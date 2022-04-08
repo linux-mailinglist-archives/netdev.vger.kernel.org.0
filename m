@@ -2,89 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED9764F9797
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 16:03:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C42524F97E4
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 16:20:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236706AbiDHOF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 10:05:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34468 "EHLO
+        id S231400AbiDHOWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 10:22:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232449AbiDHOF5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 10:05:57 -0400
-Received: from smtpservice.6wind.com (unknown [185.13.181.2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E841B13E17F;
-        Fri,  8 Apr 2022 07:03:53 -0700 (PDT)
-Received: from bretzel (bretzel.dev.6wind.com [10.17.1.57])
-        by smtpservice.6wind.com (Postfix) with ESMTPS id 7D7E0600DD;
-        Fri,  8 Apr 2022 16:03:52 +0200 (CEST)
-Received: from dichtel by bretzel with local (Exim 4.92)
-        (envelope-from <dichtel@6wind.com>)
-        id 1ncpDM-00051l-De; Fri, 08 Apr 2022 16:03:52 +0200
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-To:     Eric Dumazet <edumazet@google.com>,
-        kongweibin <kongweibin2@huawei.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Vasily Averin <vvs@virtuozzo.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, rose.chen@huawei.com,
-        liaichun@huawei.com, Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        stable@vger.kernel.org
-Subject: [PATCH net] ipv6: fix panic when forwarding a pkt with no in6 dev
-Date:   Fri,  8 Apr 2022 16:03:42 +0200
-Message-Id: <20220408140342.19311-1-nicolas.dichtel@6wind.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <59150cd5-9950-2479-a992-94dcdaa5e63c@6wind.com>
-References: <59150cd5-9950-2479-a992-94dcdaa5e63c@6wind.com>
+        with ESMTP id S236850AbiDHOWh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 10:22:37 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D824B352761;
+        Fri,  8 Apr 2022 07:20:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649427633; x=1680963633;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=XvAC40jVHJmWg5km7px+Bf8Niyr+ZCE4dlUOfiX4Ybw=;
+  b=I2uh+8dhjrtwn+kcTWUqwC0u4mnIJIizpPc/nRBxDA6LnrKNsphn8tKf
+   +zWM/4YkRPBm5DO5gKJ78JPo7hIw8aR9uo06xV03WDuOZc02uMi/G25Xk
+   +NDbQwEhiaDvfFIbfTtC8+EC1ZkbTvgL7egtRoyWK0kgQ5/DqfX8AjYbc
+   heKWtlLY3U80w8ENA5JlHWcoSfH6xzO39rcmu3/6vMdGMdc+ytsypTjI4
+   RHrUhVZf04STkZb9gvRqkT/O2GkeoQuwjhcoy717Q740z5VJmfuLa1Kwg
+   FlbDj7yE+7D+iOxWtz1KAuK1Qf7X9kxqHwKM//SE/EaTyLtG1hnohrift
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="261292337"
+X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
+   d="scan'208";a="261292337"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 07:20:33 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
+   d="scan'208";a="589231623"
+Received: from lkp-server02.sh.intel.com (HELO 7e80bc2a00a0) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 08 Apr 2022 07:20:31 -0700
+Received: from kbuild by 7e80bc2a00a0 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ncpTS-0000LK-R2;
+        Fri, 08 Apr 2022 14:20:30 +0000
+Date:   Fri, 8 Apr 2022 22:20:15 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, Stanislav Fomichev <sdf@google.com>
+Subject: Re: [PATCH bpf-next v3 2/7] bpf: per-cgroup lsm flavor
+Message-ID: <202204082214.0EUCPtwa-lkp@intel.com>
+References: <20220407223112.1204582-3-sdf@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,RDNS_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220407223112.1204582-3-sdf@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-kongweibin reported a kernel panic in ip6_forward() when input interface
-has no in6 dev associated.
+Hi Stanislav,
 
-The following tc commands were used to reproduce this panic:
-tc qdisc del dev vxlan100 root
-tc qdisc add dev vxlan100 root netem corrupt 5%
+Thank you for the patch! Yet something to improve:
 
-CC: stable@vger.kernel.org
-Fixes: ccd27f05ae7b ("ipv6: fix 'disable_policy' for fwd packets")
-Reported-by: kongweibin <kongweibin2@huawei.com>
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
----
+[auto build test ERROR on bpf-next/master]
 
-kongweibin, could you test this patch with your setup?
+url:    https://github.com/intel-lab-lkp/linux/commits/Stanislav-Fomichev/bpf-cgroup_sock-lsm-flavor/20220408-063705
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+config: arm64-randconfig-r011-20220408 (https://download.01.org/0day-ci/archive/20220408/202204082214.0EUCPtwa-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/3c3f15b5422ca616e2585d699c47aa4e7b7dcf1d
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Stanislav-Fomichev/bpf-cgroup_sock-lsm-flavor/20220408-063705
+        git checkout 3c3f15b5422ca616e2585d699c47aa4e7b7dcf1d
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash
 
-Thanks,
-Nicolas
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
- net/ipv6/ip6_output.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+All errors (new ones prefixed by >>):
 
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index e23f058166af..fa63ef2bd99c 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -485,7 +485,7 @@ int ip6_forward(struct sk_buff *skb)
- 		goto drop;
- 
- 	if (!net->ipv6.devconf_all->disable_policy &&
--	    !idev->cnf.disable_policy &&
-+	    (!idev || !idev->cnf.disable_policy) &&
- 	    !xfrm6_policy_check(NULL, XFRM_POLICY_FWD, skb)) {
- 		__IP6_INC_STATS(net, idev, IPSTATS_MIB_INDISCARDS);
- 		goto drop;
+   aarch64-linux-ld: Unexpected GOT/PLT entries detected!
+   aarch64-linux-ld: Unexpected run-time procedure linkages detected!
+   aarch64-linux-ld: ID map text too big or misaligned
+   aarch64-linux-ld: kernel/bpf/trampoline.o: in function `bpf_trampoline_compute_key':
+   include/linux/bpf_verifier.h:540: undefined reference to `btf_obj_id'
+>> aarch64-linux-ld: include/linux/bpf_verifier.h:540: undefined reference to `btf_obj_id'
+
 -- 
-2.33.0
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
