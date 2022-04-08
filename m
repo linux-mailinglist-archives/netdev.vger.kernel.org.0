@@ -2,83 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D023F4F8C9D
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 05:27:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC0724F8C4C
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 05:26:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233680AbiDHC6N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 22:58:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58548 "EHLO
+        id S233779AbiDHDC0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 23:02:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231958AbiDHC6K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 22:58:10 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8940A1D8A97;
-        Thu,  7 Apr 2022 19:56:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 289E7CE2962;
-        Fri,  8 Apr 2022 02:56:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DF0BC385A4;
-        Fri,  8 Apr 2022 02:56:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649386563;
-        bh=1jWpv2ExUkDWhUjL3VwJv5HO0++He4WymWQa2PrjI4c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BQ1HRJxZmAVJtXb4eB8lUiRx4uh2RseU3Izok1+OX2pGGMTHG3HpnZPgyqSUFEdGA
-         QYD2idTFgeVbHj28IH+vsGDu1OQTM8krKLv6ATcA06roVIoj7JVxlTQMoIMf2iV7+c
-         Tiv59aCmNj04RIUeukcqVPJY+1ilC8ZLfR70c3+c9OGxlIzeZRBUklQekPCNtS2bzP
-         Ioxo3hJ7+HTux7hjCslZpYVCwdyKlAwPA+buBjGIRRiVQMNYEFBWx5gdpWXcPJo6EF
-         mTBTwKOh4u3bpkY7CmJXT/ft1Ztyi8GRqRGr+dIEbs8AhOGjeayvVNqQMBSLJzV7kf
-         V2y+J0YLfPnZw==
-Date:   Thu, 7 Apr 2022 19:56:02 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>, UNGLinuxDriver@microchip.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net: dsa: felix: suppress -EPROBE_DEFER errors
-Message-ID: <20220407195602.47c993d4@kernel.org>
-In-Reply-To: <c9e8d4940e6c4a3540d67ca3f13ca484@walle.cc>
-References: <20220407130625.190078-1-michael@walle.cc>
-        <20220407135613.rlblrckb2h633bps@skbuf>
-        <cd433399998c2f58884f08b4fc0fd66a@walle.cc>
-        <20220407141254.3kpg75l4byytwfye@skbuf>
-        <c9e8d4940e6c4a3540d67ca3f13ca484@walle.cc>
+        with ESMTP id S229798AbiDHDCY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 23:02:24 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21F8B2B3D6D;
+        Thu,  7 Apr 2022 20:00:22 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KZNJl3krgz1HBSY;
+        Fri,  8 Apr 2022 10:59:51 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 8 Apr 2022 11:00:12 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 8 Apr
+ 2022 11:00:19 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-wireless@vger.kernel.org>, <ath11k@lists.infradead.org>
+CC:     <quic_kvalo@quicinc.com>, <quic_cjhuang@quicinc.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+Subject: [PATCH -next] ath11k: fix missing unlock on error in ath11k_wow_op_resume()
+Date:   Fri, 8 Apr 2022 11:09:12 +0800
+Message-ID: <20220408030912.3087293-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 07 Apr 2022 16:58:43 +0200 Michael Walle wrote:
-> >> I'll limit it to just the one dev_err() and add a Fixes,
-> >> there might be scripts out there who greps dmesg for errors.  
-> > 
-> > Ok.  
-> 
-> Hum, it's not that easy. The issue goes back all the way
-> to the initial commit if I didn't miss anything (56051948773e).
-> That one was first included in 5.5, but dev_err_probe() wasn't
-> added until 5.9.
-> 
-> Thus will it work if I add Fixes: 56051948773e (..)?
+Add the missing unlock before return from function ath11k_wow_op_resume()
+in the error handling case.
 
-Yes, backporters will figure it out. Matters even less since none 
-of [5.5, 5.9] kernels are LTS.
+Fixes: 90bf5c8d0f7e ("ath11k: purge rx pktlog when entering WoW")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/net/wireless/ath/ath11k/wow.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-But if you want to slap a Fixes tag on it, it has to go to net rather
-than net-next.
+diff --git a/drivers/net/wireless/ath/ath11k/wow.c b/drivers/net/wireless/ath/ath11k/wow.c
+index 6c2611f93739..9d088cebef03 100644
+--- a/drivers/net/wireless/ath/ath11k/wow.c
++++ b/drivers/net/wireless/ath/ath11k/wow.c
+@@ -758,7 +758,7 @@ int ath11k_wow_op_resume(struct ieee80211_hw *hw)
+ 	ret = ath11k_dp_rx_pktlog_start(ar->ab);
+ 	if (ret) {
+ 		ath11k_warn(ar->ab, "failed to start rx pktlog from wow: %d\n", ret);
+-		return ret;
++		goto exit;
+ 	}
+ 
+ 	ret = ath11k_wow_wakeup(ar->ab);
+-- 
+2.25.1
+
