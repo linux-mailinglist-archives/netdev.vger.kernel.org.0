@@ -2,95 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E1544F8F22
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 09:07:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AED34F8EFF
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 09:07:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234887AbiDHGns (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 02:43:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33994 "EHLO
+        id S229493AbiDHGsX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 02:48:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235229AbiDHGnp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 02:43:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3EC89100A56
-        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 23:41:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649400097;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=brClZdBOJIi3Tjs12ZgAohDLSo6wNWWbtj768wAr3+o=;
-        b=GmI4vaYDOVCHmhV0gifksVNLXENRqxEobA/hFuq7q6dGlPoZfa4Exw/UipaIbqhYNbr+Yx
-        qyoXaGTWgX/U8fUg+xhveU1uUJG+qkGq4ZNWQUfe7DjGtCxtTeY3sDHHq5vVaFGR/1476L
-        V6/PvdzQxkugdfOA+BW0JbiE3tmcvTY=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-79-i-2C-uuqNLiiBmry1Lu7GQ-1; Fri, 08 Apr 2022 02:41:33 -0400
-X-MC-Unique: i-2C-uuqNLiiBmry1Lu7GQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A79263803931;
-        Fri,  8 Apr 2022 06:41:32 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.37.45])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3DC8F40E80E1;
-        Fri,  8 Apr 2022 06:41:31 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20220404183439.3537837-1-eric.dumazet@gmail.com>
-References: <20220404183439.3537837-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     dhowells@redhat.com, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org, syzbot <syzkaller@googlegroups.com>
-Subject: Re: [PATCH net] rxrpc: fix a race in rxrpc_exit_net()
+        with ESMTP id S232594AbiDHGpx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 02:45:53 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D3DA2F429D
+        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 23:42:37 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id m16so7098603plx.3
+        for <netdev@vger.kernel.org>; Thu, 07 Apr 2022 23:42:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ry/pptsNXcfgvM2e4w+e+zihZ3PckqdRqO56Galbnsg=;
+        b=gj9fHsMV8bvOx+u4oTiZVJFEAjn2dAWvu0wdtdrp9RhQoggXIDfW1kcCJqB1/qUTAw
+         6EOxl4qupy/H8AS+akRyPKhMVyidrK5CTDNfrQYRwdlurihHr2B+t9ou5t2n294hj8h9
+         eDRqI13thFbwHoJHVkDESshyB0eUiz0K4UPTXh/Rs1MNjJB4/BCJptglyb/r9VE12M9h
+         LkOamvgPrggotzcaxDxcqP3okuPaqYzS0wpZ+jKGS/LqTE+PopQlr+J87VBDKgikV4TE
+         fi9aVpfPM6uawhCMHWBd/mLkWK4SFKfLvyjt5KNYbik0dUrgYXIkTw2Ah3NOfRsjkMIH
+         6ssQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ry/pptsNXcfgvM2e4w+e+zihZ3PckqdRqO56Galbnsg=;
+        b=xN1GqIOHGLi6AYZjjVHuqyODKMG1sf4TLn4y1Dfv2IvFb5lNkG+ZMplIoIZOdQHc6/
+         sf4cYF6KV9QcsKy16ModhtdZ7K45NXdXHzAJsb0giAnTOnQl3R/364Nh4ykie7dGJvD2
+         fIj9VdSy71fwoGUg2Dkv0+WNWLBUUnEcmyw4xssQCrGGC2Ka3W13LvwqqsTIu45nHj1b
+         En2aUtzwrNhpnSMzU3XiQKYvGrx+VkiXe8tHdgRqVb7dDNNVzs0qPCX6xVqP2eUUjMUj
+         G6tPK1VLaTCjXKyhIwaLWZzF4WJlLMKEGcPp8yveSxpYPH6NnHBO+ZsB2+slEp+qqhGr
+         Sp3A==
+X-Gm-Message-State: AOAM531oZIUEeK4kE9T1jYkkYYsTF4Y0J9HUqkyXDT+HMoUyWn2XLfGW
+        AQRYkzog3EuPa1Y2YL4P4mWQCAf1AOSBj3O1gDl0WA==
+X-Google-Smtp-Source: ABdhPJy4g38Q/4igl0yQl4XqWpbhfoxp4xqXbs6Lx5BvjSQukPMPTlRriFDBJxnzPMbw69KxlsOu1wyLwUJpw33ONHI=
+X-Received: by 2002:a17:903:200b:b0:157:1e6:931d with SMTP id
+ s11-20020a170903200b00b0015701e6931dmr7688334pla.6.1649400156907; Thu, 07 Apr
+ 2022 23:42:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <583131.1649400090.1@warthog.procyon.org.uk>
-Date:   Fri, 08 Apr 2022 07:41:30 +0100
-Message-ID: <583132.1649400090@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220408000113.129906-1-yang.lee@linux.alibaba.com>
+In-Reply-To: <20220408000113.129906-1-yang.lee@linux.alibaba.com>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Fri, 8 Apr 2022 08:42:00 +0200
+Message-ID: <CAMZdPi9kA0iLB64B6pCwt+2tUL2Lv9nYbU_N-0J6tSORSfq9_A@mail.gmail.com>
+Subject: Re: [PATCH -next 1/2] wcn36xx: clean up some inconsistent indenting
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, toke@toke.dk, wcn36xx@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
+On Fri, 8 Apr 2022 at 02:01, Yang Li <yang.lee@linux.alibaba.com> wrote:
+>
+> Eliminate the follow smatch warning:
+> drivers/net/wireless/ath/wcn36xx/smd.c:3151
+> wcn36xx_smd_gtk_offload_get_info_rsp() warn: inconsistent indenting
+>
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 
-[Note that your patch is appl/octet-stream for some reason.]
-
-> 	rxnet->live = false;
-> -	del_timer_sync(&rxnet->peer_keepalive_timer);
->  	cancel_work_sync(&rxnet->peer_keepalive_work);
-> +	del_timer_sync(&rxnet->peer_keepalive_timer);
-
-That fixes that problem, but introduces another.  The timer could be in the
-throes of queueing the worker:
-
-	CPU 1			CPU 2
-	====================	=====================
-				if (rxnet->live)
-				<INTERRUPT>
-	rxnet->live = false;
- 	cancel_work_sync(&rxnet->peer_keepalive_work);
-				rxrpc_queue_work(&rxnet->peer_keepalive_work);
-	del_timer_sync(&rxnet->peer_keepalive_timer);
-
-I think keeping the first del_timer_sync() that you removed and the one after
-the cancel would be sufficient.
-
-David
-
+Acked-by: Loic Poulain <loic.poulain@linaro.org>
