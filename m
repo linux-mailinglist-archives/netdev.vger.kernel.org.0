@@ -2,140 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 04A0B4F99AC
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 17:41:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FE204F99B6
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 17:42:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237130AbiDHPnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 11:43:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57564 "EHLO
+        id S237722AbiDHPo4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 11:44:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237708AbiDHPnj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 11:43:39 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ECA54B430
-        for <netdev@vger.kernel.org>; Fri,  8 Apr 2022 08:41:33 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id a16-20020a17090a6d9000b001c7d6c1bb13so10031301pjk.4
-        for <netdev@vger.kernel.org>; Fri, 08 Apr 2022 08:41:33 -0700 (PDT)
+        with ESMTP id S232562AbiDHPoz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 11:44:55 -0400
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E3DB8A312;
+        Fri,  8 Apr 2022 08:42:51 -0700 (PDT)
+Received: by mail-oi1-x22e.google.com with SMTP id t21so9174547oie.11;
+        Fri, 08 Apr 2022 08:42:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=EPGVb31c9VYtNFxiQ9pmgvnPXTLkuL0jOYpmVyuPVWQ=;
-        b=Kay8uKFyZQV4THgnBTgMBMQFvRcWqk4YW5Z+fwvXEGnN7+7x0t3XiZ2EogACfdRSKP
-         PvvXpZ1YayQ+cP3ehpiLWc6jbGDZgdku3bvPOI7APZ+QtfPbxmzCai3MiTRzMGCSxkT0
-         piCdWho3gYkEpwxd7gGiem+hX/2LR3zb2Cwy3vPaoNPAKbZVopNsgqdSDjc7e8WNE0QS
-         V3hd2+r9//XerfszuVvPiCobig9SBmiS4A21touEG7/5+Tc0now7QK5EAbQCURSgM18r
-         7aix9lQZhmeaWYCZB1hPMdQ4+tlptsNzxEHD/pvlSc2myeQxVfXQ+BUptzL1eP43ad6h
-         6K7g==
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=IkU27LeDLz1RvhbmUhGboZx0hYH9VeuwztKc/NAi28Y=;
+        b=ZgjJSDCTKUDLDc3NBo4hhtsyBJmI0DCpouMvDza23ZSEfWsBN65jJJAXiNOoGmJEPB
+         PHdneJ8eKLEtGwpawftqCwu2+NObvHFymZCi0xkuTZYDjX7Ab5Lm0VsmtVq/L7mL8M0s
+         bCre+Pkrm/pbVlxEjwBsxsWNLB0F+spcVIXmToy4Y7pNWp/XKEZ18R/H/5dBX1N4VA81
+         Q+uuBQ34KDX69pvfMo3gLAEkpolBKD/1kJ7ANtRRd+QiCpSme04heEM5nX1CvKUjYc31
+         2Y36vcD6NLOyPMzucqkZRqgsVTe3aA22He/aFbnEAmPsd21qksOjxlA90j3D4BZ6CQ39
+         GgTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=EPGVb31c9VYtNFxiQ9pmgvnPXTLkuL0jOYpmVyuPVWQ=;
-        b=2UzFA+aNudhLQf4pW+jctojuJDs5H18kFGEvHlIWTWXqUQDDoFGjKRqlZF17NlG70a
-         kzsYoU36tq4bA0EZhHCPGmdbgFzaz17bhLHbsmpkHpJMUYRrGVIVgFexg2VImNIp8DnQ
-         cbxHW3+5WdfE4+RlY4OJ0JDaKYBIldNFTip20/VBLOsnmDZCSI1uPX8Jcf39cObWCTC1
-         xqMTixnwO+wPXeV/utnZFe9mtr3dZxDcL7YS5bJvib/ChVs+stG7Cvkk6/KCwaMF9Ag2
-         TuNQW2V5Nt4twPCDfcgHcr+jz/Xl16bViAEV/WuKPOJqXx8KLZof6owKhaOCqqsjLmUQ
-         a1xQ==
-X-Gm-Message-State: AOAM532nLMImouuxgmVm33eW4CIRa8xkoAsNMYB/42nkFGPgyFopgMLT
-        AbNZTraZapjOXIIYhn6r0AT8MOsmEpTjNQ==
-X-Google-Smtp-Source: ABdhPJxbizw1hXUaB/fVdj2Ts0pkOBT5gHbGvFL00A+AVIFC8+lE3K2lSXim22VBGUXLB8Lod9EAQQ==
-X-Received: by 2002:a17:902:6b8b:b0:14d:66c4:f704 with SMTP id p11-20020a1709026b8b00b0014d66c4f704mr20243985plk.53.1649432493311;
-        Fri, 08 Apr 2022 08:41:33 -0700 (PDT)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id s141-20020a632c93000000b0038134d09219sm22356564pgs.55.2022.04.08.08.41.32
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=IkU27LeDLz1RvhbmUhGboZx0hYH9VeuwztKc/NAi28Y=;
+        b=Sv5q5auHjZKWTfHF+KHKj5pvEmO9R++83Y7ij1JeXlw7CqVeVNfpUKFuSff2ZGxIsT
+         2Db4QW6BHFHpU3+KiPGZ340JRuFxIeaukFkdzADW98cNJzQ/baL4uoFr0E9piUC2NDSN
+         4u7a57eRLXHJyii1od6agjCkgNES6vzZZj0Hr84XiL0Qi19i6+gUWPxq/Az8qcMeZJXv
+         sDhxUNGOZeUvv/ZHlx8jc6OowpQFUdA3kg6+/6yD+fnjqUEFXCiWif+1X59kCh5dZVsS
+         Nik2T16AvjUYGS1WDtJXFw1RB755R1IKcQIf9zw4f3Fn/NilJzLn+hrRan284ECJTG7B
+         G8gg==
+X-Gm-Message-State: AOAM531OYdVPRAzHjy1SN8ikHmwUmbOSai0aeBHc1emNAEMyDNlwP5Cz
+        3yHb+bUBDtWUcQnLcnrBzb4=
+X-Google-Smtp-Source: ABdhPJzjzjlked1QPV0x7+JOmHshn9p8AeCfIVQkMdGb85D7s9fLmVl9Q+yR6LC2W643I02P4wb11w==
+X-Received: by 2002:a05:6808:11c2:b0:2f9:b58f:5ac7 with SMTP id p2-20020a05680811c200b002f9b58f5ac7mr135549oiv.132.1649432570787;
+        Fri, 08 Apr 2022 08:42:50 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id 1-20020a056870104100b000dd9a2eb20asm8843248oaj.21.2022.04.08.08.42.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 08:41:32 -0700 (PDT)
-Date:   Fri, 8 Apr 2022 08:41:29 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Dave Jones <davej@codemonkey.org.uk>, netdev@vger.kernel.org,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH] decouple llc/bridge
-Message-ID: <20220408084129.26944522@hermes.local>
-In-Reply-To: <20220407194859.1e897edf@kernel.org>
-References: <20220407151217.GA8736@codemonkey.org.uk>
-        <20220407091640.1551b9d4@hermes.local>
-        <20220407194859.1e897edf@kernel.org>
+        Fri, 08 Apr 2022 08:42:15 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Fri, 8 Apr 2022 08:42:00 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Xu Yilun <yilun.xu@intel.com>, Tom Rix <trix@redhat.com>,
+        Jean Delvare <jdelvare@suse.com>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        David Laight <David.Laight@ACULAB.COM>
+Subject: Re: [PATCH v4 1/2] hwmon: introduce hwmon_sanitize_name()
+Message-ID: <20220408154200.GA105453@roeck-us.net>
+References: <20220405092452.4033674-1-michael@walle.cc>
+ <20220405092452.4033674-2-michael@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220405092452.4033674-2-michael@walle.cc>
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 7 Apr 2022 19:48:59 -0700
-Jakub Kicinski <kuba@kernel.org> wrote:
+On Tue, Apr 05, 2022 at 11:24:51AM +0200, Michael Walle wrote:
+> More and more drivers will check for bad characters in the hwmon name
+> and all are using the same code snippet. Consolidate that code by adding
+> a new hwmon_sanitize_name() function.
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> Reviewed-by: Tom Rix <trix@redhat.com>
 
-> On Thu, 7 Apr 2022 09:16:40 -0700 Stephen Hemminger wrote:
-> > > I was wondering why the llc code was getting compiled and it turned out
-> > > to be because I had bridging enabled. It turns out to only needs it for
-> > > a single function (llc_mac_hdr_init).  
-> 
-> > > +static inline int llc_mac_hdr_init(struct sk_buff *skb,
-> > > +				   const unsigned char *sa, const unsigned char *da)
-> > > +{
-> > > +	int rc = -EINVAL;
-> > > +
-> > > +	switch (skb->dev->type) {
-> > > +	case ARPHRD_ETHER:
-> > > +	case ARPHRD_LOOPBACK:
-> > > +		rc = dev_hard_header(skb, skb->dev, ETH_P_802_2, da, sa,
-> > > +				     skb->len);
-> > > +		if (rc > 0)
-> > > +			rc = 0;
-> > > +		break;
-> > > +	default:
-> > > +		break;
-> > > +	}
-> > > +	return rc;
-> > > +}
-> > > +
-> > >    
-> 
-> nit: extra new line
-> 
-> > > -int llc_mac_hdr_init(struct sk_buff *skb,
-> > > -		     const unsigned char *sa, const unsigned char *da)
-> > > -{
-> > > -	int rc = -EINVAL;
-> > > -
-> > > -	switch (skb->dev->type) {
-> > > -	case ARPHRD_ETHER:
-> > > -	case ARPHRD_LOOPBACK:
-> > > -		rc = dev_hard_header(skb, skb->dev, ETH_P_802_2, da, sa,
-> > > -				     skb->len);
-> > > -		if (rc > 0)
-> > > -			rc = 0;
-> > > -		break;
-> > > -	default:
-> > > -		break;
-> > > -	}
-> > > -	return rc;
-> > > -}  
-> 
-> There's also an EXPORT somewhere in this file that has to go.
-> 
-> > >  /**
-> > >   *	llc_build_and_send_ui_pkt - unitdata request interface for upper layers
-> > >   *	@sap: sap to use    
-> > 
-> > You may break other uses of LLC.
-> > 
-> > Why not open code as different function.  I used the llc stuff because there
-> > were multiple copies of same code (DRY).  
-> 
-> I didn't quite get what you mean, Stephen, would you mind restating?
+Applied to hwmon-next.
 
-
-Short answer: it was idea that didn't pan out.
-
-Suggestion: get rid of using LLC  in bridge and just rewrite that one place.
+Thanks,
+Guenter
