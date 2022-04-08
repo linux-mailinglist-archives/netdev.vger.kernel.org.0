@@ -2,246 +2,515 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B1EBC4F9FCE
-	for <lists+netdev@lfdr.de>; Sat,  9 Apr 2022 00:57:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7DA44F9FD5
+	for <lists+netdev@lfdr.de>; Sat,  9 Apr 2022 01:00:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235854AbiDHW7c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 18:59:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56648 "EHLO
+        id S237256AbiDHXCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 19:02:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231730AbiDHW7b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 18:59:31 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D85854ECCA;
-        Fri,  8 Apr 2022 15:57:26 -0700 (PDT)
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 238MvCtU027938;
-        Fri, 8 Apr 2022 15:57:12 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=mwg8nrvR6bBg0AS1xShfDivbVBIOnPBem0iVoU5AWNk=;
- b=ZEA5Ke1gilbW2RVFcK7wV1SDX+T8DHiH4f1qDTYbBjFkOByseGHIg0BBr9NGIYBKSDck
- cm2tV7tX+lDEv0B8T9ime9A/nBU+Ebyojxlikjy4W0g5oJPR+5vdyQc1y7Ho41uhS4Fv
- w+22eZBrAEyVwYym120d0O3mEb62kJ2BdSU= 
-Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2107.outbound.protection.outlook.com [104.47.58.107])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3fad7yxvta-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 08 Apr 2022 15:57:11 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GIYo8QqT98rz3tQCAmQgRlrejeVbfT/wylo2wHp8uejNLp94clD1j1DNAEw30WXTq7+q/A/0uPOx5BUYpDvxfLN+opZc4lBzhoTajdxPXEMwLVVdF7ia73NRpGqy0f4ujCluio5srLEUQu8oBdPROXzPXKSoMgNNC8md3DlN6wG2MmMPTY+I7nL0AlB9AHS+74aRtVNimVEcUBa1XKQrjWVGquhvXN6dGlPMrUAjMhWT3uhGDKsxaxZ+HWsjmq6kswRyc6JwkIBdbM5aZqBGBPs9AuTn9Rxl5JfyTCCiO5sqhJcj4pkojtx21ENjFdyT5xkCjdFxve6UofgIpGUVTA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mwg8nrvR6bBg0AS1xShfDivbVBIOnPBem0iVoU5AWNk=;
- b=W9iaeZvCr5i8WvRIZiPnKdoQfWH9nQUys+75qP+KSFm9HlLhPXCQr444yCI1YH5/aN8O3pFBPCaZ/1dflyNPKvQJBN0iZRRYxmwGIx9uumd6jSDPrzJgmrn9z9HH5onjCKPMo4Ts8tZunVPGfdTJqC7NyaSjvur1xkfRg9fvCCmVIcWbORadhhyZ66EInZZUOzd2EG3glQIh1Yl4gpO2nIhCUh1zlHsdbHy2Tm5Xy22G5P3SUWMVupWroe8MnuWGYoeD76FiBosyEMRZ+bsyv5g/vKpg3GcMnBr9Whox7tyjftgUxJveJgDd8QDBw5auiZ/NcaXx+/xIcK5Sh2a+sw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
- by DM6PR15MB3324.namprd15.prod.outlook.com (2603:10b6:5:16b::27) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.25; Fri, 8 Apr
- 2022 22:56:31 +0000
-Received: from SA1PR15MB5016.namprd15.prod.outlook.com
- ([fe80::bda3:5584:c982:9d44]) by SA1PR15MB5016.namprd15.prod.outlook.com
- ([fe80::bda3:5584:c982:9d44%3]) with mapi id 15.20.5144.025; Fri, 8 Apr 2022
- 22:56:31 +0000
-Date:   Fri, 8 Apr 2022 15:56:28 -0700
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org
-Subject: Re: [PATCH bpf-next v3 3/7] bpf: minimize number of allocated lsm
- slots per program
-Message-ID: <20220408225628.oog4a3qteauhqkdn@kafai-mbp.dhcp.thefacebook.com>
-References: <20220407223112.1204582-1-sdf@google.com>
- <20220407223112.1204582-4-sdf@google.com>
+        with ESMTP id S230518AbiDHXCL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 19:02:11 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC9D25EDFA;
+        Fri,  8 Apr 2022 16:00:04 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id t4so8974910pgc.1;
+        Fri, 08 Apr 2022 16:00:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=z5SguUuwzzxEHV4Wd/7o+wYJyRcFlc93ZqC0gQZ1tro=;
+        b=TX6EqgEkpiMeWOESQOu65B4Jl0svOBzuyTbSsYFk6Msj9fd8vemcvgbyLXkfvYLkT6
+         CBEptoSmQ4/fM5bZ/so+kyuDe3DhR4ZfZgeE5oyT/jO0Tq6NNfHArsdR2+KH9nm8qn9p
+         R55AeppyJ/U3WiGin9LhSoSCWoXWCDo9lyPr0S1159yzZQE/HBEXgHjM2VrN9dwQjFyy
+         tmVoeqGFae/Lteke7+mh+6pV3iLd4tBjZmhCXqeEr03f7rxb0FNN5LmB5kOiRwGED66M
+         u06K3DpJG0gU+/TPsdC2lsFJIZ68560MPlNtEjrS2yh4MPgaPk6TDR9HfxSBfjYz3plz
+         DVjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=z5SguUuwzzxEHV4Wd/7o+wYJyRcFlc93ZqC0gQZ1tro=;
+        b=s44UgFoDJi64imcNLr2ytYMovvjR5X85BgBb2q7EvAZ3UbwUjISNDDqGGow//qDKCG
+         9p2vwHx52BQBiZj4rzov0eC1ClfkRj3vfBUYX7ZPQRubEIel3Ea571ZwtbM8L3A4oMXX
+         XREULHxRK9R5sQezFWUpVNgHq6YxfQ7WmZspX2GIIrrcpvTDWgDRU7dbX2w6b1fm9+Hr
+         aNq/BE12F509+iEw0qh930Fd7mDvabsD92SixgFzxr4qp/IWlZJ3CuDPuhE4OGSoWDkI
+         BjB9DBUGC0/8OCBoQ4eLKOCbO+yttIgHn0qaF+NE5HioB7HV8UwHGoRNFNetmb3HlBSO
+         wZ8g==
+X-Gm-Message-State: AOAM532M8g0dgAGp/TcTX2VZAjtbohB9EQWYz2T6n27DKJDNV24sHpVm
+        LrQnGD+GjaIUJAK8fpl0Wgo=
+X-Google-Smtp-Source: ABdhPJzOkvpH9KQqsrx+UL9Pu/xznjF+cRWhyf0csSpT413q/zU1MzXeeUT5qIeFQnXgayup5wPbmg==
+X-Received: by 2002:a05:6a00:24cd:b0:4fd:9038:8aa4 with SMTP id d13-20020a056a0024cd00b004fd90388aa4mr21822622pfv.78.1649458803766;
+        Fri, 08 Apr 2022 16:00:03 -0700 (PDT)
+Received: from MBP-98dd607d3435.dhcp.thefacebook.com ([2620:10d:c090:400::5:4c4c])
+        by smtp.gmail.com with ESMTPSA id n14-20020a17090a394e00b001c670d67b8esm13162104pjf.32.2022.04.08.16.00.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Apr 2022 16:00:03 -0700 (PDT)
+Date:   Fri, 8 Apr 2022 16:00:00 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Hou Tao <houtao1@huawei.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>, Yonghong Song <yhs@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [RFC PATCH bpf-next 1/2] bpf: Introduce ternary search tree for
+ string key
+Message-ID: <20220408230000.d3g3a2labycjbd7u@MBP-98dd607d3435.dhcp.thefacebook.com>
+References: <20220331122822.14283-1-houtao1@huawei.com>
+ <20220331122822.14283-2-houtao1@huawei.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220407223112.1204582-4-sdf@google.com>
-X-ClientProxiedBy: BY5PR16CA0026.namprd16.prod.outlook.com
- (2603:10b6:a03:1a0::39) To SA1PR15MB5016.namprd15.prod.outlook.com
- (2603:10b6:806:1db::19)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 83a291a7-25a9-42dc-3778-08da19b30583
-X-MS-TrafficTypeDiagnostic: DM6PR15MB3324:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR15MB33243E1CC03C4545EFBED1C2D5E99@DM6PR15MB3324.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8lx5PZRZSeY9Wky2n1YS4+F6/ft6zF6QAhIqv618PoBoOioaZCKu5dJuLS6erqLHliUPAGj6DvcMyAd1liEEGjnTIkwFEY1QuUfWQPKKfiGjUuI86vN1D19rGIC0ApJBgfIeHWHuvTciWNia2187xuUgWCJP1+yqoinb79HuHlqN7dLDMWAJEvDEPrhwhD5J13L98UbQQpOZHuQdYTbpre9eZdev4NbAig835+HuQa8jQipnq9gB05n8z8VVHsJdQX8EwuXbRHx075ahHXjuZyJFQmDfyt1GTh135LbnjFOoRUgH+IE+VP6RPyjGxWJiC/fVyhN9jhZ1Uw2+VKu7Iwmk3GwbR+V2R0VAt4lWx2WsA9E2mT2Vya2dnCJgzaHFLVGBp9Md0LWuBBqGI93IIQ7qnnj82Hp6ELc78TgORCAC/VHHH7S7lR4JbQNQyble+JFk+znxLuIHRteOhgrr0Ehf8Zt26uKQVZbRJBF8MyBLqLuVn6h/NHVO5XyYHKcM4kdOCXsvHQDmxmQCISiuvF+3gUmxsVG2rno4Llyrfc3KDdp8iAzWCRl+rMfQ8hBEPcQlXosF+QcflQZx6TPYq7wtP9h36LvsTasZnT+U8yr0agoVqCCDYDycdkoTboZtKE8fqisW6r3LI8bHfnqFNQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5016.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(66946007)(6666004)(66476007)(66556008)(83380400001)(8676002)(86362001)(8936002)(6916009)(6486002)(4326008)(316002)(38100700002)(5660300002)(2906002)(186003)(1076003)(6506007)(508600001)(6512007)(9686003)(52116002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?R4QMzaA7qwqOAsrk9e5X1CCUO1yB2NGssN3d5doVOWv6190Y0a0ppOFZ2qrb?=
- =?us-ascii?Q?D87kzDi31qNrxwg8mipzceusW4jQeehOLxlVUKSK9v2iHChOnwyYIcYhewoa?=
- =?us-ascii?Q?aYad6afpyVHMkb2F3fnHUTEXoia1JLuvQ4kHDVTHTnW7CUFk05xyQa1Rz5eX?=
- =?us-ascii?Q?1c2AWhE1Vt2owmAt7QIfqdY3Eph4+9fSLFZgsCFAq4+Nt6eDX1Xg47XgWSZs?=
- =?us-ascii?Q?JREtc5/DrC5Cng4PDbg5DTESrA3UJjQiQnyMRd8rWcP1iroRfjnB0Wv4S+vZ?=
- =?us-ascii?Q?t4Z05QguucSRELehjJqkOHOHsCdeV8vLSxegOCyMrMEUw0vkrwVLzHuYcEOT?=
- =?us-ascii?Q?pIuulLNPXq6AnsKMWP+Qa9B69n4aGCcVUNh1aNPbpnVQBzWcil09iWFwZENM?=
- =?us-ascii?Q?frOnKFBOpZ0aoPLeSEBw1RJ6+Yo8u5xUXADf3tULAllRLSC+A/fsU9RC5f2u?=
- =?us-ascii?Q?ccHSQi7uI4rmtvWwLB1Eb8+AGYLm78zIZA2Kz5518hwmYyGuAmGS7OqRseD6?=
- =?us-ascii?Q?Pwb/XiqkeOKyz/ZrCFVoQXI5Ar3ouOp32UqpdN6eaLnnwRqVch8JE4Qt/UlI?=
- =?us-ascii?Q?+xHXJfZFNqlqeXEBOYQAzRhjHrZWBEpNKrG6g47oLQVBAHn0teG0tSHM4muG?=
- =?us-ascii?Q?BLNt9Fh2gyELrMTD9TXLYI1vYJVHb56bN1cZ8wmRt/Y+VmGe9zg1A9+U05jc?=
- =?us-ascii?Q?9PQHg+xG6OGpRNY4uGBzNJNp+ZTBra7T90fZ0C6qL5ntCPXp+RZeGA3S2j37?=
- =?us-ascii?Q?ZV1Ev12m9kRC7i34U8LGDgYOT/9tLHyFInK+5bRH7YhA4UNzWgrSC9HHcwj8?=
- =?us-ascii?Q?SvSOpEkeR2x6hT2IBo0p8ue4pi3aIDvKXc1qBPe6oChoK6pUfHTvMt3SRCFT?=
- =?us-ascii?Q?9uZQ1jTRwNTxeRmwZ7lhQd++n/ZUiu6wERD+naUSmoTMnQMtgFr2Q1E6MuB9?=
- =?us-ascii?Q?AlpJDud20iMOsBC1YjDmToynsCF38DHUYcm8jZrKJUmBmdRc79Ukt4tN4Kgf?=
- =?us-ascii?Q?gRuRlKqU+sTesf55X2myv5TuPYl+JLT98zLBIAnsU9JQr1Jo9ATB9ouK/VcH?=
- =?us-ascii?Q?LpQH0I0fn91WB4ogrq20caWgbOAXvtib6VGSKoGRKrjUYtC0iRaVH9O9BXWl?=
- =?us-ascii?Q?emFqknMnU+zAIk5KjDXgmz1g8SsceM4uwjHquHWpR+TE4WfkbMo6R5xWYCsg?=
- =?us-ascii?Q?duNTYUFLkSCNGyfE+3x1CvGVb6RpftS8o/12tLi4Pyxp/LfjjJWEoEH5FKiz?=
- =?us-ascii?Q?LefHMv37UkTDv2KkTZ+qF7nwSTIjxLEDCLkSubaaiNkf8Jkr5ug1/C/I6ApN?=
- =?us-ascii?Q?0QVFeq0u1mZOZJPWfbTAXzHe6IFT3TiqUHYge5VIydQ3Wczb/YRrg7FSbwOX?=
- =?us-ascii?Q?/E24/zyJfeMuXjzMxu2OK327ftt9bdb/uVtPQZEksafj6Smb2sh5z0viJvb0?=
- =?us-ascii?Q?e6SjL/vO3jdbgbHNEZU08DNE+iJHweZS4mDHrczCAhBeUNLoHFhw3pb76+mr?=
- =?us-ascii?Q?vuDxQeWK78U18AqXmm+kH04musl6oca32rxXE3+uEdY+gCBcLLW86nGaUqRy?=
- =?us-ascii?Q?nbkKsuFxHqWMPjpP7kcPvyb1NRy+rXJEnetyuyogupE7nwTXGmLt2vG8goJ3?=
- =?us-ascii?Q?rQe4CjOh2lOPQWV4jAPbGjCkoQV52excTF/XzRVUD73J5caCgrAtokPfiQb/?=
- =?us-ascii?Q?LMdeaEwEHhjQGum0L3rAzkijl5X4S4iJqBU0AmwF0KuAYbRka4wMrkZVz7/F?=
- =?us-ascii?Q?AsDi163D8ihiVc+7u0dEvl58kpAvKg8=3D?=
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 83a291a7-25a9-42dc-3778-08da19b30583
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5016.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2022 22:56:31.1328
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: B9IhU4hucwBRWAo1MhC/Tx4A/K2Bm4BzhHli0fqspuYykK133f9ASgW4fE0DtDID
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR15MB3324
-X-Proofpoint-ORIG-GUID: 3CxA8xwn_FdkmV53c9Hjg7fDiZRcmBd5
-X-Proofpoint-GUID: 3CxA8xwn_FdkmV53c9Hjg7fDiZRcmBd5
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-08_08,2022-04-08_01,2022-02-23_01
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20220331122822.14283-2-houtao1@huawei.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 03:31:08PM -0700, Stanislav Fomichev wrote:
-> Previous patch adds 1:1 mapping between all 211 LSM hooks
-> and bpf_cgroup program array. Instead of reserving a slot per
-> possible hook, reserve 10 slots per cgroup for lsm programs.
-> Those slots are dynamically allocated on demand and reclaimed.
-> This still adds some bloat to the cgroup and brings us back to
-> roughly pre-cgroup_bpf_attach_type times.
+On Thu, Mar 31, 2022 at 08:28:21PM +0800, Hou Tao wrote:
+> Now for string key in hash-table, the storage size of key for each
+> element is the size of longest string. If there are large differencies
+> in string length and comm prefixes between these strings, there will be
+> lots of space waste. So introduce a specific map for string key: ternary
+> search tree.
 > 
-> It should be possible to eventually extend this idea to all hooks if
-> the memory consumption is unacceptable and shrink overall effective
-> programs array.
+> Ternary search tree is a special trie where nodes are arranged in a
+> manner similar to binary search tree, but with up to three children
+> rather than two. The three children correpond to nodes whose value is
+> less than, equal to, and greater than the value of current node
+> respectively.
 > 
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> For each key in ternary search map, only the content before the
+> terminated null byte is saved. And just like trie, the common prefixes
+> between these strings are shared and it can reducee the memory usage
+> significantly for hierarchical string (e.g. file path with lengthy
+> prefix). But the space efficiency comes at a price: the lookup
+> performance is about x2~x3 or more slower compared with hash table for
+> small or medium data set.
+> 
+> Signed-off-by: Hou Tao <houtao1@huawei.com>
 > ---
->  include/linux/bpf-cgroup-defs.h |  4 +-
->  include/linux/bpf_lsm.h         |  6 ---
->  kernel/bpf/bpf_lsm.c            |  9 ++--
->  kernel/bpf/cgroup.c             | 96 ++++++++++++++++++++++++++++-----
->  4 files changed, 90 insertions(+), 25 deletions(-)
+>  include/linux/bpf_types.h      |   1 +
+>  include/uapi/linux/bpf.h       |   1 +
+>  kernel/bpf/Makefile            |   1 +
+>  kernel/bpf/bpf_tst.c           | 411 +++++++++++++++++++++++++++++++++
+>  tools/include/uapi/linux/bpf.h |   1 +
+>  5 files changed, 415 insertions(+)
+>  create mode 100644 kernel/bpf/bpf_tst.c
 > 
-> diff --git a/include/linux/bpf-cgroup-defs.h b/include/linux/bpf-cgroup-defs.h
-> index 6c661b4df9fa..d42516e86b3a 100644
-> --- a/include/linux/bpf-cgroup-defs.h
-> +++ b/include/linux/bpf-cgroup-defs.h
-> @@ -10,7 +10,9 @@
+> diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
+> index 48a91c51c015..8ffb3ab7f337 100644
+> --- a/include/linux/bpf_types.h
+> +++ b/include/linux/bpf_types.h
+> @@ -126,6 +126,7 @@ BPF_MAP_TYPE(BPF_MAP_TYPE_STRUCT_OPS, bpf_struct_ops_map_ops)
+>  #endif
+>  BPF_MAP_TYPE(BPF_MAP_TYPE_RINGBUF, ringbuf_map_ops)
+>  BPF_MAP_TYPE(BPF_MAP_TYPE_BLOOM_FILTER, bloom_filter_map_ops)
+> +BPF_MAP_TYPE(BPF_MAP_TYPE_TST, bpf_tst_map_ops)
 >  
->  struct bpf_prog_array;
+>  BPF_LINK_TYPE(BPF_LINK_TYPE_RAW_TRACEPOINT, raw_tracepoint)
+>  BPF_LINK_TYPE(BPF_LINK_TYPE_TRACING, tracing)
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index b0383d371b9a..470bf9a9353d 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -907,6 +907,7 @@ enum bpf_map_type {
+>  	BPF_MAP_TYPE_INODE_STORAGE,
+>  	BPF_MAP_TYPE_TASK_STORAGE,
+>  	BPF_MAP_TYPE_BLOOM_FILTER,
+> +	BPF_MAP_TYPE_TST,
+>  };
 >  
-> -#define CGROUP_LSM_NUM 211 /* will be addressed in the next patch */
-> +/* Maximum number of concurrently attachable per-cgroup LSM hooks.
+>  /* Note that tracing related programs such as
+> diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
+> index c1a9be6a4b9f..65176d4e99bf 100644
+> --- a/kernel/bpf/Makefile
+> +++ b/kernel/bpf/Makefile
+> @@ -10,6 +10,7 @@ obj-$(CONFIG_BPF_SYSCALL) += syscall.o verifier.o inode.o helpers.o tnum.o bpf_i
+>  obj-$(CONFIG_BPF_SYSCALL) += hashtab.o arraymap.o percpu_freelist.o bpf_lru_list.o lpm_trie.o map_in_map.o bloom_filter.o
+>  obj-$(CONFIG_BPF_SYSCALL) += local_storage.o queue_stack_maps.o ringbuf.o
+>  obj-$(CONFIG_BPF_SYSCALL) += bpf_local_storage.o bpf_task_storage.o
+> +obj-$(CONFIG_BPF_SYSCALL) += bpf_tst.o
+>  obj-${CONFIG_BPF_LSM}	  += bpf_inode_storage.o
+>  obj-$(CONFIG_BPF_SYSCALL) += disasm.o
+>  obj-$(CONFIG_BPF_JIT) += trampoline.o
+> diff --git a/kernel/bpf/bpf_tst.c b/kernel/bpf/bpf_tst.c
+> new file mode 100644
+> index 000000000000..ab82aecaa023
+> --- /dev/null
+> +++ b/kernel/bpf/bpf_tst.c
+> @@ -0,0 +1,411 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/* Copyright (C) 2022. Huawei Technologies Co., Ltd */
+> +#include <linux/bpf.h>
+> +#include <linux/rcupdate.h>
+> +#include <linux/slab.h>
+> +#include <linux/spinlock.h>
+> +
+> +/*
+> + * Ternary search tree is a special trie where nodes are arranged in
+> + * a manner similar to binary search tree, but with up to three children
+> + * rather than two. The three children correpond to nodes whose value is
+> + * less than, equal to, and greater than the value of current node
+> + * respectively.
+> + *
+> + * The following are illustrations of ternary search tree during inserting
+> + * hello, he, test, tea and team:
+> + *
+> + * 1. insert "hello"
+> + *
+> + *         [ hello ]
+> + *
+> + * 2. insert "he": need split "hello" into "he" and "llo"
+> + *
+> + *          [ he ]
+> + *             |
+> + *             *
+> + *             |
+> + *          [ llo ]
+> + *
+> + * 3. insert "test": add it as right child of "he"
+> + *
+> + *          [ he ]
+> + *             |
+> + *             *-------x
+> + *             |       |
+> + *          [ llo ] [ test ]
+> + *
+> + * 5. insert "tea": split "test" into "te" and "st",
+> + *    and insert "a" as left child of "st"
+> + *
+> + *          [ he ]
+> + *             |
+> + *      x------*-------x
+> + *      |      |       |
+> + *   [ ah ] [ llo ] [ te ]
+> + *                     |
+> + *                     *
+> + *                     |
+> + *                  [ st ]
+> + *                     |
+> + *                x----*
+> + *                |
+> + *              [ a ]
+> + *
+> + * 6. insert "team": insert "m" as middle child of "a"
+> + *
+> + *          [ he ]
+> + *             |
+> + *             *-------x
+> + *             |       |
+> + *          [ llo ] [ te ]
+> + *                     |
+> + *                     *
+> + *                     |
+> + *                  [ st ]
+> + *                     |
+> + *                x----*
+> + *                |
+> + *              [ a ]
+> + *                |
+> + *                *
+> + *                |
+> + *              [ m ]
 > + */
-> +#define CGROUP_LSM_NUM 10
-hmm...only 10 different lsm hooks (or 10 different attach_btf_ids) can
-have BPF_LSM_CGROUP programs attached.  This feels quite limited but having
-a static 211 (and potentially growing in the future) is not good either.
-I currently do not have a better idea also. :/
+> +#define TST_CREATE_FLAG_MASK \
+> +	(BPF_F_NUMA_NODE | BPF_F_NO_PREALLOC | BPF_F_ACCESS_MASK)
+> +
+> +struct bpf_tst_node;
+> +
+> +struct bpf_tst_node {
+> +	struct rcu_head rcu;
+> +	struct bpf_tst_node __rcu *child[3];
+> +	u32 len;
+> +	bool leaf;
+> +	u8 key[];
+> +};
+> +
+> +struct bpf_tst {
+> +	struct bpf_map map;
+> +	struct bpf_tst_node __rcu *root;
+> +	size_t nr_entries;
+> +	spinlock_t lock;
+> +};
+> +
+> +/*
+> + * match_prefix() - check whether prefix is fully matched
+> + *
+> + * @next: returns the position of next-to-compare character in str
+> + *
+> + * Return 0 if str has prefix, 1 if str > prefix and -1 if str < prefix
+> + */
+> +static int match_prefix(const unsigned char *prefix, int len,
+> +			const unsigned char *str, int *next)
+> +{
+> +	int i;
+> +
+> +	for (i = 0; i < len; i++) {
+> +		int cmp = str[i] - prefix[i];
+> +
+> +		if (cmp) {
+> +			*next = i;
+> +			return cmp > 0 ? 1 : -1;
+> +		}
+> +		if (!str[i])
+> +			break;
+> +	}
+> +
+> +	*next = len;
+> +	return 0;
+> +}
+> +
+> +/* Called from syscall or from eBPF program */
+> +static void *tst_lookup_elem(struct bpf_map *map, void *key)
+> +{
+> +	struct bpf_tst *tst = container_of(map, struct bpf_tst, map);
+> +	struct bpf_tst_node *node;
+> +	const unsigned char *c = key;
+> +
+> +	/* A null terminated non-empty string */
+> +	if (!c[0] || c[map->key_size - 1])
+> +		return NULL;
 
-Have you thought about other dynamic schemes or they would be too slow ?
+Looks like map->key_size is only used to make sure that
+strlen(c) doesn't go over key_size bytes that were guaranteed by the verifier.
+Looks like the algorithm should work for any blob of bytes instead of a string.
+Can we make 'key' to be variable length similar to lpm?
+Where first u32 would be the length of the blob.
 
->  enum cgroup_bpf_attach_type {
->  	CGROUP_BPF_ATTACH_TYPE_INVALID = -1,
-> diff --git a/include/linux/bpf_lsm.h b/include/linux/bpf_lsm.h
-> index 7f0e59f5f9be..613de44aa429 100644
-> --- a/include/linux/bpf_lsm.h
-> +++ b/include/linux/bpf_lsm.h
-> @@ -43,7 +43,6 @@ extern const struct bpf_func_proto bpf_inode_storage_delete_proto;
->  void bpf_inode_storage_free(struct inode *inode);
->  
->  int bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog, bpf_func_t *bpf_func);
-> -int bpf_lsm_hook_idx(u32 btf_id);
->  
->  #else /* !CONFIG_BPF_LSM */
->  
-> @@ -74,11 +73,6 @@ static inline int bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog,
->  	return -ENOENT;
->  }
->  
-> -static inline int bpf_lsm_hook_idx(u32 btf_id)
-> -{
-> -	return -EINVAL;
-> -}
-> -
->  #endif /* CONFIG_BPF_LSM */
->  
->  #endif /* _LINUX_BPF_LSM_H */
-> diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
-> index eca258ba71d8..8b948ec9ab73 100644
-> --- a/kernel/bpf/bpf_lsm.c
-> +++ b/kernel/bpf/bpf_lsm.c
-> @@ -57,10 +57,12 @@ static unsigned int __cgroup_bpf_run_lsm_socket(const void *ctx,
->  	if (unlikely(!sk))
->  		return 0;
->  
-> +	rcu_read_lock(); /* See bpf_lsm_attach_type_get(). */
->  	cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
->  	if (likely(cgrp))
->  		ret = BPF_PROG_RUN_ARRAY_CG(cgrp->bpf.effective[prog->aux->cgroup_atype],
->  					    ctx, bpf_prog_run, 0);
-> +	rcu_read_unlock();
->  	return ret;
->  }
->  
-> @@ -77,7 +79,7 @@ static unsigned int __cgroup_bpf_run_lsm_current(const void *ctx,
->  	/*prog = container_of(insn, struct bpf_prog, insnsi);*/
->  	prog = (const struct bpf_prog *)((void *)insn - offsetof(struct bpf_prog, insnsi));
->  
-> -	rcu_read_lock();
-> +	rcu_read_lock(); /* See bpf_lsm_attach_type_get(). */
-I think this is also needed for task_dfl_cgroup().  If yes,
-will be a good idea to adjust the comment if it ends up
-using the 'CGROUP_LSM_NUM 10' scheme.
+> +
+> +	node = rcu_dereference_protected(tst->root, rcu_read_lock_held());
+> +	while (node) {
+> +		int cmp;
+> +		int next;
+> +
+> +		cmp = match_prefix(node->key, node->len, c, &next);
+> +		/* Partially match an internal node */
+> +		if (cmp && next)
+> +			return NULL;
+> +
+> +		c += next;
+> +		/* Fully match */
+> +		if (!cmp && !*c) {
+> +			if (node->leaf)
+> +				return node->key + node->len;
+> +			return NULL;
+> +		}
+> +
+> +		node = rcu_dereference_protected(node->child[cmp + 1],
+> +						 rcu_read_lock_held());
+> +	}
+> +
+> +	return NULL;
+> +}
+> +
+> +/* Split node into two nodes */
+> +static struct bpf_tst_node *
+> +split_tst_node(struct bpf_map *map, struct bpf_tst_node *node, int next, void *value)
+> +{
+> +	struct bpf_tst_node *bot, *top;
+> +	size_t size;
+> +
+> +	size = sizeof(*bot) + node->len - next;
+> +	if (node->leaf)
+> +		size += map->value_size;
+> +	bot = bpf_map_kmalloc_node(map, size, GFP_ATOMIC | __GFP_NOWARN,
+> +				   map->numa_node);
+> +	if (!bot)
+> +		return NULL;
+> +
+> +	bot->child[0] = NULL;
+> +	/* node has been initialized, so no rcu_assign_pointer() */
+> +	bot->child[1] = node->child[1];
+> +	bot->child[2] = NULL;
+> +	bot->len = node->len - next;
+> +	bot->leaf = node->leaf;
+> +	memcpy(bot->key, node->key + next, bot->len);
+> +	if (bot->leaf)
+> +		memcpy(bot->key + bot->len, node->key + node->len,
+> +		       map->value_size);
+> +
+> +	size = sizeof(*top) + next;
+> +	if (value)
+> +		size += map->value_size;
+> +	top = bpf_map_kmalloc_node(map, size, GFP_ATOMIC | __GFP_NOWARN,
+> +				   map->numa_node);
+> +	if (!top) {
+> +		kfree(bot);
+> +		return NULL;
+> +	}
+> +
+> +	top->child[0] = node->child[0];
+> +	rcu_assign_pointer(top->child[1], bot);
+> +	top->child[2] = node->child[2];
+> +	top->len = next;
+> +	top->leaf = !!value;
+> +	memcpy(top->key, node->key, next);
+> +	if (value)
+> +		memcpy(top->key + top->len, value, map->value_size);
+> +
+> +	return top;
+> +}
+> +
+> +static struct bpf_tst_node *
+> +new_leaf_node(struct bpf_map *map, struct bpf_tst_node *node, bool replace,
+> +	      const void *c, void *value)
+> +{
+> +	struct bpf_tst_node *leaf;
+> +	size_t size;
+> +	unsigned int str_len;
+> +
+> +	/* Newly-created node or replace the original node */
+> +	if (!replace)
+> +		str_len = strlen(c);
+> +	else
+> +		str_len = node->len;
+> +	size = sizeof(*leaf) + str_len + map->value_size;
+> +	leaf = bpf_map_kmalloc_node(map, size, GFP_ATOMIC | __GFP_NOWARN,
+> +				    map->numa_node);
+> +	if (!leaf)
+> +		return NULL;
+> +
+> +	if (!replace) {
+> +		leaf->child[0] = leaf->child[1] = leaf->child[2] = NULL;
+> +		leaf->len = str_len;
+> +		memcpy(leaf->key, c, str_len);
+> +	} else {
+> +		memcpy(leaf, node, sizeof(*node) + str_len);
+> +	}
+> +	leaf->leaf = true;
+> +	memcpy(leaf->key + str_len, value, map->value_size);
+> +
+> +	return leaf;
+> +}
+> +
+> +/* Called from syscall or from eBPF program */
+> +static int tst_update_elem(struct bpf_map *map, void *key, void *value, u64 flags)
+> +{
+> +	struct bpf_tst *tst = container_of(map, struct bpf_tst, map);
+> +	struct bpf_tst_node __rcu **slot, **new_slot = NULL;
+> +	struct bpf_tst_node *node, *new_node, *new_intn_node = NULL;
+> +	unsigned long irq_flags;
+> +	const unsigned char *c = key;
+> +	bool replace;
+> +	int err = 0;
+> +
+> +	if (!c[0] || c[map->key_size - 1])
+> +		return -EINVAL;
+> +
+> +	spin_lock_irqsave(&tst->lock, irq_flags);
 
-While at rcu_read_lock(), have you thought about what major things are
-needed to make BPF_LSM_CGROUP sleepable ?
+The global lock is one of the reasons LPM map is seldomly used.
+As Andrii suggested can you tweak the algorithm to do a subtree lock?
+Maybe the lock doesn't need to be taken until "split" action 
+identified the spot. Then lock the parent and recheck the spot.
+In other words would it be possible to move the lock into if (cmp && next) below?
 
-The cgroup local storage could be one that require changes but it seems
-the cgroup local storage is not available to BPF_LSM_GROUP in this change set.
-The current use case doesn't need it?  
+> +	if (tst->nr_entries == map->max_entries) {
+> +		err = -ENOSPC;
+> +		goto out;
+> +	}
+> +
+> +	slot = &tst->root;
+> +	while ((node = rcu_dereference_protected(*slot, lockdep_is_held(&tst->lock)))) {
+> +		int cmp;
+> +		int next;
+> +
+> +		cmp = match_prefix(node->key, node->len, c, &next);
+> +		c += next;
+> +
+> +		/* Split internal node */
+> +		if (cmp && next) {
+> +			/* The split top node is a leaf node */
+> +			bool top_leaf = !*c;
+> +
+> +			new_node = split_tst_node(map, node, next,
+> +						  top_leaf ? value : NULL);
+> +			if (!new_node) {
+> +				err = -ENOMEM;
+> +				goto out;
+> +			}
+> +			if (top_leaf)
+> +				goto done;
+> +
+> +			new_intn_node = new_node;
+> +			new_slot = &new_node->child[1]->child[cmp + 1];
+> +			break;
+> +		}
+> +
+> +		/* Fully match */
+> +		if (!cmp && !*c)
+> +			break;
+> +		slot = &node->child[cmp + 1];
+> +	}
+> +
+> +	/* Replace the original node ? */
+> +	replace = node && !new_intn_node;
+> +	new_node = new_leaf_node(map, node, replace, c, value);
+> +	if (!new_node) {
+> +		err = -ENOMEM;
+> +		goto out;
+> +	}
+> +
+> +	/* Don't increase if replace a leaf node */
+> +	if (!replace || !node->leaf)
+> +		tst->nr_entries++;
+> +
+> +	/* Graft the leaf node first for splitting */
+> +	if (new_intn_node) {
+> +		rcu_assign_pointer(*new_slot, new_node);
+> +		new_node = new_intn_node;
+> +	}
+> +done:
+> +	rcu_assign_pointer(*slot, new_node);
+> +	spin_unlock_irqrestore(&tst->lock, irq_flags);
+> +	kfree_rcu(node, rcu);
+> +
+> +	return 0;
+> +out:
+> +	if (new_intn_node) {
+> +		kfree(new_intn_node->child[1]);
+> +		kfree(new_intn_node);
+> +	}
+> +	spin_unlock_irqrestore(&tst->lock, irq_flags);
+> +
+> +	return err;
+> +}
+> +
+> +static int tst_delete_elem(struct bpf_map *map, void *key)
+> +{
+> +	return -EOPNOTSUPP;
+> +}
+> +
+> +static int tst_get_next_key(struct bpf_map *map, void *key, void *next_key)
+> +{
+> +	return -EOPNOTSUPP;
+> +}
 
->  	cgrp = task_dfl_cgroup(current);
->  	if (likely(cgrp))
->  		ret = BPF_PROG_RUN_ARRAY_CG(cgrp->bpf.effective[prog->aux->cgroup_atype],
-> @@ -122,11 +124,6 @@ int bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog,
->  	return 0;
->  }
->  
-> -int bpf_lsm_hook_idx(u32 btf_id)
-> -{
-> -	return btf_id_set_index(&bpf_lsm_hooks, btf_id);
-> -}
-> -
->  int bpf_lsm_verify_prog(struct bpf_verifier_log *vlog,
->  			const struct bpf_prog *prog)
->  {
+For the patches to land delete and get_next_key should be implemented.
+We cannot leave them for later.
+
+Could you do a bit more benchmarking to highlight the benefits of this data structure?
+For example:
+. store kallsyms in this map and compare memory usage vs existing kallsyms
+. take vmlinux BTF and store all of it strings and compare the memory usage
+
+I suspect in both cases raw strings in BTF and kallsyms consume less
+space, but would be good to compare.
+One of the reasons is that we need a fast string search in both cases.
+Currently it's done via for_each linear loop which is inefficient.
+
+Thanks for working on this.
+Overall looks very promising.
