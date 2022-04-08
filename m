@@ -2,169 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C7334F90B1
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 10:24:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E95144F90C8
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 10:30:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231688AbiDHI03 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 04:26:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40758 "EHLO
+        id S231788AbiDHIcR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 04:32:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231700AbiDHI01 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 04:26:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C643C196D76
-        for <netdev@vger.kernel.org>; Fri,  8 Apr 2022 01:24:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9126061798
-        for <netdev@vger.kernel.org>; Fri,  8 Apr 2022 08:24:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB2CDC385A3;
-        Fri,  8 Apr 2022 08:24:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649406262;
-        bh=g5BZOLrLNvvhHcQdaMWGNBWQK2kIYIeP+Xund8My8T0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rGnhHgco+7L0bwWzsRyjSTVcbRnU8aFRb0wJyo5lRzPosxU0NNjfxLbaatSklpt6K
-         Yn4rCuRXGZR5UoAYDLh+oAkuolZNqtbA6TYYQPRU0/vGQqtIIxSDDqfPmNHcPMutzf
-         wRJUEnBIi2/AaQBmRNW+kZBOK+3+yuDb19bV13D50ZQySF7WzMkdaKpIaNsb6PSqwy
-         j0NmIvQ+3yl25Te0Au2XEmnDFtq5NJi0szNEjsWMgwwBqkcXwZeIsWcqSr7rIZ+f/s
-         VoPqXZGX0BFmjql2Wc9JEk1Lx/sgjmCin83f2yF4ELTv9vqoeGI24oDVihSpp+aR75
-         BYuQ6pN5pUnQQ==
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, thomas.petazzoni@bootlin.com,
-        ilias.apalodimas@linaro.org, jbrouer@redhat.com, andrew@lunn.ch,
-        jdamato@fastly.com
-Subject: [PATCH v2 net-next 2/2] net: mvneta: add support for page_pool_get_stats
-Date:   Fri,  8 Apr 2022 10:24:00 +0200
-Message-Id: <86f4e67f3f2eaf13e588b4989b364b1616b5fcad.1649405981.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1649405981.git.lorenzo@kernel.org>
-References: <cover.1649405981.git.lorenzo@kernel.org>
+        with ESMTP id S231731AbiDHIcP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 04:32:15 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3DE82FF507
+        for <netdev@vger.kernel.org>; Fri,  8 Apr 2022 01:30:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=LJZmQO2qwNsGWatXKQzA4vWPXRwJPPzxinQqe8QfQ3w=; b=ZYEenVqvGP1xlSx4F6Uu0V3dj7
+        jNBxvqMpNgNSJNkkE5EGDmNibBbaYMs66q+wk3I5PQQBzY6nY3Ks90fhwwRgi0cPEEiB14NdNc3zD
+        oSD8YIWaz+KSZtX2vDjisDe3H9f9+Qxow8NTgnYdLwMYNVeSqrccU31rragrv4aG5iTKADdjVdiix
+        oaIV4huIs7jaBUOGd9bL65U+dM3YvqdP4aDAExmuCeEkmzJ+aY6NbtPm2X+Ha8ACUcpe9E8coA8Dc
+        p0uGz20cqBkHsixLhiQYWnIxHrFLLy3XxRkdBAbDobF9lnRLLk2UIAStSOJu7XPfNPHb2z8Jpt+oj
+        cAMmU61g==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58170)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nck0K-0005h3-Ra; Fri, 08 Apr 2022 09:30:04 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nck0I-0006ta-DQ; Fri, 08 Apr 2022 09:30:02 +0100
+Date:   Fri, 8 Apr 2022 09:30:02 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH RFC net-next] net: dsa: b53: convert to phylink_pcs
+Message-ID: <Yk/yiv36t6QrhHBk@shell.armlinux.org.uk>
+References: <E1nc7F6-004lEo-Be@rmk-PC.armlinux.org.uk>
+ <f60b3515-d1a5-a5a8-9a3f-4cb82cd0a586@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f60b3515-d1a5-a5a8-9a3f-4cb82cd0a586@gmail.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce support for the page_pool_get_stats API to mvneta driver
-Report page_pool stats through ethtool.
+On Thu, Apr 07, 2022 at 03:55:35PM -0700, Florian Fainelli wrote:
+> On 4/6/22 08:06, Russell King (Oracle) wrote:
+> > Convert B53 to use phylink_pcs for the serdes rather than hooking it
+> > into the MAC-layer callbacks.
+> > 
+> > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> > ---
+> > Hi Florian,
+> > 
+> > Please can you test this patch? Thanks.
+> 
+> Did not spend much time debugging this as I had to do something else but
+> here is what I got:
+> 
+> [    1.909223] b53-srab-switch 18036000.ethernet-switch: SerDes lane 0,
+> model: 1, rev B0 (OUI: 0x0143bff0)
+> [    1.918956] 8<--- cut here ---
+> [    1.922119] Unable to handle kernel NULL pointer dereference at virtual
+> address 0000012c
 
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/net/ethernet/marvell/Kconfig  |  1 +
- drivers/net/ethernet/marvell/mvneta.c | 38 +++++++++++++++++++++++----
- 2 files changed, 34 insertions(+), 5 deletions(-)
+Thanks - it looks like the problem is dev->port has not been allocated
+at the point where b53_serdes_init is called, causing this null pointer
+deref. It's allocated in b53_switch_register(), which is also where the
+driver works out how many ports there are.
 
-diff --git a/drivers/net/ethernet/marvell/Kconfig b/drivers/net/ethernet/marvell/Kconfig
-index fe0989c0fc25..1240cb2dc07f 100644
---- a/drivers/net/ethernet/marvell/Kconfig
-+++ b/drivers/net/ethernet/marvell/Kconfig
-@@ -62,6 +62,7 @@ config MVNETA
- 	select MVMDIO
- 	select PHYLINK
- 	select PAGE_POOL
-+	select PAGE_POOL_STATS
- 	help
- 	  This driver supports the network interface units in the
- 	  Marvell ARMADA XP, ARMADA 370, ARMADA 38x and
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 934f6dd90992..7cc20d25a7a3 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -540,7 +540,7 @@ struct mvneta_port {
- 	bool eee_active;
- 	bool tx_lpi_enabled;
- 
--	u64 ethtool_stats[ARRAY_SIZE(mvneta_statistics)];
-+	u64 *ethtool_stats;
- 
- 	u32 indir[MVNETA_RSS_LU_TABLE_SIZE];
- 
-@@ -4732,9 +4732,13 @@ static void mvneta_ethtool_get_strings(struct net_device *netdev, u32 sset,
- 	if (sset == ETH_SS_STATS) {
- 		int i;
- 
--		for (i = 0; i < ARRAY_SIZE(mvneta_statistics); i++)
--			memcpy(data + i * ETH_GSTRING_LEN,
--			       mvneta_statistics[i].name, ETH_GSTRING_LEN);
-+		for (i = 0; i < ARRAY_SIZE(mvneta_statistics); i++) {
-+			memcpy(data, mvneta_statistics[i].name,
-+			       ETH_GSTRING_LEN);
-+			data += ETH_GSTRING_LEN;
-+		}
-+
-+		page_pool_ethtool_stats_get_strings(data);
- 	}
- }
- 
-@@ -4847,6 +4851,17 @@ static void mvneta_ethtool_update_stats(struct mvneta_port *pp)
- 	}
- }
- 
-+static void mvneta_ethtool_pp_stats(struct mvneta_port *pp, u64 *data)
-+{
-+	struct page_pool_stats stats = {};
-+	int i;
-+
-+	for (i = 0; i < rxq_number; i++)
-+		page_pool_get_stats(pp->rxqs[i].page_pool, &stats);
-+
-+	page_pool_ethtool_stats_get(data, &stats);
-+}
-+
- static void mvneta_ethtool_get_stats(struct net_device *dev,
- 				     struct ethtool_stats *stats, u64 *data)
- {
-@@ -4857,12 +4872,16 @@ static void mvneta_ethtool_get_stats(struct net_device *dev,
- 
- 	for (i = 0; i < ARRAY_SIZE(mvneta_statistics); i++)
- 		*data++ = pp->ethtool_stats[i];
-+
-+	mvneta_ethtool_pp_stats(pp, data);
- }
- 
- static int mvneta_ethtool_get_sset_count(struct net_device *dev, int sset)
- {
- 	if (sset == ETH_SS_STATS)
--		return ARRAY_SIZE(mvneta_statistics);
-+		return ARRAY_SIZE(mvneta_statistics) +
-+		       page_pool_ethtool_stats_get_count();
-+
- 	return -EOPNOTSUPP;
- }
- 
-@@ -5372,6 +5391,7 @@ static int mvneta_probe(struct platform_device *pdev)
- 	phy_interface_t phy_mode;
- 	const char *mac_from;
- 	int tx_csum_limit;
-+	int stats_len;
- 	int err;
- 	int cpu;
- 
-@@ -5392,6 +5412,14 @@ static int mvneta_probe(struct platform_device *pdev)
- 	pp->rxq_def = rxq_def;
- 	pp->indir[0] = rxq_def;
- 
-+	stats_len = ARRAY_SIZE(mvneta_statistics) +
-+		    page_pool_ethtool_stats_get_count();
-+	pp->ethtool_stats = devm_kzalloc(&pdev->dev,
-+					 sizeof(*pp->ethtool_stats) * stats_len,
-+					 GFP_KERNEL);
-+	if (!pp->ethtool_stats)
-+		return -ENOMEM;
-+
- 	err = of_get_phy_mode(dn, &phy_mode);
- 	if (err) {
- 		dev_err(&pdev->dev, "incorrect phy-mode\n");
+I don't see an easy way to allocate this array earlier... so, where can
+we save a pointer to the PCS. I guess as this is specific to srab, we
+could put it in struct b53_srab_port_priv - but then we'll need
+b53_phylink_mac_select_pcs() to call into the e.g. the srab layer.
+
 -- 
-2.35.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
