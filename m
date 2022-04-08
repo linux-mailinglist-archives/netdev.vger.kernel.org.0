@@ -2,152 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB4BA4F9C65
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 20:18:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DF404F9C5C
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 20:18:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238488AbiDHSUi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 14:20:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53892 "EHLO
+        id S238467AbiDHSUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 14:20:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238478AbiDHSUb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 14:20:31 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18EB01A590E;
-        Fri,  8 Apr 2022 11:18:27 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id 2so9364456pjw.2;
-        Fri, 08 Apr 2022 11:18:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=18I+RyxgUeMQH1gbioCsbZ117JmCwekdtCCEBKsOPhE=;
-        b=FQr3WOhq72nRoN40TG6jBdn/4lORwIkEO3TFfWxyjU5xl1CgdYxOvuBxQWszFg0O/w
-         8BzAnlECyZX0wlM74X8yyZqwVNUuj2YsL1QkmwOqO38PanUlAXc4UOXPaN1BkQAoBjtu
-         P8LcDmcrBILVqJ409r0a/kWO++uiWDPV7eICazm2ARzdYJtxz6OtZMubgkcnEoiQcQg5
-         kPgu9l8dIgiPSFNKAg0Mft5ZTrqzonbmmLJHER17TSfLvokbMI7uXnjkGjA2Ckc0QUcr
-         JH2yfJvsROwnDqt5S7Jw4csmwAZaH7al3Hzkdx6tqmkZT02jPQ/XIrGHPm0QMmEUCLJb
-         3Scw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=18I+RyxgUeMQH1gbioCsbZ117JmCwekdtCCEBKsOPhE=;
-        b=r9o+QrNHDKuQz7/Nw2hMjYUqdDyR4iSiUcOAv2x04oI0nDJOqTPQrprcERT66DvEpd
-         knWSsjRRjaRDI+tfWlYXpv4JVAC+7Qwzei9MEw0mvGco+K+r9LkoVkTfdhLaF4Janrty
-         VWFhT8B4wJGvJjUsxOtxNtustq3fVFA5S7mGa4KX+H7vvH7YexMPSW87lFVNW4GnnSlx
-         uvzeoOac87yI2WyXx6U3AG/qZi+iA8WTLXYqWW49iivPtHQiA1D0d1yHKdbA6NfGyThW
-         JZHwPR6APKHr5Vrm6Tm462FXZyuv0RsOFbXOAA0E4cNvsgCYuZeOqIplGTpRnQDAULjy
-         pLhQ==
-X-Gm-Message-State: AOAM532wbDhP1MxhH2MweRDWQzckgSa5SeQ3Gmak5wwml+YrQSsmT3Oc
-        7PcMb82aNWQyt30bQNJX8Yy08SWWggw=
-X-Google-Smtp-Source: ABdhPJzQZgoZy5f1pyUYi5gAK1Uvyi1PY67ShSOnTC+LIaj4re4v/d0V9RNL1VnQ8W0ycGEeAQWzXA==
-X-Received: by 2002:a17:90b:1e0e:b0:1c7:5b03:1d8b with SMTP id pg14-20020a17090b1e0e00b001c75b031d8bmr23009417pjb.121.1649441906611;
-        Fri, 08 Apr 2022 11:18:26 -0700 (PDT)
-Received: from localhost.localdomain ([182.213.254.91])
-        by smtp.gmail.com with ESMTPSA id d59-20020a17090a6f4100b001cb4b786e64sm2725388pjk.28.2022.04.08.11.18.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 11:18:26 -0700 (PDT)
-From:   Taehee Yoo <ap420073@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, irusskikh@marvell.com, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        kpsingh@kernel.org, bpf@vger.kernel.org
-Cc:     ap420073@gmail.com
-Subject: [PATCH net-next v4 3/3] net: atlantic: Implement .ndo_xdp_xmit handler
-Date:   Fri,  8 Apr 2022 18:17:14 +0000
-Message-Id: <20220408181714.15354-4-ap420073@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220408181714.15354-1-ap420073@gmail.com>
-References: <20220408181714.15354-1-ap420073@gmail.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229902AbiDHSUD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 14:20:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 859E614927D;
+        Fri,  8 Apr 2022 11:17:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EF6ED621CB;
+        Fri,  8 Apr 2022 18:17:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8C54C385A5;
+        Fri,  8 Apr 2022 18:17:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649441878;
+        bh=2ktX+yf7nlWuKQl8q5/RMFvhZuO9VS2BLEbBsxrsXao=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cxCkp7xhXkWweVSor0PqOXRuURnpf77+LmxH6H5tzI5ZSQ2VmzIXGKsgp3OBw80tp
+         9A6vkZzbApQO/OadYgNxfLoyGrLUkyHHjq1kWnLDFsTLoV7pro9rU4WIzMME+8filX
+         bDe3dRqlDa3QmTF6OBHEUgnPnsywG9OcpC6IFCSBRB3/O8opNg1q3jX+mtekehnedi
+         /SzJhNqtpggJSDi1mvI44KNKzF9qA3ob2rerks3u+H81Fy1faRTCGVOZtGqoj16OIV
+         8003FaMuVjUinj/1y0Mxm0R/q6NaIQFUabuZzkQCieHEfGgP2NXbhkXemdGnyHNA4i
+         0y4VBUd+0MN3g==
+Date:   Fri, 8 Apr 2022 11:17:56 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        magnus.karlsson@intel.com, bjorn@kernel.org,
+        netdev@vger.kernel.org, brouer@redhat.com,
+        alexandr.lobakin@intel.com, Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [PATCH bpf-next 00/10] xsk: stop softirq processing on full XSK
+ Rx queue
+Message-ID: <20220408111756.1339cb68@kernel.org>
+In-Reply-To: <82a1e9c1-6039-7ead-e663-2b0298f31ada@nvidia.com>
+References: <20220405110631.404427-1-maciej.fijalkowski@intel.com>
+        <8a81791e-342e-be8b-fc96-312f30b44be6@nvidia.com>
+        <Yk/7mkNi52hLKyr6@boxer>
+        <82a1e9c1-6039-7ead-e663-2b0298f31ada@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-aq_xdp_xmit() is the callback function of .ndo_xdp_xmit.
-It internally calls aq_nic_xmit_xdpf() to send packet.
+On Fri, 8 Apr 2022 15:48:44 +0300 Maxim Mikityanskiy wrote:
+> >> 4. A slow or malicious AF_XDP application may easily cause an overflow of
+> >> the hardware receive ring. Your feature introduces a mechanism to pause the
+> >> driver while the congestion is on the application side, but no symmetric
+> >> mechanism to pause the application when the driver is close to an overflow.
+> >> I don't know the behavior of Intel NICs on overflow, but in our NICs it's
+> >> considered a critical error, that is followed by a recovery procedure, so
+> >> it's not something that should happen under normal workloads.  
+> > 
+> > I'm not sure I follow on this one. Feature is about overflowing the XSK
+> > receive ring, not the HW one, right?  
+> 
+> Right. So we have this pipeline of buffers:
+> 
+> NIC--> [HW RX ring] --NAPI--> [XSK RX ring] --app--> consumes packets
+> 
+> Currently, when the NIC puts stuff in HW RX ring, NAPI always runs and 
+> drains it either to XSK RX ring or to /dev/null if XSK RX ring is full. 
+> The driver fulfills its responsibility to prevent overflows of HW RX 
+> ring. If the application doesn't consume quick enough, the frames will 
+> be leaked, but it's only the application's issue, the driver stays 
+> consistent.
+> 
+> After the feature, it's possible to pause NAPI from the userspace 
+> application, effectively disrupting the driver's consistency. I don't 
+> think an XSK application should have this power.
 
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
----
-
-v4:
- - No changed
-
-v3:
- - No changed
-
-v2:
- - No changed
-
- .../net/ethernet/aquantia/atlantic/aq_main.c  |  1 +
- .../net/ethernet/aquantia/atlantic/aq_ring.c  | 23 +++++++++++++++++++
- .../net/ethernet/aquantia/atlantic/aq_ring.h  |  2 ++
- 3 files changed, 26 insertions(+)
-
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_main.c b/drivers/net/ethernet/aquantia/atlantic/aq_main.c
-index 43012648a351..a0c428db886f 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_main.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_main.c
-@@ -508,6 +508,7 @@ static const struct net_device_ops aq_ndev_ops = {
- 	.ndo_vlan_rx_kill_vid = aq_ndo_vlan_rx_kill_vid,
- 	.ndo_setup_tc = aq_ndo_setup_tc,
- 	.ndo_bpf = aq_xdp,
-+	.ndo_xdp_xmit = aq_xdp_xmit,
- };
- 
- static int __init aq_ndev_init_module(void)
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-index d2953a84073e..e788f9095a96 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-@@ -401,6 +401,29 @@ static void aq_rx_checksum(struct aq_ring_s *self,
- 		__skb_incr_checksum_unnecessary(skb);
- }
- 
-+int aq_xdp_xmit(struct net_device *dev, int num_frames,
-+		struct xdp_frame **frames, u32 flags)
-+{
-+	struct aq_nic_s *aq_nic = netdev_priv(dev);
-+	unsigned int vec, i, drop = 0;
-+	int cpu = smp_processor_id();
-+	struct aq_nic_cfg_s *aq_cfg;
-+	struct aq_ring_s *ring;
-+
-+	aq_cfg = aq_nic_get_cfg(aq_nic);
-+	vec = cpu % aq_cfg->vecs;
-+	ring = aq_nic->aq_ring_tx[AQ_NIC_CFG_TCVEC2RING(aq_cfg, 0, vec)];
-+
-+	for (i = 0; i < num_frames; i++) {
-+		struct xdp_frame *xdpf = frames[i];
-+
-+		if (aq_nic_xmit_xdpf(aq_nic, ring, xdpf) == NETDEV_TX_BUSY)
-+			drop++;
-+	}
-+
-+	return num_frames - drop;
-+}
-+
- static struct sk_buff *aq_xdp_run_prog(struct aq_nic_s *aq_nic,
- 				       struct xdp_buff *xdp,
- 				       struct aq_ring_s *rx_ring,
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.h b/drivers/net/ethernet/aquantia/atlantic/aq_ring.h
-index 6a86d9cfac35..31e19dff6c1e 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.h
-@@ -197,6 +197,8 @@ void aq_ring_update_queue_state(struct aq_ring_s *ring);
- void aq_ring_queue_wake(struct aq_ring_s *ring);
- void aq_ring_queue_stop(struct aq_ring_s *ring);
- bool aq_ring_tx_clean(struct aq_ring_s *self);
-+int aq_xdp_xmit(struct net_device *dev, int num_frames,
-+		struct xdp_frame **frames, u32 flags);
- int aq_ring_rx_clean(struct aq_ring_s *self,
- 		     struct napi_struct *napi,
- 		     int *work_done,
--- 
-2.17.1
-
++1
+cover letter refers to busy poll, but did that test enable prefer busy
+poll w/ the timeout configured right? It seems like similar goal can 
+be achieved with just that.
