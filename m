@@ -2,68 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF1694F984C
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 16:39:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB0A04F98EC
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 17:03:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237000AbiDHOlX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 10:41:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52198 "EHLO
+        id S237337AbiDHPEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 11:04:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233877AbiDHOlW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 10:41:22 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ACECECB2B;
-        Fri,  8 Apr 2022 07:39:18 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 238DXrgB004524;
-        Fri, 8 Apr 2022 07:39:04 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pfpt0220;
- bh=Cu2apFYpM5bPz1vZIij3a91tdWX8TyF7yQXIxmBRn8A=;
- b=JkqIg8J7iTWfWkKknajNn9WQ7LBxrJY2LmdOM+MxRgI2aq0DUHOJTxE3whhaKVuVy7HX
- 6Nqlgnirns41njwbzwHIunCtXRcSMwMWUHRArGT+1fkE8/+1VkfWdo1ZEbQFFrUI7E6R
- mHuZLExck1iwKbNKY+9aDXSeGo/s3YoUESws2jiyH8M4Z0a+DxhWX6rKqb8mWyCS3Xfy
- TtHAxWhgeOd08izksdleIx9+tFsvXA+wOi+vGeofCtxcOuOz3B3bNItiKyoWjH4BF8rV
- vMrfgmS/6nEGkQsSbQ1BcWqyEBqUYs4t+2ADLcgBe5q+Yan2Xx5PB0ZQ0YtDjmmK510E Zg== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3f9r7erhnu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 08 Apr 2022 07:39:03 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Fri, 8 Apr
- 2022 07:39:01 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Fri, 8 Apr 2022 07:39:01 -0700
-Received: from [10.193.34.141] (unknown [10.193.34.141])
-        by maili.marvell.com (Postfix) with ESMTP id 9A67D3F704C;
-        Fri,  8 Apr 2022 07:38:59 -0700 (PDT)
-Message-ID: <bc8d25ed-e65f-83b9-e21c-25150f9b8884@marvell.com>
-Date:   Fri, 8 Apr 2022 16:38:58 +0200
+        with ESMTP id S233704AbiDHPEv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 11:04:51 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD53267AF5;
+        Fri,  8 Apr 2022 08:02:47 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id a2so4021412wrh.5;
+        Fri, 08 Apr 2022 08:02:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=XWPynbA+VvHB2iSPSS71KhwO0dSYse4f1BplmAMKeV8=;
+        b=GML5dlTj2OGqeK3rxya07wSKsMrsHRTrTLqrTmuGhkImcNnQE8PKmuiRWpr3aKxrVs
+         lF2Rln8Ai5vMDMBWmU79daQTp527+gQrqCSIlGYqgkwZo5XSziztH88T5gBFjY/xrfL3
+         dRUdgCOPuHNfO1IGtlQejFbBEdX3CWH3d1KNAWQKeI4uvQ96DjRWSdeo09AT0+h0dy/4
+         6DiNoLnqAk+oeuJC4vDPFW2cOJ0JaojWsbh1U+YaYuQrSNuvTv5bk0LsjmtcuvjhhLk7
+         tUCaQG1PTYGY+28udFo/6T5CqrJsrXNjLVmCS7NuI4Q+l5MwdfBAdOebDuYUVcoDv4iP
+         Dt1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=XWPynbA+VvHB2iSPSS71KhwO0dSYse4f1BplmAMKeV8=;
+        b=1ktqk4zqzSg5eZyBMEFoyvt3q4YI0jIXRK9OfaGr+44AfYpbBy9v42bCntYVRvZBm+
+         F7fbSwokiqaJ8rE4E0DKApb+2CPnm9x0b2innqpEa4E/hCTY0IbbngJ2ii9raI+1OT7N
+         rZj6Q3ae9TB3HzQ7XQVn+J58KxHbUvGWsSq9OnU5oNCqrLHF0fukd6BWFu0dRRXgjsmj
+         /toQUX0WBCKJKuJji9ifRjWeOP5R3EnLzzi7NEjwbevcFEmtAN0Wn5jnUEheEj2lJpxP
+         PiT6ywDaSdO4WXg/WjNj9RiTJf4d0s+WuzGTJtOGkKfSYGQU3UE0gr7JIt7uqUGy5/Z0
+         0tsQ==
+X-Gm-Message-State: AOAM5328G9i4+SoO0MNL9eGYtyefc9eNzv5j4z1cs+kBV4IJgFlfbEhF
+        hgXMU1iLK8yZLn8PFMknyWh5JjrzpaDhQg==
+X-Google-Smtp-Source: ABdhPJwkc85x/7947LZIzx7niHX9hJrt6asWjl+mEuW1s0FlUGdKngYjJ2aIKOeB0cu8Mzsvqt2fUw==
+X-Received: by 2002:a5d:588a:0:b0:204:1f46:cf08 with SMTP id n10-20020a5d588a000000b002041f46cf08mr15288625wrf.133.1649430165509;
+        Fri, 08 Apr 2022 08:02:45 -0700 (PDT)
+Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
+        by smtp.gmail.com with ESMTPSA id p125-20020a1c2983000000b0038e5ca446bcsm10830627wmp.5.2022.04.08.08.02.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Apr 2022 08:02:45 -0700 (PDT)
+Subject: Re: [PATCH] sfc: ef10: Fix assigning negative value to unsigned
+ variable
+To:     Haowen Bai <baihaowen@meizu.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1649383888-2745-1-git-send-email-baihaowen@meizu.com>
+From:   Edward Cree <ecree.xilinx@gmail.com>
+Message-ID: <e2e85510-f4ad-d983-f76c-b678bc9e397e@gmail.com>
+Date:   Fri, 8 Apr 2022 16:02:43 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:98.0) Gecko/20100101
- Thunderbird/98.0
-Subject: Re: [EXT] [PATCH v2] net: atlantic: Avoid out-of-bounds indexing
-Content-Language: en-US
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>
-CC:     Mario Limonciello <mario.limonciello@amd.com>,
-        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220408022204.16815-1-kai.heng.feng@canonical.com>
-From:   Igor Russkikh <irusskikh@marvell.com>
-In-Reply-To: <20220408022204.16815-1-kai.heng.feng@canonical.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1649383888-2745-1-git-send-email-baihaowen@meizu.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
-X-Proofpoint-GUID: mfWi2QzyKu_I-GBIafCg-kQQTJG2eqDb
-X-Proofpoint-ORIG-GUID: mfWi2QzyKu_I-GBIafCg-kQQTJG2eqDb
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-08_05,2022-04-08_01,2022-02-23_01
 X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,19 +77,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-> UBSAN warnings are observed on atlantic driver:
-> [ 294.432996] UBSAN: array-index-out-of-bounds in
-> /build/linux-Qow4fL/linux-5.15.0/drivers/net/ethernet/aquantia/atlantic/aq
-> _nic.c:484:48
-> [ 294.433695] index 8 is out of range for type 'aq_vec_s *[8]'
+On 08/04/2022 03:11, Haowen Bai wrote:
+> fix warning reported by smatch:
+> 251 drivers/net/ethernet/sfc/ef10.c:2259 efx_ef10_tx_tso_desc()
+> warn: assigning (-208) to unsigned variable 'ip_tot_len'
 > 
-> The ring is dereferenced right before breaking out the loop, to prevent
-> that from happening, only use the index in the loop to fix the issue.
+> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+> ---
+>  drivers/net/ethernet/sfc/ef10.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+> index 50d535981a35..1434510dbdc9 100644
+> --- a/drivers/net/ethernet/sfc/ef10.c
+> +++ b/drivers/net/ethernet/sfc/ef10.c
+> @@ -2218,7 +2218,7 @@ int efx_ef10_tx_tso_desc(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
+>  	u16 outer_ipv4_id = 0;
+>  	struct tcphdr *tcp;
+>  	struct iphdr *ip;
+> -	u16 ip_tot_len;
+> +	s16 ip_tot_len;
 
-Thanks,
+The debug-warning on line 2260 relies on this being unsigned; it would
+ be preferable to change the assignment on the line above to cast the
+ value to u16, or to assign "0x10000 - EFX_TSO2_MAX_HDRLEN", since that
+ is the actual semantics of the value.
 
-Reviewed-by: Igor Russkikh <irusskikh@marvell.com>
+-ed
 
-Igor
+>  	u32 seqnum;
+>  	u32 mss;
+>  
+> 
+
