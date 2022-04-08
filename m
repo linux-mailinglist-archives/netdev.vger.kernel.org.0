@@ -2,84 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D5054F99B2
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 17:42:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF0CE4F99B9
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 17:43:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237710AbiDHPol (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 11:44:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60770 "EHLO
+        id S237731AbiDHPpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 11:45:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230231AbiDHPok (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 11:44:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD12F83005;
-        Fri,  8 Apr 2022 08:42:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 307846201B;
-        Fri,  8 Apr 2022 15:42:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AA1DC385A1;
-        Fri,  8 Apr 2022 15:42:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649432553;
-        bh=s1dk+PG922eEPvuS1m9W/dJr95X0ai1l0ApPhrkX+3w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Tbyfbz1oeXMpnv1/dhVsJn/u+z2iWryVor30Rpl/Da08h/Oso9wnShLBxMQj2yOGG
-         Dhh7XsMFfQpufv6joYyFXru8mVE2/7nWEOhiulCp52VbarDopgQPZC+W+PTvLxTwlL
-         hImN/Mb30aK1FWsDmoSDtPpHLSQmYXeHcBkgOjw4=
-Date:   Fri, 8 Apr 2022 17:42:30 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Sasha Levin <sashal@kernel.org>, stable <stable@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH stable 0/3] SOF_TIMESTAMPING_OPT_ID backport to 4.14 and
- 4.19
-Message-ID: <YlBX5lhYHIXE0oBK@kroah.com>
-References: <20220406192956.3291614-1-vladimir.oltean@nxp.com>
- <20220408152929.4zd2mclusdpazclv@skbuf>
+        with ESMTP id S232562AbiDHPpC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 11:45:02 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE4E78F984
+        for <netdev@vger.kernel.org>; Fri,  8 Apr 2022 08:42:58 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id t4so8111721pgc.1
+        for <netdev@vger.kernel.org>; Fri, 08 Apr 2022 08:42:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=NdD/NmViCDgpdSszkXJoNveKWkNOGxWJWR0WjtMVdYI=;
+        b=QoZNgyQrF7Sbldvdc8pxZdgpn8BVS4KWwPxRyMESjhipBZInRS9naTskan+s1UNgmM
+         d/kpFHC7qL2CZTeMuA7KG7e3cjAYQTtCUPw8gdqkZOUGBlI80mn8/aBHZNNV+XWth6FR
+         lKenlPu3TwFgpHQDZymtZJtfgPeGeAdCqwI5JYm0rNEjO/ZZfp3o4dUMChYY5DGf1VKe
+         KNfVtQ2ha7H4DyX5qCwaei/jNrHbs0sC3zRVRN7bFU6BmghGZsioky4z7k4T2ihApinz
+         ZHUU0/3pzwYkhQT1cqjsIsGzKpZE7x5jGrPEOZaNwE2MC5JimYzJbRr/DNOFngF/TXNt
+         3TsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=NdD/NmViCDgpdSszkXJoNveKWkNOGxWJWR0WjtMVdYI=;
+        b=3riDg8aYOqRCp+9h/bL0kzG+ORFhOFdPNefeNDBG22R0MHffmmh1ZzzYoshxLTzzPC
+         u0FdQsoRReTcynW1Pm7E34MPfu7MLaK0NA6GTzRKY6hg6dgYPiYF5fNgFOvhuME9sk5a
+         2Ule1+84maZQLcHnMwsHZzrbUI8LWVFwXU+57UPFpbMfTG4Mk0k0MYNumkesqCX3mmEk
+         QgyiqeFAc/96cTLDFyGpiI0sjocdX+It21uMGoOCTuF1XEblhA9fnV8ZfzPAbbbOmdUX
+         9iB1aF5nivdf9evzChtoFjApA2kuMZDTJe9R8YsFH6lxQFcox7q7Eh2m453y/iUnEcbQ
+         ZXVQ==
+X-Gm-Message-State: AOAM532vRWB+2EUZ5k7OGwo5mDHzvrzLK9ed6p2MaggrInorEhXSdWI1
+        5Dg9v4/WlXGO94CZlQ2UB3AJ29mJxlO3cg==
+X-Google-Smtp-Source: ABdhPJwH+ROCaYaDf4vrwrBBiMqw7b6AH7ikHi0Ja3YegMQtTGJqlkV55KDWv33v695N8Dcw6plKRw==
+X-Received: by 2002:a63:1063:0:b0:39c:ec64:c062 with SMTP id 35-20020a631063000000b0039cec64c062mr5005051pgq.601.1649432578372;
+        Fri, 08 Apr 2022 08:42:58 -0700 (PDT)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id a7-20020aa79707000000b004fb17ad3aefsm26098549pfg.108.2022.04.08.08.42.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Apr 2022 08:42:58 -0700 (PDT)
+Date:   Fri, 8 Apr 2022 08:42:54 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Max Tottenham <mtottenh@akamai.com>
+Cc:     <netdev@vger.kernel.org>, <johunt@akamai.com>
+Subject: Re: [PATCH iproute2-next] tc: Add JSON output to tc-class
+Message-ID: <20220408084254.72ab9b50@hermes.local>
+In-Reply-To: <20220408105447.hk7n4p5m4r6npzyh@lon-mp1s1.lan>
+References: <20220408105447.hk7n4p5m4r6npzyh@lon-mp1s1.lan>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220408152929.4zd2mclusdpazclv@skbuf>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 08, 2022 at 03:29:30PM +0000, Vladimir Oltean wrote:
-> Hello Greg, Sasha,
-> 
-> On Wed, Apr 06, 2022 at 10:29:53PM +0300, Vladimir Oltean wrote:
-> > As discussed with Willem here:
-> > https://lore.kernel.org/netdev/CA+FuTSdQ57O6RWj_Lenmu_Vd3NEX9xMzMYkB0C3rKMzGgcPc6A@mail.gmail.com/T/
-> > 
-> > the kernel silently doesn't act upon the SOF_TIMESTAMPING_OPT_ID socket
-> > option in several cases on older kernels, yet user space has no way to
-> > find out about this, practically resulting in broken functionality.
-> > 
-> > This patch set backports the support towards linux-4.14.y and linux-4.19.y,
-> > which fixes the issue described above by simply making the kernel act
-> > upon SOF_TIMESTAMPING_OPT_ID as expected.
-> > 
-> > Testing was done with the most recent (not the vintage-correct one)
-> > kselftest script at:
-> > tools/testing/selftests/networking/timestamping/txtimestamp.sh
-> > with the message "OK. All tests passed".
-> 
-> Could you please pick up these backports for "stable"? Thanks.
+On Fri, 8 Apr 2022 11:54:47 +0100
+Max Tottenham <mtottenh@akamai.com> wrote:
 
-You sent this 2 days ago!
+>   * Add JSON formatted output to the `tc class show ...` command.
+>   * Add JSON formatted output for the htb qdisc classes.
+> 
+> Signed-off-by: Max Tottenham <mtottenh@akamai.com>
 
-Please relax :)
+LGTM, if there no objections will pick it up for this release.
