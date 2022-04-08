@@ -2,94 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E152E4F9CDA
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 20:38:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4E6C4F9D2E
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 20:48:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238788AbiDHSkU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 14:40:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41838 "EHLO
+        id S238591AbiDHSuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 14:50:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229909AbiDHSkT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 14:40:19 -0400
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 717D22DA8B;
-        Fri,  8 Apr 2022 11:38:12 -0700 (PDT)
-Received: by mail-oi1-x22e.google.com with SMTP id e4so9726653oif.2;
-        Fri, 08 Apr 2022 11:38:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=j9URgvci6d6dMD9NFQmmsAHkmfmb5Enalauf6tbhJOA=;
-        b=jiPIr7GoWpN9FWlADHmNfwO/MmozypRL1uxibeNbh691ft2PekZcsPtGCCk9WvclG5
-         QYQoOR/hba/9yTNagQEEDMFQvLCvPuGQtw+o127QmSBUicvAqu62MmF6ctyTKbAlPs6b
-         yzDjJU+NFHY6dPV8dfso6Kt2vrVm8w0+yZaOSzr3Z+B/GbLnlC38yb9QGHWpQzYa2aud
-         ajWVzJJKKNmWhipgING1JXq7oRvn+q0G4ih5eSE8iWvJ5QBze+PMJCBThTNBC5Jv3vqk
-         niBezhG7WHje1KLJvsieO/0jiRGW+vFsM8NK8oPKUIOOZdcAu/u/ZjdQQfH6hImgh+6n
-         Fbag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=j9URgvci6d6dMD9NFQmmsAHkmfmb5Enalauf6tbhJOA=;
-        b=k2GUap/BeRlomnu5/EQHFSapzu1YdnUdMjWPk8sZ8x3P8bdAQ8cI9zinLUGdN6offb
-         rKsL5TZde4LbJizqPFnq1MjyZvd9THupscroJksjvBslChVI2WZYsa0Wbo2qfk5p42wa
-         LmR4NV/1pYcY8oPU9qkycvpaW7zEUmaWfgqtYIkflYiVBM9lVVphccOH6qu/TZpJ12IM
-         6w/FwXvATbhsbtQZLnOTwgfkXukF6SlX7a41FgtrBdoGhRlsT5+oP6k29Pl5/Zc7YLFH
-         rXNgl2fK1np1FiVi7JtkeNNkmO1KrWRDuztBLYrEvHrpLAV7KCN8az0LiK3yGnH29aZ7
-         Fm8Q==
-X-Gm-Message-State: AOAM533Or0dQsmkUQfRTcUsjvurGkDU8/M5sESGI7peE+vpr9CLHwcwP
-        Qd6h409rJOCwMvn/vk2EHj4=
-X-Google-Smtp-Source: ABdhPJwqrefsiW7isgWIaV3ZOtcz/4FusHzdZTTS/dCv7uqj1spWsUdkNMYrSPAU/W4EM+DJxXdYaQ==
-X-Received: by 2002:a05:6808:3ba:b0:2ec:f2ad:91a4 with SMTP id n26-20020a05680803ba00b002ecf2ad91a4mr512219oie.233.1649443091770;
-        Fri, 08 Apr 2022 11:38:11 -0700 (PDT)
-Received: from t14s.localdomain ([177.220.172.117])
-        by smtp.gmail.com with ESMTPSA id ms25-20020a0568706b9900b000e264986877sm2300773oab.48.2022.04.08.11.38.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 11:38:11 -0700 (PDT)
-Received: by t14s.localdomain (Postfix, from userid 1000)
-        id 1ECA41DFE33; Fri,  8 Apr 2022 15:38:09 -0300 (-03)
-Date:   Fri, 8 Apr 2022 15:38:09 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org,
-        Neil Horman <nhorman@tuxdriver.com>, omosnace@redhat.com
-Subject: Re: [PATCHv2 net] sctp: use the correct skb for
- security_sctp_assoc_request
-Message-ID: <YlCBEU6r8Oe8h3CK@t14s.localdomain>
-References: <71becb489e51284edf0c11fc15246f4ed4cef5b6.1649337862.git.lucien.xin@gmail.com>
+        with ESMTP id S230307AbiDHSuW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 14:50:22 -0400
+X-Greylist: delayed 172 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 08 Apr 2022 11:48:17 PDT
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CF7C1C5924;
+        Fri,  8 Apr 2022 11:48:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1649443511;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:Cc:From:References:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=6u1TBR7ukFAvpGgrfPifszB9b72XH9Glp8ZeFJje1tQ=;
+    b=tiF8UtTL9XVow5CXQB6UULRZqP96I1dr/SaIzPAE9XmfnHjsMNZY1hJYMOAaWG+xSl
+    MoD2JEvfgOYrkyZIX2tGJB+HSYVHa5HDJHBdPOpx2PTGWduC6/3tS41JWSt1y4EirMe0
+    duwtax0shBcD4SQL1bnrptWQ4Pwb+dFo8IMjx8TUC0W4I87zSK36cK2L1u73SQpL0k0s
+    8VvVxh8eL5TwqKvlAsqr0wjAuWTyP9h8p0P6rWuiiqlRUvFyUOx1jrcxoOPOy7QGucpe
+    BuwUe1ecLFO7sXibsPDd3ZG9Rdcm2K/9aomU47dYBrkfIw5ROfTqOLcbY7kWmFDa8IwK
+    FaZQ==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdd0DIgVuBOfXW6v7w=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a00:6020:1cfa:f900::b82]
+    by smtp.strato.de (RZmta 47.42.2 AUTH)
+    with ESMTPSA id 4544c9y38IjAdFD
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Fri, 8 Apr 2022 20:45:10 +0200 (CEST)
+Message-ID: <c2e2c7b0-cdfb-8eb0-9550-0fb59b5cd10c@hartkopp.net>
+Date:   Fri, 8 Apr 2022 20:45:02 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <71becb489e51284edf0c11fc15246f4ed4cef5b6.1649337862.git.lucien.xin@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: peak_usb: urb aborted
+Content-Language: en-US
+To:     Paul Thomas <pthomas8589@gmail.com>, linux-can@vger.kernel.org,
+        =?UTF-8?Q?St=c3=a9phane_Grosjean?= <s.grosjean@peak-system.com>
+References: <CAD56B7dMg073f56vfaxp38=dZiAFU0iCn6kmDGiNcNtCijyFoA@mail.gmail.com>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        support@peak-system.com
+In-Reply-To: <CAD56B7dMg073f56vfaxp38=dZiAFU0iCn6kmDGiNcNtCijyFoA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 09:24:22AM -0400, Xin Long wrote:
-> Yi Chen reported an unexpected sctp connection abort, and it occurred when
-> COOKIE_ECHO is bundled with DATA Fragment by SCTP HW GSO. As the IP header
-> is included in chunk->head_skb instead of chunk->skb, it failed to check
-> IP header version in security_sctp_assoc_request().
-> 
-> According to Ondrej, SELinux only looks at IP header (address and IPsec
-> options) and XFRM state data, and these are all included in head_skb for
-> SCTP HW GSO packets. So fix it by using head_skb when calling
-> security_sctp_assoc_request() in processing COOKIE_ECHO.
-> 
-> v1->v2:
->   - As Ondrej noticed, chunk->head_skb should also be used for
->     security_sctp_assoc_established() in sctp_sf_do_5_1E_ca().
-> 
-> Fixes: e215dab1c490 ("security: call security_sctp_assoc_request in sctp_sf_do_5_1D_ce")
-> Reported-by: Yi Chen <yiche@redhat.com>
-> Signed-off-by: Xin Long <lucien.xin@gmail.com>
 
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+
+On 08.04.22 18:35, Paul Thomas wrote:
+> Folks,
+> 
+> I'm using a PCAN-USB adapter, and it seems to have a lot of trouble
+> under medium load. I'm getting these urb aborted messages.
+> [125054.082248] peak_usb 3-2.4.4:1.0 can0: Rx urb aborted (-71)
+> [125077.886850] peak_usb 3-2.4.4:1.0 can0: Rx urb aborted (-32)
+
+As I run the same hardware here it is very likely that you have a faulty 
+CAN bus setup with
+
+- wrong bitrate setting / sample points / etc
+- wrong or no termination
+- missing or wrong configured (other) CAN nodes
+
+I added the maintainer of the PEAK USB adapter (Stephane) to the 
+recipient list.
+
+Having the linux-can mailing list and Stephane in the recipient list is 
+sufficient to answer the above details.
+
+Regards,
+Oliver
+
+> 
+> Is there anything that can be done about this? This is very
+> frustrating because it makes the USB adapter very difficult to use as
+> a reliable partner of an embedded CAN device.
+> 
+> I'm using Ubuntu with 5.4.0-107-generic. Any help would be appreciated.
+> 
+> -Paul
