@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F25374F9032
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 10:01:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B90C04F903A
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 10:01:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230417AbiDHIC3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 04:02:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49150 "EHLO
+        id S230468AbiDHIDK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 04:03:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230418AbiDHICA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 04:02:00 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7660C1AD9A
-        for <netdev@vger.kernel.org>; Fri,  8 Apr 2022 00:59:48 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id t6so869226plg.7
-        for <netdev@vger.kernel.org>; Fri, 08 Apr 2022 00:59:48 -0700 (PDT)
+        with ESMTP id S230521AbiDHICB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 04:02:01 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5970F17941B
+        for <netdev@vger.kernel.org>; Fri,  8 Apr 2022 00:59:50 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id a42so1197417pfx.7
+        for <netdev@vger.kernel.org>; Fri, 08 Apr 2022 00:59:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=F3haMHO+/X9Y1a/Wk9NH5ST1skAYfEWHOLCM43LrcY8=;
-        b=SeBs/xqrWNsH9IxTFicJ7HoogUkkdJTCZ6jtcAbIvM1JqmpRw473EyW/kSD/bxDV5S
-         dJC9eObq/mZAp7PCmYKZWilfUfsr91GjO8N9F1HBDxVUOXJnH8cXQVQHmjqpkBK+y2ze
-         Zp4oEEbK8W/VWJN3PDUY9vuCKyiEROLijc9ac=
+        bh=GRgjKqqSh08bcfgfjYUQVNsXAgptmrXoQTcGsr/U9U0=;
+        b=DGNabrPBx+wgywsUb8qAh4p9x0akw3E3qm2ikpmXsZIMPaDb++us0qdoLRbaU2kPPX
+         9fzXjcoZlULhqduHjDPLYJXatsxx/VABQ3Eg8+XIPXRtTObxmSCB7Fg6sxTrwH11IDQv
+         /Cnt3/dN4RK5dTiPLa6j4T2Fj+dqRJKW0nAi8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=F3haMHO+/X9Y1a/Wk9NH5ST1skAYfEWHOLCM43LrcY8=;
-        b=3IBSw1NyfLY4UjVruI6qPu6z4aewBl+PNz7zhS962bMIYLE5CYJJy1xnVYcS+giRag
-         fZSh6CNNyykI/mFd+AHQBMnJ3g8NhMJFrL6iHblmlGbAOErbe4sbgzNKTkHUkh7XB/lI
-         n9sjjcdfhJYZhshEO/LR9Yrl9QwJ7I4t5QXtdNOY8r5MQyL1WWaICGB/5RtN4aUhVogg
-         3naGmbd7xoqrMJ7v3BKDRfyybJHmZVjAWzsdnbCZSY2wfXZUBfCDfvIpmiSdDicY5jDj
-         T491u9iXpupKgDSmzB8vsaK55FP95QXqXemzEt8S/fkQ/F+YbIA00k6A+feGnetWXmGK
-         DyAw==
-X-Gm-Message-State: AOAM530OFwBfF4gZ4kPB7/WpJhGM4YQhBB0rO15lE/tZbMTaQZjT4nZQ
-        yIOqui/UB4Kezz0GJlpP8YJv2cJABd/QHw==
-X-Google-Smtp-Source: ABdhPJwhKYJiuLOM9uvzuX66TeWu2uWI1yjlwz/p1kFfnujb3lM/kidWXpak1WEwlwPUvAXyPVDP3w==
-X-Received: by 2002:a17:90b:3a81:b0:1c6:834e:cd61 with SMTP id om1-20020a17090b3a8100b001c6834ecd61mr20278679pjb.149.1649404787611;
-        Fri, 08 Apr 2022 00:59:47 -0700 (PDT)
+        bh=GRgjKqqSh08bcfgfjYUQVNsXAgptmrXoQTcGsr/U9U0=;
+        b=A2ea+TjkuyoRgp2+vJUyw6qxOWwWk/vgkSkxdpq/BPZp5FNbIRNZZxtZMUc4j8xnfi
+         lAUTdhWETy9cZ5LOCoNg++q8iARxElVLxab8bZJWtj+qW1ItRjK8ZbwFqLx3AFwypFnt
+         Z4fmm57yL2ORWaduPSxkHazzAyico4/mI6EtAqEL9UatjZXvVx1Uls/PnLgCdSrrn6x5
+         XIiGTzqVBTrbVGPak03Hf6qxgZwNBR2jsKHpDnOIAA9NHotkmatC7ynCR0XLMFaRyprv
+         aD74IgsChXQqMmFlD2R8uchtAGtenP2zykPSAiyZ2LcyFjVYZrAy98dWJodb67XeiE+M
+         rP9A==
+X-Gm-Message-State: AOAM530AdYXYteKPInsHY4SEtIkvjq8wrsM6vGcN/CWdW6Y6pYdOLuyC
+        BOqEfN2bY+EHNJUA64v3lUY3mQ==
+X-Google-Smtp-Source: ABdhPJyYwzhinVT2YR18KiPli8qOuCgSl5pzBdyf/DhNwwAXCuedlnuq7xVC79eDULhQ2KlB0zXPtQ==
+X-Received: by 2002:a63:fd53:0:b0:386:66d:b40c with SMTP id m19-20020a63fd53000000b00386066db40cmr14471289pgj.266.1649404789108;
+        Fri, 08 Apr 2022 00:59:49 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id l2-20020a637c42000000b003644cfa0dd1sm20507448pgn.79.2022.04.08.00.59.46
+        by smtp.gmail.com with ESMTPSA id l2-20020a637c42000000b003644cfa0dd1sm20507448pgn.79.2022.04.08.00.59.47
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 08 Apr 2022 00:59:47 -0700 (PDT)
+        Fri, 08 Apr 2022 00:59:48 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
         bpf@vger.kernel.org, john.fastabend@gmail.com, toke@redhat.com,
         lorenzo@kernel.org, ast@kernel.org, daniel@iogearbox.net,
         echaudro@redhat.com, pabeni@redhat.com
-Subject: [PATCH net-next v4 07/11] bnxt: change receive ring space parameters
-Date:   Fri,  8 Apr 2022 03:59:02 -0400
-Message-Id: <1649404746-31033-8-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next v4 08/11] bnxt: add page_pool support for aggregation ring when using xdp
+Date:   Fri,  8 Apr 2022 03:59:03 -0400
+Message-Id: <1649404746-31033-9-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1649404746-31033-1-git-send-email-michael.chan@broadcom.com>
 References: <1649404746-31033-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000007b427905dc1ffad4"
+        boundary="00000000000097f13905dc1ffa41"
 X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -68,122 +68,147 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000007b427905dc1ffad4
+--00000000000097f13905dc1ffa41
 
 From: Andy Gospodarek <gospo@broadcom.com>
 
-Modify ring header data split and jumbo parameters to account
-for the fact that the design for XDP multibuffer puts close to
-the first 4k of data in a page and the remaining portions of
-the packet go in the aggregation ring.
-
-v3: Simplified code around initial buffer size calculation
+If we are using aggregation rings with XDP enabled, allocate page
+buffers for the aggregation rings from the page_pool.
 
 Signed-off-by: Andy Gospodarek <gospo@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 42 +++++++++++++++--------
- drivers/net/ethernet/broadcom/bnxt/bnxt.h |  1 +
- 2 files changed, 28 insertions(+), 15 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 77 ++++++++++++++---------
+ 1 file changed, 47 insertions(+), 30 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 6e1d43410e8c..2a919905f256 100644
+index 2a919905f256..f89a45042f38 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -56,6 +56,7 @@
- #include <linux/hwmon.h>
- #include <linux/hwmon-sysfs.h>
- #include <net/page_pool.h>
-+#include <linux/align.h>
- 
- #include "bnxt_hsi.h"
- #include "bnxt.h"
-@@ -1933,11 +1934,13 @@ static int bnxt_rx_pkt(struct bnxt *bp, struct bnxt_cp_ring_info *cpr,
+@@ -739,7 +739,6 @@ static struct page *__bnxt_alloc_rx_page(struct bnxt *bp, dma_addr_t *mapping,
+ 		page_pool_recycle_direct(rxr->page_pool, page);
+ 		return NULL;
  	}
+-	*mapping += bp->rx_dma_offset;
+ 	return page;
+ }
  
- 	if (agg_bufs) {
--		skb = bnxt_rx_agg_pages_skb(bp, cpr, skb, cp_cons, agg_bufs, false);
--		if (!skb) {
--			cpr->sw_stats.rx.rx_oom_discards += 1;
--			rc = -ENOMEM;
--			goto next_rx;
-+		if (!xdp_active) {
-+			skb = bnxt_rx_agg_pages_skb(bp, cpr, skb, cp_cons, agg_bufs, false);
-+			if (!skb) {
-+				cpr->sw_stats.rx.rx_oom_discards += 1;
-+				rc = -ENOMEM;
-+				goto next_rx;
-+			}
- 		}
- 	}
+@@ -781,6 +780,7 @@ int bnxt_alloc_rx_data(struct bnxt *bp, struct bnxt_rx_ring_info *rxr,
+ 		if (!page)
+ 			return -ENOMEM;
  
-@@ -3854,7 +3857,7 @@ void bnxt_set_ring_params(struct bnxt *bp)
- 	/* 8 for CRC and VLAN */
- 	rx_size = SKB_DATA_ALIGN(bp->dev->mtu + ETH_HLEN + NET_IP_ALIGN + 8);
++		mapping += bp->rx_dma_offset;
+ 		rx_buf->data = page;
+ 		rx_buf->data_ptr = page_address(page) + bp->rx_offset;
+ 	} else {
+@@ -841,33 +841,41 @@ static inline int bnxt_alloc_rx_page(struct bnxt *bp,
+ 	u16 sw_prod = rxr->rx_sw_agg_prod;
+ 	unsigned int offset = 0;
  
--	rx_space = rx_size + NET_SKB_PAD +
-+	rx_space = rx_size + ALIGN(max(NET_SKB_PAD, XDP_PACKET_HEADROOM), 8) +
- 		SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
- 
- 	bp->rx_copy_thresh = BNXT_RX_COPY_THRESH;
-@@ -3895,9 +3898,15 @@ void bnxt_set_ring_params(struct bnxt *bp)
- 		}
- 		bp->rx_agg_ring_size = agg_ring_size;
- 		bp->rx_agg_ring_mask = (bp->rx_agg_nr_pages * RX_DESC_CNT) - 1;
--		rx_size = SKB_DATA_ALIGN(BNXT_RX_COPY_THRESH + NET_IP_ALIGN);
--		rx_space = rx_size + NET_SKB_PAD +
--			SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
+-	if (PAGE_SIZE > BNXT_RX_PAGE_SIZE) {
+-		page = rxr->rx_page;
+-		if (!page) {
++	if (BNXT_RX_PAGE_MODE(bp)) {
++		page = __bnxt_alloc_rx_page(bp, &mapping, rxr, gfp);
 +
-+		if (BNXT_RX_PAGE_MODE(bp)) {
-+			rx_space = BNXT_PAGE_MODE_BUF_SIZE;
-+			rx_size = BNXT_MAX_PAGE_MODE_MTU;
++		if (!page)
++			return -ENOMEM;
++
++	} else {
++		if (PAGE_SIZE > BNXT_RX_PAGE_SIZE) {
++			page = rxr->rx_page;
++			if (!page) {
++				page = alloc_page(gfp);
++				if (!page)
++					return -ENOMEM;
++				rxr->rx_page = page;
++				rxr->rx_page_offset = 0;
++			}
++			offset = rxr->rx_page_offset;
++			rxr->rx_page_offset += BNXT_RX_PAGE_SIZE;
++			if (rxr->rx_page_offset == PAGE_SIZE)
++				rxr->rx_page = NULL;
++			else
++				get_page(page);
 +		} else {
-+			rx_size = SKB_DATA_ALIGN(BNXT_RX_COPY_THRESH + NET_IP_ALIGN);
-+			rx_space = rx_size + NET_SKB_PAD +
-+				SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
+ 			page = alloc_page(gfp);
+ 			if (!page)
+ 				return -ENOMEM;
+-			rxr->rx_page = page;
+-			rxr->rx_page_offset = 0;
+ 		}
+-		offset = rxr->rx_page_offset;
+-		rxr->rx_page_offset += BNXT_RX_PAGE_SIZE;
+-		if (rxr->rx_page_offset == PAGE_SIZE)
+-			rxr->rx_page = NULL;
+-		else
+-			get_page(page);
+-	} else {
+-		page = alloc_page(gfp);
+-		if (!page)
+-			return -ENOMEM;
+-	}
+ 
+-	mapping = dma_map_page_attrs(&pdev->dev, page, offset,
+-				     BNXT_RX_PAGE_SIZE, DMA_FROM_DEVICE,
+-				     DMA_ATTR_WEAK_ORDERING);
+-	if (dma_mapping_error(&pdev->dev, mapping)) {
+-		__free_page(page);
+-		return -EIO;
++		mapping = dma_map_page_attrs(&pdev->dev, page, offset,
++					     BNXT_RX_PAGE_SIZE, DMA_FROM_DEVICE,
++					     DMA_ATTR_WEAK_ORDERING);
++		if (dma_mapping_error(&pdev->dev, mapping)) {
++			__free_page(page);
++			return -EIO;
 +		}
  	}
  
- 	bp->rx_buf_use_size = rx_size;
-@@ -5287,12 +5296,15 @@ static int bnxt_hwrm_vnic_set_hds(struct bnxt *bp, u16 vnic_id)
- 	if (rc)
- 		return rc;
+ 	if (unlikely(test_bit(sw_prod, rxr->rx_agg_bmap)))
+@@ -1105,7 +1113,7 @@ static u32 __bnxt_rx_agg_pages(struct bnxt *bp,
+ 		}
  
--	req->flags = cpu_to_le32(VNIC_PLCMODES_CFG_REQ_FLAGS_JUMBO_PLACEMENT |
--				 VNIC_PLCMODES_CFG_REQ_FLAGS_HDS_IPV4 |
--				 VNIC_PLCMODES_CFG_REQ_FLAGS_HDS_IPV6);
--	req->enables =
--		cpu_to_le32(VNIC_PLCMODES_CFG_REQ_ENABLES_JUMBO_THRESH_VALID |
--			    VNIC_PLCMODES_CFG_REQ_ENABLES_HDS_THRESHOLD_VALID);
-+	req->flags = cpu_to_le32(VNIC_PLCMODES_CFG_REQ_FLAGS_JUMBO_PLACEMENT);
-+	req->enables = cpu_to_le32(VNIC_PLCMODES_CFG_REQ_ENABLES_JUMBO_THRESH_VALID);
-+
-+	if (BNXT_RX_PAGE_MODE(bp) && !BNXT_RX_JUMBO_MODE(bp)) {
-+		req->flags |= cpu_to_le32(VNIC_PLCMODES_CFG_REQ_FLAGS_HDS_IPV4 |
-+					  VNIC_PLCMODES_CFG_REQ_FLAGS_HDS_IPV6);
-+		req->enables |=
-+			cpu_to_le32(VNIC_PLCMODES_CFG_REQ_ENABLES_HDS_THRESHOLD_VALID);
-+	}
- 	/* thresholds not implemented in firmware yet */
- 	req->jumbo_thresh = cpu_to_le16(bp->rx_copy_thresh);
- 	req->hds_threshold = cpu_to_le16(bp->rx_copy_thresh);
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 0f35459d5206..319d6851eecc 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1819,6 +1819,7 @@ struct bnxt {
- #define BNXT_SUPPORTS_TPA(bp)	(!BNXT_CHIP_TYPE_NITRO_A0(bp) &&	\
- 				 (!((bp)->flags & BNXT_FLAG_CHIP_P5) ||	\
- 				  (bp)->max_tpa_v2) && !is_kdump_kernel())
-+#define BNXT_RX_JUMBO_MODE(bp)	((bp)->flags & BNXT_FLAG_JUMBO)
+ 		dma_unmap_page_attrs(&pdev->dev, mapping, BNXT_RX_PAGE_SIZE,
+-				     DMA_FROM_DEVICE,
++				     bp->rx_dir,
+ 				     DMA_ATTR_WEAK_ORDERING);
  
- #define BNXT_CHIP_SR2(bp)			\
- 	((bp)->chip_num == CHIP_NUM_58818)
+ 		total_frag_len += frag_len;
+@@ -2936,14 +2944,23 @@ static void bnxt_free_one_rx_ring_skbs(struct bnxt *bp, int ring_nr)
+ 		if (!page)
+ 			continue;
+ 
+-		dma_unmap_page_attrs(&pdev->dev, rx_agg_buf->mapping,
+-				     BNXT_RX_PAGE_SIZE, DMA_FROM_DEVICE,
+-				     DMA_ATTR_WEAK_ORDERING);
++		if (BNXT_RX_PAGE_MODE(bp)) {
++			dma_unmap_page_attrs(&pdev->dev, rx_agg_buf->mapping,
++					     BNXT_RX_PAGE_SIZE, bp->rx_dir,
++					     DMA_ATTR_WEAK_ORDERING);
++			rx_agg_buf->page = NULL;
++			__clear_bit(i, rxr->rx_agg_bmap);
+ 
+-		rx_agg_buf->page = NULL;
+-		__clear_bit(i, rxr->rx_agg_bmap);
++			page_pool_recycle_direct(rxr->page_pool, page);
++		} else {
++			dma_unmap_page_attrs(&pdev->dev, rx_agg_buf->mapping,
++					     BNXT_RX_PAGE_SIZE, DMA_FROM_DEVICE,
++					     DMA_ATTR_WEAK_ORDERING);
++			rx_agg_buf->page = NULL;
++			__clear_bit(i, rxr->rx_agg_bmap);
+ 
+-		__free_page(page);
++			__free_page(page);
++		}
+ 	}
+ 
+ skip_rx_agg_free:
 -- 
 2.18.1
 
 
---0000000000007b427905dc1ffad4
+--00000000000097f13905dc1ffa41
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -254,13 +279,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBrsQcJzzFnpTRY83D0xuG7xwEGv8QWU
-ZFCPAmwV8WBjMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDQw
-ODA3NTk0OFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIJjY8EEWIGbdRKn8WbdHzcn2pcTH9pZo
+JKbF9PGNzg2yMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDQw
+ODA3NTk0OVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBrKfT9GIONImN3lyvTflKa8u32P27cUtvsfuY1lzMCpx7bB493
-iHf53M78suL+mmvZazm+1hKO00VTf4NAaWugTuMyLLqD0fu4WbNB/xl60o/YNbpI+S9+ubOHeeGj
-R2E7/gjnDFMSKE205mvnVLrJH4bVRlEjb5Hi4sBcv2nWI+dt0BILX28E+rtIWB8iTNbsDkmprt63
-dd+MjIcd1fAl9IFTSZLFfPDyqXTXwpcUoJfLAXrcNyDpLvt2qDx+nhi6DptxrtaOdY7T2zFyb/Y6
-L3r3Mr0ioZYTx//m7e/4pZ62C3+LNIS+i1BhbLWs8DQgnpVm8O1j0mv7W2YYuNRS
---0000000000007b427905dc1ffad4--
+ATANBgkqhkiG9w0BAQEFAASCAQA71vIuu0yd2mnRGbXWPa+eu8NvHG3swjLlE/fEFftwogUathH6
+sIxy/D48pI8AaDlIhxkg/qacgxWI1FvAJeA67WAz0SgLNIdhfuY0ELp2c+IQImgMwJSQFfQZcDr7
+k8gnpxw39h2qYwLQqxUvyW+pudADGQjsBHHX0D2qPJP3xnuV9iTWvA0mCwmcNfMPTl3FySHr0pRQ
+B7QRk9mv35GtvJOqIp0f7LEC2oSnOE4eQ+sMTuQ9PvKf2ss2g9egG8q5VZom2oTlB8zLcwfHYE/C
+UbvsV5RzSpF4BcCz1zva624xhgHyN7xwx1819l+Qb8Ug+dSegppuD4mpNRlKggxE
+--00000000000097f13905dc1ffa41--
