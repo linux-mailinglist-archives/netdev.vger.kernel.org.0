@@ -2,163 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 274D64FAA19
-	for <lists+netdev@lfdr.de>; Sat,  9 Apr 2022 20:10:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E27754FAA23
+	for <lists+netdev@lfdr.de>; Sat,  9 Apr 2022 20:22:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231882AbiDISMt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Apr 2022 14:12:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52026 "EHLO
+        id S242982AbiDISYr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Apr 2022 14:24:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242980AbiDISMr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Apr 2022 14:12:47 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FB66AE4A
-        for <netdev@vger.kernel.org>; Sat,  9 Apr 2022 11:10:36 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id bu29so20153502lfb.0
-        for <netdev@vger.kernel.org>; Sat, 09 Apr 2022 11:10:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=zoPNip8VLikRHe1urojzEFTsB5LgjyaGRKI3ch5gF7o=;
-        b=QDPFB+py79p8EG6NCFJUJ36Y42o0PN3kC/RT9Wtd4KQ6ckS3+IbZ57wNMm4PQJfvQZ
-         QF/mUuX0LHygBDFGKZJKCF5Q8YNoQ+05MUF+Z6DfiQaBbfkNk9RM8XE2WMk8TyWTQQW5
-         oq2v+EJRFv7IVt8/cDBip1kqqzxYVQ1WwW6LQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=zoPNip8VLikRHe1urojzEFTsB5LgjyaGRKI3ch5gF7o=;
-        b=WL1879DZlG97rWI8HtZM4j2j9j37MQGnUnlAKe6DS8tkErozO8djzkL5L/1n0aGJ4Z
-         gP6Y6qSxRhR3xy8jHnfG8m3JtobzYPpP9ygqyiqCysr8EZsRIIJFe1om1j4Yob2SdKJV
-         T6O0XyjfCYJqOL82kb8b7j51pAzuX1UpugrZrxxlbeboOBAarwzkZJvrE6xSzOlXMdLT
-         d/RZPChCJF3SrGjEYsR3tNx/AfJcyRP5l4vFoyNnczNBkfWT+0qA5ImxSIfLaALH5Qva
-         l/aPPHtfN5RiKp0Gu0PeTZlwLN0I1NG7ytNep6ODRsc4wlriMEniQQNM+AjGxfdMO49W
-         /5NQ==
-X-Gm-Message-State: AOAM531L3ld5AxHir5Q4fjE4XAePcnz/wMQNZlLHjUV+H0HFx5Sv+fdt
-        B4oFyIEkX8wNkcmZS0WdXdTL3A==
-X-Google-Smtp-Source: ABdhPJx1QoDFsW1QXOXj1h1+QAAA4L7UzeDxejPq60Y44lFmRRG3L/Nacft8AIckdCniircTb1d8Zw==
-X-Received: by 2002:a05:6512:15a5:b0:46b:918a:cdda with SMTP id bp37-20020a05651215a500b0046b918acddamr2720652lfb.216.1649527834686;
-        Sat, 09 Apr 2022 11:10:34 -0700 (PDT)
-Received: from cloudflare.com ([2a01:110f:4809:d800::f9c])
-        by smtp.gmail.com with ESMTPSA id e11-20020a2e984b000000b00249b8b68f61sm2644717ljj.74.2022.04.09.11.10.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Apr 2022 11:10:34 -0700 (PDT)
-References: <20220407223112.1204582-1-sdf@google.com>
- <20220407223112.1204582-4-sdf@google.com>
- <20220408225628.oog4a3qteauhqkdn@kafai-mbp.dhcp.thefacebook.com>
-User-agent: mu4e 1.6.10; emacs 27.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Stanislav Fomichev <sdf@google.com>,
-        Martin KaFai Lau <kafai@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org
-Subject: Re: [PATCH bpf-next v3 3/7] bpf: minimize number of allocated lsm
- slots per program
-Date:   Sat, 09 Apr 2022 19:04:05 +0200
-In-reply-to: <20220408225628.oog4a3qteauhqkdn@kafai-mbp.dhcp.thefacebook.com>
-Message-ID: <87fsmmp1pi.fsf@cloudflare.com>
+        with ESMTP id S238956AbiDISYq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Apr 2022 14:24:46 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AA5727AD7D;
+        Sat,  9 Apr 2022 11:22:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1649528525;
+        bh=S+JIsUWtPOwYWYyB2E9KgSEzbhqzWkIfhvyksSh185M=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=RtcSzWZrFFr3F6HMnJBTOTQyJ54eC+eE+Kw9yORmhIkuzLJWOlGygzyH0Qnez1d/t
+         6uFFK9j+C4I/iqBTqA5lUfknz+rOEXHxu2attjXnIe8neWal6njGOjlFp7pDrx+hTb
+         tu1RT/Ry2/O0iNC9KFfi5KOU9+rjA1OEF7tfSg9M=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from longitude ([78.35.207.192]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MLiCu-1nLaJR225I-00Hfti; Sat, 09
+ Apr 2022 20:22:05 +0200
+From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+To:     netdev@vger.kernel.org
+Cc:     =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Yang Shen <shenyang39@huawei.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: calxedaxgmac: Fix typo (doubled "the")
+Date:   Sat,  9 Apr 2022 20:21:45 +0200
+Message-Id: <20220409182147.2509788-1-j.neuschaefer@gmx.net>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:MzRYXerfuQKo4NMjt0teyY17AoArObCa0ia0c5JtBjtduSkasTB
+ 3+4xi0ufqPNYCaJCEo1MEDuYtSjfCbRE8jyVyxvCLX0qj52pkA5JkNRnc2frZ9l7ksPcC/F
+ Za+I/i7d/nFfxtjLnkbgy4PsAxBWbi4mWkAR5DE/8qjYcbvz53cprKO6V1nuYnpiwBDA/5f
+ t+Icw8MevJRpPDBhZ4fxA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:zoOWCozI0+4=:jSLjqHTVCVVjeiF4j0kBxa
+ d9nFxUu+WcMZdVoKmUHwCWOOh8DtnQbRqz1zAkvECTeH51Au+A/Qzuidpk2o1152N4AJ6fQ+s
+ KBt3gNLSv4W/37xStYv9F+Yd8sWAEU48hybzoVG3OvdQtOvr4s93KVnbWGHp7gmilD40oNdhP
+ bQVu6GA6CNtuh1EClDC1p9QNAmnuseQmLGvjNh3CwocckKf+/PU98EOvzV1kjk1jIiDVREXAb
+ kY4wyy8TSv6Q+JjAq++LBJOm9yighLeOinUP1qs1DAXF87PoY6v+QQL+hRED11fdenOghbM0Y
+ C7iK6/yz7sG1X8XoZMdRyKHsGEAfQmNJsFQwDGb8pYoVCwJbBCoLtQoV1TY42e1tSnKfmB6Og
+ gc0QMa86ZUuwjU8C7nIkgXxgqOYNrgybI7SqoySWg2H6o2DjOakaWcDNkPyTuHj4v9xkqEwgt
+ pTVbitbjhTCLDXtUqqd4fu+Jo2QUC4gKv2GYgjDB6f56HzUpHBtZmpBiFeCP+LMSnQagzCQP1
+ fYUiEm1vKe4ncsLwpjK/r5irhSsPD4aEFKqoF8bdlGAmCNOFcZK3TPv19fdrlXvRE95qYIi/s
+ WMeABOMtyBicz7zKqMYUrz/WaeiN/PaEP9w4/QyC6BEOwoxr6HYidbdrgoSR2aKY6QtoMJD3F
+ 6hphDQI9mlJPdY65/PIudb+FkzgQeMN6OUwbt+Y7eAXRZIwBS6so/n939e9vCQVsmhlP8Riuq
+ I85QzpHD/TURD6+nBIiF78QzROHtLdU1p6Ke0daFgNP2nPw01aQ99DTl2cD9wSJqVR5teApw1
+ fHKzaLw54IHwWFh5szU8glhcjNskzMu64jTCPinCh+nqtODRAOu+rbdsbzJRu4V5cemqzNV8x
+ UcF7tGim9ddhQNLlV2vQqf4VEkS2F45uq8MAIlkGuvi3+CS4rMLQrKUikS9ZtWFKPuo1jgY1Q
+ QRMD+Hws6KXzkp9qFTjz9AGES86rg/2MiAhtZiji6OTirEkXDOMsWyYNOgs0J4E1r/no1zPaX
+ NPZKsNSh3HPhqBxAghOk/kNIIx/SxRrlT+T1QyxeReigcl8uWtUmKGBDobRSW69+BKllZYOzY
+ Bj2GwzWPNHI2w0=
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 08, 2022 at 03:56 PM -07, Martin KaFai Lau wrote:
-> On Thu, Apr 07, 2022 at 03:31:08PM -0700, Stanislav Fomichev wrote:
->> Previous patch adds 1:1 mapping between all 211 LSM hooks
->> and bpf_cgroup program array. Instead of reserving a slot per
->> possible hook, reserve 10 slots per cgroup for lsm programs.
->> Those slots are dynamically allocated on demand and reclaimed.
->> This still adds some bloat to the cgroup and brings us back to
->> roughly pre-cgroup_bpf_attach_type times.
->> 
->> It should be possible to eventually extend this idea to all hooks if
->> the memory consumption is unacceptable and shrink overall effective
->> programs array.
->> 
->> Signed-off-by: Stanislav Fomichev <sdf@google.com>
->> ---
->>  include/linux/bpf-cgroup-defs.h |  4 +-
->>  include/linux/bpf_lsm.h         |  6 ---
->>  kernel/bpf/bpf_lsm.c            |  9 ++--
->>  kernel/bpf/cgroup.c             | 96 ++++++++++++++++++++++++++++-----
->>  4 files changed, 90 insertions(+), 25 deletions(-)
->> 
->> diff --git a/include/linux/bpf-cgroup-defs.h b/include/linux/bpf-cgroup-defs.h
->> index 6c661b4df9fa..d42516e86b3a 100644
->> --- a/include/linux/bpf-cgroup-defs.h
->> +++ b/include/linux/bpf-cgroup-defs.h
->> @@ -10,7 +10,9 @@
->>  
->>  struct bpf_prog_array;
->>  
->> -#define CGROUP_LSM_NUM 211 /* will be addressed in the next patch */
->> +/* Maximum number of concurrently attachable per-cgroup LSM hooks.
->> + */
->> +#define CGROUP_LSM_NUM 10
-> hmm...only 10 different lsm hooks (or 10 different attach_btf_ids) can
-> have BPF_LSM_CGROUP programs attached.  This feels quite limited but having
-> a static 211 (and potentially growing in the future) is not good either.
-> I currently do not have a better idea also. :/
->
-> Have you thought about other dynamic schemes or they would be too slow ?
+Fix a doubled word in the comment above xgmac_poll.
 
-As long as we're talking ideas - how about a 2-level lookup?
+Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
+=2D--
+ drivers/net/ethernet/calxeda/xgmac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-L1: 0..255 -> { 0..31, -1 }, where -1 is inactive cgroup_bp_attach_type
-L2: 0..31 -> struct bpf_prog_array * for cgroup->bpf.effective[],
-             struct hlist_head [^1]  for cgroup->bpf.progs[],
-             u32                     for cgroup->bpf.flags[],
+diff --git a/drivers/net/ethernet/calxeda/xgmac.c b/drivers/net/ethernet/c=
+alxeda/xgmac.c
+index 457cb71210003..1281d1565ef84 100644
+=2D-- a/drivers/net/ethernet/calxeda/xgmac.c
++++ b/drivers/net/ethernet/calxeda/xgmac.c
+@@ -1224,7 +1224,7 @@ static int xgmac_rx(struct xgmac_priv *priv, int lim=
+it)
+  *  @budget : maximum number of packets that the current CPU can receive =
+from
+  *	      all interfaces.
+  *  Description :
+- *   This function implements the the reception process.
++ *   This function implements the reception process.
+  *   Also it runs the TX completion thread
+  */
+ static int xgmac_poll(struct napi_struct *napi, int budget)
+=2D-
+2.35.1
 
-This way we could have 32 distinct _active_ attachment types for each
-cgroup instance, to be shared among regular cgroup attach types and BPF
-LSM attach types.
-
-It is 9 extra slots in comparison to today, so if anyone has cgroups
-that make use of all available attach types at the same time, we don't
-break their setup.
-
-The L1 lookup table would still a few slots for new cgroup [^2] or LSM
-hooks:
-
-  256 - 23 (cgroup attach types) - 211 (LSM hooks) = 22
-
-Memory bloat:
-
- +256 B - L1 lookup table
- + 72 B - extra effective[] slots
- + 72 B - extra progs[] slots
- + 36 B - extra flags[] slots
- -184 B - savings from switching to hlist_head
- ------
- +252 B per cgroup instance
-
-Total cgroup_bpf{} size change - 720 B -> 968 B.
-
-WDYT?
-
-[^1] It looks like we can easily switch from cgroup->bpf.progs[] from
-     list_head to hlist_head and save some bytes!
-
-     We only access the list tail in __cgroup_bpf_attach(). We can
-     either iterate over the list and eat the cost there or push the new
-     prog onto the front.
-
-     I think we treat cgroup->bpf.progs[] everywhere like an unordered
-     set. Except for __cgroup_bpf_query, where the user might notice the
-     order change in the BPF_PROG_QUERY dump.
-
-[^2] Unrelated, but we would like to propose a
-     CGROUP_INET[46]_POST_CONNECT hook in the near future to make it
-     easier to bind UDP sockets to 4-tuple without creating conflicts:
-
-     https://github.com/cloudflare/cloudflare-blog/tree/master/2022-02-connectx/ebpf_connect4
- 
-[...]
