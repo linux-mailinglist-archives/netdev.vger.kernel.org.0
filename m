@@ -2,138 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D06C4FA765
-	for <lists+netdev@lfdr.de>; Sat,  9 Apr 2022 13:56:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B0114FA77E
+	for <lists+netdev@lfdr.de>; Sat,  9 Apr 2022 14:10:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241686AbiDIL6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Apr 2022 07:58:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57034 "EHLO
+        id S240111AbiDIMMS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Apr 2022 08:12:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241688AbiDIL6C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Apr 2022 07:58:02 -0400
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80047.outbound.protection.outlook.com [40.107.8.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C49CBC3B
-        for <netdev@vger.kernel.org>; Sat,  9 Apr 2022 04:55:54 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WqDmo7uecLmscq6wPuexKF1WhjsXMHi3x03iAtdgL/l+/91cBWxO/0pmpg1xR+QkuxjxcWFWNWmZdeiDu/AznDUZun4d9bpskOvzd4vcPL7b5Tn6oTa9gHJOEbX1UgPyHOownYh3MChU+bOdp2wIQ1eSHt8sYUeUZKmqGHZFiMWI1/Rq4obqO5HbYuziJzE3y5C90UHgJ4fsRfDJOKoQTqKxWY8loLMxQqXKC2ev1pxLh51lXGcu9bGMkQhkdwSyn9ycZNQMYD7JZNeB7o5KirJSha8yfGXH8FarJ39uJH964kbAxUOrBsbcf3doIyCfM/qOxCRbQgZNrjAfLfefWg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=w3Ulz3nfGegkqYzX0cDhgi8q6SEKVTeHB1h2RjZn1/A=;
- b=Ea880K0O4ZJ+aqdSkRR7KhTNyriwFD6D4tEqpuAbHm83iFCZotGucNT8uRAe9KzAG7oP6A2r3BGqHxxC4QJGSuwpBQfs0j2bpVlW2avz592Zl3eojZDU6ZDbiJusRfcDanFWGtieryXsyxmXisUHt3z6jPBmZm4QfZU2pieoFi6oUHnCsT9D+Q/LDUeBEt+7H82sPeE5uR1t2MgxJ+0lWogL4Aq6THakgkQiI5in+V5qxBgA0h7iWjBZLzw0J9fsttmM0Jzdy9MKftbiRvO55pdfTr2uI3XOd6r5IoL8INf5S7CSuGzGUztDkRM6aue8rZpQeGkhVurr7lQntvywwg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=w3Ulz3nfGegkqYzX0cDhgi8q6SEKVTeHB1h2RjZn1/A=;
- b=qJx+po78N9hjJ0rNWdyXl0qk8AKncKORJKggmkA+qAnHMPLvmYJpy1dE3wDQHybeLNSCqfNtAf3I7/RiAStlJCVnv+HfSVKCELoVQUPhlOz38Yr3Fhfuo4KC7j5KDuOPdZBXOpTQdig49H0ZrkFtBDgvOckP2ntE30mpsFq257c=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB5552.eurprd04.prod.outlook.com (2603:10a6:803:cc::33) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.27; Sat, 9 Apr
- 2022 11:55:53 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::8ed:49e7:d2e7:c55e]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::8ed:49e7:d2e7:c55e%3]) with mapi id 15.20.5123.031; Sat, 9 Apr 2022
- 11:55:52 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        "bcm-kernel-feedback-list@broadcom.com" 
-        <bcm-kernel-feedback-list@broadcom.com>
-Subject: Re: [PATCH v0 RFC RFT net-next 5/5] net: pcs: pcs-xpcs: Convert to
- mdiobus_c45_read
-Thread-Topic: [PATCH v0 RFC RFT net-next 5/5] net: pcs: pcs-xpcs: Convert to
- mdiobus_c45_read
-Thread-Index: AQHYStHwr+3eWz4dAUORx4HsSMXi06zne+EA
-Date:   Sat, 9 Apr 2022 11:55:52 +0000
-Message-ID: <20220409115552.fiadfovddubmo6mg@skbuf>
-References: <20220407225023.3510609-1-andrew@lunn.ch>
- <20220407225023.3510609-6-andrew@lunn.ch>
-In-Reply-To: <20220407225023.3510609-6-andrew@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c041023d-440b-4e9a-27e7-08da1a1fe5e5
-x-ms-traffictypediagnostic: VI1PR04MB5552:EE_
-x-microsoft-antispam-prvs: <VI1PR04MB555258C6385AC1175A4E3F81E0E89@VI1PR04MB5552.eurprd04.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Oq7+M5dYusD2aiS6I5QrvB+3foc0GvARvZ/0+IJEoKLXHEIM6O92eos9p8S6BpnthMQlN6+PHfmnfDJLtW9+Pa1xqISpAss6rU3upLhLWHQwMxlNsdznGyGJmaqvOts+Pd95vahxbzDLcfxFddrP8o32BaQrmRkDcLVoULD4b06WF5b+0gt9cqDCRbi3almzXTHDtQTDg76XWtfLe4UonmsPP1xgtr6O5ckN6jMJqz41lFElrHTFDsxj+5yiqRVMVJ+wHOtsbzdGntxIqiaJk9SDqAgE/VUwPflAjzgv/U5PmN7aHIn3z0xAmBpxcEnEEvHF0FQuU19VpkIi/JLTTT0l4KXmtBCfZr95s5Ld1d0GTkNhwa7GNNa97/d/htyCSW/2KOtO4C6o9rYSqK29zYZTOgkNhAWlLQZZAq552B5M8rHJl7M82KAOeqVvEG20fOrru0KHhSUaZWj+4Tph2L+NrzMCCoxWw87VVLnamG82cRnCcuL+vcjuaV/vR8gvsAf59uK5lLulh0rGibsIfLW503pa5RI2CsTnflHRBF8+S/cZruYG8P6XfUCFFs1bsKk2FNL7IwKCofSGhXWtZhgkhBo75aDLlIwfu9mDmTJ+LaLgsaiH5hWD6cfKVDHq6hvEIPeipGL02x1kiSZGJ2uzPYdmV9nn+wuItpEYH+XAhd5I4Da1fEQ1yER+wreBr1VK6CfmWcerlfjS/1nqng==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(26005)(122000001)(38100700002)(186003)(8676002)(4326008)(316002)(54906003)(8936002)(6916009)(71200400001)(33716001)(66476007)(5660300002)(86362001)(66946007)(66556008)(66446008)(6486002)(76116006)(44832011)(64756008)(4744005)(2906002)(38070700005)(6506007)(1076003)(9686003)(6512007)(508600001)(83380400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?wfRXnUzJsiP7/FKUsOSlyV5+5q1Bfd8Nqjg5j34NYhidZVpy6I3caCgoAKwH?=
- =?us-ascii?Q?5ZZCV0qXcnSBE7eo38SA+I7Th2ec2b90pS1e/vfVqqEj0sbjI/ACAkha4Qu1?=
- =?us-ascii?Q?OTTXPxVXFIu2nHj7/6PIkK02fhCdkPEAxawLwTD4IBkkK4INdOLPDYofejzo?=
- =?us-ascii?Q?kSDfKsgb00v0Y/dOg4VDPl7897ROlom9aZgU+kZfo8RmyDbLyoDuGKwnbtlJ?=
- =?us-ascii?Q?i5ecfttV0BRYEOfSuzToWQk706KQcmRFhfSM07MbwXKC4jGu9UQHnwxv0XS6?=
- =?us-ascii?Q?DXDN/FVu0KUG8z3t9hjPK9uTjUca6Ua3hdoU0bZl0g5ZjMjBI0u8py4SpR/K?=
- =?us-ascii?Q?j+AedVn4uvHbyQZsq+vzWW4vn7EdXlAqBKAYM2upI1J3foaZjG6H+EQq3UlU?=
- =?us-ascii?Q?gNVfV0ksY7nQ0U7mfnZ5UEu/K8q1O2bgi1U4U2melgCIlvrC1iESuYTc4Q3t?=
- =?us-ascii?Q?61UO3XD/VRY5p9hKrplOZpTjjaJOOwsRzJsFgr78fqThoUCNCF686dT9LCfR?=
- =?us-ascii?Q?AF+uWy3YnfhmWS0XlfSz6JGMySDsiJKHK2vaJ7A92xxtLD+RsK7e6NOUJcFr?=
- =?us-ascii?Q?1sPtUlTx1zNZalJ9mSymZlnKZsujO1gIoPVJgGLPd93Pu6qOL7d9JFVKP0iE?=
- =?us-ascii?Q?T5aVh9GGFdq8F3Sy/5uLdx/Th1dQb07MvpMrGPmir1vEA222vDl1jROujA7G?=
- =?us-ascii?Q?QnjGd/fvSCtDv47xHZOTYvIxFzGrv/gMiRRL5E5uGEHMwCaFO13PQV170BBJ?=
- =?us-ascii?Q?hRCLYTLiVeb2iUjPpmvHnw5pnJ9H84OxWFgMbADPfcKGCZBYaMVYe4ppwyYd?=
- =?us-ascii?Q?3xx7wPCcKHtHeHZ7LuTjGMB+A73BIJ5Q2P2f8ZMdEFJr/sOsIXZAI3hhsPXn?=
- =?us-ascii?Q?vaYFlS91iH3KE92hqHeX9Z8czhgxE2S8dDRqW+YRciyON6ewzRC9gO70t88O?=
- =?us-ascii?Q?Uzz0bL/IY0Dd/4Z2n3SQPQk0iur5x0OWJ11rO1Lk1BRlHRPrcrHsktD17AYl?=
- =?us-ascii?Q?TBcUsX3gnHxecmAs8Z1Gpseqoky/0KRJdGlEWBo1MEB8LosRxqxDf8B5BycA?=
- =?us-ascii?Q?NJxIj8aHORxHOzPsGTzc9vWc2C1MzVLticRRFZWZ9OXYUXCY2Q5hUdm0a2sW?=
- =?us-ascii?Q?liwcqZHIwht4t72IK1qzKHBpdHaTbJAHb5sUlSqkIsGPA5/TJwc4vxqaJJ8H?=
- =?us-ascii?Q?8rbqn/IMmM72YluB/J0co1j1cq23c8xX3wtNJEHR4DiwWmZ7WRI+LSpa6JKh?=
- =?us-ascii?Q?BET0EQN6HkrEciBK46AgtWSLN67IXwcOXTcgy6jVZIBaX4v2xCes9CrXxn/F?=
- =?us-ascii?Q?rhpyslyv1R+iFaqTepUCQUMjFRQ9mltKBLhFf8pPmJUpbor/8in4pv9MgSD/?=
- =?us-ascii?Q?DdSC6v45gAperut3j/9uzZVxVKa+FKFpcmuWY5kpNBtPippOVTzEDgZnVOvh?=
- =?us-ascii?Q?9GvMlE2NpMf+ILXclsik+3Eg9P5WmoD4a1Hvg18DpWmn/AG3r1LZZY1RGkuV?=
- =?us-ascii?Q?4OcynZ1FsC4r/HfqLt67i9O4xhi8nwYAGguV0Lr3Nlg0z7xeV5ReemwUsCBE?=
- =?us-ascii?Q?VSncysbQ4Te/OvvOVHhQkJbj17259hPFhlGiFV71hW+ldnh9o4rwase+emUy?=
- =?us-ascii?Q?Liv9IVI2EUAfiwc8agqnp56R6rt/S2RkTvVu8bE6BnKrmwlPz8RX1gawFGEH?=
- =?us-ascii?Q?sv92Tcl+wmhQgokmhZdkKzdMW6Ms1M4JvxJ1OWQcia0ieZsAALIyNV4XFRHE?=
- =?us-ascii?Q?0tC0o8UcL/NyUMgfUq/uDwJgjz7/TsE=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <52A7707F42D54F42A789CF0474CD2DCC@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S241745AbiDIMMR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Apr 2022 08:12:17 -0400
+Received: from hust.edu.cn (mail.hust.edu.cn [202.114.0.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEA30A6E01;
+        Sat,  9 Apr 2022 05:10:08 -0700 (PDT)
+Received: from localhost.localdomain ([222.20.126.44])
+        (user=dzm91@hust.edu.cn mech=LOGIN bits=0)
+        by mx1.hust.edu.cn  with ESMTP id 239C92l5016938-239C92l8016938
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
+        Sat, 9 Apr 2022 20:09:06 +0800
+From:   Dongliang Mu <dzm91@hust.edu.cn>
+To:     Oliver Neukum <oliver@neukum.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
+        syzbot+eabbf2aaa999cc507108@syzkaller.appspotmail.com,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] driver: usb: nullify dangling pointer in cdc_ncm_free
+Date:   Sat,  9 Apr 2022 20:09:00 +0800
+Message-Id: <20220409120901.267526-1-dzm91@hust.edu.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c041023d-440b-4e9a-27e7-08da1a1fe5e5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Apr 2022 11:55:52.9030
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 64Ma7o/atRcRjpkNv2IjfNjfjkz1HqDg2steQxbFavm9TUwGKTf0NqnmGEAxFnAYXtscmzSFSHTIeleR2+2Y6g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5552
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-FEAS-AUTH-USER: dzm91@hust.edu.cn
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 08, 2022 at 12:50:23AM +0200, Andrew Lunn wrote:
-> Stop using the helpers to construct a special mdio address which
-> indicates C45. Instead use the C45 accessors, which will call the
-> busses C45 specific read/write API.
->=20
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> ---
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>=
+cdc_ncm_bind calls cdc_ncm_bind_common and sets dev->data[0]
+with ctx. However, in the unbind function - cdc_ncm_unbind,
+it calls cdc_ncm_free and frees ctx, leaving dev->data[0] as
+a dangling pointer. The following ioctl operation will trigger
+the UAF in the function cdc_ncm_set_dgram_size.
+
+Fix this by setting dev->data[0] as zero.
+
+==================================================================
+BUG: KASAN: use-after-free in cdc_ncm_set_dgram_size+0xc91/0xde0
+Read of size 8 at addr ffff8880755210b0 by task dhcpcd/3174
+
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0xeb/0x495 mm/kasan/report.c:313
+ print_report mm/kasan/report.c:429 [inline]
+ kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
+ cdc_ncm_set_dgram_size+0xc91/0xde0 drivers/net/usb/cdc_ncm.c:608
+ cdc_ncm_change_mtu+0x10c/0x140 drivers/net/usb/cdc_ncm.c:798
+ __dev_set_mtu net/core/dev.c:8519 [inline]
+ dev_set_mtu_ext+0x352/0x5b0 net/core/dev.c:8572
+ dev_set_mtu+0x8e/0x120 net/core/dev.c:8596
+ dev_ifsioc+0xb87/0x1090 net/core/dev_ioctl.c:332
+ dev_ioctl+0x1b9/0xe30 net/core/dev_ioctl.c:586
+ sock_do_ioctl+0x15a/0x230 net/socket.c:1136
+ sock_ioctl+0x2f1/0x640 net/socket.c:1239
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:870 [inline]
+ __se_sys_ioctl fs/ioctl.c:856 [inline]
+ __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0x80 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f00859e70e7
+RSP: 002b:00007ffedd503dd8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007f00858f96c8 RCX: 00007f00859e70e7
+RDX: 00007ffedd513fc8 RSI: 0000000000008922 RDI: 0000000000000018
+RBP: 00007ffedd524178 R08: 00007ffedd513f88 R09: 00007ffedd513f38
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007ffedd513fc8 R14: 0000000000000028 R15: 0000000000008922
+ </TASK>
+
+Allocated by task 26:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track mm/kasan/common.c:45 [inline]
+ set_alloc_info mm/kasan/common.c:436 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:515 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:474 [inline]
+ __kasan_kmalloc+0xa9/0xd0 mm/kasan/common.c:524
+ kmalloc include/linux/slab.h:581 [inline]
+ kzalloc include/linux/slab.h:714 [inline]
+ cdc_ncm_bind_common+0xb8/0x2df0 drivers/net/usb/cdc_ncm.c:826
+ cdc_ncm_bind+0x7c/0x1c0 drivers/net/usb/cdc_ncm.c:1069
+ usbnet_probe+0xaf8/0x2580 drivers/net/usb/usbnet.c:1747
+ usb_probe_interface+0x315/0x7f0 drivers/usb/core/driver.c:396
+ call_driver_probe drivers/base/dd.c:541 [inline]
+ really_probe+0x23e/0xb20 drivers/base/dd.c:620
+ __driver_probe_device+0x338/0x4d0 drivers/base/dd.c:751
+ driver_probe_device+0x4c/0x1a0 drivers/base/dd.c:781
+ __device_attach_driver+0x20b/0x2f0 drivers/base/dd.c:898
+ bus_for_each_drv+0x15f/0x1e0 drivers/base/bus.c:427
+ __device_attach+0x228/0x4a0 drivers/base/dd.c:969
+ bus_probe_device+0x1e4/0x290 drivers/base/bus.c:487
+ device_add+0xb83/0x1e20 drivers/base/core.c:3405
+ usb_set_configuration+0x101e/0x1900 drivers/usb/core/message.c:2170
+ usb_generic_driver_probe+0xba/0x100 drivers/usb/core/generic.c:238
+ usb_probe_device+0xd9/0x2c0 drivers/usb/core/driver.c:293
+ call_driver_probe drivers/base/dd.c:541 [inline]
+ really_probe+0x23e/0xb20 drivers/base/dd.c:620
+ __driver_probe_device+0x338/0x4d0 drivers/base/dd.c:751
+ driver_probe_device+0x4c/0x1a0 drivers/base/dd.c:781
+ __device_attach_driver+0x20b/0x2f0 drivers/base/dd.c:898
+ bus_for_each_drv+0x15f/0x1e0 drivers/base/bus.c:427
+ __device_attach+0x228/0x4a0 drivers/base/dd.c:969
+ bus_probe_device+0x1e4/0x290 drivers/base/bus.c:487
+ device_add+0xb83/0x1e20 drivers/base/core.c:3405
+ usb_new_device.cold+0x641/0x1091 drivers/usb/core/hub.c:2566
+ hub_port_connect drivers/usb/core/hub.c:5363 [inline]
+ hub_port_connect_change drivers/usb/core/hub.c:5507 [inline]
+ port_event drivers/usb/core/hub.c:5665 [inline]
+ hub_event+0x25c6/0x4680 drivers/usb/core/hub.c:5747
+ process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e9/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:298
+
+Freed by task 3742:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track+0x21/0x30 mm/kasan/common.c:45
+ kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
+ ____kasan_slab_free mm/kasan/common.c:366 [inline]
+ ____kasan_slab_free+0x166/0x1a0 mm/kasan/common.c:328
+ kasan_slab_free include/linux/kasan.h:200 [inline]
+ slab_free_hook mm/slub.c:1728 [inline]
+ slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1754
+ slab_free mm/slub.c:3510 [inline]
+ kfree+0xd6/0x4d0 mm/slub.c:4552
+ cdc_ncm_free+0x145/0x1a0 drivers/net/usb/cdc_ncm.c:786
+ cdc_ncm_unbind+0x1a7/0x340 drivers/net/usb/cdc_ncm.c:1021
+ usbnet_disconnect+0x103/0x270 drivers/net/usb/usbnet.c:1620
+ usb_unbind_interface+0x1d8/0x8e0 drivers/usb/core/driver.c:458
+ device_remove drivers/base/dd.c:531 [inline]
+ device_remove+0x11f/0x170 drivers/base/dd.c:523
+ __device_release_driver drivers/base/dd.c:1199 [inline]
+ device_release_driver_internal+0x4a3/0x680 drivers/base/dd.c:1222
+ bus_remove_device+0x2eb/0x5a0 drivers/base/bus.c:529
+ device_del+0x4f3/0xc80 drivers/base/core.c:3592
+ usb_disable_device+0x35b/0x7b0 drivers/usb/core/message.c:1419
+ usb_disconnect.cold+0x278/0x6ec drivers/usb/core/hub.c:2228
+ hub_port_connect drivers/usb/core/hub.c:5207 [inline]
+ hub_port_connect_change drivers/usb/core/hub.c:5507 [inline]
+ port_event drivers/usb/core/hub.c:5665 [inline]
+ hub_event+0x1e74/0x4680 drivers/usb/core/hub.c:5747
+ process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e9/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:298
+
+Reported-by: syzbot+eabbf2aaa999cc507108@syzkaller.appspotmail.com
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+---
+ drivers/net/usb/cdc_ncm.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
+index 15f91d691bba..9fc2df9f0b63 100644
+--- a/drivers/net/usb/cdc_ncm.c
++++ b/drivers/net/usb/cdc_ncm.c
+@@ -1019,6 +1019,7 @@ void cdc_ncm_unbind(struct usbnet *dev, struct usb_interface *intf)
+ 
+ 	usb_set_intfdata(intf, NULL);
+ 	cdc_ncm_free(ctx);
++	dev->data[0] = 0;
+ }
+ EXPORT_SYMBOL_GPL(cdc_ncm_unbind);
+ 
+-- 
+2.25.1
+
