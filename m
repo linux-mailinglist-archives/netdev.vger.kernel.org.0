@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EFC44FA6FC
-	for <lists+netdev@lfdr.de>; Sat,  9 Apr 2022 13:05:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C63D4FA6FA
+	for <lists+netdev@lfdr.de>; Sat,  9 Apr 2022 13:05:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241483AbiDILHR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Apr 2022 07:07:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53178 "EHLO
+        id S241487AbiDILHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Apr 2022 07:07:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241473AbiDILHC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Apr 2022 07:07:02 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D96B523FF17
-        for <netdev@vger.kernel.org>; Sat,  9 Apr 2022 04:04:54 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id dr20so21785923ejc.6
-        for <netdev@vger.kernel.org>; Sat, 09 Apr 2022 04:04:54 -0700 (PDT)
+        with ESMTP id S241475AbiDILHK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Apr 2022 07:07:10 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0449024058C
+        for <netdev@vger.kernel.org>; Sat,  9 Apr 2022 04:04:56 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id g20so12687003edw.6
+        for <netdev@vger.kernel.org>; Sat, 09 Apr 2022 04:04:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=guCQtZJSW+6tAwRjn+xEzfBeefFkGekLuh0Y+O3VkjU=;
-        b=bbLtwEAsjB9MTLVpVYrxb3AsIdDdsAXY/PaSdP03vlHL8c/dcfd+Et0gbMMg0K6fR/
-         eDjuxvcHs8D/c0Usg9KTbOCYM9jDquU/oVvK/okxHcSF+121z2zgMf1rR0JU6n1cD2U3
-         sMSbMW4pQu+USvN+a/xOlLxQR3h+KH3q3Oc4XdI7bEdEq4PRobUoXPDsYMvej1mHljdY
-         DxNb8Kfw3DBLUwvrKztbdw2m4qBAauU8M/v1ap3yHlT0ZkZfU0W4scTbVMJregvx3PqO
-         tuVR8vRzq0hkxLTBoP7IlBOXp+tuv2ZtAEm+5HlUZSkH1nQORIdvMue809+Qe4wxCQG5
-         wQ8A==
+        bh=ruKthvyRBdKBojJ9cI3HF+YHEwKh0vpzBB/A3CTMky8=;
+        b=6Lxea4KtEreyzkvQXC0nXxpr8fx0jK/b9OrGY4V/fWEGgtpTyMivpumpy3aP/IakOl
+         tqVLSodTNTYTpQ7nOYxeY3DWoUkI9LM4YNnXNIig8zMAbaaZ8LFKcq6lVH4Hg9WbSkwU
+         jTRbFngE6hu3Xu3J2kVRxEMKESXUSZW3ey55pOVgGeAsnL8nsATeU2BIyhIJfSJ8A3aO
+         Em6+F2H38vxyVEYmwaXQmrYtUnZ1AZrDD/rwvwLZfTCGD2vkgvjKhTrffJLfn4krZwcy
+         pCIyS4zrwr7HuYVY2dX1o81fiyK0PS3A//+MMjEsSS4E+eOtJmNuC6vHi9ZM4oQVFR6V
+         5cyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=guCQtZJSW+6tAwRjn+xEzfBeefFkGekLuh0Y+O3VkjU=;
-        b=hkh4mTQVf0z97MszI+st0l/zDC81a7AHwl9b+7XcN3qm5f4MNdGx41PgRBpJcLzdBS
-         PKn0PC60Pvdcs+sVTXB3QAHBdFoY+ljRFwWnK969ltxRW2dfwBakC//sXvURBuZGaGeA
-         SP9XB+4Nx9j2HDhpu7WTRJjK1TSH/jQ7iRPCIue3+CZ/gWEZVte9fc7n6LVaaU6XVzNO
-         3cwG0NPbJ+lUaEObmAlq9K0K9gJdpf9m9T+IkeCjTL5L/3mvBw27WVra1EN350rEz8o1
-         /zARxWJtFuDJm7OInGXD3/qoqXrLFe8Zw9/ob4urySILIG2P/FwI3PrN4YsRIZMWcS/f
-         Olgw==
-X-Gm-Message-State: AOAM531W/KQcZBfehpIZqP0Z2sKwjyKnZGQLMomo958LeWP1rZK97oYh
-        9EJtLatxf8b+ihLprjaK1b7FfXi6Gp5vLTc1QJY=
-X-Google-Smtp-Source: ABdhPJxTsykKKSk5FioE0+8GII9stuEihStRh+ExC+z5gJiPkOO8jGnT8FIQsbsGcvIlfrklLNqPzQ==
-X-Received: by 2002:a17:907:9868:b0:6e8:7ae3:7f42 with SMTP id ko8-20020a170907986800b006e87ae37f42mr266476ejc.224.1649502293056;
-        Sat, 09 Apr 2022 04:04:53 -0700 (PDT)
+        bh=ruKthvyRBdKBojJ9cI3HF+YHEwKh0vpzBB/A3CTMky8=;
+        b=GNXlNybzbkNa0My/61LFNH1gnQnxRuRHxiSt9BfR7+T2t/Hal+dQ2LBL12N3WErXja
+         FuZ6qAseo1EdWMTgfZ4Zr7kpS0IGDVNhqX86COho5pD1BpCoWGemIpqEKKLo8PnhWihX
+         fRJ9GFWww1yLWOvhp2qSeMaYhsT2lfzoNNL+rR+jqfc9We8jhg+JiEsSNjxxPaWjUdll
+         xc0PLzHb1o08LoOdOtDkGCgMm6EhvHnnNgZabTAOifHOl2bH9zZivR9EypgpziTjfEkS
+         Ei9vGpiB70np8Ak76wwJRtJsLxcd0SdJvFXTxo4cD5yBZbQ7gFJhtaRKtUEffuJ20UTd
+         Tdiw==
+X-Gm-Message-State: AOAM531EQr51ymx4ihDAS/6SFK4+VEjwuGyUPLCL50xKMDj7X22mKGhh
+        rLZH/TgUq+ypAerr5X+FJut7HlzAVIBha403DdM=
+X-Google-Smtp-Source: ABdhPJwcaCWCNll8VthWgjCMOUW/rW1g9RgnU8vk5G+v2JLm8Bb+cuJ3ez96x+uRgXD37ZMt8TsErA==
+X-Received: by 2002:a05:6402:1e92:b0:41d:219:d936 with SMTP id f18-20020a0564021e9200b0041d0219d936mr13400331edf.383.1649502294074;
+        Sat, 09 Apr 2022 04:04:54 -0700 (PDT)
 Received: from debil.. (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id r11-20020a1709064d0b00b006e87938318dsm179574eju.39.2022.04.09.04.04.52
+        by smtp.gmail.com with ESMTPSA id r11-20020a1709064d0b00b006e87938318dsm179574eju.39.2022.04.09.04.04.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Apr 2022 04:04:52 -0700 (PDT)
+        Sat, 09 Apr 2022 04:04:53 -0700 (PDT)
 From:   Nikolay Aleksandrov <razor@blackwall.org>
 To:     netdev@vger.kernel.org
 Cc:     roopa@nvidia.com, kuba@kernel.org, davem@davemloft.net,
         bridge@lists.linux-foundation.org,
         Nikolay Aleksandrov <razor@blackwall.org>
-Subject: [PATCH net-next 4/6] net: bridge: fdb: add support for flush filtering based on ndm flags and state
-Date:   Sat,  9 Apr 2022 13:58:55 +0300
-Message-Id: <20220409105857.803667-5-razor@blackwall.org>
+Subject: [PATCH net-next 5/6] net: bridge: fdb: add support for flush filtering based on ifindex
+Date:   Sat,  9 Apr 2022 13:58:56 +0300
+Message-Id: <20220409105857.803667-6-razor@blackwall.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220409105857.803667-1-razor@blackwall.org>
 References: <20220409105857.803667-1-razor@blackwall.org>
@@ -69,107 +69,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for fdb flush filtering based on ndm flags and state. The
-new attributes allow users to specify a mask and value which are mapped
-to bridge-specific flags. NTF_USE is used to represent added_by_user
-flag since it sets it on fdb add and we don't have a 1:1 mapping for it.
+Add support for fdb flush filtering based on destination ifindex. The
+ifindex must either match a port's device ifindex or the bridge's.
 
 Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
 ---
- include/uapi/linux/if_bridge.h |  4 +++
- net/bridge/br_fdb.c            | 55 ++++++++++++++++++++++++++++++++++
- 2 files changed, 59 insertions(+)
+ include/uapi/linux/if_bridge.h | 1 +
+ net/bridge/br_fdb.c            | 7 +++++++
+ 2 files changed, 8 insertions(+)
 
 diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
-index 2f3799cf14b2..4638d7e39f2a 100644
+index 4638d7e39f2a..67ee12586844 100644
 --- a/include/uapi/linux/if_bridge.h
 +++ b/include/uapi/linux/if_bridge.h
-@@ -815,6 +815,10 @@ enum {
- /* embedded in BRIDGE_FLUSH_FDB */
- enum {
- 	FDB_FLUSH_UNSPEC,
-+	FDB_FLUSH_NDM_STATE,
-+	FDB_FLUSH_NDM_STATE_MASK,
-+	FDB_FLUSH_NDM_FLAGS,
-+	FDB_FLUSH_NDM_FLAGS_MASK,
+@@ -819,6 +819,7 @@ enum {
+ 	FDB_FLUSH_NDM_STATE_MASK,
+ 	FDB_FLUSH_NDM_FLAGS,
+ 	FDB_FLUSH_NDM_FLAGS_MASK,
++	FDB_FLUSH_PORT_IFINDEX,
  	__FDB_FLUSH_MAX
  };
  #define FDB_FLUSH_MAX (__FDB_FLUSH_MAX - 1)
 diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
-index 62f694a739e1..340a2ace1d5e 100644
+index 340a2ace1d5e..53208adf7474 100644
 --- a/net/bridge/br_fdb.c
 +++ b/net/bridge/br_fdb.c
-@@ -594,8 +594,40 @@ void br_fdb_flush(struct net_bridge *br,
- 	rcu_read_unlock();
- }
- 
-+static unsigned long __ndm_state_to_fdb_flags(u16 ndm_state)
-+{
-+	unsigned long flags = 0;
-+
-+	if (ndm_state & NUD_PERMANENT)
-+		__set_bit(BR_FDB_LOCAL, &flags);
-+	if (ndm_state & NUD_NOARP)
-+		__set_bit(BR_FDB_STATIC, &flags);
-+
-+	return flags;
-+}
-+
-+static unsigned long __ndm_flags_to_fdb_flags(u16 ndm_flags)
-+{
-+	unsigned long flags = 0;
-+
-+	if (ndm_flags & NTF_USE)
-+		__set_bit(BR_FDB_ADDED_BY_USER, &flags);
-+	if (ndm_flags & NTF_EXT_LEARNED)
-+		__set_bit(BR_FDB_ADDED_BY_EXT_LEARN, &flags);
-+	if (ndm_flags & NTF_OFFLOADED)
-+		__set_bit(BR_FDB_OFFLOADED, &flags);
-+	if (ndm_flags & NTF_STICKY)
-+		__set_bit(BR_FDB_STICKY, &flags);
-+
-+	return flags;
-+}
-+
- static const struct nla_policy br_fdb_flush_policy[FDB_FLUSH_MAX + 1] = {
- 	[FDB_FLUSH_UNSPEC]	= { .type = NLA_REJECT },
-+	[FDB_FLUSH_NDM_STATE]	= { .type = NLA_U16 },
-+	[FDB_FLUSH_NDM_FLAGS]	= { .type = NLA_U16 },
-+	[FDB_FLUSH_NDM_STATE_MASK]	= { .type = NLA_U16 },
-+	[FDB_FLUSH_NDM_FLAGS_MASK]	= { .type = NLA_U16 },
+@@ -628,6 +628,7 @@ static const struct nla_policy br_fdb_flush_policy[FDB_FLUSH_MAX + 1] = {
+ 	[FDB_FLUSH_NDM_FLAGS]	= { .type = NLA_U16 },
+ 	[FDB_FLUSH_NDM_STATE_MASK]	= { .type = NLA_U16 },
+ 	[FDB_FLUSH_NDM_FLAGS_MASK]	= { .type = NLA_U16 },
++	[FDB_FLUSH_PORT_IFINDEX]	= { .type = NLA_S32 },
  };
  
  int br_fdb_flush_nlattr(struct net_bridge *br, struct nlattr *fdb_flush_attr,
-@@ -610,6 +642,29 @@ int br_fdb_flush_nlattr(struct net_bridge *br, struct nlattr *fdb_flush_attr,
- 	if (err)
- 		return err;
+@@ -664,6 +665,12 @@ int br_fdb_flush_nlattr(struct net_bridge *br, struct nlattr *fdb_flush_attr,
+ 		ndm_flags_mask = nla_get_u16(fdb_flush_tb[FDB_FLUSH_NDM_FLAGS_MASK]);
+ 		desc.flags_mask |= __ndm_flags_to_fdb_flags(ndm_flags_mask);
+ 	}
++	if (fdb_flush_tb[FDB_FLUSH_PORT_IFINDEX]) {
++		int port_ifidx;
++
++		port_ifidx = nla_get_u32(fdb_flush_tb[FDB_FLUSH_PORT_IFINDEX]);
++		desc.port_ifindex = port_ifidx;
++	}
  
-+	if (fdb_flush_tb[FDB_FLUSH_NDM_STATE]) {
-+		u16 ndm_state = nla_get_u16(fdb_flush_tb[FDB_FLUSH_NDM_STATE]);
-+
-+		desc.flags |= __ndm_state_to_fdb_flags(ndm_state);
-+	}
-+	if (fdb_flush_tb[FDB_FLUSH_NDM_STATE_MASK]) {
-+		u16 ndm_state_mask;
-+
-+		ndm_state_mask = nla_get_u16(fdb_flush_tb[FDB_FLUSH_NDM_STATE_MASK]);
-+		desc.flags_mask |= __ndm_state_to_fdb_flags(ndm_state_mask);
-+	}
-+	if (fdb_flush_tb[FDB_FLUSH_NDM_FLAGS]) {
-+		u16 ndm_flags = nla_get_u16(fdb_flush_tb[FDB_FLUSH_NDM_FLAGS]);
-+
-+		desc.flags |= __ndm_flags_to_fdb_flags(ndm_flags);
-+	}
-+	if (fdb_flush_tb[FDB_FLUSH_NDM_FLAGS_MASK]) {
-+		u16 ndm_flags_mask;
-+
-+		ndm_flags_mask = nla_get_u16(fdb_flush_tb[FDB_FLUSH_NDM_FLAGS_MASK]);
-+		desc.flags_mask |= __ndm_flags_to_fdb_flags(ndm_flags_mask);
-+	}
-+
  	br_debug(br, "flushing port ifindex: %d vlan id: %u flags: 0x%lx flags mask: 0x%lx\n",
  		 desc.port_ifindex, desc.vlan_id, desc.flags, desc.flags_mask);
- 
 -- 
 2.35.1
 
