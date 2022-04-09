@@ -2,66 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C47A4FA6FD
-	for <lists+netdev@lfdr.de>; Sat,  9 Apr 2022 13:05:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A6624FA6E8
+	for <lists+netdev@lfdr.de>; Sat,  9 Apr 2022 12:59:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241476AbiDILHS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Apr 2022 07:07:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53634 "EHLO
+        id S241451AbiDILBo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Apr 2022 07:01:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241482AbiDILHL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Apr 2022 07:07:11 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 646A8241A10
-        for <netdev@vger.kernel.org>; Sat,  9 Apr 2022 04:04:56 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id w18so12632681edi.13
-        for <netdev@vger.kernel.org>; Sat, 09 Apr 2022 04:04:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=pI4juhDXvvHTh0rGKGfMfLE6PZX77VF+PfLCGPPEVPU=;
-        b=7Xj6XrbUXlfjlBFZqVNm3ajjO3GpKvG9FGv29kYvmyM0tZ/j7ilBb7io1qOU53kWbb
-         yr4jlrpYDe7dIV7kbQk282i9NwC2uFaWTAwGux3wcAoxVpIUddc1LVr6cnmHxOQjFDg6
-         2F+mew77iqtO4+3ht4Rg+43B0GcBiFyMyrPW48qVeHUcd9HilQp0FDei3LEkYybW7O5J
-         DvEPuEddTG1Drn3hMrsH005CeJXzgYaJVV2Hj6HDEHi/oWo3/wtq2EXzirUHJY9gXFXg
-         +tiwAyrWhoZLoa+lCuh2d4yTc+zkPlGPKWTRSE7hbtm4R2MuL9Wev4RwFd/GpTMEpdgi
-         c91A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=pI4juhDXvvHTh0rGKGfMfLE6PZX77VF+PfLCGPPEVPU=;
-        b=LMGfGZEzwN6xumt5MQQoqCzxEJaUjKVnAYp0gnSwCi6/9TddFKNDgrp8iTqIqwX/Tv
-         eeQwXpaF5BGX6lDYCopcA5TUSutWAFy5l6uZkEL6Jv28YbklLkiqxyM6u1s0BC1vbnhm
-         GKikCKsVbQ4OLpoKHwZAqnjCxi4jSl9Owd1nbFrJmq6efPgpkOWIqVOCm1n4b86B2dzH
-         W2kg86Uwy2kpZaedgqyIh5Tgw6PrBq4bVxudG2HHu1M0YmT2yCychIjOaleasqwICBZT
-         yJWOTFIR/P1DUPVzJ9IwbqW2JEQ/qgNRrxNGKNFCY3vCe7LQ8ENQsoQIhLb3T10AlglY
-         oong==
-X-Gm-Message-State: AOAM533nyrkbeBEIWZi74LZny2dDmkKLO6jslJ477Bgn8NnejJd+VqK3
-        ZM/mSRi8P36YOMpYGKPkOzEBxxvsCXiZ244zatQ=
-X-Google-Smtp-Source: ABdhPJx4bak1GlJt3DvLQ7SnZM7ZLqBj3nF8XgcBSJrJRibsIUXwPLesQXqb4zLYtnsmq8p0vs8xqg==
-X-Received: by 2002:a50:cd19:0:b0:41d:709f:5c57 with SMTP id z25-20020a50cd19000000b0041d709f5c57mr689523edi.227.1649502295159;
-        Sat, 09 Apr 2022 04:04:55 -0700 (PDT)
-Received: from debil.. (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id r11-20020a1709064d0b00b006e87938318dsm179574eju.39.2022.04.09.04.04.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Apr 2022 04:04:54 -0700 (PDT)
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-To:     netdev@vger.kernel.org
-Cc:     roopa@nvidia.com, kuba@kernel.org, davem@davemloft.net,
-        bridge@lists.linux-foundation.org,
-        Nikolay Aleksandrov <razor@blackwall.org>
-Subject: [PATCH net-next 6/6] net: bridge: fdb: add support for flush filtering based on vlan id
-Date:   Sat,  9 Apr 2022 13:58:57 +0300
-Message-Id: <20220409105857.803667-7-razor@blackwall.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220409105857.803667-1-razor@blackwall.org>
-References: <20220409105857.803667-1-razor@blackwall.org>
+        with ESMTP id S231465AbiDILBn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Apr 2022 07:01:43 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88EBF6D859;
+        Sat,  9 Apr 2022 03:59:36 -0700 (PDT)
+Received: from canpemm500007.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KbBsl6rx5zgYLj;
+        Sat,  9 Apr 2022 18:57:47 +0800 (CST)
+Received: from localhost (10.174.179.215) by canpemm500007.china.huawei.com
+ (7.192.104.62) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 9 Apr
+ 2022 18:59:34 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <linux@armlinux.org.uk>, <vladimir.oltean@nxp.com>,
+        <s-vadapalli@ti.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH -next] net: ethernet: ti: am65-cpsw: Fix build error without PHYLINK
+Date:   Sat, 9 Apr 2022 18:59:31 +0800
+Message-ID: <20220409105931.9080-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+Content-Type: text/plain
+X-Originating-IP: [10.174.179.215]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500007.china.huawei.com (7.192.104.62)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,50 +46,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for fdb flush filtering based on vlan id.
+If PHYLINK is n, build fails:
 
-Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
+drivers/net/ethernet/ti/am65-cpsw-ethtool.o: In function `am65_cpsw_set_link_ksettings':
+am65-cpsw-ethtool.c:(.text+0x118): undefined reference to `phylink_ethtool_ksettings_set'
+drivers/net/ethernet/ti/am65-cpsw-ethtool.o: In function `am65_cpsw_get_link_ksettings':
+am65-cpsw-ethtool.c:(.text+0x138): undefined reference to `phylink_ethtool_ksettings_get'
+drivers/net/ethernet/ti/am65-cpsw-ethtool.o: In function `am65_cpsw_set_eee':
+am65-cpsw-ethtool.c:(.text+0x158): undefined reference to `phylink_ethtool_set_eee'
+
+Select PHYLINK for TI_K3_AM65_CPSW_NUSS to fix this.
+
+Fixes: e8609e69470f ("net: ethernet: ti: am65-cpsw: Convert to PHYLINK")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- include/uapi/linux/if_bridge.h | 1 +
- net/bridge/br_fdb.c            | 6 ++++++
- 2 files changed, 7 insertions(+)
+ drivers/net/ethernet/ti/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
-index 67ee12586844..7f6730812916 100644
---- a/include/uapi/linux/if_bridge.h
-+++ b/include/uapi/linux/if_bridge.h
-@@ -820,6 +820,7 @@ enum {
- 	FDB_FLUSH_NDM_FLAGS,
- 	FDB_FLUSH_NDM_FLAGS_MASK,
- 	FDB_FLUSH_PORT_IFINDEX,
-+	FDB_FLUSH_VLAN_ID,
- 	__FDB_FLUSH_MAX
- };
- #define FDB_FLUSH_MAX (__FDB_FLUSH_MAX - 1)
-diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
-index 53208adf7474..bc8b5cbde8ed 100644
---- a/net/bridge/br_fdb.c
-+++ b/net/bridge/br_fdb.c
-@@ -626,6 +626,7 @@ static const struct nla_policy br_fdb_flush_policy[FDB_FLUSH_MAX + 1] = {
- 	[FDB_FLUSH_UNSPEC]	= { .type = NLA_REJECT },
- 	[FDB_FLUSH_NDM_STATE]	= { .type = NLA_U16 },
- 	[FDB_FLUSH_NDM_FLAGS]	= { .type = NLA_U16 },
-+	[FDB_FLUSH_VLAN_ID]	= { .type = NLA_U16 },
- 	[FDB_FLUSH_NDM_STATE_MASK]	= { .type = NLA_U16 },
- 	[FDB_FLUSH_NDM_FLAGS_MASK]	= { .type = NLA_U16 },
- 	[FDB_FLUSH_PORT_IFINDEX]	= { .type = NLA_S32 },
-@@ -671,6 +672,11 @@ int br_fdb_flush_nlattr(struct net_bridge *br, struct nlattr *fdb_flush_attr,
- 		port_ifidx = nla_get_u32(fdb_flush_tb[FDB_FLUSH_PORT_IFINDEX]);
- 		desc.port_ifindex = port_ifidx;
- 	}
-+	if (fdb_flush_tb[FDB_FLUSH_VLAN_ID]) {
-+		desc.vlan_id = nla_get_u16(fdb_flush_tb[FDB_FLUSH_VLAN_ID]);
-+		if (!br_vlan_valid_id(desc.vlan_id, extack))
-+			return -EINVAL;
-+	}
- 
- 	br_debug(br, "flushing port ifindex: %d vlan id: %u flags: 0x%lx flags mask: 0x%lx\n",
- 		 desc.port_ifindex, desc.vlan_id, desc.flags, desc.flags_mask);
+diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kconfig
+index affcf92cd3aa..fb30bc5d56cb 100644
+--- a/drivers/net/ethernet/ti/Kconfig
++++ b/drivers/net/ethernet/ti/Kconfig
+@@ -94,6 +94,7 @@ config TI_K3_AM65_CPSW_NUSS
+ 	depends on ARCH_K3 && OF && TI_K3_UDMA_GLUE_LAYER
+ 	select NET_DEVLINK
+ 	select TI_DAVINCI_MDIO
++	select PHYLINK
+ 	imply PHY_TI_GMII_SEL
+ 	depends on TI_K3_AM65_CPTS || !TI_K3_AM65_CPTS
+ 	help
 -- 
-2.35.1
+2.17.1
 
