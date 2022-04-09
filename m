@@ -2,189 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D40F4FA541
-	for <lists+netdev@lfdr.de>; Sat,  9 Apr 2022 07:55:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC0644FA566
+	for <lists+netdev@lfdr.de>; Sat,  9 Apr 2022 08:25:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238205AbiDIFzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Apr 2022 01:55:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49468 "EHLO
+        id S237246AbiDIG1K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Apr 2022 02:27:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231721AbiDIFzS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Apr 2022 01:55:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD5B338AF;
-        Fri,  8 Apr 2022 22:53:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 29707B82E55;
-        Sat,  9 Apr 2022 05:53:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18A5FC385A4;
-        Sat,  9 Apr 2022 05:53:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649483588;
-        bh=R0GA89PbrGrsoi3AypvLUQwcOEYAMuypdXieOHPZwDc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=coxS1EbBtBF6rVslIX83DyOYpS9Pjv26vBY2Hz+w54C1/F9nCutTuRssHp0i5HETc
-         GJZOUg8U1YAsKVp8GCAvsozLXLgrFpo4vNn7vY3Y4LTKDohvc4RkQ4vmM2DOpR04Ra
-         D8c+g6dqB7YkczlmVxubURMj5GNwl4LVyb2+vRUqzd4cMEuepmJohmUW4WkWuWu1zI
-         aabqZemcwwxJBd9ebZJn5EmX5OlwiCQGhcxuJQKOXG+wizfbhr4zbGVU+p3LW1bLj0
-         s+IsbrrXO7DajZb5czcuX3VCqJ2iPyDNZR8Zshi5/0bKuQISpza3zZZ56RN4sFFqnL
-         uEK/NaSRgNdZw==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>,
-        linux-netdev <netdev@vger.kernel.org>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>
-Subject: [GIT PULL] Please pull mlx5-next changes
-Date:   Sat,  9 Apr 2022 08:53:03 +0300
-Message-Id: <20220409055303.1223644-1-leon@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S233998AbiDIG1I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Apr 2022 02:27:08 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A353638B1;
+        Fri,  8 Apr 2022 23:25:02 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id s14so113328plk.8;
+        Fri, 08 Apr 2022 23:25:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pA0w4O8CRiuXzvroFL62p9tDgX2SohP+G9Ok90h6Fcc=;
+        b=L3BiklhbmiTW5WIODOPjQsK+EqQy7cAIB1x2Ta48ZFCfL4ylkePY8rt0k48ijrGnZi
+         yixG4Dzh0uwl7HYOFM7N+jvM0QLUjtKWdA4yb2tPDqQk6EcusiqFXjMOhfl8Jll3ABuc
+         zDDTkFd7lclif8zLg4LqGoqfkPhI/qwY8YJcTeuVnc/+n9mRAbI0WS19SP9HGW+/eExk
+         3QMpyEg2nHGqLpYREc01qy10tC2Vqro0SaIcXAh4xq4ZwiE6u9+8w4t+waUqLgmM34iY
+         l3EkMkk1EhIX+gEuD4Wp2BK0aa4uKjbp3DYjNVA57eakqIhvLkV7URyfm0gg7kxs23Q8
+         PReQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pA0w4O8CRiuXzvroFL62p9tDgX2SohP+G9Ok90h6Fcc=;
+        b=bxlqsgxb2fj4d1Z0iKItHO+eXub6Jhqg1BEx3uldIOXzB1Wm8JRvzEz7owas1is+3C
+         nNt8YN8AzGOPa2ia+Ob6gUROGDN0zwV3R7OeYYKbQXAYdgD4xOkHDH0r7m1/Yd4c/9gY
+         dkc8mMXuD0b0/hPqnL3Q0KRc+r9/VpwoMR4KxOx0csfqJuLaowrVdiqw1dyUna5IG5w1
+         CvlNyCw34cugMnXoGP7mvbNsgGKldZu+Bi4UVs1iqwLgSwO6+c+l5Wa2n2GrDjBHjnR8
+         FFzGrClHYHO1GTdZGm6SJhM246Ek7SJoJVF02aOu24l47tZcwEU9ZgfhmUVBRBO6pN3K
+         6Yuw==
+X-Gm-Message-State: AOAM533dFdYVXUr5RoJl2aa/uyH4lQCqUSKrkWijZh0BlQA+eHgxS4OZ
+        JLgOsvhGykiHyxpV0cXITA==
+X-Google-Smtp-Source: ABdhPJzWQcBOPqOngHyVHxk75RPQHA6pbYbYLBoE2zEL49QqbCtGx9ArK4Djp3I7JPx7JN+5JB7VIA==
+X-Received: by 2002:a17:90b:1e4e:b0:1c7:3507:30db with SMTP id pi14-20020a17090b1e4e00b001c7350730dbmr25713445pjb.39.1649485502117;
+        Fri, 08 Apr 2022 23:25:02 -0700 (PDT)
+Received: from localhost.localdomain ([144.202.91.207])
+        by smtp.gmail.com with ESMTPSA id 8-20020a056a00070800b004e14ae3e8d7sm26387128pfl.164.2022.04.08.23.24.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Apr 2022 23:25:01 -0700 (PDT)
+From:   Zheyu Ma <zheyuma97@gmail.com>
+To:     stas.yakovlev@gmail.com, kvalo@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>
+Subject: [PATCH] wireless: ipw2x00: Refine the error handling of ipw2100_pci_init_one()
+Date:   Sat,  9 Apr 2022 14:24:49 +0800
+Message-Id: <20220409062449.3752252-1-zheyuma97@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
+The driver should release resources in reverse order, i.e., the
+resources requested first should be released last, and the driver
+should adjust the order of error handling code by this rule.
 
-  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+---
+ drivers/net/wireless/intel/ipw2x00/ipw2100.c | 34 +++++++++-----------
+ 1 file changed, 16 insertions(+), 18 deletions(-)
 
-are available in the Git repository at:
+diff --git a/drivers/net/wireless/intel/ipw2x00/ipw2100.c b/drivers/net/wireless/intel/ipw2x00/ipw2100.c
+index 2ace2b27ecad..b10d10660eb8 100644
+--- a/drivers/net/wireless/intel/ipw2x00/ipw2100.c
++++ b/drivers/net/wireless/intel/ipw2x00/ipw2100.c
+@@ -6166,7 +6166,7 @@ static int ipw2100_pci_init_one(struct pci_dev *pci_dev,
+ 		printk(KERN_WARNING DRV_NAME
+ 		       "Error calling ioremap.\n");
+ 		err = -EIO;
+-		goto fail;
++		goto out;
+ 	}
+ 
+ 	/* allocate and initialize our net_device */
+@@ -6175,36 +6175,33 @@ static int ipw2100_pci_init_one(struct pci_dev *pci_dev,
+ 		printk(KERN_WARNING DRV_NAME
+ 		       "Error calling ipw2100_alloc_device.\n");
+ 		err = -ENOMEM;
+-		goto fail;
++		goto fail_iounmap;
+ 	}
+ 
++	priv = libipw_priv(dev);
++	pci_set_master(pci_dev);
++	pci_set_drvdata(pci_dev, priv);
++
+ 	/* set up PCI mappings for device */
+ 	err = pci_enable_device(pci_dev);
+ 	if (err) {
+ 		printk(KERN_WARNING DRV_NAME
+ 		       "Error calling pci_enable_device.\n");
+-		return err;
++		goto fail_dev;
+ 	}
+ 
+-	priv = libipw_priv(dev);
+-
+-	pci_set_master(pci_dev);
+-	pci_set_drvdata(pci_dev, priv);
+-
+ 	err = dma_set_mask(&pci_dev->dev, DMA_BIT_MASK(32));
+ 	if (err) {
+ 		printk(KERN_WARNING DRV_NAME
+ 		       "Error calling pci_set_dma_mask.\n");
+-		pci_disable_device(pci_dev);
+-		return err;
++		goto fail_disable;
+ 	}
+ 
+ 	err = pci_request_regions(pci_dev, DRV_NAME);
+ 	if (err) {
+ 		printk(KERN_WARNING DRV_NAME
+ 		       "Error calling pci_request_regions.\n");
+-		pci_disable_device(pci_dev);
+-		return err;
++		goto fail_disable;
+ 	}
+ 
+ 	/* We disable the RETRY_TIMEOUT register (0x41) to keep
+@@ -6306,9 +6303,13 @@ static int ipw2100_pci_init_one(struct pci_dev *pci_dev,
+ out:
+ 	return err;
+ 
+-      fail_unlock:
++fail_unlock:
+ 	mutex_unlock(&priv->action_mutex);
+-      fail:
++fail:
++	pci_release_regions(pci_dev);
++fail_disable:
++	pci_disable_device(pci_dev);
++fail_dev:
+ 	if (dev) {
+ 		if (registered >= 2)
+ 			unregister_netdev(dev);
+@@ -6334,11 +6335,8 @@ static int ipw2100_pci_init_one(struct pci_dev *pci_dev,
+ 
+ 		free_libipw(dev, 0);
+ 	}
+-
++fail_iounmap:
+ 	pci_iounmap(pci_dev, ioaddr);
+-
+-	pci_release_regions(pci_dev);
+-	pci_disable_device(pci_dev);
+ 	goto out;
+ }
+ 
+-- 
+2.25.1
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/mellanox/linux.git mlx5-next
-
-for you to fetch changes up to 2984287c4c19949d7eb451dcad0bd5c54a2a376f:
-
-net/mlx5: Remove not-implemented IPsec capabilities (2022-04-09 08:25:07 +0300)
-----------------------------------------------------------------
-Mellanox shared branch that includes:
- * Removal of FPGA TLS code https://lore.kernel.org/all/cover.1649073691.git.leonro@nvidia.com
-
-  Mellanox INNOVA TLS cards are EOL in May, 2018 [1]. As such, the code
-  is unmaintained, untested and not in-use by any upstream/distro oriented
-  customers. In order to reduce code complexity, drop the kernel code,
-  clean build config options and delete useless kTLS vs. TLS separation.
-
-  [1] https://network.nvidia.com/related-docs/eol/LCR-000286.pdf
-
- * Removal of FPGA IPsec code https://lore.kernel.org/all/cover.1649232994.git.leonro@nvidia.com
-
-  Together with FPGA TLS, the IPsec went to EOL state in the November of
-  2019 [1]. Exactly like FPGA TLS, no active customers exist for this
-  upstream code and all the complexity around that area can be deleted.
-
-  [2] https://network.nvidia.com/related-docs/eol/LCR-000535.pdf
-   
- * Fix to undefined behavior from Borislav https://lore.kernel.org/all/20220405151517.29753-11-bp@alien8.de
-
-Signed-of-by: Leon Romanovsky <leonro@nvidia.com>
-----------------------------------------------------------------
-Borislav Petkov (1):
-      IB/mlx5: Fix undefined behavior due to shift overflowing the constant
-
-Leon Romanovsky (22):
-      net/mlx5_fpga: Drop INNOVA TLS support
-      net/mlx5: Reliably return TLS device capabilities
-      net/mlx5: Remove indirection in TLS build
-      net/mlx5: Remove tls vs. ktls separation as it is the same
-      net/mlx5: Cleanup kTLS function names and their exposure
-      net/mlx5_fpga: Drop INNOVA IPsec support
-      net/mlx5: Delete metadata handling logic
-      net/mlx5: Remove not-used IDA field from IPsec struct
-      net/mlx5: Remove XFRM no_trailer flag
-      net/mlx5: Remove FPGA ipsec specific statistics
-      RDMA/mlx5: Delete never supported IPsec flow action
-      RDMA/mlx5: Drop crypto flow steering API
-      RDMA/core: Delete IPsec flow action logic from the core
-      net/mlx5: Remove ipsec vs. ipsec offload file separation
-      net/mlx5: Remove useless IPsec device checks
-      net/mlx5: Unify device IPsec capabilities check
-      net/mlx5: Align flow steering allocation namespace to common style
-      net/mlx5: Remove not-needed IPsec config
-      net/mlx5: Move IPsec file to relevant directory
-      net/mlx5: Reduce kconfig complexity while building crypto support
-      net/mlx5: Remove ipsec_ops function table
-      net/mlx5: Remove not-implemented IPsec capabilities
-
- drivers/infiniband/core/device.c                   |    2 -
- .../infiniband/core/uverbs_std_types_flow_action.c |  383 +----
- drivers/infiniband/hw/mlx5/fs.c                    |  223 +--
- drivers/infiniband/hw/mlx5/main.c                  |   31 -
- drivers/net/ethernet/mellanox/mlx5/core/Kconfig    |   58 +-
- drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   12 +-
- .../net/ethernet/mellanox/mlx5/core/accel/accel.h  |   36 -
- .../net/ethernet/mellanox/mlx5/core/accel/ipsec.c  |  179 ---
- .../net/ethernet/mellanox/mlx5/core/accel/ipsec.h  |   96 --
- .../mellanox/mlx5/core/accel/ipsec_offload.h       |   38 -
- .../net/ethernet/mellanox/mlx5/core/accel/tls.c    |  125 --
- .../net/ethernet/mellanox/mlx5/core/accel/tls.h    |  156 --
- drivers/net/ethernet/mellanox/mlx5/core/en.h       |    1 -
- .../net/ethernet/mellanox/mlx5/core/en/params.c    |   19 +-
- .../mellanox/mlx5/core/en_accel/en_accel.h         |   11 +-
- .../ethernet/mellanox/mlx5/core/en_accel/ipsec.c   |   30 +-
- .../ethernet/mellanox/mlx5/core/en_accel/ipsec.h   |   31 +-
- .../mellanox/mlx5/core/en_accel/ipsec_fs.c         |    5 +-
- .../mellanox/mlx5/core/en_accel/ipsec_fs.h         |    7 +-
- .../mlx5/core/{accel => en_accel}/ipsec_offload.c  |   95 +-
- .../mellanox/mlx5/core/en_accel/ipsec_offload.h    |   14 +
- .../mellanox/mlx5/core/en_accel/ipsec_rxtx.c       |  245 +--
- .../mellanox/mlx5/core/en_accel/ipsec_rxtx.h       |    3 -
- .../mellanox/mlx5/core/en_accel/ipsec_stats.c      |   63 +-
- .../ethernet/mellanox/mlx5/core/en_accel/ktls.c    |   71 +-
- .../ethernet/mellanox/mlx5/core/en_accel/ktls.h    |   86 +-
- .../ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c |    2 +-
- .../core/en_accel/{tls_stats.c => ktls_stats.c}    |   51 +-
- .../ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c |   20 +-
- .../mellanox/mlx5/core/en_accel/ktls_txrx.h        |   28 +-
- .../mellanox/mlx5/core/en_accel/ktls_utils.h       |    1 -
- .../net/ethernet/mellanox/mlx5/core/en_accel/tls.c |  247 ---
- .../net/ethernet/mellanox/mlx5/core/en_accel/tls.h |  132 --
- .../mellanox/mlx5/core/en_accel/tls_rxtx.c         |  390 -----
- .../mellanox/mlx5/core/en_accel/tls_rxtx.h         |   91 --
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |   24 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |    1 -
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    |   61 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_stats.c |    9 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_stats.h |    1 -
- .../net/ethernet/mellanox/mlx5/core/fpga/core.h    |    3 -
- .../net/ethernet/mellanox/mlx5/core/fpga/ipsec.c   | 1582 --------------------
- .../net/ethernet/mellanox/mlx5/core/fpga/ipsec.h   |   62 -
- drivers/net/ethernet/mellanox/mlx5/core/fpga/tls.c |  622 --------
- drivers/net/ethernet/mellanox/mlx5/core/fpga/tls.h |   74 -
- drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c   |    2 -
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  |   15 +-
- drivers/net/ethernet/mellanox/mlx5/core/fw.c       |    3 +-
- drivers/net/ethernet/mellanox/mlx5/core/main.c     |   18 +-
- include/linux/mlx5/accel.h                         |   35 +-
- include/linux/mlx5/driver.h                        |    3 -
- include/linux/mlx5/mlx5_ifc_fpga.h                 |  211 ---
- include/linux/mlx5/port.h                          |    2 +-
- include/rdma/ib_verbs.h                            |    8 -
- 54 files changed, 364 insertions(+), 5354 deletions(-)
- delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/accel/accel.h
- delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec.c
- delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec.h
- delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec_offload.h
- delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/accel/tls.c
- delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/accel/tls.h
- rename drivers/net/ethernet/mellanox/mlx5/core/{accel => en_accel}/ipsec_offload.c (84%)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.h
- rename drivers/net/ethernet/mellanox/mlx5/core/en_accel/{tls_stats.c => ktls_stats.c} (63%)
- delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls.c
- delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls.h
- delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.c
- delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.h
- delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/fpga/ipsec.c
- delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/fpga/ipsec.h
- delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/fpga/tls.c
- delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/fpga/tls.h
