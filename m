@@ -2,162 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C1C54FA7B2
-	for <lists+netdev@lfdr.de>; Sat,  9 Apr 2022 14:37:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 819744FA7DD
+	for <lists+netdev@lfdr.de>; Sat,  9 Apr 2022 15:00:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238423AbiDIMjN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Apr 2022 08:39:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51410 "EHLO
+        id S241804AbiDINCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Apr 2022 09:02:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229652AbiDIMjM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Apr 2022 08:39:12 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDEC338AA
-        for <netdev@vger.kernel.org>; Sat,  9 Apr 2022 05:37:04 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id bh17so22127418ejb.8
-        for <netdev@vger.kernel.org>; Sat, 09 Apr 2022 05:37:04 -0700 (PDT)
+        with ESMTP id S241797AbiDINCX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Apr 2022 09:02:23 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1A0B25EA8;
+        Sat,  9 Apr 2022 06:00:16 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id z16so10723646pfh.3;
+        Sat, 09 Apr 2022 06:00:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:user-agent:in-reply-to:references
-         :message-id:mime-version:content-transfer-encoding;
-        bh=ph+b6vEsWKwHnBUnlrg/LEJgtkhSmZYe3Lw1mNpS7CI=;
-        b=7GuhuVtC3u8UnVwuZhUgtoEzCBmlt85sYwX+st0ZrgtcOnomUhTd6iDkv/nAUakm9x
-         jtrUgk4JN3CAd+qFy2qeyTkjbSfyqNM8kRB2oChajlmgiKkeL5QtFKr9iDxUTfqYfXDt
-         vZe+4AM6tUaHZotVlJsLR16vVLvPQj9n7EAY4h6xe9xzVrit711zhqpt6O5MD7ZrmWRQ
-         oM/CTx7somdyGY4Ja7rJD0WfJivLe1s6G/1+J4M92MFHoeSGGUWU6cULMHDHeZXziRUF
-         cMnWEEemDTKucMUmzaGmSNhKRKxjVaSOAmPXkmGIPvdnIG0Kk8v48LqC7eT9iOxWXyaG
-         914g==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FUfKzssZgsZcsfEgZuklPwa4eiqM1i27WAbOrDmuSaU=;
+        b=Cb5MplZdEwMUcE124VwGrQKSwcDlwKQXQhXK3ANgI/Tmel/dD/vvawYMRjpgmLdBj2
+         JsSeFDfrldhAjJqsjENG34I7JQYHGs+rELHFS/6oDo0hX1YVxOldBTOFU1d6VY+xne03
+         /COOoZmAt23VceyUS2KcK2YIeNFvRV4fH6FfZYAwruAK3FoORlH6iPrmDTeefL/iFhgq
+         BBVNxZOlJNr14OF+YE6Q+0/HUnaypPoXAYvllPzjgSTE71W45nw8bS4MlgWWKm8DF9Yo
+         Tc4TTWRLLwDyBShueyH4afW8JpIHtz0WT6PILw2jyCovv8Kj2uKoLiCwvXgxWosI5dgX
+         VUPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:user-agent:in-reply-to
-         :references:message-id:mime-version:content-transfer-encoding;
-        bh=ph+b6vEsWKwHnBUnlrg/LEJgtkhSmZYe3Lw1mNpS7CI=;
-        b=Wdu3tyPjDWQ+lu49VApW4MHegsvCT2ffnmvjBsd6YweEr/VgJm5+RKCoZ4sE1ubNwf
-         8qOjliT0gVwsaVR3UG6HeqHwtjHn6ZKWFCXRoeFz4vwwi1qs85nQ1cDZ88BqbhODoUQq
-         qz2X0casEffoC1gdRsmVe/fImLMsdeIpXzaVY3glLiYh/gsqTFT7iHoaynx2vZ5etulg
-         namNOQVxEeUR9Ja/WsKMpuYooNH+DUuPVr6sXjcOzIpgCQFpVsprWxViEDKLioS5Rx33
-         4yOhYcmc6L1IlGZnT+IPo8GbbZzUqp98PzVWaIC5ElF0RcaJd0RUllgwi/ThgivHGl/T
-         2lSw==
-X-Gm-Message-State: AOAM532PrbD/4o9e3YIeE78Rk5a5FGaOkCHijoavp71QixpBNfILxKMU
-        +yaqeVD4wTqiL6W6R6FewdW8IzHVA898Sq8297Q=
-X-Google-Smtp-Source: ABdhPJzKhEDLLc/H6WeUzFVkzWzt3OCdeGp8uq/bCJuBIOeUJoVZAbU5bjhDnpWhYHWjy/k46jfayg==
-X-Received: by 2002:a17:906:c111:b0:6db:cf0e:3146 with SMTP id do17-20020a170906c11100b006dbcf0e3146mr22808993ejc.280.1649507823066;
-        Sat, 09 Apr 2022 05:37:03 -0700 (PDT)
-Received: from [127.0.0.1] ([46.249.67.250])
-        by smtp.gmail.com with ESMTPSA id f1-20020a056402194100b00416b174987asm11881167edz.35.2022.04.09.05.37.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 09 Apr 2022 05:37:02 -0700 (PDT)
-Date:   Sat, 09 Apr 2022 15:36:59 +0300
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-To:     netdev@vger.kernel.org
-CC:     roopa@nvidia.com, kuba@kernel.org, davem@davemloft.net,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH net-next 0/6] net: bridge: add flush filtering support
-User-Agent: K-9 Mail for Android
-In-Reply-To: <20220409105857.803667-1-razor@blackwall.org>
-References: <20220409105857.803667-1-razor@blackwall.org>
-Message-ID: <133ACD1C-F64D-499B-BE66-4EDA3598A35C@blackwall.org>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FUfKzssZgsZcsfEgZuklPwa4eiqM1i27WAbOrDmuSaU=;
+        b=0K0Kq17wtweny6Q07yktC9E+vVYZpfbt9n6n/c0i+bCUpVl9l3r+PpVTpnWlJf/9li
+         jOYqk1fihSzBBcp7D2DbPnobnt5e7ymsv0hgqHAp/oCn7qCSNP/3uJhZHERDuX/cVFgE
+         mS0xsP31UtGPx4rgHOU19rB7JzLdD5oxDpLHJfR+F+sUihoarowtrRh6ZnDUOHQ802/T
+         6u6qQDo9NhHS1qT7mQcWOjogMUqQ/+iRrZG5dymDOrzAPpXqsCVUwP8+9H0rmae/LoF+
+         ink3bKL99p1ciYMK+fjPihlzqV92U3KVFrqQmWprqelohq+Jb18GK+E6r3YdsIYGNGrJ
+         1neg==
+X-Gm-Message-State: AOAM530HJajBdU0IOMBalzOiQCIB+iv2f7kC6YSNl+BvisdD2ftMCK+N
+        rEnZexERzZj7lfmtREi6SAE=
+X-Google-Smtp-Source: ABdhPJwTbMte2I6ohmz09z4oq0vqeIe1qFVXt+7kFfZTBBfwnT7evqM9hcNzKSdIx3DHlJd/qeZRSg==
+X-Received: by 2002:aa7:88c5:0:b0:4fb:821:4017 with SMTP id k5-20020aa788c5000000b004fb08214017mr24102090pff.22.1649509211490;
+        Sat, 09 Apr 2022 06:00:11 -0700 (PDT)
+Received: from vultr.guest ([2001:19f0:6001:5271:5400:3ff:feef:3aee])
+        by smtp.gmail.com with ESMTPSA id s10-20020a63a30a000000b003987eaef296sm24671871pge.44.2022.04.09.06.00.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 09 Apr 2022 06:00:10 -0700 (PDT)
+From:   Yafang Shao <laoar.shao@gmail.com>
+To:     andrii@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, shuah@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, Yafang Shao <laoar.shao@gmail.com>
+Subject: [PATCH bpf-next v4 0/4] bpf: RLIMIT_MEMLOCK cleanups
+Date:   Sat,  9 Apr 2022 12:59:54 +0000
+Message-Id: <20220409125958.92629-1-laoar.shao@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9 April 2022 13:58:51 EEST, Nikolay Aleksandrov <razor@blackwall=2Eorg> =
-wrote:
->Hi,
->This patch-set adds support to specify filtering conditions for a flush
->operation=2E Initially only FDB flush filtering is added, later MDB
->support will be added as well=2E Some user-space applications need a way
->to delete only a specific set of entries, e=2Eg=2E mlag implementations n=
-eed
->a way to flush only dynamic entries excluding externally learned ones
->or only externally learned ones without static entries etc=2E Also apps
->usually want to target only a specific vlan or port/vlan combination=2E
->The current 2 flush operations (per port and bridge-wide) are not
->extensible and cannot provide such filtering, so a new bridge af
->attribute is added (IFLA_BRIDGE_FLUSH) which contains the filtering
->information for each object type which has to be flushed=2E
->An example structure for fdbs:
->     [ IFLA_BRIDGE_FLUSH ]
->      `[ BRIDGE_FDB_FLUSH ]
->        `[ FDB_FLUSH_NDM_STATE ]
->        `[ FDB_FLUSH_NDM_FLAGS ]
->
->I decided against embedding these into the old flush attributes for
->multiple reasons - proper error handling on unsupported attributes,
->older kernels silently flushing all, need for a second mechanism to
->signal that the attribute should be parsed (e=2Eg=2E using boolopts),
->special treatment for permanent entries=2E
->
->Examples:
->$ bridge fdb flush dev bridge vlan 100 static
->< flush all static entries on vlan 100 >
->$ bridge fdb flush dev bridge vlan 1 dynamic
->< flush all dynamic entries on vlan 1 >
->$ bridge fdb flush dev bridge port ens16 vlan 1 dynamic
->< flush all dynamic entries on port ens16 and vlan 1 >
->$ bridge fdb flush dev bridge nooffloaded nopermanent
->< flush all non-offloaded and non-permanent entries >
->$ bridge fdb flush dev bridge static noextern_learn
->< flush all static entries which are not externally learned >
->$ bridge fdb flush dev bridge permanent
->< flush all permanent entries >
->
->Note that all flags have their negated version (static vs nostatic etc)
->and there are some tricky cases to handle like "static" which in flag
->terms means fdbs that have NUD_NOARP but *not* NUD_PERMANENT, so the
->mask matches on both but we need only NUD_NOARP to be set=2E That's
->because permanent entries have both set so we can't just match on
->NUD_NOARP=2E Also note that this flush operation doesn't treat permanent
->entries in a special way (fdb_delete vs fdb_delete_local), it will
->delete them regardless if any port is using them=2E We can extend the api
->with a flag to do that if needed in the future=2E
->
->Patches in this set:
-> 1=2E adds the new IFLA_BRIDGE_FLUSH bridge af attribute
-> 2=2E adds a basic structure to describe an fdb flush filter
-> 3=2E adds fdb netlink flush call via BRIDGE_FDB_FLUSH attribute
-> 4 - 6=2E add support for specifying various fdb fields to filter
->
->Patch-sets (in order):
-> - Initial flush infra and fdb flush filtering (this set)
-> - iproute2 support
-> - selftests
->
->Future work:
-> - mdb flush support
->
->Thanks,
-> Nik
->
->Nikolay Aleksandrov (6):
->  net: bridge: add a generic flush operation
->  net: bridge: fdb: add support for fine-grained flushing
->  net: bridge: fdb: add new nl attribute-based flush call
->  net: bridge: fdb: add support for flush filtering based on ndm flags
->    and state
->  net: bridge: fdb: add support for flush filtering based on ifindex
->  net: bridge: fdb: add support for flush filtering based on vlan id
->
-> include/uapi/linux/if_bridge=2Eh |  22 ++++++
-> net/bridge/br_fdb=2Ec            | 128 +++++++++++++++++++++++++++++++--
-> net/bridge/br_netlink=2Ec        |  59 ++++++++++++++-
-> net/bridge/br_private=2Eh        |  12 +++-
-> net/bridge/br_sysfs_br=2Ec       |   6 +-
-> 5 files changed, 215 insertions(+), 12 deletions(-)
->
+We have switched to memcg-based memory accouting and thus the rlimit is
+not needed any more. LIBBPF_STRICT_AUTO_RLIMIT_MEMLOCK was introduced in
+libbpf for backward compatibility, so we can use it instead now.
 
-Actually if you prefer I can send the selftests with this set, I'm used to=
- sending them last
-after the iproute2 support is finalised=2E :)
+This patchset cleanups the usage of RLIMIT_MEMLOCK in tools/bpf/,
+tools/testing/selftests/bpf and samples/bpf. The file
+tools/testing/selftests/bpf/bpf_rlimit.h is removed. The included header
+sys/resource.h is removed from many files as it is useless in these files.
 
-Cheers,
-  Nik
+- v4: Squash patches and use customary subject prefixes. (Andrii)
+- v3: Get rid of bpf_rlimit.h and fix some typos (Andrii)
+- v2: Use libbpf_set_strict_mode instead. (Andrii)
+- v1: https://lore.kernel.org/bpf/20220320060815.7716-2-laoar.shao@gmail.com/
+
+Yafang Shao (4):
+  samples/bpf: Use libbpf 1.0 API mode instead of RLIMIT_MEMLOCK
+  selftests/bpf: Use libbpf 1.0 API mode instead of RLIMIT_MEMLOCK
+  bpftool: Use libbpf 1.0 API mode instead of RLIMIT_MEMLOCK
+  tools/runqslower: Use libbpf 1.0 API mode instead of RLIMIT_MEMLOCK
+
+ samples/bpf/cpustat_user.c                    |  1 -
+ samples/bpf/hbm.c                             |  5 ++--
+ samples/bpf/ibumad_user.c                     |  1 -
+ samples/bpf/map_perf_test_user.c              |  1 -
+ samples/bpf/offwaketime_user.c                |  1 -
+ samples/bpf/sockex2_user.c                    |  1 -
+ samples/bpf/sockex3_user.c                    |  1 -
+ samples/bpf/spintest_user.c                   |  1 -
+ samples/bpf/syscall_tp_user.c                 |  1 -
+ samples/bpf/task_fd_query_user.c              |  1 -
+ samples/bpf/test_lru_dist.c                   |  1 -
+ samples/bpf/test_map_in_map_user.c            |  1 -
+ samples/bpf/test_overhead_user.c              |  1 -
+ samples/bpf/tracex2_user.c                    |  1 -
+ samples/bpf/tracex3_user.c                    |  1 -
+ samples/bpf/tracex4_user.c                    |  1 -
+ samples/bpf/tracex5_user.c                    |  1 -
+ samples/bpf/tracex6_user.c                    |  1 -
+ samples/bpf/xdp1_user.c                       |  1 -
+ samples/bpf/xdp_adjust_tail_user.c            |  1 -
+ samples/bpf/xdp_monitor_user.c                |  1 -
+ samples/bpf/xdp_redirect_cpu_user.c           |  1 -
+ samples/bpf/xdp_redirect_map_multi_user.c     |  1 -
+ samples/bpf/xdp_redirect_user.c               |  1 -
+ samples/bpf/xdp_router_ipv4_user.c            |  1 -
+ samples/bpf/xdp_rxq_info_user.c               |  1 -
+ samples/bpf/xdp_sample_pkts_user.c            |  1 -
+ samples/bpf/xdp_sample_user.c                 |  1 -
+ samples/bpf/xdp_tx_iptunnel_user.c            |  1 -
+ samples/bpf/xdpsock_user.c                    |  9 ++----
+ samples/bpf/xsk_fwd.c                         |  7 ++---
+ tools/bpf/bpftool/common.c                    |  8 ------
+ tools/bpf/bpftool/feature.c                   |  2 --
+ tools/bpf/bpftool/main.c                      |  6 ++--
+ tools/bpf/bpftool/main.h                      |  2 --
+ tools/bpf/bpftool/map.c                       |  2 --
+ tools/bpf/bpftool/pids.c                      |  1 -
+ tools/bpf/bpftool/prog.c                      |  3 --
+ tools/bpf/bpftool/struct_ops.c                |  2 --
+ tools/bpf/runqslower/runqslower.c             | 18 ++----------
+ tools/testing/selftests/bpf/bench.c           |  1 -
+ tools/testing/selftests/bpf/bpf_rlimit.h      | 28 -------------------
+ .../selftests/bpf/flow_dissector_load.c       |  6 ++--
+ .../selftests/bpf/get_cgroup_id_user.c        |  4 ++-
+ tools/testing/selftests/bpf/prog_tests/btf.c  |  1 -
+ .../selftests/bpf/test_cgroup_storage.c       |  4 ++-
+ tools/testing/selftests/bpf/test_dev_cgroup.c |  4 ++-
+ tools/testing/selftests/bpf/test_lpm_map.c    |  4 ++-
+ tools/testing/selftests/bpf/test_lru_map.c    |  4 ++-
+ .../selftests/bpf/test_skb_cgroup_id_user.c   |  4 ++-
+ tools/testing/selftests/bpf/test_sock.c       |  4 ++-
+ tools/testing/selftests/bpf/test_sock_addr.c  |  4 ++-
+ tools/testing/selftests/bpf/test_sockmap.c    |  5 ++--
+ tools/testing/selftests/bpf/test_sysctl.c     |  4 ++-
+ tools/testing/selftests/bpf/test_tag.c        |  4 ++-
+ .../bpf/test_tcp_check_syncookie_user.c       |  4 ++-
+ .../selftests/bpf/test_tcpnotify_user.c       |  1 -
+ .../testing/selftests/bpf/test_verifier_log.c |  5 ++--
+ .../selftests/bpf/xdp_redirect_multi.c        |  1 -
+ tools/testing/selftests/bpf/xdping.c          |  8 ++----
+ tools/testing/selftests/bpf/xdpxceiver.c      |  6 ++--
+ 61 files changed, 57 insertions(+), 142 deletions(-)
+ delete mode 100644 tools/testing/selftests/bpf/bpf_rlimit.h
+
+-- 
+2.17.1
+
