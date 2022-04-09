@@ -2,59 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A13CE4FAA33
-	for <lists+netdev@lfdr.de>; Sat,  9 Apr 2022 20:39:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF8DC4FAA87
+	for <lists+netdev@lfdr.de>; Sat,  9 Apr 2022 21:47:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243059AbiDISla (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Apr 2022 14:41:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42004 "EHLO
+        id S229786AbiDITtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Apr 2022 15:49:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243029AbiDISlT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Apr 2022 14:41:19 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A85C829F59A;
-        Sat,  9 Apr 2022 11:39:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1649529545; x=1681065545;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=YsP1IVNf55NG73OXKQeumu+QVgE0A14MitZqXw4kQzA=;
-  b=pljZFkIMz7IGZC2WmzrAdaXnGolsMlFpnUBeizCc6/VVAyEtr7qL9QHu
-   TSZy4rxlLwylt8TgcYLnmY7U+qax68jf+pzdwHc4wlsSiKARbyCE3VfS+
-   j9PXQEg91e0yA5owm0eMg+MGMPaKpABRkxJ2bgJr0j0xrXoSgxpiKmfZn
-   bvVSO2SilBDzLaarR0nImT0Ty2CXvzeq5OjEaPjc8JIfNNxfaTaoWZ5jL
-   WCXXxaiO+7REU8bYGaw76IxcCiimLJrxugIYSyFLbTfo5IeZRe7OidNHe
-   BEcXmL7wNm87ELbENu0Q1uAjVHBzzgXtfgdyyOFV9tEW6XLNxpsqlsiEQ
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,248,1643698800"; 
-   d="scan'208";a="169060535"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Apr 2022 11:39:05 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Sat, 9 Apr 2022 11:39:05 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Sat, 9 Apr 2022 11:39:03 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <pabeni@redhat.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net 4/4] net: lan966x: Stop processing the MAC entry is port is wrong.
-Date:   Sat, 9 Apr 2022 20:41:43 +0200
-Message-ID: <20220409184143.1204786-5-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220409184143.1204786-1-horatiu.vultur@microchip.com>
-References: <20220409184143.1204786-1-horatiu.vultur@microchip.com>
+        with ESMTP id S229455AbiDITtG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Apr 2022 15:49:06 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1B3617E27
+        for <netdev@vger.kernel.org>; Sat,  9 Apr 2022 12:46:57 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id j9so12186559lfe.9
+        for <netdev@vger.kernel.org>; Sat, 09 Apr 2022 12:46:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=ylyncROvAk3qV8KCnWJolGLTwdVCttiZ9ZwX45cLPsk=;
+        b=zByb6R+T6m+ifm3CbMxA9kc/6IhHHh7NmS2qakuuPoix6vo+6avqDDvLiDS/tqG/R7
+         3hD73Q9wRALIpvyGG6QzjllizNKI/kl+NJ7TvBaRZlfggW0D6GQSnoKCD1eKPICMhN7R
+         BJ8Wxmh3t/Iqua/FZ3agrZw2DCn5iYw/YnBjLr7ywfmuHMlUhgOtKMNZUmygdQBAkX/J
+         zZlKUsGuaSKql53jqCaziS434NlwhtuUoobegxyR65wueXt2QKQ7x8sgLWRdDUGE05xy
+         AM1gzeffhPF6aMVC3XOYlw0w6/zgrou1O4SltugDt0iuz43bLu8GcrfIObrJ+37O0QY8
+         LPpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=ylyncROvAk3qV8KCnWJolGLTwdVCttiZ9ZwX45cLPsk=;
+        b=hH97YEUGAyxhoVfox2AuOBOebUSzYUE6F13hNfIQqNp9cY5LMOGLnz1ytjb7Nsz1GW
+         PkoZGrKI0zB+8GsUw4SXfk9KNOSdj7iiwEFggc+k+OKt2Utjyom3k1tKj7kegKWaU+88
+         yBK3uir4h1gnt/EYm8GfHM4kJRETdIR6Ne00Mff54dpHKOg6u+kMY7vk/TMxEqw0n6XK
+         vpFDoZchlej/CR6+H5q8w3jABq8flZjNEhTkIiD0DUhz0XmZk+h15BZKii91ScZHGlDG
+         +TZO86e/U8bnChrEcpydLOdu/XCuwLkulhVRCsMMUgp4ANWShK1oCICyKfFU+Z2ndFC9
+         quZA==
+X-Gm-Message-State: AOAM530CKVwYae0APyhycvD7rUbPcnqtEq8NhsGzaG8bjdT6tUuTvIBt
+        FzzwaF+FPhVtEOI/do+fMtouqQ==
+X-Google-Smtp-Source: ABdhPJzbPPaXtCqNPzbuDdi6QJSxDz6FX5+jG62eU6D60lkrUUKcoGWfeGQxgyedDbLLEDTuIStt3A==
+X-Received: by 2002:a05:6512:3c96:b0:44a:3c85:ddb0 with SMTP id h22-20020a0565123c9600b0044a3c85ddb0mr16407160lfv.457.1649533616124;
+        Sat, 09 Apr 2022 12:46:56 -0700 (PDT)
+Received: from wkz-x280 (h-212-85-90-115.A259.priv.bahnhof.se. [212.85.90.115])
+        by smtp.gmail.com with ESMTPSA id d12-20020a05651233cc00b0044a24fdd890sm2799724lfg.192.2022.04.09.12.46.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 09 Apr 2022 12:46:55 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        UNGLinuxDriver@microchip.com, Paolo Abeni <pabeni@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        Mattias Forsblad <mattias.forsblad@gmail.com>,
+        Joachim Wiberg <troglobit@gmail.com>
+Subject: Re: [PATCH net-next 0/6] Disable host flooding for DSA ports under
+ a bridge
+In-Reply-To: <20220408200337.718067-1-vladimir.oltean@nxp.com>
+References: <20220408200337.718067-1-vladimir.oltean@nxp.com>
+Date:   Sat, 09 Apr 2022 21:46:54 +0200
+Message-ID: <877d7yhwep.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -62,42 +78,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently when getting a new MAC is learn, the HW generates an
-interrupt. So then the SW will check the new entry and checks if it
-arrived on a correct port. If it didn't just generate a warning.
-But this could still crash the system. Therefore stop processing that
-entry when an issue is seen.
+On Fri, Apr 08, 2022 at 23:03, Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+> For this patch series to make more sense, it should be reviewed from the
+> last patch to the first. Changes were made in the order that they were
+> just to preserve patch-with-patch functionality.
+>
+> A little while ago, some DSA switch drivers gained support for
+> IFF_UNICAST_FLT, a mechanism through which they are notified of the
+> MAC addresses required for local standalone termination.
+> A bit longer ago, DSA also gained support for offloading BR_FDB_LOCAL
+> bridge FDB entries, which are the MAC addresses required for local
+> termination when under a bridge.
+>
+> So we have come one step closer to removing the CPU from the list of
+> destinations for packets with unknown MAC DA.What remains is to check
+> whether any software L2 forwarding is enabled, and that is accomplished
+> by monitoring the neighbor bridge ports that DSA switches have.
+>
+> With these changes, DSA drivers that fulfill the requirements for
+> dsa_switch_supports_uc_filtering() and dsa_switch_supports_mc_filtering()
+> will keep flooding towards the CPU disabled for as long as no port is
+> promiscuous. The bridge won't attempt to make its ports promiscuous
+> anymore either if said ports are offloaded by switchdev (this series
+> changes that behavior). Instead, DSA will fall back by its own will to
+> promiscuous mode on bridge ports when the bridge itself becomes
+> promiscuous, or a foreign interface is detected under the same bridge.
 
-Fixes: 5ccd66e01cbef8 ("net: lan966x: add support for interrupts from analyzer")
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- drivers/net/ethernet/microchip/lan966x/lan966x_mac.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Hi Vladimir,
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-index ce5970bdcc6a..2679111ef669 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-@@ -346,7 +346,8 @@ static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
- 
- 			lan966x_mac_process_raw_entry(&raw_entries[column],
- 						      mac, &vid, &dest_idx);
--			WARN_ON(dest_idx > lan966x->num_phys_ports);
-+			if (WARN_ON(dest_idx > lan966x->num_phys_ports))
-+				continue;
- 
- 			/* If the entry in SW is found, then there is nothing
- 			 * to do
-@@ -392,7 +393,8 @@ static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
- 
- 		lan966x_mac_process_raw_entry(&raw_entries[column],
- 					      mac, &vid, &dest_idx);
--		WARN_ON(dest_idx > lan966x->num_phys_ports);
-+		if (WARN_ON(dest_idx > lan966x->num_phys_ports))
-+			continue;
- 
- 		mac_entry = lan966x_mac_alloc_entry(mac, vid, dest_idx);
- 		if (!mac_entry)
--- 
-2.33.0
+Great stuff! I've added Joachim to Cc. He has been working on a series
+to add support for configuring the equivalent of BR_FLOOD,
+BR_MCAST_FLOOD, and BR_BCAST_FLOOD on the bridge itself. I.e. allowing
+the user to specify how local_rcv is managed in br_handle_frame_finish.
 
+For switchdev drivers, being able to query whether a bridge will ingress
+unknown unicast to the host or not seems like the missing piece that
+makes this bullet proof. I.e. if you have...
+
+- No foreign interfaces
+- No promisc
+_and_
+- No BR_FLOOD on the bridge itself
+
+..._then_ you can safely disable unicast flooding towards the CPU
+port. The same would hold for multicast and BR_MCAST_FLOOD of course.
+
+Not sure how close Joachim is to publishing his work. But I just thought
+you two should know about the other one's work :)
