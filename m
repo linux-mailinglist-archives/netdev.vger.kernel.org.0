@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BCBDC4FAA30
-	for <lists+netdev@lfdr.de>; Sat,  9 Apr 2022 20:39:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A13CE4FAA33
+	for <lists+netdev@lfdr.de>; Sat,  9 Apr 2022 20:39:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243047AbiDISl3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Apr 2022 14:41:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41704 "EHLO
+        id S243059AbiDISla (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Apr 2022 14:41:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243020AbiDISlN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Apr 2022 14:41:13 -0400
+        with ESMTP id S243029AbiDISlT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Apr 2022 14:41:19 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A97FB29DDE8;
-        Sat,  9 Apr 2022 11:39:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A85C829F59A;
+        Sat,  9 Apr 2022 11:39:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1649529543; x=1681065543;
+  t=1649529545; x=1681065545;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=QK6ETVxdtMN8EKUk1u/Qd2UL8bf4DyLxDzflRN7eG9A=;
-  b=H0v8Qa/PeBNgDS+wuff7T3U3rHX4dXbxkf2+n4MgG8ldo0asnfBVHMw3
-   5Zrr6p6amIlasvcwE9a796WwsfBbmwfkMFtwIBQHuYXxIKNyvounOfPfJ
-   WmUb7XBGRD0sfI/auWh7zFPW69KYC7n+kUW1rfIgbVGmJZ7KK5M7PB+D1
-   tTbJPOzQwnfdnRUcO6B0CB/YpRX2LedOfh1ns2d36cM/N2juHP5lUVE0x
-   S/9V+HbTYNdAvovFQkYbSZUEm/IbO6Eq/lCjBe5PVVJjHvaN927UDGusv
-   7/XXbeszGSr6l+N/8R3gRZSqYAfo8EuqvxuI4SIE24bKKX7tX6gxDuQbS
-   w==;
+  bh=YsP1IVNf55NG73OXKQeumu+QVgE0A14MitZqXw4kQzA=;
+  b=pljZFkIMz7IGZC2WmzrAdaXnGolsMlFpnUBeizCc6/VVAyEtr7qL9QHu
+   TSZy4rxlLwylt8TgcYLnmY7U+qax68jf+pzdwHc4wlsSiKARbyCE3VfS+
+   j9PXQEg91e0yA5owm0eMg+MGMPaKpABRkxJ2bgJr0j0xrXoSgxpiKmfZn
+   bvVSO2SilBDzLaarR0nImT0Ty2CXvzeq5OjEaPjc8JIfNNxfaTaoWZ5jL
+   WCXXxaiO+7REU8bYGaw76IxcCiimLJrxugIYSyFLbTfo5IeZRe7OidNHe
+   BEcXmL7wNm87ELbENu0Q1uAjVHBzzgXtfgdyyOFV9tEW6XLNxpsqlsiEQ
+   A==;
 X-IronPort-AV: E=Sophos;i="5.90,248,1643698800"; 
-   d="scan'208";a="169060533"
+   d="scan'208";a="169060535"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Apr 2022 11:39:03 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Apr 2022 11:39:05 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Sat, 9 Apr 2022 11:39:03 -0700
+ 15.1.2375.17; Sat, 9 Apr 2022 11:39:05 -0700
 Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Sat, 9 Apr 2022 11:39:01 -0700
+ 15.1.2375.17 via Frontend Transport; Sat, 9 Apr 2022 11:39:03 -0700
 From:   Horatiu Vultur <horatiu.vultur@microchip.com>
 To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
         <kuba@kernel.org>, <pabeni@redhat.com>,
         Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net 3/4] net: lan966x: Fix when a port's upper is changed.
-Date:   Sat, 9 Apr 2022 20:41:42 +0200
-Message-ID: <20220409184143.1204786-4-horatiu.vultur@microchip.com>
+Subject: [PATCH net 4/4] net: lan966x: Stop processing the MAC entry is port is wrong.
+Date:   Sat, 9 Apr 2022 20:41:43 +0200
+Message-ID: <20220409184143.1204786-5-horatiu.vultur@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220409184143.1204786-1-horatiu.vultur@microchip.com>
 References: <20220409184143.1204786-1-horatiu.vultur@microchip.com>
@@ -62,36 +62,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On lan966x it is not allowed to have foreign interfaces under a bridge
-which already contains lan966x ports. So when a port leaves the bridge
-it would call switchdev_bridge_port_unoffload which eventually will
-notify the other ports that bridge left the vlan group but that is not
-true because the bridge is still part of the vlan group.
+Currently when getting a new MAC is learn, the HW generates an
+interrupt. So then the SW will check the new entry and checks if it
+arrived on a correct port. If it didn't just generate a warning.
+But this could still crash the system. Therefore stop processing that
+entry when an issue is seen.
 
-Therefore when a port leaves the bridge, stop generating replays because
-already the HW cleared after itself and the other ports don't need to do
-anything else.
-
-Fixes: cf2f60897e921e ("net: lan966x: Add support to offload the forwarding.")
+Fixes: 5ccd66e01cbef8 ("net: lan966x: add support for interrupts from analyzer")
 Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/microchip/lan966x/lan966x_mac.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-index e3555c94294d..df2bee678559 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-@@ -322,8 +322,7 @@ static int lan966x_port_prechangeupper(struct net_device *dev,
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
+index ce5970bdcc6a..2679111ef669 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
+@@ -346,7 +346,8 @@ static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
  
- 	if (netif_is_bridge_master(info->upper_dev) && !info->linking)
- 		switchdev_bridge_port_unoffload(port->dev, port,
--						&lan966x_switchdev_nb,
--						&lan966x_switchdev_blocking_nb);
-+						NULL, NULL);
+ 			lan966x_mac_process_raw_entry(&raw_entries[column],
+ 						      mac, &vid, &dest_idx);
+-			WARN_ON(dest_idx > lan966x->num_phys_ports);
++			if (WARN_ON(dest_idx > lan966x->num_phys_ports))
++				continue;
  
- 	return NOTIFY_DONE;
- }
+ 			/* If the entry in SW is found, then there is nothing
+ 			 * to do
+@@ -392,7 +393,8 @@ static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
+ 
+ 		lan966x_mac_process_raw_entry(&raw_entries[column],
+ 					      mac, &vid, &dest_idx);
+-		WARN_ON(dest_idx > lan966x->num_phys_ports);
++		if (WARN_ON(dest_idx > lan966x->num_phys_ports))
++			continue;
+ 
+ 		mac_entry = lan966x_mac_alloc_entry(mac, vid, dest_idx);
+ 		if (!mac_entry)
 -- 
 2.33.0
 
