@@ -2,65 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FD7A4FAC4F
-	for <lists+netdev@lfdr.de>; Sun, 10 Apr 2022 08:26:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C9494FAC72
+	for <lists+netdev@lfdr.de>; Sun, 10 Apr 2022 08:48:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232797AbiDJG2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Apr 2022 02:28:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52922 "EHLO
+        id S232967AbiDJGuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Apr 2022 02:50:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229994AbiDJG2f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Apr 2022 02:28:35 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85A675A08E
-        for <netdev@vger.kernel.org>; Sat,  9 Apr 2022 23:26:25 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id r13so18517342wrr.9
-        for <netdev@vger.kernel.org>; Sat, 09 Apr 2022 23:26:25 -0700 (PDT)
+        with ESMTP id S229476AbiDJGuG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Apr 2022 02:50:06 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AC3718B36
+        for <netdev@vger.kernel.org>; Sat,  9 Apr 2022 23:47:54 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id w4so18514227wrg.12
+        for <netdev@vger.kernel.org>; Sat, 09 Apr 2022 23:47:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=t6cNF1cm/fyPyoSwJ6ELNZJ37M1lAzsTMW16OSgY8u4=;
-        b=NFeR5nIlsX0MFGmj+va8HVa6Qoe/YuQMdDOPpd+lQ+hx+vtM/IOKEbD0UGQZ5mdVrU
-         ZZUdoEp7M0oleinNshkO0K+Dj2pvpYJbhQw3aYplCBysH+XmGxlunaGWgbB0MIbkTYyc
-         cX88Yh91idRlYeJ7ktV2qCqCU024mV/+vnDKUIMuxBQWQRMslpeONo6qlWiPDbTCihTZ
-         kKBI8qrdgDsd3uA1dJ6Y+Ky+U0+1FnrtDy1pVdElWq3LElyupW2s7nmYmSUuZpyGz5jP
-         8FbjvWiYV196+oMs9J1PQ7j8nqmxsIfJSv4yrGclXHMhEhSWSdi+ruC0OcKxgMuIO2Cr
-         z16Q==
+        bh=IDWGwTCEfiChCWcpWeZf0pr+lGFB+CzIdzXpyjwDMY8=;
+        b=abeXu3qaf2VF84LM1vg32P2ynG7GBF8CtVbqxphgxfCfjQpA4ujENl52TEtsu4s7YO
+         zAs8ucKueJ1HvU68+/er73Xrvr3o2XispEh9y1uJjYLCpXzPQ9qUb7dOyK0ddNrAQFEl
+         c7zthAOzCVVdsojC+x29TV4sBqUAW7lSTSZ0TGudpGAHrdPrWrvXnl1Qk28J2YUu/gz7
+         98jdZusnJ+FW0gOdzxG1T0jZuVQ+Du5KoBNGQAQa2GFDwUwXH82WGaC9XhP4tFkmcURT
+         0dpGKo30cs5GkuwOpUMQLYa7a+b2TPf/yG4vNPjNChhSV2UjXgkd2RXcRUxJRA9/iXCU
+         dEhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=t6cNF1cm/fyPyoSwJ6ELNZJ37M1lAzsTMW16OSgY8u4=;
-        b=K4/BNSiNZY1263QLuNfhxfR7yTDKcE+0idAyo+TOHUcZyVTG76X9yC7DbqFyvlFn6F
-         9PVpUDIqnzpskiyjjL//x6LSFM/RE1nV17pCn2zzB0o51oMTd6+vPl9ptftkdBxf3HyC
-         Mdk7WVFFdY8nlcMWrhIXYxQpj22paZ5/Q4m5bfDgydpcLsdOQnW1SSEpLgXSp4EEKV+3
-         x1VXmyV9zk1QBQnaNyofs+XnWd+eJZhZJOAc7PDjEI57jY1uqr3AAkTbNPsF2Nt6bmKa
-         /qqrPy+75d9H9F9TDAg4f9bnedkwoUALZLMa6XFAOat1wCa/uz1Gwzqd2tLpmOp7w05E
-         9HDA==
-X-Gm-Message-State: AOAM531WzAD0e3m6nPbloX4IafnkfDHkwl9w+pzeKF0iQVN3IoJia8KW
-        35qibZUTKVFmpnyYECxv5Lo=
-X-Google-Smtp-Source: ABdhPJxeqZtsf01hkhzzWHe9frzK+B5d/nTIPHZwtkjRfln6SGvZVin66sMq9xwVB3k+aqhPlM9/Pw==
-X-Received: by 2002:adf:f781:0:b0:207:9c12:5bee with SMTP id q1-20020adff781000000b002079c125beemr5381606wrp.122.1649571983956;
-        Sat, 09 Apr 2022 23:26:23 -0700 (PDT)
+        bh=IDWGwTCEfiChCWcpWeZf0pr+lGFB+CzIdzXpyjwDMY8=;
+        b=Qm+/ld0V3qlb3HOYgPyLWvwGRN3wqU7M7vEUKIBf6wPOVcizly6XApDRcIYdCNzEmg
+         zMs/kgGvs7Cozd8tF06/0fnun5XuPPmTOES5QkXOJ+1nKRWFqJWflEIWxEG9iTYjs2Zb
+         8MyNKzmazoWZyEXSCsyF147ZbYuMnLY2knCrXMHxCbmFxoJaibkM/GqBhdg6nyHc7gei
+         gjD/WO25Sc/Uvm9vdSVj9DTL8+FWuDWUaspdd6HhoY54GrnzCgjT4chPhxNaudva4ko+
+         1jXBfo/yZg2WVjwr2hEV/9SXfzaThHBasiItSfvIeVNq9hMHA9OjhZcPl/DYnvF67j1Z
+         2OLA==
+X-Gm-Message-State: AOAM531WpsFGRLfRJEktsheu/NNW/+HQEiEa1iIA5qRbbi+Z2vwODa7p
+        XzpFGglQxFchs3mgOhfo97k=
+X-Google-Smtp-Source: ABdhPJy5QJUMYwnbntfGJz/c44HZt7sFeiMHKvj6CpyVOePN4vEJu3kVNB0Cnttb6QDzwN6W9FuxMg==
+X-Received: by 2002:a5d:430c:0:b0:206:1c68:fd05 with SMTP id h12-20020a5d430c000000b002061c68fd05mr20347352wrq.364.1649573273042;
+        Sat, 09 Apr 2022 23:47:53 -0700 (PDT)
 Received: from hoboy.vegasvil.org (195-70-108-137.stat.salzburg-online.at. [195.70.108.137])
-        by smtp.gmail.com with ESMTPSA id r4-20020a1c2b04000000b0038a0e15ee13sm14591720wmr.8.2022.04.09.23.26.23
+        by smtp.gmail.com with ESMTPSA id f66-20020a1c3845000000b0038eb64a52b5sm1856811wma.43.2022.04.09.23.47.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Apr 2022 23:26:23 -0700 (PDT)
-Date:   Sat, 9 Apr 2022 23:26:21 -0700
+        Sat, 09 Apr 2022 23:47:52 -0700 (PDT)
+Date:   Sat, 9 Apr 2022 23:47:51 -0700
 From:   Richard Cochran <richardcochran@gmail.com>
 To:     Gerhard Engleder <gerhard@engleder-embedded.com>
 Cc:     vinicius.gomes@intel.com, yangbo.lu@nxp.com, davem@davemloft.net,
         kuba@kernel.org, mlichvar@redhat.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 1/5] ptp: Add cycles support for virtual
- clocks
-Message-ID: <20220410062621.GA212299@hoboy.vegasvil.org>
+Subject: Re: [PATCH net-next v2 2/5] ptp: Request cycles for TX timestamp
+Message-ID: <20220410064751.GB212299@hoboy.vegasvil.org>
 References: <20220403175544.26556-1-gerhard@engleder-embedded.com>
- <20220403175544.26556-2-gerhard@engleder-embedded.com>
+ <20220403175544.26556-3-gerhard@engleder-embedded.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220403175544.26556-2-gerhard@engleder-embedded.com>
+In-Reply-To: <20220403175544.26556-3-gerhard@engleder-embedded.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -72,60 +71,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 03, 2022 at 07:55:40PM +0200, Gerhard Engleder wrote:
-
-> @@ -225,6 +233,21 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
->  	mutex_init(&ptp->n_vclocks_mux);
->  	init_waitqueue_head(&ptp->tsev_wq);
+On Sun, Apr 03, 2022 at 07:55:41PM +0200, Gerhard Engleder wrote:
+> The free running cycle counter of physical clocks called cycles shall be
+> used for hardware timestamps to enable synchronisation.
+> 
+> Introduce new flag SKBTX_HW_TSTAMP_USE_CYCLES, which signals driver to
+> provide a TX timestamp based on cycles if cycles are supported.
+> 
+> Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+> ---
+>  include/linux/skbuff.h |  3 +++
+>  net/core/skbuff.c      |  2 ++
+>  net/socket.c           | 11 ++++++++++-
+>  3 files changed, 15 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index 3a30cae8b0a5..aeb3ed4d6cf8 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -578,6 +578,9 @@ enum {
+>  	/* device driver is going to provide hardware time stamp */
+>  	SKBTX_IN_PROGRESS = 1 << 2,
 >  
-> +	if (!ptp->info->getcycles64 && !ptp->info->getcyclesx64) {
-
-Please swap blocks, using non-negated logical test:
-
-	if (ptp->info->getcycles64 || ptp->info->getcyclesx64)
-
-> +		/* Free running cycle counter not supported, use time. */
-> +		ptp->info->getcycles64 = ptp_getcycles64;
+> +	/* generate hardware time stamp based on cycles if supported */
+> +	SKBTX_HW_TSTAMP_USE_CYCLES = 1 << 3,
 > +
-> +		if (ptp->info->gettimex64)
-> +			ptp->info->getcyclesx64 = ptp->info->gettimex64;
-> +
-> +		if (ptp->info->getcrosststamp)
-> +			ptp->info->getcrosscycles = ptp->info->getcrosststamp;
+>  	/* generate wifi status information (where possible) */
+>  	SKBTX_WIFI_STATUS = 1 << 4,
+>  
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index 10bde7c6db44..c0f8f1341c3f 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -4847,6 +4847,8 @@ void __skb_tstamp_tx(struct sk_buff *orig_skb,
+>  		skb_shinfo(skb)->tx_flags |= skb_shinfo(orig_skb)->tx_flags &
+>  					     SKBTX_ANY_TSTAMP;
+>  		skb_shinfo(skb)->tskey = skb_shinfo(orig_skb)->tskey;
 > +	} else {
-> +		ptp->has_cycles = true;
-> +		if (!ptp->info->getcycles64 && ptp->info->getcyclesx64)
-> +			ptp->info->getcycles64 = ptp_getcycles64;
-> +	}
-> +
->  	if (ptp->info->do_aux_work) {
->  		kthread_init_delayed_work(&ptp->aux_work, ptp_aux_kworker);
->  		ptp->kworker = kthread_create_worker(0, "ptp%d", ptp->index);
+> +		skb_shinfo(skb)->tx_flags &= ~SKBTX_HW_TSTAMP_USE_CYCLES;
 
+Why is this needed?
 
-> @@ -231,10 +231,12 @@ static ssize_t n_vclocks_store(struct device *dev,
->  			*(ptp->vclock_index + ptp->n_vclocks - i) = -1;
 >  	}
 >  
-> -	if (num == 0)
-> -		dev_info(dev, "only physical clock in use now\n");
-> -	else
-> -		dev_info(dev, "guarantee physical clock free running\n");
-> +	if (!ptp->has_cycles) {
-
-Not sure what this test means ...
-
-> +		if (num == 0)
-> +			dev_info(dev, "only physical clock in use now\n");
-
-Shouldn't this one print even if has_cycles == false?
-
-> +		else
-> +			dev_info(dev, "guarantee physical clock free running\n");
-> +	}
->  
->  	ptp->n_vclocks = num;
->  	mutex_unlock(&ptp->n_vclocks_mux);
+>  	if (hwtstamps)
 
 Thanks,
 Richard
