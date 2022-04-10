@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F3D794FACE4
-	for <lists+netdev@lfdr.de>; Sun, 10 Apr 2022 10:30:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C6FB4FACDE
+	for <lists+netdev@lfdr.de>; Sun, 10 Apr 2022 10:30:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235896AbiDJIcj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Apr 2022 04:32:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35268 "EHLO
+        id S235390AbiDJIci (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Apr 2022 04:32:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235802AbiDJIcK (ORCPT
+        with ESMTP id S235825AbiDJIcK (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 10 Apr 2022 04:32:10 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73AE459A4A;
-        Sun, 10 Apr 2022 01:29:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F0515A167;
+        Sun, 10 Apr 2022 01:29:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 06B27B80AF9;
-        Sun, 10 Apr 2022 08:29:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52714C385A1;
-        Sun, 10 Apr 2022 08:29:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 97986B80B00;
+        Sun, 10 Apr 2022 08:29:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E041DC385A8;
+        Sun, 10 Apr 2022 08:29:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649579379;
-        bh=P0LPrpRFiSWkYa75MX6pPK6ScNLx3HOJkeZ8HbW1Zz4=;
+        s=k20201202; t=1649579383;
+        bh=LcNcvXY1H0V/a6HPGqdU+Q0J3NwQRZtCm5/SuuFPHF0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s5x8UfXw1BRfXRU9olTfAAF+ZcLDP7e8kGK32m5+y8l5TqAZPIWIHnnUCZuizsRL8
-         dvNcoGw30L5YUyPWGDw8MJn6a9IMYglSu6H/RPQWqf8am77ZPFVvQiyVkUNkDFBfL7
-         6ZJmXQXLmuCRe0v1WaQCN2ALR/3VHpI5MRFG/p9G80xNCXmdo96QLphS3B0n24qpFv
-         PFX6oN1PTPAuA77fCf+4XUfkOEeopS2wpB4FugGp2hjznNE+zfWQS3cOf3L1wUB/Qo
-         7yTqoa6oadrtUwTJCIiVfoc+p0wY+K5/cAzbDXEEksSeriKUHh2sdane/rY3DsQe0i
-         N7nIunXoDTMZQ==
+        b=THxYrhk3PBsS4KuXHxcYHnbb9T4tZHumHkmx96GhuOXN+R5JjKIIAs504AeI7t6HT
+         x8PWUgd0xwIcvYFYq+268IH0Wc73SR7p1ofVZxPCAFMF8PN8Lx9R9q43jbynhcWb7o
+         Sbo3VFd8QU8JP3SjGZhaGHnQVk7PXwpFe68EL++pLj0wzavS1wd4t8aIZ7sJI9b3el
+         AtqTSZt2clXLeYwyqRpVysoQAY4uqptoLY5o2i3k9F3NM6xPOWs0MJlXP7I/D4Oc/f
+         FkdAOhMLOxAeiUGlT3gdk182Cfe3w//E1+po6bSCfm5zaNNBrwLhwO8li/RCdQTRF+
+         f1nkgnxJSQthg==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
         "David S . Miller" <davem@davemloft.net>
@@ -40,9 +40,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         linux-netdev <netdev@vger.kernel.org>,
         RDMA mailing list <linux-rdma@vger.kernel.org>,
         Raed Salem <raeds@nvidia.com>
-Subject: [PATCH mlx5-next 15/17] net/mlx5: Cleanup XFRM attributes struct
-Date:   Sun, 10 Apr 2022 11:28:33 +0300
-Message-Id: <54957129978046acbf5858508d6dcba59196f9ea.1649578827.git.leonro@nvidia.com>
+Subject: [PATCH mlx5-next 16/17] net/mlx5: Allow future addition of IPsec object modifiers
+Date:   Sun, 10 Apr 2022 11:28:34 +0300
+Message-Id: <84f5b82c38733623a3962df6627c787f03a33eb4.1649578827.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1649578827.git.leonro@nvidia.com>
 References: <cover.1649578827.git.leonro@nvidia.com>
@@ -50,7 +50,7 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,129 +60,36 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Remove everything that is not used or from mlx5_accel_esp_xfrm_attrs,
-together with change type of spi to store proper type from the beginning.
+Currently, all released FW versions support only two IPsec object
+modifiers, and modify_field_select get and set same value with
+proper bits.
 
+However, it is not future compatible, as new FW can have more
+modifiers and "default" will cause to overwrite not-changed fields.
+
+Fix it by setting explicitly fields that need to be overwritten.
+
+Signed-off-by: Huy Nguyen <huyn@nvidia.com>
+Reviewed-by: Raed Salem <raeds@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- .../mellanox/mlx5/core/en_accel/ipsec.c       | 10 ++-------
- .../mellanox/mlx5/core/en_accel/ipsec.h       | 21 ++-----------------
- .../mellanox/mlx5/core/en_accel/ipsec_fs.c    |  4 ++--
- .../mlx5/core/en_accel/ipsec_offload.c        |  4 ++--
- 4 files changed, 8 insertions(+), 31 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c   | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-index e138a4d1a9c0..4476397d3d22 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-@@ -137,7 +137,7 @@ mlx5e_ipsec_build_accel_xfrm_attrs(struct mlx5e_ipsec_sa_entry *sa_entry,
- 				   struct mlx5_accel_esp_xfrm_attrs *attrs)
- {
- 	struct xfrm_state *x = sa_entry->x;
--	struct aes_gcm_keymat *aes_gcm = &attrs->keymat.aes_gcm;
-+	struct aes_gcm_keymat *aes_gcm = &attrs->aes_gcm;
- 	struct aead_geniv_ctx *geniv_ctx;
- 	struct crypto_aead *aead;
- 	unsigned int crypto_data_len, key_len;
-@@ -171,12 +171,6 @@ mlx5e_ipsec_build_accel_xfrm_attrs(struct mlx5e_ipsec_sa_entry *sa_entry,
- 			attrs->flags |= MLX5_ACCEL_ESP_FLAGS_ESN_STATE_OVERLAP;
- 	}
- 
--	/* rx handle */
--	attrs->sa_handle = sa_entry->handle;
--
--	/* algo type */
--	attrs->keymat_type = MLX5_ACCEL_ESP_KEYMAT_AES_GCM;
--
- 	/* action */
- 	attrs->action = (!(x->xso.flags & XFRM_OFFLOAD_INBOUND)) ?
- 			MLX5_ACCEL_ESP_ACTION_ENCRYPT :
-@@ -187,7 +181,7 @@ mlx5e_ipsec_build_accel_xfrm_attrs(struct mlx5e_ipsec_sa_entry *sa_entry,
- 			MLX5_ACCEL_ESP_FLAGS_TUNNEL;
- 
- 	/* spi */
--	attrs->spi = x->id.spi;
-+	attrs->spi = be32_to_cpu(x->id.spi);
- 
- 	/* source , destination ips */
- 	memcpy(&attrs->saddr, x->props.saddr.a6, sizeof(attrs->saddr));
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-index 998a812fbd15..1e31acc04a44 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-@@ -55,11 +55,6 @@ enum mlx5_accel_esp_action {
- 	MLX5_ACCEL_ESP_ACTION_ENCRYPT,
- };
- 
--enum mlx5_accel_esp_keymats {
--	MLX5_ACCEL_ESP_KEYMAT_AES_NONE,
--	MLX5_ACCEL_ESP_KEYMAT_AES_GCM,
--};
--
- struct aes_gcm_keymat {
- 	u64   seq_iv;
- 
-@@ -73,21 +68,9 @@ struct aes_gcm_keymat {
- struct mlx5_accel_esp_xfrm_attrs {
- 	enum mlx5_accel_esp_action action;
- 	u32   esn;
--	__be32 spi;
--	u32   seq;
--	u32   tfc_pad;
-+	u32   spi;
- 	u32   flags;
--	u32   sa_handle;
--	union {
--		struct {
--			u32 size;
--
--		} bmp;
--	} replay;
--	enum mlx5_accel_esp_keymats keymat_type;
--	union {
--		struct aes_gcm_keymat aes_gcm;
--	} keymat;
-+	struct aes_gcm_keymat aes_gcm;
- 
- 	union {
- 		__be32 a4;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
-index 2975788292ec..b6a389ca8ce3 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
-@@ -356,8 +356,8 @@ static void setup_fte_common(struct mlx5_accel_esp_xfrm_attrs *attrs,
- 
- 	/* SPI number */
- 	MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria, misc_parameters.outer_esp_spi);
--	MLX5_SET(fte_match_param, spec->match_value, misc_parameters.outer_esp_spi,
--		 be32_to_cpu(attrs->spi));
-+	MLX5_SET(fte_match_param, spec->match_value,
-+		 misc_parameters.outer_esp_spi, attrs->spi);
- 
- 	if (ip_version == 4) {
- 		memcpy(MLX5_ADDR_OF(fte_match_param, spec->match_value,
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-index 4f3ffe5a09fa..2f32d53761b1 100644
+index 2f32d53761b1..e079f86fae33 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-@@ -51,7 +51,7 @@ static int mlx5_create_ipsec_obj(struct mlx5e_ipsec_sa_entry *sa_entry)
- {
- 	struct mlx5_accel_esp_xfrm_attrs *attrs = &sa_entry->attrs;
- 	struct mlx5_core_dev *mdev = mlx5e_ipsec_sa2dev(sa_entry);
--	struct aes_gcm_keymat *aes_gcm = &attrs->keymat.aes_gcm;
-+	struct aes_gcm_keymat *aes_gcm = &attrs->aes_gcm;
- 	u32 out[MLX5_ST_SZ_DW(general_obj_out_cmd_hdr)];
- 	u32 in[MLX5_ST_SZ_DW(create_ipsec_obj_in)] = {};
- 	void *obj, *salt_p, *salt_iv_p;
-@@ -107,7 +107,7 @@ static void mlx5_destroy_ipsec_obj(struct mlx5e_ipsec_sa_entry *sa_entry)
+@@ -180,6 +180,9 @@ static int mlx5_modify_ipsec_obj(struct mlx5e_ipsec_sa_entry *sa_entry,
+ 		return -EOPNOTSUPP;
  
- int mlx5_ipsec_create_sa_ctx(struct mlx5e_ipsec_sa_entry *sa_entry)
- {
--	struct aes_gcm_keymat *aes_gcm = &sa_entry->attrs.keymat.aes_gcm;
-+	struct aes_gcm_keymat *aes_gcm = &sa_entry->attrs.aes_gcm;
- 	struct mlx5_core_dev *mdev = mlx5e_ipsec_sa2dev(sa_entry);
- 	int err;
- 
+ 	obj = MLX5_ADDR_OF(modify_ipsec_obj_in, in, ipsec_object);
++	MLX5_SET64(ipsec_obj, obj, modify_field_select,
++		   MLX5_MODIFY_IPSEC_BITMASK_ESN_OVERLAP |
++			   MLX5_MODIFY_IPSEC_BITMASK_ESN_MSB);
+ 	MLX5_SET(ipsec_obj, obj, esn_msb, attrs->esn);
+ 	if (attrs->flags & MLX5_ACCEL_ESP_FLAGS_ESN_STATE_OVERLAP)
+ 		MLX5_SET(ipsec_obj, obj, esn_overlap, 1);
 -- 
 2.35.1
 
