@@ -2,121 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B3FB4FAC8D
-	for <lists+netdev@lfdr.de>; Sun, 10 Apr 2022 09:29:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AD1A4FAC9E
+	for <lists+netdev@lfdr.de>; Sun, 10 Apr 2022 10:04:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233990AbiDJHbq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Apr 2022 03:31:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47442 "EHLO
+        id S234538AbiDJIAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Apr 2022 04:00:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232057AbiDJHbo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Apr 2022 03:31:44 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34EECD63
-        for <netdev@vger.kernel.org>; Sun, 10 Apr 2022 00:29:34 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id v64-20020a1cac43000000b0038cfd1b3a6dso10163359wme.5
-        for <netdev@vger.kernel.org>; Sun, 10 Apr 2022 00:29:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=wPtIU4a7d0EFWOMD3JY0UNjfcbzjfjIxnYoIGPZ5/YA=;
-        b=aDCBFtxJ1E54MbMA/Uvo2naHNfgwuD9Y19BNoA5Ytw5H/FNkK39ezZfrcfg7JF5GD/
-         Eo7UvcxfaibauqqUv+8aTlXbGbtpNAf2BOTPH3l6iZpHmMsRMkbtv5NcEDNo/BLt8cc+
-         ONF8cJBgstU8UmxzgDfgmsXaJRydTE3UNKiiYICXNRpkIUYrM5cDyEdiQ4Kf65Xtg+VA
-         n/JAdF+jNfSfUYYYc/wtABJEHVfwMrjx9QT7cmtuW13qua7S38y2MnIvAFdwrXSN7WQv
-         BsDl9dtjQp8swfxTcQ82+tLq16d7sdnczNiU93RrXY4tZLbrPWsl9NrwStgbmH3Teg6v
-         c5OQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=wPtIU4a7d0EFWOMD3JY0UNjfcbzjfjIxnYoIGPZ5/YA=;
-        b=gvS6xzj1xPnh4N9EI6GdPGh6vydwYJRpz6UW5j+VFC76/kE7w+zikdo05NoGyNpxgY
-         TLFL0RG66Pppc4WkiHKUL55HRVjpLtNao02Ia773wbWOMdYPRCDQt+TSRRGrFL88aHHR
-         Zj95W/7Y9jugUiY/LaK/18MtyYx7ly3+faByWCRZlgqVvKqCG0+1ZdaL+HTr7y8tTfdE
-         N7bDq6BxQmls79MybXAGABo1CPc/YzAmP4/q8wfr7/yqzPQzUwpYmpCMn+X12w13xfUT
-         APuo45TcsoA793lr66cBFYwUzVMtb5IyNXINpoqi7ac9wiuKKBjzerZy9UxUFNrNKTZT
-         bP9Q==
-X-Gm-Message-State: AOAM531PSh9fo6FjxtAQtELvvCBAdyx1m7o31hp6nOSsBHHQqKGOtC2S
-        xRrAl/lJNAfrXvFHkPay2AKwQ6SGhe0=
-X-Google-Smtp-Source: ABdhPJxBX0nPNa3pAZ9WBfaOiHiJSM9vveMII/FKJtFcmeIJCaQnJG0CrBvtQ9p5iXPvnCxUXFqKVw==
-X-Received: by 2002:a05:600c:3c9b:b0:38e:4c59:68b9 with SMTP id bg27-20020a05600c3c9b00b0038e4c5968b9mr23985510wmb.105.1649575772724;
-        Sun, 10 Apr 2022 00:29:32 -0700 (PDT)
-Received: from hoboy.vegasvil.org (195-70-108-137.stat.salzburg-online.at. [195.70.108.137])
-        by smtp.gmail.com with ESMTPSA id f66-20020a1c3845000000b0038eb64a52b5sm1930219wma.43.2022.04.10.00.29.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Apr 2022 00:29:32 -0700 (PDT)
-Date:   Sun, 10 Apr 2022 00:29:30 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Gerhard Engleder <gerhard@engleder-embedded.com>
-Cc:     vinicius.gomes@intel.com, yangbo.lu@nxp.com, davem@davemloft.net,
-        kuba@kernel.org, mlichvar@redhat.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 4/5] ptp: Support late timestamp determination
-Message-ID: <20220410072930.GC212299@hoboy.vegasvil.org>
-References: <20220403175544.26556-1-gerhard@engleder-embedded.com>
- <20220403175544.26556-5-gerhard@engleder-embedded.com>
+        with ESMTP id S231350AbiDJIAd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Apr 2022 04:00:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53BA1110;
+        Sun, 10 Apr 2022 00:58:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0EC64B80AF9;
+        Sun, 10 Apr 2022 07:58:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FB21C385A4;
+        Sun, 10 Apr 2022 07:58:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649577500;
+        bh=fzlsv5Dv4TCHvk6X1qKI3Q05UZcZnevWvPuhtyh68b4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tK7Ffd1mNoUbFDzuWcg0yTNJt1gEmxW3kufoMcQ25ae1hZxq1Gr8zHwdcVhKzxUtR
+         MugRZwlucQcazfuBH9+UEm4T45bvp39aPcbsFNB4/A+LTlJ3U2MHmXLsHpnT1fJSmX
+         XzImqAM+3Nwxhu3DufaCoJunjTqA6oOjNDaFeUFe48CiBhzrHK2Gp/Lbb4E2T7Ruk8
+         6lT1uf24tF96xPmodhLdq8u53Wt0eQUuSbTP2Vr+WgOaq9hLazROnng+vT1pu1oedA
+         4mxSIxhXOV1pF/aqsvtJavWPo53yQuuYelGJHfhhEJTFWWmLLuQSXmWGRwiDMbNYQ1
+         Yd+7ufyRaG0KQ==
+Date:   Sun, 10 Apr 2022 10:58:16 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Saeed Mahameed <saeedm@nvidia.com>
+Cc:     Saeed Mahameed <saeed@kernel.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Patrisious Haddad <phaddad@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Yishai Hadas <yishaih@nvidia.com>
+Subject: Re: [PATCH mlx5-next 1/3] net/mlx5: Nullify eq->dbg and qp->dbg
+ pointers post destruction
+Message-ID: <YlKOGMw7vemdPn/a@unreal>
+References: <cover.1649139915.git.leonro@nvidia.com>
+ <032d54e1ed92d0f288b385d6343a5b6e109daabe.1649139915.git.leonro@nvidia.com>
+ <20220405194845.c443x4gf522c2kgv@sx1>
+ <Yk1Hc8l5bs25wEcE@unreal>
+ <20220408193035.2uplgfjnfjo4s4f2@sx1>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220403175544.26556-5-gerhard@engleder-embedded.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220408193035.2uplgfjnfjo4s4f2@sx1>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 03, 2022 at 07:55:43PM +0200, Gerhard Engleder wrote:
-
-> @@ -887,18 +885,28 @@ void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
->  	if (shhwtstamps &&
->  	    (sk->sk_tsflags & SOF_TIMESTAMPING_RAW_HARDWARE) &&
->  	    !skb_is_swtx_tstamp(skb, false_tstamp)) {
-> +		rcu_read_lock();
-> +		orig_dev = dev_get_by_napi_id(skb_napi_id(skb));
-
-__sock_recv_timestamp() is hot path.
-
-No need to call dev_get_by_napi_id() for the vast majority of cases
-using plain old MAC time stamping.
-
-Make this conditional on (sk->sk_tsflags & SOF_TIMESTAMPING_BIND_PHC).
-
-Thanks,
-Richard
-
-> +		if (orig_dev) {
-> +			if_index = orig_dev->ifindex;
-> +			hwtstamp = netdev_get_tstamp(orig_dev, shhwtstamps,
-> +						     sk->sk_tsflags & SOF_TIMESTAMPING_BIND_PHC);
-> +		} else {
-> +			if_index = 0;
-> +			hwtstamp = shhwtstamps->hwtstamp;
-> +		}
-> +		rcu_read_unlock();
-> +
->  		if (sk->sk_tsflags & SOF_TIMESTAMPING_BIND_PHC)
-> -			hwtstamp = ptp_convert_timestamp(&shhwtstamps->hwtstamp,
-> +			hwtstamp = ptp_convert_timestamp(&hwtstamp,
->  							 sk->sk_bind_phc);
-> -		else
-> -			hwtstamp = shhwtstamps->hwtstamp;
->  
->  		if (ktime_to_timespec64_cond(hwtstamp, tss.ts + 2)) {
->  			empty = 0;
->  
->  			if ((sk->sk_tsflags & SOF_TIMESTAMPING_OPT_PKTINFO) &&
->  			    !skb_is_err_queue(skb))
-> -				put_ts_pktinfo(msg, skb);
-> +				put_ts_pktinfo(msg, skb, if_index);
->  		}
->  	}
->  	if (!empty) {
-> -- 
-> 2.20.1
+On Fri, Apr 08, 2022 at 12:30:35PM -0700, Saeed Mahameed wrote:
+> On 06 Apr 10:55, Leon Romanovsky wrote:
+> > On Tue, Apr 05, 2022 at 12:48:45PM -0700, Saeed Mahameed wrote:
+> > > On 05 Apr 11:12, Leon Romanovsky wrote:
+> > > > From: Patrisious Haddad <phaddad@nvidia.com>
+> > > >
+> > > > Prior to this patch in the case that destroy_unmap_eq()
+> > > > failed and was called again, it triggered an additional call of
+> > > 
+> > > Where is it being failed and called again ? this shouldn't even be an
+> > > option, we try to keep mlx5 symmetrical, constructors and destructors are
+> > > supposed to be called only once in their respective positions.
+> > > the callers must be fixed to avoid re-entry, or change destructors to clear
+> > > up all resources even on failures, no matter what do not invent a reentry
+> > > protocols to mlx5 destructors.
+> > 
+> > It can happen when QP is exposed through DEVX interface. In that flow,
+> > only FW knows about it and reference count all users. This means that
+> > attempt to destroy such QP will fail, but mlx5_core is structured in
+> > such way that all cleanup was done before calling to FW to get
+> > success/fail response.
 > 
+> I wasn't talking about destroy_qp, actually destroy_qp is implemented the
+> way i am asking you to implement destroy_eq(); remove debugfs on first call
+> to destroy EQ, and drop the reentry logic from from mlx5_eq_destroy_generic
+> and destroy_async_eq.
+> 
+> EQ is a core/mlx5_ib resources, it's not exposed to user nor DEVX, it
+> shouldn't be subject to DEVX limitations.
+
+I tend to agree with you. I'll take another look on it and resubmit.
+
+> 
+> Also looking at the destroy_qp implementation, it removes the debugfs
+> unconditionally even if the QP has ref count and removal will fail in FW.
+> just FYI.
+
+Right, we don't care about debugfs.
+
+> 
+> For EQ I don't even understand why devx can cause ODP EQ removal to fail..
+> you must fix this at mlx5_ib layer, but for this patch, please drop the
+> re-entry and remove debugfs in destroy_eq, unconditionally.
+
+The reason to complexity is not debugfs, but an existence of
+"mlx5_frag_buf_free(dev, &eq->frag_buf);" line, after FW command is
+executed.
+
+We need to separate to two flows: the one that can tolerate FW cmd failures
+and the one that can't. If you don't add "reentry" flag, you can (theoretically)
+find yourself leaking ->frag_buf in the flows that don't know how to reentry.
+
+I'll resubmit.
+
+Thanks
