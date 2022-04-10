@@ -2,72 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 614B64FAF26
-	for <lists+netdev@lfdr.de>; Sun, 10 Apr 2022 19:03:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31F0B4FAF44
+	for <lists+netdev@lfdr.de>; Sun, 10 Apr 2022 19:19:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240713AbiDJRFP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Apr 2022 13:05:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57342 "EHLO
+        id S241873AbiDJRWF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Apr 2022 13:22:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229907AbiDJRFO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Apr 2022 13:05:14 -0400
+        with ESMTP id S232464AbiDJRWE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Apr 2022 13:22:04 -0400
 Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 101FF4DF5A
-        for <netdev@vger.kernel.org>; Sun, 10 Apr 2022 10:03:04 -0700 (PDT)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.west.internal (Postfix) with ESMTP id 026EF3200E42;
-        Sun, 10 Apr 2022 13:03:02 -0400 (EDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 559623B281;
+        Sun, 10 Apr 2022 10:19:53 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id 46CF13201DB0;
+        Sun, 10 Apr 2022 13:19:52 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Sun, 10 Apr 2022 13:03:03 -0400
+  by compute2.internal (MEProxy); Sun, 10 Apr 2022 13:19:53 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=rBySSrHHSGhToG9ed
-        EZ+GEC7x3nJzGv6GVqQOIXJtWQ=; b=eR+pvyowHRbP3/r22fU/ZEosN/gVNWYY3
-        7uiIW0d2p3QdYFLquRyGgzNVDUgddDeNpBI6KsYM2G9s1dGW3FYDyHYePrbx156v
-        RjpvrwyGG+0EGsRzBlzn2Y3ZA+AtQH7f7UfuK0S0shOfNwnZd4KXxsNpP6Hv0wK/
-        wh8arvhbdVREdOtDvk58RFOa7NRSLXLcyI6l+VKDKTJw0MGwVQ+DupuCw/fcRzkA
-        hh6CUIVauSXxK4umqCe05Fj9tUzm9AtBrU57vcVuT9YHFeJaE667PwgBI3vXTBSn
-        moyd5ALNkMAbSIk+cQpLmW0b2gvAOyOhndMjDKoKsadUaia+sNhhw==
-X-ME-Sender: <xms:xg1TYmx9V8hZOSCvm4UoYH2hUoUxoft5gNihRBs7WeLAlQpRi6Rv1w>
-    <xme:xg1TYiSLdXdhoRgR9sMJrM56hKDXc5vxLMx0SQJ8CjNNyd9TiZJfplSHxkYnl9o5P
-    _ZvnogL32s4lhs>
-X-ME-Received: <xmr:xg1TYoXunuyhoN8qcCh4rFWTlVmpGNozd1vDYstkLd1gQD4_OrqXXqj0gf0U>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudekgedguddthecutefuodetggdotefrod
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm3; bh=cuyUckZywUZIygZ8ZXPDDXCDGhQWLlczqmeYcUsJb
+        28=; b=Y2sjtjMKmcZN+iFCh6tUH9R8b1YIFSMf47MxY2GFUEI/LzkJm4YgQ7xRW
+        8Cz7sAaGDTn/I+kaN8xJae6Zqz0402CY/Y4AYqxdrQDOD+eYKMF8dNfbkLdq3h3C
+        w5b/qnHKtUOMmpykk/SsUXHiJ5VD1/K5x9vWzDvjGpnpyvIBu2/M76F3qaXMgVKc
+        wNkj9SVI8LbQMsS/Ucn43FOzmkE7JAOr9ZctrwysezMQAryXu7SnGAzcsmjkR+u6
+        avT5xcQ87Pvh0E3MRRg/jX5DCjz702OeF70yA1NCuVhPs9bUEA3UByXOrrk/cCXU
+        S/fP1Yq79etHPpSGyAaxoo3hDa+wQ==
+X-ME-Sender: <xms:txFTYlOdJcMHhK9qCpvHaR0uLC4iFVVtaxnsB6vN1LXAVnpi9mLMBA>
+    <xme:txFTYn-q1ixuadHZWK7xbJI6Mof3HYLeC0LDIOADJzaRbkt2Ku-4Pd7cB3v6K2XHd
+    nLE_9vcRV7H2XU>
+X-ME-Received: <xmr:txFTYkQKCTvlMnDcZOGXFeieE4LEl8S-_3qEKEe8AVgCRnsXmvp_TJJ5dp3Z>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudekgedguddtlecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
-    leetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
-    guohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:xg1TYsh4dgfWANW61obfVE5y0Hiy1CHykjCfplvN4GhTQ8svG-kUyw>
-    <xmx:xg1TYoDhmKIgGxFjD9ENZZfnJQnG74bj4DWWGjQoYxEcCVZy7StPhw>
-    <xmx:xg1TYtKfl_gGySWKXmcy9wWkWrmUZXAwqhSVYDaQIqertFA87BnRoA>
-    <xmx:xg1TYmAmqL7tQA2zvxbEsPfcXjw6j4B9PXijZ7uYQ5M8nL3OIDrasQ>
+    enucfjughrpeffhffvuffkfhggtggugfgjsehtkeertddttdejnecuhfhrohhmpefkugho
+    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrg
+    htthgvrhhnpeeugfejfeeviedvkedtgfeghfegvedugeevgfetudfgteevveeutdfghfek
+    gfeggfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:txFTYhvjpfUyMCWA_iDroIimEHx3YmyOhV4DQnMAkABhc5hFywB_MA>
+    <xmx:txFTYte406Q9vQBtdatJAOuQQN-KG68-E3yHi2XdZJP1v-iAH-T_qw>
+    <xmx:txFTYt15Ub969jQ5FyOFMplYTLhgK_XMA7xtC67-USbci_ML0tFFwQ>
+    <xmx:txFTYnvSy-Px09zQyzzasUP0oH6QKvHfikuRvD8bB8K9_6mQjfoWAQ>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 10 Apr 2022 13:03:01 -0400 (EDT)
-Date:   Sun, 10 Apr 2022 20:02:58 +0300
+ 10 Apr 2022 13:19:50 -0400 (EDT)
+Date:   Sun, 10 Apr 2022 20:19:48 +0300
 From:   Ido Schimmel <idosch@idosch.org>
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     David Miller <davem@davemloft.net>,
+To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>
-Subject: Re: [PATCH net-next 4/5] mlxsw: Use dscp_t in struct
- mlxsw_sp_fib4_entry
-Message-ID: <YlMNwt5mFcqSZM8B@shredder>
-References: <cover.1649445279.git.gnault@redhat.com>
- <f7a376abaebd90e07853498c084ea2282ff1744f.1649445279.git.gnault@redhat.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] net: bridge: offload BR_HAIRPIN_MODE,
+ BR_ISOLATED, BR_MULTICAST_TO_UNICAST
+Message-ID: <YlMRtBR3+b4dKjC/@shredder>
+References: <20220410134227.18810-1-arinc.unal@arinc9.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <f7a376abaebd90e07853498c084ea2282ff1744f.1649445279.git.gnault@redhat.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220410134227.18810-1-arinc.unal@arinc9.com>
 X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -77,15 +78,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 08, 2022 at 10:08:46PM +0200, Guillaume Nault wrote:
-> Use the new dscp_t type to replace the tos field of struct
-> mlxsw_sp_fib4_entry. This ensures ECN bits are ignored and makes it
-> compatible with the dscp fields of fib_entry_notifier_info and
-> fib_rt_info.
+On Sun, Apr 10, 2022 at 04:42:27PM +0300, Arınç ÜNAL wrote:
+> Add BR_HAIRPIN_MODE, BR_ISOLATED and BR_MULTICAST_TO_UNICAST port flags to
+> BR_PORT_FLAGS_HW_OFFLOAD so that switchdev drivers which have an offloaded
+> data plane have a chance to reject these bridge port flags if they don't
+> support them yet.
 > 
-> This also allows sparse to flag potential incorrect uses of DSCP and
-> ECN bits.
+> It makes the code path go through the
+> SWITCHDEV_ATTR_ID_PORT_PRE_BRIDGE_FLAGS driver handlers, which return
+> -EINVAL for everything they don't recognize.
 > 
-> Signed-off-by: Guillaume Nault <gnault@redhat.com>
+> For drivers that don't catch SWITCHDEV_ATTR_ID_PORT_PRE_BRIDGE_FLAGS at
+> all, switchdev will return -EOPNOTSUPP for those which is then ignored, but
+> those are in the minority.
+> 
+> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 
 Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+
+> ---
+> Let me know if this is netdev/net material instead.
+
+I prefer net-next
