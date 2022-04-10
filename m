@@ -2,239 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BCBE94FADE1
-	for <lists+netdev@lfdr.de>; Sun, 10 Apr 2022 14:40:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47D114FADE7
+	for <lists+netdev@lfdr.de>; Sun, 10 Apr 2022 14:40:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238558AbiDJMmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Apr 2022 08:42:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58218 "EHLO
+        id S241660AbiDJMmj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Apr 2022 08:42:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229740AbiDJMmR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Apr 2022 08:42:17 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 545DB3F324;
-        Sun, 10 Apr 2022 05:40:06 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id i27so25698871ejd.9;
-        Sun, 10 Apr 2022 05:40:06 -0700 (PDT)
+        with ESMTP id S239170AbiDJMmc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Apr 2022 08:42:32 -0400
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8829145044
+        for <netdev@vger.kernel.org>; Sun, 10 Apr 2022 05:40:21 -0700 (PDT)
+Received: by mail-il1-x130.google.com with SMTP id 14so9560150ily.11
+        for <netdev@vger.kernel.org>; Sun, 10 Apr 2022 05:40:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=WJ3zx5hxbrhQdoh4df/mkYbAfZTieLScs1fGc8yvAKE=;
-        b=genybavvxQfO3oMBZjo2CjIk1O/oGwGjSShnuF7VRUqPU857l7tmI7mOpqspRCdNa8
-         PP0OIXI2vNtXcK+auG9ZXMTFfhBJFd0oUTv8b4pdD3v7PeUC32Ge/N4RYYU9PNXTmgJE
-         zl+60cT3783cP9JX4TQBR8pW957rVNarSQlgjCj2xNVl4mqDV72XT3VCx+sVT9VZ1DHg
-         zQaUavreMRULymshsvHLE8NMNW7w3nEqeO1w59qryQUYbxeUYgeVZGqKcEuDOH+/Mstm
-         /dypm4G0EB4d+XBiyN7xyFepVohVcq2zwf8oZ9d6urnWhkNoNMDQ1bECwpDFSUHNF7wj
-         Nq1A==
+        d=engleder-embedded-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=g0XalX9gJfYJbM5cvVQcjErRfEOrDFoPU1kLlaoR50U=;
+        b=IJn0rVb8e5vBH3PBmMAxEqZXoBtE/OVttTFZxvc3yDk7VAwTo52UBA4xJm5HEFvFTs
+         0SqGacQmmsUAKcPuqs60stjCCKp7EC+gk9GEjlSqslgyMFOznleZrJJ03mHsosNFsxjc
+         JUtgypWWaZ7X0Tmp3zq0CF39Dm7vQ7f9IbrvLjl4KjvuITtE9ORbAlQgVDLgWRyNCEdo
+         feJk0/Hc6iuukVAyisIQIVwtc2FxNS6fF/6MUHkhvv28xSg5Ahvpx+pITxJtZVmN3l2X
+         CYC9TtVBWxGulqlTBpzSoBQI6Mcs5k8afB9F+JsEMI8NDbgUdZOgAsw/rwA0tMq8OpcP
+         sBtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=WJ3zx5hxbrhQdoh4df/mkYbAfZTieLScs1fGc8yvAKE=;
-        b=xP5YrVRotHcKLMcZPWxKYt1CQYLy2UaClaobFuj91EO4nuNikzAAhPO0DzabZnxDiB
-         VVR3RDuEkRDfphhb3v5UgeuT18Q6G0Fw73bcUCXgT7Yos1TT/xPuA+ePyyrJcLZjMt4j
-         K/ce9ldgo5nIARoMqSsIBfJ579i4hTLNN151Q8Xlfl/negVDsaPiy1CgQKhLaSFNF4rv
-         esZ6MrvB3FCRpr1gqTKFnz+nnpbvFFX20bqCFuB2w4cIrVbXJhwvj+QfdcRh68xYA/k+
-         W88FBhZqz9cSFffV2y1+f8ogeyT6p4lACrS+QUxH3sMN9F4pvTTkbZMfj1lDaJCnqeYT
-         /JCw==
-X-Gm-Message-State: AOAM531NPCMFRQcnQGtwVLDuwwk4neSof4DjDEyyIhGk+dkmjBb7L/5/
-        mnQhdF9Nm/wbCbi+40rH05Q=
-X-Google-Smtp-Source: ABdhPJyyaBS7UlkYvO3wuO5S0f8bGGkJ6uVCS0ltBvj9Hg44UfZ+IoAoo+jvga3Jvjur3dumJsVFrg==
-X-Received: by 2002:a17:906:7943:b0:6df:e5b3:6553 with SMTP id l3-20020a170906794300b006dfe5b36553mr25955888ejo.398.1649594404580;
-        Sun, 10 Apr 2022 05:40:04 -0700 (PDT)
-Received: from smtpclient.apple (ip-185-104-137-32.ptr.icomera.net. [185.104.137.32])
-        by smtp.gmail.com with ESMTPSA id tj13-20020a170907c24d00b006e853804a70sm2598630ejc.0.2022.04.10.05.39.52
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 10 Apr 2022 05:40:04 -0700 (PDT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
-Subject: Re: [PATCH net-next 02/15] net: dsa: sja1105: Remove usage of
- iterator for list_add() after loop
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-In-Reply-To: <20220410110508.em3r7z62ufqcbrfm@skbuf>
-Date:   Sun, 10 Apr 2022 14:39:48 +0200
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com, Ariel Elior <aelior@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Casper Andersson <casper.casan@gmail.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Colin Ian King <colin.king@intel.com>,
-        Michael Walle <michael@walle.cc>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Eric Dumazet <edumazet@google.com>,
-        Di Zhu <zhudi21@huawei.com>, Xu Wang <vulab@iscas.ac.cn>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <935062D0-C657-4C79-A0BE-70141D052EC0@gmail.com>
-References: <20220407102900.3086255-1-jakobkoschel@gmail.com>
- <20220407102900.3086255-3-jakobkoschel@gmail.com>
- <20220408114120.tvf2lxvhfqbnrlml@skbuf>
- <FA317E17-3B09-411B-9DF6-05BDD320D988@gmail.com>
- <C9081CE3-B008-48DA-A97C-76F51D4F189F@gmail.com>
- <20220410110508.em3r7z62ufqcbrfm@skbuf>
-To:     Vladimir Oltean <olteanv@gmail.com>
-X-Mailer: Apple Mail (2.3696.80.82.1.1)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=g0XalX9gJfYJbM5cvVQcjErRfEOrDFoPU1kLlaoR50U=;
+        b=2Krg/XYA6mLUN/XOgvcvDzrJ9X4+7LtGCSI5MJfxxsdMcOlrChSo5xmEu9da0LKU6H
+         kBEORLf+savbM8v6OxahVeXOnyEAKT4HvkJacugVIfZbd0FNVcdvF8ybymtQ0inj0SIv
+         Eu5gNn6Fq9UgfjtSzYUciTKN9JzAXEFLukqODQ1cMYYJnojtU+bur31gUD6wkRWdLmmW
+         s/l6G3F9uL1ZAeRwUF7UAEtO7xzb4AToEUqOFvxYnpPTOynFBsvIELk59v2JwDPgVks9
+         MXswa7orNzY4yMlJ3tRMMjaQPPdFdkRwRKhJLO8NBryCSjxL1hoYzJ2vF8YkwHmHn0BO
+         Rl2g==
+X-Gm-Message-State: AOAM532mqkb2njho+Rrz6gdH/3oHhHXNqxPNGruLeZHRJXGr2Q3+P/9a
+        YtjzrpzAZaQ+3INlIPK0T/jhLqUNy7b0+BGtnqPizV6znSvBs1jv
+X-Google-Smtp-Source: ABdhPJweZ428zoHtvWde5yMkDkK4NISBjlERIA5Zx7Ydwd8w0hpNWtRFlTWix7w2uny8t8ctfpuVb2foGPZGWPvwM1A=
+X-Received: by 2002:a92:1e09:0:b0:2c6:304e:61fa with SMTP id
+ e9-20020a921e09000000b002c6304e61famr12607903ile.211.1649594420962; Sun, 10
+ Apr 2022 05:40:20 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220403175544.26556-1-gerhard@engleder-embedded.com>
+ <20220403175544.26556-3-gerhard@engleder-embedded.com> <20220410064751.GB212299@hoboy.vegasvil.org>
+In-Reply-To: <20220410064751.GB212299@hoboy.vegasvil.org>
+From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+Date:   Sun, 10 Apr 2022 14:40:10 +0200
+Message-ID: <CANr-f5zrwe6Dea9B3OshtN39mia-U2q0Kw7x6fHYqTaORs0mFw@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 2/5] ptp: Request cycles for TX timestamp
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, yangbo.lu@nxp.com,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, mlichvar@redhat.com,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> > The free running cycle counter of physical clocks called cycles shall be
+> > used for hardware timestamps to enable synchronisation.
+> >
+> > Introduce new flag SKBTX_HW_TSTAMP_USE_CYCLES, which signals driver to
+> > provide a TX timestamp based on cycles if cycles are supported.
+> >
+> > Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+> > ---
+> >  include/linux/skbuff.h |  3 +++
+> >  net/core/skbuff.c      |  2 ++
+> >  net/socket.c           | 11 ++++++++++-
+> >  3 files changed, 15 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> > index 3a30cae8b0a5..aeb3ed4d6cf8 100644
+> > --- a/include/linux/skbuff.h
+> > +++ b/include/linux/skbuff.h
+> > @@ -578,6 +578,9 @@ enum {
+> >       /* device driver is going to provide hardware time stamp */
+> >       SKBTX_IN_PROGRESS = 1 << 2,
+> >
+> > +     /* generate hardware time stamp based on cycles if supported */
+> > +     SKBTX_HW_TSTAMP_USE_CYCLES = 1 << 3,
+> > +
+> >       /* generate wifi status information (where possible) */
+> >       SKBTX_WIFI_STATUS = 1 << 4,
+> >
+> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > index 10bde7c6db44..c0f8f1341c3f 100644
+> > --- a/net/core/skbuff.c
+> > +++ b/net/core/skbuff.c
+> > @@ -4847,6 +4847,8 @@ void __skb_tstamp_tx(struct sk_buff *orig_skb,
+> >               skb_shinfo(skb)->tx_flags |= skb_shinfo(orig_skb)->tx_flags &
+> >                                            SKBTX_ANY_TSTAMP;
+> >               skb_shinfo(skb)->tskey = skb_shinfo(orig_skb)->tskey;
+> > +     } else {
+> > +             skb_shinfo(skb)->tx_flags &= ~SKBTX_HW_TSTAMP_USE_CYCLES;
+>
+> Why is this needed?
 
+It prevents that SKBTX_HW_TSTAMP_USE_CYCLES is set due to the call of
+skb_clone(),
+when the timestamp is delivered back to the socket. It lowers the flag
+usage, but it is not
+absolutely needed. I could remove that code.
 
-> On 10. Apr 2022, at 13:05, Vladimir Oltean <olteanv@gmail.com> wrote:
->=20
-> On Sun, Apr 10, 2022 at 12:51:56PM +0200, Jakob Koschel wrote:
->> I've just looked at this again in a bit more detail while integrating =
-it into the patch series.
->>=20
->> I realized that this just shifts the 'problem' to using the 'pos' =
-iterator variable after the loop.
->> If the scope of the list iterator would be lowered to the list =
-traversal loop it would also make sense
->> to also do it for list_for_each().
->=20
-> Yes, but list_for_each() was never formulated as being problematic in
-> the same way as list_for_each_entry(), was it? I guess I'm starting to
-> not understand what is the true purpose of the changes.
+Thank you!
 
-Sorry for having caused the confusion. Let me elaborate a bit to give =
-more context.
-
-There are two main benefits of this entire effort.
-
-1) fix the architectural bugs and avoid any missuse of the list iterator =
-after the loop
-by construction. This only concerns the list_for_each_entry_*() macros =
-and your change
-will allow lowering the scope for all of those. It might be debatable =
-that it would be
-more consistent to lower the scope for list_for_each() as well, but it =
-wouldn't be
-strictly necessary.
-
-2) fix *possible* speculative bugs. In our project, Kasper [1], we were =
-able to show
-that this can be an issue for the list traversal macros (and this is how =
-the entire
-effort started).
-The reason is that the processor might run an additional loop iteration =
-in speculative
-execution with the iterator variable computed based on the head element. =
-This can
-(and we have verified this) happen if the CPU incorrectly=20
-assumes !list_entry_is_head(pos, head, member).
-
-If this happens, all memory accesses based on the iterator variable =
-*potentially* open
-the chance for spectre [2] gadgets. The proposed mitigation was setting =
-the iterator variable
-to NULL when the terminating condition is reached (in speculative safe =
-way). Then,
-the additional speculative list iteration would still execute but won't =
-access any
-potential secret data.
-
-And this would also be required for list_for_each() since combined with =
-the list_entry()
-within the loop it basically is semantically identical to =
-list_for_each_entry()
-for the additional speculative iteration.
-
-Now, I have no strong opinion on going all the way and since 2) is not =
-the main motivation
-for this I'm also fine with sticking to your proposed solution, but it =
-would mean that implementing
-a "speculative safe" list_for_each() will be more difficult in the =
-future since it is using
-the iterator of list_for_each() past the loop.
-
-I hope this explains the background a bit better.
-
->=20
->> What do you think about doing it this way:
->>=20
->> diff --git a/drivers/net/dsa/sja1105/sja1105_vl.c =
-b/drivers/net/dsa/sja1105/sja1105_vl.c
->> index b7e95d60a6e4..f5b0502c1098 100644
->> --- a/drivers/net/dsa/sja1105/sja1105_vl.c
->> +++ b/drivers/net/dsa/sja1105/sja1105_vl.c
->> @@ -28,6 +28,7 @@ static int sja1105_insert_gate_entry(struct =
-sja1105_gating_config *gating_cfg,
->>                list_add(&e->list, &gating_cfg->entries);
->>        } else {
->>                struct sja1105_gate_entry *p;
->> +               struct list_head *pos =3D NULL;
->>=20
->>                list_for_each_entry(p, &gating_cfg->entries, list) {
->>                        if (p->interval =3D=3D e->interval) {
->> @@ -37,10 +38,14 @@ static int sja1105_insert_gate_entry(struct =
-sja1105_gating_config *gating_cfg,
->>                                goto err;
->>                        }
->>=20
->> -                       if (e->interval < p->interval)
->> +                       if (e->interval < p->interval) {
->> +                               pos =3D &p->list;
->>                                break;
->> +                       }
->>                }
->> -               list_add(&e->list, p->list.prev);
->> +               if (!pos)
->> +                       pos =3D &gating_cfg->entries;
->> +               list_add(&e->list, pos->prev);
->>        }
->>=20
->>        gating_cfg->num_entries++;
->> --
->>=20
->>>=20
->>> Thanks for the suggestion.
->>>=20
->>>> 	}
->>>>=20
->>>> 	gating_cfg->num_entries++;
->>>> -----------------------------[ cut here =
-]-----------------------------
->>>=20
->>> [1] =
-https://lore.kernel.org/linux-kernel/20220407102900.3086255-12-jakobkosche=
-l@gmail.com/
->>>=20
->>> 	Jakob
->>=20
->> Thanks,
->> Jakob
-
-Thanks,
-Jakob
-
-[1] https://www.vusec.net/projects/kasper/
-[2] https://spectreattack.com/spectre.pdf
-
+Gerhard
