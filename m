@@ -2,85 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D2144FACEA
-	for <lists+netdev@lfdr.de>; Sun, 10 Apr 2022 10:30:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDCA04FACEC
+	for <lists+netdev@lfdr.de>; Sun, 10 Apr 2022 10:31:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235603AbiDJIct (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Apr 2022 04:32:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39232 "EHLO
+        id S235753AbiDJId2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Apr 2022 04:33:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235885AbiDJIcN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Apr 2022 04:32:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F9C85A5A5;
-        Sun, 10 Apr 2022 01:29:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A262FB80B91;
-        Sun, 10 Apr 2022 08:29:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1E68C385A4;
-        Sun, 10 Apr 2022 08:29:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649579387;
-        bh=RzNVrIlb72ynOl7Enk1/ch5qBhk/Dwwk6Cey1dPF/wI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MiZp5PjSv4nU9NfvUovs6xwK23b2Xu/dJNNfJYdf7IriLGoV/IotOMZAlP5dnL7VV
-         i+rOLO++/IdhS4vZ3rb3gs1r8CP584hG1VRN+zpf2b+jOsX+wzS1CcqNExe5+uzHf1
-         V46r3rWAGFCy7kZxRmzm0736OKs+Flyeq+TuWv110HRris7Jl924GVzHczDK1ojtOM
-         6xCM5UglaGVCs8UiI3/83NVNlFFN20e0aBBKBaJn88RZiPFdh6eWxQqUKoVOnOjKke
-         MqBlKl1tzwZ8cEGZx8I+jHTfrN7gLNWQ6SJTIxON6W2j54vTh41FRPDmUvq3nSxqIS
-         eRpZWvwYZoPIw==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        linux-netdev <netdev@vger.kernel.org>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Raed Salem <raeds@nvidia.com>
-Subject: [PATCH mlx5-next 17/17] net/mlx5: Don't perform lookup after already known sec_path
-Date:   Sun, 10 Apr 2022 11:28:35 +0300
-Message-Id: <11bd0d9c142e229e09d37651c99a2c90637135c5.1649578827.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1649578827.git.leonro@nvidia.com>
-References: <cover.1649578827.git.leonro@nvidia.com>
+        with ESMTP id S235690AbiDJId0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Apr 2022 04:33:26 -0400
+Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D3EDF593BF;
+        Sun, 10 Apr 2022 01:31:04 -0700 (PDT)
+Received: by ajax-webmail-mail-app4 (Coremail) ; Sun, 10 Apr 2022 16:30:55
+ +0800 (GMT+08:00)
+X-Originating-IP: [10.192.67.219]
+Date:   Sun, 10 Apr 2022 16:30:55 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   duoming@zju.edu.cn
+To:     "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        alexander.deucher@amd.com, gregkh@linuxfoundation.org,
+        davem@davemloft.net
+Subject: Re: Re: [PATCH] drivers: nfc: nfcmrvl: fix UAF bug in
+ nfcmrvl_nci_unregister_dev()
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+In-Reply-To: <7d3a5a6b-9772-a52a-fd18-2e07a8832e91@linaro.org>
+References: <20220409135854.33333-1-duoming@zju.edu.cn>
+ <7d3a5a6b-9772-a52a-fd18-2e07a8832e91@linaro.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Message-ID: <37334368.2629.1801298f436.Coremail.duoming@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: cS_KCgBXX6e_lVJiadoDAQ--.35948W
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgwQAVZdtZHR0wAHs1
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
-
-There is no need to perform extra lookup in order to get already
-known sec_path that was set a couple of lines above. Simply reuse it.
-
-Reviewed-by: Raed Salem <raeds@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
-index d30922e1b60f..6859f1c1a831 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
-@@ -332,7 +332,6 @@ void mlx5e_ipsec_offload_handle_rx_skb(struct net_device *netdev,
- 		return;
- 	}
- 
--	sp = skb_sec_path(skb);
- 	sp->xvec[sp->len++] = xs;
- 	sp->olen++;
- 
--- 
-2.35.1
-
+SGVsbG8sCgpJIGFtIHNvcnJ5IGZvciB0aGUgZGVsYXkuCgpPbiBTYXQsIDkgQXByIDIwMjIgMTc6
+MTA6MDUgKzAyMDAgS3J6eXN6dG9mIEtvemxvd3NraSB3cm90ZToKCj4gPiBUaGVyZSBpcyBhIHBv
+dGVudGlhbCBVQUYgYnVnIGluIG5mY21ydmwgdXNiIGRyaXZlciBiZXR3ZWVuCj4gPiB1bnJlZ2lz
+dGVyIGFuZCByZXN1bWUgb3BlcmF0aW9uLgo+ID4gCj4gPiBUaGUgcmFjZSB0aGF0IGNhdXNlIHRo
+YXQgVUFGIGNhbiBiZSBzaG93biBhcyBiZWxvdzoKPiA+IAo+ID4gICAgKEZSRUUpICAgICAgICAg
+ICAgICAgICAgIHwgICAgICAoVVNFKQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwg
+bmZjbXJ2bF9yZXN1bWUKPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICBuZmNtcnZs
+X3N1Ym1pdF9idWxrX3VyYgo+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICBuZmNt
+cnZsX2J1bGtfY29tcGxldGUKPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgIG5m
+Y21ydmxfbmNpX3JlY3ZfZnJhbWUKPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAg
+ICBuZmNtcnZsX2Z3X2RubGRfcmVjdl9mcmFtZQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgIHwgICAgICBza2JfcXVldWVfdGFpbAo+ID4gbmZjbXJ2bF9kaXNjb25uZWN0ICAgICAgICAg
+IHwKPiA+ICBuZmNtcnZsX25jaV91bnJlZ2lzdGVyX2RldiB8Cj4gPiAgIG5mY21ydmxfZndfZG5s
+ZF9kZWluaXQgICAgfCAgICAgIC4uLgo+ID4gICAgZGVzdHJveV93b3JrcXVldWUgLy8oMSkgIHwK
+PiA+ICAgIC4uLiAgICAgICAgICAgICAgICAgICAgICB8ICAgICAgcXVldWVfd29yayAvLygyKQo+
+ID4gCj4gPiBXaGVuIG5mY21ydmwgdXNiIGRyaXZlciBpcyByZXN1bWluZywgd2UgZGV0YWNoIHRo
+ZSBkZXZpY2UuCj4gPiBUaGUgd29ya3F1ZXVlIGlzIGRlc3Ryb3llZCBpbiBwb3NpdGlvbiAoMSks
+IGJ1dCBpdCB3aWxsIGJlCj4gPiBsYXR0ZXIgdXNlZCBpbiBwb3NpdGlvbiAoMiksIHdoaWNoIGxl
+YWRzIHRvIGRhdGEgcmFjZS4KPiAKPiBJIG1pc3MgaGVyZSBzb21ldGhpbmcuIEhvdyBjYW4geW91
+IHF1ZXVlIHdvcmsgb24gYSBkZXN0cm95ZWQgd29ya3F1ZXVlPwo+IFdoZW4gd29ya3F1ZXVlIGlz
+IGRlc3Ryb3llZCwgbm8gbW9yZSB3b3JrIHNob3VsZCBiZSBleGVjdXRlZC4gVW5sZXNzIHlvdQo+
+IG1lYW4gdGhlIGNhc2UgdGhhdCBkcmFpbmluZyB0aGUgd29yayAoZHVyaW5nIGRlc3Ryb3lpbmcs
+IG5vdCBhZnRlcikKPiBjYXVzZXMgdGhlICgyKSB0byBoYXBwZW4/CgpTb3JyeSwgSSBtYWtlIGEg
+bWlzdGFrZSBpbiBteSBwYXRjaC4gVGhlIGRlc3Ryb3lfd29ya3F1ZXVlKCkgd2lsbCBub3QgCnJl
+dHVybiB1bnRpbCBhbGwgd29yayBpcyBmaW5pc2hlZC4gU28gdGhlIFVBRiBidWcgaXMgbm90IGV4
+aXN0LgoKQWN0dWFsbHksIHRoZXJlIGlzIGEgZG91YmxlIGZyZWUgYnVnIGluIG5mY21ydmxfbmNp
+X3VucmVnaXN0ZXJfZGV2KCkuIFRoZSByb290CmNhdXNlIGlzIHNob3duIGJlbG93OgoKICAgKEZS
+RUUpICAgICAgICAgICAgICAgICAgIHwgICAgICAoVVNFKQogICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgfCBuZmNtcnZsX3Jlc3VtZQogICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgbmZj
+bXJ2bF9zdWJtaXRfYnVsa191cmIKICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICBuZmNt
+cnZsX2J1bGtfY29tcGxldGUKICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAgbmZjbXJ2
+bF9uY2lfcmVjdl9mcmFtZQogICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgICAgbmZjbXJ2
+bF9md19kbmxkX3JlY3ZfZnJhbWUKICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAgICBx
+dWV1ZV93b3JrCiAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgICAgIGZ3X2RubGRfcnhf
+d29yawogICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgICAgICAgZndfZG5sZF9vdmVyCiAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgICAgICAgcmVsZWFzZV9maXJtd2FyZQogICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgfCAgICAgICAgICBrZnJlZShmdyk7IC8vKDEpCm5mY21y
+dmxfZGlzY29ubmVjdCAgICAgICAgICB8CiBuZmNtcnZsX25jaV91bnJlZ2lzdGVyX2RldiB8CiAg
+bmZjbXJ2bF9md19kbmxkX2Fib3J0ICAgICB8CiAgIGZ3X2RubGRfb3ZlciAgICAgICAgICAgICB8
+ICAgICAgICAgLi4uCiAgICBpZiAocHJpdi0+ZndfZG5sZC5mdykgICB8CiAgICByZWxlYXNlX2Zp
+cm13YXJlICAgICAgICB8CiAgICAga2ZyZWUoZncpOyAvLygyKSAgICAgICB8CiAgICAgLi4uICAg
+ICAgICAgICAgICAgICAgICB8ICAgICAgICAgZncgPSBOVUxMOwoKV2hlbiBuZmNtcnZsIHVzYiBk
+cml2ZXIgaXMgcmVzdW1pbmcsIHdlIGRldGFjaCB0aGUgZGV2aWNlLgpUaGUgcmVsZWFzZV9maXJt
+d2FyZSgpIHdpbGwgZGVhbGxvY2F0ZSBmaXJtd2FyZSBpbiBwb3NpdGlvbiAoMSksCmJ1dCBmaXJt
+d2FyZSB3aWxsIGJlIGRlYWxsb2NhdGUgYWdhaW4gaW4gcG9zaXRpb24gKDIpLCB3aGljaApsZWFk
+cyB0byBkb3VibGUgZnJlZS4KCj4gPiBUaGlzIHBhdGNoIHJlb3JkZXJzIHRoZSBuZmNtcnZsX2Z3
+X2RubGRfZGVpbml0IGFmdGVyCj4gPiBuY2lfdW5yZWdpc3Rlcl9kZXZpY2UgaW4gb3JkZXIgdG8g
+cHJldmVudCBVQUYuIEJlY2F1c2UKPiA+IG5jaV91bnJlZ2lzdGVyX2RldmljZSB3aWxsIG5vdCBy
+ZXR1cm4gdW50aWwgZmluaXNoIGFsbAo+ID4gb3BlcmF0aW9ucyBmcm9tIHVwcGVyIGxheWVyLgo+
+ID4gCj4gPiBTaWduZWQtb2ZmLWJ5OiBEdW9taW5nIFpob3UgPGR1b21pbmdAemp1LmVkdS5jbj4K
+PiA+IC0tLQo+ID4gIGRyaXZlcnMvbmZjL25mY21ydmwvbWFpbi5jIHwgMyArLS0KPiA+ICAxIGZp
+bGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDIgZGVsZXRpb25zKC0pCj4gPiAKPiA+IGRpZmYg
+LS1naXQgYS9kcml2ZXJzL25mYy9uZmNtcnZsL21haW4uYyBiL2RyaXZlcnMvbmZjL25mY21ydmwv
+bWFpbi5jCj4gPiBpbmRleCAyZmNmNTQ1MDEyYi4uNWVkMTdiMjNlZTggMTAwNjQ0Cj4gPiAtLS0g
+YS9kcml2ZXJzL25mYy9uZmNtcnZsL21haW4uYwo+ID4gKysrIGIvZHJpdmVycy9uZmMvbmZjbXJ2
+bC9tYWluLmMKPiA+IEBAIC0xODYsMTIgKzE4NiwxMSBAQCB2b2lkIG5mY21ydmxfbmNpX3VucmVn
+aXN0ZXJfZGV2KHN0cnVjdCBuZmNtcnZsX3ByaXZhdGUgKnByaXYpCj4gPiAgCWlmIChwcml2LT5u
+ZGV2LT5uZmNfZGV2LT5md19kb3dubG9hZF9pbl9wcm9ncmVzcykKPiA+ICAJCW5mY21ydmxfZndf
+ZG5sZF9hYm9ydChwcml2KTsKPiA+ICAKPiA+IC0JbmZjbXJ2bF9md19kbmxkX2RlaW5pdChwcml2
+KTsKPiA+IC0KPiA+ICAJaWYgKGdwaW9faXNfdmFsaWQocHJpdi0+Y29uZmlnLnJlc2V0X25faW8p
+KQo+ID4gIAkJZ3Bpb19mcmVlKHByaXYtPmNvbmZpZy5yZXNldF9uX2lvKTsKPiA+ICAKPiA+ICAJ
+bmNpX3VucmVnaXN0ZXJfZGV2aWNlKG5kZXYpOwo+ID4gKwluZmNtcnZsX2Z3X2RubGRfZGVpbml0
+KHByaXYpOwo+IAo+IFRoZSBuZXcgb3JkZXIgbWF0Y2hlcyByZXZlcnNlLXByb2JlLCBzbyBhY3R1
+YWxseSBtYWtlcyBzZW5zZS4KPiAKPiA+ICAJbmNpX2ZyZWVfZGV2aWNlKG5kZXYpOwo+ID4gIAlr
+ZnJlZShwcml2KTsKPiA+ICB9CgpJIHdpbGwgc2VuZCAiW1BBVENIXSBkcml2ZXJzOiBuZmM6IG5m
+Y21ydmw6IGZpeCBkb3VibGUgZnJlZSBidWcgaW4KbmZjbXJ2bF9uY2lfdW5yZWdpc3Rlcl9kZXYo
+KSIgYXMgc29vbiBhcyBwb3NzaWJsZS4KCkJlc3QgcmVnYXJkcywKRHVvbWluZyBaaG91Cg==
