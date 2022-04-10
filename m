@@ -2,210 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DBA8B4FAE3F
-	for <lists+netdev@lfdr.de>; Sun, 10 Apr 2022 16:28:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCD1C4FAE4C
+	for <lists+netdev@lfdr.de>; Sun, 10 Apr 2022 16:42:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237621AbiDJObD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Apr 2022 10:31:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52024 "EHLO
+        id S235754AbiDJOoo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Apr 2022 10:44:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235672AbiDJObC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Apr 2022 10:31:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 84C8C26550
-        for <netdev@vger.kernel.org>; Sun, 10 Apr 2022 07:28:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649600929;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=DJKeFhtLpKk6FDJW/lbe2K7P+qz//7PVM7l0qdrV7nk=;
-        b=Q4Ui/eD2s21ztiNU3djz3S34ysKV9/je0RsZlFQu8JQeTavQVCpvl1FMM7YapztFNjOlAF
-        NosJ/aCUiIlZQjWJlhrlUqGV2ezTkn3gcH5+q9frvdCZkMoZvROrImjjwQ9IBiY/sVSwCf
-        NTZA4XiZ/hXPv4gIS4Dcy0+dUxOuDC4=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-284-bL5I6er8MXaVRjdNhE1Pyw-1; Sun, 10 Apr 2022 10:28:48 -0400
-X-MC-Unique: bL5I6er8MXaVRjdNhE1Pyw-1
-Received: by mail-qt1-f200.google.com with SMTP id z3-20020ac86b83000000b002ed0f18c23cso2923730qts.17
-        for <netdev@vger.kernel.org>; Sun, 10 Apr 2022 07:28:48 -0700 (PDT)
+        with ESMTP id S229673AbiDJOom (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Apr 2022 10:44:42 -0400
+Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21537A6
+        for <netdev@vger.kernel.org>; Sun, 10 Apr 2022 07:42:31 -0700 (PDT)
+Received: by mail-il1-x134.google.com with SMTP id x9so9705959ilc.3
+        for <netdev@vger.kernel.org>; Sun, 10 Apr 2022 07:42:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=engleder-embedded-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=brVhrW6Zt58RQIATwXg8JtIQkyMKvwjqfkNUu7iHlbg=;
+        b=Jkb9927/oQx0gGvYGSLgGEXObe+0cBxoB3wFdonwF0/JI08DRE7Ep6ggbWnQTefyI1
+         qpuMYHAYo+2vcYlipPX+KwBiXGjVpg53m0FjWz4dn5YRdP8ZuNvNwz8yLkCIXPv77JJC
+         d2f4Ne+d7B/TFVYwnXoYs1wRCyCosFa+3XJhfYJOxyRFdZ3FPMHq+7tceDlLgkR1NF1t
+         1XpBeCCQlVYucv58lqiCjKB57K6KNqE/jUR12DmkhbNJU/sNXRbOGQgIj5DI9p3quIES
+         DCTNlyTrUvPmiKS+sYBpchclGRsNuEDz+tyA1kZoQBEvq2blwqabV9i1n1+NNeye4XAx
+         xjJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DJKeFhtLpKk6FDJW/lbe2K7P+qz//7PVM7l0qdrV7nk=;
-        b=fFVa5gb8htglY9Le0RYjicf6kvxheBV/wCafapqkRP5w8KSI0HyR45RVNy4U6Uq5gW
-         UOZogJN6JKB5CVDShq8e9lXQF0aXpCY4aJV34efJVbmOO7dHcfQTSPx29KW/wojYSncL
-         67hL6wKo0uEkDOy0i/UHNwW7QdtVZHtywkdKVY1anEW95G9K3vGWaJ71bJ/ZuiCzjoaK
-         c080xXOE6znfcnElaN68jF14KpLuEU9yGpg2lUhyNXHDm9yGyj8SHj6Efba4MV/IE3z6
-         p4mVacVliKabaGbf9ATOxcRiEjAwwazlWjJbQnSunNfErWrq4oKL/Fk7HxFzbOobujRU
-         in3A==
-X-Gm-Message-State: AOAM530pgNWRh8zoNy5KeFC0sUuDrQAtN516zCXuWzfLRo1ZB3SvhMLM
-        BfB8Gse9pM49gDA+wZi98788XDPHOhrShqSHX2dLHrqYn/GwqA7r4I8Lu+yHXVlwpbmsRXeOxmh
-        TzfyMgbRGzSMlYU3B
-X-Received: by 2002:ad4:5be4:0:b0:441:2daa:4ac2 with SMTP id k4-20020ad45be4000000b004412daa4ac2mr24249397qvc.29.1649600927251;
-        Sun, 10 Apr 2022 07:28:47 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwFzRe0p2MiMwbGaTAQ5TqH6l2IimoFAQLL0viIb2Czmoff0lqgANdpkFxb7kuOZY7Do6IZvQ==
-X-Received: by 2002:ad4:5be4:0:b0:441:2daa:4ac2 with SMTP id k4-20020ad45be4000000b004412daa4ac2mr24249380qvc.29.1649600926994;
-        Sun, 10 Apr 2022 07:28:46 -0700 (PDT)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id az17-20020a05620a171100b00680af0db559sm18285558qkb.127.2022.04.10.07.28.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Apr 2022 07:28:46 -0700 (PDT)
-From:   Tom Rix <trix@redhat.com>
-To:     luciano.coelho@intel.com, kvalo@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, emmanuel.grumbach@intel.com,
-        ayala.beker@intel.com, johannes.berg@intel.com,
-        colin.i.king@googlemail.com, keescook@chromium.org,
-        gustavoars@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH] iwlwifi: mei: clean up comments
-Date:   Sun, 10 Apr 2022 10:27:33 -0400
-Message-Id: <20220410142733.1454873-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=brVhrW6Zt58RQIATwXg8JtIQkyMKvwjqfkNUu7iHlbg=;
+        b=xQiYev41xmOuC33oT42Zdu+Uv7jyzqWDj/5p0fcwjb/F1TKP6ODSiJBrZENyv9o2ad
+         HRXlLlppMPfZ6gIeifaMzuKjjAn7r09hBEaN9sakOY3aGtH23ZH8YJCVJqG2hSk5Wkgc
+         MBz1lJb/tzTSlNb5rpqd3Fa+BpRVovy3zr9VwqIKhjEdIQNY2GTdbsj6qQ9+FWaSoFMQ
+         Jkuxkf6ARA8qM4b9fK6E22zW+bXUtyk8a1Nxv7D5K+jatE47LJJi2egUcF+KIuI4Roxn
+         RtblAZ9JOEClq463FnyRYaJO73J0HdTwqlkH2Dwkm7Do5lvNi1J4aogaCG0aroP2Qnz7
+         /h1g==
+X-Gm-Message-State: AOAM53240CyxzvaUTZtNLnFVgjvTyD4Elx4vLO4U/JDLG8Alf9WauS3b
+        OKOzftO9R5xVb6/OUqBA68XxOI8oJhB2nUcC/lPRFA==
+X-Google-Smtp-Source: ABdhPJy0DlR705Ah0+fGAR1nXu6MtRzoDI9YVuzJ2py+sFJXiivlJe1cD+E7/rPK/Qxr22MYRwaDWsVs1Slx/xcEmq8=
+X-Received: by 2002:a92:6012:0:b0:2bd:fb5f:d627 with SMTP id
+ u18-20020a926012000000b002bdfb5fd627mr12057777ilb.86.1649601750444; Sun, 10
+ Apr 2022 07:42:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <20220403175544.26556-1-gerhard@engleder-embedded.com>
+ <20220403175544.26556-5-gerhard@engleder-embedded.com> <20220410072930.GC212299@hoboy.vegasvil.org>
+ <CANr-f5xhH31yF8UOmM=ktWULyUugBGDoHzOiYZggiDPZeTbdrw@mail.gmail.com> <20220410134215.GA258320@hoboy.vegasvil.org>
+In-Reply-To: <20220410134215.GA258320@hoboy.vegasvil.org>
+From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+Date:   Sun, 10 Apr 2022 16:42:19 +0200
+Message-ID: <CANr-f5xriLzQ+3xtM+iV8ahu=J1mA7ixbc49f0i2jxkySthTdQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 4/5] ptp: Support late timestamp determination
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, yangbo.lu@nxp.com,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, mlichvar@redhat.com,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SPDX
-*.h use /* */ style comments
+> > > > @@ -887,18 +885,28 @@ void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
+> > > >       if (shhwtstamps &&
+> > > >           (sk->sk_tsflags & SOF_TIMESTAMPING_RAW_HARDWARE) &&
+> > > >           !skb_is_swtx_tstamp(skb, false_tstamp)) {
+> > > > +             rcu_read_lock();
+> > > > +             orig_dev = dev_get_by_napi_id(skb_napi_id(skb));
+> > >
+> > > __sock_recv_timestamp() is hot path.
+> > >
+> > > No need to call dev_get_by_napi_id() for the vast majority of cases
+> > > using plain old MAC time stamping.
+> >
+> > Isn't dev_get_by_napi_id() called most of the time anyway in put_ts_pktinfo()?
+>
+> No.  Only when SOF_TIMESTAMPING_OPT_PKTINFO is requested.
 
-Spelling replacements
-commnunication to communication
-adsress to address
-procotol to protocol
-addtional to additional
-kown to know
-negotiaion to negotiation
-mssage to message
+You are right, my fault.
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/net/wireless/intel/iwlwifi/mei/iwl-mei.h    |  6 +++---
- drivers/net/wireless/intel/iwlwifi/mei/main.c       |  2 +-
- drivers/net/wireless/intel/iwlwifi/mei/sap.h        | 10 +++++-----
- drivers/net/wireless/intel/iwlwifi/mei/trace-data.h |  2 +-
- drivers/net/wireless/intel/iwlwifi/mei/trace.h      |  2 +-
- 5 files changed, 11 insertions(+), 11 deletions(-)
+> > That's the reason for the removal of a separate flag, which signals the need to
+> > timestamp determination based on address/cookie. I thought there is no need
+> > for that flag, as netdev is already available later in the existing code.
+> >
+> > > Make this conditional on (sk->sk_tsflags & SOF_TIMESTAMPING_BIND_PHC).
+> >
+> > This flag tells netdev_get_tstamp() which timestamp is required. If it
+> > is not set, then
+> > netdev_get_tstamp() has to deliver the normal timestamp as always. But
+> > this normal
+> > timestamp is only available via address/cookie. So netdev_get_tstamp() must be
+> > called.
+>
+> It should be this:
+>
+> - normal, non-vclock:   use hwtstamps->hwtstamp directly
+> - vclock:               use slower path with lookup
+>
+> I don't see why you can't implement that.
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mei/iwl-mei.h b/drivers/net/wireless/intel/iwlwifi/mei/iwl-mei.h
-index 67122cfa2292..135686bf602c 100644
---- a/drivers/net/wireless/intel/iwlwifi/mei/iwl-mei.h
-+++ b/drivers/net/wireless/intel/iwlwifi/mei/iwl-mei.h
-@@ -1,4 +1,4 @@
--// SPDX-License-Identifier: GPL-2.0-only
-+/* SPDX-License-Identifier: GPL-2.0-only */
- /*
-  * Copyright (C) 2021 Intel Corporation
-  */
-@@ -13,7 +13,7 @@
- /**
-  * DOC: Introduction
-  *
-- * iwlmei is the kernel module that is in charge of the commnunication between
-+ * iwlmei is the kernel module that is in charge of the communication between
-  * the iwlwifi driver and the CSME firmware's WLAN driver. This communication
-  * uses the SAP protocol defined in another file.
-  * iwlwifi can request or release ownership on the WiFi device through iwlmei.
-@@ -346,7 +346,7 @@ void iwl_mei_set_rfkill_state(bool hw_rfkill, bool sw_rfkill);
- /**
-  * iwl_mei_set_nic_info() - set mac address
-  * @mac_address: mac address to set
-- * @nvm_address: NVM mac adsress to set
-+ * @nvm_address: NVM mac address to set
-  *
-  * This function must be called upon mac address change.
-  */
-diff --git a/drivers/net/wireless/intel/iwlwifi/mei/main.c b/drivers/net/wireless/intel/iwlwifi/mei/main.c
-index b4f45234cfc8..0bb550e364ef 100644
---- a/drivers/net/wireless/intel/iwlwifi/mei/main.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mei/main.c
-@@ -1854,7 +1854,7 @@ static int iwl_mei_probe(struct mei_cl_device *cldev,
- 	iwl_mei_dbgfs_register(mei);
- 
- 	/*
--	 * We now have a Rx function in place, start the SAP procotol
-+	 * We now have a Rx function in place, start the SAP protocol
- 	 * we expect to get the SAP_ME_MSG_START_OK response later on.
- 	 */
- 	mutex_lock(&iwl_mei_mutex);
-diff --git a/drivers/net/wireless/intel/iwlwifi/mei/sap.h b/drivers/net/wireless/intel/iwlwifi/mei/sap.h
-index be1456dea484..701373006dc8 100644
---- a/drivers/net/wireless/intel/iwlwifi/mei/sap.h
-+++ b/drivers/net/wireless/intel/iwlwifi/mei/sap.h
-@@ -1,4 +1,4 @@
--// SPDX-License-Identifier: GPL-2.0-only
-+/* SPDX-License-Identifier: GPL-2.0-only */
- /*
-  * Copyright (C) 2021 Intel Corporation
-  */
-@@ -25,7 +25,7 @@
-  *
-  * Since this messaging system cannot support high amounts of
-  * traffic, iwlwifi and the CSME firmware's WLAN driver have an
-- * addtional communication pipe to exchange information. The body
-+ * additional communication pipe to exchange information. The body
-  * of the message is copied to a shared area and the message that
-  * goes over the ME interface just signals the other side
-  * that a new message is waiting in the shared area. The ME
-@@ -55,7 +55,7 @@
- /**
-  * DOC: Host and driver state messages
-  *
-- * In order to let CSME konw about the host state and the host driver state,
-+ * In order to let CSME know about the host state and the host driver state,
-  * the host sends messages that let CSME know about the host's state.
-  * When the host driver is loaded, the host sends %SAP_MSG_NOTIF_WIFIDR_UP.
-  * When the host driver is unloaded, the host sends %SAP_MSG_NOTIF_WIFIDR_DOWN.
-@@ -76,7 +76,7 @@
-  * DOC: Ownership
-  *
-  * The device can be controlled either by the CSME firmware or
-- * by the host driver: iwlwifi. There is a negotiaion between
-+ * by the host driver: iwlwifi. There is a negotiation between
-  * those two entities to determine who controls (or owns) the
-  * device. Since the CSME can control the device even when the
-  * OS is not working or even missing, the CSME can request the
-@@ -136,7 +136,7 @@ enum iwl_sap_me_msg_id {
-  * struct iwl_sap_me_msg_hdr - the header of the ME message
-  * @type: the type of the message, see &enum iwl_sap_me_msg_id.
-  * @seq_num: a sequence number used for debug only.
-- * @len: the length of the mssage.
-+ * @len: the length of the message.
-  */
- struct iwl_sap_me_msg_hdr {
- 	__le32 type;
-diff --git a/drivers/net/wireless/intel/iwlwifi/mei/trace-data.h b/drivers/net/wireless/intel/iwlwifi/mei/trace-data.h
-index 83639c6225ca..15cb0bb4e9dc 100644
---- a/drivers/net/wireless/intel/iwlwifi/mei/trace-data.h
-+++ b/drivers/net/wireless/intel/iwlwifi/mei/trace-data.h
-@@ -1,4 +1,4 @@
--// SPDX-License-Identifier: GPL-2.0-only
-+/* SPDX-License-Identifier: GPL-2.0-only */
- /*
-  * Copyright(c) 2021        Intel Corporation
-  */
-diff --git a/drivers/net/wireless/intel/iwlwifi/mei/trace.h b/drivers/net/wireless/intel/iwlwifi/mei/trace.h
-index 45ecb22ec84a..20ff836733bb 100644
---- a/drivers/net/wireless/intel/iwlwifi/mei/trace.h
-+++ b/drivers/net/wireless/intel/iwlwifi/mei/trace.h
-@@ -1,4 +1,4 @@
--// SPDX-License-Identifier: GPL-2.0-only
-+/* SPDX-License-Identifier: GPL-2.0-only */
- /*
-  * Copyright(c) 2021        Intel Corporation
-  */
--- 
-2.27.0
+I will try to implement it that way.
 
+Thank you!
+
+Gerhard
