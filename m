@@ -2,309 +2,338 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ABA324FAD77
-	for <lists+netdev@lfdr.de>; Sun, 10 Apr 2022 12:50:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B06C54FAD7E
+	for <lists+netdev@lfdr.de>; Sun, 10 Apr 2022 12:52:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237442AbiDJKwC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Apr 2022 06:52:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49038 "EHLO
+        id S237788AbiDJKyv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Apr 2022 06:54:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230073AbiDJKwA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Apr 2022 06:52:00 -0400
-Received: from IND01-BMX-obe.outbound.protection.outlook.com (mail-bmxind01olkn2109.outbound.protection.outlook.com [40.92.103.109])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1476652E4D;
-        Sun, 10 Apr 2022 03:49:49 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EL/jjQKXWGEg9WCgWwDwTqCOIOrKCHVFCkWjrupUhdKR3nZqYqqJUeL8MTh0/9DL8hkxCor+KDGNBIp9GCzYt599fhr87SRjgRiqumjkVFwppDWKQJZrAZkvJw66nF8chp4LZEKD9odY0Jx3QH/k4xojJBssvYy9+MDEcGghPXib+7DIsR94dcjj/Y24P0KEpqyI+dHJipqAtVeAPyTTT9mb6NmiUBR70mUvZw9fW/Z/cQtMsWiGLLD5ZJ9wR7TDZSEpGRWdZdHzfjFtmTaOETqjraBs3AFrEQtB6lYScaAcUG5zNHYAk8fExT0Ikgcpz7YMbdBkRXJZEBKy841OvA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HRYT9HIVLI3JsGOF2U/SbYZObbuVI/T8O37W1Car8WE=;
- b=fOBK8mGfaAVd2CmxnaAFAYY/YSbmGW6nuE+Ll49qWAIHRnHjxZc8NTUP7j+Wkx6eGXBOHtPYQtYoRMvjE/MRhVgsBpxbvUgvVilkNDKBoYDfGmFmR/FoLSgLJCdSGxnjXVBnOy9CTu6L5nEG3JUUtRj4kttph3yfsJS6237rJjAPRm7x4FssEqSmtnT46fwrPUZGRI+u0wXtHjvw65t8wcFxCCmmZNVnpuY0ZEiPeqNwvAzaPsNX/YbnfMYifcvLVwIjLkQx3ulSfABYCYjshsWluFSR69UGBVjJvPkM7sxwf1f8qalr3xFsnxxtMGOL0ucbYrhTRpZ2AqKYIb0xIQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=live.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HRYT9HIVLI3JsGOF2U/SbYZObbuVI/T8O37W1Car8WE=;
- b=Nq9co3KHin5PJ0GpCVJVUIcrfD559PS+EzHaIrp5d9DQtDAVj7clUDeFmZ5V9m1Y7075uXzb48c4fbBjnMqs26Q4NsW8w99a+c1a9q+HpDnaPKfsNNrzXZkgktbVv4YVG9pUmKa4FiIHbVQpQaOLgXhGAhTNUrtEqRSXVpFuKooZmrKQclY/90UuV023HyjdB5Cb3+NYDQ9fxEBeffikonEjNT1D0TF95K60puro2mhCicLP/0+1HEoTEDPuIdYS9dtPJzTTSHq9sFN3x+DhPGUAfTmYqqRoBHY8ez7Zb0wJ89rVypwa1CL8rX9R4ruAardWEP5rGCXDsRcGpWsG4A==
-Received: from PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM (2603:1096:c01:1b::13)
- by PNXPR01MB6803.INDPRD01.PROD.OUTLOOK.COM (2603:1096:c01:a4::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Sun, 10 Apr
- 2022 10:49:40 +0000
-Received: from PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM
- ([fe80::dc4b:b757:214c:22cd]) by PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM
- ([fe80::dc4b:b757:214c:22cd%7]) with mapi id 15.20.5144.029; Sun, 10 Apr 2022
- 10:49:40 +0000
-From:   Aditya Garg <gargaditya08@live.com>
-To:     "jarkko@kernel.org" <jarkko@kernel.org>,
-        "zohar@linux.ibm.com" <zohar@linux.ibm.com>,
-        "dmitry.kasatkin@gmail.com" <dmitry.kasatkin@gmail.com>,
-        "jmorris@namei.org" <jmorris@namei.org>,
-        "serge@hallyn.com" <serge@hallyn.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "kafai@fb.com" <kafai@fb.com>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "yhs@fb.com" <yhs@fb.com>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>
-CC:     "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Orlando Chamberlain <redecorating@protonmail.com>,
-        "admin@kodeit.net" <admin@kodeit.net>
-Subject: [PATCH v3 RESEND] efi: Do not import certificates from UEFI Secure
- Boot for T2 Macs
-Thread-Topic: [PATCH v3 RESEND] efi: Do not import certificates from UEFI
- Secure Boot for T2 Macs
-Thread-Index: AQHYTMiu7fv9f4beLU+/MNIc0GPCKQ==
-Date:   Sun, 10 Apr 2022 10:49:40 +0000
-Message-ID: <652C3E9E-CB97-4C70-A961-74AF8AEF9E39@live.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-tmn:  [Dk+Bk30Vq8pr0Mf13vFncptVWdm2hXtW]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 7a20533a-22d9-416d-ec26-08da1adfd0aa
-x-ms-traffictypediagnostic: PNXPR01MB6803:EE_
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: mYd/zd2ozv+maSKzZYzunUD8kQHUF4ywu1rIOz7DuAMdtV8JGR2YiCfInTtNbH0m1ZESCJmL0n1FBNHR9jloe8KVZUiIgJIWjyWXBnFeRhxxftgFqUIVNQJO/pqt8U6jpUpGsC2UBZDxhqhvdBpygm5FH9DLvqNbA3H2uJg1rnnm0sWADDS+e/i+d217PBYlmkmQNH0jqGtVbfzs3Eb7ZgjYi7FNBPj3Pirdd+DNJSJctkVPy3Yj+3rNusVA2TmIKaN0nYh8LeGcL8hDntW1btetbJWYZnbTOAjKcR5LUWuBmyIhb9+GP+uhmdOiJZ59FBrpk/BLYlFcORehS8HLUpFCkXWh+EVDHumEXzinpnQU5AW76rj5Yz42FprW1cpa9TkdF1DqOKzJcVJPwMIjeEPd/fWTMlM0OVIhmCCOHqR6QE5obDmPHzmbFLd4x4yAM8wFCoF38B7xngGuR9gibtgVaVCk4rjb/3VinadJfSNdF1VDWkdimg3sylZgKrfiTjBt5VQvJR5M9Vf4ikUEQjlWC4HavoBdkWcxIFaATfTbAUlt2EwT1A438hYPwtJmZSv6NeYUwARKlQGDEwnhQA==
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?d/aGMdBH4KnXkB5maKcP/vhWRHmO+fxg/QzXTX3J2fl54sHWZhLcNKswh6lQ?=
- =?us-ascii?Q?yNUgn6WIW/YSpc8GvIFOUcmdML41VwMnrk9gR90iCZUeQ+IknOWaZldMuHRh?=
- =?us-ascii?Q?bqC/xSRlQbBsFxZdyEYxPIaTIazeBxe6cyOk/6HojGyFUvEFrSrymeU67RRD?=
- =?us-ascii?Q?on8o+zyfsXK1Ce1vkGrH8aHnkIikcNaSUkTg4wTdFqlqktw7qNTTuwY1BpFg?=
- =?us-ascii?Q?NCcjLHXHTsy95h6yZZKr+gfNtkBSWxKP+nQJ8AQxP8jshwAdfzWVB6cfHuVs?=
- =?us-ascii?Q?rVLaJaDe7IX5b0SUamdqAaDlbip9W/APDpquVn7s+Rnyr4RByobnsYLZuJ3e?=
- =?us-ascii?Q?gJg35sBGz2oEoXb3zesPwtFkpWN4kYnRzafsDYwTpkSFh+XmLJvq/qZp6V59?=
- =?us-ascii?Q?Mrjhqk5ncxKa64/Yb2sMipioauHYqis7IojbEgU6VaaGBUnY8MC+e5RznWig?=
- =?us-ascii?Q?1/rTew4sWhHYZ9dVpbCE5Q/KTKCeoLRWh27a5Z0ZavtEWYScev1qbB7Jc38K?=
- =?us-ascii?Q?jmXmc0QlhlVk/FWdriB3AitkL4vdyahPqAJsxc94p/rA5qKFLPF5Kxm6A1uZ?=
- =?us-ascii?Q?ZoqgmLM9Ldc+Fz8Rri36gs+D+D/hFhAUYFnk/+2MNUq5yHypG5H2hGEvH3Nm?=
- =?us-ascii?Q?iYXbOCkf6rHT+6RAHhIsM6rc0Svn6NBdW2hD3COB49/5EOHpP5SzI2GaGa4v?=
- =?us-ascii?Q?/ws93KpkMW6oa4QKvBeZv8MMHXjXqbh5HDKLCG5CzjSoj8npYXXKAvdEm3LK?=
- =?us-ascii?Q?AUjYh69T7PKEec06qej6Lu7h3bFb2eU5RrkVtB+IcVJX9C/NmepZvIaOx1c0?=
- =?us-ascii?Q?EiYK6Kkyr7CVHWAdK7CITLui6p3cGTcOmgd8Oygnug56WAbWdRNRyJtHV2m0?=
- =?us-ascii?Q?KL5xAiWXLkpKWJznBhnbP+5PtR+Fh3v+fMNaa4KWYDVJFrnljzvOgRPEVa8b?=
- =?us-ascii?Q?LomBorsH7Hok80gXRC8exJ3z0+ORhxXuiqGIuxsd+cK95xps/a71G2tRjKT5?=
- =?us-ascii?Q?+p4rkqUhKPeOWBUrvnY14dlBhj9BOHsHxAF6hQpbFbnmQqA5NcMmtF6o0BeT?=
- =?us-ascii?Q?7NxLhAFLWnOua2Sl1JVFii53kSZRkqahnVI8riaKTfudyiS3uOENqishM7dq?=
- =?us-ascii?Q?Xbcr1mcCis5j6lV3pobve3fyQtFRQl00fxPdTjXz9fwU604ZilUXS/weLBhG?=
- =?us-ascii?Q?GMEt6dBXo0iTp6ruYpLsZa7BFyJoNdlRR9YXEki7QVCxYiYLIA+jmeKIk27g?=
- =?us-ascii?Q?Zl5rLMpRS8fp0XAhI7ir0tKRsqgXYpA4C+A2VtSc4bLioFwXaNFHOB5GV6NU?=
- =?us-ascii?Q?2cOt8fqncBeW+eiQ/M0KLcLf5/VReTHjEmSUHXJTpu3GZ/U+9Bn10iUiFrlk?=
- =?us-ascii?Q?/iAxgo06lSeGijsxW2F6773Dhi1Ibc8bnWEu1bVex8Pny0EOPDgVZ0BjlC4P?=
- =?us-ascii?Q?VoJm/GspvjE=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <19A300E8C6374B4A9B52EF1D3E2EA82F@INDPRD01.PROD.OUTLOOK.COM>
+        with ESMTP id S237695AbiDJKyr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Apr 2022 06:54:47 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66A5B53732;
+        Sun, 10 Apr 2022 03:52:36 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id o20-20020a05600c511400b0038ebbbb2ad8so31384wms.0;
+        Sun, 10 Apr 2022 03:52:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=kn52YjxRP3HqWkZew8Ipsml5lgWqK7Cz8BCyoXhoZV0=;
+        b=nRLdihQfsUp6sOWD/nbTtvNLMahUa3M3qne1N4xH/AydXioUpWdhPubJA7eKSeUhUx
+         w7d3384iWpbwTVWDQ5IUJJCPhtwaReM2CJXXTO/XSehw11KmHBhBWieY7Zk6xsXzv21m
+         skJn3JmdAjUG2epzSVL6LxvoZn5f6484C94OUEWBatIBJThlje5Vl24BLML0OAbKFBf4
+         JoK4FeewUjOWymiDKBcTdUeW+b5K4PdGOsmBQRzYKwD95fu4KTLRsOp4CBB7zCKvAzVp
+         fFBRADeBE0V+wggy8Z+EAOwfk/e0dCyodl8fN0fVs8HTJpf264mgZaTeMPaYciEiD0kr
+         o3Zw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=kn52YjxRP3HqWkZew8Ipsml5lgWqK7Cz8BCyoXhoZV0=;
+        b=MNqCXIXuRKnTaGaKFEju3uUs61AnCsgZPE7ewXqmDFbZGzMgFzX5cy7W5glf174OAY
+         Z7OTEI2TN2U2l1fAi+xaKdrDEBjQLPQJOmXBQiF5uaC177wcfUOyVDVsIBvaP3lWtFyk
+         WZl82HagHylM5VRdYWC9lA4fnvb4bM4zwNbOECdd3j9UsKsyJvNGhCtYo3sblVOvaUzC
+         QNJNyU4lp+qki6DOIe3+FaPx9BZF4IgG/3I2yqPotghkCdMesqOckX203wz72td1fsaZ
+         BDL03HKUQ5tB+yjhh7J+0JHRLmgm24y8kaHVXp1pPrqfYLwmtp9ctiXhaRq4/zqf6znQ
+         qLig==
+X-Gm-Message-State: AOAM532EiUlqB1dVv6oisf20C+mOCVm454tDItYsY9OxpN0ofvtrt0XY
+        Z7zrplCRgkHSplflZuEbjhM=
+X-Google-Smtp-Source: ABdhPJyNmzP4UmoC2TmYAqta8L+av7eM7X4bCLxc7XByKnN0jEFRhqTNWjgEoTqRG4ZsBe0V8cQU8g==
+X-Received: by 2002:a05:600c:5111:b0:38e:3535:b258 with SMTP id o17-20020a05600c511100b0038e3535b258mr24017702wms.169.1649587954790;
+        Sun, 10 Apr 2022 03:52:34 -0700 (PDT)
+Received: from smtpclient.apple ([109.190.253.11])
+        by smtp.gmail.com with ESMTPSA id h9-20020a05600c350900b0038cbcbcf994sm15712375wmq.36.2022.04.10.03.52.00
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 10 Apr 2022 03:52:34 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: Re: [PATCH net-next 02/15] net: dsa: sja1105: Remove usage of
+ iterator for list_add() after loop
+From:   Jakob Koschel <jakobkoschel@gmail.com>
+In-Reply-To: <FA317E17-3B09-411B-9DF6-05BDD320D988@gmail.com>
+Date:   Sun, 10 Apr 2022 12:51:56 +0200
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com, Ariel Elior <aelior@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Casper Andersson <casper.casan@gmail.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Colin Ian King <colin.king@intel.com>,
+        Michael Walle <michael@walle.cc>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Eric Dumazet <edumazet@google.com>,
+        Di Zhu <zhudi21@huawei.com>, Xu Wang <vulab@iscas.ac.cn>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>
 Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-42ed3.templateTenant
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7a20533a-22d9-416d-ec26-08da1adfd0aa
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Apr 2022 10:49:40.6769
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PNXPR01MB6803
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Message-Id: <C9081CE3-B008-48DA-A97C-76F51D4F189F@gmail.com>
+References: <20220407102900.3086255-1-jakobkoschel@gmail.com>
+ <20220407102900.3086255-3-jakobkoschel@gmail.com>
+ <20220408114120.tvf2lxvhfqbnrlml@skbuf>
+ <FA317E17-3B09-411B-9DF6-05BDD320D988@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+X-Mailer: Apple Mail (2.3696.80.82.1.1)
+X-Spam-Status: No, score=1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Aditya Garg <gargaditya08@live.com>
+Hey Vladimir,
 
-On T2 Macs, the secure boot is handled by the T2 Chip. If enabled, only
-macOS and Windows are allowed to boot on these machines. Thus we need to
-disable secure boot for Linux. If we boot into Linux after disabling
-secure boot, if CONFIG_LOAD_UEFI_KEYS is enabled, EFI Runtime services
-fail to start, with the following logs in dmesg
+> On 9. Apr 2022, at 01:54, Jakob Koschel <jakobkoschel@gmail.com> =
+wrote:
+>=20
+> Hello Vladimir,
+>=20
+>> On 8. Apr 2022, at 13:41, Vladimir Oltean <olteanv@gmail.com> wrote:
+>>=20
+>> Hello Jakob,
+>>=20
+>> On Thu, Apr 07, 2022 at 12:28:47PM +0200, Jakob Koschel wrote:
+>>> In preparation to limit the scope of a list iterator to the list
+>>> traversal loop, use a dedicated pointer to point to the found =
+element [1].
+>>>=20
+>>> Before, the code implicitly used the head when no element was found
+>>> when using &pos->list. Since the new variable is only set if an
+>>> element was found, the list_add() is performed within the loop
+>>> and only done after the loop if it is done on the list head =
+directly.
+>>>=20
+>>> Link: =
+https://lore.kernel.org/all/CAHk-=3DwgRr_D8CB-D9Kg-c=3DEHreAsk5SqXPwr9Y7k9=
+sA6cWXJ6w@mail.gmail.com/ [1]
+>>> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+>>> ---
+>>> drivers/net/dsa/sja1105/sja1105_vl.c | 14 +++++++++-----
+>>> 1 file changed, 9 insertions(+), 5 deletions(-)
+>>>=20
+>>> diff --git a/drivers/net/dsa/sja1105/sja1105_vl.c =
+b/drivers/net/dsa/sja1105/sja1105_vl.c
+>>> index b7e95d60a6e4..cfcae4d19eef 100644
+>>> --- a/drivers/net/dsa/sja1105/sja1105_vl.c
+>>> +++ b/drivers/net/dsa/sja1105/sja1105_vl.c
+>>> @@ -27,20 +27,24 @@ static int sja1105_insert_gate_entry(struct =
+sja1105_gating_config *gating_cfg,
+>>> 	if (list_empty(&gating_cfg->entries)) {
+>>> 		list_add(&e->list, &gating_cfg->entries);
+>>> 	} else {
+>>> -		struct sja1105_gate_entry *p;
+>>> +		struct sja1105_gate_entry *p =3D NULL, *iter;
+>>>=20
+>>> -		list_for_each_entry(p, &gating_cfg->entries, list) {
+>>> -			if (p->interval =3D=3D e->interval) {
+>>> +		list_for_each_entry(iter, &gating_cfg->entries, list) {
+>>> +			if (iter->interval =3D=3D e->interval) {
+>>> 				NL_SET_ERR_MSG_MOD(extack,
+>>> 						 "Gate conflict");
+>>> 				rc =3D -EBUSY;
+>>> 				goto err;
+>>> 			}
+>>>=20
+>>> -			if (e->interval < p->interval)
+>>> +			if (e->interval < iter->interval) {
+>>> +				p =3D iter;
+>>> +				list_add(&e->list, iter->list.prev);
+>>> 				break;
+>>> +			}
+>>> 		}
+>>> -		list_add(&e->list, p->list.prev);
+>>> +		if (!p)
+>>> +			list_add(&e->list, gating_cfg->entries.prev);
+>>> 	}
+>>>=20
+>>> 	gating_cfg->num_entries++;
+>>> --=20
+>>> 2.25.1
+>>>=20
+>>=20
+>> I apologize in advance if I've misinterpreted the end goal of your =
+patch.
+>> I do have a vague suspicion I understand what you're trying to =
+achieve,
+>> and in that case, would you mind using this patch instead of yours?
+>=20
+> I think you are very much spot on!
+>=20
+>> I think it still preserves the intention of the code in a clean =
+manner.
+>>=20
+>> -----------------------------[ cut here =
+]-----------------------------
+>> =46rom 7aed740750d1bc3bff6e85fd33298f5905bb4e01 Mon Sep 17 00:00:00 =
+2001
+>> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+>> Date: Fri, 8 Apr 2022 13:55:14 +0300
+>> Subject: [PATCH] net: dsa: sja1105: avoid use of type-confused =
+pointer in
+>> sja1105_insert_gate_entry()
+>>=20
+>> It appears that list_for_each_entry() leaks a type-confused pointer =
+when
+>> the iteration loop ends with no early break, since "*p" will no =
+longer
+>> point to a "struct sja1105_gate_entry", but rather to some memory in
+>> front of "gating_cfg->entries".
+>>=20
+>> This isn't actually a problem here, because if the element we insert =
+has
+>> the highest interval, therefore we never exit the loop early, =
+"p->list"
+>> (which is all that we use outside the loop) will in fact point to
+>> "gating_cfg->entries" even though "p" itself is invalid.
+>>=20
+>> Nonetheless, there are preparations to increase the safety of
+>> list_for_each_entry() by making it impossible to use the =
+encapsulating
+>> structure of the iterator element outside the loop. So something =
+needs
+>> to change here before those preparations go in, even though this
+>> constitutes legitimate use.
+>>=20
+>> Make it clear that we are not dereferencing members of the =
+encapsulating
+>> "struct sja1105_gate_entry" outside the loop, by using the regular
+>> list_for_each() iterator, and dereferencing the struct =
+sja1105_gate_entry
+>> only within the loop.
+>>=20
+>> With list_for_each(), the iterator element at the end of the loop =
+does
+>> have a sane value in all cases, and we can just use that as the =
+"head"
+>> argument of list_add().
+>>=20
+>> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+>> ---
+>> drivers/net/dsa/sja1105/sja1105_vl.c | 12 +++++++++---
+>> 1 file changed, 9 insertions(+), 3 deletions(-)
+>>=20
+>> diff --git a/drivers/net/dsa/sja1105/sja1105_vl.c =
+b/drivers/net/dsa/sja1105/sja1105_vl.c
+>> index c0e45b393fde..fe93c80fe5ef 100644
+>> --- a/drivers/net/dsa/sja1105/sja1105_vl.c
+>> +++ b/drivers/net/dsa/sja1105/sja1105_vl.c
+>> @@ -27,9 +27,15 @@ static int sja1105_insert_gate_entry(struct =
+sja1105_gating_config *gating_cfg,
+>> 	if (list_empty(&gating_cfg->entries)) {
+>> 		list_add(&e->list, &gating_cfg->entries);
+>> 	} else {
+>> -		struct sja1105_gate_entry *p;
+>> +		struct list_head *pos;
+>> +
+>> +		/* We cannot safely use list_for_each_entry()
+>> +		 * because we dereference "pos" after the loop
+>> +		 */
+>> +		list_for_each(pos, &gating_cfg->entries) {
+>> +			struct sja1105_gate_entry *p;
+>>=20
+>> -		list_for_each_entry(p, &gating_cfg->entries, list) {
+>> +			p =3D list_entry(pos, struct sja1105_gate_entry, =
+list);
+>> 			if (p->interval =3D=3D e->interval) {
+>> 				NL_SET_ERR_MSG_MOD(extack,
+>> 						 "Gate conflict");
+>> @@ -40,7 +46,7 @@ static int sja1105_insert_gate_entry(struct =
+sja1105_gating_config *gating_cfg,
+>> 			if (e->interval < p->interval)
+>> 				break;
+>> 		}
+>> -		list_add(&e->list, p->list.prev);
+>> +		list_add(&e->list, pos->prev);
+>=20
+> I was actually considering doing it this way before but wasn't sure if =
+this would be preferred.
+> I've done something like this in [1] and it does turn out quite well.
+>=20
+> I'll integrate this in the v2 series.
 
-Call Trace:
- <TASK>
- page_fault_oops+0x4f/0x2c0
- ? search_bpf_extables+0x6b/0x80
- ? search_module_extables+0x50/0x80
- ? search_exception_tables+0x5b/0x60
- kernelmode_fixup_or_oops+0x9e/0x110
- __bad_area_nosemaphore+0x155/0x190
- bad_area_nosemaphore+0x16/0x20
- do_kern_addr_fault+0x8c/0xa0
- exc_page_fault+0xd8/0x180
- asm_exc_page_fault+0x1e/0x30
-(Removed some logs from here)
- ? __efi_call+0x28/0x30
- ? switch_mm+0x20/0x30
- ? efi_call_rts+0x19a/0x8e0
- ? process_one_work+0x222/0x3f0
- ? worker_thread+0x4a/0x3d0
- ? kthread+0x17a/0x1a0
- ? process_one_work+0x3f0/0x3f0
- ? set_kthread_struct+0x40/0x40
- ? ret_from_fork+0x22/0x30
- </TASK>
----[ end trace 1f82023595a5927f ]---
-efi: Froze efi_rts_wq and disabled EFI Runtime Services
-integrity: Couldn't get size: 0x8000000000000015
-integrity: MODSIGN: Couldn't get UEFI db list
-efi: EFI Runtime Services are disabled!
-integrity: Couldn't get size: 0x8000000000000015
-integrity: Couldn't get UEFI dbx list
-integrity: Couldn't get size: 0x8000000000000015
-integrity: Couldn't get mokx list
-integrity: Couldn't get size: 0x80000000
+I've just looked at this again in a bit more detail while integrating it =
+into the patch series.
 
-This patch prevents querying of these UEFI variables, since these Macs
-seem to use a non-standard EFI hardware
+I realized that this just shifts the 'problem' to using the 'pos' =
+iterator variable after the loop.
+If the scope of the list iterator would be lowered to the list traversal =
+loop it would also make sense
+to also do it for list_for_each().
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Aditya Garg <gargaditya08@live.com>
----
-v2 :- Reduce code size of the table.
-V3 :- Close the brackets which were left open by mistake.
- .../platform_certs/keyring_handler.h          |  8 ++++
- security/integrity/platform_certs/load_uefi.c | 48 +++++++++++++++++++
- 2 files changed, 56 insertions(+)
+What do you think about doing it this way:
 
-diff --git a/security/integrity/platform_certs/keyring_handler.h b/security=
-/integrity/platform_certs/keyring_handler.h
-index 2462bfa08..cd06bd607 100644
---- a/security/integrity/platform_certs/keyring_handler.h
-+++ b/security/integrity/platform_certs/keyring_handler.h
-@@ -30,3 +30,11 @@ efi_element_handler_t get_handler_for_db(const efi_guid_=
-t *sig_type);
- efi_element_handler_t get_handler_for_dbx(const efi_guid_t *sig_type);
-=20
- #endif
-+
-+#ifndef UEFI_QUIRK_SKIP_CERT
-+#define UEFI_QUIRK_SKIP_CERT(vendor, product) \
-+		 .matches =3D { \
-+			DMI_MATCH(DMI_BOARD_VENDOR, vendor), \
-+			DMI_MATCH(DMI_PRODUCT_NAME, product), \
-+		},
-+#endif
-diff --git a/security/integrity/platform_certs/load_uefi.c b/security/integ=
-rity/platform_certs/load_uefi.c
-index 08b6d12f9..f246c8732 100644
---- a/security/integrity/platform_certs/load_uefi.c
-+++ b/security/integrity/platform_certs/load_uefi.c
-@@ -3,6 +3,7 @@
- #include <linux/kernel.h>
- #include <linux/sched.h>
- #include <linux/cred.h>
-+#include <linux/dmi.h>
- #include <linux/err.h>
- #include <linux/efi.h>
- #include <linux/slab.h>
-@@ -12,6 +13,32 @@
- #include "../integrity.h"
- #include "keyring_handler.h"
-=20
-+/* Apple Macs with T2 Security chip don't support these UEFI variables.
-+ * The T2 chip manages the Secure Boot and does not allow Linux to boot
-+ * if it is turned on. If turned off, an attempt to get certificates
-+ * causes a crash, so we simply return 0 for them in each function.
-+ */
-+
-+static const struct dmi_system_id uefi_skip_cert[] =3D {
-+
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,1") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,2") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,3") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,4") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,1") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,2") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,3") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,4") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir8,1") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir8,2") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir9,1") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacMini8,1") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacPro7,1") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "iMac20,1") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "iMac20,2") },
-+	{ }
-+};
-+
- /*
-  * Look to see if a UEFI variable called MokIgnoreDB exists and return tru=
-e if
-  * it does.
-@@ -21,12 +48,18 @@
-  * is set, we should ignore the db variable also and the true return indic=
-ates
-  * this.
-  */
-+
- static __init bool uefi_check_ignore_db(void)
- {
- 	efi_status_t status;
- 	unsigned int db =3D 0;
- 	unsigned long size =3D sizeof(db);
- 	efi_guid_t guid =3D EFI_SHIM_LOCK_GUID;
-+	const struct dmi_system_id *dmi_id;
-+
-+	dmi_id =3D dmi_first_match(uefi_skip_cert);
-+	if (dmi_id)
-+		return 0;
-=20
- 	status =3D efi.get_variable(L"MokIgnoreDB", &guid, NULL, &size, &db);
- 	return status =3D=3D EFI_SUCCESS;
-@@ -41,6 +74,11 @@ static __init void *get_cert_list(efi_char16_t *name, ef=
-i_guid_t *guid,
- 	unsigned long lsize =3D 4;
- 	unsigned long tmpdb[4];
- 	void *db;
-+	const struct dmi_system_id *dmi_id;
-+
-+	dmi_id =3D dmi_first_match(uefi_skip_cert);
-+	if (dmi_id)
-+		return 0;
-=20
- 	*status =3D efi.get_variable(name, guid, NULL, &lsize, &tmpdb);
- 	if (*status =3D=3D EFI_NOT_FOUND)
-@@ -85,6 +123,11 @@ static int __init load_moklist_certs(void)
- 	unsigned long moksize;
- 	efi_status_t status;
- 	int rc;
-+	const struct dmi_system_id *dmi_id;
-+
-+	dmi_id =3D dmi_first_match(uefi_skip_cert);
-+	if (dmi_id)
-+		return 0;
-=20
- 	/* First try to load certs from the EFI MOKvar config table.
- 	 * It's not an error if the MOKvar config table doesn't exist
-@@ -138,6 +181,11 @@ static int __init load_uefi_certs(void)
- 	unsigned long dbsize =3D 0, dbxsize =3D 0, mokxsize =3D 0;
- 	efi_status_t status;
- 	int rc =3D 0;
-+	const struct dmi_system_id *dmi_id;
-+
-+	dmi_id =3D dmi_first_match(uefi_skip_cert);
-+	if (dmi_id)
-+		return 0;
-=20
- 	if (!efi_rt_services_supported(EFI_RT_SUPPORTED_GET_VARIABLE))
- 		return false;
---=20
-2.25.1
+diff --git a/drivers/net/dsa/sja1105/sja1105_vl.c =
+b/drivers/net/dsa/sja1105/sja1105_vl.c
+index b7e95d60a6e4..f5b0502c1098 100644
+--- a/drivers/net/dsa/sja1105/sja1105_vl.c
++++ b/drivers/net/dsa/sja1105/sja1105_vl.c
+@@ -28,6 +28,7 @@ static int sja1105_insert_gate_entry(struct =
+sja1105_gating_config *gating_cfg,
+                list_add(&e->list, &gating_cfg->entries);
+        } else {
+                struct sja1105_gate_entry *p;
++               struct list_head *pos =3D NULL;
 
+                list_for_each_entry(p, &gating_cfg->entries, list) {
+                        if (p->interval =3D=3D e->interval) {
+@@ -37,10 +38,14 @@ static int sja1105_insert_gate_entry(struct =
+sja1105_gating_config *gating_cfg,
+                                goto err;
+                        }
 
+-                       if (e->interval < p->interval)
++                       if (e->interval < p->interval) {
++                               pos =3D &p->list;
+                                break;
++                       }
+                }
+-               list_add(&e->list, p->list.prev);
++               if (!pos)
++                       pos =3D &gating_cfg->entries;
++               list_add(&e->list, pos->prev);
+        }
+
+        gating_cfg->num_entries++;
+--
+
+>=20
+> Thanks for the suggestion.
+>=20
+>> 	}
+>>=20
+>> 	gating_cfg->num_entries++;
+>> -----------------------------[ cut here =
+]-----------------------------
+>=20
+> [1] =
+https://lore.kernel.org/linux-kernel/20220407102900.3086255-12-jakobkosche=
+l@gmail.com/
+>=20
+> 	Jakob
+
+Thanks,
+Jakob=
