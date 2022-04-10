@@ -2,146 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D8EE4FAEC9
-	for <lists+netdev@lfdr.de>; Sun, 10 Apr 2022 18:11:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E65324FAED6
+	for <lists+netdev@lfdr.de>; Sun, 10 Apr 2022 18:19:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243540AbiDJQNI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Apr 2022 12:13:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56974 "EHLO
+        id S238514AbiDJQVu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Apr 2022 12:21:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243476AbiDJQNF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Apr 2022 12:13:05 -0400
-Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B3214831C
-        for <netdev@vger.kernel.org>; Sun, 10 Apr 2022 09:10:54 -0700 (PDT)
-Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-e2afb80550so2887452fac.1
-        for <netdev@vger.kernel.org>; Sun, 10 Apr 2022 09:10:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=xK3D8ISXCcFBiXoJXWBOc3gprGb/nCQ0EaK1U8YPw3Y=;
-        b=p3nfMx250sVmKpQD+UFbrUg4qHnQukWo/OzpkqXFRuCwa69pG/1aMboPWquPRYRoMk
-         vUY8Zg58gPz5BK7i/krMA6eisxJlT2mjx4Rx9PgZRACkUC2ex3q+I0s4BnlcDrO9ruoU
-         fWr9AlGFPESvOlzyfDXg5LVn0jas1WTpSyESY+5m8uuVR0g6JeyAQNkYqZAhR3kxNsQD
-         TQLTrSzaGgpJUG5fSWcB95QfeX5cBg5opFMrY9fLEyyHzZBWSmt7jXfCXy9Rbd2Yqotm
-         lNGrbV5/0Lzeh1NikQol3YYDhki7qGVaNwkHkf6bPkzJ1668nR5bti11dd4khxIf91ZB
-         X4Ug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=xK3D8ISXCcFBiXoJXWBOc3gprGb/nCQ0EaK1U8YPw3Y=;
-        b=CIdv50gYgJ+xbSQl9ZIK5MMPehMRTUPkBmOQz8kPSvYnVtQSS7CNNLMcO3GmwHhT47
-         Uc+zCOmKjB6ktuIHyMy3pH1OwaeFC/ZLq6AdUnvTUyVAABYRZqFy9iFcZi4/3V/Wymrl
-         eMOXEgz+lsMGCj7eY3iEr84Kzl8EAUHq1GI7isthjFb8xiXXlLu/juVzwyqsboffOAIP
-         Y8QZFoCKenPz29hcKIZKD0xLd+FmpAJG9AWxj1Ld+9xlHMEVrqvU0IUCu5XPKsREcXI5
-         zGMqBqcX80RsoyqQwjD+AZ3+nQd1QzYdUdWuO6NGwR4xSToUQZafC2zOQL1fX8DREsu7
-         ltsA==
-X-Gm-Message-State: AOAM533ECPCWTpHfhlpmDwpE/XbsgKM8QSvmlc15o/i+yiygOlC2eNAx
-        kDstDFW73cHDTB9aJZC85AkGaFs/Ht4=
-X-Google-Smtp-Source: ABdhPJySFAvPI1aIQ+iTfXvG8vm1NecCuoMPSpA9y6yKJUBPBcYnqcW6kVnpSIMIAS8QTzQhgH4a0g==
-X-Received: by 2002:a05:6871:793:b0:db:360c:7f5e with SMTP id o19-20020a056871079300b000db360c7f5emr12239275oap.218.1649607053874;
-        Sun, 10 Apr 2022 09:10:53 -0700 (PDT)
-Received: from pop-os.attlocal.net ([2600:1700:65a0:ab60:9a32:f478:4bc0:f027])
-        by smtp.gmail.com with ESMTPSA id v21-20020a4ade95000000b00320f814c73bsm10550200oou.47.2022.04.10.09.10.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Apr 2022 09:10:53 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Subject: [Patch bpf-next v1 4/4] skmsg: get rid of unncessary memset()
-Date:   Sun, 10 Apr 2022 09:10:42 -0700
-Message-Id: <20220410161042.183540-5-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220410161042.183540-1-xiyou.wangcong@gmail.com>
-References: <20220410161042.183540-1-xiyou.wangcong@gmail.com>
+        with ESMTP id S236321AbiDJQVu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Apr 2022 12:21:50 -0400
+Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DCAD4754D;
+        Sun, 10 Apr 2022 09:19:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=iXhxaxOJ7zcu/qjQPnyjomESbF8vvrLASyS5P7s+x3k=; b=jmLugh90t2msM6S5E0h/SNUMBJ
+        Jv6yqUTaFeAFbb7FYRdELoxxH0oWEHMbSwRjaKIKvQEbkPw5MwI9O0y+IkWMx2ARzMaeyKxVXiuoo
+        behJgtO3xLf5mVDLclw4bFjFQwNqfAV/c7pgYWnHfZqUyPEWKcVZDUC46t0tvBeCMtHHhQ1gyq5um
+        Sr7GOfuEE0OCvaYgG5dMli7kIWd0HlTlTKxJY6JD35a/hSo1DCHcZTGv5P8VGVH6p5k20m8mJZp71
+        pyxKDXTc0Vdd/67XGATa1+IexLIkZO8eKvreUVShnE2JVRsG4XcQN6spPPsR003BDdMsBIfqxwWyC
+        keHSHbGbYtWdH0Hv7tFc5WMwvNtG7XRY0Fwx+7MQ6ML2L2Unf7xZSGMYeoSv/bhxChyYRbmxUCKTq
+        FQplaaFeifWf7JXk1Mdy3kXJl1sArYGawiaD5CrvL8huHA9Yro+WYkU0yKNwgyIUoE+bh2dnRIJu2
+        SwqhS8oN/OWhKx9mMBMa9Kp1H/4x8uopsih9WyO+KIRKV7KCiNyFRhMhU2LD1fgi+f/W2HOMBzEiw
+        6PZ/1tcH2+ksytYHCNrG9E0XvrM5UWOvuNHu8PNhuMyOEhlMzcFGz9Eh5p5Wvyf8Qppb3U51NfJ+P
+        jnSF4gbokxB+HPZfHa8OjOg+xXy2OB33SqY5nyBDg=;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     asmadeus@codewreck.org
+Cc:     David Kahurani <k.kahurani@gmail.com>, davem@davemloft.net,
+        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        lucho@ionkov.net, netdev@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net,
+        David Howells <dhowells@redhat.com>, Greg Kurz <groug@kaod.org>
+Subject: Re: 9p fs-cache tests/benchmark (was: 9p fscache Duplicate cookie detected)
+Date:   Sun, 10 Apr 2022 18:18:38 +0200
+Message-ID: <1966295.VQPMLLWD4E@silver>
+In-Reply-To: <9591612.lsmsJCMaJN@silver>
+References: <CAAZOf26g-L2nSV-Siw6mwWQv1nv6on8c0fWqB4bKmX73QAFzow@mail.gmail.com>
+ <3791738.ukkqOL8KQD@silver> <9591612.lsmsJCMaJN@silver>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <cong.wang@bytedance.com>
+On Samstag, 9. April 2022 13:16:11 CEST Christian Schoenebeck wrote:
+> On Mittwoch, 30. M=E4rz 2022 14:21:16 CEST Christian Schoenebeck wrote:
+> > I made some tests & benchmarks regarding the fs-cache issue of 9p, runn=
+ing
+> > different kernel versions and kernel configurations in comparison.
+> [...]
+> > Case  Linux kernel version           .config  msize    cache  duration =
+ host cpu  errors/warnings
+> >
+> > A)    5.17.0+[2] + msize patches[1]  debug    4186112  mmap   20m 40s  =
+ ~80%      none
+> > B)    5.17.0+[2] + msize patches[1]  debug    4186112  loose  31m 28s  =
+ ~35%      several errors (compilation completed)
+> > C)    5.17.0+[2] + msize patches[1]  debug    507904   mmap   20m 25s  =
+ ~84%      none
+> > D)    5.17.0+[2] + msize patches[1]  debug    507904   loose  31m 2s   =
+ ~33%      several errors (compilation completed)
+> > E)    5.17.0+[2]                     debug    512000   mmap   23m 45s  =
+ ~75%      none
+> > F)    5.17.0+[2]                     debug    512000   loose  32m 6s   =
+ ~31%      several errors (compilation completed)
+> > G)    5.17.0+[2]                     release  512000   mmap   23m 18s  =
+ ~76%      none
+> > H)    5.17.0+[2]                     release  512000   loose  32m 33s  =
+ ~31%      several errors (compilation completed)
+> > I)    5.17.0+[2] + msize patches[1]  release  4186112  mmap   20m 30s  =
+ ~83%      none
+> > J)    5.17.0+[2] + msize patches[1]  release  4186112  loose  31m 21s  =
+ ~31%      several errors (compilation completed)
+> > K)    5.10.84                        release  512000   mmap   39m 20s  =
+ ~80%      none
+> > L)    5.10.84                        release  512000   loose  13m 40s  =
+ ~55%      none
+> [...]
+> > About the errors: I actually already see errors with cache=3Dloose and =
+recent
+> > kernel version just when booting the guest OS. For these tests I chose =
+some
+> > sources which allowed me to complete the build to capture some benchmar=
+k as
+> > well, I got some "soft" errors with those, but the build completed at l=
+east.
+> > I had other sources OTOH which did not complete though and aborted with
+> > certain invalid file descriptor errors, which I obviously could not use=
+ for
+> > those benchmarks here.
+>=20
+> I used git-bisect to identify the commit that broke 9p behaviour, and it =
+is
+> indeed this one:
+>=20
+> commit eb497943fa215897f2f60fd28aa6fe52da27ca6c (HEAD, refs/bisect/bad)
+> Author: David Howells <dhowells@redhat.com>
+> Date:   Tue Nov 2 08:29:55 2021 +0000
+>=20
+>     9p: Convert to using the netfs helper lib to do reads and caching
+>    =20
+>     Convert the 9p filesystem to use the netfs helper lib to handle readp=
+age,
+>     readahead and write_begin, converting those into a common issue_op fo=
+r the
+>     filesystem itself to handle.  The netfs helper lib also handles readi=
+ng
+>     from fscache if a cache is available, and interleaving reads from both
+>     sources.
 
-We always allocate skmsg with kzalloc(), so there is no need
-to call memset(0) on it, the only thing we need from
-sk_msg_init() is sg_init_marker(). So introduce a new helper
-which is just kzalloc()+sg_init_marker(), this saves an
-unncessary memset(0) for skmsg on fast path.
+I looked into the errors I get, and as far as I can see it, all misbehaviou=
+rs
+that I see, boil down to "Bad file descriptor" (EBADF) errors being the
+originating cause.
 
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Jakub Sitnicki <jakub@cloudflare.com>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
----
- net/core/skmsg.c | 23 +++++++++++++----------
- 1 file changed, 13 insertions(+), 10 deletions(-)
+The easiest misbehaviours on the guest system I can look into, are errors
+with the git client. For instance 'git fetch origin' fails this way:
 
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index 7aa37b6287e1..d165d81c1e4a 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -497,23 +497,27 @@ bool sk_msg_is_readable(struct sock *sk)
- }
- EXPORT_SYMBOL_GPL(sk_msg_is_readable);
- 
--static struct sk_msg *sk_psock_create_ingress_msg(struct sock *sk,
--						  struct sk_buff *skb)
-+static struct sk_msg *alloc_sk_msg(void)
- {
- 	struct sk_msg *msg;
- 
--	if (atomic_read(&sk->sk_rmem_alloc) > sk->sk_rcvbuf)
-+	msg = kzalloc(sizeof(*msg), __GFP_NOWARN | GFP_KERNEL);
-+	if (unlikely(!msg))
- 		return NULL;
-+	sg_init_marker(msg->sg.data, NR_MSG_FRAG_IDS);
-+	return msg;
-+}
- 
--	if (!sk_rmem_schedule(sk, skb, skb->truesize))
-+static struct sk_msg *sk_psock_create_ingress_msg(struct sock *sk,
-+						  struct sk_buff *skb)
-+{
-+	if (atomic_read(&sk->sk_rmem_alloc) > sk->sk_rcvbuf)
- 		return NULL;
- 
--	msg = kzalloc(sizeof(*msg), __GFP_NOWARN | GFP_KERNEL);
--	if (unlikely(!msg))
-+	if (!sk_rmem_schedule(sk, skb, skb->truesize))
- 		return NULL;
- 
--	sk_msg_init(msg);
--	return msg;
-+	return alloc_sk_msg();
- }
- 
- static int sk_psock_skb_ingress_enqueue(struct sk_buff *skb,
-@@ -586,13 +590,12 @@ static int sk_psock_skb_ingress(struct sk_psock *psock, struct sk_buff *skb,
- static int sk_psock_skb_ingress_self(struct sk_psock *psock, struct sk_buff *skb,
- 				     u32 off, u32 len)
- {
--	struct sk_msg *msg = kzalloc(sizeof(*msg), __GFP_NOWARN | GFP_ATOMIC);
-+	struct sk_msg *msg = alloc_sk_msg();
- 	struct sock *sk = psock->sk;
- 	int err;
- 
- 	if (unlikely(!msg))
- 		return -EAGAIN;
--	sk_msg_init(msg);
- 	skb_set_owner_r(skb, sk);
- 	err = sk_psock_skb_ingress_enqueue(skb, off, len, psock, sk, msg);
- 	if (err < 0)
--- 
-2.32.0
+=2E..
+write(3, "d16782889ee07005d1f57eb884f4a06b"..., 40) =3D 40
+write(3, "\n", 1)                       =3D 1
+close(3)                                =3D 0
+access(".git/hooks/reference-transaction", X_OK) =3D -1 ENOENT (No such fil=
+e or directory)
+openat(AT_FDCWD, ".git/logs/refs/remotes/origin/master", O_WRONLY|O_CREAT|O=
+_APPEND, 0666) =3D 3
+openat(AT_FDCWD, "/etc/localtime", O_RDONLY|O_CLOEXEC) =3D 7
+fstat(7, {st_mode=3DS_IFREG|0644, st_size=3D2326, ...}) =3D 0
+fstat(7, {st_mode=3DS_IFREG|0644, st_size=3D2326, ...}) =3D 0
+read(7, "TZif2\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\t\0\0\0\t\0\0\0\0"..., 8=
+192) =3D 2326
+lseek(7, -1467, SEEK_CUR)               =3D 859
+read(7, "TZif2\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\t\0\0\0\t\0\0\0\0"..., 8=
+192) =3D 1467
+close(7)                                =3D 0
+write(3, "d8a68c5027ef629d93b9d9519ff4da95"..., 168) =3D -1 EBADF (Bad file=
+ descriptor)
+=2E..
+error: cannot update the ref 'refs/remotes/origin/master': unable to append=
+ to '.git/logs/refs/remotes/origin/master': Bad file descriptor
+
+I tried to manually replicate those file access operations on that
+=2Egit/logs/refs/remotes/origin/master file in question, and it worked. But=
+ when
+I look at the strace output above, I see there is a close(3) call just befo=
+re
+the subsequent openat(".git/logs/refs/remotes/origin/master") call returnin=
+g 3,
+which makes me wonder, is this maybe a concurrency issue on file descriptor
+management?
+
+Ideas anyone?
+
+Best regards,
+Christian Schoenebeck
+
+
+
 
