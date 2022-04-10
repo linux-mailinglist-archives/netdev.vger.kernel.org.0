@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47D114FADE7
-	for <lists+netdev@lfdr.de>; Sun, 10 Apr 2022 14:40:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF95D4FADF9
+	for <lists+netdev@lfdr.de>; Sun, 10 Apr 2022 14:54:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241660AbiDJMmj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Apr 2022 08:42:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59590 "EHLO
+        id S232600AbiDJM47 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Apr 2022 08:56:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239170AbiDJMmc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Apr 2022 08:42:32 -0400
-Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8829145044
-        for <netdev@vger.kernel.org>; Sun, 10 Apr 2022 05:40:21 -0700 (PDT)
-Received: by mail-il1-x130.google.com with SMTP id 14so9560150ily.11
-        for <netdev@vger.kernel.org>; Sun, 10 Apr 2022 05:40:21 -0700 (PDT)
+        with ESMTP id S232667AbiDJM46 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Apr 2022 08:56:58 -0400
+Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B065C1BE8D
+        for <netdev@vger.kernel.org>; Sun, 10 Apr 2022 05:54:47 -0700 (PDT)
+Received: by mail-il1-x12d.google.com with SMTP id d3so9581998ilr.10
+        for <netdev@vger.kernel.org>; Sun, 10 Apr 2022 05:54:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=engleder-embedded-com.20210112.gappssmtp.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=g0XalX9gJfYJbM5cvVQcjErRfEOrDFoPU1kLlaoR50U=;
-        b=IJn0rVb8e5vBH3PBmMAxEqZXoBtE/OVttTFZxvc3yDk7VAwTo52UBA4xJm5HEFvFTs
-         0SqGacQmmsUAKcPuqs60stjCCKp7EC+gk9GEjlSqslgyMFOznleZrJJ03mHsosNFsxjc
-         JUtgypWWaZ7X0Tmp3zq0CF39Dm7vQ7f9IbrvLjl4KjvuITtE9ORbAlQgVDLgWRyNCEdo
-         feJk0/Hc6iuukVAyisIQIVwtc2FxNS6fF/6MUHkhvv28xSg5Ahvpx+pITxJtZVmN3l2X
-         CYC9TtVBWxGulqlTBpzSoBQI6Mcs5k8afB9F+JsEMI8NDbgUdZOgAsw/rwA0tMq8OpcP
-         sBtQ==
+        bh=axXWXIW4nKB+e9Ya+pJRTZmLVaPnsXCtOxK3jLG9vIQ=;
+        b=lcVCw8EyS1oA6R8n36ZGGlEGi41md6pmZhHZrz703VrvW9REt/OHnjqeB73igmiW2/
+         p9IvVod9/abuwaSa6pX5Q8M0NKq+r1dANmKe+1gOAla+HOrJ2jz2QGmKJAFQK4c8WnEW
+         D1ftd2j98nVOSkijsxI9BdguMDFteEnxgcuhaxRRcYdS6T+6VsIRcejFhkFfA1lSaBke
+         D3wbzjXvykAMjkJp7HHdnwwdPki2R1tmRPvMP1onHNo42uG7XV9aaFqQt9pYkC6HKneh
+         z3BMBSRoAzUBwM4AgOr2v+zv8lVON0XcNaoOIVoNlBYFaRhOWIJsabvx3J6J4PX3ZdoG
+         GBjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=g0XalX9gJfYJbM5cvVQcjErRfEOrDFoPU1kLlaoR50U=;
-        b=2Krg/XYA6mLUN/XOgvcvDzrJ9X4+7LtGCSI5MJfxxsdMcOlrChSo5xmEu9da0LKU6H
-         kBEORLf+savbM8v6OxahVeXOnyEAKT4HvkJacugVIfZbd0FNVcdvF8ybymtQ0inj0SIv
-         Eu5gNn6Fq9UgfjtSzYUciTKN9JzAXEFLukqODQ1cMYYJnojtU+bur31gUD6wkRWdLmmW
-         s/l6G3F9uL1ZAeRwUF7UAEtO7xzb4AToEUqOFvxYnpPTOynFBsvIELk59v2JwDPgVks9
-         MXswa7orNzY4yMlJ3tRMMjaQPPdFdkRwRKhJLO8NBryCSjxL1hoYzJ2vF8YkwHmHn0BO
-         Rl2g==
-X-Gm-Message-State: AOAM532mqkb2njho+Rrz6gdH/3oHhHXNqxPNGruLeZHRJXGr2Q3+P/9a
-        YtjzrpzAZaQ+3INlIPK0T/jhLqUNy7b0+BGtnqPizV6znSvBs1jv
-X-Google-Smtp-Source: ABdhPJweZ428zoHtvWde5yMkDkK4NISBjlERIA5Zx7Ydwd8w0hpNWtRFlTWix7w2uny8t8ctfpuVb2foGPZGWPvwM1A=
-X-Received: by 2002:a92:1e09:0:b0:2c6:304e:61fa with SMTP id
- e9-20020a921e09000000b002c6304e61famr12607903ile.211.1649594420962; Sun, 10
- Apr 2022 05:40:20 -0700 (PDT)
+        bh=axXWXIW4nKB+e9Ya+pJRTZmLVaPnsXCtOxK3jLG9vIQ=;
+        b=DdcnfMRvVzli9jFJC7fUINutkT2tnqND+VeWgoDFz21yv0MQx0BN1n1vs3ln9kso+M
+         MoJKRV9FLwiA4a2LE/CTkC1KI/rUB7D+P2uNv+YR/WADL+aazlgUiGnbPmI27n272w3U
+         bNtVoNmjNxpgPkGK+EQJS+c+tEGlX0f5oOeBcHN84gNsDvEPNea2dqnSCYjq93skaUea
+         I27N4LIz8xlMWSqqYUjmXQYA4GHLUv4tkygF/T6k6Jt24XRiGLMTKG8yoUUBUcf2dJTB
+         vZZj6rTQ9GbnCUVq1kjHOPT947stIo48o2qviqhtKEPqV69gllHMFWSL7f7/UVIyz+DE
+         qzTg==
+X-Gm-Message-State: AOAM531U8wD2fAmnm2he7JcNtJxTuhLg9WTYChBiuaZhlqFMbTJbi5KH
+        WS4OmFmw7wZErZqXfPZvowPF4kbdk0jLXU5KRrDVqA==
+X-Google-Smtp-Source: ABdhPJx5IXqBqX87SVqD4hlXY+29wy57joUBpSFM8qn4ftKTlUE4ip+byHsM2JzIrjPtOjIDxevaEqbfil35UMT2j/M=
+X-Received: by 2002:a05:6e02:2190:b0:2ca:6d85:4ca1 with SMTP id
+ j16-20020a056e02219000b002ca6d854ca1mr9010678ila.141.1649595286998; Sun, 10
+ Apr 2022 05:54:46 -0700 (PDT)
 MIME-Version: 1.0
 References: <20220403175544.26556-1-gerhard@engleder-embedded.com>
- <20220403175544.26556-3-gerhard@engleder-embedded.com> <20220410064751.GB212299@hoboy.vegasvil.org>
-In-Reply-To: <20220410064751.GB212299@hoboy.vegasvil.org>
+ <20220403175544.26556-5-gerhard@engleder-embedded.com> <20220410072930.GC212299@hoboy.vegasvil.org>
+In-Reply-To: <20220410072930.GC212299@hoboy.vegasvil.org>
 From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-Date:   Sun, 10 Apr 2022 14:40:10 +0200
-Message-ID: <CANr-f5zrwe6Dea9B3OshtN39mia-U2q0Kw7x6fHYqTaORs0mFw@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 2/5] ptp: Request cycles for TX timestamp
+Date:   Sun, 10 Apr 2022 14:54:36 +0200
+Message-ID: <CANr-f5xhH31yF8UOmM=ktWULyUugBGDoHzOiYZggiDPZeTbdrw@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 4/5] ptp: Support late timestamp determination
 To:     Richard Cochran <richardcochran@gmail.com>
 Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, yangbo.lu@nxp.com,
         David Miller <davem@davemloft.net>,
@@ -67,51 +67,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > The free running cycle counter of physical clocks called cycles shall be
-> > used for hardware timestamps to enable synchronisation.
-> >
-> > Introduce new flag SKBTX_HW_TSTAMP_USE_CYCLES, which signals driver to
-> > provide a TX timestamp based on cycles if cycles are supported.
-> >
-> > Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
-> > ---
-> >  include/linux/skbuff.h |  3 +++
-> >  net/core/skbuff.c      |  2 ++
-> >  net/socket.c           | 11 ++++++++++-
-> >  3 files changed, 15 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> > index 3a30cae8b0a5..aeb3ed4d6cf8 100644
-> > --- a/include/linux/skbuff.h
-> > +++ b/include/linux/skbuff.h
-> > @@ -578,6 +578,9 @@ enum {
-> >       /* device driver is going to provide hardware time stamp */
-> >       SKBTX_IN_PROGRESS = 1 << 2,
-> >
-> > +     /* generate hardware time stamp based on cycles if supported */
-> > +     SKBTX_HW_TSTAMP_USE_CYCLES = 1 << 3,
-> > +
-> >       /* generate wifi status information (where possible) */
-> >       SKBTX_WIFI_STATUS = 1 << 4,
-> >
-> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> > index 10bde7c6db44..c0f8f1341c3f 100644
-> > --- a/net/core/skbuff.c
-> > +++ b/net/core/skbuff.c
-> > @@ -4847,6 +4847,8 @@ void __skb_tstamp_tx(struct sk_buff *orig_skb,
-> >               skb_shinfo(skb)->tx_flags |= skb_shinfo(orig_skb)->tx_flags &
-> >                                            SKBTX_ANY_TSTAMP;
-> >               skb_shinfo(skb)->tskey = skb_shinfo(orig_skb)->tskey;
-> > +     } else {
-> > +             skb_shinfo(skb)->tx_flags &= ~SKBTX_HW_TSTAMP_USE_CYCLES;
+> > @@ -887,18 +885,28 @@ void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
+> >       if (shhwtstamps &&
+> >           (sk->sk_tsflags & SOF_TIMESTAMPING_RAW_HARDWARE) &&
+> >           !skb_is_swtx_tstamp(skb, false_tstamp)) {
+> > +             rcu_read_lock();
+> > +             orig_dev = dev_get_by_napi_id(skb_napi_id(skb));
 >
-> Why is this needed?
+> __sock_recv_timestamp() is hot path.
+>
+> No need to call dev_get_by_napi_id() for the vast majority of cases
+> using plain old MAC time stamping.
 
-It prevents that SKBTX_HW_TSTAMP_USE_CYCLES is set due to the call of
-skb_clone(),
-when the timestamp is delivered back to the socket. It lowers the flag
-usage, but it is not
-absolutely needed. I could remove that code.
+Isn't dev_get_by_napi_id() called most of the time anyway in put_ts_pktinfo()?
+That's the reason for the removal of a separate flag, which signals the need to
+timestamp determination based on address/cookie. I thought there is no need
+for that flag, as netdev is already available later in the existing code.
+
+> Make this conditional on (sk->sk_tsflags & SOF_TIMESTAMPING_BIND_PHC).
+
+This flag tells netdev_get_tstamp() which timestamp is required. If it
+is not set, then
+netdev_get_tstamp() has to deliver the normal timestamp as always. But
+this normal
+timestamp is only available via address/cookie. So netdev_get_tstamp() must be
+called.
 
 Thank you!
 
