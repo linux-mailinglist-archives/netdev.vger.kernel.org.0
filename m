@@ -2,62 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D8C384FB169
-	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 03:36:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC86E4FB16F
+	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 03:38:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239728AbiDKBiY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Apr 2022 21:38:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57208 "EHLO
+        id S242231AbiDKBkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Apr 2022 21:40:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230036AbiDKBiX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Apr 2022 21:38:23 -0400
-Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AF2543EEB;
-        Sun, 10 Apr 2022 18:36:10 -0700 (PDT)
-Received: by mail-qv1-xf32.google.com with SMTP id e22so12133277qvf.9;
-        Sun, 10 Apr 2022 18:36:10 -0700 (PDT)
+        with ESMTP id S231403AbiDKBkc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Apr 2022 21:40:32 -0400
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20B9944A03;
+        Sun, 10 Apr 2022 18:38:20 -0700 (PDT)
+Received: by mail-qt1-x82d.google.com with SMTP id q6so4211763qtn.4;
+        Sun, 10 Apr 2022 18:38:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=e4GkgwH8Cf5+Xk57d8WjJ96d7p3KRonjzQ3FCZd7W90=;
-        b=H3H6brXvjJkdtmxaq5yq+JtfipPNGEp5xhxyLrzDZGHtfM2M4F0x//PiDTwU1MFYg8
-         GyoSYDU69O5c0DQivLQr7QUUdlTKqC0COELV0NJdlSMXzKyF3Psc6fbXio6hsPezCBZT
-         DbtTe6BvGE6l0VdHKc9T9FlQ1TjBQ5c0B6uGudeiz6bPHB+CBd8TAIEzLw1eTgxEiVdW
-         FiHweF+vmHx5UAOd48Gg/OwW4UY6/7qm01ArhPS6V9XQSc9HcpFKnVgbfgz0tPOgQcr2
-         gFXKFfafhbCjRl0iEIrjPhimGeT2IaSsjewEmHsYLBkrfmfdVfxZRfQVOoR/+5E1XOpf
-         fa5w==
+        bh=WqzdQ/gWc4cM8zDuvt8qnP7TS4UyEHxRHkUc5zYRYUM=;
+        b=OTT04MM23HwXOpeGOpFXnh3fsftCcVfqxJxbPwNMv4w03057ztto5xcJIN6451aId6
+         QIaxV+YJe8CYfAJIJt0ojQQFjH5WMEf1baoK1rvIpDsPuLeTjBYK5ajsGl1y6KEbknlC
+         ITYTuP3AkgB0rb/Cp+3ot5mAOvXNjJu5+hPUnN0N+zswqTSc3hpQu9EpG4ksOGgx/SQ/
+         BcodUIeSlU8iX5cnE0XIfSX62Z3gAObz+v22m8wPNyeWaHNQqQrkNAnIGczu6p3vIeWP
+         ji0CzKD5y8zfvEZdU2tSc0z/CEXV6j6OqSzDWow/l33X3LO7UuwvBIvMbTuL5WbYWh6z
+         98HQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=e4GkgwH8Cf5+Xk57d8WjJ96d7p3KRonjzQ3FCZd7W90=;
-        b=HVnTN/XMbYliZP/HsnFbxKnmFNJfHMKUhJzsUW4yoSVUUzLpI9b4/8kESGBB6mdUNW
-         19oVQG8OdkzGV5G3Ndibumf5XION3yS1ITkrJ3/mE+GJXctDBcQHkRtVoI9FWShgt/6i
-         zQLEg2ZthTh0Dz6/dHyKUcBMyaNzrTmZGiYVDKOJ30VeqWdsoSTxaczCOkQEv6zpi7TW
-         mBfjV/BWChg4G2r9qNWkkw+oO85q6bFzQJAucNlZsVCJ919wb3/0gQRo2W5AieGwB4jj
-         jp57tqYl+bE0kQ90C3+M8IqMo7XRXT9524N5UCdvFL12F2XnPBYk7oNlBjBs6ychAxIA
-         YT1Q==
-X-Gm-Message-State: AOAM533PpQrk6CPvqyUeu+D9sA12pOzwwGd2uDuqM24p37YATMCFRKf2
-        cgSPRG6w4WwUBzHnoD2hH6iCKlih3js=
-X-Google-Smtp-Source: ABdhPJybI46Cuunj2Qqdpk7JajdoBLPu6o8OSbbeo/0MMW1NkzzSrVFw18O8k532OEnnoZUYXh9WNA==
-X-Received: by 2002:a05:6214:e4a:b0:444:28a7:9fb7 with SMTP id o10-20020a0562140e4a00b0044428a79fb7mr10580217qvc.30.1649640969374;
-        Sun, 10 Apr 2022 18:36:09 -0700 (PDT)
+        bh=WqzdQ/gWc4cM8zDuvt8qnP7TS4UyEHxRHkUc5zYRYUM=;
+        b=otiI/sWFUb+gQtQjKNTiFkZ7bqMAAmkjVp+FbfYRDWUBX2N+iJF+E8zUl4ud8yejK+
+         by7ZMZq7Xqqdxm5NfeM1+kB7mB18Zbol9MNaBWCkWRaL8DZDKNGGClZkDjchApVbyQbU
+         PkI8riJS1PU0iWi3GlUTD3tRRa9YfsECamW1TO5KwYpbiWNxaD7TUmh+8olzVmBMivff
+         ovIwJxID0WvJQDizy9VYFD5BwUh/hVyoKeUNhMTZRDqOyaG+4D65qqy8ajpOrs+S2MWH
+         kPSUh1psbhVJbe7oOeOgDcyTuRWUXJNKShIFPSUp1YUblE5Qt5P8P214sIhQHbpUj34I
+         qC+Q==
+X-Gm-Message-State: AOAM532cEgURpqoG5ckpCp2YiI7w2qEwu1USfGJkOAnFjU47jT7Xk2AA
+        yDOiYCA33J9pRLCvVTASUJMPi/Y8Ycc=
+X-Google-Smtp-Source: ABdhPJzNu4H4YKfUVPy80YNTAt719F2lmQ/ohbWnacIZ9s7Iyxmy9oW6WBAG3+ppKQxOoiW4e+w4Ww==
+X-Received: by 2002:ac8:5045:0:b0:2ed:974c:5a97 with SMTP id h5-20020ac85045000000b002ed974c5a97mr3375765qtm.199.1649641099239;
+        Sun, 10 Apr 2022 18:38:19 -0700 (PDT)
 Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id u5-20020a05622a198500b002ee933faf83sm1101121qtc.73.2022.04.10.18.36.06
+        by smtp.gmail.com with ESMTPSA id 64-20020a370743000000b0069a0cb6e4d5sm6989346qkh.81.2022.04.10.18.38.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Apr 2022 18:36:08 -0700 (PDT)
+        Sun, 10 Apr 2022 18:38:18 -0700 (PDT)
 From:   cgel.zte@gmail.com
 X-Google-Original-From: chi.minghao@zte.com.cn
-To:     merez@codeaurora.org
-Cc:     kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, wil6210@qti.qualcomm.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
+To:     nicolas.ferre@microchip.com
+Cc:     claudiu.beznea@microchip.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
         Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] wil6210: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
-Date:   Mon, 11 Apr 2022 01:36:02 +0000
-Message-Id: <20220411013602.2517086-1-chi.minghao@zte.com.cn>
+Subject: [PATCH] net/cadence: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Date:   Mon, 11 Apr 2022 01:38:12 +0000
+Message-Id: <20220411013812.2517212-1-chi.minghao@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -79,26 +78,67 @@ for simplifing code
 Reported-by: Zeal Robot <zealci@zte.com.cn>
 Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
- drivers/net/wireless/ath/wil6210/pm.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/cadence/macb_main.c | 22 ++++++++--------------
+ 1 file changed, 8 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/wil6210/pm.c b/drivers/net/wireless/ath/wil6210/pm.c
-index ed4df561e5c5..f521af575e9b 100644
---- a/drivers/net/wireless/ath/wil6210/pm.c
-+++ b/drivers/net/wireless/ath/wil6210/pm.c
-@@ -445,10 +445,9 @@ int wil_pm_runtime_get(struct wil6210_priv *wil)
- 	int rc;
- 	struct device *dev = wil_to_dev(wil);
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 800d5ced5800..5555daee6f13 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -337,11 +337,9 @@ static int macb_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
+ 	struct macb *bp = bus->priv;
+ 	int status;
  
--	rc = pm_runtime_get_sync(dev);
-+	rc = pm_runtime_resume_and_get(dev);
- 	if (rc < 0) {
--		wil_err(wil, "pm_runtime_get_sync() failed, rc = %d\n", rc);
--		pm_runtime_put_noidle(dev);
-+		wil_err(wil, "pm_runtime_resume_and_get() failed, rc = %d\n", rc);
- 		return rc;
- 	}
+-	status = pm_runtime_get_sync(&bp->pdev->dev);
+-	if (status < 0) {
+-		pm_runtime_put_noidle(&bp->pdev->dev);
++	status = pm_runtime_resume_and_get(&bp->pdev->dev);
++	if (status < 0)
+ 		goto mdio_pm_exit;
+-	}
  
+ 	status = macb_mdio_wait_for_idle(bp);
+ 	if (status < 0)
+@@ -391,11 +389,9 @@ static int macb_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
+ 	struct macb *bp = bus->priv;
+ 	int status;
+ 
+-	status = pm_runtime_get_sync(&bp->pdev->dev);
+-	if (status < 0) {
+-		pm_runtime_put_noidle(&bp->pdev->dev);
++	status = pm_runtime_resume_and_get(&bp->pdev->dev);
++	if (status < 0)
+ 		goto mdio_pm_exit;
+-	}
+ 
+ 	status = macb_mdio_wait_for_idle(bp);
+ 	if (status < 0)
+@@ -2745,9 +2741,9 @@ static int macb_open(struct net_device *dev)
+ 
+ 	netdev_dbg(bp->dev, "open\n");
+ 
+-	err = pm_runtime_get_sync(&bp->pdev->dev);
++	err = pm_runtime_resume_and_get(&bp->pdev->dev);
+ 	if (err < 0)
+-		goto pm_exit;
++		return err;
+ 
+ 	/* RX buffers initialization */
+ 	macb_init_rx_buffer_size(bp, bufsz);
+@@ -4134,11 +4130,9 @@ static int at91ether_open(struct net_device *dev)
+ 	u32 ctl;
+ 	int ret;
+ 
+-	ret = pm_runtime_get_sync(&lp->pdev->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(&lp->pdev->dev);
++	ret = pm_runtime_resume_and_get(&lp->pdev->dev);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	/* Clear internal statistics */
+ 	ctl = macb_readl(lp, NCR);
 -- 
 2.25.1
 
