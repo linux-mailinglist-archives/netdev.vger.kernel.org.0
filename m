@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E90374FBD58
+	by mail.lfdr.de (Postfix) with ESMTP id A17984FBD57
 	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 15:39:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346546AbiDKNlK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 09:41:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36056 "EHLO
+        id S1344612AbiDKNlJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 09:41:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343598AbiDKNlJ (ORCPT
+        with ESMTP id S1343774AbiDKNlJ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 09:41:09 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29E4F21E15
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F02D1222AE
         for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 06:38:54 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id t25so26676076lfg.7
+Received: by mail-lf1-x131.google.com with SMTP id h14so21563815lfl.2
         for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 06:38:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version:organization
-         :content-transfer-encoding;
-        bh=KP4a5Nq5xLfHHBjrnafFha3MFdJr67mljPaP7U+xutA=;
-        b=F1Dl0ogpPpEfisEpBYoUipD0dtHfWYZsL+vsWu36yEcuSnNWht4iB9T1IjrVDNe+oA
-         wmM7GmbVwYTm+tzx12ALZ9nrfvLtBsh1cOkktEHvS7YhbjL+YtND53Wgg7IEe9rsOvvv
-         LDdhVTta2Xu2Z4RDG0OmzHfuryBWnrogT1WHfoxfXTYa4IyIinbz5uRNw1QEvQQX3N9q
-         KZyOPbrJhJHwxIcO/SHOqZbCCdW5rLHrJ5hK8bi2WMvc3wb+EYhaHhDl/2r7ylQc5MRH
-         T57oax7TN3zqjTm/2bp6gct/420puw8j5X9LGnYpCmhF/vb9aF+XK2II+IJ15KhsSR7a
-         oaDw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:organization:content-transfer-encoding;
+        bh=WN01e0l1+WdxQJa+iowT/x59ccthHRPG+MX9yqwnNBA=;
+        b=k6eQUW56l8UrIWz2VghKJwhoP+InVqCMGkWpqHj8IB5vnlckcn1NfXqeDIn++xGzlB
+         TZpLNsGKadS121SKMl1/k7fKlFEG8nt1DuoJyoovAJ4f16DqP+RGMaqdt9BCzUmJaNj/
+         +PFK+YGtiPdrBSE//1i+jCmxh6PUDJcj0lps/RZsXNS8R3lWzTWXmB8CK8G+j5ylrI9N
+         E4NMTCIFy70mWuO4uo4gQFAZgjKKBPfKBiGA5ZHWieT6Tg7ncfYvtUPJWIv09VaCCNSO
+         ek/MIL8VLbZaIbMON+6Q3Iw2BXmg1QF5zg1J0MHa2v7Cx+iFzYL2FzrNP9mbYxMNgZAp
+         Jtaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :organization:content-transfer-encoding;
-        bh=KP4a5Nq5xLfHHBjrnafFha3MFdJr67mljPaP7U+xutA=;
-        b=FuwtnWFg7Vg3hyzinJHIFqtU/2IkQFRnZdexts/AV7y+4vASvMER5DyMg6xtebx2RR
-         q3BzNBwW5u5ssDLx5gINioED8Jgt6PFVfmojKqIDwii19V8xS2YbssB3kdoPxa++pcHw
-         vtz9G0blKidfP0dvYWKZsGrU/gGvTdaRG4/aluUNonQ10Grs9AZtRgyGWFBpyVxDU2dP
-         1Pgqh1Jrolbi0Fj6gqBbUy4iWXCnuSVg1zhsqrozh8ELctdRo4+ZiR+c4RbRCdWVrYew
-         gJPkHxzEnz2ZYtHHjFxep2QvYz7DF0gVVrlkYsvntuKoegyCE3auoUCsV9vGkxvkJX68
-         oXJA==
-X-Gm-Message-State: AOAM531dPB5XguTZUpEP8ES3FTQzdjIVH99aaPcqhxhMS5uAhkP0EvDL
-        N1sbAVQEMCsxv6eBkd9s/eg=
-X-Google-Smtp-Source: ABdhPJxLZjiseNnsvsyE9ERiXNC4Cju5eMhw1wxqy7+WLlloblSPYHmdBFXjkMsYrYZKCRsxH49ztw==
-X-Received: by 2002:a05:6512:3b8:b0:46b:a79a:3686 with SMTP id v24-20020a05651203b800b0046ba79a3686mr2944539lfp.350.1649684332221;
-        Mon, 11 Apr 2022 06:38:52 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:organization:content-transfer-encoding;
+        bh=WN01e0l1+WdxQJa+iowT/x59ccthHRPG+MX9yqwnNBA=;
+        b=1UFgstYDYb1cgMPhYPEHfaRdbaCPJ1Nfql7lLcT1A0rjWKtz4FZJKFJEbK4nYSTPq3
+         bVyuB9q3JvjXWmu/amESEy/pEWsnYEOLb/FYzKKigTK9XJa0tlKVjkMe2Qu9h6ZaCTfz
+         tDG2TQiJscnQxtM6W/MDCjIx9ipwctoudwMxT6XehzZDnSSceN3oI/C2ndhiP9gfjdWg
+         8LN6aXXxKxwU4NUDMOeMInlXN7N4zhicnZFHktzYGBhj8ok/H8mU4c5mnCPn+NChA53g
+         cP46oMDJ7bwc7HaRArPaLZ8m1gK21oG/6oRQObpMr5UCzbZfHUT5qMA4zfUBEuYMKJBB
+         J9zA==
+X-Gm-Message-State: AOAM533qXpU5mg6gUEP5O3Scr2T+Qs4IvtCTLBkDzUkZPZiE5inxI1LJ
+        QDzq/3cabpv3azyl3/s5yB4=
+X-Google-Smtp-Source: ABdhPJxL1DL50hKc+7ns26+XXgUelg2bDzOAYxg04ol0LvoKPy/1y7xh9WY/lhwoxpLiyuj+09tBTg==
+X-Received: by 2002:a05:6512:3046:b0:44b:121:4541 with SMTP id b6-20020a056512304600b0044b01214541mr21189810lfb.313.1649684333105;
+        Mon, 11 Apr 2022 06:38:53 -0700 (PDT)
 Received: from wbg.labs.westermo.se (h-158-174-22-128.NA.cust.bahnhof.se. [158.174.22.128])
-        by smtp.gmail.com with ESMTPSA id p12-20020a056512138c00b0044833f1cd85sm3336847lfa.62.2022.04.11.06.38.51
+        by smtp.gmail.com with ESMTPSA id p12-20020a056512138c00b0044833f1cd85sm3336847lfa.62.2022.04.11.06.38.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 06:38:51 -0700 (PDT)
+        Mon, 11 Apr 2022 06:38:52 -0700 (PDT)
 From:   Joachim Wiberg <troglobit@gmail.com>
 To:     Roopa Prabhu <roopa@nvidia.com>,
         Nikolay Aleksandrov <razor@blackwall.org>
@@ -56,87 +56,104 @@ Cc:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
         Joachim Wiberg <troglobit@gmail.com>,
         Tobias Waldekranz <tobias@waldekranz.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH RFC net-next 00/13] net: bridge: forwarding of unknown IPv4/IPv6/MAC BUM traffic
-Date:   Mon, 11 Apr 2022 15:38:24 +0200
-Message-Id: <20220411133837.318876-1-troglobit@gmail.com>
+Subject: [PATCH RFC net-next 01/13] net: bridge: add control of bum flooding to bridge itself
+Date:   Mon, 11 Apr 2022 15:38:25 +0200
+Message-Id: <20220411133837.318876-2-troglobit@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220411133837.318876-1-troglobit@gmail.com>
+References: <20220411133837.318876-1-troglobit@gmail.com>
 MIME-Version: 1.0
 Organization: Westermo Network Technologies AB
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLY,
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a proposal to improve forwarding control of BUM traffic to the
-bridge itself.  Another, related, issue regarding loss of function when
-an IP multicast router is detected, is also brought up here which can be
-a separate series in v2.
+The bridge itself is also a port, but unfortunately it does not (yet)
+have a 'struct net_bridge_port'.  However, in many cases we want to
+treat it as a proper port so concessions have been made, e.g., NULL
+port or host_joined attributes.
 
-First, we add BROPT_BCAST_FLOOD, BROPT_UNICAST_FLOOD, BROPT_MCAST_FLOOD
-flags for unknown traffic to the bridge itself, with netlink support and
-a selftest.  We ensure backwards compatible forwarding behavior is
-preserved by enabling these flags by default.  Please note however,
-these flags do not affect the behavior of IFF_PROMISC on the bridge
-interface.
+This patch is an attempt to more of the same by adding support for
+controlling flooding of unknown broadcast/unicast/multicast to the
+bridge.  Something we often also want to control in an offloaded
+switching fabric.
 
-Second, and with the above in place, we set out to verify flooding of
-unknown *and* known multicast to regular bridge ports, including the
-bridge itself.  We use `tcpdump -p` in the tests to ensure we do not
-trigger IFF_PROIMISC.  Unknown multicast should be forwarded according
-to the MCAST_FLOOD flag, and known multicast according the MDB and to
-multicast router ports.
+Signed-off-by: Joachim Wiberg <troglobit@gmail.com>
+---
+ net/bridge/br_device.c  |  4 ++++
+ net/bridge/br_input.c   | 11 ++++++++---
+ net/bridge/br_private.h |  3 +++
+ 3 files changed, 15 insertions(+), 3 deletions(-)
 
-We find that forwarding of unknown IP multicast stops[1] as soon as a
-multicast router is known.  Affecting all ports, including the bridge
-itself (this series).  The root cause for this is the classification
-`mrouters_only` in br_multicast_rcv().
+diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
+index 8d6bab244c4a..0aa7d21ac82c 100644
+--- a/net/bridge/br_device.c
++++ b/net/bridge/br_device.c
+@@ -526,6 +526,10 @@ void br_dev_setup(struct net_device *dev)
+ 	br->bridge_ageing_time = br->ageing_time = BR_DEFAULT_AGEING_TIME;
+ 	dev->max_mtu = ETH_MAX_MTU;
+ 
++	br_opt_toggle(br, BROPT_UNICAST_FLOOD, 1);
++	br_opt_toggle(br, BROPT_MCAST_FLOOD, 1);
++	br_opt_toggle(br, BROPT_BCAST_FLOOD, 1);
++
+ 	br_netfilter_rtable_init(br);
+ 	br_stp_timer_init(br);
+ 	br_multicast_init(br);
+diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+index 196417859c4a..d439b876bdf5 100644
+--- a/net/bridge/br_input.c
++++ b/net/bridge/br_input.c
+@@ -118,7 +118,8 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+ 		/* by definition the broadcast is also a multicast address */
+ 		if (is_broadcast_ether_addr(eth_hdr(skb)->h_dest)) {
+ 			pkt_type = BR_PKT_BROADCAST;
+-			local_rcv = true;
++			if (br_opt_get(br, BROPT_BCAST_FLOOD))
++				local_rcv = true;
+ 		} else {
+ 			pkt_type = BR_PKT_MULTICAST;
+ 			if (br_multicast_rcv(&brmctx, &pmctx, vlan, skb, vid))
+@@ -161,12 +162,16 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+ 			}
+ 			mcast_hit = true;
+ 		} else {
+-			local_rcv = true;
+-			br->dev->stats.multicast++;
++			if (br_opt_get(br, BROPT_MCAST_FLOOD)) {
++				local_rcv = true;
++				br->dev->stats.multicast++;
++			}
+ 		}
+ 		break;
+ 	case BR_PKT_UNICAST:
+ 		dst = br_fdb_find_rcu(br, eth_hdr(skb)->h_dest, vid);
++		if (!dst && br_opt_get(br, BROPT_UNICAST_FLOOD))
++			local_rcv = true;
+ 		break;
+ 	default:
+ 		break;
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index 18ccc3d5d296..683bd0ee4c64 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -449,6 +449,9 @@ enum net_bridge_opts {
+ 	BROPT_VLAN_BRIDGE_BINDING,
+ 	BROPT_MCAST_VLAN_SNOOPING_ENABLED,
+ 	BROPT_MST_ENABLED,
++	BROPT_UNICAST_FLOOD,
++	BROPT_MCAST_FLOOD,
++	BROPT_BCAST_FLOOD,
+ };
+ 
+ struct net_bridge {
+-- 
+2.25.1
 
-Dropping this classification of unknown IP multicast and moving the
-multicast flow handling from br_multicast_flood() to br_flood() fixes
-this problem.  The bridge now properly floods all unknown multicast, and
-this can now be controlled using the MCAST_FLOOD flag on all ports
-including the bridge itself.
-
-The use of br_flood() opens up the need for the multicast 'rport' API,
-but that is behind CONFIG_BRIDGE_IGMP_SNOOPING, which is the primary
-reason for this being an RFC series.  I'd love some feedback on how to
-go about all this, opening up that API and even the take on the issue as
-a whole.
-
-Honestly, despite taking great care to not change the bridge's default
-behavior the patch series in itself propose quite radical changes that
-alone mandate RFC status at this point.  There has been some discussion
-already on this in 20220410220324.4c3l3idubwi3w6if@skbuf and I expect
-more disucssion here.
-
-Note: this series builds upon my previous patch for host l2 mdb entries,
-      20220411084054.298807-1-troglobit@gmail.com, extending the test
-      bridge_mdb.sh
-
-Best regards
- /Joachim
-
-[1]: MAC multicast is not affected.
-
-net/bridge/br_device.c                        |   4 +
- net/bridge/br_forward.c                       |  11 +
- net/bridge/br_input.c                         |  11 +-
- net/bridge/br_multicast.c                     |   6 +-
- net/bridge/br_netlink.c                       | 170 +++++++---
- net/bridge/br_private.h                       |   7 +-
- net/bridge/br_switchdev.c                     |   8 +-
- net/bridge/br_sysfs_if.c                      |   2 +-
- .../drivers/net/ocelot/tc_flower_chains.sh    |  24 +-
- .../testing/selftests/net/forwarding/Makefile |   3 +-
- .../selftests/net/forwarding/bridge_flood.sh  | 170 ++++++++++
- .../selftests/net/forwarding/bridge_mdb.sh    | 321 +++++++++++++++++-
- tools/testing/selftests/net/forwarding/lib.sh |  33 +-
- 13 files changed, 683 insertions(+), 87 deletions(-)
- create mode 100755 tools/testing/selftests/net/forwarding/bridge_flood.sh
- mode change 100644 => 100755 tools/testing/selftests/net/forwarding/lib.sh
