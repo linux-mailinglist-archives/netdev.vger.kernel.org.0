@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E03E04FC771
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 00:15:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E01C44FC773
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 00:15:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350390AbiDKWSA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 18:18:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37612 "EHLO
+        id S1350349AbiDKWSD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 18:18:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350418AbiDKWR5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 18:17:57 -0400
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECE9B26112;
-        Mon, 11 Apr 2022 15:15:35 -0700 (PDT)
-Received: by mail-io1-xd32.google.com with SMTP id k25so20346908iok.8;
-        Mon, 11 Apr 2022 15:15:35 -0700 (PDT)
+        with ESMTP id S1350383AbiDKWSC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 18:18:02 -0400
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65D8A19030;
+        Mon, 11 Apr 2022 15:15:46 -0700 (PDT)
+Received: by mail-io1-xd2a.google.com with SMTP id p21so20426380ioj.4;
+        Mon, 11 Apr 2022 15:15:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=kL8nw+kkxRkF6850uohgHzWtw+kuxUaqTysptdnGkC8=;
-        b=JIbrFBlm2+YqWyPQ9JmNckPFktJHytR/kSF7WkbgqY3lYq8prTVFwQOQkYwPem0DNe
-         TkHoLBgTnD83MUICH5xJpN8xUxC6G/mSbHNAdxlv/SWx1lkfRxuYDjxsMj8TYLv9vVu3
-         CRb72ycRk2Tu0yW29dW5TqOj4zEe2s5J1dcuwIPoUpVW3PjDE3p6XG2kLogwyh2zN5vT
-         hZWI7+bCcgTGJ3bnJ3jdrhn1VIIG0UL603yeVOijESZmny6QGIrR9IvtFS8qMP1+648C
-         lHNuRNpUPpDPPNYcfv/ModIIiFq72dhnUSuTJyVs+oMVQgqQHXch9ZX1Oe6f/4ZgfYi4
-         1oiw==
+        bh=CNo6Z0cvn8BDnGlCktMDDZbqh+/TKG3Xb3BUHAR+QVE=;
+        b=VuwhO5g812AyrLpid0d6ragtV78PthF0C7yQ2pFTmf7SEhhKtiB9qQ9n47Pq9T6J9j
+         H3Fj7Od4JyT19OeEKhJhddeEErBzj8eSouPyPdZhEfZGdajxrWWoKudZ8gkjMV+3/Ntv
+         ouMqGJwyH8oD4jyPlMXhIYAR+pGbnIi0tYjbVlll3acsU+1lAKak6Vk9bv3OJ3P/ZGKP
+         qblfGS4puksYNhsDkMOJG0uC6kpy/SrA4az0nUHIq9fhlGi64DBdK7Lx6fhNOm/zplzf
+         9/zD/dYTgo3FLgVkpAJt5C+fJ5kRexzG05a0PXtg8U5QEHxK0wo64e/hB7ir3N8aVQe2
+         gyEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=kL8nw+kkxRkF6850uohgHzWtw+kuxUaqTysptdnGkC8=;
-        b=iVLVvysR3aLMs7zYEYfzmirT4LjwMCvZ0S1k7HYMHE2Ky48QUrBsuFfAkz0WkRgUMY
-         OoBu7BAmEEgDkmBJMDgZ9ePhlbM3WVyS6YGdJw3eFc68w36Lsd0EOE3ax3dT05YaVuBA
-         +Ac32B8WTI533Bxea0qqw+V83S4G7yLdP1X1vKbtnTT089I9y6Ed02fNhJMQt5ak4COL
-         G6Qbnd0kOEGg4ZSLz3ENXOfVgcNYipWnyeffKH+L3wPnoE86FbiGCxCVeDka3s5Cmnwe
-         i7g618T8E+1oHnXLYbgY8q1X7WRVs8KhFZwi5pGg/SbSkXow++dUvwv2UdRK5njKrCxW
-         7PTA==
-X-Gm-Message-State: AOAM530CbQ5Ffn+ASf2k1n5HjAFhiiSlpDpkdf5A8lG3V+zeO4SbBvbt
-        XsYZMLQHJOkKN2ZZDbHov+Ss4wvPl3Sw/vtaCUE=
-X-Google-Smtp-Source: ABdhPJyf/1hHwHPkmGlwPJdP5IAugKSUeFN0fJQaM6DsPOny+KiO2QsNJyxP21v/6Eqcs4XOYUdkWa3zFA5I7PbPH20=
-X-Received: by 2002:a05:6638:2104:b0:326:1e94:efa6 with SMTP id
- n4-20020a056638210400b003261e94efa6mr5719614jaj.234.1649715333863; Mon, 11
- Apr 2022 15:15:33 -0700 (PDT)
+        bh=CNo6Z0cvn8BDnGlCktMDDZbqh+/TKG3Xb3BUHAR+QVE=;
+        b=1pt4UVhg+KID3iw5faG75UpkovNsQaZ9+yKFj4sH3iYvEQXteygxzYVrQy1r0BmWgq
+         LzXzpeYOgeaWxLRHyEf/tn85RmBMcbeZ+aMUrCOH138LFWoMc04X6KylZe7YvB5Ku0JV
+         zVNtSKEP2HuwDExMYGakzS0nBVmWtzXPVw9GyZGZ2Cs/XMLXnO/B+5G7w+dnEH6iqnpD
+         wbu/c2FFnJBzImyOBnHYbl5OYmX8Ck8UnaCE3k+2MDZbbfs9Cbhn9zXq18XWJxt0HSBH
+         iXFtm5AXeiK4RGIu4x8IX3XlBJ1Lg2PNIjvVQDz7Nd8IbLQrpJ5cYD3B9runxaJsFG4b
+         9ZXQ==
+X-Gm-Message-State: AOAM532bUYXDBvBc0D8FOvUx6J2vyiZh6wVJ+HP6MbbudW/PAZ3FO2bb
+        U7+DrBaIo2rwZfmCZYRO5zRO/eLqHZwSKYTE1eI=
+X-Google-Smtp-Source: ABdhPJzu2W5GjdRPgh4/xmNVCeT2R6RAoAZXLhpRPzKwWf0CKfb5S8q5YedewPmiQ2F1qrxm1hYYvVOm71cJhXkpw9k=
+X-Received: by 2002:a05:6602:3c6:b0:63d:cac9:bd35 with SMTP id
+ g6-20020a05660203c600b0063dcac9bd35mr14265388iov.144.1649715345843; Mon, 11
+ Apr 2022 15:15:45 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220407125224.310255-1-jolsa@kernel.org> <20220407125224.310255-2-jolsa@kernel.org>
-In-Reply-To: <20220407125224.310255-2-jolsa@kernel.org>
+References: <20220407125224.310255-1-jolsa@kernel.org> <20220407125224.310255-4-jolsa@kernel.org>
+In-Reply-To: <20220407125224.310255-4-jolsa@kernel.org>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 11 Apr 2022 15:15:23 -0700
-Message-ID: <CAEf4BzYffXGFigxywjP391s4G=6VpykxaqD5OYuOR5mBRa1Tmw@mail.gmail.com>
-Subject: Re: [RFC bpf-next 1/4] kallsyms: Add kallsyms_lookup_names function
+Date:   Mon, 11 Apr 2022 15:15:32 -0700
+Message-ID: <CAEf4BzYrRSB2wSYVmMCGA80RY6Hy2Chtt3MnXFy7+-Feh+2FBw@mail.gmail.com>
+Subject: Re: [RFC bpf-next 3/4] bpf: Resolve symbols with kallsyms_lookup_names
+ for kprobe multi link
 To:     Jiri Olsa <jolsa@kernel.org>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -73,130 +74,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 7, 2022 at 5:52 AM Jiri Olsa <jolsa@kernel.org> wrote:
+On Thu, Apr 7, 2022 at 5:53 AM Jiri Olsa <jolsa@kernel.org> wrote:
 >
-> Adding kallsyms_lookup_names function that resolves array of symbols
-> with single pass over kallsyms.
+> Using kallsyms_lookup_names function to speed up symbols lookup in
+> kprobe multi link attachment and replacing with it the current
+> kprobe_multi_resolve_syms function.
 >
-> The user provides array of string pointers with count and pointer to
-> allocated array for resolved values.
+> This speeds up bpftrace kprobe attachment:
 >
->   int kallsyms_lookup_names(const char **syms, u32 cnt,
->                             unsigned long *addrs)
+>   # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
+>   ...
+>   6.5681 +- 0.0225 seconds time elapsed  ( +-  0.34% )
 >
-> Before we iterate kallsyms we sort user provided symbols by name and
-> then use that in kalsyms iteration to find each kallsyms symbol in
-> user provided symbols.
+> After:
 >
-> We also check each symbol to pass ftrace_location, because this API
-> will be used for fprobe symbols resolving. This can be optional in
-> future if there's a need.
+>   # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
+>   ...
+>   0.5661 +- 0.0275 seconds time elapsed  ( +-  4.85% )
 >
-> Suggested-by: Andrii Nakryiko <andrii@kernel.org>
 > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > ---
->  include/linux/kallsyms.h |  6 +++++
->  kernel/kallsyms.c        | 48 ++++++++++++++++++++++++++++++++++++++++
->  2 files changed, 54 insertions(+)
+>  kernel/trace/bpf_trace.c | 123 +++++++++++++++++++++++----------------
+>  1 file changed, 73 insertions(+), 50 deletions(-)
 >
-> diff --git a/include/linux/kallsyms.h b/include/linux/kallsyms.h
-> index ce1bd2fbf23e..5320a5e77f61 100644
-> --- a/include/linux/kallsyms.h
-> +++ b/include/linux/kallsyms.h
-> @@ -72,6 +72,7 @@ int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
->  #ifdef CONFIG_KALLSYMS
->  /* Lookup the address for a symbol. Returns 0 if not found. */
->  unsigned long kallsyms_lookup_name(const char *name);
-> +int kallsyms_lookup_names(const char **syms, u32 cnt, unsigned long *addrs);
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index b26f3da943de..2602957225ba 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -2226,6 +2226,72 @@ struct bpf_kprobe_multi_run_ctx {
+>         unsigned long entry_ip;
+>  };
 >
->  extern int kallsyms_lookup_size_offset(unsigned long addr,
->                                   unsigned long *symbolsize,
-> @@ -103,6 +104,11 @@ static inline unsigned long kallsyms_lookup_name(const char *name)
->         return 0;
->  }
->
-> +int kallsyms_lookup_names(const char **syms, u32 cnt, unsigned long *addrs)
-> +{
-> +       return -ERANGE;
-> +}
-> +
->  static inline int kallsyms_lookup_size_offset(unsigned long addr,
->                                               unsigned long *symbolsize,
->                                               unsigned long *offset)
-> diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
-> index 79f2eb617a62..a3738ddf9e87 100644
-> --- a/kernel/kallsyms.c
-> +++ b/kernel/kallsyms.c
-> @@ -29,6 +29,8 @@
->  #include <linux/compiler.h>
->  #include <linux/module.h>
->  #include <linux/kernel.h>
-> +#include <linux/bsearch.h>
-> +#include <linux/sort.h>
->
->  /*
->   * These will be re-linked against their real values
-> @@ -572,6 +574,52 @@ int sprint_backtrace_build_id(char *buffer, unsigned long address)
->         return __sprint_symbol(buffer, address, -1, 1, 1);
->  }
->
-> +static int symbols_cmp(const void *a, const void *b)
-
-isn't this literally strcmp? Or compiler will actually complain about
-const void * vs const char *?
-
-> +{
-> +       const char **str_a = (const char **) a;
-> +       const char **str_b = (const char **) b;
-> +
-> +       return strcmp(*str_a, *str_b);
-> +}
-> +
-> +struct kallsyms_data {
-> +       unsigned long *addrs;
+> +struct user_syms {
 > +       const char **syms;
-> +       u32 cnt;
-> +       u32 found;
+> +       char *buf;
 > +};
 > +
-> +static int kallsyms_callback(void *data, const char *name,
-> +                            struct module *mod, unsigned long addr)
+> +static int copy_user_syms(struct user_syms *us, void __user *usyms, u32 cnt)
 > +{
-> +       struct kallsyms_data *args = data;
+> +       const char __user **usyms_copy = NULL;
+> +       const char **syms = NULL;
+> +       char *buf = NULL, *p;
+> +       int err = -EFAULT;
+> +       unsigned int i;
+> +       size_t size;
 > +
-> +       if (!bsearch(&name, args->syms, args->cnt, sizeof(*args->syms), symbols_cmp))
-> +               return 0;
+> +       size = cnt * sizeof(*usyms_copy);
 > +
-> +       addr = ftrace_location(addr);
-> +       if (!addr)
-> +               return 0;
-> +
-> +       args->addrs[args->found++] = addr;
-> +       return args->found == args->cnt ? 1 : 0;
-> +}
-> +
-> +int kallsyms_lookup_names(const char **syms, u32 cnt, unsigned long *addrs)
-> +{
-> +       struct kallsyms_data args;
-> +
-> +       sort(syms, cnt, sizeof(*syms), symbols_cmp, NULL);
-> +
-> +       args.addrs = addrs;
-> +       args.syms = syms;
-> +       args.cnt = cnt;
-> +       args.found = 0;
-> +       kallsyms_on_each_symbol(kallsyms_callback, &args);
-> +
-> +       return args.found == args.cnt ? 0 : -EINVAL;
+> +       usyms_copy = kvmalloc(size, GFP_KERNEL);
+> +       if (!usyms_copy)
+> +               return -ENOMEM;
 
-ESRCH or ENOENT makes a bit more sense as an error?
+do you really need usyms_copy? why not just read one pointer at a time?
 
-
-> +}
 > +
->  /* To avoid using get_symbol_offset for every symbol, we carry prefix along. */
->  struct kallsym_iter {
->         loff_t pos;
-> --
-> 2.35.1
->
+> +       if (copy_from_user(usyms_copy, usyms, size))
+> +               goto error;
+> +
+> +       err = -ENOMEM;
+> +       syms = kvmalloc(size, GFP_KERNEL);
+> +       if (!syms)
+> +               goto error;
+> +
+> +       /* TODO this potentially allocates lot of memory (~6MB in my tests
+> +        * with attaching ~40k functions). I haven't seen this to fail yet,
+> +        * but it could be changed to allocate memory gradually if needed.
+> +        */
+> +       size = cnt * KSYM_NAME_LEN;
+
+this reassignment of size is making it hard to follow the code, you
+can just do cnt * KSYM_NAME_LEN inside kvmalloc, you don't ever use it
+anywhere else
+
+> +       buf = kvmalloc(size, GFP_KERNEL);
+> +       if (!buf)
+> +               goto error;
+> +
+> +       for (p = buf, i = 0; i < cnt; i++) {
+
+like here, before doing strncpy_from_user() you can read usyms[i] from
+user-space into temporary variable, no need for extra kvmalloc?
+
+> +               err = strncpy_from_user(p, usyms_copy[i], KSYM_NAME_LEN);
+> +               if (err == KSYM_NAME_LEN)
+> +                       err = -E2BIG;
+> +               if (err < 0)
+> +                       goto error;
+> +               syms[i] = p;
+> +               p += err + 1;
+> +       }
+> +
+> +       err = 0;
+> +       us->syms = syms;
+> +       us->buf = buf;
+> +
+
+[...]
