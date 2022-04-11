@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E01C44FC773
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 00:15:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 859A54FC778
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 00:16:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350349AbiDKWSD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 18:18:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38078 "EHLO
+        id S1350410AbiDKWSN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 18:18:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350383AbiDKWSC (ORCPT
+        with ESMTP id S241387AbiDKWSC (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 18:18:02 -0400
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65D8A19030;
-        Mon, 11 Apr 2022 15:15:46 -0700 (PDT)
-Received: by mail-io1-xd2a.google.com with SMTP id p21so20426380ioj.4;
-        Mon, 11 Apr 2022 15:15:46 -0700 (PDT)
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C5452126E;
+        Mon, 11 Apr 2022 15:15:47 -0700 (PDT)
+Received: by mail-io1-xd31.google.com with SMTP id q11so20378445iod.6;
+        Mon, 11 Apr 2022 15:15:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=CNo6Z0cvn8BDnGlCktMDDZbqh+/TKG3Xb3BUHAR+QVE=;
-        b=VuwhO5g812AyrLpid0d6ragtV78PthF0C7yQ2pFTmf7SEhhKtiB9qQ9n47Pq9T6J9j
-         H3Fj7Od4JyT19OeEKhJhddeEErBzj8eSouPyPdZhEfZGdajxrWWoKudZ8gkjMV+3/Ntv
-         ouMqGJwyH8oD4jyPlMXhIYAR+pGbnIi0tYjbVlll3acsU+1lAKak6Vk9bv3OJ3P/ZGKP
-         qblfGS4puksYNhsDkMOJG0uC6kpy/SrA4az0nUHIq9fhlGi64DBdK7Lx6fhNOm/zplzf
-         9/zD/dYTgo3FLgVkpAJt5C+fJ5kRexzG05a0PXtg8U5QEHxK0wo64e/hB7ir3N8aVQe2
-         gyEA==
+        bh=Ghy1UswEx6W00pg1cAv/pF841qi0AmfQEmewriQWJBs=;
+        b=dcVp+hrbmD/m/P0sVNANzMYqawG4Iygh4NY+WK9XwNBErx9AcxSG/ZhU5kh4MLNyDl
+         OLn/f+MsMEDyrIhykWCdo6BYe5sGmgJOJU/lf07fKmlPd954bGI5rF4u7UkXpO1ZeTnI
+         bkuycLc/gCAspPercz7Seqlhf9Uj0FYEI05lT5G3zcviNCqd2LmIrtRFXnbOGHwHTVlZ
+         n/+hSsF+D3maVmBKJAhVJvg/G7iXKUMtObKw2Zsuv002VuRlAFzOy7ugDxTtJIVyosVK
+         yghk1fsXau1MViZvz1XLNHth82HG+6ORoNyih8E6oLj44Nbm4aWp85vDgx6dG7iL/THD
+         CXAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=CNo6Z0cvn8BDnGlCktMDDZbqh+/TKG3Xb3BUHAR+QVE=;
-        b=1pt4UVhg+KID3iw5faG75UpkovNsQaZ9+yKFj4sH3iYvEQXteygxzYVrQy1r0BmWgq
-         LzXzpeYOgeaWxLRHyEf/tn85RmBMcbeZ+aMUrCOH138LFWoMc04X6KylZe7YvB5Ku0JV
-         zVNtSKEP2HuwDExMYGakzS0nBVmWtzXPVw9GyZGZ2Cs/XMLXnO/B+5G7w+dnEH6iqnpD
-         wbu/c2FFnJBzImyOBnHYbl5OYmX8Ck8UnaCE3k+2MDZbbfs9Cbhn9zXq18XWJxt0HSBH
-         iXFtm5AXeiK4RGIu4x8IX3XlBJ1Lg2PNIjvVQDz7Nd8IbLQrpJ5cYD3B9runxaJsFG4b
-         9ZXQ==
-X-Gm-Message-State: AOAM532bUYXDBvBc0D8FOvUx6J2vyiZh6wVJ+HP6MbbudW/PAZ3FO2bb
-        U7+DrBaIo2rwZfmCZYRO5zRO/eLqHZwSKYTE1eI=
-X-Google-Smtp-Source: ABdhPJzu2W5GjdRPgh4/xmNVCeT2R6RAoAZXLhpRPzKwWf0CKfb5S8q5YedewPmiQ2F1qrxm1hYYvVOm71cJhXkpw9k=
-X-Received: by 2002:a05:6602:3c6:b0:63d:cac9:bd35 with SMTP id
- g6-20020a05660203c600b0063dcac9bd35mr14265388iov.144.1649715345843; Mon, 11
- Apr 2022 15:15:45 -0700 (PDT)
+        bh=Ghy1UswEx6W00pg1cAv/pF841qi0AmfQEmewriQWJBs=;
+        b=5turyEgoUZ1BEmG91PNaVd1q74ILjS72oH9ZG0ZToz5sXAxldlPR4B6Iy+Qru08OJB
+         R7nCb8cJH8fChdso5K9NVuPHXo4MbQ3kIRokBiqfq7O3xABWurtYvfl0oFveExWJqxj4
+         N9bYZ6OiBVGF/klo7Jg7XL34Ky6YeVCa6Br2wgE3DUxn7jdEisqP1fb7c7Jh3kAYXQEy
+         RCo6/C+JH1A9X2yH2PVBnJN02KiU85n4btngEVHQnSPY/XRP0EDFbdQ7G6M65h/qru+b
+         fz79qQqecGxys8d2Qb02Wel47HviStBwahFDy8fTGTvRtKySbIyZJqT8rpCbzMztxjKC
+         cQ7A==
+X-Gm-Message-State: AOAM5338pXOrYX/awVNYxQSvgJFdPuLbELZO7/aAtUa0uWYnoXGyzUK+
+        VLAyim8hSsQvSBn6cKKkYKTMPfVun4+Z2h5TGDl+FQod
+X-Google-Smtp-Source: ABdhPJz//PCz8xh3ol8xW1/hvvN9dhh1a8liK1zU1xJtRnFH696EzAj1ao/6nV1GIGXnGzGDkSG6Yv6RkSbMXNetGpM=
+X-Received: by 2002:a02:cc07:0:b0:326:3976:81ad with SMTP id
+ n7-20020a02cc07000000b00326397681admr1865761jap.237.1649715346615; Mon, 11
+ Apr 2022 15:15:46 -0700 (PDT)
 MIME-Version: 1.0
 References: <20220407125224.310255-1-jolsa@kernel.org> <20220407125224.310255-4-jolsa@kernel.org>
-In-Reply-To: <20220407125224.310255-4-jolsa@kernel.org>
+ <20220408232610.nwtcuectacpwh6rk@MBP-98dd607d3435.dhcp.thefacebook.com>
+In-Reply-To: <20220408232610.nwtcuectacpwh6rk@MBP-98dd607d3435.dhcp.thefacebook.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 11 Apr 2022 15:15:32 -0700
-Message-ID: <CAEf4BzYrRSB2wSYVmMCGA80RY6Hy2Chtt3MnXFy7+-Feh+2FBw@mail.gmail.com>
+Date:   Mon, 11 Apr 2022 15:15:35 -0700
+Message-ID: <CAEf4BzZYopSrVo=fdnu2q1U9LwcOJartwreWqM=u=aoV+ZNncQ@mail.gmail.com>
 Subject: Re: [RFC bpf-next 3/4] bpf: Resolve symbols with kallsyms_lookup_names
  for kprobe multi link
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Masami Hiramatsu <mhiramat@kernel.org>,
@@ -74,99 +75,106 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 7, 2022 at 5:53 AM Jiri Olsa <jolsa@kernel.org> wrote:
+On Fri, Apr 8, 2022 at 4:26 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> Using kallsyms_lookup_names function to speed up symbols lookup in
-> kprobe multi link attachment and replacing with it the current
-> kprobe_multi_resolve_syms function.
+> On Thu, Apr 07, 2022 at 02:52:23PM +0200, Jiri Olsa wrote:
+> > Using kallsyms_lookup_names function to speed up symbols lookup in
+> > kprobe multi link attachment and replacing with it the current
+> > kprobe_multi_resolve_syms function.
+> >
+> > This speeds up bpftrace kprobe attachment:
+> >
+> >   # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
+> >   ...
+> >   6.5681 +- 0.0225 seconds time elapsed  ( +-  0.34% )
+> >
+> > After:
+> >
+> >   # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
+> >   ...
+> >   0.5661 +- 0.0275 seconds time elapsed  ( +-  4.85% )
+> >
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
+> >  kernel/trace/bpf_trace.c | 123 +++++++++++++++++++++++----------------
+> >  1 file changed, 73 insertions(+), 50 deletions(-)
+> >
+> > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> > index b26f3da943de..2602957225ba 100644
+> > --- a/kernel/trace/bpf_trace.c
+> > +++ b/kernel/trace/bpf_trace.c
+> > @@ -2226,6 +2226,72 @@ struct bpf_kprobe_multi_run_ctx {
+> >       unsigned long entry_ip;
+> >  };
+> >
+> > +struct user_syms {
+> > +     const char **syms;
+> > +     char *buf;
+> > +};
+> > +
+> > +static int copy_user_syms(struct user_syms *us, void __user *usyms, u32 cnt)
+> > +{
+> > +     const char __user **usyms_copy = NULL;
+> > +     const char **syms = NULL;
+> > +     char *buf = NULL, *p;
+> > +     int err = -EFAULT;
+> > +     unsigned int i;
+> > +     size_t size;
+> > +
+> > +     size = cnt * sizeof(*usyms_copy);
+> > +
+> > +     usyms_copy = kvmalloc(size, GFP_KERNEL);
+> > +     if (!usyms_copy)
+> > +             return -ENOMEM;
+> > +
+> > +     if (copy_from_user(usyms_copy, usyms, size))
+> > +             goto error;
+> > +
+> > +     err = -ENOMEM;
+> > +     syms = kvmalloc(size, GFP_KERNEL);
+> > +     if (!syms)
+> > +             goto error;
+> > +
+> > +     /* TODO this potentially allocates lot of memory (~6MB in my tests
+> > +      * with attaching ~40k functions). I haven't seen this to fail yet,
+> > +      * but it could be changed to allocate memory gradually if needed.
+> > +      */
 >
-> This speeds up bpftrace kprobe attachment:
+> Why would 6MB kvmalloc fail?
+> If we don't have such memory the kernel will be ooming soon anyway.
+> I don't think we'll see this kvmalloc triggering oom in practice.
+> The verifier allocates a lot more memory to check large programs.
 >
->   # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
->   ...
->   6.5681 +- 0.0225 seconds time elapsed  ( +-  0.34% )
+> imo this approach is fine. It's simple.
+> Trying to do gradual alloc with realloc would be just guessing.
 >
-> After:
->
->   # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
->   ...
->   0.5661 +- 0.0275 seconds time elapsed  ( +-  4.85% )
->
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  kernel/trace/bpf_trace.c | 123 +++++++++++++++++++++++----------------
->  1 file changed, 73 insertions(+), 50 deletions(-)
->
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index b26f3da943de..2602957225ba 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -2226,6 +2226,72 @@ struct bpf_kprobe_multi_run_ctx {
->         unsigned long entry_ip;
->  };
->
-> +struct user_syms {
-> +       const char **syms;
-> +       char *buf;
-> +};
-> +
-> +static int copy_user_syms(struct user_syms *us, void __user *usyms, u32 cnt)
-> +{
-> +       const char __user **usyms_copy = NULL;
-> +       const char **syms = NULL;
-> +       char *buf = NULL, *p;
-> +       int err = -EFAULT;
-> +       unsigned int i;
-> +       size_t size;
-> +
-> +       size = cnt * sizeof(*usyms_copy);
-> +
-> +       usyms_copy = kvmalloc(size, GFP_KERNEL);
-> +       if (!usyms_copy)
-> +               return -ENOMEM;
+> Another option would be to ask user space (libbpf) to do the sort.
+> There are pros and cons.
+> This vmalloc+sort is slightly better imo.
 
-do you really need usyms_copy? why not just read one pointer at a time?
+Totally agree, the simpler the better. Also when you are attaching to
+tens of thousands of probes, 6MB isn't a lot of memory for whatever
+you are trying to do, anyways :)
 
-> +
-> +       if (copy_from_user(usyms_copy, usyms, size))
-> +               goto error;
-> +
-> +       err = -ENOMEM;
-> +       syms = kvmalloc(size, GFP_KERNEL);
-> +       if (!syms)
-> +               goto error;
-> +
-> +       /* TODO this potentially allocates lot of memory (~6MB in my tests
-> +        * with attaching ~40k functions). I haven't seen this to fail yet,
-> +        * but it could be changed to allocate memory gradually if needed.
-> +        */
-> +       size = cnt * KSYM_NAME_LEN;
+Even if libbpf had to sort it, kernel would probably have to validate
+that. Also for binary search you'd still need to read in the string
+itself, but if you'd do this "on demand", we are adding TOCTOU and
+other headaches.
 
-this reassignment of size is making it hard to follow the code, you
-can just do cnt * KSYM_NAME_LEN inside kvmalloc, you don't ever use it
-anywhere else
+Simple is good.
 
-> +       buf = kvmalloc(size, GFP_KERNEL);
-> +       if (!buf)
-> +               goto error;
-> +
-> +       for (p = buf, i = 0; i < cnt; i++) {
-
-like here, before doing strncpy_from_user() you can read usyms[i] from
-user-space into temporary variable, no need for extra kvmalloc?
-
-> +               err = strncpy_from_user(p, usyms_copy[i], KSYM_NAME_LEN);
-> +               if (err == KSYM_NAME_LEN)
-> +                       err = -E2BIG;
-> +               if (err < 0)
-> +                       goto error;
-> +               syms[i] = p;
-> +               p += err + 1;
-> +       }
-> +
-> +       err = 0;
-> +       us->syms = syms;
-> +       us->buf = buf;
-> +
+>
+> > +     size = cnt * KSYM_NAME_LEN;
+> > +     buf = kvmalloc(size, GFP_KERNEL);
+> > +     if (!buf)
+> > +             goto error;
+> > +
+> > +     for (p = buf, i = 0; i < cnt; i++) {
+> > +             err = strncpy_from_user(p, usyms_copy[i], KSYM_NAME_LEN);
+> > +             if (err == KSYM_NAME_LEN)
+> > +                     err = -E2BIG;
+> > +             if (err < 0)
+> > +                     goto error;
 
 [...]
