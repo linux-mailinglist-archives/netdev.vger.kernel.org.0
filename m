@@ -2,67 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B3BB64FC808
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 01:25:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 783924FC81A
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 01:31:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232570AbiDKX1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 19:27:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59254 "EHLO
+        id S233174AbiDKXdU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 19:33:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232177AbiDKX1h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 19:27:37 -0400
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 463DE25EB2
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 16:25:22 -0700 (PDT)
-Received: by mail-io1-xd33.google.com with SMTP id e22so20502615ioe.11
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 16:25:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZMH2dd4dVn+sN1LqPK8n3ci7MR968dRhguypuScj1CQ=;
-        b=ijlqLq1r5A5qgzxLGR/tGje43sMc4riYXtrunxa/mGx8f4zKJEFIf05RsL5cjMGewb
-         VJZ2x/gZ72iq00W0xsklSEyD8uxS4AmHHHCnMhTXShKF3y97oKuk3nJimNiE4EA2RsDF
-         Qcp0uGmDhPpr4bQjm4OMVo+tlEsLlBhw5kNXQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZMH2dd4dVn+sN1LqPK8n3ci7MR968dRhguypuScj1CQ=;
-        b=Gud/FNWULP2bYDwFzb7BZ0hn32NU6qolrwKiASYO26oYlhyxVyCtrSNfjSbMu8XD9P
-         crfADgpyPy+SGec0xMpEOxRCn0hSVolrR/fuUnFWU2zYd7V2QXoZCfis0vekdve+Wmul
-         ccya9CW+RDgPHljq/y+JS/2c3ALCAOWSsdVZzzc9sgBoymUXyvUsqVV+C2uapm1h9vsv
-         +jzcVk24MK9jgrnaDWvX2g4YzYo6x+NzmdUknKgYBO+/Ctfqx41ppglLdYdaSQueASCA
-         zgfyQjIQzRDQb4r00xFQYGVqTRtGRNxp7sMJRBgYgijosAFDGHda+d8H4dqnteibXQAg
-         JmQg==
-X-Gm-Message-State: AOAM532ZjHKzdL3ZVPKumeDlU9R/qoLIoHi6U312FQ90SCi/dHlLxmCi
-        pCF1pvyj5YDmpauo3qDrOKN6/SFQV1kJ838bPrntUw==
-X-Google-Smtp-Source: ABdhPJymNLhei+3dXAexxhqaNraz8xNcaGrsEziyPA34FmXI+XSwyqsdE2qSztrB1S+TZxsnyQinZIyNAhyA3Y54alQ=
-X-Received: by 2002:a05:6602:1682:b0:63d:cac5:fd0a with SMTP id
- s2-20020a056602168200b0063dcac5fd0amr14271798iow.132.1649719521434; Mon, 11
- Apr 2022 16:25:21 -0700 (PDT)
+        with ESMTP id S232517AbiDKXdT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 19:33:19 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD394B1E0
+        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 16:31:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649719863; x=1681255863;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=I2hHSGjL5JPe2QvCCifaeCB+3R+ek7wCqVeYv6Fujf0=;
+  b=BOfJyUYCKhl6xoxZ4paWZZ8ogW+WRd1W5rXJFpKsTX4DJkeX/syAjC/H
+   7pHArd1Ujdi+ljq/ylzCyBEOFee30gEyXbnF7Y0em0Pw92L1i9aXR0284
+   nihCXPq4mptDR2bykJkbdVO1tKTG2ptjmMqJeDDjeDPGHtKimyqx/jPv5
+   k7EQIhpuby15oiqS7K0KM/SS6Zd67/zF8MWLiI0TIiUYtcrExMRNGrK0Z
+   Eoaa/NJa0LRwheH5YNO0o/f2EmmSLQXcJIifwGwFkDiUxl7drskSb6P7w
+   mdsPrZuCEi8M/A3YaPgvSCWvbVKyol9/865/XbO8xFUvWYEz4IW9G9D/y
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="261084891"
+X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
+   d="scan'208";a="261084891"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 16:31:03 -0700
+X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
+   d="scan'208";a="590091399"
+Received: from vcostago-mobl3.jf.intel.com (HELO vcostago-mobl3) ([10.24.14.61])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 16:31:03 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jhs@mojatatu.com" <jhs@mojatatu.com>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "kuba@kernel.org" <kuba@kernel.org>, Po Liu <po.liu@nxp.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>,
+        "mkubecek@suse.cz" <mkubecek@suse.cz>
+Subject: Re: [PATCH net-next v4 02/12] taprio: Add support for frame
+ preemption offload
+In-Reply-To: <20210627195826.fax7l4hd2itze4pi@skbuf>
+References: <20210626003314.3159402-1-vinicius.gomes@intel.com>
+ <20210626003314.3159402-3-vinicius.gomes@intel.com>
+ <20210627195826.fax7l4hd2itze4pi@skbuf>
+Date:   Mon, 11 Apr 2022 16:31:03 -0700
+Message-ID: <874k2zdwp4.fsf@intel.com>
 MIME-Version: 1.0
-References: <20220107200417.1.Ie4dcc45b0bf365077303c596891d460d716bb4c5@changeid>
- <CAD=FV=W5fHP8K-PcoYWxYHiDWnPUVQQzOzw=REbuJSSqGeVVfg@mail.gmail.com>
- <87sfrqqfzy.fsf@kernel.org> <CAD=FV=U0Qw-OnKJg8SWk9=e=B0qgqnaTHpuR0cRA0WCmSHSJYQ@mail.gmail.com>
-In-Reply-To: <CAD=FV=U0Qw-OnKJg8SWk9=e=B0qgqnaTHpuR0cRA0WCmSHSJYQ@mail.gmail.com>
-From:   Abhishek Kumar <kuabhs@chromium.org>
-Date:   Mon, 11 Apr 2022 16:25:10 -0700
-Message-ID: <CACTWRwtpYBokTehRE0_zSdSjio6Ga1yqdCfj1TNck7SqOT8o_Q@mail.gmail.com>
-Subject: Re: [PATCH 1/2] ath10k: search for default BDF name provided in DT
-To:     Doug Anderson <dianders@chromium.org>
-Cc:     Kalle Valo <kvalo@kernel.org>,
-        Rakesh Pillai <pillair@codeaurora.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        ath10k <ath10k@lists.infradead.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,136 +66,213 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi All,
+Vladimir Oltean <vladimir.oltean@nxp.com> writes:
 
-Apologies for the late reply, too many things at the same time. Just a
-quick note, Qcomm provided a new BDF file with support for
-'bus=snoc,qmi-board-id=ff' as well, so even without this patch, the
-non-programmed devices(with board-id=0xff) would work. However, for
-optimization of the BDF search strategy, the above mentioned strategy
-would still not work:
-- The stripping of full Board name would not work if board-id itself
-is not programmed i.e. =0xff
-e.g. for
- 'bus=snoc,qmi-board-id=ff,qmi-chip-id=320,variant=GO_LAZOR' => no match
- 'bus=snoc,qmi-board-id=ff,qmi-chip-id=320' => no match
- 'bus=snoc,qmi-board-id=ff' => no match
- 'bus=snoc' => no match
-because all the BDFs contains board-id=67
+> On Fri, Jun 25, 2021 at 05:33:04PM -0700, Vinicius Costa Gomes wrote:
+>> Adds a way to configure which traffic classes are marked as
+>> preemptible and which are marked as express.
+>> 
+>> Even if frame preemption is not a "real" offload, because it can't be
+>> executed purely in software, having this information near where the
+>> mapping of traffic classes to queues is specified, makes it,
+>> hopefully, easier to use.
+>> 
+>> taprio will receive the information of which traffic classes are
+>> marked as express/preemptible, and when offloading frame preemption to
+>> the driver will convert the information, so the driver receives which
+>> queues are marked as express/preemptible.
+>> 
+>> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+>> ---
+>>  include/linux/netdevice.h      |  1 +
+>>  include/net/pkt_sched.h        |  4 ++++
+>>  include/uapi/linux/pkt_sched.h |  1 +
+>>  net/sched/sch_taprio.c         | 43 ++++++++++++++++++++++++++++++----
+>>  4 files changed, 44 insertions(+), 5 deletions(-)
+>> 
+>> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+>> index be1dcceda5e4..af5d4c5b0ad5 100644
+>> --- a/include/linux/netdevice.h
+>> +++ b/include/linux/netdevice.h
+>> @@ -923,6 +923,7 @@ enum tc_setup_type {
+>>  	TC_SETUP_QDISC_TBF,
+>>  	TC_SETUP_QDISC_FIFO,
+>>  	TC_SETUP_QDISC_HTB,
+>> +	TC_SETUP_PREEMPT,
+>>  };
+>>  
+>>  /* These structures hold the attributes of bpf state that are being passed
+>> diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
+>> index 6d7b12cba015..b4cb479d1cf5 100644
+>> --- a/include/net/pkt_sched.h
+>> +++ b/include/net/pkt_sched.h
+>> @@ -178,6 +178,10 @@ struct tc_taprio_qopt_offload {
+>>  	struct tc_taprio_sched_entry entries[];
+>>  };
+>>  
+>> +struct tc_preempt_qopt_offload {
+>> +	u32 preemptible_queues;
+>> +};
+>> +
+>>  /* Reference counting */
+>>  struct tc_taprio_qopt_offload *taprio_offload_get(struct tc_taprio_qopt_offload
+>>  						  *offload);
+>> diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
+>> index 79a699f106b1..830ce9c9ec6f 100644
+>> --- a/include/uapi/linux/pkt_sched.h
+>> +++ b/include/uapi/linux/pkt_sched.h
+>> @@ -1241,6 +1241,7 @@ enum {
+>>  	TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME_EXTENSION, /* s64 */
+>>  	TCA_TAPRIO_ATTR_FLAGS, /* u32 */
+>>  	TCA_TAPRIO_ATTR_TXTIME_DELAY, /* u32 */
+>> +	TCA_TAPRIO_ATTR_PREEMPT_TCS, /* u32 */
+>>  	__TCA_TAPRIO_ATTR_MAX,
+>>  };
+>>  
+>> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+>> index 66fe2b82af9a..58586f98c648 100644
+>> --- a/net/sched/sch_taprio.c
+>> +++ b/net/sched/sch_taprio.c
+>> @@ -64,6 +64,7 @@ struct taprio_sched {
+>>  	struct Qdisc **qdiscs;
+>>  	struct Qdisc *root;
+>>  	u32 flags;
+>> +	u32 preemptible_tcs;
+>>  	enum tk_offsets tk_offset;
+>>  	int clockid;
+>>  	atomic64_t picos_per_byte; /* Using picoseconds because for 10Gbps+
+>> @@ -786,6 +787,7 @@ static const struct nla_policy taprio_policy[TCA_TAPRIO_ATTR_MAX + 1] = {
+>>  	[TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME_EXTENSION] = { .type = NLA_S64 },
+>>  	[TCA_TAPRIO_ATTR_FLAGS]                      = { .type = NLA_U32 },
+>>  	[TCA_TAPRIO_ATTR_TXTIME_DELAY]		     = { .type = NLA_U32 },
+>> +	[TCA_TAPRIO_ATTR_PREEMPT_TCS]                = { .type = NLA_U32 },
+>>  };
+>>  
+>>  static int fill_sched_entry(struct taprio_sched *q, struct nlattr **tb,
+>> @@ -1284,6 +1286,7 @@ static int taprio_disable_offload(struct net_device *dev,
+>>  				  struct netlink_ext_ack *extack)
+>>  {
+>>  	const struct net_device_ops *ops = dev->netdev_ops;
+>> +	struct tc_preempt_qopt_offload preempt = { };
+>>  	struct tc_taprio_qopt_offload *offload;
+>>  	int err;
+>>  
+>> @@ -1302,13 +1305,15 @@ static int taprio_disable_offload(struct net_device *dev,
+>>  	offload->enable = 0;
+>>  
+>>  	err = ops->ndo_setup_tc(dev, TC_SETUP_QDISC_TAPRIO, offload);
+>> -	if (err < 0) {
+>> +	if (err < 0)
+>>  		NL_SET_ERR_MSG(extack,
+>> -			       "Device failed to disable offload");
+>> -		goto out;
+>> -	}
+>> +			       "Device failed to disable taprio offload");
+>> +
+>> +	err = ops->ndo_setup_tc(dev, TC_SETUP_PREEMPT, &preempt);
+>> +	if (err < 0)
+>> +		NL_SET_ERR_MSG(extack,
+>> +			       "Device failed to disable frame preemption offload");
+>
+> First line in taprio_disable_offload() is:
+>
+> 	if (!FULL_OFFLOAD_IS_ENABLED(q->flags))
+> 		return 0;
+>
+> but you said it yourself below that the preemptible queues thing is
+> independent of whether you have taprio offload or not (or taprio at
+> all). So the queues will never be reset back to the eMAC if you don't
+> use full offload (yes, this includes txtime offload too). In fact, it's
+> so independent, that I don't even know why we add them to taprio in the
+> first place :)
 
-So with this DT patch specifically for case 'bus=snoc,qmi-board-id=ff'
-=> no match, we fallback to default case ( the one provided in DT)
-i.e. 'bus=snoc,qmi-board-id=67' => match . I do not see how exactly
-the driver can know that it should check for a board-id of 67.
+That I didn't change taprio_disable_offload() was a mistake caused in
+part by the limitations of the hardware I have (I cannot have txtime
+offload and frame preemption enabled at the same time), so I didn't
+catch that.
 
-However, to still remove dependency on the DT, we can make the
-board-id as no-op if it is not programmed i.e. if the board-id=ff then
-we would pick any BDF that match 'bus=snoc,qmi-board-id=<XX>' where XX
-can be any arbitrary number. Thoughts ?
+> I think the argument had to do with the hold/advance commands (other
+> frame preemption stuff that's already in taprio), but those are really
+> special and only to be used in the Qbv+Qbu combination, but the pMAC
+> traffic classes? I don't know... Honestly I thought that me asking to
+> see preemptible queues implemented for mqprio as well was going to
+> discourage you, but oh well...
+>
 
--Abhishek
+Now, the real important part, if this should be communicated to the
+driver via taprio or via ethtool/netlink.   
 
-On Thu, Mar 10, 2022 at 4:28 PM Doug Anderson <dianders@chromium.org> wrote:
+I don't really have strong opinions on this anymore, the two options are
+viable/possible.
+
+This is going to be a niche feature, agreed, so thinking that going with
+the one that gives the user more flexibility perhaps is best, i.e. using
+ethtool/netlink to communicate which queues should be marked as
+preemptible or express.
+
+>>  
+>> -out:
+>>  	taprio_offload_free(offload);
+>>  
+>>  	return err;
+>> @@ -1525,6 +1530,29 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+>>  					       mqprio->prio_tc_map[i]);
+>>  	}
+>>  
+>> +	/* It's valid to enable frame preemption without any kind of
+>> +	 * offloading being enabled, so keep it separated.
+>> +	 */
+>> +	if (tb[TCA_TAPRIO_ATTR_PREEMPT_TCS]) {
+>> +		u32 preempt = nla_get_u32(tb[TCA_TAPRIO_ATTR_PREEMPT_TCS]);
+>> +		struct tc_preempt_qopt_offload qopt = { };
+>> +
+>> +		if (preempt == U32_MAX) {
+>> +			NL_SET_ERR_MSG(extack, "At least one queue must be not be preemptible");
+>> +			err = -EINVAL;
+>> +			goto free_sched;
+>> +		}
 >
-> Hi,
+> Hmmm, did we somehow agree that at least one traffic class must not be
+> preemptible? Citation needed.
 >
-> On Thu, Mar 10, 2022 at 2:06 AM Kalle Valo <kvalo@kernel.org> wrote:
-> >
-> > Doug Anderson <dianders@chromium.org> writes:
-> >
-> > > Hi,
-> > >
-> > > On Fri, Jan 7, 2022 at 12:05 PM Abhishek Kumar <kuabhs@chromium.org> wrote:
-> > >>
-> > >> There can be cases where the board-2.bin does not contain
-> > >> any BDF matching the chip-id+board-id+variant combination.
-> > >> This causes the wlan probe to fail and renders wifi unusable.
-> > >> For e.g. if the board-2.bin has default BDF as:
-> > >> bus=snoc,qmi-board-id=67 but for some reason the board-id
-> > >> on the wlan chip is not programmed and read 0xff as the
-> > >> default value. In such cases there won't be any matching BDF
-> > >> because the board-2.bin will be searched with following:
-> > >> bus=snoc,qmi-board-id=ff
-> >
-> > I just checked, in ath10k-firmware WCN3990/hw1.0/board-2.bin we have
-> > that entry:
-> >
-> > BoardNames[1]: 'bus=snoc,qmi-board-id=ff'
-> >
-> > >> To address these scenarios, there can be an option to provide
-> > >> fallback default BDF name in the device tree. If none of the
-> > >> BDF names match then the board-2.bin file can be searched with
-> > >> default BDF names assigned in the device tree.
-> > >>
-> > >> The default BDF name can be set as:
-> > >> wifi@a000000 {
-> > >>         status = "okay";
-> > >>         qcom,ath10k-default-bdf = "bus=snoc,qmi-board-id=67";
-> > >
-> > > Rather than add a new device tree property, wouldn't it be good enough
-> > > to leverage the existing variant?
-> >
-> > I'm not thrilled either adding this to Device Tree, we should keep the
-> > bindings as simple as possible.
-> >
-> > > Right now I think that the board file contains:
-> > >
-> > > 'bus=snoc,qmi-board-id=67.bin'
-> > > 'bus=snoc,qmi-board-id=67,qmi-chip-id=320,variant=GO_LAZOR.bin'
-> > > 'bus=snoc,qmi-board-id=67,qmi-chip-id=320,variant=GO_POMPOM.bin'
-> > > 'bus=snoc,qmi-board-id=67,qmi-chip-id=4320,variant=GO_LAZOR.bin'
-> > > 'bus=snoc,qmi-board-id=67,qmi-chip-id=4320,variant=GO_POMPOM.bin'
-> > >
-> > > ...and, on lazor for instance, we have:
-> > >
-> > > qcom,ath10k-calibration-variant = "GO_LAZOR";
-> > >
-> > > The problem you're trying to solve is that on some early lazor
-> > > prototype hardware we didn't have the "board-id" programmed we could
-> > > get back 0xff from the hardware. As I understand it 0xff always means
-> > > "unprogrammed".
-> > >
-> > > It feels like you could just have a special case such that if the
-> > > hardware reports board ID of 0xff and you don't get a "match" that you
-> > > could just treat 0xff as a wildcard. That means that you'd see the
-> > > "variant" in the device tree and pick one of the "GO_LAZOR" entries.
-> > >
-> > > Anyway, I guess it's up to the people who spend more time in this file
-> > > which they'd prefer, but that seems like it'd be simple and wouldn't
-> > > require a bindings addition...
-> >
-> > In ath11k we need something similar for that I have been thinking like
-> > this:
-> >
-> > 'bus=snoc,qmi-board-id=67,qmi-chip-id=320,variant=GO_LAZOR'
-> >
-> > 'bus=snoc,qmi-board-id=67,qmi-chip-id=320'
-> >
-> > 'bus=snoc,qmi-board-id=67'
-> >
-> > 'bus=snoc'
-> >
-> > Ie. we drop one attribute at a time and try to find a suitable board
-> > file. Though I'm not sure if it's possible to find a board file which
-> > works with many different hardware, but the principle would be at least
-> > that. Would something like that work in your case?
->
-> I'll leave it for Abhishek to comment for sure since he's been the one
-> actively involved in keeping track of our board-2.bin file. As far as
-> I know:
->
-> * Mostly we need this for pre-production hardware that developers
-> inside Google and Qualcomm still have sitting around on their desks. I
-> guess some people are even still using this pre-production hardware to
-> surf the web?
->
-> * In the ideal world, we think that the best calibration would be to
-> use the board-specific one in these cases. AKA if board_id is 0xff
-> (unprogrammed) and variant is "GO_LAZOR" then the best solution would
-> be to use the settings for board id 0x67 and variant "GO_LAZOR". This
-> _ought_ to be better settings than the default 0xff settings without
-> the "GO_LAZOR".
->
-> * In reality, we're probably OK as long as _some_ reasonable settings
-> get picked. WiFi might not be super range optimized but at least it
-> will still come up and work.
+>> +
+>> +		qopt.preemptible_queues = tc_map_to_queue_mask(dev, preempt);
+>> +
+>> +		err = dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_PREEMPT,
+>> +						    &qopt);
+>> +		if (err)
+>> +			goto free_sched;
+>> +
+>> +		q->preemptible_tcs = preempt;
+>> +	}
+>> +
+>>  	if (FULL_OFFLOAD_IS_ENABLED(q->flags))
+>>  		err = taprio_enable_offload(dev, q, new_admin, extack);
+>>  	else
+>> @@ -1681,6 +1709,7 @@ static int taprio_init(struct Qdisc *sch, struct nlattr *opt,
+>>  	 */
+>>  	q->clockid = -1;
+>>  	q->flags = TAPRIO_FLAGS_INVALID;
+>> +	q->preemptible_tcs = U32_MAX;
+>>  
+>>  	spin_lock(&taprio_list_lock);
+>>  	list_add(&q->taprio_list, &taprio_list);
+>> @@ -1899,6 +1928,10 @@ static int taprio_dump(struct Qdisc *sch, struct sk_buff *skb)
+>>  	if (q->flags && nla_put_u32(skb, TCA_TAPRIO_ATTR_FLAGS, q->flags))
+>>  		goto options_error;
+>>  
+>> +	if (q->preemptible_tcs != U32_MAX &&
+>> +	    nla_put_u32(skb, TCA_TAPRIO_ATTR_PREEMPT_TCS, q->preemptible_tcs))
+>> +		goto options_error;
+>> +
+>>  	if (q->txtime_delay &&
+>>  	    nla_put_u32(skb, TCA_TAPRIO_ATTR_TXTIME_DELAY, q->txtime_delay))
+>>  		goto options_error;
+>> -- 
+>> 2.32.0
+>> 
+
+
+
+-- 
+Vinicius
