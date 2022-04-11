@@ -2,84 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AACE24FC63A
-	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 23:00:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06BD14FC64E
+	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 23:05:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348944AbiDKVCW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 17:02:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47304 "EHLO
+        id S236250AbiDKVIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 17:08:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234574AbiDKVCV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 17:02:21 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED86F2A725
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 14:00:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Pk8iVSdGCpenj2GLsLc4wJaW0usHCGPG0X8zd6virmA=; b=svn5Vvtymnuw0B8B07dk+HOPrf
-        4z5x7GtHDnTOHP27AE+Pm1l0CiHaZbh9EKReRHUAxdamr8rSiaWJvKbhjWCpiC1c8YOL0Gt7a2+2L
-        OVFaztKxieZpgFY5yEW4BbGDI++CeEyeZ9JDLXlEK7elRsJhwmw+u/kdApgeDwURZIb8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ne18h-00FK8u-4s; Mon, 11 Apr 2022 22:59:59 +0200
-Date:   Mon, 11 Apr 2022 22:59:59 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Josua Mayer <josua@solid-run.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        netdev@vger.kernel.org, alvaro.karsz@solid-run.com,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: Re: [PATCH 1/3] dt: adin: document clk-out property
-Message-ID: <YlSWz+XELKV3LK8s@lunn.ch>
-References: <20220410104626.11517-1-josua@solid-run.com>
- <20220410104626.11517-2-josua@solid-run.com>
- <d83be897-55ee-25d2-4048-586646cd7151@linaro.org>
- <bc0e507b-338b-8a86-1a7b-8055e2cf9a3a@solid-run.com>
- <e0511d39-7915-3ce1-60c7-9d7739f1b253@linaro.org>
- <b519690c-a487-e64c-86e1-bd37e38dc7a7@solid-run.com>
- <20220411130715.516fc5cc@kernel.org>
+        with ESMTP id S230074AbiDKVIC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 17:08:02 -0400
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E428B1C3;
+        Mon, 11 Apr 2022 14:05:47 -0700 (PDT)
+Received: by mail-ot1-x329.google.com with SMTP id 88-20020a9d0ee1000000b005d0ae4e126fso12136836otj.5;
+        Mon, 11 Apr 2022 14:05:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yxvMPm4Er+k4XJD+1T3NqzNOxccKbRO/T6RynpjDsiI=;
+        b=hdB/UTz3V1XEYy9ZsFEeDNEmhNmZyWZdVOugUlwHb/KntYpTlqZ5jjy/JE1m3aJ3RX
+         /0vK/8jKlgXu1ihYZ5yeHWUGyKk5nBeDgs7RFvo9K+vgVMuOBReeIHz6+oEkFS646C1I
+         0Ehoeq+Prd3bbTgrlKfJq22gN5bZULuT78Ns7Od4FRs7FAmewwPBEb9/tx05TpHpKzUa
+         hZiAEyjbcN84orkofRba9VaHml/RSwzi95v+5xMZKpYzgiNcPVCZkhdc24HrMMg1BeMp
+         sZfV1lTlMntFRiE249+yMGMz22VNSYP5vMvQM30AFZHqZQmur3+J9JnP5mh0Kjbr6ukN
+         z3+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yxvMPm4Er+k4XJD+1T3NqzNOxccKbRO/T6RynpjDsiI=;
+        b=RSW8sSpqtn5cRLw3CIi9kqWT0VBZCzD6eMcga1pYADM4AaItYBl2ILCh446Q/wW4/G
+         pVLHlPBLRqwRe+F6oD9fkph5VE+SuXyfsOML4tuvvJlMlq+bSXmhtYDQ/JVpT//IjAWp
+         JL5Bzqgkm+OIVSu+HzsZqVAmGUze3nkCKFG/qG1lwbxG3b8Cfr1cEmMMPJnX2wtQLgto
+         1sNdImdZaq630EV9+czwF+bQhzV2wSrPi4I0I157sPNqEuQoXqLUSIKrnnlsgoZHf+UF
+         0T+/308sWVJKi34aqflsSkiKKxND8bpMT/H3toAExvHFgXbuv4ADG5FjIV1M4svKyAzI
+         hOIQ==
+X-Gm-Message-State: AOAM532NNINuDa/BHQU0eIKtAwiuEaH2kF6I+RCsv5glALrogDD2zE60
+        pn28r1Cu7lE8/Kra0DI3aL0p97RS5hRcRA==
+X-Google-Smtp-Source: ABdhPJyDdgma6U7O/MrlZEQ94di4kWlbOTGUGk8PHodDppNYjdLS4SE3n634uL9fc6swAiDTKdweMQ==
+X-Received: by 2002:a05:6830:11c2:b0:5cd:9272:326a with SMTP id v2-20020a05683011c200b005cd9272326amr11868693otq.102.1649711146712;
+        Mon, 11 Apr 2022 14:05:46 -0700 (PDT)
+Received: from tresc043793.tre-sc.gov.br ([187.94.103.218])
+        by smtp.gmail.com with ESMTPSA id d1-20020a056830138100b005cf2f29d89csm12377462otq.77.2022.04.11.14.05.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 14:05:46 -0700 (PDT)
+From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     linux-doc@vger.kernel.org, tobias@waldekranz.com, andrew@lunn.ch,
+        f.fainelli@gmail.com, vladimir.oltean@nxp.com, corbet@lwn.net,
+        kuba@kernel.org, davem@davemloft.net,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
+Subject: [PATCH net-next] net: dsa: realtek: add compatible strings for RTL8367RB-VB
+Date:   Mon, 11 Apr 2022 18:04:07 -0300
+Message-Id: <20220411210406.21404-1-luizluca@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220411130715.516fc5cc@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Noob question - can you explain how this property describes HW?
-> I thought we had a framework for clock config, and did not require
-> vendor specific properties of this sort.
-> 
-> The recovered vs free running makes the entire thing sound like
-> a SyncE related knob, irrelevant to normal HW operation.
+RTL8367RB-VB was not mentioned in the compatible table, nor in the
+Kconfig help text.
 
-It is not necessarily SyncE. Fast Ethernet is based around a 25MHz
-clock. Something needs to provide that clock. Sometimes the SoC/MAC
-provides it, and passes it to the PHY. Sometimes the PHY provides it,
-and passes it to the SoC/MAC.
+The driver still detects the variant by itself and ignores which
+compatible string was used to select it. So, any compatible string will
+work for any compatible model.
 
-There are a couple of PHYs which make use of the common clock
-framework, when the SoC is the clock source. However, i don't think
-there are any PHYs which provide a clock to the common clock framework
-when they are the source. We do however have a number of vendor
-properties to control the PHY clock output, disable the PHY clock
-output, select the PHY clock output, etc. There is not too much
-standardisation here, and it is made worse by some PHYs needing a
-reset once the clock is ticking, some MACs stop the clock when the
-link is administrative down, some PHYs stop the clock a short time
-after the link goes down which can be bad for the MAC etc.
+Reported-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+---
+ drivers/net/dsa/realtek/Kconfig        | 3 ++-
+ drivers/net/dsa/realtek/realtek-mdio.c | 1 +
+ drivers/net/dsa/realtek/realtek-smi.c  | 4 ++++
+ 3 files changed, 7 insertions(+), 1 deletion(-)
 
-      Andrew
+diff --git a/drivers/net/dsa/realtek/Kconfig b/drivers/net/dsa/realtek/Kconfig
+index b7427a8292b2..8eb5148bcc00 100644
+--- a/drivers/net/dsa/realtek/Kconfig
++++ b/drivers/net/dsa/realtek/Kconfig
+@@ -29,7 +29,8 @@ config NET_DSA_REALTEK_RTL8365MB
+ 	depends on NET_DSA_REALTEK_SMI || NET_DSA_REALTEK_MDIO
+ 	select NET_DSA_TAG_RTL8_4
+ 	help
+-	  Select to enable support for Realtek RTL8365MB-VC and RTL8367S.
++	  Select to enable support for Realtek RTL8365MB-VC, RTL8367RB-VB
++	  and RTL8367S.
+ 
+ config NET_DSA_REALTEK_RTL8366RB
+ 	tristate "Realtek RTL8366RB switch subdriver"
+diff --git a/drivers/net/dsa/realtek/realtek-mdio.c b/drivers/net/dsa/realtek/realtek-mdio.c
+index 31e1f100e48e..a36b0d8f17ff 100644
+--- a/drivers/net/dsa/realtek/realtek-mdio.c
++++ b/drivers/net/dsa/realtek/realtek-mdio.c
+@@ -267,6 +267,7 @@ static const struct of_device_id realtek_mdio_of_match[] = {
+ #endif
+ #if IS_ENABLED(CONFIG_NET_DSA_REALTEK_RTL8365MB)
+ 	{ .compatible = "realtek,rtl8365mb", .data = &rtl8365mb_variant, },
++	{ .compatible = "realtek,rtl8367rb", .data = &rtl8365mb_variant, },
+ 	{ .compatible = "realtek,rtl8367s", .data = &rtl8365mb_variant, },
+ #endif
+ 	{ /* sentinel */ },
+diff --git a/drivers/net/dsa/realtek/realtek-smi.c b/drivers/net/dsa/realtek/realtek-smi.c
+index 2243d3da55b2..c2200bd23448 100644
+--- a/drivers/net/dsa/realtek/realtek-smi.c
++++ b/drivers/net/dsa/realtek/realtek-smi.c
+@@ -556,6 +556,10 @@ static const struct of_device_id realtek_smi_of_match[] = {
+ 		.compatible = "realtek,rtl8365mb",
+ 		.data = &rtl8365mb_variant,
+ 	},
++	{
++		.compatible = "realtek,rtl8367rb",
++		.data = &rtl8365mb_variant,
++	},
+ 	{
+ 		.compatible = "realtek,rtl8367s",
+ 		.data = &rtl8365mb_variant,
+-- 
+2.35.1
+
