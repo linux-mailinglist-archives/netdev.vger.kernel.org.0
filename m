@@ -2,118 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8493F4FC12F
-	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 17:42:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8A0F4FC130
+	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 17:43:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348130AbiDKPoj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 11:44:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42282 "EHLO
+        id S1345915AbiDKPpU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 11:45:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348169AbiDKPog (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 11:44:36 -0400
-Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 004D93B004;
-        Mon, 11 Apr 2022 08:42:19 -0700 (PDT)
-Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-df22f50e0cso17673359fac.3;
-        Mon, 11 Apr 2022 08:42:19 -0700 (PDT)
+        with ESMTP id S243187AbiDKPpR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 11:45:17 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 784B03AA5D
+        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 08:43:03 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id c190-20020a1c35c7000000b0038e37907b5bso12445135wma.0
+        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 08:43:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
+        d=6wind.com; s=google;
+        h=message-id:date:mime-version:user-agent:reply-to:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
          :content-transfer-encoding;
-        bh=TxbUHNQvrMBIjTCW3//JKuYPMwW2kqiY97PwifExrW0=;
-        b=XlnjY4oJEsmqZB55ghLmlOimOPY0RzYLb/AfQU6nI2vdlmK0pF0sOosXA5xjhY1xje
-         DcbHccNQE+JUR1/SHK65Pr9104N6ZeutHWlCIR33lxl5VTRZhwsrR1Zv1MY4tnhZvM3z
-         QQKkRGZMeaA20iFJVktLgkSTLRMZmlNG3HobVNASgycrkA0IgK17OZLDMRInivTj85T2
-         IAs9JRRJet16/+4vjmQN9sb8H0BJSKCLU9c85YUhbi4KJcieBC7WrJNO+PDxolwiBrdM
-         zrUpdvX7r7uUIhpfci5wFFbLklAsC7uUnxbvq82FIH0WsRajKe0xguA7OXJ59PlZy0F4
-         RA2w==
+        bh=nmJolD/r0RRhBNoHIskQnq1/lLQ+zP29m6nleMrtNP0=;
+        b=XfKwXGth5I7b7EQ2qcpwLIEAQOTKr1A79WIs1DTSvvWsuroXduYLpBrRwCw3vI7yex
+         7sSj9eKrUXCyGd0qA4eRJT4sG7XdzpyGAQY0obXVQR00e6VkDHCcyDlbMwEqEvZk0xG1
+         oAy9+MqxreJxYwaMn50zWpM6rAksNnkAU8MOUPjqxMsCT2zSmpiwT7CPRUBTWrbMXb+A
+         +twxaYBX7V4CXEZe3cgJbQL5SrSibaz9s7fBjjnp3HNPKPrihDhwEswHr7J6OdX6QpCR
+         kFEQPmtSxUEymlPWzi5ou525gTh9XcjvHl4BoxQcQPpbVI25myJMzDgAgpcFpRgwiH3X
+         w8AQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=TxbUHNQvrMBIjTCW3//JKuYPMwW2kqiY97PwifExrW0=;
-        b=ypa0TndwiDDhxyZa9Y10ByHStrM7p+ruD9wWU6otFaIiTy7vVwI90SKe4YCt84HyRP
-         6CD8E0A/SP7YeEF1LmLqC1rY/8WLgr7PCLaXyltfncephDtwyyuOKWqPifKxL/NbKprO
-         9bDsYYvkw15BoeLNypmuUpGrdu+JuH6/GszZegQYHrrV4HXLyp1Gnuphy+GD1kHsCoGv
-         8bb8YPfyv4ZheoJ0BWhlb2rj+WrdPj69v0tC938iuq5SWIdIhkypIJUT3Tcle9MwM8+B
-         9h6k+rS9e+hPyUEBEo9RlXWor6HpwjMy8fIsAzsFIpaxhlDx14nzBHuynYqrl077cKtV
-         IhBw==
-X-Gm-Message-State: AOAM5338adRH4VI9sVPU/fZMpfQHM92gWPXt0SgvX9vtQBKqIm6zTvaN
-        ajHAvP+o1ja4hns7dd4pTva9sPaJf4g=
-X-Google-Smtp-Source: ABdhPJzniQoI+xcfeMw2+smpP0QcrSIfAaa6a3E0tMqs8h5Apl4XV+TulHiqRKW4kTxjB+R0UVH00w==
-X-Received: by 2002:a05:6871:79b:b0:d3:4039:7e7c with SMTP id o27-20020a056871079b00b000d340397e7cmr14657208oap.121.1649691738902;
-        Mon, 11 Apr 2022 08:42:18 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id c9-20020a4a8ec9000000b0032438ba79b0sm11513951ool.0.2022.04.11.08.42.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 08:42:17 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     linux-wireless@vger.kernel.org
-Cc:     Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Gregory Greenman <gregory.greenman@intel.com>
-Subject: [PATCH] iwlwifi: iwl-dbg: Use del_timer_sync() before freeing
-Date:   Mon, 11 Apr 2022 08:42:10 -0700
-Message-Id: <20220411154210.1870008-1-linux@roeck-us.net>
-X-Mailer: git-send-email 2.35.1
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:reply-to
+         :subject:content-language:to:cc:references:from:organization
+         :in-reply-to:content-transfer-encoding;
+        bh=nmJolD/r0RRhBNoHIskQnq1/lLQ+zP29m6nleMrtNP0=;
+        b=BZB6HR8/2BcVhTCZXWoY3z6KaFNwT1XqBX1pMGg1/7Q8GWOlZ6pNZTHGw74qCKfEL3
+         NGH1olDQJtwJl4CnNWiguNZY3/cgtFdvucsZR8rsmqHkCLGz5E+mzm4q8JbANWlmduCR
+         p4EpteUuhVKZykWKZTNTXV4ZLnRyH3CThoX4f56gk8JDieVJYT9tO5Lhw9mBjqQIzmhM
+         WqDOOItz36CdotJdAJWI0vP0IZv0q5f0tS2wFwtEq8VLyd/42VPdiWYJmM4aQDmen8E2
+         7B6ksaQnquwvvK8aFisFWhLEUjUBhatLVHXQRxX6Bzt6cSApdnmn7HcC9ztcehbJwPRR
+         gqfQ==
+X-Gm-Message-State: AOAM533ZLtZZZv2yGYgwrF1MVmLxxTO9FSubP14a0NQjyIE6xCMfnFhw
+        9RImMn8h93kqaq6Adw+b/61/kTHXAIpjCqLD
+X-Google-Smtp-Source: ABdhPJwfDJblOlR0Dv8JWeJYeH+JcXX/4Q7sgY/WTcoHlb1Vme99hBw9351P+K0ANdMpvZx25Q8wkQ==
+X-Received: by 2002:a1c:e911:0:b0:38e:6c5d:40e5 with SMTP id q17-20020a1ce911000000b0038e6c5d40e5mr29728858wmc.116.1649691782098;
+        Mon, 11 Apr 2022 08:43:02 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:b41:c160:4d92:8b8b:5889:ee2f? ([2a01:e0a:b41:c160:4d92:8b8b:5889:ee2f])
+        by smtp.gmail.com with ESMTPSA id v1-20020adf9e41000000b00205c3d212easm27761744wre.51.2022.04.11.08.43.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Apr 2022 08:43:01 -0700 (PDT)
+Message-ID: <cb3e862f-ad39-d739-d594-a5634c29cdb3@6wind.com>
+Date:   Mon, 11 Apr 2022 17:43:01 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: What is the purpose of dev->gflags?
+Content-Language: en-US
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>
+References: <20220408183045.wpyx7tqcgcimfudu@skbuf>
+ <20220408115054.7471233b@kernel.org> <20220408191757.dllq7ztaefdyb4i6@skbuf>
+ <797f525b-9b85-9f86-2927-6dfb34e61c31@6wind.com>
+ <20220411153334.lpzilb57wddxlzml@skbuf>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+In-Reply-To: <20220411153334.lpzilb57wddxlzml@skbuf>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In Chrome OS, a large number of crashes is observed due to corrupted timer
-lists. Steven Rostedt pointed out that this usually happens when a timer
-is freed while still active, and that the problem is often triggered
-by code calling del_timer() instead of del_timer_sync() just before
-freeing.
 
-Steven also identified the iwlwifi driver as one of the possible culprits
-since it does exactly that.
-
-Reported-by: Steven Rostedt <rostedt@goodmis.org>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Johannes Berg <johannes.berg@intel.com>
-Cc: Gregory Greenman <gregory.greenman@intel.com>
-Fixes: 60e8abd9d3e91 ("iwlwifi: dbg_ini: add periodic trigger new API support")
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
----
-v1 (from RFC):
-    Removed Shahar S Matityahu from Cc: and added Gregory Greenman.
-    No functional change.
-
-I thought about the need to add a mutex to protect the timer list, but
-I convinced myself that it is not necessary because the code adding
-the timer list and the code removing it should never be never executed
-in parallel.
-
- drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c b/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
-index 866a33f49915..3237d4b528b5 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
-@@ -371,7 +371,7 @@ void iwl_dbg_tlv_del_timers(struct iwl_trans *trans)
- 	struct iwl_dbg_tlv_timer_node *node, *tmp;
- 
- 	list_for_each_entry_safe(node, tmp, timer_list, list) {
--		del_timer(&node->timer);
-+		del_timer_sync(&node->timer);
- 		list_del(&node->list);
- 		kfree(node);
- 	}
--- 
-2.35.1
-
+Le 11/04/2022 à 17:33, Vladimir Oltean a écrit :
+[snip]
+> Would you agree that the __dev_set_allmulti() -> __dev_notify_flags()
+> call path is dead code? If it is, is there any problem it should be
+> addressing which it isn't, or can we just delete it?
+I probably miss your point, why is it dead code?
