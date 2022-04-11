@@ -2,59 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 859A54FC778
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 00:16:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15FD84FC77B
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 00:16:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350410AbiDKWSN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 18:18:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38174 "EHLO
+        id S241387AbiDKWS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 18:18:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241387AbiDKWSC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 18:18:02 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C5452126E;
-        Mon, 11 Apr 2022 15:15:47 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id q11so20378445iod.6;
-        Mon, 11 Apr 2022 15:15:47 -0700 (PDT)
+        with ESMTP id S1347793AbiDKWSN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 18:18:13 -0400
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E4B01C904;
+        Mon, 11 Apr 2022 15:15:51 -0700 (PDT)
+Received: by mail-il1-x130.google.com with SMTP id y16so12432203ilc.7;
+        Mon, 11 Apr 2022 15:15:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Ghy1UswEx6W00pg1cAv/pF841qi0AmfQEmewriQWJBs=;
-        b=dcVp+hrbmD/m/P0sVNANzMYqawG4Iygh4NY+WK9XwNBErx9AcxSG/ZhU5kh4MLNyDl
-         OLn/f+MsMEDyrIhykWCdo6BYe5sGmgJOJU/lf07fKmlPd954bGI5rF4u7UkXpO1ZeTnI
-         bkuycLc/gCAspPercz7Seqlhf9Uj0FYEI05lT5G3zcviNCqd2LmIrtRFXnbOGHwHTVlZ
-         n/+hSsF+D3maVmBKJAhVJvg/G7iXKUMtObKw2Zsuv002VuRlAFzOy7ugDxTtJIVyosVK
-         yghk1fsXau1MViZvz1XLNHth82HG+6ORoNyih8E6oLj44Nbm4aWp85vDgx6dG7iL/THD
-         CXAw==
+        bh=pah6dFtB/Pcvu2zEarTnB8ifwqo0zAZEes1j6yd9fhk=;
+        b=JiKEWMYkgn3YjUMQx4zQiB6kahNGD0Gk33yc9QezXtWNdkNYTcQi5wgf9FpUMGs537
+         0eFlYsSaqgYKDtqcM/vqzuBoHYx1DWzFzWOB4h6Bsztbb8jzaYTaLmlcqPDGcvsNyTlr
+         ZvtasycqGjeTF4Kaer0KecO6GO1aZ/pPt7V8Hl/6+1GdfxdKfU9UPih0qLYqv5yVJptW
+         DyQf6CIKP7tv7WGBD6MZ0BD/+14bFTL5Gi1t3iJZwynw+8FO86jl1rTvFeIaLOBQMG5c
+         I1b8eqqxr+yMdJahqCAUA8tLQykm3fwUT7+N3+c35IrrxiI/pgRhX24W9JSeRs+eHkLo
+         Tfxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Ghy1UswEx6W00pg1cAv/pF841qi0AmfQEmewriQWJBs=;
-        b=5turyEgoUZ1BEmG91PNaVd1q74ILjS72oH9ZG0ZToz5sXAxldlPR4B6Iy+Qru08OJB
-         R7nCb8cJH8fChdso5K9NVuPHXo4MbQ3kIRokBiqfq7O3xABWurtYvfl0oFveExWJqxj4
-         N9bYZ6OiBVGF/klo7Jg7XL34Ky6YeVCa6Br2wgE3DUxn7jdEisqP1fb7c7Jh3kAYXQEy
-         RCo6/C+JH1A9X2yH2PVBnJN02KiU85n4btngEVHQnSPY/XRP0EDFbdQ7G6M65h/qru+b
-         fz79qQqecGxys8d2Qb02Wel47HviStBwahFDy8fTGTvRtKySbIyZJqT8rpCbzMztxjKC
-         cQ7A==
-X-Gm-Message-State: AOAM5338pXOrYX/awVNYxQSvgJFdPuLbELZO7/aAtUa0uWYnoXGyzUK+
-        VLAyim8hSsQvSBn6cKKkYKTMPfVun4+Z2h5TGDl+FQod
-X-Google-Smtp-Source: ABdhPJz//PCz8xh3ol8xW1/hvvN9dhh1a8liK1zU1xJtRnFH696EzAj1ao/6nV1GIGXnGzGDkSG6Yv6RkSbMXNetGpM=
-X-Received: by 2002:a02:cc07:0:b0:326:3976:81ad with SMTP id
- n7-20020a02cc07000000b00326397681admr1865761jap.237.1649715346615; Mon, 11
- Apr 2022 15:15:46 -0700 (PDT)
+        bh=pah6dFtB/Pcvu2zEarTnB8ifwqo0zAZEes1j6yd9fhk=;
+        b=CGBMp/ymp0m+7vXSGw0zN40EEm291UA9Mjj9+FRq+gMTY5JzrCm5ePdPVn9TZ4AWE/
+         AGSQz7hj03PAfxikRAOs4ETmjREqxLtV5GLPu31AuwC2i6gkYszE/mtiAFPFAE2AMZB3
+         HQtUwgrkg7UzF2LAw6m1YYRy3TXoCaUG8gqFdsvVvNmAFCbaGUbeHdnrSw8eItQrLlOi
+         vCSgbDTzJvUkj8qeOhyFqylsnu4S1wPLXkApJI9Ti2T8gsZdZPV79WsXlNIyQqY7DFub
+         +tMta+r3kGXTkCPWiwnyMVmz4t3cK/2zgayX9MN6Tef0V8HT/xGbJzxrj+J+9uaNVHyS
+         hHVQ==
+X-Gm-Message-State: AOAM530P5dWMuDbK4XfTYJr4o+f3lijEYXRM1HfxoyJvCLlpzuRaXHyZ
+        kweAmbsABmcCUL5Ybd7vVEXrrKYFe6Ur6U0wBvc=
+X-Google-Smtp-Source: ABdhPJwhjKyj8AP3Dy0Z8ofMvk6opi9uZuOY/4ga06sHxxrYu4iaNSIXqLXkM+Z4Cqt/pAkyLg1mYJwIK0LpBSo0eJY=
+X-Received: by 2002:a05:6e02:1562:b0:2ca:50f1:72f3 with SMTP id
+ k2-20020a056e02156200b002ca50f172f3mr14496482ilu.71.1649715350871; Mon, 11
+ Apr 2022 15:15:50 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220407125224.310255-1-jolsa@kernel.org> <20220407125224.310255-4-jolsa@kernel.org>
- <20220408232610.nwtcuectacpwh6rk@MBP-98dd607d3435.dhcp.thefacebook.com>
-In-Reply-To: <20220408232610.nwtcuectacpwh6rk@MBP-98dd607d3435.dhcp.thefacebook.com>
+References: <20220407125224.310255-1-jolsa@kernel.org> <20220407125224.310255-5-jolsa@kernel.org>
+In-Reply-To: <20220407125224.310255-5-jolsa@kernel.org>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 11 Apr 2022 15:15:35 -0700
-Message-ID: <CAEf4BzZYopSrVo=fdnu2q1U9LwcOJartwreWqM=u=aoV+ZNncQ@mail.gmail.com>
-Subject: Re: [RFC bpf-next 3/4] bpf: Resolve symbols with kallsyms_lookup_names
- for kprobe multi link
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+Date:   Mon, 11 Apr 2022 15:15:40 -0700
+Message-ID: <CAEf4BzbE1n3Lie+tWTzN69RQUWgjxePorxRr9J8CuiQVUfy-kA@mail.gmail.com>
+Subject: Re: [RFC bpf-next 4/4] selftests/bpf: Add attach bench test
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Masami Hiramatsu <mhiramat@kernel.org>,
@@ -75,106 +73,165 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 8, 2022 at 4:26 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
+On Thu, Apr 7, 2022 at 5:53 AM Jiri Olsa <jolsa@kernel.org> wrote:
 >
-> On Thu, Apr 07, 2022 at 02:52:23PM +0200, Jiri Olsa wrote:
-> > Using kallsyms_lookup_names function to speed up symbols lookup in
-> > kprobe multi link attachment and replacing with it the current
-> > kprobe_multi_resolve_syms function.
-> >
-> > This speeds up bpftrace kprobe attachment:
-> >
-> >   # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
-> >   ...
-> >   6.5681 +- 0.0225 seconds time elapsed  ( +-  0.34% )
-> >
-> > After:
-> >
-> >   # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
-> >   ...
-> >   0.5661 +- 0.0275 seconds time elapsed  ( +-  4.85% )
-> >
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > ---
-> >  kernel/trace/bpf_trace.c | 123 +++++++++++++++++++++++----------------
-> >  1 file changed, 73 insertions(+), 50 deletions(-)
-> >
-> > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> > index b26f3da943de..2602957225ba 100644
-> > --- a/kernel/trace/bpf_trace.c
-> > +++ b/kernel/trace/bpf_trace.c
-> > @@ -2226,6 +2226,72 @@ struct bpf_kprobe_multi_run_ctx {
-> >       unsigned long entry_ip;
-> >  };
-> >
-> > +struct user_syms {
-> > +     const char **syms;
-> > +     char *buf;
-> > +};
-> > +
-> > +static int copy_user_syms(struct user_syms *us, void __user *usyms, u32 cnt)
-> > +{
-> > +     const char __user **usyms_copy = NULL;
-> > +     const char **syms = NULL;
-> > +     char *buf = NULL, *p;
-> > +     int err = -EFAULT;
-> > +     unsigned int i;
-> > +     size_t size;
-> > +
-> > +     size = cnt * sizeof(*usyms_copy);
-> > +
-> > +     usyms_copy = kvmalloc(size, GFP_KERNEL);
-> > +     if (!usyms_copy)
-> > +             return -ENOMEM;
-> > +
-> > +     if (copy_from_user(usyms_copy, usyms, size))
-> > +             goto error;
-> > +
-> > +     err = -ENOMEM;
-> > +     syms = kvmalloc(size, GFP_KERNEL);
-> > +     if (!syms)
-> > +             goto error;
-> > +
-> > +     /* TODO this potentially allocates lot of memory (~6MB in my tests
-> > +      * with attaching ~40k functions). I haven't seen this to fail yet,
-> > +      * but it could be changed to allocate memory gradually if needed.
-> > +      */
+> Adding test that reads all functions from ftrace available_filter_functions
+> file and attach them all through kprobe_multi API.
 >
-> Why would 6MB kvmalloc fail?
-> If we don't have such memory the kernel will be ooming soon anyway.
-> I don't think we'll see this kvmalloc triggering oom in practice.
-> The verifier allocates a lot more memory to check large programs.
+> It checks that the attach and detach times is under 2 seconds
+> and printf stats info with -v option, like on my setup:
 >
-> imo this approach is fine. It's simple.
-> Trying to do gradual alloc with realloc would be just guessing.
+>   test_bench_attach: found 48712 functions
+>   test_bench_attach: attached in   1.069s
+>   test_bench_attach: detached in   0.373s
 >
-> Another option would be to ask user space (libbpf) to do the sort.
-> There are pros and cons.
-> This vmalloc+sort is slightly better imo.
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  .../bpf/prog_tests/kprobe_multi_test.c        | 141 ++++++++++++++++++
+>  .../selftests/bpf/progs/kprobe_multi_empty.c  |  12 ++
+>  2 files changed, 153 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
+> index b9876b55fc0c..6798b54416de 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
+> @@ -2,6 +2,9 @@
+>  #include <test_progs.h>
+>  #include "kprobe_multi.skel.h"
+>  #include "trace_helpers.h"
+> +#include "kprobe_multi_empty.skel.h"
+> +#include "bpf/libbpf_internal.h"
+> +#include "bpf/hashmap.h"
+>
+>  static void kprobe_multi_test_run(struct kprobe_multi *skel, bool test_return)
+>  {
+> @@ -301,6 +304,142 @@ static void test_attach_api_fails(void)
+>         kprobe_multi__destroy(skel);
+>  }
+>
+> +static inline __u64 get_time_ns(void)
+> +{
+> +       struct timespec t;
+> +
+> +       clock_gettime(CLOCK_MONOTONIC, &t);
+> +       return (__u64) t.tv_sec * 1000000000 + t.tv_nsec;
+> +}
+> +
+> +static size_t symbol_hash(const void *key, void *ctx __maybe_unused)
+> +{
+> +       return str_hash((const char *) key);
+> +}
+> +
+> +static bool symbol_equal(const void *key1, const void *key2, void *ctx __maybe_unused)
+> +{
+> +       return strcmp((const char *) key1, (const char *) key2) == 0;
+> +}
+> +
+> +#define DEBUGFS "/sys/kernel/debug/tracing/"
+> +
+> +static int get_syms(char ***symsp, size_t *cntp)
+> +{
+> +       size_t cap = 0, cnt = 0, i;
+> +       char *name, **syms = NULL;
+> +       struct hashmap *map;
+> +       char buf[256];
+> +       FILE *f;
+> +       int err;
+> +
+> +       /*
+> +        * The available_filter_functions contains many duplicates,
+> +        * but other than that all symbols are usable in kprobe multi
+> +        * interface.
+> +        * Filtering out duplicates by using hashmap__add, which won't
+> +        * add existing entry.
+> +        */
+> +       f = fopen(DEBUGFS "available_filter_functions", "r");
 
-Totally agree, the simpler the better. Also when you are attaching to
-tens of thousands of probes, 6MB isn't a lot of memory for whatever
-you are trying to do, anyways :)
+I'm really curious how did you manage to attach to everything in
+available_filter_functions because when I'm trying to do that I fail.
+available_filter_functions has a bunch of functions that should not be
+attachable (e.g., notrace functions). Look just at __bpf_tramp_exit:
 
-Even if libbpf had to sort it, kernel would probably have to validate
-that. Also for binary search you'd still need to read in the string
-itself, but if you'd do this "on demand", we are adding TOCTOU and
-other headaches.
+  void notrace __bpf_tramp_exit(struct bpf_tramp_image *tr);
 
-Simple is good.
+So first, curious what I am doing wrong or rather why it succeeds in
+your case ;)
 
->
-> > +     size = cnt * KSYM_NAME_LEN;
-> > +     buf = kvmalloc(size, GFP_KERNEL);
-> > +     if (!buf)
-> > +             goto error;
-> > +
-> > +     for (p = buf, i = 0; i < cnt; i++) {
-> > +             err = strncpy_from_user(p, usyms_copy[i], KSYM_NAME_LEN);
-> > +             if (err == KSYM_NAME_LEN)
-> > +                     err = -E2BIG;
-> > +             if (err < 0)
-> > +                     goto error;
+But second, just wanted to plea to "fix" available_filter_functions to
+not list stuff that should not be attachable. Can you please take a
+look and checks what's going on there and why do we have notrace
+functions (and what else should *NOT* be there)?
+
+
+> +       if (!f)
+> +               return -EINVAL;
+> +
+> +       map = hashmap__new(symbol_hash, symbol_equal, NULL);
+> +       err = libbpf_get_error(map);
+> +       if (err)
+> +               goto error;
+> +
 
 [...]
+
+> +
+> +       attach_delta_ns = (attach_end_ns - attach_start_ns) / 1000000000.0;
+> +       detach_delta_ns = (detach_end_ns - detach_start_ns) / 1000000000.0;
+> +
+> +       fprintf(stderr, "%s: found %lu functions\n", __func__, cnt);
+> +       fprintf(stderr, "%s: attached in %7.3lfs\n", __func__, attach_delta_ns);
+> +       fprintf(stderr, "%s: detached in %7.3lfs\n", __func__, detach_delta_ns);
+> +
+> +       if (attach_delta_ns > 2.0)
+> +               PRINT_FAIL("attach time above 2 seconds\n");
+> +       if (detach_delta_ns > 2.0)
+> +               PRINT_FAIL("detach time above 2 seconds\n");
+
+see my reply on the cover letter, any such "2 second" assumption are
+guaranteed to bite us. We've dealt with a lot of timing issues due to
+CI being slower and more unpredictable in terms of performance, I'd
+like to avoid dealing with one more case like that.
+
+
+> +
+> +cleanup:
+> +       kprobe_multi_empty__destroy(skel);
+> +       if (syms) {
+> +               for (i = 0; i < cnt; i++)
+> +                       free(syms[i]);
+> +               free(syms);
+> +       }
+> +}
+> +
+>  void test_kprobe_multi_test(void)
+>  {
+>         if (!ASSERT_OK(load_kallsyms(), "load_kallsyms"))
+> @@ -320,4 +459,6 @@ void test_kprobe_multi_test(void)
+>                 test_attach_api_syms();
+>         if (test__start_subtest("attach_api_fails"))
+>                 test_attach_api_fails();
+> +       if (test__start_subtest("bench_attach"))
+> +               test_bench_attach();
+>  }
+> diff --git a/tools/testing/selftests/bpf/progs/kprobe_multi_empty.c b/tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
+> new file mode 100644
+> index 000000000000..be9e3d891d46
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
+> @@ -0,0 +1,12 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +#include <linux/bpf.h>
+> +#include <bpf/bpf_helpers.h>
+> +#include <bpf/bpf_tracing.h>
+> +
+> +char _license[] SEC("license") = "GPL";
+> +
+> +SEC("kprobe.multi/*")
+> +int test_kprobe_empty(struct pt_regs *ctx)
+> +{
+> +       return 0;
+> +}
+> --
+> 2.35.1
+>
