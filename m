@@ -2,173 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AB494FC456
-	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 20:46:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5C4D4FC465
+	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 20:51:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349238AbiDKSss (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 14:48:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59176 "EHLO
+        id S1349265AbiDKSxj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 14:53:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349224AbiDKSsr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 14:48:47 -0400
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5925E2CCB7
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 11:46:32 -0700 (PDT)
-Received: by mail-qk1-x72f.google.com with SMTP id c199so9872363qkg.4
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 11:46:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=91Li9XU9gpsJ9k8wCFOCx1n06URSq0VVBp27IbgO0dU=;
-        b=ZE3jzHxvrXCeyfU3Ym1d86TePHiIgNaCYyP4+rQ9CLUlbAHm4ms3tb2AIilc/amm1J
-         NdcDHNQQzHMmT/jA0Kk7+g0EJnptw9ayPbM6qU6e6z98YNRwKWtQ9WxtvQ+1BQGEKaqW
-         0lZhkMlBE6OaMK/0TiP5qzJkkzYgIrSKB5Yx5epoa8GDHW16j1uXNYfZNckrWC3dyuxV
-         8g6y2hquS/Zfm0hL2SOT6/6ntDG8YIJt+rSmkwhd+9pKeJh1jPTBPCD8Hfb40JwlabOS
-         ZV+/aEpKWS5IWSvzn4T9/2mHSk/dRmNC7SrlmJaDuhBFXdHOiJuTguDUeIClkewxwr10
-         YOEQ==
+        with ESMTP id S1349255AbiDKSxg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 14:53:36 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF50A1B7
+        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 11:51:20 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id o17-20020a92c691000000b002c2c04aebe7so11183391ilg.8
+        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 11:51:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=91Li9XU9gpsJ9k8wCFOCx1n06URSq0VVBp27IbgO0dU=;
-        b=1N+B4RZ9d8RRuBhZ/rkjY46dd6UkVZgeNRpKbw6Vggx3oKqzQPYHUsVSZ7YMzrqvQl
-         goIwYznRG/B1lgjg8MTxjMTQ1zzWRmOfdBXoG4xZ2nR2+TNpX4j9KXLr/Qn84eVtOw7y
-         kcfXy9CL0yEdQAczXmqoZ6OMf3epuaL913fsuVmymF4Gv458fWYng/a5upqL66yteS2L
-         075GGcz+YqCx4v4hpLd2nEiba51kgvrGou5v4CITvVIp2s43N+GcLSggdtzTU7len+VZ
-         HtlZhaBrwFcrVXbP6X4QhKpibY8N3spVnlY/B+PYTkkCB5XRiQIbfLo6h2oLZoSOtJ3i
-         PShw==
-X-Gm-Message-State: AOAM531qe7hL1xOJdfjRzc4eCmIFuy0+5+KUjNCe5nxDiIMMG2l6c+py
-        /cgvwQfMZl3PucXREjl0Gn/2yq4+lYLdr04+C5vsFA==
-X-Google-Smtp-Source: ABdhPJxPt6k2TunyH0GsmTgJkWGdFloK65fX+MIrLpDEF9/p39z+AURPMKD9fLQujeyYFeRlXPPe6i8pbLZMBWvs+U8=
-X-Received: by 2002:ae9:eb01:0:b0:69c:10ca:ed6 with SMTP id
- b1-20020ae9eb01000000b0069c10ca0ed6mr574203qkg.496.1649702791220; Mon, 11 Apr
- 2022 11:46:31 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=krJm4vr1bgmJgUgNDyh6UBF5mJpXVx2anHtQTms+VBM=;
+        b=eoKjpFfgxEUb2pttm6HKYAX29CYNZUjvfXEQPRilXLlf1WVFH9NyE0KWAFX/n8jC93
+         J6Qgb5OM/dsCWKXQwEM3ElOpnJfD0IlQqZ6fMOAtGBHIwIEiJe9j/s9Gagjn0kibs7mm
+         gCnKHZ4/+q27sTgZ89iFl8CCEyJQJXvhMJFRAH/qP9LklFsYgGV/ldHU8oo+lS7nWNI5
+         LnYVMaO4J2Y8u4NYaIJMF12mjKejDx/f0Rq7tWpjQKZ74vFs8b9RWWI3NpAUHzUVj//R
+         eAFxi8FAmX3GiQ5cOKrWLx8pdtZ8WNBtYGH8ajDR3jb2903JKbdbmf5tXc8QN7E3l4As
+         w8gQ==
+X-Gm-Message-State: AOAM531he2y6gezxbvR7iN+vWAH+RF+6eEFLM+bMkpq6sQoC6S6otjGR
+        pP8NV4UwQMKiUrG6GDqxJfUzL/og3PompgkZrFLgWTYl5xe/
+X-Google-Smtp-Source: ABdhPJw8NTvadcUpf18oM9LygklWpQS332IuVoJT6oX/kODIOc5pa5yL4UZsOqtqf4cT8wNtgpVfEaQYoMRtnv1bNUiHlxeaicDz
 MIME-Version: 1.0
-References: <20220407223112.1204582-1-sdf@google.com> <20220407223112.1204582-4-sdf@google.com>
- <20220408225628.oog4a3qteauhqkdn@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20220408225628.oog4a3qteauhqkdn@kafai-mbp.dhcp.thefacebook.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Mon, 11 Apr 2022 11:46:20 -0700
-Message-ID: <CAKH8qBuMMuuUJiZJY8Gb+tMQLKoRGpvv58sSM4sZXjyEc0i7dA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 3/7] bpf: minimize number of allocated lsm
- slots per program
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org
+X-Received: by 2002:a05:6e02:1a81:b0:2c9:e6ac:49c with SMTP id
+ k1-20020a056e021a8100b002c9e6ac049cmr13877913ilv.281.1649703080065; Mon, 11
+ Apr 2022 11:51:20 -0700 (PDT)
+Date:   Mon, 11 Apr 2022 11:51:20 -0700
+In-Reply-To: <00000000000098289005dc17b71b@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000127d8305dc656e84@google.com>
+Subject: Re: [syzbot] possible deadlock in sco_conn_del
+From:   syzbot <syzbot+b825d87fe2d043e3e652@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        luiz.dentz@gmail.com, marcel@holtmann.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 8, 2022 at 3:57 PM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> On Thu, Apr 07, 2022 at 03:31:08PM -0700, Stanislav Fomichev wrote:
-> > Previous patch adds 1:1 mapping between all 211 LSM hooks
-> > and bpf_cgroup program array. Instead of reserving a slot per
-> > possible hook, reserve 10 slots per cgroup for lsm programs.
-> > Those slots are dynamically allocated on demand and reclaimed.
-> > This still adds some bloat to the cgroup and brings us back to
-> > roughly pre-cgroup_bpf_attach_type times.
-> >
-> > It should be possible to eventually extend this idea to all hooks if
-> > the memory consumption is unacceptable and shrink overall effective
-> > programs array.
-> >
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > ---
-> >  include/linux/bpf-cgroup-defs.h |  4 +-
-> >  include/linux/bpf_lsm.h         |  6 ---
-> >  kernel/bpf/bpf_lsm.c            |  9 ++--
-> >  kernel/bpf/cgroup.c             | 96 ++++++++++++++++++++++++++++-----
-> >  4 files changed, 90 insertions(+), 25 deletions(-)
-> >
-> > diff --git a/include/linux/bpf-cgroup-defs.h b/include/linux/bpf-cgroup-defs.h
-> > index 6c661b4df9fa..d42516e86b3a 100644
-> > --- a/include/linux/bpf-cgroup-defs.h
-> > +++ b/include/linux/bpf-cgroup-defs.h
-> > @@ -10,7 +10,9 @@
-> >
-> >  struct bpf_prog_array;
-> >
-> > -#define CGROUP_LSM_NUM 211 /* will be addressed in the next patch */
-> > +/* Maximum number of concurrently attachable per-cgroup LSM hooks.
-> > + */
-> > +#define CGROUP_LSM_NUM 10
-> hmm...only 10 different lsm hooks (or 10 different attach_btf_ids) can
-> have BPF_LSM_CGROUP programs attached.  This feels quite limited but having
-> a static 211 (and potentially growing in the future) is not good either.
-> I currently do not have a better idea also. :/
->
-> Have you thought about other dynamic schemes or they would be too slow ?
->
-> >  enum cgroup_bpf_attach_type {
-> >       CGROUP_BPF_ATTACH_TYPE_INVALID = -1,
-> > diff --git a/include/linux/bpf_lsm.h b/include/linux/bpf_lsm.h
-> > index 7f0e59f5f9be..613de44aa429 100644
-> > --- a/include/linux/bpf_lsm.h
-> > +++ b/include/linux/bpf_lsm.h
-> > @@ -43,7 +43,6 @@ extern const struct bpf_func_proto bpf_inode_storage_delete_proto;
-> >  void bpf_inode_storage_free(struct inode *inode);
-> >
-> >  int bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog, bpf_func_t *bpf_func);
-> > -int bpf_lsm_hook_idx(u32 btf_id);
-> >
-> >  #else /* !CONFIG_BPF_LSM */
-> >
-> > @@ -74,11 +73,6 @@ static inline int bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog,
-> >       return -ENOENT;
-> >  }
-> >
-> > -static inline int bpf_lsm_hook_idx(u32 btf_id)
-> > -{
-> > -     return -EINVAL;
-> > -}
-> > -
-> >  #endif /* CONFIG_BPF_LSM */
-> >
-> >  #endif /* _LINUX_BPF_LSM_H */
-> > diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
-> > index eca258ba71d8..8b948ec9ab73 100644
-> > --- a/kernel/bpf/bpf_lsm.c
-> > +++ b/kernel/bpf/bpf_lsm.c
-> > @@ -57,10 +57,12 @@ static unsigned int __cgroup_bpf_run_lsm_socket(const void *ctx,
-> >       if (unlikely(!sk))
-> >               return 0;
-> >
-> > +     rcu_read_lock(); /* See bpf_lsm_attach_type_get(). */
-> >       cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
-> >       if (likely(cgrp))
-> >               ret = BPF_PROG_RUN_ARRAY_CG(cgrp->bpf.effective[prog->aux->cgroup_atype],
-> >                                           ctx, bpf_prog_run, 0);
-> > +     rcu_read_unlock();
-> >       return ret;
-> >  }
-> >
-> > @@ -77,7 +79,7 @@ static unsigned int __cgroup_bpf_run_lsm_current(const void *ctx,
-> >       /*prog = container_of(insn, struct bpf_prog, insnsi);*/
-> >       prog = (const struct bpf_prog *)((void *)insn - offsetof(struct bpf_prog, insnsi));
-> >
-> > -     rcu_read_lock();
-> > +     rcu_read_lock(); /* See bpf_lsm_attach_type_get(). */
-> I think this is also needed for task_dfl_cgroup().  If yes,
-> will be a good idea to adjust the comment if it ends up
-> using the 'CGROUP_LSM_NUM 10' scheme.
->
-> While at rcu_read_lock(), have you thought about what major things are
-> needed to make BPF_LSM_CGROUP sleepable ?
->
-> The cgroup local storage could be one that require changes but it seems
-> the cgroup local storage is not available to BPF_LSM_GROUP in this change set.
-> The current use case doesn't need it?
+syzbot has found a reproducer for the following issue on:
 
-No, I haven't thought about sleepable at all yet :-( But seems like
-having that rcu lock here might be problematic if we want to sleep? In
-this case, Jakub's suggestion seems better.
+HEAD commit:    d12d7e1cfe38 Add linux-next specific files for 20220411
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=162e29a8f00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=58fcaf7d8df169a6
+dashboard link: https://syzkaller.appspot.com/bug?extid=b825d87fe2d043e3e652
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16a2ff0f700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=149fd2df700000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+b825d87fe2d043e3e652@syzkaller.appspotmail.com
+
+======================================================
+WARNING: possible circular locking dependency detected
+5.18.0-rc1-next-20220411-syzkaller #0 Not tainted
+------------------------------------------------------
+syz-executor104/3623 is trying to acquire lock:
+ffff88807bd9b130 (sk_lock-AF_BLUETOOTH-BTPROTO_SCO){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1682 [inline]
+ffff88807bd9b130 (sk_lock-AF_BLUETOOTH-BTPROTO_SCO){+.+.}-{0:0}, at: sco_conn_del+0x131/0x2c0 net/bluetooth/sco.c:197
+
+but task is already holding lock:
+ffffffff8d777e08 (hci_cb_list_lock){+.+.}-{3:3}, at: hci_disconn_cfm include/net/bluetooth/hci_core.h:1580 [inline]
+ffffffff8d777e08 (hci_cb_list_lock){+.+.}-{3:3}, at: hci_conn_hash_flush+0xda/0x260 net/bluetooth/hci_conn.c:1458
+
+which lock already depends on the new lock.
+
+
+the existing dependency chain (in reverse order) is:
+
+-> #2 (hci_cb_list_lock){+.+.}-{3:3}:
+       __mutex_lock_common kernel/locking/mutex.c:603 [inline]
+       __mutex_lock+0x12f/0x1350 kernel/locking/mutex.c:747
+       hci_connect_cfm include/net/bluetooth/hci_core.h:1565 [inline]
+       hci_remote_features_evt+0x62b/0xa20 net/bluetooth/hci_event.c:3736
+       hci_event_func net/bluetooth/hci_event.c:6890 [inline]
+       hci_event_packet+0x7c1/0xf60 net/bluetooth/hci_event.c:6939
+       hci_rx_work+0x522/0xd60 net/bluetooth/hci_core.c:3819
+       process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+       worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+       kthread+0x2e9/0x3a0 kernel/kthread.c:376
+       ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:298
+
+-> #1 (&hdev->lock){+.+.}-{3:3}:
+       __mutex_lock_common kernel/locking/mutex.c:603 [inline]
+       __mutex_lock+0x12f/0x1350 kernel/locking/mutex.c:747
+       sco_sock_connect+0x1eb/0xa80 net/bluetooth/sco.c:593
+       __sys_connect_file+0x14f/0x190 net/socket.c:1900
+       __sys_connect+0x161/0x190 net/socket.c:1917
+       __do_sys_connect net/socket.c:1927 [inline]
+       __se_sys_connect net/socket.c:1924 [inline]
+       __x64_sys_connect+0x6f/0xb0 net/socket.c:1924
+       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+       do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+       entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+-> #0 (sk_lock-AF_BLUETOOTH-BTPROTO_SCO){+.+.}-{0:0}:
+       check_prev_add kernel/locking/lockdep.c:3095 [inline]
+       check_prevs_add kernel/locking/lockdep.c:3214 [inline]
+       validate_chain kernel/locking/lockdep.c:3829 [inline]
+       __lock_acquire+0x2abe/0x5660 kernel/locking/lockdep.c:5053
+       lock_acquire kernel/locking/lockdep.c:5665 [inline]
+       lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5630
+       lock_sock_nested+0x36/0xf0 net/core/sock.c:3314
+       lock_sock include/net/sock.h:1682 [inline]
+       sco_conn_del+0x131/0x2c0 net/bluetooth/sco.c:197
+       sco_disconn_cfm+0x71/0xb0 net/bluetooth/sco.c:1379
+       hci_disconn_cfm include/net/bluetooth/hci_core.h:1583 [inline]
+       hci_conn_hash_flush+0x127/0x260 net/bluetooth/hci_conn.c:1458
+       hci_dev_close_sync+0x567/0x1140 net/bluetooth/hci_sync.c:4152
+       hci_dev_do_close+0x32/0x70 net/bluetooth/hci_core.c:553
+       hci_rfkill_set_block+0x19c/0x1d0 net/bluetooth/hci_core.c:935
+       rfkill_set_block+0x1f9/0x540 net/rfkill/core.c:345
+       rfkill_fop_write+0x2c3/0x570 net/rfkill/core.c:1286
+       vfs_write+0x269/0xac0 fs/read_write.c:589
+       ksys_write+0x1e8/0x250 fs/read_write.c:644
+       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+       do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+       entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+other info that might help us debug this:
+
+Chain exists of:
+  sk_lock-AF_BLUETOOTH-BTPROTO_SCO --> &hdev->lock --> hci_cb_list_lock
+
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(hci_cb_list_lock);
+                               lock(&hdev->lock);
+                               lock(hci_cb_list_lock);
+  lock(sk_lock-AF_BLUETOOTH-BTPROTO_SCO);
+
+ *** DEADLOCK ***
+
+4 locks held by syz-executor104/3623:
+ #0: ffffffff8d9583a8 (rfkill_global_mutex){+.+.}-{3:3}, at: rfkill_fop_write+0x15c/0x570 net/rfkill/core.c:1278
+ #1: ffff888022e89048 (&hdev->req_lock){+.+.}-{3:3}, at: hci_dev_do_close+0x2a/0x70 net/bluetooth/hci_core.c:551
+ #2: ffff888022e88078 (&hdev->lock){+.+.}-{3:3}, at: hci_dev_close_sync+0x26d/0x1140 net/bluetooth/hci_sync.c:4139
+ #3: ffffffff8d777e08 (hci_cb_list_lock){+.+.}-{3:3}, at: hci_disconn_cfm include/net/bluetooth/hci_core.h:1580 [inline]
+ #3: ffffffff8d777e08 (hci_cb_list_lock){+.+.}-{3:3}, at: hci_conn_hash_flush+0xda/0x260 net/bluetooth/hci_conn.c:1458
+
+stack backtrace:
+CPU: 0 PID: 3623 Comm: syz-executor104 Not tainted 5.18.0-rc1-next-20220411-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ check_noncircular+0x25f/0x2e0 kernel/locking/lockdep.c:2175
+ check_prev_add kernel/locking/lockdep.c:3095 [inline]
+ check_prevs_add kernel/locking/lockdep.c:3214 [inline]
+ validate_chain kernel/locking/lockdep.c:3829 [inline]
+ __lock_acquire+0x2abe/0x5660 kernel/locking/lockdep.c:5053
+ lock_acquire kernel/locking/lockdep.c:5665 [inline]
+ lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5630
+ lock_sock_nested+0x36/0xf0 net/core/sock.c:3314
+ lock_sock include/net/sock.h:1682 [inline]
+ sco_conn_del+0x131/0x2c0 net/bluetooth/sco.c:197
+ sco_disconn_cfm+0x71/0xb0 net/bluetooth/sco.c:1379
+ hci_disconn_cfm include/net/bluetooth/hci_core.h:1583 [inline]
+ hci_conn_hash_flush+0x127/0x260 net/bluetooth/hci_conn.c:1458
+ hci_dev_close_sync+0x567/0x1140 net/bluetooth/hci_sync.c:4152
+ hci_dev_do_close+0x32/0x70 net/bluetooth/hci_core.c:553
+ hci_rfkill_set_block+0x19c/0x1d0 net/bluetooth/hci_core.c:935
+ rfkill_set_block+0x1f9/0x540 net/rfkill/core.c:345
+ rfkill_fop_write+0x2c3/0x570 net/rfkill/core.c:1286
+ vfs_write+0x269/0xac0 fs/read_write.c:589
+ ksys_write+0x1e8/0x250 fs/read_write.c:644
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f841a998629
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 d1 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f841a1472f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+RAX: ffffffffffffffda RBX: 00007f841aa214c0 RCX: 00007f841a998629
+RDX: 0000000000000008 RSI: 0000000020000080 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007fff20c0bcce
+R13: 00007fff20c0bccf R14: 00007f841aa214c8 R15: 0000000000022000
+ </TASK>
+
