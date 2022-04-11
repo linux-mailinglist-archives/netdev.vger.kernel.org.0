@@ -2,56 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 868C24FBBDB
-	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 14:14:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79B2F4FBC03
+	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 14:27:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345960AbiDKMQ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 08:16:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46500 "EHLO
+        id S239856AbiDKM3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 08:29:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240584AbiDKMQz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 08:16:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1BFD40E4F;
-        Mon, 11 Apr 2022 05:14:41 -0700 (PDT)
+        with ESMTP id S236026AbiDKM3a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 08:29:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D0B286EE
+        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 05:27:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CC9E6163D;
-        Mon, 11 Apr 2022 12:14:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E600FC385A3;
-        Mon, 11 Apr 2022 12:14:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F00C1B815B4
+        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 12:27:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F7A0C385AA;
+        Mon, 11 Apr 2022 12:27:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649679281;
-        bh=XcjtbKiDmNUDUzHcXtTHRMT/Hnm0TsOrSzVdisG0c7A=;
+        s=k20201202; t=1649680034;
+        bh=8FDowP1jHJ9zt+jOMIHqzyUvAcYkylg3zS9ZLWM1YhY=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kajbelk+29WQC+TRn+sWzyafuwhgoynnn1Rw5qA6hxUmo3AO3Xkx53v0y+98gC8MQ
-         DKufahP1YjsM0Dq9qu8Ldd49kzEnPcueY3lVi+O7NeY0uSVgDJv1qI7xZfux+Csbxi
-         vmsv+bgKBB0uv0tstlgNOh7MvPzbmThtD5Vfscpv3EPB6MYDxOSpnzWStzO07so8Xt
-         BFTONgM5OH2hkDnOyMRpcRLjJyv/pg06VAnM/FCz1voEljK9mCGvAUzciEGWQepm7O
-         dOHO9FszOb9laPJXdh5bdt2tM7SoTMQuaZXBm4v2C+LGmp8H/deH06iQfmisbJh0lk
-         t60f0uPV+yVRA==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1ndswE-0004oq-JI; Mon, 11 Apr 2022 14:14:34 +0200
-Date:   Mon, 11 Apr 2022 14:14:34 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Dongliang Mu <dzm91@hust.edu.cn>
-Cc:     Oliver Neukum <oliver@neukum.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzbot+eabbf2aaa999cc507108@syzkaller.appspotmail.com,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] driver: usb: nullify dangling pointer in cdc_ncm_free
-Message-ID: <YlQbqnYP/jcYinvz@hovoldconsulting.com>
-References: <20220409120901.267526-1-dzm91@hust.edu.cn>
+        b=F+t81CXY4DvvdsiI0X0i6hICiULueVTVSSdpIfodNUCblgAXIYAl9zE7yOEOO826/
+         jvibwU8fb/FHeOTPKz9IyuIGAlvMrRVqS7J50rX2QFNcZj+IVAofgUG4eslijNgICY
+         zVD+eSL1qEF039awRNciOf8KDEWQ4nzH5M7wdBOVZke18dWotu7OFceimhnCFWzFgM
+         G/Uj6vLZi7tyGwmF3NzjzhfbzrTfE6spi/PFF8M7ckIIm+4eB5633kvl0Vv+V2qSYq
+         Oerg2H5XiW9yUr9/66c+b77qsgX43ZKjdOLAVuHRXOjSe7j3IZLMYbM3Xz65h4pTHu
+         4sHHRMmN4kNPw==
+Date:   Mon, 11 Apr 2022 14:27:10 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        thomas.petazzoni@bootlin.com, linux@armlinux.org.uk,
+        jbrouer@redhat.com, ilias.apalodimas@linaro.org, jdamato@fastly.com
+Subject: Re: [PATCH v3 net-next 1/2] net: page_pool: introduce ethtool stats
+Message-ID: <YlQenv0v/7munOfN@lore-desk>
+References: <cover.1649528984.git.lorenzo@kernel.org>
+ <628c0a6d9bdbc547c93fcd4ae2e84d08af7bc8e1.1649528984.git.lorenzo@kernel.org>
+ <YlQXl2a6vctIxXuP@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="o7ylXkfsizR48TZY"
 Content-Disposition: inline
-In-Reply-To: <20220409120901.267526-1-dzm91@hust.edu.cn>
+In-Reply-To: <YlQXl2a6vctIxXuP@lunn.ch>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -62,72 +58,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 09, 2022 at 08:09:00PM +0800, Dongliang Mu wrote:
-> From: Dongliang Mu <mudongliangabcd@gmail.com>
-> 
-> cdc_ncm_bind calls cdc_ncm_bind_common and sets dev->data[0]
-> with ctx. However, in the unbind function - cdc_ncm_unbind,
-> it calls cdc_ncm_free and frees ctx, leaving dev->data[0] as
-> a dangling pointer. The following ioctl operation will trigger
-> the UAF in the function cdc_ncm_set_dgram_size.
-> 
-> Fix this by setting dev->data[0] as zero.
 
-This sounds like a poor band-aid. Please explain how this prevent the
-ioctl() from racing with unbind(). 
+--o7ylXkfsizR48TZY
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Johan
+> > diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+> > index ea5fb70e5101..94b2d666db03 100644
+> > --- a/include/net/page_pool.h
+> > +++ b/include/net/page_pool.h
+> > @@ -117,6 +117,10 @@ struct page_pool_stats {
+> >  	struct page_pool_recycle_stats recycle_stats;
+> >  };
+> > =20
+> > +int page_pool_ethtool_stats_get_count(void);
+> > +u8 *page_pool_ethtool_stats_get_strings(u8 *data);
+> > +u64 *page_pool_ethtool_stats_get(u64 *data, struct page_pool_stats *st=
+ats);
+> > +
+> >  /*
+> >   * Drivers that wish to harvest page pool stats and report them to use=
+rs
+> >   * (perhaps via ethtool, debugfs, or another mechanism) can allocate a
+>=20
+> You could also add stub function here for when the page pool
+> statistics are disabled. We can then avoid all the messy #ifdef in the
+> drivers.
+>=20
+> > +u64 *page_pool_ethtool_stats_get(u64 *data, struct page_pool_stats *st=
+ats)
+> > +{
+> > +	int i;
+> > +
+> > +	for (i =3D 0; i < ARRAY_SIZE(pp_stats); i++) {
+> > +		*data++ =3D stats->alloc_stats.fast;
+> > +		*data++ =3D stats->alloc_stats.slow;
+> > +		*data++ =3D stats->alloc_stats.slow_high_order;
+> > +		*data++ =3D stats->alloc_stats.empty;
+> > +		*data++ =3D stats->alloc_stats.refill;
+> > +		*data++ =3D stats->alloc_stats.waive;
+> > +		*data++ =3D stats->recycle_stats.cached;
+> > +		*data++ =3D stats->recycle_stats.cache_full;
+> > +		*data++ =3D stats->recycle_stats.ring;
+> > +		*data++ =3D stats->recycle_stats.ring_full;
+> > +		*data++ =3D stats->recycle_stats.released_refcnt;
+> > +	}
+> > +
+> > +	return data;
+>=20
+> What is the purpose of the loop?
 
-> ==================================================================
-> BUG: KASAN: use-after-free in cdc_ncm_set_dgram_size+0xc91/0xde0
-> Read of size 8 at addr ffff8880755210b0 by task dhcpcd/3174
-> 
-> Call Trace:
->  <TASK>
->  __dump_stack lib/dump_stack.c:88 [inline]
->  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
->  print_address_description.constprop.0.cold+0xeb/0x495 mm/kasan/report.c:313
->  print_report mm/kasan/report.c:429 [inline]
->  kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
->  cdc_ncm_set_dgram_size+0xc91/0xde0 drivers/net/usb/cdc_ncm.c:608
->  cdc_ncm_change_mtu+0x10c/0x140 drivers/net/usb/cdc_ncm.c:798
->  __dev_set_mtu net/core/dev.c:8519 [inline]
->  dev_set_mtu_ext+0x352/0x5b0 net/core/dev.c:8572
->  dev_set_mtu+0x8e/0x120 net/core/dev.c:8596
->  dev_ifsioc+0xb87/0x1090 net/core/dev_ioctl.c:332
->  dev_ioctl+0x1b9/0xe30 net/core/dev_ioctl.c:586
->  sock_do_ioctl+0x15a/0x230 net/socket.c:1136
->  sock_ioctl+0x2f1/0x640 net/socket.c:1239
->  vfs_ioctl fs/ioctl.c:51 [inline]
->  __do_sys_ioctl fs/ioctl.c:870 [inline]
->  __se_sys_ioctl fs/ioctl.c:856 [inline]
->  __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0x80 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> RIP: 0033:0x7f00859e70e7
-> RSP: 002b:00007ffedd503dd8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-> RAX: ffffffffffffffda RBX: 00007f00858f96c8 RCX: 00007f00859e70e7
-> RDX: 00007ffedd513fc8 RSI: 0000000000008922 RDI: 0000000000000018
-> RBP: 00007ffedd524178 R08: 00007ffedd513f88 R09: 00007ffedd513f38
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007ffedd513fc8 R14: 0000000000000028 R15: 0000000000008922
->  </TASK>
+ops sorry, you are right. I will fix it.
 
-> Reported-by: syzbot+eabbf2aaa999cc507108@syzkaller.appspotmail.com
-> Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-> ---
->  drivers/net/usb/cdc_ncm.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
-> index 15f91d691bba..9fc2df9f0b63 100644
-> --- a/drivers/net/usb/cdc_ncm.c
-> +++ b/drivers/net/usb/cdc_ncm.c
-> @@ -1019,6 +1019,7 @@ void cdc_ncm_unbind(struct usbnet *dev, struct usb_interface *intf)
->  
->  	usb_set_intfdata(intf, NULL);
->  	cdc_ncm_free(ctx);
-> +	dev->data[0] = 0;
->  }
->  EXPORT_SYMBOL_GPL(cdc_ncm_unbind);
+Regards,
+Lorenzo
+
+>=20
+>      Andrew
+
+--o7ylXkfsizR48TZY
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYlQengAKCRA6cBh0uS2t
+rHHXAQCZ56kdoaCa4cgqaXfq7KFZJHOo0M99sp5foaDXCU6/fAD/RB6/W6bUC0hq
+Z/VqlbzuvKsIIyD8DOPHNZhRjMuLrww=
+=nbrb
+-----END PGP SIGNATURE-----
+
+--o7ylXkfsizR48TZY--
