@@ -2,902 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 312F94FC230
-	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 18:24:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB5A44FC240
+	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 18:27:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234128AbiDKQ0e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 12:26:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49834 "EHLO
+        id S1348460AbiDKQ3U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 12:29:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348557AbiDKQ0Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 12:26:25 -0400
-Received: from smtp-bc09.mail.infomaniak.ch (smtp-bc09.mail.infomaniak.ch [IPv6:2001:1600:3:17::bc09])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBBD1BF7B
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 09:24:08 -0700 (PDT)
-Received: from smtp-2-0001.mail.infomaniak.ch (unknown [10.5.36.108])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KcZ1H09bFzMqHHH;
-        Mon, 11 Apr 2022 18:24:03 +0200 (CEST)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-2-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4KcZ1G38N1zljsTT;
-        Mon, 11 Apr 2022 18:24:02 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1649694243;
-        bh=zZQITdQ+lWvFXk0xXqcnCQQ4rrnQARqDzPdvrQrPY00=;
-        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
-        b=yJbb08KO+yukkIqY+xvJUUPi4NNUdB97iQ5D1+Alt2oZSrmMebQELZzLjRm1KeP+Z
-         voFPud4KmUaAqE3DluHMv416mgQlm9WRHZZCzhjJxStG4/R9PhSAkuyZIUi4kvI2sG
-         80etV5qbWt9TE1MR4DGUhhY97KHwZohVAQgeBftQ=
-Message-ID: <665c3677-d931-351a-b934-41267cd0355c@digikod.net>
-Date:   Mon, 11 Apr 2022 18:24:17 +0200
+        with ESMTP id S244728AbiDKQ3T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 12:29:19 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F372CF2E;
+        Mon, 11 Apr 2022 09:27:04 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id k22so5281454wrd.2;
+        Mon, 11 Apr 2022 09:27:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ITFeuhIISg+UteX7JWYJlJzAHiy1YXAVNDcS4HitlFk=;
+        b=CAknTVts7FZNNCh/mOgu+gKhOEu2Y/aqwVxaNM0kHSWyY/glJTkWs+t1hBDlOYMwO0
+         vOsyAg3ZWt9rKSAYirIRS9YT7GKTIfpwgmj5Hix7tNeNxE5B0sr0C7kyaVIDuiswO/of
+         zvBfzsRABDC/kZAqs7mvbcGUVODaUwnvPUpGan18XlyFAk8QPfIcDjfIw8IX5o1PVYVy
+         NslaqRGIMKHic8ecpxpeEOtp04GwzBPfFbNBtcqWbLMjbaasnYYpRIHG15hGH0Za+K+P
+         hXSyvoeoRbwPciFOiPEojsJL+/Ym8Bq5E5fvF47Dy0DuJsUn0kJ6p+VixB6iykcjd18x
+         wKXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ITFeuhIISg+UteX7JWYJlJzAHiy1YXAVNDcS4HitlFk=;
+        b=XxcNZUfgBSi70q+8npK8/PQ7gS18J/OmYe3ze+4cZ3PYpvrlOcafVizCfq39GpsPuY
+         z2UcirEcqSPisfh71l3abE7PCDHSZ9PNbUrv1stgDuPNErOg8B4jdTwlKboO6TeoK23k
+         2hKI2cJqXAzECuEibo1ydsiK9unQkk3ONgtY7dQB41NIektY0bCQOCjxy/9tffw0UyP6
+         Qqj1bHXzrhhEPiCQUcbkWORFsIkn3IRTX0BSBm78lv3FLMswvj6azanHDoqz6fXIB30x
+         Zk0IM3CF66wXNpC7Wsd72Q9qWePB3PYAtbTEmYR1rtiyAmhWrHB3RRlaJadT0+UsGOv7
+         z50Q==
+X-Gm-Message-State: AOAM532dP1ibiBfxY9my1bKs/w3XY3ayRTd3oGmVzw3M2pcldcxMvLgs
+        fQe02uZ+WNFWVjgpSu38i5zOFhRq722Ufw==
+X-Google-Smtp-Source: ABdhPJyn/l/yymgrincqx9jqS6snjtWym7mz9/5OBTtPWM1cOAUYev+ht24Ox443KlRM9ef/kyV1Kw==
+X-Received: by 2002:a5d:64aa:0:b0:206:d0e:14a5 with SMTP id m10-20020a5d64aa000000b002060d0e14a5mr25308152wrp.705.1649694423153;
+        Mon, 11 Apr 2022 09:27:03 -0700 (PDT)
+Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
+        by smtp.gmail.com with ESMTPSA id n65-20020a1c2744000000b003862bfb509bsm18065887wmn.46.2022.04.11.09.27.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Apr 2022 09:27:02 -0700 (PDT)
+Subject: Re: [PATCH V2] sfc: ef10: Fix assigning negative value to unsigned
+ variable
+To:     Haowen Bai <baihaowen@meizu.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1649640757-30041-1-git-send-email-baihaowen@meizu.com>
+From:   Edward Cree <ecree.xilinx@gmail.com>
+Message-ID: <1912936d-14b5-f6af-c927-c46fabc72da5@gmail.com>
+Date:   Mon, 11 Apr 2022 17:27:01 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-User-Agent: 
-Content-Language: en-US
-To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-Cc:     willemdebruijn.kernel@gmail.com,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
-        artem.kuzin@huawei.com, anton.sirazetdinov@huawei.com
-References: <20220309134459.6448-1-konstantin.meskhidze@huawei.com>
- <20220309134459.6448-10-konstantin.meskhidze@huawei.com>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-Subject: Re: [RFC PATCH v4 09/15] landlock: TCP network hooks implementation
-In-Reply-To: <20220309134459.6448-10-konstantin.meskhidze@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <1649640757-30041-1-git-send-email-baihaowen@meizu.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 09/03/2022 14:44, Konstantin Meskhidze wrote:
-> Support of socket_bind() and socket_connect() hooks.
-> Its possible to restrict binding and connecting of TCP
-> types of sockets to particular ports. Its just basic idea
-> how Landlock could support network confinement.
+On 11/04/2022 02:32, Haowen Bai wrote:
+> fix warning reported by smatch:
+> 251 drivers/net/ethernet/sfc/ef10.c:2259 efx_ef10_tx_tso_desc()
+> warn: assigning (-208) to unsigned variable 'ip_tot_len'
 > 
-> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 > ---
+Acked-by: Edward Cree <ecree.xilinx@gmail.com>
+
+> V1->V2: to assign "0x10000 - EFX_TSO2_MAX_HDRLEN" is the actual 
+> semantics of the value.
 > 
-> Changes since v3:
-> * Split commit.
-> * Add SECURITY_NETWORK in config.
-> * Add IS_ENABLED(CONFIG_INET) if a kernel has no INET configuration.
-> * Add hook_socket_bind and hook_socket_connect hooks.
+>  drivers/net/ethernet/sfc/ef10.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> ---
->   security/landlock/Kconfig    |   1 +
->   security/landlock/Makefile   |   2 +-
->   security/landlock/net.c      | 180 +++++++++++++++++++++++++++++++++++
->   security/landlock/net.h      |  22 +++++
->   security/landlock/ruleset.h  |   6 ++
->   security/landlock/setup.c    |   2 +
->   security/landlock/syscalls.c |  61 +++++++++++-
->   7 files changed, 271 insertions(+), 3 deletions(-)
->   create mode 100644 security/landlock/net.c
->   create mode 100644 security/landlock/net.h
+> diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+> index 50d535981a35..c9ee5011803f 100644
+> --- a/drivers/net/ethernet/sfc/ef10.c
+> +++ b/drivers/net/ethernet/sfc/ef10.c
+> @@ -2256,7 +2256,7 @@ int efx_ef10_tx_tso_desc(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
+>  	 * guaranteed to satisfy the second as we only attempt TSO if
+>  	 * inner_network_header <= 208.
+>  	 */
+> -	ip_tot_len = -EFX_TSO2_MAX_HDRLEN;
+> +	ip_tot_len = 0x10000 - EFX_TSO2_MAX_HDRLEN;
+>  	EFX_WARN_ON_ONCE_PARANOID(mss + EFX_TSO2_MAX_HDRLEN +
+>  				  (tcp->doff << 2u) > ip_tot_len);
+>  
 > 
-> diff --git a/security/landlock/Kconfig b/security/landlock/Kconfig
-> index 8e33c4e8ffb8..2741f97169a7 100644
-> --- a/security/landlock/Kconfig
-> +++ b/security/landlock/Kconfig
-> @@ -4,6 +4,7 @@ config SECURITY_LANDLOCK
->   	bool "Landlock support"
->   	depends on SECURITY && !ARCH_EPHEMERAL_INODES
->   	select SECURITY_PATH
-> +	select SECURITY_NETWORK
-
-Nit: please move SECURITY_NETWORK before SECURITY_PATH (alphanumeric order).
-
-
->   	help
->   	  Landlock is a sandboxing mechanism that enables processes to restrict
->   	  themselves (and their future children) by gradually enforcing
-> diff --git a/security/landlock/Makefile b/security/landlock/Makefile
-> index 7bbd2f413b3e..afa44baaa83a 100644
-> --- a/security/landlock/Makefile
-> +++ b/security/landlock/Makefile
-> @@ -1,4 +1,4 @@
->   obj-$(CONFIG_SECURITY_LANDLOCK) := landlock.o
-> 
->   landlock-y := setup.o syscalls.o object.o ruleset.o \
-> -	cred.o ptrace.o fs.o
-> +	cred.o ptrace.o fs.o net.o
-> diff --git a/security/landlock/net.c b/security/landlock/net.c
-> new file mode 100644
-> index 000000000000..7fbb857c39e2
-> --- /dev/null
-> +++ b/security/landlock/net.c
-> @@ -0,0 +1,180 @@
-> +// SPDX-License-Identifier: GPL-2.0
-
-Others files are tagged with GPL-2.0-only (which means that GPL-3 is 
-excluded).
-
-
-> +/*
-> + * Landlock LSM - Network management and hooks
-> + *
-> + * Copyright (C) 2022 Huawei Tech. Co., Ltd.
-> + * Author: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-
-I would like to avoid putting all authors in file headers (including 
-from moved or copied code), but keep it small with only the copyright 
-holders. All authors are part of the Git history, which is taken into 
-account by tools such as ./scripts/get_maintainer.pl so you'll be CCed 
-for relevant patches.
-
-
-> + *
-
-nit: useless line
-
-> + */
-> +
-> +#include <linux/in.h>
-> +#include <linux/net.h>
-> +#include <linux/socket.h>
-> +#include <net/ipv6.h>
-> +
-> +#include "cred.h"
-> +#include "limits.h"
-> +#include "net.h"
-> +
-> +int landlock_append_net_rule(struct landlock_ruleset *const ruleset,
-> +			     u16 port, u32 access_rights)
-> +{
-> +	int err;
-> +
-> +	/* Transforms relative access rights to absolute ones. */
-> +	access_rights |= LANDLOCK_MASK_ACCESS_NET &
-> +			 ~landlock_get_net_access_mask(ruleset, 0);
-> +
-> +	mutex_lock(&ruleset->lock);
-> +	err = landlock_insert_rule(ruleset, NULL, (uintptr_t)port, access_rights,
-
-Type casting should not be required, but you can add this instead just 
-before the landlock_insert_rule() call:
-BUILD_BUG_ON(sizeof(port) > sizeof(uintptr_t));
-
-
-> +				   LANDLOCK_RULE_NET_SERVICE);
-> +	mutex_unlock(&ruleset->lock);
-> +
-> +	return err;
-> +}
-> +
-> +static int check_socket_access(const struct landlock_ruleset *const domain,
-> +			       u16 port, u32 access_request)
-> +{
-> +	bool allowed = false;
-> +	u64 layer_mask;
-> +	size_t i;
-> +
-> +	/* Make sure all layers can be checked. */
-
-nit: Make*s* sure…
-
-
-> +	BUILD_BUG_ON(BITS_PER_TYPE(layer_mask) < LANDLOCK_MAX_NUM_LAYERS);
-> +
-> +	if (WARN_ON_ONCE(!domain))
-> +		return 0;
-> +	if (WARN_ON_ONCE(domain->num_layers < 1))
-> +		return -EACCES;
-> +
-> +	/*
-> +	 * Saves all layers handling a subset of requested
-> +	 * socket access rules.
-> +	 */
-> +	layer_mask = 0;
-> +	for (i = 0; i < domain->num_layers; i++) {
-> +		if (landlock_get_net_access_mask(domain, i) & access_request)
-> +			layer_mask |= BIT_ULL(i);
-> +	}
-> +	/* An access request not handled by the domain is allowed. */
-> +	if (layer_mask == 0)
-> +		return 0;
-> +
-> +	/*
-> +	 * We need to walk through all the hierarchy to not miss any relevant
-> +	 * restriction.
-> +	 */
-> +	layer_mask = landlock_unmask_layers(domain, NULL, port,
-> +					    access_request, layer_mask,
-> +					    LANDLOCK_RULE_NET_SERVICE);
-> +	if (layer_mask == 0)
-> +		allowed = true;
-> +
-> +	return allowed ? 0 : -EACCES;
-> +}
-> +
-> +static int hook_socket_bind(struct socket *sock, struct sockaddr *address, int addrlen)
-> +{
-> +#if IS_ENABLED(CONFIG_INET)
-> +	short socket_type;
-> +	struct sockaddr_in *sockaddr;
-> +	struct sockaddr_in6 *sockaddr_ip6;
-> +	u16 port;
-> +	const struct landlock_ruleset *const dom = landlock_get_current_domain();
-> +
-> +	if (!dom)
-> +		return 0;
-> +
-> +	/* Check if the hook is AF_INET* socket's action */
-> +	if ((address->sa_family != AF_INET) && (address->sa_family != AF_INET6))
-
-You also need to add CONFIG_IPV6 in 
-tools/testing/selftest/landlock/config and do similar IPv4 and IPv6 
-tests. I think it would be easier with variant tests (see 
-FIXTURE_VARIANT in ptrace_test.c) and appropriate socket helpers.
-
-Using such test variants will also help for the UDP support. Please try 
-to make it easy to add (some) UDP tests with a new alternative when it 
-will be available to make your tests reusable.
-
-
-> +		return 0;
-> +
-> +	socket_type = sock->type;
-> +	/* Check if it's a TCP socket */
-> +	if (socket_type != SOCK_STREAM)
-> +		return 0;
-> +
-> +	/* Get port value in host byte order */
-> +	switch (address->sa_family) {
-> +	case AF_INET:
-> +		sockaddr = (struct sockaddr_in *)address;
-> +		port = ntohs(sockaddr->sin_port);
-> +		break;
-> +	case AF_INET6:
-> +		sockaddr_ip6 = (struct sockaddr_in6 *)address;
-> +		port = ntohs(sockaddr_ip6->sin6_port);
-> +		break;
-> +	}
-> +
-> +	return check_socket_access(dom, port, LANDLOCK_ACCESS_NET_BIND_TCP);
-> +#else
-> +	return 0;
-> +#endif
-> +}
-> +
-> +static int hook_socket_connect(struct socket *sock, struct sockaddr *address, int addrlen)
-> +{
-> +#if IS_ENABLED(CONFIG_INET)
-> +	short socket_type;
-> +	struct sockaddr_in *sockaddr;
-> +	struct sockaddr_in6 *sockaddr_ip6;
-> +	u16 port;
-> +	const struct landlock_ruleset *const dom = landlock_get_current_domain();
-> +
-> +	if (!dom)
-> +		return 0;
-> +
-> +	/* Check if the hook is AF_INET* socket's action */
-> +	if ((address->sa_family != AF_INET) && (address->sa_family != AF_INET6)) {
-> +		/* Check if the socket_connect() hook has AF_UNSPEC flag*/
-> +		if (address->sa_family == AF_UNSPEC) {
-> +			u16 i;
-> +			/*
-> +			 * If just in a layer a mask supports connect access,
-> +			 * the socket_connect() hook with AF_UNSPEC family flag
-> +			 * must be banned. This prevents from disconnecting already
-> +			 * connected sockets.
-> +			 */
-> +			for (i = 0; i < dom->num_layers; i++) {
-> +				if (landlock_get_net_access_mask(dom, i) &
-> +							LANDLOCK_ACCESS_NET_CONNECT_TCP)
-> +					return -EACCES;
-> +			}
-> +		}
-> +		return 0;
-> +	}
-> +
-> +	socket_type = sock->type;
-> +	/* Check if it's a TCP socket */
-> +	if (socket_type != SOCK_STREAM)
-> +		return 0;
-> +
-> +	/* Get port value in host byte order */
-> +	switch (address->sa_family) {
-> +	case AF_INET:
-> +		sockaddr = (struct sockaddr_in *)address;
-> +		port = ntohs(sockaddr->sin_port);
-> +		break;
-> +	case AF_INET6:
-> +		sockaddr_ip6 = (struct sockaddr_in6 *)address;
-> +		port = ntohs(sockaddr_ip6->sin6_port);
-> +		break;
-> +	}
-> +
-> +	return check_socket_access(dom, port, LANDLOCK_ACCESS_NET_CONNECT_TCP);
-> +#else
-> +	return 0;
-> +#endif
-> +}
-> +
-> +static struct security_hook_list landlock_hooks[] __lsm_ro_after_init = {
-> +	LSM_HOOK_INIT(socket_bind, hook_socket_bind),
-> +	LSM_HOOK_INIT(socket_connect, hook_socket_connect),
-> +};
-> +
-> +__init void landlock_add_net_hooks(void)
-> +{
-> +	security_add_hooks(landlock_hooks, ARRAY_SIZE(landlock_hooks),
-> +			LANDLOCK_NAME);
-> +}
-> diff --git a/security/landlock/net.h b/security/landlock/net.h
-> new file mode 100644
-> index 000000000000..345bdc1dc84f
-> --- /dev/null
-> +++ b/security/landlock/net.h
-> @@ -0,0 +1,22 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Landlock LSM - Network management and hooks
-> + *
-> + * Copyright (C) 2022 Huawei Tech. Co., Ltd.
-> + * Author: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-> + *
-> + */
-> +
-> +#ifndef _SECURITY_LANDLOCK_NET_H
-> +#define _SECURITY_LANDLOCK_NET_H
-> +
-> +#include "common.h"
-> +#include "ruleset.h"
-> +#include "setup.h"
-> +
-> +__init void landlock_add_net_hooks(void);
-> +
-> +int landlock_append_net_rule(struct landlock_ruleset *const ruleset,
-> +			     u16 port, u32 access_hierarchy);
-> +
-> +#endif /* _SECURITY_LANDLOCK_NET_H */
-> diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
-> index abf3e09a65cd..74e9d3d26bd6 100644
-> --- a/security/landlock/ruleset.h
-> +++ b/security/landlock/ruleset.h
-> @@ -193,6 +193,12 @@ void landlock_set_fs_access_mask(struct landlock_ruleset *ruleset,
-> 
->   u32 landlock_get_fs_access_mask(const struct landlock_ruleset *ruleset, u16 mask_level);
-> 
-> +void landlock_set_net_access_mask(struct landlock_ruleset *ruleset,
-> +				  const struct landlock_access_mask *access_mask_set,
-> +				  u16 mask_level);
-> +
-> +u32 landlock_get_net_access_mask(const struct landlock_ruleset *ruleset, u16 mask_level);
-
-These can be made static inline here.
-
-
-> +
->   u64 landlock_unmask_layers(const struct landlock_ruleset *const domain,
->   			   const struct landlock_object *object_ptr,
->   			   const u16 port, const u32 access_request,
-> diff --git a/security/landlock/setup.c b/security/landlock/setup.c
-> index f8e8e980454c..8059dc0b47d3 100644
-> --- a/security/landlock/setup.c
-> +++ b/security/landlock/setup.c
-> @@ -14,6 +14,7 @@
->   #include "fs.h"
->   #include "ptrace.h"
->   #include "setup.h"
-> +#include "net.h"
-> 
->   bool landlock_initialized __lsm_ro_after_init = false;
-> 
-> @@ -28,6 +29,7 @@ static int __init landlock_init(void)
->   	landlock_add_cred_hooks();
->   	landlock_add_ptrace_hooks();
->   	landlock_add_fs_hooks();
-> +	landlock_add_net_hooks();
->   	landlock_initialized = true;
->   	pr_info("Up and running.\n");
->   	return 0;
-> diff --git a/security/landlock/syscalls.c b/security/landlock/syscalls.c
-> index b91455a19356..2d45ea94e6d2 100644
-> --- a/security/landlock/syscalls.c
-> +++ b/security/landlock/syscalls.c
-> @@ -29,6 +29,7 @@
->   #include "cred.h"
->   #include "fs.h"
->   #include "limits.h"
-> +#include "net.h"
->   #include "ruleset.h"
->   #include "setup.h"
-> 
-> @@ -73,7 +74,8 @@ static void build_check_abi(void)
->   {
->   	struct landlock_ruleset_attr ruleset_attr;
->   	struct landlock_path_beneath_attr path_beneath_attr;
-> -	size_t ruleset_size, path_beneath_size;
-> +	struct landlock_net_service_attr net_service_attr;
-> +	size_t ruleset_size, path_beneath_size, net_service_size;
-> 
->   	/*
->   	 * For each user space ABI structures, first checks that there is no
-> @@ -89,6 +91,11 @@ static void build_check_abi(void)
->   	path_beneath_size += sizeof(path_beneath_attr.parent_fd);
->   	BUILD_BUG_ON(sizeof(path_beneath_attr) != path_beneath_size);
->   	BUILD_BUG_ON(sizeof(path_beneath_attr) != 12);
-> +
-> +	net_service_size = sizeof(net_service_attr.allowed_access);
-> +	net_service_size += sizeof(net_service_attr.port);
-> +	BUILD_BUG_ON(sizeof(net_service_attr) != net_service_size);
-> +	BUILD_BUG_ON(sizeof(net_service_attr) != 10);
->   }
-> 
->   /* Ruleset handling */
-> @@ -311,7 +318,6 @@ static int add_rule_path_beneath(const int ruleset_fd, const void *const rule_at
->   	 * Checks that allowed_access matches the @ruleset constraints
->   	 * (ruleset->access_masks[0] is automatically upgraded to 64-bits).
->   	 */
-> -
->   	if ((path_beneath_attr.allowed_access | landlock_get_fs_access_mask(ruleset, 0)) !=
->   						landlock_get_fs_access_mask(ruleset, 0)) {
->   		err = -EINVAL;
-> @@ -333,6 +339,50 @@ static int add_rule_path_beneath(const int ruleset_fd, const void *const rule_at
->   	return err;
->   }
-> 
-> +static int add_rule_net_service(const int ruleset_fd, const void *const rule_attr)
-
-
-
-Here is a patch for other changes:
-
-* Clean up and factor out landlock_add_rule(2).
-* Only build network part if CONFIG_INET is set and make
-   landlock_add_rule(2) returns -EAFNOSUPPORT otherwise.
-* Use CONFIG_IPV6 ifdef.
-* Cosmetic fixes.
-* Add TODOs.
----
-  security/landlock/Makefile   |   4 +-
-  security/landlock/net.c      | 146 ++++++++++++++++++-----------------
-  security/landlock/net.h      |   9 +++
-  security/landlock/syscalls.c |  90 ++++++++++-----------
-  4 files changed, 126 insertions(+), 123 deletions(-)
-
-diff --git a/security/landlock/Makefile b/security/landlock/Makefile
-index afa44baaa83a..c2e116f2a299 100644
---- a/security/landlock/Makefile
-+++ b/security/landlock/Makefile
-@@ -1,4 +1,6 @@
-  obj-$(CONFIG_SECURITY_LANDLOCK) := landlock.o
-
-  landlock-y := setup.o syscalls.o object.o ruleset.o \
--	cred.o ptrace.o fs.o net.o
-+	cred.o ptrace.o fs.o
-+
-+landlock-$(CONFIG_INET) += net.o
-diff --git a/security/landlock/net.c b/security/landlock/net.c
-index 7fbb857c39e2..23dd842a4628 100644
---- a/security/landlock/net.c
-+++ b/security/landlock/net.c
-@@ -26,8 +26,8 @@ int landlock_append_net_rule(struct landlock_ruleset 
-*const ruleset,
-  			 ~landlock_get_net_access_mask(ruleset, 0);
-
-  	mutex_lock(&ruleset->lock);
--	err = landlock_insert_rule(ruleset, NULL, (uintptr_t)port, access_rights,
--				   LANDLOCK_RULE_NET_SERVICE);
-+	err = landlock_insert_rule(ruleset, NULL, (uintptr_t)port,
-+			access_rights, LANDLOCK_RULE_NET_SERVICE);
-  	mutex_unlock(&ruleset->lock);
-
-  	return err;
-@@ -65,107 +65,109 @@ static int check_socket_access(const struct 
-landlock_ruleset *const domain,
-  	 * We need to walk through all the hierarchy to not miss any relevant
-  	 * restriction.
-  	 */
--	layer_mask = landlock_unmask_layers(domain, NULL, port,
--					    access_request, layer_mask,
--					    LANDLOCK_RULE_NET_SERVICE);
-+	layer_mask = landlock_unmask_layers(domain, NULL, port, access_request,
-+			layer_mask, LANDLOCK_RULE_NET_SERVICE);
-  	if (layer_mask == 0)
-  		allowed = true;
-
-  	return allowed ? 0 : -EACCES;
-  }
-
--static int hook_socket_bind(struct socket *sock, struct sockaddr 
-*address, int addrlen)
-+static u16 get_port(const struct sockaddr *const address)
-  {
--#if IS_ENABLED(CONFIG_INET)
--	short socket_type;
--	struct sockaddr_in *sockaddr;
--	struct sockaddr_in6 *sockaddr_ip6;
--	u16 port;
--	const struct landlock_ruleset *const dom = landlock_get_current_domain();
-+	/* Gets port value in host byte order. */
-+	switch (address->sa_family) {
-+	case AF_INET:
-+		const struct sockaddr_in *const sockaddr =
-+			(struct sockaddr_in *)address;
-
--	if (!dom)
--		return 0;
-+		return ntohs(sockaddr->sin_port);
-+#if IS_ENABLED(CONFIG_IPV6)
-+	case AF_INET6:
-+		struct sockaddr_in6 *sockaddr_ip6 =
-+			(struct sockaddr_in6 *)address;
-
--	/* Check if the hook is AF_INET* socket's action */
--	if ((address->sa_family != AF_INET) && (address->sa_family != AF_INET6))
-+		return ntohs(sockaddr_ip6->sin6_port);
-+#endif
-+	/*
-+	 * TODO: What about AF_UNSPEC and other values? Add tests for these
-+	 * cases.
-+	 */
-+	}
-+	WARN_ON_ONCE(1);
-+	return 0;
-+}
-+
-+static int hook_socket_bind(struct socket *sock, struct sockaddr *address,
-+		int addrlen)
-+{
-+	const struct landlock_ruleset *const dom =
-+		landlock_get_current_domain();
-+
-+	if (!dom)
-  		return 0;
-
--	socket_type = sock->type;
--	/* Check if it's a TCP socket */
--	if (socket_type != SOCK_STREAM)
-+	/* Checks if it is a TCP socket. */
-+	if (sock->type != SOCK_STREAM)
-  		return 0;
-
--	/* Get port value in host byte order */
-  	switch (address->sa_family) {
-  	case AF_INET:
--		sockaddr = (struct sockaddr_in *)address;
--		port = ntohs(sockaddr->sin_port);
--		break;
-+#if IS_ENABLED(CONFIG_IPV6)
-  	case AF_INET6:
--		sockaddr_ip6 = (struct sockaddr_in6 *)address;
--		port = ntohs(sockaddr_ip6->sin6_port);
--		break;
--	}
--
--	return check_socket_access(dom, port, LANDLOCK_ACCESS_NET_BIND_TCP);
--#else
--	return 0;
-  #endif
-+		/* TODO: Add tests with different source and destination ports. */
-+		return check_socket_access(dom, get_port(address),
-+				LANDLOCK_ACCESS_NET_BIND_TCP);
-+	default:
-+		/*
-+		 * TODO: What about AF_UNSPEC and other values? Add tests for
-+		 * these cases.
-+		 */
-+		return 0;
-+	}
-  }
-
--static int hook_socket_connect(struct socket *sock, struct sockaddr 
-*address, int addrlen)
-+static int hook_socket_connect(struct socket *sock, struct sockaddr 
-*address,
-+		int addrlen)
-  {
--#if IS_ENABLED(CONFIG_INET)
--	short socket_type;
--	struct sockaddr_in *sockaddr;
--	struct sockaddr_in6 *sockaddr_ip6;
--	u16 port;
--	const struct landlock_ruleset *const dom = landlock_get_current_domain();
-+	const struct landlock_ruleset *const dom =
-+		landlock_get_current_domain();
-
-  	if (!dom)
-  		return 0;
-
--	/* Check if the hook is AF_INET* socket's action */
--	if ((address->sa_family != AF_INET) && (address->sa_family != AF_INET6)) {
--		/* Check if the socket_connect() hook has AF_UNSPEC flag*/
--		if (address->sa_family == AF_UNSPEC) {
--			u16 i;
--			/*
--			 * If just in a layer a mask supports connect access,
--			 * the socket_connect() hook with AF_UNSPEC family flag
--			 * must be banned. This prevents from disconnecting already
--			 * connected sockets.
--			 */
--			for (i = 0; i < dom->num_layers; i++) {
--				if (landlock_get_net_access_mask(dom, i) &
--							LANDLOCK_ACCESS_NET_CONNECT_TCP)
--					return -EACCES;
--			}
--		}
--		return 0;
--	}
--
--	socket_type = sock->type;
--	/* Check if it's a TCP socket */
--	if (socket_type != SOCK_STREAM)
-+	/* Checks if it is a TCP socket. */
-+	if (sock->type != SOCK_STREAM)
-  		return 0;
-
--	/* Get port value in host byte order */
-+	/* Check if the hook is AF_INET* socket's action */
-  	switch (address->sa_family) {
-  	case AF_INET:
--		sockaddr = (struct sockaddr_in *)address;
--		port = ntohs(sockaddr->sin_port);
--		break;
-+#if IS_ENABLED(CONFIG_IPV6)
-  	case AF_INET6:
--		sockaddr_ip6 = (struct sockaddr_in6 *)address;
--		port = ntohs(sockaddr_ip6->sin6_port);
--		break;
-+#endif
-+		/* TODO: Add tests with different source and destination ports. */
-+		return check_socket_access(dom, get_port(address),
-+				LANDLOCK_ACCESS_NET_CONNECT_TCP);
-+	case AF_UNSPEC:
-+		u16 i;
-+
-+		/*
-+		 * If just in a layer a mask supports connect access,
-+		 * the socket_connect() hook with AF_UNSPEC family flag
-+		 * must be banned. This prevents from disconnecting already
-+		 * connected sockets.
-+		 */
-+		/* TODO: Add tests for this case, with UDP and TCP. */
-+		for (i = 0; i < dom->num_layers; i++) {
-+			if (landlock_get_net_access_mask(dom, i) &
-+					LANDLOCK_ACCESS_NET_CONNECT_TCP)
-+				return -EACCES;
-+		}
-  	}
--
--	return check_socket_access(dom, port, LANDLOCK_ACCESS_NET_CONNECT_TCP);
--#else
-  	return 0;
--#endif
-+
-  }
-
-  static struct security_hook_list landlock_hooks[] __lsm_ro_after_init = {
-diff --git a/security/landlock/net.h b/security/landlock/net.h
-index 345bdc1dc84f..4cf32c89d352 100644
---- a/security/landlock/net.h
-+++ b/security/landlock/net.h
-@@ -14,9 +14,18 @@
-  #include "ruleset.h"
-  #include "setup.h"
-
-+#if IS_ENABLED(CONFIG_INET)
-+
-  __init void landlock_add_net_hooks(void);
-
-  int landlock_append_net_rule(struct landlock_ruleset *const ruleset,
-  			     u16 port, u32 access_hierarchy);
-
-+#else /* IS_ENABLED(CONFIG_INET) */
-+
-+static inline void landlock_add_net_hooks(void)
-+{}
-+
-+#endif /* IS_ENABLED(CONFIG_INET) */
-+
-  #endif /* _SECURITY_LANDLOCK_NET_H */
-diff --git a/security/landlock/syscalls.c b/security/landlock/syscalls.c
-index 2d45ea94e6d2..b8dcd981872e 100644
---- a/security/landlock/syscalls.c
-+++ b/security/landlock/syscalls.c
-@@ -288,12 +288,13 @@ static int get_path_from_fd(const s32 fd, struct 
-path *const path)
-  	return err;
-  }
-
--static int add_rule_path_beneath(const int ruleset_fd, const void 
-*const rule_attr)
-+static int add_rule_path_beneath(struct landlock_ruleset *const ruleset,
-+		const void *const rule_attr)
-  {
-  	struct landlock_path_beneath_attr path_beneath_attr;
-  	struct path path;
--	struct landlock_ruleset *ruleset;
-  	int res, err;
-+	u32 mask;
-
-  	/* Copies raw user space buffer, only one type for now. */
-  	res = copy_from_user(&path_beneath_attr, rule_attr,
-@@ -301,49 +302,39 @@ static int add_rule_path_beneath(const int 
-ruleset_fd, const void *const rule_at
-  	if (res)
-  		return -EFAULT;
-
--	/* Gets and checks the ruleset. */
--	ruleset = get_ruleset_from_fd(ruleset_fd, FMODE_CAN_WRITE);
--	if (IS_ERR(ruleset))
--		return PTR_ERR(ruleset);
--
-  	/*
-  	 * Informs about useless rule: empty allowed_access (i.e. deny rules)
-  	 * are ignored in path walks.
-  	 */
--	if (!path_beneath_attr.allowed_access) {
--		err = -ENOMSG;
--		goto out_put_ruleset;
--	}
-+	if (!path_beneath_attr.allowed_access)
-+		return -ENOMSG;
-  	/*
-  	 * Checks that allowed_access matches the @ruleset constraints
-  	 * (ruleset->access_masks[0] is automatically upgraded to 64-bits).
-  	 */
--	if ((path_beneath_attr.allowed_access | 
-landlock_get_fs_access_mask(ruleset, 0)) !=
--						landlock_get_fs_access_mask(ruleset, 0)) {
--		err = -EINVAL;
--		goto out_put_ruleset;
--	}
-+	mask = landlock_get_fs_access_mask(ruleset, 0);
-+	if ((path_beneath_attr.allowed_access | mask) != mask)
-+		return -EINVAL;
-
-  	/* Gets and checks the new rule. */
-  	err = get_path_from_fd(path_beneath_attr.parent_fd, &path);
-  	if (err)
--		goto out_put_ruleset;
-+		return err;
-
-  	/* Imports the new rule. */
-  	err = landlock_append_fs_rule(ruleset, &path,
-  			path_beneath_attr.allowed_access);
-  	path_put(&path);
--
--out_put_ruleset:
--	landlock_put_ruleset(ruleset);
-  	return err;
-  }
-
--static int add_rule_net_service(const int ruleset_fd, const void *const 
-rule_attr)
-+static int add_rule_net_service(struct landlock_ruleset *const ruleset,
-+		const void *const rule_attr)
-  {
--	struct landlock_net_service_attr  net_service_attr;
--	struct landlock_ruleset *ruleset;
--	int res, err;
-+#if IS_ENABLED(CONFIG_INET)
-+	struct landlock_net_service_attr net_service_attr;
-+	int res;
-+	u32 mask;
-
-  	/* Copies raw user space buffer, only one type for now. */
-  	res = copy_from_user(&net_service_attr, rule_attr,
-@@ -351,36 +342,28 @@ static int add_rule_net_service(const int 
-ruleset_fd, const void *const rule_att
-  	if (res)
-  		return -EFAULT;
-
--	/* Gets and checks the ruleset. */
--	ruleset = get_ruleset_from_fd(ruleset_fd, FMODE_CAN_WRITE);
--	if (IS_ERR(ruleset))
--		return PTR_ERR(ruleset);
--
-  	/*
-  	 * Informs about useless rule: empty allowed_access (i.e. deny rules)
-  	 * are ignored by network actions
-  	 */
--	if (!net_service_attr.allowed_access) {
--		err = -ENOMSG;
--		goto out_put_ruleset;
--	}
-+	if (!net_service_attr.allowed_access)
-+		return -ENOMSG;
-  	/*
-  	 * Checks that allowed_access matches the @ruleset constraints
-  	 * (ruleset->access_masks[0] is automatically upgraded to 64-bits).
-  	 */
--	if ((net_service_attr.allowed_access | 
-landlock_get_net_access_mask(ruleset, 0)) !=
--					       landlock_get_net_access_mask(ruleset, 0)) {
--		err = -EINVAL;
--		goto out_put_ruleset;
--	}
-+	mask = landlock_get_net_access_mask(ruleset, 0);
-+	if ((net_service_attr.allowed_access | mask) != mask)
-+		return -EINVAL;
-
-  	/* Imports the new rule. */
--	err = landlock_append_net_rule(ruleset, net_service_attr.port,
-+	return landlock_append_net_rule(ruleset, net_service_attr.port,
-  				       net_service_attr.allowed_access);
-
--out_put_ruleset:
--	landlock_put_ruleset(ruleset);
--	return err;
-+#else /* IS_ENABLED(CONFIG_INET) */
-+
-+	return -EAFNOSUPPORT;
-+#endif /* IS_ENABLED(CONFIG_INET) */
-  }
-
-  /**
-@@ -388,8 +371,8 @@ static int add_rule_net_service(const int 
-ruleset_fd, const void *const rule_att
-   *
-   * @ruleset_fd: File descriptor tied to the ruleset that should be 
-extended
-   *		with the new rule.
-- * @rule_type: Identify the structure type pointed to by @rule_attr (only
-- *             LANDLOCK_RULE_PATH_BENEATH for now).
-+ * @rule_type: Identify the structure type pointed to by @rule_attr:
-+ *             LANDLOCK_RULE_PATH_BENEATH or LANDLOCK_RULE_NET_SERVICE.
-   * @rule_attr: Pointer to a rule (only of type &struct
-   *             landlock_path_beneath_attr for now).
-   * @flags: Must be 0.
-@@ -400,6 +383,8 @@ static int add_rule_net_service(const int 
-ruleset_fd, const void *const rule_att
-   * Possible returned errors are:
-   *
-   * - EOPNOTSUPP: Landlock is supported by the kernel but disabled at 
-boot time;
-+ * - EAFNOSUPPORT: @rule_type is LANDLOCK_RULE_NET_SERVICE but TCP/IP 
-is not
-+ *   supported by the running kernel;
-   * - EINVAL: @flags is not 0, or inconsistent access in the rule (i.e.
-   *   &landlock_path_beneath_attr.allowed_access is not a subset of the 
-rule's
-   *   accesses);
-@@ -416,6 +401,7 @@ SYSCALL_DEFINE4(landlock_add_rule,
-  		const int, ruleset_fd, const enum landlock_rule_type, rule_type,
-  		const void __user *const, rule_attr, const __u32, flags)
-  {
-+	struct landlock_ruleset *ruleset;
-  	int err;
-
-  	if (!landlock_initialized)
-@@ -425,20 +411,24 @@ SYSCALL_DEFINE4(landlock_add_rule,
-  	if (flags)
-  		return -EINVAL;
-
-+	/* Gets and checks the ruleset. */
-+	ruleset = get_ruleset_from_fd(ruleset_fd, FMODE_CAN_WRITE);
-+	if (IS_ERR(ruleset))
-+		return PTR_ERR(ruleset);
-+
-  	switch (rule_type) {
-  	case LANDLOCK_RULE_PATH_BENEATH:
--		err = add_rule_path_beneath(ruleset_fd, rule_attr);
-+		err = add_rule_path_beneath(ruleset, rule_attr);
-  		break;
-  	case LANDLOCK_RULE_NET_SERVICE:
--#if IS_ENABLED(CONFIG_INET)
--		err = add_rule_net_service(ruleset_fd, rule_attr);
--#else
--		err = -EOPNOTSUPP;
--#endif
-+		err = add_rule_net_service(ruleset, rule_attr);
-  		break;
-  	default:
-  		err = -EINVAL;
-+		break;
-  	}
-+
-+	landlock_put_ruleset(ruleset);
-  	return err;
-  }
 
