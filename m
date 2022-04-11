@@ -2,28 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D81594FB98E
-	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 12:27:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BA9C4FB992
+	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 12:28:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236290AbiDKKaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 06:30:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43792 "EHLO
+        id S1345475AbiDKKaF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 06:30:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232344AbiDKKaC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 06:30:02 -0400
+        with ESMTP id S232344AbiDKKaD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 06:30:03 -0400
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E8E3F2B258;
-        Mon, 11 Apr 2022 03:27:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3C9C42B258;
+        Mon, 11 Apr 2022 03:27:50 -0700 (PDT)
 Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 87D9E625B9;
-        Mon, 11 Apr 2022 12:23:47 +0200 (CEST)
+        by mail.netfilter.org (Postfix) with ESMTPSA id CD0E1625E1;
+        Mon, 11 Apr 2022 12:23:48 +0200 (CEST)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 00/11] Netfilter updates for net-next
-Date:   Mon, 11 Apr 2022 12:27:33 +0200
-Message-Id: <20220411102744.282101-1-pablo@netfilter.org>
+Subject: [PATCH net-next 01/11] netfilter: nf_tables: replace unnecessary use of list_for_each_entry_continue()
+Date:   Mon, 11 Apr 2022 12:27:34 +0200
+Message-Id: <20220411102744.282101-2-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220411102744.282101-1-pablo@netfilter.org>
+References: <20220411102744.282101-1-pablo@netfilter.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
@@ -35,86 +37,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Jakob Koschel <jakobkoschel@gmail.com>
 
-The following patchset contains Netfilter updates for net-next:
+Since there is no way for list_for_each_entry_continue() to start
+interating in the middle of the list they can be replaced with a call
+to list_for_each_entry().
 
-1) Replace unnecessary list_for_each_entry_continue() in nf_tables,
-   from Jakob Koschel.
+In preparation to limit the scope of the list iterator to the list
+traversal loop, the list iterator variable 'rule' should not be used
+past the loop.
 
-2) Add struct nf_conntrack_net_ecache to conntrack event cache and
-   use it, from Florian Westphal.
+v1->v2:
+- also replace first usage of list_for_each_entry_continue() (Florian
+Westphal)
 
-3) Refactor ctnetlink_dump_list(), also from Florian.
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+Reviewed-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+ net/netfilter/nf_tables_api.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-4) Bump module reference counter on cttimeout object addition/removal,
-   from Florian.
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 5ddfdb2adaf1..060aa56e54d9 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -8367,10 +8367,8 @@ static int nf_tables_commit_chain_prepare(struct net *net, struct nft_chain *cha
+ 	if (chain->blob_next || !nft_is_active_next(net, chain))
+ 		return 0;
+ 
+-	rule = list_entry(&chain->rules, struct nft_rule, list);
+-
+ 	data_size = 0;
+-	list_for_each_entry_continue(rule, &chain->rules, list) {
++	list_for_each_entry(rule, &chain->rules, list) {
+ 		if (nft_is_active_next(net, rule)) {
+ 			data_size += sizeof(*prule) + rule->dlen;
+ 			if (data_size > INT_MAX)
+@@ -8387,7 +8385,7 @@ static int nf_tables_commit_chain_prepare(struct net *net, struct nft_chain *cha
+ 	data_boundary = data + data_size;
+ 	size = 0;
+ 
+-	list_for_each_entry_continue(rule, &chain->rules, list) {
++	list_for_each_entry(rule, &chain->rules, list) {
+ 		if (!nft_is_active_next(net, rule))
+ 			continue;
+ 
+-- 
+2.30.2
 
-5) Consolidate nf_log MAC printer, from Phil Sutter.
-
-6) Add basic logging support for unknown ethertype, from Phil Sutter.
-
-7) Consolidate check for sysctl nf_log_all_netns toggle, also from Phil.
-
-8) Replace hardcode value in nft_bitwise, from Jeremy Sowden.
-
-9) Rename BASIC-like goto tags in nft_bitwise to more meaningful names,
-   also from Jeremy.
-
-10) nft_fib support for reverse path filtering with policy-based routing
-    on iif. Extend selftests to cover for this new usecase, from Florian.
-
-Please, pull these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git
-
-Thanks.
-
-----------------------------------------------------------------
-
-The following changes since commit 2975dbdc3989cd66a4cb5a7c5510de2de8ee4d14:
-
-  Merge tag 'net-5.18-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2022-03-31 11:23:31 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git HEAD
-
-for you to fetch changes up to 0c7b27616fbd64b3b86c59ad5441f82a1a0c4176:
-
-  selftests: netfilter: add fib expression forward test case (2022-04-11 12:10:09 +0200)
-
-----------------------------------------------------------------
-Florian Westphal (4):
-      netfilter: ecache: move to separate structure
-      netfilter: conntrack: split inner loop of list dumping to own function
-      netfilter: cttimeout: inc/dec module refcount per object, not per use refcount
-      selftests: netfilter: add fib expression forward test case
-
-Jakob Koschel (1):
-      netfilter: nf_tables: replace unnecessary use of list_for_each_entry_continue()
-
-Jeremy Sowden (2):
-      netfilter: bitwise: replace hard-coded size with `sizeof` expression
-      netfilter: bitwise: improve error goto labels
-
-Pablo Neira Ayuso (1):
-      netfilter: nft_fib: reverse path filter for policy-based routing on iif
-
-Phil Sutter (3):
-      netfilter: nf_log_syslog: Merge MAC header dumpers
-      netfilter: nf_log_syslog: Don't ignore unknown protocols
-      netfilter: nf_log_syslog: Consolidate entry checks
-
- include/net/netfilter/nf_conntrack.h         |   8 +-
- net/ipv4/netfilter/nft_fib_ipv4.c            |   4 +
- net/ipv6/netfilter/nft_fib_ipv6.c            |   4 +
- net/netfilter/nf_conntrack_ecache.c          |  19 ++--
- net/netfilter/nf_conntrack_netlink.c         |  68 +++++++++-----
- net/netfilter/nf_log_syslog.c                | 136 +++++++++++++--------------
- net/netfilter/nf_tables_api.c                |   6 +-
- net/netfilter/nfnetlink_cttimeout.c          |  14 +--
- net/netfilter/nft_bitwise.c                  |  13 +--
- net/netfilter/nft_fib.c                      |   4 +
- tools/testing/selftests/netfilter/nft_fib.sh |  50 ++++++++++
- 11 files changed, 199 insertions(+), 127 deletions(-)
