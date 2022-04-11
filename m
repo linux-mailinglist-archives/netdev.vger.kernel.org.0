@@ -2,116 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C05B34FC216
-	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 18:20:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3473E4FC218
+	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 18:20:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343777AbiDKQWs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 12:22:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42352 "EHLO
+        id S1348471AbiDKQW4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 12:22:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242124AbiDKQWg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 12:22:36 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B1C730555
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 09:20:19 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id i27so31955833ejd.9
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 09:20:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=InkQAWOi5kUIzfoFQv0gHI/AUZPdTU0YUvjCx4nxJOg=;
-        b=XA9zMvhfBsJlCa84lL55lvakm7Z8ytBs99rA7pXMy//nwKS0mQ5JbF/6JKTQyDqU1p
-         frV5Rsl9/tPK8rehDGGQjTlCjZx485FVJdvAX1bCFVeglKqVh9erp/8fNdSCH+kyHwmJ
-         L6qmit2/R7LZEcWtiR/NQbDHc6deX0HF1jtrCWey/xQ1ij1GVq21vR/mUsyqfr/GLjnc
-         G8+Lmqlck5V7KFCVXFywD1GAiA5m8YjAXh9XH4ocnUCUbpGG9CUyYzBzC2mJ+Gft6D39
-         G7ZIfz+BbTkV5AJywsER5bku51OS+R4rZwQ6IKaNI9bejuH9DXm+VA8bFB0Zsk6Gpi7Q
-         YNVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=InkQAWOi5kUIzfoFQv0gHI/AUZPdTU0YUvjCx4nxJOg=;
-        b=apuj0VRDVBwFeZfuey38I5Mq/5ElEgwMDp9K5wtZxUN/SQySQ/Nmc4WJXreyWpjyDK
-         6psnAr8hlHYVsMR/RwMBpDy1lxtNO6Nqczc9MQqcgGshdL51WNI9jSozZh1/TP98L8qx
-         s/ksCioe4R4vNYquT7LUxbUd2Z6MIVaabj29rVqWADxs8GRV8Q81zQfLqF8gJRxY+Dzn
-         VYU4wbil/QtVpWPR68vH3a7jjZe1hsd9zvJFNkjoQ38Mt/GqPMxAaungl54NxT3/QaUY
-         1Ms5H97JlknsIokx99EnAijvGo1VjVgvVDSDXDve1vCH6i0uMEpJF1OuBvWbdjrWkMTL
-         rsgQ==
-X-Gm-Message-State: AOAM5303ENpbyJYQOtrnntZ9S84mX5VUnTy0N4aE28ubEKC95rrEIbAk
-        RZzBaGmfxesucWW640UpFy1Y0PO4zTQ=
-X-Google-Smtp-Source: ABdhPJy8e643ISAyFBH5RUPCSngdIfgWZTCpo3zdfLN5my/+ipF0f0ES2w4lrJTpWg0Hw8qtCTfPBw==
-X-Received: by 2002:a17:906:7c5:b0:6e8:7c6f:4f49 with SMTP id m5-20020a17090607c500b006e87c6f4f49mr8580756ejc.378.1649694017774;
-        Mon, 11 Apr 2022 09:20:17 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id qf21-20020a1709077f1500b006e84ee40742sm4135048ejc.218.2022.04.11.09.20.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 09:20:17 -0700 (PDT)
-Date:   Mon, 11 Apr 2022 19:20:16 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: What is the purpose of dev->gflags?
-Message-ID: <20220411162016.sau3gertosgr6mtu@skbuf>
-References: <20220408183045.wpyx7tqcgcimfudu@skbuf>
- <20220408115054.7471233b@kernel.org>
- <20220408191757.dllq7ztaefdyb4i6@skbuf>
- <797f525b-9b85-9f86-2927-6dfb34e61c31@6wind.com>
- <20220411153334.lpzilb57wddxlzml@skbuf>
- <cb3e862f-ad39-d739-d594-a5634c29cdb3@6wind.com>
- <20220411154911.3mjcprftqt6dpqou@skbuf>
- <41a58ead-9a14-c061-ee12-42050605deff@6wind.com>
+        with ESMTP id S1345135AbiDKQWy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 12:22:54 -0400
+Received: from smtp-bc0b.mail.infomaniak.ch (smtp-bc0b.mail.infomaniak.ch [IPv6:2001:1600:3:17::bc0b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 476B03056E
+        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 09:20:39 -0700 (PDT)
+Received: from smtp-2-0001.mail.infomaniak.ch (unknown [10.5.36.108])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KcYxJ5NbbzMqDZS;
+        Mon, 11 Apr 2022 18:20:36 +0200 (CEST)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-2-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4KcYxJ1khzzljsTB;
+        Mon, 11 Apr 2022 18:20:36 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1649694036;
+        bh=G0sWXxQMDnEVTFfV95ip/q9mAhMhv4uhCDtyPMWfKPs=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=CTyvjW61W3Br/ep0FWCfj9Dq0xvVa6keMIMtjxQk5vnX8l4YqyXlwXyAtR8IUit/N
+         9r1bsnJn9kBLDn+HQ0UlCPvh1kSfFPbxEQfVjaOe1ng2Bu7wyIgnRoVv43b3u59Uu0
+         ZiEc2djdVOLDXrG0hlGjdoaHxH3NQ4TqL3n11PQA=
+Message-ID: <6f9d82ed-081e-a6e4-5876-6af7db180ba1@digikod.net>
+Date:   Mon, 11 Apr 2022 18:20:51 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+User-Agent: 
+Content-Language: en-US
+To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+Cc:     willemdebruijn.kernel@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
+        artem.kuzin@huawei.com, anton.sirazetdinov@huawei.com
+References: <20220309134459.6448-1-konstantin.meskhidze@huawei.com>
+ <20220309134459.6448-9-konstantin.meskhidze@huawei.com>
+ <06f9ca1f-6e92-9d71-4097-e43b2f77b937@digikod.net>
+ <8e279be2-5092-ad34-2f8d-ca77ee5a10fd@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [RFC PATCH v4 08/15] landlock: add support network rules
+In-Reply-To: <8e279be2-5092-ad34-2f8d-ca77ee5a10fd@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <41a58ead-9a14-c061-ee12-42050605deff@6wind.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 06:10:49PM +0200, Nicolas Dichtel wrote:
+
+On 11/04/2022 15:44, Konstantin Meskhidze wrote:
 > 
-> Le 11/04/2022 � 17:49, Vladimir Oltean a �crit�:
-> > On Mon, Apr 11, 2022 at 05:43:01PM +0200, Nicolas Dichtel wrote:
-> >>
-> >> Le 11/04/2022 � 17:33, Vladimir Oltean a �crit�:
-> >> [snip]
-> >>> Would you agree that the __dev_set_allmulti() -> __dev_notify_flags()
-> >>> call path is dead code? If it is, is there any problem it should be
-> >>> addressing which it isn't, or can we just delete it?
-> >> I probably miss your point, why is it dead code?
-> > 
-> > Because __dev_set_allmulti() doesn't update dev->gflags, it means
-> > dev->gflags == old_gflags. In turn, it means dev->gflags ^ old_gflags,
-> > passed to "gchanges" of __dev_notify_flags(), is 0.
-> I didn't take any assumptions on dev->gflags because two functions are called
-> with dev as parameter (dev_change_rx_flags() and dev_set_rx_mode()).
+> 
+> 4/8/2022 7:30 PM, Mickaël Salaün пишет:
 
-You mean ops->ndo_change_rx_flags() or ops->ndo_set_rx_mode() are
-expected to update dev->gflags?
+[...]
 
-> Even if __dev_notify_flags() is called with 0 for the last arg, it calls
-> notifiers. Thus, this is not "dead code".
 
-The relevant "changes" (dev->flags & old_flags) of the net_device which
-may have changed from __dev_set_allmulti() are masked out from
-call_netdevice_notifiers(), are they not?
+>>>   struct landlock_ruleset *landlock_create_ruleset(const struct 
+>>> landlock_access_mask *access_mask_set)
+>>>   {
+>>>       struct landlock_ruleset *new_ruleset;
+>>>
+>>>       /* Informs about useless ruleset. */
+>>> -    if (!access_mask_set->fs)
+>>> +    if (!access_mask_set->fs && !access_mask_set->net)
+>>>           return ERR_PTR(-ENOMSG);
+>>>       new_ruleset = create_ruleset(1);
+>>> -    if (!IS_ERR(new_ruleset))
+>>
+>> This is better:
+>>
+>> if (IS_ERR(new_ruleset))
+>>      return new_ruleset;
+>> if (access_mask_set->fs)
+>> ...
+> 
+>    I dont get this condition. Do you mean that we return new_ruleset
+> anyway no matter what the masks's values are? So its possible to have 0 
+> masks values, is't it?
 
-	if (changes & IFF_UP) {
-		/* doesn't apply */
-	}
+No, the logic is correct but it would be simpler to exit as soon as 
+there is a ruleset error, you don't need to duplicate 
+"IS_ERR(new_ruleset) &&":
 
-	if (dev->flags & IFF_UP &&
-	    (changes & ~(IFF_UP | IFF_PROMISC | IFF_ALLMULTI | IFF_VOLATILE))) {
-	               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	               these changes are masked out
+if (IS_ERR(new_ruleset))
+	return new_ruleset;
+if (access_mask_set->fs)
+	landlock_set_fs_access_mask(new_ruleset, access_mask_set, 0);
+if (access_mask_set->net)
+	landlock_set_net_access_mask(new_ruleset, access_mask_set, 0);
+return new_ruleset;
+
