@@ -2,101 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A8CBE4FC1F9
-	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 18:12:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B1A94FC203
+	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 18:13:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242730AbiDKQN4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 12:13:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43542 "EHLO
+        id S1344051AbiDKQQF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 12:16:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348119AbiDKQNr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 12:13:47 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A68920BF2
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 09:10:51 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id t1so6060771wra.4
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 09:10:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=message-id:date:mime-version:user-agent:reply-to:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=ce5fu7ycn7dUXlc9MmLst+yQYHhyd+tclVQECLvk1js=;
-        b=YSoxKpBQ27pJC/NUYM0t6og3xSn8vpXW+/+d6wALd3rvHLcuIT+n1KEhFkgbRQZV6O
-         mawSArsbRGji48AE+AP4hViCE2vNxqT/FcYsLSQFJSHZ8KhC260VUqFtBA5ouNQNUCwA
-         xfkDu6VkhuRsIBe/lmqnVtGN0wc5CSpFhj6OmLrskSGrlZB5vQLDPHmJZMqCNOpPBoeU
-         8kksghGHey8wzO2YeUdzQ6xxXILIBG7GPdrIF12SmWwicPEqHNXPXvPlZZLHEAzyXV83
-         M3b72MTX4pxHyHTSghLecN/6S56DDbGc74rDvZhTz/UrLu4SAUNHhZbyfXjg7wtBTUm4
-         KLiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:reply-to
-         :subject:content-language:to:cc:references:from:organization
-         :in-reply-to:content-transfer-encoding;
-        bh=ce5fu7ycn7dUXlc9MmLst+yQYHhyd+tclVQECLvk1js=;
-        b=ygAcJXcGhGImscz4kZaYRVjCPAjNw8dSqnro7loa+6J/J9sFHGxp30+QOiQcf8LA60
-         TvtN0hEvdhpAGXrWZwnjNw4ZHJ+pK3i4ddec3vArbJqWzBoyvhnd4SpagT6Rl/O7jsVa
-         7b9Fvq3OVkuwmcWWye0j+GY00GGOsAnJJUcKU4lsy85eGUkpct9QRHoM9ia/aaU+GXyN
-         t/dzc3iHySyTPvB1t5T8DGAqPkQ/WPE4D0B06DgmmxSYln78qUxsvKUgNWCp+LUChTvi
-         r1md8EUgTa1M+9P1ZgT5umaUH2LLpaXBi1xHoeax5bH4H2jOLcTzL2a4q1XpZ7YpRQ3e
-         HbOg==
-X-Gm-Message-State: AOAM532QdW0PLL4klDUaS5MqcdliWEpz0RtNLeOZ7Hts+g/cx+6apFdY
-        dKjWIIs66ASQWuNG3vEWYJVTEw==
-X-Google-Smtp-Source: ABdhPJxJzT+c7Uqvio4omdC+uK2QKBidQlv52qRyZIzmxQpD85bRX+iO/w3anJTAY/+sqhOdQXEnVw==
-X-Received: by 2002:adf:f7cd:0:b0:207:a25c:24c4 with SMTP id a13-20020adff7cd000000b00207a25c24c4mr7820486wrq.528.1649693450469;
-        Mon, 11 Apr 2022 09:10:50 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:b41:c160:4d92:8b8b:5889:ee2f? ([2a01:e0a:b41:c160:4d92:8b8b:5889:ee2f])
-        by smtp.gmail.com with ESMTPSA id g16-20020a05600c4ed000b0038ceb0b21b4sm21565794wmq.24.2022.04.11.09.10.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Apr 2022 09:10:49 -0700 (PDT)
-Message-ID: <41a58ead-9a14-c061-ee12-42050605deff@6wind.com>
-Date:   Mon, 11 Apr 2022 18:10:49 +0200
+        with ESMTP id S231284AbiDKQQC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 12:16:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A93BC2B8;
+        Mon, 11 Apr 2022 09:13:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6EDA0B81704;
+        Mon, 11 Apr 2022 16:13:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76885C385A3;
+        Mon, 11 Apr 2022 16:13:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649693626;
+        bh=S4RgEBNrSyI+ophc0QVA8uNOdYjwnqrns4P7akRNFaI=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=u6j2TNukG/Ye5tRQPNUxnV2SOuyDUoYoChUBMIbom+cpoQ0Zn/BEGeeQb3x33QKy6
+         iLS44nfmiV0iqUPciH14pEgtnMGByPaiINkJeyDpGpE+rhUC7ge4KRijekqh1TjRGA
+         qseaDRToWLTReU/pvUu+81XSxrsu93EoG7ecEWegxNmMpJAo8bZYHuyA0fs3ZClIGW
+         QzpjAN1iraiktH0G3WnTmK5oRfuB+thCM6cL9rMJ9OUBvGgu/C7i2Vi8x1wU7eFlw1
+         TZJwZzLxneElwllZsXdw3TPhhi3Xwhrvud+o0n4UdYwgYcQteqaYVLZoaENV7abKUm
+         IqFJ2fHTiw4MA==
+Message-ID: <1d595632-ae6d-39f0-b624-7dfc5bfc1ea7@kernel.org>
+Date:   Mon, 11 Apr 2022 10:13:44 -0600
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: What is the purpose of dev->gflags?
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.7.0
+Subject: Re: [PATCH net-next v2] net/ipv6: Introduce accept_unsolicited_na
+ knob to implement router-side changes for RFC9131
 Content-Language: en-US
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>
-References: <20220408183045.wpyx7tqcgcimfudu@skbuf>
- <20220408115054.7471233b@kernel.org> <20220408191757.dllq7ztaefdyb4i6@skbuf>
- <797f525b-9b85-9f86-2927-6dfb34e61c31@6wind.com>
- <20220411153334.lpzilb57wddxlzml@skbuf>
- <cb3e862f-ad39-d739-d594-a5634c29cdb3@6wind.com>
- <20220411154911.3mjcprftqt6dpqou@skbuf>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-In-Reply-To: <20220411154911.3mjcprftqt6dpqou@skbuf>
+To:     Arun Ajith S <aajith@arista.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        yoshfuji@linux-ipv6.org, kuba@kernel.org, pabeni@redhat.com,
+        corbet@lwn.net, prestwoj@gmail.com, gilligan@arista.com,
+        noureddine@arista.com, gk@arista.com
+References: <20220407074428.1623-1-aajith@arista.com>
+ <d7a85a29-0d7f-b5e2-c908-4aa9f89bb476@kernel.org>
+ <CAOvjArQcH1KRV3B1V9urYEV+6i3ZL6NbmkYjbu1icFBJZ3JVOQ@mail.gmail.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <CAOvjArQcH1KRV3B1V9urYEV+6i3ZL6NbmkYjbu1icFBJZ3JVOQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-Le 11/04/2022 à 17:49, Vladimir Oltean a écrit :
-> On Mon, Apr 11, 2022 at 05:43:01PM +0200, Nicolas Dichtel wrote:
->>
->> Le 11/04/2022 à 17:33, Vladimir Oltean a écrit :
->> [snip]
->>> Would you agree that the __dev_set_allmulti() -> __dev_notify_flags()
->>> call path is dead code? If it is, is there any problem it should be
->>> addressing which it isn't, or can we just delete it?
->> I probably miss your point, why is it dead code?
+On 4/11/22 9:41 AM, Arun Ajith S wrote:
 > 
-> Because __dev_set_allmulti() doesn't update dev->gflags, it means
-> dev->gflags == old_gflags. In turn, it means dev->gflags ^ old_gflags,
-> passed to "gchanges" of __dev_notify_flags(), is 0.
-I didn't take any assumptions on dev->gflags because two functions are called
-with dev as parameter (dev_change_rx_flags() and dev_set_rx_mode()).
-Even if __dev_notify_flags() is called with 0 for the last arg, it calls
-notifiers. Thus, this is not "dead code".
+> mausezahn doesn't have good support for ICMPv6.
+> I tried using --type icmp6 -t icmp6 "type=136, payload=<HEX-PAYLOAD>"
+> to manually craft a NA packet with  the target address and the target
+> ll addr option.
+> But it still doesn't allow me to set the flags to mark it as an
+> unsolicited advertisement.
+> 
+> How about this alternative for a test:
+> 1. Setup a veth tunnel across two namespaces, one end being the host
+> and the other the router.
+> 2. On the host side, I can configure
+> net.ipv6.conf.<interface>.ndisc_notify to send out unsolicited NAs.
+> 3. On the router side, I can try out various combinations of
+> (accept_unsolicited_na, drop_unsolicted_na and forwarding)
+> 
+
+that works too. even simpler.
