@@ -2,177 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 17CDF4FB292
-	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 06:12:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C32C4FB2D6
+	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 06:31:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241533AbiDKEOX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 00:14:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43792 "EHLO
+        id S236240AbiDKEdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 00:33:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233151AbiDKEOV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 00:14:21 -0400
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02BED25F3;
-        Sun, 10 Apr 2022 21:12:08 -0700 (PDT)
-Received: by mail-io1-xd29.google.com with SMTP id e22so17274048ioe.11;
-        Sun, 10 Apr 2022 21:12:07 -0700 (PDT)
+        with ESMTP id S237387AbiDKEdo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 00:33:44 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E392821C
+        for <netdev@vger.kernel.org>; Sun, 10 Apr 2022 21:31:31 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id s18so5851198ejr.0
+        for <netdev@vger.kernel.org>; Sun, 10 Apr 2022 21:31:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=28KDkHQg1bfu2ZxEsxkdsWjXzFVXknzOfbF/hqHTX2w=;
-        b=MQJAvVg/2kkiy9VqbFyprvL49C2jBI5NaO9uGEd9e3rhZ4E35OIecK1sGK7Lavzsr1
-         rVWMhTmXgEKb91xsKKXKWmoypfAGTTQrX+zTKK6CXvzb6A/4luxDKv5ezeHFtRRbrV4G
-         2bLuX+D3HSpw+SLidB+yfy18LBn5hSbHgNLzQmY8ilTNyYFBKswZ5TtEFX3llpkDJrVN
-         vi/35PI3ikz3T1KPQCQiQWS6jhSiszQ3RqS2m6yAyl3Z7D3Ugeog1KIU0gkEUwpeR7n5
-         Ser4amr/fgWyIcg+4G3dT7bHvl04xihamLpPkg5PbfsNA0q+GVhDrh23Cc/+Ou24a29b
-         kFyA==
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=KeMi8W+p20zdR41YZoRj2EapY7imNsLYkAgQIQsIzqY=;
+        b=N7BylrP8tKv6Ig1EqbBXaZcnqQu0RpvAF5dMgpdPQJR2SwPxrpJfjnlmfsXlfDmp7V
+         VlScdLndhgtwV/gFbBcCRviih6BVvCjpQccxuCPrkxdiuAzeWSuYqVyCJ0V6A2Bka2L3
+         06cSLApjVZXiodjzrUYtJ9n/l6hqVJlJQU4mIpU7fv9AJuyMa3jdtsBoWfyD0n9UfzVp
+         tWbYCe+eJuTIbwuXG80+jZ+vQHeZGUj9sLyhS1FTS4AaATbKBifPUlB53yk6C7OZMO2b
+         STajT6PyGz/l16KgmlziD55rk2gvOxyzaZ+pHSF+tD6C6Q6z8akxRJ/J3htQmB10l38y
+         3Rjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=28KDkHQg1bfu2ZxEsxkdsWjXzFVXknzOfbF/hqHTX2w=;
-        b=CetbRZqRGk2Mwe8ABvJhoNp//ozl+HbEClPYW8q1XN3itTVSxvRoFTmaO+PwlgQQwV
-         dCnSPDyZ6OCyZP40d2cuh1nbS/s6phH7p/HF7MDcBvCGO8Odw/jvX9cg58CsXyHahpRJ
-         g3RnpnbJ3w1b/+/9w7geBiKaYasgNJ895R9lZbjhv/u90DI6zXrjXHWX5X3XEboKfRmB
-         2ULcbu+MrTMQzyDykzvHq83brDEgUg0r7yMmRm8Cj7Nm/sd1q3nBiJYDKocX9fZjBNDY
-         O/63hjilO3wuVitI+PyWZ13Y39Vr58WEn0GHyM9zX+eM+cNDWiQM+UwMCPzjT9UiC2oN
-         MfvQ==
-X-Gm-Message-State: AOAM531OU3UXUIYwQ+OfJY3c7JMXry5DzfWW+GLa4QBMiQ8SCl4yxF43
-        KCQQFKrMtYEhhf0xpwC+2PJrL3vzxn37pNbmExM2lSSD
-X-Google-Smtp-Source: ABdhPJw8XS5jgq/4xkBkH9QjSRJA01n680HyviK/aMzVcJiaQk/kCT2IhGLM1dSHWErr0rmVx6X+DVNvWUwG0f+yS4Q=
-X-Received: by 2002:a05:6638:772:b0:319:e4eb:adb with SMTP id
- y18-20020a056638077200b00319e4eb0adbmr14819500jad.237.1649650326068; Sun, 10
- Apr 2022 21:12:06 -0700 (PDT)
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=KeMi8W+p20zdR41YZoRj2EapY7imNsLYkAgQIQsIzqY=;
+        b=b32vnm2bEvoZw0lAYNgMdtsFyf+t1QQ4coYFE+gXrgcRvES+lkw/mkJhXQf+H76XJy
+         JqSVrkf8DbYNqS+M9SN10ybE+/HVJkdw/8vEs4uDJjugMWtgJtXMy8bpPMTFzTcGH0J1
+         S1ADeGcA3Z+ZMTpzvtvkisXQSz1m8YWmFnuhdhHVr+zTbESdCtlRvymwQmzhEsYFphuW
+         ZSkfFQ1SNsRAVJiaB+4zDmzxEs4xIbjSXZowmc9Vlp+rK56dPn1eCx+oI2R5QeOobaTT
+         cAzeErN2kbjzZ0R+miKUUvgp7n00F3rJHqtbABgPbCH4inC0oYNAtInmY3aaIO9CW693
+         7niQ==
+X-Gm-Message-State: AOAM531slOu/lVy/rjZzgSabtRk4fJ67qkD2EihyAYpSJ3IfQIK0wVdh
+        nro7DpZXrkir29Hlmy+SZHu54vhqFJhDcg8OZlM=
+X-Google-Smtp-Source: ABdhPJx0wVvsLBdPwP1mhCYyPpYV9RgGwKpaC9He/Pbk9qkJICOH3wjUsyKj1heIF981UVnsd2iGmLJBFG8hlLYq8Ac=
+X-Received: by 2002:a17:907:c06:b0:6e0:9149:8047 with SMTP id
+ ga6-20020a1709070c0600b006e091498047mr27898161ejc.765.1649651489727; Sun, 10
+ Apr 2022 21:31:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <1649458366-25288-1-git-send-email-alan.maguire@oracle.com> <1649458366-25288-3-git-send-email-alan.maguire@oracle.com>
-In-Reply-To: <1649458366-25288-3-git-send-email-alan.maguire@oracle.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Sun, 10 Apr 2022 21:11:55 -0700
-Message-ID: <CAEf4BzYVGOnLksE+UXoqUr5tgvd9gXthSzkWX7jqEgJ+oib1GA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/2] libbpf: usdt aarch64 arg parsing support
-To:     Alan Maguire <alan.maguire@oracle.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Received: by 2002:a50:2891:0:0:0:0:0 with HTTP; Sun, 10 Apr 2022 21:31:29
+ -0700 (PDT)
+Reply-To: daniel.seyba@yahoo.com
+From:   Seyba Daniel <lucien.dapelgo@gmail.com>
+Date:   Mon, 11 Apr 2022 06:31:29 +0200
+Message-ID: <CAFMiXw8GvAS34dT56FwsV-yD+qQmLFJe-jkRTK5zx8J+Uj=z+g@mail.gmail.com>
+Subject: Hello,
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: Yes, score=5.3 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2a00:1450:4864:20:0:0:0:644 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5000]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [lucien.dapelgo[at]gmail.com]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  3.7 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 8, 2022 at 3:53 PM Alan Maguire <alan.maguire@oracle.com> wrote:
->
-> Parsing of USDT arguments is architecture-specific; on aarch64 it is
-> relatively easy since registers used are x[0-31], sp.  Format is
-> slightly different compared to x86_64; forms are
->
-> - "size @ [ reg[,offset] ]" for dereferences, for example
->   "-8 @ [ sp, 76 ]" ; " -4 @ [ sp ]"
-> - "size @ reg" for register values; for example
->   "-4@x0"
-> - "size @ value" for raw values; for example
->   "-8@1"
->
-> Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
-> ---
->  tools/lib/bpf/usdt.c | 50 +++++++++++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 49 insertions(+), 1 deletion(-)
->
-> diff --git a/tools/lib/bpf/usdt.c b/tools/lib/bpf/usdt.c
-> index 0677bbd..6165d40 100644
-> --- a/tools/lib/bpf/usdt.c
-> +++ b/tools/lib/bpf/usdt.c
-> @@ -1170,7 +1170,7 @@ static int parse_usdt_spec(struct usdt_spec *spec, const struct usdt_note *note,
->
->  /* Architecture-specific logic for parsing USDT argument location specs */
->
-> -#if defined(__x86_64__) || defined(__i386__) || defined(__s390x__)
-> +#if defined(__x86_64__) || defined(__i386__) || defined(__s390x__) || defined(__aarch64__)
->
->  static int init_usdt_arg_spec(struct usdt_arg_spec *arg, enum usdt_arg_type arg_type, int arg_sz,
->                               __u64 val_off, int reg_off)
-> @@ -1316,6 +1316,54 @@ static int parse_usdt_arg(const char *arg_str, int arg_num, struct usdt_arg_spec
->         return len;
->  }
->
-> +#elif defined(__aarch64__)
-> +
-> +static int calc_pt_regs_off(const char *reg_name)
-> +{
-> +       int reg_num;
-> +
-> +       if (sscanf(reg_name, "x%d", &reg_num) == 1) {
-> +               if (reg_num >= 0 && reg_num < 31)
-> +                       return offsetof(struct user_pt_regs, regs[reg_num]);
-> +       } else if (strcmp(reg_name, "sp") == 0) {
-> +               return offsetof(struct user_pt_regs, sp);
-> +       }
-> +       pr_warn("usdt: unrecognized register '%s'\n", reg_name);
-> +       return -ENOENT;
-> +}
-> +
-> +static int parse_usdt_arg(const char *arg_str, int arg_num, struct usdt_arg_spec *arg)
-> +{
-> +       char *reg_name = NULL;
-> +       int arg_sz, len, ret;
-> +       long off = 0;
-> +
-> +       if (sscanf(arg_str, " %d @ \[ %m[^,], %ld ] %n", &arg_sz, &reg_name, &off, &len) == 3 ||
-> +           sscanf(arg_str, " %d @ \[ %m[a-z0-9] ] %n", &arg_sz, &reg_name, &len) == 2) {
+Hello,
 
-I'm not sure about the behavior here w.r.t. reg_name and memory
-allocation. What if first sscanf() matches reg_name but fails at %ld,
-will reg_name be allocated and then second sscanf() will reallocate
-(and thus we'll have a memory leak).
+I am so sorry contacting you in this means especially when we have never
+met before. I urgently seek your service to represent me in investing in
+your region / country and you will be rewarded for your service without
+affecting your present job with very little time invested in it.
 
-We might have similar problems in other implementations, actually...
+My interest is in buying real estate, private schools or companies with
+potentials for rapid growth in long terms.
 
-Either way, came here to ask to split two sscanfs into two separate
-branches, so that we have a clear linear pattern. One sscanf, handle
-it if successful, otherwise move on to next case.
+So please confirm interest by responding back.
 
-Also a question about [a-z0-9] for register in one case and [^,] in
-another. Should the first one be [a-z0-9] as well?
+My dearest regards
 
-> +               /* Memory dereference case, e.g., -4@[sp, 96], -4@[sp] */
-> +               ret = init_usdt_arg_spec(arg, USDT_ARG_REG_DEREF, arg_sz, off,
-> +                                        calc_pt_regs_off(reg_name));
-> +               free(reg_name);
-> +       } else if (sscanf(arg_str, " %d @ %ld %n", &arg_sz, &off, &len) == 2) {
-> +               /* Constant value case, e.g., 4@5 */
-> +               ret = init_usdt_arg_spec(arg, USDT_ARG_CONST, arg_sz, off, 0);
-> +       } else if (sscanf(arg_str, " %d @ %ms %n", &arg_sz, &reg_name, &len) == 2) {
-> +               /* Register read case, e.g., -8@x4 */
-> +               ret = init_usdt_arg_spec(arg, USDT_ARG_REG, arg_sz, 0, calc_pt_regs_off(reg_name));
-> +               free(reg_name);
-> +       } else {
-> +               pr_warn("usdt: unrecognized arg #%d spec '%s'\n", arg_num, arg_str);
-> +               return -EINVAL;
-> +       }
-> +
-> +       if (ret < 0) {
-> +               pr_warn("usdt: unsupported arg #%d (spec '%s') size: %d\n",
-> +                       arg_num, arg_str, arg_sz);
-> +               return ret;
-> +       }
-> +       return len;
-> +}
-> +
->  #else
->
->  static int parse_usdt_arg(const char *arg_str, int arg_num, struct usdt_arg_spec *arg)
-> --
-> 1.8.3.1
->
+Seyba Daniel
