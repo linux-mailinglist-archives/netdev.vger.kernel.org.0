@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0329B4FB7FB
-	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 11:46:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFADB4FB7FA
+	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 11:46:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344678AbiDKJsn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 05:48:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33284 "EHLO
+        id S1344698AbiDKJso (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 05:48:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344700AbiDKJsa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 05:48:30 -0400
+        with ESMTP id S1344697AbiDKJsl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 05:48:41 -0400
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD1BF3CA4D
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 02:46:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48967403D2
+        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 02:46:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
         Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
         In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=/QFgek31WZKKhHIeYB7HtM9AIlDa5tiHe5pdziNT4u0=; b=x7pB4/9Cxkj1cGo9pmbgIMg4E8
-        GvddEiWDNj8tQqDYAVRaDCSGU5s1pSE2GeFnbsL1pZ3tZdzO8DYQ1HINlJ5GFMngYniY7KLJMdRKN
-        pOGXGmEQzZq+9bhVHCJt8IBC07JZ1Axw8o20dp92SPUNDNpOM86Vf5BlWmjk3IxdiXpoFTGHF2flI
-        BS7jpt6r4gsNaJ/H+ZcwgQzjSY2wvTBlfd/+ql+K5kd/WO/V3j1uXPow/DYyTcV/6rHz1RxjLLCXt
-        wgMSHyfYBSwCLdjb8c5D7cinYKvsIeyW30/2jGlr6rxXtqyzd1UnucIqndQCZIhzI5wS3o5gHqtY2
-        BZ4MZsYg==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:52856 helo=rmk-PC.armlinux.org.uk)
+        bh=ebIsZQh6bWWdHnFk9H8f8xTDY2EZehgXMp8QevaXF3w=; b=f7om5BwCKQlcRWMRayydqwf5y3
+        GqlLR9YdG4qUDrUEdSi/TBW4nKitrc7eYqOU9hs+jvfCyy7H8bjQK9OlQAqcTAOHOiOKETmuZQzMA
+        K2a2aS38LGZkiy7QrnfD48yvNFxCfbqM2u7sYyhJLnPcsnGIdA01CtaWx+cyqI/MTAj/EwsyGmf7i
+        6LeuRA5SGuTFl4xB40+sBCUr+1Z+4HUq5DGMrW8NIt25w/roci9JT326gKcHHFjJ2IqFu3qXb1x2Z
+        6t3Z2n8fFZyutlWhU3cCtCMYK2TJSFB3Hxb4wsmincZuGQw2oLYtb4KdIAR9WFiUuHoGunHOkYE6S
+        5JquVQPw==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:52866 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1ndqce-0000Gq-W0; Mon, 11 Apr 2022 10:46:12 +0100
+        id 1ndqck-0000H4-3W; Mon, 11 Apr 2022 10:46:17 +0100
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
         (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-        id 1ndqce-0055Qv-3L; Mon, 11 Apr 2022 10:46:12 +0100
+        id 1ndqcj-0055RC-6M; Mon, 11 Apr 2022 10:46:17 +0100
 In-Reply-To: <YlP4vGKVrlIJUUHK@shell.armlinux.org.uk>
 References: <YlP4vGKVrlIJUUHK@shell.armlinux.org.uk>
 From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
@@ -50,8 +50,8 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Matthias Brugger <matthias.bgg@gmail.com>,
         netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
-Subject: [PATCH net-next v2 4/9] net: dsa: mt7530: drop use of
- phylink_helper_basex_speed()
+Subject: [PATCH net-next v2 5/9] net: dsa: mt7530: only indicate linkmodes
+ that can be supported
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -59,9 +59,9 @@ MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1ndqce-0055Qv-3L@rmk-PC.armlinux.org.uk>
+Message-Id: <E1ndqcj-0055RC-6M@rmk-PC.armlinux.org.uk>
 Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Mon, 11 Apr 2022 10:46:12 +0100
+Date:   Mon, 11 Apr 2022 10:46:17 +0100
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -71,32 +71,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that we have a better method to select SFP interface modes, we
-no longer need to use phylink_helper_basex_speed() in a driver's
-validation function.
+Now that mt7530 is not using the basex helper, it becomes unnecessary to
+indicate support for both 1000baseX and 2500baseX when one of the 803.3z
+PHY interface modes is being selected. Ensure that the driver indicates
+only those linkmodes that can actually be supported by the PHY interface
+mode.
 
 Tested-by: Marek Behún <kabel@kernel.org>
 Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/dsa/mt7530.c | 5 -----
- 1 file changed, 5 deletions(-)
+ drivers/net/dsa/mt7530.c | 12 ++++++++----
+ drivers/net/dsa/mt7530.h |  1 +
+ 2 files changed, 9 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 4fdd75e88b1b..de9cfd20ccbf 100644
+index de9cfd20ccbf..dfe3cd6d6b56 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
-@@ -2946,11 +2946,6 @@ mt753x_phylink_validate(struct dsa_switch *ds, int port,
- 
- 	linkmode_and(supported, supported, mask);
- 	linkmode_and(state->advertising, state->advertising, mask);
--
--	/* We can only operate at 2500BaseX or 1000BaseX.  If requested
--	 * to advertise both, only report advertising at 2500BaseX.
--	 */
--	phylink_helper_basex_speed(state);
+@@ -2522,12 +2522,13 @@ static int mt7531_rgmii_setup(struct mt7530_priv *priv, u32 port,
  }
  
- static int
+ static void mt7531_sgmii_validate(struct mt7530_priv *priv, int port,
++				  phy_interface_t interface,
+ 				  unsigned long *supported)
+ {
+ 	/* Port5 supports ethier RGMII or SGMII.
+ 	 * Port6 supports SGMII only.
+ 	 */
+-	if (port == 6) {
++	if (port == 6 && interface == PHY_INTERFACE_MODE_2500BASEX) {
+ 		phylink_set(supported, 2500baseX_Full);
+ 		phylink_set(supported, 2500baseT_Full);
+ 	}
+@@ -2902,16 +2903,18 @@ static void mt753x_phylink_get_caps(struct dsa_switch *ds, int port,
+ 
+ static void
+ mt7530_mac_port_validate(struct dsa_switch *ds, int port,
++			 phy_interface_t interface,
+ 			 unsigned long *supported)
+ {
+ }
+ 
+ static void mt7531_mac_port_validate(struct dsa_switch *ds, int port,
++				     phy_interface_t interface,
+ 				     unsigned long *supported)
+ {
+ 	struct mt7530_priv *priv = ds->priv;
+ 
+-	mt7531_sgmii_validate(priv, port, supported);
++	mt7531_sgmii_validate(priv, port, interface, supported);
+ }
+ 
+ static void
+@@ -2934,12 +2937,13 @@ mt753x_phylink_validate(struct dsa_switch *ds, int port,
+ 	}
+ 
+ 	/* This switch only supports 1G full-duplex. */
+-	if (state->interface != PHY_INTERFACE_MODE_MII) {
++	if (state->interface != PHY_INTERFACE_MODE_MII &&
++	    state->interface != PHY_INTERFACE_MODE_2500BASEX) {
+ 		phylink_set(mask, 1000baseT_Full);
+ 		phylink_set(mask, 1000baseX_Full);
+ 	}
+ 
+-	priv->info->mac_port_validate(ds, port, mask);
++	priv->info->mac_port_validate(ds, port, state->interface, mask);
+ 
+ 	phylink_set(mask, Pause);
+ 	phylink_set(mask, Asym_Pause);
+diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+index cbebbcc76509..73cfd29fbb17 100644
+--- a/drivers/net/dsa/mt7530.h
++++ b/drivers/net/dsa/mt7530.h
+@@ -772,6 +772,7 @@ struct mt753x_info {
+ 	void (*mac_port_get_caps)(struct dsa_switch *ds, int port,
+ 				  struct phylink_config *config);
+ 	void (*mac_port_validate)(struct dsa_switch *ds, int port,
++				  phy_interface_t interface,
+ 				  unsigned long *supported);
+ 	int (*mac_port_get_state)(struct dsa_switch *ds, int port,
+ 				  struct phylink_link_state *state);
 -- 
 2.30.2
 
