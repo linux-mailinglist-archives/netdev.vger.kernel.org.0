@@ -2,72 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A5F14FBBA1
-	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 14:05:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EF754FBBB5
+	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 14:06:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235800AbiDKMHI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 08:07:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49542 "EHLO
+        id S245753AbiDKMIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 08:08:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229664AbiDKMHH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 08:07:07 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86CF73A1A6
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 05:04:52 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id u17-20020a05600c211100b0038eaf4cdaaeso3286706wml.1
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 05:04:52 -0700 (PDT)
+        with ESMTP id S234546AbiDKMIy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 08:08:54 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22E513CA66
+        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 05:06:40 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id x17so17098246lfa.10
+        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 05:06:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=E//4mWhP6CG/ZkqhrqSeXFwz+Zo69xEls9lzXQvB3jU=;
-        b=ZLiJC4Ve9WtWf5EZ62GPCgydug1v92Jyr48OphLJr+OavIuIGPhQWY1Qpynv13R+Ku
-         CYk8cOfTDs3/+4u3bnQjK4WbgVMT7L14j/d1nTz74+IvGB/V8Wz5ONhEorF8vXdDwtTo
-         F9fs5wV+trKSMZpI27NA6OpkiLhgiCnj9wvQlM1VWpJETU/gAJ0tAkE1cK7O4ZfI1H19
-         L8aAxShicLc1Th+cWA/BaL16foR8BFhX68RAaVZFlzMpf9QROsRjX+EWwhFyMQfJH/Tq
-         kh1X2/Z5QvpLy7pE5Ws4Q0GjeaLeO+Fw8rC5CBgRbgl26pnWToVVyW/33hunNqMAFdUt
-         gt8Q==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bMXbnPtGZfpLqftwbrCknYC2/BkmXdyyMdRk7l2b/O8=;
+        b=k+vPu5Ce21FCvW/A8Tz/eBZJwsLAhpitDUWwJcELmdb7EP/kfbGu35ogpZt0iQc6t0
+         Gl7pLztN3k4RVA9v5f2Vzxu8yim/T54qRtillf6LBLHEKxsumzkThdJ8+s1m2hOGpsDt
+         O/6PLjeVierKYuyCvpjoLldXdkf044PgGYNKw6Fnovy3R09sNjSdoP5x9L79eYJmlXFD
+         DetGIGAZPGv60pdXmI3c7QRrKE5H/MtMKMvkKkObLeWjOnMeREGic02K9IxAmZBWnzgo
+         tuQZqEIyJKX48lUEZOc7hUa9m8V0zUQQf1MyZpe9rw5nwzQhxRL5fX7g9lsqSg48HQ1G
+         S/YA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=E//4mWhP6CG/ZkqhrqSeXFwz+Zo69xEls9lzXQvB3jU=;
-        b=fhVGnL4Q7sdwAJi2GvmoZn6DGFU3FZ5DjUYu8/vdoqhLC6Q3onETzbtYh/7i5sdck3
-         x/3RB89bUxE5ZBb3PuHyZ4OYRCd/h3eR/m7WaZ1PpxXdoWffdYwv5FbfyGqL/eWLCmrV
-         eVw9zIY7mxv1HnUjNOuu5MOMJwPMJjedL9lKxYljQQOZ6TBIgZ2vT77UcaxdwYXBalqg
-         oIWcjY5hv4yXCLqudbvr7YN0K0qrXwr147dEO35g2F+bXqUo9G1mSibcyTjk0TB5AvMK
-         Aq7g4JchyzBaaFzzXKL3B7onGQ2xSKgd4DlP3Atzu1rRz/CrK0tDHs+tFppeoAmKVCe7
-         hN8w==
-X-Gm-Message-State: AOAM530PfXkDL2xUovUiOUTF83OYDjtz2UUW+eQ7kBgAH24QiuZ+cZvS
-        fyN5NjDUdozKOao+/pLTPmQ=
-X-Google-Smtp-Source: ABdhPJwoGsB2Qx8UmmDV3bQVWdIOcq0fd1QnOVjtLtxDIOPgZppRJ8lVCf+WaTsHUg5jhdcfLrsTWw==
-X-Received: by 2002:a1c:3b08:0:b0:38e:ae26:87c3 with SMTP id i8-20020a1c3b08000000b0038eae2687c3mr11090567wma.117.1649678690954;
-        Mon, 11 Apr 2022 05:04:50 -0700 (PDT)
-Received: from [192.168.8.198] ([148.252.129.222])
-        by smtp.gmail.com with ESMTPSA id r129-20020a1c2b87000000b0038e6a025d05sm18582510wmr.18.2022.04.11.05.04.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Apr 2022 05:04:50 -0700 (PDT)
-Message-ID: <f0a8e790-aff5-db72-d42e-1cbfe711a092@gmail.com>
-Date:   Mon, 11 Apr 2022 13:04:10 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [RFC net-next 00/27] net and/or udp optimisations
-Content-Language: en-US
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>,
+        bh=bMXbnPtGZfpLqftwbrCknYC2/BkmXdyyMdRk7l2b/O8=;
+        b=sMslYcsIQh44wMdREpFbkPxLzDbkVbAw5FRNTEC56N43HNAS9bbu9LHC6QHI+A8Tbj
+         rImGf8VeGbWI36c7uBGZNsKJA1wehutvIze8/89KbqR+LnBPFrKIraIEMRfCO0TbSqn2
+         Mx/+Qy3fpATig4E4anBTclWEnqd/GHCfHhVi3nN80wAskARHl2KCSIznwoaXQa8HB3n/
+         FxjuZjKiExm3Fd1XX7XSGJjUnjLbq3C1e3KPHQekxjx27YE15dEz0zMYxocn/ROikQ6S
+         ataLQZVx6hmp5egaZ79Iw9Jw42egnnntkzEdYmZAS0udLtb/UWHgu67azmOS901f+FSW
+         ekBg==
+X-Gm-Message-State: AOAM531lgugIt6wNvMmacw4A3fh7vFurPVNHzrbc1SuSH9o5gaw1A03J
+        tYYa9oYtq+CmRg7+b9Yr2vOs1y7Vf8kwug==
+X-Google-Smtp-Source: ABdhPJxrTSCmmdQydlBVzPUkns6CBH4YHCUz+xSfI4s9B+ZSzLF5c2+oWM2vVV02zkavuVXh2d6W2Q==
+X-Received: by 2002:a05:6512:131d:b0:464:f4f7:1b2d with SMTP id x29-20020a056512131d00b00464f4f71b2dmr13603861lfu.143.1649678797483;
+        Mon, 11 Apr 2022 05:06:37 -0700 (PDT)
+Received: from wse-c0089.raspi.local (h-98-128-237-157.A259.priv.bahnhof.se. [98.128.237.157])
+        by smtp.gmail.com with ESMTPSA id s10-20020a19ad4a000000b0044826a25a2esm3297627lfd.292.2022.04.11.05.06.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 05:06:36 -0700 (PDT)
+From:   Mattias Forsblad <mattias.forsblad@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Wei Liu <wei.liu@kernel.org>,
-        Paul Durrant <paul@xen.org>
-References: <cover.1648981570.git.asml.silence@gmail.com>
- <CANn89iL0anmfcX1v1NqOQ6xi2VfY7CmiUwav0jNbz6GuSjUspQ@mail.gmail.com>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <CANn89iL0anmfcX1v1NqOQ6xi2VfY7CmiUwav0jNbz6GuSjUspQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Mattias Forsblad <mattias.forsblad@gmail.com>
+Subject: [PATCH v4 net-next 0/3] net: dsa: mv88e6xxx: Implement offload of matchall for bridged DSA ports
+Date:   Mon, 11 Apr 2022 14:06:30 +0200
+Message-Id: <20220411120633.40054-1-mattias.forsblad@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -76,101 +74,102 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/6/22 10:44, Eric Dumazet wrote:
-> On Sun, Apr 3, 2022 at 6:08 AM Pavel Begunkov <asml.silence@gmail.com> wrote:
->>
->> A mix of various net optimisations, which were mostly discovered during UDP
->> testing. Benchmarked with an io_uring test using 16B UDP/IPv6 over dummy netdev:
->> 2090K vs 2229K tx/s, +6.6%, or in a 4-8% range if not averaging across reboots.
->>
->> 1-3 removes extra atomics and barriers from sock_wfree() mainly benefitting UDP.
->> 4-7 cleans up some zerocopy helpers
->> 8-16 do inlining of ipv6 and generic net pathes
->> 17 is a small nice performance improvement for TCP zerocopy
->> 18-27 refactors UDP to shed some more overhead
->>
+Greetings,
 
-> Please send a smaller series first.
+This series implements offloading of tc matchall filter to HW
+for bridged DSA ports.
 
-Apologies for delays. Ok, I'll split it.
+Background
+When using a non-VLAN filtering bridge we want to be able to drop
+traffic directed to the CPU port so that the CPU doesn't get unnecessary loaded.
+This is specially important when we have disabled learning on user ports.
 
-> About inlining everything around, make sure to include performance
-> numbers only for the inline parts.
-> We can inline everything and make the kernel 4 x time bigger.
-> Synthetic benchmarks will still show improvements but in overall, we
-> add icache cost that is going to hurt latencies.
+A basic sample configuration could be something like this:
 
-I do care about kernel bloating, but I think we can agree that for most
-patches inlining is safe. There are 6 such patches (9-12,15,16). Three
-of them (9,11,15) only do simple redirecting to another function
-skb_csum_hwoffload_help() in 10 has only two callers. I think we can
-agree that they're safe to inline.
+       br0
+      /   \
+   swp0   swp1
 
-That leaves ip6_local_out() with ~8 callers and used quite heavily. And
-fl6_update_dst() with ~12 users, I don't have exact data but it appears
-not everybody uses ip6 options and so the function does nothing. At
-least that's true for UDP cases I care about. I think it's justified
-to be inlined. Would you prefer these two to be removed?
+ip link add dev br0 type bridge stp_state 0 vlan_filtering 0
+ip link set swp0 master br0
+ip link set swp1 master br0
+ip link set swp0 type bridge_slave learning off
+ip link set swp1 type bridge_slave learning off
+ip link set swp0 up
+ip link set swp1 up
+ip link set br0 up
 
+After discussions here: https://lore.kernel.org/netdev/YjMo9xyoycXgSWXS@shredder/
+it was advised to use tc to set an ingress filter that could then
+be offloaded to HW, like so:
 
-> I vote that you focus on the other parts first.
-> 
-> Thank you.
-> 
->> Pavel Begunkov (27):
->>    sock: deduplicate ->sk_wmem_alloc check
->>    sock: optimise sock_def_write_space send refcounting
->>    sock: optimise sock_def_write_space barriers
->>    skbuff: drop zero check from skb_zcopy_set
->>    skbuff: drop null check from skb_zcopy
->>    net: xen: set zc flags only when there is ubuf
->>    skbuff: introduce skb_is_zcopy()
->>    skbuff: optimise alloc_skb_with_frags()
->>    net: inline sock_alloc_send_skb
->>    net: inline part of skb_csum_hwoffload_help
->>    net: inline skb_zerocopy_iter_dgram
->>    ipv6: inline ip6_local_out()
->>    ipv6: help __ip6_finish_output() inlining
->>    ipv6: refactor ip6_finish_output2()
->>    net: inline dev_queue_xmit()
->>    ipv6: partially inline fl6_update_dst()
->>    tcp: optimise skb_zerocopy_iter_stream()
->>    net: optimise ipcm6 cookie init
->>    udp/ipv6: refactor udpv6_sendmsg udplite checks
->>    udp/ipv6: move pending section of udpv6_sendmsg
->>    udp/ipv6: prioritise the ip6 path over ip4 checks
->>    udp/ipv6: optimise udpv6_sendmsg() daddr checks
->>    udp/ipv6: optimise out daddr reassignment
->>    udp/ipv6: clean up udpv6_sendmsg's saddr init
->>    ipv6: refactor opts push in __ip6_make_skb()
->>    ipv6: improve opt-less __ip6_make_skb()
->>    ipv6: clean up ip6_setup_cork
->>
->>   drivers/net/xen-netback/interface.c |   3 +-
->>   include/linux/netdevice.h           |  27 ++++-
->>   include/linux/skbuff.h              | 102 +++++++++++++-----
->>   include/net/ipv6.h                  |  37 ++++---
->>   include/net/sock.h                  |  10 +-
->>   net/core/datagram.c                 |   2 -
->>   net/core/datagram.h                 |  15 ---
->>   net/core/dev.c                      |  28 ++---
->>   net/core/skbuff.c                   |  59 ++++-------
->>   net/core/sock.c                     |  50 +++++++--
->>   net/ipv4/ip_output.c                |  10 +-
->>   net/ipv4/tcp.c                      |   5 +-
->>   net/ipv6/datagram.c                 |   4 +-
->>   net/ipv6/exthdrs.c                  |  15 ++-
->>   net/ipv6/ip6_output.c               |  88 ++++++++--------
->>   net/ipv6/output_core.c              |  12 ---
->>   net/ipv6/raw.c                      |   8 +-
->>   net/ipv6/udp.c                      | 158 +++++++++++++---------------
->>   net/l2tp/l2tp_ip6.c                 |   8 +-
->>   19 files changed, 339 insertions(+), 302 deletions(-)
->>   delete mode 100644 net/core/datagram.h
->>
->> --
->> 2.35.1
->>
+tc qdisc add dev br0 clsact
+tc filter add dev br0 ingress pref 1 proto all matchall action drop
+
+Another situation that needs to be handled is when there is a
+foreign interface in the bridge. In this case traffic must reach the
+bridge, like the setup below.
+
+               br0
+             /  |  \
+          swp0 swp1 veth0
+
+Yet another case is when we have ports that are bonded with an
+foreign interface added to the bridge.
+
+               br0
+             /     \
+          bond0   veth0
+         /     \
+       swp0   swp1
+
+These examples highlight the need to evaluate the bridge stack
+to be able to make the right decision about whetever we can
+offload this to hw or not.
+
+Limitations
+If there is tc rules on a bridge and all the ports leave the bridge
+and then joins the bridge again, the indirect framwork doesn't seem
+to reoffload them at join. The tc rules need to be torn down and
+re-added. This seems to be because of limitations in the tc
+framework. A fix for this would need another patch-series in itself.
+However we prepare for when this issue is fixed by registring and
+deregistring when a dsa_bridge is created/destroyed so it should
+work when it's solved.
+
+The first patch in this series now include changes done by Vladimir
+Oltean to cleanup netdev notifier code and check for foreign
+interfaces. The second part uses the flow indirect framework to
+setup monitoring of tc qdisc and filters added to a bridge.
+The last part offloads the matchall filter to HW for Marvell
+switches.
+
+RFC -> v1: Monitor bridge join/leave and re-evaluate offloading (Vladimir Oltean)
+v2: Fix code standard compliance (Jakub Kicinski)
+v3: Fix warning from kernel test robot (<lkp@intel.com>)
+v4: Check matchall priority (Jakub)
+    Use boolean type (Vladimir)
+    Use Vladimirs code for checking foreign interfaces
+    Drop unused argument (Vladimir)
+    Add switchdev notifier (Vladimir)
+    Only call ops when value have changed (Vladimir)
+    Add error check (Vladimir)
+
+Mattias Forsblad (3):
+  net: dsa: track whetever bridges have foreign interfaces in them
+  net: dsa: Add support for offloading tc matchall with drop target
+  net: dsa: mv88e6xxx: Add HW offload support for tc matchall in Marvell
+    switches
+
+ drivers/net/dsa/mv88e6xxx/chip.c |  17 +-
+ include/net/dsa.h                |  15 ++
+ include/net/switchdev.h          |   2 +
+ net/dsa/dsa2.c                   |   2 +
+ net/dsa/dsa_priv.h               |   3 +
+ net/dsa/port.c                   |  14 ++
+ net/dsa/slave.c                  | 321 +++++++++++++++++++++++++++++--
+ 7 files changed, 361 insertions(+), 13 deletions(-)
 
 -- 
-Pavel Begunkov
+2.25.1
+
