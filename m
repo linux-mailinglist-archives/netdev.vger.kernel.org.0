@@ -2,194 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C8BB4FC416
-	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 20:31:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6039F4FC44E
+	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 20:45:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348210AbiDKSdm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 14:33:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56760 "EHLO
+        id S1349227AbiDKSrX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 14:47:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346048AbiDKSdl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 14:33:41 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7011D132
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 11:31:25 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id bv19so9644548ejb.6
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 11:31:25 -0700 (PDT)
+        with ESMTP id S1345246AbiDKSrW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 14:47:22 -0400
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEEB91BEA1
+        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 11:45:07 -0700 (PDT)
+Received: by mail-qt1-x82a.google.com with SMTP id z15so7887085qtj.13
+        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 11:45:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=M6kQVibwIommm1PCOed8MlI6sevi/BmpWfio8ymcPMk=;
-        b=sBgYDBZLL3whglAn6FUGe+d0ET9FaZJLnf4Wt13gjxOD7Y8fYAzcKqI9migZs1nZJR
-         rmdOSgsHUCU6QuJIWC4IckvWJwcT7T6P2dG3qLqDNeOKtKbW2nFjaloiBk0Vt40PPeQE
-         HcPU41YRzcjntS2k+tXAqziEyUI79Di/0hrV9pcvvNyIfJcludJ1a3jkuj+g9iD7FhYe
-         Am0JZeFGyJ9y0PmbsXqmu3PYMzj6F/neY7OSAPuZzlxlswIFQ0+qCgTTNcjyx949Ne+c
-         LTrX8ZeM4pTh31t5cGcdSTmlrq6Cgq+RljG+//dOIjNbqSaqow/vcbRtZk799rN3Um70
-         Hl+A==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4Atzl5Qlnk4ng0dcb/L65lU+gmvOLyVa46Qnmvo9iXY=;
+        b=riXB7FpX2QojH2be1u/W+nd4wjq1tPtaTIlkVyctTP3lFrGPKR5G4+2/mx3IJx1pWd
+         FLap29Tf0/j8+pcCRsMfYnWsY5H9kazVpo8PR9B/0JdCX2NXRYlweIaKrFGLwzsrfZI2
+         iuYG3OC8a6MyOxQLyIinWTmds/rzke1+21ojqRM3H8+JuhS7e/Dh2lvv+j3XcwyubH+k
+         BR0uVJq0Hn64wTZ/6NPZHaQPI6MF8lfae9dC4tJaPcE697V0JDvquG96LulGSyH9dC67
+         BlwOLfLukYWkDJ2ExLVUA0r74Zq0t2t016LPlcIDTUu0np2+Ha2bpL0nU2y8Ryc7HU/S
+         qd1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=M6kQVibwIommm1PCOed8MlI6sevi/BmpWfio8ymcPMk=;
-        b=HZ9iH0CRk9MiP94SX0TRtmotX+vARnm+p2u55QkHopDNKawAM+YlSA26ETX8C4o2XN
-         qoXH2+RysmhQVQQcVnMU4dQ5Ipvl/JzxwEkxtOoFRiHZNHwMPNwFlEfLQmg4YknADZ6m
-         z+29zcW/AsPcDCWGXVyEWA80dwkh40wRHbh4Lx0dGLeIqhWcF3E4D/hP8L4Z6gnIG34X
-         JcuDLvtzqNBH4PkC2ruigPgRTo3uFI6AiXtLrYIQTC81I+F/FW0MmUDxuBDjaBHqhV4B
-         dtAWjMmjB1yCyjQafnEzw0m/va4qFtwdP77bF1JamTniV5mOBgZJQNn7X8VKEjKAL76l
-         S+7Q==
-X-Gm-Message-State: AOAM532uiApPuQgSjvHGcjH550j5PmkHlM0SPNfU36+qqP2UBPWXSfe1
-        7S4LMPwmjg248TLxauyqxE6oXw==
-X-Google-Smtp-Source: ABdhPJwQ1+K8cSq/brJxeDYBJSIiZHYr3fPd/e+YwBPZRf9r4a4qoo3KL3EUOrJ9no6PijauU96T7Q==
-X-Received: by 2002:a17:907:94ca:b0:6da:e637:fa42 with SMTP id dn10-20020a17090794ca00b006dae637fa42mr31432195ejc.347.1649701883915;
-        Mon, 11 Apr 2022 11:31:23 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id k19-20020a1709061c1300b006e8843b0729sm2225805ejg.76.2022.04.11.11.31.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Apr 2022 11:31:23 -0700 (PDT)
-Message-ID: <92f578b7-347e-22c7-be83-cae4dce101f6@blackwall.org>
-Date:   Mon, 11 Apr 2022 21:31:22 +0300
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4Atzl5Qlnk4ng0dcb/L65lU+gmvOLyVa46Qnmvo9iXY=;
+        b=lN8ZnRbs4XKSrTQTkvgJ6p1tCu8xrwh607HDWF3Jo6Jnq+Fss9D54tSCysVVYK9+rY
+         kLgZNPZG+8mkkMt90/Y0ZIOG6MZM2ib2DW9DBdoTOE4IVYkP4S8jI+E/rSfzJ5ueDrAx
+         uL8Hh/2YTze94gnO8qzbBpsk6W87o7GgcJRaxtKk4bIFbBLI9ySfqVOv4yRcYd46v7J1
+         gvqwLgqjwaO+lw5cUNqHWFLBfkVaIn71DtGi5qUDf5/LY32t0AvqApJznVpjn38I1OEd
+         YaN2HyVcg3NA38Ng+c4otN8rn628YAXizKupF0TExCLLWg4pC7y/LVC8jnt7NVHB9qwF
+         cPzw==
+X-Gm-Message-State: AOAM533+gokdvgfR/1VGzpsovFz6yPbOdvNJki3g015zmgVS4uA0r2eD
+        6pvcNWpbn3YQEDnLZbpfJhtr4UQF/ZJgpYlf1eWnAg==
+X-Google-Smtp-Source: ABdhPJyu22o9/7Vp+IROuDW9V7v9slxbj/KCVaJDHFmQGAVj4CQvQXhiCsg/Pi6Vzl7EECgYHVbAH+WghR43qoWNuqc=
+X-Received: by 2002:ac8:51d8:0:b0:2eb:dc92:63d1 with SMTP id
+ d24-20020ac851d8000000b002ebdc9263d1mr602651qtn.526.1649702706754; Mon, 11
+ Apr 2022 11:45:06 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH net-next v2 0/8] net: bridge: add flush filtering support
-Content-Language: en-US
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-To:     Roopa Prabhu <roopa@nvidia.com>, netdev@vger.kernel.org
-Cc:     idosch@idosch.org, kuba@kernel.org, davem@davemloft.net,
-        bridge@lists.linux-foundation.org
-References: <20220411172934.1813604-1-razor@blackwall.org>
- <0d08b6ce-53bb-bffa-4f04-ede9bfc8ab63@nvidia.com>
- <c46ac324-34a2-ca0c-7c8c-35dc9c1aa0ab@blackwall.org>
-In-Reply-To: <c46ac324-34a2-ca0c-7c8c-35dc9c1aa0ab@blackwall.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220407223112.1204582-1-sdf@google.com> <20220407223112.1204582-4-sdf@google.com>
+ <20220408225628.oog4a3qteauhqkdn@kafai-mbp.dhcp.thefacebook.com> <87fsmmp1pi.fsf@cloudflare.com>
+In-Reply-To: <87fsmmp1pi.fsf@cloudflare.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Mon, 11 Apr 2022 11:44:54 -0700
+Message-ID: <CAKH8qBuqPQjZ==CjD=rO8dui9LNcUNRFOg7ROETRxbuMYnzBEg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 3/7] bpf: minimize number of allocated lsm
+ slots per program
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     Martin KaFai Lau <kafai@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/04/2022 21:18, Nikolay Aleksandrov wrote:
-> On 11/04/2022 21:08, Roopa Prabhu wrote:
->>
->> On 4/11/22 10:29, Nikolay Aleksandrov wrote:
->>> Hi,
->>> This patch-set adds support to specify filtering conditions for a flush
->>> operation. This version has entirely different entry point (v1 had
->>> bridge-specific IFLA attribute, here I add new RTM_FLUSHNEIGH msg and
->>> netdev ndo_fdb_flush op) so I'll give a new overview altogether.
->>> After me and Ido discussed the feature offlist, we agreed that it would
->>> be best to add a new generic RTM_FLUSHNEIGH with a new ndo_fdb_flush
->>> callback which can be re-used for other drivers (e.g. vxlan).
->>> Patch 01 adds the new RTM_FLUSHNEIGH type, patch 02 then adds the
->>> new ndo_fdb_flush call. With this structure we need to add a generic
->>> rtnl_fdb_flush which will be used to do basic attribute validation and
->>> dispatch the call to the appropriate device based on the NTF_USE/MASTER
->>> flags (patch 03). Patch 04 then adds some common flush attributes which
->>> are used by the bridge and vxlan drivers (target ifindex, vlan id, ndm
->>> flags/state masks) with basic attribute validation, further validation
->>> can be done by the implementers of the ndo callback. Patch 05 adds a
->>> minimal ndo_fdb_flush to the bridge driver, it uses the current
->>> br_fdb_flush implementation to flush all entries similar to existing
->>> calls. Patch 06 adds filtering support to the new bridge flush op which
->>> supports target ifindex (port or bridge), vlan id and flags/state mask.
->>> Patch 07 converts ndm state/flags and their masks to bridge-private flags
->>> and fills them in the filter descriptor for matching. Finally patch 08
->>> fills in the target ifindex (after validating it) and vlan id (already
->>> validated by rtnl_fdb_flush) for matching. Flush filtering is needed
->>> because user-space applications need a quick way to delete only a
->>> specific set of entries, e.g. mlag implementations need a way to flush only
->>> dynamic entries excluding externally learned ones or only externally
->>> learned ones without static entries etc. Also apps usually want to target
->>> only a specific vlan or port/vlan combination. The current 2 flush
->>> operations (per port and bridge-wide) are not extensible and cannot
->>> provide such filtering.
->>>
->>> I decided against embedding new attrs into the old flush attributes for
->>> multiple reasons - proper error handling on unsupported attributes,
->>> older kernels silently flushing all, need for a second mechanism to
->>> signal that the attribute should be parsed (e.g. using boolopts),
->>> special treatment for permanent entries.
->>>
->>> Examples:
->>> $ bridge fdb flush dev bridge vlan 100 static
->>> < flush all static entries on vlan 100 >
->>> $ bridge fdb flush dev bridge vlan 1 dynamic
->>> < flush all dynamic entries on vlan 1 >
->>> $ bridge fdb flush dev bridge port ens16 vlan 1 dynamic
->>> < flush all dynamic entries on port ens16 and vlan 1 >
->>> $ bridge fdb flush dev ens16 vlan 1 dynamic master
->>> < as above: flush all dynamic entries on port ens16 and vlan 1 >
->>> $ bridge fdb flush dev bridge nooffloaded nopermanent self
->>> < flush all non-offloaded and non-permanent entries >
->>> $ bridge fdb flush dev bridge static noextern_learn
->>> < flush all static entries which are not externally learned >
->>> $ bridge fdb flush dev bridge permanent
->>> < flush all permanent entries >
->>> $ bridge fdb flush dev bridge port bridge permanent
->>> < flush all permanent entries pointing to the bridge itself >
->>>
->>> Note that all flags have their negated version (static vs nostatic etc)
->>> and there are some tricky cases to handle like "static" which in flag
->>> terms means fdbs that have NUD_NOARP but *not* NUD_PERMANENT, so the
->>> mask matches on both but we need only NUD_NOARP to be set. That's
->>> because permanent entries have both set so we can't just match on
->>> NUD_NOARP. Also note that this flush operation doesn't treat permanent
->>> entries in a special way (fdb_delete vs fdb_delete_local), it will
->>> delete them regardless if any port is using them. We can extend the api
->>> with a flag to do that if needed in the future.
->>>
->>> Patch-sets (in order):
->>>   - Initial flush infra and fdb flush filtering (this set)
->>>   - iproute2 support
->>>   - selftests
->>>
->>> Future work:
->>>   - mdb flush support (RTM_FLUSHMDB type)
->>>
->>> Thanks to Ido for the great discussion and feedback while working on this.
->>>
->> Cant we pile this on to RTM_DELNEIGH with a flush flag ?.
->>
->> It is a bulk del, and sounds seems similar to the bulk dev del discussion on netdev a few months ago (i dont remember how that api ended up to be. unless i am misremembering).
->>
->> neigh subsystem also needs this, curious how this api will work there.
->>
->> (apologies if you guys already discussed this, did not have time to look through all the comments)
->>
->>
->>
-> 
-> I thought about that option, but I didn't like overloading delneigh like that.
-> del currently requires a mac address and we need to either signal the device supports> a null mac, or we should push that verification to ndo_fdb_del users. Also we'll have
+On Sat, Apr 9, 2022 at 11:10 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>
+> On Fri, Apr 08, 2022 at 03:56 PM -07, Martin KaFai Lau wrote:
+> > On Thu, Apr 07, 2022 at 03:31:08PM -0700, Stanislav Fomichev wrote:
+> >> Previous patch adds 1:1 mapping between all 211 LSM hooks
+> >> and bpf_cgroup program array. Instead of reserving a slot per
+> >> possible hook, reserve 10 slots per cgroup for lsm programs.
+> >> Those slots are dynamically allocated on demand and reclaimed.
+> >> This still adds some bloat to the cgroup and brings us back to
+> >> roughly pre-cgroup_bpf_attach_type times.
+> >>
+> >> It should be possible to eventually extend this idea to all hooks if
+> >> the memory consumption is unacceptable and shrink overall effective
+> >> programs array.
+> >>
+> >> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> >> ---
+> >>  include/linux/bpf-cgroup-defs.h |  4 +-
+> >>  include/linux/bpf_lsm.h         |  6 ---
+> >>  kernel/bpf/bpf_lsm.c            |  9 ++--
+> >>  kernel/bpf/cgroup.c             | 96 ++++++++++++++++++++++++++++-----
+> >>  4 files changed, 90 insertions(+), 25 deletions(-)
+> >>
+> >> diff --git a/include/linux/bpf-cgroup-defs.h b/include/linux/bpf-cgroup-defs.h
+> >> index 6c661b4df9fa..d42516e86b3a 100644
+> >> --- a/include/linux/bpf-cgroup-defs.h
+> >> +++ b/include/linux/bpf-cgroup-defs.h
+> >> @@ -10,7 +10,9 @@
+> >>
+> >>  struct bpf_prog_array;
+> >>
+> >> -#define CGROUP_LSM_NUM 211 /* will be addressed in the next patch */
+> >> +/* Maximum number of concurrently attachable per-cgroup LSM hooks.
+> >> + */
+> >> +#define CGROUP_LSM_NUM 10
+> > hmm...only 10 different lsm hooks (or 10 different attach_btf_ids) can
+> > have BPF_LSM_CGROUP programs attached.  This feels quite limited but having
+> > a static 211 (and potentially growing in the future) is not good either.
+> > I currently do not have a better idea also. :/
+> >
+> > Have you thought about other dynamic schemes or they would be too slow ?
+>
+> As long as we're talking ideas - how about a 2-level lookup?
+>
+> L1: 0..255 -> { 0..31, -1 }, where -1 is inactive cgroup_bp_attach_type
+> L2: 0..31 -> struct bpf_prog_array * for cgroup->bpf.effective[],
+>              struct hlist_head [^1]  for cgroup->bpf.progs[],
+>              u32                     for cgroup->bpf.flags[],
+>
+> This way we could have 32 distinct _active_ attachment types for each
+> cgroup instance, to be shared among regular cgroup attach types and BPF
+> LSM attach types.
+>
+> It is 9 extra slots in comparison to today, so if anyone has cgroups
+> that make use of all available attach types at the same time, we don't
+> break their setup.
+>
+> The L1 lookup table would still a few slots for new cgroup [^2] or LSM
+> hooks:
+>
+>   256 - 23 (cgroup attach types) - 211 (LSM hooks) = 22
+>
+> Memory bloat:
+>
+>  +256 B - L1 lookup table
+>  + 72 B - extra effective[] slots
+>  + 72 B - extra progs[] slots
+>  + 36 B - extra flags[] slots
+>  -184 B - savings from switching to hlist_head
+>  ------
+>  +252 B per cgroup instance
+>
+> Total cgroup_bpf{} size change - 720 B -> 968 B.
+>
+> WDYT?
 
-that's the only thing, overloading delneigh with a flush-behaviour (multi-del or whatever)
-would require to push the mac check to ndo_fdb_del implementers
+Sounds workable, thanks! Let me try and see how it goes. I guess we
+don't even have to increase the size of the effective array with this
+mode,;having 23 unique slots per cgroup seems like a good start? So
+the cgroup_bpf{} growth would be +256B L1 (technically, we only need 5
+bits per entry, so can shrink to 160B) -185B for hlist_head
 
-I don't mind going that road if others agree that we should do it through delneigh
-+ a bit/option to signal flush, instead of a new rtm type.
+> [^1] It looks like we can easily switch from cgroup->bpf.progs[] from
+>      list_head to hlist_head and save some bytes!
+>
+>      We only access the list tail in __cgroup_bpf_attach(). We can
+>      either iterate over the list and eat the cost there or push the new
+>      prog onto the front.
+>
+>      I think we treat cgroup->bpf.progs[] everywhere like an unordered
+>      set. Except for __cgroup_bpf_query, where the user might notice the
+>      order change in the BPF_PROG_QUERY dump.
 
-> attributes which are flush-specific and will work only when flushing as opposed to when
-> deleting a specific mac, so handling them in the different cases can become a pain.
 
-scratch the specific attributes, those can be adapted for both cases
+[...]
 
-> MDBs will need DELMDB to be modified in a similar way.
-> 
-> IMO a separate flush op is cleaner, but I don't have a strong preference.
-> This can very easily be adapted to delneigh with just a bit more mechanical changes
-> if the mac check is pushed to the ndo implementers.
-> 
-> FLUSHNEIGH can easily work for neighs, just need another address family rtnl_register
-> that implements it, the new ndo is just for PF_BRIDGE. :)
-> 
-> Cheers,
->  Nik
-> 
-> 
+> [^2] Unrelated, but we would like to propose a
+>      CGROUP_INET[46]_POST_CONNECT hook in the near future to make it
+>      easier to bind UDP sockets to 4-tuple without creating conflicts:
+>
+>      https://github.com/cloudflare/cloudflare-blog/tree/master/2022-02-connectx/ebpf_connect4
 
+Do you think those new lsm hooks can be used instead? If not, what's missing?
