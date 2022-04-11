@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B85F04FC379
-	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 19:31:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D58314FC377
+	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 19:30:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348939AbiDKRdF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 13:33:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48520 "EHLO
+        id S235326AbiDKRdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 13:33:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348969AbiDKRcT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 13:32:19 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 810AF2F009
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 10:30:04 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id bg10so32370686ejb.4
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 10:30:04 -0700 (PDT)
+        with ESMTP id S1348959AbiDKRcV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 13:32:21 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D9552E0AA
+        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 10:30:05 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id ks6so7713223ejb.1
+        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 10:30:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=fjc7yh9BABEAcWYSv/wz9ajmM8BNqoc42tZ1SpXSbXE=;
-        b=Oj3zp3IneXaC6o+Kceh7QeX/CLUGp2OlRLD1CM20EAPW4gj6k7pQmlpObukOT9BU7n
-         6uq/oeNEiaaONOfZ01fv3gLO1Ey/Rattn+Wg6gsfU8GZTd3iM87A6xlIbYpqBIQUxELb
-         W2cPXicI5EdAd8hXxtjbGkvIidY2ochvP2Ky122vfdhr3r6opwL47k7FjFDTbjQ84lIC
-         0NANWcIclRZtRe7HKUvCR0pems0HRYwebAl6PmLgqfmr/yTZFGsdab3OKtJtdMoLqZrz
-         1eiJeA8Mkr6051oInD5fWV/qf/3aP9sUYrW51xSqi/ByZZn7peRzXUmfq3VqZnZ5xFtn
-         2SrA==
+        bh=4pZGl1wOEf7Qv3VZG+DB1PDq+c4kDTX/aMWvmPeV+KQ=;
+        b=I1YA9Xc9lyeZ5hUtEQiOREQlD9bTjb3CHHxPkiPiQvv4qw+JwijFa5Vr/qe15UrGsG
+         5FQoTiFLJbSlhqkLxpYhrMvsPvPS8w1vlzqL+irD+AiTXGh86sRtefkoodiAhtAkyjms
+         QBIaLOGMPgm4w36JTiKn2+vP7TH//56RMuBQ7fi7Clcj7DQB/l3wY5+iWQqqUmyXR+qC
+         Hr76h5BVPnPmrmwGHHv3Nh7ZLTzK4ILrQnROOj+UtxfGBmytXdlUeo649vdOs243b16z
+         6qsdIshaoFwM8jUYdy15jGX15FObz8C352chK99eDFH5iCBZWx7qX/zS22x2mfkjMNKh
+         NQLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=fjc7yh9BABEAcWYSv/wz9ajmM8BNqoc42tZ1SpXSbXE=;
-        b=OwPt2zBoDln2KDP/KJn5994h8c4YX2kz5JlgLwiJTgRt0qa4CeTB4TEtHNS90q+l2n
-         92rqnxsa8UQ0xzdjOCuNl1lrrqK6j9SZ6qBu9/WIpDtG+CCanR/G43tbljyhFFniUL3z
-         hIYAJzFRXWy+U3GRgxc/PWpnGfJ0fYKqBwU50e+W88XFdXQelv4MrLy4SjRkjTst44xw
-         0JBwF0tyjH/hsFMgNBJaPpfAGydO0jN44mZT89n03QFNf2J4dOmSBvRe0Nx5XQYjHE4F
-         1DKcBl5zSKzFUibx5KxfDVDC5D7spy4J9pi5bZhEAueVfj8XKGJJ/eZHNf9aNVPig5PH
-         IXjw==
-X-Gm-Message-State: AOAM530VMUxgPRcVXGAJmufY9wp3mgd3RR4AzMNN11ZDinrmFZ8xWa8j
-        EpjNQgBrZCUzSdjTykqFT2tnVftl+IwVWNDH
-X-Google-Smtp-Source: ABdhPJzo4J9TYxxUDp3FRICrBNSdx4BQSbolHbWynt5O1ClXlkmDK6MabH9nzxh/9O6nIQcuNS3Vkw==
-X-Received: by 2002:a17:907:97d3:b0:6e8:3c07:3107 with SMTP id js19-20020a17090797d300b006e83c073107mr20710847ejc.630.1649698202554;
-        Mon, 11 Apr 2022 10:30:02 -0700 (PDT)
+        bh=4pZGl1wOEf7Qv3VZG+DB1PDq+c4kDTX/aMWvmPeV+KQ=;
+        b=R4Yo9uz9lF2Ns48EArX5UA6CQJkVkpGPV+rCPpvFHK/ey3g+TtDUjVxsDTwA2EmKeb
+         ShbC3uUpUWIBheIAg0e1oSZN9lgkE9MFzB9nQXsgFjAy830vJ43IiZe3QH77/9Vj+mBy
+         8KaO3HvOdSeg1wB77bz8vJaUgr6RQe6ly8ixAMlLb1cDt7sEaDu+OTANORA746pikDEu
+         Vtwd+JT5p/+7R+gFjQ8KoPq6gawjuWnGs5+jcPy5c+6o+6b+FqbmfuSiWCA2BnmXeMeu
+         AFNpFKFWimOBN+MvTwlZxB6/tCCrxaEeuFeJMeUkUqrhwgJJ+qE7XG80yXjQKAPI52Sw
+         Xiog==
+X-Gm-Message-State: AOAM530igLEKPuAGUyLshLpQioTlxqcUFGYCKCm3LeyiB+MG/hDG0ysF
+        vAmTIhoFj8SUmEtBwWRvQ4XSV8aTaPJE8mN4
+X-Google-Smtp-Source: ABdhPJy+tAX6NtjZxMVDpD+T1GIkuvjN+DnrXDB7NMxQULs1GKLE6sZ49HWkT+IP1gCHrD0WmnzW5g==
+X-Received: by 2002:a17:907:3f86:b0:6db:b745:f761 with SMTP id hr6-20020a1709073f8600b006dbb745f761mr30264401ejc.610.1649698203595;
+        Mon, 11 Apr 2022 10:30:03 -0700 (PDT)
 Received: from debil.. (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id u6-20020a17090626c600b006e74ef7f092sm10325084ejc.176.2022.04.11.10.30.01
+        by smtp.gmail.com with ESMTPSA id u6-20020a17090626c600b006e74ef7f092sm10325084ejc.176.2022.04.11.10.30.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 10:30:02 -0700 (PDT)
+        Mon, 11 Apr 2022 10:30:03 -0700 (PDT)
 From:   Nikolay Aleksandrov <razor@blackwall.org>
 To:     netdev@vger.kernel.org
 Cc:     roopa@nvidia.com, idosch@idosch.org, kuba@kernel.org,
         davem@davemloft.net, bridge@lists.linux-foundation.org,
         Nikolay Aleksandrov <razor@blackwall.org>
-Subject: [PATCH net-next v2 6/8] net: bridge: fdb: add support for fine-grained flushing
-Date:   Mon, 11 Apr 2022 20:29:32 +0300
-Message-Id: <20220411172934.1813604-7-razor@blackwall.org>
+Subject: [PATCH net-next v2 7/8] net: bridge: fdb: add support for flush filtering based on ndm flags and state
+Date:   Mon, 11 Apr 2022 20:29:33 +0300
+Message-Id: <20220411172934.1813604-8-razor@blackwall.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220411172934.1813604-1-razor@blackwall.org>
 References: <20220411172934.1813604-1-razor@blackwall.org>
@@ -69,160 +69,117 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the ability to specify exactly which fdbs to be flushed. They are
-described by a new structure - net_bridge_fdb_flush_desc. Currently it
-can match on port/bridge ifindex, vlan id and fdb flags. It is used to
-describe the existing dynamic fdb flush operation. Note that this flush
-operation doesn't treat permanent entries in a special way (fdb_delete vs
-fdb_delete_local), it will delete them regardless if any port is using
-them, so currently it can't directly replace deletes which need to handle
-that case, although we can extend it later for that too.
+Add support for fdb flush filtering based on ndm flags and state. NDM
+state and flags are mapped to bridge-specific flags and matched
+according to the specified masks. NTF_USE is used to represent
+added_by_user flag since it sets it on fdb add and we don't have a 1:1
+mapping for it. Only allowed bits can be set, NTF_USE and NTF_MASTER are
+ignored.
 
 Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
 ---
-v2: changed the flush matches func for better readability (Ido)
+v2: ignore NTF_USE/NTF_MASTER and reject unknown flags
 
- net/bridge/br_fdb.c      | 41 ++++++++++++++++++++++++++++++++--------
- net/bridge/br_netlink.c  |  9 +++++++--
- net/bridge/br_private.h  | 10 +++++++++-
- net/bridge/br_sysfs_br.c |  6 +++++-
- 4 files changed, 54 insertions(+), 12 deletions(-)
+ net/bridge/br_fdb.c     | 58 ++++++++++++++++++++++++++++++++++++++---
+ net/bridge/br_private.h |  5 ++++
+ 2 files changed, 60 insertions(+), 3 deletions(-)
 
 diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
-index 64a549acdac8..045eb61e833e 100644
+index 045eb61e833e..2cea03cbc55f 100644
 --- a/net/bridge/br_fdb.c
 +++ b/net/bridge/br_fdb.c
-@@ -558,24 +558,49 @@ void br_fdb_cleanup(struct work_struct *work)
- 	mod_delayed_work(system_long_wq, &br->gc_work, work_delay);
+@@ -594,13 +594,40 @@ void __br_fdb_flush(struct net_bridge *br,
+ 	rcu_read_unlock();
  }
  
--/* Completely flush all dynamic entries in forwarding database.*/
--void __br_fdb_flush(struct net_bridge *br)
-+static bool __fdb_flush_matches(const struct net_bridge *br,
-+				const struct net_bridge_fdb_entry *f,
-+				const struct net_bridge_fdb_flush_desc *desc)
++static unsigned long __ndm_state_to_fdb_flags(u16 ndm_state)
 +{
-+	const struct net_bridge_port *dst = READ_ONCE(f->dst);
-+	int port_ifidx = dst ? dst->dev->ifindex : br->dev->ifindex;
++	unsigned long flags = 0;
 +
-+	if (desc->vlan_id && desc->vlan_id != f->key.vlan_id)
-+		return false;
-+	if (desc->port_ifindex && desc->port_ifindex != port_ifidx)
-+		return false;
-+	if (desc->flags_mask && (f->flags & desc->flags_mask) != desc->flags)
-+		return false;
++	if (ndm_state & NUD_PERMANENT)
++		__set_bit(BR_FDB_LOCAL, &flags);
++	if (ndm_state & NUD_NOARP)
++		__set_bit(BR_FDB_STATIC, &flags);
 +
-+	return true;
++	return flags;
 +}
 +
-+/* Flush forwarding database entries matching the description */
-+void __br_fdb_flush(struct net_bridge *br,
-+		    const struct net_bridge_fdb_flush_desc *desc)
- {
- 	struct net_bridge_fdb_entry *f;
--	struct hlist_node *tmp;
- 
--	spin_lock_bh(&br->hash_lock);
--	hlist_for_each_entry_safe(f, tmp, &br->fdb_list, fdb_node) {
--		if (!test_bit(BR_FDB_STATIC, &f->flags))
-+	rcu_read_lock();
-+	hlist_for_each_entry_rcu(f, &br->fdb_list, fdb_node) {
-+		if (!__fdb_flush_matches(br, f, desc))
-+			continue;
++static unsigned long __ndm_flags_to_fdb_flags(u8 ndm_flags)
++{
++	unsigned long flags = 0;
 +
-+		spin_lock_bh(&br->hash_lock);
-+		if (!hlist_unhashed(&f->fdb_node))
- 			fdb_delete(br, f, true);
-+		spin_unlock_bh(&br->hash_lock);
- 	}
--	spin_unlock_bh(&br->hash_lock);
-+	rcu_read_unlock();
- }
- 
++	if (ndm_flags & NTF_USE)
++		__set_bit(BR_FDB_ADDED_BY_USER, &flags);
++	if (ndm_flags & NTF_EXT_LEARNED)
++		__set_bit(BR_FDB_ADDED_BY_EXT_LEARN, &flags);
++	if (ndm_flags & NTF_OFFLOADED)
++		__set_bit(BR_FDB_OFFLOADED, &flags);
++	if (ndm_flags & NTF_STICKY)
++		__set_bit(BR_FDB_STICKY, &flags);
++
++	return flags;
++}
++
  int br_fdb_flush(struct ndmsg *ndm, struct nlattr *tb[],
  		 struct net_device *dev, u16 vid,
  		 struct netlink_ext_ack *extack)
  {
-+	struct net_bridge_fdb_flush_desc desc = {
-+		.flags_mask = BR_FDB_STATIC
-+	};
+-	struct net_bridge_fdb_flush_desc desc = {
+-		.flags_mask = BR_FDB_STATIC
+-	};
++	u8 ndm_flags = ndm->ndm_flags & ~FDB_FLUSH_IGNORED_NDM_FLAGS;
++	struct net_bridge_fdb_flush_desc desc = {};
  	struct net_bridge *br;
  
  	if (netif_is_bridge_master(dev)) {
-@@ -590,7 +615,7 @@ int br_fdb_flush(struct ndmsg *ndm, struct nlattr *tb[],
+@@ -615,6 +642,31 @@ int br_fdb_flush(struct ndmsg *ndm, struct nlattr *tb[],
  		br = p->br;
  	}
  
--	__br_fdb_flush(br);
-+	__br_fdb_flush(br, &desc);
++	if (ndm_flags & ~FDB_FLUSH_ALLOWED_NDM_FLAGS) {
++		NL_SET_ERR_MSG(extack, "Unsupported fdb flush ndm flag bits set");
++		return -EINVAL;
++	}
++	if (ndm->ndm_state & ~FDB_FLUSH_ALLOWED_NDM_STATES) {
++		NL_SET_ERR_MSG(extack, "Unsupported fdb flush ndm state bits set");
++		return -EINVAL;
++	}
++
++	desc.flags |= __ndm_state_to_fdb_flags(ndm->ndm_state);
++	desc.flags |= __ndm_flags_to_fdb_flags(ndm_flags);
++	if (tb[NDFA_NDM_STATE_MASK]) {
++		u16 ndm_state_mask = nla_get_u16(tb[NDFA_NDM_STATE_MASK]);
++
++		desc.flags_mask |= __ndm_state_to_fdb_flags(ndm_state_mask);
++	}
++	if (tb[NDFA_NDM_FLAGS_MASK]) {
++		u8 ndm_flags_mask = nla_get_u8(tb[NDFA_NDM_FLAGS_MASK]);
++
++		desc.flags_mask |= __ndm_flags_to_fdb_flags(ndm_flags_mask);
++	}
++
++	br_debug(br, "flushing port ifindex: %d vlan id: %u flags: 0x%lx flags mask: 0x%lx\n",
++		 desc.port_ifindex, desc.vlan_id, desc.flags, desc.flags_mask);
++
+ 	__br_fdb_flush(br, &desc);
  
  	return 0;
- }
-diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-index c59c775730bb..accab38b0b6a 100644
---- a/net/bridge/br_netlink.c
-+++ b/net/bridge/br_netlink.c
-@@ -1326,8 +1326,13 @@ static int br_changelink(struct net_device *brdev, struct nlattr *tb[],
- 		br_recalculate_fwd_mask(br);
- 	}
- 
--	if (data[IFLA_BR_FDB_FLUSH])
--		__br_fdb_flush(br);
-+	if (data[IFLA_BR_FDB_FLUSH]) {
-+		struct net_bridge_fdb_flush_desc desc = {
-+			.flags_mask = BR_FDB_STATIC
-+		};
-+
-+		__br_fdb_flush(br, &desc);
-+	}
- 
- #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
- 	if (data[IFLA_BR_MCAST_ROUTER]) {
 diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 23ef2982d1bc..9fb9abdbd3f4 100644
+index 9fb9abdbd3f4..fd5cbd00e12d 100644
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
-@@ -274,6 +274,13 @@ struct net_bridge_fdb_entry {
- 	struct rcu_head			rcu;
- };
+@@ -762,6 +762,11 @@ static inline void br_netpoll_disable(struct net_bridge_port *p)
+ #endif
  
-+struct net_bridge_fdb_flush_desc {
-+	unsigned long			flags;
-+	unsigned long			flags_mask;
-+	int				port_ifindex;
-+	u16				vlan_id;
-+};
+ /* br_fdb.c */
++#define FDB_FLUSH_IGNORED_NDM_FLAGS (NTF_MASTER | NTF_SELF)
++#define FDB_FLUSH_ALLOWED_NDM_STATES (NUD_PERMANENT | NUD_NOARP)
++#define FDB_FLUSH_ALLOWED_NDM_FLAGS (NTF_USE | NTF_EXT_LEARNED | \
++				     NTF_STICKY | NTF_OFFLOADED)
 +
- #define MDB_PG_FLAGS_PERMANENT	BIT(0)
- #define MDB_PG_FLAGS_OFFLOAD	BIT(1)
- #define MDB_PG_FLAGS_FAST_LEAVE	BIT(2)
-@@ -759,7 +766,8 @@ int br_fdb_init(void);
+ int br_fdb_init(void);
  void br_fdb_fini(void);
  int br_fdb_hash_init(struct net_bridge *br);
- void br_fdb_hash_fini(struct net_bridge *br);
--void __br_fdb_flush(struct net_bridge *br);
-+void __br_fdb_flush(struct net_bridge *br,
-+		    const struct net_bridge_fdb_flush_desc *desc);
- int br_fdb_flush(struct ndmsg *ndm, struct nlattr *tb[],
- 		 struct net_device *dev, u16 vid,
- 		 struct netlink_ext_ack *extack);
-diff --git a/net/bridge/br_sysfs_br.c b/net/bridge/br_sysfs_br.c
-index 7a2cf3aebc84..c863151f1cde 100644
---- a/net/bridge/br_sysfs_br.c
-+++ b/net/bridge/br_sysfs_br.c
-@@ -344,7 +344,11 @@ static DEVICE_ATTR_RW(group_addr);
- static int set_flush(struct net_bridge *br, unsigned long val,
- 		     struct netlink_ext_ack *extack)
- {
--	__br_fdb_flush(br);
-+	struct net_bridge_fdb_flush_desc desc = {
-+		.flags_mask = BR_FDB_STATIC
-+	};
-+
-+	__br_fdb_flush(br, &desc);
- 	return 0;
- }
- 
 -- 
 2.35.1
 
