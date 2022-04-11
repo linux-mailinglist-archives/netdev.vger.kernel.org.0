@@ -2,144 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F3F204FC11B
-	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 17:41:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8493F4FC12F
+	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 17:42:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348103AbiDKPnu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 11:43:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41514 "EHLO
+        id S1348130AbiDKPoj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 11:44:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348096AbiDKPns (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 11:43:48 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 112363A731
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 08:41:33 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id f3so14935187pfe.2
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 08:41:32 -0700 (PDT)
+        with ESMTP id S1348169AbiDKPog (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 11:44:36 -0400
+Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 004D93B004;
+        Mon, 11 Apr 2022 08:42:19 -0700 (PDT)
+Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-df22f50e0cso17673359fac.3;
+        Mon, 11 Apr 2022 08:42:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CKSVJq8qyQSm9E+7b2Am3lv3FrkvK7wUmRfkto+stTY=;
-        b=Py6byB+z+qm6GT/cyQ9H3VDiviPg9AOykgcnGDtEPmbJc8P5o7Ee2DRaIziq9LcT70
-         rW4lbxFTez6VrSm/K2HtLMyUJ1Oy2GCTkdgPYGb2YKxJLpaBN3F5Uc3SSIYRshGjHgOS
-         irSJynYCofXZzSKJsMVD4fgj11ROaQIxOjBJtcDWcK/7gHrxehYg6ILUWbXFcWDErrac
-         1kja8yuN9bCfuOuLEitP+D6aT3quzYaj9hDjHrsS3gNyj2ATBTftYsXSSDQ9WPX2MNKh
-         YMNJwkjclPARHpRBpUM6r0108ZFRcCC8+aI0QT5qxWXeEE5YYzxEwpuJ+H+gg3gGHHkZ
-         0KFg==
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TxbUHNQvrMBIjTCW3//JKuYPMwW2kqiY97PwifExrW0=;
+        b=XlnjY4oJEsmqZB55ghLmlOimOPY0RzYLb/AfQU6nI2vdlmK0pF0sOosXA5xjhY1xje
+         DcbHccNQE+JUR1/SHK65Pr9104N6ZeutHWlCIR33lxl5VTRZhwsrR1Zv1MY4tnhZvM3z
+         QQKkRGZMeaA20iFJVktLgkSTLRMZmlNG3HobVNASgycrkA0IgK17OZLDMRInivTj85T2
+         IAs9JRRJet16/+4vjmQN9sb8H0BJSKCLU9c85YUhbi4KJcieBC7WrJNO+PDxolwiBrdM
+         zrUpdvX7r7uUIhpfci5wFFbLklAsC7uUnxbvq82FIH0WsRajKe0xguA7OXJ59PlZy0F4
+         RA2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CKSVJq8qyQSm9E+7b2Am3lv3FrkvK7wUmRfkto+stTY=;
-        b=4+oREG+8ZxM3qchEWWsIp9d3S1jdXSd75jcfN88Eup0X67m1YcVsTJ1Gr/6omWMGMz
-         t1YMDc5lDksz4ri2z8ekyd8FW4HnU7vz/9j9+R1gaAsGd0iBnny3p6hrcFgHnpF42SDF
-         kmMcRDQz4MDdHlLuJnjbJLVTEJRCirzMhC42GmGbKO0A+hTWRar2Q4ULA7ebzgvDB06Y
-         tlrkW2TtPxwZlMVPdOYr50UVMyR1xgrhSI1RRQ29dpfpQkWaYWvronc1mWdr+o0ZRSbg
-         YMdG5q+RIAn+snCbEXxxTohzGHrwiYSPJSl1+fIlL8KRXsztuW7LBfaJ60roDTKKt2ht
-         1NAQ==
-X-Gm-Message-State: AOAM533EkdqZlvaU7wfd0W1cbu0DOvub6PXb6m2u0PSHIrqa/bbpEQ/b
-        3OpWZZaGBIp+phpxATYuSGMtcFyvUT42o3WUkJOJHhBfyLg4dw==
-X-Google-Smtp-Source: ABdhPJw3W72mgYRLuP67t01179jiwVBumuQsRGETnRGnwgI+OSwd9njSrKuqgYPdcudiSOGqiFDlqHVWC85wz+P4IKI=
-X-Received: by 2002:a63:1557:0:b0:39d:8460:2e07 with SMTP id
- 23-20020a631557000000b0039d84602e07mr969931pgv.344.1649691692235; Mon, 11 Apr
- 2022 08:41:32 -0700 (PDT)
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=TxbUHNQvrMBIjTCW3//JKuYPMwW2kqiY97PwifExrW0=;
+        b=ypa0TndwiDDhxyZa9Y10ByHStrM7p+ruD9wWU6otFaIiTy7vVwI90SKe4YCt84HyRP
+         6CD8E0A/SP7YeEF1LmLqC1rY/8WLgr7PCLaXyltfncephDtwyyuOKWqPifKxL/NbKprO
+         9bDsYYvkw15BoeLNypmuUpGrdu+JuH6/GszZegQYHrrV4HXLyp1Gnuphy+GD1kHsCoGv
+         8bb8YPfyv4ZheoJ0BWhlb2rj+WrdPj69v0tC938iuq5SWIdIhkypIJUT3Tcle9MwM8+B
+         9h6k+rS9e+hPyUEBEo9RlXWor6HpwjMy8fIsAzsFIpaxhlDx14nzBHuynYqrl077cKtV
+         IhBw==
+X-Gm-Message-State: AOAM5338adRH4VI9sVPU/fZMpfQHM92gWPXt0SgvX9vtQBKqIm6zTvaN
+        ajHAvP+o1ja4hns7dd4pTva9sPaJf4g=
+X-Google-Smtp-Source: ABdhPJzniQoI+xcfeMw2+smpP0QcrSIfAaa6a3E0tMqs8h5Apl4XV+TulHiqRKW4kTxjB+R0UVH00w==
+X-Received: by 2002:a05:6871:79b:b0:d3:4039:7e7c with SMTP id o27-20020a056871079b00b000d340397e7cmr14657208oap.121.1649691738902;
+        Mon, 11 Apr 2022 08:42:18 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id c9-20020a4a8ec9000000b0032438ba79b0sm11513951ool.0.2022.04.11.08.42.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 08:42:17 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     linux-wireless@vger.kernel.org
+Cc:     Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Gregory Greenman <gregory.greenman@intel.com>
+Subject: [PATCH] iwlwifi: iwl-dbg: Use del_timer_sync() before freeing
+Date:   Mon, 11 Apr 2022 08:42:10 -0700
+Message-Id: <20220411154210.1870008-1-linux@roeck-us.net>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220407074428.1623-1-aajith@arista.com> <d7a85a29-0d7f-b5e2-c908-4aa9f89bb476@kernel.org>
-In-Reply-To: <d7a85a29-0d7f-b5e2-c908-4aa9f89bb476@kernel.org>
-From:   Arun Ajith S <aajith@arista.com>
-Date:   Mon, 11 Apr 2022 21:11:18 +0530
-Message-ID: <CAOvjArQcH1KRV3B1V9urYEV+6i3ZL6NbmkYjbu1icFBJZ3JVOQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] net/ipv6: Introduce accept_unsolicited_na
- knob to implement router-side changes for RFC9131
-To:     David Ahern <dsahern@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        yoshfuji@linux-ipv6.org, kuba@kernel.org, pabeni@redhat.com,
-        corbet@lwn.net, prestwoj@gmail.com, gilligan@arista.com,
-        noureddine@arista.com, gk@arista.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+In Chrome OS, a large number of crashes is observed due to corrupted timer
+lists. Steven Rostedt pointed out that this usually happens when a timer
+is freed while still active, and that the problem is often triggered
+by code calling del_timer() instead of del_timer_sync() just before
+freeing.
 
-Thank you very much for the review.
-I will make the changes you suggested.
-Please see inline the question about mausezahn.
+Steven also identified the iwlwifi driver as one of the possible culprits
+since it does exactly that.
 
-On Sat, Apr 9, 2022 at 6:48 AM David Ahern <dsahern@kernel.org> wrote:
->
-> On 4/7/22 1:44 AM, Arun Ajith S wrote:
-> > Add a new neighbour cache entry in STALE state for routers on receiving
-> > an unsolicited (gratuitous) neighbour advertisement with
-> > target link-layer-address option specified.
-> > This is similar to the arp_accept configuration for IPv4.
-> > A new sysctl endpoint is created to turn on this behaviour:
-> > /proc/sys/net/ipv6/conf/interface/accept_unsolicited_na.
-> >
-> > Signed-off-by: Arun Ajith S <aajith@arista.com>
-> > Tested-by: Arun Ajith S <aajith@arista.com>
->
-> you don't need the Tested-by line since you wrote the patch; you are
-> expected to test it.
->
->
-> > diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-> > index 1afc4c024981..1b4d278d0454 100644
-> > --- a/net/ipv6/addrconf.c
-> > +++ b/net/ipv6/addrconf.c
-> > @@ -5587,6 +5587,7 @@ static inline void ipv6_store_devconf(struct ipv6_devconf *cnf,
-> >       array[DEVCONF_IOAM6_ID] = cnf->ioam6_id;
-> >       array[DEVCONF_IOAM6_ID_WIDE] = cnf->ioam6_id_wide;
-> >       array[DEVCONF_NDISC_EVICT_NOCARRIER] = cnf->ndisc_evict_nocarrier;
-> > +     array[DEVCONF_ACCEPT_UNSOLICITED_NA] = cnf->accept_unsolicited_na;
-> >  }
-> >
-> >  static inline size_t inet6_ifla6_size(void)
-> > @@ -7037,6 +7038,13 @@ static const struct ctl_table addrconf_sysctl[] = {
-> >               .extra1         = (void *)SYSCTL_ZERO,
-> >               .extra2         = (void *)SYSCTL_ONE,
-> >       },
-> > +     {
-> > +             .procname       = "accept_unsolicited_na",
-> > +             .data           = &ipv6_devconf.accept_unsolicited_na,
-> > +             .maxlen         = sizeof(int),
-> > +             .mode           = 0644,
-> > +             .proc_handler   = proc_dointvec,
-> > +     },
->
-> I realize drop_unsolicited_na does not have limits, but this is a new
-> sysctl - add the upper and lower bounds via extra1 and extra2 arguments.
->
->
->
-> also, please add test cases under tools/testing/selftests/net. You can
-> use fib_tests.sh as a template. mausezahn is already used in a number of
-> tests; it should be able to create the NA packets. Be sure to cover
-> combinations of drop and accept settings.
+Reported-by: Steven Rostedt <rostedt@goodmis.org>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Johannes Berg <johannes.berg@intel.com>
+Cc: Gregory Greenman <gregory.greenman@intel.com>
+Fixes: 60e8abd9d3e91 ("iwlwifi: dbg_ini: add periodic trigger new API support")
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+---
+v1 (from RFC):
+    Removed Shahar S Matityahu from Cc: and added Gregory Greenman.
+    No functional change.
 
-mausezahn doesn't have good support for ICMPv6.
-I tried using --type icmp6 -t icmp6 "type=136, payload=<HEX-PAYLOAD>"
-to manually craft a NA packet with  the target address and the target
-ll addr option.
-But it still doesn't allow me to set the flags to mark it as an
-unsolicited advertisement.
+I thought about the need to add a mutex to protect the timer list, but
+I convinced myself that it is not necessary because the code adding
+the timer list and the code removing it should never be never executed
+in parallel.
 
-How about this alternative for a test:
-1. Setup a veth tunnel across two namespaces, one end being the host
-and the other the router.
-2. On the host side, I can configure
-net.ipv6.conf.<interface>.ndisc_notify to send out unsolicited NAs.
-3. On the router side, I can try out various combinations of
-(accept_unsolicited_na, drop_unsolicted_na and forwarding)
+ drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
-Arun
+diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c b/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
+index 866a33f49915..3237d4b528b5 100644
+--- a/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
++++ b/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
+@@ -371,7 +371,7 @@ void iwl_dbg_tlv_del_timers(struct iwl_trans *trans)
+ 	struct iwl_dbg_tlv_timer_node *node, *tmp;
+ 
+ 	list_for_each_entry_safe(node, tmp, timer_list, list) {
+-		del_timer(&node->timer);
++		del_timer_sync(&node->timer);
+ 		list_del(&node->list);
+ 		kfree(node);
+ 	}
+-- 
+2.35.1
+
