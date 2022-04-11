@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3872C4FBCB0
-	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 15:01:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80A004FBCAB
+	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 15:00:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346303AbiDKNDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 09:03:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54862 "EHLO
+        id S244175AbiDKNDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 09:03:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237127AbiDKNDA (ORCPT
+        with ESMTP id S231367AbiDKNDA (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 09:03:00 -0400
 Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFFF818E04;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E04401A059;
         Mon, 11 Apr 2022 06:00:45 -0700 (PDT)
 Received: from canpemm500010.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KcTV15B77z1HBVc;
-        Mon, 11 Apr 2022 21:00:09 +0800 (CST)
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KcTV2301Zz1HBjN;
+        Mon, 11 Apr 2022 21:00:10 +0800 (CST)
 Received: from huawei.com (10.175.101.6) by canpemm500010.china.huawei.com
  (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 11 Apr
@@ -28,10 +28,12 @@ To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
         <davem@davemloft.net>, <kuba@kernel.org>, <sdf@google.com>,
         <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
 CC:     <liujian56@huawei.com>
-Subject: [PATCH bpf 0/2] Enlarge offset check value in bpf_skb_load_bytes
-Date:   Mon, 11 Apr 2022 21:02:53 +0800
-Message-ID: <20220411130255.385520-1-liujian56@huawei.com>
+Subject: [PATCH bpf 1/2] net: Enlarge offset check value from 0xffff to INT_MAX in bpf_skb_load_bytes
+Date:   Mon, 11 Apr 2022 21:02:54 +0800
+Message-ID: <20220411130255.385520-2-liujian56@huawei.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220411130255.385520-1-liujian56@huawei.com>
+References: <20220411130255.385520-1-liujian56@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.175.101.6]
@@ -50,21 +52,36 @@ X-Mailing-List: netdev@vger.kernel.org
 The data length of skb frags + frag_list may be greater than 0xffff,
 and skb_header_pointer can not handle negative offset and negative len.
 So here INT_MAX is used to check the validity of offset and len.
+Add the same change to the related function skb_store_bytes.
 
-And add the test case for the change.
+Fixes: 05c74e5e53f6 ("bpf: add bpf_skb_load_bytes helper")
+Signed-off-by: Liu Jian <liujian56@huawei.com>
+---
+ net/core/filter.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Liu Jian (2):
-  net: Enlarge offset check value from 0xffff to INT_MAX in
-    bpf_skb_load_bytes
-  selftests: bpf: add test for skb_load_bytes
-
- net/core/filter.c                             |  4 +-
- .../selftests/bpf/prog_tests/skb_load_bytes.c | 65 +++++++++++++++++++
- .../selftests/bpf/progs/skb_load_bytes.c      | 37 +++++++++++
- 3 files changed, 104 insertions(+), 2 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/skb_load_bytes.c
- create mode 100644 tools/testing/selftests/bpf/progs/skb_load_bytes.c
-
+diff --git a/net/core/filter.c b/net/core/filter.c
+index a7044e98765e..b0a3b6489701 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -1687,7 +1687,7 @@ BPF_CALL_5(bpf_skb_store_bytes, struct sk_buff *, skb, u32, offset,
+ 
+ 	if (unlikely(flags & ~(BPF_F_RECOMPUTE_CSUM | BPF_F_INVALIDATE_HASH)))
+ 		return -EINVAL;
+-	if (unlikely(offset > 0xffff))
++	if (unlikely(offset > INT_MAX || len > INT_MAX))
+ 		return -EFAULT;
+ 	if (unlikely(bpf_try_make_writable(skb, offset + len)))
+ 		return -EFAULT;
+@@ -1722,7 +1722,7 @@ BPF_CALL_4(bpf_skb_load_bytes, const struct sk_buff *, skb, u32, offset,
+ {
+ 	void *ptr;
+ 
+-	if (unlikely(offset > 0xffff))
++	if (unlikely(offset > INT_MAX || len > INT_MAX))
+ 		goto err_clear;
+ 
+ 	ptr = skb_header_pointer(skb, offset, len, to);
 -- 
 2.17.1
 
