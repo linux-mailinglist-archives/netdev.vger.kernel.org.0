@@ -2,80 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5256E4FB527
-	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 09:42:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D66EB4FB535
+	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 09:47:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245614AbiDKHog (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 03:44:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47380 "EHLO
+        id S245645AbiDKHtw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 03:49:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245610AbiDKHof (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 03:44:35 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B6D5599
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 00:42:22 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id q20so9329516wmq.1
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 00:42:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=solid-run-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=lwXiBSpe8uIxk+fI9dDr9NxVqCilKjnZ3dM6N+dvifc=;
-        b=NO8ZZXsxGMZWS6SApm5O+5QyQusOp1n9cNqYdhifjLtO4uu60DNd0UiW72Lbc6dy1Y
-         TKY7VO9XiNkPKjdq3NqmnXn2slMMbEosVbGRV5Z3qwwYCSPXRXBeC0h6OjWC6ily0snZ
-         zXhQUR22kigSAS88spG8PvfW9MT1gjIEOdbxxqzoQOFyVQmZiCKFKyySAe+wcEr1Vv7k
-         ToNJlkiPiBJw92YlNOdIJxn1cHIPRRcey+Hj/QlY20q9cEOEgVJnf/Kj7mm42glhYH2m
-         XrwyxG5z07Q45s8xSReNkWv4uXRlexAJ2moDITeJHPU1zqHE0RVYOXgJW7eMBSX9OpFz
-         fr6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=lwXiBSpe8uIxk+fI9dDr9NxVqCilKjnZ3dM6N+dvifc=;
-        b=5bINRmy6ly4FU5Cx7A1mTt/WEgnpCP78PAWvJTHaU8LsuNTxB9qxEHqWwBk49Q/df0
-         7k5kOoyIB3M87a2giY9jvHZn+fY4Y7Doj9YMnBrqz3y/01H0ook+Gsgo6AdxIlIutoY0
-         DUejt8pGZBau1EH+Y4fByXCk1UnXOQpBjxYhK1FlDTjMOicK0v2oYJtJoGjLP91XCoeE
-         jDH2/wA5G34knCKq/OyjCbbXtzD4S/HWuH8ez6X6d4BKWuHvBAAc74fsByKchMxfW+G0
-         AQdRYYs/7XNncVxyRqLX+PopswovHA5N33rtA4udLttooO/Pw+TEFXwEucbADZ4ZuDHE
-         ni5w==
-X-Gm-Message-State: AOAM533wf5JH/rhfna0a8LhbYjNIOkJuMavdyXp+Gp3aX4MzN9jB3tBx
-        CmeuDpTlMdC/P5597RmuHAjjlw==
-X-Google-Smtp-Source: ABdhPJy0emhVTkd5BjOWeTHbwIeiUbsxkpqSesQg/UfrhLUzYYVUBz7CksqbJq0oHZop4yQg2cFGww==
-X-Received: by 2002:a05:600c:4f82:b0:38c:9185:1ecd with SMTP id n2-20020a05600c4f8200b0038c91851ecdmr27418202wmq.130.1649662940760;
-        Mon, 11 Apr 2022 00:42:20 -0700 (PDT)
-Received: from [192.168.17.223] (bzq-82-81-222-124.cablep.bezeqint.net. [82.81.222.124])
-        by smtp.gmail.com with ESMTPSA id i19-20020a05600c355300b0038e1d69af52sm17239738wmq.7.2022.04.11.00.42.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Apr 2022 00:42:20 -0700 (PDT)
-Message-ID: <b519690c-a487-e64c-86e1-bd37e38dc7a7@solid-run.com>
-Date:   Mon, 11 Apr 2022 10:42:18 +0300
+        with ESMTP id S243358AbiDKHtv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 03:49:51 -0400
+Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 947CB344E4
+        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 00:47:38 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id CB028320206D;
+        Mon, 11 Apr 2022 03:47:37 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Mon, 11 Apr 2022 03:47:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1649663257; x=
+        1649749657; bh=aeCglxf3m0Z/ur1F6Av+nbXh7GfbEdpar1vW63Rquvc=; b=l
+        Cr9mxxPOsoUY/xGlRGDDO7uYCNaQiDmX1pnCEbZYpVDmpoEkF5nrNJXafl3rgCuJ
+        hWrCcIvJVQy45n7o8bMoHsrI3U/TPN/QPyqgEHdSgX6Z60a+Rg/R2al0fwflklB5
+        oKQZhenuRcCl+yg78fajA5PGJljGBSPhC/Nel6MoPISGqwP1ILdfuRIZ2/0zFB5s
+        wp/t9vAANgzB/HuLqPKSa044FwVB1O5eTfIPYKAwalkcAjH7vrNd2f2qrHlhILpd
+        FBcjwZTjCDhk/ATcU8wBcrsNdaqt3gMvrXkKrPOb2391J2ohCMkuke6yDQlUlqvY
+        1ZDxY5nYECTw3XtpjV8lA==
+X-ME-Sender: <xms:Gd1TYkxlj_Gmq1c1-58aymsID-Fof1LPdBMXHBxagREWguTl-_3rFA>
+    <xme:Gd1TYoSFFkH6tEE4iP2BMlrg0HOM4eZiQLKM_feg9WJtF3yjeNLNtNACiQDdbpMHO
+    HTzJOq48qE2Y50>
+X-ME-Received: <xmr:Gd1TYmXJm3eijSDtJBxUZCHt4jJoQq2aDvLbowEJcODeoX9P-SGivJBwemvx>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudekhedguddulecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecunecujfgurhepfffhvffukfhfgggtuggjsehttd
+    ertddttddvnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
+    ohhstghhrdhorhhgqeenucggtffrrghtthgvrhhnpedtffekkeefudffveegueejffejhf
+    etgfeuuefgvedtieehudeuueekhfduheelteenucevlhhushhtvghrufhiiigvpedtnecu
+    rfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:Gd1TYijqRGjBApaQKF7kbvFkl8nZljUxgBzE4mDVlISMEJB1I2K9bA>
+    <xmx:Gd1TYmBn2xiORSQUdMU-blb4eK42ApMW8nvyFnRz3h1VcMwgeK6h8A>
+    <xmx:Gd1TYjLgscGezHEHmAmiPL098WzLiPav1HnYIevqYck3L_QMiNKgyg>
+    <xmx:Gd1TYhNaD81wqNGvgqWVG7NzdzCsrnkziNclZX__-7uJ_5UsL8j5Qw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 11 Apr 2022 03:47:36 -0400 (EDT)
+Date:   Mon, 11 Apr 2022 10:47:33 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Nikolay Aleksandrov <razor@blackwall.org>
+Cc:     netdev@vger.kernel.org, roopa@nvidia.com, kuba@kernel.org,
+        davem@davemloft.net, bridge@lists.linux-foundation.org
+Subject: Re: [PATCH net-next 0/6] net: bridge: add flush filtering support
+Message-ID: <YlPdFS//hYbBSAkT@shredder>
+References: <20220409105857.803667-1-razor@blackwall.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 1/3] dt: adin: document clk-out property
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        netdev@vger.kernel.org
-Cc:     alvaro.karsz@solid-run.com,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-References: <20220410104626.11517-1-josua@solid-run.com>
- <20220410104626.11517-2-josua@solid-run.com>
- <d83be897-55ee-25d2-4048-586646cd7151@linaro.org>
- <bc0e507b-338b-8a86-1a7b-8055e2cf9a3a@solid-run.com>
- <e0511d39-7915-3ce1-60c7-9d7739f1b253@linaro.org>
-From:   Josua Mayer <josua@solid-run.com>
-In-Reply-To: <e0511d39-7915-3ce1-60c7-9d7739f1b253@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220409105857.803667-1-razor@blackwall.org>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,108 +69,105 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-\o/
+On Sat, Apr 09, 2022 at 01:58:51PM +0300, Nikolay Aleksandrov wrote:
+> Hi,
+> This patch-set adds support to specify filtering conditions for a flush
+> operation. Initially only FDB flush filtering is added, later MDB
+> support will be added as well. Some user-space applications need a way
+> to delete only a specific set of entries, e.g. mlag implementations need
+> a way to flush only dynamic entries excluding externally learned ones
+> or only externally learned ones without static entries etc. Also apps
+> usually want to target only a specific vlan or port/vlan combination.
+> The current 2 flush operations (per port and bridge-wide) are not
+> extensible and cannot provide such filtering, so a new bridge af
+> attribute is added (IFLA_BRIDGE_FLUSH) which contains the filtering
+> information for each object type which has to be flushed.
+> An example structure for fdbs:
+>      [ IFLA_BRIDGE_FLUSH ]
+>       `[ BRIDGE_FDB_FLUSH ]
+>         `[ FDB_FLUSH_NDM_STATE ]
+>         `[ FDB_FLUSH_NDM_FLAGS ]
+> 
+> I decided against embedding these into the old flush attributes for
+> multiple reasons - proper error handling on unsupported attributes,
+> older kernels silently flushing all, need for a second mechanism to
+> signal that the attribute should be parsed (e.g. using boolopts),
+> special treatment for permanent entries.
+> 
+> Examples:
+> $ bridge fdb flush dev bridge vlan 100 static
+> < flush all static entries on vlan 100 >
+> $ bridge fdb flush dev bridge vlan 1 dynamic
+> < flush all dynamic entries on vlan 1 >
+> $ bridge fdb flush dev bridge port ens16 vlan 1 dynamic
+> < flush all dynamic entries on port ens16 and vlan 1 >
+> $ bridge fdb flush dev bridge nooffloaded nopermanent
+> < flush all non-offloaded and non-permanent entries >
+> $ bridge fdb flush dev bridge static noextern_learn
+> < flush all static entries which are not externally learned >
+> $ bridge fdb flush dev bridge permanent
+> < flush all permanent entries >
 
-Am 10.04.22 um 22:01 schrieb Krzysztof Kozlowski:
-> On 10/04/2022 20:41, Josua Mayer wrote:
->>> Adjust subject prefix to the subsystem (dt-bindings, not dt, missing net).
->> Ack. So something like
->> dt-bindings: net: adin: document clk-out property
-> Yes.
-Great, I will have it changed in a future revision!
->>>> Signed-off-by: Josua Mayer <josua@solid-run.com>
->>>> ---
->>>>    Documentation/devicetree/bindings/net/adi,adin.yaml | 5 +++++
->>>>    1 file changed, 5 insertions(+)
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/net/adi,adin.yaml b/Documentation/devicetree/bindings/net/adi,adin.yaml
->>>> index 1129f2b58e98..4e421bf5193d 100644
->>>> --- a/Documentation/devicetree/bindings/net/adi,adin.yaml
->>>> +++ b/Documentation/devicetree/bindings/net/adi,adin.yaml
->>>> @@ -36,6 +36,11 @@ properties:
->>>>        enum: [ 4, 8, 12, 16, 20, 24 ]
->>>>        default: 8
->>>>    
->>>> +  adi,clk-out-frequency:
->>> Use types defined by the dtschema, so "adi,clk-out-hz". Then no need for
->>> type/ref.
->> That sounds useful, I was not aware. The only inspiration I used was the
->> at803x driver ...
->> It seemed natural to share the property name as it serves the same
->> purpose here.
-> Indeed ar803x uses such property. In general reusing properties is a
-> good idea, but not all properties are good enough to copy. I don't know
-> why adi,clk-out-frequency got accepted because we really stick to common
-> units when possible.
->
-> https://github.com/devicetree-org/dt-schema/blob/main/dtschema/schemas/property-units.yaml
->
->>>> +    description: Clock output frequency in Hertz.
->>>> +    $ref: /schemas/types.yaml#/definitions/uint32
->>>> +    enum: [125000000]
->>> If only one value, then "const: 125000000", but why do you need such
->>> value in DT if it is always the same?
->> Yes yes yes.
->>   From my understanding of the adin1300 data-sheet, it can provide either
->> a 25MHz clock or a 125MHz clock on its GP_CLK pin. So for the context of
->> this feature we would have two options. However because we found the
->> documentation very confusing we skipped the 25MHz option.
->>
->> Actually my statement above omits some of the options.
->> - There are actually two 125MHz clocks, the first called "recovered" and
->> the second "free running".
->> - One can let the phy choose the rate based on its internal state.
->> This is indicated on page 73 of the datasheet
->> (https://www.analog.com/media/en/technical-documentation/data-sheets/adin1300.pdf)
->>
->> Because of this confusion we wanted to for now only allow selecting the
->> free-running 125MHz clock.
-> Hm, so you do not insist on actual frequency but rather type of the
-> clock (freerunning instead of recovered and 25 MHz). Then the frequency
-> does not look enough because it does not offer you the choice of clock
-> (freerunning or recovered) and instead you could have enum like:
->    adi,phy-output-clock:
->    $ref: /schemas/types.yaml#/definitions/string
->    enum: [125mhz-freerunning, 125mhz-recovered, 25mhz-freeruning....]
->
-> Judging by page 24 you have 5 or more options... This could be also
-> numeric ID (enum [0, 1, 2, 3 ...]) with some explanation, but strings
-> seem easier to understand.
+IIUC, the new IFLA_BRIDGE_FLUSH attribute is supposed to be passed in
+RTM_SETLINK messages, but the current 'bridge fdb' commands all
+correspond to RTM_{NEW,DEL,GET}NEIGH messages. To continue following
+this pattern, did you consider turning the above examples to the
+following?
 
-I agree that strings are more meaningful here, especially considering 
-how each entry carries at least two pieces of information.
-If we are not to reuse the qca,clk-out-frequency name, then an enum 
-seems the easiest way to describe the available settings from the clock 
-config register!
+$ ip link set dev bridge type bridge fdb_flush vlan 100 static
+$ ip link set dev bridge type bridge fdb_flush vlan 1 dynamic
+$ ip link set dev ens16 type bridge_slave fdb_flush vlan 1 dynamic
+$ ip link set dev bridge type bridge fdb_flush nooffloaded nopermanent
+$ ip link set dev bridge type bridge fdb_flush static noextern_learn
+$ ip link set dev bridge type bridge fdb_flush permanent
 
-> The binding should describe the hardware, not implementation in Linux,
-> therefore you should actually list all possible choices. The driver then
-> can just return EINVAL on unsupported choices (or map them back to only
-> one supported).
+It's not critical, but I like the correspondence between iproute2
+commands and the underlying netlink messages.
 
-I have prepared a draft for the entries that should exist, it covers 
-five of the 6 available bits. Maybe you can comment if this is 
-understandable?
-
-   adi,phy-output-clock:
-     description: Select clock output on GP_CLK pin. Three clocks are 
-available:
-       A 25MHz reference, a free-running 125MHz and a recovered 125MHz.
-       The phy can also automatically switch between the reference and the
-       respective 125MHz clocks based on its internal state.
-     $ref: /schemas/types.yaml#/definitions/string
-     enum:
-     - 25mhz-reference
-     - 125mhz-free-running
-     - 125mhz-recovered
-     - adaptive-free-running
-     - adaptive-recovered
-
-Bit no. 3 (GE_REF_CLK_EN) is special in that it can be enabled 
-independently from the 5 choices above,
-and it controls a different pin. Therefore it deserves its own property, 
-perhaps a flag or boolean adi,phy-output-ref-clock.
-Any opinion if this should be added, or we can omit it completely?
-
-sincerely
-Josua Mayer
+> 
+> Note that all flags have their negated version (static vs nostatic etc)
+> and there are some tricky cases to handle like "static" which in flag
+> terms means fdbs that have NUD_NOARP but *not* NUD_PERMANENT, so the
+> mask matches on both but we need only NUD_NOARP to be set. That's
+> because permanent entries have both set so we can't just match on
+> NUD_NOARP. Also note that this flush operation doesn't treat permanent
+> entries in a special way (fdb_delete vs fdb_delete_local), it will
+> delete them regardless if any port is using them. We can extend the api
+> with a flag to do that if needed in the future.
+> 
+> Patches in this set:
+>  1. adds the new IFLA_BRIDGE_FLUSH bridge af attribute
+>  2. adds a basic structure to describe an fdb flush filter
+>  3. adds fdb netlink flush call via BRIDGE_FDB_FLUSH attribute
+>  4 - 6. add support for specifying various fdb fields to filter
+> 
+> Patch-sets (in order):
+>  - Initial flush infra and fdb flush filtering (this set)
+>  - iproute2 support
+>  - selftests
+> 
+> Future work:
+>  - mdb flush support
+> 
+> Thanks,
+>  Nik
+> 
+> Nikolay Aleksandrov (6):
+>   net: bridge: add a generic flush operation
+>   net: bridge: fdb: add support for fine-grained flushing
+>   net: bridge: fdb: add new nl attribute-based flush call
+>   net: bridge: fdb: add support for flush filtering based on ndm flags
+>     and state
+>   net: bridge: fdb: add support for flush filtering based on ifindex
+>   net: bridge: fdb: add support for flush filtering based on vlan id
+> 
+>  include/uapi/linux/if_bridge.h |  22 ++++++
+>  net/bridge/br_fdb.c            | 128 +++++++++++++++++++++++++++++++--
+>  net/bridge/br_netlink.c        |  59 ++++++++++++++-
+>  net/bridge/br_private.h        |  12 +++-
+>  net/bridge/br_sysfs_br.c       |   6 +-
+>  5 files changed, 215 insertions(+), 12 deletions(-)
+> 
+> -- 
+> 2.35.1
+> 
