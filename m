@@ -2,153 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8095A4FB6E7
-	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 11:07:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C5CD4FB73E
+	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 11:20:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344119AbiDKJJc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 05:09:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38336 "EHLO
+        id S245581AbiDKJWx convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 11 Apr 2022 05:22:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231960AbiDKJJb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 05:09:31 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3558B205DD
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 02:07:17 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id u18so6824583eda.3
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 02:07:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Urg3WNbWAAbmT/1unZ8S+i2ajaf9UWWtyCFD6wiRjuI=;
-        b=ibyW2IIHcc8wVZkOHS/s3WSv0MoDzWtmuPnwfhxKEi4RzBk+lE+OjaZj1DhEPuw3Hy
-         6NJ+CVirQCZZcErNoU0TAeox7TvSA/CXrx4gFqLwyEAmtLusg2Gr1PN5ur2YAPvxGmMx
-         l1llRE5cg55Kho7+i0Suwu/IgcZ5k6U+blXsx/wc1j5CokN/Ry6tC01zoSbllzYJNACg
-         XPkLEi65esJc8k4lnuPC40ZEp1Od8Y5LSzhcmhOtqZMMvnDrZTcodeFp2SWWjdlOUNsK
-         8FLIvFyFV/lB5HpY7PItzvZJ8xADMKRWwUY9xYisLDX7x052HHECkMO+7GDDEzpz1jbu
-         7syw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Urg3WNbWAAbmT/1unZ8S+i2ajaf9UWWtyCFD6wiRjuI=;
-        b=6cJncOhirCXPY9Og0oDdgC/TCPF+8ohFgeM2jUdYXQQqxBdhcgXeHzvELrYf0M4CeJ
-         u2ZHEzxswzTqEUib+yqLkjCBTdxVw2ZhafmyIjmoekf61shdYpq8nmZWH+/RJRygp23z
-         R9HbGPrsNGsPhn1wlf3C//EsNVZKGKFQT4aMyGWc7GHEorT59RGHAdlyAJEjWIGYfM56
-         lHYpl6jY+1X2vAwe9srJYsYluGGORQTg9x6TesPEqjzAux/HcQWm3KUQwVO02oNdgaOt
-         k0mXQB7Cy1CTbFQVhJMrLCpUZxpbWVSoDbWtH8FOox2gIOV4GjQsSc6q6J5zwyl4RA+i
-         jyig==
-X-Gm-Message-State: AOAM532pbg6/7jwO63AVbpK2DxxuMF31hodm1xPepc/F0Wo3LS9le8fz
-        y0XHJaJ5frkQRE1UDP4VOk/Tyw==
-X-Google-Smtp-Source: ABdhPJzhJalaqUptPqm4oxnVKC+KyE7L+rULrYE4tCHqDaE2vTvvQb6dq2zbbq1HN4y7QNIjT/3USw==
-X-Received: by 2002:a05:6402:26c8:b0:419:2e54:9262 with SMTP id x8-20020a05640226c800b004192e549262mr31862541edd.61.1649668035740;
-        Mon, 11 Apr 2022 02:07:15 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id w14-20020a509d8e000000b0041cd217726dsm11336827ede.4.2022.04.11.02.07.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Apr 2022 02:07:15 -0700 (PDT)
-Message-ID: <a869797f-8501-3766-36ae-b73b76e8f7e7@blackwall.org>
-Date:   Mon, 11 Apr 2022 12:07:14 +0300
+        with ESMTP id S1344147AbiDKJWW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 05:22:22 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE8B3329B8
+        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 02:20:08 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1ndqD4-0003hy-BW; Mon, 11 Apr 2022 11:19:46 +0200
+Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1ndqCz-002MLK-V5; Mon, 11 Apr 2022 11:19:40 +0200
+Received: from pza by lupine with local (Exim 4.94.2)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1ndqCx-00040Q-Qs; Mon, 11 Apr 2022 11:19:39 +0200
+Message-ID: <8470f6029703a29bd7c384f489da0c7936c44cc7.camel@pengutronix.de>
+Subject: Re: [PATCH RESEND v3 2/3] net: mdio: add reset control for Aspeed
+ MDIO
+From:   Philipp Zabel <p.zabel@pengutronix.de>
+To:     Andrew Jeffery <andrew@aj.id.au>,
+        Dylan Hung <dylan_hung@aspeedtech.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Joel Stanley <joel@jms.id.au>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        netdev <netdev@vger.kernel.org>
+Cc:     BMC-SW@aspeedtech.com
+Date:   Mon, 11 Apr 2022 11:19:39 +0200
+In-Reply-To: <667280e7-526d-4002-9dff-389f6b35ac2f@www.fastmail.com>
+References: <20220407075734.19644-1-dylan_hung@aspeedtech.com>
+         <20220407075734.19644-3-dylan_hung@aspeedtech.com>
+         <667280e7-526d-4002-9dff-389f6b35ac2f@www.fastmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH net-next 4/6] net: bridge: fdb: add support for flush
- filtering based on ndm flags and state
-Content-Language: en-US
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, roopa@nvidia.com, kuba@kernel.org,
-        davem@davemloft.net, bridge@lists.linux-foundation.org
-References: <20220409105857.803667-1-razor@blackwall.org>
- <20220409105857.803667-5-razor@blackwall.org> <YlPrJaWjeObhxmwb@shredder>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <YlPrJaWjeObhxmwb@shredder>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: p.zabel@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/04/2022 11:47, Ido Schimmel wrote:
-> On Sat, Apr 09, 2022 at 01:58:55PM +0300, Nikolay Aleksandrov wrote:
->> Add support for fdb flush filtering based on ndm flags and state. The
->> new attributes allow users to specify a mask and value which are mapped
->> to bridge-specific flags. NTF_USE is used to represent added_by_user
->> flag since it sets it on fdb add and we don't have a 1:1 mapping for it.
->>
->> Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
->> ---
->>  include/uapi/linux/if_bridge.h |  4 +++
->>  net/bridge/br_fdb.c            | 55 ++++++++++++++++++++++++++++++++++
->>  2 files changed, 59 insertions(+)
->>
->> diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
->> index 2f3799cf14b2..4638d7e39f2a 100644
->> --- a/include/uapi/linux/if_bridge.h
->> +++ b/include/uapi/linux/if_bridge.h
->> @@ -815,6 +815,10 @@ enum {
->>  /* embedded in BRIDGE_FLUSH_FDB */
->>  enum {
->>  	FDB_FLUSH_UNSPEC,
->> +	FDB_FLUSH_NDM_STATE,
->> +	FDB_FLUSH_NDM_STATE_MASK,
->> +	FDB_FLUSH_NDM_FLAGS,
->> +	FDB_FLUSH_NDM_FLAGS_MASK,
->>  	__FDB_FLUSH_MAX
->>  };
->>  #define FDB_FLUSH_MAX (__FDB_FLUSH_MAX - 1)
->> diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
->> index 62f694a739e1..340a2ace1d5e 100644
->> --- a/net/bridge/br_fdb.c
->> +++ b/net/bridge/br_fdb.c
->> @@ -594,8 +594,40 @@ void br_fdb_flush(struct net_bridge *br,
->>  	rcu_read_unlock();
->>  }
->>  
->> +static unsigned long __ndm_state_to_fdb_flags(u16 ndm_state)
->> +{
->> +	unsigned long flags = 0;
->> +
->> +	if (ndm_state & NUD_PERMANENT)
->> +		__set_bit(BR_FDB_LOCAL, &flags);
->> +	if (ndm_state & NUD_NOARP)
->> +		__set_bit(BR_FDB_STATIC, &flags);
->> +
->> +	return flags;
->> +}
->> +
->> +static unsigned long __ndm_flags_to_fdb_flags(u16 ndm_flags)
->> +{
->> +	unsigned long flags = 0;
->> +
->> +	if (ndm_flags & NTF_USE)
->> +		__set_bit(BR_FDB_ADDED_BY_USER, &flags);
->> +	if (ndm_flags & NTF_EXT_LEARNED)
->> +		__set_bit(BR_FDB_ADDED_BY_EXT_LEARN, &flags);
->> +	if (ndm_flags & NTF_OFFLOADED)
->> +		__set_bit(BR_FDB_OFFLOADED, &flags);
->> +	if (ndm_flags & NTF_STICKY)
->> +		__set_bit(BR_FDB_STICKY, &flags);
->> +
->> +	return flags;
->> +}
->> +
->>  static const struct nla_policy br_fdb_flush_policy[FDB_FLUSH_MAX + 1] = {
->>  	[FDB_FLUSH_UNSPEC]	= { .type = NLA_REJECT },
->> +	[FDB_FLUSH_NDM_STATE]	= { .type = NLA_U16 },
->> +	[FDB_FLUSH_NDM_FLAGS]	= { .type = NLA_U16 },
->> +	[FDB_FLUSH_NDM_STATE_MASK]	= { .type = NLA_U16 },
->> +	[FDB_FLUSH_NDM_FLAGS_MASK]	= { .type = NLA_U16 },
+On Mo, 2022-04-11 at 09:50 +0930, Andrew Jeffery wrote:
 > 
-> Might be better to use NLA_POLICY_MASK(NLA_U16, mask) and reject
-> unsupported states / flags instead of just ignoring them?
+> On Thu, 7 Apr 2022, at 17:27, Dylan Hung wrote:
+> > Add reset assertion/deassertion for Aspeed MDIO.  There are 4 MDIO
+> > controllers embedded in Aspeed AST2600 SOC and share one reset control
+> > register SCU50[3].  To work with old DT blobs which don't have the reset
+> > property, devm_reset_control_get_optional_shared is used in this change.
+> > 
+> > Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
+> > Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+> > ---
+> >  drivers/net/mdio/mdio-aspeed.c | 15 ++++++++++++++-
+> >  1 file changed, 14 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/net/mdio/mdio-aspeed.c b/drivers/net/mdio/mdio-aspeed.c
+> > index e2273588c75b..1afb58ccc524 100644
+> > --- a/drivers/net/mdio/mdio-aspeed.c
+> > +++ b/drivers/net/mdio/mdio-aspeed.c
+> > @@ -3,6 +3,7 @@
+> > 
+> >  #include <linux/bitfield.h>
+> >  #include <linux/delay.h>
+> > +#include <linux/reset.h>
+> >  #include <linux/iopoll.h>
+> >  #include <linux/mdio.h>
+> >  #include <linux/module.h>
+> > @@ -37,6 +38,7 @@
+> > 
+> >  struct aspeed_mdio {
+> >  	void __iomem *base;
+> > +	struct reset_control *reset;
+> >  };
+> > 
+> >  static int aspeed_mdio_read(struct mii_bus *bus, int addr, int regnum)
+> > @@ -120,6 +122,12 @@ static int aspeed_mdio_probe(struct platform_device *pdev)
+> >  	if (IS_ERR(ctx->base))
+> >  		return PTR_ERR(ctx->base);
+> > 
+> > +	ctx->reset = devm_reset_control_get_optional_shared(&pdev->dev, NULL);
+> > +	if (IS_ERR(ctx->reset))
+> > +		return PTR_ERR(ctx->reset);
+> > +
+> > +	reset_control_deassert(ctx->reset);
+> > +
+> >  	bus->name = DRV_NAME;
+> >  	snprintf(bus->id, MII_BUS_ID_SIZE, "%s%d", pdev->name, pdev->id);
+> >  	bus->parent = &pdev->dev;
+> > @@ -129,6 +137,7 @@ static int aspeed_mdio_probe(struct platform_device *pdev)
+> >  	rc = of_mdiobus_register(bus, pdev->dev.of_node);
+> >  	if (rc) {
+> >  		dev_err(&pdev->dev, "Cannot register MDIO bus!\n");
+> > +		reset_control_assert(ctx->reset);
+> >  		return rc;
+> >  	}
+> > 
+> > @@ -139,7 +148,11 @@ static int aspeed_mdio_probe(struct platform_device *pdev)
+> > 
+> >  static int aspeed_mdio_remove(struct platform_device *pdev)
+> >  {
+> > -	mdiobus_unregister(platform_get_drvdata(pdev));
+> > +	struct mii_bus *bus = (struct mii_bus *)platform_get_drvdata(pdev);
+> > +	struct aspeed_mdio *ctx = bus->priv;
+> > +
+> > +	reset_control_assert(ctx->reset);
 > 
+> Isn't this unnecessary because you've used the devm_ variant to acquire 
+> the reset?
 
-Yep, forgot about that one. Good point!
+No, this is correct. deassert/assert needs to be balanced, and the
+reset_control_deassert() call in aspeed_mdio_probe() is not devres
+managed.
 
-
+regards
+Philipp
