@@ -2,165 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D66CD4FBD67
-	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 15:39:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37D0C4FBD96
+	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 15:44:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346618AbiDKNlg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 09:41:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36526 "EHLO
+        id S1346659AbiDKNqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 09:46:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346626AbiDKNlV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 09:41:21 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4548F42
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 06:39:06 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id z17so2183547lfj.11
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 06:39:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:organization:content-transfer-encoding;
-        bh=50MJkKhlS1J2AvfKZSt0Jb7+m5hEUpZE6Hebck0fg/A=;
-        b=JXCw9oiD2WnF+/dOWbCKR30QwHOFYeeIGFnoSQa3rk8zCXJGF9WjRf21JEaJS7JlFW
-         oJYl9mRBvdtaftLg5HYDs6a1KOlfipXmEgYHv64nyqOgOdKBy5dw93enKmSLyOTC8vDJ
-         W/UW3b6tEh2yZBB1eEDy309N1pFBTEJEpmWVM2F45VroybbBgx/7sQzUz5QgrIDKfitW
-         cMnHAf+Q4TDrbb1nkoIJQXMsvEtII4Ikv0y/qk+3qrMBfUp2W8kEQjfFaQdohb1DjTE1
-         sqAvuH9qb9id5HA7h3y0VaR/F/YMRqh2KrrJV6qs859EreZyHh+T2yEXN41++YTzd4wl
-         zeKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:organization:content-transfer-encoding;
-        bh=50MJkKhlS1J2AvfKZSt0Jb7+m5hEUpZE6Hebck0fg/A=;
-        b=JQ5q88RYGj1gVixPegxJ22O7wCCUnv/bF7IrJgbBlKhSj2S61yTtNLvIiyX2Ouym3B
-         JXmq3Q/WeKX9VXLWi3alKZQmP+BgOHQov9kSTmRjZ1ozQfqguG00IVRQVisvFFxv9NQY
-         74Xw65zlqmOSc7VY+KHQ9GiA6pjHNmxOh4Nc3dEbgqO0rzrs8//+29KnaBn5QKrTp+4a
-         cLiM+HQoORjVPfzcZkkj7hjhgpYYKMj6LLGlfGynMWFm8/Xe/GQWANNvotCWRgPC8/O1
-         /4RNVxLao9YTNVUJbL/HK5NoeZhoN8Z607vM8/0lTti30e+QzK3DeZ0aCFrI7WiFx0kN
-         xerQ==
-X-Gm-Message-State: AOAM531y2HTUnx+EN6SwClMyvWlMXuewYV/pGcs8Jg03e7THw2bAEbz1
-        ECfXhU7/SnSEe+zVYX01PJM=
-X-Google-Smtp-Source: ABdhPJygk8gDfsKgwEqOQRFbO6IgRWDrD1xWTXDdJhj6rrgjNMQxB602CKesPbTFsnNmR3wr9M9wzQ==
-X-Received: by 2002:ac2:5119:0:b0:450:d4e7:99ca with SMTP id q25-20020ac25119000000b00450d4e799camr21456161lfb.95.1649684344648;
-        Mon, 11 Apr 2022 06:39:04 -0700 (PDT)
-Received: from wbg.labs.westermo.se (h-158-174-22-128.NA.cust.bahnhof.se. [158.174.22.128])
-        by smtp.gmail.com with ESMTPSA id p12-20020a056512138c00b0044833f1cd85sm3336847lfa.62.2022.04.11.06.39.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 06:39:04 -0700 (PDT)
-From:   Joachim Wiberg <troglobit@gmail.com>
-To:     Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>
-Cc:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Joachim Wiberg <troglobit@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH RFC net-next 13/13] selftests: forwarding: verify flood of known mc on mcast_router port
-Date:   Mon, 11 Apr 2022 15:38:37 +0200
-Message-Id: <20220411133837.318876-14-troglobit@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220411133837.318876-1-troglobit@gmail.com>
-References: <20220411133837.318876-1-troglobit@gmail.com>
+        with ESMTP id S1346664AbiDKNqr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 09:46:47 -0400
+Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B74BF5D;
+        Mon, 11 Apr 2022 06:44:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=K7iqjzEKodptiKfvuoGAMKfPEDKK9H4ydTx0zlRIMKY=; b=qcK9XJ8Q2+wciYd8XEvPaxKZnp
+        UwQgcpEJ7ZkTnx+UrI37FNE0fCsVoqAWvkDeSDv9dZKFVuPS/MjQ6ShGeOgPZam/2qLZ3GMuyYecG
+        /kiXOq6dLZIC9TX74OsTLuMw6D/bBqCn6Qe/4za6at/biJANLw7M5/3wGfKVDWAHJH0bLomI/B2G5
+        T505keIvdngq7ChrVG6p8l3xIoOCy224mEs6xVnzQVgkcYJleaCJmi/pE9C/3ZkeSBy+3q6aD/L+P
+        lx9RTKE0O5E0nk6SF/DJKQ6X8O29U4l5GnRF+pFb2emmZpWalwtFWuWpQAbdy3ii4v+8R39z3Z0Qc
+        3AIGVmHrh+0h0r59nuOWsUFBq/ZJBKV/xYhj7NgWUcYAvhRr2X7p3w0kbhLcn2jPQPAUBzCZ6w6mN
+        +FK0cgvJ1CIwVcYOjcIWg+Y6MaC+zIg8G5aFZiKuvZm4O+6bqo0WdwUK0PMR/ALvVKEJjW/08zmui
+        Yj7wlw+y2FKuRKchgUJE28ourWKJnfggV3IcrMGfLVuoFJllRgMUw73U/qKpICZp4ADZN9PVqUcTU
+        V82Nu1C4+hgBcFz5qZDAvF7Tj+98MPLBDPAnXmLWaOoS/P2U04Vc5Abr7GzeZyyWd0Ewy05tIdjEI
+        SJR/vXXb5TVHXPkGF3an3AHefyZQ4MxER1Mnbb37s=;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     asmadeus@codewreck.org
+Cc:     David Kahurani <k.kahurani@gmail.com>, davem@davemloft.net,
+        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        lucho@ionkov.net, netdev@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net,
+        David Howells <dhowells@redhat.com>, Greg Kurz <groug@kaod.org>
+Subject: Re: 9p fs-cache tests/benchmark (was: 9p fscache Duplicate cookie detected)
+Date:   Mon, 11 Apr 2022 15:41:45 +0200
+Message-ID: <3119964.Qa6D4ExsIi@silver>
+In-Reply-To: <YlNgN5f1KnT1walD@codewreck.org>
+References: <CAAZOf26g-L2nSV-Siw6mwWQv1nv6on8c0fWqB4bKmX73QAFzow@mail.gmail.com>
+ <1966295.VQPMLLWD4E@silver> <YlNgN5f1KnT1walD@codewreck.org>
 MIME-Version: 1.0
-Organization: Westermo Network Technologies AB
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This test verifies that both known (in mdb) and unknown IP multicast is
-forwarded to a mcast_router port.
+On Montag, 11. April 2022 00:54:47 CEST asmadeus@codewreck.org wrote:
+> Thanks for keeping it up!
+> 
+> Christian Schoenebeck wrote on Sun, Apr 10, 2022 at 06:18:38PM +0200:
+> > > I used git-bisect to identify the commit that broke 9p behaviour, and it
+> > > is
+> > > indeed this one:
+> > > 
+> > > commit eb497943fa215897f2f60fd28aa6fe52da27ca6c (HEAD, refs/bisect/bad)
+> > > Author: David Howells <dhowells@redhat.com>
+> > > Date:   Tue Nov 2 08:29:55 2021 +0000
+> > > 
+> > >     9p: Convert to using the netfs helper lib to do reads and caching
+> 
+> Yes, quite a few things changed with that.
+> 
+> > I looked into the errors I get, and as far as I can see it, all
+> > misbehaviours that I see, boil down to "Bad file descriptor" (EBADF)
+> > errors being the originating cause.
+> > 
+> > The easiest misbehaviours on the guest system I can look into, are errors
+> 
+> > with the git client. For instance 'git fetch origin' fails this way:
+> FWIW I didn't report but did try to reproduce, on my machines (tried a
+> couple) booting on a small alpine rootfs over 9p works, and I tried some
+> git clone/git fetch of variying sizes of local repo (tmpfs in VM -> 9p
+> mount of tmpfs on host) to no avail.
 
-Signed-off-by: Joachim Wiberg <troglobit@gmail.com>
----
- .../selftests/net/forwarding/bridge_mdb.sh    | 54 ++++++++++++++++++-
- 1 file changed, 53 insertions(+), 1 deletion(-)
+I get more convinced that it's a bug on Linux kernel side. When guest is
+booted I always immediately get a read("/var/log/wtmp") = EBADF error on
+guest. And the 9p command sequence sent to QEMU 9p server were:
 
-diff --git a/tools/testing/selftests/net/forwarding/bridge_mdb.sh b/tools/testing/selftests/net/forwarding/bridge_mdb.sh
-index 137bc79fd677..3fd7d68bca09 100755
---- a/tools/testing/selftests/net/forwarding/bridge_mdb.sh
-+++ b/tools/testing/selftests/net/forwarding/bridge_mdb.sh
-@@ -10,13 +10,16 @@
- # Verify selective multicast forwarding (strict mdb), when bridge port
- # mcast_flood is disabled, of known MAC, IPv4, IPv6 traffic.
- #
-+# Verify flooding towards mcast_router ports of known IP multicast.
-+#
- # Note: this test completely disables IPv6 auto-configuration to avoid
- #       any type of dynamic behavior outside of MLD and IGMP protocols.
- #       Static IPv6 addresses are used to ensure consistent behavior,
- #       even in the startup phase when multicast snooping is enabled.
- #
- 
--ALL_TESTS="mdb_add_del_test mdb_compat_fwd_test mdb_mac_fwd_test mdb_ip4_fwd_test mdb_ip6_fwd_test"
-+ALL_TESTS="mdb_add_del_test mdb_compat_fwd_test mdb_rport_fwd_test \
-+	   mdb_mac_fwd_test mdb_ip4_fwd_test mdb_ip6_fwd_test"
- NUM_NETIFS=6
- 
- SRC_PORT="1234"
-@@ -246,6 +249,55 @@ mdb_compat_fwd_test()
- 	do_compat_fwd "br0"
- }
- 
-+#
-+# Verify fwd of IP multicast to router ports.  A detected multicast
-+# router should always receive both known and unknown multicast.
-+#
-+mdb_rport_fwd_test()
-+{
-+	pass_grp=$PASS_GRP_IP4
-+	fail_grp=$FAIL_GRP_IP4
-+	pass_pkt=$PASS_PKT_IP4
-+	fail_pkt=$FAIL_PKT_IP4
-+	decoy="br0"
-+	port=$h1
-+	type="IPv4"
-+
-+	# Disable flooding of unknown multicast, strict MDB forwarding
-+	bridge link set dev "$swp1" mcast_flood off
-+	bridge link set dev "$swp2" mcast_flood off
-+	bridge link set dev "br0"   mcast_flood off self
-+
-+	# Let h2 act as a multicast router
-+	ip link set dev "$swp1" type bridge_slave mcast_router 2
-+
-+	# Static filter only to this decoy port
-+	bridge mdb add dev br0 port $decoy grp "$pass_grp"
-+	check_err $? "Failed adding multicast group $pass_grp to bridge port $decoy"
-+
-+	tcpdump_start "$port"
-+
-+	# Real data we're expecting
-+	$MZ -q "$h2" "$pass_pkt"
-+	# This should not pass
-+	$MZ -q "$h2" "$fail_pkt"
-+
-+	sleep 1
-+	tcpdump_stop "$port"
-+
-+	tcpdump_show "$port" |grep -q "$src$spt > $pass_grp$dpt"
-+	check_err $? "Failed forwarding $type multicast $pass_grp from $h2 to port $port"
-+
-+	tcpdump_show "$port" |grep -q "$src$spt > $fail_grp$dpt"
-+	check_err $? "Failed forwarding $type multicast $fail_grp from $h2 to port $port"
-+
-+	bridge mdb del dev br0 port br0 grp "$pass_grp"
-+	ip link set dev "$swp1" type bridge_slave mcast_router 1
-+
-+	log_test "MDB forward all $type multicast to multicast router on $port"
-+	tcpdump_cleanup "$port"
-+}
-+
- do_mdb_fwd()
- {
- 	type=$1
--- 
-2.25.1
+...
+v9fs_clunk tag 0 id 120 fid 568
+v9fs_walk tag 0 id 110 fid 1 newfid 568 nwnames 1
+v9fs_rerror tag 0 id 110 err 2
+v9fs_walk tag 0 id 110 fid 26 newfid 568 nwnames 1
+v9fs_rerror tag 0 id 110 err 2
+v9fs_readlink tag 0 id 22 fid 474
+v9fs_readlink_return tag 0 id 22 name /run
+v9fs_readlink tag 0 id 22 fid 474
+v9fs_readlink_return tag 0 id 22 name /run
+v9fs_readlink tag 0 id 22 fid 474
+v9fs_readlink_return tag 0 id 22 name /run
+v9fs_readlink tag 0 id 22 fid 474
+v9fs_readlink_return tag 0 id 22 name /run
+v9fs_walk tag 0 id 110 fid 633 newfid 568 nwnames 1
+v9fs_rerror tag 0 id 110 err 2
+v9fs_walk tag 0 id 110 fid 875 newfid 568 nwnames 0
+v9fs_walk_return tag 0 id 110 nwnames 0 qids (nil)
+v9fs_open tag 0 id 12 fid 568 mode 32769
+v9fs_open_return tag 0 id 12 qid={type 0 version 0 path 820297} iounit 507904
+v9fs_walk tag 0 id 110 fid 875 newfid 900 nwnames 0
+v9fs_walk_return tag 0 id 110 nwnames 0 qids (nil)
+v9fs_open tag 0 id 12 fid 900 mode 2
+v9fs_open_return tag 0 id 12 qid={type 0 version 0 path 820297} iounit 507904
+v9fs_lock tag 0 id 52 fid 568 type 1 start 0 length 0
+v9fs_lock_return tag 0 id 52 status 0
+v9fs_xattrwalk tag 0 id 30 fid 568 newfid 901 name security.capability
+v9fs_rerror tag 0 id 30 err 95
+v9fs_read tag 0 id 116 fid 568 off 192512 max_count 256
+
+So guest opens /var/log/wtmp with fid=568 mode=32769, which is write-only
+mode, and then it tries to read that fid 568, which eventually causes the
+read() call on host to error with EBADF. Which makes sense, as the file was
+opened in write-only mode, hence read() is not possible with that file
+descriptor.
+
+The other things I noticed when looking at the 9p command sequence above:
+there is a Twalk on fid 568 before, which is not clunked before reusing fid
+568 with Topen later. And before that Twalk on fid 568 there is a Tclunk on
+fid 568, but apparently that fid was not used before.
+
+> Perhaps backing filesystem dependant? qemu version? virtfs access options?
+
+I tried with different hardware and different file systems (ext4, btrfs), same
+misbehaviours.
+
+QEMU is latest git version. I also tried several different QEMU versions, same
+thing.
+
+QEMU command line used:
+
+~/git/qemu/build/qemu-system-x86_64 \
+-machine pc,accel=kvm,usb=off,dump-guest-core=off -m 16384 \
+-smp 8,sockets=8,cores=1,threads=1 -rtc base=utc -boot strict=on \
+-kernel ~/vm/bullseye/boot/vmlinuz \
+-initrd ~/vm/bullseye/boot/initrd.img \
+-append 'root=fsRoot rw rootfstype=9p rootflags=trans=virtio,version=9p2000.L,msize=4186112,cache=loose console=ttyS0' \
+-fsdev local,security_model=mapped,multidevs=remap,id=fsdev-fs0,path=$HOME/vm/bullseye/ \
+-device virtio-9p-pci,id=fs0,fsdev=fsdev-fs0,mount_tag=fsRoot \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-nographic
+
+Important for reproducing this issue:
+
+  * cache=loose
+  * -smp N (with N>1)
+  * Guest booted with Linux kernel containing commit eb497943fa21
+    (uname >= 5.16)
+
+I'm pretty sure that you can reproduce this issue with the QEMU 9p rootfs
+setup HOWTO linked before.
+
+> It's all extremely slow though... like the final checkout counting files
+> at less than 10/s
+
+It is VERY slow. And the weird thing is that cache=loose got much slower than
+cache=mmap. My worst case expactation would be cache=loose at least not
+performing worse than cache=mmap.
+
+Best regards,
+Christian Schoenebeck
+
 
