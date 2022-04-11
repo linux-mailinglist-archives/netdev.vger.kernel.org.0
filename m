@@ -2,66 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C4424FC37A
-	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 19:31:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBF694FC39B
+	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 19:42:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348956AbiDKRdI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 13:33:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48740 "EHLO
+        id S239275AbiDKRpL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 13:45:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348958AbiDKRcV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 13:32:21 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38AE32E696
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 10:30:06 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id ks6so7713320ejb.1
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 10:30:06 -0700 (PDT)
+        with ESMTP id S235152AbiDKRpK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 13:45:10 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F19C3220FE
+        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 10:42:54 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id bh17so32386957ejb.8
+        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 10:42:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=O/VZLSKKUr9Ihqy6S3wZzx57tDuzGbENOM9GV5qAtjA=;
-        b=fFAeWA901r46qOOdPqJ4hjzi3NDTcPdGTCrShzVqlrXGohdJz5OqOhbR53eJj+8/Mz
-         jNsj1Ll+69KR3nuryXJWdWkkpKWIrq0tGF98iH4JSZiXpx9yrldzFYvXmWU2LU35kGxI
-         2a0zL+wy9JNmACu4OFV0CW+eoeI6F723MISF2PvEnIHToEZ9xwXZtYYRS9/FFpY97Z9d
-         L3z1fX9r31aAfIgro65HkUnPXsAkNUU5O+x+VOr+pCw9pmQaThoJ1+usUZFN8fxTEpbw
-         DXGDKEZe1rK0SoyB953x362v9H+VCZ7WHPKRd3soJS63WL6Jh7M/9EjYA34boDNsiCU/
-         DuzA==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Qn0m42DURCvgyA+3fQ3KmY2jO1hPwl7SsCJTQkfJV1s=;
+        b=hMkj2kvMUd7imAmQLdIxKRb5Y6stYgX2688k9Otvb5DuBuGpKEVIzX2kLC0il0bbuC
+         Dxg8JbTm4UWxbe/cvYxUsKKiAq9QEEvmvHMKr7WnRrnIEf3kz9qvX1sPKAQW45TVLtuo
+         fP7XB81maT1NwKW4v3GZ+j2t29xaKL8mD/u4X7aMrGAfrSiz9ha6Mv5ywKLv3sRWrOyq
+         Ou/uXdcDhayTAVeJLZkyHql3VVGDXBNGZ4O2vP9fb5SxgaI9qXBg1noS+UbhEC+UQKF8
+         PMw3KVI33DheavQ7MDCthvZxpI4Q1hV0sKBug/5/3H5tSnyZVIXZ+fzHE7oAlN120maL
+         6/dQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=O/VZLSKKUr9Ihqy6S3wZzx57tDuzGbENOM9GV5qAtjA=;
-        b=oIe61mVJ5ND2g0UYPohpOMstCKDbOhqmd5HRLfBOusnzw9QJCNnmSTvmCl6vbPI11R
-         Fi4UsLg9YcN5mGoMcABtk2RwPGgGRhO3Mleyqmdk4T5fFibB+kjZnn2KPaPzZjQXISeX
-         c0SCWOigrwxJREi7PrDPoJMzTFcTvib00n3PhFr+N7B9msTrSz/uC3J5HrSH5vhVgwoz
-         SWParoCKc/77nCSFwkFSCLB2l5Zd1v0JkI5Xwfs+gOZVnUI+69bSjvFwxKbV57cN6reZ
-         onZFKY98W9KuaubfObzS9uziFiYboMQcxoN65ppYtJuQ66HzC6AWrhv/Y7s2oTwaOO/2
-         j2gw==
-X-Gm-Message-State: AOAM5330ZxTWb5GPDzQwY22bHem/4BpfVBEQOsunepMt1TWLCC/l1A43
-        e2VZ/9g273u1e9rwwkk6KJ7VeLSzsE8qAfOr
-X-Google-Smtp-Source: ABdhPJx3nKeCKQpSmaPdqh76RCSsXmqoKXzgCblRjdLmXrHbv2xJUhepqMv+qlK5mBnORk9EyAvm6A==
-X-Received: by 2002:a17:906:2c0d:b0:6e8:979c:be8 with SMTP id e13-20020a1709062c0d00b006e8979c0be8mr4246836ejh.239.1649698204541;
-        Mon, 11 Apr 2022 10:30:04 -0700 (PDT)
-Received: from debil.. (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id u6-20020a17090626c600b006e74ef7f092sm10325084ejc.176.2022.04.11.10.30.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 10:30:04 -0700 (PDT)
-From:   Nikolay Aleksandrov <razor@blackwall.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Qn0m42DURCvgyA+3fQ3KmY2jO1hPwl7SsCJTQkfJV1s=;
+        b=YCJIF8vcXOH+2CdmRnyDOE/q2eDVGPKuNRINWEUhq9iQCbiOqCauGQwydYhJJs/t/j
+         60qkqelapdE1GAGZsCo8O5K8I4pU56BzSli9tW8xporwdHe4xa6MOMzDw3Zbr5/TvJmb
+         /xQnCPMNq2vvvTna1cMCF20PCNjqbQm2INqpL7ZoI87n3aiT1EWPY9lwgrHxKAh+HYHG
+         Apftad27KNo4FYf2wfAXFggQYfTbMNgFnCy8Jix5CJaDOHF7t1cTi0UREVp1kMeVhczq
+         r4P5w3pNKOGpQKATSP3TR2Y3LjIMfkYcn4soMhZyuFZ1ohckLBh2yXD5If3eIUNwXTsT
+         Qz9g==
+X-Gm-Message-State: AOAM531HRrS589cAtEKXU8bGyAE70y2qrEniXe1+PGdsHmv7wXYhgwVg
+        ecRfaAK72khHFO9Cmj7HqlRxX1FXuBWVNXxG
+X-Google-Smtp-Source: ABdhPJxSlTBZucy+uuY8OR6pUuEslmh0PoObVjfwbfegrQwnWuOG8zmj7amgAJNB0D2XbOJZxJefjA==
+X-Received: by 2002:a17:907:7f1b:b0:6e8:558c:5ba with SMTP id qf27-20020a1709077f1b00b006e8558c05bamr15442310ejc.522.1649698973189;
+        Mon, 11 Apr 2022 10:42:53 -0700 (PDT)
+Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
+        by smtp.gmail.com with ESMTPSA id sh31-20020a1709076e9f00b006e8289e5836sm5977052ejc.117.2022.04.11.10.42.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Apr 2022 10:42:52 -0700 (PDT)
+Message-ID: <e3655cbf-5b8f-85d1-cd5f-80df739d79f4@blackwall.org>
+Date:   Mon, 11 Apr 2022 20:42:51 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net-next v2 0/8] net: bridge: add flush filtering support
+Content-Language: en-US
 To:     netdev@vger.kernel.org
 Cc:     roopa@nvidia.com, idosch@idosch.org, kuba@kernel.org,
-        davem@davemloft.net, bridge@lists.linux-foundation.org,
-        Nikolay Aleksandrov <razor@blackwall.org>
-Subject: [PATCH net-next v2 8/8] net: bridge: fdb: add support for flush filtering based on ifindex and vlan
-Date:   Mon, 11 Apr 2022 20:29:34 +0300
-Message-Id: <20220411172934.1813604-9-razor@blackwall.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220411172934.1813604-1-razor@blackwall.org>
+        davem@davemloft.net, bridge@lists.linux-foundation.org
 References: <20220411172934.1813604-1-razor@blackwall.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20220411172934.1813604-1-razor@blackwall.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,83 +72,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for fdb flush filtering based on destination ifindex and
-vlan id. The ifindex must either match a port's device ifindex or the
-bridge's. The vlan support is trivial since it's already validated by
-rtnl_fdb_flush, we just need to fill it in.
+On 11/04/2022 20:29, Nikolay Aleksandrov wrote:
+> Hi,
+> This patch-set adds support to specify filtering conditions for a flush
+> operation. This version has entirely different entry point (v1 had
+> bridge-specific IFLA attribute, here I add new RTM_FLUSHNEIGH msg and
+> netdev ndo_fdb_flush op) so I'll give a new overview altogether.
+> After me and Ido discussed the feature offlist, we agreed that it would
+> be best to add a new generic RTM_FLUSHNEIGH with a new ndo_fdb_flush
+> callback which can be re-used for other drivers (e.g. vxlan).
+> Patch 01 adds the new RTM_FLUSHNEIGH type, patch 02 then adds the
+> new ndo_fdb_flush call. With this structure we need to add a generic
+> rtnl_fdb_flush which will be used to do basic attribute validation and
+> dispatch the call to the appropriate device based on the NTF_USE/MASTER
+> flags (patch 03). Patch 04 then adds some common flush attributes which
+> are used by the bridge and vxlan drivers (target ifindex, vlan id, ndm
+> flags/state masks) with basic attribute validation, further validation
+> can be done by the implementers of the ndo callback. Patch 05 adds a
+> minimal ndo_fdb_flush to the bridge driver, it uses the current
+> br_fdb_flush implementation to flush all entries similar to existing
+> calls. Patch 06 adds filtering support to the new bridge flush op which
+> supports target ifindex (port or bridge), vlan id and flags/state mask.
+> Patch 07 converts ndm state/flags and their masks to bridge-private flags
+> and fills them in the filter descriptor for matching. Finally patch 08
 
-Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
----
-v2: validate ifindex and fill in vlan id
+Aargh.. I mixed up the patch numbers above. Patch 03 adds the minimal ndo_fdb_flush
+to the bridge driver (not patch 05), patch 04 adds the generic rtnl_fdb_flush
+(not patch 03) and patch 05 adds the common attributes (not patch 04).
 
- net/bridge/br_fdb.c | 42 +++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 41 insertions(+), 1 deletion(-)
+Let me know if you'd like me to repost it with fixed numbers. I'll wait for
+feedback anyway.
 
-diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
-index 2cea03cbc55f..b078a656776a 100644
---- a/net/bridge/br_fdb.c
-+++ b/net/bridge/br_fdb.c
-@@ -622,12 +622,44 @@ static unsigned long __ndm_flags_to_fdb_flags(u8 ndm_flags)
- 	return flags;
- }
- 
-+static int __fdb_flush_validate_ifindex(const struct net_bridge *br,
-+					int ifindex,
-+					struct netlink_ext_ack *extack)
-+{
-+	const struct net_device *dev;
-+
-+	dev = __dev_get_by_index(dev_net(br->dev), ifindex);
-+	if (!dev) {
-+		NL_SET_ERR_MSG_MOD(extack, "Unknown flush device ifindex");
-+		return -ENODEV;
-+	}
-+	if (!netif_is_bridge_master(dev) && !netif_is_bridge_port(dev)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Flush device is not a bridge or bridge port");
-+		return -EINVAL;
-+	}
-+	if (netif_is_bridge_master(dev) && dev != br->dev) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Flush bridge device does not match target bridge device");
-+		return -EINVAL;
-+	}
-+	if (netif_is_bridge_port(dev)) {
-+		struct net_bridge_port *p = br_port_get_rtnl(dev);
-+
-+		if (p->br != br) {
-+			NL_SET_ERR_MSG_MOD(extack, "Port belongs to a different bridge device");
-+			return -EINVAL;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
- int br_fdb_flush(struct ndmsg *ndm, struct nlattr *tb[],
- 		 struct net_device *dev, u16 vid,
- 		 struct netlink_ext_ack *extack)
- {
- 	u8 ndm_flags = ndm->ndm_flags & ~FDB_FLUSH_IGNORED_NDM_FLAGS;
--	struct net_bridge_fdb_flush_desc desc = {};
-+	struct net_bridge_fdb_flush_desc desc = { .vlan_id = vid };
- 	struct net_bridge *br;
- 
- 	if (netif_is_bridge_master(dev)) {
-@@ -663,6 +695,14 @@ int br_fdb_flush(struct ndmsg *ndm, struct nlattr *tb[],
- 
- 		desc.flags_mask |= __ndm_flags_to_fdb_flags(ndm_flags_mask);
- 	}
-+	if (tb[NDFA_IFINDEX]) {
-+		int err, ifidx = nla_get_s32(tb[NDFA_IFINDEX]);
-+
-+		err = __fdb_flush_validate_ifindex(br, ifidx, extack);
-+		if (err)
-+			return err;
-+		desc.port_ifindex = ifidx;
-+	}
- 
- 	br_debug(br, "flushing port ifindex: %d vlan id: %u flags: 0x%lx flags mask: 0x%lx\n",
- 		 desc.port_ifindex, desc.vlan_id, desc.flags, desc.flags_mask);
--- 
-2.35.1
+> fills in the target ifindex (after validating it) and vlan id (already
+> validated by rtnl_fdb_flush) for matching. Flush filtering is needed> because user-space applications need a quick way to delete only a
+> specific set of entries, e.g. mlag implementations need a way to flush only
+> dynamic entries excluding externally learned ones or only externally
+> learned ones without static entries etc. Also apps usually want to target
+> only a specific vlan or port/vlan combination. The current 2 flush
+> operations (per port and bridge-wide) are not extensible and cannot
+> provide such filtering.
+
+
 
