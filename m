@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A26064FB999
-	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 12:28:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 831634FB993
+	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 12:28:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345490AbiDKKaK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 06:30:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43844 "EHLO
+        id S1345476AbiDKKaJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 06:30:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345471AbiDKKaF (ORCPT
+        with ESMTP id S1344899AbiDKKaF (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 06:30:05 -0400
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 163F12CCB1;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D9FA639169;
         Mon, 11 Apr 2022 03:27:51 -0700 (PDT)
 Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id A927E63004;
-        Mon, 11 Apr 2022 12:23:49 +0200 (CEST)
+        by mail.netfilter.org (Postfix) with ESMTPSA id 4B2326302B;
+        Mon, 11 Apr 2022 12:23:50 +0200 (CEST)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 02/11] netfilter: ecache: move to separate structure
-Date:   Mon, 11 Apr 2022 12:27:35 +0200
-Message-Id: <20220411102744.282101-3-pablo@netfilter.org>
+Subject: [PATCH net-next 03/11] netfilter: conntrack: split inner loop of list dumping to own function
+Date:   Mon, 11 Apr 2022 12:27:36 +0200
+Message-Id: <20220411102744.282101-4-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220411102744.282101-1-pablo@netfilter.org>
 References: <20220411102744.282101-1-pablo@netfilter.org>
@@ -39,101 +39,113 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Florian Westphal <fw@strlen.de>
 
-This makes it easier for a followup patch to only expose ecache
-related parts of nf_conntrack_net structure.
+This allows code re-use in the followup patch.
+No functional changes intended.
 
 Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- include/net/netfilter/nf_conntrack.h |  8 ++++++--
- net/netfilter/nf_conntrack_ecache.c  | 19 ++++++++++---------
- 2 files changed, 16 insertions(+), 11 deletions(-)
+ net/netfilter/nf_conntrack_netlink.c | 68 ++++++++++++++++++----------
+ 1 file changed, 43 insertions(+), 25 deletions(-)
 
-diff --git a/include/net/netfilter/nf_conntrack.h b/include/net/netfilter/nf_conntrack.h
-index b08b70989d2c..69e6c6a218be 100644
---- a/include/net/netfilter/nf_conntrack.h
-+++ b/include/net/netfilter/nf_conntrack.h
-@@ -43,6 +43,11 @@ union nf_conntrack_expect_proto {
- 	/* insert expect proto private data here */
- };
+diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
+index 1ea2ad732d57..924d766e6c53 100644
+--- a/net/netfilter/nf_conntrack_netlink.c
++++ b/net/netfilter/nf_conntrack_netlink.c
+@@ -1708,6 +1708,47 @@ static int ctnetlink_done_list(struct netlink_callback *cb)
+ 	return 0;
+ }
  
-+struct nf_conntrack_net_ecache {
-+	struct delayed_work dwork;
-+	struct netns_ct *ct_net;
-+};
++static int ctnetlink_dump_one_entry(struct sk_buff *skb,
++				    struct netlink_callback *cb,
++				    struct nf_conn *ct,
++				    bool dying)
++{
++	struct ctnetlink_list_dump_ctx *ctx = (void *)cb->ctx;
++	struct nfgenmsg *nfmsg = nlmsg_data(cb->nlh);
++	u8 l3proto = nfmsg->nfgen_family;
++	int res;
 +
- struct nf_conntrack_net {
- 	/* only used when new connection is allocated: */
- 	atomic_t count;
-@@ -58,8 +63,7 @@ struct nf_conntrack_net {
- 	struct ctl_table_header	*sysctl_header;
- #endif
- #ifdef CONFIG_NF_CONNTRACK_EVENTS
--	struct delayed_work ecache_dwork;
--	struct netns_ct *ct_net;
-+	struct nf_conntrack_net_ecache ecache;
- #endif
- };
- 
-diff --git a/net/netfilter/nf_conntrack_ecache.c b/net/netfilter/nf_conntrack_ecache.c
-index 07e65b4e92f8..0cb2da0a759a 100644
---- a/net/netfilter/nf_conntrack_ecache.c
-+++ b/net/netfilter/nf_conntrack_ecache.c
-@@ -96,8 +96,8 @@ static enum retry_state ecache_work_evict_list(struct ct_pcpu *pcpu)
- 
- static void ecache_work(struct work_struct *work)
- {
--	struct nf_conntrack_net *cnet = container_of(work, struct nf_conntrack_net, ecache_dwork.work);
--	struct netns_ct *ctnet = cnet->ct_net;
-+	struct nf_conntrack_net *cnet = container_of(work, struct nf_conntrack_net, ecache.dwork.work);
-+	struct netns_ct *ctnet = cnet->ecache.ct_net;
- 	int cpu, delay = -1;
- 	struct ct_pcpu *pcpu;
- 
-@@ -127,7 +127,7 @@ static void ecache_work(struct work_struct *work)
- 
- 	ctnet->ecache_dwork_pending = delay > 0;
- 	if (delay >= 0)
--		schedule_delayed_work(&cnet->ecache_dwork, delay);
-+		schedule_delayed_work(&cnet->ecache.dwork, delay);
- }
- 
- static int __nf_conntrack_eventmask_report(struct nf_conntrack_ecache *e,
-@@ -293,12 +293,12 @@ void nf_conntrack_ecache_work(struct net *net, enum nf_ct_ecache_state state)
- 	struct nf_conntrack_net *cnet = nf_ct_pernet(net);
- 
- 	if (state == NFCT_ECACHE_DESTROY_FAIL &&
--	    !delayed_work_pending(&cnet->ecache_dwork)) {
--		schedule_delayed_work(&cnet->ecache_dwork, HZ);
-+	    !delayed_work_pending(&cnet->ecache.dwork)) {
-+		schedule_delayed_work(&cnet->ecache.dwork, HZ);
- 		net->ct.ecache_dwork_pending = true;
- 	} else if (state == NFCT_ECACHE_DESTROY_SENT) {
- 		net->ct.ecache_dwork_pending = false;
--		mod_delayed_work(system_wq, &cnet->ecache_dwork, 0);
-+		mod_delayed_work(system_wq, &cnet->ecache.dwork, 0);
- 	}
- }
- 
-@@ -310,8 +310,9 @@ void nf_conntrack_ecache_pernet_init(struct net *net)
- 	struct nf_conntrack_net *cnet = nf_ct_pernet(net);
- 
- 	net->ct.sysctl_events = nf_ct_events;
--	cnet->ct_net = &net->ct;
--	INIT_DELAYED_WORK(&cnet->ecache_dwork, ecache_work);
++	if (l3proto && nf_ct_l3num(ct) != l3proto)
++		return 0;
 +
-+	cnet->ecache.ct_net = &net->ct;
-+	INIT_DELAYED_WORK(&cnet->ecache.dwork, ecache_work);
- 
- 	BUILD_BUG_ON(__IPCT_MAX >= 16);	/* e->ctmask is u16 */
- }
-@@ -320,5 +321,5 @@ void nf_conntrack_ecache_pernet_fini(struct net *net)
++	if (ctx->last) {
++		if (ct != ctx->last)
++			return 0;
++
++		ctx->last = NULL;
++	}
++
++	/* We can't dump extension info for the unconfirmed
++	 * list because unconfirmed conntracks can have
++	 * ct->ext reallocated (and thus freed).
++	 *
++	 * In the dying list case ct->ext can't be free'd
++	 * until after we drop pcpu->lock.
++	 */
++	res = ctnetlink_fill_info(skb, NETLINK_CB(cb->skb).portid,
++				  cb->nlh->nlmsg_seq,
++				  NFNL_MSG_TYPE(cb->nlh->nlmsg_type),
++				  ct, dying, 0);
++	if (res < 0) {
++		if (!refcount_inc_not_zero(&ct->ct_general.use))
++			return 0;
++
++		ctx->last = ct;
++	}
++
++	return res;
++}
++
+ static int
+ ctnetlink_dump_list(struct sk_buff *skb, struct netlink_callback *cb, bool dying)
  {
- 	struct nf_conntrack_net *cnet = nf_ct_pernet(net);
+@@ -1715,12 +1756,9 @@ ctnetlink_dump_list(struct sk_buff *skb, struct netlink_callback *cb, bool dying
+ 	struct nf_conn *ct, *last;
+ 	struct nf_conntrack_tuple_hash *h;
+ 	struct hlist_nulls_node *n;
+-	struct nfgenmsg *nfmsg = nlmsg_data(cb->nlh);
+-	u_int8_t l3proto = nfmsg->nfgen_family;
+-	int res;
+-	int cpu;
+ 	struct hlist_nulls_head *list;
+ 	struct net *net = sock_net(skb->sk);
++	int res, cpu;
  
--	cancel_delayed_work_sync(&cnet->ecache_dwork);
-+	cancel_delayed_work_sync(&cnet->ecache.dwork);
- }
+ 	if (ctx->done)
+ 		return 0;
+@@ -1739,30 +1777,10 @@ ctnetlink_dump_list(struct sk_buff *skb, struct netlink_callback *cb, bool dying
+ restart:
+ 		hlist_nulls_for_each_entry(h, n, list, hnnode) {
+ 			ct = nf_ct_tuplehash_to_ctrack(h);
+-			if (l3proto && nf_ct_l3num(ct) != l3proto)
+-				continue;
+-			if (ctx->last) {
+-				if (ct != last)
+-					continue;
+-				ctx->last = NULL;
+-			}
+ 
+-			/* We can't dump extension info for the unconfirmed
+-			 * list because unconfirmed conntracks can have
+-			 * ct->ext reallocated (and thus freed).
+-			 *
+-			 * In the dying list case ct->ext can't be free'd
+-			 * until after we drop pcpu->lock.
+-			 */
+-			res = ctnetlink_fill_info(skb, NETLINK_CB(cb->skb).portid,
+-						  cb->nlh->nlmsg_seq,
+-						  NFNL_MSG_TYPE(cb->nlh->nlmsg_type),
+-						  ct, dying, 0);
++			res = ctnetlink_dump_one_entry(skb, cb, ct, dying);
+ 			if (res < 0) {
+-				if (!refcount_inc_not_zero(&ct->ct_general.use))
+-					continue;
+ 				ctx->cpu = cpu;
+-				ctx->last = ct;
+ 				spin_unlock_bh(&pcpu->lock);
+ 				goto out;
+ 			}
 -- 
 2.30.2
 
