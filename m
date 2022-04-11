@@ -2,169 +2,349 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 37D0C4FBD96
-	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 15:44:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE6F84FBD9A
+	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 15:45:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346659AbiDKNqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 09:46:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51226 "EHLO
+        id S1346675AbiDKNrD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 09:47:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346664AbiDKNqr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 09:46:47 -0400
-Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B74BF5D;
-        Mon, 11 Apr 2022 06:44:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-        Content-ID:Content-Description;
-        bh=K7iqjzEKodptiKfvuoGAMKfPEDKK9H4ydTx0zlRIMKY=; b=qcK9XJ8Q2+wciYd8XEvPaxKZnp
-        UwQgcpEJ7ZkTnx+UrI37FNE0fCsVoqAWvkDeSDv9dZKFVuPS/MjQ6ShGeOgPZam/2qLZ3GMuyYecG
-        /kiXOq6dLZIC9TX74OsTLuMw6D/bBqCn6Qe/4za6at/biJANLw7M5/3wGfKVDWAHJH0bLomI/B2G5
-        T505keIvdngq7ChrVG6p8l3xIoOCy224mEs6xVnzQVgkcYJleaCJmi/pE9C/3ZkeSBy+3q6aD/L+P
-        lx9RTKE0O5E0nk6SF/DJKQ6X8O29U4l5GnRF+pFb2emmZpWalwtFWuWpQAbdy3ii4v+8R39z3Z0Qc
-        3AIGVmHrh+0h0r59nuOWsUFBq/ZJBKV/xYhj7NgWUcYAvhRr2X7p3w0kbhLcn2jPQPAUBzCZ6w6mN
-        +FK0cgvJ1CIwVcYOjcIWg+Y6MaC+zIg8G5aFZiKuvZm4O+6bqo0WdwUK0PMR/ALvVKEJjW/08zmui
-        Yj7wlw+y2FKuRKchgUJE28ourWKJnfggV3IcrMGfLVuoFJllRgMUw73U/qKpICZp4ADZN9PVqUcTU
-        V82Nu1C4+hgBcFz5qZDAvF7Tj+98MPLBDPAnXmLWaOoS/P2U04Vc5Abr7GzeZyyWd0Ewy05tIdjEI
-        SJR/vXXb5TVHXPkGF3an3AHefyZQ4MxER1Mnbb37s=;
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-To:     asmadeus@codewreck.org
-Cc:     David Kahurani <k.kahurani@gmail.com>, davem@davemloft.net,
-        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        lucho@ionkov.net, netdev@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net,
-        David Howells <dhowells@redhat.com>, Greg Kurz <groug@kaod.org>
-Subject: Re: 9p fs-cache tests/benchmark (was: 9p fscache Duplicate cookie detected)
-Date:   Mon, 11 Apr 2022 15:41:45 +0200
-Message-ID: <3119964.Qa6D4ExsIi@silver>
-In-Reply-To: <YlNgN5f1KnT1walD@codewreck.org>
-References: <CAAZOf26g-L2nSV-Siw6mwWQv1nv6on8c0fWqB4bKmX73QAFzow@mail.gmail.com>
- <1966295.VQPMLLWD4E@silver> <YlNgN5f1KnT1walD@codewreck.org>
+        with ESMTP id S1346679AbiDKNrB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 09:47:01 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5503613F4C;
+        Mon, 11 Apr 2022 06:44:39 -0700 (PDT)
+Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KcVQp6tvhz67m0C;
+        Mon, 11 Apr 2022 21:42:26 +0800 (CST)
+Received: from [10.122.132.241] (10.122.132.241) by
+ fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Mon, 11 Apr 2022 15:44:35 +0200
+Message-ID: <8e279be2-5092-ad34-2f8d-ca77ee5a10fd@huawei.com>
+Date:   Mon, 11 Apr 2022 16:44:35 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [RFC PATCH v4 08/15] landlock: add support network rules
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+CC:     <willemdebruijn.kernel@gmail.com>,
+        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
+        <artem.kuzin@huawei.com>, <anton.sirazetdinov@huawei.com>
+References: <20220309134459.6448-1-konstantin.meskhidze@huawei.com>
+ <20220309134459.6448-9-konstantin.meskhidze@huawei.com>
+ <06f9ca1f-6e92-9d71-4097-e43b2f77b937@digikod.net>
+From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+In-Reply-To: <06f9ca1f-6e92-9d71-4097-e43b2f77b937@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.122.132.241]
+X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
+ fraeml704-chm.china.huawei.com (10.206.15.53)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Montag, 11. April 2022 00:54:47 CEST asmadeus@codewreck.org wrote:
-> Thanks for keeping it up!
+
+
+4/8/2022 7:30 PM, Mickaël Salaün пишет:
 > 
-> Christian Schoenebeck wrote on Sun, Apr 10, 2022 at 06:18:38PM +0200:
-> > > I used git-bisect to identify the commit that broke 9p behaviour, and it
-> > > is
-> > > indeed this one:
-> > > 
-> > > commit eb497943fa215897f2f60fd28aa6fe52da27ca6c (HEAD, refs/bisect/bad)
-> > > Author: David Howells <dhowells@redhat.com>
-> > > Date:   Tue Nov 2 08:29:55 2021 +0000
-> > > 
-> > >     9p: Convert to using the netfs helper lib to do reads and caching
+> On 09/03/2022 14:44, Konstantin Meskhidze wrote:
+>> This modification adds network rules support
+>> in internal landlock functions (presented in ruleset.c)
+>> and landlock_create_ruleset syscall.
+>>
+>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>> ---
+>>
+>> Changes since v3:
+>> * Split commit.
+>> * Add network rule support for internal landlock functions.
+>> * Add set_masks and get_masks for network.
+>> * Add rb_root root_net_port.
+>>
+>> ---
+>>   security/landlock/fs.c       |  2 +-
+>>   security/landlock/limits.h   |  6 +++
+>>   security/landlock/ruleset.c  | 88 +++++++++++++++++++++++++++++++++---
+>>   security/landlock/ruleset.h  | 14 +++++-
+>>   security/landlock/syscalls.c | 10 +++-
+>>   5 files changed, 109 insertions(+), 11 deletions(-)
+>>
+>> diff --git a/security/landlock/fs.c b/security/landlock/fs.c
+>> index 75ebdce5cd16..5cd339061cdb 100644
+>> --- a/security/landlock/fs.c
+>> +++ b/security/landlock/fs.c
+>> @@ -231,7 +231,7 @@ static int check_access_path(const struct 
+>> landlock_ruleset *const domain,
+>>
+>>               inode = d_backing_inode(walker_path.dentry);
+>>               object_ptr = landlock_inode(inode)->object;
+>> -            layer_mask = landlock_unmask_layers(domain, object_ptr,
+>> +            layer_mask = landlock_unmask_layers(domain, object_ptr, 0,
+>>                               access_request, layer_mask,
+>>                               LANDLOCK_RULE_PATH_BENEATH);
+>>               if (layer_mask == 0) {
+>> diff --git a/security/landlock/limits.h b/security/landlock/limits.h
+>> index 2a0a1095ee27..fdbef85e4de0 100644
+>> --- a/security/landlock/limits.h
+>> +++ b/security/landlock/limits.h
+>> @@ -18,4 +18,10 @@
+>>   #define LANDLOCK_LAST_ACCESS_FS        LANDLOCK_ACCESS_FS_MAKE_SYM
+>>   #define LANDLOCK_MASK_ACCESS_FS        ((LANDLOCK_LAST_ACCESS_FS << 
+>> 1) - 1)
+>>
+>> +#define LANDLOCK_LAST_ACCESS_NET    LANDLOCK_ACCESS_NET_CONNECT_TCP
+>> +#define LANDLOCK_MASK_ACCESS_NET    ((LANDLOCK_LAST_ACCESS_NET << 1) 
+>> - 1)
+>> +#define LANDLOCK_MASK_SHIFT_NET        16
+>> +
+>> +#define LANDLOCK_RULE_TYPE_NUM        LANDLOCK_RULE_NET_SERVICE
+>> +
+>>   #endif /* _SECURITY_LANDLOCK_LIMITS_H */
+>> diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
+>> index 7179b10f3538..1cecca59a942 100644
+>> --- a/security/landlock/ruleset.c
+>> +++ b/security/landlock/ruleset.c
+>> @@ -35,6 +35,7 @@ static struct landlock_ruleset *create_ruleset(const 
+>> u32 num_layers)
+>>       refcount_set(&new_ruleset->usage, 1);
+>>       mutex_init(&new_ruleset->lock);
+>>       new_ruleset->root_inode = RB_ROOT;
+>> +    new_ruleset->root_net_port = RB_ROOT;
+>>       new_ruleset->num_layers = num_layers;
+>>       /*
+>>        * hierarchy = NULL
+>> @@ -58,16 +59,32 @@ u32 landlock_get_fs_access_mask(const struct 
+>> landlock_ruleset *ruleset, u16 mask
+>>       return ruleset->access_masks[mask_level];
+>>   }
+>>
+>> +/* A helper function to set a network mask */
+>> +void landlock_set_net_access_mask(struct landlock_ruleset *ruleset,
+>> +                  const struct landlock_access_mask *access_mask_set,
+>> +                  u16 mask_level)
+>> +{
+>> +    ruleset->access_masks[mask_level] |= (access_mask_set->net << 
+>> LANDLOCK_MASK_SHIFT_NET);
+>> +}
+>> +
+>> +/* A helper function to get a network mask */
+>> +u32 landlock_get_net_access_mask(const struct landlock_ruleset 
+>> *ruleset, u16 mask_level)
+>> +{
+>> +    return (ruleset->access_masks[mask_level] >> 
+>> LANDLOCK_MASK_SHIFT_NET);
+>> +}
 > 
-> Yes, quite a few things changed with that.
+> Both these helpers should be "static inline" and moved in net.h
+
+   I got it. Ok.
 > 
-> > I looked into the errors I get, and as far as I can see it, all
-> > misbehaviours that I see, boil down to "Bad file descriptor" (EBADF)
-> > errors being the originating cause.
-> > 
-> > The easiest misbehaviours on the guest system I can look into, are errors
 > 
-> > with the git client. For instance 'git fetch origin' fails this way:
-> FWIW I didn't report but did try to reproduce, on my machines (tried a
-> couple) booting on a small alpine rootfs over 9p works, and I tried some
-> git clone/git fetch of variying sizes of local repo (tmpfs in VM -> 9p
-> mount of tmpfs on host) to no avail.
+>> +
+>>   struct landlock_ruleset *landlock_create_ruleset(const struct 
+>> landlock_access_mask *access_mask_set)
+>>   {
+>>       struct landlock_ruleset *new_ruleset;
+>>
+>>       /* Informs about useless ruleset. */
+>> -    if (!access_mask_set->fs)
+>> +    if (!access_mask_set->fs && !access_mask_set->net)
+>>           return ERR_PTR(-ENOMSG);
+>>       new_ruleset = create_ruleset(1);
+>> -    if (!IS_ERR(new_ruleset))
+> 
+> This is better:
+> 
+> if (IS_ERR(new_ruleset))
+>      return new_ruleset;
+> if (access_mask_set->fs)
+> ...
 
-I get more convinced that it's a bug on Linux kernel side. When guest is
-booted I always immediately get a read("/var/log/wtmp") = EBADF error on
-guest. And the 9p command sequence sent to QEMU 9p server were:
+   I dont get this condition. Do you mean that we return new_ruleset
+anyway no matter what the masks's values are? So its possible to have 0 
+masks values, is't it?
+> 
+> 
+>> +    if (!IS_ERR(new_ruleset) && access_mask_set->fs)
+>>           landlock_set_fs_access_mask(new_ruleset, access_mask_set, 0);
+>> +    if (!IS_ERR(new_ruleset) && access_mask_set->net)
+>> +        landlock_set_net_access_mask(new_ruleset, access_mask_set, 0);
+>>       return new_ruleset;
+>>   }
+>>
+>> @@ -111,6 +128,9 @@ static struct landlock_rule *create_rule(
+>>           landlock_get_object(object_ptr);
+>>           new_rule->object.ptr = object_ptr;
+>>           break;
+>> +    case LANDLOCK_RULE_NET_SERVICE:
+>> +        new_rule->object.data = object_data;
+>> +        break;
+>>       default:
+>>           return ERR_PTR(-EINVAL);
+>>       }
+>> @@ -145,10 +165,12 @@ static void build_check_ruleset(void)
+>>           .num_layers = ~0,
+>>       };
+>>       typeof(ruleset.access_masks[0]) fs_access_mask = ~0;
+>> +    typeof(ruleset.access_masks[0]) net_access_mask = ~0;
+>>
+>>       BUILD_BUG_ON(ruleset.num_rules < LANDLOCK_MAX_NUM_RULES);
+>>       BUILD_BUG_ON(ruleset.num_layers < LANDLOCK_MAX_NUM_LAYERS);
+>>       BUILD_BUG_ON(fs_access_mask < LANDLOCK_MASK_ACCESS_FS);
+>> +    BUILD_BUG_ON(net_access_mask < LANDLOCK_MASK_ACCESS_NET);
+>>   }
+>>
+>>   /**
+>> @@ -191,6 +213,12 @@ static int insert_rule(struct landlock_ruleset 
+>> *const ruleset,
+> 
+> Already reviewed.
+> 
+> [...]
+> 
+> 
+>> @@ -319,6 +363,9 @@ static int tree_merge(struct landlock_ruleset 
+>> *const src,
+>>       case LANDLOCK_RULE_PATH_BENEATH:
+>>           src_root = &src->root_inode;
+>>           break;
+>> +    case LANDLOCK_RULE_NET_SERVICE:
+>> +        src_root = &src->root_net_port;
+>> +        break;
+>>       default:
+>>           return -EINVAL;
+>>       }
+>> @@ -338,11 +385,14 @@ static int tree_merge(struct landlock_ruleset 
+>> *const src,
+>>               return err;
+>>           }
+>>           layers[0].access = walker_rule->layers[0].access;
+>> -
+> 
+> nit: Please keep this empty line.
+> 
+> 
+>>           switch (rule_type) {
+>>           case LANDLOCK_RULE_PATH_BENEATH:
+>>               err = insert_rule(dst, walker_rule->object.ptr, 0, &layers,
+>> -                ARRAY_SIZE(layers), rule_type);
+>> +                    ARRAY_SIZE(layers), rule_type);
+> 
+> Please don't insert this kind of formatting in unrelated patches.
+> 
+> 
+>> +            break;
+>> +        case LANDLOCK_RULE_NET_SERVICE:
+>> +            err = insert_rule(dst, NULL, walker_rule->object.data, 
+>> &layers,
+>> +                    ARRAY_SIZE(layers), rule_type);
+>>               break;
+>>           }
+>>           if (err)
+>> @@ -379,6 +429,10 @@ static int merge_ruleset(struct landlock_ruleset 
+>> *const dst,
+>>       err = tree_merge(src, dst, LANDLOCK_RULE_PATH_BENEATH);
+>>       if (err)
+>>           goto out_unlock;
+>> +    /* Merges the @src network tree. */
+>> +    err = tree_merge(src, dst, LANDLOCK_RULE_NET_SERVICE);
+>> +    if (err)
+>> +        goto out_unlock;
+>>
+>>   out_unlock:
+>>       mutex_unlock(&src->lock);
+>> @@ -398,6 +452,9 @@ static int tree_copy(struct landlock_ruleset 
+>> *const parent,
+>>       case LANDLOCK_RULE_PATH_BENEATH:
+>>           parent_root = &parent->root_inode;
+>>           break;
+>> +    case LANDLOCK_RULE_NET_SERVICE:
+>> +        parent_root = &parent->root_net_port;
+>> +        break;
+>>       default:
+>>           return -EINVAL;
+>>       }
+>> @@ -410,6 +467,11 @@ static int tree_copy(struct landlock_ruleset 
+>> *const parent,
+>>                     &walker_rule->layers, walker_rule->num_layers,
+>>                     rule_type);
+>>               break;
+>> +        case LANDLOCK_RULE_NET_SERVICE:
+>> +            err = insert_rule(child, NULL, walker_rule->object.data,
+>> +                  &walker_rule->layers, walker_rule->num_layers,
+>> +                  rule_type);
+>> +            break;
+>>           }
+>>           if (err)
+>>               return err;
+>> @@ -432,6 +494,10 @@ static int inherit_ruleset(struct 
+>> landlock_ruleset *const parent,
+>>
+>>       /* Copies the @parent inode tree. */
+>>       err = tree_copy(parent, child, LANDLOCK_RULE_PATH_BENEATH);
+>> +    if (err)
+>> +        goto out_unlock;
+>> +    /* Copies the @parent inode tree. */
+>> +    err = tree_copy(parent, child, LANDLOCK_RULE_NET_SERVICE);
+>>       if (err)
+>>           goto out_unlock;
+>>
+>> @@ -464,6 +530,9 @@ static void free_ruleset(struct landlock_ruleset 
+>> *const ruleset)
+>>       rbtree_postorder_for_each_entry_safe(freeme, next, 
+>> &ruleset->root_inode,
+>>               node)
+>>           free_rule(freeme, LANDLOCK_RULE_PATH_BENEATH);
+>> +    rbtree_postorder_for_each_entry_safe(freeme, next, 
+>> &ruleset->root_net_port,
+>> +            node)
+>> +        free_rule(freeme, LANDLOCK_RULE_NET_SERVICE);
+>>       put_hierarchy(ruleset->hierarchy);
+>>       kfree(ruleset);
+>>   }
+>> @@ -565,6 +634,9 @@ const struct landlock_rule *landlock_find_rule(
+>>       case LANDLOCK_RULE_PATH_BENEATH:
+>>           node = ruleset->root_inode.rb_node;
+>>           break;
+>> +    case LANDLOCK_RULE_NET_SERVICE:
+>> +        node = ruleset->root_net_port.rb_node;
+>> +        break;
+>>       default:
+>>           return ERR_PTR(-EINVAL);
+>>       }
+>> @@ -586,8 +658,8 @@ const struct landlock_rule *landlock_find_rule(
+>>   /* Access-control management */
+>>   u64 landlock_unmask_layers(const struct landlock_ruleset *const domain,
+>>                  const struct landlock_object *object_ptr,
+>> -               const u32 access_request, u64 layer_mask,
+>> -               const u16 rule_type)
+>> +               const u16 port, const u32 access_request,
+>> +               u64 layer_mask, const u16 rule_type)
+>>   {
+>>       const struct landlock_rule *rule;
+>>       size_t i;
+>> @@ -600,6 +672,10 @@ u64 landlock_unmask_layers(const struct 
+>> landlock_ruleset *const domain,
+>>               LANDLOCK_RULE_PATH_BENEATH);
+>>           rcu_read_unlock();
+>>           break;
+>> +    case LANDLOCK_RULE_NET_SERVICE:
+>> +        rule = landlock_find_rule(domain, (uintptr_t)port,
+> 
+> Type casting should not be required.
 
-...
-v9fs_clunk tag 0 id 120 fid 568
-v9fs_walk tag 0 id 110 fid 1 newfid 568 nwnames 1
-v9fs_rerror tag 0 id 110 err 2
-v9fs_walk tag 0 id 110 fid 26 newfid 568 nwnames 1
-v9fs_rerror tag 0 id 110 err 2
-v9fs_readlink tag 0 id 22 fid 474
-v9fs_readlink_return tag 0 id 22 name /run
-v9fs_readlink tag 0 id 22 fid 474
-v9fs_readlink_return tag 0 id 22 name /run
-v9fs_readlink tag 0 id 22 fid 474
-v9fs_readlink_return tag 0 id 22 name /run
-v9fs_readlink tag 0 id 22 fid 474
-v9fs_readlink_return tag 0 id 22 name /run
-v9fs_walk tag 0 id 110 fid 633 newfid 568 nwnames 1
-v9fs_rerror tag 0 id 110 err 2
-v9fs_walk tag 0 id 110 fid 875 newfid 568 nwnames 0
-v9fs_walk_return tag 0 id 110 nwnames 0 qids (nil)
-v9fs_open tag 0 id 12 fid 568 mode 32769
-v9fs_open_return tag 0 id 12 qid={type 0 version 0 path 820297} iounit 507904
-v9fs_walk tag 0 id 110 fid 875 newfid 900 nwnames 0
-v9fs_walk_return tag 0 id 110 nwnames 0 qids (nil)
-v9fs_open tag 0 id 12 fid 900 mode 2
-v9fs_open_return tag 0 id 12 qid={type 0 version 0 path 820297} iounit 507904
-v9fs_lock tag 0 id 52 fid 568 type 1 start 0 length 0
-v9fs_lock_return tag 0 id 52 status 0
-v9fs_xattrwalk tag 0 id 30 fid 568 newfid 901 name security.capability
-v9fs_rerror tag 0 id 30 err 95
-v9fs_read tag 0 id 116 fid 568 off 192512 max_count 256
-
-So guest opens /var/log/wtmp with fid=568 mode=32769, which is write-only
-mode, and then it tries to read that fid 568, which eventually causes the
-read() call on host to error with EBADF. Which makes sense, as the file was
-opened in write-only mode, hence read() is not possible with that file
-descriptor.
-
-The other things I noticed when looking at the 9p command sequence above:
-there is a Twalk on fid 568 before, which is not clunked before reusing fid
-568 with Topen later. And before that Twalk on fid 568 there is a Tclunk on
-fid 568, but apparently that fid was not used before.
-
-> Perhaps backing filesystem dependant? qemu version? virtfs access options?
-
-I tried with different hardware and different file systems (ext4, btrfs), same
-misbehaviours.
-
-QEMU is latest git version. I also tried several different QEMU versions, same
-thing.
-
-QEMU command line used:
-
-~/git/qemu/build/qemu-system-x86_64 \
--machine pc,accel=kvm,usb=off,dump-guest-core=off -m 16384 \
--smp 8,sockets=8,cores=1,threads=1 -rtc base=utc -boot strict=on \
--kernel ~/vm/bullseye/boot/vmlinuz \
--initrd ~/vm/bullseye/boot/initrd.img \
--append 'root=fsRoot rw rootfstype=9p rootflags=trans=virtio,version=9p2000.L,msize=4186112,cache=loose console=ttyS0' \
--fsdev local,security_model=mapped,multidevs=remap,id=fsdev-fs0,path=$HOME/vm/bullseye/ \
--device virtio-9p-pci,id=fs0,fsdev=fsdev-fs0,mount_tag=fsRoot \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
--nographic
-
-Important for reproducing this issue:
-
-  * cache=loose
-  * -smp N (with N>1)
-  * Guest booted with Linux kernel containing commit eb497943fa21
-    (uname >= 5.16)
-
-I'm pretty sure that you can reproduce this issue with the QEMU 9p rootfs
-setup HOWTO linked before.
-
-> It's all extremely slow though... like the final checkout counting files
-> at less than 10/s
-
-It is VERY slow. And the weird thing is that cache=loose got much slower than
-cache=mmap. My worst case expactation would be cache=loose at least not
-performing worse than cache=mmap.
-
-Best regards,
-Christian Schoenebeck
-
-
+  Ok. I got it.
+> 
+> [...]
+> .
