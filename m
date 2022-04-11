@@ -2,88 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 069734FC2E9
-	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 19:07:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E0DF4FC2F0
+	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 19:11:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348747AbiDKRKE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 13:10:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59316 "EHLO
+        id S1348739AbiDKRNf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 13:13:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235105AbiDKRKD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 13:10:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC32F1FCD8;
-        Mon, 11 Apr 2022 10:07:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9133961736;
-        Mon, 11 Apr 2022 17:07:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6980EC385A4;
-        Mon, 11 Apr 2022 17:07:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649696868;
-        bh=zuIe1s4v0t4bbjsE+1TfmJB8us8+U2Yt33ASuWZjdCU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=AFOhIOI0ySF4Euc0At3UCntZCIPfQdzmGY7J+ciGuOlq5babrNYN5wJjEo0UjmK48
-         K6+CTFnP6sxGiohfKEMdSzZC/lnAe2cQV8UO296ViVqiwixj/y+jmQ40TD6+jXWUkm
-         kQVfxK+s2P9XQD0Xpa8jJAEme34YlB2acARad6gS1W2Gj5a+/h9oCjldKccvBx6x6t
-         +QdVVnQzGgJPPf373UsV76AfCjXPcFXoZ5l1zsN4EvX0lZAwS6RglAUnAWRAb1uepO
-         KD81E6z13LulmxUmqf3W6SSo9YmjjcdwhAmQjrJUMFMasdc6D1UwFDHbOnEDxNByUI
-         v8/+0qRWE7aKQ==
-Date:   Mon, 11 Apr 2022 10:07:46 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     Maxim Mikityanskiy <maximmi@nvidia.com>, bpf@vger.kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, magnus.karlsson@intel.com,
-        bjorn@kernel.org, netdev@vger.kernel.org, brouer@redhat.com,
-        alexandr.lobakin@intel.com, Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [PATCH bpf-next 00/10] xsk: stop softirq processing on full XSK
- Rx queue
-Message-ID: <20220411100746.1231a5a6@kernel.org>
-In-Reply-To: <YlRNPuHdN5RTZjDn@boxer>
-References: <20220405110631.404427-1-maciej.fijalkowski@intel.com>
-        <8a81791e-342e-be8b-fc96-312f30b44be6@nvidia.com>
-        <Yk/7mkNi52hLKyr6@boxer>
-        <82a1e9c1-6039-7ead-e663-2b0298f31ada@nvidia.com>
-        <20220408111756.1339cb68@kernel.org>
-        <YlRNPuHdN5RTZjDn@boxer>
+        with ESMTP id S1345849AbiDKRNe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 13:13:34 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47697DE9F
+        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 10:11:20 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id bg24so3458644pjb.1
+        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 10:11:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=4vfQyttDdobHbBrio36ZO852PxT9+1cO/BhU8vf48uk=;
+        b=SgJYtjKj63nQeVA7J0ZZS1dldUo2m5g6vqqpvYOJS+i2A8K4cjtEBemRNhINcRYoX3
+         1gBjFt5LqUFiNFhrX+USGI5QZUaaqTyvp/4MDg2rTaCwtDf+PjXXDSvLWp9xbjsEZaOX
+         mHoILuWJ5ve1LncQQZ2RyW42tMgq4p+0AdbIzgDHLx5eF7qePhiQ6XTAv230FyFy7xVA
+         jNgXxr5K0CChcoQUn3lEKdGlJw4wIqEEkKXd37+P6tjlclgD5V/xNOiFlN0JpXzNsxQr
+         yO3X1Z4ESergo8sm6q8kKsP7r8ZBRLzQqhB58dEA3Qbkr5YXhpeucXEwU1FosghVIpkz
+         x8/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=4vfQyttDdobHbBrio36ZO852PxT9+1cO/BhU8vf48uk=;
+        b=FovR1eJLb7WxcZ1cLqunyN29V0FJyooexG0aE2NDCpTca7zRNXjj0tbTzJxrYOP4pO
+         GNrNxwgi7kxT69+RGy+vIclxifnSm6t/g9j+oVJnIXQFyrdWfdYdEgjNqe6HH9+qfTvL
+         xFrjy4sjyR5i9VmwqmeEgoF65RMlqFahy6zgB8EMfDvEUCo6EkMytz16Ak5MrzKdgfev
+         2GiZsnJwXK5czT2RHXHaTnrTCdQJqI8rmOiMkZlvG4nd3G5REYzNjhiuWj2M8XScAbjH
+         1CFIXl5kGYJrUDZKvAXH6WJXxh7xYxU01IBOwv4Krxojzi6hSS3l+XVjSeUQHDTeqhmH
+         VUDw==
+X-Gm-Message-State: AOAM531H5z1VDHhY+jAHdrUpBnVn1dj6ZtVZRVilKnZ7zownpJAQ6av6
+        fgl1nLq8Sg3qYhGYDuUQmJaarE8jgEDYRDpJFxg=
+X-Google-Smtp-Source: ABdhPJw1T4+QDonnaemEQ8dUFlZ6WZruoK4K7k9C6My3h9pC7nlfOs7Jwyo/BEBadSHXtQQNcWlhZBKpdGRl5DVNiBA=
+X-Received: by 2002:a17:902:d492:b0:158:519f:487c with SMTP id
+ c18-20020a170902d49200b00158519f487cmr8566978plg.2.1649697079862; Mon, 11 Apr
+ 2022 10:11:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Sender: novnovigno12@gmail.com
+Received: by 2002:a05:6a10:8c0a:0:0:0:0 with HTTP; Mon, 11 Apr 2022 10:11:19
+ -0700 (PDT)
+From:   Hannah Johnson <hannahjohnson8856@gmail.com>
+Date:   Mon, 11 Apr 2022 17:11:19 +0000
+X-Google-Sender-Auth: 2TBgyJhHBmZz3CXNBqlwyv3xsjc
+Message-ID: <CADVVueWkw8UoCSuVd_GW6frzQU32oy_yeR-g4rKexG3Nt1Apiw@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-0.5 required=5.0 tests=BAYES_05,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 11 Apr 2022 17:46:06 +0200 Maciej Fijalkowski wrote:
-> > +1
-> > cover letter refers to busy poll, but did that test enable prefer busy
-> > poll w/ the timeout configured right? It seems like similar goal can 
-> > be achieved with just that.  
-> 
-> AF_XDP busy poll where app and driver runs on same core, without
-> configuring gro_flush_timeout and napi_defer_hard_irqs does not bring much
-> value, so all of the busy poll tests were done with:
-> 
-> echo 2 | sudo tee /sys/class/net/ens4f1/napi_defer_hard_irqs
-> echo 200000 | sudo tee /sys/class/net/ens4f1/gro_flush_timeout
-> 
-> That said, performance can still suffer and packets would not make it up
-> to user space even with timeout being configured in the case I'm trying to
-> improve.
-
-Does the system not break out of busy poll then? See if the NAPI
-hrtimer fires or not.
-
-It's a 2k queue IIRC, with timeout of 200us, so 10Mpps at least.
-What rate is l2fwd sustaining without these patches?
-
-You may have to either increase the timeout or increase the frequency
-of repoll from user space (with a smaller budget).
+-- 
+Hello
+Nice to meet you
+my name is Hannah Johnson i will be glad if we get to know each other
+more better and share pictures i am  expecting your reply
+thank you
