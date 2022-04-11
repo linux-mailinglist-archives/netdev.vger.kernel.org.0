@@ -2,143 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC86E4FB16F
-	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 03:38:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94E5A4FB198
+	for <lists+netdev@lfdr.de>; Mon, 11 Apr 2022 04:09:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242231AbiDKBkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Apr 2022 21:40:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35408 "EHLO
+        id S242773AbiDKCLK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Apr 2022 22:11:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231403AbiDKBkc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Apr 2022 21:40:32 -0400
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20B9944A03;
-        Sun, 10 Apr 2022 18:38:20 -0700 (PDT)
-Received: by mail-qt1-x82d.google.com with SMTP id q6so4211763qtn.4;
-        Sun, 10 Apr 2022 18:38:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WqzdQ/gWc4cM8zDuvt8qnP7TS4UyEHxRHkUc5zYRYUM=;
-        b=OTT04MM23HwXOpeGOpFXnh3fsftCcVfqxJxbPwNMv4w03057ztto5xcJIN6451aId6
-         QIaxV+YJe8CYfAJIJt0ojQQFjH5WMEf1baoK1rvIpDsPuLeTjBYK5ajsGl1y6KEbknlC
-         ITYTuP3AkgB0rb/Cp+3ot5mAOvXNjJu5+hPUnN0N+zswqTSc3hpQu9EpG4ksOGgx/SQ/
-         BcodUIeSlU8iX5cnE0XIfSX62Z3gAObz+v22m8wPNyeWaHNQqQrkNAnIGczu6p3vIeWP
-         ji0CzKD5y8zfvEZdU2tSc0z/CEXV6j6OqSzDWow/l33X3LO7UuwvBIvMbTuL5WbYWh6z
-         98HQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WqzdQ/gWc4cM8zDuvt8qnP7TS4UyEHxRHkUc5zYRYUM=;
-        b=otiI/sWFUb+gQtQjKNTiFkZ7bqMAAmkjVp+FbfYRDWUBX2N+iJF+E8zUl4ud8yejK+
-         by7ZMZq7Xqqdxm5NfeM1+kB7mB18Zbol9MNaBWCkWRaL8DZDKNGGClZkDjchApVbyQbU
-         PkI8riJS1PU0iWi3GlUTD3tRRa9YfsECamW1TO5KwYpbiWNxaD7TUmh+8olzVmBMivff
-         ovIwJxID0WvJQDizy9VYFD5BwUh/hVyoKeUNhMTZRDqOyaG+4D65qqy8ajpOrs+S2MWH
-         kPSUh1psbhVJbe7oOeOgDcyTuRWUXJNKShIFPSUp1YUblE5Qt5P8P214sIhQHbpUj34I
-         qC+Q==
-X-Gm-Message-State: AOAM532cEgURpqoG5ckpCp2YiI7w2qEwu1USfGJkOAnFjU47jT7Xk2AA
-        yDOiYCA33J9pRLCvVTASUJMPi/Y8Ycc=
-X-Google-Smtp-Source: ABdhPJzNu4H4YKfUVPy80YNTAt719F2lmQ/ohbWnacIZ9s7Iyxmy9oW6WBAG3+ppKQxOoiW4e+w4Ww==
-X-Received: by 2002:ac8:5045:0:b0:2ed:974c:5a97 with SMTP id h5-20020ac85045000000b002ed974c5a97mr3375765qtm.199.1649641099239;
-        Sun, 10 Apr 2022 18:38:19 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id 64-20020a370743000000b0069a0cb6e4d5sm6989346qkh.81.2022.04.10.18.38.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Apr 2022 18:38:18 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     nicolas.ferre@microchip.com
-Cc:     claudiu.beznea@microchip.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] net/cadence: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
-Date:   Mon, 11 Apr 2022 01:38:12 +0000
-Message-Id: <20220411013812.2517212-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S239877AbiDKCLK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Apr 2022 22:11:10 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9800C1AD89;
+        Sun, 10 Apr 2022 19:08:57 -0700 (PDT)
+Received: from canpemm500007.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KcC0W6PZwzgYZ2;
+        Mon, 11 Apr 2022 10:07:07 +0800 (CST)
+Received: from localhost (10.174.179.215) by canpemm500007.china.huawei.com
+ (7.192.104.62) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 11 Apr
+ 2022 10:08:55 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <kvalo@kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <quic_cjhuang@quicinc.com>,
+        <quic_bqiang@quicinc.com>
+CC:     <ath11k@lists.infradead.org>, <linux-wireless@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH] ath11k: Fix build warning without CONFIG_IPV6
+Date:   Mon, 11 Apr 2022 10:08:43 +0800
+Message-ID: <20220411020843.10284-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Originating-IP: [10.174.179.215]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500007.china.huawei.com (7.192.104.62)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+drivers/net/wireless/ath/ath11k/mac.c:8175:13: error: ‘ath11k_mac_op_ipv6_changed’ defined but not used [-Werror=unused-function]
+ static void ath11k_mac_op_ipv6_changed(struct ieee80211_hw *hw,
+             ^~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Using pm_runtime_resume_and_get is more appropriate
-for simplifing code
+Wrap it with #ifdef block to fix this.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+Fixes: c3c36bfe998b ("ath11k: support ARP and NS offload")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- drivers/net/ethernet/cadence/macb_main.c | 22 ++++++++--------------
- 1 file changed, 8 insertions(+), 14 deletions(-)
+ drivers/net/wireless/ath/ath11k/mac.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 800d5ced5800..5555daee6f13 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -337,11 +337,9 @@ static int macb_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
- 	struct macb *bp = bus->priv;
- 	int status;
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index ca998fb13b62..18a2994b6d85 100644
+--- a/drivers/net/wireless/ath/ath11k/mac.c
++++ b/drivers/net/wireless/ath/ath11k/mac.c
+@@ -8151,6 +8151,7 @@ static void ath11k_mac_op_sta_statistics(struct ieee80211_hw *hw,
+ 	}
+ }
  
--	status = pm_runtime_get_sync(&bp->pdev->dev);
--	if (status < 0) {
--		pm_runtime_put_noidle(&bp->pdev->dev);
-+	status = pm_runtime_resume_and_get(&bp->pdev->dev);
-+	if (status < 0)
- 		goto mdio_pm_exit;
--	}
++#if IS_ENABLED(CONFIG_IPV6)
+ static void ath11k_generate_ns_mc_addr(struct ath11k *ar,
+ 				       struct ath11k_arp_ns_offload *offload)
+ {
+@@ -8245,6 +8246,7 @@ static void ath11k_mac_op_ipv6_changed(struct ieee80211_hw *hw,
+ 	/* generate ns multicast address */
+ 	ath11k_generate_ns_mc_addr(ar, offload);
+ }
++#endif
  
- 	status = macb_mdio_wait_for_idle(bp);
- 	if (status < 0)
-@@ -391,11 +389,9 @@ static int macb_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
- 	struct macb *bp = bus->priv;
- 	int status;
- 
--	status = pm_runtime_get_sync(&bp->pdev->dev);
--	if (status < 0) {
--		pm_runtime_put_noidle(&bp->pdev->dev);
-+	status = pm_runtime_resume_and_get(&bp->pdev->dev);
-+	if (status < 0)
- 		goto mdio_pm_exit;
--	}
- 
- 	status = macb_mdio_wait_for_idle(bp);
- 	if (status < 0)
-@@ -2745,9 +2741,9 @@ static int macb_open(struct net_device *dev)
- 
- 	netdev_dbg(bp->dev, "open\n");
- 
--	err = pm_runtime_get_sync(&bp->pdev->dev);
-+	err = pm_runtime_resume_and_get(&bp->pdev->dev);
- 	if (err < 0)
--		goto pm_exit;
-+		return err;
- 
- 	/* RX buffers initialization */
- 	macb_init_rx_buffer_size(bp, bufsz);
-@@ -4134,11 +4130,9 @@ static int at91ether_open(struct net_device *dev)
- 	u32 ctl;
- 	int ret;
- 
--	ret = pm_runtime_get_sync(&lp->pdev->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(&lp->pdev->dev);
-+	ret = pm_runtime_resume_and_get(&lp->pdev->dev);
-+	if (ret < 0)
- 		return ret;
--	}
- 
- 	/* Clear internal statistics */
- 	ctl = macb_readl(lp, NCR);
+ static void ath11k_mac_op_set_rekey_data(struct ieee80211_hw *hw,
+ 					 struct ieee80211_vif *vif,
 -- 
-2.25.1
+2.17.1
 
