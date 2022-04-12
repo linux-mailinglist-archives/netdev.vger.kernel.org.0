@@ -2,128 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 71E064FE576
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 17:57:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DADD74FE578
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 17:58:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349079AbiDLP7Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 11:59:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33298 "EHLO
+        id S1357412AbiDLQAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 12:00:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238148AbiDLP7Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 11:59:24 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17ADB2980D
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 08:57:06 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id e21so11872412wrc.8
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 08:57:06 -0700 (PDT)
+        with ESMTP id S238148AbiDLQAP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 12:00:15 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0AC72A70A
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 08:57:55 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id u3so28402830wrg.3
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 08:57:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=message-id:date:mime-version:user-agent:reply-to:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
+        d=pqrs.dk; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=tQAKufzYrZIiW7UDSGtuejMEpxHokTnftOGoQHPMHYA=;
-        b=MYlDlRgEES5S8Ugj6W+7R6VGP890P6G6h8OZkRuv9+1oRUu9qJGSPM47wEXijIuWtH
-         BWEOz9O4udSk2OooKSxURpJfYMJZdLPmKt9qhZnkQbfcCpEjYzSjCsnNEO7BKBFtfz6c
-         YHTspdVOLe+cfP/0ailL8G8tjbwq6TD+UpHIfzwFXHQetv8Vxeh9Ho9ZIu/93fc8TjYg
-         mT03/wgEXShwE7CnQ4YtFFYysi2k+M6BXyxbJy7acBPbJCa6QPtpWXt6OYHxGDGwyhZm
-         Kps/3G5dGFiUBWfqx4jh/sIMkW/RkuUul47D/QO67B62pcqc0YPv9qPZkhssyKgynfeH
-         nt4A==
+        bh=oXU3hwiMfKY80GD9UAyVjvKh2iumJni0metDCTcR0Zs=;
+        b=gyITdjS2U9I7emTve761Mhyp4rm1MvbYmGDM5K/9Gdw3Sh21Hakr6ivPa8gXU0wDAC
+         a4ZbjQmq0C7UU8g1ejYaBfbE0RV1tuhBAtEhgm4wY7b8WBO/IosxZImvbSEmXPt65t9/
+         G8EcZFQOlfN4oD+mTSgYBJkiJD9Xv10UQPABA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:reply-to
-         :subject:content-language:to:cc:references:from:organization
-         :in-reply-to:content-transfer-encoding;
-        bh=tQAKufzYrZIiW7UDSGtuejMEpxHokTnftOGoQHPMHYA=;
-        b=jobbJufibNX32LyyrGaUy8kbOdbAmtZY5i6At2iO3K0laVbmPvw3MQJ4IgqgWTttTU
-         Re/6dqMzRpoFlEhO3o/ZVWn+HohzgGbp6VWT0PyItvHe1CTJ0Bvu7WLKOW8lU0JnhrZa
-         Ma1GM7afYYb483vGzFrHffccVIwnfoNhkq2PqmzAjwi7gvJZ/3zUgIwdD2R5uZybzM2O
-         AnlzFLc+SUj7IJUyVLT+tDTS+FfkQMr2Ke/FgwNH55PzduxMw0oyNel2YLFgcibdfL1D
-         yoUapMGEIDHJJ7z+MI4HvNGNm2uX21J8moXWmQdNrUkqQuW3nhtAbtIhyfNMeg5EJvGF
-         BWug==
-X-Gm-Message-State: AOAM531UulgT7ENCLreHypLzV9RnMG3cbP8l/JPtdOThhZQh/kZLLiW8
-        irNDrWwZsUf8rTzcQL8w6fc2t04M4ncP9pDi
-X-Google-Smtp-Source: ABdhPJyabxq/zs7jNe3alkH/MB5niruJuZwp5eevNXf1164mCSYUp6NtuqrvfaPMduOegQ/I5ly24g==
-X-Received: by 2002:a05:6000:797:b0:207:a48e:f24d with SMTP id bu23-20020a056000079700b00207a48ef24dmr9915939wrb.270.1649779024588;
-        Tue, 12 Apr 2022 08:57:04 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:b41:c160:8c7d:f6d7:e9d9:8eff? ([2a01:e0a:b41:c160:8c7d:f6d7:e9d9:8eff])
-        by smtp.gmail.com with ESMTPSA id w7-20020a1cf607000000b00389a5390180sm2662110wmc.25.2022.04.12.08.57.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 08:57:03 -0700 (PDT)
-Message-ID: <b53c5aa5-68fd-e54f-847a-74aaf6f7c049@6wind.com>
-Date:   Tue, 12 Apr 2022 17:57:03 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: What is the purpose of dev->gflags?
-Content-Language: en-US
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oXU3hwiMfKY80GD9UAyVjvKh2iumJni0metDCTcR0Zs=;
+        b=l5Bxrs2tV3e3Pg2iIQT4Pm60aQx+T3wpaD3GtdE5mSFsmhpt7C2eLaVr/wxA76UcnV
+         fj60hHkeFW0vw0+j05sHkzGyMwP4SmDvYAnK3lG2n8uxkOyEsV0n/QSm3ebvuJDObn53
+         cjwuVjhnM9HfgOLrQS082dW88Zul2PLfkbyIoOanixZjAU2HhSUXBpfBdvdDWpK9nNtS
+         ubIq/P0bvUjHocdibj+ogo2LkiJoe/Kxb+FwbQuQon6Kxikl9oZ9wKXF6HTYsWaQrQQN
+         9JHkPBy9I1QmCxviVIZF+F/eMkma/hy5UUOg+epi6FiHzeSE9NqcIY5C3Co+eOMZzntL
+         aSBw==
+X-Gm-Message-State: AOAM531CLfUKujcrSZRi3EbA8Z8rhbZhz3/I5vud96j0VFFkHqtgyNKp
+        28tT6RColoJN7bBEzrYHnCp/jw==
+X-Google-Smtp-Source: ABdhPJzvB91kCZ6vPMivEWQNfWetW2FsTs2voeYmQzoe8Ic2OtqbXJZBPqn5lmO8qcT4wpU+wAv99Q==
+X-Received: by 2002:a05:6000:118f:b0:206:81d:c030 with SMTP id g15-20020a056000118f00b00206081dc030mr29130004wrx.169.1649779074464;
+        Tue, 12 Apr 2022 08:57:54 -0700 (PDT)
+Received: from capella.. (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
+        by smtp.gmail.com with ESMTPSA id n15-20020a5d6b8f000000b00207ab69284csm3497155wrx.23.2022.04.12.08.57.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 08:57:53 -0700 (PDT)
+From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-References: <20220408183045.wpyx7tqcgcimfudu@skbuf>
- <20220408115054.7471233b@kernel.org> <20220408191757.dllq7ztaefdyb4i6@skbuf>
- <797f525b-9b85-9f86-2927-6dfb34e61c31@6wind.com>
- <20220411153334.lpzilb57wddxlzml@skbuf>
- <cb3e862f-ad39-d739-d594-a5634c29cdb3@6wind.com>
- <20220411154911.3mjcprftqt6dpqou@skbuf>
- <41a58ead-9a14-c061-ee12-42050605deff@6wind.com>
- <20220411162016.sau3gertosgr6mtu@skbuf>
- <686bf021-e6a4-c77a-33c9-5b01481e12f4@6wind.com>
- <20220411165030.f65ztltftgxkltmr@skbuf>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-In-Reply-To: <20220411165030.f65ztltftgxkltmr@skbuf>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net] net: dsa: realtek: don't parse compatible string for RTL8366S
+Date:   Tue, 12 Apr 2022 17:57:49 +0200
+Message-Id: <20220412155749.1835519-1-alvin@pqrs.dk>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-Le 11/04/2022 à 18:50, Vladimir Oltean a écrit :
-> On Mon, Apr 11, 2022 at 06:27:54PM +0200, Nicolas Dichtel wrote:
->> Same here. Some complex path are called (eg. dev_change_rx_flags =>
->> ops->ndo_change_rx_flags() => vlan_dev_change_rx_flags => dev_set_allmulti =>
->> __dev_set_allmulti => etc).
->> Maybe you made an audit to check that other flags cannot be changed. But, if it
->> changes in the future, we will miss them here.
-> 
-> I guess I just don't see what other dev->flags that aren't masked out
-> from netdev notifier calls may or should change during the call to
-> __dev_set_allmulti(), regardless of the complexity or depth of the
-> call path.
-> 
-> And the commit that added the __dev_notify_flags() call said "dev:
-> always advertise rx_flags changes via netlink" (i.e. the function was
-> called for its rtmsg_ifinfo() part, not for its call_netdevice_notifiers()
-> part).
-> 
-> There *was* no call to dev_notify_flags prior to that commit, and it
-> didn't give a reason for voluntarily going through the netdev notifiers,
-> either.
-Yes.
+This switch is not even supported, but if someone were to actually put
+this compatible string "realtek,rtl8366s" in their device tree, they
+would be greeted with a kernel panic because the probe function would
+dereference NULL. So let's just remove it.
 
-> 
->> Did you see a bug? What is the issue?
-> 
-> I didn't see any bug, as mentioned I was trying to follow how
-> dev->gflags is used (see title) and stumbled upon this strange pattern
-> while doing so. dev->gflags is not updated from dev_set_allmulti()
-> almost by definition, otherwise in-kernel drivers wouldn't have a way to
-> update IFF_ALLMULTI without user space becoming aware of it.
-FWIW, here is the patch that has introduced the gflags field:
-https://git.kernel.org/pub/scm/linux/kernel/git/davem/netdev-vger-cvs.git/commit/?id=c7a329628f395
+Link: https://lore.kernel.org/all/CACRpkdYdKZs0WExXc3=0yPNOwP+oOV60HRz7SRoGjZvYHaT=1g@mail.gmail.com/
+Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+---
+ drivers/net/dsa/realtek/realtek-smi.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-> 
-> The reason for emailing you to was to understand the intention, I do
-> understand that the code has went through changes since 2013 and that
-> a more in-depth audit is still needed before making any change.
-Yep, because notifiers are called since this patch and maybe some modules expect
-this now.
+diff --git a/drivers/net/dsa/realtek/realtek-smi.c b/drivers/net/dsa/realtek/realtek-smi.c
+index 2243d3da55b2..6cec559c90ce 100644
+--- a/drivers/net/dsa/realtek/realtek-smi.c
++++ b/drivers/net/dsa/realtek/realtek-smi.c
+@@ -546,11 +546,6 @@ static const struct of_device_id realtek_smi_of_match[] = {
+ 		.data = &rtl8366rb_variant,
+ 	},
+ #endif
+-	{
+-		/* FIXME: add support for RTL8366S and more */
+-		.compatible = "realtek,rtl8366s",
+-		.data = NULL,
+-	},
+ #if IS_ENABLED(CONFIG_NET_DSA_REALTEK_RTL8365MB)
+ 	{
+ 		.compatible = "realtek,rtl8365mb",
+-- 
+2.35.1
+
