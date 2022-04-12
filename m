@@ -2,160 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34DB84FE7E5
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 20:24:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ADEE4FE7ED
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 20:27:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352072AbiDLS0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 14:26:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60644 "EHLO
+        id S1352388AbiDLS3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 14:29:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233150AbiDLS0y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 14:26:54 -0400
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC32A2CCA0
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 11:24:35 -0700 (PDT)
-Received: by mail-qt1-x82c.google.com with SMTP id t2so19700412qtw.9
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 11:24:35 -0700 (PDT)
+        with ESMTP id S238453AbiDLS3a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 14:29:30 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FAD55132D
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 11:27:12 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id t11so12036862eju.13
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 11:27:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Yseg7YHb6ueRr/v9ofq6boPTCbC2ojioMLPcsNQSVlw=;
-        b=X4NXLydEt6SO/gmB7e+GbX+CbcAfNqBZW4Wg6Ou8uJVEYhZEk9uqzxxmqgq3oc5az3
-         TvMvZKsaErLT5qym96HjBvJPgLfEKjYfvgZZT30XFcIQDFGv5RiniSOyogtKzqD9C08p
-         jpgKLoi7r9nCsoL2WhcTWN2fIK+Wyxlb4I1k4=
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=J21PHEN7ZRAhcQmfolizIm1UZz66Yv5HSRs/omXTjN4=;
+        b=ai8AgLXzydofSQZYGhVg7c3L0xJtwlCQ/he+hWR563VgxfEm1WR0HZH33PaD9aOrtv
+         T7DsGo8mSqIxdWBy9yJpH8UqK02zv5pHUno7fE7yp28p2Waa0EHhcSIAWx6zrAORViMP
+         Av+SUe2Va+KR3vHLBeNWuBMDlGPKPXOTq3VwRaxhdZ043ysEqbkKdbrLVdoBKxTmjmHI
+         QIXA4EhqDqaNU72tLcvFLH2/kYpSRxq7hvu3PnsLEa3BeEma9GK4Hjkq1qXg1VYeCZNv
+         evWVPSvqkTLrlLlgL0Sr1X0GsqF7hr0leUiwt4uc+65orFj6SksEc4Zz+gpWJz1CqhyZ
+         NzDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Yseg7YHb6ueRr/v9ofq6boPTCbC2ojioMLPcsNQSVlw=;
-        b=kKVNnWhLaMwqAu8ISqTRCmP4Dm6CLL2LEXNi3BKsUpnGc8Q3yHvsFYSt6Ne1ojQ1w7
-         /5nMTKRH7yVlYLfQTD776eaHmhe1yOm06SC6Xj9tKoUbpG+xefGYa7wMahSGNMLzLZff
-         nuiScZBiQ+zYFUUlKSrK4hCXygZyknyTmf0CZk6d02NokBPwOfZIgwHBv80963ApZru7
-         J9ZypGL+FhqOcAeMmYAoAFRh/pnABlDDe/DCRkhBaUTL4yHAToZIzXY3rZObzNfJCNSE
-         G8i9sNs0Nyt6yhm9D9HaeRbMZRRVyGWyzRjPFT93UDpfrUxSZIYpxWUNyoXSBtW4V5oG
-         In6Q==
-X-Gm-Message-State: AOAM531zAEPWEl2bVM+fmGy64ccH/sh8IYXoaQ2fDiTb2nyrh+YAyjTW
-        mSyNB4sUmm+O+0vLIbkIA+qvI7Qhnsq6G+Iir72R5A==
-X-Google-Smtp-Source: ABdhPJyK1NqWDxQ5lfS5gahOnmhqUmw6JiFN+In2vwIf7W0XE4Y15Coh+rmnQAtXsjQPbl+B8CZnr4Jxx+SIjIY3FGo=
-X-Received: by 2002:a05:622a:60f:b0:2e2:750:ce24 with SMTP id
- z15-20020a05622a060f00b002e20750ce24mr4423818qta.315.1649787874981; Tue, 12
- Apr 2022 11:24:34 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=J21PHEN7ZRAhcQmfolizIm1UZz66Yv5HSRs/omXTjN4=;
+        b=Vkdh2Tw9aAElogQwucF2t0VSNpDVTvzZRpfulVHJvZ1FFn4Hyh90sB/CmcHmAKcNOO
+         M5UbPte8MYLHWN0ZoeCDqL2ZvnXfgZK3ZNytVjbqyivpk5d5JjPagQVJYARVbfjaR9vq
+         farBWCCF9ZqRrDxB5WBhp0PosJxL7snrpLj0ZD0uPDoYQjifbqJbHFKxh3p9mBzZQ4yV
+         gfRgeLw3SetoFoptAKII2FARzn/Dmlr1xloUI8vocYigTWIhJUaCMbKKmFsxJtMVHyif
+         X+wawKWaE7k5oKPspVn6bT/EGGkqoZt6bWoWDCtvSTpRVKXRubVaes6SaqNDqNUpIAui
+         Kadg==
+X-Gm-Message-State: AOAM532iilW1pEjj1GiE8Ca9Y5bc/YhR9fg21G1u5PyydugFldHvRqHn
+        J+4W+iRS8955Z9kcDX7pTq6Ktr9XsoHYwo1+
+X-Google-Smtp-Source: ABdhPJxwxFwX2iQZaaU5kN48pPo1VZcaBojtGCWpHMds4VBe5NySbatRDe9kMehvAkCg1RcU2j3IOg==
+X-Received: by 2002:a17:907:7242:b0:6da:b561:d523 with SMTP id ds2-20020a170907724200b006dab561d523mr34414251ejc.118.1649788030496;
+        Tue, 12 Apr 2022 11:27:10 -0700 (PDT)
+Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
+        by smtp.gmail.com with ESMTPSA id j4-20020a509d44000000b0041cdc7ffda4sm105406edk.59.2022.04.12.11.27.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Apr 2022 11:27:10 -0700 (PDT)
+Message-ID: <99b0790a-9746-ea08-b57e-52c53436666d@blackwall.org>
+Date:   Tue, 12 Apr 2022 21:27:08 +0300
 MIME-Version: 1.0
-References: <1bdb8417-233d-932b-1dc0-c56042aedabd@broadcom.com>
- <20220412103724.54924945@kernel.org> <999fab5e-08e1-888e-6672-4fc868555b32@broadcom.com>
-In-Reply-To: <999fab5e-08e1-888e-6672-4fc868555b32@broadcom.com>
-From:   Michael Chan <michael.chan@broadcom.com>
-Date:   Tue, 12 Apr 2022 11:24:24 -0700
-Message-ID: <CACKFLinCdTELX7-19-hp4dK3Ysm2tCmW=qeh-SHoiKU5TShwuw@mail.gmail.com>
-Subject: Re: [RFC] Applicability of using 'txq_trans_update' during ring recovery
-To:     Ray Jui <ray.jui@broadcom.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000436eed05dc792c00"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH RFC net-next 01/13] net: bridge: add control of bum
+ flooding to bridge itself
+Content-Language: en-US
+To:     Joachim Wiberg <troglobit@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>
+Cc:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+References: <20220411133837.318876-1-troglobit@gmail.com>
+ <20220411133837.318876-2-troglobit@gmail.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20220411133837.318876-2-troglobit@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000436eed05dc792c00
-Content-Type: text/plain; charset="UTF-8"
+On 11/04/2022 16:38, Joachim Wiberg wrote:
+> The bridge itself is also a port, but unfortunately it does not (yet)
+> have a 'struct net_bridge_port'.  However, in many cases we want to
+> treat it as a proper port so concessions have been made, e.g., NULL
+> port or host_joined attributes.
+> 
+> This patch is an attempt to more of the same by adding support for
+> controlling flooding of unknown broadcast/unicast/multicast to the
+> bridge.  Something we often also want to control in an offloaded
+> switching fabric.
+> 
+> Signed-off-by: Joachim Wiberg <troglobit@gmail.com>
+> ---
+>  net/bridge/br_device.c  |  4 ++++
+>  net/bridge/br_input.c   | 11 ++++++++---
+>  net/bridge/br_private.h |  3 +++
+>  3 files changed, 15 insertions(+), 3 deletions(-)
+> 
+> diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
+> index 8d6bab244c4a..0aa7d21ac82c 100644
+> --- a/net/bridge/br_device.c
+> +++ b/net/bridge/br_device.c
+> @@ -526,6 +526,10 @@ void br_dev_setup(struct net_device *dev)
+>  	br->bridge_ageing_time = br->ageing_time = BR_DEFAULT_AGEING_TIME;
+>  	dev->max_mtu = ETH_MAX_MTU;
+>  
+> +	br_opt_toggle(br, BROPT_UNICAST_FLOOD, 1);
 
-On Tue, Apr 12, 2022 at 11:08 AM Ray Jui <ray.jui@broadcom.com> wrote:
+This one must be false by default. It changes current default behaviour.
+Unknown unicast is not currently passed up to the bridge if the port is
+not in promisc mode, this will change it. You'll have to make it consistent
+with promisc (e.g. one way would be for promisc always to enable unicast flood
+and it won't be possible to be disabled while promisc).
 
-> Can you please also comment on whether 'txq_trans_update' is considered
-> an acceptable approach in this particular scenario?
+> +	br_opt_toggle(br, BROPT_MCAST_FLOOD, 1);
+> +	br_opt_toggle(br, BROPT_BCAST_FLOOD, 1);
 
-In my opinion, updating trans_start to the current jiffies to prevent
-TX timeout is not a good solution.  It just buys you the arbitrary TX
-timeout period before the next TX timeout.  If you take more than this
-time to restart the TX queue, you will still get TX timeout.
+s/1/true/ for consistency
 
---000000000000436eed05dc792c00
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+> +
+>  	br_netfilter_rtable_init(br);
+>  	br_stp_timer_init(br);
+>  	br_multicast_init(br);
+> diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+> index 196417859c4a..d439b876bdf5 100644
+> --- a/net/bridge/br_input.c
+> +++ b/net/bridge/br_input.c
+> @@ -118,7 +118,8 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+>  		/* by definition the broadcast is also a multicast address */
+>  		if (is_broadcast_ether_addr(eth_hdr(skb)->h_dest)) {
+>  			pkt_type = BR_PKT_BROADCAST;
+> -			local_rcv = true;
+> +			if (br_opt_get(br, BROPT_BCAST_FLOOD))
+> +				local_rcv = true;
+>  		} else {
+>  			pkt_type = BR_PKT_MULTICAST;
+>  			if (br_multicast_rcv(&brmctx, &pmctx, vlan, skb, vid))
+> @@ -161,12 +162,16 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+>  			}
+>  			mcast_hit = true;
+>  		} else {
+> -			local_rcv = true;
+> -			br->dev->stats.multicast++;
+> +			if (br_opt_get(br, BROPT_MCAST_FLOOD)) {
+> +				local_rcv = true;
+> +				br->dev->stats.multicast++;
+> +			}
+>  		}
+>  		break;
+>  	case BR_PKT_UNICAST:
+>  		dst = br_fdb_find_rcu(br, eth_hdr(skb)->h_dest, vid);
+> +		if (!dst && br_opt_get(br, BROPT_UNICAST_FLOOD))
+> +			local_rcv = true;
+>  		break;
 
-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
-xV4Em+0wQoEIR2kPG6yiZNtUK0tNCaZejYU/Mf/bzdKSwud3pLgHV8ls83y2OU/ha9xgJMLpRswv
-xucFCxMsPmk0yoVmpbr92kIpLm+TomNZsL++LcDRa2ECAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
-AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
-c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
-AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
-TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
-bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
-L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
-BB0wG4EZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
-HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUz2bMvqtXpXM0u3vAvRkalz60
-CjswDQYJKoZIhvcNAQELBQADggEBAGUgeqqI/q2pkETeLr6oS7nnm1bkeNmtnJ2bnybNO/RdrbPj
-DHVSiDCCrWr6xrc+q6OiZDKm0Ieq6BN+Wfr8h5mCkZMUdJikI85WcQTRk6EEF2lzIiaULmFD7U15
-FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
-1CHkODrS2JGwDQxXKmyF64MhJiOutWHmqoGmLJVz1jnDvClsYtgT4zcNtoqKtjpWDYAefncWDPIQ
-DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
-aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
-EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEILqiUEzyBZvD/LuJF7hwN5DSXXocC/f3
-w5tIu1moJv4YMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDQx
-MjE4MjQzNVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
-SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQCJ++rBHX3NZ4ckz1TKg3fvh52ZIef4zA2w6na55D3yMtp7Viqx
-c5xvMT6C2g+/Dd4J5LmT5b889qSR1i/aJ/5zhmaVCF390+9qxABjHvcfePAxpQuQ5nHD0LtetBhj
-bZLE0W01btWPYoT7YiwOAbzDcb+poLph4YTPdxcOuCZZCWvQD2R+HGALAMI14drxprjW0VH1hLiT
-2FWB489aXoVndnt/8FBIuxjIHXAcEIlTIxNlrrAzHM1OIYg/UT9nvZ6cFnmof3eIUZ3jqACr/Cux
-0fpY/R8Q7HT5n0P+L65Dr8uyNL3O/faiCjupZ/VxVJ8He+Namnvtj/dNS1/Po+wC
---000000000000436eed05dc792c00--
+This adds new tests for all fast paths for host traffic,
+especially the port - port communication which is the most critical one.
+Please at least move the unicast test to the "else" block of "if (dst)" later.
+
+The other tests can be moved to host only code too, but would require bigger changes.
+Please try to keep the impact on the fast-path at minimum.
+
+>  	default:
+>  		break;
+> diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+> index 18ccc3d5d296..683bd0ee4c64 100644
+> --- a/net/bridge/br_private.h
+> +++ b/net/bridge/br_private.h
+> @@ -449,6 +449,9 @@ enum net_bridge_opts {
+>  	BROPT_VLAN_BRIDGE_BINDING,
+>  	BROPT_MCAST_VLAN_SNOOPING_ENABLED,
+>  	BROPT_MST_ENABLED,
+> +	BROPT_UNICAST_FLOOD,
+> +	BROPT_MCAST_FLOOD,
+> +	BROPT_BCAST_FLOOD,
+>  };
+>  
+>  struct net_bridge {
+
