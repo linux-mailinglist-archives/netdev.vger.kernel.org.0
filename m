@@ -2,55 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D5624FE508
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 17:44:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65FEE4FE511
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 17:47:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352971AbiDLPqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 11:46:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59636 "EHLO
+        id S1357274AbiDLPtN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 11:49:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349533AbiDLPqY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 11:46:24 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 858E410E1;
-        Tue, 12 Apr 2022 08:44:05 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id b15so22873599edn.4;
-        Tue, 12 Apr 2022 08:44:05 -0700 (PDT)
+        with ESMTP id S235507AbiDLPtM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 11:49:12 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 142C95FF23;
+        Tue, 12 Apr 2022 08:46:54 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id bh17so38149044ejb.8;
+        Tue, 12 Apr 2022 08:46:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=NXTt21pP00Yb2qQhiXa+16lsp7D3w+nhEqL+5vsS12M=;
-        b=Rqp9TqHC8gBsLVoMXbStnEGzZMTPX95+kpVbKAi0Y2GDZEQWzTKb4lFaep0wk3ED5O
-         X3gRWYeovPEl/3OD48ulzalDPTBMKZh+JjsqJPfsXrs/cZLDyHyzwog7nYUL2TgfM2bj
-         /xi34FyJFLnN4p1QymAmHZfWHtE9NitUul2m55zZbccOFASOc1D0IAFtjleeROWqC91F
-         ejm9ivKThag8DFzEBXEbEaMGFaLI/9dGKZkkjr+igq515gt8HqhZos7gH1e8KjBK5Xqt
-         H5e5E2dhPs5g4HlkTYENoldIJgZzQQcF1cusoi0tdRX41ol7llIzTotKnMiMIAxLncm9
-         zTbA==
+        bh=gwZ9CHvYhZZ9147CrVLA+yjNadbJUhOCmSfrIzjUHWg=;
+        b=P+vpgkwx8MjQx+ycKCwc6BgaPi7uKHrw/x7OkuGiydyZW8GRegFWgWZSktFmeoBJHl
+         y+XpOHd0TvosGRU4ZnFkTGFcBmh+NoISJ6JkQxso/rBSxn+3A/uBJ6rwxHCD/sS/jcCU
+         V/MOKfTg6mg4jZKkI3fObyPuXVaFZyRRRBEormnhQIJyM6SpwLoktBhfVkPFcwl2kdSQ
+         lVZ16fap4LpHCqNGCzRpLJJ71IBEQWfqdN5T0C+bu1q97QhmnkekHEQzPXcVXzZwoe8s
+         Q6Xm9UGV6eWFo5EXc5fHt7AyvMQ8VpGosW/MIjaFK7Gb5nSyp6Qrx1wzhMsgf8wn3XJk
+         Q/qQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=NXTt21pP00Yb2qQhiXa+16lsp7D3w+nhEqL+5vsS12M=;
-        b=20fkcKUur4EHaP2rjUBPQEp595Cn+oxmQ0KCqJI5/KcipcYIBbdDlEjOMD9dHCehvp
-         YAwXcSxQ72gPn68IHajF3vtWGzG4Zd9EiELqDOzXJySXgrFD+MjYG2YhVurXprZasrKr
-         qUCeJimyG3+w6PyGjoi0TcjaCa2sFtDkc2eyRnkyiLIxHkn57bIU0ufMUU/cq0ptFEjO
-         7CWnJqoBJ59waU/zA4JJJvyxQZS5L3j1J4zHG4oEHvJVMDchQh6JuWaQFNFOrvwHmI6W
-         0dvYsj40/N8iC3gkf0jzruoqyzcGx4vYuFfxxFBA9FR5DRSEa2as8MilnPdGxkjGRL+E
-         i80w==
-X-Gm-Message-State: AOAM533oc7h89jbM3o2yIU3oD2RyqYIMOpP7u+A3ztzbe1vCbQXqIF+A
-        2aSgvpaFDuzLl9inhcTgcmA=
-X-Google-Smtp-Source: ABdhPJzaldN29rZURT2NOIMe+NKGjjWzDphXskZr9BXgnSyVxiiayAAXHEV/jpKDrNPsg6k3bxXghw==
-X-Received: by 2002:a50:871e:0:b0:41d:77c0:6927 with SMTP id i30-20020a50871e000000b0041d77c06927mr13569863edb.354.1649778243710;
-        Tue, 12 Apr 2022 08:44:03 -0700 (PDT)
+        bh=gwZ9CHvYhZZ9147CrVLA+yjNadbJUhOCmSfrIzjUHWg=;
+        b=WkYucC9JGgbHucWxvG93IsLEOMIz3vTrSINBkKis3O+6KmtCNy1hh0lUytuVNzmrtE
+         14dN/JLcJvJd5pQ/bLvf9GAr2K5eOJF7e/hvYuCvfZopQoabuea0k0Z0vI9Wj+rfzEJv
+         hIKUffmQumMu47R3YyJ0P6ppLH6DyJAnV+DU16vLdJwbI2sphP41kMaTYFxVtlLNb/Jq
+         AQazSEP7oyl9FOshdjRoIDxVuMExALMFwcCiryXd4sUhajIF6nQX3FlbxedXuXwNdJGr
+         Ugir7gKl7ZCYMfwdyAI29Mf87g/GxeoQKW773G+6aW6jFZoGXIlSxo4tTwjSHOxea46X
+         GVfQ==
+X-Gm-Message-State: AOAM532Bf/3Va7SkP7V2tfTiecyVuBY7Z7QxK7aejftrc0p6nLzIXUdU
+        cwvsvcXU2/TB0yCct1LypEw=
+X-Google-Smtp-Source: ABdhPJz0ggnoLW3vkCVf9b6N6Oatr4EM1jR37FXRi8Iw3QENChkAGly44hf54w3k/WSzhNIqvsrpaw==
+X-Received: by 2002:a17:907:160b:b0:6e8:58c1:8850 with SMTP id hb11-20020a170907160b00b006e858c18850mr15415064ejc.284.1649778412502;
+        Tue, 12 Apr 2022 08:46:52 -0700 (PDT)
 Received: from krava ([83.240.62.142])
-        by smtp.gmail.com with ESMTPSA id z21-20020a1709063a1500b006da6436819dsm13252584eje.173.2022.04.12.08.44.02
+        by smtp.gmail.com with ESMTPSA id s11-20020a170906284b00b006e108693850sm13214817ejc.28.2022.04.12.08.46.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 08:44:03 -0700 (PDT)
-Date:   Tue, 12 Apr 2022 17:44:00 +0200
+        Tue, 12 Apr 2022 08:46:52 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 17:46:49 +0200
 From:   Jiri Olsa <olsajiri@gmail.com>
 To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Masami Hiramatsu <mhiramat@kernel.org>,
@@ -60,15 +62,19 @@ Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>
-Subject: Re: [RFC bpf-next 4/4] selftests/bpf: Add attach bench test
-Message-ID: <YlWeQIUaqGnbg4K0@krava>
+Subject: Re: [RFC bpf-next 0/4] bpf: Speed up symbol resolving in kprobe
+ multi link
+Message-ID: <YlWe6U7qSsFA7DYK@krava>
 References: <20220407125224.310255-1-jolsa@kernel.org>
- <20220407125224.310255-5-jolsa@kernel.org>
- <CAEf4BzbE1n3Lie+tWTzN69RQUWgjxePorxRr9J8CuiQVUfy-kA@mail.gmail.com>
+ <20220408232922.mz2vi2oaxf2fvnvt@MBP-98dd607d3435.dhcp.thefacebook.com>
+ <YlHrdhkfz+IuGbZM@krava>
+ <CAEf4BzYXHeM+m64cV6_5TU0_BjotDVo+iw_wpJEWLkU9gsvfXg@mail.gmail.com>
+ <CAADnVQLQj-ixQo5xEJEZaJavoNpVdhizDmkqFm+pDJq97_Ecpw@mail.gmail.com>
+ <CAEf4BzbV2PObd26scnTfQ8C1508k=z4cc7mvPS5BAc+9sXhVVg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAEf4BzbE1n3Lie+tWTzN69RQUWgjxePorxRr9J8CuiQVUfy-kA@mail.gmail.com>
+In-Reply-To: <CAEf4BzbV2PObd26scnTfQ8C1508k=z4cc7mvPS5BAc+9sXhVVg@mail.gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -79,134 +85,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 03:15:40PM -0700, Andrii Nakryiko wrote:
-
-SNIP
-
-> > +static int get_syms(char ***symsp, size_t *cntp)
-> > +{
-> > +       size_t cap = 0, cnt = 0, i;
-> > +       char *name, **syms = NULL;
-> > +       struct hashmap *map;
-> > +       char buf[256];
-> > +       FILE *f;
-> > +       int err;
-> > +
-> > +       /*
-> > +        * The available_filter_functions contains many duplicates,
-> > +        * but other than that all symbols are usable in kprobe multi
-> > +        * interface.
-> > +        * Filtering out duplicates by using hashmap__add, which won't
-> > +        * add existing entry.
-> > +        */
-> > +       f = fopen(DEBUGFS "available_filter_functions", "r");
+On Mon, Apr 11, 2022 at 03:21:49PM -0700, Andrii Nakryiko wrote:
+> On Mon, Apr 11, 2022 at 3:18 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Mon, Apr 11, 2022 at 10:15 PM Andrii Nakryiko
+> > <andrii.nakryiko@gmail.com> wrote:
+> > >
+> > > On Sat, Apr 9, 2022 at 1:24 PM Jiri Olsa <olsajiri@gmail.com> wrote:
+> > > >
+> > > > On Fri, Apr 08, 2022 at 04:29:22PM -0700, Alexei Starovoitov wrote:
+> > > > > On Thu, Apr 07, 2022 at 02:52:20PM +0200, Jiri Olsa wrote:
+> > > > > > hi,
+> > > > > > sending additional fix for symbol resolving in kprobe multi link
+> > > > > > requested by Alexei and Andrii [1].
+> > > > > >
+> > > > > > This speeds up bpftrace kprobe attachment, when using pure symbols
+> > > > > > (3344 symbols) to attach:
+> > > > > >
+> > > > > > Before:
+> > > > > >
+> > > > > >   # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
+> > > > > >   ...
+> > > > > >   6.5681 +- 0.0225 seconds time elapsed  ( +-  0.34% )
+> > > > > >
+> > > > > > After:
+> > > > > >
+> > > > > >   # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
+> > > > > >   ...
+> > > > > >   0.5661 +- 0.0275 seconds time elapsed  ( +-  4.85% )
+> > > > > >
+> > > > > >
+> > > > > > There are 2 reasons I'm sending this as RFC though..
+> > > > > >
+> > > > > >   - I added test that meassures attachment speed on all possible functions
+> > > > > >     from available_filter_functions, which is 48712 functions on my setup.
+> > > > > >     The attach/detach speed for that is under 2 seconds and the test will
+> > > > > >     fail if it's bigger than that.. which might fail on different setups
+> > > > > >     or loaded machine.. I'm not sure what's the best solution yet, separate
+> > > > > >     bench application perhaps?
+> > > > >
+> > > > > are you saying there is a bug in the code that you're still debugging?
+> > > > > or just worried about time?
+> > > >
+> > > > just the time, I can make the test fail (cross the 2 seconds limit)
+> > > > when the machine is loaded, like with running kernel build
+> > > >
+> > > > but I couldn't reproduce this with just paralel test_progs run
+> > > >
+> > > > >
+> > > > > I think it's better for it to be a part of selftest.
+> > > > > CI will take extra 2 seconds to run.
+> > > > > That's fine. It's a good stress test.
+> > >
+> > > I agree it's a good stress test, but I disagree on adding it as a
+> > > selftests. The speed will depend on actual host machine. In VMs it
+> > > will be slower, on busier machines it will be slower, etc. Generally,
+> > > depending on some specific timing just causes unnecessary maintenance
+> > > headaches. We can have this as a benchmark, if someone things it's
+> > > very important. I'm impartial to having this regularly executed as
+> > > it's extremely unlikely that we'll accidentally regress from NlogN
+> > > back to N^2. And if there is some X% slowdown such selftest is
+> > > unlikely to alarm us anyways. Sporadic failures will annoy us way
+> > > before that to the point of blacklisting this selftests in CI at the
+> > > very least.
+> >
+> > Such selftest shouldn't be measuring the speed, of course.
+> > The selftest will be about:
+> > 1. not crashing
+> > 2. succeeding to attach and getting some meaningful data back.
 > 
-> I'm really curious how did you manage to attach to everything in
-> available_filter_functions because when I'm trying to do that I fail.
+> Yeah, that's totally fine with me. My biggest beef is using time as a
+> measure of test success, which will be flaky. Just a slow-ish test
+> doing a lot of work sounds totally fine.
 
-the new code makes the differece ;-) so the main problem I could not
-use available_filter_functions functions before were cases like:
-
-  # cat available_filter_functions | grep sys_ni_syscall
-  sys_ni_syscall
-  sys_ni_syscall
-  sys_ni_syscall
-  sys_ni_syscall
-  sys_ni_syscall
-  sys_ni_syscall
-  sys_ni_syscall
-  sys_ni_syscall
-  sys_ni_syscall
-  sys_ni_syscall
-  sys_ni_syscall
-  sys_ni_syscall
-  sys_ni_syscall
-  sys_ni_syscall
-  sys_ni_syscall
-
-which when you try to resolve you'll find just one address:
-
-  # cat /proc/kallsyms | egrep 'T sys_ni_syscall'
-  ffffffff81170020 T sys_ni_syscall
-
-this is caused by entries like:
-    __SYSCALL(156, sys_ni_syscall)
-
-when generating syscalls for given arch
-
-this is handled by the new code by removing duplicates when
-reading available_filter_functions
-
-
-
-another case is the other way round, like with:
-
-  # cat /proc/kallsyms | grep 't t_next'
-  ffffffff8125c3f0 t t_next
-  ffffffff8126a320 t t_next
-  ffffffff81275de0 t t_next
-  ffffffff8127efd0 t t_next
-  ffffffff814d6660 t t_next
-
-that has just one 'ftrace-able' instance:
-
-  # cat available_filter_functions | grep '^t_next$'
-  t_next
-
-and this is handled by calling ftrace_location on address when
-resolving symbols, to ensure each reasolved symbol lives in ftrace 
-
-> available_filter_functions has a bunch of functions that should not be
-> attachable (e.g., notrace functions). Look just at __bpf_tramp_exit:
-> 
->   void notrace __bpf_tramp_exit(struct bpf_tramp_image *tr);
-> 
-> So first, curious what I am doing wrong or rather why it succeeds in
-> your case ;)
-> 
-> But second, just wanted to plea to "fix" available_filter_functions to
-> not list stuff that should not be attachable. Can you please take a
-> look and checks what's going on there and why do we have notrace
-> functions (and what else should *NOT* be there)?
-
-yes, seems like a bug ;-) it's in available_filter_functions
-but it does not have 'call __fentry__' at the entry..
-
-I was going to check on that, because you brought that up before,
-but did not get to it yet
-
-> 
-> 
-> > +       if (!f)
-> > +               return -EINVAL;
-> > +
-> > +       map = hashmap__new(symbol_hash, symbol_equal, NULL);
-> > +       err = libbpf_get_error(map);
-> > +       if (err)
-> > +               goto error;
-> > +
-> 
-> [...]
-> 
-> > +
-> > +       attach_delta_ns = (attach_end_ns - attach_start_ns) / 1000000000.0;
-> > +       detach_delta_ns = (detach_end_ns - detach_start_ns) / 1000000000.0;
-> > +
-> > +       fprintf(stderr, "%s: found %lu functions\n", __func__, cnt);
-> > +       fprintf(stderr, "%s: attached in %7.3lfs\n", __func__, attach_delta_ns);
-> > +       fprintf(stderr, "%s: detached in %7.3lfs\n", __func__, detach_delta_ns);
-> > +
-> > +       if (attach_delta_ns > 2.0)
-> > +               PRINT_FAIL("attach time above 2 seconds\n");
-> > +       if (detach_delta_ns > 2.0)
-> > +               PRINT_FAIL("detach time above 2 seconds\n");
-> 
-> see my reply on the cover letter, any such "2 second" assumption are
-> guaranteed to bite us. We've dealt with a lot of timing issues due to
-> CI being slower and more unpredictable in terms of performance, I'd
-> like to avoid dealing with one more case like that.
-
-right, I'll remove the check
+ok, I'll remove the 2 seconds check
 
 thanks,
 jirka
