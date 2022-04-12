@@ -2,347 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 96A204FE7E3
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 20:24:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34DB84FE7E5
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 20:24:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239698AbiDLS0n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 14:26:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59776 "EHLO
+        id S1352072AbiDLS0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 14:26:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245485AbiDLS0i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 14:26:38 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDD7BE0D6
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 11:24:19 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id d10so23464952edj.0
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 11:24:19 -0700 (PDT)
+        with ESMTP id S233150AbiDLS0y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 14:26:54 -0400
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC32A2CCA0
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 11:24:35 -0700 (PDT)
+Received: by mail-qt1-x82c.google.com with SMTP id t2so19700412qtw.9
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 11:24:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=0I4B/XmBZ0J0+KCFpKsvKUIAVo+1Rq3rKSI2L+PakG8=;
-        b=DDZQbk5T5ql0/W3nkHkf2d+GTy4eAoTBHfDsI23Lmou7j7WGazvlpFzvkJ6e+TOnmH
-         7TvDhLDoyPmwyn/lb+b1/Te72O8GWh3fpqlo9Is2903pVqbvUfh+tn1lH++QtmDx35JQ
-         EqnqQqeUNBHRIYAEPPGi/8T7lw8woq/41JEc1XPzU0Ye+Rf8z0eim03VIpBE8wyOqV8g
-         sjKW44fx8bHQjqPLezxJs4sBFM44RqodzIqnVQ9TbWli9Ykmk5zpDcJnTMEcYf7rZPb2
-         tcUl0F+bdNBkvc/zLXkoR1q99XwpbtzqAkL4O3QfcwOfyFhG2tjvUMAR8JG6u9s7jqe0
-         vYdA==
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Yseg7YHb6ueRr/v9ofq6boPTCbC2ojioMLPcsNQSVlw=;
+        b=X4NXLydEt6SO/gmB7e+GbX+CbcAfNqBZW4Wg6Ou8uJVEYhZEk9uqzxxmqgq3oc5az3
+         TvMvZKsaErLT5qym96HjBvJPgLfEKjYfvgZZT30XFcIQDFGv5RiniSOyogtKzqD9C08p
+         jpgKLoi7r9nCsoL2WhcTWN2fIK+Wyxlb4I1k4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=0I4B/XmBZ0J0+KCFpKsvKUIAVo+1Rq3rKSI2L+PakG8=;
-        b=JR/GWOxfQVWFvfH3ccDhr6yuvMV57IT0/QRNX7nIrHmMLuMk1aj1yFZEKsl2y+svrH
-         7Caj+3yKC5XFSbmkgKlmjUREbxcCw6VwiiNXoEH37WabMVZgtOdgMzr31J2XmtVD08in
-         T+Gqx5oGNUYwOMMrG+HxeLBTJvCWOaraUJ/p6PIcKhEfFNlYhhLdbmqzNmwA6NfAG0Pm
-         07t3d+KuA5OIqL9c/bK8CA6rEJM5hCzSM38aizR10mlguSx/T5uZQHCitnNfDhrKyVbc
-         vFD3rTrScxKHwzQ+pB7oK7yyKyFedjfc8J401d0GzxHr2DzoiCUvQn/n5QPr+weibf0p
-         4XEg==
-X-Gm-Message-State: AOAM531qzHm9CD/t0KhKV3GUmNSimN0ePXUpBe5+XgBQA/fgugpRPPLa
-        4ekTe76kJpJXZbqsWy3KKcw6vg==
-X-Google-Smtp-Source: ABdhPJyhIv0JZjX6/DjjHmFDKPd6+RjNKNCBqa+35BDxcgTE9byyhC8B1j+1kgFJ/EV0XGEz1q168g==
-X-Received: by 2002:a50:cc9e:0:b0:41d:7123:d3ba with SMTP id q30-20020a50cc9e000000b0041d7123d3bamr17050254edi.296.1649787858336;
-        Tue, 12 Apr 2022 11:24:18 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id c13-20020a17090654cd00b006e0db351d01sm13431629ejp.124.2022.04.12.11.24.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 11:24:18 -0700 (PDT)
-Message-ID: <37bb2846-6371-1e49-9a7e-7c27a7a8b9c4@blackwall.org>
-Date:   Tue, 12 Apr 2022 21:24:16 +0300
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Yseg7YHb6ueRr/v9ofq6boPTCbC2ojioMLPcsNQSVlw=;
+        b=kKVNnWhLaMwqAu8ISqTRCmP4Dm6CLL2LEXNi3BKsUpnGc8Q3yHvsFYSt6Ne1ojQ1w7
+         /5nMTKRH7yVlYLfQTD776eaHmhe1yOm06SC6Xj9tKoUbpG+xefGYa7wMahSGNMLzLZff
+         nuiScZBiQ+zYFUUlKSrK4hCXygZyknyTmf0CZk6d02NokBPwOfZIgwHBv80963ApZru7
+         J9ZypGL+FhqOcAeMmYAoAFRh/pnABlDDe/DCRkhBaUTL4yHAToZIzXY3rZObzNfJCNSE
+         G8i9sNs0Nyt6yhm9D9HaeRbMZRRVyGWyzRjPFT93UDpfrUxSZIYpxWUNyoXSBtW4V5oG
+         In6Q==
+X-Gm-Message-State: AOAM531zAEPWEl2bVM+fmGy64ccH/sh8IYXoaQ2fDiTb2nyrh+YAyjTW
+        mSyNB4sUmm+O+0vLIbkIA+qvI7Qhnsq6G+Iir72R5A==
+X-Google-Smtp-Source: ABdhPJyK1NqWDxQ5lfS5gahOnmhqUmw6JiFN+In2vwIf7W0XE4Y15Coh+rmnQAtXsjQPbl+B8CZnr4Jxx+SIjIY3FGo=
+X-Received: by 2002:a05:622a:60f:b0:2e2:750:ce24 with SMTP id
+ z15-20020a05622a060f00b002e20750ce24mr4423818qta.315.1649787874981; Tue, 12
+ Apr 2022 11:24:34 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH RFC net-next 04/13] net: bridge: netlink support for
- controlling BUM flooding to bridge
-Content-Language: en-US
-To:     Joachim Wiberg <troglobit@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>
-Cc:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-References: <20220411133837.318876-1-troglobit@gmail.com>
- <20220411133837.318876-5-troglobit@gmail.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20220411133837.318876-5-troglobit@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <1bdb8417-233d-932b-1dc0-c56042aedabd@broadcom.com>
+ <20220412103724.54924945@kernel.org> <999fab5e-08e1-888e-6672-4fc868555b32@broadcom.com>
+In-Reply-To: <999fab5e-08e1-888e-6672-4fc868555b32@broadcom.com>
+From:   Michael Chan <michael.chan@broadcom.com>
+Date:   Tue, 12 Apr 2022 11:24:24 -0700
+Message-ID: <CACKFLinCdTELX7-19-hp4dK3Ysm2tCmW=qeh-SHoiKU5TShwuw@mail.gmail.com>
+Subject: Re: [RFC] Applicability of using 'txq_trans_update' during ring recovery
+To:     Ray Jui <ray.jui@broadcom.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000436eed05dc792c00"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/04/2022 16:38, Joachim Wiberg wrote:
-> This patch adds netlink support for controlling the new broadcast,
-> unicast, and multicast flooding flags to the bridge itself.
-> 
-> The messy part is in br_setport(), which re-indents a large block of
-> code for the port settings.  To reduce code duplication a few new
-> variables have been added; new_flags and dev.  The latter is used for
-> the recently renamed br_switchdev_set_dev_flag(), which can now be used
-> by underlying switching fabric drivers as another source of information
-> when controlling flooding of unknown BUM traffic to the CPU port.
-> 
-> Signed-off-by: Joachim Wiberg <troglobit@gmail.com>
-> ---
+--000000000000436eed05dc792c00
+Content-Type: text/plain; charset="UTF-8"
 
-Absolutely not. This is just wrong on a few levels and way too hacky.
+On Tue, Apr 12, 2022 at 11:08 AM Ray Jui <ray.jui@broadcom.com> wrote:
 
-Please separate the bridge handling altogether and make it clean.
-No need to integrate it with the port handling, also I think you've missed
-a few things about bool options, more below...
+> Can you please also comment on whether 'txq_trans_update' is considered
+> an acceptable approach in this particular scenario?
 
-For boolopts examples you can check BR_BOOLOPT_NO_LL_LEARN,
-BR_BOOLOPT_MCAST_VLAN_SNOOPING and BR_BOOLOPT_MST_ENABLE.
+In my opinion, updating trans_start to the current jiffies to prevent
+TX timeout is not a good solution.  It just buys you the arbitrary TX
+timeout period before the next TX timeout.  If you take more than this
+time to restart the TX queue, you will still get TX timeout.
 
->  net/bridge/br_netlink.c | 160 ++++++++++++++++++++++++++++++----------
->  1 file changed, 123 insertions(+), 37 deletions(-)
-> 
-> diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-> index 8f4297287b32..68bbf703b31a 100644
-> --- a/net/bridge/br_netlink.c
-> +++ b/net/bridge/br_netlink.c
-> @@ -225,13 +225,29 @@ static inline size_t br_nlmsg_size(struct net_device *dev, u32 filter_mask)
->  		+ nla_total_size(4); /* IFLA_BRPORT_BACKUP_PORT */
->  }
->  
-> -static int br_port_fill_attrs(struct sk_buff *skb,
-> +static int br_port_fill_attrs(struct sk_buff *skb, const struct net_bridge *br,
->  			      const struct net_bridge_port *p)
->  {
-> -	u8 mode = !!(p->flags & BR_HAIRPIN_MODE);
->  	struct net_bridge_port *backup_p;
->  	u64 timerval;
-> +	u8 mode;
->  
-> +	if (!p) {
-> +		if (!br)
-> +			return -EINVAL;
-> +
-> +		if (nla_put_u8(skb, IFLA_BRPORT_UNICAST_FLOOD,
-> +			       br_opt_get(br, BROPT_UNICAST_FLOOD)) ||
-> +		    nla_put_u8(skb, IFLA_BRPORT_MCAST_FLOOD,
-> +			       br_opt_get(br, BROPT_MCAST_FLOOD)) ||
-> +		    nla_put_u8(skb, IFLA_BRPORT_BCAST_FLOOD,
-> +			       br_opt_get(br, BROPT_BCAST_FLOOD)))
-> +			return -EMSGSIZE;
+--000000000000436eed05dc792c00
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
-No. Bool opts are already exposed through IFLA_BR_MULTI_BOOLOPT.
-
-> +
-> +		return 0;
-> +	}
-> +
-> +	mode = !!(p->flags & BR_HAIRPIN_MODE);
->  	if (nla_put_u8(skb, IFLA_BRPORT_STATE, p->state) ||
->  	    nla_put_u16(skb, IFLA_BRPORT_PRIORITY, p->priority) ||
->  	    nla_put_u32(skb, IFLA_BRPORT_COST, p->path_cost) ||
-> @@ -475,11 +491,11 @@ static int br_fill_ifinfo(struct sk_buff *skb,
->  	     nla_put_u32(skb, IFLA_LINK, dev_get_iflink(dev))))
->  		goto nla_put_failure;
->  
-> -	if (event == RTM_NEWLINK && port) {
-> +	if (event == RTM_NEWLINK) {
->  		struct nlattr *nest;
->  
->  		nest = nla_nest_start(skb, IFLA_PROTINFO);
-> -		if (nest == NULL || br_port_fill_attrs(skb, port) < 0)
-> +		if (!nest || br_port_fill_attrs(skb, br, port) < 0)
->  			goto nla_put_failure;
->  		nla_nest_end(skb, nest);
->  	}
-> @@ -911,43 +927,113 @@ static void br_set_port_flag(struct net_bridge_port *p, struct nlattr *tb[],
->  		p->flags &= ~mask;
->  }
->  
-> +/* Map bridge options to brport flags */
-> +static unsigned long br_boolopt_map_flags(struct br_boolopt_multi *bm)
-> +{
-> +	unsigned long bitmap = bm->optmask;
-> +	unsigned long bitmask = 0;
-> +	int opt_id;
-> +
-> +	for_each_set_bit(opt_id, &bitmap, BR_BOOLOPT_MAX) {
-> +		if (!(bm->optval & BIT(opt_id)))
-> +			continue;
-> +
-> +		switch (opt_id) {
-> +		case BROPT_UNICAST_FLOOD:
-> +			bitmask |= BR_FLOOD;
-> +			break;
-> +		case BROPT_MCAST_FLOOD:
-> +			bitmask |= BR_MCAST_FLOOD;
-> +			break;
-> +		case BROPT_BCAST_FLOOD:
-> +			bitmask |= BR_BCAST_FLOOD;
-> +			break;
-> +		}
-> +	}
-> +
-> +	return bitmask;
-> +}
-> +
-> +static void br_set_bropt(struct net_bridge *br, struct nlattr *tb[],
-> +			 int attrtype, enum net_bridge_opts opt)
-> +{
-> +	if (!tb[attrtype])
-> +		return;
-> +
-> +	br_opt_toggle(br, opt, !!nla_get_u8(tb[attrtype]));
-> +}
-
-These must be controlled via the boolopt api and attributes, not through
-additional nl attributes.
-
-> +
-> +#define BROPT_MASK (BROPT_UNICAST_FLOOD | BROPT_MCAST_FLOOD | BROPT_MCAST_FLOOD)
-> +
->  /* Process bridge protocol info on port */
-> -static int br_setport(struct net_bridge_port *p, struct nlattr *tb[],
-> -		      struct netlink_ext_ack *extack)
-> +static int br_setport(struct net_bridge *br, struct net_bridge_port *p,
-> +		      struct nlattr *tb[], struct netlink_ext_ack *extack)
->  {
-> -	unsigned long old_flags, changed_mask;
-> +	unsigned long old_flags, new_flags, changed_mask;
-> +	struct br_boolopt_multi old_opts = {
-> +		.optmask = BROPT_MASK
-> +	};
->  	bool br_vlan_tunnel_old;
-> +	struct net_device *dev;
->  	int err;
->  
-> -	old_flags = p->flags;
-> -	br_vlan_tunnel_old = (old_flags & BR_VLAN_TUNNEL) ? true : false;
-> -
-> -	br_set_port_flag(p, tb, IFLA_BRPORT_MODE, BR_HAIRPIN_MODE);
-> -	br_set_port_flag(p, tb, IFLA_BRPORT_GUARD, BR_BPDU_GUARD);
-> -	br_set_port_flag(p, tb, IFLA_BRPORT_FAST_LEAVE,
-> -			 BR_MULTICAST_FAST_LEAVE);
-> -	br_set_port_flag(p, tb, IFLA_BRPORT_PROTECT, BR_ROOT_BLOCK);
-> -	br_set_port_flag(p, tb, IFLA_BRPORT_LEARNING, BR_LEARNING);
-> -	br_set_port_flag(p, tb, IFLA_BRPORT_UNICAST_FLOOD, BR_FLOOD);
-> -	br_set_port_flag(p, tb, IFLA_BRPORT_MCAST_FLOOD, BR_MCAST_FLOOD);
-> -	br_set_port_flag(p, tb, IFLA_BRPORT_MCAST_TO_UCAST,
-> -			 BR_MULTICAST_TO_UNICAST);
-> -	br_set_port_flag(p, tb, IFLA_BRPORT_BCAST_FLOOD, BR_BCAST_FLOOD);
-> -	br_set_port_flag(p, tb, IFLA_BRPORT_PROXYARP, BR_PROXYARP);
-> -	br_set_port_flag(p, tb, IFLA_BRPORT_PROXYARP_WIFI, BR_PROXYARP_WIFI);
-> -	br_set_port_flag(p, tb, IFLA_BRPORT_VLAN_TUNNEL, BR_VLAN_TUNNEL);
-> -	br_set_port_flag(p, tb, IFLA_BRPORT_NEIGH_SUPPRESS, BR_NEIGH_SUPPRESS);
-> -	br_set_port_flag(p, tb, IFLA_BRPORT_ISOLATED, BR_ISOLATED);
-> -	br_set_port_flag(p, tb, IFLA_BRPORT_LOCKED, BR_PORT_LOCKED);
-> -
-> -	changed_mask = old_flags ^ p->flags;
-> -
-> -	err = br_switchdev_set_dev_flag(p->dev, p->flags, changed_mask, extack);
-> +	if (p) {
-> +		old_flags = p->flags;
-> +		br_vlan_tunnel_old = (old_flags & BR_VLAN_TUNNEL) ? true : false;
-> +
-> +		br_set_port_flag(p, tb, IFLA_BRPORT_MODE, BR_HAIRPIN_MODE);
-> +		br_set_port_flag(p, tb, IFLA_BRPORT_GUARD, BR_BPDU_GUARD);
-> +		br_set_port_flag(p, tb, IFLA_BRPORT_FAST_LEAVE,
-> +				 BR_MULTICAST_FAST_LEAVE);
-> +		br_set_port_flag(p, tb, IFLA_BRPORT_PROTECT, BR_ROOT_BLOCK);
-> +		br_set_port_flag(p, tb, IFLA_BRPORT_LEARNING, BR_LEARNING);
-> +		br_set_port_flag(p, tb, IFLA_BRPORT_UNICAST_FLOOD, BR_FLOOD);
-> +		br_set_port_flag(p, tb, IFLA_BRPORT_MCAST_FLOOD, BR_MCAST_FLOOD);
-> +		br_set_port_flag(p, tb, IFLA_BRPORT_MCAST_TO_UCAST,
-> +				 BR_MULTICAST_TO_UNICAST);
-> +		br_set_port_flag(p, tb, IFLA_BRPORT_BCAST_FLOOD, BR_BCAST_FLOOD);
-> +		br_set_port_flag(p, tb, IFLA_BRPORT_PROXYARP, BR_PROXYARP);
-> +		br_set_port_flag(p, tb, IFLA_BRPORT_PROXYARP_WIFI, BR_PROXYARP_WIFI);
-> +		br_set_port_flag(p, tb, IFLA_BRPORT_VLAN_TUNNEL, BR_VLAN_TUNNEL);
-> +		br_set_port_flag(p, tb, IFLA_BRPORT_NEIGH_SUPPRESS, BR_NEIGH_SUPPRESS);
-> +		br_set_port_flag(p, tb, IFLA_BRPORT_ISOLATED, BR_ISOLATED);
-> +		br_set_port_flag(p, tb, IFLA_BRPORT_LOCKED, BR_PORT_LOCKED);
-> +
-> +		new_flags = p->flags;
-> +		dev = p->dev;
-> +	} else {
-> +		struct br_boolopt_multi opts = {
-> +			.optmask = BROPT_MASK
-> +		};
-> +
-> +		br_boolopt_multi_get(br, &old_opts);
-> +		old_flags = br_boolopt_map_flags(&old_opts);
-> +
-> +		br_set_bropt(br, tb, IFLA_BRPORT_UNICAST_FLOOD, BROPT_UNICAST_FLOOD);
-> +		br_set_bropt(br, tb, IFLA_BRPORT_MCAST_FLOOD, BROPT_MCAST_FLOOD);
-> +		br_set_bropt(br, tb, IFLA_BRPORT_BCAST_FLOOD, BROPT_BCAST_FLOOD);
-> +
-> +		br_boolopt_multi_get(br, &opts);
-> +		new_flags = br_boolopt_map_flags(&opts);
-> +		dev = br->dev;
-> +	}
-> +
-> +	changed_mask = old_flags ^ new_flags;
-> +
-> +	err = br_switchdev_set_dev_flag(dev, new_flags, changed_mask, extack);
->  	if (err) {
-> -		p->flags = old_flags;
-> +		if (!p)
-> +			br_boolopt_multi_toggle(br, &old_opts, extack);
-> +		else
-> +			p->flags = old_flags;
-> +
->  		return err;
->  	}
->  
-> +	/* Skip the rest for the bridge itself, for now */
-> +	if (!p)
-> +		return 0;
-> +
->  	if (br_vlan_tunnel_old && !(p->flags & BR_VLAN_TUNNEL))
->  		nbp_vlan_tunnel_info_flush(p);
->  
-> @@ -1048,7 +1134,7 @@ int br_setlink(struct net_device *dev, struct nlmsghdr *nlh, u16 flags,
->  	if (!p && !afspec)
->  		return -EINVAL;
->  
-> -	if (p && protinfo) {
-> +	if (protinfo) {
->  		if (protinfo->nla_type & NLA_F_NESTED) {
->  			err = nla_parse_nested_deprecated(tb, IFLA_BRPORT_MAX,
->  							  protinfo,
-> @@ -1058,9 +1144,9 @@ int br_setlink(struct net_device *dev, struct nlmsghdr *nlh, u16 flags,
->  				return err;
->  
->  			spin_lock_bh(&br->lock);
-> -			err = br_setport(p, tb, extack);
-> +			err = br_setport(br, p, tb, extack);
-
-setport is for *port* only...
-
->  			spin_unlock_bh(&br->lock);
-> -		} else {
-> +		} else if (p) {
->  			/* Binary compatibility with old RSTP */
->  			if (nla_len(protinfo) < sizeof(u8))
->  				return -EINVAL;
-> @@ -1153,7 +1239,7 @@ static int br_port_slave_changelink(struct net_device *brdev,
->  		return 0;
->  
->  	spin_lock_bh(&br->lock);
-> -	ret = br_setport(br_port_get_rtnl(dev), data, extack);
-> +	ret = br_setport(br, br_port_get_rtnl(dev), data, extack);
->  	spin_unlock_bh(&br->lock);
->  
->  	return ret;
-> @@ -1163,7 +1249,7 @@ static int br_port_fill_slave_info(struct sk_buff *skb,
->  				   const struct net_device *brdev,
->  				   const struct net_device *dev)
->  {
-> -	return br_port_fill_attrs(skb, br_port_get_rtnl(dev));
-> +	return br_port_fill_attrs(skb, NULL, br_port_get_rtnl(dev));
->  }
->  
->  static size_t br_port_get_slave_size(const struct net_device *brdev,
-
+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
+xV4Em+0wQoEIR2kPG6yiZNtUK0tNCaZejYU/Mf/bzdKSwud3pLgHV8ls83y2OU/ha9xgJMLpRswv
+xucFCxMsPmk0yoVmpbr92kIpLm+TomNZsL++LcDRa2ECAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
+AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
+c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
+AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
+TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
+bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
+L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
+BB0wG4EZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
+HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUz2bMvqtXpXM0u3vAvRkalz60
+CjswDQYJKoZIhvcNAQELBQADggEBAGUgeqqI/q2pkETeLr6oS7nnm1bkeNmtnJ2bnybNO/RdrbPj
+DHVSiDCCrWr6xrc+q6OiZDKm0Ieq6BN+Wfr8h5mCkZMUdJikI85WcQTRk6EEF2lzIiaULmFD7U15
+FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
+1CHkODrS2JGwDQxXKmyF64MhJiOutWHmqoGmLJVz1jnDvClsYtgT4zcNtoqKtjpWDYAefncWDPIQ
+DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
+aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
+EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEILqiUEzyBZvD/LuJF7hwN5DSXXocC/f3
+w5tIu1moJv4YMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDQx
+MjE4MjQzNVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
+ATANBgkqhkiG9w0BAQEFAASCAQCJ++rBHX3NZ4ckz1TKg3fvh52ZIef4zA2w6na55D3yMtp7Viqx
+c5xvMT6C2g+/Dd4J5LmT5b889qSR1i/aJ/5zhmaVCF390+9qxABjHvcfePAxpQuQ5nHD0LtetBhj
+bZLE0W01btWPYoT7YiwOAbzDcb+poLph4YTPdxcOuCZZCWvQD2R+HGALAMI14drxprjW0VH1hLiT
+2FWB489aXoVndnt/8FBIuxjIHXAcEIlTIxNlrrAzHM1OIYg/UT9nvZ6cFnmof3eIUZ3jqACr/Cux
+0fpY/R8Q7HT5n0P+L65Dr8uyNL3O/faiCjupZ/VxVJ8He+Namnvtj/dNS1/Po+wC
+--000000000000436eed05dc792c00--
