@@ -2,45 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C76264FC9D7
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 02:47:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD1074FC9C6
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 02:47:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243170AbiDLAsY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 20:48:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42700 "EHLO
+        id S243088AbiDLAsm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 20:48:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242887AbiDLAsG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 20:48:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9860B2ED5C;
-        Mon, 11 Apr 2022 17:45:50 -0700 (PDT)
+        with ESMTP id S243107AbiDLAsS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 20:48:18 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D2A72F00C;
+        Mon, 11 Apr 2022 17:45:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 21B5B617F3;
-        Tue, 12 Apr 2022 00:45:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 686A2C385AD;
-        Tue, 12 Apr 2022 00:45:48 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id AB7E3CE185D;
+        Tue, 12 Apr 2022 00:45:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A7E5C385AB;
+        Tue, 12 Apr 2022 00:45:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724349;
-        bh=Bcm/L4B9jJWb+jV5TvnT5U/PTAjme2W/RGdOOBuZDt8=;
+        s=k20201202; t=1649724351;
+        bh=7XTqroqFO/okzB1xM2ykxMbeDx4n0Pp7JOnf+IK9yyc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QZOkFu1e6B7vGBK+a0X7vUxMUGLheKeypelhJb+TyGu3TytzMeDB9B8wqBazeZnMJ
-         cvurx3zLXW+AuTvd0q89yT+MEswJbtvg033W/GvQ44AhgBOwLnvtLSv4NlQCn/GUbi
-         WhZCuPFj6pBZ6pclhKJiUlS2JFbHUgMwLHxV//fG1YEm+aO7Syiwz3P0lgezHo9LUd
-         W1aUXbDqZrynzH3LZRLv8DgKFTcmeuOc+e3kvEGbXxIc0tMiRuWok0YupC9wKAEsKN
-         Jg2JY8rBKyOORcV7waPaF20BcrdwrCPYKXPGtTdDVsDPOWHtqg4uBvLk9n7q8F+ZA6
-         UMeWKD1L0BL+Q==
+        b=hsKZzoHiOHVk06o6JD/IFUOZm0Sm8j1e2eBlsKHVaZe4LMw/5xou47aLGnvNGFvi+
+         PeRfNGzhak1PPa4xN/9WHacKg2fNY9vHK0DdRVAQmj8Q1cdOpcx4ZjWejxpVixFzSO
+         qLKBrvu0EFvn+Z1LaZ1MwEJnIGuLCNj9rR+KON02tIVSRvxGvEhM7bS1+vrRETG9lW
+         eNnzD0YT19nIQYJog3zugBO3cmpRHvcpbE6cw4hDwRSmRPhR9wZ9oxKgLNOdhED/kv
+         tco3RRWl58cBClS78puFt81LHJ/9yV2EHzSdSQQW4LoxWNaGAPs+g1qZHcx704oK4v
+         8qN466qc7KyRQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Marcin Kozlowski <marcinguy@gmail.com>,
+Cc:     Xiaomeng Tong <xiam0nd.tong@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        pabeni@redhat.com, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 32/49] net: usb: aqc111: Fix out-of-bounds accesses in RX fixup
-Date:   Mon, 11 Apr 2022 20:43:50 -0400
-Message-Id: <20220412004411.349427-32-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, christopher.lee@cspi.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 33/49] myri10ge: fix an incorrect free for skb in myri10ge_sw_tso
+Date:   Mon, 11 Apr 2022 20:43:51 -0400
+Message-Id: <20220412004411.349427-33-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412004411.349427-1-sashal@kernel.org>
 References: <20220412004411.349427-1-sashal@kernel.org>
@@ -58,54 +57,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marcin Kozlowski <marcinguy@gmail.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-[ Upstream commit afb8e246527536848b9b4025b40e613edf776a9d ]
+[ Upstream commit b423e54ba965b4469b48e46fd16941f1e1701697 ]
 
-aqc111_rx_fixup() contains several out-of-bounds accesses that can be
-triggered by a malicious (or defective) USB device, in particular:
+All remaining skbs should be released when myri10ge_xmit fails to
+transmit a packet. Fix it within another skb_list_walk_safe.
 
- - The metadata array (desc_offset..desc_offset+2*pkt_count) can be out of bounds,
-   causing OOB reads and (on big-endian systems) OOB endianness flips.
- - A packet can overlap the metadata array, causing a later OOB
-   endianness flip to corrupt data used by a cloned SKB that has already
-   been handed off into the network stack.
- - A packet SKB can be constructed whose tail is far beyond its end,
-   causing out-of-bounds heap data to be considered part of the SKB's
-   data.
-
-Found doing variant analysis. Tested it with another driver (ax88179_178a), since
-I don't have a aqc111 device to test it, but the code looks very similar.
-
-Signed-off-by: Marcin Kozlowski <marcinguy@gmail.com>
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/aqc111.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/myricom/myri10ge/myri10ge.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/usb/aqc111.c b/drivers/net/usb/aqc111.c
-index ea06d10e1c21..ca409d450a29 100644
---- a/drivers/net/usb/aqc111.c
-+++ b/drivers/net/usb/aqc111.c
-@@ -1102,10 +1102,15 @@ static int aqc111_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
- 	if (start_of_descs != desc_offset)
- 		goto err;
- 
--	/* self check desc_offset from header*/
--	if (desc_offset >= skb_len)
-+	/* self check desc_offset from header and make sure that the
-+	 * bounds of the metadata array are inside the SKB
-+	 */
-+	if (pkt_count * 2 + desc_offset >= skb_len)
- 		goto err;
- 
-+	/* Packets must not overlap the metadata array */
-+	skb_trim(skb, desc_offset);
-+
- 	if (pkt_count == 0)
- 		goto err;
- 
+diff --git a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+index 50ac3ee2577a..21d2645885ce 100644
+--- a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
++++ b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+@@ -2903,11 +2903,9 @@ static netdev_tx_t myri10ge_sw_tso(struct sk_buff *skb,
+ 		status = myri10ge_xmit(curr, dev);
+ 		if (status != 0) {
+ 			dev_kfree_skb_any(curr);
+-			if (segs != NULL) {
+-				curr = segs;
+-				segs = next;
++			skb_list_walk_safe(next, curr, next) {
+ 				curr->next = NULL;
+-				dev_kfree_skb_any(segs);
++				dev_kfree_skb_any(curr);
+ 			}
+ 			goto drop;
+ 		}
 -- 
 2.35.1
 
