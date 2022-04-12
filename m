@@ -2,51 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 09E084FCD3B
+	by mail.lfdr.de (Postfix) with ESMTP id 7FE474FCD3C
 	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 05:40:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344342AbiDLDmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 23:42:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34148 "EHLO
+        id S1344366AbiDLDmo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 23:42:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344757AbiDLDm2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 23:42:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E86013E3C;
-        Mon, 11 Apr 2022 20:40:12 -0700 (PDT)
+        with ESMTP id S1344892AbiDLDma (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 23:42:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 541C713E3C;
+        Mon, 11 Apr 2022 20:40:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 17A2161740;
-        Tue, 12 Apr 2022 03:40:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 75024C385A8;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0E3A7B81A8D;
+        Tue, 12 Apr 2022 03:40:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B934CC385AE;
         Tue, 12 Apr 2022 03:40:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1649734811;
-        bh=x5IqgRVdfCTDlvWYNRFSIidKHASxXB5BiP3YYe4XB+o=;
+        bh=QSsKy83Tm0f2ZZsihBg96iw58bRZQn7S4W9PNzeh6IU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=uU/iKHelPyNDXwSrwQxBgs+uigA0VUNI3jF1EARtnkGzHX9UqJTK3GTD3ORrsS1bb
-         DVWweWffLi+9zfDtCneHcHp5sF9ojqLt4rRkfupW2g1jW6MJkoS6+Xc7XTLSdn1UOv
-         gfDy1cY1uOUIgX7wKoS5pbg/6oz8fwzDDlfd4gb6jSu44d0XD9qj4oUm1iNhQqo59u
-         rn0D7WOUrlRKmnVC+oV29dZiAEuOhHINBTv9QmA9hAzRhDmW26zHfqzxDekfQtLtdZ
-         CWZHySx4yz/AQ0uGogaoEUwNAqKdgjeM177qOMhFmPTm+bAnA+bNlVisEb/5eyUClp
-         inU9va3l+yAyg==
+        b=NxtyIYEfueBaHbM2MfB0w9z9bqeoYdVe4N7T0pIWDfo3db0loc10hklAXeu7IqXHq
+         E1oahx3XM2qt4aJwziCkzRp9iCoSeE4ILLvDk7tGS1YNh0g2wFfgAIbjhdK7rdave+
+         OgMKkzMHKd71phnAwvEvZwDk2xEFofUXQFs6YGv62NhufhyECL0ugAGGKTRqv3SOu3
+         u7bf+Lge3+xJD/67kDljEw+ouUB2XelIVyw8tpTsrbauROWPbmES5ev0DuhtR4kS5A
+         hkxIcCMiz8nqYImM4EFI0AaNPsn/D2dF3xzfeqEQZN/CLkJsw0OeJv20cKKYPyNyxt
+         ZOGtifyQm5u2Q==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 556EFE8DBD1;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A1D2BE8DBD1;
         Tue, 12 Apr 2022 03:40:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] sctp: Initialize daddr on peeled off socket
+Subject: Re: [PATCH] net: stmmac: using pm_runtime_resume_and_get instead of
+ pm_runtime_get_sync
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164973481134.21815.13991525286598495841.git-patchwork-notify@kernel.org>
+Message-Id: <164973481165.21815.4242211129127788144.git-patchwork-notify@kernel.org>
 Date:   Tue, 12 Apr 2022 03:40:11 +0000
-References: <20220409063611.673193-1-oss@malat.biz>
-In-Reply-To: <20220409063611.673193-1-oss@malat.biz>
-To:     Petr Malat <oss@malat.biz>
-Cc:     netdev@vger.kernel.org, vyasevich@gmail.com, nhorman@tuxdriver.com,
-        davem@davemloft.net, kuba@kernel.org, linux-sctp@vger.kernel.org,
-        marcelo.leitner@gmail.com
+References: <20220408081250.2494588-1-chi.minghao@zte.com.cn>
+In-Reply-To: <20220408081250.2494588-1-chi.minghao@zte.com.cn>
+To:     CGEL <cgel.zte@gmail.com>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        chi.minghao@zte.com.cn, zealci@zte.com.cn
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -59,24 +62,23 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Sat,  9 Apr 2022 08:36:11 +0200 you wrote:
-> Function sctp_do_peeloff() wrongly initializes daddr of the original
-> socket instead of the peeled off socket, which makes getpeername()
-> return zeroes instead of the primary address. Initialize the new socket
-> instead.
+On Fri,  8 Apr 2022 08:12:50 +0000 you wrote:
+> From: Minghao Chi <chi.minghao@zte.com.cn>
 > 
-> Fixes: d570ee490fb1 ("[SCTP]: Correctly set daddr for IPv6 sockets during peeloff")
-> Signed-off-by: Petr Malat <oss@malat.biz>
-> Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+> Using pm_runtime_resume_and_get is more appropriate
+> for simplifing code
+> 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 > 
 > [...]
 
 Here is the summary with links:
-  - sctp: Initialize daddr on peeled off socket
-    https://git.kernel.org/netdev/net/c/8467dda0c265
+  - net: stmmac: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+    https://git.kernel.org/netdev/net-next/c/e2d0acd40c87
 
 You are awesome, thank you!
 -- 
