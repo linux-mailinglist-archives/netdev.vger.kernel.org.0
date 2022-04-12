@@ -2,135 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE5374FDDFB
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 13:43:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D6674FDE9B
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 13:54:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245227AbiDLLod (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 07:44:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57430 "EHLO
+        id S1345061AbiDLLub (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 07:50:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351888AbiDLLma (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 07:42:30 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D17C513D78
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 03:24:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=7yNgO80/03lnD0Kqds8NpJPYxgBo16kU6kQWTts+KN8=; b=o5nsa/KLcwWKgOPE4A77u8g1W1
-        kAdD6Ak8iUhnASXVHiUGLEi62j+mgjVGzJm34LDn6vd96dlCEKnQfeBZrfUU5oSFUhv0mpPx63dcz
-        /ftgjBTGZQBO9w70i4pN1srsNROCi6/XPlYBwdKCFjNk5OtVRi1F3LkbET0vQMsVsKpNtWLRg5G7U
-        WhJ8p9DCTD8H7rCYgYAp2ifokAIdvW6U6zNiqGKaaeuJzgS/0rGhJG9BXGCHwsht0x6OsMOy2vhvi
-        OakFHM7mlyy3bzGIvyun7QCkAfNQqUORfSsfCAoGEXn9ZP4c2EvzjO/MWc4a7oz0misud08m81MFi
-        aXrOhW+A==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:57174 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1neDgn-0001gv-7N; Tue, 12 Apr 2022 11:24:00 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-        id 1neDgm-005IBR-BW; Tue, 12 Apr 2022 11:24:00 +0100
-From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH net-next] net: phylink: remove phylink_helper_basex_speed()
+        with ESMTP id S1349398AbiDLLro (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 07:47:44 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 18302574A1
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 03:28:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649759291;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=CI/supGVxEWMyhUXNHAcGDlAX2GlLgQ43ophBjewddA=;
+        b=GV+44362oNbDu9VbBOULJzZ40yp3VzDGQ1PJVKHbedEnlLn2mHyR7vRxg661TfQjkg3rve
+        x4fw5cO+oWB5Z5QZgEDG9bPwiEQ5Ia5PaOIxhrGxJkROVpjOrd2fUFizaGUFMSRVFp4+qA
+        h55Hy2QG/IZeDt2cqVuqbIuphSs5+co=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-259-7ujAnAPBPiaVaavGGEhO7Q-1; Tue, 12 Apr 2022 06:28:07 -0400
+X-MC-Unique: 7ujAnAPBPiaVaavGGEhO7Q-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AD06D3804091;
+        Tue, 12 Apr 2022 10:28:06 +0000 (UTC)
+Received: from horn.redhat.com (unknown [10.40.193.222])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id ABA94145BA42;
+        Tue, 12 Apr 2022 10:28:04 +0000 (UTC)
+From:   Petr Oros <poros@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        jacob.e.keller@intel.com, intel-wired-lan@lists.osuosl.org,
+        linux-kernel@vger.kernel.org, ivecera@redhat.com
+Subject: [PATCH] ice: wait for EMP reset after firmware flash
+Date:   Tue, 12 Apr 2022 12:27:53 +0200
+Message-Id: <20220412102753.670867-1-poros@redhat.com>
 MIME-Version: 1.0
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1neDgm-005IBR-BW@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Tue, 12 Apr 2022 11:24:00 +0100
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As there are now no users of phylink_helper_basex_speed(), we can
-remove this obsolete functionality.
+We need to wait for EMP reset after firmware flash.
+Code was extracted from OOT driver and without this wait fw_activate let
+card in inconsistent state recoverable only by second flash/activate
 
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reproducer:
+[root@host ~]# devlink dev flash pci/0000:ca:00.0 file E810_XXVDA4_FH_O_SEC_FW_1p6p1p9_NVM_3p10_PLDMoMCTP_0.11_8000AD7B.bin
+Preparing to flash
+[fw.mgmt] Erasing
+[fw.mgmt] Erasing done
+[fw.mgmt] Flashing 100%
+[fw.mgmt] Flashing done 100%
+[fw.undi] Erasing
+[fw.undi] Erasing done
+[fw.undi] Flashing 100%
+[fw.undi] Flashing done 100%
+[fw.netlist] Erasing
+[fw.netlist] Erasing done
+[fw.netlist] Flashing 100%
+[fw.netlist] Flashing done 100%
+Activate new firmware by devlink reload
+[root@host ~]# devlink dev reload pci/0000:ca:00.0 action fw_activate
+reload_actions_performed:
+    fw_activate
+[root@host ~]# ip link show ens7f0
+71: ens7f0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
+    link/ether b4:96:91:dc:72:e0 brd ff:ff:ff:ff:ff:ff
+    altname enp202s0f0
+
+dmesg after flash:
+[   55.120788] ice: Copyright (c) 2018, Intel Corporation.
+[   55.274734] ice 0000:ca:00.0: Get PHY capabilities failed status = -5, continuing anyway
+[   55.569797] ice 0000:ca:00.0: The DDP package was successfully loaded: ICE OS Default Package version 1.3.28.0
+[   55.603629] ice 0000:ca:00.0: Get PHY capability failed.
+[   55.608951] ice 0000:ca:00.0: ice_init_nvm_phy_type failed: -5
+[   55.647348] ice 0000:ca:00.0: PTP init successful
+[   55.675536] ice 0000:ca:00.0: DCB is enabled in the hardware, max number of TCs supported on this port are 8
+[   55.685365] ice 0000:ca:00.0: FW LLDP is disabled, DCBx/LLDP in SW mode.
+[   55.692179] ice 0000:ca:00.0: Commit DCB Configuration to the hardware
+[   55.701382] ice 0000:ca:00.0: 126.024 Gb/s available PCIe bandwidth, limited by 16.0 GT/s PCIe x8 link at 0000:c9:02.0 (capable of 252.048 Gb/s with 16.0 GT/s PCIe x16 link)
+Reboot don't help, only second flash/activate with OOT or patched driver put card back in consistent state
+
+After patch:
+[root@host ~]# devlink dev flash pci/0000:ca:00.0 file E810_XXVDA4_FH_O_SEC_FW_1p6p1p9_NVM_3p10_PLDMoMCTP_0.11_8000AD7B.bin
+Preparing to flash
+[fw.mgmt] Erasing
+[fw.mgmt] Erasing done
+[fw.mgmt] Flashing 100%
+[fw.mgmt] Flashing done 100%
+[fw.undi] Erasing
+[fw.undi] Erasing done
+[fw.undi] Flashing 100%
+[fw.undi] Flashing done 100%
+[fw.netlist] Erasing
+[fw.netlist] Erasing done
+[fw.netlist] Flashing 100%
+[fw.netlist] Flashing done 100%
+Activate new firmware by devlink reload
+[root@host ~]# devlink dev reload pci/0000:ca:00.0 action fw_activate
+reload_actions_performed:
+    fw_activate
+[root@host ~]# ip link show ens7f0
+19: ens7f0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
+    link/ether b4:96:91:dc:72:e0 brd ff:ff:ff:ff:ff:ff
+    altname enp202s0f0
+
+Fixes: 399e27dbbd9e94 ("ice: support immediate firmware activation via devlink reload")
+Signed-off-by: Petr Oros <poros@redhat.com>
 ---
-The last user was the mt7530 driver which has just been merged.
+ drivers/net/ethernet/intel/ice/ice_main.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
- drivers/net/phy/phylink.c | 28 ----------------------------
- include/linux/phylink.h   |  6 ------
- 2 files changed, 34 deletions(-)
-
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 06943889d747..33c285252584 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -2778,34 +2778,6 @@ static const struct sfp_upstream_ops sfp_phylink_ops = {
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index d768925785ca79..90ea2203cdc763 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -6931,12 +6931,15 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
  
- /* Helpers for MAC drivers */
+ 	dev_dbg(dev, "rebuilding PF after reset_type=%d\n", reset_type);
  
--/**
-- * phylink_helper_basex_speed() - 1000BaseX/2500BaseX helper
-- * @state: a pointer to a &struct phylink_link_state
-- *
-- * Inspect the interface mode, advertising mask or forced speed and
-- * decide whether to run at 2.5Gbit or 1Gbit appropriately, switching
-- * the interface mode to suit.  @state->interface is appropriately
-- * updated, and the advertising mask has the "other" baseX_Full flag
-- * cleared.
-- */
--void phylink_helper_basex_speed(struct phylink_link_state *state)
--{
--	if (phy_interface_mode_is_8023z(state->interface)) {
--		bool want_2500 = state->an_enabled ?
--			phylink_test(state->advertising, 2500baseX_Full) :
--			state->speed == SPEED_2500;
--
--		if (want_2500) {
--			phylink_clear(state->advertising, 1000baseX_Full);
--			state->interface = PHY_INTERFACE_MODE_2500BASEX;
--		} else {
--			phylink_clear(state->advertising, 2500baseX_Full);
--			state->interface = PHY_INTERFACE_MODE_1000BASEX;
--		}
--	}
--}
--EXPORT_SYMBOL_GPL(phylink_helper_basex_speed);
--
- static void phylink_decode_c37_word(struct phylink_link_state *state,
- 				    uint16_t config_reg, int speed)
- {
-diff --git a/include/linux/phylink.h b/include/linux/phylink.h
-index 223781622b33..6d06896fc20d 100644
---- a/include/linux/phylink.h
-+++ b/include/linux/phylink.h
-@@ -160,11 +160,6 @@ struct phylink_mac_ops {
-  * clearing unsupported speeds and duplex settings. The port modes
-  * should not be cleared; phylink_set_port_modes() will help with this.
-  *
-- * If the @state->interface mode is %PHY_INTERFACE_MODE_1000BASEX
-- * or %PHY_INTERFACE_MODE_2500BASEX, select the appropriate mode
-- * based on @state->advertising and/or @state->speed and update
-- * @state->interface accordingly. See phylink_helper_basex_speed().
-- *
-  * When @config->supported_interfaces has been set, phylink will iterate
-  * over the supported interfaces to determine the full capability of the
-  * MAC. The validation function must not print errors if @state->interface
-@@ -579,7 +574,6 @@ int phylink_speed_up(struct phylink *pl);
- #define phylink_test(bm, mode)	__phylink_do_bit(test_bit, bm, mode)
++#define ICE_EMP_RESET_SLEEP 5000
+ 	if (reset_type == ICE_RESET_EMPR) {
+ 		/* If an EMP reset has occurred, any previously pending flash
+ 		 * update will have completed. We no longer know whether or
+ 		 * not the NVM update EMP reset is restricted.
+ 		 */
+ 		pf->fw_emp_reset_disabled = false;
++
++		msleep(ICE_EMP_RESET_SLEEP);
+ 	}
  
- void phylink_set_port_modes(unsigned long *bits);
--void phylink_helper_basex_speed(struct phylink_link_state *state);
- 
- void phylink_mii_c22_pcs_decode_state(struct phylink_link_state *state,
- 				      u16 bmsr, u16 lpa);
+ 	err = ice_init_all_ctrlq(hw);
 -- 
-2.30.2
+2.35.1
 
