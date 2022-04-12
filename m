@@ -2,119 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 761B44FDE1C
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 13:44:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE5374FDDFB
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 13:43:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352394AbiDLLob (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 07:44:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57398 "EHLO
+        id S245227AbiDLLod (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 07:44:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350336AbiDLLli (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 07:41:38 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 237D2506C3
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 03:23:24 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id r13so26984845wrr.9
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 03:23:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=PWMqY36PdhLmPkOzVF3q3fwHeKiOtTKe2AjxmCLE4AM=;
-        b=rxPkFbXFz9aCNjSPQJCPwsRgNusOv6QOeU6kHeI7J2jLUpfCOO7NPqnM6zMHlWJPlf
-         c1flepjryToeCDaC4JFADEtJTlrVPVeJkLG4Un7QDQFozlTM4ojPUd7Qy7AV7Nnmg7VR
-         o6aMqa6PuHkNAywHEzkjenaw5mFQCqftxZVV7QphwAB4tIuB7lE+D/8nVP1xT8t/c2gE
-         S+UWahfMmnDhXFy8IAYIU+k/SBFRn8N1iRznqKcBa3s/5mKo4812cUFjYTQdXHQWZpks
-         t5jejttpdawk3BTjhZouX1n+M8NeHYQ2aaGiBC/i0pijXEDRINDJ3stJYWMU9svnI6xy
-         mNEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=PWMqY36PdhLmPkOzVF3q3fwHeKiOtTKe2AjxmCLE4AM=;
-        b=VKS1NMu5DsJIVjcKfcYVVEjAV6aerscviaZFA2Gdkn59Og9bjPFGeKQ8lJAfr9UwVW
-         TLxiX14AQTxDoPojhP9K/WK08xbjRxzMXdtfE92kHfUwCwQiSlD7T/SncSLrtXJU4+pm
-         /8Q0wUq611PsWGgCKp2dXOK0/Us3APHVO/3rPsti8Xa/Xzr5vj04iGe/GcxrWjCZMle1
-         FpHnnpPUEjXQk4L0xGJ381YPfHFAyIl1EHocVgc9J3LLQNltbi6/XxrJPKPCPu0tgGpq
-         KaBy6seLw0bTah+piL8CHlxMs0+OQ9N9WcYRpCV6kHL7w0DUyQ2U0Geh/QNY0acW8pJ2
-         fZjg==
-X-Gm-Message-State: AOAM533V2Ce6Tp00ziqW1dQbu64gv01Wc5hP/2h4st8wIs9W2wRcA9r8
-        D7CBosRNUXXJpfaUzeu1/6rNPg==
-X-Google-Smtp-Source: ABdhPJyU87YmXxLZxW7oXhFtjM8IEwsiPrNqUd6sNpFKh9QYGd776pDXXzthW10OfB72M9oSz7/6cw==
-X-Received: by 2002:adf:ff86:0:b0:207:a89b:f532 with SMTP id j6-20020adfff86000000b00207a89bf532mr6176553wrr.558.1649759002672;
-        Tue, 12 Apr 2022 03:23:22 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id b1-20020a05600018a100b00207ab2305d5sm3803038wri.16.2022.04.12.03.23.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 03:23:22 -0700 (PDT)
-Date:   Tue, 12 Apr 2022 11:23:20 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     kernel test robot <oliver.sang@intel.com>,
-        0day robot <lkp@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S1351888AbiDLLma (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 07:42:30 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D17C513D78
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 03:24:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=7yNgO80/03lnD0Kqds8NpJPYxgBo16kU6kQWTts+KN8=; b=o5nsa/KLcwWKgOPE4A77u8g1W1
+        kAdD6Ak8iUhnASXVHiUGLEi62j+mgjVGzJm34LDn6vd96dlCEKnQfeBZrfUU5oSFUhv0mpPx63dcz
+        /ftgjBTGZQBO9w70i4pN1srsNROCi6/XPlYBwdKCFjNk5OtVRi1F3LkbET0vQMsVsKpNtWLRg5G7U
+        WhJ8p9DCTD8H7rCYgYAp2ifokAIdvW6U6zNiqGKaaeuJzgS/0rGhJG9BXGCHwsht0x6OsMOy2vhvi
+        OakFHM7mlyy3bzGIvyun7QCkAfNQqUORfSsfCAoGEXn9ZP4c2EvzjO/MWc4a7oz0misud08m81MFi
+        aXrOhW+A==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:57174 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1neDgn-0001gv-7N; Tue, 12 Apr 2022 11:24:00 +0100
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
+        id 1neDgm-005IBR-BW; Tue, 12 Apr 2022 11:24:00 +0100
+From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
-        stable@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [nl80211]  584f2e43bb: hwsim.ap_country.fail
-Message-ID: <YlVTGIhTvzCsZhmO@google.com>
-References: <20220401105046.1952815-1-lee.jones@linaro.org>
- <20220405091420.GD17553@xsang-OptiPlex-9020>
- <YlP0A+PurZl39sUG@google.com>
- <eb5873b4afeee8a7e183a9b1f2e6af461bf7f69f.camel@sipsolutions.net>
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH net-next] net: phylink: remove phylink_helper_basex_speed()
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <eb5873b4afeee8a7e183a9b1f2e6af461bf7f69f.camel@sipsolutions.net>
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1neDgm-005IBR-BW@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date:   Tue, 12 Apr 2022 11:24:00 +0100
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 11 Apr 2022, Johannes Berg wrote:
+As there are now no users of phylink_helper_basex_speed(), we can
+remove this obsolete functionality.
 
-> On Mon, 2022-04-11 at 10:25 +0100, Lee Jones wrote:
-> > So what exactly happened here?  What does this failure tell us?
-> 
-> Probably nothing.
-> 
-> > Is the LKP test broken or did I overlook something in the kernel
-> > patch?
-> 
-> I think the test is just randomly fluking out.
-> 
-> > How does LKP make use of NL80211_ATTR_REG_ALPHA2?
-> > 
-> > I'm struggling to find any mention of 'hostapd.py' or 'ap_country' in
-> > LKP [0].  Are these benchmarks bespoke add-ons? 
-> > 
-> 
-> it's running the tests from hostap:
-> https://w1.fi/cgit/hostap/tree/tests/hwsim
-> 
-> Anyway, I think we'd better fix the issue like this:
-> 
-> -       [NL80211_ATTR_REG_ALPHA2] = { .type = NLA_STRING, .len = 2 },
-> +       /* allow 3 for NUL-termination, we used to declare this NLA_STRING */
-> +       [NL80211_ATTR_REG_ALPHA2] = NLA_POLICY_RANGE(NLA_BINARY, 2, 3),
-> 
-> 
-> What do you think?
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+The last user was the mt7530 driver which has just been merged.
 
-I'm not entirely sure of the semantics, but so long as it ensures the
-user declares enough space to hold both Bytes of data, I'd be happy.
+ drivers/net/phy/phylink.c | 28 ----------------------------
+ include/linux/phylink.h   |  6 ------
+ 2 files changed, 34 deletions(-)
 
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 06943889d747..33c285252584 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -2778,34 +2778,6 @@ static const struct sfp_upstream_ops sfp_phylink_ops = {
+ 
+ /* Helpers for MAC drivers */
+ 
+-/**
+- * phylink_helper_basex_speed() - 1000BaseX/2500BaseX helper
+- * @state: a pointer to a &struct phylink_link_state
+- *
+- * Inspect the interface mode, advertising mask or forced speed and
+- * decide whether to run at 2.5Gbit or 1Gbit appropriately, switching
+- * the interface mode to suit.  @state->interface is appropriately
+- * updated, and the advertising mask has the "other" baseX_Full flag
+- * cleared.
+- */
+-void phylink_helper_basex_speed(struct phylink_link_state *state)
+-{
+-	if (phy_interface_mode_is_8023z(state->interface)) {
+-		bool want_2500 = state->an_enabled ?
+-			phylink_test(state->advertising, 2500baseX_Full) :
+-			state->speed == SPEED_2500;
+-
+-		if (want_2500) {
+-			phylink_clear(state->advertising, 1000baseX_Full);
+-			state->interface = PHY_INTERFACE_MODE_2500BASEX;
+-		} else {
+-			phylink_clear(state->advertising, 2500baseX_Full);
+-			state->interface = PHY_INTERFACE_MODE_1000BASEX;
+-		}
+-	}
+-}
+-EXPORT_SYMBOL_GPL(phylink_helper_basex_speed);
+-
+ static void phylink_decode_c37_word(struct phylink_link_state *state,
+ 				    uint16_t config_reg, int speed)
+ {
+diff --git a/include/linux/phylink.h b/include/linux/phylink.h
+index 223781622b33..6d06896fc20d 100644
+--- a/include/linux/phylink.h
++++ b/include/linux/phylink.h
+@@ -160,11 +160,6 @@ struct phylink_mac_ops {
+  * clearing unsupported speeds and duplex settings. The port modes
+  * should not be cleared; phylink_set_port_modes() will help with this.
+  *
+- * If the @state->interface mode is %PHY_INTERFACE_MODE_1000BASEX
+- * or %PHY_INTERFACE_MODE_2500BASEX, select the appropriate mode
+- * based on @state->advertising and/or @state->speed and update
+- * @state->interface accordingly. See phylink_helper_basex_speed().
+- *
+  * When @config->supported_interfaces has been set, phylink will iterate
+  * over the supported interfaces to determine the full capability of the
+  * MAC. The validation function must not print errors if @state->interface
+@@ -579,7 +574,6 @@ int phylink_speed_up(struct phylink *pl);
+ #define phylink_test(bm, mode)	__phylink_do_bit(test_bit, bm, mode)
+ 
+ void phylink_set_port_modes(unsigned long *bits);
+-void phylink_helper_basex_speed(struct phylink_link_state *state);
+ 
+ void phylink_mii_c22_pcs_decode_state(struct phylink_link_state *state,
+ 				      u16 bmsr, u16 lpa);
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.30.2
+
