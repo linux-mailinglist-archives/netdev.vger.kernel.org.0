@@ -2,181 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A8D44FE983
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 22:38:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D11684FE982
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 22:38:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229970AbiDLUkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 16:40:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43200 "EHLO
+        id S229579AbiDLUkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 16:40:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230419AbiDLUj4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 16:39:56 -0400
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49AFEA27CC
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 13:35:40 -0700 (PDT)
-Received: by mail-oi1-x22e.google.com with SMTP id w127so20227553oig.10
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 13:35:40 -0700 (PDT)
+        with ESMTP id S229994AbiDLUjg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 16:39:36 -0400
+Received: from mail-il1-f178.google.com (mail-il1-f178.google.com [209.85.166.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 028F5890AD
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 13:35:27 -0700 (PDT)
+Received: by mail-il1-f178.google.com with SMTP id h4so6054268ilq.8
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 13:35:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=kernel-dk.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ueKQiaOwXWfO1zTh53PpaKJgbzCNJb2g84lcVyQKwFo=;
-        b=7VxnOEQ9Ueusg4iiUr4Ng9ShyQFNu4rc5xSfsFuwKmE1w+/3KoMDSZdinNaIf3YCr/
-         7ka35af4fX2nc1T7VGvYVlnDXIz2QWMPlgAi04jnSB2iuf9CfNhT0JAOlfmMy2u4Xy5r
-         C1HlRaMghMVfaipiUNI9j1dm4g1TlFV9G+hkzaRYjfrKRd7e4PQa+BJfRwcZ0JRsCJA8
-         ZNuAC0+pQmk+QQogz3c0B8mlPLeZY6W1kwd8O1fc1u2gj3UxYUjtectfHCd/lAUSWNfX
-         WS610zP9V7xQZMNF66ZzhbrFAJVvPEa2MEFDASbzOGT0eql9Yw1RnCFQmAud81v77mgw
-         7LlQ==
+        bh=USVVp1hK54jHeAqy/lUDZNBBqIJDjeW4jtH5P9usO7U=;
+        b=y6SpbqynDTaeScwaA/pU4EiSBCsWW1ugzYwUe4tqzVe54p7UUY4mhgVu/f+YAD+aXQ
+         auIZkr4d4IaK9QvuvJnbmGI3LhqEgPs3zXgNGB6Ez/I2HEfs/1aBtEm60n0mfFHHpLhM
+         Qr6NBj5R5o+fXOYioZH8ftLvqyBP18neW2Ft36Dd7fmdMjOk4/rzO0uHL8i2zl/QQaH7
+         w48bR8xtnKqv72A8c2BP9hUZE2/ULfJpNcaYWOSJ6ansrjiPfMfVwEWPoqccknekRz8D
+         xC41IkSmvqrxCGybigZReEGn7sDieG5qXnq8UFwFrq0T3NJIWQ4DGV29L6QymKN3ZclO
+         eAsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ueKQiaOwXWfO1zTh53PpaKJgbzCNJb2g84lcVyQKwFo=;
-        b=ovMyc2Y8y2wXd+9CLAiH8ELYySK3Fi7InWkTR0YxSGNoiru72TxgqqD8iwXHKOqikA
-         UKB1yCa3BeGN4bNsf3h97LOvU/QQ8XhRckmxrI95GrwaZ32210HkMFzGHlfoUKtGAtOx
-         PDBpw7G/4yxb5VtpED5H21WIajDMluAwbsRClRe9eokNsdn5VV6HQ2IshxL18BoZ2STj
-         m7JAg8gV2j3hevXFvuOplRmTsRwq30J6/YS4n90MxN+OkLTaBlzm73kXZBHUN0aZJqUk
-         q0qv89fQ7d3HFO+1dnLgMZourivZBYMg8YfXNTS/US+DhNLM/ykc0oVZD3EmktN6P+K2
-         767g==
-X-Gm-Message-State: AOAM533Fhz7AHTeEYbM7Q+XGNqps0A39hY7yRBbez30DIdOPlCyzXMVc
-        wq8ToUHf64+hZQI9d5ins4ObEAn/GEr+dJAx
-X-Google-Smtp-Source: ABdhPJxxGOJpZrS5Z7s7jUuALDyKOR+u1VMtR7kbGQyCtniJpNOovNYrUGaaFNLskM3jhPZGp56dpQ==
-X-Received: by 2002:a17:90b:390c:b0:1c7:9a94:1797 with SMTP id ob12-20020a17090b390c00b001c79a941797mr6861472pjb.221.1649794964278;
-        Tue, 12 Apr 2022 13:22:44 -0700 (PDT)
+        bh=USVVp1hK54jHeAqy/lUDZNBBqIJDjeW4jtH5P9usO7U=;
+        b=qV1c/XN3L6jRymiOJwCogURnfdR+aJP5ooUvcXUjC4/4lxERTtofnnB18YCYI62rHp
+         MujON8SHOdYXDjHFOor4+868wyNM8mDQXwuFqZ/pxYdC6CDdDNfFXP1NtLkE5g1YXuSv
+         DIfHTN+o5r6iOCPLcQCLQJznke1IZkq1wBil605Kyu4Cxp7EisRhJWn/wsP0ZVKBlt+L
+         7ORjCIciDASlTKASZjbjTTU9MdguADmT7bYPy05Kpvry7jqs2L6bzKRsjxy0BLksx1Py
+         caCl411+Q/8rQpfFvsnhfyH9sTifx0aM82UCoc6OpVJOP0MKguilTeel/qMClyHsSp7O
+         Us0g==
+X-Gm-Message-State: AOAM530zVzj/Ak1iLW0WcD+RzKeCOAb6pzXmKGKf2+cTXinuzFN7ctMP
+        e+1k4cXOxznbAWd6T5GD16LqMNj8kUqlQk2E
+X-Google-Smtp-Source: ABdhPJxVMmWRPZgak0ACi4mGWFKAVePCuGtLDsT3AYqFZm2YFpl3R8ulupFitXx++nlIu1K+VoPe3Q==
+X-Received: by 2002:a63:5310:0:b0:39c:f338:407e with SMTP id h16-20020a635310000000b0039cf338407emr20694065pgb.600.1649794967758;
+        Tue, 12 Apr 2022 13:22:47 -0700 (PDT)
 Received: from localhost.localdomain ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id 2-20020a17090a0f0200b001cb6621403csm359541pjy.24.2022.04.12.13.22.43
+        by smtp.gmail.com with ESMTPSA id 2-20020a17090a0f0200b001cb6621403csm359541pjy.24.2022.04.12.13.22.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 13:22:43 -0700 (PDT)
+        Tue, 12 Apr 2022 13:22:47 -0700 (PDT)
 From:   Jens Axboe <axboe@kernel.dk>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org
 Cc:     Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 1/2] net: add __sys_socket_file()
-Date:   Tue, 12 Apr 2022 14:22:39 -0600
-Message-Id: <20220412202240.234207-2-axboe@kernel.dk>
+Subject: [PATCH 2/2] io_uring: add socket(2) support
+Date:   Tue, 12 Apr 2022 14:22:40 -0600
+Message-Id: <20220412202240.234207-3-axboe@kernel.dk>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412202240.234207-1-axboe@kernel.dk>
 References: <20220412202240.234207-1-axboe@kernel.dk>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This works like __sys_socket(), except instead of allocating and
-returning a socket fd, it just returns the file associated with the
-socket. No fd is installed into the process file table.
-
-This is similar to do_accept(), and allows io_uring to use this without
-instantiating a file descriptor in the process file table.
+Supports both regular socket(2) where a normal file descriptor is
+instantiated when called, or direct descriptors.
 
 Signed-off-by: Jens Axboe <axboe@kernel.dk>
 ---
- include/linux/socket.h |  1 +
- net/socket.c           | 52 ++++++++++++++++++++++++++++++++++--------
- 2 files changed, 43 insertions(+), 10 deletions(-)
+ fs/io_uring.c                 | 77 +++++++++++++++++++++++++++++++++++
+ include/uapi/linux/io_uring.h |  1 +
+ 2 files changed, 78 insertions(+)
 
-diff --git a/include/linux/socket.h b/include/linux/socket.h
-index 6f85f5d957ef..a1882e1e71d2 100644
---- a/include/linux/socket.h
-+++ b/include/linux/socket.h
-@@ -434,6 +434,7 @@ extern struct file *do_accept(struct file *file, unsigned file_flags,
- extern int __sys_accept4(int fd, struct sockaddr __user *upeer_sockaddr,
- 			 int __user *upeer_addrlen, int flags);
- extern int __sys_socket(int family, int type, int protocol);
-+extern struct file *__sys_socket_file(int family, int type, int protocol);
- extern int __sys_bind(int fd, struct sockaddr __user *umyaddr, int addrlen);
- extern int __sys_connect_file(struct file *file, struct sockaddr_storage *addr,
- 			      int addrlen, int file_flags);
-diff --git a/net/socket.c b/net/socket.c
-index 6887840682bb..bb6a1a12fbde 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -504,7 +504,7 @@ static int sock_map_fd(struct socket *sock, int flags)
- struct socket *sock_from_file(struct file *file)
- {
- 	if (file->f_op == &socket_file_ops)
--		return file->private_data;	/* set in sock_map_fd */
-+		return file->private_data;	/* set in sock_alloc_file */
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index b83134906a3a..1523a43c4469 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -558,6 +558,16 @@ struct io_accept {
+ 	unsigned long			nofile;
+ };
  
- 	return NULL;
- }
-@@ -1538,11 +1538,10 @@ int sock_create_kern(struct net *net, int family, int type, int protocol, struct
- }
- EXPORT_SYMBOL(sock_create_kern);
- 
--int __sys_socket(int family, int type, int protocol)
-+static struct socket *__sys_socket_create(int family, int type, int protocol)
- {
--	int retval;
- 	struct socket *sock;
--	int flags;
-+	int retval;
- 
- 	/* Check the SOCK_* constants for consistency.  */
- 	BUILD_BUG_ON(SOCK_CLOEXEC != O_CLOEXEC);
-@@ -1550,17 +1549,50 @@ int __sys_socket(int family, int type, int protocol)
- 	BUILD_BUG_ON(SOCK_CLOEXEC & SOCK_TYPE_MASK);
- 	BUILD_BUG_ON(SOCK_NONBLOCK & SOCK_TYPE_MASK);
- 
--	flags = type & ~SOCK_TYPE_MASK;
--	if (flags & ~(SOCK_CLOEXEC | SOCK_NONBLOCK))
--		return -EINVAL;
-+	if ((type & ~SOCK_TYPE_MASK) & ~(SOCK_CLOEXEC | SOCK_NONBLOCK))
-+		return ERR_PTR(-EINVAL);
- 	type &= SOCK_TYPE_MASK;
- 
-+	retval = sock_create(family, type, protocol, &sock);
-+	if (retval < 0)
-+		return ERR_PTR(retval);
++struct io_socket {
++	struct file			*file;
++	int				domain;
++	int				type;
++	int				protocol;
++	int				flags;
++	u32				file_slot;
++	unsigned long			nofile;
++};
 +
-+	return sock;
+ struct io_sync {
+ 	struct file			*file;
+ 	loff_t				len;
+@@ -926,6 +936,7 @@ struct io_kiocb {
+ 		struct io_hardlink	hardlink;
+ 		struct io_msg		msg;
+ 		struct io_xattr		xattr;
++		struct io_socket	sock;
+ 	};
+ 
+ 	u8				opcode;
+@@ -1192,6 +1203,9 @@ static const struct io_op_def io_op_defs[] = {
+ 		.needs_file = 1
+ 	},
+ 	[IORING_OP_GETXATTR] = {},
++	[IORING_OP_SOCKET] = {
++		.audit_skip		= 1,
++	},
+ };
+ 
+ /* requests with any of those set should undergo io_disarm_next() */
+@@ -5968,6 +5982,63 @@ static int io_accept(struct io_kiocb *req, unsigned int issue_flags)
+ 	return 0;
+ }
+ 
++static int io_socket_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
++{
++	struct io_socket *sock = &req->sock;
++
++	if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
++		return -EINVAL;
++	if (sqe->ioprio || sqe->addr || sqe->rw_flags || sqe->buf_index)
++		return -EINVAL;
++
++	sock->domain = READ_ONCE(sqe->fd);
++	sock->type = READ_ONCE(sqe->off);
++	sock->protocol = READ_ONCE(sqe->len);
++	sock->file_slot = READ_ONCE(sqe->file_index);
++	sock->nofile = rlimit(RLIMIT_NOFILE);
++
++	sock->flags = sock->type & ~SOCK_TYPE_MASK;
++	if (sock->file_slot && (sock->flags & SOCK_CLOEXEC))
++		return -EINVAL;
++	if (sock->flags & ~(SOCK_CLOEXEC | SOCK_NONBLOCK))
++		return -EINVAL;
++	return 0;
 +}
 +
-+struct file *__sys_socket_file(int family, int type, int protocol)
++static int io_socket(struct io_kiocb *req, unsigned int issue_flags)
 +{
-+	struct socket *sock;
++	struct io_socket *sock = &req->sock;
++	bool fixed = !!sock->file_slot;
 +	struct file *file;
-+	int flags;
++	int ret, fd;
 +
-+	sock = __sys_socket_create(family, type, protocol);
-+	if (IS_ERR(sock))
-+		return ERR_CAST(sock);
-+
-+	flags = type & ~SOCK_TYPE_MASK;
- 	if (SOCK_NONBLOCK != O_NONBLOCK && (flags & SOCK_NONBLOCK))
- 		flags = (flags & ~SOCK_NONBLOCK) | O_NONBLOCK;
- 
--	retval = sock_create(family, type, protocol, &sock);
--	if (retval < 0)
--		return retval;
-+	file = sock_alloc_file(sock, flags, NULL);
-+	if (IS_ERR(file))
-+		sock_release(sock);
-+
-+	return file;
++	if (!fixed) {
++		fd = __get_unused_fd_flags(sock->flags, sock->nofile);
++		if (unlikely(fd < 0))
++			return fd;
++	}
++	file = __sys_socket_file(sock->domain, sock->type, sock->protocol);
++	if (IS_ERR(file)) {
++		if (!fixed)
++			put_unused_fd(fd);
++		ret = PTR_ERR(file);
++		if (ret == -EAGAIN && (issue_flags & IO_URING_F_NONBLOCK))
++			return -EAGAIN;
++		if (ret == -ERESTARTSYS)
++			ret = -EINTR;
++		req_set_fail(req);
++	} else if (!fixed) {
++		fd_install(fd, file);
++		ret = fd;
++	} else {
++		io_sock_nolock_set(file);
++		ret = io_install_fixed_file(req, file, issue_flags,
++					    sock->file_slot - 1);
++	}
++	__io_req_complete(req, issue_flags, ret, 0);
++	return 0;
 +}
 +
-+int __sys_socket(int family, int type, int protocol)
-+{
-+	struct socket *sock;
-+	int flags;
-+
-+	sock = __sys_socket_create(family, type, protocol);
-+	if (IS_ERR(sock))
-+		return PTR_ERR(sock);
-+
-+	flags = type & ~SOCK_TYPE_MASK;
-+	if (SOCK_NONBLOCK != O_NONBLOCK && (flags & SOCK_NONBLOCK))
-+		flags = (flags & ~SOCK_NONBLOCK) | O_NONBLOCK;
+ static int io_connect_prep_async(struct io_kiocb *req)
+ {
+ 	struct io_async_connect *io = req->async_data;
+@@ -6055,6 +6126,7 @@ IO_NETOP_PREP_ASYNC(sendmsg);
+ IO_NETOP_PREP_ASYNC(recvmsg);
+ IO_NETOP_PREP_ASYNC(connect);
+ IO_NETOP_PREP(accept);
++IO_NETOP_PREP(socket);
+ IO_NETOP_FN(send);
+ IO_NETOP_FN(recv);
+ #endif /* CONFIG_NET */
+@@ -7269,6 +7341,8 @@ static int io_req_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
+ 		return io_fgetxattr_prep(req, sqe);
+ 	case IORING_OP_GETXATTR:
+ 		return io_getxattr_prep(req, sqe);
++	case IORING_OP_SOCKET:
++		return io_socket_prep(req, sqe);
+ 	}
  
- 	return sock_map_fd(sock, flags & (O_CLOEXEC | O_NONBLOCK));
- }
+ 	printk_once(KERN_WARNING "io_uring: unhandled opcode %d\n",
+@@ -7590,6 +7664,9 @@ static int io_issue_sqe(struct io_kiocb *req, unsigned int issue_flags)
+ 	case IORING_OP_GETXATTR:
+ 		ret = io_getxattr(req, issue_flags);
+ 		break;
++	case IORING_OP_SOCKET:
++		ret = io_socket(req, issue_flags);
++		break;
+ 	default:
+ 		ret = -EINVAL;
+ 		break;
+diff --git a/include/uapi/linux/io_uring.h b/include/uapi/linux/io_uring.h
+index 696a05aa9618..9e28014b1e10 100644
+--- a/include/uapi/linux/io_uring.h
++++ b/include/uapi/linux/io_uring.h
+@@ -151,6 +151,7 @@ enum {
+ 	IORING_OP_SETXATTR,
+ 	IORING_OP_FGETXATTR,
+ 	IORING_OP_GETXATTR,
++	IORING_OP_SOCKET,
+ 
+ 	/* this goes last, obviously */
+ 	IORING_OP_LAST,
 -- 
 2.35.1
 
