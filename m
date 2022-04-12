@@ -2,132 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C1294FC956
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 02:38:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 751524FC999
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 02:45:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234416AbiDLAlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 20:41:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56036 "EHLO
+        id S242654AbiDLAsD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 20:48:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229609AbiDLAlG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 20:41:06 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F6D41929A
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 17:38:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649723931; x=1681259931;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=zdDESkkqaUn/aPwGR2fRNE+tXm7huVy2jT6kk0Wyssc=;
-  b=a/jrw3bAgviCSC0BdYcYUqpPQHP2A7xa4SA4pBrarnI9zVhZVI1FbQhg
-   mcn3+uvQgYS965yND2dypVtU+YEwA61oImZ6BADQktllIWBzCosWdBuUH
-   62+ntapjBK1rHOXFwg9sGWSXyAiPJBJMfsVDmzUGH6OEuSci2FHL1W1pN
-   gtpuebZ2dzsWx9JVVbUTuRHC7SuJLDZfzYqc9VAbKh17pqth41sASsjOb
-   TfS36WjbmPIQ5n0YKSVVvs4W1HwzVw07hcH8D0Siex1Om9BUtLHx7BLvQ
-   YgLzsuKLfLG9iaEA9bY1SdJ4RAGsEBE4Au2kPY4DPT9J+0aMBHUlf8iGV
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="249529238"
-X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
-   d="scan'208";a="249529238"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 17:38:47 -0700
-X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
-   d="scan'208";a="551466016"
-Received: from vcostago-mobl3.jf.intel.com (HELO vcostago-mobl3) ([10.24.14.61])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 17:38:47 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "kuba@kernel.org" <kuba@kernel.org>, Po Liu <po.liu@nxp.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>,
-        "mkubecek@suse.cz" <mkubecek@suse.cz>
-Subject: Re: [PATCH net-next v4 02/12] taprio: Add support for frame
- preemption offload
-In-Reply-To: <20220412000759.wtsebxkayb5vssvx@skbuf>
-References: <20210626003314.3159402-1-vinicius.gomes@intel.com>
- <20210626003314.3159402-3-vinicius.gomes@intel.com>
- <20210627195826.fax7l4hd2itze4pi@skbuf> <874k2zdwp4.fsf@intel.com>
- <20220412000759.wtsebxkayb5vssvx@skbuf>
-Date:   Mon, 11 Apr 2022 17:38:47 -0700
-Message-ID: <87h76zcezs.fsf@intel.com>
+        with ESMTP id S243163AbiDLAro (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 20:47:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AC45183A8;
+        Mon, 11 Apr 2022 17:45:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E5C3F612A8;
+        Tue, 12 Apr 2022 00:45:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A688C385A3;
+        Tue, 12 Apr 2022 00:45:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649724328;
+        bh=/SrTrWU+LeV3TKzN5aOB97yjjBF+58xluB+OKVYBegw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=u5Sd5XfRUoCjxH5/ABjC8YSmkJ6mOc9rpN1OFXq9SSsHvFIKV4n33wmvUjr7wrwOt
+         m6a1XBSTApf+jrTkBxYDAJoXs7I+VHoiPKRy3A4DM7dXfsUVmEl8p/5GHNJ6sDByc0
+         ADmjJLHr4aynTRGwyron1scq8IVaXWK8fEps6SRKXZ21lcbLzcOX9cuz2zNpHJlBqy
+         2IOaFcLhHTWfKO9MFSogrt9jeNgi9FSCmu9KYWSwaKpO/58EG8m1PIqkceSeIiQNhS
+         676yZgczcpEYIEIcGyWURmrYOF61v01qH1rmcLmttnGQH7crJ8taoE4yykwieXE3mG
+         smcrvsX6qFK4g==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, horatiu.vultur@microchip.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 22/49] net: micrel: fix KS8851_MLL Kconfig
+Date:   Mon, 11 Apr 2022 20:43:40 -0400
+Message-Id: <20220412004411.349427-22-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412004411.349427-1-sashal@kernel.org>
+References: <20220412004411.349427-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vladimir Oltean <vladimir.oltean@nxp.com> writes:
+From: Randy Dunlap <rdunlap@infradead.org>
 
-> On Mon, Apr 11, 2022 at 04:31:03PM -0700, Vinicius Costa Gomes wrote:
->> > First line in taprio_disable_offload() is:
->> >
->> > 	if (!FULL_OFFLOAD_IS_ENABLED(q->flags))
->> > 		return 0;
->> >
->> > but you said it yourself below that the preemptible queues thing is
->> > independent of whether you have taprio offload or not (or taprio at
->> > all). So the queues will never be reset back to the eMAC if you don't
->> > use full offload (yes, this includes txtime offload too). In fact, it's
->> > so independent, that I don't even know why we add them to taprio in the
->> > first place :)
->>
->> That I didn't change taprio_disable_offload() was a mistake caused in
->> part by the limitations of the hardware I have (I cannot have txtime
->> offload and frame preemption enabled at the same time), so I didn't
->> catch that.
->>
->> > I think the argument had to do with the hold/advance commands (other
->> > frame preemption stuff that's already in taprio), but those are really
->> > special and only to be used in the Qbv+Qbu combination, but the pMAC
->> > traffic classes? I don't know... Honestly I thought that me asking to
->> > see preemptible queues implemented for mqprio as well was going to
->> > discourage you, but oh well...
->>
->> Now, the real important part, if this should be communicated to the
->> driver via taprio or via ethtool/netlink.
->>
->> I don't really have strong opinions on this anymore, the two options are
->> viable/possible.
->>
->> This is going to be a niche feature, agreed, so thinking that going with
->> the one that gives the user more flexibility perhaps is best, i.e. using
->> ethtool/netlink to communicate which queues should be marked as
->> preemptible or express.
->
-> So we're back at this, very well.
->
-> I was just happening to be looking at clause 36 of 802.1Q (Priority Flow Control),
-> a feature exchanged through DCBX where flows of a certain priority can be
-> configured as lossless on a port, and generate PAUSE frames. This is essentially
-> the extension of 802.3 annex 31B MAC Control PAUSE operation with the ability to
-> enable/disable flow control on a per-priority basis.
->
-> The priority in PFC (essentially synonymous with "traffic class") is the same
-> priority as the priority in frame preemption. And you know how PFC is configured
-> in Linux? Not through the qdisc, but through DCB_ATTR_PFC_CFG, a nested dcbnl
-> netlink attribute with one nested u8 attribute per priority value
-> (DCB_PFC_UP_ATTR_0 to DCB_PFC_UP_ATTR_7).
->
-> Not saying we should follow the exact same model as PFC, just saying that I'm
-> hard pressed to find a good reason why the "preemptable traffic classes"
-> information should sit in a layer which is basically independent of the frame
-> preemption feature itself.
+[ Upstream commit c3efcedd272aa6dd5929e20cf902a52ddaa1197a ]
 
-Ok, going to take this as another point in favor of going the ethtool
-route.
+KS8851_MLL selects MICREL_PHY, which depends on PTP_1588_CLOCK_OPTIONAL,
+so make KS8851_MLL also depend on PTP_1588_CLOCK_OPTIONAL since
+'select' does not follow any dependency chains.
 
+Fixes kconfig warning and build errors:
 
-Thank you,
+WARNING: unmet direct dependencies detected for MICREL_PHY
+  Depends on [m]: NETDEVICES [=y] && PHYLIB [=y] && PTP_1588_CLOCK_OPTIONAL [=m]
+  Selected by [y]:
+  - KS8851_MLL [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_MICREL [=y] && HAS_IOMEM [=y]
+
+ld: drivers/net/phy/micrel.o: in function `lan8814_ts_info':
+micrel.c:(.text+0xb35): undefined reference to `ptp_clock_index'
+ld: drivers/net/phy/micrel.o: in function `lan8814_probe':
+micrel.c:(.text+0x2586): undefined reference to `ptp_clock_register'
+
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/micrel/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/ethernet/micrel/Kconfig b/drivers/net/ethernet/micrel/Kconfig
+index 93df3049cdc0..1b632cdd7630 100644
+--- a/drivers/net/ethernet/micrel/Kconfig
++++ b/drivers/net/ethernet/micrel/Kconfig
+@@ -39,6 +39,7 @@ config KS8851
+ config KS8851_MLL
+ 	tristate "Micrel KS8851 MLL"
+ 	depends on HAS_IOMEM
++	depends on PTP_1588_CLOCK_OPTIONAL
+ 	select MII
+ 	select CRC32
+ 	select EEPROM_93CX6
 -- 
-Vinicius
+2.35.1
+
