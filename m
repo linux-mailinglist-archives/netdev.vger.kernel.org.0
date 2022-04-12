@@ -2,74 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0D074FDE29
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 13:44:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26C184FDE48
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 13:45:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353082AbiDLLZr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 07:25:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47168 "EHLO
+        id S1346876AbiDLLaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 07:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232463AbiDLLZf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 07:25:35 -0400
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A23327B2F
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 03:07:01 -0700 (PDT)
-Received: by mail-qk1-x72f.google.com with SMTP id d71so5153822qkg.12
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 03:07:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :in-reply-to;
-        bh=aQo08ZfuqMR2aGAJIBeiiHJSq/474UgKJqCEyz/l7fI=;
-        b=LC5/kHqDnp7qhIRkc6X9cqelT+y9eAOeN3kWPf+b8xZOgC01HCRDYyDYmK+pm2jP6D
-         qvkJp9GxQrladatxcunRFyiIlhdkChuaKtxkbueFHhOJAl0KOmX+PgVMAV3TCNTOag1z
-         AmW4xantyma9cL2um+WMCwv7whsoLmEsccEPU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:in-reply-to;
-        bh=aQo08ZfuqMR2aGAJIBeiiHJSq/474UgKJqCEyz/l7fI=;
-        b=QPWLMB6I5BsASgUadQYjtZaoPfg+W/TqJ0Z+Dxuvf8/RDP7m4u0Cufg/RzBp4+hHez
-         z5USAtqOdBpjRaJRoCM8zofTDgaDcctx6i/VtGW2aoc/e9g2ftv/W9UnRGqXSJGkEtZ9
-         Z5JGa6GXgsO5gdqn3eorteQGVp8ygp6gAcI+AFCg603CFM0AlMVIu5lp1gtgYRY7R4xl
-         jzw6VJAT4JAyGthBDi4zRwp/rmELBhhQ9MbfJXqvuHwD10oyWe0Elxee8ZEG26zqsHbi
-         nsLLdjaz6/y9m4y9hRv+F/vMOXySWK5qewADlpe8kc+lFPdc5eQ+39sp0yLI6ORi9ZT1
-         B/5Q==
-X-Gm-Message-State: AOAM531XzY28pCbRBxVxvus1n8XAFCHFinKpnKXgyve0YDaMQyoCXnN0
-        UkKH02pApch2quhkLsfY5jzOvA==
-X-Google-Smtp-Source: ABdhPJyGXMpc3/wcDTX81vYr8UQ0ws8Z8vMIo7chNJlLZmsbyhp4jKck/qRBXKC9/0wc+b6Me8PJ+Q==
-X-Received: by 2002:a05:620a:10a3:b0:69b:f9aa:67f5 with SMTP id h3-20020a05620a10a300b0069bf9aa67f5mr2475313qkk.562.1649758020412;
-        Tue, 12 Apr 2022 03:07:00 -0700 (PDT)
-Received: from noodle ([192.19.250.250])
-        by smtp.gmail.com with ESMTPSA id r19-20020a05620a299300b0069c39a56b19sm1597170qkp.129.2022.04.12.03.06.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 03:07:00 -0700 (PDT)
-Date:   Tue, 12 Apr 2022 13:06:51 +0300
-From:   Boris Sukholitko <boris.sukholitko@broadcom.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Eric Dumazet <edumazet@google.com>,
-        zhang kai <zhangkaiheb@126.com>,
-        Yoshiki Komachi <komachi.yoshiki@gmail.com>,
-        Ilya Lifshits <ilya.lifshits@broadcom.com>
-Subject: Re: [PATCH net-next 5/5] Consider the number of vlan tags for vlan
- filters
-Message-ID: <20220412100651.GA27480@noodle>
-References: <20220411133100.18126-1-boris.sukholitko@broadcom.com>
- <20220411133100.18126-6-boris.sukholitko@broadcom.com>
- <YlRKdX+uxdjuPslp@nanopsycho>
+        with ESMTP id S1355506AbiDLL31 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 07:29:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B94884EDD7
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 03:10:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BCC760B60
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 10:10:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A4B4DC385A6;
+        Tue, 12 Apr 2022 10:10:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649758213;
+        bh=awEmwceAHMTLgt++0w0XhcTYw0uJdVpEoFT4/OGcWQQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=TSiTHX7SCa8uLekV+0ttDc29QQHz1LE7THUnhnOSsY5Y8R1DEJuS2Wb54rw4tjdrX
+         GRyxc11+pUQ3N5Yjx21JWDmBrhmBUWh5DegGV4rJy9PXfZG8A5Cx9wZLmvc4T+eR1Y
+         egfMvA5GoLCne/PGMdOGgKi6bogcEeWZM5JtlI87WRqhBej5brXhszYTwd6jUuEkg6
+         fsLjflGG/G7yeLMzIXRuXqKII1MoNinRTX/PnV2HT7HgCAquTP/OypPJabb2QNt89n
+         OsAUORhhfago/aIHsBMht9jBvtTaDENzl7zw9qLN8zr9zrW/A9xdtrrZqRbE/2meJY
+         8kjawORzVeRtg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 831F4E85D15;
+        Tue, 12 Apr 2022 10:10:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <YlRKdX+uxdjuPslp@nanopsycho>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000c97f6d05dc723842"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v2 0/9] net: dsa: mt7530: updates for phylink changes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164975821353.21132.17881540288519221118.git-patchwork-notify@kernel.org>
+Date:   Tue, 12 Apr 2022 10:10:13 +0000
+References: <YlP4vGKVrlIJUUHK@shell.armlinux.org.uk>
+In-Reply-To: <YlP4vGKVrlIJUUHK@shell.armlinux.org.uk>
+To:     Russell King (Oracle) <linux@armlinux.org.uk>
+Cc:     Landen.Chao@mediatek.com, dqfext@gmail.com, sean.wang@mediatek.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        kabel@kernel.org, olteanv@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, matthias.bgg@gmail.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,122 +60,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000c97f6d05dc723842
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Hello:
 
-On Mon, Apr 11, 2022 at 05:34:13PM +0200, Jiri Pirko wrote:
-> Mon, Apr 11, 2022 at 03:31:00PM CEST, boris.sukholitko@broadcom.com wrote:
-> >Currently the existence of vlan filters is conditional on the vlan
-> >protocol being matched in the tc rule. I.e. the following rule:
-> >
-> >tc filter add dev eth1 ingress flower vlan_prio 5
-> >
-> >is illegal because we lack protocol 802.1q in the rule.
-> >
-> >Having the num_of_vlans filter configured removes this restriction. The
-> >following rule becomes ok:
-> >
-> >tc filter add dev eth1 ingress flower num_of_vlans 1 vlan_prio 5
-> >
-> >because we know that the packet is single tagged.
+This series was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
+
+On Mon, 11 Apr 2022 10:45:32 +0100 you wrote:
+> Hi,
 > 
-> From this patch description, I'm unable to tell what the patch is doing.
-> Tell the codebase what to do.
+> This revised series is a partial conversion of the mt7530 DSA driver to
+> the modern phylink infrastructure. This driver has some exceptional
+> cases which prevent - at the moment - its full conversion (particularly
+> with the Autoneg bit) to using phylink_generic_validate().
 > 
+> [...]
 
-I've expanded the description in v2 of the patches.
+Here is the summary with links:
+  - [net-next,v2,1/9] net: dsa: mt7530: 1G can also support 1000BASE-X link mode
+    https://git.kernel.org/netdev/net-next/c/66f862563ed6
+  - [net-next,v2,2/9] net: dsa: mt7530: populate supported_interfaces and mac_capabilities
+    https://git.kernel.org/netdev/net-next/c/59c2215f3604
+  - [net-next,v2,3/9] net: dsa: mt7530: remove interface checks
+    https://git.kernel.org/netdev/net-next/c/26f6d8810282
+  - [net-next,v2,4/9] net: dsa: mt7530: drop use of phylink_helper_basex_speed()
+    https://git.kernel.org/netdev/net-next/c/fd301137e6b3
+  - [net-next,v2,5/9] net: dsa: mt7530: only indicate linkmodes that can be supported
+    https://git.kernel.org/netdev/net-next/c/7c04c8489115
+  - [net-next,v2,6/9] net: dsa: mt7530: switch to use phylink_get_linkmodes()
+    https://git.kernel.org/netdev/net-next/c/6789d6d76e81
+  - [net-next,v2,7/9] net: dsa: mt7530: partially convert to phylink_pcs
+    https://git.kernel.org/netdev/net-next/c/cbd1f243bc41
+  - [net-next,v2,8/9] net: dsa: mt7530: move autoneg handling to PCS validation
+    https://git.kernel.org/netdev/net-next/c/9d0df207c002
+  - [net-next,v2,9/9] net: dsa: mt7530: mark as non-legacy
+    https://git.kernel.org/netdev/net-next/c/7b972512ec0e
 
-> Also, in subject line of the patches, it is customary to put prefix
-> like: "net/sched: cls_flower:"
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Done in v2.
 
-> 
-> The the first glance, the patchset looks fine to me.
-
-Thanks,
-Boris.
-
---000000000000c97f6d05dc723842
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-MIIQeQYJKoZIhvcNAQcCoIIQajCCEGYCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
-gg3QMIIFDTCCA/WgAwIBAgIQeEqpED+lv77edQixNJMdADANBgkqhkiG9w0BAQsFADBMMSAwHgYD
-VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
-AxMKR2xvYmFsU2lnbjAeFw0yMDA5MTYwMDAwMDBaFw0yODA5MTYwMDAwMDBaMFsxCzAJBgNVBAYT
-AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBS
-MyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
-vbCmXCcsbZ/a0fRIQMBxp4gJnnyeneFYpEtNydrZZ+GeKSMdHiDgXD1UnRSIudKo+moQ6YlCOu4t
-rVWO/EiXfYnK7zeop26ry1RpKtogB7/O115zultAz64ydQYLe+a1e/czkALg3sgTcOOcFZTXk38e
-aqsXsipoX1vsNurqPtnC27TWsA7pk4uKXscFjkeUE8JZu9BDKaswZygxBOPBQBwrA5+20Wxlk6k1
-e6EKaaNaNZUy30q3ArEf30ZDpXyfCtiXnupjSK8WU2cK4qsEtj09JS4+mhi0CTCrCnXAzum3tgcH
-cHRg0prcSzzEUDQWoFxyuqwiwhHu3sPQNmFOMwIDAQABo4IB2jCCAdYwDgYDVR0PAQH/BAQDAgGG
-MGAGA1UdJQRZMFcGCCsGAQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNxQCAgYKKwYBBAGCNwoDBAYJ
-KwYBBAGCNxUGBgorBgEEAYI3CgMMBggrBgEFBQcDBwYIKwYBBQUHAxEwEgYDVR0TAQH/BAgwBgEB
-/wIBADAdBgNVHQ4EFgQUljPR5lgXWzR1ioFWZNW+SN6hj88wHwYDVR0jBBgwFoAUj/BLf6guRSSu
-TVD6Y5qL3uLdG7wwegYIKwYBBQUHAQEEbjBsMC0GCCsGAQUFBzABhiFodHRwOi8vb2NzcC5nbG9i
-YWxzaWduLmNvbS9yb290cjMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5j
-b20vY2FjZXJ0L3Jvb3QtcjMuY3J0MDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwuZ2xvYmFs
-c2lnbi5jb20vcm9vdC1yMy5jcmwwWgYDVR0gBFMwUTALBgkrBgEEAaAyASgwQgYKKwYBBAGgMgEo
-CjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAN
-BgkqhkiG9w0BAQsFAAOCAQEAdAXk/XCnDeAOd9nNEUvWPxblOQ/5o/q6OIeTYvoEvUUi2qHUOtbf
-jBGdTptFsXXe4RgjVF9b6DuizgYfy+cILmvi5hfk3Iq8MAZsgtW+A/otQsJvK2wRatLE61RbzkX8
-9/OXEZ1zT7t/q2RiJqzpvV8NChxIj+P7WTtepPm9AIj0Keue+gS2qvzAZAY34ZZeRHgA7g5O4TPJ
-/oTd+4rgiU++wLDlcZYd/slFkaT3xg4qWDepEMjT4T1qFOQIL+ijUArYS4owpPg9NISTKa1qqKWJ
-jFoyms0d0GwOniIIbBvhI2MJ7BSY9MYtWVT5jJO3tsVHwj4cp92CSFuGwunFMzCCA18wggJHoAMC
-AQICCwQAAAAAASFYUwiiMA0GCSqGSIb3DQEBCwUAMEwxIDAeBgNVBAsTF0dsb2JhbFNpZ24gUm9v
-dCBDQSAtIFIzMRMwEQYDVQQKEwpHbG9iYWxTaWduMRMwEQYDVQQDEwpHbG9iYWxTaWduMB4XDTA5
-MDMxODEwMDAwMFoXDTI5MDMxODEwMDAwMFowTDEgMB4GA1UECxMXR2xvYmFsU2lnbiBSb290IENB
-IC0gUjMxEzARBgNVBAoTCkdsb2JhbFNpZ24xEzARBgNVBAMTCkdsb2JhbFNpZ24wggEiMA0GCSqG
-SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDMJXaQeQZ4Ihb1wIO2hMoonv0FdhHFrYhy/EYCQ8eyip0E
-XyTLLkvhYIJG4VKrDIFHcGzdZNHr9SyjD4I9DCuul9e2FIYQebs7E4B3jAjhSdJqYi8fXvqWaN+J
-J5U4nwbXPsnLJlkNc96wyOkmDoMVxu9bi9IEYMpJpij2aTv2y8gokeWdimFXN6x0FNx04Druci8u
-nPvQu7/1PQDhBjPogiuuU6Y6FnOM3UEOIDrAtKeh6bJPkC4yYOlXy7kEkmho5TgmYHWyn3f/kRTv
-riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
-QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
-UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
-M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
-Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
-14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
-a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
-XzCCBVgwggRAoAMCAQICDDSzinKpvcPTN4ZIJTANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
-RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
-UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMTAyMjIwNzMwMDRaFw0yMjA5MDUwNzM3NTVaMIGW
-MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
-BgNVBAoTDUJyb2FkY29tIEluYy4xGTAXBgNVBAMTEEJvcmlzIFN1a2hvbGl0a28xLDAqBgkqhkiG
-9w0BCQEWHWJvcmlzLnN1a2hvbGl0a29AYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
-AQ8AMIIBCgKCAQEAy/C7bjpxs+95egWV8sWrK9KO0SQi6Nxu14tJBgP+MOK5tvokizPFHoiXTymZ
-7ClfnmbcqT4PzWgI3thyfk64bgUo1nQkCTApn7ov3IRsWjmHExLSNoJ/siUHagO6BPAk4JSycrj5
-9tC9sL4FnIAbAHmOSILCyGyyaBAcmiyH/3toYqXyjJkK+vbWQSTxk2NlqJLIN/ypLJ1pYffVZGUs
-52g1hlQtHhgLIznB1Qx3Fop3nOUk8nNpQLON/aM8K5sl18964c7aXh7YZnalUQv3md4p2rAQQqIR
-rZ8HBc7YjlZynwOnZl1NrK4cP5aM9lMkbfRGIUitHTIhoDYp8IZ1dwIDAQABo4IB3jCCAdowDgYD
-VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
-ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
-CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
-MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
-d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
-hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
-bDAoBgNVHREEITAfgR1ib3Jpcy5zdWtob2xpdGtvQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggr
-BgEFBQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUtBmGs9S4
-t1FcFSfkrP2LKQQwBKMwDQYJKoZIhvcNAQELBQADggEBAJMAjVBkRmr1lvVvEjMaLfvMhwGpUfh6
-CMZsKICyz/ZZmvTmIZNwy+7b9r6gjLCV4tP63tz4U72X9qJwfzldAlYLYWIq9e/DKDjwJRYlzN8H
-979QJ0DHPSJ9EpvSKXob7Ci/FMkTfq1eOLjkPRF72mn8KPbHjeN3VVcn7oTe5IdIXaaZTryjM5Ud
-bR7s0ZZh6mOhJtqk3k1L1DbDTVB4tOZXZHRDghEGaQSnwU/qxCNlvQ52fImLFVwXKPnw6+9dUvFR
-ORaZ1pZbapCGbs/4QLplv8UaBmpFfK6MW/44zcsDbtCFfgIP3fEJBByIREhvRC5mtlRtdM+SSjgS
-ZiNfUggxggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
-LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgw0
-s4pyqb3D0zeGSCUwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIL0GnUesIypQux/N
-2gV0c5zl64bIFTwcl/2fZ6PyV/3DMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
-AQkFMQ8XDTIyMDQxMjEwMDcwMFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
-AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
-MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQCulTJ0CCommLZgvnVJt7BS6ADRM8l1Kb8Q
-S374EgCqV33ByEZmTud4Ac1kBevr8nvc+1c6oqnXs1/tYYNez7HB+djQUiuJU+MPVfII49GoKund
-JCE0JEDuNp3UDbCsuUdFj4xRp4HySzUgVfmXcBXXiL64du5yvKYbQCAn5zQ1kbJiCXC7oq38H3vV
-XRhSacMcmYy1xFZadhAETNdkufUPGgdFPoUhtNNilPsfq9a27O5EXS/8bwp5q0I9GSFP8MxXA0fq
-siKgnuGlC3GUydY/iLNQD1x8HL/QhmC4990RALR+VTfFufIR7/kpmD90FpASTFG9GahCqWo6QOMZ
-LxWK
---000000000000c97f6d05dc723842--
