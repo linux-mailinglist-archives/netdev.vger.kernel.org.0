@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A7244FE0FB
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 14:52:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5A5C4FE0DC
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 14:52:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242332AbiDLMut (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 08:50:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34120 "EHLO
+        id S1346277AbiDLMuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 08:50:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355312AbiDLMsK (ORCPT
+        with ESMTP id S1355313AbiDLMsK (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 08:48:10 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB95DFEA;
-        Tue, 12 Apr 2022 05:16:48 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id i27so36939014ejd.9;
-        Tue, 12 Apr 2022 05:16:48 -0700 (PDT)
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FEB91117E;
+        Tue, 12 Apr 2022 05:16:50 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id 21so8908081edv.1;
+        Tue, 12 Apr 2022 05:16:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=yEn2KXl6YaWL8lEsoeTa0NhbbIFQf0W1A7EAGx1tWC4=;
-        b=iXJMdwpNrxt7RXikTigM+URh+seDNwmTBeP54jN6oatM9hD1I1qjtOAyt6rGEXqP15
-         cpcE0OlWaDY8NarYxMocprMaFJZx8nqBB2tW6LPkyAV9+i4IlC3n9Z+vheu/faQaFbJs
-         xNt4I7wFDeNIaqRsGQbGhPfy5tmM2/JNonlVMZ5sLYkcDgctqeb2aNmgeh9Vrry/Hr64
-         7VxLVBOINIG/PyrTnB0EBKGmYHymLdoGlhkoNDatkk0Qs5zabcqaKMO9ig8hNQX0WfLR
-         aZYpNg/1B/WDrNUbgOAO5y7K/M3WCiYcVFCODA+3dUppRLfb71j1kLsKBQgJ1deOiAQy
-         ja6Q==
+        bh=/A0b7QXPnRxcdjzjvBy95srF3RhPajcOL797uVjW17k=;
+        b=pt6ToQjAd663wMrVDbXPdtWrIdem4CnLtP/h4V1zvHQRqD9xToIMziUbeJ9DxzoAYw
+         OCLLsufYdt512l71hphYx/hJe8A8CErh5Lt/6NKV0Y7B/1e4oDXd4K1htKuRLHzhXPe9
+         jJPNjIX5vQIC6oHGZuC7X+FqdkYdbFS/AmB/sIQDe2hpVZsj7ADmMUveDsreb2wQnwGg
+         X7hgHRhuIFXqs8yvxRT5ooTQUI3appVaTVO4cEoVrotN8HpmF8qg9lV7YsPj067SBZOM
+         vTV25l1GfMgIGDydkON7gxh+EZ9wbQk7/xyn/YsIPpl1zOZlz2kyMy1ZXpyu+C1yJCtn
+         lqog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=yEn2KXl6YaWL8lEsoeTa0NhbbIFQf0W1A7EAGx1tWC4=;
-        b=smz9p2C5nJp4095IqxV2XYc/jfwr8fQ816aGpCSrc8a200tUfkIrY05aRz+6EqjwBP
-         byaTTJMsvWNeP944/09q2mCMzODgiozdCrljM89HwlimbhazadCPG9smFJJFq9Y1cWUv
-         +c57278/LmVJ9io4OCR7wktsj2uIy8iqybcRlfPIPbZ2WJor1k/JiZd9rNXx6K/B5GmD
-         zf/2crPsAETOHEFuNYWBwuWzCs4nttya6N7PNTH2U8+nPzJP7Gi1Qvg3P8AjEa2yurXR
-         OP2kHoLFsEJt28oJ+WFWl9dz+AxitLSs1q3NMpOOzqaSAQkD7SPn5XFmj/I64RHDrmnJ
-         K4ow==
-X-Gm-Message-State: AOAM533xBfgB1spc6LWQg+bGpbEh6RzskVQLhFhOOnCTVvqtCe6FNYPI
-        mTgH3R85ozGeZYSO61YBspk=
-X-Google-Smtp-Source: ABdhPJwp6F4IY9GIHKJ2nyRemruLcULeHd8S9uL+NtdbVF54Vrmg47gla/xTzUwjIcaXB048+q2uCw==
-X-Received: by 2002:a17:907:168a:b0:6da:9177:9fdd with SMTP id hc10-20020a170907168a00b006da91779fddmr34596105ejc.757.1649765807446;
-        Tue, 12 Apr 2022 05:16:47 -0700 (PDT)
+        bh=/A0b7QXPnRxcdjzjvBy95srF3RhPajcOL797uVjW17k=;
+        b=Xe4tdW08vT/nOLx2E2Qlt4Sb4xV+GGdTLXTnLil1ZiAXFWvYQReJcBjEa78yoAzcdB
+         4EqeZm8pNmtV7uzMsxlnI6wM59TCF/Y+vaQ6MixRfFJnM6F+3YEMOZtD+b33+ED2KIOg
+         tiA5qjCSBr/ENm/OV7d1n6pzmBOHwV845gFEGlme41joE5doSPbriPH440u2bHfxR8dz
+         iUTXtzBOxebM5hfH8XUIdb6GGtbt/7hi3zxXNL46zRQ+Q5r87FO2okEx+9oYLFsS9Ayk
+         TfFr75LrNkfj+YhyWTZV7dfYoWwfFw5Qer0mjyeqOq1EAZE7oASluEyZZbB+tKD3z0pz
+         Y3Mw==
+X-Gm-Message-State: AOAM532mWH46maZoeCK10UDNzJgMbuDIuiBIZVE/zbozTWfaK1fEnLJX
+        IRTyQxanXs8TCxJ4PKFd3C0=
+X-Google-Smtp-Source: ABdhPJyIMZ/77cMenUjdSyEWMxn67TK1mFZMcR67eDJlbutAdo1BjZ/IBoHT2jh8Jk14zLeMyyEwpA==
+X-Received: by 2002:a05:6402:530b:b0:41d:6f3c:d8dc with SMTP id eo11-20020a056402530b00b0041d6f3cd8dcmr15902311edb.291.1649765808937;
+        Tue, 12 Apr 2022 05:16:48 -0700 (PDT)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id b5-20020a17090630c500b006e8044fa76bsm8827900ejb.143.2022.04.12.05.16.45
+        by smtp.googlemail.com with ESMTPSA id b5-20020a17090630c500b006e8044fa76bsm8827900ejb.143.2022.04.12.05.16.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 05:16:47 -0700 (PDT)
+        Tue, 12 Apr 2022 05:16:48 -0700 (PDT)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
@@ -88,9 +88,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH net-next v3 17/18] ipvlan: Remove usage of list iterator variable for the loop body
-Date:   Tue, 12 Apr 2022 14:15:56 +0200
-Message-Id: <20220412121557.3553555-18-jakobkoschel@gmail.com>
+Subject: [PATCH net-next v3 18/18] team: Remove use of list iterator variable for list_for_each_entry_from()
+Date:   Tue, 12 Apr 2022 14:15:57 +0200
+Message-Id: <20220412121557.3553555-19-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220412121557.3553555-1-jakobkoschel@gmail.com>
 References: <20220412121557.3553555-1-jakobkoschel@gmail.com>
@@ -114,49 +114,95 @@ Since that variable should not be used past the loop iteration, a
 separate variable is used to 'remember the current location within the
 loop'.
 
-To either continue iterating from that position or start a new
-iteration (if the previous iteration was complete) list_prepare_entry()
-is used.
+To either continue iterating from that position or skip the iteration
+(if the previous iteration was complete) list_prepare_entry() is used.
 
 Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/net/ipvlan/ipvlan_main.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/net/team/team.c | 20 +++++++++++++-------
+ 1 file changed, 13 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ipvlan/ipvlan_main.c b/drivers/net/ipvlan/ipvlan_main.c
-index 696e245f6d00..063d7c30e944 100644
---- a/drivers/net/ipvlan/ipvlan_main.c
-+++ b/drivers/net/ipvlan/ipvlan_main.c
-@@ -9,7 +9,7 @@
- static int ipvlan_set_port_mode(struct ipvl_port *port, u16 nval,
- 				struct netlink_ext_ack *extack)
+diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
+index b07dde6f0abf..688c4393f099 100644
+--- a/drivers/net/team/team.c
++++ b/drivers/net/team/team.c
+@@ -2425,17 +2425,17 @@ static int team_nl_send_options_get(struct team *team, u32 portid, u32 seq,
+ 				    int flags, team_nl_send_func_t *send_func,
+ 				    struct list_head *sel_opt_inst_list)
  {
--	struct ipvl_dev *ipvlan;
-+	struct ipvl_dev *ipvlan, *tmp = NULL;
- 	unsigned int flags;
++	struct team_option_inst *opt_inst, *tmp = NULL;
+ 	struct nlattr *option_list;
+ 	struct nlmsghdr *nlh;
+ 	void *hdr;
+-	struct team_option_inst *opt_inst;
  	int err;
+ 	struct sk_buff *skb = NULL;
+ 	bool incomplete;
+ 	int i;
  
-@@ -26,8 +26,10 @@ static int ipvlan_set_port_mode(struct ipvl_port *port, u16 nval,
- 						       flags & ~IFF_NOARP,
- 						       extack);
+-	opt_inst = list_first_entry(sel_opt_inst_list,
+-				    struct team_option_inst, tmp_list);
++	tmp = list_first_entry(sel_opt_inst_list,
++			       struct team_option_inst, tmp_list);
+ 
+ start_again:
+ 	err = __send_and_alloc_skb(&skb, team, portid, send_func);
+@@ -2456,7 +2456,9 @@ static int team_nl_send_options_get(struct team *team, u32 portid, u32 seq,
+ 		goto nla_put_failure;
+ 
+ 	i = 0;
++	opt_inst = list_prepare_entry(tmp, sel_opt_inst_list, tmp_list);
+ 	incomplete = false;
++	tmp = NULL;
+ 	list_for_each_entry_from(opt_inst, sel_opt_inst_list, tmp_list) {
+ 		err = team_nl_fill_one_option_get(skb, team, opt_inst);
+ 		if (err) {
+@@ -2464,6 +2466,7 @@ static int team_nl_send_options_get(struct team *team, u32 portid, u32 seq,
+ 				if (!i)
+ 					goto errout;
+ 				incomplete = true;
++				tmp = opt_inst;
+ 				break;
  			}
--			if (unlikely(err))
-+			if (unlikely(err)) {
-+				tmp = ipvlan;
- 				goto fail;
-+			}
- 		}
- 		if (nval == IPVLAN_MODE_L3S) {
- 			/* New mode is L3S */
-@@ -43,6 +45,7 @@ static int ipvlan_set_port_mode(struct ipvl_port *port, u16 nval,
- 	return 0;
+ 			goto errout;
+@@ -2707,14 +2710,14 @@ static int team_nl_send_port_list_get(struct team *team, u32 portid, u32 seq,
+ 	struct nlattr *port_list;
+ 	struct nlmsghdr *nlh;
+ 	void *hdr;
+-	struct team_port *port;
++	struct team_port *port, *tmp = NULL;
+ 	int err;
+ 	struct sk_buff *skb = NULL;
+ 	bool incomplete;
+ 	int i;
  
- fail:
-+	ipvlan = list_prepare_entry(tmp, &port->ipvlans, pnode);
- 	/* Undo the flags changes that have been done so far. */
- 	list_for_each_entry_continue_reverse(ipvlan, &port->ipvlans, pnode) {
- 		flags = ipvlan->dev->flags;
+-	port = list_first_entry_or_null(&team->port_list,
+-					struct team_port, list);
++	tmp = list_first_entry_or_null(&team->port_list,
++				       struct team_port, list);
+ 
+ start_again:
+ 	err = __send_and_alloc_skb(&skb, team, portid, send_func);
+@@ -2744,7 +2747,9 @@ static int team_nl_send_port_list_get(struct team *team, u32 portid, u32 seq,
+ 		err = team_nl_fill_one_port_get(skb, one_port);
+ 		if (err)
+ 			goto errout;
+-	} else if (port) {
++	} else {
++		port = list_prepare_entry(tmp, &team->port_list, list);
++		tmp = NULL;
+ 		list_for_each_entry_from(port, &team->port_list, list) {
+ 			err = team_nl_fill_one_port_get(skb, port);
+ 			if (err) {
+@@ -2752,6 +2757,7 @@ static int team_nl_send_port_list_get(struct team *team, u32 portid, u32 seq,
+ 					if (!i)
+ 						goto errout;
+ 					incomplete = true;
++					tmp = port;
+ 					break;
+ 				}
+ 				goto errout;
 -- 
 2.25.1
 
