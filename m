@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 21D6C4FCBD7
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 03:20:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63AC54FCBE3
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 03:30:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243575AbiDLBWc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 21:22:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41698 "EHLO
+        id S244866AbiDLBc3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 21:32:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231907AbiDLBWc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 21:22:32 -0400
+        with ESMTP id S230259AbiDLBc2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 21:32:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3BE1193E2
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 18:20:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85AD113D23;
+        Mon, 11 Apr 2022 18:30:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CD9A615C7
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 01:20:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7D1A2C385A3;
-        Tue, 12 Apr 2022 01:20:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FEA661047;
+        Tue, 12 Apr 2022 01:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 703FCC385AA;
+        Tue, 12 Apr 2022 01:30:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649726415;
-        bh=VOBzqH/b2rAY/I2vLmOXN5jzJK7VgJlR1xdnJOqNJeA=;
+        s=k20201202; t=1649727011;
+        bh=y0SHa5ehdasmyuILDO1pFKt4qKWN4fredmH2EEpE8XI=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Dj5nAOoyDQ6RfYXU6Va4pZd3vuDOZ4ERPzao1dj/LtkcSSDSDG0NzBAQYr9f628yW
-         67PsuMQn4zqGXanMkLuFkV9+0ohfikrhSkobjQHV4NnNPtx6biETDt4BcigR9cXVUo
-         OkoRlGgar/890j7z1lVZcGCBqog/Ep5Ed8rb8fQkcRCGiJWVlOtIp45KIbFg8tEAyb
-         /V3UP0s72jSkDlr36U7GPYoAO/Cg0QdarhKTTK9RR32duW2YnMHSdIfGG8WdY8RhdL
-         Fh9OGrGuUTfqs+gRYaQ8hsk/W0GantlnJHts1LAqLPPvTalonQddcXJ1NEgyaiI9g0
-         LKP5/OIY7LTnA==
+        b=VuA3HDCnGKJ4u1TuBPUNVg1+BmE5AOdFSCaQSYMSuQriF3zGi6x8ZP4Y4Gi5ermLb
+         pTbeHpTTMNOLqQMU3FH8WIm5eL9Ciqh9OTeR/78Eief/QPzdVCdhldxr6ResvU88Ik
+         wMjapP3aXDAxz4RnI2yNpXXCRe4hNo+/FbEwv9VbbTWRH+rb1M25d3W7xEYd/P0gsS
+         N3xjgTqWrwmfGir4EZvl20B1IgdLE3P7OPI7jsec8fz2GzAIeb5wPgjxqQkQnGMLUu
+         Cae/kRnU2QMadxRJwKY8qPI2NpnpfvsoPhW6NDZhWKGZrpvI6C2SAC3INuNof8/T1H
+         8wXPU726a2o6g==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 58E35E85B76;
-        Tue, 12 Apr 2022 01:20:15 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 561D7E85B76;
+        Tue, 12 Apr 2022 01:30:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/5] ipv4: Convert several tos fields to dscp_t
+Subject: Re: [PATCH net-next] hv_netvsc: Add support for XDP_REDIRECT
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164972641536.27669.11150630095148243278.git-patchwork-notify@kernel.org>
-Date:   Tue, 12 Apr 2022 01:20:15 +0000
-References: <cover.1649445279.git.gnault@redhat.com>
-In-Reply-To: <cover.1649445279.git.gnault@redhat.com>
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, tchornyi@marvell.com, idosch@nvidia.com,
-        petrm@nvidia.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org
+Message-Id: <164972701134.31190.7243820472815913361.git-patchwork-notify@kernel.org>
+Date:   Tue, 12 Apr 2022 01:30:11 +0000
+References: <1649362894-20077-1-git-send-email-haiyangz@microsoft.com>
+In-Reply-To: <1649362894-20077-1-git-send-email-haiyangz@microsoft.com>
+To:     Haiyang Zhang <haiyangz@microsoft.com>
+Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        kys@microsoft.com, sthemmin@microsoft.com, olaf@aepfle.de,
+        vkuznets@redhat.com, davem@davemloft.net,
+        linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -59,33 +60,24 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (master)
+This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Fri, 8 Apr 2022 22:08:34 +0200 you wrote:
-> Continue the work started with commit a410a0cf9885 ("ipv6: Define
-> dscp_t and stop taking ECN bits into account in fib6-rules") and
-> convert more structure fields and variables to dscp_t. This series
-> focuses on struct fib_rt_info, struct fib_entry_notifier_info and their
-> users (networking drivers).
+On Thu,  7 Apr 2022 13:21:34 -0700 you wrote:
+> Handle XDP_REDIRECT action in netvsc driver.
+> Also, transparently pass ndo_xdp_xmit to VF when available.
 > 
-> The purpose of dscp_t is to ensure that ECN bits don't influence IP
-> route lookups. It does so by ensuring that dscp_t variables have the
-> ECN bits cleared.
-> 
-> [...]
+> Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
+> ---
+>  drivers/net/hyperv/hyperv_net.h |  69 ++++++++++++++-
+>  drivers/net/hyperv/netvsc.c     |   8 +-
+>  drivers/net/hyperv/netvsc_bpf.c |  95 +++++++++++++++++++-
+>  drivers/net/hyperv/netvsc_drv.c | 150 +++++++++++++-------------------
+>  4 files changed, 228 insertions(+), 94 deletions(-)
 
 Here is the summary with links:
-  - [net-next,1/5] ipv4: Use dscp_t in struct fib_rt_info
-    https://git.kernel.org/netdev/net-next/c/888ade8f90d7
-  - [net-next,2/5] ipv4: Use dscp_t in struct fib_entry_notifier_info
-    https://git.kernel.org/netdev/net-next/c/568a3f33b427
-  - [net-next,3/5] netdevsim: Use dscp_t in struct nsim_fib4_rt
-    https://git.kernel.org/netdev/net-next/c/20bbf32efe1e
-  - [net-next,4/5] mlxsw: Use dscp_t in struct mlxsw_sp_fib4_entry
-    https://git.kernel.org/netdev/net-next/c/046eabbf1991
-  - [net-next,5/5] net: marvell: prestera: Use dscp_t in struct prestera_kern_fib_cache
-    https://git.kernel.org/netdev/net-next/c/9f6982e9a3c2
+  - [net-next] hv_netvsc: Add support for XDP_REDIRECT
+    https://git.kernel.org/netdev/net-next/c/1cb9d3b6185b
 
 You are awesome, thank you!
 -- 
