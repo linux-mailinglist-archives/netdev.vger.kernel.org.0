@@ -2,93 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 346DE4FEA96
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 01:46:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B88F4FEB13
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 01:47:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231342AbiDLXgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 19:36:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55432 "EHLO
+        id S230112AbiDLX0w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 19:26:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231477AbiDLXdC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 19:33:02 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 244076D968
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 15:21:45 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id x17so278651lfa.10
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 15:21:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=jhwvgyEcZSOpmpyxrOgaq3w630NRgKLJPQ/gN5X9BqI=;
-        b=BB63I15MqIOp+T77hNkUITkpUD8QzKo4ftAaAr6iSDCZawwm24ja4awPZssphh0IS/
-         UryQULhmMGO7D/ThCzmwk0TszCLMMADNuhX2eYsT6ofrbvaRJaeXhS/I0rbWh83NMk1Y
-         eQd6vSyt+TcQ+D978FzkhEZnx0v/6eY5iqGxPxHN5PsdLzgYLcGmUsnhXMjldLfNfeIT
-         o1Sae3QBQnECHLmyrbwKmqr+sWHO+Jtv0zNHGksgZuovc029llkhB7qu+4xSW16g/NJX
-         eCOXHRXh5RqyXxfa6cQV1sQp5WpPxWyKCMqcajjiAdi54wY0DdQDOh/tHKAUG9kA7/Kv
-         uZlA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=jhwvgyEcZSOpmpyxrOgaq3w630NRgKLJPQ/gN5X9BqI=;
-        b=XXm6mTVyIdGuI/0H3MiHy4nXu39wmCqxQHm1oppkMDRa4XrCZiC8itm+EkUJUnXr8B
-         9DxmCrCOQuKI360uS8XMg73GQ6tWf933/MpLc7SmSJgxfkVR1P5XdH7sEPipZl91QJrF
-         GyUCcDVcW7uaFOMiidKA6HvoJU9dAMKC97WI7/tJIUftFRH6RSKXFJUF4pH5wLozIKkC
-         VbGOL3ld/9DnKhjwGw/0gW+ke3Lz8mqk6YLGTH7WCxBHtbimY5rnarcS/OEKB0zaS0zo
-         KXqZh4r2VTUxacz5zIrq2vFFeixvwoTHP8/p08w/mNQAbAqyNiskFx5fDV4eyeH64NWx
-         qYhQ==
-X-Gm-Message-State: AOAM532Ats9Y8pBcaigl3qC6sXRYsdb54zbG6r6Osg842EUISRzKnxM3
-        akHf72aJUh/04e10JQhRH+a19+zEvWc=
-X-Google-Smtp-Source: ABdhPJw+es4HP4ZNUL9jIZiSw5Dlf2I3brqrtwwtJL66sXiQBoyeSLcm5ceujNkah436/1TXqF6BNQ==
-X-Received: by 2002:adf:ed8f:0:b0:207:ac33:801f with SMTP id c15-20020adfed8f000000b00207ac33801fmr5635741wro.453.1649800017932;
-        Tue, 12 Apr 2022 14:46:57 -0700 (PDT)
-Received: from hoboy.vegasvil.org (195-70-108-137.stat.salzburg-online.at. [195.70.108.137])
-        by smtp.gmail.com with ESMTPSA id u7-20020a5d6da7000000b00203d9d1875bsm34134462wrs.73.2022.04.12.14.46.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 14:46:57 -0700 (PDT)
-Date:   Tue, 12 Apr 2022 14:46:55 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Gerhard Engleder <gerhard@engleder-embedded.com>
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, yangbo.lu@nxp.com,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, mlichvar@redhat.com,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next v2 4/5] ptp: Support late timestamp determination
-Message-ID: <20220412214655.GB579091@hoboy.vegasvil.org>
-References: <20220403175544.26556-1-gerhard@engleder-embedded.com>
- <20220403175544.26556-5-gerhard@engleder-embedded.com>
- <20220410072930.GC212299@hoboy.vegasvil.org>
- <CANr-f5xhH31yF8UOmM=ktWULyUugBGDoHzOiYZggiDPZeTbdrw@mail.gmail.com>
- <20220410134215.GA258320@hoboy.vegasvil.org>
- <CANr-f5xriLzQ+3xtM+iV8ahu=J1mA7ixbc49f0i2jxkySthTdQ@mail.gmail.com>
- <CANr-f5yn9LzMQ8yAP8Py-EP_NyifFyj1uXBNo+kuGY1p8t0CFw@mail.gmail.com>
+        with ESMTP id S230063AbiDLX00 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 19:26:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92CDAD1117
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 15:12:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D36261CBC
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 21:49:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EE80C385A1;
+        Tue, 12 Apr 2022 21:49:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649800148;
+        bh=TKFoBgN6gGcBl8AdG9TLB647TtG60QoAqZ631HFi/EI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=gN9lkXh2IvIgBGjzPkfaXcUio4abDWiRkH06RTzWcYa39bbaqix+cHQeH6Ye2ILBb
+         /dCbkRo0P03jE3HnHm0Msn7QZa+TVM06xxyCAFpLviKbcaJAGnKs9al15Vj2EKTMcI
+         bVTTKnLYfQhmM7xtEt4597MWTFJyqOOyTkZSPu54OUDpGfpNwqeTvNCjGVHSfhO5kG
+         tIz4GpNiOQ5cCfs2kjs5PYkqJiDnHc8Y/X+w7on9Kqo/5hMz4u97jhP8FqdtJGkw0I
+         sBRguXsOVRIr6czzg+37knaB+rKLV3OLzP02WY6PtUhAlkHuOg5DQsL6NFQEI+ANcv
+         9E0UtmGPMDFog==
+Date:   Tue, 12 Apr 2022 14:49:06 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ray Jui <ray.jui@broadcom.com>
+Cc:     Michael Chan <michael.chan@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>
+Subject: Re: [RFC] Applicability of using 'txq_trans_update' during ring
+ recovery
+Message-ID: <20220412144906.40d935f2@kernel.org>
+In-Reply-To: <040cd578-946f-0141-c28a-2f04d00d9790@broadcom.com>
+References: <1bdb8417-233d-932b-1dc0-c56042aedabd@broadcom.com>
+        <20220412103724.54924945@kernel.org>
+        <999fab5e-08e1-888e-6672-4fc868555b32@broadcom.com>
+        <CACKFLinCdTELX7-19-hp4dK3Ysm2tCmW=qeh-SHoiKU5TShwuw@mail.gmail.com>
+        <7bdffaa4-0977-414d-c28f-7408fde20bab@broadcom.com>
+        <CACKFLim6ty5Pxih+aPn_mDGEy5RvZpJLFN8aV5UAhzfysL9bdA@mail.gmail.com>
+        <040cd578-946f-0141-c28a-2f04d00d9790@broadcom.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANr-f5yn9LzMQ8yAP8Py-EP_NyifFyj1uXBNo+kuGY1p8t0CFw@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 09:24:10PM +0200, Gerhard Engleder wrote:
-> I'm thinking about why there should be a slow path with lookup. If the
-> address/cookie
-> points to a defined data structure with two timestamps, then no lookup
-> for the phc or
-> netdev is necessary. It should be possible for every driver to
-> allocate a skbuff with enough
-> space for this structure in front of the received Ethernet frame.
+On Tue, 12 Apr 2022 12:34:23 -0700 Ray Jui wrote:
+> Sure, that is the general error recovery case which is very different
+> from this specific recovery case we are discussing here. This specific
+> recovery is solely performed by driver (without resetting firmware and
+> chip) on a per NAPI ring set basis. While a specific NAPI ring set is
+> being recovered, traffic is still going with the rest of the NAPI ring
+> sets. Average recovery time is in the 1 - 2 ms range in this type of
+> recovery.
+> 
+> Also as I already said, 'netif_carrier_off' is not an option given that
+> the RoCE/infiniband subsystem has a dependency on 'netif_carrier_status'
+> for many of their operations.
+> 
+> Basically I'm looking for a solution that allows one to be able to:
+> 1) quieice traffic and perform recovery on a per NAPI ring set basis
+> 2) During recovery, it does not cause any drastic effect on RoCE
+> 
+> 'txq_trans_update' may not be the most optimal solution, but it is a
+> solution that satisfies the two requirements above. If there are any
+> other option that is considered more optimal than 'txq_trans_update' and
+> can satisfy the two requirements, please let me know.
 
-Adding 16 bytes for every allocated skbuff is going to be a tough
-sell.  Most people don't want/need this.
-
-Thanks,
-Richard
+The optimal solution would be to not have to reset your rings and
+pretend like nothing happened :/ If you can't reset the ring in time
+you'll have to live with the splat. End of story.
