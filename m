@@ -2,164 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 65FEE4FE511
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 17:47:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18BC84FE513
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 17:47:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357274AbiDLPtN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 11:49:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39894 "EHLO
+        id S1357289AbiDLPtc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 11:49:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235507AbiDLPtM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 11:49:12 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 142C95FF23;
-        Tue, 12 Apr 2022 08:46:54 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id bh17so38149044ejb.8;
-        Tue, 12 Apr 2022 08:46:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gwZ9CHvYhZZ9147CrVLA+yjNadbJUhOCmSfrIzjUHWg=;
-        b=P+vpgkwx8MjQx+ycKCwc6BgaPi7uKHrw/x7OkuGiydyZW8GRegFWgWZSktFmeoBJHl
-         y+XpOHd0TvosGRU4ZnFkTGFcBmh+NoISJ6JkQxso/rBSxn+3A/uBJ6rwxHCD/sS/jcCU
-         V/MOKfTg6mg4jZKkI3fObyPuXVaFZyRRRBEormnhQIJyM6SpwLoktBhfVkPFcwl2kdSQ
-         lVZ16fap4LpHCqNGCzRpLJJ71IBEQWfqdN5T0C+bu1q97QhmnkekHEQzPXcVXzZwoe8s
-         Q6Xm9UGV6eWFo5EXc5fHt7AyvMQ8VpGosW/MIjaFK7Gb5nSyp6Qrx1wzhMsgf8wn3XJk
-         Q/qQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gwZ9CHvYhZZ9147CrVLA+yjNadbJUhOCmSfrIzjUHWg=;
-        b=WkYucC9JGgbHucWxvG93IsLEOMIz3vTrSINBkKis3O+6KmtCNy1hh0lUytuVNzmrtE
-         14dN/JLcJvJd5pQ/bLvf9GAr2K5eOJF7e/hvYuCvfZopQoabuea0k0Z0vI9Wj+rfzEJv
-         hIKUffmQumMu47R3YyJ0P6ppLH6DyJAnV+DU16vLdJwbI2sphP41kMaTYFxVtlLNb/Jq
-         AQazSEP7oyl9FOshdjRoIDxVuMExALMFwcCiryXd4sUhajIF6nQX3FlbxedXuXwNdJGr
-         Ugir7gKl7ZCYMfwdyAI29Mf87g/GxeoQKW773G+6aW6jFZoGXIlSxo4tTwjSHOxea46X
-         GVfQ==
-X-Gm-Message-State: AOAM532Bf/3Va7SkP7V2tfTiecyVuBY7Z7QxK7aejftrc0p6nLzIXUdU
-        cwvsvcXU2/TB0yCct1LypEw=
-X-Google-Smtp-Source: ABdhPJz0ggnoLW3vkCVf9b6N6Oatr4EM1jR37FXRi8Iw3QENChkAGly44hf54w3k/WSzhNIqvsrpaw==
-X-Received: by 2002:a17:907:160b:b0:6e8:58c1:8850 with SMTP id hb11-20020a170907160b00b006e858c18850mr15415064ejc.284.1649778412502;
-        Tue, 12 Apr 2022 08:46:52 -0700 (PDT)
-Received: from krava ([83.240.62.142])
-        by smtp.gmail.com with ESMTPSA id s11-20020a170906284b00b006e108693850sm13214817ejc.28.2022.04.12.08.46.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 08:46:52 -0700 (PDT)
-Date:   Tue, 12 Apr 2022 17:46:49 +0200
-From:   Jiri Olsa <olsajiri@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: Re: [RFC bpf-next 0/4] bpf: Speed up symbol resolving in kprobe
- multi link
-Message-ID: <YlWe6U7qSsFA7DYK@krava>
-References: <20220407125224.310255-1-jolsa@kernel.org>
- <20220408232922.mz2vi2oaxf2fvnvt@MBP-98dd607d3435.dhcp.thefacebook.com>
- <YlHrdhkfz+IuGbZM@krava>
- <CAEf4BzYXHeM+m64cV6_5TU0_BjotDVo+iw_wpJEWLkU9gsvfXg@mail.gmail.com>
- <CAADnVQLQj-ixQo5xEJEZaJavoNpVdhizDmkqFm+pDJq97_Ecpw@mail.gmail.com>
- <CAEf4BzbV2PObd26scnTfQ8C1508k=z4cc7mvPS5BAc+9sXhVVg@mail.gmail.com>
+        with ESMTP id S1357309AbiDLPta (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 11:49:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B51B56005F
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 08:47:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2C515B819FD
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 15:47:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A94EC385A5;
+        Tue, 12 Apr 2022 15:47:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649778420;
+        bh=4zMV9F3FChIO+lD2MsMpUwisXBjI9AH8/81Vgqxi69k=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kywpsU0w7OPWcEdJvgXomyntHbzChpaBm8bF9RjmoD3HWTsYDPYKW5tvj9d02ptef
+         d+XHHbVrFMVSRcc0EPRg0UttyQ89p2V3bdJBDXfobd4ycvsDeXwpz32xPN8JdCAodI
+         7lEPuDVYPtZnz9s/f7yk95rIl4L64KCsQNc1lwimZGySvCKExUyB6McqpK1EGQTeKw
+         tq8M7Gx116d9qg2cgVXwcDWgvx7CSWU2aEKMlQpekXisMZCNXVg8JmnDXKXsVjgHim
+         gMwfwAtjfC7B7LNP6/fTv68oUIVSLzuZlPa+EYqLEW4C4FeN4iJRkiACEzvL0sE6Uk
+         6GzU2dCa7TNSA==
+Date:   Tue, 12 Apr 2022 08:46:59 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Simon Horman <simon.horman@corigine.com>,
+        Dylan Muller <dylan.muller@corigine.com>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com
+Subject: Re: [PATCH net-next] nfp: update nfp_X logging definitions
+Message-ID: <20220412084659.60838d73@kernel.org>
+In-Reply-To: <20220412152600.190317-1-simon.horman@corigine.com>
+References: <20220412152600.190317-1-simon.horman@corigine.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzbV2PObd26scnTfQ8C1508k=z4cc7mvPS5BAc+9sXhVVg@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 03:21:49PM -0700, Andrii Nakryiko wrote:
-> On Mon, Apr 11, 2022 at 3:18 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Mon, Apr 11, 2022 at 10:15 PM Andrii Nakryiko
-> > <andrii.nakryiko@gmail.com> wrote:
-> > >
-> > > On Sat, Apr 9, 2022 at 1:24 PM Jiri Olsa <olsajiri@gmail.com> wrote:
-> > > >
-> > > > On Fri, Apr 08, 2022 at 04:29:22PM -0700, Alexei Starovoitov wrote:
-> > > > > On Thu, Apr 07, 2022 at 02:52:20PM +0200, Jiri Olsa wrote:
-> > > > > > hi,
-> > > > > > sending additional fix for symbol resolving in kprobe multi link
-> > > > > > requested by Alexei and Andrii [1].
-> > > > > >
-> > > > > > This speeds up bpftrace kprobe attachment, when using pure symbols
-> > > > > > (3344 symbols) to attach:
-> > > > > >
-> > > > > > Before:
-> > > > > >
-> > > > > >   # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
-> > > > > >   ...
-> > > > > >   6.5681 +- 0.0225 seconds time elapsed  ( +-  0.34% )
-> > > > > >
-> > > > > > After:
-> > > > > >
-> > > > > >   # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
-> > > > > >   ...
-> > > > > >   0.5661 +- 0.0275 seconds time elapsed  ( +-  4.85% )
-> > > > > >
-> > > > > >
-> > > > > > There are 2 reasons I'm sending this as RFC though..
-> > > > > >
-> > > > > >   - I added test that meassures attachment speed on all possible functions
-> > > > > >     from available_filter_functions, which is 48712 functions on my setup.
-> > > > > >     The attach/detach speed for that is under 2 seconds and the test will
-> > > > > >     fail if it's bigger than that.. which might fail on different setups
-> > > > > >     or loaded machine.. I'm not sure what's the best solution yet, separate
-> > > > > >     bench application perhaps?
-> > > > >
-> > > > > are you saying there is a bug in the code that you're still debugging?
-> > > > > or just worried about time?
-> > > >
-> > > > just the time, I can make the test fail (cross the 2 seconds limit)
-> > > > when the machine is loaded, like with running kernel build
-> > > >
-> > > > but I couldn't reproduce this with just paralel test_progs run
-> > > >
-> > > > >
-> > > > > I think it's better for it to be a part of selftest.
-> > > > > CI will take extra 2 seconds to run.
-> > > > > That's fine. It's a good stress test.
-> > >
-> > > I agree it's a good stress test, but I disagree on adding it as a
-> > > selftests. The speed will depend on actual host machine. In VMs it
-> > > will be slower, on busier machines it will be slower, etc. Generally,
-> > > depending on some specific timing just causes unnecessary maintenance
-> > > headaches. We can have this as a benchmark, if someone things it's
-> > > very important. I'm impartial to having this regularly executed as
-> > > it's extremely unlikely that we'll accidentally regress from NlogN
-> > > back to N^2. And if there is some X% slowdown such selftest is
-> > > unlikely to alarm us anyways. Sporadic failures will annoy us way
-> > > before that to the point of blacklisting this selftests in CI at the
-> > > very least.
-> >
-> > Such selftest shouldn't be measuring the speed, of course.
-> > The selftest will be about:
-> > 1. not crashing
-> > 2. succeeding to attach and getting some meaningful data back.
+On Tue, 12 Apr 2022 17:26:00 +0200 Simon Horman wrote:
+> From: Dylan Muller <dylan.muller@corigine.com>
 > 
-> Yeah, that's totally fine with me. My biggest beef is using time as a
-> measure of test success, which will be flaky. Just a slow-ish test
-> doing a lot of work sounds totally fine.
+> Previously it was not possible to determine which code path was responsible
+> for generating a certain message after a call to the nfp_X messaging
+> definitions for cases of duplicate strings. We therefore modify nfp_err,
+> nfp_warn, nfp_info, nfp_dbg and nfp_printk to print the corresponding file
+> and line number where the nfp_X definition is used.
+> 
+> Signed-off-by: Dylan Muller <dylan.muller@corigine.com>
+> Signed-off-by: Simon Horman <simon.horman@corigine.com>
 
-ok, I'll remove the 2 seconds check
-
-thanks,
-jirka
+Examples? The messages are usually unique. Unless you also print 
+the kernel version the line numbers are meaningless in real life.
