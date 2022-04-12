@@ -2,159 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47AA54FDFE6
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 14:30:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 261DE4FDFC2
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 14:29:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238663AbiDLMKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 08:10:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58954 "EHLO
+        id S1352174AbiDLMMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 08:12:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354313AbiDLMKE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 08:10:04 -0400
-Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 184A96D3AA
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 04:09:57 -0700 (PDT)
-Received: by mail-qv1-xf2d.google.com with SMTP id e22so15811609qvf.9
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 04:09:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=8HQYjugvN4vPXQ4iViwk6iKGa5uEY85iMW3XiQYVH9Q=;
-        b=t6DQH7PdS0WBcFEfTBybj65BVU2E2JjaBEGBHyWTV2TPuLlNlkvSQCfDzaJ4qLcZv9
-         G4clIb6kfQW6gYIPEqBcksjpsE135TJCO+eNtSvuAUWYyg8x/PTrodxlY9LT8+EJzH6Z
-         PQ5/W5HS+D1WAnhEplN2aQXFC3ZLU9PoQz5t4sca+AAhjeaOZeiJlro4j/KBrqc07OPv
-         JcWcXfpU1MouhnOUnuUv2c859KlN82fsld59QIN622RBBBOOCZO0ZRKQCs5yGdLBGSX5
-         x6HbFP6CBD54uUt5TIhRPKAYs/WD1Ly7JuHHEY+sKbhJ73K51d2qO12eVmapv9mp3YUY
-         niIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=8HQYjugvN4vPXQ4iViwk6iKGa5uEY85iMW3XiQYVH9Q=;
-        b=olLZmapVIaRHhe/pN3o8THU3oPZ66RqD5WAXDpfVyCOAxBAXZK272oQ4y67khNNh6D
-         O3p5ZHwzbzu/lE18AdGI0wPguUtuGtGZLNjTrs9dVSpEu4HGOwJCV+XjHqnH9dTnz0K4
-         stwrUzZJyo26V6kklqgga7MV1Jzre2+yUZ10jW8y1Ke2XmZ63uvU7QJiOtiJArtP2MsJ
-         c3wq4TqORktZGkNdL+/I5K2/kogRCwQdXbi0Oh7fiOPwVbo8hVgWW497gyiznsGMEBnd
-         zvK/ajwXn6IccB67os1R9fvpnc9gcGTh7/JVhLsyJB5LstmU+sxPEB2059WKcUBuqw69
-         Jxsg==
-X-Gm-Message-State: AOAM532djc9xb7RYG6wZj6UHDLkHNSA9ZCz0lUuVncWjVLgD6oOByU7I
-        vBoTVF9wrLs23Bu7z8pAJX5PbA==
-X-Google-Smtp-Source: ABdhPJwr1zBG3HK1klPqoVXbjTjJqK6OpAmzV+PKs5Mn36QB/hRTOCz5XHz/DeP9wTWckdoHfLcyAA==
-X-Received: by 2002:a05:6214:d88:b0:443:e626:40e0 with SMTP id e8-20020a0562140d8800b00443e62640e0mr30718114qve.112.1649761796444;
-        Tue, 12 Apr 2022 04:09:56 -0700 (PDT)
-Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-25-174-95-97-66.dsl.bell.ca. [174.95.97.66])
-        by smtp.googlemail.com with ESMTPSA id m6-20020a05622a118600b002ed159394bfsm6414115qtk.31.2022.04.12.04.09.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 04:09:55 -0700 (PDT)
-Message-ID: <b2c83f63-a2e9-92a2-f262-3aae3491dfc3@mojatatu.com>
-Date:   Tue, 12 Apr 2022 07:09:54 -0400
+        with ESMTP id S1354717AbiDLMKV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 08:10:21 -0400
+Received: from smtp-42ac.mail.infomaniak.ch (smtp-42ac.mail.infomaniak.ch [IPv6:2001:1600:4:17::42ac])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7318D82D37;
+        Tue, 12 Apr 2022 04:12:32 -0700 (PDT)
+Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4Kd33L5xM1zMprpV;
+        Tue, 12 Apr 2022 13:12:30 +0200 (CEST)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4Kd33L2CSkzlhMCQ;
+        Tue, 12 Apr 2022 13:12:30 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1649761950;
+        bh=bZYdW/tm5O312A9NSRRHYt/TwJO5MHrCuiyBeQhEYJs=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=IvnE3N6f00aDiZ2pmCgA763PDaKbUTjgpp1nKbskBjmK7gMVauHaApwNTQLYS32qO
+         fcykJwt363hiwwd9xd6niS3L21iGgnb/49pOa1rvcQTvX89me3JnLLRvVD6deuUhJe
+         y0Q2hIVUveb5nBJ5xmIYlQkH0qBd4aqgj3i4CZl8=
+Message-ID: <638ae3c4-09cd-2eaf-858b-4909f2a9cdcc@digikod.net>
+Date:   Tue, 12 Apr 2022 13:12:48 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH iproute2-next 0/2] flower: match on the number of vlan
- tags
+User-Agent: 
 Content-Language: en-US
-To:     Boris Sukholitko <boris.sukholitko@broadcom.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Eric Dumazet <edumazet@google.com>,
-        zhang kai <zhangkaiheb@126.com>,
-        Yoshiki Komachi <komachi.yoshiki@gmail.com>,
-        Ilya Lifshits <ilya.lifshits@broadcom.com>
-References: <20220411133202.18278-1-boris.sukholitko@broadcom.com>
- <20220411084536.1f18d4ea@hermes.local> <20220412104514.GB27480@noodle>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-In-Reply-To: <20220412104514.GB27480@noodle>
+To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+Cc:     willemdebruijn.kernel@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
+        artem.kuzin@huawei.com, anton.sirazetdinov@huawei.com
+References: <20220309134459.6448-1-konstantin.meskhidze@huawei.com>
+ <20220309134459.6448-7-konstantin.meskhidze@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [RFC PATCH v4 06/15] landlock: landlock_add_rule syscall
+ refactoring
+In-Reply-To: <20220309134459.6448-7-konstantin.meskhidze@huawei.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-04-12 06:45, Boris Sukholitko wrote:
-> On Mon, Apr 11, 2022 at 08:45:36AM -0700, Stephen Hemminger wrote:
->> On Mon, 11 Apr 2022 16:32:00 +0300
->> Boris Sukholitko <boris.sukholitko@broadcom.com> wrote:
->>
->>> Hi,
->>>
->>> Our customers in the fiber telecom world have network configurations
->>> where they would like to control their traffic according to the number
->>> of tags appearing in the packet.
->>>
->>> For example, TR247 GPON conformance test suite specification mostly
->>> talks about untagged, single, double tagged packets and gives lax
->>> guidelines on the vlan protocol vs. number of vlan tags.
->>>
->>> This is different from the common IT networks where 802.1Q and 802.1ad
->>> protocols are usually describe single and double tagged packet. GPON
->>> configurations that we work with have arbitrary mix the above protocols
->>> and number of vlan tags in the packet.
->>>
->>> The following patch series implement number of vlans flower filter. They
->>> add num_of_vlans flower filter as an alternative to vlan ethtype protocol
->>> matching. The end result is that the following command becomes possible:
->>>
->>> tc filter add dev eth1 ingress flower \
->>>    num_of_vlans 1 vlan_prio 5 action drop
->>>
->>> The corresponding kernel patches are being sent separately.
->>>
->>> Thanks,
->>> Boris.
->>
->> Maybe something custom like this is better done by small BPF program?
+
+On 09/03/2022 14:44, Konstantin Meskhidze wrote:
+> Landlock_add_rule syscall was refactored to support new
+> rule types in future Landlock versions. Add_rule_path_beneath()
+> helper was added to support current filesystem rules. It is called
+> by the switch case.
 > 
-> I am not sure it is feasible to have BPF match done on the number of
-> vlans and have the rest of TC machinery work as expected.
+> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+> ---
 > 
-> For example, the flower filters look at the protocol to allow matching
-> on the vlan fields. Patch 5 of the kernel part of the series adds number
-> of vlans as a different precondition. Having BPF program does nothing
-> for it.
+> Changes since v3:
+> * Split commit.
+> * Refactoring landlock_add_rule syscall.
 > 
-> Replicating more of TC functionality in the BPF to alleviate such pain
-> points is probably possible but will not be "simple".
+> ---
+>   security/landlock/syscalls.c | 95 ++++++++++++++++++++----------------
+>   1 file changed, 53 insertions(+), 42 deletions(-)
 > 
-> Also (and sorry for the philosophy rant!) there is an issue of UI and
-> intended audience here. The TC tools are well known and accessible. I am
-> not sure that the same can be said for a custom BPF programs. :)
+> diff --git a/security/landlock/syscalls.c b/security/landlock/syscalls.c
+> index 5931b666321d..8c0f6165fe3a 100644
+> --- a/security/landlock/syscalls.c
+> +++ b/security/landlock/syscalls.c
+> @@ -274,54 +274,13 @@ static int get_path_from_fd(const s32 fd, struct path *const path)
+>   	return err;
+>   }
 > 
+> -/**
+> - * sys_landlock_add_rule - Add a new rule to a ruleset
+> - *
+> - * @ruleset_fd: File descriptor tied to the ruleset that should be extended
+> - *		with the new rule.
+> - * @rule_type: Identify the structure type pointed to by @rule_attr (only
+> - *             LANDLOCK_RULE_PATH_BENEATH for now).
+> - * @rule_attr: Pointer to a rule (only of type &struct
+> - *             landlock_path_beneath_attr for now).
+> - * @flags: Must be 0.
+> - *
+> - * This system call enables to define a new rule and add it to an existing
+> - * ruleset.
+> - *
+> - * Possible returned errors are:
+> - *
+> - * - EOPNOTSUPP: Landlock is supported by the kernel but disabled at boot time;
+> - * - EINVAL: @flags is not 0, or inconsistent access in the rule (i.e.
+> - *   &landlock_path_beneath_attr.allowed_access is not a subset of the rule's
+> - *   accesses);
+> - * - ENOMSG: Empty accesses (e.g. &landlock_path_beneath_attr.allowed_access);
+> - * - EBADF: @ruleset_fd is not a file descriptor for the current thread, or a
+> - *   member of @rule_attr is not a file descriptor as expected;
+> - * - EBADFD: @ruleset_fd is not a ruleset file descriptor, or a member of
+> - *   @rule_attr is not the expected file descriptor type (e.g. file open
+> - *   without O_PATH);
+> - * - EPERM: @ruleset_fd has no write access to the underlying ruleset;
+> - * - EFAULT: @rule_attr inconsistency.
+> - */
+> -SYSCALL_DEFINE4(landlock_add_rule,
+> -		const int, ruleset_fd, const enum landlock_rule_type, rule_type,
+> -		const void __user *const, rule_attr, const __u32, flags)
+> +static int add_rule_path_beneath(const int ruleset_fd, const void *const rule_attr)
+>   {
+>   	struct landlock_path_beneath_attr path_beneath_attr;
+>   	struct path path;
+>   	struct landlock_ruleset *ruleset;
+>   	int res, err;
+> 
+> -	if (!landlock_initialized)
+> -		return -EOPNOTSUPP;
+> -
+> -	/* No flag for now. */
+> -	if (flags)
+> -		return -EINVAL;
+> -
+> -	if (rule_type != LANDLOCK_RULE_PATH_BENEATH)
+> -		return -EINVAL;
+> -
+>   	/* Copies raw user space buffer, only one type for now. */
+>   	res = copy_from_user(&path_beneath_attr, rule_attr,
+>   			sizeof(path_beneath_attr));
+> @@ -367,6 +326,58 @@ SYSCALL_DEFINE4(landlock_add_rule,
+>   	return err;
+>   }
+> 
+> +/**
+> + * sys_landlock_add_rule - Add a new rule to a ruleset
+> + *
+> + * @ruleset_fd: File descriptor tied to the ruleset that should be extended
+> + *		with the new rule.
+> + * @rule_type: Identify the structure type pointed to by @rule_attr (only
+> + *             LANDLOCK_RULE_PATH_BENEATH for now).
+> + * @rule_attr: Pointer to a rule (only of type &struct
+> + *             landlock_path_beneath_attr for now).
+> + * @flags: Must be 0.
+> + *
+> + * This system call enables to define a new rule and add it to an existing
+> + * ruleset.
+> + *
+> + * Possible returned errors are:
+> + *
+> + * - EOPNOTSUPP: Landlock is supported by the kernel but disabled at boot time;
+> + * - EINVAL: @flags is not 0, or inconsistent access in the rule (i.e.
+> + *   &landlock_path_beneath_attr.allowed_access is not a subset of the rule's
+> + *   accesses);
+> + * - ENOMSG: Empty accesses (e.g. &landlock_path_beneath_attr.allowed_access);
+> + * - EBADF: @ruleset_fd is not a file descriptor for the current thread, or a
+> + *   member of @rule_attr is not a file descriptor as expected;
+> + * - EBADFD: @ruleset_fd is not a ruleset file descriptor, or a member of
+> + *   @rule_attr is not the expected file descriptor type (e.g. file open
+> + *   without O_PATH);
+> + * - EPERM: @ruleset_fd has no write access to the underlying ruleset;
+> + * - EFAULT: @rule_attr inconsistency.
+> + */
+> +SYSCALL_DEFINE4(landlock_add_rule,
+> +		const int, ruleset_fd, const enum landlock_rule_type, rule_type,
+> +		const void __user *const, rule_attr, const __u32, flags)
+> +{
+> +	int err;
+> +
+> +	if (!landlock_initialized)
+> +		return -EOPNOTSUPP;
+> +
+> +	/* No flag for now. */
+> +	if (flags)
+> +		return -EINVAL;
 
-I hate to use +1 (proverbial death-by-pluse-one in effect) but, damn
-couldnt resist. Stephen, this mantra only makes sense if:
+As you can see in my yesterday patch, the get_ruleset_from_fd() call 
+should be here.
 
-a) You are a big cloud vendor with a gazillion developers who will
-write, test and maintain your custom code.
-b) willing to pay some consultant or other vendor to do the above.
 
-The majority of the world just wants to pay RH or Cannonical for the
-basic distro support and then run their bash scripts (the ops part,
-_not the dev_).
-I wouldnt call what Boris is doing as "custom". The VLAN infrastructure
-has some challenges when it comes to multiple tags.
-
-My 2c Canadiana rant:
-I am not saying there's no room for custom - in which case ebpf has
-a role to play (and we widely use it here when it makes sense), just
-that the standard answer shouldnt be "use ebpf" just because.
-
-Rant continued:
-As community we now seem to be driven by cloud vendor mentality really.
-What happened to "lets contribute back so everyone can benefit"?
-There's a lot of value still in upstreaming things.
-
-cheers,
-jamal
+> +
+> +	switch (rule_type) {
+> +	case LANDLOCK_RULE_PATH_BENEATH:
+> +		err = add_rule_path_beneath(ruleset_fd, rule_attr);
+> +		break;
+> +	default:
+> +		err = -EINVAL;
+> +	}
+> +	return err;
+> +}
+> +
+>   /* Enforcement */
+> 
+>   /**
+> --
+> 2.25.1
+> 
