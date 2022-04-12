@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 20BD84FE74A
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 19:37:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8E4F4FE743
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 19:37:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358438AbiDLRjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 13:39:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55614 "EHLO
+        id S1358425AbiDLRj0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 13:39:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351686AbiDLRjS (ORCPT
+        with ESMTP id S1358453AbiDLRjS (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 13:39:18 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C76B62133;
-        Tue, 12 Apr 2022 10:36:54 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id p15so38745448ejc.7;
-        Tue, 12 Apr 2022 10:36:54 -0700 (PDT)
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28A9562A0A;
+        Tue, 12 Apr 2022 10:36:57 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id bg10so38779451ejb.4;
+        Tue, 12 Apr 2022 10:36:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=BTPgW2n9sf+20ModHaYtKLOVMmWh29ezrmm/S2xE800=;
-        b=mvLURYCtwj5+cvgf3AXN4d+Ozqm804p4BiZ8YnrRHm8qN2f89RaShSm+wnfiHpnKaf
-         4xQey8Miss5tuRgNbkWPJHwY7cQBi8AoA04vU5gsL+7PsvxJjrsZl0CvAAbapJ1UifZk
-         bPQj18l+XzJbPuS52aJreVSUnEeW7mc9sNKAI9267bWfjeZ5IhFk69s7NPuUX1zAk3bh
-         tzkfNWcv8Oz3YqdYAJTIRc8LX1NW8/TKbqnqFcMSftR8WnYFlD77+0yHf638MqZ2yCs7
-         M6tqIVhqzQV1N41TM7TM4BHh+qY/HqxXFPNKzI1tzpXd5lKtgQzJGkUzq8y0VpMPygpv
-         rmsg==
+        bh=LtZCMAaqO/VG5YpfRuO+UKadnxV+qlzoG2jHc4egOys=;
+        b=BhFlfM7WlDWeQoL2oBPd1wdD5+QfBwB3o37cqrfIeRYLcN8LhGUW/3FRIoXiw2zssZ
+         pMsBvqP2XmGk1/t/lPq9UaKDY/NCVEsbejHkvAk1f6/2gt5/3Nfh+WPV+MAJZrLdnwIT
+         R1rudQaoZpMYYTmisjTx4dDSWnQ+VsE6ocgY4be+JodlEy+1crl9xhXHjRWs7SXehYzt
+         KUMXhT5/Cdxa9RvZm6TgYYmgbb5e7H43zsbv7myXFz1ZHDpiiQ/k6VcN1aeOcpgJOcn7
+         /0px6ND5ozbN0MGiLpw3mmxU0aJaF0P7CHeCftw8udgjbcRgb7eeE6k6cBuUPbzZBcqH
+         rKfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=BTPgW2n9sf+20ModHaYtKLOVMmWh29ezrmm/S2xE800=;
-        b=OEmFjXFy6Ox+6SVBzka/yuI5xV82C85UUDpfBqRTLjY+RGlexWUOMgsDonDAQWe5Ez
-         7mZjXXOgLjDpBuIF7XyHDxufv9mbEBwfil0h/W7/K3X8YGiv/K0PXEQowZP6JtVZ37ii
-         fFj0+6yDprk9WUhJwHRJRIfg/vKqXRnxjdcdnutDWydK6ka+RzNT3sLiEZeFQ0f7vK6j
-         4TiHr8ogH9IAOnJni0L5lPLWzhRlxX52t/Hno19etwj2vrfUPch2XLRE1oWHdIKwCCXN
-         jUC7/X9MS7vbCC8PF1FJ/lyb//puy4PC5aYO3YFZ9rsO+kFirPTeoFYPsVO8aQl9yO/8
-         HuhQ==
-X-Gm-Message-State: AOAM532ZbMUZg2mQMU4FroJcBZDt9jR8Oah3UO/bYWVfEIolYt3kEc9m
-        JWp59lHHTGerDrdAcG4lhlc=
-X-Google-Smtp-Source: ABdhPJxPWGLES0RgMU8bPM2nfkq8a026Lgl6rBOGDO6Q2BViGc2/VmpvNqkTl7LWfWYGpHNKQk57wA==
-X-Received: by 2002:a17:906:b155:b0:6c9:ea2d:3363 with SMTP id bt21-20020a170906b15500b006c9ea2d3363mr35159153ejb.729.1649785013021;
-        Tue, 12 Apr 2022 10:36:53 -0700 (PDT)
+        bh=LtZCMAaqO/VG5YpfRuO+UKadnxV+qlzoG2jHc4egOys=;
+        b=FT0U5qPc7ConXgRf4vG/C0hxV6+pVDtM26qmBvII6F9qFMmvk+I0JtDGWJqN+tYeLs
+         bF3/4542z+aR8cKWKSDR0fyRLJWxOtD2+y9S8MSRmZ3+4Nx21Wr9Rls3FKH7Euw448J4
+         JGc3kwNrK6tXXtnkbSbY1bug65ZZZVu4FUpgZiIAdISZAhvkteaKkJPRuXVpZR+eVXye
+         Pl8LiuPrHeNp3FEr9Eo2AQRILmCc1QuSVQhv/E/8p0BDZADwS/HFrbmrv6+KaByVX47O
+         yQna9lJWDSkYaoiacJrcbBdI1xjB2WZNzv9CHcb3JxpZp7SWfF3c3QdOqVaxHSgZPag6
+         Q75g==
+X-Gm-Message-State: AOAM5306rhH/yPAZsiMuEiYexyT/3zQoTaI9QsuL7BE8n99CmHniu1CP
+        PwWUuSYxFx9r6uMBlAKGc0M=
+X-Google-Smtp-Source: ABdhPJwBpvYMW9Rop2D/kRLqtKhVc9292ewqg60QqdMXSB5mXpLFNudGe4Aea/oqfX56vmp9ucWXIw==
+X-Received: by 2002:a17:907:6289:b0:6e0:eb0c:8ee7 with SMTP id nd9-20020a170907628900b006e0eb0c8ee7mr33978446ejc.245.1649785015404;
+        Tue, 12 Apr 2022 10:36:55 -0700 (PDT)
 Received: from localhost.localdomain ([5.171.105.8])
-        by smtp.googlemail.com with ESMTPSA id n11-20020a50cc4b000000b0041d8bc4f076sm48959edi.79.2022.04.12.10.36.51
+        by smtp.googlemail.com with ESMTPSA id n11-20020a50cc4b000000b0041d8bc4f076sm48959edi.79.2022.04.12.10.36.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 10:36:52 -0700 (PDT)
+        Tue, 12 Apr 2022 10:36:55 -0700 (PDT)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -57,9 +57,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [net-next PATCH v2 3/4] drivers: net: dsa: qca8k: rework and simplify mdiobus logic
-Date:   Tue, 12 Apr 2022 19:30:18 +0200
-Message-Id: <20220412173019.4189-4-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v2 4/4] drivers: net: dsa: qca8k: drop dsa_switch_ops from qca8k_priv
+Date:   Tue, 12 Apr 2022 19:30:19 +0200
+Message-Id: <20220412173019.4189-5-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220412173019.4189-1-ansuelsmth@gmail.com>
 References: <20220412173019.4189-1-ansuelsmth@gmail.com>
@@ -75,187 +75,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In an attempt to reduce qca8k_priv space, rework and simplify mdiobus
-logic.
-We now declare a mdiobus instead of relying on DSA phy_read/write even
-if a mdio node is not present. This is all to make the qca8k ops static
-and not switch specific. With a legacy implementation where port doesn't
-have a phy map declared in the dts with a mdio node, we declare a
-'qca8k-legacy' mdiobus. The conversion logic is used as legacy read and
-write ops are used instead of the internal one.
-While at it also improve the bus id to support multiple switch.
-Also drop the legacy_phy_port_mapping as we now declare mdiobus with ops
-that already address the workaround.
+Now that dsa_switch_ops is not switch specific anymore, we can drop it
+from qca8k_priv and use the static ops directly for the dsa_switch
+pointer.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/net/dsa/qca8k.c | 101 ++++++++++++++--------------------------
- drivers/net/dsa/qca8k.h |   1 -
- 2 files changed, 34 insertions(+), 68 deletions(-)
+ drivers/net/dsa/qca8k.c | 3 +--
+ drivers/net/dsa/qca8k.h | 1 -
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
 diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 5f447b586cfa..9c4c5af79f9a 100644
+index 9c4c5af79f9a..48a71d85b4ff 100644
 --- a/drivers/net/dsa/qca8k.c
 +++ b/drivers/net/dsa/qca8k.c
-@@ -1287,87 +1287,71 @@ qca8k_internal_mdio_read(struct mii_bus *slave_bus, int phy, int regnum)
- 	if (ret >= 0)
- 		return ret;
+@@ -3160,8 +3160,7 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
+ 	priv->ds->dev = &mdiodev->dev;
+ 	priv->ds->num_ports = QCA8K_NUM_PORTS;
+ 	priv->ds->priv = priv;
+-	priv->ops = qca8k_switch_ops;
+-	priv->ds->ops = &priv->ops;
++	priv->ds->ops = &qca8k_switch_ops;
+ 	mutex_init(&priv->reg_mutex);
+ 	dev_set_drvdata(&mdiodev->dev, priv);
  
--	return qca8k_mdio_read(priv, phy, regnum);
-+	ret = qca8k_mdio_read(priv, phy, regnum);
-+
-+	if (ret < 0)
-+		return 0xffff;
-+
-+	return ret;
- }
- 
- static int
--qca8k_phy_write(struct dsa_switch *ds, int port, int regnum, u16 data)
-+qca8k_legacy_mdio_write(struct mii_bus *slave_bus, int port, int regnum, u16 data)
- {
--	struct qca8k_priv *priv = ds->priv;
--	int ret;
--
--	/* Check if the legacy mapping should be used and the
--	 * port is not correctly mapped to the right PHY in the
--	 * devicetree
--	 */
--	if (priv->legacy_phy_port_mapping)
--		port = qca8k_port_to_phy(port) % PHY_MAX_ADDR;
--
--	/* Use mdio Ethernet when available, fallback to legacy one on error */
--	ret = qca8k_phy_eth_command(priv, false, port, regnum, 0);
--	if (!ret)
--		return ret;
-+	port = qca8k_port_to_phy(port) % PHY_MAX_ADDR;
- 
--	return qca8k_mdio_write(priv, port, regnum, data);
-+	return qca8k_internal_mdio_write(slave_bus, port, regnum, data);
- }
- 
- static int
--qca8k_phy_read(struct dsa_switch *ds, int port, int regnum)
-+qca8k_legacy_mdio_read(struct mii_bus *slave_bus, int port, int regnum)
- {
--	struct qca8k_priv *priv = ds->priv;
--	int ret;
--
--	/* Check if the legacy mapping should be used and the
--	 * port is not correctly mapped to the right PHY in the
--	 * devicetree
--	 */
--	if (priv->legacy_phy_port_mapping)
--		port = qca8k_port_to_phy(port) % PHY_MAX_ADDR;
--
--	/* Use mdio Ethernet when available, fallback to legacy one on error */
--	ret = qca8k_phy_eth_command(priv, true, port, regnum, 0);
--	if (ret >= 0)
--		return ret;
--
--	ret = qca8k_mdio_read(priv, port, regnum);
--
--	if (ret < 0)
--		return 0xffff;
-+	port = qca8k_port_to_phy(port) % PHY_MAX_ADDR;
- 
--	return ret;
-+	return qca8k_internal_mdio_read(slave_bus, port, regnum);
- }
- 
- static int
--qca8k_mdio_register(struct qca8k_priv *priv, struct device_node *mdio)
-+qca8k_mdio_register(struct qca8k_priv *priv)
- {
- 	struct dsa_switch *ds = priv->ds;
-+	struct device_node *mdio;
- 	struct mii_bus *bus;
- 
- 	bus = devm_mdiobus_alloc(ds->dev);
--
- 	if (!bus)
- 		return -ENOMEM;
- 
- 	bus->priv = (void *)priv;
--	bus->name = "qca8k slave mii";
--	bus->read = qca8k_internal_mdio_read;
--	bus->write = qca8k_internal_mdio_write;
--	snprintf(bus->id, MII_BUS_ID_SIZE, "qca8k-%d",
--		 ds->index);
--
-+	snprintf(bus->id, MII_BUS_ID_SIZE, "qca8k-%d.%d",
-+		 ds->dst->index, ds->index);
- 	bus->parent = ds->dev;
- 	bus->phy_mask = ~ds->phys_mii_mask;
--
- 	ds->slave_mii_bus = bus;
- 
--	return devm_of_mdiobus_register(priv->dev, bus, mdio);
-+	/* Check if the devicetree declare the port:phy mapping */
-+	mdio = of_get_child_by_name(priv->dev->of_node, "mdio");
-+	if (of_device_is_available(mdio)) {
-+		bus->name = "qca8k slave mii";
-+		bus->read = qca8k_internal_mdio_read;
-+		bus->write = qca8k_internal_mdio_write;
-+		return devm_of_mdiobus_register(priv->dev, bus, mdio);
-+	}
-+
-+	/* If a mapping can't be found the legacy mapping is used,
-+	 * using the qca8k_port_to_phy function
-+	 */
-+	bus->name = "qca8k-legacy slave mii";
-+	bus->read = qca8k_legacy_mdio_read;
-+	bus->write = qca8k_legacy_mdio_write;
-+	return devm_mdiobus_register(priv->dev, bus);
- }
- 
- static int
- qca8k_setup_mdio_bus(struct qca8k_priv *priv)
- {
- 	u32 internal_mdio_mask = 0, external_mdio_mask = 0, reg;
--	struct device_node *ports, *port, *mdio;
-+	struct device_node *ports, *port;
- 	phy_interface_t mode;
- 	int err;
- 
-@@ -1429,24 +1413,7 @@ qca8k_setup_mdio_bus(struct qca8k_priv *priv)
- 					 QCA8K_MDIO_MASTER_EN);
- 	}
- 
--	/* Check if the devicetree declare the port:phy mapping */
--	mdio = of_get_child_by_name(priv->dev->of_node, "mdio");
--	if (of_device_is_available(mdio)) {
--		err = qca8k_mdio_register(priv, mdio);
--		if (err)
--			of_node_put(mdio);
--
--		return err;
--	}
--
--	/* If a mapping can't be found the legacy mapping is used,
--	 * using the qca8k_port_to_phy function
--	 */
--	priv->legacy_phy_port_mapping = true;
--	priv->ops.phy_read = qca8k_phy_read;
--	priv->ops.phy_write = qca8k_phy_write;
--
--	return 0;
-+	return qca8k_mdio_register(priv);
- }
- 
- static int
 diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-index 12d8d090298b..8bbe36f135b5 100644
+index 8bbe36f135b5..04408e11402a 100644
 --- a/drivers/net/dsa/qca8k.h
 +++ b/drivers/net/dsa/qca8k.h
-@@ -388,7 +388,6 @@ struct qca8k_priv {
- 	 * Bit 1: port enabled. Bit 0: port disabled.
- 	 */
- 	u8 port_enabled_map;
--	bool legacy_phy_port_mapping;
- 	struct qca8k_ports_config ports_config;
- 	struct regmap *regmap;
- 	struct mii_bus *bus;
+@@ -394,7 +394,6 @@ struct qca8k_priv {
+ 	struct dsa_switch *ds;
+ 	struct mutex reg_mutex;
+ 	struct device *dev;
+-	struct dsa_switch_ops ops;
+ 	struct gpio_desc *reset_gpio;
+ 	struct net_device *mgmt_master; /* Track if mdio/mib Ethernet is available */
+ 	struct qca8k_mgmt_eth_data mgmt_eth_data;
 -- 
 2.34.1
 
