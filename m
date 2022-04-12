@@ -2,201 +2,249 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E6484FE7A2
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 20:08:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7564E4FE7A7
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 20:11:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358610AbiDLSK1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 14:10:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57046 "EHLO
+        id S1358628AbiDLSNe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 14:13:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351068AbiDLSK0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 14:10:26 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9918F4CD5C
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 11:08:08 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id f3so18204994pfe.2
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 11:08:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=message-id:date:mime-version:user-agent:subject:to:cc:references
-         :from:in-reply-to;
-        bh=GQUYX9UarsvOGCYmEdxygTjGj2T8/Sag1PdM7KVUUHs=;
-        b=cFrHp1ejW2BkUDgYOnqtSBX0dTRNbFFd8NMr41AYrx7uGa8xie/Oe4Uk6oFKCG+acK
-         b0BHWSiwCFqwiRYhi/kD+LSuy4s81AjXVYuo/pTTm398A/wP+XOPQLX1xzYGcbxzruM+
-         Y/hsm85xRiw5gd0YB0iNk5Pgirm9/MKzaVrOY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :to:cc:references:from:in-reply-to;
-        bh=GQUYX9UarsvOGCYmEdxygTjGj2T8/Sag1PdM7KVUUHs=;
-        b=vob1iza1v3FpM957fiqOu6z548jJLbPgqPRm2qOMn73B4UYAm2XKVl2VP8N16O+B9e
-         XRKrRnmTzflqi+OHrythv/ap0yCRkszFOwifeRZCBAHi1bRiy59ah2+48+FDt4yVL+wL
-         l7HXLlaDem1VpzqeoOcNJEbYwWZBQzsOQWshYRrVcR6lmT7fab5WpoXBvMpqz+X9Mjtd
-         bESJF5DeDym35Cpo3sbAZzmC2NoRS9zPIT4pF5+7r7aw4WTya6b1cJQHRsp4Rg4vnaLE
-         vhcxST9UfbKQqHhUgAmUnw2yohG4GHnoGPoM2IJg7ZYGYiNmcNwPX5QzP8eYJPb4qBrn
-         bp3w==
-X-Gm-Message-State: AOAM5319wGl+FwSDcCAEKRVjcxde9a33C44u6qxFhu0kUsZvE3JxpS+z
-        wyxvgZPCph7t3okV6GN06d9+dTTayENqekJB
-X-Google-Smtp-Source: ABdhPJyMDg4mYuPdV0OYmtpJoj67xF0G7De5YuHYp/9NRQYb1RF1B3qMlmflrqzRFFP13vlwNg7L7A==
-X-Received: by 2002:a63:4d66:0:b0:399:14fa:2acc with SMTP id n38-20020a634d66000000b0039914fa2accmr32147428pgl.558.1649786887843;
-        Tue, 12 Apr 2022 11:08:07 -0700 (PDT)
-Received: from [10.136.8.240] ([192.19.161.250])
-        by smtp.gmail.com with ESMTPSA id c10-20020a62e80a000000b0050571cecadasm17368720pfi.19.2022.04.12.11.08.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 11:08:07 -0700 (PDT)
-Message-ID: <999fab5e-08e1-888e-6672-4fc868555b32@broadcom.com>
-Date:   Tue, 12 Apr 2022 11:08:02 -0700
+        with ESMTP id S1357033AbiDLSNd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 14:13:33 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EB2135DF6;
+        Tue, 12 Apr 2022 11:11:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649787075; x=1681323075;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=lx68TdPGcWgfpuggGaziE1bzCH4pcICXKu31ixz4/NM=;
+  b=DDNzQPBJ0EXu7ZqyXq2VmTPpU/IJF9u74hHZiyI/Tk544Zl6X4xBK9kD
+   n4twOifT3k1YAM6hafvReBzIfxKKor58z3/bde1WxVHwMeOdjG4gtR6au
+   qtPKO1P9Xs4Hogdanp0CNUjeBhqAxD434p00ffvsTZQMIXwcIRxhO5X28
+   x4ih6tzEWCgHfOB59W7GCzgni0EeeQPpDKjQ9KLRPcwLHlMBo7upPXhd6
+   DtmhDcFyboFhcfDyjLSm46uR32c+Nr02E7luLLvTYxt44Q8ZftVmIXxLc
+   mRQgcGlHdTUI0SlXQRmqIcJr4saEXlxzys6bgMz1qauuhUTD6zWxsaXXa
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="242406055"
+X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
+   d="scan'208";a="242406055"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 11:11:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
+   d="scan'208";a="507665399"
+Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 12 Apr 2022 11:11:11 -0700
+Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1neKys-00032t-Te;
+        Tue, 12 Apr 2022 18:11:10 +0000
+Date:   Wed, 13 Apr 2022 02:11:00 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Duoming Zhou <duoming@zju.edu.cn>, krzk@kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, davem@davemloft.net,
+        gregkh@linuxfoundation.org, alexander.deucher@amd.com,
+        broonie@kernel.org, akpm@linux-foundation.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        Duoming Zhou <duoming@zju.edu.cn>
+Subject: Re: [PATCH 2/2] drivers: nfc: nfcmrvl: fix double free bug in
+ nfc_fw_download_done()
+Message-ID: <202204130213.ukrJxJpy-lkp@intel.com>
+References: <d958c7ea019766405bf9db42d58d24d61d6b7607.1649759498.git.duoming@zju.edu.cn>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [RFC] Applicability of using 'txq_trans_update' during ring
- recovery
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <1bdb8417-233d-932b-1dc0-c56042aedabd@broadcom.com>
- <20220412103724.54924945@kernel.org>
-From:   Ray Jui <ray.jui@broadcom.com>
-In-Reply-To: <20220412103724.54924945@kernel.org>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000006ffbc605dc78f1de"
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d958c7ea019766405bf9db42d58d24d61d6b7607.1649759498.git.duoming@zju.edu.cn>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000006ffbc605dc78f1de
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Hi Duoming,
 
-Hi Jakub,
+Thank you for the patch! Yet something to improve:
 
-On 4/12/2022 10:37 AM, Jakub Kicinski wrote:
-> On Tue, 12 Apr 2022 10:01:02 -0700 Ray Jui wrote:
->> Hi David/Jakub,
->>
->> I'd like to run through you on the idea of invoking 'txq_trans_update'
->> to update the last TX timestamp in the scenario where we temporarily
->> stop the TX queue to do some recovery work. Is it considered an
->> acceptable approach to prevent false positive triggering of TX timeout
->> during the recovery process?
->>
->> I know in general people use 'netif_carrier_off' during the process when
->> they reset/change the entire TX/RX ring set and/or other resources on
->> the Ethernet card. But in our particular case, we have another driver
->> running (i.e., RoCE) on top and setting 'netif_carrier_off' will cause a
->> significant side effect on the other driver (e.g., all RoCE QPs will be
->> terminated). In addition, for this special recovery work on our driver,
->> we are doing it on a per NAPI ring set basis while keeping the traffic
->> on other queues running. Using 'netif_carrier_off' will prevent traffic
->> running from all other queues that are not going through recovery.
-> 
-> Can you use netif_device_detach() to mark the device as not present?
+[auto build test ERROR on net-next/master]
+[also build test ERROR on net/master linus/master linux/master v5.18-rc2 next-20220412]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-It seems 'netif_device_detach' marks the netif device as removed
-(through __LINK_STATE_PRESENT) and stops all TX queues.
+url:    https://github.com/intel-lab-lkp/linux/commits/Duoming-Zhou/Fix-double-free-bugs-in-nfcmrvl-module/20220412-203028
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git b66bfc131c69bd9a5ed3ae90be4cf47ec46c1526
+config: openrisc-randconfig-r033-20220411 (https://download.01.org/0day-ci/archive/20220413/202204130213.ukrJxJpy-lkp@intel.com/config)
+compiler: or1k-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/1f4dba76cb2e854d8ae29781d066257f58b33dee
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Duoming-Zhou/Fix-double-free-bugs-in-nfcmrvl-module/20220412-203028
+        git checkout 1f4dba76cb2e854d8ae29781d066257f58b33dee
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=openrisc SHELL=/bin/bash drivers/nfc/nfcmrvl/
 
-It also seems the core infiniband subsystem mainly relies on
-'netif_carrier_ok' and 'netif_runing', so 'netif_device_detach' might
-potentially work. I also need to check with our internal RoCE driver
-team to confirm.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-One drawback with 'netif_device_detach' compared to the current solution
-is that we will have to stop all TX queues during the entire duration of
-the recovery process (instead of on a per NAPI ring set basis).
+All errors (new ones prefixed by >>):
 
-Can you please also comment on whether 'txq_trans_update' is considered
-an acceptable approach in this particular scenario? And if not, is there
-another mechanism in the kernel net subsystem that allows one to quiece
-traffic on a per NAPI ring set basis?
+   In file included from include/linux/build_bug.h:5,
+                    from include/linux/container_of.h:5,
+                    from include/linux/list.h:5,
+                    from include/linux/module.h:12,
+                    from drivers/nfc/nfcmrvl/fw_dnld.c:8:
+   drivers/nfc/nfcmrvl/fw_dnld.c: In function 'fw_dnld_over':
+>> drivers/nfc/nfcmrvl/fw_dnld.c:120:13: error: 'dev' undeclared (first use in this function); did you mean 'cdev'?
+     120 |         if (dev->fw_download_in_progress)
+         |             ^~~
+   include/linux/compiler.h:58:52: note: in definition of macro '__trace_if_var'
+      58 | #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
+         |                                                    ^~~~
+   drivers/nfc/nfcmrvl/fw_dnld.c:120:9: note: in expansion of macro 'if'
+     120 |         if (dev->fw_download_in_progress)
+         |         ^~
+   drivers/nfc/nfcmrvl/fw_dnld.c:120:13: note: each undeclared identifier is reported only once for each function it appears in
+     120 |         if (dev->fw_download_in_progress)
+         |             ^~~
+   include/linux/compiler.h:58:52: note: in definition of macro '__trace_if_var'
+      58 | #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
+         |                                                    ^~~~
+   drivers/nfc/nfcmrvl/fw_dnld.c:120:9: note: in expansion of macro 'if'
+     120 |         if (dev->fw_download_in_progress)
+         |         ^~
 
-Thanks,
 
-Ray
+vim +120 drivers/nfc/nfcmrvl/fw_dnld.c
 
---0000000000006ffbc605dc78f1de
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+   > 8	#include <linux/module.h>
+     9	#include <asm/unaligned.h>
+    10	#include <linux/firmware.h>
+    11	#include <linux/nfc.h>
+    12	#include <net/nfc/nci.h>
+    13	#include <net/nfc/nci_core.h>
+    14	#include "nfcmrvl.h"
+    15	
+    16	#define FW_DNLD_TIMEOUT			15000
+    17	
+    18	#define NCI_OP_PROPRIETARY_BOOT_CMD	nci_opcode_pack(NCI_GID_PROPRIETARY, \
+    19								NCI_OP_PROP_BOOT_CMD)
+    20	
+    21	/* FW download states */
+    22	
+    23	enum {
+    24		STATE_RESET = 0,
+    25		STATE_INIT,
+    26		STATE_SET_REF_CLOCK,
+    27		STATE_SET_HI_CONFIG,
+    28		STATE_OPEN_LC,
+    29		STATE_FW_DNLD,
+    30		STATE_CLOSE_LC,
+    31		STATE_BOOT
+    32	};
+    33	
+    34	enum {
+    35		SUBSTATE_WAIT_COMMAND = 0,
+    36		SUBSTATE_WAIT_ACK_CREDIT,
+    37		SUBSTATE_WAIT_NACK_CREDIT,
+    38		SUBSTATE_WAIT_DATA_CREDIT,
+    39	};
+    40	
+    41	/*
+    42	 * Patterns for responses
+    43	 */
+    44	
+    45	static const uint8_t nci_pattern_core_reset_ntf[] = {
+    46		0x60, 0x00, 0x02, 0xA0, 0x01
+    47	};
+    48	
+    49	static const uint8_t nci_pattern_core_init_rsp[] = {
+    50		0x40, 0x01, 0x11
+    51	};
+    52	
+    53	static const uint8_t nci_pattern_core_set_config_rsp[] = {
+    54		0x40, 0x02, 0x02, 0x00, 0x00
+    55	};
+    56	
+    57	static const uint8_t nci_pattern_core_conn_create_rsp[] = {
+    58		0x40, 0x04, 0x04, 0x00
+    59	};
+    60	
+    61	static const uint8_t nci_pattern_core_conn_close_rsp[] = {
+    62		0x40, 0x05, 0x01, 0x00
+    63	};
+    64	
+    65	static const uint8_t nci_pattern_core_conn_credits_ntf[] = {
+    66		0x60, 0x06, 0x03, 0x01, NCI_CORE_LC_CONNID_PROP_FW_DL, 0x01
+    67	};
+    68	
+    69	static const uint8_t nci_pattern_proprietary_boot_rsp[] = {
+    70		0x4F, 0x3A, 0x01, 0x00
+    71	};
+    72	
+    73	static struct sk_buff *alloc_lc_skb(struct nfcmrvl_private *priv, uint8_t plen)
+    74	{
+    75		struct sk_buff *skb;
+    76		struct nci_data_hdr *hdr;
+    77	
+    78		skb = nci_skb_alloc(priv->ndev, (NCI_DATA_HDR_SIZE + plen), GFP_KERNEL);
+    79		if (!skb)
+    80			return NULL;
+    81	
+    82		hdr = skb_put(skb, NCI_DATA_HDR_SIZE);
+    83		hdr->conn_id = NCI_CORE_LC_CONNID_PROP_FW_DL;
+    84		hdr->rfu = 0;
+    85		hdr->plen = plen;
+    86	
+    87		nci_mt_set((__u8 *)hdr, NCI_MT_DATA_PKT);
+    88		nci_pbf_set((__u8 *)hdr, NCI_PBF_LAST);
+    89	
+    90		return skb;
+    91	}
+    92	
+    93	static void fw_dnld_over(struct nfcmrvl_private *priv, u32 error)
+    94	{
+    95		spin_lock_irq(&priv->fw_dnld.lock);
+    96		if (priv->fw_dnld.fw) {
+    97			release_firmware(priv->fw_dnld.fw);
+    98			priv->fw_dnld.fw = NULL;
+    99			priv->fw_dnld.header = NULL;
+   100			priv->fw_dnld.binary_config = NULL;
+   101		}
+   102		spin_unlock_irq(&priv->fw_dnld.lock);
+   103	
+   104		atomic_set(&priv->ndev->cmd_cnt, 0);
+   105	
+   106		if (timer_pending(&priv->ndev->cmd_timer))
+   107			del_timer_sync(&priv->ndev->cmd_timer);
+   108	
+   109		if (timer_pending(&priv->fw_dnld.timer))
+   110			del_timer_sync(&priv->fw_dnld.timer);
+   111	
+   112		nfc_info(priv->dev, "FW loading over (%d)]\n", error);
+   113	
+   114		if (error != 0) {
+   115			/* failed, halt the chip to avoid power consumption */
+   116			nfcmrvl_chip_halt(priv);
+   117		}
+   118	
+   119		spin_lock_irq(&priv->fw_dnld.lock);
+ > 120		if (dev->fw_download_in_progress)
+   121			nfc_fw_download_done(priv->ndev->nfc_dev, priv->fw_dnld.name, error);
+   122		spin_unlock_irq(&priv->fw_dnld.lock);
+   123	}
+   124	
 
-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
-Pi3DQoJNNR5cV1dw3cNMKQyHRziEjFTVmILshClu9AljdXzCUoHXDUbge8TIJ/fK36qTGCYWwA01
-rTB3drVX3FZq/Uqo0JnVcyP1dtYVzQIDAQABo4IB1TCCAdEwDgYDVR0PAQH/BAQDAgWgMIGjBggr
-BgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3VyZS5nbG9iYWxzaWduLmNvbS9j
-YWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEGCCsGAQUFBzABhjVodHRwOi8v
-b2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMDBNBgNVHSAERjBE
-MEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93d3cuZ2xvYmFsc2lnbi5jb20v
-cmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6hjhodHRwOi8vY3JsLmdsb2Jh
-bHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNybDAfBgNVHREEGDAWgRRyYXku
-anVpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdb
-NHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQU5E1VdIocTRYIpXh6e6OnGvwfrEgwDQYJKoZIhvcNAQEL
-BQADggEBADcZteuA4mZVmXNzp/tJky+9TS87L/xAogg4z+0bFDomA2JdNGKjraV7jE3LKHUyCQzU
-Bvp8xXjxCndLBgltr+2Fn/Dna/f29iAs4mPBxgPKhqnqpQuTo2DLID2LWU1SLI9ewIlROY57UCvO
-B6ni+9NcOot0MbKF2A1TnzJjWyd127CVyU5vL3un1/tbtmjiT4Ku8ZDoBEViuuWyhdB6TTEQiwDo
-2NxZdezRkkkq+RoNek6gmtl8IKmXsmr1dKIsRBtLQ0xu+kdX+zYJbAQymI1mkq8qCmFAe5aJkrNM
-NbsYBZGZlcox4dHWayCpn4sK+41xyJsmGrygY3zghqBuHPUxggJtMIICaQIBATBrMFsxCzAJBgNV
-BAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdD
-QyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxnTAexrtwIst251kUwDQYJYIZIAWUDBAIBBQCg
-gdQwLwYJKoZIhvcNAQkEMSIEIGp9ulaFnzHty26kOKeMlyKq3tshbEgn5hOppMGOb7vQMBgGCSqG
-SIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDQxMjE4MDgwOFowaQYJKoZI
-hvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG
-9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEF
-AASCAQA/lk+V9YrI4FB77C4ecPKh2VIPQupaKv/x0szANIjozz0xYqJ0JekKdThOYhAuuRS8uuOr
-gQtJQTFp3lKZgE5FMLZBUqR3lZ0+r8mRDTeLWWgWLq4be98VbZ8TFtinc1DjIyiDblJZqXnZCXjl
-LDk4pyluzyhpbQy3EN/KbDvFvNLNpgdoFrcINfPwbGbDh4CHy9QKKbnS7vNk892Ctx/9wKzhJ+/S
-QE+Ajq0vTJYL2eHs6DSRK1p8p0yUxCh90dFdY24KpV8rEZyPR6GFj4xgdLGxVN/DYpPqk75l3lqk
-O4djScx5oQIDKLZ5hmR31PEgybMsN9No2MtR4Ei1vFnU
---0000000000006ffbc605dc78f1de--
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
