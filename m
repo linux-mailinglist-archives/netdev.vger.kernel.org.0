@@ -2,222 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D11684FE982
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 22:38:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 058374FE985
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 22:38:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229579AbiDLUkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 16:40:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41308 "EHLO
+        id S230158AbiDLUkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 16:40:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229994AbiDLUjg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 16:39:36 -0400
-Received: from mail-il1-f178.google.com (mail-il1-f178.google.com [209.85.166.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 028F5890AD
+        with ESMTP id S230045AbiDLUjf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 16:39:35 -0400
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2057.outbound.protection.outlook.com [40.107.212.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2301975E7C
         for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 13:35:27 -0700 (PDT)
-Received: by mail-il1-f178.google.com with SMTP id h4so6054268ilq.8
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 13:35:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=USVVp1hK54jHeAqy/lUDZNBBqIJDjeW4jtH5P9usO7U=;
-        b=y6SpbqynDTaeScwaA/pU4EiSBCsWW1ugzYwUe4tqzVe54p7UUY4mhgVu/f+YAD+aXQ
-         auIZkr4d4IaK9QvuvJnbmGI3LhqEgPs3zXgNGB6Ez/I2HEfs/1aBtEm60n0mfFHHpLhM
-         Qr6NBj5R5o+fXOYioZH8ftLvqyBP18neW2Ft36Dd7fmdMjOk4/rzO0uHL8i2zl/QQaH7
-         w48bR8xtnKqv72A8c2BP9hUZE2/ULfJpNcaYWOSJ6ansrjiPfMfVwEWPoqccknekRz8D
-         xC41IkSmvqrxCGybigZReEGn7sDieG5qXnq8UFwFrq0T3NJIWQ4DGV29L6QymKN3ZclO
-         eAsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=USVVp1hK54jHeAqy/lUDZNBBqIJDjeW4jtH5P9usO7U=;
-        b=qV1c/XN3L6jRymiOJwCogURnfdR+aJP5ooUvcXUjC4/4lxERTtofnnB18YCYI62rHp
-         MujON8SHOdYXDjHFOor4+868wyNM8mDQXwuFqZ/pxYdC6CDdDNfFXP1NtLkE5g1YXuSv
-         DIfHTN+o5r6iOCPLcQCLQJznke1IZkq1wBil605Kyu4Cxp7EisRhJWn/wsP0ZVKBlt+L
-         7ORjCIciDASlTKASZjbjTTU9MdguADmT7bYPy05Kpvry7jqs2L6bzKRsjxy0BLksx1Py
-         caCl411+Q/8rQpfFvsnhfyH9sTifx0aM82UCoc6OpVJOP0MKguilTeel/qMClyHsSp7O
-         Us0g==
-X-Gm-Message-State: AOAM530zVzj/Ak1iLW0WcD+RzKeCOAb6pzXmKGKf2+cTXinuzFN7ctMP
-        e+1k4cXOxznbAWd6T5GD16LqMNj8kUqlQk2E
-X-Google-Smtp-Source: ABdhPJxVMmWRPZgak0ACi4mGWFKAVePCuGtLDsT3AYqFZm2YFpl3R8ulupFitXx++nlIu1K+VoPe3Q==
-X-Received: by 2002:a63:5310:0:b0:39c:f338:407e with SMTP id h16-20020a635310000000b0039cf338407emr20694065pgb.600.1649794967758;
-        Tue, 12 Apr 2022 13:22:47 -0700 (PDT)
-Received: from localhost.localdomain ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id 2-20020a17090a0f0200b001cb6621403csm359541pjy.24.2022.04.12.13.22.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 13:22:47 -0700 (PDT)
-From:   Jens Axboe <axboe@kernel.dk>
-To:     io-uring@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 2/2] io_uring: add socket(2) support
-Date:   Tue, 12 Apr 2022 14:22:40 -0600
-Message-Id: <20220412202240.234207-3-axboe@kernel.dk>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412202240.234207-1-axboe@kernel.dk>
-References: <20220412202240.234207-1-axboe@kernel.dk>
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dapt+nKc60oq40t1l1U/qdXNsG3xrBEXfllKcLOm0Vw178IQ1oU7izwEFnCz6g9jJddBnNsg/hMfF2j243sF8i/eKA90CETbI3BrgzrUFfvHglLOyjOb8qaumyu0hvQqE//EA90Isa/mMcAHtdBmSJBCnEcBPCKx9zgeD1120NHmZmMp3cgVTvCyMVqx1l6ofk4oM/gprm5YMFxpu8obRqcoiSApaHMHwC9H7HcnjWJ8nHiOfQdNQXT0S0fiXp+cSFIksRq6p3XW9z9FizXEeyDV1+5wNxclHAQF2Esl+mf3EQ5OGnDQELSuKZ8IIGPHWQPTRGgNuCtx5V1pzSlpZw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=OFG308hyNeumBcMJqZ3yx9g55rh7duK1KCBKPvq3uBs=;
+ b=ktVVBhs5bj/RB0si+vy74lwdkR+D0wIlf0SbsRGH2KAx1i0ThUC0WvWPuMAs1poitqa6mGK0LKw2djeT6XIH2nOKeA0f5QpQsMS21jpHRQ21NGmCW4HgfZyokFCpBLtVBWGsQR/q7Bew6tMOW2auwTU+AzSa++8WFZJmDG7+56E1qg3R1Ql0QxD4AZjOsAorqv5lfrZSVYwx7dlmYgyiMFIz3IdrmL+s2duG1Ce+navXpzQ1lyGgkMeho7dXM7LVbF6iol3klF5Fma8iVHiy/NlSGOetiTPf8ADrp0CM4mg2gXhZ33lsfrJ3WqBF1nphE+DRkmeyksj1dKYNzyglhw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.238) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OFG308hyNeumBcMJqZ3yx9g55rh7duK1KCBKPvq3uBs=;
+ b=fWpWQDRgb40ZSvTgoqdEKM2b9Dm0WwIWUQRwS8NJ7nrc8eTY+55MnhrLNVj7nCxViMv05z4J2HIIEWmSXQs1J6l2yHtTvBWOdOxs1IVXdP5bwoiuDo4eOGuHMm43PvZTYZvz/eKOWI+N7i4jATkfCZKnCZgb177DcQpJ0HPjw6CIQ63igz5nceOowoLVbMclNglGcmI5ksgBWyKa49vo1kT/3AZt1yICg3PidCIHHDtt7+sDboWtmE8r0ZpZ5NlyUUZXI+jJIK4Iu13pvFI8SFCpajCi5MJ89Xj3YvvZUDOFmAi/90rBL6RPjrXsHFwjZPMPrDOZcm2PwaWv90Q4XQ==
+Received: from DM6PR03CA0008.namprd03.prod.outlook.com (2603:10b6:5:40::21) by
+ MW5PR12MB5624.namprd12.prod.outlook.com (2603:10b6:303:19d::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Tue, 12 Apr
+ 2022 20:25:47 +0000
+Received: from DM6NAM11FT052.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:40:cafe::2a) by DM6PR03CA0008.outlook.office365.com
+ (2603:10b6:5:40::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31 via Frontend
+ Transport; Tue, 12 Apr 2022 20:25:46 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.238; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.238) by
+ DM6NAM11FT052.mail.protection.outlook.com (10.13.172.111) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5164.19 via Frontend Transport; Tue, 12 Apr 2022 20:25:46 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL105.nvidia.com
+ (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Tue, 12 Apr
+ 2022 20:25:40 +0000
+Received: from yaviefel.local (10.126.231.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 12 Apr
+ 2022 13:25:38 -0700
+From:   Petr Machata <petrm@nvidia.com>
+To:     <netdev@vger.kernel.org>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>
+Subject: [PATCH net] rtnetlink: Fix handling of disabled L3 stats in RTM_GETSTATS replies
+Date:   Tue, 12 Apr 2022 22:25:06 +0200
+Message-ID: <591b58e7623edc3eb66dd1fcfa8c8f133d090974.1649794741.git.petrm@nvidia.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 35937562-2c18-4e85-aa09-08da1cc2a076
+X-MS-TrafficTypeDiagnostic: MW5PR12MB5624:EE_
+X-Microsoft-Antispam-PRVS: <MW5PR12MB56249D8EB67531752AE31C64D6ED9@MW5PR12MB5624.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: xwuTYyWLQLmg2p93en9zaLG4XtbyqAgZydPkNznIjVOf29PG8Cu3lsQzW6OVpo8oI9xdSahstq/YQRYaM5sqH27IsLXFJ+H4XEuSM2I2KA4lmkX4ZwjGMM5+LZ2rDXDszr1hggYRih+tqckn6RFTsgW48sjT+fBKNN5nSFSckU35RD1rGHWUt9qwiOoycRwklc98kwh8ZJ152aJA4LVlu+f4Hdws0SslcoYttt3ak4JdY90HTzZQ5K8LZjvJenYcMZ2YWVaoJNqYvae3zCq9TJUTyHOjwyih4uUwjotveuo8eJ81SYCUVnWmLN3sfxrn/tGtpTUaGYHFUxaP3FO35hQsGrhqzlYnG7g9RKuzuylNg7mrAsbX9XKPx3rzelhHtC6inz8HNOx2A2csgqRzjEnzvatoEiIWIyv/QWdoe/RoqhdUZWJxf34VisA0mP6guvDMrJf0nFqLb6gKpew4dhsrM7CthmgA5XS8M91xTJy4W6aLTCkS12ikzM9yZB06242LFaj13uISRW9Spl2dszAsGUfn/blxRbQh+Nxin/9ozyLQmVYwrToLL4JSfDbdFvXREU3Vf1/325WmdHpfBfxu4dXR7+EMNPYOf3Fa5ufrZY841h1PBMhmWHMfPjwHpFK1k2qf83LVrAxaQAjabAl9FxZQe8BShAmvnjdkuBl4LQCh1VH0cMsJ752zh1udC7vLMpOXf4xdX8i8Bg220g==
+X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(186003)(5660300002)(82310400005)(40460700003)(70206006)(54906003)(6916009)(81166007)(8676002)(508600001)(4326008)(70586007)(426003)(316002)(2616005)(356005)(336012)(83380400001)(2906002)(107886003)(26005)(47076005)(86362001)(16526019)(6666004)(36756003)(8936002)(36860700001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2022 20:25:46.6461
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 35937562-2c18-4e85-aa09-08da1cc2a076
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT052.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW5PR12MB5624
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Supports both regular socket(2) where a normal file descriptor is
-instantiated when called, or direct descriptors.
+When L3 stats are disabled, rtnl_offload_xstats_get_size_stats() returns
+size of 0, which is supposed to be an indication that the corresponding
+attribute should not be emitted. However, instead, the current code
+reserves a 0-byte attribute.
 
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+The reason this does not show up as a citation on a kasan kernel is that
+netdev_offload_xstats_get(), which is supposed to fill in the data, never
+ends up getting called, because rtnl_offload_xstats_get_stats() notices
+that the stats are not actually used and skips the call.
+
+Thus a zero-length IFLA_OFFLOAD_XSTATS_L3_STATS attribute ends up in a
+response, confusing the userspace.
+
+Fix by skipping the L3-stats related block in rtnl_offload_xstats_fill().
+
+Fixes: 0e7788fd7622 ("net: rtnetlink: Add UAPI for obtaining L3 offload xstats")
+Signed-off-by: Petr Machata <petrm@nvidia.com>
 ---
- fs/io_uring.c                 | 77 +++++++++++++++++++++++++++++++++++
- include/uapi/linux/io_uring.h |  1 +
- 2 files changed, 78 insertions(+)
+ net/core/rtnetlink.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index b83134906a3a..1523a43c4469 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -558,6 +558,16 @@ struct io_accept {
- 	unsigned long			nofile;
- };
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 159c9c61e6af..d1381ea6d52e 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -5242,6 +5242,8 @@ static int rtnl_offload_xstats_fill(struct sk_buff *skb, struct net_device *dev,
+ 		*prividx = attr_id_l3_stats;
  
-+struct io_socket {
-+	struct file			*file;
-+	int				domain;
-+	int				type;
-+	int				protocol;
-+	int				flags;
-+	u32				file_slot;
-+	unsigned long			nofile;
-+};
-+
- struct io_sync {
- 	struct file			*file;
- 	loff_t				len;
-@@ -926,6 +936,7 @@ struct io_kiocb {
- 		struct io_hardlink	hardlink;
- 		struct io_msg		msg;
- 		struct io_xattr		xattr;
-+		struct io_socket	sock;
- 	};
+ 		size_l3 = rtnl_offload_xstats_get_size_stats(dev, t_l3);
++		if (!size_l3)
++			goto skip_l3_stats;
+ 		attr = nla_reserve_64bit(skb, attr_id_l3_stats, size_l3,
+ 					 IFLA_OFFLOAD_XSTATS_UNSPEC);
+ 		if (!attr)
+@@ -5253,6 +5255,7 @@ static int rtnl_offload_xstats_fill(struct sk_buff *skb, struct net_device *dev,
+ 			return err;
  
- 	u8				opcode;
-@@ -1192,6 +1203,9 @@ static const struct io_op_def io_op_defs[] = {
- 		.needs_file = 1
- 	},
- 	[IORING_OP_GETXATTR] = {},
-+	[IORING_OP_SOCKET] = {
-+		.audit_skip		= 1,
-+	},
- };
- 
- /* requests with any of those set should undergo io_disarm_next() */
-@@ -5968,6 +5982,63 @@ static int io_accept(struct io_kiocb *req, unsigned int issue_flags)
- 	return 0;
- }
- 
-+static int io_socket_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
-+{
-+	struct io_socket *sock = &req->sock;
-+
-+	if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
-+		return -EINVAL;
-+	if (sqe->ioprio || sqe->addr || sqe->rw_flags || sqe->buf_index)
-+		return -EINVAL;
-+
-+	sock->domain = READ_ONCE(sqe->fd);
-+	sock->type = READ_ONCE(sqe->off);
-+	sock->protocol = READ_ONCE(sqe->len);
-+	sock->file_slot = READ_ONCE(sqe->file_index);
-+	sock->nofile = rlimit(RLIMIT_NOFILE);
-+
-+	sock->flags = sock->type & ~SOCK_TYPE_MASK;
-+	if (sock->file_slot && (sock->flags & SOCK_CLOEXEC))
-+		return -EINVAL;
-+	if (sock->flags & ~(SOCK_CLOEXEC | SOCK_NONBLOCK))
-+		return -EINVAL;
-+	return 0;
-+}
-+
-+static int io_socket(struct io_kiocb *req, unsigned int issue_flags)
-+{
-+	struct io_socket *sock = &req->sock;
-+	bool fixed = !!sock->file_slot;
-+	struct file *file;
-+	int ret, fd;
-+
-+	if (!fixed) {
-+		fd = __get_unused_fd_flags(sock->flags, sock->nofile);
-+		if (unlikely(fd < 0))
-+			return fd;
-+	}
-+	file = __sys_socket_file(sock->domain, sock->type, sock->protocol);
-+	if (IS_ERR(file)) {
-+		if (!fixed)
-+			put_unused_fd(fd);
-+		ret = PTR_ERR(file);
-+		if (ret == -EAGAIN && (issue_flags & IO_URING_F_NONBLOCK))
-+			return -EAGAIN;
-+		if (ret == -ERESTARTSYS)
-+			ret = -EINTR;
-+		req_set_fail(req);
-+	} else if (!fixed) {
-+		fd_install(fd, file);
-+		ret = fd;
-+	} else {
-+		io_sock_nolock_set(file);
-+		ret = io_install_fixed_file(req, file, issue_flags,
-+					    sock->file_slot - 1);
-+	}
-+	__io_req_complete(req, issue_flags, ret, 0);
-+	return 0;
-+}
-+
- static int io_connect_prep_async(struct io_kiocb *req)
- {
- 	struct io_async_connect *io = req->async_data;
-@@ -6055,6 +6126,7 @@ IO_NETOP_PREP_ASYNC(sendmsg);
- IO_NETOP_PREP_ASYNC(recvmsg);
- IO_NETOP_PREP_ASYNC(connect);
- IO_NETOP_PREP(accept);
-+IO_NETOP_PREP(socket);
- IO_NETOP_FN(send);
- IO_NETOP_FN(recv);
- #endif /* CONFIG_NET */
-@@ -7269,6 +7341,8 @@ static int io_req_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
- 		return io_fgetxattr_prep(req, sqe);
- 	case IORING_OP_GETXATTR:
- 		return io_getxattr_prep(req, sqe);
-+	case IORING_OP_SOCKET:
-+		return io_socket_prep(req, sqe);
+ 		have_data = true;
++skip_l3_stats:
+ 		*prividx = 0;
  	}
  
- 	printk_once(KERN_WARNING "io_uring: unhandled opcode %d\n",
-@@ -7590,6 +7664,9 @@ static int io_issue_sqe(struct io_kiocb *req, unsigned int issue_flags)
- 	case IORING_OP_GETXATTR:
- 		ret = io_getxattr(req, issue_flags);
- 		break;
-+	case IORING_OP_SOCKET:
-+		ret = io_socket(req, issue_flags);
-+		break;
- 	default:
- 		ret = -EINVAL;
- 		break;
-diff --git a/include/uapi/linux/io_uring.h b/include/uapi/linux/io_uring.h
-index 696a05aa9618..9e28014b1e10 100644
---- a/include/uapi/linux/io_uring.h
-+++ b/include/uapi/linux/io_uring.h
-@@ -151,6 +151,7 @@ enum {
- 	IORING_OP_SETXATTR,
- 	IORING_OP_FGETXATTR,
- 	IORING_OP_GETXATTR,
-+	IORING_OP_SOCKET,
- 
- 	/* this goes last, obviously */
- 	IORING_OP_LAST,
 -- 
-2.35.1
+2.31.1
 
