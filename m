@@ -2,49 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AB214FE820
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 20:39:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 989924FE823
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 20:39:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358748AbiDLSlw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 14:41:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59184 "EHLO
+        id S1358743AbiDLSlz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 14:41:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358743AbiDLSlt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 14:41:49 -0400
+        with ESMTP id S1355654AbiDLSlu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 14:41:50 -0400
 Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03E9F28E23
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 11:39:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC6292F03A
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 11:39:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649788770; x=1681324770;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=gsYKeANYPYn1yXtdk1xODQklniwSTfWI6tMyMmbQjiw=;
-  b=TOysiOoalxbcqpjd0oBaSAePiblkwTF+di69hrShVi40QTPCb4pKLRlZ
-   j1tQSR/Oj5pep9qdr2LwJDxBJRS06MPXatXro3zBSH39wkURwZjI2SxuR
-   GZUgvxOcHUC9oyq+OcTDDs0kzDRXuhJkDTRmJt1OxqCldrteuID59vH10
-   cH6pW+K+/DLyS9oDxoqY1F4gpxBMSUTuihIZblrh2f8vRtU/i8PgGZ/bv
-   2o2/huu+NwXAAeBhFi/EwNl2YhpwnNwczpKiyg2JHAIeFWQEbcWm2kvMq
-   d5fJQX/+nEKBMCX9kyQYuy1PrBfAUti/GPoMSLtMvz/kfzBk8WITt5dCn
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="322919260"
+  t=1649788771; x=1681324771;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=H/hv6yrB4tnzrrTgA4pV/nYC+eGAh+XSK1vQPU8OJK8=;
+  b=fC4GbuccpgxiNXhoJv2HbVi1rkbwk16RD1zeOR1BFz6pm3TTuQvNOCWG
+   DE5XEpC6AewOn/f+0MiIh5QlV3DQr+/UxYaUkkRhCUNy019qlGEl1aE/s
+   7t25mBClfNo0RqPwrjIEqGbfSLW3N2vsHX9oIFEvGPHps1tFfyzwSQD0w
+   sQL+3FRoffnYqh3chGANgrxkdbowfO/+oV+YmEeGIJ05ScAi1zAFqnyBP
+   biG8xV7s9ElPJbJIo8xFfevpMo74r06oTmb7uIhTF2EmHJP0AfwFNJPYb
+   55JRxhlOY4+aUrwDu9ZT6pWBJeXg0Xi98y7S1ZGhTkhEm79Z3cOks7DdR
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="322919263"
 X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
-   d="scan'208";a="322919260"
+   d="scan'208";a="322919263"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
   by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 11:39:29 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
-   d="scan'208";a="590453075"
+   d="scan'208";a="590453079"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga001.jf.intel.com with ESMTP; 12 Apr 2022 11:39:29 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
-        sassmann@redhat.com
-Subject: [PATCH net-next 0/5][pull request] 40GbE Intel Wired LAN Driver Updates 2022-04-12
-Date:   Tue, 12 Apr 2022 11:36:31 -0700
-Message-Id: <20220412183636.1408915-1-anthony.l.nguyen@intel.com>
+Cc:     Joe Damato <jdamato@fastly.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com, sassmann@redhat.com,
+        Mike Gallo <mgallo@fastly.com>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH net-next 1/5] i40e: Add support for MPLS + TSO
+Date:   Tue, 12 Apr 2022 11:36:32 -0700
+Message-Id: <20220412183636.1408915-2-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220412183636.1408915-1-anthony.l.nguyen@intel.com>
+References: <20220412183636.1408915-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -57,43 +61,211 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series contains updates to i40e and ice drivers.
+From: Joe Damato <jdamato@fastly.com>
 
-Joe Damato adds TSO support for MPLS packets on i40e and ice drivers. He
-also adds tracking and reporting of tx_stopped statistic for i40e.
+This change adds support for TSO of MPLS packets.
 
-Nabil S. Alramli adds reporting of tx_restart to ethtool for i40e.
+In my tests with tcpdump it seems to work. Note this test setup has
+a 9000 byte MTU:
 
-Mateusz adds new device id support for i40e.
+MPLS (label 100, exp 0, [S], ttl 64) IP srcip.50086 > dstip.1234:
+  Flags [P.], seq 593345:644401, ack 0, win 420,
+  options [nop,nop,TS val 45022534 ecr 1722291395], length 51056
 
-The following are changes since commit 590032a4d2133ecc10d3078a8db1d85a4842f12c:
-  page_pool: Add recycle stats to page_pool_put_page_bulk
-and are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 40GbE
+IP dstip.1234 > srcip.50086: Flags [.], ack 593345, win 122,
+  options [nop,nop,TS val 1722291395 ecr 45022534], length 0
 
-Joe Damato (3):
-  i40e: Add support for MPLS + TSO
-  ice: Add mpls+tso support
-  i40e: Add tx_stopped stat
+IP dstip.1234 > srcip.50086: Flags [.], ack 602289, win 105,
+  options [nop,nop,TS val 1722291395 ecr 45022534], length 0
 
-Mateusz Palczewski (1):
-  i40e: Add Ethernet Connection X722 for 10GbE SFP+ support
+IP dstip.1234 > srcip.50086: Flags [.], ack 620177, win 71,
+  options [nop,nop,TS val 1722291395 ecr 45022534], length 0
 
-Nabil S. Alramli (1):
-  i40e: Add vsi.tx_restart to i40e ethtool stats
+MPLS (label 100, exp 0, [S], ttl 64) IP srcip.50086 > dstip.1234:
+  Flags [P.], seq 644401:655953, ack 0, win 420,
+  options [nop,nop,TS val 45022534 ecr 1722291395], length 11552
 
- drivers/net/ethernet/intel/i40e/i40e.h        |  1 +
- drivers/net/ethernet/intel/i40e/i40e_common.c |  1 +
- .../net/ethernet/intel/i40e/i40e_debugfs.c    |  5 +-
- drivers/net/ethernet/intel/i40e/i40e_devids.h |  1 +
- .../net/ethernet/intel/i40e/i40e_ethtool.c    |  2 +
- drivers/net/ethernet/intel/i40e/i40e_main.c   | 25 +++++++++-
- drivers/net/ethernet/intel/i40e/i40e_txrx.c   | 49 ++++++++++++-------
- drivers/net/ethernet/intel/i40e/i40e_txrx.h   |  1 +
- drivers/net/ethernet/intel/ice/ice_main.c     |  4 +-
- drivers/net/ethernet/intel/ice/ice_txrx.c     | 29 ++++++++---
- 10 files changed, 88 insertions(+), 30 deletions(-)
+IP dstip.1234 > srcip.50086: Flags [.], ack 638065, win 37,
+  options [nop,nop,TS val 1722291395 ecr 45022534], length 0
 
+IP dstip.1234 > srcip.50086: Flags [.], ack 644401, win 25,
+  options [nop,nop,TS val 1722291395 ecr 45022534], length 0
+
+IP dstip.1234 > srcip.50086: Flags [.], ack 653345, win 8,
+  options [nop,nop,TS val 1722291395 ecr 45022534], length 0
+
+IP dstip.1234 > srcip.50086: Flags [.], ack 655953, win 3,
+  options [nop,nop,TS val 1722291395 ecr 45022534], length 0
+
+Signed-off-by: Joe Damato <jdamato@fastly.com>
+Co-developed-by: Mike Gallo <mgallo@fastly.com>
+Signed-off-by: Mike Gallo <mgallo@fastly.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 20 ++++++++-
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c | 47 +++++++++++++--------
+ 2 files changed, 48 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index 6778df2177a1..b7f11fd8297b 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -13436,8 +13436,7 @@ static int i40e_config_netdev(struct i40e_vsi *vsi)
+ 	np->vsi = vsi;
+ 
+ 	hw_enc_features = NETIF_F_SG			|
+-			  NETIF_F_IP_CSUM		|
+-			  NETIF_F_IPV6_CSUM		|
++			  NETIF_F_HW_CSUM		|
+ 			  NETIF_F_HIGHDMA		|
+ 			  NETIF_F_SOFT_FEATURES		|
+ 			  NETIF_F_TSO			|
+@@ -13468,6 +13467,23 @@ static int i40e_config_netdev(struct i40e_vsi *vsi)
+ 	/* record features VLANs can make use of */
+ 	netdev->vlan_features |= hw_enc_features | NETIF_F_TSO_MANGLEID;
+ 
++#define I40E_GSO_PARTIAL_FEATURES (NETIF_F_GSO_GRE |		\
++				   NETIF_F_GSO_GRE_CSUM |	\
++				   NETIF_F_GSO_IPXIP4 |		\
++				   NETIF_F_GSO_IPXIP6 |		\
++				   NETIF_F_GSO_UDP_TUNNEL |	\
++				   NETIF_F_GSO_UDP_TUNNEL_CSUM)
++
++	netdev->gso_partial_features = I40E_GSO_PARTIAL_FEATURES;
++	netdev->features |= NETIF_F_GSO_PARTIAL |
++			    I40E_GSO_PARTIAL_FEATURES;
++
++	netdev->mpls_features |= NETIF_F_SG;
++	netdev->mpls_features |= NETIF_F_HW_CSUM;
++	netdev->mpls_features |= NETIF_F_TSO;
++	netdev->mpls_features |= NETIF_F_TSO6;
++	netdev->mpls_features |= I40E_GSO_PARTIAL_FEATURES;
++
+ 	/* enable macvlan offloads */
+ 	netdev->hw_features |= NETIF_F_HW_L2FW_DOFFLOAD;
+ 
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+index 0eae5858f2fe..8b844ad08a86 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+@@ -3,6 +3,7 @@
+ 
+ #include <linux/prefetch.h>
+ #include <linux/bpf_trace.h>
++#include <net/mpls.h>
+ #include <net/xdp.h>
+ #include "i40e.h"
+ #include "i40e_trace.h"
+@@ -3015,6 +3016,7 @@ static int i40e_tso(struct i40e_tx_buffer *first, u8 *hdr_len,
+ {
+ 	struct sk_buff *skb = first->skb;
+ 	u64 cd_cmd, cd_tso_len, cd_mss;
++	__be16 protocol;
+ 	union {
+ 		struct iphdr *v4;
+ 		struct ipv6hdr *v6;
+@@ -3026,7 +3028,7 @@ static int i40e_tso(struct i40e_tx_buffer *first, u8 *hdr_len,
+ 		unsigned char *hdr;
+ 	} l4;
+ 	u32 paylen, l4_offset;
+-	u16 gso_segs, gso_size;
++	u16 gso_size;
+ 	int err;
+ 
+ 	if (skb->ip_summed != CHECKSUM_PARTIAL)
+@@ -3039,15 +3041,23 @@ static int i40e_tso(struct i40e_tx_buffer *first, u8 *hdr_len,
+ 	if (err < 0)
+ 		return err;
+ 
+-	ip.hdr = skb_network_header(skb);
+-	l4.hdr = skb_transport_header(skb);
++	protocol = vlan_get_protocol(skb);
++
++	if (eth_p_mpls(protocol))
++		ip.hdr = skb_inner_network_header(skb);
++	else
++		ip.hdr = skb_network_header(skb);
++	l4.hdr = skb_checksum_start(skb);
+ 
+ 	/* initialize outer IP header fields */
+ 	if (ip.v4->version == 4) {
+ 		ip.v4->tot_len = 0;
+ 		ip.v4->check = 0;
++
++		first->tx_flags |= I40E_TX_FLAGS_TSO;
+ 	} else {
+ 		ip.v6->payload_len = 0;
++		first->tx_flags |= I40E_TX_FLAGS_TSO;
+ 	}
+ 
+ 	if (skb_shinfo(skb)->gso_type & (SKB_GSO_GRE |
+@@ -3100,10 +3110,9 @@ static int i40e_tso(struct i40e_tx_buffer *first, u8 *hdr_len,
+ 
+ 	/* pull values out of skb_shinfo */
+ 	gso_size = skb_shinfo(skb)->gso_size;
+-	gso_segs = skb_shinfo(skb)->gso_segs;
+ 
+ 	/* update GSO size and bytecount with header size */
+-	first->gso_segs = gso_segs;
++	first->gso_segs = skb_shinfo(skb)->gso_segs;
+ 	first->bytecount += (first->gso_segs - 1) * *hdr_len;
+ 
+ 	/* find the field values */
+@@ -3187,13 +3196,27 @@ static int i40e_tx_enable_csum(struct sk_buff *skb, u32 *tx_flags,
+ 	unsigned char *exthdr;
+ 	u32 offset, cmd = 0;
+ 	__be16 frag_off;
++	__be16 protocol;
+ 	u8 l4_proto = 0;
+ 
+ 	if (skb->ip_summed != CHECKSUM_PARTIAL)
+ 		return 0;
+ 
+-	ip.hdr = skb_network_header(skb);
+-	l4.hdr = skb_transport_header(skb);
++	protocol = vlan_get_protocol(skb);
++
++	if (eth_p_mpls(protocol))
++		ip.hdr = skb_inner_network_header(skb);
++	else
++		ip.hdr = skb_network_header(skb);
++	l4.hdr = skb_checksum_start(skb);
++
++	/* set the tx_flags to indicate the IP protocol type. this is
++	 * required so that checksum header computation below is accurate.
++	 */
++	if (ip.v4->version == 4)
++		*tx_flags |= I40E_TX_FLAGS_IPV4;
++	else
++		*tx_flags |= I40E_TX_FLAGS_IPV6;
+ 
+ 	/* compute outer L2 header size */
+ 	offset = ((ip.hdr - skb->data) / 2) << I40E_TX_DESC_LENGTH_MACLEN_SHIFT;
+@@ -3749,7 +3772,6 @@ static netdev_tx_t i40e_xmit_frame_ring(struct sk_buff *skb,
+ 	struct i40e_tx_buffer *first;
+ 	u32 td_offset = 0;
+ 	u32 tx_flags = 0;
+-	__be16 protocol;
+ 	u32 td_cmd = 0;
+ 	u8 hdr_len = 0;
+ 	int tso, count;
+@@ -3791,15 +3813,6 @@ static netdev_tx_t i40e_xmit_frame_ring(struct sk_buff *skb,
+ 	if (i40e_tx_prepare_vlan_flags(skb, tx_ring, &tx_flags))
+ 		goto out_drop;
+ 
+-	/* obtain protocol of skb */
+-	protocol = vlan_get_protocol(skb);
+-
+-	/* setup IPv4/IPv6 offloads */
+-	if (protocol == htons(ETH_P_IP))
+-		tx_flags |= I40E_TX_FLAGS_IPV4;
+-	else if (protocol == htons(ETH_P_IPV6))
+-		tx_flags |= I40E_TX_FLAGS_IPV6;
+-
+ 	tso = i40e_tso(first, &hdr_len, &cd_type_cmd_tso_mss);
+ 
+ 	if (tso < 0)
 -- 
 2.31.1
 
