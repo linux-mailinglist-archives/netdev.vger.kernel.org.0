@@ -2,324 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 54C564FCE4F
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 06:56:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2ED594FCEFE
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 07:32:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347147AbiDLE6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 00:58:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42552 "EHLO
+        id S241050AbiDLFfM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 01:35:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347092AbiDLE6I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 00:58:08 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F219E11C07
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 21:55:51 -0700 (PDT)
-Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com [209.85.215.198])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 7D27F3F845
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 04:55:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1649739349;
-        bh=pow7WGCl5/+qsXQpSH+3LFTNAwgaC5eqLAL0Vx4SfPA=;
-        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
-         Content-Type:Date:Message-ID;
-        b=P4clLl8absVl/e1mN3oCyO5b7jcg6B+Tu1X+4YUv3azaKEt6TZugi6b6prj3zgkDI
-         bz8qLPwiEeyQ4XXPqm2koBisr1Vliu3+iecwkVzfUAVmCf51E0N1fEEiVSZ9DSUE1v
-         r5qtBTBKA4qpX8oPr6EeuwXBjfz6X768s74B6JkOeYCuJx+i6J5759OZMnU5TU6qfd
-         QkWvyr+FlGVL8CAlzoim3nhNAwVB0oWtxiv2MBPZ35Ck068KtqgWCERLDFVlaphBCg
-         Xf4H8XW65uiuU18uFYA6bNVqycDYpAinWU2rvvNzfIIexZE6pD4HoSf2obmEgADX3Z
-         moh6EZNFa3s5g==
-Received: by mail-pg1-f198.google.com with SMTP id u32-20020a634560000000b0039940fd2020so9943242pgk.20
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 21:55:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references
-         :comments:mime-version:content-id:content-transfer-encoding:date
-         :message-id;
-        bh=pow7WGCl5/+qsXQpSH+3LFTNAwgaC5eqLAL0Vx4SfPA=;
-        b=1BhUbc9trxBmlrM5f+JBoR0r6brwUBTb/C8JWaVBzv5lwrHLAyj1Ff+ebfkCf/EUR4
-         8PAvrqBcSglKcZdo7UEwBRnT1mj9VL0wKPqOWJ9IVF9W4TIi9MrdfX2trEpkJMIZ0QPj
-         CCvvBvgwzrOMDnshTBcVIJo2R1iqzl85YLzDvTJz2yhAUnyn/rAm0KhY1ikPt+/g0ZgL
-         5Lgg51H//fMceGIUDmDO5C7jPckv+45OBnj4WhY7DadJEhCSUJC0CaZDQMTRApy7HRBi
-         5lay7d7sSBJ2THMo2mxL3Pm9iVzr+22OnA9i48Y9aivr9lIGjYIQKLNUb7i6fRW37mGL
-         f7OA==
-X-Gm-Message-State: AOAM533pJIhYYuYaXSRZ+u26gOsw3RCGo6ZxlyWMiFhfK3JIZxZua9fS
-        3I3PpOsqyk1tpPOCBzJceTTrKWoxUgVMnMzJhME86HWck4ObNhWJ7dpRtaD3KA7SWoh3cRhTWOk
-        bHGf4aAp/5JlGoRrl34ACHFoDZBk0YhBdNQ==
-X-Received: by 2002:a63:2006:0:b0:39d:8460:48a4 with SMTP id g6-20020a632006000000b0039d846048a4mr3272766pgg.623.1649739347823;
-        Mon, 11 Apr 2022 21:55:47 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwFOdDCW3YRf6PojFhHKJ4BiX1KaUM1fTlvlCz0qK4sw40csATRUO3oemtsHIMwyGaT8MQgwg==
-X-Received: by 2002:a63:2006:0:b0:39d:8460:48a4 with SMTP id g6-20020a632006000000b0039d846048a4mr3272735pgg.623.1649739347533;
-        Mon, 11 Apr 2022 21:55:47 -0700 (PDT)
-Received: from famine.localdomain ([50.125.80.157])
-        by smtp.gmail.com with ESMTPSA id s22-20020a056a00179600b004fb28a97abdsm40804798pfg.12.2022.04.11.21.55.46
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 11 Apr 2022 21:55:46 -0700 (PDT)
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id E5E576093D; Mon, 11 Apr 2022 21:55:45 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id DEE73A0B21;
-        Mon, 11 Apr 2022 21:55:45 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-cc:     netdev@vger.kernel.org, Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Ahern <dsahern@gmail.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net-next] Bonding: add per port priority support
-In-reply-to: <20220412041322.2409558-1-liuhangbin@gmail.com>
-References: <20220412041322.2409558-1-liuhangbin@gmail.com>
-Comments: In-reply-to Hangbin Liu <liuhangbin@gmail.com>
-   message dated "Tue, 12 Apr 2022 12:13:22 +0800."
-X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
+        with ESMTP id S229668AbiDLFfL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 01:35:11 -0400
+Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6A87034B81;
+        Mon, 11 Apr 2022 22:32:53 -0700 (PDT)
+Received: from localhost.localdomain (unknown [222.205.5.156])
+        by mail-app3 (Coremail) with SMTP id cC_KCgCn+cn2DlViAenxAQ--.60148S4;
+        Tue, 12 Apr 2022 13:32:39 +0800 (CST)
+From:   Lin Ma <linma@zju.edu.cn>
+To:     krzk@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Lin Ma <linma@zju.edu.cn>
+Subject: [PATCH] NFC: NULL out the dev->rfkill to prevent UAF
+Date:   Tue, 12 Apr 2022 13:32:08 +0800
+Message-Id: <20220412053208.28681-1-linma@zju.edu.cn>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <11972.1649739345.1@famine>
-Content-Transfer-Encoding: quoted-printable
-Date:   Mon, 11 Apr 2022 21:55:45 -0700
-Message-ID: <11973.1649739345@famine>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: cC_KCgCn+cn2DlViAenxAQ--.60148S4
+X-Coremail-Antispam: 1UD129KBjvJXoW3AF4UuFy7Kry7ZryDGFWfKrg_yoWxGFW8pr
+        98KFWfCrWrX34UJw48J3WUGr4rAF4kAF1UJFs7CryUAF4DXF42yryUGrn0qF4UGr1ruFy7
+        JayDJr12yrZrAw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUka1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
+        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
+        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
+        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
+        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v
+        1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
+        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vI
+        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
+        1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvE
+        x4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHUDUUUUU=
+X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hangbin Liu <liuhangbin@gmail.com> wrote:
+Commit 3e3b5dfcd16a ("NFC: reorder the logic in nfc_{un,}register_device") 
+assumes the device_is_registered() in function nfc_dev_up() will help
+to check when the rfkill is unregistered. However, this check only 
+take effect when device_del(&dev->dev) is done in nfc_unregister_device().
+Hence, the rfkill object is still possible be dereferenced.
 
->Add per port priority support for bonding. A higher number means higher
->priority. The primary slave still has the highest priority. This option
->also follows the primary_reselect rules.
+The crash trace in latest kernel (5.18-rc2):
 
-	The above description (and the Subject) should mention that this
-apparently refers to priority in interface selection during failover
-events.
+[   68.760105] ==================================================================
+[   68.760330] BUG: KASAN: use-after-free in __lock_acquire+0x3ec1/0x6750
+[   68.760756] Read of size 8 at addr ffff888009c93018 by task fuzz/313
+[   68.760756]
+[   68.760756] CPU: 0 PID: 313 Comm: fuzz Not tainted 5.18.0-rc2 #4
+[   68.760756] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+[   68.760756] Call Trace:
+[   68.760756]  <TASK>
+[   68.760756]  dump_stack_lvl+0x57/0x7d
+[   68.760756]  print_report.cold+0x5e/0x5db
+[   68.760756]  ? __lock_acquire+0x3ec1/0x6750
+[   68.760756]  kasan_report+0xbe/0x1c0
+[   68.760756]  ? __lock_acquire+0x3ec1/0x6750
+[   68.760756]  __lock_acquire+0x3ec1/0x6750
+[   68.760756]  ? lockdep_hardirqs_on_prepare+0x410/0x410
+[   68.760756]  ? register_lock_class+0x18d0/0x18d0
+[   68.760756]  lock_acquire+0x1ac/0x4f0
+[   68.760756]  ? rfkill_blocked+0xe/0x60
+[   68.760756]  ? lockdep_hardirqs_on_prepare+0x410/0x410
+[   68.760756]  ? mutex_lock_io_nested+0x12c0/0x12c0
+[   68.760756]  ? nla_get_range_signed+0x540/0x540
+[   68.760756]  ? _raw_spin_lock_irqsave+0x4e/0x50
+[   68.760756]  _raw_spin_lock_irqsave+0x39/0x50
+[   68.760756]  ? rfkill_blocked+0xe/0x60
+[   68.760756]  rfkill_blocked+0xe/0x60
+[   68.760756]  nfc_dev_up+0x84/0x260
+[   68.760756]  nfc_genl_dev_up+0x90/0xe0
+[   68.760756]  genl_family_rcv_msg_doit+0x1f4/0x2f0
+[   68.760756]  ? genl_family_rcv_msg_attrs_parse.constprop.0+0x230/0x230
+[   68.760756]  ? security_capable+0x51/0x90
+[   68.760756]  genl_rcv_msg+0x280/0x500
+[   68.760756]  ? genl_get_cmd+0x3c0/0x3c0
+[   68.760756]  ? lock_acquire+0x1ac/0x4f0
+[   68.760756]  ? nfc_genl_dev_down+0xe0/0xe0
+[   68.760756]  ? lockdep_hardirqs_on_prepare+0x410/0x410
+[   68.760756]  netlink_rcv_skb+0x11b/0x340
+[   68.760756]  ? genl_get_cmd+0x3c0/0x3c0
+[   68.760756]  ? netlink_ack+0x9c0/0x9c0
+[   68.760756]  ? netlink_deliver_tap+0x136/0xb00
+[   68.760756]  genl_rcv+0x1f/0x30
+[   68.760756]  netlink_unicast+0x430/0x710
+[   68.760756]  ? memset+0x20/0x40
+[   68.760756]  ? netlink_attachskb+0x740/0x740
+[   68.760756]  ? __build_skb_around+0x1f4/0x2a0
+[   68.760756]  netlink_sendmsg+0x75d/0xc00
+[   68.760756]  ? netlink_unicast+0x710/0x710
+[   68.760756]  ? netlink_unicast+0x710/0x710
+[   68.760756]  sock_sendmsg+0xdf/0x110
+[   68.760756]  __sys_sendto+0x19e/0x270
+[   68.760756]  ? __ia32_sys_getpeername+0xa0/0xa0
+[   68.760756]  ? fd_install+0x178/0x4c0
+[   68.760756]  ? fd_install+0x195/0x4c0
+[   68.760756]  ? kernel_fpu_begin_mask+0x1c0/0x1c0
+[   68.760756]  __x64_sys_sendto+0xd8/0x1b0
+[   68.760756]  ? lockdep_hardirqs_on+0xbf/0x130
+[   68.760756]  ? syscall_enter_from_user_mode+0x1d/0x50
+[   68.760756]  do_syscall_64+0x3b/0x90
+[   68.760756]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   68.760756] RIP: 0033:0x7f67fb50e6b3
+...
+[   68.760756] RSP: 002b:00007f67fa91fe90 EFLAGS: 00000293 ORIG_RAX: 000000000000002c
+[   68.760756] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f67fb50e6b3
+[   68.760756] RDX: 000000000000001c RSI: 0000559354603090 RDI: 0000000000000003
+[   68.760756] RBP: 00007f67fa91ff00 R08: 00007f67fa91fedc R09: 000000000000000c
+[   68.760756] R10: 0000000000000000 R11: 0000000000000293 R12: 00007ffe824d496e
+[   68.760756] R13: 00007ffe824d496f R14: 00007f67fa120000 R15: 0000000000000003
 
->This option could only be configured via netlink.
->
->Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
->---
-> Documentation/networking/bonding.rst |  9 +++++++++
-> drivers/net/bonding/bond_main.c      | 27 +++++++++++++++++++++++++++
-> drivers/net/bonding/bond_netlink.c   | 12 ++++++++++++
-> include/net/bonding.h                |  1 +
-> include/uapi/linux/if_link.h         |  1 +
-> tools/include/uapi/linux/if_link.h   |  1 +
-> 6 files changed, 51 insertions(+)
->
->diff --git a/Documentation/networking/bonding.rst b/Documentation/network=
-ing/bonding.rst
->index 525e6842dd33..103e292a04a1 100644
->--- a/Documentation/networking/bonding.rst
->+++ b/Documentation/networking/bonding.rst
->@@ -780,6 +780,15 @@ peer_notif_delay
-> 	value is 0 which means to match the value of the link monitor
-> 	interval.
-> =
+[   68.760756]  </TASK>
+[   68.760756]
+[   68.760756] Allocated by task 279:
+[   68.760756]  kasan_save_stack+0x1e/0x40
+[   68.760756]  __kasan_kmalloc+0x81/0xa0
+[   68.760756]  rfkill_alloc+0x7f/0x280
+[   68.760756]  nfc_register_device+0xa3/0x1a0
+[   68.760756]  nci_register_device+0x77a/0xad0
+[   68.760756]  nfcmrvl_nci_register_dev+0x20b/0x2c0
+[   68.760756]  nfcmrvl_nci_uart_open+0xf2/0x1dd
+[   68.760756]  nci_uart_tty_ioctl+0x2c3/0x4a0
+[   68.760756]  tty_ioctl+0x764/0x1310
+[   68.760756]  __x64_sys_ioctl+0x122/0x190
+[   68.760756]  do_syscall_64+0x3b/0x90
+[   68.760756]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   68.760756]
+[   68.760756] Freed by task 314:
+[   68.760756]  kasan_save_stack+0x1e/0x40
+[   68.760756]  kasan_set_track+0x21/0x30
+[   68.760756]  kasan_set_free_info+0x20/0x30
+[   68.760756]  __kasan_slab_free+0x108/0x170
+[   68.760756]  kfree+0xb0/0x330
+[   68.760756]  device_release+0x96/0x200
+[   68.760756]  kobject_put+0xf9/0x1d0
+[   68.760756]  nfc_unregister_device+0x77/0x190
+[   68.760756]  nfcmrvl_nci_unregister_dev+0x88/0xd0
+[   68.760756]  nci_uart_tty_close+0xdf/0x180
+[   68.760756]  tty_ldisc_kill+0x73/0x110
+[   68.760756]  tty_ldisc_hangup+0x281/0x5b0
+[   68.760756]  __tty_hangup.part.0+0x431/0x890
+[   68.760756]  tty_release+0x3a8/0xc80
+[   68.760756]  __fput+0x1f0/0x8c0
+[   68.760756]  task_work_run+0xc9/0x170
+[   68.760756]  exit_to_user_mode_prepare+0x194/0x1a0
+[   68.760756]  syscall_exit_to_user_mode+0x19/0x50
+[   68.760756]  do_syscall_64+0x48/0x90
+[   68.760756]  entry_SYSCALL_64_after_hwframe+0x44/0xae
 
->+prio
->+	Slave priority. A higher number means higher priority.
->+	The primary slave has the highest priority. This option also
->+	follows the primary_reselect rules.
->+
->+	This option could only be configured via netlink, and is only valid
->+	for active-backup(1), balance-tlb (5) and balance-alb (6) mode.
->+	The default value is 0.
->+
-> primary
-> =
+This patch just add the null out of dev->rfkill to make sure such
+dereference cannot happen. This is safe since the device_lock() already
+protect the check/write from data race.
 
-> 	A string (eth0, eth2, etc) specifying which slave is the
->diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_m=
-ain.c
->index 15eddca7b4b6..4211b79ac619 100644
->--- a/drivers/net/bonding/bond_main.c
->+++ b/drivers/net/bonding/bond_main.c
->@@ -1026,12 +1026,38 @@ static void bond_do_fail_over_mac(struct bonding =
-*bond,
-> =
-
-> }
-> =
-
->+/**
->+ * bond_choose_primary_or_current - select the primary or high priority =
-slave
->+ * @bond: our bonding struct
->+ *
->+ * - Check if there is a primary link. If the primary link was set and i=
-s up,
->+ *   go on and do link reselection.
->+ *
->+ * - If primary link is not set or down, find the highest priority link.
->+ *   If the highest priority link is not current slave, set it as primar=
-y
->+ *   link and do link reselection.
->+ */
-> static struct slave *bond_choose_primary_or_current(struct bonding *bond=
-)
-> {
-> 	struct slave *prim =3D rtnl_dereference(bond->primary_slave);
-> 	struct slave *curr =3D rtnl_dereference(bond->curr_active_slave);
->+	struct slave *slave, *hprio =3D NULL;
->+	struct list_head *iter;
-> =
-
-> 	if (!prim || prim->link !=3D BOND_LINK_UP) {
->+		bond_for_each_slave(bond, slave, iter) {
->+			if (slave->link =3D=3D BOND_LINK_UP) {
->+				hprio =3D hprio ? hprio : slave;
->+				if (slave->prio > hprio->prio)
->+					hprio =3D slave;
->+			}
->+		}
->+
->+		if (hprio && hprio !=3D curr) {
->+			prim =3D hprio;
->+			goto link_reselect;
->+		}
->+
-> 		if (!curr || curr->link !=3D BOND_LINK_UP)
-> 			return NULL;
-> 		return curr;
->@@ -1042,6 +1068,7 @@ static struct slave *bond_choose_primary_or_current=
-(struct bonding *bond)
-> 		return prim;
-> 	}
-> =
-
->+link_reselect:
-> 	if (!curr || curr->link !=3D BOND_LINK_UP)
-> 		return prim;
-> =
-
->diff --git a/drivers/net/bonding/bond_netlink.c b/drivers/net/bonding/bon=
-d_netlink.c
->index f427fa1737c7..63066559e7d6 100644
->--- a/drivers/net/bonding/bond_netlink.c
->+++ b/drivers/net/bonding/bond_netlink.c
->@@ -27,6 +27,7 @@ static size_t bond_get_slave_size(const struct net_devi=
-ce *bond_dev,
-> 		nla_total_size(sizeof(u16)) +	/* IFLA_BOND_SLAVE_AD_AGGREGATOR_ID */
-> 		nla_total_size(sizeof(u8)) +	/* IFLA_BOND_SLAVE_AD_ACTOR_OPER_PORT_STA=
-TE */
-> 		nla_total_size(sizeof(u16)) +	/* IFLA_BOND_SLAVE_AD_PARTNER_OPER_PORT_=
-STATE */
->+		nla_total_size(sizeof(s32)) +	/* IFLA_BOND_SLAVE_PRIO */
-> 		0;
-> }
-> =
-
->@@ -53,6 +54,9 @@ static int bond_fill_slave_info(struct sk_buff *skb,
-> 	if (nla_put_u16(skb, IFLA_BOND_SLAVE_QUEUE_ID, slave->queue_id))
-> 		goto nla_put_failure;
-> =
-
->+	if (nla_put_s32(skb, IFLA_BOND_SLAVE_PRIO, slave->prio))
->+		goto nla_put_failure;
->+
-> 	if (BOND_MODE(slave->bond) =3D=3D BOND_MODE_8023AD) {
-> 		const struct aggregator *agg;
-> 		const struct port *ad_port;
->@@ -117,6 +121,7 @@ static const struct nla_policy bond_policy[IFLA_BOND_=
-MAX + 1] =3D {
-> =
-
-> static const struct nla_policy bond_slave_policy[IFLA_BOND_SLAVE_MAX + 1=
-] =3D {
-> 	[IFLA_BOND_SLAVE_QUEUE_ID]	=3D { .type =3D NLA_U16 },
->+	[IFLA_BOND_SLAVE_PRIO]		=3D { .type =3D NLA_S32 },
-
-	Why used signed instead of unsigned?
-
-	Regardless, the valid range for the prio value should be
-documented.
-
-	-J
-
-> };
-> =
-
-> static int bond_validate(struct nlattr *tb[], struct nlattr *data[],
->@@ -136,6 +141,7 @@ static int bond_slave_changelink(struct net_device *b=
-ond_dev,
-> 				 struct nlattr *tb[], struct nlattr *data[],
-> 				 struct netlink_ext_ack *extack)
-> {
->+	struct slave *slave =3D bond_slave_get_rtnl(slave_dev);
-> 	struct bonding *bond =3D netdev_priv(bond_dev);
-> 	struct bond_opt_value newval;
-> 	int err;
->@@ -156,6 +162,12 @@ static int bond_slave_changelink(struct net_device *=
-bond_dev,
-> 			return err;
-> 	}
-> =
-
->+	/* No need to bother __bond_opt_set as we only support netlink config *=
-/
->+	if (data[IFLA_BOND_SLAVE_PRIO]) {
->+		slave->prio =3D nla_get_s32(data[IFLA_BOND_SLAVE_PRIO]);
->+		bond_select_active_slave(bond);
->+	}
->+
-> 	return 0;
-> }
-> =
-
->diff --git a/include/net/bonding.h b/include/net/bonding.h
->index b14f4c0b4e9e..4ff093fb2289 100644
->--- a/include/net/bonding.h
->+++ b/include/net/bonding.h
->@@ -176,6 +176,7 @@ struct slave {
-> 	u32    speed;
-> 	u16    queue_id;
-> 	u8     perm_hwaddr[MAX_ADDR_LEN];
->+	int    prio;
-> 	struct ad_slave_info *ad_info;
-> 	struct tlb_slave_info tlb_info;
-> #ifdef CONFIG_NET_POLL_CONTROLLER
->diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
->index cc284c048e69..204e342b107a 100644
->--- a/include/uapi/linux/if_link.h
->+++ b/include/uapi/linux/if_link.h
->@@ -956,6 +956,7 @@ enum {
-> 	IFLA_BOND_SLAVE_AD_AGGREGATOR_ID,
-> 	IFLA_BOND_SLAVE_AD_ACTOR_OPER_PORT_STATE,
-> 	IFLA_BOND_SLAVE_AD_PARTNER_OPER_PORT_STATE,
->+	IFLA_BOND_SLAVE_PRIO,
-> 	__IFLA_BOND_SLAVE_MAX,
-> };
-> =
-
->diff --git a/tools/include/uapi/linux/if_link.h b/tools/include/uapi/linu=
-x/if_link.h
->index e1ba2d51b717..ee5de9f3700b 100644
->--- a/tools/include/uapi/linux/if_link.h
->+++ b/tools/include/uapi/linux/if_link.h
->@@ -888,6 +888,7 @@ enum {
-> 	IFLA_BOND_SLAVE_AD_AGGREGATOR_ID,
-> 	IFLA_BOND_SLAVE_AD_ACTOR_OPER_PORT_STATE,
-> 	IFLA_BOND_SLAVE_AD_PARTNER_OPER_PORT_STATE,
->+	IFLA_BOND_SLAVE_PRIO,
-> 	__IFLA_BOND_SLAVE_MAX,
-> };
-> =
-
->-- =
-
->2.35.1
->
-
+Fixes: 3e3b5dfcd16a ("NFC: reorder the logic in nfc_{un,}register_device")
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
 ---
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+ net/nfc/core.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/nfc/core.c b/net/nfc/core.c
+index dc7a2404efdf..67524982b89b 100644
+--- a/net/nfc/core.c
++++ b/net/nfc/core.c
+@@ -1165,6 +1165,7 @@ void nfc_unregister_device(struct nfc_dev *dev)
+ 	if (dev->rfkill) {
+ 		rfkill_unregister(dev->rfkill);
+ 		rfkill_destroy(dev->rfkill);
++		dev->rfkill = NULL;
+ 	}
+ 	device_unlock(&dev->dev);
+ 
+-- 
+2.35.1
+
