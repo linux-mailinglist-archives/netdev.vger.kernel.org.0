@@ -2,57 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 492E04FE625
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 18:43:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B18D4FE61F
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 18:43:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357830AbiDLQpK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 12:45:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57948 "EHLO
+        id S1357806AbiDLQpX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 12:45:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357844AbiDLQpF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 12:45:05 -0400
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3063D5DA00
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 09:42:44 -0700 (PDT)
-Received: by mail-qk1-x72d.google.com with SMTP id t207so12775360qke.2
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 09:42:44 -0700 (PDT)
+        with ESMTP id S1352301AbiDLQpU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 12:45:20 -0400
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2288759A7F
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 09:42:52 -0700 (PDT)
+Received: by mail-qt1-x835.google.com with SMTP id z16so3470765qtq.6
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 09:42:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=JVjnZJW1gTzLNd6GSkHckxvLH+hasBQ5D4wNIoqR+uU=;
-        b=ggSDi4aLEr1V4zONNh/G7vTALzc1X6UYNXF7Ja/29IyLKLl59Nxk4KGCH2lUJYMEPR
-         /3/OcPlNzZwTst3mB5oCIQYEbasmXoGb7AHX53Qhg7Fgx6c03gXjXFSrrQ9gydjftIjN
-         P+/KoRP9cgK1zW0JLKix0veLvS4E2JhOn6tV+7YgpZFqZM6UXbtE34qVfsGfKWUztYJ5
-         9hW+8bpPsriit45Z4wq9bDA9japn7ssB452UFIVFDyB692930fpGDTNvqn9+RuKYmsSO
-         lsIGg/w3FzzWN4TGZyWOwy1I6MRtE0f7up8QId/AcjCx3yaUZsgkguTeWPz0Q4UPMgQl
-         sHig==
+        bh=AHisszjxu0l65fU9Pt7c1LEZ9ALwF4lQHlZ3U0OZBmA=;
+        b=hyqVLy+VPMHb8VaYruvRzGRE3orpxld+MNfNtnMrTVF5exB0UVBhuMhte+n/MIIlSJ
+         GOf3ZPH6ZPufm6+C8mSFa/Elsf44OqpfTaStx7KNBMYbzrnXMp3/9iH4bV/WqWcxjWQJ
+         As4zI3tzS6No2THSnxWobB5hS3hbRGnA/Y6YChuSZXGlCuRQ0Wu66EIE8ghV+j9LYWQl
+         oVFwOw05sOgxpVyyKkROSlmc3XrxtxxO+QYct0OPPVKaFq9ZaS8PnBDiQrXomIcUBoIT
+         sIPHVT5qqSPi3i8Ri9r1SOgcumbp2YfDoZi8HFlugFe1K5iAImD3kduVBJJtEd5WYhwu
+         0EOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=JVjnZJW1gTzLNd6GSkHckxvLH+hasBQ5D4wNIoqR+uU=;
-        b=r1q/gtjXyk82OPqjY6taZ5UE0fFKOqXP3IcjIKAvfFjGJF8ZlyIPsZiKsEKytsa42f
-         lUEEN818HBBNIqATIMek9Dd8wV8LlCMDOCX5fZKsOuKJy8hF9W4sVb+bWYWAWpZ4u1Jh
-         ckDVHgMi1AT0RUgBey/tVbR7HHR7lqzw3t1NeZFFdUIY1WdIb2Ey/v1HHTQ01HMdRecF
-         F6Q3gAPEW9h3Js6rN7lxIdj/gNnQ4dEuCLL7mYnDXMw3Igz71BtCEFdjJGECvPjm7WG6
-         w/DqC6YOnHFUZcVyN+sylgkDH2H94XwjyXfNRyXqbjrCFIl8SQIf6vBnARyA9DZmm8ir
-         4a4A==
-X-Gm-Message-State: AOAM530n/dqLcr4DgcOGa9QLKZIqYsiRXZaFL+GWbDLXXbgPzLMCZBh3
-        arAnmOwtI9NAp97Jh40WmTDT3zb2hxd8BHKpaMSJWA==
-X-Google-Smtp-Source: ABdhPJxx9k7qHT4RJVNZk2f5xQtsiMLaF2SPzeBUVpc0VoWpaH9lTdoU4MDkI/t01fs3IGm6ceIaaqyFGHnZp88eZJg=
-X-Received: by 2002:ae9:eb01:0:b0:69c:10ca:ed6 with SMTP id
- b1-20020ae9eb01000000b0069c10ca0ed6mr3748006qkg.496.1649781763052; Tue, 12
- Apr 2022 09:42:43 -0700 (PDT)
+        bh=AHisszjxu0l65fU9Pt7c1LEZ9ALwF4lQHlZ3U0OZBmA=;
+        b=MU4y4iL7SUfYhqkChOovZhRFuuDBP7QcI4FsW7U02zDj5vZ7Ny0YcbMAQ8PLwM2REW
+         CMiKE5F/9oHXLJlytmACeLnyndiqmiQ90ihs+rTXGltuN9I0VLcD0QpR1kNLRXJbo04P
+         wZgC/7xt8VDyiCCSK3exyEiNPs4pOqrtFR7GLDinE/W5IIxgph0ANTQiow+yaXfTKidX
+         ivel38e2FcF3usMqj/yGlwk1To0IVssODbwSwD5bY27PYA8StdPd+Yr8VUDpdVzxtLR7
+         58q9jjTktEDlRD/KQCr0mvybRyOHzgX0dFAAJYvNFLk7HRkcr3+ZiHSLm6ylPyUQJB3R
+         Sj2g==
+X-Gm-Message-State: AOAM5327SvEYPC7g2gzpI09QEWaFBgsj1k+rk/K7MOTcHGHYbpEs2ybK
+        YPA10Yke8hy0na6kgZHtJqZHxljMAlr8eYxSPo9DMKbmX0s=
+X-Google-Smtp-Source: ABdhPJziUAzL5Qh9sEw1TPh+Zw611eueZryff4xfSz25SIZqrl8HFI+b4M+iDkb6iVYK+bdhShVRKJ22Ovi2R99TFzc=
+X-Received: by 2002:a05:622a:14c8:b0:2e1:d626:66ea with SMTP id
+ u8-20020a05622a14c800b002e1d62666eamr4098943qtx.58.1649781771094; Tue, 12 Apr
+ 2022 09:42:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220407223112.1204582-1-sdf@google.com> <20220407223112.1204582-3-sdf@google.com>
- <20220408221252.b5hgz53z43p6apkt@kafai-mbp.dhcp.thefacebook.com>
- <CAKH8qBujC+ds9UOqLjcSoM5SggN4zuyEzKDi=zq4z5sNcTFY+w@mail.gmail.com> <20220412010449.vmg6r72wf7pilfkw@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20220412010449.vmg6r72wf7pilfkw@kafai-mbp.dhcp.thefacebook.com>
+References: <20220407223112.1204582-1-sdf@google.com> <20220407223112.1204582-4-sdf@google.com>
+ <20220408225628.oog4a3qteauhqkdn@kafai-mbp.dhcp.thefacebook.com>
+ <CAKH8qBuMMuuUJiZJY8Gb+tMQLKoRGpvv58sSM4sZXjyEc0i7dA@mail.gmail.com> <20220412013631.tntvx7lw3c7sw6ur@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20220412013631.tntvx7lw3c7sw6ur@kafai-mbp.dhcp.thefacebook.com>
 From:   Stanislav Fomichev <sdf@google.com>
-Date:   Tue, 12 Apr 2022 09:42:31 -0700
-Message-ID: <CAKH8qBs6V=a46JAnqK-FaKkdtxDE8ArH5O0mnXR=_Z-MbJEB1A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 2/7] bpf: per-cgroup lsm flavor
+Date:   Tue, 12 Apr 2022 09:42:40 -0700
+Message-ID: <CAKH8qBvCNVwEmoDyWvA5kEuNkCuVZYtf7RVL4AMXAsMr7aQDZA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 3/7] bpf: minimize number of allocated lsm
+ slots per program
 To:     Martin KaFai Lau <kafai@fb.com>
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
         daniel@iogearbox.net, andrii@kernel.org
@@ -61,243 +62,127 @@ X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On Mon, Apr 11, 2022 at 6:04 PM Martin KaFai Lau <kafai@fb.com> wrote:
+On Mon, Apr 11, 2022 at 6:36 PM Martin KaFai Lau <kafai@fb.com> wrote:
 >
-> On Mon, Apr 11, 2022 at 12:07:20PM -0700, Stanislav Fomichev wrote:
-> > On Fri, Apr 8, 2022 at 3:13 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> On Mon, Apr 11, 2022 at 11:46:20AM -0700, Stanislav Fomichev wrote:
+> > On Fri, Apr 8, 2022 at 3:57 PM Martin KaFai Lau <kafai@fb.com> wrote:
 > > >
-> > > On Thu, Apr 07, 2022 at 03:31:07PM -0700, Stanislav Fomichev wrote:
-> > > > diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
-> > > > index 064eccba641d..eca258ba71d8 100644
-> > > > --- a/kernel/bpf/bpf_lsm.c
-> > > > +++ b/kernel/bpf/bpf_lsm.c
-> > > > @@ -35,6 +35,98 @@ BTF_SET_START(bpf_lsm_hooks)
-> > > >  #undef LSM_HOOK
-> > > >  BTF_SET_END(bpf_lsm_hooks)
+> > > On Thu, Apr 07, 2022 at 03:31:08PM -0700, Stanislav Fomichev wrote:
+> > > > Previous patch adds 1:1 mapping between all 211 LSM hooks
+> > > > and bpf_cgroup program array. Instead of reserving a slot per
+> > > > possible hook, reserve 10 slots per cgroup for lsm programs.
+> > > > Those slots are dynamically allocated on demand and reclaimed.
+> > > > This still adds some bloat to the cgroup and brings us back to
+> > > > roughly pre-cgroup_bpf_attach_type times.
 > > > >
-> > > > +static unsigned int __cgroup_bpf_run_lsm_socket(const void *ctx,
-> > > > +                                             const struct bpf_insn *insn)
-> > > > +{
-> > > > +     const struct bpf_prog *prog;
-> > > > +     struct socket *sock;
-> > > > +     struct cgroup *cgrp;
-> > > > +     struct sock *sk;
-> > > > +     int ret = 0;
-> > > > +     u64 *regs;
-> > > > +
-> > > > +     regs = (u64 *)ctx;
-> > > > +     sock = (void *)(unsigned long)regs[BPF_REG_0];
-> > > > +     /*prog = container_of(insn, struct bpf_prog, insnsi);*/
-> > > > +     prog = (const struct bpf_prog *)((void *)insn - offsetof(struct bpf_prog, insnsi));
-> > > nit. Rename prog to shim_prog.
+> > > > It should be possible to eventually extend this idea to all hooks if
+> > > > the memory consumption is unacceptable and shrink overall effective
+> > > > programs array.
+> > > >
+> > > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > > > ---
+> > > >  include/linux/bpf-cgroup-defs.h |  4 +-
+> > > >  include/linux/bpf_lsm.h         |  6 ---
+> > > >  kernel/bpf/bpf_lsm.c            |  9 ++--
+> > > >  kernel/bpf/cgroup.c             | 96 ++++++++++++++++++++++++++++-----
+> > > >  4 files changed, 90 insertions(+), 25 deletions(-)
+> > > >
+> > > > diff --git a/include/linux/bpf-cgroup-defs.h b/include/linux/bpf-cgroup-defs.h
+> > > > index 6c661b4df9fa..d42516e86b3a 100644
+> > > > --- a/include/linux/bpf-cgroup-defs.h
+> > > > +++ b/include/linux/bpf-cgroup-defs.h
+> > > > @@ -10,7 +10,9 @@
+> > > >
+> > > >  struct bpf_prog_array;
+> > > >
+> > > > -#define CGROUP_LSM_NUM 211 /* will be addressed in the next patch */
+> > > > +/* Maximum number of concurrently attachable per-cgroup LSM hooks.
+> > > > + */
+> > > > +#define CGROUP_LSM_NUM 10
+> > > hmm...only 10 different lsm hooks (or 10 different attach_btf_ids) can
+> > > have BPF_LSM_CGROUP programs attached.  This feels quite limited but having
+> > > a static 211 (and potentially growing in the future) is not good either.
+> > > I currently do not have a better idea also. :/
 > > >
-> > > > +
-> > > > +     if (unlikely(!sock))
-> > > Is it possible in the lsm hooks?  Can these hooks
-> > > be rejected at the load time instead?
-> >
-> > Doesn't seem like it can be null, at least from the quick review that
-> > I had; I'll take a deeper look.
-> > I guess in general I wanted to be more defensive here because there
-> > are 200+ hooks, the new ones might arrive, and it's better to have the
-> > check?
-> not too worried about an extra runtime check for now.
-> Instead, have a concern that it will be a usage surprise when a successfully
-> attached bpf program is then always silently ignored.
->
-> Another question, for example, the inet_conn_request lsm_hook:
-> LSM_HOOK(int, 0, inet_conn_request, const struct sock *sk, struct sk_buff *skb,
->          struct request_sock *req)
->
-> 'struct sock *sk' is the first argument, so it will use the current's cgroup.
-> inet_conn_request() is likely run in a softirq though and then it will be
-> incorrect.  This runs in softirq case may not be limited to hooks that
-> take sk/sock argument also, not sure.
-
-For now, I decided not to treat 'struct sock' cases as 'socket'
-because of cases like sk_alloc_security where 'struct sock' is not
-initialized. Looks like treating them as 'current' is also not 100%
-foolproof. I guess we'd still have to have some special
-cases/exceptions. Let me bring back that 'struct sock' handler and add
-some btf-set to treat other non-inet_conn_request as the exception for
-now.
-
-> > > > +             return 0;
-> > > > +
-> > > > +     sk = sock->sk;
-> > > > +     if (unlikely(!sk))
-> > > Same here.
+> > > Have you thought about other dynamic schemes or they would be too slow ?
 > > >
-> > > > +             return 0;
-> > > > +
-> > > > +     cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
-> > > > +     if (likely(cgrp))
-> unrelated, but while talking extra check,
->
-> I think the shim_prog has already acted as a higher level (per attach-btf_id)
-> knob but do you think it may still worth to do a bpf_empty_prog_array
-> check here in case a cgroup may not have prog to run ?
-
-Oh yeah, good idea, let me add those cgroup_bpf_sock_enabled.
-
-> > > > +             ret = BPF_PROG_RUN_ARRAY_CG(cgrp->bpf.effective[prog->aux->cgroup_atype],
-> > > > +                                         ctx, bpf_prog_run, 0);
->
-> [ ... ]
->
-> > > > @@ -100,6 +123,15 @@ static void bpf_cgroup_link_auto_detach(struct bpf_cgroup_link *link)
-> > > >       link->cgroup = NULL;
+> > > >  enum cgroup_bpf_attach_type {
+> > > >       CGROUP_BPF_ATTACH_TYPE_INVALID = -1,
+> > > > diff --git a/include/linux/bpf_lsm.h b/include/linux/bpf_lsm.h
+> > > > index 7f0e59f5f9be..613de44aa429 100644
+> > > > --- a/include/linux/bpf_lsm.h
+> > > > +++ b/include/linux/bpf_lsm.h
+> > > > @@ -43,7 +43,6 @@ extern const struct bpf_func_proto bpf_inode_storage_delete_proto;
+> > > >  void bpf_inode_storage_free(struct inode *inode);
+> > > >
+> > > >  int bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog, bpf_func_t *bpf_func);
+> > > > -int bpf_lsm_hook_idx(u32 btf_id);
+> > > >
+> > > >  #else /* !CONFIG_BPF_LSM */
+> > > >
+> > > > @@ -74,11 +73,6 @@ static inline int bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog,
+> > > >       return -ENOENT;
 > > > >  }
 > > > >
-> > > > +static void bpf_cgroup_lsm_shim_release(struct bpf_prog *prog,
-> > > > +                                     enum cgroup_bpf_attach_type atype)
-> > > > +{
-> > > > +     if (!prog || atype != prog->aux->cgroup_atype)
-> > > prog cannot be NULL here, no?
-> > >
-> > > The 'atype != prog->aux->cgroup_atype' looks suspicious also considering
-> > > prog->aux->cgroup_atype is only initialized (and meaningful) for BPF_LSM_CGROUP.
-> > > I suspect incorrectly passing this test will crash in the below
-> > > bpf_trampoline_unlink_cgroup_shim(). More on this later.
-> > >
-> > > > +             return;
-> > > > +
-> > > > +     bpf_trampoline_unlink_cgroup_shim(prog);
-> > > > +}
-> > > > +
-> > > >  /**
-> > > >   * cgroup_bpf_release() - put references of all bpf programs and
-> > > >   *                        release all cgroup bpf data
-> > > > @@ -123,10 +155,16 @@ static void cgroup_bpf_release(struct work_struct *work)
-> > > Copying some missing loop context here:
-> > >
-> > >         for (atype = 0; atype < ARRAY_SIZE(cgrp->bpf.progs); atype++) {
-> > >                 struct list_head *progs = &cgrp->bpf.progs[atype];
-> > >                 struct bpf_prog_list *pl, *pltmp;
-> > >
+> > > > -static inline int bpf_lsm_hook_idx(u32 btf_id)
+> > > > -{
+> > > > -     return -EINVAL;
+> > > > -}
+> > > > -
+> > > >  #endif /* CONFIG_BPF_LSM */
 > > > >
-> > > >               list_for_each_entry_safe(pl, pltmp, progs, node) {
-> > > >                       list_del(&pl->node);
-> > > > -                     if (pl->prog)
-> > > > +                     if (pl->prog) {
-> > > > +                             bpf_cgroup_lsm_shim_release(pl->prog,
-> > > > +                                                         atype);
-> > > atype could be 0 (CGROUP_INET_INGRESS) here.  bpf_cgroup_lsm_shim_release()
-> > > above will go ahead with bpf_trampoline_unlink_cgroup_shim().
-> > > It will break some of the assumptions.  e.g. prog->aux->attach_btf is NULL
-> > > for CGROUP_INET_INGRESS.
+> > > >  #endif /* _LINUX_BPF_LSM_H */
+> > > > diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
+> > > > index eca258ba71d8..8b948ec9ab73 100644
+> > > > --- a/kernel/bpf/bpf_lsm.c
+> > > > +++ b/kernel/bpf/bpf_lsm.c
+> > > > @@ -57,10 +57,12 @@ static unsigned int __cgroup_bpf_run_lsm_socket(const void *ctx,
+> > > >       if (unlikely(!sk))
+> > > >               return 0;
+> > > >
+> > > > +     rcu_read_lock(); /* See bpf_lsm_attach_type_get(). */
+> > > >       cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
+> > > >       if (likely(cgrp))
+> > > >               ret = BPF_PROG_RUN_ARRAY_CG(cgrp->bpf.effective[prog->aux->cgroup_atype],
+> > > >                                           ctx, bpf_prog_run, 0);
+> > > > +     rcu_read_unlock();
+> > > >       return ret;
+> > > >  }
+> > > >
+> > > > @@ -77,7 +79,7 @@ static unsigned int __cgroup_bpf_run_lsm_current(const void *ctx,
+> > > >       /*prog = container_of(insn, struct bpf_prog, insnsi);*/
+> > > >       prog = (const struct bpf_prog *)((void *)insn - offsetof(struct bpf_prog, insnsi));
+> > > >
+> > > > -     rcu_read_lock();
+> > > > +     rcu_read_lock(); /* See bpf_lsm_attach_type_get(). */
+> > > I think this is also needed for task_dfl_cgroup().  If yes,
+> > > will be a good idea to adjust the comment if it ends up
+> > > using the 'CGROUP_LSM_NUM 10' scheme.
 > > >
-> > > Instead, only call bpf_cgroup_lsm_shim_release() for BPF_LSM_CGROUP ?
+> > > While at rcu_read_lock(), have you thought about what major things are
+> > > needed to make BPF_LSM_CGROUP sleepable ?
 > > >
-> > > If the above observation is sane, I wonder if the existing test_progs
-> > > have uncovered it or may be the existing tests just always detach
-> > > cleanly itself before cleaning the cgroup which then avoided this case.
+> > > The cgroup local storage could be one that require changes but it seems
+> > > the cgroup local storage is not available to BPF_LSM_GROUP in this change set.
+> > > The current use case doesn't need it?
 > >
-> > Might be what's happening here:
-> >
-> > https://github.com/kernel-patches/bpf/runs/5876983908?check_suite_focus=true
-> hmm.... this one looks different.  I am thinking the oops should happen
-> in bpf_obj_id() which is not inlined.  didn't ring any bell for now
-> after a quick look, so yeah let's fix the known first.
+> > No, I haven't thought about sleepable at all yet :-( But seems like
+> > having that rcu lock here might be problematic if we want to sleep? In
+> > this case, Jakub's suggestion seems better.
+> The new rcu_read_lock() here seems fine after some thoughts.
 >
-> >
-> > Although, I'm not sure why it's z15 only. Good point on filtering by
-> > BPF_LSM_CGROUP, will do.
-> >
-> > > >                               bpf_prog_put(pl->prog);
-> > > > -                     if (pl->link)
-> > > > +                     }
-> > > > +                     if (pl->link) {
-> > > > +                             bpf_cgroup_lsm_shim_release(pl->link->link.prog,
-> > > > +                                                         atype);
-> > > >                               bpf_cgroup_link_auto_detach(pl->link);
-> > > > +                     }
-> > > >                       kfree(pl);
-> > > >                       static_branch_dec(&cgroup_bpf_enabled_key[atype]);
-> > > >               }
->
-> [ ... ]
->
-> > > > +int bpf_trampoline_link_cgroup_shim(struct bpf_prog *prog,
-> > > > +                                 struct bpf_attach_target_info *tgt_info)
-> > > > +{
-> > > > +     struct bpf_prog *shim_prog = NULL;
-> > > > +     struct bpf_trampoline *tr;
-> > > > +     bpf_func_t bpf_func;
-> > > > +     u64 key;
-> > > > +     int err;
-> > > > +
-> > > > +     key = bpf_trampoline_compute_key(NULL, prog->aux->attach_btf,
-> > > > +                                      prog->aux->attach_btf_id);
-> > > > +
-> > > > +     err = bpf_lsm_find_cgroup_shim(prog, &bpf_func);
-> > > > +     if (err)
-> > > > +             return err;
-> > > > +
-> > > > +     tr = bpf_trampoline_get(key, tgt_info);
-> > > > +     if (!tr)
-> > > > +             return  -ENOMEM;
-> > > > +
-> > > > +     mutex_lock(&tr->mutex);
-> > > > +
-> > > > +     shim_prog = cgroup_shim_find(tr, bpf_func);
-> > > > +     if (shim_prog) {
-> > > > +             /* Reusing existing shim attached by the other program.
-> > > > +              */
-> > > The shim_prog is reused by >1 BPF_LSM_CGROUP progs and
-> > > shim_prog is hidden from the userspace also (no id), so it may worth
-> > > to bring this up:
-> > >
-> > > In __bpf_prog_enter(), other than some bpf stats of the shim_prog
-> > > will become useless which is a very minor thing, it is also checking
-> > > shim_prog->active and bump the misses counter.  Now, the misses counter
-> > > is no longer visible to users.  Since it is actually running the cgroup prog,
-> > > may be there is no need for the active check ?
-> >
-> > Agree that the active counter will probably be taken care of when the
-> > actual program runs;
-> iirc, the BPF_PROG_RUN_ARRAY_CG does not need the active counter.
->
-> > but now sure it worth the effort in trying to
-> > remove it here?
-> I was thinking if the active counter got triggered and missed calling the
-> BPF_LSM_CGROUP, then there is no way to tell this case got hit without
-> exposing the stats of the shim_prog and it could be a pretty hard
-> problem to chase.  It probably won't be an issue for non-sleepable now
-> if the rcu_read_lock() maps to preempt_disable().  Not sure about the
-> future sleepable case.
->
-> I am thinking to avoid doing all the active count and stats count
-> in __bpf_prog_enter() and __bpf_prog_exit() for BPF_LSM_CGROUP.  afaik,
-> only the rcu_read_lock and rcu_read_unlock are useful to protect
-> the shim_prog itself.  May be a __bpf_nostats_enter() and
-> __bpf_nostats_exit().
+> I was looking at the helpers in cgroup_base_func_proto() to get a sense
+> on sleepable support.  Only the bpf_get_local_storage caught my eyes for
+> now because it uses a call_rcu to free the storage.  That will be the
+> major one to change for sleepable that I can think of for now.
 
-SG, let me try to skip that for BPF_LSM_CGROUP case.
-
-> > Regarding "no longer visible to users": that's a good point. Should I
-> > actually add those shim progs to the prog_idr? Or just hide it as
-> > "internal implementation detail"?
-> Then no need to expose the shim_progs to the idr.
->
-> ~~~~
-> [ btw, while thinking the shim_prog, I also think there is no need for one
->   shim_prog for each attach_btf_id which is essentially
->   prog->aux->cgroup_atype.  The static prog->aux->cgroup_atype can be
->   passed in the stack when preparing the trampoline.
->   just an idea and not suggesting must be done now.  This can be
->   optimized later since it does not affect the API. ]
-
-Ack, I guess in theory, there needs to be only two "global"
-shim_progs, one for 'struct socket' and another for 'current' (or
-more, for other types). I went with allocating an instance per
-trampoline to avoid having that global state. Working under tr->mutex
-simplifies things a bit imo, but, as you said, we can optimize here if
-needed.
+That rcu_read_lock should be switched over to rcu_read_lock_trace in
+the sleepable case I'm assuming? Are we allowed to sleep while holding
+rcu_read_lock_trace?
