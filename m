@@ -2,50 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C8114FCAFC
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 03:01:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7CAF4FCAF1
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 03:01:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344478AbiDLBCj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 21:02:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34706 "EHLO
+        id S1343646AbiDLBC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 21:02:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349020AbiDLA7e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 20:59:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A46D6377EB;
-        Mon, 11 Apr 2022 17:52:49 -0700 (PDT)
+        with ESMTP id S1349450AbiDLA7j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 20:59:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBFA938186;
+        Mon, 11 Apr 2022 17:53:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 03C89B819A7;
-        Tue, 12 Apr 2022 00:52:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64634C385A3;
-        Tue, 12 Apr 2022 00:52:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B8454B819BC;
+        Tue, 12 Apr 2022 00:52:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CB1DC385AB;
+        Tue, 12 Apr 2022 00:52:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724767;
-        bh=9wysc3l9Xh1o7NUB5BbEpn0nafyGg5avgQ5lCuMELII=;
+        s=k20201202; t=1649724778;
+        bh=cYzXXg1Vy1q7vvQEVY1rET2xsZpGFJS5PCjsVVvLFiQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cw3bgmp1vql3aCe3r7nMpteZul32Q4/PMEBEHFU9YE5ZCnSs3j0P/VzxLpABgTOdB
-         zKYUUEGGvZxsWlpbRau6GUkzYiAMuQyrM+G31iISsCXdAgkHSP0QCijWt7Z6OCm4n1
-         gYSC6n0fiOOACoYh5zXRs680TgBKncDvbw/PAgp2QEGjKP7ArRc2wOmncnfbylV1cp
-         vpauLCIcbnfVZJjZHGdCN/KbaMmD2aB7uOn5BDhLX27UmFEbIF6PLTOmfEkwKvL0yX
-         p5dcQZt8WwMXNZowwkaGThvSOmhjIEu/iMxwtr+AznLpUfnvdK6mTxkRL5Jowx1YwT
-         s8ANz9mqQpPHw==
+        b=tEzjUtYA5xc7PaqVhCOuAvyT1lDe/D8K+jsVT+rrVwTXjcIqRocVz4yYDlkp4Zrpy
+         AWvd3h8zLUmOIZjLYU3swL7zjctiRuEOM7CxTGnTyg6XVaYaaWdRKlrMIDcis6mdrR
+         SxmMO2k5dDS7OAUywFuuTQAIakOlPlVcN9JF456bWNFJszrBiwOvwjGMrAsAYOt+J3
+         EKbb1g0HZ7q9f+4/+CAm8dbc/wh9BKpb8Y6P5F5xi8o63ROZllzfAtwiADkA7QAkU4
+         Qf1wRj0y2Urf5S3/smqYP1S8nnw9kpQQafwY+5kZ5y5gf/lytvNPjT4uW3U2RYemgC
+         JEuSrI3HNF3jg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duoming Zhou <duoming@zju.edu.cn>,
-        Jiri Slaby <jirislaby@kernel.org>,
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        pabeni@redhat.com, gregkh@linuxfoundation.org, mkl@pengutronix.de,
-        dmitry.torokhov@gmail.com, arnd@arndb.de, bigeasy@linutronix.de,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, horatiu.vultur@microchip.com,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 11/11] drivers: net: slip: fix NPD bug in sl_tx_timeout()
-Date:   Mon, 11 Apr 2022 20:52:20 -0400
-Message-Id: <20220412005222.351554-11-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 4/7] net: micrel: fix KS8851_MLL Kconfig
+Date:   Mon, 11 Apr 2022 20:52:45 -0400
+Message-Id: <20220412005248.351701-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412005222.351554-1-sashal@kernel.org>
-References: <20220412005222.351554-1-sashal@kernel.org>
+In-Reply-To: <20220412005248.351701-1-sashal@kernel.org>
+References: <20220412005248.351701-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -60,58 +59,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit ec4eb8a86ade4d22633e1da2a7d85a846b7d1798 ]
+[ Upstream commit c3efcedd272aa6dd5929e20cf902a52ddaa1197a ]
 
-When a slip driver is detaching, the slip_close() will act to
-cleanup necessary resources and sl->tty is set to NULL in
-slip_close(). Meanwhile, the packet we transmit is blocked,
-sl_tx_timeout() will be called. Although slip_close() and
-sl_tx_timeout() use sl->lock to synchronize, we don`t judge
-whether sl->tty equals to NULL in sl_tx_timeout() and the
-null pointer dereference bug will happen.
+KS8851_MLL selects MICREL_PHY, which depends on PTP_1588_CLOCK_OPTIONAL,
+so make KS8851_MLL also depend on PTP_1588_CLOCK_OPTIONAL since
+'select' does not follow any dependency chains.
 
-   (Thread 1)                 |      (Thread 2)
-                              | slip_close()
-                              |   spin_lock_bh(&sl->lock)
-                              |   ...
-...                           |   sl->tty = NULL //(1)
-sl_tx_timeout()               |   spin_unlock_bh(&sl->lock)
-  spin_lock(&sl->lock);       |
-  ...                         |   ...
-  tty_chars_in_buffer(sl->tty)|
-    if (tty->ops->..) //(2)   |
-    ...                       |   synchronize_rcu()
+Fixes kconfig warning and build errors:
 
-We set NULL to sl->tty in position (1) and dereference sl->tty
-in position (2).
+WARNING: unmet direct dependencies detected for MICREL_PHY
+  Depends on [m]: NETDEVICES [=y] && PHYLIB [=y] && PTP_1588_CLOCK_OPTIONAL [=m]
+  Selected by [y]:
+  - KS8851_MLL [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_MICREL [=y] && HAS_IOMEM [=y]
 
-This patch adds check in sl_tx_timeout(). If sl->tty equals to
-NULL, sl_tx_timeout() will goto out.
+ld: drivers/net/phy/micrel.o: in function `lan8814_ts_info':
+micrel.c:(.text+0xb35): undefined reference to `ptp_clock_index'
+ld: drivers/net/phy/micrel.o: in function `lan8814_probe':
+micrel.c:(.text+0x2586): undefined reference to `ptp_clock_register'
 
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Link: https://lore.kernel.org/r/20220405132206.55291-1-duoming@zju.edu.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/slip/slip.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/micrel/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/slip/slip.c b/drivers/net/slip/slip.c
-index d7882b548b79..dd95d6181afa 100644
---- a/drivers/net/slip/slip.c
-+++ b/drivers/net/slip/slip.c
-@@ -471,7 +471,7 @@ static void sl_tx_timeout(struct net_device *dev)
- 	spin_lock(&sl->lock);
- 
- 	if (netif_queue_stopped(dev)) {
--		if (!netif_running(dev))
-+		if (!netif_running(dev) || !sl->tty)
- 			goto out;
- 
- 		/* May be we must check transmitter timeout here ?
+diff --git a/drivers/net/ethernet/micrel/Kconfig b/drivers/net/ethernet/micrel/Kconfig
+index b7e2f49696b7..aa12bace8673 100644
+--- a/drivers/net/ethernet/micrel/Kconfig
++++ b/drivers/net/ethernet/micrel/Kconfig
+@@ -45,6 +45,7 @@ config KS8851
+ config KS8851_MLL
+ 	tristate "Micrel KS8851 MLL"
+ 	depends on HAS_IOMEM
++	depends on PTP_1588_CLOCK_OPTIONAL
+ 	select MII
+ 	---help---
+ 	  This platform driver is for Micrel KS8851 Address/data bus
 -- 
 2.35.1
 
