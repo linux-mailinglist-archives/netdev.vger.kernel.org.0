@@ -2,213 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EED9C4FE866
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 21:01:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F1F74FE882
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 21:19:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241027AbiDLTEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 15:04:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41746 "EHLO
+        id S1351572AbiDLTVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 15:21:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232475AbiDLTEM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 15:04:12 -0400
-Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC43020E
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 12:01:53 -0700 (PDT)
-Received: by mail-qk1-x733.google.com with SMTP id 3so7067892qkj.5
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 12:01:53 -0700 (PDT)
+        with ESMTP id S1352457AbiDLTVh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 15:21:37 -0400
+Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 687B663E5
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 12:19:16 -0700 (PDT)
+Received: by mail-qv1-xf2d.google.com with SMTP id hu11so16917864qvb.7
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 12:19:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=broadcom.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=9NyrBIysFfbmStSkhH0W0umMgC5iJfoGoDBNA6fyRag=;
-        b=GTTHIi1rmqLR28C52bq10tSV1AVWgdrA9aWH/C0O2ZrnDy64RO/Jx8RrKUMymPDtgH
-         iIIqpi8wzy8jcifUUYO47uCewtkl1cPhtUosrEeBOwt9H5MG4wWnJtvM4I2QoqcYmH4J
-         GiVEJxddbe+I5xo4mVlb4vSIrsjz3oUzpMyGkCizt4BBXEWb0XRlUrDu89g+qHFGhXjC
-         eG139ftKKIu0UH/+O8C2DqaXATvBTu35redADwlmRSn0QhTX1E5X5wZcHJ+bJoPQdval
-         6/j8CriT2dexrtqPt29nZellBqLBRFH6Za5A+7FABS25dF73/M8mr7ZCIiPEQOaQR/9F
-         dQuw==
+        bh=8qVuThZAG4cuca7UY468b7VKhOIvlTVmzMOig3QccPg=;
+        b=bm53z4etwA5BzH94xST60E3gNTPiG5S3DcB2S7XJvtqwoxJ8CK/FUgREhnStRFn7MJ
+         +dik74pFWpY58gEYxuY6YqaQRDBA1FyA8TQ7dL82J8WgHMzugPBnV31jvbnqH6PRIr7c
+         dENJ3MLhQXl5SUAhBR2tYQxT89ItaJM/YdfKc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=9NyrBIysFfbmStSkhH0W0umMgC5iJfoGoDBNA6fyRag=;
-        b=mrvXDQesMa1+JFmuuTFD5f94A5MQgH7oeylOZRmM2rGSBNhOvHLxkk1teVWyRGkghT
-         Btwmq7lTbwJ6zA6lujFqoJJPdZBSn/x2NXGC+dWWJJinYAUJWN7IfQBqUphCPymQDch5
-         HH/ztnLTjhBYvjLLtgJcUdlVgbo4zeisLNv63BCpuZ+onKJ9/62muezAw3/aRMTImb4i
-         3oAg4FThPEz+LNAs9HLU8KntNJQkByIvvLD7vbtwYqU3dcTAzEd3eFMkVEDY8zFFqRb/
-         3GhWDZNjV6VdEjIdUQM4wQbB+dqWnLc5uvUI1cbztDxu254IaG6/VknwBknvylTHw05+
-         YXpw==
-X-Gm-Message-State: AOAM532D/W87nvSWQs8uIYQPL1X7MAc4DZel2BpvxkaFT+l1wqP98unG
-        yoF+pGTlGPnBXlbOd2IRdNUAskzg9qrChrnVQp1Ndw==
-X-Google-Smtp-Source: ABdhPJxgBpAp+6DjFexSNm4j8H7Zd7L5P+miHsxGvoRbEA0+aHIxlZ/VP3iXhjUdZ1BHpqW6MB7PThopK78xWV0gKt8=
-X-Received: by 2002:a05:620a:2717:b0:69b:e996:11cb with SMTP id
- b23-20020a05620a271700b0069be99611cbmr4245788qkp.390.1649790112840; Tue, 12
- Apr 2022 12:01:52 -0700 (PDT)
+        bh=8qVuThZAG4cuca7UY468b7VKhOIvlTVmzMOig3QccPg=;
+        b=R+2e6x9lczQlIGDNUDtLvenBxmXV4hI9+LDq84VGcs+jPBsHPxV9pCiwHpXioP13UZ
+         XkgtL/VJjKOzXlyhnIULEjqabJT7ZIEjmdlfIPpZbMyIASonCKl96W8XvVt3ACq5ZM5h
+         k1pOFAfho8pNAHzS1u+jBOLsjN8SZLO6cuWCiPpURDFtyt8qoBz9njLDZOlSbRqjWt59
+         ptS+QNzuJeyFk8snoEvdpuWQ4zfwVAvyDFMQNE/XIZWuHOP5xco7ipDBwhzKGsoFFYlP
+         RjwkRFRrN96P8drmnDaBkRwkcl40nl9ps8U/MunAEW7kdKoak4wLL44Kd3y1GldDLyQw
+         OABQ==
+X-Gm-Message-State: AOAM533DPQbPgbOxE6h/pZGqKLm92RAAWZCVEalkmMWR+QSp332iyw6/
+        orKxPxAyzpfBxkhX6XWfJc2cgJ/SqQhYoNoUfVZOaPXiyMI=
+X-Google-Smtp-Source: ABdhPJzYmQmjkIdNT/GEom8tvnX1yybGsJEo5hU1o0O1uJCZ9+iA6+DP/QTWy80PtOg8laJ9s0BkTfDAT3VHCllArMI=
+X-Received: by 2002:a05:6214:27ec:b0:443:fd5b:ba92 with SMTP id
+ jt12-20020a05621427ec00b00443fd5bba92mr27117218qvb.80.1649791155385; Tue, 12
+ Apr 2022 12:19:15 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220407223112.1204582-1-sdf@google.com> <20220407223112.1204582-4-sdf@google.com>
- <20220408225628.oog4a3qteauhqkdn@kafai-mbp.dhcp.thefacebook.com>
- <CAKH8qBuMMuuUJiZJY8Gb+tMQLKoRGpvv58sSM4sZXjyEc0i7dA@mail.gmail.com>
- <20220412013631.tntvx7lw3c7sw6ur@kafai-mbp.dhcp.thefacebook.com>
- <CAKH8qBvCNVwEmoDyWvA5kEuNkCuVZYtf7RVL4AMXAsMr7aQDZA@mail.gmail.com> <20220412181353.zgyl2oy4vl3uyigl@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20220412181353.zgyl2oy4vl3uyigl@kafai-mbp.dhcp.thefacebook.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Tue, 12 Apr 2022 12:01:41 -0700
-Message-ID: <CAKH8qBuc8gVcS6GbSx4P6w2j6jTVXX8QROBjFW953mp0ejQqRA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 3/7] bpf: minimize number of allocated lsm
- slots per program
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <1bdb8417-233d-932b-1dc0-c56042aedabd@broadcom.com>
+ <20220412103724.54924945@kernel.org> <999fab5e-08e1-888e-6672-4fc868555b32@broadcom.com>
+ <CACKFLinCdTELX7-19-hp4dK3Ysm2tCmW=qeh-SHoiKU5TShwuw@mail.gmail.com> <7bdffaa4-0977-414d-c28f-7408fde20bab@broadcom.com>
+In-Reply-To: <7bdffaa4-0977-414d-c28f-7408fde20bab@broadcom.com>
+From:   Michael Chan <michael.chan@broadcom.com>
+Date:   Tue, 12 Apr 2022 12:19:04 -0700
+Message-ID: <CACKFLim6ty5Pxih+aPn_mDGEy5RvZpJLFN8aV5UAhzfysL9bdA@mail.gmail.com>
+Subject: Re: [RFC] Applicability of using 'txq_trans_update' during ring recovery
+To:     Ray Jui <ray.jui@broadcom.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000cb8b1105dc79eff9"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 11:13 AM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> On Tue, Apr 12, 2022 at 09:42:40AM -0700, Stanislav Fomichev wrote:
-> > On Mon, Apr 11, 2022 at 6:36 PM Martin KaFai Lau <kafai@fb.com> wrote:
-> > >
-> > > On Mon, Apr 11, 2022 at 11:46:20AM -0700, Stanislav Fomichev wrote:
-> > > > On Fri, Apr 8, 2022 at 3:57 PM Martin KaFai Lau <kafai@fb.com> wrote:
-> > > > >
-> > > > > On Thu, Apr 07, 2022 at 03:31:08PM -0700, Stanislav Fomichev wrote:
-> > > > > > Previous patch adds 1:1 mapping between all 211 LSM hooks
-> > > > > > and bpf_cgroup program array. Instead of reserving a slot per
-> > > > > > possible hook, reserve 10 slots per cgroup for lsm programs.
-> > > > > > Those slots are dynamically allocated on demand and reclaimed.
-> > > > > > This still adds some bloat to the cgroup and brings us back to
-> > > > > > roughly pre-cgroup_bpf_attach_type times.
-> > > > > >
-> > > > > > It should be possible to eventually extend this idea to all hooks if
-> > > > > > the memory consumption is unacceptable and shrink overall effective
-> > > > > > programs array.
-> > > > > >
-> > > > > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > > > > > ---
-> > > > > >  include/linux/bpf-cgroup-defs.h |  4 +-
-> > > > > >  include/linux/bpf_lsm.h         |  6 ---
-> > > > > >  kernel/bpf/bpf_lsm.c            |  9 ++--
-> > > > > >  kernel/bpf/cgroup.c             | 96 ++++++++++++++++++++++++++++-----
-> > > > > >  4 files changed, 90 insertions(+), 25 deletions(-)
-> > > > > >
-> > > > > > diff --git a/include/linux/bpf-cgroup-defs.h b/include/linux/bpf-cgroup-defs.h
-> > > > > > index 6c661b4df9fa..d42516e86b3a 100644
-> > > > > > --- a/include/linux/bpf-cgroup-defs.h
-> > > > > > +++ b/include/linux/bpf-cgroup-defs.h
-> > > > > > @@ -10,7 +10,9 @@
-> > > > > >
-> > > > > >  struct bpf_prog_array;
-> > > > > >
-> > > > > > -#define CGROUP_LSM_NUM 211 /* will be addressed in the next patch */
-> > > > > > +/* Maximum number of concurrently attachable per-cgroup LSM hooks.
-> > > > > > + */
-> > > > > > +#define CGROUP_LSM_NUM 10
-> > > > > hmm...only 10 different lsm hooks (or 10 different attach_btf_ids) can
-> > > > > have BPF_LSM_CGROUP programs attached.  This feels quite limited but having
-> > > > > a static 211 (and potentially growing in the future) is not good either.
-> > > > > I currently do not have a better idea also. :/
-> > > > >
-> > > > > Have you thought about other dynamic schemes or they would be too slow ?
-> > > > >
-> > > > > >  enum cgroup_bpf_attach_type {
-> > > > > >       CGROUP_BPF_ATTACH_TYPE_INVALID = -1,
-> > > > > > diff --git a/include/linux/bpf_lsm.h b/include/linux/bpf_lsm.h
-> > > > > > index 7f0e59f5f9be..613de44aa429 100644
-> > > > > > --- a/include/linux/bpf_lsm.h
-> > > > > > +++ b/include/linux/bpf_lsm.h
-> > > > > > @@ -43,7 +43,6 @@ extern const struct bpf_func_proto bpf_inode_storage_delete_proto;
-> > > > > >  void bpf_inode_storage_free(struct inode *inode);
-> > > > > >
-> > > > > >  int bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog, bpf_func_t *bpf_func);
-> > > > > > -int bpf_lsm_hook_idx(u32 btf_id);
-> > > > > >
-> > > > > >  #else /* !CONFIG_BPF_LSM */
-> > > > > >
-> > > > > > @@ -74,11 +73,6 @@ static inline int bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog,
-> > > > > >       return -ENOENT;
-> > > > > >  }
-> > > > > >
-> > > > > > -static inline int bpf_lsm_hook_idx(u32 btf_id)
-> > > > > > -{
-> > > > > > -     return -EINVAL;
-> > > > > > -}
-> > > > > > -
-> > > > > >  #endif /* CONFIG_BPF_LSM */
-> > > > > >
-> > > > > >  #endif /* _LINUX_BPF_LSM_H */
-> > > > > > diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
-> > > > > > index eca258ba71d8..8b948ec9ab73 100644
-> > > > > > --- a/kernel/bpf/bpf_lsm.c
-> > > > > > +++ b/kernel/bpf/bpf_lsm.c
-> > > > > > @@ -57,10 +57,12 @@ static unsigned int __cgroup_bpf_run_lsm_socket(const void *ctx,
-> > > > > >       if (unlikely(!sk))
-> > > > > >               return 0;
-> > > > > >
-> > > > > > +     rcu_read_lock(); /* See bpf_lsm_attach_type_get(). */
-> > > > > >       cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
-> > > > > >       if (likely(cgrp))
-> > > > > >               ret = BPF_PROG_RUN_ARRAY_CG(cgrp->bpf.effective[prog->aux->cgroup_atype],
-> > > > > >                                           ctx, bpf_prog_run, 0);
-> > > > > > +     rcu_read_unlock();
-> > > > > >       return ret;
-> > > > > >  }
-> > > > > >
-> > > > > > @@ -77,7 +79,7 @@ static unsigned int __cgroup_bpf_run_lsm_current(const void *ctx,
-> > > > > >       /*prog = container_of(insn, struct bpf_prog, insnsi);*/
-> > > > > >       prog = (const struct bpf_prog *)((void *)insn - offsetof(struct bpf_prog, insnsi));
-> > > > > >
-> > > > > > -     rcu_read_lock();
-> > > > > > +     rcu_read_lock(); /* See bpf_lsm_attach_type_get(). */
-> > > > > I think this is also needed for task_dfl_cgroup().  If yes,
-> > > > > will be a good idea to adjust the comment if it ends up
-> > > > > using the 'CGROUP_LSM_NUM 10' scheme.
-> > > > >
-> > > > > While at rcu_read_lock(), have you thought about what major things are
-> > > > > needed to make BPF_LSM_CGROUP sleepable ?
-> > > > >
-> > > > > The cgroup local storage could be one that require changes but it seems
-> > > > > the cgroup local storage is not available to BPF_LSM_GROUP in this change set.
-> > > > > The current use case doesn't need it?
-> > > >
-> > > > No, I haven't thought about sleepable at all yet :-( But seems like
-> > > > having that rcu lock here might be problematic if we want to sleep? In
-> > > > this case, Jakub's suggestion seems better.
-> > > The new rcu_read_lock() here seems fine after some thoughts.
-> > >
-> > > I was looking at the helpers in cgroup_base_func_proto() to get a sense
-> > > on sleepable support.  Only the bpf_get_local_storage caught my eyes for
-> > > now because it uses a call_rcu to free the storage.  That will be the
-> > > major one to change for sleepable that I can think of for now.
+--000000000000cb8b1105dc79eff9
+Content-Type: text/plain; charset="UTF-8"
+
+On Tue, Apr 12, 2022 at 11:36 AM Ray Jui <ray.jui@broadcom.com> wrote:
+> On 4/12/22 11:24, Michael Chan wrote:
+> > On Tue, Apr 12, 2022 at 11:08 AM Ray Jui <ray.jui@broadcom.com> wrote:
 > >
-> > That rcu_read_lock should be switched over to rcu_read_lock_trace in
-> > the sleepable case I'm assuming? Are we allowed to sleep while holding
-> > rcu_read_lock_trace?
-> Ah. right, suddenly forgot the obvious in between emails :(
+> >> Can you please also comment on whether 'txq_trans_update' is considered
+> >> an acceptable approach in this particular scenario?
+> >
+> > In my opinion, updating trans_start to the current jiffies to prevent
+> > TX timeout is not a good solution.  It just buys you the arbitrary TX
+> > timeout period before the next TX timeout.  If you take more than this
+> > time to restart the TX queue, you will still get TX timeout.
 >
-> In that sense, may as well remove the rcu_read_lock() here and let
-> the trampoline to decide which one (rcu_read_lock or rcu_read_lock_trace)
-> to call before calling the shim_prog.  The __bpf_prog_enter(_sleepable) will
-> call the right rcu_read_lock(_trace) based on the prog is sleepable or not.
+> However, one can argue that the recovery work is expected to be finished
+> in much less time than any arbitrary TX timeout period. If the recovery
+> of the particular NAPI ring set is taking more than an arbitrary TX
+> timeout period, then something is wrong and we should really TX timeout.
 
-Removing rcu_read_lock in __cgroup_bpf_run_lsm_current might be
-problematic because we also want to guarantee current's cgroup doesn't
-go away. I'm assuming things like task migrating to a new cgroup and
-the old one being freed can happen while we are trying to get cgroup's
-effective array.
+Even if it should work in a specific case, you are still expanding the
+definition of TX timeout to be no shorter than this specific recovery
+time.
 
-I guess BPF_PROG_RUN_ARRAY_CG will also need some work before
-sleepable can happen (it calls rcu_read_lock unconditionally).
+Our general error recovery time that includes firmware and chip reset
+can take longer than the TX timeout period.  And we call
+netif_carrier_off() for the whole duration.
 
-Also, it doesn't seem like BPF_PROG_RUN_ARRAY_CG rcu usage is correct.
-It receives __rcu array_rcu, takes rcu read lock and does deref. I'm
-assuming that array_rcu can be free'd before we even get to
-BPF_PROG_RUN_ARRAY_CG's rcu_read_lock? (so having rcu_read_lock around
-BPF_PROG_RUN_ARRAY_CG makes sense)
+--000000000000cb8b1105dc79eff9
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+xV4Em+0wQoEIR2kPG6yiZNtUK0tNCaZejYU/Mf/bzdKSwud3pLgHV8ls83y2OU/ha9xgJMLpRswv
+xucFCxMsPmk0yoVmpbr92kIpLm+TomNZsL++LcDRa2ECAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
+AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
+c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
+AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
+TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
+bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
+L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
+BB0wG4EZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
+HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUz2bMvqtXpXM0u3vAvRkalz60
+CjswDQYJKoZIhvcNAQELBQADggEBAGUgeqqI/q2pkETeLr6oS7nnm1bkeNmtnJ2bnybNO/RdrbPj
+DHVSiDCCrWr6xrc+q6OiZDKm0Ieq6BN+Wfr8h5mCkZMUdJikI85WcQTRk6EEF2lzIiaULmFD7U15
+FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
+1CHkODrS2JGwDQxXKmyF64MhJiOutWHmqoGmLJVz1jnDvClsYtgT4zcNtoqKtjpWDYAefncWDPIQ
+DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
+aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
+EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIFRWiLnpFfXpgzZMDOqhqLkeFEPCx3th
+yQepZV0zFR3xMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDQx
+MjE5MTkxNVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
+ATANBgkqhkiG9w0BAQEFAASCAQCNgZRj01cOzysleyDytEyIhhjgAhod4HOC1E9pUGVZe8NFnNVH
+4LFyfbZQPjiCS6EQymdf3zOrAa99BRoVvuoHIKJyTzFBKDpsHutlhJ3ShhNOTHk+OFkqt9R0L1bb
+qXW74QmLKyVnHb9ynJRMGgp3rMc47iUogSKy2eYV9Zf2cfkk3gLlAWR0Nu3wl9xyevECLkZNBB9K
+LyvjYxfyVkOlvszYWqUjGeI9ithkSu8Ct6yEIcWTbOQON2fYwI4PSm/F78XCGSvKnGzRbQgxGAfq
+bjQUcX6Lx0izFVn+Kf6jEmuQUw9A7z6RXnpDc3+zbsIwqXkbzCAwoms+S8leVBPL
+--000000000000cb8b1105dc79eff9--
