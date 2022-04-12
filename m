@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D95C74FDF2E
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 14:04:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 415884FDEEB
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 14:03:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350217AbiDLMGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 08:06:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39496 "EHLO
+        id S1345931AbiDLMFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 08:05:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351776AbiDLMCn (ORCPT
+        with ESMTP id S1351775AbiDLMCn (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 08:02:43 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE3C74A3D3;
-        Tue, 12 Apr 2022 03:59:08 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id bg10so36567333ejb.4;
-        Tue, 12 Apr 2022 03:59:08 -0700 (PDT)
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B30653E0F;
+        Tue, 12 Apr 2022 03:59:10 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id d10so21937179edj.0;
+        Tue, 12 Apr 2022 03:59:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0WZ3VKnVxGM80qdLHkweZkrBfRptzeVUXSKm7/OGDn8=;
-        b=XZluyyXBrSJrDF64OiHdboQ+ZaxK2ykPWgKXHz6CncWVY4DziM2RY4qNmsykbtsgUu
-         08JLMlZV9OcMJWqB86aOYu+iw263HRolsP+H7z/noCeKqqK8hXMsdAW0XZPPXMYQWksG
-         w6l4nkpBI3i6/4vSvZvI3HlokHsF0U6Q4egmb0iFo/TvYWrnsqz3YxzyCuGiighxHsQ5
-         2kA0FM43PbosMl/yrvykkSxyrD9FonhzgPMFEyNRyWk54oCH++MECb1/FQpjWuKTtphB
-         uJ/04nx57SCToZr7ZC+YTdHhACyjXy/VhUka6PZwXXJFi8lrElMpOpoPfSM9kFVEjH8d
-         8JMA==
+        bh=fIZenjsGtzoZOCvRY/8dIr7NFNGibTLVVWT+oNYuIJo=;
+        b=O+BdGb0v7IyCBRQtf3EZKDW/fxwuFivAq1K1m8aSR/ytFEwq46qecATmSDqqsoJYRK
+         Y/MwY/ukhLjhxOkctLHbr7I4ckDi+C2PoR4izz8aAHHuQvSrf7Hh57Aufl+a+Hw+mZwr
+         MaSrmhvityUftJvqYYObK31mfpHkKhm8Qax7fB4QZHucg5MBhdGgAJmsHbY1MgPwUhN4
+         +njMvCDSfbXqNTHqnZgM8Km2KzKAuvYsx8cNL34U0iaaw73aC482LJD5MlBvoU22NJzF
+         WXeO/fGRt9/1u+k6LWTzxKFXC33QPJRaHNQ54Bfh+n+aVJMr5rLXCmQPFnNAdGIiCNW3
+         mg0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0WZ3VKnVxGM80qdLHkweZkrBfRptzeVUXSKm7/OGDn8=;
-        b=bJOUldjZYHv9Rczvkctc0pCig3DhaQrARLjmCvb+amx7bLxInqQ0YpEDpM99qks8S/
-         haLjLdosVSSLappEHqpEIwZ/Ke0ri/LqioewulIdSi/pErB2HBPAErTnlRgNWn27Ru6l
-         E5T50hTUzGV1K7iMjMfmZdAkPKQBZUR7NyYxjr1KXm8vbWnQh6DIP+Qg7JfONgGIc2oU
-         HlSMmYtfiQJ/SsY7uN2fWDDXIP2Lu2OiiUFxJ4crSDFPftq89XnZT/f0hrJdd07VlxSq
-         WG3cB0AdvGmxRK7A8EEtj/f0xz6GR8eXTD03xlU0qS0sZMo6TUIOprK6O3Pe9w1/HmHh
-         Qpww==
-X-Gm-Message-State: AOAM531XPsgG9KrxmKCQE2MoP1868PG2jXRHb3sNKzs7D2NP9RJp0QAT
-        DV1uWh3M6lpjV0Llp8ItObw=
-X-Google-Smtp-Source: ABdhPJxDHNie4r8skUxjeBcgyxDVwngRrhoDRWdvCwq105U3Ymrsz4/WteZI1QKZZU0ouaxPdY/MNw==
-X-Received: by 2002:a17:907:e91:b0:6e8:61d0:9e4d with SMTP id ho17-20020a1709070e9100b006e861d09e4dmr16468938ejc.507.1649761147299;
-        Tue, 12 Apr 2022 03:59:07 -0700 (PDT)
+        bh=fIZenjsGtzoZOCvRY/8dIr7NFNGibTLVVWT+oNYuIJo=;
+        b=DsEBmo2Kpzc4OlnHMY+rTTboKxxLkzUGfKlw15NjrGcljD+ffJKcZKNjFD3GB7Nl8r
+         esr8R723AIhaerN8F2iUO6Zs5voBr0EQLNkFXWYeWiuAYjwcB4SZ5655Zp8OBJmpw5eI
+         4c0WmQpj0ehP8gl+bOpG2e7DsczMOalfgRNK3imjDxJOCIFWkGCVWvmYPPHN4LPNTj6x
+         AJwLB4ve5wl0jrAgIgyjxxMNfHO4NPtg5x78qtSbqpN0Nz8lF7q41L3ahsNDnngnvdnV
+         p9gtnWgwaUFXF9FxAqFhv9kg2WX4z6lapTMki44XxhH4+9redVU/utt36LM152Ls4Xke
+         tKMA==
+X-Gm-Message-State: AOAM530sR0RezBoPMi4WvIuaz6xcL5zYaMKjpz8xlpA7FxsUG0Eaxqy4
+        9PvnCeVfulPJ6SFZKnBuKak=
+X-Google-Smtp-Source: ABdhPJxBdd4nYfNJLAMB/gvCpT9MR5g2MN/g0AMD5E0/fevu9Z0Vl/VApU+6pED4uixMBmcAxsu+dg==
+X-Received: by 2002:aa7:d602:0:b0:41d:78e2:655d with SMTP id c2-20020aa7d602000000b0041d78e2655dmr11490685edr.388.1649761148688;
+        Tue, 12 Apr 2022 03:59:08 -0700 (PDT)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id f1-20020a056402194100b00416b174987asm16986370edz.35.2022.04.12.03.59.06
+        by smtp.googlemail.com with ESMTPSA id f1-20020a056402194100b00416b174987asm16986370edz.35.2022.04.12.03.59.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 03:59:06 -0700 (PDT)
+        Tue, 12 Apr 2022 03:59:08 -0700 (PDT)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
@@ -85,9 +85,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH net-next v2 12/18] net: qede: Replace usage of found with dedicated list iterator variable
-Date:   Tue, 12 Apr 2022 12:58:24 +0200
-Message-Id: <20220412105830.3495846-13-jakobkoschel@gmail.com>
+Subject: [PATCH net-next v2 13/18] net: qede: Remove check of list iterator against head past the loop body
+Date:   Tue, 12 Apr 2022 12:58:25 +0200
+Message-Id: <20220412105830.3495846-14-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220412105830.3495846-1-jakobkoschel@gmail.com>
 References: <20220412105830.3495846-1-jakobkoschel@gmail.com>
@@ -103,51 +103,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To move the list iterator variable into the list_for_each_entry_*()
-macro in the future it should be avoided to use the list iterator
-variable after the loop body.
+When list_for_each_entry() completes the iteration over the whole list
+without breaking the loop, the iterator value will be a bogus pointer
+computed based on the head element.
 
-To *never* use the list iterator variable after the loop it was
-concluded to use a separate iterator variable instead of a
-found boolean [1].
+While it is safe to use the pointer to determine if it was computed
+based on the head element, either with list_entry_is_head() or
+&pos->member == head, using the iterator variable after the loop should
+be avoided.
 
-This removes the need to use a found variable and simply checking if
-the variable was set, can determine if the break/goto was hit.
+In preparation to limit the scope of a list iterator to the list
+traversal loop, use a dedicated pointer to point to the found element [1].
 
 Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/net/ethernet/qlogic/qede/qede_rdma.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/qlogic/qede/qede_filter.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_rdma.c b/drivers/net/ethernet/qlogic/qede/qede_rdma.c
-index 6304514a6f2c..2eb03ffe2484 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_rdma.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_rdma.c
-@@ -246,18 +246,17 @@ static void qede_rdma_change_mtu(struct qede_dev *edev)
- static struct qede_rdma_event_work *
- qede_rdma_get_free_event_node(struct qede_dev *edev)
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_filter.c b/drivers/net/ethernet/qlogic/qede/qede_filter.c
+index 3010833ddde3..3d167e37e654 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_filter.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_filter.c
+@@ -829,18 +829,21 @@ int qede_configure_vlan_filters(struct qede_dev *edev)
+ int qede_vlan_rx_kill_vid(struct net_device *dev, __be16 proto, u16 vid)
  {
--	struct qede_rdma_event_work *event_node = NULL;
--	bool found = false;
-+	struct qede_rdma_event_work *event_node = NULL, *iter;
+ 	struct qede_dev *edev = netdev_priv(dev);
+-	struct qede_vlan *vlan;
++	struct qede_vlan *vlan = NULL;
++	struct qede_vlan *iter;
+ 	int rc = 0;
  
--	list_for_each_entry(event_node, &edev->rdma_info.rdma_event_list,
-+	list_for_each_entry(iter, &edev->rdma_info.rdma_event_list,
- 			    list) {
--		if (!work_pending(&event_node->work)) {
--			found = true;
-+		if (!work_pending(&iter->work)) {
-+			event_node = iter;
+ 	DP_VERBOSE(edev, NETIF_MSG_IFDOWN, "Removing vlan 0x%04x\n", vid);
+ 
+ 	/* Find whether entry exists */
+ 	__qede_lock(edev);
+-	list_for_each_entry(vlan, &edev->vlan_list, list)
+-		if (vlan->vid == vid)
++	list_for_each_entry(iter, &edev->vlan_list, list)
++		if (iter->vid == vid) {
++			vlan = iter;
  			break;
- 		}
- 	}
++		}
  
--	if (!found) {
-+	if (!event_node) {
- 		event_node = kzalloc(sizeof(*event_node), GFP_ATOMIC);
- 		if (!event_node) {
- 			DP_NOTICE(edev,
+-	if (list_entry_is_head(vlan, &edev->vlan_list, list)) {
++	if (!vlan) {
+ 		DP_VERBOSE(edev, (NETIF_MSG_IFUP | NETIF_MSG_IFDOWN),
+ 			   "Vlan isn't configured\n");
+ 		goto out;
 -- 
 2.25.1
 
