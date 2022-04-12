@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43FE54FDDF3
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 13:43:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 053034FDE60
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 13:45:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344936AbiDLLPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 07:15:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49388 "EHLO
+        id S1345660AbiDLLPp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 07:15:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355129AbiDLLPP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 07:15:15 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 832B0252A4
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 03:03:11 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id 32so14669520pgl.4
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 03:03:11 -0700 (PDT)
+        with ESMTP id S1355371AbiDLLPZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 07:15:25 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A4995A0A
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 03:03:15 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id bo5so17056036pfb.4
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 03:03:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version;
-        bh=J15r6CdbQlQ1MjQalRz71kYTjgOltdBXsSk3+PGN9OQ=;
-        b=LXjP7KYFZ3ggXPzCgE6p0Rr0oczQIlzPmK03pWuhUmjiuXXsjUCgk90iiuES/zHe9F
-         jIhzNS5zsFk3182SnXjmOTrcFKZ6B1Cl+7s8iciSqyW/sjG7Vm04A+EHUY6uU+lwWJjb
-         AqtcpLbmF1r1O1MctcXR33wsuUReLw4IJJWBA=
+        bh=7HSa34Vzmptg/tOFFE7Ys9hDlo/RWae1LwIxkQPxykA=;
+        b=Y++hKSB6AP+ZKzUjLy64gKZyuck0FOqkPrbkXURqBgQVXumG0W35ZSxFsvYJ8WClqG
+         oNUMFhO6e4+AR3Shk5JjcPX8lC4n75KmVa9C/gj00A4Ujy88b61Pw6eaQOTHdC89DH8A
+         G3PG16rMn5GeP1/RHmnuQ1lpfIA7yZUmFoMv8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version;
-        bh=J15r6CdbQlQ1MjQalRz71kYTjgOltdBXsSk3+PGN9OQ=;
-        b=cumNagpQmfvWE7vLXBxFxjD7RnT3D8rT8wlznKcystjODUzV1CM9F2crwtGcmeugrE
-         YcOAxLruidlfnE3iC2l2XTDwbln1hDNPC/yS+0lVbcXbh+U9mOTbbnbCpAgaGRupv2dJ
-         DwhUGnY6PFBuuHahaI1ihr5z9nJecv4sUWZcgxxK3cTgMPjwSbBcRZ4KdXECuaULLA47
-         4ejnjJX13BDTEqL8aqgPpLsgGf9GF4YEPqgM6Arb2yfXgIlEn71k6ULBAxwSQ25PD1/9
-         j+hVRKmT/Pa+Ce19ZgZNPdikpDbXTubTWQ08e72UTg7PqCJY3MrdclPYGFkkTYlsOEFM
-         zWuw==
-X-Gm-Message-State: AOAM533VgX/iEJNfoIjTXcFmQ78uRrbDYeytiZVrsWNV0bXlksr8tqhj
-        zEYeDacHXXqKFgjFeNCZSs+f1PqcB+mgiZJo3DF1h3TztcHfMbvVTgs1fu8cW+WIsvBHspibKgb
-        z6xx8tAk+CUn3NmFLhSxBuTyHZ82mczIQDnSo5eGW8Vf1TRC3C2jQryGMtjcTIAc1YFBItUgwp0
-        KHNviyuZs/9w==
-X-Google-Smtp-Source: ABdhPJw80j12qk/2mGiJvdcW1TVtmO97+Huroq57AT/r9eJEppFeK5jRa7enqmq2//h//pBK6kOltA==
-X-Received: by 2002:a63:1061:0:b0:399:5cd:3ddf with SMTP id 33-20020a631061000000b0039905cd3ddfmr29440152pgq.271.1649757790213;
-        Tue, 12 Apr 2022 03:03:10 -0700 (PDT)
+        bh=7HSa34Vzmptg/tOFFE7Ys9hDlo/RWae1LwIxkQPxykA=;
+        b=hcbDD7wegTpbS77pJxwyuOlJMw4zwjG539yeBMDzvltwW8HGi8AjA4mpU2YCWNswYl
+         OMHEvuk4IFGeuadNRRLmcKPI+WHjTN01DizPlGaRanVJVUFIrgbrIPsanqRziGtRrw46
+         AtQQ9ALE1nWeZurvw/uE93kRujHLxLpW59E1M9JoS0LeAid+MDpqgIQAkTNVzob/2SFv
+         DQdBcNoaRJHltgNZGiOJUP7GberTGeU3mH36xDL8l836CNgXbewF4/7GJNUF31oOrtN1
+         I+dFDp6aMuIxz3pptVnEKg3jsOuppzSWbWABfup8Bv9jtHYli3dzyvX3KPVIdGkhVrOS
+         A8jQ==
+X-Gm-Message-State: AOAM533KxykrziqnwPSFXcinzt2tSvsrc5wjIQ/rg4FJ1E4xrziBnqH3
+        xul3FFofyDr3Rp35i9izDJiOJvs3fK1OEkpir52ilps4Ylk+Oz5xzBDTqx3ZVXkm4O1ROSRLc0t
+        zsDjyxHWfs0tLImhksTekqGxFesneZtGj9n+Y5eIt4891r4rFKGE6+NUByJ+vDan1r2WTFoWZEX
+        uTqoUU/QWnnw==
+X-Google-Smtp-Source: ABdhPJzU1x+u0k+2/FEUgyKj8LZ8C2Y9erbuDw6TTmaICDgyLPrXUBxWyyN3LoQDwUQQ0NEjlwcnig==
+X-Received: by 2002:a65:5302:0:b0:39c:e41e:e8ff with SMTP id m2-20020a655302000000b0039ce41ee8ffmr19414978pgq.305.1649757794719;
+        Tue, 12 Apr 2022 03:03:14 -0700 (PDT)
 Received: from localhost.localdomain ([192.19.250.250])
-        by smtp.gmail.com with ESMTPSA id u17-20020a056a00159100b004faef351ebcsm37020020pfk.45.2022.04.12.03.03.05
+        by smtp.gmail.com with ESMTPSA id u17-20020a056a00159100b004faef351ebcsm37020020pfk.45.2022.04.12.03.03.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 03:03:09 -0700 (PDT)
+        Tue, 12 Apr 2022 03:03:14 -0700 (PDT)
 From:   Boris Sukholitko <boris.sukholitko@broadcom.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -59,15 +59,15 @@ To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Yoshiki Komachi <komachi.yoshiki@gmail.com>
 Cc:     Ilya Lifshits <ilya.lifshits@broadcom.com>,
         Boris Sukholitko <boris.sukholitko@broadcom.com>
-Subject: [PATCH net-next v2 1/5] net/sched: flower: Helper function for vlan ethtype checks
-Date:   Tue, 12 Apr 2022 13:02:32 +0300
-Message-Id: <20220412100236.27244-2-boris.sukholitko@broadcom.com>
+Subject: [PATCH net-next v2 2/5] net/sched: flower: Reduce identation after is_key_vlan refactoring
+Date:   Tue, 12 Apr 2022 13:02:33 +0300
+Message-Id: <20220412100236.27244-3-boris.sukholitko@broadcom.com>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20220412100236.27244-1-boris.sukholitko@broadcom.com>
 References: <20220412100236.27244-1-boris.sukholitko@broadcom.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000001413d905dc722b06"
+        boundary="000000000000599a1405dc722b86"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -78,79 +78,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000001413d905dc722b06
+--000000000000599a1405dc722b86
 Content-Transfer-Encoding: 8bit
 
-There are somewhat repetitive ethertype checks in fl_set_key. Refactor
-them into is_vlan_key helper function.
-
-To make the changes clearer, avoid touching identation levels. This is
-the job for the next patch in the series.
+Whitespace only.
 
 Signed-off-by: Boris Sukholitko <boris.sukholitko@broadcom.com>
 ---
- net/sched/cls_flower.c | 32 +++++++++++++++++---------------
- 1 file changed, 17 insertions(+), 15 deletions(-)
+ net/sched/cls_flower.c | 30 +++++++++++++++---------------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
 
 diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index 87e030dfc328..9a9b7849e657 100644
+index 9a9b7849e657..8725aa1bb21e 100644
 --- a/net/sched/cls_flower.c
 +++ b/net/sched/cls_flower.c
-@@ -1573,6 +1573,21 @@ static int fl_set_key_ct(struct nlattr **tb,
- 	return 0;
- }
- 
-+static bool is_vlan_key(struct nlattr *tb, __be16 *ethertype,
-+			struct fl_flow_key *key, struct fl_flow_key *mask)
-+{
-+	if (!tb)
-+		return false;
-+
-+	*ethertype = nla_get_be16(tb);
-+	if (eth_type_vlan(*ethertype))
-+		return true;
-+
-+	key->basic.n_proto = *ethertype;
-+	mask->basic.n_proto = cpu_to_be16(~0);
-+	return false;
-+}
-+
- static int fl_set_key(struct net *net, struct nlattr **tb,
- 		      struct fl_flow_key *key, struct fl_flow_key *mask,
- 		      struct netlink_ext_ack *extack)
-@@ -1595,17 +1610,12 @@ static int fl_set_key(struct net *net, struct nlattr **tb,
- 		       mask->eth.src, TCA_FLOWER_KEY_ETH_SRC_MASK,
+@@ -1611,21 +1611,21 @@ static int fl_set_key(struct net *net, struct nlattr **tb,
  		       sizeof(key->eth.src));
  
--	if (tb[TCA_FLOWER_KEY_ETH_TYPE]) {
--		ethertype = nla_get_be16(tb[TCA_FLOWER_KEY_ETH_TYPE]);
+ 	if (is_vlan_key(tb[TCA_FLOWER_KEY_ETH_TYPE], &ethertype, key, mask)) {
+-			fl_set_key_vlan(tb, ethertype, TCA_FLOWER_KEY_VLAN_ID,
+-					TCA_FLOWER_KEY_VLAN_PRIO, &key->vlan,
+-					&mask->vlan);
 -
--		if (eth_type_vlan(ethertype)) {
-+	if (is_vlan_key(tb[TCA_FLOWER_KEY_ETH_TYPE], &ethertype, key, mask)) {
- 			fl_set_key_vlan(tb, ethertype, TCA_FLOWER_KEY_VLAN_ID,
- 					TCA_FLOWER_KEY_VLAN_PRIO, &key->vlan,
- 					&mask->vlan);
- 
--			if (tb[TCA_FLOWER_KEY_VLAN_ETH_TYPE]) {
--				ethertype = nla_get_be16(tb[TCA_FLOWER_KEY_VLAN_ETH_TYPE]);
--				if (eth_type_vlan(ethertype)) {
-+			if (is_vlan_key(tb[TCA_FLOWER_KEY_VLAN_ETH_TYPE], &ethertype, key, mask)) {
- 					fl_set_key_vlan(tb, ethertype,
- 							TCA_FLOWER_KEY_CVLAN_ID,
- 							TCA_FLOWER_KEY_CVLAN_PRIO,
-@@ -1615,15 +1625,7 @@ static int fl_set_key(struct net *net, struct nlattr **tb,
- 						       &mask->basic.n_proto,
- 						       TCA_FLOWER_UNSPEC,
- 						       sizeof(key->basic.n_proto));
--				} else {
--					key->basic.n_proto = ethertype;
--					mask->basic.n_proto = cpu_to_be16(~0);
--				}
- 			}
--		} else {
--			key->basic.n_proto = ethertype;
--			mask->basic.n_proto = cpu_to_be16(~0);
--		}
+-			if (is_vlan_key(tb[TCA_FLOWER_KEY_VLAN_ETH_TYPE], &ethertype, key, mask)) {
+-					fl_set_key_vlan(tb, ethertype,
+-							TCA_FLOWER_KEY_CVLAN_ID,
+-							TCA_FLOWER_KEY_CVLAN_PRIO,
+-							&key->cvlan, &mask->cvlan);
+-					fl_set_key_val(tb, &key->basic.n_proto,
+-						       TCA_FLOWER_KEY_CVLAN_ETH_TYPE,
+-						       &mask->basic.n_proto,
+-						       TCA_FLOWER_UNSPEC,
+-						       sizeof(key->basic.n_proto));
+-			}
++		fl_set_key_vlan(tb, ethertype, TCA_FLOWER_KEY_VLAN_ID,
++				TCA_FLOWER_KEY_VLAN_PRIO, &key->vlan,
++				&mask->vlan);
++
++		if (is_vlan_key(tb[TCA_FLOWER_KEY_VLAN_ETH_TYPE], &ethertype, key, mask)) {
++			fl_set_key_vlan(tb, ethertype,
++					TCA_FLOWER_KEY_CVLAN_ID,
++					TCA_FLOWER_KEY_CVLAN_PRIO,
++					&key->cvlan, &mask->cvlan);
++			fl_set_key_val(tb, &key->basic.n_proto,
++				       TCA_FLOWER_KEY_CVLAN_ETH_TYPE,
++				       &mask->basic.n_proto,
++				       TCA_FLOWER_UNSPEC,
++				       sizeof(key->basic.n_proto));
++		}
  	}
  
  	if (key->basic.n_proto == htons(ETH_P_IP) ||
@@ -158,7 +133,7 @@ index 87e030dfc328..9a9b7849e657 100644
 2.29.2
 
 
---0000000000001413d905dc722b06
+--000000000000599a1405dc722b86
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -229,14 +204,14 @@ bR7s0ZZh6mOhJtqk3k1L1DbDTVB4tOZXZHRDghEGaQSnwU/qxCNlvQ52fImLFVwXKPnw6+9dUvFR
 ORaZ1pZbapCGbs/4QLplv8UaBmpFfK6MW/44zcsDbtCFfgIP3fEJBByIREhvRC5mtlRtdM+SSjgS
 ZiNfUggxggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgw0
-s4pyqb3D0zeGSCUwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIJy3n7poaVpuWqcH
-PARVOzd24BlgtI7jhVmP5xew9uk8MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
-AQkFMQ8XDTIyMDQxMjEwMDMxMFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
+s4pyqb3D0zeGSCUwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIE/NtP1y46Uptajl
+JqHc56XU5aQD3sfxF3PmiMzQBn9iMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
+AQkFMQ8XDTIyMDQxMjEwMDMxNVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
 AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
-MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQCWN0F5GRhAraZKC7KOpn6Qu042LMwvRW5v
-0J5flDw2qRuenrx5Wz2At+aBVBK0OL3MBUSTBQr+Y9fqHDbFH49gQit+TBOZUefGsDrG5sYVzFMu
-G11w8qDDyLBPCbSi2j39+rcF7fNS/fJ/G8bW1MB7PAjT/4+ACc8wVigRsG74+zc+fpqOL6Vu+MP0
-e8cneEQqFtnMVBV9x/tB2O5/GdiTayi9jkSGRtMjzxORqwSw0ejK0rrSM24j77UcFjfCeLuf0Vvu
-FgB7VPCsYT+CT/31oP0WA+mcvoP03IgIWr9Y10nHp88BpCs2DthovPSFcaEybEVYOiBD+fukud/D
-Eg95
---0000000000001413d905dc722b06--
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQCqcjCOQ/pKzqEUw5cnVqDDDhDLNJS1rx3G
+5O1uGD29T5nAAkGf/bWESVFjFQrxRlA3RRLHB1uoO/iuHHWa+mFNcC58zSgdIALqS1vlykTnnFmC
+IFM0AqkSW/el4wcPiqiHJ2DSVR8iNLlzIY6Zm7qsOFCrmBkukNQVnxodJ/mq6CEVkQD0Gg4wiSeU
+5FVdsRTNRtR4YwcCr6c1JhOlqsUG14i3Dd5/wcPE+IMCrmkMOhX9CHqS6V61YW/jcBazTJuwG1J9
+hxw9MKGEy4MTWtALq0SHSPdxmwScyTUZWtRvBtLsAcg9HV6dmpj453u3YnUdSLduh20VLwNyNVmX
+zWTA
+--000000000000599a1405dc722b86--
