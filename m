@@ -2,171 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A8A424FE583
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 18:05:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E312A4FE5C2
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 18:24:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354377AbiDLQHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 12:07:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46110 "EHLO
+        id S1350069AbiDLQ1C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 12:27:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229591AbiDLQHN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 12:07:13 -0400
-Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E198940E7C;
-        Tue, 12 Apr 2022 09:04:52 -0700 (PDT)
-Received: from localhost.localdomain (unknown [222.205.9.127])
-        by mail-app4 (Coremail) with SMTP id cS_KCgA3OfAXo1ViBSYjAQ--.15521S4;
-        Wed, 13 Apr 2022 00:04:40 +0800 (CST)
-From:   Lin Ma <linma@zju.edu.cn>
-To:     krzk@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mudongliangabcd@gmail.com
-Cc:     Lin Ma <linma@zju.edu.cn>
-Subject: [PATCH v0] nfc: nci: add flush_workqueue to prevent uaf
-Date:   Wed, 13 Apr 2022 00:04:30 +0800
-Message-Id: <20220412160430.11581-1-linma@zju.edu.cn>
+        with ESMTP id S235689AbiDLQ1A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 12:27:00 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EBB538192;
+        Tue, 12 Apr 2022 09:24:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649780682; x=1681316682;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=UeSHKiFD9MWQD9/lwoZzgM1WMiX/Uf+MCYGmOWbS/MQ=;
+  b=IgeMVV1TefkVsW0SmgHxJRH+NyZFscL9F9bdji2rv8JrIej68zf9DmYm
+   otsDeyHUHO6CZ/UM8wAIDTtj1UKHkMM1cnUuA4R7qFZ0TLpkZy0nCEwkk
+   lNsLeeGKZqtAgFKQbmoPyQ6KUVnj9ef2+ZA9hCbHVgiNiYRVFJONnnDQd
+   YUW1GTva3e9lYnYw3suUOi5MKihzrm47Yw3TfrDd1aGt9nEGYHW25hXYv
+   55qi6Gxr8fnhIXI9n3Dr9nbKObcGrTnf+3mBVN5fv5W8pCdqgwr3q1+E/
+   ii1VOss+KOFZG8X3rYiaRF3+B/2I2BIvhQbpMTx7o7VEl5GJW6UQLrtl9
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="242362658"
+X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
+   d="scan'208";a="242362658"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 09:11:23 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
+   d="scan'208";a="655174943"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga002.fm.intel.com with ESMTP; 12 Apr 2022 09:11:21 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 23CGBKdH010632;
+        Tue, 12 Apr 2022 17:11:20 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Petr Oros <poros@redhat.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        netdev@vger.kernel.org, ivecera@redhat.com,
+        intel-wired-lan@lists.osuosl.org, linux-kernel@vger.kernel.org,
+        kuba@kernel.org, pabeni@redhat.com, davem@davemloft.net
+Subject: Re: [Intel-wired-lan] [PATCH] ice: wait for EMP reset after firmware flash
+Date:   Tue, 12 Apr 2022 18:08:56 +0200
+Message-Id: <20220412160856.1027597-1-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412102753.670867-1-poros@redhat.com>
+References: <20220412102753.670867-1-poros@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: cS_KCgA3OfAXo1ViBSYjAQ--.15521S4
-X-Coremail-Antispam: 1UD129KBjvJXoWxWF45CryfuF15Zr1DCF1xXwb_yoWrtry3pF
-        s5GryxGr10qa4qqr47tF4kWw4rtwsFyry2yw1xGw47ur13Xr4DtFyIkFykXr13Gr45uFyD
-        Ar1jqa43GF4qv3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUka1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
-        z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I0E14v26r4j6r4UJwAS0I0E0xvYzx
-        vE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWU
-        JVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7V
-        AKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCF04k20xvY0x0EwIxGrwCF04k20xvE74AG
-        Y7Cv6cx26r4fKr1UJr1l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJV
-        WUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAK
-        I48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r
-        4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY
-        6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHUDUUUUU=
-X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Our detector found a concurrent use-after-free bug when detaching an
-NCI device. The main reason for this bug is the unexpected scheduling
-between the used delayed mechanism (timer and workqueue).
+From: Petr Oros <poros@redhat.com>
+Date: Tue, 12 Apr 2022 12:27:53 +0200
 
-The race can be demonstrated below:
+> We need to wait for EMP reset after firmware flash.
+> Code was extracted from OOT driver and without this wait fw_activate let
+> card in inconsistent state recoverable only by second flash/activate
+> 
+> Reproducer:
+> [root@host ~]# devlink dev flash pci/0000:ca:00.0 file E810_XXVDA4_FH_O_SEC_FW_1p6p1p9_NVM_3p10_PLDMoMCTP_0.11_8000AD7B.bin
+> Preparing to flash
+> [fw.mgmt] Erasing
+> [fw.mgmt] Erasing done
+> [fw.mgmt] Flashing 100%
+> [fw.mgmt] Flashing done 100%
+> [fw.undi] Erasing
+> [fw.undi] Erasing done
+> [fw.undi] Flashing 100%
+> [fw.undi] Flashing done 100%
+> [fw.netlist] Erasing
+> [fw.netlist] Erasing done
+> [fw.netlist] Flashing 100%
+> [fw.netlist] Flashing done 100%
+> Activate new firmware by devlink reload
+> [root@host ~]# devlink dev reload pci/0000:ca:00.0 action fw_activate
+> reload_actions_performed:
+>     fw_activate
+> [root@host ~]# ip link show ens7f0
+> 71: ens7f0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
+>     link/ether b4:96:91:dc:72:e0 brd ff:ff:ff:ff:ff:ff
+>     altname enp202s0f0
+> 
+> dmesg after flash:
+> [   55.120788] ice: Copyright (c) 2018, Intel Corporation.
+> [   55.274734] ice 0000:ca:00.0: Get PHY capabilities failed status = -5, continuing anyway
+> [   55.569797] ice 0000:ca:00.0: The DDP package was successfully loaded: ICE OS Default Package version 1.3.28.0
+> [   55.603629] ice 0000:ca:00.0: Get PHY capability failed.
+> [   55.608951] ice 0000:ca:00.0: ice_init_nvm_phy_type failed: -5
+> [   55.647348] ice 0000:ca:00.0: PTP init successful
+> [   55.675536] ice 0000:ca:00.0: DCB is enabled in the hardware, max number of TCs supported on this port are 8
+> [   55.685365] ice 0000:ca:00.0: FW LLDP is disabled, DCBx/LLDP in SW mode.
+> [   55.692179] ice 0000:ca:00.0: Commit DCB Configuration to the hardware
+> [   55.701382] ice 0000:ca:00.0: 126.024 Gb/s available PCIe bandwidth, limited by 16.0 GT/s PCIe x8 link at 0000:c9:02.0 (capable of 252.048 Gb/s with 16.0 GT/s PCIe x16 link)
+> Reboot don't help, only second flash/activate with OOT or patched driver put card back in consistent state
+> 
+> After patch:
+> [root@host ~]# devlink dev flash pci/0000:ca:00.0 file E810_XXVDA4_FH_O_SEC_FW_1p6p1p9_NVM_3p10_PLDMoMCTP_0.11_8000AD7B.bin
+> Preparing to flash
+> [fw.mgmt] Erasing
+> [fw.mgmt] Erasing done
+> [fw.mgmt] Flashing 100%
+> [fw.mgmt] Flashing done 100%
+> [fw.undi] Erasing
+> [fw.undi] Erasing done
+> [fw.undi] Flashing 100%
+> [fw.undi] Flashing done 100%
+> [fw.netlist] Erasing
+> [fw.netlist] Erasing done
+> [fw.netlist] Flashing 100%
+> [fw.netlist] Flashing done 100%
+> Activate new firmware by devlink reload
+> [root@host ~]# devlink dev reload pci/0000:ca:00.0 action fw_activate
+> reload_actions_performed:
+>     fw_activate
+> [root@host ~]# ip link show ens7f0
+> 19: ens7f0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
+>     link/ether b4:96:91:dc:72:e0 brd ff:ff:ff:ff:ff:ff
+>     altname enp202s0f0
+> 
+> Fixes: 399e27dbbd9e94 ("ice: support immediate firmware activation via devlink reload")
+> Signed-off-by: Petr Oros <poros@redhat.com>
+> ---
+>  drivers/net/ethernet/intel/ice/ice_main.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+> index d768925785ca79..90ea2203cdc763 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_main.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_main.c
+> @@ -6931,12 +6931,15 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
+>  
+>  	dev_dbg(dev, "rebuilding PF after reset_type=%d\n", reset_type);
+>  
+> +#define ICE_EMP_RESET_SLEEP 5000
 
-Thread-1                           Thread-2
-                                 | nci_dev_up()
-                                 |   nci_open_device()
-                                 |     __nci_request(nci_reset_req)
-                                 |       nci_send_cmd
-                                 |         queue_work(cmd_work)
-nci_unregister_device()          |
-  nci_close_device()             | ...
-    del_timer_sync(cmd_timer)[1] |
-...                              | Worker
-nci_free_device()                | nci_cmd_work()
-  kfree(ndev)[3]                 |   mod_timer(cmd_timer)[2]
+Ooof, 5 sec is a lot! Is there any way to poll the device readiness?
+Does it really need the whole 5 sec?
 
-In short, the cleanup routine thought that the cmd_timer has already
-been detached by [1] but the mod_timer can re-attach the timer [2], even
-it is already released [3], resulting in UAF.
+>  	if (reset_type == ICE_RESET_EMPR) {
+>  		/* If an EMP reset has occurred, any previously pending flash
+>  		 * update will have completed. We no longer know whether or
+>  		 * not the NVM update EMP reset is restricted.
+>  		 */
+>  		pf->fw_emp_reset_disabled = false;
+> +
+> +		msleep(ICE_EMP_RESET_SLEEP);
+>  	}
+>  
+>  	err = ice_init_all_ctrlq(hw);
+> -- 
+> 2.35.1
 
-This UAF is easy to trigger, crash trace by POC is like below
-
-[   66.703713] ==================================================================
-[   66.703974] BUG: KASAN: use-after-free in enqueue_timer+0x448/0x490
-[   66.703974] Write of size 8 at addr ffff888009fb7058 by task kworker/u4:1/33
-[   66.703974]
-[   66.703974] CPU: 1 PID: 33 Comm: kworker/u4:1 Not tainted 5.18.0-rc2 #5
-[   66.703974] Workqueue: nfc2_nci_cmd_wq nci_cmd_work
-[   66.703974] Call Trace:
-[   66.703974]  <TASK>
-[   66.703974]  dump_stack_lvl+0x57/0x7d
-[   66.703974]  print_report.cold+0x5e/0x5db
-[   66.703974]  ? enqueue_timer+0x448/0x490
-[   66.703974]  kasan_report+0xbe/0x1c0
-[   66.703974]  ? enqueue_timer+0x448/0x490
-[   66.703974]  enqueue_timer+0x448/0x490
-[   66.703974]  __mod_timer+0x5e6/0xb80
-[   66.703974]  ? mark_held_locks+0x9e/0xe0
-[   66.703974]  ? try_to_del_timer_sync+0xf0/0xf0
-[   66.703974]  ? lockdep_hardirqs_on_prepare+0x17b/0x410
-[   66.703974]  ? queue_work_on+0x61/0x80
-[   66.703974]  ? lockdep_hardirqs_on+0xbf/0x130
-[   66.703974]  process_one_work+0x8bb/0x1510
-[   66.703974]  ? lockdep_hardirqs_on_prepare+0x410/0x410
-[   66.703974]  ? pwq_dec_nr_in_flight+0x230/0x230
-[   66.703974]  ? rwlock_bug.part.0+0x90/0x90
-[   66.703974]  ? _raw_spin_lock_irq+0x41/0x50
-[   66.703974]  worker_thread+0x575/0x1190
-[   66.703974]  ? process_one_work+0x1510/0x1510
-[   66.703974]  kthread+0x2a0/0x340
-[   66.703974]  ? kthread_complete_and_exit+0x20/0x20
-[   66.703974]  ret_from_fork+0x22/0x30
-[   66.703974]  </TASK>
-[   66.703974]
-[   66.703974] Allocated by task 267:
-[   66.703974]  kasan_save_stack+0x1e/0x40
-[   66.703974]  __kasan_kmalloc+0x81/0xa0
-[   66.703974]  nci_allocate_device+0xd3/0x390
-[   66.703974]  nfcmrvl_nci_register_dev+0x183/0x2c0
-[   66.703974]  nfcmrvl_nci_uart_open+0xf2/0x1dd
-[   66.703974]  nci_uart_tty_ioctl+0x2c3/0x4a0
-[   66.703974]  tty_ioctl+0x764/0x1310
-[   66.703974]  __x64_sys_ioctl+0x122/0x190
-[   66.703974]  do_syscall_64+0x3b/0x90
-[   66.703974]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[   66.703974]
-[   66.703974] Freed by task 406:
-[   66.703974]  kasan_save_stack+0x1e/0x40
-[   66.703974]  kasan_set_track+0x21/0x30
-[   66.703974]  kasan_set_free_info+0x20/0x30
-[   66.703974]  __kasan_slab_free+0x108/0x170
-[   66.703974]  kfree+0xb0/0x330
-[   66.703974]  nfcmrvl_nci_unregister_dev+0x90/0xd0
-[   66.703974]  nci_uart_tty_close+0xdf/0x180
-[   66.703974]  tty_ldisc_kill+0x73/0x110
-[   66.703974]  tty_ldisc_hangup+0x281/0x5b0
-[   66.703974]  __tty_hangup.part.0+0x431/0x890
-[   66.703974]  tty_release+0x3a8/0xc80
-[   66.703974]  __fput+0x1f0/0x8c0
-[   66.703974]  task_work_run+0xc9/0x170
-[   66.703974]  exit_to_user_mode_prepare+0x194/0x1a0
-[   66.703974]  syscall_exit_to_user_mode+0x19/0x50
-[   66.703974]  do_syscall_64+0x48/0x90
-[   66.703974]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-To fix the UAF, this patch adds flush_workqueue() to ensure the
-nci_cmd_work is finished before the following del_timer_sync.
-This combination will promise the timer is actually detached.
-
-Fixes: 6a2968aaf50c ("NFC: basic NCI protocol implementation")
-Signed-off-by: Lin Ma <linma@zju.edu.cn>
----
- net/nfc/nci/core.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/net/nfc/nci/core.c b/net/nfc/nci/core.c
-index d2537383a3e8..0d7763c322b5 100644
---- a/net/nfc/nci/core.c
-+++ b/net/nfc/nci/core.c
-@@ -560,6 +560,10 @@ static int nci_close_device(struct nci_dev *ndev)
- 	mutex_lock(&ndev->req_lock);
- 
- 	if (!test_and_clear_bit(NCI_UP, &ndev->flags)) {
-+		/* Need to flush the cmd wq in case
-+		 * there is a queued/running cmd_work
-+		 */
-+		flush_workqueue(ndev->cmd_wq);
- 		del_timer_sync(&ndev->cmd_timer);
- 		del_timer_sync(&ndev->data_timer);
- 		mutex_unlock(&ndev->req_lock);
--- 
-2.35.1
-
+Thanks,
+Al
