@@ -2,194 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 11D474FEB63
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 01:47:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 025634FEB7A
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 01:48:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230313AbiDLX3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 19:29:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38968 "EHLO
+        id S230116AbiDLX0x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 19:26:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231478AbiDLX20 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 19:28:26 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF1D89F6D2;
-        Tue, 12 Apr 2022 15:32:14 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id t25so332340lfg.7;
-        Tue, 12 Apr 2022 15:32:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=bTkux4B6XrPxs7uR/ZWdE6mZk/YED01EcqeCEeBlQD4=;
-        b=TTiGkV3DCIvaovkwxhVL7WNQMC+mAxvDYsPenZC7aTXi53vQJbXOpmxfvWHW8pUvK/
-         QnqO4W+u6ZT0zEXXdcvFmDI8JgqQAVzMDQY81z/qjnyRybpd5GD2eas95viKqdNWD7jH
-         wGPcl1GsxL/6H8y4SQb6EK+ftO7dH9xBWLbGHj5xHw8zMq0aJ/ax8oc2p7Gf0LMs87K9
-         VOdrR3PbdsH4SWqZZ7PQvn1k8B+xGt3tJpG2optHOe6IRiYZgMhKsKb1VVGqU6XzFCdD
-         56o94e7I+/5mtl688yVKNE4c3xjnWU/IjU8carUf2N1y50lBR1+8YsQyjKWuuxMf5sRH
-         URQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=bTkux4B6XrPxs7uR/ZWdE6mZk/YED01EcqeCEeBlQD4=;
-        b=0I23jPXciTRSyYX62Zh1XSDcRVXRjUtigyTKbhD5EbAFjaH31TTKemaeAXb1s81MLl
-         XBdV/n7+1L5fgv5onpkEAA8aw/jo5HlfPA5IxYNL8/B07r64snM50L7iuO6wP9Gqtb5Q
-         VVBNSB+TmrObAq22lElXOjZAwoid0EpY8xMxJADF+TUJam1LVEe0DG1DXtB3gTmFnhqx
-         7iJvRfXtOZezbdkt2t+IjJupHyfVEU4hX/lgMsdrSc5miHHi8QAQWenLzWUxieQJkQG3
-         vHhGwjqZBpQg0dhnVbFx5Ij5ZOzNEPcMggSH5QAallz5TJMgozxd1mOVh9z+MNozQ/Na
-         AMVg==
-X-Gm-Message-State: AOAM531uIECyRfYiCOp8gFKztF4t17xsjPOmdLuDyOoH6zeuRGHkacBy
-        uXSoL4xZBqpaSG+XpanOtcY=
-X-Google-Smtp-Source: ABdhPJzzw+FMh3QyfjXmS6pY5uqsp1uVsRUc2yhPf3faGKX1J/PYPc0TH/CN2Q/29KdqkrDFUioK+A==
-X-Received: by 2002:a19:6759:0:b0:46b:b99f:a7ac with SMTP id e25-20020a196759000000b0046bb99fa7acmr3403805lfj.312.1649802732918;
-        Tue, 12 Apr 2022 15:32:12 -0700 (PDT)
-Received: from ?IPV6:2001:470:6180:0:a105:2443:47df:c2c9? ([2001:470:6180:0:a105:2443:47df:c2c9])
-        by smtp.googlemail.com with ESMTPSA id w14-20020a0565120b0e00b0044a9b61d2b3sm3811099lfu.221.2022.04.12.15.32.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 15:32:12 -0700 (PDT)
-Message-ID: <c37dd38f-c855-fb86-643b-c35ef5bb8ca6@gmail.com>
-Date:   Wed, 13 Apr 2022 00:32:11 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 2/3] rndis_host: enable the bogus MAC fixup for ZTE
- devices from cdc_ether
-Content-Language: en-GB
-From:   Lech Perczak <lech.perczak@gmail.com>
-To:     =?UTF-8?Q?Bj=c3=b8rn_Mork?= <bjorn@mork.no>
-Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        Kristian Evensen <kristian.evensen@gmail.com>,
-        Oliver Neukum <oliver@neukum.org>
-References: <20220407001926.11252-1-lech.perczak@gmail.com>
- <20220407001926.11252-3-lech.perczak@gmail.com>
- <87o81d1kay.fsf@miraculix.mork.no>
- <c5f5e028-26b1-5c2d-ed7f-e36550ce6ac2@gmail.com>
-In-Reply-To: <c5f5e028-26b1-5c2d-ed7f-e36550ce6ac2@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S230059AbiDLX0Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 19:26:25 -0400
+Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE6007F21A;
+        Tue, 12 Apr 2022 15:38:46 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id 1E89CC023; Wed, 13 Apr 2022 00:38:45 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1649803125; bh=8cKWiKZ+6BTHDIeYecZe923WDWd/fUmOnyJCVtqwQRk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mS9vU0aqfwqdsVmn1+fa/0vv8poCioV3NJDSA17DNm9q9Ze0nYISH8TNXvFDpAMS8
+         C4Jc6ONlOhQfqyomQD967RYDtuMwtHtWEGhzGcdfmWkYwbwz4GXlYNGAQ8A9U7nqpJ
+         CkpdLUAF64RbHktWdxuFbwQD4IFG4rk43Ro7+lFRMqwzTxNDwUYw2jHd2H9rz0Wpxe
+         OnMPT1HdWwcZMohiiSfMzF+sFbXKSA3j3YVKpWwZ1/w3epl5Z5jpplVdN8ywCcm9g9
+         0dGXaCsPK8357uBBuiXIE9F/syhLwChpq4NkvPhNozRKMyn6YEISHQQRWjauvMRSqs
+         MmkfW+8OEuasA==
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 7F9E9C009;
+        Wed, 13 Apr 2022 00:38:40 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1649803123; bh=8cKWiKZ+6BTHDIeYecZe923WDWd/fUmOnyJCVtqwQRk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QIFkVHZ2ZiGbLOIJpIJcCiS1PLc/cPhwSWBrjYJf9pKPl7B7UmiOchF498QnFkb4y
+         d6SAVmOieXRM32MCO7wMHOysrLbU/K7WSjFEzaHPQYYs3ShQxhorVvthNbdgA7A/fF
+         otUGRti4jEfWxDr0jUP64iVY6uWuxbrL15XEvAWogBuvScpSDvwwSIkZP2ZokXAT+b
+         bbNaKaUl153IEmtWTExOL35yYuFKLq4RYPdrr9w3DKTN1rFppUZO5r4/lqqHEpAkLv
+         9iG0aoGGFsNboqQdBUgse5KM+QDo4HxXDYXCzGRqICleQEAS0qI8jNGqVTEIX5TVf5
+         OQXfpP3fslG+Q==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 4f5f244e;
+        Tue, 12 Apr 2022 22:38:37 +0000 (UTC)
+Date:   Wed, 13 Apr 2022 07:38:21 +0900
+From:   asmadeus@codewreck.org
+To:     Christian Schoenebeck <linux_oss@crudebyte.com>
+Cc:     David Kahurani <k.kahurani@gmail.com>, davem@davemloft.net,
+        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        lucho@ionkov.net, netdev@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net,
+        David Howells <dhowells@redhat.com>, Greg Kurz <groug@kaod.org>
+Subject: Re: 9p fs-cache tests/benchmark (was: 9p fscache Duplicate cookie
+ detected)
+Message-ID: <YlX/XRWwQ7eQntLr@codewreck.org>
+References: <CAAZOf26g-L2nSV-Siw6mwWQv1nv6on8c0fWqB4bKmX73QAFzow@mail.gmail.com>
+ <1966295.VQPMLLWD4E@silver>
+ <YlNgN5f1KnT1walD@codewreck.org>
+ <3119964.Qa6D4ExsIi@silver>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <3119964.Qa6D4ExsIi@silver>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-W dniu 2022-04-07 o 22:51, Lech Perczak pisze:
-> Hi Bjørn,
->
-> Many thanks you for your review! Answers inline.
->
-> W dniu 2022-04-07 o 08:25, Bjørn Mork pisze:
->> Lech Perczak <lech.perczak@gmail.com> writes:
->>
->>> +static int zte_rndis_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
->>> +{
->>> +    return rndis_rx_fixup(dev, skb) && usbnet_cdc_zte_rx_fixup(dev, 
->>> skb);
->>> +}
->> Does this work as expected? Only the last ethernet packet in the rndis
->> frame will end up being handled by usbnet_cdc_zte_rx_fixup(). The
->> others are cloned and submitted directly to usbnet_skb_return().
-> I've got some positive reports from at least two owners of the device 
-> - I don't have one myself. In the meantime asked them to run tests 
-> with high traffic, because this should most probably manifest itself 
-> in that scenario easily - my wild guess is that the modem doesn't use 
-> batching, but you are most certainly right in the general case. And 
-> for testing on older modems, we can probably only count on Kristian.
->>
->> I don't know how to best solve that, but maybe add another
->> RNDIS_DRIVER_DATA_x flag and test that in rndis_rx_fixup?  I.e something
->> like
->>
->>     bool fixup_dst = dev->driver_info->data & 
->> RNDIS_DRIVER_DATA_FIXUP_DST:
->>          ..
->>
->>         /* try to return all the packets in the batch */
->>         skb2 = skb_clone(skb, GFP_ATOMIC);
->>         if (unlikely(!skb2))
->>             break;
->>         skb_pull(skb, msg_len - sizeof *hdr);
->>         skb_trim(skb2, data_len);
->>                  if (fixup_dst)
->>                      usbnet_cdc_zte_rx_fixup(dev, skb2);
->>         usbnet_skb_return(dev, skb2);
->>     }
->>          if (fixup_dst)
->>                  usbnet_cdc_zte_rx_fixup(dev, skb);
->>
->>     /* caller will usbnet_skb_return the remaining packet */
->>     return 1;
->> }
->
-> I'll consider that. My concern with that approach is degradation of 
-> performance by testing for that flag, both for ZTE and non-ZTE 
-> devices, for each and every packet. But this might be the only 
-> solution, as I cannot catch the n-1 sk_buffs from the batch 
-> mid-flight, only the last one. The only other way that currently comes 
-> to my mind, is to duplicate rndis_rx_fixup, with added calls to 
-> usbnet_cdc_zte_rx_fixup in the right places. But the amount of 
-> duplicated code by doing so would be huge, so I'd like to avoid that 
-> as well.
->
-> I will definitely send a V2 after I decide on a solution and do some 
-> testing, including high downlink traffic.
->
->>
->>
->>
->> Bjørn
->
-Hi Bjørn,
+Christian Schoenebeck wrote on Mon, Apr 11, 2022 at 03:41:45PM +0200:
+> I get more convinced that it's a bug on Linux kernel side. When guest is
+> booted I always immediately get a read("/var/log/wtmp") = EBADF error on
+> guest. And the 9p command sequence sent to QEMU 9p server were:
 
-I implemented the fix according to your suggestion and did some testing.
-Although I don't have a full MF286R myself, I used my Raspberry Pi 
-Zero's USB gadget
-to simulate the modem's RNDIS interface, and compared three scenarios:
-- generic VID/PID with "locally administered" bit off,
-- generic VID/PID with "locally administered" bit on,
-- ZTE VID/PID (of MF286R's modem) with "locally administered" bit on.
+Yes, I'm not pointing fingers, just trying to understand :)
 
-Of course, only the last one activated the MAC fixup path.
+> 
+> ...
+> v9fs_clunk tag 0 id 120 fid 568
+> v9fs_walk tag 0 id 110 fid 1 newfid 568 nwnames 1
+> v9fs_rerror tag 0 id 110 err 2
+> v9fs_walk tag 0 id 110 fid 26 newfid 568 nwnames 1
+> v9fs_rerror tag 0 id 110 err 2
+> v9fs_readlink tag 0 id 22 fid 474
+> v9fs_readlink_return tag 0 id 22 name /run
+> v9fs_readlink tag 0 id 22 fid 474
+> v9fs_readlink_return tag 0 id 22 name /run
+> v9fs_readlink tag 0 id 22 fid 474
+> v9fs_readlink_return tag 0 id 22 name /run
+> v9fs_readlink tag 0 id 22 fid 474
+> v9fs_readlink_return tag 0 id 22 name /run
+> v9fs_walk tag 0 id 110 fid 633 newfid 568 nwnames 1
+> v9fs_rerror tag 0 id 110 err 2
+> v9fs_walk tag 0 id 110 fid 875 newfid 568 nwnames 0
+> v9fs_walk_return tag 0 id 110 nwnames 0 qids (nil)
+> v9fs_open tag 0 id 12 fid 568 mode 32769
+> v9fs_open_return tag 0 id 12 qid={type 0 version 0 path 820297} iounit 507904
+> v9fs_walk tag 0 id 110 fid 875 newfid 900 nwnames 0
+> v9fs_walk_return tag 0 id 110 nwnames 0 qids (nil)
+> v9fs_open tag 0 id 12 fid 900 mode 2
+> v9fs_open_return tag 0 id 12 qid={type 0 version 0 path 820297} iounit 507904
+> v9fs_lock tag 0 id 52 fid 568 type 1 start 0 length 0
+> v9fs_lock_return tag 0 id 52 status 0
+> v9fs_xattrwalk tag 0 id 30 fid 568 newfid 901 name security.capability
+> v9fs_rerror tag 0 id 30 err 95
+> v9fs_read tag 0 id 116 fid 568 off 192512 max_count 256
+> 
+> So guest opens /var/log/wtmp with fid=568 mode=32769, which is write-only
+> mode, and then it tries to read that fid 568, which eventually causes the
+> read() call on host to error with EBADF. Which makes sense, as the file was
+> opened in write-only mode, hence read() is not possible with that file
+> descriptor.
 
-For testing I used one of my modem-less MF286A cross-flashed to MF286R 
-using current
-OpenWrt master - which are exactly the same hardware, modulo the 
-internal modem.
-In all three scenarios, when running iperf3 server on the Pi Zero,
-I got constant 150Mbps of traffic in both directions, with iperf3 client 
-running on the
-router itself. When router was uploading data to my "modem", CPU usage 
-was around 66%.
-When downloading, the total usage would hit 100%, with about 15% 
-attributed to syscalls,
-and about 85% attributed to softirq.
-When using iperf3 client on a PC connected to the router, and enabling 
-flow offload,
-the softirq load would drop to around 75%, and CPU would idle for the 
-rest of time,
-in both directions, but the downlink speed would drop to around 125Mbps, 
-with upload the
-same as if running iperf3 on router itself.
+Oh! That's something we can work on. the vfs code has different caches
+for read only and read-write fids, perhaps the new netfs code just used
+the wrong one somewhere. I'll have a look.
 
-I compared all of this against a build without this patchset, with 
-scenario one - getting
-exactly  the same performance.
-So, suumming up - it seems my concerns about performance were 
-exaggerated, so I decided to just
-introduce the check inside zte_rndis_fixup(), just as suggested in this 
-thread. V2 coming shortly.
+> The other things I noticed when looking at the 9p command sequence above:
+> there is a Twalk on fid 568 before, which is not clunked before reusing fid
+> 568 with Topen later. And before that Twalk on fid 568 there is a Tclunk on
+> fid 568, but apparently that fid was not used before.
 
-One strange quirk I noticed while testing, is that when "locally 
-administered" bit in MAC address
-was set, the interface would get "usb" prefix on the host side, and 
-"eth" otherwise.
+This one though is just weird, I don't see where linux would make up a fid to
+clunk like this... Could messages be ordered a bit weird through
+multithreading?
+e.g. thread 1 opens, thread 2 clunks almost immediately afterwards, and
+would be printed the other way around?
+Should still be serialized through the virtio ring buffer so I don't
+believe what I'm saying myself... It might be worth digging further as
+well.
+
+> > Perhaps backing filesystem dependant? qemu version? virtfs access options?
+> 
+> I tried with different hardware and different file systems (ext4, btrfs), same
+> misbehaviours.
+> 
+> QEMU is latest git version. I also tried several different QEMU versions, same
+> thing.
+> 
+> QEMU command line used:
+> 
+> ~/git/qemu/build/qemu-system-x86_64 \
+> -machine pc,accel=kvm,usb=off,dump-guest-core=off -m 16384 \
+> -smp 8,sockets=8,cores=1,threads=1 -rtc base=utc -boot strict=on \
+> -kernel ~/vm/bullseye/boot/vmlinuz \
+> -initrd ~/vm/bullseye/boot/initrd.img \
+> -append 'root=fsRoot rw rootfstype=9p rootflags=trans=virtio,version=9p2000.L,msize=4186112,cache=loose console=ttyS0' \
+> -fsdev local,security_model=mapped,multidevs=remap,id=fsdev-fs0,path=$HOME/vm/bullseye/ \
+> -device virtio-9p-pci,id=fs0,fsdev=fsdev-fs0,mount_tag=fsRoot \
+> -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+> -nographic
+> 
+> Important for reproducing this issue:
+> 
+>   * cache=loose
+>   * -smp N (with N>1)
+>   * Guest booted with Linux kernel containing commit eb497943fa21
+>     (uname >= 5.16)
+> 
+> I'm pretty sure that you can reproduce this issue with the QEMU 9p rootfs
+> setup HOWTO linked before.
+
+Yes, I'm not sure why I can't reproduce... All my computers are pretty
+slow but the conditions should be met.
+I'll try again with a command line closer to what you just gave here.
+
+
+> > It's all extremely slow though... like the final checkout counting files
+> > at less than 10/s
+> 
+> It is VERY slow. And the weird thing is that cache=loose got much slower than
+> cache=mmap. My worst case expactation would be cache=loose at least not
+> performing worse than cache=mmap.
+
+Yes, some profiling is also in order, it didn't use to be that slow so
+it must not be reusing previously open fids as it should have or
+something..
 
 -- 
-Pozdrawiam/Kind regards,
-Lech Perczak
-
+Dominique
