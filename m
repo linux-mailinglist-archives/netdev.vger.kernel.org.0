@@ -2,173 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D16F04FE77B
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 19:52:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E6484FE7A2
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 20:08:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346578AbiDLRyZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 13:54:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55400 "EHLO
+        id S1358610AbiDLSK1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 14:10:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233776AbiDLRyX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 13:54:23 -0400
-Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C7F947AF4;
-        Tue, 12 Apr 2022 10:52:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:Subject:
-        From:References:Cc:To:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe
-        :List-Post:List-Owner:List-Archive;
-        bh=jmqFnXO2ZqZwvHpgNAB6QeZncj7ETg2mnMiU2ejcaaE=; b=kFJmPNgcrTrkb88HIJO/HCKje7
-        2eFdAtCq7U3T1febm9lJDI4aTtGD+sTL26jKqiTHXT+2O1kmvaGyAYr25staFA96BQImT3N5aEqpW
-        Pr9lK7/XWH2DSeTm23KdBoN14/1TBE+drx6zgZkTSOe3Exh7Mz/gzG9+HaPa96DEZk8Y=;
-Received: from p57a6f1f9.dip0.t-ipconnect.de ([87.166.241.249] helo=nf.local)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1neKgD-0008Kt-FP; Tue, 12 Apr 2022 19:51:53 +0200
-Message-ID: <2989e566-a1d2-2288-8ef3-759f20aa0c2e@nbd.name>
-Date:   Tue, 12 Apr 2022 19:51:52 +0200
+        with ESMTP id S1351068AbiDLSK0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 14:10:26 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9918F4CD5C
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 11:08:08 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id f3so18204994pfe.2
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 11:08:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to;
+        bh=GQUYX9UarsvOGCYmEdxygTjGj2T8/Sag1PdM7KVUUHs=;
+        b=cFrHp1ejW2BkUDgYOnqtSBX0dTRNbFFd8NMr41AYrx7uGa8xie/Oe4Uk6oFKCG+acK
+         b0BHWSiwCFqwiRYhi/kD+LSuy4s81AjXVYuo/pTTm398A/wP+XOPQLX1xzYGcbxzruM+
+         Y/hsm85xRiw5gd0YB0iNk5Pgirm9/MKzaVrOY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:cc:references:from:in-reply-to;
+        bh=GQUYX9UarsvOGCYmEdxygTjGj2T8/Sag1PdM7KVUUHs=;
+        b=vob1iza1v3FpM957fiqOu6z548jJLbPgqPRm2qOMn73B4UYAm2XKVl2VP8N16O+B9e
+         XRKrRnmTzflqi+OHrythv/ap0yCRkszFOwifeRZCBAHi1bRiy59ah2+48+FDt4yVL+wL
+         l7HXLlaDem1VpzqeoOcNJEbYwWZBQzsOQWshYRrVcR6lmT7fab5WpoXBvMpqz+X9Mjtd
+         bESJF5DeDym35Cpo3sbAZzmC2NoRS9zPIT4pF5+7r7aw4WTya6b1cJQHRsp4Rg4vnaLE
+         vhcxST9UfbKQqHhUgAmUnw2yohG4GHnoGPoM2IJg7ZYGYiNmcNwPX5QzP8eYJPb4qBrn
+         bp3w==
+X-Gm-Message-State: AOAM5319wGl+FwSDcCAEKRVjcxde9a33C44u6qxFhu0kUsZvE3JxpS+z
+        wyxvgZPCph7t3okV6GN06d9+dTTayENqekJB
+X-Google-Smtp-Source: ABdhPJyMDg4mYuPdV0OYmtpJoj67xF0G7De5YuHYp/9NRQYb1RF1B3qMlmflrqzRFFP13vlwNg7L7A==
+X-Received: by 2002:a63:4d66:0:b0:399:14fa:2acc with SMTP id n38-20020a634d66000000b0039914fa2accmr32147428pgl.558.1649786887843;
+        Tue, 12 Apr 2022 11:08:07 -0700 (PDT)
+Received: from [10.136.8.240] ([192.19.161.250])
+        by smtp.gmail.com with ESMTPSA id c10-20020a62e80a000000b0050571cecadasm17368720pfi.19.2022.04.12.11.08.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Apr 2022 11:08:07 -0700 (PDT)
+Message-ID: <999fab5e-08e1-888e-6672-4fc868555b32@broadcom.com>
+Date:   Tue, 12 Apr 2022 11:08:02 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.7.0
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-References: <20220405195755.10817-1-nbd@nbd.name>
- <20220405195755.10817-15-nbd@nbd.name> <Yk8pJRxnVCfdk8xi@lunn.ch>
- <f25a6278-1baf-cc27-702a-5d93eedda438@nbd.name> <YlQmf7qGAnq/3nW0@lunn.ch>
- <ece29b0d-bbbe-7c03-a6b4-60e44453ca31@nbd.name> <YlV5jEzNZT1aKmNL@lunn.ch>
- <ee1d6c89-95f4-bf28-cf25-36b18ffb342f@nbd.name> <YlWK5Dozpo7nIS9j@lunn.ch>
- <29cecc87-8689-6a73-a5ef-43eb2b8f33cd@nbd.name> <YlW4zF1s3SRTl2ue@lunn.ch>
-From:   Felix Fietkau <nbd@nbd.name>
-Subject: Re: [PATCH v2 14/14] net: ethernet: mtk_eth_soc: support creating mac
- address based offload entries
-In-Reply-To: <YlW4zF1s3SRTl2ue@lunn.ch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [RFC] Applicability of using 'txq_trans_update' during ring
+ recovery
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+References: <1bdb8417-233d-932b-1dc0-c56042aedabd@broadcom.com>
+ <20220412103724.54924945@kernel.org>
+From:   Ray Jui <ray.jui@broadcom.com>
+In-Reply-To: <20220412103724.54924945@kernel.org>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="0000000000006ffbc605dc78f1de"
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--0000000000006ffbc605dc78f1de
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On 12.04.22 19:37, Andrew Lunn wrote:
->> It basically has to keep track of all possible destination ports, their STP
->> state, all their fdb entries, member VLANs of all ports. It has to quickly
->> react to changes in any of these.
-> 
-> switchdev gives you all of those i think. DSA does not make use of
-> them all, in particularly the fdb entries, because of the low
-> bandwidth management link to the switch. But look at the Mellanox
-> switch, it keeps its hardware fdb entries in sync with the software
-> fdb.
-> 
-> And you get every quick access to these, sometimes too quick in that
-> it is holding a spinlock when it calls the switchdev functions, and
-> you need to defer the handling in your driver if you want to use a
-> mutex, perform blocking IO etc.
-> 
->> In order to implement this properly, I would also need to make more changes
->> to mac80211. Right now, mac80211 drivers do not have access to the
->> net_device pointer of virtual interfaces. So mac80211 itself would likely
->> need to implement the switchdev ops and handle some of this.
-> 
-> So this again sounds like something which would be shared by IPA, and
-> any other hardware which can accelerate forwarding between WiFi and
-> some other sort of interface.
-I would really like to see an example of how this should be done.
-Is there a work in progress tree for IPA with offloading? Because the 
-code that I see upstream doesn't seem to have any of that - or did I 
-look in the wrong place?
+Hi Jakub,
 
->> There are also some other issues where I don't know how this is supposed to
->> be solved properly:
->> On MT7622 most of the bridge ports are connected to a MT7531 switch using
->> DSA. Offloading (lan->wlan bridging or L3/L4 NAT/routing) is not handled by
->> the switch itself, it is handled by a packet processing engine in the SoC,
->> which knows how to handle the DSA tags of the MT7531 switch.
->> 
->> So if I were to handle this through switchdev implemented on the wlan and
->> ethernet devices, it would technically not be part of the same switch, since
->> it's a behind a different component with a different driver.
+On 4/12/2022 10:37 AM, Jakub Kicinski wrote:
+> On Tue, 12 Apr 2022 10:01:02 -0700 Ray Jui wrote:
+>> Hi David/Jakub,
+>>
+>> I'd like to run through you on the idea of invoking 'txq_trans_update'
+>> to update the last TX timestamp in the scenario where we temporarily
+>> stop the TX queue to do some recovery work. Is it considered an
+>> acceptable approach to prevent false positive triggering of TX timeout
+>> during the recovery process?
+>>
+>> I know in general people use 'netif_carrier_off' during the process when
+>> they reset/change the entire TX/RX ring set and/or other resources on
+>> the Ethernet card. But in our particular case, we have another driver
+>> running (i.e., RoCE) on top and setting 'netif_carrier_off' will cause a
+>> significant side effect on the other driver (e.g., all RoCE QPs will be
+>> terminated). In addition, for this special recovery work on our driver,
+>> we are doing it on a per NAPI ring set basis while keeping the traffic
+>> on other queues running. Using 'netif_carrier_off' will prevent traffic
+>> running from all other queues that are not going through recovery.
 > 
-> What is important here is the user experience. The user is not
-> expected to know there is an accelerate being used. You setup the
-> bridge just as normal, using iproute2. You add routes in the normal
-> way, either by iproute2, or frr can add routes from OSPF, BGP, RIP or
-> whatever, via zebra. I'm not sure anybody has yet accelerated NAT, but
-> the same principle should be used, using iptables in the normal way,
-> and the accelerate is then informed and should accelerate it if
-> possible.
-Accelerated NAT on MT7622 is already present in the upstream code for a 
-while. It's there for ethernet, and with my patches it also works for 
-ethernet -> wlan.
+> Can you use netif_device_detach() to mark the device as not present?
 
-> switchdev gives you notification of when anything changes. You can
-> have multiple receivers of these notifications, so the packet
-> processor can act on them as well as the DSA switch.
->   
->> Also, is switchdev able to handle the situation where only parts of the
->> traffic is offloaded and the rest (e.g. multicast) is handled through the
->> regular software path?
-> 
-> Yes, that is not a problem. I deliberately use the term
-> accelerator. We accelerate what Linux can already do. If the
-> accelerator hardware is not capable of something, Linux still is, so
-> just pass it the frames and it will do the right thing. Multicast is a
-> good example of this, many of the DSA switch drivers don't accelerate
-> it.
-Don't get me wrong, I'm not against switchdev support at all. I just 
-don't know how to do it yet, and the code that I put in place is useful 
-for non-switchdev use cases as well.
+It seems 'netif_device_detach' marks the netif device as removed
+(through __LINK_STATE_PRESENT) and stops all TX queues.
 
->> In my opinion, handling it through the TC offload has a number of
->> advantages:
->> - It's a lot simpler
->> - It uses the same kind of offloading rules that my software fastpath
->> already uses
->> - It allows more fine grained control over which traffic should be offloaded
->> (src mac -> destination MAC tuple)
->> 
->> I also plan on extending my software fast path code to support emulating
->> bridging of WiFi client mode interfaces. This involves doing some MAC
->> address translation with some IP address tracking. I want that to support
->> hardware offload as well.
->> 
->> I really don't think that desire for supporting switchdev based offload
->> should be a blocker for accepting this code now, especially since my
->> implementation relies on existing Linux network APIs without inventing any
->> new ones, and there are valid use cases for using it, even with switchdev
->> support in place.
-> 
-> What we need to avoid is fragmentation of the way we do things. It has
-> been decided that switchdev is how we use accelerators, and the user
-> should not really know anything about the accelerator. No other in
-> kernel network accelerator needs a user space component listening to
-> netlink notifications and programming the accelerator from user space.
-> Do we really want two ways to do this?
-There's always some overlap in what the APIs can do. And when it comes 
-to the "client mode bridge" use case that I mentioned, I would also need 
-exactly the same API that I put in place here. And this is not something 
-that can (or even should) be done using switchdev. mac80211 prevents 
-adding client mode interfaces to bridges for a reason.
+It also seems the core infiniband subsystem mainly relies on
+'netif_carrier_ok' and 'netif_runing', so 'netif_device_detach' might
+potentially work. I also need to check with our internal RoCE driver
+team to confirm.
 
-- Felix
+One drawback with 'netif_device_detach' compared to the current solution
+is that we will have to stop all TX queues during the entire duration of
+the recovery process (instead of on a per NAPI ring set basis).
+
+Can you please also comment on whether 'txq_trans_update' is considered
+an acceptable approach in this particular scenario? And if not, is there
+another mechanism in the kernel net subsystem that allows one to quiece
+traffic on a per NAPI ring set basis?
+
+Thanks,
+
+Ray
+
+--0000000000006ffbc605dc78f1de
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+Pi3DQoJNNR5cV1dw3cNMKQyHRziEjFTVmILshClu9AljdXzCUoHXDUbge8TIJ/fK36qTGCYWwA01
+rTB3drVX3FZq/Uqo0JnVcyP1dtYVzQIDAQABo4IB1TCCAdEwDgYDVR0PAQH/BAQDAgWgMIGjBggr
+BgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3VyZS5nbG9iYWxzaWduLmNvbS9j
+YWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEGCCsGAQUFBzABhjVodHRwOi8v
+b2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMDBNBgNVHSAERjBE
+MEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93d3cuZ2xvYmFsc2lnbi5jb20v
+cmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6hjhodHRwOi8vY3JsLmdsb2Jh
+bHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNybDAfBgNVHREEGDAWgRRyYXku
+anVpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdb
+NHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQU5E1VdIocTRYIpXh6e6OnGvwfrEgwDQYJKoZIhvcNAQEL
+BQADggEBADcZteuA4mZVmXNzp/tJky+9TS87L/xAogg4z+0bFDomA2JdNGKjraV7jE3LKHUyCQzU
+Bvp8xXjxCndLBgltr+2Fn/Dna/f29iAs4mPBxgPKhqnqpQuTo2DLID2LWU1SLI9ewIlROY57UCvO
+B6ni+9NcOot0MbKF2A1TnzJjWyd127CVyU5vL3un1/tbtmjiT4Ku8ZDoBEViuuWyhdB6TTEQiwDo
+2NxZdezRkkkq+RoNek6gmtl8IKmXsmr1dKIsRBtLQ0xu+kdX+zYJbAQymI1mkq8qCmFAe5aJkrNM
+NbsYBZGZlcox4dHWayCpn4sK+41xyJsmGrygY3zghqBuHPUxggJtMIICaQIBATBrMFsxCzAJBgNV
+BAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdD
+QyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxnTAexrtwIst251kUwDQYJYIZIAWUDBAIBBQCg
+gdQwLwYJKoZIhvcNAQkEMSIEIGp9ulaFnzHty26kOKeMlyKq3tshbEgn5hOppMGOb7vQMBgGCSqG
+SIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDQxMjE4MDgwOFowaQYJKoZI
+hvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG
+9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEF
+AASCAQA/lk+V9YrI4FB77C4ecPKh2VIPQupaKv/x0szANIjozz0xYqJ0JekKdThOYhAuuRS8uuOr
+gQtJQTFp3lKZgE5FMLZBUqR3lZ0+r8mRDTeLWWgWLq4be98VbZ8TFtinc1DjIyiDblJZqXnZCXjl
+LDk4pyluzyhpbQy3EN/KbDvFvNLNpgdoFrcINfPwbGbDh4CHy9QKKbnS7vNk892Ctx/9wKzhJ+/S
+QE+Ajq0vTJYL2eHs6DSRK1p8p0yUxCh90dFdY24KpV8rEZyPR6GFj4xgdLGxVN/DYpPqk75l3lqk
+O4djScx5oQIDKLZ5hmR31PEgybMsN9No2MtR4Ei1vFnU
+--0000000000006ffbc605dc78f1de--
