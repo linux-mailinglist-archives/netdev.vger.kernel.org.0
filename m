@@ -2,112 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7A5E4FC929
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 02:18:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 890294FC92C
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 02:18:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239876AbiDLAUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 20:20:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54884 "EHLO
+        id S240415AbiDLAUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 20:20:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231799AbiDLAUQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 20:20:16 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 469891C107;
-        Mon, 11 Apr 2022 17:18:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649722681; x=1681258681;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=RsPgl6JS8IMFJXGV1Eo0MBdyDoNAzeMZdr4UYrfqzAA=;
-  b=Sxq7jxGaiCQR31J7THa3TcmZXHFu0WFSNXI7rnZpZNLLjK72QeUvtjYk
-   2Fuy560E2EioOHqQfyffQKh2qPnMWmAVLrKt+8feRIEtRv030XRykSdrm
-   Rr5k/FxOLch0DTi/DtIcwSO3mR6xY3EC8uvIFKMezSbri5ZymS1Tc6X4S
-   ky4daNyJt3/qkpPF07LrNiqGsi0Df7um2PUczd2ZuUemlHbWna29Nu/Jn
-   eFxN7I1Ba/dVduAtAGsC1JTYfW0QTrXYA353//Oe8bKV2Lziq8ZA05QDA
-   wI/WhUOvnJLDVT12UmcdBvou8kuXnseDrVmWZVlBK7GM31SVsqbQ/EmXS
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="322689108"
-X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
-   d="scan'208";a="322689108"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 17:18:00 -0700
-X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
-   d="scan'208";a="660258800"
-Received: from zhoufuro-mobl.ccr.corp.intel.com (HELO [10.249.171.224]) ([10.249.171.224])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 17:17:57 -0700
-Message-ID: <cca8a37b-a648-52ba-c14c-1e1078bc628e@linux.intel.com>
-Date:   Tue, 12 Apr 2022 08:17:55 +0800
+        with ESMTP id S240338AbiDLAUe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 20:20:34 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 286DF1C10D;
+        Mon, 11 Apr 2022 17:18:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=4JejSNvCJX2CI8+uPW+i37EPrfsaIiLcHqu56LNBXTk=; b=NAvAlHPem2HgX3sTPQ25vElX7Z
+        7VKmILEkx6xnRWdnUcWhzX8eAvzK5H79rs2pLa6zWUaiYRcj6GZlcDsaHdzFtsS5ZjS3zMNflrEWV
+        SgMxIAYKJGDjj5qgQI75uKWZ/cYqZCupIeuei2mSdds537SL8dLkt6myxRcnyGtp/kyM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ne4EY-00FLah-3D; Tue, 12 Apr 2022 02:18:14 +0200
+Date:   Tue, 12 Apr 2022 02:18:14 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        tobias@waldekranz.com, f.fainelli@gmail.com,
+        vladimir.oltean@nxp.com, corbet@lwn.net, kuba@kernel.org,
+        davem@davemloft.net,
+        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Subject: Re: [PATCH net-next] net: dsa: realtek: add compatible strings for
+ RTL8367RB-VB
+Message-ID: <YlTFRqY3pq84Fw1i@lunn.ch>
+References: <20220411210406.21404-1-luizluca@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v5 5/7] net: phy: adin1100: Add initial support for
- ADIN1100 industrial PHY
-Content-Language: en-US
-To:     alexandru.tachici@analog.com
-Cc:     andrew@lunn.ch, o.rempel@pengutronix.de, davem@davemloft.net,
-        devicetree@vger.kernel.org, hkallweit1@gmail.com, kuba@kernel.org,
-        LKML <linux-kernel@vger.kernel.org>, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, robh+dt@kernel.org,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        Ramon Fried <rfried.dev@gmail.com>
-References: <20220324112620.46963-1-alexandru.tachici@analog.com>
- <20220324112620.46963-6-alexandru.tachici@analog.com>
- <CAGi-RUJLmT-jfjtaYvPjaNHX-QCohhkZ3rkXaHHbmOHk56jTaA@mail.gmail.com>
-From:   Zhou Furong <furong.zhou@linux.intel.com>
-In-Reply-To: <CAGi-RUJLmT-jfjtaYvPjaNHX-QCohhkZ3rkXaHHbmOHk56jTaA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220411210406.21404-1-luizluca@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Mon, Apr 11, 2022 at 06:04:07PM -0300, Luiz Angelo Daros de Luca wrote:
+> RTL8367RB-VB was not mentioned in the compatible table, nor in the
+> Kconfig help text.
+> 
+> The driver still detects the variant by itself and ignores which
+> compatible string was used to select it. So, any compatible string will
+> work for any compatible model.
 
->> +static int adin_config_aneg(struct phy_device *phydev)
->> +{
->> +       struct adin_priv *priv = phydev->priv;
->> +       int ret;
->> +
->> +       if (phydev->autoneg == AUTONEG_DISABLE) {
->> +               ret = genphy_c45_pma_setup_forced(phydev);
->> +               if (ret < 0)
->> +                       return ret;
->> +
->> +               if (priv->tx_level_prop_present && priv->tx_level_2v4) {
->> +                       ret = phy_set_bits_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_B10L_PMA_CTRL,
->> +                                              MDIO_PMA_10T1L_CTRL_2V4_EN);
->> +                       if (ret < 0)
->> +                               return ret;
->> +               } else {
->> +                       ret = phy_clear_bits_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_B10L_PMA_CTRL,
->> +                                                MDIO_PMA_10T1L_CTRL_2V4_EN);
->> +                       if (ret < 0)
->> +                               return ret;
->> +               }
-move below out if/else
+Meaning the compatible string is pointless, and cannot be trusted. So
+yes, you can add it, but don't actually try to use it for anything,
+like quirks.
 
-if(ret < 0）
-	return ret;
-
-
->> +static int adin_set_powerdown_mode(struct phy_device *phydev, bool en)
->> +{
->> +       int ret;
->> +       int val;
->> +
->> +       if (en)
->> +               val = ADIN_CRSM_SFT_PD_CNTRL_EN;
->> +       else
->> +               val = 0;please consider below change which looks neat
-            val = en? ADIN_CRSM_SFT_PD_CNTRL_EN : 0
-
-
-Best regards,
-Furong
+     Andrew
