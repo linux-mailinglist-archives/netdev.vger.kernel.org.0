@@ -2,168 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E312A4FE5C2
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 18:24:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C747E4FE592
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 18:10:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350069AbiDLQ1C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 12:27:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51976 "EHLO
+        id S1357496AbiDLQMU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 12:12:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235689AbiDLQ1A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 12:27:00 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EBB538192;
-        Tue, 12 Apr 2022 09:24:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649780682; x=1681316682;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=UeSHKiFD9MWQD9/lwoZzgM1WMiX/Uf+MCYGmOWbS/MQ=;
-  b=IgeMVV1TefkVsW0SmgHxJRH+NyZFscL9F9bdji2rv8JrIej68zf9DmYm
-   otsDeyHUHO6CZ/UM8wAIDTtj1UKHkMM1cnUuA4R7qFZ0TLpkZy0nCEwkk
-   lNsLeeGKZqtAgFKQbmoPyQ6KUVnj9ef2+ZA9hCbHVgiNiYRVFJONnnDQd
-   YUW1GTva3e9lYnYw3suUOi5MKihzrm47Yw3TfrDd1aGt9nEGYHW25hXYv
-   55qi6Gxr8fnhIXI9n3Dr9nbKObcGrTnf+3mBVN5fv5W8pCdqgwr3q1+E/
-   ii1VOss+KOFZG8X3rYiaRF3+B/2I2BIvhQbpMTx7o7VEl5GJW6UQLrtl9
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="242362658"
-X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
-   d="scan'208";a="242362658"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 09:11:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
-   d="scan'208";a="655174943"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga002.fm.intel.com with ESMTP; 12 Apr 2022 09:11:21 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 23CGBKdH010632;
-        Tue, 12 Apr 2022 17:11:20 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Petr Oros <poros@redhat.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        netdev@vger.kernel.org, ivecera@redhat.com,
-        intel-wired-lan@lists.osuosl.org, linux-kernel@vger.kernel.org,
-        kuba@kernel.org, pabeni@redhat.com, davem@davemloft.net
-Subject: Re: [Intel-wired-lan] [PATCH] ice: wait for EMP reset after firmware flash
-Date:   Tue, 12 Apr 2022 18:08:56 +0200
-Message-Id: <20220412160856.1027597-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412102753.670867-1-poros@redhat.com>
-References: <20220412102753.670867-1-poros@redhat.com>
+        with ESMTP id S240516AbiDLQMT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 12:12:19 -0400
+Received: from smtp-8fa9.mail.infomaniak.ch (smtp-8fa9.mail.infomaniak.ch [83.166.143.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99BE84AE1B
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 09:10:00 -0700 (PDT)
+Received: from smtp-2-0001.mail.infomaniak.ch (unknown [10.5.36.108])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4Kd9fZ4T2xzMqKrL;
+        Tue, 12 Apr 2022 18:09:58 +0200 (CEST)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-2-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4Kd9fZ0G0ZzljsV0;
+        Tue, 12 Apr 2022 18:09:57 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1649779798;
+        bh=rjmNslMl6N3fWg5T7Fr5nmkqlk6bozeTLtc7icUMyjA=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=ccJa5J0ct/QoZol+PWIYaFhliMBIBpZyqNiENzOk/RY9pvCr6VkI1l2ozdxqntSWn
+         cFY+nX/e5bySFGhIWPpR9Cpo0G7tEFY4pi40tj2QYGd8+/HNFwg5winQMqmXCPtnY8
+         EqBoqp8WR3WCe0IfJCBWUcFoGoZaj7NZ3MVYAjdI=
+Message-ID: <dbe702e7-ee63-c665-a989-255b0c1212cc@digikod.net>
+Date:   Tue, 12 Apr 2022 18:10:14 +0200
 MIME-Version: 1.0
+User-Agent: 
+Content-Language: en-US
+To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+Cc:     willemdebruijn.kernel@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
+        artem.kuzin@huawei.com, anton.sirazetdinov@huawei.com
+References: <20220309134459.6448-1-konstantin.meskhidze@huawei.com>
+ <20220309134459.6448-8-konstantin.meskhidze@huawei.com>
+ <d4724117-167d-00b0-1f10-749b35bffc2f@digikod.net>
+ <1b1c5aaa-9d9a-e38e-42b4-bb0509eba4b5@digikod.net>
+ <6db0b12b-aeaa-12b6-bf50-33f138a52360@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [RFC PATCH v4 07/15] landlock: user space API network support
+In-Reply-To: <6db0b12b-aeaa-12b6-bf50-33f138a52360@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Petr Oros <poros@redhat.com>
-Date: Tue, 12 Apr 2022 12:27:53 +0200
 
-> We need to wait for EMP reset after firmware flash.
-> Code was extracted from OOT driver and without this wait fw_activate let
-> card in inconsistent state recoverable only by second flash/activate
+On 12/04/2022 16:05, Konstantin Meskhidze wrote:
 > 
-> Reproducer:
-> [root@host ~]# devlink dev flash pci/0000:ca:00.0 file E810_XXVDA4_FH_O_SEC_FW_1p6p1p9_NVM_3p10_PLDMoMCTP_0.11_8000AD7B.bin
-> Preparing to flash
-> [fw.mgmt] Erasing
-> [fw.mgmt] Erasing done
-> [fw.mgmt] Flashing 100%
-> [fw.mgmt] Flashing done 100%
-> [fw.undi] Erasing
-> [fw.undi] Erasing done
-> [fw.undi] Flashing 100%
-> [fw.undi] Flashing done 100%
-> [fw.netlist] Erasing
-> [fw.netlist] Erasing done
-> [fw.netlist] Flashing 100%
-> [fw.netlist] Flashing done 100%
-> Activate new firmware by devlink reload
-> [root@host ~]# devlink dev reload pci/0000:ca:00.0 action fw_activate
-> reload_actions_performed:
->     fw_activate
-> [root@host ~]# ip link show ens7f0
-> 71: ens7f0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
->     link/ether b4:96:91:dc:72:e0 brd ff:ff:ff:ff:ff:ff
->     altname enp202s0f0
 > 
-> dmesg after flash:
-> [   55.120788] ice: Copyright (c) 2018, Intel Corporation.
-> [   55.274734] ice 0000:ca:00.0: Get PHY capabilities failed status = -5, continuing anyway
-> [   55.569797] ice 0000:ca:00.0: The DDP package was successfully loaded: ICE OS Default Package version 1.3.28.0
-> [   55.603629] ice 0000:ca:00.0: Get PHY capability failed.
-> [   55.608951] ice 0000:ca:00.0: ice_init_nvm_phy_type failed: -5
-> [   55.647348] ice 0000:ca:00.0: PTP init successful
-> [   55.675536] ice 0000:ca:00.0: DCB is enabled in the hardware, max number of TCs supported on this port are 8
-> [   55.685365] ice 0000:ca:00.0: FW LLDP is disabled, DCBx/LLDP in SW mode.
-> [   55.692179] ice 0000:ca:00.0: Commit DCB Configuration to the hardware
-> [   55.701382] ice 0000:ca:00.0: 126.024 Gb/s available PCIe bandwidth, limited by 16.0 GT/s PCIe x8 link at 0000:c9:02.0 (capable of 252.048 Gb/s with 16.0 GT/s PCIe x16 link)
-> Reboot don't help, only second flash/activate with OOT or patched driver put card back in consistent state
+> 4/12/2022 4:48 PM, Mickaël Salaün пишет:
+>>
+>> On 12/04/2022 13:21, Mickaël Salaün wrote:
+>>>
+>>> On 09/03/2022 14:44, Konstantin Meskhidze wrote:
+>>
+>> [...]
+>>
+>>>> @@ -184,7 +185,7 @@ SYSCALL_DEFINE3(landlock_create_ruleset,
+>>>>
+>>>>       /* Checks content (and 32-bits cast). */
+>>>>       if ((ruleset_attr.handled_access_fs | LANDLOCK_MASK_ACCESS_FS) !=
+>>>> -            LANDLOCK_MASK_ACCESS_FS)
+>>>> +             LANDLOCK_MASK_ACCESS_FS)
+>>>
+>>> Don't add cosmetic changes. FYI, I'm relying on the way Vim does line 
+>>> cuts, which is mostly tabs. Please try to do the same.
+>>
+>> Well, let's make it simple and avoid tacit rules. I'll update most of 
+>> the existing Landlock code and tests to be formatted with clang-format 
+>> (-i *.[ch]), and I'll update the landlock-wip branch so that you can 
+>> base your next patch series on it. There should be some exceptions 
+>> that need customization but we'll see that in the next series. Anyway, 
+>> don't worry too much, just make sure you don't have style-only changes 
+>> in your patches.
 > 
-> After patch:
-> [root@host ~]# devlink dev flash pci/0000:ca:00.0 file E810_XXVDA4_FH_O_SEC_FW_1p6p1p9_NVM_3p10_PLDMoMCTP_0.11_8000AD7B.bin
-> Preparing to flash
-> [fw.mgmt] Erasing
-> [fw.mgmt] Erasing done
-> [fw.mgmt] Flashing 100%
-> [fw.mgmt] Flashing done 100%
-> [fw.undi] Erasing
-> [fw.undi] Erasing done
-> [fw.undi] Flashing 100%
-> [fw.undi] Flashing done 100%
-> [fw.netlist] Erasing
-> [fw.netlist] Erasing done
-> [fw.netlist] Flashing 100%
-> [fw.netlist] Flashing done 100%
-> Activate new firmware by devlink reload
-> [root@host ~]# devlink dev reload pci/0000:ca:00.0 action fw_activate
-> reload_actions_performed:
->     fw_activate
-> [root@host ~]# ip link show ens7f0
-> 19: ens7f0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
->     link/ether b4:96:91:dc:72:e0 brd ff:ff:ff:ff:ff:ff
->     altname enp202s0f0
-> 
-> Fixes: 399e27dbbd9e94 ("ice: support immediate firmware activation via devlink reload")
-> Signed-off-by: Petr Oros <poros@redhat.com>
-> ---
->  drivers/net/ethernet/intel/ice/ice_main.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-> index d768925785ca79..90ea2203cdc763 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_main.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-> @@ -6931,12 +6931,15 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
->  
->  	dev_dbg(dev, "rebuilding PF after reset_type=%d\n", reset_type);
->  
-> +#define ICE_EMP_RESET_SLEEP 5000
+>    I have already rebased my next patch series on your landlock-wip 
+> branch. So I will wait for your changes meanwhile refactoring my v5 
+> patch series according your comments.
 
-Ooof, 5 sec is a lot! Is there any way to poll the device readiness?
-Does it really need the whole 5 sec?
+Good.
 
->  	if (reset_type == ICE_RESET_EMPR) {
->  		/* If an EMP reset has occurred, any previously pending flash
->  		 * update will have completed. We no longer know whether or
->  		 * not the NVM update EMP reset is restricted.
->  		 */
->  		pf->fw_emp_reset_disabled = false;
-> +
-> +		msleep(ICE_EMP_RESET_SLEEP);
->  	}
->  
->  	err = ice_init_all_ctrlq(hw);
-> -- 
-> 2.35.1
+> 
+> Also I want to discuss adding demo in sandboxer.c to show how landlock
+> supports network sandboxing:
+> 
+>      - Add additional args like "LL_NET_BIND=port1:...:portN"
+>      - Add additional args like "LL_NET_CONNECT=port1:...:portN"
+>      - execv 2 bash procceses:
+>          1. first bash listens in loop - $ nc -l -k -p <port1> -v
+>          2. second bash to connects the first one - $ nc <ip> <port>
+> 
+> What do you think? its possible to present this demo in the next v5 
+> patch series.
 
-Thanks,
-Al
+This looks good! I think LL_TCP_BIND and LL_TCP_CONNECT would fit better 
+though.
+
+I'm not sure if I already said that, but please remove the "RFC " part 
+for the next series.
