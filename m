@@ -2,58 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 518964FC944
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 02:29:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C1294FC956
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 02:38:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229874AbiDLAcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 20:32:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44156 "EHLO
+        id S234416AbiDLAlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 20:41:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241416AbiDLAcI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 20:32:08 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7000825586
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 17:29:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Bm+IUItO5bfuLl2+06gfMmD7aKqXc2K7mQxSf0tpnNc=; b=bY0wkwTq9R7qqClMxQJkwLw1hy
-        jHC1DG453Eq3M7Yop9p/MqQdCM3OHp7yR6j7wcgx4oFVzVaIehFAKL8VOtIyzCdnC2UPStlbrFUqP
-        auTYluZN2SgJPx26wr2puGmoYD8QHVfAzwnaIVRRqxTqlrGcgxdXZcGRy1/a51tQPYaQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ne4Pk-00FLeB-Sa; Tue, 12 Apr 2022 02:29:48 +0200
-Date:   Tue, 12 Apr 2022 02:29:48 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Josua Mayer <josua@solid-run.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        netdev@vger.kernel.org, alvaro.karsz@solid-run.com,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: Re: [PATCH 1/3] dt: adin: document clk-out property
-Message-ID: <YlTH/IsKi/v8UHKv@lunn.ch>
-References: <20220410104626.11517-1-josua@solid-run.com>
- <20220410104626.11517-2-josua@solid-run.com>
- <d83be897-55ee-25d2-4048-586646cd7151@linaro.org>
- <bc0e507b-338b-8a86-1a7b-8055e2cf9a3a@solid-run.com>
- <e0511d39-7915-3ce1-60c7-9d7739f1b253@linaro.org>
- <b519690c-a487-e64c-86e1-bd37e38dc7a7@solid-run.com>
- <20220411130715.516fc5cc@kernel.org>
- <YlSWz+XELKV3LK8s@lunn.ch>
- <20220411143315.6cd5484e@kernel.org>
+        with ESMTP id S229609AbiDLAlG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 20:41:06 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F6D41929A
+        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 17:38:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649723931; x=1681259931;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=zdDESkkqaUn/aPwGR2fRNE+tXm7huVy2jT6kk0Wyssc=;
+  b=a/jrw3bAgviCSC0BdYcYUqpPQHP2A7xa4SA4pBrarnI9zVhZVI1FbQhg
+   mcn3+uvQgYS965yND2dypVtU+YEwA61oImZ6BADQktllIWBzCosWdBuUH
+   62+ntapjBK1rHOXFwg9sGWSXyAiPJBJMfsVDmzUGH6OEuSci2FHL1W1pN
+   gtpuebZ2dzsWx9JVVbUTuRHC7SuJLDZfzYqc9VAbKh17pqth41sASsjOb
+   TfS36WjbmPIQ5n0YKSVVvs4W1HwzVw07hcH8D0Siex1Om9BUtLHx7BLvQ
+   YgLzsuKLfLG9iaEA9bY1SdJ4RAGsEBE4Au2kPY4DPT9J+0aMBHUlf8iGV
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="249529238"
+X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
+   d="scan'208";a="249529238"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 17:38:47 -0700
+X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
+   d="scan'208";a="551466016"
+Received: from vcostago-mobl3.jf.intel.com (HELO vcostago-mobl3) ([10.24.14.61])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 17:38:47 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jhs@mojatatu.com" <jhs@mojatatu.com>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "kuba@kernel.org" <kuba@kernel.org>, Po Liu <po.liu@nxp.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>,
+        "mkubecek@suse.cz" <mkubecek@suse.cz>
+Subject: Re: [PATCH net-next v4 02/12] taprio: Add support for frame
+ preemption offload
+In-Reply-To: <20220412000759.wtsebxkayb5vssvx@skbuf>
+References: <20210626003314.3159402-1-vinicius.gomes@intel.com>
+ <20210626003314.3159402-3-vinicius.gomes@intel.com>
+ <20210627195826.fax7l4hd2itze4pi@skbuf> <874k2zdwp4.fsf@intel.com>
+ <20220412000759.wtsebxkayb5vssvx@skbuf>
+Date:   Mon, 11 Apr 2022 17:38:47 -0700
+Message-ID: <87h76zcezs.fsf@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220411143315.6cd5484e@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,37 +67,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 02:33:15PM -0700, Jakub Kicinski wrote:
-> On Mon, 11 Apr 2022 22:59:59 +0200 Andrew Lunn wrote:
-> > > Noob question - can you explain how this property describes HW?
-> > > I thought we had a framework for clock config, and did not require
-> > > vendor specific properties of this sort.
-> > > 
-> > > The recovered vs free running makes the entire thing sound like
-> > > a SyncE related knob, irrelevant to normal HW operation.  
-> > 
-> > It is not necessarily SyncE. Fast Ethernet is based around a 25MHz
-> > clock. Something needs to provide that clock. Sometimes the SoC/MAC
-> > provides it, and passes it to the PHY. Sometimes the PHY provides it,
-> > and passes it to the SoC/MAC.
-> > 
-> > There are a couple of PHYs which make use of the common clock
-> > framework, when the SoC is the clock source. However, i don't think
-> > there are any PHYs which provide a clock to the common clock framework
-> > when they are the source. We do however have a number of vendor
-> > properties to control the PHY clock output, disable the PHY clock
-> > output, select the PHY clock output, etc. There is not too much
-> > standardisation here, and it is made worse by some PHYs needing a
-> > reset once the clock is ticking, some MACs stop the clock when the
-> > link is administrative down, some PHYs stop the clock a short time
-> > after the link goes down which can be bad for the MAC etc.
-> 
-> I see. Why would the MAC/SoC care if the clock is recovered or free
-> running, tho?
+Vladimir Oltean <vladimir.oltean@nxp.com> writes:
 
-Autoneg determines which link peer will be the master and which will
-be the slave. The master provides the clock for the link. So the slave
-PHY might want to pass through the recovered clock so it does not need
-to deal with drift between the recovered clock and its own clock.
+> On Mon, Apr 11, 2022 at 04:31:03PM -0700, Vinicius Costa Gomes wrote:
+>> > First line in taprio_disable_offload() is:
+>> >
+>> > 	if (!FULL_OFFLOAD_IS_ENABLED(q->flags))
+>> > 		return 0;
+>> >
+>> > but you said it yourself below that the preemptible queues thing is
+>> > independent of whether you have taprio offload or not (or taprio at
+>> > all). So the queues will never be reset back to the eMAC if you don't
+>> > use full offload (yes, this includes txtime offload too). In fact, it's
+>> > so independent, that I don't even know why we add them to taprio in the
+>> > first place :)
+>>
+>> That I didn't change taprio_disable_offload() was a mistake caused in
+>> part by the limitations of the hardware I have (I cannot have txtime
+>> offload and frame preemption enabled at the same time), so I didn't
+>> catch that.
+>>
+>> > I think the argument had to do with the hold/advance commands (other
+>> > frame preemption stuff that's already in taprio), but those are really
+>> > special and only to be used in the Qbv+Qbu combination, but the pMAC
+>> > traffic classes? I don't know... Honestly I thought that me asking to
+>> > see preemptible queues implemented for mqprio as well was going to
+>> > discourage you, but oh well...
+>>
+>> Now, the real important part, if this should be communicated to the
+>> driver via taprio or via ethtool/netlink.
+>>
+>> I don't really have strong opinions on this anymore, the two options are
+>> viable/possible.
+>>
+>> This is going to be a niche feature, agreed, so thinking that going with
+>> the one that gives the user more flexibility perhaps is best, i.e. using
+>> ethtool/netlink to communicate which queues should be marked as
+>> preemptible or express.
+>
+> So we're back at this, very well.
+>
+> I was just happening to be looking at clause 36 of 802.1Q (Priority Flow Control),
+> a feature exchanged through DCBX where flows of a certain priority can be
+> configured as lossless on a port, and generate PAUSE frames. This is essentially
+> the extension of 802.3 annex 31B MAC Control PAUSE operation with the ability to
+> enable/disable flow control on a per-priority basis.
+>
+> The priority in PFC (essentially synonymous with "traffic class") is the same
+> priority as the priority in frame preemption. And you know how PFC is configured
+> in Linux? Not through the qdisc, but through DCB_ATTR_PFC_CFG, a nested dcbnl
+> netlink attribute with one nested u8 attribute per priority value
+> (DCB_PFC_UP_ATTR_0 to DCB_PFC_UP_ATTR_7).
+>
+> Not saying we should follow the exact same model as PFC, just saying that I'm
+> hard pressed to find a good reason why the "preemptable traffic classes"
+> information should sit in a layer which is basically independent of the frame
+> preemption feature itself.
 
-   Andrew
+Ok, going to take this as another point in favor of going the ethtool
+route.
+
+
+Thank you,
+-- 
+Vinicius
