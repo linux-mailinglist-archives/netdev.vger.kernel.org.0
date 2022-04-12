@@ -2,116 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E614B4FCB0D
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 03:01:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9369C4FCB02
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 03:01:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345025AbiDLBCy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 21:02:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34948 "EHLO
+        id S1344671AbiDLBCm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 21:02:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345071AbiDLA61 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 20:58:27 -0400
+        with ESMTP id S245667AbiDLA4n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 20:56:43 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 088C62F036;
-        Mon, 11 Apr 2022 17:50:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38FF41FCC0;
+        Mon, 11 Apr 2022 17:49:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B79F1B815C8;
-        Tue, 12 Apr 2022 00:50:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCC67C385A3;
-        Tue, 12 Apr 2022 00:50:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A0B09B8198C;
+        Tue, 12 Apr 2022 00:49:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6DC5C385AB;
+        Tue, 12 Apr 2022 00:49:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724632;
-        bh=N/9Rui6mpSwGeDNpe/xTbHy8TO3O88n/9VixNIN9aiA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BQsEWYAKkoQzd8XbijsLFdOdvakTZiHTachPTLc2GTjV+eX5tBdXTNCaqH6tBDG2L
-         2aHppI74GHl02hJCuXZMKgYjYOJwoWePDg/+3XN2GXU0a8pgB7uf1PTLuRXcyh6cbf
-         WIaqkyjpej3VtyIvEY2P71dOdQaAZ87fhp/rsBKqXs7WRnRWvof/nAKEPbYgZY+pAu
-         d79WpveRA07YxeRgMz+tetzqSBZWtCJmPq/k1df4D02+13QhjmB8GQ+avLJ5OMfH+e
-         bnREdECDgO5BOegEcSSvj/3Ypjo44x8DaUSwovybyKLo2nsIAlTxmSm42nzcMTmCYn
-         UCXbVwDY4o/Lw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duoming Zhou <duoming@zju.edu.cn>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        pabeni@redhat.com, gregkh@linuxfoundation.org, mkl@pengutronix.de,
-        dmitry.torokhov@gmail.com, arnd@arndb.de, bigeasy@linutronix.de,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 28/30] drivers: net: slip: fix NPD bug in sl_tx_timeout()
-Date:   Mon, 11 Apr 2022 20:49:02 -0400
-Message-Id: <20220412004906.350678-28-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412004906.350678-1-sashal@kernel.org>
-References: <20220412004906.350678-1-sashal@kernel.org>
-MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        s=k20201202; t=1649724569;
+        bh=bUn5MsT2K3tXiL4OUAHoHpu6WGSu0PQnC8Qt/TN43SE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ViCn0Y6LM+yv0btIMrHmlN+58EMx9MaXxxgCwKhNVwVOxuIGaKehJl/ZLscRhnQJ4
+         mJ7lLRBHAgazX8B77zxLgrABdwYaIefAtrLOI4/52lNZv6Zx7nVnc4Pj3Huyu3F35f
+         kHg7hiF5+AdmI3BRZTSyJWhLXYe6Jvk2Qw49+XyCjhOnI1yx1y2U4F/JrX9rH4s1as
+         JjqNeKBJRlY7dTDblK05yNU7Bp5KPimltOU5ziXBZKlFCnPwICA7lEag1Pl9TdGHbv
+         p6RKbqYj3pLBihxkZscNumNxW4BMAGw2c028jnQipUQUJjAibgIzUsKd1kzgSMe50o
+         dPSG4eTamKURw==
+Date:   Tue, 12 Apr 2022 09:49:23 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: Re: [RFC bpf-next 4/4] selftests/bpf: Add attach bench test
+Message-Id: <20220412094923.0abe90955e5db486b7bca279@kernel.org>
+In-Reply-To: <CAEf4BzbE1n3Lie+tWTzN69RQUWgjxePorxRr9J8CuiQVUfy-kA@mail.gmail.com>
+References: <20220407125224.310255-1-jolsa@kernel.org>
+        <20220407125224.310255-5-jolsa@kernel.org>
+        <CAEf4BzbE1n3Lie+tWTzN69RQUWgjxePorxRr9J8CuiQVUfy-kA@mail.gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+On Mon, 11 Apr 2022 15:15:40 -0700
+Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
 
-[ Upstream commit ec4eb8a86ade4d22633e1da2a7d85a846b7d1798 ]
+> > +#define DEBUGFS "/sys/kernel/debug/tracing/"
+> > +
+> > +static int get_syms(char ***symsp, size_t *cntp)
+> > +{
+> > +       size_t cap = 0, cnt = 0, i;
+> > +       char *name, **syms = NULL;
+> > +       struct hashmap *map;
+> > +       char buf[256];
+> > +       FILE *f;
+> > +       int err;
+> > +
+> > +       /*
+> > +        * The available_filter_functions contains many duplicates,
+> > +        * but other than that all symbols are usable in kprobe multi
+> > +        * interface.
+> > +        * Filtering out duplicates by using hashmap__add, which won't
+> > +        * add existing entry.
+> > +        */
+> > +       f = fopen(DEBUGFS "available_filter_functions", "r");
+> 
+> I'm really curious how did you manage to attach to everything in
+> available_filter_functions because when I'm trying to do that I fail.
+> available_filter_functions has a bunch of functions that should not be
+> attachable (e.g., notrace functions). Look just at __bpf_tramp_exit:
+> 
+>   void notrace __bpf_tramp_exit(struct bpf_tramp_image *tr);
 
-When a slip driver is detaching, the slip_close() will act to
-cleanup necessary resources and sl->tty is set to NULL in
-slip_close(). Meanwhile, the packet we transmit is blocked,
-sl_tx_timeout() will be called. Although slip_close() and
-sl_tx_timeout() use sl->lock to synchronize, we don`t judge
-whether sl->tty equals to NULL in sl_tx_timeout() and the
-null pointer dereference bug will happen.
+Hmm, this sounds like a bug in ftrace side. IIUC, the
+"available_filter_functions" only shows the functions which is NOT
+instrumented by mcount, we should not see any notrace functions on it.
 
-   (Thread 1)                 |      (Thread 2)
-                              | slip_close()
-                              |   spin_lock_bh(&sl->lock)
-                              |   ...
-...                           |   sl->tty = NULL //(1)
-sl_tx_timeout()               |   spin_unlock_bh(&sl->lock)
-  spin_lock(&sl->lock);       |
-  ...                         |   ...
-  tty_chars_in_buffer(sl->tty)|
-    if (tty->ops->..) //(2)   |
-    ...                       |   synchronize_rcu()
+Technically, this is done by __no_instrument_function__ attribute.
 
-We set NULL to sl->tty in position (1) and dereference sl->tty
-in position (2).
+#if defined(CC_USING_HOTPATCH)
+#define notrace                 __attribute__((hotpatch(0, 0)))
+#elif defined(CC_USING_PATCHABLE_FUNCTION_ENTRY)
+#define notrace                 __attribute__((patchable_function_entry(0, 0)))
+#else
+#define notrace                 __attribute__((__no_instrument_function__))
+#endif
 
-This patch adds check in sl_tx_timeout(). If sl->tty equals to
-NULL, sl_tx_timeout() will goto out.
+> 
+> So first, curious what I am doing wrong or rather why it succeeds in
+> your case ;)
+> 
+> But second, just wanted to plea to "fix" available_filter_functions to
+> not list stuff that should not be attachable. Can you please take a
+> look and checks what's going on there and why do we have notrace
+> functions (and what else should *NOT* be there)?
 
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Link: https://lore.kernel.org/r/20220405132206.55291-1-duoming@zju.edu.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/slip/slip.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Can you share how did you reproduce the issue? I'll check it.
 
-diff --git a/drivers/net/slip/slip.c b/drivers/net/slip/slip.c
-index f81fb0b13a94..369bd30fed35 100644
---- a/drivers/net/slip/slip.c
-+++ b/drivers/net/slip/slip.c
-@@ -468,7 +468,7 @@ static void sl_tx_timeout(struct net_device *dev, unsigned int txqueue)
- 	spin_lock(&sl->lock);
- 
- 	if (netif_queue_stopped(dev)) {
--		if (!netif_running(dev))
-+		if (!netif_running(dev) || !sl->tty)
- 			goto out;
- 
- 		/* May be we must check transmitter timeout here ?
+Thank you,
+
+
 -- 
-2.35.1
-
+Masami Hiramatsu <mhiramat@kernel.org>
