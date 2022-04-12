@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D2DE4FCFB1
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 08:35:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4658A4FCFAE
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 08:35:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349628AbiDLGgz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 02:36:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51756 "EHLO
+        id S1349695AbiDLGhD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 02:37:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349319AbiDLGgH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 02:36:07 -0400
+        with ESMTP id S1349379AbiDLGgJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 02:36:09 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DD8135DD0;
-        Mon, 11 Apr 2022 23:33:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DAF835DF7;
+        Mon, 11 Apr 2022 23:33:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1649745218; x=1681281218;
+  t=1649745225; x=1681281225;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=mq3h1yyGxNGjLIox7hCoYlBU0GvesA0gIlk/iL9J+Ac=;
-  b=xlcVY3vuqAP/1KahK/gFvzKh2pFeVhE5OX8XIi/KPQQSz/uRAR3+aeul
-   OqUsGvT/n9XsPS4mvpCRY8cSJzxAiyLBa+cUnQeHmicxTqXL3WV4ITmiA
-   u8yabzO/VCd/Pnk+QHl3r4dqMirmDDiDM/9jo9tQA09ze8M2n460N8DBm
-   gltW7q+qFiow7Wm9KGOfVLempPq0C5+1OMAvcLwHWS6QzmtPzqsc93xm2
-   PgHj228aJiJBUE4s7hesgsBJCay07956vX5RhrbF3ymOgXcl+AW8NbFar
-   jMv23BsEkJ+us+v0BVtgBjGrFlBSJUo9g7q5JKQ0rwaJFIWvTYurFszga
-   w==;
+  bh=OV+dhk+nfcCxCEAOVg9hBASWS9td5Fa2U6D9XDixvHc=;
+  b=T0fmpcSkhH8G1lKDOR1KWw7t85reJX9EfuO3wxrGhpPb1G904AtAuOEC
+   Oo8e9jAjjLTMKxZDHao88mGTopEKWGeagoTMxE91LGpplVgOM/wHc6MBv
+   SOJOsOQ5+Tee/r266VgoVLyy0DlXZZRr3nEa5DfAWc9C99DSns/S5sUAS
+   tGfO4OVRu3XyK6igMYYgBouQD8xTn0B71wKdxyTujzoCTUbXR8TioZI9A
+   56Fps9CLsaMev2XdtXG/DXY8pcUx/Dzo+wNlc96IwhAGmFSdYBxzDgAgK
+   55svddJBDC3yJZIcvsgDMk/g48XXeQ8CPGeh6bXjQiyzXjDwo4QBReVxo
+   g==;
 X-IronPort-AV: E=Sophos;i="5.90,253,1643698800"; 
-   d="scan'208";a="159767808"
+   d="scan'208";a="169301755"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Apr 2022 23:33:38 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Apr 2022 23:33:44 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 11 Apr 2022 23:33:36 -0700
+ 15.1.2375.17; Mon, 11 Apr 2022 23:33:44 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 11 Apr 2022 23:33:33 -0700
+ 15.1.2375.17 via Frontend Transport; Mon, 11 Apr 2022 23:33:40 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
@@ -45,9 +45,9 @@ CC:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
         Russell King <linux@armlinux.org.uk>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>, <UNGLinuxDriver@microchip.com>
-Subject: [Patch net-next 1/3] net: phy: LAN937x: added PHY_POLL_CABLE_TEST flag
-Date:   Tue, 12 Apr 2022 12:03:15 +0530
-Message-ID: <20220412063317.4173-2-arun.ramadoss@microchip.com>
+Subject: [Patch net-next 2/3] net: phy: LAN87xx: add ethtool SQI support
+Date:   Tue, 12 Apr 2022 12:03:16 +0530
+Message-ID: <20220412063317.4173-3-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220412063317.4173-1-arun.ramadoss@microchip.com>
 References: <20220412063317.4173-1-arun.ramadoss@microchip.com>
@@ -64,26 +64,113 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Added the phy_poll_cable_test flag for the lan937x phy driver.
-Tested using command -  ethtool --cable-test <dev>
+This patch add the support for measuring Signal Quality Index for
+LAN87xx and LAN937x T1 Phy. It uses the SQI Method 5 for obtaining the
+values.
 
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 ---
- drivers/net/phy/microchip_t1.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/phy/microchip_t1.c | 48 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
 
 diff --git a/drivers/net/phy/microchip_t1.c b/drivers/net/phy/microchip_t1.c
-index 389df3f4293c..363bfbfa182b 100644
+index 363bfbfa182b..509aa78fef85 100644
 --- a/drivers/net/phy/microchip_t1.c
 +++ b/drivers/net/phy/microchip_t1.c
-@@ -748,6 +748,7 @@ static struct phy_driver microchip_t1_phy_driver[] = {
+@@ -68,7 +68,12 @@
+ #define T1_POST_LCK_MUFACT_CFG_REG	0x1C
+ #define T1_TX_RX_FIFO_CFG_REG		0x02
+ #define T1_TX_LPF_FIR_CFG_REG		0x55
++#define T1_COEF_CLK_PWR_DN_CFG		0x04
++#define T1_COEF_RW_CTL_CFG		0x0D
+ #define T1_SQI_CONFIG_REG		0x2E
++#define T1_SQI_CONFIG2_REG		0x4A
++#define T1_DCQ_SQI_REG			0xC3
++#define T1_DCQ_SQI_MSK			GENMASK(3, 1)
+ #define T1_MDIO_CONTROL2_REG		0x10
+ #define T1_INTERRUPT_SOURCE_REG		0x18
+ #define T1_INTERRUPT2_SOURCE_REG	0x08
+@@ -82,6 +87,9 @@
+ #define T1_MODE_STAT_REG		0x11
+ #define T1_LINK_UP_MSK			BIT(0)
+ 
++/* SQI defines */
++#define LAN87XX_MAX_SQI			0x07
++
+ #define DRIVER_AUTHOR	"Nisar Sayed <nisar.sayed@microchip.com>"
+ #define DRIVER_DESC	"Microchip LAN87XX/LAN937x T1 PHY driver"
+ 
+@@ -346,9 +354,20 @@ static int lan87xx_phy_init(struct phy_device *phydev)
+ 		  T1_TX_LPF_FIR_CFG_REG, 0x1011, 0 },
+ 		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
+ 		  T1_TX_LPF_FIR_CFG_REG, 0x1000, 0 },
++		/* Setup SQI measurement */
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_COEF_CLK_PWR_DN_CFG,	0x16d6, 0 },
+ 		/* SQI enable */
+ 		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
+ 		  T1_SQI_CONFIG_REG,		0x9572, 0 },
++		/* SQI select mode 5 */
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_SQI_CONFIG2_REG,		0x0001, 0 },
++		/* Throws the first SQI reading */
++		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_DSP,
++		  T1_COEF_RW_CTL_CFG,		0x0301,	0 },
++		{ PHYACC_ATTR_MODE_READ, PHYACC_ATTR_BANK_DSP,
++		  T1_DCQ_SQI_REG,		0,	0 },
+ 		/* Flag LPS and WUR as idle errors */
+ 		{ PHYACC_ATTR_MODE_WRITE, PHYACC_ATTR_BANK_SMI,
+ 		  T1_MDIO_CONTROL2_REG,		0x0014, 0 },
+@@ -729,6 +748,31 @@ static int lan87xx_config_aneg(struct phy_device *phydev)
+ 	return rc;
+ }
+ 
++static int lan87xx_get_sqi(struct phy_device *phydev)
++{
++	u8 sqi_value = 0;
++	int rc;
++
++	rc = access_ereg(phydev, PHYACC_ATTR_MODE_WRITE,
++			 PHYACC_ATTR_BANK_DSP, T1_COEF_RW_CTL_CFG, 0x0301);
++	if (rc < 0)
++		return rc;
++
++	rc = access_ereg(phydev, PHYACC_ATTR_MODE_READ,
++			 PHYACC_ATTR_BANK_DSP, T1_DCQ_SQI_REG, 0x0);
++	if (rc < 0)
++		return rc;
++
++	sqi_value = FIELD_GET(T1_DCQ_SQI_MSK, rc);
++
++	return sqi_value;
++}
++
++static int lan87xx_get_sqi_max(struct phy_device *phydev)
++{
++	return LAN87XX_MAX_SQI;
++}
++
+ static struct phy_driver microchip_t1_phy_driver[] = {
  	{
- 		PHY_ID_MATCH_MODEL(PHY_ID_LAN937X),
- 		.name		= "Microchip LAN937x T1",
-+		.flags          = PHY_POLL_CABLE_TEST,
- 		.features	= PHY_BASIC_T1_FEATURES,
- 		.config_init	= lan87xx_config_init,
- 		.suspend	= genphy_suspend,
+ 		PHY_ID_MATCH_MODEL(PHY_ID_LAN87XX),
+@@ -742,6 +786,8 @@ static struct phy_driver microchip_t1_phy_driver[] = {
+ 		.resume         = genphy_resume,
+ 		.config_aneg    = lan87xx_config_aneg,
+ 		.read_status	= lan87xx_read_status,
++		.get_sqi	= lan87xx_get_sqi,
++		.get_sqi_max	= lan87xx_get_sqi_max,
+ 		.cable_test_start = lan87xx_cable_test_start,
+ 		.cable_test_get_status = lan87xx_cable_test_get_status,
+ 	},
+@@ -755,6 +801,8 @@ static struct phy_driver microchip_t1_phy_driver[] = {
+ 		.resume		= genphy_resume,
+ 		.config_aneg    = lan87xx_config_aneg,
+ 		.read_status	= lan87xx_read_status,
++		.get_sqi	= lan87xx_get_sqi,
++		.get_sqi_max	= lan87xx_get_sqi_max,
+ 		.cable_test_start = lan87xx_cable_test_start,
+ 		.cable_test_get_status = lan87xx_cable_test_get_status,
+ 	}
 -- 
 2.33.0
 
