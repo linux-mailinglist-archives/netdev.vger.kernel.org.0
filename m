@@ -2,134 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ADD44FCC35
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 04:08:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95ECF4FCC22
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 04:05:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243006AbiDLCJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Apr 2022 22:09:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60130 "EHLO
+        id S241556AbiDLCGx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Apr 2022 22:06:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242379AbiDLCJV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 22:09:21 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8857338BF;
-        Mon, 11 Apr 2022 19:07:04 -0700 (PDT)
-Received: from kwepemi500007.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KcpxJ1qR7zdZh4;
-        Tue, 12 Apr 2022 10:06:28 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi500007.china.huawei.com (7.221.188.207) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Apr 2022 10:07:02 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Apr 2022 10:07:01 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <mkubecek@suse.cz>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
-        <chenhao288@hisilicon.com>, <wangjie125@huawei.com>
-Subject: [PATCH net-next v2 3/3] net: hns3: add tx push support in hns3 ring param process
-Date:   Tue, 12 Apr 2022 10:01:21 +0800
-Message-ID: <20220412020121.14140-4-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220412020121.14140-1-huangguangbin2@huawei.com>
-References: <20220412020121.14140-1-huangguangbin2@huawei.com>
+        with ESMTP id S241355AbiDLCGw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Apr 2022 22:06:52 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFDA92CE2A
+        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 19:04:35 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id s28so9709098wrb.5
+        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 19:04:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=t7HiZoNKYwhR0YbrYRz+Uo5dLeYLk95V30dgWM5HBFw=;
+        b=G3raJIRj4Peb6RNf3cEGN1DXfwApDWhqwUrB+CM/ZJl4Ikc0IPN6HRD+07w44uoIUO
+         FCBqzK9pH65ihtLyabK5K9Yfx76dBLVyHkL9shMIf430wqBEHkKyhL6tweJRjGN5M2uL
+         /5CbbPbE4spyFd3A9Wl+f8y0vAt0vVDwRsL4bP82tg95FzIfa6pk5VJ4vGYzFSigIvIK
+         SfN62u962gCS9MTMRlYdkxllyrTIBAeIG4FmZMMOuIFBTLEo59hRwbwEHnEIP5W47Kch
+         r8KdizIctnaZTyK7Gn/EIGiKU4KaIzrVNyttymHtcdLI9zJbXiPlZGRb+0fralV8iyWx
+         Kxdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=t7HiZoNKYwhR0YbrYRz+Uo5dLeYLk95V30dgWM5HBFw=;
+        b=C8N5AAknupYm/QViOEDknabudNZYGtOFQul3yJazwTk9g9tUObLUdyLJdNb4C7DmFu
+         uX43eh0OOEYPS3OcBcmBJRfezKu3h8YypJ1aZIslmhbLd0ftVLHwHpa+uzCPpdXRaZXS
+         HWuoW1NKcRbmbMVDoaLBkZm7XskY2RzUqERFbD0RO6JltfbPdAHbguIM6s/XMfEaL/rJ
+         Vtoaadyy69TOYJY3vgsIeWFKJW79kY62wnpwETLKC++DSibuVdXEnj3lJQN3Q/FIZUNt
+         C4FbbKBgUqvJGcof7EIsgId5nGytbP7DnnT9PkILgJP4+n0qC15wNn75lZaC7zGcQcKt
+         CvnQ==
+X-Gm-Message-State: AOAM531QIQBpuKx93I52VlE6FeCf7ogj3ic3z/jGva+ArDtpJnVnD/hI
+        5REPVWLZ428J/BgGUYJXojM=
+X-Google-Smtp-Source: ABdhPJwoaqBy6yFxfQzxzdzzCPMV0/GiaMlWOJze35TpL4XB5K8sWW21vVsJIrayS/p63McaCMrTcQ==
+X-Received: by 2002:adf:9111:0:b0:206:c9b:ce0d with SMTP id j17-20020adf9111000000b002060c9bce0dmr27387761wrj.418.1649729074599;
+        Mon, 11 Apr 2022 19:04:34 -0700 (PDT)
+Received: from alaa-emad ([197.57.239.92])
+        by smtp.gmail.com with ESMTPSA id i14-20020a0560001ace00b00203da1fa749sm39670692wry.72.2022.04.11.19.04.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 19:04:34 -0700 (PDT)
+From:   Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     roopa@nvidia.com, roopa.prabhu@gmail.com, jdenham@redhat.com,
+        sbrivio@redhat.com, eng.alaamohamedsoliman.am@gmail.com
+Subject: [PATCH net-next v2] selftests: net: fib_rule_tests: add support to select a test to run
+Date:   Tue, 12 Apr 2022 04:04:31 +0200
+Message-Id: <20220412020431.3881-1-eng.alaamohamedsoliman.am@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jie Wang <wangjie125@huawei.com>
+Add boilerplate test loop in test to run all tests
+in fib_rule_tests.sh
 
-This patch adds tx push param to hns3 ring param and adapts the set and get
-API of ring params. So users can set it by cmd ethtool -G and get it by cmd
-ethtool -g.
-
-Signed-off-by: Jie Wang <wangjie125@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
 ---
- .../ethernet/hisilicon/hns3/hns3_ethtool.c    | 33 ++++++++++++++++++-
- 1 file changed, 32 insertions(+), 1 deletion(-)
+changes in v2:
+	edit commit subject to be clearer
+---
+ tools/testing/selftests/net/fib_rule_tests.sh | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index f4da77452126..9f4111fd2986 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -664,6 +664,8 @@ static void hns3_get_ringparam(struct net_device *netdev,
- 	param->tx_pending = priv->ring[0].desc_num;
- 	param->rx_pending = priv->ring[rx_queue_index].desc_num;
- 	kernel_param->rx_buf_len = priv->ring[rx_queue_index].buf_size;
-+	kernel_param->tx_push = test_bit(HNS3_NIC_STATE_TX_PUSH_ENABLE,
-+					 &priv->state);
- }
+diff --git a/tools/testing/selftests/net/fib_rule_tests.sh b/tools/testing/selftests/net/fib_rule_tests.sh
+index 4f70baad867d..bbe3b379927a 100755
+--- a/tools/testing/selftests/net/fib_rule_tests.sh
++++ b/tools/testing/selftests/net/fib_rule_tests.sh
+@@ -20,6 +20,7 @@ SRC_IP6=2001:db8:1::3
+ DEV_ADDR=192.51.100.1
+ DEV_ADDR6=2001:db8:1::1
+ DEV=dummy0
++TESTS="fib_rule6 fib_rule4"
  
- static void hns3_get_pauseparam(struct net_device *netdev,
-@@ -1120,6 +1122,30 @@ static int hns3_change_rx_buf_len(struct net_device *ndev, u32 rx_buf_len)
- 	return 0;
- }
+ log_test()
+ {
+@@ -316,7 +317,16 @@ fi
+ # start clean
+ cleanup &> /dev/null
+ setup
+-run_fibrule_tests
++for t in $TESTS
++do
++	case $t in
++	fib_rule6_test|fib_rule6)		fib_rule6_test;;
++	fib_rule4_test|fib_rule4)		fib_rule4_test;;
++
++	help) echo "Test names: $TESTS"; exit 0;;
++
++	esac
++done
+ cleanup
  
-+static int hns3_set_tx_push(struct net_device *netdev, u32 tx_push)
-+{
-+	struct hns3_nic_priv *priv = netdev_priv(netdev);
-+	struct hnae3_handle *h = hns3_get_handle(netdev);
-+	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(h->pdev);
-+	u32 old_state = test_bit(HNS3_NIC_STATE_TX_PUSH_ENABLE, &priv->state);
-+
-+	if (!test_bit(HNAE3_DEV_SUPPORT_TX_PUSH_B, ae_dev->caps) && tx_push)
-+		return -EOPNOTSUPP;
-+
-+	if (tx_push == old_state)
-+		return 0;
-+
-+	netdev_dbg(netdev, "Changing tx push from %s to %s\n",
-+		   old_state ? "on" : "off", tx_push ? "on" : "off");
-+
-+	if (tx_push)
-+		set_bit(HNS3_NIC_STATE_TX_PUSH_ENABLE, &priv->state);
-+	else
-+		clear_bit(HNS3_NIC_STATE_TX_PUSH_ENABLE, &priv->state);
-+
-+	return 0;
-+}
-+
- static int hns3_set_ringparam(struct net_device *ndev,
- 			      struct ethtool_ringparam *param,
- 			      struct kernel_ethtool_ringparam *kernel_param,
-@@ -1139,6 +1165,10 @@ static int hns3_set_ringparam(struct net_device *ndev,
- 	if (ret)
- 		return ret;
- 
-+	ret = hns3_set_tx_push(ndev, kernel_param->tx_push);
-+	if (ret)
-+		return ret;
-+
- 	/* Hardware requires that its descriptors must be multiple of eight */
- 	new_tx_desc_num = ALIGN(param->tx_pending, HNS3_RING_BD_MULTIPLE);
- 	new_rx_desc_num = ALIGN(param->rx_pending, HNS3_RING_BD_MULTIPLE);
-@@ -1858,7 +1888,8 @@ static int hns3_set_tunable(struct net_device *netdev,
- 				 ETHTOOL_COALESCE_MAX_FRAMES |		\
- 				 ETHTOOL_COALESCE_USE_CQE)
- 
--#define HNS3_ETHTOOL_RING	ETHTOOL_RING_USE_RX_BUF_LEN
-+#define HNS3_ETHTOOL_RING	(ETHTOOL_RING_USE_RX_BUF_LEN |		\
-+				 ETHTOOL_RING_USE_TX_PUSH)
- 
- static int hns3_get_ts_info(struct net_device *netdev,
- 			    struct ethtool_ts_info *info)
+ if [ "$TESTS" != "none" ]; then
 -- 
-2.33.0
+2.35.1
 
