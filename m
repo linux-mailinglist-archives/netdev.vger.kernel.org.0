@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 836504FDE99
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 13:54:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C069C4FDE98
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 13:54:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345839AbiDLLuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 07:50:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39032 "EHLO
+        id S244538AbiDLLyg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 07:54:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355056AbiDLLtJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 07:49:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69867B7DD;
-        Tue, 12 Apr 2022 03:34:00 -0700 (PDT)
+        with ESMTP id S1350732AbiDLLxE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 07:53:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A19F5D67F;
+        Tue, 12 Apr 2022 03:37:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 00C8D6189B;
-        Tue, 12 Apr 2022 10:34:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BF10C385A1;
-        Tue, 12 Apr 2022 10:33:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF75DB81CA4;
+        Tue, 12 Apr 2022 10:37:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0CB0C385A9;
+        Tue, 12 Apr 2022 10:36:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649759639;
-        bh=h/Lw9izRLusTDmD2KCubgYWO5EB0A5SrBYBfsF6EwZk=;
+        s=k20201202; t=1649759822;
+        bh=aW4x6amHzum00rDQPT0FUG+ggRroUKbynU3+mFAMVMs=;
         h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=b61UQ4X4zw6b2oqj7cqsksnVXuQh9qJJdTlX3mzgxfveyIxmCmtf8lGtk7t/KIU4/
-         8KWpULW509FC+eUFEQvwEY9UlYa+9ykC2UgVDxngpNkJ+yrIuJWcpryAzpT3tRB3dH
-         P2tiezjzuF2emFaeVhIRg1EHSBrhgn/EU+3v5s/IKYlo2y/66AEBvtoApANjBVn5qL
-         qVU4HVdRH7pe49LUiABwacPBbDdo83V+4Xu5aW5tq8ZXgXRyGz+f8Ei9zi5mNC4LRl
-         I2p9vq5G6dRG5UpuHGe+I2mbNqtIw9WJmAyRBFMrgkbEccPu+TCfoqnqYl38EG7hx4
-         X9N3CA/7efcLg==
+        b=qA+nHcZTf76+eD7wAm4dguMty2X7Md0r/KunP1VnoFC53/YPOSJyFrJRjRb1C6Os/
+         i77YGzYijefmhXDTFLslXAKRS7T2NiScf7dO4p60+AswhP8uWewlnKa/Up6uG3pNq+
+         dnOGUKfms80yp8RYw5UlMXDllY8DOMX7hUiEW6kESVrVdaJNe61vTUNQubYMBQ9H5+
+         a9+jCxp3Pa7OqtWH+p8q87XlwbsgDcoN+RiYFKb/SeB4wqrph9EZl15pKyxMalpeND
+         BaS9myYIVHQQfIzqcrUIWj3I1U3qRBz2Qi4XFNlbIRp3hOIYZkm+qEsoLy6gpgDpGV
+         IYMdLHZ7etrSA==
 From:   Kalle Valo <kvalo@kernel.org>
 To:     Thorsten Leemhuis <regressions@leemhuis.info>
 Cc:     Philippe Schenker <dev@pschenker.ch>,
@@ -52,10 +52,10 @@ Subject: Re: [PATCH] Revert "mt76: mt7921: enable aspm by default"
 References: <20220412090415.17541-1-dev@pschenker.ch>
         <87y20aod5d.fsf@kernel.org>
         <7aa0bbd0-5498-ba74-ad6d-6dacbade8a3d@leemhuis.info>
-Date:   Tue, 12 Apr 2022 13:33:52 +0300
+Date:   Tue, 12 Apr 2022 13:36:52 +0300
 In-Reply-To: <7aa0bbd0-5498-ba74-ad6d-6dacbade8a3d@leemhuis.info> (Thorsten
         Leemhuis's message of "Tue, 12 Apr 2022 11:55:13 +0200")
-Message-ID: <87sfqioajz.fsf@kernel.org>
+Message-ID: <87o816oaez.fsf@kernel.org>
 User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
 Content-Type: text/plain
@@ -97,11 +97,21 @@ Thorsten Leemhuis <regressions@leemhuis.info> writes:
 > into the backstory much: would disabling ASPM for this particular
 > machine using a quirk be the better approach? Or are we assuming a lot
 > of machines are affected?
+>
+> Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+>
+> P.S.: As the Linux kernel's regression tracker I'm getting a lot of
+> reports on my table. I can only look briefly into most of them and lack
+> knowledge about most of the areas they concern. I thus unfortunately
+> will sometimes get things wrong or miss something important. I hope
+> that's not the case here; if you think it is, don't hesitate to tell me
+> in a public reply, it's in everyone's interest to set the public record
+> straight.
 
-Kernel crashing is far more serious than increased power consumption. If
-there's a better fix available in the next day or two of course that can
-be considered. But if there's no such fix available, we have to revert
-the commit.
+BTW, maybe you could add that boilerplace text after P.S. into the
+signature (ie. under "-- " line)? That way your mails would more
+readable and make it more clear that you didn't write the boilerplate
+text specifically for this mail.
 
 -- 
 https://patchwork.kernel.org/project/linux-wireless/list/
