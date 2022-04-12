@@ -2,58 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BCB14FDA94
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 12:50:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF85A4FDB44
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 12:56:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354254AbiDLH7A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 03:59:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45872 "EHLO
+        id S1354726AbiDLH7L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 03:59:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352958AbiDLHOl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 03:14:41 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5D3B326C3
-        for <netdev@vger.kernel.org>; Mon, 11 Apr 2022 23:55:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649746531; x=1681282531;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=dNuzupcsdiCrltG7y+ecXDHzYTJCC5YfKzyqOEkYIas=;
-  b=GmDX+EACIC7lEbp1eCd5nOo6IaQW9DZT7OfvzngA4OEwJtDcOgNACT2x
-   ubFjmF8TT+llw400RE8vMxXelTm2SFLLqx3dhuJefpN2+xtb/6dVlz+fV
-   1f3qzGUiY8CDJCHmHxKX01XAFvHO17npk7aLdfQfJsCG1gVTw+89j3ROQ
-   I9PEN/HECpSsZ/00hAWWgNOUbMRKNLYUn4hyhU9TrMKPvAKxY8/l4mEbC
-   8ZN/KDOAUTlnGO/zykFh5IXHuIkcWLdTRak/Cv9oRiIOdTwYXDQO1gywa
-   jax+jbISU1wftW+NHtaOMmsPON88NvYW0i11qSKaLH8avLAppjypk/llF
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="244176288"
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="244176288"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 23:55:31 -0700
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="572617263"
-Received: from zhoufuro-mobl.ccr.corp.intel.com (HELO [10.249.171.224]) ([10.249.171.224])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 23:55:29 -0700
-Message-ID: <b24c4e3d-2792-da43-3335-5ed83c557565@linux.intel.com>
-Date:   Tue, 12 Apr 2022 14:55:27 +0800
+        with ESMTP id S1353419AbiDLHPU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 03:15:20 -0400
+Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C27D639698;
+        Mon, 11 Apr 2022 23:56:56 -0700 (PDT)
+Received: from mail.aspeedtech.com ([192.168.0.24])
+        by twspam01.aspeedtech.com with ESMTP id 23C6gdnT026327;
+        Tue, 12 Apr 2022 14:42:39 +0800 (GMT-8)
+        (envelope-from dylan_hung@aspeedtech.com)
+Received: from DylanHung-PC.aspeed.com (192.168.2.216) by TWMBX02.aspeed.com
+ (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 12 Apr
+ 2022 14:54:18 +0800
+From:   Dylan Hung <dylan_hung@aspeedtech.com>
+To:     <robh+dt@kernel.org>, <joel@jms.id.au>, <andrew@aj.id.au>,
+        <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <p.zabel@pengutronix.de>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <krzk+dt@kernel.org>
+CC:     <BMC-SW@aspeedtech.com>
+Subject: [PATCH v4 0/3] Add reset deassertion for Aspeed MDIO
+Date:   Tue, 12 Apr 2022 14:56:08 +0800
+Message-ID: <20220412065611.8930-1-dylan_hung@aspeedtech.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] vDPA/ifcvf: allow userspace to suspend a queue
-Content-Language: en-US
-To:     Zhu Lingshan <lingshan.zhu@intel.com>, jasowang@redhat.com,
-        mst@redhat.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-References: <20220411031057.162485-1-lingshan.zhu@intel.com>
-From:   Zhou Furong <furong.zhou@linux.intel.com>
-In-Reply-To: <20220411031057.162485-1-lingshan.zhu@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.2.216]
+X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
+ (192.168.0.24)
+X-DNSRBL: 
+X-MAIL: twspam01.aspeedtech.com 23C6gdnT026327
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,32 +51,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Add missing reset deassertion for Aspeed MDIO bus controller. The reset
+is asserted by the hardware when power-on so the driver only needs to
+deassert it. To be able to work with the old DT blobs, the reset is
+optional since it may be deasserted by the bootloader or the previous
+kernel.
 
-> +bool ifcvf_get_vq_ready(struct ifcvf_hw *hw, u16 qid)
-> +{
-> +	struct virtio_pci_common_cfg __iomem *cfg = hw->common_cfg;
-> +	bool queue_enable;
-> +
-> +	vp_iowrite16(qid, &cfg->queue_select);
-> +	queue_enable = vp_ioread16(&cfg->queue_enable);
-> +
-> +	return (bool)queue_enable;
-queue_enable is bool, why cast? looks like remove the variable is better.
-return vp_ioread16(&cfg->queue_enable);
+V4:
+- use ASPEED_RESET_MII instead of hardcoding in dt-binding example
 
->   static bool ifcvf_vdpa_get_vq_ready(struct vdpa_device *vdpa_dev, u16 qid)
->   {
->   	struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
-> +	bool ready;
->   
-> -	return vf->vring[qid].ready;
-> +	ready = ifcvf_get_vq_ready(vf, qid);
-> +
-> +	return ready;
-remove ready looks better
-return ifcvf_get_vq_ready(vf, qid);
+V3:
+- remove reset property from the required list of the device tree
+  bindings
+- remove "Cc: stable@vger.kernel.org" from the commit messages
+- add more description in the commit message of the dt-binding
 
+V2:
+- add reset property in the device tree bindings
+- add reset assertion in the error path and driver remove
 
-Best regards,
-Furong
+Dylan Hung (3):
+  dt-bindings: net: add reset property for aspeed, ast2600-mdio binding
+  net: mdio: add reset control for Aspeed MDIO
+  ARM: dts: aspeed: add reset properties into MDIO nodes
+
+ .../bindings/net/aspeed,ast2600-mdio.yaml         |  5 +++++
+ arch/arm/boot/dts/aspeed-g6.dtsi                  |  4 ++++
+ drivers/net/mdio/mdio-aspeed.c                    | 15 ++++++++++++++-
+ 3 files changed, 23 insertions(+), 1 deletion(-)
+
+-- 
+2.25.1
+
