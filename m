@@ -2,66 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0B934FE6D2
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 19:27:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6F7E4FE73F
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 19:36:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347315AbiDLRaI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 13:30:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34838 "EHLO
+        id S1358368AbiDLRjG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 13:39:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235665AbiDLRaH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 13:30:07 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B519852B2A
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 10:27:47 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id s13so24978145ljd.5
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 10:27:47 -0700 (PDT)
+        with ESMTP id S1347117AbiDLRjF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 13:39:05 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 980FD5F8F9;
+        Tue, 12 Apr 2022 10:36:47 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id p15so38744787ejc.7;
+        Tue, 12 Apr 2022 10:36:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=ThAY3Ed/dk6m+iaWZn0wjwKwYvlAqcEvAvL+WRRtrb0=;
-        b=VtOnhHywQSKBg+GRfttHHC8ae5LyqPtsEzJ/crFnQSt+funvR7/8PtgornBKeYebKm
-         cSDCNVpdIF/s8sc7rYRvF34NyNzfqXXBenMwNmc7sAj4jZVBue5zwOzlUAXKuBURJUt3
-         lSUqmpKK+p2diqCm3O7GhD45+L9W60gKgKQtGP9OCp4MMrMLjsqXgWqwRSwuoWGJ0CKv
-         cNgHbrjTvri8o956YdK7UxS2I8N5NK1ZO5y9df/M8/Rx2Ha4hZ1dGTYcQ4KFJF8rgsk5
-         zKvazIslIgk/T/+N2qDruNmqasEsvu5YyERumQr9NzFcTrnC5XYGJcm9ZJi1MM54FcVS
-         4Kmg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ek5IZF4QsiCOGMfala/H8lskYq2jep0oZg3B2DCoBUI=;
+        b=FVP1yKaVPQEsrNiLcbE21956MmEFBCGiSO1WoGkJKxPTWG4EfuA+BZSLXuIKM3r4Es
+         x+t9lqxEeDX6lq4r+Uyys6wIWTyt+gJCIUhc604f7DdxTktzzSuapECN7tGjJPJ3zo2l
+         R93Q44ySF6RSbrOfVO0+3ovnLht+s06hO6Lr6aMbx4D2Gjb58oqxUZs5z2i8UiC3lttP
+         NT9tMwH1MCp5NFyTKN3d332nni6Z7Xz7SdISyH4TeBty9RV99QmNL7LHgspcgJUmeaLU
+         X6wtu+825BqQtcwe5GuYr46PQKq/qs4yJ8x2OWhsCjC+6ye9RPG3xidySBJv02ebrxuV
+         jHpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=ThAY3Ed/dk6m+iaWZn0wjwKwYvlAqcEvAvL+WRRtrb0=;
-        b=IMFtGg0/4z1+sb0Mu9FkKFA3P0ah5Wvaolflsfz6kahbtj1MrUjFgrYkJymkahiIll
-         jZbT65/IQVwxQGBfzR6RQJmrspbtL771OYKqEOSb+msBCi5tMZVo8/JdJovgwfGBKdO4
-         iwO4aAwDcZA4KKMX6RJywLAQRF/QKLVbsRuZDxbY5RHgiW12mRA11tYa7ZXGeVfonsY8
-         ePIjRW9NXNviUjxdUPhxZe59MbHFIUqcPPBxFu5FrsMYNrrmhRX7j6buFWmcKoRUMGM/
-         spOsyFEzC+1a0+eSxAO0ONJEDqEnaWoHZzs6vk1PlNK9ETHibApEyW5JXSjE343/S3kf
-         Dn4w==
-X-Gm-Message-State: AOAM530Eijyh/LdIRnwe4fUvylYF4cgDmFp/8i2FOpBK4n1ZIbniY3Pk
-        SwxaYPqNSt/ZTUcIOOLZWik=
-X-Google-Smtp-Source: ABdhPJw/1hkLcDu4ztvmgaRue7Fo3A9Ykhtp/Im8rQj8AixV9nrhr1aAXSiK+6zVKX2+7TvfJZPyfQ==
-X-Received: by 2002:a2e:9c94:0:b0:24b:3df5:64c with SMTP id x20-20020a2e9c94000000b0024b3df5064cmr17996207lji.324.1649784465750;
-        Tue, 12 Apr 2022 10:27:45 -0700 (PDT)
-Received: from wbg (h-158-174-22-128.NA.cust.bahnhof.se. [158.174.22.128])
-        by smtp.gmail.com with ESMTPSA id p15-20020a056512312f00b0046ba5c0da2esm780443lfd.121.2022.04.12.10.27.44
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ek5IZF4QsiCOGMfala/H8lskYq2jep0oZg3B2DCoBUI=;
+        b=vwtjsX9nv/bsaDUAi1S2RCSnTmTz3aL8X3pbaT15EVHYwg/2u2qLty/FnQIbH+cjvX
+         XA4h29xXM35gGGywZdomNaVGmDoi5epNNngNmYsPt8LewylfJIbAKRNt8Ite88EfRof0
+         +ouANdh0i/SHpfu17s9OC0ru9pgdrF0fVM18bSX+1cjcoUbF3FGAadpqg22+Gt9HLbGM
+         br6EUIX1IHSmmsZNx8atiBRjjeDLWKwsg/98apxDHeToRn+2iWorhwUdB5vO50tEHpEl
+         HlraLtPtpdv/l2fwknc+BVQATjkG2fB8q9TMw9u+yGxXpEQY+qsnfGv43hPgazgqBFKM
+         durg==
+X-Gm-Message-State: AOAM533H6UEXW72nJX1CDu5L9k63z1AujpDmOngPlqlcv6QS9didZi6F
+        nN78F/ojXX923VylsteQn5U=
+X-Google-Smtp-Source: ABdhPJwjjUQ9yQsNQHq3wO2SJzfZi1mt85GURM9Sk2gfjlJZ25UbJh6WPNglvGQS5aDTjxuiS/ikGw==
+X-Received: by 2002:a17:906:3a18:b0:6cd:ba45:995f with SMTP id z24-20020a1709063a1800b006cdba45995fmr35679690eje.328.1649785005942;
+        Tue, 12 Apr 2022 10:36:45 -0700 (PDT)
+Received: from localhost.localdomain ([5.171.105.8])
+        by smtp.googlemail.com with ESMTPSA id n11-20020a50cc4b000000b0041d8bc4f076sm48959edi.79.2022.04.12.10.36.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 10:27:45 -0700 (PDT)
-From:   Joachim Wiberg <troglobit@gmail.com>
-To:     Nikolay Aleksandrov <razor@blackwall.org>,
-        Roopa Prabhu <roopa@nvidia.com>
-Cc:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
-        "David S . Miller" <davem@davemloft.net>,
+        Tue, 12 Apr 2022 10:36:45 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH RFC net-next 08/13] net: bridge: avoid classifying unknown multicast as mrouters_only
-In-Reply-To: <ebd182a2-20bc-471c-e649-a2689ea5a5d1@blackwall.org>
-References: <20220411133837.318876-1-troglobit@gmail.com> <20220411133837.318876-9-troglobit@gmail.com> <ebd182a2-20bc-471c-e649-a2689ea5a5d1@blackwall.org>
-Date:   Tue, 12 Apr 2022 19:27:44 +0200
-Message-ID: <87v8ve9ppr.fsf@gmail.com>
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>
+Subject: [net-next PATCH v2 0/4] Reduce qca8k_priv space usage
+Date:   Tue, 12 Apr 2022 19:30:15 +0200
+Message-Id: <20220412173019.4189-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -72,67 +73,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+These 4 patch is a first attempt at reducting qca8k_priv space.
+The code changed a lot during times and we have many old logic
+that can be replaced with new implementation
 
-Hi Nik,
+The first patch drop the tracking of MTU. We mimic what was done
+for mtk and we change MTU only when CPU port is changed.
 
-and thank you for taking the time to respond!
+The second patch finally drop a piece of story of this driver.
+The ar8xxx_port_status struct was used by the first implementation
+of this driver to put all sort of status data for the port...
+With the evolution of DSA all that stuff got dropped till only
+the enabled state was the only part of the that struct.
+Since it's overkill to keep an array of int, we convert the variable
+to a simple u8 where we store the status of each port. This is needed
+to don't reanable ports on system resume.
 
-On Tue, Apr 12, 2022 at 16:59, Nikolay Aleksandrov <razor@blackwall.org> wrote:
-> On 11/04/2022 16:38, Joachim Wiberg wrote:
->> Unknown multicast, MAC/IPv4/IPv6, should always be flooded according to
->> the per-port mcast_flood setting, as well as to detected and configured
->> mcast_router ports.
+The third patch is a preparation for patch 4. As Vladimir explained
+in another patch, we waste a tons of space by keeping a duplicate of
+the switch dsa ops in qca8k_priv. The only reason for this is to
+dynamically set the correct mdiobus configuration (a legacy dsa one,
+or a custom dedicated one)
+To solve this problem, we just drop the phy_read/phy_write and we
+declare a custom mdiobus in any case. 
+This way we can use a static dsa switch ops struct and we can drop it
+from qca8k_priv
 
-I realize I should've included a reference to RFC4541 here.  Will add
-that in the non-RFC patch.
+Patch 4 finally drop the duplicated dsa_switch_ops.
 
->> This patch drops the mrouters_only classifier of unknown IP multicast
->> and moves the flow handling from br_multicast_flood() to br_flood().
->> This in turn means br_flood() must know about multicast router ports.
-> If you'd like to flood unknown mcast traffic when a router is present please add
-> a new option which defaults to the current state (disabled).
+This series is just a start of more cleanup.
 
-I don't think we have to add another option, because according to the
-snooping RFC[1], section 2.1.2 Data Forwarding Rules:
+The idea is to move this driver to the qca dir and split common code
+from specific code. Also the mgmt eth code still requires some love
+and can totally be optimized by recycling the same skb over time.
 
- "3) [..] If a switch receives an unregistered packet, it must forward
-  that packet on all ports to which an IGMP[2] router is attached.  A
-  switch may default to forwarding unregistered packets on all ports.
-  Switches that do not forward unregistered packets to all ports must
-  include a configuration option to force the flooding of unregistered
-  packets on specified ports. [..]"
+Also while working on the MTU it was notice some problem with
+the stmmac driver and with the reloading phase that cause all
+sort of problems with qca8k.
 
-From this I'd like to argue that our current behavior in the bridge is
-wrong.  To me it's clear that, since we have a confiugration option, we
-should forward unknown IP multicast to all MCAST_FLOOD ports (as well as
-the router ports).
+I'm sending this here just to try to keep small series instead of
+proposing monster series hard to review.
 
-Also, and more critically, the current behavior of offloaded switches do
-forwarding like this already.  So there is a discrepancy currently
-between how the bridge forwards unknown multicast and how any underlying
-switchcore does it.
+v2:
+- Rework MTU patch
 
-Sure, we'll break bridge behavior slightly by forwarding to more ports
-than previous (until the group becomes known/registered), but we'd be
-standards compliant, and the behavior can still be controlled per-port.
+Ansuel Smith (4):
+  drivers: net: dsa: qca8k: drop MTU tracking from qca8k_priv
+  drivers: net: dsa: qca8k: drop port_sts from qca8k_priv
+  drivers: net: dsa: qca8k: rework and simplify mdiobus logic
+  drivers: net: dsa: qca8k: drop dsa_switch_ops from qca8k_priv
 
-[1]: https://www.rfc-editor.org/rfc/rfc4541.html#section-2.1.2
-[2]: Section 3 goes on to explain how this is similar also for MLD
+ drivers/net/dsa/qca8k.c | 144 +++++++++++++++-------------------------
+ drivers/net/dsa/qca8k.h |  12 ++--
+ 2 files changed, 56 insertions(+), 100 deletions(-)
 
->> diff --git a/net/bridge/br_forward.c b/net/bridge/br_forward.c
->> index 02bb620d3b8d..ab5b97a8c12e 100644
->> --- a/net/bridge/br_forward.c
->> +++ b/net/bridge/br_forward.c
->> @@ -199,9 +199,15 @@ static struct net_bridge_port *maybe_deliver(
->>  void br_flood(struct net_bridge *br, struct sk_buff *skb,
->>  	      enum br_pkt_type pkt_type, bool local_rcv, bool local_orig)
->>  {
->> +	struct net_bridge_mcast *brmctx = &br->multicast_ctx;
-> Note this breaks per-vlan mcast. You have to use the inferred mctx.
+-- 
+2.34.1
 
-Thank you, this was one of the things I was really unsure about since
-the introduction of per-VLAN support.  I'll extend the prototype and
-include the brmctx from br_handle_frame_finish().  Thanks!
-
-Best regards
- /Joachim
