@@ -2,164 +2,274 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D9F084FE621
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 18:43:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD3314FE63D
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 18:45:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357885AbiDLQpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 12:45:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58456 "EHLO
+        id S1345761AbiDLQr5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 12:47:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357837AbiDLQpV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 12:45:21 -0400
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B03B5AA7D
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 09:42:54 -0700 (PDT)
-Received: by mail-qt1-x82f.google.com with SMTP id j21so19635434qta.0
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 09:42:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/xj1JAOHRTccsN1PMLkAoN8xFX0TYfJvn+wqBumxkh4=;
-        b=h6ngWg7b6HXqt0/qPKjIS+p3sN6F82znJPyR8yClX2PARyJmVyx9OVjcpfRdgubt+J
-         sXsMTSgopIocaisFPcHhFFugHraqGJ9CEQ0lU25PGyXPkKlqBQJ3H6pju7rxPwn0cTHB
-         w/QgkTnxKCFPqDhe6ZKoewILuS47plREja25d2j3thi2F+64ilSZFRQXP3TyJKaMSYR1
-         KpvRZ5hoBfEv+wyUMOgtpcYM1jITFO5sF3M0RS6Zp4i7xPV1A/btO1vxLa2UxGr1Xqcp
-         BqHif//iuhPD74S+PFWkurwTqAydHrF/oa3ob8H1gEA5CnGw6fAJTwtvj9rgjasYxiWS
-         xKmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/xj1JAOHRTccsN1PMLkAoN8xFX0TYfJvn+wqBumxkh4=;
-        b=Ahe7B5GLnOFauuPUJzVuG0wcEvwVl8teDLLYPj4fcxDuyGu9kM9LpDL0x4LWoSNAvH
-         99qn8KVNBk6SKaBBx80lVGu5YPCRIzqNHMOsMUlaIgM7QGCq/o2yOiCVC9/Tz1If4p66
-         8EKpj3u8+TVI19cpYMUQblVUVPgHTT5Y+i0xLSH4F81ygaHxa52eckyBP4HRLNc70KU0
-         kpYGE/x5S7w/vbGC4LoYU6pddl29itaF517S/9QR60MttbvPf2tmbygBsbvl6xl21JB9
-         0NqPq6ufOiBUSlCGVNBRtKSF86cQfbeQxOeBC1ngjYS9xgy9ZAqHv61nE0Q+X+WtS3pT
-         2jFw==
-X-Gm-Message-State: AOAM533Fo5TkC3YlLO77kN/ME8qud8gau4X6nYim4Qgi2WW7QHELi0sl
-        gfoRPYymZQm5+Y6Ksq9G2UpuyM5qbKy5y6nMksvDQQ==
-X-Google-Smtp-Source: ABdhPJyD7Wp3KyEPpt/CRfiqmL1gXKHoQVQeNSHoYfQrYtNLZfLCwFd7mvIX36y5V9VTuX80Rbw4cnkxCR/jetzduyg=
-X-Received: by 2002:ac8:6a18:0:b0:2ed:10e7:e0aa with SMTP id
- t24-20020ac86a18000000b002ed10e7e0aamr4073612qtr.570.1649781773053; Tue, 12
- Apr 2022 09:42:53 -0700 (PDT)
+        with ESMTP id S1345055AbiDLQrY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 12:47:24 -0400
+Received: from IND01-BMX-obe.outbound.protection.outlook.com (mail-bmxind01olkn2043.outbound.protection.outlook.com [40.92.103.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D121CFC2;
+        Tue, 12 Apr 2022 09:45:05 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UlWpgsUR0Hadn1B92OqBGguHRdaUhzRzWcV527eMetDnIivvLQVilnkjD9R3aN2qoXzmNUJsptCIHvlFZZ+h87WcmwQa/TQsmWWansIlAXWo/ucHZA2IgOjxkMykpc8EmqdN/gPlthGJN4j5WfETrIBmDDVNwA/C3pg7NlfPkHu3HP5HVgfY7/LXfqW+pPaiLTVhraN77RdViTplIbNusln3zyP5c8lFNYrnX2pTVQny2zkoufhFZNpBYBEaUx2uRAbYDYu+6Yq04ZaRoDlco8nW/zal2uVVJfrd/51mtCbAmOZXWvkPlVBqpFh8Q5/uB2xr+83SHfmscIhUr9mM8A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=J5HAJsIymNmVdpWcGHWznw8P+jbjXeVNXCN325s7DF4=;
+ b=fMYqy9m4dc8eDGWYcT30fVzVoYcNviMZ2ktJbl89g4PGuWMZk59JE6u16HhrBIfXX2k9SqMK4PrLLaVh56psvb8Ik+UVtR1R8dkMPvzfsMXHTDNaPpaVU7Xj7/f/xh/J2G1jjN5r6xjBGafm9itLJgJb5iurvpF5o4O4yFREiqkpwhVdx9Bri/+3/TtI2gSD+ujVBz5fRPBqqzqaQBPZCfENyrCR1WS4Q+7RrDVYfm8ZFer0P87FXI2+Ubzo9MMHzabhQ2Xnt0vYZdmCWkFd04FcvJStW1k/mtaE805+q90pazop1+O7bIsNoaB7BohMkZeSn/M/fbNHoL8mYrWJlw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=live.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=J5HAJsIymNmVdpWcGHWznw8P+jbjXeVNXCN325s7DF4=;
+ b=oVw5OKFo+iVyaSJG5HecjCHRa/HdgwYxF+dfSAGxGnO0Jv9JyKx0fbJ8+vCyafQcz48XnisSJjzqwDPzWWwJfCKmA4cIB9ymzwbByVYyRfiVhwpkIoS12sScRX4wTZmmRY0NREzBzKi5twfE+QIO0yYqM6G5lm1DOQrNnZW49WbYH7VtezkScc3kmi5HJVG75mZ7TzXwn5/U3n5gN9d1N8wExxjcV4EVt8oiwuEFiQBG18zekywNfmrjt5UcgJ/NQo+RbPTQkBX2OBru9MUK+C/4Qz/RaIxg1Q1in0rRt/hpKY8LLZNZNewH5PeGGnDtdwKW0bNPkMC5TYALhhP7aw==
+Received: from PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM (2603:1096:c01:1b::13)
+ by MA0PR01MB6906.INDPRD01.PROD.OUTLOOK.COM (2603:1096:a01:37::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Tue, 12 Apr
+ 2022 16:44:57 +0000
+Received: from PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM
+ ([fe80::dc4b:b757:214c:22cd]) by PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM
+ ([fe80::dc4b:b757:214c:22cd%7]) with mapi id 15.20.5144.030; Tue, 12 Apr 2022
+ 16:44:57 +0000
+From:   Aditya Garg <gargaditya08@live.com>
+To:     "jarkko@kernel.org" <jarkko@kernel.org>,
+        "zohar@linux.ibm.com" <zohar@linux.ibm.com>,
+        "dmitry.kasatkin@gmail.com" <dmitry.kasatkin@gmail.com>,
+        "jmorris@namei.org" <jmorris@namei.org>,
+        "serge@hallyn.com" <serge@hallyn.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "yhs@fb.com" <yhs@fb.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>
+CC:     "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Orlando Chamberlain <redecorating@protonmail.com>,
+        "admin@kodeit.net" <admin@kodeit.net>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: [PATCH v4 RESEND] efi: Do not import certificates from UEFI Secure
+ Boot for T2 Macs
+Thread-Topic: [PATCH v4 RESEND] efi: Do not import certificates from UEFI
+ Secure Boot for T2 Macs
+Thread-Index: AQHYToykrBFj4SbxpkSfp7eRtc7lVg==
+Date:   Tue, 12 Apr 2022 16:44:56 +0000
+Message-ID: <590ED76A-EE91-4ED1-B524-BC23419C051E@live.com>
+References: <652C3E9E-CB97-4C70-A961-74AF8AEF9E39@live.com>
+ <94DD0D83-8FDE-4A61-AAF0-09A0175A0D0D@live.com>
+In-Reply-To: <94DD0D83-8FDE-4A61-AAF0-09A0175A0D0D@live.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-tmn:  [BSvz8NT8+F0ZyBjpzVSsHIz/tJb4ne4S]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9633903e-b6f0-415b-a95d-08da1ca3c6fe
+x-ms-traffictypediagnostic: MA0PR01MB6906:EE_
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: IP2K/Xf+HGGCy2CDeLeJvFRB0eN2P2hN0hwYQJtpK8MbE6tyGthNNu3ARtesBrvzqd38FFW9tvpqVN07Srd+jmRux7PN5zdyYE5kaElOm4oxP9olyBEvCbxVF4PlspMSksHfa5xNHua5AJLrd0lWZXq6NvsFtThNFlI1XTGvln0X7fS/p1/WKN/rvYMppkrEwCKvOJdooXNWtldE083FtVpEIIgPSJNXSIuqZ+yR64x3xwDHxgBlsFr1qoDMLdCqY/4AtHMWDTkvfhfqkAVrYcSDgGTr6LtoFLvjQPZMxKpYOJX2+NXqO2ONf+7buvsINvQ8YC034RXq2mbwNSL5a+39LyDhEiImBE+ejNfDe2jyuBuOyBYTfH1A8HFNEi3V+ps0oRvhwROsCRP5Huv1yabMDZlNmFTpmD78vHcFCFAs4oAE4LAjIRsGbm75sBM2LeFdWHJBOr971pAXMoJOQVi0UZegnUWi9yRR5bvXmPhZtjEYZ7ZTu1B15Ve7bP4bxpaeKsJrUb8r2TltRwmQ2LK97ckvHIcaP0QaHLUm9ynkmHFYLTxptpjZ9o3XMfynpvNH1EwTSSwQx0vLqC6Aqg==
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?nZZ1R1XuDYhvbBICzU+jzMsuZxT+/8aNhd4HOzcLEnigssGy26HkmZAj44gV?=
+ =?us-ascii?Q?auYBqiuJgG9A2PS7UTm4Qlq+eY6C7/yM50ZrgPmUsG2z5uiVcUpmsfqkIivE?=
+ =?us-ascii?Q?bi8yo6QSYvsIpntJkVplFhTdK8exeVlfDxmPoZYli5iW2gLt/ctzNcWugqKI?=
+ =?us-ascii?Q?73B6ACRbi5xnmNqdaGfET2hyvqXVqH2f18fV6liBmm7RWKP0bmJVLf4w0gqt?=
+ =?us-ascii?Q?TJQmzIKERJB3vwFzIj906g2Ftn8zJuKuUQ4dfS82d7sO4BBOjaj0QB+lWpLc?=
+ =?us-ascii?Q?Q8COIPZDlKTyALftgJME0/Tpn81YdMikZusANdN9XFGWkd8xKAnQJUmUGA5V?=
+ =?us-ascii?Q?st5ILNeBdflkTMH5eX0z6qHt7OMvKAECGyWv6Ayo2c7S/bCCsyNXxy4fQHP+?=
+ =?us-ascii?Q?LZgUV0xFd+A0FmE1GxBSlLdSED6wfAmdCk928a9TWuousGy8qab7d3DD/qMB?=
+ =?us-ascii?Q?fOtKOvGnqAIJi8nGoLEW/mRpx0jn0fdsVIKoZna5MbEJ8uoV6Xyfih51l87v?=
+ =?us-ascii?Q?mqjIMBZczmSpWXaXhS8tY20bSQse0yCQWLrsnnOKAlXULufwIgEBU8gpfWMm?=
+ =?us-ascii?Q?elK/ZzNeM8T7EdVGbL2aM901uFNVZJbIJdQqLoa6iVcApMy1bSqNO5lPkvBx?=
+ =?us-ascii?Q?9CQ2zvCRfrSCRZklHeckJLVcTRTt0AfTPLzgMv9hsJHZVPUHP5plquk/xYbC?=
+ =?us-ascii?Q?X1d0UhRj1bErsDwJBrl2JF0Aj66altyKSBoa68D1Qwj32skUaxXKftCpz/58?=
+ =?us-ascii?Q?5cJ2Xaw4k7MtbHucZBhYny6FVDrxrJHkuItb0XpryEgi0hGOcGBCpUWKAGbu?=
+ =?us-ascii?Q?lKljSv+zeNGMsRjDRtGor0tbTHmDnTqdvf3856N8q4tFUxhWLpNgTbOwuJEM?=
+ =?us-ascii?Q?7ZlnHRSaxv7O6WxFGyZXP9a3ahZDREp6goYeSQqhZ2QCFpXT/Cg0FJceJmjl?=
+ =?us-ascii?Q?IIj6hq1ksWg8TxpBN1EVz+DPfz5QuJ1Bc1zkg7nc0EGhPy/Dvd2E6cW8nx12?=
+ =?us-ascii?Q?ZnHK3+XFa+ru8Fcup/VWIvLBnfhnlwHbTDeQAwB7JLcxmclJxy0GT8bTM0U5?=
+ =?us-ascii?Q?UmugoGkSpkLw5JOgbUiQJltinNYC70wKGvedSXMomTGh2oVh6OGgWzbQLG6O?=
+ =?us-ascii?Q?0TvEzLAPqAFciLtNnLIiAQQQ+23wr9ZHHXIfJN4TAFk6UuCa7bNEyLrlPJGk?=
+ =?us-ascii?Q?uZ4Ogt8PI9cH1zi4E9VEF7gshFXW6Hd97GSOjXP4eDvEIHvzfMUtKnOauqtU?=
+ =?us-ascii?Q?gKgV6bd+ZktNoQSjCEwrrl+0NN83N13eEz1MgzvJ9wmGSrc+WOBv7wy2usfi?=
+ =?us-ascii?Q?l0jsjnPKQphFTrpi3F0t01Wf/ohSIqYqY0jdTl7qe6zWKQjESg9wQ1o+ZUae?=
+ =?us-ascii?Q?6nPyAWWc2vgznm6g7oa0vzBjOsfJK5u3FrqTNOyBd9x++WMK267cWijijLdU?=
+ =?us-ascii?Q?1PuQAV/DM2U=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <2DCE488ADB19C843A73733946B7EB064@INDPRD01.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20220407223112.1204582-1-sdf@google.com> <20220407223112.1204582-4-sdf@google.com>
- <20220408225628.oog4a3qteauhqkdn@kafai-mbp.dhcp.thefacebook.com>
- <87fsmmp1pi.fsf@cloudflare.com> <20220412011938.usu6wzwc2ayydiq2@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20220412011938.usu6wzwc2ayydiq2@kafai-mbp.dhcp.thefacebook.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Tue, 12 Apr 2022 09:42:41 -0700
-Message-ID: <CAKH8qBtMU2V3RpQBBCmaZyh1A-oB1ggc9sgF9KXWgPPp++iNhQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 3/7] bpf: minimize number of allocated lsm
- slots per program
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     Jakub Sitnicki <jakub@cloudflare.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-42ed3.templateTenant
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9633903e-b6f0-415b-a95d-08da1ca3c6fe
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Apr 2022 16:44:56.9547
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MA0PR01MB6906
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 6:19 PM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> On Sat, Apr 09, 2022 at 07:04:05PM +0200, Jakub Sitnicki wrote:
-> > >> diff --git a/include/linux/bpf-cgroup-defs.h b/include/linux/bpf-cgroup-defs.h
-> > >> index 6c661b4df9fa..d42516e86b3a 100644
-> > >> --- a/include/linux/bpf-cgroup-defs.h
-> > >> +++ b/include/linux/bpf-cgroup-defs.h
-> > >> @@ -10,7 +10,9 @@
-> > >>
-> > >>  struct bpf_prog_array;
-> > >>
-> > >> -#define CGROUP_LSM_NUM 211 /* will be addressed in the next patch */
-> > >> +/* Maximum number of concurrently attachable per-cgroup LSM hooks.
-> > >> + */
-> > >> +#define CGROUP_LSM_NUM 10
-> > > hmm...only 10 different lsm hooks (or 10 different attach_btf_ids) can
-> > > have BPF_LSM_CGROUP programs attached.  This feels quite limited but having
-> > > a static 211 (and potentially growing in the future) is not good either.
-> > > I currently do not have a better idea also. :/
-> > >
-> > > Have you thought about other dynamic schemes or they would be too slow ?
-> >
-> > As long as we're talking ideas - how about a 2-level lookup?
-> >
-> > L1: 0..255 -> { 0..31, -1 }, where -1 is inactive cgroup_bp_attach_type
-> > L2: 0..31 -> struct bpf_prog_array * for cgroup->bpf.effective[],
-> >              struct hlist_head [^1]  for cgroup->bpf.progs[],
-> >              u32                     for cgroup->bpf.flags[],
-> >
-> > This way we could have 32 distinct _active_ attachment types for each
-> > cgroup instance, to be shared among regular cgroup attach types and BPF
-> > LSM attach types.
-> >
-> > It is 9 extra slots in comparison to today, so if anyone has cgroups
-> > that make use of all available attach types at the same time, we don't
-> > break their setup.
-> >
-> > The L1 lookup table would still a few slots for new cgroup [^2] or LSM
-> > hooks:
-> >
-> >   256 - 23 (cgroup attach types) - 211 (LSM hooks) = 22
-> >
-> > Memory bloat:
-> >
-> >  +256 B - L1 lookup table
-> Does L1 need to be per cgroup ?
->
-> or different cgroups usually have a very different active(/effective) set ?
+From: Aditya Garg <gargaditya08@live.com>
 
-I'm assuming the suggestion is to have it per cgroup. Otherwise, if it's
-global, it's close to whatever I'm proposing in the original patch. As I
-mentioned in the commit message, in theory, all cgroup_bpf can be managed
-the way I propose to manage 10 lsm slots if we get to the point where
-10 slots is not enough.
+On T2 Macs, the secure boot is handled by the T2 Chip. If enabled, only
+macOS and Windows are allowed to boot on these machines. Moreover, loading
+UEFI Secure Boot certificates is not supported on these machines on Linux.
+An attempt to do so causes a crash with the following logs :-
 
-I've played with this mode a bit and it looks a bit complicated :-( Since it's
-per cgroup, we have to be careful to preserve this mapping during
-cgroup_bpf_inherit.
-I'll see what I can do, but I'll most likely revert to my initial
-version for now (I'll also include list_head->hlist_head conversion
-patch, very nice idea).
+Call Trace:
+ <TASK>
+ page_fault_oops+0x4f/0x2c0
+ ? search_bpf_extables+0x6b/0x80
+ ? search_module_extables+0x50/0x80
+ ? search_exception_tables+0x5b/0x60
+ kernelmode_fixup_or_oops+0x9e/0x110
+ __bad_area_nosemaphore+0x155/0x190
+ bad_area_nosemaphore+0x16/0x20
+ do_kern_addr_fault+0x8c/0xa0
+ exc_page_fault+0xd8/0x180
+ asm_exc_page_fault+0x1e/0x30
+(Removed some logs from here)
+ ? __efi_call+0x28/0x30
+ ? switch_mm+0x20/0x30
+ ? efi_call_rts+0x19a/0x8e0
+ ? process_one_work+0x222/0x3f0
+ ? worker_thread+0x4a/0x3d0
+ ? kthread+0x17a/0x1a0
+ ? process_one_work+0x3f0/0x3f0
+ ? set_kthread_struct+0x40/0x40
+ ? ret_from_fork+0x22/0x30
+ </TASK>
+---[ end trace 1f82023595a5927f ]---
+efi: Froze efi_rts_wq and disabled EFI Runtime Services
+integrity: Couldn't get size: 0x8000000000000015
+integrity: MODSIGN: Couldn't get UEFI db list
+efi: EFI Runtime Services are disabled!
+integrity: Couldn't get size: 0x8000000000000015
+integrity: Couldn't get UEFI dbx list
+integrity: Couldn't get size: 0x8000000000000015
+integrity: Couldn't get mokx list
+integrity: Couldn't get size: 0x80000000
+
+As a result of not being able to read or load certificates, secure boot
+cannot be enabled. This patch prevents querying of these UEFI variables,
+since these Macs seem to use a non-standard EFI hardware.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Aditya Garg <gargaditya08@live.com>
+---
+v2 :- Reduce code size of the table.
+v3 :- Close the brackets which were left open by mistake.
+v4 :- Fix comment style issues, remove blank spaces and limit use of dmi_fi=
+rst_match()
+v4 RESEND :- Add stable to cc
+ .../platform_certs/keyring_handler.h          |  8 +++++
+ security/integrity/platform_certs/load_uefi.c | 35 +++++++++++++++++++
+ 2 files changed, 43 insertions(+)
+
+diff --git a/security/integrity/platform_certs/keyring_handler.h b/security=
+/integrity/platform_certs/keyring_handler.h
+index 284558f30..212d894a8 100644
+--- a/security/integrity/platform_certs/keyring_handler.h
++++ b/security/integrity/platform_certs/keyring_handler.h
+@@ -35,3 +35,11 @@ efi_element_handler_t get_handler_for_mok(const efi_guid=
+_t *sig_type);
+ efi_element_handler_t get_handler_for_dbx(const efi_guid_t *sig_type);
+=20
+ #endif
++
++#ifndef UEFI_QUIRK_SKIP_CERT
++#define UEFI_QUIRK_SKIP_CERT(vendor, product) \
++		 .matches =3D { \
++			DMI_MATCH(DMI_BOARD_VENDOR, vendor), \
++			DMI_MATCH(DMI_PRODUCT_NAME, product), \
++		},
++#endif
+diff --git a/security/integrity/platform_certs/load_uefi.c b/security/integ=
+rity/platform_certs/load_uefi.c
+index 5f45c3c07..c3393b2b1 100644
+--- a/security/integrity/platform_certs/load_uefi.c
++++ b/security/integrity/platform_certs/load_uefi.c
+@@ -3,6 +3,7 @@
+ #include <linux/kernel.h>
+ #include <linux/sched.h>
+ #include <linux/cred.h>
++#include <linux/dmi.h>
+ #include <linux/err.h>
+ #include <linux/efi.h>
+ #include <linux/slab.h>
+@@ -12,6 +13,33 @@
+ #include "../integrity.h"
+ #include "keyring_handler.h"
+=20
++/*
++ * Apple Macs with T2 Security chip seem to be using a non standard
++ * implementation of Secure Boot. For Linux to run on these machines
++ * Secure Boot needs to be turned off, since the T2 Chip manages
++ * Secure Boot and doesn't allow OS other than macOS or Windows to
++ * boot. If turned off, an attempt to get certificates causes a crash,
++ * so we simply prevent doing the same.
++ */
++static const struct dmi_system_id uefi_skip_cert[] =3D {
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,2") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,3") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,4") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,2") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,3") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,4") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir8,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir8,2") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir9,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacMini8,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacPro7,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "iMac20,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "iMac20,2") },
++	{ }
++};
++
+ /*
+  * Look to see if a UEFI variable called MokIgnoreDB exists and return tru=
+e if
+  * it does.
+@@ -138,6 +166,13 @@ static int __init load_uefi_certs(void)
+ 	unsigned long dbsize =3D 0, dbxsize =3D 0, mokxsize =3D 0;
+ 	efi_status_t status;
+ 	int rc =3D 0;
++	const struct dmi_system_id *dmi_id;
++
++	dmi_id =3D dmi_first_match(uefi_skip_cert);
++	if (dmi_id) {
++		pr_err("Getting UEFI Secure Boot Certs is not supported on T2 Macs.\n");
++		return false;
++	}
+=20
+ 	if (!efi_rt_services_supported(EFI_RT_SUPPORTED_GET_VARIABLE))
+ 		return false;
+--=20
+2.25.1
 
 
-
-> >  + 72 B - extra effective[] slots
-> >  + 72 B - extra progs[] slots
-> >  + 36 B - extra flags[] slots
-> >  -184 B - savings from switching to hlist_head
-> >  ------
-> >  +252 B per cgroup instance
-> >
-> > Total cgroup_bpf{} size change - 720 B -> 968 B.
-> >
-> > WDYT?
-> >
-> > [^1] It looks like we can easily switch from cgroup->bpf.progs[] from
-> >      list_head to hlist_head and save some bytes!
-> >
-> >      We only access the list tail in __cgroup_bpf_attach(). We can
-> >      either iterate over the list and eat the cost there or push the new
-> >      prog onto the front.
-> >
-> >      I think we treat cgroup->bpf.progs[] everywhere like an unordered
-> >      set. Except for __cgroup_bpf_query, where the user might notice the
-> >      order change in the BPF_PROG_QUERY dump.
-> >
-> > [^2] Unrelated, but we would like to propose a
-> >      CGROUP_INET[46]_POST_CONNECT hook in the near future to make it
-> >      easier to bind UDP sockets to 4-tuple without creating conflicts:
-> >
-> >      https://github.com/cloudflare/cloudflare-blog/tree/master/2022-02-connectx/ebpf_connect4
-> >
-> > [...]
