@@ -2,135 +2,269 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B2B64FE312
+	by mail.lfdr.de (Postfix) with ESMTP id DB5FE4FE314
 	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 15:51:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344633AbiDLNw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 09:52:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45842 "EHLO
+        id S1356267AbiDLNwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 09:52:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238580AbiDLNwY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 09:52:24 -0400
-Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66CC350B0A;
-        Tue, 12 Apr 2022 06:50:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:Subject:
-        From:References:Cc:To:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe
-        :List-Post:List-Owner:List-Archive;
-        bh=DqKc8iJWKXFesV4tUBomdbYhQAx3J3hZZcgttBI4x2Y=; b=lUcIljzLQVkGDAXHQvO3ekCQ9M
-        JW4E1mqnOh350Gj+Eo1iyNXxUT+ph4jRyeLYG3/8bpC3qR5mSIBj1whJKWuTaAsjmIKKYhUDNBrnj
-        06RlAEIaL8dX8lKiR47oFmu0ZI/9BKYRTXp8vJ4av43r3Y3xyLnM47QGCmqTDWbqLZK8=;
-Received: from p57a6f1f9.dip0.t-ipconnect.de ([87.166.241.249] helo=nf.local)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1neGu0-00074w-2t; Tue, 12 Apr 2022 15:49:52 +0200
-Message-ID: <ee1d6c89-95f4-bf28-cf25-36b18ffb342f@nbd.name>
-Date:   Tue, 12 Apr 2022 15:49:51 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.7.0
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S1356295AbiDLNwg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 09:52:36 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 147FC54FA7
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 06:50:17 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id l7so32034208ejn.2
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 06:50:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=mD45Iif032GK88o1qMNo6w3/u6ggfAfX7qh5bJo8NEo=;
+        b=pbFyd8R46nIcgxyDcQ26MHXU5kThNwKLbXLYWLscA9j9wGdb+CoazLFJ3Mc/IZcrMC
+         Q0prBkqlCe2iJHQQIPjFNfXmn8aHvbqSVpmFAC44PhD2XkF6XQUEEShtm8Vz61Z/P4EQ
+         zXaV4bD4bNqPWp0leW6jSSFe1hHGKZpopdBqpWyRIYPRPWEzkZuqW7uyxV7n0caVqDcm
+         5iDSaw9skCAgUST2D0UJ2vNIHTLhYaUcc8HDcl4Pw+S4L2Euau6cTh1vv26iFFAViP8B
+         FA2Pkkn45N2yC8QmoRYVZMggmR1nFu4UFRs5OAqQ3kvScVTgXQjymDDRT6L1anJ4/xTe
+         1QFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=mD45Iif032GK88o1qMNo6w3/u6ggfAfX7qh5bJo8NEo=;
+        b=cgl9mtZ5yOg0Gsr1kUzlErluLyaCJkllpPYKBLd9KzKD8OXwUxXlh97PE2/7ZzPbo3
+         hBTYyTXSaxLVumiIj9rwqiYhvrCZLuUgaZSojX5+kFMLHIAOoCCMilLJE0O45H/BRlS2
+         zywckTjwlyoimYsInJRIf0b77wBzCWVe3WSD5+dxV2ZvGADTkBbFdzLikpJyI4HDUWJt
+         pobgE6jPM/w9Tb6ePHP97vGYItMBgcAao1dc5bQSXkX+5GjCEMQ0uAwF75ZxGXvw4GlL
+         NS7WnhQQo91nQ1oCmpSPjv8IJTi8O4Qpp8Kzlc5b0oGIWm6GIycn9HXs0Y6dhVWu0qM0
+         y51w==
+X-Gm-Message-State: AOAM533QqVBO5PTOlVCLJka5vM5BaMesgHq1hXag9QidOL15oPmxXW+f
+        zlyvp+eDjMYri83gvH+hFB0=
+X-Google-Smtp-Source: ABdhPJz+91h6oAhgO2Nk6GkNMZqOXMbEDLWuVY+g8AwnX6jjJdKtuLwjhu5miayyFkeRywG6H902Lg==
+X-Received: by 2002:a17:907:1608:b0:6e8:526a:2312 with SMTP id hb8-20020a170907160800b006e8526a2312mr18954077ejc.200.1649771415282;
+        Tue, 12 Apr 2022 06:50:15 -0700 (PDT)
+Received: from skbuf ([188.26.57.45])
+        by smtp.gmail.com with ESMTPSA id u10-20020a50d94a000000b004131aa2525esm16925369edj.49.2022.04.12.06.50.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 06:50:14 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 16:50:12 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Mattias Forsblad <mattias.forsblad@gmail.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-References: <20220405195755.10817-1-nbd@nbd.name>
- <20220405195755.10817-15-nbd@nbd.name> <Yk8pJRxnVCfdk8xi@lunn.ch>
- <f25a6278-1baf-cc27-702a-5d93eedda438@nbd.name> <YlQmf7qGAnq/3nW0@lunn.ch>
- <ece29b0d-bbbe-7c03-a6b4-60e44453ca31@nbd.name> <YlV5jEzNZT1aKmNL@lunn.ch>
-From:   Felix Fietkau <nbd@nbd.name>
-Subject: Re: [PATCH v2 14/14] net: ethernet: mtk_eth_soc: support creating mac
- address based offload entries
-In-Reply-To: <YlV5jEzNZT1aKmNL@lunn.ch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        Tobias Waldekranz <tobias@waldekranz.com>
+Subject: Re: [PATCH v4 net-next 1/3] net: dsa: track whetever bridges have
+ foreign interfaces in them
+Message-ID: <20220412135012.czcmfurp5w2t2ocl@skbuf>
+References: <20220411120633.40054-1-mattias.forsblad@gmail.com>
+ <20220411120633.40054-2-mattias.forsblad@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220411120633.40054-2-mattias.forsblad@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 12.04.22 15:07, Andrew Lunn wrote:
->> > > > > I'm trying to understand the architecture here.
->> > > > > We have an Ethernet interface and a Wireless interface. The slow
->> > > path
->> > > > is that frames ingress from one of these interfaces, Linux decides
->> > > > what to do with them, either L2 or L3, and they then egress probably
->> > > > out the other interface.
->> > > > > The hardware will look at the frames and try to spot flows? It
->> > > will
->> > > > then report any it finds. You can then add an offload, telling it for
->> > > > a flow it needs to perform L2 or L3 processing, and egress out a
->> > > > specific port? Linux then no longer sees the frame, the hardware
->> > > > handles it, until the flow times out?
->> > > Yes, the hw handles it until either the flow times out, or the corresponding
->> > > offload entry is removed.
->> > > 
->> > > For OpenWrt I also wrote a daemon that uses tc classifier BPF to accelerate
->> > > the software bridge and create hardware offload entries as well via hardware
->> > > TC flower rules: https://github.com/nbd168/bridger
->> > > It works in combination with these changes.
->> > 
->> > What about the bridge? In Linux, it is the software bridge which
->> > controls all this at L2, and it should be offloading the flows, via
->> > switchdev. The egress port you derive here is from the software bridge
->> > FDB?
+On Mon, Apr 11, 2022 at 02:06:31PM +0200, Mattias Forsblad wrote:
+> Track if a bridge stack has any foreign interfaces in them.
 > 
->> My code uses netlink to fetch and monitor the bridge configuration,
->> including fdb, port state, vlans, etc. and it uses that for the offload path
->> - no extra configuration needed.
+> This patch is based on work done by Vlodimir Oltean.
+
+Originally these were 2 patches which were squashed (and they were 2
+patches for a reason), they're missing proper authorship (mine, my sign
+off, your sign off), and my name is misspelled.
+
 > 
-> So this is where we get into architecture issues. Do we really want
-> Linux to have two ways for setting up L2 networking? It was decided
-> that users should not need to know about how to use an accelerator,
-> they should not use additional tools, it should just look like
-> linux. The user should just add the WiFi netdev to the bridge and
-> switchdev will do the rest to offload L2 switching to the hardware.
+> Signed-off-by: Mattias Forsblad <mattias.forsblad@gmail.com>
+> ---
+>  include/net/dsa.h  |  1 +
+>  net/dsa/dsa_priv.h |  1 +
+>  net/dsa/slave.c    | 88 +++++++++++++++++++++++++++++++++++++++++-----
+>  3 files changed, 81 insertions(+), 9 deletions(-)
 > 
-> You appear to be saying you need a daemon in userspace. That is not
-> how every other accelerate works in Linux networking.
+> diff --git a/include/net/dsa.h b/include/net/dsa.h
+> index 934958fda962..52b6da7d45b3 100644
+> --- a/include/net/dsa.h
+> +++ b/include/net/dsa.h
+> @@ -242,6 +242,7 @@ struct dsa_bridge {
+>  	unsigned int num;
+>  	bool tx_fwd_offload;
+>  	refcount_t refcount;
+> +	u8 have_foreign:1;
+>  };
+>  
+>  struct dsa_port {
+> diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+> index 5d3f4a67dce1..d610776ecd76 100644
+> --- a/net/dsa/dsa_priv.h
+> +++ b/net/dsa/dsa_priv.h
+> @@ -320,6 +320,7 @@ void dsa_slave_setup_tagger(struct net_device *slave);
+>  int dsa_slave_change_mtu(struct net_device *dev, int new_mtu);
+>  int dsa_slave_manage_vlan_filtering(struct net_device *dev,
+>  				    bool vlan_filtering);
+> +int dsa_bridge_foreign_dev_update(struct net_device *bridge_dev);
+>  
+>  static inline struct dsa_port *dsa_slave_to_port(const struct net_device *dev)
+>  {
+> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+> index 41c69a6e7854..feaf64564c6e 100644
+> --- a/net/dsa/slave.c
+> +++ b/net/dsa/slave.c
+> @@ -2485,6 +2485,9 @@ static int dsa_slave_changeupper(struct net_device *dev,
+>  	struct netlink_ext_ack *extack;
+>  	int err = NOTIFY_DONE;
+>  
+> +	if (!dsa_slave_dev_check(dev))
+> +		return err;
+> +
+>  	extack = netdev_notifier_info_to_extack(&info->info);
+>  
+>  	if (netif_is_bridge_master(info->upper_dev)) {
+> @@ -2539,6 +2542,9 @@ static int dsa_slave_prechangeupper(struct net_device *dev,
+>  {
+>  	struct dsa_port *dp = dsa_slave_to_port(dev);
+>  
+> +	if (!dsa_slave_dev_check(dev))
+> +		return NOTIFY_DONE;
+> +
+>  	if (netif_is_bridge_master(info->upper_dev) && !info->linking)
+>  		dsa_port_pre_bridge_leave(dp, info->upper_dev);
+>  	else if (netif_is_lag_master(info->upper_dev) && !info->linking)
+> @@ -2559,6 +2565,9 @@ dsa_slave_lag_changeupper(struct net_device *dev,
+>  	int err = NOTIFY_DONE;
+>  	struct dsa_port *dp;
+>  
+> +	if (!netif_is_lag_master(dev))
+> +		return err;
+> +
+>  	netdev_for_each_lower_dev(dev, lower, iter) {
+>  		if (!dsa_slave_dev_check(lower))
+>  			continue;
+> @@ -2588,6 +2597,9 @@ dsa_slave_lag_prechangeupper(struct net_device *dev,
+>  	int err = NOTIFY_DONE;
+>  	struct dsa_port *dp;
+>  
+> +	if (!netif_is_lag_master(dev))
+> +		return err;
+> +
+>  	netdev_for_each_lower_dev(dev, lower, iter) {
+>  		if (!dsa_slave_dev_check(lower))
+>  			continue;
+> @@ -2605,6 +2617,18 @@ dsa_slave_lag_prechangeupper(struct net_device *dev,
+>  	return err;
+>  }
+>  
+> +static int dsa_bridge_changelower(struct net_device *dev,
+> +				  struct netdev_notifier_changeupper_info *info)
+> +{
+> +	int err;
+> +
+> +	if (!netif_is_bridge_master(info->upper_dev))
+> +		return NOTIFY_DONE;
+> +
+> +	err = dsa_bridge_foreign_dev_update(info->upper_dev);
+> +	return notifier_from_errno(err);
+> +}
+> +
+>  static int
+>  dsa_prevent_bridging_8021q_upper(struct net_device *dev,
+>  				 struct netdev_notifier_changeupper_info *info)
+> @@ -2709,22 +2733,33 @@ static int dsa_slave_netdevice_event(struct notifier_block *nb,
+>  		if (err != NOTIFY_DONE)
+>  			return err;
+>  
+> -		if (dsa_slave_dev_check(dev))
+> -			return dsa_slave_prechangeupper(dev, ptr);
+> +		err = dsa_slave_prechangeupper(dev, ptr);
+> +		if (notifier_to_errno(err))
+> +			return err;
+>  
+> -		if (netif_is_lag_master(dev))
+> -			return dsa_slave_lag_prechangeupper(dev, ptr);
+> +		err = dsa_slave_lag_prechangeupper(dev, ptr);
+> +		if (notifier_to_errno(err))
+> +			return err;
+>  
+>  		break;
+>  	}
+> -	case NETDEV_CHANGEUPPER:
+> -		if (dsa_slave_dev_check(dev))
+> -			return dsa_slave_changeupper(dev, ptr);
+> +	case NETDEV_CHANGEUPPER: {
+> +		int err;
+>  
+> -		if (netif_is_lag_master(dev))
+> -			return dsa_slave_lag_changeupper(dev, ptr);
+> +		err = dsa_slave_changeupper(dev, ptr);
+> +		if (notifier_to_errno(err))
+> +			return err;
+> +
+> +		err = dsa_slave_lag_changeupper(dev, ptr);
+> +		if (notifier_to_errno(err))
+> +			return err;
+> +
+> +		err = dsa_bridge_changelower(dev, ptr);
+> +		if (notifier_to_errno(err))
+> +			return err;
+>  
+>  		break;
+> +	}
+>  	case NETDEV_CHANGELOWERSTATE: {
+>  		struct netdev_notifier_changelowerstate_info *info = ptr;
+>  		struct dsa_port *dp;
+> @@ -2877,6 +2912,41 @@ static bool dsa_foreign_dev_check(const struct net_device *dev,
+>  	return true;
+>  }
+>  
+> +int dsa_bridge_foreign_dev_update(struct net_device *bridge_dev)
+> +{
+> +	struct net_device *first_slave, *lower;
+> +	struct dsa_bridge *bridge = NULL;
+> +	struct dsa_switch_tree *dst;
+> +	bool have_foreign = false;
+> +	struct list_head *iter;
+> +	struct dsa_port *dp;
+> +
+> +	list_for_each_entry(dst, &dsa_tree_list, list) {
+> +		dsa_tree_for_each_user_port(dp, dst) {
+> +			if (dsa_port_offloads_bridge_dev(dp, bridge_dev)) {
+> +				bridge = dp->bridge;
+> +				first_slave = dp->slave;
+> +				break;
+> +			}
+> +		}
+> +	}
+> +
+> +	/* Bridge with no DSA interface in it */
+> +	if (!bridge)
+> +		return 0;
+> +
+> +	netdev_for_each_lower_dev(bridge_dev, lower, iter) {
+> +		if (dsa_foreign_dev_check(first_slave, lower)) {
+> +			have_foreign = true;
+> +			break;
+> +		}
+> +	}
+> +
+> +	bridge->have_foreign = have_foreign;
+> +
+> +	return 0;
+> +}
+> +
+>  static int dsa_slave_fdb_event(struct net_device *dev,
+>  			       struct net_device *orig_dev,
+>  			       unsigned long event, const void *ctx,
+> -- 
+> 2.25.1
 > 
-> We the Linux network community need to decided if we want this?
-The problem here is that it can't be fully transparent. Enabling 
-hardware offload for LAN -> WiFi comes at a cost of bypassing airtime 
-fairness and mac80211's bufferbloat mitigation.
-Some people want this anyway (often but not always for 
-benchmark/marketing purposes), but it's not something that I would want 
-to have enabled by default simply by a wifi netdev to a bridge.
-
-Initially, I wanted to put more of the state tracking code in the 
-kernel. I made the first implementation of my acceleration code as a 
-patch to the network bridge - speeding up bridge unicast forwarding 
-significantly for any device regardless of hardware support. I wanted to 
-build on that to avoid putting a lot of FDB/VLAN related tracking 
-directly into the driver.
-
-That approach was immediately rejected and I was told to use BPF instead.
-
-That said, I really don't think it's a good idea to put all the code for 
-tracking the bridge state, and all possible forwarding destinations into 
-the driver directly.
-
-I believe the combination of doing the bridge state tracking in user 
-space + using the standard TC API for programming offloading rules into 
-the hardware is a reasonable compromise.
-
-- Felix
