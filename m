@@ -2,115 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D8E4F4FE743
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 19:37:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEEED4FE71B
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 19:33:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358425AbiDLRj0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 13:39:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55630 "EHLO
+        id S1358160AbiDLRfg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 13:35:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358453AbiDLRjS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 13:39:18 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28A9562A0A;
-        Tue, 12 Apr 2022 10:36:57 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id bg10so38779451ejb.4;
-        Tue, 12 Apr 2022 10:36:57 -0700 (PDT)
+        with ESMTP id S1358139AbiDLRfe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 13:35:34 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 137315BE77
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 10:33:15 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id p15so38725065ejc.7
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 10:33:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=LtZCMAaqO/VG5YpfRuO+UKadnxV+qlzoG2jHc4egOys=;
-        b=BhFlfM7WlDWeQoL2oBPd1wdD5+QfBwB3o37cqrfIeRYLcN8LhGUW/3FRIoXiw2zssZ
-         pMsBvqP2XmGk1/t/lPq9UaKDY/NCVEsbejHkvAk1f6/2gt5/3Nfh+WPV+MAJZrLdnwIT
-         R1rudQaoZpMYYTmisjTx4dDSWnQ+VsE6ocgY4be+JodlEy+1crl9xhXHjRWs7SXehYzt
-         KUMXhT5/Cdxa9RvZm6TgYYmgbb5e7H43zsbv7myXFz1ZHDpiiQ/k6VcN1aeOcpgJOcn7
-         /0px6ND5ozbN0MGiLpw3mmxU0aJaF0P7CHeCftw8udgjbcRgb7eeE6k6cBuUPbzZBcqH
-         rKfQ==
+        d=pqrs.dk; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=w97rX506l0IZkP+JZIYJlQ8t2kG9o3WJCY91DufueFk=;
+        b=ORC1aokz3Akmjy39tO0RY2jzikbJzlVNlrJZb+6WACySbrtF6E+MNNtD7yGr1ALcME
+         99TOioRefbrdi/g42nB6ZY9BxJZ7iNwer55DdjXCqeZr3gAihwdN9Z0rrqkAAAUgXdjJ
+         QjE+mE4/eal7w8QmOY38mR4NOTj4YYlOOiON0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=LtZCMAaqO/VG5YpfRuO+UKadnxV+qlzoG2jHc4egOys=;
-        b=FT0U5qPc7ConXgRf4vG/C0hxV6+pVDtM26qmBvII6F9qFMmvk+I0JtDGWJqN+tYeLs
-         bF3/4542z+aR8cKWKSDR0fyRLJWxOtD2+y9S8MSRmZ3+4Nx21Wr9Rls3FKH7Euw448J4
-         JGc3kwNrK6tXXtnkbSbY1bug65ZZZVu4FUpgZiIAdISZAhvkteaKkJPRuXVpZR+eVXye
-         Pl8LiuPrHeNp3FEr9Eo2AQRILmCc1QuSVQhv/E/8p0BDZADwS/HFrbmrv6+KaByVX47O
-         yQna9lJWDSkYaoiacJrcbBdI1xjB2WZNzv9CHcb3JxpZp7SWfF3c3QdOqVaxHSgZPag6
-         Q75g==
-X-Gm-Message-State: AOAM5306rhH/yPAZsiMuEiYexyT/3zQoTaI9QsuL7BE8n99CmHniu1CP
-        PwWUuSYxFx9r6uMBlAKGc0M=
-X-Google-Smtp-Source: ABdhPJwBpvYMW9Rop2D/kRLqtKhVc9292ewqg60QqdMXSB5mXpLFNudGe4Aea/oqfX56vmp9ucWXIw==
-X-Received: by 2002:a17:907:6289:b0:6e0:eb0c:8ee7 with SMTP id nd9-20020a170907628900b006e0eb0c8ee7mr33978446ejc.245.1649785015404;
-        Tue, 12 Apr 2022 10:36:55 -0700 (PDT)
-Received: from localhost.localdomain ([5.171.105.8])
-        by smtp.googlemail.com with ESMTPSA id n11-20020a50cc4b000000b0041d8bc4f076sm48959edi.79.2022.04.12.10.36.53
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=w97rX506l0IZkP+JZIYJlQ8t2kG9o3WJCY91DufueFk=;
+        b=giuiESSndhBxtFHZ0jI9rM8N64oYOe+INr3nVGr5KbwPOK/Odr097+TpGOG8Rr35bq
+         3MXL1RAQvnF874+kGkgdnc5fLtyB0yHfTK7bLlsXeR08JhsJ2EN5ljjUQnkDuruvxpvi
+         IvwqJVyb6O8J6vZC2DLpG8qazodozrVarSaydsL6bH1u2IZ/FlihwRL543sgpudLrQ8C
+         wGX+EjwPP47kcJk7qHnzGnWXS+AGXEMLA2thOQbPOq1wbO1IdZmVrx5K918m1WTdwwDb
+         M0mzI6VVrBwEnCv+pr6WJTd+ynIVCFSNnZJ9CRsWotu05jvL8Lv7dMyzru5HuPRkQXTd
+         4taA==
+X-Gm-Message-State: AOAM533TTAVeMtPGNQF3hYx+iVMigibSLd9eEYzHzmalbQE7bhHBJS1q
+        MYRgMsIynf08JVyAtlYlbZj14Q==
+X-Google-Smtp-Source: ABdhPJy/Ds7apVGrE02M2cDXTimaPZi1syJE7lufyddpu55XI0GsM3dEf3LKDwyhS3Hs95uW5/m86A==
+X-Received: by 2002:a17:906:7316:b0:6d7:16be:b584 with SMTP id di22-20020a170906731600b006d716beb584mr34948158ejc.759.1649784793578;
+        Tue, 12 Apr 2022 10:33:13 -0700 (PDT)
+Received: from capella.. (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
+        by smtp.gmail.com with ESMTPSA id o3-20020aa7dd43000000b00419db53ae65sm56142edw.7.2022.04.12.10.33.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 10:36:55 -0700 (PDT)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
+        Tue, 12 Apr 2022 10:33:12 -0700 (PDT)
+From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, stable@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [net-next PATCH v2 4/4] drivers: net: dsa: qca8k: drop dsa_switch_ops from qca8k_priv
-Date:   Tue, 12 Apr 2022 19:30:19 +0200
-Message-Id: <20220412173019.4189-5-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220412173019.4189-1-ansuelsmth@gmail.com>
-References: <20220412173019.4189-1-ansuelsmth@gmail.com>
+        Michael Rasmussen <mir@bang-olufsen.dk>,
+        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH stable 5.16+ 0/3] backported Realtek DSA driver fixes for 5.16 and 5.17
+Date:   Tue, 12 Apr 2022 19:32:49 +0200
+Message-Id: <20220412173253.2247196-1-alvin@pqrs.dk>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that dsa_switch_ops is not switch specific anymore, we can drop it
-from qca8k_priv and use the static ops directly for the dsa_switch
-pointer.
+From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
----
- drivers/net/dsa/qca8k.c | 3 +--
- drivers/net/dsa/qca8k.h | 1 -
- 2 files changed, 1 insertion(+), 3 deletions(-)
+These fixes can be applied to both 5.16 and 5.17 - the subtree of
+drivers/net/dsa/realtek is identical save for a few unrelated places.
 
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 9c4c5af79f9a..48a71d85b4ff 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -3160,8 +3160,7 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
- 	priv->ds->dev = &mdiodev->dev;
- 	priv->ds->num_ports = QCA8K_NUM_PORTS;
- 	priv->ds->priv = priv;
--	priv->ops = qca8k_switch_ops;
--	priv->ds->ops = &priv->ops;
-+	priv->ds->ops = &qca8k_switch_ops;
- 	mutex_init(&priv->reg_mutex);
- 	dev_set_drvdata(&mdiodev->dev, priv);
- 
-diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-index 8bbe36f135b5..04408e11402a 100644
---- a/drivers/net/dsa/qca8k.h
-+++ b/drivers/net/dsa/qca8k.h
-@@ -394,7 +394,6 @@ struct qca8k_priv {
- 	struct dsa_switch *ds;
- 	struct mutex reg_mutex;
- 	struct device *dev;
--	struct dsa_switch_ops ops;
- 	struct gpio_desc *reset_gpio;
- 	struct net_device *mgmt_master; /* Track if mdio/mib Ethernet is available */
- 	struct qca8k_mgmt_eth_data mgmt_eth_data;
+The main backporting effort was to remove some parts of the patches
+which touched the newly introduced MDIO interface, which was introduced
+in the 5.18 development cycle, and to work around a mass-rename of a
+single variable (smi -> priv). Regrettably this rename will make future
+stable backports equally tedious and hard to automate.
+
+Please let me know if you would like me to send the series again for
+5.17.
+
+Thanks!
+
+
+Alvin Šipraga (3):
+  net: dsa: realtek: allow subdrivers to externally lock regmap
+  net: dsa: realtek: rtl8365mb: serialize indirect PHY register access
+  net: dsa: realtek: make interface drivers depend on OF
+
+ drivers/net/dsa/realtek/Kconfig            |  1 +
+ drivers/net/dsa/realtek/realtek-smi-core.c | 48 +++++++++++++++++--
+ drivers/net/dsa/realtek/realtek-smi-core.h |  2 +
+ drivers/net/dsa/realtek/rtl8365mb.c        | 54 +++++++++++++---------
+ 4 files changed, 81 insertions(+), 24 deletions(-)
+
 -- 
-2.34.1
+2.35.1
 
