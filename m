@@ -2,88 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 187C64FDBB8
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 12:59:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1A324FDBA0
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 12:58:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353706AbiDLKGe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 06:06:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48636 "EHLO
+        id S1348952AbiDLKFe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 06:05:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389070AbiDLJXW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 05:23:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC69527D3
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 01:30:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0EC56B81B66
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 08:30:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AA06DC385A1;
-        Tue, 12 Apr 2022 08:30:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649752212;
-        bh=m+1PpGjcwzHYLO+3cx1OqvO/hhTh8rff68hcJcnjGQA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=bFSn3y8tt33D6MUcoPmxOFx49qQePeyXNBYioOxS3rObIZuOnq3c5WAwcuTkjL7vY
-         JtFd2DOOqld136OWdCzBvJCeZ20Fe2pKgAHSTNjlmE/9p/xNq6X5N2HdWdGh4xuMkq
-         flJasIEY3MLhZoPkv3R89EQ/aN+JIZPTJCM0YNH45K4rdwfAtXcr3jSux1ZTHEUbHj
-         m8wKITzMS/2dLZRaXhUBIbPOwGrcZRRNSnHcgZRf49aIrW95j+nfzpp8+BU691dxiw
-         iyhGsNLLGbMoe7Mu0QySYrA+MiH8BF4P8izivP30NfI2QOdAY7zg+thCFehpt3CSyn
-         uS/ljFgukr4Xw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8D584E8DBD1;
-        Tue, 12 Apr 2022 08:30:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S1389767AbiDLJYI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 05:24:08 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2143956227;
+        Tue, 12 Apr 2022 01:38:37 -0700 (PDT)
+Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KczYz579yz67Zy6;
+        Tue, 12 Apr 2022 16:35:19 +0800 (CST)
+Received: from [10.122.132.241] (10.122.132.241) by
+ fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Tue, 12 Apr 2022 10:38:34 +0200
+Message-ID: <5a229249-fd4a-76ee-ec94-5f29ca3a245c@huawei.com>
+Date:   Tue, 12 Apr 2022 11:38:33 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [RFC PATCH v4 08/15] landlock: add support network rules
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+CC:     <willemdebruijn.kernel@gmail.com>,
+        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
+        <artem.kuzin@huawei.com>, <anton.sirazetdinov@huawei.com>
+References: <20220309134459.6448-1-konstantin.meskhidze@huawei.com>
+ <20220309134459.6448-9-konstantin.meskhidze@huawei.com>
+ <06f9ca1f-6e92-9d71-4097-e43b2f77b937@digikod.net>
+ <8e279be2-5092-ad34-2f8d-ca77ee5a10fd@huawei.com>
+ <6f9d82ed-081e-a6e4-5876-6af7db180ba1@digikod.net>
+From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+In-Reply-To: <6f9d82ed-081e-a6e4-5876-6af7db180ba1@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net-next 0/2] net: bridge: add support for host l2 mdb
- entries
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164975221257.23162.6047417037650246223.git-patchwork-notify@kernel.org>
-Date:   Tue, 12 Apr 2022 08:30:12 +0000
-References: <20220411084054.298807-1-troglobit@gmail.com>
-In-Reply-To: <20220411084054.298807-1-troglobit@gmail.com>
-To:     Joachim Wiberg <troglobit@gmail.com>
-Cc:     kuba@kernel.org, razor@blackwall.org, roopa@nvidia.com,
-        netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
-        davem@davemloft.net
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Originating-IP: [10.122.132.241]
+X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
+ fraeml704-chm.china.huawei.com (10.206.15.53)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This series was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
 
-On Mon, 11 Apr 2022 10:40:52 +0200 you wrote:
-> Fix to an obvious omissions for layer-2 host mdb entries, this v2 adds
-> the missing selftest and some minor style fixes.
+4/11/2022 7:20 PM, Mickaël Salaün пишет:
 > 
-> Note: this patch revealed some worrying problems in how the bridge
->       forwards unknown BUM traffic and also how unknown multicast is
->       forwarded when a IP multicast router is known, which a another
->       (RFC) patch series intend to address.  That series will build
->       on this selftest, hence the name of the test.
+> On 11/04/2022 15:44, Konstantin Meskhidze wrote:
+>>
+>>
+>> 4/8/2022 7:30 PM, Mickaël Salaün пишет:
 > 
 > [...]
-
-Here is the summary with links:
-  - [v2,net-next,1/2] net: bridge: add support for host l2 mdb entries
-    https://git.kernel.org/netdev/net-next/c/e65693b0179e
-  - [v2,net-next,2/2] selftests: forwarding: new test, verify host mdb entries
-    https://git.kernel.org/netdev/net-next/c/50fe062c806e
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+> 
+> 
+>>>>   struct landlock_ruleset *landlock_create_ruleset(const struct 
+>>>> landlock_access_mask *access_mask_set)
+>>>>   {
+>>>>       struct landlock_ruleset *new_ruleset;
+>>>>
+>>>>       /* Informs about useless ruleset. */
+>>>> -    if (!access_mask_set->fs)
+>>>> +    if (!access_mask_set->fs && !access_mask_set->net)
+>>>>           return ERR_PTR(-ENOMSG);
+>>>>       new_ruleset = create_ruleset(1);
+>>>> -    if (!IS_ERR(new_ruleset))
+>>>
+>>> This is better:
+>>>
+>>> if (IS_ERR(new_ruleset))
+>>>      return new_ruleset;
+>>> if (access_mask_set->fs)
+>>> ...
+>>
+>>    I dont get this condition. Do you mean that we return new_ruleset
+>> anyway no matter what the masks's values are? So its possible to have 
+>> 0 masks values, is't it?
+> 
+> No, the logic is correct but it would be simpler to exit as soon as 
+> there is a ruleset error, you don't need to duplicate 
+> "IS_ERR(new_ruleset) &&":
+> 
+> if (IS_ERR(new_ruleset))
+>      return new_ruleset;
+> if (access_mask_set->fs)
+>      landlock_set_fs_access_mask(new_ruleset, access_mask_set, 0);
+> if (access_mask_set->net)
+>      landlock_set_net_access_mask(new_ruleset, access_mask_set, 0);
+> return new_ruleset;
+> 
+   Ok. I got it. Thank you.
+> .
