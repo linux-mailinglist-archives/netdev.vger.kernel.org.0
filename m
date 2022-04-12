@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E7BD34FE26F
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 15:29:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75BB74FE275
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 15:29:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355660AbiDLN3d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 09:29:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43176 "EHLO
+        id S1356032AbiDLN3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 09:29:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356721AbiDLN2G (ORCPT
+        with ESMTP id S1356731AbiDLN2G (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 09:28:06 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C84534C43B
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 06:23:12 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id u15so18665895ejf.11
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 06:23:12 -0700 (PDT)
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1E2E2AE34
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 06:23:13 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id r13so37348580ejd.5
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 06:23:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=TL0c+Hs+0lBMqasciNPJrqUQXbgHwj7xsTQadVbU8KQ=;
-        b=fY8ffGGtVbY8dJ+Pum0CRcGC6YXlMA0rkvpKenc11A5lffG+COmeo74YILwokEYNvW
-         d1Jx0PgylqFD4fV5MaNcX1juwMsHgexHsy7vDHJMCPwI3vRaP6xsOj465eqv0jtWe8KH
-         u4h0rjzKIx3u7t+TaIAywVpqeK+YJBsOtvXRUgfwDlp7b7a/9XOO0GSva/rMjzighPeu
-         V5i0lVbjZjETVDO0wGUfaziUHKTXKfS9bIXTOctcHBTBwZXgFgPRu3IReq6b/xidMfx8
-         KIPxBTcpUNm0OqFC6HVpVsAEwsDOljp3IGAI2GI3+goo5lB3RjUhowNGg2JP4J+jD0Z5
-         MePg==
+        bh=ETWbF7zKsZG9skDxgFBuQOsMiuFT3MmfMSLOxhDh3mw=;
+        b=Q7Dpt9DQjInhOCoN2TX1SM9fAaM/ZcyKh2wLi9yqBD8CWhScrhMlf8KjQdw9i35ktl
+         ALa9AsW7WDZd44cDkQNSIsMMnFkqftQt+Z4p5hQlKbA7xPufx1OQCid2gCrTGp+in0LX
+         CrhSwFsMKQnfPDBO33PnPHpDw6mcG1G5Bg/8kX9L0tYEPJ/tE3avhZkN2SjqblBIFBlG
+         zz1GdiAF+HZG7BuryzyhQfgFp4eikC6THMi9IkFweQZ9qbJoMT55KJalDQ7kbEpapC6k
+         /XAG7JYI7mGHXI6ode8zK9IzGRuWAr1tT5K2m8SSNSgcAqhSUkZ7hk3Jjc6QEnGi+56E
+         GKhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=TL0c+Hs+0lBMqasciNPJrqUQXbgHwj7xsTQadVbU8KQ=;
-        b=LM9ZXd+JCPhxsI9YsAdlptAnItj9N7hsAxzN92ZUEzkGfE5eDB4/9joswm8UBQzXeh
-         lY9Xd6evceTrI3cRgYOw5u7aEjYna3X5hM85McMEAYX5gVQo9i/lI3jIjoRgNshZxl6b
-         bRZVVwsbwfdACBIGPTZQRrBXP8KyLwxhcskTkluWGe9dZdEcCW1C0TOmjlz7L7YsXPwg
-         U7YR3DwX6OVA1chzrXY/XYDlsfHE1PPXiDqh7uN1ZSkxtF6Aw6cCbRLR9HnNNbEHuaHC
-         Bg2Lq1TOgVeEcrNAb2h6BdX5HKnGYiFp5vlwiY27cH4gU7Qrwnagfg33Gn3JBxP3VU8B
-         ckqw==
-X-Gm-Message-State: AOAM532NWBdwlKcINgf8yV0xD9TBwEGmhsm6rvRDFOqgmUlQD0KP9pLC
-        K4yFslbToaCRgsgKzvRwvSPOF1hvaXC4o9Zz
-X-Google-Smtp-Source: ABdhPJw4d1MUchQXlkpHba8s2U9YZk+Af7ZipghYtclXLY7NwNHQ2H1zZ2Up8/8wRrhrAhLwekPOMg==
-X-Received: by 2002:a17:906:37cd:b0:6e0:bdb6:f309 with SMTP id o13-20020a17090637cd00b006e0bdb6f309mr34510105ejc.394.1649769790535;
-        Tue, 12 Apr 2022 06:23:10 -0700 (PDT)
+        bh=ETWbF7zKsZG9skDxgFBuQOsMiuFT3MmfMSLOxhDh3mw=;
+        b=VuiaECxki4v+WZxsodRCQRd1JJU+Xnxgmwxyjy/vnXCPErCTOyfCssUm+9R7vcxyB+
+         XeAFGcmmN8ZlQFXLtvA9lzgm/rGF5I5Z3KuLZdWPmQHrrkaN9uPmMT362xRFyWYRsvvE
+         ckDHSZ5Jt7wTcAWZdggoX49BaAisBJu21UNkx6Wnhx6jNp0r6nHAzIdCIzoF25/ZPli0
+         /lMcjdKmeVP0SPrEHaeiZXhT6TGRhxkIi3YVpv23QqEH3VnFbOQmg+ToCF0iGD5YDrKv
+         gPPUYTgqgBBH/IbZEE9WyYLpYkX6jCVYgLNsmOz4P41/ikaYvadufE5rHY3dPlOuhyfe
+         Uy8Q==
+X-Gm-Message-State: AOAM530QGWsvhOWIQKnmmkR8V0zMPtFl/6XTMFwnU2mlW2wcGb66DLl9
+        bjGrQ1paLen5wX3lDvlDQh1FzBnAKdQHR67Z
+X-Google-Smtp-Source: ABdhPJw5byT8y5MZ5mbH7NPOSQMVFjKhfITSKVTsXhxpS47HhEtSaibWOHFbYL/p/jAv0JWEliD4Xw==
+X-Received: by 2002:a17:907:3f8b:b0:6e8:318d:1def with SMTP id hr11-20020a1709073f8b00b006e8318d1defmr26133568ejc.153.1649769791697;
+        Tue, 12 Apr 2022 06:23:11 -0700 (PDT)
 Received: from debil.. (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id z16-20020a17090665d000b006e8789e8cedsm3771301ejn.204.2022.04.12.06.23.09
+        by smtp.gmail.com with ESMTPSA id z16-20020a17090665d000b006e8789e8cedsm3771301ejn.204.2022.04.12.06.23.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 06:23:10 -0700 (PDT)
+        Tue, 12 Apr 2022 06:23:11 -0700 (PDT)
 From:   Nikolay Aleksandrov <razor@blackwall.org>
 To:     netdev@vger.kernel.org
 Cc:     dsahern@kernel.org, roopa@nvidia.com, idosch@idosch.org,
         kuba@kernel.org, davem@davemloft.net,
         bridge@lists.linux-foundation.org,
         Nikolay Aleksandrov <razor@blackwall.org>
-Subject: [PATCH net-next v3 2/8] net: add ndo_fdb_del_bulk
-Date:   Tue, 12 Apr 2022 16:22:39 +0300
-Message-Id: <20220412132245.2148794-3-razor@blackwall.org>
+Subject: [PATCH net-next v3 3/8] net: rtnetlink: add NLM_F_BULK support to rtnl_fdb_del
+Date:   Tue, 12 Apr 2022 16:22:40 +0300
+Message-Id: <20220412132245.2148794-4-razor@blackwall.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412132245.2148794-1-razor@blackwall.org>
 References: <20220412132245.2148794-1-razor@blackwall.org>
@@ -70,43 +70,140 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a new netdev op called ndo_fdb_del_bulk, it will be later used for
-driver-specific bulk delete implementation dispatched from rtnetlink. The
-first user will be the bridge, we need it to signal to rtnetlink from
-the driver that we support bulk delete operation (NLM_F_BULK).
+When NLM_F_BULK is specified in a fdb del message we need to handle it
+differently. First since this is a new call we can strictly validate the
+passed attributes, at first only ifindex and vlan are allowed as these
+will be the initially supported filter attributes, any other attribute
+is rejected. The mac address is no longer mandatory, but we use it
+to error out in older kernels because it cannot be specified with bulk
+request (the attribute is not allowed) and then we have to dispatch
+the call to ndo_fdb_del_bulk if the device supports it. The del bulk
+callback can do further validation of the attributes if necessary.
 
 Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
 ---
- include/linux/netdevice.h | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ net/core/rtnetlink.c | 64 +++++++++++++++++++++++++++++++-------------
+ 1 file changed, 46 insertions(+), 18 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 28ea4f8269d4..a602f29365b0 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -1260,6 +1260,10 @@ struct netdev_net_notifier {
-  *		      struct net_device *dev,
-  *		      const unsigned char *addr, u16 vid)
-  *	Deletes the FDB entry from dev coresponding to addr.
-+ * int (*ndo_fdb_del_bulk)(struct ndmsg *ndm, struct nlattr *tb[],
-+ *			   struct net_device *dev,
-+ *			   u16 vid,
-+ *			   struct netlink_ext_ack *extack);
-  * int (*ndo_fdb_dump)(struct sk_buff *skb, struct netlink_callback *cb,
-  *		       struct net_device *dev, struct net_device *filter_dev,
-  *		       int *idx)
-@@ -1510,6 +1514,11 @@ struct net_device_ops {
- 					       struct net_device *dev,
- 					       const unsigned char *addr,
- 					       u16 vid);
-+	int			(*ndo_fdb_del_bulk)(struct ndmsg *ndm,
-+						    struct nlattr *tb[],
-+						    struct net_device *dev,
-+						    u16 vid,
-+						    struct netlink_ext_ack *extack);
- 	int			(*ndo_fdb_dump)(struct sk_buff *skb,
- 						struct netlink_callback *cb,
- 						struct net_device *dev,
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 4041b3e2e8ec..824963aa57b1 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -4167,22 +4167,34 @@ int ndo_dflt_fdb_del(struct ndmsg *ndm,
+ }
+ EXPORT_SYMBOL(ndo_dflt_fdb_del);
+ 
++static const struct nla_policy fdb_del_bulk_policy[NDA_MAX + 1] = {
++	[NDA_VLAN]	= { .type = NLA_U16 },
++	[NDA_IFINDEX]	= NLA_POLICY_MIN(NLA_S32, 1),
++};
++
+ static int rtnl_fdb_del(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 			struct netlink_ext_ack *extack)
+ {
++	bool del_bulk = !!(nlh->nlmsg_flags & NLM_F_BULK);
+ 	struct net *net = sock_net(skb->sk);
++	const struct net_device_ops *ops;
+ 	struct ndmsg *ndm;
+ 	struct nlattr *tb[NDA_MAX+1];
+ 	struct net_device *dev;
+-	__u8 *addr;
++	__u8 *addr = NULL;
+ 	int err;
+ 	u16 vid;
+ 
+ 	if (!netlink_capable(skb, CAP_NET_ADMIN))
+ 		return -EPERM;
+ 
+-	err = nlmsg_parse_deprecated(nlh, sizeof(*ndm), tb, NDA_MAX, NULL,
+-				     extack);
++	if (!del_bulk) {
++		err = nlmsg_parse_deprecated(nlh, sizeof(*ndm), tb, NDA_MAX,
++					     NULL, extack);
++	} else {
++		err = nlmsg_parse(nlh, sizeof(*ndm), tb, NDA_MAX,
++				  fdb_del_bulk_policy, extack);
++	}
+ 	if (err < 0)
+ 		return err;
+ 
+@@ -4198,9 +4210,12 @@ static int rtnl_fdb_del(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 		return -ENODEV;
+ 	}
+ 
+-	if (!tb[NDA_LLADDR] || nla_len(tb[NDA_LLADDR]) != ETH_ALEN) {
+-		NL_SET_ERR_MSG(extack, "invalid address");
+-		return -EINVAL;
++	if (!del_bulk) {
++		if (!tb[NDA_LLADDR] || nla_len(tb[NDA_LLADDR]) != ETH_ALEN) {
++			NL_SET_ERR_MSG(extack, "invalid address");
++			return -EINVAL;
++		}
++		addr = nla_data(tb[NDA_LLADDR]);
+ 	}
+ 
+ 	if (dev->type != ARPHRD_ETHER) {
+@@ -4208,8 +4223,6 @@ static int rtnl_fdb_del(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 		return -EINVAL;
+ 	}
+ 
+-	addr = nla_data(tb[NDA_LLADDR]);
+-
+ 	err = fdb_vid_parse(tb[NDA_VLAN], &vid, extack);
+ 	if (err)
+ 		return err;
+@@ -4220,10 +4233,16 @@ static int rtnl_fdb_del(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	if ((!ndm->ndm_flags || ndm->ndm_flags & NTF_MASTER) &&
+ 	    netif_is_bridge_port(dev)) {
+ 		struct net_device *br_dev = netdev_master_upper_dev_get(dev);
+-		const struct net_device_ops *ops = br_dev->netdev_ops;
+ 
+-		if (ops->ndo_fdb_del)
+-			err = ops->ndo_fdb_del(ndm, tb, dev, addr, vid);
++		ops = br_dev->netdev_ops;
++		if (!del_bulk) {
++			if (ops->ndo_fdb_del)
++				err = ops->ndo_fdb_del(ndm, tb, dev, addr, vid);
++		} else {
++			if (ops->ndo_fdb_del_bulk)
++				err = ops->ndo_fdb_del_bulk(ndm, tb, dev, vid,
++							    extack);
++		}
+ 
+ 		if (err)
+ 			goto out;
+@@ -4233,15 +4252,24 @@ static int rtnl_fdb_del(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 
+ 	/* Embedded bridge, macvlan, and any other device support */
+ 	if (ndm->ndm_flags & NTF_SELF) {
+-		if (dev->netdev_ops->ndo_fdb_del)
+-			err = dev->netdev_ops->ndo_fdb_del(ndm, tb, dev, addr,
+-							   vid);
+-		else
+-			err = ndo_dflt_fdb_del(ndm, tb, dev, addr, vid);
++		ops = dev->netdev_ops;
++		if (!del_bulk) {
++			if (ops->ndo_fdb_del)
++				err = ops->ndo_fdb_del(ndm, tb, dev, addr, vid);
++			else
++				err = ndo_dflt_fdb_del(ndm, tb, dev, addr, vid);
++		} else {
++			/* in case err was cleared by NTF_MASTER call */
++			err = -EOPNOTSUPP;
++			if (ops->ndo_fdb_del_bulk)
++				err = ops->ndo_fdb_del_bulk(ndm, tb, dev, vid,
++							    extack);
++		}
+ 
+ 		if (!err) {
+-			rtnl_fdb_notify(dev, addr, vid, RTM_DELNEIGH,
+-					ndm->ndm_state);
++			if (!del_bulk)
++				rtnl_fdb_notify(dev, addr, vid, RTM_DELNEIGH,
++						ndm->ndm_state);
+ 			ndm->ndm_flags &= ~NTF_SELF;
+ 		}
+ 	}
 -- 
 2.35.1
 
