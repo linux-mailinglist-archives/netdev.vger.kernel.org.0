@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D2B94FE113
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 14:53:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AECE4FE0CF
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 14:52:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237263AbiDLMuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 08:50:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58990 "EHLO
+        id S1349116AbiDLMtt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 08:49:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355295AbiDLMsJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 08:48:09 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE42960EF;
-        Tue, 12 Apr 2022 05:16:39 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id lc2so16362441ejb.12;
-        Tue, 12 Apr 2022 05:16:39 -0700 (PDT)
+        with ESMTP id S1355297AbiDLMsK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 08:48:10 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DCED62CD;
+        Tue, 12 Apr 2022 05:16:41 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id v4so8599953edl.7;
+        Tue, 12 Apr 2022 05:16:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=JrLemglUST4WORuuuukktAwV8TRd9yLyGflAl3xl1zc=;
-        b=lZrp4fUKHuSqiOLSJtpVC7XXMD0asm7ixPH3FzwMKxz4wTFY81n7AZNGcznRjoJDjw
-         ImJJkIdZDpeyXwXRa72utr2cTE6/up0jKF2dieBvSDBmO+V/CDpO7jTw6zG8s+PGz0rx
-         iJcQB6866kBoMX9E31+b/0LYLmfrDaHavCtmQXUrTG/co/r8uRUuAuZGQ1J91bxe7+Sp
-         PqbcmXjh4Fb3JE28zM/pUTaGT4WfZjnmFizg4+0Q6K8pnYGTsqeeIS6Z3+npPCGPE0e9
-         vYzkjZXHzEg3hIrq3rsGGjOQTFsjbWqhY0e34zIJd8A57XqeYBM7m5LT5/nI6j5RHSNG
-         w09Q==
+        bh=0WZ3VKnVxGM80qdLHkweZkrBfRptzeVUXSKm7/OGDn8=;
+        b=jHIIcESqNWLqokGpKfh4YWlmbXIj1lpsqtH5XYszmhDU3tq/FIVh2csMvH+YrFhuN7
+         hjt3Q05Ttr48pdRZWa3LRlCPOhhwxDwNMtf+FwK+XMyaEDW7g3wM99hIJlZho+2z9HVA
+         Uops0rojEuKytF3Z63OHDKkt1EXtNbR+gJ82Dw9d+S6S+ahGMcDnsZpyKPa7GnHdmXtH
+         ZoWa4Aa/X96KMx2OdKPlquIG7gI8jh4c6HuEz1Pq95xmK2zo3buo8NMv9Vy14n3wSzqU
+         UwOExVEbSWb0F2f/G44vlo4HKFr44eOh7X64Jegdl0KKefl8o9Jg21kY4/WHSVQi/1rl
+         rrag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=JrLemglUST4WORuuuukktAwV8TRd9yLyGflAl3xl1zc=;
-        b=uNIKrj22qC1kgDh+aX5fourthOIrNBI8fKUe0Sf6C4IKzUtY7tqfPhuOwh7lBW377Q
-         TsJuy5a6G9tX/LociB06rGM0QeH5WLT2jMU9LB8ZaM8WuKkeUGbAW9ygtl2TWkqArAJL
-         /PgHhO3A0nXB9M78Ua0EdZwfq1mbPiPiJ48z+wJ26lpFMgvqjNxjk1X0Ov5NXet/1P2S
-         sWvsVPzOezy8E1SfExufuEUSSp6BrqHnqWLhzr67GrPamhYvmfEHIFCWSmXqF4NXF9y6
-         vTaiBI9Aca4KrVgYOc3K4rWHRtQ2HfR9MCGGILyxBiTQOaEKAq8rXiF7IjWzDEvZeWQA
-         Emmw==
-X-Gm-Message-State: AOAM5327A66xm3BTQFTk/o7mVctbhQq3fFpcTM2nxcWVC+noiPr9yctZ
-        E6IRbwAktmWDErD+n6EuKl4=
-X-Google-Smtp-Source: ABdhPJyvMlGS8lbsL8Ct1xcPBU/bepbuaCJfo+JyDSjrVyvEKhUC0Od61kuaqKRiaeCSIhZj4v8qwg==
-X-Received: by 2002:a17:906:4787:b0:6e8:9252:5bef with SMTP id cw7-20020a170906478700b006e892525befmr9204660ejc.679.1649765798369;
-        Tue, 12 Apr 2022 05:16:38 -0700 (PDT)
+        bh=0WZ3VKnVxGM80qdLHkweZkrBfRptzeVUXSKm7/OGDn8=;
+        b=QtdsMHhJxNC0KOmP7yV07rzWaE+6l1bX0DIQ+XUe6OekGC+Gu00nnGcnf0nU2MSM/E
+         ClP7m/JuOUPLru8E3pfdSxGQDKfFXZ4S5vbjXgqWiNKO3fhCiaP5yh4CRKvhmXBasHiN
+         fmpNI6+RgRbdKBAy/0SEtFFB1YdYA0HrjlslUnLfAj5G+1HxIWkx9A+tpy6UmdCGTEOg
+         H/10frvalCxXa/lxyK6KuCSiPMPBo2zgNZNeuy4qdDhj+lhTKW1IUn+RO6cLjecFe/cu
+         x4rTG5qJuHjuoLl5PCyLPgYNDMANHDmrfsS3WHtlsrZyXBdAXX8SZjNvScRkqpdWjoQ3
+         vf4A==
+X-Gm-Message-State: AOAM533VaWkNZBnDqWN+DM4wQuH3AJ86ZfwPPqCQc4CtoACyRUL/0aM2
+        l6NU73LfEveXocBh7Lyf+vU=
+X-Google-Smtp-Source: ABdhPJyErqiLg6C0liUUmkq0/55+jKlY2qozidbEehxTilHbpBR21vFsB/5rB5E60MJjeR/OKEUKyg==
+X-Received: by 2002:a05:6402:5254:b0:41d:7abe:3e08 with SMTP id t20-20020a056402525400b0041d7abe3e08mr10795420edd.153.1649765799882;
+        Tue, 12 Apr 2022 05:16:39 -0700 (PDT)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id b5-20020a17090630c500b006e8044fa76bsm8827900ejb.143.2022.04.12.05.16.36
+        by smtp.googlemail.com with ESMTPSA id b5-20020a17090630c500b006e8044fa76bsm8827900ejb.143.2022.04.12.05.16.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 05:16:38 -0700 (PDT)
+        Tue, 12 Apr 2022 05:16:39 -0700 (PDT)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
@@ -88,9 +88,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH net-next v3 11/18] qed: Remove usage of list iterator variable after the loop
-Date:   Tue, 12 Apr 2022 14:15:50 +0200
-Message-Id: <20220412121557.3553555-12-jakobkoschel@gmail.com>
+Subject: [PATCH net-next v3 12/18] net: qede: Replace usage of found with dedicated list iterator variable
+Date:   Tue, 12 Apr 2022 14:15:51 +0200
+Message-Id: <20220412121557.3553555-13-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220412121557.3553555-1-jakobkoschel@gmail.com>
 References: <20220412121557.3553555-1-jakobkoschel@gmail.com>
@@ -110,41 +110,47 @@ To move the list iterator variable into the list_for_each_entry_*()
 macro in the future it should be avoided to use the list iterator
 variable after the loop body.
 
-Since "found" and "p_ent" need to be equal, "found" should be used
-consistently to limit the scope of "p_ent" to the list traversal in
-the future.
+To *never* use the list iterator variable after the loop it was
+concluded to use a separate iterator variable instead of a
+found boolean [1].
 
+This removes the need to use a found variable and simply checking if
+the variable was set, can determine if the break/goto was hit.
+
+Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/net/ethernet/qlogic/qed/qed_spq.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/qlogic/qede/qede_rdma.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_spq.c b/drivers/net/ethernet/qlogic/qed/qed_spq.c
-index d01b9245f811..cbaa2abed660 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_spq.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_spq.c
-@@ -934,10 +934,10 @@ int qed_spq_completion(struct qed_hwfn *p_hwfn,
- 		       u8 fw_return_code,
- 		       union event_ring_data *p_data)
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_rdma.c b/drivers/net/ethernet/qlogic/qede/qede_rdma.c
+index 6304514a6f2c..2eb03ffe2484 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_rdma.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_rdma.c
+@@ -246,18 +246,17 @@ static void qede_rdma_change_mtu(struct qede_dev *edev)
+ static struct qede_rdma_event_work *
+ qede_rdma_get_free_event_node(struct qede_dev *edev)
  {
-+	struct qed_spq_entry	*found = NULL;
- 	struct qed_spq		*p_spq;
--	struct qed_spq_entry	*p_ent = NULL;
-+	struct qed_spq_entry	*p_ent;
- 	struct qed_spq_entry	*tmp;
--	struct qed_spq_entry	*found = NULL;
+-	struct qede_rdma_event_work *event_node = NULL;
+-	bool found = false;
++	struct qede_rdma_event_work *event_node = NULL, *iter;
  
- 	if (!p_hwfn)
- 		return -EINVAL;
-@@ -980,7 +980,7 @@ int qed_spq_completion(struct qed_hwfn *p_hwfn,
- 	DP_VERBOSE(p_hwfn, QED_MSG_SPQ,
- 		   "Complete EQE [echo %04x]: func %p cookie %p)\n",
- 		   le16_to_cpu(echo),
--		   p_ent->comp_cb.function, p_ent->comp_cb.cookie);
-+		   found->comp_cb.function, found->comp_cb.cookie);
- 	if (found->comp_cb.function)
- 		found->comp_cb.function(p_hwfn, found->comp_cb.cookie, p_data,
- 					fw_return_code);
+-	list_for_each_entry(event_node, &edev->rdma_info.rdma_event_list,
++	list_for_each_entry(iter, &edev->rdma_info.rdma_event_list,
+ 			    list) {
+-		if (!work_pending(&event_node->work)) {
+-			found = true;
++		if (!work_pending(&iter->work)) {
++			event_node = iter;
+ 			break;
+ 		}
+ 	}
+ 
+-	if (!found) {
++	if (!event_node) {
+ 		event_node = kzalloc(sizeof(*event_node), GFP_ATOMIC);
+ 		if (!event_node) {
+ 			DP_NOTICE(edev,
 -- 
 2.25.1
 
