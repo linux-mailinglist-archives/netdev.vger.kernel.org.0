@@ -2,104 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DADD74FE578
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 17:58:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8A424FE583
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 18:05:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357412AbiDLQAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 12:00:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33640 "EHLO
+        id S1354377AbiDLQHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 12:07:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238148AbiDLQAP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 12:00:15 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0AC72A70A
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 08:57:55 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id u3so28402830wrg.3
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 08:57:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pqrs.dk; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oXU3hwiMfKY80GD9UAyVjvKh2iumJni0metDCTcR0Zs=;
-        b=gyITdjS2U9I7emTve761Mhyp4rm1MvbYmGDM5K/9Gdw3Sh21Hakr6ivPa8gXU0wDAC
-         a4ZbjQmq0C7UU8g1ejYaBfbE0RV1tuhBAtEhgm4wY7b8WBO/IosxZImvbSEmXPt65t9/
-         G8EcZFQOlfN4oD+mTSgYBJkiJD9Xv10UQPABA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oXU3hwiMfKY80GD9UAyVjvKh2iumJni0metDCTcR0Zs=;
-        b=l5Bxrs2tV3e3Pg2iIQT4Pm60aQx+T3wpaD3GtdE5mSFsmhpt7C2eLaVr/wxA76UcnV
-         fj60hHkeFW0vw0+j05sHkzGyMwP4SmDvYAnK3lG2n8uxkOyEsV0n/QSm3ebvuJDObn53
-         cjwuVjhnM9HfgOLrQS082dW88Zul2PLfkbyIoOanixZjAU2HhSUXBpfBdvdDWpK9nNtS
-         ubIq/P0bvUjHocdibj+ogo2LkiJoe/Kxb+FwbQuQon6Kxikl9oZ9wKXF6HTYsWaQrQQN
-         9JHkPBy9I1QmCxviVIZF+F/eMkma/hy5UUOg+epi6FiHzeSE9NqcIY5C3Co+eOMZzntL
-         aSBw==
-X-Gm-Message-State: AOAM531CLfUKujcrSZRi3EbA8Z8rhbZhz3/I5vud96j0VFFkHqtgyNKp
-        28tT6RColoJN7bBEzrYHnCp/jw==
-X-Google-Smtp-Source: ABdhPJzvB91kCZ6vPMivEWQNfWetW2FsTs2voeYmQzoe8Ic2OtqbXJZBPqn5lmO8qcT4wpU+wAv99Q==
-X-Received: by 2002:a05:6000:118f:b0:206:81d:c030 with SMTP id g15-20020a056000118f00b00206081dc030mr29130004wrx.169.1649779074464;
-        Tue, 12 Apr 2022 08:57:54 -0700 (PDT)
-Received: from capella.. (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
-        by smtp.gmail.com with ESMTPSA id n15-20020a5d6b8f000000b00207ab69284csm3497155wrx.23.2022.04.12.08.57.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 08:57:53 -0700 (PDT)
-From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net] net: dsa: realtek: don't parse compatible string for RTL8366S
-Date:   Tue, 12 Apr 2022 17:57:49 +0200
-Message-Id: <20220412155749.1835519-1-alvin@pqrs.dk>
+        with ESMTP id S229591AbiDLQHN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 12:07:13 -0400
+Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E198940E7C;
+        Tue, 12 Apr 2022 09:04:52 -0700 (PDT)
+Received: from localhost.localdomain (unknown [222.205.9.127])
+        by mail-app4 (Coremail) with SMTP id cS_KCgA3OfAXo1ViBSYjAQ--.15521S4;
+        Wed, 13 Apr 2022 00:04:40 +0800 (CST)
+From:   Lin Ma <linma@zju.edu.cn>
+To:     krzk@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mudongliangabcd@gmail.com
+Cc:     Lin Ma <linma@zju.edu.cn>
+Subject: [PATCH v0] nfc: nci: add flush_workqueue to prevent uaf
+Date:   Wed, 13 Apr 2022 00:04:30 +0800
+Message-Id: <20220412160430.11581-1-linma@zju.edu.cn>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-CM-TRANSID: cS_KCgA3OfAXo1ViBSYjAQ--.15521S4
+X-Coremail-Antispam: 1UD129KBjvJXoWxWF45CryfuF15Zr1DCF1xXwb_yoWrtry3pF
+        s5GryxGr10qa4qqr47tF4kWw4rtwsFyry2yw1xGw47ur13Xr4DtFyIkFykXr13Gr45uFyD
+        Ar1jqa43GF4qv3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUka1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
+        z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I0E14v26r4j6r4UJwAS0I0E0xvYzx
+        vE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWU
+        JVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7V
+        AKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCF04k20xvY0x0EwIxGrwCF04k20xvE74AG
+        Y7Cv6cx26r4fKr1UJr1l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJV
+        WUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAK
+        I48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r
+        4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY
+        6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHUDUUUUU=
+X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alvin Šipraga <alsi@bang-olufsen.dk>
+Our detector found a concurrent use-after-free bug when detaching an
+NCI device. The main reason for this bug is the unexpected scheduling
+between the used delayed mechanism (timer and workqueue).
 
-This switch is not even supported, but if someone were to actually put
-this compatible string "realtek,rtl8366s" in their device tree, they
-would be greeted with a kernel panic because the probe function would
-dereference NULL. So let's just remove it.
+The race can be demonstrated below:
 
-Link: https://lore.kernel.org/all/CACRpkdYdKZs0WExXc3=0yPNOwP+oOV60HRz7SRoGjZvYHaT=1g@mail.gmail.com/
-Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+Thread-1                           Thread-2
+                                 | nci_dev_up()
+                                 |   nci_open_device()
+                                 |     __nci_request(nci_reset_req)
+                                 |       nci_send_cmd
+                                 |         queue_work(cmd_work)
+nci_unregister_device()          |
+  nci_close_device()             | ...
+    del_timer_sync(cmd_timer)[1] |
+...                              | Worker
+nci_free_device()                | nci_cmd_work()
+  kfree(ndev)[3]                 |   mod_timer(cmd_timer)[2]
+
+In short, the cleanup routine thought that the cmd_timer has already
+been detached by [1] but the mod_timer can re-attach the timer [2], even
+it is already released [3], resulting in UAF.
+
+This UAF is easy to trigger, crash trace by POC is like below
+
+[   66.703713] ==================================================================
+[   66.703974] BUG: KASAN: use-after-free in enqueue_timer+0x448/0x490
+[   66.703974] Write of size 8 at addr ffff888009fb7058 by task kworker/u4:1/33
+[   66.703974]
+[   66.703974] CPU: 1 PID: 33 Comm: kworker/u4:1 Not tainted 5.18.0-rc2 #5
+[   66.703974] Workqueue: nfc2_nci_cmd_wq nci_cmd_work
+[   66.703974] Call Trace:
+[   66.703974]  <TASK>
+[   66.703974]  dump_stack_lvl+0x57/0x7d
+[   66.703974]  print_report.cold+0x5e/0x5db
+[   66.703974]  ? enqueue_timer+0x448/0x490
+[   66.703974]  kasan_report+0xbe/0x1c0
+[   66.703974]  ? enqueue_timer+0x448/0x490
+[   66.703974]  enqueue_timer+0x448/0x490
+[   66.703974]  __mod_timer+0x5e6/0xb80
+[   66.703974]  ? mark_held_locks+0x9e/0xe0
+[   66.703974]  ? try_to_del_timer_sync+0xf0/0xf0
+[   66.703974]  ? lockdep_hardirqs_on_prepare+0x17b/0x410
+[   66.703974]  ? queue_work_on+0x61/0x80
+[   66.703974]  ? lockdep_hardirqs_on+0xbf/0x130
+[   66.703974]  process_one_work+0x8bb/0x1510
+[   66.703974]  ? lockdep_hardirqs_on_prepare+0x410/0x410
+[   66.703974]  ? pwq_dec_nr_in_flight+0x230/0x230
+[   66.703974]  ? rwlock_bug.part.0+0x90/0x90
+[   66.703974]  ? _raw_spin_lock_irq+0x41/0x50
+[   66.703974]  worker_thread+0x575/0x1190
+[   66.703974]  ? process_one_work+0x1510/0x1510
+[   66.703974]  kthread+0x2a0/0x340
+[   66.703974]  ? kthread_complete_and_exit+0x20/0x20
+[   66.703974]  ret_from_fork+0x22/0x30
+[   66.703974]  </TASK>
+[   66.703974]
+[   66.703974] Allocated by task 267:
+[   66.703974]  kasan_save_stack+0x1e/0x40
+[   66.703974]  __kasan_kmalloc+0x81/0xa0
+[   66.703974]  nci_allocate_device+0xd3/0x390
+[   66.703974]  nfcmrvl_nci_register_dev+0x183/0x2c0
+[   66.703974]  nfcmrvl_nci_uart_open+0xf2/0x1dd
+[   66.703974]  nci_uart_tty_ioctl+0x2c3/0x4a0
+[   66.703974]  tty_ioctl+0x764/0x1310
+[   66.703974]  __x64_sys_ioctl+0x122/0x190
+[   66.703974]  do_syscall_64+0x3b/0x90
+[   66.703974]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   66.703974]
+[   66.703974] Freed by task 406:
+[   66.703974]  kasan_save_stack+0x1e/0x40
+[   66.703974]  kasan_set_track+0x21/0x30
+[   66.703974]  kasan_set_free_info+0x20/0x30
+[   66.703974]  __kasan_slab_free+0x108/0x170
+[   66.703974]  kfree+0xb0/0x330
+[   66.703974]  nfcmrvl_nci_unregister_dev+0x90/0xd0
+[   66.703974]  nci_uart_tty_close+0xdf/0x180
+[   66.703974]  tty_ldisc_kill+0x73/0x110
+[   66.703974]  tty_ldisc_hangup+0x281/0x5b0
+[   66.703974]  __tty_hangup.part.0+0x431/0x890
+[   66.703974]  tty_release+0x3a8/0xc80
+[   66.703974]  __fput+0x1f0/0x8c0
+[   66.703974]  task_work_run+0xc9/0x170
+[   66.703974]  exit_to_user_mode_prepare+0x194/0x1a0
+[   66.703974]  syscall_exit_to_user_mode+0x19/0x50
+[   66.703974]  do_syscall_64+0x48/0x90
+[   66.703974]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+To fix the UAF, this patch adds flush_workqueue() to ensure the
+nci_cmd_work is finished before the following del_timer_sync.
+This combination will promise the timer is actually detached.
+
+Fixes: 6a2968aaf50c ("NFC: basic NCI protocol implementation")
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
 ---
- drivers/net/dsa/realtek/realtek-smi.c | 5 -----
- 1 file changed, 5 deletions(-)
+ net/nfc/nci/core.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/dsa/realtek/realtek-smi.c b/drivers/net/dsa/realtek/realtek-smi.c
-index 2243d3da55b2..6cec559c90ce 100644
---- a/drivers/net/dsa/realtek/realtek-smi.c
-+++ b/drivers/net/dsa/realtek/realtek-smi.c
-@@ -546,11 +546,6 @@ static const struct of_device_id realtek_smi_of_match[] = {
- 		.data = &rtl8366rb_variant,
- 	},
- #endif
--	{
--		/* FIXME: add support for RTL8366S and more */
--		.compatible = "realtek,rtl8366s",
--		.data = NULL,
--	},
- #if IS_ENABLED(CONFIG_NET_DSA_REALTEK_RTL8365MB)
- 	{
- 		.compatible = "realtek,rtl8365mb",
+diff --git a/net/nfc/nci/core.c b/net/nfc/nci/core.c
+index d2537383a3e8..0d7763c322b5 100644
+--- a/net/nfc/nci/core.c
++++ b/net/nfc/nci/core.c
+@@ -560,6 +560,10 @@ static int nci_close_device(struct nci_dev *ndev)
+ 	mutex_lock(&ndev->req_lock);
+ 
+ 	if (!test_and_clear_bit(NCI_UP, &ndev->flags)) {
++		/* Need to flush the cmd wq in case
++		 * there is a queued/running cmd_work
++		 */
++		flush_workqueue(ndev->cmd_wq);
+ 		del_timer_sync(&ndev->cmd_timer);
+ 		del_timer_sync(&ndev->data_timer);
+ 		mutex_unlock(&ndev->req_lock);
 -- 
 2.35.1
 
