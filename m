@@ -2,151 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DB334FE46C
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 17:14:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C625A4FE4B5
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 17:26:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356876AbiDLPQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 11:16:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60814 "EHLO
+        id S1344640AbiDLP2d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 11:28:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356869AbiDLPQy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 11:16:54 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AFCF387B9;
-        Tue, 12 Apr 2022 08:14:35 -0700 (PDT)
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23CEndSf013362;
-        Tue, 12 Apr 2022 15:14:15 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=z9Mc5Z7O6/eJFTtDaBXWB7HJdfgDz8mO40uWSlWFwuM=;
- b=UulRKzuIDkGh3PuHaW7kBrObwfogo6WSMRVrgQIYPwN6FqWUvZ8tc39XUrcUEs6abGdV
- YVj5XUtDu0dAaG1cOJQa7kWJL22FrT9/va1NqYd/CCJUbhoYB/4+f3DgMZ627ULyKvW1
- nkrf10qEs06vPe1Co7l7PsB98xjVxyYSSkLAvj7BTfbbNI2wJZPh/ZZCm86rWaT9T2I0
- JJL96mh5Uy4jGvSLzOxPqqSr3Fr+f7dVbzwbnZQudhHt6nLusijH81IIxuYNs4ysmPHK
- CySGzryX3edjmlN7scc3/lWxjuO7OKWD5hnSG58vcFtGc8N/cuyMGYb4gVxmr6LTlhqP /Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fd8b65sh0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Apr 2022 15:14:15 +0000
-Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23CFBVeh028406;
-        Tue, 12 Apr 2022 15:14:14 GMT
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fd8b65sg2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Apr 2022 15:14:14 +0000
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23CEvv5d031030;
-        Tue, 12 Apr 2022 15:14:11 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma06fra.de.ibm.com with ESMTP id 3fbsj03275-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Apr 2022 15:14:11 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23CFE98V53281108
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 12 Apr 2022 15:14:09 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 54CFF42042;
-        Tue, 12 Apr 2022 15:14:09 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4B1B54203F;
-        Tue, 12 Apr 2022 15:14:06 +0000 (GMT)
-Received: from sig-9-65-64-123.ibm.com (unknown [9.65.64.123])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 12 Apr 2022 15:14:06 +0000 (GMT)
-Message-ID: <2913e2998892833d4bc7d866b99dcd9bd234e82e.camel@linux.ibm.com>
-Subject: Re: [PATCH v3 RESEND] efi: Do not import certificates from UEFI
- Secure Boot for T2 Macs
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Aditya Garg <gargaditya08@live.com>
-Cc:     "jarkko@kernel.org" <jarkko@kernel.org>,
-        "dmitry.kasatkin@gmail.com" <dmitry.kasatkin@gmail.com>,
-        "jmorris@namei.org" <jmorris@namei.org>,
-        "serge@hallyn.com" <serge@hallyn.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "kafai@fb.com" <kafai@fb.com>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "yhs@fb.com" <yhs@fb.com>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>,
-        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Orlando Chamberlain <redecorating@protonmail.com>,
-        "admin@kodeit.net" <admin@kodeit.net>
-Date:   Tue, 12 Apr 2022 11:13:52 -0400
-In-Reply-To: <B857EF0F-23D7-4B82-8A1E-7480C19C9AC5@live.com>
-References: <652C3E9E-CB97-4C70-A961-74AF8AEF9E39@live.com>
-         <f55551188f2a17a7a5da54ea4a38bfbae938a62f.camel@linux.ibm.com>
-         <B857EF0F-23D7-4B82-8A1E-7480C19C9AC5@live.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
+        with ESMTP id S230501AbiDLP2c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 11:28:32 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2097.outbound.protection.outlook.com [40.107.236.97])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41B7C1CFCF
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 08:26:14 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nBYSBRZNFGBFZZbxXpN+UTYf8caLNpVA1XiXk7ncv3TLEQZODbp5BlTAWjwSZ+CS/O6IxNaqXaaJ3o+/0fhhkI7KQcrancpCxth9sbY+WJmQ06fY01ersxfB2W3nu1NxdMchXkzjDNJBF42XvHo1HhckETgx1QKXUaZB+vjGQpQZUVl7gz0j0TN0KnrJ9DXU7bi8wjQE/ISqEB7mVNEa5lfsp2rj/ctx5B9UqKoWtJVoxA+rzWu4QXXmOtWZ61rybu4WqNwiVbK+70uuAHpkR9/Ag89j3dTkyrStJrRme0OJE6B4kq8yAo8HY05p+qDCCXvkx0Ka8Ic0NWrZAfjL3Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kFWAFki9nfHwTWSqjTTggSMIRCKhnNefIFJUjr+/cdI=;
+ b=GQE0vLIgVIu3Xw8qZmHausDO3ci79WbGDTZT0vDyMUKT0wyVmOOe5d4Zn2Bh0zUy4TIlYjqY5XYGa12Ja/L4EL2Ob3W8Yon8Vfs7/GEZL7Qxl3mMsz8r268t2MklrjV/TppAjc7GcPxYqu/HLHBONiVb2Uf/iHuzbqt7UnW+ES+hi+ankQJCATyU5Vw4sY5f4IIeWPArLN8/JEZa8Q3l5EojjlVdb7AZpXIyWAqTUKu7dqIX38IqP//9T9GH4j3cB5PdPQHd+vny5FdnexUQ5/qyzbeJDrvf0zIjLdms/cTf+QfnpdlSr/D1fJnXB18sXBzk5PBet2bhpjmFEV626Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kFWAFki9nfHwTWSqjTTggSMIRCKhnNefIFJUjr+/cdI=;
+ b=MFYo6HpgMiqKyhiKW05AdPEaa8CUiZxEVpvaPvrYdaueB+HEfEyqpUdEczvDxZAIFYIVyaQVh1cd6My1xgzhAdjAZ1AiQJtaA0APzmOPcoRWvP+Bmo+t2+KaFgl/IcIXcgehNcHwy7VibpsGkjycf+71PgzqrQ6IgvhJ1oQYFK4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SN4PR13MB5663.namprd13.prod.outlook.com (2603:10b6:806:21e::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.17; Tue, 12 Apr
+ 2022 15:26:12 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::8c8a:96b7:33a6:4da5]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::8c8a:96b7:33a6:4da5%7]) with mapi id 15.20.5164.020; Tue, 12 Apr 2022
+ 15:26:12 +0000
+From:   Simon Horman <simon.horman@corigine.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
+        Dylan Muller <dylan.muller@corigine.com>,
+        Simon Horman <simon.horman@corigine.com>
+Subject: [PATCH net-next] nfp: update nfp_X logging definitions
+Date:   Tue, 12 Apr 2022 17:26:00 +0200
+Message-Id: <20220412152600.190317-1-simon.horman@corigine.com>
+X-Mailer: git-send-email 2.30.2
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: VL29UvswhcIeofTBN-DnUeLg90zeqr8c
-X-Proofpoint-ORIG-GUID: -AP3CmwIOBSGN_aB583esCRjb3Y92MuS
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-12_05,2022-04-12_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 impostorscore=0
- priorityscore=1501 mlxlogscore=999 adultscore=0 spamscore=0 phishscore=0
- clxscore=1015 malwarescore=0 bulkscore=0 lowpriorityscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2204120073
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-ClientProxiedBy: AM4PR07CA0019.eurprd07.prod.outlook.com
+ (2603:10a6:205:1::32) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0b147f0e-414a-4f0e-6bd8-08da1c98c706
+X-MS-TrafficTypeDiagnostic: SN4PR13MB5663:EE_
+X-Microsoft-Antispam-PRVS: <SN4PR13MB566366FF7FB9AB3B88CB5628E8ED9@SN4PR13MB5663.namprd13.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: CU9ZGNRdBPYqSkCHJuBvKFR6RNb+ivqsMVJEBwVyjzSr2hVl3VXmAz/KJU1P4h+UbH4o2TEEo2I1znYftbw0tFyU4ws2I8YpcQWgx2+4/3cd/ry0bUnM6oN0b/vv9htGWsoymc6hyvl/OVQVrt5K/y12NUT5D9e+qeW6eodw7H+J7VnbFYhSROeYaOc8Qi0w4DZPgGbsGHBm4hbQoC+dga30B+MCBBrbJWTlEkMdOAG1tphte6pG+fA4txf4XyHSYDpV9NWF9dvEZ2fmSoYLCWJH9jqvoKNE2wG0YGfR18XGbnLLtO3g8BeoKey+uKo2Te2aYlDiWBlVWobQhl7RpAKa+c5jNbXJg6N/tzaPchQE1riZZ4jtmge9EuU2Gv+DchT/NsGQ+GL1S1JjPgVg9futnlW0BB4bNZUrE8c8EKpJNtpENoPdPSxWwv/Mbv4fkkpqH94r7mOtSiMa8sO+o2jknVqTBW6xYSk6G5cDfm/aTfjNJMXjgGssay0OGGlv48vHlWwpKaY2S5R4fRq7vA9sZBO557E3qYBRdWd6DwxH3zsZDHSHRiFd1pAK80ZCFGZe0vGw8qnb+Q5MQeEWE/uFQfWRWHuuR71YHoDTB7B+HXD3W1iOrVVtKWkj6rOOucjYvSBhfIW3dOtkyAlh2GazgQqzZchKJ4cDKR8rQ9pQD2Hu1QcyZFsDyOmIl2T6EuGF8rFf2SAE2SioJU0pZQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(396003)(366004)(346002)(376002)(39830400003)(136003)(83380400001)(86362001)(508600001)(2906002)(5660300002)(54906003)(1076003)(36756003)(6486002)(15650500001)(38100700002)(8936002)(6512007)(52116002)(6506007)(316002)(110136005)(66556008)(66946007)(66476007)(186003)(44832011)(2616005)(6666004)(8676002)(107886003)(4326008);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?W2QFMWh30nQ124G7QpFfBF3JQj2ZRugGsjdnV++OU7k+7U6bQ8Y12ukA4mIM?=
+ =?us-ascii?Q?sLGnfcsS3mxKUgcN4CJ+HFrvK3eLJlc1qjuw9g5GqTa/3UdMYx2u1I7yU2PX?=
+ =?us-ascii?Q?ce5D1y42u96kxzYeVpUImJRk31Fgb+qDAOs+yfk6JXa+gDoVAI2oTpFo/1Wi?=
+ =?us-ascii?Q?SHKY23SUNYGsOcQxikNnREEZ5Yj5HoGN5MFV076pxfWJDwkCz6DB0d4Y8e3I?=
+ =?us-ascii?Q?PnzLbN9lrYrT2CjSwxbXYQyuh6n1wrHoNIjVopRwL703QrXqhn/LtgkasLIi?=
+ =?us-ascii?Q?I5KtMKniinwk4Ks+tm4jPkO2VeMsP1HN9HJ3ku5gtcMrqY4Y63ZYdon+Krvi?=
+ =?us-ascii?Q?TNP+6OUEJjfdYglhwUVQMnluwmFFm74BboAtNzgeBafdm2Au4pfCqlKxWw5F?=
+ =?us-ascii?Q?DOByWa1KvGPiPz6WJoR79vxiK4Ua1GwT9FaMEiQKzrs+7xu2sD7po3IkYofP?=
+ =?us-ascii?Q?fx9p2w1Hczx5CxaZIvSAkWhWRRMfzoz0SfkFUn9qgqekcFN0Hu2XcN0xIJjJ?=
+ =?us-ascii?Q?9c9ZWbVPVVak4++UDMY+cMTOXfB/Fvy/NxX0kAUHnWWCz6kSBmrh0SHNzAtO?=
+ =?us-ascii?Q?qafTf6RLHbCjj0O1T1NhLrHaM6XXzeNKAuN/L2Pa3yHRWkzdIq7jEns6ouEh?=
+ =?us-ascii?Q?ZuDtPSzhQO2kGkY+zPWBGEQFWznPzmvG01qJxRNulNNHeRN75C5APqg0FoQl?=
+ =?us-ascii?Q?RqfETH+JXt4DdHhBeQrgFoN/YVZbH61O+hkCFeQEwDzSGqNNB/r4UoLg1OT8?=
+ =?us-ascii?Q?Fg5dJX8sJowzlwtVFBMhC9hc/LRDCkuntNzVN4R44EIc84029ZyHXCLT7Iil?=
+ =?us-ascii?Q?LB8up4eNs+cidPmexvDqBAIZMJ0objnYj2VhRhfPL+y1EvksIBhU3cp3K0gg?=
+ =?us-ascii?Q?a43Jvlxyvp+EJDUe1ya4Dp/M2qklHQUL0iz46qtEer540Ghl96n5sORbSofH?=
+ =?us-ascii?Q?IjnIfqXP+EDVF7JYpMB7bzJQmNx8wQrJeFM0DZ+8vuX3npCLzkLhj+3S3atg?=
+ =?us-ascii?Q?hmOo5V9d+A51oQPfoKs/gGp8xrGpEfPH2bOKHl+UiOfMs1woRyiSqtUpf/0p?=
+ =?us-ascii?Q?SEwGEMdcCdV1Sp+xYYo/N2ywd89D2sdlQEp+62RE6ZR9xPyM41LSeJ4r+y2b?=
+ =?us-ascii?Q?hQE2d6kyzUBCPrOl/EJV2e1XP40o2uUYGwsipSbj3uv7yrC6+szcsvfJGDhY?=
+ =?us-ascii?Q?vDUrI+h+ijqrTUI9RGW4W245HV3STU178DNzdyI4WB8KaJUbuO7LmAJKR6pT?=
+ =?us-ascii?Q?aQqFn7sUQx7n3PavHBI8SSdUvlZSRVvZsF/YZURsKNGqzuSb/lCfoiFcFqVf?=
+ =?us-ascii?Q?PD+MkPZ/4IAqIq7hdosg8n9VnVsEWwEvwn++a2OEvUeGXTEnQzZ2pUUGwm9j?=
+ =?us-ascii?Q?LmgfMSg6NyEYEqk2lizdBtXrifBVY2jU0uPJ3VbYRdypG4FhZFQ1FMgLoo+D?=
+ =?us-ascii?Q?/ju00QVhF9tf9uEFdGMJyQedHWifBRfba7sVSeyDyKZATpGt10lhjwhJ2mbf?=
+ =?us-ascii?Q?hBHjQReTrjzM9Df5Bq1GymADJzgB/OekmNDaszpxp0yjJhLbyxJ3/YEwqikM?=
+ =?us-ascii?Q?QSYhLILTFBvHzzc0eT3XKhD+hPOktHPRU8vu8FCvEbNfLNOk9ChjJxKIrhi7?=
+ =?us-ascii?Q?Ed8XatNmlJBQMGd1lJqUhDia0kY8MKMFf0pLKDsEdLZO2XgA+YXC5VED9cPe?=
+ =?us-ascii?Q?KyqtMc8XV7AEUP5fyYTEDo7Wg31zJb/G8wPDiMB+cbUS/QK5UuH+ZkHbJZu5?=
+ =?us-ascii?Q?Ndl7FgK9k4j0gMvpnAGPgM6Ka9Tj/WKZ7tck6c7jBavmKgTXyxv6byN6vWD5?=
+X-MS-Exchange-AntiSpam-MessageData-1: FqzlFbS7arbHyTH4Blmuy3VOtpHDYoXMNlQ=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0b147f0e-414a-4f0e-6bd8-08da1c98c706
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2022 15:26:12.7289
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: UQleu+cT1FmMvDSOM28OM6HdsXdTEU6dB8ND4gyziDmUQuKXeZnROYqoPU7N+nBec87jPntgVJgh7rc6CLtQPKxmndWmhcGkvXIBr3nBI7c=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN4PR13MB5663
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-04-12 at 14:13 +0000, Aditya Garg wrote:
-> >> @@ -138,6 +181,11 @@ static int __init load_uefi_certs(void)
-> >>      unsigned long dbsize = 0, dbxsize = 0, mokxsize = 0;
-> >>      efi_status_t status;
-> >>      int rc = 0;
-> >> +    const struct dmi_system_id *dmi_id;
-> >> +
-> >> +    dmi_id = dmi_first_match(uefi_skip_cert);
-> >> +    if (dmi_id)
-> >> +            return 0;
-> > 
-> > uefi_check_ignore_db(), get_cert_list(), uefi_check_ignore_db(), and
-> > /load_moklist_certs() are all defined all static and are gated here by
-> > this dmi_first_match(). There's probably no need for any of the other
-> > calls to dmi_first_match().
-> I couldn’t get you here. Could you elaborate?
+From: Dylan Muller <dylan.muller@corigine.com>
 
-dmi_first_match() is called here at the beginning of load_uefi_certs().
-Only if it succeeds would uefi_check_ignore_db(), get_cert_list(),
-uefi_check_ignore_db(), or
-load_moklist_certs() be called.  Is there a need for adding a call to
-dmi_first_match() in any of these other functions?
+Previously it was not possible to determine which code path was responsible
+for generating a certain message after a call to the nfp_X messaging
+definitions for cases of duplicate strings. We therefore modify nfp_err,
+nfp_warn, nfp_info, nfp_dbg and nfp_printk to print the corresponding file
+and line number where the nfp_X definition is used.
 
-thanks,
+Signed-off-by: Dylan Muller <dylan.muller@corigine.com>
+Signed-off-by: Simon Horman <simon.horman@corigine.com>
+---
+ .../ethernet/netronome/nfp/nfpcore/nfp_cpp.h  | 26 ++++++++++++++-----
+ 1 file changed, 20 insertions(+), 6 deletions(-)
 
-Mimi
-
-> > 
-> > Like in all the other cases, there should be some sort of message. At
-> > minimum, there should be a pr_info().
-> > 
-> >> 
-> >>      if (!efi_rt_services_supported(EFI_RT_SUPPORTED_GET_VARIABLE))
-> >>              return false;
-> > 
-
+diff --git a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cpp.h b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cpp.h
+index 3d379e937184..ddb34bfb9bef 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cpp.h
++++ b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cpp.h
+@@ -13,22 +13,36 @@
+ #include <linux/ctype.h>
+ #include <linux/types.h>
+ #include <linux/sizes.h>
++#include <linux/stringify.h>
+ 
+ #ifndef NFP_SUBSYS
+ #define NFP_SUBSYS "nfp"
+ #endif
+ 
+-#define nfp_err(cpp, fmt, args...) \
++#define string_format(x) __FILE__ ":" __stringify(__LINE__) ": " x
++
++#define __nfp_err(cpp, fmt, args...) \
+ 	dev_err(nfp_cpp_device(cpp)->parent, NFP_SUBSYS ": " fmt, ## args)
+-#define nfp_warn(cpp, fmt, args...) \
++#define __nfp_warn(cpp, fmt, args...) \
+ 	dev_warn(nfp_cpp_device(cpp)->parent, NFP_SUBSYS ": " fmt, ## args)
+-#define nfp_info(cpp, fmt, args...) \
++#define __nfp_info(cpp, fmt, args...) \
+ 	dev_info(nfp_cpp_device(cpp)->parent, NFP_SUBSYS ": " fmt, ## args)
+-#define nfp_dbg(cpp, fmt, args...) \
++#define __nfp_dbg(cpp, fmt, args...) \
+ 	dev_dbg(nfp_cpp_device(cpp)->parent, NFP_SUBSYS ": " fmt, ## args)
++#define __nfp_printk(level, cpp, fmt, args...) \
++	dev_printk(level, nfp_cpp_device(cpp)->parent,  \
++		   NFP_SUBSYS ": " fmt, ## args)
++
++#define nfp_err(cpp, fmt, args...) \
++	__nfp_err(cpp, string_format(fmt), ## args)
++#define nfp_warn(cpp, fmt, args...) \
++	__nfp_warn(cpp, string_format(fmt), ## args)
++#define nfp_info(cpp, fmt, args...) \
++	__nfp_info(cpp, string_format(fmt), ## args)
++#define nfp_dbg(cpp, fmt, args...) \
++	__nfp_dbg(cpp, string_format(fmt), ## args)
+ #define nfp_printk(level, cpp, fmt, args...) \
+-	dev_printk(level, nfp_cpp_device(cpp)->parent,	\
+-		   NFP_SUBSYS ": " fmt,	## args)
++	__nfp_printk(level, cpp, string_format(fmt), ## args)
+ 
+ #define PCI_64BIT_BAR_COUNT             3
+ 
+-- 
+2.30.2
 
