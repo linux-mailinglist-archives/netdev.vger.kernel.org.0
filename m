@@ -2,168 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 06F1E4FDEAE
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 13:56:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0E4E4FDEC2
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 13:57:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242208AbiDLL4p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 07:56:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55794 "EHLO
+        id S243150AbiDLL72 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 07:59:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242275AbiDLL41 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 07:56:27 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F6EEB1D5;
-        Tue, 12 Apr 2022 03:39:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649759947; x=1681295947;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=g+p33sCVDo47hJRgXGw26HlV8Qp/lHoN+PX+D++UZRo=;
-  b=RuREpT9xVk086OUYbiGG0GMac++2FD2lt6Lcp/BW2uN+3huKpkgtti8z
-   Ahi2paMKPDWFQIQcMdEQmM8Zyka2S8O7JI66HpDdJCsbi83jE7jQ3dQZd
-   RcrChKBqmq2dzLK07RBrdc/o1mlbpjqR/5iVIpT9i1D+ZX2D3ZMthz0op
-   d7FbIuCUTALItKBiFOTrcN+q2pGOkL9qK4RXPVxCylbrSwnQfeC/4GvVt
-   J6+E0JRYz20r84FYc8aSXRtuMNFfTOJ3re8zhkaNfBruz8J585eMTP45z
-   6NtDngJ2W0+vmEUROQbZCegIg/qIjUskNIwXUFHazjy/yoMdmjhyFDtKp
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="242284286"
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="242284286"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 03:39:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="525988681"
-Received: from orsmsx604.amr.corp.intel.com ([10.22.229.17])
-  by orsmga002.jf.intel.com with ESMTP; 12 Apr 2022 03:39:04 -0700
-Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
- ORSMSX604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 12 Apr 2022 03:39:04 -0700
-Received: from orsmsx604.amr.corp.intel.com (10.22.229.17) by
- ORSMSX607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 12 Apr 2022 03:39:04 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Tue, 12 Apr 2022 03:39:04 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.103)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Tue, 12 Apr 2022 03:39:03 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eCBptvaa9ab38Vi8bXX9DGdrxn3hUVj0QbRQkHANb5pK/TT6i7W7djVRp7k8FaBIClsDnPsjxTbV38FptByeUTlXCZKic13oj5SdUd0sC9pnaIsWgV/z72E5mwjd+SBuur2SrCb9f3HipsoIIF6B8wtkA74+B0HAoQW4/avlVRC1u8lQ0ptXKxYkJTsLU3VPhswYG2x03GsCKCLnE8avC37PdDP1vm/EhQExoMBV9W5wuwsWKkTNUdwFM+oLlOm07bmqJry7TZqS+CXRjLm94O9FruMu3a6cTjPIoUqS8RkR0dUD/64v6ltgZ+mdyVDXPELaRbR4QihKFySii6yMTA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cQJp5zGAYGU7504ctjP3WErAcf0ZtKJe3xE2Bc/Nqe4=;
- b=abaCCYADtgMnamo23scUW0jQTV07zRtYH4VyiDTnboYAfqSma7St2WrLyFVxvoZAnYCLQADynYun2DXetWxDUbRwijCtbQve10kbD/9LgbEtMunpZu88aZ8d06WcoC6f24EO34y3/yUEc6enjxqFwP3Ol9VN7vCESg3uphz60YqhLwTTB1mpXdV2Hq2SYYne4yWlbXlNJZit4pkz3/V1iW9qsMw9At5YBXgGtAJJVi3nS+3ZMomHYVOtoGX63JPavsFb9XqXHUbVKSt43kF0gbK+3Wcw2uPs1SThlwA6jEDoswvvbFjZ6R9fCUDr3re83w28qhlyXdSZu31ZKtYLmQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from SJ0PR11MB5629.namprd11.prod.outlook.com (2603:10b6:a03:3ab::13)
- by MWHPR11MB1789.namprd11.prod.outlook.com (2603:10b6:300:108::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Tue, 12 Apr
- 2022 10:39:02 +0000
-Received: from SJ0PR11MB5629.namprd11.prod.outlook.com
- ([fe80::302b:8e15:32a2:f9d7]) by SJ0PR11MB5629.namprd11.prod.outlook.com
- ([fe80::302b:8e15:32a2:f9d7%8]) with mapi id 15.20.5144.030; Tue, 12 Apr 2022
- 10:39:01 +0000
-From:   "Jankowski, Konrad0" <konrad0.jankowski@intel.com>
-To:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "Lobakin, Alexandr" <alexandr.lobakin@intel.com>
-CC:     ivecera <ivecera@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        mschmidt <mschmidt@redhat.com>,
-        Brett Creeley <brett@pensando.io>,
-        open list <linux-kernel@vger.kernel.org>,
-        poros <poros@redhat.com>,
-        "moderated list:INTEL ETHERNET DRIVERS" 
-        <intel-wired-lan@lists.osuosl.org>,
+        with ESMTP id S1345931AbiDLL50 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 07:57:26 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C1701E3DF
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 03:45:24 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id z16so17159088pfh.3
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 03:45:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :in-reply-to;
+        bh=uOZzHgpsFINfhDBqO+V0wa1pRb4ryXU2dDYb+LlRdDU=;
+        b=NL+mwm1gDMdbKsi8B25L2g0/qOK83CdznLNRudsjUnJB6/bmzpqbJYPZ1ob9s8tkZI
+         LEmigD7S0T9Z8qGZkFuEmlpo2hPqEoKJ5H5CVuPUMwU22LPzbI3WxhPNt5JsegMUYjmY
+         BPJVwDMcPOn0A/M3+rUD3xO9rUR+H0nEHKwak=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:in-reply-to;
+        bh=uOZzHgpsFINfhDBqO+V0wa1pRb4ryXU2dDYb+LlRdDU=;
+        b=1F3mi/KQ9rCjDPiyCwH/np4DZFxCDJIWB4gvKeKBj6oQlG3+3I4Z+GUsV+wVmOeove
+         BAib2lQbFzDl8Byv9/MEGgt7CcKSPW+Gff8Ue0omfiIFdJSksa7V37f5sO0UO8Dyrkdc
+         fFUHu/9VetrXI2Oem/QuEhidpOYU16SXcgv/OLJo19kzPgV9SEoMOux0Z1bsCLj55aOm
+         HoHrj54UHaxjC17uwQa4WIDXhBmy958ww7Uc6Kj0qrFl294qNfiHyBEyIFViigeqlzRI
+         UCKsS/l5WawIJ63Fx/xQG94KjZTr69kSGJ2kJBzyH9qTwq5J0RtXNVH9wdVm/shfh+S6
+         ebzw==
+X-Gm-Message-State: AOAM531BPLGd08K0cLIfawddq4vcBmqqIhef+steXyCvPgLrHLP2Y9MU
+        GgxysffgFdwqDQtEbJ1k4GD1vg==
+X-Google-Smtp-Source: ABdhPJwgBxUVWSm8a74Sn2QEArNun78i+qNa0zQ4bLStiIg0dTWg8Ks1NiJgd7ESXXvB1NaE+r4mPg==
+X-Received: by 2002:a62:2504:0:b0:505:7693:b48e with SMTP id l4-20020a622504000000b005057693b48emr22786404pfl.4.1649760323870;
+        Tue, 12 Apr 2022 03:45:23 -0700 (PDT)
+Received: from noodle ([192.19.250.250])
+        by smtp.gmail.com with ESMTPSA id q28-20020a656a9c000000b00372f7ecfcecsm2577655pgu.37.2022.04.12.03.45.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 03:45:22 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 13:45:14 +0300
+From:   Boris Sukholitko <boris.sukholitko@broadcom.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: RE: [Intel-wired-lan] [PATCH net v2] ice: Fix incorrect locking in
- ice_vc_process_vf_msg()
-Thread-Topic: [Intel-wired-lan] [PATCH net v2] ice: Fix incorrect locking in
- ice_vc_process_vf_msg()
-Thread-Index: AQHYRbUMDJGo38dwqUSS7ixfLZwgCqzmEuQAgAAlZoCABe8vsA==
-Date:   Tue, 12 Apr 2022 10:39:01 +0000
-Message-ID: <SJ0PR11MB5629903816D77836D62E8EAEABED9@SJ0PR11MB5629.namprd11.prod.outlook.com>
-References: <20220401104052.1711721-1-ivecera@redhat.com>
- <20220408134714.1834349-1-alexandr.lobakin@intel.com>
- <97c58b06-11b5-182b-eed2-e5a74824241c@intel.com>
-In-Reply-To: <97c58b06-11b5-182b-eed2-e5a74824241c@intel.com>
-Accept-Language: pl-PL, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.6.401.20
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ef331338-6d3b-4172-6e6f-08da1c70a8c8
-x-ms-traffictypediagnostic: MWHPR11MB1789:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-microsoft-antispam-prvs: <MWHPR11MB178912FEB960E7ACE0E359D9ABED9@MWHPR11MB1789.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 8ZvDdTnTljR6GZUBL7uxUFZaQMRNvd6U2zBczItZXzPQrj4rYnpITKdDB+qfPU6TYaxMn//D6z0oMxKd+DEuggCy7CAtT+Bo9QA4ueTTnJG/joBNiAiVnH5s8izH/HBfhNwE+fCDVxgC/4ruHTxm/Xz7rD7JRhcZtaZCzTWHr2v1aqmfbI61Y7t8Uk1kGmVN29xPL5FIab/snAcF+mTJQxs+T/TtpnkIR1ZODavvmoYi9AdxpwSouP9USwJAptSJGEwMiN5WQFLNaFdP953S5HTOe4PZIZt1o8dLZ6sW5sh6JPn8AIEfJd7OBWSVGmRv24YWffdZ1xHB/FQ/HU7n6QcVQNPNDjJFyiWxk15WsAaUU00sQ5vZ+AuOauxCZFBrkrL4hFXg4LEivP3vAL3luW8Aw9EMPGvetutLnpiN/VkvLtZF/gkhvpLufBZZ4o6I5ATkmEkkbozQx5wEjZ/lK3LDiGoQMtsCCzBMGaM3mbuU8jwiCtuix5FC0neCkkD6SU7BRz37mEg0+nN7Mw3z99d4WzL29BRJjYJ7Lna2F+QBQD+UCaxjaw9yfQpRlp+iDytV9Fz4WXvWz/NQALMNJYuJntoRdIgsRwfjnEj5BlS+6FVlwEQNuClOzcT4FP/IVAF4+eazlOGXwIbDyXCzcb7SbEh6YGaF1cy2pPPpk/gDHkzqy8ITReADxyNgB/AacktKhc3IxhxHTDbHhi2/tg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR11MB5629.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(83380400001)(508600001)(55016003)(6636002)(33656002)(52536014)(5660300002)(66946007)(66476007)(66446008)(66556008)(64756008)(76116006)(38070700005)(86362001)(82960400001)(122000001)(4326008)(38100700002)(8676002)(7416002)(2906002)(8936002)(54906003)(110136005)(71200400001)(53546011)(26005)(186003)(7696005)(6506007)(9686003)(316002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?CYIXw9ReR6lUfkNqT/hrFb62n3MDMVEI4fU2KQjLizml1/AMrPiL2JS7yTND?=
- =?us-ascii?Q?lTZKsy5UH4WYt3InXXhrWNUQqQpKFqnCYz+HYvpB6E3AlCti/nArfnNxg2o5?=
- =?us-ascii?Q?MrFoQInxMfGlLl3IF+OkNYPZRThknqjpuCX/ML6iKrZ9bXJd3pSVooKQ9H9b?=
- =?us-ascii?Q?N6mdm3Ukzww1siDcRC3HJuXwYw538Ef2yn6PUnFXMsHxXnUMVahJGYmvfigy?=
- =?us-ascii?Q?/y6zdjnPznGnMlh/n7l1iTuVXqzGH2eEHrixWvfRBKa79THUzugimNF0LCYI?=
- =?us-ascii?Q?jkaF1wv7dkAG2Dq4UMs6jxHa4BdVWTvAqigs+JJfnt+WiR3g8bB7d4pfpOWA?=
- =?us-ascii?Q?+6tXT80MVl/I5rS8bVKrXWyjsVNSXfNSn2kpBk9Tyi0npYFVNWFXcAps82Ud?=
- =?us-ascii?Q?GNAqN8eQVNYtJKGkgvrgILCeY/PxqZzsJsgSrvUcKy5ixAjb7Cr6XCi/GM1Z?=
- =?us-ascii?Q?EzmWHvA+bFTZLd3MziYL5+b8qDAtgrwcI5bXnX7Ndqbfdcv0+dU0eiz+CSZJ?=
- =?us-ascii?Q?Wue3Mjim2Vysk7hwuHZzY62L3JpUT0Yw8telBbKxoVBpHauZGIjaOItvFpqT?=
- =?us-ascii?Q?UWyBYFzhG7K2bshxz66y11y5K7dbrId5OCEV0/aZ537pn5d6kuSGDk9QzwIC?=
- =?us-ascii?Q?oiUlnO+2tNa+0TAGIONi5eJS13Ti7RzB0h0cgz+8tqayLdDWen79JgOco46s?=
- =?us-ascii?Q?IYJXQ9DFTYpsQrGQbyp/ULs/6kXU1cYyXmMioqG20vncwAo2U1fLvLn/lT+w?=
- =?us-ascii?Q?YjlEPNXqDlZ36QqB5M5oiXw1uGx3O8lTgeDbrsEZWmx4Z4zmHeILSzqmjACU?=
- =?us-ascii?Q?wpT9uCpRM6PnCw04U2CtQT/SH3EEI3NLlokKW2byoB0QBVe/52rOgh6hvyPz?=
- =?us-ascii?Q?nxMqX9n5pGChFfxjdJ5gf5UayRWFuADUoxjihLmxBRk1H+8BatH13XeI7FJk?=
- =?us-ascii?Q?IV79gC4jpK1jJFTNQN4lU+hlpdoLfmOkbdUeaQLwwMnSOCWPfbsPpf5z8A8q?=
- =?us-ascii?Q?q2F0W/krJdGJMcEkbzKuBf2ll6mGwi8S8HkhdKN84CIFU7yBjOQT4TLbNOpz?=
- =?us-ascii?Q?x85G1zFRoB+hYyfZMm0ku0zCJWS4KDpUD2blYMDpa3tpDdSh6rfT4kIbYtaS?=
- =?us-ascii?Q?vA2RO9dlwn2/tyKrGxgWcN1gVXq+KL8fvvTsJMlqfqN6Zu5DZ8f2IwpvKgCb?=
- =?us-ascii?Q?wspIreYDeYp7Ct3853zh9UhZbGpTHHUBOzqx22b14Uq9CQ3wKo32fwxPjOr3?=
- =?us-ascii?Q?s7JkiMxzI2RP/HL8+HjQj3hPdd5mce07k3PKDZkt6vu4qe0IssaIWRW78E9f?=
- =?us-ascii?Q?uWG6SUaCBUJbooiCeBWbHWyvyZfezdiC0mWuACjM4xR7tnUfd788hkit6Yzu?=
- =?us-ascii?Q?3tn3C9T7vJRze3KA31XkJ7Bz+8nQHyHA356aUIR47vd5P+IpP1O+P9eQ/SQe?=
- =?us-ascii?Q?09oQSisA+TcdOWV4h7BSrHcWrohFgGWDxoZN51ddR6Z7gxB425fq8G5jzeHo?=
- =?us-ascii?Q?/ne3PcpRIzXUsQ1enC8dUC9dohCEwI9Pmfn8v+vqWf2NSkBs/+Olo7XgCU/b?=
- =?us-ascii?Q?nskXxiDd7D7QjZYp2XCSh5mDUYm0Czvrx/lp1PIG8/hniUXBIEm0uXSysO+X?=
- =?us-ascii?Q?IX7MmcKhk1sgSe6aRVe0cXdGZkfNnnpHiFM4EvMO6XXMVnUDgM/nlfLHKugA?=
- =?us-ascii?Q?5oB5Z4jP+CE+Mz9nuUlaLtJn18j6gyJjNHz8HPwUPe8bGXkrBrMLDDao9YmF?=
- =?us-ascii?Q?sVCWrvgQMQ3uod5bafPMc2AR12nn5yA=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Eric Dumazet <edumazet@google.com>,
+        zhang kai <zhangkaiheb@126.com>,
+        Yoshiki Komachi <komachi.yoshiki@gmail.com>,
+        Ilya Lifshits <ilya.lifshits@broadcom.com>
+Subject: Re: [PATCH iproute2-next 0/2] flower: match on the number of vlan
+ tags
+Message-ID: <20220412104514.GB27480@noodle>
+References: <20220411133202.18278-1-boris.sukholitko@broadcom.com>
+ <20220411084536.1f18d4ea@hermes.local>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR11MB5629.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ef331338-6d3b-4172-6e6f-08da1c70a8c8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Apr 2022 10:39:01.8563
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: b+c3oqN7peStrDb5klrebqk/MtBjZ4aISwPK8skfpon2R6wH5IQxN7WbimAq43e7nfApRuxEpmKDpMQrfS+Iyb4okEAS+Hozhjjj2OzmMkE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1789
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+In-Reply-To: <20220411084536.1f18d4ea@hermes.local>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="0000000000001578c905dc72c202"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -171,62 +77,140 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--0000000000001578c905dc72c202
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
+On Mon, Apr 11, 2022 at 08:45:36AM -0700, Stephen Hemminger wrote:
+> On Mon, 11 Apr 2022 16:32:00 +0300
+> Boris Sukholitko <boris.sukholitko@broadcom.com> wrote:
+> 
+> > Hi,
+> > 
+> > Our customers in the fiber telecom world have network configurations
+> > where they would like to control their traffic according to the number
+> > of tags appearing in the packet.
+> > 
+> > For example, TR247 GPON conformance test suite specification mostly
+> > talks about untagged, single, double tagged packets and gives lax
+> > guidelines on the vlan protocol vs. number of vlan tags.
+> > 
+> > This is different from the common IT networks where 802.1Q and 802.1ad
+> > protocols are usually describe single and double tagged packet. GPON
+> > configurations that we work with have arbitrary mix the above protocols
+> > and number of vlan tags in the packet.
+> > 
+> > The following patch series implement number of vlans flower filter. They
+> > add num_of_vlans flower filter as an alternative to vlan ethtype protocol
+> > matching. The end result is that the following command becomes possible:
+> > 
+> > tc filter add dev eth1 ingress flower \
+> >   num_of_vlans 1 vlan_prio 5 action drop
+> > 
+> > The corresponding kernel patches are being sent separately.
+> > 
+> > Thanks,
+> > Boris.
+> 
+> Maybe something custom like this is better done by small BPF program?
 
-> -----Original Message-----
-> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
-> Tony Nguyen
-> Sent: Friday, April 8, 2022 6:01 PM
-> To: Lobakin, Alexandr <alexandr.lobakin@intel.com>
-> Cc: ivecera <ivecera@redhat.com>; netdev@vger.kernel.org; mschmidt
-> <mschmidt@redhat.com>; Brett Creeley <brett@pensando.io>; open list
-> <linux-kernel@vger.kernel.org>; poros <poros@redhat.com>; moderated
-> list:INTEL ETHERNET DRIVERS <intel-wired-lan@lists.osuosl.org>; Jakub
-> Kicinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>; David S.
-> Miller <davem@davemloft.net>
-> Subject: Re: [Intel-wired-lan] [PATCH net v2] ice: Fix incorrect locking =
-in
-> ice_vc_process_vf_msg()
->=20
->=20
-> On 4/8/2022 6:47 AM, Alexander Lobakin wrote:
-> > From: Ivan Vecera <ivecera@redhat.com>
-> > Date: Fri,  1 Apr 2022 12:40:52 +0200
-> >
-> >> Usage of mutex_trylock() in ice_vc_process_vf_msg() is incorrect
-> >> because message sent from VF is ignored and never processed.
-> >>
-> >> Use mutex_lock() instead to fix the issue. It is safe because this
-> >> mutex is used to prevent races between VF related NDOs and handlers
-> >> processing request messages from VF and these handlers are running in
-> >> ice_service_task() context. Additionally move this mutex lock prior
-> >> ice_vc_is_opcode_allowed() call to avoid potential races during
-> >> allowlist acccess.
-> >>
-> >> Fixes: e6ba5273d4ed ("ice: Fix race conditions between virtchnl
-> >> handling and VF ndo ops")
-> >> Signed-off-by: Ivan Vecera <ivecera@redhat.com>
-> > Hey Tony,
-> >
-> > I guess you missed this one due to being on a vacation previously.
-> > It's been previously reviewed IIRC, could you take it into net-queue?
->=20
-> I remember applying this but I don't see it on the tree so I must be mist=
-aken.
-> :( I'll get it applied, thanks for catching.
->=20
-> -Tony
->=20
-> >> ---
-> >>   drivers/net/ethernet/intel/ice/ice_virtchnl.c | 21 +++++++----------=
---
-> >>   1 file changed, 7 insertions(+), 14 deletions(-)
-> >>
-> >> diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-> >> b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-> >> index 3f1a63815bac..a465f3743ffc 100644
-> >> --- a/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-> >> +++ b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-> >> @@ -3642,14 +3642,6 @@ void ice_vc_process_vf_msg(struct ice_pf *pf,
+I am not sure it is feasible to have BPF match done on the number of
+vlans and have the rest of TC machinery work as expected.
 
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+For example, the flower filters look at the protocol to allow matching
+on the vlan fields. Patch 5 of the kernel part of the series adds number
+of vlans as a different precondition. Having BPF program does nothing
+for it.
+
+Replicating more of TC functionality in the BPF to alleviate such pain
+points is probably possible but will not be "simple".
+
+Also (and sorry for the philosophy rant!) there is an issue of UI and
+intended audience here. The TC tools are well known and accessible. I am
+not sure that the same can be said for a custom BPF programs. :)
+
+Thanks,
+Boris.
+
+--0000000000001578c905dc72c202
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
+QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
+UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
+M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
+Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
+14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
+a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
+XzCCBVgwggRAoAMCAQICDDSzinKpvcPTN4ZIJTANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
+RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
+UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMTAyMjIwNzMwMDRaFw0yMjA5MDUwNzM3NTVaMIGW
+MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
+BgNVBAoTDUJyb2FkY29tIEluYy4xGTAXBgNVBAMTEEJvcmlzIFN1a2hvbGl0a28xLDAqBgkqhkiG
+9w0BCQEWHWJvcmlzLnN1a2hvbGl0a29AYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
+AQ8AMIIBCgKCAQEAy/C7bjpxs+95egWV8sWrK9KO0SQi6Nxu14tJBgP+MOK5tvokizPFHoiXTymZ
+7ClfnmbcqT4PzWgI3thyfk64bgUo1nQkCTApn7ov3IRsWjmHExLSNoJ/siUHagO6BPAk4JSycrj5
+9tC9sL4FnIAbAHmOSILCyGyyaBAcmiyH/3toYqXyjJkK+vbWQSTxk2NlqJLIN/ypLJ1pYffVZGUs
+52g1hlQtHhgLIznB1Qx3Fop3nOUk8nNpQLON/aM8K5sl18964c7aXh7YZnalUQv3md4p2rAQQqIR
+rZ8HBc7YjlZynwOnZl1NrK4cP5aM9lMkbfRGIUitHTIhoDYp8IZ1dwIDAQABo4IB3jCCAdowDgYD
+VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
+ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
+CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
+MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
+d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
+hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
+bDAoBgNVHREEITAfgR1ib3Jpcy5zdWtob2xpdGtvQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggr
+BgEFBQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUtBmGs9S4
+t1FcFSfkrP2LKQQwBKMwDQYJKoZIhvcNAQELBQADggEBAJMAjVBkRmr1lvVvEjMaLfvMhwGpUfh6
+CMZsKICyz/ZZmvTmIZNwy+7b9r6gjLCV4tP63tz4U72X9qJwfzldAlYLYWIq9e/DKDjwJRYlzN8H
+979QJ0DHPSJ9EpvSKXob7Ci/FMkTfq1eOLjkPRF72mn8KPbHjeN3VVcn7oTe5IdIXaaZTryjM5Ud
+bR7s0ZZh6mOhJtqk3k1L1DbDTVB4tOZXZHRDghEGaQSnwU/qxCNlvQ52fImLFVwXKPnw6+9dUvFR
+ORaZ1pZbapCGbs/4QLplv8UaBmpFfK6MW/44zcsDbtCFfgIP3fEJBByIREhvRC5mtlRtdM+SSjgS
+ZiNfUggxggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
+LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgw0
+s4pyqb3D0zeGSCUwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIGN4pwl/JlBKbjm+
+JNOzfmpNQj6wVeZ2bUiNyScMjMruMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
+AQkFMQ8XDTIyMDQxMjEwNDUyNFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
+AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQBWUooUNP818Y59EjVH2riZX0WftcH1l7hZ
+2FrWW4Y0nCMK/zJ8PgZk8SFkbhz6Waooi1ARzr81pp2C1P7o9fFhUuATDzRFTQtv9vQBng1ljhyi
+iH/GUmBCNqI+8LBqjxXntUE6K1ixrqHeeAMpCEue5vZN6IZjX+IGsSze10RHWDCkshc5IETjwv5D
+k/Rka+fWGY8JhIgwTTo10igeaz42SuqRxd18HVSVjnZndL5gwC00lOUyxXIUQyaWfIvGm38ceejs
+snMGGEkD1Khn/kl01ui/y949QLII7tTG+3wluBkiaIaiKshcPHWWR5rK5IYLWh0UU0WXGvfDvwmS
+Gap0
+--0000000000001578c905dc72c202--
