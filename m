@@ -2,268 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A05974FE6AE
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 19:17:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42A364FE6C2
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 19:22:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358018AbiDLRTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 13:19:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42522 "EHLO
+        id S240410AbiDLRYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 13:24:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232588AbiDLRTU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 13:19:20 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 540DD517EE;
-        Tue, 12 Apr 2022 10:17:00 -0700 (PDT)
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23CEn26n024425;
-        Tue, 12 Apr 2022 17:16:40 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=VpPiPdJueworOs7vPPFQzle2AMcIoQ96/wEqZJ/Dp6Y=;
- b=gjfgzbUIe0psKkRn2yzGaMfUNKG1BGq/8a6kwi+yO0Zcng8mN4c6IkLjcSGNTdMA9vz5
- CPRiird4eKc4H2l6shgbtpthwDZRBAIUH1Tq3mIfobY5ODRiEpfw9VtGfYF1jb1mkcaV
- pXkh/1RbNR4Wpg4kK8812b3yFs0jp3pb93qcqjD+C4ajTEekGcLXjKtoHNKAIi1JHe+T
- c1rwnNPZzk7Z9eLYOWO0VXov2R0hJ95+Wrz452nAPMMu05phjpcwAf7zOQ6xjO7Bno1c
- N4bMENj7UOezQeW0pYyV4EDNb4ESRiTyKJmitV72G7opp5SQ/k95tYP06uDFNl2JGzrg +w== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fdaqkvngv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Apr 2022 17:16:40 +0000
-Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23CGtBZ4032351;
-        Tue, 12 Apr 2022 17:16:39 GMT
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fdaqkvnga-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Apr 2022 17:16:39 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23CHGM9W015738;
-        Tue, 12 Apr 2022 17:16:36 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma03fra.de.ibm.com with ESMTP id 3fb1s8m8tk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Apr 2022 17:16:36 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23CHGY4426411336
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 12 Apr 2022 17:16:34 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 22863A4054;
-        Tue, 12 Apr 2022 17:16:34 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F34A1A4062;
-        Tue, 12 Apr 2022 17:16:30 +0000 (GMT)
-Received: from sig-9-65-64-123.ibm.com (unknown [9.65.64.123])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 12 Apr 2022 17:16:30 +0000 (GMT)
-Message-ID: <6545f8241f3d41dd0f55997bfb85ad0de9f1c3e3.camel@linux.ibm.com>
-Subject: Re: [PATCH v4 RESEND] efi: Do not import certificates from UEFI
- Secure Boot for T2 Macs
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Aditya Garg <gargaditya08@live.com>,
-        "jarkko@kernel.org" <jarkko@kernel.org>,
-        "dmitry.kasatkin@gmail.com" <dmitry.kasatkin@gmail.com>,
-        "jmorris@namei.org" <jmorris@namei.org>,
-        "serge@hallyn.com" <serge@hallyn.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "kafai@fb.com" <kafai@fb.com>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "yhs@fb.com" <yhs@fb.com>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>
-Cc:     "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Orlando Chamberlain <redecorating@protonmail.com>,
-        "admin@kodeit.net" <admin@kodeit.net>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Date:   Tue, 12 Apr 2022 13:16:30 -0400
-In-Reply-To: <590ED76A-EE91-4ED1-B524-BC23419C051E@live.com>
-References: <652C3E9E-CB97-4C70-A961-74AF8AEF9E39@live.com>
-         <94DD0D83-8FDE-4A61-AAF0-09A0175A0D0D@live.com>
-         <590ED76A-EE91-4ED1-B524-BC23419C051E@live.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: YAIrI7YKZQk-OE0GoS9uQU3Mjgf1WVgT
-X-Proofpoint-ORIG-GUID: azcNPx-bwu6g0GOenyLWoALybZvGeW3a
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-12_06,2022-04-12_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- malwarescore=0 spamscore=0 clxscore=1011 priorityscore=1501
- mlxlogscore=999 adultscore=0 phishscore=0 suspectscore=0
- lowpriorityscore=0 mlxscore=0 bulkscore=0 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2204120081
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S233538AbiDLRYt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 13:24:49 -0400
+Received: from EUR03-DB5-obe.outbound.protection.outlook.com (mail-eopbgr40076.outbound.protection.outlook.com [40.107.4.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2B1760CE0
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 10:22:30 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=E9hLeHn5DfSuDcZX1aKTsIAidNBUH11U4fWczGuCGTGwHNITDjVcwmRET7SAGGKp/B+OySC3727OxxdEAV9DkO/I+MepHPNsz798wQEPNazkudPXN+rFFI4R3Rt7ZSKoDAjyzgb6/bDskWz5J0IVsIVfHXMxjbMinR9/QFCLqnZBLw9X+Kw2Q629aNqELbW1hvFvZWwsh7FMuMTOcZAGjzRq5QhiNW258/ahrbfptQfc1Q6UJADOrQRi02eZXp+F7nFHc6u3UtL29G3bPABYVhmOjnzCtXWYIqFI/5q4oa6Gk0DGIdXMCPXbayS/fBDdqXtMvN/U/MqJ9vb1NQGNyg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+CC6QJeCrTRlSjhZeC7Z7e8qNqETfh6VkLB9eUsQLqI=;
+ b=ACmuuIUhLqO8n6H46UjKPAev0LXgbYGOWyBM/iyQAHDN4NkYhUAIM5SG8dVZY8hE1Rf9fzyrsFQzio9q8w7havhwV6ZAF/9KckL28saGGTL+nh/6wzhqN3EI0usRADUuzA/DZmY4l63QJZ0vdLSIlIaZLFLiQZs7NzdV5TU7EAbSnEz/zs7GknrsUNiA0h6UQul1kYz+WfsMKA5o/tQ0UQt7qfsnk3qtB5k5UuWFgTbMZX075UJtVK7kX9ZgShMOZhIK1rUsoom4tY9aTWNXTSZLS7m+meHzOBc6//m9Ap9kwA17N3k5Cw9jwWIYajojQgf6ASToAjXlpe0CkVA/qQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+CC6QJeCrTRlSjhZeC7Z7e8qNqETfh6VkLB9eUsQLqI=;
+ b=JCwgqNHSqLUTA+Ot+ow++Oh0D43BdPvWMmXHHogoglVeTXrn6fkiElKDdJL+oZl1Jt7FVTNjHPRUqZvBMc9gGquW8c64b+vn537lHh2i3zrCLBQmNyXEctx/1vzv3hGWWLe3P0li2TzWEfo+i4GfI8+yCyP4aauP2JxJXHxq+84=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AM0PR04MB6131.eurprd04.prod.outlook.com (2603:10a6:208:145::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Tue, 12 Apr
+ 2022 17:22:28 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::8ed:49e7:d2e7:c55e]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::8ed:49e7:d2e7:c55e%3]) with mapi id 15.20.5144.029; Tue, 12 Apr 2022
+ 17:22:28 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Michael Walle <michael@walle.cc>
+Subject: [PATCH net] net: dsa: felix: fix tagging protocol changes with multiple CPU ports
+Date:   Tue, 12 Apr 2022 20:22:09 +0300
+Message-Id: <20220412172209.2531865-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AS9PR06CA0220.eurprd06.prod.outlook.com
+ (2603:10a6:20b:45e::23) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ae97df70-440f-4aef-bc21-08da1ca904cc
+X-MS-TrafficTypeDiagnostic: AM0PR04MB6131:EE_
+X-Microsoft-Antispam-PRVS: <AM0PR04MB6131BB9809B611A223EF5097E0ED9@AM0PR04MB6131.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: S+XBfKlUyCbZw6+m8vfGBaUhAPMYJms+92vfzqwwxwWcJ3JHL1bKG5mlssQBXgnouXajAbXYRVfPmujmO0yK8+IhUN/xZTa7ayxFVua1LptC7p8HdpmXoY30i7SREt0Z97XXL7QsPAOosKCWFl359yHxv+CKFSvnq0VhgedhHVVWaGvpK1SJWJ1PopSz/jngMzjko3a+rl6pwG6LKQTloF4AQu0K5j3OhN0hlkV5uhEKYaaL7JpUpV0MaZ1YEnxe+1x1zUxa4QcienYcC4EKnN/d+k8ZA6uxSkyQbcKkaUwTs2n89eHedsq25csFwri/j5pIKGchDdbK8qLYlIYqPOyG7wn3oaOccwVuTHe/9jNIGTRoSbc/bOLGGqAD1YizHhFtN4BFofR+jAAKjw5R+hSMg2f9xMQ7I+zFgJ37vCEJxU5+pak9fMZDMI+CoVdn0nUxKowGOVM4kWOnoU5aAZEwxaKB3CUyJHajRmG4NH+1XBNk6WFItwSTIA9ACHs3vd4LokufpMD39GBeBnmrLL5D396rzpfb74BM5fpN1Q8W+z38tF1eA0Y3/327bMQxbDxYVjkevFcTr7MZ7Fp/tXmQNyBoXbSgi4urUm4qbary5IwHDJKcFyfIYP0NuOs6Srqtk2zh2WsjWGRE2TBqSMPp/aQ6/ptMgTTaKlb2O287UScqthudqeThrlMmgIr1zR6/M355bz9S/RDCTcRG+w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6916009)(44832011)(2616005)(5660300002)(508600001)(186003)(26005)(1076003)(8676002)(4326008)(66946007)(86362001)(36756003)(66476007)(66556008)(2906002)(8936002)(7416002)(6486002)(54906003)(83380400001)(52116002)(6512007)(6506007)(6666004)(316002)(38350700002)(38100700002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ig+bDESy3OBeuoKFCmQ6f3why65wM09//HeBJLKHMKJaczvF9LLXfyH9gkWa?=
+ =?us-ascii?Q?uA1EG1fiUvAZLo8XiyekgvbMEnyJubLdVMMJbIpl1VPjaIXeGEVojUMETm5b?=
+ =?us-ascii?Q?9GmCHwhDGlScvm8AcUCSrpfAk+NKARP6CEI55PZsZHA+mBq+jD+KPyQ4ngnb?=
+ =?us-ascii?Q?TQtOvFSwbNwFRvz5DGvD7C/n+2BgPinJdd38+Avcugl0FjqFQ0vGPpeszvGz?=
+ =?us-ascii?Q?n5l0jfigDgICKAiJi9VsLwwd24nbEJtLmOwU2tEecAYObLE/djZrcEpb/Jwk?=
+ =?us-ascii?Q?6eCy2IcUO8MGWUMDv3WCS0F4t386GwC6Hav5XN76Gd9JAWq1PCP+kHQQVU0T?=
+ =?us-ascii?Q?wW3xTb/hzGHjv6Ydu/AFzk1wSY3Dfkf+rU8ZMu+RZWwMegO+gosGafiYXzNn?=
+ =?us-ascii?Q?lO/Fl2T4tySq8HGQMkM/L0b939mBTWicHVLZVjkhLYSVtoG7a3NjwhcI7/xJ?=
+ =?us-ascii?Q?PA8fUgRTAmCzg1ZeurJru4nHh+WQmfePvQrkCWYdvkphrXHkElgkK26lZVBk?=
+ =?us-ascii?Q?vR3YMKBaEveTF/aQmym7fwlwPrfmSbbD+2R4ieECogfAVbM/wLNEJum/BCFP?=
+ =?us-ascii?Q?YD+6o52IoZKWxoYDbYTcP3RNVtwYppS7RF1pg4GrFF9xgWwvLC6T/QWzweCC?=
+ =?us-ascii?Q?NAjzZVNkIXCoizIaVlQkajWAtEQCM64NHFN8gk/Cszo7yC8vqRiYYwiJnVwM?=
+ =?us-ascii?Q?1FVT3oVM6EU4x2IgwBmISUPih6bd3Yu4+i7IStNWHjcm1jrltb2NTRvox8v6?=
+ =?us-ascii?Q?5Wyb0pQTndZs2Dy64sN/zJgKIIfGeDRxJsyruLys5dCUiv4DR1X/8IH/pBhX?=
+ =?us-ascii?Q?QD/y6vqL6iHz6Sf0AKs0mA9p1YscUq+/lbjBPeTkM8800cNgQfqEBQp6Nxrp?=
+ =?us-ascii?Q?Q7rPS1RIJ4NWobX6B+03jA4dXsbFR+JfDbDWJ7zXcMrjX6iy/RQv/gRV6sGC?=
+ =?us-ascii?Q?GlU2NSAfFfydolMml0vU4njUru3361M7Fk3+ZUaMtkC6RLrBwQ3v1qMGJGhA?=
+ =?us-ascii?Q?tq9DElfzbhj40xtj9D2C9FMRs0uc04l1rjLQWWiTRotJ3cWFTreNlPiHXeFQ?=
+ =?us-ascii?Q?o9dtMrtajtcerQFcfR3HeGqsGTnb1XDzypiDrxaKu8FZsWmzeTMpJrVhVCWk?=
+ =?us-ascii?Q?A6memffO3DIRSULVMcMCZ2DeaX9XgYyX+U0TIKWx6WDxhm3VJbSwQcVyE1+F?=
+ =?us-ascii?Q?v60KUMnbqJVCFBxOrT/MmlO4Dz7DkMPqVBH/oTuvNw4sXnEIEG7l/9TedHPA?=
+ =?us-ascii?Q?Tig0AMwqZNprrTFOWQiCdtKODxrzKnsD+hoHD1wAEkGkkVshz+fIrSW9D8fg?=
+ =?us-ascii?Q?h7EevI030RaYoGFZIuDn6PUoNsImnonTCs5QXDSe69vRFeuxv3gXP8s0sjgu?=
+ =?us-ascii?Q?vjB8ZNZbc/JT4hdzPBykrdRM1N7LiFJryWc8JNrqwBXBuvxC/Vb7WSeaNnrE?=
+ =?us-ascii?Q?wyVgEeyCcV2cchINhwKz4KySYvBxAQW+t2qOaJKBsparfIzdOmJsfgP2AdR+?=
+ =?us-ascii?Q?nu89VFmIB3eu6NqX1bW+RcCMaO2EOA10e6n73h4ObFVO3bZAXLSnIOmP+Npi?=
+ =?us-ascii?Q?81/yl+Sv2nRhchHXWGIh5G++P5AM2IpVmFKFgIn1FmYShrhQChJMu1LdWJN6?=
+ =?us-ascii?Q?r5bmbOFlSaWO0SxaDS0hfi2rH6gEeSfG18RNtFWl+3+pp3QBEEOHWy071UDk?=
+ =?us-ascii?Q?Jnm3E//hqCtSc2bqPuw9R/k29PUInxfGzzWC/5BMvB6W6/3EaWX/uQo8bCGk?=
+ =?us-ascii?Q?xGaN7XVcbVLAtAShBNjNBnifrhp76ek=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ae97df70-440f-4aef-bc21-08da1ca904cc
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2022 17:22:28.4579
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: cqJmnACwXVyhAyW2fdtYMzo4kCudA0WJX74NKkvWUn8PkFHKvnS/2c4LMafuml/GMbh6C4x2gAiHtnm8esLQSA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6131
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-04-12 at 16:44 +0000, Aditya Garg wrote:
-> From: Aditya Garg <gargaditya08@live.com>
-> 
-> On T2 Macs, the secure boot is handled by the T2 Chip. If enabled, only
-> macOS and Windows are allowed to boot on these machines. Moreover, loading
-> UEFI Secure Boot certificates is not supported on these machines on Linux.
-> An attempt to do so causes a crash with the following logs :-
-> 
-> Call Trace:
->  <TASK>
->  page_fault_oops+0x4f/0x2c0
->  ? search_bpf_extables+0x6b/0x80
->  ? search_module_extables+0x50/0x80
->  ? search_exception_tables+0x5b/0x60
->  kernelmode_fixup_or_oops+0x9e/0x110
->  __bad_area_nosemaphore+0x155/0x190
->  bad_area_nosemaphore+0x16/0x20
->  do_kern_addr_fault+0x8c/0xa0
->  exc_page_fault+0xd8/0x180
->  asm_exc_page_fault+0x1e/0x30
-> (Removed some logs from here)
->  ? __efi_call+0x28/0x30
->  ? switch_mm+0x20/0x30
->  ? efi_call_rts+0x19a/0x8e0
->  ? process_one_work+0x222/0x3f0
->  ? worker_thread+0x4a/0x3d0
->  ? kthread+0x17a/0x1a0
->  ? process_one_work+0x3f0/0x3f0
->  ? set_kthread_struct+0x40/0x40
->  ? ret_from_fork+0x22/0x30
->  </TASK>
-> ---[ end trace 1f82023595a5927f ]---
-> efi: Froze efi_rts_wq and disabled EFI Runtime Services
-> integrity: Couldn't get size: 0x8000000000000015
-> integrity: MODSIGN: Couldn't get UEFI db list
-> efi: EFI Runtime Services are disabled!
-> integrity: Couldn't get size: 0x8000000000000015
-> integrity: Couldn't get UEFI dbx list
-> integrity: Couldn't get size: 0x8000000000000015
-> integrity: Couldn't get mokx list
-> integrity: Couldn't get size: 0x80000000
-> 
-> As a result of not being able to read or load certificates, secure boot
-> cannot be enabled. This patch prevents querying of these UEFI variables,
-> since these Macs seem to use a non-standard EFI hardware.
-> 
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Aditya Garg <gargaditya08@live.com>
-> ---
-> v2 :- Reduce code size of the table.
-> v3 :- Close the brackets which were left open by mistake.
-> v4 :- Fix comment style issues, remove blank spaces and limit use of dmi_first_match()
-> v4 RESEND :- Add stable to cc
->  .../platform_certs/keyring_handler.h          |  8 +++++
->  security/integrity/platform_certs/load_uefi.c | 35 +++++++++++++++++++
->  2 files changed, 43 insertions(+)
-> 
-> diff --git a/security/integrity/platform_certs/keyring_handler.h b/security/integrity/platform_certs/keyring_handler.h
-> index 284558f30..212d894a8 100644
-> --- a/security/integrity/platform_certs/keyring_handler.h
-> +++ b/security/integrity/platform_certs/keyring_handler.h
-> @@ -35,3 +35,11 @@ efi_element_handler_t get_handler_for_mok(const efi_guid_t *sig_type);
->  efi_element_handler_t get_handler_for_dbx(const efi_guid_t *sig_type);
->  
->  #endif
-> +
-> +#ifndef UEFI_QUIRK_SKIP_CERT
-> +#define UEFI_QUIRK_SKIP_CERT(vendor, product) \
-> +		 .matches = { \
-> +			DMI_MATCH(DMI_BOARD_VENDOR, vendor), \
-> +			DMI_MATCH(DMI_PRODUCT_NAME, product), \
-> +		},
-> +#endif
-> diff --git a/security/integrity/platform_certs/load_uefi.c b/security/integrity/platform_certs/load_uefi.c
-> index 5f45c3c07..c3393b2b1 100644
-> --- a/security/integrity/platform_certs/load_uefi.c
-> +++ b/security/integrity/platform_certs/load_uefi.c
-> @@ -3,6 +3,7 @@
->  #include <linux/kernel.h>
->  #include <linux/sched.h>
->  #include <linux/cred.h>
-> +#include <linux/dmi.h>
->  #include <linux/err.h>
->  #include <linux/efi.h>
->  #include <linux/slab.h>
-> @@ -12,6 +13,33 @@
->  #include "../integrity.h"
->  #include "keyring_handler.h"
->  
-> +/*
-> + * Apple Macs with T2 Security chip seem to be using a non standard
-> + * implementation of Secure Boot. For Linux to run on these machines
-> + * Secure Boot needs to be turned off, since the T2 Chip manages
-> + * Secure Boot and doesn't allow OS other than macOS or Windows to
-> + * boot. If turned off, an attempt to get certificates causes a crash,
-> + * so we simply prevent doing the same.
-> + */
+When the device tree has 2 CPU ports defined, a single one is active
+(has any dp->cpu_dp pointers point to it). Yet the second one is still a
+CPU port, and DSA still calls ->change_tag_protocol on it.
 
-Both the comment here and the patch description above still needs to be
-improved.  Perhaps something along these lines.
+On the NXP LS1028A, the CPU ports are ports 4 and 5. Port 4 is the
+active CPU port and port 5 is inactive.
 
-Secure boot on Apple Macs with a T2 Security chip cannot read either
-the EFI variables or the certificates stored in different db's (e.g.
-db, dbx, MokListXRT).  Attempting to read them causes ...   
+After the following commands:
 
-Avoid reading the EFI variables or the certificates stored in different
-dbs.  As a result, without certificates secure boot signature
-verification fails.
+ # Initial setting
+ cat /sys/class/net/eno2/dsa/tagging
+ ocelot
+ echo ocelot-8021q > /sys/class/net/eno2/dsa/tagging
+ echo ocelot > /sys/class/net/eno2/dsa/tagging
 
-thanks,
+traffic is now broken, because the driver has moved the NPI port from
+port 4 to port 5, unbeknown to DSA.
 
-Mimi
+The problem can be avoided by detecting that the second CPU port is
+unused, and not doing anything for it. Further rework will be needed
+when proper support for multiple CPU ports is added.
 
+Treat this as a bug and prepare current kernels to work in single-CPU
+mode with multiple-CPU DT blobs.
 
-> +static const struct dmi_system_id uefi_skip_cert[] = {
-> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,1") },
-> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,2") },
-> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,3") },
-> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,4") },
-> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,1") },
-> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,2") },
-> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,3") },
-> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,4") },
-> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir8,1") },
-> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir8,2") },
-> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir9,1") },
-> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacMini8,1") },
-> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacPro7,1") },
-> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "iMac20,1") },
-> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "iMac20,2") },
-> +	{ }
-> +};
-> +
->  /*
->   * Look to see if a UEFI variable called MokIgnoreDB exists and return true if
->   * it does.
-> @@ -138,6 +166,13 @@ static int __init load_uefi_certs(void)
->  	unsigned long dbsize = 0, dbxsize = 0, mokxsize = 0;
->  	efi_status_t status;
->  	int rc = 0;
-> +	const struct dmi_system_id *dmi_id;
-> +
-> +	dmi_id = dmi_first_match(uefi_skip_cert);
-> +	if (dmi_id) {
-> +		pr_err("Getting UEFI Secure Boot Certs is not supported on T2 Macs.\n");
-> +		return false;
-> +	}
->  
->  	if (!efi_rt_services_supported(EFI_RT_SUPPORTED_GET_VARIABLE))
->  		return false;
+Fixes: adb3dccf090b ("net: dsa: felix: convert to the new .change_tag_protocol DSA API")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ drivers/net/dsa/ocelot/felix.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index 413b0006e9a2..9e28219b223d 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -670,6 +670,8 @@ static int felix_change_tag_protocol(struct dsa_switch *ds, int cpu,
+ 	struct ocelot *ocelot = ds->priv;
+ 	struct felix *felix = ocelot_to_felix(ocelot);
+ 	enum dsa_tag_protocol old_proto = felix->tag_proto;
++	bool cpu_port_active = false;
++	struct dsa_port *dp;
+ 	int err;
+ 
+ 	if (proto != DSA_TAG_PROTO_SEVILLE &&
+@@ -677,6 +679,27 @@ static int felix_change_tag_protocol(struct dsa_switch *ds, int cpu,
+ 	    proto != DSA_TAG_PROTO_OCELOT_8021Q)
+ 		return -EPROTONOSUPPORT;
+ 
++	/* We don't support multiple CPU ports, yet the DT blob may have
++	 * multiple CPU ports defined. The first CPU port is the active one,
++	 * the others are inactive. In this case, DSA will call
++	 * ->change_tag_protocol() multiple times, once per CPU port.
++	 * Since we implement the tagging protocol change towards "ocelot" or
++	 * "seville" as effectively initializing the NPI port, what we are
++	 * doing is effectively changing who the NPI port is to the last @cpu
++	 * argument passed, which is an unused DSA CPU port and not the one
++	 * that should actively pass traffic.
++	 * Suppress DSA's calls on CPU ports that are inactive.
++	 */
++	dsa_switch_for_each_user_port(dp, ds) {
++		if (dp->cpu_dp->index == cpu) {
++			cpu_port_active = true;
++			break;
++		}
++	}
++
++	if (!cpu_port_active)
++		return 0;
++
+ 	felix_del_tag_protocol(ds, cpu, old_proto);
+ 
+ 	err = felix_set_tag_protocol(ds, cpu, proto);
+-- 
+2.25.1
 
