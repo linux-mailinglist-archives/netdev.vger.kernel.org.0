@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D6FA84FDF30
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 14:04:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC3A24FDF03
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 14:03:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350337AbiDLMGH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 08:06:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42164 "EHLO
+        id S1347944AbiDLMFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 08:05:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351373AbiDLMCh (ORCPT
+        with ESMTP id S1351382AbiDLMCh (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 08:02:37 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E24A7805D;
-        Tue, 12 Apr 2022 03:58:58 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id c6so6729086edn.8;
-        Tue, 12 Apr 2022 03:58:58 -0700 (PDT)
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBC0878062;
+        Tue, 12 Apr 2022 03:58:59 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id u15so17893593ejf.11;
+        Tue, 12 Apr 2022 03:58:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=esB5mepgr5nyvG9nrRmGTzzqc+m2Rur7gox62JB2JxA=;
-        b=PuvOlw8FCBCG5e+EE/ntog+d+HeeY8K1lZiupPOEKAdCgqu2LkYctFFE46dcuaKWxD
-         JqH+76Qb0X+BMNsfA9Q8hPEBX7h/TK52EayIDurkbi0ZXZFsbAEpG97HJRgmTx+tICGE
-         lCvlWrFaheyN2vCP4qZCLM2U9CPNc/5RzLPcE9ceZCqgdyWliGLOkuRdsOz6o3J4ilD+
-         TbQcxAbbz+3lTN4E+LeC2njmuDn5Cn6HBynXRNM7hJygrqlMJHf3cKhdC3wl51iVwJOp
-         0ejiDVcQHPks45Uwbw/G/4tvBL/Muq1Ge9wW11L6vmzrxnOckDr79bjZ6ilLKC8GJuHB
-         DezA==
+        bh=PwlvdFh40zWrnBHSnvRolkyWcqqdHXS406E/ZGgN6EM=;
+        b=qbvgYgagzSXxv6YmhWQbxqNdOmSbQgfVFVfg080pnmD2QQT4ewAjsptb6A151wy3qB
+         l6YN8srio8jNhYnocQB9/Du9NaXc7tZUtoTURut7ItC2ERogITRXDModlgdtZqjY2hoA
+         vYjbslfGvCzth9QlMXFSRC8+gpbvhVtL9EnROoIzIai1bv0v+3U8etOIs85gXb2avuu0
+         wXup3n/MaYi0FQUmW7W9MseeBhsedGuwcgBndyFWy1KvjzSHRp3PnwiU33VAYbjVdr+k
+         XXZ7rWh6GJt6kkgM93uVduBBw0Piopt0wRQtEsiohjxYPFVFZXdutCjO5dD/WJCTgmfj
+         RZdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=esB5mepgr5nyvG9nrRmGTzzqc+m2Rur7gox62JB2JxA=;
-        b=gBmZAzPWHFFw4H27IfKgUQaGYdp1os6V8L3uzpoRydj79usOrunuXdUspSCWAzBABB
-         QU+aMHjx2UulIiE4WUJr//096z1oL/OuraV+7XHja4pCrPnCaMqO+k2MiZMxcwOjRo6J
-         vPcPug0BHt+NurW/nZDx1Ox/xXIqpmN2gaUOe9M9SND0S07cCV6zJVSwlwG6AzEL+kQl
-         A7iN/D6laFhrSnMQklknmjdSSRpkt3h81D+o60u6CURsgS6MMP1EmceT7PVbyJKjlpWc
-         LjNJH499NDnztSb/H2nWCXfyQ0iKA+fydOiXkHQVKL5hkVSCPJMqPBz34G7/64/WGqr2
-         koKQ==
-X-Gm-Message-State: AOAM532/l5fr+roP00gFCx9yiba5gA7IKw8E9c8EOfhTf0Qcws1u72uK
-        P9Q8wbS7OWTycyL3lptdjYU=
-X-Google-Smtp-Source: ABdhPJwWJgCDTrqPfiqP3TWBYTxeilB8kDG9V7L+j1ctwcQCz/eM8OQpB3keuCQCrlhlGAhb4nEDcw==
-X-Received: by 2002:a05:6402:5106:b0:419:45cd:7ab0 with SMTP id m6-20020a056402510600b0041945cd7ab0mr38052671edd.116.1649761136889;
-        Tue, 12 Apr 2022 03:58:56 -0700 (PDT)
+        bh=PwlvdFh40zWrnBHSnvRolkyWcqqdHXS406E/ZGgN6EM=;
+        b=eXih0CSBXAC41lKBORjVqYfvD/7vSt0q9b0TVgKByaPdsCMlVt8478ELjS16uHmX+7
+         xlhycBZncNyBKQqx6vWirlkaUkR0AtHxFT2GWRC3XJsUs0NwDa1ACVfqhaZdlUF4/Cz0
+         LU/d21Lb0xz8tCiXfPkzk6eiFn/CQbwvaBVCZ/n+KeqZo7rsajGEGniUYuM2oVqH1DH+
+         p4aOC/zP8G9scXMshMoOQfJARCquLrK6pxG8ELKV8cNek2wJ5qPruYJ7Osc2a0+EO7wS
+         904ugEPLvdMtAOYLcKEbMnxYZa/CiUQIXk2GDitYIRYEs9FirNXIQp4sqXXQklXdrteY
+         +/WQ==
+X-Gm-Message-State: AOAM532khrwTbBNj2M2XdcUDuMUvdIBsToCBFcB7n/h1kKMnc7zBZauQ
+        A3u//cJ0Hw9Sl9/p2hZ/Uio=
+X-Google-Smtp-Source: ABdhPJwA+rvSjheEa32LQoy9hOd6Zb25JtwO8XMjJGvYpQlukrjH+4wgEFqK8xj7XJh4Ax1vjoAg/g==
+X-Received: by 2002:a17:906:c111:b0:6db:cf0e:3146 with SMTP id do17-20020a170906c11100b006dbcf0e3146mr34735453ejc.280.1649761138218;
+        Tue, 12 Apr 2022 03:58:58 -0700 (PDT)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id f1-20020a056402194100b00416b174987asm16986370edz.35.2022.04.12.03.58.55
+        by smtp.googlemail.com with ESMTPSA id f1-20020a056402194100b00416b174987asm16986370edz.35.2022.04.12.03.58.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 03:58:56 -0700 (PDT)
+        Tue, 12 Apr 2022 03:58:57 -0700 (PDT)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
@@ -86,9 +86,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next v2 04/18] net: dsa: sja1105: use list_add_tail(pos) instead of list_add(pos->prev)
-Date:   Tue, 12 Apr 2022 12:58:16 +0200
-Message-Id: <20220412105830.3495846-5-jakobkoschel@gmail.com>
+Subject: [PATCH net-next v2 05/18] net: dsa: mv88e6xxx: remove redundant check in mv88e6xxx_port_vlan()
+Date:   Tue, 12 Apr 2022 12:58:17 +0200
+Message-Id: <20220412105830.3495846-6-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220412105830.3495846-1-jakobkoschel@gmail.com>
 References: <20220412105830.3495846-1-jakobkoschel@gmail.com>
@@ -104,30 +104,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When passed a non-head list element, list_add_tail() actually adds the
-new element to its left, which is what we want. Despite the slightly
-confusing name, use the dedicated function which does the same thing as
-the open-coded list_add(pos->prev).
+We know that "dev > dst->last_switch" in the "else" block.
+In other words, that "dev - dst->last_switch" is > 0.
 
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
+dsa_port_bridge_num_get(dp) can be 0, but the check
+"if (bridge_num + dst->last_switch != dev) continue", rewritten as
+"if (bridge_num != dev - dst->last_switch) continue", aka
+"if (bridge_num != something which cannot be 0) continue",
+makes it redundant to have the extra "if (!bridge_num) continue" logic,
+since a bridge_num of zero would have been skipped anyway.
+
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/sja1105/sja1105_vl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_vl.c b/drivers/net/dsa/sja1105/sja1105_vl.c
-index e5ea8eb9ec4e..7fe9b18f1cbd 100644
---- a/drivers/net/dsa/sja1105/sja1105_vl.c
-+++ b/drivers/net/dsa/sja1105/sja1105_vl.c
-@@ -49,7 +49,7 @@ static int sja1105_insert_gate_entry(struct sja1105_gating_config *gating_cfg,
- 	e->rule = rule;
- 	e->gate_state = gate_state;
- 	e->interval = entry_time;
--	list_add(&e->list, pos->prev);
-+	list_add_tail(&e->list, pos);
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 64f4fdd02902..b3aa0e5bc842 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -1404,9 +1404,6 @@ static u16 mv88e6xxx_port_vlan(struct mv88e6xxx_chip *chip, int dev, int port)
+ 		list_for_each_entry(dp, &dst->ports, list) {
+ 			unsigned int bridge_num = dsa_port_bridge_num_get(dp);
  
- 	gating_cfg->num_entries++;
+-			if (!bridge_num)
+-				continue;
+-
+ 			if (bridge_num + dst->last_switch != dev)
+ 				continue;
  
 -- 
 2.25.1
