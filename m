@@ -2,169 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB47D4FE0D6
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 14:52:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59EF14FE0D1
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 14:52:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232009AbiDLMuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 08:50:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34096 "EHLO
+        id S1352123AbiDLMuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 08:50:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354217AbiDLMr3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 08:47:29 -0400
+        with ESMTP id S1355272AbiDLMsJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 08:48:09 -0400
 Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E991D27148
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 05:12:17 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id i27so36914199ejd.9
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 05:12:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19CD51AA;
+        Tue, 12 Apr 2022 05:16:27 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id r13so36972813ejd.5;
+        Tue, 12 Apr 2022 05:16:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=voEA3xREkBtNhZMe8ZgZ5hDKttcZOGVZTdj/cLemKnY=;
-        b=uihFcdftQToCh4VFnJMBMJIsrHC5IYZEwlfuCI66r5vw5QyR1C5PEWXfSHWNFASEvB
-         rIHoFh+9NHfgSWYxhoPZnj06HIvG0HJFaJMtMvfCK9dzw9APbwiIHvcXmejf1lBEcFxz
-         ePZgmEl3luVgQFqL8x9gBx75e6Ou7uIw9I0u5IMhaH4pfcwkM3USfl5ELY0NVztErWR+
-         cTGV0HIRQFlOxvj68Xo23uj1YPBxSvKVPw44owunif74KTqyGC3hZazmvfd9z327Iwt9
-         y+UoupeYkYwBslcOMApoiYZQh39wo8LEBOyMpF+/Ns0KkLT/HtiPTl+mT2Uonz9sPM4Q
-         uL7w==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SauRrPtkvH++wq5kM/ENmKVywKLBbnGlq4WrfqqSV+A=;
+        b=KMMgTD4eqHSocfjUAX9sOYUKbAccfIdzUX7Y/cKXBZaA3DdYKoxaDEkMTRpY15o4Pp
+         LEFDk2i7uYe0t8MnS99DWhcmH+n3krrsHjMfb/I9AeIsI7boJcVxlx6SSr3LxEFaO10s
+         E+dBacnWczSHi6Vv6AnA0AFsgkjnfCuvnjTVH0BbxhhbuNqE4UFa+48BgViG/28eaG4b
+         NZ2UlhPW2IbUHdjPVlGa6lA+1bTtbP/b9QYneqAekedYypLIIGTSjCsrCIUhJyEnNBmX
+         FE6NJWukEY4Gyqss5WRrieAK/t7AiE0doun7ScIXJIEFBdGzgs0avwpahmiPVU8aR1Vm
+         oAvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=voEA3xREkBtNhZMe8ZgZ5hDKttcZOGVZTdj/cLemKnY=;
-        b=pquVct2ZMmbV1IhojrFwNYd/KkjQi3wqb0iTjpFwPbVsih5whA4rzfhc0MgEWVnnOm
-         tnbyiedIiMvJQsBzQoFlpxp8/ZJTL5RcN8S2UdHRVuIGOVIIwwYZUDV2scSS4q6G72iZ
-         k7GaaS+7ngcPD2RHL+biMZ2yUKV0XZujX7z0Ivv+zYWmn8qVPPPygR4BHYEDgtC+NTew
-         LRY6btBFtDjxzkELhQYx/S3HQxOD4KppVi0e0mn2Meb+FYnA2pGZ1I+blPR7W3U+V3jl
-         n9K5H/ZyLx3M+QUBXizTdMe65JUw+KLUwudstTiH37lJb7QL0cjSyep9dPVvebNRPsYt
-         J23w==
-X-Gm-Message-State: AOAM531Wypgk657anUo3sEmBeuyy6Qhm0Hnnb0qDhkqKM5+CBb82E+qe
-        WjSJ3TbmaS+V2tngRI4yUHo5Dg==
-X-Google-Smtp-Source: ABdhPJwDc5fPkHPk5flbHAsXudGpfZUgseWTsc4cMfsihAuOfA0zOEwtFraMYo0ZIPtApPdz15ktvw==
-X-Received: by 2002:a17:906:58d3:b0:6da:bdb2:2727 with SMTP id e19-20020a17090658d300b006dabdb22727mr34090759ejs.549.1649765536359;
-        Tue, 12 Apr 2022 05:12:16 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id a1-20020a50da41000000b0041c83587300sm16066327edk.36.2022.04.12.05.12.15
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SauRrPtkvH++wq5kM/ENmKVywKLBbnGlq4WrfqqSV+A=;
+        b=4PbbPCtQ+0o0AMjvBnJU3fHhDynChtypLs/tfoxD5SwvfyCkjoW8s+bPdhPSAvOBn3
+         F9Bu/BJpCDHINqBjRwBF1Z+IqGFxobaOjOWWTWuGTyu8ZU4YsM+fo+euEsBEsFIY+iIk
+         rbqBgCmdz+0yGAlo0+HnWXdiVWoX83GrbLtgCEGINxD/ha9+79KZu2V24E8jqIUrAY7Q
+         MkZlDyEdhE7EXHGJeZ53JYWagS0orrI2HtywJh4l5Xw6lGEMmjmppb2o2oUY7aOfoxbp
+         Egg/+zC9PCrkvoEr8gtD++2BpXtwAKBQxsF8xxjtgh7f0Fj4l5JEoIb5+U0VDvZtji1P
+         0Zmw==
+X-Gm-Message-State: AOAM533ctt5iwr+kjpXvLZaG/V4SNVwPV4ha4didb8pxO0g43ufexlxE
+        UgKqEXWbAKLkhpXKbUjn9sk=
+X-Google-Smtp-Source: ABdhPJwaLV9WCXwPNDN9XsaLWYamOBWtMxnQwfCpN462OFM8kyd9vvvxbB2FB9m9bGxFmOH6VZCyVA==
+X-Received: by 2002:a17:906:2991:b0:6cd:ac19:ce34 with SMTP id x17-20020a170906299100b006cdac19ce34mr34558940eje.746.1649765780565;
+        Tue, 12 Apr 2022 05:16:20 -0700 (PDT)
+Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
+        by smtp.googlemail.com with ESMTPSA id b5-20020a17090630c500b006e8044fa76bsm8827900ejb.143.2022.04.12.05.16.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 05:12:15 -0700 (PDT)
-Date:   Tue, 12 Apr 2022 14:12:15 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Boris Sukholitko <boris.sukholitko@broadcom.com>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Tue, 12 Apr 2022 05:16:20 -0700 (PDT)
+From:   Jakob Koschel <jakobkoschel@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com, Ariel Elior <aelior@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Casper Andersson <casper.casan@gmail.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Michael Walle <michael@walle.cc>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Colin Ian King <colin.king@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
         Eric Dumazet <edumazet@google.com>,
-        zhang kai <zhangkaiheb@126.com>,
-        Yoshiki Komachi <komachi.yoshiki@gmail.com>,
-        Ilya Lifshits <ilya.lifshits@broadcom.com>
-Subject: Re: [PATCH net-next v2 5/5] net/sched: flower: Consider the number
- of tags for vlan filters
-Message-ID: <YlVsn59Cbe+pnTte@nanopsycho>
-References: <20220412100236.27244-1-boris.sukholitko@broadcom.com>
- <20220412100236.27244-6-boris.sukholitko@broadcom.com>
- <YlVd79bM00wuK9yW@nanopsycho>
- <20220412114049.GA2451@noodle>
+        Di Zhu <zhudi21@huawei.com>, Xu Wang <vulab@iscas.ac.cn>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, bpf@vger.kernel.org,
+        Mike Rapoport <rppt@kernel.org>,
+        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>
+Subject: [PATCH net-next v3 00/18] Remove use of list iterator after loop body
+Date:   Tue, 12 Apr 2022 14:15:39 +0200
+Message-Id: <20220412121557.3553555-1-jakobkoschel@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220412114049.GA2451@noodle>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Apr 12, 2022 at 01:40:49PM CEST, boris.sukholitko@broadcom.com wrote:
->On Tue, Apr 12, 2022 at 01:09:35PM +0200, Jiri Pirko wrote:
->> Tue, Apr 12, 2022 at 12:02:36PM CEST, boris.sukholitko@broadcom.com wrote:
->> >Currently the existence of vlan filters is conditional on the vlan
->> >protocol being matched in the tc rule. I.e. the following rule:
->> >
->> >tc filter add dev eth1 ingress flower vlan_prio 5
->> >
->> >is illegal because we lack protocol 802.1q in the rule.
->> >
->> >Having the num_of_vlans filter configured removes this restriction. The
->> >following rule becomes ok:
->> >
->> >tc filter add dev eth1 ingress flower num_of_vlans 1 vlan_prio 5
->> >
->> >because we know that the packet is single tagged.
->> >
->> >We achieve the above by having is_vlan_key helper look at the number of
->> 
->> Sorry to be a nitpicker, but who's "we"? When I read the patch
->> description, I need to understand clearly what the patch is doing, which
->> is not this case. You suppose to command the codebase what to do.
->> I fail to see that :/
->> 
->> 
->
->What do you think of the following description? The description consists
->of two parts: the first provides motivation for the patch, the second is
->the way the motivation is implemented. I've judiciously edited out the
->"we"-word. :)
->
-><description>
->
->Currently the existence of vlan filters is conditional on the vlan
->protocol being matched in the tc rule. I.e. the following rule:
->
->tc filter add dev eth1 ingress flower vlan_prio 5
->
->is illegal because vlan protocol (e.g. 802.1q) does not appear in the rule.
->
->Having the num_of_vlans filter configured removes this restriction. The
->following rule becomes ok:
->
->tc filter add dev eth1 ingress flower num_of_vlans 1 vlan_prio 5
+When the list iterator loop does not exit early the list iterator variable
+contains a type-confused pointer to a 'bogus' list element computed based
+on the head [1].
 
-So this is what this patch allows? You are talking about it as it is
-already possible with the code before this patch being applied.
+Often a 'found' variable is used to ensure the list iterator
+variable is only accessed after the loop body if the loop did exit early
+(using a break or goto).
 
+In other cases that list iterator variable is used in
+combination to access the list member which reverses the invocation of
+container_of() and brings back a "safe" pointer to the head of the list.
 
->
->because having num_of_vlans==1 implies that the packet is single tagged.
->
->To make the above possible, is_vlan_key helper is changed to look at the
->number of vlans in addition to the vlan ethertype.
+Since, due to this code patten, there were quite a few bugs discovered [2],
+Linus concluded that the rule should be to never use the list iterator
+after the loop and introduce a dedicated pointer for that [3].
 
-What "is changed"? You should tell the codebase what to do, what toadd,
-remove or change. If you did that, it would be very clear to the reader
-what the patch is supposed to do.
+With the new gnu11 standard, it will now be possible to limit the scope
+of the list iterator variable to the traversal loop itself by defining
+the variable within the for loop.
+This, however, requires to remove all uses of the list iterator after
+the loop.
 
+Based on input from Paolo Abeni [4], Vinicius Costa Gomes [5], and
+Jakub Kicinski [6], I've splitted all the net-next related changes into
+two patch sets, where this is part 1.
 
->
->Outer tag vlan filters (e.g.  vlan_prio) require the number of vlan tags
->be greater than 0. Inner filters (e.g. cvlan_prio) require the number of
->vlan tags be greater than 1.
+v2->v3:
+- fix commit authors and signed-off order regarding Vladimir's patches
+  (Sorry about that, wasn't intentional.)
 
-Again, unclear what this describes, if the current code before the patch
-or the state after this patch.
+v1->v2:
+- Fixed commit message for PATCH 14/18 and used dedicated variable
+  pointing to the position (Edward Cree)
+- Removed redundant check in mv88e6xxx_port_vlan() (Vladimir Oltean)
+- Refactor mv88e6xxx_port_vlan() using separate list iterator functions
+  (Vladimir Oltean)
+- Refactor sja1105_insert_gate_entry() to use separate list iterator
+  functions (Vladimir Oltean)
+- Allow early return in sja1105_insert_gate_entry() if
+  sja1105_first_entry_longer_than() didn't find any element
+  (Vladimir Oltean)
+- Use list_add_tail() instead of list_add() in sja1105_insert_gate_entry()
+  (Jakub Kicinski)
+- net: netcp: also use separate 'pos' variable instead of duplicating list_add()
 
-
->
->Number of vlans filter may cause ethertype to be set to 0.
->fl_set_key_vlan is changed to accomodate this.
->
-></description>
->
->Thanks,
->Boris.
->
->> >vlans in addition to the vlan ethertype. Outer tag vlan filters (e.g.
->> >vlan_prio) require the number of vlan tags be greater than 0. Inner
->> >filters (e.g. cvlan_prio) require the number of vlan tags be greater
->> >than 1.
->> >
->> >Number of vlans filter may cause ethertype to be set to 0. Check this in
->> >fl_set_key_vlan.
->> >
-
+Link: https://lwn.net/Articles/887097/ [1]
+Link: https://lore.kernel.org/linux-kernel/20220217184829.1991035-4-jakobkoschel@gmail.com/ [2]
+Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [3]
+Link: https://lore.kernel.org/linux-kernel/7393b673c626fd75f2b4f8509faa5459254fb87c.camel@redhat.com/ [4]
+Link: https://lore.kernel.org/linux-kernel/877d8a3sww.fsf@intel.com/ [5]
+Link: https://lore.kernel.org/linux-kernel/20220403205502.1b34415d@kernel.org/ [6]
 
