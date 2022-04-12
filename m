@@ -2,98 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 830B24FEA9B
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 01:46:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 346DE4FEA96
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 01:46:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230131AbiDLX0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 19:26:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38682 "EHLO
+        id S231342AbiDLXgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 19:36:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229990AbiDLX0Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 19:26:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 900C9C9B49;
-        Tue, 12 Apr 2022 15:12:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DC3261C54;
-        Tue, 12 Apr 2022 21:29:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41B9CC385A5;
-        Tue, 12 Apr 2022 21:29:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649798949;
-        bh=kpS0EcU/RLQzTaKo85ZEC/dgBcrpXX2fe+n6wE10HoY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GaLCgYlHxpFu6dokBt6GCrmgjotR4ofYQfGcSFBOLeVJbLpcwYNstaIrRFFIghgom
-         d4/BYVT4yedX7dhBWKTquSxLJru2kufnM1pSd6adoQdHT5dspvAHMXGF+D7LBSbyGy
-         uqwHRxFNdMWVDYxR0VfF+2gKqAXrxjAQgzuLbxkHXicMZ4BZiA4YlOWRDTjH9tpsz+
-         lFMd8q2AcF3LrzmBQ/fhVQi3g0E+SpAYkcw2R0hXBqNrKSdDI4R0a0zA/04HGUFz7K
-         uaJaecV/iiyppRN+sMAt+0yP/ErIwQTkaBGZvf6wgKDX4lLyfLcopor9Ly3uCGIfYU
-         NpNRnUyxLeliQ==
-Date:   Tue, 12 Apr 2022 14:29:05 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jakob Koschel <jakobkoschel@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com, Ariel Elior <aelior@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Casper Andersson <casper.casan@gmail.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Michael Walle <michael@walle.cc>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Colin Ian King <colin.king@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Eric Dumazet <edumazet@google.com>,
-        Di Zhu <zhudi21@huawei.com>, Xu Wang <vulab@iscas.ac.cn>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, bpf@vger.kernel.org,
-        Mike Rapoport <rppt@kernel.org>,
-        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Subject: Re: [PATCH net-next v3 14/18] sfc: Remove usage of list iterator
- for list_add() after the loop body
-Message-ID: <20220412142905.54489567@kernel.org>
-In-Reply-To: <20220412121557.3553555-15-jakobkoschel@gmail.com>
-References: <20220412121557.3553555-1-jakobkoschel@gmail.com>
-        <20220412121557.3553555-15-jakobkoschel@gmail.com>
+        with ESMTP id S231477AbiDLXdC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 19:33:02 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 244076D968
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 15:21:45 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id x17so278651lfa.10
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 15:21:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=jhwvgyEcZSOpmpyxrOgaq3w630NRgKLJPQ/gN5X9BqI=;
+        b=BB63I15MqIOp+T77hNkUITkpUD8QzKo4ftAaAr6iSDCZawwm24ja4awPZssphh0IS/
+         UryQULhmMGO7D/ThCzmwk0TszCLMMADNuhX2eYsT6ofrbvaRJaeXhS/I0rbWh83NMk1Y
+         eQd6vSyt+TcQ+D978FzkhEZnx0v/6eY5iqGxPxHN5PsdLzgYLcGmUsnhXMjldLfNfeIT
+         o1Sae3QBQnECHLmyrbwKmqr+sWHO+Jtv0zNHGksgZuovc029llkhB7qu+4xSW16g/NJX
+         eCOXHRXh5RqyXxfa6cQV1sQp5WpPxWyKCMqcajjiAdi54wY0DdQDOh/tHKAUG9kA7/Kv
+         uZlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=jhwvgyEcZSOpmpyxrOgaq3w630NRgKLJPQ/gN5X9BqI=;
+        b=XXm6mTVyIdGuI/0H3MiHy4nXu39wmCqxQHm1oppkMDRa4XrCZiC8itm+EkUJUnXr8B
+         9DxmCrCOQuKI360uS8XMg73GQ6tWf933/MpLc7SmSJgxfkVR1P5XdH7sEPipZl91QJrF
+         GyUCcDVcW7uaFOMiidKA6HvoJU9dAMKC97WI7/tJIUftFRH6RSKXFJUF4pH5wLozIKkC
+         VbGOL3ld/9DnKhjwGw/0gW+ke3Lz8mqk6YLGTH7WCxBHtbimY5rnarcS/OEKB0zaS0zo
+         KXqZh4r2VTUxacz5zIrq2vFFeixvwoTHP8/p08w/mNQAbAqyNiskFx5fDV4eyeH64NWx
+         qYhQ==
+X-Gm-Message-State: AOAM532Ats9Y8pBcaigl3qC6sXRYsdb54zbG6r6Osg842EUISRzKnxM3
+        akHf72aJUh/04e10JQhRH+a19+zEvWc=
+X-Google-Smtp-Source: ABdhPJw+es4HP4ZNUL9jIZiSw5Dlf2I3brqrtwwtJL66sXiQBoyeSLcm5ceujNkah436/1TXqF6BNQ==
+X-Received: by 2002:adf:ed8f:0:b0:207:ac33:801f with SMTP id c15-20020adfed8f000000b00207ac33801fmr5635741wro.453.1649800017932;
+        Tue, 12 Apr 2022 14:46:57 -0700 (PDT)
+Received: from hoboy.vegasvil.org (195-70-108-137.stat.salzburg-online.at. [195.70.108.137])
+        by smtp.gmail.com with ESMTPSA id u7-20020a5d6da7000000b00203d9d1875bsm34134462wrs.73.2022.04.12.14.46.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 14:46:57 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 14:46:55 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, yangbo.lu@nxp.com,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, mlichvar@redhat.com,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 4/5] ptp: Support late timestamp determination
+Message-ID: <20220412214655.GB579091@hoboy.vegasvil.org>
+References: <20220403175544.26556-1-gerhard@engleder-embedded.com>
+ <20220403175544.26556-5-gerhard@engleder-embedded.com>
+ <20220410072930.GC212299@hoboy.vegasvil.org>
+ <CANr-f5xhH31yF8UOmM=ktWULyUugBGDoHzOiYZggiDPZeTbdrw@mail.gmail.com>
+ <20220410134215.GA258320@hoboy.vegasvil.org>
+ <CANr-f5xriLzQ+3xtM+iV8ahu=J1mA7ixbc49f0i2jxkySthTdQ@mail.gmail.com>
+ <CANr-f5yn9LzMQ8yAP8Py-EP_NyifFyj1uXBNo+kuGY1p8t0CFw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANr-f5yn9LzMQ8yAP8Py-EP_NyifFyj1uXBNo+kuGY1p8t0CFw@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 12 Apr 2022 14:15:53 +0200 Jakob Koschel wrote:
-> -	struct list_head *head = &efx->rss_context.list;
-> +	struct list_head *head = *pos = &efx->rss_context.list;
+On Tue, Apr 12, 2022 at 09:24:10PM +0200, Gerhard Engleder wrote:
+> I'm thinking about why there should be a slow path with lookup. If the
+> address/cookie
+> points to a defined data structure with two timestamps, then no lookup
+> for the phc or
+> netdev is necessary. It should be possible for every driver to
+> allocate a skbuff with enough
+> space for this structure in front of the received Ethernet frame.
 
-ENOTBUILT, please wait with the reposting. Since you posted two
-versions today I guess that's 2x 24h? :)
+Adding 16 bytes for every allocated skbuff is going to be a tough
+sell.  Most people don't want/need this.
+
+Thanks,
+Richard
