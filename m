@@ -2,117 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 42A364FE6C2
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 19:22:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0B934FE6D2
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 19:27:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240410AbiDLRYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 13:24:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53240 "EHLO
+        id S1347315AbiDLRaI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 13:30:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233538AbiDLRYt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 13:24:49 -0400
-Received: from EUR03-DB5-obe.outbound.protection.outlook.com (mail-eopbgr40076.outbound.protection.outlook.com [40.107.4.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2B1760CE0
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 10:22:30 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=E9hLeHn5DfSuDcZX1aKTsIAidNBUH11U4fWczGuCGTGwHNITDjVcwmRET7SAGGKp/B+OySC3727OxxdEAV9DkO/I+MepHPNsz798wQEPNazkudPXN+rFFI4R3Rt7ZSKoDAjyzgb6/bDskWz5J0IVsIVfHXMxjbMinR9/QFCLqnZBLw9X+Kw2Q629aNqELbW1hvFvZWwsh7FMuMTOcZAGjzRq5QhiNW258/ahrbfptQfc1Q6UJADOrQRi02eZXp+F7nFHc6u3UtL29G3bPABYVhmOjnzCtXWYIqFI/5q4oa6Gk0DGIdXMCPXbayS/fBDdqXtMvN/U/MqJ9vb1NQGNyg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+CC6QJeCrTRlSjhZeC7Z7e8qNqETfh6VkLB9eUsQLqI=;
- b=ACmuuIUhLqO8n6H46UjKPAev0LXgbYGOWyBM/iyQAHDN4NkYhUAIM5SG8dVZY8hE1Rf9fzyrsFQzio9q8w7havhwV6ZAF/9KckL28saGGTL+nh/6wzhqN3EI0usRADUuzA/DZmY4l63QJZ0vdLSIlIaZLFLiQZs7NzdV5TU7EAbSnEz/zs7GknrsUNiA0h6UQul1kYz+WfsMKA5o/tQ0UQt7qfsnk3qtB5k5UuWFgTbMZX075UJtVK7kX9ZgShMOZhIK1rUsoom4tY9aTWNXTSZLS7m+meHzOBc6//m9Ap9kwA17N3k5Cw9jwWIYajojQgf6ASToAjXlpe0CkVA/qQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+CC6QJeCrTRlSjhZeC7Z7e8qNqETfh6VkLB9eUsQLqI=;
- b=JCwgqNHSqLUTA+Ot+ow++Oh0D43BdPvWMmXHHogoglVeTXrn6fkiElKDdJL+oZl1Jt7FVTNjHPRUqZvBMc9gGquW8c64b+vn537lHh2i3zrCLBQmNyXEctx/1vzv3hGWWLe3P0li2TzWEfo+i4GfI8+yCyP4aauP2JxJXHxq+84=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by AM0PR04MB6131.eurprd04.prod.outlook.com (2603:10a6:208:145::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Tue, 12 Apr
- 2022 17:22:28 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::8ed:49e7:d2e7:c55e]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::8ed:49e7:d2e7:c55e%3]) with mapi id 15.20.5144.029; Tue, 12 Apr 2022
- 17:22:28 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S235665AbiDLRaH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 13:30:07 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B519852B2A
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 10:27:47 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id s13so24978145ljd.5
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 10:27:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=ThAY3Ed/dk6m+iaWZn0wjwKwYvlAqcEvAvL+WRRtrb0=;
+        b=VtOnhHywQSKBg+GRfttHHC8ae5LyqPtsEzJ/crFnQSt+funvR7/8PtgornBKeYebKm
+         cSDCNVpdIF/s8sc7rYRvF34NyNzfqXXBenMwNmc7sAj4jZVBue5zwOzlUAXKuBURJUt3
+         lSUqmpKK+p2diqCm3O7GhD45+L9W60gKgKQtGP9OCp4MMrMLjsqXgWqwRSwuoWGJ0CKv
+         cNgHbrjTvri8o956YdK7UxS2I8N5NK1ZO5y9df/M8/Rx2Ha4hZ1dGTYcQ4KFJF8rgsk5
+         zKvazIslIgk/T/+N2qDruNmqasEsvu5YyERumQr9NzFcTrnC5XYGJcm9ZJi1MM54FcVS
+         4Kmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=ThAY3Ed/dk6m+iaWZn0wjwKwYvlAqcEvAvL+WRRtrb0=;
+        b=IMFtGg0/4z1+sb0Mu9FkKFA3P0ah5Wvaolflsfz6kahbtj1MrUjFgrYkJymkahiIll
+         jZbT65/IQVwxQGBfzR6RQJmrspbtL771OYKqEOSb+msBCi5tMZVo8/JdJovgwfGBKdO4
+         iwO4aAwDcZA4KKMX6RJywLAQRF/QKLVbsRuZDxbY5RHgiW12mRA11tYa7ZXGeVfonsY8
+         ePIjRW9NXNviUjxdUPhxZe59MbHFIUqcPPBxFu5FrsMYNrrmhRX7j6buFWmcKoRUMGM/
+         spOsyFEzC+1a0+eSxAO0ONJEDqEnaWoHZzs6vk1PlNK9ETHibApEyW5JXSjE343/S3kf
+         Dn4w==
+X-Gm-Message-State: AOAM530Eijyh/LdIRnwe4fUvylYF4cgDmFp/8i2FOpBK4n1ZIbniY3Pk
+        SwxaYPqNSt/ZTUcIOOLZWik=
+X-Google-Smtp-Source: ABdhPJw/1hkLcDu4ztvmgaRue7Fo3A9Ykhtp/Im8rQj8AixV9nrhr1aAXSiK+6zVKX2+7TvfJZPyfQ==
+X-Received: by 2002:a2e:9c94:0:b0:24b:3df5:64c with SMTP id x20-20020a2e9c94000000b0024b3df5064cmr17996207lji.324.1649784465750;
+        Tue, 12 Apr 2022 10:27:45 -0700 (PDT)
+Received: from wbg (h-158-174-22-128.NA.cust.bahnhof.se. [158.174.22.128])
+        by smtp.gmail.com with ESMTPSA id p15-20020a056512312f00b0046ba5c0da2esm780443lfd.121.2022.04.12.10.27.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 10:27:45 -0700 (PDT)
+From:   Joachim Wiberg <troglobit@gmail.com>
+To:     Nikolay Aleksandrov <razor@blackwall.org>,
+        Roopa Prabhu <roopa@nvidia.com>
+Cc:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Michael Walle <michael@walle.cc>
-Subject: [PATCH net] net: dsa: felix: fix tagging protocol changes with multiple CPU ports
-Date:   Tue, 12 Apr 2022 20:22:09 +0300
-Message-Id: <20220412172209.2531865-1-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AS9PR06CA0220.eurprd06.prod.outlook.com
- (2603:10a6:20b:45e::23) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH RFC net-next 08/13] net: bridge: avoid classifying unknown multicast as mrouters_only
+In-Reply-To: <ebd182a2-20bc-471c-e649-a2689ea5a5d1@blackwall.org>
+References: <20220411133837.318876-1-troglobit@gmail.com> <20220411133837.318876-9-troglobit@gmail.com> <ebd182a2-20bc-471c-e649-a2689ea5a5d1@blackwall.org>
+Date:   Tue, 12 Apr 2022 19:27:44 +0200
+Message-ID: <87v8ve9ppr.fsf@gmail.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ae97df70-440f-4aef-bc21-08da1ca904cc
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6131:EE_
-X-Microsoft-Antispam-PRVS: <AM0PR04MB6131BB9809B611A223EF5097E0ED9@AM0PR04MB6131.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: S+XBfKlUyCbZw6+m8vfGBaUhAPMYJms+92vfzqwwxwWcJ3JHL1bKG5mlssQBXgnouXajAbXYRVfPmujmO0yK8+IhUN/xZTa7ayxFVua1LptC7p8HdpmXoY30i7SREt0Z97XXL7QsPAOosKCWFl359yHxv+CKFSvnq0VhgedhHVVWaGvpK1SJWJ1PopSz/jngMzjko3a+rl6pwG6LKQTloF4AQu0K5j3OhN0hlkV5uhEKYaaL7JpUpV0MaZ1YEnxe+1x1zUxa4QcienYcC4EKnN/d+k8ZA6uxSkyQbcKkaUwTs2n89eHedsq25csFwri/j5pIKGchDdbK8qLYlIYqPOyG7wn3oaOccwVuTHe/9jNIGTRoSbc/bOLGGqAD1YizHhFtN4BFofR+jAAKjw5R+hSMg2f9xMQ7I+zFgJ37vCEJxU5+pak9fMZDMI+CoVdn0nUxKowGOVM4kWOnoU5aAZEwxaKB3CUyJHajRmG4NH+1XBNk6WFItwSTIA9ACHs3vd4LokufpMD39GBeBnmrLL5D396rzpfb74BM5fpN1Q8W+z38tF1eA0Y3/327bMQxbDxYVjkevFcTr7MZ7Fp/tXmQNyBoXbSgi4urUm4qbary5IwHDJKcFyfIYP0NuOs6Srqtk2zh2WsjWGRE2TBqSMPp/aQ6/ptMgTTaKlb2O287UScqthudqeThrlMmgIr1zR6/M355bz9S/RDCTcRG+w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6916009)(44832011)(2616005)(5660300002)(508600001)(186003)(26005)(1076003)(8676002)(4326008)(66946007)(86362001)(36756003)(66476007)(66556008)(2906002)(8936002)(7416002)(6486002)(54906003)(83380400001)(52116002)(6512007)(6506007)(6666004)(316002)(38350700002)(38100700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ig+bDESy3OBeuoKFCmQ6f3why65wM09//HeBJLKHMKJaczvF9LLXfyH9gkWa?=
- =?us-ascii?Q?uA1EG1fiUvAZLo8XiyekgvbMEnyJubLdVMMJbIpl1VPjaIXeGEVojUMETm5b?=
- =?us-ascii?Q?9GmCHwhDGlScvm8AcUCSrpfAk+NKARP6CEI55PZsZHA+mBq+jD+KPyQ4ngnb?=
- =?us-ascii?Q?TQtOvFSwbNwFRvz5DGvD7C/n+2BgPinJdd38+Avcugl0FjqFQ0vGPpeszvGz?=
- =?us-ascii?Q?n5l0jfigDgICKAiJi9VsLwwd24nbEJtLmOwU2tEecAYObLE/djZrcEpb/Jwk?=
- =?us-ascii?Q?6eCy2IcUO8MGWUMDv3WCS0F4t386GwC6Hav5XN76Gd9JAWq1PCP+kHQQVU0T?=
- =?us-ascii?Q?wW3xTb/hzGHjv6Ydu/AFzk1wSY3Dfkf+rU8ZMu+RZWwMegO+gosGafiYXzNn?=
- =?us-ascii?Q?lO/Fl2T4tySq8HGQMkM/L0b939mBTWicHVLZVjkhLYSVtoG7a3NjwhcI7/xJ?=
- =?us-ascii?Q?PA8fUgRTAmCzg1ZeurJru4nHh+WQmfePvQrkCWYdvkphrXHkElgkK26lZVBk?=
- =?us-ascii?Q?vR3YMKBaEveTF/aQmym7fwlwPrfmSbbD+2R4ieECogfAVbM/wLNEJum/BCFP?=
- =?us-ascii?Q?YD+6o52IoZKWxoYDbYTcP3RNVtwYppS7RF1pg4GrFF9xgWwvLC6T/QWzweCC?=
- =?us-ascii?Q?NAjzZVNkIXCoizIaVlQkajWAtEQCM64NHFN8gk/Cszo7yC8vqRiYYwiJnVwM?=
- =?us-ascii?Q?1FVT3oVM6EU4x2IgwBmISUPih6bd3Yu4+i7IStNWHjcm1jrltb2NTRvox8v6?=
- =?us-ascii?Q?5Wyb0pQTndZs2Dy64sN/zJgKIIfGeDRxJsyruLys5dCUiv4DR1X/8IH/pBhX?=
- =?us-ascii?Q?QD/y6vqL6iHz6Sf0AKs0mA9p1YscUq+/lbjBPeTkM8800cNgQfqEBQp6Nxrp?=
- =?us-ascii?Q?Q7rPS1RIJ4NWobX6B+03jA4dXsbFR+JfDbDWJ7zXcMrjX6iy/RQv/gRV6sGC?=
- =?us-ascii?Q?GlU2NSAfFfydolMml0vU4njUru3361M7Fk3+ZUaMtkC6RLrBwQ3v1qMGJGhA?=
- =?us-ascii?Q?tq9DElfzbhj40xtj9D2C9FMRs0uc04l1rjLQWWiTRotJ3cWFTreNlPiHXeFQ?=
- =?us-ascii?Q?o9dtMrtajtcerQFcfR3HeGqsGTnb1XDzypiDrxaKu8FZsWmzeTMpJrVhVCWk?=
- =?us-ascii?Q?A6memffO3DIRSULVMcMCZ2DeaX9XgYyX+U0TIKWx6WDxhm3VJbSwQcVyE1+F?=
- =?us-ascii?Q?v60KUMnbqJVCFBxOrT/MmlO4Dz7DkMPqVBH/oTuvNw4sXnEIEG7l/9TedHPA?=
- =?us-ascii?Q?Tig0AMwqZNprrTFOWQiCdtKODxrzKnsD+hoHD1wAEkGkkVshz+fIrSW9D8fg?=
- =?us-ascii?Q?h7EevI030RaYoGFZIuDn6PUoNsImnonTCs5QXDSe69vRFeuxv3gXP8s0sjgu?=
- =?us-ascii?Q?vjB8ZNZbc/JT4hdzPBykrdRM1N7LiFJryWc8JNrqwBXBuvxC/Vb7WSeaNnrE?=
- =?us-ascii?Q?wyVgEeyCcV2cchINhwKz4KySYvBxAQW+t2qOaJKBsparfIzdOmJsfgP2AdR+?=
- =?us-ascii?Q?nu89VFmIB3eu6NqX1bW+RcCMaO2EOA10e6n73h4ObFVO3bZAXLSnIOmP+Npi?=
- =?us-ascii?Q?81/yl+Sv2nRhchHXWGIh5G++P5AM2IpVmFKFgIn1FmYShrhQChJMu1LdWJN6?=
- =?us-ascii?Q?r5bmbOFlSaWO0SxaDS0hfi2rH6gEeSfG18RNtFWl+3+pp3QBEEOHWy071UDk?=
- =?us-ascii?Q?Jnm3E//hqCtSc2bqPuw9R/k29PUInxfGzzWC/5BMvB6W6/3EaWX/uQo8bCGk?=
- =?us-ascii?Q?xGaN7XVcbVLAtAShBNjNBnifrhp76ek=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ae97df70-440f-4aef-bc21-08da1ca904cc
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2022 17:22:28.4579
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cqJmnACwXVyhAyW2fdtYMzo4kCudA0WJX74NKkvWUn8PkFHKvnS/2c4LMafuml/GMbh6C4x2gAiHtnm8esLQSA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6131
+Content-Type: text/plain
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -120,78 +72,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the device tree has 2 CPU ports defined, a single one is active
-(has any dp->cpu_dp pointers point to it). Yet the second one is still a
-CPU port, and DSA still calls ->change_tag_protocol on it.
 
-On the NXP LS1028A, the CPU ports are ports 4 and 5. Port 4 is the
-active CPU port and port 5 is inactive.
+Hi Nik,
 
-After the following commands:
+and thank you for taking the time to respond!
 
- # Initial setting
- cat /sys/class/net/eno2/dsa/tagging
- ocelot
- echo ocelot-8021q > /sys/class/net/eno2/dsa/tagging
- echo ocelot > /sys/class/net/eno2/dsa/tagging
+On Tue, Apr 12, 2022 at 16:59, Nikolay Aleksandrov <razor@blackwall.org> wrote:
+> On 11/04/2022 16:38, Joachim Wiberg wrote:
+>> Unknown multicast, MAC/IPv4/IPv6, should always be flooded according to
+>> the per-port mcast_flood setting, as well as to detected and configured
+>> mcast_router ports.
 
-traffic is now broken, because the driver has moved the NPI port from
-port 4 to port 5, unbeknown to DSA.
+I realize I should've included a reference to RFC4541 here.  Will add
+that in the non-RFC patch.
 
-The problem can be avoided by detecting that the second CPU port is
-unused, and not doing anything for it. Further rework will be needed
-when proper support for multiple CPU ports is added.
+>> This patch drops the mrouters_only classifier of unknown IP multicast
+>> and moves the flow handling from br_multicast_flood() to br_flood().
+>> This in turn means br_flood() must know about multicast router ports.
+> If you'd like to flood unknown mcast traffic when a router is present please add
+> a new option which defaults to the current state (disabled).
 
-Treat this as a bug and prepare current kernels to work in single-CPU
-mode with multiple-CPU DT blobs.
+I don't think we have to add another option, because according to the
+snooping RFC[1], section 2.1.2 Data Forwarding Rules:
 
-Fixes: adb3dccf090b ("net: dsa: felix: convert to the new .change_tag_protocol DSA API")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/dsa/ocelot/felix.c | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+ "3) [..] If a switch receives an unregistered packet, it must forward
+  that packet on all ports to which an IGMP[2] router is attached.  A
+  switch may default to forwarding unregistered packets on all ports.
+  Switches that do not forward unregistered packets to all ports must
+  include a configuration option to force the flooding of unregistered
+  packets on specified ports. [..]"
 
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 413b0006e9a2..9e28219b223d 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -670,6 +670,8 @@ static int felix_change_tag_protocol(struct dsa_switch *ds, int cpu,
- 	struct ocelot *ocelot = ds->priv;
- 	struct felix *felix = ocelot_to_felix(ocelot);
- 	enum dsa_tag_protocol old_proto = felix->tag_proto;
-+	bool cpu_port_active = false;
-+	struct dsa_port *dp;
- 	int err;
- 
- 	if (proto != DSA_TAG_PROTO_SEVILLE &&
-@@ -677,6 +679,27 @@ static int felix_change_tag_protocol(struct dsa_switch *ds, int cpu,
- 	    proto != DSA_TAG_PROTO_OCELOT_8021Q)
- 		return -EPROTONOSUPPORT;
- 
-+	/* We don't support multiple CPU ports, yet the DT blob may have
-+	 * multiple CPU ports defined. The first CPU port is the active one,
-+	 * the others are inactive. In this case, DSA will call
-+	 * ->change_tag_protocol() multiple times, once per CPU port.
-+	 * Since we implement the tagging protocol change towards "ocelot" or
-+	 * "seville" as effectively initializing the NPI port, what we are
-+	 * doing is effectively changing who the NPI port is to the last @cpu
-+	 * argument passed, which is an unused DSA CPU port and not the one
-+	 * that should actively pass traffic.
-+	 * Suppress DSA's calls on CPU ports that are inactive.
-+	 */
-+	dsa_switch_for_each_user_port(dp, ds) {
-+		if (dp->cpu_dp->index == cpu) {
-+			cpu_port_active = true;
-+			break;
-+		}
-+	}
-+
-+	if (!cpu_port_active)
-+		return 0;
-+
- 	felix_del_tag_protocol(ds, cpu, old_proto);
- 
- 	err = felix_set_tag_protocol(ds, cpu, proto);
--- 
-2.25.1
+From this I'd like to argue that our current behavior in the bridge is
+wrong.  To me it's clear that, since we have a confiugration option, we
+should forward unknown IP multicast to all MCAST_FLOOD ports (as well as
+the router ports).
 
+Also, and more critically, the current behavior of offloaded switches do
+forwarding like this already.  So there is a discrepancy currently
+between how the bridge forwards unknown multicast and how any underlying
+switchcore does it.
+
+Sure, we'll break bridge behavior slightly by forwarding to more ports
+than previous (until the group becomes known/registered), but we'd be
+standards compliant, and the behavior can still be controlled per-port.
+
+[1]: https://www.rfc-editor.org/rfc/rfc4541.html#section-2.1.2
+[2]: Section 3 goes on to explain how this is similar also for MLD
+
+>> diff --git a/net/bridge/br_forward.c b/net/bridge/br_forward.c
+>> index 02bb620d3b8d..ab5b97a8c12e 100644
+>> --- a/net/bridge/br_forward.c
+>> +++ b/net/bridge/br_forward.c
+>> @@ -199,9 +199,15 @@ static struct net_bridge_port *maybe_deliver(
+>>  void br_flood(struct net_bridge *br, struct sk_buff *skb,
+>>  	      enum br_pkt_type pkt_type, bool local_rcv, bool local_orig)
+>>  {
+>> +	struct net_bridge_mcast *brmctx = &br->multicast_ctx;
+> Note this breaks per-vlan mcast. You have to use the inferred mctx.
+
+Thank you, this was one of the things I was really unsure about since
+the introduction of per-VLAN support.  I'll extend the prototype and
+include the brmctx from br_handle_frame_finish().  Thanks!
+
+Best regards
+ /Joachim
