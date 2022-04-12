@@ -2,57 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B2374FDF06
-	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 14:03:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 243894FDFC3
+	for <lists+netdev@lfdr.de>; Tue, 12 Apr 2022 14:30:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348000AbiDLMF0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 08:05:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50854 "EHLO
+        id S239047AbiDLMKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 08:10:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354602AbiDLMEk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 08:04:40 -0400
-Received: from smtp-190a.mail.infomaniak.ch (smtp-190a.mail.infomaniak.ch [IPv6:2001:1600:4:17::190a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 688DC5623A
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 04:07:25 -0700 (PDT)
-Received: from smtp-2-0001.mail.infomaniak.ch (unknown [10.5.36.108])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4Kd2xQ5bZGzMpvCG;
-        Tue, 12 Apr 2022 13:07:22 +0200 (CEST)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-2-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4Kd2xQ1jKlzljsTj;
-        Tue, 12 Apr 2022 13:07:21 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1649761642;
-        bh=hdT0n/yGB+udShZ9jh7ougx0uizMRtCIzzMECKwb6I0=;
-        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
-        b=Ov765teFETg9CKi7Sr2LidqlCCNWHCI3wIFdpxdr/yBg71su8fgyE2Aq42iMtlUle
-         poGNb4mgJNbdWVo5QPE5mi/0M4+nW2nYWB1TldCSY5vu3eIM2EoaP7HF+1N29RnJql
-         oEH7oGTMu7DbyGIdqbQRIRxXH21PCBUmhFMKZz44=
-Message-ID: <0e5afeaf-0569-d0b5-b701-0f611d103732@digikod.net>
-Date:   Tue, 12 Apr 2022 13:07:39 +0200
+        with ESMTP id S1354122AbiDLMJ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 08:09:59 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 621836C1E0
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 04:09:38 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id g18so11648780ejc.10
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 04:09:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=yNEjCnsZ8Ok4GE24ZZB1eOeuUntHqjn6YDnpHQYpIUU=;
+        b=Z0lawRMq8qavym1elBuA7rs8UA4rk3soUSne7+zNAUkJwv7xvzXO81NeqRkxcJW9aA
+         bw2+qs4jdmJo9OohUOzYj5Bx+Dq7CmF0H4IrXQ97fhruC0pWCB1xCkPMXsr8NTKzFrVI
+         oUOYvrLsYIxRiwJpj4Rj31ATRM8nxt22e9ehPKmVMlXjajVChypo5MSNHqoVL433Rx+u
+         iL57Pyv7nJVx+iQMEEqzcEewoHj6qjfKF3kZ3DeQ4eEisjFv7W9YFgBu579neAwLqQWE
+         0sfiwiARQUniYIC8eT2YZcPlF3uM4BGQu2wEHYOpGmi/6WYpBGAtjgoaze/RsBIrsR24
+         laEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=yNEjCnsZ8Ok4GE24ZZB1eOeuUntHqjn6YDnpHQYpIUU=;
+        b=8En8Ff3QlgoJcGhv2TKL7hztXXpyJQyE6Ns+2mNC4da6Cd5LvNiEr6i2RKSwSjRu6V
+         yjn0bvOUg1TDyc4/9pc958enlGlwOs9QeGuNuguaWcFKyrT5bvlWO6SGacRxLsldQYHd
+         CgRbXJ8pxJcCdvemeu2aEGZm9iTBnNVhHcdty89CNmazDgXpjsbM0F8WIc8jMjRRDM9M
+         52/D7OuXLSj4ZrgHQdSCJi57fxJgFlfhQ3gRHHfZ3HcfM7QVR1JbuC1FZra+CdF3GmQs
+         WWmm4MZs7/rt3BJLEG9sT7ousLfZ/Uyq+TpvDjsqPb41VRcFXpP9hpytx9FIzEPErKhZ
+         4q5A==
+X-Gm-Message-State: AOAM530fqA8BolmK0owCbN6eZksGA9D2be5Kr/d10Hrw0uk7FoXCBAEJ
+        61A59XDlswbWTbPDUA2zWaMubg==
+X-Google-Smtp-Source: ABdhPJx6r9S/hqtzqfcnbxxGv0MPI135kFY6IYm0Ad4Iy9V+2+90G8OECcqNutavWkXzut7ECiCfxA==
+X-Received: by 2002:a17:906:8514:b0:6e8:966f:3004 with SMTP id i20-20020a170906851400b006e8966f3004mr7523501ejx.115.1649761776818;
+        Tue, 12 Apr 2022 04:09:36 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id z2-20020a17090674c200b006e13403964asm13122183ejl.77.2022.04.12.04.09.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 04:09:36 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 13:09:35 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Boris Sukholitko <boris.sukholitko@broadcom.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Eric Dumazet <edumazet@google.com>,
+        zhang kai <zhangkaiheb@126.com>,
+        Yoshiki Komachi <komachi.yoshiki@gmail.com>,
+        Ilya Lifshits <ilya.lifshits@broadcom.com>
+Subject: Re: [PATCH net-next v2 5/5] net/sched: flower: Consider the number
+ of tags for vlan filters
+Message-ID: <YlVd79bM00wuK9yW@nanopsycho>
+References: <20220412100236.27244-1-boris.sukholitko@broadcom.com>
+ <20220412100236.27244-6-boris.sukholitko@broadcom.com>
 MIME-Version: 1.0
-User-Agent: 
-Content-Language: en-US
-To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>,
-        willemdebruijn.kernel@gmail.com
-Cc:     linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
-        artem.kuzin@huawei.com, anton.sirazetdinov@huawei.com
-References: <20220309134459.6448-1-konstantin.meskhidze@huawei.com>
- <20220309134459.6448-4-konstantin.meskhidze@huawei.com>
- <bc44f11f-0eaa-a5f6-c5dc-1d36570f1be1@digikod.net>
- <6535183b-5fad-e3a9-1350-d22122205be6@huawei.com>
- <92d498f0-c598-7413-6b7c-d19c5aec6cab@digikod.net>
- <cb30248d-a8ae-c366-2c9f-2ab0fe44cc9a@huawei.com>
- <90a20548-39f6-6e84-efb1-8ef3ad992255@digikod.net>
- <212ac1b3-b78b-4030-1f3d-f5cd1001bb7d@huawei.com>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-Subject: Re: [RFC PATCH v4 03/15] landlock: landlock_find/insert_rule
- refactoring (TCP port 0)
-In-Reply-To: <212ac1b3-b78b-4030-1f3d-f5cd1001bb7d@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220412100236.27244-6-boris.sukholitko@broadcom.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,35 +78,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Tue, Apr 12, 2022 at 12:02:36PM CEST, boris.sukholitko@broadcom.com wrote:
+>Currently the existence of vlan filters is conditional on the vlan
+>protocol being matched in the tc rule. I.e. the following rule:
+>
+>tc filter add dev eth1 ingress flower vlan_prio 5
+>
+>is illegal because we lack protocol 802.1q in the rule.
+>
+>Having the num_of_vlans filter configured removes this restriction. The
+>following rule becomes ok:
+>
+>tc filter add dev eth1 ingress flower num_of_vlans 1 vlan_prio 5
+>
+>because we know that the packet is single tagged.
+>
+>We achieve the above by having is_vlan_key helper look at the number of
 
-On 23/03/2022 09:41, Konstantin Meskhidze wrote:
-> 
-> 
-> 3/22/2022 4:24 PM, Mickaël Salaün пишет:
->>
+Sorry to be a nitpicker, but who's "we"? When I read the patch
+description, I need to understand clearly what the patch is doing, which
+is not this case. You suppose to command the codebase what to do.
+I fail to see that :/
 
-[...]
->> The remaining question is: should we need to accept 0 as a valid TCP 
->> port? Can it be used? How does the kernel handle it?
-> 
->   I agree that must be a check for port 0 in add_rule_net_service(), 
-> cause unlike most port numbers, port 0 is a reserved port in TCP/IP 
-> networking, meaning that it should not be used in TCP or UDP messages.
-> Also network traffic sent across the internet to hosts listening on port 
-> 0 might be generated from network attackers or accidentally by 
-> applications programmed incorrectly.
-> Source: https://www.lifewire.com/port-0-in-tcp-and-udp-818145
 
-OK, so denying this port by default without a way to allow it should not 
-be an issue. I guess an -EINVAL error would make sense when trying to 
-allow this port. This should be documented in a comment (with a link to 
-the RFC/section) and a dedicated test should check that behavior.
-
-What is the behavior of firewalls (e.g. Netfiler) when trying to filter 
-port 0?
-
-This doesn't seem to be settle though: 
-https://www.austingroupbugs.net/view.php?id=1068
-
-Interesting article: 
-https://z3r0trust.medium.com/socket-programming-the-bizarre-tcp-ip-port-0-saga-fcfbc0e0a276
+>vlans in addition to the vlan ethertype. Outer tag vlan filters (e.g.
+>vlan_prio) require the number of vlan tags be greater than 0. Inner
+>filters (e.g. cvlan_prio) require the number of vlan tags be greater
+>than 1.
+>
+>Number of vlans filter may cause ethertype to be set to 0. Check this in
+>fl_set_key_vlan.
+>
