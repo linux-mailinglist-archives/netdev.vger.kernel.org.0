@@ -2,140 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A54F24FED00
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 04:34:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D296F4FED17
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 04:38:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231496AbiDMCgo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 22:36:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54194 "EHLO
+        id S231517AbiDMCk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 22:40:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231451AbiDMCgk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 22:36:40 -0400
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C691828E09;
-        Tue, 12 Apr 2022 19:34:20 -0700 (PDT)
-Received: by mail-qk1-x72d.google.com with SMTP id 3so422149qkj.5;
-        Tue, 12 Apr 2022 19:34:20 -0700 (PDT)
+        with ESMTP id S229870AbiDMCk4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 22:40:56 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12773101C9
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 19:38:37 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id q3so760322plg.3
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 19:38:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=jms.id.au; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MqB+e2xT6Yv8MpPTnOJ+2E7n6YyjIMzpIJ4iHfGOxzQ=;
-        b=MiGg6bcAs91xkbp2RAUHsNccXGOyhvPuMSn82Wa1gSKILPMKoQG5P3Nl6kIPR+N5J+
-         zVXOLkNpjaDHn+waq32rztY1uH6Ltt+sjAJ0nV2d/w1hp6PgqHrypZf+6wnGN6+VoZhA
-         Gqm9ac5gX/HqIda6RlWEEWZA5aB3xxReNhoT8=
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=fLgDjeHVYbXkfhaYx0Do2mV56Jvy8fglOjLawJ1rbTc=;
+        b=P3MfXovjlQ2qgEWYmVCqkuXandknnLCXm8IY+usb3p1H22UXtH93guyKo53g49KDwl
+         8Tkz8jTU1yS3F7V2BrjAzcJUL9yhbhyi+MOT784mO1WaqjAxKIGtYb5Ilg7tZGwcz3ZR
+         1DjxqFKnJEx7hKjtmHsYTD4x6nOJGaJAgh857eD5oIiFge1p2afx7WgE3YLnfKvlQUis
+         mjo4JMHaFzPPRGZv+d8FDuIEAOTbm85fIB3PxTvJToLdVq/G0oZCBNK7Ro12LJTigsO/
+         IBOp1JhYMYDmNFQoMb8z9ZSXXiwTLRNsJe2B3pT4qxwJiLOPJ196X8H384gVUkE1m/3K
+         Mniw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MqB+e2xT6Yv8MpPTnOJ+2E7n6YyjIMzpIJ4iHfGOxzQ=;
-        b=t7fBsECdTn7A+wWRmrPxbNn52y/e/rvmTo4iyTOJAOMhiEGdM0QBSgjnDqYpVKBp2q
-         uuOyUOnzUgNNZ39xdcWuvW2IVezSFQFUFTRMDGy30x9jIG2tSyqD+5dAvuE7xoKz2KsZ
-         3znyBWE8H+5fU7kijyFqRUDb+vcEyQSmYUOAsOUZ6U0dGhksUiJPzFshnEtf+3FOBBMo
-         Ryd8juNhX01VC7Qwzdpim0dwEafUeVUn/k6+kJtl5FMITimGd2XKh9OK0inx7ujbJFFK
-         6rEDSL/FZsXtCTe/GIBHxXAq6N8rg0kSBOCySPqom8//9Tpix57wX5uU88l9f9O67IrX
-         B7bA==
-X-Gm-Message-State: AOAM531/UGpyveGOSjyQHSpXkK5Drkq1WOLQ9yGlq9jXe3XBuyw3DtAo
-        4ptVkW+NWEM3y7hQmyxSA+WWf3yXX8lqB3xVCSd14xzDK3Q=
-X-Google-Smtp-Source: ABdhPJywZYFb5Kxa0f4hpEMdUjYMwcNEQCHYq0m2mmEOdorMP1FM/4Q5J9SAQdd/0fyvytzb+Axet0s98+c5ArMZPco=
-X-Received: by 2002:a37:f903:0:b0:648:ca74:b7dc with SMTP id
- l3-20020a37f903000000b00648ca74b7dcmr5261283qkj.666.1649817259877; Tue, 12
- Apr 2022 19:34:19 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=fLgDjeHVYbXkfhaYx0Do2mV56Jvy8fglOjLawJ1rbTc=;
+        b=Ipw4EBS7gDrqP3k2okpjuTX/GckEvAR8DIaoAdIzR1srqrGJGL5kUUIq8j+Hac7rgF
+         VEN3eV/hoir7Y04HAdk1suPu1oxUpsK1kGi9jhvmxfg/2IJqknRrs3BQzJPDeUmCtE0t
+         Vh4l7QvAEcNYHCPy2MagaoavxClMIYM8KmjLVOz2c3/lpzl3PqZD6ZhxbkEEaG+RZQU3
+         GLYyItcv95BpHuaONCpVmTGvHIgKTulWXa9AGBFksXy4PAd3ojHhYTUhI3h1J+Z13JbW
+         GUXnOcw/MTCug0KXnaeoLDx/jcBSA5xUk19WY/3sGi5Q1mwpbeJ81qai63OwR5lxh8HW
+         1JQg==
+X-Gm-Message-State: AOAM532MYkW666sufktzs82fBL1muo21cOBS2yOCQWt79DAPvQ5+ErxN
+        P/B5BScNrFCZUXLUXo8IcXNnSQ==
+X-Google-Smtp-Source: ABdhPJzKACTDxfOvoHXgoDtih2bWYIVirNbxvz45rdqdf2S0W8tv4ibDtfL1Vm8j4Af/khsZpObLQw==
+X-Received: by 2002:a17:90b:1d04:b0:1c7:1174:56ae with SMTP id on4-20020a17090b1d0400b001c7117456aemr8144046pjb.153.1649817516516;
+        Tue, 12 Apr 2022 19:38:36 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id y16-20020a17090a6c9000b001cc3a8b4fd6sm907727pjj.7.2022.04.12.19.38.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Apr 2022 19:38:35 -0700 (PDT)
+Message-ID: <8a762692-3e0a-f7e8-ff80-38c0da73647e@kernel.dk>
+Date:   Tue, 12 Apr 2022 20:38:34 -0600
 MIME-Version: 1.0
-References: <20220412065611.8930-1-dylan_hung@aspeedtech.com> <20220412065611.8930-2-dylan_hung@aspeedtech.com>
-In-Reply-To: <20220412065611.8930-2-dylan_hung@aspeedtech.com>
-From:   Joel Stanley <joel@jms.id.au>
-Date:   Wed, 13 Apr 2022 02:34:08 +0000
-Message-ID: <CACPK8Xd0gh5pDafP3ysu7odhnP=YPNSYPV9u36CEoMPDtQxEJw@mail.gmail.com>
-Subject: Re: [PATCH v4 1/3] dt-bindings: net: add reset property for aspeed,
- ast2600-mdio binding
-To:     Dylan Hung <dylan_hung@aspeedtech.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, Andrew Jeffery <andrew@aj.id.au>,
-        Andrew Lunn <andrew@lunn.ch>, hkallweit1@gmail.com,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        BMC-SW <BMC-SW@aspeedtech.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCHSET 0/4] Add support for no-lock sockets
+Content-Language: en-US
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>, io-uring@vger.kernel.org,
+        netdev <netdev@vger.kernel.org>
+References: <20220412202613.234896-1-axboe@kernel.dk>
+ <e7631a6f-b614-da4c-4f47-571a7b0149fc@gmail.com>
+ <80ba97f9-3705-8fd6-8e7d-a934512d7ec0@kernel.dk>
+ <CANn89iJRCeB2HZyy49J60KReZKwrLysffy9cmLSw6+Wd4qJy-g@mail.gmail.com>
+ <d772ae66-6c0f-4083-8530-400546743ef6@kernel.dk>
+ <CANn89i+1UJHYwDocWuaxzHoiPrJwi0WR0mELMidYBXYuPcLumg@mail.gmail.com>
+ <22271a21-2999-2f2f-9270-c7233aa79c6d@kernel.dk>
+ <CANn89iKXTbDJ594KN5K8u4eowpTWKdxXJ4hBQOqkuiZGcS7x0A@mail.gmail.com>
+ <d39a2713-9172-3dd6-4a37-dad178a5bb57@kernel.dk>
+ <CANn89iKVtHLNUMRPP276-w31usKwWnFhQp04W1CbD-TqOnRAiw@mail.gmail.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <CANn89iKVtHLNUMRPP276-w31usKwWnFhQp04W1CbD-TqOnRAiw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 12 Apr 2022 at 06:55, Dylan Hung <dylan_hung@aspeedtech.com> wrote:
->
-> The AST2600 MDIO bus controller has a reset control bit and must be
-> deasserted before manipulating the MDIO controller. By default, the
-> hardware asserts the reset so the driver only need to deassert it.
->
-> Regarding to the old DT blobs which don't have reset property in them,
-> the reset deassertion is usually done by the bootloader so the reset
-> property is optional to work with them.
->
-> Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
-> Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
-> ---
->  .../devicetree/bindings/net/aspeed,ast2600-mdio.yaml         | 5 +++++
->  1 file changed, 5 insertions(+)
->
-> diff --git a/Documentation/devicetree/bindings/net/aspeed,ast2600-mdio.yaml b/Documentation/devicetree/bindings/net/aspeed,ast2600-mdio.yaml
-> index 1c88820cbcdf..1174c14898e1 100644
-> --- a/Documentation/devicetree/bindings/net/aspeed,ast2600-mdio.yaml
-> +++ b/Documentation/devicetree/bindings/net/aspeed,ast2600-mdio.yaml
-> @@ -20,10 +20,14 @@ allOf:
->  properties:
->    compatible:
->      const: aspeed,ast2600-mdio
-> +
->    reg:
->      maxItems: 1
->      description: The register range of the MDIO controller instance
->
-> +  resets:
-> +    maxItems: 1
-> +
->  required:
->    - compatible
->    - reg
-> @@ -39,6 +43,7 @@ examples:
->              reg = <0x1e650000 0x8>;
->              #address-cells = <1>;
->              #size-cells = <0>;
-> +            resets = <&syscon ASPEED_RESET_MII>;
+On 4/12/22 8:32 PM, Eric Dumazet wrote:
+> On Tue, Apr 12, 2022 at 7:27 PM Jens Axboe <axboe@kernel.dk> wrote:
+>>
+>> On 4/12/22 8:19 PM, Eric Dumazet wrote:
+>>> On Tue, Apr 12, 2022 at 7:12 PM Jens Axboe <axboe@kernel.dk> wrote:
+>>>>
+>>>> On 4/12/22 8:05 PM, Eric Dumazet wrote:
+>>>>> On Tue, Apr 12, 2022 at 7:01 PM Jens Axboe <axboe@kernel.dk> wrote:
+>>>>>>
+>>>>>> On 4/12/22 7:54 PM, Eric Dumazet wrote:
+>>>>>>> On Tue, Apr 12, 2022 at 6:26 PM Jens Axboe <axboe@kernel.dk> wrote:
+>>>>>>>>
+>>>>>>>> On 4/12/22 6:40 PM, Eric Dumazet wrote:
+>>>>>>>>>
+>>>>>>>>> On 4/12/22 13:26, Jens Axboe wrote:
+>>>>>>>>>> Hi,
+>>>>>>>>>>
+>>>>>>>>>> If we accept a connection directly, eg without installing a file
+>>>>>>>>>> descriptor for it, or if we use IORING_OP_SOCKET in direct mode, then
+>>>>>>>>>> we have a socket for recv/send that we can fully serialize access to.
+>>>>>>>>>>
+>>>>>>>>>> With that in mind, we can feasibly skip locking on the socket for TCP
+>>>>>>>>>> in that case. Some of the testing I've done has shown as much as 15%
+>>>>>>>>>> of overhead in the lock_sock/release_sock part, with this change then
+>>>>>>>>>> we see none.
+>>>>>>>>>>
+>>>>>>>>>> Comments welcome!
+>>>>>>>>>>
+>>>>>>>>> How BH handlers (including TCP timers) and io_uring are going to run
+>>>>>>>>> safely ? Even if a tcp socket had one user, (private fd opened by a
+>>>>>>>>> non multi-threaded program), we would still to use the spinlock.
+>>>>>>>>
+>>>>>>>> But we don't even hold the spinlock over lock_sock() and release_sock(),
+>>>>>>>> just the mutex. And we do check for running eg the backlog on release,
+>>>>>>>> which I believe is done safely and similarly in other places too.
+>>>>>>>
+>>>>>>> So lets say TCP stack receives a packet in BH handler... it proceeds
+>>>>>>> using many tcp sock fields.
+>>>>>>>
+>>>>>>> Then io_uring wants to read/write stuff from another cpu, while BH
+>>>>>>> handler(s) is(are) not done yet,
+>>>>>>> and will happily read/change many of the same fields
+>>>>>>
+>>>>>> But how is that currently protected?
+>>>>>
+>>>>> It is protected by current code.
+>>>>>
+>>>>> What you wrote would break TCP stack quite badly.
+>>>>
+>>>> No offense, but your explanations are severely lacking. By "current
+>>>> code"? So what you're saying is that it's protected by how the code
+>>>> currently works? From how that it currently is? Yeah, that surely
+>>>> explains it.
+>>>>
+>>>>> I suggest you setup/run a syzbot server/farm, then you will have a
+>>>>> hundred reports quite easily.
+>>>>
+>>>> Nowhere am I claiming this is currently perfect, and it should have had
+>>>> an RFC on it. Was hoping for some constructive criticism on how to move
+>>>> this forward, as high frequency TCP currently _sucks_ in the stack.
+>>>> Instead I get useless replies, not very encouraging.
+>>>>
+>>>> I've run this quite extensively on just basic send/receive over sockets,
+>>>> so it's not like it hasn't been run at all. And it's been fine so far,
+>>>> no ill effects observed. If we need to tighten down the locking, perhaps
+>>>> a valid use would be to simply skip the mutex and retain the bh lock for
+>>>> setting owner. As far as I can tell, should still be safe to skip on
+>>>> release, except if we need to process the backlog. And it'd serialize
+>>>> the owner setting with the BH, which seems to be your main objection in.
+>>>> Mostly guessing here, based on the in-depth replies.
+>>>>
+>>>> But it'd be nice if we could have a more constructive dialogue about
+>>>> this, rather than the weird dismisiveness.
+>>>>
+>>>>
+>>>
+>>> Sure. It would be nice that I have not received such a patch series
+>>> the day I am sick.
+>>
+>> I'm sorry that you are sick - but if you are not in a state to reply,
+>> then please just don't. It sets a bad example. It was sent to the list,
+>> not to you personally.
+> 
+> I tried to be as constructive as possible, and Jakub pinged me about
 
-You will need to include the definition for ASPEED_RESET_MII at the
-start of the example:
+Are you serious?! I don't think I've ever received less constructive
+feedback in 20+ years of working on the kernel.
 
-#include <dt-bindings/clock/ast2600-clock.h>
+> this series,
+> so I really thought Jakub was okay with it.
+> 
+> So I am a bit concerned.
 
-You can test the bindings example by doing this:
+I did show it to Jakub a week or so ago, probably that was why. But why
+the concern?! It's just a patchseries proposed for discussion. Something
+that happens every day.
 
-pip install dtschema
+>> Don't check email then, putting the blame on ME for posting a patchset
+>> while you are sick is uncalled for and rude. If I had a crystal ball, I
+>> would not be spending my time working on the kernel. You know what
+>> would've been a better idea? Replying that you are sick and that you are
+>> sorry for being an ass on the mailing list.
+> 
+> Wow.
 
-make dt_binding_check
-DT_SCHEMA_FILES=Documentation/devicetree/bindings/net/aspeed,ast2600-mdio.yaml
+Putting the blame on me for your emails, since I posted a patchset while
+you're sick, is just rude.
 
-Cheers,
+-- 
+Jens Axboe
 
-Joel
-
->
->              ethphy0: ethernet-phy@0 {
->                      compatible = "ethernet-phy-ieee802.3-c22";
-> --
-> 2.25.1
->
