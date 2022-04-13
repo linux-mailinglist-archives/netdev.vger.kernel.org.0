@@ -2,109 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 196294FEEC3
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 07:53:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 015CC4FEF96
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 08:12:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232622AbiDMFz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 01:55:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55360 "EHLO
+        id S232529AbiDMGNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 02:13:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229917AbiDMFzZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 01:55:25 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1104738DB5
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 22:53:05 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id k5so1597878lfg.9
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 22:53:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7U40Ltcj2IU9/USLZ23kMUEI1qqBd4qWHJo2TOH5zSQ=;
-        b=OR9C6RtXfkdyzSyh7vrDh0o+8LlhQrLAliQFeLCNjMLdXz5WavEo2tzgTVvHcDz1Wn
-         D7prtbZE/X0g7u8twN//FxoKtexCYLwK06bDeDBxXjjml2b9aezthrOx7wy2HdoCasaI
-         GWhTodeSf2oQJQxy2pKTX8NQaHybughVr0qdoO1Y7N7uvl1MX3A1T6DGee0fWV/lfip8
-         YiCtVo077EgmiJQZzbbmjB2WM0lID5yuTnH6HnQtwTGv8HLpwjrzFa5aYqYn+kOloso3
-         dD9zp7aORPWSHtisuRPGWvdtgst6/6ZEAr2vtLuausOKRKWVh/OKYXbVYlpj18R8zXRE
-         l8uA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7U40Ltcj2IU9/USLZ23kMUEI1qqBd4qWHJo2TOH5zSQ=;
-        b=EnfDq/DGUPh/ut1AU3MOmFuQDnbOyHhQkCXco97opc7A17aaqYsnX5jJ45H4A2NEDI
-         XuYBT5rU2DR14wkLF+zVMBJtVBacyQrKvDbZb8nK8Ah9JhysdXs48rmcv5vbHH+Yy5cK
-         M+quVRVreF9KxsMh80YFfWBW/kwmGtxh9y9ISneaNlbOyL0Lk+Kj77WNGTbECum7e/mf
-         2N474jTfaphD0FbSWQvvWr48k50cJEGWNomIV9lpFG9U4ad47530S//MWdorEBaNxBkx
-         D31K88gFV4QeizwihUYQg9nLNW7ytUxGW0aThzrfwC+2qQ2hRwoiHn8rszz21G6PWYa1
-         1oQg==
-X-Gm-Message-State: AOAM531oakLgzRYYml0BEucmQArZgDBNyutGbFhV9XKgRuuN52f36uxd
-        VTw9bK4ajnWYcgOJ7rrcnEkezPwHuIm5/Q==
-X-Google-Smtp-Source: ABdhPJwgCIY6iYn2zICUkN4nb1qBRzyYrkhospTzwXNAGF4wOTt6IAm2JHGYOasBtbgpyJFXwGwGVQ==
-X-Received: by 2002:ac2:4c89:0:b0:46b:c187:b761 with SMTP id d9-20020ac24c89000000b0046bc187b761mr3312052lfl.272.1649829182966;
-        Tue, 12 Apr 2022 22:53:02 -0700 (PDT)
-Received: from wse-c0089.westermo.com (h-98-128-237-157.A259.priv.bahnhof.se. [98.128.237.157])
-        by smtp.gmail.com with ESMTPSA id o18-20020a2e9b52000000b0024af0b04d04sm3681231ljj.1.2022.04.12.22.53.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 22:53:02 -0700 (PDT)
-From:   Mattias Forsblad <mattias.forsblad@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     roid@nvidia.com, vladbu@nvidia.com, Eli Cohen <eli@mellanox.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Baowen Zheng <baowen.zheng@corigine.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Mattias Forsblad <mattias.forsblad@gmail.com>
-Subject: [RFC net-next] net: tc: flow indirect framework issue
-Date:   Wed, 13 Apr 2022 07:52:48 +0200
-Message-Id: <20220413055248.1959073-1-mattias.forsblad@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S232252AbiDMGNS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 02:13:18 -0400
+Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87DFB37A03
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 23:10:47 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id DEBE63200953;
+        Wed, 13 Apr 2022 02:10:44 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Wed, 13 Apr 2022 02:10:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1649830244; x=
+        1649916644; bh=Jmt+YOtDi3H8U74krhGDbZs40tMLJRCUypvQVKK18Cc=; b=B
+        PR+QiDCgYhLQSyNcS8fxik/z9bPZHTzW6fX7H72eFIYe4UkHW4Hipj7lee8E3uvv
+        T4Tl2Yjr3ANw0wVlzetqsyHad0pk6P8DTAG7k6c7EZzEkIoiegBKOsTiXMKq0iEV
+        ko+ytFLZEMdPBrHWXHuTywifv8evyQ8+UIkR8Jk118NmZkIv0p1sqVBHm7EoSpv8
+        Pn+SgTUwHAAaJ12kC1tWLRf0s3hzh74xPxgonqm6qBqtgJ1+iZfboC8xZyTmwlTW
+        9+toqA/VDMaaRxYPaxag6julecN/76wAhw1VdV4cf0kpBOzVrhOCLeJvvFDdBnqq
+        dxg9C3QVvZVo23MjvYcrw==
+X-ME-Sender: <xms:ZGlWYmDaHc6eqyBrMReKZiJejv7ltkHA9AW4Ck7H7-H4JnIw1-7FSw>
+    <xme:ZGlWYghXXm1yyFYzfK906d5BpGtbGNTbK8MC4bN8yyiqHYIZexuEsgsXzmSB1jFtW
+    gCy0eIG7-fCxOY>
+X-ME-Received: <xmr:ZGlWYpmWHHafoIOR5m6bgk3U82rfStpzC2dZGP7XwYWQEdNH4Bq0FS7Jik3OP8lABeNZbEz7wxeNVJr8QORHsNNPbjfvUg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudekledguddtgecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
+    leetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
+    guohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:ZGlWYkwBacEGCp8WaRU6j1dTIUgH1Apl2DBumjzawnNZF4v89VCbcw>
+    <xmx:ZGlWYrSZMwdb9JXsVPsJM6rP7xd-sG7c1Mtk6jb0Rp30S3TSV5gqdA>
+    <xmx:ZGlWYvbF5rfNWy0bifCKb5H4_m0k_iWDCHdHzmAgrqgmKfbqpA4ovQ>
+    <xmx:ZGlWYmep7LlovhGt-uCslFRGlfS5R52wOBy6dq6FIFqaEnbXhflCyA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 13 Apr 2022 02:10:43 -0400 (EDT)
+Date:   Wed, 13 Apr 2022 09:10:39 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Petr Machata <petrm@nvidia.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net] rtnetlink: Fix handling of disabled L3 stats in
+ RTM_GETSTATS replies
+Message-ID: <YlZpX6YdMzqDeZag@shredder>
+References: <591b58e7623edc3eb66dd1fcfa8c8f133d090974.1649794741.git.petrm@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <591b58e7623edc3eb66dd1fcfa8c8f133d090974.1649794741.git.petrm@nvidia.com>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello all,
+On Tue, Apr 12, 2022 at 10:25:06PM +0200, Petr Machata wrote:
+> When L3 stats are disabled, rtnl_offload_xstats_get_size_stats() returns
+> size of 0, which is supposed to be an indication that the corresponding
+> attribute should not be emitted. However, instead, the current code
+> reserves a 0-byte attribute.
+> 
+> The reason this does not show up as a citation on a kasan kernel is that
+> netdev_offload_xstats_get(), which is supposed to fill in the data, never
+> ends up getting called, because rtnl_offload_xstats_get_stats() notices
+> that the stats are not actually used and skips the call.
+> 
+> Thus a zero-length IFLA_OFFLOAD_XSTATS_L3_STATS attribute ends up in a
+> response, confusing the userspace.
+> 
+> Fix by skipping the L3-stats related block in rtnl_offload_xstats_fill().
+> 
+> Fixes: 0e7788fd7622 ("net: rtnetlink: Add UAPI for obtaining L3 offload xstats")
+> Signed-off-by: Petr Machata <petrm@nvidia.com>
 
-I'm currently working to get offloading of tc rules (clsact/matchall/drop) 
-on a bridge offloaded to HW. The patch series is here:
-
-https://lore.kernel.org/netdev/20220411131619.43js6owwkalcdwwa@skbuf/T/#m07bff9e205e9ac03d15a4e758b4129235da88aba
-
-However I'm having some trouble with it. More specific in the limitations section
-in the link above, quote:
-
-Limitations
-If there is tc rules on a bridge and all the ports leave the bridge
-and then joins the bridge again, the indirect framwork doesn't seem
-to reoffload them at join. The tc rules need to be torn down and
-re-added. This seems to be because of limitations in the tc
-framework.
-
-The same issue can bee seen it you have a bridge with no ports
-and then adds a tc rule, like so:
-
-tc qdisc add dev br0 clsact
-tc filter add dev br0 ingress pref 1 proto all matchall action drop
-
-And then adds a port to that bridge
-ip link set dev swp0 master br0   <---- flow_indr_dev_register() bc this
-
-I'm seeing the callback(TC_SETUP_BLOCK) from flow_indr_dev_register()
-but I'm not getting any callbacks that I've added via flow_block_cb_add()
-
-Do you maybe have some idea why I'm seeing this behavior?
-Am i doing something wrong or is it a known issue or something else?
-
-Best regards,
-
-Mattias Forsblad
-mattias.forsblad@gmail.com
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
