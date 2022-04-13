@@ -2,65 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4E0B4FFD9A
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 20:13:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A95684FFDD5
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 20:30:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236279AbiDMSQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 14:16:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36756 "EHLO
+        id S237709AbiDMScW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 14:32:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235006AbiDMSQA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 14:16:00 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72E47496BE
-        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 11:13:38 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id s137so2512990pgs.5
-        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 11:13:38 -0700 (PDT)
+        with ESMTP id S237711AbiDMScS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 14:32:18 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4E6453A6F;
+        Wed, 13 Apr 2022 11:29:56 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id bg9so2537724pgb.9;
+        Wed, 13 Apr 2022 11:29:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VdAR39GeJ30HYwCF1dGMPnCGrq/yFAelZKC0NnUWDa0=;
-        b=Vcu8tpWZeL6WOIBAHz/pUd4lhEMwhThInep6MfL+T53R9u5ljISIKE803ivh+8BaVm
-         tTyehauZM39STOqtam227qc+kKFARlnnObE7YXmHbSyYMMAxSR9WE6x1O7NkjuVR8vge
-         9KwXM6YYF/qWUaWKqmSIfzjRLHUsPwGtTlrrH+/wzcJ8n2xEU1LEGj1QO2L8RoOIf/+C
-         Zxwc+HHRwOc70+zYfhWygLX26C0HGbPnADDajutPjekqlWonwDNyhavc2c1GzjWC/UOO
-         LsGEHnbaG3GX+kK/28wzMJ0Ta0XjPLADsADSt54vvJevGyaLdW/kuL6WNfsAQAYPqqY/
-         kSJg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tqUy4wIUbnHeXLECZT3EuzOLy7NbT4AdLMplw9UwAVc=;
+        b=hz+Yj5/2bFOmrBQy1COFXlF/LnxLOHCumtQ990qLhTsycEgqbMQZXWjcTx0ztYdv2l
+         qCW6/jsej1UlM4MnnsacAIj8t1rmSUKN+392gf0/CUGV2Nqn9ijwARMZ1HM9B+yxP3tn
+         YXJ/kulsZhoFB6W658SpkEg0YopHvSgpjLGRjwJ/TRtzC+vFffHjfYbQub5C4LHDDC0v
+         XTPtu/iZMBTiQdd3riWpvQrOI6F9eO7O4FCZ+lzqziGXmF1eVgE4Q7BNFbZMZlF8Axfm
+         3cayOdZxM4rMwSGWysqxYI99CyuDtfuwUXyOS8xFZ/rG/jg1au3yVnWbClA2b9uwv3LJ
+         +I5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VdAR39GeJ30HYwCF1dGMPnCGrq/yFAelZKC0NnUWDa0=;
-        b=ICGi9fuRqgiD9+MBCeUyQ2CXw/lSlW6ef+qA0zRVJ7s5iL63ANp/O12aEdBpq1RPvg
-         dvJoVD6sQrsCpCqrjMq/eFqJc+kxk4gkDL/utBZ+lWo+JSqiMIB0XJUG/fy5Cd8j3pYX
-         Q5OFeoxNKkrOMdJURw7G8M2rwyhGF2HI3SHuCNUIMD9axhXUUGp4Sz4yuS0cFJFFSD3y
-         1LbkGOOZcVyXK3UmrNzZ558z81hNiFaTsu0+jZjL4xbuzfoMaL3Q07gqZhqV3HuyNnR9
-         L9yRx3wZWi/SdFKgO5C3F6MRgDArfQByHrFSGjYGj8vZogGgxat/cIrt9IL6a6QR9Dkq
-         KJgw==
-X-Gm-Message-State: AOAM531wFVb1dr9EO7YtP+/KTLLi8vE18dkXlHyvH83umzgvynSa02XW
-        uPaA8rV9y4skb7rtSHKdXiU=
-X-Google-Smtp-Source: ABdhPJzhzgorl+BHdL51hkci7FNJ6yPb1P5Mk1b1bxwvhvq2DmPU+qDW+D+Wwfyvy5dzEThETvyqFg==
-X-Received: by 2002:a63:6c0a:0:b0:398:6bd2:a16a with SMTP id h10-20020a636c0a000000b003986bd2a16amr36618869pgc.191.1649873617992;
-        Wed, 13 Apr 2022 11:13:37 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:bfb5:153b:b727:ea])
-        by smtp.gmail.com with ESMTPSA id w60-20020a17090a6bc200b001cbc1a6963asm3800186pjj.29.2022.04.13.11.13.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 11:13:37 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     David Ahern <dsahern@kernel.org>, netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: [PATCH net] ipv6: make ip6_rt_gc_expire an atomic_t
-Date:   Wed, 13 Apr 2022 11:13:33 -0700
-Message-Id: <20220413181333.649424-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tqUy4wIUbnHeXLECZT3EuzOLy7NbT4AdLMplw9UwAVc=;
+        b=UqYDhgJvWpsydHQkLvpDEotKrpjh9ojC85XqKaUC+eY++e10H2C74qKBmBn8eeBmbt
+         +qSOmYFpSCTam+zhRe1n577to6VGnrw0X2q4XcHPTOPvfTSwSrshaUWhcWfsUei5e9b6
+         SnOLeE/PAiKZLEDyFYtxZ8RSlqRYm+EXILh8oWCrGe+f/Cosd3hjjlg38snar5roWk2C
+         hp/v3W387upIbzxHC7A6Qzkk+lMGgvp81mSqr9DjRVzyw6idU2PSW+zwbgJCSkqBLjL7
+         kFMJg++gdFptnDok88cjrgYYtTLwSTPKzeGRfPYfbODnJDo5XUjFYdSkUzrjPrK5zbza
+         Nfbw==
+X-Gm-Message-State: AOAM533K5O124FkZGuCZIbxA0NZFL08aXN+bGpfmzcjXfU5JKTLcRPd9
+        qrz94HrDMILD7UDT3SotvU7vq7xxGMXzIh46Kx0=
+X-Google-Smtp-Source: ABdhPJwyTh2FcolXckqzV6cIv6vpRDPezWMSTgy40VccO9wouiaqdGm8NAajogyDuS1EHDafcByBah1JKsDUpR8eC0o=
+X-Received: by 2002:a05:6a00:248e:b0:506:1dce:fcba with SMTP id
+ c14-20020a056a00248e00b005061dcefcbamr133998pfv.21.1649874596245; Wed, 13 Apr
+ 2022 11:29:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220411210406.21404-1-luizluca@gmail.com> <YlTFRqY3pq84Fw1i@lunn.ch>
+ <CAJq09z7CDbaFdjkmqiZsPM1He4o+szMEJANDiaZTCo_oi+ZCSQ@mail.gmail.com>
+ <YlVz2gqXbgtFZUhA@lunn.ch> <20220412133055.vmzz2copvu2qzzin@bang-olufsen.dk>
+In-Reply-To: <20220412133055.vmzz2copvu2qzzin@bang-olufsen.dk>
+From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Date:   Wed, 13 Apr 2022 15:29:45 -0300
+Message-ID: <CAJq09z4E-HiA3WD4UtBAYm6mOCehHGedmofCqxRsAwUqND+=uQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: dsa: realtek: add compatible strings for RTL8367RB-VB
+To:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -71,116 +75,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+> On Tue, Apr 12, 2022 at 02:43:06PM +0200, Andrew Lunn wrote:
+> > On Tue, Apr 12, 2022 at 01:12:51AM -0300, Luiz Angelo Daros de Luca wrote:
+> > > > On Mon, Apr 11, 2022 at 06:04:07PM -0300, Luiz Angelo Daros de Luca wrote:
+> > > > > RTL8367RB-VB was not mentioned in the compatible table, nor in the
+> > > > > Kconfig help text.
+> > > > >
+> > > > > The driver still detects the variant by itself and ignores which
+> > > > > compatible string was used to select it. So, any compatible string will
+> > > > > work for any compatible model.
+> > > >
+> > > > Meaning the compatible string is pointless, and cannot be trusted. So
+> > > > yes, you can add it, but don't actually try to use it for anything,
+> > > > like quirks.
+> > >
+> > >
+> > > Thanks, Andrew. Those compatible strings are indeed useless for now.
+> > > The driver probes the chip variant. Maybe in the future, if required,
+> > > we could provide a way to either force a model or let it autodetect as
+> > > it does today.
+> >
+> > The problem is, you have to assume some percentage of shipped DT blobs
+> > have the wrong compatible string, but work because it is not actually
+> > used in a meaningful way. This is why the couple of dozen Marvell
+> > switches have just 3 compatible strings, which is enough to find the
+> > ID registers to identify the actual switch. The three compatibles are
+> > the name of the lowest chip in the family which introduced to location
+> > of the ID register.
+>
+> Right, this was basically the original behaviour:
+>
+> - realtek,rtl8265mb -> use rtl8365mb.c subdriver
+> - realtek,rtl8366rb -> use rtl8366rb.c subdriver (different family with different register layout)
+>
+> We then check a chip ID/version register and store that in the driver-private
+> data, in case of quirks or different behaviours between chips in the same
+> family.
+>
+> I think Andrew has a point that adding more compatible strings is not really
+> going to add any tangible benefit, due to the above bahviour. People can equally
+> well just put one of the above two compatible strings.
 
-Reads and Writes to ip6_rt_gc_expire always have been racy,
-as syzbot reported lately [1]
+The Realtek driver (rtl8367c) does provide a way to skip the probe and
+force a specific model detection. Maybe that is a requirement for some
+kind of device we might see in the future. If needed, we could add a
+new property ("autodetect-{model,variant} = false") to force the model
+based only on the compatible string. It would also allow a compatible
+device to use the driver even if its ids are not known by the driver.
 
-There is a possible risk of under-flow, leading
-to unexpected high value passed to fib6_run_gc(),
-although I have not observed this in the field.
+> > > There is no "family name" for those devices. The best we had was
+> > > rtl8367c (with "c" probably meaning 3rd family). I suggested renaming
+> > > the driver to rtl8367c but, in the end, we kept it as the first
+> > > supported device name. My plan is, at least, to allow the user to
+> > > specify the correct model without knowing which model it is equivalent
+> > > to.
+> >
+> > In order words, you are quite happy to allow the DT author to get is
+> > wrong, and do not care it is wrong. So the percentage of DT blobs with
+> > the wrong compatible will go up, making it even more useless.
 
-Hosts hitting ip6_dst_gc() very hard are under pretty bad
-state anyway.
+I wouldn't say it is wrong but not as specific as possible.
+"compatible" seems to indicate that a driver from modelA can be used
+for modelB.
+We could start to warn the user when the compatible string does not
+match the model (at least from what we already know).
 
-[1]
-BUG: KCSAN: data-race in ip6_dst_gc / ip6_dst_gc
+Today, the driver only uses the model to tell the CPU and user ports
+(and chip version is enough for that usage). However, the vendor
+driver does an independent probe when it is setting the external port
+and it does check additional registers. Today the Linux driver only
+supports RGMII without actually checking if the model does support it.
+When we expand that support to other port modes, we might need to
+revisit the chip probe.
 
-read-write to 0xffff888102110744 of 4 bytes by task 13165 on cpu 1:
- ip6_dst_gc+0x1f3/0x220 net/ipv6/route.c:3311
- dst_alloc+0x9b/0x160 net/core/dst.c:86
- ip6_dst_alloc net/ipv6/route.c:344 [inline]
- icmp6_dst_alloc+0xb2/0x360 net/ipv6/route.c:3261
- mld_sendpack+0x2b9/0x580 net/ipv6/mcast.c:1807
- mld_send_cr net/ipv6/mcast.c:2119 [inline]
- mld_ifc_work+0x576/0x800 net/ipv6/mcast.c:2651
- process_one_work+0x3d3/0x720 kernel/workqueue.c:2289
- worker_thread+0x618/0xa70 kernel/workqueue.c:2436
- kthread+0x1a9/0x1e0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30
+> > It is also something you cannot retrospectively make useful, because
+> > of all those broken DT blobs.
 
-read-write to 0xffff888102110744 of 4 bytes by task 11607 on cpu 0:
- ip6_dst_gc+0x1f3/0x220 net/ipv6/route.c:3311
- dst_alloc+0x9b/0x160 net/core/dst.c:86
- ip6_dst_alloc net/ipv6/route.c:344 [inline]
- icmp6_dst_alloc+0xb2/0x360 net/ipv6/route.c:3261
- mld_sendpack+0x2b9/0x580 net/ipv6/mcast.c:1807
- mld_send_cr net/ipv6/mcast.c:2119 [inline]
- mld_ifc_work+0x576/0x800 net/ipv6/mcast.c:2651
- process_one_work+0x3d3/0x720 kernel/workqueue.c:2289
- worker_thread+0x618/0xa70 kernel/workqueue.c:2436
- kthread+0x1a9/0x1e0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30
+We cannot tell if there are other models that share the same chip
+version (from reg 0x1302). We can only tell from the devices we have
+access to. Yes, there might already be a device using a different
+compatible string from the real device and I don't intend to break it.
 
-value changed: 0x00000bb3 -> 0x00000ba9
+> I think Luiz is saying he wants to allow device tree authors to write
+> "realtek,rtl8367rb" if their hardware really does have an RTL8367RB switch and
+> not an RTL8365MB, rather than writing "realtek,rtl8365mb". But an enterprising
+> device tree author could just as well write:
+>
+>          compatible = "realtek,rtl8367rb", "realtek,rtl8365mb";
+>
+> ... which would work without us having to continually add more (arguably
+> useless) compatible strings to the driver, including this one.
 
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 0 PID: 11607 Comm: kworker/0:21 Not tainted 5.18.0-rc1-syzkaller-00037-g42e7a03d3bad-dirty #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: mld mld_ifc_work
+Yes, Alvin. Thanks.
 
-Fixes: 1da177e4c3 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
----
- include/net/netns/ipv6.h |  4 ++--
- net/ipv6/route.c         | 11 ++++++-----
- 2 files changed, 8 insertions(+), 7 deletions(-)
+It feels strange to force the user to use "realtek,rtl8365mb" or any
+other different string that does not match the chip's real name. I
+would not expect the one writing the DT to know that rtl8367s shares
+the same family with rtl8365mb and rtl8365mb driver does support
+rtl8367s. Before writing the rtl8367s driver, I also didn't know the
+relation between those chips. The common was only to relate rtl8367s
+(or any other chip model) with the vendor driver rtl8367c. As we don't
+have a generic family string, I think it is better to add every model
+variant.
 
-diff --git a/include/net/netns/ipv6.h b/include/net/netns/ipv6.h
-index 3d83b64471d32391fb632e8c25e12a8ec7d1b42e..b4af4837d80b4ed47d05474432d5b8ebb42322e7 100644
---- a/include/net/netns/ipv6.h
-+++ b/include/net/netns/ipv6.h
-@@ -75,8 +75,8 @@ struct netns_ipv6 {
- 	struct list_head	fib6_walkers;
- 	rwlock_t		fib6_walker_lock;
- 	spinlock_t		fib6_gc_lock;
--	unsigned int		 ip6_rt_gc_expire;
--	unsigned long		 ip6_rt_last_gc;
-+	atomic_t		ip6_rt_gc_expire;
-+	unsigned long		ip6_rt_last_gc;
- 	unsigned char		flowlabel_has_excl;
- #ifdef CONFIG_IPV6_MULTIPLE_TABLES
- 	bool			fib6_has_custom_rules;
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 169e9df6d172ead607cc20a108c3371a20dbc632..c4b6ce017d5e3bf63c66a53df3d46c08370aed23 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -3292,6 +3292,7 @@ static int ip6_dst_gc(struct dst_ops *ops)
- 	int rt_elasticity = net->ipv6.sysctl.ip6_rt_gc_elasticity;
- 	int rt_gc_timeout = net->ipv6.sysctl.ip6_rt_gc_timeout;
- 	unsigned long rt_last_gc = net->ipv6.ip6_rt_last_gc;
-+	unsigned int val;
- 	int entries;
- 
- 	entries = dst_entries_get_fast(ops);
-@@ -3302,13 +3303,13 @@ static int ip6_dst_gc(struct dst_ops *ops)
- 	    entries <= rt_max_size)
- 		goto out;
- 
--	net->ipv6.ip6_rt_gc_expire++;
--	fib6_run_gc(net->ipv6.ip6_rt_gc_expire, net, true);
-+	fib6_run_gc(atomic_inc_return(&net->ipv6.ip6_rt_gc_expire), net, true);
- 	entries = dst_entries_get_slow(ops);
- 	if (entries < ops->gc_thresh)
--		net->ipv6.ip6_rt_gc_expire = rt_gc_timeout>>1;
-+		atomic_set(&net->ipv6.ip6_rt_gc_expire, rt_gc_timeout >> 1);
- out:
--	net->ipv6.ip6_rt_gc_expire -= net->ipv6.ip6_rt_gc_expire>>rt_elasticity;
-+	val = atomic_read(&net->ipv6.ip6_rt_gc_expire);
-+	atomic_set(&net->ipv6.ip6_rt_gc_expire, val - (val >> rt_elasticity));
- 	return entries > rt_max_size;
- }
- 
-@@ -6509,7 +6510,7 @@ static int __net_init ip6_route_net_init(struct net *net)
- 	net->ipv6.sysctl.ip6_rt_min_advmss = IPV6_MIN_MTU - 20 - 40;
- 	net->ipv6.sysctl.skip_notify_on_dev_down = 0;
- 
--	net->ipv6.ip6_rt_gc_expire = 30*HZ;
-+	atomic_set(&net->ipv6.ip6_rt_gc_expire, 30*HZ);
- 
- 	ret = 0;
- out:
--- 
-2.35.1.1178.g4f1659d476-goog
+Regards,
 
+Luiz
