@@ -2,101 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E0CB14FFA68
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 17:37:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62C184FFA6B
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 17:38:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236593AbiDMPkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 11:40:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45466 "EHLO
+        id S236598AbiDMPkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 11:40:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236592AbiDMPj7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 11:39:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC3865484;
-        Wed, 13 Apr 2022 08:37:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S236596AbiDMPkT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 11:40:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1178D654BE
+        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 08:37:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649864277;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sLekYFBHk6vmdPrvSejYiiFxxEyq7KZDxaB/jClyyLg=;
+        b=hI8HKbgWSwcbd550EEvhQzmEW4eyBCUjR9eWZZiyO/3vXOpleYPi5VmEMus2Bs8/7tKNwi
+        AsSQwDe0jrmATFvQZbe/LFSd9W7XNkVsWKE0HRwAeZ9B2/0dWjZjAM/0TX1+4dgFL6Xyhs
+        9vD++KpENQhGaEmND8PKqeZUmgLqQPQ=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-537-HI2ChDyCPO-K0g7Y-EmT8A-1; Wed, 13 Apr 2022 11:37:50 -0400
+X-MC-Unique: HI2ChDyCPO-K0g7Y-EmT8A-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6EFFBB824D9;
-        Wed, 13 Apr 2022 15:37:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB0CDC385A9;
-        Wed, 13 Apr 2022 15:37:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649864255;
-        bh=s/FDyPwXHSh1CfotSKYmbOJsOxj8JCVTCzl/FNi66hk=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=KewYssnAORZMZAlFge+XFNsM/vkdOda+G0Z2OMj95NDl5tYeA/YTPCxMpdLgbUDXb
-         hEJVKrfHmYjKbjNJQkYMxai5+oIxV4QMzHJe5+2BPkx1zOmax3ygan+Jv3lOh/AQyH
-         qunNQt7aiPb6dAejH0lIzd46P0VwfZtSsHrWmGKJ5yEpANt2L/Gi/OnLEYrI41M6L9
-         ydmZZU2K+IQTGDUORnfCc51mwpOTjdkEZ1wXA5C72fSz9txLsh0rTcZqJN5wfRhRvb
-         4OsbRZs+tILYVGTwG6Za1sxyxXzNCdTb1rqrz5QtzSIZ3iFPrCjHLdTbDZ77t5ZRRB
-         fOBwbMN56Whqg==
-Message-ID: <8faa4219-9b67-7ba8-7058-e350623c437c@kernel.org>
-Date:   Wed, 13 Apr 2022 09:37:33 -0600
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0ECAB1014A6A;
+        Wed, 13 Apr 2022 15:37:50 +0000 (UTC)
+Received: from horn.redhat.com (unknown [10.40.193.222])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 524AC40D1B98;
+        Wed, 13 Apr 2022 15:37:47 +0000 (UTC)
+From:   Petr Oros <poros@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        jacob.e.keller@intel.com, intel-wired-lan@lists.osuosl.org,
+        linux-kernel@vger.kernel.org, ivecera@redhat.com,
+        pmenzel@molgen.mpg.de, alexandr.lobakin@intel.com
+Subject: [PATCH v2] ice: wait 5 s for EMP reset after firmware flash
+Date:   Wed, 13 Apr 2022 17:37:45 +0200
+Message-Id: <20220413153745.1125674-1-poros@redhat.com>
+In-Reply-To: <20220412102753.670867-1-poros@redhat.com>
+References: <20220412102753.670867-1-poros@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.7.0
-Subject: Re: [PATCH nf] netfilter: Update ip6_route_me_harder to consider L3
- domain
-Content-Language: en-US
-To:     Martin Willi <martin@strongswan.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-References: <20220412074639.1963131-1-martin@strongswan.org>
- <a64e1342-c953-40c5-2afb-0e9654e7d002@kernel.org>
- <5572c06750a388056001d1b460d5e67c18fa2836.camel@strongswan.org>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <5572c06750a388056001d1b460d5e67c18fa2836.camel@strongswan.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-8.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/13/22 3:05 AM, Martin Willi wrote:
-> Hi David,
-> 
->>> @@ -39,6 +38,13 @@ int ip6_route_me_harder(struct net *net, struct
->>> sock *sk_partial, struct sk_buff
->>>  	};
->>>  	int err;
->>>  
->>> +	if (sk && sk->sk_bound_dev_if)
->>> +		fl6.flowi6_oif = sk->sk_bound_dev_if;
->>> +	else if (strict)
->>> +		fl6.flowi6_oif = dev->ifindex;
->>> +	else
->>> +		fl6.flowi6_oif = l3mdev_master_ifindex(dev);
->>
->> For top of tree, this is now fl6.flowi6_l3mdev
-> 
-> Ah, I see, missed that.
-> 
-> Given that IPv4 should be converted to flowi4_l3mdev as well (?), what
-> about:
-> 
->  * Keep the IPv6 patch in this form, as this allows stable to pick it
->    up as-is
->  * I'll add a follow-up patch, which converts both to flowi[46]_l3mdev
+We need to wait 5 s for EMP reset after firmware flash. Code was extracted
+from OOT driver (ice v1.8.3 downloaded from sourceforge). Without this
+wait, fw_activate let card in inconsistent state and recoverable only
+by second flash/activate. Flash was tested on these fw's:
+From -> To
+ 3.00 -> 3.10/3.20
+ 3.10 -> 3.00/3.20
+ 3.20 -> 3.00/3.10
 
-sure, backport to stable will be easier.
+Reproducer:
+[root@host ~]# devlink dev flash pci/0000:ca:00.0 file E810_XXVDA4_FH_O_SEC_FW_1p6p1p9_NVM_3p10_PLDMoMCTP_0.11_8000AD7B.bin
+Preparing to flash
+[fw.mgmt] Erasing
+[fw.mgmt] Erasing done
+[fw.mgmt] Flashing 100%
+[fw.mgmt] Flashing done 100%
+[fw.undi] Erasing
+[fw.undi] Erasing done
+[fw.undi] Flashing 100%
+[fw.undi] Flashing done 100%
+[fw.netlist] Erasing
+[fw.netlist] Erasing done
+[fw.netlist] Flashing 100%
+[fw.netlist] Flashing done 100%
+Activate new firmware by devlink reload
+[root@host ~]# devlink dev reload pci/0000:ca:00.0 action fw_activate
+reload_actions_performed:
+    fw_activate
+[root@host ~]# ip link show ens7f0
+71: ens7f0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
+    link/ether b4:96:91:dc:72:e0 brd ff:ff:ff:ff:ff:ff
+    altname enp202s0f0
 
-> 
-> This would avoid some noise for a separate stable patch, but let me
-> know what you prefer.
-> 
->>  and dev is only needed here so make this:
->> 	fl6.flowi6_l3mdev = l3mdev_master_ifindex(skb_dst(skb)->dev);
-> 
-> Actually it is used in that "strict" branch, this is why I've added
-> "dev" as a local variable. I guess that is still needed
-> with flowi6_l3mdev?
+dmesg after flash:
+[   55.120788] ice: Copyright (c) 2018, Intel Corporation.
+[   55.274734] ice 0000:ca:00.0: Get PHY capabilities failed status = -5, continuing anyway
+[   55.569797] ice 0000:ca:00.0: The DDP package was successfully loaded: ICE OS Default Package version 1.3.28.0
+[   55.603629] ice 0000:ca:00.0: Get PHY capability failed.
+[   55.608951] ice 0000:ca:00.0: ice_init_nvm_phy_type failed: -5
+[   55.647348] ice 0000:ca:00.0: PTP init successful
+[   55.675536] ice 0000:ca:00.0: DCB is enabled in the hardware, max number of TCs supported on this port are 8
+[   55.685365] ice 0000:ca:00.0: FW LLDP is disabled, DCBx/LLDP in SW mode.
+[   55.692179] ice 0000:ca:00.0: Commit DCB Configuration to the hardware
+[   55.701382] ice 0000:ca:00.0: 126.024 Gb/s available PCIe bandwidth, limited by 16.0 GT/s PCIe x8 link at 0000:c9:02.0 (capable of 252.048 Gb/s with 16.0 GT/s PCIe x16 link)
+Reboot doesn’t help, only second flash/activate with OOT or patched
+driver put card back in consistent state.
 
-ah, missed the strict branch use.
+After patch:
+[root@host ~]# devlink dev flash pci/0000:ca:00.0 file E810_XXVDA4_FH_O_SEC_FW_1p6p1p9_NVM_3p10_PLDMoMCTP_0.11_8000AD7B.bin
+Preparing to flash
+[fw.mgmt] Erasing
+[fw.mgmt] Erasing done
+[fw.mgmt] Flashing 100%
+[fw.mgmt] Flashing done 100%
+[fw.undi] Erasing
+[fw.undi] Erasing done
+[fw.undi] Flashing 100%
+[fw.undi] Flashing done 100%
+[fw.netlist] Erasing
+[fw.netlist] Erasing done
+[fw.netlist] Flashing 100%
+[fw.netlist] Flashing done 100%
+Activate new firmware by devlink reload
+[root@host ~]# devlink dev reload pci/0000:ca:00.0 action fw_activate
+reload_actions_performed:
+    fw_activate
+[root@host ~]# ip link show ens7f0
+19: ens7f0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
+    link/ether b4:96:91:dc:72:e0 brd ff:ff:ff:ff:ff:ff
+    altname enp202s0f0
+
+v2 changes:
+- fixed format issues
+- added info about fw and OOT driver versions
+- added time in the commit message summary
+- appended the unit to the macro name
+
+Fixes: 399e27dbbd9e94 ("ice: support immediate firmware activation via devlink reload")
+Signed-off-by: Petr Oros <poros@redhat.com>
+---
+ drivers/net/ethernet/intel/ice/ice_main.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index d768925785ca79..38825ed2ecd1de 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -6931,12 +6931,15 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
+ 
+ 	dev_dbg(dev, "rebuilding PF after reset_type=%d\n", reset_type);
+ 
++#define ICE_EMP_RESET_SLEEP_MS 5000
+ 	if (reset_type == ICE_RESET_EMPR) {
+ 		/* If an EMP reset has occurred, any previously pending flash
+ 		 * update will have completed. We no longer know whether or
+ 		 * not the NVM update EMP reset is restricted.
+ 		 */
+ 		pf->fw_emp_reset_disabled = false;
++
++		msleep(ICE_EMP_RESET_SLEEP_MS);
+ 	}
+ 
+ 	err = ice_init_all_ctrlq(hw);
+-- 
+2.35.1
+
