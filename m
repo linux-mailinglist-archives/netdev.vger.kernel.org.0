@@ -2,357 +2,243 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33A9D4FF683
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 14:13:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 755C54FF693
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 14:19:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235277AbiDMMOd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 08:14:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39372 "EHLO
+        id S231933AbiDMMV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 08:21:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232147AbiDMMOa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 08:14:30 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFF3E5DA0E
-        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 05:12:08 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id w7so1802742pfu.11
-        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 05:12:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :in-reply-to;
-        bh=ibwBzYwYbBh2t32XZnSkvZXGDv4TDx4u3z/MvzXw+Hk=;
-        b=gkTICXrqp6jNT6Ffdw92tqKSiXyUCWOkA4HV5AdIMJ3rMAACjKjv8DaNiBvJIMCfQm
-         qEwqcZsSA/7Evhr8MQ9y2Bwwmt+ELII3apXrnBp1PbXStAxG1YQ1WTKClaOz3Iq6MHqq
-         2MbIbFSyDRH9JZaw9iMtfdFOq6o9pfxJ4ISAY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:in-reply-to;
-        bh=ibwBzYwYbBh2t32XZnSkvZXGDv4TDx4u3z/MvzXw+Hk=;
-        b=ktE4srJiNJLG3rsoijgFMZ1XVAIHR+Ei76x1kGaBAiKnyh6b5A9rnGktXn14Bf0KP5
-         Qc5M0PIJR49/9AwCGEaXJiWokgXeL7Pd5xoPCpSiY3FL/u2uAN8+qzHa9Anl71Sv5xQA
-         wYHIKeTIfHOEc9NB9QRlFRdRguijG8RSz+OM3NzcqBlVywDncBJxER78Feijfr0Kr/qD
-         Z/uOx7HuDBc2Anr2is34Uvwk/qFbpsefeBcaMTu1eceIieWe/mfdOL9qjMwSl7ItDWpI
-         kmjywR+W9JymnO6IHgG4flkkifZ13WhH8oHRGihtamq3j8aWteMQr2wiu6Ge6JIqvpEq
-         i+Mg==
-X-Gm-Message-State: AOAM5307meuNHaKVrcgX+kexssdzpYgRFcX+uufp93oxpDqlTVlOCb7z
-        cPD+4RCGWKb+KDUCf6XDe+fYAA==
-X-Google-Smtp-Source: ABdhPJyLlUPrYZD77givFnsGDXMlkvd8w4YCxFfBeC5/0xO4CACj4oMFcbhuBK6CIluK1c01hBadbg==
-X-Received: by 2002:a63:4d4c:0:b0:39d:3808:804f with SMTP id n12-20020a634d4c000000b0039d3808804fmr15260385pgl.312.1649851928272;
-        Wed, 13 Apr 2022 05:12:08 -0700 (PDT)
-Received: from noodle ([192.19.250.250])
-        by smtp.gmail.com with ESMTPSA id v26-20020aa7809a000000b00505bf88a17bsm10755825pff.214.2022.04.13.05.12.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 05:12:06 -0700 (PDT)
-Date:   Wed, 13 Apr 2022 15:11:59 +0300
-From:   Boris Sukholitko <boris.sukholitko@broadcom.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S229483AbiDMMV0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 08:21:26 -0400
+Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFCE85881F;
+        Wed, 13 Apr 2022 05:19:02 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R911e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=33;SR=0;TI=SMTPD_---0V9zZ.hy_1649852336;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V9zZ.hy_1649852336)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 13 Apr 2022 20:18:57 +0800
+Message-ID: <1649852080.6360478-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH v9 18/32] virtio_ring: introduce virtqueue_resize()
+Date:   Wed, 13 Apr 2022 20:14:40 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Eric Dumazet <edumazet@google.com>,
-        zhang kai <zhangkaiheb@126.com>,
-        Yoshiki Komachi <komachi.yoshiki@gmail.com>,
-        Ilya Lifshits <ilya.lifshits@broadcom.com>
-Subject: Re: [PATCH net-next v2 5/5] net/sched: flower: Consider the number
- of tags for vlan filters
-Message-ID: <20220413121159.GB12128@noodle>
-References: <20220412100236.27244-1-boris.sukholitko@broadcom.com>
- <20220412100236.27244-6-boris.sukholitko@broadcom.com>
- <YlVd79bM00wuK9yW@nanopsycho>
- <20220412114049.GA2451@noodle>
- <YlVsn59Cbe+pnTte@nanopsycho>
- <20220412131610.GB2451@noodle>
- <YlWJ3TCKhih5qM/M@nanopsycho>
- <20220413081417.GA12128@noodle>
- <Yla3uGUYIQhHpsvs@nanopsycho>
-MIME-Version: 1.0
-In-Reply-To: <Yla3uGUYIQhHpsvs@nanopsycho>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000023c9ab05dc881625"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Vadim Pasternak <vadimp@nvidia.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        linux-um@lists.infradead.org, netdev@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org, bpf@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+References: <20220406034346.74409-1-xuanzhuo@linux.alibaba.com>
+ <20220406034346.74409-19-xuanzhuo@linux.alibaba.com>
+ <92622553-e02d-47bd-06f9-0ce24c22650c@redhat.com>
+In-Reply-To: <92622553-e02d-47bd-06f9-0ce24c22650c@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000023c9ab05dc881625
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-On Wed, Apr 13, 2022 at 01:44:56PM +0200, Jiri Pirko wrote:
-> Wed, Apr 13, 2022 at 10:14:17AM CEST, boris.sukholitko@broadcom.com wrote:
-> >On Tue, Apr 12, 2022 at 04:17:01PM +0200, Jiri Pirko wrote:
-> >> Tue, Apr 12, 2022 at 03:16:10PM CEST, boris.sukholitko@broadcom.com wrote:
-> >> >On Tue, Apr 12, 2022 at 02:12:15PM +0200, Jiri Pirko wrote:
-> >> >> Tue, Apr 12, 2022 at 01:40:49PM CEST, boris.sukholitko@broadcom.com wrote:
-> >> >> >On Tue, Apr 12, 2022 at 01:09:35PM +0200, Jiri Pirko wrote:
-> >> >> >> Tue, Apr 12, 2022 at 12:02:36PM CEST, boris.sukholitko@broadcom.com wrote:
-> >> >> >> >Currently the existence of vlan filters is conditional on the vlan
-> >> >> >> >protocol being matched in the tc rule. I.e. the following rule:
-> >> >> >> >
-> >> >> >> >tc filter add dev eth1 ingress flower vlan_prio 5
-> >> >> >> >
-> >> >> >> >is illegal because we lack protocol 802.1q in the rule.
-> >> >> >> >
-> >> >> >> >Having the num_of_vlans filter configured removes this restriction. The
-> >> >> >> >following rule becomes ok:
-> >> >> >> >
-> >> >> >> >tc filter add dev eth1 ingress flower num_of_vlans 1 vlan_prio 5
-> >> >> >> >
-> >> >> >> >because we know that the packet is single tagged.
-> >> >> >> >
-> >> >> >> >We achieve the above by having is_vlan_key helper look at the number of
-> >> >> >> 
-> >> >> >> Sorry to be a nitpicker, but who's "we"? When I read the patch
-> >> >> >> description, I need to understand clearly what the patch is doing, which
-> >> >> >> is not this case. You suppose to command the codebase what to do.
-> >> >> >> I fail to see that :/
-> >> >> >> 
-> >> >> >> 
-> >> >> >
-> >> >> >What do you think of the following description? The description consists
-> >> >> >of two parts: the first provides motivation for the patch, the second is
-> >> >> >the way the motivation is implemented. I've judiciously edited out the
-> >> >> >"we"-word. :)
-> >> >> >
-> >> >> ><description>
-> >> >> >
-> >> >> >Currently the existence of vlan filters is conditional on the vlan
-> >> >> >protocol being matched in the tc rule. I.e. the following rule:
-> >> >> >
-> >> >> >tc filter add dev eth1 ingress flower vlan_prio 5
-> >> >> >
-> >> >> >is illegal because vlan protocol (e.g. 802.1q) does not appear in the rule.
-> >> >> >
-> >> >> >Having the num_of_vlans filter configured removes this restriction. The
-> >> >> >following rule becomes ok:
-> >> >> >
-> >> >> >tc filter add dev eth1 ingress flower num_of_vlans 1 vlan_prio 5
-> >> >> 
-> >> >> So this is what this patch allows?
-> >> >
-> >> >Yes.
-> >> >
-> >> >> You are talking about it as it is
-> >> >> already possible with the code before this patch being applied.
-> >> >> 
-> >> >
-> >> >Sorry for the confusion. In the updated description I try to make the
-> >> >distinction much clearer.
-> >> >
-> >> >> 
-> >> >> >
-> >> >> >because having num_of_vlans==1 implies that the packet is single tagged.
-> >> >> >
-> >> >> >To make the above possible, is_vlan_key helper is changed to look at the
-> >> >> >number of vlans in addition to the vlan ethertype.
-> >> >> 
-> >> >> What "is changed"? You should tell the codebase what to do, what toadd,
-> >> >> remove or change. If you did that, it would be very clear to the reader
-> >> >> what the patch is supposed to do.
-> >> >> 
-> >> >
-> >> >The "changed" refers to the code of is_vlan_key function which is
-> >> >changed by this patch. Please see the updated description.
-> >> >
-> >> >> 
-> >> >> >
-> >> >> >Outer tag vlan filters (e.g.  vlan_prio) require the number of vlan tags
-> >> >> >be greater than 0. Inner filters (e.g. cvlan_prio) require the number of
-> >> >> >vlan tags be greater than 1.
-> >> >> 
-> >> >> Again, unclear what this describes, if the current code before the patch
-> >> >> or the state after this patch.
-> >> >> 
-> >> >
-> >> >What about the following:
-> >> >
-> >> ><description>
-> >> >
-> >> >Before this commit the existence of vlan filters was conditional on the vlan
-> >> >protocol being matched in the tc rule. For example, the following rule:
-> >> >
-> >> >tc filter add dev eth1 ingress flower vlan_prio 5
-> >> >
-> >> >was illegal because vlan protocol (e.g. 802.1q) does not appear in the rule.
-> >> >
-> >> >This commit removes the above restriction. Having the num_of_vlans
-> >> 
-> >> Say rather just "Remove the above restriction. ..."
-> >> 
-> >> 
-> >> >filter configured allows further matching on vlan attributes. The
-> >> >following rule is ok now:
-> >> >
-> >> >tc filter add dev eth1 ingress flower num_of_vlans 1 vlan_prio 5
-> >> >
-> >> >because having num_of_vlans==1 implies that the packet is single tagged.
-> >> >
-> >> >To do this, this commit changes is_vlan_key helper to look at the number
-> >> 
-> >> "Change the is_vlan_key helper to look..."
-> >> 
-> >> Don't talk about "this commit".
-> >> 
+On Tue, 12 Apr 2022 14:41:18 +0800, Jason Wang <jasowang@redhat.com> wrote:
+>
+> =E5=9C=A8 2022/4/6 =E4=B8=8A=E5=8D=8811:43, Xuan Zhuo =E5=86=99=E9=81=93:
+> > Introduce virtqueue_resize() to implement the resize of vring.
+> > Based on these, the driver can dynamically adjust the size of the vring.
+> > For example: ethtool -G.
 > >
-> >OK. The following incorporates both of the above suggestions:
+> > virtqueue_resize() implements resize based on the vq reset function. In
+> > case of failure to allocate a new vring, it will give up resize and use
+> > the original vring.
 > >
-> ><description>
+> > During this process, if the re-enable reset vq fails, the vq can no
+> > longer be used. Although the probability of this situation is not high.
 > >
-> >Before this commit the existence of vlan filters was conditional on the vlan
-> >protocol being matched in the tc rule. For example, the following rule:
+> > The parameter recycle is used to recycle the buffer that is no longer
+> > used.
 > >
-> >tc filter add dev eth1 ingress flower vlan_prio 5
+> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > ---
+> >   drivers/virtio/virtio_ring.c | 69 ++++++++++++++++++++++++++++++++++++
+> >   include/linux/virtio.h       |  3 ++
+> >   2 files changed, 72 insertions(+)
 > >
-> >was illegal because vlan protocol (e.g. 802.1q) does not appear in the rule.
+> > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+> > index 06f66b15c86c..6250e19fc5bf 100644
+> > --- a/drivers/virtio/virtio_ring.c
+> > +++ b/drivers/virtio/virtio_ring.c
+> > @@ -2554,6 +2554,75 @@ struct virtqueue *vring_create_virtqueue(
+> >   }
+> >   EXPORT_SYMBOL_GPL(vring_create_virtqueue);
 > >
-> >Remove the above restriction by looking at the num_of_vlans filter to
-> >allow further matching on vlan attributes. The following rule is ok now:
-> 
-> What's "now"?
+> > +/**
+> > + * virtqueue_resize - resize the vring of vq
+> > + * @_vq: the struct virtqueue we're talking about.
+> > + * @num: new ring num
+> > + * @recycle: callback for recycle the useless buffer
+> > + *
+> > + * When it is really necessary to create a new vring, it will set the =
+current vq
+> > + * into the reset state. Then call the passed callback to recycle the =
+buffer
+> > + * that is no longer used. Only after the new vring is successfully cr=
+eated, the
+> > + * old vring will be released.
+> > + *
+> > + * Caller must ensure we don't call this with other virtqueue operatio=
+ns
+> > + * at the same time (except where noted).
+> > + *
+> > + * Returns zero or a negative error.
+>
+>
+> Should we document that the virtqueue is kept unchanged (still
+> available) on (specific) failure?
+>
 
-"Now" is the situation after applying the patch. I'll mention this fact
-in the description below.
+OK.
 
-> 
-> 
+>
+> > + */
+> > +int virtqueue_resize(struct virtqueue *_vq, u32 num,
+> > +		     void (*recycle)(struct virtqueue *vq, void *buf))
+> > +{
+> > +	struct vring_virtqueue *vq =3D to_vvq(_vq);
+> > +	struct virtio_device *vdev =3D vq->vq.vdev;
+> > +	bool packed;
+> > +	void *buf;
+> > +	int err;
+> > +
+> > +	if (!vq->we_own_ring)
+> > +		return -EINVAL;
+> > +
+> > +	if (num > vq->vq.num_max)
+> > +		return -E2BIG;
+> > +
+> > +	if (!num)
+> > +		return -EINVAL;
+> > +
+> > +	packed =3D virtio_has_feature(vdev, VIRTIO_F_RING_PACKED) ? true : fa=
+lse;
+> > +
+> > +	if ((packed ? vq->packed.vring.num : vq->split.vring.num) =3D=3D num)
+> > +		return 0;
+> > +
+> > +	if (!vdev->config->reset_vq)
+> > +		return -ENOENT;
+> > +
+> > +	if (!vdev->config->enable_reset_vq)
+> > +		return -ENOENT;
+> > +
+> > +	err =3D vdev->config->reset_vq(_vq);
+> > +	if (err)
+> > +		return err;
+> > +
+> > +	while ((buf =3D virtqueue_detach_unused_buf(_vq)) !=3D NULL)
+> > +		recycle(_vq, buf);
+> > +
+> > +	if (packed) {
+> > +		err =3D virtqueue_resize_packed(_vq, num);
+> > +		if (err)
+> > +			virtqueue_reinit_packed(vq);
+>
+>
+> Calling reinit here seems a little bit odd, it looks more like a reset
+> of the virtqueue. Consider we may re-use virtqueue reset for more
+> purpose, I wonder if we need a helper like:
+>
+> virtqueue_resize() {
+>  =C2=A0=C2=A0=C2=A0 vdev->config->reset_vq(_vq);
+>  =C2=A0=C2=A0=C2=A0 if (packed)
+>  =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 virtqueue_reinit_packed(_vq)
+>  =C2=A0=C2=A0=C2=A0 else
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 virtqueue_reinit_split(_vq)
+> }
+
+Yes, currently we are implementing resize. This is used to implement
+set_ringparam()
+
+Later, when we implement virtio_net + AF_XDP, what we want is reset not res=
+ize,
+so we need to implement a helper:
+
+ virtqueue_reset() {
+  =C2=A0=C2=A0=C2=A0 vdev->config->reset_vq(_vq);
+  =C2=A0=C2=A0=C2=A0 if (packed)
+  =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 virtqueue_reinit_packed(_vq)
+  =C2=A0=C2=A0=C2=A0 else
+  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 virtqueue_reinit_split(_vq)
+ }
+
+So I use virtqueue_reinit_* as a separate function not only to deal with the
+case of resize failure, but also to consider the subsequent implementation =
+of
+virtqueue_reset()
+
+Thanks.
+
+
+>
+> Thanks
+>
+>
+> > +	} else {
+> > +		err =3D virtqueue_resize_split(_vq, num);
+> > +		if (err)
+> > +			virtqueue_reinit_split(vq);
+> > +	}
+> > +
+> > +	if (vdev->config->enable_reset_vq(_vq))
+> > +		return -EBUSY;
+> > +
+> > +	return err;
+> > +}
+> > +EXPORT_SYMBOL_GPL(virtqueue_resize);
+> > +
+> >   /* Only available for split ring */
+> >   struct virtqueue *vring_new_virtqueue(unsigned int index,
+> >   				      unsigned int num,
+> > diff --git a/include/linux/virtio.h b/include/linux/virtio.h
+> > index d59adc4be068..c86ff02e0ca0 100644
+> > --- a/include/linux/virtio.h
+> > +++ b/include/linux/virtio.h
+> > @@ -91,6 +91,9 @@ dma_addr_t virtqueue_get_desc_addr(struct virtqueue *=
+vq);
+> >   dma_addr_t virtqueue_get_avail_addr(struct virtqueue *vq);
+> >   dma_addr_t virtqueue_get_used_addr(struct virtqueue *vq);
 > >
-> >tc filter add dev eth1 ingress flower num_of_vlans 1 vlan_prio 5
-> >
-> >because having num_of_vlans==1 implies that the packet is single tagged.
-> >
-> >Change is_vlan_key helper to look at the number of vlans in addition to
-> >the vlan ethertype. Outer (e.g. vlan_prio) and inner (e.g.  cvlan_prio)
-> >tag vlan filters require the number of vlan tags to be greater then 0
-> >and 1 accordingly.
-> 
-> I don't get this last sentence. "filters require". Do you do the change
-> or are you stating what's in before the patch?
-> 
-
-The whole paragraph starting with "Change..." talks about what happens
-after the patch. I'll make it more explicit in the description below.
-
-The updated description follows:
-
-<description>
-
-Before this commit the existence of vlan filters was conditional on the vlan
-protocol being matched in the tc rule. For example, the following rule:
-
-tc filter add dev eth1 ingress flower vlan_prio 5
-
-was illegal because vlan protocol (e.g. 802.1q) does not appear in the rule.
-
-Remove the above restriction by looking at the num_of_vlans filter to
-allow further matching on vlan attributes. The following rule becomes
-legal as a result of this commit:
-
-tc filter add dev eth1 ingress flower num_of_vlans 1 vlan_prio 5
-
-because having num_of_vlans==1 implies that the packet is single tagged.
-
-Change is_vlan_key helper to look at the number of vlans in addition to
-the vlan ethertype. The outcome of this change is that outer (e.g. vlan_prio)
-and inner (e.g. cvlan_prio) tag vlan filters require the number of vlan
-tags to be greater then 0 and 1 accordingly.
-
-As a result of is_vlan_key change, the ethertype may be set to 0 when
-matching on the number of vlans. Update fl_set_key_vlan to avoid setting
-key, mask vlan_tpid for the 0 ethertype.
-
-</description>
-
-Thanks,
-Boris.
-
---00000000000023c9ab05dc881625
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
-QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
-UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
-M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
-Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
-14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
-a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
-XzCCBVgwggRAoAMCAQICDDSzinKpvcPTN4ZIJTANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
-RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
-UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMTAyMjIwNzMwMDRaFw0yMjA5MDUwNzM3NTVaMIGW
-MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
-BgNVBAoTDUJyb2FkY29tIEluYy4xGTAXBgNVBAMTEEJvcmlzIFN1a2hvbGl0a28xLDAqBgkqhkiG
-9w0BCQEWHWJvcmlzLnN1a2hvbGl0a29AYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
-AQ8AMIIBCgKCAQEAy/C7bjpxs+95egWV8sWrK9KO0SQi6Nxu14tJBgP+MOK5tvokizPFHoiXTymZ
-7ClfnmbcqT4PzWgI3thyfk64bgUo1nQkCTApn7ov3IRsWjmHExLSNoJ/siUHagO6BPAk4JSycrj5
-9tC9sL4FnIAbAHmOSILCyGyyaBAcmiyH/3toYqXyjJkK+vbWQSTxk2NlqJLIN/ypLJ1pYffVZGUs
-52g1hlQtHhgLIznB1Qx3Fop3nOUk8nNpQLON/aM8K5sl18964c7aXh7YZnalUQv3md4p2rAQQqIR
-rZ8HBc7YjlZynwOnZl1NrK4cP5aM9lMkbfRGIUitHTIhoDYp8IZ1dwIDAQABo4IB3jCCAdowDgYD
-VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
-ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
-CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
-MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
-d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
-hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
-bDAoBgNVHREEITAfgR1ib3Jpcy5zdWtob2xpdGtvQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggr
-BgEFBQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUtBmGs9S4
-t1FcFSfkrP2LKQQwBKMwDQYJKoZIhvcNAQELBQADggEBAJMAjVBkRmr1lvVvEjMaLfvMhwGpUfh6
-CMZsKICyz/ZZmvTmIZNwy+7b9r6gjLCV4tP63tz4U72X9qJwfzldAlYLYWIq9e/DKDjwJRYlzN8H
-979QJ0DHPSJ9EpvSKXob7Ci/FMkTfq1eOLjkPRF72mn8KPbHjeN3VVcn7oTe5IdIXaaZTryjM5Ud
-bR7s0ZZh6mOhJtqk3k1L1DbDTVB4tOZXZHRDghEGaQSnwU/qxCNlvQ52fImLFVwXKPnw6+9dUvFR
-ORaZ1pZbapCGbs/4QLplv8UaBmpFfK6MW/44zcsDbtCFfgIP3fEJBByIREhvRC5mtlRtdM+SSjgS
-ZiNfUggxggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
-LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgw0
-s4pyqb3D0zeGSCUwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIGGypwMHzqRGhiri
-PcD941/B9xHKY3dyP2n3d0gRNs2sMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
-AQkFMQ8XDTIyMDQxMzEyMTIwOFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
-AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
-MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQAF8k2BMCo2zzk5toaxN67ectQnK0cYr1YL
-xm5Ye6JqtrCZasZ5CgbrrrYcuI2WyajRgeszuago6HIlrSQYUQBbyA4BD0Di6n8yhRGGFfl7iVqA
-wCcQttb7B8//geCsZcE6sMUa6j90chp7xfYaqJVCpdCAhuRamq+wnW8LUuSDpU+t6cB2NG00JpI9
-Evjeph7IypfiBnV5DL/MMKKHIKV9DkNn8HWPmIsAVaQ+wF6DDp45eHZBRwdONSHkgkgM6giIYroz
-To+30bKWZJrQFVdCvZZj7KtsXPfLh5QKUkrRcLhWLo85VOFZzvHMA5yPBWJ+546DVNd+K/QW3d8a
-7hlP
---00000000000023c9ab05dc881625--
+> > +int virtqueue_resize(struct virtqueue *vq, u32 num,
+> > +		     void (*recycle)(struct virtqueue *vq, void *buf));
+> > +
+> >   /**
+> >    * virtio_device - representation of a device using virtio
+> >    * @index: unique position on the virtio bus
+>
