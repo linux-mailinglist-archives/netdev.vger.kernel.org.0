@@ -2,129 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F1094FFFA1
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 21:54:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDEE04FFFA2
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 21:54:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238561AbiDMT4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 15:56:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60048 "EHLO
+        id S237186AbiDMT4w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 15:56:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238550AbiDMT41 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 15:56:27 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 904F67EB05;
-        Wed, 13 Apr 2022 12:53:04 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id p135so3127839iod.2;
-        Wed, 13 Apr 2022 12:53:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PYQkokTYtwVbYRHQxnb+iuaU7r3MFZjW0sFXFg0tbtg=;
-        b=FthKul79qbqDNiKkhhp37liOFMg2g7fU3GliLbRuthWZRCmD9AJvnA4YBUNUNO41dD
-         8k6b6mzESXUzs9HbBJxBNonOEjAO6XZHS+dMvw9800yDcKsbKxyZJ2zEY0wN/r1xJ1qz
-         uw35pd674o+WM/HSPOTc35R1MwQCkHCjXVFPrW6nP9zXyhqw9x3rL6lOuJPNQ69Zdvih
-         JfQ3F2jz7iOjuMlTp7flU2GJFzAzLQPZWkoWammpawwvhqJ5yXuc6aUvrrhCnIFF4Ohk
-         yQT6J7+joRWskIcEkx6ICQFiXyo+IKN1aZqCi2W0cKjEF2Oy+hVC0KYdUy+YZUtzyf5U
-         TWNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PYQkokTYtwVbYRHQxnb+iuaU7r3MFZjW0sFXFg0tbtg=;
-        b=uHIOwcy5OgDFB/BVgNvyawxkw5iTiEj4Z2ZfLow18wPmOdhSuyoOmEQCH9vi3TJbsH
-         Y/NEASTYIQiU/Dd6Ia1ymu688D0tT2lEFbI9MOmLEgcUXBUVZNA4g9dQx/W7CP1Kuwhe
-         IsV2McJ8kNmpXJJr4aITC13OLx0yK3VUze7mqxpEK99sDEDlvyVu/XpNFu4Tpv5LCz//
-         ff7wlduosgt6uCnLMjq6vRGPA+X2UttVVMCltVbnW8QgJXoA2nhnFtnYxfms5QlaX/wK
-         Quv2McDS9ZbgkAn1mIRI5pBCSOCqPgGiRUNEwkkE9vtX4rI2sUM1mI5WemH4cg6aX8Tl
-         IlJg==
-X-Gm-Message-State: AOAM533eNNMljG55l2vEm3KeshkK336dCl08VQg66mVLlPbgbzzC2QTc
-        Ewirn4wqX0qIQeRzmI6EciylFOWfEZ/C3SNQHrc=
-X-Google-Smtp-Source: ABdhPJx8OI+c7t6n0bKaqM8nR4Al1KGElwxWsQ/7aotAR0YzM56X0s9y51jdRPwgB1i+l5OukTXEbgPAmwwNvD/yFxk=
-X-Received: by 2002:a6b:8bd7:0:b0:646:2804:5c73 with SMTP id
- n206-20020a6b8bd7000000b0064628045c73mr17753794iod.112.1649879583916; Wed, 13
- Apr 2022 12:53:03 -0700 (PDT)
+        with ESMTP id S237447AbiDMT4i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 15:56:38 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCCF35D64D;
+        Wed, 13 Apr 2022 12:54:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1649879650; x=1681415650;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ywh3+h3uP3qVZckj1zw7OyZyfOYOqj/A4ypO6SPBREQ=;
+  b=Z69EQVfjKplCq4/2agQdcyZP2raNi3Mc04kBnf+n7OcGMQ8awFRKKlE1
+   3fgBr33IxG3Cf4aAyFfcV6jxdaXIHIP+acbvBv654LhaWKmsnrsXexomc
+   wOU1bgZ9JmLQVCiXFWchaG2Iac6sfFygQqhZZtn8EOPCeHmLiS7S/VkTz
+   Sv6WQMeH9OqT/ZMEcQHTtW+Yb2eXBm4Y8K7MNUJdRh389QEbXp5w5Lqpb
+   GyG6midTzUzrXJ36ijuMDg7uUR/RAi5lHoIhzXySVN4/VKms9II/zr65b
+   V9fM4376+1qLwfy6kO9z6WQJ0vGwEAdrlr5OwMdAQvDZH/5MCTDEFJH4X
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.90,257,1643698800"; 
+   d="scan'208";a="152570440"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Apr 2022 12:54:09 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 13 Apr 2022 12:54:08 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Wed, 13 Apr 2022 12:54:06 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <pabeni@redhat.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net] net: lan966x: Make sure to release ptp interrupt
+Date:   Wed, 13 Apr 2022 21:57:16 +0200
+Message-ID: <20220413195716.3796467-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-References: <20220413183256.1819164-1-sdf@google.com> <CAEf4Bzb_-KMy7GBN_NsJCKXHfDnGTtVEZb7i4dmcN-8=cLhO+A@mail.gmail.com>
- <Ylcm/dfeU3AEYqlV@google.com>
-In-Reply-To: <Ylcm/dfeU3AEYqlV@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 13 Apr 2022 12:52:53 -0700
-Message-ID: <CAEf4BzYuTd9m4_J9nh5pZ9baoMMQK+m6Cum8UMCq-k6jFTJwEA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: move rcu lock management out of
- BPF_PROG_RUN routines
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 12:39 PM <sdf@google.com> wrote:
->
-> On 04/13, Andrii Nakryiko wrote:
-> > On Wed, Apr 13, 2022 at 11:33 AM Stanislav Fomichev <sdf@google.com>
-> > wrote:
-> > >
-> > > Commit 7d08c2c91171 ("bpf: Refactor BPF_PROG_RUN_ARRAY family of macros
-> > > into functions") switched a bunch of BPF_PROG_RUN macros to inline
-> > > routines. This changed the semantic a bit. Due to arguments expansion
-> > > of macros, it used to be:
-> > >
-> > >         rcu_read_lock();
-> > >         array = rcu_dereference(cgrp->bpf.effective[atype]);
-> > >         ...
-> > >
-> > > Now, with with inline routines, we have:
-> > >         array_rcu = rcu_dereference(cgrp->bpf.effective[atype]);
-> > >         /* array_rcu can be kfree'd here */
-> > >         rcu_read_lock();
-> > >         array = rcu_dereference(array_rcu);
-> > >
->
-> > So subtle difference, wow...
->
-> > But this open-coding of rcu_read_lock() seems very unfortunate as
-> > well. Would making BPF_PROG_RUN_ARRAY back to a macro which only does
-> > rcu lock/unlock and grabs effective array and then calls static inline
-> > function be a viable solution?
->
-> > #define BPF_PROG_RUN_ARRAY_CG_FLAGS(array_rcu, ctx, run_prog, ret_flags) \
-> >    ({
-> >        int ret;
->
-> >        rcu_read_lock();
-> >        ret =
-> > __BPF_PROG_RUN_ARRAY_CG_FLAGS(rcu_dereference(array_rcu), ....);
-> >        rcu_read_unlock();
-> >        ret;
-> >    })
->
->
-> > where __BPF_PROG_RUN_ARRAY_CG_FLAGS is what
-> > BPF_PROG_RUN_ARRAY_CG_FLAGS is today but with __rcu annotation dropped
-> > (and no internal rcu stuff)?
->
-> Yeah, that should work. But why do you think it's better to hide them?
-> I find those automatic rcu locks deep in the call stack a bit obscure
-> (when reasoning about sleepable vs non-sleepable contexts/bpf).
->
-> I, as the caller, know that the effective array is rcu-managed (it
-> has __rcu annotation) and it seems natural for me to grab rcu lock
-> while work with it; I might grab it for some other things like cgroup
-> anyway.
+When the lan966x driver is removed make sure to remove also the ptp_irq
+IRQ.
 
-If you think that having this more explicitly is better, I'm fine with
-that as well. I thought a simpler invocation pattern would be good,
-given we call bpf_prog_run_array variants in quite a lot of places. So
-count me indifferent. I'm curious what others think.
+Fixes: e85a96e48e3309 ("net: lan966x: Add support for ptp interrupts")
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+ drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+index 958e55596b82..95830e3e2b1f 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+@@ -671,6 +671,9 @@ static void lan966x_cleanup_ports(struct lan966x *lan966x)
+ 		disable_irq(lan966x->ana_irq);
+ 		lan966x->ana_irq = -ENXIO;
+ 	}
++
++	if (lan966x->ptp_irq)
++		devm_free_irq(lan966x->dev, lan966x->ptp_irq, lan966x);
+ }
+ 
+ static int lan966x_probe_port(struct lan966x *lan966x, u32 p,
+-- 
+2.33.0
+
