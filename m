@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E21A24FF53C
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 12:53:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F39144FF542
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 12:53:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235058AbiDMKy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 06:54:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57800 "EHLO
+        id S235054AbiDMKyy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 06:54:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235019AbiDMKyr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 06:54:47 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF5E4593B8
-        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 03:52:26 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id s18so3204369ejr.0
-        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 03:52:26 -0700 (PDT)
+        with ESMTP id S235023AbiDMKys (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 06:54:48 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB46B59A4A
+        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 03:52:27 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id bg10so3125944ejb.4
+        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 03:52:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=uUhhwavoelOAutf6ZINYv5+4TG3VETWVUGFixQHcuak=;
-        b=rLSJSouYiv7OkG/FyDtfvfS0x+gh2sGEdXXD3TxkUkcmfLkc4s3DwFs9WTIygFn5Fj
-         9dSFB3Q1LOeTUmj52Pu5jrZS6Lqgao9V4kPo8O8KEc2Q/Kez1XjZZY4DPSluEyfFd4Ww
-         EydDZh+HT81QxaYKcL6dvGh6SYfTkUwGZ+P7sw8+uGAjks7+/cXXSX2OzW4UjCXD4jly
-         fx8cx49P+Jph5i4PQluNOpPv8OtonmhYKrDY9BeqB4i4IEa6rZhhDcdKDVufnhylZZ9E
-         aPGeIj0Il1AgFqn+S7NrqP+SoGJSPoPoJSTOaVbWq47E7ub44xVG+fFXXW8ChJPQthi6
-         CPQw==
+        bh=0+d6Rov8cjDp4XASxWMxnkxwuD5Gq2aFtJ+v6sDjNGk=;
+        b=E2vRYdVkMpOuOmuBfP6Oq6xxQ8AygCk0IigcDxqCSJmZqps/Xbyf6XW0O12cT1Oax4
+         FiCB528iHFY03d7tXKx1d7N2lWiDg084eNkY9gq7shM2MIKG9UF5/64tnrZ3mpv2OI6e
+         mV12s6jeyA6T8qTdawpgBxEpaf9xzc4JN48EHsKpzIF3Puf1xfFHkxbwqDOBfCUKcufz
+         72d5o/qUEMspTt1BacW//JMc0IKjZixQER9i2DrxZEZHW1da2hBX9DWVs/SXN4DCMKMj
+         t4gR2S79+YxQGdmMRFJdJ5nY175E47oT+YLWlr/jgqTtIN17mxndg0U/ui3nDbEhX3z9
+         Zgrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=uUhhwavoelOAutf6ZINYv5+4TG3VETWVUGFixQHcuak=;
-        b=t1mVYYCz+9kcXmTzhOFeIAdrUm46aWlyshqER2/0TxWxiiDedl9+yilesJY3S7lPP8
-         /4hMlSfgBWFEjFACFz0ZwuBPfqkfH4Mr7WmIMnv3/+vhL7WP8tDEaetdLSlereB+7Ab3
-         84SpTTUTOiSkf+myXZ/f3ZEOGaD7KCQglBcjrJdV/fzWCwOzkby0wE6H95Vdq7sd6B0W
-         7srUgrQgAHQ7TOprTbrl4u3OHf+xxU19k32yelpEYtgMZTpB/5yVZ68oQ8nVAwBjOWro
-         w2O6QecSi7bgSeSeVuBofTfpS+ovIujKRFc7nPVP4u8tTN5u/ZXdii5OQ1MO70vHYadS
-         gx3w==
-X-Gm-Message-State: AOAM533WxqQsTCmMGmxxrUowSci/I9OxF6rVRqDf1SjsTVFEr+0ZQtgv
-        8hj5Xly7NCsrS6qAFSwAHV0E8i9ky8PGn6O9
-X-Google-Smtp-Source: ABdhPJwRtQi8x5hLJqvnOxjlqt8uUG4sb0nQ06Dq5kORtMji7kyjiZDwAaGxEDr/C2WKg/zOzLnO8A==
-X-Received: by 2002:a17:907:1690:b0:6db:325:3088 with SMTP id hc16-20020a170907169000b006db03253088mr39050134ejc.718.1649847145173;
-        Wed, 13 Apr 2022 03:52:25 -0700 (PDT)
+        bh=0+d6Rov8cjDp4XASxWMxnkxwuD5Gq2aFtJ+v6sDjNGk=;
+        b=aNFhOVagYQgerGw+XFxwVvGcmit3j84d5pDDyw8JRZdOR0xj9NGA1NKDY8iUTK0rEN
+         osS6WRey9mPwy2k8q3iaUNv+Y7BT3SFdu4IaIeIfIjVwCBJwJBxGoMoJxc2jpOP06yCe
+         rFVJbM0OXjiOSq5ruV+ZfGHFndb9d8ZUK86aHcVceCwmRXAH9rNAHEN4V0d1+gckYDJV
+         efshKbfmKSoAo7emDotYxl8BVezW0ePXPtDrYpnwv6QxgIuMW1aDE/A5wutWZgkXDrm2
+         qx9Rhg/3qQoR86DT5iVXYVLT+qAb3h/BVKVxzlYWruX58kNXSzSG07yuT3eUqL/qkzXG
+         5ayQ==
+X-Gm-Message-State: AOAM533PlgTknxBMTGHLuj0Oi17UB6wqVsMchfL1bAS2Hri5SrTLKdPB
+        ZRAp/wAEiisYe6oX0cSAyiA4VL0bp6BtPv1L
+X-Google-Smtp-Source: ABdhPJzHstTpmBQgNCZQOeZWES1aAH90boWyFAjDx2nJhi9OSbcCrVvB3z3PKcnCHhXapqWq8d+UHw==
+X-Received: by 2002:a17:906:3ad3:b0:6cd:382b:86e5 with SMTP id z19-20020a1709063ad300b006cd382b86e5mr36598097ejd.145.1649847146154;
+        Wed, 13 Apr 2022 03:52:26 -0700 (PDT)
 Received: from debil.. (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id v8-20020a1709063bc800b006e898cfd926sm2960952ejf.134.2022.04.13.03.52.24
+        by smtp.gmail.com with ESMTPSA id v8-20020a1709063bc800b006e898cfd926sm2960952ejf.134.2022.04.13.03.52.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 03:52:24 -0700 (PDT)
+        Wed, 13 Apr 2022 03:52:25 -0700 (PDT)
 From:   Nikolay Aleksandrov <razor@blackwall.org>
 To:     netdev@vger.kernel.org
 Cc:     dsahern@kernel.org, roopa@nvidia.com, idosch@idosch.org,
         kuba@kernel.org, davem@davemloft.net,
         bridge@lists.linux-foundation.org,
         Nikolay Aleksandrov <razor@blackwall.org>
-Subject: [PATCH net-next v4 04/12] net: netlink: add NLM_F_BULK delete request modifier
-Date:   Wed, 13 Apr 2022 13:51:54 +0300
-Message-Id: <20220413105202.2616106-5-razor@blackwall.org>
+Subject: [PATCH net-next v4 05/12] net: rtnetlink: add bulk delete support flag
+Date:   Wed, 13 Apr 2022 13:51:55 +0300
+Message-Id: <20220413105202.2616106-6-razor@blackwall.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220413105202.2616106-1-razor@blackwall.org>
 References: <20220413105202.2616106-1-razor@blackwall.org>
@@ -70,34 +70,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a new delete request modifier called NLM_F_BULK which, when
-supported, would cause the request to delete multiple objects. The flag
-is a convenient way to signal that a multiple delete operation is
-requested which can be gradually added to different delete requests. In
-order to make sure older kernels will error out if the operation is not
-supported instead of doing something unintended we have to break a
-required condition when implementing support for this flag, f.e. for
-neighbors we will omit the mandatory mac address attribute.
-Initially it will be used to add flush with filtering support for bridge
-fdbs, but it also opens the door to add similar support to others.
+Add a new rtnl flag (RTNL_FLAG_BULK_DEL_SUPPORTED) which is used to
+verify that the delete operation allows bulk object deletion. Also emit
+a warning if anyone tries to set it for non-delete kind.
 
+Suggested-by: David Ahern <dsahern@kernel.org>
 Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
 ---
- include/uapi/linux/netlink.h | 1 +
- 1 file changed, 1 insertion(+)
+v4: new patch
 
-diff --git a/include/uapi/linux/netlink.h b/include/uapi/linux/netlink.h
-index 4c0cde075c27..855dffb4c1c3 100644
---- a/include/uapi/linux/netlink.h
-+++ b/include/uapi/linux/netlink.h
-@@ -72,6 +72,7 @@ struct nlmsghdr {
+ include/net/rtnetlink.h | 3 ++-
+ net/core/rtnetlink.c    | 8 ++++++++
+ 2 files changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/include/net/rtnetlink.h b/include/net/rtnetlink.h
+index 0bf622409aaa..bf8bb3357825 100644
+--- a/include/net/rtnetlink.h
++++ b/include/net/rtnetlink.h
+@@ -10,7 +10,8 @@ typedef int (*rtnl_doit_func)(struct sk_buff *, struct nlmsghdr *,
+ typedef int (*rtnl_dumpit_func)(struct sk_buff *, struct netlink_callback *);
  
- /* Modifiers to DELETE request */
- #define NLM_F_NONREC	0x100	/* Do not delete recursively	*/
-+#define NLM_F_BULK	0x200	/* Delete multiple objects	*/
+ enum rtnl_link_flags {
+-	RTNL_FLAG_DOIT_UNLOCKED = BIT(0),
++	RTNL_FLAG_DOIT_UNLOCKED		= BIT(0),
++	RTNL_FLAG_BULK_DEL_SUPPORTED	= BIT(1),
+ };
  
- /* Flags for ACK message */
- #define NLM_F_CAPPED	0x100	/* request was capped */
+ enum rtnl_kinds {
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index beda4a7da062..63c7df52a667 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -249,6 +249,8 @@ static int rtnl_register_internal(struct module *owner,
+ 	if (dumpit)
+ 		link->dumpit = dumpit;
+ 
++	WARN_ON(rtnl_msgtype_kind(msgtype) != RTNL_KIND_DEL &&
++		(flags & RTNL_FLAG_BULK_DEL_SUPPORTED));
+ 	link->flags |= flags;
+ 
+ 	/* publish protocol:msgtype */
+@@ -6009,6 +6011,12 @@ static int rtnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	}
+ 
+ 	flags = link->flags;
++	if (kind == RTNL_KIND_DEL && (nlh->nlmsg_flags & NLM_F_BULK) &&
++	    !(flags & RTNL_FLAG_BULK_DEL_SUPPORTED)) {
++		NL_SET_ERR_MSG(extack, "Bulk delete is not supported");
++		goto err_unlock;
++	}
++
+ 	if (flags & RTNL_FLAG_DOIT_UNLOCKED) {
+ 		doit = link->doit;
+ 		rcu_read_unlock();
 -- 
 2.35.1
 
