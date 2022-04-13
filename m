@@ -2,67 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C8DDF4FFF7B
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 21:40:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C733F4FFF84
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 21:41:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236933AbiDMTmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 15:42:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48918 "EHLO
+        id S236994AbiDMTnh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 15:43:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236102AbiDMTmG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 15:42:06 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E23C036B49
-        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 12:39:43 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id d129-20020a254f87000000b006411bf3f331so2530481ybb.4
-        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 12:39:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=tLNxohLKrVZ2VVuJVQUOGJ+tr2LG5dKkJ9dtNAVBr4M=;
-        b=aDeLMXW3YW0LEhpD+WohfSXtav5zJ0uHeotCMJ57B3AxhTBSgE9kZR06v6MdMLhA93
-         xBgcOX5NaMZHkbabUgvPlxqq57dGIIOEqLlVNAf69iIflYthOiQQG07QoQW8gL2lyOLf
-         XPiYRZc48IDshzUkFcyzuYZGRwGqj6ZSDqNY88KDWsMkKcEDMIEyBJ9ugSiiWc+/xw/d
-         WoslN5QVNVOsy/U2HIyFH1+3g4YkAlJaT1uXXkZGiZlM/dzAOSeny9yAice2QSqBJCzR
-         QoFwC4cETm3rvLKYjnqMp6t43U3ThyGjHPmTm3m2og4cJSiUVi+TPTXLdXlGl0CHnXMM
-         sgLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=tLNxohLKrVZ2VVuJVQUOGJ+tr2LG5dKkJ9dtNAVBr4M=;
-        b=QK+Lv/xKGcihe9/awH/nDUsG0AQfb0cxmRkLN/SkPOqp5D7PAzpfsadfT58MKe6nEv
-         TqPf9XMXiDmHm4TTxIyoSn0e6g9XvhEagoQY2ibPquDKX9sv/l3bh7zXh/WYrLxWpLKA
-         ehyEujSrc9W5J5rpneRTzkYChjYUWTRlEcNVtPJjj0OW/ZYdrfzIj6jqsulwHeoc5nta
-         qJ9IGQUAHpRGEZhDj4M2d1KerfQJQbx4RQ4SACm2Wh7aTJvv4xMWeqS5grYZCglzGsEr
-         neGMF8nUcz3JZ1vt5+Vqv6U//CHKGWIOSF1U4P2beeXHPqrSipttFcBkr3o2q5vf6R2L
-         dQXw==
-X-Gm-Message-State: AOAM530dwfeT8hijFKTefZcMA+7MYIg8PRRTbZ3K6/3OhdusJ5X5nUyd
-        tk8KMNEUiq++1fNenSg8ZQv5ftY=
-X-Google-Smtp-Source: ABdhPJxWATPkf8KlWcgRLEhbe1i88LM2aPdMSwy8XRQXKbhlUx/A5AAh2nr639TLrv1W9e+ZEr8zP7I=
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:45c6:42d5:e443:72cc])
- (user=sdf job=sendgmr) by 2002:a25:1dc2:0:b0:641:e120:4ab1 with SMTP id
- d185-20020a251dc2000000b00641e1204ab1mr389524ybd.169.1649878783188; Wed, 13
- Apr 2022 12:39:43 -0700 (PDT)
-Date:   Wed, 13 Apr 2022 12:39:41 -0700
-In-Reply-To: <CAEf4Bzb_-KMy7GBN_NsJCKXHfDnGTtVEZb7i4dmcN-8=cLhO+A@mail.gmail.com>
-Message-Id: <Ylcm/dfeU3AEYqlV@google.com>
-Mime-Version: 1.0
-References: <20220413183256.1819164-1-sdf@google.com> <CAEf4Bzb_-KMy7GBN_NsJCKXHfDnGTtVEZb7i4dmcN-8=cLhO+A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: move rcu lock management out of
- BPF_PROG_RUN routines
-From:   sdf@google.com
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        with ESMTP id S238305AbiDMTng (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 15:43:36 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB29D78067;
+        Wed, 13 Apr 2022 12:41:13 -0700 (PDT)
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1neirM-000F0N-13; Wed, 13 Apr 2022 21:41:00 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1neirL-000Bl2-HH; Wed, 13 Apr 2022 21:40:59 +0200
+Subject: Re: [PATCH v4 sysctl-next] bpf: move bpf sysctls from kernel/sysctl.c
+ to bpf module
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     Yan Zhu <zhuyan34@huawei.com>, andrii@kernel.org, ast@kernel.org,
+        bpf@vger.kernel.org, john.fastabend@gmail.com, kafai@fb.com,
+        keescook@chromium.org, kpsingh@kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        liucheng32@huawei.com, netdev@vger.kernel.org,
+        nixiaoming@huawei.com, songliubraving@fb.com,
+        xiechengliang1@huawei.com, yhs@fb.com, yzaikin@google.com,
+        zengweilin@huawei.com, leeyou.li@huawei.com,
+        laiyuanyuan.lai@huawei.com
+References: <Yk4XE/hKGOQs5oq0@bombadil.infradead.org>
+ <20220407070759.29506-1-zhuyan34@huawei.com>
+ <3a82460b-6f58-6e7e-a3d9-141f42069eda@iogearbox.net>
+ <Ylcd0zvHhi96zVi+@bombadil.infradead.org>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <b615bd44-6bd1-a958-7e3f-dd2ff58931a1@iogearbox.net>
+Date:   Wed, 13 Apr 2022 21:40:58 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <Ylcd0zvHhi96zVi+@bombadil.infradead.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26511/Wed Apr 13 10:22:45 2022)
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,54 +61,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04/13, Andrii Nakryiko wrote:
-> On Wed, Apr 13, 2022 at 11:33 AM Stanislav Fomichev <sdf@google.com>  
-> wrote:
-> >
-> > Commit 7d08c2c91171 ("bpf: Refactor BPF_PROG_RUN_ARRAY family of macros
-> > into functions") switched a bunch of BPF_PROG_RUN macros to inline
-> > routines. This changed the semantic a bit. Due to arguments expansion
-> > of macros, it used to be:
-> >
-> >         rcu_read_lock();
-> >         array = rcu_dereference(cgrp->bpf.effective[atype]);
-> >         ...
-> >
-> > Now, with with inline routines, we have:
-> >         array_rcu = rcu_dereference(cgrp->bpf.effective[atype]);
-> >         /* array_rcu can be kfree'd here */
-> >         rcu_read_lock();
-> >         array = rcu_dereference(array_rcu);
-> >
+On 4/13/22 9:00 PM, Luis Chamberlain wrote:
+> On Wed, Apr 13, 2022 at 04:45:00PM +0200, Daniel Borkmann wrote:
+>> On 4/7/22 9:07 AM, Yan Zhu wrote:
+>>> We're moving sysctls out of kernel/sysctl.c as its a mess. We
+>>> already moved all filesystem sysctls out. And with time the goal is
+>>> to move all sysctls out to their own subsystem/actual user.
+>>>
+>>> kernel/sysctl.c has grown to an insane mess and its easy to run
+>>> into conflicts with it. The effort to move them out is part of this.
+>>>
+>>> Signed-off-by: Yan Zhu <zhuyan34@huawei.com>
+>>
+>> Acked-by: Daniel Borkmann <daniel@iogearbox.net>
+>>
+>> Given the desire is to route this via sysctl-next and we're not shortly
+>> before but after the merge win, could we get a feature branch for bpf-next
+>> to pull from to avoid conflicts with ongoing development cycle?
+> 
+> Sure thing. So I've never done this sort of thing, so forgive me for
+> being new at it. Would it make sense to merge this change to sysctl-next
+> as-is today and put a frozen branch sysclt-next-bpf to reflect this,
+> which bpf-next can merge. And then sysctl-next just continues to chug on
+> its own? As-is my goal is to keep sysctl-next as immutable as well.
+> 
+> Or is there a better approach you can recommend?
 
-> So subtle difference, wow...
+Are you able to merge the pr/bpf-sysctl branch into your sysctl-next tree?
 
-> But this open-coding of rcu_read_lock() seems very unfortunate as
-> well. Would making BPF_PROG_RUN_ARRAY back to a macro which only does
-> rcu lock/unlock and grabs effective array and then calls static inline
-> function be a viable solution?
+   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/log/?h=pr/bpf-sysctl
 
-> #define BPF_PROG_RUN_ARRAY_CG_FLAGS(array_rcu, ctx, run_prog, ret_flags) \
->    ({
->        int ret;
+This is based off common base for both trees (3123109284176b1532874591f7c81f3837bbdc17)
+so should only pull in the single commit then.
 
->        rcu_read_lock();
->        ret =  
-> __BPF_PROG_RUN_ARRAY_CG_FLAGS(rcu_dereference(array_rcu), ....);
->        rcu_read_unlock();
->        ret;
->    })
-
-
-> where __BPF_PROG_RUN_ARRAY_CG_FLAGS is what
-> BPF_PROG_RUN_ARRAY_CG_FLAGS is today but with __rcu annotation dropped
-> (and no internal rcu stuff)?
-
-Yeah, that should work. But why do you think it's better to hide them?
-I find those automatic rcu locks deep in the call stack a bit obscure
-(when reasoning about sleepable vs non-sleepable contexts/bpf).
-
-I, as the caller, know that the effective array is rcu-managed (it
-has __rcu annotation) and it seems natural for me to grab rcu lock
-while work with it; I might grab it for some other things like cgroup  
-anyway.
+Thanks,
+Daniel
