@@ -2,100 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DFB54FF08B
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 09:28:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 852E34FF08E
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 09:28:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233345AbiDMH3t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 03:29:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60644 "EHLO
+        id S233343AbiDMHaH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 03:30:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233327AbiDMH3q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 03:29:46 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CB303CA76
-        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 00:27:26 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id c6so1274512edn.8
-        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 00:27:26 -0700 (PDT)
+        with ESMTP id S229718AbiDMHaF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 03:30:05 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 007D618E0C;
+        Wed, 13 Apr 2022 00:27:44 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id ks6so2155675ejb.1;
+        Wed, 13 Apr 2022 00:27:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=qs/d6eRMsE3W5PauvBIvDHu7IP681Nr7sUF8OehanNA=;
-        b=AY5+QQmby5D8nvGvA7iUqTaPU5tTPAIrk1g+XO3Z8dXZ4ra0Zjjmw42wd+4nTl01h9
-         aEpnG+VL5SOMivcSneQAYKHQ8COdjSl6fATqvWjadCiAjnLjdpfgjeCi8CBouEMXlcUr
-         CI9Adk9z6cLmT5DJ5L2UEd/XnDliz1O0xXDdbFjYSj7v1Ixz/ZjBQlUQyiKC3/d49ZtE
-         bmmzQ0LExw2KPzX5dAJtHi1kBjtR23us4tKUujOnDgwWPQl0DfAMZjuIJXPvPXcwCJBA
-         swWvDoSO8HSEi0y9hI2k5s1shuEG4WvCnDMn2x4KmQ2zxiOgjavZSXaALtTq51jowkTt
-         lW3w==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qwO5x8daEsKn7AJxj0XCIjFXgnsykAoMFtFOPr30/OY=;
+        b=omH/vMEmEDVQszB0OIuSdTvi7p/jJXy6R7A4244H80S4k3+XRyMjfRgpMOFKczNheK
+         0jy7I2xFnKdHegbsri9PY8EXS+4uFYoIGtYTxKnQ/I1UBHEt3e/74Tk+DLZwRfczFDpL
+         4nNc2M9wLBIW/NcnCJpG3Nwg22ZUYnph1J536J98rJMFw4wSWrNNxwdCYDzXjpoELrb8
+         AiYRB7OjbIX80I0M3LzLL+ukfZ3T35MEbZ7hX6tNFGAwytw5AuBCjFFIbH7dL7b1ku0X
+         TxjTMYhCbTwQn0DDRcsEGgsEp0t2OHz72ifkKSR4lHRLVLybOQnppkwpv8o9RuAJmVOv
+         jLaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=qs/d6eRMsE3W5PauvBIvDHu7IP681Nr7sUF8OehanNA=;
-        b=qKvLaSMLSoXNE1aYBLamTHu4BSbhOS/E9arcHM9cLin/soDLa7rxso+4mSJn+CMNTF
-         0AFkRvH6/D5IcdLl8nyYNw6QIFTDMDNNObue8lciP2rjq/nGTxp3zqkUChZcmzicz7Ea
-         +oWDxZ5oMeddkIz6LCvttBg5J8Xl3Ymnp+Md79vMcnfzj1ZiMkE9jNieJ4eCMSb558j1
-         IRx8rU4dcppLkg5pAl8nn/FKSCeWR+5+VvMSD/cyHmABzFhjgJxyakJfdFdV9VY3cneU
-         4KKuGc1w2d2hQkQJnalBBKFkTAkgX0ycxmBon+R/IYQQtLOx/UCEI6Ri1jGPOHUU2jEJ
-         KCyQ==
-X-Gm-Message-State: AOAM531yXYaglgdaGwfnkz1Ntz+qix41RVYzow+LVfgT440BOJCBxa7G
-        iG3Ifr9iYgAd77NAPnGX4aKnRg==
-X-Google-Smtp-Source: ABdhPJxxBelGL9yLtiPd2tUkQahvRnMC7+6ddweJr5oxgAC1w1X4b7KtEQgCuSF01Q3H9tE8ruY9vg==
-X-Received: by 2002:a05:6402:1941:b0:413:2b7e:676e with SMTP id f1-20020a056402194100b004132b7e676emr43135760edz.114.1649834844592;
-        Wed, 13 Apr 2022 00:27:24 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id a13-20020a50858d000000b0041d71502d2dsm834520edh.13.2022.04.13.00.27.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Apr 2022 00:27:24 -0700 (PDT)
-Message-ID: <b9059a6e-353d-dea0-0d55-27829c8f51ae@blackwall.org>
-Date:   Wed, 13 Apr 2022 10:27:22 +0300
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qwO5x8daEsKn7AJxj0XCIjFXgnsykAoMFtFOPr30/OY=;
+        b=hWU0dyWKA1xacCZ4qhwUtkslimdEHXFO9Ni3Bcnlf3CgPV01Ma2A3n9CEQ1YQ3PaCD
+         Bd//xRIshLJbJnj0sht+ZDFOkvrcU3wX5yh86LS2JEXdhGyDA5Sn+OgEUu8+xserxEqQ
+         5AMdyvdw/5odPWi3aIJIb+djkIWAdPA5YbcaK4CFPNRwIr3LyBKkM0ht2aycDV+NhpUM
+         NRHMNqElnj01RidwJrXJE26ZAWisW2pn2oKfWyTg5S/eBd4eGBFN05Syns8hJk/05m4Y
+         zo00FTPVFul2shk+q6VFmTlgxz/qrch2yg/9Y2+wDgTmx3Szo1dIkDe/P0O/X/Ab8neo
+         wY2g==
+X-Gm-Message-State: AOAM533/g2UAUJnyRTCYTPjVzthlUr+PyxuPrwIRQi+sIbgi9yleF3+w
+        UKA1a1ScYxgpo5o4jPDbbO0=
+X-Google-Smtp-Source: ABdhPJymyC0Lf62J4fDfrOo+9dDUgyCYtUkNg5mcd26g90i1LvwiUVdLiE+l5WqgQs6DUMH4EFe2EQ==
+X-Received: by 2002:a17:907:6093:b0:6e0:dabf:1a9f with SMTP id ht19-20020a170907609300b006e0dabf1a9fmr37979065ejc.424.1649834863420;
+        Wed, 13 Apr 2022 00:27:43 -0700 (PDT)
+Received: from krava ([83.240.62.142])
+        by smtp.gmail.com with ESMTPSA id q3-20020a5085c3000000b0041d7958ae70sm831859edh.25.2022.04.13.00.27.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 00:27:43 -0700 (PDT)
+Date:   Wed, 13 Apr 2022 09:27:40 +0200
+From:   Jiri Olsa <olsajiri@gmail.com>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: Re: [RFC bpf-next 1/4] kallsyms: Add kallsyms_lookup_names function
+Message-ID: <YlZ7bAY1lDQWxUgH@krava>
+References: <20220407125224.310255-1-jolsa@kernel.org>
+ <20220407125224.310255-2-jolsa@kernel.org>
+ <20220408095701.54aea15c3cafcf66dd628a95@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH net-next v3 0/8] net: bridge: add flush filtering support
-Content-Language: en-US
-To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
-Cc:     roopa@nvidia.com, idosch@idosch.org, kuba@kernel.org,
-        davem@davemloft.net, bridge@lists.linux-foundation.org
-References: <20220412132245.2148794-1-razor@blackwall.org>
- <c418e95e-440e-0502-58f2-63179f370a98@kernel.org>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <c418e95e-440e-0502-58f2-63179f370a98@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220408095701.54aea15c3cafcf66dd628a95@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 13/04/2022 05:04, David Ahern wrote:
-> On 4/12/22 7:22 AM, Nikolay Aleksandrov wrote:
->> Hi,
->> This patch-set adds support to specify filtering conditions for a bulk
->> delete (flush) operation. This version uses a new nlmsghdr delete flag
->> called NLM_F_BULK in combination with a new ndo_fdb_del_bulk op which is
->> used to signal that the driver supports bulk deletes (that avoids
->> pushing common mac address checks to ndo_fdb_del implementations and
->> also has a different prototype and parsed attribute expectations, more
->> info in patch 03). The new delete flag can be used for any RTM_DEL*
->> type, implementations just need to be careful with older kernels which
->> are doing non-strict attribute parses. Here I use the fact that mac
+On Fri, Apr 08, 2022 at 09:57:01AM +0900, Masami Hiramatsu wrote:
+
+SNIP
+
+> >  /*
+> >   * These will be re-linked against their real values
+> > @@ -572,6 +574,52 @@ int sprint_backtrace_build_id(char *buffer, unsigned long address)
+> >  	return __sprint_symbol(buffer, address, -1, 1, 1);
+> >  }
+> >  
+> > +static int symbols_cmp(const void *a, const void *b)
+> > +{
+> > +	const char **str_a = (const char **) a;
+> > +	const char **str_b = (const char **) b;
+> > +
+> > +	return strcmp(*str_a, *str_b);
+> > +}
+> > +
+> > +struct kallsyms_data {
+> > +	unsigned long *addrs;
+> > +	const char **syms;
+> > +	u32 cnt;
+> > +	u32 found;
 > 
-> overall it looks fine to me. The rollout of BULK delete for other
-> commands will be slow so we need a way to reject the BULK flag if the
-> handler does not support it. One thought is to add another flag to
-> rtnl_link_flags (e.g., RTNL_FLAG_BULK_DEL_SUPPORTED) and pass that flag
-> in for handlers that handle bulk delete and reject it for others in core
-> rtnetlink code.
+> BTW, why do you use 'u32' for this arch independent code?
+> I think 'size_t' will make its role clearer.
 
-Good point, it will be nice to error out with something meaningful if
-bulk delete isn't supported. I'll look into it.
+right, will change
 
-Thanks,
- Nik
+> 
+> > +};
+> > +
+> > +static int kallsyms_callback(void *data, const char *name,
+> > +			     struct module *mod, unsigned long addr)
+> > +{
+> > +	struct kallsyms_data *args = data;
+> > +
+> > +	if (!bsearch(&name, args->syms, args->cnt, sizeof(*args->syms), symbols_cmp))
+> > +		return 0;
+> > +
+> > +	addr = ftrace_location(addr);
+> > +	if (!addr)
+> > +		return 0;
+> > +
+> > +	args->addrs[args->found++] = addr;
+> > +	return args->found == args->cnt ? 1 : 0;
+> > +}
+> > +
+> > +int kallsyms_lookup_names(const char **syms, u32 cnt, unsigned long *addrs)
+> 
+> Ditto. I think 'size_t cnt' is better. 
 
+ok, thanks
+
+jirka
+
+> 
+> Thank you,
+> 
+> > +{
+> > +	struct kallsyms_data args;
+> > +
+> > +	sort(syms, cnt, sizeof(*syms), symbols_cmp, NULL);
+> > +
+> > +	args.addrs = addrs;
+> > +	args.syms = syms;
+> > +	args.cnt = cnt;
+> > +	args.found = 0;
+> > +	kallsyms_on_each_symbol(kallsyms_callback, &args);
+> > +
+> > +	return args.found == args.cnt ? 0 : -EINVAL;
+> > +}
+> > +
+> >  /* To avoid using get_symbol_offset for every symbol, we carry prefix along. */
+> >  struct kallsym_iter {
+> >  	loff_t pos;
+> > -- 
+> > 2.35.1
+> > 
+> 
+> 
+> -- 
+> Masami Hiramatsu <mhiramat@kernel.org>
