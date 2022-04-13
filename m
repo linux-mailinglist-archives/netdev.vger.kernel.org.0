@@ -2,68 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 554924FEE15
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 06:10:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51A314FEE51
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 06:34:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232253AbiDMEMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 00:12:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56958 "EHLO
+        id S232285AbiDMEgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 00:36:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231138AbiDMEMc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 00:12:32 -0400
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44EB025EA2;
-        Tue, 12 Apr 2022 21:10:11 -0700 (PDT)
-Received: by mail-io1-xd34.google.com with SMTP id k25so581535iok.8;
-        Tue, 12 Apr 2022 21:10:11 -0700 (PDT)
+        with ESMTP id S231205AbiDMEgf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 00:36:35 -0400
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19D1A20BE6;
+        Tue, 12 Apr 2022 21:34:13 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id 125so611274iov.10;
+        Tue, 12 Apr 2022 21:34:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=KAPHVgbv3fQELslstn41lPFxszGxCyixVC5Zh9pgEtg=;
-        b=dOcmDUHfJtdNteWlEBxvPoi3/TzURwn/VK8LoXt2VH/71wctpZYSfIl1ET0eZIMETr
-         1I8jbV+JxxarnKoGokR89hN0CZrYqaJZ96s9KKvziP8CWTDcXsTiJhMPlQ1kqBSky+vR
-         9voQWBvmKeXjGQiDJQWH1aCckQYfvkSAoe3XF6atNckwucZbLeVN727TzdlReczv6dLu
-         +KIkCz/FUFM32hoWW1Rh/ltp5HP6LDsCb2YsocTFc8ia1lxZehMTFMcKhjkWVUIsKwCH
-         UMTrrXc+uZxqNH/Iu2FdTU1SiwCxIIp3yCsHGNX9lMsohzYeCQJBrOjwAfsHCPtLcoYs
-         WGjg==
+        bh=+kKAmZ56bSMiCNUh+T1c9pQhR9+j4E7TijaQbHLEFfI=;
+        b=DA13Jbr1itHfsq+mubcsEIdeL5WVrgUdhlg1wq21e4tHiw9MtlKgRy81OQWpdbcY2S
+         FXxKDjDF4e6MmttFTqsEdOh0l2BFsZP2RmaVLAbH6eEUxoHO9YLR9qa6aB7U+U+t2h2f
+         8sOwQ0JI9t9OjyTJzwr//4qCm2bezKDglobwwrqqaAn8B26PklVVRBmuSiG58+jcoPxI
+         pdgcSxGAAl+Tk5DXoMejzfwUr6RmOp+x+TOsi5C93hDgBHsLQgRWCsNjaEyJwhs3DGHh
+         4BRY/xTUkmrVk5nj80b/ytzxtz7lPuFXyzln+Mp4ElxeKgmKnH2S9EaYzrC4SsUal6b7
+         aN1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=KAPHVgbv3fQELslstn41lPFxszGxCyixVC5Zh9pgEtg=;
-        b=5Cp/6Ejme4HrwFS+/pQiU2L1Um9PX662UfIVyrybBINboDltgqfR1r4KdUbUs2Lsgx
-         ZAgJRn38eGLFxVjFs2eEr4RFAFB/Ml3NH5TLc4pZW+mwqE9tjLRijWSdydFbWXtGpJxZ
-         b4EAMjgjIABTHA606gP2r1eXX5nKvgwRQ7b3uduf98AqJfJvUbdIAYppKiyDwU7CdRWn
-         oC/TeBRbPHDTyZO183RBDODLHB2l3h7pGfRNDNsqKr7dWKTAqhPL/32+KD2NdkxSXaKQ
-         4OKWD0A6I6q3yqLBmhibcEtbS3Udo02kCyUkp7T2Gtiq+C9rANoJ1xSOjpyVxcvopJ7Z
-         0rPQ==
-X-Gm-Message-State: AOAM532OqhCWVETjRqvPZHCH2NQsrbW+5SzUVIgP+gn9xAPImWpHv8Hc
-        z32pTCoB4vIYMFpUQjlP9cQkSgkr48J3YGuZWSk=
-X-Google-Smtp-Source: ABdhPJyfiUjeVZeTcUztwo4qHei4D0o9K90Bvi+B+Vth9eNR59cfnw2Lg5n/pyBSt5Pwz9aTprXYZfFZKgqqzr6kBcQ=
+        bh=+kKAmZ56bSMiCNUh+T1c9pQhR9+j4E7TijaQbHLEFfI=;
+        b=ZB+cAXg5JyZaX8WWglmtXazxMTd9AhbT86K8lb+gX9FjCtvnzxKXhSQUGEWKJZfDnq
+         pj2y0xv+QFOL/eMRfCTtdgz+RanUVblJl0Kpkf15Wm7VFFUIaoETbEBkoTat/2+LLP1I
+         Esyuv5q6yVBas7huHCWlCqa6s1QRwtTA99m1z0zNl2wPIPp8fMJAdaU4qt17WnahedYo
+         StLou0fYp7IgKjCmoR8qgxhXNryd9ZeTWS/4twHVseAHhi7nt+RFvYC5O+gjQh+nFFnj
+         oxoYe6lYODGe6OnlvrrqL/TGzjZQjrasgVoW0seZT/L9xczpQwtM/obIbuaZ31XxQAMg
+         krzw==
+X-Gm-Message-State: AOAM533PyJFb61ZCQel+/xCraYG3eoljtoIW5ScX/hyb+oSeM1N7Caca
+        PMwu0sSHGcZj7EcDEmXnVnr59oPLsuKQGk7kcn0=
+X-Google-Smtp-Source: ABdhPJzqSVa2ep/AdEZORIqrAJS6wVCc+EbBE13SJmpPq4zS/7me/akccrlRROpUkl+u6W7EbVOSqkgIdE7WjOJYtsc=
 X-Received: by 2002:a02:cc07:0:b0:326:3976:81ad with SMTP id
- n7-20020a02cc07000000b00326397681admr5032584jap.237.1649823010614; Tue, 12
- Apr 2022 21:10:10 -0700 (PDT)
+ n7-20020a02cc07000000b00326397681admr5093551jap.237.1649824452458; Tue, 12
+ Apr 2022 21:34:12 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220331122822.14283-1-houtao1@huawei.com> <CAEf4Bzb7keBS8vXgV5JZzwgNGgMV0X3_guQ_m9JW3X6fJBDpPQ@mail.gmail.com>
- <5a990687-b336-6f44-589b-8bd972882beb@huawei.com>
-In-Reply-To: <5a990687-b336-6f44-589b-8bd972882beb@huawei.com>
+References: <20220405170356.43128-1-tadeusz.struk@linaro.org>
+In-Reply-To: <20220405170356.43128-1-tadeusz.struk@linaro.org>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 12 Apr 2022 21:09:59 -0700
-Message-ID: <CAEf4BzaUmqDUeKBjSQgLNULx=f-3ipK57Y2qEbND0XuuL9aNvw@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 0/2] bpf: Introduce ternary search tree for
- string key
-To:     Hou Tao <houtao1@huawei.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>, Yonghong Song <yhs@fb.com>,
+Date:   Tue, 12 Apr 2022 21:34:01 -0700
+Message-ID: <CAEf4BzaPmp5TzNM8U=SSyEp30wv335_ZxuAL-LLPQUZJ9OS74g@mail.gmail.com>
+Subject: Re: [PATCH] bpf: Fix KASAN use-after-free Read in compute_effective_progs
+To:     Tadeusz Struk <tadeusz.struk@linaro.org>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        linux- stable <stable@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -75,177 +74,117 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 8, 2022 at 8:08 PM Hou Tao <houtao1@huawei.com> wrote:
+On Tue, Apr 5, 2022 at 10:04 AM Tadeusz Struk <tadeusz.struk@linaro.org> wrote:
 >
-> Hi,
->
-> On 4/7/2022 1:38 AM, Andrii Nakryiko wrote:
-> > On Thu, Mar 31, 2022 at 5:04 AM Hou Tao <houtao1@huawei.com> wrote:
-> >> Hi,
-> >>
-> >> The initial motivation for the patchset is due to the suggestion of Alexei.
-> >> During the discuss of supporting of string key in hash-table, he saw the
-> >> space efficiency of ternary search tree under our early test and suggest
-> >> us to post it as a new bpf map [1].
-> >>
-> >> Ternary search tree is a special trie where nodes are arranged in a
-> >> manner similar to binary search tree, but with up to three children
-> >> rather than two. The three children correpond to nodes whose value is
-> >> less than, equal to, and greater than the value of current node
-> >> respectively.
-> >>
-> >> In ternary search tree map, only the valid content of string is saved.
-> >> The trailing null byte and unused bytes after it are not saved. If there
-> >> are common prefixes between these strings, the prefix is only saved once.
-> >> Compared with other space optimized trie (e.g. HAT-trie, succinct trie),
-> >> the advantage of ternary search tree is simple and being writeable.
-> >>
-> >> Below are diagrams for ternary search map when inserting hello, he,
-> >> test and tea into it:
-> >>
-> >> 1. insert "hello"
-> >>
-> >>         [ hello ]
-> >>
-> >> 2. insert "he": need split "hello" into "he" and "llo"
-> >>
-> >>          [ he ]
-> >>             |
-> >>             *
-> >>             |
-> >>          [ llo ]
-> >>
-> >> 3. insert "test": add it as right child of "he"
-> >>
-> >>          [ he ]
-> >>             |
-> >>             *-------x
-> >>             |       |
-> >>          [ llo ] [ test ]
-> >>
-> >> 5. insert "tea": split "test" into "te" and "st",
-> >>    and insert "a" as left child of "st"
-> >>
-> >>          [ he ]
-> >>             |
-> >>      x------*-------x
-> >>      |      |       |
-> >>   [ ah ] [ llo ] [ te ]
-> >>                     |
-> >>                     *
-> >>                     |
-> >>                  [ st ]
-> >>                     |
-> >>                x----*
-> >>                |
-> >>              [ a ]
-> >>
-> >> As showed in above diagrams, the common prefix between "test" and "tea"
-> >> is "te" and it only is saved once. Also add benchmarks to compare the
-> >> memory usage and lookup performance between ternary search tree and
-> >> hash table. When the common prefix is lengthy (~192 bytes) and the
-> >> length of suffix is about 64 bytes, there are about 2~3 folds memory
-> >> saving compared with hash table. But the memory saving comes at prices:
-> >> the lookup performance of tst is about 2~3 slower compared with hash
-> >> table. See more benchmark details on patch #2.
-> >>
-> >> Comments and suggestions are always welcome.
-> >>
-> > Have you heard and tried qp-trie ([0]) by any chance? It is elegant
-> > and simple data structure. By all the available benchmarks it handily
-> > beats Red-Black trees in terms of memory usage and performance (though
-> > it of course depends on the data set, just like "memory compression"
-> > for ternary tree of yours depends on large set of common prefixes).
-> > qp-trie based BPF map seems (at least on paper) like a better
-> > general-purpose BPF map that is dynamically sized (avoiding current
-> > HASHMAP limitations) and stores keys in sorted order (and thus allows
-> > meaningful ordered iteration *and*, importantly for longest prefix
-> > match tree, allows efficient prefix matches). I did a quick experiment
-> > about a month ago trying to replace libbpf's internal use of hashmap
-> > with qp-trie for BTF string dedup and it was slightly slower than
-> > hashmap (not surprisingly, though, because libbpf over-sizes hashmap
-> > to avoid hash collisions and long chains in buckets), but it was still
-> > very decent even in that scenario. So I've been mulling the idea of
-> > implementing BPF map based on qp-trie elegant design and ideas, but
-> > can't find time to do this.
-> I have heard about it when check the space efficient of HAT trie [0], because
-> qp-trie needs to save the whole string key in the leaf node and its space
-> efficiency can not be better than ternary search tree for strings with common
-> prefix, so I did not consider about it. But I will do some benchmarks to check
-> the lookup performance and space efficiency of qp-trie and tst for string with
-> common prefix and strings without much common prefix.
-> If qp-trie is better, I think I can take the time to post it as a bpf map if you
-> are OK with that.
+> Syzbot found a Use After Free bug in compute_effective_progs().
+> The reproducer creates a number of BPF links, and causes a fault
+> injected alloc to fail, while calling bpf_link_detach on them.
+> Link detach triggers the link to be freed by bpf_link_free(),
+> which calls __cgroup_bpf_detach() and update_effective_progs().
+> If the memory allocation in this function fails, the function restores
+> the pointer to the bpf_cgroup_link on the cgroup list, but the memory
+> gets freed just after it returns. After this, every subsequent call to
+> update_effective_progs() causes this already deallocated pointer to be
+> dereferenced in prog_list_length(), and triggers KASAN UAF error.
+> To fix this don't preserve the pointer to the link on the cgroup list
+> in __cgroup_bpf_detach(), but proceed with the cleanup and retry calling
+> update_effective_progs() again afterwards.
 
-You can probably always craft a data set where prefix sharing is so
-prevalent that space savings are very significant. But I think for a
-lot of real-world data it won't be as extreme and qp-trie might be
-very comparable (if not more memory-efficient) due to very compact
-node layout (which was the point of qp-trie). So I'd be really curious
-to see some comparisons. Would be great if you can try both!
+I think it's still problematic. BPF link might have been the last one
+that holds bpf_prog's refcnt, so when link is put, its prog can stay
+there in effective_progs array(s) and will cause use-after-free
+anyways.
+
+It would be best to make sure that detach never fails. On detach
+effective prog array can only shrink, so even if
+update_effective_progs() fails to allocate memory, we should be able
+to iterate and just replace that prog with NULL, as a fallback
+strategy.
 
 >
 >
-> >
-> > This prefix sharing is nice when you have a lot of long common
-> > prefixes, but I'm a bit skeptical that as a general-purpose BPF data
-> > structure it's going to be that beneficial. 192 bytes of common
-> > prefixes seems like a very unusual dataset :)
-> Yes. The case with common prefix I known is full file path.
-> > More specifically about TST implementation in your paches. One global
-> > per-map lock I think is a very big downside. We have LPM trie which is
-> > very slow in big part due to global lock. It might be possible to
-> > design more granular schema for TST, but this whole in-place splitting
-> > logic makes this harder. I think qp-trie can be locked in a granular
-> > fashion much more easily by having a "hand over hand" locking: lock
-> > parent, find child, lock child, unlock parent, move into child node.
-> > Something like that would be more scalable overall, especially if the
-> > access pattern is not focused on a narrow set of nodes.
-> Yes. The global lock is a problem but the splitting is not in-place. I will try
-> to figure out whether the lock can be more scalable after the benchmark test
-> between qp-trie and tst.
+> Cc: "Alexei Starovoitov" <ast@kernel.org>
+> Cc: "Daniel Borkmann" <daniel@iogearbox.net>
+> Cc: "Andrii Nakryiko" <andrii@kernel.org>
+> Cc: "Martin KaFai Lau" <kafai@fb.com>
+> Cc: "Song Liu" <songliubraving@fb.com>
+> Cc: "Yonghong Song" <yhs@fb.com>
+> Cc: "John Fastabend" <john.fastabend@gmail.com>
+> Cc: "KP Singh" <kpsingh@kernel.org>
+> Cc: <netdev@vger.kernel.org>
+> Cc: <bpf@vger.kernel.org>
+> Cc: <stable@vger.kernel.org>
+> Cc: <linux-kernel@vger.kernel.org>
+>
+> Link: https://syzkaller.appspot.com/bug?id=8ebf179a95c2a2670f7cf1ba62429ec044369db4
+> Fixes: af6eea57437a ("bpf: Implement bpf_link-based cgroup BPF program attachment")
+> Reported-by: <syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com>
+> Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+> ---
+>  kernel/bpf/cgroup.c | 25 ++++++++++++++-----------
+>  1 file changed, 14 insertions(+), 11 deletions(-)
+>
+> diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+> index 128028efda64..b6307337a3c7 100644
+> --- a/kernel/bpf/cgroup.c
+> +++ b/kernel/bpf/cgroup.c
+> @@ -723,10 +723,11 @@ static int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
+>         pl->link = NULL;
+>
+>         err = update_effective_progs(cgrp, atype);
+> -       if (err)
+> -               goto cleanup;
+> -
+> -       /* now can actually delete it from this cgroup list */
+> +       /*
+> +        * Proceed regardless of error. The link and/or prog will be freed
+> +        * just after this function returns so just delete it from this
+> +        * cgroup list and retry calling update_effective_progs again later.
+> +        */
+>         list_del(&pl->node);
+>         kfree(pl);
+>         if (list_empty(progs))
+> @@ -735,12 +736,11 @@ static int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
+>         if (old_prog)
+>                 bpf_prog_put(old_prog);
+>         static_branch_dec(&cgroup_bpf_enabled_key[atype]);
+> -       return 0;
+>
+> -cleanup:
+> -       /* restore back prog or link */
+> -       pl->prog = old_prog;
+> -       pl->link = link;
+> +       /* In case of error call update_effective_progs again */
+> +       if (err)
+> +               err = update_effective_progs(cgrp, atype);
 
-Great, looking forward!
+there is no guarantee that this will now succeed, right? so it's more
+like "let's try just in case we are lucky this time"?
 
+> +
+>         return err;
+>  }
 >
-> Regards,
-> Tao
+> @@ -881,6 +881,7 @@ static void bpf_cgroup_link_release(struct bpf_link *link)
+>         struct bpf_cgroup_link *cg_link =
+>                 container_of(link, struct bpf_cgroup_link, link);
+>         struct cgroup *cg;
+> +       int err;
 >
-> [0]: https://github.com/Tessil/hat-trie
-> >
-> > Anyways, I love data structures and this one is an interesting idea.
-> > But just my few cents of "production-readiness" for general-purpose
-> > data structures for BPF.
-> >
-> >   [0] https://dotat.at/prog/qp/README.html
-> >
-> >> Regards,
-> >> Tao
-> >>
-> >> [1]: https://lore.kernel.org/bpf/CAADnVQJUJp3YBcpESwR3Q1U6GS1mBM=Vp-qYuQX7eZOaoLjdUA@mail.gmail.com/
-> >>
-> >> Hou Tao (2):
-> >>   bpf: Introduce ternary search tree for string key
-> >>   selftests/bpf: add benchmark for ternary search tree map
-> >>
-> >>  include/linux/bpf_types.h                     |   1 +
-> >>  include/uapi/linux/bpf.h                      |   1 +
-> >>  kernel/bpf/Makefile                           |   1 +
-> >>  kernel/bpf/bpf_tst.c                          | 411 +++++++++++++++++
-> >>  tools/include/uapi/linux/bpf.h                |   1 +
-> >>  tools/testing/selftests/bpf/Makefile          |   5 +-
-> >>  tools/testing/selftests/bpf/bench.c           |   6 +
-> >>  .../selftests/bpf/benchs/bench_tst_map.c      | 415 ++++++++++++++++++
-> >>  .../selftests/bpf/benchs/run_bench_tst.sh     |  54 +++
-> >>  tools/testing/selftests/bpf/progs/tst_bench.c |  70 +++
-> >>  10 files changed, 964 insertions(+), 1 deletion(-)
-> >>  create mode 100644 kernel/bpf/bpf_tst.c
-> >>  create mode 100644 tools/testing/selftests/bpf/benchs/bench_tst_map.c
-> >>  create mode 100755 tools/testing/selftests/bpf/benchs/run_bench_tst.sh
-> >>  create mode 100644 tools/testing/selftests/bpf/progs/tst_bench.c
-> >>
-> >> --
-> >> 2.31.1
-> >>
-> > .
+>         /* link might have been auto-detached by dying cgroup already,
+>          * in that case our work is done here
+> @@ -896,8 +897,10 @@ static void bpf_cgroup_link_release(struct bpf_link *link)
+>                 return;
+>         }
 >
+> -       WARN_ON(__cgroup_bpf_detach(cg_link->cgroup, NULL, cg_link,
+> -                                   cg_link->type));
+> +       err = __cgroup_bpf_detach(cg_link->cgroup, NULL, cg_link,
+> +                                 cg_link->type);
+> +       if (err)
+> +               pr_warn("cgroup_bpf_detach() failed, err %d\n", err);
+>
+>         cg = cg_link->cgroup;
+>         cg_link->cgroup = NULL;
+> --
+> 2.35.1
