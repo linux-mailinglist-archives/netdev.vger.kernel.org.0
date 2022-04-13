@@ -2,72 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E710D4FF2F1
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 11:07:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE6F84FF32D
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 11:16:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234220AbiDMJJc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 05:09:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47658 "EHLO
+        id S234333AbiDMJSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 05:18:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229999AbiDMJJ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 05:09:29 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B186443482
-        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 02:07:08 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id u15so2544169ejf.11
-        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 02:07:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=mTMrX5+gjBvjgZqzOUKqAOBI2Taj/bLG+B+9MIfEki0=;
-        b=gUfBXg+pYaJdsGFVJKfUJJ0RaMzNHXk35hLKdf8tf/RPw6fLLOqdbuD44MDcS1V6Y9
-         5eDdOKs52pLVa+U5C8ANO0fM8/cjclXLkjBgttKSikjUSafwDIw2qFCLlDpPhzigA1aW
-         9RHgKxKZgiPuII6ZujKjE7zpoPpG1IF9S8LZ7zwXAsmpAoRppIjkV7hHgR40X2c5HOgy
-         WDb0DYbO1uRENU4Cie52L2lUJxgrOuqL7aZWYbC4ygu7jrttI6uP2Z2oWBvAHnJujr9u
-         5EZgEX3G3QOS96jguckXxR/4Jr01WCfddMvog5cf6US7itu7RtyN24R+2Blp1ZBKB86W
-         8TBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mTMrX5+gjBvjgZqzOUKqAOBI2Taj/bLG+B+9MIfEki0=;
-        b=binj4VYBB5tBWsnfQ/yqw1Ffk5FdpQdXO2fyetStWNdgr520RTiPCQDqlhS8EOCVmt
-         icRTPLtvkk18J0uKKE+C2Pb356x6n7jD6uYscRU9EX8XV6J3CKAFjsxCcCBcZ1j2mH2c
-         2by9Oq6JUEd9r+u9zBheuu4mmD+q4xgKgt2j4nLfcNpuQzRoNqyNN2NHm//gM1PjZuIj
-         GDdkOtZPtx7F2qLC1YzFkrTigsLz69f3dJDHR6OhSn9GWzMvCSEUUgF0WURVEPXIHHzH
-         D4EXQ3aTVhvK0573wOJCLYPVgOJF4vcSd4AUz8J1UVOGINW6mI+t/Tn+cueIiHfTxZiR
-         i7HQ==
-X-Gm-Message-State: AOAM531fOSWu8Jv6gLKZsO3H/3ZcSPAk+Dx/OPRrmLANluEPxRubU1d3
-        i6V1D+HnPOyWfr5cOG93Vgk=
-X-Google-Smtp-Source: ABdhPJxp+oL++siikDaIM7VY5M+LcxAiXKd+7ppfrgq/l57+7lPHKTR7fGC3r/BdnrUAIfNoBlWyfw==
-X-Received: by 2002:a17:906:7210:b0:6d6:7881:1483 with SMTP id m16-20020a170906721000b006d678811483mr37710116ejk.227.1649840827019;
-        Wed, 13 Apr 2022 02:07:07 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id j2-20020a056402238200b0041f351a8b83sm652550eda.43.2022.04.13.02.07.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 02:07:06 -0700 (PDT)
-Date:   Wed, 13 Apr 2022 12:07:05 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Baowen Zheng <baowen.zheng@corigine.com>
-Cc:     Mattias Forsblad <mattias.forsblad@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "roid@nvidia.com" <roid@nvidia.com>,
-        "vladbu@nvidia.com" <vladbu@nvidia.com>,
-        Eli Cohen <elic@nvidia.com>, Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Tobias Waldekranz <tobias@waldekranz.com>
-Subject: Re: [RFC net-next] net: tc: flow indirect framework issue
-Message-ID: <20220413090705.zkfrp2fjhejqdj6a@skbuf>
-References: <20220413055248.1959073-1-mattias.forsblad@gmail.com>
- <DM5PR1301MB2172F573F9314D43F79D8F26E7EC9@DM5PR1301MB2172.namprd13.prod.outlook.com>
+        with ESMTP id S233450AbiDMJSs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 05:18:48 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88831527D8
+        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 02:16:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649841387; x=1681377387;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=2qSpWtdv+CVCutFYdNG9tJUBmh/HyA0LfKAybjefNE8=;
+  b=Yp1ef5Uw+VCYZyCfEn8pkcURuD2QPIj+1Rssj2thW+XJaEpkcg7UfsxI
+   MNiGVPwB5Xva97kG/IAt/CxoYEXgh07h16DxfUzCxo4pbl95wHiBCKsSX
+   W2sGAWM27DU3tpjqipCgaccjGBtYBjez38ecb7tB3Y2gJ/aJJPvxxPPz7
+   MhpBzvcdw8nIs5UEtMjQ7R9q3xRTi+LqppnV9naeh8zlTPergO3TeUO7J
+   dtrg5DHwK5IUeUou52ZVMEhmXmzQSNoKeG61udrub1Q9J3dtJ21jZFP+J
+   r9ewLa1heZU6aWkeX71Q2te+1OUkczYwbE4h+aPEvwgkPpXWnosNPcixB
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="262796058"
+X-IronPort-AV: E=Sophos;i="5.90,256,1643702400"; 
+   d="scan'208";a="262796058"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 02:16:11 -0700
+X-IronPort-AV: E=Sophos;i="5.90,256,1643702400"; 
+   d="scan'208";a="526867294"
+Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.249.173.225]) ([10.249.173.225])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 02:16:09 -0700
+Message-ID: <09a3613f-514b-c769-b8a0-25899b3d3159@intel.com>
+Date:   Wed, 13 Apr 2022 17:16:06 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DM5PR1301MB2172F573F9314D43F79D8F26E7EC9@DM5PR1301MB2172.namprd13.prod.outlook.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.8.0
+Subject: Re: [PATCH] vDPA/ifcvf: assign nr_vring to the MSI vector of
+ config_intr by default
+Content-Language: en-US
+To:     Jason Wang <jasowang@redhat.com>, mst@redhat.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        Dan Carpenter <dan.carpenter@oracle.com>
+References: <20220408121013.54709-1-lingshan.zhu@intel.com>
+ <f3f60d6e-a506-bd58-d763-848beb0e4c26@redhat.com>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <f3f60d6e-a506-bd58-d763-848beb0e4c26@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-8.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,45 +63,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Baowen,
 
-On Wed, Apr 13, 2022 at 07:05:39AM +0000, Baowen Zheng wrote:
-> Hi Mattias, in my understand, your problem may because you register
-> your callback here. I am not sure why you choose to register your hook
-> here(after the interface is added to the bridge to just trigger the
-> callback in necessary case.)
 
-> Then your function is called and add your cb to the tcf_block. But
-> since the matchall filter has been created so you can not get your
-> callback triggered. 
+On 4/13/2022 4:14 PM, Jason Wang wrote:
+>
+> 在 2022/4/8 下午8:10, Zhu Lingshan 写道:
+>> This commit assign struct ifcvf_hw.nr_vring to the MSIX vector of the
+>> config interrupt by default in ifcvf_request_config_irq().
+>> ifcvf_hw.nr_vring is the most likely and the ideal case for
+>> the device config interrupt handling, means every virtqueue has
+>> an individual MSIX vector(0 ~ nr_vring - 1), and the config interrupt 
+>> has
+>> its own MSIX vector(number nr_vring).
+>>
+>> This change can also make GCC W = 2 happy, silence the
+>> "uninitialized" warning.
+>>
+>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>> Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+>> ---
+>>   drivers/vdpa/ifcvf/ifcvf_main.c | 8 ++++----
+>>   1 file changed, 4 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c 
+>> b/drivers/vdpa/ifcvf/ifcvf_main.c
+>> index 4366320fb68d..b500fb941dab 100644
+>> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
+>> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+>> @@ -290,13 +290,13 @@ static int ifcvf_request_config_irq(struct 
+>> ifcvf_adapter *adapter)
+>>       struct ifcvf_hw *vf = &adapter->vf;
+>>       int config_vector, ret;
+>>   +    /* vector 0 ~ vf->nr_vring for vqs, num vf->nr_vring vector 
+>> for config interrupt */
+>
+>
+> The comment is right before this patch, but probably wrong for 
+> MSIX_VECTOR_DEV_SHARED.
+This comment is for the case when every vq and config interrupt has its 
+own vector, how
+about a better comment "The ideal the default case, vector 0 ~ 
+vf->nr_vring for vqs, num vf->nr_vring vector for config interrupt"
+>
+>
+>> +    config_vector = vf->nr_vring;
+>> +
+>> +    /* re-use the vqs vector */
+>>       if (vf->msix_vector_status == MSIX_VECTOR_DEV_SHARED)
+>>           return 0;
+>>   -    if (vf->msix_vector_status == MSIX_VECTOR_PER_VQ_AND_CONFIG)
+>> -        /* vector 0 ~ vf->nr_vring for vqs, num vf->nr_vring vector 
+>> for config interrupt */
+>> -        config_vector = vf->nr_vring;
+>> -
+>>       if (vf->msix_vector_status == MSIX_VECTOR_SHARED_VQ_AND_CONFIG)
+>>           /* vector 0 for vqs and 1 for config interrupt */
+>>           config_vector = 1;
+>
+>
+> Actually, I prefer to use if ... else ... here.
+IMHO, if else may lead to mistakes.
 
-The bridge device has a certain lifetime, and the physical port device
-has a different and completely independent lifetime. So the port device
-may join the bridge when the bridge already has some filters on its
-ingress chain.
+The code:
+         /* The ideal the default case, vector 0 ~ vf->nr_vring for vqs, 
+num vf->nr_vring vector for config interrupt */
+         config_vector = vf->nr_vring;
 
-Even with the indirect flow block callback registered at module load
-stage as you suggest, the port driver needs to have a reason to
-intercept a tc filter on a certain bridge. And when the port isn't a
-member (yet) of that bridge, it has no reason to.
+         /* re-use the vqs vector */
+         if (vf->msix_vector_status == MSIX_VECTOR_DEV_SHARED)
+                 return 0;
 
-Of course, you could make the port driver speculatively monitor all tc
-filters installed on all bridges in the system (related or unrelated to
-ports belonging to this driver), just to not miss callbacks which may be
-needed later. But that is quite suboptimal.
+         if (vf->msix_vector_status == MSIX_VECTOR_SHARED_VQ_AND_CONFIG)
+                 /* vector 0 for vqs and 1 for config interrupt */
+                 config_vector = 1;
 
-Mattias' question comes from the fact that there is already some logic
-in flow_indr_dev_register() to replay missed flow block binding events,
-added by Eli Cohen in commit 74fc4f828769 ("net: Fix offloading indirect
-devices dependency on qdisc order creation"). That logic works, but it
-replays only the binding, not the actual filters, which again, would be
-necessary.
 
-> Maybe you can try to regist your callback in your module load stage I
-> think your callback will be triggered, or change the command order as: 
-> tc qdisc add dev br0 clsact
-> ip link set dev swp0 master br0
-> tc filter add dev br0 ingress pref 1 proto all matchall action drop
-> I am not sure whether it will take effect.
+here by default config_vector = vf->nr_vring;
+If msix_vector_status == MSIX_VECTOR_DEV_SHARED, it will reuse the dev 
+shared vector, means using the vector(value 0) for data-vqs.
+If msix_vector_status == MSIX_VECTOR_SHARED_VQ_AND_CONFIG, it will use 
+vector=1(vector 0 for data-vqs).
 
-I think the idea is to make the given command order work, not to change it.
+If we use if...else, it will be:
+
+         /* re-use the vqs vector */
+         if (vf->msix_vector_status == MSIX_VECTOR_DEV_SHARED)
+                 return 0;
+         else
+                 config_vector = 1;
+
+This looks like config_vector can only be 0(re-used vector for the 
+data-vqs, which is 0) or 1. It shadows the ideal and default case
+config_vector = vf->nr_vring
+
+Thanks,
+Zhu Lingshan
+
+>
+> Thanks
+>
+>
+
