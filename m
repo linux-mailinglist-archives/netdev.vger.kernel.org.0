@@ -2,94 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FCDB4FEE90
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 07:38:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 196294FEEC3
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 07:53:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232483AbiDMFkG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 01:40:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41844 "EHLO
+        id S232622AbiDMFz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 01:55:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232456AbiDMFkC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 01:40:02 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 786953151C;
-        Tue, 12 Apr 2022 22:37:42 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KdWTY5vjpzBsFD;
-        Wed, 13 Apr 2022 13:33:21 +0800 (CST)
-Received: from huawei.com (10.67.174.197) by kwepemi500013.china.huawei.com
- (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 13 Apr
- 2022 13:37:38 +0800
-From:   Xu Kuohai <xukuohai@huawei.com>
-To:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>
-CC:     Will Deacon <will@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, <x86@kernel.org>,
-        <hpa@zytor.com>, Shuah Khan <shuah@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Daniel Kiss <daniel.kiss@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Delyan Kratunov <delyank@fb.com>
-Subject: [PATCH bpf-next 5/5] selftests/bpf: Fix trivial typo in fentry_fexit.c
-Date:   Wed, 13 Apr 2022 01:49:59 -0400
-Message-ID: <20220413054959.1053668-6-xukuohai@huawei.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220413054959.1053668-1-xukuohai@huawei.com>
-References: <20220413054959.1053668-1-xukuohai@huawei.com>
+        with ESMTP id S229917AbiDMFzZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 01:55:25 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1104738DB5
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 22:53:05 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id k5so1597878lfg.9
+        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 22:53:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7U40Ltcj2IU9/USLZ23kMUEI1qqBd4qWHJo2TOH5zSQ=;
+        b=OR9C6RtXfkdyzSyh7vrDh0o+8LlhQrLAliQFeLCNjMLdXz5WavEo2tzgTVvHcDz1Wn
+         D7prtbZE/X0g7u8twN//FxoKtexCYLwK06bDeDBxXjjml2b9aezthrOx7wy2HdoCasaI
+         GWhTodeSf2oQJQxy2pKTX8NQaHybughVr0qdoO1Y7N7uvl1MX3A1T6DGee0fWV/lfip8
+         YiCtVo077EgmiJQZzbbmjB2WM0lID5yuTnH6HnQtwTGv8HLpwjrzFa5aYqYn+kOloso3
+         dD9zp7aORPWSHtisuRPGWvdtgst6/6ZEAr2vtLuausOKRKWVh/OKYXbVYlpj18R8zXRE
+         l8uA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7U40Ltcj2IU9/USLZ23kMUEI1qqBd4qWHJo2TOH5zSQ=;
+        b=EnfDq/DGUPh/ut1AU3MOmFuQDnbOyHhQkCXco97opc7A17aaqYsnX5jJ45H4A2NEDI
+         XuYBT5rU2DR14wkLF+zVMBJtVBacyQrKvDbZb8nK8Ah9JhysdXs48rmcv5vbHH+Yy5cK
+         M+quVRVreF9KxsMh80YFfWBW/kwmGtxh9y9ISneaNlbOyL0Lk+Kj77WNGTbECum7e/mf
+         2N474jTfaphD0FbSWQvvWr48k50cJEGWNomIV9lpFG9U4ad47530S//MWdorEBaNxBkx
+         D31K88gFV4QeizwihUYQg9nLNW7ytUxGW0aThzrfwC+2qQ2hRwoiHn8rszz21G6PWYa1
+         1oQg==
+X-Gm-Message-State: AOAM531oakLgzRYYml0BEucmQArZgDBNyutGbFhV9XKgRuuN52f36uxd
+        VTw9bK4ajnWYcgOJ7rrcnEkezPwHuIm5/Q==
+X-Google-Smtp-Source: ABdhPJwgCIY6iYn2zICUkN4nb1qBRzyYrkhospTzwXNAGF4wOTt6IAm2JHGYOasBtbgpyJFXwGwGVQ==
+X-Received: by 2002:ac2:4c89:0:b0:46b:c187:b761 with SMTP id d9-20020ac24c89000000b0046bc187b761mr3312052lfl.272.1649829182966;
+        Tue, 12 Apr 2022 22:53:02 -0700 (PDT)
+Received: from wse-c0089.westermo.com (h-98-128-237-157.A259.priv.bahnhof.se. [98.128.237.157])
+        by smtp.gmail.com with ESMTPSA id o18-20020a2e9b52000000b0024af0b04d04sm3681231ljj.1.2022.04.12.22.53.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 22:53:02 -0700 (PDT)
+From:   Mattias Forsblad <mattias.forsblad@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     roid@nvidia.com, vladbu@nvidia.com, Eli Cohen <eli@mellanox.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Mattias Forsblad <mattias.forsblad@gmail.com>
+Subject: [RFC net-next] net: tc: flow indirect framework issue
+Date:   Wed, 13 Apr 2022 07:52:48 +0200
+Message-Id: <20220413055248.1959073-1-mattias.forsblad@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.197]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemi500013.china.huawei.com (7.221.188.120)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The "ipv6" word in assertion message should be "fentry_fexit".
+Hello all,
 
-Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
----
- tools/testing/selftests/bpf/prog_tests/fentry_fexit.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+I'm currently working to get offloading of tc rules (clsact/matchall/drop) 
+on a bridge offloaded to HW. The patch series is here:
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/fentry_fexit.c b/tools/testing/selftests/bpf/prog_tests/fentry_fexit.c
-index 130f5b82d2e6..e3c139bde46e 100644
---- a/tools/testing/selftests/bpf/prog_tests/fentry_fexit.c
-+++ b/tools/testing/selftests/bpf/prog_tests/fentry_fexit.c
-@@ -28,8 +28,8 @@ void test_fentry_fexit(void)
- 
- 	prog_fd = fexit_skel->progs.test1.prog_fd;
- 	err = bpf_prog_test_run_opts(prog_fd, &topts);
--	ASSERT_OK(err, "ipv6 test_run");
--	ASSERT_OK(topts.retval, "ipv6 test retval");
-+	ASSERT_OK(err, "fentry_fexit test_run");
-+	ASSERT_OK(topts.retval, "fentry_fexit test retval");
- 
- 	fentry_res = (__u64 *)fentry_skel->bss;
- 	fexit_res = (__u64 *)fexit_skel->bss;
--- 
-2.30.2
+https://lore.kernel.org/netdev/20220411131619.43js6owwkalcdwwa@skbuf/T/#m07bff9e205e9ac03d15a4e758b4129235da88aba
 
+However I'm having some trouble with it. More specific in the limitations section
+in the link above, quote:
+
+Limitations
+If there is tc rules on a bridge and all the ports leave the bridge
+and then joins the bridge again, the indirect framwork doesn't seem
+to reoffload them at join. The tc rules need to be torn down and
+re-added. This seems to be because of limitations in the tc
+framework.
+
+The same issue can bee seen it you have a bridge with no ports
+and then adds a tc rule, like so:
+
+tc qdisc add dev br0 clsact
+tc filter add dev br0 ingress pref 1 proto all matchall action drop
+
+And then adds a port to that bridge
+ip link set dev swp0 master br0   <---- flow_indr_dev_register() bc this
+
+I'm seeing the callback(TC_SETUP_BLOCK) from flow_indr_dev_register()
+but I'm not getting any callbacks that I've added via flow_block_cb_add()
+
+Do you maybe have some idea why I'm seeing this behavior?
+Am i doing something wrong or is it a known issue or something else?
+
+Best regards,
+
+Mattias Forsblad
+mattias.forsblad@gmail.com
