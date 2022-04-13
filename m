@@ -2,103 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D86E34FF7A5
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 15:30:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30B304FF7B8
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 15:36:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235786AbiDMNcp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 09:32:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39004 "EHLO
+        id S235730AbiDMNi4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 09:38:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235794AbiDMNck (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 09:32:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0CDF1B786;
-        Wed, 13 Apr 2022 06:30:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5BA84B824AF;
-        Wed, 13 Apr 2022 13:30:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EC7DFC385A8;
-        Wed, 13 Apr 2022 13:30:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649856616;
-        bh=85lID7Y8b/51FkWR0s29xGJVseeMIQt5vDZECBrzLy4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=AAsb8InHwtqgg6vNgBUIAYWq8UQE3mExKtGlt5tSJ/CWECeF6ZB1h+jJeaik4xk5S
-         06SFsgz+4q3qRspsApWN1DQ1uv+7lXHZQn6ikaXMbE637OGssEFpouAAilcohYvWOu
-         0s5ERTyol+pvljKf0M/qvHiOwvvXPmm/YAj/gMLUI51RwWxOc/jg1fWSCqwdlQZhfT
-         u6e3vCs8wx/iJwrtIZgWd+YTVAB0Fs0aA+JMv52OibMDU0TMtMx6aUR0KrbHdX7+Kd
-         OPWnwb+NoACSzmBObWJ82WfWQXkInY6PhW7854KhyzWDTnz6S3VSz6vtlbV/JrhLWE
-         0263kB3W4LZrQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D3B62E8DD5E;
-        Wed, 13 Apr 2022 13:30:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S233567AbiDMNi4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 09:38:56 -0400
+Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C20FD5D5F1
+        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 06:36:34 -0700 (PDT)
+Date:   Wed, 13 Apr 2022 15:36:32 +0200
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Mattias Forsblad <mattias.forsblad@gmail.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "roid@nvidia.com" <roid@nvidia.com>,
+        "vladbu@nvidia.com" <vladbu@nvidia.com>,
+        Eli Cohen <elic@nvidia.com>, Jiri Pirko <jiri@resnulli.us>,
+        Tobias Waldekranz <tobias@waldekranz.com>
+Subject: Re: [RFC net-next] net: tc: flow indirect framework issue
+Message-ID: <YlbR4Cgzd/ulpT25@salvia>
+References: <20220413055248.1959073-1-mattias.forsblad@gmail.com>
+ <DM5PR1301MB2172F573F9314D43F79D8F26E7EC9@DM5PR1301MB2172.namprd13.prod.outlook.com>
+ <20220413090705.zkfrp2fjhejqdj6a@skbuf>
+ <2a82cf39-48b9-2c6c-f662-c1d1bce391ba@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/9] net: ip: add skb drop reasons to ip ingress
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164985661586.7515.1894293980770406853.git-patchwork-notify@kernel.org>
-Date:   Wed, 13 Apr 2022 13:30:15 +0000
-References: <20220413081600.187339-1-imagedong@tencent.com>
-In-Reply-To: <20220413081600.187339-1-imagedong@tencent.com>
-To:     Menglong Dong <menglong8.dong@gmail.com>
-Cc:     dsahern@kernel.org, rostedt@goodmis.org, mingo@redhat.com,
-        davem@davemloft.net, yoshfuji@linux-ipv6.org, kuba@kernel.org,
-        pabeni@redhat.com, benbjiang@tencent.com, flyingpeng@tencent.com,
-        imagedong@tencent.com, edumazet@google.com, kafai@fb.com,
-        talalahmad@google.com, keescook@chromium.org,
-        mengensun@tencent.com, dongli.zhang@oracle.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <2a82cf39-48b9-2c6c-f662-c1d1bce391ba@gmail.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Wed, Apr 13, 2022 at 02:24:38PM +0200, Mattias Forsblad wrote:
+> On 2022-04-13 11:07, Vladimir Oltean wrote:
+> > Hi Baowen,
+> > 
+> > On Wed, Apr 13, 2022 at 07:05:39AM +0000, Baowen Zheng wrote:
+[...]
+> > Mattias' question comes from the fact that there is already some logic
+> > in flow_indr_dev_register() to replay missed flow block binding events,
+> > added by Eli Cohen in commit 74fc4f828769 ("net: Fix offloading indirect
+> > devices dependency on qdisc order creation"). That logic works, but it
+> > replays only the binding, not the actual filters, which again, would be
+> > necessary.
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+A bit of a long email...
 
-On Wed, 13 Apr 2022 16:15:51 +0800 you wrote:
-> From: Menglong Dong <imagedong@tencent.com>
+This commit 74fc4f828769 handles this scenario:
+
+1) eth0 is gone (module removal)
+2) vxlan0 device is still in place, tc ingress also contains rules for
+   vxlan0.
+3) eth0 is reloaded.
+
+A bit of background: tc ingress removes rules for eth0 if eth0 is
+gone (I am refering to software rules, in general). In this model, the
+tc ingress rules are attached to the device, and if the device eth0 is
+gone, those rules are also gone and, then, once this device eth0 comes
+back, the user has to the tc ingress rules software for eth0 again.
+There is no replay mechanism for tc ingress rules in this case.
+
+IIRC, Eli's patch re-adds the flow block for vxlan0 because he got a
+bug report that says that after reloading the driver module and eth0
+comes back, rules for tc vxlan0 were not hardware offloaded.
+
+The indirect flow block infrastructure is tracking devices such as
+vxlan0 that the given driver *might* be able to hardware offload.
+But from the control plane (user) perspective, this detail is hidden.
+To me, the problem is that there is no way from the control plane to
+relate vxlan0 with the real device that performs the hardware offload.
+There is also no flag for the user to request "please hardware offload
+vxlan0 tc ingress rules". Instead, the flow indirect block
+infrastructure performs the hardware offload "transparently" to the user.
+
+I think some people believe doing things fully transparent is good, at
+the cost of adding more kernel complexity and hiding details that are
+relevant to the user (such as if hardware offload is enabled for
+vxlan0 and what is the real device that is actually being used for the
+vxlan0 to be offloaded).
+
+So, there are no flags when setting up the vxlan0 device for the user
+to say: "I would like to hardware offload vxlan0", and going slightly
+further there is not "please attach this vxlan0 device to eth0 for
+hardware offload". Any real device could be potentially used to
+offload vxlan0, the user does not know which one is actually used.
+
+Exposing this information is a bit more work on top of the user, but:
+
+1) it will be transparent: the control plane shows that the vxlan0 is
+   hardware offloaded. Then if eth0 is gone, vxlan0 tc ingress can be
+   removed too, because it depends on eth0.
+
+2) The control plane validates if hardware offload for vxlan0. If this
+   is not possible, display an error to the user: "sorry, I cannot
+   offload vxlan0 on eth0 for reason X".
+
+Since this is not exposed to the control plane, the existing
+infrastructure follows a snooping scheme, but tracking devices that
+might be able to hardware offload.
+
+There is no obvious way to relate vxlan0 with the real device
+(eth0) that is actually performing the hardware offloading.
+
+Does replay make sense for vxlan0 when the user has to manually
+reload rules for eth0? So why vxlan0 rules need to be transparently
+replayed but eth0 rules need to be manually reloaded in tc ingress?
+
+> >> Maybe you can try to regist your callback in your module load stage I
+> >> think your callback will be triggered, or change the command order as: 
+> >> tc qdisc add dev br0 clsact
+> >> ip link set dev swp0 master br0
+> >> tc filter add dev br0 ingress pref 1 proto all matchall action drop
+> >> I am not sure whether it will take effect.
+> > 
+> > I think the idea is to make the given command order work, not to change it.
 > 
-> In the series "net: use kfree_skb_reason() for ip/udp packet receive",
-> skb drop reasons are added to the basic ingress path of IPv4. And in
-> the series "net: use kfree_skb_reason() for ip/neighbour", the egress
-> paths of IPv4 and IPv6 are handled. Related links:
-> 
-> [...]
+> Re-ordering the tc commands doesn't solve the issue when all ports leave the
+> bridge, which will lead to flow_indr_dev_unregister() and later re-joins
+> the bridge (flow_indr_dev_register()). We'll need filter replay for this.
 
-Here is the summary with links:
-  - [net-next,1/9] skb: add some helpers for skb drop reasons
-    https://git.kernel.org/netdev/net-next/c/d6d3146ce532
-  - [net-next,2/9] net: ipv4: add skb drop reasons to ip_error()
-    https://git.kernel.org/netdev/net-next/c/c4eb664191b4
-  - [net-next,3/9] net: ipv6: add skb drop reasons to ip6_pkt_drop()
-    https://git.kernel.org/netdev/net-next/c/3ae42cc8092b
-  - [net-next,4/9] net: ip: add skb drop reasons to ip forwarding
-    https://git.kernel.org/netdev/net-next/c/2edc1a383fda
-  - [net-next,5/9] net: icmp: introduce function icmpv6_param_prob_reason()
-    https://git.kernel.org/netdev/net-next/c/1ad6d548e2a4
-  - [net-next,6/9] net: ipv6: remove redundant statistics in ipv6_hop_jumbo()
-    https://git.kernel.org/netdev/net-next/c/bba98083499f
-  - [net-next,7/9] net: ipv6: add skb drop reasons to TLV parse
-    https://git.kernel.org/netdev/net-next/c/7d9dbdfbfdc5
-  - [net-next,8/9] net: ipv6: add skb drop reasons to ip6_rcv_core()
-    https://git.kernel.org/netdev/net-next/c/4daf841a2ef3
-  - [net-next,9/9] net: ipv6: add skb drop reasons to ip6_protocol_deliver_rcu()
-    https://git.kernel.org/netdev/net-next/c/eeab7e7ff43e
+Existing drivers call flow_indr_dev_register() from module init, so
+they start tracking any device that might be offloaded since the
+beginning, see below.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Mattias Forsblad said:
+>tc qdisc add dev br0 clsact
+>tc filter add dev br0 ingress pref 1 proto all matchall action drop
+>
+>And then adds a port to that bridge
+>ip link set dev swp0 master br0   <---- flow_indr_dev_register() bc this
 
-
+Regarding your issue: Why does it call flow_indr_dev_register() here?
+Most drivers call flow_indr_dev_register() much earlier, when swp0
+becomes available.  Then, tc qdisc add dev br0 clsact will trigger the
+indirect flow block path to reach your driver.
