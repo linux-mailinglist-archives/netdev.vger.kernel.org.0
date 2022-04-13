@@ -2,243 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 755C54FF693
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 14:19:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D270F4FF699
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 14:20:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231933AbiDMMV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 08:21:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51424 "EHLO
+        id S231732AbiDMMWs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 08:22:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbiDMMV0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 08:21:26 -0400
-Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFCE85881F;
-        Wed, 13 Apr 2022 05:19:02 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R911e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=33;SR=0;TI=SMTPD_---0V9zZ.hy_1649852336;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V9zZ.hy_1649852336)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 13 Apr 2022 20:18:57 +0800
-Message-ID: <1649852080.6360478-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH v9 18/32] virtio_ring: introduce virtqueue_resize()
-Date:   Wed, 13 Apr 2022 20:14:40 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Vadim Pasternak <vadimp@nvidia.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        linux-um@lists.infradead.org, netdev@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org, bpf@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-References: <20220406034346.74409-1-xuanzhuo@linux.alibaba.com>
- <20220406034346.74409-19-xuanzhuo@linux.alibaba.com>
- <92622553-e02d-47bd-06f9-0ce24c22650c@redhat.com>
-In-Reply-To: <92622553-e02d-47bd-06f9-0ce24c22650c@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S229711AbiDMMWq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 08:22:46 -0400
+Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 783985AA6C
+        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 05:20:25 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id DDF725C02F8;
+        Wed, 13 Apr 2022 08:20:24 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Wed, 13 Apr 2022 08:20:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1649852424; x=
+        1649938824; bh=zRtVpMslhEM9FCA8X5eI7aYkFrjVVyS1PZ9+HOH6SRM=; b=p
+        JjxwG15BHkty0EjvKyb7p3j+jgCzeOvCl0wvHSuvw8mjPK9M4Y2CfWWbMnYL2Ijc
+        33OLQbi02VgrnDfJu1Mu17vga4W4hECd7y7TLlqG5BDlWcFJ1mmasT0X8DoLLXbG
+        LKA0Fws7GGPWbsi9YN2B7GYwzg8gDX291/RqpbotoVGW/QvYOj/PPq6sCYLRiFfl
+        JjBhqseMD2s6LxzCMmTzUrJVPFX/iKooAOu3O5q9I/Me8S07sX7hvIFyi7zQXBmF
+        /QzT6QOX+iFu33vALE0RJgA7MuSg2fvYfNN66nF0ygb9jgUQd9CXx/noaCHVoQEx
+        vj6tJcn8/clf3X9/IKFTg==
+X-ME-Sender: <xms:CMBWYrdLnKU08z_KkZ4f3HOSppDDKfDtWWQOCVAch3xNTCI9PUtHJA>
+    <xme:CMBWYhPDPLaACvNvgbL2oGc8u0sfzTorFju5BxLHR_AwKKFTcuQqovbR5WDwque0w
+    nTeqilmSm6Lb-Q>
+X-ME-Received: <xmr:CMBWYkh5BnYCF42IJsylrs8k2CWBGgQ_QSenvtBuZy9I_hrQ1wLpOVMTEqmJoAIcB5dPTfcXmfSauNuD7zEW2-lQXK2FwA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudeluddgvdegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvuffkfhggtggujgesthdtre
+    dttddtvdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
+    shgthhdrohhrgheqnecuggftrfgrthhtvghrnheptdffkeekfeduffevgeeujeffjefhte
+    fgueeugfevtdeiheduueeukefhudehleetnecuvehluhhsthgvrhfuihiivgeptdenucfr
+    rghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:CMBWYs-_-5RR_4qlylJlnaGrDxuiFgfoeQAjNG-QoV3wQVvho3F2ZA>
+    <xmx:CMBWYntpnC6iGGjvnKG2CS0LvK1kK_-TNvGDrYSQwPzpWfSr_A2Bmg>
+    <xmx:CMBWYrEHqMcp2xMpvubneP0iWSsoIUEIeFfsAYcOUuijA9WFYwGpjg>
+    <xmx:CMBWYhImivkM-baFr5s4mfhwS0RISOaHwBb_RPdRMe9TiQQZ0TI8LQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 13 Apr 2022 08:20:24 -0400 (EDT)
+Date:   Wed, 13 Apr 2022 15:20:21 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Nikolay Aleksandrov <razor@blackwall.org>
+Cc:     netdev@vger.kernel.org, dsahern@kernel.org, roopa@nvidia.com,
+        kuba@kernel.org, davem@davemloft.net,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH net-next v4 07/12] net: rtnetlink: add NLM_F_BULK support
+ to rtnl_fdb_del
+Message-ID: <YlbABWs3ICeeiKsq@shredder>
+References: <20220413105202.2616106-1-razor@blackwall.org>
+ <20220413105202.2616106-8-razor@blackwall.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220413105202.2616106-8-razor@blackwall.org>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 12 Apr 2022 14:41:18 +0800, Jason Wang <jasowang@redhat.com> wrote:
->
-> =E5=9C=A8 2022/4/6 =E4=B8=8A=E5=8D=8811:43, Xuan Zhuo =E5=86=99=E9=81=93:
-> > Introduce virtqueue_resize() to implement the resize of vring.
-> > Based on these, the driver can dynamically adjust the size of the vring.
-> > For example: ethtool -G.
-> >
-> > virtqueue_resize() implements resize based on the vq reset function. In
-> > case of failure to allocate a new vring, it will give up resize and use
-> > the original vring.
-> >
-> > During this process, if the re-enable reset vq fails, the vq can no
-> > longer be used. Although the probability of this situation is not high.
-> >
-> > The parameter recycle is used to recycle the buffer that is no longer
-> > used.
-> >
-> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > ---
-> >   drivers/virtio/virtio_ring.c | 69 ++++++++++++++++++++++++++++++++++++
-> >   include/linux/virtio.h       |  3 ++
-> >   2 files changed, 72 insertions(+)
-> >
-> > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> > index 06f66b15c86c..6250e19fc5bf 100644
-> > --- a/drivers/virtio/virtio_ring.c
-> > +++ b/drivers/virtio/virtio_ring.c
-> > @@ -2554,6 +2554,75 @@ struct virtqueue *vring_create_virtqueue(
-> >   }
-> >   EXPORT_SYMBOL_GPL(vring_create_virtqueue);
-> >
-> > +/**
-> > + * virtqueue_resize - resize the vring of vq
-> > + * @_vq: the struct virtqueue we're talking about.
-> > + * @num: new ring num
-> > + * @recycle: callback for recycle the useless buffer
-> > + *
-> > + * When it is really necessary to create a new vring, it will set the =
-current vq
-> > + * into the reset state. Then call the passed callback to recycle the =
-buffer
-> > + * that is no longer used. Only after the new vring is successfully cr=
-eated, the
-> > + * old vring will be released.
-> > + *
-> > + * Caller must ensure we don't call this with other virtqueue operatio=
-ns
-> > + * at the same time (except where noted).
-> > + *
-> > + * Returns zero or a negative error.
->
->
-> Should we document that the virtqueue is kept unchanged (still
-> available) on (specific) failure?
->
+On Wed, Apr 13, 2022 at 01:51:57PM +0300, Nikolay Aleksandrov wrote:
+> When NLM_F_BULK is specified in a fdb del message we need to handle it
+> differently. First since this is a new call we can strictly validate the
+> passed attributes, at first only ifindex and vlan are allowed as these
+> will be the initially supported filter attributes, any other attribute
+> is rejected. The mac address is no longer mandatory, but we use it
+> to error out in older kernels because it cannot be specified with bulk
+> request (the attribute is not allowed) and then we have to dispatch
+> the call to ndo_fdb_del_bulk if the device supports it. The del bulk
+> callback can do further validation of the attributes if necessary.
+> 
+> Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
+> ---
+> v4: mark PF_BRIDGE/RTM_DELNEIGH with RTNL_FLAG_BULK_DEL_SUPPORTED
+> 
+>  net/core/rtnetlink.c | 67 +++++++++++++++++++++++++++++++-------------
+>  1 file changed, 48 insertions(+), 19 deletions(-)
+> 
+> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+> index 63c7df52a667..520d50fcaaea 100644
+> --- a/net/core/rtnetlink.c
+> +++ b/net/core/rtnetlink.c
+> @@ -4169,22 +4169,34 @@ int ndo_dflt_fdb_del(struct ndmsg *ndm,
+>  }
+>  EXPORT_SYMBOL(ndo_dflt_fdb_del);
+>  
+> +static const struct nla_policy fdb_del_bulk_policy[NDA_MAX + 1] = {
+> +	[NDA_VLAN]	= { .type = NLA_U16 },
 
-OK.
+In earlier versions br_vlan_valid_id() was used to validate the VLAN,
+but I don't see it anymore. Maybe use 
 
->
-> > + */
-> > +int virtqueue_resize(struct virtqueue *_vq, u32 num,
-> > +		     void (*recycle)(struct virtqueue *vq, void *buf))
-> > +{
-> > +	struct vring_virtqueue *vq =3D to_vvq(_vq);
-> > +	struct virtio_device *vdev =3D vq->vq.vdev;
-> > +	bool packed;
-> > +	void *buf;
-> > +	int err;
-> > +
-> > +	if (!vq->we_own_ring)
-> > +		return -EINVAL;
-> > +
-> > +	if (num > vq->vq.num_max)
-> > +		return -E2BIG;
-> > +
-> > +	if (!num)
-> > +		return -EINVAL;
-> > +
-> > +	packed =3D virtio_has_feature(vdev, VIRTIO_F_RING_PACKED) ? true : fa=
-lse;
-> > +
-> > +	if ((packed ? vq->packed.vring.num : vq->split.vring.num) =3D=3D num)
-> > +		return 0;
-> > +
-> > +	if (!vdev->config->reset_vq)
-> > +		return -ENOENT;
-> > +
-> > +	if (!vdev->config->enable_reset_vq)
-> > +		return -ENOENT;
-> > +
-> > +	err =3D vdev->config->reset_vq(_vq);
-> > +	if (err)
-> > +		return err;
-> > +
-> > +	while ((buf =3D virtqueue_detach_unused_buf(_vq)) !=3D NULL)
-> > +		recycle(_vq, buf);
-> > +
-> > +	if (packed) {
-> > +		err =3D virtqueue_resize_packed(_vq, num);
-> > +		if (err)
-> > +			virtqueue_reinit_packed(vq);
->
->
-> Calling reinit here seems a little bit odd, it looks more like a reset
-> of the virtqueue. Consider we may re-use virtqueue reset for more
-> purpose, I wonder if we need a helper like:
->
-> virtqueue_resize() {
->  =C2=A0=C2=A0=C2=A0 vdev->config->reset_vq(_vq);
->  =C2=A0=C2=A0=C2=A0 if (packed)
->  =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 virtqueue_reinit_packed(_vq)
->  =C2=A0=C2=A0=C2=A0 else
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 virtqueue_reinit_split(_vq)
-> }
+NLA_POLICY_RANGE(1, VLAN_N_VID - 2)
 
-Yes, currently we are implementing resize. This is used to implement
-set_ringparam()
+?
 
-Later, when we implement virtio_net + AF_XDP, what we want is reset not res=
-ize,
-so we need to implement a helper:
+I realize that invalid values won't do anything, but I think it's better
+to only allow valid ranges.
 
- virtqueue_reset() {
-  =C2=A0=C2=A0=C2=A0 vdev->config->reset_vq(_vq);
-  =C2=A0=C2=A0=C2=A0 if (packed)
-  =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 virtqueue_reinit_packed(_vq)
-  =C2=A0=C2=A0=C2=A0 else
-  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 virtqueue_reinit_split(_vq)
- }
-
-So I use virtqueue_reinit_* as a separate function not only to deal with the
-case of resize failure, but also to consider the subsequent implementation =
-of
-virtqueue_reset()
-
-Thanks.
-
-
->
-> Thanks
->
->
-> > +	} else {
-> > +		err =3D virtqueue_resize_split(_vq, num);
-> > +		if (err)
-> > +			virtqueue_reinit_split(vq);
-> > +	}
-> > +
-> > +	if (vdev->config->enable_reset_vq(_vq))
-> > +		return -EBUSY;
-> > +
-> > +	return err;
-> > +}
-> > +EXPORT_SYMBOL_GPL(virtqueue_resize);
-> > +
-> >   /* Only available for split ring */
-> >   struct virtqueue *vring_new_virtqueue(unsigned int index,
-> >   				      unsigned int num,
-> > diff --git a/include/linux/virtio.h b/include/linux/virtio.h
-> > index d59adc4be068..c86ff02e0ca0 100644
-> > --- a/include/linux/virtio.h
-> > +++ b/include/linux/virtio.h
-> > @@ -91,6 +91,9 @@ dma_addr_t virtqueue_get_desc_addr(struct virtqueue *=
-vq);
-> >   dma_addr_t virtqueue_get_avail_addr(struct virtqueue *vq);
-> >   dma_addr_t virtqueue_get_used_addr(struct virtqueue *vq);
-> >
-> > +int virtqueue_resize(struct virtqueue *vq, u32 num,
-> > +		     void (*recycle)(struct virtqueue *vq, void *buf));
-> > +
-> >   /**
-> >    * virtio_device - representation of a device using virtio
-> >    * @index: unique position on the virtio bus
->
+> +	[NDA_IFINDEX]	= NLA_POLICY_MIN(NLA_S32, 1),
+> +};
+> +
+>  static int rtnl_fdb_del(struct sk_buff *skb, struct nlmsghdr *nlh,
+>  			struct netlink_ext_ack *extack)
+>  {
+> +	bool del_bulk = !!(nlh->nlmsg_flags & NLM_F_BULK);
+>  	struct net *net = sock_net(skb->sk);
+> +	const struct net_device_ops *ops;
+>  	struct ndmsg *ndm;
+>  	struct nlattr *tb[NDA_MAX+1];
+>  	struct net_device *dev;
+> -	__u8 *addr;
+> +	__u8 *addr = NULL;
+>  	int err;
+>  	u16 vid;
+>  
+>  	if (!netlink_capable(skb, CAP_NET_ADMIN))
+>  		return -EPERM;
+>  
+> -	err = nlmsg_parse_deprecated(nlh, sizeof(*ndm), tb, NDA_MAX, NULL,
+> -				     extack);
+> +	if (!del_bulk) {
+> +		err = nlmsg_parse_deprecated(nlh, sizeof(*ndm), tb, NDA_MAX,
+> +					     NULL, extack);
+> +	} else {
+> +		err = nlmsg_parse(nlh, sizeof(*ndm), tb, NDA_MAX,
+> +				  fdb_del_bulk_policy, extack);
+> +	}
+>  	if (err < 0)
+>  		return err;
+>  
+> @@ -4200,9 +4212,12 @@ static int rtnl_fdb_del(struct sk_buff *skb, struct nlmsghdr *nlh,
+>  		return -ENODEV;
+>  	}
+>  
+> -	if (!tb[NDA_LLADDR] || nla_len(tb[NDA_LLADDR]) != ETH_ALEN) {
+> -		NL_SET_ERR_MSG(extack, "invalid address");
+> -		return -EINVAL;
+> +	if (!del_bulk) {
+> +		if (!tb[NDA_LLADDR] || nla_len(tb[NDA_LLADDR]) != ETH_ALEN) {
+> +			NL_SET_ERR_MSG(extack, "invalid address");
+> +			return -EINVAL;
+> +		}
+> +		addr = nla_data(tb[NDA_LLADDR]);
+>  	}
+>  
+>  	if (dev->type != ARPHRD_ETHER) {
+> @@ -4210,8 +4225,6 @@ static int rtnl_fdb_del(struct sk_buff *skb, struct nlmsghdr *nlh,
+>  		return -EINVAL;
+>  	}
+>  
+> -	addr = nla_data(tb[NDA_LLADDR]);
+> -
+>  	err = fdb_vid_parse(tb[NDA_VLAN], &vid, extack);
+>  	if (err)
+>  		return err;
+> @@ -4222,10 +4235,16 @@ static int rtnl_fdb_del(struct sk_buff *skb, struct nlmsghdr *nlh,
+>  	if ((!ndm->ndm_flags || ndm->ndm_flags & NTF_MASTER) &&
+>  	    netif_is_bridge_port(dev)) {
+>  		struct net_device *br_dev = netdev_master_upper_dev_get(dev);
+> -		const struct net_device_ops *ops = br_dev->netdev_ops;
+>  
+> -		if (ops->ndo_fdb_del)
+> -			err = ops->ndo_fdb_del(ndm, tb, dev, addr, vid);
+> +		ops = br_dev->netdev_ops;
+> +		if (!del_bulk) {
+> +			if (ops->ndo_fdb_del)
+> +				err = ops->ndo_fdb_del(ndm, tb, dev, addr, vid);
+> +		} else {
+> +			if (ops->ndo_fdb_del_bulk)
+> +				err = ops->ndo_fdb_del_bulk(ndm, tb, dev, vid,
+> +							    extack);
+> +		}
+>  
+>  		if (err)
+>  			goto out;
+> @@ -4235,15 +4254,24 @@ static int rtnl_fdb_del(struct sk_buff *skb, struct nlmsghdr *nlh,
+>  
+>  	/* Embedded bridge, macvlan, and any other device support */
+>  	if (ndm->ndm_flags & NTF_SELF) {
+> -		if (dev->netdev_ops->ndo_fdb_del)
+> -			err = dev->netdev_ops->ndo_fdb_del(ndm, tb, dev, addr,
+> -							   vid);
+> -		else
+> -			err = ndo_dflt_fdb_del(ndm, tb, dev, addr, vid);
+> +		ops = dev->netdev_ops;
+> +		if (!del_bulk) {
+> +			if (ops->ndo_fdb_del)
+> +				err = ops->ndo_fdb_del(ndm, tb, dev, addr, vid);
+> +			else
+> +				err = ndo_dflt_fdb_del(ndm, tb, dev, addr, vid);
+> +		} else {
+> +			/* in case err was cleared by NTF_MASTER call */
+> +			err = -EOPNOTSUPP;
+> +			if (ops->ndo_fdb_del_bulk)
+> +				err = ops->ndo_fdb_del_bulk(ndm, tb, dev, vid,
+> +							    extack);
+> +		}
+>  
+>  		if (!err) {
+> -			rtnl_fdb_notify(dev, addr, vid, RTM_DELNEIGH,
+> -					ndm->ndm_state);
+> +			if (!del_bulk)
+> +				rtnl_fdb_notify(dev, addr, vid, RTM_DELNEIGH,
+> +						ndm->ndm_state);
+>  			ndm->ndm_flags &= ~NTF_SELF;
+>  		}
+>  	}
+> @@ -6145,7 +6173,8 @@ void __init rtnetlink_init(void)
+>  	rtnl_register(PF_UNSPEC, RTM_DELLINKPROP, rtnl_dellinkprop, NULL, 0);
+>  
+>  	rtnl_register(PF_BRIDGE, RTM_NEWNEIGH, rtnl_fdb_add, NULL, 0);
+> -	rtnl_register(PF_BRIDGE, RTM_DELNEIGH, rtnl_fdb_del, NULL, 0);
+> +	rtnl_register(PF_BRIDGE, RTM_DELNEIGH, rtnl_fdb_del, NULL,
+> +		      RTNL_FLAG_BULK_DEL_SUPPORTED);
+>  	rtnl_register(PF_BRIDGE, RTM_GETNEIGH, rtnl_fdb_get, rtnl_fdb_dump, 0);
+>  
+>  	rtnl_register(PF_BRIDGE, RTM_GETLINK, NULL, rtnl_bridge_getlink, 0);
+> -- 
+> 2.35.1
+> 
