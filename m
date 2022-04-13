@@ -2,112 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8CB74FFF3B
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 21:28:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AE094FFF50
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 21:30:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238335AbiDMT3o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 15:29:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34646 "EHLO
+        id S232431AbiDMTcS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 15:32:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238322AbiDMT3k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 15:29:40 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EA6A72E28
-        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 12:27:17 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id h23-20020a17090a051700b001c9c1dd3acbso3340262pjh.3
-        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 12:27:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ulZD6zNnI3E2tVgbP2ay2zB6j2x9YR9+l3/69/Ua3pA=;
-        b=JLd5puMQf6492ML/dyNY6TKWLx7/9ZIuCpo4/MdsTOmTLArTtUAHSBUUksMMpNsbUg
-         JKoMefN2Xhc4AQ40Oj/ty6rADytP+hgT6kUGvT/+DME34D1YFAeq1NkGOZwC2LD/nH7A
-         UROiFTo0esSJrW/PMu2+jyzk+RilmC4re7wIb6Zj+9vn95TEcRuBhlxaxDMhY3k2FK9Z
-         JF9sAJzfofpZ9TQMjkyuueU/pkYZfnd4WssWZzBXW8PLxVwodjar5qU85Jw0zbjCixvV
-         UNSLduY+bWJgbHcYb6l5xShpVPyjY5c/TLwd1mNzgdN8nvRmYBPxs/1Sb65pSM4TrGJT
-         8Ahw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ulZD6zNnI3E2tVgbP2ay2zB6j2x9YR9+l3/69/Ua3pA=;
-        b=rBf4o7A3aZyy9Y7zpS9FfGL5cfgGphw3idhjTmnIziP4hcIFJ3qreiyFQ/z/8T7kQY
-         2SLqv+yB88VDpOsu0+2KIgNeX4/gFVEgECZEEME1KFMtZszktDpJVjRjwnauVxExW8z1
-         C9jpy8HTuzIP9vx3teyvOos/vTjDQE5FakAUScuaU6sBPM6X3HPCrxuH1jrLcygfH5zn
-         s6j54q6NSB1ELhTm7j1ZmFVKZJZ0B4FCO2thzCE7/R1xe46M6YIViADAAqqKPH2EM7HR
-         Xr/fYWQVnyKlYiQOIeQZxMRLvwR5bdsmeKyPWj0JHaIsQSHUxR9uBe7ljYAxEbER3IwX
-         xOJA==
-X-Gm-Message-State: AOAM532NvgU0qyqNPM7qAf4h/8YzhiyuWjyHsfcChyTBN0XNZimOS5k+
-        2x2GzwxYLSqj1HCvdBZSLtoQzQj3FUpcO2yC
-X-Google-Smtp-Source: ABdhPJy2l1eOffJSFsfUgH2fvADP0aGuwJ8njCIdXBZ9pzOEzXCNNM+Oyp4lX76nDUJdDBeupVp7HA==
-X-Received: by 2002:a17:90a:454a:b0:1ca:91c7:df66 with SMTP id r10-20020a17090a454a00b001ca91c7df66mr288235pjm.186.1649878036766;
-        Wed, 13 Apr 2022 12:27:16 -0700 (PDT)
-Received: from [192.168.254.17] ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id v16-20020aa78090000000b0050583cb0adbsm18978259pff.196.2022.04.13.12.27.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Apr 2022 12:27:16 -0700 (PDT)
-Message-ID: <bb29d766-f837-195e-63cc-15d02f155f2c@linaro.org>
-Date:   Wed, 13 Apr 2022 12:27:15 -0700
+        with ESMTP id S235925AbiDMTcM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 15:32:12 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9920D25C8
+        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 12:29:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=NSRLcO0ZZFlZh7mQFDRSMBndI491Jw/AOweQw0H/N2A=; b=T//mkpYqoo+cZej34GccBGHLHX
+        AWcKx2Csuw7+sHuesp4v9O6fcuQ+BwMclDJRc0CW2YPcERbqdZ8/vbWdhXc7ry4riA4PANWA8ss38
+        8plLTB1MMUMkl+1SQSgc/mbV/dfcK695M6538KDoP+TLaYV+FhyRfjwaInYdYDCezpsYYYZ9PKuco
+        zPiczY3CGEHns5QuMoHYK10jaPf6cMt/4Fz4Ofd+FisSx4z8lM5fXjvgU5pd+vxVYfD/836MxGlCR
+        HsKONRKJ6L450u520+JZI1dYf1LxBkkcxlB3F7MkvSYZ4FPZHxJ/RBT1G07VIuuYCIlWDo0USSPC3
+        xYd7jJig==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58250)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1neigG-0003dO-5k; Wed, 13 Apr 2022 20:29:31 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1neigE-0003b4-0V; Wed, 13 Apr 2022 20:29:30 +0100
+Date:   Wed, 13 Apr 2022 20:29:29 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net 1/3] net: dsa: mv88e6xxx: use BMSR_ANEGCOMPLETE bit
+ for filling an_complete
+Message-ID: <YlckmZZChBJvyav7@shell.armlinux.org.uk>
+References: <Ylb/vEWXHOmQ7sFd@shell.armlinux.org.uk>
+ <E1negFc-005tSn-BX@rmk-PC.armlinux.org.uk>
+ <YlcaiKD1zcM6ztsK@lunn.ch>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] bpf: Fix KASAN use-after-free Read in
- compute_effective_progs
-Content-Language: en-US
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        linux- stable <stable@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com
-References: <20220405170356.43128-1-tadeusz.struk@linaro.org>
- <CAEf4BzaPmp5TzNM8U=SSyEp30wv335_ZxuAL-LLPQUZJ9OS74g@mail.gmail.com>
- <e7692d0b-e495-8d3e-4905-c4109bf5caa4@linaro.org>
- <CAEf4Bzbb+AmuABH2cw=48uuznz7bT=eEMc1V9mS3GSqgU664Tw@mail.gmail.com>
-From:   Tadeusz Struk <tadeusz.struk@linaro.org>
-In-Reply-To: <CAEf4Bzbb+AmuABH2cw=48uuznz7bT=eEMc1V9mS3GSqgU664Tw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YlcaiKD1zcM6ztsK@lunn.ch>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/13/22 12:07, Andrii Nakryiko wrote:
->> it would be ideal if detach would never fail, but it would require some kind of
->> prealloc, on attach maybe? Another option would be to minimize the probability
-> We allocate new arrays in update_effective_progs() under assumption
-> that we might need to grow the array because we use
-> update_effective_progs() for attachment. But for detachment we know
-> that we definitely don't need to increase the size, we need to remove
-> existing element only, thus shrinking the size.
+On Wed, Apr 13, 2022 at 08:46:32PM +0200, Andrew Lunn wrote:
+> On Wed, Apr 13, 2022 at 05:53:52PM +0100, Russell King wrote:
+> > From: =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
 > 
-> Normally we'd reallocate the array to shrink it (and that's why we use
-> update_effective_progs() and allocate memory), but we can also have a
-> fallback path for detachment only to reuse existing effective arrays
-> and just shift all the elements to the right from the element that's
-> being removed. We'll leave NULL at the end, but that's much better
-> than error out. Subsequent attachment or detachment will attempt to
-> properly size and reallocate everything.
+> Hi Russell
 > 
-> So I think that should be the fix, if you'd be willing to work on it.
+> Does git am parse that correctly? At least it is something
+> Jakub/DaveM/Paolo needs to keep an eye on when they accept the series.
 
-That makes it much easier then. I will change it so that there is no
-alloc needed on the detach path. Thanks for the clarification.
+If it doesn't git is rather brain-dead - the above is generated by
+git format-patch... if git produces emails that it can't accept then
+there's definitely something wrong with git!
+
+> > Commit ede359d8843a ("net: dsa: mv88e6xxx: Link in pcs_get_state() if AN
+> > is bypassed") added the ability to link if AN was bypassed, and added
+> > filling of state->an_complete field, but set it to true if AN was
+> > enabled in BMCR, not when AN was reported complete in BMSR.
+> > 
+> > This was done because for some reason, when I wanted to use BMSR value
+> > to infer an_complete, I was looking at BMSR_ANEGCAPABLE bit (which was
+> > always 1), instead of BMSR_ANEGCOMPLETE bit.
+> > 
+> > Use BMSR_ANEGCOMPLETE for filling state->an_complete.
+> > 
+> > Fixes: ede359d8843a ("net: dsa: mv88e6xxx: Link in pcs_get_state() if AN is bypassed")
+> > Signed-off-by: Marek Behún <kabel@kernel.org>
+> > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> > ---
+> >  drivers/net/dsa/mv88e6xxx/serdes.c | 27 +++++++++++----------------
+> >  1 file changed, 11 insertions(+), 16 deletions(-)
+> > 
+> > diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6xxx/serdes.c
+> > index 7b37d45bc9fb..1a19c5284f2c 100644
+> > --- a/drivers/net/dsa/mv88e6xxx/serdes.c
+> > +++ b/drivers/net/dsa/mv88e6xxx/serdes.c
+> > @@ -50,22 +50,17 @@ static int mv88e6390_serdes_write(struct mv88e6xxx_chip *chip,
+> >  }
+> >  
+> >  static int mv88e6xxx_serdes_pcs_get_state(struct mv88e6xxx_chip *chip,
+> > -					  u16 ctrl, u16 status, u16 lpa,
+> > +					  u16 bmsr, u16 lpa, u16 status,
+> >  					  struct phylink_link_state *state)
+> >  {
+> >  	state->link = !!(status & MV88E6390_SGMII_PHY_STATUS_LINK);
+> > +	state->an_complete = !!(bmsr & BMSR_ANEGCOMPLETE);
+> >  
+> >  	if (status & MV88E6390_SGMII_PHY_STATUS_SPD_DPL_VALID) {
+> >  		/* The Spped and Duplex Resolved register is 1 if AN is enabled
+> 
+> It looks like there is a typ0 here for speed.
+
+Will fix.
+
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+Thanks.
 
 -- 
-Thanks,
-Tadeusz
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
