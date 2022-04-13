@@ -2,72 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EAA54FF26D
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 10:44:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9485C4FF193
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 10:16:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234019AbiDMIqU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 04:46:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39826 "EHLO
+        id S233704AbiDMIS0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 04:18:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234018AbiDMIqS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 04:46:18 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8627750447;
-        Wed, 13 Apr 2022 01:43:57 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id j8so1350986pll.11;
-        Wed, 13 Apr 2022 01:43:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=/WNILOdnKVUcQWRps0HdDCOJ2Ayw4wZcEI2cZi5xPjA=;
-        b=En4zjQhdSiB0UMqHwU7grNsvnTv94MzrlMNTZCz0VLP2sZZN/cXkBzbeKpoi24nrUS
-         6sJo4MpCqBLa9P37patLwBt/Fa4mw5UU4LA3y+vHqnrHKRVEApR24/HItSzYnSPaEL/w
-         E+z80EzdxF68OIY7ESQI5iCKBa++y6RCGaldeRvdgkLYbupd5LuWjUs/FiJWqCgesYux
-         5YwUmP0SH4rNFBT5OALUyaB0wFqLtH00QioNGPxnouPbEJwCHZmNVRb8bDKqScPkyMJb
-         CDj920k6LwCSPuGs1AxB4jYp9yQPkJSx3QvPq/ea+gt6nCPvkywwV5TCnHdAvWok0pGL
-         HQAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=/WNILOdnKVUcQWRps0HdDCOJ2Ayw4wZcEI2cZi5xPjA=;
-        b=2Mdss6QKHXEWqVjRoE88Sxnfl6yWxm0CZQ11KXzEqBy5qiq3Dtaizsd4L8St3k1tk/
-         XFUEOFsNHkCLXcfsalKhnknyF6xbwThpt87P6zem/Ci+igNsNWrqg0OQ6Y692RjS9+It
-         u8C87DGyp5W4LOdU0euBbZ1BbiPXcES0b70A7Doh46I0RVv0INYQLPcVoVtIAxuUxNnu
-         0A5Ctb8Nyx23Ifyy2NsFPMOEcxLtgbzwqfmtbneGDXtIwjkJXvchec/ajdc5u0cGVLkV
-         0q67X+AZnhssmIcT9IUvFa0X9I9loJmCrNyYQBAciXB288kUxITW6dYxuRDkjQkb9sIw
-         4ycA==
-X-Gm-Message-State: AOAM531FpfBFTAVJcxs0ZJFPq2bLvvzEueAFTN2QGv0Xwo0bYKhamInW
-        Af2UdTgnAD5OdSLB4q8UaOhlZ/VtsmY=
-X-Google-Smtp-Source: ABdhPJy9BDgQBpeVXDbGKV1+S82yXRVfb2x4Rxx4IgVLBs9XktLF7OduwJvhB5vzsmlhZkes0HHegw==
-X-Received: by 2002:a17:902:ce8a:b0:158:7b10:980b with SMTP id f10-20020a170902ce8a00b001587b10980bmr10220024plg.122.1649839437125;
-        Wed, 13 Apr 2022 01:43:57 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.119])
-        by smtp.gmail.com with ESMTPSA id l5-20020a63f305000000b0039daaa10a1fsm2410335pgh.65.2022.04.13.01.43.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 01:43:56 -0700 (PDT)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     dsahern@kernel.org
-Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, kuba@kernel.org, pabeni@redhat.com,
-        benbjiang@tencent.com, flyingpeng@tencent.com,
-        imagedong@tencent.com, edumazet@google.com, kafai@fb.com,
-        talalahmad@google.com, keescook@chromium.org,
-        mengensun@tencent.com, dongli.zhang@oracle.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next 2/9] net: ipv4: add skb drop reasons to ip_error()
-Date:   Wed, 13 Apr 2022 16:15:53 +0800
-Message-Id: <20220413081600.187339-3-imagedong@tencent.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220413081600.187339-1-imagedong@tencent.com>
-References: <20220413081600.187339-1-imagedong@tencent.com>
+        with ESMTP id S233682AbiDMISY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 04:18:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABFDA3879F;
+        Wed, 13 Apr 2022 01:16:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 62A34B8214A;
+        Wed, 13 Apr 2022 08:16:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26522C385A3;
+        Wed, 13 Apr 2022 08:15:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649837760;
+        bh=OSJL62PsVT9RuUTRNkAgpg4b2N9gEv5mm5zrUxAX4l8=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=fX+DA8GJBzUsixPc0ausR8D9FeKBk5wu7bfEgPhaaxDFqoKUFAvTtJaqxAbjT2PkO
+         OX8gG8uHRkVSk6kJas/5qlAyQkbn1ZLZSYCr+5eboogj3mH2yt3vArlU7mm5QBqJyV
+         X9knNu54qMMdkY1U2PfHCMzrO9LlBjyvzDT48jfy1FZkLVrtnFprcdgvyi6c1VayjW
+         8M2TFDImGA19Q4wEu4Y5znhH6x7DmteGbMhcESuNYfF7t6tHWezU7CgnDBa19FsmYr
+         IMYSITMS0+Fm8JvJ9TN1cvMJ3W+S01iFX5/HfK2k6daU9Ood2L/1slfzQoTiVVxXOX
+         T3HNUGoEzV3yw==
+Message-ID: <1c893a6b-671e-de1b-5d58-65198a310573@kernel.org>
+Date:   Wed, 13 Apr 2022 11:15:53 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC 13/13] net: ti: icssg-prueth: Add ICSSG ethernet driver
+Content-Language: en-US
+To:     Puranjay Mohan <p-mohan@ti.com>, Andrew Lunn <andrew@lunn.ch>
+Cc:     linux-kernel@vger.kernel.org, bjorn.andersson@linaro.org,
+        mathieu.poirier@linaro.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-remoteproc@vger.kernel.org, devicetree@vger.kernel.org,
+        nm@ti.com, ssantosh@kernel.org, s-anna@ti.com,
+        linux-arm-kernel@lists.infradead.org, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org, vigneshr@ti.com,
+        kishon@ti.com, Grygorii Strashko <grygorii.strashko@ti.com>
+References: <20220406094358.7895-1-p-mohan@ti.com>
+ <20220406094358.7895-14-p-mohan@ti.com> <Yk2gDGN8a2xss1UO@lunn.ch>
+ <543b8c11-db95-29d1-29bc-ae5cbd99b2e2@ti.com>
+From:   Roger Quadros <rogerq@kernel.org>
+In-Reply-To: <543b8c11-db95-29d1-29bc-ae5cbd99b2e2@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,102 +63,191 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+Hi,
 
-Eventually, I find out the handler function for inputting route lookup
-fail: ip_error().
+On 12/04/2022 12:42, Puranjay Mohan wrote:
+> + Roger, Grygorii
+> 
+> On 06/04/22 19:43, Andrew Lunn wrote:
+>>> +static int emac_set_link_ksettings(struct net_device *ndev,
+>>> +				   const struct ethtool_link_ksettings *ecmd)
+>>> +{
+>>> +	struct prueth_emac *emac = netdev_priv(ndev);
+>>> +
+>>> +	if (!emac->phydev || phy_is_pseudo_fixed_link(emac->phydev))
+>>> +		return -EOPNOTSUPP;
+>>> +
+>>> +	return phy_ethtool_ksettings_set(emac->phydev, ecmd);
+>>> +}
+>>> +
+>>> +static int emac_get_eee(struct net_device *ndev, struct ethtool_eee *edata)
+>>> +{
+>>> +	struct prueth_emac *emac = netdev_priv(ndev);
+>>> +
+>>> +	if (!emac->phydev || phy_is_pseudo_fixed_link(emac->phydev))
+>>> +		return -EOPNOTSUPP;
+>>> +
+>>> +	return phy_ethtool_get_eee(emac->phydev, edata);
+>>> +}
+>>
+>> Why do you need the phy_is_pseudo_fixed_link() calls here?
 
-The drop reasons we used in ip_error() are almost corresponding to
-IPSTATS_MIB_*, and following new reasons are introduced:
+I think this is left over code from early days. It can be removed.
 
-SKB_DROP_REASON_IP_INADDRERRORS
-SKB_DROP_REASON_IP_INNOROUTES
+>>
+>>> +/* called back by PHY layer if there is change in link state of hw port*/
+>>> +static void emac_adjust_link(struct net_device *ndev)
+>>> +{
+>>
+>> ...
+>>
+>>> +	if (emac->link) {
+>>> +		/* link ON */
+>>> +		netif_carrier_on(ndev);
+>>> +		/* reactivate the transmit queue */
+>>> +		netif_tx_wake_all_queues(ndev);
+>>> +	} else {
+>>> +		/* link OFF */
+>>> +		netif_carrier_off(ndev);
+>>> +		netif_tx_stop_all_queues(ndev);
+>>> +	}
+>>
+>> phylib should of set the carrier for you.
+>>
+>>> + * emac_ndo_open - EMAC device open
+>>> + * @ndev: network adapter device
+>>> + *
+>>> + * Called when system wants to start the interface.
+>>> + *
+>>> + * Returns 0 for a successful open, or appropriate error code
+>>> + */
+>>> +static int emac_ndo_open(struct net_device *ndev)
+>>> +{
+>>> +	struct prueth_emac *emac = netdev_priv(ndev);
+>>> +	int ret, i, num_data_chn = emac->tx_ch_num;
+>>> +	struct prueth *prueth = emac->prueth;
+>>> +	int slice = prueth_emac_slice(emac);
+>>> +	struct device *dev = prueth->dev;
+>>> +	int max_rx_flows;
+>>> +	int rx_flow;
+>>> +
+>>> +	/* clear SMEM and MSMC settings for all slices */
+>>> +	if (!prueth->emacs_initialized) {
+>>> +		memset_io(prueth->msmcram.va, 0, prueth->msmcram.size);
+>>> +		memset_io(prueth->shram.va, 0, ICSSG_CONFIG_OFFSET_SLICE1 * PRUETH_NUM_MACS);
+>>> +	}
+>>> +
+>>> +	/* set h/w MAC as user might have re-configured */
+>>> +	ether_addr_copy(emac->mac_addr, ndev->dev_addr);
+>>> +
+>>> +	icssg_class_set_mac_addr(prueth->miig_rt, slice, emac->mac_addr);
+>>> +	icssg_ft1_set_mac_addr(prueth->miig_rt, slice, emac->mac_addr);
+>>> +
+>>> +	icssg_class_default(prueth->miig_rt, slice, 0);
+>>> +
+>>> +	netif_carrier_off(ndev);
+>>
+>> phylib should take care of this.
+>>
+>>> +
+>>> +	/* Notify the stack of the actual queue counts. */
+>>> +	ret = netif_set_real_num_tx_queues(ndev, num_data_chn);
+>>> +	if (ret) {
+>>> +		dev_err(dev, "cannot set real number of tx queues\n");
+>>> +		return ret;
+>>> +	}
+>>> +
+>>> +	init_completion(&emac->cmd_complete);
+>>> +	ret = prueth_init_tx_chns(emac);
+>>> +	if (ret) {
+>>> +		dev_err(dev, "failed to init tx channel: %d\n", ret);
+>>> +		return ret;
+>>> +	}
+>>> +
+>>> +	max_rx_flows = PRUETH_MAX_RX_FLOWS;
+>>> +	ret = prueth_init_rx_chns(emac, &emac->rx_chns, "rx",
+>>> +				  max_rx_flows, PRUETH_MAX_RX_DESC);
+>>> +	if (ret) {
+>>> +		dev_err(dev, "failed to init rx channel: %d\n", ret);
+>>> +		goto cleanup_tx;
+>>> +	}
+>>> +
+>>> +	ret = prueth_ndev_add_tx_napi(emac);
+>>> +	if (ret)
+>>> +		goto cleanup_rx;
+>>> +
+>>> +	/* we use only the highest priority flow for now i.e. @irq[3] */
+>>> +	rx_flow = PRUETH_RX_FLOW_DATA;
+>>> +	ret = request_irq(emac->rx_chns.irq[rx_flow], prueth_rx_irq,
+>>> +			  IRQF_TRIGGER_HIGH, dev_name(dev), emac);
+>>> +	if (ret) {
+>>> +		dev_err(dev, "unable to request RX IRQ\n");
+>>> +		goto cleanup_napi;
+>>> +	}
+>>> +
+>>> +	/* reset and start PRU firmware */
+>>> +	ret = prueth_emac_start(prueth, emac);
+>>> +	if (ret)
+>>> +		goto free_rx_irq;
+>>> +
+>>> +	/* Prepare RX */
+>>> +	ret = prueth_prepare_rx_chan(emac, &emac->rx_chns, PRUETH_MAX_PKT_SIZE);
+>>> +	if (ret)
+>>> +		goto stop;
+>>> +
+>>> +	ret = k3_udma_glue_enable_rx_chn(emac->rx_chns.rx_chn);
+>>> +	if (ret)
+>>> +		goto reset_rx_chn;
+>>> +
+>>> +	for (i = 0; i < emac->tx_ch_num; i++) {
+>>> +		ret = k3_udma_glue_enable_tx_chn(emac->tx_chns[i].tx_chn);
+>>> +		if (ret)
+>>> +			goto reset_tx_chan;
+>>> +	}
+>>> +
+>>> +	/* Enable NAPI in Tx and Rx direction */
+>>> +	for (i = 0; i < emac->tx_ch_num; i++)
+>>> +		napi_enable(&emac->tx_chns[i].napi_tx);
+>>> +	napi_enable(&emac->napi_rx);
+>>> +
+>>> +	emac_phy_connect(emac);
+>>
+>> Why don't you check the error code?
+>>
+>>> +static int prueth_config_rgmiidelay(struct prueth *prueth,
+>>> +				    struct device_node *eth_np,
+>>> +				    phy_interface_t phy_if)
+>>> +{
+>>> +	struct device *dev = prueth->dev;
+>>> +	struct regmap *ctrl_mmr;
+>>> +	u32 rgmii_tx_id = 0;
+>>> +	u32 icssgctrl_reg;
+>>> +
+>>> +	if (!phy_interface_mode_is_rgmii(phy_if))
+>>> +		return 0;
+>>> +
+>>> +	ctrl_mmr = syscon_regmap_lookup_by_phandle(eth_np, "ti,syscon-rgmii-delay");
+>>> +	if (IS_ERR(ctrl_mmr)) {
+>>> +		dev_err(dev, "couldn't get ti,syscon-rgmii-delay\n");
+>>> +		return -ENODEV;
+>>> +	}
+>>> +
+>>> +	if (of_property_read_u32_index(eth_np, "ti,syscon-rgmii-delay", 1,
+>>> +				       &icssgctrl_reg)) {
+>>> +		dev_err(dev, "couldn't get ti,rgmii-delay reg. offset\n");
+>>> +		return -ENODEV;
+>>> +	}
+>>> +
+>>> +	if (phy_if == PHY_INTERFACE_MODE_RGMII_ID ||
+>>> +	    phy_if == PHY_INTERFACE_MODE_RGMII_TXID)
+>>> +		rgmii_tx_id |= ICSSG_CTRL_RGMII_ID_MODE;
+>>> +
+>>> +	regmap_update_bits(ctrl_mmr, icssgctrl_reg, ICSSG_CTRL_RGMII_ID_MODE, rgmii_tx_id);
+>>
+>> Do you need to do a units conversion here, or does the register
+>> already take pico seconds?
 
-Isn't the name SKB_DROP_REASON_IP_HOSTUNREACH and
-SKB_DROP_REASON_IP_NETUNREACH more accurate? To make them corresponding
-to IPSTATS_MIB_*, we keep their name still.
+I think Grygorii already answered this. It is just a fixed delay enable/disable bit.
 
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
-Reviewed-by: Jiang Biao <benbjiang@tencent.com>
-Reviewed-by: Hao Peng <flyingpeng@tencent.com>
----
- include/linux/skbuff.h     | 6 ++++++
- include/trace/events/skb.h | 2 ++
- net/ipv4/route.c           | 6 +++++-
- 3 files changed, 13 insertions(+), 1 deletion(-)
-
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 0cbd6ada957c..886e83ac4b70 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -447,6 +447,12 @@ enum skb_drop_reason {
- 					 * 2211, such as a broadcasts
- 					 * ICMP_TIMESTAMP
- 					 */
-+	SKB_DROP_REASON_IP_INADDRERRORS,	/* host unreachable, corresponding
-+						 * to IPSTATS_MIB_INADDRERRORS
-+						 */
-+	SKB_DROP_REASON_IP_INNOROUTES,	/* network unreachable, corresponding
-+					 * to IPSTATS_MIB_INADDRERRORS
-+					 */
- 	SKB_DROP_REASON_MAX,
- };
- 
-diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
-index 42647114fffe..0acac7e5a019 100644
---- a/include/trace/events/skb.h
-+++ b/include/trace/events/skb.h
-@@ -63,6 +63,8 @@
- 	EM(SKB_DROP_REASON_TAP_TXFILTER, TAP_TXFILTER)		\
- 	EM(SKB_DROP_REASON_ICMP_CSUM, ICMP_CSUM)		\
- 	EM(SKB_DROP_REASON_INVALID_PROTO, INVALID_PROTO)	\
-+	EM(SKB_DROP_REASON_IP_INADDRERRORS, IP_INADDRERRORS)	\
-+	EM(SKB_DROP_REASON_IP_INNOROUTES, IP_INNOROUTES)	\
- 	EMe(SKB_DROP_REASON_MAX, MAX)
- 
- #undef EM
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index 98c6f3429593..0b581ee5c000 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -945,6 +945,7 @@ static int ip_error(struct sk_buff *skb)
- 	struct inet_peer *peer;
- 	unsigned long now;
- 	struct net *net;
-+	SKB_DR(reason);
- 	bool send;
- 	int code;
- 
-@@ -964,10 +965,12 @@ static int ip_error(struct sk_buff *skb)
- 	if (!IN_DEV_FORWARD(in_dev)) {
- 		switch (rt->dst.error) {
- 		case EHOSTUNREACH:
-+			SKB_DR_SET(reason, IP_INADDRERRORS);
- 			__IP_INC_STATS(net, IPSTATS_MIB_INADDRERRORS);
- 			break;
- 
- 		case ENETUNREACH:
-+			SKB_DR_SET(reason, IP_INNOROUTES);
- 			__IP_INC_STATS(net, IPSTATS_MIB_INNOROUTES);
- 			break;
- 		}
-@@ -983,6 +986,7 @@ static int ip_error(struct sk_buff *skb)
- 		break;
- 	case ENETUNREACH:
- 		code = ICMP_NET_UNREACH;
-+		SKB_DR_SET(reason, IP_INNOROUTES);
- 		__IP_INC_STATS(net, IPSTATS_MIB_INNOROUTES);
- 		break;
- 	case EACCES:
-@@ -1009,7 +1013,7 @@ static int ip_error(struct sk_buff *skb)
- 	if (send)
- 		icmp_send(skb, ICMP_DEST_UNREACH, code, 0);
- 
--out:	kfree_skb(skb);
-+out:	kfree_skb_reason(skb, reason);
- 	return 0;
- }
- 
--- 
-2.35.1
-
+cheers,
+-roger
