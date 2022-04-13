@@ -2,121 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 02C134FF6E5
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 14:35:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 778CB4FF6E9
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 14:37:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232466AbiDMMhf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 08:37:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42512 "EHLO
+        id S233186AbiDMMjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 08:39:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233151AbiDMMh2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 08:37:28 -0400
-Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1847218E35
-        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 05:35:08 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 7CAF25C0364;
-        Wed, 13 Apr 2022 08:35:07 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Wed, 13 Apr 2022 08:35:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1649853307; x=
-        1649939707; bh=XMgjqSu330j537uTdk8vlBBLcfWargGjanG7gxBvZyg=; b=z
-        QW+9E/xJjz5557ZQvJmGoLEHCR3PqDZ2OV/fW+wKGV6shPhL4bVwe1NBK+Jat8ma
-        pQvzsOsB1KmRlIWTz3jcroigAiEuugm4PYzgEleksi1wxXqn1Fu9yE+xMSeQIuS0
-        XYV4uIrGhKHdZeWAfEnUsZMfJepRIDUBQAVq9rNRjTZlmKxtN11gnr7upi6ZnLIE
-        7TKPk4+SCnoO3if3V37TCxXGeIdFn/H34kGCWoq6XTvk9S76Q1pjXBdRtMs59azj
-        pFf+M16rLDQSaplMhimuWD82QnPtrowWq3U9KXY24OHZq9ZMApinbxH3iLUwzMe3
-        UyxL7qSAru56LPfXn9XHw==
-X-ME-Sender: <xms:e8NWYlit5EEn34rxWyiyWJRL5ERRuWilRL2Pk8DkX7eMsO45hiYw8g>
-    <xme:e8NWYqD6MOcdyZNUzRtHdIZkbER3ThT5WB2cgVaeKGsE3rT2ub44F6xOvPTUW_J8h
-    tRRBM5UA9Ly7ds>
-X-ME-Received: <xmr:e8NWYlHO5jMJqQKQlJySY8cEQ8tIWrswiGRI6HMMrsym-hFfYHGaVsIWl2-VpumanNOaP7QtF2oRSI3TAZkaVNnp3gFCMw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudeluddgvdejucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvuffkfhggtggujgesthdtre
-    dttddtvdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecuggftrfgrthhtvghrnheptdffkeekfeduffevgeeujeffjefhte
-    fgueeugfevtdeiheduueeukefhudehleetnecuvehluhhsthgvrhfuihiivgeptdenucfr
-    rghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:e8NWYqQKMixU83rHXURlJF2ihVFAAWLBHFWykr5CD0EbKem5LRhmlw>
-    <xmx:e8NWYiykUQp4_IfKGSCqHV3sMWsM0lfSHPMzgXDsVj57UVDiyeU1Ew>
-    <xmx:e8NWYg4Lub-JniHJgQv37rLWx2iL_EtJ7j7zD_lVh95n3C92ISpt0A>
-    <xmx:e8NWYsu8iSi7U3rqdHBpFIVNlPSnJ6zi0aUXwteD_aeyBcpKrygT8Q>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 13 Apr 2022 08:35:06 -0400 (EDT)
-Date:   Wed, 13 Apr 2022 15:35:04 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Nikolay Aleksandrov <razor@blackwall.org>
-Cc:     netdev@vger.kernel.org, dsahern@kernel.org, roopa@nvidia.com,
-        kuba@kernel.org, davem@davemloft.net,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH net-next v4 07/12] net: rtnetlink: add NLM_F_BULK support
- to rtnl_fdb_del
-Message-ID: <YlbDeNh7D+BHRscg@shredder>
-References: <20220413105202.2616106-1-razor@blackwall.org>
- <20220413105202.2616106-8-razor@blackwall.org>
- <YlbABWs3ICeeiKsq@shredder>
- <e22bd42c-f257-82d6-f550-6e174c74b500@blackwall.org>
+        with ESMTP id S232694AbiDMMjb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 08:39:31 -0400
+Received: from mail-vk1-xa36.google.com (mail-vk1-xa36.google.com [IPv6:2607:f8b0:4864:20::a36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C14E434B7;
+        Wed, 13 Apr 2022 05:37:09 -0700 (PDT)
+Received: by mail-vk1-xa36.google.com with SMTP id o14so769167vkf.13;
+        Wed, 13 Apr 2022 05:37:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=l91PaoNzkraHqeajdUVuvzQMezggMyac9Bnl2PBAwYE=;
+        b=GY+Nx/NLjsUDY2KpKhXCF0f+wm3O1zKwOqSZqRMwSH/56LljWI42nzXFPSbOLyCzgT
+         38WLFUE7x1wXVcgpN+m50/DObAWM4TnxUxxRmFhI/C9OoGZK4NuzYTGMq2Rm5gfC2W59
+         5NLo7/rvy6vTcgAgP/s6fT6oILUlEPqJR7TkH7m5VJYlOAMtELQhO2QUn7l50LFhFp3p
+         v6oSBLHRPNRnN3wVuNHT3YkYnjj2RPzO9KpRP3DWjy1xFP4HW+Br7ccBiLlarZcjMUVS
+         U6i/JaRu2U861B3HZ466iOe9s1qpyrndnCtwiKI+X1ic2HRWNvuQH1WT8I3bhjPSOUIu
+         CFHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=l91PaoNzkraHqeajdUVuvzQMezggMyac9Bnl2PBAwYE=;
+        b=K/9w5RqodWriEVvuKJ+pEH4qI4xncynenFD3UvhoB/swI2yswB1sTEYy3YcZDN7oQp
+         dYp6UQhjUPh4RABVdSpizJpPeFnPtWiqMSgu2A6bHmtbsKKj4M3wIkjrAlUgo/u+HFRz
+         67kkLnEGxV3x30urhkrXa8/fzukfWgN/czoQT0+Z8TklKwJj3E1ud2+4BOqHRuGQKW2V
+         0r5PSrZoFLN5956z6+DGKX2iIfQoITySOijvaEyOMaA4ovF8Xub5rJgxtULBvXpv8sMF
+         RLmKzmHHQSxZc8kRcY6KWLTOGMyyB22VLlG2ePJ62EpZe/9ZBHi4+JZrIpDZgDcrOh8t
+         kz8A==
+X-Gm-Message-State: AOAM5320VnjBgaWSL1kURKVF/+yVcKOIpCpDMjVMdMz80TE6cqcN+OgO
+        YJGu5KcMZDv24xi8o/Mt1ep0tyZVrO0X7KZK1lg=
+X-Google-Smtp-Source: ABdhPJxGJlkfPgu8vJf3w4y+p8nnMcci1I50j/3AishPt40LSnppecm72DbL0epYWf0Sht2/EZHHGcU9xC0srQzNp3g=
+X-Received: by 2002:a1f:ac95:0:b0:345:2ade:e54b with SMTP id
+ v143-20020a1fac95000000b003452adee54bmr8524580vke.3.1649853428705; Wed, 13
+ Apr 2022 05:37:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e22bd42c-f257-82d6-f550-6e174c74b500@blackwall.org>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220404151036.265901-1-k.kahurani@gmail.com> <20220404153151.GF3293@kadam>
+In-Reply-To: <20220404153151.GF3293@kadam>
+From:   David Kahurani <k.kahurani@gmail.com>
+Date:   Wed, 13 Apr 2022 15:36:57 +0300
+Message-ID: <CAAZOf25i_mLO9igOY5wiUaxLOsxMt3jrvytSm1wm95R-bdKysA@mail.gmail.com>
+Subject: Re: [PATCH] net: ax88179: add proper error handling of usb read errors
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     netdev@vger.kernel.org,
+        syzbot <syzbot+d3dbdf31fbe9d8f5f311@syzkaller.appspotmail.com>,
+        davem@davemloft.net, jgg@ziepe.ca, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        Phillip Potter <phil@philpotter.co.uk>,
+        syzkaller-bugs@googlegroups.com, arnd@arndb.de,
+        Pavel Skripkin <paskripkin@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 03:21:54PM +0300, Nikolay Aleksandrov wrote:
-> On 13/04/2022 15:20, Ido Schimmel wrote:
-> > On Wed, Apr 13, 2022 at 01:51:57PM +0300, Nikolay Aleksandrov wrote:
-> >> When NLM_F_BULK is specified in a fdb del message we need to handle it
-> >> differently. First since this is a new call we can strictly validate the
-> >> passed attributes, at first only ifindex and vlan are allowed as these
-> >> will be the initially supported filter attributes, any other attribute
-> >> is rejected. The mac address is no longer mandatory, but we use it
-> >> to error out in older kernels because it cannot be specified with bulk
-> >> request (the attribute is not allowed) and then we have to dispatch
-> >> the call to ndo_fdb_del_bulk if the device supports it. The del bulk
-> >> callback can do further validation of the attributes if necessary.
-> >>
-> >> Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
-> >> ---
-> >> v4: mark PF_BRIDGE/RTM_DELNEIGH with RTNL_FLAG_BULK_DEL_SUPPORTED
-> >>
-> >>  net/core/rtnetlink.c | 67 +++++++++++++++++++++++++++++++-------------
-> >>  1 file changed, 48 insertions(+), 19 deletions(-)
-> >>
-> >> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-> >> index 63c7df52a667..520d50fcaaea 100644
-> >> --- a/net/core/rtnetlink.c
-> >> +++ b/net/core/rtnetlink.c
-> >> @@ -4169,22 +4169,34 @@ int ndo_dflt_fdb_del(struct ndmsg *ndm,
-> >>  }
-> >>  EXPORT_SYMBOL(ndo_dflt_fdb_del);
-> >>  
-> >> +static const struct nla_policy fdb_del_bulk_policy[NDA_MAX + 1] = {
-> >> +	[NDA_VLAN]	= { .type = NLA_U16 },
-> > 
-> > In earlier versions br_vlan_valid_id() was used to validate the VLAN,
-> > but I don't see it anymore. Maybe use 
-> > 
-> > NLA_POLICY_RANGE(1, VLAN_N_VID - 2)
-> > 
-> > ?
-> > 
-> > I realize that invalid values won't do anything, but I think it's better
-> > to only allow valid ranges.
-> > 
-> 
-> It's already validated below, see fdb_vid_parse().
+On Mon, Apr 4, 2022 at 6:32 PM Dan Carpenter <dan.carpenter@oracle.com> wrote:
 
-Sorry, missed it :)
+Hi Dan
+
+> >       int ret;
+> >       int (*fn)(struct usbnet *, u8, u8, u16, u16, void *, u16);
+> > @@ -201,9 +202,12 @@ static int __ax88179_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+> >       ret = fn(dev, cmd, USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+> >                value, index, data, size);
+> >
+> > -     if (unlikely(ret < 0))
+> > +     if (unlikely(ret < size)) {
+> > +             ret = ret < 0 ? ret : -ENODATA;
+> > +
+> >               netdev_warn(dev->net, "Failed to read reg index 0x%04x: %d\n",
+> >                           index, ret);
+> > +     }
+> >
+> >       return ret;
+>
+> It would be better to make __ax88179_read_cmd() return 0 on success
+> instead of returning size on success.  Non-standard returns lead to bugs.
+>
+
+I don't suppose this would have much effect on the structure of the
+code and indeed plan to do this but just some minor clarification.
+
+Isn't it standard for reader functions to return the number of bytes read?
+
+Regards,
+David.
+
+>
+> > @@ -1060,16 +1151,30 @@ static int ax88179_check_eeprom(struct usbnet *dev)
+> >
+> >               jtimeout = jiffies + delay;
+> >               do {
+> > -                     ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_SROM_CMD,
+> > -                                      1, 1, &buf);
+> > +                 ret = ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_SROM_CMD,
+> > +                                        1, 1, &buf);
+> > +
+> > +                 if (ret < 0) {
+> > +                         netdev_dbg(dev->net,
+> > +                                    "Failed to read SROM_CMD: %d\n",
+> > +                                    ret);
+> > +                         return ret;
+> > +                 }
+> >
+> >                       if (time_after(jiffies, jtimeout))
+> >                               return -EINVAL;
+>
+> The indenting here is wrong.  Run scripts/checkpatch.pl on your patches.
+>
+> regards,
+> dan carpenter
+>
