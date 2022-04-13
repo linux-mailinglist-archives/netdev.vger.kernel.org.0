@@ -2,69 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EB9D4FF3DA
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 11:42:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDA254FF426
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 11:51:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234584AbiDMJmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 05:42:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59914 "EHLO
+        id S234573AbiDMJxy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 05:53:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232611AbiDMJmO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 05:42:14 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB3BE35247
-        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 02:39:52 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id c6so1643832edn.8
-        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 02:39:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=KhtSZr2c56r54K7IpY0qcNj65rBp4GOZJk8SwvpS20Q=;
-        b=A1UR9raaChW76TEYQ6W7rbeQLFclE3Ev4UXUC48a3qNoNBpbUBpm3RwMBHLxEDTjRp
-         urD+qi7Ny4fEyRtFuBtz8khDO4UlxKcgQg91Wah1DGrop6eqbEnoL5jZcHvFzzRluE6q
-         PVpql2/AhUhT3insWejQuTozd2Wy5sc8NaZbRk0xNHxUA4MQtQheUODGiwxY3zJfVG+q
-         HYN0ba4JvT0P6fbTLjBOdcjwiQ2PZB3nZM3I58D2zKiX9/2BhjObbHglbxQ+R+Be8w1E
-         WBEtNfBU3KWskGvqMu+Z96tygaDFrQvFZksYOTjfDKqjUsCvegxDnesXjUS2FknsjQAs
-         fS5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=KhtSZr2c56r54K7IpY0qcNj65rBp4GOZJk8SwvpS20Q=;
-        b=Z2Rlg+gBehmx+DJXqgVn7H3oW2ig2ulL8eKiihb070ERFTUA+qWKiAIERGAAT4VOSg
-         GnfjpmQ+RiIVyX7Lyao8B/t6eFDucgfUM8iBIo+qLTcDFztK8r5/Xrh3/KRbS5nZm+vw
-         IDnYCf6SkTfCRuDJfCU06Wao+6rGvTGC2zQMgmJfUPV0/29aYsRn9dKxDzdKrgxJjWC4
-         QAjkxWTwYRI6QkfQB+zOkmqLemreZyPbyLehVf9RU5oGyLYl8jDisJEOojfmvYWAghQq
-         SaG+T35p/SDfwdJg4YI+PdQrlin0DWIsuUiZUn64ozSNROWJXlEbaseEHG1Uw1kuW1hn
-         EXsg==
-X-Gm-Message-State: AOAM531CswEoRMR+paYBw18DcVqOW0UGBn+8nZzNEsDML2R4zPSPuCCj
-        FFRHYFjjgE75J8kCZUgVk1jvyZOgWIlLLys6
-X-Google-Smtp-Source: ABdhPJyuyhJH8cXmwjKUDWtoY4iM+tiNhiA1k/YC0JYrpYM1DsovaxG6C6wKC4F8SHD8/LjC92kMQQ==
-X-Received: by 2002:a05:6402:2794:b0:419:2ea9:7de3 with SMTP id b20-20020a056402279400b004192ea97de3mr43060432ede.169.1649842791323;
-        Wed, 13 Apr 2022 02:39:51 -0700 (PDT)
-Received: from [192.168.0.203] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id b5-20020a17090630c500b006e8044fa76bsm9711375ejb.143.2022.04.13.02.39.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Apr 2022 02:39:50 -0700 (PDT)
-Message-ID: <aaa7960e-11cb-e5aa-d1c3-499c3353133d@linaro.org>
-Date:   Wed, 13 Apr 2022 11:39:50 +0200
+        with ESMTP id S231853AbiDMJxx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 05:53:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB3FC4A923;
+        Wed, 13 Apr 2022 02:51:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4E57DB82161;
+        Wed, 13 Apr 2022 09:51:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B24BC385A4;
+        Wed, 13 Apr 2022 09:51:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649843489;
+        bh=Ll9cmKCnCIZMAyLi98CvN9YvaSxa78kAFH25Ir3N/Lc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=o6cyqtjJAqcuHsZDL2GJ5Cu/uyLkMKtP3ZoNzSEoKuskM8DDXIVYGdMXzmGCPXbXX
+         x4+G8jBkp9naUQB8RDykGzSr4Uf9ETzn3t5sjtw5yoE0tECMyIzypgAgUI6jwkBzt4
+         DXEo0gmLuFZfQxyo6VdEhFItq+RBriomD/d2wYLp4CetEegmGqyO/8fpM/htsIND6b
+         fXKedbvQqLWrM/zIYjQZFTSm5uXd5Ch95Kmo/o+1DFwAn//qBv1XvZq8Y8rqLqw43j
+         qx1yTCTy4nTERKmkisOoL38D5CsT7gl/HpJolBwP0RbWJCGaoqmSutgA6vjYElozLT
+         tj0MUV1IdtH4Q==
+Date:   Wed, 13 Apr 2022 12:51:21 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Veerasenareddy Burru <vburru@marvell.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, corbet@lwn.net,
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Abhijit Ayarekar <aayarekar@marvell.com>,
+        Satananda Burla <sburla@marvell.com>
+Subject: Re: [net-next PATCH v5 1/7] octeon_ep: Add driver framework and
+ device initialization
+Message-ID: <YladGTmon1x3dfxI@unreal>
+References: <20220413033503.3962-1-vburru@marvell.com>
+ <20220413033503.3962-2-vburru@marvell.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] NFC: NULL out the dev->rfkill to prevent UAF
-Content-Language: en-US
-To:     Lin Ma <linma@zju.edu.cn>, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220412053208.28681-1-linma@zju.edu.cn>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220412053208.28681-1-linma@zju.edu.cn>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220413033503.3962-2-vburru@marvell.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -73,17 +58,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/04/2022 07:32, Lin Ma wrote:
-> Commit 3e3b5dfcd16a ("NFC: reorder the logic in nfc_{un,}register_device") 
-> assumes the device_is_registered() in function nfc_dev_up() will help
-> to check when the rfkill is unregistered. However, this check only 
-> take effect when device_del(&dev->dev) is done in nfc_unregister_device().
-> Hence, the rfkill object is still possible be dereferenced.
+On Tue, Apr 12, 2022 at 08:34:57PM -0700, Veerasenareddy Burru wrote:
+> Add driver framework and device setup and initialization for Octeon
+> PCI Endpoint NIC.
 > 
+> Add implementation to load module, initilaize, register network device,
+> cleanup and unload module.
+> 
+> Signed-off-by: Veerasenareddy Burru <vburru@marvell.com>
+> Signed-off-by: Abhijit Ayarekar <aayarekar@marvell.com>
+> Signed-off-by: Satananda Burla <sburla@marvell.com>
 
+<...>
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> +static struct workqueue_struct *octep_wq;
+> +
+> +/* Supported Devices */
+> +static const struct pci_device_id octep_pci_id_tbl[] = {
+> +	{PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, OCTEP_PCI_DEVICE_ID_CN93_PF)},
+> +	{0, },
+> +};
+> +MODULE_DEVICE_TABLE(pci, octep_pci_id_tbl);
+> +
+> +MODULE_AUTHOR("Veerasenareddy Burru <vburru@marvell.com>");
+> +MODULE_DESCRIPTION(OCTEP_DRV_STRING);
+> +MODULE_LICENSE("GPL");
+> +MODULE_VERSION(OCTEP_DRV_VERSION_STR);
 
+No module and/or driver versions in new code.
 
-Best regards,
-Krzysztof
+Thanks
