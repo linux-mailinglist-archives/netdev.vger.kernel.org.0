@@ -2,291 +2,240 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D27284FF87D
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 16:04:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D7624FF8B8
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 16:15:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236008AbiDMOGv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 10:06:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43236 "EHLO
+        id S232781AbiDMOSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 10:18:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236000AbiDMOGr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 10:06:47 -0400
-Received: from IND01-MA1-obe.outbound.protection.outlook.com (mail-ma1ind01olkn0165.outbound.protection.outlook.com [104.47.100.165])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 289976252;
-        Wed, 13 Apr 2022 07:04:26 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SIvilzrEY241uDTNww0fc9FFvbFhM7mvD5zqb7LSXcppwHIhRr9cj485KeA4r9VRYzt4n2WEfVGehs8ExnZHfFNThpGmQeP781r3kFB+8TFo/VgWK+R5anboy5YYEArbWsdJ8jBYBvA1189cThK0TTiwju70wXiNLNaTDGOHG0ozDS7Hu2U37dr840HMlT00zo1MlUUjnVy18ZeLHPPrf5/T9039XeJaczfbLpE5sAgFzvMs2pc6lqP0+i7TepO47Lc08cTS54+qqTjO4UfnKBWwHiyBhYEc2ElwTrKZFJd3Uz8WnqMJGi4njKf+caCc4tq/EMRe9heeezfdw1EoJw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ApuCERXhLlrcIvk22sjEpQJAbjQii2yMS3hHqTWR9+Y=;
- b=bnp5dxIrtEc1DLnfFLJLJ29UWoTbJuxlM7TGe1dwYIV65Q2mm02Doe3t8afvwk9LpmvjGG6puSBFoW7uWZzgFqKMPlAUtckYYGBCbxcfVRTjNBOv4ywAP+LwfMCeU3y4tjxDM4yNUtu1HWiQMR9rNZIs2CK45MbkOCiAE6t2pCacqB0vT1U2jWEt37TtW0y9drHikYwLSJZuGUGIsUTh8u99ZDa4n6DRWwoQ9IdHqGADm5/zDMt/LIcOg7Pqf3ogRfWm4USJFGAW3YKQJQAPsOF/dZaY8yIQC5ro6CPIlc0W6kJTqGnnOQX72C4bymXRgrao3n604oBmp/ArPcv8IA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=live.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ApuCERXhLlrcIvk22sjEpQJAbjQii2yMS3hHqTWR9+Y=;
- b=oX4Cck2CTKt4dM6q67soLMJDIWInx15F3+tnz1IGFe+a0Hcw+MeO/33e+SXbxH3u3fSLp/MEIrgogTMKNYCpAjYgOHMBhdZHwJB88768HCFBTQAH3oB6yThchKaKi/0xr4OqtgL2uU2O4INe30n8czB+yr6gBFAZdLbZMuJNcJd7Qx4QgaXwA0E/B44o1TvwX7PmYizW6+xFdX4L41sijSCcUypCW8L/zIRNEIE4Ez5ROc+bguFH2QpQzRDVvgOLn17ih86SUNcP8BmJRJwXqfGL8/U6sNtIMtu6DCrh2ukam2not2eH8jrPS++O9uO2/Abxl3LsHptLjEzsmU6ltg==
-Received: from PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM (2603:1096:c01:1b::13)
- by PN1PR0101MB2045.INDPRD01.PROD.OUTLOOK.COM (2603:1096:c00:1c::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Wed, 13 Apr
- 2022 14:04:18 +0000
-Received: from PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM
- ([fe80::dc4b:b757:214c:22cd]) by PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM
- ([fe80::dc4b:b757:214c:22cd%7]) with mapi id 15.20.5144.030; Wed, 13 Apr 2022
- 14:04:18 +0000
-From:   Aditya Garg <gargaditya08@live.com>
-To:     "jarkko@kernel.org" <jarkko@kernel.org>,
-        "zohar@linux.ibm.com" <zohar@linux.ibm.com>,
-        "dmitry.kasatkin@gmail.com" <dmitry.kasatkin@gmail.com>,
-        "jmorris@namei.org" <jmorris@namei.org>,
-        "serge@hallyn.com" <serge@hallyn.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "kafai@fb.com" <kafai@fb.com>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "yhs@fb.com" <yhs@fb.com>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>
-CC:     "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        with ESMTP id S229617AbiDMOSO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 10:18:14 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EDF85F8DE
+        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 07:15:50 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id t11so4187650eju.13
+        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 07:15:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Sj26ljVoaGLJYe+WUwiF0a3U0eLQ0dS3nh2IKwO4+S4=;
+        b=SvJ4RhiPAy4BSWaNWtn81CJYzkX/aNozZyZ2hieniiUOIxJvNiIP1hKdorVUgOI1EW
+         s1WsqbmX3+ZU1OA84XFM0hicL2txCoXiTLOJ+loGrBpQELyLtX4hHb6Q4FcMtCbmk67e
+         /34cun2lKuBTMX20kOBGH9CXh7wCjukRwNVhEDnH7ugUkV9bh43OQS0gQWBwKMYeRksr
+         YKjeN8UmL95/s94a27t5M6gg8LT4+S0Ya17PDQUa7BX5+dRT8GrvrVM+UWgcdooQ5Tx+
+         TGpeO1d+Cx5AzuaLpSyBvuOSCpmrJdifvfZAinIDdOfTBP3yfXHVe6Slxa5tqz09kcSj
+         4HYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Sj26ljVoaGLJYe+WUwiF0a3U0eLQ0dS3nh2IKwO4+S4=;
+        b=YvXqcO72j0WLRFh+YzFHLqnW5/bKoRMd9aAr3YMMA8SJeQtiZF1GW3xPeuEH/zqpIO
+         wtf0sRPau/0ZH6a31peVt1CPEIja0IvNUXg1l8Eg8VY2GSEdjQy17G5KEmW2Iour680E
+         cCYO7Fh19AzSLSCC1bZ1W4NW2tflRiJacCKvr22mZfvUqpdKuHQkd7gtjGzBJvUkhW3U
+         qn4OPaD5kZdgz1N7h1VpMil6QA7bueO32XVqan4PlmvAHjfH4iy4KN47rmpakcs3R7Nc
+         mjqDGBY7GWoc7QSxy7UQw4OquBgHNtXMCpSxNcxXGUejiTJKPhhepP/BYvBr/2rxtH6g
+         SCWw==
+X-Gm-Message-State: AOAM5334uVIOmUsbX2ZnqKLUHIfHEW8Au3sMnrbSswXo8m2KTX/nKD6a
+        su8l4iThHMjGBgot31UaADA1TSZ8eXk=
+X-Google-Smtp-Source: ABdhPJwKRb82vSMaYbjLP4Qh7yiVu3vTfTXVVrvs3/etFknQYJE8CZZJSagdsMUidBaGKya0IO2pkQ==
+X-Received: by 2002:a17:906:8a4e:b0:6e8:9109:cc01 with SMTP id gx14-20020a1709068a4e00b006e89109cc01mr13827856ejc.80.1649859348396;
+        Wed, 13 Apr 2022 07:15:48 -0700 (PDT)
+Received: from skbuf ([188.26.57.45])
+        by smtp.gmail.com with ESMTPSA id c5-20020a170906d18500b006ce371f09d4sm38443ejz.57.2022.04.13.07.15.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 07:15:47 -0700 (PDT)
+Date:   Wed, 13 Apr 2022 17:15:46 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Mattias Forsblad <mattias.forsblad@gmail.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Orlando Chamberlain <redecorating@protonmail.com>,
-        "admin@kodeit.net" <admin@kodeit.net>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: [PATCH v5] efi: Do not import certificates from UEFI Secure Boot for
- T2 Macs
-Thread-Topic: [PATCH v5] efi: Do not import certificates from UEFI Secure Boot
- for T2 Macs
-Thread-Index: AQHYTz9dLlSTMdRHnkmSfUQV8JWzhA==
-Date:   Wed, 13 Apr 2022 14:04:18 +0000
-Message-ID: <E9C28706-2546-40BF-B32C-66A047BE9EFB@live.com>
-References: <652C3E9E-CB97-4C70-A961-74AF8AEF9E39@live.com>
- <94DD0D83-8FDE-4A61-AAF0-09A0175A0D0D@live.com>
- <590ED76A-EE91-4ED1-B524-BC23419C051E@live.com>
-In-Reply-To: <590ED76A-EE91-4ED1-B524-BC23419C051E@live.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-tmn:  [ySZnu0NEl5DFr7K8br+1m4eD1pKN9JE3]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6ab0b5f7-e5a8-48b3-3495-08da1d568054
-x-ms-traffictypediagnostic: PN1PR0101MB2045:EE_
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: P6cpX/uQrPD+SM9yMe6z4XVHNxSOlfC0vMPcwcOc9ZG616cUy+tZS1dDHfXYiUisIbx1jjdADznU5580HLQ3MgbSkwr1EDKv4VOC1dGeFg6fgZgQ/tmJSQWWaFZTSY65dCHqCPVgCMxHABUQHf2nEP0kEPlHiitovz7qgrZ5VBqKX8dnz0UdORupFPd8/piplZkG0hUR34sybUqU/J6hRGBm1Ivcgu9RiwfBGqNqzVqRJ6VmFJUxH04eObhn0yKJi453C91GJlR7MVXunyxkSpSGRJrwnw7eh0goSlb+m8oiDX6anAMMaX9tEOczJuUruMnorlyJGGxrchfNfzpDbuDwykjZQqEhs3nQXZzuZYKo15dP8FwK1ZdfLLTuaxKxSj2K/YTPyhcw6VqQm/6NI74vOYCDBEOb+qMmLRLsAOv803dxpyWhbR/3qtx/siKfK84uHT14vfivpYsBfxnImq7t5k1K8JpkNIEnKsM3surP+4PIZTfwz88JigvlHmCz6tej3ovQGXf5O98mZeUVoDzze6k4/wnnCeKxAOqzy/CSidfOsL1NQnKc9LSBxtXvD2zbzm4DKi/cput6SU0QGg==
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?9HzOYunob4of6GwZGxECn6PCccgAflYLk2RdmSVmY/q+Bmu8ZcndOq/IRYAI?=
- =?us-ascii?Q?X2WQoM0JOixN7DZdCcpbLYq0aVRdOFp28+A/MdjVH2bqeQ0O5gzruCYx4hpC?=
- =?us-ascii?Q?Jbv58joYgiAtpsUOAJXqrGDsKz42vpm+twr/pINx/OYp2CPTReqRk1jr8+5j?=
- =?us-ascii?Q?r83irDaJcSsQ+LbuVa5RXfpbdUnHcTOVWemBcc8hWhjxVHsu2peg04pbDMpi?=
- =?us-ascii?Q?B3fLn7mNDVg11c7e5b6Eh/BVAeZ/tg/46jATTsOdd8iNdDqasVYg//mECEim?=
- =?us-ascii?Q?n4LHpalQdptqPjzmAkX2BoxcyqSO49AQH8nKYkiPSPXJjx+uLVFX2mGIt+rg?=
- =?us-ascii?Q?QZcpwwLlTScSCw8EuBeArHcCzenstIf9o5JfFKfaLBw1gKhakdjHM4CJMGMo?=
- =?us-ascii?Q?JbkGjiHgx0v5c/APnmIDKo+opawRC2DGu0CtYhVCdqjO4A/H6hzVETVF8azv?=
- =?us-ascii?Q?JVYIqGYx1r9mYFFH+oCOFb3IQp4+STpsbiWatWlIWopmpfzYBsRhIrtYx2Tb?=
- =?us-ascii?Q?hCen5sAytKHeDy59vbkPhB9CODQ9wnRt8+XhET7UCtlydtIRsZVlohkKZ0ja?=
- =?us-ascii?Q?swxr++M6hN8yEbiDIwWR8GwAWmk/l7Jf9PiPhI0OE+iDGIZSjhfp2AwTiwET?=
- =?us-ascii?Q?KOaMyDs6FzLME5KWEhywnMCGRHCn+DHnnWhWvVu7V36hf1ovEaGs7VYRHkVc?=
- =?us-ascii?Q?ZChOJ2rK6dZikWl3kprL8N/hY2EhKSyuvHlYejGDl19l+6VBCYOk6VckE9jr?=
- =?us-ascii?Q?GSLPqNuXNaGREg1R4yyvAGD8KNGc/N1f7W3YSD1ReOB+MT0VOQE+9E0vi+hU?=
- =?us-ascii?Q?fsPYnIKbI2NLsBm/iUyuAq963jmSbomDKw/q6jpup6suzpuESfaOwpwvWGJI?=
- =?us-ascii?Q?KtbMHn8i7TET9ujroi5FDGXczCEZVTDUi9qRGpLBQvbVWElj7q3d6ad55+1p?=
- =?us-ascii?Q?HFF2XhTNj6Vc0xZ2R/0QHBfbhp/jbyVHTPbjzXTJAAkDJp7Q7tuqI5VY7Bzw?=
- =?us-ascii?Q?6/lI7pP/Fk1VTHqAyffa9d2sseKF628wPDnHSTUQWol9qqEgCN4ggRu7nDYV?=
- =?us-ascii?Q?rl2cvyjvrnydD97RxB+LkA109HNOjQVC/M6+K2DNfN4MOI0342xPDMrrgvxC?=
- =?us-ascii?Q?nolpxdHAymOnq4i0od3ND0sTTzprGEVTNLy7RTBWG1vd89OE3bRb1ENPCqj1?=
- =?us-ascii?Q?hMuIP+WLJiNf7O4yYEVGuO5BGTIVnRJOfHw1nYklX1aUtWPZFlM/1+pExd8H?=
- =?us-ascii?Q?IK+3h2frRK8Ra6Ued5Juyd3xByD8fz4XsIa2cWJBRxcUJVlZkpGyhX5kL6sO?=
- =?us-ascii?Q?ydDEPHeoGjUSNsdicgE7pH9F87sJsfE2QA5fLsJxrd5u7Wor2HxcPS5v46S8?=
- =?us-ascii?Q?gyVwajoJf9w8geN+rShGiKPk4GLb7CR9Z0QWk4NRwnAz80bVWyMdlQygj8Iu?=
- =?us-ascii?Q?GeOULuXrOm0=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <BCD9548BD9399942898A4B5F46481393@INDPRD01.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: quoted-printable
+        "roid@nvidia.com" <roid@nvidia.com>,
+        "vladbu@nvidia.com" <vladbu@nvidia.com>,
+        Eli Cohen <elic@nvidia.com>, Jiri Pirko <jiri@resnulli.us>,
+        Tobias Waldekranz <tobias@waldekranz.com>
+Subject: Re: [RFC net-next] net: tc: flow indirect framework issue
+Message-ID: <20220413141546.velahw5nt2omes7g@skbuf>
+References: <20220413055248.1959073-1-mattias.forsblad@gmail.com>
+ <DM5PR1301MB2172F573F9314D43F79D8F26E7EC9@DM5PR1301MB2172.namprd13.prod.outlook.com>
+ <20220413090705.zkfrp2fjhejqdj6a@skbuf>
+ <2a82cf39-48b9-2c6c-f662-c1d1bce391ba@gmail.com>
+ <YlbR4Cgzd/ulpT25@salvia>
 MIME-Version: 1.0
-X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-42ed3.templateTenant
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6ab0b5f7-e5a8-48b3-3495-08da1d568054
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Apr 2022 14:04:18.0461
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PN1PR0101MB2045
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YlbR4Cgzd/ulpT25@salvia>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Aditya Garg <gargaditya08@live.com>
+Hi Pablo,
 
-On Apple T2 Macs, when Linux reads the db and dbx efi variables to load
-UEFI Secure Boot certificates, a page fault occurs in Apple firmware
-code and EFI services are disabled with the following logs:
+On Wed, Apr 13, 2022 at 03:36:32PM +0200, Pablo Neira Ayuso wrote:
+> On Wed, Apr 13, 2022 at 02:24:38PM +0200, Mattias Forsblad wrote:
+> > On 2022-04-13 11:07, Vladimir Oltean wrote:
+> > > Hi Baowen,
+> > > 
+> > > On Wed, Apr 13, 2022 at 07:05:39AM +0000, Baowen Zheng wrote:
+> [...]
+> > > Mattias' question comes from the fact that there is already some logic
+> > > in flow_indr_dev_register() to replay missed flow block binding events,
+> > > added by Eli Cohen in commit 74fc4f828769 ("net: Fix offloading indirect
+> > > devices dependency on qdisc order creation"). That logic works, but it
+> > > replays only the binding, not the actual filters, which again, would be
+> > > necessary.
+> 
+> A bit of a long email...
+> 
+> This commit 74fc4f828769 handles this scenario:
+> 
+> 1) eth0 is gone (module removal)
+> 2) vxlan0 device is still in place, tc ingress also contains rules for
+>    vxlan0.
+> 3) eth0 is reloaded.
+> 
+> A bit of background: tc ingress removes rules for eth0 if eth0 is
+> gone (I am refering to software rules, in general). In this model, the
+> tc ingress rules are attached to the device, and if the device eth0 is
+> gone, those rules are also gone and, then, once this device eth0 comes
+> back, the user has to the tc ingress rules software for eth0 again.
+> There is no replay mechanism for tc ingress rules in this case.
 
-Call Trace:
- <TASK>
- page_fault_oops+0x4f/0x2c0
- ? search_bpf_extables+0x6b/0x80
- ? search_module_extables+0x50/0x80
- ? search_exception_tables+0x5b/0x60
- kernelmode_fixup_or_oops+0x9e/0x110
- __bad_area_nosemaphore+0x155/0x190
- bad_area_nosemaphore+0x16/0x20
- do_kern_addr_fault+0x8c/0xa0
- exc_page_fault+0xd8/0x180
- asm_exc_page_fault+0x1e/0x30
-(Removed some logs from here)
- ? __efi_call+0x28/0x30
- ? switch_mm+0x20/0x30
- ? efi_call_rts+0x19a/0x8e0
- ? process_one_work+0x222/0x3f0
- ? worker_thread+0x4a/0x3d0
- ? kthread+0x17a/0x1a0
- ? process_one_work+0x3f0/0x3f0
- ? set_kthread_struct+0x40/0x40
- ? ret_from_fork+0x22/0x30
- </TASK>
----[ end trace 1f82023595a5927f ]---
-efi: Froze efi_rts_wq and disabled EFI Runtime Services
-integrity: Couldn't get size: 0x8000000000000015
-integrity: MODSIGN: Couldn't get UEFI db list
-efi: EFI Runtime Services are disabled!
-integrity: Couldn't get size: 0x8000000000000015
-integrity: Couldn't get UEFI dbx list
-integrity: Couldn't get size: 0x8000000000000015
-integrity: Couldn't get mokx list
-integrity: Couldn't get size: 0x80000000
+I don't understand the mechanics of this side note, sorry (maybe also
+because I don't know the mechanics of VXLAN / VXLAN offload in mlxsw).
 
-This also occurs when some other variables are read (see examples below,
-there are many more), but only when these variables are read at an early
-stage like db and dbx are to load UEFI certs.
+Presumably, tc filters on the ingress of vxlan0 would not just vanish if
+some random other net device in the system unregistered. Those rules
+would have to be in some way related to eth0, like "mirred egress
+redirect eth0" or something like that. In that case, yes I agree it is
+fully to be expected for this rule to disappear when eth0 disappears.
+But that makes the example also not applicable to what Mattias is trying
+to achieve, except maybe to illustrate that the indirect flow block
+framework isn't adequate for it.
 
-BridgeOSBootSessionUUID-4d1ede05-38c7-4a6a-9cc6-4bcca8b38c14
-KEK-8be4df61-93ca-11d2-aa0d-00e098032b8c
+> IIRC, Eli's patch re-adds the flow block for vxlan0 because he got a
+> bug report that says that after reloading the driver module and eth0
+> comes back, rules for tc vxlan0 were not hardware offloaded.
+> 
+> The indirect flow block infrastructure is tracking devices such as
+> vxlan0 that the given driver *might* be able to hardware offload.
+> But from the control plane (user) perspective, this detail is hidden.
+> To me, the problem is that there is no way from the control plane to
+> relate vxlan0 with the real device that performs the hardware offload.
+> There is also no flag for the user to request "please hardware offload
+> vxlan0 tc ingress rules". Instead, the flow indirect block
+> infrastructure performs the hardware offload "transparently" to the user.
 
-On these Macs, we skip reading the EFI variables for the UEFI certificates.
-As a result without certificates, secure boot signature verification fails.
-As these Macs have a non-standard implementation of secure boot that only
-uses Apple's and Microsoft's keys (users can't add their own), securely
-booting Linux was never supported on this hardware, so skipping it
-shouldn't cause a regression.
+It would be difficult to draw a full relationship between your VXLAN
+example and what Mattias is trying to do ("matchall action drop" on
+bridge device). Since the bridge is an upper device with multiple
+lowers, some lowers may monitor this tc rule and do something about it,
+while other lowers may not. What do you report to user space in that
+case, "partially offloaded"? Do you report the full list of offloaders?
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Aditya Garg <gargaditya08@live.com>
----
-v2 :- Reduce code size of the table.
-v3 :- Close the brackets which were left open by mistake.
-v4 :- Fix comment style issues, remove blank spaces and limit use of dmi_fi=
-rst_match()
-v4 RESEND :- Add stable to cc
-v5 :- Rewrite the description
- .../platform_certs/keyring_handler.h          |  8 ++++
- security/integrity/platform_certs/load_uefi.c | 37 +++++++++++++++++++
- 2 files changed, 45 insertions(+)
+> I think some people believe doing things fully transparent is good, at
+> the cost of adding more kernel complexity and hiding details that are
+> relevant to the user (such as if hardware offload is enabled for
+> vxlan0 and what is the real device that is actually being used for the
+> vxlan0 to be offloaded).
 
-diff --git a/security/integrity/platform_certs/keyring_handler.h b/security=
-/integrity/platform_certs/keyring_handler.h
-index 284558f30..212d894a8 100644
---- a/security/integrity/platform_certs/keyring_handler.h
-+++ b/security/integrity/platform_certs/keyring_handler.h
-@@ -35,3 +35,11 @@ efi_element_handler_t get_handler_for_mok(const efi_guid=
-_t *sig_type);
- efi_element_handler_t get_handler_for_dbx(const efi_guid_t *sig_type);
-=20
- #endif
-+
-+#ifndef UEFI_QUIRK_SKIP_CERT
-+#define UEFI_QUIRK_SKIP_CERT(vendor, product) \
-+		 .matches =3D { \
-+			DMI_MATCH(DMI_BOARD_VENDOR, vendor), \
-+			DMI_MATCH(DMI_PRODUCT_NAME, product), \
-+		},
-+#endif
-diff --git a/security/integrity/platform_certs/load_uefi.c b/security/integ=
-rity/platform_certs/load_uefi.c
-index 5f45c3c07..bbddc7c7c 100644
---- a/security/integrity/platform_certs/load_uefi.c
-+++ b/security/integrity/platform_certs/load_uefi.c
-@@ -3,6 +3,7 @@
- #include <linux/kernel.h>
- #include <linux/sched.h>
- #include <linux/cred.h>
-+#include <linux/dmi.h>
- #include <linux/err.h>
- #include <linux/efi.h>
- #include <linux/slab.h>
-@@ -12,6 +13,35 @@
- #include "../integrity.h"
- #include "keyring_handler.h"
-=20
-+/*
-+ * On T2 Macs reading the reading the db and dbx efi variables to load UEF=
-I
-+ * Secure Boot certificates causes occurrence of a page fault in Apple's
-+ * firmware and a crash disabling EFI runtime services. The following quir=
-k
-+ * skips loading of these certificates.
-+ *
-+ * As these Macs have a non-standard implementation of secure boot that on=
-ly uses
-+ * Apple's and Microsoft's keys, booting Linux securely was never supporte=
-d on
-+ * this hardware, so these quirks shouldn't cause a regression.
-+ */
-+static const struct dmi_system_id uefi_skip_cert[] =3D {
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,1") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,2") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,3") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,4") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,1") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,2") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,3") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,4") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir8,1") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir8,2") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir9,1") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacMini8,1") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacPro7,1") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "iMac20,1") },
-+	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "iMac20,2") },
-+	{ }
-+};
-+
- /*
-  * Look to see if a UEFI variable called MokIgnoreDB exists and return tru=
-e if
-  * it does.
-@@ -138,6 +168,13 @@ static int __init load_uefi_certs(void)
- 	unsigned long dbsize =3D 0, dbxsize =3D 0, mokxsize =3D 0;
- 	efi_status_t status;
- 	int rc =3D 0;
-+	const struct dmi_system_id *dmi_id;
-+
-+	dmi_id =3D dmi_first_match(uefi_skip_cert);
-+	if (dmi_id) {
-+		pr_err("Getting UEFI Secure Boot Certs is not supported on T2 Macs.\n");
-+		return false;
-+	}
-=20
- 	if (!efi_rt_services_supported(EFI_RT_SUPPORTED_GET_VARIABLE))
- 		return false;
---=20
-2.25.1
+Assuming that this is what you're hinting at: when a DSA port leaves a
+bridge, the "matchall action drop" rule that was added by the user on
+the bridge should automagically disappear, because its offloaders
+disappeared?
 
+But maybe you liked that rule anyway... maybe the bridge had 4 DSA
+ports, and 50 non-DSA ports, and that rule applies with or without DSA.
 
+> So, there are no flags when setting up the vxlan0 device for the user
+> to say: "I would like to hardware offload vxlan0", and going slightly
+> further there is not "please attach this vxlan0 device to eth0 for
+> hardware offload". Any real device could be potentially used to
+> offload vxlan0, the user does not know which one is actually used.
+> 
+> Exposing this information is a bit more work on top of the user, but:
+> 
+> 1) it will be transparent: the control plane shows that the vxlan0 is
+>    hardware offloaded. Then if eth0 is gone, vxlan0 tc ingress can be
+>    removed too, because it depends on eth0.
+> 
+> 2) The control plane validates if hardware offload for vxlan0. If this
+>    is not possible, display an error to the user: "sorry, I cannot
+>    offload vxlan0 on eth0 for reason X".
+> 
+> Since this is not exposed to the control plane, the existing
+> infrastructure follows a snooping scheme, but tracking devices that
+> might be able to hardware offload.
+> 
+> There is no obvious way to relate vxlan0 with the real device
+> (eth0) that is actually performing the hardware offloading.
+> 
+> Does replay make sense for vxlan0 when the user has to manually
+> reload rules for eth0? So why vxlan0 rules need to be transparently
+> replayed but eth0 rules need to be manually reloaded in tc ingress?
+
+Yes, filter replay for vxlan0 makes perfect sense to the extent that the
+list of filters to reoffload would be empty in the particular case you
+give. So nothing changes. But the filters that you have to react on do
+not always involve you (snooper) as a net device.
+
+> > >> Maybe you can try to regist your callback in your module load stage I
+> > >> think your callback will be triggered, or change the command order as: 
+> > >> tc qdisc add dev br0 clsact
+> > >> ip link set dev swp0 master br0
+> > >> tc filter add dev br0 ingress pref 1 proto all matchall action drop
+> > >> I am not sure whether it will take effect.
+> > > 
+> > > I think the idea is to make the given command order work, not to change it.
+> > 
+> > Re-ordering the tc commands doesn't solve the issue when all ports leave the
+> > bridge, which will lead to flow_indr_dev_unregister() and later re-joins
+> > the bridge (flow_indr_dev_register()). We'll need filter replay for this.
+> 
+> Existing drivers call flow_indr_dev_register() from module init, so
+> they start tracking any device that might be offloaded since the
+> beginning, see below.
+
+There's a certain level of absurdity to the idea that, on a kernel
+compiled with CONFIG_NET_DSA=y, the DSA module would track and save
+state for every tc filter added on the ingress of any bridge in the
+system, *regardless* of whether any DSA switch has probed, or will even
+probe in that system. Distribution kernels come with CONFIG_NET_DSA
+enabled by default.
+
+> Mattias Forsblad said:
+> >tc qdisc add dev br0 clsact
+> >tc filter add dev br0 ingress pref 1 proto all matchall action drop
+> >
+> >And then adds a port to that bridge
+> >ip link set dev swp0 master br0   <---- flow_indr_dev_register() bc this
+> 
+> Regarding your issue: Why does it call flow_indr_dev_register() here?
+> Most drivers call flow_indr_dev_register() much earlier, when swp0
+> becomes available.  Then, tc qdisc add dev br0 clsact will trigger the
+> indirect flow block path to reach your driver.
+
+So my main takeaway is that what Mattias is trying to do is
+fundamentally inadequate to the very limited use case that
+flow_indr_dev_register() was intended for.
+
+The obvious alternative is for the bridge driver itself to bind to its
+own flow block, watch for the same tc filters, and re-notify them via
+other mechanisms to drivers which are interested. The advantage would be
+that the filters have the same lifetime as the bridge device itself, and
+the bridge device is notified of port joins/leaves, so Mattias could
+avoid missing filters very cleanly.
+
+That would create some bloat of its own, namely in the bridge driver
+this time, but in the longer term, I think the tc filters on the bridge
+device itself may be interesting to more than one single offloading
+driver, so the cost of this bloat may amortize.
