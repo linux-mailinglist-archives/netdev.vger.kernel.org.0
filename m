@@ -2,69 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF8454FF288
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 10:46:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54F154FF1A3
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 10:18:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234127AbiDMIrO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 04:47:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40828 "EHLO
+        id S231361AbiDMIU4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 04:20:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234123AbiDMIq6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 04:46:58 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A52874AE2C;
-        Wed, 13 Apr 2022 01:44:28 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id u2so1168614pgq.10;
-        Wed, 13 Apr 2022 01:44:28 -0700 (PDT)
+        with ESMTP id S229447AbiDMIUw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 04:20:52 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C512A4EA02;
+        Wed, 13 Apr 2022 01:18:31 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id t25so1404385edt.9;
+        Wed, 13 Apr 2022 01:18:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Q3CF2CYyk/KU/cKIRGIDMOGHVL/2+I9I23VjG1uUJC8=;
-        b=CSMXfbjUMzMQUSHDlcY6940ReprM7qI7VMrvYmu6L+uFOM7DoT5aUGa8icSjL4eGYv
-         wCdwhr7PYc5HtsEDZGHhJ2MePSWgmgg8qtGdp2rin2Zm8pN6Cl41cEQ+66wVpHFk/PPD
-         QN9cQe+XT2w7+4QBaMZtRvt7czuI/YwA0obZfwfN72e2mk1l7F7BIsewf7nCo5ZCcdRq
-         4wpofjJIDIaiGdEDMOpX/PsqZN7FpAlKtlOafykU0F28edsB4JzoovC1RkgfkYkq3PDl
-         AknCMLvf3Fpnn4AoiuO+5g1hVkfspoTf7B4oZO2Hp1xxQVdl79Qfqn+xclZrezquJXjI
-         fAPg==
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=NM1pfbSgTEQ9uckWSvNkdocJAYN18ejH2fT6Ofk0eeU=;
+        b=ZO7+1DjFeRVhMTsgznRttF4gB2w6B0IYKtFlA4KFq1h3iyBj5QYxSIJne7Yh506ZqM
+         swB8QzLiPoWAF3LMh/l3KgD4/mNV4sn59GaBuq53ifDYJ6XuI8eoXMS+5IhfE3NKTDB/
+         I4zsbZ5y//peeXAXtyPrmwrTYKsLaEVebBGl+MJmM70/yZUB/e0WGb3YVaxtS0h1vOUV
+         7z+2mxqxR0TqdfF1n8LGT7V81mhY2K9kNXpsvuTebVelCQRK3PT0oTHKyMEwiPUGb15s
+         FN7kEnSW2tGnQUNQWa/CAboo8LsqaQvW3AqfeP4IN1PEMq1kjLOJjqSJx/cXQ7Gfo5pP
+         dacw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Q3CF2CYyk/KU/cKIRGIDMOGHVL/2+I9I23VjG1uUJC8=;
-        b=bscO76cCV6d2iZXUkgG6ahrMCriC0593Vy60dBWdKwLex4QCPpCkbFRs1ofeDoJ75V
-         i4vnaGoxdotrXVAmTvQx31QWP8e/RXLEs1uU1JKSXd58VYykY94CECao5jH9+YtdnFqS
-         9VSvM2tW+ulNK24lwLAzX7DcR9/Nk+GuL2IqglXh8NNurS+XbJIW1vJ6AEYHryqpTJ5k
-         IKzoSXpcmnz8bGqy7LqJqon+Du9fczsHv8gwhoChtS9lDR8O011jhBtohk7LiKG1vWCd
-         PAXWShIDcevXWVOz0cU23A9Juc4cK/iCVI1iOz6ncsPoBd5pCRv1l/yBDueVBtuf91EF
-         lGRA==
-X-Gm-Message-State: AOAM530f9914tkoSY9KchLTDQifalUqZoISoS2e+tofLzgNhI8nzrIFp
-        qauFFm82r56Nia2JNa0LTuY=
-X-Google-Smtp-Source: ABdhPJwHcdm+jreTHfL7OfNFwhm+bX5jRBwz/tWPt6br+WjRQnxT3R65fOAW2S0C/jOsToIKS7ehGg==
-X-Received: by 2002:a05:6a00:2354:b0:505:c6c3:af87 with SMTP id j20-20020a056a00235400b00505c6c3af87mr14012849pfj.78.1649839468233;
-        Wed, 13 Apr 2022 01:44:28 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.119])
-        by smtp.gmail.com with ESMTPSA id l5-20020a63f305000000b0039daaa10a1fsm2410335pgh.65.2022.04.13.01.44.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 01:44:27 -0700 (PDT)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     dsahern@kernel.org
-Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, kuba@kernel.org, pabeni@redhat.com,
-        benbjiang@tencent.com, flyingpeng@tencent.com,
-        imagedong@tencent.com, edumazet@google.com, kafai@fb.com,
-        talalahmad@google.com, keescook@chromium.org,
-        mengensun@tencent.com, dongli.zhang@oracle.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next 9/9] net: ipv6: add skb drop reasons to ip6_protocol_deliver_rcu()
-Date:   Wed, 13 Apr 2022 16:16:00 +0800
-Message-Id: <20220413081600.187339-10-imagedong@tencent.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220413081600.187339-1-imagedong@tencent.com>
-References: <20220413081600.187339-1-imagedong@tencent.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=NM1pfbSgTEQ9uckWSvNkdocJAYN18ejH2fT6Ofk0eeU=;
+        b=4oYCjJbieANqcKitPvuDQtwmKylNPYDxfJWaWL55dau8F21zzBqQy7lmw+kPV6ygSB
+         O5+a120Fa8tiSHGOTNy/JjYSWXrPSmHKk5L2chR0pvO/UYB1T/XE1U6k4VKeYR5Dvhi2
+         vkUtKf7PnSqzWbHfiM3/kP4uSqts/Uhh+cSF7s7EHHzYSpyQK3l3lYv0+9GIltTJwS3U
+         EYSP9JjDzdYQRudRu5DU1/anLsEup1pM7cSov3x9Ercp4UMQLnYmeMFUpzNViST4ZQXG
+         PCadDI+7Fp5jug5EwgPetj3vbGIdtrEFqVgtnxxCz8FcmvYsprehwnmNipDOa6Vr5SvJ
+         fXiA==
+X-Gm-Message-State: AOAM5338BfN21HvhjmqbZeQm/3EgPsoGAlUYtEbbIy+dOOSN9wTvavIf
+        TiXS5c+9Pp9ZoASGhpMkBu0=
+X-Google-Smtp-Source: ABdhPJz1zFDl7IwBBpiJdJJrHQx/gNJ9eFMxB5nFGFZzuNCuKc3atEKIDRvXQCvDLr+YN63LNf2RhA==
+X-Received: by 2002:a05:6402:51c6:b0:419:8269:f33d with SMTP id r6-20020a05640251c600b004198269f33dmr41758137edd.264.1649837910214;
+        Wed, 13 Apr 2022 01:18:30 -0700 (PDT)
+Received: from smtpclient.apple (i130160.upc-i.chello.nl. [62.195.130.160])
+        by smtp.gmail.com with ESMTPSA id u4-20020a170906780400b006ce69ff6050sm13728111ejm.69.2022.04.13.01.18.28
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 13 Apr 2022 01:18:29 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: Re: [PATCH net-next v3 14/18] sfc: Remove usage of list iterator for
+ list_add() after the loop body
+From:   Jakob Koschel <jakobkoschel@gmail.com>
+In-Reply-To: <20220412142905.54489567@kernel.org>
+Date:   Wed, 13 Apr 2022 10:18:28 +0200
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com, Ariel Elior <aelior@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Casper Andersson <casper.casan@gmail.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Michael Walle <michael@walle.cc>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Colin Ian King <colin.king@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Eric Dumazet <edumazet@google.com>,
+        Di Zhu <zhudi21@huawei.com>, Xu Wang <vulab@iscas.ac.cn>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        bpf@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>
+Content-Transfer-Encoding: 7bit
+Message-Id: <132EC4A3-4397-4124-B736-0C3057B63B26@gmail.com>
+References: <20220412121557.3553555-1-jakobkoschel@gmail.com>
+ <20220412121557.3553555-15-jakobkoschel@gmail.com>
+ <20220412142905.54489567@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+X-Mailer: Apple Mail (2.3696.80.82.1.1)
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -75,76 +111,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
 
-Replace kfree_skb() used in ip6_protocol_deliver_rcu() with
-kfree_skb_reason().
 
-No new reasons are added.
+> On 12. Apr 2022, at 23:29, Jakub Kicinski <kuba@kernel.org> wrote:
+> 
+> On Tue, 12 Apr 2022 14:15:53 +0200 Jakob Koschel wrote:
+>> -	struct list_head *head = &efx->rss_context.list;
+>> +	struct list_head *head = *pos = &efx->rss_context.list;
+> 
+> ENOTBUILT, please wait with the reposting. Since you posted two
+> versions today I guess that's 2x 24h? :)
 
-Some paths are ignored, as they are not common, such as encapsulation
-on non-final protocol.
+oh gosh, seems like I indeed forgot to build this commit.
+Sorry about all the mess :( Also I'll wait with reposting (not
+going to make the same mistake twice ;)).
 
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
-Reviewed-by: Jiang Biao <benbjiang@tencent.com>
-Reviewed-by: Hao Peng <flyingpeng@tencent.com>
----
- net/ipv6/ip6_input.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
-
-diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
-index 1b925ecb26e9..126ae3aa67e1 100644
---- a/net/ipv6/ip6_input.c
-+++ b/net/ipv6/ip6_input.c
-@@ -362,6 +362,7 @@ void ip6_protocol_deliver_rcu(struct net *net, struct sk_buff *skb, int nexthdr,
- 	const struct inet6_protocol *ipprot;
- 	struct inet6_dev *idev;
- 	unsigned int nhoff;
-+	SKB_DR(reason);
- 	bool raw;
- 
- 	/*
-@@ -421,12 +422,16 @@ void ip6_protocol_deliver_rcu(struct net *net, struct sk_buff *skb, int nexthdr,
- 			if (ipv6_addr_is_multicast(&hdr->daddr) &&
- 			    !ipv6_chk_mcast_addr(dev, &hdr->daddr,
- 						 &hdr->saddr) &&
--			    !ipv6_is_mld(skb, nexthdr, skb_network_header_len(skb)))
-+			    !ipv6_is_mld(skb, nexthdr, skb_network_header_len(skb))) {
-+				SKB_DR_SET(reason, IP_INADDRERRORS);
- 				goto discard;
-+			}
- 		}
- 		if (!(ipprot->flags & INET6_PROTO_NOPOLICY) &&
--		    !xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb))
-+		    !xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb)) {
-+			SKB_DR_SET(reason, XFRM_POLICY);
- 			goto discard;
-+		}
- 
- 		ret = INDIRECT_CALL_2(ipprot->handler, tcp_v6_rcv, udpv6_rcv,
- 				      skb);
-@@ -452,8 +457,11 @@ void ip6_protocol_deliver_rcu(struct net *net, struct sk_buff *skb, int nexthdr,
- 						IPSTATS_MIB_INUNKNOWNPROTOS);
- 				icmpv6_send(skb, ICMPV6_PARAMPROB,
- 					    ICMPV6_UNK_NEXTHDR, nhoff);
-+				SKB_DR_SET(reason, IP_NOPROTO);
-+			} else {
-+				SKB_DR_SET(reason, XFRM_POLICY);
- 			}
--			kfree_skb(skb);
-+			kfree_skb_reason(skb, reason);
- 		} else {
- 			__IP6_INC_STATS(net, idev, IPSTATS_MIB_INDELIVERS);
- 			consume_skb(skb);
-@@ -463,7 +471,7 @@ void ip6_protocol_deliver_rcu(struct net *net, struct sk_buff *skb, int nexthdr,
- 
- discard:
- 	__IP6_INC_STATS(net, idev, IPSTATS_MIB_INDISCARDS);
--	kfree_skb(skb);
-+	kfree_skb_reason(skb, reason);
- }
- 
- static int ip6_input_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
--- 
-2.35.1
-
+I messed up three times yesterday, was really not on a high.
+I'll be more careful in the future to not the the same kind of
+mistakes again :/
