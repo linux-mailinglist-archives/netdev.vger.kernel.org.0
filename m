@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CEE14FFC25
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 19:11:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3084B4FFC28
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 19:11:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236324AbiDMRNf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 13:13:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51684 "EHLO
+        id S237245AbiDMRNi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 13:13:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237289AbiDMRNa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 13:13:30 -0400
+        with ESMTP id S237295AbiDMRNb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 13:13:31 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9860F6B081
-        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 10:11:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE6806B092
+        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 10:11:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649869868; x=1681405868;
+  t=1649869869; x=1681405869;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=POmCMgQ9u+gs1hOgxgiCRwR6VngakNTkvwjpV9IsPCU=;
-  b=YgtzeuJJ7LjMfjQlObSTjQTRcqZeKEN1598Fzzz6Z1iN8ynaEAcc4hmF
-   mvRAmucHRbBfjLmBTdj+Bs7VQ5eWu78aqAssl/F6idiiQz6CLnO+c/w9Q
-   jO+BxWmYeDOtTKOuKxFWLSMZeuo5LSAlm6eEW2Fl8bESm1CWf5db3rWQF
-   ylfvN1aXwJc2LSxrJBxv+Z9lLNsvAEXJnj6dAMg9xFmenKc8yM1hRDD/B
-   7Vw4JvH6kV1dvQJn/YWOkQ4+G79Q5waRka8wXiQkaIqzb6eAJpV9Vfin4
-   y9L2twiGt2o7J3xYDXe19ZC5Iy/7d9FGGwx6ldcKXQpewfiA112xQJKCR
+  bh=jtxWZCk3Mwm0hcwhXaHTGpY8jrK1JNSCvtnU6VajyXw=;
+  b=cQVarVZ3RXBsTDFXY+jsLvHg+FcVmZRA/+YGjJuWRq9GlJ70eRfYdDnY
+   EKbv0V8NPY7RdPrOCydiW4sT+9+VwHPYlRpdi5LRfnDr0HyWdcV9m9FOU
+   aWKY/L5ow9oMFeaJKnRIzwhGuVqv3/Ndy9dclcqvjdiEy8Ar/yKsUf5Hi
+   ZcsguygaDZmnbpQxAdVK6KJaUcKFdpRxERfTHOjvaOPilss+xp4gQnnqn
+   pSc8ggax2RKJ8KcOxupBCoL0MTgEtnBbMLX2qQERaj60KrBfXpCJNMT9P
+   gaAwOG/8gM24A/oeXf9OjL3Ugx6QGcuUj0YDd7RT92CkgTLLVlwPLrwRf
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="349158020"
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="349158021"
 X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
-   d="scan'208";a="349158020"
+   d="scan'208";a="349158021"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
   by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 10:11:06 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,257,1643702400"; 
-   d="scan'208";a="573360515"
+   d="scan'208";a="573360518"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga008.jf.intel.com with ESMTP; 13 Apr 2022 10:11:05 -0700
+  by orsmga008.jf.intel.com with ESMTP; 13 Apr 2022 10:11:06 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
-Cc:     Sasha Neftin <sasha.neftin@intel.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, Corinna Vinschen <vinschen@redhat.com>,
-        Dima Ruinskiy <dima.ruinskiy@intel.com>,
-        Naama Meir <naamax.meir@linux.intel.com>
-Subject: [PATCH net 2/4] igc: Fix BUG: scheduling while atomic
-Date:   Wed, 13 Apr 2022 10:08:12 -0700
-Message-Id: <20220413170814.2066855-3-anthony.l.nguyen@intel.com>
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        Naama Meir <naamax.meir@linux.intel.com>,
+        Paul Menzel <pmenzel@molgen.mpg.de>
+Subject: [PATCH net 3/4] igc: Fix suspending when PTM is active
+Date:   Wed, 13 Apr 2022 10:08:13 -0700
+Message-Id: <20220413170814.2066855-4-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220413170814.2066855-1-anthony.l.nguyen@intel.com>
 References: <20220413170814.2066855-1-anthony.l.nguyen@intel.com>
@@ -61,113 +61,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+From: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 
-Replace usleep_range() method with udelay() method to allow atomic contexts
-in low-level MDIO access functions.
+Some mainboard/CPU combinations, in particular, Alder Lake-S with a
+W680 mainboard, have shown problems (system hangs usually, no kernel
+logs) with suspend/resume when PCIe PTM is enabled and active. In some
+cases, it could be reproduced when removing the igc module.
 
-The following issue can be seen by doing the following:
-$ modprobe -r bonding
-$ modprobe -v bonding max_bonds=1 mode=1 miimon=100 use_carrier=0
-$ ip link set bond0 up
-$ ifenslave bond0 eth0 eth1
+The best we can do is to stop PTM dialogs from the downstream/device
+side before the interface is brought down. PCIe PTM will be re-enabled
+when the interface is being brought up.
 
-[  982.357308] BUG: scheduling while atomic: kworker/u64:0/9/0x00000002
-[  982.364431] INFO: lockdep is turned off.
-[  982.368824] Modules linked in: bonding sctp ip6_udp_tunnel udp_tunnel mlx4_ib ib_uverbs ib_core mlx4_en mlx4_core nfp tls sunrpc intel_rapl_msr iTCO_wdt iTCO_vendor_support mxm_wmi dcdbas intel_rapl_common sb_edac x86_pkg_temp_thermal intel_powerclamp coretemp kvm_intel kvm irqbypass crct10dif_pclmul crc32_pclmul ghash_clmulni_intel rapl intel_cstate intel_uncore pcspkr lpc_ich mei_me ipmi_ssif mei ipmi_si ipmi_devintf ipmi_msghandler wmi acpi_power_meter xfs libcrc32c sr_mod cdrom sd_mod t10_pi sg mgag200 drm_kms_helper syscopyarea sysfillrect sysimgblt fb_sys_fops drm ahci libahci crc32c_intel libata i2c_algo_bit tg3 megaraid_sas igc dm_mirror dm_region_hash dm_log dm_mod [last unloaded: bonding]
-[  982.437941] CPU: 25 PID: 9 Comm: kworker/u64:0 Kdump: loaded Tainted: G        W        --------- -  - 4.18.0-348.el8.x86_64+debug #1
-[  982.451333] Hardware name: Dell Inc. PowerEdge R730/0H21J3, BIOS 2.7.0 12/005/2017
-[  982.459791] Workqueue: bond0 bond_mii_monitor [bonding]
-[  982.465622] Call Trace:
-[  982.468355]  dump_stack+0x8e/0xd0
-[  982.472056]  __schedule_bug.cold.60+0x3a/0x60
-[  982.476919]  __schedule+0x147b/0x1bc0
-[  982.481007]  ? firmware_map_remove+0x16b/0x16b
-[  982.485967]  ? hrtimer_fixup_init+0x40/0x40
-[  982.490625]  schedule+0xd9/0x250
-[  982.494227]  schedule_hrtimeout_range_clock+0x10d/0x2c0
-[  982.500058]  ? hrtimer_nanosleep_restart+0x130/0x130
-[  982.505598]  ? hrtimer_init_sleeper_on_stack+0x90/0x90
-[  982.511332]  ? usleep_range+0x88/0x130
-[  982.515514]  ? recalibrate_cpu_khz+0x10/0x10
-[  982.520279]  ? ktime_get+0xab/0x1c0
-[  982.524175]  ? usleep_range+0x88/0x130
-[  982.528355]  usleep_range+0xdd/0x130
-[  982.532344]  ? console_conditional_schedule+0x30/0x30
-[  982.537987]  ? igc_put_hw_semaphore+0x17/0x60 [igc]
-[  982.543432]  igc_read_phy_reg_gpy+0x111/0x2b0 [igc]
-[  982.548887]  igc_phy_has_link+0xfa/0x260 [igc]
-[  982.553847]  ? igc_get_phy_id+0x210/0x210 [igc]
-[  982.558894]  ? lock_acquire+0x34d/0x890
-[  982.563187]  ? lock_downgrade+0x710/0x710
-[  982.567659]  ? rcu_read_unlock+0x50/0x50
-[  982.572039]  igc_check_for_copper_link+0x106/0x210 [igc]
-[  982.577970]  ? igc_config_fc_after_link_up+0x840/0x840 [igc]
-[  982.584286]  ? rcu_read_unlock+0x50/0x50
-[  982.588661]  ? lock_release+0x591/0xb80
-[  982.592939]  ? lock_release+0x591/0xb80
-[  982.597220]  igc_has_link+0x113/0x330 [igc]
-[  982.601887]  ? lock_downgrade+0x710/0x710
-[  982.606362]  igc_ethtool_get_link+0x6d/0x90 [igc]
-[  982.611614]  bond_check_dev_link+0x131/0x2c0 [bonding]
-[  982.617350]  ? bond_time_in_interval+0xd0/0xd0 [bonding]
-[  982.623277]  ? rcu_read_lock_held+0x62/0xc0
-[  982.627944]  ? rcu_read_lock_sched_held+0xe0/0xe0
-[  982.633198]  bond_mii_monitor+0x314/0x2500 [bonding]
-[  982.638738]  ? lock_contended+0x880/0x880
-[  982.643214]  ? bond_miimon_link_change+0xa0/0xa0 [bonding]
-[  982.649336]  ? lock_acquire+0x34d/0x890
-[  982.653615]  ? lock_downgrade+0x710/0x710
-[  982.658089]  ? debug_object_deactivate+0x221/0x340
-[  982.663436]  ? rcu_read_unlock+0x50/0x50
-[  982.667811]  ? debug_print_object+0x2b0/0x2b0
-[  982.672672]  ? __switch_to_asm+0x41/0x70
-[  982.677049]  ? __switch_to_asm+0x35/0x70
-[  982.681426]  ? _raw_spin_unlock_irq+0x24/0x40
-[  982.686288]  ? trace_hardirqs_on+0x20/0x195
-[  982.690956]  ? _raw_spin_unlock_irq+0x24/0x40
-[  982.695818]  process_one_work+0x8f0/0x1770
-[  982.700390]  ? pwq_dec_nr_in_flight+0x320/0x320
-[  982.705443]  ? debug_show_held_locks+0x50/0x50
-[  982.710403]  worker_thread+0x87/0xb40
-[  982.714489]  ? process_one_work+0x1770/0x1770
-[  982.719349]  kthread+0x344/0x410
-[  982.722950]  ? kthread_insert_work_sanity_check+0xd0/0xd0
-[  982.728975]  ret_from_fork+0x3a/0x50
-
-Fixes: 5586838fe9ce ("igc: Add code for PHY support")
-Reported-by: Corinna Vinschen <vinschen@redhat.com>
-Suggested-by: Dima Ruinskiy <dima.ruinskiy@intel.com>
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Corinna Vinschen <vinschen@redhat.com>
+Fixes: a90ec8483732 ("igc: Add support for PTP getcrosststamp()")
+Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 Tested-by: Naama Meir <naamax.meir@linux.intel.com>
+Acked-by: Paul Menzel <pmenzel@molgen.mpg.de>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/igc/igc_phy.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/igc/igc_ptp.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_phy.c b/drivers/net/ethernet/intel/igc/igc_phy.c
-index 40dbf4b43234..6961f65d36b9 100644
---- a/drivers/net/ethernet/intel/igc/igc_phy.c
-+++ b/drivers/net/ethernet/intel/igc/igc_phy.c
-@@ -581,7 +581,7 @@ static s32 igc_read_phy_reg_mdic(struct igc_hw *hw, u32 offset, u16 *data)
- 	 * the lower time out
- 	 */
- 	for (i = 0; i < IGC_GEN_POLL_TIMEOUT; i++) {
--		usleep_range(500, 1000);
-+		udelay(50);
- 		mdic = rd32(IGC_MDIC);
- 		if (mdic & IGC_MDIC_READY)
- 			break;
-@@ -638,7 +638,7 @@ static s32 igc_write_phy_reg_mdic(struct igc_hw *hw, u32 offset, u16 data)
- 	 * the lower time out
- 	 */
- 	for (i = 0; i < IGC_GEN_POLL_TIMEOUT; i++) {
--		usleep_range(500, 1000);
-+		udelay(50);
- 		mdic = rd32(IGC_MDIC);
- 		if (mdic & IGC_MDIC_READY)
- 			break;
+diff --git a/drivers/net/ethernet/intel/igc/igc_ptp.c b/drivers/net/ethernet/intel/igc/igc_ptp.c
+index 0d6e3215e98f..653e9f1e35b5 100644
+--- a/drivers/net/ethernet/intel/igc/igc_ptp.c
++++ b/drivers/net/ethernet/intel/igc/igc_ptp.c
+@@ -992,6 +992,17 @@ static void igc_ptp_time_restore(struct igc_adapter *adapter)
+ 	igc_ptp_write_i225(adapter, &ts);
+ }
+ 
++static void igc_ptm_stop(struct igc_adapter *adapter)
++{
++	struct igc_hw *hw = &adapter->hw;
++	u32 ctrl;
++
++	ctrl = rd32(IGC_PTM_CTRL);
++	ctrl &= ~IGC_PTM_CTRL_EN;
++
++	wr32(IGC_PTM_CTRL, ctrl);
++}
++
+ /**
+  * igc_ptp_suspend - Disable PTP work items and prepare for suspend
+  * @adapter: Board private structure
+@@ -1009,8 +1020,10 @@ void igc_ptp_suspend(struct igc_adapter *adapter)
+ 	adapter->ptp_tx_skb = NULL;
+ 	clear_bit_unlock(__IGC_PTP_TX_IN_PROGRESS, &adapter->state);
+ 
+-	if (pci_device_is_present(adapter->pdev))
++	if (pci_device_is_present(adapter->pdev)) {
+ 		igc_ptp_time_save(adapter);
++		igc_ptm_stop(adapter);
++	}
+ }
+ 
+ /**
 -- 
 2.31.1
 
