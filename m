@@ -2,230 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EF524FED83
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 05:26:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A1AF4FEDA4
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 05:36:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231348AbiDMD27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 23:28:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59052 "EHLO
+        id S232039AbiDMDhq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 23:37:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbiDMD26 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 23:28:58 -0400
-Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF01F1127;
-        Tue, 12 Apr 2022 20:26:37 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=33;SR=0;TI=SMTPD_---0V9xXClK_1649820390;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V9xXClK_1649820390)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 13 Apr 2022 11:26:32 +0800
-Message-ID: <1649820210.3432868-4-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH v9 12/32] virtio_ring: packed: extract the logic of alloc queue
-Date:   Wed, 13 Apr 2022 11:23:30 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Vadim Pasternak <vadimp@nvidia.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        linux-um@lists.infradead.org, netdev@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org, bpf@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-References: <20220406034346.74409-1-xuanzhuo@linux.alibaba.com>
- <20220406034346.74409-13-xuanzhuo@linux.alibaba.com>
- <4da7b8dc-74ca-fc1b-fbdb-21f9943e8d45@redhat.com>
-In-Reply-To: <4da7b8dc-74ca-fc1b-fbdb-21f9943e8d45@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S230311AbiDMDhn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 23:37:43 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7829026570;
+        Tue, 12 Apr 2022 20:35:23 -0700 (PDT)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 23CHw2UT008778;
+        Tue, 12 Apr 2022 20:35:09 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : subject
+ : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=AkXs6NTbL7IKkOe27+UheR5UY26Uf0hizdTcbdBRvMc=;
+ b=X30LHMPoUNnU6pDpoPYklDOSKvRDqWTG0HGcRiqu6ZVQXIywt/UFewO9eOJhMmKPHSEZ
+ 2d1G18tPJ500k1VlH5rTqL30uC0l+e0AvZkMdI0A7zOwRzSZr4ZzWYg5+bHv9DFErJol
+ KfZs5VSBKmjOGtjix1zkiUyD1YcfKn9ftq5elCiQS9le2GWzedvI4QCau7p/WlpviLZ6
+ ++blsZVe4pZFYVZ5fzE+27W7kkkVfqeDTk0Vp/ST5oIgmB131czj6aQCnpLpYYK3fvA2
+ 4Uk9ndD2DVHMgzTo4TChKKIITJ9mbg4oaxsUfSvI9NvR/CsZEODhkulYWnYOhhgRLVoL RA== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3fd6nfccx9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 12 Apr 2022 20:35:08 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 12 Apr
+ 2022 20:35:07 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Tue, 12 Apr 2022 20:35:07 -0700
+Received: from sburla-PowerEdge-T630.caveonetworks.com (unknown [10.106.27.217])
+        by maili.marvell.com (Postfix) with ESMTP id 5D43A3F705B;
+        Tue, 12 Apr 2022 20:35:07 -0700 (PDT)
+From:   Veerasenareddy Burru <vburru@marvell.com>
+To:     <vburru@marvell.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <corbet@lwn.net>, <netdev@vger.kernel.org>,
+        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [net-next PATCH v5 0/7] Add octeon_ep driver
+Date:   Tue, 12 Apr 2022 20:34:56 -0700
+Message-ID: <20220413033503.3962-1-vburru@marvell.com>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Proofpoint-GUID: BRquQkyRi16EfvARkF_R3XRBctEdKaFd
+X-Proofpoint-ORIG-GUID: BRquQkyRi16EfvARkF_R3XRBctEdKaFd
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-12_06,2022-04-12_02,2022-02-23_01
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 12 Apr 2022 14:28:24 +0800, Jason Wang <jasowang@redhat.com> wrote:
->
-> =E5=9C=A8 2022/4/6 =E4=B8=8A=E5=8D=8811:43, Xuan Zhuo =E5=86=99=E9=81=93:
-> > Separate the logic of packed to create vring queue.
-> >
-> > For the convenience of passing parameters, add a structure
-> > vring_packed.
-> >
-> > This feature is required for subsequent virtuqueue reset vring.
-> >
-> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > ---
-> >   drivers/virtio/virtio_ring.c | 70 ++++++++++++++++++++++++++++--------
-> >   1 file changed, 56 insertions(+), 14 deletions(-)
-> >
-> > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> > index 33864134a744..ea451ae2aaef 100644
-> > --- a/drivers/virtio/virtio_ring.c
-> > +++ b/drivers/virtio/virtio_ring.c
-> > @@ -1817,19 +1817,17 @@ static struct vring_desc_extra *vring_alloc_des=
-c_extra(unsigned int num)
-> >   	return desc_extra;
-> >   }
-> >
-> > -static struct virtqueue *vring_create_virtqueue_packed(
-> > -	unsigned int index,
-> > -	unsigned int num,
-> > -	unsigned int vring_align,
-> > -	struct virtio_device *vdev,
-> > -	bool weak_barriers,
-> > -	bool may_reduce_num,
-> > -	bool context,
-> > -	bool (*notify)(struct virtqueue *),
-> > -	void (*callback)(struct virtqueue *),
-> > -	const char *name)
-> > +static int vring_alloc_queue_packed(struct virtio_device *vdev,
-> > +				    u32 num,
-> > +				    struct vring_packed_desc **_ring,
-> > +				    struct vring_packed_desc_event **_driver,
-> > +				    struct vring_packed_desc_event **_device,
-> > +				    dma_addr_t *_ring_dma_addr,
-> > +				    dma_addr_t *_driver_event_dma_addr,
-> > +				    dma_addr_t *_device_event_dma_addr,
-> > +				    size_t *_ring_size_in_bytes,
-> > +				    size_t *_event_size_in_bytes)
-> >   {
-> > -	struct vring_virtqueue *vq;
-> >   	struct vring_packed_desc *ring;
-> >   	struct vring_packed_desc_event *driver, *device;
-> >   	dma_addr_t ring_dma_addr, driver_event_dma_addr, device_event_dma_ad=
-dr;
-> > @@ -1857,6 +1855,52 @@ static struct virtqueue *vring_create_virtqueue_=
-packed(
-> >   	if (!device)
-> >   		goto err_device;
-> >
-> > +	*_ring                   =3D ring;
-> > +	*_driver                 =3D driver;
-> > +	*_device                 =3D device;
-> > +	*_ring_dma_addr          =3D ring_dma_addr;
-> > +	*_driver_event_dma_addr  =3D driver_event_dma_addr;
-> > +	*_device_event_dma_addr  =3D device_event_dma_addr;
-> > +	*_ring_size_in_bytes     =3D ring_size_in_bytes;
-> > +	*_event_size_in_bytes    =3D event_size_in_bytes;
->
->
-> I wonder if we can simply factor out split and packed from struct
-> vring_virtqueue:
->
-> struct vring_virtqueue {
->  =C2=A0=C2=A0=C2=A0 union {
->  =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 struct {} split;
->  =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 struct {} packed;
->  =C2=A0=C2=A0=C2=A0 };
-> };
->
-> to
->
-> struct vring_virtqueue_split {};
-> struct vring_virtqueue_packed {};
->
-> Then we can do things like:
->
-> vring_create_virtqueue_packed(struct virtio_device *vdev, u32 num,
-> struct vring_virtqueue_packed *packed);
->
-> and
->
-> vring_vritqueue_attach_packed(struct vring_virtqueue *vq, struct
-> vring_virtqueue_packed packed);
+This driver implements networking functionality of Marvell's Octeon
+PCI Endpoint NIC.
 
-This idea is very similar to my previous idea, just without introducing a n=
-ew
-structure.
+This driver support following devices:
+ * Network controller: Cavium, Inc. Device b200
 
-I'd be more than happy to revise this.
+V4 -> V5:
+   - Fix warnings reported by clang.
+   - Address comments from community reviews.
 
-Thanks.
+V3 -> V4:
+   - Fix warnings and errors reported by "make W=1 C=1".
+
+V2 -> V3:
+   - Fix warnings and errors reported by kernel test robot:
+     "Reported-by: kernel test robot <lkp@intel.com>"
+
+V1 -> V2:
+    - Address review comments on original patch series.
+    - Divide PATCH 1/4 from the original series into 4 patches in
+      v2 patch series: PATCH 1/7 to PATCH 4/7.
+    - Fix clang build errors.
+
+Veerasenareddy Burru (7):
+  octeon_ep: Add driver framework and device initialization
+  octeon_ep: add hardware configuration APIs
+  octeon_ep: Add mailbox for control commands
+  octeon_ep: add Tx/Rx ring resource setup and cleanup
+  octeon_ep: add support for ndo ops
+  octeon_ep: add Tx/Rx processing and interrupt support
+  octeon_ep: add ethtool support for Octeon PCI Endpoint NIC
+
+ .../device_drivers/ethernet/index.rst         |    1 +
+ .../ethernet/marvell/octeon_ep.rst            |   35 +
+ MAINTAINERS                                   |    7 +
+ drivers/net/ethernet/marvell/Kconfig          |    1 +
+ drivers/net/ethernet/marvell/Makefile         |    1 +
+ .../net/ethernet/marvell/octeon_ep/Kconfig    |   20 +
+ .../net/ethernet/marvell/octeon_ep/Makefile   |    9 +
+ .../marvell/octeon_ep/octep_cn9k_pf.c         |  737 +++++++++++
+ .../ethernet/marvell/octeon_ep/octep_config.h |  204 +++
+ .../marvell/octeon_ep/octep_ctrl_mbox.c       |  256 ++++
+ .../marvell/octeon_ep/octep_ctrl_mbox.h       |  170 +++
+ .../marvell/octeon_ep/octep_ctrl_net.c        |  194 +++
+ .../marvell/octeon_ep/octep_ctrl_net.h        |  299 +++++
+ .../marvell/octeon_ep/octep_ethtool.c         |  463 +++++++
+ .../ethernet/marvell/octeon_ep/octep_main.c   | 1177 +++++++++++++++++
+ .../ethernet/marvell/octeon_ep/octep_main.h   |  366 +++++
+ .../marvell/octeon_ep/octep_regs_cn9k_pf.h    |  367 +++++
+ .../net/ethernet/marvell/octeon_ep/octep_rx.c |  508 +++++++
+ .../net/ethernet/marvell/octeon_ep/octep_rx.h |  199 +++
+ .../net/ethernet/marvell/octeon_ep/octep_tx.c |  335 +++++
+ .../net/ethernet/marvell/octeon_ep/octep_tx.h |  284 ++++
+ 21 files changed, 5633 insertions(+)
+ create mode 100644 Documentation/networking/device_drivers/ethernet/marvell/octeon_ep.rst
+ create mode 100644 drivers/net/ethernet/marvell/octeon_ep/Kconfig
+ create mode 100644 drivers/net/ethernet/marvell/octeon_ep/Makefile
+ create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_cn9k_pf.c
+ create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_config.h
+ create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.c
+ create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.h
+ create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_net.c
+ create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_net.h
+ create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_ethtool.c
+ create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+ create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_main.h
+ create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_regs_cn9k_pf.h
+ create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_rx.c
+ create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_rx.h
+ create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_tx.c
+ create mode 100644 drivers/net/ethernet/marvell/octeon_ep/octep_tx.h
 
 
->
-> Thanks
->
->
-> > +
-> > +	return 0;
-> > +
-> > +err_device:
-> > +	vring_free_queue(vdev, event_size_in_bytes, driver, driver_event_dma_=
-addr);
-> > +
-> > +err_driver:
-> > +	vring_free_queue(vdev, ring_size_in_bytes, ring, ring_dma_addr);
-> > +
-> > +err_ring:
-> > +	return -ENOMEM;
-> > +}
-> > +
-> > +static struct virtqueue *vring_create_virtqueue_packed(
-> > +	unsigned int index,
-> > +	unsigned int num,
-> > +	unsigned int vring_align,
-> > +	struct virtio_device *vdev,
-> > +	bool weak_barriers,
-> > +	bool may_reduce_num,
-> > +	bool context,
-> > +	bool (*notify)(struct virtqueue *),
-> > +	void (*callback)(struct virtqueue *),
-> > +	const char *name)
-> > +{
-> > +	dma_addr_t ring_dma_addr, driver_event_dma_addr, device_event_dma_add=
-r;
-> > +	struct vring_packed_desc_event *driver, *device;
-> > +	size_t ring_size_in_bytes, event_size_in_bytes;
-> > +	struct vring_packed_desc *ring;
-> > +	struct vring_virtqueue *vq;
-> > +
-> > +	if (vring_alloc_queue_packed(vdev, num, &ring, &driver, &device,
-> > +				     &ring_dma_addr, &driver_event_dma_addr,
-> > +				     &device_event_dma_addr,
-> > +				     &ring_size_in_bytes,
-> > +				     &event_size_in_bytes))
-> > +		goto err_ring;
-> > +
-> >   	vq =3D kmalloc(sizeof(*vq), GFP_KERNEL);
-> >   	if (!vq)
-> >   		goto err_vq;
-> > @@ -1939,9 +1983,7 @@ static struct virtqueue *vring_create_virtqueue_p=
-acked(
-> >   	kfree(vq);
-> >   err_vq:
-> >   	vring_free_queue(vdev, event_size_in_bytes, device, device_event_dma=
-_addr);
-> > -err_device:
-> >   	vring_free_queue(vdev, event_size_in_bytes, driver, driver_event_dma=
-_addr);
-> > -err_driver:
-> >   	vring_free_queue(vdev, ring_size_in_bytes, ring, ring_dma_addr);
-> >   err_ring:
-> >   	return NULL;
->
+base-commit: f45ba67eb74ab4b775616af731bdf8944afce3f1
+-- 
+2.17.1
+
