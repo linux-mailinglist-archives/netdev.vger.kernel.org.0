@@ -2,60 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE6F84FF32D
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 11:16:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ECD24FF33A
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 11:18:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234333AbiDMJSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 05:18:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57698 "EHLO
+        id S234347AbiDMJUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 05:20:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233450AbiDMJSs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 05:18:48 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88831527D8
-        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 02:16:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649841387; x=1681377387;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=2qSpWtdv+CVCutFYdNG9tJUBmh/HyA0LfKAybjefNE8=;
-  b=Yp1ef5Uw+VCYZyCfEn8pkcURuD2QPIj+1Rssj2thW+XJaEpkcg7UfsxI
-   MNiGVPwB5Xva97kG/IAt/CxoYEXgh07h16DxfUzCxo4pbl95wHiBCKsSX
-   W2sGAWM27DU3tpjqipCgaccjGBtYBjez38ecb7tB3Y2gJ/aJJPvxxPPz7
-   MhpBzvcdw8nIs5UEtMjQ7R9q3xRTi+LqppnV9naeh8zlTPergO3TeUO7J
-   dtrg5DHwK5IUeUou52ZVMEhmXmzQSNoKeG61udrub1Q9J3dtJ21jZFP+J
-   r9ewLa1heZU6aWkeX71Q2te+1OUkczYwbE4h+aPEvwgkPpXWnosNPcixB
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="262796058"
-X-IronPort-AV: E=Sophos;i="5.90,256,1643702400"; 
-   d="scan'208";a="262796058"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 02:16:11 -0700
-X-IronPort-AV: E=Sophos;i="5.90,256,1643702400"; 
-   d="scan'208";a="526867294"
-Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.249.173.225]) ([10.249.173.225])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2022 02:16:09 -0700
-Message-ID: <09a3613f-514b-c769-b8a0-25899b3d3159@intel.com>
-Date:   Wed, 13 Apr 2022 17:16:06 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.8.0
-Subject: Re: [PATCH] vDPA/ifcvf: assign nr_vring to the MSI vector of
- config_intr by default
-Content-Language: en-US
-To:     Jason Wang <jasowang@redhat.com>, mst@redhat.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Dan Carpenter <dan.carpenter@oracle.com>
-References: <20220408121013.54709-1-lingshan.zhu@intel.com>
- <f3f60d6e-a506-bd58-d763-848beb0e4c26@redhat.com>
-From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
-In-Reply-To: <f3f60d6e-a506-bd58-d763-848beb0e4c26@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-8.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        with ESMTP id S230236AbiDMJUW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 05:20:22 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F27C251E75;
+        Wed, 13 Apr 2022 02:17:45 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id w7so1438807pfu.11;
+        Wed, 13 Apr 2022 02:17:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=tz5dWuELBA/iPFeCUwqUqTCIDdY/keZQPX5lNBv6mfg=;
+        b=S15LxfsjJ7VtU+jLif+PoGVD12PMyIA4UE53je4fmZBYj6DmqNi/RJiIYQ1CvZOBeb
+         H/whVGvDBOkquSrZWL69NZD7wk9kzBjjy0+ULHaWUhOD0ga2o+4peMsyFZFk1vuSR62W
+         MDpgNp0wXqAO3V3RrJb8FBS7vCC7qOZce4c3ZujXAFASrcHZ9Pgro5C9sRUMa7dW8NB/
+         cSoB/eXMKR0vV/PlxJRf1LDhe2t4PVVHQy8kok/UXtZh35W4D59H0EqasViZNvxyRK2t
+         2qdE7zIwsY3sbS1nFm3ewjewGDpMkSoJblS/ZS3upWM36h3IKIlIux+cMyUe0F6ahagm
+         MVew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=tz5dWuELBA/iPFeCUwqUqTCIDdY/keZQPX5lNBv6mfg=;
+        b=RZkjukrU2GJNOtPENR8gu1iJMSO5uX+wPm5wPHl+2URT/5669a+5t3mxSPQhsOnAgB
+         mzr0FeDGoZn448jmQJ37MwIKOFckZxHJdhFgsLdeooyuJvcIWhEp4glpQEu+e+iI08tF
+         NVBOeH5UcBGrp8CEBk/a/KjGeC3xZeL8NXz+fMIRtE8q7b+/HRJ7dti14hh6IuL9rKgY
+         4fm6v1dXyPrMdvzyBcVB78t23gug9n2r54IrovIztv2ScBtnOwaVn3xm09SJ8Uajteiv
+         xRUPwGIh8dstmCSv9retDhrxPPjT7aD5xDAvu2Bv76Wc1NiEyC1i4SeAJyy4l+Val5L/
+         JUkA==
+X-Gm-Message-State: AOAM533YsMyXqlrriLVf+b7N5ArVve7/F8M460tNXabIBlw+Ham7wX1l
+        RtAobkNcd7gH/BoT1T3cR/DLiFXCkAmvgw==
+X-Google-Smtp-Source: ABdhPJwJWC+oe4G9+3nv/Ooabuax/OuMo+x+Scpy5Khtg0OBD7X0uysKsgX7llq0gccOfhHz0K/WGA==
+X-Received: by 2002:a05:6a00:17a6:b0:505:a751:8354 with SMTP id s38-20020a056a0017a600b00505a7518354mr19101372pfg.82.1649841465196;
+        Wed, 13 Apr 2022 02:17:45 -0700 (PDT)
+Received: from localhost.localdomain ([119.3.119.18])
+        by smtp.gmail.com with ESMTPSA id n19-20020a635c53000000b0039dc2ea9876sm834512pgm.49.2022.04.13.02.17.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 02:17:44 -0700 (PDT)
+From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
+To:     pizza@shaftnet.org, kvalo@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, linville@tuxdriver.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Subject: [PATCH v3] cw1200: fix incorrect check to determine if no element is found in list
+Date:   Wed, 13 Apr 2022 17:17:23 +0800
+Message-Id: <20220413091723.17596-1-xiam0nd.tong@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,104 +65,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The bug is here: "} else if (item) {".
 
+The list iterator value will *always* be set and non-NULL by
+list_for_each_entry(), so it is incorrect to assume that the iterator
+value will be NULL if the list is empty or no element is found in list.
 
-On 4/13/2022 4:14 PM, Jason Wang wrote:
->
-> 在 2022/4/8 下午8:10, Zhu Lingshan 写道:
->> This commit assign struct ifcvf_hw.nr_vring to the MSIX vector of the
->> config interrupt by default in ifcvf_request_config_irq().
->> ifcvf_hw.nr_vring is the most likely and the ideal case for
->> the device config interrupt handling, means every virtqueue has
->> an individual MSIX vector(0 ~ nr_vring - 1), and the config interrupt 
->> has
->> its own MSIX vector(number nr_vring).
->>
->> This change can also make GCC W = 2 happy, silence the
->> "uninitialized" warning.
->>
->> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
->> Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
->> ---
->>   drivers/vdpa/ifcvf/ifcvf_main.c | 8 ++++----
->>   1 file changed, 4 insertions(+), 4 deletions(-)
->>
->> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c 
->> b/drivers/vdpa/ifcvf/ifcvf_main.c
->> index 4366320fb68d..b500fb941dab 100644
->> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
->> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
->> @@ -290,13 +290,13 @@ static int ifcvf_request_config_irq(struct 
->> ifcvf_adapter *adapter)
->>       struct ifcvf_hw *vf = &adapter->vf;
->>       int config_vector, ret;
->>   +    /* vector 0 ~ vf->nr_vring for vqs, num vf->nr_vring vector 
->> for config interrupt */
->
->
-> The comment is right before this patch, but probably wrong for 
-> MSIX_VECTOR_DEV_SHARED.
-This comment is for the case when every vq and config interrupt has its 
-own vector, how
-about a better comment "The ideal the default case, vector 0 ~ 
-vf->nr_vring for vqs, num vf->nr_vring vector for config interrupt"
->
->
->> +    config_vector = vf->nr_vring;
->> +
->> +    /* re-use the vqs vector */
->>       if (vf->msix_vector_status == MSIX_VECTOR_DEV_SHARED)
->>           return 0;
->>   -    if (vf->msix_vector_status == MSIX_VECTOR_PER_VQ_AND_CONFIG)
->> -        /* vector 0 ~ vf->nr_vring for vqs, num vf->nr_vring vector 
->> for config interrupt */
->> -        config_vector = vf->nr_vring;
->> -
->>       if (vf->msix_vector_status == MSIX_VECTOR_SHARED_VQ_AND_CONFIG)
->>           /* vector 0 for vqs and 1 for config interrupt */
->>           config_vector = 1;
->
->
-> Actually, I prefer to use if ... else ... here.
-IMHO, if else may lead to mistakes.
+Use a new value 'iter' as the list iterator, while use the old value
+'item' as a dedicated pointer to point to the found element, which
+1. can fix this bug, due to now 'item' is NULL only if it's not found.
+2. do not need to change all the uses of 'item' after the loop.
+3. can also limit the scope of the list iterator 'iter' *only inside*
+   the traversal loop by simply declaring 'iter' inside the loop in the
+   future, as usage of the iterator outside of the list_for_each_entry
+   is considered harmful. https://lkml.org/lkml/2022/2/17/1032
 
-The code:
-         /* The ideal the default case, vector 0 ~ vf->nr_vring for vqs, 
-num vf->nr_vring vector for config interrupt */
-         config_vector = vf->nr_vring;
+Fixes: a910e4a94f692 ("cw1200: add driver for the ST-E CW1100 & CW1200 WLAN chipsets")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+---
+changes since v2:
+ - rebase on latest wireless-next (Kalle Valo)
+changes since v1:
+ - fix incorrect check to item (Jakob Koschel)
 
-         /* re-use the vqs vector */
-         if (vf->msix_vector_status == MSIX_VECTOR_DEV_SHARED)
-                 return 0;
+v2: https://lore.kernel.org/lkml/20220320035436.11293-1-xiam0nd.tong@gmail.com/
+v1: https://lore.kernel.org/all/20220319063800.28791-1-xiam0nd.tong@gmail.com/
+---
+ drivers/net/wireless/st/cw1200/queue.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
 
-         if (vf->msix_vector_status == MSIX_VECTOR_SHARED_VQ_AND_CONFIG)
-                 /* vector 0 for vqs and 1 for config interrupt */
-                 config_vector = 1;
-
-
-here by default config_vector = vf->nr_vring;
-If msix_vector_status == MSIX_VECTOR_DEV_SHARED, it will reuse the dev 
-shared vector, means using the vector(value 0) for data-vqs.
-If msix_vector_status == MSIX_VECTOR_SHARED_VQ_AND_CONFIG, it will use 
-vector=1(vector 0 for data-vqs).
-
-If we use if...else, it will be:
-
-         /* re-use the vqs vector */
-         if (vf->msix_vector_status == MSIX_VECTOR_DEV_SHARED)
-                 return 0;
-         else
-                 config_vector = 1;
-
-This looks like config_vector can only be 0(re-used vector for the 
-data-vqs, which is 0) or 1. It shadows the ideal and default case
-config_vector = vf->nr_vring
-
-Thanks,
-Zhu Lingshan
-
->
-> Thanks
->
->
+diff --git a/drivers/net/wireless/st/cw1200/queue.c b/drivers/net/wireless/st/cw1200/queue.c
+index e06da4b3b0d4..805a3c1bf8fe 100644
+--- a/drivers/net/wireless/st/cw1200/queue.c
++++ b/drivers/net/wireless/st/cw1200/queue.c
+@@ -91,23 +91,25 @@ static void __cw1200_queue_gc(struct cw1200_queue *queue,
+ 			      bool unlock)
+ {
+ 	struct cw1200_queue_stats *stats = queue->stats;
+-	struct cw1200_queue_item *item = NULL, *tmp;
++	struct cw1200_queue_item *item = NULL, *iter, *tmp;
+ 	bool wakeup_stats = false;
+ 
+-	list_for_each_entry_safe(item, tmp, &queue->queue, head) {
+-		if (time_is_after_jiffies(item->queue_timestamp + queue->ttl))
++	list_for_each_entry_safe(iter, tmp, &queue->queue, head) {
++		if (time_is_after_jiffies(iter->queue_timestamp + queue->ttl)) {
++			item = iter;
+ 			break;
++		}
+ 		--queue->num_queued;
+-		--queue->link_map_cache[item->txpriv.link_id];
++		--queue->link_map_cache[iter->txpriv.link_id];
+ 		spin_lock_bh(&stats->lock);
+ 		--stats->num_queued;
+-		if (!--stats->link_map_cache[item->txpriv.link_id])
++		if (!--stats->link_map_cache[iter->txpriv.link_id])
+ 			wakeup_stats = true;
+ 		spin_unlock_bh(&stats->lock);
+ 		cw1200_debug_tx_ttl(stats->priv);
+-		cw1200_queue_register_post_gc(head, item);
+-		item->skb = NULL;
+-		list_move_tail(&item->head, &queue->free_pool);
++		cw1200_queue_register_post_gc(head, iter);
++		iter->skb = NULL;
++		list_move_tail(&iter->head, &queue->free_pool);
+ 	}
+ 
+ 	if (wakeup_stats)
+-- 
+2.17.1
 
