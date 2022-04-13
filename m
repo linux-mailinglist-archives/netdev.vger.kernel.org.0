@@ -2,102 +2,301 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FEA14FF284
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 10:46:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62ADD4FF2A4
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 10:49:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230503AbiDMIsY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 04:48:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43256 "EHLO
+        id S234068AbiDMIvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 04:51:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234077AbiDMIrM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 04:47:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4124851E66
-        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 01:44:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649839490;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=JVdR/H9u0F9f7xRSiMpLk+sv3aibSn7XmuwAEZfNMiM=;
-        b=LqbfR5gkIEFxycdLn7DmGCrt3fkt1qUvFIJ5iqQRzOR4JjFgpTjbsezSGoVmNVX6C7FRDs
-        0L9XxN3AHJhqyaPkRh6bjrRV9HuZon4N3eNagpCFllrutM/9XCNj+BlhcOJ+QGilLsYu43
-        5yZqocUGR3GqhCfCPpymoL1qU1zz3+g=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-396-EU9o9IxjMHKS6625HnWSzg-1; Wed, 13 Apr 2022 04:44:48 -0400
-X-MC-Unique: EU9o9IxjMHKS6625HnWSzg-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 244282999B4E
-        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 08:44:48 +0000 (UTC)
-Received: from gerbillo.redhat.com (unknown [10.39.193.104])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A889554AC8A
-        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 08:44:47 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Subject: [PATCH net-next] geneve: avoid indirect calls in GRO path, when possible
-Date:   Wed, 13 Apr 2022 10:44:40 +0200
-Message-Id: <72bc10247a7f5fee36a3ce7da51dfd4c66a52b68.1649839351.git.pabeni@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229540AbiDMIvW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 04:51:22 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC8FD4D633;
+        Wed, 13 Apr 2022 01:49:00 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R321e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=33;SR=0;TI=SMTPD_---0V9yiszT_1649839734;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V9yiszT_1649839734)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 13 Apr 2022 16:48:55 +0800
+Message-ID: <1649839684.1990876-11-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH v9 23/32] virtio_pci: queue_reset: support VIRTIO_F_RING_RESET
+Date:   Wed, 13 Apr 2022 16:48:04 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Vadim Pasternak <vadimp@nvidia.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        linux-um@lists.infradead.org, netdev@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org, bpf@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+References: <20220406034346.74409-1-xuanzhuo@linux.alibaba.com>
+ <20220406034346.74409-24-xuanzhuo@linux.alibaba.com>
+ <d040a3fe-765e-93d6-cef9-603f23a0fd1e@redhat.com>
+In-Reply-To: <d040a3fe-765e-93d6-cef9-603f23a0fd1e@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the most common setups, the geneve tunnels use an inner
-ethernet encapsulation. In the GRO path, when such condition is
-true, we can call directly the relevant GRO helper and avoid
-a few indirect calls.
+On Tue, 12 Apr 2022 15:07:58 +0800, Jason Wang <jasowang@redhat.com> wrote:
+>
+> =E5=9C=A8 2022/4/6 =E4=B8=8A=E5=8D=8811:43, Xuan Zhuo =E5=86=99=E9=81=93:
+> > This patch implements virtio pci support for QUEUE RESET.
+> >
+> > Performing reset on a queue is divided into these steps:
+> >
+> >   1. notify the device to reset the queue
+> >   2. recycle the buffer submitted
+> >   3. reset the vring (may re-alloc)
+> >   4. mmap vring to device, and enable the queue
+> >
+> > This patch implements virtio_reset_vq(), virtio_enable_resetq() in the
+> > pci scenario.
+> >
+> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > ---
+> >   drivers/virtio/virtio_pci_common.c |  8 +--
+> >   drivers/virtio/virtio_pci_modern.c | 84 ++++++++++++++++++++++++++++++
+> >   drivers/virtio/virtio_ring.c       |  2 +
+> >   include/linux/virtio.h             |  1 +
+> >   4 files changed, 92 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio=
+_pci_common.c
+> > index fdbde1db5ec5..863d3a8a0956 100644
+> > --- a/drivers/virtio/virtio_pci_common.c
+> > +++ b/drivers/virtio/virtio_pci_common.c
+> > @@ -248,9 +248,11 @@ static void vp_del_vq(struct virtqueue *vq)
+> >   	struct virtio_pci_vq_info *info =3D vp_dev->vqs[vq->index];
+> >   	unsigned long flags;
+> >
+> > -	spin_lock_irqsave(&vp_dev->lock, flags);
+> > -	list_del(&info->node);
+> > -	spin_unlock_irqrestore(&vp_dev->lock, flags);
+> > +	if (!vq->reset) {
+>
+>
+> On which condition that we may hit this path?
 
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- drivers/net/geneve.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+As discussed in patch 31, it may fail when renable vq.
 
-diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
-index 7db6c135ac6c..2495a5719e1c 100644
---- a/drivers/net/geneve.c
-+++ b/drivers/net/geneve.c
-@@ -533,14 +533,16 @@ static struct sk_buff *geneve_gro_receive(struct sock *sk,
- 		}
- 	}
- 
-+	skb_gro_pull(skb, gh_len);
-+	skb_gro_postpull_rcsum(skb, gh, gh_len);
- 	type = gh->proto_type;
-+	if (likely(type == htons(ETH_P_TEB)))
-+		return call_gro_receive(eth_gro_receive, head, skb);
- 
- 	ptype = gro_find_receive_by_type(type);
- 	if (!ptype)
- 		goto out;
- 
--	skb_gro_pull(skb, gh_len);
--	skb_gro_postpull_rcsum(skb, gh, gh_len);
- 	pp = call_gro_receive(ptype->callbacks.gro_receive, head, skb);
- 	flush = 0;
- 
-@@ -563,6 +565,10 @@ static int geneve_gro_complete(struct sock *sk, struct sk_buff *skb,
- 	gh_len = geneve_hlen(gh);
- 	type = gh->proto_type;
- 
-+	/* since skb->encapsulation is set, eth_gro_complete() sets the inner mac header */
-+	if (likely(type == htons(ETH_P_TEB)))
-+		return eth_gro_complete(skb, nhoff + gh_len);
-+
- 	ptype = gro_find_complete_by_type(type);
- 	if (ptype)
- 		err = ptype->callbacks.gro_complete(skb, nhoff + gh_len);
--- 
-2.35.1
+Thanks.
 
+>
+>
+> > +		spin_lock_irqsave(&vp_dev->lock, flags);
+> > +		list_del(&info->node);
+> > +		spin_unlock_irqrestore(&vp_dev->lock, flags);
+> > +	}
+> >
+> >   	vp_dev->del_vq(info);
+> >   	kfree(info);
+> > diff --git a/drivers/virtio/virtio_pci_modern.c b/drivers/virtio/virtio=
+_pci_modern.c
+> > index 49a4493732cf..cb5d38f1c9c8 100644
+> > --- a/drivers/virtio/virtio_pci_modern.c
+> > +++ b/drivers/virtio/virtio_pci_modern.c
+> > @@ -34,6 +34,9 @@ static void vp_transport_features(struct virtio_devic=
+e *vdev, u64 features)
+> >   	if ((features & BIT_ULL(VIRTIO_F_SR_IOV)) &&
+> >   			pci_find_ext_capability(pci_dev, PCI_EXT_CAP_ID_SRIOV))
+> >   		__virtio_set_bit(vdev, VIRTIO_F_SR_IOV);
+> > +
+> > +	if (features & BIT_ULL(VIRTIO_F_RING_RESET))
+> > +		__virtio_set_bit(vdev, VIRTIO_F_RING_RESET);
+> >   }
+> >
+> >   /* virtio config->finalize_features() implementation */
+> > @@ -199,6 +202,83 @@ static int vp_active_vq(struct virtqueue *vq, u16 =
+msix_vec)
+> >   	return 0;
+> >   }
+> >
+> > +static int vp_modern_reset_vq(struct virtqueue *vq)
+> > +{
+> > +	struct virtio_pci_device *vp_dev =3D to_vp_device(vq->vdev);
+> > +	struct virtio_pci_modern_device *mdev =3D &vp_dev->mdev;
+> > +	struct virtio_pci_vq_info *info;
+> > +	unsigned long flags;
+> > +
+> > +	if (!virtio_has_feature(vq->vdev, VIRTIO_F_RING_RESET))
+> > +		return -ENOENT;
+> > +
+> > +	vp_modern_set_queue_reset(mdev, vq->index);
+> > +
+> > +	info =3D vp_dev->vqs[vq->index];
+> > +
+> > +	/* delete vq from irq handler */
+> > +	spin_lock_irqsave(&vp_dev->lock, flags);
+> > +	list_del(&info->node);
+> > +	spin_unlock_irqrestore(&vp_dev->lock, flags);
+> > +
+> > +	INIT_LIST_HEAD(&info->node);
+> > +
+> > +	/* For the case where vq has an exclusive irq, to prevent the irq from
+> > +	 * being received again and the pending irq, call disable_irq().
+> > +	 *
+> > +	 * In the scenario based on shared interrupts, vq will be searched fr=
+om
+> > +	 * the queue virtqueues. Since the previous list_del() has been delet=
+ed
+> > +	 * from the queue, it is impossible for vq to be called in this case.
+> > +	 * There is no need to close the corresponding interrupt.
+> > +	 */
+> > +	if (vp_dev->per_vq_vectors && info->msix_vector !=3D VIRTIO_MSI_NO_VE=
+CTOR)
+> > +		disable_irq(pci_irq_vector(vp_dev->pci_dev, info->msix_vector));
+>
+>
+> See the previous discussion and the revert of the first try to harden
+> the interrupt. We probably can't use disable_irq() since it conflicts
+> with the affinity managed IRQ that is used by some drivers.
+>
+> We need to use synchonize_irq() and per virtqueue flag instead. As
+> mentioned in previous patches, this could be done on top of my rework on
+> the IRQ hardening .
+>
+>
+> > +
+> > +	vq->reset =3D true;
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static int vp_modern_enable_reset_vq(struct virtqueue *vq)
+> > +{
+> > +	struct virtio_pci_device *vp_dev =3D to_vp_device(vq->vdev);
+> > +	struct virtio_pci_modern_device *mdev =3D &vp_dev->mdev;
+> > +	struct virtio_pci_vq_info *info;
+> > +	unsigned long flags, index;
+> > +	int err;
+> > +
+> > +	if (!vq->reset)
+> > +		return -EBUSY;
+> > +
+> > +	index =3D vq->index;
+> > +	info =3D vp_dev->vqs[index];
+> > +
+> > +	/* check queue reset status */
+> > +	if (vp_modern_get_queue_reset(mdev, index) !=3D 1)
+> > +		return -EBUSY;
+> > +
+> > +	err =3D vp_active_vq(vq, info->msix_vector);
+> > +	if (err)
+> > +		return err;
+> > +
+> > +	if (vq->callback) {
+> > +		spin_lock_irqsave(&vp_dev->lock, flags);
+> > +		list_add(&info->node, &vp_dev->virtqueues);
+> > +		spin_unlock_irqrestore(&vp_dev->lock, flags);
+> > +	} else {
+> > +		INIT_LIST_HEAD(&info->node);
+> > +	}
+> > +
+> > +	vp_modern_set_queue_enable(&vp_dev->mdev, index, true);
+> > +
+> > +	if (vp_dev->per_vq_vectors && info->msix_vector !=3D VIRTIO_MSI_NO_VE=
+CTOR)
+> > +		enable_irq(pci_irq_vector(vp_dev->pci_dev, info->msix_vector));
+>
+>
+> We had the same issue as disable_irq().
+>
+> Thanks
+>
+>
+> > +
+> > +	vq->reset =3D false;
+> > +
+> > +	return 0;
+> > +}
+> > +
+> >   static u16 vp_config_vector(struct virtio_pci_device *vp_dev, u16 vec=
+tor)
+> >   {
+> >   	return vp_modern_config_vector(&vp_dev->mdev, vector);
+> > @@ -407,6 +487,8 @@ static const struct virtio_config_ops virtio_pci_co=
+nfig_nodev_ops =3D {
+> >   	.set_vq_affinity =3D vp_set_vq_affinity,
+> >   	.get_vq_affinity =3D vp_get_vq_affinity,
+> >   	.get_shm_region  =3D vp_get_shm_region,
+> > +	.reset_vq	 =3D vp_modern_reset_vq,
+> > +	.enable_reset_vq =3D vp_modern_enable_reset_vq,
+> >   };
+> >
+> >   static const struct virtio_config_ops virtio_pci_config_ops =3D {
+> > @@ -425,6 +507,8 @@ static const struct virtio_config_ops virtio_pci_co=
+nfig_ops =3D {
+> >   	.set_vq_affinity =3D vp_set_vq_affinity,
+> >   	.get_vq_affinity =3D vp_get_vq_affinity,
+> >   	.get_shm_region  =3D vp_get_shm_region,
+> > +	.reset_vq	 =3D vp_modern_reset_vq,
+> > +	.enable_reset_vq =3D vp_modern_enable_reset_vq,
+> >   };
+> >
+> >   /* the PCI probing function */
+> > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+> > index 6250e19fc5bf..91937e21edca 100644
+> > --- a/drivers/virtio/virtio_ring.c
+> > +++ b/drivers/virtio/virtio_ring.c
+> > @@ -2028,6 +2028,7 @@ static struct virtqueue *vring_create_virtqueue_p=
+acked(
+> >   	vq->vq.vdev =3D vdev;
+> >   	vq->vq.name =3D name;
+> >   	vq->vq.index =3D index;
+> > +	vq->vq.reset =3D false;
+> >   	vq->notify =3D notify;
+> >   	vq->weak_barriers =3D weak_barriers;
+> >
+> > @@ -2508,6 +2509,7 @@ struct virtqueue *__vring_new_virtqueue(unsigned =
+int index,
+> >   	vq->vq.vdev =3D vdev;
+> >   	vq->vq.name =3D name;
+> >   	vq->vq.index =3D index;
+> > +	vq->vq.reset =3D false;
+> >   	vq->notify =3D notify;
+> >   	vq->weak_barriers =3D weak_barriers;
+> >
+> > diff --git a/include/linux/virtio.h b/include/linux/virtio.h
+> > index c86ff02e0ca0..33ab003c5100 100644
+> > --- a/include/linux/virtio.h
+> > +++ b/include/linux/virtio.h
+> > @@ -33,6 +33,7 @@ struct virtqueue {
+> >   	unsigned int num_free;
+> >   	unsigned int num_max;
+> >   	void *priv;
+> > +	bool reset;
+> >   };
+> >
+> >   int virtqueue_add_outbuf(struct virtqueue *vq,
+>
