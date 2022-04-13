@@ -2,138 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D1584FEC73
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 03:44:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 297504FEC8B
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 03:50:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231577AbiDMBq5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 21:46:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38796 "EHLO
+        id S231589AbiDMBxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 21:53:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231575AbiDMBqt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 21:46:49 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41CB352E40;
-        Tue, 12 Apr 2022 18:44:30 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id 17so483410lji.1;
-        Tue, 12 Apr 2022 18:44:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5aNZYeUYDfIbOemrUHc4Mql5VkqNDGGwgnSk/laqkR8=;
-        b=VzgWXGnNjnqKhQd5YAZ8hWVjbUagXCcZb1WhEAaG745M6nxWZybOVC6aWeLeP02rlG
-         xCCXJZ1JOChfI9rlBIFXL9v5dWfFxzFXRi5MqKfcqCEWJvH80zHFcI1XghlYgdBP3c7B
-         l+oqLiDKI1/lkNmoic28HPMyCX/kflxriWsX8p+4zoBUlQYZ7tshDEp9okY0gTw5YwGw
-         MIQ8GNPfzt8kkElYSusRZt4ky67FiOg/3MGhIAeJCoq+of61j1Nz176OOhqYSUtawIgF
-         AyffHQ//1iAjQjEbc9Iq5Amz169n4dMLfJyZLYp3ahYl0URTpMM86Tp/PMIBHQFVJwXl
-         /lWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5aNZYeUYDfIbOemrUHc4Mql5VkqNDGGwgnSk/laqkR8=;
-        b=UTMH6QPqtQqNdLPcI6lw0VD1vUwfWT6u9nh1Iw5gqzHjNFAc2Qys3gy0a1bL9CjiMs
-         BVkjEjMu73l3bXSIIVDL9fX0qlQR8gGlTgljDKNSu/NtCPDywwykPTt5IDYkq+rcw6Mz
-         ADrPu8MPjII4Gce4x5fHu51IgX8lMpoMarEVoW+ntU5/MV+U3CkdMC7Yk8R8sLGuKqR3
-         9FWVXhWJayzli2dvbGB5wiQlA9N969XqmlBaIonvz2Ly+Az4xdd/zQ1bmbSwQ409XJFf
-         Hd8eQO+WRps92sAHe5S2LfBLvpagF+2yMQDN1/97Xr3A+Yf45sA77yVKSfUMAuZLZ2Zm
-         eGHw==
-X-Gm-Message-State: AOAM53017K5DfuKOE4zVrxtfNyfZ7gcLdWRt+TtO4ffCJBw3IdHW/ODF
-        tXH7nSkvG7o4uYhGbQtf0y46ukK6nSC2CA==
-X-Google-Smtp-Source: ABdhPJzJNa1HQ6lfobavQaQ7VNNQ10OKCHmmnj1nm2HBxzA3IeI1Be5V/coATxAvyiNSQUQ4CX+bNQ==
-X-Received: by 2002:a2e:934d:0:b0:24b:41cf:fb50 with SMTP id m13-20020a2e934d000000b0024b41cffb50mr19008281ljh.336.1649814268559;
-        Tue, 12 Apr 2022 18:44:28 -0700 (PDT)
-Received: from rafiki.local ([2001:470:6180::c8d])
-        by smtp.gmail.com with ESMTPSA id u3-20020a197903000000b00464f4c76ebbsm1915574lfc.94.2022.04.12.18.44.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 18:44:28 -0700 (PDT)
-From:   Lech Perczak <lech.perczak@gmail.com>
-To:     netdev@vger.kernel.org, linux-usb@vger.kernel.org
-Cc:     Lech Perczak <lech.perczak@gmail.com>,
-        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
-        Kristian Evensen <kristian.evensen@gmail.com>,
-        Oliver Neukum <oliver@neukum.org>
-Subject: [PATCH v3 3/3] rndis_host: limit scope of bogus MAC address detection to ZTE devices
-Date:   Wed, 13 Apr 2022 03:44:16 +0200
-Message-Id: <20220413014416.2306843-4-lech.perczak@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220413014416.2306843-1-lech.perczak@gmail.com>
-References: <20220413014416.2306843-1-lech.perczak@gmail.com>
+        with ESMTP id S229755AbiDMBxO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 21:53:14 -0400
+Received: from ha.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 83CC327FE7;
+        Tue, 12 Apr 2022 18:50:54 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by ha.nfschina.com (Postfix) with ESMTP id 7F4E21E80D9E;
+        Wed, 13 Apr 2022 09:49:36 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from ha.nfschina.com ([127.0.0.1])
+        by localhost (ha.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id P---MdcC6w0a; Wed, 13 Apr 2022 09:49:33 +0800 (CST)
+Received: from ubuntu.localdomain (unknown [101.228.255.56])
+        (Authenticated sender: yuzhe@nfschina.com)
+        by ha.nfschina.com (Postfix) with ESMTPA id 08A021E80D95;
+        Wed, 13 Apr 2022 09:49:32 +0800 (CST)
+From:   Yu Zhe <yuzhe@nfschina.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, liqiong@nfschina.com,
+        kernel-janitors@vger.kernel.org, Yu Zhe <yuzhe@nfschina.com>
+Subject: [PATCH] bpf: remove unnecessary type castings
+Date:   Tue, 12 Apr 2022 18:50:48 -0700
+Message-Id: <20220413015048.12319-1-yuzhe@nfschina.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,RDNS_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reporting of bogus MAC addresses and ignoring configuration of new
-destination address wasn't observed outside of a range of ZTE devices,
-among which this seems to be the common bug. Align rndis_host driver
-with implementation found in cdc_ether, which also limits this workaround
-to ZTE devices.
+remove unnecessary void* type castings.
 
-Suggested-by: Bjørn Mork <bjorn@mork.no>
-Cc: Kristian Evensen <kristian.evensen@gmail.com>
-Cc: Oliver Neukum <oliver@neukum.org>
-Signed-off-by: Lech Perczak <lech.perczak@gmail.com>
+Signed-off-by: Yu Zhe <yuzhe@nfschina.com>
 ---
+ kernel/bpf/bpf_struct_ops.c | 4 ++--
+ kernel/bpf/hashtab.c        | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-v3: No changes to the patch.
-
-v2:
-- No logical changes, just rebased on top of previous patches.
-
- drivers/net/usb/rndis_host.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/usb/rndis_host.c b/drivers/net/usb/rndis_host.c
-index 7a9ece2de2c5..4e70dec30e5a 100644
---- a/drivers/net/usb/rndis_host.c
-+++ b/drivers/net/usb/rndis_host.c
-@@ -418,10 +418,7 @@ generic_rndis_bind(struct usbnet *dev, struct usb_interface *intf, int flags)
- 		goto halt_fail_and_release;
- 	}
+diff --git a/kernel/bpf/bpf_struct_ops.c b/kernel/bpf/bpf_struct_ops.c
+index 21069dbe9138..de01d37c2d3b 100644
+--- a/kernel/bpf/bpf_struct_ops.c
++++ b/kernel/bpf/bpf_struct_ops.c
+@@ -263,7 +263,7 @@ int bpf_struct_ops_map_sys_lookup_elem(struct bpf_map *map, void *key,
+ 	/* No lock is needed.  state and refcnt do not need
+ 	 * to be updated together under atomic context.
+ 	 */
+-	uvalue = (struct bpf_struct_ops_value *)value;
++	uvalue = value;
+ 	memcpy(uvalue, st_map->uvalue, map->value_size);
+ 	uvalue->state = state;
+ 	refcount_set(&uvalue->refcnt, refcount_read(&kvalue->refcnt));
+@@ -353,7 +353,7 @@ static int bpf_struct_ops_map_update_elem(struct bpf_map *map, void *key,
+ 	if (err)
+ 		return err;
  
--	if (bp[0] & 0x02)
--		eth_hw_addr_random(net);
--	else
--		eth_hw_addr_set(net, bp);
-+	eth_hw_addr_set(net, bp);
- 
- 	/* set a nonzero filter to enable data transfers */
- 	memset(u.set, 0, sizeof *u.set);
-@@ -463,6 +460,16 @@ static int rndis_bind(struct usbnet *dev, struct usb_interface *intf)
- 	return generic_rndis_bind(dev, intf, FLAG_RNDIS_PHYM_NOT_WIRELESS);
- }
- 
-+static int zte_rndis_bind(struct usbnet *dev, struct usb_interface *intf)
-+{
-+	int status = rndis_bind(dev, intf);
-+
-+	if (!status && (dev->net->dev_addr[0] & 0x02))
-+		eth_hw_addr_random(dev->net);
-+
-+	return status;
-+}
-+
- void rndis_unbind(struct usbnet *dev, struct usb_interface *intf)
+-	uvalue = (struct bpf_struct_ops_value *)value;
++	uvalue = value;
+ 	err = check_zero_holes(t, uvalue->data);
+ 	if (err)
+ 		return err;
+diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+index 65877967f414..c68fbebc8c00 100644
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -738,7 +738,7 @@ static void check_and_free_timer(struct bpf_htab *htab, struct htab_elem *elem)
+  */
+ static bool htab_lru_map_delete_node(void *arg, struct bpf_lru_node *node)
  {
- 	struct rndis_halt	*halt;
-@@ -615,7 +622,7 @@ static const struct driver_info	zte_rndis_info = {
- 	.description =	"ZTE RNDIS device",
- 	.flags =	FLAG_ETHER | FLAG_POINTTOPOINT | FLAG_FRAMING_RN | FLAG_NO_SETINT,
- 	.data =		RNDIS_DRIVER_DATA_DST_MAC_FIXUP,
--	.bind =		rndis_bind,
-+	.bind =		zte_rndis_bind,
- 	.unbind =	rndis_unbind,
- 	.status =	rndis_status,
- 	.rx_fixup =	rndis_rx_fixup,
+-	struct bpf_htab *htab = (struct bpf_htab *)arg;
++	struct bpf_htab *htab = arg;
+ 	struct htab_elem *l = NULL, *tgt_l;
+ 	struct hlist_nulls_head *head;
+ 	struct hlist_nulls_node *n;
 -- 
-2.30.2
+2.25.1
 
