@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56F594FF5B8
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 13:31:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE0494FF5E7
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 13:40:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235169AbiDMLcj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 07:32:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58792 "EHLO
+        id S233141AbiDMLmg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 07:42:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232440AbiDMLcg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 07:32:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 745F52AC6F;
-        Wed, 13 Apr 2022 04:30:13 -0700 (PDT)
+        with ESMTP id S229971AbiDMLmf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 07:42:35 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE7FA2DCD
+        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 04:40:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 57F6861DC6;
-        Wed, 13 Apr 2022 11:30:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AB5E6C385B3;
-        Wed, 13 Apr 2022 11:30:12 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5C612CE22FD
+        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 11:40:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 99AAEC385A4;
+        Wed, 13 Apr 2022 11:40:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649849412;
-        bh=dx7OUX8/yekR+5yZ3BY30eSyyVdl4N1P7VEeD7kiFeE=;
+        s=k20201202; t=1649850011;
+        bh=8852dA7rkkPDyCaxlLGCxpC3nSGBIJCfJSH+j0TsN4w=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=gNiau/O2B3bWi89MNgvZK6Pg8+zNFYhixJtWOmqHdX1uyxz06R2KoiHgumx0sjt1/
-         YcnJddWnfp4FWVavEyzc1tzoXrtRKrn9mWphGDFxH2sfOdDlu6PvndSZFF4V9ET7j4
-         ArARo02UOSzSN0Y3+hQzy9CqJRyzZutOJi0Tse+G0fy7NLYHmYmfRsUSy2RRBalyA2
-         1AdSJcd5+Jv5QwLNjZAkYucJ/VODyDnxZQXSBnKoZw7V0wDs9rXRB+4A5aZg/sQIu+
-         zAZEaDSpMQ+OA93bFLDE0hyuBv1R/ecuCW05jOZDLuL1k99kRBuwfwUusav1lgcyt2
-         CumZKKx6RMhqA==
+        b=TgzMt/bRdtVGypA7rcodxwwW7JlsjuttRHstPNpkesPo5iTGPcGFKWwIKmguEISuV
+         jMnmSn8NJ+oiWQuy/0Du0Vp1rFt6Y1FZIY01k6wI49Vfe35u+7j72+fl1KWwdFfQLj
+         MOYyzsqezCY6TrZnVOVSv1E8EKFqMC7rafnm3nUHhEJG/wvJILfeHZXRt/5YG2ddsd
+         GjaUrZKE4rYse0Brc0nticJ2XFUx96DYKK3dsiU2HfIUOcH3lbUeeqllFYh1e45t5i
+         YIyZhyY/dNbW0qHmuBnxwNsbd1KY++bILKvETxTykzJo/+LfLBp/6V2wRSQDQ2IzeY
+         OYMq8rW8DQ+/w==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8F4A1E8DD67;
-        Wed, 13 Apr 2022 11:30:12 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 77E69E8DD5E;
+        Wed, 13 Apr 2022 11:40:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] NFC: NULL out the dev->rfkill to prevent UAF
+Subject: Re: [PATCH net] Revert "net: dsa: setup master before ports"
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164984941258.14313.4753120813378621079.git-patchwork-notify@kernel.org>
-Date:   Wed, 13 Apr 2022 11:30:12 +0000
-References: <20220412053208.28681-1-linma@zju.edu.cn>
-In-Reply-To: <20220412053208.28681-1-linma@zju.edu.cn>
-To:     Lin Ma <linma@zju.edu.cn>
-Cc:     krzk@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Message-Id: <164985001148.18593.17484550428624509468.git-patchwork-notify@kernel.org>
+Date:   Wed, 13 Apr 2022 11:40:11 +0000
+References: <20220412094426.2342043-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20220412094426.2342043-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, pabeni@redhat.com, kuba@kernel.org,
+        davem@davemloft.net, f.fainelli@gmail.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, olteanv@gmail.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -59,23 +59,24 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
+This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Tue, 12 Apr 2022 13:32:08 +0800 you wrote:
-> Commit 3e3b5dfcd16a ("NFC: reorder the logic in nfc_{un,}register_device")
-> assumes the device_is_registered() in function nfc_dev_up() will help
-> to check when the rfkill is unregistered. However, this check only
-> take effect when device_del(&dev->dev) is done in nfc_unregister_device().
-> Hence, the rfkill object is still possible be dereferenced.
+On Tue, 12 Apr 2022 12:44:26 +0300 you wrote:
+> This reverts commit 11fd667dac315ea3f2469961f6d2869271a46cae.
 > 
-> The crash trace in latest kernel (5.18-rc2):
+> dsa_slave_change_mtu() updates the MTU of the DSA master and of the
+> associated CPU port, but only if it detects a change to the master MTU.
+> 
+> The blamed commit in the Fixes: tag below addressed a regression where
+> dsa_slave_change_mtu() would return early and not do anything due to
+> ds->ops->port_change_mtu() not being implemented.
 > 
 > [...]
 
 Here is the summary with links:
-  - NFC: NULL out the dev->rfkill to prevent UAF
-    https://git.kernel.org/netdev/net-next/c/1b0e81416a24
+  - [net] Revert "net: dsa: setup master before ports"
+    https://git.kernel.org/netdev/net/c/762c2998c962
 
 You are awesome, thank you!
 -- 
