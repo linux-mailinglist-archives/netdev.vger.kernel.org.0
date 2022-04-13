@@ -2,157 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ABBCC4FF541
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 12:53:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9A274FF546
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 12:54:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235053AbiDMKzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 06:55:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57878 "EHLO
+        id S232035AbiDMK4x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 06:56:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235029AbiDMKy4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 06:54:56 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE1EB5A085
-        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 03:52:35 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id c6so1856419edn.8
-        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 03:52:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=mqsQMGWoSGIiSBxMnK2lmj4CXMMwYXskZS4euBUat3E=;
-        b=CqDiUuwWy9Ar00ARP8AYHLDoMiZ0B5XU5oPXE/n2LzKIKzDb49qspNm4EVvgWriuLB
-         KZinTcU15VppmpjZEA9orOK8DU7Fo2EdjIq516B5dDIi3jLwGJ4d1e3sGe2O+aDhJKY+
-         H9VjOjlcifF4ptjMaqMKm55ysi4GaMzGDDfudxGhosRVz+6ueUxA+jloInbsRhcDb53O
-         BwZTcmhYey2vPRJNCxvZxI2Xuz5WeRJyvv6jWAxY+JB7qlxOUvKlNqP06BAXFyx5wTRW
-         u2a2YqRGR7QoqxFD7gp5t4D9kXT208DcQkRoSH6JOZTt+0/FHhUaA1KOsD5huESnC9iO
-         hKvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=mqsQMGWoSGIiSBxMnK2lmj4CXMMwYXskZS4euBUat3E=;
-        b=psmaotGFuowUeRE25W4rsfyyZEnBCB2ShPy2LKdmWQ0HlLNY7EYME+ISJ4ThYugUyQ
-         aO+VQ6RYUpJn1SJrBqCeSmPpt8WxcK0ciZDROaUf7G+jYsLD6CZ+5DJn5YuroYmD3HI1
-         QYzDRL+F+IosPynRTXEmSnqwsCWD1C77YPbbPiQqFgFinizgNTChdFJZe9R/wl4YhcoQ
-         fiMs/W0CxM2SKyz8UcGLetGkyjH6Gr/0OEclNGP59IFAoq6jD496fLcFmEffrMacea4a
-         jIZgl/utO3fYppw/U+eobOD7qHOQ3f7fLzIDcDtBXCf15YawzS3v2OIX4sLx/iMG7RWh
-         0OwA==
-X-Gm-Message-State: AOAM531INgkwAFq4+SRRd4YOmw6qGKqoxnuHdKBgaKFlZANwOqK9WyJQ
-        yWRUbHWa/oFsBdOQc5pAMcPKWKUeTVYlBkmJ
-X-Google-Smtp-Source: ABdhPJyxmiTlU/gzlQY4BZV1whXOgPfQ2aPbByMtiLISua5V8l2KvoggVWfXCVu9uWjQFwcmNY+YoA==
-X-Received: by 2002:a05:6402:270b:b0:419:3383:7a9f with SMTP id y11-20020a056402270b00b0041933837a9fmr43266917edd.191.1649847153925;
-        Wed, 13 Apr 2022 03:52:33 -0700 (PDT)
-Received: from debil.. (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id v8-20020a1709063bc800b006e898cfd926sm2960952ejf.134.2022.04.13.03.52.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 03:52:33 -0700 (PDT)
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@kernel.org, roopa@nvidia.com, idosch@idosch.org,
-        kuba@kernel.org, davem@davemloft.net,
-        bridge@lists.linux-foundation.org,
-        Nikolay Aleksandrov <razor@blackwall.org>
-Subject: [PATCH net-next v4 12/12] net: bridge: fdb: add support for flush filtering based on ifindex and vlan
-Date:   Wed, 13 Apr 2022 13:52:02 +0300
-Message-Id: <20220413105202.2616106-13-razor@blackwall.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220413105202.2616106-1-razor@blackwall.org>
-References: <20220413105202.2616106-1-razor@blackwall.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S231566AbiDMK4v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 06:56:51 -0400
+Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net (zg8tmty1ljiyny4xntqumjca.icoremail.net [165.227.154.27])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 46887344DF
+        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 03:54:24 -0700 (PDT)
+Received: from 102.wangsu.com (unknown [59.61.78.232])
+        by app1 (Coremail) with SMTP id xjNnewCHODLeq1ZifvMKAA--.336S2;
+        Wed, 13 Apr 2022 18:54:22 +0800 (CST)
+From:   Pengcheng Yang <yangpc@wangsu.com>
+To:     Eric Dumazet <edumazet@google.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Neal Cardwell <ncardwell@google.com>, netdev@vger.kernel.org
+Cc:     Pengcheng Yang <yangpc@wangsu.com>
+Subject: [PATCH net-next] tcp: ensure to use the most recently sent skb when filling the rate sample
+Date:   Wed, 13 Apr 2022 18:54:04 +0800
+Message-Id: <1649847244-5738-1-git-send-email-yangpc@wangsu.com>
+X-Mailer: git-send-email 1.8.3.1
+X-CM-TRANSID: xjNnewCHODLeq1ZifvMKAA--.336S2
+X-Coremail-Antispam: 1UD129KBjvdXoWruFW5KFy3JF48GrWxWr4rKrg_yoWkJFX_ur
+        nrXa4rJayxJry8Cr1qkr98KrWSq34UAFZ5uw1rtryDKa48tay5CwsrX34v9r1ruay7CFZr
+        trs5XryrA34rZjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbI8Fc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wA2ocxC64kI
+        II0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7
+        xvwVC0I7IYx2IY6xkF7I0E14v26F4UJVW0owA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28E
+        F7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F4
+        0EFcxC0VAKzVAqx4xG6I80ewAv7VACjcxG62k0Y48FwI0_Cr0_Gr1UMcIj6x8ErcxFaVAv
+        8VW8GwAv7VCY1x0262k0Y48FwI0_Gr1j6F4UJwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2
+        IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAFwVW8twCF04k20xvY
+        0x0EwIxGrwCF04k20xvE74AGY7Cv6cx26r48MxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I
+        0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWU
+        AVWUtwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcV
+        CY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAF
+        wI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVWUJVW8JbIYCTnIWIevJa73UjIFyTuYvj
+        fU22YLDUUUU
+X-CM-SenderInfo: p1dqw1nf6zt0xjvxhudrp/
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
+        T_SPF_TEMPERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for fdb flush filtering based on destination ifindex and
-vlan id. The ifindex must either match a port's device ifindex or the
-bridge's. The vlan support is trivial since it's already validated by
-rtnl_fdb_del, we just need to fill it in.
+If an ACK (s)acks multiple skbs, we favor the information
+from the most recently sent skb by choosing the skb with
+the highest prior_delivered count.
+But prior_delivered may be equal, because tp->delivered only
+changes when receiving, which requires further comparison of
+skb timestamp.
 
-Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
+Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
 ---
-v2: validate ifindex and fill in vlan id
-v3: NDFA -> NDA attributes
-v4: use port's ifindex if NTF_MASTER is used and NDA_IFINDEX is not
-    specified
+ net/ipv4/tcp_rate.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
- net/bridge/br_fdb.c | 45 ++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 44 insertions(+), 1 deletion(-)
-
-diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
-index 74d759d09f94..1a3d583fbc8e 100644
---- a/net/bridge/br_fdb.c
-+++ b/net/bridge/br_fdb.c
-@@ -622,12 +622,44 @@ static unsigned long __ndm_flags_to_fdb_flags(u8 ndm_flags)
- 	return flags;
- }
+diff --git a/net/ipv4/tcp_rate.c b/net/ipv4/tcp_rate.c
+index 617b818..ad893ad 100644
+--- a/net/ipv4/tcp_rate.c
++++ b/net/ipv4/tcp_rate.c
+@@ -86,7 +86,9 @@ void tcp_rate_skb_delivered(struct sock *sk, struct sk_buff *skb,
+ 		return;
  
-+static int __fdb_flush_validate_ifindex(const struct net_bridge *br,
-+					int ifindex,
-+					struct netlink_ext_ack *extack)
-+{
-+	const struct net_device *dev;
-+
-+	dev = __dev_get_by_index(dev_net(br->dev), ifindex);
-+	if (!dev) {
-+		NL_SET_ERR_MSG_MOD(extack, "Unknown flush device ifindex");
-+		return -ENODEV;
-+	}
-+	if (!netif_is_bridge_master(dev) && !netif_is_bridge_port(dev)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Flush device is not a bridge or bridge port");
-+		return -EINVAL;
-+	}
-+	if (netif_is_bridge_master(dev) && dev != br->dev) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Flush bridge device does not match target bridge device");
-+		return -EINVAL;
-+	}
-+	if (netif_is_bridge_port(dev)) {
-+		struct net_bridge_port *p = br_port_get_rtnl(dev);
-+
-+		if (p->br != br) {
-+			NL_SET_ERR_MSG_MOD(extack, "Port belongs to a different bridge device");
-+			return -EINVAL;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
- int br_fdb_delete_bulk(struct ndmsg *ndm, struct nlattr *tb[],
- 		       struct net_device *dev, u16 vid,
- 		       struct netlink_ext_ack *extack)
- {
- 	u8 ndm_flags = ndm->ndm_flags & ~FDB_FLUSH_IGNORED_NDM_FLAGS;
--	struct net_bridge_fdb_flush_desc desc = {};
-+	struct net_bridge_fdb_flush_desc desc = { .vlan_id = vid };
- 	struct net_bridge_port *p = NULL;
- 	struct net_bridge *br;
- 
-@@ -663,6 +695,17 @@ int br_fdb_delete_bulk(struct ndmsg *ndm, struct nlattr *tb[],
- 
- 		desc.flags_mask |= __ndm_flags_to_fdb_flags(ndm_flags_mask);
- 	}
-+	if (tb[NDA_IFINDEX]) {
-+		int err, ifidx = nla_get_s32(tb[NDA_IFINDEX]);
-+
-+		err = __fdb_flush_validate_ifindex(br, ifidx, extack);
-+		if (err)
-+			return err;
-+		desc.port_ifindex = ifidx;
-+	} else if (p) {
-+		/* flush was invoked with port device and NTF_MASTER */
-+		desc.port_ifindex = p->dev->ifindex;
-+	}
- 
- 	br_debug(br, "flushing port ifindex: %d vlan id: %u flags: 0x%lx flags mask: 0x%lx\n",
- 		 desc.port_ifindex, desc.vlan_id, desc.flags, desc.flags_mask);
+ 	if (!rs->prior_delivered ||
+-	    after(scb->tx.delivered, rs->prior_delivered)) {
++	    after(scb->tx.delivered, rs->prior_delivered) ||
++	    (scb->tx.delivered == rs->prior_delivered &&
++	     tcp_skb_timestamp_us(skb) > tp->first_tx_mstamp)) {
+ 		rs->prior_delivered_ce  = scb->tx.delivered_ce;
+ 		rs->prior_delivered  = scb->tx.delivered;
+ 		rs->prior_mstamp     = scb->tx.delivered_mstamp;
 -- 
-2.35.1
+1.8.3.1
 
