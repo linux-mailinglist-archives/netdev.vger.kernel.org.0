@@ -2,107 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EA3E4FEC3F
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 03:27:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D438F4FEC6E
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 03:44:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230461AbiDMB2q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 21:28:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45622 "EHLO
+        id S231499AbiDMBqr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 21:46:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230024AbiDMB2o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 21:28:44 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14191377E7
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 18:26:24 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id bg9so335076pgb.9
-        for <netdev@vger.kernel.org>; Tue, 12 Apr 2022 18:26:24 -0700 (PDT)
+        with ESMTP id S231425AbiDMBqr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 21:46:47 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C30CE527C5;
+        Tue, 12 Apr 2022 18:44:27 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id b21so466950ljf.4;
+        Tue, 12 Apr 2022 18:44:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=kQf0pqlkyIN2VPnbRyTQkyx8KfLqZDPK38QYDmwlZ3s=;
-        b=2sT/9FogHDrn5GCCLwF+88y+y8HTuQXzIUKUXIggcscwpxQF0qG/jpvsP1bu8f1byT
-         B+UYICfVYXnhpAcnidOYG5G9UbCSlIZs5Z6m/IxbUoGe9IuXt7ht81NGb5yYOlSoQYHN
-         mhrPVqf9QFzzrigsGWkd3g+31hH3js7DkvpGfrGQuDn6nIXAByGMSXr+844Twp0yoROI
-         DP/Fkn4I/lOh5mU0EUq8R66MxmIci+YGvGH19bK0SoGAGEGM8RSHIYrCa5ckeadEMUIN
-         ermQKbF3TqoaffL2dlw9l86xwSsiqFROAY5kbkg/m1ImcPbrqIdJ+Ue67DusE7OHJ9v3
-         SNUg==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ySiyIpfROIPLrNfxp6ftud+YvGVma3cO1KHhZiW0jOM=;
+        b=nSUWqZdSI/kAJg7fzVB/bNESSfXx77XC4BL8V3C4CWbzMgp/9ELT+n4cP+QU7kQzWr
+         dWWCxSSIX9rB4owJGKAJvJKGVSv4S8KnTa1xKIRv5RlocHDH+lhmQWx6wcHp0Z7dDjLy
+         UxqjocVCeBilJOGf7Dfqui7ITgYYT3GqFrd90njzox2H2pFaPYEcgHlOcn4tBtgduY6q
+         JLt5Gamie+R1Dg79U11B42dP3stz6F8YNTSdLnP6kUMbRaWdZ/R3VuPs56hEsxGDGchr
+         EEJzT4wxEANHI67qXStsIfIuNqIwoUZ0upome9MyKYgtCHPdm0qe4I3CCFIDtF0FpRQ7
+         r4oA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=kQf0pqlkyIN2VPnbRyTQkyx8KfLqZDPK38QYDmwlZ3s=;
-        b=H535kdeeo2HYY7QzvWszQdIOAin5PJ72GwANLT0r16uLGjkCvxZ9r/TFxtBEr03z4k
-         3SI3u3FHU9Ol9Jn2f7goTN9Iq4l6u7etkZoS8peMKG5pl46umXNneZvLixoQdwaO6SUi
-         KWMN7rUZ0lsZ6RZOqZpPGLysjmkmk4KfXWaz5TUdsldfpdlL3YFJDb3S+8dm+T4pQ1y3
-         PrHJwVu1dSSsLz/KQ9zTfgm3cYS8ZEzCFEwj7AFFb222LZCpr67FKWoPej+yZ2HmHF0d
-         saT2poHhdyUDioXOjZAIABF7Tc2fVa2xnMS5sXB5hBDi/4gYf8IOJjpNCvkOSzzQAGNT
-         K0YQ==
-X-Gm-Message-State: AOAM532BBPPeuMnePODwAFPO9w+6FT+h3zXPTCoaGUFinX6+QHuWbrAA
-        K12pVRgZGX4EuZej709f5T2xtw==
-X-Google-Smtp-Source: ABdhPJxubiYLkXRujz/RIeBzIUGCeyE2+hDTuZ9NPN7UdosoENU0UuZjgLU7FjxAY9xLK8ALqcPQbQ==
-X-Received: by 2002:a65:4188:0:b0:39d:2197:13b5 with SMTP id a8-20020a654188000000b0039d219713b5mr15082030pgq.368.1649813183528;
-        Tue, 12 Apr 2022 18:26:23 -0700 (PDT)
-Received: from [192.168.1.100] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id s3-20020a056a00194300b004f6664d26eesm43294042pfk.88.2022.04.12.18.26.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 18:26:23 -0700 (PDT)
-Message-ID: <80ba97f9-3705-8fd6-8e7d-a934512d7ec0@kernel.dk>
-Date:   Tue, 12 Apr 2022 19:26:21 -0600
+        bh=ySiyIpfROIPLrNfxp6ftud+YvGVma3cO1KHhZiW0jOM=;
+        b=Me+tnykxr2RwYbRUDjPqitjRFWi4lUTz+FMlDTfcPtZA6OFFxR0ny12fPLALf9n7vJ
+         2eQHvamj4V3CQPEWhGHDp6IazG26Q0J4iUIPKf9jAzQ+a1wXkXIfAPXFyXxdy3R/2ism
+         9yvcEKS70AUi14BB0haylgV8qKojRklWbeC4WvwK4tROA793aZweJoTv9hkabl0vacg9
+         GGXNJfCk2TFB4tbPudQQTM10OnWkyhUbQD3+42ysU+K858r9sAR8O+aprANo0/vGAn2g
+         XYaQEiY75PQcJfgZLJskfAUCXF797me+GUlS+KTwAOFNpmVv160mrF8SeQgqiNKBoP42
+         GUhw==
+X-Gm-Message-State: AOAM5323qhCTKDViQRrZaihypv/oyspRUeYDooTiCk319aMSUMKF+ctb
+        dtauMtYyBRaLenXrKc2vOY/UwGkRUwKrJg==
+X-Google-Smtp-Source: ABdhPJzx+4OqoNSYlqC69DXgtoU/1lrwk9CSja+PwVK+gr3ciqy1EgnHHVTr0JLR8Ban5KIDRBxnwQ==
+X-Received: by 2002:a2e:5817:0:b0:24b:50a2:86f0 with SMTP id m23-20020a2e5817000000b0024b50a286f0mr15043837ljb.230.1649814265896;
+        Tue, 12 Apr 2022 18:44:25 -0700 (PDT)
+Received: from rafiki.local ([2001:470:6180::c8d])
+        by smtp.gmail.com with ESMTPSA id u3-20020a197903000000b00464f4c76ebbsm1915574lfc.94.2022.04.12.18.44.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 18:44:25 -0700 (PDT)
+From:   Lech Perczak <lech.perczak@gmail.com>
+To:     netdev@vger.kernel.org, linux-usb@vger.kernel.org
+Cc:     Lech Perczak <lech.perczak@gmail.com>,
+        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
+        Kristian Evensen <kristian.evensen@gmail.com>,
+        Oliver Neukum <oliver@neukum.org>
+Subject: [PATCH v3 0/3] rndis_host: handle bogus MAC addresses in ZTE RNDIS devices
+Date:   Wed, 13 Apr 2022 03:44:13 +0200
+Message-Id: <20220413014416.2306843-1-lech.perczak@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCHSET 0/4] Add support for no-lock sockets
-Content-Language: en-US
-To:     Eric Dumazet <eric.dumazet@gmail.com>, io-uring@vger.kernel.org,
-        netdev@vger.kernel.org, edumazet@google.com
-References: <20220412202613.234896-1-axboe@kernel.dk>
- <e7631a6f-b614-da4c-4f47-571a7b0149fc@gmail.com>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <e7631a6f-b614-da4c-4f47-571a7b0149fc@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/12/22 6:40 PM, Eric Dumazet wrote:
-> 
-> On 4/12/22 13:26, Jens Axboe wrote:
->> Hi,
->>
->> If we accept a connection directly, eg without installing a file
->> descriptor for it, or if we use IORING_OP_SOCKET in direct mode, then
->> we have a socket for recv/send that we can fully serialize access to.
->>
->> With that in mind, we can feasibly skip locking on the socket for TCP
->> in that case. Some of the testing I've done has shown as much as 15%
->> of overhead in the lock_sock/release_sock part, with this change then
->> we see none.
->>
->> Comments welcome!
->>
-> How BH handlers (including TCP timers) and io_uring are going to run
-> safely ? Even if a tcp socket had one user, (private fd opened by a
-> non multi-threaded program), we would still to use the spinlock.
+When porting support of ZTE MF286R to OpenWrt [1], it was discovered,
+that its built-in LTE modem fails to adjust its target MAC address,
+when a random MAC address is assigned to the interface, due to detection of
+"locally-administered address" bit. This leads to dropping of ingress
+trafficat the host. The modem uses RNDIS as its primary interface,
+with some variants exposing both of them simultaneously.
 
-But we don't even hold the spinlock over lock_sock() and release_sock(),
-just the mutex. And we do check for running eg the backlog on release,
-which I believe is done safely and similarly in other places too.
+Then it was discovered, that cdc_ether driver contains a fixup for that
+exact issue, also appearing on CDC ECM interfaces.
+I discussed how to proceed with that with Bjørn Mork at OpenWrt forum [3],
+with the first approach would be to trust the locally-administered MAC
+again, and add a quirk for the problematic ZTE devices, as suggested by
+Kristian Evensen. before [4], but reusing the fixup from cdc_ether looks
+like a safer and more generic solution.
 
-> Maybe I am missing something, but so far your patches make no sense to
-> me.
+Finally, according to Bjørn's suggestion. limit the scope of bogus MAC
+addressdetection to ZTE devices, the same way as it is done in cdc_ether,
+as this trait wasn't really observed outside of ZTE devices.
+Do that for both flavours of RNDIS devices, with interface classes
+02/02/ff and e0/01/03, as both types are reported by different modems.
 
-It's probably more likely I'm missing something, since I don't know this
-area nearly as well as you. But it'd be great if you could be specific.
+[1] https://git.openwrt.org/?p=openwrt/openwrt.git;a=commit;h=7ac8da00609f42b8aba74b7efc6b0d055b7cef3e
+[2] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=bfe9b9d2df669a57a95d641ed46eb018e204c6ce
+[3] https://forum.openwrt.org/t/problem-with-modem-in-zte-mf286r/120988
+[4] https://lore.kernel.org/all/CAKfDRXhDp3heiD75Lat7cr1JmY-kaJ-MS0tt7QXX=s8RFjbpUQ@mail.gmail.com/T/
 
+Cc: Bjørn Mork <bjorn@mork.no>
+Cc: Kristian Evensen <kristian.evensen@gmail.com>
+Cc: Oliver Neukum <oliver@neukum.org>
+
+v3: Fixed wrong identifier commit description and whitespace in patch 2.
+
+v2: ensure that MAC fixup is applied to all Ethernet frames in RNDIS
+batch, by introducing a driver flag, and integrating the fixup inside
+rndis_rx_fixup().
+
+Lech Perczak (3):
+  cdc_ether: export usbnet_cdc_zte_rx_fixup
+  rndis_host: enable the bogus MAC fixup for ZTE devices from cdc_ether
+  rndis_host: limit scope of bogus MAC address detection to ZTE devices
+
+ drivers/net/usb/cdc_ether.c    |  3 ++-
+ drivers/net/usb/rndis_host.c   | 47 +++++++++++++++++++++++++++++++---
+ include/linux/usb/rndis_host.h |  1 +
+ include/linux/usb/usbnet.h     |  1 +
+ 4 files changed, 47 insertions(+), 5 deletions(-)
 
 -- 
-Jens Axboe
+2.30.2
 
