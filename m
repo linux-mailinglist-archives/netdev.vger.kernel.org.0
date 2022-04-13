@@ -2,115 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E6844FEFF4
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 08:38:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4F2E4FF019
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 08:47:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232988AbiDMGlN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 02:41:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59210 "EHLO
+        id S233114AbiDMGuA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 02:50:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230106AbiDMGlL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 02:41:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5884650075;
-        Tue, 12 Apr 2022 23:38:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E887F61CFC;
-        Wed, 13 Apr 2022 06:38:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1EE4C385A3;
-        Wed, 13 Apr 2022 06:38:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649831930;
-        bh=G7/WJoWD9FfHoh4X7HlXVQoamqq7l9XUV19pw+KNsSI=;
-        h=From:Subject:To:Cc:Date:From;
-        b=f3GbY+whWmrOYbP5T8ldGzwehXMkDFlvnddBCmNoSye1yqi5n5tFkWvyYdE3j4oqh
-         J9e7v8wRXfd+uPBo/CYSXZHaMNQW19bD9+/pZO/xRBeaOIeqbwAbja7I6UyF3qrG2o
-         A4Ytn8lNzMQEX0vV6Ghw3ajcDP6Kc5cgT8YPigqGkeO4Pzcz08DeRRa++V3eBPCMAq
-         E3mRSBj0ueiLgcM6YsiDnMiSh/GYSKK+wWXgO/n0IyHGbGiJuy+yDJ90pJ3hJ8Msxh
-         L/IhLfLKo+Zz6A8eS6sn2YbJgsk2BnOhSJo0HzR6NqvPGtHuzQAvn+uZCC9zQuKFUQ
-         fSc8k8ZU6ONfQ==
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-From:   Kalle Valo <kvalo@kernel.org>
-Subject: pull-request: wireless-2022-04-13
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Message-Id: <20220413063849.C1EE4C385A3@smtp.kernel.org>
-Date:   Wed, 13 Apr 2022 06:38:49 +0000 (UTC)
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S231419AbiDMGt7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 02:49:59 -0400
+Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 139782C676;
+        Tue, 12 Apr 2022 23:47:37 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=33;SR=0;TI=SMTPD_---0V9yF0Rm_1649832451;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V9yF0Rm_1649832451)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 13 Apr 2022 14:47:32 +0800
+Message-ID: <1649832244.772237-6-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH v9 08/32] virtio_ring: split: extract the logic of attach vring
+Date:   Wed, 13 Apr 2022 14:44:04 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Vadim Pasternak <vadimp@nvidia.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        linux-um@lists.infradead.org, netdev@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org, bpf@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+References: <20220406034346.74409-1-xuanzhuo@linux.alibaba.com>
+ <20220406034346.74409-9-xuanzhuo@linux.alibaba.com>
+ <28237db0-cf04-aa36-b7b8-de55b11d18db@redhat.com>
+In-Reply-To: <28237db0-cf04-aa36-b7b8-de55b11d18db@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, 12 Apr 2022 11:31:08 +0800, Jason Wang <jasowang@redhat.com> wrote:
+>
+> =E5=9C=A8 2022/4/6 =E4=B8=8A=E5=8D=8811:43, Xuan Zhuo =E5=86=99=E9=81=93:
+> > Separate the logic of attach vring, subsequent patches will call it
+> > separately.
+> >
+> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > ---
+> >   drivers/virtio/virtio_ring.c | 20 ++++++++++++++------
+> >   1 file changed, 14 insertions(+), 6 deletions(-)
+> >
+> > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+> > index 6de67439cb57..083f2992ba0d 100644
+> > --- a/drivers/virtio/virtio_ring.c
+> > +++ b/drivers/virtio/virtio_ring.c
+> > @@ -916,6 +916,19 @@ static void *virtqueue_detach_unused_buf_split(str=
+uct virtqueue *_vq)
+> >   	return NULL;
+> >   }
+> >
+> > +static void vring_virtqueue_attach_split(struct vring_virtqueue *vq,
+> > +					 struct vring vring,
+> > +					 struct vring_desc_state_split *desc_state,
+> > +					 struct vring_desc_extra *desc_extra)
+> > +{
+> > +	vq->split.vring =3D vring;
+> > +	vq->split.queue_dma_addr =3D 0;
+> > +	vq->split.queue_size_in_bytes =3D 0;
+>
+>
+> Any reason to add the above two assignment in attach? It seems belong to
+> free or reset.
 
-here's a pull request to net tree, more info below. Please let me know if there
-are any problems.
+As discussed in patch 11, since there is no dma_addr in __vring_new_virtque=
+ue(),
+the corresponding vq->split.queue_dma_addr cannot be set, so the purpose he=
+re
+is just to initialize it.
 
-Kalle
+In the next version, struct vring_virtqueue_split will be passed to
+vring_virtqueue_attach_split() to make the logic here look more reasonable.
 
-The following changes since commit a81687886ca9a64c0aeefefcbc6e7a64ce083ab0:
+Thanks.
 
-  Merge branch 'vsock-virtio-enable-vqs-early-on-probe-and-finish-the-setup-before-using-them' (2022-03-24 18:36:39 -0700)
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless.git tags/wireless-2022-04-13
-
-for you to fetch changes up to fb4bccd863ccccd36ad000601856609e259a1859:
-
-  mac80211: fix ht_capa printout in debugfs (2022-04-11 11:57:27 +0200)
-
-----------------------------------------------------------------
-wireless fixes for v5.18
-
-First set of fixes for v5.18. Maintainers file updates, two
-compilation warning fixes, one revert for ath11k and smaller fixes to
-drivers and stack. All the usual stuff.
-
-----------------------------------------------------------------
-Anilkumar Kolli (1):
-      Revert "ath11k: mesh: add support for 256 bitmap in blockack frames in 11ax"
-
-Ben Greear (1):
-      mac80211: fix ht_capa printout in debugfs
-
-Borislav Petkov (2):
-      mt76: Fix undefined behavior due to shift overflowing the constant
-      brcmfmac: sdio: Fix undefined behavior due to shift overflowing the constant
-
-Johannes Berg (2):
-      MAINTAINERS: claim include/uapi/linux/wireless.h
-      nl80211: correctly check NL80211_ATTR_REG_ALPHA2 size
-
-Kalle Valo (1):
-      MAINTAINERS: mark wil6210 as orphan
-
-Lorenzo Bianconi (1):
-      MAINTAINERS: update Lorenzo's email address
-
-Rameshkumar Sundaram (1):
-      cfg80211: hold bss_lock while updating nontrans_list
-
-Toke Høiland-Jørgensen (2):
-      ath9k: Properly clear TX status area before reporting to mac80211
-      ath9k: Fix usage of driver-private space in tx_info
-
- MAINTAINERS                                        |  7 ++---
- drivers/net/wireless/ath/ath11k/mac.c              | 22 +++++++++------
- drivers/net/wireless/ath/ath9k/main.c              |  2 +-
- drivers/net/wireless/ath/ath9k/xmit.c              | 33 ++++++++++++++--------
- .../wireless/broadcom/brcm80211/brcmfmac/sdio.c    |  2 +-
- drivers/net/wireless/mediatek/mt76/mt76x2/pci.c    |  2 +-
- net/mac80211/debugfs_sta.c                         |  2 +-
- net/wireless/nl80211.c                             |  3 +-
- net/wireless/scan.c                                |  2 ++
- 9 files changed, 46 insertions(+), 29 deletions(-)
+>
+> Thanks
+>
+>
+> > +
+> > +	vq->split.desc_state =3D desc_state;
+> > +	vq->split.desc_extra =3D desc_extra;
+> > +}
+> > +
+> >   static int vring_alloc_state_extra_split(u32 num,
+> >   					 struct vring_desc_state_split **desc_state,
+> >   					 struct vring_desc_extra **desc_extra)
+> > @@ -2262,10 +2275,6 @@ struct virtqueue *__vring_new_virtqueue(unsigned=
+ int index,
+> >   	if (virtio_has_feature(vdev, VIRTIO_F_ORDER_PLATFORM))
+> >   		vq->weak_barriers =3D false;
+> >
+> > -	vq->split.queue_dma_addr =3D 0;
+> > -	vq->split.queue_size_in_bytes =3D 0;
+> > -
+> > -	vq->split.vring =3D vring;
+> >   	vq->split.avail_flags_shadow =3D 0;
+> >   	vq->split.avail_idx_shadow =3D 0;
+> >
+> > @@ -2283,8 +2292,7 @@ struct virtqueue *__vring_new_virtqueue(unsigned =
+int index,
+> >   		return NULL;
+> >   	}
+> >
+> > -	vq->split.desc_state =3D state;
+> > -	vq->split.desc_extra =3D extra;
+> > +	vring_virtqueue_attach_split(vq, vring, state, extra);
+> >
+> >   	/* Put everything in free lists. */
+> >   	vq->free_head =3D 0;
+>
