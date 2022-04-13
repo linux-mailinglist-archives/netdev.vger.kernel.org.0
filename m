@@ -2,162 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 96FEB4FEDE7
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 05:54:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 554924FEE15
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 06:10:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232159AbiDMD5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 23:57:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39848 "EHLO
+        id S232253AbiDMEMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 00:12:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232126AbiDMD4t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 23:56:49 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDC3F273A;
-        Tue, 12 Apr 2022 20:54:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649822068; x=1681358068;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=qWnHsji0gnh/xDp7MQF81PbKycXAQAQAMMGE3n28kdA=;
-  b=YlhoMOngZDWEyJon07RvXTvrthpaDc+N+wS0AqTD8UqmyKrHA2Jzq+eP
-   bCxsTEddmO2VWcKEjnfypmWBBOU2QV+rgQY9mWqqwDBwT+azVS6dpvewZ
-   rxMJx2vrHHs8Ltx59uEj83UlNpeG3Yc33hD/0BTUDuZL2CLFwWFjP+XE9
-   VQz33zcwXCmHdnaIPm0rkHBD8lhZMW60qbGBa2TAoWH5UYejoZUD5ujEY
-   eSwJP6GiQNO/VUioeEgUoawKVLeI5ObmJCKWgLMbe7rHVcJDUOXhz1DQM
-   NAj0Jp5iSZxHPK15nkEKWcmizwabXjhZ4xHiFF2/4deaBj+Gi7+u6A0cJ
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="249852148"
-X-IronPort-AV: E=Sophos;i="5.90,255,1643702400"; 
-   d="scan'208";a="249852148"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 20:54:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,255,1643702400"; 
-   d="scan'208";a="724733855"
-Received: from p12hl01tmin.png.intel.com ([10.158.65.75])
-  by orsmga005.jf.intel.com with ESMTP; 12 Apr 2022 20:54:23 -0700
-From:   Tan Tee Min <tee.min.tan@intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
+        with ESMTP id S231138AbiDMEMc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 00:12:32 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44EB025EA2;
+        Tue, 12 Apr 2022 21:10:11 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id k25so581535iok.8;
+        Tue, 12 Apr 2022 21:10:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KAPHVgbv3fQELslstn41lPFxszGxCyixVC5Zh9pgEtg=;
+        b=dOcmDUHfJtdNteWlEBxvPoi3/TzURwn/VK8LoXt2VH/71wctpZYSfIl1ET0eZIMETr
+         1I8jbV+JxxarnKoGokR89hN0CZrYqaJZ96s9KKvziP8CWTDcXsTiJhMPlQ1kqBSky+vR
+         9voQWBvmKeXjGQiDJQWH1aCckQYfvkSAoe3XF6atNckwucZbLeVN727TzdlReczv6dLu
+         +KIkCz/FUFM32hoWW1Rh/ltp5HP6LDsCb2YsocTFc8ia1lxZehMTFMcKhjkWVUIsKwCH
+         UMTrrXc+uZxqNH/Iu2FdTU1SiwCxIIp3yCsHGNX9lMsohzYeCQJBrOjwAfsHCPtLcoYs
+         WGjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KAPHVgbv3fQELslstn41lPFxszGxCyixVC5Zh9pgEtg=;
+        b=5Cp/6Ejme4HrwFS+/pQiU2L1Um9PX662UfIVyrybBINboDltgqfR1r4KdUbUs2Lsgx
+         ZAgJRn38eGLFxVjFs2eEr4RFAFB/Ml3NH5TLc4pZW+mwqE9tjLRijWSdydFbWXtGpJxZ
+         b4EAMjgjIABTHA606gP2r1eXX5nKvgwRQ7b3uduf98AqJfJvUbdIAYppKiyDwU7CdRWn
+         oC/TeBRbPHDTyZO183RBDODLHB2l3h7pGfRNDNsqKr7dWKTAqhPL/32+KD2NdkxSXaKQ
+         4OKWD0A6I6q3yqLBmhibcEtbS3Udo02kCyUkp7T2Gtiq+C9rANoJ1xSOjpyVxcvopJ7Z
+         0rPQ==
+X-Gm-Message-State: AOAM532OqhCWVETjRqvPZHCH2NQsrbW+5SzUVIgP+gn9xAPImWpHv8Hc
+        z32pTCoB4vIYMFpUQjlP9cQkSgkr48J3YGuZWSk=
+X-Google-Smtp-Source: ABdhPJyfiUjeVZeTcUztwo4qHei4D0o9K90Bvi+B+Vth9eNR59cfnw2Lg5n/pyBSt5Pwz9aTprXYZfFZKgqqzr6kBcQ=
+X-Received: by 2002:a02:cc07:0:b0:326:3976:81ad with SMTP id
+ n7-20020a02cc07000000b00326397681admr5032584jap.237.1649823010614; Tue, 12
+ Apr 2022 21:10:10 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220331122822.14283-1-houtao1@huawei.com> <CAEf4Bzb7keBS8vXgV5JZzwgNGgMV0X3_guQ_m9JW3X6fJBDpPQ@mail.gmail.com>
+ <5a990687-b336-6f44-589b-8bd972882beb@huawei.com>
+In-Reply-To: <5a990687-b336-6f44-589b-8bd972882beb@huawei.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 12 Apr 2022 21:09:59 -0700
+Message-ID: <CAEf4BzaUmqDUeKBjSQgLNULx=f-3ipK57Y2qEbND0XuuL9aNvw@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 0/2] bpf: Introduce ternary search tree for
+ string key
+To:     Hou Tao <houtao1@huawei.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>, Yonghong Song <yhs@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Rayagond Kokatanur <rayagond@vayavyalabs.com>,
-        Richard Cochran <richardcochran@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Voon Wei Feng <weifeng.voon@intel.com>,
-        Wong Vee Khee <vee.khee.wong@intel.com>,
-        Song Yoong Siang <yoong.siang.song@intel.com>,
-        Tan Tee Min <tee.min.tan@intel.com>
-Subject: [PATCH net 1/1] net: stmmac: add fsleep() in HW Rx timestamp checking loop
-Date:   Wed, 13 Apr 2022 12:01:15 +0800
-Message-Id: <20220413040115.2351987-1-tee.min.tan@intel.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=0.2 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
-        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+        John Fastabend <john.fastabend@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a possibility that the context descriptor still owned by the DMA
-even the previous normal descriptor own bit is already cleared. Checking
-the context descriptor readiness without delay might be not enough time
-for the DMA to update the descriptor field, which causing failure in
-getting HW Rx timestamp.
+On Fri, Apr 8, 2022 at 8:08 PM Hou Tao <houtao1@huawei.com> wrote:
+>
+> Hi,
+>
+> On 4/7/2022 1:38 AM, Andrii Nakryiko wrote:
+> > On Thu, Mar 31, 2022 at 5:04 AM Hou Tao <houtao1@huawei.com> wrote:
+> >> Hi,
+> >>
+> >> The initial motivation for the patchset is due to the suggestion of Alexei.
+> >> During the discuss of supporting of string key in hash-table, he saw the
+> >> space efficiency of ternary search tree under our early test and suggest
+> >> us to post it as a new bpf map [1].
+> >>
+> >> Ternary search tree is a special trie where nodes are arranged in a
+> >> manner similar to binary search tree, but with up to three children
+> >> rather than two. The three children correpond to nodes whose value is
+> >> less than, equal to, and greater than the value of current node
+> >> respectively.
+> >>
+> >> In ternary search tree map, only the valid content of string is saved.
+> >> The trailing null byte and unused bytes after it are not saved. If there
+> >> are common prefixes between these strings, the prefix is only saved once.
+> >> Compared with other space optimized trie (e.g. HAT-trie, succinct trie),
+> >> the advantage of ternary search tree is simple and being writeable.
+> >>
+> >> Below are diagrams for ternary search map when inserting hello, he,
+> >> test and tea into it:
+> >>
+> >> 1. insert "hello"
+> >>
+> >>         [ hello ]
+> >>
+> >> 2. insert "he": need split "hello" into "he" and "llo"
+> >>
+> >>          [ he ]
+> >>             |
+> >>             *
+> >>             |
+> >>          [ llo ]
+> >>
+> >> 3. insert "test": add it as right child of "he"
+> >>
+> >>          [ he ]
+> >>             |
+> >>             *-------x
+> >>             |       |
+> >>          [ llo ] [ test ]
+> >>
+> >> 5. insert "tea": split "test" into "te" and "st",
+> >>    and insert "a" as left child of "st"
+> >>
+> >>          [ he ]
+> >>             |
+> >>      x------*-------x
+> >>      |      |       |
+> >>   [ ah ] [ llo ] [ te ]
+> >>                     |
+> >>                     *
+> >>                     |
+> >>                  [ st ]
+> >>                     |
+> >>                x----*
+> >>                |
+> >>              [ a ]
+> >>
+> >> As showed in above diagrams, the common prefix between "test" and "tea"
+> >> is "te" and it only is saved once. Also add benchmarks to compare the
+> >> memory usage and lookup performance between ternary search tree and
+> >> hash table. When the common prefix is lengthy (~192 bytes) and the
+> >> length of suffix is about 64 bytes, there are about 2~3 folds memory
+> >> saving compared with hash table. But the memory saving comes at prices:
+> >> the lookup performance of tst is about 2~3 slower compared with hash
+> >> table. See more benchmark details on patch #2.
+> >>
+> >> Comments and suggestions are always welcome.
+> >>
+> > Have you heard and tried qp-trie ([0]) by any chance? It is elegant
+> > and simple data structure. By all the available benchmarks it handily
+> > beats Red-Black trees in terms of memory usage and performance (though
+> > it of course depends on the data set, just like "memory compression"
+> > for ternary tree of yours depends on large set of common prefixes).
+> > qp-trie based BPF map seems (at least on paper) like a better
+> > general-purpose BPF map that is dynamically sized (avoiding current
+> > HASHMAP limitations) and stores keys in sorted order (and thus allows
+> > meaningful ordered iteration *and*, importantly for longest prefix
+> > match tree, allows efficient prefix matches). I did a quick experiment
+> > about a month ago trying to replace libbpf's internal use of hashmap
+> > with qp-trie for BTF string dedup and it was slightly slower than
+> > hashmap (not surprisingly, though, because libbpf over-sizes hashmap
+> > to avoid hash collisions and long chains in buckets), but it was still
+> > very decent even in that scenario. So I've been mulling the idea of
+> > implementing BPF map based on qp-trie elegant design and ideas, but
+> > can't find time to do this.
+> I have heard about it when check the space efficient of HAT trie [0], because
+> qp-trie needs to save the whole string key in the leaf node and its space
+> efficiency can not be better than ternary search tree for strings with common
+> prefix, so I did not consider about it. But I will do some benchmarks to check
+> the lookup performance and space efficiency of qp-trie and tst for string with
+> common prefix and strings without much common prefix.
+> If qp-trie is better, I think I can take the time to post it as a bpf map if you
+> are OK with that.
 
-This patch introduces a 1us fsleep() in HW Rx timestamp checking loop
-to give time for DMA to update/complete the context descriptor.
+You can probably always craft a data set where prefix sharing is so
+prevalent that space savings are very significant. But I think for a
+lot of real-world data it won't be as extreme and qp-trie might be
+very comparable (if not more memory-efficient) due to very compact
+node layout (which was the point of qp-trie). So I'd be really curious
+to see some comparisons. Would be great if you can try both!
 
-ptp4l Timestamp log without this patch:
------------------------------------------------------------
-$ echo 10000 > /sys/class/net/enp0s30f4/gro_flush_timeout
-$ echo 10000 > /sys/class/net/enp0s30f4/napi_defer_hard_irqs
-$ ptp4l -P2Hi enp0s30f4 --step_threshold=1 -m
-ptp4l: selected /dev/ptp2 as PTP clock
-ptp4l: port 1: INITIALIZING to LISTENING on INIT_COMPLETE
-ptp4l: selected local clock 901210.fffe.b57df7 as best master
-ptp4l: port 1: new foreign master 22bb22.fffe.bb22bb-1
-ptp4l: selected best master clock 22bb22.fffe.bb22bb
-ptp4l: port 1: LISTENING to UNCALIBRATED on RS_SLAVE
-ptp4l: port 1: UNCALIBRATED to SLAVE on MASTER_CLOCK_SELECTED
-ptp4l: port 1: received SYNC without timestamp
-ptp4l: rms   49 max   63 freq  -9573 +/-  34 delay    71 +/-   1
-ptp4l: rms   15 max   25 freq  -9553 +/-  20 delay    72 +/-   0
-ptp4l: port 1: received SYNC without timestamp
-ptp4l: rms    9 max   18 freq  -9540 +/-  11 delay    70 +/-   0
-ptp4l: port 1: received PDELAY_REQ without timestamp
-ptp4l: rms   16 max   29 freq  -9519 +/-  12 delay    72 +/-   0
-ptp4l: port 1: received PDELAY_REQ without timestamp
-ptp4l: rms    9 max   18 freq  -9527 +/-  12 delay    72 +/-   0
-ptp4l: rms    5 max    9 freq  -9530 +/-   7 delay    70 +/-   0
-ptp4l: rms   11 max   20 freq  -9530 +/-  16 delay    72 +/-   0
-ptp4l: rms    5 max   11 freq  -9530 +/-   7 delay    74 +/-   0
-ptp4l: rms    6 max    9 freq  -9522 +/-   7 delay    72 +/-   0
-ptp4l: port 1: received PDELAY_REQ without timestamp
------------------------------------------------------------
+>
+>
+> >
+> > This prefix sharing is nice when you have a lot of long common
+> > prefixes, but I'm a bit skeptical that as a general-purpose BPF data
+> > structure it's going to be that beneficial. 192 bytes of common
+> > prefixes seems like a very unusual dataset :)
+> Yes. The case with common prefix I known is full file path.
+> > More specifically about TST implementation in your paches. One global
+> > per-map lock I think is a very big downside. We have LPM trie which is
+> > very slow in big part due to global lock. It might be possible to
+> > design more granular schema for TST, but this whole in-place splitting
+> > logic makes this harder. I think qp-trie can be locked in a granular
+> > fashion much more easily by having a "hand over hand" locking: lock
+> > parent, find child, lock child, unlock parent, move into child node.
+> > Something like that would be more scalable overall, especially if the
+> > access pattern is not focused on a narrow set of nodes.
+> Yes. The global lock is a problem but the splitting is not in-place. I will try
+> to figure out whether the lock can be more scalable after the benchmark test
+> between qp-trie and tst.
 
-ptp4l Timestamp log with this patch:
------------------------------------------------------------
-$ echo 10000 > /sys/class/net/enp0s30f4/gro_flush_timeout
-$ echo 10000 > /sys/class/net/enp0s30f4/napi_defer_hard_irqs
-$ ptp4l -P2Hi enp0s30f4 --step_threshold=1 -m
-ptp4l: selected /dev/ptp2 as PTP clock
-ptp4l: port 1: INITIALIZING to LISTENING on INIT_COMPLETE
-ptp4l: selected local clock 901210.fffe.b57df7 as best master
-ptp4l: port 1: new foreign master 22bb22.fffe.bb22bb-1
-ptp4l: selected best master clock 22bb22.fffe.bb22bb
-ptp4l: port 1: LISTENING to UNCALIBRATED on RS_SLAVE
-ptp4l: port 1: UNCALIBRATED to SLAVE on MASTER_CLOCK_SELECTED
-ptp4l: rms   30 max   45 freq  -9400 +/-  23 delay    72 +/-   0
-ptp4l: rms    7 max   16 freq  -9414 +/-  10 delay    70 +/-   0
-ptp4l: rms    6 max    9 freq  -9422 +/-   6 delay    72 +/-   0
-ptp4l: rms   13 max   20 freq  -9436 +/-  13 delay    74 +/-   0
-ptp4l: rms   12 max   27 freq  -9446 +/-  11 delay    72 +/-   0
-ptp4l: rms    9 max   12 freq  -9453 +/-   6 delay    74 +/-   0
-ptp4l: rms    9 max   15 freq  -9438 +/-  11 delay    74 +/-   0
-ptp4l: rms   10 max   16 freq  -9435 +/-  12 delay    74 +/-   0
-ptp4l: rms    8 max   18 freq  -9428 +/-   8 delay    72 +/-   0
-ptp4l: rms    8 max   18 freq  -9423 +/-   8 delay    72 +/-   0
-ptp4l: rms    9 max   16 freq  -9431 +/-  12 delay    70 +/-   0
-ptp4l: rms    9 max   18 freq  -9441 +/-   9 delay    72 +/-   0
------------------------------------------------------------
+Great, looking forward!
 
-Fixes: ba1ffd74df74 ("stmmac: fix PTP support for GMAC4")
-Cc: <stable@vger.kernel.org> # 5.4.x
-Signed-off-by: Song Yoong Siang <yoong.siang.song@intel.com>
-Signed-off-by: Tan Tee Min <tee.min.tan@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
-index d3b4765c1a5b..289bf26a6105 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
-@@ -279,10 +279,11 @@ static int dwmac4_wrback_get_rx_timestamp_status(void *desc, void *next_desc,
- 			/* Check if timestamp is OK from context descriptor */
- 			do {
- 				ret = dwmac4_rx_check_timestamp(next_desc);
--				if (ret < 0)
-+				if (ret <= 0)
- 					goto exit;
- 				i++;
- 
-+				fsleep(1);
- 			} while ((ret == 1) && (i < 10));
- 
- 			if (i == 10)
--- 
-2.25.1
-
+>
+> Regards,
+> Tao
+>
+> [0]: https://github.com/Tessil/hat-trie
+> >
+> > Anyways, I love data structures and this one is an interesting idea.
+> > But just my few cents of "production-readiness" for general-purpose
+> > data structures for BPF.
+> >
+> >   [0] https://dotat.at/prog/qp/README.html
+> >
+> >> Regards,
+> >> Tao
+> >>
+> >> [1]: https://lore.kernel.org/bpf/CAADnVQJUJp3YBcpESwR3Q1U6GS1mBM=Vp-qYuQX7eZOaoLjdUA@mail.gmail.com/
+> >>
+> >> Hou Tao (2):
+> >>   bpf: Introduce ternary search tree for string key
+> >>   selftests/bpf: add benchmark for ternary search tree map
+> >>
+> >>  include/linux/bpf_types.h                     |   1 +
+> >>  include/uapi/linux/bpf.h                      |   1 +
+> >>  kernel/bpf/Makefile                           |   1 +
+> >>  kernel/bpf/bpf_tst.c                          | 411 +++++++++++++++++
+> >>  tools/include/uapi/linux/bpf.h                |   1 +
+> >>  tools/testing/selftests/bpf/Makefile          |   5 +-
+> >>  tools/testing/selftests/bpf/bench.c           |   6 +
+> >>  .../selftests/bpf/benchs/bench_tst_map.c      | 415 ++++++++++++++++++
+> >>  .../selftests/bpf/benchs/run_bench_tst.sh     |  54 +++
+> >>  tools/testing/selftests/bpf/progs/tst_bench.c |  70 +++
+> >>  10 files changed, 964 insertions(+), 1 deletion(-)
+> >>  create mode 100644 kernel/bpf/bpf_tst.c
+> >>  create mode 100644 tools/testing/selftests/bpf/benchs/bench_tst_map.c
+> >>  create mode 100755 tools/testing/selftests/bpf/benchs/run_bench_tst.sh
+> >>  create mode 100644 tools/testing/selftests/bpf/progs/tst_bench.c
+> >>
+> >> --
+> >> 2.31.1
+> >>
+> > .
+>
