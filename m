@@ -2,107 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FD154FF8C3
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 16:17:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 851F94FF902
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 16:33:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236098AbiDMOTV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 10:19:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60308 "EHLO
+        id S236136AbiDMOfj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 10:35:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236096AbiDMOTS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 10:19:18 -0400
-Received: from bmailout1.hostsharing.net (bmailout1.hostsharing.net [IPv6:2a01:37:1000::53df:5f64:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C618A5F8DE;
-        Wed, 13 Apr 2022 07:16:53 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout1.hostsharing.net (Postfix) with ESMTPS id CEE6830000647;
-        Wed, 13 Apr 2022 16:16:49 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id C2C89870B5; Wed, 13 Apr 2022 16:16:49 +0200 (CEST)
-Message-Id: <127121d9d933ebe3fc13f9f91cc33363d6a8a8ac.1649859147.git.lukas@wunner.de>
-From:   Lukas Wunner <lukas@wunner.de>
-Date:   Wed, 13 Apr 2022 16:16:19 +0200
-Subject: [PATCH] usbnet: Fix use-after-free on disconnect
-To:     Oliver Neukum <oneukum@suse.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Jann Horn <jannh@google.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Eric Dumazet <edumazet@google.com>,
-        Jacky Chou <jackychou@asix.com.tw>, Willy Tarreau <w@1wt.eu>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S233994AbiDMOfi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 10:35:38 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF7556C00;
+        Wed, 13 Apr 2022 07:33:16 -0700 (PDT)
+Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KdlMW1PQDzCqwJ;
+        Wed, 13 Apr 2022 22:28:55 +0800 (CST)
+Received: from [10.174.176.117] (10.174.176.117) by
+ dggpeml500025.china.huawei.com (7.185.36.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 13 Apr 2022 22:33:12 +0800
+Subject: Re: [PATCH] bpf/benchs: fix error check return value of
+ bpf_program__attach()
+To:     <cgel.zte@gmail.com>, <shuah@kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
+        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
+        <joannekoong@fb.com>, <lv.ruyi@zte.com.cn>, <toke@redhat.com>,
+        <linux-kselftest@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Zeal Robot <zealci@zte.com.cn>
+References: <20220413093123.2538001-1-lv.ruyi@zte.com.cn>
+From:   Hou Tao <houtao1@huawei.com>
+Message-ID: <3dab1e4b-2317-4730-f699-627583ff759d@huawei.com>
+Date:   Wed, 13 Apr 2022 22:33:12 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
+MIME-Version: 1.0
+In-Reply-To: <20220413093123.2538001-1-lv.ruyi@zte.com.cn>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Originating-IP: [10.174.176.117]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpeml500025.china.huawei.com (7.185.36.35)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jann Horn reports a use-after-free on disconnect of a USB Ethernet
-(ax88179_178a.c).  Oleksij Rempel has witnessed the same issue with a
-different driver (ax88172a.c).
+Hi,
 
-Jann's report (linked below) explains the root cause in great detail.
-Briefly, USB Ethernet drivers schedule work (usbnet_deferred_kevent())
-which in turn schedules another work (linkwatch_event()).  The problem
-is that usbnet_disconnect() first synchronizes with linkwatch_event()
-and only then with usbnet_deferred_kevent().  That allows
-usbnet_deferred_kevent() to schedule another linkwatch_event() after
-synchronization with the latter.  In other words, scheduling happens
-in AB order and synchronization on disconnect happens in BA order.
+On 4/13/2022 5:31 PM, cgel.zte@gmail.com wrote:
+> From: Lv Ruyi <lv.ruyi@zte.com.cn>
+>
+> bpf_program__attach() returns error ptr when it fails, so we should use
+> IS_ERR() to check it in error handling path. The patch fix all the same
+> problems in the bpf/benchs/*.
+The fix is unnecessary. Because libbpf has been setup as  LIBBPF_STRICT_ALL mode
+in setup_libbpf() of bench.c, so when bpf_program__attach() fails, it will
+return NULL instead of ERR_PTR(err).
 
-The correct order is to first synchronize with usbnet_deferred_kevent()
-(and prevent any future execution), then with linkwatch_event(), i.e.
-in AB order.
-
-Reported-by: Jann Horn <jannh@google.com>
-Link: https://lore.kernel.org/netdev/CAG48ez0MHBbENX5gCdHAUXZ7h7s20LnepBF-pa5M=7Bi-jZrEA@mail.gmail.com/
-Reported-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Link: https://lore.kernel.org/netdev/20220315113841.GA22337@pengutronix.de/
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Cc: stable@vger.kernel.org
-Cc: Oliver Neukum <oneukum@suse.com>
-Cc: Andrew Lunn <andrew@lunn.ch>
----
- drivers/net/usb/usbnet.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
-index 9a6450f796dc..6c67ae48afeb 100644
---- a/drivers/net/usb/usbnet.c
-+++ b/drivers/net/usb/usbnet.c
-@@ -469,6 +469,9 @@ static enum skb_state defer_bh(struct usbnet *dev, struct sk_buff *skb,
-  */
- void usbnet_defer_kevent (struct usbnet *dev, int work)
- {
-+	if (dev->intf->condition == USB_INTERFACE_UNBINDING)
-+		return;
-+
- 	set_bit (work, &dev->flags);
- 	if (!schedule_work (&dev->kevent))
- 		netdev_dbg(dev->net, "kevent %s may have been dropped\n", usbnet_event_names[work]);
-@@ -1619,11 +1622,11 @@ void usbnet_disconnect (struct usb_interface *intf)
- 	if (dev->driver_info->unbind)
- 		dev->driver_info->unbind(dev, intf);
- 
-+	cancel_work_sync(&dev->kevent);
-+
- 	net = dev->net;
- 	unregister_netdev (net);
- 
--	cancel_work_sync(&dev->kevent);
--
- 	usb_scuttle_anchored_urbs(&dev->deferred);
- 
- 	usb_kill_urb(dev->interrupt);
--- 
-2.35.2
+>
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+> ---
+>  .../selftests/bpf/benchs/bench_bloom_filter_map.c      | 10 +++++-----
+>  tools/testing/selftests/bpf/benchs/bench_bpf_loop.c    |  2 +-
+>  tools/testing/selftests/bpf/benchs/bench_rename.c      |  2 +-
+>  tools/testing/selftests/bpf/benchs/bench_ringbufs.c    |  6 +++---
+>  tools/testing/selftests/bpf/benchs/bench_strncmp.c     |  2 +-
+>  tools/testing/selftests/bpf/benchs/bench_trigger.c     |  2 +-
+>  6 files changed, 12 insertions(+), 12 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/benchs/bench_bloom_filter_map.c b/tools/testing/selftests/bpf/benchs/bench_bloom_filter_map.c
+> index 5bcb8a8cdeb2..fd1be1042516 100644
+> --- a/tools/testing/selftests/bpf/benchs/bench_bloom_filter_map.c
+> +++ b/tools/testing/selftests/bpf/benchs/bench_bloom_filter_map.c
+> @@ -309,7 +309,7 @@ static void bloom_lookup_setup(void)
+>  	populate_maps();
+>  
+>  	link = bpf_program__attach(ctx.skel->progs.bloom_lookup);
+> -	if (!link) {
+> +	if (IS_ERR(link)) {
+>  		fprintf(stderr, "failed to attach program!\n");
+>  		exit(1);
+>  	}
+> @@ -326,7 +326,7 @@ static void bloom_update_setup(void)
+>  	populate_maps();
+>  
+>  	link = bpf_program__attach(ctx.skel->progs.bloom_update);
+> -	if (!link) {
+> +	if (IS_ERR(link)) {
+>  		fprintf(stderr, "failed to attach program!\n");
+>  		exit(1);
+>  	}
+> @@ -345,7 +345,7 @@ static void false_positive_setup(void)
+>  	populate_maps();
+>  
+>  	link = bpf_program__attach(ctx.skel->progs.bloom_hashmap_lookup);
+> -	if (!link) {
+> +	if (IS_ERR(link)) {
+>  		fprintf(stderr, "failed to attach program!\n");
+>  		exit(1);
+>  	}
+> @@ -363,7 +363,7 @@ static void hashmap_with_bloom_setup(void)
+>  	populate_maps();
+>  
+>  	link = bpf_program__attach(ctx.skel->progs.bloom_hashmap_lookup);
+> -	if (!link) {
+> +	if (IS_ERR(link)) {
+>  		fprintf(stderr, "failed to attach program!\n");
+>  		exit(1);
+>  	}
+> @@ -380,7 +380,7 @@ static void hashmap_no_bloom_setup(void)
+>  	populate_maps();
+>  
+>  	link = bpf_program__attach(ctx.skel->progs.bloom_hashmap_lookup);
+> -	if (!link) {
+> +	if (IS_ERR(link)) {
+>  		fprintf(stderr, "failed to attach program!\n");
+>  		exit(1);
+>  	}
+> diff --git a/tools/testing/selftests/bpf/benchs/bench_bpf_loop.c b/tools/testing/selftests/bpf/benchs/bench_bpf_loop.c
+> index d0a6572bfab6..8dbdc28d26c8 100644
+> --- a/tools/testing/selftests/bpf/benchs/bench_bpf_loop.c
+> +++ b/tools/testing/selftests/bpf/benchs/bench_bpf_loop.c
+> @@ -85,7 +85,7 @@ static void setup(void)
+>  	}
+>  
+>  	link = bpf_program__attach(ctx.skel->progs.benchmark);
+> -	if (!link) {
+> +	if (IS_ERR(link)) {
+>  		fprintf(stderr, "failed to attach program!\n");
+>  		exit(1);
+>  	}
+> diff --git a/tools/testing/selftests/bpf/benchs/bench_rename.c b/tools/testing/selftests/bpf/benchs/bench_rename.c
+> index 3c203b6d6a6e..66d63b92a28a 100644
+> --- a/tools/testing/selftests/bpf/benchs/bench_rename.c
+> +++ b/tools/testing/selftests/bpf/benchs/bench_rename.c
+> @@ -65,7 +65,7 @@ static void attach_bpf(struct bpf_program *prog)
+>  	struct bpf_link *link;
+>  
+>  	link = bpf_program__attach(prog);
+> -	if (!link) {
+> +	if (IS_ERR(link)) {
+>  		fprintf(stderr, "failed to attach program!\n");
+>  		exit(1);
+>  	}
+> diff --git a/tools/testing/selftests/bpf/benchs/bench_ringbufs.c b/tools/testing/selftests/bpf/benchs/bench_ringbufs.c
+> index c2554f9695ff..fff24ca82dc0 100644
+> --- a/tools/testing/selftests/bpf/benchs/bench_ringbufs.c
+> +++ b/tools/testing/selftests/bpf/benchs/bench_ringbufs.c
+> @@ -181,7 +181,7 @@ static void ringbuf_libbpf_setup(void)
+>  	}
+>  
+>  	link = bpf_program__attach(ctx->skel->progs.bench_ringbuf);
+> -	if (!link) {
+> +	if (IS_ERR(link)) {
+>  		fprintf(stderr, "failed to attach program!\n");
+>  		exit(1);
+>  	}
+> @@ -271,7 +271,7 @@ static void ringbuf_custom_setup(void)
+>  	}
+>  
+>  	link = bpf_program__attach(ctx->skel->progs.bench_ringbuf);
+> -	if (!link) {
+> +	if (IS_ERR(link)) {
+>  		fprintf(stderr, "failed to attach program\n");
+>  		exit(1);
+>  	}
+> @@ -426,7 +426,7 @@ static void perfbuf_libbpf_setup(void)
+>  	}
+>  
+>  	link = bpf_program__attach(ctx->skel->progs.bench_perfbuf);
+> -	if (!link) {
+> +	if (IS_ERR(link)) {
+>  		fprintf(stderr, "failed to attach program\n");
+>  		exit(1);
+>  	}
+> diff --git a/tools/testing/selftests/bpf/benchs/bench_strncmp.c b/tools/testing/selftests/bpf/benchs/bench_strncmp.c
+> index 494b591c0289..dcb9ce5ffcb0 100644
+> --- a/tools/testing/selftests/bpf/benchs/bench_strncmp.c
+> +++ b/tools/testing/selftests/bpf/benchs/bench_strncmp.c
+> @@ -103,7 +103,7 @@ static void strncmp_attach_prog(struct bpf_program *prog)
+>  	struct bpf_link *link;
+>  
+>  	link = bpf_program__attach(prog);
+> -	if (!link) {
+> +	if (IS_ERR(link)) {
+>  		fprintf(stderr, "failed to attach program!\n");
+>  		exit(1);
+>  	}
+> diff --git a/tools/testing/selftests/bpf/benchs/bench_trigger.c b/tools/testing/selftests/bpf/benchs/bench_trigger.c
+> index 0c481de2833d..bda930a8153c 100644
+> --- a/tools/testing/selftests/bpf/benchs/bench_trigger.c
+> +++ b/tools/testing/selftests/bpf/benchs/bench_trigger.c
+> @@ -61,7 +61,7 @@ static void attach_bpf(struct bpf_program *prog)
+>  	struct bpf_link *link;
+>  
+>  	link = bpf_program__attach(prog);
+> -	if (!link) {
+> +	if (IS_ERR(link)) {
+>  		fprintf(stderr, "failed to attach program!\n");
+>  		exit(1);
+>  	}
 
