@@ -2,58 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E42D74FFF95
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 21:46:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2488C4FFF9D
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 21:50:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237009AbiDMTsm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 15:48:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54264 "EHLO
+        id S238041AbiDMTwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 15:52:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231436AbiDMTsk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 15:48:40 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D0DB7522B;
-        Wed, 13 Apr 2022 12:46:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=TsmPNaK5EhVUCi0QRwL1L+rVvRifceYwNNpMjUTmFq0=; b=lXYjOzxjnKh6D+uV4pVfYNwZfw
-        AV/wm5OKcdr/HiD62jqs75O2BX+tPwbixswxvQiEYCTx4dFd+vb7vyAN90uttIl1D7pktWr3EF1gA
-        ItUKKvOE1WU0VEvkYyT6xgEGkTLqp0LPY4kD9pZpPcIqOA0Q2wxLiqyBM+Y+DfdCC/h2tQmkyWBEI
-        ZH/lj9ssBprW1gAyOL0tg0C0v+GKOTxdRpcD+Lu8Jxd0AXCroDpqEuJ98TaqeXfexY/NWfo+/PVmX
-        7NRy787YCNn0MxXHIYwYPEQPRu1oCBV6IaZsVV2YQ5f7Q/IbrUk6KQlqfOWIaWWtbeTW/nj2rSBPl
-        5/h+oWIA==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1neiwE-002Yz4-F5; Wed, 13 Apr 2022 19:46:02 +0000
-Date:   Wed, 13 Apr 2022 12:46:02 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Yan Zhu <zhuyan34@huawei.com>, andrii@kernel.org, ast@kernel.org,
-        bpf@vger.kernel.org, john.fastabend@gmail.com, kafai@fb.com,
-        keescook@chromium.org, kpsingh@kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        liucheng32@huawei.com, netdev@vger.kernel.org,
-        nixiaoming@huawei.com, songliubraving@fb.com,
-        xiechengliang1@huawei.com, yhs@fb.com, yzaikin@google.com,
-        zengweilin@huawei.com, leeyou.li@huawei.com,
-        laiyuanyuan.lai@huawei.com
-Subject: Re: [PATCH v4 sysctl-next] bpf: move bpf sysctls from
- kernel/sysctl.c to bpf module
-Message-ID: <YlcoevXO2t1pn3Pu@bombadil.infradead.org>
-References: <Yk4XE/hKGOQs5oq0@bombadil.infradead.org>
- <20220407070759.29506-1-zhuyan34@huawei.com>
- <3a82460b-6f58-6e7e-a3d9-141f42069eda@iogearbox.net>
- <Ylcd0zvHhi96zVi+@bombadil.infradead.org>
- <b615bd44-6bd1-a958-7e3f-dd2ff58931a1@iogearbox.net>
+        with ESMTP id S238464AbiDMTwc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 15:52:32 -0400
+Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 236852C116;
+        Wed, 13 Apr 2022 12:50:10 -0700 (PDT)
+Received: by mail-il1-x12d.google.com with SMTP id d3so1787299ilr.10;
+        Wed, 13 Apr 2022 12:50:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8Tiu9GfgkD+GsqRA+j44Yw5I46wY8QuomfzRtQUPRFo=;
+        b=D5ENLHyIiXmfehIAfPvIzNbsh7FgNaxwTQ8E5JHc+qCJQekBE3jWYJG/5UGakpQYpt
+         l9INOvekj/V4cZP6yRjHoUBs3DazVWY2KhnQ5QK9f7Ln/qUuxJE1IZ0faSXl1Di2Lbfe
+         IhcYpML5tcE/4cXu4Mvsn3IOZqWVwZ+txDAjk+zFoMFHirVpo4Ld6ATJIi5aL4zXcAOv
+         TO3YWwYuJRta8cc9uu9glKHyedWzM5Ch1XKyMWqhpI/tZ/19yfvZuivrC97s6rVAweaZ
+         ewfdrUO9ndm9uFTZgmOn//KwW8sXPabDK21x0VGc8VjzfUnr9sNW2ElT5ijo7QjYwIpR
+         Y94w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8Tiu9GfgkD+GsqRA+j44Yw5I46wY8QuomfzRtQUPRFo=;
+        b=jYSBtq2x6KY9AVp1ATy8sEM7bmX9/aiYEyTJl4aYmf8Di8JIYukDNqXWHkV/6t8oud
+         D7BNCE95Tgx1fqakYBqaceHdShkXn77O+zKHrazvivfxCz24eRD2H1vHpRrAIszRAILY
+         SXj68yKX3Uwu4m9ymm5JAvnPHnjAMxD0cQmF1py+yIsmydOgV1O5hSzekhFTW1HJw8wC
+         IaKcQ8kS3nyd7OkkDOTxyR0DyXSYFyFooR6JRTRYKvausM6JzwcPa1DP0RDkhMjluAU/
+         sPQGiio4Wk1l4KuzNxkLDZOymVN7uOgIoS2hdF/w2pK/PtCwEXkTGNOS7A4SGwpPFIom
+         q3xA==
+X-Gm-Message-State: AOAM531FbP645W9eZRyKETAkPHWQNSwDbcgknIlYON78fImJ1jjuWkoD
+        euV+0abokWwuqBYWSx/tkth72wxHRhGscXjCB5c=
+X-Google-Smtp-Source: ABdhPJwJa9eBFjniQ9Fom7Jxfe4EKNMPTKbtvRYrK/n+O1jm5v8MlaDb9vDzHDgQaagvGqppkERZwtug8H7feDgfVwM=
+X-Received: by 2002:a05:6e02:18c5:b0:2cb:cdca:bed4 with SMTP id
+ s5-20020a056e0218c500b002cbcdcabed4mr2847853ilu.239.1649879409551; Wed, 13
+ Apr 2022 12:50:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b615bd44-6bd1-a958-7e3f-dd2ff58931a1@iogearbox.net>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+References: <20220405170356.43128-1-tadeusz.struk@linaro.org>
+ <CAEf4BzaPmp5TzNM8U=SSyEp30wv335_ZxuAL-LLPQUZJ9OS74g@mail.gmail.com>
+ <e7692d0b-e495-8d3e-4905-c4109bf5caa4@linaro.org> <CAEf4Bzbb+AmuABH2cw=48uuznz7bT=eEMc1V9mS3GSqgU664Tw@mail.gmail.com>
+ <bb29d766-f837-195e-63cc-15d02f155f2c@linaro.org>
+In-Reply-To: <bb29d766-f837-195e-63cc-15d02f155f2c@linaro.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 13 Apr 2022 12:49:58 -0700
+Message-ID: <CAEf4BzbiVeQfhxEu908w2mU4d8+5kKeMknuvhzCXuxM9pJ1jmQ@mail.gmail.com>
+Subject: Re: [PATCH] bpf: Fix KASAN use-after-free Read in compute_effective_progs
+To:     Tadeusz Struk <tadeusz.struk@linaro.org>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        linux- stable <stable@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,40 +77,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 09:40:58PM +0200, Daniel Borkmann wrote:
-> On 4/13/22 9:00 PM, Luis Chamberlain wrote:
-> > On Wed, Apr 13, 2022 at 04:45:00PM +0200, Daniel Borkmann wrote:
-> > > On 4/7/22 9:07 AM, Yan Zhu wrote:
-> > > > We're moving sysctls out of kernel/sysctl.c as its a mess. We
-> > > > already moved all filesystem sysctls out. And with time the goal is
-> > > > to move all sysctls out to their own subsystem/actual user.
-> > > > 
-> > > > kernel/sysctl.c has grown to an insane mess and its easy to run
-> > > > into conflicts with it. The effort to move them out is part of this.
-> > > > 
-> > > > Signed-off-by: Yan Zhu <zhuyan34@huawei.com>
-> > > 
-> > > Acked-by: Daniel Borkmann <daniel@iogearbox.net>
-> > > 
-> > > Given the desire is to route this via sysctl-next and we're not shortly
-> > > before but after the merge win, could we get a feature branch for bpf-next
-> > > to pull from to avoid conflicts with ongoing development cycle?
-> > 
-> > Sure thing. So I've never done this sort of thing, so forgive me for
-> > being new at it. Would it make sense to merge this change to sysctl-next
-> > as-is today and put a frozen branch sysclt-next-bpf to reflect this,
-> > which bpf-next can merge. And then sysctl-next just continues to chug on
-> > its own? As-is my goal is to keep sysctl-next as immutable as well.
-> > 
-> > Or is there a better approach you can recommend?
-> 
-> Are you able to merge the pr/bpf-sysctl branch into your sysctl-next tree?
-> 
->   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/log/?h=pr/bpf-sysctl
-> 
-> This is based off common base for both trees (3123109284176b1532874591f7c81f3837bbdc17)
-> so should only pull in the single commit then.
+On Wed, Apr 13, 2022 at 12:27 PM Tadeusz Struk <tadeusz.struk@linaro.org> wrote:
+>
+> On 4/13/22 12:07, Andrii Nakryiko wrote:
+> >> it would be ideal if detach would never fail, but it would require some kind of
+> >> prealloc, on attach maybe? Another option would be to minimize the probability
+> > We allocate new arrays in update_effective_progs() under assumption
+> > that we might need to grow the array because we use
+> > update_effective_progs() for attachment. But for detachment we know
+> > that we definitely don't need to increase the size, we need to remove
+> > existing element only, thus shrinking the size.
+> >
+> > Normally we'd reallocate the array to shrink it (and that's why we use
+> > update_effective_progs() and allocate memory), but we can also have a
+> > fallback path for detachment only to reuse existing effective arrays
+> > and just shift all the elements to the right from the element that's
+> > being removed. We'll leave NULL at the end, but that's much better
+> > than error out. Subsequent attachment or detachment will attempt to
+> > properly size and reallocate everything.
+> >
+> > So I think that should be the fix, if you'd be willing to work on it.
+>
+> That makes it much easier then. I will change it so that there is no
+> alloc needed on the detach path. Thanks for the clarification.
 
-Yup. That worked just fine. I pushed it.
+Keep in mind that we probably want to do normal alloc-based detach
+first anyways, if it works. It will keep effective arrays minimally
+sized. This additional detach specific logic should be a fall back
+path if the normal way doesn't work.
 
-  Luis
+>
+> --
+> Thanks,
+> Tadeusz
