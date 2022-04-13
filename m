@@ -2,43 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A31B34FFD09
+	by mail.lfdr.de (Postfix) with ESMTP id EB0E64FFD0A
 	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 19:43:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237269AbiDMRp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S237296AbiDMRp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 13 Apr 2022 13:45:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51180 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236323AbiDMRpz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 13:45:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B03396CA66
-        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 10:43:33 -0700 (PDT)
+        with ESMTP id S236567AbiDMRp4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 13:45:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E8C16CA6E
+        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 10:43:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6EA3DB826A9
+        by ams.source.kernel.org (Postfix) with ESMTPS id E2A74B826AF
         for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 17:43:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CDE9C385A8;
-        Wed, 13 Apr 2022 17:43:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 371D7C385AB;
+        Wed, 13 Apr 2022 17:43:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1649871811;
-        bh=G014dzYjZiA7PFihVFG9EOc1YDDoCgF7ABuTjE5FIj4=;
+        bh=YDACq5n/khiWKHPt9ApJ5UkZcq2vAvOJzdJm3kX3+9w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tw5VTvSbQ5AB5ih86y6M6w6fLBNeIw1DOBrZXOoM1xk1tdKDtAkydhobo234tUokX
-         lxcbhfvgh4muIBZFk0oM2XWu3+pFpFYEhreCyrByS0li6RZmwhFbhrX3MP3yARS/3v
-         h194z3jXCU47UOXTfM3buYOtw0kYEZQNRvCio3u1f/BU0q/BsSy2zMigX3HDF1kmuG
-         FDyINcKTtkG5ImcOoPSq7lth1ImkTsofAyuGkXpqu9mm0sQCC0IdDTQR3KkZLDniNb
-         9CJTAfHbFhX9A+BjMBbJP2RfTFI3BbqHCBHtRQWKR8LVOxR7bC5DKv2aSlWwp9EW1g
-         clqh8w7iHvuBw==
+        b=nnbO9wTO46b/RGwVDALO2RP5oOv+FT4fGJ4CDE0M8RCUDtrddI4pDeadbXLIk6ueV
+         5eQxeRZnR2F/EMJLDgRQuu7ZLWDjetTpoDf+l2WyA5lY6UesaMjSGYZTFe38Ss3nRH
+         q9U3URco5gTxxSS9ORY5crgAgG2/IM7FSUKYZtL7TGvVR05voaBqylLt9xRHCLsVss
+         ospBGFpL4dPDubPF143ZUULaZ2IElU2xrlXw+PsgKAS1R3k8Y4wAUhgKNt2V2v2w+Y
+         sol70m7bSHVNdJvdmEr0Pf8eADkxSX6k0xFwLHFrs5jZrVmLzcgfS5kg61ewu1Xu0t
+         TKcnOkuCvdIjg==
 From:   David Ahern <dsahern@kernel.org>
 To:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
         pabeni@redhat.com
-Cc:     David Ahern <dsahern@kernel.org>, Ido Schimmel <idosch@idosch.org>,
-        Alexis Bauvin <abauvin@scaleway.com>
-Subject: [PATCH net 1/2] l3mdev: l3mdev_master_upper_ifindex_by_index_rcu should be using netdev_master_upper_dev_get_rcu
-Date:   Wed, 13 Apr 2022 11:43:19 -0600
-Message-Id: <20220413174320.28989-2-dsahern@kernel.org>
+Cc:     David Ahern <dsahern@kernel.org>, Ido Schimmel <idosch@idosch.org>
+Subject: [PATCH net 2/2] net: Handle l3mdev in ip_tunnel_init_flow
+Date:   Wed, 13 Apr 2022 11:43:20 -0600
+Message-Id: <20220413174320.28989-3-dsahern@kernel.org>
 X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 In-Reply-To: <20220413174320.28989-1-dsahern@kernel.org>
 References: <20220413174320.28989-1-dsahern@kernel.org>
@@ -54,56 +53,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Next patch uses l3mdev_master_upper_ifindex_by_index_rcu which throws
-a splat with debug kernels:
+Ido reported that the commit referenced in the Fixes tag broke
+a gre use case with dummy devices. Add a check to ip_tunnel_init_flow
+to see if the oif is an l3mdev port and if so set the oif to 0 to
+avoid the oif comparison in fib_lookup_good_nhc.
 
-[13783.087570] ------------[ cut here ]------------
-[13783.093974] RTNL: assertion failed at net/core/dev.c (6702)
-[13783.100761] WARNING: CPU: 3 PID: 51132 at net/core/dev.c:6702 netdev_master_upper_dev_get+0x16a/0x1a0
-
-[13783.184226] CPU: 3 PID: 51132 Comm: kworker/3:3 Not tainted 5.17.0-custom-100090-g6f963aafb1cc #682
-[13783.194788] Hardware name: Mellanox Technologies Ltd. MSN2010/SA002610, BIOS 5.6.5 08/24/2017
-[13783.204755] Workqueue: mld mld_ifc_work [ipv6]
-[13783.210338] RIP: 0010:netdev_master_upper_dev_get+0x16a/0x1a0
-[13783.217209] Code: 0f 85 e3 fe ff ff e8 65 ac ec fe ba 2e 1a 00 00 48 c7 c6 60 6f 38 83 48 c7 c7 c0 70 38 83 c6 05 5e b5 d7 01 01 e8 c6 29 52 00 <0f> 0b e9 b8 fe ff ff e8 5a 6c 35 ff e9 1c ff ff ff 48 89 ef e8 7d
-[13783.238659] RSP: 0018:ffffc9000b37f5a8 EFLAGS: 00010286
-[13783.244995] RAX: 0000000000000000 RBX: ffff88812ee5c000 RCX: 0000000000000000
-[13783.253379] RDX: ffff88811ce09d40 RSI: ffffffff812d0fcd RDI: fffff5200166fea7
-[13783.261769] RBP: 0000000000000000 R08: 0000000000000001 R09: ffff8882375f4287
-[13783.270138] R10: ffffed1046ebe850 R11: 0000000000000001 R12: dffffc0000000000
-[13783.278510] R13: 0000000000000275 R14: ffffc9000b37f688 R15: ffff8881273b4af8
-[13783.286870] FS:  0000000000000000(0000) GS:ffff888237400000(0000) knlGS:0000000000000000
-[13783.296352] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[13783.303177] CR2: 00007ff25fc9b2e8 CR3: 0000000174d23000 CR4: 00000000001006e0
-[13783.311546] Call Trace:
-[13783.314660]  <TASK>
-[13783.317553]  l3mdev_master_upper_ifindex_by_index_rcu+0x43/0xe0
-...
-
-Change l3mdev_master_upper_ifindex_by_index_rcu to use
-netdev_master_upper_dev_get_rcu.
-
-Fixes: 6a6d6681ac1a ("l3mdev: add function to retreive upper master")
-Signed-off-by: Ido Schimmel <idosch@idosch.org>
+Fixes: 40867d74c374 ("net: Add l3mdev index to flow struct and avoid oif reset for port devices")
+Reported-by: Ido Schimmel <idosch@idosch.org>
 Signed-off-by: David Ahern <dsahern@kernel.org>
-Cc: Alexis Bauvin <abauvin@scaleway.com>
 ---
- net/l3mdev/l3mdev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c |  2 +-
+ include/net/ip_tunnels.h                            | 11 +++++++++--
+ net/ipv4/ip_gre.c                                   |  4 ++--
+ net/ipv4/ip_tunnel.c                                |  9 +++++----
+ 4 files changed, 17 insertions(+), 9 deletions(-)
 
-diff --git a/net/l3mdev/l3mdev.c b/net/l3mdev/l3mdev.c
-index 4eb8892fb2ff..ca10916340b0 100644
---- a/net/l3mdev/l3mdev.c
-+++ b/net/l3mdev/l3mdev.c
-@@ -147,7 +147,7 @@ int l3mdev_master_upper_ifindex_by_index_rcu(struct net *net, int ifindex)
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
+index b73466470f75..fe663b0ab708 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c
+@@ -423,7 +423,7 @@ mlxsw_sp_span_gretap4_route(const struct net_device *to_dev,
  
- 	dev = dev_get_by_index_rcu(net, ifindex);
- 	while (dev && !netif_is_l3_master(dev))
--		dev = netdev_master_upper_dev_get(dev);
-+		dev = netdev_master_upper_dev_get_rcu(dev);
+ 	parms = mlxsw_sp_ipip_netdev_parms4(to_dev);
+ 	ip_tunnel_init_flow(&fl4, parms.iph.protocol, *daddrp, *saddrp,
+-			    0, 0, parms.link, tun->fwmark, 0);
++			    0, 0, dev_net(to_dev), parms.link, tun->fwmark, 0);
  
- 	return dev ? dev->ifindex : 0;
- }
+ 	rt = ip_route_output_key(tun->net, &fl4);
+ 	if (IS_ERR(rt))
+diff --git a/include/net/ip_tunnels.h b/include/net/ip_tunnels.h
+index 0219fe907b26..88dee57eac8a 100644
+--- a/include/net/ip_tunnels.h
++++ b/include/net/ip_tunnels.h
+@@ -243,11 +243,18 @@ static inline __be32 tunnel_id_to_key32(__be64 tun_id)
+ static inline void ip_tunnel_init_flow(struct flowi4 *fl4,
+ 				       int proto,
+ 				       __be32 daddr, __be32 saddr,
+-				       __be32 key, __u8 tos, int oif,
++				       __be32 key, __u8 tos,
++				       struct net *net, int oif,
+ 				       __u32 mark, __u32 tun_inner_hash)
+ {
+ 	memset(fl4, 0, sizeof(*fl4));
+-	fl4->flowi4_oif = oif;
++
++	if (oif) {
++		fl4->flowi4_l3mdev = l3mdev_master_upper_ifindex_by_index_rcu(net, oif);
++		/* Legacy VRF/l3mdev use case */
++		fl4->flowi4_oif = fl4->flowi4_l3mdev ? 0 : oif;
++	}
++
+ 	fl4->daddr = daddr;
+ 	fl4->saddr = saddr;
+ 	fl4->flowi4_tos = tos;
+diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
+index 99db2e41ed10..365caebf51ab 100644
+--- a/net/ipv4/ip_gre.c
++++ b/net/ipv4/ip_gre.c
+@@ -605,8 +605,8 @@ static int gre_fill_metadata_dst(struct net_device *dev, struct sk_buff *skb)
+ 	key = &info->key;
+ 	ip_tunnel_init_flow(&fl4, IPPROTO_GRE, key->u.ipv4.dst, key->u.ipv4.src,
+ 			    tunnel_id_to_key32(key->tun_id),
+-			    key->tos & ~INET_ECN_MASK, 0, skb->mark,
+-			    skb_get_hash(skb));
++			    key->tos & ~INET_ECN_MASK, dev_net(dev), 0,
++			    skb->mark, skb_get_hash(skb));
+ 	rt = ip_route_output_key(dev_net(dev), &fl4);
+ 	if (IS_ERR(rt))
+ 		return PTR_ERR(rt);
+diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
+index 5a473319d3a5..94017a8c3994 100644
+--- a/net/ipv4/ip_tunnel.c
++++ b/net/ipv4/ip_tunnel.c
+@@ -294,8 +294,8 @@ static int ip_tunnel_bind_dev(struct net_device *dev)
+ 
+ 		ip_tunnel_init_flow(&fl4, iph->protocol, iph->daddr,
+ 				    iph->saddr, tunnel->parms.o_key,
+-				    RT_TOS(iph->tos), tunnel->parms.link,
+-				    tunnel->fwmark, 0);
++				    RT_TOS(iph->tos), dev_net(dev),
++				    tunnel->parms.link, tunnel->fwmark, 0);
+ 		rt = ip_route_output_key(tunnel->net, &fl4);
+ 
+ 		if (!IS_ERR(rt)) {
+@@ -570,7 +570,7 @@ void ip_md_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
+ 	}
+ 	ip_tunnel_init_flow(&fl4, proto, key->u.ipv4.dst, key->u.ipv4.src,
+ 			    tunnel_id_to_key32(key->tun_id), RT_TOS(tos),
+-			    0, skb->mark, skb_get_hash(skb));
++			    dev_net(dev), 0, skb->mark, skb_get_hash(skb));
+ 	if (tunnel->encap.type != TUNNEL_ENCAP_NONE)
+ 		goto tx_error;
+ 
+@@ -726,7 +726,8 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
+ 	}
+ 
+ 	ip_tunnel_init_flow(&fl4, protocol, dst, tnl_params->saddr,
+-			    tunnel->parms.o_key, RT_TOS(tos), tunnel->parms.link,
++			    tunnel->parms.o_key, RT_TOS(tos),
++			    dev_net(dev), tunnel->parms.link,
+ 			    tunnel->fwmark, skb_get_hash(skb));
+ 
+ 	if (ip_tunnel_encap(skb, tunnel, &protocol, &fl4) < 0)
 -- 
 2.24.3 (Apple Git-128)
 
