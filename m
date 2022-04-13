@@ -2,64 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 778CB4FF6E9
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 14:37:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABD264FF748
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 14:59:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233186AbiDMMjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 08:39:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43162 "EHLO
+        id S235684AbiDMNBo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 09:01:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232694AbiDMMjb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 08:39:31 -0400
-Received: from mail-vk1-xa36.google.com (mail-vk1-xa36.google.com [IPv6:2607:f8b0:4864:20::a36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C14E434B7;
-        Wed, 13 Apr 2022 05:37:09 -0700 (PDT)
-Received: by mail-vk1-xa36.google.com with SMTP id o14so769167vkf.13;
-        Wed, 13 Apr 2022 05:37:09 -0700 (PDT)
+        with ESMTP id S231727AbiDMNBm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 09:01:42 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAE30303;
+        Wed, 13 Apr 2022 05:59:20 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id x3so1017301wmj.5;
+        Wed, 13 Apr 2022 05:59:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=l91PaoNzkraHqeajdUVuvzQMezggMyac9Bnl2PBAwYE=;
-        b=GY+Nx/NLjsUDY2KpKhXCF0f+wm3O1zKwOqSZqRMwSH/56LljWI42nzXFPSbOLyCzgT
-         38WLFUE7x1wXVcgpN+m50/DObAWM4TnxUxxRmFhI/C9OoGZK4NuzYTGMq2Rm5gfC2W59
-         5NLo7/rvy6vTcgAgP/s6fT6oILUlEPqJR7TkH7m5VJYlOAMtELQhO2QUn7l50LFhFp3p
-         v6oSBLHRPNRnN3wVuNHT3YkYnjj2RPzO9KpRP3DWjy1xFP4HW+Br7ccBiLlarZcjMUVS
-         U6i/JaRu2U861B3HZ466iOe9s1qpyrndnCtwiKI+X1ic2HRWNvuQH1WT8I3bhjPSOUIu
-         CFHA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=tLvIKnCsgwq0Fk81VHoLGLNWgDzppdl1EGVsnwIiwWk=;
+        b=J+TeCd/41OhdiO9FUGEfBABaBHyh/+x7sT23BLdtYO5M/x78pQgF4HUNKv9pzckLvE
+         MxPd2HtNgkI6X7aRD/PgoHW6pVhDxI8euAS9xxP6mmaE1kusyaJ0y+ZjzUz6BMYa5ozG
+         9uinPwymgXMcz+Gg+OuQDeTD5Y8mH6LmuNMUDP/r/iZ6ncTL2KniEyeWwa8admD2JJxh
+         55468CiYjZUtegpegbpzGpHqZ2PuQ9QJf08kGj4VNjg0PuJiBgKjEWPP6vJNz5uLeKJS
+         pPiToZDXWjoFGkMUuKIofSm8bW4zIWYbuSBz6fEuW6Ccl8EM9Nmw4ioblOFhaO1IvD9d
+         ZBkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=l91PaoNzkraHqeajdUVuvzQMezggMyac9Bnl2PBAwYE=;
-        b=K/9w5RqodWriEVvuKJ+pEH4qI4xncynenFD3UvhoB/swI2yswB1sTEYy3YcZDN7oQp
-         dYp6UQhjUPh4RABVdSpizJpPeFnPtWiqMSgu2A6bHmtbsKKj4M3wIkjrAlUgo/u+HFRz
-         67kkLnEGxV3x30urhkrXa8/fzukfWgN/czoQT0+Z8TklKwJj3E1ud2+4BOqHRuGQKW2V
-         0r5PSrZoFLN5956z6+DGKX2iIfQoITySOijvaEyOMaA4ovF8Xub5rJgxtULBvXpv8sMF
-         RLmKzmHHQSxZc8kRcY6KWLTOGMyyB22VLlG2ePJ62EpZe/9ZBHi4+JZrIpDZgDcrOh8t
-         kz8A==
-X-Gm-Message-State: AOAM5320VnjBgaWSL1kURKVF/+yVcKOIpCpDMjVMdMz80TE6cqcN+OgO
-        YJGu5KcMZDv24xi8o/Mt1ep0tyZVrO0X7KZK1lg=
-X-Google-Smtp-Source: ABdhPJxGJlkfPgu8vJf3w4y+p8nnMcci1I50j/3AishPt40LSnppecm72DbL0epYWf0Sht2/EZHHGcU9xC0srQzNp3g=
-X-Received: by 2002:a1f:ac95:0:b0:345:2ade:e54b with SMTP id
- v143-20020a1fac95000000b003452adee54bmr8524580vke.3.1649853428705; Wed, 13
- Apr 2022 05:37:08 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=tLvIKnCsgwq0Fk81VHoLGLNWgDzppdl1EGVsnwIiwWk=;
+        b=WX/tvb6yVCz0T6oV6WZN9+6cGtZhttzYuuK5nSYV09C9Nf/8nT8nUC27ygpJ6dyW2M
+         tw4WVyuhWOsbAs5rRRxi+A8YXNIaJjfzYueLHOTK7PuHS1kRAA6HhrNb9lZf+9I+3efh
+         q5aP3vEfB4QJZfH9dKO3jgemiFzZrUpLBt0nMYlnlLGPYMPvRtsKm9bGQrIZYB4cgXlD
+         yZ8gg7MQ8JmPXOTqdATmbeBPPxC4+mmYKb6QO+8ieUL6qBFLvzTqdjjLyB0Ix3GE+ur0
+         BbVl9LErdE+CUZ9DvyXMyCao/qXJ3XmkWJbhPhuUeNMF7mFkdemSZdR4Uhytm5ofLP/l
+         PIzQ==
+X-Gm-Message-State: AOAM530Y88/NxUFQi4GGkUdRWW2wfznoyTrFW2Z52bKjMeNg5nlLdW0A
+        zaZgs1M/kX/38/5e/2ssP1o=
+X-Google-Smtp-Source: ABdhPJzHDsOyWeJ1XYw5H42kbzi5IU99y9X4kNsBdhZkSZSUb/AfGgMpOXsUKWaFNT0R/LhnDJ9bFw==
+X-Received: by 2002:a05:600c:5128:b0:38e:bcdd:53bf with SMTP id o40-20020a05600c512800b0038ebcdd53bfmr8352243wms.109.1649854759438;
+        Wed, 13 Apr 2022 05:59:19 -0700 (PDT)
+Received: from hoboy.vegasvil.org (195-70-108-137.stat.salzburg-online.at. [195.70.108.137])
+        by smtp.gmail.com with ESMTPSA id f9-20020a05600c4e8900b0038cc29bb0e1sm2873992wmq.4.2022.04.13.05.59.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 05:59:18 -0700 (PDT)
+Date:   Wed, 13 Apr 2022 05:59:15 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Tan Tee Min <tee.min.tan@intel.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Rayagond Kokatanur <rayagond@vayavyalabs.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Voon Wei Feng <weifeng.voon@intel.com>,
+        Wong Vee Khee <vee.khee.wong@intel.com>,
+        Song Yoong Siang <yoong.siang.song@intel.com>
+Subject: Re: [PATCH net 1/1] net: stmmac: add fsleep() in HW Rx timestamp
+ checking loop
+Message-ID: <20220413125915.GA667752@hoboy.vegasvil.org>
+References: <20220413040115.2351987-1-tee.min.tan@intel.com>
 MIME-Version: 1.0
-References: <20220404151036.265901-1-k.kahurani@gmail.com> <20220404153151.GF3293@kadam>
-In-Reply-To: <20220404153151.GF3293@kadam>
-From:   David Kahurani <k.kahurani@gmail.com>
-Date:   Wed, 13 Apr 2022 15:36:57 +0300
-Message-ID: <CAAZOf25i_mLO9igOY5wiUaxLOsxMt3jrvytSm1wm95R-bdKysA@mail.gmail.com>
-Subject: Re: [PATCH] net: ax88179: add proper error handling of usb read errors
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     netdev@vger.kernel.org,
-        syzbot <syzbot+d3dbdf31fbe9d8f5f311@syzkaller.appspotmail.com>,
-        davem@davemloft.net, jgg@ziepe.ca, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        Phillip Potter <phil@philpotter.co.uk>,
-        syzkaller-bugs@googlegroups.com, arnd@arndb.de,
-        Pavel Skripkin <paskripkin@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220413040115.2351987-1-tee.min.tan@intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -70,60 +82,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 4, 2022 at 6:32 PM Dan Carpenter <dan.carpenter@oracle.com> wrote:
+On Wed, Apr 13, 2022 at 12:01:15PM +0800, Tan Tee Min wrote:
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
+> index d3b4765c1a5b..289bf26a6105 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
+> @@ -279,10 +279,11 @@ static int dwmac4_wrback_get_rx_timestamp_status(void *desc, void *next_desc,
+>  			/* Check if timestamp is OK from context descriptor */
+>  			do {
+>  				ret = dwmac4_rx_check_timestamp(next_desc);
+> -				if (ret < 0)
+> +				if (ret <= 0)
+>  					goto exit;
+>  				i++;
+>  
+> +				fsleep(1);
 
-Hi Dan
+This is nutty.  Why isn't this code using proper deferral mechanisms
+like work or kthread?
 
-> >       int ret;
-> >       int (*fn)(struct usbnet *, u8, u8, u16, u16, void *, u16);
-> > @@ -201,9 +202,12 @@ static int __ax88179_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
-> >       ret = fn(dev, cmd, USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
-> >                value, index, data, size);
-> >
-> > -     if (unlikely(ret < 0))
-> > +     if (unlikely(ret < size)) {
-> > +             ret = ret < 0 ? ret : -ENODATA;
-> > +
-> >               netdev_warn(dev->net, "Failed to read reg index 0x%04x: %d\n",
-> >                           index, ret);
-> > +     }
-> >
-> >       return ret;
->
-> It would be better to make __ax88179_read_cmd() return 0 on success
-> instead of returning size on success.  Non-standard returns lead to bugs.
->
+>  			} while ((ret == 1) && (i < 10));
+>  
+>  			if (i == 10)
+> -- 
+> 2.25.1
+> 
 
-I don't suppose this would have much effect on the structure of the
-code and indeed plan to do this but just some minor clarification.
-
-Isn't it standard for reader functions to return the number of bytes read?
-
-Regards,
-David.
-
->
-> > @@ -1060,16 +1151,30 @@ static int ax88179_check_eeprom(struct usbnet *dev)
-> >
-> >               jtimeout = jiffies + delay;
-> >               do {
-> > -                     ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_SROM_CMD,
-> > -                                      1, 1, &buf);
-> > +                 ret = ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_SROM_CMD,
-> > +                                        1, 1, &buf);
-> > +
-> > +                 if (ret < 0) {
-> > +                         netdev_dbg(dev->net,
-> > +                                    "Failed to read SROM_CMD: %d\n",
-> > +                                    ret);
-> > +                         return ret;
-> > +                 }
-> >
-> >                       if (time_after(jiffies, jtimeout))
-> >                               return -EINVAL;
->
-> The indenting here is wrong.  Run scripts/checkpatch.pl on your patches.
->
-> regards,
-> dan carpenter
->
+Thanks,
+Richard
