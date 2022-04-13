@@ -2,132 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7894B4FF3C0
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 11:39:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EB9D4FF3DA
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 11:42:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234483AbiDMJmI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 05:42:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59362 "EHLO
+        id S234584AbiDMJmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 05:42:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229934AbiDMJmF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 05:42:05 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DBD416599;
-        Wed, 13 Apr 2022 02:39:44 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id n18so1484673plg.5;
-        Wed, 13 Apr 2022 02:39:44 -0700 (PDT)
+        with ESMTP id S232611AbiDMJmO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 05:42:14 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB3BE35247
+        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 02:39:52 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id c6so1643832edn.8
+        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 02:39:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rhegUgjc/7VHRLP2gdtsnZm8adnS3l3cX73PyLsMGRk=;
-        b=ARKI66sAkLyVzLdo1WE8DshrLMWmBCs9E7n6aGgK9cqB3oVkTySrW8TkAyxoxGms2E
-         K222tpdE9a+sxA+q7V2nGmIgu6FiZLQbx73ITRSU4APR9gpUKY7K4QwXHsb8AEXB59I8
-         c9HCyDrm4OCF7UY8jFeY5F0a3R81n5Otjd4WQ+7JHwOzk037mlwL8bzmej5bxTbg42qm
-         HJFt9TyjX+pqdQhAgKAlEpz3dUiz18+cdiGIn3YlBFanQ8mfci5Cczvpb5RruJALPqS7
-         C8GfyeZbQz/gjftS0XKefkLgK2Gy2i/3XoJwbbGu0QvOD+swJ2YsugwaCqhPoUPr255t
-         mjYw==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=KhtSZr2c56r54K7IpY0qcNj65rBp4GOZJk8SwvpS20Q=;
+        b=A1UR9raaChW76TEYQ6W7rbeQLFclE3Ev4UXUC48a3qNoNBpbUBpm3RwMBHLxEDTjRp
+         urD+qi7Ny4fEyRtFuBtz8khDO4UlxKcgQg91Wah1DGrop6eqbEnoL5jZcHvFzzRluE6q
+         PVpql2/AhUhT3insWejQuTozd2Wy5sc8NaZbRk0xNHxUA4MQtQheUODGiwxY3zJfVG+q
+         HYN0ba4JvT0P6fbTLjBOdcjwiQ2PZB3nZM3I58D2zKiX9/2BhjObbHglbxQ+R+Be8w1E
+         WBEtNfBU3KWskGvqMu+Z96tygaDFrQvFZksYOTjfDKqjUsCvegxDnesXjUS2FknsjQAs
+         fS5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=rhegUgjc/7VHRLP2gdtsnZm8adnS3l3cX73PyLsMGRk=;
-        b=51JdK1VVLATZDhIIPcw4IUvtiJi6xb8YZtzkeGhA1J0lAN9b843gGS/R9L+AbMG8GS
-         LYIY0+w91NA12i4HmE0+v1fWwoW26TgRSyP5YKYinuVzva5bt2pmhIVQggUYtQn9jtO0
-         LgyBjGSVvJ7TPaJQk22i/kRYOFPeL33qGlYx9HAFAHoDbsSUBqRISV4FsgZP6Vt31rl4
-         pYt6bmCaTv1V9tSm0iU9K0Kv8W1/C3uUXD1YpIJqjUrimX4RvI4r/aFdtMzte8jrvVcf
-         oP8De8oD99En6KkGzW3jTpyPogI4AMUwKyfOd5Q5aVuGGtc6bk4e/SFZarL2AluKmEqJ
-         dFwQ==
-X-Gm-Message-State: AOAM532JgIQl13v/Uq+nJJzTvQK8fYEr/XigKwow3xt7QzWZVKX/lVze
-        qHK325qM7tocftxtL8pOLjQ=
-X-Google-Smtp-Source: ABdhPJwkgg7b/12aUFRK5iwhxMcz1c2QyYp9PhA6rSpY/3uzhaFb3dcLDGd0TQxSU3Ady4kqsgP1Jw==
-X-Received: by 2002:a17:902:cf0d:b0:156:1cc:f08f with SMTP id i13-20020a170902cf0d00b0015601ccf08fmr41362048plg.42.1649842784486;
-        Wed, 13 Apr 2022 02:39:44 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id r35-20020a635163000000b0039d2213ca6csm5522616pgl.45.2022.04.13.02.39.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 02:39:44 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     kvalo@kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] wlcore: vendor_cmd: use pm_runtime_resume_and_get instead of pm_runtime_get_sync
-Date:   Wed, 13 Apr 2022 09:39:39 +0000
-Message-Id: <20220413093939.2538825-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        bh=KhtSZr2c56r54K7IpY0qcNj65rBp4GOZJk8SwvpS20Q=;
+        b=Z2Rlg+gBehmx+DJXqgVn7H3oW2ig2ulL8eKiihb070ERFTUA+qWKiAIERGAAT4VOSg
+         GnfjpmQ+RiIVyX7Lyao8B/t6eFDucgfUM8iBIo+qLTcDFztK8r5/Xrh3/KRbS5nZm+vw
+         IDnYCf6SkTfCRuDJfCU06Wao+6rGvTGC2zQMgmJfUPV0/29aYsRn9dKxDzdKrgxJjWC4
+         QAjkxWTwYRI6QkfQB+zOkmqLemreZyPbyLehVf9RU5oGyLYl8jDisJEOojfmvYWAghQq
+         SaG+T35p/SDfwdJg4YI+PdQrlin0DWIsuUiZUn64ozSNROWJXlEbaseEHG1Uw1kuW1hn
+         EXsg==
+X-Gm-Message-State: AOAM531CswEoRMR+paYBw18DcVqOW0UGBn+8nZzNEsDML2R4zPSPuCCj
+        FFRHYFjjgE75J8kCZUgVk1jvyZOgWIlLLys6
+X-Google-Smtp-Source: ABdhPJyuyhJH8cXmwjKUDWtoY4iM+tiNhiA1k/YC0JYrpYM1DsovaxG6C6wKC4F8SHD8/LjC92kMQQ==
+X-Received: by 2002:a05:6402:2794:b0:419:2ea9:7de3 with SMTP id b20-20020a056402279400b004192ea97de3mr43060432ede.169.1649842791323;
+        Wed, 13 Apr 2022 02:39:51 -0700 (PDT)
+Received: from [192.168.0.203] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id b5-20020a17090630c500b006e8044fa76bsm9711375ejb.143.2022.04.13.02.39.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Apr 2022 02:39:50 -0700 (PDT)
+Message-ID: <aaa7960e-11cb-e5aa-d1c3-499c3353133d@linaro.org>
+Date:   Wed, 13 Apr 2022 11:39:50 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] NFC: NULL out the dev->rfkill to prevent UAF
+Content-Language: en-US
+To:     Lin Ma <linma@zju.edu.cn>, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220412053208.28681-1-linma@zju.edu.cn>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220412053208.28681-1-linma@zju.edu.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
-
-Using pm_runtime_resume_and_get is more appropriate
-for simplifing code
-
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
----
- drivers/net/wireless/ti/wlcore/vendor_cmd.c | 18 ++++++------------
- 1 file changed, 6 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/net/wireless/ti/wlcore/vendor_cmd.c b/drivers/net/wireless/ti/wlcore/vendor_cmd.c
-index e1bd344c4ebc..e4269e2b0098 100644
---- a/drivers/net/wireless/ti/wlcore/vendor_cmd.c
-+++ b/drivers/net/wireless/ti/wlcore/vendor_cmd.c
-@@ -53,11 +53,9 @@ wlcore_vendor_cmd_smart_config_start(struct wiphy *wiphy,
- 		goto out;
- 	}
- 
--	ret = pm_runtime_get_sync(wl->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(wl->dev);
-+	ret = pm_runtime_resume_and_get(wl->dev);
-+	if (ret < 0)
- 		goto out;
--	}
- 
- 	ret = wlcore_smart_config_start(wl,
- 			nla_get_u32(tb[WLCORE_VENDOR_ATTR_GROUP_ID]));
-@@ -88,11 +86,9 @@ wlcore_vendor_cmd_smart_config_stop(struct wiphy *wiphy,
- 		goto out;
- 	}
- 
--	ret = pm_runtime_get_sync(wl->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(wl->dev);
-+	ret = pm_runtime_resume_and_get(wl->dev);
-+	if (ret < 0)
- 		goto out;
--	}
- 
- 	ret = wlcore_smart_config_stop(wl);
- 
-@@ -135,11 +131,9 @@ wlcore_vendor_cmd_smart_config_set_group_key(struct wiphy *wiphy,
- 		goto out;
- 	}
- 
--	ret = pm_runtime_get_sync(wl->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(wl->dev);
-+	ret = pm_runtime_resume_and_get(wl->dev);
-+	if (ret < 0)
- 		goto out;
--	}
- 
- 	ret = wlcore_smart_config_set_group_key(wl,
- 			nla_get_u32(tb[WLCORE_VENDOR_ATTR_GROUP_ID]),
--- 
-2.25.1
+On 12/04/2022 07:32, Lin Ma wrote:
+> Commit 3e3b5dfcd16a ("NFC: reorder the logic in nfc_{un,}register_device") 
+> assumes the device_is_registered() in function nfc_dev_up() will help
+> to check when the rfkill is unregistered. However, this check only 
+> take effect when device_del(&dev->dev) is done in nfc_unregister_device().
+> Hence, the rfkill object is still possible be dereferenced.
+> 
 
 
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+Best regards,
+Krzysztof
