@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9763B4FEBD7
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 02:12:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2A7F4FEBD8
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 02:12:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230185AbiDMAOp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Apr 2022 20:14:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59608 "EHLO
+        id S230218AbiDMAOr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Apr 2022 20:14:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230130AbiDMAOm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 20:14:42 -0400
+        with ESMTP id S230149AbiDMAOn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Apr 2022 20:14:43 -0400
 Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F9572183C;
-        Tue, 12 Apr 2022 17:12:23 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id r18so355986ljp.0;
-        Tue, 12 Apr 2022 17:12:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66D9023157;
+        Tue, 12 Apr 2022 17:12:24 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id c15so291328ljr.9;
+        Tue, 12 Apr 2022 17:12:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=95EdWt3P5OcczU2ZgA3mNWl4SQi5XpYA5t1o8tF8XYk=;
-        b=c+FWgx0zV3p4uTzreCEpkwcL0sYI2IYIBoovHFkyJ4D68sPmtMIz6PN8OxzIvA85e1
-         LBkB1zjlxhrx9xfrxKDPqVYliEb1WNg1v3T8ifr0Q4DrDJMlZFbBmFaEIFZyFLcrKKKS
-         NckidXETcrx731FpkArx31gLDlwMGeRus75bihsNWbH9rhFZDSvJmdCcsrCX3gGWi6hW
-         XTZ5dG+dP/fnUJuu/HUlq5s32MmcQmC7+9gq7y7yp7rjeIOh+h6fnCr1JqocDcwr+Aet
-         A/aykxVA6cpp2MRnjshnk/7k2mjREHpjHpehoQ6wGWqTBouPTXFggj0syERTxOvMoUB3
-         RjmA==
+        bh=8nBiXf+DqAHduPvS/hZ0dn5wt8Ro59nVlIHK+Vhdc5k=;
+        b=a201yrJaXTcomsccXmr0UKd66u8v8gBKyVobnEphmTEXNkNtb4tH7EK8hJGo6kjw1t
+         wJOAK39ScUc/cw0SznPgwfbOGR1cRychpUxC1azekQQtoWiII4jV4kKdt+K3w6+wEMX+
+         DoqI4bjl3PBm+ml/YlJe1pcvUlI5AZDFq/4HTVrlvAoQReNZlg3VRNUDOj2I7o5CqTWI
+         e4uLu1anc33oIg0AwXen3FjVGobt+GKp/nr/BVnKYTLAyOXlZgsO8+nRufDVwx6jQGBj
+         W2Ua3AdSuNx7LWd79peC89a2wGDUm2lcUHYYW6hAuYS3MyQMsIo3hYqL9V9wYtFRab9U
+         FnBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=95EdWt3P5OcczU2ZgA3mNWl4SQi5XpYA5t1o8tF8XYk=;
-        b=pe2t7zjEe/z31Hrgo6d4eJy2XFGD2emeZn0LB7S6e1Jkna4wEKHE7qJT6WSZvsPUWk
-         QMcYjeqlIf/XiMLcA2eBBnpWqlTQczbmdVatFPBAYKZxtL7vY+dPTkKStVVIqlU1YwVp
-         SRT5OO0zraP9CmHhcgzRAor2e1CRBVerL9vwUJb0Q9rlh/Y5bI2602WS0BvQmefcMyYP
-         noPefaeDlqjI3s+K91b63bhUDpR+xUhOcAcd+PY+5HsgI9LA3V6kFRkXnDPTXic3MDnW
-         c0zvSXjLkX7qwGW5jX5IiWVBXrXnXg9YbuU9zNOHJR2MS0gQQOnygjl+5IwPF1MSSZId
-         lkzA==
-X-Gm-Message-State: AOAM530Q0QHTPbJSXdTST0zm1pAu7Opdv9Sd5GaC1j2HCZB1ftnTI5sR
-        VyTK4/miPmRhsk5yXEy6r12BvuoJx2qzyA==
-X-Google-Smtp-Source: ABdhPJxhbhcM+HcMeo8HVy50JWoZDZNCkkXm1dXSGPOKhMpkZcoWduYuCqLX3pNc1gl2eLaM3t9RBw==
-X-Received: by 2002:a2e:bf25:0:b0:247:d216:43fc with SMTP id c37-20020a2ebf25000000b00247d21643fcmr25040685ljr.520.1649808741341;
-        Tue, 12 Apr 2022 17:12:21 -0700 (PDT)
+        bh=8nBiXf+DqAHduPvS/hZ0dn5wt8Ro59nVlIHK+Vhdc5k=;
+        b=V4prLDwANhpd/hbWF5F0cikUIDljdQvC3qea3y2v5yTTmkPvIvgWRBUmbiEJl6gbXx
+         VnJ0wA8Vw6NJgSAIB858o/iiTFxYINMJVgd9NC9CpvyOJCDck9+Bshffj5cjaJo0NXHS
+         4xTmvziogXdJ4re79dGvOHdc5Qe/oEG/qRWWGzOm0r8sjwDPxsPttcuAYZD0/27woJt+
+         RdAW95FJio4z29O4NApJwhuJH3XJgl/n+wkSiMFmuGJOfRMo0H8BnWhv5IFiIyzHGXqU
+         B8NVMfy6MKffwjWsW59+TQtzyIbbGM+xEioOmFz1TPN0uqxWHcOWT8hFK3fa9dz0+7Fp
+         H8mw==
+X-Gm-Message-State: AOAM530/xWFuxnV/6ybe4axCdCVosf4ZnTyAr5ccJZ5nnmNsKFL662Me
+        GTd8TJMG2ez6/Y5vWWXFRRI23H+vIBBFag==
+X-Google-Smtp-Source: ABdhPJxg6rkgSwRSE+mkDpxStXDQSRUttkodtSBl1JRGEeVLR4p7sb9o7aIbXmDh25M1aJX4g9Pjtg==
+X-Received: by 2002:a2e:8007:0:b0:24a:c2d6:50c7 with SMTP id j7-20020a2e8007000000b0024ac2d650c7mr24850624ljg.94.1649808742499;
+        Tue, 12 Apr 2022 17:12:22 -0700 (PDT)
 Received: from rafiki.local ([2001:470:6180::c8d])
-        by smtp.gmail.com with ESMTPSA id d6-20020a2e96c6000000b0024b4cd1b611sm1611731ljj.91.2022.04.12.17.12.20
+        by smtp.gmail.com with ESMTPSA id d6-20020a2e96c6000000b0024b4cd1b611sm1611731ljj.91.2022.04.12.17.12.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Tue, 12 Apr 2022 17:12:21 -0700 (PDT)
 From:   Lech Perczak <lech.perczak@gmail.com>
@@ -53,9 +53,9 @@ Cc:     Lech Perczak <lech.perczak@gmail.com>,
         =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
         Kristian Evensen <kristian.evensen@gmail.com>,
         Oliver Neukum <oliver@neukum.org>
-Subject: [PATCH v2 2/3] rndis_host: enable the bogus MAC fixup for ZTE devices from cdc_ether
-Date:   Wed, 13 Apr 2022 02:11:57 +0200
-Message-Id: <20220413001158.1202194-3-lech.perczak@gmail.com>
+Subject: [PATCH v2 3/3] rndis_host: limit scope of bogus MAC address detection to ZTE devices
+Date:   Wed, 13 Apr 2022 02:11:58 +0200
+Message-Id: <20220413001158.1202194-4-lech.perczak@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220413001158.1202194-1-lech.perczak@gmail.com>
 References: <20220413001158.1202194-1-lech.perczak@gmail.com>
@@ -72,132 +72,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Certain ZTE modems, namely: MF823. MF831, MF910, built-in modem from
-MF286R, expose both CDC-ECM and RNDIS network interfaces.
-They have a trait of ignoring the locally-administered MAC address
-configured on the interface both in CDC-ECM and RNDIS part,
-and this leads to dropping of incoming traffic by the host.
-However, the workaround was only present in CDC-ECM, and MF286R
-explicitly requires it in RNDIS mode.
-
-Re-use the workaround in rndis_host as well, to fix operation of MF286R
-module, some versions of which expose only the RNDIS interface. Do so by
-introducing new flag, RNDIS_DRIVER_DATA_BOGUS_MAC, and testing for it in
-rndis_rx_fixup. This is required, as RNDIS uses frame batching, and all
-of the packets inside the batch need the fixup. This might introduce a
-performance penalty, because test is done for every returned Ethernet
-frame.
-
-Apply the workaround to both "flavors" of RNDIS interfaces, as older ZTE
-modems, like MF823 found in the wild, report the USB_CLASS_COMM class
-interfaces, while MF286R reports USB_CLASS_WIRELESS_CONTROLLER.
+Reporting of bogus MAC addresses and ignoring configuration of new
+destination address wasn't observed outside of a range of ZTE devices,
+among which this seems to be the common bug. Align rndis_host driver
+with implementation found in cdc_ether, which also limits this workaround
+to ZTE devices.
 
 Suggested-by: Bjørn Mork <bjorn@mork.no>
 Cc: Kristian Evensen <kristian.evensen@gmail.com>
 Cc: Oliver Neukum <oliver@neukum.org>
 Signed-off-by: Lech Perczak <lech.perczak@gmail.com>
 ---
-v2:
-- Ensured that MAC fixup is applied to all Ethernet frames inside an
-  RNDIS batch. Thanks to Bjørn for finding the issue. 
-- Introduced new driver flag to facilitate the above.
 
- drivers/net/usb/rndis_host.c   | 33 ++++++++++++++++++++++++++++++++-
- include/linux/usb/rndis_host.h |  1 +
- 2 files changed, 33 insertions(+), 1 deletion(-)
+v2:
+- No logical changes, just rebased on top of previous patches.
+
+ drivers/net/usb/rndis_host.c | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/usb/rndis_host.c b/drivers/net/usb/rndis_host.c
-index 247f58cb0f84..18b27a4ed8bd 100644
+index 18b27a4ed8bd..c5e0a5f659b1 100644
 --- a/drivers/net/usb/rndis_host.c
 +++ b/drivers/net/usb/rndis_host.c
-@@ -485,10 +485,14 @@ EXPORT_SYMBOL_GPL(rndis_unbind);
-  */
- int rndis_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
- {
-+	bool dst_mac_fixup;
-+
- 	/* This check is no longer done by usbnet */
- 	if (skb->len < dev->net->hard_header_len)
- 		return 0;
- 
-+	dst_mac_fixup = !!(dev->driver_info->data & RNDIS_DRIVER_DATA_DST_MAC_FIXUP);
-+
- 	/* peripheral may have batched packets to us... */
- 	while (likely(skb->len)) {
- 		struct rndis_data_hdr	*hdr = (void *)skb->data;
-@@ -523,10 +527,17 @@ int rndis_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
- 			break;
- 		skb_pull(skb, msg_len - sizeof *hdr);
- 		skb_trim(skb2, data_len);
-+
-+		if (unlikely(dst_mac_fixup))
-+			usbnet_cdc_zte_rx_fixup(dev, skb2);
-+
- 		usbnet_skb_return(dev, skb2);
+@@ -418,10 +418,7 @@ generic_rndis_bind(struct usbnet *dev, struct usb_interface *intf, int flags)
+ 		goto halt_fail_and_release;
  	}
  
- 	/* caller will usbnet_skb_return the remaining packet */
-+	if (unlikely(dst_mac_fixup))
-+		usbnet_cdc_zte_rx_fixup(dev, skb);
-+
- 	return 1;
- }
- EXPORT_SYMBOL_GPL(rndis_rx_fixup);
-@@ -578,7 +589,6 @@ rndis_tx_fixup(struct usbnet *dev, struct sk_buff *skb, gfp_t flags)
- }
- EXPORT_SYMBOL_GPL(rndis_tx_fixup);
+-	if (bp[0] & 0x02)
+-		eth_hw_addr_random(net);
+-	else
+-		eth_hw_addr_set(net, bp);
++	eth_hw_addr_set(net, bp);
  
--
- static const struct driver_info	rndis_info = {
- 	.description =	"RNDIS device",
+ 	/* set a nonzero filter to enable data transfers */
+ 	memset(u.set, 0, sizeof *u.set);
+@@ -463,6 +460,16 @@ static int rndis_bind(struct usbnet *dev, struct usb_interface *intf)
+ 	return generic_rndis_bind(dev, intf, FLAG_RNDIS_PHYM_NOT_WIRELESS);
+ }
+ 
++static int zte_rndis_bind(struct usbnet *dev, struct usb_interface *intf)
++{
++	int status = rndis_bind(dev, intf);
++
++	if (!status && (dev->net->dev_addr[0] & 0x02))
++		eth_hw_addr_random(dev->net);
++
++	return status;
++}
++
+ void rndis_unbind(struct usbnet *dev, struct usb_interface *intf)
+ {
+ 	struct rndis_halt	*halt;
+@@ -614,7 +621,7 @@ static const struct driver_info	zte_rndis_info = {
+ 	.description =	"ZTE RNDIS device",
  	.flags =	FLAG_ETHER | FLAG_POINTTOPOINT | FLAG_FRAMING_RN | FLAG_NO_SETINT,
-@@ -600,6 +610,17 @@ static const struct driver_info	rndis_poll_status_info = {
- 	.tx_fixup =	rndis_tx_fixup,
- };
- 
-+static const struct driver_info	zte_rndis_info = {
-+	.description =	"ZTE RNDIS device",
-+	.flags =	FLAG_ETHER | FLAG_POINTTOPOINT | FLAG_FRAMING_RN | FLAG_NO_SETINT,
-+	.data =		RNDIS_DRIVER_DATA_DST_MAC_FIXUP,
-+	.bind =		rndis_bind,
-+	.unbind =	rndis_unbind,
-+	.status =	rndis_status,
-+	.rx_fixup =	rndis_rx_fixup,
-+	.tx_fixup =	rndis_tx_fixup,
-+};
-+
- /*-------------------------------------------------------------------------*/
- 
- static const struct usb_device_id	products [] = {
-@@ -613,6 +634,16 @@ static const struct usb_device_id	products [] = {
- 	USB_VENDOR_AND_INTERFACE_INFO(0x238b,
- 				      USB_CLASS_COMM, 2 /* ACM */, 0x0ff),
- 	.driver_info = (unsigned long)&rndis_info,
-+}, {
-+	/* ZTE WWAN modules */
-+	USB_VENDOR_AND_INTERFACE_INFO(0x19d2,
-+				      USB_CLASS_WIRELESS_CONTROLLER, 1, 3),
-+	.driver_info = (unsigned long)&zte_rndis_info,
-+}, {
-+	/* ZTE WWAN modules, ACM flavour */
-+	USB_VENDOR_AND_INTERFACE_INFO(0x19d2,
-+				      USB_CLASS_COMM, 2 /* ACM */, 0x0ff),
-+	.driver_info = (unsigned long)&zte_rndis_info,
- }, {
- 	/* RNDIS is MSFT's un-official variant of CDC ACM */
- 	USB_INTERFACE_INFO(USB_CLASS_COMM, 2 /* ACM */, 0x0ff),
-diff --git a/include/linux/usb/rndis_host.h b/include/linux/usb/rndis_host.h
-index 809bccd08455..cc42db51bbba 100644
---- a/include/linux/usb/rndis_host.h
-+++ b/include/linux/usb/rndis_host.h
-@@ -197,6 +197,7 @@ struct rndis_keepalive_c {	/* IN (optionally OUT) */
- 
- /* Flags for driver_info::data */
- #define RNDIS_DRIVER_DATA_POLL_STATUS	1	/* poll status before control */
-+#define RNDIS_DRIVER_DATA_DST_MAC_FIXUP	2	/* device ignores configured MAC address */
- 
- extern void rndis_status(struct usbnet *dev, struct urb *urb);
- extern int
+ 	.data =		RNDIS_DRIVER_DATA_DST_MAC_FIXUP,
+-	.bind =		rndis_bind,
++	.bind =		zte_rndis_bind,
+ 	.unbind =	rndis_unbind,
+ 	.status =	rndis_status,
+ 	.rx_fixup =	rndis_rx_fixup,
 -- 
 2.30.2
 
