@@ -2,143 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 776A24FFFD8
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 22:15:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 852794FFFFC
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 22:28:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237254AbiDMURr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 16:17:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41154 "EHLO
+        id S235917AbiDMUar (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 16:30:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232478AbiDMURq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 16:17:46 -0400
-Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130047.outbound.protection.outlook.com [40.107.13.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE1C7DE10;
-        Wed, 13 Apr 2022 13:15:24 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nD8oiGkR2rUdEWs8kktus5UkVxhmrMjXirqI3QCF4ySEiXwS3qbzHD9bDaJ4i4s0gzcFr9KpNeeeqcYudzGfeZa2jitUuVj6Tj7bL+tsDGX2eRG2priheSdQ780kdmOX0mODCyMtIZyOYo844hskXNy6AREo1Q0I3QPy45dyc2yGKmSFW43/BCSc6Ofzy6Zts9t9zuSwd3YrKuOpa1uOdCstIjXEBVlQgUlK1+8RIVIpx4Yo1XPeillrkyWI/eWDgmE1FuqJ9NObY9ZJPgjXKF2Q9MYD+Kg6IguKLGmkDvWsl3lnnJPjH0stAGPYFz9kMoBHkT9ucZbVYZvy3TrAcg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4NTC3H21EFtPy/5KRI/SiA0iQWujtG9LY9PtYQOEOJw=;
- b=TVTS5Xr9CK2Ne/yqOcv7e8Fxy7WmplPFJWL1ej6rmpdci4QxG62rACTioqMuvU7H7PRZF2RgPUx8isyMn0DTVAeB2CQRmJbVEGeqZhGHmPaKHIwo+ScL4naZ9fy9i7g8czBBWAUfe2pJ1WrYV7SWJ8A3kKUT7qNPmedkAlact1tznyg/ibvC5n8QIqvK2eFSpHg05SNnLZLXu3GEILR/AiNQQOSdx4ZMMB/BPpsDp+mXQ3aJ77tRKsSg80LGsXhHLmXDMtcU2wU9Wm/fzT3iWfnMJADedrDPQ0gsarR1TbUGyJqhvg5sfqJ5edVvUGVUQYVEg5fu/HfLPiNGABnDAw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4NTC3H21EFtPy/5KRI/SiA0iQWujtG9LY9PtYQOEOJw=;
- b=JAM+GhtzIR6HCs0HWLgTzjmtfZkk3puJ1tnuzRIINhAmu5Yurshol+OS1pEGGmpf+16BaSHYslXPDlGkySNU5Ofd3z6n20ZYzrf/6WzrF23WdFltmvniPcyx4YM5ZNz51dxEKFqmgOpOx7UT5sHqZdBY8qej5ScOCtW+CuFYJqI=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by DBBPR04MB7756.eurprd04.prod.outlook.com (2603:10a6:10:1e3::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.18; Wed, 13 Apr
- 2022 20:15:21 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::8ed:49e7:d2e7:c55e]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::8ed:49e7:d2e7:c55e%3]) with mapi id 15.20.5144.029; Wed, 13 Apr 2022
- 20:15:21 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "tobias@waldekranz.com" <tobias@waldekranz.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        =?iso-8859-3?Q?Ar=B9n=E7_=DCNAL?= <arinc.unal@arinc9.com>
-Subject: Re: [PATCH net-next] docs: net: dsa: describe issues with checksum
- offload
-Thread-Topic: [PATCH net-next] docs: net: dsa: describe issues with checksum
- offload
-Thread-Index: AQHYM9/NC+3mEspv+kGYTn+QoTcLVqy3uLEAgDarZQCAABqQAA==
-Date:   Wed, 13 Apr 2022 20:15:21 +0000
-Message-ID: <20220413201520.wpdeso2zfmwjhhqk@skbuf>
-References: <20220309180148.13286-1-luizluca@gmail.com>
- <20220309234848.2lthubjtqjx4yn6v@skbuf>
- <CAJq09z7AT0eZR6hf4H2wHsSbXm5O6m4XTV0xM9r_4xgCOu=rtw@mail.gmail.com>
-In-Reply-To: <CAJq09z7AT0eZR6hf4H2wHsSbXm5O6m4XTV0xM9r_4xgCOu=rtw@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 04326d03-933d-4c72-caf2-08da1d8a5617
-x-ms-traffictypediagnostic: DBBPR04MB7756:EE_
-x-microsoft-antispam-prvs: <DBBPR04MB775684BA46C5AF3268976253E0EC9@DBBPR04MB7756.eurprd04.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: wOwk5F+4B+rjLQqZPnGUWp9hRfSG1LvurP6E72OQITn8iv+mXeSbs3oN115xCOJUJJqFGsu0vei+uJ7I3UN+KIK42x9hQcZn/aMPGUdP6Texbco0rqsPSabNtbgSUHbWTdyyaN0gAvXiWK2ngWdOoYjEK9+7eVI1j3ySRSl/0+wynxmPkW1tvR6b90CocYWgD0nRe1w9noERNtiC3cz+3e0KxUyNMJ66nTQHSNVOnSDF3INpPMzPS2anT8OsbTNUYZLCN5enQFH0Lbj0B3cMMZSRlzfNhf5olQNsP9Q4JZZw17Amj8ybNuEfGWsUwkS08xWG3GVaOWxyMHC09nGQTLEAAlYfrQleEK7jQPHksg2h/l/Jb4AOFY8IQQHsBzu5IkpBzKeaQ6whlgnpEUVucuJqEHga+1R7xNre6n4hVCUxfg0tFf0pLh42AIdG9UoZPbaMObPdg6hmnsQtshppTrWK75lCP8LZbOij/MwIPPEnx+ZNISNBbKcfjddWGOKtElvw8CoBgy3UO0khX0GZIYY4pwvx4+E0dn7sqy9Tp55ThRnohNRPJa+T0UXHTIVZ8jZ/31r/YvSS6F42EOeTpG4xIRE+D46KIkvy4NGON0J9jQJdcIUafdB4S2PnDrtYHm+XslPoILZXwl9AjlBTCtq+gekqqry3f9EreOaVur3r6isVajzpU3LfrbCBojOiIIWjlEZWGgOw5fQYTpm/2g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(7416002)(5660300002)(2906002)(44832011)(6512007)(9686003)(6486002)(71200400001)(8936002)(1076003)(54906003)(6916009)(76116006)(186003)(4326008)(64756008)(66946007)(66556008)(66446008)(66476007)(8676002)(6506007)(508600001)(558084003)(122000001)(38100700002)(316002)(26005)(33716001)(86362001)(38070700005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-3?Q?qJQBUbyhNnfAcIqKvq+BJVJFBP6N7y3FL8yYYJ7FwZy+pYcabbVgpvxXIv?=
- =?iso-8859-3?Q?xQCBpax3xo57CHdgCAaNfAyAQHTscEWR82ms7a3+1xC9P5dXPX4mgnPtf4?=
- =?iso-8859-3?Q?ViNFz2nrAiqnVuEn+e2z9PGHLdwxsIzqs0L5oa2ngMOjdIE4kEZ5h2ZwEK?=
- =?iso-8859-3?Q?SS6OPHupqcLGvgMY9CwVUGSrBsCRiUObdUdCXg+cmAYfL4EHQuWXfJAqod?=
- =?iso-8859-3?Q?ml5zr94ob4zpKSKJTbvX/fzC6Xpi0cPiedd6k2XoY2r6BpE3cr74Q0R+nr?=
- =?iso-8859-3?Q?Pu2mvZo87PBQlMkh7ZR2IrtiqwDQHKlvdhd1G1jMNr8uhL2fkwrtFnbxON?=
- =?iso-8859-3?Q?dHi6mHCvj5ESova8PcUEyWem7RdOW3cy+VxyS3RMUcsIOQCkwzT8d0zt+m?=
- =?iso-8859-3?Q?xYRuflNu0xbS1pKjCOvfj3pnauaxoH47n5GeTO41mCb7kbhC4V8/wR1Ond?=
- =?iso-8859-3?Q?dTC4izBPMRut8N8vSLRaMbhHr8xVWWCgjw6rlv2yk2QqpGuLwfQwV5cGeo?=
- =?iso-8859-3?Q?08yOH7eXte+ZPpQgtkJQ6Qx0A1qYgsiW5Vi5Y1Ivd2nrjuW83QFHhEpztL?=
- =?iso-8859-3?Q?5QIdZ6mTWHKrLgwkij2SOHqEKcRhZdLhLjLTn6rPQc4gIIpMl30TUZuMXj?=
- =?iso-8859-3?Q?S3VK4NM/DnIk7iYlq3cXvkrndZRH4CXQTjeSz+JIixJYniJ7IsZsJm1y7W?=
- =?iso-8859-3?Q?xBiy94yOmfhJymFlvTIJAcyf2gFbWUFQKK/p6+DtZbWe/AmLdt7ad9ZJdb?=
- =?iso-8859-3?Q?gQSgwCaWf6FrSQ9wJKsMRP3Aiya4Qj2JXRy0BPVD9B+LwryK+AsVKDbC1p?=
- =?iso-8859-3?Q?lCXu9dj61cBRADuWlcp8bP6b9fX2Ze1pWCbY6ex5wc9oxEHAphTVlD3MOl?=
- =?iso-8859-3?Q?Ck41lAw9nnVzppRQTwl85+oRlPKmRm1d0qSlSCS81md/Jz5Oe2MsJo3coX?=
- =?iso-8859-3?Q?9g2tR1tRwuIMYOD6ck7fXNMpe2Uz22X+v57/lK5ZDMrrPpgujIiaoq2hCU?=
- =?iso-8859-3?Q?Jhl6d/dq/rASW216cYnllYUczeknVyoYDZz6QtqGbrn/iOh4z1Z3pFkpBH?=
- =?iso-8859-3?Q?etnh0V/1OeqkjnawdpOwUk9mhUGbcxP9dn8INPCRwXgoHtxqmxKy5CCuFz?=
- =?iso-8859-3?Q?IT+aV2MdJwr0glH1CAaYhR6H1mCurrulNP6DohcCtaJ2EkXxVn6LuyTHaN?=
- =?iso-8859-3?Q?Slj2NE+xRE3AQKJoF3kA81tupqL+Nc0ErtxidWQXPVFpEs84FwBQRzlcTu?=
- =?iso-8859-3?Q?QMjPF1s1kDB2hyMUOMlJJ2MaZyfK0RfqRqJFFuOLIsm6J1J4yJ5zp+W80Q?=
- =?iso-8859-3?Q?VWhzYdT3xU45X8u8GSVWPDxzTb7giJZ2jqLr35motJRZflbzKJYswpDySA?=
- =?iso-8859-3?Q?ZR0xy5gwdFIsPY/vwZbK4RQUmAz391uBmh9X31Ye0DQzFD/xNAL8DtQnb8?=
- =?iso-8859-3?Q?MjGVTgJhmcKIdbmWQm6ANVhpNUtZUaNc2FYfZSOfY5uWV4k3I+J6np5DxC?=
- =?iso-8859-3?Q?wWhHjb7bqk13GWU6gamBYMBn5vHn4zNL6N8VOoYESW1MXN7y+EOIeygDAL?=
- =?iso-8859-3?Q?ObzNEvDOltImE1Jce9fBqFUHnagfJr6CYq4+9ckyhZhpGw+HrDE92U8Dok?=
- =?iso-8859-3?Q?7n5W4IrfOSYX3LfoANlk+yexKZeGAbSnW/6cj+qJTset762fLalzNcz1dt?=
- =?iso-8859-3?Q?qAd6XNNbmaSRligRHHG58J1kFA9Flp7z1hvk1t/sghosfRousObCzNK9o1?=
- =?iso-8859-3?Q?njgFsb0LG1KlkkcsAPA7eukcr5YKKHVRT8WhJio+GNYbG4MbcEZO6vXT/j?=
- =?iso-8859-3?Q?ngJNEcOMe7GqjXIlPL+AC7epjIHeqYg=3D?=
-Content-Type: text/plain; charset="iso-8859-3"
-Content-ID: <90FDA0D7F1937C4BAFE169D1F76A5B82@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S232705AbiDMUaq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 16:30:46 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6F8182D2F
+        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 13:28:23 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id x17so5558811lfa.10
+        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 13:28:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=engleder-embedded-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=stPKuc9/DjQLOg92Qty3+0zAk8yZJ1MXBf39gZf90jk=;
+        b=e5K1tK1Pv9oAMx51KI2RetWYTyJxnpaLeHhPlg4V9kGUqX3Si/SCR9u3vD41kjVawl
+         Yxx3x3VaOv9QeUxPK4mWXvySk30PUSI37BfZjDXB2m/De+7/ANtvwKpAZixIJmMJW41V
+         oydG6qE1rkcb8CwPMVZxH9qGC+BNjyXt3en7/Dp6dgE0SphQxPSgMiNF0+gzXCDDR0zT
+         mjeePZrQ0ZxYcD2u0nVVvaFvem7U3Q9wLhXZ8pRiBCpgeshiQaLbp1+YDgTvOBzKotzr
+         YKqgHZQ+O7oh0/JKUQk51mHpQoOj55D310xhqSslQkoyB2wilaRvMAEErMQjKWg4BM04
+         Za9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=stPKuc9/DjQLOg92Qty3+0zAk8yZJ1MXBf39gZf90jk=;
+        b=kgS5Hex3Do1bIqWljkxNlb7FIMDpCis/8tgMv2NK8M5iat+ZywGjxraXJvPEJonv6r
+         p3Nu/pL5+o3sXEhSdhvzFxv2DYhJvrQ1R/9iBBmikTqOo01Z3FPf8swTMkxGYGrSiPQH
+         nrUE99bKnvtg2fkomgAMnLmwuTHqZPbiHDbJMWsp1FSP/ewS1BStWasWKxmTxniYvovp
+         38ZYjwSAGy+n8j6CuydZE7pU6MGs/P1LnSdr1d/BdTSEeZZdaO3S4tohj1tNUqeGS4iM
+         RJQSytg6c6Pd5Scha45EwU6PdOU28nqF9lGOitwKMvI3M6eVlP9fC8n7Pk0NoS1+MZx8
+         He+Q==
+X-Gm-Message-State: AOAM533an15SnHHIQwgOG0sgvU7193RoRP8KcunAmMFKrpJQE+K7mSpo
+        evjLXA/IaARii1kLTMM5xhJ9pbuhTlrV0HaQUjl15w==
+X-Google-Smtp-Source: ABdhPJxwNzx3ZyDgcngUeZJIoeL+K+TntmPU+xGBg7X0NzvYq8kAKNzsf5j+datrCZ43fmMtpVyipAYAn/kSYEJS0SQ=
+X-Received: by 2002:a05:6512:12d5:b0:44a:9c24:9254 with SMTP id
+ p21-20020a05651212d500b0044a9c249254mr28799899lfg.39.1649881701924; Wed, 13
+ Apr 2022 13:28:21 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 04326d03-933d-4c72-caf2-08da1d8a5617
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Apr 2022 20:15:21.2032
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: qba/QuuI1MGNbaavXfXD4wI14jOA+DOj25KgPXyRN5zcw2ZUd3rg86qV9Rd8Rw4ztFNq46vkivnEFSZ8F3wQEw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR04MB7756
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220403175544.26556-1-gerhard@engleder-embedded.com>
+ <20220403175544.26556-5-gerhard@engleder-embedded.com> <20220410072930.GC212299@hoboy.vegasvil.org>
+ <CANr-f5xhH31yF8UOmM=ktWULyUugBGDoHzOiYZggiDPZeTbdrw@mail.gmail.com>
+ <20220410134215.GA258320@hoboy.vegasvil.org> <CANr-f5xriLzQ+3xtM+iV8ahu=J1mA7ixbc49f0i2jxkySthTdQ@mail.gmail.com>
+ <CANr-f5yn9LzMQ8yAP8Py-EP_NyifFyj1uXBNo+kuGY1p8t0CFw@mail.gmail.com> <87sfqiypvl.fsf@intel.com>
+In-Reply-To: <87sfqiypvl.fsf@intel.com>
+From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+Date:   Wed, 13 Apr 2022 22:28:10 +0200
+Message-ID: <CANr-f5zrUikbE6N5zYcHYFL=R_tkqP63P2VybHbtqr9m8=08fA@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 4/5] ptp: Support late timestamp determination
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Cc:     Richard Cochran <richardcochran@gmail.com>, yangbo.lu@nxp.com,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, mlichvar@redhat.com,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 03:40:16PM -0300, Luiz Angelo Daros de Luca wrote:
-> Vladimir,
->=20
-> I sent a v2 with your suggestions.
->=20
-> Regards,
->=20
-> Luiz
+> >> > > > > @@ -887,18 +885,28 @@ void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
+> >> > > > >       if (shhwtstamps &&
+> >> > > > >           (sk->sk_tsflags & SOF_TIMESTAMPING_RAW_HARDWARE) &&
+> >> > > > >           !skb_is_swtx_tstamp(skb, false_tstamp)) {
+> >> > > > > +             rcu_read_lock();
+> >> > > > > +             orig_dev = dev_get_by_napi_id(skb_napi_id(skb));
+> >> > > >
+> >> > > > __sock_recv_timestamp() is hot path.
+> >> > > >
+> >> > > > No need to call dev_get_by_napi_id() for the vast majority of cases
+> >> > > > using plain old MAC time stamping.
+> >> > >
+> >> > > Isn't dev_get_by_napi_id() called most of the time anyway in put_ts_pktinfo()?
+> >> >
+> >> > No.  Only when SOF_TIMESTAMPING_OPT_PKTINFO is requested.
+> >>
+> >> You are right, my fault.
+> >>
+> >> > > That's the reason for the removal of a separate flag, which signals the need to
+> >> > > timestamp determination based on address/cookie. I thought there is no need
+> >> > > for that flag, as netdev is already available later in the existing code.
+> >> > >
+> >> > > > Make this conditional on (sk->sk_tsflags & SOF_TIMESTAMPING_BIND_PHC).
+> >> > >
+> >> > > This flag tells netdev_get_tstamp() which timestamp is required. If it
+> >> > > is not set, then
+> >> > > netdev_get_tstamp() has to deliver the normal timestamp as always. But
+> >> > > this normal
+> >> > > timestamp is only available via address/cookie. So netdev_get_tstamp() must be
+> >> > > called.
+> >> >
+> >> > It should be this:
+> >> >
+> >> > - normal, non-vclock:   use hwtstamps->hwtstamp directly
+> >> > - vclock:               use slower path with lookup
+> >> >
+> >> > I don't see why you can't implement that.
+> >>
+> >> I will try to implement it that way.
+> >
+> > I'm thinking about why there should be a slow path with lookup. If the
+> > address/cookie
+> > points to a defined data structure with two timestamps, then no lookup
+> > for the phc or
+> > netdev is necessary. It should be possible for every driver to
+> > allocate a skbuff with enough
+> > space for this structure
+On Tue, Apr 12, 2022 at 11:05 PM Vinicius Costa Gomes
+<vinicius.gomes@intel.com> wrote:
+>
+> Gerhard Engleder <gerhard@engleder-embedded.com> writes:
+> in front of the received Ethernet frame. The
+> > structure could be:
+> >
+> > struct skb_inline_hwtstamps {
+> >         ktime_t hwtstamp;
+> >         ktime_t hwcstamp;
+> > };
+> >
+> > Actually my device and igc are storing the timestamps in front of the
+> > received Ethernet
+> > frame. In my opinion it is obvious to the store metadata of received
+> > Ethernet frames in
+> > front of it, because it eliminates the need for another DMA transfer.
+> > What is your opinion
+> > Vinicius?
+>
+> If I am understanding this right, the idea is providing both "cycles"
+> (free running cycles measurement) and PHC timestamp for all packets, for
+> igc, it will work fine for RX (the HW already writes the timestamps for
+> two timer registers in the host memory), but for TX it's going be
+> awkward/slow (I would have to read two extra registers), but I think
+> it's still possible.
+>
+> But it would be best to avoid the overhead, and only providing the
+> "extra" (the cycles one) measurement if necessary for TX, so
+> SKBTX_HW_TSTAMP_USE_CYCLES would still be needed.
+>
+> So, in short, I am fine with it, as long as I can get away with only
+> providing the cycles measurement for TX if necessary.
 
-Sorry, I had put it in the folder with read emails but didn't actually
-respond to it.=
+Of course for TX only cycles measurement shall be provided and
+SKBTX_HW_TSTAMP_USE_CYCLES is used for that.
+
+Thanks!
+
+Gerhard
