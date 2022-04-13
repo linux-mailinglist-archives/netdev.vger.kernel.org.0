@@ -2,111 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ABD264FF748
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 14:59:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A13B14FF753
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 15:01:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235684AbiDMNBo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 09:01:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33320 "EHLO
+        id S233130AbiDMNDk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 09:03:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231727AbiDMNBm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 09:01:42 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAE30303;
-        Wed, 13 Apr 2022 05:59:20 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id x3so1017301wmj.5;
-        Wed, 13 Apr 2022 05:59:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=tLvIKnCsgwq0Fk81VHoLGLNWgDzppdl1EGVsnwIiwWk=;
-        b=J+TeCd/41OhdiO9FUGEfBABaBHyh/+x7sT23BLdtYO5M/x78pQgF4HUNKv9pzckLvE
-         MxPd2HtNgkI6X7aRD/PgoHW6pVhDxI8euAS9xxP6mmaE1kusyaJ0y+ZjzUz6BMYa5ozG
-         9uinPwymgXMcz+Gg+OuQDeTD5Y8mH6LmuNMUDP/r/iZ6ncTL2KniEyeWwa8admD2JJxh
-         55468CiYjZUtegpegbpzGpHqZ2PuQ9QJf08kGj4VNjg0PuJiBgKjEWPP6vJNz5uLeKJS
-         pPiToZDXWjoFGkMUuKIofSm8bW4zIWYbuSBz6fEuW6Ccl8EM9Nmw4ioblOFhaO1IvD9d
-         ZBkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=tLvIKnCsgwq0Fk81VHoLGLNWgDzppdl1EGVsnwIiwWk=;
-        b=WX/tvb6yVCz0T6oV6WZN9+6cGtZhttzYuuK5nSYV09C9Nf/8nT8nUC27ygpJ6dyW2M
-         tw4WVyuhWOsbAs5rRRxi+A8YXNIaJjfzYueLHOTK7PuHS1kRAA6HhrNb9lZf+9I+3efh
-         q5aP3vEfB4QJZfH9dKO3jgemiFzZrUpLBt0nMYlnlLGPYMPvRtsKm9bGQrIZYB4cgXlD
-         yZ8gg7MQ8JmPXOTqdATmbeBPPxC4+mmYKb6QO+8ieUL6qBFLvzTqdjjLyB0Ix3GE+ur0
-         BbVl9LErdE+CUZ9DvyXMyCao/qXJ3XmkWJbhPhuUeNMF7mFkdemSZdR4Uhytm5ofLP/l
-         PIzQ==
-X-Gm-Message-State: AOAM530Y88/NxUFQi4GGkUdRWW2wfznoyTrFW2Z52bKjMeNg5nlLdW0A
-        zaZgs1M/kX/38/5e/2ssP1o=
-X-Google-Smtp-Source: ABdhPJzHDsOyWeJ1XYw5H42kbzi5IU99y9X4kNsBdhZkSZSUb/AfGgMpOXsUKWaFNT0R/LhnDJ9bFw==
-X-Received: by 2002:a05:600c:5128:b0:38e:bcdd:53bf with SMTP id o40-20020a05600c512800b0038ebcdd53bfmr8352243wms.109.1649854759438;
-        Wed, 13 Apr 2022 05:59:19 -0700 (PDT)
-Received: from hoboy.vegasvil.org (195-70-108-137.stat.salzburg-online.at. [195.70.108.137])
-        by smtp.gmail.com with ESMTPSA id f9-20020a05600c4e8900b0038cc29bb0e1sm2873992wmq.4.2022.04.13.05.59.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 05:59:18 -0700 (PDT)
-Date:   Wed, 13 Apr 2022 05:59:15 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Tan Tee Min <tee.min.tan@intel.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Rayagond Kokatanur <rayagond@vayavyalabs.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Voon Wei Feng <weifeng.voon@intel.com>,
-        Wong Vee Khee <vee.khee.wong@intel.com>,
-        Song Yoong Siang <yoong.siang.song@intel.com>
-Subject: Re: [PATCH net 1/1] net: stmmac: add fsleep() in HW Rx timestamp
- checking loop
-Message-ID: <20220413125915.GA667752@hoboy.vegasvil.org>
-References: <20220413040115.2351987-1-tee.min.tan@intel.com>
+        with ESMTP id S231935AbiDMNDi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 09:03:38 -0400
+Received: from fx308.security-mail.net (smtpout30.security-mail.net [85.31.212.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86DF25DE65
+        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 06:01:16 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by fx308.security-mail.net (Postfix) with ESMTP id E8DB04C1F61
+        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 15:01:14 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kalrayinc.com;
+        s=sec-sig-email; t=1649854875;
+        bh=C5jb2gUVw2lbnJ56y7ZrVUjzaArCHYGx57W7dS7Hv+4=;
+        h=Date:From:To:Cc:In-Reply-To:References:Subject;
+        b=GV3XvF6ydR7xQiYgfhTryH5vxuAfqZwqilyBs8reF9oNjxjuml4nyLuQrEhRayNgC
+         jDxmDWUp4TCe1on/cWrP1681lhxqZDKv1iQ6yq9Vr2B6/YBQunI/VWh+2uKRgpliZu
+         VMf+WVVplhKAUbfCBS9IQadm0jFp0x4scjF8iLBw=
+Received: from fx308 (localhost [127.0.0.1]) by fx308.security-mail.net
+ (Postfix) with ESMTP id 28A594C1F25; Wed, 13 Apr 2022 15:01:14 +0200 (CEST)
+Received: from zimbra2.kalray.eu (unknown [217.181.231.53]) by
+ fx308.security-mail.net (Postfix) with ESMTPS id A6C0D4C1F13; Wed, 13 Apr
+ 2022 15:01:13 +0200 (CEST)
+Received: from zimbra2.kalray.eu (localhost [127.0.0.1]) by
+ zimbra2.kalray.eu (Postfix) with ESMTPS id 86BFB27E045B; Wed, 13 Apr 2022
+ 15:01:13 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1]) by zimbra2.kalray.eu
+ (Postfix) with ESMTP id 6DFE927E045F; Wed, 13 Apr 2022 15:01:13 +0200 (CEST)
+Received: from zimbra2.kalray.eu ([127.0.0.1]) by localhost
+ (zimbra2.kalray.eu [127.0.0.1]) (amavisd-new, port 10026) with ESMTP id
+ vFb-Qz3XzAZQ; Wed, 13 Apr 2022 15:01:13 +0200 (CEST)
+Received: from zimbra2.kalray.eu (localhost [127.0.0.1]) by
+ zimbra2.kalray.eu (Postfix) with ESMTP id 5A2DB27E045B; Wed, 13 Apr 2022
+ 15:01:13 +0200 (CEST)
+X-Virus-Scanned: E-securemail, by Secumail
+Secumail-id: <1537a.6256c999.a597c.0>
+DKIM-Filter: OpenDKIM Filter v2.10.3 zimbra2.kalray.eu 6DFE927E045F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kalrayinc.com;
+ s=4F334102-7B72-11EB-A74E-42D0B9747555; t=1649854873;
+ bh=KWf5SOiFzubpbIftkSOPjofJAUh180tzPTZYKncwPsM=;
+ h=Date:From:To:Message-ID:MIME-Version;
+ b=f3gyHDvmqGaJM6aXWIZsawfSWUSitV2nnP438aJMCOgotaMizDPqz1t7hhx0vKanB
+ nnb3zsQCSJQ5WSKGkrRAUuagX4nfbK1aall3ADT2FA96P2KZfPKCz7vsNWUoZKpyjI
+ I27kww4uXA8xc9GtMd7+r8i7CXvhutJ+vtCf7YwVJ3T6YJXsZ5KVLC6uRq7wUoTew6
+ rZnIJrCkF4uKYgGDAz0ytyWBPwS+YbFw+icyBDzDhKl24/yBYrUkBLlcrUvEn5JSLL
+ mTUKosFWNnWMZ5a+KYN5SaiJQ1YVlkfYgOPQOKi/co68lu+pdsHDVOuokrb4zS+ve7
+ bZydPf8HdmL0w==
+Date:   Wed, 13 Apr 2022 15:01:13 +0200 (CEST)
+From:   Vincent Ray <vray@kalrayinc.com>
+To:     linyunsheng <linyunsheng@huawei.com>
+Cc:     vladimir oltean <vladimir.oltean@nxp.com>, kuba <kuba@kernel.org>,
+        davem <davem@davemloft.net>, Samuel Jones <sjones@kalrayinc.com>,
+        netdev <netdev@vger.kernel.org>,
+        =?utf-8?b?5pa55Zu954Ks?= <guoju.fgj@alibaba-inc.com>
+Message-ID: <1359936158.10849094.1649854873275.JavaMail.zimbra@kalray.eu>
+In-Reply-To: <969086798.7658413.1648197914959.JavaMail.zimbra@kalray.eu>
+References: <1862202329.1457162.1643113633513.JavaMail.zimbra@kalray.eu>
+ <698739062.1462023.1643115337201.JavaMail.zimbra@kalray.eu>
+ <1c53c5c0-4e77-723b-4260-de83e8f8e40c@huawei.com>
+ <0d6e8178-953a-82c9-329c-241bd311dbf9@huawei.com>
+ <969086798.7658413.1648197914959.JavaMail.zimbra@kalray.eu>
+Subject: Re: packet stuck in qdisc
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220413040115.2351987-1-tee.min.tan@intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [192.168.40.202]
+X-Mailer: Zimbra 9.0.0_GA_4126 (ZimbraWebClient - FF99
+ (Linux)/9.0.0_GA_4126)
+Thread-Topic: packet stuck in qdisc
+Thread-Index: DcZRcSeliYiQfqvuboiF+EvMd0YX2ZLImBsm
+X-ALTERMIMEV2_out: done
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 12:01:15PM +0800, Tan Tee Min wrote:
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
-> index d3b4765c1a5b..289bf26a6105 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
-> @@ -279,10 +279,11 @@ static int dwmac4_wrback_get_rx_timestamp_status(void *desc, void *next_desc,
->  			/* Check if timestamp is OK from context descriptor */
->  			do {
->  				ret = dwmac4_rx_check_timestamp(next_desc);
-> -				if (ret < 0)
-> +				if (ret <= 0)
->  					goto exit;
->  				i++;
->  
-> +				fsleep(1);
+Hi Linyun,
 
-This is nutty.  Why isn't this code using proper deferral mechanisms
-like work or kthread?
+I tried quoju's patch (on 5.15.0)but it did not make any difference, the pb is still there.
 
->  			} while ((ret == 1) && (i < 10));
->  
->  			if (i == 10)
-> -- 
-> 2.25.1
-> 
+I tried applying your debug patch but can't seem to find the right sha1 where to apply it smoothly.
+I guess this is because you made it based on a netdev branch, while I've been trying to apply it on various versions of the stable repo.
+
+=> what do you suggest ?
+- should I try to apply it "manually" to whatever stable version suits me (e.g. 5.15 or 5.17 why not) ?
+- or should I clone a netdev repo and apply it there ? In this case can you please give me the exact sha1 to use ?
 
 Thanks,
-Richard
+
+V
+ 
+
+----- Original Message -----
+From: "Vincent Ray" <vray@kalrayinc.com>
+To: "linyunsheng" <linyunsheng@huawei.com>
+Cc: "vladimir oltean" <vladimir.oltean@nxp.com>, "kuba" <kuba@kernel.org>, "davem" <davem@davemloft.net>, "Samuel Jones" <sjones@kalrayinc.com>, "netdev" <netdev@vger.kernel.org>, "方国炬" <guoju.fgj@alibaba-inc.com>
+Sent: Friday, March 25, 2022 9:45:14 AM
+Subject: Re: packet stuck in qdisc
+
+OK I'll try that, thank you LinYun.
+
+(I'm sorry for the delay in my answers, I haven't been able to try your debug patch yet because I've had other problems with my setup, preventing me from reproducing the issue in the first place, but it should be ok soon)
+
+----- Original Message -----
+From: "linyunsheng" <linyunsheng@huawei.com>
+To: "Vincent Ray" <vray@kalrayinc.com>, "vladimir oltean" <vladimir.oltean@nxp.com>, "kuba" <kuba@kernel.org>, "davem" <davem@davemloft.net>
+Cc: "Samuel Jones" <sjones@kalrayinc.com>, "netdev" <netdev@vger.kernel.org>, "方国炬" <guoju.fgj@alibaba-inc.com>
+Sent: Friday, March 25, 2022 7:16:02 AM
+Subject: Re: packet stuck in qdisc
+
+On 2022/1/28 10:36, Yunsheng Lin wrote:
+> On 2022/1/25 20:55, Vincent Ray wrote:
+>> Dear kernel maintainers / developers,
+>>
+>> I work at Kalray where we are developping an NVME-over-TCP target controller board.
+>> My setup is as such :
+>> - a development workstation running Linux 5.x.y (the host)
+>> - sending NVME-TCP traffic to our board, to which it is connected through a Mellanox NIC (Connect-X-5) and a 100G ETH cable
+>>
+>> While doing performance tests, using simple fio scenarios running over the regular kernel nvme-tcp driver on the host, we noticed important performance variations.
+>> After some digging (using tcpdump on the host), we found that there were big "holes" in the tcp traffic sent by the host.
+>> The scenario we observed is the following :
+>> 1) a TCP segment gets lost (not sent by the host) on a particular TCP connection, leading to a gap in the seq numbers received by the board
+>> 2) the board sends dup-acks and/or sacks (if configured) to signal this loss
+>> 3) then, sometimes, the host stops emitting on that TCP connection for several seconds (as much as 14s observed)
+>> 4) finally the host resumes emission, sending the missing packet
+>> 5) then the TCP connection continues correctly with the appropriate throughput
+>>
+>> Such a scenario can be observed in the attached tcpdump (+ comments).
+> 
+> Hi,
+>     Thanks for reporting the problem.
+
+Hi,
+   It seems guoju from alibaba has a similar problem as above.
+   And they fixed it by adding a smp_mb() barrier between spin_unlock()
+and test_bit() in qdisc_run_end(), please see if it fixes your problem.
+
+> 
+>>
+
+
+
+To declare a filtering error, please use the following link : https://www.security-mail.net/reporter.php?mid=5ef9.623d5e27.9b9df.0&r=vray%40kalrayinc.com&s=linyunsheng%40huawei.com&o=Re%3A+packet+stuck+in+qdisc&verdict=C&c=7b4f9607053f62d4edea3c79310a8bd5d5e63628
+
+
+
+
