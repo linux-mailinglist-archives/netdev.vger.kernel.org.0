@@ -2,54 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EF8F4FF837
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 15:52:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB7704FF847
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 16:00:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236030AbiDMNxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 09:53:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60702 "EHLO
+        id S230149AbiDMOCs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 10:02:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236002AbiDMNwe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 09:52:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AE9E255BF;
-        Wed, 13 Apr 2022 06:50:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 421F461A8B;
-        Wed, 13 Apr 2022 13:50:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A4507C385A3;
-        Wed, 13 Apr 2022 13:50:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649857811;
-        bh=BNlKKpCCAjEzk4KRbTjOnJCG5l1RHP2diT/TEyqCk7U=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=fjy7J1J9KpEmvBf1PYzFbhJEGVhHpVu3iQMu6Y0DgqOSPH4q4UtmGFOZlsOONX/8x
-         a2SxQ40mNI+6EA71c1QT8JEYuLqXkPSwOnYr4S9cNfeXokJwoPQidzuYMj3ttss/Ck
-         TuBJ+DgcXrI5OGA0aXEnVSmvGt5xzKG4WCVotDnt+3ATCvoIZAxhka9dG97S8GSUol
-         PcnMNmFPWroJzGvvi7mWBoCwI852oVkdV0U/lZOkX1nxrcmo6UJPEPf/yAqi7D9+I9
-         rqbf0OWnGwCpYGNkUjKL/5DAKlV6jEZImF2Jd/CdhzG3Lg+WgxVItIS4z4FhbCeNjm
-         jtlCLAU6H8IMg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 868C3E8DD5E;
-        Wed, 13 Apr 2022 13:50:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S235882AbiDMOCh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 10:02:37 -0400
+Received: from smtpservice.6wind.com (unknown [185.13.181.2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 911D63B3CE
+        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 07:00:13 -0700 (PDT)
+Received: from bretzel (bretzel.dev.6wind.com [10.17.1.57])
+        by smtpservice.6wind.com (Postfix) with ESMTPS id 4B8B060010;
+        Wed, 13 Apr 2022 16:00:12 +0200 (CEST)
+Received: from dichtel by bretzel with local (Exim 4.92)
+        (envelope-from <dichtel@6wind.com>)
+        id 1nedXY-00069d-7O; Wed, 13 Apr 2022 16:00:12 +0200
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     Xin Long <lucien.xin@gmail.com>, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Subject: [PATCH net] doc/ip-sysctl: add bc_forwarding
+Date:   Wed, 13 Apr 2022 16:00:00 +0200
+Message-Id: <20220413140000.23648-1-nicolas.dichtel@6wind.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v0] nfc: nci: add flush_workqueue to prevent uaf
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164985781154.18805.3482291136799298171.git-patchwork-notify@kernel.org>
-Date:   Wed, 13 Apr 2022 13:50:11 +0000
-References: <20220412160430.11581-1-linma@zju.edu.cn>
-In-Reply-To: <20220412160430.11581-1-linma@zju.edu.cn>
-To:     Lin Ma <linma@zju.edu.cn>
-Cc:     krzk@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mudongliangabcd@gmail.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,RDNS_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,40 +43,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Let's describe this sysctl.
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+Fixes: 5cbf777cfdf6 ("route: add support for directed broadcast forwarding")
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+---
+ Documentation/networking/ip-sysctl.rst | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-On Wed, 13 Apr 2022 00:04:30 +0800 you wrote:
-> Our detector found a concurrent use-after-free bug when detaching an
-> NCI device. The main reason for this bug is the unexpected scheduling
-> between the used delayed mechanism (timer and workqueue).
-> 
-> The race can be demonstrated below:
-> 
-> Thread-1                           Thread-2
->                                  | nci_dev_up()
->                                  |   nci_open_device()
->                                  |     __nci_request(nci_reset_req)
->                                  |       nci_send_cmd
->                                  |         queue_work(cmd_work)
-> nci_unregister_device()          |
->   nci_close_device()             | ...
->     del_timer_sync(cmd_timer)[1] |
-> ...                              | Worker
-> nci_free_device()                | nci_cmd_work()
->   kfree(ndev)[3]                 |   mod_timer(cmd_timer)[2]
-> 
-> [...]
-
-Here is the summary with links:
-  - [v0] nfc: nci: add flush_workqueue to prevent uaf
-    https://git.kernel.org/netdev/net/c/ef27324e2cb7
-
-You are awesome, thank you!
+diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+index b0024aa7b051..66828293d9cb 100644
+--- a/Documentation/networking/ip-sysctl.rst
++++ b/Documentation/networking/ip-sysctl.rst
+@@ -267,6 +267,13 @@ ipfrag_max_dist - INTEGER
+ 	from different IP datagrams, which could result in data corruption.
+ 	Default: 64
+ 
++bc_forwarding - INTEGER
++	bc_forwarding enables the feature described in rfc1812#section-5.3.5.2
++	and rfc2644. It allows the router to forward directed broadcast.
++	To enable this feature, the 'all' entry and the input interface entry
++	should be set to 1.
++	Default: 0
++
+ INET peer storage
+ =================
+ 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.33.0
 
