@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 77ED64FEE91
-	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 07:38:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ABCD4FEE96
+	for <lists+netdev@lfdr.de>; Wed, 13 Apr 2022 07:38:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232473AbiDMFkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Apr 2022 01:40:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41826 "EHLO
+        id S232501AbiDMFkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Apr 2022 01:40:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231567AbiDMFkB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 01:40:01 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2310731226;
-        Tue, 12 Apr 2022 22:37:39 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KdWYX5q7pz1HBpK;
-        Wed, 13 Apr 2022 13:36:48 +0800 (CST)
+        with ESMTP id S232470AbiDMFkD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Apr 2022 01:40:03 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C03CF3134B;
+        Tue, 12 Apr 2022 22:37:43 -0700 (PDT)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KdWX949fMzgYbZ;
+        Wed, 13 Apr 2022 13:35:37 +0800 (CST)
 Received: from huawei.com (10.67.174.197) by kwepemi500013.china.huawei.com
  (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 13 Apr
- 2022 13:37:23 +0800
+ 2022 13:37:26 +0800
 From:   Xu Kuohai <xukuohai@huawei.com>
 To:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
@@ -46,10 +46,12 @@ CC:     Will Deacon <will@kernel.org>,
         Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
         Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Delyan Kratunov <delyank@fb.com>
-Subject: [PATCH bpf-next 0/5] bpf trampoline for arm64
-Date:   Wed, 13 Apr 2022 01:49:54 -0400
-Message-ID: <20220413054959.1053668-1-xukuohai@huawei.com>
+Subject: [PATCH bpf-next 1/5] arm64: ftrace: Add ftrace direct call support
+Date:   Wed, 13 Apr 2022 01:49:55 -0400
+Message-ID: <20220413054959.1053668-2-xukuohai@huawei.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220413054959.1053668-1-xukuohai@huawei.com>
+References: <20220413054959.1053668-1-xukuohai@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -66,39 +68,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add bpf trampoline support for arm64. Most of the logic is the same as
-x86.
+Add ftrace direct support for arm64.
 
-Tested on qemu, result:
- #55 fentry_fexit:OK
- #56 fentry_test:OK
- #58 fexit_sleep:OK
- #59 fexit_stress:OK
- #60 fexit_test:OK
- #67 get_func_args_test:OK
- #68 get_func_ip_test:OK
- #101 modify_return:OK
+1. When there is custom trampoline only, replace the fentry nop to a
+   jump instruction that jumps directly to the custom trampoline.
 
-Xu Kuohai (5):
-  arm64: ftrace: Add ftrace direct call support
-  bpf: Move is_valid_bpf_tramp_flags() to the public trampoline code
-  bpf, arm64: Impelment bpf_arch_text_poke() for arm64
-  bpf, arm64: bpf trampoline for arm64
-  selftests/bpf: Fix trivial typo in fentry_fexit.c
+2. When ftrace trampoline and custome coexist, jump from fentry to
+   ftrace trampoline first, then jump to custom trampoline when ftrace
+   trampoline exits. The currently unused register pt_regs->x0 is used
+   as an intermediary for jumping from ftrace trampoline to custom
+   trampoline.
 
- arch/arm64/Kconfig                            |   2 +
- arch/arm64/include/asm/ftrace.h               |  10 +
- arch/arm64/kernel/asm-offsets.c               |   1 +
- arch/arm64/kernel/entry-ftrace.S              |  18 +-
- arch/arm64/net/bpf_jit.h                      |  14 +-
- arch/arm64/net/bpf_jit_comp.c                 | 390 +++++++++++++++++-
- arch/x86/net/bpf_jit_comp.c                   |  20 -
- include/linux/bpf.h                           |   5 +
- kernel/bpf/bpf_struct_ops.c                   |   4 +-
- kernel/bpf/trampoline.c                       |  36 +-
- .../selftests/bpf/prog_tests/fentry_fexit.c   |   4 +-
- 11 files changed, 470 insertions(+), 34 deletions(-)
+Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
+---
+ arch/arm64/Kconfig               |  2 ++
+ arch/arm64/include/asm/ftrace.h  | 10 ++++++++++
+ arch/arm64/kernel/asm-offsets.c  |  1 +
+ arch/arm64/kernel/entry-ftrace.S | 18 +++++++++++++++---
+ 4 files changed, 28 insertions(+), 3 deletions(-)
 
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 57c4c995965f..81cc330daafc 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -177,6 +177,8 @@ config ARM64
+ 	select HAVE_DYNAMIC_FTRACE
+ 	select HAVE_DYNAMIC_FTRACE_WITH_REGS \
+ 		if $(cc-option,-fpatchable-function-entry=2)
++	select HAVE_DYNAMIC_FTRACE_WITH_DIRECT_CALLS \
++		if DYNAMIC_FTRACE_WITH_REGS
+ 	select FTRACE_MCOUNT_USE_PATCHABLE_FUNCTION_ENTRY \
+ 		if DYNAMIC_FTRACE_WITH_REGS
+ 	select HAVE_EFFICIENT_UNALIGNED_ACCESS
+diff --git a/arch/arm64/include/asm/ftrace.h b/arch/arm64/include/asm/ftrace.h
+index 1494cfa8639b..3a363d6a3bd0 100644
+--- a/arch/arm64/include/asm/ftrace.h
++++ b/arch/arm64/include/asm/ftrace.h
+@@ -78,6 +78,16 @@ static inline unsigned long ftrace_call_adjust(unsigned long addr)
+ 	return addr;
+ }
+ 
++static inline void arch_ftrace_set_direct_caller(struct pt_regs *regs,
++						 unsigned long addr)
++{
++	/*
++	 * Place custom trampoline address in regs->orig_x0 to let ftrace
++	 * trampoline jump to it.
++	 */
++	regs->orig_x0 = addr;
++}
++
+ #ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
+ struct dyn_ftrace;
+ int ftrace_init_nop(struct module *mod, struct dyn_ftrace *rec);
+diff --git a/arch/arm64/kernel/asm-offsets.c b/arch/arm64/kernel/asm-offsets.c
+index 1197e7679882..b1ed0bf01c59 100644
+--- a/arch/arm64/kernel/asm-offsets.c
++++ b/arch/arm64/kernel/asm-offsets.c
+@@ -80,6 +80,7 @@ int main(void)
+   DEFINE(S_SDEI_TTBR1,		offsetof(struct pt_regs, sdei_ttbr1));
+   DEFINE(S_PMR_SAVE,		offsetof(struct pt_regs, pmr_save));
+   DEFINE(S_STACKFRAME,		offsetof(struct pt_regs, stackframe));
++  DEFINE(S_ORIG_X0,		offsetof(struct pt_regs, orig_x0));
+   DEFINE(PT_REGS_SIZE,		sizeof(struct pt_regs));
+   BLANK();
+ #ifdef CONFIG_COMPAT
+diff --git a/arch/arm64/kernel/entry-ftrace.S b/arch/arm64/kernel/entry-ftrace.S
+index e535480a4069..b1bd6576f205 100644
+--- a/arch/arm64/kernel/entry-ftrace.S
++++ b/arch/arm64/kernel/entry-ftrace.S
+@@ -60,6 +60,9 @@
+ 	str	x29, [sp, #S_FP]
+ 	.endif
+ 
++	/* Set orig_x0 to zero  */
++	str     xzr, [sp, #S_ORIG_X0]
++
+ 	/* Save the callsite's SP and LR */
+ 	add	x10, sp, #(PT_REGS_SIZE + 16)
+ 	stp	x9, x10, [sp, #S_LR]
+@@ -119,12 +122,21 @@ ftrace_common_return:
+ 	/* Restore the callsite's FP, LR, PC */
+ 	ldr	x29, [sp, #S_FP]
+ 	ldr	x30, [sp, #S_LR]
+-	ldr	x9, [sp, #S_PC]
+-
++	ldr	x10, [sp, #S_PC]
++
++	ldr	x11, [sp, #S_ORIG_X0]
++	cbz	x11, 1f
++	/* Set x9 to parent ip before jump to bpf trampoline */
++	mov	x9,  x30
++	/* Set lr to self ip */
++	ldr	x30, [sp, #S_PC]
++	/* Set x10 (used for return address) to bpf trampoline */
++	mov	x10, x11
++1:
+ 	/* Restore the callsite's SP */
+ 	add	sp, sp, #PT_REGS_SIZE + 16
+ 
+-	ret	x9
++	ret	x10
+ SYM_CODE_END(ftrace_common)
+ 
+ #ifdef CONFIG_FUNCTION_GRAPH_TRACER
 -- 
 2.30.2
 
