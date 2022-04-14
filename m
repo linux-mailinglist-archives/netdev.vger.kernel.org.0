@@ -2,88 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EE2AE500C87
-	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 13:58:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A70D500CAE
+	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 14:01:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242539AbiDNMAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 08:00:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36526 "EHLO
+        id S240163AbiDNMDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 08:03:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231937AbiDNMAs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 08:00:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E80C47DA86;
-        Thu, 14 Apr 2022 04:58:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9F41EB82933;
-        Thu, 14 Apr 2022 11:58:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F64CC385A5;
-        Thu, 14 Apr 2022 11:58:21 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="U63Cq0fl"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1649937497;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0+tyDdaud0kiRmw8JRN89CzIpjI4CklQbrxH74flBhI=;
-        b=U63Cq0fl5eBV+Bco0G7lzZ9CpSjnbV3gIrnLyWveyQB4k2Bgzzu3oIYzMk+d4Q0ieovZ92
-        O9ogC+fJ+dqpF6Df1TFUQWZPzuGaTaoLoH1QU0kYLajCg55r78TUmpHaN+ffHcfOhEBk24
-        R276B/heUPweH4/IfWwDDNnXE/uUZeA=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 185da3bc (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 14 Apr 2022 11:58:17 +0000 (UTC)
-Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-2eba37104a2so53156317b3.0;
-        Thu, 14 Apr 2022 04:58:16 -0700 (PDT)
-X-Gm-Message-State: AOAM531LvtM07hqu5MH1UcyFktBZnILQfqSXIyRvjzbjF0oKmxZvoTsH
-        FjtG0A6570SHmWI1W+HGaNbBKH+kdo5ZYsA0Xjo=
-X-Google-Smtp-Source: ABdhPJw5pFFo3/eGiTk3uI3THl4Do92diVuSvMWAn3JON0H3IzibadXY4xzo3Jp01LIaTcrdhee3BfMGV1MYR9QYmIM=
-X-Received: by 2002:a81:1d4:0:b0:2eb:1b10:f43e with SMTP id
- 203-20020a8101d4000000b002eb1b10f43emr1685819ywb.100.1649937495961; Thu, 14
- Apr 2022 04:58:15 -0700 (PDT)
+        with ESMTP id S243145AbiDNMCy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 08:02:54 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C376BF4;
+        Thu, 14 Apr 2022 05:00:21 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 503611F479AA
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649937620;
+        bh=SIfLgdnnm8Mr1pbjdeSXLKHkft4Qo/podTgV9ZDU6oA=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Zg5ZpRBctAbEWetGACqu7m5ZTuMBIP5UM9CW0mHjzxWc9yf6zxgri36QFRVRjFe8r
+         q1k0qUq5I9KDxSWMh70FuxJ/Z7zG2Hfa7/zale0fdLVS7CAyUbwObk8mNvDyot53uP
+         +IQOXs3VLcYC+43iXuXMkYMgW+NzpNj9pjZUgui/WWFR6F5aVi8cgDenBSd/G4lKAf
+         8Tr1vm9ZVoqDRVNWvBXgv1KWwwVnHUPH+hXPS+mMC8X0/57TecA6wAfRmGCa+0jOrG
+         CaTqlo5j2ZcT8SOi18q3e72PURRomPvUN+U+Jl3d+TpmmrHRmYk9M75ytNGAzxHgL/
+         KJzCU9Xf5zMUA==
+Message-ID: <98a1d6fa-c5d0-f1f2-ad85-f5246b368fb3@collabora.com>
+Date:   Thu, 14 Apr 2022 14:00:17 +0200
 MIME-Version: 1.0
-References: <20220414104458.3097244-1-razor@blackwall.org> <20220414104458.3097244-2-razor@blackwall.org>
-In-Reply-To: <20220414104458.3097244-2-razor@blackwall.org>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Thu, 14 Apr 2022 13:58:04 +0200
-X-Gmail-Original-Message-ID: <CAHmME9qZyz26gnfcZCjAiLhYqZ9LwJN1VZ+3rgGmhxJYrGvZCw@mail.gmail.com>
-Message-ID: <CAHmME9qZyz26gnfcZCjAiLhYqZ9LwJN1VZ+3rgGmhxJYrGvZCw@mail.gmail.com>
-Subject: Re: [PATCH net 1/2] wireguard: device: fix metadata_dst xmit null
- pointer dereference
-To:     Nikolay Aleksandrov <razor@blackwall.org>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martynas Pumputis <m@lambda.lt>,
-        WireGuard mailing list <wireguard@lists.zx2c4.com>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] mt76: mt7921: make read-only array ppet16_ppet8_ru3_ru0
+ static const
+Content-Language: en-US
+To:     Colin Ian King <colin.i.king@gmail.com>,
+        Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Shayne Chen <shayne.chen@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220414095438.294980-1-colin.i.king@gmail.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220414095438.294980-1-colin.i.king@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Nikolay,
+Il 14/04/22 11:54, Colin Ian King ha scritto:
+> Don't populate the read-only array ppet16_ppet8_ru3_ru0 on the stack but
+> instead make it static const. Also makes the object code a little smaller.
+> 
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 
-On Thu, Apr 14, 2022 at 12:45 PM Nikolay Aleksandrov
-<razor@blackwall.org> wrote:
-> When we try to transmit an skb with md_dst attached through wireguard
-> we hit a null pointer dereference[1] in wg_xmit() due to the use of
-> dst_mtu() which calls into dst_blackhole_mtu() which in turn tries to
-> dereference dst->dev. Since wireguard doesn't use md_dsts we should use
-> skb_valid_dst() which checks for DST_METADATA flag and if it's set then
-> fallback to wireguard's device mtu. That gives us the best chance of
-> transmitting the packet, otherwise if the blackhole netdev is used we'd
-> get ETH_MIN_MTU.
+Tested OK (mt7921 on PCIe), and....
 
-Thanks for the patch. Will queue up this patch #1 in the wireguard
-tree and send it out to net.git not before too long.
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-Jason
