@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75A8A501C70
-	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 22:15:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3687C501C97
+	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 22:22:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346156AbiDNUQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 16:16:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58634 "EHLO
+        id S1346238AbiDNUXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 16:23:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231754AbiDNUQO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 16:16:14 -0400
-Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130111.outbound.protection.outlook.com [40.107.13.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B176E886D;
-        Thu, 14 Apr 2022 13:13:48 -0700 (PDT)
+        with ESMTP id S1346230AbiDNUXA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 16:23:00 -0400
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80111.outbound.protection.outlook.com [40.107.8.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FB8BBD892;
+        Thu, 14 Apr 2022 13:20:34 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RNTqw8rf7IeF+VpKb2wY+tfU10eh/BYCXyEgNBo3N/P23NUp27PokfJdFu5CBKQj55ugYTKd7JubCo+UovKSkv/B1LcGep4D6OPXKaslk+X06aawevulba953jpWrotflY1OESKdvh8NgkJWd0HxFFXgQzUTrrBHsg4cTiSz9SlFMC6L1jUonuFWpEJ7KOGXfrJPLeofDI6DlLzbOOYd0raFEfnVb5gfqTIS1k+r9FUFeVEL5DRDlCQuXZFdMazi1Cj/wfxa0X7bIepQCap2Zcm3Ys2pFCCuZbP+EPZ3nE+o8SX5ivTVwDYs3FKXUEcU9P80aplbDtS7yzFNDD7IAA==
+ b=So2/mIlvllklREj9Y0goO42D33DmF/DbmL4cwayL6Or4agQlTX4THjiBRUdexbnE46AKjl7TiPQ48TTdscmXt8Ou4AJzqBGdHRehJpLex7p6/HqqQYklW5SJm4CUUFSL/w8lPm4Ji7N2VXgHIdDhA+uR/trS8TyaagGbEvhgzHSIMpyei2DXpMGdFpaL1QoLViwkaA7zx/g+MYBuoWVqvQ1MW6YA586v9fNGjZxFauAz7a+TKVn3tA9m1QGp3J78TVnpG+exP4GJNuNrfeQIpEwIpZNxtr1JoEbrmQO6/4sZ0Qf4B8IqxGYbd+0seITTc1Ig41Wh2UBT9UHsVFkw6w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GyGDLMupMgVfKsis6OZOueOFEV3Twd99DpJYLCdcO6o=;
- b=WGj+K60Z3m3LHHyEP8pfCxcoBHOb/idGZa7yuRrZSaesECoAjbyqz82PymU9CWC28otSN8pktK2A44gKKSfS53skxS3NRA39wqjlYlYAHUrrwcRTuFzt2l8FJjuL4v8BlvpLpkoY8rqkBzoqaWdUCfQInswKsZ3hRg1BLbuFZXwFW4jVC93lAKmsjPqsFuOo7dXnwQ5YjENfRzMbdxtRNBsOMLokaxldOpC2t68hTlraJhjakzErYLJWqsSyspgE/LKX55TXWNqG9v9bsqbd0YGmt0mXrpcUZ4uC4O3F/hDxukHszwPA1ahgMU2tuOVnniaLfzaVFk6anNt6p0L7lA==
+ bh=a+wHA5EI11JerEr5o/Vhk8DA5Zqvje8Co8z0AHceqvw=;
+ b=isDp+ThzHW8dyMp9yyMHyyw0hunDjLOPEEVxAAOhyp1yPyVt5cNeR1h44xm/112kmaLQ8EZKRSCkDUw/DfSxm3/VmHGnpFI0hM3fliVB7PV4qMkQo6SNRrezUYNxuVkAe1U1cY93blG8JnHgu78sXNsbTJY1R03iWEObsKwZqucqo8CrkgrblFoJRwrA4EmATKaNYuFT33st7dOwQ3hq25HTJpwL47xgDIsasla1iU3j56ku5CLGsDWT2QpBTKZsfkk1GGT1gpIrZ6mH6kl6soKfNaI1lmou28/JuLLm+JdfUO0luEBA6Ui47vyuoukFP0sndxekBRWPlDedQCe0QA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=silicom-usa.com; dmarc=pass action=none
  header.from=silicom-usa.com; dkim=pass header.d=silicom-usa.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=SILICOMLTD.onmicrosoft.com; s=selector2-SILICOMLTD-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GyGDLMupMgVfKsis6OZOueOFEV3Twd99DpJYLCdcO6o=;
- b=uthvjuzKFVsqkua/DCFIaqoGQbKSCU712zvCY8wRZ0l+IuAYJD/TsHsbLe9EGKB6T1N9XgNVNRZNKkp7gJsourjzlmzwQ6zw9EhhzAQrWt2FfRxIHXUBVPCGYjd9KG5OxKoVGeGSgy+2NbK27VcblmtpV3lR13b7jZhU6Qtcms8=
+ bh=a+wHA5EI11JerEr5o/Vhk8DA5Zqvje8Co8z0AHceqvw=;
+ b=Juld03Y6jj279/6kp6hAFfw7hGw5xdTZtZQklArTy8tMzA2X7QHLKc8omhY8TQ/Nkf9ulHhgIUcq3apIal6kjYJpHAWolze41N7CkWfuNj0JYYehk+holEwZXkdLuzISSDRW0kDcD6xizndelGOsx+3z0XOeholTsC1y6GkihdM=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=silicom-usa.com;
 Received: from VI1PR0402MB3517.eurprd04.prod.outlook.com (2603:10a6:803:b::16)
- by DB7PR04MB5227.eurprd04.prod.outlook.com (2603:10a6:10:17::11) with
+ by AS8PR04MB7654.eurprd04.prod.outlook.com (2603:10a6:20b:290::23) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20; Thu, 14 Apr
- 2022 20:13:44 +0000
+ 2022 20:20:31 +0000
 Received: from VI1PR0402MB3517.eurprd04.prod.outlook.com
  ([fe80::5dd5:47e1:1cef:cc4e]) by VI1PR0402MB3517.eurprd04.prod.outlook.com
  ([fe80::5dd5:47e1:1cef:cc4e%6]) with mapi id 15.20.5164.020; Thu, 14 Apr 2022
- 20:13:43 +0000
+ 20:20:31 +0000
 From:   Jeff Daly <jeffd@silicom-usa.com>
-To:     intel-wired-lan@osuosl.org
+To:     intel-wired-lan@losuosl.org
 Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -50,69 +50,67 @@ Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
         intel-wired-lan@lists.osuosl.org (moderated list:INTEL ETHERNET DRIVERS),
         netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
         linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v2] ixgbe: Treat 1G Cu SFPs as 1G SX for X550EM
-Date:   Thu, 14 Apr 2022 16:13:29 -0400
-Message-Id: <20220414201329.27714-1-jeffd@silicom-usa.com>
+Subject: [PATCH] ixgbe: Fix module_param allow_unsupported_sfp type
+Date:   Thu, 14 Apr 2022 16:20:18 -0400
+Message-Id: <20220414202018.800-1-jeffd@silicom-usa.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220414172020.22396-1-jeffd@silicom-usa.com>
-References: <20220414172020.22396-1-jeffd@silicom-usa.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: MN2PR19CA0031.namprd19.prod.outlook.com
- (2603:10b6:208:178::44) To VI1PR0402MB3517.eurprd04.prod.outlook.com
+X-ClientProxiedBy: BL1PR13CA0322.namprd13.prod.outlook.com
+ (2603:10b6:208:2c1::27) To VI1PR0402MB3517.eurprd04.prod.outlook.com
  (2603:10a6:803:b::16)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 841b780d-2cf5-45b5-ea53-08da1e534625
-X-MS-TrafficTypeDiagnostic: DB7PR04MB5227:EE_
-X-Microsoft-Antispam-PRVS: <DB7PR04MB5227065FA424CAE83ABDCB79EAEF9@DB7PR04MB5227.eurprd04.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 5c9412a1-d267-4f20-adcd-08da1e5438e1
+X-MS-TrafficTypeDiagnostic: AS8PR04MB7654:EE_
+X-Microsoft-Antispam-PRVS: <AS8PR04MB7654EAE5ABDFABC38AFAD7AAEAEF9@AS8PR04MB7654.eurprd04.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: eASFcoOKXBUGGUt4mnmiDf53kh2bA6QiFszg1nK78iZ3ME17B45dKgrcLAgFHJjZDOoaOXTadKa/6ao4zq9g0Yfo4esGjkR7UAm2+bsKtkzaigDNNWo5f2jLhScPC3Igrp2gUElR3ZRa5OqfAukc4ugy2zQq63vqTqGop35p8B4hbqlvOXCwMEOqjoJBPFmHkiNp0gx0JXfo6Uxn8W79D7us0BOQIMSyaFCkLNi9WzWsjMwZ4K+V3quSOYwid6N8xwPFm0OQ3Fz/igwcybOBm3uIB6kWbBrooQ4YxCfybmqeJjxlcoYMixFLGFa7OGK7kGQWA2v6fxPJ2prq1hK2AiFMf2OUT1cY9XZFPsOJ5JuhUUG0BxgwDUOiqDLWXVNJq90X9aQ8hKJHx2lzqsQyPYA/Zv8L6SOGux6ef2nclm/ieIYYHrGTMgJI4uKo4tFL4ldHVVcFB7wzYehcKxBMkjb5XmajXQlUgj/aq+lzCRf1WS4aB80/r8VfY0i/Ow4b2l/iH66vyLP11gUcFx5Q+iaxs7DNK4ZxSC0BFQTFG8k1LwQ75FcuqIbn1CO7wPZil3PZSNo+Cse8KtngbLsFNcKbRWDpLF2Mf4kwjIzfwNFmSBZyXDvjiJiWf+Kb1YvApKu8pXuvi8Iw9Jl0yK5MpjCR/CfM25QquyqEPj7Rk0Wb+ToVXW/YoYa4uzoVaOO81szCtUk2CONIrEP9uHBKDQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3517.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6916009)(6666004)(54906003)(6506007)(316002)(83380400001)(6512007)(2906002)(6486002)(36756003)(52116002)(508600001)(1076003)(26005)(186003)(66946007)(66476007)(66556008)(8676002)(2616005)(86362001)(8936002)(38350700002)(38100700002)(5660300002)(4326008);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: OByHzZ0mwtnkSOO+w4U5UQIVb071uBO1cLYO1en519PcWPVmFgKkSpg9JlxF+PpiwtdAq89Dcmu4Jla9MTINj5Pu8Oau5FZuDA9QwUnLaE2LWiCF4j7hqk+G087vp2u1EDMiV2qidxH699iEM3JGanW5tik6u6lJZEULZwsiXXEgUma5bVUCD0nNHWUCuM04LhFAlCR9PCwPZENeVpk60QCT3vBJTLJvSdJ9eiUPzWIQrA5NJ18XEZKIiMlnSBT/W4z0mXQm422AbtgjhEejsTQwOXMppjgF8ccjOajmwErOsAhZo9LddPaH4QQ9n6JBr5x1+sAbZeHHX296o6M8uYRWHTP6qE6xVDeudS3gffxloPlWA03mJ8+eMn2x2dW4YsXA5znc+aFhdSH284LNQmZQdi4riP6DdDVp1WEjvhTlPNzJxJ+cFBPXVWfaFr5nJO62SBHvYvutoOqztnzGHPrlMKvvZzCJ2BGCa4i+jjtdUVkxuIQ9ooNfKKyRdGjOnJlJpWbykL/wJjs4QPceVoRUPRl7xS0BJ8WuqOiILQ01EcVuk9qwOFxXRyb18alozPscUWQLusW8qxsM9+IhLS32tXiyDkSEcqtB5pP0L6XHr0KvcNMqh/4VlsChH2K2tnW7XwBK3MWDJ7eLOhKXc5I7G22eeHSKt0YXJhpX3ta+QQ59vL29PJA/UsPh8TwhKrjvq2p/7SFOLvQy8vpr3w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3517.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8936002)(38100700002)(38350700002)(5660300002)(36756003)(2906002)(6512007)(1076003)(186003)(26005)(6916009)(6506007)(54906003)(2616005)(8676002)(508600001)(66476007)(316002)(52116002)(66556008)(4326008)(6486002)(6666004)(66946007)(83380400001)(86362001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?40CTr4c3Ywt29RC5XaDuyypsPGAzbeyKGuDTbZT2nUM0SKVj3dqYiisoAYhu?=
- =?us-ascii?Q?E+Gqq5oiAOASbGPw5gZ9NjqT2AlGAOsN2Tr/84mDFlgZ6C/sXj1RzB/m7uvf?=
- =?us-ascii?Q?6SkJCSmfwFnVYBUMV+GbvTL5xQJfnRCwMTGf4VZMTvupbiqQAOP1J4sll7Nn?=
- =?us-ascii?Q?isUFAgkmel3WZqOTCsz3iU7L782EWhyVrGCOzCII+V1la3Wlg7MfonHN3HjH?=
- =?us-ascii?Q?nSBiID3jWhURBGLDP/70mGSesgcneg8FfhtU2wCif5oi8mXW/PYL3yJ+0klO?=
- =?us-ascii?Q?W95sYDUxiLoUybX9zrWJH3maXXmQar6NglqzEW0XJmDEmp40oWTuUO7G6/Ou?=
- =?us-ascii?Q?wUJCJmv+cATgVAHeiOIS616UYc6jNorVyfgRVdhOqDMnRCtSb0VKwx8z8U6N?=
- =?us-ascii?Q?tZGka2ZyJIGmGAx8hLC53TAY7ZrkT3gMyIR7Qo/PXE2qt7Lyp0YrXx850jqP?=
- =?us-ascii?Q?ByfKuavCdcbTjFjTaf5/jYHCaa2SNCFJ5lZ5cjyA4ES1bnO26U5dNeFR3sEg?=
- =?us-ascii?Q?vDU/hJwP1TMLk/TuOUAbIIkBF0DnhOEeF+XiEew+8xoRboGgTox86qhR3q4f?=
- =?us-ascii?Q?y5LvXbdyYEVq9VXzLSHxM/1cqE/ao1U7ERhoiH6H/+IGLnv5zEJVmk5ordWP?=
- =?us-ascii?Q?DU3wSpPzI8roCx23AwKoXICzpocgqP4mcoQ4T43GRps6sdZBHkVnh0fO1hD/?=
- =?us-ascii?Q?KGSdvG2Q9ScsPFEXgyRIyN57xSTI1aQqAhFIRDO+vuIs5O1eo8SdHWXIgf5h?=
- =?us-ascii?Q?NwF4LBZmwrI/Lc332TFjem83miUiOBY5yrOvWkX9jmnh2JCK9puLPDprQrUQ?=
- =?us-ascii?Q?TW7B5d6sDXlL5vVhXlDGtzRzzsOf+N5oMlAh+0S+54x3KpFVSbN3Hpq/egaL?=
- =?us-ascii?Q?tTD5KI/I9ERCZA7seJNZma3XLxU65q1tTW7xKnGrewn4cq77de9Xne+L4u2f?=
- =?us-ascii?Q?hUaSgmWXhrvDHtofLLvR0inA50rE1YBG8FvgTzS+PU23tcLBVsXSkr3sRB0w?=
- =?us-ascii?Q?WKNmCAa/2AveZW+Hfxr+awyJJ/2dQlzU7VBlFoaZeorF1Ovj5mhg5Tqz1hjp?=
- =?us-ascii?Q?oyPIqeae0rqx3DSwVBlYJWkqQeZUZ8rZtUTukl5T4YT/87zgeqJb4XPiTSmK?=
- =?us-ascii?Q?okWGFxaJBkqnhlwwfpw2nZK36c4D3HgXp+022vl77M8Y8irH4kF9bGgV0Rsz?=
- =?us-ascii?Q?R3L1oJbGsRyyfmp58fG0L7dyV4X16noxfXNJt31u24EVcr2TOcflUaF/2B6T?=
- =?us-ascii?Q?ufQyRO7qldWKbeMg+nORKD7AEMqbySM+Md74FFIdhXqYH8UH5IJ1dh1xPGiY?=
- =?us-ascii?Q?W4/6rI6Ipd4OE+QwfX1DPqxFf24h8Cr/NZHiUF5SLqLtWLqpE3JXdZxejhO5?=
- =?us-ascii?Q?dPpl41l3HKRnsKwEEx22dqdPmC79/XFHuq7RGTAM7kebHJt/dy8DENODHT36?=
- =?us-ascii?Q?8qFGA3KVyq8jaXm1wXEYHl6ZBDhh5J002bK1ofoaFUuKJWQaALqh1rFlD6uI?=
- =?us-ascii?Q?H2BUVyWos86AJzwv2DPXHEj4wE1icWtPcJIPaSSX6AtQnmGmFmxarNnUTWtx?=
- =?us-ascii?Q?WIorr9uQxVDoLbguBO9IbdcpNL4dJsNFHucj6tZnjaPS1Amzj6QjRd48N2m8?=
- =?us-ascii?Q?R//ub1A2QWnmaTuqPjtw2R1NrzmU6xLciZNkrn1irYARAksfFMEpqaPQrTaC?=
- =?us-ascii?Q?Fh13VgzzqVTa25EbCexeT3rNLWtjD0gGNGKGNwvHZNPz6vgn+1W+aOqOruj3?=
- =?us-ascii?Q?4+piOH5+0w=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TLGCL2YH7cVFv7JBm40Ms6qN13+h0hikrcZMABFjfd3H0MQkDjMv9yvfe35o?=
+ =?us-ascii?Q?uqv3bTfVPKcSpccCpuShvzIl49flsIQxTSh8aPHR7/NWArH9Y6WbqcHur2kM?=
+ =?us-ascii?Q?k8WLh+tFe8/1tJsMlybKRCaloLJr6m9pTdDbxOMzCQKOW0VT/2MfpevGOfWl?=
+ =?us-ascii?Q?zezp7bqFoYovKpIsRrb8wK0tUty/j95eXj2K4mmKa/mMga6L8w4Cf6Xxwo6X?=
+ =?us-ascii?Q?Jy3WBSYWTcP8STyYyqdDDE2gzwq/LFcv3cmZ1FS/tGv2nYWHy6b1JE+85Oiy?=
+ =?us-ascii?Q?msZ8+vnrT3oRCquZETUDP/ruBGUUZJ1PYneaH4SqDHNjUE/3WZlwMisoTW2V?=
+ =?us-ascii?Q?3Qp+cNBGpsjV3c//AggYV0C3sFCElJJO2uEs9ZD47GZnjrDF7r5aP9K4yfzn?=
+ =?us-ascii?Q?5v5ZQy4BJyjS7RhPsPqns8WiKd2VlGd/spoJcq9G8Da1sH5mSjOOaY6CEzZE?=
+ =?us-ascii?Q?PMuqbnc9qMigBw2nTFUgB+kPkuqlnAH1qFd/PIV0UxGYKrdce0Eel+EG9D3k?=
+ =?us-ascii?Q?vAXI0WpWbudMyXA+kPEfPOMmSLV+l1JBayel9ngCqZplMlO8rwdx1zG9c3de?=
+ =?us-ascii?Q?PBh3WCJV1jUVhwplQch9PI8RUHWMAZtVRcn6NzC5liijXjZ41qP41gauvKmg?=
+ =?us-ascii?Q?PC1FkQXVeY7nh9nNrgIB4rGggN9yx4R+eDpMFvS5xw52ngjNlJhke3ayNUh8?=
+ =?us-ascii?Q?dTK5PFrZq5KZ8QiUYOuquAX88nuK07AyuNR0JKPHC87nRMkYKq5lT+jlLeQ3?=
+ =?us-ascii?Q?RXE1nFT1WT39pbENycuT1jmvVpP3/VaTAvcm3FuX23UsowElUkwNpBtZdXOE?=
+ =?us-ascii?Q?1oySwMGH17b6KzyLbXO4gD0O04/7iIxN+9+1Pc8/UuGc1L0ufdHuJ0xv5p8V?=
+ =?us-ascii?Q?fqEbAkm+M1cGw2AuZ36blMJjBPWHZXknpas0pSwR4souG6j7gli2KxRKnQc2?=
+ =?us-ascii?Q?85z35y0wAunJ4g0App/V9uULts156XPKs3sIzS0c+GOsiUMzq/tsUUJtvjTw?=
+ =?us-ascii?Q?y7yvrH6rRG1UftsMsycDIfjtt9Zx7JZuQkgJk1yN+8NaiaGMmxLaMT+wW9QF?=
+ =?us-ascii?Q?N12sl9v/mhmVzaKaEdHgEfoRLy1n2prbhL9eKW3rsyPn6C7VPavsqeT2pm9w?=
+ =?us-ascii?Q?IoBA918WwbJef3rjpJWhYn9qH4MvdwgvjvpD6Geyi3H65G7XUx1oKQzIogwU?=
+ =?us-ascii?Q?tqtNWQM22rlyzRldpaihZQNFyNzK56A9BNDam6VpADM9N/HrIyGbb6FvZF2p?=
+ =?us-ascii?Q?1FODwn2e/Jk3Ejm2WHTU/C5gnvqkcxqkFynOdIZ6FRd8yHZ8gtR0gUVORRtM?=
+ =?us-ascii?Q?n9pU+Z+mFjfu9Ek9cUvHX3pLCbajBf+0cgFA48XLkXS2N4vQJn/gzGkaFEtY?=
+ =?us-ascii?Q?TzZO1WeZOtW4gIyRrv7Crjs+18u3WxIhZVvKb2wLFRuyv0RjCy+Y/oiVZCdg?=
+ =?us-ascii?Q?f5j4vHxAz9W/9vOAeD4jOqvIV1iVHjWTRub7a52qmS4Oz+98Cd4gzgXlvRxb?=
+ =?us-ascii?Q?kUNCjMRBxUh8FiqrYwQk+rrmSOPwd45njkgnmBMlwezCKxqNLjEsEHgTMViW?=
+ =?us-ascii?Q?xTeqFNyp3JfUyALPyZzXwx7FR8Hf8vRBJ3FcPt6bWcP/FM827WajwCohZkVf?=
+ =?us-ascii?Q?KnxI+osk/L7Hnr2aRph2rFcVsdZByNEZbewj56sSahijEyeXRF2RUrE9gA/8?=
+ =?us-ascii?Q?WKCVB+r7OqgkuNID9sNobLc9gLIGUnJZ2CnDVe1jZhuNCItU2ElZXyLVq/52?=
+ =?us-ascii?Q?Bf+1d+3//Q=3D=3D?=
 X-OriginatorOrg: silicom-usa.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 841b780d-2cf5-45b5-ea53-08da1e534625
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5c9412a1-d267-4f20-adcd-08da1e5438e1
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3517.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Apr 2022 20:13:43.6230
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Apr 2022 20:20:30.9090
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: c9e326d8-ce47-4930-8612-cc99d3c87ad1
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: h1XpB5J7rInTAR/SFnAsCIft2nUWM2RO8CInumNcZkVOHNL0QxGJ3Ur1gG3fT6w1kLO2e/vazqx+DdEuRIlJXQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5227
+X-MS-Exchange-CrossTenant-UserPrincipalName: s/zxWjjgLkIyDRS1fnS9NnO5hpSB7MMveCWF5gRBSudjE4Nzk1XCLbbj+ZDULELCxmUDBI51DphwRA6Vd+Ryow==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB7654
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -122,97 +120,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-X550EM NICs do not support 1G Cu SFPs by default from Intel, this patch
-enables treating these SFPs as 1G SX SFPs via a module parameter similar to
-the parameter that allows the driver to be able to recognize unsupported
-(by Intel) SFPs.
+The module_param allow_unsupported_sfp should be a boolean to match the
+type in the ixgbe_hw struct.
 
 Signed-off-by: Jeff Daly <jeffd@silicom-usa.com>
-
 ---
-
-v2:
-* Make module_param option a boolean, fix commit message.
----
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |  8 ++++++++
- drivers/net/ethernet/intel/ixgbe/ixgbe_type.h |  1 +
- drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c | 16 +++++++++++++++-
- 3 files changed, 24 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index c4a4954aa317..b02345b82cae 100644
+index c4a4954aa317..e5732a058bec 100644
 --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
 +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -156,6 +156,11 @@ module_param(allow_unsupported_sfp, uint, 0);
+@@ -151,8 +151,8 @@ MODULE_PARM_DESC(max_vfs,
+ 		 "Maximum number of virtual functions to allocate per physical function - default is zero and maximum value is 63. (Deprecated)");
+ #endif /* CONFIG_PCI_IOV */
+ 
+-static unsigned int allow_unsupported_sfp;
+-module_param(allow_unsupported_sfp, uint, 0);
++static bool allow_unsupported_sfp;
++module_param(allow_unsupported_sfp, bool, 0);
  MODULE_PARM_DESC(allow_unsupported_sfp,
  		 "Allow unsupported and untested SFP+ modules on 82599-based adapters");
  
-+static bool cu_sfp_as_sx;
-+module_param(cu_sfp_as_sx, bool, 0);
-+MODULE_PARM_DESC(cu_sfp_as_sx,
-+		 "Allow treating 1G Cu SFP modules as 1G SX modules on X550-based adapters");
-+
- #define DEFAULT_MSG_ENABLE (NETIF_MSG_DRV|NETIF_MSG_PROBE|NETIF_MSG_LINK)
- static int debug = -1;
- module_param(debug, int, 0);
-@@ -10814,6 +10819,9 @@ static int ixgbe_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	if (allow_unsupported_sfp)
- 		hw->allow_unsupported_sfp = allow_unsupported_sfp;
- 
-+	if (cu_sfp_as_sx)
-+		hw->cu_sfp_as_sx = cu_sfp_as_sx;
-+
- 	/* reset_hw fills in the perm_addr as well */
- 	hw->phy.reset_if_overtemp = true;
- 	err = hw->mac.ops.reset_hw(hw);
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h b/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h
-index 6da9880d766a..0ffe09c0d5a8 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h
-@@ -3645,6 +3645,7 @@ struct ixgbe_hw {
- 	bool				allow_unsupported_sfp;
- 	bool				wol_enabled;
- 	bool				need_crosstalk_fix;
-+	bool				cu_sfp_as_sx;
- };
- 
- struct ixgbe_info {
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c
-index e4b50c7781ff..aa12d589c39b 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_x550.c
-@@ -1609,6 +1609,8 @@ static s32 ixgbe_setup_ixfi_x550em(struct ixgbe_hw *hw, ixgbe_link_speed *speed)
-  */
- static s32 ixgbe_supported_sfp_modules_X550em(struct ixgbe_hw *hw, bool *linear)
- {
-+	struct ixgbe_adapter *adapter = hw->back;
-+
- 	switch (hw->phy.sfp_type) {
- 	case ixgbe_sfp_type_not_present:
- 		return IXGBE_ERR_SFP_NOT_PRESENT;
-@@ -1626,9 +1628,21 @@ static s32 ixgbe_supported_sfp_modules_X550em(struct ixgbe_hw *hw, bool *linear)
- 	case ixgbe_sfp_type_1g_lx_core1:
- 		*linear = false;
- 		break;
--	case ixgbe_sfp_type_unknown:
- 	case ixgbe_sfp_type_1g_cu_core0:
-+		if (hw->cu_sfp_as_sx) {
-+			e_warn(drv, "WARNING: Treating Cu SFP modules as SX modules is unsupported by Intel and may cause unstable operation or damage to the module or the adapter.  Intel Corporation is not responsible for any harm caused by using Cu modules in this way with this adapter.\n");
-+			*linear = false;
-+			hw->phy.sfp_type = ixgbe_sfp_type_1g_sx_core0;
-+			break;
-+		}
- 	case ixgbe_sfp_type_1g_cu_core1:
-+		if (hw->cu_sfp_as_sx) {
-+			e_warn(drv, "WARNING: Treating Cu SFP modules as SX modules is unsupported by Intel and may cause unstable operation or damage to the module or the adapter.  Intel Corporation is not responsible for any harm caused by using Cu modules in this way with this adapter.\n");
-+			*linear = false;
-+			hw->phy.sfp_type = ixgbe_sfp_type_1g_sx_core1;
-+			break;
-+		}
-+	case ixgbe_sfp_type_unknown:
- 	default:
- 		return IXGBE_ERR_SFP_NOT_SUPPORTED;
- 	}
 -- 
 2.25.1
 
