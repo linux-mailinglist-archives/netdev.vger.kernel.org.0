@@ -2,114 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AEAB500B15
-	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 12:28:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE92F500B68
+	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 12:46:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242275AbiDNKao (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 06:30:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59762 "EHLO
+        id S237742AbiDNKsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 06:48:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240915AbiDNKak (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 06:30:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA0C678908
-        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 03:28:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7988C61ED5
-        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 10:28:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57DC7C385A1;
-        Thu, 14 Apr 2022 10:28:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649932095;
-        bh=qOVMcIRed93FqSM6f1Yv6XH6fG5xRT3u2822rP5io44=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=eNm/iLrM09olyezza7rh3gEladiF1NNeIBpiSQo6Eumw97jAgRs7pnec4xEMev2Rn
-         Yp7HMHCSQhAb8GoBsKa3bML4Zw3aMx0CPnKtRZP1z9TeTdWljM+wYerg6XmU3HqnPS
-         lAOVOScA2BbvrW81kT7vXSX2TodYXcYwfxjSnlNS6QQhHR8aE6XsKaGwTL2sWNRbjJ
-         SkMBm9u2B8OKQqXRbcy4vmLqed9emKtEV5MgangbU0jjEZ0alJEGzPnZBVdbfIMJsj
-         LwRuXcZL/As3+xeLqakhh9XHWkpOh/VE320kRiTjA4acob27ZdUBvSgZ4oPgjJzNMn
-         FbD7OHSG6U+Ag==
-Date:   Thu, 14 Apr 2022 12:28:08 +0200
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Maxim Mikityanskiy <maximmi@nvidia.com>
-Cc:     Boris Pismenny <borisp@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Aviad Yehezkel <aviadye@mellanox.com>,
-        "Ilya Lesokhin" <ilyal@mellanox.com>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH net] tls: Skip tls_append_frag on zero copy size
-Message-ID: <20220414122808.09f31bfe@kernel.org>
-In-Reply-To: <20220413134956.3258530-1-maximmi@nvidia.com>
-References: <20220413134956.3258530-1-maximmi@nvidia.com>
+        with ESMTP id S242534AbiDNKrh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 06:47:37 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77E357DE10
+        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 03:45:13 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id ks6so9274635ejb.1
+        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 03:45:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wK3Vu/zllzq8WW1cGsouYUQlE32V/v7LYbuG4KARwww=;
+        b=iWo3MuKhvQmURfId57Q9uVQNBSA37QsqxkHYuHTUlbM4DFyctAvxrqNB/IKdRzrNOD
+         zJqUM34hZ268u8gA/eQsmhLSaeJqqFsEuoEerQ4HgjmrjgyRkWR+FbFn0QDRB9rtQId9
+         JiKuZjBHR9Be84RkQ9KZm0tWSbz8uNDRMkEEU8VfjgNX5pYy7Uk9l6Dx4PhytkF5f+l6
+         FQZVuwkpGSbnaIp37yQTI3jpdNRqxxq61/mIAQdMxhrgexjZPeOUZrArpb1p0HejOXtz
+         IJLEFTlraweDr79RyAW072wL5wLxjB37KWYNPYSDbZJRp5McegC9XhxrRsyZAfCUb5vP
+         AdAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wK3Vu/zllzq8WW1cGsouYUQlE32V/v7LYbuG4KARwww=;
+        b=bQZVlatfMfEY39s8if9YrXBbW2MKwnl6o96U7J3yEaql/gSfN9gqmt1sz0t7HUY4Z/
+         PPP/UPcPET0mtgM+RP7/tPP4sCjvoxJNmAhP0FAak3Phx6eYmcWLmt2s1FE+WmaNqpag
+         KQMecpj58QqXW0w4T2l+zFGiASO0DkJNob5dqe3lSVPfTXqkv8pcjF0h+n60ysSDi+By
+         5DijFX6MQ1DI6u95Utk4zmT7+hTYepxVMLDzNEq27hZVplAycLoU7429nHNfRm0cQvrR
+         oII3m9SDt4kenp0ReeMM3arGgDmFZF18+LV2UOhR8JvyI589RoF3l34L3Bpqt+rICqEK
+         S+UA==
+X-Gm-Message-State: AOAM532GYsvmFfBJO0+tkGH/NNGu7LdjiPQmBNHClv2VXj3PJVeXblIp
+        1cJy9pYIugL2aKSmCDSQHVT27U276NAhkris
+X-Google-Smtp-Source: ABdhPJw+lUQ4hQwaZcm0NYtAWY2TeyGXIOIdTleMr9lZonqxWXnefd5lDNruLr7zmdbdkrs7EzX8pQ==
+X-Received: by 2002:a17:907:7205:b0:6e7:ee50:ea94 with SMTP id dr5-20020a170907720500b006e7ee50ea94mr1732651ejc.351.1649933111632;
+        Thu, 14 Apr 2022 03:45:11 -0700 (PDT)
+Received: from debil.. (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
+        by smtp.gmail.com with ESMTPSA id hy24-20020a1709068a7800b006e888dbf1d6sm504984ejc.91.2022.04.14.03.45.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 03:45:11 -0700 (PDT)
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+To:     netdev@vger.kernel.org
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Martynas Pumputis <m@lambda.lt>,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>, wireguard@lists.zx2c4.com,
+        kuba@kernel.org, davem@davemloft.net,
+        Nikolay Aleksandrov <razor@blackwall.org>
+Subject: [PATCH net 0/2] wireguard: device: fix metadata_dst xmit null pointer dereference
+Date:   Thu, 14 Apr 2022 13:44:56 +0300
+Message-Id: <20220414104458.3097244-1-razor@blackwall.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 13 Apr 2022 16:49:56 +0300 Maxim Mikityanskiy wrote:
-> Calling tls_append_frag when max_open_record_len == record->len might
-> add an empty fragment to the TLS record if the call happens to be on the
-> page boundary. Normally tls_append_frag coalesces the zero-sized
-> fragment to the previous one, but not if it's on page boundary.
-> 
-> If a resync happens then, the mlx5 driver posts dump WQEs in
-> tx_post_resync_dump, and the empty fragment may become a data segment
-> with byte_count == 0, which will confuse the NIC and lead to a CQE
-> error.
-> 
-> This commit fixes the described issue by skipping tls_append_frag on
-> zero size to avoid adding empty fragments. The fix is not in the driver,
-> because an empty fragment is hardly the desired behavior.
-> 
-> Fixes: e8f69799810c ("net/tls: Add generic NIC offload infrastructure")
-> Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-> ---
->  net/tls/tls_device.c | 12 +++++++-----
->  1 file changed, 7 insertions(+), 5 deletions(-)
-> 
-> diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-> index 12f7b56771d9..af875ad4a822 100644
-> --- a/net/tls/tls_device.c
-> +++ b/net/tls/tls_device.c
-> @@ -483,11 +483,13 @@ static int tls_push_data(struct sock *sk,
->  		copy = min_t(size_t, size, (pfrag->size - pfrag->offset));
->  		copy = min_t(size_t, copy, (max_open_record_len - record->len));
->  
-> -		rc = tls_device_copy_data(page_address(pfrag->page) +
-> -					  pfrag->offset, copy, msg_iter);
-> -		if (rc)
-> -			goto handle_error;
-> -		tls_append_frag(record, pfrag, copy);
-> +		if (copy) {
-> +			rc = tls_device_copy_data(page_address(pfrag->page) +
-> +						  pfrag->offset, copy, msg_iter);
-> +			if (rc)
-> +				goto handle_error;
-> +			tls_append_frag(record, pfrag, copy);
-> +		}
+Hi,
+Patch 01 fixes a null pointer dereference in wireguard's xmit path when
+transmitting skbs with metadata_dst attached. Patch 02 adds a selftest for
+that case using bpf_skb_set_tunnel_key on wg device's egress path.
 
-I appreciate you're likely trying to keep the fix minimal but Greg
-always says "fix it right, worry about backports later".
+Thanks,
+ Nik
 
-I think we should skip more, we can reorder the mins and if 
-min(size, rec space) == 0 then we can skip the allocation as well.
-Maybe some application wants to do zero-length sends to flush the
-MSG_MORE and would benefit that way?
+Nikolay Aleksandrov (2):
+  wireguard: device: fix metadata_dst xmit null pointer dereference
+  wireguard: selftests: add metadata_dst xmit selftest
 
->  		size -= copy;
->  		if (!size) {
+ drivers/net/wireguard/device.c             |  3 +-
+ tools/testing/selftests/wireguard/netns.sh | 63 ++++++++++++++++++++++
+ 2 files changed, 65 insertions(+), 1 deletion(-)
+
+-- 
+2.35.1
 
