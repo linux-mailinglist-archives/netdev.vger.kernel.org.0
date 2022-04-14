@@ -2,94 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1DD750089B
-	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 10:43:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FF865008B9
+	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 10:49:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241002AbiDNIpi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 04:45:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49676 "EHLO
+        id S240924AbiDNIwH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 04:52:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239558AbiDNIph (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 04:45:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D712965796;
-        Thu, 14 Apr 2022 01:43:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A5536208B;
-        Thu, 14 Apr 2022 08:43:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3406C385A5;
-        Thu, 14 Apr 2022 08:43:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649925791;
-        bh=iHZqK4K6Vu+KtomeHU+dePQzrkU7Y2MgGUiDicf1Wms=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=YfpsG3DHQxvqsl7laZpVeqMWas0uw1WWEfQ7MdGYXDkI0ZdQnz/wgk09mSVBb2cp+
-         uGskG3PDsJrK3Z8JEcgBj4VxDusYggKK5JoLf8MzikpDfm7rLDUcQv5qWLWuQXJAz7
-         AETSy1Xar9DIGuU+nARBCnLJkDXTKWFu+1dY/4Jp2bsY+luai/i7tHt4D547WhPFi/
-         WjbNX37dYJtr5eh7qViBy/zt2jXJziDaxiq0sawamgjY7vg4voXnK5E/LaV0lp9ET+
-         pWBh3d0F3tyBLP7Z3Pjo/93FqilmSqUNCoI7keU14fNphnYJMQ8LngUZOnQSyDnGSk
-         4qKTDEfb58k2Q==
-Date:   Thu, 14 Apr 2022 10:42:59 +0200
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tan Tee Min <tee.min.tan@linux.intel.com>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Tan Tee Min <tee.min.tan@intel.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
+        with ESMTP id S236287AbiDNIwG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 04:52:06 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD27918E3E
+        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 01:49:41 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id k14so4255453pga.0
+        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 01:49:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=52xoWc0fpCWeHzM+yM9WHHbsetQNq9MHzCL2pPBApiI=;
+        b=XWiFxMT+UWDp7Vz0jzxoFt4hqWis6mV9c69E0BRPhKjUM5aPsG0wu88vvME8Z+YPu7
+         yYwd2KshY51yj+y2mEIF866q/Q6LC6Zf43yVODtJS2ZBlxDoFO9anzS2/B18+SenKUCh
+         AqjwVs+jvuqsvtor65wYKc2I3aHvzm5idy3tZt8v8/ZPPI44720OUbuOnUSqpHQW/T+/
+         HIrWhbjWJQUQu6ZTu7jqtP7HH9iHnXApaXs4qmCU0E7AQWKTxvyRPeS30GdQHJEu5TYK
+         UK+ienUNVd1/1I0Lpba0/RTfweaen3Qgjv1TSCDsvzMWEaUxw5LkbjrT05jHzkLQwY3r
+         nBvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=52xoWc0fpCWeHzM+yM9WHHbsetQNq9MHzCL2pPBApiI=;
+        b=otIsg5nHDK1uLymHL722yD/OhsvEZoeAI3/G8+qyE0QJHXltCUkLGSdgNOSC1Y2dR2
+         4wLoUbIfae3L6Nqs7fuWmu6aLbM6eQzoWOzkMxDiRRpd417qb5/ssdCia/M8CdkNNkbk
+         i0Bgy/+WoCinB+DqyCx2D7v2wN9qcmvOBDNr+sxb4iiDrKpMX1sqzna9pz8VJDejfgZK
+         /lXerm4PvHATnyTcjIYTH9PDzWstbc+Y82fnBSkG9tEATCDRyZOZtKjQ4rpKkW7BbE2c
+         ujWoWN51x2tjbWdToD4MfEEsq6V46SJg5vDe6tPYySqCkxxZ6ueLUNVDzXuJv82WWHe/
+         SRGQ==
+X-Gm-Message-State: AOAM532G9coCQDtylF8VoAoT2k4tQHzZmOktY8XE9INkOgYABXt5jiik
+        i86ZXHcX4hvGMClCUdh5U1rZPGMsBzA=
+X-Google-Smtp-Source: ABdhPJyEtMUMS20fmtwUu0ewlLpWRGwpeBqHKsCaOQi3VCnjbIUZHBFPJz9SxO79zRkU414jm8r8Yw==
+X-Received: by 2002:a65:4188:0:b0:39d:2197:13b5 with SMTP id a8-20020a654188000000b0039d219713b5mr1482495pgq.368.1649926180963;
+        Thu, 14 Apr 2022 01:49:40 -0700 (PDT)
+Received: from Laptop-X1.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id f4-20020aa79d84000000b00505f920ffb8sm1437871pfq.179.2022.04.14.01.49.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 01:49:40 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Rayagond Kokatanur <rayagond@vayavyalabs.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Voon Wei Feng <weifeng.voon@intel.com>,
-        Wong Vee Khee <vee.khee.wong@intel.com>,
-        Song Yoong Siang <yoong.siang.song@intel.com>
-Subject: Re: [PATCH net 1/1] net: stmmac: add fsleep() in HW Rx timestamp
- checking loop
-Message-ID: <20220414104259.0b928249@kernel.org>
-In-Reply-To: <20220414072934.GA10025@linux.intel.com>
-References: <20220413040115.2351987-1-tee.min.tan@intel.com>
-        <20220413125915.GA667752@hoboy.vegasvil.org>
-        <20220414072934.GA10025@linux.intel.com>
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Flavio Leitner <fbl@redhat.com>
+Subject: [PATCH net] net/packet: fix packet_sock xmit return value checking
+Date:   Thu, 14 Apr 2022 16:49:25 +0800
+Message-Id: <20220414084925.22731-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 14 Apr 2022 15:29:34 +0800 Tan Tee Min wrote:
-> > > --- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
-> > > +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
-> > > @@ -279,10 +279,11 @@ static int dwmac4_wrback_get_rx_timestamp_status(void *desc, void *next_desc,
-> > >  			/* Check if timestamp is OK from context descriptor */
-> > >  			do {
-> > >  				ret = dwmac4_rx_check_timestamp(next_desc);
-> > > -				if (ret < 0)
-> > > +				if (ret <= 0)
-> > >  					goto exit;
-> > >  				i++;
-> > >  
-> > > +				fsleep(1);  
-> > 
-> > This is nutty.  Why isn't this code using proper deferral mechanisms
-> > like work or kthread?  
-> 
-> Appreciate your comment.
-> The dwmac4_wrback_get_rx_timestamp_status() is called by stmmac_rx()
-> function which is scheduled by NAPI framework.
-> Do we still need to create deferred work inside NAPI work?
-> Would you mind to explain it more in detail?
+packet_sock xmit could be dev_queue_xmit, which also returns negative
+errors. So only checking positive errors is not enough, or userspace
+sendmsg may return success while packet is not send out.
 
-fsleep() is a big hammer, can you try cpu_relax() and bumping the max
-loop count a little?
+Move the net_xmit_errno() assignment in the braces as checkpatch.pl said
+do not use assignment in if condition.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Flavio Leitner <fbl@redhat.com>
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+---
+ net/packet/af_packet.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index c39c09899fd0..002d2b9c69dd 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -2858,8 +2858,9 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+ 
+ 		status = TP_STATUS_SEND_REQUEST;
+ 		err = po->xmit(skb);
+-		if (unlikely(err > 0)) {
+-			err = net_xmit_errno(err);
++		if (unlikely(err != 0)) {
++			if (err > 0)
++				err = net_xmit_errno(err);
+ 			if (err && __packet_get_status(po, ph) ==
+ 				   TP_STATUS_AVAILABLE) {
+ 				/* skb was destructed already */
+@@ -3060,8 +3061,12 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+ 		skb->no_fcs = 1;
+ 
+ 	err = po->xmit(skb);
+-	if (err > 0 && (err = net_xmit_errno(err)) != 0)
+-		goto out_unlock;
++	if (unlikely(err != 0)) {
++		if (err > 0)
++			err = net_xmit_errno(err);
++		if (err)
++			goto out_unlock;
++	}
+ 
+ 	dev_put(dev);
+ 
+-- 
+2.35.1
+
