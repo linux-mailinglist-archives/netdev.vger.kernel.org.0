@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C2FAF501E93
-	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 00:46:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7851501E96
+	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 00:46:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347190AbiDNWsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 18:48:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41752 "EHLO
+        id S1347238AbiDNWsf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 18:48:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241321AbiDNWsO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 18:48:14 -0400
-Received: from mail-0201.mail-europe.com (mail-0201.mail-europe.com [51.77.79.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 683F4C6B76;
-        Thu, 14 Apr 2022 15:45:47 -0700 (PDT)
-Date:   Thu, 14 Apr 2022 22:45:36 +0000
+        with ESMTP id S1347253AbiDNWsa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 18:48:30 -0400
+Received: from mail-0301.mail-europe.com (mail-0301.mail-europe.com [188.165.51.139])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4BEAC6EF0;
+        Thu, 14 Apr 2022 15:45:59 -0700 (PDT)
+Date:   Thu, 14 Apr 2022 22:45:50 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
-        s=protonmail2; t=1649976343;
-        bh=N1CwAcVop9zqLRsxrEXTkTy/S/preizWU4aYyhoZHhM=;
+        s=protonmail2; t=1649976355;
+        bh=4UBxbz5wf4h5VLr17g7++AvyCOaKrTuecaQ7HkJeJ4c=;
         h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
          References:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
          Message-ID;
-        b=A22Iq2lQ4+bvKuiiH5ymI5leLRm2NdvbTRbCKTbTSPbG9FrsxL4lhq+6lvrKqyYVX
-         f+jqjmtNimSu19D0n3qDygcmD1jdvQp+kYlfG4OE2s1GwAZu6kcwmnJpwpHSULv6+v
-         YkJ5usrs7vsKBaD8n69R3nMgGX9KrJaF6R7iOUOKjdFww7hAJvnC1d9tJpqlb9w7w0
-         RTW+fAuYbwCvz+VXBdIHc/UwvFj62SsB67Zxs+5vY9lCY5WUkeQCMLmyZhuRgubjMN
-         /7zWr9JFt/FO+dtUcBPTOTDQ8qvU4HV/xO4vF3lssWb3vjzIWPUYjhNE8V6O1LHI/T
-         SDUZPwx38pcAw==
+        b=MooR0+CEAV4XbA72GQZXTEX0qrP/7bHt4An7MuN15EsMiCeJbogR0SuNVdOa0OE6z
+         i5+DpHyyLJJ93Op7sWb/op+qLU0EmssLRgsQvozEzp9XCuYj6OxIshSNSU9RqC/0Oh
+         rUaMn5VIHKUuG4Vr7yn/ye0MEfT3ZHK0QwLU+Z3HP7UjnJLtV8rbSCsNs2o9lknyl3
+         zDaxvV7foY/Do1y9UGcYfDuYlthxRsfNMA15DpXT7vIEl4izRnpnOpeCivqxQ1q0Ma
+         f68vfMrSc7K+gHtcmWUFMHgeMGPcdlBaL1OiaRrmvwFuNffHMfOdFLnVH4nCscDzqr
+         +qg809I6lI6qQ==
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>
@@ -63,8 +63,8 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org, llvm@lists.linux.dev
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH bpf-next 04/11] samples: bpf: add 'asm/mach-generic' include path for every MIPS
-Message-ID: <20220414223704.341028-5-alobakin@pm.me>
+Subject: [PATCH bpf-next 05/11] samples: bpf: use host bpftool to generate vmlinux.h, not target
+Message-ID: <20220414223704.341028-6-alobakin@pm.me>
 In-Reply-To: <20220414223704.341028-1-alobakin@pm.me>
 References: <20220414223704.341028-1-alobakin@pm.me>
 MIME-Version: 1.0
@@ -72,53 +72,48 @@ Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the following:
+Use the host build of bpftool (bootstrap) instead of the target one
+to generate vmlinux.h/skeletons for the BPF samples. Otherwise, when
+host !=3D target, samples compilation fails with:
 
-In file included from samples/bpf/tracex2_kern.c:7:
-In file included from ./include/linux/skbuff.h:13:
-In file included from ./include/linux/kernel.h:22:
-In file included from ./include/linux/bitops.h:33:
-In file included from ./arch/mips/include/asm/bitops.h:20:
-In file included from ./arch/mips/include/asm/barrier.h:11:
-./arch/mips/include/asm/addrspace.h:13:10: fatal error: 'spaces.h' file not=
- found
- #include <spaces.h>
-          ^~~~~~~~~~
+/bin/sh: line 1: samples/bpf/bpftool/bpftool: failed to exec: Exec
+format error
 
-'arch/mips/include/asm/mach-generic' should always be included as
-many other MIPS include files rely on this.
-Move it from under CONFIG_MACH_LOONGSON64 to let it be included
-for every MIPS.
-
-Fixes: 058107abafc7 ("samples/bpf: Add include dir for MIPS Loongson64 to f=
-ix build errors")
+Fixes: 384b6b3bbf0d ("samples: bpf: Add vmlinux.h generation support")
 Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 ---
- samples/bpf/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ samples/bpf/Makefile | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index 8fff5ad3444b..97203c0de252 100644
+index 97203c0de252..02f999a8ef84 100644
 --- a/samples/bpf/Makefile
 +++ b/samples/bpf/Makefile
-@@ -193,8 +193,8 @@ ifeq ($(ARCH), mips)
- TPROGS_CFLAGS +=3D -D__SANE_USERSPACE_TYPES__
- ifdef CONFIG_MACH_LOONGSON64
- BPF_EXTRA_CFLAGS +=3D -I$(srctree)/arch/mips/include/asm/mach-loongson64
--BPF_EXTRA_CFLAGS +=3D -I$(srctree)/arch/mips/include/asm/mach-generic
- endif
-+BPF_EXTRA_CFLAGS +=3D -I$(srctree)/arch/mips/include/asm/mach-generic
- endif
+@@ -291,12 +291,13 @@ $(LIBBPF): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_S=
+RC)/Makefile) | $(LIBBPF_OU
 
- TPROGS_CFLAGS +=3D -Wall -O2
+ BPFTOOLDIR :=3D $(TOOLS_PATH)/bpf/bpftool
+ BPFTOOL_OUTPUT :=3D $(abspath $(BPF_SAMPLES_PATH))/bpftool
+-BPFTOOL :=3D $(BPFTOOL_OUTPUT)/bpftool
++BPFTOOL :=3D $(BPFTOOL_OUTPUT)/bootstrap/bpftool
+ $(BPFTOOL): $(LIBBPF) $(wildcard $(BPFTOOLDIR)/*.[ch] $(BPFTOOLDIR)/Makefi=
+le) | $(BPFTOOL_OUTPUT)
+ =09    $(MAKE) -C $(BPFTOOLDIR) srctree=3D$(BPF_SAMPLES_PATH)/../../ \
+ =09=09OUTPUT=3D$(BPFTOOL_OUTPUT)/ \
+ =09=09LIBBPF_OUTPUT=3D$(LIBBPF_OUTPUT)/ \
+-=09=09LIBBPF_DESTDIR=3D$(LIBBPF_DESTDIR)/
++=09=09LIBBPF_DESTDIR=3D$(LIBBPF_DESTDIR)/ \
++=09=09bootstrap
+
+ $(LIBBPF_OUTPUT) $(BPFTOOL_OUTPUT):
+ =09$(call msg,MKDIR,$@)
 --
 2.35.2
 
