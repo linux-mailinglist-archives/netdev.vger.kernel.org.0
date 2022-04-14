@@ -2,56 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F3E9500BD0
-	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 13:07:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF21F500BEC
+	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 13:14:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239079AbiDNLKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 07:10:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39380 "EHLO
+        id S242591AbiDNLRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 07:17:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233401AbiDNLKG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 07:10:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AC6374DC5;
-        Thu, 14 Apr 2022 04:07:41 -0700 (PDT)
+        with ESMTP id S242581AbiDNLQ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 07:16:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8290327B22;
+        Thu, 14 Apr 2022 04:14:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1674D61234;
-        Thu, 14 Apr 2022 11:07:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2ECAC385A1;
-        Thu, 14 Apr 2022 11:07:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649934460;
-        bh=N8fZoRR/MqVYpakPiKIChLg8Ip1k00Jv+UvTYBl06I8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rNajIpH8VoRQ10f7BGDubY5P7grv08Vg3rMts5/sImX3bWVT4Oo3+/BHm10DL9l6c
-         3fok+bTNF1UyeF83fFuu3C1bYNNs+58dT6tMnoo0PWTZWHn1dqaCsnPBksYhKnM7B3
-         UZSDNNmsJ4OzxajXtj+O58OKOtKEuqyAOVNanwRQ=
-Date:   Thu, 14 Apr 2022 13:07:35 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     Oliver Neukum <oneukum@suse.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Jann Horn <jannh@google.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Eric Dumazet <edumazet@google.com>,
-        Jacky Chou <jackychou@asix.com.tw>, Willy Tarreau <w@1wt.eu>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH] usbnet: Fix use-after-free on disconnect
-Message-ID: <YlgAd2bHWAJwgd8q@kroah.com>
-References: <127121d9d933ebe3fc13f9f91cc33363d6a8a8ac.1649859147.git.lukas@wunner.de>
- <614e6498-3c3e-0104-591e-8ea296dfd887@suse.com>
- <20220414105858.GA9106@wunner.de>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2F1D3B828E6;
+        Thu, 14 Apr 2022 11:14:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE836C385A5;
+        Thu, 14 Apr 2022 11:14:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649934872;
+        bh=NmetDrxQ+EhR6cSrYu4CXnVLfNx9HrQ/wJn7pNgkRNQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cAOOydwO3ql5oucGvzxYWVmHeQtwnjGuUZe9yX/3fKx7Ie2l8ACcJLd04elVLkCYD
+         UwmpsD479bfr3SYn2pcFEY9MdggMb3lMYHXjxvHV7g4M2AXYsGAA8blffgVJOtZfhV
+         e35oWN0i4nST7+2NCuEqJgtxNoTcgcxbntFhhp1La8j4Qi2EH+w6ZrhaGfqtCbtLxP
+         uBVxcm+uOPm9VraGQw95SyXAaQBKUWW87pVZHVDM61OxlABbH8Q21tld5RNouqvCP1
+         TImh2hYV4MirBJjO82pnDZOY25w2jTjgjHDswMAeesMpws/iOOmhznXLjRahv9qfgZ
+         VbxuO1TA4ykeg==
+Date:   Thu, 14 Apr 2022 13:14:24 +0200
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Peilin Ye <yepeilin.cs@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Feng Zhou <zhoufeng.zf@bytedance.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 2/2] ip6_gre: Fix skb_under_panic in __gre6_xmit()
+Message-ID: <20220414131424.744aa842@kernel.org>
+In-Reply-To: <9cd9ca4ac2c19be288cb8734a86eb30e4d9e2050.1649715555.git.peilin.ye@bytedance.com>
+References: <c5b7dc6020c93a1e7b40bc472fcdb6429999473e.1649715555.git.peilin.ye@bytedance.com>
+        <9cd9ca4ac2c19be288cb8734a86eb30e4d9e2050.1649715555.git.peilin.ye@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220414105858.GA9106@wunner.de>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -62,40 +59,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 12:58:58PM +0200, Lukas Wunner wrote:
-> On Wed, Apr 13, 2022 at 08:59:48PM +0200, Oliver Neukum wrote:
-> > On 13.04.22 16:16, Lukas Wunner wrote:
-> > > Jann Horn reports a use-after-free on disconnect of a USB Ethernet
-> > > (ax88179_178a.c).  Oleksij Rempel has witnessed the same issue with a
-> > > different driver (ax88172a.c).
-> > 
-> > I see. Very good catch
-> > 
-> > > --- a/drivers/net/usb/usbnet.c
-> > > +++ b/drivers/net/usb/usbnet.c
-> > > @@ -469,6 +469,9 @@ static enum skb_state defer_bh(struct usbnet *dev, struct sk_buff *skb,
-> > >   */
-> > >  void usbnet_defer_kevent (struct usbnet *dev, int work)
-> > >  {
-> > > +	if (dev->intf->condition == USB_INTERFACE_UNBINDING)
-> > > +		return;
-> > 
-> > But, no, you cannot do this. This is a very blatant layering violation.
-> > You cannot use states internal to usb core like that in a driver.
+On Mon, 11 Apr 2022 15:33:00 -0700 Peilin Ye wrote:
+> The following sequence of events caused the BUG:
 > 
-> Why do you think it's internal?
+> 1. During ip6gretap device initialization, tunnel->tun_hlen (e.g. 4) is
+>    calculated based on old flags (see ip6gre_calc_hlen());
+> 2. packet_snd() reserves header room for skb A, assuming
+>    tunnel->tun_hlen is 4;
+> 3. Later (in clsact Qdisc), the eBPF program sets a new tunnel key for
+>    skb A using bpf_skb_set_tunnel_key() (see _ip6gretap_set_tunnel());
+> 4. __gre6_xmit() detects the new tunnel key, and recalculates
+>    "tun_hlen" (e.g. 12) based on new flags (e.g. TUNNEL_KEY and
+>    TUNNEL_SEQ);
+> 5. gre_build_header() calls skb_push() with insufficient reserved header
+>    room, triggering the BUG.
 > 
-> enum usb_interface_condition is defined in include/linux/usb.h
-> for everyone to see and use.  If it was meant to be private,
-> I'd expect it to be marked as such or live in drivers/usb/core/usb.h.
+> As sugguested by Cong, fix it by moving the call to skb_cow_head() after
+> the recalculation of tun_hlen.
+> 
+> Reported-by: Feng Zhou <zhoufeng.zf@bytedance.com>
+> Co-developed-by: Cong Wang <cong.wang@bytedance.com>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+> ---
+> Hi all,
+> 
+> I couldn't find a proper Fixes: tag for this fix; please comment if you
+> have any sugguestions.  Thanks!
 
-Because we didn't think people would do crazy things like this.
+What's wrong with
 
-> Adding Greg to clarify.
+Fixes: 6712abc168eb ("ip6_gre: add ip6 gre and gretap collect_md mode")
 
-Oliver is right.  Also what prevents the condition from changing _right_
-after you tested for it?
+?
 
-thanks,
+> diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
+> index b43a46449130..976236736146 100644
+> --- a/net/ipv6/ip6_gre.c
+> +++ b/net/ipv6/ip6_gre.c
+> @@ -733,9 +733,6 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+>  	else
+>  		fl6->daddr = tunnel->parms.raddr;
+>  
+> -	if (skb_cow_head(skb, dev->needed_headroom ?: tunnel->hlen))
+> -		return -ENOMEM;
+> -
+>  	/* Push GRE header. */
+>  	protocol = (dev->type == ARPHRD_ETHER) ? htons(ETH_P_TEB) : proto;
+>  
+> @@ -763,6 +760,9 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+>  			(TUNNEL_CSUM | TUNNEL_KEY | TUNNEL_SEQ);
 
-greg k-h
+We should also reject using SEQ with collect_md, but that's a separate
+issue.
+
+>  		tun_hlen = gre_calc_hlen(flags);
+>  
+> +		if (skb_cow_head(skb, dev->needed_headroom ?: tun_hlen + tunnel->encap_hlen))
+> +			return -ENOMEM;
+> +
+>  		gre_build_header(skb, tun_hlen,
+>  				 flags, protocol,
+>  				 tunnel_id_to_key32(tun_info->key.tun_id),
