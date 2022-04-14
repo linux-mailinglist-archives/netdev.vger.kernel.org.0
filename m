@@ -2,188 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D10675017CD
-	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 18:04:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5D265017D7
+	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 18:04:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239416AbiDNPuf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 11:50:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53028 "EHLO
+        id S243420AbiDNPu6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 11:50:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243690AbiDNPi0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 11:38:26 -0400
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E295F1FA61;
-        Thu, 14 Apr 2022 08:15:40 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id D88736000C;
-        Thu, 14 Apr 2022 15:15:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649949339;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Kldf5IEa3yAZkGIRecTUUIoT+f9V5tcdBTTm3Fj/R0E=;
-        b=KfauuI8udm5OMo/y2S7FtmFocxXA/lFKzTmOSteFep9LasMRYCoO3NSxkZE/5aLMkW9nYR
-        MQkfXzScE5Qe31vWvX6SmMQFEQtHou+UGO9iyU+1WMmzn+8yFEGDSI4rFKMrSQ1WJU7I89
-        qqiDNFx3A7qIX03nL2GLRHuCXQJyfQedxYH+ikaozYt5a3f9UOHhgbTQLgmbWMCYRa2nJw
-        O22a9HqvWw7copMKG1nxE0KIBJB+emaChGyGyM9kW1PK1zbpF8ndwOqhDt9CCN6vjH5mXD
-        SvAQrt4vE/GDbBNdMOCqt/b0Qh45nyOyrfG5u6I5pfjsy4U14AQ2gUhpRxgnqg==
-Date:   Thu, 14 Apr 2022 17:14:08 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 04/12] net: pcs: add Renesas MII converter
- driver
-Message-ID: <20220414171408.59716a52@fixe.home>
-In-Reply-To: <YlgYRGVuHQCwp7FQ@shell.armlinux.org.uk>
-References: <20220414122250.158113-1-clement.leger@bootlin.com>
-        <20220414122250.158113-5-clement.leger@bootlin.com>
-        <YlgYRGVuHQCwp7FQ@shell.armlinux.org.uk>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S1355930AbiDNPlI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 11:41:08 -0400
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70055.outbound.protection.outlook.com [40.107.7.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD02FE098A;
+        Thu, 14 Apr 2022 08:22:14 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GQT1tLvKPEBEVHECas5zqGjrH5UAPtHo+BDVWJr+GzWBe5eXLRLFU8+TpB52s973aOb8ghEmpi/HcDXVdMZ9+MymkgDEFc7Np03TYQwOHOLGwXoaeaUFLcr33DENJAysN/DOyTnTEmpR+aaAX9mY71yEB5hNqWZv6R1lj7cm6P0OOW8DN8ljcKxxFl5NyPA6HbNaBc7yac+G3KoySqVhGNe2SpUxyBCefdJv1vcjzi77TdkjRyWV3E/VVKbQlTeT0irwf5abWjkIeI3rpSCacP9wyui4V2RfXzKP53cCtT4ewiiNyMTogFzHIbHoEUX1eFegYavIDditcbiJaMul5A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9XbLDYmSh4qOxLeudAAaaO/lS02BRDFCF9vBDmsGR2Y=;
+ b=OAxsPEPgdgM99sJdUqUZcu/twfdrrBLnZcVixdgih0/CjRfmrm6DuaLCv47H7MqwzsDZcfAS2FG6sNGxXJJNGo3AsWmJSu0ny0lLrCT1efZXGNeiR7/kZPFYm7DqeWnyBiX42wzY2ubNrHFCAMx1mCi2al/T0QKDw07jWFm5HGsD9yi9SmgBlBh/p0abW8PCC3q4EgM3PKViMvXY1InfJYr+TlGFO/QNWHcbmbZyOBbBAJhspdxRCrqKiFaoTBk5s2U5qYdczQLiGMbpbB22peBx4T2hBoAg9tMc/tT4jZ9MR5y1ToOcboADquhImSlzvSBHzgK4pD28l+1/slO2Mw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9XbLDYmSh4qOxLeudAAaaO/lS02BRDFCF9vBDmsGR2Y=;
+ b=i3Xa6y4PXROASOi2Ugl/XDsE/At/X5cGia+RM+a/1grW5PjPB8jl3qBIqsKXKek4Uu01F1lOivsVgAi9MLwT1gDB87lGKFwMI/wcH78xgJrfZcrXVaMTErNH+UGz5cPYWV++JC5D08ioMwB4+J6hKDr75UiQIlDW4vZO82K1XHo=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by DBAPR04MB7256.eurprd04.prod.outlook.com (2603:10a6:10:1a3::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20; Thu, 14 Apr
+ 2022 15:22:12 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::8ed:49e7:d2e7:c55e]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::8ed:49e7:d2e7:c55e%3]) with mapi id 15.20.5144.029; Thu, 14 Apr 2022
+ 15:22:12 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+CC:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH net-next v2] docs: net: dsa: describe issues with checksum
+ offload
+Thread-Topic: [PATCH net-next v2] docs: net: dsa: describe issues with
+ checksum offload
+Thread-Index: AQHYTfheCzBrufjauEu7NwJglkZ/ZKzuSJmAgACtXwCAAJTqgA==
+Date:   Thu, 14 Apr 2022 15:22:12 +0000
+Message-ID: <20220414152211.txmb3peuxs4rt4pw@skbuf>
+References: <20220411230305.28951-1-luizluca@gmail.com>
+ <20220413200841.4nmnv2qgapqhfnx3@skbuf> <87tuawp493.fsf@kurt>
+In-Reply-To: <87tuawp493.fsf@kurt>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 481774ef-615a-4565-a22b-08da1e2a8c9a
+x-ms-traffictypediagnostic: DBAPR04MB7256:EE_
+x-microsoft-antispam-prvs: <DBAPR04MB72562CCA06A0C2008596F90CE0EF9@DBAPR04MB7256.eurprd04.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: RBFNIIvG93PXwep2mQUKlLWnMmPweuCZqjmTOE4S6x/jh9R+wwaKz3rmULRSj1VdRcCF8B5RLfwmDUU+g4bdWETqprP6FuFl2xEYF7s8fETeSWUwFy0CF8iB39n3Rf7wRomGVcXOgjCyxpW4dSnGKYafgfKhdDGCm66NmiO7fn4ZoOnWcFbd6/Zx3+EAX4sRXSLPEgjOD8tuLAYEAK/mhpCMJQV/IflcdW1BpvahF8PPnTpL1dHeiLeVGEue5Ng1edYxh6ZSBSrwKo33Y4GW9tkj+mKHqqNahUp8DDVFiT6fEN96ssJKJsuA2rSfp7WZAnbUu94KLDJxQZtKCVkSIbCLNKdHHmjPFeAAtcuEjJM1uviauuiZCyJQ1Bxi0/K3tI/Tk7ag5YV4se/i0nb0eXFS7thoaPZUoMcrCv5R9gvt0sdP59ZCTMyS8easgFDF6CXrW+YavVvhBha/UitYyt5eEt58zhua6YC6qJkUMmFItJ4k+0Zio20u0T1FMxjsdJ3UW/yWy61Nsc7vqq5ZRjMYxcVT6fTQSsn8Hztc2/Nap6y5CrvQb9fWupsa9P0v6jG5OqsnkC9gXCuYhdPbDdKo9VcFOMQvU+/0AD1IqYK0VExFbKqxiogAobA8pVfYXetU//AsAL/QPBV+C0HNzCp1eDltVQqy9Uun3gqAPmrt8KHsZffvVXUxWHW7hc15FYlQLEUT5vLu5cy4GEVtxw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(7916004)(366004)(8676002)(4326008)(5660300002)(122000001)(86362001)(2906002)(7416002)(38100700002)(38070700005)(8936002)(54906003)(44832011)(186003)(6506007)(1076003)(6512007)(9686003)(508600001)(6916009)(316002)(71200400001)(26005)(6486002)(66446008)(66556008)(76116006)(66946007)(66476007)(91956017)(33716001)(64756008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?dShr1OM3d3YKADTvHanBez9v1OX/YQDU4qje/G8qfTQTu/BAGIIdQqEKMtsY?=
+ =?us-ascii?Q?SOPS69zaYlUQq7J79aT6FnavuJ+8g/Ogf7lWIo4nIurosQcoVHBiOBgiqDFD?=
+ =?us-ascii?Q?Gc2Ip0GeK2Au2RZgsLCYMLNh6wUAg2FWZtdiZZayWgE+G1HDlmfN1/6iEpnC?=
+ =?us-ascii?Q?AOesupa1cLvTYknFv5WbaAPqrcMOUnF9OYtooHgax+3HSUwWfzlclvL00lXm?=
+ =?us-ascii?Q?ubFCYjlIS3ZWcQ7Xxh3V/Q66iHL1/GAEu1CXb+S0zb/23euCzK93JMJqoEtK?=
+ =?us-ascii?Q?WcdySURuBWs7BrGj070Ry3vyQ8p6K8lLP/xAi1mmUJAadqX//DtQnvBpJTky?=
+ =?us-ascii?Q?tc61Acxwtmv5qvTVu4j8Kx10zxGK1kdLmV8YbbQL+YBXK6U5eHBxqUKchjD+?=
+ =?us-ascii?Q?DuKwKo6gYNvP5cZAv+eIz8kqqa6aiRpoaUhopVFzfFKHy2vfmZeuBI0Ytzxt?=
+ =?us-ascii?Q?7iz1u6uk8PDQgH+5PNgvmvaJfHnVRovv6JAIMCBLrUeygR0AM9mpS7aIu1Wa?=
+ =?us-ascii?Q?4eSFisSul52Q467kxc9t0tb+Sabemx+7wLr9g6xvk977zc+pQfbFSc8Dlasp?=
+ =?us-ascii?Q?CX7pnSbCbpX5T5PwLzMGi788QPuo/IMw3LdomiHB/kuTuT+LNVE0DJllcUbX?=
+ =?us-ascii?Q?dBB0dFef5BTVYMVV9HbxBdaWbFDD5g+/QoH38fAyQSaVj1KkAlj7Sk23qGo+?=
+ =?us-ascii?Q?bzIXtZW3/jLjA+fRtx1J6YXbSiRqUaCkL+vF7PVmr9cg/786kScM3t5Rhzgf?=
+ =?us-ascii?Q?58a1LvL3uRmIvVf7nd8d9qUz5Emy2LbJAKhL1A6Z2nH38/W6ACambS06x/Us?=
+ =?us-ascii?Q?XeGRFsDggsxBefNJkBj0WvlWkKwb8o5B8TOmSwXv43LMPF58sLojuQklVd3H?=
+ =?us-ascii?Q?qq7Q6QazsNR6GrrEyYaaF5cqNIxvkPAW2bg12iINWmpNx2ialrGU8G+S2SoD?=
+ =?us-ascii?Q?fuNfJL3dWNi+zQ6WMWMGaZ41NyP+cuVpRROJdU/rYHb0onNxEzQy+PAMoYFM?=
+ =?us-ascii?Q?a7dAjsb+Bt8wrrqQHJMMijOVIEh/3Bo/wjP8JMV73/U/es6mtv1z3X9rOf60?=
+ =?us-ascii?Q?4KNm+wdld1CeGnXvYwUrruC3F7fOSbT3ohNTNozGA4MUOmGlqZHSTID5nx7P?=
+ =?us-ascii?Q?ZxePx3LQtSOdVt+UXciIMRFZTzAEaJ+krnh+vfWxWocYjhM91Nu8qGsgxk6q?=
+ =?us-ascii?Q?ynoBkXCfgBimMleQ7kHCiASZ08+EDrdRcef/EOtzl0SWVzfn0A+/8Ro9MWIL?=
+ =?us-ascii?Q?dDmq0MsFRaD4yWUxnEc5bj4r9sakXJqTynncqStBJtpU2Hr/bGGSBWJVg1qI?=
+ =?us-ascii?Q?Gwf/PxERe3+6fvjsJ56e/LQY7IMxCp2wu58ja7A2Yqsgp2O1DLZFhSlYJOPo?=
+ =?us-ascii?Q?zbOPhpEI8GvstLeYRJRj+/R7eP2SF934Slug/Q27jnGfaY+r6ZAjJTS7e3Du?=
+ =?us-ascii?Q?XI5KLcEY7x2IHzjHlxqjwO1wlGUQ3JHurd0PkEiXmaUhYcvSyDbxa47yCHtq?=
+ =?us-ascii?Q?+hrHX/dwKN/kXC/V3kHwPmJsWmHWX1zml8X/aUR4EBWgx1ndcOX5qFbVyHGF?=
+ =?us-ascii?Q?/5NxYw4O+NlHyGlNpAmZyZ2PinhcwLMDF22mE+DuncSsG5LGEEMQQj/jSXwU?=
+ =?us-ascii?Q?fQm44o43phnkUSdCiU97TXP3KzP8ckGqJDZPEt7ekHaDwnpWMdvVonSZrC3f?=
+ =?us-ascii?Q?dNSZJbHok3RckiAY0spdXT4cEQ2GnXHd6Q6ZtaVUkwRbhzDIvhXGOIYZoj7w?=
+ =?us-ascii?Q?pnww46LwNGKlro4mOOC+nPDDJODlcn0=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <25012289B008954A8D0B03E1018543F0@eurprd04.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 481774ef-615a-4565-a22b-08da1e2a8c9a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Apr 2022 15:22:12.2281
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: dz9bMg1NYwFLnGZmukIXAsDOXoJGp+gmmPfSOeObXzY6DoCbFN5d1olnRF2h4/Sx1UaEp+jbbridKF5T/rvmIg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR04MB7256
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le Thu, 14 Apr 2022 13:49:08 +0100,
-"Russell King (Oracle)" <linux@armlinux.org.uk> a =C3=A9crit :
-
-> On Thu, Apr 14, 2022 at 02:22:42PM +0200, Cl=C3=A9ment L=C3=A9ger wrote:
-> > Add PCS driver for the MII converter that is present on Renesas RZ/N1
-> > SoC. This MII converter is reponsible of converting MII to RMII/RGMII
-> > or act as a MII passtrough. Exposing it as a PCS allows to reuse it
-> > in both the switch driver and the stmmac driver. Currently, this driver
-> > only allows the PCS to be used by the dual Cortex-A7 subsystem since
-> > the register locking system is not used. =20
+On Thu, Apr 14, 2022 at 08:29:12AM +0200, Kurt Kanzenbach wrote:
+> On Wed Apr 13 2022, Vladimir Oltean wrote:
+> > I've copied a bunch of new people to this email.
+> >
+> > TL;DR: Kurt/George/Andrew, on your systems with hellcreek/xrs700x/mv88e=
+6060,
+> > does the DSA master declare any of the following features as "on"?
+> >
+> > ethtool -k eth0 | grep tx-checksum-ip
 >=20
-> Hi,
+> It's a Cyclone V with stmmac as master:
 >=20
-> > +#define MIIC_CONVCTRL_CONV_MODE		GENMASK(4, 0)
-> > +#define CONV_MODE_MII			0
-> > +#define CONV_MODE_RMII			BIT(2)
-> > +#define CONV_MODE_RGMII			BIT(3)
-> > +#define CONV_MODE_10MBPS		0
-> > +#define CONV_MODE_100MBPS		BIT(0)
-> > +#define CONV_MODE_1000MBPS		BIT(1) =20
+> |root@tsn:~# ethtool -k eth0 | grep tx-checksum-ip
+> |        tx-checksum-ipv4: on
+> |        tx-checksum-ip-generic: off [fixed]
+> |        tx-checksum-ipv6: on
 >=20
-> Is this really a single 4-bit wide field? It looks like two 2-bit fields
-> to me.
-
-You are right, the datasheet presents that as a single bitfield but
-that can be split.
-
+> >
+> > I would expect not. Otherwise, we've either found a bug, or discovered
+> > the Sasquatch.
 >=20
-> > +#define phylink_pcs_to_miic_port(pcs) container_of((pcs), struct miic_=
-port, pcs) =20
+> Now, I'm wondering how this actually works. Anyway, I'll send a patch to
+> add the missing skb_checksum_help().
 >=20
-> I prefer a helper function to a preprocessor macro for that, but I'm not
-> going to insist on that point.
+> Thanks,
+> Kurt
 
-Acked.
+Thanks, Kurt.
 
->=20
-> > +static void miic_link_up(struct phylink_pcs *pcs, unsigned int mode,
-> > +			 phy_interface_t interface, int speed, int duplex)
-> > +{
-> > +	struct miic_port *miic_port =3D phylink_pcs_to_miic_port(pcs);
-> > +	struct miic *miic =3D miic_port->miic;
-> > +	int port =3D miic_port->port;
-> > +	u32 val =3D 0;
-> > +
-> > +	if (duplex =3D=3D DUPLEX_FULL)
-> > +		val |=3D MIIC_CONVCTRL_FULLD;
-> > +
-> > +	switch (interface) {
-> > +	case PHY_INTERFACE_MODE_RMII:
-> > +		val |=3D CONV_MODE_RMII;
-> > +		break;
-> > +	case PHY_INTERFACE_MODE_RGMII:
-> > +		val |=3D CONV_MODE_RGMII;
-> > +		break;
-> > +	case PHY_INTERFACE_MODE_MII:
-> > +		val |=3D CONV_MODE_MII;
-> > +		break;
-> > +	default:
-> > +		dev_err(miic->dev, "Unsupported interface %s\n",
-> > +			phy_modes(interface));
-> > +		return;
-> > +	} =20
->=20
-> Why are you re-decoding the interface mode? The interface mode won't
-> change as a result of a call to link-up. Changing the interface mode
-> is a major configuration event that will always see a call to your
-> miic_config() function first.
+It works because stmmac declares NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM in
+ndev->hw_features but not in ndev->vlan_features. Whereas DSA inherits
+what it inherits from ndev->vlan_features.
 
-Indeed, seems stupid, I will simply keep the mode bits once split from
-speed.
-
-[...]
-
-> > +};
-> > +
-> > +struct phylink_pcs *miic_create(struct device_node *np)
-> > +{
-> > +	struct platform_device *pdev;
-> > +	struct miic_port *miic_port;
-> > +	struct device_node *pcs_np;
-> > +	u32 port;
-> > +
-> > +	if (of_property_read_u32(np, "reg", &port))
-> > +		return ERR_PTR(-EINVAL);
-> > +
-> > +	if (port >=3D MIIC_MAX_NR_PORTS)
-> > +		return ERR_PTR(-EINVAL);
-> > +
-> > +	/* The PCS pdev is attached to the parent node */
-> > +	pcs_np =3D of_get_parent(np);
-> > +	if (!pcs_np)
-> > +		return ERR_PTR(-EINVAL);
-> > +
-> > +	pdev =3D of_find_device_by_node(pcs_np);
-> > +	if (!pdev || !platform_get_drvdata(pdev))
-> > +		return ERR_PTR(-EPROBE_DEFER); =20
->=20
-> It would be a good idea to have a comment in the probe function to say
-> that this relies on platform_set_drvdata() being the very last thing
-> after a point where initialisation is complete and we won't fail.
-
-Yep, sounds like a good idea.
-
->=20
-> Thanks!
->=20
-
-Thanks for the review,
-
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+It's good to fix this in hellcreek anyway.=
