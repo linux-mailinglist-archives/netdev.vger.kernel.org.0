@@ -2,72 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F22E95011A7
-	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 17:00:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15B47501363
+	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 17:20:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344453AbiDNOZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 10:25:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43260 "EHLO
+        id S1344634AbiDNOZT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 10:25:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346945AbiDNN6I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 09:58:08 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 035B5B53D1;
-        Thu, 14 Apr 2022 06:48:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=6bA3SZP3kvtP2Wpll9NtCPewFoIjvo4Ea/TB78oMn0U=; b=i78/sHtrdJmWRvO8019zlGvMhV
-        u5pdEpfdiKymh5T3N2vpel1z1b63cXmc+5CPp2SKhZKKFPbxWOrfEVYG4gvqDu09r5L1wPWg/Dsyf
-        AjBx/gtkTbn0iEXn5cBLkdxD7uTfnwO/E6Dd2pVPFlTQ8YSF90RJY7xZujTQbaBaG69c=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nezpT-00Fpkh-Un; Thu, 14 Apr 2022 15:48:11 +0200
-Date:   Thu, 14 Apr 2022 15:48:11 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Alvin =?utf-8?Q?=C5=A0ipraga?= <ALSI@bang-olufsen.dk>
-Cc:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "tobias@waldekranz.com" <tobias@waldekranz.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "vladimir.oltean@nxp.com" <vladimir.oltean@nxp.com>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-Subject: Re: [PATCH net-next] net: dsa: realtek: add compatible strings for
- RTL8367RB-VB
-Message-ID: <YlgmG3mLlRKef+sy@lunn.ch>
-References: <20220411210406.21404-1-luizluca@gmail.com>
- <20220412105018.gjrswtwrgjyndev4@bang-olufsen.dk>
- <CAJq09z53MZ6g=+tfwRU-N5BV5GcPSB5n0=+zj-cXOegMrq6g=A@mail.gmail.com>
- <20220414014527.gex5tlufyj4hm5di@bang-olufsen.dk>
- <CAJq09z6KSQS+oGFw5ZXRcSH5nQ3zongn4Owu0hCjO=RZZmHf+w@mail.gmail.com>
- <20220414113718.ofhgzhsmvyuxd2l2@bang-olufsen.dk>
+        with ESMTP id S1346981AbiDNN6K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 09:58:10 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E18C4B3DD9;
+        Thu, 14 Apr 2022 06:48:21 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id z12so6456493edl.2;
+        Thu, 14 Apr 2022 06:48:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=gP0+DXghKcf2qXvcW1JZOCtSqa2MqphfThUN2zjo/Q4=;
+        b=HYvpG8UzdAG6LoGZ9qjTgDXsg31DQ7UqcdZiUgRNKT7bAo3UgCHYYkGtZB43Xic69N
+         PAav5JmoT8bzlA5yxVn2ZoQW6A93kIbkMcNikdIWaaUp1+2w4BuyLCtDM2z+kYRC8YZd
+         7F0DghZn4eUEQYRPG4WrgyqKdVXYTQOBwp1futUrCevJPQEy6wqjloPJlWBxIrkh+y2s
+         1yqEM+GlfrfDUyID6a7K7EKY7bYJ+5wuTTDZBVl6U/Eyzqy1wulwmitWkaTJDlPWhDG5
+         z0y0vn6Te0PXE74LCTi49vCMsbbO8KVIlfIkr1UhWJn9QR45GJmxQm7JuAdr7nvqx/bY
+         z2Iw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=gP0+DXghKcf2qXvcW1JZOCtSqa2MqphfThUN2zjo/Q4=;
+        b=1pWYAS6bxh1SXjtVEDtY83FyfYJHTnjVrFvXUxajT3fpfuxjduTjiV70oYTUY4gzfV
+         jCtxTlLkGbeimf9hzTdqsJYDjgE7XE36Xr5e/rxA6aA+zFqzWzBdKZ/VmhCNKpjjKlfv
+         0S0OAnCwTqXQX6g28kY14Z40ANIpFmm2nzsmATfpzpia5IDs75W/l8ORjE5pY+BfME9C
+         uVzctb/uE4LbRrFasyGGru0De4mDHrhfY1JymYsbeAI0pFQTDfEMLQj4C5pMXLy6SEiO
+         nrQZA+jCNBi9vCylv7bfboiaD4PSA1I8VhM5zp4atGuPqQi7nyXRwNt5y0JIpVp6CJVL
+         qLnA==
+X-Gm-Message-State: AOAM533LLEn6+Yhdu2OBeVa51qcG3QyXGOGhpHJ8LUZOtgzrvL3WWQ44
+        hpYjMKgL7L/ovb4zM1Cl+pk=
+X-Google-Smtp-Source: ABdhPJxeXqlrsaTsutnOIVvQkRr7u2i4EUXnV8AW+2cmGmjtpodIFs3uxdOpS1pGJNgEBYYbUo4ZNw==
+X-Received: by 2002:aa7:c40b:0:b0:41d:9886:90a0 with SMTP id j11-20020aa7c40b000000b0041d988690a0mr3003328edq.275.1649944100273;
+        Thu, 14 Apr 2022 06:48:20 -0700 (PDT)
+Received: from skbuf ([188.26.57.45])
+        by smtp.gmail.com with ESMTPSA id e35-20020a056402332300b004209638cb94sm1013954eda.6.2022.04.14.06.48.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 06:48:19 -0700 (PDT)
+Date:   Thu, 14 Apr 2022 16:48:18 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [net-next PATCH v2 1/4] drivers: net: dsa: qca8k: drop MTU
+ tracking from qca8k_priv
+Message-ID: <20220414134818.xesotjnlbhe4ewvc@skbuf>
+References: <20220412173019.4189-1-ansuelsmth@gmail.com>
+ <20220412173019.4189-2-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220414113718.ofhgzhsmvyuxd2l2@bang-olufsen.dk>
+In-Reply-To: <20220412173019.4189-2-ansuelsmth@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Is it too late to get rid of all those compatible strings from
-> > dt-bindings? And rtl8367s from the driver?
-> > We must add all supported devices to the doc as well, similar to mv88e6085.
+On Tue, Apr 12, 2022 at 07:30:16PM +0200, Ansuel Smith wrote:
+> DSA set the CPU port based on the largest MTU of all the slave ports.
+> Based on this we can drop the MTU array from qca8k_priv and set the
+> port_change_mtu logic on DSA changing MTU of the CPU port as the switch
+> have a global MTU settingfor each port.
 > 
-> You can always try! I'm OK with those things in principle, but others might
-> object due to ABI reasons.
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
 
-Anything which is in a released Linus kernel is ABI and cannot be
-removed. Anything in net-next, or an -rcX kernel can still be changed.
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 
-	 Andrew
+>  drivers/net/dsa/qca8k.c | 25 ++++++++-----------------
+>  drivers/net/dsa/qca8k.h |  1 -
+>  2 files changed, 8 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+> index d3ed0a7f8077..820eeab19873 100644
+> --- a/drivers/net/dsa/qca8k.c
+> +++ b/drivers/net/dsa/qca8k.c
+> @@ -2367,16 +2367,17 @@ static int
+>  qca8k_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
+>  {
+>  	struct qca8k_priv *priv = ds->priv;
+> -	int i, mtu = 0;
+>  
+> -	priv->port_mtu[port] = new_mtu;
+> -
+> -	for (i = 0; i < QCA8K_NUM_PORTS; i++)
+> -		if (priv->port_mtu[i] > mtu)
+> -			mtu = priv->port_mtu[i];
+> +	/* We have only have a general MTU setting.
+> +	 * DSA always set the CPU port's MTU to the largest MTU of the salve ports.
+
+s/salve/slave/
+
+Also watch for the 80 characters limit.
+
+> +	 * Setting MTU just for the CPU port is sufficient to correctly set a
+> +	 * value for every port.
+> +	 */
+> +	if (!dsa_is_cpu_port(ds, port))
+> +		return 0;
+>  
+>  	/* Include L2 header / FCS length */
+> -	return qca8k_write(priv, QCA8K_MAX_FRAME_SIZE, mtu + ETH_HLEN + ETH_FCS_LEN);
+> +	return qca8k_write(priv, QCA8K_MAX_FRAME_SIZE, new_mtu + ETH_HLEN + ETH_FCS_LEN);
+>  }
+>  
+>  static int
+> @@ -3033,16 +3034,6 @@ qca8k_setup(struct dsa_switch *ds)
+>  				  QCA8K_PORT_HOL_CTRL1_WRED_EN,
+>  				  mask);
+>  		}
+> -
+> -		/* Set initial MTU for every port.
+> -		 * We have only have a general MTU setting. So track
+> -		 * every port and set the max across all port.
+> -		 * Set per port MTU to 1500 as the MTU change function
+> -		 * will add the overhead and if its set to 1518 then it
+> -		 * will apply the overhead again and we will end up with
+> -		 * MTU of 1536 instead of 1518
+> -		 */
+> -		priv->port_mtu[i] = ETH_DATA_LEN;
+>  	}
+>  
+>  	/* Special GLOBAL_FC_THRESH value are needed for ar8327 switch */
+> diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
+> index f375627174c8..562d75997e55 100644
+> --- a/drivers/net/dsa/qca8k.h
+> +++ b/drivers/net/dsa/qca8k.h
+> @@ -398,7 +398,6 @@ struct qca8k_priv {
+>  	struct device *dev;
+>  	struct dsa_switch_ops ops;
+>  	struct gpio_desc *reset_gpio;
+> -	unsigned int port_mtu[QCA8K_NUM_PORTS];
+>  	struct net_device *mgmt_master; /* Track if mdio/mib Ethernet is available */
+>  	struct qca8k_mgmt_eth_data mgmt_eth_data;
+>  	struct qca8k_mib_eth_data mib_eth_data;
+> -- 
+> 2.34.1
+> 
+
