@@ -2,301 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 48021500923
-	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 11:02:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27ED7500957
+	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 11:08:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241383AbiDNJEZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 05:04:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50822 "EHLO
+        id S241550AbiDNJK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 05:10:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241625AbiDNJCy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 05:02:54 -0400
-Received: from 189.cn (ptr.189.cn [183.61.185.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D8F0633B;
-        Thu, 14 Apr 2022 02:00:28 -0700 (PDT)
-HMM_SOURCE_IP: 10.64.8.43:52594.698421431
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-123.150.8.43 (unknown [10.64.8.43])
-        by 189.cn (HERMES) with SMTP id 7262B100180;
-        Thu, 14 Apr 2022 17:00:26 +0800 (CST)
-Received: from  ([123.150.8.43])
-        by gateway-153622-dep-749df8664c-nmrf6 with ESMTP id 89fc0cdd849b4fa5b64c6882a9cc62ac for ast@kernel.org;
-        Thu, 14 Apr 2022 17:00:27 CST
-X-Transaction-ID: 89fc0cdd849b4fa5b64c6882a9cc62ac
-X-Real-From: chensong_2000@189.cn
-X-Receive-IP: 123.150.8.43
-X-MEDUSA-Status: 0
-Sender: chensong_2000@189.cn
-From:   Song Chen <chensong_2000@189.cn>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Song Chen <chensong_2000@189.cn>
-Subject: [RFC PATCH 1/1] sample: bpf: introduce irqlat
-Date:   Thu, 14 Apr 2022 17:07:35 +0800
-Message-Id: <1649927255-19036-1-git-send-email-chensong_2000@189.cn>
-X-Mailer: git-send-email 2.7.4
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+        with ESMTP id S238109AbiDNJK2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 05:10:28 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C6546E540;
+        Thu, 14 Apr 2022 02:08:04 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id ll10so4534597pjb.5;
+        Thu, 14 Apr 2022 02:08:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qYtINvSR5Dih3lqIftjEIHDwvXs93GlfwwGB+RQETjg=;
+        b=G06GEOeVuuzjlWUCEo6hbJXjPuVWMHJvuXq9cM78tfK5tfEvemHx0U8OfWz1npch4h
+         C+3BDn1yqytd1BrwWAwbciqRL/gs79YcAZ6HLGqwPqp5BAKzKWoQ6ATsh69IJOERDMxf
+         M/dxJruoPKM/vxd2jZejIfb3hhrVVOq3y/VaiX0VBIZD9dFdwa1QudQChkYwV4DXHMr2
+         QbZ1+XNAQfrurRt5meXb4lL7cYh5pDUdo/6TOAew4qs678sRKKaI8xSB1VfRct/mHN44
+         o3cvXe1icyX3v4giaOJwOPbWkdjgxG/8vX2iWxWY/cJgmkdI4dsBM8fEovaj0qx3Wf0e
+         uM2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qYtINvSR5Dih3lqIftjEIHDwvXs93GlfwwGB+RQETjg=;
+        b=wd5XairboKg1WtY0lVmKSK3q773m87YWmUjPLs0X/6ytEzKHKaWFDRMJ9nm/OBqiTy
+         mwjZ9IVOQfKAIEzSIHX8YEHxLcZmPRGUZcLpq96OYDlAOszSwaoVj8IAr9K8H5Jdgcha
+         QXBWtPRryr+pGtFM1ous+j2xJ1q9E2o470urO3esZeDyzBhD6lqx/iajZLz+43yfW2TH
+         fPGqwfVo6tVoCMIoSFHAa11uDYKJld2XDQpD/L5TuHMLAU18+DNycxGFHsxfiJK3b0rO
+         pd/8Yg3DU7YCf5mbWubq1Cz9YFBd6ENWCSj8m3v3HexUctX3nYAK0qcRDVZ/9XDzea7/
+         K14g==
+X-Gm-Message-State: AOAM531nsfa7FDGe7s5u0gd+in1kOscyqlLuNiD1kC2URh113b+CVMEt
+        zkW6LJqlQIU1ZPB9QgHan+c=
+X-Google-Smtp-Source: ABdhPJz+6ah9if//yY1c2sHC40NolRb/XwCaxX0VprNKeLwyb7PtImEh0zH5k1pYYFwgPSqdAGNk9A==
+X-Received: by 2002:a17:90b:3b84:b0:1cd:fe1c:151 with SMTP id pc4-20020a17090b3b8400b001cdfe1c0151mr2179837pjb.182.1649927283900;
+        Thu, 14 Apr 2022 02:08:03 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id l8-20020a17090a150800b001cbaf536a3esm5496865pja.18.2022.04.14.02.08.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 02:08:03 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     grygorii.strashko@ti.com
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-omap@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] net: ethernet: ti: davinci_emac: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Date:   Thu, 14 Apr 2022 09:08:00 +0000
+Message-Id: <20220414090800.2542064-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-irqlat presents max, min and avg value of time consumed in
-irq handling for each cpu, from irq_handler_entry to
-irq_handler_exit.
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-engineers can run it to evaluate the performance of irq handling,
-especially for RT system.
+Using pm_runtime_resume_and_get() to replace pm_runtime_get_sync and
+pm_runtime_put_noidle. This change is just to simplify the code, no
+actual functional changes.
 
-Signed-off-by: Song Chen <chensong_2000@189.cn>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
- samples/bpf/.gitignore    |   1 +
- samples/bpf/Makefile      |   5 ++
- samples/bpf/irqlat_kern.c |  81 ++++++++++++++++++++++++++++++
- samples/bpf/irqlat_user.c | 100 ++++++++++++++++++++++++++++++++++++++
- 4 files changed, 187 insertions(+)
- create mode 100644 samples/bpf/irqlat_kern.c
- create mode 100644 samples/bpf/irqlat_user.c
+ drivers/net/ethernet/ti/davinci_emac.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/samples/bpf/.gitignore b/samples/bpf/.gitignore
-index 0e7bfdbff80a..2d727f041f51 100644
---- a/samples/bpf/.gitignore
-+++ b/samples/bpf/.gitignore
-@@ -61,3 +61,4 @@ iperf.*
- /vmlinux.h
- /bpftool/
- /libbpf/
-+irqlat
-diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index 38638845db9d..df2daab128f0 100644
---- a/samples/bpf/Makefile
-+++ b/samples/bpf/Makefile
-@@ -60,6 +60,8 @@ tprogs-y += xdp_redirect_map
- tprogs-y += xdp_redirect
- tprogs-y += xdp_monitor
+diff --git a/drivers/net/ethernet/ti/davinci_emac.c b/drivers/net/ethernet/ti/davinci_emac.c
+index 4b6aed78d392..9d1e98db308b 100644
+--- a/drivers/net/ethernet/ti/davinci_emac.c
++++ b/drivers/net/ethernet/ti/davinci_emac.c
+@@ -1422,9 +1422,8 @@ static int emac_dev_open(struct net_device *ndev)
+ 	struct phy_device *phydev = NULL;
+ 	struct device *phy = NULL;
  
-+tprogs-y += irqlat
-+
- # Libbpf dependencies
- LIBBPF_SRC = $(TOOLS_PATH)/lib/bpf
- LIBBPF_OUTPUT = $(abspath $(BPF_SAMPLES_PATH))/libbpf
-@@ -125,6 +127,8 @@ xdp_redirect_map-objs := xdp_redirect_map_user.o $(XDP_SAMPLE)
- xdp_redirect-objs := xdp_redirect_user.o $(XDP_SAMPLE)
- xdp_monitor-objs := xdp_monitor_user.o $(XDP_SAMPLE)
+-	ret = pm_runtime_get_sync(&priv->pdev->dev);
++	ret = pm_runtime_resume_and_get(&priv->pdev->dev);
+ 	if (ret < 0) {
+-		pm_runtime_put_noidle(&priv->pdev->dev);
+ 		dev_err(&priv->pdev->dev, "%s: failed to get_sync(%d)\n",
+ 			__func__, ret);
+ 		return ret;
+@@ -1661,9 +1660,8 @@ static struct net_device_stats *emac_dev_getnetstats(struct net_device *ndev)
+ 	u32 stats_clear_mask;
+ 	int err;
  
-+irqlat-objs := irqlat_user.o
-+
- # Tell kbuild to always build the programs
- always-y := $(tprogs-y)
- always-y += sockex1_kern.o
-@@ -181,6 +185,7 @@ always-y += ibumad_kern.o
- always-y += hbm_out_kern.o
- always-y += hbm_edt_kern.o
- always-y += xdpsock_kern.o
-+always-y += irqlat_kern.o
+-	err = pm_runtime_get_sync(&priv->pdev->dev);
++	err = pm_runtime_resume_and_get(&priv->pdev->dev);
+ 	if (err < 0) {
+-		pm_runtime_put_noidle(&priv->pdev->dev);
+ 		dev_err(&priv->pdev->dev, "%s: failed to get_sync(%d)\n",
+ 			__func__, err);
+ 		return &ndev->stats;
+@@ -1954,9 +1952,8 @@ static int davinci_emac_probe(struct platform_device *pdev)
+ 	netif_napi_add(ndev, &priv->napi, emac_poll, EMAC_POLL_WEIGHT);
  
- ifeq ($(ARCH), arm)
- # Strip all except -D__LINUX_ARM_ARCH__ option needed to handle linux
-diff --git a/samples/bpf/irqlat_kern.c b/samples/bpf/irqlat_kern.c
-new file mode 100644
-index 000000000000..0037dcda67cf
---- /dev/null
-+++ b/samples/bpf/irqlat_kern.c
-@@ -0,0 +1,81 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (c) 2022 Kylin
-+ *
-+ * This program is free software; you can redistribute it and/or
-+ * modify it under the terms of version 2 of the GNU General Public
-+ * License as published by the Free Software Foundation.
-+ */
-+#include <linux/version.h>
-+#include <linux/ptrace.h>
-+#include <uapi/linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+
-+#define MAX_CPUS		128
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__type(key, int);
-+	__type(value, u64);
-+	__uint(max_entries, MAX_CPUS);
-+} irq_ts SEC(".maps");
-+
-+SEC("tracepoint/irq/irq_handler_entry")
-+int on_irq_entry(struct pt_regs *ctx)
-+{
-+	int cpu = bpf_get_smp_processor_id();
-+	u64 *ts = bpf_map_lookup_elem(&irq_ts, &cpu);
-+
-+	if (ts)
-+		*ts = bpf_ktime_get_ns();
-+
-+	return 0;
-+}
-+
-+struct datares {
-+	u64 entries;
-+	u64 total;
-+	u64 max;
-+	u64 min;
-+};
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__type(key, int);
-+	__type(value, struct datares);
-+	__uint(max_entries, MAX_CPUS);
-+} irq_lat SEC(".maps");
-+
-+SEC("tracepoint/irq/irq_handler_exit")
-+int on_irq_exit(struct pt_regs *ctx)
-+{
-+	u64 *ts, cur_ts, delta, *val;
-+	int cpu;
-+	struct datares *res;
-+
-+	cpu = bpf_get_smp_processor_id();
-+	ts = bpf_map_lookup_elem(&irq_ts, &cpu);
-+	if (!ts)
-+		return 0;
-+
-+	cur_ts = bpf_ktime_get_ns();
-+	delta = cur_ts - *ts;
-+
-+	res = bpf_map_lookup_elem(&irq_lat, &cpu);
-+	if (!res)
-+		return 0;
-+
-+	res->entries++;
-+	res->total += delta;
-+	if (res->max < delta)
-+		res->max = delta;
-+	if (res->min == 0 || res->min > delta)
-+		res->min = delta;
-+
-+	if (res->total >= U64_MAX)
-+		__builtin_memset(res, 0, sizeof(struct datares));
-+
-+	return 0;
-+}
-+
-+char _license[] SEC("license") = "GPL";
-diff --git a/samples/bpf/irqlat_user.c b/samples/bpf/irqlat_user.c
-new file mode 100644
-index 000000000000..3a5a43b9fce9
---- /dev/null
-+++ b/samples/bpf/irqlat_user.c
-@@ -0,0 +1,100 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (c) 2022 Kylin
-+ */
-+
-+#include <stdio.h>
-+#include <unistd.h>
-+#include <stdlib.h>
-+#include <signal.h>
-+#include <linux/perf_event.h>
-+#include <linux/bpf.h>
-+#include <bpf/libbpf.h>
-+#include <bpf/bpf.h>
-+#include "trace_helpers.h"
-+
-+#define MAX_CPUS 128
-+static int map_fd[2];
-+
-+struct datares {
-+	__u64 entries;
-+	__u64 total;
-+	__u64 max;
-+	__u64 min;
-+};
-+
-+static void get_data(int fd)
-+{
-+	int i;
-+	struct datares res;
-+	__u64 avg;
-+
-+	/* Clear screen */
-+	printf("\033[2J");
-+
-+	/* Header */
-+	printf("\nirq Latency statistics: (ns)\n");
-+	for (i = 0; i < MAX_CPUS; i++) {
-+		bpf_map_lookup_elem(fd, &i, &res);
-+
-+		if (res.entries == 0)
-+			continue;
-+
-+		avg = res.total / res.entries;
-+		printf("cpu:%d, max:%llu, min:%llu, avg:%llu\n",
-+					i, res.max, res.min, avg);
-+	}
-+}
-+
-+int main(int argc, char **argv)
-+{
-+	char filename[256];
-+	struct bpf_object *obj = NULL;
-+	struct bpf_link *links[2];
-+	struct bpf_program *prog;
-+	int delay = 1, i = 0;
-+
-+	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
-+
-+	obj = bpf_object__open_file(filename, NULL);
-+	if (libbpf_get_error(obj)) {
-+		fprintf(stderr, "ERROR: opening BPF object file failed\n");
-+		obj = NULL;
-+		goto cleanup;
-+	}
-+
-+	/* load BPF program */
-+	if (bpf_object__load(obj)) {
-+		fprintf(stderr, "ERROR: loading BPF object file failed\n");
-+		goto cleanup;
-+	}
-+
-+	map_fd[0] = bpf_object__find_map_fd_by_name(obj, "irq_ts");
-+	map_fd[1] = bpf_object__find_map_fd_by_name(obj, "irq_lat");
-+	if (map_fd[0] < 0 || map_fd[1] < 0) {
-+		fprintf(stderr, "ERROR: finding a map in obj file failed\n");
-+		goto cleanup;
-+	}
-+
-+	bpf_object__for_each_program(prog, obj) {
-+		links[i] = bpf_program__attach(prog);
-+		if (libbpf_get_error(links[i])) {
-+			fprintf(stderr, "ERROR: bpf_program__attach failed\n");
-+			links[i] = NULL;
-+			goto cleanup;
-+		}
-+		i++;
-+	}
-+
-+	while (1) {
-+		sleep(delay);
-+		get_data(map_fd[1]);
-+	}
-+
-+cleanup:
-+	for (i--; i >= 0; i--)
-+		bpf_link__destroy(links[i]);
-+
-+	bpf_object__close(obj);
-+	return 0;
-+}
+ 	pm_runtime_enable(&pdev->dev);
+-	rc = pm_runtime_get_sync(&pdev->dev);
++	rc = pm_runtime_resume_and_get(&pdev->dev);
+ 	if (rc < 0) {
+-		pm_runtime_put_noidle(&pdev->dev);
+ 		dev_err(&pdev->dev, "%s: failed to get_sync(%d)\n",
+ 			__func__, rc);
+ 		goto err_napi_del;
 -- 
 2.25.1
+
 
