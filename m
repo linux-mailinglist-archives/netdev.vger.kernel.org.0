@@ -2,50 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EE1D500DEC
-	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 14:45:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65F02500E14
+	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 14:50:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230086AbiDNMsB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 08:48:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58296 "EHLO
+        id S243602AbiDNMv4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 08:51:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241889AbiDNMr2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 08:47:28 -0400
-Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D220C90270;
-        Thu, 14 Apr 2022 05:45:02 -0700 (PDT)
+        with ESMTP id S243600AbiDNMvx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 08:51:53 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B0C9F1A;
+        Thu, 14 Apr 2022 05:49:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-        Content-ID:Content-Description;
-        bh=Q89LmOY4QsQwqDUIV/jiE3VXQh22TbF6MoKNt2t/lbY=; b=Y604GdzeZvrieynRAz3bmrTjl9
-        OUtJvuqb0RUPm1Qod0VyHNsNkJJ3FEzHzva8XTvqyi1oFEhjGBTcbUhydSuofO9sXioNXYXXUEmtw
-        IGMBWoleyc0I4g6OTxrX6U10YrdV734RwH+JqCOJIBxk79AED2nAJqLos4EP8ufaWwwkHTc5cYiaA
-        MILjYXzCZXbEJK5xh9b8h/Kbb+MfEk/VTn3WivVL4KqpNy20kiEMrO1TDOwjlWUHCJlg9MXT9FFmE
-        /Y9Aa3gOHUIlyuy2GjTyfXtZl62J3M35TRE2Y0/vJomIaH/sxFBySnewQKTFIT6+7aA8ojUBxkMbI
-        SzhTheyjRKCpdPsFIlM6SM8RiVd/p3ZAcRezXPnYB12DQo8YdHv+DTbPhgcJFI0WIB7DqWGRxW9/P
-        WF0dGEzdcl2oYyACSlOhD52mZZaa/KdLhsQX+d7MqP4tjPR9rZ8Y5NZxgkvVkRgqDSrMsQ4AR0Mrq
-        OK/oCzKKm/5BxB8YvKb+psouKamIqdxZLScIJ+OkBH9zArk1yrUx+5YR1OEjZaateCXYbonmVk+/2
-        d2hwVLh0IyBR5wHdzb7wgE8Z5k6GHxoqDll6JZ4e43xQufc+8ow5Eh0qHpfbHSIqmx5wHbjEh/7bW
-        bi8LWVNqH31oLZkZgR0TC3hxUVODXDDqf3myvVde0=;
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-To:     asmadeus@codewreck.org
-Cc:     David Kahurani <k.kahurani@gmail.com>, davem@davemloft.net,
-        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        lucho@ionkov.net, netdev@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net,
-        David Howells <dhowells@redhat.com>, Greg Kurz <groug@kaod.org>
-Subject: Re: 9p fs-cache tests/benchmark (was: 9p fscache Duplicate cookie detected)
-Date:   Thu, 14 Apr 2022 14:44:53 +0200
-Message-ID: <2551609.RCmPuZc3Qn@silver>
-In-Reply-To: <YlX/XRWwQ7eQntLr@codewreck.org>
-References: <CAAZOf26g-L2nSV-Siw6mwWQv1nv6on8c0fWqB4bKmX73QAFzow@mail.gmail.com>
- <3119964.Qa6D4ExsIi@silver> <YlX/XRWwQ7eQntLr@codewreck.org>
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=zZwQuxnMgCZNediijEyYQkwJHjFub/8sm9BuaSGMJOE=; b=oyIlAJZqcvdTWOLga7GM8LecyS
+        oTJeMXrlROnC3xAMJe9m6th4+lQ73TWD2M0GcZiqgvfWow51fbs41kaT8LNgfIs/F5G5M0OnW/eis
+        r6c4jDWamm4BCh/y+MuAgaxv8M0Kdlh1YIe10mZ5EhG1MRKWRVptWXjM3EEe+T0YnINQD7ClVdn86
+        OCr3YmAHGTRn+oQC/1ICmuPgYOJ1JYzct5BnBZ0KEj+BhX3OKT7zAUAOrPgk+5wwsgq85J2KVpGye
+        E/7+jU1NyE9r1YqfyFhwPPAv/mcVL7o6m5m/iR22J3DX81BX2lZGBEh6ZV2qQ2XQPwnff2GrWQL0n
+        tihW+1RQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58260)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1neyuN-0004Yi-Ha; Thu, 14 Apr 2022 13:49:11 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1neyuK-0004K1-RO; Thu, 14 Apr 2022 13:49:08 +0100
+Date:   Thu, 14 Apr 2022 13:49:08 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?iso-8859-1?Q?Miqu=E8l?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 04/12] net: pcs: add Renesas MII converter driver
+Message-ID: <YlgYRGVuHQCwp7FQ@shell.armlinux.org.uk>
+References: <20220414122250.158113-1-clement.leger@bootlin.com>
+ <20220414122250.158113-5-clement.leger@bootlin.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220414122250.158113-5-clement.leger@bootlin.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -53,145 +75,177 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mittwoch, 13. April 2022 00:38:21 CEST asmadeus@codewreck.org wrote:
-> Christian Schoenebeck wrote on Mon, Apr 11, 2022 at 03:41:45PM +0200:
-> > I get more convinced that it's a bug on Linux kernel side. When guest is
-> > booted I always immediately get a read("/var/log/wtmp") = EBADF error on
-> > guest. And the 9p command sequence sent to QEMU 9p server were:
-> 
-> Yes, I'm not pointing fingers, just trying to understand :)
+On Thu, Apr 14, 2022 at 02:22:42PM +0200, Clément Léger wrote:
+> Add PCS driver for the MII converter that is present on Renesas RZ/N1
+> SoC. This MII converter is reponsible of converting MII to RMII/RGMII
+> or act as a MII passtrough. Exposing it as a PCS allows to reuse it
+> in both the switch driver and the stmmac driver. Currently, this driver
+> only allows the PCS to be used by the dual Cortex-A7 subsystem since
+> the register locking system is not used.
 
-Don't worry, that was not my impression, nor was it my intention either. I'm 
-jut trying to interpret what I'm seeing here.
+Hi,
 
-> > ...
-> > v9fs_clunk tag 0 id 120 fid 568
-> > v9fs_walk tag 0 id 110 fid 1 newfid 568 nwnames 1
-> > v9fs_rerror tag 0 id 110 err 2
-> > v9fs_walk tag 0 id 110 fid 26 newfid 568 nwnames 1
-> > v9fs_rerror tag 0 id 110 err 2
-> > v9fs_readlink tag 0 id 22 fid 474
-> > v9fs_readlink_return tag 0 id 22 name /run
-> > v9fs_readlink tag 0 id 22 fid 474
-> > v9fs_readlink_return tag 0 id 22 name /run
-> > v9fs_readlink tag 0 id 22 fid 474
-> > v9fs_readlink_return tag 0 id 22 name /run
-> > v9fs_readlink tag 0 id 22 fid 474
-> > v9fs_readlink_return tag 0 id 22 name /run
-> > v9fs_walk tag 0 id 110 fid 633 newfid 568 nwnames 1
-> > v9fs_rerror tag 0 id 110 err 2
-> > v9fs_walk tag 0 id 110 fid 875 newfid 568 nwnames 0
-> > v9fs_walk_return tag 0 id 110 nwnames 0 qids (nil)
-> > v9fs_open tag 0 id 12 fid 568 mode 32769
-> > v9fs_open_return tag 0 id 12 qid={type 0 version 0 path 820297} iounit
-> > 507904 v9fs_walk tag 0 id 110 fid 875 newfid 900 nwnames 0
-> > v9fs_walk_return tag 0 id 110 nwnames 0 qids (nil)
-> > v9fs_open tag 0 id 12 fid 900 mode 2
-> > v9fs_open_return tag 0 id 12 qid={type 0 version 0 path 820297} iounit
-> > 507904 v9fs_lock tag 0 id 52 fid 568 type 1 start 0 length 0
-> > v9fs_lock_return tag 0 id 52 status 0
-> > v9fs_xattrwalk tag 0 id 30 fid 568 newfid 901 name security.capability
-> > v9fs_rerror tag 0 id 30 err 95
-> > v9fs_read tag 0 id 116 fid 568 off 192512 max_count 256
-> > 
-> > So guest opens /var/log/wtmp with fid=568 mode=32769, which is write-only
-> > mode, and then it tries to read that fid 568, which eventually causes the
-> > read() call on host to error with EBADF. Which makes sense, as the file
-> > was
-> > opened in write-only mode, hence read() is not possible with that file
-> > descriptor.
-> 
-> Oh! That's something we can work on. the vfs code has different caches
-> for read only and read-write fids, perhaps the new netfs code just used
-> the wrong one somewhere. I'll have a look.
-> 
-> > The other things I noticed when looking at the 9p command sequence above:
-> > there is a Twalk on fid 568 before, which is not clunked before reusing
-> > fid
-> > 568 with Topen later. And before that Twalk on fid 568 there is a Tclunk
-> > on
-> > fid 568, but apparently that fid was not used before.
-> 
-> This one though is just weird, I don't see where linux would make up a fid
-> to clunk like this... Could messages be ordered a bit weird through
-> multithreading?
-> e.g. thread 1 opens, thread 2 clunks almost immediately afterwards, and
-> would be printed the other way around?
+> +#define MIIC_CONVCTRL_CONV_MODE		GENMASK(4, 0)
+> +#define CONV_MODE_MII			0
+> +#define CONV_MODE_RMII			BIT(2)
+> +#define CONV_MODE_RGMII			BIT(3)
+> +#define CONV_MODE_10MBPS		0
+> +#define CONV_MODE_100MBPS		BIT(0)
+> +#define CONV_MODE_1000MBPS		BIT(1)
 
-Yeah, something like that was also my guess.
+Is this really a single 4-bit wide field? It looks like two 2-bit fields
+to me.
 
-> Should still be serialized through the virtio ring buffer so I don't
-> believe what I'm saying myself... It might be worth digging further as
-> well.
-> 
-> > > Perhaps backing filesystem dependant? qemu version? virtfs access
-> > > options?
-> > 
-> > I tried with different hardware and different file systems (ext4, btrfs),
-> > same misbehaviours.
-> > 
-> > QEMU is latest git version. I also tried several different QEMU versions,
-> > same thing.
-> > 
-> > QEMU command line used:
-> > 
-> > ~/git/qemu/build/qemu-system-x86_64 \
-> > -machine pc,accel=kvm,usb=off,dump-guest-core=off -m 16384 \
-> > -smp 8,sockets=8,cores=1,threads=1 -rtc base=utc -boot strict=on \
-> > -kernel ~/vm/bullseye/boot/vmlinuz \
-> > -initrd ~/vm/bullseye/boot/initrd.img \
-> > -append 'root=fsRoot rw rootfstype=9p
-> > rootflags=trans=virtio,version=9p2000.L,msize=4186112,cache=loose
-> > console=ttyS0' \ -fsdev
-> > local,security_model=mapped,multidevs=remap,id=fsdev-fs0,path=$HOME/vm/bu
-> > llseye/ \ -device virtio-9p-pci,id=fs0,fsdev=fsdev-fs0,mount_tag=fsRoot \
-> > -sandbox
-> > on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
-> > -nographic
-> > 
-> > Important for reproducing this issue:
-> >   * cache=loose
-> >   * -smp N (with N>1)
-> >   * Guest booted with Linux kernel containing commit eb497943fa21
-> >   
-> >     (uname >= 5.16)
-> > 
-> > I'm pretty sure that you can reproduce this issue with the QEMU 9p rootfs
-> > setup HOWTO linked before.
-> 
-> Yes, I'm not sure why I can't reproduce... All my computers are pretty
-> slow but the conditions should be met.
-> I'll try again with a command line closer to what you just gave here.
+> +#define phylink_pcs_to_miic_port(pcs) container_of((pcs), struct miic_port, pcs)
 
-I'm not surprised that you could not reproduce the EBADF errors yet. To make 
-this more clear, as for the git client errors: I have like 200+ git 
-repositories checked out on that test VM, and only about 5 of them trigger 
-EBADF errors on 'git pull'. But those few repositories reproduce the EBADF 
-errors reliably here.
+I prefer a helper function to a preprocessor macro for that, but I'm not
+going to insist on that point.
 
-In other words: these EBADF errors only seem to trigger under certain 
-circumstances, so it requires quite a bunch of test material to get a 
-reproducer.
+> +static void miic_link_up(struct phylink_pcs *pcs, unsigned int mode,
+> +			 phy_interface_t interface, int speed, int duplex)
+> +{
+> +	struct miic_port *miic_port = phylink_pcs_to_miic_port(pcs);
+> +	struct miic *miic = miic_port->miic;
+> +	int port = miic_port->port;
+> +	u32 val = 0;
+> +
+> +	if (duplex == DUPLEX_FULL)
+> +		val |= MIIC_CONVCTRL_FULLD;
+> +
+> +	switch (interface) {
+> +	case PHY_INTERFACE_MODE_RMII:
+> +		val |= CONV_MODE_RMII;
+> +		break;
+> +	case PHY_INTERFACE_MODE_RGMII:
+> +		val |= CONV_MODE_RGMII;
+> +		break;
+> +	case PHY_INTERFACE_MODE_MII:
+> +		val |= CONV_MODE_MII;
+> +		break;
+> +	default:
+> +		dev_err(miic->dev, "Unsupported interface %s\n",
+> +			phy_modes(interface));
+> +		return;
+> +	}
 
-Like I said though, with the Bullseye installation I immediately get EBADF 
-errors already when booting, whereas with a Buster VM it boots without errors.
+Why are you re-decoding the interface mode? The interface mode won't
+change as a result of a call to link-up. Changing the interface mode
+is a major configuration event that will always see a call to your
+miic_config() function first.
 
-> > > It's all extremely slow though... like the final checkout counting files
-> > > at less than 10/s
-> > 
-> > It is VERY slow. And the weird thing is that cache=loose got much slower
-> > than cache=mmap. My worst case expactation would be cache=loose at least
-> > not performing worse than cache=mmap.
-> 
-> Yes, some profiling is also in order, it didn't use to be that slow so
-> it must not be reusing previously open fids as it should have or
-> something..
+> +
+> +	/* No speed in MII through-mode */
+> +	if (interface != PHY_INTERFACE_MODE_MII) {
+> +		switch (speed) {
+> +		case SPEED_1000:
+> +			val |= CONV_MODE_1000MBPS;
+> +			break;
+> +		case SPEED_100:
+> +			val |= CONV_MODE_100MBPS;
+> +			break;
+> +		case SPEED_10:
+> +			val |= CONV_MODE_10MBPS;
+> +			break;
+> +		case SPEED_UNKNOWN:
+> +			pr_err("Invalid speed\n");
+> +			/* Silently don't do anything */
+> +			return;
 
-If somebody has some more ideas what I can try/test, let me know. However ATM 
-I won't be able to review the netfs and vfs code to actually find the cause of 
-these issues.
+You shouldn't need to consider SPEED_UNKNOWN - if that's something we
+really want to print a warning for, that should be done by phylink and
+not by drivers.
 
-Best regards,
-Christian Schoenebeck
+> +		default:
+> +			dev_err(miic->dev, "Invalid PCS speed %d\n", speed);
+> +			return;
+> +		}
+> +	}
+> +
+> +	miic_reg_rmw(miic, MIIC_CONVCTRL(port),
+> +		     (MIIC_CONVCTRL_CONV_MODE | MIIC_CONVCTRL_FULLD), val);
+> +}
+> +
+> +static bool miic_mode_supported(phy_interface_t interface)
+> +{
+> +	return (interface == PHY_INTERFACE_MODE_RGMII ||
+> +		interface == PHY_INTERFACE_MODE_RMII ||
+> +		interface == PHY_INTERFACE_MODE_MII);
+> +}
+> +
+> +static int miic_validate(struct phylink_pcs *pcs, unsigned long *supported,
+> +			 const struct phylink_link_state *state)
+> +{
+> +	struct miic_port *miic_port = phylink_pcs_to_miic_port(pcs);
+> +	struct miic *miic = miic_port->miic;
+> +
+> +	if (state->interface != PHY_INTERFACE_MODE_NA &&
 
+PHY_INTERFACE_MODE_NA is no longer a "thing" with phylink with PCS
+support, you no longer need to test for it.
 
+> +	    !miic_mode_supported(state->interface)) {
+> +		dev_err(miic->dev, "phy mode %s is unsupported on port %d\n",
+> +			phy_modes(state->interface), miic_port->port);
+
+Please don't print an error if the interface mode is not supported.
+
+> +		linkmode_zero(supported);
+
+There is no need to zero the support mask if you return an error.
+
+> +		return -EOPNOTSUPP;
+
+From the method documentation:
+
+ * Returns -EINVAL if the interface mode/autoneg mode is not supported.
+ * Returns non-zero positive if the link state can be supported.
+
+Also, really, the MAC layer should ensure that the PCS isn't used for
+interface modes that it doesn't support. I might introduce a bitmap of
+interface modes for PCS later if there's a benefit to doing so.
+
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct phylink_pcs_ops miic_phylink_ops = {
+> +	.pcs_config = miic_config,
+> +	.pcs_link_up = miic_link_up,
+> +	.pcs_validate = miic_validate,
+
+I'd prefer to have them in the order that they are in the structure.
+
+> +};
+> +
+> +struct phylink_pcs *miic_create(struct device_node *np)
+> +{
+> +	struct platform_device *pdev;
+> +	struct miic_port *miic_port;
+> +	struct device_node *pcs_np;
+> +	u32 port;
+> +
+> +	if (of_property_read_u32(np, "reg", &port))
+> +		return ERR_PTR(-EINVAL);
+> +
+> +	if (port >= MIIC_MAX_NR_PORTS)
+> +		return ERR_PTR(-EINVAL);
+> +
+> +	/* The PCS pdev is attached to the parent node */
+> +	pcs_np = of_get_parent(np);
+> +	if (!pcs_np)
+> +		return ERR_PTR(-EINVAL);
+> +
+> +	pdev = of_find_device_by_node(pcs_np);
+> +	if (!pdev || !platform_get_drvdata(pdev))
+> +		return ERR_PTR(-EPROBE_DEFER);
+
+It would be a good idea to have a comment in the probe function to say
+that this relies on platform_set_drvdata() being the very last thing
+after a point where initialisation is complete and we won't fail.
+
+Thanks!
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
