@@ -2,87 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 752AC500CC0
-	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 14:06:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C253500CD7
+	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 14:13:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237885AbiDNMIr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 08:08:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44102 "EHLO
+        id S239274AbiDNMPL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 08:15:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229849AbiDNMIq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 08:08:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2B601D339
-        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 05:06:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 69F4AB82893
-        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 12:06:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3CEDC385A5
-        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 12:06:18 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="SEEwDSOV"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1649937976;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=GZ1BA6TpHPMsY58vHmext4YwmrVTXLAF1tsLrMoMkc8=;
-        b=SEEwDSOVQys2+eJdUdgF5jRXdx6gN1s6SXrcCkYauOsbnrlRwjK35iHkxulmVIHfd9TxNC
-        qCdHDSX1sTb+DQl4XFm1kZRNOakgaFODvneiKLTa/iI88sj++RlrstWa4KG5YYMXoV47wG
-        mhAWSOGoBL+WBKm+4Dvbz3/iLN0Tm4A=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 296b2f95 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
-        for <netdev@vger.kernel.org>;
-        Thu, 14 Apr 2022 12:06:16 +0000 (UTC)
-Received: by mail-yb1-f169.google.com with SMTP id f17so8964258ybj.10
-        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 05:06:15 -0700 (PDT)
-X-Gm-Message-State: AOAM533cnF4cleQjHz/jx2lmJzC1bgJjPFZrbvB4309e1F1DKVkvP1Dk
-        p11rHVg/ksfnaXs9ZxUPQ/QYqlPAQwRRb3olZgQ=
-X-Google-Smtp-Source: ABdhPJyqUFFKSzuWQmKd31Q61BMpomS7L/FGgsv5ayCAaemFit1pLM1Ox0PpNxZ/9vj+KWrmK/e2k30jVk6QmAoFzkY=
-X-Received: by 2002:a25:b905:0:b0:61e:23e4:949f with SMTP id
- x5-20020a25b905000000b0061e23e4949fmr1484880ybj.373.1649937975177; Thu, 14
- Apr 2022 05:06:15 -0700 (PDT)
+        with ESMTP id S232670AbiDNMPK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 08:15:10 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBE061F61E
+        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 05:12:42 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id b15so6086717edn.4
+        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 05:12:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=rhRwaWht/J6fvPbw/1zwrOPPkEZ7TQU79YfUwkCsdwM=;
+        b=2qTh20UMAp/GP2n+qZcbQWlYkPs1azsU6UR5GYW6VdsAjSxmrQ75uUH7H2Lw9QbrN1
+         Lwr3IvYBW7za1efKzTQvINSSddtVlY0r1GTFVpJdXVi+i5zZtiKyWFGxBn+/Qm2LR0P2
+         AmTpDMMu5ivj6qpEgDmkjzqMklIIImpzeh6a3U5Mjg3gzAKR2rAE4tS8jdgXD91oLb41
+         lF1RlUhUMqZ478oQ3/K/cdSUagRx2cFF0aftkGEYNYIJnqvxu8Djbrq7EUjnUDGN2pFw
+         133rmeMs0dYFDqkJsZ5SAycFFwiJA8UouRP3M7IKCYufbJfdbCGFU5XgBA86HYk0vhXj
+         S13w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=rhRwaWht/J6fvPbw/1zwrOPPkEZ7TQU79YfUwkCsdwM=;
+        b=SxHqQwMrYrmbZki/EL7T6C28NKwtpCakU5tSO5hlX2Cy6wPyUHpK8Ohu2TuJe3G1dE
+         WqUn4REGrfrA5ppysl1Iy/UW/8E/EAZ+WZS7IRJL7tLtdBiz6dInQcoHwfBgnJ4ENs8o
+         FnG6DK9rpd/3JExsZkD1SJAYRdCUwnbHTsOmBa7W1P2Xenu1QZHRspfnl/NNDVXMofH3
+         mF/2YLy6KWHp50MJyLwgEoyew0zb3ikB2RNsq37Q6097P58vYdM2DAvSwQaNQ1CJaOif
+         081ot7H4kyGeq8z4kPTAUZAwWsO5NQpJBkgsXUnGztiDKTWO5NjPjJLUBsZZvsrLFm/S
+         HIEA==
+X-Gm-Message-State: AOAM531TC3KQmlUjAJ1FB+MsrG26SgK4DqS0DC2TRpPkWRUkucDXgDwA
+        g8mD2RosSDLRYNam2FbquFxOQw==
+X-Google-Smtp-Source: ABdhPJzF41g9n4BhcFyZM2BPEmqtGuuWJKd9rk9+VVAeWFIhL/Lm0cfv8vDLahOPrEt1FcCnaexnwQ==
+X-Received: by 2002:a05:6402:1385:b0:413:2bc6:4400 with SMTP id b5-20020a056402138500b004132bc64400mr2694016edv.94.1649938361247;
+        Thu, 14 Apr 2022 05:12:41 -0700 (PDT)
+Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
+        by smtp.gmail.com with ESMTPSA id e26-20020a1709067e1a00b006e8cb5c173bsm585527ejr.13.2022.04.14.05.12.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Apr 2022 05:12:40 -0700 (PDT)
+Message-ID: <2607574b-6726-6772-7921-84156393df95@blackwall.org>
+Date:   Thu, 14 Apr 2022 15:12:39 +0300
 MIME-Version: 1.0
-References: <20220414104458.3097244-1-razor@blackwall.org> <20220414104458.3097244-3-razor@blackwall.org>
-In-Reply-To: <20220414104458.3097244-3-razor@blackwall.org>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Thu, 14 Apr 2022 14:06:04 +0200
-X-Gmail-Original-Message-ID: <CAHmME9ouN0O-mfi4d_xVon_SxzE4hbzdD0Zm8hRLS4k5C3dPFw@mail.gmail.com>
-Message-ID: <CAHmME9ouN0O-mfi4d_xVon_SxzE4hbzdD0Zm8hRLS4k5C3dPFw@mail.gmail.com>
-Subject: Re: [PATCH net 2/2] wireguard: selftests: add metadata_dst xmit selftest
-To:     Nikolay Aleksandrov <razor@blackwall.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net 2/2] wireguard: selftests: add metadata_dst xmit
+ selftest
+Content-Language: en-US
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
 Cc:     Netdev <netdev@vger.kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Martynas Pumputis <m@lambda.lt>,
         WireGuard mailing list <wireguard@lists.zx2c4.com>,
         Jakub Kicinski <kuba@kernel.org>,
         David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220414104458.3097244-1-razor@blackwall.org>
+ <20220414104458.3097244-3-razor@blackwall.org>
+ <CAHmME9ouN0O-mfi4d_xVon_SxzE4hbzdD0Zm8hRLS4k5C3dPFw@mail.gmail.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <CAHmME9ouN0O-mfi4d_xVon_SxzE4hbzdD0Zm8hRLS4k5C3dPFw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Nikolay,
+On 14/04/2022 15:06, Jason A. Donenfeld wrote:
+> Hi Nikolay,
+> 
+> These tests need to run in the minimal fast-to-compile test harness
+> inside of tools/testing/selftests/wireguard/qemu, which you can try
+> out with:
+> 
+> $ make -C tools/testing/selftests/wireguard/qemu -j$(nproc)
+> 
+> Currently iproute2 is built, but only ip(8) is used in the image, so
+> you'll need to add tc(8) to there. Clang, however, seems a bit
+> heavyweight. I suspect it'd make more sense to just base64 up that
+> object file and include it as a string in the file? Or, alternatively,
+> we could just not move ahead with this rather niche test, and revisit
+> the issue if we wind up wanting to test for lots of bpf things.
+> Thoughts on that?
+> 
+> Jason
 
-These tests need to run in the minimal fast-to-compile test harness
-inside of tools/testing/selftests/wireguard/qemu, which you can try
-out with:
+Hi Jason,
+My bad, I completely missed the qemu part. I'll look into including the
+ready object file. If it works out, looks compact and well
+I'll post v2.
 
-$ make -C tools/testing/selftests/wireguard/qemu -j$(nproc)
-
-Currently iproute2 is built, but only ip(8) is used in the image, so
-you'll need to add tc(8) to there. Clang, however, seems a bit
-heavyweight. I suspect it'd make more sense to just base64 up that
-object file and include it as a string in the file? Or, alternatively,
-we could just not move ahead with this rather niche test, and revisit
-the issue if we wind up wanting to test for lots of bpf things.
-Thoughts on that?
-
-Jason
+Thanks,
+ Nik
