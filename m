@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 920455011D2
-	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 17:00:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3720350117B
+	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 16:59:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344133AbiDNOZs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 10:25:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43256 "EHLO
+        id S1346501AbiDNO0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 10:26:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243615AbiDNN7e (ORCPT
+        with ESMTP id S245045AbiDNN7e (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 09:59:34 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E189DE;
-        Thu, 14 Apr 2022 06:57:00 -0700 (PDT)
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93F9C1C0;
+        Thu, 14 Apr 2022 06:57:01 -0700 (PDT)
 Received: from canpemm500010.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KfLbT1lBLzfYmv;
-        Thu, 14 Apr 2022 21:56:21 +0800 (CST)
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KfLZ46JfHzgYdv;
+        Thu, 14 Apr 2022 21:55:08 +0800 (CST)
 Received: from huawei.com (10.175.101.6) by canpemm500010.china.huawei.com
  (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 14 Apr
@@ -29,9 +29,9 @@ To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
         <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
         <pabeni@redhat.com>
 CC:     <liujian56@huawei.com>
-Subject: [PATCH bpf-next v3 1/3] net: Enlarge offset check value from 0xffff to INT_MAX in bpf_skb_load_bytes
-Date:   Thu, 14 Apr 2022 21:59:00 +0800
-Message-ID: <20220414135902.100914-2-liujian56@huawei.com>
+Subject: [PATCH bpf-next v3 2/3] net: change skb_ensure_writable()'s write_len param to unsigned int type
+Date:   Thu, 14 Apr 2022 21:59:01 +0800
+Message-ID: <20220414135902.100914-3-liujian56@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220414135902.100914-1-liujian56@huawei.com>
 References: <20220414135902.100914-1-liujian56@huawei.com>
@@ -50,41 +50,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The data length of skb frags + frag_list may be greater than 0xffff,
-and skb_header_pointer can not handle negative offset and negative len.
-So here INT_MAX is used to check the validity of offset and len.
-Add the same change to the related function skb_store_bytes.
+Both pskb_may_pull() and skb_clone_writable()'s length parameters are of
+type unsigned int already.
+Therefore, change this function's write_len param to unsigned int type.
 
-Fixes: 05c74e5e53f6 ("bpf: add bpf_skb_load_bytes helper")
 Signed-off-by: Liu Jian <liujian56@huawei.com>
-Acked-by: Song Liu <songliubraving@fb.com>
 ---
-v2->v3: change nothing
- net/core/filter.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/linux/skbuff.h | 2 +-
+ net/core/skbuff.c      | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 64470a727ef7..1571b6bc51ea 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -1687,7 +1687,7 @@ BPF_CALL_5(bpf_skb_store_bytes, struct sk_buff *, skb, u32, offset,
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 3a30cae8b0a5..fe8990ce52a8 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -3886,7 +3886,7 @@ struct sk_buff *skb_segment(struct sk_buff *skb, netdev_features_t features);
+ struct sk_buff *skb_segment_list(struct sk_buff *skb, netdev_features_t features,
+ 				 unsigned int offset);
+ struct sk_buff *skb_vlan_untag(struct sk_buff *skb);
+-int skb_ensure_writable(struct sk_buff *skb, int write_len);
++int skb_ensure_writable(struct sk_buff *skb, unsigned int write_len);
+ int __skb_vlan_pop(struct sk_buff *skb, u16 *vlan_tci);
+ int skb_vlan_pop(struct sk_buff *skb);
+ int skb_vlan_push(struct sk_buff *skb, __be16 vlan_proto, u16 vlan_tci);
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 30b523fa4ad2..a84e00e44ad2 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -5601,7 +5601,7 @@ struct sk_buff *skb_vlan_untag(struct sk_buff *skb)
+ }
+ EXPORT_SYMBOL(skb_vlan_untag);
  
- 	if (unlikely(flags & ~(BPF_F_RECOMPUTE_CSUM | BPF_F_INVALIDATE_HASH)))
- 		return -EINVAL;
--	if (unlikely(offset > 0xffff))
-+	if (unlikely(offset > INT_MAX || len > INT_MAX))
- 		return -EFAULT;
- 	if (unlikely(bpf_try_make_writable(skb, offset + len)))
- 		return -EFAULT;
-@@ -1722,7 +1722,7 @@ BPF_CALL_4(bpf_skb_load_bytes, const struct sk_buff *, skb, u32, offset,
+-int skb_ensure_writable(struct sk_buff *skb, int write_len)
++int skb_ensure_writable(struct sk_buff *skb, unsigned int write_len)
  {
- 	void *ptr;
- 
--	if (unlikely(offset > 0xffff))
-+	if (unlikely(offset > INT_MAX || len > INT_MAX))
- 		goto err_clear;
- 
- 	ptr = skb_header_pointer(skb, offset, len, to);
+ 	if (!pskb_may_pull(skb, write_len))
+ 		return -ENOMEM;
 -- 
 2.17.1
 
