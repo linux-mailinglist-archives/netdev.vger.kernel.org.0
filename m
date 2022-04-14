@@ -2,84 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E57750062D
-	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 08:35:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2889D500634
+	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 08:36:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240049AbiDNGiF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 02:38:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58370 "EHLO
+        id S236260AbiDNGi7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 02:38:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232107AbiDNGiE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 02:38:04 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3F3C3137D;
-        Wed, 13 Apr 2022 23:35:40 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Kf8pD4gxMz1HBvq;
-        Thu, 14 Apr 2022 14:35:00 +0800 (CST)
-Received: from [10.67.111.192] (10.67.111.192) by
- kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2375.24; Thu, 14 Apr 2022 14:35:36 +0800
-Message-ID: <d405cd60-c071-0daf-3174-670d1c8a2009@huawei.com>
-Date:   Thu, 14 Apr 2022 14:35:26 +0800
+        with ESMTP id S229989AbiDNGi4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 02:38:56 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D93F31DFB
+        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 23:36:31 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id b19so5498548wrh.11
+        for <netdev@vger.kernel.org>; Wed, 13 Apr 2022 23:36:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=W13RGoIXQweN+v6MZVwcX2S9w3C2c7+oR55UibETev4=;
+        b=WQmWi7kZ5kk/7oG/tazI71tOaN0y+HbleNKYDusllFjhCTldmvNnXaaz0SSUehd5E3
+         pDcrfIDbMtkKWb9D8haIQ0Ru4SrFkNnlXAsPeIAEvupX52fGt9xOijfofW97Z7GPy6SY
+         V2F0135ueB0amGkKCrAAjm+N9UQNpgU/fS8Heiqld1CjqBYN8ubrkTCoN15VpYam858X
+         sorGqm3Y58Q309vFeOhsFePqw0+HPDQBS46owA7Tnic2hH+TrLcgmSrUv5k8OZ4jpko5
+         AVNaFTroEu9QK0Lx3PHijyihwFki298WhPfSgiHHmPx7fCemmdwGN8oH9cM6nGglSwUc
+         c3vw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=W13RGoIXQweN+v6MZVwcX2S9w3C2c7+oR55UibETev4=;
+        b=DmFpSJNUKE0pMzTsF5tN0eRnscB9RsOlVyExCGKi1AsL3gyX44jVZs9FNtJk17oT4J
+         UeBuvWlAn7rFECNuGbmC3YZzhs+0N/KAzDlN2QjOJ3DKfe5l594HJnrXGRWLGvD/ZpmJ
+         f9lBGgLZT5LVCbd2Bpo8GI5kAyeu37iLocKCZhpgp1ZQGiyMR/MtTKa+YoB1y0teOr6Y
+         wNJ5SV1Y2BmmytYJfIgmbnpNdzrjTTw6YGuAAMHuzLXQR4WYWuZKJDaqfKU4CT04IDBY
+         bIfoeDgV9Jex3J3X5u2u+E7oRKgjodns4a93IYekIpj7d8rk2adw3le90uVLvGNIvSUg
+         ZewA==
+X-Gm-Message-State: AOAM533oU7ZXJPGkJnXckGcvbqh7YAPN5Itpv0yqBNb0gLW7noQPV58s
+        3t38AcEVy/s42z/iyaB/bFz2RIUX+eQ=
+X-Google-Smtp-Source: ABdhPJysrmkTofBY7xlCZITbWx5+f3SqxhTLPj4cgo4gywTgrK8qZ2Dyp+9R/eh5Pv6pp6dB4l2W+g==
+X-Received: by 2002:adf:816b:0:b0:203:7fae:a245 with SMTP id 98-20020adf816b000000b002037faea245mr867622wrm.619.1649918190081;
+        Wed, 13 Apr 2022 23:36:30 -0700 (PDT)
+Received: from hoboy.vegasvil.org (195-70-108-137.stat.salzburg-online.at. [195.70.108.137])
+        by smtp.gmail.com with ESMTPSA id f13-20020a5d664d000000b00207ab79ed80sm955619wrw.12.2022.04.13.23.36.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 23:36:29 -0700 (PDT)
+Date:   Wed, 13 Apr 2022 23:36:27 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, yangbo.lu@nxp.com,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, mlichvar@redhat.com,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 4/5] ptp: Support late timestamp determination
+Message-ID: <20220414063627.GA2311@hoboy.vegasvil.org>
+References: <20220403175544.26556-1-gerhard@engleder-embedded.com>
+ <20220403175544.26556-5-gerhard@engleder-embedded.com>
+ <20220410072930.GC212299@hoboy.vegasvil.org>
+ <CANr-f5xhH31yF8UOmM=ktWULyUugBGDoHzOiYZggiDPZeTbdrw@mail.gmail.com>
+ <20220410134215.GA258320@hoboy.vegasvil.org>
+ <CANr-f5xriLzQ+3xtM+iV8ahu=J1mA7ixbc49f0i2jxkySthTdQ@mail.gmail.com>
+ <CANr-f5yn9LzMQ8yAP8Py-EP_NyifFyj1uXBNo+kuGY1p8t0CFw@mail.gmail.com>
+ <20220412214655.GB579091@hoboy.vegasvil.org>
+ <CANr-f5zLyphtbi49mvsH_rVzn7yrGejUGMVobwrFmX8U6f2YVA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH bpf-next 1/5] arm64: ftrace: Add ftrace direct call
- support
-Content-Language: en-US
-To:     Song Liu <songliubraving@fb.com>
-CC:     bpf <bpf@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, Will Deacon <will@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, X86 ML <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Shuah Khan <shuah@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Daniel Kiss <daniel.kiss@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Delyan Kratunov <delyank@fb.com>
-References: <20220413054959.1053668-1-xukuohai@huawei.com>
- <20220413054959.1053668-2-xukuohai@huawei.com>
- <D829ABEB-5504-4682-9A20-AAD21AFE3CB3@fb.com>
-From:   Xu Kuohai <xukuohai@huawei.com>
-In-Reply-To: <D829ABEB-5504-4682-9A20-AAD21AFE3CB3@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.111.192]
-X-ClientProxiedBy: dggeme701-chm.china.huawei.com (10.1.199.97) To
- kwepemi500013.china.huawei.com (7.221.188.120)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANr-f5zLyphtbi49mvsH_rVzn7yrGejUGMVobwrFmX8U6f2YVA@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/14/2022 1:58 PM, Song Liu wrote:
-> Just one nitpick for 2/5: as we move is_valid_bpf_tramp_flags to
-> trampoline.c, we should change the multi-line comment into net
-> style:
+On Wed, Apr 13, 2022 at 10:51:54PM +0200, Gerhard Engleder wrote:
+> For igc and tsnep the 16 bytes in front of the RX frame exist anyway.
+> So this would be a minimal solution with best performance as a first
+> step. A lookup for netdev/phc can be added in the future if there is
+> a driver, which needs that.
 
-Thanks for your suggestion, will fix in v2.
+It is a design mistake to base new kernel interfaces on hardware
+quirks.
+
+> Is it worth posting an implementation in that direction?
+
+Sure, but please make thoughts about how this would work for the
+non-igc world.
+
+IIRC one of the nxp switches also has such counters?  You can start
+with that.
+
+Thanks,
+Richard
