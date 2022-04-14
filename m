@@ -2,88 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 614EF501A85
-	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 19:53:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F2FE501A75
+	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 19:51:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344032AbiDNRyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 13:54:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47364 "EHLO
+        id S1343944AbiDNRxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 13:53:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343966AbiDNRyG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 13:54:06 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D83BEEAC84;
-        Thu, 14 Apr 2022 10:51:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=LymSj2bkAQBsKt59tP7qveJbohj2dcOZKvwQYkKRUzg=; b=hYa/LhL1uUAkf7VpnkoQM3umNT
-        ZiFgJylZZ8CTcvVDkzB716ymJQwJl6129TYGV0zmzutMI6dycH3XCVuDZ407OruoML/8K3CayX7TS
-        crsIOVoMKjW+j7L1ID+2ClF6X1yMZZ3hb+D89ZI33eSBZUsK8nfIgK9dnmxAwflxznKM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nf3ci-00FrIe-Dc; Thu, 14 Apr 2022 19:51:16 +0200
-Date:   Thu, 14 Apr 2022 19:51:16 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?iso-8859-1?Q?Miqu=E8l?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
-        Laurent Gonzales <laurent.gonzales@non.se.com>,
-        Jean-Pierre Geslin <jean-pierre.geslin@non.se.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>
-Subject: Re: [PATCH net-next 06/12] net: dsa: rzn1-a5psw: add Renesas RZ/N1
- advanced 5 port switch driver
-Message-ID: <YlhfFIDy4gCbokpP@lunn.ch>
-References: <20220414122250.158113-1-clement.leger@bootlin.com>
- <20220414122250.158113-7-clement.leger@bootlin.com>
- <20220414144709.tpxiiaiy2hu4n7fd@skbuf>
+        with ESMTP id S1343952AbiDNRxq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 13:53:46 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA322EA76F
+        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 10:51:20 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id q3so5280432plg.3
+        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 10:51:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc
+         :references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=R60EpWC4+M+3jSe48lUE7Gq4ExP+RSflXlkjF6VcaNg=;
+        b=MJT5ZerLaHe0JjBpnq1LElIVlHvKx2ombKDP9yRuUPnzETaAhn9nIFw2s+5thyg8ck
+         z+Auc/bX6s4XDzQD7WK+/TG6WF/NPaz7NxNF+va1neIBQvkDM8rvE/Z8Bu7yJMiDjGhr
+         Qq/F7VMSrZoc5QrzMA5rKvUUC9eGBE4aSx1/AZufDrZmL8MFVO75636rgU+GQRNVBJf+
+         XMC2Wjv8LayNUGel212gOwnBPbKqlmm34ot5OyZMuDQLngo5WNI+Qvm1BsfC5EhRNMHA
+         pczXurvhUftRw1ejmjb5pCtSqc/EQVw3Lip1QWxc1k5n4sDFrV6ZrKI9OY/a3Zk8+Y1S
+         UitA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=R60EpWC4+M+3jSe48lUE7Gq4ExP+RSflXlkjF6VcaNg=;
+        b=2CapEV/paC5Mnw/GcATAirM7ylocs8mFkLYrPl7qOpZeCtfrqnaqRpTAY+S4mwN5MB
+         Aa3E2MSyoTMmwsLYxcqaqmBF0RnNCjoGxxa6ZvpaPi9EYNhQoAONDZUGgtEuCqm654dy
+         8TainyDJlfTiTMTRe6qYHUnzjiDw2uH6LeDFBzD/DjvRtyvaARklYKT3xnYKM2ssq3AY
+         oYQrKVOA9E7pIZ6hBZqXowjLolaKb+DsqN1mmYD6ZPjyPVLXOJgfe1z5Wae2PFqa9HTj
+         kf+NCX1X7QysCO8fqXMbh0pFI/EEAVxrIBeLNsZepCmwGIU4JYYtciEbAV0HEXvtXk70
+         zYDQ==
+X-Gm-Message-State: AOAM530pJ+gm4OVRl1z09NJM8zCqHJi+il6y+qRgf7XcGRv82zMqxufm
+        PbkNOd6XEzI3uwLx3CBfWZgjrKZYUpHAXe8C
+X-Google-Smtp-Source: ABdhPJwRAMampTIjKcuBpR+du+kxiuKgR+5wRxgzxrak8w+8zYw1w59xdKpX2VjJw2lzIeX2jldwgw==
+X-Received: by 2002:a17:902:b7c9:b0:158:b09e:527a with SMTP id v9-20020a170902b7c900b00158b09e527amr6104672plz.40.1649958679806;
+        Thu, 14 Apr 2022 10:51:19 -0700 (PDT)
+Received: from [192.168.254.17] ([50.39.160.154])
+        by smtp.gmail.com with ESMTPSA id p3-20020a056a000b4300b004faee36ea56sm506706pfo.155.2022.04.14.10.51.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Apr 2022 10:51:19 -0700 (PDT)
+Message-ID: <584183e2-2473-6185-e07d-f478da118b87@linaro.org>
+Date:   Thu, 14 Apr 2022 10:51:18 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220414144709.tpxiiaiy2hu4n7fd@skbuf>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
+Cc:     cgroups@vger.kernel.org, Tejun Heo <tj@kernel.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, stable@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+e42ae441c3b10acf9e9d@syzkaller.appspotmail.com
+References: <20220412192459.227740-1-tadeusz.struk@linaro.org>
+ <20220414164409.GA5404@blackbody.suse.cz>
+From:   Tadeusz Struk <tadeusz.struk@linaro.org>
+Subject: Re: [PATCH] cgroup: don't queue css_release_work if one already
+ pending
+In-Reply-To: <20220414164409.GA5404@blackbody.suse.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > +static int a5psw_probe_mdio(struct a5psw *a5psw)
-> > +{
-> > +	struct device *dev = a5psw->dev;
-> > +	struct device_node *mdio_node;
-> > +	struct mii_bus *bus;
-> > +	int err;
-> > +
-> > +	if (of_property_read_u32(dev->of_node, "clock-frequency",
-> > +				 &a5psw->mdio_freq))
-> > +		a5psw->mdio_freq = A5PSW_MDIO_DEF_FREQ;
+Hi Michal,
+Thanks for your analysis.
+
+On 4/14/22 09:44, Michal Koutný wrote:
+> Hello Tadeusz.
 > 
-> Shouldn't the clock-frequency be a property of the "mdio" node?
-> At least I see it in Documentation/devicetree/bindings/net/mdio.yaml.
+> Thanks for analyzing this syzbot report. Let me provide my understanding
+> of the test case and explanation why I think your patch fixes it but is
+> not fully correct.
+> 
+> On Tue, Apr 12, 2022 at 12:24:59PM -0700, Tadeusz Struk <tadeusz.struk@linaro.org> wrote:
+>> Syzbot found a corrupted list bug scenario that can be triggered from
+>> cgroup css_create(). The reproduces writes to cgroup.subtree_control
+>> file, which invokes cgroup_apply_control_enable(), css_create(), and
+>> css_populate_dir(), which then randomly fails with a fault injected -ENOMEM.
+> 
+> The reproducer code makes it hard for me to understand which function
+> fails with ENOMEM.
+> But I can see your patch fixes the reproducer and your additional debug
+> patch which proves that css->destroy_work is re-queued.
 
-Yes. And the example in the binding document for this driver also
-places it in the mdio node.
+Yes, it is hard to see the actual failing point because, I think it is randomly
+failing in different places. I think in the actual case that causes the list
+corruption is in fact in css_create().
+It is the css_create() error path that does fist rcu enqueue in:
 
-       Andrew
+https://elixir.bootlin.com/linux/v5.10.109/source/kernel/cgroup/cgroup.c#L5228
+
+and the second is triggered by the css->refcnt calling css_release()
+
+The reason why we don't see it actually failing in css_create() in the trace
+dump is that the fail_dump() is rate-limited, see:
+https://elixir.bootlin.com/linux/v5.18-rc2/source/lib/fault-inject.c#L44
+
+I was confused as well, so I put additional debug prints in every place
+where css_release() can fail, and it was actually in
+css_create()->cgroup_idr_alloc() that failed in my case.
+
+What happened was, the write triggered:
+cgroup_subtree_control_write()->cgroup_apply_control()->cgroup_apply_control_enable()->css_create()
+
+which, allocates and initializes the css, then fails in cgroup_idr_alloc(),
+bails out and calls queue_rcu_work(cgroup_destroy_wq, &css->destroy_rwork);
+
+then cgroup_subtree_control_write() bails out to out_unlock:, which then goes:
+
+cgroup_kn_unlock()->cgroup_put()->css_put()->percpu_ref_put(&css->refcnt)->percpu_ref_put_many(ref)
+
+which then calls ref->data->release(ref) and enqueues the same
+&css->destroy_rwork on cgroup_destroy_wq causing list corruption in insert_work.
+
+>> In such scenario the css_create() error path rcu enqueues css_free_rwork_fn
+>> work for an css->refcnt initialized with css_release() destructor,
+> 
+> Note that css_free_rwork_fn() utilizes css->destroy_*r*work.
+> The error path in css_create() open codes relevant parts of
+> css_release_work_fn() so that css_release() can be skipped and the
+> refcnt is eventually just percpu_ref_exit()'d.
+> 
+>> and there is a chance that the css_release() function will be invoked
+>> for a cgroup_subsys_state, for which a destroy_work has already been
+>> queued via css_create() error path.
+> 
+> But I think the problem is css_populate_dir() failing in
+> cgroup_apply_control_enable(). (Is this what you actually meant?
+> css_create() error path is then irrelevant, no?)
+
+I thought so too at first as the the crushdump shows that this is failing
+in css_populate_dir(), but this is not the fail that causes the list corruption.
+The code can recover from the fail in css_populate_dir().
+The fail that causes trouble is in css_create(), that makes it go to its error path.
+I can dig out the patch with my debug prints and request syzbot to run it
+if you want.
+
+> 
+> The already created csses should then be rolled back via
+> 	cgroup_restore_control(cgrp);
+> 	cgroup_apply_control_disable(cgrp);
+> 	   ...
+> 	   kill_css(css)
+> 
+> I suspect the double-queuing is a result of the fact that there exists
+> only the single reference to the css->refcnt. I.e. it's
+> percpu_ref_kill_and_confirm()'d and released both at the same time.
+> 
+> (Normally (when not killing the last reference), css->destroy_work reuse
+> is not a problem because of the sequenced chain
+> css_killed_work_fn()->css_put()->css_release().)
+> 
+>> This can be avoided by adding a check to css_release() that checks
+>> if it has already been enqueued.
+> 
+> If that's what's happening, then your patch omits the final
+> css_release_work_fn() in favor of css_killed_work_fn() but both should
+> be run during the rollback upon css_populate_dir() failure.
+
+This change only prevents from double queue:
+
+queue_[rcu]_work(cgroup_destroy_wq, &css->destroy_rwork);
+
+I don't see how it affects the css_killed_work_fn() clean path.
+I didn't look at it, since I thought it is irrelevant in this case.
+
+-- 
+Thanks,
+Tadeusz
