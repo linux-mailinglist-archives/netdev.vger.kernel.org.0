@@ -2,58 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 009385017D3
-	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 18:04:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D10675017CD
+	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 18:04:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243114AbiDNPuv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 11:50:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45618 "EHLO
+        id S239416AbiDNPuf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 11:50:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242158AbiDNPeP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 11:34:15 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7DA2B715D;
-        Thu, 14 Apr 2022 08:11:50 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id c64so6735634edf.11;
-        Thu, 14 Apr 2022 08:11:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=ePaXFvQpBZHWZnEFe6kdyoM4M5jCBAO3IMy7bDaD+IQ=;
-        b=T3y7/ezwj893tPbd5HahxfqR30GzBGzewCsL3NxKGci1PBv/JhijD1EWqxBqyiPhCq
-         MixICDu2zy/rZSjOartFBhQMPEUInun7+vXgTUAn46k70RS39svn1sDFccf8XnzbCm1w
-         +xfyWVzZshcJqTywem9rulpf+BAJWF4nVne0lKwjkMb+i1yyqlV9tzqxywR8zC0Dqhv7
-         V6trRKYPrp1Vi4tjauvr2KhKSV0Dy5dYJtUTu2ejESyn2xhHn4ZvWRCLHV86vU3AvVgu
-         ykouEjIMSV1YZldUBE1U5o7iBg44+Dt78fkPvv+0xvqc6a38kGD3EEjcy27DtWFQYj5t
-         NFdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=ePaXFvQpBZHWZnEFe6kdyoM4M5jCBAO3IMy7bDaD+IQ=;
-        b=WDtkxu0XwJF5OU38fIFUTRj2EqdoGw6qLYP8Lhp6jDyZQMk7Jyy7iAxfXX0baMocte
-         +L6LMD1NXXNYwKl4eR2F4wBV+cIdzdbEYiT6LAC1079m8g63sjRy01ffLYt3A+/lmFRL
-         kvvAOAKhq/fkaSJ5SaWkdp711ghwZ5SjeLtDBERLpYq4jAYIWrTlWZZVDHwTHRdzsGpD
-         WZ/CFFORt8RW8NQgaVvI3uKvedxkdInP9CrDKLs3hGeS0dgNp26tSa+ol45VtWntjQFj
-         GvbsphmnmP1e4nWPAinO/nfkJd9Hz1Vq0fcPtOQVxGD9Tyim2nG4jiZiQRxRKFVZIyr3
-         KzbA==
-X-Gm-Message-State: AOAM533861uqGFE2hBLRgrw7rUnutfBK/F4RVqPKoYbXZB0yFbwB238Z
-        V8V5LokFZ0rxPx2aIRKHXjaFQSloUDY=
-X-Google-Smtp-Source: ABdhPJyJ2J8sskGXXS//80pWKe+59gPk1N1HgMJtX9oy+x8bwTlGvAUINwFwJFr8voAtmH9agAzh5A==
-X-Received: by 2002:a05:6402:5250:b0:41d:8556:4191 with SMTP id t16-20020a056402525000b0041d85564191mr3586219edd.269.1649949109131;
-        Thu, 14 Apr 2022 08:11:49 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id hx12-20020a170906846c00b006e8ad71c18fsm706995ejc.208.2022.04.14.08.11.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 08:11:48 -0700 (PDT)
-Date:   Thu, 14 Apr 2022 18:11:46 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+        with ESMTP id S243690AbiDNPi0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 11:38:26 -0400
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E295F1FA61;
+        Thu, 14 Apr 2022 08:15:40 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id D88736000C;
+        Thu, 14 Apr 2022 15:15:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1649949339;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Kldf5IEa3yAZkGIRecTUUIoT+f9V5tcdBTTm3Fj/R0E=;
+        b=KfauuI8udm5OMo/y2S7FtmFocxXA/lFKzTmOSteFep9LasMRYCoO3NSxkZE/5aLMkW9nYR
+        MQkfXzScE5Qe31vWvX6SmMQFEQtHou+UGO9iyU+1WMmzn+8yFEGDSI4rFKMrSQ1WJU7I89
+        qqiDNFx3A7qIX03nL2GLRHuCXQJyfQedxYH+ikaozYt5a3f9UOHhgbTQLgmbWMCYRa2nJw
+        O22a9HqvWw7copMKG1nxE0KIBJB+emaChGyGyM9kW1PK1zbpF8ndwOqhDt9CCN6vjH5mXD
+        SvAQrt4vE/GDbBNdMOCqt/b0Qh45nyOyrfG5u6I5pfjsy4U14AQ2gUhpRxgnqg==
+Date:   Thu, 14 Apr 2022 17:14:08 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
@@ -62,74 +44,146 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Geert Uytterhoeven <geert+renesas@glider.be>,
         Magnus Damm <magnus.damm@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Herve Codina <herve.codina@bootlin.com>,
-        =?utf-8?Q?Miqu=C3=A8l?= Raynal <miquel.raynal@bootlin.com>,
+        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
         Milan Stevanovic <milan.stevanovic@se.com>,
         Jimmy Lalande <jimmy.lalande@se.com>,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 02/12] net: dsa: add Renesas RZ/N1 switch tag
+Subject: Re: [PATCH net-next 04/12] net: pcs: add Renesas MII converter
  driver
-Message-ID: <20220414151146.a2fncklswo6utiyd@skbuf>
+Message-ID: <20220414171408.59716a52@fixe.home>
+In-Reply-To: <YlgYRGVuHQCwp7FQ@shell.armlinux.org.uk>
 References: <20220414122250.158113-1-clement.leger@bootlin.com>
- <20220414122250.158113-3-clement.leger@bootlin.com>
- <20220414142242.vsvv3vxexc7i3ukm@skbuf>
- <20220414163546.3f6c5157@fixe.home>
+        <20220414122250.158113-5-clement.leger@bootlin.com>
+        <YlgYRGVuHQCwp7FQ@shell.armlinux.org.uk>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220414163546.3f6c5157@fixe.home>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 04:35:46PM +0200, Clément Léger wrote:
-> > Please keep variable declarations sorted in decreasing order of line
-> > length (applies throughout the patch series, I won't repeat this comment).
-> 
-> Acked, both PCS and DSA driver are ok with that rule. Missed that one
-> though.
+Le Thu, 14 Apr 2022 13:49:08 +0100,
+"Russell King (Oracle)" <linux@armlinux.org.uk> a =C3=A9crit :
 
-Are you sure? Because a5psw_port_stp_state_set() says otherwise.
+> On Thu, Apr 14, 2022 at 02:22:42PM +0200, Cl=C3=A9ment L=C3=A9ger wrote:
+> > Add PCS driver for the MII converter that is present on Renesas RZ/N1
+> > SoC. This MII converter is reponsible of converting MII to RMII/RGMII
+> > or act as a MII passtrough. Exposing it as a PCS allows to reuse it
+> > in both the switch driver and the stmmac driver. Currently, this driver
+> > only allows the PCS to be used by the dual Cortex-A7 subsystem since
+> > the register locking system is not used. =20
+>=20
+> Hi,
+>=20
+> > +#define MIIC_CONVCTRL_CONV_MODE		GENMASK(4, 0)
+> > +#define CONV_MODE_MII			0
+> > +#define CONV_MODE_RMII			BIT(2)
+> > +#define CONV_MODE_RGMII			BIT(3)
+> > +#define CONV_MODE_10MBPS		0
+> > +#define CONV_MODE_100MBPS		BIT(0)
+> > +#define CONV_MODE_1000MBPS		BIT(1) =20
+>=20
+> Is this really a single 4-bit wide field? It looks like two 2-bit fields
+> to me.
 
-> > sizeof(tag), to be consistent with the other use of sizeof() above?
-> > Although, hmm, I think you could get away with editing "ptag" in place.
-> 
-> I was not sure of the alignment guarantee I would have here. If the
-> VLAN header is guaranteed to be aligned on 2 bytes, then I guess it's
-> ok to do that in-place.
+You are right, the datasheet presents that as a single bitfield but
+that can be split.
 
-If I look at Documentation/core-api/unaligned-memory-access.rst
+>=20
+> > +#define phylink_pcs_to_miic_port(pcs) container_of((pcs), struct miic_=
+port, pcs) =20
+>=20
+> I prefer a helper function to a preprocessor macro for that, but I'm not
+> going to insist on that point.
 
-| Alignment vs. Networking
-| ========================
-| 
-| On architectures that require aligned loads, networking requires that the IP
-| header is aligned on a four-byte boundary to optimise the IP stack. For
-| regular ethernet hardware, the constant NET_IP_ALIGN is used. On most
-| architectures this constant has the value 2 because the normal ethernet
-| header is 14 bytes long, so in order to get proper alignment one needs to
-| DMA to an address which can be expressed as 4*n + 2. One notable exception
-| here is powerpc which defines NET_IP_ALIGN to 0 because DMA to unaligned
-| addresses can be very expensive and dwarf the cost of unaligned loads.
+Acked.
 
-Your struct a5psw_tag *ptag starts at 10 bytes (8 for tag, 2 for Ethertype)
-before the IP header, so I'm thinking it is aligned at a 2 byte boundary
-as well. A VLAN header between the DSA header and the IP header should
-also not affect that alignment, since its length is 4 bytes.
+>=20
+> > +static void miic_link_up(struct phylink_pcs *pcs, unsigned int mode,
+> > +			 phy_interface_t interface, int speed, int duplex)
+> > +{
+> > +	struct miic_port *miic_port =3D phylink_pcs_to_miic_port(pcs);
+> > +	struct miic *miic =3D miic_port->miic;
+> > +	int port =3D miic_port->port;
+> > +	u32 val =3D 0;
+> > +
+> > +	if (duplex =3D=3D DUPLEX_FULL)
+> > +		val |=3D MIIC_CONVCTRL_FULLD;
+> > +
+> > +	switch (interface) {
+> > +	case PHY_INTERFACE_MODE_RMII:
+> > +		val |=3D CONV_MODE_RMII;
+> > +		break;
+> > +	case PHY_INTERFACE_MODE_RGMII:
+> > +		val |=3D CONV_MODE_RGMII;
+> > +		break;
+> > +	case PHY_INTERFACE_MODE_MII:
+> > +		val |=3D CONV_MODE_MII;
+> > +		break;
+> > +	default:
+> > +		dev_err(miic->dev, "Unsupported interface %s\n",
+> > +			phy_modes(interface));
+> > +		return;
+> > +	} =20
+>=20
+> Why are you re-decoding the interface mode? The interface mode won't
+> change as a result of a call to link-up. Changing the interface mode
+> is a major configuration event that will always see a call to your
+> miic_config() function first.
 
-If "ctrl_tag" is aligned at a 4 byte boundary - 10, it means "ctrl_data"
-is aligned at a 4 byte boundary - 8, so also a 4 byte boundary.
+Indeed, seems stupid, I will simply keep the mode bits once split from
+speed.
 
-But "ctrl_data2" is aligned at a 4 byte boundary + 2, so you might want
-to break up the u32 access into 2 u16 accesses, just to be on the safe
-side?
+[...]
+
+> > +};
+> > +
+> > +struct phylink_pcs *miic_create(struct device_node *np)
+> > +{
+> > +	struct platform_device *pdev;
+> > +	struct miic_port *miic_port;
+> > +	struct device_node *pcs_np;
+> > +	u32 port;
+> > +
+> > +	if (of_property_read_u32(np, "reg", &port))
+> > +		return ERR_PTR(-EINVAL);
+> > +
+> > +	if (port >=3D MIIC_MAX_NR_PORTS)
+> > +		return ERR_PTR(-EINVAL);
+> > +
+> > +	/* The PCS pdev is attached to the parent node */
+> > +	pcs_np =3D of_get_parent(np);
+> > +	if (!pcs_np)
+> > +		return ERR_PTR(-EINVAL);
+> > +
+> > +	pdev =3D of_find_device_by_node(pcs_np);
+> > +	if (!pdev || !platform_get_drvdata(pdev))
+> > +		return ERR_PTR(-EPROBE_DEFER); =20
+>=20
+> It would be a good idea to have a comment in the probe function to say
+> that this relies on platform_set_drvdata() being the very last thing
+> after a point where initialisation is complete and we won't fail.
+
+Yep, sounds like a good idea.
+
+>=20
+> Thanks!
+>=20
+
+Thanks for the review,
+
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
