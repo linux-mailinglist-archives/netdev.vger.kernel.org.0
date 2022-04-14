@@ -2,67 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D30D5013EB
-	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 17:23:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0907C50144C
+	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 17:25:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346315AbiDNO0K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 10:26:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50372 "EHLO
+        id S242337AbiDNOZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 10:25:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348298AbiDNOMg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 10:12:36 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC34214096;
-        Thu, 14 Apr 2022 07:04:24 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id bh17so10244904ejb.8;
-        Thu, 14 Apr 2022 07:04:24 -0700 (PDT)
+        with ESMTP id S1348015AbiDNORh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 10:17:37 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9624E15726;
+        Thu, 14 Apr 2022 07:08:26 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id c6so6493093edn.8;
+        Thu, 14 Apr 2022 07:08:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lCC3Pfudq3lc52JAAG1sG7HbUkpkTnk/H8GtNDbWO8Q=;
-        b=JDV8GhcH1zuJn0OOA5UBejxDG49F0Z45Kj3qjuDnZOLw3BeSKpEqyUCjjG41ySlXbg
-         FEnNIudzU1mntcXCjLDBNBT8BKflg+3dpqBlAaleqoEHANJ9daDRUsG+0hsKroKanNn9
-         a7B3NDbIxMlL3YYwChHq8Wi0QE7bmKoQmzJQQn4WTpw8xvcu5f9qrJoMUP0hVujhS1La
-         oU4dxgEbPcHNoSUBtp/w2e/hP9XwkAs51/H3gCbxQcdVcR6z2efMHTrRc27Q40/sjRzm
-         xlRKxL0j5fJhLCnTMldi5q+qjMWbAMDY+34Xv/TVcFb6jzOcJRVmnSRik4t4sUMpGu7J
-         3fJQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=VKAGTVudGRy4HcB9l5vebptdpongU9LNNg0Y13bPPlM=;
+        b=RMXEv7drgQD67+ERI0zrhQwGBwfCGMbg/GYLE4M5vy18ic1oiIEIcA6qntRehKbvXk
+         VFXV+SuHtujfO1WvK8niBLF+0LDE+4oUhM/Bc7G4X6e03bIRoT92YXk1FAACi2V8ZL78
+         TCGjqXkuY7GibuktNFIwK/7VJw1qNNI2OYk+L0ssaZmZ5jCLsvR0m6asLGyKeNaemysy
+         pxLLvs1ixnuPOKKAR6lJ9Zp9WaOHq9Q+0PInQCpa0/BBHmIhneri2ylbhjwYSJ5Tk92Y
+         BGRqHl4/RB4tVevJBpd1zRJDslFhbB/pCHsNJG210L8aeUCwEPJN+5NdUP8EtJz4bYo1
+         /3wA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lCC3Pfudq3lc52JAAG1sG7HbUkpkTnk/H8GtNDbWO8Q=;
-        b=W82b45rpXmRYljZ+faz/GGy9MI2LtFVCcjA48gTvEYiVywQO5hE6ybsIyvuIEMQKdh
-         0C1/1+ibGuGAxHz/zfl186MVrwxfOJv3q7K4zlCAQY6+NSlqCXWiLLqliIMCUeXyP19c
-         2k2NwOa0wSg0b0tBI0p1XdIYXDb9fUIsS9Z59G2/fiNSTRJp2jcbb+SKVqlBMk3omnmF
-         LExjnXN9ZcX4PRXV9kVU/k48Ti39hsJtmjZHnVQQYbJIOI++MbgzSRAWA38+en1cmrp2
-         7O8dyDWMIZ29Mo3H9ES/URpS/aLTw8/91SLHy/dOKEFe5IzBXf8S6XGi9ezN1st2xOeJ
-         IFWQ==
-X-Gm-Message-State: AOAM533l6gphMMR6haQwaDKLEI4hWtCSMMxn/Y1oLX27KkjQGdfZ1we4
-        cMkykQcxluTyHx6LUbAT5EP7OcbFdWLiQvjQeOc=
-X-Google-Smtp-Source: ABdhPJzszOBX2OhJxDlnmeyI7hbBMe+wTy+WsTqeQ46bA+0Zq92wgXNJ34vsRZTe3citZvGtZp6VSUszInRrYxxPFTM=
-X-Received: by 2002:a17:906:b157:b0:6d0:9f3b:a6aa with SMTP id
- bt23-20020a170906b15700b006d09f3ba6aamr2461492ejb.365.1649945062793; Thu, 14
- Apr 2022 07:04:22 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220409120901.267526-1-dzm91@hust.edu.cn> <YlQbqnYP/jcYinvz@hovoldconsulting.com>
- <CAD-N9QV=tRxcRH_bD7-3X4sLKYBu4LYDk5tTfUAaX2JDd7nLTg@mail.gmail.com>
-In-Reply-To: <CAD-N9QV=tRxcRH_bD7-3X4sLKYBu4LYDk5tTfUAaX2JDd7nLTg@mail.gmail.com>
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-Date:   Thu, 14 Apr 2022 22:03:55 +0800
-Message-ID: <CAD-N9QXs7+AyGRUgJMe9YGBsUe67QK+y+=Q6OCVABQnwWn+1dA@mail.gmail.com>
-Subject: Re: [PATCH] driver: usb: nullify dangling pointer in cdc_ncm_free
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Dongliang Mu <dzm91@hust.edu.cn>,
-        Oliver Neukum <oliver@neukum.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VKAGTVudGRy4HcB9l5vebptdpongU9LNNg0Y13bPPlM=;
+        b=4NHjcMZaHseX8/sHrMqDGHIIRKEi/LFKjL7/6v/7iJwCL38/ocfSe8iZdVf7Y5wjVL
+         tqs/+vxVBzZtYYHP4GhO0nuy4Ob7uU/Yp61hZREl/F/U8ZTzc+BCxEvP2dp7O+e8N7FB
+         3HmsBVUBNNzSykdcQtgfXOvZoivEkm2rByvr97Tq2WUfzX5n1/P7jxTL05Sd6MybK1I2
+         MfRSbFdrTgiVbFOd7JsMnMRGjkNgn5LhpcplMnTY/J2WfGNefa80x0+p1xSzhpvRhDRm
+         HIzzwkta3MR0FwkoQeD/iSijFYz+Z9riz/xAETM5MBokgsboNhsE7cnU5s1JkSOEc89i
+         usGA==
+X-Gm-Message-State: AOAM533udyzMvRelsaeNgXW2K7HogHLnX/DbAW5kKDlUhAjwsQJGlj85
+        q7oQaPt3BDdCblHQjlh75HU=
+X-Google-Smtp-Source: ABdhPJzS9F5vzt8xwzgHrX0bMFynD2Y0gnSNfZhO7BVlIgo/YrIbRaK/dqiuLCIq1FzR8cZnLGwVWw==
+X-Received: by 2002:a50:fa90:0:b0:41d:8c32:838 with SMTP id w16-20020a50fa90000000b0041d8c320838mr3231941edr.140.1649945304913;
+        Thu, 14 Apr 2022 07:08:24 -0700 (PDT)
+Received: from skbuf ([188.26.57.45])
+        by smtp.gmail.com with ESMTPSA id gl2-20020a170906e0c200b006a767d52373sm647576ejb.182.2022.04.14.07.08.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 07:08:24 -0700 (PDT)
+Date:   Thu, 14 Apr 2022 17:08:23 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        syzbot+eabbf2aaa999cc507108@syzkaller.appspotmail.com,
-        USB <linux-usb@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [net-next PATCH v2 3/4] drivers: net: dsa: qca8k: rework and
+ simplify mdiobus logic
+Message-ID: <20220414140823.btcvlebraynaw6wr@skbuf>
+References: <20220412173019.4189-1-ansuelsmth@gmail.com>
+ <20220412173019.4189-4-ansuelsmth@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220412173019.4189-4-ansuelsmth@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -73,95 +76,205 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 9:58 PM Dongliang Mu <mudongliangabcd@gmail.com> wrote:
->
-> On Mon, Apr 11, 2022 at 8:14 PM Johan Hovold <johan@kernel.org> wrote:
-> >
-> > On Sat, Apr 09, 2022 at 08:09:00PM +0800, Dongliang Mu wrote:
-> > > From: Dongliang Mu <mudongliangabcd@gmail.com>
-> > >
-> > > cdc_ncm_bind calls cdc_ncm_bind_common and sets dev->data[0]
-> > > with ctx. However, in the unbind function - cdc_ncm_unbind,
-> > > it calls cdc_ncm_free and frees ctx, leaving dev->data[0] as
-> > > a dangling pointer. The following ioctl operation will trigger
-> > > the UAF in the function cdc_ncm_set_dgram_size.
-> > >
-> > > Fix this by setting dev->data[0] as zero.
-> >
-> > This sounds like a poor band-aid. Please explain how this prevent the
-> > ioctl() from racing with unbind().
->
-> You mean the following thread interlaving?
->
-> ioctl                                unbind
->                                 cdc_ncm_free(ctx);
-> dev->data[0]
->                                  dev->data[0] = 0;
->
-> It seems this will still trigger UAF. Maybe we need to add mutex to
-> prevent this. But I am not sure.
+On Tue, Apr 12, 2022 at 07:30:18PM +0200, Ansuel Smith wrote:
+> In an attempt to reduce qca8k_priv space, rework and simplify mdiobus
+> logic.
+> We now declare a mdiobus instead of relying on DSA phy_read/write even
+> if a mdio node is not present. This is all to make the qca8k ops static
+> and not switch specific. With a legacy implementation where port doesn't
+> have a phy map declared in the dts with a mdio node, we declare a
+> 'qca8k-legacy' mdiobus. The conversion logic is used as legacy read and
+> write ops are used instead of the internal one.
+> While at it also improve the bus id to support multiple switch.
+> Also drop the legacy_phy_port_mapping as we now declare mdiobus with ops
+> that already address the workaround.
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
+>  drivers/net/dsa/qca8k.c | 101 ++++++++++++++--------------------------
+>  drivers/net/dsa/qca8k.h |   1 -
+>  2 files changed, 34 insertions(+), 68 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+> index 5f447b586cfa..9c4c5af79f9a 100644
+> --- a/drivers/net/dsa/qca8k.c
+> +++ b/drivers/net/dsa/qca8k.c
+> @@ -1287,87 +1287,71 @@ qca8k_internal_mdio_read(struct mii_bus *slave_bus, int phy, int regnum)
+>  	if (ret >= 0)
+>  		return ret;
+>  
+> -	return qca8k_mdio_read(priv, phy, regnum);
+> +	ret = qca8k_mdio_read(priv, phy, regnum);
+> +
+> +	if (ret < 0)
+> +		return 0xffff;
+> +
+> +	return ret;
 
-ioctl                                   unbind
-                                  cdc_ncm_free(ctx);
-                                  dev->data[0] = 0;
-dev->data[0]
+Unrelated change?
 
-This will trigger a null pointer dereference if my patch is applied, right?
+>  }
+>  
+>  static int
+> -qca8k_phy_write(struct dsa_switch *ds, int port, int regnum, u16 data)
+> +qca8k_legacy_mdio_write(struct mii_bus *slave_bus, int port, int regnum, u16 data)
+>  {
+> -	struct qca8k_priv *priv = ds->priv;
+> -	int ret;
+> -
+> -	/* Check if the legacy mapping should be used and the
+> -	 * port is not correctly mapped to the right PHY in the
+> -	 * devicetree
+> -	 */
+> -	if (priv->legacy_phy_port_mapping)
+> -		port = qca8k_port_to_phy(port) % PHY_MAX_ADDR;
+> -
+> -	/* Use mdio Ethernet when available, fallback to legacy one on error */
+> -	ret = qca8k_phy_eth_command(priv, false, port, regnum, 0);
+> -	if (!ret)
+> -		return ret;
+> +	port = qca8k_port_to_phy(port) % PHY_MAX_ADDR;
+>  
+> -	return qca8k_mdio_write(priv, port, regnum, data);
+> +	return qca8k_internal_mdio_write(slave_bus, port, regnum, data);
+>  }
+>  
+>  static int
+> -qca8k_phy_read(struct dsa_switch *ds, int port, int regnum)
+> +qca8k_legacy_mdio_read(struct mii_bus *slave_bus, int port, int regnum)
+>  {
+> -	struct qca8k_priv *priv = ds->priv;
+> -	int ret;
+> -
+> -	/* Check if the legacy mapping should be used and the
+> -	 * port is not correctly mapped to the right PHY in the
+> -	 * devicetree
+> -	 */
+> -	if (priv->legacy_phy_port_mapping)
+> -		port = qca8k_port_to_phy(port) % PHY_MAX_ADDR;
+> -
+> -	/* Use mdio Ethernet when available, fallback to legacy one on error */
+> -	ret = qca8k_phy_eth_command(priv, true, port, regnum, 0);
+> -	if (ret >= 0)
+> -		return ret;
+> -
+> -	ret = qca8k_mdio_read(priv, port, regnum);
+> -
+> -	if (ret < 0)
+> -		return 0xffff;
+> +	port = qca8k_port_to_phy(port) % PHY_MAX_ADDR;
+>  
+> -	return ret;
+> +	return qca8k_internal_mdio_read(slave_bus, port, regnum);
+>  }
+>  
+>  static int
+> -qca8k_mdio_register(struct qca8k_priv *priv, struct device_node *mdio)
+> +qca8k_mdio_register(struct qca8k_priv *priv)
+>  {
+>  	struct dsa_switch *ds = priv->ds;
+> +	struct device_node *mdio;
+>  	struct mii_bus *bus;
+>  
+>  	bus = devm_mdiobus_alloc(ds->dev);
+> -
+>  	if (!bus)
+>  		return -ENOMEM;
+>  
+>  	bus->priv = (void *)priv;
+> -	bus->name = "qca8k slave mii";
+> -	bus->read = qca8k_internal_mdio_read;
+> -	bus->write = qca8k_internal_mdio_write;
+> -	snprintf(bus->id, MII_BUS_ID_SIZE, "qca8k-%d",
+> -		 ds->index);
+> -
+> +	snprintf(bus->id, MII_BUS_ID_SIZE, "qca8k-%d.%d",
+> +		 ds->dst->index, ds->index);
 
->
-> >
-> > Johan
-> >
-> > > ==================================================================
-> > > BUG: KASAN: use-after-free in cdc_ncm_set_dgram_size+0xc91/0xde0
-> > > Read of size 8 at addr ffff8880755210b0 by task dhcpcd/3174
-> > >
-> > > Call Trace:
-> > >  <TASK>
-> > >  __dump_stack lib/dump_stack.c:88 [inline]
-> > >  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
-> > >  print_address_description.constprop.0.cold+0xeb/0x495 mm/kasan/report.c:313
-> > >  print_report mm/kasan/report.c:429 [inline]
-> > >  kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
-> > >  cdc_ncm_set_dgram_size+0xc91/0xde0 drivers/net/usb/cdc_ncm.c:608
-> > >  cdc_ncm_change_mtu+0x10c/0x140 drivers/net/usb/cdc_ncm.c:798
-> > >  __dev_set_mtu net/core/dev.c:8519 [inline]
-> > >  dev_set_mtu_ext+0x352/0x5b0 net/core/dev.c:8572
-> > >  dev_set_mtu+0x8e/0x120 net/core/dev.c:8596
-> > >  dev_ifsioc+0xb87/0x1090 net/core/dev_ioctl.c:332
-> > >  dev_ioctl+0x1b9/0xe30 net/core/dev_ioctl.c:586
-> > >  sock_do_ioctl+0x15a/0x230 net/socket.c:1136
-> > >  sock_ioctl+0x2f1/0x640 net/socket.c:1239
-> > >  vfs_ioctl fs/ioctl.c:51 [inline]
-> > >  __do_sys_ioctl fs/ioctl.c:870 [inline]
-> > >  __se_sys_ioctl fs/ioctl.c:856 [inline]
-> > >  __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
-> > >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-> > >  do_syscall_64+0x35/0x80 arch/x86/entry/common.c:80
-> > >  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> > > RIP: 0033:0x7f00859e70e7
-> > > RSP: 002b:00007ffedd503dd8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-> > > RAX: ffffffffffffffda RBX: 00007f00858f96c8 RCX: 00007f00859e70e7
-> > > RDX: 00007ffedd513fc8 RSI: 0000000000008922 RDI: 0000000000000018
-> > > RBP: 00007ffedd524178 R08: 00007ffedd513f88 R09: 00007ffedd513f38
-> > > R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> > > R13: 00007ffedd513fc8 R14: 0000000000000028 R15: 0000000000008922
-> > >  </TASK>
-> >
-> > > Reported-by: syzbot+eabbf2aaa999cc507108@syzkaller.appspotmail.com
-> > > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-> > > ---
-> > >  drivers/net/usb/cdc_ncm.c | 1 +
-> > >  1 file changed, 1 insertion(+)
-> > >
-> > > diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
-> > > index 15f91d691bba..9fc2df9f0b63 100644
-> > > --- a/drivers/net/usb/cdc_ncm.c
-> > > +++ b/drivers/net/usb/cdc_ncm.c
-> > > @@ -1019,6 +1019,7 @@ void cdc_ncm_unbind(struct usbnet *dev, struct usb_interface *intf)
-> > >
-> > >       usb_set_intfdata(intf, NULL);
-> > >       cdc_ncm_free(ctx);
-> > > +     dev->data[0] = 0;
-> > >  }
-> > >  EXPORT_SYMBOL_GPL(cdc_ncm_unbind);
+So the bus->id here is the same, regardless if this is the OF-based MDIO
+bus or the legacy slave MII bus. dsa_slave_mii_bus_init() used to set
+the bus->id to "dsa-%d.%d", ds->dst->index, ds->index), so you're doing
+this to kind of preserve the structure (although not completely).
+
+In any case, this is an unrelated change, because not only are you
+modifying the bus->id of the legacy MII bus, but also the bus->id of the
+OF-based one. I would rather have it be a separate patch just for that.
+
+Does the MDIO bus id constitute unbreakable ABI? I hope not, otherwise
+as you say, we couldn't support multiple switches.
+
+>  	bus->parent = ds->dev;
+>  	bus->phy_mask = ~ds->phys_mii_mask;
+> -
+>  	ds->slave_mii_bus = bus;
+>  
+> -	return devm_of_mdiobus_register(priv->dev, bus, mdio);
+> +	/* Check if the devicetree declare the port:phy mapping */
+> +	mdio = of_get_child_by_name(priv->dev->of_node, "mdio");
+> +	if (of_device_is_available(mdio)) {
+> +		bus->name = "qca8k slave mii";
+> +		bus->read = qca8k_internal_mdio_read;
+> +		bus->write = qca8k_internal_mdio_write;
+> +		return devm_of_mdiobus_register(priv->dev, bus, mdio);
+> +	}
+> +
+> +	/* If a mapping can't be found the legacy mapping is used,
+> +	 * using the qca8k_port_to_phy function
+> +	 */
+> +	bus->name = "qca8k-legacy slave mii";
+> +	bus->read = qca8k_legacy_mdio_read;
+> +	bus->write = qca8k_legacy_mdio_write;
+> +	return devm_mdiobus_register(priv->dev, bus);
+>  }
+>  
+>  static int
+>  qca8k_setup_mdio_bus(struct qca8k_priv *priv)
+>  {
+>  	u32 internal_mdio_mask = 0, external_mdio_mask = 0, reg;
+> -	struct device_node *ports, *port, *mdio;
+> +	struct device_node *ports, *port;
+>  	phy_interface_t mode;
+>  	int err;
+>  
+> @@ -1429,24 +1413,7 @@ qca8k_setup_mdio_bus(struct qca8k_priv *priv)
+>  					 QCA8K_MDIO_MASTER_EN);
+>  	}
+>  
+> -	/* Check if the devicetree declare the port:phy mapping */
+> -	mdio = of_get_child_by_name(priv->dev->of_node, "mdio");
+> -	if (of_device_is_available(mdio)) {
+> -		err = qca8k_mdio_register(priv, mdio);
+> -		if (err)
+> -			of_node_put(mdio);
+> -
+> -		return err;
+> -	}
+> -
+> -	/* If a mapping can't be found the legacy mapping is used,
+> -	 * using the qca8k_port_to_phy function
+> -	 */
+> -	priv->legacy_phy_port_mapping = true;
+> -	priv->ops.phy_read = qca8k_phy_read;
+> -	priv->ops.phy_write = qca8k_phy_write;
+> -
+> -	return 0;
+> +	return qca8k_mdio_register(priv);
+>  }
+>  
+>  static int
+> diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
+> index 12d8d090298b..8bbe36f135b5 100644
+> --- a/drivers/net/dsa/qca8k.h
+> +++ b/drivers/net/dsa/qca8k.h
+> @@ -388,7 +388,6 @@ struct qca8k_priv {
+>  	 * Bit 1: port enabled. Bit 0: port disabled.
+>  	 */
+>  	u8 port_enabled_map;
+> -	bool legacy_phy_port_mapping;
+>  	struct qca8k_ports_config ports_config;
+>  	struct regmap *regmap;
+>  	struct mii_bus *bus;
+> -- 
+> 2.34.1
+> 
+
