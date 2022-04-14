@@ -2,30 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D9DA1501E88
-	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 00:44:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF1E5501E8C
+	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 00:45:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243642AbiDNWrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 18:47:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40524 "EHLO
+        id S1347140AbiDNWr0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 18:47:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239245AbiDNWrP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 18:47:15 -0400
-Received: from mail-40134.protonmail.ch (mail-40134.protonmail.ch [185.70.40.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C8F63A70E
-        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 15:44:43 -0700 (PDT)
-Date:   Thu, 14 Apr 2022 22:44:32 +0000
+        with ESMTP id S1347163AbiDNWrY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 18:47:24 -0400
+Received: from mail-0301.mail-europe.com (mail-0301.mail-europe.com [188.165.51.139])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E3A0AFACB;
+        Thu, 14 Apr 2022 15:44:57 -0700 (PDT)
+Date:   Thu, 14 Apr 2022 22:44:48 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
-        s=protonmail2; t=1649976281;
-        bh=NbUyMRXU3YGyouZhFWR+9oe5iiAhaIN84BE7CsU16Zc=;
-        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:From:To:Cc:Date:
-         Subject:Reply-To:Feedback-ID:Message-ID;
-        b=lE7nwooIHB/4IgEfwRdkbBZ7P0LpWSGdD9zZmqLTeCGJCVWDYrAoZljZGQSPtWUV6
-         rJCe1lEnjKjBgjsPGaNVXDv7io4kZN1nziWGF8tu+vJqa0Q2A5p6mX78pU1p85tLaP
-         gRicHZEM87UVPIsTECwtmhRiEDRP/PrGHKd/RmoALy738gTUed7bIpeMH7W5DuDyEv
-         RkEg0ckD6yNgDX7XsSrOdPmiKaX4CTS0cfWVCTWUuhCDP8aPojWmfXVMTqlPRaGTQc
-         ZM9U7wl49sykLy3ZzCyhAfu4WwftGEFkth+U4v0m4F4egi9Y4donykcb+azNwS6GEr
-         i86EhtsJVfp/g==
+        s=protonmail2; t=1649976293;
+        bh=m39CgK5yAeTLeYnreGilY1UHwXX8icQa6tZk1rsB5Sc=;
+        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
+         References:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+         Message-ID;
+        b=TkUjN83LOR7KPiP6/BtDcJy9T5A0SCRrwKRt1UzFAetbS3c2v+4YvxILXankuuXKA
+         4HY05YFja8QYjbogtEz/s3wWHsySjkzwMmMmTQe/GZkAKHlTVVzgr2BOFKMUlYdunH
+         rlfQ0yZrJiUMxNdi/r5H9DIqgAc5zLN8ybeswQmgTg7NUzgVx050NOn/FYpLVcfwaf
+         POZh9VZIGI9C+ZjD+HeOg87Gpvtxhol39CYLQ9cTVYgA+ymIpw0NTL02KXjOxWRu3j
+         V2oO+f4NaEvXJWVWqIMY7N935zYLBKulFFf/y0Q9/PDR1Pc6f/JDUGJcRR8dSV0C9U
+         bTqx92pK+L0rg==
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>
@@ -62,54 +63,69 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org, llvm@lists.linux.dev
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH bpf-next 00/11] bpf: random unpopular userspace fixes (32 bit et al.)
-Message-ID: <20220414223704.341028-1-alobakin@pm.me>
+Subject: [PATCH bpf-next 01/11] bpf, perf: fix bpftool compilation with !CONFIG_PERF_EVENTS
+Message-ID: <20220414223704.341028-2-alobakin@pm.me>
+In-Reply-To: <20220414223704.341028-1-alobakin@pm.me>
+References: <20220414223704.341028-1-alobakin@pm.me>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H4,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This mostly issues the cross build (1) errors for 32 bit (2)
-MIPS (3) with minimal configuration (4) on Musl (5). The majority
-of them aren't yesterday's, so it is a "who does need it outside
-of x86_64 or ARM64?" moment again.
-Trivial stuff in general, not counting the bpf_cookie build fix.
+When CONFIG_PERF_EVENTS is not set, struct perf_event remains empty.
+However, the structure is being used by bpftool indirectly via BTF.
+This leads to:
 
-Alexander Lobakin (11):
-  bpf, perf: fix bpftool compilation with !CONFIG_PERF_EVENTS
-  bpf: always emit struct bpf_perf_link BTF
-  tools, bpf: fix bpftool build with !CONFIG_BPF_EVENTS
-  samples: bpf: add 'asm/mach-generic' include path for every MIPS
-  samples: bpf: use host bpftool to generate vmlinux.h, not target
-  tools, bpf: fix fcntl.h include in bpftool
-  samples: bpf: fix uin64_t format literals
-  samples: bpf: fix shifting unsigned long by 32 positions
-  samples: bpf: fix include order for non-Glibc environments
-  samples: bpf: fix -Wsequence-point
-  samples: bpf: xdpsock: fix -Wmaybe-uninitialized
+skeleton/pid_iter.bpf.c:49:30: error: no member named 'bpf_cookie' in 'stru=
+ct perf_event'
+        return BPF_CORE_READ(event, bpf_cookie);
+               ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
 
- include/linux/perf_event.h              |  2 ++
- kernel/bpf/syscall.c                    |  4 +++-
- samples/bpf/Makefile                    |  7 ++++---
- samples/bpf/cookie_uid_helper_example.c | 12 ++++++------
- samples/bpf/lathist_kern.c              |  2 +-
- samples/bpf/lwt_len_hist_kern.c         |  2 +-
- samples/bpf/lwt_len_hist_user.c         |  4 ++--
- samples/bpf/task_fd_query_user.c        |  2 +-
- samples/bpf/test_lru_dist.c             |  3 ++-
- samples/bpf/tracex2_kern.c              |  2 +-
- samples/bpf/xdpsock_user.c              |  5 +++--
- tools/bpf/bpftool/tracelog.c            |  2 +-
- 12 files changed, 27 insertions(+), 20 deletions(-)
+...
 
+skeleton/pid_iter.bpf.c:49:9: error: returning 'void' from a function with =
+incompatible result type '__u64' (aka 'unsigned long long')
+        return BPF_CORE_READ(event, bpf_cookie);
+               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Tools and samples can't use any CONFIG_ definitions, so the fields
+used there should always be present.
+Move CONFIG_BPF_SYSCALL block out of the CONFIG_PERF_EVENTS block
+to make it available unconditionally.
+
+Fixes: cbdaf71f7e65 ("bpftool: Add bpf_cookie to link output")
+Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+---
+ include/linux/perf_event.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
+index af97dd427501..b1d5715b8b34 100644
+--- a/include/linux/perf_event.h
++++ b/include/linux/perf_event.h
+@@ -762,12 +762,14 @@ struct perf_event {
+ =09u64=09=09=09=09(*clock)(void);
+ =09perf_overflow_handler_t=09=09overflow_handler;
+ =09void=09=09=09=09*overflow_handler_context;
++#endif /* CONFIG_PERF_EVENTS */
+ #ifdef CONFIG_BPF_SYSCALL
+ =09perf_overflow_handler_t=09=09orig_overflow_handler;
+ =09struct bpf_prog=09=09=09*prog;
+ =09u64=09=09=09=09bpf_cookie;
+ #endif
+
++#ifdef CONFIG_PERF_EVENTS
+ #ifdef CONFIG_EVENT_TRACING
+ =09struct trace_event_call=09=09*tp_event;
+ =09struct event_filter=09=09*filter;
 --
 2.35.2
 
