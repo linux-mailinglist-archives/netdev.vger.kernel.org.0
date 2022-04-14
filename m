@@ -2,114 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E852500DBF
-	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 14:39:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EE1D500DEC
+	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 14:45:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242878AbiDNMlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 08:41:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40680 "EHLO
+        id S230086AbiDNMsB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 08:48:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233352AbiDNMlK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 08:41:10 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2049.outbound.protection.outlook.com [40.107.93.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06EB19027D;
-        Thu, 14 Apr 2022 05:38:45 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JVCgdsjCuAsd20+Y44d0vR3fPsyHgb3nCxbFK+qoRpiPNqLsVVMcK+EOFQEaYHgTIxC+SpbEezR7sU5GcAzA5qLuc8uCW+Zi19I2wWZ3IVfX+rgwp+dV+poZVrPqtEh4PTWMqIcBOokgiKv0NjPPo3cU9RTRhjo0p0lQzcQ/zpcSrKHGV8uX0kouZUgb8EPNcB31DwxBJ/i3RYsTKUlFHNuqhla3a0k2wGXccE0dRLN6LrNG5us4PWTK5gtHteh9Ynmxjrkb0KTHzoGflkZzyWjK1ov6JKxtOxUXKdJbVm7Dw93drwLOlIBl9ySG3gXyWwztLJiJGsi09dZbaKT5TQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ERScTANQNWWzuRaQXEXf9XcN7vExEMh0K9W4dzjHkmA=;
- b=MDizmhRcB9z5a05sxm7pZgkXula7lQZJ8+fls6er+WToS2Yig4ANDCRMAB8tNmFfmp0itjPG02fxUdSFk4Yp53EDSVXlOUtiE9PsTB/GH038rVpYbeaObplMrhaMHPNiHY+kZD/zDd/S+zMoDZmumB2bB29WOJyzsD6QIwrdh8hCEqLCokGFn/3hOOoMnovE5WD1Cu5jnuXsABZhYBAt7TEbU+5yWI2BV5O7JGi252f5h4smeNj16U6CsxEZyNneJwQkQ6kkaWQnwYrNDnyg3eZ322bw9a7ORU/+OJudW06ZZrhaHMPwcDSksk77vHVjCOSx1Fw1/u8QulePNXHoEA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=davemloft.net smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ERScTANQNWWzuRaQXEXf9XcN7vExEMh0K9W4dzjHkmA=;
- b=s4GeB4IxnPvqwCy0W7mymEsJ/ZzLiW48smUPaYqYWrmS497602JgtDIAzTK/bQLJd/la4NbNBO9sKWS/WmiNOIFrs/d+2eGN/RPGfIcdtaQu8/rDYLwKW77/uBQhIo1iu3t8BqO2wGgom48cQEMij8el7Pj9aMWzbHcD/Jnsk90=
-Received: from BN9PR03CA0543.namprd03.prod.outlook.com (2603:10b6:408:138::8)
- by MWHPR0201MB3596.namprd02.prod.outlook.com (2603:10b6:301:79::37) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Thu, 14 Apr
- 2022 12:38:42 +0000
-Received: from BN1NAM02FT013.eop-nam02.prod.protection.outlook.com
- (2603:10b6:408:138:cafe::c0) by BN9PR03CA0543.outlook.office365.com
- (2603:10b6:408:138::8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20 via Frontend
- Transport; Thu, 14 Apr 2022 12:38:42 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com;
-Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
- BN1NAM02FT013.mail.protection.outlook.com (10.13.2.88) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5164.19 via Frontend Transport; Thu, 14 Apr 2022 12:38:41 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Thu, 14 Apr 2022 05:37:59 -0700
-Received: from smtp.xilinx.com (172.19.127.96) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Thu, 14 Apr 2022 05:37:59 -0700
-Envelope-to: git@xilinx.com,
- davem@davemloft.net,
- kuba@kernel.org,
- linux-arm-kernel@lists.infradead.org,
- andrew@lunn.ch,
- pabeni@redhat.com,
- linux-kernel@vger.kernel.org,
- netdev@vger.kernel.org
-Received: from [172.23.64.6] (port=53841 helo=xhdvnc106.xilinx.com)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <radhey.shyam.pandey@xilinx.com>)
-        id 1neyjX-0006t9-CM; Thu, 14 Apr 2022 05:37:59 -0700
-Received: by xhdvnc106.xilinx.com (Postfix, from userid 13245)
-        id 05E7661070; Thu, 14 Apr 2022 18:07:19 +0530 (IST)
-From:   Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <andrew@lunn.ch>
-CC:     <michal.simek@xilinx.com>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <git@xilinx.com>,
-        Shravya Kumbham <shravya.kumbham@xilinx.com>,
-        "Radhey Shyam Pandey" <radhey.shyam.pandey@xilinx.com>
-Subject: [PATCH net-next 3/3] net: emaclite: Remove custom BUFFER_ALIGN macro
-Date:   Thu, 14 Apr 2022 18:07:11 +0530
-Message-ID: <1649939831-14901-4-git-send-email-radhey.shyam.pandey@xilinx.com>
-X-Mailer: git-send-email 2.1.1
-In-Reply-To: <1649939831-14901-1-git-send-email-radhey.shyam.pandey@xilinx.com>
-References: <1649939831-14901-1-git-send-email-radhey.shyam.pandey@xilinx.com>
+        with ESMTP id S241889AbiDNMr2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 08:47:28 -0400
+Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D220C90270;
+        Thu, 14 Apr 2022 05:45:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=Q89LmOY4QsQwqDUIV/jiE3VXQh22TbF6MoKNt2t/lbY=; b=Y604GdzeZvrieynRAz3bmrTjl9
+        OUtJvuqb0RUPm1Qod0VyHNsNkJJ3FEzHzva8XTvqyi1oFEhjGBTcbUhydSuofO9sXioNXYXXUEmtw
+        IGMBWoleyc0I4g6OTxrX6U10YrdV734RwH+JqCOJIBxk79AED2nAJqLos4EP8ufaWwwkHTc5cYiaA
+        MILjYXzCZXbEJK5xh9b8h/Kbb+MfEk/VTn3WivVL4KqpNy20kiEMrO1TDOwjlWUHCJlg9MXT9FFmE
+        /Y9Aa3gOHUIlyuy2GjTyfXtZl62J3M35TRE2Y0/vJomIaH/sxFBySnewQKTFIT6+7aA8ojUBxkMbI
+        SzhTheyjRKCpdPsFIlM6SM8RiVd/p3ZAcRezXPnYB12DQo8YdHv+DTbPhgcJFI0WIB7DqWGRxW9/P
+        WF0dGEzdcl2oYyACSlOhD52mZZaa/KdLhsQX+d7MqP4tjPR9rZ8Y5NZxgkvVkRgqDSrMsQ4AR0Mrq
+        OK/oCzKKm/5BxB8YvKb+psouKamIqdxZLScIJ+OkBH9zArk1yrUx+5YR1OEjZaateCXYbonmVk+/2
+        d2hwVLh0IyBR5wHdzb7wgE8Z5k6GHxoqDll6JZ4e43xQufc+8ow5Eh0qHpfbHSIqmx5wHbjEh/7bW
+        bi8LWVNqH31oLZkZgR0TC3hxUVODXDDqf3myvVde0=;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     asmadeus@codewreck.org
+Cc:     David Kahurani <k.kahurani@gmail.com>, davem@davemloft.net,
+        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        lucho@ionkov.net, netdev@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net,
+        David Howells <dhowells@redhat.com>, Greg Kurz <groug@kaod.org>
+Subject: Re: 9p fs-cache tests/benchmark (was: 9p fscache Duplicate cookie detected)
+Date:   Thu, 14 Apr 2022 14:44:53 +0200
+Message-ID: <2551609.RCmPuZc3Qn@silver>
+In-Reply-To: <YlX/XRWwQ7eQntLr@codewreck.org>
+References: <CAAZOf26g-L2nSV-Siw6mwWQv1nv6on8c0fWqB4bKmX73QAFzow@mail.gmail.com>
+ <3119964.Qa6D4ExsIi@silver> <YlX/XRWwQ7eQntLr@codewreck.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1a08b520-d528-4439-9122-08da1e13b502
-X-MS-TrafficTypeDiagnostic: MWHPR0201MB3596:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR0201MB3596934057498E9BFE2FEAD8C7EF9@MWHPR0201MB3596.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: sJqx79BPMXIHxuiLb+cwBLiVDzctVjNLhtORUXMSX+hAJKWo2oGqpsAxu3RjZn10LaJ6GNEE1nwJLNzujukFlc1bYP6aNOZNUeBsE+lQdHWWMYnYwJBqrTjxV/scBJXA5DD4Ok5WCaJjIGTCvv6Y0VbRy5qkdyy4b901wAEA0CBirB18a8yRHOclrTaBcvJlOHDK/4pKkqRUSaDRsDzg8ZGtlv+5Puk50UxPWUtvKUwEXxyGUJjv2sb35ECR048Vz0gKku+0/BK1e+Txkdc9fgb+CULDfkExVHEId2Rngyr5HHLWfDc9PO/8EEiCtdGN1oGFdTPdM1PA10inUnhWZhcItDHFjckjIDXjuld5mjXwbVq4S9s3cdgrM83PeyTfTHsh+l1ZHI0rsWdvwwXu5tRzNlm6nOBS0yS1qdOc8At6wwonvjpRPhetuvbnKQ2OP7xWPpnfV+8/rqbbOvOCawAounecXzCa59bGE85MMGBsAkqX7HBV8S1NqWRLjhqQCzsxk/kNHnsQF3FsJTJuvydrMAbI13SwrRRxmUkeOBztSVhXJrqAnnwGepXh3IKnDQaoQJjRxfjWQ9UOchO2HvF6pazu9uGudg27DI07YDwOszP0fBCbXoEgM+AU7kPGWh0IFXpFBUSWFkyn7DCuu32stiFuVPn1nh+UUF6LOY3W9oirhdKKJGosavr1YHRXCvYAbghkUD0VCZSVl4A2Gg==
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(47076005)(82310400005)(70586007)(508600001)(6666004)(83380400001)(426003)(336012)(42186006)(7636003)(36756003)(316002)(36860700001)(356005)(110136005)(8936002)(54906003)(70206006)(5660300002)(2906002)(186003)(40460700003)(2616005)(8676002)(26005)(107886003)(4326008)(6266002)(102446001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Apr 2022 12:38:41.4996
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1a08b520-d528-4439-9122-08da1e13b502
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN1NAM02FT013.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR0201MB3596
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -117,67 +53,145 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shravya Kumbham <shravya.kumbham@xilinx.com>
+On Mittwoch, 13. April 2022 00:38:21 CEST asmadeus@codewreck.org wrote:
+> Christian Schoenebeck wrote on Mon, Apr 11, 2022 at 03:41:45PM +0200:
+> > I get more convinced that it's a bug on Linux kernel side. When guest is
+> > booted I always immediately get a read("/var/log/wtmp") = EBADF error on
+> > guest. And the 9p command sequence sent to QEMU 9p server were:
+> 
+> Yes, I'm not pointing fingers, just trying to understand :)
 
-BUFFER_ALIGN macro is used to calculate the number of bytes
-required for the next alignment. Instead of this, we can directly
-use the skb_reserve(skb, NET_IP_ALIGN) to make the protocol header
-buffer aligned on at least a 4-byte boundary, where the NET_IP_ALIGN
-is by default defined as 2. So removing the BUFFER_ALIGN and its
-related defines which it can be done by the skb_reserve() itself.
+Don't worry, that was not my impression, nor was it my intention either. I'm 
+jut trying to interpret what I'm seeing here.
 
-Signed-off-by: Shravya Kumbham <shravya.kumbham@xilinx.com>
-Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
----
- drivers/net/ethernet/xilinx/xilinx_emaclite.c | 18 ++----------------
- 1 file changed, 2 insertions(+), 16 deletions(-)
+> > ...
+> > v9fs_clunk tag 0 id 120 fid 568
+> > v9fs_walk tag 0 id 110 fid 1 newfid 568 nwnames 1
+> > v9fs_rerror tag 0 id 110 err 2
+> > v9fs_walk tag 0 id 110 fid 26 newfid 568 nwnames 1
+> > v9fs_rerror tag 0 id 110 err 2
+> > v9fs_readlink tag 0 id 22 fid 474
+> > v9fs_readlink_return tag 0 id 22 name /run
+> > v9fs_readlink tag 0 id 22 fid 474
+> > v9fs_readlink_return tag 0 id 22 name /run
+> > v9fs_readlink tag 0 id 22 fid 474
+> > v9fs_readlink_return tag 0 id 22 name /run
+> > v9fs_readlink tag 0 id 22 fid 474
+> > v9fs_readlink_return tag 0 id 22 name /run
+> > v9fs_walk tag 0 id 110 fid 633 newfid 568 nwnames 1
+> > v9fs_rerror tag 0 id 110 err 2
+> > v9fs_walk tag 0 id 110 fid 875 newfid 568 nwnames 0
+> > v9fs_walk_return tag 0 id 110 nwnames 0 qids (nil)
+> > v9fs_open tag 0 id 12 fid 568 mode 32769
+> > v9fs_open_return tag 0 id 12 qid={type 0 version 0 path 820297} iounit
+> > 507904 v9fs_walk tag 0 id 110 fid 875 newfid 900 nwnames 0
+> > v9fs_walk_return tag 0 id 110 nwnames 0 qids (nil)
+> > v9fs_open tag 0 id 12 fid 900 mode 2
+> > v9fs_open_return tag 0 id 12 qid={type 0 version 0 path 820297} iounit
+> > 507904 v9fs_lock tag 0 id 52 fid 568 type 1 start 0 length 0
+> > v9fs_lock_return tag 0 id 52 status 0
+> > v9fs_xattrwalk tag 0 id 30 fid 568 newfid 901 name security.capability
+> > v9fs_rerror tag 0 id 30 err 95
+> > v9fs_read tag 0 id 116 fid 568 off 192512 max_count 256
+> > 
+> > So guest opens /var/log/wtmp with fid=568 mode=32769, which is write-only
+> > mode, and then it tries to read that fid 568, which eventually causes the
+> > read() call on host to error with EBADF. Which makes sense, as the file
+> > was
+> > opened in write-only mode, hence read() is not possible with that file
+> > descriptor.
+> 
+> Oh! That's something we can work on. the vfs code has different caches
+> for read only and read-write fids, perhaps the new netfs code just used
+> the wrong one somewhere. I'll have a look.
+> 
+> > The other things I noticed when looking at the 9p command sequence above:
+> > there is a Twalk on fid 568 before, which is not clunked before reusing
+> > fid
+> > 568 with Topen later. And before that Twalk on fid 568 there is a Tclunk
+> > on
+> > fid 568, but apparently that fid was not used before.
+> 
+> This one though is just weird, I don't see where linux would make up a fid
+> to clunk like this... Could messages be ordered a bit weird through
+> multithreading?
+> e.g. thread 1 opens, thread 2 clunks almost immediately afterwards, and
+> would be printed the other way around?
 
-diff --git a/drivers/net/ethernet/xilinx/xilinx_emaclite.c b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-index bb9c3ebde522..7a86ae82fcc1 100644
---- a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-@@ -91,10 +91,6 @@
- #define XEL_HEADER_IP_LENGTH_OFFSET	16	/* IP Length Offset */
- 
- #define TX_TIMEOUT		(60 * HZ)	/* Tx timeout is 60 seconds. */
--#define ALIGNMENT		4
--
--/* BUFFER_ALIGN(adr) calculates the number of bytes to the next alignment. */
--#define BUFFER_ALIGN(adr) ((ALIGNMENT - ((uintptr_t)adr)) % ALIGNMENT)
- 
- #ifdef __BIG_ENDIAN
- #define xemaclite_readl		ioread32be
-@@ -595,11 +591,10 @@ static void xemaclite_rx_handler(struct net_device *dev)
- {
- 	struct net_local *lp = netdev_priv(dev);
- 	struct sk_buff *skb;
--	unsigned int align;
- 	u32 len;
- 
- 	len = ETH_FRAME_LEN + ETH_FCS_LEN;
--	skb = netdev_alloc_skb(dev, len + ALIGNMENT);
-+	skb = netdev_alloc_skb(dev, len + NET_IP_ALIGN);
- 	if (!skb) {
- 		/* Couldn't get memory. */
- 		dev->stats.rx_dropped++;
-@@ -607,16 +602,7 @@ static void xemaclite_rx_handler(struct net_device *dev)
- 		return;
- 	}
- 
--	/* A new skb should have the data halfword aligned, but this code is
--	 * here just in case that isn't true. Calculate how many
--	 * bytes we should reserve to get the data to start on a word
--	 * boundary
--	 */
--	align = BUFFER_ALIGN(skb->data);
--	if (align)
--		skb_reserve(skb, align);
--
--	skb_reserve(skb, 2);
-+	skb_reserve(skb, NET_IP_ALIGN);
- 
- 	len = xemaclite_recv_data(lp, (u8 *)skb->data, len);
- 
--- 
-2.7.4
+Yeah, something like that was also my guess.
+
+> Should still be serialized through the virtio ring buffer so I don't
+> believe what I'm saying myself... It might be worth digging further as
+> well.
+> 
+> > > Perhaps backing filesystem dependant? qemu version? virtfs access
+> > > options?
+> > 
+> > I tried with different hardware and different file systems (ext4, btrfs),
+> > same misbehaviours.
+> > 
+> > QEMU is latest git version. I also tried several different QEMU versions,
+> > same thing.
+> > 
+> > QEMU command line used:
+> > 
+> > ~/git/qemu/build/qemu-system-x86_64 \
+> > -machine pc,accel=kvm,usb=off,dump-guest-core=off -m 16384 \
+> > -smp 8,sockets=8,cores=1,threads=1 -rtc base=utc -boot strict=on \
+> > -kernel ~/vm/bullseye/boot/vmlinuz \
+> > -initrd ~/vm/bullseye/boot/initrd.img \
+> > -append 'root=fsRoot rw rootfstype=9p
+> > rootflags=trans=virtio,version=9p2000.L,msize=4186112,cache=loose
+> > console=ttyS0' \ -fsdev
+> > local,security_model=mapped,multidevs=remap,id=fsdev-fs0,path=$HOME/vm/bu
+> > llseye/ \ -device virtio-9p-pci,id=fs0,fsdev=fsdev-fs0,mount_tag=fsRoot \
+> > -sandbox
+> > on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+> > -nographic
+> > 
+> > Important for reproducing this issue:
+> >   * cache=loose
+> >   * -smp N (with N>1)
+> >   * Guest booted with Linux kernel containing commit eb497943fa21
+> >   
+> >     (uname >= 5.16)
+> > 
+> > I'm pretty sure that you can reproduce this issue with the QEMU 9p rootfs
+> > setup HOWTO linked before.
+> 
+> Yes, I'm not sure why I can't reproduce... All my computers are pretty
+> slow but the conditions should be met.
+> I'll try again with a command line closer to what you just gave here.
+
+I'm not surprised that you could not reproduce the EBADF errors yet. To make 
+this more clear, as for the git client errors: I have like 200+ git 
+repositories checked out on that test VM, and only about 5 of them trigger 
+EBADF errors on 'git pull'. But those few repositories reproduce the EBADF 
+errors reliably here.
+
+In other words: these EBADF errors only seem to trigger under certain 
+circumstances, so it requires quite a bunch of test material to get a 
+reproducer.
+
+Like I said though, with the Bullseye installation I immediately get EBADF 
+errors already when booting, whereas with a Buster VM it boots without errors.
+
+> > > It's all extremely slow though... like the final checkout counting files
+> > > at less than 10/s
+> > 
+> > It is VERY slow. And the weird thing is that cache=loose got much slower
+> > than cache=mmap. My worst case expactation would be cache=loose at least
+> > not performing worse than cache=mmap.
+> 
+> Yes, some profiling is also in order, it didn't use to be that slow so
+> it must not be reusing previously open fids as it should have or
+> something..
+
+If somebody has some more ideas what I can try/test, let me know. However ATM 
+I won't be able to review the netfs and vfs code to actually find the cause of 
+these issues.
+
+Best regards,
+Christian Schoenebeck
+
 
