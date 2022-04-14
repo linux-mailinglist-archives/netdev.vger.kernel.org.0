@@ -2,91 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AC52501906
-	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 18:48:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A954501911
+	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 18:49:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240883AbiDNQu3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 12:50:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37770 "EHLO
+        id S240628AbiDNQvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 12:51:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240792AbiDNQuF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 12:50:05 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 237ECCEE22
-        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 09:18:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649953095; x=1681489095;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=6+TtaCNM1rw15XLB/bNBV5raCsK/BRkkLwwahiv5HBw=;
-  b=RVsJY/zBnEy4BnFHSWQjAIGUchk6syOFF/a7cPcwXmaLgtKvT010M0HY
-   qn7h/dzf4dAG845Y3P5t0tqEMmNbD4RxiAeCutkHqK2CVFADhsnM9Rs6F
-   Z25F5ek35oSB5fhhXy/8Sr0ZHf9bR+cC1cos0muDJM3ySCMSiOAWM+WXV
-   l7TNSeXUovusvLvJdsDxrPLBoor5HJZ6FGfyfnaRrUlRNGS7jgtxkd9wl
-   adTB1CmtmqiqN9RWouK/NARInTCvVbNcjMjVujquv38VE2UkQRM2QpOwr
-   y84EnWa0t6ruBQBNRcbIZi1TCzR3OORF31rvnEiR642EJY71/5jKnYosM
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="242901622"
-X-IronPort-AV: E=Sophos;i="5.90,260,1643702400"; 
-   d="scan'208";a="242901622"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 09:18:12 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,260,1643702400"; 
-   d="scan'208";a="526970488"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga002.jf.intel.com with ESMTP; 14 Apr 2022 09:18:12 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
-Cc:     Jianglei Nie <niejianglei2021@163.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH net 4/4] ice: Fix memory leak in ice_get_orom_civd_data()
-Date:   Thu, 14 Apr 2022 09:15:22 -0700
-Message-Id: <20220414161522.2320694-5-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220414161522.2320694-1-anthony.l.nguyen@intel.com>
-References: <20220414161522.2320694-1-anthony.l.nguyen@intel.com>
+        with ESMTP id S230313AbiDNQvQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 12:51:16 -0400
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C15F9286D5;
+        Thu, 14 Apr 2022 09:19:44 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 23A6140011;
+        Thu, 14 Apr 2022 16:19:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1649953183;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=2J9dJbB1wD0QBDzU2kIu9rGdefw3vt+7Yy1VMMdSVd4=;
+        b=i3Kk7S1W9/QOKtOOXJKFSOZpbTI53V6e7lU8R+xc8GOnt49tt18cfYIxt3dsN4/O/KT7lI
+        ShJcuZRRvR617x2N8reYCw/3xleZso3O3hTU3IljwhcZ3JrainAQyiC0l8FKDCJP9+u17+
+        AgSedK4iFaEtN/hvhq9GrtSPMNLsKPCaUiNu7wUMb/5CPrPm8oBVbuETJGjsP4XTBn2jTV
+        1CXx5XYdLtAlN/d8po8wSPJIcPLrFiy4+Oeqpv4gYGm5eb3fgwhYMekefpAXI4/qjlidyv
+        SZTfPJbCXHh7Qhkr5wNodBV3cCEDjVH6JTTnW+33skPbUCYBh9DvLQOkW8kiEA==
+Date:   Thu, 14 Apr 2022 18:18:15 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 02/12] net: dsa: add Renesas RZ/N1 switch tag
+ driver
+Message-ID: <20220414181815.5037651e@fixe.home>
+In-Reply-To: <20220414151146.a2fncklswo6utiyd@skbuf>
+References: <20220414122250.158113-1-clement.leger@bootlin.com>
+        <20220414122250.158113-3-clement.leger@bootlin.com>
+        <20220414142242.vsvv3vxexc7i3ukm@skbuf>
+        <20220414163546.3f6c5157@fixe.home>
+        <20220414151146.a2fncklswo6utiyd@skbuf>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jianglei Nie <niejianglei2021@163.com>
+Le Thu, 14 Apr 2022 18:11:46 +0300,
+Vladimir Oltean <olteanv@gmail.com> a =C3=A9crit :
 
-A memory chunk was allocated for orom_data in ice_get_orom_civd_data()
-by vzmalloc(). But when ice_read_flash_module() fails, the allocated
-memory is not freed, which will lead to a memory leak.
+> On Thu, Apr 14, 2022 at 04:35:46PM +0200, Cl=C3=A9ment L=C3=A9ger wrote:
+> > > Please keep variable declarations sorted in decreasing order of line
+> > > length (applies throughout the patch series, I won't repeat this comm=
+ent). =20
+> >=20
+> > Acked, both PCS and DSA driver are ok with that rule. Missed that one
+> > though. =20
+>=20
+> Are you sure? Because a5psw_port_stp_state_set() says otherwise.
 
-We can fix it by freeing the orom_data when ce_read_flash_module() fails.
+Weeeeell, ok let's say I missed these two. Would be useful to have such
+checks in checkpatch.pl.
 
-Fixes: af18d8866c80 ("ice: reduce time to read Option ROM CIVD data")
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_nvm.c | 1 +
- 1 file changed, 1 insertion(+)
+>=20
+> > > sizeof(tag), to be consistent with the other use of sizeof() above?
+> > > Although, hmm, I think you could get away with editing "ptag" in plac=
+e. =20
+> >=20
+> > I was not sure of the alignment guarantee I would have here. If the
+> > VLAN header is guaranteed to be aligned on 2 bytes, then I guess it's
+> > ok to do that in-place. =20
+>=20
+> If I look at Documentation/core-api/unaligned-memory-access.rst
+>=20
+> | Alignment vs. Networking
+> | =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> |=20
+> | On architectures that require aligned loads, networking requires that t=
+he IP
+> | header is aligned on a four-byte boundary to optimise the IP stack. For
+> | regular ethernet hardware, the constant NET_IP_ALIGN is used. On most
+> | architectures this constant has the value 2 because the normal ethernet
+> | header is 14 bytes long, so in order to get proper alignment one needs =
+to
+> | DMA to an address which can be expressed as 4*n + 2. One notable except=
+ion
+> | here is powerpc which defines NET_IP_ALIGN to 0 because DMA to unaligned
+> | addresses can be very expensive and dwarf the cost of unaligned loads.
+>=20
+> Your struct a5psw_tag *ptag starts at 10 bytes (8 for tag, 2 for Ethertyp=
+e)
+> before the IP header, so I'm thinking it is aligned at a 2 byte boundary
+> as well. A VLAN header between the DSA header and the IP header should
+> also not affect that alignment, since its length is 4 bytes.
+>=20
+> If "ctrl_tag" is aligned at a 4 byte boundary - 10, it means "ctrl_data"
+> is aligned at a 4 byte boundary - 8, so also a 4 byte boundary.
+>=20
+> But "ctrl_data2" is aligned at a 4 byte boundary + 2, so you might want
+> to break up the u32 access into 2 u16 accesses, just to be on the safe
+> side?
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.c b/drivers/net/ethernet/intel/ice/ice_nvm.c
-index 4eb0599714f4..13cdb5ea594d 100644
---- a/drivers/net/ethernet/intel/ice/ice_nvm.c
-+++ b/drivers/net/ethernet/intel/ice/ice_nvm.c
-@@ -641,6 +641,7 @@ ice_get_orom_civd_data(struct ice_hw *hw, enum ice_bank_select bank,
- 	status = ice_read_flash_module(hw, bank, ICE_SR_1ST_OROM_BANK_PTR, 0,
- 				       orom_data, hw->flash.banks.orom_size);
- 	if (status) {
-+		vfree(orom_data);
- 		ice_debug(hw, ICE_DBG_NVM, "Unable to read Option ROM data\n");
- 		return status;
- 	}
--- 
-2.31.1
+Thanks for finding these, looks like a good compromise, let's go that
+way then.
 
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
