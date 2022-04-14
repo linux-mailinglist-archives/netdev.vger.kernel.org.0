@@ -2,60 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 768E3500900
-	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 10:57:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A87E500918
+	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 10:59:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241282AbiDNI7p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 04:59:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42024 "EHLO
+        id S241391AbiDNJCC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 05:02:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241278AbiDNI7i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 04:59:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87D8F68982
-        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 01:57:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3CDACB828C1
-        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 08:57:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB3FFC385A5;
-        Thu, 14 Apr 2022 08:57:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649926631;
-        bh=+BCznLdwYhU1fE3gxQduI2AmwWzGRbg40R4Q4CsZzYk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=md7sILLk4SheFi6CWP+5J/5MGX8SspIgZcMt46OhICvcwiJq0oJccuaRXA/Eahsg4
-         oBFRG3WmQFttX64UGH6MdWo/6L+ePdzG5ygvHg0fZuRwpytrxktIPKcZ7tS33A+R9k
-         GZnmVd2Yi9NB6VupXLWJ9nLyO+pPPYp/nROh+RI0BmtXf1FM814MGWvc7rgK1+UMHO
-         iVx9YcrB95GF72AKXLp23HOlHj9Op1Pj6Qx/jomMMmg4xN74IvVXU2udXRTHuqlcIB
-         wYF6q5u27mA47Z9lFMSZnBsVjQgrs7PjAYloHlk2BRMz1UVm/TNsNb82+vQ69EhVnG
-         hwQ+FfEgdCQbw==
-Date:   Thu, 14 Apr 2022 10:57:01 +0200
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Mattias Forsblad <mattias.forsblad@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Baowen Zheng <baowen.zheng@corigine.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "roid@nvidia.com" <roid@nvidia.com>,
-        "vladbu@nvidia.com" <vladbu@nvidia.com>,
-        Eli Cohen <elic@nvidia.com>, Jiri Pirko <jiri@resnulli.us>,
-        Tobias Waldekranz <tobias@waldekranz.com>
-Subject: Re: [RFC net-next] net: tc: flow indirect framework issue
-Message-ID: <20220414105701.54c3fba4@kernel.org>
-In-Reply-To: <YlbR4Cgzd/ulpT25@salvia>
-References: <20220413055248.1959073-1-mattias.forsblad@gmail.com>
-        <DM5PR1301MB2172F573F9314D43F79D8F26E7EC9@DM5PR1301MB2172.namprd13.prod.outlook.com>
-        <20220413090705.zkfrp2fjhejqdj6a@skbuf>
-        <2a82cf39-48b9-2c6c-f662-c1d1bce391ba@gmail.com>
-        <YlbR4Cgzd/ulpT25@salvia>
+        with ESMTP id S241040AbiDNJBx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 05:01:53 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA3766E546
+        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 01:59:14 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id md20-20020a17090b23d400b001cb70ef790dso8682979pjb.5
+        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 01:59:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=arista.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0LUCoLOqsjdmuMA9Sv/GTYrqnMUY1MiY7Yfiq4vegQE=;
+        b=HomuRkNsmV7IKhzIJt76YdeNNTkW/NrcqeA7SzFmKUtPaY3/VHAjsS6yZ7zHOBKR8r
+         zCbX6k8iFJINPRJt9zuZu8/CXDMqLnhSxOGqYIJpYeDl+0FvJm/iSC9G3LsO52+Oz2dg
+         rsYn2iXkkOEIHk3i3p7NtE9HPSbQsp1vtXzXF2xhtp8OUDuCvSp+B5vvOv5814PjX+ok
+         4LMXXWwLCY54XIJCI9Ibtxe+l/9oNMHcSY+At3un98WY7TMznKD02N7Wk8UNO8TB52aB
+         47NserAFqEUbjQx9vcfA+BEoQm5QtpTY7JEe5FLzJ5a8cfqTN4598JvJjiu2XQgMRIRQ
+         rsog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0LUCoLOqsjdmuMA9Sv/GTYrqnMUY1MiY7Yfiq4vegQE=;
+        b=OYcJrJrO+uGEXqLXY1Ovd3m+Rb7HBgYuNdVIcnLLMlV98JrszfZ8JeJ82PgX4E23A5
+         jS9tKP776EPA6JpasVccJ80emQxnLtDnQEtwjf7LY+613lsklLPvsfLheufVMQ7hEE6C
+         nbXMYVSUlsXYPb9nk7NVELqYMKUTnB35fuadX6N2MtnNBX3z7qathVwR9MO1rZlefihW
+         wX9ZIkSXYHX1B6eR4Nq4SeELhira8xhMjOBBs5LPjg7m+ObfAmE30dcutLVw7V61Fkd+
+         2sZDYTOrI+5b7YrU6O4O1xyiYJqJo9SYS9ZJXWfyKWsmCa4oZ0PJvUWOq5oyJhIsV5oB
+         CtGA==
+X-Gm-Message-State: AOAM533f0UxGO2pm/sXaNKEmIgCIisoD6py49UVjA/aCDWWNG10yPock
+        Ov9d+IdEF+MlxofBXWMskMggF4p4oazzkyB8JnE+Jw==
+X-Google-Smtp-Source: ABdhPJxlr3HwneXRMQWmwp1QPVtDvPbaeJ6+jvqdb1zomhx1OdLrBeAIymtji6CSi0zshAF41yPRZfFxQZO+hbVuwLs=
+X-Received: by 2002:a17:902:7205:b0:156:1a0a:2c39 with SMTP id
+ ba5-20020a170902720500b001561a0a2c39mr46589099plb.88.1649926754208; Thu, 14
+ Apr 2022 01:59:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+References: <20220414025609.578-1-aajith@arista.com> <0bf37720-870a-9dde-d825-92e12633ce38@gmail.com>
+In-Reply-To: <0bf37720-870a-9dde-d825-92e12633ce38@gmail.com>
+From:   Arun Ajith S <aajith@arista.com>
+Date:   Thu, 14 Apr 2022 14:29:01 +0530
+Message-ID: <CAOvjArTBoxSnX_ck_pW9Fq1cVXtT1sQ9zVHL207fdwj5v5iygQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v4] net/ipv6: Introduce accept_unsolicited_na
+ knob to implement router-side changes for RFC9131
+To:     Bagas Sanjaya <bagasdotme@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        dsahern@kernel.org, yoshfuji@linux-ipv6.org, kuba@kernel.org,
+        pabeni@redhat.com, corbet@lwn.net, prestwoj@gmail.com,
+        gilligan@arista.com, noureddine@arista.com, gk@arista.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,70 +69,83 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 13 Apr 2022 15:36:32 +0200 Pablo Neira Ayuso wrote:
-> A bit of a long email...
-> 
-> This commit 74fc4f828769 handles this scenario:
-> 
-> 1) eth0 is gone (module removal)
-> 2) vxlan0 device is still in place, tc ingress also contains rules for
->    vxlan0.
-> 3) eth0 is reloaded.
-> 
-> A bit of background: tc ingress removes rules for eth0 if eth0 is
-> gone (I am refering to software rules, in general). In this model, the
-> tc ingress rules are attached to the device, and if the device eth0 is
-> gone, those rules are also gone and, then, once this device eth0 comes
-> back, the user has to the tc ingress rules software for eth0 again.
-> There is no replay mechanism for tc ingress rules in this case.
-> 
-> IIRC, Eli's patch re-adds the flow block for vxlan0 because he got a
-> bug report that says that after reloading the driver module and eth0
-> comes back, rules for tc vxlan0 were not hardware offloaded.
-> 
-> The indirect flow block infrastructure is tracking devices such as
-> vxlan0 that the given driver *might* be able to hardware offload.
-> But from the control plane (user) perspective, this detail is hidden.
-> To me, the problem is that there is no way from the control plane to
-> relate vxlan0 with the real device that performs the hardware offload.
-> There is also no flag for the user to request "please hardware offload
-> vxlan0 tc ingress rules". Instead, the flow indirect block
-> infrastructure performs the hardware offload "transparently" to the user.
+Thank you.
+Do I have to post a v5 with the fixup ?
 
-TBH I don't understand why indirect infra is important. Mattias said he
-gets a replay of the block bind. So it's the replay of rules that's
-broken. Whether the block bind came from indir infra or the block is
-shared and got bound to a new dev is not important.
+-Arun
 
-> I think some people believe doing things fully transparent is good, at
-> the cost of adding more kernel complexity and hiding details that are
-> relevant to the user (such as if hardware offload is enabled for
-> vxlan0 and what is the real device that is actually being used for the
-> vxlan0 to be offloaded).
-> 
-> So, there are no flags when setting up the vxlan0 device for the user
-> to say: "I would like to hardware offload vxlan0", and going slightly
-> further there is not "please attach this vxlan0 device to eth0 for
-> hardware offload". Any real device could be potentially used to
-> offload vxlan0, the user does not know which one is actually used.
-> 
-> Exposing this information is a bit more work on top of the user, but:
-> 
-> 1) it will be transparent: the control plane shows that the vxlan0 is
->    hardware offloaded. Then if eth0 is gone, vxlan0 tc ingress can be
->    removed too, because it depends on eth0.
-> 
-> 2) The control plane validates if hardware offload for vxlan0. If this
->    is not possible, display an error to the user: "sorry, I cannot
->    offload vxlan0 on eth0 for reason X".
-> 
-> Since this is not exposed to the control plane, the existing
-> infrastructure follows a snooping scheme, but tracking devices that
-> might be able to hardware offload.
-> 
-> There is no obvious way to relate vxlan0 with the real device
-> (eth0) that is actually performing the hardware offloading.
+-Arun
 
-Let's not over-complicate things, Mattias just needs replay to work.
-90% sure it worked when we did the work back in the day with John H,
-before the nft rewrite etc.
+
+On Thu, Apr 14, 2022 at 11:42 AM Bagas Sanjaya <bagasdotme@gmail.com> wrote:
+>
+> On 4/14/22 09:56, Arun Ajith S wrote:
+> > Add a new neighbour cache entry in STALE state for routers on receiving
+> > an unsolicited (gratuitous) neighbour advertisement with
+> > target link-layer-address option specified.
+> > This is similar to the arp_accept configuration for IPv4.
+> > A new sysctl endpoint is created to turn on this behaviour:
+> > /proc/sys/net/ipv6/conf/interface/accept_unsolicited_na.
+> >
+>
+> Hi,
+>
+> Building the documentation (htmldocs) with this patch, I got:
+>
+> /home/bagas/repo/linux-stable/Documentation/networking/ip-sysctl.rst:2475:
+> WARNING: Unexpected indentation.
+> /home/bagas/repo/linux-stable/Documentation/networking/ip-sysctl.rst:2477:
+> WARNING: Unexpected indentation.
+> /home/bagas/repo/linux-stable/Documentation/networking/ip-sysctl.rst:2481:
+> WARNING: Unexpected indentation.
+> /home/bagas/repo/linux-stable/Documentation/networking/ip-sysctl.rst:2482:
+> WARNING: Block quote ends without a blank line; unexpected unindent.
+>
+> I have applied following fixup.
+>
+> ---- 8> ----
+> From 304846b43a9f962f53f3841afabfd597b3b80951 Mon Sep 17 00:00:00 2001
+> From: Bagas Sanjaya <bagasdotme@gmail.com>
+> Date: Thu, 14 Apr 2022 12:59:46 +0700
+> Subject: [PATCH] fixup for "net/ipv6: Introduce accept_unsolicited_na knob to
+>  implement router-side changes for RFC9131"
+>
+> Fix the simple table syntax.
+>
+> Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+> ---
+>  Documentation/networking/ip-sysctl.rst | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+>
+> diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+> index 9e17efe343a..433f2e4a5fe 100644
+> --- a/Documentation/networking/ip-sysctl.rst
+> +++ b/Documentation/networking/ip-sysctl.rst
+> @@ -2472,13 +2472,17 @@ accept_unsolicited_na - BOOLEAN
+>         unsolicited neighbour advertisement with target link-layer address option
+>         specified. This is as per router-side behavior documented in RFC9131.
+>         This has lower precedence than drop_unsolicited_na.
+> +
+> +        ====   ======  ======  ==============================================
+>          drop   accept  fwding                   behaviour
+>          ----   ------  ------  ----------------------------------------------
+>             1        X       X  Drop NA packet and don't pass up the stack
+>             0        0       X  Pass NA packet up the stack, don't update NC
+>             0        1       0  Pass NA packet up the stack, don't update NC
+>             0        1       1  Pass NA packet up the stack, and add a STALE
+> -                                 NC entry
+> +                               NC entry
+> +        ====   ======  ======  ==============================================
+> +
+>         This will optimize the return path for the initial off-link communication
+>         that is initiated by a directly connected host, by ensuring that
+>         the first-hop router which turns on this setting doesn't have to
+>
+> base-commit: 38e01f46e0e7f88b92ca0b3f52ac6b9909ed413b
+> --
+> An old man doll... just what I always wanted! - Clara
+>
+> Thanks.
+>
+> --
+> An old man doll... just what I always wanted! - Clara
