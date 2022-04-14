@@ -2,32 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 178B2501E94
-	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 00:46:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92F45501EAE
+	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 00:47:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347274AbiDNWsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 18:48:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41974 "EHLO
+        id S1347296AbiDNWtD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 18:49:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235898AbiDNWsl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 18:48:41 -0400
-X-Greylist: delayed 92 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Apr 2022 15:46:15 PDT
-Received: from mail-40133.protonmail.ch (mail-40133.protonmail.ch [185.70.40.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50E9DC6B76;
-        Thu, 14 Apr 2022 15:46:15 -0700 (PDT)
-Date:   Thu, 14 Apr 2022 22:46:06 +0000
+        with ESMTP id S1347277AbiDNWs7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 18:48:59 -0400
+Received: from mail-40134.protonmail.ch (mail-40134.protonmail.ch [185.70.40.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86956C6F00;
+        Thu, 14 Apr 2022 15:46:32 -0700 (PDT)
+Date:   Thu, 14 Apr 2022 22:46:24 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
-        s=protonmail2; t=1649976373;
-        bh=+DkRIXJc5M3gz3F1I0xigPA/k06QlcMXGhroeUqQePw=;
+        s=protonmail2; t=1649976390;
+        bh=LiFwMTDd2fdSlZNNJT9AWOWlwaivKQ5qk8KaEcQEfrs=;
         h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
          References:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
          Message-ID;
-        b=HQiMjgfKOjR3X8TVweXIVyu1t4Gd2yBQvkpZ6YSQzI+fFkGQoNk7nXgVD2uZ4EXNT
-         eo3BJ/Xd/bWnrp/ClkfhLYLMO2GoXnTWE9gvTnCv6qf8ceUb6jJE1+lKhJ1LONCpxy
-         ELnrljzwRInDfLKRtetJn7/Y4YBka9BOd4B5EeDJaDIM+mtxVHHBQO7D/933Hj9Z91
-         Ea7hngMlNPpGn4g4EizCKziBbiPYdnbdv/YiIR7zzgV3hk4zo0v0HEOyUquzjzIO+O
-         8d7ZdZLYnTtFuHzvzi+WsZx8plerCzOqB6eqW30tVoPH8mDFimIu7dBPyyjVb8uYFo
-         4me2Zigwe515w==
+        b=fiN8lGwSeXi6yQVq95169CY5q0fzkvN7gW6UYs2Gv4qL+WDStjwwjCQh0hCFYvksU
+         KnswdJkdUtU5G9GqL5Gxkii4Kk5V4ypSMXwAFRhB8ERjsorTeeAsUqVoT+zdEMMnjf
+         oJiycRhG9r7gmPG8gH0louf++DYLLAv75knuCVPX+ca7M2uTv/1VQdT18IzG6xzs/a
+         6g4MF5ZXxirNHeYPobCikPiutt8fL50asp7vfCzUqKz1WsQRnWgrgFEHA5NMdKI4K0
+         ZaO3DghoEjFcnwImnLGE3V49hSOiewYZfIPHt/9yi4wVZ+k81z8SzXwdnbzSqnD24V
+         tQqte9gKKFnUQ==
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>
@@ -64,8 +63,8 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org, llvm@lists.linux.dev
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH bpf-next 06/11] tools, bpf: fix fcntl.h include in bpftool
-Message-ID: <20220414223704.341028-7-alobakin@pm.me>
+Subject: [PATCH bpf-next 07/11] samples: bpf: fix uin64_t format literals
+Message-ID: <20220414223704.341028-8-alobakin@pm.me>
 In-Reply-To: <20220414223704.341028-1-alobakin@pm.me>
 References: <20220414223704.341028-1-alobakin@pm.me>
 MIME-Version: 1.0
@@ -81,38 +80,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the following (on some libc implementations):
+There's a couple places where uin64_t is being passed as an %ld
+format argument, which is incorrect (should be %lld). Fix them.
 
-  CC      tracelog.o
-In file included from tracelog.c:12:
-include/sys/fcntl.h:1:2: warning: #warning redirecting incorrect #include <=
-sys/fcntl.h> to <fcntl.h> [-Wcpp]
-    1 | #warning redirecting incorrect #include <sys/fcntl.h> to <fcntl.h>
-      |  ^~~~~~~
-
-<sys/fcntl.h> is anyway just a wrapper over <fcntl.h> (backcomp
-stuff).
-
-Fixes: 30da46b5dc3a ("tools: bpftool: add a command to dump the trace pipe"=
-)
+Fixes: 51570a5ab2b7 ("A Sample of using socket cookie and uid for traffic m=
+onitoring")
+Fixes: 00f660eaf378 ("Sample program using SO_COOKIE")
 Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 ---
- tools/bpf/bpftool/tracelog.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ samples/bpf/cookie_uid_helper_example.c | 12 ++++++------
+ samples/bpf/lwt_len_hist_user.c         |  4 ++--
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/tools/bpf/bpftool/tracelog.c b/tools/bpf/bpftool/tracelog.c
-index e80a5c79b38f..bf1f02212797 100644
---- a/tools/bpf/bpftool/tracelog.c
-+++ b/tools/bpf/bpftool/tracelog.c
-@@ -9,7 +9,7 @@
- #include <string.h>
- #include <unistd.h>
- #include <linux/magic.h>
--#include <sys/fcntl.h>
-+#include <fcntl.h>
- #include <sys/vfs.h>
+diff --git a/samples/bpf/cookie_uid_helper_example.c b/samples/bpf/cookie_u=
+id_helper_example.c
+index f0df3dda4b1f..1b98debb6019 100644
+--- a/samples/bpf/cookie_uid_helper_example.c
++++ b/samples/bpf/cookie_uid_helper_example.c
+@@ -207,9 +207,9 @@ static void print_table(void)
+ =09=09=09error(1, errno, "fail to get entry value of Key: %u\n",
+ =09=09=09=09curN);
+ =09=09} else {
+-=09=09=09printf("cookie: %u, uid: 0x%x, Packet Count: %lu,"
+-=09=09=09=09" Bytes Count: %lu\n", curN, curEntry.uid,
+-=09=09=09=09curEntry.packets, curEntry.bytes);
++=09=09=09printf("cookie: %u, uid: 0x%x, Packet Count: %llu, Bytes Count: %=
+llu\n",
++=09=09=09       curN, curEntry.uid, curEntry.packets,
++=09=09=09       curEntry.bytes);
+ =09=09}
+ =09}
+ }
+@@ -265,9 +265,9 @@ static void udp_client(void)
+ =09=09if (res < 0)
+ =09=09=09error(1, errno, "lookup sk stat failed, cookie: %lu\n",
+ =09=09=09      cookie);
+-=09=09printf("cookie: %lu, uid: 0x%x, Packet Count: %lu,"
+-=09=09=09" Bytes Count: %lu\n\n", cookie, dataEntry.uid,
+-=09=09=09dataEntry.packets, dataEntry.bytes);
++=09=09printf("cookie: %llu, uid: 0x%x, Packet Count: %llu, Bytes Count: %l=
+lu\n\n",
++=09=09       cookie, dataEntry.uid, dataEntry.packets,
++=09=09       dataEntry.bytes);
+ =09}
+ =09close(s_send);
+ =09close(s_rcv);
+diff --git a/samples/bpf/lwt_len_hist_user.c b/samples/bpf/lwt_len_hist_use=
+r.c
+index 430a4b7e353e..4ef22571aa67 100644
+--- a/samples/bpf/lwt_len_hist_user.c
++++ b/samples/bpf/lwt_len_hist_user.c
+@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 
- #include "main.h"
+ =09while (bpf_map_get_next_key(map_fd, &key, &next_key) =3D=3D 0) {
+ =09=09if (next_key >=3D MAX_INDEX) {
+-=09=09=09fprintf(stderr, "Key %lu out of bounds\n", next_key);
++=09=09=09fprintf(stderr, "Key %llu out of bounds\n", next_key);
+ =09=09=09continue;
+ =09=09}
+
+@@ -66,7 +66,7 @@ int main(int argc, char **argv)
+
+ =09for (i =3D 1; i <=3D max_key + 1; i++) {
+ =09=09stars(starstr, data[i - 1], max_value, MAX_STARS);
+-=09=09printf("%8ld -> %-8ld : %-8ld |%-*s|\n",
++=09=09printf("%8ld -> %-8ld : %-8lld |%-*s|\n",
+ =09=09       (1l << i) >> 1, (1l << i) - 1, data[i - 1],
+ =09=09       MAX_STARS, starstr);
+ =09}
 --
 2.35.2
 
