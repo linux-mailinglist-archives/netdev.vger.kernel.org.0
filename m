@@ -2,119 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FF865008B9
-	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 10:49:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 768E3500900
+	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 10:57:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240924AbiDNIwH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 04:52:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55628 "EHLO
+        id S241282AbiDNI7p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 04:59:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236287AbiDNIwG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 04:52:06 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD27918E3E
-        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 01:49:41 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id k14so4255453pga.0
-        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 01:49:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=52xoWc0fpCWeHzM+yM9WHHbsetQNq9MHzCL2pPBApiI=;
-        b=XWiFxMT+UWDp7Vz0jzxoFt4hqWis6mV9c69E0BRPhKjUM5aPsG0wu88vvME8Z+YPu7
-         yYwd2KshY51yj+y2mEIF866q/Q6LC6Zf43yVODtJS2ZBlxDoFO9anzS2/B18+SenKUCh
-         AqjwVs+jvuqsvtor65wYKc2I3aHvzm5idy3tZt8v8/ZPPI44720OUbuOnUSqpHQW/T+/
-         HIrWhbjWJQUQu6ZTu7jqtP7HH9iHnXApaXs4qmCU0E7AQWKTxvyRPeS30GdQHJEu5TYK
-         UK+ienUNVd1/1I0Lpba0/RTfweaen3Qgjv1TSCDsvzMWEaUxw5LkbjrT05jHzkLQwY3r
-         nBvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=52xoWc0fpCWeHzM+yM9WHHbsetQNq9MHzCL2pPBApiI=;
-        b=otIsg5nHDK1uLymHL722yD/OhsvEZoeAI3/G8+qyE0QJHXltCUkLGSdgNOSC1Y2dR2
-         4wLoUbIfae3L6Nqs7fuWmu6aLbM6eQzoWOzkMxDiRRpd417qb5/ssdCia/M8CdkNNkbk
-         i0Bgy/+WoCinB+DqyCx2D7v2wN9qcmvOBDNr+sxb4iiDrKpMX1sqzna9pz8VJDejfgZK
-         /lXerm4PvHATnyTcjIYTH9PDzWstbc+Y82fnBSkG9tEATCDRyZOZtKjQ4rpKkW7BbE2c
-         ujWoWN51x2tjbWdToD4MfEEsq6V46SJg5vDe6tPYySqCkxxZ6ueLUNVDzXuJv82WWHe/
-         SRGQ==
-X-Gm-Message-State: AOAM532G9coCQDtylF8VoAoT2k4tQHzZmOktY8XE9INkOgYABXt5jiik
-        i86ZXHcX4hvGMClCUdh5U1rZPGMsBzA=
-X-Google-Smtp-Source: ABdhPJyEtMUMS20fmtwUu0ewlLpWRGwpeBqHKsCaOQi3VCnjbIUZHBFPJz9SxO79zRkU414jm8r8Yw==
-X-Received: by 2002:a65:4188:0:b0:39d:2197:13b5 with SMTP id a8-20020a654188000000b0039d219713b5mr1482495pgq.368.1649926180963;
-        Thu, 14 Apr 2022 01:49:40 -0700 (PDT)
-Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id f4-20020aa79d84000000b00505f920ffb8sm1437871pfq.179.2022.04.14.01.49.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 01:49:40 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Flavio Leitner <fbl@redhat.com>
-Subject: [PATCH net] net/packet: fix packet_sock xmit return value checking
-Date:   Thu, 14 Apr 2022 16:49:25 +0800
-Message-Id: <20220414084925.22731-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S241278AbiDNI7i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 04:59:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87D8F68982
+        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 01:57:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3CDACB828C1
+        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 08:57:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB3FFC385A5;
+        Thu, 14 Apr 2022 08:57:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649926631;
+        bh=+BCznLdwYhU1fE3gxQduI2AmwWzGRbg40R4Q4CsZzYk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=md7sILLk4SheFi6CWP+5J/5MGX8SspIgZcMt46OhICvcwiJq0oJccuaRXA/Eahsg4
+         oBFRG3WmQFttX64UGH6MdWo/6L+ePdzG5ygvHg0fZuRwpytrxktIPKcZ7tS33A+R9k
+         GZnmVd2Yi9NB6VupXLWJ9nLyO+pPPYp/nROh+RI0BmtXf1FM814MGWvc7rgK1+UMHO
+         iVx9YcrB95GF72AKXLp23HOlHj9Op1Pj6Qx/jomMMmg4xN74IvVXU2udXRTHuqlcIB
+         wYF6q5u27mA47Z9lFMSZnBsVjQgrs7PjAYloHlk2BRMz1UVm/TNsNb82+vQ69EhVnG
+         hwQ+FfEgdCQbw==
+Date:   Thu, 14 Apr 2022 10:57:01 +0200
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Mattias Forsblad <mattias.forsblad@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "roid@nvidia.com" <roid@nvidia.com>,
+        "vladbu@nvidia.com" <vladbu@nvidia.com>,
+        Eli Cohen <elic@nvidia.com>, Jiri Pirko <jiri@resnulli.us>,
+        Tobias Waldekranz <tobias@waldekranz.com>
+Subject: Re: [RFC net-next] net: tc: flow indirect framework issue
+Message-ID: <20220414105701.54c3fba4@kernel.org>
+In-Reply-To: <YlbR4Cgzd/ulpT25@salvia>
+References: <20220413055248.1959073-1-mattias.forsblad@gmail.com>
+        <DM5PR1301MB2172F573F9314D43F79D8F26E7EC9@DM5PR1301MB2172.namprd13.prod.outlook.com>
+        <20220413090705.zkfrp2fjhejqdj6a@skbuf>
+        <2a82cf39-48b9-2c6c-f662-c1d1bce391ba@gmail.com>
+        <YlbR4Cgzd/ulpT25@salvia>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-packet_sock xmit could be dev_queue_xmit, which also returns negative
-errors. So only checking positive errors is not enough, or userspace
-sendmsg may return success while packet is not send out.
+On Wed, 13 Apr 2022 15:36:32 +0200 Pablo Neira Ayuso wrote:
+> A bit of a long email...
+> 
+> This commit 74fc4f828769 handles this scenario:
+> 
+> 1) eth0 is gone (module removal)
+> 2) vxlan0 device is still in place, tc ingress also contains rules for
+>    vxlan0.
+> 3) eth0 is reloaded.
+> 
+> A bit of background: tc ingress removes rules for eth0 if eth0 is
+> gone (I am refering to software rules, in general). In this model, the
+> tc ingress rules are attached to the device, and if the device eth0 is
+> gone, those rules are also gone and, then, once this device eth0 comes
+> back, the user has to the tc ingress rules software for eth0 again.
+> There is no replay mechanism for tc ingress rules in this case.
+> 
+> IIRC, Eli's patch re-adds the flow block for vxlan0 because he got a
+> bug report that says that after reloading the driver module and eth0
+> comes back, rules for tc vxlan0 were not hardware offloaded.
+> 
+> The indirect flow block infrastructure is tracking devices such as
+> vxlan0 that the given driver *might* be able to hardware offload.
+> But from the control plane (user) perspective, this detail is hidden.
+> To me, the problem is that there is no way from the control plane to
+> relate vxlan0 with the real device that performs the hardware offload.
+> There is also no flag for the user to request "please hardware offload
+> vxlan0 tc ingress rules". Instead, the flow indirect block
+> infrastructure performs the hardware offload "transparently" to the user.
 
-Move the net_xmit_errno() assignment in the braces as checkpatch.pl said
-do not use assignment in if condition.
+TBH I don't understand why indirect infra is important. Mattias said he
+gets a replay of the block bind. So it's the replay of rules that's
+broken. Whether the block bind came from indir infra or the block is
+shared and got bound to a new dev is not important.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Flavio Leitner <fbl@redhat.com>
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- net/packet/af_packet.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+> I think some people believe doing things fully transparent is good, at
+> the cost of adding more kernel complexity and hiding details that are
+> relevant to the user (such as if hardware offload is enabled for
+> vxlan0 and what is the real device that is actually being used for the
+> vxlan0 to be offloaded).
+> 
+> So, there are no flags when setting up the vxlan0 device for the user
+> to say: "I would like to hardware offload vxlan0", and going slightly
+> further there is not "please attach this vxlan0 device to eth0 for
+> hardware offload". Any real device could be potentially used to
+> offload vxlan0, the user does not know which one is actually used.
+> 
+> Exposing this information is a bit more work on top of the user, but:
+> 
+> 1) it will be transparent: the control plane shows that the vxlan0 is
+>    hardware offloaded. Then if eth0 is gone, vxlan0 tc ingress can be
+>    removed too, because it depends on eth0.
+> 
+> 2) The control plane validates if hardware offload for vxlan0. If this
+>    is not possible, display an error to the user: "sorry, I cannot
+>    offload vxlan0 on eth0 for reason X".
+> 
+> Since this is not exposed to the control plane, the existing
+> infrastructure follows a snooping scheme, but tracking devices that
+> might be able to hardware offload.
+> 
+> There is no obvious way to relate vxlan0 with the real device
+> (eth0) that is actually performing the hardware offloading.
 
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index c39c09899fd0..002d2b9c69dd 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -2858,8 +2858,9 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
- 
- 		status = TP_STATUS_SEND_REQUEST;
- 		err = po->xmit(skb);
--		if (unlikely(err > 0)) {
--			err = net_xmit_errno(err);
-+		if (unlikely(err != 0)) {
-+			if (err > 0)
-+				err = net_xmit_errno(err);
- 			if (err && __packet_get_status(po, ph) ==
- 				   TP_STATUS_AVAILABLE) {
- 				/* skb was destructed already */
-@@ -3060,8 +3061,12 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
- 		skb->no_fcs = 1;
- 
- 	err = po->xmit(skb);
--	if (err > 0 && (err = net_xmit_errno(err)) != 0)
--		goto out_unlock;
-+	if (unlikely(err != 0)) {
-+		if (err > 0)
-+			err = net_xmit_errno(err);
-+		if (err)
-+			goto out_unlock;
-+	}
- 
- 	dev_put(dev);
- 
--- 
-2.35.1
-
+Let's not over-complicate things, Mattias just needs replay to work.
+90% sure it worked when we did the work back in the day with John H,
+before the nft rewrite etc.
