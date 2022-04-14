@@ -2,119 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BF365006E8
-	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 09:31:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34A0F5006E3
+	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 09:30:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240340AbiDNHeM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 03:34:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50824 "EHLO
+        id S239641AbiDNHcq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 03:32:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240330AbiDNHeL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 03:34:11 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1E4625C57;
-        Thu, 14 Apr 2022 00:31:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649921507; x=1681457507;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=xTe/USNWGaWU+a+ifxzMMD7mLSnomvLGY2rXT/S2iZk=;
-  b=OcuDrYV/xMu4I2YGZfIv6bhGHOAR19e9liepVkLFLdGiCvuD9/ZI/ndM
-   MMMhm5XeZkc58OC6Hg/NppGPhZ3Fb7JqpxcUWF/Nu90CDybkORAADFYag
-   4w2tAAebvuzXovyNpB1WIMNCML4Gx6UpZ5IIaUdO9FHZ22gX1iazaGAzP
-   aJoHziDnmGOE0TkcMGjadBFci/WKJyE1IkyyDhSK5i0BUBvdzVwesmVKv
-   sMn9S8kTobsEmZnyZVblhbLOnx5iXqcobcrgjehwZH/06ofYH1I/9eqUM
-   IaSC3DngVjlSmq6g6n73mBMtbghVJF2BkBaJVvejS8lpD2I1srpsIgbLq
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="262623045"
-X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
-   d="scan'208";a="262623045"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 00:31:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
-   d="scan'208";a="624010417"
-Received: from linux.intel.com ([10.54.29.200])
-  by fmsmga004.fm.intel.com with ESMTP; 14 Apr 2022 00:31:46 -0700
-Received: from linux.intel.com (ssid-ilbpg3-teeminta.png.intel.com [10.88.227.74])
-        (using TLSv1.2 with cipher DHE-RSA-AES128-SHA (128/128 bits))
+        with ESMTP id S240346AbiDNHci (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 03:32:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C4DC338AF;
+        Thu, 14 Apr 2022 00:30:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id 527075807E8;
-        Thu, 14 Apr 2022 00:31:42 -0700 (PDT)
-Date:   Thu, 14 Apr 2022 15:29:34 +0800
-From:   Tan Tee Min <tee.min.tan@linux.intel.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Tan Tee Min <tee.min.tan@intel.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Rayagond Kokatanur <rayagond@vayavyalabs.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Voon Wei Feng <weifeng.voon@intel.com>,
-        Wong Vee Khee <vee.khee.wong@intel.com>,
-        Song Yoong Siang <yoong.siang.song@intel.com>
-Subject: Re: [PATCH net 1/1] net: stmmac: add fsleep() in HW Rx timestamp
- checking loop
-Message-ID: <20220414072934.GA10025@linux.intel.com>
-References: <20220413040115.2351987-1-tee.min.tan@intel.com>
- <20220413125915.GA667752@hoboy.vegasvil.org>
+        by ams.source.kernel.org (Postfix) with ESMTPS id BBA5DB8289B;
+        Thu, 14 Apr 2022 07:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 700FCC385A7;
+        Thu, 14 Apr 2022 07:30:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649921411;
+        bh=OuNLvEJ8aXMqTJPv7jVEIV7+W6+riGS+XbsjZV8uTL4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=GZ8nxhM0UxgDVBIo3qzVBxVKyFF9gnn+e+BtnrxoGHZIoRNAsgvqY2SrxJsQOFNOr
+         CtYG2oWUFMqyAE1y1amWltHFJdh/8bdSOePY9eChLAKlLIqUx7iL/rM8J3qXig3mCK
+         3FAlGAHUtjadULG0IGTDZ8E9ZI2l+OwHuU9QkIdQXEV2GBQKM1QFBmPFCEyUrRUjmX
+         T47NVwWAeED/qUhd4bAuVpbEe74IknXXNGq4b1tc4cXRX7gKTX9UhkL0e17VUVhjcZ
+         zq6tnHfPBYvCqrbeE2pzIRhmnnT701upwXYi2BCDXD68OwdCMxydi5xeeRzzFw6prh
+         g9mL9wbdewrkQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 511ABE85D15;
+        Thu, 14 Apr 2022 07:30:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220413125915.GA667752@hoboy.vegasvil.org>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: bcmgenet: Revert "Use stronger register read/writes to
+ assure ordering"
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164992141132.21485.14435114290874521938.git-patchwork-notify@kernel.org>
+Date:   Thu, 14 Apr 2022 07:30:11 +0000
+References: <20220412210420.1129430-1-jeremy.linton@arm.com>
+In-Reply-To: <20220412210420.1129430-1-jeremy.linton@arm.com>
+To:     Jeremy Linton <jeremy.linton@arm.com>
+Cc:     netdev@vger.kernel.org, opendmb@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        pbrobinson@gmail.com, bcm-kernel-feedback-list@broadcom.com,
+        linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 05:59:15AM -0700, Richard Cochran wrote:
-> On Wed, Apr 13, 2022 at 12:01:15PM +0800, Tan Tee Min wrote:
-> > diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
-> > index d3b4765c1a5b..289bf26a6105 100644
-> > --- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
-> > +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
-> > @@ -279,10 +279,11 @@ static int dwmac4_wrback_get_rx_timestamp_status(void *desc, void *next_desc,
-> >  			/* Check if timestamp is OK from context descriptor */
-> >  			do {
-> >  				ret = dwmac4_rx_check_timestamp(next_desc);
-> > -				if (ret < 0)
-> > +				if (ret <= 0)
-> >  					goto exit;
-> >  				i++;
-> >  
-> > +				fsleep(1);
-> 
-> This is nutty.  Why isn't this code using proper deferral mechanisms
-> like work or kthread?
+Hello:
 
-Appreciate your comment.
-The dwmac4_wrback_get_rx_timestamp_status() is called by stmmac_rx()
-function which is scheduled by NAPI framework.
-Do we still need to create deferred work inside NAPI work?
-Would you mind to explain it more in detail?
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
+On Tue, 12 Apr 2022 16:04:20 -0500 you wrote:
+> It turns out after digging deeper into this bug, that it was being
+> triggered by GCC12 failing to call the bcmgenet_enable_dma()
+> routine. Given that a gcc12 fix has been merged [1] and the genet
+> driver now works properly when built with gcc12, this commit should
+> be reverted.
 > 
-> >  			} while ((ret == 1) && (i < 10));
-> >  
-> >  			if (i == 10)
-> > -- 
-> > 2.25.1
-> > 
+> [1]
+> https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105160
+> https://gcc.gnu.org/git/?p=gcc.git;a=commit;h=aabb9a261ef060cf24fd626713f1d7d9df81aa57
 > 
-> Thanks,
-> Richard
+> [...]
 
-Thanks,
-Tee Min
+Here is the summary with links:
+  - net: bcmgenet: Revert "Use stronger register read/writes to assure ordering"
+    https://git.kernel.org/netdev/net/c/2df3fc4a84e9
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
