@@ -2,183 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 431FA500E34
-	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 14:59:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 702FD500E3A
+	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 15:00:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243670AbiDNNBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 09:01:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55120 "EHLO
+        id S241745AbiDNNCS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 09:02:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243666AbiDNNBT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 09:01:19 -0400
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60047.outbound.protection.outlook.com [40.107.6.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6130C92865;
-        Thu, 14 Apr 2022 05:58:54 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CCVcFcVqUXr9IXXlh4x5/yAlYzLNNcCW9/qTgezB69D9XMTi3VbwM+7R5YlK4MekuV0Pks+IU40mrz6jGC6bh8GRXwi4/lKQ+zWJSE7SNjLgNlyL6WvJ00Gy0bnWUPnN6wY5+V39UA7yOLW/HCHlpCVu5GX7LqCPOPAEesdL9saJMWWVjJCH6IwLClSNtiTugZevrsYVlmOHd6+8OnI88ud5SoC9GbelD9hgBiPyx63ijzVj8OavyF46QFrNuwiX/FQT79Z1EqSK7VBFAyMdL+o7UHUK30gEupcvNpF6JdpUjH52wIa1z9+IA8akoOO59qkiVx0WX2QjvUzIle1zTA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CihIIC09A2jydUQI8mKfnMp4am53strjCDkExKUhE0Q=;
- b=LxQIwp9/lM6nYBX9ZFqrRmtXvg7F5iENthNGnXjpsYWlC15Qd1ryJQbJrnPq8pSgrm9wUMF0RUbFHWAEOwUQtGl7u9MfAJFupCLZZPqcHTmKqAcy7Dpk/OiQp7cPFZkz7OHQFNfBqfJqFstVhgt8oxju+X9wueMZiBS1nn/7dkSjS3l9+1zSBIxH1jfSTZnVkMbKxwBbTYNiMabowyRjoPyCfT829kR0MeVf1SgAIqud4CGRqVg27it/HEFMoVCkkMAiStRvGkLTFzfmVDZCBbDqSnPnfQUHn290w6iAlsF2BpqyWXtry9N7Th7vGHT713Oa0vOr7qz/EZn5/mlo5A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CihIIC09A2jydUQI8mKfnMp4am53strjCDkExKUhE0Q=;
- b=sQDvnKS1oEf4scgdfyl8aC5Y+J5NsvZqzKMRvJX35QXUf/FoZBg+1zXzkISJ3R0M8Oq2n9gg1d6hsJyaTwuWmfN+uXRE2lk1pUPrhOxPp7DMrmio2Ud26ZQ+/qKZQV6QPu3l8Y7cI6DlkIBKci0JdJfkKyVEMU1wTvqIYeNjyT4=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB4829.eurprd04.prod.outlook.com (2603:10a6:803:5f::25) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20; Thu, 14 Apr
- 2022 12:58:51 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::8ed:49e7:d2e7:c55e]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::8ed:49e7:d2e7:c55e%3]) with mapi id 15.20.5144.029; Thu, 14 Apr 2022
- 12:58:51 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
-CC:     Andrew Lunn <andrew@lunn.ch>, Kurt Kanzenbach <kurt@linutronix.de>,
-        George McCollister <george.mccollister@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH net-next v2] docs: net: dsa: describe issues with checksum
- offload
-Thread-Topic: [PATCH net-next v2] docs: net: dsa: describe issues with
- checksum offload
-Thread-Index: AQHYTfheCzBrufjauEu7NwJglkZ/ZKzuSJmAgAALg4CAAAEaAIAAARUAgAAAwwCAAGFTAIAAqnKA
-Date:   Thu, 14 Apr 2022 12:58:50 +0000
-Message-ID: <20220414125849.hinuxwesqrwumpd2@skbuf>
-References: <20220411230305.28951-1-luizluca@gmail.com>
- <20220413200841.4nmnv2qgapqhfnx3@skbuf> <Ylc3ca1k1IZUhFxZ@lunn.ch>
- <20220413205350.3jhtm7u6cusc7kh3@skbuf> <Ylc5RhzehbIuLswA@lunn.ch>
- <20220413210026.pe4jpq7jjefcuypo@skbuf>
- <CAJq09z7h_M9u=7jC3i3xEXCt+8wjkV9PfD4iVdje_jZ=9NZNKA@mail.gmail.com>
-In-Reply-To: <CAJq09z7h_M9u=7jC3i3xEXCt+8wjkV9PfD4iVdje_jZ=9NZNKA@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3716b76c-fa59-4bca-f96e-08da1e1685d9
-x-ms-traffictypediagnostic: VI1PR04MB4829:EE_
-x-microsoft-antispam-prvs: <VI1PR04MB482959EEA51CCF60C3DFEC74E0EF9@VI1PR04MB4829.eurprd04.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: rkWP/7WOLhPC5tSYcfiiVV4msbyg6VL/BkBsnKnELuacYyY1p2f6WrNv/ItLQCb2e652r8MX2slRtwv+jdNh/RsEt1zPAK1G9R8fkCp0sWMar2PfbLkkcqY3L0mUry4J8K40IY37BX9oH8/+Umwqr1Z2ZlEijS2+PyAvlLHv2ljEV4tmQLA7rJ1PWsTsOu3CAc6xtcQLJxjkZfLhVY3zcZShAYfRoJl0GHBjyZpTh31+KxmJc20WqAV2fMH62F7XrTxVYJo3aph/kLuh52KMdum8ADJvEFXeb4jkfO8HyFql1fgqLav4S8BqpOjNI2KRTV17gXqvgGwR+EogGrNZsOJoxm4PVdRsKj7ePY0Io/JJlpGeyhhzReagXX9tDzSVHqgPj3Hw9qFp+WnjGXJutst4TMwyJnfIh9P17oSIfYs4K5SkMFTY7QhEHeIvwiXe25UEeBfcsKHbE6QcDoWZftMH8N+wzHIbJ8OgXrvCMXMLbyMjtr3IaPoWABGZWkMbnh3EJMU6wqaDT8lY/3pn0KZd3m877jbBJ8gZ9jwmzCMMQDIvIXFaCmnOnihvMzr/ZwG8ItOxYZJCSHRyqVRSGMj2VNle3c7noE9SCZlJ7shI2ITZfc64M5tVhXRCgozqcpGi85ak+7yEwMEyAkZ+gwY4anEVs7Yt8z48KFvqO0LJMSPGOfZ8ivRIdIsbhF7Hl+vyIxpBmPRjJ02AijBKHg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(122000001)(7416002)(5660300002)(6506007)(9686003)(38100700002)(1076003)(44832011)(6512007)(508600001)(316002)(86362001)(71200400001)(6486002)(54906003)(6916009)(38070700005)(2906002)(8676002)(26005)(186003)(33716001)(4326008)(91956017)(66556008)(66946007)(66476007)(66446008)(76116006)(64756008)(83380400001)(8936002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ShN5B2C7Fs5g2gOV6MgZbXI/XIg9Jo8jSe6T/ikplAcTKcE1J1sg+Ym6Yh2E?=
- =?us-ascii?Q?LH1sNYxNT+RrcHaGGCioDONnhV0Z8RPZ2YKH4PczS6jSELLqaodzM2rGX8nT?=
- =?us-ascii?Q?VCaaWc6UOeWG4guDBNAnaDECmmUeGfhwv4gb5rbRMLJOmKvfppBkyGC8rmQy?=
- =?us-ascii?Q?vULR9faFkaXUY3CzGnkptPyJvC75NA98Rs5Hxc7tS9IKgH9nRuGsvSJHtq01?=
- =?us-ascii?Q?8ldYJ1zESTMP7Rq+fD2o1RCta+uzviRseorvkZJX118AJQNhRkZoCLtGIhL5?=
- =?us-ascii?Q?UKkJeg94STERwdvbPnp92OVmGodjFI9QIXtErwJWKEIuxldciS3Xm8M7IJix?=
- =?us-ascii?Q?6RwrDTeDYQrNDb88DnulEUsaBY7zCAmHPwAF4YEtVbgJQwVVhBIai18nOOYT?=
- =?us-ascii?Q?QiDaKRmpy19MdvMGUGRtVFooB/BZPTcFDfqBd8/RUA93xOYCUrbD66R9eufK?=
- =?us-ascii?Q?IneDVxlC35iYSC37d7IuRdUB2wf3nKpeaV8T4WuG0JO48sirAPUAlVxHNOnh?=
- =?us-ascii?Q?X3rmX/JrB98QYXFTjMLbr4Vmn1PvUcr6KCQcA4NTyLv02p9DVJE3MQj99Owe?=
- =?us-ascii?Q?W/u+70mMJchfJ8rbupMGzZAJ4O0KL2qYRQp4wj48i8obv7OMREMsJFVidN25?=
- =?us-ascii?Q?EeVKsqbmfRQgYtjjlS+sO5mWMh7liADymgU6AkZKOCxPtYhu8KYQwVAsTg0i?=
- =?us-ascii?Q?Pv/OoT+CmFQZ0Sgw5fNcJUpc7aTEq3IP4jv68ewFrfTYECcWo8hx/Q6R63os?=
- =?us-ascii?Q?DooIBlMV5QuRb+UPTYZNU0Rz8IFMAiYdN1fcODp0ZitgX37RcGccZIcrVRcH?=
- =?us-ascii?Q?vZUp/GKSsJRvYOzltPerZaYqH0DD8hN7L/y6ok2eVBpflJolKuWAAjwpl0Kw?=
- =?us-ascii?Q?KCfiZ6t7mRMv8MbnNyNmdHRRPgFoUJY1q0w5G4lZgiGh8RL/DReMEGjBktfW?=
- =?us-ascii?Q?9o97urTIsEZbF0r46xKdfljJiV1/uwa5/XM5wFds7JaD9M74mCunOlVBlMcC?=
- =?us-ascii?Q?lpuPtYScnLCOPtGVKGJ8wufIlltVe2f+uGdnPKHSex8vVRk9oHF8eM9RkKlO?=
- =?us-ascii?Q?kToN2uPR9Lct7hHqVpr866GpFX0bCCdem0xhDS9nyvj80XkKViA8BXnCVj5U?=
- =?us-ascii?Q?W8qAGeuTYS8kYE3zyD/eDPoGPZmA/vOBRNox1tSLCMCb3wdz8JsfRG8qzFtO?=
- =?us-ascii?Q?L60QGeq/UwT6hxn1nXHTZ6xogRP3Sl3fOUB/ATf5MP9E3eF72yhxIsJKLMcV?=
- =?us-ascii?Q?zR2JEWiZPYgVUnCj5q2hjwcFUEEg5zwYwqErI76Ey/PvB8qcnqr0GQ86pnR+?=
- =?us-ascii?Q?/MKPi2MtPkDO2X+KZYUUi6nqrTZAnrQjIi7QUe8r2SP42+B/zfGES9/w+aY5?=
- =?us-ascii?Q?FZITw5fGKBkPm9uFjPcTSQGDVyRp/ng4x5dBX0B6AkE5QSabTiZbvKAwahve?=
- =?us-ascii?Q?yNZT0p4JHdD57ji0i8+XB1M7UgG59Cb79GoYn+Rm3z/msXVOScUUwNGC4/2i?=
- =?us-ascii?Q?SnctoZcWV+W4zHaAOKFzmIOm42OEX9WMCWqN4iQseFhRo6/5788RxZHD7tZO?=
- =?us-ascii?Q?D8bzKaaJORVkMXdmrcJvlHOmoIjghr4igjY1/WwDs0jmxDZc4e3n9F031buP?=
- =?us-ascii?Q?ZQI/+mkSM3ZCC4KlcvQGdraDrERRVisWGtCIJwHkyC34X/BwOFtHOsQ2OOmJ?=
- =?us-ascii?Q?eDCbndcc589UnEQxivmbZJ7e8Vr7NoBuQodfBiDwlAQhFla/5lOCyBnPJX4C?=
- =?us-ascii?Q?8Bw3xGrEqJyuo1Gh6AXe4oTtJIxU4Gs=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <B87B825D991DE2499735322B12FA6186@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S238742AbiDNNCR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 09:02:17 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F3910FF9
+        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 05:59:53 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id s137so4720543pgs.5
+        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 05:59:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :in-reply-to;
+        bh=e9E9KMA4I5AkMnzx9mKYu3S2YRhNPMundBLUvPb0KXk=;
+        b=cX62wPpKnT3YO1VD6dTIeUWN/WYdCEuhRXGljX3AC34abRR3IZc1rVcbvsjW1o3Ixf
+         LO9hH+kJpmOzznb/xSqxwQj25fF6khpL2+OmwRclMdzjMEzwk2pt+jMh8UurS0+bViUK
+         YerwdtBNYXU9Z8wj3ULBYQpVHt5C7oxNUqTE4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:in-reply-to;
+        bh=e9E9KMA4I5AkMnzx9mKYu3S2YRhNPMundBLUvPb0KXk=;
+        b=neJAkk6lxPfwJXy3DuILwVuGKC6MhNG5P/X/UffGFly8CQNfawZdsWBBAvip+PzLjf
+         ZWI01k31pvkIQsKhH8RjhGdwQTkx2s2b06EOlcG9OJ3yLCtsWX7wFKFKNvNEa+UmVdO+
+         p+jYBL8ufyJNGzLDRm7I2IuMTE0H9uBl9EbsADBqj3lz0Tt+lzfQ0aja5iv2CjtXXeZg
+         440qd4kTKe0Hsq5EpiqNU5xeVPLoHDCbywzp9hmirKf59XII/UszjCzCfJfN8CpR3rvB
+         ixC5Rh1xrHkw0aps0V/4Rhh+QxFMotT6WzF+mvKqy7XjDjyIuNsWSHwJoo/AZq8vFNu1
+         e5Qw==
+X-Gm-Message-State: AOAM531F3Ftl6x9xXVq5K1xxyPbaDQSGwJQdfAc0cSdj4eFX6NFPb38m
+        DDShgBhknDOYm/K9Iel1osDAZQ==
+X-Google-Smtp-Source: ABdhPJw2jvJ4+6pc1VCtuwd2lKaibvDBPrDUFvCx9brhWv20MoZoSnzbM8DAyfl8XrZuPoGIY2TSaA==
+X-Received: by 2002:a63:db4c:0:b0:39d:18bf:7857 with SMTP id x12-20020a63db4c000000b0039d18bf7857mr2213819pgi.413.1649941192414;
+        Thu, 14 Apr 2022 05:59:52 -0700 (PDT)
+Received: from noodle ([192.19.250.250])
+        by smtp.gmail.com with ESMTPSA id c138-20020a624e90000000b005081f92826dsm2230872pfb.99.2022.04.14.05.59.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 05:59:51 -0700 (PDT)
+Date:   Thu, 14 Apr 2022 15:59:40 +0300
+From:   Boris Sukholitko <boris.sukholitko@broadcom.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Eric Dumazet <edumazet@google.com>,
+        zhang kai <zhangkaiheb@126.com>,
+        Yoshiki Komachi <komachi.yoshiki@gmail.com>,
+        Ilya Lifshits <ilya.lifshits@broadcom.com>
+Subject: Re: [PATCH net-next 0/5] flower: match on the number of vlan tags
+Message-ID: <20220414125926.GA397@noodle>
+References: <20220411133100.18126-1-boris.sukholitko@broadcom.com>
+ <1b1b82a9-3e1b-d20a-f62c-f35fe1f155b8@mojatatu.com>
+ <20220411145647.GA23636@noodle>
+ <24581ebb-e952-d1d8-8d64-a51c94e29bc8@mojatatu.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3716b76c-fa59-4bca-f96e-08da1e1685d9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Apr 2022 12:58:50.9490
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: /+RUdxjCPCAM1O86559VOUJM+ZvFKZ7wsguwSDhT6GBrfNF4W6Vuw+tm61MtL3/RTFBwJzkUUYhSHVwiUPKm7Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4829
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <24581ebb-e952-d1d8-8d64-a51c94e29bc8@mojatatu.com>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000b215ec05dc9cdeda"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 11:48:46PM -0300, Luiz Angelo Daros de Luca wrote:
-> > Ok, I'll go with "no checksum offload for its trailer tag, and bugs
-> > never fixed because no one uses it", in any case no Sasquatch. Thanks.
->=20
-> Vladimir, so the DSA switch will not copy the offload flags when a tag
-> requests tail room? At least it will work.
->=20
-> Now, if the offload HW does support that tag, what would be the
-> options? Set the slave port checksum flag from userland?
-> It would be nice to have some type of "magic trick" to have it enabled
-> by default. I'm already expecting a no, but wouldn't it be a nice case
-> for a DSA property in the device tree?
->=20
-> Regards,
->=20
-> Luiz
+--000000000000b215ec05dc9cdeda
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-DSA calls netdev_upper_dev_link(master, slave_dev, NULL) to establish a
-relationship with its master and the master driver can detect this by
-monitoring NETDEV_CHANGEUPPER.
+On Tue, Apr 12, 2022 at 06:54:43AM -0400, Jamal Hadi Salim wrote:
+> On 2022-04-11 10:56, Boris Sukholitko wrote:
+> > On Mon, Apr 11, 2022 at 10:07:14AM -0400, Jamal Hadi Salim wrote:
+> > > On 2022-04-11 09:30, Boris Sukholitko wrote:
+> > > > Hi,
+> 
+> [..]
+> 
+> > > Can you please provide more elaborate example of more than 1 vlan?
+> > 
+> > Perusing our logs, we have redirect rules such as:
+> > 
+> > tc filter add dev $GPON ingress flower num_of_vlans $N \
+> >     action mirred egress redirect dev $DEV
+> > 
+> 
+> Please add in the commit logs.
+> 
+> > where N can range from 0 to 3 and $DEV is the function of $N.
+> > 
+> 
+> Also in the commit log, very specific to GPON. I have seen upto
+> 4 in some telco environment.
+> 
+> > Also there are rules setting skb mark based on the number of vlans:
+> > 
+> > tc filter add dev $GPON ingress flower num_of_vlans $N vlan_prio \
+> >     $P action skbedit mark $M
+> > 
 
-If we look a bit closer at the implementation of netdev_upper_dev_link
-we see it calls __netdev_upper_dev_link() which contains an interesting
-pair of arguments "void *upper_priv, void *upper_info". These are
-accessible to netdev_master_upper_dev_link(), and the bonding driver
-(for example) makes use of them, see bond_master_upper_dev_link().
+All of the above added to the commit log in v3 (added to the cover and
+patch 3 in the series).
 
-I'm thinking DSA could create a struct netdev_dsa_upper_info too, and
-certain DSA masters could populate things in it. Then DSA could look at
-what the DSA master has said (or not said) and fix up features
-accordingly.
+> 
+> Yep makes sense.
+> 
+> 
+> > > Where would the line be drawn:
+> > > Is it max of two vlans?
+> > 
+> > We have seen the maximum of 3 vlans.
+> > 
+> > > Is there potential of <=X, meaning matching of upto X Vlans?
+> > > 
+> > 
+> > We've managed to get by without such feature somehow :)
+> 
+> If needed should be extensible. You already have ability to count, so
+> adding inequality check should not be hard to add when needed.
+> 
 
-One information that could get populated by the master is a bit field of
-whether checksumming is supported for a certain tagging protocol.
-I'd rather pass a full bit field of all tagging protocols, rather than
-just the protocol in current use by the slave, because:
-(a) it's less gory compared to having the master look at
-    dsa_port_from_netdev(info->upper_dev)->cpu_dp->tag_ops->proto
-(b) the DSA tagging protocol can change at runtime, and when it does, no
-    NETDEV_CHANGEUPPER will be emitted, so the master won't have a
-    chance to inform us whether it can offload checksumming for the new
-    protocol. So it's better to have this information from the get go.
+Yes, it can certainly be done as a further patch.
 
-We'd also need the DSA master to populate a "bool acked=3Dtrue" from this
-new struct netdev_dsa_upper_info. The reason is to be able to
-distinguish between an empty bit mask that means "yup, I really can't
-offload checksumming for anything", and a bit mask that means "DSA who?"
-(where checksum offloading is expected to work under the normal
-circumstances described by you, no special code required).=
+Thanks,
+Boris.
+
+--000000000000b215ec05dc9cdeda
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIIQeQYJKoZIhvcNAQcCoIIQajCCEGYCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
+gg3QMIIFDTCCA/WgAwIBAgIQeEqpED+lv77edQixNJMdADANBgkqhkiG9w0BAQsFADBMMSAwHgYD
+VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
+AxMKR2xvYmFsU2lnbjAeFw0yMDA5MTYwMDAwMDBaFw0yODA5MTYwMDAwMDBaMFsxCzAJBgNVBAYT
+AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBS
+MyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
+vbCmXCcsbZ/a0fRIQMBxp4gJnnyeneFYpEtNydrZZ+GeKSMdHiDgXD1UnRSIudKo+moQ6YlCOu4t
+rVWO/EiXfYnK7zeop26ry1RpKtogB7/O115zultAz64ydQYLe+a1e/czkALg3sgTcOOcFZTXk38e
+aqsXsipoX1vsNurqPtnC27TWsA7pk4uKXscFjkeUE8JZu9BDKaswZygxBOPBQBwrA5+20Wxlk6k1
+e6EKaaNaNZUy30q3ArEf30ZDpXyfCtiXnupjSK8WU2cK4qsEtj09JS4+mhi0CTCrCnXAzum3tgcH
+cHRg0prcSzzEUDQWoFxyuqwiwhHu3sPQNmFOMwIDAQABo4IB2jCCAdYwDgYDVR0PAQH/BAQDAgGG
+MGAGA1UdJQRZMFcGCCsGAQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNxQCAgYKKwYBBAGCNwoDBAYJ
+KwYBBAGCNxUGBgorBgEEAYI3CgMMBggrBgEFBQcDBwYIKwYBBQUHAxEwEgYDVR0TAQH/BAgwBgEB
+/wIBADAdBgNVHQ4EFgQUljPR5lgXWzR1ioFWZNW+SN6hj88wHwYDVR0jBBgwFoAUj/BLf6guRSSu
+TVD6Y5qL3uLdG7wwegYIKwYBBQUHAQEEbjBsMC0GCCsGAQUFBzABhiFodHRwOi8vb2NzcC5nbG9i
+YWxzaWduLmNvbS9yb290cjMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5j
+b20vY2FjZXJ0L3Jvb3QtcjMuY3J0MDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwuZ2xvYmFs
+c2lnbi5jb20vcm9vdC1yMy5jcmwwWgYDVR0gBFMwUTALBgkrBgEEAaAyASgwQgYKKwYBBAGgMgEo
+CjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAN
+BgkqhkiG9w0BAQsFAAOCAQEAdAXk/XCnDeAOd9nNEUvWPxblOQ/5o/q6OIeTYvoEvUUi2qHUOtbf
+jBGdTptFsXXe4RgjVF9b6DuizgYfy+cILmvi5hfk3Iq8MAZsgtW+A/otQsJvK2wRatLE61RbzkX8
+9/OXEZ1zT7t/q2RiJqzpvV8NChxIj+P7WTtepPm9AIj0Keue+gS2qvzAZAY34ZZeRHgA7g5O4TPJ
+/oTd+4rgiU++wLDlcZYd/slFkaT3xg4qWDepEMjT4T1qFOQIL+ijUArYS4owpPg9NISTKa1qqKWJ
+jFoyms0d0GwOniIIbBvhI2MJ7BSY9MYtWVT5jJO3tsVHwj4cp92CSFuGwunFMzCCA18wggJHoAMC
+AQICCwQAAAAAASFYUwiiMA0GCSqGSIb3DQEBCwUAMEwxIDAeBgNVBAsTF0dsb2JhbFNpZ24gUm9v
+dCBDQSAtIFIzMRMwEQYDVQQKEwpHbG9iYWxTaWduMRMwEQYDVQQDEwpHbG9iYWxTaWduMB4XDTA5
+MDMxODEwMDAwMFoXDTI5MDMxODEwMDAwMFowTDEgMB4GA1UECxMXR2xvYmFsU2lnbiBSb290IENB
+IC0gUjMxEzARBgNVBAoTCkdsb2JhbFNpZ24xEzARBgNVBAMTCkdsb2JhbFNpZ24wggEiMA0GCSqG
+SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDMJXaQeQZ4Ihb1wIO2hMoonv0FdhHFrYhy/EYCQ8eyip0E
+XyTLLkvhYIJG4VKrDIFHcGzdZNHr9SyjD4I9DCuul9e2FIYQebs7E4B3jAjhSdJqYi8fXvqWaN+J
+J5U4nwbXPsnLJlkNc96wyOkmDoMVxu9bi9IEYMpJpij2aTv2y8gokeWdimFXN6x0FNx04Druci8u
+nPvQu7/1PQDhBjPogiuuU6Y6FnOM3UEOIDrAtKeh6bJPkC4yYOlXy7kEkmho5TgmYHWyn3f/kRTv
+riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
+QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
+UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
+M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
+Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
+14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
+a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
+XzCCBVgwggRAoAMCAQICDDSzinKpvcPTN4ZIJTANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
+RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
+UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMTAyMjIwNzMwMDRaFw0yMjA5MDUwNzM3NTVaMIGW
+MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
+BgNVBAoTDUJyb2FkY29tIEluYy4xGTAXBgNVBAMTEEJvcmlzIFN1a2hvbGl0a28xLDAqBgkqhkiG
+9w0BCQEWHWJvcmlzLnN1a2hvbGl0a29AYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
+AQ8AMIIBCgKCAQEAy/C7bjpxs+95egWV8sWrK9KO0SQi6Nxu14tJBgP+MOK5tvokizPFHoiXTymZ
+7ClfnmbcqT4PzWgI3thyfk64bgUo1nQkCTApn7ov3IRsWjmHExLSNoJ/siUHagO6BPAk4JSycrj5
+9tC9sL4FnIAbAHmOSILCyGyyaBAcmiyH/3toYqXyjJkK+vbWQSTxk2NlqJLIN/ypLJ1pYffVZGUs
+52g1hlQtHhgLIznB1Qx3Fop3nOUk8nNpQLON/aM8K5sl18964c7aXh7YZnalUQv3md4p2rAQQqIR
+rZ8HBc7YjlZynwOnZl1NrK4cP5aM9lMkbfRGIUitHTIhoDYp8IZ1dwIDAQABo4IB3jCCAdowDgYD
+VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
+ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
+CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
+MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
+d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
+hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
+bDAoBgNVHREEITAfgR1ib3Jpcy5zdWtob2xpdGtvQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggr
+BgEFBQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUtBmGs9S4
+t1FcFSfkrP2LKQQwBKMwDQYJKoZIhvcNAQELBQADggEBAJMAjVBkRmr1lvVvEjMaLfvMhwGpUfh6
+CMZsKICyz/ZZmvTmIZNwy+7b9r6gjLCV4tP63tz4U72X9qJwfzldAlYLYWIq9e/DKDjwJRYlzN8H
+979QJ0DHPSJ9EpvSKXob7Ci/FMkTfq1eOLjkPRF72mn8KPbHjeN3VVcn7oTe5IdIXaaZTryjM5Ud
+bR7s0ZZh6mOhJtqk3k1L1DbDTVB4tOZXZHRDghEGaQSnwU/qxCNlvQ52fImLFVwXKPnw6+9dUvFR
+ORaZ1pZbapCGbs/4QLplv8UaBmpFfK6MW/44zcsDbtCFfgIP3fEJBByIREhvRC5mtlRtdM+SSjgS
+ZiNfUggxggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
+LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgw0
+s4pyqb3D0zeGSCUwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBbiobBkt4dMbXG/
+TIaMFfL/i+U/+fN2M9MAUWZV7OViMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
+AQkFMQ8XDTIyMDQxNDEyNTk1MlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
+AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQChidOFvhOBhby/fW0mT65c+oKtIS/Xingi
++y5OgMR+YAygYO21vVpnsnl7HyQTA8bfQ151x6RlzyoKqqgXw81lExiYg3H9K3fAZLvY69JHRB7S
+H8xpz1evCORX6KYASojg5ZCrtpC+BBwU1od54+VK99F/sNqa1YqqHLuol/dYYk4SSriEp4JN/NR4
+Zi94knlswgzqiqjQq/87MrxET4lBN66cDmd1A2srBykL2t0e9ay6hObiisGWVp5WtuGDoE4v4hhH
+/O5peb2VnW33uDgAj3c91tu9tWO7d7Byof+TVEsmzqEYtI+5UBDaj0+SyVswMOsusp4UttNtAic7
+STHV
+--000000000000b215ec05dc9cdeda--
