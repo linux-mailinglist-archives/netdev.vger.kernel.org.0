@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 646E9500D46
-	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 14:26:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD9B5500D30
+	for <lists+netdev@lfdr.de>; Thu, 14 Apr 2022 14:26:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243301AbiDNM2k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 08:28:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33646 "EHLO
+        id S243278AbiDNM2f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 08:28:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243237AbiDNM1c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 08:27:32 -0400
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1E402BB2A;
-        Thu, 14 Apr 2022 05:24:54 -0700 (PDT)
+        with ESMTP id S243279AbiDNM1r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 08:27:47 -0400
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC1442ED50;
+        Thu, 14 Apr 2022 05:24:56 -0700 (PDT)
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id DB01040011;
-        Thu, 14 Apr 2022 12:24:51 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 962B340002;
+        Thu, 14 Apr 2022 12:24:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649939093;
+        t=1649939095;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=cK1q3GoW1XIF/YF8LlVHAMZt+VQi14OcCuETPC0h7lg=;
-        b=ktdbfLdoTLhrltw28ZpmX9o+ZahqCBw4lZHR1TrsNLUFjYV7ve7qb8CkVYm6MwLNT61lFp
-        iAeJgkpap8p8+GfoFN+7pyiu5HIBZcgzPmDIhHRRgvD713Y15IdlphDDUGuzo/jt6HUrFR
-        Oum0LWPPemQ5iY3lSBRKQS0wtSdf2LoGpftCsBI3THWQjJhw6SRtPdSIolak+BdTJyz5Ar
-        Dz1guQ97kz/PCKXDwKO0uLygU7B2O9YrTTDAZuuBKGgRAQwkyDuiDhbU6HTkxsPTmjuzsX
-        qxaMzo4nWLBu2wpHUSRfNkOgpu7khaH8d6Ee18HvLinNjC8J0H3KjRABNg/T3w==
+        bh=h9gVl1WIs8Z8UsupszQpWZh1q9U2WdRb4t2hl3wiUik=;
+        b=gKjrfFgN+jnimsR+rmxwFBH3T6yZjzEo8ElLzhryGLKSWNDc5As2AaD4XGvLzPtSDcuf8b
+        /cjbl50pyr5ZAk+7GF5Y+a2TrPtChcpxXi6WiIPOEK7EkIQuNPHKQ0ffRG0zOtBtTlCgSr
+        324RC4kSe3kvQii9KuNLVaZekO21q/Se3m8A+/uRU9xPWV2mQ2qtw8bdLOhQns6DLVGYAX
+        jvsr7mUMzuJ6s7aSLwtFgrYNjq0y9IvC0wSTVBCYSATOC7xlwVjA/7Ij/QFb235D0r8UdL
+        8S3tHOdJItw1dq6CQTC/LmYDx/KkDE3KeUK4txOJftxGnDWDCp3wnhOdOUFk2A==
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -51,9 +51,9 @@ Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
         Jimmy Lalande <jimmy.lalande@se.com>,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next 07/12] net: dsa: rzn1-a5psw: add statistics support
-Date:   Thu, 14 Apr 2022 14:22:45 +0200
-Message-Id: <20220414122250.158113-8-clement.leger@bootlin.com>
+Subject: [PATCH net-next 08/12] net: dsa: rzn1-a5psw: add FDB support
+Date:   Thu, 14 Apr 2022 14:22:46 +0200
+Message-Id: <20220414122250.158113-9-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220414122250.158113-1-clement.leger@bootlin.com>
 References: <20220414122250.158113-1-clement.leger@bootlin.com>
@@ -61,178 +61,232 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add per-port statistics. This support requries to add a stat lock since
-statistics are stored in two 32 bits registers, the hi part one being
-global and latched when accessing the lo part.
+This commits add forwarding database support to the driver. It
+implements fdb_add(), fdb_del() and fdb_dump().
 
 Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 ---
- drivers/net/dsa/rzn1_a5psw.c | 101 +++++++++++++++++++++++++++++++++++
- drivers/net/dsa/rzn1_a5psw.h |   2 +
- 2 files changed, 103 insertions(+)
+ drivers/net/dsa/rzn1_a5psw.c | 163 +++++++++++++++++++++++++++++++++++
+ drivers/net/dsa/rzn1_a5psw.h |  16 ++++
+ 2 files changed, 179 insertions(+)
 
 diff --git a/drivers/net/dsa/rzn1_a5psw.c b/drivers/net/dsa/rzn1_a5psw.c
-index 5bee999f7050..7ab7d9054427 100644
+index 7ab7d9054427..8c763c2a1a1f 100644
 --- a/drivers/net/dsa/rzn1_a5psw.c
 +++ b/drivers/net/dsa/rzn1_a5psw.c
-@@ -16,6 +16,59 @@
- 
- #include "rzn1_a5psw.h"
- 
-+struct a5psw_stats {
-+	u16 offset;
-+	const char *name;
-+};
-+
-+#define STAT_DESC(_offset, _name) {.offset = _offset, .name = _name}
-+
-+static const struct a5psw_stats a5psw_stats[] = {
-+	STAT_DESC(0x868, "aFrameTransmitted"),
-+	STAT_DESC(0x86C, "aFrameReceived"),
-+	STAT_DESC(0x870, "aFrameCheckSequenceErrors"),
-+	STAT_DESC(0x874, "aAlignmentErrors"),
-+	STAT_DESC(0x878, "aOctetsTransmitted"),
-+	STAT_DESC(0x87C, "aOctetsReceived"),
-+	STAT_DESC(0x880, "aTxPAUSEMACCtrlFrames"),
-+	STAT_DESC(0x884, "aRxPAUSEMACCtrlFrames"),
-+	/* If */
-+	STAT_DESC(0x888, "ifInErrors"),
-+	STAT_DESC(0x88C, "ifOutErrors"),
-+	STAT_DESC(0x890, "ifInUcastPkts"),
-+	STAT_DESC(0x894, "ifInMulticastPkts"),
-+	STAT_DESC(0x898, "ifInBroadcastPkts"),
-+	STAT_DESC(0x89C, "ifOutDiscards"),
-+	STAT_DESC(0x8A0, "ifOutUcastPkts"),
-+	STAT_DESC(0x8A4, "ifOutMulticastPkts"),
-+	STAT_DESC(0x8A8, "ifOutBroadcastPkts"),
-+	/* Ether */
-+	STAT_DESC(0x8AC, "etherStatsDropEvents"),
-+	STAT_DESC(0x8B0, "etherStatsOctets"),
-+	STAT_DESC(0x8B4, "etherStatsPkts"),
-+	STAT_DESC(0x8B8, "etherStatsUndersizePkts"),
-+	STAT_DESC(0x8BC, "etherStatsetherStatsOversizePktsDropEvents"),
-+	STAT_DESC(0x8C0, "etherStatsPkts64Octets"),
-+	STAT_DESC(0x8C4, "etherStatsPkts65to127Octets"),
-+	STAT_DESC(0x8C8, "etherStatsPkts128to255Octets"),
-+	STAT_DESC(0x8CC, "etherStatsPkts256to511Octets"),
-+	STAT_DESC(0x8D0, "etherStatsPkts512to1023Octets"),
-+	STAT_DESC(0x8D4, "etherStatsPkts1024to1518Octets"),
-+	STAT_DESC(0x8D8, "etherStatsPkts1519toXOctets"),
-+	STAT_DESC(0x8DC, "etherStatsJabbers"),
-+	STAT_DESC(0x8E0, "etherStatsFragments"),
-+
-+	STAT_DESC(0x8E8, "VLANReceived"),
-+	STAT_DESC(0x8EC, "VLANTransmitted"),
-+
-+	STAT_DESC(0x910, "aDeferred"),
-+	STAT_DESC(0x914, "aMultipleCollisions"),
-+	STAT_DESC(0x918, "aSingleCollisions"),
-+	STAT_DESC(0x91C, "aLateCollisions"),
-+	STAT_DESC(0x920, "aExcessiveCollisions"),
-+	STAT_DESC(0x924, "aCarrierSenseErrors"),
-+};
-+
- static void a5psw_reg_writel(struct a5psw *a5psw, int offset, u32 value)
- {
- 	writel(value, a5psw->base + offset);
-@@ -316,6 +369,50 @@ static void a5psw_port_fast_age(struct dsa_switch *ds, int port)
+@@ -369,6 +369,166 @@ static void a5psw_port_fast_age(struct dsa_switch *ds, int port)
  	a5psw_port_fdb_flush(a5psw, port);
  }
  
-+static void a5psw_get_strings(struct dsa_switch *ds, int port, u32 stringset,
-+			      uint8_t *data)
++static int a5psw_lk_execute_lookup(struct a5psw *a5psw, union lk_data *lk_data,
++				   u16 *entry)
 +{
-+	unsigned int u;
++	u32 ctrl;
++	int ret;
 +
-+	if (stringset != ETH_SS_STATS)
-+		return;
++	a5psw_reg_writel(a5psw, A5PSW_LK_DATA_LO, lk_data->lo);
++	a5psw_reg_writel(a5psw, A5PSW_LK_DATA_HI, lk_data->hi);
 +
-+	for (u = 0; u < ARRAY_SIZE(a5psw_stats); u++) {
-+		strncpy(data + u * ETH_GSTRING_LEN, a5psw_stats[u].name,
-+			ETH_GSTRING_LEN);
-+	}
++	ctrl = A5PSW_LK_ADDR_CTRL_LOOKUP;
++	ret = a5psw_lk_execute_ctrl(a5psw, &ctrl);
++	if (ret)
++		return ret;
++
++	*entry = ctrl & A5PSW_LK_ADDR_CTRL_ADDRESS;
++
++	return 0;
 +}
 +
-+static void a5psw_get_ethtool_stats(struct dsa_switch *ds, int port,
-+				    uint64_t *data)
++static int a5psw_port_fdb_add(struct dsa_switch *ds, int port,
++			      const unsigned char *addr, u16 vid,
++			      struct dsa_db db)
 +{
 +	struct a5psw *a5psw = ds->priv;
-+	u32 reg_lo, reg_hi;
-+	unsigned int u;
++	union lk_data lk_data = {0};
++	bool inc_learncount = false;
++	int ret = 0;
++	u16 entry;
++	u32 reg;
 +
-+	for (u = 0; u < ARRAY_SIZE(a5psw_stats); u++) {
-+		/* A5PSW_STATS_HIWORD is global and thus, access must be
-+		 * exclusive
-+		 */
-+		spin_lock(&a5psw->stats_lock);
-+		reg_lo = a5psw_reg_readl(a5psw, a5psw_stats[u].offset +
-+					 A5PSW_PORT_OFFSET(port));
-+		/* A5PSW_STATS_HIWORD is latched on stat read */
-+		reg_hi = a5psw_reg_readl(a5psw, A5PSW_STATS_HIWORD);
++	ether_addr_copy(lk_data.entry.mac, addr);
++	lk_data.entry.port_mask = BIT(port);
 +
-+		data[u] = ((u64)reg_hi << 32) | reg_lo;
-+		spin_unlock(&a5psw->stats_lock);
++	spin_lock(&a5psw->lk_lock);
++
++	/* Set the value to be written in the lookup table */
++	ret = a5psw_lk_execute_lookup(a5psw, &lk_data, &entry);
++	if (ret)
++		goto lk_unlock;
++
++	lk_data.hi = a5psw_reg_readl(a5psw, A5PSW_LK_DATA_HI);
++	if (!lk_data.entry.valid) {
++		inc_learncount = true;
++		/* port_mask set to 0x1f when entry is not valid, clear it */
++		lk_data.entry.port_mask = 0;
++		lk_data.entry.prio = 0;
 +	}
++
++	lk_data.entry.port_mask |= BIT(port);
++	lk_data.entry.is_static = 1;
++	lk_data.entry.valid = 1;
++
++	a5psw_reg_writel(a5psw, A5PSW_LK_DATA_HI, lk_data.hi);
++
++	reg = A5PSW_LK_ADDR_CTRL_WRITE | entry;
++	ret = a5psw_lk_execute_ctrl(a5psw, &reg);
++	if (ret)
++		goto lk_unlock;
++
++	if (inc_learncount) {
++		reg = A5PSW_LK_LEARNCOUNT_MODE_INC;
++		a5psw_reg_writel(a5psw, A5PSW_LK_LEARNCOUNT, reg);
++	}
++
++lk_unlock:
++	spin_unlock(&a5psw->lk_lock);
++
++	return ret;
 +}
 +
-+static int a5psw_get_sset_count(struct dsa_switch *ds, int port, int sset)
++static int a5psw_port_fdb_del(struct dsa_switch *ds, int port,
++			      const unsigned char *addr, u16 vid,
++			      struct dsa_db db)
 +{
-+	if (sset != ETH_SS_STATS)
-+		return 0;
++	struct a5psw *a5psw = ds->priv;
++	union lk_data lk_data = {0};
++	bool clear = false;
++	int ret = 0;
++	u16 entry;
++	u32 reg;
 +
-+	return ARRAY_SIZE(a5psw_stats);
++	ether_addr_copy(lk_data.entry.mac, addr);
++
++	spin_lock(&a5psw->lk_lock);
++
++	ret = a5psw_lk_execute_lookup(a5psw, &lk_data, &entry);
++	if (ret) {
++		dev_err(a5psw->dev, "Failed to lookup mac address\n");
++		goto lk_unlock;
++	}
++
++	lk_data.hi = a5psw_reg_readl(a5psw, A5PSW_LK_DATA_HI);
++	if (!lk_data.entry.valid) {
++		dev_err(a5psw->dev, "Tried to remove non-existing entry\n");
++		ret = -ENOENT;
++		goto lk_unlock;
++	}
++
++	lk_data.entry.port_mask &= ~BIT(port);
++	/* If there is no more port in the mask, clear the entry */
++	if (lk_data.entry.port_mask == 0)
++		clear = true;
++
++	a5psw_reg_writel(a5psw, A5PSW_LK_DATA_HI, lk_data.hi);
++
++	reg = entry;
++	if (clear)
++		reg |= A5PSW_LK_ADDR_CTRL_CLEAR;
++	else
++		reg |= A5PSW_LK_ADDR_CTRL_WRITE;
++
++	ret = a5psw_lk_execute_ctrl(a5psw, &reg);
++	if (ret)
++		goto lk_unlock;
++
++	/* Decrement LEARNCOUNT */
++	if (clear) {
++		reg = A5PSW_LK_LEARNCOUNT_MODE_DEC;
++		a5psw_reg_writel(a5psw, A5PSW_LK_LEARNCOUNT, reg);
++	}
++
++lk_unlock:
++	spin_unlock(&a5psw->lk_lock);
++
++	return ret;
 +}
 +
- static int a5psw_setup(struct dsa_switch *ds)
++static int a5psw_port_fdb_dump(struct dsa_switch *ds, int port,
++			       dsa_fdb_dump_cb_t *cb, void *data)
++{
++	struct a5psw *a5psw = ds->priv;
++	union lk_data lk_data;
++	int i = 0, ret;
++	u32 reg;
++
++	for (i = 0; i < A5PSW_TABLE_ENTRIES; i++) {
++		reg = A5PSW_LK_ADDR_CTRL_READ | A5PSW_LK_ADDR_CTRL_WAIT | i;
++		spin_lock(&a5psw->lk_lock);
++
++		ret = a5psw_lk_execute_ctrl(a5psw, &reg);
++		if (ret)
++			return ret;
++
++		lk_data.hi = a5psw_reg_readl(a5psw, A5PSW_LK_DATA_HI);
++		/* If entry is not valid or does not contain the port, skip */
++		if (!lk_data.entry.valid ||
++		    !(lk_data.entry.port_mask & BIT(port))) {
++			spin_unlock(&a5psw->lk_lock);
++			continue;
++		}
++
++		lk_data.lo = a5psw_reg_readl(a5psw, A5PSW_LK_DATA_LO);
++		spin_unlock(&a5psw->lk_lock);
++
++		cb(lk_data.entry.mac, 0, lk_data.entry.is_static, data);
++	}
++
++	return 0;
++}
++
+ static void a5psw_get_strings(struct dsa_switch *ds, int port, u32 stringset,
+ 			      uint8_t *data)
  {
- 	struct a5psw *a5psw = ds->priv;
-@@ -395,6 +492,9 @@ const struct dsa_switch_ops a5psw_switch_ops = {
- 	.phylink_mac_link_up = a5psw_phylink_mac_link_up,
- 	.port_change_mtu = a5psw_port_change_mtu,
- 	.port_max_mtu = a5psw_port_max_mtu,
-+	.get_sset_count = a5psw_get_sset_count,
-+	.get_strings = a5psw_get_strings,
-+	.get_ethtool_stats = a5psw_get_ethtool_stats,
- 	.set_ageing_time = a5psw_set_ageing_time,
- 	.port_bridge_join = a5psw_port_bridge_join,
+@@ -500,6 +660,9 @@ const struct dsa_switch_ops a5psw_switch_ops = {
  	.port_bridge_leave = a5psw_port_bridge_leave,
-@@ -580,6 +680,7 @@ static int a5psw_probe(struct platform_device *pdev)
- 		return -ENOMEM;
+ 	.port_stp_state_set = a5psw_port_stp_state_set,
+ 	.port_fast_age = a5psw_port_fast_age,
++	.port_fdb_add = a5psw_port_fdb_add,
++	.port_fdb_del = a5psw_port_fdb_del,
++	.port_fdb_dump = a5psw_port_fdb_dump,
  
- 	a5psw->dev = dev;
-+	spin_lock_init(&a5psw->stats_lock);
- 	spin_lock_init(&a5psw->lk_lock);
- 	spin_lock_init(&a5psw->reg_lock);
- 	a5psw->base = devm_platform_ioremap_resource(pdev, 0);
+ };
+ 
 diff --git a/drivers/net/dsa/rzn1_a5psw.h b/drivers/net/dsa/rzn1_a5psw.h
-index 2d96a2afbc3a..b34ea549e936 100644
+index b34ea549e936..37aa89383e70 100644
 --- a/drivers/net/dsa/rzn1_a5psw.h
 +++ b/drivers/net/dsa/rzn1_a5psw.h
-@@ -177,6 +177,7 @@
-  * @mdio_freq: MDIO bus frequency requested
-  * @pcs: Array of PCS connected to the switch ports (not for the CPU)
-  * @ds: DSA switch struct
-+ * @stats_lock: lock to access statistics (shared HI counter)
-  * @lk_lock: Lock for the lookup table
-  * @reg_lock: Lock for register read-modify-write operation
-  * @flooding_ports: List of ports that should be flooded
-@@ -190,6 +191,7 @@ struct a5psw {
- 	u32 mdio_freq;
- 	struct phylink_pcs *pcs[A5PSW_PORTS_NUM - 1];
- 	struct dsa_switch ds;
-+	spinlock_t stats_lock;
- 	spinlock_t lk_lock;
- 	spinlock_t reg_lock;
- 	u32 flooding_ports;
+@@ -167,6 +167,22 @@
+ #define A5PSW_CTRL_TIMEOUT		1000
+ #define A5PSW_TABLE_ENTRIES		8192
+ 
++struct fdb_entry {
++	u8 mac[ETH_ALEN];
++	u8 valid:1;
++	u8 is_static:1;
++	u8 prio:3;
++	u8 port_mask:5;
++} __packed;
++
++union lk_data {
++	struct {
++		u32 lo;
++		u32 hi;
++	};
++	struct fdb_entry entry;
++};
++
+ /**
+  * struct a5psw - switch struct
+  * @base: Base address of the switch
 -- 
 2.34.1
 
