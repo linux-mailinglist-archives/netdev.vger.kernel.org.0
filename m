@@ -2,204 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 70E9C5029E7
-	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 14:32:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F7C2502A02
+	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 14:35:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347663AbiDOMeP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 08:34:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60182 "EHLO
+        id S1349269AbiDOMhg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 08:37:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353456AbiDOMdk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 08:33:40 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F31853B75;
-        Fri, 15 Apr 2022 05:31:12 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id b15so9774440edn.4;
-        Fri, 15 Apr 2022 05:31:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=/A0b7QXPnRxcdjzjvBy95srF3RhPajcOL797uVjW17k=;
-        b=XPxIYgo6M0hFOfIDjd1x3rJvr403xWmkCv4BfN5SzQ6rl/o2LtUELnVEK2flTgl7Mu
-         h9HynkeZlcHvrZKXB463qAGm4ubHnZ3K84JE6vUQ2VAllYUyaKrzCWHOr4clD8wcI+rZ
-         QpgplpTYCxRlhudFZFTA3TZD85lBUtoeJR2ZadxDeZWKjD8aVgCwTAxdaBFqyCFEJ1J8
-         PEwKA6HHOLREZ0lK50ZwI1XpJLo79AgBKnxd7WsP5o/j86FlHeBFkz4B3rHD3RofjoY7
-         6FtJSZWBNVcMaDMJQhhI3uZMtMt0Od6Y/b3KCJAVC6iktp21nwQegu5vn8S6PUNDQGsm
-         aPaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=/A0b7QXPnRxcdjzjvBy95srF3RhPajcOL797uVjW17k=;
-        b=yV93RsrKv2eXNK4Yp3IBumxMJfYADj/UedZSjRlbp0KL3gWeV94AyUX/VEufsPhKZ1
-         CCfbHdykxjhWTXwfmJ2CREXahuK/mz5RinyDDYOCEm8IHspsVMNfzyHZsw5jwerfBs+9
-         rW8qdvW1UtnVzlaUFcTkUckVeZ1bQGGN2uvk1jL9b+OMJg7V/BD/GTv3C/A0XNg3zaNk
-         IdSihJ2dp/HLmnLpkBgxAlaPNnxrX44LaFpiWDCu9ypWDqjb5oi0r6Hx23PufnyabqZI
-         hDsBhlbDZjhmoRx3yOxrnzr2J++oWXIWt/Fj0vvxZkEdYDzTiSQ/XgJW9yYMw2k5oinO
-         hA0A==
-X-Gm-Message-State: AOAM53185VhOVh2lzAeQG3AW3YtegOZpjemFAee6LNhyFg/Z4N7ceZW7
-        2AJPJVDT3Ur29sucbP7kUEM=
-X-Google-Smtp-Source: ABdhPJzMXbUYQrLVI7KhkcyMDrJ0/R3dZbgsUde+fJ0qaBD2PAAuaj6vloHxnRVzxDfc0Lz8L3X0Bw==
-X-Received: by 2002:a05:6402:26cb:b0:421:e28f:4776 with SMTP id x11-20020a05640226cb00b00421e28f4776mr4442275edd.400.1650025870912;
-        Fri, 15 Apr 2022 05:31:10 -0700 (PDT)
-Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id bo14-20020a170906d04e00b006ce98d9c3e3sm1649533ejb.194.2022.04.15.05.31.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 05:31:10 -0700 (PDT)
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S1353437AbiDOMhS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 08:37:18 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 485DAC74B8;
+        Fri, 15 Apr 2022 05:32:50 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 6B01B24000B;
+        Fri, 15 Apr 2022 12:32:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1650025969;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/rpSdRIr29uNTmJaIt9QZ8DL3HFAoCTObhaQHkW3Kc8=;
+        b=PMANM4wIkVW/Tb63MnsMzWSZrCLJdDueAmYFd0HG4+yq3+ZT5dG+bsiust3DfCU+U4ei7C
+        zzOUf3jW+4KXkACkNhTB1KyHNhCFPEgYADQ1m5PrHB73iS9qh664xxQpeAbvYNxIwnAH2c
+        AvGyCpi/yavxV5erssG/G3WMCJ2XDKhwlcm5FpEj6OyYN1aXFO662a66XW55agee6WsUYe
+        j9darq1RkYXSneWVPn/0Mb0fvJ3CakzU22YSd9g4e32I63v+ylnMroET52hF04AWMwm7Xm
+        F7bOnFbSW5db9ZXZ9BarWjnDEMov6AYm/ZuwWsnKpi934Rl9+ZWLZZGGOtcTOA==
+Date:   Fri, 15 Apr 2022 14:31:20 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com, Ariel Elior <aelior@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Casper Andersson <casper.casan@gmail.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Colin Ian King <colin.king@intel.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Xu Wang <vulab@iscas.ac.cn>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, bpf@vger.kernel.org,
-        Mike Rapoport <rppt@kernel.org>,
-        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH net-next v4 18/18] team: Remove use of list iterator variable for list_for_each_entry_from()
-Date:   Fri, 15 Apr 2022 14:29:47 +0200
-Message-Id: <20220415122947.2754662-19-jakobkoschel@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220415122947.2754662-1-jakobkoschel@gmail.com>
-References: <20220415122947.2754662-1-jakobkoschel@gmail.com>
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
+        Jean-Pierre Geslin <jean-pierre.geslin@non.se.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>
+Subject: Re: [PATCH net-next 06/12] net: dsa: rzn1-a5psw: add Renesas RZ/N1
+ advanced 5 port switch driver
+Message-ID: <20220415143120.4c406ff9@fixe.home>
+In-Reply-To: <20220415110524.4lhue7gcwqlhk2iv@skbuf>
+References: <20220414122250.158113-1-clement.leger@bootlin.com>
+        <20220414122250.158113-7-clement.leger@bootlin.com>
+        <20220414144709.tpxiiaiy2hu4n7fd@skbuf>
+        <20220415113453.1a076746@fixe.home>
+        <20220415105503.ztl4zhoyua2qzelt@skbuf>
+        <20220415110524.4lhue7gcwqlhk2iv@skbuf>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In preparation to limit the scope of the list iterator variable to the
-list traversal loop, use a dedicated pointer to iterate through the
-list [1].
+Le Fri, 15 Apr 2022 14:05:24 +0300,
+Vladimir Oltean <olteanv@gmail.com> a =C3=A9crit :
 
-Since that variable should not be used past the loop iteration, a
-separate variable is used to 'remember the current location within the
-loop'.
+> On Fri, Apr 15, 2022 at 01:55:03PM +0300, Vladimir Oltean wrote:
+> > > > The selftests don't cover nearly enough, but just to make sure that=
+ they
+> > > > pass for your switch, when you use 2 switch ports as h1 and h2 (hos=
+ts),
+> > > > and 2 ports as swp1 and swp2? There's surprisingly little that you =
+do on
+> > > > .port_bridge_join, I need to study the code more. =20
+> > >=20
+> > > Port isolation is handled by using a pattern matcher which is enabled
+> > > for each port at setup. If set, the port packet will only be forwarded
+> > > to the CPU port. When bridging is needed, the pattern matching is
+> > > disabled and thus, the packets are forwarded between all the ports th=
+at
+> > > are enabled in the bridge. =20
+> >=20
+> > Is there some public documentation for this pattern matcher? =20
+>=20
+> Again, I realize I haven't made it clear what concerns me here.
+> On ->port_bridge_join() and ->port_bridge_leave(), the "bridge" is given
+> to you as argument. 2 ports may join br0, and 2 ports may join br1.
+> You disregard the "bridge" argument. So you enable forwarding between
+> br0 and br1. What I'd like to see is what the hardware can do in terms
+> of this "pattern matching", to improve on this situation.
 
-To either continue iterating from that position or skip the iteration
-(if the previous iteration was complete) list_prepare_entry() is used.
+Yes, you are right, the driver currently won't support 2 differents
+bridges. Either I add checks to support explicitely only one, or I add
+support for multiple bridges. This would probably requires to use VLAN
+internally to separate trafic.
 
-Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
----
- drivers/net/team/team.c | 20 +++++++++++++-------
- 1 file changed, 13 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
-index b07dde6f0abf..688c4393f099 100644
---- a/drivers/net/team/team.c
-+++ b/drivers/net/team/team.c
-@@ -2425,17 +2425,17 @@ static int team_nl_send_options_get(struct team *team, u32 portid, u32 seq,
- 				    int flags, team_nl_send_func_t *send_func,
- 				    struct list_head *sel_opt_inst_list)
- {
-+	struct team_option_inst *opt_inst, *tmp = NULL;
- 	struct nlattr *option_list;
- 	struct nlmsghdr *nlh;
- 	void *hdr;
--	struct team_option_inst *opt_inst;
- 	int err;
- 	struct sk_buff *skb = NULL;
- 	bool incomplete;
- 	int i;
- 
--	opt_inst = list_first_entry(sel_opt_inst_list,
--				    struct team_option_inst, tmp_list);
-+	tmp = list_first_entry(sel_opt_inst_list,
-+			       struct team_option_inst, tmp_list);
- 
- start_again:
- 	err = __send_and_alloc_skb(&skb, team, portid, send_func);
-@@ -2456,7 +2456,9 @@ static int team_nl_send_options_get(struct team *team, u32 portid, u32 seq,
- 		goto nla_put_failure;
- 
- 	i = 0;
-+	opt_inst = list_prepare_entry(tmp, sel_opt_inst_list, tmp_list);
- 	incomplete = false;
-+	tmp = NULL;
- 	list_for_each_entry_from(opt_inst, sel_opt_inst_list, tmp_list) {
- 		err = team_nl_fill_one_option_get(skb, team, opt_inst);
- 		if (err) {
-@@ -2464,6 +2466,7 @@ static int team_nl_send_options_get(struct team *team, u32 portid, u32 seq,
- 				if (!i)
- 					goto errout;
- 				incomplete = true;
-+				tmp = opt_inst;
- 				break;
- 			}
- 			goto errout;
-@@ -2707,14 +2710,14 @@ static int team_nl_send_port_list_get(struct team *team, u32 portid, u32 seq,
- 	struct nlattr *port_list;
- 	struct nlmsghdr *nlh;
- 	void *hdr;
--	struct team_port *port;
-+	struct team_port *port, *tmp = NULL;
- 	int err;
- 	struct sk_buff *skb = NULL;
- 	bool incomplete;
- 	int i;
- 
--	port = list_first_entry_or_null(&team->port_list,
--					struct team_port, list);
-+	tmp = list_first_entry_or_null(&team->port_list,
-+				       struct team_port, list);
- 
- start_again:
- 	err = __send_and_alloc_skb(&skb, team, portid, send_func);
-@@ -2744,7 +2747,9 @@ static int team_nl_send_port_list_get(struct team *team, u32 portid, u32 seq,
- 		err = team_nl_fill_one_port_get(skb, one_port);
- 		if (err)
- 			goto errout;
--	} else if (port) {
-+	} else {
-+		port = list_prepare_entry(tmp, &team->port_list, list);
-+		tmp = NULL;
- 		list_for_each_entry_from(port, &team->port_list, list) {
- 			err = team_nl_fill_one_port_get(skb, port);
- 			if (err) {
-@@ -2752,6 +2757,7 @@ static int team_nl_send_port_list_get(struct team *team, u32 portid, u32 seq,
- 					if (!i)
- 						goto errout;
- 					incomplete = true;
-+					tmp = port;
- 					break;
- 				}
- 				goto errout;
--- 
-2.25.1
-
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
