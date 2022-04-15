@@ -2,118 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 28A7D50314B
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 01:10:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 287C15030B3
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 01:09:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354897AbiDOVni (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 17:43:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54090 "EHLO
+        id S1356191AbiDOVx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 17:53:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356195AbiDOVna (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 17:43:30 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 844FF42A3F;
-        Fri, 15 Apr 2022 14:40:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650058859; x=1681594859;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=D+EtR25o6TgsLEAQY93ZWajgB/+OLtNNhIpII8Uyeks=;
-  b=J3NJ2Jp/yNJsDB+nyegVPy2Zfz0dGoiKYRsWIRuuk+Ts3oY/9dv/phJ8
-   m/Nw4PeAnACterylQtv7B8vTwommLSQk2jbV1nLvWA2H+9UVs8dUYzYEn
-   14/ZnoXbEwDuZH7RZiuCQEydzJtYW9zwhbOJbrzYTC6OyR2c9ZBbLEvye
-   r8SDgr0szB7b5ZQ1T/rVkeqFN2Cb0JWcdN8iI0fL+S5KoufYJT2jVD+vr
-   IE2qtvPLfYyy0tYhrN9ORxcSNhUmq7BK/29s4ysXn7uq9vjjd9sPzzwKA
-   sePgw5NLhihmufbRaXV7WNYW69ckemgt4ltgCttgCH2r32bZNMXUGuySk
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10318"; a="262695357"
-X-IronPort-AV: E=Sophos;i="5.90,263,1643702400"; 
-   d="scan'208";a="262695357"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2022 14:40:58 -0700
-X-IronPort-AV: E=Sophos;i="5.90,263,1643702400"; 
-   d="scan'208";a="560709031"
-Received: from aelhiber-mobl2.amr.corp.intel.com (HELO localhost) ([10.212.78.254])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2022 14:40:58 -0700
-Date:   Fri, 15 Apr 2022 14:40:58 -0700
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-Cc:     outreachy@lists.linux.dev, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] intel: igb: igb_ethtool.c: Convert kmap() to
- kmap_local_page()
-Message-ID: <Ylnmaji5bHHp8t3p@iweiny-desk3>
-References: <20220415205307.675650-1-eng.alaamohamedsoliman.am@gmail.com>
+        with ESMTP id S1356189AbiDOVxj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 17:53:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2374B6F4B9
+        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 14:50:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF73DB82FDE
+        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 21:50:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4E7A5C385A9;
+        Fri, 15 Apr 2022 21:50:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650059413;
+        bh=ijHrUpeWHCppukSPMzVjDmycrDNJYfjMZeOxeemcM7I=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=g+gdjZxIK/2G2gOvnUQGrmtpLMXaqMiw770q5YFuTo7UO5PjErahFY5kOgiNc5fOB
+         pbp2/GqanRVTLynsx1i6y6thsUEEuP10wfSDHqcH/TsYuTgUW61NMXck1CxNW+FKwL
+         ctdVfOWDPe0TjQmz9bCOJRijrX61xM8j50LCanjlWHpI/PE4UzELk292qu4vWNDLAD
+         IqiDs/ij5uE+zgDk2ANhBNZQsaKcBDYZgQwuo4Hnzn/yrhUjlj6mASSK5LpKdaP+Uz
+         YKudNdMr09ijYMAPe85JzfYEOfKMg3MJeeejuQD5AtqbHhkcsrYgOeTtnXodi+AHOR
+         OP91om1OoaBkw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2EEF8EAC096;
+        Fri, 15 Apr 2022 21:50:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220415205307.675650-1-eng.alaamohamedsoliman.am@gmail.com>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] ipv6: make ip6_rt_gc_expire an atomic_t
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165005941318.21261.5695810530637959197.git-patchwork-notify@kernel.org>
+Date:   Fri, 15 Apr 2022 21:50:13 +0000
+References: <20220413181333.649424-1-eric.dumazet@gmail.com>
+In-Reply-To: <20220413181333.649424-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        dsahern@kernel.org, netdev@vger.kernel.org, edumazet@google.com,
+        syzkaller@googlegroups.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 15, 2022 at 10:53:07PM +0200, Alaa Mohamed wrote:
-> The use of kmap() is being deprecated in favor of kmap_local_page()
-> where it is feasible.
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Wed, 13 Apr 2022 11:13:33 -0700 you wrote:
+> From: Eric Dumazet <edumazet@google.com>
 > 
-> With kmap_local_page(), the mapping is per thread, CPU local and not
-> globally visible.
+> Reads and Writes to ip6_rt_gc_expire always have been racy,
+> as syzbot reported lately [1]
 > 
-> Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-> ---
->  drivers/net/ethernet/intel/igb/igb_ethtool.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> There is a possible risk of under-flow, leading
+> to unexpected high value passed to fib6_run_gc(),
+> although I have not observed this in the field.
 > 
-> diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-> index 2a5782063f4c..ba93aa4ae6a0 100644
-> --- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
-> +++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-> @@ -1798,14 +1798,14 @@ static int igb_check_lbtest_frame(struct igb_rx_buffer *rx_buffer,
->  
->  	frame_size >>= 1;
->  
-> -	data = kmap(rx_buffer->page);
-> +	data = kmap_local_page(rx_buffer->page);
->  
->  	if (data[3] != 0xFF ||
->  	    data[frame_size + 10] != 0xBE ||
->  	    data[frame_size + 12] != 0xAF)
->  		match = false;
->  
-> -	kunmap(rx_buffer->page);
-> +	kunmap_local(rx_buffer->page);
+> [...]
 
-kunmap_local() is different from kunmap().  It takes an address within the
-mapped page.  From the kdoc:
+Here is the summary with links:
+  - [net] ipv6: make ip6_rt_gc_expire an atomic_t
+    https://git.kernel.org/netdev/net/c/9cb7c013420f
 
-/**
- * kunmap_local - Unmap a page mapped via kmap_local_page().
- * @__addr: An address within the page mapped
- *
- * @__addr can be any address within the mapped page.  Commonly it is the
- * address return from kmap_local_page(), but it can also include offsets.
- *
- * Unmapping should be done in the reverse order of the mapping.  See
- * kmap_local_page() for details.
- */
-#define kunmap_local(__addr)                                    \
-...
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-Ira
-
->  
->  	return match;
->  }
-> -- 
-> 2.35.2
-> 
