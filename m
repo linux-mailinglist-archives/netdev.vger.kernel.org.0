@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9191A502DD6
+	by mail.lfdr.de (Postfix) with ESMTP id 4989D502DD5
 	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 18:41:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355884AbiDOQng (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 12:43:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40798 "EHLO
+        id S1355892AbiDOQnh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 12:43:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355882AbiDOQna (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 12:43:30 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BFF5C90DA
-        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 09:41:02 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id bg9so7663851pgb.9
-        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 09:41:02 -0700 (PDT)
+        with ESMTP id S1355896AbiDOQnf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 12:43:35 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0B68CD30B
+        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 09:41:06 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id 32so7688743pgl.4
+        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 09:41:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=wi8lR72hF3bb7piHXu1Feo29o6OHeeNjrPbGCw7lHhY=;
-        b=N1L+iEYfRrPV3+Fq1c2la+aaQPbqxMhRcEYMS8uOA7wMoKpIeFd8cQHgdTS1/oF+LB
-         h66WV8ieDUeasF2Uyq1+Ge5vQUoUAMKb1LY6+lpNN6kGijSASYl+h7VQhC1ByUDsaZ1t
-         zmKyaFMT4fZRybFGOuiMi3Qk7FCprh63EhMHC2bfjEZk6zk/8qIdH4M5/nF4j+l7/3Ac
-         lilgHGoL7AGTYJZt5jD2ohuS5SaLbMvjOB790Cl0Th5i+E+GUREBbx7Iva5RrG3XMY8J
-         Qpsowitrhm2P/m8EGPJFFcXlCjZDu+seaJBuTo1y0qRee5rGYTSpUkcHU+tAimTky9Ui
-         SOHQ==
+        bh=pi2p9s+7ockuAfhrzEFX26mtKh7CLuNVCsy4MKBs+0A=;
+        b=joaIqEfP9X+4vMjl7KWx6hzI5qg0RY4vxPCynj2wWO58LVVm7KslIHY9NlPQcvYrdx
+         1d4gPCvaffIlxycb+2nE32s//+iaWpMum1VO50/syRK0LpImF0BxvV8MXHGcN/syiNGh
+         3+iLQ3U0C8gooxksM1V40FkK4EFNXu/B0wwNgXdTh0BTMaCt8EXDtVeMP1RxkSYBwXmi
+         fEISl8WCkDFk3zWDd3KGHudxIFJl/iC5ceM39JxtfokWdDEfJDFyr9JjppAgcGTVb9Ok
+         GyBape6hNEeB/5rMk9hoCBbKWBBH3uD5oEA7nsXgPoi3VG6AFDnMSt7dBjWDGGVBjjIU
+         2Q9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=wi8lR72hF3bb7piHXu1Feo29o6OHeeNjrPbGCw7lHhY=;
-        b=AfG2T/8aOEzfKB/hJ/HSu2owyBCASv16enbSS1amFpElME59YmaIbSGAphyn4/eTJm
-         OSpNXXJf55c4roS3/XyMGK2Uct5/zKdK1kGKbkcnqH+qcnfjx1OOs6b07tdC0dbog5Yj
-         y3jLxdxdHQM2BOICiHdzq7EHgKAKoa9vxnIIWq/IbPeTPRP02OxMoQ4DmBOANdxQv98O
-         I0aWUlaJURcIwXATDTlNIIybpHZsU534sjliIstNorPKvswNeKzi/bjvZgTSwxgXoyex
-         FUW4pgV/lieDW2MhC57VhDncAL8KB3dK0rCc4U9riRdSC9fw2yVamC2gA77ybkle2XB6
-         LV3A==
-X-Gm-Message-State: AOAM532fuWXkm9v4lWsh/hEIaUbI+wBG9E6YgnRrmxD3Vmh6S/3Wcmaz
-        wSog1+wXknWuFZ79ZlucnJgSWUWElNPsCwZx
-X-Google-Smtp-Source: ABdhPJyg69QSTqzGDZCn553CrxqJg5kUmRSzMHrqUuasw7ccic3fLSKb9Aj3Uh+xduzfoChX+0tRgQ==
-X-Received: by 2002:a65:6b8e:0:b0:39d:6761:300f with SMTP id d14-20020a656b8e000000b0039d6761300fmr7201154pgw.42.1650040861163;
-        Fri, 15 Apr 2022 09:41:01 -0700 (PDT)
+        bh=pi2p9s+7ockuAfhrzEFX26mtKh7CLuNVCsy4MKBs+0A=;
+        b=4EjPmhBxH5xOIgMnz/PImKRVYfZXVLtvo0GmrT/gZmOzzmsZ7ma0up4IBl/SgWke6T
+         Eb7agXXSFRAq1OOQ5w/Vv2YH4FHDBD8hQkn/sT14LyYe+Iy0Z7my0KlI4EpGnp1BqSRF
+         tcNjpH0lPlBuwqqI2CWn9aYKvvw3cxNwx1gi/xczyjdjj+qVcDryXIsSQi1znjOMn+jB
+         7hSXPPfYw8YNVk0WVA47lOmicgLzrQwNRc8UzdC3/vXP33ldiX+/xOdsfzJSSe+Ciwc1
+         NmQ3t+75uHBr208ClWi9jEixddOcPTRfoJChAognHTnoklXMaEfjWFru4MvB5xSDI7Nm
+         +rbw==
+X-Gm-Message-State: AOAM533Vz5bCRoB3x77QedODy4z/0NCWx5mMCOhufjF8jqQP4k5LtIS3
+        i1bTrMGl+Kw/3ZjRhJadlLe2/xlYF3wH3Vwd
+X-Google-Smtp-Source: ABdhPJzMB1w6zmYwGxuvv1ItAsg62ji6u3UB1Car0vPq6UsygesfjrOiEFSDovJkV+TUbrudStCYQQ==
+X-Received: by 2002:a05:6a00:b8e:b0:505:8d7e:cb02 with SMTP id g14-20020a056a000b8e00b005058d7ecb02mr9577268pfj.68.1650040865862;
+        Fri, 15 Apr 2022 09:41:05 -0700 (PDT)
 Received: from localhost.localdomain ([111.201.148.136])
-        by smtp.gmail.com with ESMTPSA id w123-20020a623081000000b005056a4d71e3sm3322171pfw.77.2022.04.15.09.40.56
+        by smtp.gmail.com with ESMTPSA id w123-20020a623081000000b005056a4d71e3sm3322171pfw.77.2022.04.15.09.41.01
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 15 Apr 2022 09:41:00 -0700 (PDT)
+        Fri, 15 Apr 2022 09:41:05 -0700 (PDT)
 From:   xiangxia.m.yue@gmail.com
 To:     netdev@vger.kernel.org
 Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
@@ -66,9 +66,9 @@ Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
         Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Antoine Tenart <atenart@kernel.org>,
         Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
-Subject: [net-next RESEND v11 1/2] net: sched: use queue_mapping to pick tx queue
-Date:   Sat, 16 Apr 2022 00:40:45 +0800
-Message-Id: <20220415164046.26636-2-xiangxia.m.yue@gmail.com>
+Subject: [net-next RESEND v11 2/2] net: sched: support hash selecting tx queue
+Date:   Sat, 16 Apr 2022 00:40:46 +0800
+Message-Id: <20220415164046.26636-3-xiangxia.m.yue@gmail.com>
 X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 In-Reply-To: <20220415164046.26636-1-xiangxia.m.yue@gmail.com>
 References: <20220415164046.26636-1-xiangxia.m.yue@gmail.com>
@@ -86,59 +86,15 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-This patch fixes issue:
-* If we install tc filters with act_skbedit in clsact hook.
-  It doesn't work, because netdev_core_pick_tx() overwrites
-  queue_mapping.
+This patch allows users to pick queue_mapping, range
+from A to B. Then we can load balance packets from A
+to B tx queue. The range is an unsigned 16bit value
+in decimal format.
 
-  $ tc filter ... action skbedit queue_mapping 1
+$ tc filter ... action skbedit queue_mapping skbhash A B
 
-And this patch is useful:
-* We can use FQ + EDT to implement efficient policies. Tx queues
-  are picked by xps, ndo_select_queue of netdev driver, or skb hash
-  in netdev_core_pick_tx(). In fact, the netdev driver, and skb
-  hash are _not_ under control. xps uses the CPUs map to select Tx
-  queues, but we can't figure out which task_struct of pod/containter
-  running on this cpu in most case. We can use clsact filters to classify
-  one pod/container traffic to one Tx queue. Why ?
-
-  In containter networking environment, there are two kinds of pod/
-  containter/net-namespace. One kind (e.g. P1, P2), the high throughput
-  is key in these applications. But avoid running out of network resource,
-  the outbound traffic of these pods is limited, using or sharing one
-  dedicated Tx queues assigned HTB/TBF/FQ Qdisc. Other kind of pods
-  (e.g. Pn), the low latency of data access is key. And the traffic is not
-  limited. Pods use or share other dedicated Tx queues assigned FIFO Qdisc.
-  This choice provides two benefits. First, contention on the HTB/FQ Qdisc
-  lock is significantly reduced since fewer CPUs contend for the same queue.
-  More importantly, Qdisc contention can be eliminated completely if each
-  CPU has its own FIFO Qdisc for the second kind of pods.
-
-  There must be a mechanism in place to support classifying traffic based on
-  pods/container to different Tx queues. Note that clsact is outside of Qdisc
-  while Qdisc can run a classifier to select a sub-queue under the lock.
-
-  In general recording the decision in the skb seems a little heavy handed.
-  This patch introduces a per-CPU variable, suggested by Eric.
-
-  The xmit.skip_txqueue flag is firstly cleared in __dev_queue_xmit().
-  - Tx Qdisc may install that skbedit actions, then xmit.skip_txqueue flag
-    is set in qdisc->enqueue() though tx queue has been selected in
-    netdev_tx_queue_mapping() or netdev_core_pick_tx(). That flag is cleared
-    firstly in __dev_queue_xmit(), is useful:
-  - Avoid picking Tx queue with netdev_tx_queue_mapping() in next netdev
-    in such case: eth0 macvlan - eth0.3 vlan - eth0 ixgbe-phy:
-    For example, eth0, macvlan in pod, which root Qdisc install skbedit
-    queue_mapping, send packets to eth0.3, vlan in host. In __dev_queue_xmit() of
-    eth0.3, clear the flag, does not select tx queue according to skb->queue_mapping
-    because there is no filters in clsact or tx Qdisc of this netdev.
-    Same action taked in eth0, ixgbe in Host.
-  - Avoid picking Tx queue for next packet. If we set xmit.skip_txqueue
-    in tx Qdisc (qdisc->enqueue()), the proper way to clear it is clearing it
-    in __dev_queue_xmit when processing next packets.
-
-  For performance reasons, use the static key. If user does not config the NET_EGRESS,
-  the patch will not be compiled.
+"skbedit queue_mapping QUEUE_MAPPING" (from "man 8 tc-skbedit")
+is enhanced with flags: SKBEDIT_F_TXQ_SKBHASH
 
   +----+      +----+      +----+
   | P1 |      | P2 |      | Pn |
@@ -150,9 +106,70 @@ And this patch is useful:
                 |      MQ
                 v
     +-----------+-----------+
-    | q0        | q1        | qn
+    | q0        | qn        | qm
     v           v           v
-  HTB/FQ      HTB/FQ  ...  FIFO
+  HTB/FQ       FIFO   ...  FIFO
+
+For example:
+If P1 sends out packets to different Pods on other host, and
+we want distribute flows from qn - qm. Then we can use skb->hash
+as hash.
+
+setup commands:
+$ NETDEV=eth0
+$ ip netns add n1
+$ ip link add ipv1 link $NETDEV type ipvlan mode l2
+$ ip link set ipv1 netns n1
+$ ip netns exec n1 ifconfig ipv1 2.2.2.100/24 up
+
+$ tc qdisc add dev $NETDEV clsact
+$ tc filter add dev $NETDEV egress protocol ip prio 1 \
+        flower skip_hw src_ip 2.2.2.100 action skbedit queue_mapping skbhash 2 6
+$ tc qdisc add dev $NETDEV handle 1: root mq
+$ tc qdisc add dev $NETDEV parent 1:1 handle 2: htb
+$ tc class add dev $NETDEV parent 2: classid 2:1 htb rate 100kbit
+$ tc class add dev $NETDEV parent 2: classid 2:2 htb rate 200kbit
+$ tc qdisc add dev $NETDEV parent 1:2 tbf rate 100mbit burst 100mb latency 1
+$ tc qdisc add dev $NETDEV parent 1:3 pfifo
+$ tc qdisc add dev $NETDEV parent 1:4 pfifo
+$ tc qdisc add dev $NETDEV parent 1:5 pfifo
+$ tc qdisc add dev $NETDEV parent 1:6 pfifo
+$ tc qdisc add dev $NETDEV parent 1:7 pfifo
+
+$ ip netns exec n1 iperf3 -c 2.2.2.1 -i 1 -t 10 -P 10
+
+pick txqueue from 2 - 6:
+$ ethtool -S $NETDEV | grep -i tx_queue_[0-9]_bytes
+     tx_queue_0_bytes: 42
+     tx_queue_1_bytes: 0
+     tx_queue_2_bytes: 11442586444
+     tx_queue_3_bytes: 7383615334
+     tx_queue_4_bytes: 3981365579
+     tx_queue_5_bytes: 3983235051
+     tx_queue_6_bytes: 6706236461
+     tx_queue_7_bytes: 42
+     tx_queue_8_bytes: 0
+     tx_queue_9_bytes: 0
+
+txqueues 2 - 6 are mapped to classid 1:3 - 1:7
+$ tc -s class show dev $NETDEV
+...
+class mq 1:3 root leaf 8002:
+ Sent 11949133672 bytes 7929798 pkt (dropped 0, overlimits 0 requeues 0)
+ backlog 0b 0p requeues 0
+class mq 1:4 root leaf 8003:
+ Sent 7710449050 bytes 5117279 pkt (dropped 0, overlimits 0 requeues 0)
+ backlog 0b 0p requeues 0
+class mq 1:5 root leaf 8004:
+ Sent 4157648675 bytes 2758990 pkt (dropped 0, overlimits 0 requeues 0)
+ backlog 0b 0p requeues 0
+class mq 1:6 root leaf 8005:
+ Sent 4159632195 bytes 2759990 pkt (dropped 0, overlimits 0 requeues 0)
+ backlog 0b 0p requeues 0
+class mq 1:7 root leaf 8006:
+ Sent 7003169603 bytes 4646912 pkt (dropped 0, overlimits 0 requeues 0)
+ backlog 0b 0p requeues 0
+...
 
 Cc: Jamal Hadi Salim <jhs@mojatatu.com>
 Cc: Cong Wang <xiyou.wangcong@gmail.com>
@@ -171,128 +188,156 @@ Cc: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 Cc: Antoine Tenart <atenart@kernel.org>
 Cc: Wei Wang <weiwan@google.com>
 Cc: Arnd Bergmann <arnd@arndb.de>
-Suggested-by: Eric Dumazet <edumazet@google.com>
 Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
 ---
- include/linux/netdevice.h |  3 +++
- include/linux/rtnetlink.h |  1 +
- net/core/dev.c            | 31 +++++++++++++++++++++++++++++--
- net/sched/act_skbedit.c   |  6 +++++-
- 4 files changed, 38 insertions(+), 3 deletions(-)
+ include/net/tc_act/tc_skbedit.h        |  1 +
+ include/uapi/linux/tc_act/tc_skbedit.h |  2 ++
+ net/sched/act_skbedit.c                | 49 ++++++++++++++++++++++++--
+ 3 files changed, 50 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index a602f29365b0..7dccbfd1bf56 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -3061,6 +3061,9 @@ struct softnet_data {
- 	struct {
- 		u16 recursion;
- 		u8  more;
-+#ifdef CONFIG_NET_EGRESS
-+		u8  skip_txqueue;
-+#endif
- 	} xmit;
- #ifdef CONFIG_RPS
- 	/* input_queue_head should be written by cpu owning this struct,
-diff --git a/include/linux/rtnetlink.h b/include/linux/rtnetlink.h
-index 7f970b16da3a..ae2c6a3cec5d 100644
---- a/include/linux/rtnetlink.h
-+++ b/include/linux/rtnetlink.h
-@@ -100,6 +100,7 @@ void net_dec_ingress_queue(void);
- #ifdef CONFIG_NET_EGRESS
- void net_inc_egress_queue(void);
- void net_dec_egress_queue(void);
-+void netdev_xmit_skip_txqueue(bool skip);
- #endif
+diff --git a/include/net/tc_act/tc_skbedit.h b/include/net/tc_act/tc_skbedit.h
+index cab8229b9bed..dc1079f28e13 100644
+--- a/include/net/tc_act/tc_skbedit.h
++++ b/include/net/tc_act/tc_skbedit.h
+@@ -17,6 +17,7 @@ struct tcf_skbedit_params {
+ 	u32 mark;
+ 	u32 mask;
+ 	u16 queue_mapping;
++	u16 mapping_mod;
+ 	u16 ptype;
+ 	struct rcu_head rcu;
+ };
+diff --git a/include/uapi/linux/tc_act/tc_skbedit.h b/include/uapi/linux/tc_act/tc_skbedit.h
+index 800e93377218..6cb6101208d0 100644
+--- a/include/uapi/linux/tc_act/tc_skbedit.h
++++ b/include/uapi/linux/tc_act/tc_skbedit.h
+@@ -29,6 +29,7 @@
+ #define SKBEDIT_F_PTYPE			0x8
+ #define SKBEDIT_F_MASK			0x10
+ #define SKBEDIT_F_INHERITDSFIELD	0x20
++#define SKBEDIT_F_TXQ_SKBHASH		0x40
  
- void rtnetlink_init(void);
-diff --git a/net/core/dev.c b/net/core/dev.c
-index ba853e878007..4a77ebda4fb1 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -3925,6 +3925,25 @@ sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
- 
- 	return skb;
- }
-+
-+static struct netdev_queue *
-+netdev_tx_queue_mapping(struct net_device *dev, struct sk_buff *skb)
-+{
-+	int qm = skb_get_queue_mapping(skb);
-+
-+	return netdev_get_tx_queue(dev, netdev_cap_txqueue(dev, qm));
-+}
-+
-+static bool netdev_xmit_txqueue_skipped(void)
-+{
-+	return __this_cpu_read(softnet_data.xmit.skip_txqueue);
-+}
-+
-+void netdev_xmit_skip_txqueue(bool skip)
-+{
-+	__this_cpu_write(softnet_data.xmit.skip_txqueue, skip);
-+}
-+EXPORT_SYMBOL_GPL(netdev_xmit_skip_txqueue);
- #endif /* CONFIG_NET_EGRESS */
- 
- #ifdef CONFIG_XPS
-@@ -4095,7 +4114,7 @@ struct netdev_queue *netdev_core_pick_tx(struct net_device *dev,
- static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
- {
- 	struct net_device *dev = skb->dev;
--	struct netdev_queue *txq;
-+	struct netdev_queue *txq = NULL;
- 	struct Qdisc *q;
- 	int rc = -ENOMEM;
- 	bool again = false;
-@@ -4123,11 +4142,17 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
- 			if (!skb)
- 				goto out;
- 		}
-+
-+		netdev_xmit_skip_txqueue(false);
-+
- 		nf_skip_egress(skb, true);
- 		skb = sch_handle_egress(skb, &rc, dev);
- 		if (!skb)
- 			goto out;
- 		nf_skip_egress(skb, false);
-+
-+		if (netdev_xmit_txqueue_skipped())
-+			txq = netdev_tx_queue_mapping(dev, skb);
- 	}
- #endif
- 	/* If device/qdisc don't need skb->dst, release it right now while
-@@ -4138,7 +4163,9 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
- 	else
- 		skb_dst_force(skb);
- 
--	txq = netdev_core_pick_tx(dev, skb, sb_dev);
-+	if (!txq)
-+		txq = netdev_core_pick_tx(dev, skb, sb_dev);
-+
- 	q = rcu_dereference_bh(txq->qdisc);
- 
- 	trace_net_dev_queue(skb);
+ struct tc_skbedit {
+ 	tc_gen;
+@@ -45,6 +46,7 @@ enum {
+ 	TCA_SKBEDIT_PTYPE,
+ 	TCA_SKBEDIT_MASK,
+ 	TCA_SKBEDIT_FLAGS,
++	TCA_SKBEDIT_QUEUE_MAPPING_MAX,
+ 	__TCA_SKBEDIT_MAX
+ };
+ #define TCA_SKBEDIT_MAX (__TCA_SKBEDIT_MAX - 1)
 diff --git a/net/sched/act_skbedit.c b/net/sched/act_skbedit.c
-index 92d0dc754207..1c5fdb6e7c2f 100644
+index 1c5fdb6e7c2f..e3bd11dfe1ca 100644
 --- a/net/sched/act_skbedit.c
 +++ b/net/sched/act_skbedit.c
-@@ -58,8 +58,12 @@ static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
- 		}
- 	}
- 	if (params->flags & SKBEDIT_F_QUEUE_MAPPING &&
--	    skb->dev->real_num_tx_queues > params->queue_mapping)
-+	    skb->dev->real_num_tx_queues > params->queue_mapping) {
-+#ifdef CONFIG_NET_EGRESS
-+		netdev_xmit_skip_txqueue(true);
-+#endif
- 		skb_set_queue_mapping(skb, params->queue_mapping);
+@@ -23,6 +23,20 @@
+ static unsigned int skbedit_net_id;
+ static struct tc_action_ops act_skbedit_ops;
+ 
++static u16 tcf_skbedit_hash(struct tcf_skbedit_params *params,
++			    struct sk_buff *skb)
++{
++	u16 queue_mapping = params->queue_mapping;
++
++	if (params->flags & SKBEDIT_F_TXQ_SKBHASH) {
++		u32 hash = skb_get_hash(skb);
++
++		queue_mapping += hash % params->mapping_mod;
 +	}
++
++	return netdev_cap_txqueue(skb->dev, queue_mapping);
++}
++
+ static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
+ 			   struct tcf_result *res)
+ {
+@@ -62,7 +76,7 @@ static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
+ #ifdef CONFIG_NET_EGRESS
+ 		netdev_xmit_skip_txqueue(true);
+ #endif
+-		skb_set_queue_mapping(skb, params->queue_mapping);
++		skb_set_queue_mapping(skb, tcf_skbedit_hash(params, skb));
+ 	}
  	if (params->flags & SKBEDIT_F_MARK) {
  		skb->mark &= ~params->mask;
- 		skb->mark |= params->mark & params->mask;
+@@ -96,6 +110,7 @@ static const struct nla_policy skbedit_policy[TCA_SKBEDIT_MAX + 1] = {
+ 	[TCA_SKBEDIT_PTYPE]		= { .len = sizeof(u16) },
+ 	[TCA_SKBEDIT_MASK]		= { .len = sizeof(u32) },
+ 	[TCA_SKBEDIT_FLAGS]		= { .len = sizeof(u64) },
++	[TCA_SKBEDIT_QUEUE_MAPPING_MAX]	= { .len = sizeof(u16) },
+ };
+ 
+ static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
+@@ -112,6 +127,7 @@ static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
+ 	struct tcf_skbedit *d;
+ 	u32 flags = 0, *priority = NULL, *mark = NULL, *mask = NULL;
+ 	u16 *queue_mapping = NULL, *ptype = NULL;
++	u16 mapping_mod = 1;
+ 	bool exists = false;
+ 	int ret = 0, err;
+ 	u32 index;
+@@ -157,6 +173,25 @@ static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
+ 	if (tb[TCA_SKBEDIT_FLAGS] != NULL) {
+ 		u64 *pure_flags = nla_data(tb[TCA_SKBEDIT_FLAGS]);
+ 
++		if (*pure_flags & SKBEDIT_F_TXQ_SKBHASH) {
++			u16 *queue_mapping_max;
++
++			if (!tb[TCA_SKBEDIT_QUEUE_MAPPING] ||
++			    !tb[TCA_SKBEDIT_QUEUE_MAPPING_MAX]) {
++				NL_SET_ERR_MSG_MOD(extack, "Missing required range of queue_mapping.");
++				return -EINVAL;
++			}
++
++			queue_mapping_max =
++				nla_data(tb[TCA_SKBEDIT_QUEUE_MAPPING_MAX]);
++			if (*queue_mapping_max < *queue_mapping) {
++				NL_SET_ERR_MSG_MOD(extack, "The range of queue_mapping is invalid, max < min.");
++				return -EINVAL;
++			}
++
++			mapping_mod = *queue_mapping_max - *queue_mapping + 1;
++			flags |= SKBEDIT_F_TXQ_SKBHASH;
++		}
+ 		if (*pure_flags & SKBEDIT_F_INHERITDSFIELD)
+ 			flags |= SKBEDIT_F_INHERITDSFIELD;
+ 	}
+@@ -208,8 +243,10 @@ static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
+ 	params_new->flags = flags;
+ 	if (flags & SKBEDIT_F_PRIORITY)
+ 		params_new->priority = *priority;
+-	if (flags & SKBEDIT_F_QUEUE_MAPPING)
++	if (flags & SKBEDIT_F_QUEUE_MAPPING) {
+ 		params_new->queue_mapping = *queue_mapping;
++		params_new->mapping_mod = mapping_mod;
++	}
+ 	if (flags & SKBEDIT_F_MARK)
+ 		params_new->mark = *mark;
+ 	if (flags & SKBEDIT_F_PTYPE)
+@@ -276,6 +313,13 @@ static int tcf_skbedit_dump(struct sk_buff *skb, struct tc_action *a,
+ 		goto nla_put_failure;
+ 	if (params->flags & SKBEDIT_F_INHERITDSFIELD)
+ 		pure_flags |= SKBEDIT_F_INHERITDSFIELD;
++	if (params->flags & SKBEDIT_F_TXQ_SKBHASH) {
++		if (nla_put_u16(skb, TCA_SKBEDIT_QUEUE_MAPPING_MAX,
++				params->queue_mapping + params->mapping_mod - 1))
++			goto nla_put_failure;
++
++		pure_flags |= SKBEDIT_F_TXQ_SKBHASH;
++	}
+ 	if (pure_flags != 0 &&
+ 	    nla_put(skb, TCA_SKBEDIT_FLAGS, sizeof(pure_flags), &pure_flags))
+ 		goto nla_put_failure;
+@@ -325,6 +369,7 @@ static size_t tcf_skbedit_get_fill_size(const struct tc_action *act)
+ 	return nla_total_size(sizeof(struct tc_skbedit))
+ 		+ nla_total_size(sizeof(u32)) /* TCA_SKBEDIT_PRIORITY */
+ 		+ nla_total_size(sizeof(u16)) /* TCA_SKBEDIT_QUEUE_MAPPING */
++		+ nla_total_size(sizeof(u16)) /* TCA_SKBEDIT_QUEUE_MAPPING_MAX */
+ 		+ nla_total_size(sizeof(u32)) /* TCA_SKBEDIT_MARK */
+ 		+ nla_total_size(sizeof(u16)) /* TCA_SKBEDIT_PTYPE */
+ 		+ nla_total_size(sizeof(u32)) /* TCA_SKBEDIT_MASK */
 -- 
 2.27.0
 
