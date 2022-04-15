@@ -2,140 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34542502E49
-	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 19:12:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BA8F502E6A
+	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 19:49:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343862AbiDORPN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 13:15:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59624 "EHLO
+        id S237028AbiDORvh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 13:51:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235654AbiDORPM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 13:15:12 -0400
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A4519BAC5;
-        Fri, 15 Apr 2022 10:12:43 -0700 (PDT)
-Received: by mail-io1-xd2a.google.com with SMTP id c125so1585518iof.9;
-        Fri, 15 Apr 2022 10:12:43 -0700 (PDT)
+        with ESMTP id S1343622AbiDORvg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 13:51:36 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A24BCB6A
+        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 10:49:07 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id n17so5290153ljc.11
+        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 10:49:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WrjUGuM6rsjd8l4kfiI/+ZvHzPP7KdnaSgcThC3AV8o=;
-        b=kKdXm1SFgaU0iXA2vligFziQ2tI3e4EIcf2e7gI9zKaVVjoJhwqa6nil1gW6QuZQcX
-         yTfkNxFYkQabvpe3wRuWqWHLTF6CpllydvcNWtRCILfdfOR5A63e2ts7V2n6xzxOsJpG
-         Y4aq1E0Z23FtIuzyB8xUYBJg6qyRNu5J43LfRlXIp49m7Rq7gUl0mfxkV0kqxxxk8fly
-         eQRSN0sUhANtHFudZbLuk4Nw/mGjSIBoVboWUuwBJUTqF8wImuscttw8qag/vC/gBaCA
-         v8WKOJzooa3wSHSmQfhzNL7BHJXQum0JWnLtwlIVyivtFiBpBZKILiGPhpyH2fOmH/zr
-         etug==
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=5XM54esi5Eok3jDOxJYtKt57YMeODoXOKraxTOsy46A=;
+        b=Zlj+UxV1OEdo2amDF/6snrU6BTkSnlTKLx9JQA1EOXt7CUtUBOtr/fJRotCHhyoOPM
+         FRmw6NSd31W1jS/ORt1zMO+tKGJoZFWCDBU+hB0HX1JW344Vr5vT7Gjs09UUc582DI+c
+         6nlt2C8QBJzbZgQUocNy++5sjxs4HZ8tigL+I=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WrjUGuM6rsjd8l4kfiI/+ZvHzPP7KdnaSgcThC3AV8o=;
-        b=NCTZQOpJh6WRWa2wP2fsV+xVT11hFBauk334ATqklZ2TVQz8UyHUEppn1l6HRNW6Ww
-         oD6ddO8AbFu3M8QurbD2nJNGungnK4fcVNCVwBgA9y0OuG0vs+Ql18jRehDmTyVSlxtp
-         o1JtIPphPD/uz6F9lKZYFqsGhD1UOa+8M9+inigJ+WiITc3h7vJi7Oo6j1h5b5FwCX/h
-         RKQDYS1ftaxOrA2qJU7JAXW0V/qKesfB0NJZgJwiHWJg8iyVt92Ya22BnNnCZWB8Xn2B
-         KWekKMnUY+Uh1lT4Vq9yxpAey2nmO6UFnueLDDmAQgPQcdZTDreTvV+zlvzQUzmtiFhl
-         rxbg==
-X-Gm-Message-State: AOAM5321lRDISJNOIL54u5BC9qF63xma6aBQv3t7KGjuALyCFehOqEhu
-        vNqnWtTUWvOjmzV4wk0KDElmhEIie7KEWdYimI8=
-X-Google-Smtp-Source: ABdhPJzxTm55bqpj9D4DAFEW2P37c3B5S+N0gPMJy7zffSpWPkEiz3q0FQyy5x0p9Pr8mdpZ/LMosfy/lWxTiQuG6ZA=
-X-Received: by 2002:a05:6602:185a:b0:645:d914:35e9 with SMTP id
- d26-20020a056602185a00b00645d91435e9mr3603490ioi.154.1650042762884; Fri, 15
- Apr 2022 10:12:42 -0700 (PDT)
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
+         :in-reply-to:message-id:mime-version;
+        bh=5XM54esi5Eok3jDOxJYtKt57YMeODoXOKraxTOsy46A=;
+        b=fpF49f6jOepN2NIhD6YYqRI6D0om76/aMfNlzxGpARXrdF4UASANtQGbb+9uIdDogR
+         FheKXPJo4lKROQUahFvH3MhNn2d2dElkX8tQmHEE6DBReD+wPiZth+FUn1GFC1gHLcL7
+         Irpqq+RreExsm4YbzKcW2Le7bkSF+hP4GJiTB0AIS6nGkCE6vT0+cPJfsb5YM/fErb1w
+         XIzqwPpyuos5KTwdtwyvNdGrrUzcNPXA/9ofJaKXwinjXmahz866lGk66KWGtKOlg1j/
+         hGJ4+Kn2yqoMpeSRARkdov9PffhNKFcbHZWxIxryxY1AX0cLVj14CM0Ay/1ifnASVjHI
+         oOew==
+X-Gm-Message-State: AOAM532APWEAGhwcyogtOuO63Rmt3M6niHCAnj7/IyI0FuDNDWKS62Gk
+        h+z2rz2FAI8Ogm7+FfdnW6KbCA==
+X-Google-Smtp-Source: ABdhPJx4AQcQqkFmb2Jedw4hUQ60/atpnS9qOHwSSvBbUIe6jE8kEq7L7dHPtTXnFIg+Zp36ZK+3Lg==
+X-Received: by 2002:a2e:9b59:0:b0:24b:439c:8928 with SMTP id o25-20020a2e9b59000000b0024b439c8928mr147324ljj.154.1650044945340;
+        Fri, 15 Apr 2022 10:49:05 -0700 (PDT)
+Received: from cloudflare.com (2a01-110f-4809-d800-0000-0000-0000-0f9c.aa.ipv6.supernova.orange.pl. [2a01:110f:4809:d800::f9c])
+        by smtp.gmail.com with ESMTPSA id m14-20020a2ea58e000000b0024c87adf6e3sm329773ljp.35.2022.04.15.10.49.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Apr 2022 10:49:04 -0700 (PDT)
+References: <20220407223112.1204582-1-sdf@google.com>
+ <20220407223112.1204582-4-sdf@google.com>
+ <20220408225628.oog4a3qteauhqkdn@kafai-mbp.dhcp.thefacebook.com>
+ <87fsmmp1pi.fsf@cloudflare.com>
+ <CAKH8qBuqPQjZ==CjD=rO8dui9LNcUNRFOg7ROETRxbuMYnzBEg@mail.gmail.com>
+User-agent: mu4e 1.6.10; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Martin KaFai Lau <kafai@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org
+Subject: Re: [PATCH bpf-next v3 3/7] bpf: minimize number of allocated lsm
+ slots per program
+Date:   Fri, 15 Apr 2022 19:39:35 +0200
+In-reply-to: <CAKH8qBuqPQjZ==CjD=rO8dui9LNcUNRFOg7ROETRxbuMYnzBEg@mail.gmail.com>
+Message-ID: <878rs66xv3.fsf@cloudflare.com>
 MIME-Version: 1.0
-References: <20220414162220.1985095-1-xukuohai@huawei.com> <20220414162220.1985095-6-xukuohai@huawei.com>
-In-Reply-To: <20220414162220.1985095-6-xukuohai@huawei.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 15 Apr 2022 10:12:31 -0700
-Message-ID: <CAEf4Bzb_R56wAuD-Wgg7B5brT-dcsa+5sYynY+_CFzRwg+N5AA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 5/6] bpf, arm64: bpf trampoline for arm64
-To:     Xu Kuohai <xukuohai@huawei.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        X86 ML <x86@kernel.org>, hpa@zytor.com,
-        Shuah Khan <shuah@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Daniel Kiss <daniel.kiss@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Delyan Kratunov <delyank@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 9:10 AM Xu Kuohai <xukuohai@huawei.com> wrote:
->
-> Add bpf trampoline support for arm64. Most of the logic is the same as
-> x86.
->
-> fentry before bpf trampoline hooked:
->  mov x9, x30
->  nop
->
-> fentry after bpf trampoline hooked:
->  mov x9, x30
->  bl  <bpf_trampoline>
->
-> Tested on qemu, result:
->  #55 fentry_fexit:OK
->  #56 fentry_test:OK
->  #58 fexit_sleep:OK
->  #59 fexit_stress:OK
->  #60 fexit_test:OK
->  #67 get_func_args_test:OK
->  #68 get_func_ip_test:OK
->  #101 modify_return:OK
->
-> Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
-> Acked-by: Song Liu <songliubraving@fb.com>
-> ---
-
-Can you please also take a look at [0], which is an ongoing work to
-add support for BPF cookie to BPF trampoline-based BPF programs. It's
-very close to being done, so it would be good if you can implement
-that at the same time.
-
-  [0] https://patchwork.kernel.org/project/netdevbpf/patch/20220412165555.4146407-4-kuifeng@fb.com/
-
->  arch/arm64/net/bpf_jit.h      |  14 +-
->  arch/arm64/net/bpf_jit_comp.c | 338 +++++++++++++++++++++++++++++++++-
->  2 files changed, 348 insertions(+), 4 deletions(-)
->
+On Mon, Apr 11, 2022 at 11:44 AM -07, Stanislav Fomichev wrote:
+> On Sat, Apr 9, 2022 at 11:10 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
 
 [...]
+
+>> [^1] It looks like we can easily switch from cgroup->bpf.progs[] from
+>>      list_head to hlist_head and save some bytes!
+>>
+>>      We only access the list tail in __cgroup_bpf_attach(). We can
+>>      either iterate over the list and eat the cost there or push the new
+>>      prog onto the front.
+>>
+>>      I think we treat cgroup->bpf.progs[] everywhere like an unordered
+>>      set. Except for __cgroup_bpf_query, where the user might notice the
+>>      order change in the BPF_PROG_QUERY dump.
+>
+>
+> [...]
+>
+>> [^2] Unrelated, but we would like to propose a
+>>      CGROUP_INET[46]_POST_CONNECT hook in the near future to make it
+>>      easier to bind UDP sockets to 4-tuple without creating conflicts:
+>>
+>>      https://github.com/cloudflare/cloudflare-blog/tree/master/2022-02-connectx/ebpf_connect4
+>
+> Do you think those new lsm hooks can be used instead? If not, what's missing?
+
+Same as for CGROUP_INET hooks, there is no post-connect() LSM hook.
+
+Why are we looking for a post-connect hook?
+
+Having a pre- and a post- connect hook, would allow us to turn the whole
+connect() syscall into a critical section with synchronization done in
+BPF - lock on pre-connect, unlock on post-connect.
+
+Why do we want to serialize connect() calls?
+
+To check for 4-tuple conflict with an existing unicast UDP socket, in
+which case we want fail connect() if there is a conflict.
+
+That said, ideally we would rather have a mechanism like
+IP_BIND_ADDRESS_NO_PORT, but for UDP, and one that allows selecting both
+an local IP and port.
+
+We're hoping to put together an RFC sometime this quarter.
