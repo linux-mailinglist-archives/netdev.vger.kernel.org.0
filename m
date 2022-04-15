@@ -2,135 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D97E8502C24
-	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 16:48:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48422502C52
+	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 17:05:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354684AbiDOOuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 10:50:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40130 "EHLO
+        id S1354816AbiDOPHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 11:07:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347186AbiDOOui (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 10:50:38 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9697114
-        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 07:48:09 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 23FDxSbE010782;
-        Fri, 15 Apr 2022 07:48:07 -0700
-Received: from nam04-mw2-obe.outbound.protection.outlook.com (mail-mw2nam08lp2168.outbound.protection.outlook.com [104.47.73.168])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3fdw7ej8cm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 15 Apr 2022 07:48:07 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FfKo211qMKBqJlVf/clYIoizJsKhCD5Qg8fS5rkV85RmWyTOUZ3qXxL/5Vev0hZe1aYOp0/1BNX7D6XM2+6/aNc8LqFGY9f4+iYZUfVm9SzAM7AFplvakAdjxND468OwHJ12TY53rdwmPfKEPKVt2IoVJxaoeMsetYQY5VgDYoQbxOksSoA0cbyf0w3F0I5yZJIfHzO4B25gRHzxwqOEXBKt46AqGB/I06wFxf70mCRHmNHBTpiKsDyVl+QoLinpJWV5TYOp7y3qVJN+vu0p4ppCxUlymBDw9jrWvAKaTenkWWl/77jKPzUNAMlRn9V637wqsl58vLej6HFBIBcZnQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HOI5z129RoBM64XmJYzfq6RaR5XP7f7d3XNye0MUqK0=;
- b=eueW5HZRGK5Ycy44228Pz/tUfmyxNFnmgSiIIqxWE84jDSyStSaxcTAua8RfzsSpKiAjkgSil8D/px7pib7ViXwvPVbRcSXJLsCFITd/EcWR7ApGc7HKkmrkPYAYAOnIUFJgPE91UrxHzRUernpYfWz+o7+fk8WpwF+aXeKUXekqPZrKAb7WmvbeA6pRp8szSlMZsg+wxg/rwyM0XGqbwOWXEdFgkz+vtp6M7ss7PXvhh38ZJFKwAQwKqCX0X3NUu5Fjv4/COwG09kzyKz9Boq+abD6lylw3CnoBzEiBuXJInPjSecNGhY9PoYlEduHrjv7rXXTAPVVKKQ/GvU+x/w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HOI5z129RoBM64XmJYzfq6RaR5XP7f7d3XNye0MUqK0=;
- b=jojEfcwlXNGcLq5H8dWoZ5chypY2XHZ44PGeYKAcOcOw7FRY2oyG8brKtaKYKgbvOuK4ziGqDelZkDRbYf4GF72e8h8XlOIgxMs22AaA1QP8KArT4tzjRGEKXV5lbc8iDu24PGRC69e+Iv2FYUS03ej0GvB2DQ8IjssPjKE9VFs=
-Received: from BY3PR18MB4612.namprd18.prod.outlook.com (2603:10b6:a03:3c3::8)
- by CY4PR1801MB1878.namprd18.prod.outlook.com (2603:10b6:910:7b::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.18; Fri, 15 Apr
- 2022 14:48:04 +0000
-Received: from BY3PR18MB4612.namprd18.prod.outlook.com
- ([fe80::4ca0:dcd4:3a6:fde9]) by BY3PR18MB4612.namprd18.prod.outlook.com
- ([fe80::4ca0:dcd4:3a6:fde9%6]) with mapi id 15.20.5164.020; Fri, 15 Apr 2022
- 14:48:04 +0000
-From:   Manish Chopra <manishc@marvell.com>
-To:     David Christensen <drc@linux.vnet.ibm.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Ariel Elior <aelior@marvell.com>,
-        Sudarsana Reddy Kalluru <skalluru@marvell.com>
-Subject: RE: [EXT] EEH Causes bnx2x to Hang in napi_disable
-Thread-Topic: [EXT] EEH Causes bnx2x to Hang in napi_disable
-Thread-Index: AQHYTdIcT7Ayv8ruHkah0Ji+uM3vcqzxDo8Q
-Date:   Fri, 15 Apr 2022 14:48:04 +0000
-Message-ID: <BY3PR18MB4612CB2F82889E5B155BD03EABEE9@BY3PR18MB4612.namprd18.prod.outlook.com>
-References: <e478c5c4-3c0f-705b-6215-8bad6084f536@linux.vnet.ibm.com>
-In-Reply-To: <e478c5c4-3c0f-705b-6215-8bad6084f536@linux.vnet.ibm.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c913ddb5-d577-49e5-ee7e-08da1eeef283
-x-ms-traffictypediagnostic: CY4PR1801MB1878:EE_
-x-microsoft-antispam-prvs: <CY4PR1801MB1878AB8F26D351AC438DB01EABEE9@CY4PR1801MB1878.namprd18.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: kGXq2w3QMJLv2ourJtNEGOeylISTHhRKwfYE3dp5dXgDJsqxdQ2z3/fQ5o9sKQ7aNOdA3LTVDZxacek3DAHsU4jaT6Lqhy699Y7OJKvK9WC7oNjY2jevMN3Vh+k88SVGgNDd2MTUkVXfalU/K4WFEN71xfJXi6LNZZCWdp9V+W3+VuTMQp3EgD5xS0GoQMdEMeOaONDjH3aKdPmzUmgZDwz8oVuHyZizc2INyQzS6CNTZW8iwGOdWzgtLdlhfKnPvyTDz+7xG+yiMXmm43cCxbHBXMpxiYH2a+vVnzdB411butvTzEHuuAKXwK0uIReKSdeiHmjOgIi+z4xZCO3ILyrxt62Z3REqPavpLcnxrnI4R7OVqhoTv+dZLsTW4iVcLtfRXFwhkjP4Iln86vjxdXpbBemt4VGgFog+RD5ajjtUD+cXpGjXRSNEH7GOqQ/O0PrIBsmCh9F8g2Kz9w1QId8TiciGKBwQfI1TL0VSAxJfFwCJ5kLqL535Dd5JyH902hxbWtDZWCyQ6O/PI9ZXKQqC9LnsyAEQGc7PETQGKO8v9NHISUzJ4+Wg5k0KUuU8OvciR4+N3us9lIQlaSmoXuNxgpf4uIrAwiTkhOT3Ve4uZBKv2secuf84NGAx1s+2rNN11K+OwzGxaBpOLm0EzSP8pvxTaAc7ryB+p3Gg/RRfkdTY5ekl9WBPMMwmbMTHXEi2/H7BV6it7Vy+MD91AOe3sgI4+4R2KclMVToU1CUAYpQwOs/pX7iWyxCvpTtN7W8QAyLSsmF0pqvbu4QEqrL8O3rKhXn04tjrzdZiJ1k=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY3PR18MB4612.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(83380400001)(2906002)(5660300002)(86362001)(55016003)(6636002)(8676002)(110136005)(6506007)(508600001)(122000001)(71200400001)(9686003)(186003)(26005)(66476007)(66446008)(66556008)(64756008)(7696005)(316002)(8936002)(33656002)(52536014)(38100700002)(53546011)(38070700005)(66946007)(76116006);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?cVZ5SExCNmUrckpiTXZZZ1ZwUXVZTlYvbTMxeWhIZTFVTlN4U3JFd0U4ZHNY?=
- =?utf-8?B?clE5bWpHa3pxK0xGbDd3Ri9JZUExRzVrUUZOdUo1RUxkcDVKUDhBWHBydFFa?=
- =?utf-8?B?S0N4d3FjY2VSbHE0UFRuMzR5TWo5T3hYTE4ya2FQK1RSVEJHVkMrTmxxVmty?=
- =?utf-8?B?OW43d0MrZVBXb2JJRDFWVUx4dmVOdVkySExPbmMvQkFwMHFCc1RYT3lXUTJE?=
- =?utf-8?B?QXY2Y1IzcjcyM1Fyd1dqNHpXYzVFTDdjZEcwTjFHcXFvdlR6aGl0Sk9vaWVJ?=
- =?utf-8?B?R3ZWOXRtenp6ZGZkZExRbGRhaEkxUjRYNEI4NktraWlnMDFoMlBzYU55djZP?=
- =?utf-8?B?UDFrNTJNNmRWekRrb2FVdXZhbWhSc2ZUS1RZYWpEQXB1K291KzltdXJodncy?=
- =?utf-8?B?c25iV3NXRWh3YWNZVi9QMHdURU9tcUFVTG9SRzRSd29YODRlLzJMWDBVK3lH?=
- =?utf-8?B?bHlPTmJqZUNGSDExWXJraVJZTnFhSnM1eDFBM2xnTXYvNkNLM3ZXcEx0cGs5?=
- =?utf-8?B?VFVIRzEza09VMUtza2RVOHdJdWJxK1piVDc3ZkVBY0JINHlKOUxoVU83Y1BO?=
- =?utf-8?B?OHNUdlRoQkVkeGJ6eXAwY3huanpwQ3NwbkltdkZlbTdGRk45WDdzZ1h2QUdH?=
- =?utf-8?B?OWxPS05DSG5jMnJHeCs4U2dNM0NoL0xGRW4xLzZBZktyZDlLREo0SHZWUDE5?=
- =?utf-8?B?NFVqRzFSc2FxNTlCYjNxQ1FSZXQweFM1ZzVRQXo3VXpuNjV0ZE53ODVML20r?=
- =?utf-8?B?OWE2bWVzSHBRM09ISnhJRCt0ZGdmSlA0YU1WWXkvV3ZWN2Rtb2N4dmtTM0RT?=
- =?utf-8?B?UDVhZy94YTRoMU82S1k3VDVqTkgweXZmZm15TDV2bnQxL0VjMHV6dk4vUGNK?=
- =?utf-8?B?bEJRcStpRzJueVowSDlKZ21YeEx1cE84eDVCOExZTmhBT2NXZ1graWVaZGxZ?=
- =?utf-8?B?eGNUTFRRSFUwZkhyY1lRMFRSck1ZSzdNVTFGdXZ4dFdkTkVQQW1oNWRVY3Jz?=
- =?utf-8?B?QzE5Q1FDSkNDQyt1SXVoTDhjTjExLzhyZUtXY1BrR3NENy8yajhKY0VmcWhF?=
- =?utf-8?B?TXV4Wmw5bCtMZ0l1UjU2ajI4cWtDMnF5ODlyMGh2cnRvM085SS8wWHE2Z0NJ?=
- =?utf-8?B?dVpldGJhdk5lRkkxcUN4QUZ6WUMyNWhOM2gzY2U4OTZmT2ovSDVlUzkyOHNS?=
- =?utf-8?B?ak9OekRCcllEeXdNUlY3MSsyQm5wYXRxMnoyQmhQVDlrTWx1b3dmaVl1clQr?=
- =?utf-8?B?TDk2TkpNYmdZNFhBSllWdFFaMjZSdW5xZFQ4Vno4cFZtN3FDTFFab3NKOVdr?=
- =?utf-8?B?Z0FKeHJqOExSNjlYc0NEaFQvT0xvQnJBeVhPR0dBeVhvWmNKWXVuRFdocFhm?=
- =?utf-8?B?OUtuektyeHhaN1ppVForbzNjcEJYMU1UN1dBV20zNlc5L3FjU3E5ZHdTWEth?=
- =?utf-8?B?c2c0NUFtR1dickRmczI4Y3JTd090dGEwS2xyeGM5ZWQxNUFYYnorWEF1eSsv?=
- =?utf-8?B?VGxYemk3eGdJOXF1MDNWamtGdTBleUhLVTVhc3hwenB4VHF2SmlMejdNNjhM?=
- =?utf-8?B?V0JqZDBWU00xQ09oTVRUdWZtS2Q5YjF4RGFJcVlXMSsydmlRdXJDN0dyeWVz?=
- =?utf-8?B?RmJ2eE5kWkp0RGkzL0tyWWVqUzlNbDN4NXpBUVNQL1BxYld3UUFYY0ZobmF1?=
- =?utf-8?B?Zk5aQ2huUzg5RWcvUVh3S0JERUZzNTZRK0M0RnZCcVhxMHZPdnZ2REgyZkt0?=
- =?utf-8?B?VzZCWmNqd1Jya2ZRSlZISlF6Q0kvVGs1cnBtTCttTDRJUWVkQmtVUTdIUUIz?=
- =?utf-8?B?TnkyQ0JuR091aFp3M3Z6VFVneGY3OGZNVHI1cUdPcDF0Q3JEdTFBRm9VWFN6?=
- =?utf-8?B?NW1TMTNFN25pUk1nMW8rQlBpVWxDWlQvU2YrbGp6QnZteTVNenkrMzg1QjV6?=
- =?utf-8?B?UGp4MnRJYU8xOUM3MzdvMmxHRUJHelZvWC9XTEJGNE1zMysreFZ1Ryt2bjR0?=
- =?utf-8?B?Q2lwdFdFMktLSUlPM1lGdWNsUjVwdU5GVW8wemNpcFArNnI5R2E3TGVJNmFX?=
- =?utf-8?B?cTlpTG8xVnIxTEFIWHBvV2pHTjVuVjJoUkRJZS9rallDZkY4dEVjRkM2eWtj?=
- =?utf-8?B?cERNZ1RGclpXY29tWjQrbnJvN0l0bnU4WGFYaFNvNEFXQ2hkTGFZdS9XM2Jx?=
- =?utf-8?B?aEtiOUswaGZEVjVhVnprZHh3Q3pBYmprQkdjSjNrWit2bEVpY1B6bVJ3YkJp?=
- =?utf-8?B?Qkw3L0lGeFpDNG9DQ2NsclgwNUx6cmhXeWRZcG5BbWxyamQvMWw2Wkg2aDdr?=
- =?utf-8?B?QXpXOU5uVU1zeUxIM2lhT1E2ejE3MXFBYlNSSWNlYUpuR2N5YkhkUT09?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        with ESMTP id S1354865AbiDOPHg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 11:07:36 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74457326EE;
+        Fri, 15 Apr 2022 08:05:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=2/N+rOJE8PGxoG4dig2bE/oA6uo9oIRZf9q57tBjzQE=; b=GnBlTtZl+CTu47NOU5RTWHTUPI
+        Wu9zQs+XHNXsnVwMvkDNvzpLIWb0NykNl6158dpCd4qjS4LnU0iaxLDxa5Qr3LCHaIquJx02Bq1nW
+        ManUpHs8CCJ6fOuusMWxnR8X84jAuzCCb6xZDXq0z0aWokpwKlVkxHlzY4d/oCeemaB8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nfNVO-00Fz2n-E6; Fri, 15 Apr 2022 17:05:02 +0200
+Date:   Fri, 15 Apr 2022 17:05:02 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Piyush Malgujar <pmalgujar@marvell.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        cchavva@marvell.com, Damian Eppel <deppel@marvell.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH] Marvell MDIO clock related changes.
+Message-ID: <YlmJnh1OQ64Y3Fiv@lunn.ch>
+References: <20220415143026.11088-1-pmalgujar@marvell.com>
 MIME-Version: 1.0
-X-OriginatorOrg: marvell.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BY3PR18MB4612.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c913ddb5-d577-49e5-ee7e-08da1eeef283
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Apr 2022 14:48:04.5660
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: hzDG1VB14xNlWmhwYM+CKwg3wuZxzBzuLbcvifYijrW3magO05OnpqfHyQ6nESidlqJcDE3wKDjWVFQ9dY7Z8A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1801MB1878
-X-Proofpoint-GUID: 1ox75mGlOG8RQ0HlmDhVdU-a7-BCNDBo
-X-Proofpoint-ORIG-GUID: 1ox75mGlOG8RQ0HlmDhVdU-a7-BCNDBo
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-15_05,2022-04-15_01,2022-02-23_01
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220415143026.11088-1-pmalgujar@marvell.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -138,170 +51,182 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8gRGF2aWQsDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogRGF2
-aWQgQ2hyaXN0ZW5zZW4gPGRyY0BsaW51eC52bmV0LmlibS5jb20+DQo+IFNlbnQ6IE1vbmRheSwg
-QXByaWwgMTEsIDIwMjIgMTE6MzYgUE0NCj4gVG86IE5ldGRldiA8bmV0ZGV2QHZnZXIua2VybmVs
-Lm9yZz47IEFyaWVsIEVsaW9yIDxhZWxpb3JAbWFydmVsbC5jb20+Ow0KPiBNYW5pc2ggQ2hvcHJh
-IDxtYW5pc2hjQG1hcnZlbGwuY29tPjsgU3VkYXJzYW5hIFJlZGR5IEthbGx1cnUNCj4gPHNrYWxs
-dXJ1QG1hcnZlbGwuY29tPg0KPiBTdWJqZWN0OiBbRVhUXSBFRUggQ2F1c2VzIGJueDJ4IHRvIEhh
-bmcgaW4gbmFwaV9kaXNhYmxlDQo+IA0KPiBFeHRlcm5hbCBFbWFpbA0KPiANCj4gLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLQ0KPiBFeHBlcmllbmNpbmcgYW4gaW5hY2Nlc3NpYmxlIHN5c3RlbSB3aGVuIGJueDJ4IGF0
-dGVtcHRzIHRvIHJlY292ZXIgZnJvbSBhbg0KPiBpbmplY3RlZCBFRUggZXJyb3IuIFRoaXMgaXMg
-YSBQT1dFUjEwIHN5c3RlbSBydW5uaW5nIFNMRVMgMTUgU1AzDQo+ICg1LjMuMTgtMTUwMzAwLjU5
-LjQ5LWRlZmF1bHQpIHdpdGggYSBCQ001NzgxMCBkdWFsIHBvcnQgTklDLg0KPiANCj4gU3lzdGVt
-IG1lc3NhZ2UgbG9nIHNob3dzIHRoZSBmb2xsb3dpbmc6DQo+ID09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PQ0KPiBbIDMyMjIuNTM3NTEwXSBFRUg6IERldGVjdGVkIFBDSSBi
-dXMgZXJyb3Igb24gUEhCIzM4NC1QRSM4MDAwMDAgWw0KPiAzMjIyLjUzNzUxMV0gRUVIOiBUaGlz
-IFBDSSBkZXZpY2UgaGFzIGZhaWxlZCAyIHRpbWVzIGluIHRoZSBsYXN0IGhvdXIgYW5kIHdpbGwN
-Cj4gYmUgcGVybWFuZW50bHkgZGlzYWJsZWQgYWZ0ZXIgNSBmYWlsdXJlcy4NCj4gWyAzMjIyLjUz
-NzUxMl0gRUVIOiBOb3RpZnkgZGV2aWNlIGRyaXZlcnMgdG8gc2h1dGRvd24gWyAzMjIyLjUzNzUx
-M10gRUVIOg0KPiBCZWdpbm5pbmc6ICdlcnJvcl9kZXRlY3RlZChJTyBmcm96ZW4pJw0KPiBbIDMy
-MjIuNTM3NTE0XSBFRUg6IFBFIzgwMDAwMCAoUENJIDAzODQ6ODA6MDAuMCk6IEludm9raW5nDQo+
-IGJueDJ4LT5lcnJvcl9kZXRlY3RlZChJTyBmcm96ZW4pDQo+IFsgMzIyMi41Mzc1MTZdIGJueDJ4
-OiBbYm54MnhfaW9fZXJyb3JfZGV0ZWN0ZWQ6MTQyMzYoZXRoMTQpXUlPIGVycm9yDQo+IGRldGVj
-dGVkIFsgMzIyMi41Mzc2NTBdIEVFSDogUEUjODAwMDAwIChQQ0kgMDM4NDo4MDowMC4wKTogYm54
-MnggZHJpdmVyDQo+IHJlcG9ydHM6DQo+ICduZWVkIHJlc2V0Jw0KPiBbIDMyMjIuNTM3NjUxXSBF
-RUg6IFBFIzgwMDAwMCAoUENJIDAzODQ6ODA6MDAuMSk6IEludm9raW5nDQo+IGJueDJ4LT5lcnJv
-cl9kZXRlY3RlZChJTyBmcm96ZW4pDQo+IFsgMzIyMi41Mzc2NTFdIGJueDJ4OiBbYm54MnhfaW9f
-ZXJyb3JfZGV0ZWN0ZWQ6MTQyMzYoZXRoMTMpXUlPIGVycm9yDQo+IGRldGVjdGVkIFsgMzIyMi41
-Mzc3MjldIEVFSDogUEUjODAwMDAwIChQQ0kgMDM4NDo4MDowMC4xKTogYm54MnggZHJpdmVyDQo+
-IHJlcG9ydHM6DQo+ICduZWVkIHJlc2V0Jw0KPiBbIDMyMjIuNTM3NzI5XSBFRUg6IEZpbmlzaGVk
-OidlcnJvcl9kZXRlY3RlZChJTyBmcm96ZW4pJyB3aXRoIGFnZ3JlZ2F0ZQ0KPiByZWNvdmVyeSBz
-dGF0ZTonbmVlZCByZXNldCcNCj4gWyAzMjIyLjUzNzg5MF0gRUVIOiBDb2xsZWN0IHRlbXBvcmFy
-eSBsb2cgWyAzMjIyLjU4MzQ4MV0gRUVIOiBvZg0KPiBub2RlPTAzODQ6ODA6MDAuMCBbIDMyMjIu
-NTgzNTE5XSBFRUg6IFBDSSBkZXZpY2UvdmVuZG9yOiAxNjhlMTRlNCBbDQo+IDMyMjIuNTgzNTU3
-XSBFRUg6IFBDSSBjbWQvc3RhdHVzIHJlZ2lzdGVyOiAwMDEwMDE0MCBbIDMyMjIuNTgzNTU3XSBF
-RUg6DQo+IFBDSS1FIGNhcGFiaWxpdGllcyBhbmQgc3RhdHVzIGZvbGxvdzoNCj4gWyAzMjIyLjU4
-Mzc0NF0gRUVIOiBQQ0ktRSAwMDogMDAwMjAwMTAgMDEyYzhkYTIgMDAwOTVkNWUgMDA0NTVjODIg
-Ww0KPiAzMjIyLjU4Mzg5Ml0gRUVIOiBQQ0ktRSAxMDogMTA4MjAwMDAgMDAwMDAwMDAgMDAwMDAw
-MDAgMDAwMDAwMDAgWw0KPiAzMjIyLjU4Mzg5M10gRUVIOiBQQ0ktRSAyMDogMDAwMDAwMDAgWyAz
-MjIyLjU4Mzg5M10gRUVIOiBQQ0ktRSBBRVINCj4gY2FwYWJpbGl0eSByZWdpc3RlciBzZXQgZm9s
-bG93czoNCj4gWyAzMjIyLjU4NDA3OV0gRUVIOiBQQ0ktRSBBRVIgMDA6IDEzYzEwMDAxIDAwMDAw
-MDAwIDAwMDAwMDAwIDAwMDYyMDMwIFsNCj4gMzIyMi41ODQyMzBdIEVFSDogUENJLUUgQUVSIDEw
-OiAwMDAwMjAwMCAwMDAwMzFjMCAwMDAwMDFlMCAwMDAwMDAwMCBbDQo+IDMyMjIuNTg0Mzc4XSBF
-RUg6IFBDSS1FIEFFUiAyMDogMDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAwMDAgWw0K
-PiAzMjIyLjU4NDQxNl0gRUVIOiBQQ0ktRSBBRVIgMzA6IDAwMDAwMDAwIDAwMDAwMDAwIFsgMzIy
-Mi41ODQ0MTZdIEVFSDogb2YNCj4gbm9kZT0wMzg0OjgwOjAwLjEgWyAzMjIyLjU4NDQ1NF0gRUVI
-OiBQQ0kgZGV2aWNlL3ZlbmRvcjogMTY4ZTE0ZTQgWw0KPiAzMjIyLjU4NDQ5MV0gRUVIOiBQQ0kg
-Y21kL3N0YXR1cyByZWdpc3RlcjogMDAxMDAxNDAgWyAzMjIyLjU4NDQ5Ml0gRUVIOg0KPiBQQ0kt
-RSBjYXBhYmlsaXRpZXMgYW5kIHN0YXR1cyBmb2xsb3c6DQo+IFsgMzIyMi41ODQ2NzddIEVFSDog
-UENJLUUgMDA6IDAwMDIwMDEwIDAxMmM4ZGEyIDAwMDk1ZDVlIDAwNDU1YzgyIFsNCj4gMzIyMi41
-ODQ4MjVdIEVFSDogUENJLUUgMTA6IDEwODIwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAw
-IFsNCj4gMzIyMi41ODQ4MjZdIEVFSDogUENJLUUgMjA6IDAwMDAwMDAwIFsgMzIyMi41ODQ4MjZd
-IEVFSDogUENJLUUgQUVSDQo+IGNhcGFiaWxpdHkgcmVnaXN0ZXIgc2V0IGZvbGxvd3M6DQo+IFsg
-MzIyMi41ODUwMTFdIEVFSDogUENJLUUgQUVSIDAwOiAxM2MxMDAwMSAwMDAwMDAwMCAwMDAwMDAw
-MCAwMDA2MjAzMCBbDQo+IDMyMjIuNTg1MTYwXSBFRUg6IFBDSS1FIEFFUiAxMDogMDAwMDIwMDAg
-MDAwMDMxYzAgMDAwMDAxZTAgMDAwMDAwMDAgWw0KPiAzMjIyLjU4NTMwOV0gRUVIOiBQQ0ktRSBB
-RVIgMjA6IDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIFsNCj4gMzIyMi41ODUz
-NDddIEVFSDogUENJLUUgQUVSIDMwOiAwMDAwMDAwMCAwMDAwMDAwMCBbIDMyMjIuNTg2ODcyXSBS
-VEFTOg0KPiBldmVudDogNSwgVHlwZTogUGxhdGZvcm0gRXJyb3IgKDIyNCksIFNldmVyaXR5OiAy
-IFsgMzIyMi41ODY4NzNdIEVFSDogUmVzZXQNCj4gd2l0aG91dCBob3RwbHVnIGFjdGl2aXR5IFsg
-MzIyNC43NjI3NjddIEVFSDogQmVnaW5uaW5nOiAnc2xvdF9yZXNldCcNCj4gWyAzMjI0Ljc2Mjc3
-MF0gRUVIOiBQRSM4MDAwMDAgKFBDSSAwMzg0OjgwOjAwLjApOiBJbnZva2luZw0KPiBibngyeC0+
-c2xvdF9yZXNldCgpDQo+IFsgMzIyNC43NjI3NzFdIGJueDJ4OiBbYm54MnhfaW9fc2xvdF9yZXNl
-dDoxNDI3MShldGgxNCldSU8gc2xvdCByZXNldA0KPiBpbml0aWFsaXppbmcuLi4NCj4gWyAzMjI0
-Ljc2Mjg4N10gYm54MnggMDM4NDo4MDowMC4wOiBlbmFibGluZyBkZXZpY2UgKDAxNDAgLT4gMDE0
-MikgWw0KPiAzMjI0Ljc2ODE1N10gYm54Mng6IFtibngyeF9pb19zbG90X3Jlc2V0OjE0Mjg3KGV0
-aDE0KV1JTyBzbG90IHJlc2V0DQo+IC0tPiBkcml2ZXIgdW5sb2FkDQo+IA0KPiBVbmludGVycnVw
-dGFibGUgdGFza3MNCj4gPT09PT09PT09PT09PT09PT09PT09DQo+IGNyYXNoPiBwcyB8IGdyZXAg
-VU4NCj4gICAgICAyMTMgICAgICAyICAxMSAgYzAwMDAwMDAwNGM4OWUwMCAgVU4gICAwLjAgICAg
-ICAgMCAgICAgIDAgIFtlZWhkXQ0KPiAgICAgIDIxNSAgICAgIDIgICAwICBjMDAwMDAwMDA0Yzgw
-MDAwICBVTiAgIDAuMCAgICAgICAwICAgICAgMA0KPiBba3dvcmtlci8wOjJdDQo+ICAgICAyMTk2
-ICAgICAgMSAgMjggIGMwMDAwMDAwMDQ1MDRmMDAgIFVOICAgMC4xICAgMTU5MzYgIDExMTM2ICB3
-aWNrZWRkDQo+ICAgICA0Mjg3ICAgICAgMSAgIDkgIGMwMDAwMDAyMGQwNzY4MDAgIFVOICAgMC4w
-ICAgIDQwMzIgICAzMDA4ICBhZ2V0dHkNCj4gICAgIDQyODkgICAgICAxICAyMCAgYzAwMDAwMDIw
-ZDA1NjY4MCAgVU4gICAwLjAgICAgNzIzMiAgIDM4NDAgIGFnZXR0eQ0KPiAgICAzMjQyMyAgICAg
-IDIgIDI2ICBjMDAwMDAwMjAwMzhjNTgwICBVTiAgIDAuMCAgICAgICAwICAgICAgMA0KPiBba3dv
-cmtlci8yNjozXQ0KPiAgICAzMjg3MSAgIDQyNDEgIDI3ICBjMDAwMDAwMjYwOWRkZDAwICBVTiAg
-IDAuMSAgIDE4NjI0ICAxMTY0OCAgc3NoZA0KPiAgICAzMjkyMCAgMTAxMzAgIDE2ICBjMDAwMDAw
-MjcyODRhMTAwICBVTiAgIDAuMSAgIDQ4NTEyICAxMjYwOCAgc2VuZG1haWwNCj4gICAgMzMwOTIg
-IDMyOTg3ICAgMCAgYzAwMDAwMDIwNTIxOGIwMCAgVU4gICAwLjEgICA0ODUxMiAgMTI2MDggIHNl
-bmRtYWlsDQo+ICAgIDMzMTU0ICAgNDU2NyAgMTYgIGMwMDAwMDAyNjBlNTE3ODAgIFVOICAgMC4x
-ICAgNDg4MzIgIDEyODY0ICBwaWNrdXANCj4gICAgMzMyMDkgICA0MjQxICAzNiAgYzAwMDAwMDI3
-MGNiNjUwMCAgVU4gICAwLjEgICAxODYyNCAgMTE3MTIgIHNzaGQNCj4gICAgMzM0NzMgIDMzMjgz
-ICAgMCAgYzAwMDAwMDIwNTIxMTQ4MCAgVU4gICAwLjEgICA0ODUxMiAgMTI2NzIgIHNlbmRtYWls
-DQo+ICAgIDMzNTMxICAgNDI0MSAgMzcgIGMwMDAwMDAyM2M5MDI3ODAgIFVOICAgMC4xICAgMTg2
-MjQgIDExNjQ4ICBzc2hkDQo+IA0KPiBFRUggaGFuZGxlciBodW5nIHdoaWxlIGJueDJ4IHNsZWVw
-aW5nIGFuZCBob2xkaW5nIFJUTkwgbG9jaw0KPiA9PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQ0KPiBjcmFzaD4gYnQgMjEzDQo+IFBJRDog
-MjEzICAgIFRBU0s6IGMwMDAwMDAwMDRjODllMDAgIENQVTogMTEgIENPTU1BTkQ6ICJlZWhkIg0K
-PiAgICMwIFtjMDAwMDAwMDA0ZDQ3N2UwXSBfX3NjaGVkdWxlIGF0IGMwMDAwMDAwMDBjNzA4MDgN
-Cj4gICAjMSBbYzAwMDAwMDAwNGQ0NzhiMF0gc2NoZWR1bGUgYXQgYzAwMDAwMDAwMGM3MGVlMA0K
-PiAgICMyIFtjMDAwMDAwMDA0ZDQ3OGUwXSBzY2hlZHVsZV90aW1lb3V0IGF0IGMwMDAwMDAwMDBj
-NzZkZWMNCj4gICAjMyBbYzAwMDAwMDAwNGQ0NzljMF0gbXNsZWVwIGF0IGMwMDAwMDAwMDAyMTIw
-Y2MNCj4gICAjNCBbYzAwMDAwMDAwNGQ0NzlmMF0gbmFwaV9kaXNhYmxlIGF0IGMwMDAwMDAwMDBh
-MDY0NDgNCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIF5eXl5eXl5e
-Xl5eXl5eXl4NCj4gICAjNSBbYzAwMDAwMDAwNGQ0N2EzMF0gYm54MnhfbmV0aWZfc3RvcCBhdCBj
-MDA4MDAwMDAxOGRiYTk0IFtibngyeF0NCj4gICAjNiBbYzAwMDAwMDAwNGQ0N2E2MF0gYm54Mnhf
-aW9fc2xvdF9yZXNldCBhdCBjMDA4MDAwMDAxOGE1NTFjIFtibngyeF0NCj4gICAjNyBbYzAwMDAw
-MDAwNGQ0N2IyMF0gZWVoX3JlcG9ydF9yZXNldCBhdCBjMDAwMDAwMDAwMDRjOWJjDQo+ICAgIzgg
-W2MwMDAwMDAwMDRkNDdiOTBdIGVlaF9wZV9yZXBvcnQgYXQgYzAwMDAwMDAwMDA0ZDFhOA0KPiAg
-ICM5IFtjMDAwMDAwMDA0ZDQ3YzQwXSBlZWhfaGFuZGxlX25vcm1hbF9ldmVudCBhdCBjMDAwMDAw
-MDAwMDRkYTY0DQo+ICMxMCBbYzAwMDAwMDAwNGQ0N2QwMF0gZWVoX2V2ZW50X2hhbmRsZXIgYXQg
-YzAwMDAwMDAwMDA0ZTMzMA0KPiAjMTEgW2MwMDAwMDAwMDRkNDdkYjBdIGt0aHJlYWQgYXQgYzAw
-MDAwMDAwMDE3NTgzYw0KPiAjMTIgW2MwMDAwMDAwMDRkNDdlMjBdIHJldF9mcm9tX2tlcm5lbF90
-aHJlYWQgYXQgYzAwMDAwMDAwMDAwY2RhOA0KPiANCj4gQW5kIHRoZSBzbGVlcGluZyBzb3VyY2Ug
-Y29kZQ0KPiA9PT09PT09PT09PT09PT09PT09PT09PT09PT09DQo+IGNyYXNoPiBkaXMgLWxzIGMw
-MDAwMDAwMDBhMDY0NDgNCj4gRklMRTogLi4vbmV0L2NvcmUvZGV2LmMNCj4gTElORTogNjcwMg0K
-PiANCj4gICAgNjY5NyAgew0KPiAgICA2Njk4ICAgICAgICAgIG1pZ2h0X3NsZWVwKCk7DQo+ICAg
-IDY2OTkgICAgICAgICAgc2V0X2JpdChOQVBJX1NUQVRFX0RJU0FCTEUsICZuLT5zdGF0ZSk7DQo+
-ICAgIDY3MDANCj4gICAgNjcwMSAgICAgICAgICB3aGlsZSAodGVzdF9hbmRfc2V0X2JpdChOQVBJ
-X1NUQVRFX1NDSEVELCAmbi0+c3RhdGUpKQ0KPiAqIDY3MDIgICAgICAgICAgICAgICAgICBtc2xl
-ZXAoMSk7DQo+ICAgIDY3MDMgICAgICAgICAgd2hpbGUgKHRlc3RfYW5kX3NldF9iaXQoTkFQSV9T
-VEFURV9OUFNWQywgJm4tPnN0YXRlKSkNCj4gICAgNjcwNCAgICAgICAgICAgICAgICAgIG1zbGVl
-cCgxKTsNCj4gICAgNjcwNQ0KPiAgICA2NzA2ICAgICAgICAgIGhydGltZXJfY2FuY2VsKCZuLT50
-aW1lcik7DQo+ICAgIDY3MDcNCj4gICAgNjcwOCAgICAgICAgICBjbGVhcl9iaXQoTkFQSV9TVEFU
-RV9ESVNBQkxFLCAmbi0+c3RhdGUpOw0KPiAgICA2NzA5ICB9DQo+IA0KPiBFRUggY2FsbHMgaW50
-byBibngyeCB0d2ljZSBiYXNlZCBvbiB0aGUgc3lzdGVtIGxvZyBhYm92ZSwgZmlyc3QgdGhyb3Vn
-aA0KPiBibngyeF9pb19lcnJvcl9kZXRlY3RlZCgpIGFuZCB0aGVuIGJueDJ4X2lvX3Nsb3RfcmVz
-ZXQoKSwgYW5kIGV4ZWN1dGVzDQo+IHRoZSBmb2xsb3dpbmcgY2FsbCBjaGFpbnM6DQo+IA0KPiBi
-bngyeF9pb19lcnJvcl9kZXRlY3RlZCgpDQo+ICAgKy0+IGJueDJ4X2VlaF9uaWNfdW5sb2FkKCkN
-Cj4gICAgICAgICstPiBibngyeF9kZWxfYWxsX25hcGkoKQ0KPiAgICAgICAgICAgICArLT4gX19u
-ZXRpZl9uYXBpX2RlbCgpDQo+IA0KPiANCj4gYm54MnhfaW9fc2xvdF9yZXNldCgpDQo+ICAgKy0+
-IGJueDJ4X25ldGlmX3N0b3AoKQ0KPiAgICAgICAgKy0+IGJueDJ4X25hcGlfZGlzYWJsZSgpDQo+
-ICAgICAgICAgICAgICstPm5hcGlfZGlzYWJsZSgpDQo+IA0KPiBJJ20gc3VzcGljaW91cyBvZiB0
-aGUgbmFwaV9kaXNhYmxlKCkgZm9sbG93aW5nIHRoZSBfX25ldGlmX25hcGlfZGVsKCksDQo+IGJh
-c2VkIG9uIG15IHJlYWQgb2YgdGhlIE5BUEkgQVBJDQo+IChodHRwczovL3VybGRlZmVuc2UucHJv
-b2Zwb2ludC5jb20vdjIvdXJsP3U9aHR0cHMtDQo+IDNBX193aWtpLmxpbnV4Zm91bmRhdGlvbi5v
-cmdfbmV0d29ya2luZ19uYXBpJmQ9RHdJQ2FRJmM9bktqV2VjMmI2UjANCj4gbU95UGF6N3h0ZlEm
-cj1iTVRneDJYNDhRVlh5WE9FTDhBTHlJNGRzV29SLW03NGM1bjNkLQ0KPiBydUpJOCZtPU5vbExM
-WWVGVDZacEtvTHhyS0tUQzVlcERDdXVBNVRNaDF3cWlJbzl3M19zcjdFLQ0KPiAwUjRqMVpkUEhS
-X1oyd3NlJnM9RlNXM1FBMTdqVWtJOW5NSlJ4ZnBTWFFTRXY0RWx0T0xYamYxbUxVWUt4VSYNCj4g
-ZT0gKS4gIFRob3VnaCBub3QNCj4gZXhwbGljaXRseSBkb2N1bWVudGVkLCBpdCBzZWVtcyBsaWtl
-IGRpc2FibGluZyBOQVBJIGFmdGVyIGRlbGV0aW5nIE5BUEkNCj4gcmVzb3VyY2VzIGlzIGEgYmFk
-IHRoaW5nLiAgQW0gSSBtaXN0YWtlbiBpbiBteSB1bmRlcnN0YW5kaW5nIG9mIHRoZSBOQVBJDQo+
-IEFQSSBvciBpcyB0aGVyZSBhIGJ1ZyBoZXJlPyAgSWYgdGhlIGxhdHRlciwgaG93IGNhbiB3ZSBm
-aXggaXQ/DQo+DQoNClRoYW5rcyBmb3IgcmVwb3J0aW5nIHRoaXMgaXNzdWUsIEkgdHJpZWQgdG8g
-cmVwcm9kdWNlIHRoZSBzYW1lIGlzc3VlIHdoZXJlIGluIG15IGNhc2UgaXQgbGVhZGVkIHRvIHN5
-c3RlbSBjcmFzaCBidXQgaXQgd2FzIG5vdCBleGFjdGx5IHRoZSBzYW1lDQpzeW1wdG9tIG9mIGhh
-bmcvc3R1Y2sgaW4gbmFwaV9kaXNhYmxlKCkuIEJ1dCBJIGJlbGlldmUgdGhleSBhbGwgaGF2ZSB0
-aGUgc2FtZSByb290IGNhdXNlIGZvciBkaWZmZXJlbnQgaXNzdWVzIGFzIHlvdSBzdGF0ZWQgYWJv
-dXQgdGhlIGluY29ycmVjdA0Kc2VxdWVuY2Ugb2YgTkFQSSBBUEkgdXNhZ2UgaW4gdGhpcyBwYXJ0
-aWN1bGFyIGRyaXZlciBmbG93ICh1bmxpa2UgaW4gcmVndWxhciB1bmxvYWQgZmxvdyAobmRvX3N0
-b3AoKSkgd2hlcmUgaXQgZGVsZXRlcyBOQVBJIGFmdGVyIGl0IGRpc2FibGVzIHRoZSBOQVBJKS4N
-ClNvIGRyaXZlciBhY3R1YWxseSBuZWVkcyB0byBkaXNhYmxlIE5BUEkgZmlyc3QgYW5kIGRlbGV0
-ZSB0aGUgTkFQSSBhZnRlcndhcmRzLCBJIHRyaWVkIGJlbG93IGNoYW5nZSB3aGljaCBmaXhlZCB0
-aGUgY3Jhc2ggd2hpY2ggSSB3YXMgYWx3YXlzIHNlZWluZyBvbg0KbXkgc2V0dXAuDQoNCkNhbiB5
-b3UgcGxlYXNlIHRyeSB0aGlzIGJlbG93IGNoYW5nZSB0byBzZWUgaWYgdGhhdCBoZWxwcyBmb3Ig
-dGhlIGlzc3VlIHlvdSByZXBvcnRlZCBvciBub3QgPw0KDQojIGdpdCBkaWZmDQpkaWZmIC0tZ2l0
-IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvYnJvYWRjb20vYm54MngvYm54MnhfbWFpbi5jIGIvZHJp
-dmVycy9uZXQvZXRoZXJuZXQvYnJvYWRjb20vYm54MngvYm54MnhfbWFpbi5jDQppbmRleCBjMTli
-MDcyZjNhMjMuLjk2MjI1M2RiMjViOCAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0
-L2Jyb2FkY29tL2JueDJ4L2JueDJ4X21haW4uYw0KKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQv
-YnJvYWRjb20vYm54MngvYm54MnhfbWFpbi5jDQpAQCAtMTQxNTMsMTAgKzE0MTUzLDYgQEAgc3Rh
-dGljIGludCBibngyeF9lZWhfbmljX3VubG9hZChzdHJ1Y3QgYm54MnggKmJwKQ0KDQogICAgICAg
-IC8qIFN0b3AgVHggKi8NCiAgICAgICAgYm54MnhfdHhfZGlzYWJsZShicCk7DQotICAgICAgIC8q
-IERlbGV0ZSBhbGwgTkFQSSBvYmplY3RzICovDQotICAgICAgIGJueDJ4X2RlbF9hbGxfbmFwaShi
-cCk7DQotICAgICAgIGlmIChDTklDX0xPQURFRChicCkpDQotICAgICAgICAgICAgICAgYm54Mnhf
-ZGVsX2FsbF9uYXBpX2NuaWMoYnApOw0KICAgICAgICBuZXRkZXZfcmVzZXRfdGMoYnAtPmRldik7
-DQoNCiAgICAgICAgZGVsX3RpbWVyX3N5bmMoJmJwLT50aW1lcik7DQpAQCAtMTQyNjEsNiArMTQy
-NTcsMTEgQEAgc3RhdGljIHBjaV9lcnNfcmVzdWx0X3QgYm54MnhfaW9fc2xvdF9yZXNldChzdHJ1
-Y3QgcGNpX2RldiAqcGRldikNCiAgICAgICAgICAgICAgICBibngyeF9kcmFpbl90eF9xdWV1ZXMo
-YnApOw0KICAgICAgICAgICAgICAgIGJueDJ4X3NlbmRfdW5sb2FkX3JlcShicCwgVU5MT0FEX1JF
-Q09WRVJZKTsNCiAgICAgICAgICAgICAgICBibngyeF9uZXRpZl9zdG9wKGJwLCAxKTsNCisgICAg
-ICAgICAgICAgICBibngyeF9kZWxfYWxsX25hcGkoYnApOw0KKw0KKyAgICAgICAgICAgICAgIGlm
-IChDTklDX0xPQURFRChicCkpDQorICAgICAgICAgICAgICAgICAgICAgICBibngyeF9kZWxfYWxs
-X25hcGlfY25pYyhicCk7DQorDQogICAgICAgICAgICAgICAgYm54MnhfZnJlZV9pcnEoYnApOw0K
-DQogICAgICAgICAgICAgICAgLyogUmVwb3J0IFVOTE9BRF9ET05FIHRvIE1DUCAqLw0KDQpUaGFu
-a3MsDQpNYW5pc2gNCg==
+On Fri, Apr 15, 2022 at 07:30:26AM -0700, Piyush Malgujar wrote:
+> This patch includes following support related to MDIO Clock:
+
+Please make you patch subject more specific. Marvell has lots of MDIO
+bus masters, those in the mvebu SoCs, there is at least one USB MDIO
+bus master, a couple in various SoHo switches, etc.
+
+git log --oneline mdio-thunder.c will give you an idea what to use.
+
+> 1) clock gating:
+> The purpose of this change is to apply clock gating for MDIO clock when there is no transaction happening.
+> This will stop the MDC clock toggling in idle scenario.
+>
+> 2) Marvell MDIO clock frequency attribute change:
+> This MDIO change provides an option for user to have the bus speed set to their needs which is otherwise set
+> to default(3.125 MHz).
+
+Please read 802.3 Clause 22. The default should be 2.5MHz.
+
+Also, you are clearly doing two different things here, so there should
+be two patches.
+
+> In case someone needs to use this attribute, they have to add an extra attribute clock-freq
+> in the mdio entry in their DTS and this driver will support the rest.
+> 
+> The changes are made in a way that the clock will set to the nearest possible value based on the clock calculation
+
+Please keep line lengths to 80. I'm surprised checkpatch did not warn
+about this.
+
+
+> and required frequency from DTS. Below are some possible values:
+> default:3.125 MHz
+> Max:16.67 MHz
+> 
+> These changes has been verified internally with Marvell SoCs 9x and 10x series.
+> 
+> Signed-off-by: Piyush Malgujar <pmalgujar@marvell.com>
+> Signed-off-by: Damian Eppel <deppel@marvell.com>
+
+These are in the wrong order. Since you are submitting it, your
+Signed-off-by: comes last.
+
+> ---
+>  drivers/net/mdio/mdio-cavium.h  |  1 +
+>  drivers/net/mdio/mdio-thunder.c | 65 +++++++++++++++++++++++++++++++++
+>  2 files changed, 66 insertions(+)
+> 
+> diff --git a/drivers/net/mdio/mdio-cavium.h b/drivers/net/mdio/mdio-cavium.h
+> index a2245d436f5dae4d6424b7c7bfca0aa969a3b3ad..ed4c48d8a38bd80e6a169f7a6d90c1f2a0daccfc 100644
+> --- a/drivers/net/mdio/mdio-cavium.h
+> +++ b/drivers/net/mdio/mdio-cavium.h
+> @@ -92,6 +92,7 @@ struct cavium_mdiobus {
+>  	struct mii_bus *mii_bus;
+>  	void __iomem *register_base;
+>  	enum cavium_mdiobus_mode mode;
+> +	u32 clk_freq;
+>  };
+>  
+>  #ifdef CONFIG_CAVIUM_OCTEON_SOC
+> diff --git a/drivers/net/mdio/mdio-thunder.c b/drivers/net/mdio/mdio-thunder.c
+> index 822d2cdd2f3599025f3e79d4243337c18114c951..642d08aff3f7f849102992a891790e900b111d5c 100644
+> --- a/drivers/net/mdio/mdio-thunder.c
+> +++ b/drivers/net/mdio/mdio-thunder.c
+> @@ -19,6 +19,46 @@ struct thunder_mdiobus_nexus {
+>  	struct cavium_mdiobus *buses[4];
+>  };
+>  
+> +#define _calc_clk_freq(_phase) (100000000U / (2 * (_phase)))
+> +#define _calc_sample(_phase) (2 * (_phase) - 3)
+
+Please avoid macros like this. Use a function.
+
+> +
+> +#define PHASE_MIN 3
+> +#define PHASE_DFLT 16
+> +#define DFLT_CLK_FREQ _calc_clk_freq(PHASE_DFLT)
+> +#define MAX_CLK_FREQ _calc_clk_freq(PHASE_MIN)
+> +
+> +static inline u32 _config_clk(u32 req_freq, u32 *phase, u32 *sample)
+> +{
+> +	unsigned int p;
+> +	u32 freq = 0, freq_prev;
+> +
+> +	for (p = PHASE_MIN; p < PHASE_DFLT; p++) {
+> +		freq_prev = freq;
+> +		freq = _calc_clk_freq(p);
+> +
+> +		if (req_freq >= freq)
+> +			break;
+> +	}
+> +
+> +	if (p == PHASE_DFLT)
+> +		freq = DFLT_CLK_FREQ;
+> +
+> +	if (p == PHASE_MIN || p == PHASE_DFLT)
+> +		goto out;
+> +
+> +	/* Check which clock value from the identified range
+> +	 * is closer to the requested value
+> +	 */
+> +	if ((freq_prev - req_freq) < (req_freq - freq)) {
+> +		p = p - 1;
+> +		freq = freq_prev;
+> +	}
+> +out:
+> +	*phase = p;
+> +	*sample = _calc_sample(p);
+> +	return freq;
+> +}
+> +
+>  static int thunder_mdiobus_pci_probe(struct pci_dev *pdev,
+>  				     const struct pci_device_id *ent)
+>  {
+> @@ -59,6 +99,8 @@ static int thunder_mdiobus_pci_probe(struct pci_dev *pdev,
+>  		struct mii_bus *mii_bus;
+>  		struct cavium_mdiobus *bus;
+>  		union cvmx_smix_en smi_en;
+> +		union cvmx_smix_clk smi_clk;
+> +		u32 req_clk_freq;
+>  
+>  		/* If it is not an OF node we cannot handle it yet, so
+>  		 * exit the loop.
+> @@ -87,6 +129,29 @@ static int thunder_mdiobus_pci_probe(struct pci_dev *pdev,
+>  		bus->register_base = nexus->bar0 +
+>  			r.start - pci_resource_start(pdev, 0);
+>  
+> +		smi_clk.u64 = oct_mdio_readq(bus->register_base + SMI_CLK);
+> +		smi_clk.s.clk_idle = 1;
+> +
+> +		if (!of_property_read_u32(node, "clock-freq", &req_clk_freq)) {
+
+Documentation/devicetree/bindings/net/mdio.yaml
+
+says:
+
+  clock-frequency:
+    description:
+      Desired MDIO bus clock frequency in Hz. Values greater than IEEE 802.3
+      defined 2.5MHz should only be used when all devices on the bus support
+      the given clock speed.
+
+Please use this property name, and update the binding for your device
+to indicate it is valid.
+
+> +			u32 phase, sample;
+> +
+> +			dev_info(&pdev->dev, "requested bus clock frequency=%d\n",
+> +				 req_clk_freq);
+
+dev_dbg()
+
+> +
+> +			 bus->clk_freq = _config_clk(req_clk_freq,
+> +						     &phase, &sample);
+
+There should be some sort of range checks here, and return -EINVAL, if
+asked to do lower/higher than what the hardware can support.
+
+> +
+> +			 smi_clk.s.phase = phase;
+> +			 smi_clk.s.sample_hi = (sample >> 4) & 0x1f;
+> +			 smi_clk.s.sample = sample & 0xf;
+
+You indentation is messed up here. checkpatch would definitely of
+found that! Please do use checkpatch.
+
+> +		} else {
+> +			bus->clk_freq = DFLT_CLK_FREQ;
+> +		}
+> +
+> +		oct_mdio_writeq(smi_clk.u64, bus->register_base + SMI_CLK);
+> +		dev_info(&pdev->dev, "bus clock frequency set to %d\n",
+> +			 bus->clk_freq);
+
+Only use dev_info() for really important messages. We don't spam the
+kernel log for trivial things.
+
+       Andrew
