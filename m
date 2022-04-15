@@ -2,27 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 59076502090
-	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 04:34:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C6D2502096
+	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 04:37:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244344AbiDOChT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 22:37:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50604 "EHLO
+        id S1348738AbiDOCjv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 22:39:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232664AbiDOChS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 22:37:18 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 565303B283;
-        Thu, 14 Apr 2022 19:34:51 -0700 (PDT)
-Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KfgNV5DVczgYnH;
-        Fri, 15 Apr 2022 10:32:58 +0800 (CST)
+        with ESMTP id S240097AbiDOCjs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 22:39:48 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE8C94BB9B;
+        Thu, 14 Apr 2022 19:37:21 -0700 (PDT)
+Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KfgRN509VzQj6r;
+        Fri, 15 Apr 2022 10:35:28 +0800 (CST)
 Received: from [10.174.176.117] (10.174.176.117) by
  dggpeml500025.china.huawei.com (7.185.36.35) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 15 Apr 2022 10:34:48 +0800
-Subject: Re: [PATCH bpf-next v2 4/6] bpf, arm64: Impelment
- bpf_arch_text_poke() for arm64
+ 15.1.2375.24; Fri, 15 Apr 2022 10:37:18 +0800
+Subject: Re: [PATCH bpf-next v2 0/6] bpf trampoline for arm64
 To:     Xu Kuohai <xukuohai@huawei.com>, <bpf@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
@@ -57,19 +56,18 @@ CC:     Catalin Marinas <catalin.marinas@arm.com>,
         Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Delyan Kratunov <delyank@fb.com>
 References: <20220414162220.1985095-1-xukuohai@huawei.com>
- <20220414162220.1985095-5-xukuohai@huawei.com>
 From:   Hou Tao <houtao1@huawei.com>
-Message-ID: <ba838451-1a96-2c83-9188-a994f45d7523@huawei.com>
-Date:   Fri, 15 Apr 2022 10:34:47 +0800
+Message-ID: <b9d38c43-a2a7-ae6d-79e1-51507103ef88@huawei.com>
+Date:   Fri, 15 Apr 2022 10:37:18 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.6.0
 MIME-Version: 1.0
-In-Reply-To: <20220414162220.1985095-5-xukuohai@huawei.com>
+In-Reply-To: <20220414162220.1985095-1-xukuohai@huawei.com>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Content-Language: en-US
 X-Originating-IP: [10.174.176.117]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
  dggpeml500025.china.huawei.com (7.185.36.35)
 X-CFilter-Loop: Reflected
 X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,NICE_REPLY_A,
@@ -85,90 +83,52 @@ X-Mailing-List: netdev@vger.kernel.org
 Hi,
 
 On 4/15/2022 12:22 AM, Xu Kuohai wrote:
-> Impelment bpf_arch_text_poke() for arm64, so bpf trampoline code can use
-> it to replace nop with jump, or replace jump with nop.
+> Add bpf trampoline support for arm64. Most of the logic is the same as
+> x86.
 >
-> Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
-> Acked-by: Song Liu <songliubraving@fb.com>
-> ---
->  arch/arm64/net/bpf_jit_comp.c | 52 +++++++++++++++++++++++++++++++++++
->  1 file changed, 52 insertions(+)
+> Tested on qemu, result:
+>  #55 fentry_fexit:OK
+>  #56 fentry_test:OK
+>  #58 fexit_sleep:OK
+>  #59 fexit_stress:OK
+>  #60 fexit_test:OK
+>  #67 get_func_args_test:OK
+>  #68 get_func_ip_test:OK
+>  #101 modify_return:OK
+bpf_struct_ops also depends on bpf trampoline, could you please also add the
+test results for bpf_struct_ops related tests case ?
 >
-> diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
-> index 8ab4035dea27..1a1c3ea75ee2 100644
-> --- a/arch/arm64/net/bpf_jit_comp.c
-> +++ b/arch/arm64/net/bpf_jit_comp.c
-> @@ -9,6 +9,7 @@
->  
->  #include <linux/bitfield.h>
->  #include <linux/bpf.h>
-> +#include <linux/memory.h>
->  #include <linux/filter.h>
->  #include <linux/printk.h>
->  #include <linux/slab.h>
-> @@ -18,6 +19,7 @@
->  #include <asm/cacheflush.h>
->  #include <asm/debug-monitors.h>
->  #include <asm/insn.h>
-> +#include <asm/patching.h>
->  #include <asm/set_memory.h>
->  
->  #include "bpf_jit.h"
-> @@ -1529,3 +1531,53 @@ void bpf_jit_free_exec(void *addr)
->  {
->  	return vfree(addr);
->  }
-> +
-> +static int gen_branch_or_nop(enum aarch64_insn_branch_type type, void *ip,
-> +			     void *addr, u32 *insn)
-> +{
-> +	if (!addr)
-> +		*insn = aarch64_insn_gen_nop();
-> +	else
-> +		*insn = aarch64_insn_gen_branch_imm((unsigned long)ip,
-> +						    (unsigned long)addr,
-> +						    type);
-> +
-> +	return *insn != AARCH64_BREAK_FAULT ? 0 : -EFAULT;
-> +}
-> +
-> +int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type poke_type,
-> +		       void *old_addr, void *new_addr)
-> +{
-> +	int ret;
-> +	u32 old_insn;
-> +	u32 new_insn;
-> +	u32 replaced;
-> +	enum aarch64_insn_branch_type branch_type;
-> +
-In bpf_arch_text_poke() of x86, it disables the poking of kernel module, can you
-explain why it is OK to do so in arm64 ? Because there is no test cases for
-fentry on linux kernel module, could you please add some tests for it ?
-> +	if (poke_type == BPF_MOD_CALL)
-> +		branch_type = AARCH64_INSN_BRANCH_LINK;
-> +	else
-> +		branch_type = AARCH64_INSN_BRANCH_NOLINK;
-> +
-> +	if (gen_branch_or_nop(branch_type, ip, old_addr, &old_insn) < 0)
-> +		return -EFAULT;
-> +
-> +	if (gen_branch_or_nop(branch_type, ip, new_addr, &new_insn) < 0)
-> +		return -EFAULT;
-> +
-> +	mutex_lock(&text_mutex);
-> +	if (aarch64_insn_read(ip, &replaced)) {
-> +		ret = -EFAULT;
-> +		goto out;
-> +	}
-> +
-> +	if (replaced != old_insn) {
-> +		ret = -EFAULT;
-> +		goto out;
-> +	}
-> +
-> +	ret =  aarch64_insn_patch_text_nosync((void *)ip, new_insn);
-> +out:
-> +	mutex_unlock(&text_mutex);
-> +	return ret;
-> +}
+> v2:
+> - Add Song's ACK
+> - Change the multi-line comment in is_valid_bpf_tramp_flags() into net
+>   style (patch 3)
+> - Fix a deadloop issue in ftrace selftest (patch 2)
+> - Replace pt_regs->x0 with pt_regs->orig_x0 in patch 1 commit message 
+> - Replace "bpf trampoline" with "custom trampoline" in patch 1, as
+>   ftrace direct call is not only used by bpf trampoline.
+>
+> v1: https://lore.kernel.org/bpf/20220413054959.1053668-1-xukuohai@huawei.com/
+>
+> Xu Kuohai (6):
+>   arm64: ftrace: Add ftrace direct call support
+>   ftrace: Fix deadloop caused by direct call in ftrace selftest
+>   bpf: Move is_valid_bpf_tramp_flags() to the public trampoline code
+>   bpf, arm64: Impelment bpf_arch_text_poke() for arm64
+>   bpf, arm64: bpf trampoline for arm64
+>   selftests/bpf: Fix trivial typo in fentry_fexit.c
+>
+>  arch/arm64/Kconfig                            |   2 +
+>  arch/arm64/include/asm/ftrace.h               |  10 +
+>  arch/arm64/kernel/asm-offsets.c               |   1 +
+>  arch/arm64/kernel/entry-ftrace.S              |  28 +-
+>  arch/arm64/net/bpf_jit.h                      |  14 +-
+>  arch/arm64/net/bpf_jit_comp.c                 | 390 +++++++++++++++++-
+>  arch/x86/net/bpf_jit_comp.c                   |  20 -
+>  include/linux/bpf.h                           |   5 +
+>  kernel/bpf/bpf_struct_ops.c                   |   4 +-
+>  kernel/bpf/trampoline.c                       |  35 +-
+>  kernel/trace/trace_selftest.c                 |   4 +-
+>  .../selftests/bpf/prog_tests/fentry_fexit.c   |   4 +-
+>  12 files changed, 482 insertions(+), 35 deletions(-)
+>
 
