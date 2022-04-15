@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD3EB5029D0
-	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 14:31:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F26C35029D4
+	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 14:31:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345456AbiDOMeH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 08:34:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60108 "EHLO
+        id S1353498AbiDOMeL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 08:34:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353359AbiDOMde (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 08:33:34 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C58E833E03;
-        Fri, 15 Apr 2022 05:31:06 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id p15so15142840ejc.7;
-        Fri, 15 Apr 2022 05:31:06 -0700 (PDT)
+        with ESMTP id S1353387AbiDOMdg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 08:33:36 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D569329A7;
+        Fri, 15 Apr 2022 05:31:08 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id bg10so15161617ejb.4;
+        Fri, 15 Apr 2022 05:31:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=uAHor3fZAToYO2ZbC1+zF3CTAzYEz/vc4hOsxC2CPlY=;
-        b=d1IWC1UD75Cs8XZm2xFafi1NpLjrHtuA/gSi8YeHIWwbplMDAuT3/9fA6m11Ll6kYE
-         q4/ol++c2+FkzAuq1sb/y6You4BIIcLcC4uxqO7VtAnMvEm6ByB4a6eMBd377wT/EDGi
-         9yWnLo6WFSDFHCCD9CT/QgxyN5Bgfl+CK/zoZBgjaj7+oIns6nuK0/4sP0BR3DK8tSd3
-         vqjAEtbwv54Rs3CL9TZk9R8smGwmpzyn1w5PABzefSSczNyFqmhR8xCUwaPRiVEb1leF
-         U98fQfONKtEr/ldLjaoqYoMraM9qJG5dWeqz7kXL1U1t971lwsQwlN9NennrfTteVD/E
-         SmCQ==
+        bh=woYPht1iAY/ITrpUe+WmESGMoM6pZPj3PA3p1Q9RO1s=;
+        b=J29YX3EEMEL7T374lnld4XKuYjiGeeoVO1klWLUIkfZJQeL2lLiOJu41mh8Mlrt/vB
+         0hc1mDL5NN2TTVjsBWWdsfB0RlH9u8WpBKvaSwodSk+R4GZNluAP3ZKaTkkPMlIbNlTk
+         w9cBhCyuJv+3wLIzF/9Kc7oQdcKK/rIIWAVsgeZIVRYleGEFkaYTlnrjHromHPnbM1/7
+         3lP8wZeKMpEF3W4eWzvgySheAoJ/fSA4dloEVHWMNtpL4XJqAwi6ktnNLBkPCF3RqAtL
+         FfsqZ0RtqT0it3Iyvym50ZYXeiMDeI0khBXLATZMg661vZKB6wij6XlgY68sJ/G4H+3v
+         pltg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=uAHor3fZAToYO2ZbC1+zF3CTAzYEz/vc4hOsxC2CPlY=;
-        b=hRd+GPo0JPUP3PBNzfqMN10V5FAScjm68V0RAuzgg/9RxL/sHdPjmgvxS2qn6rzA9Z
-         j8lhhPHUb30knX6N5Q81TpGpdXpT6xeT0D2ASRyrpHtg8ViaQ8gnk+r4JoDxFXmXsnst
-         YsjQA5bxolcsWQxinyY37zw4iaSKhYdRa8U27/pqVVxoWd1GrmFBW99F6BYXDyRXmC4p
-         tA38PoQ1SiWeVFtFKQtRspTwPWhdOWPZMzMnrBcqyhWz5iAl4C3DpOel27XzCuyg/n6D
-         XifOObCUXMrtlvP1yDxD89wRrSPqW+vc9g2phoeQ+5Ec4rK+48KepFVaaaRyFcdB+5BQ
-         3IzQ==
-X-Gm-Message-State: AOAM532Pyxrbff4f+JMhKqrz1l11xQoL3GIKRLyCZCJwNjJiQAmO8NKv
-        P/XkRSU6m/Mfd0Y0BlcUwVQ=
-X-Google-Smtp-Source: ABdhPJz9Q0jgktw0ccZcumMAz0TYBTMU3aEYa31kRPzOK6808ixPEYTW1P8q2f6OdLNRDumy5FlGuw==
-X-Received: by 2002:a17:906:6158:b0:6ce:61d6:f243 with SMTP id p24-20020a170906615800b006ce61d6f243mr5934115ejl.268.1650025865292;
-        Fri, 15 Apr 2022 05:31:05 -0700 (PDT)
+        bh=woYPht1iAY/ITrpUe+WmESGMoM6pZPj3PA3p1Q9RO1s=;
+        b=QR1GbEDnXtxEMtwbQ1X4m8y7nR/oY8FcZKw6vY4U3nJYf3fKZ1e1bbg1ft8S1mH8ya
+         AAe05Azb4UypRl3lh5rSBkgayy3THhNC7KExlXXciqZ5+PmIGyB5j8MtLFvFF5LADN9O
+         DfDnNFNWmRivprUW3XjOsX52PKPeVpiGqCLdJYa0J7ZRF9Iw2ddygsS4I6wCw0veSX1Y
+         IcZJQjZFQuaNHyOsx4O23iFK7/xlxnmbjyb6EfejCkFYf7dOs8xAQlN2rpODcCL6zFvk
+         ZD3ySdt1r3DEY5HsmIG9QLFft5hZuoj1VGYQfm5UlQrGMH+YVglxtkYutsiwA4p8gNvF
+         UIRA==
+X-Gm-Message-State: AOAM533YIBcmsj5kEXuBL3hGM88QGnIwNVHtoAL7sYDQBkMDqiFo41RE
+        mEqmWcV7KG/tDV+dWqKIW0w=
+X-Google-Smtp-Source: ABdhPJyYIoFdAFzmkkdjuJw1d5/znELShtA1rZkNdZGQuvIqYGA+O8h6GmIux5FiMuA0sKmX8w24Kg==
+X-Received: by 2002:a17:907:6d9b:b0:6db:8eab:94e0 with SMTP id sb27-20020a1709076d9b00b006db8eab94e0mr5947836ejc.687.1650025866683;
+        Fri, 15 Apr 2022 05:31:06 -0700 (PDT)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id bo14-20020a170906d04e00b006ce98d9c3e3sm1649533ejb.194.2022.04.15.05.31.04
+        by smtp.googlemail.com with ESMTPSA id bo14-20020a170906d04e00b006ce98d9c3e3sm1649533ejb.194.2022.04.15.05.31.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 05:31:04 -0700 (PDT)
+        Fri, 15 Apr 2022 05:31:06 -0700 (PDT)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
@@ -85,9 +85,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH net-next v4 14/18] sfc: Remove usage of list iterator for list_add() after the loop body
-Date:   Fri, 15 Apr 2022 14:29:43 +0200
-Message-Id: <20220415122947.2754662-15-jakobkoschel@gmail.com>
+Subject: [PATCH net-next v4 15/18] net: netcp: Remove usage of list iterator for list_add() after loop body
+Date:   Fri, 15 Apr 2022 14:29:44 +0200
+Message-Id: <20220415122947.2754662-16-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220415122947.2754662-1-jakobkoschel@gmail.com>
 References: <20220415122947.2754662-1-jakobkoschel@gmail.com>
@@ -108,49 +108,66 @@ traversal loop, use a dedicated pointer pointing to the location
 where the element should be inserted [1].
 
 Before, the code implicitly used the head when no element was found
-when using &new->list. The new 'pos' variable is set to the list head
+when using &next->list. The new 'pos' variable is set to the list head
 by default and overwritten if the list exits early, marking the
 insertion point for list_add().
 
 Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/net/ethernet/sfc/rx_common.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/ti/netcp_core.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/rx_common.c b/drivers/net/ethernet/sfc/rx_common.c
-index 1b22c7be0088..716847ba7038 100644
---- a/drivers/net/ethernet/sfc/rx_common.c
-+++ b/drivers/net/ethernet/sfc/rx_common.c
-@@ -556,6 +556,7 @@ efx_rx_packet_gro(struct efx_channel *channel, struct efx_rx_buffer *rx_buf,
- struct efx_rss_context *efx_alloc_rss_context_entry(struct efx_nic *efx)
+diff --git a/drivers/net/ethernet/ti/netcp_core.c b/drivers/net/ethernet/ti/netcp_core.c
+index 16507bff652a..f25104b5a31b 100644
+--- a/drivers/net/ethernet/ti/netcp_core.c
++++ b/drivers/net/ethernet/ti/netcp_core.c
+@@ -471,6 +471,7 @@ struct netcp_hook_list {
+ int netcp_register_txhook(struct netcp_intf *netcp_priv, int order,
+ 			  netcp_hook_rtn *hook_rtn, void *hook_data)
  {
- 	struct list_head *head = &efx->rss_context.list;
-+	struct list_head *pos = head;
- 	struct efx_rss_context *ctx, *new;
- 	u32 id = 1; /* Don't use zero, that refers to the master RSS context */
++	struct list_head *pos = &netcp_priv->txhook_list_head;
+ 	struct netcp_hook_list *entry;
+ 	struct netcp_hook_list *next;
+ 	unsigned long flags;
+@@ -485,10 +486,12 @@ int netcp_register_txhook(struct netcp_intf *netcp_priv, int order,
  
-@@ -563,8 +564,10 @@ struct efx_rss_context *efx_alloc_rss_context_entry(struct efx_nic *efx)
- 
- 	/* Search for first gap in the numbering */
- 	list_for_each_entry(ctx, head, list) {
--		if (ctx->user_id != id)
-+		if (ctx->user_id != id) {
-+			pos = &ctx->list;
+ 	spin_lock_irqsave(&netcp_priv->lock, flags);
+ 	list_for_each_entry(next, &netcp_priv->txhook_list_head, list) {
+-		if (next->order > order)
++		if (next->order > order) {
++			pos = &next->list;
  			break;
 +		}
- 		id++;
- 		/* Check for wrap.  If this happens, we have nearly 2^32
- 		 * allocated RSS contexts, which seems unlikely.
-@@ -582,7 +585,7 @@ struct efx_rss_context *efx_alloc_rss_context_entry(struct efx_nic *efx)
+ 	}
+-	__list_add(&entry->list, next->list.prev, &next->list);
++	list_add_tail(&entry->list, pos);
+ 	spin_unlock_irqrestore(&netcp_priv->lock, flags);
  
- 	/* Insert the new entry into the gap */
- 	new->user_id = id;
--	list_add_tail(&new->list, &ctx->list);
-+	list_add_tail(&new->list, pos);
- 	return new;
- }
+ 	return 0;
+@@ -520,6 +523,7 @@ EXPORT_SYMBOL_GPL(netcp_unregister_txhook);
+ int netcp_register_rxhook(struct netcp_intf *netcp_priv, int order,
+ 			  netcp_hook_rtn *hook_rtn, void *hook_data)
+ {
++	struct list_head *pos = &netcp_priv->rxhook_list_head;
+ 	struct netcp_hook_list *entry;
+ 	struct netcp_hook_list *next;
+ 	unsigned long flags;
+@@ -534,10 +538,12 @@ int netcp_register_rxhook(struct netcp_intf *netcp_priv, int order,
  
+ 	spin_lock_irqsave(&netcp_priv->lock, flags);
+ 	list_for_each_entry(next, &netcp_priv->rxhook_list_head, list) {
+-		if (next->order > order)
++		if (next->order > order) {
++			pos = &next->list;
+ 			break;
++		}
+ 	}
+-	__list_add(&entry->list, next->list.prev, &next->list);
++	list_add_tail(&entry->list, pos);
+ 	spin_unlock_irqrestore(&netcp_priv->lock, flags);
+ 
+ 	return 0;
 -- 
 2.25.1
 
