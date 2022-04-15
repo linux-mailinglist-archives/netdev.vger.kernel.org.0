@@ -2,68 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 42940502069
-	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 04:24:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59076502090
+	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 04:34:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348656AbiDOC0K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Apr 2022 22:26:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57326 "EHLO
+        id S244344AbiDOChT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Apr 2022 22:37:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239639AbiDOC0J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 22:26:09 -0400
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C78E844742;
-        Thu, 14 Apr 2022 19:23:40 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R951e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=33;SR=0;TI=SMTPD_---0VA5EU1i_1649989414;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VA5EU1i_1649989414)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 15 Apr 2022 10:23:35 +0800
-Message-ID: <1649989126.5433838-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH v9 31/32] virtio_net: support rx/tx queue resize
-Date:   Fri, 15 Apr 2022 10:18:46 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Vadim Pasternak <vadimp@nvidia.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        with ESMTP id S232664AbiDOChS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Apr 2022 22:37:18 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 565303B283;
+        Thu, 14 Apr 2022 19:34:51 -0700 (PDT)
+Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KfgNV5DVczgYnH;
+        Fri, 15 Apr 2022 10:32:58 +0800 (CST)
+Received: from [10.174.176.117] (10.174.176.117) by
+ dggpeml500025.china.huawei.com (7.185.36.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 15 Apr 2022 10:34:48 +0800
+Subject: Re: [PATCH bpf-next v2 4/6] bpf, arm64: Impelment
+ bpf_arch_text_poke() for arm64
+To:     Xu Kuohai <xukuohai@huawei.com>, <bpf@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>
+CC:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        linux-um@lists.infradead.org, netdev <netdev@vger.kernel.org>,
-        platform-driver-x86@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        kvm <kvm@vger.kernel.org>,
-        "open list:XDP (eXpress Data Path)" <bpf@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>
-References: <20220406034346.74409-1-xuanzhuo@linux.alibaba.com>
- <20220406034346.74409-32-xuanzhuo@linux.alibaba.com>
- <122008a6-1e79-14d3-1478-59f96464afc9@redhat.com>
- <1649838917.6726515-10-xuanzhuo@linux.alibaba.com>
- <CACGkMEvPH1k76xB_cHq_S9hvMXgGruoXpKLfoMZvJZ-L7wM9iw@mail.gmail.com>
-In-Reply-To: <CACGkMEvPH1k76xB_cHq_S9hvMXgGruoXpKLfoMZvJZ-L7wM9iw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        KP Singh <kpsingh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        <hpa@zytor.com>, Shuah Khan <shuah@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Daniel Kiss <daniel.kiss@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Steven Price <steven.price@arm.com>,
+        Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Delyan Kratunov <delyank@fb.com>
+References: <20220414162220.1985095-1-xukuohai@huawei.com>
+ <20220414162220.1985095-5-xukuohai@huawei.com>
+From:   Hou Tao <houtao1@huawei.com>
+Message-ID: <ba838451-1a96-2c83-9188-a994f45d7523@huawei.com>
+Date:   Fri, 15 Apr 2022 10:34:47 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
+MIME-Version: 1.0
+In-Reply-To: <20220414162220.1985095-5-xukuohai@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.174.176.117]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml500025.china.huawei.com (7.185.36.35)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,293 +82,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 14 Apr 2022 17:30:02 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> On Wed, Apr 13, 2022 at 4:47 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wr=
-ote:
-> >
-> > On Wed, 13 Apr 2022 16:00:18 +0800, Jason Wang <jasowang@redhat.com> wr=
-ote:
-> > >
-> > > =E5=9C=A8 2022/4/6 =E4=B8=8A=E5=8D=8811:43, Xuan Zhuo =E5=86=99=E9=81=
-=93:
-> > > > This patch implements the resize function of the rx, tx queues.
-> > > > Based on this function, it is possible to modify the ring num of the
-> > > > queue.
-> > > >
-> > > > There may be an exception during the resize process, the resize may
-> > > > fail, or the vq can no longer be used. Either way, we must execute
-> > > > napi_enable(). Because napi_disable is similar to a lock, napi_enab=
-le
-> > > > must be called after calling napi_disable.
-> > > >
-> > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > > > ---
-> > > >   drivers/net/virtio_net.c | 81 +++++++++++++++++++++++++++++++++++=
-+++++
-> > > >   1 file changed, 81 insertions(+)
-> > > >
-> > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > > index b8bf00525177..ba6859f305f7 100644
-> > > > --- a/drivers/net/virtio_net.c
-> > > > +++ b/drivers/net/virtio_net.c
-> > > > @@ -251,6 +251,9 @@ struct padded_vnet_hdr {
-> > > >     char padding[4];
-> > > >   };
-> > > >
-> > > > +static void virtnet_sq_free_unused_buf(struct virtqueue *vq, void =
-*buf);
-> > > > +static void virtnet_rq_free_unused_buf(struct virtqueue *vq, void =
-*buf);
-> > > > +
-> > > >   static bool is_xdp_frame(void *ptr)
-> > > >   {
-> > > >     return (unsigned long)ptr & VIRTIO_XDP_FLAG;
-> > > > @@ -1369,6 +1372,15 @@ static void virtnet_napi_enable(struct virtq=
-ueue *vq, struct napi_struct *napi)
-> > > >   {
-> > > >     napi_enable(napi);
-> > > >
-> > > > +   /* Check if vq is in reset state. The normal reset/resize proce=
-ss will
-> > > > +    * be protected by napi. However, the protection of napi is onl=
-y enabled
-> > > > +    * during the operation, and the protection of napi will end af=
-ter the
-> > > > +    * operation is completed. If re-enable fails during the proces=
-s, vq
-> > > > +    * will remain unavailable with reset state.
-> > > > +    */
-> > > > +   if (vq->reset)
-> > > > +           return;
-> > >
-> > >
-> > > I don't get when could we hit this condition.
-> >
-> >
-> > In patch 23, the code to implement re-enable vq is as follows:
-> >
-> > +static int vp_modern_enable_reset_vq(struct virtqueue *vq)
-> > +{
-> > +       struct virtio_pci_device *vp_dev =3D to_vp_device(vq->vdev);
-> > +       struct virtio_pci_modern_device *mdev =3D &vp_dev->mdev;
-> > +       struct virtio_pci_vq_info *info;
-> > +       unsigned long flags, index;
-> > +       int err;
-> > +
-> > +       if (!vq->reset)
-> > +               return -EBUSY;
-> > +
-> > +       index =3D vq->index;
-> > +       info =3D vp_dev->vqs[index];
-> > +
-> > +       /* check queue reset status */
-> > +       if (vp_modern_get_queue_reset(mdev, index) !=3D 1)
-> > +               return -EBUSY;
-> > +
-> > +       err =3D vp_active_vq(vq, info->msix_vector);
-> > +       if (err)
-> > +               return err;
-> > +
-> > +       if (vq->callback) {
-> > +               spin_lock_irqsave(&vp_dev->lock, flags);
-> > +               list_add(&info->node, &vp_dev->virtqueues);
-> > +               spin_unlock_irqrestore(&vp_dev->lock, flags);
-> > +       } else {
-> > +               INIT_LIST_HEAD(&info->node);
-> > +       }
-> > +
-> > +       vp_modern_set_queue_enable(&vp_dev->mdev, index, true);
-> > +
-> > +       if (vp_dev->per_vq_vectors && info->msix_vector !=3D VIRTIO_MSI=
-_NO_VECTOR)
-> > +               enable_irq(pci_irq_vector(vp_dev->pci_dev, info->msix_v=
-ector));
-> > +
-> > +       vq->reset =3D false;
-> > +
-> > +       return 0;
-> > +}
-> >
-> >
-> > There are three situations where an error will be returned. These are t=
-he
-> > situations I want to handle.
->
-> Right, but it looks harmless if we just schedule the NAPI without the che=
-ck.
+Hi,
 
-Yes.
-
-> >
-> > But I'm rethinking the question, and I feel like you're right, although=
- the
-> > hardware setup may fail. We can no longer sync with the hardware. But u=
-sing it
-> > as a normal vq doesn't have any problems.
+On 4/15/2022 12:22 AM, Xu Kuohai wrote:
+> Impelment bpf_arch_text_poke() for arm64, so bpf trampoline code can use
+> it to replace nop with jump, or replace jump with nop.
 >
-> Note that we should make sure the buggy(malicous) device won't crash
-> the codes by changing the queue_reset value at its will.
-
-I will keep an eye on this situation.
-
+> Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
+> Acked-by: Song Liu <songliubraving@fb.com>
+> ---
+>  arch/arm64/net/bpf_jit_comp.c | 52 +++++++++++++++++++++++++++++++++++
+>  1 file changed, 52 insertions(+)
 >
-> >
-> > >
-> > >
-> > > > +
-> > > >     /* If all buffers were filled by other side before we napi_enab=
-led, we
-> > > >      * won't get another interrupt, so process any outstanding pack=
-ets now.
-> > > >      * Call local_bh_enable after to trigger softIRQ processing.
-> > > > @@ -1413,6 +1425,15 @@ static void refill_work(struct work_struct *=
-work)
-> > > >             struct receive_queue *rq =3D &vi->rq[i];
-> > > >
-> > > >             napi_disable(&rq->napi);
-> > > > +
-> > > > +           /* Check if vq is in reset state. See more in
-> > > > +            * virtnet_napi_enable()
-> > > > +            */
-> > > > +           if (rq->vq->reset) {
-> > > > +                   virtnet_napi_enable(rq->vq, &rq->napi);
-> > > > +                   continue;
-> > > > +           }
-> > >
-> > >
-> > > Can we do something similar in virtnet_close() by canceling the work?
-> >
-> > I think there is no need to cancel the work here, because napi_disable =
-will wait
-> > for the napi_enable of the resize. So if the re-enable failed vq is use=
-d as a normal
-> > vq, this logic can be removed.
->
-> Actually I meant the part of virtnet_rx_resize().
->
-> If we don't synchronize with the refill work, it might enable NAPI unexpe=
-ctedly?
+> diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
+> index 8ab4035dea27..1a1c3ea75ee2 100644
+> --- a/arch/arm64/net/bpf_jit_comp.c
+> +++ b/arch/arm64/net/bpf_jit_comp.c
+> @@ -9,6 +9,7 @@
+>  
+>  #include <linux/bitfield.h>
+>  #include <linux/bpf.h>
+> +#include <linux/memory.h>
+>  #include <linux/filter.h>
+>  #include <linux/printk.h>
+>  #include <linux/slab.h>
+> @@ -18,6 +19,7 @@
+>  #include <asm/cacheflush.h>
+>  #include <asm/debug-monitors.h>
+>  #include <asm/insn.h>
+> +#include <asm/patching.h>
+>  #include <asm/set_memory.h>
+>  
+>  #include "bpf_jit.h"
+> @@ -1529,3 +1531,53 @@ void bpf_jit_free_exec(void *addr)
+>  {
+>  	return vfree(addr);
+>  }
+> +
+> +static int gen_branch_or_nop(enum aarch64_insn_branch_type type, void *ip,
+> +			     void *addr, u32 *insn)
+> +{
+> +	if (!addr)
+> +		*insn = aarch64_insn_gen_nop();
+> +	else
+> +		*insn = aarch64_insn_gen_branch_imm((unsigned long)ip,
+> +						    (unsigned long)addr,
+> +						    type);
+> +
+> +	return *insn != AARCH64_BREAK_FAULT ? 0 : -EFAULT;
+> +}
+> +
+> +int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type poke_type,
+> +		       void *old_addr, void *new_addr)
+> +{
+> +	int ret;
+> +	u32 old_insn;
+> +	u32 new_insn;
+> +	u32 replaced;
+> +	enum aarch64_insn_branch_type branch_type;
+> +
+In bpf_arch_text_poke() of x86, it disables the poking of kernel module, can you
+explain why it is OK to do so in arm64 ? Because there is no test cases for
+fentry on linux kernel module, could you please add some tests for it ?
+> +	if (poke_type == BPF_MOD_CALL)
+> +		branch_type = AARCH64_INSN_BRANCH_LINK;
+> +	else
+> +		branch_type = AARCH64_INSN_BRANCH_NOLINK;
+> +
+> +	if (gen_branch_or_nop(branch_type, ip, old_addr, &old_insn) < 0)
+> +		return -EFAULT;
+> +
+> +	if (gen_branch_or_nop(branch_type, ip, new_addr, &new_insn) < 0)
+> +		return -EFAULT;
+> +
+> +	mutex_lock(&text_mutex);
+> +	if (aarch64_insn_read(ip, &replaced)) {
+> +		ret = -EFAULT;
+> +		goto out;
+> +	}
+> +
+> +	if (replaced != old_insn) {
+> +		ret = -EFAULT;
+> +		goto out;
+> +	}
+> +
+> +	ret =  aarch64_insn_patch_text_nosync((void *)ip, new_insn);
+> +out:
+> +	mutex_unlock(&text_mutex);
+> +	return ret;
+> +}
 
-I don't think this situation will be encountered, because napi_disable is
-mutually exclusive, so there will be no unexpected napi enable.
-
-Is there something I misunderstood?
-
-Thanks.
-
->
-> Thanks
->
-> >
-> >
-> > >
-> > >
-> > > > +
-> > > >             still_empty =3D !try_fill_recv(vi, rq, GFP_KERNEL);
-> > > >             virtnet_napi_enable(rq->vq, &rq->napi);
-> > > >
-> > > > @@ -1523,6 +1544,10 @@ static void virtnet_poll_cleantx(struct rece=
-ive_queue *rq)
-> > > >     if (!sq->napi.weight || is_xdp_raw_buffer_queue(vi, index))
-> > > >             return;
-> > > >
-> > > > +   /* Check if vq is in reset state. See more in virtnet_napi_enab=
-le() */
-> > > > +   if (sq->vq->reset)
-> > > > +           return;
-> > >
-> > >
-> > > We've disabled TX napi, any chance we can still hit this?
-> >
-> > Same as above.
-> >
-> > >
-> > >
-> > > > +
-> > > >     if (__netif_tx_trylock(txq)) {
-> > > >             do {
-> > > >                     virtqueue_disable_cb(sq->vq);
-> > > > @@ -1769,6 +1794,62 @@ static netdev_tx_t start_xmit(struct sk_buff=
- *skb, struct net_device *dev)
-> > > >     return NETDEV_TX_OK;
-> > > >   }
-> > > >
-> > > > +static int virtnet_rx_resize(struct virtnet_info *vi,
-> > > > +                        struct receive_queue *rq, u32 ring_num)
-> > > > +{
-> > > > +   int err;
-> > > > +
-> > > > +   napi_disable(&rq->napi);
-> > > > +
-> > > > +   err =3D virtqueue_resize(rq->vq, ring_num, virtnet_rq_free_unus=
-ed_buf);
-> > > > +   if (err)
-> > > > +           goto err;
-> > > > +
-> > > > +   if (!try_fill_recv(vi, rq, GFP_KERNEL))
-> > > > +           schedule_delayed_work(&vi->refill, 0);
-> > > > +
-> > > > +   virtnet_napi_enable(rq->vq, &rq->napi);
-> > > > +   return 0;
-> > > > +
-> > > > +err:
-> > > > +   netdev_err(vi->dev,
-> > > > +              "reset rx reset vq fail: rx queue index: %td err: %d=
-\n",
-> > > > +              rq - vi->rq, err);
-> > > > +   virtnet_napi_enable(rq->vq, &rq->napi);
-> > > > +   return err;
-> > > > +}
-> > > > +
-> > > > +static int virtnet_tx_resize(struct virtnet_info *vi,
-> > > > +                        struct send_queue *sq, u32 ring_num)
-> > > > +{
-> > > > +   struct netdev_queue *txq;
-> > > > +   int err, qindex;
-> > > > +
-> > > > +   qindex =3D sq - vi->sq;
-> > > > +
-> > > > +   virtnet_napi_tx_disable(&sq->napi);
-> > > > +
-> > > > +   txq =3D netdev_get_tx_queue(vi->dev, qindex);
-> > > > +   __netif_tx_lock_bh(txq);
-> > > > +   netif_stop_subqueue(vi->dev, qindex);
-> > > > +   __netif_tx_unlock_bh(txq);
-> > > > +
-> > > > +   err =3D virtqueue_resize(sq->vq, ring_num, virtnet_sq_free_unus=
-ed_buf);
-> > > > +   if (err)
-> > > > +           goto err;
-> > > > +
-> > > > +   netif_start_subqueue(vi->dev, qindex);
-> > > > +   virtnet_napi_tx_enable(vi, sq->vq, &sq->napi);
-> > > > +   return 0;
-> > > > +
-> > > > +err:
-> > >
-> > >
-> > > I guess we can still start the queue in this case? (Since we don't
-> > > change the queue if resize fails).
-> >
-> > Yes, you are right.
-> >
-> > Thanks.
-> >
-> > >
-> > >
-> > > > +   netdev_err(vi->dev,
-> > > > +              "reset tx reset vq fail: tx queue index: %td err: %d=
-\n",
-> > > > +              sq - vi->sq, err);
-> > > > +   virtnet_napi_tx_enable(vi, sq->vq, &sq->napi);
-> > > > +   return err;
-> > > > +}
-> > > > +
-> > > >   /*
-> > > >    * Send command via the control virtqueue and check status.  Comm=
-ands
-> > > >    * supported by the hypervisor, as indicated by feature bits, sho=
-uld
-> > >
-> >
->
