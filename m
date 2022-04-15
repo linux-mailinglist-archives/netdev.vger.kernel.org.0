@@ -2,147 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C90AB5031B8
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 01:10:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D48B650310B
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 01:09:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356216AbiDOV5z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 17:57:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35410 "EHLO
+        id S232305AbiDOWHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 18:07:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356196AbiDOV5x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 17:57:53 -0400
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5594B35AB4
-        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 14:55:23 -0700 (PDT)
-Received: by mail-io1-f71.google.com with SMTP id j6-20020a5d93c6000000b0064fbbf9566bso5424772ioo.12
-        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 14:55:23 -0700 (PDT)
+        with ESMTP id S232720AbiDOWHD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 18:07:03 -0400
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8164E193E4
+        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 15:04:33 -0700 (PDT)
+Received: by mail-lj1-x22c.google.com with SMTP id bn33so10734739ljb.6
+        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 15:04:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=engleder-embedded-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UjWq5GSJRSakthqVM5tmIM2a+e/ojUhA4a1Oq61RZ+M=;
+        b=Lhl4IQLYHvZIMiYRBY9LMQOe7ZXADWBvzrgaltAp5vr6ME6XD1cFDpgx5gmlQnv3vq
+         2I9CV3ihB58nWJSaXF9LLIi8ZInllmYi53uZTAw9ockb8emAJotNoKdgwJUHQqbbX9NG
+         KKvyhwHNqLJVXykHvLSukTIchMbo10B9vcnRfuBq0PKQNN+v6Tm0D/FGNV6zTke1FtHj
+         cP3dcBkQ9/PH3MP8Sn7YjfJ6Y8f4pL9/ReLUxL7Gdt3C82IycymQWuZs6q6W7Cqf9KYk
+         JVWtptC92bawKDL0navlb/xocnJO9IIVUAWCL5y9ySMs6ic7Zq692RbTH/6sSwZM/cE1
+         zWNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=GRcidgR5GRr7HbjNxlPa+IC6tr/dF+pZKMzcXuE0s+0=;
-        b=jiJpBEl6YjlLXnd5aZ+kBfrlrVRMHPsuBV0XbwnG6mzDL6UOtl1JGCs7Rz42EX+0M9
-         M9gOeyf0Y9+SZvSsnHP44fAfEvXpstnFxVjm2dRU5HAGiQdbMrAYaz6o/P/rFvFwH6pb
-         YJKxSB+icljyp3WVob4eoUdnBbkfTBBXP354XaDufdDsEo34oT01i7JSSViS9AiI959W
-         gj+lUmaj3E2K+HHX2n5CQG01uWYvFuHZiMsGVb4XK6jURYzm/qqPuVhau69Wl1eUzh0c
-         B1QcjVKyauxwllep+JJh8cq0YnCsRuHuUpliHxjjNCcEPnnDYaeT/TKNSP0tFArf13/i
-         VXNA==
-X-Gm-Message-State: AOAM530U0d6Xje4VVqKnAB8jT8XKUf7Uno+qs2b6cVIZ8i1RYqCzcTgE
-        JULisUhlykwsC8kd/bqAE4gzQD9TsUUZJvqqLCQZoFZgzzqS
-X-Google-Smtp-Source: ABdhPJw4gJ2NMoRsLD70Dsq821nSADN5jTVHVCrBJq3wFQS710ylX808RPmgF4qxv8Kch9zIktpTtG3+EzwlWpJv8MjT6QXqvF/m
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UjWq5GSJRSakthqVM5tmIM2a+e/ojUhA4a1Oq61RZ+M=;
+        b=V62Mpkv3o7pGLoqFiMV0JCoB/FhUHgjhmVM/tLfbarvVoMkw8awK6TCrTHf3Nm0LC8
+         ZJ97ycZsGYnX94Lh2R8HhePGsbWeZqRGOF7aozbueGTMQLIZ40iQ+NxUNqt1SJayFqOm
+         MU1n63kHOjHeUai2zpligoDOz3f/hp7YF3c/qZ+4BUMwvk5CGJ16wZIIHq6Tvkn7lsde
+         FN5ClAy7wmYbPpI/0a0lmIhIaAp4R6bCuvChmmplOmmATlCXDLwfv1gqAtpvlDougZzx
+         qm4s1el0bi7LwiHTq9FZw4oHit8+t52OuANbZ9PKRLeW69dB+WEc5nnV4W+itjcMqdVd
+         tjLA==
+X-Gm-Message-State: AOAM531KJvbh/bu7xZ8UZQlz27zlLssf961zkI8bQOz31Iq7dtrEMdMm
+        vQZul7tTqk0OtsWLFZxWgBCvgFh5xyQXVOGPqpMaew==
+X-Google-Smtp-Source: ABdhPJzotPEtPcjiFGRG/9Jf1YWrMW0QQ39f1sDmIFQXTwZeOPyLx5qAV54b1gIIu/7QDV8YuKObwKTAyWiDK2xE2fM=
+X-Received: by 2002:a05:651c:546:b0:24d:a9fa:7088 with SMTP id
+ q6-20020a05651c054600b0024da9fa7088mr625761ljp.96.1650060271664; Fri, 15 Apr
+ 2022 15:04:31 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1e0a:b0:2cb:ec2c:4220 with SMTP id
- g10-20020a056e021e0a00b002cbec2c4220mr354053ila.261.1650059722679; Fri, 15
- Apr 2022 14:55:22 -0700 (PDT)
-Date:   Fri, 15 Apr 2022 14:55:22 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a0ea7305dcb877f4@google.com>
-Subject: [syzbot] memory leak in lapb_send_control
-From:   syzbot <syzbot+780995ea16fd2fad8f9b@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-x25@vger.kernel.org, ms@dev.tdt.de, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com
+References: <20220403175544.26556-1-gerhard@engleder-embedded.com>
+ <20220403175544.26556-5-gerhard@engleder-embedded.com> <20220410072930.GC212299@hoboy.vegasvil.org>
+ <CANr-f5xhH31yF8UOmM=ktWULyUugBGDoHzOiYZggiDPZeTbdrw@mail.gmail.com>
+ <20220410134215.GA258320@hoboy.vegasvil.org> <CANr-f5xriLzQ+3xtM+iV8ahu=J1mA7ixbc49f0i2jxkySthTdQ@mail.gmail.com>
+ <CANr-f5yn9LzMQ8yAP8Py-EP_NyifFyj1uXBNo+kuGY1p8t0CFw@mail.gmail.com>
+ <20220412214655.GB579091@hoboy.vegasvil.org> <CANr-f5zLyphtbi49mvsH_rVzn7yrGejUGMVobwrFmX8U6f2YVA@mail.gmail.com>
+ <20220414063627.GA2311@hoboy.vegasvil.org>
+In-Reply-To: <20220414063627.GA2311@hoboy.vegasvil.org>
+From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+Date:   Sat, 16 Apr 2022 00:04:20 +0200
+Message-ID: <CANr-f5zzQ6_UsOdLZK7b-k5Jy4qhdGJ4_D2irK-S0FzhE5u3rQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 4/5] ptp: Support late timestamp determination
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, yangbo.lu@nxp.com,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, mlichvar@redhat.com,
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+> > For igc and tsnep the 16 bytes in front of the RX frame exist anyway.
+> > So this would be a minimal solution with best performance as a first
+> > step. A lookup for netdev/phc can be added in the future if there is
+> > a driver, which needs that.
+>
+> It is a design mistake to base new kernel interfaces on hardware
+> quirks.
+>
+> > Is it worth posting an implementation in that direction?
+>
+> Sure, but please make thoughts about how this would work for the
+> non-igc world.
+>
+> IIRC one of the nxp switches also has such counters?  You can start
+> with that.
 
-syzbot found the following issue on:
+I did some measurements (A53, 1.2GHz): netdev lookup and call to
+my driver takes ~400ns. ptp_convert_timestamp() takes ~6000ns, I
+assume because of class_find_device_by_name() call. So eliminating
+the netdev lookup is the wrong optimisation target.
 
-HEAD commit:    a19944809fe9 Merge tag 'hardening-v5.18-rc3' of git://git...
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=10498e14f00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=b8f1a3425e05af27
-dashboard link: https://syzkaller.appspot.com/bug?extid=780995ea16fd2fad8f9b
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15de1c67700000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1402da98f00000
+I will try to do it like that:
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+780995ea16fd2fad8f9b@syzkaller.appspotmail.com
+- normal, driver without cycles support:   use hwtstamps->hwtstamp
+directly (not changed)
+- driver with cycles support:   netdev lookup for address/cookie
+conversion to hwtstamp (newly implemented)
+- vclock:   slow path with phc lookup (not changed)
 
-BUG: memory leak
-unreferenced object 0xffff88810d526a00 (size 232):
-  comm "kworker/0:3", pid 3257, jiffies 4294947579 (age 18.730s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 6a 52 0d 81 88 ff ff  .........jR.....
-    00 f0 40 0c 81 88 ff ff 00 00 00 00 00 00 00 00  ..@.............
-  backtrace:
-    [<ffffffff837dc4f6>] __alloc_skb+0x216/0x290 net/core/skbuff.c:414
-    [<ffffffff83d9ed04>] alloc_skb include/linux/skbuff.h:1300 [inline]
-    [<ffffffff83d9ed04>] lapb_send_control+0x34/0x1b0 net/lapb/lapb_subr.c:227
-    [<ffffffff83d9f536>] __lapb_disconnect_request+0xa6/0xc0 net/lapb/lapb_iface.c:326
-    [<ffffffff83d9f7c5>] lapb_device_event+0x195/0x250 net/lapb/lapb_iface.c:492
-    [<ffffffff8127ad5d>] notifier_call_chain kernel/notifier.c:84 [inline]
-    [<ffffffff8127ad5d>] raw_notifier_call_chain+0x5d/0xa0 kernel/notifier.c:392
-    [<ffffffff837fd4b8>] call_netdevice_notifiers_info+0x78/0xe0 net/core/dev.c:1938
-    [<ffffffff837fde06>] call_netdevice_notifiers_extack net/core/dev.c:1976 [inline]
-    [<ffffffff837fde06>] call_netdevice_notifiers net/core/dev.c:1990 [inline]
-    [<ffffffff837fde06>] __dev_close_many+0x76/0x150 net/core/dev.c:1483
-    [<ffffffff838024f3>] dev_close_many+0xc3/0x1b0 net/core/dev.c:1534
-    [<ffffffff8380523e>] dev_close net/core/dev.c:1560 [inline]
-    [<ffffffff8380523e>] dev_close+0xae/0xf0 net/core/dev.c:1554
-    [<ffffffff82ab3283>] lapbeth_device_event+0x333/0x580 drivers/net/wan/lapbether.c:462
-    [<ffffffff8127ad5d>] notifier_call_chain kernel/notifier.c:84 [inline]
-    [<ffffffff8127ad5d>] raw_notifier_call_chain+0x5d/0xa0 kernel/notifier.c:392
-    [<ffffffff837fd4b8>] call_netdevice_notifiers_info+0x78/0xe0 net/core/dev.c:1938
-    [<ffffffff837fde06>] call_netdevice_notifiers_extack net/core/dev.c:1976 [inline]
-    [<ffffffff837fde06>] call_netdevice_notifiers net/core/dev.c:1990 [inline]
-    [<ffffffff837fde06>] __dev_close_many+0x76/0x150 net/core/dev.c:1483
-    [<ffffffff838024f3>] dev_close_many+0xc3/0x1b0 net/core/dev.c:1534
-    [<ffffffff838081bf>] unregister_netdevice_many+0x1df/0xac0 net/core/dev.c:10726
-    [<ffffffff83808bd4>] unregister_netdevice_queue net/core/dev.c:10683 [inline]
-    [<ffffffff83808bd4>] unregister_netdevice_queue+0x134/0x190 net/core/dev.c:10673
-
-BUG: memory leak
-unreferenced object 0xffff88810c66c400 (size 232):
-  comm "kworker/0:1", pid 42, jiffies 4294948655 (age 7.970s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 c4 66 0c 81 88 ff ff  ..........f.....
-    00 b0 16 11 81 88 ff ff 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<ffffffff837dc4f6>] __alloc_skb+0x216/0x290 net/core/skbuff.c:414
-    [<ffffffff83d9ed04>] alloc_skb include/linux/skbuff.h:1300 [inline]
-    [<ffffffff83d9ed04>] lapb_send_control+0x34/0x1b0 net/lapb/lapb_subr.c:227
-    [<ffffffff83d9f536>] __lapb_disconnect_request+0xa6/0xc0 net/lapb/lapb_iface.c:326
-    [<ffffffff83d9f7c5>] lapb_device_event+0x195/0x250 net/lapb/lapb_iface.c:492
-    [<ffffffff8127ad5d>] notifier_call_chain kernel/notifier.c:84 [inline]
-    [<ffffffff8127ad5d>] raw_notifier_call_chain+0x5d/0xa0 kernel/notifier.c:392
-    [<ffffffff837fd4b8>] call_netdevice_notifiers_info+0x78/0xe0 net/core/dev.c:1938
-    [<ffffffff837fde06>] call_netdevice_notifiers_extack net/core/dev.c:1976 [inline]
-    [<ffffffff837fde06>] call_netdevice_notifiers net/core/dev.c:1990 [inline]
-    [<ffffffff837fde06>] __dev_close_many+0x76/0x150 net/core/dev.c:1483
-    [<ffffffff838024f3>] dev_close_many+0xc3/0x1b0 net/core/dev.c:1534
-    [<ffffffff8380523e>] dev_close net/core/dev.c:1560 [inline]
-    [<ffffffff8380523e>] dev_close+0xae/0xf0 net/core/dev.c:1554
-    [<ffffffff82ab3283>] lapbeth_device_event+0x333/0x580 drivers/net/wan/lapbether.c:462
-    [<ffffffff8127ad5d>] notifier_call_chain kernel/notifier.c:84 [inline]
-    [<ffffffff8127ad5d>] raw_notifier_call_chain+0x5d/0xa0 kernel/notifier.c:392
-    [<ffffffff837fd4b8>] call_netdevice_notifiers_info+0x78/0xe0 net/core/dev.c:1938
-    [<ffffffff837fde06>] call_netdevice_notifiers_extack net/core/dev.c:1976 [inline]
-    [<ffffffff837fde06>] call_netdevice_notifiers net/core/dev.c:1990 [inline]
-    [<ffffffff837fde06>] __dev_close_many+0x76/0x150 net/core/dev.c:1483
-    [<ffffffff838024f3>] dev_close_many+0xc3/0x1b0 net/core/dev.c:1534
-    [<ffffffff838081bf>] unregister_netdevice_many+0x1df/0xac0 net/core/dev.c:10726
-    [<ffffffff83808bd4>] unregister_netdevice_queue net/core/dev.c:10683 [inline]
-    [<ffffffff83808bd4>] unregister_netdevice_queue+0x134/0x190 net/core/dev.c:10673
-
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Gerhard
