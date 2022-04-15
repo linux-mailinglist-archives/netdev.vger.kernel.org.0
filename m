@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C02F5029CA
-	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 14:31:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BE7E5029CE
+	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 14:31:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353501AbiDOMdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 08:33:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59978 "EHLO
+        id S1353415AbiDOMdi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 08:33:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353812AbiDOMdS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 08:33:18 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C285329A7;
-        Fri, 15 Apr 2022 05:30:50 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id p15so15141678ejc.7;
-        Fri, 15 Apr 2022 05:30:50 -0700 (PDT)
+        with ESMTP id S1353817AbiDOMdU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 08:33:20 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AD4933E03;
+        Fri, 15 Apr 2022 05:30:52 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id v4so9765571edl.7;
+        Fri, 15 Apr 2022 05:30:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ky3MoM/ZXCS0RcXaCsseb5+miwfvst1Flp3YDairGIg=;
-        b=VX5z0p2CQATSjZ/cB6fC3h9O4lcoVuaEeHZ5oMj5ah/MF5El83y/G05fbzVfnY4jtV
-         2jfdW24ABg6n0p6U+h7v6WIwzSt3d7b9iZZfCOVwdb9eRkqsjfUYQfBf0tP9PQhj6xAF
-         ZqzTYECEUx2XXcPHnM08pm1xojDqgZR/wBevx8Sb24MxSgnBtyAz8PoCc58xcG8YAB9G
-         IxK95DPTq6cr0xJ/fmCfUz06QbDZ5Fkpcsn4s7p6FTbWtVO8lIB5Wd8WZQoVWWRcyjNR
-         0+fySitodpTLLbLvAAk9XfdLW29VtBz3pf+uk388QGLpxd+KwzM5fJkKB+UJDZiq/7vG
-         rzaQ==
+        bh=PxsivQPQxoWJpzdCzth3DXDecoJwiEJJ2qSzCxa8YbM=;
+        b=P0c5Dh8AAa7sb5OM8099LhwkdWs0uzk5X1uLLNx3Jd6eqx5Lgt/IcUOj+ipY349hmP
+         zFr0oJ100/g8T7HFu2hZNgVAPiINcyxsFje98AfSxqbBiWv1hhtZi7jXF3sFaPuo5KpO
+         +yRpASfCwTH+VZ5eTbpv3G0m0FEupA0NKKPjaNv1+6pt02WnINZlFA1Q3cLXlszsthcQ
+         2JCWgtlWrm0RLFwH3f7/f8aHEwV54NuKX20RJ4kvpXtgIialHHc6Ic+lgKcQHDw8fP+3
+         IQrA6guzPLfCKaU7jPWmDHySkUFxm0EsXDvOd/7sMFfIbS4/OkUgtlXsoe9i2w0T+a6g
+         lw1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ky3MoM/ZXCS0RcXaCsseb5+miwfvst1Flp3YDairGIg=;
-        b=a/sA7uWE7r+FdQiVjUkb4IU9Y2Br6DMDFLbgykV/s2Cmq4zqTBvIdwkNJdfmM2G4IY
-         nDTfSGuaSZpIt+aSjgUBsCLCmmyS3xAP6cuSvaPsaWdBngKfyWJhW1ARiiu0sIG2bhvD
-         Q6/oWn8w7NnjH5UXbIGl2RfH3M5tKjBYmklaxChLPftaOQa0LnGuX+bIfoQnFct4/3KD
-         eJBV7cysilXGAJyVRaObRyeZekUzkX1tEA8ElcFFIDnMIka7W/yZfHxQlObgUTpacLtM
-         h8hyA0v89wV56C/TvO/hXJ8D4j9VByH+pNSvaY7ckhXEw2dYfrTMe3IG9um0LseN19Mx
-         /iAg==
-X-Gm-Message-State: AOAM531W9x/+jA/OhwCK+7zhdasdUBpUZEnJgReds63MXBcqk6yMstqL
-        3T/UibKCSTPBaZmrYl6QCb0=
-X-Google-Smtp-Source: ABdhPJxVt5dt+TeFnYseiosxE0swakZutRyn/1CBbMxdSXvdp7WSGz2vkXz7SiKCNkURenMOkyTIlg==
-X-Received: by 2002:a17:907:7f26:b0:6ec:b6a:468 with SMTP id qf38-20020a1709077f2600b006ec0b6a0468mr5278591ejc.661.1650025848973;
-        Fri, 15 Apr 2022 05:30:48 -0700 (PDT)
+        bh=PxsivQPQxoWJpzdCzth3DXDecoJwiEJJ2qSzCxa8YbM=;
+        b=JkfEmeK3qKIHkVHaAx8uqETS0TQtTWt3quLZOxn1k7JkQL42vKLNg7YTqo5MhWomv0
+         gGIacrc5Rt4SG3tjhi0XFlFUkxWB7FrFUOtrZtXIEpIcz0NiZYZFCykXbxCtCF4whaOr
+         WAzJoyDATm7slZaAsCLbDs+kefoTk6uVo5mVwRmdoy9xZrKolkxEpYONm++eHgMcJE0U
+         LZ4UbXwx4Zi60UaslvPkcoYYwarPFXaTT8dNDX0LGUdXaLhb24qRPV097eEJF6aGpKkg
+         KGPfeEdNl2znojQd1z9fp2MRKsUFwKXAeHot4Qr4xRA6CNRghKccCr7rovgdzxgt+ffR
+         wMEg==
+X-Gm-Message-State: AOAM533l0LPIBHxfEtiLaKbL5x6Ea54uRWlSCcMnt0xbYhkLo2GeSkaj
+        ShvCMwDyBc8tYGQQLtp6+U0=
+X-Google-Smtp-Source: ABdhPJxrnUQmwDmP1a2wh10wtTWPKFW1vlmgMjhOfGBg6TlgPtgf0/ohOCzc3KvvklBKqUk/nAx7fQ==
+X-Received: by 2002:a05:6402:1148:b0:413:11e0:1f58 with SMTP id g8-20020a056402114800b0041311e01f58mr7958352edw.113.1650025850637;
+        Fri, 15 Apr 2022 05:30:50 -0700 (PDT)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id bo14-20020a170906d04e00b006ce98d9c3e3sm1649533ejb.194.2022.04.15.05.30.47
+        by smtp.googlemail.com with ESMTPSA id bo14-20020a170906d04e00b006ce98d9c3e3sm1649533ejb.194.2022.04.15.05.30.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 05:30:48 -0700 (PDT)
+        Fri, 15 Apr 2022 05:30:50 -0700 (PDT)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
@@ -86,9 +86,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next v4 03/18] net: dsa: sja1105: reorder sja1105_first_entry_longer_than with memory allocation
-Date:   Fri, 15 Apr 2022 14:29:32 +0200
-Message-Id: <20220415122947.2754662-4-jakobkoschel@gmail.com>
+Subject: [PATCH net-next v4 04/18] net: dsa: sja1105: use list_add_tail(pos) instead of list_add(pos->prev)
+Date:   Fri, 15 Apr 2022 14:29:33 +0200
+Message-Id: <20220415122947.2754662-5-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220415122947.2754662-1-jakobkoschel@gmail.com>
 References: <20220415122947.2754662-1-jakobkoschel@gmail.com>
@@ -106,60 +106,31 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-sja1105_first_entry_longer_than() does not make use of the full struct
-sja1105_gate_entry *e, just of e->interval which is set from the passed
-entry_time.
+When passed a non-head list element, list_add_tail() actually adds the
+new element to its left, which is what we want. Despite the slightly
+confusing name, use the dedicated function which does the same thing as
+the open-coded list_add(pos->prev).
 
-This means that if there is a gate conflict, we have allocated e for
-nothing, just to free it later. Reorder the memory allocation and the
-function call, to avoid that and simplify the error unwind path.
-
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/net/dsa/sja1105/sja1105_vl.c | 17 +++++------------
- 1 file changed, 5 insertions(+), 12 deletions(-)
+ drivers/net/dsa/sja1105/sja1105_vl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/dsa/sja1105/sja1105_vl.c b/drivers/net/dsa/sja1105/sja1105_vl.c
-index 369be2ac3587..e5ea8eb9ec4e 100644
+index e5ea8eb9ec4e..7fe9b18f1cbd 100644
 --- a/drivers/net/dsa/sja1105/sja1105_vl.c
 +++ b/drivers/net/dsa/sja1105/sja1105_vl.c
-@@ -36,7 +36,11 @@ static int sja1105_insert_gate_entry(struct sja1105_gating_config *gating_cfg,
- {
- 	struct sja1105_gate_entry *e;
- 	struct list_head *pos;
--	int rc;
-+
-+	pos = sja1105_first_entry_longer_than(&gating_cfg->entries,
-+					      entry_time, extack);
-+	if (IS_ERR(pos))
-+		return PTR_ERR(pos);
- 
- 	e = kzalloc(sizeof(*e), GFP_KERNEL);
- 	if (!e)
-@@ -45,22 +49,11 @@ static int sja1105_insert_gate_entry(struct sja1105_gating_config *gating_cfg,
+@@ -49,7 +49,7 @@ static int sja1105_insert_gate_entry(struct sja1105_gating_config *gating_cfg,
  	e->rule = rule;
  	e->gate_state = gate_state;
  	e->interval = entry_time;
--
--	pos = sja1105_first_entry_longer_than(&gating_cfg->entries,
--					      e->interval, extack);
--	if (IS_ERR(pos)) {
--		rc = PTR_ERR(pos);
--		goto err;
--	}
--
- 	list_add(&e->list, pos->prev);
+-	list_add(&e->list, pos->prev);
++	list_add_tail(&e->list, pos);
  
  	gating_cfg->num_entries++;
  
- 	return 0;
--err:
--	kfree(e);
--	return rc;
- }
- 
- /* The gate entries contain absolute times in their e->interval field. Convert
 -- 
 2.25.1
 
