@@ -2,112 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 57347502720
-	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 10:53:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3877C50272E
+	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 11:00:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348523AbiDOIz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 04:55:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35326 "EHLO
+        id S1351644AbiDOJDO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 05:03:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbiDOIzZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 04:55:25 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8814B644D;
-        Fri, 15 Apr 2022 01:52:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=6RJ/VwGJTUKSN4pEDxbLWHdkQvJ3lWAEWFoDyQeUEzY=; b=0h+2I4Mp2CKd9ThVYlQmFspKuM
-        EhcO/UJG+h5+jVA8X7gRiiqEibxwSptVfDVrf8sZb4wt5xLVfB42duZd8yFG0yMFHBmoU0W5cmJWB
-        yjA2uW9YarvyUuf8ZREIT4pb50/oZFJ70XqI8r+DsmO5i80cTCwzEP/IQhCKmmQXI3dDSnRvB1O5P
-        K4+DluIrkyWN0VURAQvURZaHO8ak3Omw/tIhkP1bzLs+3TdWw3n6uVOpJSgRbTgDHXooqGLLD7g3p
-        kDGU9IN7/s5RHSRWkEzHFoF7q1JeAPX1XJNLNCqI8dNMZJEuvZybbyHaXS4xJ4DHR39X1588Sbb6n
-        cDrYiZ5g==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58272)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nfHh1-0005SZ-66; Fri, 15 Apr 2022 09:52:38 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nfHgx-00057u-IP; Fri, 15 Apr 2022 09:52:35 +0100
-Date:   Fri, 15 Apr 2022 09:52:35 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?iso-8859-1?Q?Miqu=E8l?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
-        Laurent Gonzales <laurent.gonzales@non.se.com>,
-        Jean-Pierre Geslin <jean-pierre.geslin@non.se.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>
-Subject: Re: [PATCH net-next 06/12] net: dsa: rzn1-a5psw: add Renesas RZ/N1
- advanced 5 port switch driver
-Message-ID: <YlkyU7jRAi5037up@shell.armlinux.org.uk>
-References: <20220414122250.158113-1-clement.leger@bootlin.com>
- <20220414122250.158113-7-clement.leger@bootlin.com>
- <YlgbUiXzHa0UNRK+@shell.armlinux.org.uk>
- <20220415104029.5e52080b@fixe.home>
+        with ESMTP id S229460AbiDOJDN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 05:03:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 528C58AE52;
+        Fri, 15 Apr 2022 02:00:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F39C0B80171;
+        Fri, 15 Apr 2022 09:00:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 91CCBC385A8;
+        Fri, 15 Apr 2022 09:00:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650013243;
+        bh=MetiOuWbF050kxsHnVkalbwK32pwNS7n10G5RvDN38M=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=jjlPh2atZsOsN//6lP1kYJuOTvIOm78g7TfP2m0mcM/W4PlnGhR4mvca12pN7kDxr
+         AZ1NOCC9EdqiHKvun/BkLlbOiIa7F9s1B9r+spHHjv0HajcUhqYC46Z07cDeyqWFUb
+         NZd95laeV7JEqP6ES/L5epfx7B8I3PMtE5SBCJPjUbWDRzz0c1r6y2S37dZUCIOKZE
+         FVuG6GqwYlhM9wwjX8Rfxs9hakdbi35miWRbPzpXsmysMKUXG35rL3ZmEKZx/YoPIV
+         ClLwr5S2mTMsLHWg8DNQVemQrSUI2CxrRa+4E4juzCpoVOqM2yHBvpe1gHeIMqNEmH
+         PlOx5XAu/sgHw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6FF4EE8DD6A;
+        Fri, 15 Apr 2022 09:00:43 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220415104029.5e52080b@fixe.home>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net] net: dsa: realtek: fix Kconfig to assure consistent
+ driver linkage
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165001324345.27870.14252281044127630297.git-patchwork-notify@kernel.org>
+Date:   Fri, 15 Apr 2022 09:00:43 +0000
+References: <20220412155527.1824118-1-alvin@pqrs.dk>
+In-Reply-To: <20220412155527.1824118-1-alvin@pqrs.dk>
+To:     =?utf-8?b?QWx2aW4gxaBpcHJhZ2EgPGFsdmluQHBxcnMuZGs+?=@ci.codeaurora.org
+Cc:     linus.walleij@linaro.org, alsi@bang-olufsen.dk, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        luizluca@gmail.com, lkp@intel.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 15, 2022 at 10:40:29AM +0200, Clément Léger wrote:
-> Le Thu, 14 Apr 2022 14:02:10 +0100,
-> "Russell King (Oracle)" <linux@armlinux.org.uk> a écrit :
-> 
-> > On Thu, Apr 14, 2022 at 02:22:44PM +0200, Clément Léger wrote:
-> > > Add Renesas RZ/N1 advanced 5 port switch driver. This switch handles 5
-> > > ports including 1 CPU management port. A MDIO bus is also exposed by
-> > > this switch and allows to communicate with PHYs connected to the ports.
-> > > Each switch port (except for the CPU management ports) are connected to
-> > > the MII converter.
-> > > 
-> > > This driver include basic bridging support, more support will be added
-> > > later (vlan, etc).  
-> > 
-> > This patch looks to me like it needs to be updated...
-> 
-> Hi Russell,
-> 
-> When you say so, do you expect the VLAN support to be included ?
+Hello:
 
-I was referring to the use of .phylink_validate rather than
-.phylink_get_caps - all but one DSA driver have been recently updated
-to use the latter, and the former should now only be used in
-exceptional circumstances.
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Thanks.
+On Tue, 12 Apr 2022 17:55:27 +0200 you wrote:
+> From: Alvin Å ipraga <alsi@bang-olufsen.dk>
+> 
+> The kernel test robot reported a build failure:
+> 
+> or1k-linux-ld: drivers/net/dsa/realtek/realtek-smi.o:(.rodata+0x16c): undefined reference to `rtl8366rb_variant'
+> 
+> ... with the following build configuration:
+> 
+> [...]
 
+Here is the summary with links:
+  - [net] net: dsa: realtek: fix Kconfig to assure consistent driver linkage
+    https://git.kernel.org/netdev/net-next/c/2511e0c87786
+
+You are awesome, thank you!
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
