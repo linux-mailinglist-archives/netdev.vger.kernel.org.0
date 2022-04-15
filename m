@@ -2,74 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CAEC4502D00
-	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 17:40:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70CC9502CF0
+	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 17:40:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350138AbiDOPgI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 11:36:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38372 "EHLO
+        id S1355604AbiDOPkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 11:40:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355474AbiDOPf6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 11:35:58 -0400
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA5AAD4476;
-        Fri, 15 Apr 2022 08:31:24 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 8FE39E0005;
-        Fri, 15 Apr 2022 15:31:20 +0000 (UTC)
+        with ESMTP id S1355561AbiDOPkH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 11:40:07 -0400
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9D3D47048
+        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 08:37:24 -0700 (PDT)
+Received: (Authenticated sender: maxime.chevallier@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 7CA6060008;
+        Fri, 15 Apr 2022 15:37:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650036683;
+        t=1650037040;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5PxUe/jVOziohrmOicNYY1NsCVv8h1sy+kBFs3ns1qA=;
-        b=e++gmbm5jOhwqvqQNApsOKbqHDxmZxZJl+i+rTOmPFMYyErOSmlhX2RorX0RUev+YdkpYX
-        5afXGsrmBl/GHJ3cZN1ImxN5rI83UpLDx6yfbkUHcQdvQV4S3dpTp1C1kAD92Yo2bPNHY/
-        cMSwiel+wUKf/h2/fCbw9nilDsXB3UwUF6woHk1K8CNiohC09GOFC4k5zBiLMlfXj7TMgT
-        L8R4/QwvwzigMq0BYndP0c233YnEss5rqFoVgnOaYiEVEvEiAU0C+Llz0JPDcGljoTuCIG
-        oB8OJFlVr4YY+phywFrY//KZcTg9QAaQT7KYQtzCrxZdkRXJtL6fSXSW6qOuEg==
-Date:   Fri, 15 Apr 2022 17:29:54 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ij0H5L8ZW1gD/KNj5IYgoazS+UY2ozgxRzm7e6WPS4Y=;
+        b=R5BAnE7kTbvZIkVn90ihmKmWNi9jFWw4OxiqJRYH+952BeLuRb23Vlq1D5xwuD2KWoQV74
+        oqUmDxlE3eYUA934NW38kiykkBWp8gGfK+pRzx8D8vBydp7HYKxvQhcHkxr86AG5yi4ekh
+        uVc4g6wxiG/u4xXvcw4isr5urXqs1JemjJMSK4+hBzZ7gih+icXia+jvF/lP8wR8CLRdHh
+        VDi8a9ilrqe00bCpBCdRXdXOk5llq4+Mrr1l/zKdlf9Zk9X//9wClrDL3b31UcpgPMEv1w
+        bqqYQmDBg6e9P4HwS8TncLczZomsWidmSpF17fT6cws1JBSxD7tB5jg+3RXpLQ==
+Date:   Fri, 15 Apr 2022 17:37:18 +0200
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        vladimir.oltean@nxp.com,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 09/12] ARM: dts: r9a06g032: describe MII
- converter
-Message-ID: <20220415172954.64e53086@fixe.home>
-In-Reply-To: <YlmLWv4Hsm2uk8pa@lunn.ch>
-References: <20220414122250.158113-1-clement.leger@bootlin.com>
-        <20220414122250.158113-10-clement.leger@bootlin.com>
-        <YlismVi8y3Vf6PZ0@lunn.ch>
-        <20220415102453.1b5b3f77@fixe.home>
-        <Yll+Tpnwo5410B9H@lunn.ch>
-        <20220415163853.683c0b6d@fixe.home>
-        <YlmLWv4Hsm2uk8pa@lunn.ch>
+        "Allan.Nielsen@microchip.com" <Allan.Nielsen@microchip.com>
+Subject: Offloading Priority Tables for queue classification
+Message-ID: <20220415173718.494f5fdb@fedora>
 Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,85 +52,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le Fri, 15 Apr 2022 17:12:26 +0200,
-Andrew Lunn <andrew@lunn.ch> a =C3=A9crit :
+Hello everyone,
 
-> > Ok, looks like a more flexible way to doing it. Let's go with something
-> > like this:
-> >=20
-> > renesas,miic-port-connection =3D <PORTIN_GMAC2>, <MAC2>, <SWITCH_PORTC>,
-> > <SWITCH_PORTB>, <SWITCH_PORTA>; =20
->=20
-> Not all combinations are possible. In fact, there is a limited choice
-> for each value. So consider getting the yaml tools to help you by
-> listing what is valid for each setting. You might need a different
-> format than. Also, this format it is not clear what each value refers
-> to.
->=20
-> renesas,miic-port-connection-mii-conv1 =3D <PORTIN_GMAC2>;
-> renesas,miic-port-connection-mii-conv2 =3D <MAC2>;
-> renesas,miic-port-connection-mii-conv3 =3D <SWITCH_PORTC>;
-> renesas,miic-port-connection-mii-conv4 =3D <SWITCH_PORTB>;
-> renesas,miic-port-connection-mii-conv5 =3D <SWITCH_PORTA>;
->=20
-> is more sense documenting, and i suspect easier to make the validator
-> work for you.
+I'm starting this thread before any kind of series submission to
+discuss on the manner with which we could deal with Queue
+Classification in NICs, and more specifically how we could handle
+internal classification tables like DSCP, VLAN Prio and any other
+tables that we can populate in modern NICs to quickly assign a priority
+to both egress and ingress traffic, and use that priority to select a
+queue in which the packet will be enqueued/dequeued from.
 
-While doing it, I think it probably even makes more sense to have
-something more structured. I currently have the following:
+The use-case we have in mind is to offload all of these classification
+steps into a switch , where traffic would be classified internally
+into queues, that we could configure for Frame-Preemption or any other
+QoS techniques. I know that Frame Preemption itself and the way to
+configure it is still under discussion, with debate on where to
+configure the queue preemptability (hence why some of you ended-up CC'd
+to that thread) :
 
-    eth-miic@44030000 {
-      ...
+https://lore.kernel.org/netdev/20210626003314.3159402-1-vinicius.gomes@intel.com/
+  
+There are already ways to do this classification, but from what
+I've gathered, it looks like it's scattered across several places :
 
-      mii_conv0: mii-conv@0 {
-        reg =3D <0>;
-      };
+ - In TC, we can of course use TC flower for that. We can neatly decide
+   which flows goes where, match on any of the fields that we can use
+   to determine the priority of the packet. This however scales poorly
+   when the underlying hardware uses tables dedicated only to matching
+   specific fields, to assign each DSCP or VLAN a priority.
 
-      mii_conv1: mii-conv@1 {
-        reg =3D <1>;
-      };
-      ...
-    };
+   TC flower works well when we want to use a full-featured
+   classifier, using a TCAM of some sort combined with complete
+   classification rules. Using TC flower to configure such tables would
+   mean entering one rule per entry in our tables, which could work for
+   VLAN prio, but not that much for DSCP tables for example.
 
-I think it would be good to modify it like this:
+ - TC skbedit with the priority offloading is exactly what we want to
+   achieve, that is to emulate the skb->priority behaviour that we can
+   configure with various ways, and map this priority to queues with
+   mqpriofor example. tc-skbedit priority when offloaded handles that
+   notion of "packet priority" that is used internally in a switch.
 
-eth-miic@44030000 {
-    ...
-  converters {
-    mii_conv0: mii-conv@0 {
-      // Even if useless, maybe keeping it for the sake of coherency
-      renesas,miic-input =3D <MIIC_GMAC1>;
-      reg =3D <0>;
-    };
-    mii_conv1: mii-conv@1 {
-      renesas,miic-input =3D <SWITCH_PORTA>;
-      reg =3D <1>;
-    };
-    mii_conv2: mii-conv@2 {
-      renesas,miic-input =3D <SWITCH_PORTB>;
-      reg =3D <2>;
-    };
-    mii_conv3: mii-conv@3 {
-      renesas,miic-input =3D <SWITCH_PORTC>;
-      reg =3D <3>;
-    };
-    mii_conv4: mii-conv@4 {
-      renesas,miic-input =3D <SWITCH_PORTD>;
-      reg =3D <4>;
-    };
-  };
+ - TC mqprio and TC taprio can be used for the actual prio->queue
+   mapping, even though there's the "traffic class" layer sitting in
+   the middle.
 
-This way, it remains tied to the MII converter output port definition. I
-guess that the yaml definitions would still allow to restrict the values
-available per nodes. Validation for the final combination is probably
-more difficult to do using yaml.
+ - It looks like DCB could be a way to go to configure the DSCP/VLAN
+   prio/any other QoS tables, since we can configure all of these tables
+   with the "dcb app" command, which then calls hooks into the driver to
+   configure offloading of these tables. Using DCB for this is perfect,
+   since the traffic to prio assignment really is independant to the
+   mqprio layer.
 
-Regarding the SWITCH_PORTIN, I don't see any way to use the same
-definition than for the converter port and thus, a
-"renesas,miic-switch-portin" property seems mandatory.
+ - Finally for the last part of the chain, we can setup the queues for
+   PFC or Frame-Preemption, possibly using ethtool as suggested in the
+   above-mentionned thread.
+
+So in the end, my question would be : Is it OK to mix all of these
+together ? Using the dcb layer to configure the internal mapping of
+traffic -> priority, then using mqprio to configure the priority ->
+queue mapping, and then either TC again or ethtool do configure the
+behaviour of the queues themselves ? Or is there some other way that
+we've missed ?
+
+Thanks in advance,
+
+Best regards,
+
+Maxime
 
 
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
