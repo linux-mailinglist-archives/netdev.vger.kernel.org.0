@@ -2,213 +2,418 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 85DB95024F3
-	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 07:52:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B00B15024FE
+	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 07:54:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350098AbiDOFyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 01:54:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38024 "EHLO
+        id S1350181AbiDOF4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 01:56:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350100AbiDOFx7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 01:53:59 -0400
+        with ESMTP id S1347761AbiDOF4h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 01:56:37 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 41C9C4925D
-        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 22:51:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0F8DF4553E
+        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 22:54:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650001891;
+        s=mimecast20190719; t=1650002048;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=kvg7qjjzcKhlXPuJQVCJWvizFmo4t6XFmtZYkK1Ck7I=;
-        b=h6SGCZBOmuGbgQNIwHPbClLXpOlxJbsEY/PzFrwYh7HZlwI0LdJgmeK4SASpredtKdD4Kc
-        PKgyj+g6NUHdGtOoC/OMyKb9HkjtD+yz1T7txBeKzyC5lYiyqLKL9yOqAPvgHELXcvLrDT
-        rCEsP2waLNeZEQ03+laqBHboYi+sUXM=
+        bh=4DUpQQRjllWeKgwaikEH9+Zg1RdjLEbvQ8m8vSLOXgo=;
+        b=JYDcM6icb+UjJ5dzA+fDv0+QD3YMy5jtDDmnCS2Gp2U9uvKTrzZb368I+Q2VDzPPLslzSr
+        FCtYFzFVMd5pWY5SDQw6Swds49XZni1lEPUVGYmLbp/bqT35bIya+oIGHF5VWAtI7HYjDv
+        ClGj+45cXs0WpX6KlwsUSQ6pLSGpimM=
 Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
  [209.85.167.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-61-Y522lgehOZ6J8Q3jtd0liA-1; Fri, 15 Apr 2022 01:51:29 -0400
-X-MC-Unique: Y522lgehOZ6J8Q3jtd0liA-1
-Received: by mail-lf1-f70.google.com with SMTP id w25-20020a05651234d900b0044023ac3f64so3196510lfr.0
-        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 22:51:29 -0700 (PDT)
+ us-mta-531-ZL0uP-DbMSONSpYkOt5mUQ-1; Fri, 15 Apr 2022 01:54:07 -0400
+X-MC-Unique: ZL0uP-DbMSONSpYkOt5mUQ-1
+Received: by mail-lf1-f70.google.com with SMTP id bi4-20020a0565120e8400b0044acdd98ce2so3192110lfb.17
+        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 22:54:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=kvg7qjjzcKhlXPuJQVCJWvizFmo4t6XFmtZYkK1Ck7I=;
-        b=K3xuXp1fePFmjZ750vuw0uQ6qmWmmkrGbGsR7jenyn9XlyQMSx69YQ8+gJE8JT0aPa
-         3QJ+xzw7zyH8nutIp/ILlkl+7KGW/KDakp/XqhYf1DhDLhR5CY73VGrbkvOS35oB57Z8
-         QUjoa7LZqqjb6WsbeIGUD8dW1V2wH+U0RWAUq9FUFu0OuhDGk3LVBOW6nEgX+1G57A1y
-         g6yKbr0LS3PWyoG774A2gKfc9LdA8s1dD9XkNRZvOMYjhPY9WCzAbtBkTeroYxQBpt6W
-         NXy6UxGrtVcxNrFT/dDxrfaixHwVHWFQMDt2zS7YNcUhjxj7u5uaNTOpMD+6B/ha8bOi
-         q1pQ==
-X-Gm-Message-State: AOAM531aAlH7EcUu2hub/jI07Wnyxh285m+s4Q4zvJ/la3dJMLCP/2K7
-        BHUr4nbTQFD60Kgqp6WbY57BC04F/37CUOX61IbgocxnTynBuIGNvzcpZmuOk2CoH7k57xmYeKz
-        yGWBlJDqE1rwUzznOf8tygNVLe7z3W1+f
-X-Received: by 2002:ac2:4189:0:b0:448:bc2b:e762 with SMTP id z9-20020ac24189000000b00448bc2be762mr4045057lfh.471.1650001887930;
-        Thu, 14 Apr 2022 22:51:27 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyS9hHKM21VRW0UY8Ve1Cbt+BdOhiCFLW4MX1/5XpMUr29jtbfQMNmVD64dtIZ4cj74T8I09XLXvQC8wZy8ZJ4=
-X-Received: by 2002:ac2:4189:0:b0:448:bc2b:e762 with SMTP id
- z9-20020ac24189000000b00448bc2be762mr4045051lfh.471.1650001887708; Thu, 14
- Apr 2022 22:51:27 -0700 (PDT)
+        bh=4DUpQQRjllWeKgwaikEH9+Zg1RdjLEbvQ8m8vSLOXgo=;
+        b=54MazTxgEe+m+hW1Hnjr0ZNwdi//z4VLfJJ59TbqSIt/jyz3UICFotwKgvZQ8/VV50
+         bXJ8mZ8NpFaW1/yMdlzdppoPYgl7kgmnKLVjRA3vEBYO22VRQNrgjY4ZTUbFyXHcSalj
+         2Yn0zq7+AzyuPBqS914vrgABWMUZMyKNK6op/eDw0J+VQYGZUzE3oNBqLjfRkLqdEaFX
+         1t8jFRoKEubBo6+pTr31WEOaiAb6Ja9iCy6t4wWFlVHlWd9iXNscfc85rt/RQAjapfBa
+         foeztpSyatH+M25mKXNyV0zWCqQeEVjY9zpBauIok9rcyrN486M9V7Q63Jj8BVs+tv06
+         iX6w==
+X-Gm-Message-State: AOAM532LO2iXEm6cmQe0qm5uD/N2SozWdcRciy0wGSxD/gAX40TCHV2H
+        Pm8SimFYgpNmM2JYkBDvCQGmoCB0VF8yI/dvcEjyJ0oNSyeQXA0qS+tLom8F/nG62iV+di8oOdL
+        fpPpeEjmLNeEIFYjA5FyVncA3aVvMbTeC
+X-Received: by 2002:a05:6512:1285:b0:46b:a899:1111 with SMTP id u5-20020a056512128500b0046ba8991111mr4242509lfs.190.1650002045410;
+        Thu, 14 Apr 2022 22:54:05 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxMjPqFCCnsam4Gad1pwnmaN1PVSlqjX3b129ONCrCyE1AW6MdYUcqBDKuUQc4SGRNnhmWVZl0obuYmi/qz+og=
+X-Received: by 2002:a05:6512:1285:b0:46b:a899:1111 with SMTP id
+ u5-20020a056512128500b0046ba8991111mr4242472lfs.190.1650002045138; Thu, 14
+ Apr 2022 22:54:05 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220408121013.54709-1-lingshan.zhu@intel.com>
- <f3f60d6e-a506-bd58-d763-848beb0e4c26@redhat.com> <09a3613f-514b-c769-b8a0-25899b3d3159@intel.com>
-In-Reply-To: <09a3613f-514b-c769-b8a0-25899b3d3159@intel.com>
+References: <20220406034346.74409-1-xuanzhuo@linux.alibaba.com>
+ <20220406034346.74409-32-xuanzhuo@linux.alibaba.com> <122008a6-1e79-14d3-1478-59f96464afc9@redhat.com>
+ <1649838917.6726515-10-xuanzhuo@linux.alibaba.com> <CACGkMEvPH1k76xB_cHq_S9hvMXgGruoXpKLfoMZvJZ-L7wM9iw@mail.gmail.com>
+ <1649989126.5433838-1-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <1649989126.5433838-1-xuanzhuo@linux.alibaba.com>
 From:   Jason Wang <jasowang@redhat.com>
-Date:   Fri, 15 Apr 2022 13:51:16 +0800
-Message-ID: <CACGkMEuLW_PypyiPVcNz-B5FWNpkzLWwzC0eaZsCih+PbNt3Cg@mail.gmail.com>
-Subject: Re: [PATCH] vDPA/ifcvf: assign nr_vring to the MSI vector of
- config_intr by default
-To:     "Zhu, Lingshan" <lingshan.zhu@intel.com>
-Cc:     mst <mst@redhat.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>
+Date:   Fri, 15 Apr 2022 13:53:54 +0800
+Message-ID: <CACGkMEuju+kdapRbnx6OxsmAbD=JZin67xGBLEqLrMeuPPw0Fg@mail.gmail.com>
+Subject: Re: [PATCH v9 31/32] virtio_net: support rx/tx queue resize
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Vadim Pasternak <vadimp@nvidia.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        linux-um@lists.infradead.org, netdev <netdev@vger.kernel.org>,
+        platform-driver-x86@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        kvm <kvm@vger.kernel.org>,
+        "open list:XDP (eXpress Data Path)" <bpf@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 5:16 PM Zhu, Lingshan <lingshan.zhu@intel.com> wrot=
+On Fri, Apr 15, 2022 at 10:23 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wro=
+te:
+>
+> On Thu, 14 Apr 2022 17:30:02 +0800, Jason Wang <jasowang@redhat.com> wrot=
 e:
->
->
->
-> On 4/13/2022 4:14 PM, Jason Wang wrote:
-> >
-> > =E5=9C=A8 2022/4/8 =E4=B8=8B=E5=8D=888:10, Zhu Lingshan =E5=86=99=E9=81=
-=93:
-> >> This commit assign struct ifcvf_hw.nr_vring to the MSIX vector of the
-> >> config interrupt by default in ifcvf_request_config_irq().
-> >> ifcvf_hw.nr_vring is the most likely and the ideal case for
-> >> the device config interrupt handling, means every virtqueue has
-> >> an individual MSIX vector(0 ~ nr_vring - 1), and the config interrupt
-> >> has
-> >> its own MSIX vector(number nr_vring).
-> >>
-> >> This change can also make GCC W =3D 2 happy, silence the
-> >> "uninitialized" warning.
-> >>
-> >> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
-> >> Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-> >> ---
-> >>   drivers/vdpa/ifcvf/ifcvf_main.c | 8 ++++----
-> >>   1 file changed, 4 insertions(+), 4 deletions(-)
-> >>
-> >> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c
-> >> b/drivers/vdpa/ifcvf/ifcvf_main.c
-> >> index 4366320fb68d..b500fb941dab 100644
-> >> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
-> >> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-> >> @@ -290,13 +290,13 @@ static int ifcvf_request_config_irq(struct
-> >> ifcvf_adapter *adapter)
-> >>       struct ifcvf_hw *vf =3D &adapter->vf;
-> >>       int config_vector, ret;
-> >>   +    /* vector 0 ~ vf->nr_vring for vqs, num vf->nr_vring vector
-> >> for config interrupt */
-> >
-> >
-> > The comment is right before this patch, but probably wrong for
-> > MSIX_VECTOR_DEV_SHARED.
-> This comment is for the case when every vq and config interrupt has its
-> own vector, how
-> about a better comment "The ideal the default case, vector 0 ~
-> vf->nr_vring for vqs, num vf->nr_vring vector for config interrupt"
-
-Actually, I suggest to remove the comment since the code can explain itself=
-.
-
-> >
-> >
-> >> +    config_vector =3D vf->nr_vring;
-> >> +
-> >> +    /* re-use the vqs vector */
-> >>       if (vf->msix_vector_status =3D=3D MSIX_VECTOR_DEV_SHARED)
-> >>           return 0;
-> >>   -    if (vf->msix_vector_status =3D=3D MSIX_VECTOR_PER_VQ_AND_CONFIG=
-)
-> >> -        /* vector 0 ~ vf->nr_vring for vqs, num vf->nr_vring vector
-> >> for config interrupt */
-> >> -        config_vector =3D vf->nr_vring;
-> >> -
-> >>       if (vf->msix_vector_status =3D=3D MSIX_VECTOR_SHARED_VQ_AND_CONF=
-IG)
-> >>           /* vector 0 for vqs and 1 for config interrupt */
-> >>           config_vector =3D 1;
-> >
-> >
-> > Actually, I prefer to use if ... else ... here.
-> IMHO, if else may lead to mistakes.
->
-> The code:
->          /* The ideal the default case, vector 0 ~ vf->nr_vring for vqs,
-> num vf->nr_vring vector for config interrupt */
->          config_vector =3D vf->nr_vring;
->
->          /* re-use the vqs vector */
->          if (vf->msix_vector_status =3D=3D MSIX_VECTOR_DEV_SHARED)
->                  return 0;
->
->          if (vf->msix_vector_status =3D=3D MSIX_VECTOR_SHARED_VQ_AND_CONF=
-IG)
->                  /* vector 0 for vqs and 1 for config interrupt */
->                  config_vector =3D 1;
->
->
-> here by default config_vector =3D vf->nr_vring;
-> If msix_vector_status =3D=3D MSIX_VECTOR_DEV_SHARED, it will reuse the de=
-v
-> shared vector, means using the vector(value 0) for data-vqs.
-> If msix_vector_status =3D=3D MSIX_VECTOR_SHARED_VQ_AND_CONFIG, it will us=
+> > On Wed, Apr 13, 2022 at 4:47 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> =
+wrote:
+> > >
+> > > On Wed, 13 Apr 2022 16:00:18 +0800, Jason Wang <jasowang@redhat.com> =
+wrote:
+> > > >
+> > > > =E5=9C=A8 2022/4/6 =E4=B8=8A=E5=8D=8811:43, Xuan Zhuo =E5=86=99=E9=
+=81=93:
+> > > > > This patch implements the resize function of the rx, tx queues.
+> > > > > Based on this function, it is possible to modify the ring num of =
+the
+> > > > > queue.
+> > > > >
+> > > > > There may be an exception during the resize process, the resize m=
+ay
+> > > > > fail, or the vq can no longer be used. Either way, we must execut=
 e
-> vector=3D1(vector 0 for data-vqs).
+> > > > > napi_enable(). Because napi_disable is similar to a lock, napi_en=
+able
+> > > > > must be called after calling napi_disable.
+> > > > >
+> > > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > > > > ---
+> > > > >   drivers/net/virtio_net.c | 81 +++++++++++++++++++++++++++++++++=
++++++++
+> > > > >   1 file changed, 81 insertions(+)
+> > > > >
+> > > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > > > index b8bf00525177..ba6859f305f7 100644
+> > > > > --- a/drivers/net/virtio_net.c
+> > > > > +++ b/drivers/net/virtio_net.c
+> > > > > @@ -251,6 +251,9 @@ struct padded_vnet_hdr {
+> > > > >     char padding[4];
+> > > > >   };
+> > > > >
+> > > > > +static void virtnet_sq_free_unused_buf(struct virtqueue *vq, voi=
+d *buf);
+> > > > > +static void virtnet_rq_free_unused_buf(struct virtqueue *vq, voi=
+d *buf);
+> > > > > +
+> > > > >   static bool is_xdp_frame(void *ptr)
+> > > > >   {
+> > > > >     return (unsigned long)ptr & VIRTIO_XDP_FLAG;
+> > > > > @@ -1369,6 +1372,15 @@ static void virtnet_napi_enable(struct vir=
+tqueue *vq, struct napi_struct *napi)
+> > > > >   {
+> > > > >     napi_enable(napi);
+> > > > >
+> > > > > +   /* Check if vq is in reset state. The normal reset/resize pro=
+cess will
+> > > > > +    * be protected by napi. However, the protection of napi is o=
+nly enabled
+> > > > > +    * during the operation, and the protection of napi will end =
+after the
+> > > > > +    * operation is completed. If re-enable fails during the proc=
+ess, vq
+> > > > > +    * will remain unavailable with reset state.
+> > > > > +    */
+> > > > > +   if (vq->reset)
+> > > > > +           return;
+> > > >
+> > > >
+> > > > I don't get when could we hit this condition.
+> > >
+> > >
+> > > In patch 23, the code to implement re-enable vq is as follows:
+> > >
+> > > +static int vp_modern_enable_reset_vq(struct virtqueue *vq)
+> > > +{
+> > > +       struct virtio_pci_device *vp_dev =3D to_vp_device(vq->vdev);
+> > > +       struct virtio_pci_modern_device *mdev =3D &vp_dev->mdev;
+> > > +       struct virtio_pci_vq_info *info;
+> > > +       unsigned long flags, index;
+> > > +       int err;
+> > > +
+> > > +       if (!vq->reset)
+> > > +               return -EBUSY;
+> > > +
+> > > +       index =3D vq->index;
+> > > +       info =3D vp_dev->vqs[index];
+> > > +
+> > > +       /* check queue reset status */
+> > > +       if (vp_modern_get_queue_reset(mdev, index) !=3D 1)
+> > > +               return -EBUSY;
+> > > +
+> > > +       err =3D vp_active_vq(vq, info->msix_vector);
+> > > +       if (err)
+> > > +               return err;
+> > > +
+> > > +       if (vq->callback) {
+> > > +               spin_lock_irqsave(&vp_dev->lock, flags);
+> > > +               list_add(&info->node, &vp_dev->virtqueues);
+> > > +               spin_unlock_irqrestore(&vp_dev->lock, flags);
+> > > +       } else {
+> > > +               INIT_LIST_HEAD(&info->node);
+> > > +       }
+> > > +
+> > > +       vp_modern_set_queue_enable(&vp_dev->mdev, index, true);
+> > > +
+> > > +       if (vp_dev->per_vq_vectors && info->msix_vector !=3D VIRTIO_M=
+SI_NO_VECTOR)
+> > > +               enable_irq(pci_irq_vector(vp_dev->pci_dev, info->msix=
+_vector));
+> > > +
+> > > +       vq->reset =3D false;
+> > > +
+> > > +       return 0;
+> > > +}
+> > >
+> > >
+> > > There are three situations where an error will be returned. These are=
+ the
+> > > situations I want to handle.
+> >
+> > Right, but it looks harmless if we just schedule the NAPI without the c=
+heck.
 >
-> If we use if...else, it will be:
+> Yes.
 >
->          /* re-use the vqs vector */
->          if (vf->msix_vector_status =3D=3D MSIX_VECTOR_DEV_SHARED)
->                  return 0;
->          else
->                  config_vector =3D 1;
+> > >
+> > > But I'm rethinking the question, and I feel like you're right, althou=
+gh the
+> > > hardware setup may fail. We can no longer sync with the hardware. But=
+ using it
+> > > as a normal vq doesn't have any problems.
+> >
+> > Note that we should make sure the buggy(malicous) device won't crash
+> > the codes by changing the queue_reset value at its will.
 >
-> This looks like config_vector can only be 0(re-used vector for the
-> data-vqs, which is 0) or 1. It shadows the ideal and default case
-> config_vector =3D vf->nr_vring
+> I will keep an eye on this situation.
+>
+> >
+> > >
+> > > >
+> > > >
+> > > > > +
+> > > > >     /* If all buffers were filled by other side before we napi_en=
+abled, we
+> > > > >      * won't get another interrupt, so process any outstanding pa=
+ckets now.
+> > > > >      * Call local_bh_enable after to trigger softIRQ processing.
+> > > > > @@ -1413,6 +1425,15 @@ static void refill_work(struct work_struct=
+ *work)
+> > > > >             struct receive_queue *rq =3D &vi->rq[i];
+> > > > >
+> > > > >             napi_disable(&rq->napi);
+> > > > > +
+> > > > > +           /* Check if vq is in reset state. See more in
+> > > > > +            * virtnet_napi_enable()
+> > > > > +            */
+> > > > > +           if (rq->vq->reset) {
+> > > > > +                   virtnet_napi_enable(rq->vq, &rq->napi);
+> > > > > +                   continue;
+> > > > > +           }
+> > > >
+> > > >
+> > > > Can we do something similar in virtnet_close() by canceling the wor=
+k?
+> > >
+> > > I think there is no need to cancel the work here, because napi_disabl=
+e will wait
+> > > for the napi_enable of the resize. So if the re-enable failed vq is u=
+sed as a normal
+> > > vq, this logic can be removed.
+> >
+> > Actually I meant the part of virtnet_rx_resize().
+> >
+> > If we don't synchronize with the refill work, it might enable NAPI unex=
+pectedly?
+>
+> I don't think this situation will be encountered, because napi_disable is
+> mutually exclusive, so there will be no unexpected napi enable.
+>
+> Is there something I misunderstood?
 
-I meant something like
+So in virtnet_rx_resize() we do:
 
-if (DEV_SHARED)
-    return 0;
-else if  (SHARED_VQ_AND_CONFIG)
-    config_vector =3D 1
-else if (PER_VQ_AND_CONFIG)
-    config_vector =3D vf->nr_vring
-else
-    return -EINVAL;
+napi_disable()
+...
+resize()
+...
+napi_enalbe()
 
-or using a switch here.
-
-(We get the warning because there's no way for the checker to know
-that msix_vector_status must be DEV_SHARED, SHARED_VQ_AND_CONFIG and
-PER_VQ_AND_CONFIG).
+How can we guarantee that the work is not run after the napi_disable()?
 
 Thanks
 
 >
-> Thanks,
-> Zhu Lingshan
+> Thanks.
 >
 > >
 > > Thanks
 > >
+> > >
+> > >
+> > > >
+> > > >
+> > > > > +
+> > > > >             still_empty =3D !try_fill_recv(vi, rq, GFP_KERNEL);
+> > > > >             virtnet_napi_enable(rq->vq, &rq->napi);
+> > > > >
+> > > > > @@ -1523,6 +1544,10 @@ static void virtnet_poll_cleantx(struct re=
+ceive_queue *rq)
+> > > > >     if (!sq->napi.weight || is_xdp_raw_buffer_queue(vi, index))
+> > > > >             return;
+> > > > >
+> > > > > +   /* Check if vq is in reset state. See more in virtnet_napi_en=
+able() */
+> > > > > +   if (sq->vq->reset)
+> > > > > +           return;
+> > > >
+> > > >
+> > > > We've disabled TX napi, any chance we can still hit this?
+> > >
+> > > Same as above.
+> > >
+> > > >
+> > > >
+> > > > > +
+> > > > >     if (__netif_tx_trylock(txq)) {
+> > > > >             do {
+> > > > >                     virtqueue_disable_cb(sq->vq);
+> > > > > @@ -1769,6 +1794,62 @@ static netdev_tx_t start_xmit(struct sk_bu=
+ff *skb, struct net_device *dev)
+> > > > >     return NETDEV_TX_OK;
+> > > > >   }
+> > > > >
+> > > > > +static int virtnet_rx_resize(struct virtnet_info *vi,
+> > > > > +                        struct receive_queue *rq, u32 ring_num)
+> > > > > +{
+> > > > > +   int err;
+> > > > > +
+> > > > > +   napi_disable(&rq->napi);
+> > > > > +
+> > > > > +   err =3D virtqueue_resize(rq->vq, ring_num, virtnet_rq_free_un=
+used_buf);
+> > > > > +   if (err)
+> > > > > +           goto err;
+> > > > > +
+> > > > > +   if (!try_fill_recv(vi, rq, GFP_KERNEL))
+> > > > > +           schedule_delayed_work(&vi->refill, 0);
+> > > > > +
+> > > > > +   virtnet_napi_enable(rq->vq, &rq->napi);
+> > > > > +   return 0;
+> > > > > +
+> > > > > +err:
+> > > > > +   netdev_err(vi->dev,
+> > > > > +              "reset rx reset vq fail: rx queue index: %td err: =
+%d\n",
+> > > > > +              rq - vi->rq, err);
+> > > > > +   virtnet_napi_enable(rq->vq, &rq->napi);
+> > > > > +   return err;
+> > > > > +}
+> > > > > +
+> > > > > +static int virtnet_tx_resize(struct virtnet_info *vi,
+> > > > > +                        struct send_queue *sq, u32 ring_num)
+> > > > > +{
+> > > > > +   struct netdev_queue *txq;
+> > > > > +   int err, qindex;
+> > > > > +
+> > > > > +   qindex =3D sq - vi->sq;
+> > > > > +
+> > > > > +   virtnet_napi_tx_disable(&sq->napi);
+> > > > > +
+> > > > > +   txq =3D netdev_get_tx_queue(vi->dev, qindex);
+> > > > > +   __netif_tx_lock_bh(txq);
+> > > > > +   netif_stop_subqueue(vi->dev, qindex);
+> > > > > +   __netif_tx_unlock_bh(txq);
+> > > > > +
+> > > > > +   err =3D virtqueue_resize(sq->vq, ring_num, virtnet_sq_free_un=
+used_buf);
+> > > > > +   if (err)
+> > > > > +           goto err;
+> > > > > +
+> > > > > +   netif_start_subqueue(vi->dev, qindex);
+> > > > > +   virtnet_napi_tx_enable(vi, sq->vq, &sq->napi);
+> > > > > +   return 0;
+> > > > > +
+> > > > > +err:
+> > > >
+> > > >
+> > > > I guess we can still start the queue in this case? (Since we don't
+> > > > change the queue if resize fails).
+> > >
+> > > Yes, you are right.
+> > >
+> > > Thanks.
+> > >
+> > > >
+> > > >
+> > > > > +   netdev_err(vi->dev,
+> > > > > +              "reset tx reset vq fail: tx queue index: %td err: =
+%d\n",
+> > > > > +              sq - vi->sq, err);
+> > > > > +   virtnet_napi_tx_enable(vi, sq->vq, &sq->napi);
+> > > > > +   return err;
+> > > > > +}
+> > > > > +
+> > > > >   /*
+> > > > >    * Send command via the control virtqueue and check status.  Co=
+mmands
+> > > > >    * supported by the hypervisor, as indicated by feature bits, s=
+hould
+> > > >
+> > >
 > >
 >
 
