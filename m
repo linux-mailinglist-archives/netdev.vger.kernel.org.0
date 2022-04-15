@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A5634502EE1
-	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 21:02:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77E75502EE6
+	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 21:05:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347742AbiDOTET (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 15:04:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60990 "EHLO
+        id S1347900AbiDOTGY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 15:06:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347623AbiDOTER (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 15:04:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E014D9E9B;
-        Fri, 15 Apr 2022 12:01:48 -0700 (PDT)
+        with ESMTP id S1347903AbiDOTGX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 15:06:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6045EDA6CE
+        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 12:03:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ED8FCB82ECD;
-        Fri, 15 Apr 2022 19:01:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 850EBC385A5;
-        Fri, 15 Apr 2022 19:01:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 05755617EA
+        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 19:03:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9219DC385A4;
+        Fri, 15 Apr 2022 19:03:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650049305;
-        bh=Z5tq7WhsfYCtbsBpe6vYTV676bSOimMfYuf424iszwE=;
+        s=k20201202; t=1650049432;
+        bh=RVds9XxSNlvwWuOPK1En0bGPkQZUY5zXL3gVXkOhN18=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=aV+e6hc/YF4o11T2Oms1tvdnTdFOUTPWcEW2d9B7X47iV5IgdOvthDZQHzb5HZQ23
-         9l9KaD4MeUZOiH7SzithuFtnSoeUlv/o4Lpo4YyDME41z7B501NpoJGiFkRmF45BSM
-         jpyxJ9WXisbunkgGL0p8RFCpAeZzaW27PAt61aO7Tgz+/sbSDIzh8zAgrIZysp6OF2
-         gXBQs2I8YNN814UlqT3gGxH2hBVzNxDKl6FI3DfLXH/QscMkcUyHAP2eGpbQs4Qbps
-         AiCzVD3nGWDsUYP0xIhez7Mqfq6z9PNYNpuBjq7MXu6z9N8bw9SSf6ikHavUmvlaZP
-         xz1wDzi1VbD+w==
-Date:   Fri, 15 Apr 2022 21:01:39 +0200
+        b=ng9rBc4yyfWHg3U9CWDOifZmvPq/9iCGZ6ZPNYe98kGl2ukJKChI180YPpxzU3ytm
+         HV9RSsKeq3ESGzn5eGmu2CkhrWvxJGtJoKP4IvX3n/R29G/wnhrzbKMThqz0I8M++w
+         up72XzFLB6b5ZoYr8ZEWeQJyZzik+gBIIB1ISkOD8hNBkKDdXGjfAGpKaHRkdzjEcL
+         HpSA547er7v3Z52OFJ6LdI1LB0KvKx4uIK5swoekzpowz3BeR8sIx55I3+cPJ5NoLq
+         VRmaXkLqiG2kpcPgh4BgQvh3IaDj623z2jWyhm1bGbPs7AIkk1/Hs9nPFMRp44RmZy
+         jYt4t9Ye8LQug==
+Date:   Fri, 15 Apr 2022 21:03:45 +0200
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
-        <pabeni@redhat.com>
-Subject: Re: [PATCH net] net: lan966x: Make sure to release ptp interrupt
-Message-ID: <20220415210139.2d338f4b@kernel.org>
-In-Reply-To: <20220413195716.3796467-1-horatiu.vultur@microchip.com>
-References: <20220413195716.3796467-1-horatiu.vultur@microchip.com>
+To:     Florent Fourcot <florent.fourcot@wifirst.fr>
+Cc:     netdev@vger.kernel.org, cong.wang@bytedance.com,
+        edumazet@google.com
+Subject: Re: [PATCH v5 net-next 0/4] rtnetlink: improve ALT_IFNAME config
+ and fix dangerous GROUP usage
+Message-ID: <20220415210345.08b0ab75@kernel.org>
+In-Reply-To: <20220415165330.10497-1-florent.fourcot@wifirst.fr>
+References: <20220415165330.10497-1-florent.fourcot@wifirst.fr>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -54,13 +54,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 13 Apr 2022 21:57:16 +0200 Horatiu Vultur wrote:
-> When the lan966x driver is removed make sure to remove also the ptp_irq
-> IRQ.
+On Fri, 15 Apr 2022 18:53:26 +0200 Florent Fourcot wrote:
+> First commit forbids dangerous calls when both IFNAME and GROUP are
+> given, since it can introduce unexpected behaviour when IFNAME does not
+> match any interface.
+> 
+> Second patch achieves primary goal of this patchset to fix/improve
+> IFLA_ALT_IFNAME attribute, since previous code was never working for
+> newlink/setlink. ip-link command is probably getting interface index
+> before, and was not using this feature.
+> 
+> Last two patches are improving error code on corner cases.
 
-I presume it's because you want to disable the IRQ so it doesn't fire
-during / after remove? Would be good to have such justifications
-spelled out in the commit message in the future!
-
-> Fixes: e85a96e48e3309 ("net: lan966x: Add support for ptp interrupts")
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+Reviewed-by: Jakub Kicinski <kuba@kernel.org>
