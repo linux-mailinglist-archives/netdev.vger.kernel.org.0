@@ -2,130 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0C68502676
-	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 10:02:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8266502687
+	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 10:08:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351285AbiDOIE2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 04:04:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42030 "EHLO
+        id S244551AbiDOILV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 04:11:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232094AbiDOIE0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 04:04:26 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ADB31BE92;
-        Fri, 15 Apr 2022 01:01:58 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id i24-20020a17090adc1800b001cd5529465aso6570559pjv.0;
-        Fri, 15 Apr 2022 01:01:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QBkn3eeqJuFTCBC21KwI1sFHjtTbFep2R7GxdftUZx8=;
-        b=barxOCuFSntfHYJG2rn/cpZ8R9kC313FM51Ml+iwxG8L8FJwNSCkpWSXkEsz+1K3pt
-         5oK32TX1sdwzhsfWhnJuemxrizHKdgPy5T8A9MJpiqKhNps6pKTWbkY/oUz4DbVxpQpY
-         MIIZIS/nKlQWmLpxoN8N2t5+0weRo1u4mBcHMW5G/2N2f8R4XGcbB8TV1YSrl5MH2m9l
-         +g8FOQSTpL4s5bGlQW2mlbVRZ7spK8479sK2VHzyhnSpvKrVBY9XVVenxJ23IFoCETYn
-         bScnPNHKtkfJsZCO1/7OPb4o6TyIgeRzgKbSJSpiktT9RXEHnqMoO0F3D7cq6bA1ySbO
-         8hdA==
+        with ESMTP id S234920AbiDOILS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 04:11:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A6C9DA207F
+        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 01:08:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650010129;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=vpehKJ0zTwJUI6+hRmJYUW5SCsbqvW8TRk+pqvNLRAw=;
+        b=Smr6uKvGFGI/bZc10o45+xxJKUABQOq2txrY0MPRw9O/hqXeuKZbcxij1svWA5+x7SbMT9
+        pKp3XsNqjeBa9breGeV8f6wUgDr76GR1wMJrK6W5vsnZV6SUCIFcZx3IYwz85axHxnkJIQ
+        Rv4KqXHDatHGcvEFwJY5EvyLuhNVKXk=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-426-0XINriSpNx6lmMwExS7dUQ-1; Fri, 15 Apr 2022 04:08:48 -0400
+X-MC-Unique: 0XINriSpNx6lmMwExS7dUQ-1
+Received: by mail-wm1-f69.google.com with SMTP id r64-20020a1c2b43000000b0038b59eb1940so3766942wmr.0
+        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 01:08:48 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QBkn3eeqJuFTCBC21KwI1sFHjtTbFep2R7GxdftUZx8=;
-        b=gpEBMufhmcVdf/VTkemfLGMInxJtiOnlpeqSjBUlmdDgnJIhv9xdLVl9nx+ooMt4GC
-         c8gUyD4OUQmRekYiW/1Zy+et/a/jvhPB/oX5SAK/39BN5DYpJd3ZGkvgc9+Ig+AKtI5T
-         s3ROgCkOCdiD/1ZQonxdAcAptSCAB8xV1tDphiRcCqrWtribBpn3luMlgUG/9wfQ1tvH
-         XSC7zgRMrFGzGwDXEfNSu3bMwYBO4/bxJghl3ASWJl58sIgMfRaup59NY9yrIDgcJIXL
-         3K73YoRjRa063aLpXxlJHzn6eZFvjOMKnJQN3TJRHJCS2Ci3oPgwqdc5boYV9T0ovJdm
-         5LxQ==
-X-Gm-Message-State: AOAM530F6xYDEZVf/Lq5DY+2aTGfiv9wCkz6SdLA6PjXuXmFl111fL1K
-        Bspx4/MHTaTcvSWqN3+WUzKIwtp38wtORsFPaJA=
-X-Google-Smtp-Source: ABdhPJzUKf0/lVAPNa4/ZgiKBXh+oxw3lzDGmkPJRgsM2pFXsuN9lwU73kjl8TFBglomCAgZaFqfv9AmMJJfKFUWqC8=
-X-Received: by 2002:a17:902:d2d0:b0:158:761e:c165 with SMTP id
- n16-20020a170902d2d000b00158761ec165mr20505494plc.59.1650009717870; Fri, 15
- Apr 2022 01:01:57 -0700 (PDT)
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=vpehKJ0zTwJUI6+hRmJYUW5SCsbqvW8TRk+pqvNLRAw=;
+        b=nZ43fdqx1n0yeYT0H97j6IpwJ79V7mmmCCGgzvavpyd/rS4bdHvK/x8e6HPwpb+SKc
+         5becQsjCoW5M5WYOQwsQ28jSJWt+ER2Pa7iXcFZbwMqEs92vCvvHPxHsmOWu7wgig2Bs
+         ETz3R1RWawKnjYVB1v5N5a5/7T45atJxXuFwE+HR6IUSobGV1XUmLEiBeC6QuffTaYog
+         sWVilL90hGiQmm9pBtE/tyLlI230QpDd9GG46cLu2gTNhzNTylkMXBwEeFcy3cFJOroj
+         YokeJqR7nQIAN5WdIf5FlSXHpqq6hWh3NgXZkE7/275uYRSC8t2gU1OXXJxD51Y/fun3
+         OBqQ==
+X-Gm-Message-State: AOAM530epvSfpoIEfg8kcRAStZ+W2Lh12P7sP4yRtDk7yyvd8jak36Xb
+        T3+eJ+3h0VE80DHiLcinjmGtQsfhP6A7K7GcVCkEy7jAfcjoqxkU3J5RaW7p9XpAfb01cNYidzo
+        D15ld0UhYymo5bpXvar2HDvgfqg5b81Oi6omzENSag5qd+xqvkhJOYzcpYHepOk2CojIX
+X-Received: by 2002:adf:e3c8:0:b0:207:a128:6205 with SMTP id k8-20020adfe3c8000000b00207a1286205mr4580105wrm.370.1650010127277;
+        Fri, 15 Apr 2022 01:08:47 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyfK3tLgQgE9GRjr8IzikqTBblXrumiDHFMUj55H/EGUOYj4hX0V7PE0ksW+1mqLz16rohDmw==
+X-Received: by 2002:adf:e3c8:0:b0:207:a128:6205 with SMTP id k8-20020adfe3c8000000b00207a1286205mr4580078wrm.370.1650010126913;
+        Fri, 15 Apr 2022 01:08:46 -0700 (PDT)
+Received: from localhost (net-2-39-43-66.cust.vodafonedsl.it. [2.39.43.66])
+        by smtp.gmail.com with ESMTPSA id o40-20020a05600c512800b0038ebf2858cbsm8609134wms.16.2022.04.15.01.08.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Apr 2022 01:08:46 -0700 (PDT)
+Subject: [PATCH] openvswitch: fix OOB access in reserve_sfa_size()
+From:   Paolo Valerio <pvalerio@redhat.com>
+To:     netdev@vger.kernel.org, dev@openvswitch.org
+Cc:     Pravin B Shelar <pshelar@ovn.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, stable@vger.kernel.org
+Date:   Fri, 15 Apr 2022 10:08:41 +0200
+Message-ID: <165001012108.2147631.5880395764325229829.stgit@fed.void>
+User-Agent: StGit/1.1
 MIME-Version: 1.0
-References: <20220411230305.28951-1-luizluca@gmail.com> <20220413200841.4nmnv2qgapqhfnx3@skbuf>
- <Ylc3ca1k1IZUhFxZ@lunn.ch> <20220413205350.3jhtm7u6cusc7kh3@skbuf>
- <Ylc5RhzehbIuLswA@lunn.ch> <20220413210026.pe4jpq7jjefcuypo@skbuf>
- <CAJq09z7h_M9u=7jC3i3xEXCt+8wjkV9PfD4iVdje_jZ=9NZNKA@mail.gmail.com> <20220414125849.hinuxwesqrwumpd2@skbuf>
-In-Reply-To: <20220414125849.hinuxwesqrwumpd2@skbuf>
-From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Date:   Fri, 15 Apr 2022 05:01:46 -0300
-Message-ID: <CAJq09z6XTz7Xb0VBFdFVELb26LztFng7hULe6tSDX7KCQjzUmg@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] docs: net: dsa: describe issues with checksum offload
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Kurt Kanzenbach <kurt@linutronix.de>,
-        George McCollister <george.mccollister@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On Wed, Apr 13, 2022 at 11:48:46PM -0300, Luiz Angelo Daros de Luca wrote:
-> > > Ok, I'll go with "no checksum offload for its trailer tag, and bugs
-> > > never fixed because no one uses it", in any case no Sasquatch. Thanks.
-> >
-> > Vladimir, so the DSA switch will not copy the offload flags when a tag
-> > requests tail room? At least it will work.
-> >
-> > Now, if the offload HW does support that tag, what would be the
-> > options? Set the slave port checksum flag from userland?
-> > It would be nice to have some type of "magic trick" to have it enabled
-> > by default. I'm already expecting a no, but wouldn't it be a nice case
-> > for a DSA property in the device tree?
-> >
-> > Regards,
-> >
-> > Luiz
->
-> DSA calls netdev_upper_dev_link(master, slave_dev, NULL) to establish a
-> relationship with its master and the master driver can detect this by
-> monitoring NETDEV_CHANGEUPPER.
->
-> If we look a bit closer at the implementation of netdev_upper_dev_link
-> we see it calls __netdev_upper_dev_link() which contains an interesting
-> pair of arguments "void *upper_priv, void *upper_info". These are
-> accessible to netdev_master_upper_dev_link(), and the bonding driver
-> (for example) makes use of them, see bond_master_upper_dev_link().
->
-> I'm thinking DSA could create a struct netdev_dsa_upper_info too, and
-> certain DSA masters could populate things in it. Then DSA could look at
-> what the DSA master has said (or not said) and fix up features
-> accordingly.
->
-> One information that could get populated by the master is a bit field of
-> whether checksumming is supported for a certain tagging protocol.
-> I'd rather pass a full bit field of all tagging protocols, rather than
-> just the protocol in current use by the slave, because:
-> (a) it's less gory compared to having the master look at
->     dsa_port_from_netdev(info->upper_dev)->cpu_dp->tag_ops->proto
-> (b) the DSA tagging protocol can change at runtime, and when it does, no
->     NETDEV_CHANGEUPPER will be emitted, so the master won't have a
->     chance to inform us whether it can offload checksumming for the new
->     protocol. So it's better to have this information from the get go.
->
-> We'd also need the DSA master to populate a "bool acked=true" from this
-> new struct netdev_dsa_upper_info. The reason is to be able to
-> distinguish between an empty bit mask that means "yup, I really can't
-> offload checksumming for anything", and a bit mask that means "DSA who?"
-> (where checksum offloading is expected to work under the normal
-> circumstances described by you, no special code required).
+Given a sufficiently large number of actions, while copying and
+reserving memory for a new action of a new flow, if next_offset is
+greater than MAX_ACTIONS_BUFSIZE, the function reserve_sfa_size() does
+not return -EMSGSIZE as expected, but it allocates MAX_ACTIONS_BUFSIZE
+bytes increasing actions_len by req_size. This can then lead to an OOB
+write access, especially when further actions need to be copied.
 
-That looks like a larger change. Should we put this patch on hold
-waiting for the code refactor or we merge it as is (as it tells no
-lies about current code).
+Fix it by rearranging the flow action size check.
+
+KASAN splat below:
+
+==================================================================
+BUG: KASAN: slab-out-of-bounds in reserve_sfa_size+0x1ba/0x380 [openvswitch]
+Write of size 65360 at addr ffff888147e4001c by task handler15/836
+
+CPU: 1 PID: 836 Comm: handler15 Not tainted 5.18.0-rc1+ #27
+...
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x45/0x5a
+ print_report.cold+0x5e/0x5db
+ ? __lock_text_start+0x8/0x8
+ ? reserve_sfa_size+0x1ba/0x380 [openvswitch]
+ kasan_report+0xb5/0x130
+ ? reserve_sfa_size+0x1ba/0x380 [openvswitch]
+ kasan_check_range+0xf5/0x1d0
+ memcpy+0x39/0x60
+ reserve_sfa_size+0x1ba/0x380 [openvswitch]
+ __add_action+0x24/0x120 [openvswitch]
+ ovs_nla_add_action+0xe/0x20 [openvswitch]
+ ovs_ct_copy_action+0x29d/0x1130 [openvswitch]
+ ? __kernel_text_address+0xe/0x30
+ ? unwind_get_return_address+0x56/0xa0
+ ? create_prof_cpu_mask+0x20/0x20
+ ? ovs_ct_verify+0xf0/0xf0 [openvswitch]
+ ? prep_compound_page+0x198/0x2a0
+ ? __kasan_check_byte+0x10/0x40
+ ? kasan_unpoison+0x40/0x70
+ ? ksize+0x44/0x60
+ ? reserve_sfa_size+0x75/0x380 [openvswitch]
+ __ovs_nla_copy_actions+0xc26/0x2070 [openvswitch]
+ ? __zone_watermark_ok+0x420/0x420
+ ? validate_set.constprop.0+0xc90/0xc90 [openvswitch]
+ ? __alloc_pages+0x1a9/0x3e0
+ ? __alloc_pages_slowpath.constprop.0+0x1da0/0x1da0
+ ? unwind_next_frame+0x991/0x1e40
+ ? __mod_node_page_state+0x99/0x120
+ ? __mod_lruvec_page_state+0x2e3/0x470
+ ? __kasan_kmalloc_large+0x90/0xe0
+ ovs_nla_copy_actions+0x1b4/0x2c0 [openvswitch]
+ ovs_flow_cmd_new+0x3cd/0xb10 [openvswitch]
+ ...
+
+Cc: stable@vger.kernel.org
+Fixes: f28cd2af22a0 ("openvswitch: fix flow actions reallocation")
+Signed-off-by: Paolo Valerio <pvalerio@redhat.com>
+---
+ net/openvswitch/flow_netlink.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
+index 7176156d3844..4c09cf8a0ab2 100644
+--- a/net/openvswitch/flow_netlink.c
++++ b/net/openvswitch/flow_netlink.c
+@@ -2465,7 +2465,7 @@ static struct nlattr *reserve_sfa_size(struct sw_flow_actions **sfa,
+ 	new_acts_size = max(next_offset + req_size, ksize(*sfa) * 2);
+ 
+ 	if (new_acts_size > MAX_ACTIONS_BUFSIZE) {
+-		if ((MAX_ACTIONS_BUFSIZE - next_offset) < req_size) {
++		if ((next_offset + req_size) > MAX_ACTIONS_BUFSIZE) {
+ 			OVS_NLERR(log, "Flow action size exceeds max %u",
+ 				  MAX_ACTIONS_BUFSIZE);
+ 			return ERR_PTR(-EMSGSIZE);
+
