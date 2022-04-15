@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C629F5029DE
-	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 14:31:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 869C85029C5
+	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 14:31:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353340AbiDOMde (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 08:33:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59952 "EHLO
+        id S1353379AbiDOMdf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 08:33:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353806AbiDOMdP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 08:33:15 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81F36329A7;
-        Fri, 15 Apr 2022 05:30:47 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id k23so15160586ejd.3;
-        Fri, 15 Apr 2022 05:30:47 -0700 (PDT)
+        with ESMTP id S1353811AbiDOMdR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 08:33:17 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3E372F03F;
+        Fri, 15 Apr 2022 05:30:48 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id bh17so15141665ejb.8;
+        Fri, 15 Apr 2022 05:30:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=cM7cNDbZdzDRR54XOLUdiPP1jrQ7jBG9dEAYVsbcNLE=;
-        b=bik80RG5BJTj91DXG4BprsO4mTgco6QGIGjMUUl1T6dHSIeviC5xOCFZG/C6Qu1H0o
-         w0Wyqs2Jkg/jOvbH5xOVandyeLruRMdekZJKLlTYeZj9IvKfZ4VgGlUM03zWK2uj2yKW
-         S7oTi0BiBI7hnkPTSfm2Ov2T4+2baYv+e+Eo1397jsaVCR5jVGXSGWvric8XNDkHm+qz
-         2xsaNdKknQV8mDknd2sO1NRdYlgNHbPAKF6m3kIPTUthoFPBKCntItTshu/lAaNGZrp8
-         X0tRh9j1wd6I4bAGXyH+CGQrKM/ETEt9Xq8lniL+7bIH88uGUvb2xi1fnTOo9RTqqdZS
-         H4SA==
+        bh=UiT3RVqcqw/2HXUfTd1U2cSmXIntDYXehGziaThTk/w=;
+        b=GuZnsylT3pcSouW5ddrLgN/m/YCesZsnWJ/E2onIZFIgxUc1qQptGQ3sweZxexEYv1
+         vKlJMVgVRvAHa7/xdpFsMQ7uN3QSB6rhQkI5NwIS+W5EXVWFe0Bn0kjiOkXq0IBLCkuj
+         lclTi38+gNurzHOHabPerljHiV+bP8CqpHqv8YsEab7edLhwB/IWh/ItcQeZ8y+awFYY
+         R40H+T+SiaWZmaxtr/yh0dEt2Em33fUKgR21HmEKqqnYjBTxJgzmiwJG7e8Y8Wu0KHia
+         cxok0g1QeVV7AlcK2vRmUgq2jI19VWMbd6X2aIXlxOrQF1HXjHfs/YnAFJ3UmApH9h3/
+         0f/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=cM7cNDbZdzDRR54XOLUdiPP1jrQ7jBG9dEAYVsbcNLE=;
-        b=Xz5n4F9FD8CXjKVJMSpRO/usZoizg64szCphB5cNES54krIl6k7hAfw+x6H2EXhZym
-         OJ0af2hDFozHwEe2UcH1GjXz9xypIED6Cf/Z/8lkMwq1haxDaTPYELDsZCNvSkFzFu41
-         4geu4eRu83Ts/nhSqLdSy//IWfZxTZqD3ZlhcHELYbFcJIVZjXAQsZQoG6M6VqBse7fQ
-         o/X3rfo1lI0r8ECVvCGQd2x5Kiu5IiHjIvLB3cHHez8na8rAr08+fs0dJ2+3NA5lvhSd
-         PaH4teXmq12yNvH36f2tvv2XKUUTeEHvOBTuxgf8EI6EPdJz+xwOSywrg2K8SSDG5d00
-         JfCw==
-X-Gm-Message-State: AOAM5339yin53ls9sW0u6FfiGfAn/ShcCaPPJkgDuIhqyw+Fr/Tpu2Kf
-        +pLEjfapH4n+rPoFPFSl4ck=
-X-Google-Smtp-Source: ABdhPJyDoVWG26VAB7SBkp1JY1foVvcNpUoGUFZg6AUnrhSJ8MrmB1N6dz6LykMqhp6U5q2nqjcU7Q==
-X-Received: by 2002:a17:907:3e0d:b0:6e8:cccd:de80 with SMTP id hp13-20020a1709073e0d00b006e8cccdde80mr6017929ejc.162.1650025846062;
-        Fri, 15 Apr 2022 05:30:46 -0700 (PDT)
+        bh=UiT3RVqcqw/2HXUfTd1U2cSmXIntDYXehGziaThTk/w=;
+        b=wM9XIzzl7v9Ao3wDnKn3Z1gs9cPI1vFqDZNCISJmtQZYtMiLQzIeKuOqjKyokbFZRF
+         9k2PKVvJ9ECWMCGNWqSO08rGrzSJ/IOYjpM/yg1lS/FgNJIbHGfZFIu2NU5zcCOyQm3j
+         WE1NVNetl/vrhNcrepSFmTJXcM6EMe6h0j10Vii9k4AZSKN8KFqmmQoEjsoCmJi+aurB
+         ZRCWy9XK/m94L9+/z4hSJOwIcobGP4ATjaoZnPJNk10RdYZLff8s6+uOuzJ389U2uym2
+         1TAQjL31bwh/c680v4JdqEl/P+mbkZFscwBeyjzfCWDn1LcPDUyOVVp83L4OhoERBIL9
+         XnhQ==
+X-Gm-Message-State: AOAM53398aMoj2TJ9H1LtIYm81RFS/A/nMSoYlcBMN+mWiZwOt2/U8YF
+        8fH0wXjaNSY8SbtvGbVL58Y=
+X-Google-Smtp-Source: ABdhPJxpgeSXdYhbvP5O8IUq9aUGmAkJDetH/MVX0ebgJq8cESmyiLB+RwgqipJncxMfJg4FKayNBg==
+X-Received: by 2002:a17:906:4d1a:b0:6e8:8860:8a72 with SMTP id r26-20020a1709064d1a00b006e888608a72mr6334437eju.540.1650025847533;
+        Fri, 15 Apr 2022 05:30:47 -0700 (PDT)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id bo14-20020a170906d04e00b006ce98d9c3e3sm1649533ejb.194.2022.04.15.05.30.44
+        by smtp.googlemail.com with ESMTPSA id bo14-20020a170906d04e00b006ce98d9c3e3sm1649533ejb.194.2022.04.15.05.30.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 05:30:45 -0700 (PDT)
+        Fri, 15 Apr 2022 05:30:47 -0700 (PDT)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
@@ -84,10 +84,11 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
         Mike Rapoport <rppt@kernel.org>,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH net-next v4 01/18] connector: Replace usage of found with dedicated list iterator variable
-Date:   Fri, 15 Apr 2022 14:29:30 +0200
-Message-Id: <20220415122947.2754662-2-jakobkoschel@gmail.com>
+        "Bos, H.J." <h.j.bos@vu.nl>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH net-next v4 02/18] net: dsa: sja1105: remove use of iterator after list_for_each_entry() loop
+Date:   Fri, 15 Apr 2022 14:29:31 +0200
+Message-Id: <20220415122947.2754662-3-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220415122947.2754662-1-jakobkoschel@gmail.com>
 References: <20220415122947.2754662-1-jakobkoschel@gmail.com>
@@ -103,54 +104,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To move the list iterator variable into the list_for_each_entry_*()
-macro in the future it should be avoided to use the list iterator
-variable after the loop body.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-To *never* use the list iterator variable after the loop it was
-concluded to use a separate iterator variable instead of a
-found boolean [1].
+The link below explains that there is a desire to syntactically change
+list_for_each_entry() and list_for_each() such that it becomes
+impossible to use the iterator variable outside the scope of the loop.
 
-This removes the need to use a found variable and simply checking if
-the variable was set, can determine if the break/goto was hit.
+Although sja1105_insert_gate_entry() makes legitimate use of the
+iterator pointer when it breaks out, the pattern it uses may become
+illegal, so it needs to change.
 
-Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
+It is deemed acceptable to use a copy of the loop iterator, and
+sja1105_insert_gate_entry() only needs to know the list_head element
+before which the list insertion should be made. So let's profit from the
+occasion and refactor the list iteration to a dedicated function.
+
+An additional benefit is given by the fact that with the helper function
+in place, we no longer need to special-case the empty list, since it is
+equivalent to not having found any gating entry larger than the
+specified interval in the list. We just need to insert at the tail of
+that list (list_add vs list_add_tail on an empty list does the same
+thing).
+
+Link: https://patchwork.kernel.org/project/netdevbpf/patch/20220407102900.3086255-3-jakobkoschel@gmail.com/#24810127
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/connector/cn_queue.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ drivers/net/dsa/sja1105/sja1105_vl.c | 46 ++++++++++++++++++----------
+ 1 file changed, 29 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/connector/cn_queue.c b/drivers/connector/cn_queue.c
-index 996f025eb63c..ed77599b0b25 100644
---- a/drivers/connector/cn_queue.c
-+++ b/drivers/connector/cn_queue.c
-@@ -92,20 +92,19 @@ int cn_queue_add_callback(struct cn_queue_dev *dev, const char *name,
+diff --git a/drivers/net/dsa/sja1105/sja1105_vl.c b/drivers/net/dsa/sja1105/sja1105_vl.c
+index b7e95d60a6e4..369be2ac3587 100644
+--- a/drivers/net/dsa/sja1105/sja1105_vl.c
++++ b/drivers/net/dsa/sja1105/sja1105_vl.c
+@@ -7,6 +7,27 @@
  
- void cn_queue_del_callback(struct cn_queue_dev *dev, const struct cb_id *id)
+ #define SJA1105_SIZE_VL_STATUS			8
+ 
++static struct list_head *
++sja1105_first_entry_longer_than(struct list_head *entries,
++				s64 interval,
++				struct netlink_ext_ack *extack)
++{
++	struct sja1105_gate_entry *p;
++
++	list_for_each_entry(p, entries, list) {
++		if (p->interval == interval) {
++			NL_SET_ERR_MSG_MOD(extack, "Gate conflict");
++			return ERR_PTR(-EBUSY);
++		}
++
++		if (interval < p->interval)
++			return &p->list;
++	}
++
++	/* Empty list, or specified interval is largest within the list */
++	return entries;
++}
++
+ /* Insert into the global gate list, sorted by gate action time. */
+ static int sja1105_insert_gate_entry(struct sja1105_gating_config *gating_cfg,
+ 				     struct sja1105_rule *rule,
+@@ -14,6 +35,7 @@ static int sja1105_insert_gate_entry(struct sja1105_gating_config *gating_cfg,
+ 				     struct netlink_ext_ack *extack)
  {
--	struct cn_callback_entry *cbq, *n;
--	int found = 0;
-+	struct cn_callback_entry *cbq = NULL, *iter, *n;
+ 	struct sja1105_gate_entry *e;
++	struct list_head *pos;
+ 	int rc;
  
- 	spin_lock_bh(&dev->queue_lock);
--	list_for_each_entry_safe(cbq, n, &dev->queue_list, callback_entry) {
--		if (cn_cb_equal(&cbq->id.id, id)) {
--			list_del(&cbq->callback_entry);
--			found = 1;
-+	list_for_each_entry_safe(iter, n, &dev->queue_list, callback_entry) {
-+		if (cn_cb_equal(&iter->id.id, id)) {
-+			list_del(&iter->callback_entry);
-+			cbq = iter;
- 			break;
- 		}
+ 	e = kzalloc(sizeof(*e), GFP_KERNEL);
+@@ -24,25 +46,15 @@ static int sja1105_insert_gate_entry(struct sja1105_gating_config *gating_cfg,
+ 	e->gate_state = gate_state;
+ 	e->interval = entry_time;
+ 
+-	if (list_empty(&gating_cfg->entries)) {
+-		list_add(&e->list, &gating_cfg->entries);
+-	} else {
+-		struct sja1105_gate_entry *p;
+-
+-		list_for_each_entry(p, &gating_cfg->entries, list) {
+-			if (p->interval == e->interval) {
+-				NL_SET_ERR_MSG_MOD(extack,
+-						   "Gate conflict");
+-				rc = -EBUSY;
+-				goto err;
+-			}
+-
+-			if (e->interval < p->interval)
+-				break;
+-		}
+-		list_add(&e->list, p->list.prev);
++	pos = sja1105_first_entry_longer_than(&gating_cfg->entries,
++					      e->interval, extack);
++	if (IS_ERR(pos)) {
++		rc = PTR_ERR(pos);
++		goto err;
  	}
- 	spin_unlock_bh(&dev->queue_lock);
  
--	if (found)
-+	if (cbq)
- 		cn_queue_release_callback(cbq);
- }
++	list_add(&e->list, pos->prev);
++
+ 	gating_cfg->num_entries++;
  
+ 	return 0;
 -- 
 2.25.1
 
