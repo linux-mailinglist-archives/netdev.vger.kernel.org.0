@@ -2,50 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BBE545032EB
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 07:48:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D37AB50340F
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 07:49:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232191AbiDOXhU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 19:37:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38534 "EHLO
+        id S235185AbiDOXiN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 19:38:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230282AbiDOXhT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 19:37:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3605940E59;
-        Fri, 15 Apr 2022 16:34:49 -0700 (PDT)
+        with ESMTP id S232616AbiDOXiM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 19:38:12 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DC454BFD5;
+        Fri, 15 Apr 2022 16:35:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DDB69B82CE7;
-        Fri, 15 Apr 2022 23:34:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EF28C385A8;
-        Fri, 15 Apr 2022 23:34:46 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B7AE4CE31E1;
+        Fri, 15 Apr 2022 23:35:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A128C385AB;
+        Fri, 15 Apr 2022 23:35:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650065686;
-        bh=H8TG9TaTkxthyp0a78kt3dMEbKUO8m3PltS7yJt03Lk=;
+        s=k20201202; t=1650065738;
+        bh=36GzXrQ0XGK7C5vbiiV0ktcyeA7F6rACtEbIBGiF3Gw=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=gIDIFML52510OKuQReILMZhX3fFpruAsOz8I2y/UUWSS/XA9np+igAuQ9J71VVmaI
-         yc8pvY+JCT6UUVSGrSR28Ayfzg/8ReygDBjTJSLAShxwB5Q1Qo9/MOMFj3FAGgFIFR
-         b+quTWnBobJaTM9heJhVac+VBoK7X8aOPkPesZjtk8Sw8CgLhMwjtdcnPb2R0zdM+R
-         b0IRTjA8BaIlnt3lHEL4f2tkElrFZItoG10MxYNsonfzToHNWoxA30Y2vSy9nx+Wsv
-         Spv7lDZszmOJuMuhvCckvgwOwqBC0cMLNzx3iUNLR2OxRTtmfNwJJFOnS20TCvMtzG
-         A0718dSkj3OuA==
-Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-2ebf4b91212so95347557b3.8;
-        Fri, 15 Apr 2022 16:34:46 -0700 (PDT)
-X-Gm-Message-State: AOAM533UrQlHQSa+Mhg0xgFELEHrKjqqmCWoghMhVlH/knn2FAWhiuBE
-        chXG7QpxApc4ACMRS4jIvSh6RtzQ2blyiRGoRHI=
-X-Google-Smtp-Source: ABdhPJzFi4avB4LXxfU1+vAL7RiFsHM0NYSgX5xmyngsW8isXQE/FvZ8UGsTCkZUMTOvj9iYRuUPlvo38P1Pwkh32Ek=
-X-Received: by 2002:a81:688:0:b0:2ec:239:d1e with SMTP id 130-20020a810688000000b002ec02390d1emr1124694ywg.211.1650065685677;
- Fri, 15 Apr 2022 16:34:45 -0700 (PDT)
+        b=iXx1eEWaz8brLgqBJN4vsW6VTYCngf+8+P/Pbrf8jCHrG4tLTi8FilS/Z2Jt+RP1Y
+         oq1vksA8qipJ2z9lb/HcIm4p8uXzJsqFw+LJ/8i5gB8tnLgyZcSV/NIuFkA3RzNc0Y
+         IEldDb2ClV6PGqzy9WADWOQBKtMkHJAosOlamjfsRjIk+PD814CmsnOPx2Ket3be5V
+         LZxdK6yHLNdcOJywv1/c1mlRu2BG6ozc873sCU/dZVsCrz2Zs+NQ1gHgQgA1/DsmrE
+         7lnh4b+TlTXwDcvqJOI/z57239ge+muXztey2O8amqG/xmb9zsZRR7ABqeF/azmouX
+         gneMLqDOmab/A==
+Received: by mail-yb1-f169.google.com with SMTP id z33so16663414ybh.5;
+        Fri, 15 Apr 2022 16:35:38 -0700 (PDT)
+X-Gm-Message-State: AOAM533ZTb2RpLTrTrvujRuG2y03XBW+gvPDestr4+9FVb4TkOFboRMN
+        Pwt4XsnXOKhhDipM6sTNwOCJ4BJY3+m2Dk74B2E=
+X-Google-Smtp-Source: ABdhPJxrwFIMGcUH1SzkmYhvn2SYkuUhhUDS9HkrDN7TjOG46VNAAeaBmpGAeK1C2yKWnd3B7VrliNvHZy3iO+A3fnY=
+X-Received: by 2002:a05:6902:114c:b0:641:87a7:da90 with SMTP id
+ p12-20020a056902114c00b0064187a7da90mr1420300ybu.561.1650065737268; Fri, 15
+ Apr 2022 16:35:37 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220414223704.341028-1-alobakin@pm.me> <20220414223704.341028-4-alobakin@pm.me>
-In-Reply-To: <20220414223704.341028-4-alobakin@pm.me>
+References: <20220414223704.341028-1-alobakin@pm.me> <20220414223704.341028-5-alobakin@pm.me>
+In-Reply-To: <20220414223704.341028-5-alobakin@pm.me>
 From:   Song Liu <song@kernel.org>
-Date:   Fri, 15 Apr 2022 16:34:34 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW6_9nq6wesTwDbpV50euq=ubqdLdfVkc9-pNOnGevXs1Q@mail.gmail.com>
-Message-ID: <CAPhsuW6_9nq6wesTwDbpV50euq=ubqdLdfVkc9-pNOnGevXs1Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 03/11] tools, bpf: fix bpftool build with !CONFIG_BPF_EVENTS
+Date:   Fri, 15 Apr 2022 16:35:26 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW7rHVS7Z2yjhNn0Dfq1CV5B294ceAXW2jDwvtyXGeftuQ@mail.gmail.com>
+Message-ID: <CAPhsuW7rHVS7Z2yjhNn0Dfq1CV5B294ceAXW2jDwvtyXGeftuQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 04/11] samples: bpf: add 'asm/mach-generic'
+ include path for every MIPS
 To:     Alexander Lobakin <alobakin@pm.me>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -95,44 +97,46 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Thu, Apr 14, 2022 at 3:45 PM Alexander Lobakin <alobakin@pm.me> wrote:
 >
-> Fix the following error when building bpftool:
+> Fix the following:
 >
->   CLANG   profiler.bpf.o
->   CLANG   pid_iter.bpf.o
-> skeleton/profiler.bpf.c:18:21: error: invalid application of 'sizeof' to an incomplete type 'struct bpf_perf_event_value'
->         __uint(value_size, sizeof(struct bpf_perf_event_value));
->                            ^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> tools/bpf/bpftool/bootstrap/libbpf/include/bpf/bpf_helpers.h:13:39: note: expanded from macro '__uint'
->                                       ^~~
-> tools/bpf/bpftool/bootstrap/libbpf/include/bpf/bpf_helper_defs.h:7:8: note: forward declaration of 'struct bpf_perf_event_value'
-> struct bpf_perf_event_value;
->        ^
+> In file included from samples/bpf/tracex2_kern.c:7:
+> In file included from ./include/linux/skbuff.h:13:
+> In file included from ./include/linux/kernel.h:22:
+> In file included from ./include/linux/bitops.h:33:
+> In file included from ./arch/mips/include/asm/bitops.h:20:
+> In file included from ./arch/mips/include/asm/barrier.h:11:
+> ./arch/mips/include/asm/addrspace.h:13:10: fatal error: 'spaces.h' file not found
+>  #include <spaces.h>
+>           ^~~~~~~~~~
 >
-> struct bpf_perf_event_value is being used in the kernel only when
-> CONFIG_BPF_EVENTS is enabled, so it misses a BTF entry then.
-> Emit the type unconditionally to fix the problem.
+> 'arch/mips/include/asm/mach-generic' should always be included as
+> many other MIPS include files rely on this.
+> Move it from under CONFIG_MACH_LOONGSON64 to let it be included
+> for every MIPS.
 >
-> Fixes: 47c09d6a9f67 ("bpftool: Introduce "prog profile" command")
+> Fixes: 058107abafc7 ("samples/bpf: Add include dir for MIPS Loongson64 to fix build errors")
 > Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 
 Acked-by: Song Liu <songliubraving@fb.com>
 
 > ---
->  kernel/bpf/syscall.c | 1 +
->  1 file changed, 1 insertion(+)
+>  samples/bpf/Makefile | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> index 34fdf27d14cf..dd8284a60a8e 100644
-> --- a/kernel/bpf/syscall.c
-> +++ b/kernel/bpf/syscall.c
-> @@ -4286,6 +4286,7 @@ static int link_create(union bpf_attr *attr, bpfptr_t uattr)
->                 goto out;
->         case BPF_PROG_TYPE_PERF_EVENT:
->         case BPF_PROG_TYPE_TRACEPOINT:
-> +               BTF_TYPE_EMIT(struct bpf_perf_event_value);
->                 if (attr->link_create.attach_type != BPF_PERF_EVENT) {
->                         ret = -EINVAL;
->                         goto out;
+> diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+> index 8fff5ad3444b..97203c0de252 100644
+> --- a/samples/bpf/Makefile
+> +++ b/samples/bpf/Makefile
+> @@ -193,8 +193,8 @@ ifeq ($(ARCH), mips)
+>  TPROGS_CFLAGS += -D__SANE_USERSPACE_TYPES__
+>  ifdef CONFIG_MACH_LOONGSON64
+>  BPF_EXTRA_CFLAGS += -I$(srctree)/arch/mips/include/asm/mach-loongson64
+> -BPF_EXTRA_CFLAGS += -I$(srctree)/arch/mips/include/asm/mach-generic
+>  endif
+> +BPF_EXTRA_CFLAGS += -I$(srctree)/arch/mips/include/asm/mach-generic
+>  endif
+>
+>  TPROGS_CFLAGS += -Wall -O2
 > --
 > 2.35.2
 >
