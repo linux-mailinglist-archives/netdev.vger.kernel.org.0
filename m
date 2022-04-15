@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56C8A502F0E
-	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 21:09:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4A06502F1D
+	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 21:09:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348963AbiDOTL0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 15:11:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47598 "EHLO
+        id S1348885AbiDOTLm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 15:11:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348542AbiDOTLL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 15:11:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F9FADB2CB;
-        Fri, 15 Apr 2022 12:08:41 -0700 (PDT)
+        with ESMTP id S1348679AbiDOTLS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 15:11:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54E5ADB2EC;
+        Fri, 15 Apr 2022 12:08:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E0CAE61BB8;
-        Fri, 15 Apr 2022 19:08:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FA50C385A5;
-        Fri, 15 Apr 2022 19:08:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E101C61CB7;
+        Fri, 15 Apr 2022 19:08:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FD7CC385B7;
+        Fri, 15 Apr 2022 19:08:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650049720;
-        bh=QNhkR5f2VwsmRJLjyIIeuyQ3Ro0/ZTlpiHVGueu8khw=;
+        s=k20201202; t=1650049722;
+        bh=II6OEIXWBm46BUBaioGDbgMZ+vUKj+RzIpjwlTwoobY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RzXW0JUf3FmmvjCkNLPg6xeSiQ00FCdgqtRjSiv750sCreQXBhr+haJGO3gaKecxK
-         Ut63sQ0/8xIkmtE1di1uclIYjE3djP8GM/NAZvEmiQ50vNroamDnR8EJhVyHC90mAX
-         DCjvBvyeNWljHEVX3CqMYuSlRG8rajCE4XkjMSePx9n1RQV1NZMCyYIazZvPVRo+0I
-         GHgXCH+MAp6nGOF2EU4Ezu3OBddS8QZSxKM+2+OKfJ2EOMkezjpNIdTE3XnvMI4AIT
-         BkT+aUHhioeRJQGiWGOXv1o/Fi2wCjLqpTFlNLS+zZ+1bOC9ECLuRExRrZ8wlP2c6J
-         beDpycOtgITAA==
+        b=mucLjtHZlTlqn2DfNqXglYqlzQSZRXHg7K3buWgwJ6TRmRLexMpb/3xdYzYZVnJs+
+         gvBVNpEgyW88VKmUYBkUJbakIu5PdplrUxVwEyeu9N/5FtduwCXjlc6s+6XwFWAL7a
+         J3hnMLdtA0dszo+jHajTb12P1IDdZL9y+8tQ9AM1qXC1DXvSJv/qQ6bqPGDCQJxN9s
+         8SuiW1RQrqkyjOH5CKiSXg68i99swwTacX+KoAEKHxEuVCAvdKmn+ZTzSKf8SCV95w
+         qZvkONpo92Q8EjiphevANVfZ7bTf5QgoMcAuHZJkuE3BCcOyhiGmvRmV3bWHD9MpWP
+         RuPfTe7QgwUPw==
 From:   Bjorn Helgaas <helgaas@kernel.org>
 To:     Richard Henderson <rth@twiddle.net>,
         Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
@@ -48,9 +48,9 @@ Cc:     linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org,
         linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org,
         linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH 5/7] powerpc: Remove unused SLOW_DOWN_IO definition
-Date:   Fri, 15 Apr 2022 14:08:15 -0500
-Message-Id: <20220415190817.842864-6-helgaas@kernel.org>
+Subject: [PATCH 6/7] ia64: remove unused __SLOW_DOWN_IO and SLOW_DOWN_IO definitions
+Date:   Fri, 15 Apr 2022 14:08:16 -0500
+Message-Id: <20220415190817.842864-7-helgaas@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220415190817.842864-1-helgaas@kernel.org>
 References: <20220415190817.842864-1-helgaas@kernel.org>
@@ -68,26 +68,28 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Bjorn Helgaas <bhelgaas@google.com>
 
-Remove unused SLOW_DOWN_IO definition.
+Remove unused __SLOW_DOWN_IO and SLOW_DOWN_IO definitions.
 
 Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 ---
- arch/powerpc/include/asm/io.h | 2 --
- 1 file changed, 2 deletions(-)
+ arch/ia64/include/asm/io.h | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/arch/powerpc/include/asm/io.h b/arch/powerpc/include/asm/io.h
-index fee979d3a1aa..c5a5f7c9b231 100644
---- a/arch/powerpc/include/asm/io.h
-+++ b/arch/powerpc/include/asm/io.h
-@@ -38,8 +38,6 @@ extern struct pci_dev *isa_bridge_pcidev;
- #define SIO_CONFIG_RA	0x398
- #define SIO_CONFIG_RD	0x399
+diff --git a/arch/ia64/include/asm/io.h b/arch/ia64/include/asm/io.h
+index 6d93b923b379..1069e1730b2e 100644
+--- a/arch/ia64/include/asm/io.h
++++ b/arch/ia64/include/asm/io.h
+@@ -23,10 +23,6 @@
+ #include <asm/unaligned.h>
+ #include <asm/early_ioremap.h>
  
--#define SLOW_DOWN_IO
+-/* We don't use IO slowdowns on the ia64, but.. */
+-#define __SLOW_DOWN_IO	do { } while (0)
+-#define SLOW_DOWN_IO	do { } while (0)
 -
- /* 32 bits uses slightly different variables for the various IO
-  * bases. Most of this file only uses _IO_BASE though which we
-  * define properly based on the platform
+ #define __IA64_UNCACHED_OFFSET	RGN_BASE(RGN_UNCACHED)
+ 
+ /*
 -- 
 2.25.1
 
