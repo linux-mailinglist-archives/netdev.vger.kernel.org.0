@@ -2,91 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C11B5502DCE
-	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 18:39:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8873C502DD1
+	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 18:40:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355867AbiDOQlW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 12:41:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34730 "EHLO
+        id S1347321AbiDOQmm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 12:42:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355858AbiDOQlV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 12:41:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1414EC6B46
-        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 09:38:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650040732;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=yY1XpQLOJF8SRfLRiRImiId98yLUwf4ACq4UfHXrlTM=;
-        b=Ep+eRWJyXssOITUA3LT57x5CP/a77KNcLAJHgr0Q6fwjN1geFQAw9Em4rJ/ZSGSro/zEyX
-        ODtkLjqPkhsSTnOCkdZ/jaeBQ9UAGfpHQ29xDDSzJ6TzlxkMyBwM8wRdUjyDNOUnUMlzDX
-        BD/agJb5N1ri8C/7UhbKa4792xmrGcw=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-448-nA3M0pSZOp6RRNd-FabZnw-1; Fri, 15 Apr 2022 12:38:48 -0400
-X-MC-Unique: nA3M0pSZOp6RRNd-FabZnw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3CA6C811E7A;
-        Fri, 15 Apr 2022 16:38:48 +0000 (UTC)
-Received: from ceranb (unknown [10.40.194.169])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9D74A2167D68;
-        Fri, 15 Apr 2022 16:38:46 +0000 (UTC)
-Date:   Fri, 15 Apr 2022 18:38:45 +0200
-From:   Ivan Vecera <ivecera@redhat.com>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     netdev@vger.kernel.org, Fei Liu <feliu@redhat.com>,
-        "moderated list:INTEL ETHERNET DRIVERS" 
-        <intel-wired-lan@lists.osuosl.org>, mschmidt@redhat.com,
-        Brett Creeley <brett.creeley@intel.com>,
-        open list <linux-kernel@vger.kernel.org>,
+        with ESMTP id S1351468AbiDOQmZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 12:42:25 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AB995A15C
+        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 09:39:56 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id c23so7549567plo.0
+        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 09:39:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WLbvMdFUjeOsEVw2kQd/JFDkXOsqqWVeP/u+VlXoS7E=;
+        b=CSYqK+kbErrShISrcVLb1WCuakgRD6dK/xZCGa+ns+eTa/lsQx1qm/++9HO8rt3ELn
+         GrPKEQYDp7wq8V6mncQdkDPsxsYo66Quni2mTjULThAIgHuSoSknPkz80BP3I/ZtSJAY
+         EdoIGydyQPz9eT2flzRfMRMcEqxrs/ypn/O6+lYIw9mhKOcnQ0w+vE9H5u+Xw1lxr+ST
+         vN7JayZD9doeaUf74bb74Uo4VPtq1vpFa4yy/DRaBS6rfxb8vlsFhw2LOhJvgbvKQNkF
+         eubBHhMls/b8arZwrUvpCx3kre5HPXCdDDC0A+X0/nte/8xIEhx2hHhxSgOdANo9YRa8
+         2x1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WLbvMdFUjeOsEVw2kQd/JFDkXOsqqWVeP/u+VlXoS7E=;
+        b=MKxxMfBsMbXLCWImfdJVJAtkMfg310ib8xK/BXLHkGG+1Ec025XTAt3BWNzWSeQ8rC
+         GbT64/LxoqhNMnUWgRmyKGSI5HFJyYRvP4B9E/jBitVrYW8FfFGoy4sm6vfGT0WMTQE6
+         eXcSvv2HmlnWFaPIrNW6UA7hb/ege6HShSw/gf3o3GAKXgZhjuWEzYZVWjSCWIVtb0Vo
+         sP49qvH25IJcfZ5wMAk2rFEEIz5bCzng0IuuoRLFNIsHar7t5IhBL1JXd3fZPWfMaPyc
+         bdJwW6iUTvo8JJMZsjkD9u2Qypbpc+C5Gl+WkpIBr8e3zQq367CZ9aoxY7YzGj20xKNT
+         AeSw==
+X-Gm-Message-State: AOAM533T3rZJGV38QxecnvPTCMLS7ksW/X1h/efzR9KGqJNlQwnIWGk+
+        ZM161ebG5DWvbbenpwnvxpiliNYZEt7xOLpD
+X-Google-Smtp-Source: ABdhPJykHqJlN/77ORftaOJmjXDniBCNmH12G5XFmcsGqSMMlg7bw5v5qHpFWU5GZNEVcxrBI3+MSA==
+X-Received: by 2002:a17:90b:4d89:b0:1cb:b402:fadf with SMTP id oj9-20020a17090b4d8900b001cbb402fadfmr4956793pjb.29.1650040795719;
+        Fri, 15 Apr 2022 09:39:55 -0700 (PDT)
+Received: from localhost.localdomain ([111.201.148.136])
+        by smtp.gmail.com with ESMTPSA id y13-20020a17090a154d00b001cb5f0b55cfsm5598077pja.1.2022.04.15.09.39.50
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 15 Apr 2022 09:39:55 -0700 (PDT)
+From:   xiangxia.m.yue@gmail.com
+To:     netdev@vger.kernel.org
+Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Iurii Zaikin <yzaikin@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [Intel-wired-lan] [PATCH net] ice: Protect vf_state check by
- cfg_lock in ice_vc_process_vf_msg()
-Message-ID: <20220415183845.51a326fe@ceranb>
-In-Reply-To: <YlldFriBVkKEgbBs@boxer>
-References: <20220413072259.3189386-1-ivecera@redhat.com>
-        <YlldFriBVkKEgbBs@boxer>
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Simon Horman <horms@verge.net.au>,
+        Julian Anastasov <ja@ssi.bg>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Akhmat Karakotov <hmukos@yandex-team.ru>
+Subject: [PATCH v3 0/2] use standard sysctl macro
+Date:   Sat, 16 Apr 2022 00:39:10 +0800
+Message-Id: <20220415163912.26530-1-xiangxia.m.yue@gmail.com>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 15 Apr 2022 13:55:02 +0200
-Maciej Fijalkowski <maciej.fijalkowski@intel.com> wrote:
+From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-> On Wed, Apr 13, 2022 at 09:22:59AM +0200, Ivan Vecera wrote:
-> > Previous patch labelled "ice: Fix incorrect locking in
-> > ice_vc_process_vf_msg()"  fixed an issue with ignored messages  
-> 
-> tiny tiny nit: double space after "
-> Also, has mentioned patch landed onto some tree so that we could provide
-> SHA-1 of it? If not, then maybe squashing this one with the mentioned one
-> would make sense?
+This patchset introduce sysctl macro or replace var
+with macro.
 
-Well, that commit were already tested and now it is present in Tony's queue
-but not in upstream yet. It is not problem to squash together but the first
-was about ignored VF messages and this one is about race and I didn't want
-to make single patch with huge description that cover both issues.
-But as I said, no problem to squash if needed.
+Tonghao Zhang (2):
+  net: sysctl: use shared sysctl macro
+  net: sysctl: introduce sysctl SYSCTL_THREE
 
-Thx,
-Ivan
+ fs/proc/proc_sysctl.c          |  2 +-
+ include/linux/sysctl.h         |  9 +++++----
+ net/core/sysctl_net_core.c     | 13 +++++--------
+ net/ipv4/sysctl_net_ipv4.c     | 16 ++++++----------
+ net/ipv6/sysctl_net_ipv6.c     |  6 ++----
+ net/netfilter/ipvs/ip_vs_ctl.c |  4 +---
+ 6 files changed, 20 insertions(+), 30 deletions(-)
+
+--
+v3: split v2 to 2 patches
+https://patchwork.kernel.org/project/netdevbpf/patch/20220406124208.3485-1-xiangxia.m.yue@gmail.com/
+
+Cc: Luis Chamberlain <mcgrof@kernel.org>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Iurii Zaikin <yzaikin@google.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Cc: David Ahern <dsahern@kernel.org>
+Cc: Simon Horman <horms@verge.net.au>
+Cc: Julian Anastasov <ja@ssi.bg>
+Cc: Pablo Neira Ayuso <pablo@netfilter.org>
+Cc: Jozsef Kadlecsik <kadlec@netfilter.org>
+Cc: Florian Westphal <fw@strlen.de>
+Cc: Dmitry Vyukov <dvyukov@google.com>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+Cc: Lorenz Bauer <lmb@cloudflare.com>
+Cc: Akhmat Karakotov <hmukos@yandex-team.ru>
+--
+2.27.0
 
