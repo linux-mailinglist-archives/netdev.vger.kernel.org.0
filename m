@@ -2,114 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 103505028AC
-	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 13:05:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 776525028B3
+	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 13:10:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349151AbiDOLIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 07:08:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42492 "EHLO
+        id S1352630AbiDOLMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 07:12:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352685AbiDOLH4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 07:07:56 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41C009680F;
-        Fri, 15 Apr 2022 04:05:28 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id b15so9567882edn.4;
-        Fri, 15 Apr 2022 04:05:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=aNHgNCbgtVNEO2BN8vXFcv/xIVvPMu9dYuO7n9SQH/Q=;
-        b=b+dxuyyW78CHTyt8nvSp6UEZCi6NcD7K8ggtz388LM1PSEu/OLRIrxQWqXdANsVkc3
-         FQOp4Xi0upySR4tkCJfpS+GCb+nsgkgM6qXChV5u6DtVneqBwJIEMp3n3H/a0juFscen
-         HUphhBL94AAnbA0lYMyc1RAxypQBDbz/j1GfpE9vd8B33OZKWL5sbk+3GkJTTlhlj+vJ
-         /Vy2EVqxmNuXdpxGBlFXhSN6iTgBsh9RJPt9IKiCma+qizoqkUkR43Nw/tcl+cTNGMo6
-         gftdEs+5GJmY1Wzdxpb9kLzXHn9wDGE4eV3Z3jI2c8Tp32zvUJqrieqNTk6EtV0dSCjz
-         xUAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=aNHgNCbgtVNEO2BN8vXFcv/xIVvPMu9dYuO7n9SQH/Q=;
-        b=ufGio1xqHs8akcISTTgVvWU5fBxUATIf8yc5bQbfsQ+pHH4ORfUWicef8rZ5qsXvmm
-         5WPZpbpsiinqvzVpNi0xp9Z2Figzy58qdeTbuDX1y9RTbflny+5ZG5b3DWzkFyyhgmKs
-         KOpfdxnF0iQJUMnC96GrOaLY8I4nJLNDQ2rkk9e9MXPbGRRM4fkMHPlETybNkKksPlg4
-         bdiaE/k9iTQ3JbRR8LJhqJl4zBLJoPBFgRqElFZrnjJy9vcSfiAefMhH1DrbMPpvSuHo
-         VIx6zCsjMgTB5ZCdv0MjAmUC06r06a/cxWY+qqVbebgJtVoiHYpOzvhZldp3BbSXes3J
-         zhFA==
-X-Gm-Message-State: AOAM530Vhxl6AdnTlyZs8t2+D7zx2tBAVQoJIP4H14WqVx2lnRXT2jxQ
-        SwWMLLtBOwFXCbsinHWbf4s=
-X-Google-Smtp-Source: ABdhPJxir9Fv9dO2LvYZxagXMGCO2X2Qw+Y06fTPieGCLbeU/AHQQrvrOPgc5p/X43uvfvrnIff5Ag==
-X-Received: by 2002:a05:6402:e85:b0:41d:121b:f436 with SMTP id h5-20020a0564020e8500b0041d121bf436mr7641355eda.121.1650020726814;
-        Fri, 15 Apr 2022 04:05:26 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id r3-20020aa7cb83000000b0041b573e2654sm2477700edt.94.2022.04.15.04.05.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 04:05:26 -0700 (PDT)
-Date:   Fri, 15 Apr 2022 14:05:24 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?utf-8?Q?Miqu=C3=A8l?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
-        Jean-Pierre Geslin <jean-pierre.geslin@non.se.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>
-Subject: Re: [PATCH net-next 06/12] net: dsa: rzn1-a5psw: add Renesas RZ/N1
- advanced 5 port switch driver
-Message-ID: <20220415110524.4lhue7gcwqlhk2iv@skbuf>
-References: <20220414122250.158113-1-clement.leger@bootlin.com>
- <20220414122250.158113-7-clement.leger@bootlin.com>
- <20220414144709.tpxiiaiy2hu4n7fd@skbuf>
- <20220415113453.1a076746@fixe.home>
- <20220415105503.ztl4zhoyua2qzelt@skbuf>
+        with ESMTP id S1345806AbiDOLMk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 07:12:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 604F3972AC
+        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 04:10:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F02EF6228E
+        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 11:10:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 61A7BC385A9;
+        Fri, 15 Apr 2022 11:10:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650021011;
+        bh=f5522Fbo2dXjfAGlD5q36ttNQxa4AOpp2bPNvk44ymo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=tCWvZrdhvWDj0GmOGuSJoJoH3TeuqffCAtoMOvHxaXdZnHLLDxy1EdyHpqX5MJX9Y
+         zATFg/5vU/dX4oYdeZNTONFd0hLwHOnUCK9jTPfNBLkGNcyqPjC2InYhOrm/fmEWQ6
+         Rk0Qb9dCtUd9N7BxZZVEfTj+KmP8t/q3kMSsr3OmjN8y3lg/ww0+IMesQXT3PSEPAV
+         wKnGn7y1GG2A1sgFN3O1VZcVtOc/d5flMC+6ze9j6axeyLTKq6aXQoexV7B2HRFGHX
+         1PxOGul5TlvrA3ibePMD3b/WC0j7fN0SC4Lnp05jkb9U1Hy4W52kCNR8KYrEs2fW1u
+         8rwql0xGjJBnQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3EAF0EAC096;
+        Fri, 15 Apr 2022 11:10:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220415105503.ztl4zhoyua2qzelt@skbuf>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 1/1] powerpc: Update MAINTAINERS for ibmvnic and VAS
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165002101125.2718.18001601253242630733.git-patchwork-notify@kernel.org>
+Date:   Fri, 15 Apr 2022 11:10:11 +0000
+References: <20220413194515.93139-1-sukadev@linux.ibm.com>
+In-Reply-To: <20220413194515.93139-1-sukadev@linux.ibm.com>
+To:     Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Cc:     linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        drt@linux.ibm.com, brking@linux.ibm.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 15, 2022 at 01:55:03PM +0300, Vladimir Oltean wrote:
-> > > The selftests don't cover nearly enough, but just to make sure that they
-> > > pass for your switch, when you use 2 switch ports as h1 and h2 (hosts),
-> > > and 2 ports as swp1 and swp2? There's surprisingly little that you do on
-> > > .port_bridge_join, I need to study the code more.
-> > 
-> > Port isolation is handled by using a pattern matcher which is enabled
-> > for each port at setup. If set, the port packet will only be forwarded
-> > to the CPU port. When bridging is needed, the pattern matching is
-> > disabled and thus, the packets are forwarded between all the ports that
-> > are enabled in the bridge.
-> 
-> Is there some public documentation for this pattern matcher?
+Hello:
 
-Again, I realize I haven't made it clear what concerns me here.
-On ->port_bridge_join() and ->port_bridge_leave(), the "bridge" is given
-to you as argument. 2 ports may join br0, and 2 ports may join br1.
-You disregard the "bridge" argument. So you enable forwarding between
-br0 and br1. What I'd like to see is what the hardware can do in terms
-of this "pattern matching", to improve on this situation.
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Wed, 13 Apr 2022 12:45:15 -0700 you wrote:
+> Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+> ---
+>  MAINTAINERS | 2 --
+>  1 file changed, 2 deletions(-)
+
+Here is the summary with links:
+  - [1/1] powerpc: Update MAINTAINERS for ibmvnic and VAS
+    https://git.kernel.org/netdev/net/c/60496069d0ae
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
