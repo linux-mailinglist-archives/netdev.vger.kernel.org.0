@@ -2,423 +2,315 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D454E502758
-	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 11:26:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28E99502779
+	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 11:37:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351733AbiDOJ3H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 05:29:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59200 "EHLO
+        id S1351783AbiDOJiy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 05:38:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233670AbiDOJ3F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 05:29:05 -0400
-Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B386E972FE;
-        Fri, 15 Apr 2022 02:26:35 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=33;SR=0;TI=SMTPD_---0VA6gwDg_1650014789;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VA6gwDg_1650014789)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 15 Apr 2022 17:26:30 +0800
-Message-ID: <1650014226.0312726-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH v9 31/32] virtio_net: support rx/tx queue resize
-Date:   Fri, 15 Apr 2022 17:17:06 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S245380AbiDOJiw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 05:38:52 -0400
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81DB5A997D;
+        Fri, 15 Apr 2022 02:36:23 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 474BA60012;
+        Fri, 15 Apr 2022 09:36:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1650015382;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mMgy3Vt8tIp5CbMmqA1LFW/mKTOyJ2Q1HfluOipEiKo=;
+        b=pGUwaMg/3eaSAM2NU4yX77x+pQpj6rPYYOc9m9bBHTGTXo0+AnmAS14I7eMSGdmAdzvA70
+        DPbtWxhby/8MLXmeNI35Ol9zCc3DOksqVb8Wjdu9OFBqTI2OzmczOTx9ZX6x5BzW8Oyt6o
+        4AwTKjv0/SkzpODZ8oqETTL+U9KwCDE+FBv+mEU5j0/Rc2VJC9kq5XJpP/rmThAn9lax4U
+        psav3gHgNFBNGKuInBMyMzjpbwaLkcv8XYdjbexVxty97u2LX0L9op4SWV11KoaZucvS0m
+        lUtmJ2/iHCM4nZHMLX6fjbPEjOIBI4SGNOq3SkjnClh2u8uRYbDss/SUHKcGgQ==
+Date:   Fri, 15 Apr 2022 11:34:53 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Vadim Pasternak <vadimp@nvidia.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        linux-um@lists.infradead.org, netdev <netdev@vger.kernel.org>,
-        platform-driver-x86@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        kvm <kvm@vger.kernel.org>,
-        "open list:XDP (eXpress Data Path)" <bpf@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>
-References: <20220406034346.74409-1-xuanzhuo@linux.alibaba.com>
- <20220406034346.74409-32-xuanzhuo@linux.alibaba.com>
- <122008a6-1e79-14d3-1478-59f96464afc9@redhat.com>
- <1649838917.6726515-10-xuanzhuo@linux.alibaba.com>
- <CACGkMEvPH1k76xB_cHq_S9hvMXgGruoXpKLfoMZvJZ-L7wM9iw@mail.gmail.com>
- <1649989126.5433838-1-xuanzhuo@linux.alibaba.com>
- <CACGkMEuju+kdapRbnx6OxsmAbD=JZin67xGBLEqLrMeuPPw0Fg@mail.gmail.com>
-In-Reply-To: <CACGkMEuju+kdapRbnx6OxsmAbD=JZin67xGBLEqLrMeuPPw0Fg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
+        Jean-Pierre Geslin <jean-pierre.geslin@non.se.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>
+Subject: Re: [PATCH net-next 06/12] net: dsa: rzn1-a5psw: add Renesas RZ/N1
+ advanced 5 port switch driver
+Message-ID: <20220415113453.1a076746@fixe.home>
+In-Reply-To: <20220414144709.tpxiiaiy2hu4n7fd@skbuf>
+References: <20220414122250.158113-1-clement.leger@bootlin.com>
+        <20220414122250.158113-7-clement.leger@bootlin.com>
+        <20220414144709.tpxiiaiy2hu4n7fd@skbuf>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H4,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 15 Apr 2022 13:53:54 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> On Fri, Apr 15, 2022 at 10:23 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> w=
-rote:
-> >
-> > On Thu, 14 Apr 2022 17:30:02 +0800, Jason Wang <jasowang@redhat.com> wr=
-ote:
-> > > On Wed, Apr 13, 2022 at 4:47 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com=
-> wrote:
-> > > >
-> > > > On Wed, 13 Apr 2022 16:00:18 +0800, Jason Wang <jasowang@redhat.com=
-> wrote:
-> > > > >
-> > > > > =E5=9C=A8 2022/4/6 =E4=B8=8A=E5=8D=8811:43, Xuan Zhuo =E5=86=99=
-=E9=81=93:
-> > > > > > This patch implements the resize function of the rx, tx queues.
-> > > > > > Based on this function, it is possible to modify the ring num o=
-f the
-> > > > > > queue.
-> > > > > >
-> > > > > > There may be an exception during the resize process, the resize=
- may
-> > > > > > fail, or the vq can no longer be used. Either way, we must exec=
-ute
-> > > > > > napi_enable(). Because napi_disable is similar to a lock, napi_=
-enable
-> > > > > > must be called after calling napi_disable.
-> > > > > >
-> > > > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > > > > > ---
-> > > > > >   drivers/net/virtio_net.c | 81 +++++++++++++++++++++++++++++++=
-+++++++++
-> > > > > >   1 file changed, 81 insertions(+)
-> > > > > >
-> > > > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > > > > index b8bf00525177..ba6859f305f7 100644
-> > > > > > --- a/drivers/net/virtio_net.c
-> > > > > > +++ b/drivers/net/virtio_net.c
-> > > > > > @@ -251,6 +251,9 @@ struct padded_vnet_hdr {
-> > > > > >     char padding[4];
-> > > > > >   };
-> > > > > >
-> > > > > > +static void virtnet_sq_free_unused_buf(struct virtqueue *vq, v=
-oid *buf);
-> > > > > > +static void virtnet_rq_free_unused_buf(struct virtqueue *vq, v=
-oid *buf);
-> > > > > > +
-> > > > > >   static bool is_xdp_frame(void *ptr)
-> > > > > >   {
-> > > > > >     return (unsigned long)ptr & VIRTIO_XDP_FLAG;
-> > > > > > @@ -1369,6 +1372,15 @@ static void virtnet_napi_enable(struct v=
-irtqueue *vq, struct napi_struct *napi)
-> > > > > >   {
-> > > > > >     napi_enable(napi);
-> > > > > >
-> > > > > > +   /* Check if vq is in reset state. The normal reset/resize p=
-rocess will
-> > > > > > +    * be protected by napi. However, the protection of napi is=
- only enabled
-> > > > > > +    * during the operation, and the protection of napi will en=
-d after the
-> > > > > > +    * operation is completed. If re-enable fails during the pr=
-ocess, vq
-> > > > > > +    * will remain unavailable with reset state.
-> > > > > > +    */
-> > > > > > +   if (vq->reset)
-> > > > > > +           return;
-> > > > >
-> > > > >
-> > > > > I don't get when could we hit this condition.
-> > > >
-> > > >
-> > > > In patch 23, the code to implement re-enable vq is as follows:
-> > > >
-> > > > +static int vp_modern_enable_reset_vq(struct virtqueue *vq)
-> > > > +{
-> > > > +       struct virtio_pci_device *vp_dev =3D to_vp_device(vq->vdev);
-> > > > +       struct virtio_pci_modern_device *mdev =3D &vp_dev->mdev;
-> > > > +       struct virtio_pci_vq_info *info;
-> > > > +       unsigned long flags, index;
-> > > > +       int err;
-> > > > +
-> > > > +       if (!vq->reset)
-> > > > +               return -EBUSY;
-> > > > +
-> > > > +       index =3D vq->index;
-> > > > +       info =3D vp_dev->vqs[index];
-> > > > +
-> > > > +       /* check queue reset status */
-> > > > +       if (vp_modern_get_queue_reset(mdev, index) !=3D 1)
-> > > > +               return -EBUSY;
-> > > > +
-> > > > +       err =3D vp_active_vq(vq, info->msix_vector);
-> > > > +       if (err)
-> > > > +               return err;
-> > > > +
-> > > > +       if (vq->callback) {
-> > > > +               spin_lock_irqsave(&vp_dev->lock, flags);
-> > > > +               list_add(&info->node, &vp_dev->virtqueues);
-> > > > +               spin_unlock_irqrestore(&vp_dev->lock, flags);
-> > > > +       } else {
-> > > > +               INIT_LIST_HEAD(&info->node);
-> > > > +       }
-> > > > +
-> > > > +       vp_modern_set_queue_enable(&vp_dev->mdev, index, true);
-> > > > +
-> > > > +       if (vp_dev->per_vq_vectors && info->msix_vector !=3D VIRTIO=
-_MSI_NO_VECTOR)
-> > > > +               enable_irq(pci_irq_vector(vp_dev->pci_dev, info->ms=
-ix_vector));
-> > > > +
-> > > > +       vq->reset =3D false;
-> > > > +
-> > > > +       return 0;
-> > > > +}
-> > > >
-> > > >
-> > > > There are three situations where an error will be returned. These a=
-re the
-> > > > situations I want to handle.
-> > >
-> > > Right, but it looks harmless if we just schedule the NAPI without the=
- check.
-> >
-> > Yes.
-> >
-> > > >
-> > > > But I'm rethinking the question, and I feel like you're right, alth=
-ough the
-> > > > hardware setup may fail. We can no longer sync with the hardware. B=
-ut using it
-> > > > as a normal vq doesn't have any problems.
-> > >
-> > > Note that we should make sure the buggy(malicous) device won't crash
-> > > the codes by changing the queue_reset value at its will.
-> >
-> > I will keep an eye on this situation.
-> >
-> > >
-> > > >
-> > > > >
-> > > > >
-> > > > > > +
-> > > > > >     /* If all buffers were filled by other side before we napi_=
-enabled, we
-> > > > > >      * won't get another interrupt, so process any outstanding =
-packets now.
-> > > > > >      * Call local_bh_enable after to trigger softIRQ processing.
-> > > > > > @@ -1413,6 +1425,15 @@ static void refill_work(struct work_stru=
-ct *work)
-> > > > > >             struct receive_queue *rq =3D &vi->rq[i];
-> > > > > >
-> > > > > >             napi_disable(&rq->napi);
-> > > > > > +
-> > > > > > +           /* Check if vq is in reset state. See more in
-> > > > > > +            * virtnet_napi_enable()
-> > > > > > +            */
-> > > > > > +           if (rq->vq->reset) {
-> > > > > > +                   virtnet_napi_enable(rq->vq, &rq->napi);
-> > > > > > +                   continue;
-> > > > > > +           }
-> > > > >
-> > > > >
-> > > > > Can we do something similar in virtnet_close() by canceling the w=
-ork?
-> > > >
-> > > > I think there is no need to cancel the work here, because napi_disa=
-ble will wait
-> > > > for the napi_enable of the resize. So if the re-enable failed vq is=
- used as a normal
-> > > > vq, this logic can be removed.
-> > >
-> > > Actually I meant the part of virtnet_rx_resize().
-> > >
-> > > If we don't synchronize with the refill work, it might enable NAPI un=
-expectedly?
-> >
-> > I don't think this situation will be encountered, because napi_disable =
-is
-> > mutually exclusive, so there will be no unexpected napi enable.
-> >
-> > Is there something I misunderstood?
->
-> So in virtnet_rx_resize() we do:
->
-> napi_disable()
-> ...
-> resize()
-> ...
-> napi_enalbe()
->
-> How can we guarantee that the work is not run after the napi_disable()?
+Le Thu, 14 Apr 2022 17:47:09 +0300,
+Vladimir Oltean <olteanv@gmail.com> a =C3=A9crit :
 
+>=20
+> > later (vlan, etc).
+> >=20
+> > Suggested-by: Laurent Gonzales <laurent.gonzales@non.se.com>
+> > Suggested-by: Jean-Pierre Geslin <jean-pierre.geslin@non.se.com>
+> > Suggested-by: Phil Edworthy <phil.edworthy@renesas.com> =20
+>=20
+> Suggested? What did they suggest? "You should write a driver"?
+> We have a Co-developed-by: tag, maybe it's more appropriate here?
 
-I think you're talking about a situation like this:
+This driver was written from scratch but some ideas (port isolation
+using pattern matcher) was inspired from a previous driver. I thought it
+would be nice to give them credit for that.
 
-virtnet_rx_resize          refill work
------------------------------------------------------------
- napi_disable()
- ...                       napi_disable()
- resize()                      ...
-                           napi_enable()
- ...
- napi_enalbe()
+[...]
 
+> >  obj-y				+=3D hirschmann/
+> >  obj-y				+=3D microchip/
+> > diff --git a/drivers/net/dsa/rzn1_a5psw.c b/drivers/net/dsa/rzn1_a5psw.c
+> > new file mode 100644
+> > index 000000000000..5bee999f7050
+> > --- /dev/null
+> > +++ b/drivers/net/dsa/rzn1_a5psw.c
+> > @@ -0,0 +1,676 @@
+> > +// SPDX-License-Identifier: GPL-2.0-only
+> > +/*
+> > + * Copyright (C) 2022 Schneider-Electric
+> > + *
+> > + * Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com>
+> > + */
+> > +
+> > +#include <linux/clk.h>
+> > +#include <linux/etherdevice.h>
+> > +#include <linux/kernel.h>
+> > +#include <linux/module.h>
+> > +#include <linux/of.h>
+> > +#include <linux/of_mdio.h>
+> > +#include <net/dsa.h>
+> > +#include <uapi/linux/if_bridge.h> =20
+>=20
+> Why do you need to include this header?
 
-But in fact:
+It defines BR_STATE_* but I guess linux/if_bridge.h does include it.
 
-virtnet_rx_resize          refill work
------------------------------------------------------------
- napi_disable()
- ...                       napi_disable() <----[0]
- resize()                       |
- ...                            |
- napi_enalbe()                  |
-                           napi_disable() <---- [1] here success
-                           napi_enable()
+> > +
+> > +static void a5psw_port_pattern_set(struct a5psw *a5psw, int port, int =
+pattern,
+> > +				   bool enable)
+> > +{
+> > +	u32 rx_match =3D 0;
+> > +
+> > +	if (enable)
+> > +		rx_match |=3D A5PSW_RXMATCH_CONFIG_PATTERN(pattern);
+> > +
+> > +	a5psw_reg_rmw(a5psw, A5PSW_RXMATCH_CONFIG(port),
+> > +		      A5PSW_RXMATCH_CONFIG_PATTERN(pattern), rx_match);
+> > +}
+> > +
+> > +static void a5psw_port_mgmtfwd_set(struct a5psw *a5psw, int port, bool=
+ enable) =20
+>=20
+> Some explanation on what "management forward" means/does?
 
-Because virtnet_rx_resize() has already executed napi_disable(), napi_disal=
-be()
-of [0] will wait until [1] to complete.
+I'll probably rename that cpu_port_forward to match the dsa naming.
+It'll actually isolate the port from other ports by only forwarding the
+packets to the CPU port.
 
-I'm not sure if my understanding is correct.
+> > +
+> > +static int a5psw_setup(struct dsa_switch *ds)
+> > +{
+> > +	struct a5psw *a5psw =3D ds->priv;
+> > +	int port, vlan, ret;
+> > +	u32 reg;
+> > +
+> > +	/* Configure management port */
+> > +	reg =3D A5PSW_CPU_PORT | A5PSW_MGMT_CFG_DISCARD;
+> > +	a5psw_reg_writel(a5psw, A5PSW_MGMT_CFG, reg); =20
+>=20
+> Perhaps you should validate the DT blob that the CPU port is the one
+> that you think it is?
 
-Thanks.
+You are right, the datasheet says that the management port should
+actually always be the CPU port so I guess a check would be nice.
 
->
-> Thanks
->
-> >
-> > Thanks.
-> >
-> > >
-> > > Thanks
-> > >
-> > > >
-> > > >
-> > > > >
-> > > > >
-> > > > > > +
-> > > > > >             still_empty =3D !try_fill_recv(vi, rq, GFP_KERNEL);
-> > > > > >             virtnet_napi_enable(rq->vq, &rq->napi);
-> > > > > >
-> > > > > > @@ -1523,6 +1544,10 @@ static void virtnet_poll_cleantx(struct =
-receive_queue *rq)
-> > > > > >     if (!sq->napi.weight || is_xdp_raw_buffer_queue(vi, index))
-> > > > > >             return;
-> > > > > >
-> > > > > > +   /* Check if vq is in reset state. See more in virtnet_napi_=
-enable() */
-> > > > > > +   if (sq->vq->reset)
-> > > > > > +           return;
-> > > > >
-> > > > >
-> > > > > We've disabled TX napi, any chance we can still hit this?
-> > > >
-> > > > Same as above.
-> > > >
-> > > > >
-> > > > >
-> > > > > > +
-> > > > > >     if (__netif_tx_trylock(txq)) {
-> > > > > >             do {
-> > > > > >                     virtqueue_disable_cb(sq->vq);
-> > > > > > @@ -1769,6 +1794,62 @@ static netdev_tx_t start_xmit(struct sk_=
-buff *skb, struct net_device *dev)
-> > > > > >     return NETDEV_TX_OK;
-> > > > > >   }
-> > > > > >
-> > > > > > +static int virtnet_rx_resize(struct virtnet_info *vi,
-> > > > > > +                        struct receive_queue *rq, u32 ring_num)
-> > > > > > +{
-> > > > > > +   int err;
-> > > > > > +
-> > > > > > +   napi_disable(&rq->napi);
-> > > > > > +
-> > > > > > +   err =3D virtqueue_resize(rq->vq, ring_num, virtnet_rq_free_=
-unused_buf);
-> > > > > > +   if (err)
-> > > > > > +           goto err;
-> > > > > > +
-> > > > > > +   if (!try_fill_recv(vi, rq, GFP_KERNEL))
-> > > > > > +           schedule_delayed_work(&vi->refill, 0);
-> > > > > > +
-> > > > > > +   virtnet_napi_enable(rq->vq, &rq->napi);
-> > > > > > +   return 0;
-> > > > > > +
-> > > > > > +err:
-> > > > > > +   netdev_err(vi->dev,
-> > > > > > +              "reset rx reset vq fail: rx queue index: %td err=
-: %d\n",
-> > > > > > +              rq - vi->rq, err);
-> > > > > > +   virtnet_napi_enable(rq->vq, &rq->napi);
-> > > > > > +   return err;
-> > > > > > +}
-> > > > > > +
-> > > > > > +static int virtnet_tx_resize(struct virtnet_info *vi,
-> > > > > > +                        struct send_queue *sq, u32 ring_num)
-> > > > > > +{
-> > > > > > +   struct netdev_queue *txq;
-> > > > > > +   int err, qindex;
-> > > > > > +
-> > > > > > +   qindex =3D sq - vi->sq;
-> > > > > > +
-> > > > > > +   virtnet_napi_tx_disable(&sq->napi);
-> > > > > > +
-> > > > > > +   txq =3D netdev_get_tx_queue(vi->dev, qindex);
-> > > > > > +   __netif_tx_lock_bh(txq);
-> > > > > > +   netif_stop_subqueue(vi->dev, qindex);
-> > > > > > +   __netif_tx_unlock_bh(txq);
-> > > > > > +
-> > > > > > +   err =3D virtqueue_resize(sq->vq, ring_num, virtnet_sq_free_=
-unused_buf);
-> > > > > > +   if (err)
-> > > > > > +           goto err;
-> > > > > > +
-> > > > > > +   netif_start_subqueue(vi->dev, qindex);
-> > > > > > +   virtnet_napi_tx_enable(vi, sq->vq, &sq->napi);
-> > > > > > +   return 0;
-> > > > > > +
-> > > > > > +err:
-> > > > >
-> > > > >
-> > > > > I guess we can still start the queue in this case? (Since we don't
-> > > > > change the queue if resize fails).
-> > > >
-> > > > Yes, you are right.
-> > > >
-> > > > Thanks.
-> > > >
-> > > > >
-> > > > >
-> > > > > > +   netdev_err(vi->dev,
-> > > > > > +              "reset tx reset vq fail: tx queue index: %td err=
-: %d\n",
-> > > > > > +              sq - vi->sq, err);
-> > > > > > +   virtnet_napi_tx_enable(vi, sq->vq, &sq->napi);
-> > > > > > +   return err;
-> > > > > > +}
-> > > > > > +
-> > > > > >   /*
-> > > > > >    * Send command via the control virtqueue and check status.  =
-Commands
-> > > > > >    * supported by the hypervisor, as indicated by feature bits,=
- should
-> > > > >
-> > > >
-> > >
-> >
->
+> > +
+> > +	/* Reset learn count to 0 */
+> > +	reg =3D A5PSW_LK_LEARNCOUNT_MODE_SET;
+> > +	a5psw_reg_writel(a5psw, A5PSW_LK_LEARNCOUNT, reg);
+> > +
+> > +	/* Clear VLAN resource table */
+> > +	reg =3D A5PSW_VLAN_RES_WR_PORTMASK | A5PSW_VLAN_RES_WR_TAGMASK;
+> > +	for (vlan =3D 0; vlan < A5PSW_VLAN_COUNT; vlan++)
+> > +		a5psw_reg_writel(a5psw, A5PSW_VLAN_RES(vlan), reg);
+> > +
+> > +	/* Reset all ports */
+> > +	for (port =3D 0; port < ds->num_ports; port++) { =20
+>=20
+> Because dsa_is_cpu_port() internally calls dsa_to_port() which iterates
+> through a list, we tend to avoid the pattern where we call a list
+> iterating function from a loop over essentially the same data.
+> Instead, we have:
+>=20
+> 	dsa_switch_for_each_port(dp, ds) {
+> 		if (dsa_port_is_unused(dp))
+> 			do stuff with dp->index
+> 		if (dsa_port_is_cpu(dp))
+> 			...
+> 		if (dsa_port_is_user(dp))
+> 			...
+> 	}
+
+Nice catch indeed, I'll convert that.
+
+> > +
+> > +static int a5psw_probe_mdio(struct a5psw *a5psw)
+> > +{
+> > +	struct device *dev =3D a5psw->dev;
+> > +	struct device_node *mdio_node;
+> > +	struct mii_bus *bus;
+> > +	int err;
+> > +
+> > +	if (of_property_read_u32(dev->of_node, "clock-frequency",
+> > +				 &a5psw->mdio_freq))
+> > +		a5psw->mdio_freq =3D A5PSW_MDIO_DEF_FREQ; =20
+>=20
+> Shouldn't the clock-frequency be a property of the "mdio" node?
+> At least I see it in Documentation/devicetree/bindings/net/mdio.yaml.
+
+Yes, totally.
+
+> > +static const struct of_device_id a5psw_of_mtable[] =3D {
+> > +	{ .compatible =3D "renesas,rzn1-a5psw", },
+> > +	{ /* sentinel */ },
+> > +};
+> > +MODULE_DEVICE_TABLE(of, a5psw_of_mtable);
+> > +
+> > +static struct platform_driver a5psw_driver =3D {
+> > +	.driver =3D {
+> > +		.name	 =3D "rzn1_a5psw",
+> > +		.of_match_table =3D of_match_ptr(a5psw_of_mtable),
+> > +	},
+> > +	.probe =3D a5psw_probe,
+> > +	.remove =3D a5psw_remove, =20
+>=20
+> Please implement .shutdown too, it's non-optional.
+
+Hum, platform_shutdown does seems to check for the .shutdown callback:
+
+static void platform_shutdown(struct device *_dev)
+{
+	struct platform_device *dev =3D to_platform_device(_dev);
+	struct platform_driver *drv;
+
+	if (!_dev->driver)
+		return;
+
+	drv =3D to_platform_driver(_dev->driver);
+	if (drv->shutdown)
+		drv->shutdown(dev);
+}
+
+Is there some documentation specifying that this is mandatory ?
+If so, should I just set it to point to an empty shutdown function then
+?
+
+>=20
+> > +/**
+> > + * struct a5psw - switch struct
+> > + * @base: Base address of the switch
+> > + * @hclk_rate: hclk_switch clock rate
+> > + * @clk_rate: clk_switch clock rate
+> > + * @dev: Device associated to the switch
+> > + * @mii_bus: MDIO bus struct
+> > + * @mdio_freq: MDIO bus frequency requested
+> > + * @pcs: Array of PCS connected to the switch ports (not for the CPU)
+> > + * @ds: DSA switch struct
+> > + * @lk_lock: Lock for the lookup table
+> > + * @reg_lock: Lock for register read-modify-write operation =20
+>=20
+> Interesting concept. Generally we see higher-level locking schemes
+> (i.e. a rmw lock won't really ensure much in terms of consistency of
+> settings if that's the only thing that serializes concurrent thread
+> accesses to some register).
+
+Agreed, this does not guarantee consistency of settings but guarantees
+that rmw modifications are atomic between devices. I wasn't sure about
+the locking guarantee that I could have. After looking at other
+drivers, I guess I will switch to something more common such as using
+a global mutex for register accesses.
+
+>=20
+> Anyway, probably doesn't hurt to have it.
+>=20
+> > + * @flooding_ports: List of ports that should be flooded
+> > + */
+> > +struct a5psw {
+> > +	void __iomem *base;
+> > +	struct clk* hclk;
+> > +	struct clk* clk;
+> > +	struct device *dev;
+> > +	struct mii_bus	*mii_bus;
+> > +	u32 mdio_freq;
+> > +	struct phylink_pcs *pcs[A5PSW_PORTS_NUM - 1];
+> > +	struct dsa_switch ds;
+> > +	spinlock_t lk_lock;
+> > +	spinlock_t reg_lock;
+> > +	u32 flooding_ports;
+> > +};
+> > --=20
+> > 2.34.1
+> >  =20
+>=20
+> We have some selftests in tools/testing/selftests/net/forwarding/, like
+> for example bridge_vlan_unaware.sh. They create veth pairs by default,
+> but if you edit the NETIF_CREATE configuration you should be able to
+> pass your DSA interfaces.
+
+Ok, great to know that there are some tests that can be used.
+
+> The selftests don't cover nearly enough, but just to make sure that they
+> pass for your switch, when you use 2 switch ports as h1 and h2 (hosts),
+> and 2 ports as swp1 and swp2? There's surprisingly little that you do on
+> .port_bridge_join, I need to study the code more.
+
+Port isolation is handled by using a pattern matcher which is enabled
+for each port at setup. If set, the port packet will only be forwarded
+to the CPU port. When bridging is needed, the pattern matching is
+disabled and thus, the packets are forwarded between all the ports that
+are enabled in the bridge.
+
+Thanks,
+
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
