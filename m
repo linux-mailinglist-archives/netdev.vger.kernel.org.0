@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DFD155033DF
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 07:48:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 045825033C8
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 07:48:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352778AbiDOX46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 19:56:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53638 "EHLO
+        id S1356625AbiDOX6K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 19:58:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229645AbiDOX44 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 19:56:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A81C12AE7;
-        Fri, 15 Apr 2022 16:54:25 -0700 (PDT)
+        with ESMTP id S1356571AbiDOX6J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 19:58:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AAF429813;
+        Fri, 15 Apr 2022 16:55:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5E738B831BC;
-        Fri, 15 Apr 2022 23:54:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B83DC385B4;
-        Fri, 15 Apr 2022 23:54:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E9FDF61BD5;
+        Fri, 15 Apr 2022 23:55:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59405C385AB;
+        Fri, 15 Apr 2022 23:55:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650066863;
-        bh=zB3P6rJZN/By5Iuun6emUQBHSdfFSQaOz0rSzPoCu88=;
+        s=k20201202; t=1650066939;
+        bh=YH64/o1O+cqN6mti7iSTLeA7PRyBcNLfWO/TvtuyAM8=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=pOQhh5/FCCUl6mq3o7UPQLlRBJuQIU1MhhHZPGuA+F55YhbJYQjPt77tb4QUxVd1O
-         W0D9K6Nd144QRfk3wXYS04dXgv5kTc7Mnb/fs3nc0aEA8iCHtMdPMSn07ddWCspohY
-         eLd6vn2JqHrGZ7/YlmpU6ktydWKWsC3GZ72EX597u8Plv8Nzxuq+HPkYFbrfY56mvs
-         fKz6iF08n0r1VFB93pBSeHgcdsH1krCsbmhgHLmFuwsfDlJctJlEtUn6QmV3qTn4Hu
-         dMIcdelqBXj49wdXu2nb+c9Pq/oN4SRKP8DA8ZvPf2lvZvxQp6W1Qjivhs676dK+Xu
-         M/bAtVaQBSuNQ==
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2eafabbc80aso95246127b3.11;
-        Fri, 15 Apr 2022 16:54:22 -0700 (PDT)
-X-Gm-Message-State: AOAM532ickrxeJeKrzHjlc9dyzFGxDyBMkTz2N1xv9KRkonam6c4MIMF
-        JEAFB2Kzcx0ekruD4stQqohrf0xK/gXvZTxeq3g=
-X-Google-Smtp-Source: ABdhPJwruJ2DfBF/L5tsPxBRZTqmDEHj/8xa6rjPWFgo5TGQaO8WRiBrIzExNV9TGp80OykO6utMSigN+h5+NhKMrzY=
-X-Received: by 2002:a81:9b57:0:b0:2f1:49eb:1ad9 with SMTP id
- s84-20020a819b57000000b002f149eb1ad9mr1277161ywg.130.1650066861971; Fri, 15
- Apr 2022 16:54:21 -0700 (PDT)
+        b=tkijavTCh1wVpyg+GjXJWWbYnnBjhHT+VkxUTBA1yNFhK+lDbtQly03gbGjuQlecJ
+         1/PdgTWTwD8+0wlBnSNAUAm4BP7J0+yg2kaBGsrMxX/GSPpgIRefw/lTXp+CWzoMrv
+         AL7hKp4iQgOEehAvpQUphLN7fZSzIvDuubGXG1alsj7m3jcRTmOiW09CbmNry+O6RG
+         g+vyiSgs8nBIqWtiAdbx9o7hpLwXoeBOLW4E1qsBxOIunG7UKdd/m02ollqGST2ARt
+         tLYdHJBEg/wPPr3Zit8+9oiGGx6MlyFMIJbeGF/CMTG7ylRTlfQd10i1q+THVo3K2n
+         xVSAa8A7lSrIQ==
+Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-2edbd522c21so95306007b3.13;
+        Fri, 15 Apr 2022 16:55:39 -0700 (PDT)
+X-Gm-Message-State: AOAM531kvRrqHNq7pxRIXctyKdQzH+8cA0kfP7ijA5rC6J9Lwzzg7ILq
+        bLpsvidBJcBOy9cYE7eyRWnipKVFXPo/UyfnQmo=
+X-Google-Smtp-Source: ABdhPJyISR8EYC48dmNmJAW81L5Nb6ADJpA6bDXJ40TpY8Kqerl/tVZf49sPOq2grieqfsNCYMchikwY4VqrGsQb5qc=
+X-Received: by 2002:a81:5087:0:b0:2ef:33c1:fccd with SMTP id
+ e129-20020a815087000000b002ef33c1fccdmr1206424ywb.73.1650066938416; Fri, 15
+ Apr 2022 16:55:38 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220414223704.341028-1-alobakin@pm.me> <20220414223704.341028-9-alobakin@pm.me>
-In-Reply-To: <20220414223704.341028-9-alobakin@pm.me>
+References: <20220414223704.341028-1-alobakin@pm.me> <20220414223704.341028-10-alobakin@pm.me>
+In-Reply-To: <20220414223704.341028-10-alobakin@pm.me>
 From:   Song Liu <song@kernel.org>
-Date:   Fri, 15 Apr 2022 16:54:10 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW5KnLUfN2Vom1c2_+ZSeqfvnYpULhEVujeUBa_6OBQseg@mail.gmail.com>
-Message-ID: <CAPhsuW5KnLUfN2Vom1c2_+ZSeqfvnYpULhEVujeUBa_6OBQseg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 08/11] samples: bpf: fix shifting unsigned long
- by 32 positions
+Date:   Fri, 15 Apr 2022 16:55:27 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW7DxW-3MJKd+26eLGZ+hT_sWnV+QOW8BCy-51VzPsXKTA@mail.gmail.com>
+Message-ID: <CAPhsuW7DxW-3MJKd+26eLGZ+hT_sWnV+QOW8BCy-51VzPsXKTA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 09/11] samples: bpf: fix include order for
+ non-Glibc environments
 To:     Alexander Lobakin <alobakin@pm.me>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -95,70 +95,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 3:46 PM Alexander Lobakin <alobakin@pm.me> wrote:
+On Thu, Apr 14, 2022 at 3:47 PM Alexander Lobakin <alobakin@pm.me> wrote:
 >
-> On 32 bit systems, shifting an unsigned long by 32 positions
-> yields the following warning:
+> Some standard C library implementations, e.g. Musl, ship the UAPI
+> definitions themselves to not be dependent on the UAPI headers and
+> their versions. Their kernel UAPI counterparts are usually guarded
+> with some definitions which the formers set in order to avoid
+> duplicate definitions.
+> In such cases, include order matters. Change it in two samples: in
+> the first, kernel UAPI ioctl definitions should go before the libc
+> ones, and the opposite story with the second, where the kernel
+> includes should go later to avoid struct redefinitions.
 >
-> samples/bpf/tracex2_kern.c:60:23: warning: shift count >= width of type [-Wshift-count-overflow]
->         unsigned int hi = v >> 32;
->                             ^  ~~
->
-> The usual way to avoid this is to shift by 16 two times (see
-> upper_32_bits() macro in the kernel). Use it across the BPF sample
-> code as well.
->
-> Fixes: d822a1926849 ("samples/bpf: Add counting example for kfree_skb() function calls and the write() syscall")
-> Fixes: 0fb1170ee68a ("bpf: BPF based latency tracing")
-> Fixes: f74599f7c530 ("bpf: Add tests and samples for LWT-BPF")
+> Fixes: b4b8faa1ded7 ("samples/bpf: sample application and documentation for AF_XDP sockets")
+> Fixes: e55190f26f92 ("samples/bpf: Fix build for task_fd_query_user.c")
 > Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 
 Acked-by: Song Liu <songliubraving@fb.com>
+
 > ---
->  samples/bpf/lathist_kern.c      | 2 +-
->  samples/bpf/lwt_len_hist_kern.c | 2 +-
->  samples/bpf/tracex2_kern.c      | 2 +-
->  3 files changed, 3 insertions(+), 3 deletions(-)
+>  samples/bpf/task_fd_query_user.c | 2 +-
+>  samples/bpf/xdpsock_user.c       | 3 ++-
+>  2 files changed, 3 insertions(+), 2 deletions(-)
 >
-> diff --git a/samples/bpf/lathist_kern.c b/samples/bpf/lathist_kern.c
-> index 4adfcbbe6ef4..9744ed547abe 100644
-> --- a/samples/bpf/lathist_kern.c
-> +++ b/samples/bpf/lathist_kern.c
-> @@ -53,7 +53,7 @@ static unsigned int log2(unsigned int v)
+> diff --git a/samples/bpf/task_fd_query_user.c b/samples/bpf/task_fd_query_user.c
+> index 424718c0872c..5d3a60547f9f 100644
+> --- a/samples/bpf/task_fd_query_user.c
+> +++ b/samples/bpf/task_fd_query_user.c
+> @@ -9,10 +9,10 @@
+>  #include <stdint.h>
+>  #include <fcntl.h>
+>  #include <linux/bpf.h>
+> +#include <linux/perf_event.h>
+>  #include <sys/ioctl.h>
+>  #include <sys/types.h>
+>  #include <sys/stat.h>
+> -#include <linux/perf_event.h>
 >
->  static unsigned int log2l(unsigned long v)
->  {
-> -       unsigned int hi = v >> 32;
-> +       unsigned int hi = (v >> 16) >> 16;
->
->         if (hi)
->                 return log2(hi) + 32;
-> diff --git a/samples/bpf/lwt_len_hist_kern.c b/samples/bpf/lwt_len_hist_kern.c
-> index 1fa14c54963a..bf32fa04c91f 100644
-> --- a/samples/bpf/lwt_len_hist_kern.c
-> +++ b/samples/bpf/lwt_len_hist_kern.c
-> @@ -49,7 +49,7 @@ static unsigned int log2(unsigned int v)
->
->  static unsigned int log2l(unsigned long v)
->  {
-> -       unsigned int hi = v >> 32;
-> +       unsigned int hi = (v >> 16) >> 16;
->         if (hi)
->                 return log2(hi) + 32;
->         else
-> diff --git a/samples/bpf/tracex2_kern.c b/samples/bpf/tracex2_kern.c
-> index 5bc696bac27d..6bf22056ff95 100644
-> --- a/samples/bpf/tracex2_kern.c
-> +++ b/samples/bpf/tracex2_kern.c
-> @@ -57,7 +57,7 @@ static unsigned int log2(unsigned int v)
->
->  static unsigned int log2l(unsigned long v)
->  {
-> -       unsigned int hi = v >> 32;
-> +       unsigned int hi = (v >> 16) >> 16;
->         if (hi)
->                 return log2(hi) + 32;
->         else
+>  #include <bpf/bpf.h>
+>  #include <bpf/libbpf.h>
+> diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
+> index be7d2572e3e6..399b999fcec2 100644
+> --- a/samples/bpf/xdpsock_user.c
+> +++ b/samples/bpf/xdpsock_user.c
+> @@ -7,14 +7,15 @@
+>  #include <linux/bpf.h>
+>  #include <linux/if_link.h>
+>  #include <linux/if_xdp.h>
+> -#include <linux/if_ether.h>
+>  #include <linux/ip.h>
+>  #include <linux/limits.h>
+> +#include <linux/net.h>
+>  #include <linux/udp.h>
+>  #include <arpa/inet.h>
+>  #include <locale.h>
+>  #include <net/ethernet.h>
+>  #include <netinet/ether.h>
+> +#include <linux/if_ether.h>
+>  #include <net/if.h>
+>  #include <poll.h>
+>  #include <pthread.h>
 > --
 > 2.35.2
 >
