@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97734503325
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 07:48:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFD155033DF
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 07:48:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242328AbiDOXzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 19:55:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52562 "EHLO
+        id S1352778AbiDOX46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 19:56:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229645AbiDOXy6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 19:54:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 750A4954B6;
-        Fri, 15 Apr 2022 16:52:28 -0700 (PDT)
+        with ESMTP id S229645AbiDOX44 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 19:56:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A81C12AE7;
+        Fri, 15 Apr 2022 16:54:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1B8D7B831BC;
-        Fri, 15 Apr 2022 23:52:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B715AC385B0;
-        Fri, 15 Apr 2022 23:52:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E738B831BC;
+        Fri, 15 Apr 2022 23:54:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B83DC385B4;
+        Fri, 15 Apr 2022 23:54:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650066745;
-        bh=errT7JCib6AzTkVoGPltwDcZINvMpoIAWe1b0AzmVjQ=;
+        s=k20201202; t=1650066863;
+        bh=zB3P6rJZN/By5Iuun6emUQBHSdfFSQaOz0rSzPoCu88=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=qNxv7R7kwGBplr4pFmyq+iyauWnfSUOQxiEV1D253Qu6QckwiUPoV8kS8B7hDvkIF
-         8r/h9C9qoQH1xiKBFuj/MwKoZ2yrwUVOzdx0QQqGQdu6eIJ91rZ6zdZ3AFGmkUJLMx
-         QeEhdcIHd+4kyqWYYERVkKlTGUBe8Tt33vmkE34mBM0rlflT0tTIeqCHkAPYy2m/Yi
-         XL8JHpBzufzAHD7Lh80CX6Zg+a/JNDywq9F5odVU9gXMoiEOWmSle+Uqx/Gq0yrHeM
-         Rzwu6FWkxKLl9ptrE4BaqBMNgBwR02nEefskx1y9zRueUrC/vgsuzK78JSe9f3Tzpm
-         GAMzI5xhgbiwA==
-Received: by mail-yb1-f181.google.com with SMTP id p65so16676882ybp.9;
-        Fri, 15 Apr 2022 16:52:25 -0700 (PDT)
-X-Gm-Message-State: AOAM531dF0jGOBsvuwFNiY8RNx9TS51fVO9REBpJg3c7yXIo+Nw4U4Mj
-        gxt0cn8ndAp3aRtIEYKnrCsk2QLkQrbQ1XhSgFo=
-X-Google-Smtp-Source: ABdhPJx72bmk61XUaqJvL+i1XHxlM70OjJc/9IRT4lbbDvxH0qPpB5kgaRzVhtGK/RofPmCZoqlatSkJeo/Au/tdM30=
-X-Received: by 2002:a25:8b81:0:b0:629:17d5:68c1 with SMTP id
- j1-20020a258b81000000b0062917d568c1mr1296810ybl.449.1650066744755; Fri, 15
- Apr 2022 16:52:24 -0700 (PDT)
+        b=pOQhh5/FCCUl6mq3o7UPQLlRBJuQIU1MhhHZPGuA+F55YhbJYQjPt77tb4QUxVd1O
+         W0D9K6Nd144QRfk3wXYS04dXgv5kTc7Mnb/fs3nc0aEA8iCHtMdPMSn07ddWCspohY
+         eLd6vn2JqHrGZ7/YlmpU6ktydWKWsC3GZ72EX597u8Plv8Nzxuq+HPkYFbrfY56mvs
+         fKz6iF08n0r1VFB93pBSeHgcdsH1krCsbmhgHLmFuwsfDlJctJlEtUn6QmV3qTn4Hu
+         dMIcdelqBXj49wdXu2nb+c9Pq/oN4SRKP8DA8ZvPf2lvZvxQp6W1Qjivhs676dK+Xu
+         M/bAtVaQBSuNQ==
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2eafabbc80aso95246127b3.11;
+        Fri, 15 Apr 2022 16:54:22 -0700 (PDT)
+X-Gm-Message-State: AOAM532ickrxeJeKrzHjlc9dyzFGxDyBMkTz2N1xv9KRkonam6c4MIMF
+        JEAFB2Kzcx0ekruD4stQqohrf0xK/gXvZTxeq3g=
+X-Google-Smtp-Source: ABdhPJwruJ2DfBF/L5tsPxBRZTqmDEHj/8xa6rjPWFgo5TGQaO8WRiBrIzExNV9TGp80OykO6utMSigN+h5+NhKMrzY=
+X-Received: by 2002:a81:9b57:0:b0:2f1:49eb:1ad9 with SMTP id
+ s84-20020a819b57000000b002f149eb1ad9mr1277161ywg.130.1650066861971; Fri, 15
+ Apr 2022 16:54:21 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220414223704.341028-1-alobakin@pm.me> <20220414223704.341028-8-alobakin@pm.me>
-In-Reply-To: <20220414223704.341028-8-alobakin@pm.me>
+References: <20220414223704.341028-1-alobakin@pm.me> <20220414223704.341028-9-alobakin@pm.me>
+In-Reply-To: <20220414223704.341028-9-alobakin@pm.me>
 From:   Song Liu <song@kernel.org>
-Date:   Fri, 15 Apr 2022 16:52:13 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW7FuAKX0fJ1XPfFWWwRS+wTW0qA49V-iQVzxv4jOb47MA@mail.gmail.com>
-Message-ID: <CAPhsuW7FuAKX0fJ1XPfFWWwRS+wTW0qA49V-iQVzxv4jOb47MA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 07/11] samples: bpf: fix uin64_t format literals
+Date:   Fri, 15 Apr 2022 16:54:10 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW5KnLUfN2Vom1c2_+ZSeqfvnYpULhEVujeUBa_6OBQseg@mail.gmail.com>
+Message-ID: <CAPhsuW5KnLUfN2Vom1c2_+ZSeqfvnYpULhEVujeUBa_6OBQseg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 08/11] samples: bpf: fix shifting unsigned long
+ by 32 positions
 To:     Alexander Lobakin <alobakin@pm.me>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -96,74 +97,68 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Thu, Apr 14, 2022 at 3:46 PM Alexander Lobakin <alobakin@pm.me> wrote:
 >
-> There's a couple places where uin64_t is being passed as an %ld
-> format argument, which is incorrect (should be %lld). Fix them.
-
-This will cause some warning on some 64-bit compiler, no?
-
-Song
-
+> On 32 bit systems, shifting an unsigned long by 32 positions
+> yields the following warning:
 >
-> Fixes: 51570a5ab2b7 ("A Sample of using socket cookie and uid for traffic monitoring")
-> Fixes: 00f660eaf378 ("Sample program using SO_COOKIE")
+> samples/bpf/tracex2_kern.c:60:23: warning: shift count >= width of type [-Wshift-count-overflow]
+>         unsigned int hi = v >> 32;
+>                             ^  ~~
+>
+> The usual way to avoid this is to shift by 16 two times (see
+> upper_32_bits() macro in the kernel). Use it across the BPF sample
+> code as well.
+>
+> Fixes: d822a1926849 ("samples/bpf: Add counting example for kfree_skb() function calls and the write() syscall")
+> Fixes: 0fb1170ee68a ("bpf: BPF based latency tracing")
+> Fixes: f74599f7c530 ("bpf: Add tests and samples for LWT-BPF")
 > Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+
+Acked-by: Song Liu <songliubraving@fb.com>
 > ---
->  samples/bpf/cookie_uid_helper_example.c | 12 ++++++------
->  samples/bpf/lwt_len_hist_user.c         |  4 ++--
->  2 files changed, 8 insertions(+), 8 deletions(-)
+>  samples/bpf/lathist_kern.c      | 2 +-
+>  samples/bpf/lwt_len_hist_kern.c | 2 +-
+>  samples/bpf/tracex2_kern.c      | 2 +-
+>  3 files changed, 3 insertions(+), 3 deletions(-)
 >
-> diff --git a/samples/bpf/cookie_uid_helper_example.c b/samples/bpf/cookie_uid_helper_example.c
-> index f0df3dda4b1f..1b98debb6019 100644
-> --- a/samples/bpf/cookie_uid_helper_example.c
-> +++ b/samples/bpf/cookie_uid_helper_example.c
-> @@ -207,9 +207,9 @@ static void print_table(void)
->                         error(1, errno, "fail to get entry value of Key: %u\n",
->                                 curN);
->                 } else {
-> -                       printf("cookie: %u, uid: 0x%x, Packet Count: %lu,"
-> -                               " Bytes Count: %lu\n", curN, curEntry.uid,
-> -                               curEntry.packets, curEntry.bytes);
-> +                       printf("cookie: %u, uid: 0x%x, Packet Count: %llu, Bytes Count: %llu\n",
-> +                              curN, curEntry.uid, curEntry.packets,
-> +                              curEntry.bytes);
->                 }
->         }
->  }
-> @@ -265,9 +265,9 @@ static void udp_client(void)
->                 if (res < 0)
->                         error(1, errno, "lookup sk stat failed, cookie: %lu\n",
->                               cookie);
-> -               printf("cookie: %lu, uid: 0x%x, Packet Count: %lu,"
-> -                       " Bytes Count: %lu\n\n", cookie, dataEntry.uid,
-> -                       dataEntry.packets, dataEntry.bytes);
-> +               printf("cookie: %llu, uid: 0x%x, Packet Count: %llu, Bytes Count: %llu\n\n",
-> +                      cookie, dataEntry.uid, dataEntry.packets,
-> +                      dataEntry.bytes);
->         }
->         close(s_send);
->         close(s_rcv);
-> diff --git a/samples/bpf/lwt_len_hist_user.c b/samples/bpf/lwt_len_hist_user.c
-> index 430a4b7e353e..4ef22571aa67 100644
-> --- a/samples/bpf/lwt_len_hist_user.c
-> +++ b/samples/bpf/lwt_len_hist_user.c
-> @@ -44,7 +44,7 @@ int main(int argc, char **argv)
+> diff --git a/samples/bpf/lathist_kern.c b/samples/bpf/lathist_kern.c
+> index 4adfcbbe6ef4..9744ed547abe 100644
+> --- a/samples/bpf/lathist_kern.c
+> +++ b/samples/bpf/lathist_kern.c
+> @@ -53,7 +53,7 @@ static unsigned int log2(unsigned int v)
 >
->         while (bpf_map_get_next_key(map_fd, &key, &next_key) == 0) {
->                 if (next_key >= MAX_INDEX) {
-> -                       fprintf(stderr, "Key %lu out of bounds\n", next_key);
-> +                       fprintf(stderr, "Key %llu out of bounds\n", next_key);
->                         continue;
->                 }
+>  static unsigned int log2l(unsigned long v)
+>  {
+> -       unsigned int hi = v >> 32;
+> +       unsigned int hi = (v >> 16) >> 16;
 >
-> @@ -66,7 +66,7 @@ int main(int argc, char **argv)
+>         if (hi)
+>                 return log2(hi) + 32;
+> diff --git a/samples/bpf/lwt_len_hist_kern.c b/samples/bpf/lwt_len_hist_kern.c
+> index 1fa14c54963a..bf32fa04c91f 100644
+> --- a/samples/bpf/lwt_len_hist_kern.c
+> +++ b/samples/bpf/lwt_len_hist_kern.c
+> @@ -49,7 +49,7 @@ static unsigned int log2(unsigned int v)
 >
->         for (i = 1; i <= max_key + 1; i++) {
->                 stars(starstr, data[i - 1], max_value, MAX_STARS);
-> -               printf("%8ld -> %-8ld : %-8ld |%-*s|\n",
-> +               printf("%8ld -> %-8ld : %-8lld |%-*s|\n",
->                        (1l << i) >> 1, (1l << i) - 1, data[i - 1],
->                        MAX_STARS, starstr);
->         }
+>  static unsigned int log2l(unsigned long v)
+>  {
+> -       unsigned int hi = v >> 32;
+> +       unsigned int hi = (v >> 16) >> 16;
+>         if (hi)
+>                 return log2(hi) + 32;
+>         else
+> diff --git a/samples/bpf/tracex2_kern.c b/samples/bpf/tracex2_kern.c
+> index 5bc696bac27d..6bf22056ff95 100644
+> --- a/samples/bpf/tracex2_kern.c
+> +++ b/samples/bpf/tracex2_kern.c
+> @@ -57,7 +57,7 @@ static unsigned int log2(unsigned int v)
+>
+>  static unsigned int log2l(unsigned long v)
+>  {
+> -       unsigned int hi = v >> 32;
+> +       unsigned int hi = (v >> 16) >> 16;
+>         if (hi)
+>                 return log2(hi) + 32;
+>         else
 > --
 > 2.35.2
 >
