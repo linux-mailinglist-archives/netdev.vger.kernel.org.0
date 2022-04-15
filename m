@@ -2,118 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8941D5033BA
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 07:48:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBE545032EB
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 07:48:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347534AbiDOXdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 19:33:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57208 "EHLO
+        id S232191AbiDOXhU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 19:37:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356522AbiDOXc7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 19:32:59 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D80BD46B29;
-        Fri, 15 Apr 2022 16:30:28 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id y10so173568ejw.8;
-        Fri, 15 Apr 2022 16:30:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=5nDzaaAHa7/WeJJ4E62iP/cCLjk44LELpCyD9uJYd+s=;
-        b=Er6MHtpc4IdPXf5rUA2twJd83mpeYG8RTPD1ynVEcyTIsmSGpg5fzOQMKggdCaZ7Ns
-         SDlRro9MmrPzqwd64tsuRwUVT9sOON87buwPW8GsoBqtT0yp8hyy0l7+p0R5N0VdQMbd
-         ++FhrfYN8vPOJ0jwfKFMMmb8ctecs2kFxjZkNAtrKMIDDZ7Wir8fQH0FCLmWo4uEWMzO
-         5yw+5r6C0qUpmAOUqcYDyjVjp+/5Mnex1eZmGtHtGcU3XhjnV/zuBPxpKpLJM9srMm5r
-         fu0OGUNAUHJfn/v5eCno5j15gb/iYfC1zcxVor245Sd0q8bP4idIpwkzjv9DuwXMUCTu
-         4Lkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5nDzaaAHa7/WeJJ4E62iP/cCLjk44LELpCyD9uJYd+s=;
-        b=ZLef2j9jt8USlm397V7XCWRAJeSiEQcl6KNuD0ThjXwIC8TWubik3fBVehbWCcKcOS
-         Mk88A9V0vtDhoWuzWQ2rnsm765DdEO3SKla+hc7bbgCuTa9m3i6gaQjyfdH4Sbfp+MX3
-         6wNQN88F+Aw0aZa6m68PkSoWl8ADtZDhAKJrNNff2XSGBUrNaxA3QzvLuObVtr1eaD8G
-         ZbqaVOyhte9v5gJ/PGsODUNBIyGC8au8CCccXW24sFTmzTo8RXqMSYhqxu6Bcjj9TwSu
-         Y9rcnh7xjya7hqPdCe+p9aiRVJ6eD1mqDTWy28McBILRl3sKeB9f6LLIWl8HNqnBcfvF
-         dC5Q==
-X-Gm-Message-State: AOAM530ntxW3wV7n3gKcorAwuPLgz5iGb0/ujbs04lrs2941t26gH7D9
-        4WVWgL9vVPeR9lj4edEqNyU=
-X-Google-Smtp-Source: ABdhPJy5w+y12JaFpUfY7+rbhIopdcIzKnPNaEPw/Yn0VtjgDutavo3bdBPD9bXKy9IZ/uJBMCPt1A==
-X-Received: by 2002:a17:906:2991:b0:6cf:6b24:e92f with SMTP id x17-20020a170906299100b006cf6b24e92fmr943076eje.748.1650065427310;
-        Fri, 15 Apr 2022 16:30:27 -0700 (PDT)
-Received: from localhost.localdomain (host-79-33-253-62.retail.telecomitalia.it. [79.33.253.62])
-        by smtp.googlemail.com with ESMTPSA id z21-20020a1709063a1500b006da6436819dsm2114588eje.173.2022.04.15.16.30.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 16:30:26 -0700 (PDT)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        with ESMTP id S230282AbiDOXhT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 19:37:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3605940E59;
+        Fri, 15 Apr 2022 16:34:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DDB69B82CE7;
+        Fri, 15 Apr 2022 23:34:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EF28C385A8;
+        Fri, 15 Apr 2022 23:34:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650065686;
+        bh=H8TG9TaTkxthyp0a78kt3dMEbKUO8m3PltS7yJt03Lk=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=gIDIFML52510OKuQReILMZhX3fFpruAsOz8I2y/UUWSS/XA9np+igAuQ9J71VVmaI
+         yc8pvY+JCT6UUVSGrSR28Ayfzg/8ReygDBjTJSLAShxwB5Q1Qo9/MOMFj3FAGgFIFR
+         b+quTWnBobJaTM9heJhVac+VBoK7X8aOPkPesZjtk8Sw8CgLhMwjtdcnPb2R0zdM+R
+         b0IRTjA8BaIlnt3lHEL4f2tkElrFZItoG10MxYNsonfzToHNWoxA30Y2vSy9nx+Wsv
+         Spv7lDZszmOJuMuhvCckvgwOwqBC0cMLNzx3iUNLR2OxRTtmfNwJJFOnS20TCvMtzG
+         A0718dSkj3OuA==
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-2ebf4b91212so95347557b3.8;
+        Fri, 15 Apr 2022 16:34:46 -0700 (PDT)
+X-Gm-Message-State: AOAM533UrQlHQSa+Mhg0xgFELEHrKjqqmCWoghMhVlH/knn2FAWhiuBE
+        chXG7QpxApc4ACMRS4jIvSh6RtzQ2blyiRGoRHI=
+X-Google-Smtp-Source: ABdhPJzFi4avB4LXxfU1+vAL7RiFsHM0NYSgX5xmyngsW8isXQE/FvZ8UGsTCkZUMTOvj9iYRuUPlvo38P1Pwkh32Ek=
+X-Received: by 2002:a81:688:0:b0:2ec:239:d1e with SMTP id 130-20020a810688000000b002ec02390d1emr1124694ywg.211.1650065685677;
+ Fri, 15 Apr 2022 16:34:45 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220414223704.341028-1-alobakin@pm.me> <20220414223704.341028-4-alobakin@pm.me>
+In-Reply-To: <20220414223704.341028-4-alobakin@pm.me>
+From:   Song Liu <song@kernel.org>
+Date:   Fri, 15 Apr 2022 16:34:34 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW6_9nq6wesTwDbpV50euq=ubqdLdfVkc9-pNOnGevXs1Q@mail.gmail.com>
+Message-ID: <CAPhsuW6_9nq6wesTwDbpV50euq=ubqdLdfVkc9-pNOnGevXs1Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 03/11] tools, bpf: fix bpftool build with !CONFIG_BPF_EVENTS
+To:     Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ansuel Smith <ansuelsmth@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [net-next PATCH v3 6/6] net: dsa: qca8k: unify bus id naming with legacy and OF mdio bus
-Date:   Sat, 16 Apr 2022 01:30:17 +0200
-Message-Id: <20220415233017.23275-7-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220415233017.23275-1-ansuelsmth@gmail.com>
-References: <20220415233017.23275-1-ansuelsmth@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Dmitrii Dolgov <9erthalion6@gmail.com>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Chenbo Feng <fengc@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Daniel Wagner <daniel.wagner@bmw-carit.de>,
+        Thomas Graf <tgraf@suug.ch>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        linux-perf-users@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for multiple switch with OF mdio bus declaration.
-Unify the bus id naming and use the same logic for both legacy and OF
-mdio bus.
+On Thu, Apr 14, 2022 at 3:45 PM Alexander Lobakin <alobakin@pm.me> wrote:
+>
+> Fix the following error when building bpftool:
+>
+>   CLANG   profiler.bpf.o
+>   CLANG   pid_iter.bpf.o
+> skeleton/profiler.bpf.c:18:21: error: invalid application of 'sizeof' to an incomplete type 'struct bpf_perf_event_value'
+>         __uint(value_size, sizeof(struct bpf_perf_event_value));
+>                            ^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> tools/bpf/bpftool/bootstrap/libbpf/include/bpf/bpf_helpers.h:13:39: note: expanded from macro '__uint'
+>                                       ^~~
+> tools/bpf/bpftool/bootstrap/libbpf/include/bpf/bpf_helper_defs.h:7:8: note: forward declaration of 'struct bpf_perf_event_value'
+> struct bpf_perf_event_value;
+>        ^
+>
+> struct bpf_perf_event_value is being used in the kernel only when
+> CONFIG_BPF_EVENTS is enabled, so it misses a BTF entry then.
+> Emit the type unconditionally to fix the problem.
+>
+> Fixes: 47c09d6a9f67 ("bpftool: Introduce "prog profile" command")
+> Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
----
- drivers/net/dsa/qca8k.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+Acked-by: Song Liu <songliubraving@fb.com>
 
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 4fb1486795c4..2727d3169c25 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -1323,6 +1323,8 @@ qca8k_mdio_register(struct qca8k_priv *priv)
- 		return -ENOMEM;
- 
- 	bus->priv = (void *)priv;
-+	snprintf(bus->id, MII_BUS_ID_SIZE, "qca8k-%d.%d",
-+		 ds->dst->index, ds->index);
- 	bus->parent = ds->dev;
- 	bus->phy_mask = ~ds->phys_mii_mask;
- 	ds->slave_mii_bus = bus;
-@@ -1330,7 +1332,6 @@ qca8k_mdio_register(struct qca8k_priv *priv)
- 	/* Check if the devicetree declare the port:phy mapping */
- 	mdio = of_get_child_by_name(priv->dev->of_node, "mdio");
- 	if (of_device_is_available(mdio)) {
--		snprintf(bus->id, MII_BUS_ID_SIZE, "qca8k-%d", ds->index);
- 		bus->name = "qca8k slave mii";
- 		bus->read = qca8k_internal_mdio_read;
- 		bus->write = qca8k_internal_mdio_write;
-@@ -1340,8 +1341,6 @@ qca8k_mdio_register(struct qca8k_priv *priv)
- 	/* If a mapping can't be found the legacy mapping is used,
- 	 * using the qca8k_port_to_phy function
- 	 */
--	snprintf(bus->id, MII_BUS_ID_SIZE, "qca8k-%d.%d",
--		 ds->dst->index, ds->index);
- 	bus->name = "qca8k-legacy slave mii";
- 	bus->read = qca8k_legacy_mdio_read;
- 	bus->write = qca8k_legacy_mdio_write;
--- 
-2.34.1
-
+> ---
+>  kernel/bpf/syscall.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> index 34fdf27d14cf..dd8284a60a8e 100644
+> --- a/kernel/bpf/syscall.c
+> +++ b/kernel/bpf/syscall.c
+> @@ -4286,6 +4286,7 @@ static int link_create(union bpf_attr *attr, bpfptr_t uattr)
+>                 goto out;
+>         case BPF_PROG_TYPE_PERF_EVENT:
+>         case BPF_PROG_TYPE_TRACEPOINT:
+> +               BTF_TYPE_EMIT(struct bpf_perf_event_value);
+>                 if (attr->link_create.attach_type != BPF_PERF_EVENT) {
+>                         ret = -EINVAL;
+>                         goto out;
+> --
+> 2.35.2
+>
+>
