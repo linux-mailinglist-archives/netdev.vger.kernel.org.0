@@ -2,82 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 455065025E8
-	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 08:56:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFD955025EF
+	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 08:59:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350796AbiDOG7E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 02:59:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42296 "EHLO
+        id S1350831AbiDOHBW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 03:01:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232878AbiDOG7D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 02:59:03 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F24803E0C5;
-        Thu, 14 Apr 2022 23:56:35 -0700 (PDT)
+        with ESMTP id S1350810AbiDOHBT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 03:01:19 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5751AB2472;
+        Thu, 14 Apr 2022 23:58:52 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id i27so13942549ejd.9;
+        Thu, 14 Apr 2022 23:58:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650005796; x=1681541796;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=t2JyKHgJzNVEtMBMT1fofHfCUqQE1R9r4NG3h8NrjI8=;
-  b=pvbwW0C11+qnWdAWxaMiAxY+2P/cTne0DGa4ZqeS6O+jLKCD5Tj+W/wF
-   cFRNpBX53q3wRFllrI8Aen0FbYMqKnuy+c/KU+6jILOY/4qx6o9mA95YC
-   RWSvuo0kYbOqVEobHODd5yw9r+ZZ8hqZibQ7uVnrEX17oi3qoTPKLpU2o
-   4=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 14 Apr 2022 23:56:35 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 23:56:36 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 14 Apr 2022 23:56:34 -0700
-Received: from [10.253.8.85] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 14 Apr
- 2022 23:56:31 -0700
-Message-ID: <c503b9b8-062d-d8c8-1d9f-106602dd31c4@quicinc.com>
-Date:   Fri, 15 Apr 2022 14:56:29 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] ath11k: simplify if-if to if-else
-Content-Language: en-US
-To:     Benjamin Poirier <benjamin.poirier@gmail.com>,
-        Yihao Han <hanyihao@vivo.com>
-CC:     Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=OI3GF4xjZzu1D4neEuDrMg3tnbukoM+/AXSNWLr/K1w=;
+        b=pVptxzwSMjKbyebGjecwxf5tJKK0YxTlgD5JiFLCEkdIMrIqD9ZmxjnmTH9AER2Bel
+         psMsbK47is/YBD2xA1sjZpHhfJV2Zuw9kKgxczGVfCnNkE5qWNG49SkhEEzRUKbwrzuZ
+         /nkm68yoTRJF2Wk7zGzK49PwCY0PaS0vtResgaQZualISpqTvqz2Q7LqBy7OPs6Mr9ua
+         7jvuOlmo149Uhb63YsfqRJwLE2o5HR4uQBE2q3xa0sQiOErP8MbrN9pEB+JhV+mrwjxC
+         EQtiRXjJWs4VKSVIspz4DAGV/G6msrOxhE+YcdT3zJF+siA1DEoQNQVr+p2bj5A4n0Xz
+         daRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=OI3GF4xjZzu1D4neEuDrMg3tnbukoM+/AXSNWLr/K1w=;
+        b=mmAYSzxCMddU17lzV3BNYk/Ah+BtsRlMDVAI3zeLoxmhMQ7XsMPr73PR1XiYZ07+1o
+         yOfOVC219SokH0uQ95myVSSzhqbEQEFnsLivHbHRoA23VzdUxvEa1Y3d5v1VtAkgF/Fg
+         f7i9Cb6fWlNsuXhNJilQrpeQBRoEWvlA46fln9Ptc1oCMYlKlFC+FczFXDMGxQ0sUH6S
+         YAvdC6WABVPTkeBJmPRqxgjGjE7MkYMpQJoxDYiQm8VrE8+22oJBhAuZ3/p1zU5EJR8Q
+         OWk0rSbMVWKni733knVtSXmEhWTlzjxQes3j0TP0fkI4Kb1wz+EG30JUmSSPijtl5PUe
+         QM3w==
+X-Gm-Message-State: AOAM5323vXeeioLIALhBvkZXOXy7J3p+8B1HnwVhmG8a41sHaKYwHT8z
+        UpAPFqlZLheSVY36Y8rFN6yv7mbQPc/1zHia
+X-Google-Smtp-Source: ABdhPJzr+2LDFjO6ChpD8ZWZgDqYxv7d+0s9XTLHBTMU4WX09MFl1eEtbpP3f59LeTWBsH1350Nnsw==
+X-Received: by 2002:a17:907:1ca0:b0:6e9:9eef:a8d2 with SMTP id nb32-20020a1709071ca000b006e99eefa8d2mr5157847ejc.719.1650005930930;
+        Thu, 14 Apr 2022 23:58:50 -0700 (PDT)
+Received: from anparri (host-79-52-64-69.retail.telecomitalia.it. [79.52.64.69])
+        by smtp.gmail.com with ESMTPSA id fx3-20020a170906b74300b006daecedee44sm1376689ejb.220.2022.04.14.23.58.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 23:58:50 -0700 (PDT)
+Date:   Fri, 15 Apr 2022 08:58:47 +0200
+From:   Andrea Parri <parri.andrea@gmail.com>
+To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+Cc:     KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, <ath11k@lists.infradead.org>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <kernel@vivo.com>
-References: <20220414092042.78152-1-hanyihao@vivo.com> <YlkN1FsTd0Bozz0K@d3>
-From:   Wen Gong <quic_wgong@quicinc.com>
-In-Reply-To: <YlkN1FsTd0Bozz0K@d3>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH 5/6] Drivers: hv: vmbus: Accept hv_sock offers in
+ isolated guests
+Message-ID: <20220415065847.GD2961@anparri>
+References: <20220413204742.5539-1-parri.andrea@gmail.com>
+ <20220413204742.5539-6-parri.andrea@gmail.com>
+ <PH0PR21MB302520562EED77A587340D1DD7EE9@PH0PR21MB3025.namprd21.prod.outlook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <PH0PR21MB302520562EED77A587340D1DD7EE9@PH0PR21MB3025.namprd21.prod.outlook.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/15/2022 2:16 PM, Benjamin Poirier wrote:
-> On 2022-04-14 02:20 -0700, Yihao Han wrote:
-...
-> It seems there is no synchronization around is_reset but is it
-> guaranteed that it cannot be changed by ath11k_core_reset() between the
-> two tests? I'm not familiar with the driver.
+> > @@ -976,17 +976,22 @@ find_primary_channel_by_offer(const struct
+> > vmbus_channel_offer_channel *offer)
+> >  	return channel;
+> >  }
+> > 
+> > -static bool vmbus_is_valid_device(const guid_t *guid)
+> > +static bool vmbus_is_valid_offer(const struct vmbus_channel_offer_channel *offer)
+> >  {
+> > +	const guid_t *guid = &offer->offer.if_type;
+> >  	u16 i;
+> > 
+> >  	if (!hv_is_isolation_supported())
+> >  		return true;
+> > 
+> > +	if (is_hvsock_offer(offer))
+> > +		return true;
+> > +
+> >  	for (i = 0; i < ARRAY_SIZE(vmbus_devs); i++) {
+> >  		if (guid_equal(guid, &vmbus_devs[i].guid))
+> >  			return vmbus_devs[i].allowed_in_isolated;
+> >  	}
+> > +
+> 
+> Spurious newline added?
+> 
+> >  	return false;
 
-ath11k_core_reset() has logic to avoid muti-reset in the same time.
+Intentionally added to visually separate the "hvsock", "vmbus_dev" and
+"default" blocks, patch seemed simple enough to try to merge in "style
+material" without incurring in the question.  ;-)
 
-it means it has one recovery work doing for each time.
+Newline removed.
 
+Thanks,
+  Andrea
