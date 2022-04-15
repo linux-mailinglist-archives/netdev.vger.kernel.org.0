@@ -2,107 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81F0750264B
-	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 09:39:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92193502662
+	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 09:49:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351160AbiDOHlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 03:41:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55138 "EHLO
+        id S1351217AbiDOHvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 03:51:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351162AbiDOHlc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 03:41:32 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16B4F4B1F8;
-        Fri, 15 Apr 2022 00:39:05 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id bg9so6725703pgb.9;
-        Fri, 15 Apr 2022 00:39:04 -0700 (PDT)
+        with ESMTP id S232094AbiDOHvW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 03:51:22 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17E20A1465;
+        Fri, 15 Apr 2022 00:48:54 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id k62so682343pgd.2;
+        Fri, 15 Apr 2022 00:48:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=7Z7mILpiEbIhXnxkIbIQrTgZVr/aE/tpgfsOP60J5fQ=;
-        b=Ek/ooZ8zbGOpq4ldLwkfi6X2KgZZv1HnzYWGJx53dOVtA2RnkzoFq8zSKz79lYnl9P
-         f3jNoGwOxUruO3I2wH4hFmEHqV5a0OnfwYJWFFN0lzo0RB7hL3WEPXMgABIx9K8k93Up
-         Br/YK5YtXXUAaxQdLDEp7rUVapHh4pccxlM74DotEOP7p1zeCoiTCbNxB1eV8DOvUA/D
-         C+slidK0jKPCwqw09Rn5/QoHQzWrlfQnRtQGALkEovDUZ1ZOR53/2cusntn1keEvYN6j
-         ndzUiUWPAge7IwdrArw3d0O2aaZX3deH5MGNwfz6iz0ewBrSf+1A4NgvyjK4LEtZZGJd
-         usEg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ojb7v3RWfPmTpcy1XYxej8SBWhny6YXG14sLiPEtEs4=;
+        b=Y/tE9xzMFlHIGfuq7ZusEiu+m3bxcTOwYGI+fGLyNYe1zZtoYOYuhg50+bCRILMeBz
+         G7Js2/5cqHzuyDM1htxWJVZtEDhrgsViXUgEhJb673jax5+6vA5/DzcXN7/IrUUBRjMV
+         NCNDeqU0YbKo5qghlfwYBaDmvQbqc4VS3a04ersEwCo9/2ijImTuifVrI29Ojv90yaMy
+         nvLUVHMJr+gZIzwrqzI0e9zEI60FGgYYC2+xJtdzU2JSp6CwjK4dkM1LYR8juNqCInkZ
+         pawmzq8Jggv9ebiaOFaZUZgVYYsodnBMpt5jLOxm/wl/DMDYVkXwyLP8cNSH2Ny2TTHo
+         aw0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=7Z7mILpiEbIhXnxkIbIQrTgZVr/aE/tpgfsOP60J5fQ=;
-        b=APtBI3OypXhmT3fxB//SXnrnqyJtVWAGpJvF4pV61sFIyObUKYfBU9/7Xq2hbPMrN0
-         GXfaja0dAVinE22jxLGifxphEdbljclvKBlhQv9gpPHB7yAvq38NDzBp28M6Ck+9+Nk0
-         hDOobMoU4DT9IdJveWlo5Ba9uBmiVHXLffATi998L5JxZDCng/4RRK7A0em5Q57r1tgs
-         NMa1tnTnHcK8eRAboT+DVQ9zQ2MG35dnBFbgK9UpbXGujEhntMqH3EXUyHDhnnqdkpm3
-         F3NBNPhvHvTsX9CO/t+rJDLmqjdJ17/BV3nCZEfmgtKGJQksAq3uDYrxpCEAnoIa/mlc
-         qdcA==
-X-Gm-Message-State: AOAM531tRCE3kMy1KXl6TMpp/ReMtHaRnyI4mK8WHNpg8lC1n7o4Ntoj
-        DBZ0qd/6vVYalh9bAATgRfU=
-X-Google-Smtp-Source: ABdhPJx/mFPNudIZ2y6RfMDEwj4GDSKSQpBB7GQigl3sdT8UsSdsiuEBHlCdzEa+tF35zyGcTAiJoA==
-X-Received: by 2002:a63:a804:0:b0:398:e7d7:29ab with SMTP id o4-20020a63a804000000b00398e7d729abmr5294823pgf.138.1650008344416;
-        Fri, 15 Apr 2022 00:39:04 -0700 (PDT)
-Received: from [192.168.43.80] (subs32-116-206-28-30.three.co.id. [116.206.28.30])
-        by smtp.gmail.com with ESMTPSA id y8-20020aa78f28000000b00508225493ddsm1925680pfr.80.2022.04.15.00.39.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Apr 2022 00:39:03 -0700 (PDT)
-Message-ID: <4586921d-5fc4-b63f-8264-a6fd63c592b6@gmail.com>
-Date:   Fri, 15 Apr 2022 14:38:58 +0700
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ojb7v3RWfPmTpcy1XYxej8SBWhny6YXG14sLiPEtEs4=;
+        b=n7dUAvHS/c7VICcfBycm/KzBkseX2LFaPY2BBbgP+yvqR5mZpVvx8eq1lYgzSRoO3S
+         iLBR0i1ClB8lg+L+l9Ud2IHZKSac648mrrQPLuP1uzxXUE0leTy0sMysWu7EBAKjaWIg
+         RopTsa0R/wDCd7DwREgVzoIuDexxYQhTAIT5JNA/EPwRPJ3BTPuBs88IwtDo5cIcOk5s
+         vqZzk+XCJnriQ71AYticYvwX3fe1fjOAw0NY72sA8VfrESy6UDThumQ/HlEyjY4b+l/5
+         6wgcsusGIhTjob2A0G+VvCrdGqbMpF07GrhtRxLlbgViGkkSnnYa0wrJDNyj3szSXMU7
+         6/wg==
+X-Gm-Message-State: AOAM533pRRx4hDB3GGGXE22FDn2KSOIU6z6hEeWYeVxNvunUhTp3w+vb
+        8ER7dXGHo+CiqBF0nFQBpoPjPDO46RAgWSMB/DEV1SsUXmI=
+X-Google-Smtp-Source: ABdhPJywl7yjw4I3QpEFEiONA2lIr6XXfv2kw6vi8Mqe8QZ7ESn2e4Oxf+oNppBVTiUGtyvpEBdcP0VRQLuerJPzvX8=
+X-Received: by 2002:a63:7c42:0:b0:39c:c333:b3d4 with SMTP id
+ l2-20020a637c42000000b0039cc333b3d4mr5442556pgn.456.1650008933574; Fri, 15
+ Apr 2022 00:48:53 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH net-next v5] net/ipv6: Introduce accept_unsolicited_na
- knob to implement router-side changes for RFC9131
-Content-Language: en-US
-To:     Arun Ajith S <aajith@arista.com>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, dsahern@kernel.org,
-        yoshfuji@linux-ipv6.org, kuba@kernel.org, pabeni@redhat.com,
-        corbet@lwn.net, prestwoj@gmail.com, gilligan@arista.com,
-        noureddine@arista.com, gk@arista.com
-References: <20220415054219.38078-1-aajith@arista.com>
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-In-Reply-To: <20220415054219.38078-1-aajith@arista.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220411210406.21404-1-luizluca@gmail.com> <20220412105018.gjrswtwrgjyndev4@bang-olufsen.dk>
+ <CAJq09z53MZ6g=+tfwRU-N5BV5GcPSB5n0=+zj-cXOegMrq6g=A@mail.gmail.com>
+ <20220414014527.gex5tlufyj4hm5di@bang-olufsen.dk> <CAJq09z6KSQS+oGFw5ZXRcSH5nQ3zongn4Owu0hCjO=RZZmHf+w@mail.gmail.com>
+ <20220414113718.ofhgzhsmvyuxd2l2@bang-olufsen.dk> <YlgmG3mLlRKef+sy@lunn.ch>
+In-Reply-To: <YlgmG3mLlRKef+sy@lunn.ch>
+From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Date:   Fri, 15 Apr 2022 04:48:42 -0300
+Message-ID: <CAJq09z5hG7VkhkxdhVTUvA-dMJr6_ajkHYBZ6N2ROFXLz0gijQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: dsa: realtek: add compatible strings for RTL8367RB-VB
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "tobias@waldekranz.com" <tobias@waldekranz.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "vladimir.oltean@nxp.com" <vladimir.oltean@nxp.com>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/15/22 12:42, Arun Ajith S wrote:
-> +accept_unsolicited_na - BOOLEAN
-> +	Add a new neighbour cache entry in STALE state for routers on receiving an
-> +	unsolicited neighbour advertisement with target link-layer address option
-> +	specified. This is as per router-side behavior documented in RFC9131.
-> +	This has lower precedence than drop_unsolicited_na.
-> +
-> +   ====   ======  ======  ==============================================
-> +	 drop   accept  fwding                   behaviour
-> +	 ----   ------  ------  ----------------------------------------------
-> +	    1        X       X  Drop NA packet and don't pass up the stack
-> +	    0        0       X  Pass NA packet up the stack, don't update NC
-> +	    0        1       0  Pass NA packet up the stack, don't update NC
-> +	    0        1       1  Pass NA packet up the stack, and add a STALE
-> +	                        NC entry
-> +   ====   ======  ======  ==============================================
-> +
+> > > Is it too late to get rid of all those compatible strings from
+> > > dt-bindings? And rtl8367s from the driver?
+> > > We must add all supported devices to the doc as well, similar to mv88e6085.
+> >
+> > You can always try! I'm OK with those things in principle, but others might
+> > object due to ABI reasons.
+>
+> Anything which is in a released Linus kernel is ABI and cannot be
+> removed. Anything in net-next, or an -rcX kernel can still be changed.
 
-Hi,
+rtl8367s was added for 5.18. I'll prepare a patch for net to remove it.
 
-Building htmldocs with this patch, there are no more warnings from v4, but
-I don't see the table above generated in the output. I guess due to
-whitespace-mangling issues on your mailer, because the table syntax alignment
-(the =-s) don't match the contents/cells. 
+Now, about dt-bindings, I don't know what is the best approach. As
+device-tree should not focus on Linux, it is strange to use a
+compatible "rtl8365mb" just because it is the Linux subdriver name and
+that name was just because it was the first device supported. Also,
+once published, it is not good to break it.
 
-Thanks.
+Just to illustrate it better, these are the chip versions rtl8365mb.c
+already supports or could support:
+- rtl8363nb (not in dt)
+- rtl8363nb-vb (not in dt)
+- rtl8363sc (not in dt)
+- rtl8363sc-vb (not in dt)
+- rtl8364nb (not in dt)
+- rtl8364nb-vb (not in dt)
+- rtl8365mb (the first supported by rtl8365mb.c, maybe it should be
+realtek,rtl8365mb-vc as rtl8365mb and rtl8365mb-vb seems to exist and
+they might be incompatible)
+- rtl8366sc (not in dt)
+- rtl8367rb-vb (not in dt)
+- rtl8367s (in dt and referenced in the code. The one I'll remove from code)
+- rtl8367sb (new)
+- rtl8370mb (new)
+- rtl8310sr (new)
 
--- 
-An old man doll... just what I always wanted! - Clara
+and these are the ones referenced in rtl8366rb.c code:
+- rtl8366rb (rtl8366rb.c)
+- rtl8366s (removed from rtl8366rb.c recently)
+
+but I know nothing about unsupported chip versions. These "models" are
+referenced in the bindings but some of them are not really a chip,
+like rtl8367 and rtl8367b:
+- rtl8366 (??)
+- rtl8367 (??)
+- rtl8367b (??)
+- rtl8367rb (??)
+- rtl8368s (??)
+- rtl8369 (??)
+- rtl8370 (??)
+
+Anyway, I'm planning on submitting something like this:
+
+--- a/Documentation/devicetree/bindings/net/dsa/realtek.yaml
++++ b/Documentation/devicetree/bindings/net/dsa/realtek.yaml
+@@ -31,28 +31,14 @@ properties:
+  compatible:
+    enum:
+      - realtek,rtl8365mb
+-      - realtek,rtl8366
+      - realtek,rtl8366rb
+-      - realtek,rtl8366s
+-      - realtek,rtl8367
+-      - realtek,rtl8367b
+-      - realtek,rtl8367rb
+-      - realtek,rtl8367s
+-      - realtek,rtl8368s
+-      - realtek,rtl8369
+-      - realtek,rtl8370
+    description: |
+-      realtek,rtl8365mb: 4+1 ports
+-      realtek,rtl8366: 5+1 ports
+-      realtek,rtl8366rb: 5+1 ports
+-      realtek,rtl8366s: 5+1 ports
+-      realtek,rtl8367:
+-      realtek,rtl8367b:
+-      realtek,rtl8367rb: 5+2 ports
+-      realtek,rtl8367s: 5+2 ports
+-      realtek,rtl8368s: 8 ports
+-      realtek,rtl8369: 8+1 ports
+-      realtek,rtl8370: 8+2 ports
++      realtek,rtl8365mb:
++        Use with models RTL8363NB, RTL8363NB-VB, RTL8363SC, RTL8363SC-VB,
++        RTL8364NB, RTL8364NB-VB, RTL8365MB, RTL8366SC, RTL8367RB-VB, RTL8367S,
++        RTL8367SB, RTL8370MB, RTL8310SR
++      realtek,rtl8367rb:
++        Use with models RTL8366RB, RTL8366S
+
+  mdc-gpios:
+    description: GPIO line for the MDC clock line.
