@@ -2,131 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DDA5502DA0
-	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 18:17:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51C13502DAA
+	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 18:20:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355771AbiDOQSk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 12:18:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55174 "EHLO
+        id S1355802AbiDOQWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 12:22:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355761AbiDOQSf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 12:18:35 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C53097BA2;
-        Fri, 15 Apr 2022 09:16:07 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id s25so9944877edi.13;
-        Fri, 15 Apr 2022 09:16:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Mj8Kd2iaxdzZLtP+lkn5ZFqD1Z3Svx/w2u5MGhXQFl4=;
-        b=bI5nLF7gOH5fv+8CP/CcpZvHtE/YkpEJ7pdSo6kPPHCCY1r5/XqoNcnQ1uaxXY+dZP
-         yj0nBoF5wG4uOR3ic7tkxW+2Q7fON1wnFMlREAfAE3XIgGj6J/mluz9sK6iRhH/LR/34
-         ly3rUt0CTm5jYczR93kve/CY9CHWsfbVUwigeBqIUyIpSRVnlyhw0f02QvA1eqpDDn6Y
-         x1vyb4yjGlGvEMlnsWy7rUglQ1c8IYQ2YWWCdt/CPrAu55z70tFfAKeFNMe0XMmMV9Rz
-         /x+87a1EmR21GeZmbhXd5QMkf3FomJ+tmVuex1tGqZKJX13mvnbxBl/JPADUWhwqwtNM
-         sAdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Mj8Kd2iaxdzZLtP+lkn5ZFqD1Z3Svx/w2u5MGhXQFl4=;
-        b=Bc+g8kMDyLS1Y9VOjy/IzKpw9y1dhJhUCGNzB5hDWFdvC6eeaHXxHJEkmQxsBTSJGM
-         KxNbUGEzxLlVCO8Z4wxIJFDS7I8MP8YnTi4RFI68x0u0knYooXJ83J6OymOb5gcKkzmZ
-         i3iSGvW0OfoIrTyma9eAb6F1NdpaKf5fwzMhuI8JQhJ6aSfvT5B35KSPZsAzNuy6gVUo
-         SZ8US+LsUTm8bvyESZhTLe1WAW8UTXJhGfssAGKMfPJKYW2fgMvSspSciXDDgnqamxYs
-         wFlbUlQOJ+AvyUkc3MvkILrHUkZwZtruTVyNl50Bugto+suVd2VmwuXlJ2CWt0KjvL/3
-         t2Wg==
-X-Gm-Message-State: AOAM531AppofaXAeF9VdhMe8xTu/r794vMlqepmO/QuCPeM2RvOad0Ad
-        ElOCXt3fjdliT30BEolv8KgMk3Abu+b11cpU
-X-Google-Smtp-Source: ABdhPJyHwgUdfR3xOYg50OKEZyOpA7BGxyjG+xURtu5uCfd+kRod+JU/CISItj+ytt0oHpzfnDHFJA==
-X-Received: by 2002:a50:fc89:0:b0:41d:83d1:9df3 with SMTP id f9-20020a50fc89000000b0041d83d19df3mr8753484edq.19.1650039365812;
-        Fri, 15 Apr 2022 09:16:05 -0700 (PDT)
-Received: from anparri (host-79-52-64-69.retail.telecomitalia.it. [79.52.64.69])
-        by smtp.gmail.com with ESMTPSA id b7-20020a170906708700b006da8440d642sm1847640ejk.113.2022.04.15.09.16.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 09:16:05 -0700 (PDT)
-Date:   Fri, 15 Apr 2022 18:16:02 +0200
-From:   Andrea Parri <parri.andrea@gmail.com>
-To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc:     KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        David Miller <davem@davemloft.net>,
+        with ESMTP id S234081AbiDOQW3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 12:22:29 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A51C197B9B;
+        Fri, 15 Apr 2022 09:19:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=AD7y6t2FutZNo1iQOFDe7kMGydOzNTbvIMGGb73fJwc=; b=IsUPJRGn6OPxvSAfo8oh365+38
+        KRuGWw3/46cDX/h4srLR9RLzY0wFgH9PGJhHtQG9VTHIujzL3S7c3Hl1nBUU7CB3gw0miFUjmKomR
+        koW3L8q1IGnkC3A4uPFEaRO3f/4SrQDFeNGbCWb7uEZJZCOa97p/4WID+kJeECjYtTBM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nfOfi-00FziH-F0; Fri, 15 Apr 2022 18:19:46 +0200
+Date:   Fri, 15 Apr 2022 18:19:46 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH 4/6] hv_sock: Initialize send_buf in
- hvs_stream_enqueue()
-Message-ID: <20220415161602.GB47428@anparri>
-References: <20220413204742.5539-1-parri.andrea@gmail.com>
- <20220413204742.5539-5-parri.andrea@gmail.com>
- <PH0PR21MB3025F58A2536209ED3785F24D7EE9@PH0PR21MB3025.namprd21.prod.outlook.com>
- <20220415065041.GC2961@anparri>
- <PH0PR21MB302526F1483A6FC932AC55CFD7EE9@PH0PR21MB3025.namprd21.prod.outlook.com>
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?iso-8859-1?Q?Miqu=E8l?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 09/12] ARM: dts: r9a06g032: describe MII
+ converter
+Message-ID: <YlmbIjoIZ8Xb4Kh/@lunn.ch>
+References: <20220414122250.158113-1-clement.leger@bootlin.com>
+ <20220414122250.158113-10-clement.leger@bootlin.com>
+ <YlismVi8y3Vf6PZ0@lunn.ch>
+ <20220415102453.1b5b3f77@fixe.home>
+ <Yll+Tpnwo5410B9H@lunn.ch>
+ <20220415163853.683c0b6d@fixe.home>
+ <YlmLWv4Hsm2uk8pa@lunn.ch>
+ <20220415172954.64e53086@fixe.home>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <PH0PR21MB302526F1483A6FC932AC55CFD7EE9@PH0PR21MB3025.namprd21.prod.outlook.com>
+In-Reply-To: <20220415172954.64e53086@fixe.home>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > All fields are explicitly initialized, and in the data
-> > > array, only the populated bytes are copied to the ring buffer.  There should not
-> > > be any uninitialized values sent to the host.   Zeroing the memory ahead of
-> > > time certainly provides an extra protection (particularly against padding bytes,
-> > > but there can't be any since the layout of the data is part of the protocol with
-> > > Hyper-V).
-> > 
-> > Rather than keeping checking that...
+> I think it would be good to modify it like this:
 > 
-> The extra protection might be obtained by just zero'ing the header (i.e., the
-> bytes up to the 16 Kbyte data array).   I don't have a strong preference either
-> way, so up to you.
+> eth-miic@44030000 {
+>     ...
+>   converters {
+>     mii_conv0: mii-conv@0 {
+>       // Even if useless, maybe keeping it for the sake of coherency
+>       renesas,miic-input = <MIIC_GMAC1>;
+>       reg = <0>;
+>     };
 
-A main reason behind this RFC is that I don't have either.  IIUC, you're
-suggesting something like (the compiled only):
+This is not a 'bus', so using reg, and @0, etc is i think wrong.  You
+just have a collection of properties.
 
+>     mii_conv1: mii-conv@1 {
+>       renesas,miic-input = <SWITCH_PORTA>;
+>       reg = <1>;
+>     };
+>     mii_conv2: mii-conv@2 {
+>       renesas,miic-input = <SWITCH_PORTB>;
+>       reg = <2>;
+>     };
+>     mii_conv3: mii-conv@3 {
+>       renesas,miic-input = <SWITCH_PORTC>;
+>       reg = <3>;
+>     };
+>     mii_conv4: mii-conv@4 {
+>       renesas,miic-input = <SWITCH_PORTD>;
+>       reg = <4>;
+>     };
+>   };
+> 
+> This way, it remains tied to the MII converter output port definition. I
+> guess that the yaml definitions would still allow to restrict the values
+> available per nodes. Validation for the final combination is probably
+> more difficult to do using yaml.
 
-diff --git a/net/vmw_vsock/hyperv_transport.c b/net/vmw_vsock/hyperv_transport.c
-index 092cadc2c866d..200f12c432863 100644
---- a/net/vmw_vsock/hyperv_transport.c
-+++ b/net/vmw_vsock/hyperv_transport.c
-@@ -234,7 +234,8 @@ static int __hvs_send_data(struct vmbus_channel *chan,
- {
- 	hdr->pkt_type = 1;
- 	hdr->data_size = to_write;
--	return vmbus_sendpacket(chan, hdr, sizeof(*hdr) + to_write,
-+	return vmbus_sendpacket(chan, hdr,
-+				offsetof(struct hvs_send_buf, data) + to_write,
- 				0, VM_PKT_DATA_INBAND, 0);
- }
- 
-@@ -658,6 +659,7 @@ static ssize_t hvs_stream_enqueue(struct vsock_sock *vsk, struct msghdr *msg,
- 	send_buf = kmalloc(sizeof(*send_buf), GFP_KERNEL);
- 	if (!send_buf)
- 		return -ENOMEM;
-+	memset(send_buf, 0, offsetof(struct hvs_send_buf, data));
- 
- 	/* Reader(s) could be draining data from the channel as we write.
- 	 * Maximize bandwidth, by iterating until the channel is found to be
--- 
+I doubt you can do full validation in YAML. But you can at least limit
+some of the errors. You need to do full validation in the driver
+anyway.
 
-Let me queue this for further testing/review...
-
-Thanks,
-  Andrea
+	Andrew
