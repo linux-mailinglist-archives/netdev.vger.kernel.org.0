@@ -2,114 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93D705024D5
-	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 07:49:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85DB95024F3
+	for <lists+netdev@lfdr.de>; Fri, 15 Apr 2022 07:52:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346313AbiDOFvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 01:51:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35446 "EHLO
+        id S1350098AbiDOFyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 01:54:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230224AbiDOFvX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 01:51:23 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 180D04160A;
-        Thu, 14 Apr 2022 22:48:57 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id 2so6907593pjw.2;
-        Thu, 14 Apr 2022 22:48:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=EkZ6B5iLKVXv5Srcu76r3A62V/ZZt/J9R/FB5UABxPU=;
-        b=Map6MfGcaRDiOY9nxu5tNcDFugf5a+zp33X0uSP/NLKBd5B8mizst2Hx0ZW+4ZPq4V
-         oo55U7QNalBlhk7mZNXTURgkaAlY/AGFajJj9m03US6+UpAAI21/MdvNQghCawIOpYm4
-         gMALgH16hFf9OBKy0EKnWcnqc/EzsO56OWtmOeiYJ1YiDJHlis46fH5FDMRZvIJSyCId
-         ZGauzdwIzkZuOy8tsaxtgheiDRGWB+rm7D8jo4G7C9tqCLSqlyZE35sF9yWlrNyTxTl/
-         tA2Qu3AYGGbAsSV5Ix9No36EgAyyHMcJ4TP05/4ZRuF1IJ34oIBxa2jIf7VK7ChuKjeh
-         JpnQ==
+        with ESMTP id S1350100AbiDOFx7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 01:53:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 41C9C4925D
+        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 22:51:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650001891;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kvg7qjjzcKhlXPuJQVCJWvizFmo4t6XFmtZYkK1Ck7I=;
+        b=h6SGCZBOmuGbgQNIwHPbClLXpOlxJbsEY/PzFrwYh7HZlwI0LdJgmeK4SASpredtKdD4Kc
+        PKgyj+g6NUHdGtOoC/OMyKb9HkjtD+yz1T7txBeKzyC5lYiyqLKL9yOqAPvgHELXcvLrDT
+        rCEsP2waLNeZEQ03+laqBHboYi+sUXM=
+Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
+ [209.85.167.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-61-Y522lgehOZ6J8Q3jtd0liA-1; Fri, 15 Apr 2022 01:51:29 -0400
+X-MC-Unique: Y522lgehOZ6J8Q3jtd0liA-1
+Received: by mail-lf1-f70.google.com with SMTP id w25-20020a05651234d900b0044023ac3f64so3196510lfr.0
+        for <netdev@vger.kernel.org>; Thu, 14 Apr 2022 22:51:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=EkZ6B5iLKVXv5Srcu76r3A62V/ZZt/J9R/FB5UABxPU=;
-        b=nShU1YH2EBAFHLXG07MYgmEAxOMSInxR9OySQXd7B38PpjerH82tgQnnB5GUC9VdbI
-         mlUIgHVEg6ytKEajD1EuvMP4kMOTcjiP4xOlf0yKUSiYEbw1F8NuU3OUntNXNTQAxG3U
-         ZRWRdk4qf2itxOJMNIv7GMtIQuXwPtbyA3HuJqqTfDo1NtNArtA/BbPQw9cIG9pbkSTE
-         K1zIF/Vi+J5WR9CQ0er4lSf7T0erh10MlxI9peuhRM5iUWMM4byNfPFMtdA9VlidycLs
-         /5PhjdkD/yR93uVFf7Hw+FQTrzvuMmcR7GFkJoKC+09HmLRpseGfmI3jliprFThiqA0S
-         eZFA==
-X-Gm-Message-State: AOAM531kvRtHJy4dDvBPISgAr6iqzbuZ50HrEk5AjyGc4zkaIN52eYZu
-        FzLgNAB9iXLGaKD3MbnVJJo=
-X-Google-Smtp-Source: ABdhPJzq5U/5RA7OgRGopMUXYjszuTAGLW4wdDrxEq9PCpFTXojnP+lSjb6+gqd3ElvWgE/IfSx3jQ==
-X-Received: by 2002:a17:90a:c003:b0:1cb:65a2:81ab with SMTP id p3-20020a17090ac00300b001cb65a281abmr2428373pjt.161.1650001736529;
-        Thu, 14 Apr 2022 22:48:56 -0700 (PDT)
-Received: from d3 ([2405:6580:97e0:3100:ae94:2ee7:59a:4846])
-        by smtp.gmail.com with ESMTPSA id n24-20020aa79058000000b0050612d0fe01sm1560528pfo.2.2022.04.14.22.48.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 22:48:55 -0700 (PDT)
-Date:   Fri, 15 Apr 2022 14:48:50 +0900
-From:   Benjamin Poirier <benjamin.poirier@gmail.com>
-To:     Yihao Han <hanyihao@vivo.com>
-Cc:     Shahed Shaikh <shshaikh@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        GR-Linux-NIC-Dev@marvell.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@vivo.com
-Subject: Re: [PATCH] net: qlogic: qlcnic: simplify if-if to if-else
-Message-ID: <YlkHQkZ33rkzAwhS@d3>
-References: <20220414031111.76862-1-hanyihao@vivo.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=kvg7qjjzcKhlXPuJQVCJWvizFmo4t6XFmtZYkK1Ck7I=;
+        b=K3xuXp1fePFmjZ750vuw0uQ6qmWmmkrGbGsR7jenyn9XlyQMSx69YQ8+gJE8JT0aPa
+         3QJ+xzw7zyH8nutIp/ILlkl+7KGW/KDakp/XqhYf1DhDLhR5CY73VGrbkvOS35oB57Z8
+         QUjoa7LZqqjb6WsbeIGUD8dW1V2wH+U0RWAUq9FUFu0OuhDGk3LVBOW6nEgX+1G57A1y
+         g6yKbr0LS3PWyoG774A2gKfc9LdA8s1dD9XkNRZvOMYjhPY9WCzAbtBkTeroYxQBpt6W
+         NXy6UxGrtVcxNrFT/dDxrfaixHwVHWFQMDt2zS7YNcUhjxj7u5uaNTOpMD+6B/ha8bOi
+         q1pQ==
+X-Gm-Message-State: AOAM531aAlH7EcUu2hub/jI07Wnyxh285m+s4Q4zvJ/la3dJMLCP/2K7
+        BHUr4nbTQFD60Kgqp6WbY57BC04F/37CUOX61IbgocxnTynBuIGNvzcpZmuOk2CoH7k57xmYeKz
+        yGWBlJDqE1rwUzznOf8tygNVLe7z3W1+f
+X-Received: by 2002:ac2:4189:0:b0:448:bc2b:e762 with SMTP id z9-20020ac24189000000b00448bc2be762mr4045057lfh.471.1650001887930;
+        Thu, 14 Apr 2022 22:51:27 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyS9hHKM21VRW0UY8Ve1Cbt+BdOhiCFLW4MX1/5XpMUr29jtbfQMNmVD64dtIZ4cj74T8I09XLXvQC8wZy8ZJ4=
+X-Received: by 2002:ac2:4189:0:b0:448:bc2b:e762 with SMTP id
+ z9-20020ac24189000000b00448bc2be762mr4045051lfh.471.1650001887708; Thu, 14
+ Apr 2022 22:51:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220414031111.76862-1-hanyihao@vivo.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220408121013.54709-1-lingshan.zhu@intel.com>
+ <f3f60d6e-a506-bd58-d763-848beb0e4c26@redhat.com> <09a3613f-514b-c769-b8a0-25899b3d3159@intel.com>
+In-Reply-To: <09a3613f-514b-c769-b8a0-25899b3d3159@intel.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Fri, 15 Apr 2022 13:51:16 +0800
+Message-ID: <CACGkMEuLW_PypyiPVcNz-B5FWNpkzLWwzC0eaZsCih+PbNt3Cg@mail.gmail.com>
+Subject: Re: [PATCH] vDPA/ifcvf: assign nr_vring to the MSI vector of
+ config_intr by default
+To:     "Zhu, Lingshan" <lingshan.zhu@intel.com>
+Cc:     mst <mst@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-04-13 20:11 -0700, Yihao Han wrote:
-> Replace `if (!pause->autoneg)` with `else` for simplification
-> and add curly brackets according to the kernel coding style:
-> 
-> "Do not unnecessarily use braces where a single statement will do."
-> 
-> ...
-> 
-> "This does not apply if only one branch of a conditional statement is
-> a single statement; in the latter case use braces in both branches"
-> 
-> Please refer to:
-> https://www.kernel.org/doc/html/v5.17-rc8/process/coding-style.html
+On Wed, Apr 13, 2022 at 5:16 PM Zhu, Lingshan <lingshan.zhu@intel.com> wrot=
+e:
+>
+>
+>
+> On 4/13/2022 4:14 PM, Jason Wang wrote:
+> >
+> > =E5=9C=A8 2022/4/8 =E4=B8=8B=E5=8D=888:10, Zhu Lingshan =E5=86=99=E9=81=
+=93:
+> >> This commit assign struct ifcvf_hw.nr_vring to the MSIX vector of the
+> >> config interrupt by default in ifcvf_request_config_irq().
+> >> ifcvf_hw.nr_vring is the most likely and the ideal case for
+> >> the device config interrupt handling, means every virtqueue has
+> >> an individual MSIX vector(0 ~ nr_vring - 1), and the config interrupt
+> >> has
+> >> its own MSIX vector(number nr_vring).
+> >>
+> >> This change can also make GCC W =3D 2 happy, silence the
+> >> "uninitialized" warning.
+> >>
+> >> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+> >> Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+> >> ---
+> >>   drivers/vdpa/ifcvf/ifcvf_main.c | 8 ++++----
+> >>   1 file changed, 4 insertions(+), 4 deletions(-)
+> >>
+> >> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c
+> >> b/drivers/vdpa/ifcvf/ifcvf_main.c
+> >> index 4366320fb68d..b500fb941dab 100644
+> >> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
+> >> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+> >> @@ -290,13 +290,13 @@ static int ifcvf_request_config_irq(struct
+> >> ifcvf_adapter *adapter)
+> >>       struct ifcvf_hw *vf =3D &adapter->vf;
+> >>       int config_vector, ret;
+> >>   +    /* vector 0 ~ vf->nr_vring for vqs, num vf->nr_vring vector
+> >> for config interrupt */
+> >
+> >
+> > The comment is right before this patch, but probably wrong for
+> > MSIX_VECTOR_DEV_SHARED.
+> This comment is for the case when every vq and config interrupt has its
+> own vector, how
+> about a better comment "The ideal the default case, vector 0 ~
+> vf->nr_vring for vqs, num vf->nr_vring vector for config interrupt"
 
-Seems the part of the log about curly brackets doesn't correspond with
-the actual changes.
+Actually, I suggest to remove the comment since the code can explain itself=
+.
 
-> 
-> Signed-off-by: Yihao Han <hanyihao@vivo.com>
-> ---
->  drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c
-> index bd0607680329..e3842eaf1532 100644
-> --- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c
-> +++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c
-> @@ -3752,7 +3752,7 @@ int qlcnic_83xx_set_pauseparam(struct qlcnic_adapter *adapter,
->  	if (ahw->port_type == QLCNIC_GBE) {
->  		if (pause->autoneg)
->  			ahw->port_config |= QLC_83XX_ENABLE_AUTONEG;
-> -		if (!pause->autoneg)
-> +		else
->  			ahw->port_config &= ~QLC_83XX_ENABLE_AUTONEG;
->  	} else if ((ahw->port_type == QLCNIC_XGBE) && (pause->autoneg)) {
->  		return -EOPNOTSUPP;
-> -- 
-> 2.17.1
-> 
+> >
+> >
+> >> +    config_vector =3D vf->nr_vring;
+> >> +
+> >> +    /* re-use the vqs vector */
+> >>       if (vf->msix_vector_status =3D=3D MSIX_VECTOR_DEV_SHARED)
+> >>           return 0;
+> >>   -    if (vf->msix_vector_status =3D=3D MSIX_VECTOR_PER_VQ_AND_CONFIG=
+)
+> >> -        /* vector 0 ~ vf->nr_vring for vqs, num vf->nr_vring vector
+> >> for config interrupt */
+> >> -        config_vector =3D vf->nr_vring;
+> >> -
+> >>       if (vf->msix_vector_status =3D=3D MSIX_VECTOR_SHARED_VQ_AND_CONF=
+IG)
+> >>           /* vector 0 for vqs and 1 for config interrupt */
+> >>           config_vector =3D 1;
+> >
+> >
+> > Actually, I prefer to use if ... else ... here.
+> IMHO, if else may lead to mistakes.
+>
+> The code:
+>          /* The ideal the default case, vector 0 ~ vf->nr_vring for vqs,
+> num vf->nr_vring vector for config interrupt */
+>          config_vector =3D vf->nr_vring;
+>
+>          /* re-use the vqs vector */
+>          if (vf->msix_vector_status =3D=3D MSIX_VECTOR_DEV_SHARED)
+>                  return 0;
+>
+>          if (vf->msix_vector_status =3D=3D MSIX_VECTOR_SHARED_VQ_AND_CONF=
+IG)
+>                  /* vector 0 for vqs and 1 for config interrupt */
+>                  config_vector =3D 1;
+>
+>
+> here by default config_vector =3D vf->nr_vring;
+> If msix_vector_status =3D=3D MSIX_VECTOR_DEV_SHARED, it will reuse the de=
+v
+> shared vector, means using the vector(value 0) for data-vqs.
+> If msix_vector_status =3D=3D MSIX_VECTOR_SHARED_VQ_AND_CONFIG, it will us=
+e
+> vector=3D1(vector 0 for data-vqs).
+>
+> If we use if...else, it will be:
+>
+>          /* re-use the vqs vector */
+>          if (vf->msix_vector_status =3D=3D MSIX_VECTOR_DEV_SHARED)
+>                  return 0;
+>          else
+>                  config_vector =3D 1;
+>
+> This looks like config_vector can only be 0(re-used vector for the
+> data-vqs, which is 0) or 1. It shadows the ideal and default case
+> config_vector =3D vf->nr_vring
+
+I meant something like
+
+if (DEV_SHARED)
+    return 0;
+else if  (SHARED_VQ_AND_CONFIG)
+    config_vector =3D 1
+else if (PER_VQ_AND_CONFIG)
+    config_vector =3D vf->nr_vring
+else
+    return -EINVAL;
+
+or using a switch here.
+
+(We get the warning because there's no way for the checker to know
+that msix_vector_status must be DEV_SHARED, SHARED_VQ_AND_CONFIG and
+PER_VQ_AND_CONFIG).
+
+Thanks
+
+>
+> Thanks,
+> Zhu Lingshan
+>
+> >
+> > Thanks
+> >
+> >
+>
+
