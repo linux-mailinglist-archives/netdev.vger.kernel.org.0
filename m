@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA70950341D
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 07:49:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97734503325
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 07:48:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356591AbiDOXtB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 19:49:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37790 "EHLO
+        id S242328AbiDOXzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 19:55:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345318AbiDOXtA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 19:49:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 965A488786;
-        Fri, 15 Apr 2022 16:46:30 -0700 (PDT)
+        with ESMTP id S229645AbiDOXy6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 19:54:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 750A4954B6;
+        Fri, 15 Apr 2022 16:52:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A18962286;
-        Fri, 15 Apr 2022 23:46:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8939DC385AC;
-        Fri, 15 Apr 2022 23:46:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1B8D7B831BC;
+        Fri, 15 Apr 2022 23:52:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B715AC385B0;
+        Fri, 15 Apr 2022 23:52:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650066389;
-        bh=LTJf/A8Me12vLOMr5JY1SIon/1xfytx3EclH8+DlUvY=;
+        s=k20201202; t=1650066745;
+        bh=errT7JCib6AzTkVoGPltwDcZINvMpoIAWe1b0AzmVjQ=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=LBZSxeeTHTnhfUzAb394wiHLjDjPcy6kLVK9zRbNdHz7mA1uf3Fgnv1xQAstRgV+d
-         lPFYg6DQsp2l7nbwuMZmQ/97nwSS0PPxnXPPO0+8ebU+guKLBLRCprQ+TO+Zjr090Q
-         ZUEzWNL3YyvA3lwmaRaXfiKf/vfOLZa4eQN+w/1i0Db5gOBAQN1bR3XuGcqt9v9vIX
-         pZkWct2LfHEUTqGZCXPyLJoNxRblsBNAcNmCnJCPXu6wCQ+A+dJ5+rDeXU9MUkaQHY
-         eG4BrBrEVmBhdnNP3yR3tjddyZgEkvRuIN5sz3iHDpsRl7HeFWC2eptCx/DmPweY8z
-         YpBGmaNXEhQhA==
-Received: by mail-yb1-f175.google.com with SMTP id x200so16608709ybe.13;
-        Fri, 15 Apr 2022 16:46:29 -0700 (PDT)
-X-Gm-Message-State: AOAM530vC2eCXv7lsXCWGc/eICdB4S0RDS0H5D8nizzXk1WXlFUsHAaF
-        A6xuKa/jZHRz3Hgvg77s87unx3MqCZb8WRkizR4=
-X-Google-Smtp-Source: ABdhPJyWyr2oTV/QYiBZcOp+HRuagV8MwNq7QqnmSyEnbUluuqK77EmsK07wn6ItjGoYFnwvNX0hmFftNOObm3DtmGs=
-X-Received: by 2002:a05:6902:1506:b0:63e:4f1b:40ae with SMTP id
- q6-20020a056902150600b0063e4f1b40aemr1446621ybu.322.1650066388578; Fri, 15
- Apr 2022 16:46:28 -0700 (PDT)
+        b=qNxv7R7kwGBplr4pFmyq+iyauWnfSUOQxiEV1D253Qu6QckwiUPoV8kS8B7hDvkIF
+         8r/h9C9qoQH1xiKBFuj/MwKoZ2yrwUVOzdx0QQqGQdu6eIJ91rZ6zdZ3AFGmkUJLMx
+         QeEhdcIHd+4kyqWYYERVkKlTGUBe8Tt33vmkE34mBM0rlflT0tTIeqCHkAPYy2m/Yi
+         XL8JHpBzufzAHD7Lh80CX6Zg+a/JNDywq9F5odVU9gXMoiEOWmSle+Uqx/Gq0yrHeM
+         Rzwu6FWkxKLl9ptrE4BaqBMNgBwR02nEefskx1y9zRueUrC/vgsuzK78JSe9f3Tzpm
+         GAMzI5xhgbiwA==
+Received: by mail-yb1-f181.google.com with SMTP id p65so16676882ybp.9;
+        Fri, 15 Apr 2022 16:52:25 -0700 (PDT)
+X-Gm-Message-State: AOAM531dF0jGOBsvuwFNiY8RNx9TS51fVO9REBpJg3c7yXIo+Nw4U4Mj
+        gxt0cn8ndAp3aRtIEYKnrCsk2QLkQrbQ1XhSgFo=
+X-Google-Smtp-Source: ABdhPJx72bmk61XUaqJvL+i1XHxlM70OjJc/9IRT4lbbDvxH0qPpB5kgaRzVhtGK/RofPmCZoqlatSkJeo/Au/tdM30=
+X-Received: by 2002:a25:8b81:0:b0:629:17d5:68c1 with SMTP id
+ j1-20020a258b81000000b0062917d568c1mr1296810ybl.449.1650066744755; Fri, 15
+ Apr 2022 16:52:24 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220414223704.341028-1-alobakin@pm.me> <20220414223704.341028-7-alobakin@pm.me>
-In-Reply-To: <20220414223704.341028-7-alobakin@pm.me>
+References: <20220414223704.341028-1-alobakin@pm.me> <20220414223704.341028-8-alobakin@pm.me>
+In-Reply-To: <20220414223704.341028-8-alobakin@pm.me>
 From:   Song Liu <song@kernel.org>
-Date:   Fri, 15 Apr 2022 16:46:17 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW6JoSHe2B4daYjFrkWYBvGLzq2PZnPs76ceT0iW1h6sMQ@mail.gmail.com>
-Message-ID: <CAPhsuW6JoSHe2B4daYjFrkWYBvGLzq2PZnPs76ceT0iW1h6sMQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 06/11] tools, bpf: fix fcntl.h include in bpftool
+Date:   Fri, 15 Apr 2022 16:52:13 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW7FuAKX0fJ1XPfFWWwRS+wTW0qA49V-iQVzxv4jOb47MA@mail.gmail.com>
+Message-ID: <CAPhsuW7FuAKX0fJ1XPfFWWwRS+wTW0qA49V-iQVzxv4jOb47MA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 07/11] samples: bpf: fix uin64_t format literals
 To:     Alexander Lobakin <alobakin@pm.me>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -96,39 +96,74 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Thu, Apr 14, 2022 at 3:46 PM Alexander Lobakin <alobakin@pm.me> wrote:
 >
-> Fix the following (on some libc implementations):
+> There's a couple places where uin64_t is being passed as an %ld
+> format argument, which is incorrect (should be %lld). Fix them.
+
+This will cause some warning on some 64-bit compiler, no?
+
+Song
+
 >
->   CC      tracelog.o
-> In file included from tracelog.c:12:
-> include/sys/fcntl.h:1:2: warning: #warning redirecting incorrect #include <sys/fcntl.h> to <fcntl.h> [-Wcpp]
->     1 | #warning redirecting incorrect #include <sys/fcntl.h> to <fcntl.h>
->       |  ^~~~~~~
->
-> <sys/fcntl.h> is anyway just a wrapper over <fcntl.h> (backcomp
-> stuff).
->
-> Fixes: 30da46b5dc3a ("tools: bpftool: add a command to dump the trace pipe")
+> Fixes: 51570a5ab2b7 ("A Sample of using socket cookie and uid for traffic monitoring")
+> Fixes: 00f660eaf378 ("Sample program using SO_COOKIE")
 > Signed-off-by: Alexander Lobakin <alobakin@pm.me>
-
-Acked-by: Song Liu <songliubraving@fb.com>
-
 > ---
->  tools/bpf/bpftool/tracelog.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  samples/bpf/cookie_uid_helper_example.c | 12 ++++++------
+>  samples/bpf/lwt_len_hist_user.c         |  4 ++--
+>  2 files changed, 8 insertions(+), 8 deletions(-)
 >
-> diff --git a/tools/bpf/bpftool/tracelog.c b/tools/bpf/bpftool/tracelog.c
-> index e80a5c79b38f..bf1f02212797 100644
-> --- a/tools/bpf/bpftool/tracelog.c
-> +++ b/tools/bpf/bpftool/tracelog.c
-> @@ -9,7 +9,7 @@
->  #include <string.h>
->  #include <unistd.h>
->  #include <linux/magic.h>
-> -#include <sys/fcntl.h>
-> +#include <fcntl.h>
->  #include <sys/vfs.h>
+> diff --git a/samples/bpf/cookie_uid_helper_example.c b/samples/bpf/cookie_uid_helper_example.c
+> index f0df3dda4b1f..1b98debb6019 100644
+> --- a/samples/bpf/cookie_uid_helper_example.c
+> +++ b/samples/bpf/cookie_uid_helper_example.c
+> @@ -207,9 +207,9 @@ static void print_table(void)
+>                         error(1, errno, "fail to get entry value of Key: %u\n",
+>                                 curN);
+>                 } else {
+> -                       printf("cookie: %u, uid: 0x%x, Packet Count: %lu,"
+> -                               " Bytes Count: %lu\n", curN, curEntry.uid,
+> -                               curEntry.packets, curEntry.bytes);
+> +                       printf("cookie: %u, uid: 0x%x, Packet Count: %llu, Bytes Count: %llu\n",
+> +                              curN, curEntry.uid, curEntry.packets,
+> +                              curEntry.bytes);
+>                 }
+>         }
+>  }
+> @@ -265,9 +265,9 @@ static void udp_client(void)
+>                 if (res < 0)
+>                         error(1, errno, "lookup sk stat failed, cookie: %lu\n",
+>                               cookie);
+> -               printf("cookie: %lu, uid: 0x%x, Packet Count: %lu,"
+> -                       " Bytes Count: %lu\n\n", cookie, dataEntry.uid,
+> -                       dataEntry.packets, dataEntry.bytes);
+> +               printf("cookie: %llu, uid: 0x%x, Packet Count: %llu, Bytes Count: %llu\n\n",
+> +                      cookie, dataEntry.uid, dataEntry.packets,
+> +                      dataEntry.bytes);
+>         }
+>         close(s_send);
+>         close(s_rcv);
+> diff --git a/samples/bpf/lwt_len_hist_user.c b/samples/bpf/lwt_len_hist_user.c
+> index 430a4b7e353e..4ef22571aa67 100644
+> --- a/samples/bpf/lwt_len_hist_user.c
+> +++ b/samples/bpf/lwt_len_hist_user.c
+> @@ -44,7 +44,7 @@ int main(int argc, char **argv)
 >
->  #include "main.h"
+>         while (bpf_map_get_next_key(map_fd, &key, &next_key) == 0) {
+>                 if (next_key >= MAX_INDEX) {
+> -                       fprintf(stderr, "Key %lu out of bounds\n", next_key);
+> +                       fprintf(stderr, "Key %llu out of bounds\n", next_key);
+>                         continue;
+>                 }
+>
+> @@ -66,7 +66,7 @@ int main(int argc, char **argv)
+>
+>         for (i = 1; i <= max_key + 1; i++) {
+>                 stars(starstr, data[i - 1], max_value, MAX_STARS);
+> -               printf("%8ld -> %-8ld : %-8ld |%-*s|\n",
+> +               printf("%8ld -> %-8ld : %-8lld |%-*s|\n",
+>                        (1l << i) >> 1, (1l << i) - 1, data[i - 1],
+>                        MAX_STARS, starstr);
+>         }
 > --
 > 2.35.2
 >
