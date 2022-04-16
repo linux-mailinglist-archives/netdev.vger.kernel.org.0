@@ -2,69 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E99705037EC
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 21:30:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D67485037EF
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 21:30:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232629AbiDPTcn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Apr 2022 15:32:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56252 "EHLO
+        id S232798AbiDPTdJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Apr 2022 15:33:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230141AbiDPTcm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 15:32:42 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0F8533EA1
-        for <netdev@vger.kernel.org>; Sat, 16 Apr 2022 12:30:09 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id md20-20020a17090b23d400b001cb70ef790dso14225059pjb.5
-        for <netdev@vger.kernel.org>; Sat, 16 Apr 2022 12:30:09 -0700 (PDT)
+        with ESMTP id S232795AbiDPTdI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 15:33:08 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 686C96AA76;
+        Sat, 16 Apr 2022 12:30:35 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id y13so76077plg.2;
+        Sat, 16 Apr 2022 12:30:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=/TwpT3e9/cdR4EICG+BKCniDNRBv08wpl4thuHd6+/M=;
-        b=k6aZZbihB7K5n4dkKR47gnrnP9E6O7twqTg5cdP257biTP1bjNA9XZI5xOguALcc50
-         uHQpKLDJGOAcYeJ+/3+yxcHdNBKn0rcOuXehftDDXWuIHKnpdoLVEXkyX3EIVtnMzEhn
-         lx2exZ4efDqbNBuUjHEFIP7+85D/9Yz4yZhwtBG/khVlcjSTd71rfpeuTQDHPrNu3rhw
-         OKGpS64EjULXnpFVEl2T5h+4mvfXxtUFG02At7iTNnAYeM5SmfR9etP00O0wiopVdS9Y
-         JmAVBQqcYpMkBVAlSnsa6z2UWWDPn4dRHnwR7Y8huf9tOZ4jHiLvGVq5VVJBGmx7tRti
-         kxpA==
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=GXpYsibJgbwzrsoKdFVKjWbsXs5GVGrlAx1EyLFiLTw=;
+        b=lrMCOU7PNkVpRq9cSaewuD16OZ0XI83/COfEOAPN/fq98jhfnfcDd6VHfRZp4d0o40
+         c+pp+iVA7JgBxb+4KHi+D/HyrxEN4qFgyxib12so8j/VOk2joq/OXSN1dyYwXtrg2aO8
+         gbNMqDT0kBdp36qd6XgGKRRvH9bYsX3oQ6uTZgUSp+3Ez9NAewa9q6zpfPWnjZ/yYuP+
+         xCf0SMTRZPEHisqEv5fDMrSfW+SfoH0iiN5bAJcIEinXg1bxRvyN8WaT2T879hCnu4eO
+         /Qr/LmiRQlqUg5/O6w3jEs4HNH5tdTcPIJgNAbDLN28X/t2OBexlBMCWwuD6KDGbfrmh
+         BKGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+         :content-language:to:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=/TwpT3e9/cdR4EICG+BKCniDNRBv08wpl4thuHd6+/M=;
-        b=qZO7vwjsIZVKUzF8DXUo8QyBJOIhdISufvoqt9SPxyXSN5ZqhvRiFxWQF2777ic8AV
-         ftZrbKOSanYygSzP88D1X3vxiLiQy5y4fHaSX0pEUEAB7SqPxMuQJB7kTOMa548i0ACU
-         /c8Oph/qeXurKpObIicc2dJ3mpjKJIigsHJBCY8395K0UY2LkX22prA9HgXD/Hi90wfI
-         u1x1ZS4NmW3mYxTKKutkbXUg8TIApeU2KF1v5wzN5hRwHRiFHaOlu1cLfW62uHCgd+Oh
-         2X5id2KaY3jL/qIVfNwSgyov/HklYahzPzD2hTAcicB8csSha/e7ohplggRUshyxTrPV
-         9law==
-X-Gm-Message-State: AOAM530Fj/CxcPDzqkq1VtNaZmhripJHIlIyVZr9H2HoGMuI3PhTQbXp
-        wrNohfIQSRUID6EmqjOvAPQ=
-X-Google-Smtp-Source: ABdhPJxQJRNC4kqDmYGj0Y3tMk8owK2lCetJOUIxQJwvodXkX2rs4vmEOCe4XmodqXF4L6rBTKqPrA==
-X-Received: by 2002:a17:903:228b:b0:158:c040:5cd3 with SMTP id b11-20020a170903228b00b00158c0405cd3mr4615307plh.30.1650137409155;
-        Sat, 16 Apr 2022 12:30:09 -0700 (PDT)
+        bh=GXpYsibJgbwzrsoKdFVKjWbsXs5GVGrlAx1EyLFiLTw=;
+        b=HTG/n5FMKvTIqf7YyPNzhsAOCtOYn6uA63Z0qFClKm5KYoNKhbgAuWnGxHPFf9Joie
+         1vAw2/5xDnv3dCVOCpcbrUHEJzZI/1C+bB/ZkJlhNhThChF2Ev6pKcJxPycStTfsR8Fd
+         hRDxsP5ceWn88t/Yi4F9PWQ+hHIWIauPid7t6vyhwljcvpwru6RKkk2kywq6K5DP583j
+         G5g6RTSTHJRAvG921KrGlN+ZvkC24msMHjFRewAh8o0dSB/ALhuAJ+kUPQHfSXGXEoU4
+         bkuB1J2E6X5IO41Mwp1hl7frWZsbn8+KFajIRDijPe4A5HbLfocp2u9OWVVDDJ1EVbz8
+         E1OQ==
+X-Gm-Message-State: AOAM533uG5gYGZRsOe/hi77FTxoxgka1Rx2qu/170RTDEHGeKZ8YY3eW
+        epsTicEziDOGP4k12QF+3Q0=
+X-Google-Smtp-Source: ABdhPJyOMBLHdNqrDWONKsaljU0WWFCfWY6TastEgVZnYLoVdtoCTVXmX8uwsHnk7sDfnd9tQGOr3A==
+X-Received: by 2002:a17:902:d717:b0:156:20a9:d388 with SMTP id w23-20020a170902d71700b0015620a9d388mr4560170ply.19.1650137434896;
+        Sat, 16 Apr 2022 12:30:34 -0700 (PDT)
 Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id 65-20020a17090a09c700b001cba39c88fcsm10322641pjo.0.2022.04.16.12.30.07
+        by smtp.gmail.com with ESMTPSA id bu10-20020a056a00410a00b0050a641fc685sm213172pfb.115.2022.04.16.12.30.33
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 16 Apr 2022 12:30:08 -0700 (PDT)
-Message-ID: <d563b0f7-ebff-2402-4e31-5688c97cd79d@gmail.com>
-Date:   Sat, 16 Apr 2022 12:30:07 -0700
+        Sat, 16 Apr 2022 12:30:34 -0700 (PDT)
+Message-ID: <fa334dea-b823-f658-0215-1e66e36fa30e@gmail.com>
+Date:   Sat, 16 Apr 2022 12:30:32 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.0
-Subject: Re: [PATCH net 2/2] net: dsa: realtek: remove realtek,rtl8367s string
+Subject: Re: [net-next PATCH v2 1/4] drivers: net: dsa: qca8k: drop MTU
+ tracking from qca8k_priv
 Content-Language: en-US
-To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        netdev@vger.kernel.org
-Cc:     linus.walleij@linaro.org, alsi@bang-olufsen.dk, andrew@lunn.ch,
-        vivien.didelot@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
-        krzk+dt@kernel.org, arinc.unal@arinc9.com
-References: <20220416062504.19005-1-luizluca@gmail.com>
- <20220416062504.19005-2-luizluca@gmail.com>
+To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220412173019.4189-1-ansuelsmth@gmail.com>
+ <20220412173019.4189-2-ansuelsmth@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220416062504.19005-2-luizluca@gmail.com>
+In-Reply-To: <20220412173019.4189-2-ansuelsmth@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-6.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -79,14 +81,13 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 4/15/2022 11:25 PM, Luiz Angelo Daros de Luca wrote:
-> There is no need to add new compatible strings for each new supported
-> chip version. The compatible string is used only to select the subdriver
-> (rtl8365mb.c or rtl8366rb). Once in the subdriver, it will detect the
-> chip model by itself, ignoring which compatible string was used.
+On 4/12/2022 10:30 AM, Ansuel Smith wrote:
+> DSA set the CPU port based on the largest MTU of all the slave ports.
+> Based on this we can drop the MTU array from qca8k_priv and set the
+> port_change_mtu logic on DSA changing MTU of the CPU port as the switch
+> have a global MTU settingfor each port.
 > 
-> Link: https://lore.kernel.org/netdev/20220414014055.m4wbmr7tdz6hsa3m@bang-olufsen.dk/
-> Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
