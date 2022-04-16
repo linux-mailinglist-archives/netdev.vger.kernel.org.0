@@ -2,121 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 344E3503398
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 07:48:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9FC15033AE
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 07:48:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229685AbiDPCHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 22:07:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36682 "EHLO
+        id S229537AbiDPCKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 22:10:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbiDPCGB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 22:06:01 -0400
-Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 185726E36D;
-        Fri, 15 Apr 2022 18:59:30 -0700 (PDT)
-Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-dacc470e03so9422768fac.5;
-        Fri, 15 Apr 2022 18:59:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=CZl1G0yOWcHR+4w7BioZbnZEDnrT5AWLArVFooO2o4c=;
-        b=D5xuKdFnExTDBQqGU6R+W9iBOJpgg5vTWz80N32DLEL+l8fWuCwxG0MVcgkEwFH7RW
-         YvkGiShTxKYq2hXm+RWPdnsD6DLANCncDhkkitJ9shRjRuHTzU8q6hyWi1WbXnZAR2TZ
-         evkw8KDtAyW9Zr3GMDBwD7RLvmc2Y9f7bznv649G1+oIzcWr/WP3E4T96M8KiNQ9Tqan
-         CusSHAAqLghyE6N8VPTqmRNKvIGPefCOr2mLmjhUs1uUG0N/faddOvgUzzHSOJXBwzNi
-         c0t0wfXtojBK6O41quttPCM+v96WGPpztgmcEjzGZ2JQwXccwOo8vK/sellCw3CigLCn
-         pthA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=CZl1G0yOWcHR+4w7BioZbnZEDnrT5AWLArVFooO2o4c=;
-        b=1NqdEKfQx/IwrlFeIrHhcnYcTpCZuYN1uM1kptxfGIR0vOW2i5YtK02mUVDoyYuktI
-         iRA1PxkwumuLKUetCixjumbY0Js5RpbMS6Am1Jcn7wJplXdVh4IUDbuUZXNpao0zE3I8
-         sqoWeMeMq7vWzq/4Rav6Au9RhJlOgunkfGp6bdgRIAuYrK2jB88uanG8xAGbGqg0Ivet
-         Pa7cQdFyxPEbHKaMRuyAmuNuG6bJ1FuVWQ2p/aPBs8YGtL2G5HRgPd67XTl4ajIVnkYn
-         k7z8sNTLG1S2KcnKsmeW7JUkXwurBsbZ8A90cEnb9KJmDdKR6Xv4Y4wKllvAfadmVKcA
-         IYOg==
-X-Gm-Message-State: AOAM532dEyrt3i81XfDq67YdJfu6NYzkDKcU0HD+bsXaiJkbKNHcqo8i
-        0FVpBa6Smi0+9e8eLFu9kgabAIBtteDtTA==
-X-Google-Smtp-Source: ABdhPJyxSVABo8qkGB7Wudcok21+GD2dj2PEU388i7rw/ixuqjyPAXobglCig6MbNKyzeogfnUBjzA==
-X-Received: by 2002:a17:90a:8581:b0:1b2:7541:af6c with SMTP id m1-20020a17090a858100b001b27541af6cmr1747571pjn.48.1650073848590;
-        Fri, 15 Apr 2022 18:50:48 -0700 (PDT)
-Received: from d3 ([2405:6580:97e0:3100:ae94:2ee7:59a:4846])
-        by smtp.gmail.com with ESMTPSA id v18-20020a17090a899200b001d22f3fe3e2sm205313pjn.35.2022.04.15.18.50.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 18:50:48 -0700 (PDT)
-Date:   Sat, 16 Apr 2022 10:50:42 +0900
-From:   Benjamin Poirier <benjamin.poirier@gmail.com>
-To:     Jeff Johnson <quic_jjohnson@quicinc.com>
-Cc:     Yihao Han <hanyihao@vivo.com>, Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@vivo.com
-Subject: Re: [PATCH v2] ath11k: simplify if-if to if-else
-Message-ID: <Ylog8qhT6X/bYiZZ@d3>
-References: <20220415125853.86418-1-hanyihao@vivo.com>
- <ca2944bd-e80e-e0ff-0804-c8439f54b28a@quicinc.com>
+        with ESMTP id S229699AbiDPCGY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 22:06:24 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D222765827;
+        Fri, 15 Apr 2022 18:57:16 -0700 (PDT)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KgGX26D0Pz1HBhn;
+        Sat, 16 Apr 2022 09:56:34 +0800 (CST)
+Received: from [10.67.111.192] (10.67.111.192) by
+ kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 16 Apr 2022 09:57:12 +0800
+Message-ID: <6c18a27f-c983-58f3-1dc0-5192f7df232a@huawei.com>
+Date:   Sat, 16 Apr 2022 09:57:12 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ca2944bd-e80e-e0ff-0804-c8439f54b28a@quicinc.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH bpf-next v2 5/6] bpf, arm64: bpf trampoline for arm64
+Content-Language: en-US
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     bpf <bpf@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        X86 ML <x86@kernel.org>, <hpa@zytor.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Daniel Kiss <daniel.kiss@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Steven Price <steven.price@arm.com>,
+        Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Delyan Kratunov <delyank@fb.com>
+References: <20220414162220.1985095-1-xukuohai@huawei.com>
+ <20220414162220.1985095-6-xukuohai@huawei.com>
+ <CAEf4Bzb_R56wAuD-Wgg7B5brT-dcsa+5sYynY+_CFzRwg+N5AA@mail.gmail.com>
+From:   Xu Kuohai <xukuohai@huawei.com>
+In-Reply-To: <CAEf4Bzb_R56wAuD-Wgg7B5brT-dcsa+5sYynY+_CFzRwg+N5AA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.111.192]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemi500013.china.huawei.com (7.221.188.120)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-04-15 16:02 -0700, Jeff Johnson wrote:
-> On 4/15/2022 5:58 AM, Yihao Han wrote:
-> > Replace `if (!ab->is_reset)` with `else` for simplification
-> > according to the kernel coding style:
-> > 
-> > "Do not unnecessarily use braces where a single statement will do."
-> > 
-> > ...
-> > 
-> > "This does not apply if only one branch of a conditional statement is
-> > a single statement; in the latter case use braces in both branches"
-> > 
-> > Please refer to:
-> > https://www.kernel.org/doc/html/v5.17-rc8/process/coding-style.html
+On 4/16/2022 1:12 AM, Andrii Nakryiko wrote:
+> On Thu, Apr 14, 2022 at 9:10 AM Xu Kuohai <xukuohai@huawei.com> wrote:
+>>
+>> Add bpf trampoline support for arm64. Most of the logic is the same as
+>> x86.
+>>
+>> fentry before bpf trampoline hooked:
+>>  mov x9, x30
+>>  nop
+>>
+>> fentry after bpf trampoline hooked:
+>>  mov x9, x30
+>>  bl  <bpf_trampoline>
+>>
+>> Tested on qemu, result:
+>>  #55 fentry_fexit:OK
+>>  #56 fentry_test:OK
+>>  #58 fexit_sleep:OK
+>>  #59 fexit_stress:OK
+>>  #60 fexit_test:OK
+>>  #67 get_func_args_test:OK
+>>  #68 get_func_ip_test:OK
+>>  #101 modify_return:OK
+>>
+>> Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
+>> Acked-by: Song Liu <songliubraving@fb.com>
+>> ---
 > 
-> why are you referring to braces when your patch has nothing to do with
-> braces?
-> 
-> changing if (foo) X;if (!foo) Y; to if (foo) X else Y; is not a design
-> pattern referenced in the coding style
-> 
-> > 
-> > Suggested-by: Benjamin Poirier <benjamin.poirier@gmail.com>
+> Can you please also take a look at [0], which is an ongoing work to
+> add support for BPF cookie to BPF trampoline-based BPF programs. It's
+> very close to being done, so it would be good if you can implement
+> that at the same time.
 
-I did not suggest this change. Please remove this tag.
-
-> > Signed-off-by: Yihao Han <hanyihao@vivo.com>
-> > ---
-> > v2:edit commit message
-> > ---
-> >   drivers/net/wireless/ath/ath11k/core.c | 3 +--
-> >   1 file changed, 1 insertion(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-> > index cbac1919867f..80009482165a 100644
-> > --- a/drivers/net/wireless/ath/ath11k/core.c
-> > +++ b/drivers/net/wireless/ath/ath11k/core.c
-> > @@ -1532,8 +1532,7 @@ static void ath11k_core_restart(struct work_struct *work)
-> >   	if (ab->is_reset)
-> >   		complete_all(&ab->reconfigure_complete);
-> > -
-> > -	if (!ab->is_reset)
-> > +	else
-> >   		ath11k_core_post_reconfigure_recovery(ab);
-> >   }
-> 
+OK, I'll take a look and try to implemnt it.
