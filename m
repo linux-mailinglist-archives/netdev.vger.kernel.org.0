@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 58A865032F8
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 07:48:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F1BC503392
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 07:48:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231319AbiDPAOL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 20:14:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40248 "EHLO
+        id S237845AbiDPAOM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 20:14:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231308AbiDPAN5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 20:13:57 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 417E54163A
-        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 17:11:27 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id e8-20020a17090a118800b001cb13402ea2so9463521pja.0
-        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 17:11:27 -0700 (PDT)
+        with ESMTP id S232211AbiDPAN7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 20:13:59 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6256E48E77
+        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 17:11:29 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id bx5so8661708pjb.3
+        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 17:11:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=VFPB/o/p02yEpoXVsNv474y8sumijZGgXHbx6Fsoz20=;
-        b=Kybh6ZK/VBSagT+7FD/wihHbyht6DSqd8yvB43FHAY6Mf460TUhcKpZyS0FKmRlqKt
-         JuTdWTiwYdtRLZp5WukxFNoAW+SSuMzd2nyMI1yT2pXPtH9hujpwWttUaFuC83EfxqWq
-         Gd9R92Hi61i+nj9COIL4fQMnw9DPw6gs6+gJUBlE0VCQl3r9QqeyAzE+fhCmtgPVOIGI
-         kqp7QgJsJIqbefqVljIWYFVOzdYhf/msVBs2Vw8jBYigtxRqBNEUK3ZpzBuqP1jNqLiD
-         3EVfyuTGVU4WgwEMdEE5geG9QTrnrmbZyRXVJ74sXFmxrIr+NdZyKvbbEpuy8ycpmOEt
-         dq+g==
+        bh=ZIDCzIQbVqISNHr7nFXqJpdxyPN74kyCes1OzRawTFw=;
+        b=Kr3lwbr7sc5z/5oTAodMArZvUtvE1ecQRWF6u7gx+rajpt3rBm2NVQ9RLzoOGtMCax
+         f0Gu0vKhNdPoLV3AZHOTJhS758TurmURXYKNo3CQs6pThMUUPdnYJ7bf+NMV4sLL8t2/
+         DoE2qA0k4uxmChpOvxD8A93ca44TFNpF+Qk8j50CrGrahwXtyIyK9ruNzAIkpLuiFeGk
+         4RoA1TbVVSZEPc3yVD8KrZR8UTjUW8kcSU9roGZDI97akIgQ/TDhSQWDsLOlG1NLvlgb
+         LFsKhL1l/jr8vSMzIAevXYda2NFy8+ZfqQCQNZMbUZGT8zHnqyx6yl/n4FK3Kwtkrxuk
+         e7QQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=VFPB/o/p02yEpoXVsNv474y8sumijZGgXHbx6Fsoz20=;
-        b=A16bukj+UmFNsYHEBWg9h1kCwuq9NQqSJoBgJ5tqMKPUPFt1lvnqBjvXMzBQgvtytF
-         58jYfFwYq5KAr0BYHmJsLQJELC11fDw6EO0YTDsvk+mVSm3RflGCTEX26kla3uRMEbF4
-         cHTwKKT2RV3aY1VOydmRb25e7/GnuPE8W3FzxaK4e54dXD2cUJXr190gYH4aXbXYKHLy
-         UEh2O/UxREQuB8g6LW+F2/BgBi42T4VIVWHR4tau8/Cv1xhUAV94Cj/R6UW/kntmE5wz
-         o1Hkz/WJSJqpV8xl1XXWZYe4rAa2i5qYfihjLF8YxfWx8XzxmLjDu+ogsp7tqzYo/Ydp
-         WhkA==
-X-Gm-Message-State: AOAM532lj7eZ1JCiWY1iG1HqSvoX2+CmCmMgt7EWT6P1pHzn6FvCH+tv
-        ERdUdS/QPhPCAih5Cd8asYyON8XRfdg=
-X-Google-Smtp-Source: ABdhPJwrbKAbpq4FBP2fihXnNpRnvzBoWnxuMONmjhrKu7FuurJmGb/ndknnMWrritArJ4hGtGLf0A==
-X-Received: by 2002:a17:902:f68e:b0:154:6518:69ba with SMTP id l14-20020a170902f68e00b00154651869bamr1479430plg.60.1650067886585;
-        Fri, 15 Apr 2022 17:11:26 -0700 (PDT)
+        bh=ZIDCzIQbVqISNHr7nFXqJpdxyPN74kyCes1OzRawTFw=;
+        b=r2EzHSffq6cObnYWnC44c9Z+GnkQNNdcztpCmAhddtMsZaiv2VWgTjXi/emyNE5CRv
+         MMzRUm4Ahc6sdZi89Ty57AbJuX/UTnX83dUeiwnluHOMNV4yJ46f3XA8SNVds4KZio6+
+         LWBgDlUSLnULP1eNBTsf7WVLp2GNukj6Sl+EfgzRXHa24wAi9Sx0gwAHvEeRMLvYjRHN
+         ZthDrn1/rZ4xpWXmlFpkolnTusZyTdn3BwJKx4YZNlvz68Jo4UBHkfCovTEvHiLwlTvS
+         4hUOE01yVywPAK05Z/cZODL/O4hepN2io/FnUeo9/whXqpi+cccFLbuiGeSxW8GnOKkX
+         UTrA==
+X-Gm-Message-State: AOAM533A7GtWIsZCkbtjOcg2czj13uUkdImbxHdPoh6231f8xWGWDl6+
+        w/ucB0Y9ZsudujzOA9fhHInpLRO4SbQ=
+X-Google-Smtp-Source: ABdhPJyXYymKi010dhKwZe3Yj6rgD9dAzM+D1d09EjVosmo3G08o+TyTtd4dfoCbI37D5ZnOnVxxAA==
+X-Received: by 2002:a17:90a:3e48:b0:1cd:34ec:c72f with SMTP id t8-20020a17090a3e4800b001cd34ecc72fmr6754237pjm.65.1650067888791;
+        Fri, 15 Apr 2022 17:11:28 -0700 (PDT)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:147b:581d:7b9d:b092])
-        by smtp.gmail.com with ESMTPSA id j10-20020a17090a31ca00b001cb87502e32sm5729514pjf.23.2022.04.15.17.11.25
+        by smtp.gmail.com with ESMTPSA id j10-20020a17090a31ca00b001cb87502e32sm5729514pjf.23.2022.04.15.17.11.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 17:11:26 -0700 (PDT)
+        Fri, 15 Apr 2022 17:11:28 -0700 (PDT)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -54,9 +54,9 @@ To:     "David S . Miller" <davem@davemloft.net>,
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 09/10] tcp: add drop reasons to tcp_rcv_synsent_state_process()
-Date:   Fri, 15 Apr 2022 17:10:47 -0700
-Message-Id: <20220416001048.2218911-10-eric.dumazet@gmail.com>
+Subject: [PATCH net-next 10/10] tcp: add drop reason support to tcp_ofo_queue()
+Date:   Fri, 15 Apr 2022 17:10:48 -0700
+Message-Id: <20220416001048.2218911-11-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.36.0.rc0.470.gd361397f0d-goog
 In-Reply-To: <20220416001048.2218911-1-eric.dumazet@gmail.com>
 References: <20220416001048.2218911-1-eric.dumazet@gmail.com>
@@ -74,67 +74,75 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-Re-use existing reasons.
+packets in OFO queue might be redundant, and dropped.
+
+tcp_drop() is no longer needed.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/ipv4/tcp_input.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+ include/linux/skbuff.h     | 1 +
+ include/trace/events/skb.h | 1 +
+ net/ipv4/tcp_input.c       | 9 ++-------
+ 3 files changed, 4 insertions(+), 7 deletions(-)
 
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index ad15ad208b5612357546f23dfe4feaa1535f4982..84d78df60453955a8eaf05847f6e2145176a727a 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -393,6 +393,7 @@ enum skb_drop_reason {
+ 	SKB_DROP_REASON_TCP_TOO_OLD_ACK, /* TCP ACK is too old */
+ 	SKB_DROP_REASON_TCP_ACK_UNSENT_DATA, /* TCP ACK for data we haven't sent yet */
+ 	SKB_DROP_REASON_TCP_OFO_QUEUE_PRUNE, /* pruned from TCP OFO queue */
++	SKB_DROP_REASON_TCP_OFO_DROP,	/* data already in receive queue */
+ 	SKB_DROP_REASON_IP_OUTNOROUTES,	/* route lookup failed */
+ 	SKB_DROP_REASON_BPF_CGROUP_EGRESS,	/* dropped by
+ 						 * BPF_PROG_TYPE_CGROUP_SKB
+diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
+index 73d7a6e594cbc6884148afa473bc08d12d783079..a477bf9074982cde8d1025ed18086fecafae8807 100644
+--- a/include/trace/events/skb.h
++++ b/include/trace/events/skb.h
+@@ -37,6 +37,7 @@
+ 	EM(SKB_DROP_REASON_TCP_OLD_DATA, TCP_OLD_DATA)		\
+ 	EM(SKB_DROP_REASON_TCP_OVERWINDOW, TCP_OVERWINDOW)	\
+ 	EM(SKB_DROP_REASON_TCP_OFOMERGE, TCP_OFOMERGE)		\
++	EM(SKB_DROP_REASON_TCP_OFO_DROP, TCP_OFO_DROP)		\
+ 	EM(SKB_DROP_REASON_TCP_RFC7323_PAWS, TCP_RFC7323_PAWS)	\
+ 	EM(SKB_DROP_REASON_TCP_INVALID_SEQUENCE,		\
+ 	   TCP_INVALID_SEQUENCE)				\
 diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index cd9f5c39f85a042751ef78132860a2a6cc96bccc..339cc3d40745a0ea2a9f66b03dfda5aa6800d4a2 100644
+index 339cc3d40745a0ea2a9f66b03dfda5aa6800d4a2..cf2dc19bb8c766c1d33406053fd61c0873f15489 100644
 --- a/net/ipv4/tcp_input.c
 +++ b/net/ipv4/tcp_input.c
-@@ -6144,6 +6144,7 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
- 	struct tcp_fastopen_cookie foc = { .len = -1 };
- 	int saved_clamp = tp->rx_opt.mss_clamp;
- 	bool fastopen_fail;
-+	SKB_DR(reason);
+@@ -4674,7 +4674,7 @@ static bool tcp_ooo_try_coalesce(struct sock *sk,
+ {
+ 	bool res = tcp_try_coalesce(sk, to, from, fragstolen);
  
- 	tcp_parse_options(sock_net(sk), skb, &tp->rx_opt, 0, &foc);
- 	if (tp->rx_opt.saw_tstamp && tp->rx_opt.rcv_tsecr)
-@@ -6198,9 +6199,10 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
- 		 *    See note below!
- 		 *                                        --ANK(990513)
- 		 */
--		if (!th->syn)
-+		if (!th->syn) {
-+			SKB_DR_SET(reason, TCP_FLAGS);
- 			goto discard_and_undo;
--
-+		}
- 		/* rfc793:
- 		 *   "If the SYN bit is on ...
- 		 *    are acceptable then ...
-@@ -6291,15 +6293,16 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
- 		 *
- 		 *      Otherwise (no ACK) drop the segment and return."
- 		 */
--
-+		SKB_DR_SET(reason, TCP_RESET);
- 		goto discard_and_undo;
- 	}
+-	/* In case tcp_drop() is called later, update to->gso_segs */
++	/* In case tcp_drop_reason() is called later, update to->gso_segs */
+ 	if (res) {
+ 		u32 gso_segs = max_t(u16, 1, skb_shinfo(to)->gso_segs) +
+ 			       max_t(u16, 1, skb_shinfo(from)->gso_segs);
+@@ -4691,11 +4691,6 @@ static void tcp_drop_reason(struct sock *sk, struct sk_buff *skb,
+ 	kfree_skb_reason(skb, reason);
+ }
  
- 	/* PAWS check. */
- 	if (tp->rx_opt.ts_recent_stamp && tp->rx_opt.saw_tstamp &&
--	    tcp_paws_reject(&tp->rx_opt, 0))
-+	    tcp_paws_reject(&tp->rx_opt, 0)) {
-+		SKB_DR_SET(reason, TCP_RFC7323_PAWS);
- 		goto discard_and_undo;
+-static void tcp_drop(struct sock *sk, struct sk_buff *skb)
+-{
+-	tcp_drop_reason(sk, skb, SKB_DROP_REASON_NOT_SPECIFIED);
+-}
 -
-+	}
- 	if (th->syn) {
- 		/* We see SYN without ACK. It is attempt of
- 		 * simultaneous connect with crossed SYNs.
-@@ -6358,7 +6361,7 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
- discard_and_undo:
- 	tcp_clear_options(&tp->rx_opt);
- 	tp->rx_opt.mss_clamp = saved_clamp;
--	tcp_drop(sk, skb);
-+	tcp_drop_reason(sk, skb, reason);
- 	return 0;
+ /* This one checks to see if we can put data from the
+  * out_of_order queue into the receive_queue.
+  */
+@@ -4723,7 +4718,7 @@ static void tcp_ofo_queue(struct sock *sk)
+ 		rb_erase(&skb->rbnode, &tp->out_of_order_queue);
  
- reset_and_undo:
+ 		if (unlikely(!after(TCP_SKB_CB(skb)->end_seq, tp->rcv_nxt))) {
+-			tcp_drop(sk, skb);
++			tcp_drop_reason(sk, skb, SKB_DROP_REASON_TCP_OFO_DROP);
+ 			continue;
+ 		}
+ 
 -- 
 2.36.0.rc0.470.gd361397f0d-goog
 
