@@ -2,97 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B532A50359D
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 11:21:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 971D55035A4
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 11:21:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231193AbiDPJWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Apr 2022 05:22:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39420 "EHLO
+        id S231314AbiDPJXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Apr 2022 05:23:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230500AbiDPJWB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 05:22:01 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A1F749F2D;
-        Sat, 16 Apr 2022 02:19:30 -0700 (PDT)
-Received: from kwepemi500014.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KgSLJ72yCz1HBtM;
-        Sat, 16 Apr 2022 17:18:48 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi500014.china.huawei.com (7.221.188.232) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 16 Apr 2022 17:19:28 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 16 Apr 2022 17:19:28 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
-        <chenhao288@hisilicon.com>
-Subject: [PATCH net-next 9/9] net: hns3: remove unnecessary line wrap for hns3_set_tunable
-Date:   Sat, 16 Apr 2022 17:13:43 +0800
-Message-ID: <20220416091343.35817-10-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220416091343.35817-1-huangguangbin2@huawei.com>
-References: <20220416091343.35817-1-huangguangbin2@huawei.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229823AbiDPJW6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 05:22:58 -0400
+Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net (zg8tmty1ljiyny4xntqumjca.icoremail.net [165.227.154.27])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id BC5E4107809
+        for <netdev@vger.kernel.org>; Sat, 16 Apr 2022 02:20:00 -0700 (PDT)
+Received: from 102.localdomain (unknown [58.23.249.10])
+        by app1 (Coremail) with SMTP id xjNnewA36DErilpi+B0VAA--.37S2;
+        Sat, 16 Apr 2022 17:19:40 +0800 (CST)
+From:   Pengcheng Yang <yangpc@wangsu.com>
+To:     Eric Dumazet <edumazet@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Yuchung Cheng <ycheng@google.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Pengcheng Yang <yangpc@wangsu.com>
+Subject: [PATCH net-next v2 0/2] tcp: ensure rate sample to use the most recently sent skb
+Date:   Sat, 16 Apr 2022 17:19:07 +0800
+Message-Id: <1650100749-10072-1-git-send-email-yangpc@wangsu.com>
+X-Mailer: git-send-email 1.8.3.1
+X-CM-TRANSID: xjNnewA36DErilpi+B0VAA--.37S2
+X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
+        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUY47CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
+        6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_GFWl
+        42xK82IYc2Ij64vIr41l42xK82IY6x8ErcxFaVAv8VW5Jr1UJr1UMxC20s026xCaFVCjc4
+        AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE
+        17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMI
+        IF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4l
+        IxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvf
+        C2KfnxnUUI43ZEXa7VUbgyCJUUUUU==
+X-CM-SenderInfo: p1dqw1nf6zt0xjvxhudrp/
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
+        T_SPF_TEMPERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hao Chen <chenhao288@hisilicon.com>
+This patch ensure to use the most recently sent skb
+when filling the rate sample. And make RACK and rate
+sample share the use of tcp_skb_sent_after() helper.
 
-Remove unnecessary line wrap for hns3_set_tunable to improve
-function readability.
+v2: introduce a new help function tcp_skb_sent_after()
 
-Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+Pengcheng Yang (2):
+  tcp: ensure to use the most recently sent skb when filling the rate
+    sample
+  tcp: use tcp_skb_sent_after() instead in RACK
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index 51ee8adab6a3..1e641083bd60 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -1172,8 +1172,7 @@ static int hns3_set_ringparam(struct net_device *ndev,
- 
- 	tmp_rings = hns3_backup_ringparam(priv);
- 	if (!tmp_rings) {
--		netdev_err(ndev,
--			   "backup ring param failed by allocating memory fail\n");
-+		netdev_err(ndev, "backup ring param failed by allocating memory fail\n");
- 		return -ENOMEM;
- 	}
- 
-@@ -1875,13 +1874,11 @@ static int hns3_set_tunable(struct net_device *netdev,
- 		    (!priv->ring->tx_spare && new_tx_spare_buf_size != 0)) {
- 			int ret1;
- 
--			netdev_warn(netdev,
--				    "change tx spare buf size fail, revert to old value\n");
-+			netdev_warn(netdev, "change tx spare buf size fail, revert to old value\n");
- 			ret1 = hns3_set_tx_spare_buf_size(netdev,
- 							  old_tx_spare_buf_size);
- 			if (ret1) {
--				netdev_err(netdev,
--					   "revert to old tx spare buf size fail\n");
-+				netdev_err(netdev, "revert to old tx spare buf size fail\n");
- 				return ret1;
- 			}
- 
+ include/net/tcp.h       |  6 ++++++
+ net/ipv4/tcp_rate.c     | 11 ++++++++---
+ net/ipv4/tcp_recovery.c | 15 +++++----------
+ 3 files changed, 19 insertions(+), 13 deletions(-)
+
 -- 
-2.33.0
+1.8.3.1
 
