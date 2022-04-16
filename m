@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 94C53503807
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 21:39:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CECB50380B
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 21:40:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232894AbiDPTlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Apr 2022 15:41:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56822 "EHLO
+        id S232898AbiDPTms (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Apr 2022 15:42:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232892AbiDPTlu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 15:41:50 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62E7FCB038;
-        Sat, 16 Apr 2022 12:39:17 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id s137so12007123pgs.5;
-        Sat, 16 Apr 2022 12:39:17 -0700 (PDT)
+        with ESMTP id S232908AbiDPTmh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 15:42:37 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF53033342;
+        Sat, 16 Apr 2022 12:40:04 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id t12so9538305pll.7;
+        Sat, 16 Apr 2022 12:40:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=voxZ31qFlafqYv1KtZJxqTUhs3UryZT4D28XGScW+a0=;
-        b=TvlBjYUb6jvPOj6IsHs0M9D5K2wvs0b2TjFENcykUyDcKNPhtWD7iiraagCgqnJXfu
-         X+jWY3fdoRuNHTcyuhmbSM4+oTmU5ijesNoWgO69Hbbtr7J7eWUHkK0UDPlx1PL0WIQ7
-         ctE0EbnqX3CCOG03pvoofNEdEaIrccBASxSjLWufJk1+DLF69pfywyReEZfxiL11dMra
-         Ps8v6vgJ15q9TfbBLnIDgOoZ8gkJMqSOOG18LFapmNk8lSO6ei6E8GlHG+yaa1dFz/Pd
-         UIr07HeEO/b981RrT/3upCExQJ5heif2jOckyrNIwVRqXEc4tNrKiEzZmnXwq18NRSK+
-         hKug==
+        bh=5Xp410sF+GGnn+k64Aem0Bq20nF9FpJBZpOgxpPYfOM=;
+        b=M84mj+tp2XRkS5+g1JBD/J8nfprjEP9Xx2ytgoZNWcMBTTP42X6ZRSpXcO7hFe9/Oo
+         02aTUR9pmaftVGumtn+BD0zsgzRHDeeUYHwEZC46IvXiynXEGk8BVJKSu95AVDXsZt/p
+         t4JHw/IOVAdlggDWBqPfnE7MIrjLrPcArBrvKK0bI1L4x2vd1vZfodtEunrv9+5jLivM
+         RzhLPK+IwE7X9yHdqZHpyQL945co1l+I2H3dg4bprjOYNxzRhsDn2KREvTF9IHC/cj2R
+         tr0HjN9UjNAV+ZBbsyTRaWC4SvKM2xUt/7A9G6LwnqiPikL7XXqAcKH2zVuvh1Mt9ONg
+         hC9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=voxZ31qFlafqYv1KtZJxqTUhs3UryZT4D28XGScW+a0=;
-        b=zbwvp8wZmw59CeoreIA54t6gW4HdZCOidRDXME1oisr9FBY2d8g9dzrJRUfE1xLnMv
-         ier2QTX6nWJ5Dk4Ap4il3HpHEOCn+E39Q/HuoVlNfRSIUBewFXPA6ey9o36J19k38H2G
-         hpf3vpTgA/hnmWQIIM++4NzxAM0gAIM4BlZtqded5s5RomTGdU2/nHuy28CODcy085p6
-         +cov91AiLSCONJQdTwhrHZMIKFVxbncMJO56+gBtwd9yq+WdwsCcj7YH1eUARqUJk6Kn
-         J4FrZoEgkESY5LFY/y6yNpSLhiebxNndvodlZNrKVYMMrOoNyrSrdJKUsE1fuFZavJ59
-         dXvA==
-X-Gm-Message-State: AOAM530Hb94HCsG4gmJrBE6UA1HR90jRzW/plj2ZVFCEk8M7X+VVryo/
-        /jrQU9RX0kYA1H0Sg9VS/4w=
-X-Google-Smtp-Source: ABdhPJwpJnw7UFOao4GWq7HDPD7r7/mQ3y+uk5lJFjJ5tekzMlbaH4EjnEsFU6hBsHkI+VxR4u/mGQ==
-X-Received: by 2002:a63:d13:0:b0:381:f043:c627 with SMTP id c19-20020a630d13000000b00381f043c627mr4027727pgl.168.1650137956942;
-        Sat, 16 Apr 2022 12:39:16 -0700 (PDT)
+        bh=5Xp410sF+GGnn+k64Aem0Bq20nF9FpJBZpOgxpPYfOM=;
+        b=k7ctjhvL4hv/DpSOY9p9YX6kXZ7v993j3568MvNOrjhCY+DZf4ufiCZh73U6CpXZ55
+         DmX+PLO1Ij0U9x2ZDV0e7PKQxV1kmNelvsIODGw6A+J6YVySxlKEJsZOK1axW8NqaJjT
+         wWLfdvy0tbKvMFkDi9uFu1xOo87oN5g5YlTP/B8DLJJCqty8zu9Oh2azfyV4yLR3NQQn
+         /6DerDpVrZbcJbqulCfoTPu5zbcB8IBHp8aZgYpDrmSAI7ka7dC5ri92UeQAfVA9DKF+
+         fFZ85dbyuxnnwEDUYYmddmAaSau60CrtjOajXDe4sFHKxBkKcy9bYnDCDnzbZJGLJkgm
+         1a3w==
+X-Gm-Message-State: AOAM533uDczH6vdbQrk84eT3ThaCY0Yj1yxruf4iDFHVglrDMJB5iv9v
+        tjVOu8YnYlpATJpe0SzJivI=
+X-Google-Smtp-Source: ABdhPJwnTW8KqhnPwjGmeCpgHceRrEhsRLl5L0AQzXm3+Da3tFcNkHwGjE0Bz7pgd1D+I0xXP4IsAg==
+X-Received: by 2002:a17:902:ea0d:b0:158:5910:d683 with SMTP id s13-20020a170902ea0d00b001585910d683mr4720898plg.95.1650138004440;
+        Sat, 16 Apr 2022 12:40:04 -0700 (PDT)
 Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id g200-20020a6252d1000000b0050833d7602csm6839324pfb.103.2022.04.16.12.39.13
+        by smtp.gmail.com with ESMTPSA id a19-20020a17090aa51300b001cde7228b61sm8322237pjq.47.2022.04.16.12.40.01
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 16 Apr 2022 12:39:16 -0700 (PDT)
-Message-ID: <8f140d64-e486-f02c-c9c5-09e6c740220c@gmail.com>
-Date:   Sat, 16 Apr 2022 12:39:13 -0700
+        Sat, 16 Apr 2022 12:40:03 -0700 (PDT)
+Message-ID: <725e814d-da65-b77d-1a6e-a029d594944f@gmail.com>
+Date:   Sat, 16 Apr 2022 12:40:00 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.0
-Subject: Re: [PATCH net-next v4 03/18] net: dsa: sja1105: reorder
- sja1105_first_entry_longer_than with memory allocation
+Subject: Re: [PATCH net-next v4 02/18] net: dsa: sja1105: remove use of
+ iterator after list_for_each_entry() loop
 Content-Language: en-US
 To:     Jakob Koschel <jakobkoschel@gmail.com>,
         "David S. Miller" <davem@davemloft.net>
@@ -94,9 +94,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
         "Bos, H.J." <h.j.bos@vu.nl>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
 References: <20220415122947.2754662-1-jakobkoschel@gmail.com>
- <20220415122947.2754662-4-jakobkoschel@gmail.com>
+ <20220415122947.2754662-3-jakobkoschel@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220415122947.2754662-4-jakobkoschel@gmail.com>
+In-Reply-To: <20220415122947.2754662-3-jakobkoschel@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-6.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -114,14 +114,27 @@ X-Mailing-List: netdev@vger.kernel.org
 On 4/15/2022 5:29 AM, Jakob Koschel wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> sja1105_first_entry_longer_than() does not make use of the full struct
-> sja1105_gate_entry *e, just of e->interval which is set from the passed
-> entry_time.
+> The link below explains that there is a desire to syntactically change
+> list_for_each_entry() and list_for_each() such that it becomes
+> impossible to use the iterator variable outside the scope of the loop.
 > 
-> This means that if there is a gate conflict, we have allocated e for
-> nothing, just to free it later. Reorder the memory allocation and the
-> function call, to avoid that and simplify the error unwind path.
+> Although sja1105_insert_gate_entry() makes legitimate use of the
+> iterator pointer when it breaks out, the pattern it uses may become
+> illegal, so it needs to change.
 > 
+> It is deemed acceptable to use a copy of the loop iterator, and
+> sja1105_insert_gate_entry() only needs to know the list_head element
+> before which the list insertion should be made. So let's profit from the
+> occasion and refactor the list iteration to a dedicated function.
+> 
+> An additional benefit is given by the fact that with the helper function
+> in place, we no longer need to special-case the empty list, since it is
+> equivalent to not having found any gating entry larger than the
+> specified interval in the list. We just need to insert at the tail of
+> that list (list_add vs list_add_tail on an empty list does the same
+> thing).
+> 
+> Link: https://patchwork.kernel.org/project/netdevbpf/patch/20220407102900.3086255-3-jakobkoschel@gmail.com/#24810127
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 > Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 
