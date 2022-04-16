@@ -2,119 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A4D9150368F
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 14:20:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0906D5036BA
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 15:35:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231938AbiDPMXJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Apr 2022 08:23:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44844 "EHLO
+        id S232022AbiDPNUw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Apr 2022 09:20:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231932AbiDPMXI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 08:23:08 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F320CCF4BD
-        for <netdev@vger.kernel.org>; Sat, 16 Apr 2022 05:20:34 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id s14-20020a17090a880e00b001caaf6d3dd1so13683861pjn.3
-        for <netdev@vger.kernel.org>; Sat, 16 Apr 2022 05:20:34 -0700 (PDT)
+        with ESMTP id S230299AbiDPNUt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 09:20:49 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57C6348338;
+        Sat, 16 Apr 2022 06:18:17 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id t1so13536751wra.4;
+        Sat, 16 Apr 2022 06:18:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=10g5PeA+XaJ6h4fM6nvbGbNybYbukOrQjkFvmHObJsc=;
-        b=CgebbriGoAmkr1Rg5xVdZLvCCa309ajlKcDJD/JIiowCsjIx+cXkj7m8JGGVBfcW9r
-         wFzsYqQPaVFnDYbPKT+BdF2oE5TLzMdhyWQagqh1hTk55/3Kg1whLMV0OlsDBVPGEa08
-         XaVkOARq89nr1JApNWywxLqHflj7ZafQSGntDGnOnXwiH+0pKLKfEmuINxEWWLr2gBmd
-         CYdRtYch1N9wCOy/JfpTRLv9Ri4+tnR09/lcaWyPt2ZXYZoXBuKzOhI5XwZAdCEvvtL+
-         hDCOGwAfnk+mdI6Br0zfqKb3F5w7TuwFLISTguDvdAY+8JgZCJvJ+c+81e855UBlZlvi
-         smIw==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=UXVIgoFYs8vsH8vpoCLGmkcmYfTHRALX33Ntdgh3h50=;
+        b=i5R7voAqMw3IkNbZ205uB3jZh7KrTyvi4z2SN5EULNf3WJEl+edvTXfn1zC8FtiiUn
+         YFVTnzqbWUhfpHsqfdd+9z+6UD9inu0TRL7ftH81gbunCkZdwg0BAH6vgjxCQTsaH9Th
+         85/PeFeeuxShAatHYiomslhvUrbFX0jXYwRdZGiNR742qG4umdSm5berad8Gf+YB7S1S
+         flXaZetPTQrIWrqLCsAFv+AoGXDZmx6KvkPSDj3lgMPKhM4zXGMdjqmLB4J0/QjuH/3A
+         R/MI66r9eNm0leJG0C4U40tXX+WdnjDsj693/hnLnEXhuF4jsGOOmVTdB3s5XQzCpJSX
+         qQ6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=10g5PeA+XaJ6h4fM6nvbGbNybYbukOrQjkFvmHObJsc=;
-        b=ahOvEwY0RapRAQWakA0JwF9WRhVubGehiw5AwwXMfjRfj2Cw88A0es3nmKY1Q5NEqq
-         cltILOB29WlK1NGHDtHZXnJc/Js5upC8joWn7necYqV1HSk8Zg0euvg7Djv/4tvoH66a
-         TkU1cZQ7m8PHmrGGObGG6DVGLeHZwiGu8sHw/6EU3rvHszb3jVZswRseT3G0R77FpQBV
-         AHjJn6B7kmQIxtlkdnAGCZHBiBTLcfg29j7+e0xn/NjYwZk2DwwgtG19qf/29YOcLe/i
-         uEOdBFo66+QhvMBdWN88VyMsJz3vuxnV0Tk2RBqki6F2ersHTb3WT06S1MNgxTGsJWaP
-         TxHQ==
-X-Gm-Message-State: AOAM533ajupsmCT/6HoJ7OZhfjXk3+n7jzCcXgZQ/UjfKI5Qk1OyzFh9
-        LaxOuu8dLt52OaQKihSOkQj7+QXV6GtD14yt9woL/g==
-X-Google-Smtp-Source: ABdhPJyEwRorxFq6OT7m+o6QC9Ai2tfvWEY9TKOl8S83xNzbiirkOnUcAtuBGD2k9i6Sa/2MBVAssWO1MK9O/UnsI08=
-X-Received: by 2002:a17:903:285:b0:158:d693:c52c with SMTP id
- j5-20020a170903028500b00158d693c52cmr3348830plr.36.1650111634362; Sat, 16 Apr
- 2022 05:20:34 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=UXVIgoFYs8vsH8vpoCLGmkcmYfTHRALX33Ntdgh3h50=;
+        b=va2FLJRdKrvLrBpPAPJCobHD37dFj+k3NbIHZpaH0rs7kMIiIycoh5YLTsCk/fExp7
+         11bmL4gQ8kf13Vq81s56nvKsl4umZRSiLbthoHOaR1qWBvHEmftKQX7TaeVoxO4KPvnr
+         nTM5LWs20JZ+aZwwlIgkwUA80SXBQExh6F9ET2NZUgUd9Th1Y0bWKnYuQpg3r3v1xQi7
+         p5oeGBhWmDszsywkZnqXvFu2HYnsxcaWr6HvtWt27JMgWI1VyS8AfueFOpCkjPW334OC
+         IhZraTqgy02vvM+n3hyF3edHb5YW8TH0PtC5TTSvHG1mZw3c0MJDoiXGHzYCjlBGIugi
+         3ySA==
+X-Gm-Message-State: AOAM533dYIOeFCt/utB4jkjzV9Io0OWV/jQqB4XmEPcI/kXlbgHClkgQ
+        p0Y5oKgsxB7dl4smg1WT2Ds=
+X-Google-Smtp-Source: ABdhPJyJ06sKHsPB4+wIBhVC0HslxWUz7QAdEMKT8yyqPoyR/rswgpyfI3awyjFXTK+20cmJdmZsTQ==
+X-Received: by 2002:a05:6000:1684:b0:209:7fda:e3a with SMTP id y4-20020a056000168400b002097fda0e3amr2454676wrd.709.1650115095860;
+        Sat, 16 Apr 2022 06:18:15 -0700 (PDT)
+Received: from [192.168.1.5] ([197.57.90.163])
+        by smtp.gmail.com with ESMTPSA id d6-20020a5d5386000000b0020a79c74bedsm4451623wrv.79.2022.04.16.06.18.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 16 Apr 2022 06:18:15 -0700 (PDT)
+Message-ID: <857a2d22-5d0f-99d6-6686-98d50e4491d5@gmail.com>
+Date:   Sat, 16 Apr 2022 15:18:13 +0200
 MIME-Version: 1.0
-References: <20220415083402.39080-1-aajith@arista.com> <642672cb-8b11-c78f-8975-f287ece9e89e@gmail.com>
-In-Reply-To: <642672cb-8b11-c78f-8975-f287ece9e89e@gmail.com>
-From:   Arun Ajith S <aajith@arista.com>
-Date:   Sat, 16 Apr 2022 17:50:22 +0530
-Message-ID: <CAOvjArRX_CXbUdAbfnta9sBad30aV0Q7HSA6rNPTKPbENRsnqQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v6] net/ipv6: Introduce accept_unsolicited_na
- knob to implement router-side changes for RFC9131
-To:     Bagas Sanjaya <bagasdotme@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        David Ahern <dsahern@kernel.org>, yoshfuji@linux-ipv6.org,
-        kuba@kernel.org, pabeni@redhat.com, corbet@lwn.net,
-        prestwoj@gmail.com, Bob Gilligan <gilligan@arista.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        Gautam Kachroo <gk@arista.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3] intel: igb: igb_ethtool.c: Convert kmap() to
+ kmap_local_page()
+Content-Language: en-US
+To:     Julia Lawall <julia.lawall@inria.fr>
+Cc:     outreachy@lists.linux.dev, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, intel-wired-lan@lists.osuosl.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ira.weiny@intel.com
+References: <20220416111457.5868-1-eng.alaamohamedsoliman.am@gmail.com>
+ <alpine.DEB.2.22.394.2204161331080.3501@hadrien>
+From:   Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+In-Reply-To: <alpine.DEB.2.22.394.2204161331080.3501@hadrien>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-6.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 16, 2022 at 11:13 AM Bagas Sanjaya <bagasdotme@gmail.com> wrote:
+
+On ١٦‏/٤‏/٢٠٢٢ ١٣:٣١, Julia Lawall wrote:
 >
-> On 4/15/22 15:34, Arun Ajith S wrote:
-> > +accept_unsolicited_na - BOOLEAN
-> > +     Add a new neighbour cache entry in STALE state for routers on receiving an
-> > +     unsolicited neighbour advertisement with target link-layer address option
-> > +     specified. This is as per router-side behavior documented in RFC9131.
-> > +     This has lower precedence than drop_unsolicited_na.
-> > +
-> > +      ====   ======  ======  ==============================================
-> > +      drop   accept  fwding                   behaviour
-> > +      ----   ------  ------  ----------------------------------------------
-> > +         1        X       X  Drop NA packet and don't pass up the stack
-> > +         0        0       X  Pass NA packet up the stack, don't update NC
-> > +         0        1       0  Pass NA packet up the stack, don't update NC
-> > +         0        1       1  Pass NA packet up the stack, and add a STALE
-> > +                             NC entry
-> > +      ====   ======  ======  ==============================================
-> > +
-> > +     This will optimize the return path for the initial off-link communication
-> > +     that is initiated by a directly connected host, by ensuring that
-> > +     the first-hop router which turns on this setting doesn't have to
-> > +     buffer the initial return packets to do neighbour-solicitation.
-> > +     The prerequisite is that the host is configured to send
-> > +     unsolicited neighbour advertisements on interface bringup.
-> > +     This setting should be used in conjunction with the ndisc_notify setting
-> > +     on the host to satisfy this prerequisite.
-> > +
-> > +     By default this is turned off.
-> > +
+> On Sat, 16 Apr 2022, Alaa Mohamed wrote:
 >
-> Looks good. htmldocs builds successfully and the table displayed properly.
+>> Convert kmap() to kmap_local_page()
+>>
+>> With kmap_local_page(), the mapping is per thread, CPU local and not
+>> globally visible.
+> It's not clearer.
+I mean this " fix kunmap_local path value to take address of the mapped 
+page" be more clearer
+> This is a general statement about the function.  You
+> need to explain why it is appropriate to use it here.  Unless it is the
+> case that all calls to kmap should be converted to call kmap_local_page.
+It's required to convert all calls kmap to kmap_local_page. So, I don't 
+what should the commit message be?
+
+Is this will be good :
+
+"kmap_local_page() was recently developed as a replacement for kmap().  The
+kmap_local_page() creates a mapping which is restricted to local use by a
+single thread of execution. "
 >
-> Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
+> julia
 >
-> However, I remind you the following:
->
-> - The patch changelogs should be put between the dashes (---) and diffstat.
->   I don't see the changelogs when I hit reply-all because you put them as
->   message signature (at very bottom of patch message).
-> - DON'T DO top-posting, DO configure your MUA to make reply text below
->   the quoted text instead.
->
-> --
-> An old man doll... just what I always wanted! - Clara
-Thank you.
-I will keep the tips for the Changelog in my mind for my next patch.
+>> Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+>> ---
+>> changes in V2:
+>> 	fix kunmap_local path value to take address of the mapped page.
+>> ---
+>> changes in V3:
+>> 	edit commit message to be clearer
+>> ---
+>>   drivers/net/ethernet/intel/igb/igb_ethtool.c | 4 ++--
+>>   1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
+>> index 2a5782063f4c..c14fc871dd41 100644
+>> --- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
+>> +++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
+>> @@ -1798,14 +1798,14 @@ static int igb_check_lbtest_frame(struct igb_rx_buffer *rx_buffer,
+>>
+>>   	frame_size >>= 1;
+>>
+>> -	data = kmap(rx_buffer->page);
+>> +	data = kmap_local_page(rx_buffer->page);
+>>
+>>   	if (data[3] != 0xFF ||
+>>   	    data[frame_size + 10] != 0xBE ||
+>>   	    data[frame_size + 12] != 0xAF)
+>>   		match = false;
+>>
+>> -	kunmap(rx_buffer->page);
+>> +	kunmap_local(data);
+>>
+>>   	return match;
+>>   }
+>> --
+>> 2.35.2
+>>
+>>
+>>
