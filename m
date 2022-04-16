@@ -2,109 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E30550365C
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 13:32:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C829D503660
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 13:34:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231790AbiDPLec (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Apr 2022 07:34:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50788 "EHLO
+        id S231519AbiDPLfb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Apr 2022 07:35:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231786AbiDPLeb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 07:34:31 -0400
-Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2F2840A3E;
-        Sat, 16 Apr 2022 04:31:58 -0700 (PDT)
+        with ESMTP id S231335AbiDPLf3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 07:35:29 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9666E40A2A
+        for <netdev@vger.kernel.org>; Sat, 16 Apr 2022 04:32:58 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id m132so18276054ybm.4
+        for <netdev@vger.kernel.org>; Sat, 16 Apr 2022 04:32:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=inria.fr; s=dc;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=z9A4gkqrnB2OxeVyXP/QAPVgh7qVm2HOgeHFVAA094w=;
-  b=EtwyZYsyeWT0eBa/S5Z0d8LtdEbsVCfwjtKMIRvCu6lScgMV94c3RkSR
-   26n/GJ1ZI1NquP9Pbilvv2vFFtY4aZh8Porxi6383xy6oQAHKawiyJ39j
-   Y9ujjtHPSd8sMrWt9d5itN2mcUE++kFGD5xtQnHAXLMUHUAMmIwRIZ+/l
-   M=;
-Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=julia.lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
-X-IronPort-AV: E=Sophos;i="5.90,264,1643670000"; 
-   d="scan'208";a="11697161"
-Received: from 203.107.68.85.rev.sfr.net (HELO hadrien) ([85.68.107.203])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2022 13:31:56 +0200
-Date:   Sat, 16 Apr 2022 13:31:56 +0200 (CEST)
-From:   Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: jll@hadrien
-To:     Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-cc:     outreachy@lists.linux.dev, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ira.weiny@intel.com
-Subject: Re: [PATCH v3] intel: igb: igb_ethtool.c: Convert kmap() to
- kmap_local_page()
-In-Reply-To: <20220416111457.5868-1-eng.alaamohamedsoliman.am@gmail.com>
-Message-ID: <alpine.DEB.2.22.394.2204161331080.3501@hadrien>
-References: <20220416111457.5868-1-eng.alaamohamedsoliman.am@gmail.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=xVJHepNq93ePmAbCv1LHbdOWJcqWYQh8v11fr0KUdVw=;
+        b=mTGRyB37vDPp7R6N8XdzNiGYtXIZM+JddnoIiZIpv4OXFMfE7jCEBDmY6XkLS38+2b
+         JjhVz2nII/Rx7cHLWjOV1tyLjEHfxZGqG1ZXU4CfXJ1ItE6yvNDGExF8ZnesQnKQND45
+         cACo2m+omuf5K6jKRTvxxrsalYB0thDn81R0I52ip/VcGnVX5VfLNbqIzkXHLYRCxDAf
+         6CPZvijRmdWg3VvQim2WwcCN+iIM2Ar3JGTr8TUk9iFX//+MWPHT5yuJ3h+eVU8Wa8/U
+         9MafqLt0dqt9g+W4g/e0LG1gma7JxZTNJ4eoA0fiFS0W0idcTfpsSKpddhaXZCU3ytOz
+         MOnA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=xVJHepNq93ePmAbCv1LHbdOWJcqWYQh8v11fr0KUdVw=;
+        b=TA/QC6h2BBxZpYlm/pjYYF060xpGAmivWWs9GCvhYNIOBUH4ez2984TrKvnUChXUr+
+         vPlQAnd4eRfKLSBspNjH4I8AtUcNEqUSRgRFZRuvGlNfgzYNxihKSc4VaiEHumntoGHk
+         MO059Z4fZanUkw/x6DJC0HkNIfbT6RWlYw7XmhCP402JpHlt+Wve3JPq2GBI1zeWxGNi
+         2zCgFtfJ7g9GPf61eSzGj1CBLqzTZTx2T0l7feu04A0FZbbVLduNEbW2hhYlXqSWBPkg
+         58x1KFb8A5I/HXXFpkQQD0hEcL2WX1Ils3q5xv0RAaT00xbBCamfJPL3qZyYtoiOsuaq
+         LNlw==
+X-Gm-Message-State: AOAM5339YFgK4h3RE1sSo6KZv9Y1imv75Rl5vSG/AcUc+TakAwYzheN+
+        AhWBHvDAgllUPi2ZpqPYHHbbo5hIs1gNsQQwSeU=
+X-Google-Smtp-Source: ABdhPJw2AO0t6jjAYVr8C+A62DilU5ZCkg1yHUF+6vNhYB2fA3zR+gwyZmkozMuWBwVyZmTj5ZPxfr9oHHLMbTfuWQQ=
+X-Received: by 2002:a5b:f87:0:b0:62b:f9d8:ed5 with SMTP id q7-20020a5b0f87000000b0062bf9d80ed5mr2541225ybh.467.1650108777739;
+ Sat, 16 Apr 2022 04:32:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:a05:6918:8206:b0:b1:7d1b:9bdb with HTTP; Sat, 16 Apr 2022
+ 04:32:57 -0700 (PDT)
+Reply-To: lilywilliam989@gmail.com
+From:   Lily William <sgtalberts@gmail.com>
+Date:   Sat, 16 Apr 2022 03:32:57 -0800
+Message-ID: <CALPTejN=DFC_NtcGWK3f-idki9pA+YOohK9iCiiqoW9h-Sx4Ug@mail.gmail.com>
+Subject: Hi Dear,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=5.5 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
+        FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:b35 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.4999]
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [lilywilliam989[at]gmail.com]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [sgtalberts[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  3.7 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+-- 
+Hi Dear,
 
+My name is Lily William, I am from the United States of America. It's my
+pleasure to contact you for a new and special friendship. I will be glad to
+see your reply so we can get to know each other better.
 
-On Sat, 16 Apr 2022, Alaa Mohamed wrote:
-
-> Convert kmap() to kmap_local_page()
->
-> With kmap_local_page(), the mapping is per thread, CPU local and not
-> globally visible.
-
-It's not clearer.  This is a general statement about the function.  You
-need to explain why it is appropriate to use it here.  Unless it is the
-case that all calls to kmap should be converted to call kmap_local_page.
-
-julia
-
->
-> Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-> ---
-> changes in V2:
-> 	fix kunmap_local path value to take address of the mapped page.
-> ---
-> changes in V3:
-> 	edit commit message to be clearer
-> ---
->  drivers/net/ethernet/intel/igb/igb_ethtool.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-> index 2a5782063f4c..c14fc871dd41 100644
-> --- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
-> +++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-> @@ -1798,14 +1798,14 @@ static int igb_check_lbtest_frame(struct igb_rx_buffer *rx_buffer,
->
->  	frame_size >>= 1;
->
-> -	data = kmap(rx_buffer->page);
-> +	data = kmap_local_page(rx_buffer->page);
->
->  	if (data[3] != 0xFF ||
->  	    data[frame_size + 10] != 0xBE ||
->  	    data[frame_size + 12] != 0xAF)
->  		match = false;
->
-> -	kunmap(rx_buffer->page);
-> +	kunmap_local(data);
->
->  	return match;
->  }
-> --
-> 2.35.2
->
->
->
+Yours
+Lily
