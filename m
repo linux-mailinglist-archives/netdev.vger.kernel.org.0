@@ -2,125 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AF61503770
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 17:52:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73A595037A5
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 18:58:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232483AbiDPPy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Apr 2022 11:54:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48618 "EHLO
+        id S232638AbiDPRAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Apr 2022 13:00:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230108AbiDPPy5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 11:54:57 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91B05972DF;
-        Sat, 16 Apr 2022 08:52:25 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id p15so20085703ejc.7;
-        Sat, 16 Apr 2022 08:52:25 -0700 (PDT)
+        with ESMTP id S231799AbiDPRAo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 13:00:44 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F81C4BFFD
+        for <netdev@vger.kernel.org>; Sat, 16 Apr 2022 09:58:11 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id t11so20226180eju.13
+        for <netdev@vger.kernel.org>; Sat, 16 Apr 2022 09:58:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=WB0OkA4npUVlTHKxP5L/zecMJKXRJHu4yHb6ykPI+d0=;
-        b=p1PdgWeV4/8OWZSYyJ2Gtl7Sb29XmosvPG966HCgE+yOaNpBXl37cLieNQh1YhCimK
-         cfjREeBGHHB7QtLvlG2M7NPMi038s27WDZ0PyHroXUbzv8mgsj8Qhdb/F8TEqVYIKDvg
-         tN2I6HQfvs2KlGV6UrdM8caLjg8HNpylVyGPM+5YIoS2WwN63G32fgwrsxy2k66zCBgy
-         Bri21J62bTzs2JnbGPL282vrgIBnHBLUgIuY3xW1qVAqJTdBaTnOL018zIF1KpddLUp4
-         4Ah+hh5gs2LzYujyxZoo+L3hfQCXXhiJI0eiTbhDXRppsWwKweBe2G3/IYbK4AkHMquQ
-         LBYQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=YXxJ2U5MK0DNYLscrVzxl5xIWdVVJY9JmdEudpzTeTg=;
+        b=Y1LMnTPnzZpNsMFNB/daZT8+EcZptw1+A8wVMivGWiGAlow216zR4GgsddR8J7BEeT
+         ayoQzVLUEPLHbNj+xlm5SBWe7gKw2oJ8cG+GshAm9llSK9Xk6BML7/mc48ezvZMroXBQ
+         CDZFSt/feItkecGOzIE+VJYDa22S7n/L2tWVviRsbMtU52mh7DUaCfn9SYpQ24nyi/W0
+         6dyk++0UnlQLBSBZINGtMaY9/TsynwGfKO46MdNhMqCZXy0EAJe8e7gPas/Ev8z70kHp
+         qjliVQGIBc3fRXHlfgcprDZtb8QMvS+jcaFZ0vmaea09pPTSjwDZfioRFL9zes9dPa+f
+         DCvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WB0OkA4npUVlTHKxP5L/zecMJKXRJHu4yHb6ykPI+d0=;
-        b=zCHfYnx1NdJIES1q10RBv/MMXLajx02hori8VkCJLMYkYR/cHZ70GcLPy1/ZKzhvQi
-         Ssxxda4luersiExY1NWaRyBhpC+UllSgeeElTXFF686Ux0evZfDxDGm+jIPz23/JTZW8
-         YIYRufDh4NYMQHoYf75XZ46dTvqdC9kp84nAg93lbmO9YnISfF98yBBU0Ocg675x36/4
-         AeL+rEfo/MHLkBPa17hHp9o5nFvxbtrN3WNta8BVWj+pJSg3vaE7XBWiojy0Aab5YFXv
-         krM1t0vBifH9SIblhgwsjsVcZiRDmuFLrH/qvweZJXdc2jD75K+33dnYZw+TZpxKRDIF
-         fi2w==
-X-Gm-Message-State: AOAM5300oOcJudEWkUXc4SG8jd6pVyGRQHvltbyGDT7wBptandvdzxWp
-        AaqfR+dZbzg31TcZLFUCofT9r9y8+yE=
-X-Google-Smtp-Source: ABdhPJwxtNuBtqOCmrmCxvK+GvsLdC4aeyXb2uo3u3eVpeTvHsXFV6Kh5xcnPCNk6rHSsh2eMiP5cg==
-X-Received: by 2002:a17:906:dc8b:b0:6ef:86e8:777 with SMTP id cs11-20020a170906dc8b00b006ef86e80777mr1451459ejc.326.1650124343944;
-        Sat, 16 Apr 2022 08:52:23 -0700 (PDT)
-Received: from leap.localnet (host-79-50-86-254.retail.telecomitalia.it. [79.50.86.254])
-        by smtp.gmail.com with ESMTPSA id fy11-20020a1709069f0b00b006e8b68c92d8sm2752978ejc.162.2022.04.16.08.52.21
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=YXxJ2U5MK0DNYLscrVzxl5xIWdVVJY9JmdEudpzTeTg=;
+        b=sPlHyYRw+AAizgtS9gUFiWgGVTWhIK40v3pTZWHVfXs/rOMEvyL5kDhKsff1CSDice
+         8VyKdPpP7CAC2FkigimGpCeq3AHxRQXXxwLKGaacAt1jMNiRMS+ZqJ6au52iaGGbpBng
+         GvtOQDtCw748sdZUmVOeiE2E8ltDJImw/SCSZ7ytf+e74+qeq/Q4P3I0dHjLW/c6t7w8
+         +jQBwGATmiWMEEJXFGnNK7izlSaY1YKgER+MFvGcxFHIMVI4Xr3zZZZuDJ8VbUBn7+nd
+         jNXRKFMVXk9njkAqnjgnLYeTB0ysJ9IxqIg5KS8csenJKod4Q2w8mtBhYBKS+M2JTY1P
+         Ri7w==
+X-Gm-Message-State: AOAM533cUY3O5fim4Eja5idyNkYD7vHtK0/+5Em15c4F9vUxuJqP0Sov
+        cBY1xRq48Ok5arIAiDBL6GA=
+X-Google-Smtp-Source: ABdhPJxR0FMuKqo86eO7F4ya8AxvMfkmHwqVS742M03+j9XhKdIbxIbEL882o8QwlMXWxE/4j5S1gA==
+X-Received: by 2002:a17:907:7204:b0:6e8:c1e9:49f7 with SMTP id dr4-20020a170907720400b006e8c1e949f7mr3239331ejc.251.1650128289745;
+        Sat, 16 Apr 2022 09:58:09 -0700 (PDT)
+Received: from hoboy.vegasvil.org (81-223-89-254.static.upcbusiness.at. [81.223.89.254])
+        by smtp.gmail.com with ESMTPSA id e22-20020a170906505600b006da7d71f25csm2836825ejk.41.2022.04.16.09.58.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 Apr 2022 08:52:22 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>,
-        Julia Lawall <julia.lawall@inria.fr>
-Cc:     Julia Lawall <julia.lawall@inria.fr>, outreachy@lists.linux.dev,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ira.weiny@intel.com
-Subject: Re: [PATCH v3] intel: igb: igb_ethtool.c: Convert kmap() to kmap_local_page()
-Date:   Sat, 16 Apr 2022 17:52:20 +0200
-Message-ID: <1897617.PYKUYFuaPT@leap>
-In-Reply-To: <alpine.DEB.2.22.394.2204161608230.3501@hadrien>
-References: <20220416111457.5868-1-eng.alaamohamedsoliman.am@gmail.com> <857a2d22-5d0f-99d6-6686-98d50e4491d5@gmail.com> <alpine.DEB.2.22.394.2204161608230.3501@hadrien>
+        Sat, 16 Apr 2022 09:58:09 -0700 (PDT)
+Date:   Sat, 16 Apr 2022 09:58:07 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, yangbo.lu@nxp.com,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, mlichvar@redhat.com,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 4/5] ptp: Support late timestamp determination
+Message-ID: <20220416165807.GB3040@hoboy.vegasvil.org>
+References: <20220403175544.26556-5-gerhard@engleder-embedded.com>
+ <20220410072930.GC212299@hoboy.vegasvil.org>
+ <CANr-f5xhH31yF8UOmM=ktWULyUugBGDoHzOiYZggiDPZeTbdrw@mail.gmail.com>
+ <20220410134215.GA258320@hoboy.vegasvil.org>
+ <CANr-f5xriLzQ+3xtM+iV8ahu=J1mA7ixbc49f0i2jxkySthTdQ@mail.gmail.com>
+ <CANr-f5yn9LzMQ8yAP8Py-EP_NyifFyj1uXBNo+kuGY1p8t0CFw@mail.gmail.com>
+ <20220412214655.GB579091@hoboy.vegasvil.org>
+ <CANr-f5zLyphtbi49mvsH_rVzn7yrGejUGMVobwrFmX8U6f2YVA@mail.gmail.com>
+ <20220414063627.GA2311@hoboy.vegasvil.org>
+ <CANr-f5zzQ6_UsOdLZK7b-k5Jy4qhdGJ4_D2irK-S0FzhE5u3rQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="ISO-8859-1"
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANr-f5zzQ6_UsOdLZK7b-k5Jy4qhdGJ4_D2irK-S0FzhE5u3rQ@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On sabato 16 aprile 2022 16:09:58 CEST Julia Lawall wrote:
->=20
-> On Sat, 16 Apr 2022, Alaa Mohamed wrote:
->=20
-> >
-> > On =D9=A1=D9=A6/=D9=A4/=D9=A2=D9 =D9=A2=D9=A2 =D9=A1=D9=A3:=D9=A3=D9=A1=
-, Julia Lawall wrote:
-> > >
-> > > On Sat, 16 Apr 2022, Alaa Mohamed wrote:
-> > >
-> > > > Convert kmap() to kmap_local_page()
-> > > >
-> > > > With kmap_local_page(), the mapping is per thread, CPU local and=20
-not
-> > > > globally visible.
-> > > It's not clearer.
-> > I mean this " fix kunmap_local path value to take address of the mapped=
-=20
-page"
-> > be more clearer
-> > > This is a general statement about the function.  You
-> > > need to explain why it is appropriate to use it here.  Unless it is=20
-the
-> > > case that all calls to kmap should be converted to call=20
-kmap_local_page.
-> > It's required to convert all calls kmap to kmap_local_page. So, I don't=
-=20
-what
-> > should the commit message be?
->=20
-> If all calls should be changed then you can also say that.
+On Sat, Apr 16, 2022 at 12:04:20AM +0200, Gerhard Engleder wrote:
+> - vclock:   slow path with phc lookup (not changed)
 
-If all calls should be changed with no regards to the surrounding contexts=
-=20
-and special situations, we can just make an automated s/kmap()/
-kmap_local_page()/ or something else similar :)
+This one could really use caching.  (I know that isn't your patch, but
+maybe you can try to fix it?)
 
 Thanks,
-
-=46abio M. De Francesco
-
->=20
-> I thought that a previous commit on the outreachy list made some=20
-arguments
-> about how the affacted value was just allocated and thus could not yet be
-> shared.
->=20
-> julia
-
-
-
+Richard
