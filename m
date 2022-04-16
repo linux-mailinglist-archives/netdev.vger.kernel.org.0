@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDE08503596
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 11:21:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C78295035A0
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 11:21:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231175AbiDPJWG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Apr 2022 05:22:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39420 "EHLO
+        id S231207AbiDPJWN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Apr 2022 05:22:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230179AbiDPJWA (ORCPT
+        with ESMTP id S230300AbiDPJWA (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 05:22:00 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B283049CB2;
-        Sat, 16 Apr 2022 02:19:28 -0700 (PDT)
-Received: from kwepemi500026.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KgSM06TsjzQwQV;
-        Sat, 16 Apr 2022 17:19:24 +0800 (CST)
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7155B49F07;
+        Sat, 16 Apr 2022 02:19:29 -0700 (PDT)
+Received: from kwepemi500018.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KgSG22Bl0zCr34;
+        Sat, 16 Apr 2022 17:15:06 +0800 (CST)
 Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi500026.china.huawei.com (7.221.188.247) with Microsoft SMTP Server
+ kwepemi500018.china.huawei.com (7.221.188.213) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 16 Apr 2022 17:19:26 +0800
+ 15.1.2375.24; Sat, 16 Apr 2022 17:19:27 +0800
 Received: from localhost.localdomain (10.67.165.24) by
  kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -30,9 +30,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
         <chenhao288@hisilicon.com>
-Subject: [PATCH net-next 5/9] net: hns3: add log for setting tx spare buf size
-Date:   Sat, 16 Apr 2022 17:13:39 +0800
-Message-ID: <20220416091343.35817-6-huangguangbin2@huawei.com>
+Subject: [PATCH net-next 6/9] net: hns3: update the comment of function hclgevf_get_mbx_resp
+Date:   Sat, 16 Apr 2022 17:13:40 +0800
+Message-ID: <20220416091343.35817-7-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220416091343.35817-1-huangguangbin2@huawei.com>
 References: <20220416091343.35817-1-huangguangbin2@huawei.com>
@@ -52,41 +52,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hao Chen <chenhao288@hisilicon.com>
+From: Peng Li <lipeng321@huawei.com>
 
-For the active tx spare buffer size maybe changed according
-to the page size, so add log to notice it.
+The param of function hclgevf_get_mbx_resp has been changed but the
+comments not upodated. This patch updates it.
 
-Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
+Signed-off-by: Peng Li<lipeng321@huawei.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index bea810a26aac..51ee8adab6a3 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -1868,6 +1868,8 @@ static int hns3_set_tunable(struct net_device *netdev,
- 	case ETHTOOL_TX_COPYBREAK_BUF_SIZE:
- 		old_tx_spare_buf_size = h->kinfo.tx_spare_buf_size;
- 		new_tx_spare_buf_size = *(u32 *)data;
-+		netdev_info(netdev, "request to set tx spare buf size from %u to %u\n",
-+			    old_tx_spare_buf_size, new_tx_spare_buf_size);
- 		ret = hns3_set_tx_spare_buf_size(netdev, new_tx_spare_buf_size);
- 		if (ret ||
- 		    (!priv->ring->tx_spare && new_tx_spare_buf_size != 0)) {
-@@ -1885,6 +1887,10 @@ static int hns3_set_tunable(struct net_device *netdev,
- 
- 			return ret;
- 		}
-+
-+		netdev_info(netdev, "the actvie tx spare buf size is %u, due to page order\n",
-+			    priv->ring->tx_spare->len);
-+
- 		break;
- 	default:
- 		ret = -EOPNOTSUPP;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c
+index d5e0a3f762f7..4761dceccea5 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c
+@@ -32,8 +32,10 @@ static void hclgevf_reset_mbx_resp_status(struct hclgevf_dev *hdev)
+ /* hclgevf_get_mbx_resp: used to get a response from PF after VF sends a mailbox
+  * message to PF.
+  * @hdev: pointer to struct hclgevf_dev
+- * @resp_msg: pointer to store the original message type and response status
+- * @len: the resp_msg data array length.
++ * @code0: the message opcode VF send to PF.
++ * @code1: the message sub-opcode VF send to PF.
++ * @resp_data: pointer to store response data from PF to VF.
++ * @resp_len: the length of resp_data from PF to VF.
+  */
+ static int hclgevf_get_mbx_resp(struct hclgevf_dev *hdev, u16 code0, u16 code1,
+ 				u8 *resp_data, u16 resp_len)
 -- 
 2.33.0
 
