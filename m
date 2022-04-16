@@ -2,78 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 73A595037A5
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 18:58:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB9245037BF
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 19:56:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232638AbiDPRAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Apr 2022 13:00:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54702 "EHLO
+        id S232720AbiDPRxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Apr 2022 13:53:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231799AbiDPRAo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 13:00:44 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F81C4BFFD
-        for <netdev@vger.kernel.org>; Sat, 16 Apr 2022 09:58:11 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id t11so20226180eju.13
-        for <netdev@vger.kernel.org>; Sat, 16 Apr 2022 09:58:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=YXxJ2U5MK0DNYLscrVzxl5xIWdVVJY9JmdEudpzTeTg=;
-        b=Y1LMnTPnzZpNsMFNB/daZT8+EcZptw1+A8wVMivGWiGAlow216zR4GgsddR8J7BEeT
-         ayoQzVLUEPLHbNj+xlm5SBWe7gKw2oJ8cG+GshAm9llSK9Xk6BML7/mc48ezvZMroXBQ
-         CDZFSt/feItkecGOzIE+VJYDa22S7n/L2tWVviRsbMtU52mh7DUaCfn9SYpQ24nyi/W0
-         6dyk++0UnlQLBSBZINGtMaY9/TsynwGfKO46MdNhMqCZXy0EAJe8e7gPas/Ev8z70kHp
-         qjliVQGIBc3fRXHlfgcprDZtb8QMvS+jcaFZ0vmaea09pPTSjwDZfioRFL9zes9dPa+f
-         DCvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=YXxJ2U5MK0DNYLscrVzxl5xIWdVVJY9JmdEudpzTeTg=;
-        b=sPlHyYRw+AAizgtS9gUFiWgGVTWhIK40v3pTZWHVfXs/rOMEvyL5kDhKsff1CSDice
-         8VyKdPpP7CAC2FkigimGpCeq3AHxRQXXxwLKGaacAt1jMNiRMS+ZqJ6au52iaGGbpBng
-         GvtOQDtCw748sdZUmVOeiE2E8ltDJImw/SCSZ7ytf+e74+qeq/Q4P3I0dHjLW/c6t7w8
-         +jQBwGATmiWMEEJXFGnNK7izlSaY1YKgER+MFvGcxFHIMVI4Xr3zZZZuDJ8VbUBn7+nd
-         jNXRKFMVXk9njkAqnjgnLYeTB0ysJ9IxqIg5KS8csenJKod4Q2w8mtBhYBKS+M2JTY1P
-         Ri7w==
-X-Gm-Message-State: AOAM533cUY3O5fim4Eja5idyNkYD7vHtK0/+5Em15c4F9vUxuJqP0Sov
-        cBY1xRq48Ok5arIAiDBL6GA=
-X-Google-Smtp-Source: ABdhPJxR0FMuKqo86eO7F4ya8AxvMfkmHwqVS742M03+j9XhKdIbxIbEL882o8QwlMXWxE/4j5S1gA==
-X-Received: by 2002:a17:907:7204:b0:6e8:c1e9:49f7 with SMTP id dr4-20020a170907720400b006e8c1e949f7mr3239331ejc.251.1650128289745;
-        Sat, 16 Apr 2022 09:58:09 -0700 (PDT)
-Received: from hoboy.vegasvil.org (81-223-89-254.static.upcbusiness.at. [81.223.89.254])
-        by smtp.gmail.com with ESMTPSA id e22-20020a170906505600b006da7d71f25csm2836825ejk.41.2022.04.16.09.58.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 Apr 2022 09:58:09 -0700 (PDT)
-Date:   Sat, 16 Apr 2022 09:58:07 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Gerhard Engleder <gerhard@engleder-embedded.com>
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, yangbo.lu@nxp.com,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, mlichvar@redhat.com,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next v2 4/5] ptp: Support late timestamp determination
-Message-ID: <20220416165807.GB3040@hoboy.vegasvil.org>
-References: <20220403175544.26556-5-gerhard@engleder-embedded.com>
- <20220410072930.GC212299@hoboy.vegasvil.org>
- <CANr-f5xhH31yF8UOmM=ktWULyUugBGDoHzOiYZggiDPZeTbdrw@mail.gmail.com>
- <20220410134215.GA258320@hoboy.vegasvil.org>
- <CANr-f5xriLzQ+3xtM+iV8ahu=J1mA7ixbc49f0i2jxkySthTdQ@mail.gmail.com>
- <CANr-f5yn9LzMQ8yAP8Py-EP_NyifFyj1uXBNo+kuGY1p8t0CFw@mail.gmail.com>
- <20220412214655.GB579091@hoboy.vegasvil.org>
- <CANr-f5zLyphtbi49mvsH_rVzn7yrGejUGMVobwrFmX8U6f2YVA@mail.gmail.com>
- <20220414063627.GA2311@hoboy.vegasvil.org>
- <CANr-f5zzQ6_UsOdLZK7b-k5Jy4qhdGJ4_D2irK-S0FzhE5u3rQ@mail.gmail.com>
+        with ESMTP id S232450AbiDPRxT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 13:53:19 -0400
+Received: from mail-4322.protonmail.ch (mail-4322.protonmail.ch [185.70.43.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0690E34;
+        Sat, 16 Apr 2022 10:50:46 -0700 (PDT)
+Date:   Sat, 16 Apr 2022 17:50:39 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
+        s=protonmail2; t=1650131444;
+        bh=dUBVYxJ9KjFGdWAPZ3BpuTxFmDw0xhV4VjL0SW5G2Cs=;
+        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
+         References:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+         Message-ID;
+        b=amXLMAutJGPxMzbDaeGMyXFJX9zlX6dkXXT2t9TYkA46iUHC/JG9DfVb84E1JOr3v
+         5i7k7LSd6DCTZ9xQKZwi5NNgJfHv/MWn3SPTSbUKs5djHd6HpB83Jpha6uCFBEKI2S
+         ooJYv4Nu0+mGX154G/bDnvnCNY35Fs70h23GR1G3Q9iqkEV/9dfNmBjoz+J4sVs0EG
+         R3cAIWN/RYxouBCKNFFiV+kSnSqMug8na3JtHvmg/YEO5OSMTeVOeAAiKi/TnqiBIW
+         0lZthWkwvsFWIICVz4tefCNwyM0eB0/EOg5Tzqc/tR+5qvYDOiUyacvmPEMLFeeF5Q
+         1/fmwoe9vwpLw==
+To:     Song Liu <song@kernel.org>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        =?utf-8?Q?Bj=C3=B6rn_T=C3=B6pel?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Dmitrii Dolgov <9erthalion6@gmail.com>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Chenbo Feng <fengc@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Thomas Graf <tgraf@suug.ch>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        linux-perf-users@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        llvm@lists.linux.dev
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: Re: [PATCH bpf-next 02/11] bpf: always emit struct bpf_perf_link BTF
+Message-ID: <20220416174330.195496-1-alobakin@pm.me>
+In-Reply-To: <CAPhsuW42Sv2EkMzVoh2+i=2NN2yMRHOqDN8wmXGPax2-cz8ynA@mail.gmail.com>
+References: <20220414223704.341028-1-alobakin@pm.me> <20220414223704.341028-3-alobakin@pm.me> <CAPhsuW42Sv2EkMzVoh2+i=2NN2yMRHOqDN8wmXGPax2-cz8ynA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANr-f5zzQ6_UsOdLZK7b-k5Jy4qhdGJ4_D2irK-S0FzhE5u3rQ@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H4,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,11 +82,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 16, 2022 at 12:04:20AM +0200, Gerhard Engleder wrote:
-> - vclock:   slow path with phc lookup (not changed)
+From: Song Liu <song@kernel.org>
+Date: Fri, 15 Apr 2022 16:24:41 -0700
 
-This one could really use caching.  (I know that isn't your patch, but
-maybe you can try to fix it?)
+> On Thu, Apr 14, 2022 at 3:45 PM Alexander Lobakin <alobakin@pm.me> wrote:
+> >
+> > When building bpftool with !CONFIG_PERF_EVENTS:
+> >
+> > skeleton/pid_iter.bpf.c:47:14: error: incomplete definition of type 'st=
+ruct bpf_perf_link'
+> >         perf_link =3D container_of(link, struct bpf_perf_link, link);
+> >                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > tools/bpf/bpftool/bootstrap/libbpf/include/bpf/bpf_helpers.h:74:22: not=
+e: expanded from macro 'container_of'
+> >                 ((type *)(__mptr - offsetof(type, member)));    \
+> >                                    ^~~~~~~~~~~~~~~~~~~~~~
+> > tools/bpf/bpftool/bootstrap/libbpf/include/bpf/bpf_helpers.h:68:60: not=
+e: expanded from macro 'offsetof'
+> >  #define offsetof(TYPE, MEMBER)  ((unsigned long)&((TYPE *)0)->MEMBER)
+> >                                                   ~~~~~~~~~~~^
+> > skeleton/pid_iter.bpf.c:44:9: note: forward declaration of 'struct bpf_=
+perf_link'
+> >         struct bpf_perf_link *perf_link;
+> >                ^
+> >
+> > &bpf_perf_link is being defined and used only under the ifdef.
+> > Move it out of the block and explicitly emit a BTF to fix
+> > compilation.
+> >
+> > Fixes: cbdaf71f7e65 ("bpftool: Add bpf_cookie to link output")
+> > Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+>
+> Similar to v1, this fix is weird to me. I hope we have can fix it in user
+> space.
+
+I've been thinking on this, but userspace is not provided with any
+autoconf.h definitions (only selftests have them), so its code must
+be sort of universal.
+Both this and 01/11 are compile time and due to imcomplete and/or
+absent BTF struct declarations. I'm not familiar with
+bpf_core_field_exists(), and it might be that it's able to solve
+01/11, but not this one. &bpf_perf_link must be present
+unconditionally, otherwise it won't be defined in the generated
+vmlinux.h at all.
 
 Thanks,
-Richard
+Al
+
