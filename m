@@ -2,136 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CD15503319
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 07:48:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A456503414
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 07:49:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229565AbiDPCKP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 22:10:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33090 "EHLO
+        id S229457AbiDPCEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 22:04:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229623AbiDPCHE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 22:07:04 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 755693A738;
-        Fri, 15 Apr 2022 19:04:08 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id b15so11726849edn.4;
-        Fri, 15 Apr 2022 19:04:08 -0700 (PDT)
+        with ESMTP id S229379AbiDPCEh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 22:04:37 -0400
+Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 717C31342DF;
+        Fri, 15 Apr 2022 18:54:01 -0700 (PDT)
+Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-dacc470e03so9414001fac.5;
+        Fri, 15 Apr 2022 18:54:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=K661SeVjfjm40/ajBVyDtl5qfOYlfB+1y0XGeMywF+w=;
-        b=XpLM2Q/7Ny4osrW3Ec9ro1rQR9RBXNcdhRPgPczdiPb9ze20vSUvjSzhPUKlMX+2Dc
-         rDBjB+dfEU4qJv+2FJ/uoo8JkpvF3oHd+cWRq6AKY07HKcy8CPBfezLm3ilNKrIeg+k2
-         2Vjv5PUwWu6SK9jouPsQ2sZZvXDo7V6loHSjz20aialUkIg6U7x9VqfjFDv6oyBrLNTB
-         nW+nMeQYp2kOs8ejApvuGGsY/S61Uon7NyT+ZgFOm16vRlJu2OQhFzJ9C8d4RfLBm3/f
-         1TZuNYvRyapTmNk8MIKehKZfpq+eyGJo5hyZlmPFqNeekF68PKaLATovp3Xnf0d7GtTS
-         JIlg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=JSSksXfSHT8J5RaVPGQ9iInEYYQkEPPrA2/YVmqRfXs=;
+        b=OU2Yqq+f86YpQJByLea2+P16BM8pxSSyWmk1uKVQm9hHeePVtZyDivMG10YhUTbIbw
+         r+Lg4uSnR7ZRcHD0wUaQVXk7g72nWv1DcdTSBMpdx/8GtKC46hUtiKnHIYly4HbNYgG3
+         3zZebYK2ItjOkSEAgK3SMa26KNQi3yvUXaNjwgxJpDW1K2lHXiNtUNmZl+bvvDvTGn99
+         WxBcq29+4inQvCgIUQbE5uowI1ykjtiwxpvSaHxU9AnAB+COJy4VQKeV9xHHuRYUbNl1
+         g2xuJEHq7422mYxkUjWKlBEeYl+vQp/FoxDHTTJpSzayNIsrn97+RnuOznmIx9PzbeUA
+         0SAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=K661SeVjfjm40/ajBVyDtl5qfOYlfB+1y0XGeMywF+w=;
-        b=1yDcT5vj7AsYExz7NVHK884gX9301MwKdrqfQ8IK6Hk5CUXATa7TZAbagkovSh5ZTi
-         Dh3bCyvY+T5pCW5LueXDmT22gKBtyq4SH8ex2VEDDzZoi/81QhIwM9R+xXNorwkRqrUU
-         vPJf1fSkHIbCWF6cVLcRLdUptKAHsKcBNv5uUQnw7SqsOm0w4iBM2g5rV2ZKZ/QANvCk
-         2XI9hg2q870uO0JkBA12ogTPdmtMb+nPe9/xZ1qYdhML4ML2QgoeiGYwwXfin6wAko3s
-         xj8lPr2HrFf6yNziaXilwfRmZwONTyt1oQMmQbLXpDaHXwzB64uSAI3m7IdVWlcTYHrN
-         V5SA==
-X-Gm-Message-State: AOAM532+7wpi3ehmR030KNsRmSku71OU73GURrQpvhODXzqTvAyAPu2b
-        xGH5W4yGCn6B1X58ZBAB83OvN+8kTK84qA==
-X-Google-Smtp-Source: ABdhPJxQhWdthcWPzvheVHKDxtEk6HLcxJeWC+KCsnMjRmtwRzwG3ztGQm/3vZdtZkwLCRVpugpBfA==
-X-Received: by 2002:a05:6000:14d:b0:207:a75a:ae0c with SMTP id r13-20020a056000014d00b00207a75aae0cmr990788wrx.398.1650072820100;
-        Fri, 15 Apr 2022 18:33:40 -0700 (PDT)
-Received: from [192.168.1.14] ([197.57.90.163])
-        by smtp.gmail.com with ESMTPSA id bs12-20020a056000070c00b00207a2c698b1sm4708190wrb.40.2022.04.15.18.33.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Apr 2022 18:33:39 -0700 (PDT)
-Message-ID: <78253f3a-cdca-166a-ee54-e2173b2be5a7@gmail.com>
-Date:   Sat, 16 Apr 2022 03:33:37 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=JSSksXfSHT8J5RaVPGQ9iInEYYQkEPPrA2/YVmqRfXs=;
+        b=Q0JfEQvsxc73HI8dA6GmBZpv9onAcdLcNezPV3aw7NgRqs/nTaqyV1wVqiI44b6SIB
+         hquFtnIlPAyFpDYsQn/N7wjYtwhS/66BwDnJ/xlHPOkX9R/bGmcxJ6Rt+5x5X1iHhOyj
+         hDizvy3qB+cJ5B6t81sdIceUOjrkIbp6NDHOFnEqAQNDeUJIk2DKkYeO60t+Oad8Np3c
+         0s/QxVgmoLQfxeDtoRpGkHDxwiGmStTtxlXxcUJTcHD5RkKLX+pLVRcgbeEBkkRPE8Ow
+         IvKZIlNCLWc7RcLi0Bkb1rSCKJ0bDVcAIFJcwkr2v1JnfReV7m06cQgqbsk1r2+dJZx7
+         Jw8A==
+X-Gm-Message-State: AOAM532Fl+tYP1oYBLsVZ5yJQKCmfScZ28rr+mEDJaDZNQDGWE8HWhOQ
+        7g/UEyWgzt1Ti1a6ekIUrjAyr99i+EG6iw==
+X-Google-Smtp-Source: ABdhPJw/Jj+ggFXWVzYqOMrwoGySpFgbznD2nqtFZEejK9A/D8nCrw3gYkqXuSkkRptU7a06zbilcw==
+X-Received: by 2002:a17:90b:1c8f:b0:1b8:c6dc:ca61 with SMTP id oo15-20020a17090b1c8f00b001b8c6dcca61mr1702855pjb.13.1650073476694;
+        Fri, 15 Apr 2022 18:44:36 -0700 (PDT)
+Received: from d3 ([2405:6580:97e0:3100:ae94:2ee7:59a:4846])
+        by smtp.gmail.com with ESMTPSA id q91-20020a17090a1b6400b001d0dcaf7920sm2917613pjq.6.2022.04.15.18.44.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Apr 2022 18:44:36 -0700 (PDT)
+Date:   Sat, 16 Apr 2022 10:44:30 +0900
+From:   Benjamin Poirier <benjamin.poirier@gmail.com>
+To:     Yihao Han <hanyihao@vivo.com>
+Cc:     Shahed Shaikh <shshaikh@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        GR-Linux-NIC-Dev@marvell.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@vivo.com
+Subject: Re: [PATCH v2] net: qlogic: qlcnic: simplify if-if to if-else
+Message-ID: <Yloffi2Og9bS2fds@d3>
+References: <20220415120949.86169-1-hanyihao@vivo.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] intel: igb: igb_ethtool.c: Convert kmap() to
- kmap_local_page()
-Content-Language: en-US
-To:     Ira Weiny <ira.weiny@intel.com>
-Cc:     outreachy@lists.linux.dev, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220415205307.675650-1-eng.alaamohamedsoliman.am@gmail.com>
- <Ylnmaji5bHHp8t3p@iweiny-desk3>
-From:   Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-In-Reply-To: <Ylnmaji5bHHp8t3p@iweiny-desk3>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-6.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220415120949.86169-1-hanyihao@vivo.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On ١٥‏/٤‏/٢٠٢٢ ٢٣:٤٠, Ira Weiny wrote:
-> On Fri, Apr 15, 2022 at 10:53:07PM +0200, Alaa Mohamed wrote:
->> The use of kmap() is being deprecated in favor of kmap_local_page()
->> where it is feasible.
->>
->> With kmap_local_page(), the mapping is per thread, CPU local and not
->> globally visible.
->>
->> Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
->> ---
->>   drivers/net/ethernet/intel/igb/igb_ethtool.c | 4 ++--
->>   1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
->> index 2a5782063f4c..ba93aa4ae6a0 100644
->> --- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
->> +++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
->> @@ -1798,14 +1798,14 @@ static int igb_check_lbtest_frame(struct igb_rx_buffer *rx_buffer,
->>   
->>   	frame_size >>= 1;
->>   
->> -	data = kmap(rx_buffer->page);
->> +	data = kmap_local_page(rx_buffer->page);
->>   
->>   	if (data[3] != 0xFF ||
->>   	    data[frame_size + 10] != 0xBE ||
->>   	    data[frame_size + 12] != 0xAF)
->>   		match = false;
->>   
->> -	kunmap(rx_buffer->page);
->> +	kunmap_local(rx_buffer->page);
-> kunmap_local() is different from kunmap().  It takes an address within the
-> mapped page.  From the kdoc:
->
-> /**
->   * kunmap_local - Unmap a page mapped via kmap_local_page().
->   * @__addr: An address within the page mapped
->   *
->   * @__addr can be any address within the mapped page.  Commonly it is the
->   * address return from kmap_local_page(), but it can also include offsets.
->   *
->   * Unmapping should be done in the reverse order of the mapping.  See
->   * kmap_local_page() for details.
->   */
-> #define kunmap_local(__addr)                                    \
+On 2022-04-15 05:09 -0700, Yihao Han wrote:
+> Replace `if (!pause->autoneg)` with `else` for simplification
+> according to the kernel coding style:
+> 
+> "Do not unnecessarily use braces where a single statement will do."
+> 
 > ...
-Got it , Thanks
->
->
-> Ira
->
->>   
->>   	return match;
->>   }
->> -- 
->> 2.35.2
->>
+> 
+> "This does not apply if only one branch of a conditional statement is
+> a single statement; in the latter case use braces in both branches"
+> 
+> Please refer to:
+> https://www.kernel.org/doc/html/v5.17-rc8/process/coding-style.html
+
+This commit log is even more confusing than v1. Only the first line is
+correct.
+
+> 
+> Suggested-by: Benjamin Poirier <benjamin.poirier@gmail.com>
+
+I did not suggest this change. Please remove the tag.
+
+> Signed-off-by: Yihao Han <hanyihao@vivo.com>
+> ---
+> v2:edit commit message
+> ---
+>  drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c
+> index bd0607680329..e3842eaf1532 100644
+> --- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c
+> +++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c
+> @@ -3752,7 +3752,7 @@ int qlcnic_83xx_set_pauseparam(struct qlcnic_adapter *adapter,
+>  	if (ahw->port_type == QLCNIC_GBE) {
+>  		if (pause->autoneg)
+>  			ahw->port_config |= QLC_83XX_ENABLE_AUTONEG;
+> -		if (!pause->autoneg)
+> +		else
+>  			ahw->port_config &= ~QLC_83XX_ENABLE_AUTONEG;
+>  	} else if ((ahw->port_type == QLCNIC_XGBE) && (pause->autoneg)) {
+>  		return -EOPNOTSUPP;
+> -- 
+> 2.17.1
+> 
