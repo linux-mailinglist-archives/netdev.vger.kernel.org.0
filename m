@@ -2,74 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D5F8D503480
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 08:39:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DA5E503493
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 08:56:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229799AbiDPGlz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Apr 2022 02:41:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53640 "EHLO
+        id S229691AbiDPG7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Apr 2022 02:59:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229704AbiDPGlz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 02:41:55 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94E90100E16
-        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 23:39:24 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1650091148; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=VjG8/QtTVmOmZvRl2Gl7xyLanYbXVwZ33MH3IIVgstDEeEfRAVmjTVZJ1yLPi8QYnRPjyeKNO0vOXcC1YDEMowWdo4bsrR5mqDR0Vvq/iEMTkd/qn4o2lL9SCLyTicEaAI5XJv9rIaEHoZ0ANDV8IntVFMxZez82MogdWiEPoJo=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1650091148; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=IT0sSFhEplyIaeKs9Na8MCumOdpRDb1FwNl66TqyNaw=; 
-        b=aaVEt9qebl8lFQnTwuEZ5sqfi2EiG4nDou7nVoDfobtlecw7G4d2iaW2DZH+IZovXRPvDkRLMuiLRD0ugjsGdpumNpvlDFzvXS27aehjeh57qDw3v41VN8HyPcCvkXs04DiGObbdm22jF/Cq03OmGjgoLH4jjXfVfdszTwc16+8=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1650091148;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=IT0sSFhEplyIaeKs9Na8MCumOdpRDb1FwNl66TqyNaw=;
-        b=NQ8B/VDqF9+naPwEiO/H0Q1V/tpYO1bxv8o5dP2BcPdcjFXreJ2eqxed9pQ6NJ7O
-        j3uNRMSUqx/h/4kDe8b11z9AvvQClYhKlaoKZNNQfHJj/f7K0T10SwR4lTXtJ2vYi89
-        NP5oTF7YODxmyt6GPmftkepAqkpDR/XLFWh/8aN0=
-Received: from [10.10.10.3] (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
-        with SMTPS id 1650091146352648.4518782847122; Fri, 15 Apr 2022 23:39:06 -0700 (PDT)
-Message-ID: <8a0af01d-026a-1f44-3958-efd933febf95@arinc9.com>
-Date:   Sat, 16 Apr 2022 09:38:58 +0300
+        with ESMTP id S229445AbiDPG7I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 02:59:08 -0400
+Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183B715FC5;
+        Fri, 15 Apr 2022 23:56:38 -0700 (PDT)
+Received: by mail-qk1-x734.google.com with SMTP id e10so7960933qka.6;
+        Fri, 15 Apr 2022 23:56:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=punmqzR82m/ivhuuKbOeeSpij9rdVwj6dBLRCcjDN2k=;
+        b=i9cqRmdeTs/dXZI7D8kVcvX7nKhAwVdRcsrrwV0udpeEz8u7vILSkXeM6Y4ILBwLw8
+         8vo5kZ1OpuvzjvqTf1HFeDTKoIjZ3dPKmhQboel8qI974hmxHwWLFUgsJNBUVEjw+Tc6
+         kL2AsD9EAsTN+etwV5KUcpvxVUXCVNLj7No/z6ySWd/UQPvsJXld/Ne2ur4Qh5dZkDMs
+         NVMTGlHHChISbR5xF6QAxi1kd9sFXWZxFSvDrV+fzbtmH4ROgYXbxibN+7iaiBKKMlo7
+         csRB5we2ap8f6joUB0iF3pPQT1DiNQCDPjN73JxXkn/llWZ2F5PBI5wzgrcfeC3Jkjmb
+         uaqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=punmqzR82m/ivhuuKbOeeSpij9rdVwj6dBLRCcjDN2k=;
+        b=d9YExKATJmhUa09dPHJ6Zmh2X3Dg+7fJZ4rHiZNQMVK++ND8lNUV91qrN7+RJSjat5
+         AMeM6xFXjyuvTwUJupKy8iO71JvPrahGF0S1kKV5WpK08H+UPVS1jD1V3eAy4OwNDUVC
+         OyF949SW77fTndSDnBNfhvyyqH0CfvSSTnD+RCGMAAIB8VBAJ0tF2JOL2u03YCWr2Hem
+         KsPyDVfG90k+g1Jf3DP5YUblO3sGiwQgIEXOQvRsA0aXGix54qMROc26sPUi/w9EUA7a
+         oFUmPl3PTRdm4pMNxAed6lrAuaUE7A/qxhRxpJenevJUrCNy6ESKnG8IdFGN1VtDOscV
+         oNlw==
+X-Gm-Message-State: AOAM532Udbm/PoQV6QYLG3oULQK7xiscRQNbniZpbnPH/e6s/AUkCk6t
+        RxaX/RRC6uTmwXE3If8gDQ==
+X-Google-Smtp-Source: ABdhPJze666BWXOZ7v9o1b6NG80dduEFjgHheOq3DDDAfADinL6HdmzmCwEKN6ASVTQtu2Maih3mqA==
+X-Received: by 2002:a05:620a:bd4:b0:47b:4c75:894e with SMTP id s20-20020a05620a0bd400b0047b4c75894emr1303721qki.425.1650092197189;
+        Fri, 15 Apr 2022 23:56:37 -0700 (PDT)
+Received: from bytedance (ec2-13-57-97-131.us-west-1.compute.amazonaws.com. [13.57.97.131])
+        by smtp.gmail.com with ESMTPSA id d8-20020ac85d88000000b002f18ecfd221sm4087252qtx.82.2022.04.15.23.56.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Apr 2022 23:56:36 -0700 (PDT)
+Date:   Fri, 15 Apr 2022 23:56:33 -0700
+From:   Peilin Ye <yepeilin.cs@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Feng Zhou <zhoufeng.zf@bytedance.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 2/2] ip6_gre: Fix skb_under_panic in __gre6_xmit()
+Message-ID: <20220416065633.GA10882@bytedance>
+References: <c5b7dc6020c93a1e7b40bc472fcdb6429999473e.1649715555.git.peilin.ye@bytedance.com>
+ <9cd9ca4ac2c19be288cb8734a86eb30e4d9e2050.1649715555.git.peilin.ye@bytedance.com>
+ <20220414131424.744aa842@kernel.org>
+ <20220414200854.GA2729@bytedance>
+ <20220415191133.0597a79a@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH net 2/2] net: dsa: realtek: remove realtek,rtl8367s string
-Content-Language: en-US
-To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        netdev@vger.kernel.org
-Cc:     linus.walleij@linaro.org, alsi@bang-olufsen.dk, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        robh+dt@kernel.org, krzk+dt@kernel.org
-References: <20220416062504.19005-1-luizluca@gmail.com>
- <20220416062504.19005-2-luizluca@gmail.com>
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <20220416062504.19005-2-luizluca@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-6.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220415191133.0597a79a@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 16/04/2022 09:25, Luiz Angelo Daros de Luca wrote:
-> There is no need to add new compatible strings for each new supported
-> chip version. The compatible string is used only to select the subdriver
-> (rtl8365mb.c or rtl8366rb). Once in the subdriver, it will detect the
+On Fri, Apr 15, 2022 at 07:11:33PM +0200, Jakub Kicinski wrote:
+> On Thu, 14 Apr 2022 13:08:54 -0700 Peilin Ye wrote:
+> > > We should also reject using SEQ with collect_md, but that's a separate
+> > > issue.  
+> > 
+> > Could you explain this a bit more?  It seems that commit 77a5196a804e
+> > ("gre: add sequence number for collect md mode.") added this
+> > intentionally.
+> 
+> Interesting. Maybe a better way of dealing with the problem would be
+> rejecting SEQ if it's not set on the device itself.
 
-Might as well call the subdriver rtl8365mb like rtl8366rb since you're 
-going to send a v2 anyway.
+According to ip-link(8), the 'external' option is mutually exclusive
+with the '[o]seq' option.  In other words, a collect_md mode IP6GRETAP
+device should always have the TUNNEL_SEQ flag off in its
+'tunnel->parms.o_flags'.
 
-Arınç
+(However, I just tried:
+
+  $ ip link add dev ip6gretap11 type ip6gretap oseq external
+					       ^^^^ ^^^^^^^^
+ ...and my 'ip' executed it with no error.  I will take a closer look at
+ iproute2 later; maybe it's undefined behavior...)
+
+How about:
+
+1. If 'external', then 'oseq' means "always turn off NETIF_F_LLTX, so
+it's okay to set TUNNEL_SEQ in e.g. eBPF";
+
+2. Otherwise, if 'external' but NOT 'oseq', then whenever we see a
+TUNNEL_SEQ in skb's tunnel info, we do something like WARN_ONCE() then
+return -EINVAL.
+
+?
+
+> When the device is set up without the SEQ bit enabled it disables Tx
+> locking (look for LLTX). This means that multiple CPUs can try to do
+> the tunnel->o_seqno++ in parallel. Not catastrophic but racy for sure.
+
+Thanks for the explanation!  At first glance, I was wondering why don't
+we make 'o_seqno' atomic until I found commit b790e01aee74 ("ip_gre:
+lockless xmit").  I quote:
+
+"""
+Even using an atomic_t o_seq, we would increase chance for packets being
+out of order at receiver.
+"""
+
+I don't fully understand this out-of-order yet, but it seems that making
+'o_seqno' atomic is not an option?
+
+Thanks,
+Peilin Ye
+
