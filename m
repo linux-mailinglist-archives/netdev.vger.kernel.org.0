@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 971D55035A4
+	by mail.lfdr.de (Postfix) with ESMTP id 4F6665035A3
 	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 11:21:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231314AbiDPJXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Apr 2022 05:23:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42400 "EHLO
+        id S231130AbiDPJXY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Apr 2022 05:23:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229823AbiDPJW6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 05:22:58 -0400
+        with ESMTP id S230299AbiDPJXL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 05:23:11 -0400
 Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net (zg8tmty1ljiyny4xntqumjca.icoremail.net [165.227.154.27])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id BC5E4107809
-        for <netdev@vger.kernel.org>; Sat, 16 Apr 2022 02:20:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 80A0212A92
+        for <netdev@vger.kernel.org>; Sat, 16 Apr 2022 02:20:28 -0700 (PDT)
 Received: from 102.localdomain (unknown [58.23.249.10])
-        by app1 (Coremail) with SMTP id xjNnewA36DErilpi+B0VAA--.37S2;
-        Sat, 16 Apr 2022 17:19:40 +0800 (CST)
+        by app1 (Coremail) with SMTP id xjNnewA36DErilpi+B0VAA--.37S3;
+        Sat, 16 Apr 2022 17:20:05 +0800 (CST)
 From:   Pengcheng Yang <yangpc@wangsu.com>
 To:     Eric Dumazet <edumazet@google.com>,
         Neal Cardwell <ncardwell@google.com>,
@@ -24,51 +24,122 @@ To:     Eric Dumazet <edumazet@google.com>,
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Pengcheng Yang <yangpc@wangsu.com>
-Subject: [PATCH net-next v2 0/2] tcp: ensure rate sample to use the most recently sent skb
-Date:   Sat, 16 Apr 2022 17:19:07 +0800
-Message-Id: <1650100749-10072-1-git-send-email-yangpc@wangsu.com>
+Subject: [PATCH net-next v2 1/2] tcp: ensure to use the most recently sent skb when filling the rate sample
+Date:   Sat, 16 Apr 2022 17:19:08 +0800
+Message-Id: <1650100749-10072-2-git-send-email-yangpc@wangsu.com>
 X-Mailer: git-send-email 1.8.3.1
-X-CM-TRANSID: xjNnewA36DErilpi+B0VAA--.37S2
-X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
-        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUY47CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
-        6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_GFWl
-        42xK82IYc2Ij64vIr41l42xK82IY6x8ErcxFaVAv8VW5Jr1UJr1UMxC20s026xCaFVCjc4
-        AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE
-        17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMI
-        IF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4l
-        IxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvf
-        C2KfnxnUUI43ZEXa7VUbgyCJUUUUU==
+In-Reply-To: <1650100749-10072-1-git-send-email-yangpc@wangsu.com>
+References: <1650100749-10072-1-git-send-email-yangpc@wangsu.com>
+X-CM-TRANSID: xjNnewA36DErilpi+B0VAA--.37S3
+X-Coremail-Antispam: 1UD129KBjvJXoWxAF1DAw1rAFWUKr1kJr45Awb_yoW5tFyxpF
+        Wvkr9xWr1kJrWrtrn7tw4kJw1F9ws5Gr1fWFWDuw1YywsxG34xWF1ktryUtay5WFZ2yFWf
+        tw1qgF1Uu3WDWFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvF1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
+        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
+        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r10
+        6r15McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
+        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAFwVW8uwCF04k20xvY0x0EwIxG
+        rwCF04k20xvE74AGY7Cv6cx26ryUJr1UJr1l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxV
+        Aqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r12
+        6r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6x
+        kF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AK
+        xVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvj
+        fUOOzVUUUUU
 X-CM-SenderInfo: p1dqw1nf6zt0xjvxhudrp/
 X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
         RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
-        T_SPF_TEMPERROR autolearn=ham autolearn_force=no version=3.4.6
+        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch ensure to use the most recently sent skb
-when filling the rate sample. And make RACK and rate
-sample share the use of tcp_skb_sent_after() helper.
+If an ACK (s)acks multiple skbs, we favor the information
+from the most recently sent skb by choosing the skb with
+the highest prior_delivered count. But in the interval
+between receiving ACKs, we send multiple skbs with the same
+prior_delivered, because the tp->delivered only changes
+when we receive an ACK.
 
-v2: introduce a new help function tcp_skb_sent_after()
+We used RACK's solution, copying tcp_rack_sent_after() as
+tcp_skb_sent_after() helper to determine "which packet was
+sent last?". Later, we will use tcp_skb_sent_after() instead
+in RACK.
 
-Pengcheng Yang (2):
-  tcp: ensure to use the most recently sent skb when filling the rate
-    sample
-  tcp: use tcp_skb_sent_after() instead in RACK
+Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
+Cc: Neal Cardwell <ncardwell@google.com>
+---
+ include/net/tcp.h   |  6 ++++++
+ net/ipv4/tcp_rate.c | 11 ++++++++---
+ 2 files changed, 14 insertions(+), 3 deletions(-)
 
- include/net/tcp.h       |  6 ++++++
- net/ipv4/tcp_rate.c     | 11 ++++++++---
- net/ipv4/tcp_recovery.c | 15 +++++----------
- 3 files changed, 19 insertions(+), 13 deletions(-)
-
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 6d50a66..fcd69fc 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -1042,6 +1042,7 @@ struct rate_sample {
+ 	int  losses;		/* number of packets marked lost upon ACK */
+ 	u32  acked_sacked;	/* number of packets newly (S)ACKed upon ACK */
+ 	u32  prior_in_flight;	/* in flight before this ACK */
++	u32  last_end_seq;	/* end_seq of most recently ACKed packet */
+ 	bool is_app_limited;	/* is sample from packet with bubble in pipe? */
+ 	bool is_retrans;	/* is sample from retransmission? */
+ 	bool is_ack_delayed;	/* is this (likely) a delayed ACK? */
+@@ -1158,6 +1159,11 @@ void tcp_rate_gen(struct sock *sk, u32 delivered, u32 lost,
+ 		  bool is_sack_reneg, struct rate_sample *rs);
+ void tcp_rate_check_app_limited(struct sock *sk);
+ 
++static inline bool tcp_skb_sent_after(u64 t1, u64 t2, u32 seq1, u32 seq2)
++{
++	return t1 > t2 || (t1 == t2 && after(seq1, seq2));
++}
++
+ /* These functions determine how the current flow behaves in respect of SACK
+  * handling. SACK is negotiated with the peer, and therefore it can vary
+  * between different flows.
+diff --git a/net/ipv4/tcp_rate.c b/net/ipv4/tcp_rate.c
+index 617b818..a8f6d9d 100644
+--- a/net/ipv4/tcp_rate.c
++++ b/net/ipv4/tcp_rate.c
+@@ -74,27 +74,32 @@ void tcp_rate_skb_sent(struct sock *sk, struct sk_buff *skb)
+  *
+  * If an ACK (s)acks multiple skbs (e.g., stretched-acks), this function is
+  * called multiple times. We favor the information from the most recently
+- * sent skb, i.e., the skb with the highest prior_delivered count.
++ * sent skb, i.e., the skb with the most recently sent time and the highest
++ * sequence.
+  */
+ void tcp_rate_skb_delivered(struct sock *sk, struct sk_buff *skb,
+ 			    struct rate_sample *rs)
+ {
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	struct tcp_skb_cb *scb = TCP_SKB_CB(skb);
++	u64 tx_tstamp;
+ 
+ 	if (!scb->tx.delivered_mstamp)
+ 		return;
+ 
++	tx_tstamp = tcp_skb_timestamp_us(skb);
+ 	if (!rs->prior_delivered ||
+-	    after(scb->tx.delivered, rs->prior_delivered)) {
++	    tcp_skb_sent_after(tx_tstamp, tp->first_tx_mstamp,
++			       scb->end_seq, rs->last_end_seq)) {
+ 		rs->prior_delivered_ce  = scb->tx.delivered_ce;
+ 		rs->prior_delivered  = scb->tx.delivered;
+ 		rs->prior_mstamp     = scb->tx.delivered_mstamp;
+ 		rs->is_app_limited   = scb->tx.is_app_limited;
+ 		rs->is_retrans	     = scb->sacked & TCPCB_RETRANS;
++		rs->last_end_seq     = scb->end_seq;
+ 
+ 		/* Record send time of most recently ACKed packet: */
+-		tp->first_tx_mstamp  = tcp_skb_timestamp_us(skb);
++		tp->first_tx_mstamp  = tx_tstamp;
+ 		/* Find the duration of the "send phase" of this window: */
+ 		rs->interval_us = tcp_stamp_us_delta(tp->first_tx_mstamp,
+ 						     scb->tx.first_tx_mstamp);
 -- 
 1.8.3.1
 
