@@ -2,93 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F4095037E9
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 21:20:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C37CF5037EB
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 21:29:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232788AbiDPTVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Apr 2022 15:21:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53602 "EHLO
+        id S232266AbiDPTcK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Apr 2022 15:32:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232171AbiDPTVA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 15:21:00 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B8FE457B9;
-        Sat, 16 Apr 2022 12:18:27 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id 32so11958907pgl.4;
-        Sat, 16 Apr 2022 12:18:27 -0700 (PDT)
+        with ESMTP id S230141AbiDPTcJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 15:32:09 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DB3164719;
+        Sat, 16 Apr 2022 12:29:36 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id q19so11989820pgm.6;
+        Sat, 16 Apr 2022 12:29:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=cEiFYO7CvfRyx2lxfp/dzLomivsTy3qKaQW3t/1AfgA=;
-        b=hjhW4uwSoiJ3c41yfoxcSod5NklVn46w57mFDsyZSSAbFNscq7GfEDF2n69+jgBU/F
-         ZhCf4FjSWojzwk+zZGwcEbar4ct/cbGfd2eveL/hB7gga5rsGJy7MENwxAGaVcc5pIo2
-         EQIUYVmcm/ZID7UwqnIIxLDG/kPCxRKGpvywa3K8oyasbskgiAfNYJJ1vOl3XlIKBeCp
-         xMdcpw05UCMjFnGsOYsm3qkFUOOyNo2QzfYIQkzYDbCxzdTC4B/dDlBNYLQW1iH5MTX8
-         LD7nBPDyLaKRH29NiZbn3WYCc/vxBJczs183CgGDAeBiBPSHBiMzYnbYaY2lHcWe0U7K
-         4iBg==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=/BjQcKMSDpf6lmiVBQLJmYeoCiRDmu7xV/pJ44ZnW90=;
+        b=XWUs9NjXbkOGguNEF20D+RRHlWIYhvJ7lvqgCAH9Q7Q4auORjrZtYxTiFy3EarvtLS
+         4NEt9N6FW1u9i1Fkry6VTe9qZ9thmU5/3F4fTY9sKsRF0tvQHvSddOWRD1S+gVtdnxL2
+         S+jefNoSKvIyHNX5YaVq6Pb4/Y5Q39Rxth3KSKvj0g4MJGGXesKGJUTfjYBGgqAvP5YM
+         Ebvu+n2vMxzNGW9mYY30PUu2edXo6ZN+SCShmk7RgbB9LY5VnNaPuOSKzjGXnKJk0djn
+         3B6fgg3Md958BBGZFNIOuOien6x72+/15mvqxFoAtMpYwZ/W6PIX/IzMIs60I3O5AArx
+         8Agg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=cEiFYO7CvfRyx2lxfp/dzLomivsTy3qKaQW3t/1AfgA=;
-        b=WAuE0/o8S7gSjztp3gHwXiMwCFMZRIPKKkL41MUB0kgB9Xo0FxFF7TTvulvyM6WGu6
-         6BmldKU4rLt0GI8Rlcu/sxQBOJ9OHc4nEiTha95dhkDTc8Nyhh5T19cX0tmKWs+mfDZ4
-         u8IqAAubpXnjSUipSuWknkRhrTA1gSHmmFM0R+Z1YtTiVQfd1YYa/g+Q/0QmXe4Oy9T6
-         fpqufM5AENRgfMZ8AmiZWFVA/QlU429l4fNzw9k6nPvIuR6Ir+pfoNS0EZ9ZW2CB4E/R
-         +BjdeNeaQpWq8vY6TleqIxELa6CXdSJ6UkI2asa8k1mn9iylb2b40mWGtw8mXZOJab6I
-         wXJA==
-X-Gm-Message-State: AOAM533SpNDA64hmoM+VxnUU6BAYTfaXCIG6FTEigsaVR2kEqy1SvycH
-        fzolZCNZrgBzT/AJA5QZST8=
-X-Google-Smtp-Source: ABdhPJzgLqlNi+iTW3XfsMmksrs4Si6d6BxNd3yiSJYhM4GHXT37Bc+odwKwilPJVYOUYvT/NjF8gw==
-X-Received: by 2002:a05:6a00:140f:b0:4e0:6995:9c48 with SMTP id l15-20020a056a00140f00b004e069959c48mr4780091pfu.59.1650136707150;
-        Sat, 16 Apr 2022 12:18:27 -0700 (PDT)
-Received: from Negi ([207.151.52.3])
-        by smtp.gmail.com with ESMTPSA id d5-20020a17090acd0500b001b9c05b075dsm11913701pju.44.2022.04.16.12.18.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 Apr 2022 12:18:26 -0700 (PDT)
-From:   Soumya Negi <soumya.negi97@gmail.com>
-To:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
-        Coiby Xu <coiby.xu@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, outreachy@lists.linux.dev
-Cc:     Soumya Negi <soumya.negi97@gmail.com>
-Subject: [PATCH v2] staging: qlge: add blank line after function declaration
-Date:   Sat, 16 Apr 2022 12:17:45 -0700
-Message-Id: <20220416191745.7079-1-soumya.negi97@gmail.com>
-X-Mailer: git-send-email 2.17.1
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=/BjQcKMSDpf6lmiVBQLJmYeoCiRDmu7xV/pJ44ZnW90=;
+        b=j7M5ljoCjeVCJiy493lGu6ZRk1rFo/ztgK6NC6I5v/TmI7bYwGcm7vnnR0S5H5r+rn
+         XwBGxbgy+hplZaVUOiEKs83lTYdrhv5U1HlAPynZGWX5XJ0pHyZfBb72kFn5muCB/MkB
+         9mRE04dRrC53hHIkXeEg6IAZZZQt03fM/TygFZbZmL2XVs+SX8bz7d9PpL3VuYOs7Qz7
+         YLfmGt1Q1PSt2WwVRbPIdGYx3sIssJZBYq7izSIA4nhnK6V9V6J9BVHHtYPAl+3vhzqJ
+         atavSCuXue+bj2WM3XPRfKPp1nYc4FxJEVaNS3voAlTWPdQNYtAwWRAg6XNDD6p2RkNj
+         9k1A==
+X-Gm-Message-State: AOAM532GJ/z6n0uLuqBIwcceCNk3Hie2HW0vrZISPg63wkX1CB7puceY
+        Biu0qSf7vesOrq9ZFxHvAeo=
+X-Google-Smtp-Source: ABdhPJxdn769OvVq9eNtDKecb7ES7BNuMzkn1YDbaXJCCdilsJanqpA40oHRThkZaNOEPOpebxxv+A==
+X-Received: by 2002:a05:6a00:cc4:b0:505:6998:69b8 with SMTP id b4-20020a056a000cc400b00505699869b8mr4618837pfv.19.1650137375805;
+        Sat, 16 Apr 2022 12:29:35 -0700 (PDT)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id w60-20020a17090a6bc200b001cbc1a6963asm8611728pjj.29.2022.04.16.12.29.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 16 Apr 2022 12:29:35 -0700 (PDT)
+Message-ID: <d4419373-c576-a7ef-09f7-2bf18ad8f0db@gmail.com>
+Date:   Sat, 16 Apr 2022 12:29:33 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH net-next v3] docs: net: dsa: describe issues with checksum
+ offload
+Content-Language: en-US
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        netdev@vger.kernel.org
+Cc:     linux-doc@vger.kernel.org, tobias@waldekranz.com, andrew@lunn.ch,
+        vladimir.oltean@nxp.com, corbet@lwn.net, kuba@kernel.org,
+        davem@davemloft.net
+References: <20220416052737.25509-1-luizluca@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220416052737.25509-1-luizluca@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adhere to linux coding style. Reported by checkpatch:
-CHECK: Please use a blank line after function/struct/union/enum declarations
 
-Signed-off-by: Soumya Negi <soumya.negi97@gmail.com>
----
-Changes in v2:
-  - Correct commit message.
----
- drivers/staging/qlge/qlge.h | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/staging/qlge/qlge.h b/drivers/staging/qlge/qlge.h
-index 55e0ad759250..d0dd659834ee 100644
---- a/drivers/staging/qlge/qlge.h
-+++ b/drivers/staging/qlge/qlge.h
-@@ -2072,6 +2072,7 @@ struct qlge_adapter *netdev_to_qdev(struct net_device *ndev)
- 
- 	return ndev_priv->qdev;
- }
-+
- /*
-  * The main Adapter structure definition.
-  * This structure has all fields relevant to the hardware.
+On 4/15/2022 10:27 PM, Luiz Angelo Daros de Luca wrote:
+> DSA tags before IP header (categories 1 and 2) or after the payload (3)
+> might introduce offload checksum issues.
+> 
+> Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+> Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.17.1
-
+Florian
