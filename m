@@ -2,106 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 05DB7503516
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 10:13:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A01F503524
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 10:17:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230177AbiDPIPr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Apr 2022 04:15:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49176 "EHLO
+        id S230307AbiDPIT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Apr 2022 04:19:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229837AbiDPIPq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 04:15:46 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C56A49F11
-        for <netdev@vger.kernel.org>; Sat, 16 Apr 2022 01:13:15 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id i24-20020a17090adc1800b001cd5529465aso8689188pjv.0
-        for <netdev@vger.kernel.org>; Sat, 16 Apr 2022 01:13:15 -0700 (PDT)
+        with ESMTP id S230161AbiDPIT1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 04:19:27 -0400
+Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0395A15A3C;
+        Sat, 16 Apr 2022 01:16:57 -0700 (PDT)
+Received: by mail-qv1-xf2a.google.com with SMTP id kl29so7808553qvb.2;
+        Sat, 16 Apr 2022 01:16:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=KeMi8W+p20zdR41YZoRj2EapY7imNsLYkAgQIQsIzqY=;
-        b=gCTOHe0CYc8qSmNwyNiVlTuwBLX5pCrf2raldTHagK50t2A6fNjs8o4ZyRDUDHEuos
-         G6wKKEir4wHfqvG4lWlEq2j57LfACpYEn/hn2dp/kVDWBcoPZ9E1EAYiSPyEaWeH2hg4
-         2ba9pSFDA1SBjHhazDASylBQeKjPMQRkX5qU1wpEYTPDaBXsrEAqytb4Tq0ZuqsLPwvi
-         DXoOqax+EXdx5Sr8yw36qq2MTDSL+0eRYu3oVUNypH8VY7tpC/EAIr63b1KBEWM1M/mc
-         KjyrgkvKKwQ0ZJFyUP8Ydo3THghXvhZJZKX+p+e3c5AqNfvgzwOxAv55TV3p0df/d2l3
-         pImA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=uZHCzWAZCF54H9l8o4Fov+TpziM3IgLdlvWuOde2Hlw=;
+        b=Gn//A44OZ9VIhXCSQRhhD9YlLcsIXv+T7gjBpJ5gl01mdcddI/NTjwmOo+HLm5/xRA
+         W4ei2Z+/2BnN7cF9EOdNGXaQsrCzayzpkhkIImtSdmD2Z6dWxWSkqZqh5e5VVBYrEWce
+         HuOhgn8GiolvPs6YngcUESziI8keS7+4SL6Z1a6isSqPqMWjQwIhH5K9BngBT3UnKg7W
+         /pgFmpbtWGw5SOjTibKuzLvYpnLnxBUN1EwZ5dzxteSP5AnUhb2QyjRYipMUYBJFUAGe
+         3Y8mSvOppqBfRnGO41CXZm2sE1X0b4sonx12cxVXODY0JR8t0Lhd9qZw76RRChPNXITM
+         wn8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=KeMi8W+p20zdR41YZoRj2EapY7imNsLYkAgQIQsIzqY=;
-        b=NbV/J7AWhMEpfc6vwYs7WtshNLboVpofGG5svZ8WUgwXA1exGUfh/1fhRefQb09R+w
-         G4H1vvlEH7yiYwdksTC0kYCL+M/ItP/InJyxZ90/ae03fAOp77bcBm0/HAdPf/zXHf+T
-         ZXOXgeivMpmd668M2BfyktJ4LNjsJWvR5kfUsPe8x5xxOzYzBaGYr1m3u/q0noVzbRxa
-         kGB3Uz8UcXPr/GX508v/VkIOjn8mjGBZJmc9zGZs896rk+8Sin4N6cm6isd/ijJxMusK
-         L75rQxDOJa+zkABwH2MBINOjI+OjWWbIXO9eMK0bqImdHvaedHfiVqJXvHzkauZflI5J
-         ChoA==
-X-Gm-Message-State: AOAM532i0qtdRV4aR1X17u0lZEkkW20hNOWxsvN1jY5OYZVpFKhGgkJU
-        rD+uZe29CJatUlCei9FQw1Cl870EJ6fgoMbWn5k=
-X-Google-Smtp-Source: ABdhPJzt3Pa6ZlGiOCOFzRcQfbTefGS0l7dFpER+uumD7nebpfqoIL6+QG7qd0lmvfHf9EkMFkHlgDicDP1+TCDFPfY=
-X-Received: by 2002:a17:903:1d0:b0:158:d4c7:99c2 with SMTP id
- e16-20020a17090301d000b00158d4c799c2mr2603030plh.63.1650096794625; Sat, 16
- Apr 2022 01:13:14 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=uZHCzWAZCF54H9l8o4Fov+TpziM3IgLdlvWuOde2Hlw=;
+        b=zNuk04i265preBDJokwARTY2OGDPwJNYpxGQcT0t/932y4gGFg16/J3dMEy4Enqku5
+         YtyyeIYlmR5Wrt+9UKENQz5vFoq017g2X7J1au+rEBuAvMeh11llgY4COB1TvDWbciU2
+         zjrtLpWAXxSFu4P2B5gUR2QAzLAme2Wl0lcRqDcQ7U8EXivcK5qp2Fq+3fGhYKdbE0+Y
+         x1BERnkisi50qbKkxeLjbAXSi0aQXwaxzQRqUJqPmIvcfCbXhZJL3JN624taiVEJqU4O
+         nz+KbX03l5q7Bcz4i8MfyNoev0USvkyuBAXS0cLLpEoXynfO1nh7AYxQ2XmTyQOP38M7
+         2hMQ==
+X-Gm-Message-State: AOAM5313EyOzS7gacLLjykCXIQgvOc4q/irHO2lJWJnxN1Qg+rLGYKOv
+        aAihMraG2USS39oAmELFJcf0N0HuJg==
+X-Google-Smtp-Source: ABdhPJwXlUfOf0YOaRQOksXz/q++G39mW3V1vbRT/E4O/CBmdB+2j6fwCz3hhVCtaK2sqkj0pTxO1Q==
+X-Received: by 2002:a05:6214:1ccd:b0:443:652e:69d with SMTP id g13-20020a0562141ccd00b00443652e069dmr1933166qvd.114.1650097016083;
+        Sat, 16 Apr 2022 01:16:56 -0700 (PDT)
+Received: from bytedance (ec2-13-57-97-131.us-west-1.compute.amazonaws.com. [13.57.97.131])
+        by smtp.gmail.com with ESMTPSA id o3-20020a05622a008300b002ef3ba485c0sm4354786qtw.6.2022.04.16.01.16.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 16 Apr 2022 01:16:55 -0700 (PDT)
+Date:   Sat, 16 Apr 2022 01:16:52 -0700
+From:   Peilin Ye <yepeilin.cs@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Feng Zhou <zhoufeng.zf@bytedance.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 2/2] ip6_gre: Fix skb_under_panic in __gre6_xmit()
+Message-ID: <20220416081652.GA11007@bytedance>
+References: <c5b7dc6020c93a1e7b40bc472fcdb6429999473e.1649715555.git.peilin.ye@bytedance.com>
+ <9cd9ca4ac2c19be288cb8734a86eb30e4d9e2050.1649715555.git.peilin.ye@bytedance.com>
+ <20220414131424.744aa842@kernel.org>
+ <20220414200854.GA2729@bytedance>
+ <20220415191133.0597a79a@kernel.org>
+ <20220416065633.GA10882@bytedance>
+ <20220416093320.13f4ba1d@kernel.org>
 MIME-Version: 1.0
-Received: by 2002:a05:7300:640e:b0:5c:e92b:3eb5 with HTTP; Sat, 16 Apr 2022
- 01:13:13 -0700 (PDT)
-Reply-To: danielseyba@yahoo.com
-From:   Seyba Daniel <ceez281990@gmail.com>
-Date:   Sat, 16 Apr 2022 10:13:13 +0200
-Message-ID: <CAN8=WHxuxzBQQTpV6dvk3A2AABsy7SKgz-R3PFpTsac=vniW5w@mail.gmail.com>
-Subject: Hello,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.5 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:1042 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [ceez281990[at]gmail.com]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [ceez281990[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.7 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220416093320.13f4ba1d@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sat, Apr 16, 2022 at 09:33:20AM +0200, Jakub Kicinski wrote:
+> On Fri, 15 Apr 2022 23:56:33 -0700 Peilin Ye wrote:
+> > On Fri, Apr 15, 2022 at 07:11:33PM +0200, Jakub Kicinski wrote:
+> > > > Could you explain this a bit more?  It seems that commit 77a5196a804e
+> > > > ("gre: add sequence number for collect md mode.") added this
+> > > > intentionally.  
+> > > 
+> > > Interesting. Maybe a better way of dealing with the problem would be
+> > > rejecting SEQ if it's not set on the device itself.  
+> > 
+> > According to ip-link(8), the 'external' option is mutually exclusive
+> > with the '[o]seq' option.  In other words, a collect_md mode IP6GRETAP
+> > device should always have the TUNNEL_SEQ flag off in its
+> > 'tunnel->parms.o_flags'.
+> > 
+> > (However, I just tried:
+> > 
+> >   $ ip link add dev ip6gretap11 type ip6gretap oseq external
+> > 					       ^^^^ ^^^^^^^^
+> >  ...and my 'ip' executed it with no error.  I will take a closer look at
+> >  iproute2 later; maybe it's undefined behavior...)
+> > 
+> > How about:
+> > 
+> > 1. If 'external', then 'oseq' means "always turn off NETIF_F_LLTX, so
+> > it's okay to set TUNNEL_SEQ in e.g. eBPF";
+> > 
+> > 2. Otherwise, if 'external' but NOT 'oseq', then whenever we see a
+> > TUNNEL_SEQ in skb's tunnel info, we do something like WARN_ONCE() then
+> > return -EINVAL.
+> 
+> Maybe pr_warn_once(), no need for a stacktrace.
 
-I am so sorry contacting you in this means especially when we have never
-met before. I urgently seek your service to represent me in investing in
-your region / country and you will be rewarded for your service without
-affecting your present job with very little time invested in it.
+Ah, thanks, coffee needed...
 
-My interest is in buying real estate, private schools or companies with
-potentials for rapid growth in long terms.
+> > > When the device is set up without the SEQ bit enabled it disables Tx
+> > > locking (look for LLTX). This means that multiple CPUs can try to do
+> > > the tunnel->o_seqno++ in parallel. Not catastrophic but racy for sure.  
+> > 
+> > Thanks for the explanation!  At first glance, I was wondering why don't
+> > we make 'o_seqno' atomic until I found commit b790e01aee74 ("ip_gre:
+> > lockless xmit").  I quote:
+> > 
+> > """
+> > Even using an atomic_t o_seq, we would increase chance for packets being
+> > out of order at receiver.
+> > """
+> > 
+> > I don't fully understand this out-of-order yet, but it seems that making
+> > 'o_seqno' atomic is not an option?
+> 
+> atomic_t would also work (if it has enough bits). Whatever is simplest
+> TBH. It's just about correctness, I don't think seq is widely used.
 
-So please confirm interest by responding back.
+I see, I will work on this, thanks!
 
-My dearest regards
+Peilin Ye
 
-Seyba Daniel
