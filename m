@@ -2,74 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 71F4250337A
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 07:48:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B993503469
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 08:20:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229695AbiDPFpx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Apr 2022 01:45:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35400 "EHLO
+        id S229627AbiDPGXD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Apr 2022 02:23:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229534AbiDPFpv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 01:45:51 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4D2EB82C6;
-        Fri, 15 Apr 2022 22:43:20 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id mm4-20020a17090b358400b001cb93d8b137so13236436pjb.2;
-        Fri, 15 Apr 2022 22:43:20 -0700 (PDT)
+        with ESMTP id S229379AbiDPGXA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 02:23:00 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F129C6F17;
+        Fri, 15 Apr 2022 23:20:29 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id q12so9848985pgj.13;
+        Fri, 15 Apr 2022 23:20:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=VveAaJQrLZTOJ5nAlkzPLuKBOVh4Qe7+DM8P2UVWRbk=;
-        b=QfmDjH6eOlLf3j2i4pkM2EepKkmyIYSXcCF4uWtyyWSwG/P2fP9kgkqG+/lnDipyZd
-         ZtA4FQsmZ20xKBLy6BACQskf4nF0rxdQtqQChS4ztgtMNuOeVolkCpenywOelDE5JgDi
-         /CiWdn/DodF60EDj5WETb7BxDf4JLAx3j22DP5n1xzQoEINtyXvJO757fmmOKidUtmDm
-         vPXOSe2GeS6GHREC/DKY5b9Ni8TbS+c0jMYpwjj/+7Iw5rRXqqNfvXjCzW/VxfhQmR/o
-         I+H9eKefFIG03Ji8386GIw6f4i9SxWsxTODGCGPvGJCvWZoaFS6AO7lwAh4hRbwCvwQk
-         LOjA==
+        h=from:to:cc:subject:date:message-id;
+        bh=mID4Q7Oy5vdVFWCrost986cUNbsemXABJB5WYtGqo7s=;
+        b=MOsQpB6P6OmUeKPIYslvJ0lIWOikcXOjyVnuW3mRJ9yPuHGk4t/d9nL1IxsDRRYnCf
+         DDhS3UW5qLDjgK/SVsboQrrF6nV8igkpEzXLlPRj5ABwqhAtbd6PfTIcTGKnLKrlayhD
+         2RG/SV4Qxo3v0T8HkCg0WhBaHiQBP41cojQiL7cqB2tTJTgaCeE0j01gz4Hp+UUdX931
+         ZSjG/HxQ1yDauGl4iVqjUmPD3i0HsIKw5MW+AHAThE1+n3n9kAgzlAORsUVSOF7kza5I
+         chpQ+Cinzer5Xb9HH90oq2lV2dnjwAugfKGIshAlQTrxRtDIl+3POJFzH6ztDtBW/z7A
+         WMWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=VveAaJQrLZTOJ5nAlkzPLuKBOVh4Qe7+DM8P2UVWRbk=;
-        b=kdcAUGghyTpL8k9WQNxZE3nPo/UJqvJLm18iJJKpj6EMmMKqp9Mkkbk9207rQiJ1Mq
-         bkvQn9gUfjofAoJUfLTRG1dYANwtUr0mRW7dzezl4TrLPYYR5iw/v8jfOitTuxf8CPJj
-         dyqe5xeXhEnITaJ7P0qmQcE1adhE8M7R4426fSwyYFvywL+r4ZI2z16b/FSGVbqc/XYa
-         iaOauQc9RMEpENvFt9zWcbkOG9T18rHtsruj9nCb4/NhW/+cGOMlFDQgUoQ0010HP/WL
-         Xydp87OQW5VGFNm1sABksbgnGquDW+nf14yNu6+3q7cD1qV+L3BkOFyCfnL0YLdhZHnX
-         1b7Q==
-X-Gm-Message-State: AOAM533Dup0KXPRkbCM61E3Vvce481i7Qy3XU7+B+X6fbSuwChhZCIv4
-        bRlLQsVAI/dzsYVWh4cVhBycC92pyC8=
-X-Google-Smtp-Source: ABdhPJz5pMf0lbnwCwAmE2o47PXiM2SGhxBZ/XO8J7tcPxUbGCqY10WIqNNO5y5tK+BglEK5Pjw6+A==
-X-Received: by 2002:a17:90a:a4e:b0:1cb:58a9:af2a with SMTP id o72-20020a17090a0a4e00b001cb58a9af2amr2410102pjo.101.1650087800170;
-        Fri, 15 Apr 2022 22:43:20 -0700 (PDT)
-Received: from [192.168.43.80] (subs03-180-214-233-90.three.co.id. [180.214.233.90])
-        by smtp.gmail.com with ESMTPSA id z11-20020aa7888b000000b00505bc0b970csm4837683pfe.181.2022.04.15.22.43.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Apr 2022 22:43:19 -0700 (PDT)
-Message-ID: <642672cb-8b11-c78f-8975-f287ece9e89e@gmail.com>
-Date:   Sat, 16 Apr 2022 12:43:14 +0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH net-next v6] net/ipv6: Introduce accept_unsolicited_na
- knob to implement router-side changes for RFC9131
-Content-Language: en-US
-To:     Arun Ajith S <aajith@arista.com>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, dsahern@kernel.org,
-        yoshfuji@linux-ipv6.org, kuba@kernel.org, pabeni@redhat.com,
-        corbet@lwn.net, prestwoj@gmail.com, gilligan@arista.com,
-        noureddine@arista.com, gk@arista.com
-References: <20220415083402.39080-1-aajith@arista.com>
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-In-Reply-To: <20220415083402.39080-1-aajith@arista.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=mID4Q7Oy5vdVFWCrost986cUNbsemXABJB5WYtGqo7s=;
+        b=H9cZyqidEsnDH5QibcKpiVFoel03I2qcBPS+JW6gJmLQzDroPQeTo2kI1uUF9C6JYm
+         uG64PzVrBEfC7NbZfuV1MUtsE+YxYGsA755hfdwvNboB2fP46iKDIxRhQ3/J1W37m1ga
+         4249TReMD1d4NddoyCdWehuN4XOmoIqG2qpQEsYQ3UrJGN+wPIOJ0IU7rAjRUNdbJ56z
+         1hlW+gVv7IpqpYHwZXfMiWtixf02Edi9XASkMP70L59II4eglvXKPfYpZ6xsfptYxIfK
+         QIv9f0Eey55wLEL2Ch9YvrVhsxwqoOThTxBzwgADlNFM3l62ONzithe14NcxXuSc0iFP
+         9JIQ==
+X-Gm-Message-State: AOAM5339gVlV6DZZq+SX7/hgzDvGWqDir5I5I5MhhV9nhWt3efBH4pJF
+        LuknV+Er9XfGTaJQ87fJrzM=
+X-Google-Smtp-Source: ABdhPJzCBF4WLTMb+id3pXyWZx9SOAxqCcgwN3ur3pGF6UG2W+luavjOfk77uSXxP1vpp0IATQUAyg==
+X-Received: by 2002:a63:b20e:0:b0:398:5b28:e54a with SMTP id x14-20020a63b20e000000b003985b28e54amr1874512pge.443.1650090028828;
+        Fri, 15 Apr 2022 23:20:28 -0700 (PDT)
+Received: from Negi ([207.151.52.3])
+        by smtp.gmail.com with ESMTPSA id o123-20020a634181000000b0039d300c417dsm5988151pga.64.2022.04.15.23.20.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Apr 2022 23:20:28 -0700 (PDT)
+From:   Soumya Negi <soumya.negi97@gmail.com>
+To:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
+        Coiby Xu <coiby.xu@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org, outreachy@lists.linux.dev
+Cc:     Soumya Negi <soumya.negi97@gmail.com>
+Subject: [PATCH] staging: qlge: add blank line after struct declaration
+Date:   Fri, 15 Apr 2022 23:19:36 -0700
+Message-Id: <20220416061936.957-1-soumya.negi97@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,46 +66,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/15/22 15:34, Arun Ajith S wrote:
-> +accept_unsolicited_na - BOOLEAN
-> +	Add a new neighbour cache entry in STALE state for routers on receiving an
-> +	unsolicited neighbour advertisement with target link-layer address option
-> +	specified. This is as per router-side behavior documented in RFC9131.
-> +	This has lower precedence than drop_unsolicited_na.
-> +
-> +	 ====   ======  ======  ==============================================
-> +	 drop   accept  fwding                   behaviour
-> +	 ----   ------  ------  ----------------------------------------------
-> +	    1        X       X  Drop NA packet and don't pass up the stack
-> +	    0        0       X  Pass NA packet up the stack, don't update NC
-> +	    0        1       0  Pass NA packet up the stack, don't update NC
-> +	    0        1       1  Pass NA packet up the stack, and add a STALE
-> +	                        NC entry
-> +	 ====   ======  ======  ==============================================
-> +
-> +	This will optimize the return path for the initial off-link communication
-> +	that is initiated by a directly connected host, by ensuring that
-> +	the first-hop router which turns on this setting doesn't have to
-> +	buffer the initial return packets to do neighbour-solicitation.
-> +	The prerequisite is that the host is configured to send
-> +	unsolicited neighbour advertisements on interface bringup.
-> +	This setting should be used in conjunction with the ndisc_notify setting
-> +	on the host to satisfy this prerequisite.
-> +
-> +	By default this is turned off.
-> +
+Adhere to linux coding style. Reported by checkpatch:
+CHECK: Please use a blank line after function/struct/union/enum declarations
 
-Looks good. htmldocs builds successfully and the table displayed properly.
+Signed-off-by: Soumya Negi <soumya.negi97@gmail.com>
+---
+ drivers/staging/qlge/qlge.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
-
-However, I remind you the following:
-
-- The patch changelogs should be put between the dashes (---) and diffstat.
-  I don't see the changelogs when I hit reply-all because you put them as
-  message signature (at very bottom of patch message).
-- DON'T DO top-posting, DO configure your MUA to make reply text below
-  the quoted text instead.
-
+diff --git a/drivers/staging/qlge/qlge.h b/drivers/staging/qlge/qlge.h
+index 55e0ad759250..d0dd659834ee 100644
+--- a/drivers/staging/qlge/qlge.h
++++ b/drivers/staging/qlge/qlge.h
+@@ -2072,6 +2072,7 @@ struct qlge_adapter *netdev_to_qdev(struct net_device *ndev)
+ 
+ 	return ndev_priv->qdev;
+ }
++
+ /*
+  * The main Adapter structure definition.
+  * This structure has all fields relevant to the hardware.
 -- 
-An old man doll... just what I always wanted! - Clara
+2.17.1
+
