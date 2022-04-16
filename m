@@ -2,79 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B9FC15033AE
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 07:48:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD90D5033EB
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 07:48:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229537AbiDPCKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Apr 2022 22:10:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36564 "EHLO
+        id S230118AbiDPDgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Apr 2022 23:36:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229699AbiDPCGY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 22:06:24 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D222765827;
-        Fri, 15 Apr 2022 18:57:16 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KgGX26D0Pz1HBhn;
-        Sat, 16 Apr 2022 09:56:34 +0800 (CST)
-Received: from [10.67.111.192] (10.67.111.192) by
- kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 16 Apr 2022 09:57:12 +0800
-Message-ID: <6c18a27f-c983-58f3-1dc0-5192f7df232a@huawei.com>
-Date:   Sat, 16 Apr 2022 09:57:12 +0800
+        with ESMTP id S230000AbiDPDgb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Apr 2022 23:36:31 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 617CB50E01
+        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 20:34:00 -0700 (PDT)
+Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KgJhN6sRbzYXF5;
+        Sat, 16 Apr 2022 11:33:56 +0800 (CST)
+Received: from [10.67.103.87] (10.67.103.87) by dggpeml500022.china.huawei.com
+ (7.185.36.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 16 Apr
+ 2022 11:33:58 +0800
+Subject: Re: [RFCv5 PATCH net-next 02/20] net: introduce operation helpers for
+ netdev features
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <andrew@lunn.ch>, <ecree.xilinx@gmail.com>,
+        <hkallweit1@gmail.com>, <alexandr.lobakin@intel.com>,
+        <saeed@kernel.org>, <leon@kernel.org>, <netdev@vger.kernel.org>,
+        <linuxarm@openeuler.org>, <lipeng321@huawei.com>
+References: <20220324154932.17557-1-shenjian15@huawei.com>
+ <20220324154932.17557-3-shenjian15@huawei.com>
+ <20220324180931.7e6e5188@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   "shenjian (K)" <shenjian15@huawei.com>
+Message-ID: <752c07fc-2417-1685-5950-8d8770b9f048@huawei.com>
+Date:   Sat, 16 Apr 2022 11:33:58 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.5.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH bpf-next v2 5/6] bpf, arm64: bpf trampoline for arm64
-Content-Language: en-US
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     bpf <bpf@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        X86 ML <x86@kernel.org>, <hpa@zytor.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Daniel Kiss <daniel.kiss@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Delyan Kratunov <delyank@fb.com>
-References: <20220414162220.1985095-1-xukuohai@huawei.com>
- <20220414162220.1985095-6-xukuohai@huawei.com>
- <CAEf4Bzb_R56wAuD-Wgg7B5brT-dcsa+5sYynY+_CFzRwg+N5AA@mail.gmail.com>
-From:   Xu Kuohai <xukuohai@huawei.com>
-In-Reply-To: <CAEf4Bzb_R56wAuD-Wgg7B5brT-dcsa+5sYynY+_CFzRwg+N5AA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.111.192]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemi500013.china.huawei.com (7.221.188.120)
+In-Reply-To: <20220324180931.7e6e5188@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.103.87]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml500022.china.huawei.com (7.185.36.66)
 X-CFilter-Loop: Reflected
 X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
         RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
@@ -86,37 +54,182 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/16/2022 1:12 AM, Andrii Nakryiko wrote:
-> On Thu, Apr 14, 2022 at 9:10 AM Xu Kuohai <xukuohai@huawei.com> wrote:
->>
->> Add bpf trampoline support for arm64. Most of the logic is the same as
->> x86.
->>
->> fentry before bpf trampoline hooked:
->>  mov x9, x30
->>  nop
->>
->> fentry after bpf trampoline hooked:
->>  mov x9, x30
->>  bl  <bpf_trampoline>
->>
->> Tested on qemu, result:
->>  #55 fentry_fexit:OK
->>  #56 fentry_test:OK
->>  #58 fexit_sleep:OK
->>  #59 fexit_stress:OK
->>  #60 fexit_test:OK
->>  #67 get_func_args_test:OK
->>  #68 get_func_ip_test:OK
->>  #101 modify_return:OK
->>
->> Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
->> Acked-by: Song Liu <songliubraving@fb.com>
->> ---
-> 
-> Can you please also take a look at [0], which is an ongoing work to
-> add support for BPF cookie to BPF trampoline-based BPF programs. It's
-> very close to being done, so it would be good if you can implement
-> that at the same time.
 
-OK, I'll take a look and try to implemnt it.
+
+在 2022/3/25 9:09, Jakub Kicinski 写道:
+> On Thu, 24 Mar 2022 23:49:14 +0800 Jian Shen wrote:
+>> Introduce a set of bitmap operation helpers for netdev features,
+>> then we can use them to replace the logical operation with them.
+>> As the nic driversare not supposed to modify netdev_features
+>> directly, it also introduces wrappers helpers to this.
+>>
+>> The implementation of these helpers are based on the old prototype
+>> of netdev_features_t is still u64. I will rewrite them on the last
+>> patch, when the prototype changes.
+>>
+>> Signed-off-by: Jian Shen <shenjian15@huawei.com>
+>> ---
+>>   include/linux/netdevice.h | 597 ++++++++++++++++++++++++++++++++++++++
+> Please move these helpers to a new header file which won't be included
+> by netdevice.h and include it at users appropriately.
+I introduced a new header file "netdev_features_helper",  and moved 
+thses helpers
+to it.  Some helpers need to include struct  net_device which defined in 
+netdevice.h,
+but there are also some inline functions in netdevice.h need to use 
+these netdev_features
+helpers. It's conflicted.
+
+So far I thought 3 ways to solved it, but all of them are not satisfactory.
+1) Split netdevice.h, move the definition of struct net_device and its 
+relative definitions to
+a new header file A( haven't got a reasonable name).  Both the 
+netdev_features_helper.h
+and the netdevice include A.
+
+2) Split netdevice.h, move the inline functions to a new header file B. 
+The netdev_features_helper.h
+inlucde netdevice.h， and B include netdev_features_helper.h and 
+netdevice.h. All the source files
+which using these ininline functions should include B.
+
+3) Split netdevice.h, move the inline functions to to 
+netdev_featurer_helper.h. The netdev_features_helper.h
+inlucde netdevice.h, All the source files which using these ininline 
+functions should include netde_features_helper.h.
+
+I'd like to get more advice to this.
+
+Thanks!
+>> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+>> index 7307b9553bcf..0af4b26896d6 100644
+>> --- a/include/linux/netdevice.h
+>> +++ b/include/linux/netdevice.h
+>> @@ -2295,6 +2295,603 @@ struct net_device {
+>>   };
+>>   #define to_net_dev(d) container_of(d, struct net_device, dev)
+>>   
+>> +static inline void netdev_features_zero(netdev_features_t *dst)
+>> +{
+>> +	*dst = 0;
+>> +}
+>> +
+>> +static inline void netdev_features_fill(netdev_features_t *dst)
+>> +{
+>> +	*dst = ~0ULL;
+>> +}
+>> +
+>> +static inline bool netdev_features_empty(const netdev_features_t src)
+> Don't pass by value something larger than 64 bit.
+>
+>> +{
+>> +	return src == 0;
+>> +}
+>> +
+>> +/* helpers for netdev features '==' operation */
+>> +static inline bool netdev_features_equal(const netdev_features_t src1,
+>> +					 const netdev_features_t src2)
+>> +{
+>> +	return src1 == src2;
+>> +}
+>> +/* helpers for netdev features '&=' operation */
+>> +static inline void
+>> +netdev_features_direct_and(netdev_features_t *dst,
+>> +			   const netdev_features_t features)
+>> +{
+>> +	*dst = netdev_features_and(*dst, features);
+>> +}
+>> +
+>> +static inline void
+>> +netdev_active_features_direct_and(struct net_device *ndev,
+> s/direct_and/mask/ ?
+>
+>> +				  const netdev_features_t features)
+>> +{
+>> +	ndev->active_features = netdev_active_features_and(ndev, features);
+>> +}
+>> +
+>> +/* helpers for netdev features '|' operation */
+>> +static inline netdev_features_t
+>> +netdev_features_or(const netdev_features_t a, const netdev_features_t b)
+>> +{
+>> +	return a | b;
+>> +}
+>> +/* helpers for netdev features '|=' operation */
+>> +static inline void
+>> +netdev_features_direct_or(netdev_features_t *dst,
+> s/direct_or/set/ ?
+>
+>> +			  const netdev_features_t features)
+>> +{
+>> +	*dst = netdev_features_or(*dst, features);
+>> +}
+>> +/* helpers for netdev features '^' operation */
+>> +static inline netdev_features_t
+>> +netdev_features_xor(const netdev_features_t a, const netdev_features_t b)
+>> +{
+>> +	return a ^ b;
+>> +}
+>> +/* helpers for netdev features '^=' operation */
+>> +static inline void
+>> +netdev_active_features_direct_xor(struct net_device *ndev,
+> s/direct_xor/toggle/ ?
+>
+>> +/* helpers for netdev features '& ~' operation */
+>> +static inline netdev_features_t
+>> +netdev_features_andnot(const netdev_features_t a, const netdev_features_t b)
+>> +{
+>> +	return a & ~b;
+>> +}
+>> +static inline void
+>> +netdev_features_direct_andnot(netdev_features_t *dst,
+> s/andnot/clear/ ?
+>
+>> +			     const netdev_features_t features)
+>> +{
+>> +	*dst = netdev_features_andnot(*dst, features);
+>> +}
+>> +/* helpers for netdev features 'set bit' operation */
+>> +static inline void netdev_features_set_bit(int nr, netdev_features_t *src)
+> s/features_set_bit/feature_add/ ?
+>
+>> +{
+>> +	*src |= __NETIF_F_BIT(nr);
+>> +}
+>> +/* helpers for netdev features 'set bit array' operation */
+>> +static inline void netdev_features_set_array(const int *array, int array_size,
+>> +					     netdev_features_t *dst)
+>> +{
+>> +	int i;
+>> +
+>> +	for (i = 0; i < array_size; i++)
+>> +		netdev_features_set_bit(array[i], dst);
+>> +}
+>> +
+>> +#define netdev_active_features_set_array(ndev, array, array_size) \
+>> +		netdev_features_set_array(array, array_size, &ndev->active_features)
+>> +
+>> +#define netdev_hw_features_set_array(ndev, array, array_size) \
+>> +		netdev_features_set_array(array, array_size, &ndev->hw_features)
+>> +
+>> +#define netdev_wanted_features_set_array(ndev, array, array_size) \
+>> +		netdev_features_set_array(array, array_size, &ndev->wanted_features)
+>> +
+>> +#define netdev_vlan_features_set_array(ndev, array, array_size) \
+>> +		netdev_features_set_array(array, array_size, &ndev->vlan_features)
+>> +
+>> +#define netdev_hw_enc_features_set_array(ndev, array, array_size) \
+>> +		netdev_features_set_array(array, array_size, &ndev->hw_enc_features)
+>> +
+>> +#define netdev_mpls_features_set_array(ndev, array, array_size) \
+>> +		netdev_features_set_array(array, array_size, &ndev->mpls_features)
+>> +
+>> +#define netdev_gso_partial_features_set_array(ndev, array, array_size) \
+>> +		netdev_features_set_array(array, array_size, &ndev->gso_partial_features)
+>> +
+>> +/* helpers for netdev features 'clear bit' operation */
+>> +static inline void netdev_features_clear_bit(int nr, netdev_features_t *src)
+> All the mentions of '_bit' are unnecessary IMHO.
+> .
+>
+
