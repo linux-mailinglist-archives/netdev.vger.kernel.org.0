@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62220503800
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 21:38:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2616503804
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 21:39:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232870AbiDPTlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Apr 2022 15:41:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56156 "EHLO
+        id S232885AbiDPTlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Apr 2022 15:41:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232867AbiDPTlM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 15:41:12 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A46393123B;
-        Sat, 16 Apr 2022 12:38:39 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id s14so9535310plk.8;
-        Sat, 16 Apr 2022 12:38:39 -0700 (PDT)
+        with ESMTP id S232876AbiDPTle (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 15:41:34 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72D723152B;
+        Sat, 16 Apr 2022 12:39:01 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id be5so9512475plb.13;
+        Sat, 16 Apr 2022 12:39:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=1Od2+V3Bj00Er4Mva8kO5nsmL4Z8o4xlw5ojaMLjb+w=;
-        b=FFOQGdsSjPmsDdXIlaewKQ8ZFhhoraD8wn0k1G/X2hv94hq9geZz81UYFVS4QYEjw2
-         btSOypwjHN5ovugpJYXXuzgZu9we+zRymba667F54uMiM4CMybbNf4RHA5IWRYHtsNMT
-         F5YBX+bTf6CoSIKm+3JVthY0Cchzo9cOliLZ01HWHYAX59s02cO9El5NZakqvkNABfSn
-         lkszACXmfnj9J5YZIp6tae1eh1D8pLBHppOwp9JcmCIjSyQ0HwlBy5N6bdR0Mtnpxj54
-         XAv9mbIWjOYBnR9di3tXENZ1YPh5wbAYUNUVVx8cvR74hs4VGWCyH9sxSPQ2MZF+HxoH
-         XcZw==
+        bh=N+DA4t8WHVTUtbydzYgACjP/GeP+iQmNsdDutAJHeuA=;
+        b=ipkj2w+o4JXJ3KVPO0DxLQWuqs4OEyi3UxINeXoIACCYu6fi6SkJQHqTkrYwYGprUQ
+         eFmI7HinPBK1VOkYjtuvYxcz0o+axmOWFuu05Ikj/TH1PrTl1EbSnsUo0T8FWlF4ucXj
+         UIdtITPmr4CiwPguZXFmrLHp1mzUxubJ2PQLWe91Zk2tpcpgQRCgqJsfRW06Go+ljivI
+         D6CuHcdtpbXh1GP7kTxAbofHF6QwSBpbAIYYbNPw9ms5N9bglUTEtjE5UD7rXrParXGc
+         kZzuK5gHoSIDFJqFGQlftcu7Dut1Gv5ZlsMOVF1z39g57L5NEGalhGUQoG6dehteKE89
+         HYKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=1Od2+V3Bj00Er4Mva8kO5nsmL4Z8o4xlw5ojaMLjb+w=;
-        b=Gv5UKyFWOyXm9zh5IcxH94rL4uPDJK8UZx4gjSRxqvIDXGaxKfrfeLkK31fb0DkDTv
-         7hIq/uEjspugdHGiUYEADmkIHgZHTMlWb3FaDRYC6ZoIs5c/7c2MzSIwXL6/P3lXbT+l
-         rimddvgWvJODOmvQflyJe2bfsPDUFnNCuplqQTDaJth7difxNrdgmfq5K9KybDM5HhD2
-         B7dDbrJqbqmHZ5YX5w6fRFzLvIYnBMu9y1d274J2DpFc4ASrVMSbrBNICD0Uc2Klc5OB
-         VE5N+gBd0es4kGdnvq2OEHRLYpXm6GPrzwiufDkrG9cthzzKfx9/ZONkfENMPGh/mdGm
-         yVKQ==
-X-Gm-Message-State: AOAM530aFoinvX5R6WBqiGYdvovwzBMVAkfgW646oW5TgVUxBg1SAXRI
-        MUNP1E/ndEpi7uRQTgqEqMg=
-X-Google-Smtp-Source: ABdhPJy7mlYg2xknqTc8SqONg+1saF9q0f2T6nu61MenY84/BMYT2pB1OyS1ut0gOcOlm4Mvl8AMzg==
-X-Received: by 2002:a17:902:ccd0:b0:156:7ac2:5600 with SMTP id z16-20020a170902ccd000b001567ac25600mr4631387ple.156.1650137919166;
-        Sat, 16 Apr 2022 12:38:39 -0700 (PDT)
+        bh=N+DA4t8WHVTUtbydzYgACjP/GeP+iQmNsdDutAJHeuA=;
+        b=GBR1wGUJBeui+N5CdhUPpC0uQxK/2oGomJY22y+6+ippRuJKlGYO20NeP8o9JnBwDL
+         s5wkSwqRgGPRvY6Ey0LHS/vNTx7gLWpKdaAn3ETQNKXcHBCU8v9vewMgSxs5yVEt0oKc
+         f6b5eLb5/9aPBel7uHQNLeQXvTP0+XWOJYKVWMulFTObDlYV9dxyZopNBeIDn6f6k3g3
+         SwTi9LhzLToTq2Y9MLcsDfmxV9RmgFtVLKBwlCwPQoJdQvRWR8xMvblTRoMB9WhjKQhV
+         71sfhEvFp0q7ucuLgV4J7jKqzBdb5fRf5zZqUAZGU3eSE3FE+6oamdctU8m35xiJKV4d
+         F0Pg==
+X-Gm-Message-State: AOAM533HG4nIDqzGkdhmQ7a4jV1Lyn4DmJbjsvH//tWykmGQz4Lfo5vI
+        LuNirI0qoH4pE0vUo6nXSWU=
+X-Google-Smtp-Source: ABdhPJyeyAQ30+cHYCLhpzgXBLBNZ+Oa9HOuk6mMsnj9uqD+miynqPFri5VlK2WPnuSq25kcoNNBeA==
+X-Received: by 2002:a17:903:11c7:b0:154:b936:d1d4 with SMTP id q7-20020a17090311c700b00154b936d1d4mr4694779plh.78.1650137940950;
+        Sat, 16 Apr 2022 12:39:00 -0700 (PDT)
 Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id g15-20020aa7818f000000b00505ce2e4640sm6678733pfi.100.2022.04.16.12.38.36
+        by smtp.gmail.com with ESMTPSA id g15-20020a056a0023cf00b004e17e11cb17sm7142471pfc.111.2022.04.16.12.38.57
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 16 Apr 2022 12:38:38 -0700 (PDT)
-Message-ID: <64a9fc32-0288-d142-f35b-0f688a0a6659@gmail.com>
-Date:   Sat, 16 Apr 2022 12:38:35 -0700
+        Sat, 16 Apr 2022 12:39:00 -0700 (PDT)
+Message-ID: <2c0e1778-4602-67eb-8481-33e29764c84d@gmail.com>
+Date:   Sat, 16 Apr 2022 12:38:57 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.0
-Subject: Re: [PATCH net-next v4 06/18] net: dsa: mv88e6xxx: refactor
- mv88e6xxx_port_vlan()
+Subject: Re: [PATCH net-next v4 04/18] net: dsa: sja1105: use
+ list_add_tail(pos) instead of list_add(pos->prev)
 Content-Language: en-US
 To:     Jakob Koschel <jakobkoschel@gmail.com>,
         "David S. Miller" <davem@davemloft.net>
@@ -94,9 +94,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
         "Bos, H.J." <h.j.bos@vu.nl>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
 References: <20220415122947.2754662-1-jakobkoschel@gmail.com>
- <20220415122947.2754662-7-jakobkoschel@gmail.com>
+ <20220415122947.2754662-5-jakobkoschel@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220415122947.2754662-7-jakobkoschel@gmail.com>
+In-Reply-To: <20220415122947.2754662-5-jakobkoschel@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-6.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -114,26 +114,12 @@ X-Mailing-List: netdev@vger.kernel.org
 On 4/15/2022 5:29 AM, Jakob Koschel wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> To avoid bugs and speculative execution exploits due to type-confused
-> pointers at the end of a list_for_each_entry() loop, one measure is to
-> restrict code to not use the iterator variable outside the loop block.
+> When passed a non-head list element, list_add_tail() actually adds the
+> new element to its left, which is what we want. Despite the slightly
+> confusing name, use the dedicated function which does the same thing as
+> the open-coded list_add(pos->prev).
 > 
-> In the case of mv88e6xxx_port_vlan(), this isn't a problem, as we never
-> let the loops exit through "natural causes" anyway, by using a "found"
-> variable and then using the last "dp" iterator prior to the break, which
-> is a safe thing to do.
-> 
-> Nonetheless, with the expected new syntax, this pattern will no longer
-> be possible.
-> 
-> Profit off of the occasion and break the two port finding methods into
-> smaller sub-functions. Somehow, returning a copy of the iterator pointer
-> is still accepted.
-> 
-> This change makes it redundant to have a "bool found", since the "dp"
-> from mv88e6xxx_port_vlan() now holds NULL if we haven't found what we
-> were looking for.
-> 
+> Suggested-by: Jakub Kicinski <kuba@kernel.org>
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 > Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 
