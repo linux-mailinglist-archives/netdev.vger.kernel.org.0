@@ -2,63 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 713A350346E
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 08:25:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EBC850346F
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 08:25:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229656AbiDPG16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Apr 2022 02:27:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43216 "EHLO
+        id S229658AbiDPG2G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Apr 2022 02:28:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiDPG15 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 02:27:57 -0400
-Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F28512FFD7;
-        Fri, 15 Apr 2022 23:25:26 -0700 (PDT)
-Received: by mail-ot1-x336.google.com with SMTP id c21-20020a056830001500b005f8f6757c22so4780633otp.1;
-        Fri, 15 Apr 2022 23:25:26 -0700 (PDT)
+        with ESMTP id S229663AbiDPG2C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 02:28:02 -0400
+Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DBA031519
+        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 23:25:31 -0700 (PDT)
+Received: by mail-ot1-x32f.google.com with SMTP id i3-20020a056830010300b00605468119c3so9101otp.11
+        for <netdev@vger.kernel.org>; Fri, 15 Apr 2022 23:25:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=m4zdO4FwkXc6f31oyTAiz2VllA8ZYggkDmpwHP6e3l0=;
-        b=UvQ+CJPJoipRoQQ0NzsNb4fFpaMMJvCwFv8wyp1EqBS09HzBgSMwp7j4C0DBDUEKdb
-         jdl4ckSmWDssKhUjO2csA7griZHKqwXKnj/ptiOUZ/MYdUZZm4vkmnCYT1q6GPdTiid7
-         p68q+YxyqkAusXydN7g8xMxv6Ceh1wCvaHvsMVtVslDgX7iHc9hJ9gR3yioBqqS4iRFU
-         +ZZbFJuBDIQ/dXYyxzv6gsR9pXYVFCfbWFCvfNwLJCvdazSslPqXCCcd6F9eiWW6cxCa
-         cDWeP7sSQqNM4V0VKlpKe+Q4IkfJouDn/FCi1qieB2TGeiKvaty+iG3v7xWUgyhYMXPD
-         llag==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=1nj3J8YU5Vej28oK4eTz5AhdGlTE1eHnuaxj+1M/yCk=;
+        b=btV3Z3eteJFAElnS9gk7VjFFNe0KKh31GbJUhz2UFW6eYt+vwSqH6q7kSg6UQPkeZb
+         1IHwXLqOdfwtRJLeaTk2WvdJjo+2CXMJjnPvxRhvnsDgOQRPvsc8YLnoBJa3EpZ+71px
+         4vTN4j6ek47Upp+uPpFur81slS/Mc9h9yNob/1lkZd/DQfLTacs/RHtNUOBfaKvGJxe8
+         e1oI1gcbYcK+cYUhmIa6V6T/xVx/8dWZoP9PTDSVzE73UX7asq1aDFN4yWyaig8R7HRr
+         9W2TtlMGl/JoIFOMX+GLTER9l5R9Rfs72Y4wcHlASZVslqn1qWScLSKryBkp8BQdBVt7
+         tePQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=m4zdO4FwkXc6f31oyTAiz2VllA8ZYggkDmpwHP6e3l0=;
-        b=wA8iRAwLvRXTXSfIoZDDUBnDVECL6QLY5oh6qu6Mjtp+YExAAU7Pol1sWZudqgEB+V
-         gMcAL9XBJ2mXtfXXFKX6e88uDbKArdA4VqkeBme+nhfzwPz5z5zTn2ofzCrcr/OcjTau
-         IyToudAD/Rizf121Vp2BOredbVI+Vbg0j9u4d02Ydc7nnXWi3E+8ymafV6NbZtpwS5Bb
-         GQqbhB4rYAyWoBz4sM/k7qMlMznaqHPafQr3z+GSLgRFTlHRYv6gXDTWIcRzBbj9IJqM
-         pBIxDweiSbs6PlfP1W4dNBOHBQRDmIOGf3gYEGo0Gg8IXcAPKrOePF9MsIrq9es5mov0
-         bzhg==
-X-Gm-Message-State: AOAM531CFE9iwDVectbB978XhsHNE7fvvbf0b9pPMgPXlVPGJAQIMBGq
-        ishU/DE2z0o0umBCwJX7yXN08nuLW3R6tQ==
-X-Google-Smtp-Source: ABdhPJyyzl+3t88BO1OKQfFLwpNwUnEOGBmT4YDeHYJLC6De6hGKwrinKLZHZnB3myLcXNuVuK5PVA==
-X-Received: by 2002:a9d:62c:0:b0:5e6:b611:ff6b with SMTP id 41-20020a9d062c000000b005e6b611ff6bmr765880otn.210.1650090325940;
-        Fri, 15 Apr 2022 23:25:25 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=1nj3J8YU5Vej28oK4eTz5AhdGlTE1eHnuaxj+1M/yCk=;
+        b=zXtowd7oegPXoQ1XyLo/flAeVGawm4RH8vS8bOc54nBYC9xQrZIoLwvx5Zz++ckseK
+         ph9OvX+vkE6MtC1jxFlpLA94/mh6dbMLZO/5lVI8YRJFEP94zdeBEcBAEyugrncT/4+U
+         shzCoBQ8ohnY3Kckllp+y8eDDDF/9Tdj0crFw4e8WrViZ96v/B5FWtWofo90KC5d8lCw
+         smDhu/KKpR0lFc2C8B+Ubw5zMX6uHvAFPe5NuwW8lAIN969hDsNyQX5xNz/hg0JEg8eA
+         avXhZ0F/mhePmLfF04rbFC/AVEV8KTqHXUZFc7TdiBY8mSff45adeXNyze07Rp1JWFFR
+         FVMw==
+X-Gm-Message-State: AOAM531qW4FDSXEZbsVYrbGi6+0Flf+CKEnWS9h4BjquByU3/mFEYon4
+        TBN/FRFgC0gz4SO8ysqmWKKHcQPAUJpioA==
+X-Google-Smtp-Source: ABdhPJwsyzAdOu3sK54bN8AMM0A9hsW2LuTVDRDlZf3q4D+el+ggs3OtAPCK+0fn9UbCPanDFgCizw==
+X-Received: by 2002:a9d:6f07:0:b0:5b2:38e8:41f7 with SMTP id n7-20020a9d6f07000000b005b238e841f7mr783322otq.308.1650090330659;
+        Fri, 15 Apr 2022 23:25:30 -0700 (PDT)
 Received: from tresc043793.tre-sc.gov.br (187-049-235-234.floripa.net.br. [187.49.235.234])
-        by smtp.gmail.com with ESMTPSA id 6-20020aca0706000000b002f9d20b3134sm1838928oih.7.2022.04.15.23.25.16
+        by smtp.gmail.com with ESMTPSA id 6-20020aca0706000000b002f9d20b3134sm1838928oih.7.2022.04.15.23.25.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 23:25:22 -0700 (PDT)
+        Fri, 15 Apr 2022 23:25:29 -0700 (PDT)
 From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     linus.walleij@linaro.org, alsi@bang-olufsen.dk, andrew@lunn.ch,
         vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
         davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         robh+dt@kernel.org, krzk+dt@kernel.org, arinc.unal@arinc9.com,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        devicetree@vger.kernel.org
-Subject: [PATCH net 1/2] dt-bindings: net: dsa: realtek: cleanup compatible strings
-Date:   Sat, 16 Apr 2022 03:25:03 -0300
-Message-Id: <20220416062504.19005-1-luizluca@gmail.com>
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Subject: [PATCH net 2/2] net: dsa: realtek: remove realtek,rtl8367s string
+Date:   Sat, 16 Apr 2022 03:25:04 -0300
+Message-Id: <20220416062504.19005-2-luizluca@gmail.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220416062504.19005-1-luizluca@gmail.com>
+References: <20220416062504.19005-1-luizluca@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -71,76 +72,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Compatible strings are used to help the driver find the chip ID/version
-register for each chip family. After that, the driver can setup the
-switch accordingly. Keep only the first supported model for each family
-as a compatible string and reference other chip models in the
-description.
+There is no need to add new compatible strings for each new supported
+chip version. The compatible string is used only to select the subdriver
+(rtl8365mb.c or rtl8366rb). Once in the subdriver, it will detect the
+chip model by itself, ignoring which compatible string was used.
 
-CC: devicetree@vger.kernel.org
 Link: https://lore.kernel.org/netdev/20220414014055.m4wbmr7tdz6hsa3m@bang-olufsen.dk/
 Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
 ---
- .../devicetree/bindings/net/dsa/realtek.yaml  | 33 +++++++------------
- 1 file changed, 12 insertions(+), 21 deletions(-)
+ drivers/net/dsa/realtek/realtek-mdio.c | 1 -
+ drivers/net/dsa/realtek/realtek-smi.c  | 4 ----
+ 2 files changed, 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/realtek.yaml b/Documentation/devicetree/bindings/net/dsa/realtek.yaml
-index 8756060895a8..9bf862abb496 100644
---- a/Documentation/devicetree/bindings/net/dsa/realtek.yaml
-+++ b/Documentation/devicetree/bindings/net/dsa/realtek.yaml
-@@ -27,32 +27,23 @@ description:
-   The realtek-mdio driver is an MDIO driver and it must be inserted inside
-   an MDIO node.
- 
-+  The compatibility string is used only to find an identification register,
-+  (chip ID and version) which is at a different MDIO base address in different
-+  switch families. The driver then uses the chip ID/version to device how to
-+  drive the switch.
-+
- properties:
-   compatible:
-     enum:
-       - realtek,rtl8365mb
--      - realtek,rtl8366
-       - realtek,rtl8366rb
--      - realtek,rtl8366s
--      - realtek,rtl8367
--      - realtek,rtl8367b
--      - realtek,rtl8367rb
--      - realtek,rtl8367s
--      - realtek,rtl8368s
--      - realtek,rtl8369
--      - realtek,rtl8370
-     description: |
--      realtek,rtl8365mb: 4+1 ports
--      realtek,rtl8366: 5+1 ports
--      realtek,rtl8366rb: 5+1 ports
--      realtek,rtl8366s: 5+1 ports
--      realtek,rtl8367:
--      realtek,rtl8367b:
--      realtek,rtl8367rb: 5+2 ports
--      realtek,rtl8367s: 5+2 ports
--      realtek,rtl8368s: 8 ports
--      realtek,rtl8369: 8+1 ports
--      realtek,rtl8370: 8+2 ports
-+      realtek,rtl8365mb:
-+        Use with models RTL8363NB, RTL8363NB-VB, RTL8363SC, RTL8363SC-VB,
-+        RTL8364NB, RTL8364NB-VB, RTL8365MB, RTL8366SC, RTL8367RB-VB, RTL8367S,
-+        RTL8367SB, RTL8370MB, RTL8310SR
-+      realtek,rtl8367rb:
-+        Use with models RTL8366RB, RTL8366S
- 
-   mdc-gpios:
-     description: GPIO line for the MDC clock line.
-@@ -335,7 +326,7 @@ examples:
-             #size-cells = <0>;
- 
-             switch@29 {
--                    compatible = "realtek,rtl8367s";
-+                    compatible = "realtek,rtl8365mb";
-                     reg = <29>;
- 
-                     reset-gpios = <&gpio2 20 GPIO_ACTIVE_LOW>;
+diff --git a/drivers/net/dsa/realtek/realtek-mdio.c b/drivers/net/dsa/realtek/realtek-mdio.c
+index 31e1f100e48e..c58f49d558d2 100644
+--- a/drivers/net/dsa/realtek/realtek-mdio.c
++++ b/drivers/net/dsa/realtek/realtek-mdio.c
+@@ -267,7 +267,6 @@ static const struct of_device_id realtek_mdio_of_match[] = {
+ #endif
+ #if IS_ENABLED(CONFIG_NET_DSA_REALTEK_RTL8365MB)
+ 	{ .compatible = "realtek,rtl8365mb", .data = &rtl8365mb_variant, },
+-	{ .compatible = "realtek,rtl8367s", .data = &rtl8365mb_variant, },
+ #endif
+ 	{ /* sentinel */ },
+ };
+diff --git a/drivers/net/dsa/realtek/realtek-smi.c b/drivers/net/dsa/realtek/realtek-smi.c
+index 6cec559c90ce..45992f79ec8d 100644
+--- a/drivers/net/dsa/realtek/realtek-smi.c
++++ b/drivers/net/dsa/realtek/realtek-smi.c
+@@ -551,10 +551,6 @@ static const struct of_device_id realtek_smi_of_match[] = {
+ 		.compatible = "realtek,rtl8365mb",
+ 		.data = &rtl8365mb_variant,
+ 	},
+-	{
+-		.compatible = "realtek,rtl8367s",
+-		.data = &rtl8365mb_variant,
+-	},
+ #endif
+ 	{ /* sentinel */ },
+ };
 -- 
 2.35.1
 
