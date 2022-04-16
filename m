@@ -2,157 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B85550363F
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 13:10:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EC9E50364A
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 13:15:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231664AbiDPLMn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Apr 2022 07:12:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50514 "EHLO
+        id S231732AbiDPLR6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Apr 2022 07:17:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231701AbiDPLMk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 07:12:40 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB0D4AD133;
-        Sat, 16 Apr 2022 04:10:05 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id k5so17459324lfg.9;
-        Sat, 16 Apr 2022 04:10:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to;
-        bh=WB4+/QFKrNI2ywCG/GzNlM3DCuj5PqjLAYqkAja7LNQ=;
-        b=eQFEvZGK1REM/iYJ7t3YApZEf9rPnXCuY8ghxes2VWwUXBKzydLKBWFFPpJuYndvYr
-         +e8EhVXML4xiOCJ/wPAIiBa+yKAj8zcLO3hxFcYL/Z4FDl4KQ6uLs8l5v+tAxja33uXS
-         APHwJLopceBqaGRLnzuuY9JtoEtrgnkdAxOpRAWB5r1sm0oLkDt2TbHXed5Zm89cekU7
-         V9vcj24cw6AsGhsbdjTaPOiSjJi/lLBfzWWhqCNNK6OHm9e3Y2NLunNqDS9xgpyEc0LD
-         kEwAKxlwkBIa9sDlgLXW7h9O750B5sy97cm+YRCjQt4fc61vFhcQAX6XNv5jKoDDgo9y
-         3sDQ==
+        with ESMTP id S231740AbiDPLRy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 07:17:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C858A3BF9F
+        for <netdev@vger.kernel.org>; Sat, 16 Apr 2022 04:15:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650107718;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ztaTsvLTF8cbNkdtRcQLTl5LXI+kwPm0KvDnKWHh+yU=;
+        b=OtSXmCG093KSnj73HTBGB6slko2PYOPdu2CIat5VlcYBk0STwmcO6QyguqnSLd9Cbz9qnA
+        KO8M7t1HJzzVCx3eR9sv+hiRp0cEOucE0WHUhfuPdZ9gScPPYPa1RSEfgakxYP9Fo2q8xC
+        A5yk/+u8XCLnH0MMbkHwZLxNS50eW8Y=
+Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com
+ [209.85.214.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-497-1Yr2WfxIN2e8yNeO9nmB9w-1; Sat, 16 Apr 2022 07:15:17 -0400
+X-MC-Unique: 1Yr2WfxIN2e8yNeO9nmB9w-1
+Received: by mail-pl1-f198.google.com with SMTP id j1-20020a170903028100b0014b1f9e0068so5721836plr.8
+        for <netdev@vger.kernel.org>; Sat, 16 Apr 2022 04:15:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to;
-        bh=WB4+/QFKrNI2ywCG/GzNlM3DCuj5PqjLAYqkAja7LNQ=;
-        b=NMQy74sKvRcKCj2LxHjg+ffm4GUgMwDwmtGBKtct+tNhgoCoqdWe0DSrwG3s6hxGbt
-         kBADxOQyh+bDzdfgOaI9VwKeU5QilqdNPBIJ+g+dBKe5ZjQrBUqvB0yxszSQF6sDaq3K
-         bUtw0HU0Z7seA3wOSYFNCrhMLVNBi9pAWLnnbs/XM0JN3Q9lmzGohGhC7CF7R/g7AfaM
-         CzLV/Z/UlJzEdyYd7mFnogKEIE6rYMlNV0nia16uWKWwaNLwmyAmIj/Wh88fPeWEdZ5e
-         6Fd0hCIto2UnxcYr4fmiorZUd9AxogOifdcbtokIkG3mHq4FajRI6Sqfj2yqUj1ZXWKa
-         fJag==
-X-Gm-Message-State: AOAM532fWAJRQE0+avBgINWLh+C4doI0EesYQj8uuLwkgPgKdPJLMTvG
-        JcKZt8QiouX6GNQ8UjtBbNk=
-X-Google-Smtp-Source: ABdhPJzay9IdzNfAP4GnLTie2+6uI6ofL7xWiBnDDXbJfZbV05tiRSwdVw4hAl2ShXJQIk7NPz/NbA==
-X-Received: by 2002:ac2:5223:0:b0:448:5100:e427 with SMTP id i3-20020ac25223000000b004485100e427mr2150728lfl.87.1650107403960;
-        Sat, 16 Apr 2022 04:10:03 -0700 (PDT)
-Received: from [192.168.1.11] ([94.103.225.17])
-        by smtp.gmail.com with ESMTPSA id x22-20020a2e9c96000000b0024da6072587sm433287lji.80.2022.04.16.04.10.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 16 Apr 2022 04:10:03 -0700 (PDT)
-Message-ID: <65c52645-26e8-ff2b-86dc-b5dd697317f9@gmail.com>
-Date:   Sat, 16 Apr 2022 14:10:02 +0300
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ztaTsvLTF8cbNkdtRcQLTl5LXI+kwPm0KvDnKWHh+yU=;
+        b=iYTY/uQsQxJCf9W3C4yKv2Sos3VOzCYBr5nbULAgUq9rPefvNLF5ESviTBVtkYblKT
+         BfWIjtriJlPdiMkzebRJLw8uX4nnbWwwHhB4AmCXQjbTr1Yu3iFm7SblKhX4cfElh/gv
+         kiZOS/YchW0oT2jTr/FJKKvY9x5Vt2oQHRX5Vh/75/8gOXqyi6+OrkEOUsVbF5Of2Rh8
+         cl066cbZm1IMNvfLoKjEMcdn0dzYnw197rXmLbWPl3HkLTjn5wc71JduEWxiQLnTovyy
+         auBwr8FL821rTeMwGDdrArj2dCpp7M07cu1tt0TgkcjuQ0iSt4JYZxcKbpy5X0zQ8/lJ
+         Lovg==
+X-Gm-Message-State: AOAM533PIdk28tzUDOIBhmxw7B8FAHzZJw9v98bo+DNHBo4+7UfbeUvj
+        6ictHXq9TOPZv6Y9onbpzy/uluD/vtMbLYL/csjuWzlZS58ugUyHSHkrO5jLN88Yy9vWQdfLhQu
+        YYHD/LWUeAm0T2rwa
+X-Received: by 2002:a17:902:f70f:b0:153:ebfe:21b3 with SMTP id h15-20020a170902f70f00b00153ebfe21b3mr3126278plo.119.1650107716074;
+        Sat, 16 Apr 2022 04:15:16 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyVQv9EVl2R9qgPnHbNZm4Vfw0djxGkPIQ94EL5azYrNUvYYp0MdOtCzgQcwiIKyQpzuftx6A==
+X-Received: by 2002:a17:902:f70f:b0:153:ebfe:21b3 with SMTP id h15-20020a170902f70f00b00153ebfe21b3mr3126254plo.119.1650107715783;
+        Sat, 16 Apr 2022 04:15:15 -0700 (PDT)
+Received: from localhost.localdomain.com ([103.59.74.34])
+        by smtp.gmail.com with ESMTPSA id h18-20020a056a001a5200b0050a43bb7ae6sm4404565pfv.161.2022.04.16.04.15.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 16 Apr 2022 04:15:15 -0700 (PDT)
+From:   Suresh Kumar <surkumar@redhat.com>
+X-Google-Original-From: Suresh Kumar <suresh2514@gmail.com>
+To:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     suresh kumar <suresh2514@gmail.com>
+Subject: [PATCH] bonding: do not discard lowest hash bit for non layer3+4 hashing
+Date:   Sat, 16 Apr 2022 16:44:10 +0530
+Message-Id: <20220416111410.356132-1-suresh2514@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] net: ax88179: add proper error handling of usb read
- errors
-Content-Language: en-US
-To:     David Kahurani <k.kahurani@gmail.com>, netdev@vger.kernel.org
-Cc:     syzbot+d3dbdf31fbe9d8f5f311@syzkaller.appspotmail.com,
-        davem@davemloft.net, jgg@ziepe.ca, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        phil@philpotter.co.uk, syzkaller-bugs@googlegroups.com,
-        arnd@arndb.de, dan.carpenter@oracle.com
-References: <20220416074817.571160-1-k.kahurani@gmail.com>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <20220416074817.571160-1-k.kahurani@gmail.com>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------x70JgzBdQ5jV31EERnjUlnC7"
-X-Spam-Status: No, score=-6.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------x70JgzBdQ5jV31EERnjUlnC7
-Content-Type: multipart/mixed; boundary="------------1qnCSQxy3NKX4amAmcXuvQ5M";
- protected-headers="v1"
-From: Pavel Skripkin <paskripkin@gmail.com>
-To: David Kahurani <k.kahurani@gmail.com>, netdev@vger.kernel.org
-Cc: syzbot+d3dbdf31fbe9d8f5f311@syzkaller.appspotmail.com,
- davem@davemloft.net, jgg@ziepe.ca, kuba@kernel.org,
- linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
- phil@philpotter.co.uk, syzkaller-bugs@googlegroups.com, arnd@arndb.de,
- dan.carpenter@oracle.com
-Message-ID: <65c52645-26e8-ff2b-86dc-b5dd697317f9@gmail.com>
-Subject: Re: [PATCH] net: ax88179: add proper error handling of usb read
- errors
-References: <20220416074817.571160-1-k.kahurani@gmail.com>
-In-Reply-To: <20220416074817.571160-1-k.kahurani@gmail.com>
+From: suresh kumar <suresh2514@gmail.com>
 
---------------1qnCSQxy3NKX4amAmcXuvQ5M
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+Commit b5f862180d70 was introduced to discard lowest hash bit for layer3+4 hashing
+but it also removes last bit from non layer3+4 hashing
 
-SGkgRGF2aWQsDQoNCm9uZSBtb3JlIHNtYWxsIGNvbW1lbnQNCg0KT24gNC8xNi8yMiAxMDo0
-OCwgRGF2aWQgS2FodXJhbmkgd3JvdGU6DQo+IFJlYWRzIHRoYXQgYXJlIGxlc3NlciB0aGFu
-IHRoZSByZXF1ZXN0ZWQgc2l6ZSBsZWFkIHRvIHVuaW5pdC12YWx1ZSBidWdzLg0KPiBJbiB0
-aGlzIHBhcnRpY3VsYXIgY2FzZSBhIHZhcmlhYmxlIHdoaWNoIHdhcyBzdXBwb3NlZCB0byBi
-ZSBpbml0aWFsaXplZA0KPiBhZnRlciBhIHJlYWQgaXMgbGVmdCB1bmluaXRpYWxpemVkIGFm
-dGVyIGEgcGFydGlhbCByZWFkLg0KPiANCj4gUXVhbGlmeSBzdWNoIHJlYWRzIGFzIGVycm9y
-cyBhbmQgaGFuZGxlIHRoZW0gY29ycmVjdGx5IGFuZCB3aGlsZSBhdCBpdA0KPiBjb252ZXJ0
-IHRoZSByZWFkZXIgZnVuY3Rpb25zIHRvIHJldHVybiB6ZXJvIG9uIHN1Y2Nlc3MgZm9yIGVh
-c2llciBlcnJvcg0KPiBoYW5kbGluZy4NCj4gDQo+IEZpeGVzOiBlMmNhOTBjMjc2ZTEgKCJh
-eDg4MTc5XzE3OGE6IEFTSVggQVg4ODE3OV8xNzhBIFVTQiAzLjAvMi4wIHRvDQo+IGdpZ2Fi
-aXQgZXRoZXJuZXQgYWRhcHRlciBkcml2ZXIiKQ0KPiBTaWduZWQtb2ZmLWJ5OiBEYXZpZCBL
-YWh1cmFuaSA8ay5rYWh1cmFuaUBnbWFpbC5jb20+DQo+IFJlcG9ydGVkLWFuZC10ZXN0ZWQt
-Ynk6IHN5emJvdCtkM2RiZGYzMWZiZTlkOGY1ZjMxMUBzeXprYWxsZXIuYXBwc3BvdG1haWwu
-Y29tDQo+IC0tLQ0KDQpbY29kZSBzbmlwXQ0KDQo+IEBAIC0xMjk1LDYgKzE0MzksNyBAQCBz
-dGF0aWMgaW50IGF4ODgxNzlfbGVkX3NldHRpbmcoc3RydWN0IHVzYm5ldCAqZGV2KQ0KPiAg
-IHN0YXRpYyB2b2lkIGF4ODgxNzlfZ2V0X21hY19hZGRyKHN0cnVjdCB1c2JuZXQgKmRldikN
-Cj4gICB7DQo+ICAgCXU4IG1hY1tFVEhfQUxFTl07DQo+ICsJaW50IHJldDsNCj4gICANCj4g
-ICAJbWVtc2V0KG1hYywgMCwgc2l6ZW9mKG1hYykpOw0KPiAgIA0KPiBAQCAtMTMwMyw4ICsx
-NDQ4LDEyIEBAIHN0YXRpYyB2b2lkIGF4ODgxNzlfZ2V0X21hY19hZGRyKHN0cnVjdCB1c2Ju
-ZXQgKmRldikNCj4gICAJCW5ldGlmX2RiZyhkZXYsIGlmdXAsIGRldi0+bmV0LA0KPiAgIAkJ
-CSAgIk1BQyBhZGRyZXNzIHJlYWQgZnJvbSBkZXZpY2UgdHJlZSIpOw0KPiAgIAl9IGVsc2Ug
-ew0KPiAtCQlheDg4MTc5X3JlYWRfY21kKGRldiwgQVhfQUNDRVNTX01BQywgQVhfTk9ERV9J
-RCwgRVRIX0FMRU4sDQo+IC0JCQkJIEVUSF9BTEVOLCBtYWMpOw0KPiArCQlyZXQgPSBheDg4
-MTc5X3JlYWRfY21kKGRldiwgQVhfQUNDRVNTX01BQywgQVhfTk9ERV9JRCwgRVRIX0FMRU4s
-DQo+ICsJCQkJICAgICAgIEVUSF9BTEVOLCBtYWMpOw0KPiArDQo+ICsJCWlmIChyZXQpDQo+
-ICsJCQluZXRkZXZfZGJnKGRldi0+bmV0LCAiRmFpbGVkIHRvIHJlYWQgTk9ERV9JRDogJWQi
-LCByZXQpOw0KPiArDQo+ICAgCQluZXRpZl9kYmcoZGV2LCBpZnVwLCBkZXYtPm5ldCwNCj4g
-ICAJCQkgICJNQUMgYWRkcmVzcyByZWFkIGZyb20gQVNJWCBjaGlwIik7DQo+ICAgCX0NCg0K
-DQpUaGlzIG1lc3NhZ2Ugc2VxdWVuY2UgaXMgY29uZnVzaW5nLg0KDQpJbiBjYXNlIG9mIGF4
-ODgxNzlfcmVhZF9jbWQoKSBmYWlsdXJlIG1hYyByZWFkIGZyb20gZGV2aWNlIGFjdHVhbGx5
-IA0KZmFpbGVkLCBidXQgbWVzc2FnZSBzYXlzLCB0aGF0IGl0IHdhcyBzdWNjZXNzZnVsbHkg
-ZmluaXNoZWQuDQoNCg0KDQoNCg0KV2l0aCByZWdhcmRzLA0KUGF2ZWwgU2tyaXBraW4NCg==
+Below script shows layer2+3 hashing will result in same slave to be used with above commit.
+$ cat hash.py
+#/usr/bin/python3.6
 
+h_dests=[0xa0, 0xa1]
+h_source=0xe3
+hproto=0x8
+saddr=0x1e7aa8c0
+daddr=0x17aa8c0
 
---------------1qnCSQxy3NKX4amAmcXuvQ5M--
+for h_dest in h_dests:
+    hash = (h_dest ^ h_source ^ hproto ^ saddr ^ daddr)
+    hash ^= hash >> 16
+    hash ^= hash >> 8
+    print(hash)
 
---------------x70JgzBdQ5jV31EERnjUlnC7
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
+print("with last bit removed")
+for h_dest in h_dests:
+    hash = (h_dest ^ h_source ^ hproto ^ saddr ^ daddr)
+    hash ^= hash >> 16
+    hash ^= hash >> 8
+    hash = hash >> 1
+    print(hash)
 
------BEGIN PGP SIGNATURE-----
+Output:
+$ python3.6 hash.py
+522133332
+522133333   <-------------- will result in both slaves being used
 
-wsF5BAABCAAjFiEER3XL3TplLQE8Qi40bk1w61LbBA0FAmJapAoFAwAAAAAACgkQbk1w61LbBA2d
-NQ/+LRLQ+4EWTwl4i14awbRI8pi8zuwIgTzqbsdj2ihlIVPcSLl0cOf/3zZUpgMKWgUsl5JUJolj
-+W5JVmpZ5QBmAOUEN46P5waH1wnYOI+cab8hkNGPRNEPbO6tj5kKRAnjBkHEtqyHJaLs9UVEiwp4
-RYZV3Zl6I3S8XL3NAMGt/mXwhEUeHHE7RYD0eSxjRnEI3UieSRni6XxrduEguxURLQZCJPTyHkji
-ZXinqDnpsF/3zKamcpV9X9AJaVGR71xZP9/6cUh4AguzTC4eOppcb600/vKajzmV4jnS2S/UYIXH
-NfLpVkp5uS9RYttqQYz6u1fmMi7Add4Kp554qj603TWyUCBQUwVnYEkMXXWJdByIeAVSDamvPFDg
-C/5WumweoSOiRhBsqJ3pA3wKar5C5C+PE8/C3qUfydczCZ0o6K5pUzgaFqz1m85xv9v7k/+iWYyc
-9l/CcwdIqnkaGed0DtwOtfQlvmzqW+bTS8Qa6asftjTJ8HC55wj2lQIeWJ9lMBZGwvugtyrJ5vMu
-45KVO4CKafRkSYwratiIFgYu8LzEmIzco1Eyj94+KSV1vKvGNew8h4d4uVYriWnTY6F0UjgTbo0A
-YzC8IwgCFgpIphdzJIUTvVEs6p+9CSR8+Fg8wbyNVCWSaOTTYRgDE8n/NXSqZv31/xwX+2mf2X5N
-TxA=
-=bUPz
------END PGP SIGNATURE-----
+with last bit removed
+261066666
+261066666   <-------------- only single slave used
 
---------------x70JgzBdQ5jV31EERnjUlnC7--
+Signed-off-by: suresh kumar <suresh2514@gmail.com>
+---
+ drivers/net/bonding/bond_main.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 15eddca7b4b6..38e152548126 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -4027,14 +4027,19 @@ static bool bond_flow_dissect(struct bonding *bond, struct sk_buff *skb, const v
+ 	return true;
+ }
+ 
+-static u32 bond_ip_hash(u32 hash, struct flow_keys *flow)
++static u32 bond_ip_hash(u32 hash, struct flow_keys *flow, int xmit_policy)
+ {
+ 	hash ^= (__force u32)flow_get_u32_dst(flow) ^
+ 		(__force u32)flow_get_u32_src(flow);
+ 	hash ^= (hash >> 16);
+ 	hash ^= (hash >> 8);
++
+ 	/* discard lowest hash bit to deal with the common even ports pattern */
+-	return hash >> 1;
++	if (xmit_policy == BOND_XMIT_POLICY_LAYER34 ||
++		xmit_policy == BOND_XMIT_POLICY_ENCAP34)
++		return hash >> 1;
++
++	return hash;
+ }
+ 
+ /* Generate hash based on xmit policy. If @skb is given it is used to linearize
+@@ -4064,7 +4069,7 @@ static u32 __bond_xmit_hash(struct bonding *bond, struct sk_buff *skb, const voi
+ 			memcpy(&hash, &flow.ports.ports, sizeof(hash));
+ 	}
+ 
+-	return bond_ip_hash(hash, &flow);
++	return bond_ip_hash(hash, &flow, bond->params.xmit_policy);
+ }
+ 
+ /**
+@@ -5259,7 +5264,7 @@ static u32 bond_sk_hash_l34(struct sock *sk)
+ 	/* L4 */
+ 	memcpy(&hash, &flow.ports.ports, sizeof(hash));
+ 	/* L3 */
+-	return bond_ip_hash(hash, &flow);
++	return bond_ip_hash(hash, &flow, BOND_XMIT_POLICY_LAYER34);
+ }
+ 
+ static struct net_device *__bond_sk_get_lower_dev(struct bonding *bond,
+-- 
+2.27.0
+
