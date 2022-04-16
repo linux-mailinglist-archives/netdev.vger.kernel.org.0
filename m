@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D2616503804
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 21:39:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94C53503807
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 21:39:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232885AbiDPTlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Apr 2022 15:41:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56524 "EHLO
+        id S232894AbiDPTlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Apr 2022 15:41:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232876AbiDPTle (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 15:41:34 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72D723152B;
-        Sat, 16 Apr 2022 12:39:01 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id be5so9512475plb.13;
-        Sat, 16 Apr 2022 12:39:01 -0700 (PDT)
+        with ESMTP id S232892AbiDPTlu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 15:41:50 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62E7FCB038;
+        Sat, 16 Apr 2022 12:39:17 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id s137so12007123pgs.5;
+        Sat, 16 Apr 2022 12:39:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=N+DA4t8WHVTUtbydzYgACjP/GeP+iQmNsdDutAJHeuA=;
-        b=ipkj2w+o4JXJ3KVPO0DxLQWuqs4OEyi3UxINeXoIACCYu6fi6SkJQHqTkrYwYGprUQ
-         eFmI7HinPBK1VOkYjtuvYxcz0o+axmOWFuu05Ikj/TH1PrTl1EbSnsUo0T8FWlF4ucXj
-         UIdtITPmr4CiwPguZXFmrLHp1mzUxubJ2PQLWe91Zk2tpcpgQRCgqJsfRW06Go+ljivI
-         D6CuHcdtpbXh1GP7kTxAbofHF6QwSBpbAIYYbNPw9ms5N9bglUTEtjE5UD7rXrParXGc
-         kZzuK5gHoSIDFJqFGQlftcu7Dut1Gv5ZlsMOVF1z39g57L5NEGalhGUQoG6dehteKE89
-         HYKA==
+        bh=voxZ31qFlafqYv1KtZJxqTUhs3UryZT4D28XGScW+a0=;
+        b=TvlBjYUb6jvPOj6IsHs0M9D5K2wvs0b2TjFENcykUyDcKNPhtWD7iiraagCgqnJXfu
+         X+jWY3fdoRuNHTcyuhmbSM4+oTmU5ijesNoWgO69Hbbtr7J7eWUHkK0UDPlx1PL0WIQ7
+         ctE0EbnqX3CCOG03pvoofNEdEaIrccBASxSjLWufJk1+DLF69pfywyReEZfxiL11dMra
+         Ps8v6vgJ15q9TfbBLnIDgOoZ8gkJMqSOOG18LFapmNk8lSO6ei6E8GlHG+yaa1dFz/Pd
+         UIr07HeEO/b981RrT/3upCExQJ5heif2jOckyrNIwVRqXEc4tNrKiEzZmnXwq18NRSK+
+         hKug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=N+DA4t8WHVTUtbydzYgACjP/GeP+iQmNsdDutAJHeuA=;
-        b=GBR1wGUJBeui+N5CdhUPpC0uQxK/2oGomJY22y+6+ippRuJKlGYO20NeP8o9JnBwDL
-         s5wkSwqRgGPRvY6Ey0LHS/vNTx7gLWpKdaAn3ETQNKXcHBCU8v9vewMgSxs5yVEt0oKc
-         f6b5eLb5/9aPBel7uHQNLeQXvTP0+XWOJYKVWMulFTObDlYV9dxyZopNBeIDn6f6k3g3
-         SwTi9LhzLToTq2Y9MLcsDfmxV9RmgFtVLKBwlCwPQoJdQvRWR8xMvblTRoMB9WhjKQhV
-         71sfhEvFp0q7ucuLgV4J7jKqzBdb5fRf5zZqUAZGU3eSE3FE+6oamdctU8m35xiJKV4d
-         F0Pg==
-X-Gm-Message-State: AOAM533HG4nIDqzGkdhmQ7a4jV1Lyn4DmJbjsvH//tWykmGQz4Lfo5vI
-        LuNirI0qoH4pE0vUo6nXSWU=
-X-Google-Smtp-Source: ABdhPJyeyAQ30+cHYCLhpzgXBLBNZ+Oa9HOuk6mMsnj9uqD+miynqPFri5VlK2WPnuSq25kcoNNBeA==
-X-Received: by 2002:a17:903:11c7:b0:154:b936:d1d4 with SMTP id q7-20020a17090311c700b00154b936d1d4mr4694779plh.78.1650137940950;
-        Sat, 16 Apr 2022 12:39:00 -0700 (PDT)
+        bh=voxZ31qFlafqYv1KtZJxqTUhs3UryZT4D28XGScW+a0=;
+        b=zbwvp8wZmw59CeoreIA54t6gW4HdZCOidRDXME1oisr9FBY2d8g9dzrJRUfE1xLnMv
+         ier2QTX6nWJ5Dk4Ap4il3HpHEOCn+E39Q/HuoVlNfRSIUBewFXPA6ey9o36J19k38H2G
+         hpf3vpTgA/hnmWQIIM++4NzxAM0gAIM4BlZtqded5s5RomTGdU2/nHuy28CODcy085p6
+         +cov91AiLSCONJQdTwhrHZMIKFVxbncMJO56+gBtwd9yq+WdwsCcj7YH1eUARqUJk6Kn
+         J4FrZoEgkESY5LFY/y6yNpSLhiebxNndvodlZNrKVYMMrOoNyrSrdJKUsE1fuFZavJ59
+         dXvA==
+X-Gm-Message-State: AOAM530Hb94HCsG4gmJrBE6UA1HR90jRzW/plj2ZVFCEk8M7X+VVryo/
+        /jrQU9RX0kYA1H0Sg9VS/4w=
+X-Google-Smtp-Source: ABdhPJwpJnw7UFOao4GWq7HDPD7r7/mQ3y+uk5lJFjJ5tekzMlbaH4EjnEsFU6hBsHkI+VxR4u/mGQ==
+X-Received: by 2002:a63:d13:0:b0:381:f043:c627 with SMTP id c19-20020a630d13000000b00381f043c627mr4027727pgl.168.1650137956942;
+        Sat, 16 Apr 2022 12:39:16 -0700 (PDT)
 Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id g15-20020a056a0023cf00b004e17e11cb17sm7142471pfc.111.2022.04.16.12.38.57
+        by smtp.gmail.com with ESMTPSA id g200-20020a6252d1000000b0050833d7602csm6839324pfb.103.2022.04.16.12.39.13
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 16 Apr 2022 12:39:00 -0700 (PDT)
-Message-ID: <2c0e1778-4602-67eb-8481-33e29764c84d@gmail.com>
-Date:   Sat, 16 Apr 2022 12:38:57 -0700
+        Sat, 16 Apr 2022 12:39:16 -0700 (PDT)
+Message-ID: <8f140d64-e486-f02c-c9c5-09e6c740220c@gmail.com>
+Date:   Sat, 16 Apr 2022 12:39:13 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.0
-Subject: Re: [PATCH net-next v4 04/18] net: dsa: sja1105: use
- list_add_tail(pos) instead of list_add(pos->prev)
+Subject: Re: [PATCH net-next v4 03/18] net: dsa: sja1105: reorder
+ sja1105_first_entry_longer_than with memory allocation
 Content-Language: en-US
 To:     Jakob Koschel <jakobkoschel@gmail.com>,
         "David S. Miller" <davem@davemloft.net>
@@ -94,9 +94,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
         "Bos, H.J." <h.j.bos@vu.nl>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
 References: <20220415122947.2754662-1-jakobkoschel@gmail.com>
- <20220415122947.2754662-5-jakobkoschel@gmail.com>
+ <20220415122947.2754662-4-jakobkoschel@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220415122947.2754662-5-jakobkoschel@gmail.com>
+In-Reply-To: <20220415122947.2754662-4-jakobkoschel@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-6.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -114,12 +114,14 @@ X-Mailing-List: netdev@vger.kernel.org
 On 4/15/2022 5:29 AM, Jakob Koschel wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> When passed a non-head list element, list_add_tail() actually adds the
-> new element to its left, which is what we want. Despite the slightly
-> confusing name, use the dedicated function which does the same thing as
-> the open-coded list_add(pos->prev).
+> sja1105_first_entry_longer_than() does not make use of the full struct
+> sja1105_gate_entry *e, just of e->interval which is set from the passed
+> entry_time.
 > 
-> Suggested-by: Jakub Kicinski <kuba@kernel.org>
+> This means that if there is a gate conflict, we have allocated e for
+> nothing, just to free it later. Reorder the memory allocation and the
+> function call, to avoid that and simplify the error unwind path.
+> 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 > Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 
