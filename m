@@ -2,68 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C37CF5037EB
-	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 21:29:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E99705037EC
+	for <lists+netdev@lfdr.de>; Sat, 16 Apr 2022 21:30:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232266AbiDPTcK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Apr 2022 15:32:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54378 "EHLO
+        id S232629AbiDPTcn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Apr 2022 15:32:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230141AbiDPTcJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 15:32:09 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DB3164719;
-        Sat, 16 Apr 2022 12:29:36 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id q19so11989820pgm.6;
-        Sat, 16 Apr 2022 12:29:36 -0700 (PDT)
+        with ESMTP id S230141AbiDPTcm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Apr 2022 15:32:42 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0F8533EA1
+        for <netdev@vger.kernel.org>; Sat, 16 Apr 2022 12:30:09 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id md20-20020a17090b23d400b001cb70ef790dso14225059pjb.5
+        for <netdev@vger.kernel.org>; Sat, 16 Apr 2022 12:30:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=/BjQcKMSDpf6lmiVBQLJmYeoCiRDmu7xV/pJ44ZnW90=;
-        b=XWUs9NjXbkOGguNEF20D+RRHlWIYhvJ7lvqgCAH9Q7Q4auORjrZtYxTiFy3EarvtLS
-         4NEt9N6FW1u9i1Fkry6VTe9qZ9thmU5/3F4fTY9sKsRF0tvQHvSddOWRD1S+gVtdnxL2
-         S+jefNoSKvIyHNX5YaVq6Pb4/Y5Q39Rxth3KSKvj0g4MJGGXesKGJUTfjYBGgqAvP5YM
-         Ebvu+n2vMxzNGW9mYY30PUu2edXo6ZN+SCShmk7RgbB9LY5VnNaPuOSKzjGXnKJk0djn
-         3B6fgg3Md958BBGZFNIOuOien6x72+/15mvqxFoAtMpYwZ/W6PIX/IzMIs60I3O5AArx
-         8Agg==
+        bh=/TwpT3e9/cdR4EICG+BKCniDNRBv08wpl4thuHd6+/M=;
+        b=k6aZZbihB7K5n4dkKR47gnrnP9E6O7twqTg5cdP257biTP1bjNA9XZI5xOguALcc50
+         uHQpKLDJGOAcYeJ+/3+yxcHdNBKn0rcOuXehftDDXWuIHKnpdoLVEXkyX3EIVtnMzEhn
+         lx2exZ4efDqbNBuUjHEFIP7+85D/9Yz4yZhwtBG/khVlcjSTd71rfpeuTQDHPrNu3rhw
+         OKGpS64EjULXnpFVEl2T5h+4mvfXxtUFG02At7iTNnAYeM5SmfR9etP00O0wiopVdS9Y
+         JmAVBQqcYpMkBVAlSnsa6z2UWWDPn4dRHnwR7Y8huf9tOZ4jHiLvGVq5VVJBGmx7tRti
+         kxpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=/BjQcKMSDpf6lmiVBQLJmYeoCiRDmu7xV/pJ44ZnW90=;
-        b=j7M5ljoCjeVCJiy493lGu6ZRk1rFo/ztgK6NC6I5v/TmI7bYwGcm7vnnR0S5H5r+rn
-         XwBGxbgy+hplZaVUOiEKs83lTYdrhv5U1HlAPynZGWX5XJ0pHyZfBb72kFn5muCB/MkB
-         9mRE04dRrC53hHIkXeEg6IAZZZQt03fM/TygFZbZmL2XVs+SX8bz7d9PpL3VuYOs7Qz7
-         YLfmGt1Q1PSt2WwVRbPIdGYx3sIssJZBYq7izSIA4nhnK6V9V6J9BVHHtYPAl+3vhzqJ
-         atavSCuXue+bj2WM3XPRfKPp1nYc4FxJEVaNS3voAlTWPdQNYtAwWRAg6XNDD6p2RkNj
-         9k1A==
-X-Gm-Message-State: AOAM532GJ/z6n0uLuqBIwcceCNk3Hie2HW0vrZISPg63wkX1CB7puceY
-        Biu0qSf7vesOrq9ZFxHvAeo=
-X-Google-Smtp-Source: ABdhPJxdn769OvVq9eNtDKecb7ES7BNuMzkn1YDbaXJCCdilsJanqpA40oHRThkZaNOEPOpebxxv+A==
-X-Received: by 2002:a05:6a00:cc4:b0:505:6998:69b8 with SMTP id b4-20020a056a000cc400b00505699869b8mr4618837pfv.19.1650137375805;
-        Sat, 16 Apr 2022 12:29:35 -0700 (PDT)
+        bh=/TwpT3e9/cdR4EICG+BKCniDNRBv08wpl4thuHd6+/M=;
+        b=qZO7vwjsIZVKUzF8DXUo8QyBJOIhdISufvoqt9SPxyXSN5ZqhvRiFxWQF2777ic8AV
+         ftZrbKOSanYygSzP88D1X3vxiLiQy5y4fHaSX0pEUEAB7SqPxMuQJB7kTOMa548i0ACU
+         /c8Oph/qeXurKpObIicc2dJ3mpjKJIigsHJBCY8395K0UY2LkX22prA9HgXD/Hi90wfI
+         u1x1ZS4NmW3mYxTKKutkbXUg8TIApeU2KF1v5wzN5hRwHRiFHaOlu1cLfW62uHCgd+Oh
+         2X5id2KaY3jL/qIVfNwSgyov/HklYahzPzD2hTAcicB8csSha/e7ohplggRUshyxTrPV
+         9law==
+X-Gm-Message-State: AOAM530Fj/CxcPDzqkq1VtNaZmhripJHIlIyVZr9H2HoGMuI3PhTQbXp
+        wrNohfIQSRUID6EmqjOvAPQ=
+X-Google-Smtp-Source: ABdhPJxQJRNC4kqDmYGj0Y3tMk8owK2lCetJOUIxQJwvodXkX2rs4vmEOCe4XmodqXF4L6rBTKqPrA==
+X-Received: by 2002:a17:903:228b:b0:158:c040:5cd3 with SMTP id b11-20020a170903228b00b00158c0405cd3mr4615307plh.30.1650137409155;
+        Sat, 16 Apr 2022 12:30:09 -0700 (PDT)
 Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id w60-20020a17090a6bc200b001cbc1a6963asm8611728pjj.29.2022.04.16.12.29.34
+        by smtp.gmail.com with ESMTPSA id 65-20020a17090a09c700b001cba39c88fcsm10322641pjo.0.2022.04.16.12.30.07
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 16 Apr 2022 12:29:35 -0700 (PDT)
-Message-ID: <d4419373-c576-a7ef-09f7-2bf18ad8f0db@gmail.com>
-Date:   Sat, 16 Apr 2022 12:29:33 -0700
+        Sat, 16 Apr 2022 12:30:08 -0700 (PDT)
+Message-ID: <d563b0f7-ebff-2402-4e31-5688c97cd79d@gmail.com>
+Date:   Sat, 16 Apr 2022 12:30:07 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.0
-Subject: Re: [PATCH net-next v3] docs: net: dsa: describe issues with checksum
- offload
+Subject: Re: [PATCH net 2/2] net: dsa: realtek: remove realtek,rtl8367s string
 Content-Language: en-US
 To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
         netdev@vger.kernel.org
-Cc:     linux-doc@vger.kernel.org, tobias@waldekranz.com, andrew@lunn.ch,
-        vladimir.oltean@nxp.com, corbet@lwn.net, kuba@kernel.org,
-        davem@davemloft.net
-References: <20220416052737.25509-1-luizluca@gmail.com>
+Cc:     linus.walleij@linaro.org, alsi@bang-olufsen.dk, andrew@lunn.ch,
+        vivien.didelot@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
+        krzk+dt@kernel.org, arinc.unal@arinc9.com
+References: <20220416062504.19005-1-luizluca@gmail.com>
+ <20220416062504.19005-2-luizluca@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220416052737.25509-1-luizluca@gmail.com>
+In-Reply-To: <20220416062504.19005-2-luizluca@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-6.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -78,12 +79,14 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 4/15/2022 10:27 PM, Luiz Angelo Daros de Luca wrote:
-> DSA tags before IP header (categories 1 and 2) or after the payload (3)
-> might introduce offload checksum issues.
+On 4/15/2022 11:25 PM, Luiz Angelo Daros de Luca wrote:
+> There is no need to add new compatible strings for each new supported
+> chip version. The compatible string is used only to select the subdriver
+> (rtl8365mb.c or rtl8366rb). Once in the subdriver, it will detect the
+> chip model by itself, ignoring which compatible string was used.
 > 
+> Link: https://lore.kernel.org/netdev/20220414014055.m4wbmr7tdz6hsa3m@bang-olufsen.dk/
 > Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
-> Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
