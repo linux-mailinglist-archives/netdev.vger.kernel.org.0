@@ -2,124 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 30E2B504833
-	for <lists+netdev@lfdr.de>; Sun, 17 Apr 2022 17:29:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F46750488F
+	for <lists+netdev@lfdr.de>; Sun, 17 Apr 2022 19:10:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234321AbiDQPcS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Apr 2022 11:32:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44482 "EHLO
+        id S234599AbiDQRNK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Apr 2022 13:13:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229496AbiDQPcR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Apr 2022 11:32:17 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C052F36E09
-        for <netdev@vger.kernel.org>; Sun, 17 Apr 2022 08:29:41 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1ng6qJ-0007MV-GH
-        for netdev@vger.kernel.org; Sun, 17 Apr 2022 17:29:39 +0200
-Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 566BF64EB8
-        for <netdev@vger.kernel.org>; Sun, 17 Apr 2022 15:29:38 +0000 (UTC)
-Received: from hardanger.blackshift.org (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id B841564EAC;
-        Sun, 17 Apr 2022 15:29:37 +0000 (UTC)
-Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 86a3c89b;
-        Sun, 17 Apr 2022 15:29:36 +0000 (UTC)
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Oliver Hartkopp <socketcan@hartkopp.net>,
-        syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net] can: isotp: stop timeout monitoring when no first frame was sent
-Date:   Sun, 17 Apr 2022 17:29:34 +0200
-Message-Id: <20220417152934.2696539-2-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220417152934.2696539-1-mkl@pengutronix.de>
-References: <20220417152934.2696539-1-mkl@pengutronix.de>
+        with ESMTP id S231211AbiDQRNI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Apr 2022 13:13:08 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67FFE63F8
+        for <netdev@vger.kernel.org>; Sun, 17 Apr 2022 10:10:32 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id u5-20020a17090a6a8500b001d0b95031ebso5233384pjj.3
+        for <netdev@vger.kernel.org>; Sun, 17 Apr 2022 10:10:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=84VJQi/2/yPzYKLQB3UGdKxxnh2pxi0liokf2t3z3C0=;
+        b=eco7xcTdvKRBSg2qoFtNgyiwQHCMRe9+wAUO0NshNhp1/TcM61VSGXJz56qX0GP31Q
+         jxRKTwMNRevDRxNlueIvr52IZNXHyrMIDVrLytOUeFysYhjOw9MK66LLArsLXHjyeogE
+         XLLTOmdggvsP0OJlQAbFCJAJHY5TMKKGWuSE5C+kQgcMvXJPtOmcIDHt2qCIxxkSLkPe
+         zEIv1Jr3C7IZDEfGzQo5X57FBuHz/xywXXKcW/ijOcIYwDxI5H3xf24tzOgRhIjBJO24
+         7d8aXkY02ng4e1AMTAunmV7eT4Jppn1lpQHR4xOlq+3xpbqYLWNpyYf07vLiC3dIR4cd
+         FGKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=84VJQi/2/yPzYKLQB3UGdKxxnh2pxi0liokf2t3z3C0=;
+        b=ClD6vN76Put2yiL13prDbnjgPdR52fxoRScdwzAO1hKycSXYg5iIK4Nf9JULZhbvy7
+         6zI57OOaDTgO2kTks7oxDMoKJ/d/IC9RDKWQpc2Kyt7zmqssKYfAL2XErbuuOOL14vf0
+         TDijHUZ121cBZCrZZKIrN170bDMVYwSkbvlW7mK65CfEDvzb+2ffMz74FjCPw99To1zp
+         aFLYDPh0almeLZ8bVwrnA7H8qICzy0stoE57n/WlIknE9zaBcX764FNBOlOnKB4OWAyx
+         bgyVj5/f2EBrFshHp4o5lRgrZgrA5kaegDvAjFq+bdTMJCqDuTnltDKnzPQYaibh/YaK
+         pSzw==
+X-Gm-Message-State: AOAM533aUoIh9mTG8e96Shz06/uCCaNgreyHrEoVDYkzrqK3f+xvjTtY
+        yh1sJFcDEiV9rpimLmGJt7M=
+X-Google-Smtp-Source: ABdhPJzT2unK0fz+s2wvT6Sdz1BDgqGiAOyhuIvyWamDH0KUFb59Nlb/IJsVxH2P2ABvVKDbR4bcLg==
+X-Received: by 2002:a17:902:d709:b0:155:d473:2be0 with SMTP id w9-20020a170902d70900b00155d4732be0mr7360311ply.151.1650215431625;
+        Sun, 17 Apr 2022 10:10:31 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:2a7a:266f:bc8e:11ae])
+        by smtp.gmail.com with ESMTPSA id c16-20020a631c50000000b003a39244fe8esm5861312pgm.68.2022.04.17.10.10.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 Apr 2022 10:10:31 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH net-next] tcp: fix signed/unsigned comparison
+Date:   Sun, 17 Apr 2022 10:10:27 -0700
+Message-Id: <20220417171027.3888810-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.36.0.rc0.470.gd361397f0d-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Eric Dumazet <edumazet@google.com>
 
-The first attempt to fix a the 'impossible' WARN_ON_ONCE(1) in
-isotp_tx_timer_handler() focussed on the identical CAN IDs created by
-the syzbot reproducer and lead to upstream fix/commit 3ea566422cbd
-("can: isotp: sanitize CAN ID checks in isotp_bind()"). But this did
-not catch the root cause of the wrong tx.state in the tx_timer handler.
+Kernel test robot reported:
 
-In the isotp 'first frame' case a timeout monitoring needs to be started
-before the 'first frame' is send. But when this sending failed the timeout
-monitoring for this specific frame has to be disabled too.
+smatch warnings:
+net/ipv4/tcp_input.c:5966 tcp_rcv_established() warn: unsigned 'reason' is never less than zero.
 
-Otherwise the tx_timer is fired with the 'warn me' tx.state of ISOTP_IDLE.
+I actually had one packetdrill failing because of this bug,
+and was about to send the fix :)
 
-Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
-Link: https://lore.kernel.org/all/20220405175112.2682-1-socketcan@hartkopp.net
-Reported-by: syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: 4b506af9c5b8 ("tcp: add two drop reasons for tcp_ack()")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: kernel test robot <lkp@intel.com>
 ---
- net/can/isotp.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ net/ipv4/tcp_input.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/can/isotp.c b/net/can/isotp.c
-index bafb0fb5f0e0..ff5d7870294e 100644
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -906,6 +906,7 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
- 	struct canfd_frame *cf;
- 	int ae = (so->opt.flags & CAN_ISOTP_EXTEND_ADDR) ? 1 : 0;
- 	int wait_tx_done = (so->opt.flags & CAN_ISOTP_WAIT_TX_DONE) ? 1 : 0;
-+	s64 hrtimer_sec = 0;
- 	int off;
- 	int err;
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index cf2dc19bb8c766c1d33406053fd61c0873f15489..0d88984e071531fb727bdee178b0c01fd087fe5f 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -5959,7 +5959,7 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
  
-@@ -1004,7 +1005,9 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
- 		isotp_create_fframe(cf, so, ae);
+ step5:
+ 	reason = tcp_ack(sk, skb, FLAG_SLOWPATH | FLAG_UPDATE_TS_RECENT);
+-	if (reason < 0)
++	if ((int)reason < 0)
+ 		goto discard;
  
- 		/* start timeout for FC */
--		hrtimer_start(&so->txtimer, ktime_set(1, 0), HRTIMER_MODE_REL_SOFT);
-+		hrtimer_sec = 1;
-+		hrtimer_start(&so->txtimer, ktime_set(hrtimer_sec, 0),
-+			      HRTIMER_MODE_REL_SOFT);
- 	}
- 
- 	/* send the first or only CAN frame */
-@@ -1017,6 +1020,11 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
- 	if (err) {
- 		pr_notice_once("can-isotp: %s: can_send_ret %pe\n",
- 			       __func__, ERR_PTR(err));
-+
-+		/* no transmission -> no timeout monitoring */
-+		if (hrtimer_sec)
-+			hrtimer_cancel(&so->txtimer);
-+
- 		goto err_out_drop;
- 	}
- 
-
-base-commit: 49aefd131739df552f83c566d0665744c30b1d70
+ 	tcp_rcv_rtt_measure_ts(sk, skb);
 -- 
-2.35.1
-
+2.36.0.rc0.470.gd361397f0d-goog
 
