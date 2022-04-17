@@ -2,133 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 85DAA5046DD
-	for <lists+netdev@lfdr.de>; Sun, 17 Apr 2022 08:39:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90FB65046E8
+	for <lists+netdev@lfdr.de>; Sun, 17 Apr 2022 09:10:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233507AbiDQGmR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Apr 2022 02:42:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53842 "EHLO
+        id S233542AbiDQHNU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Apr 2022 03:13:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233013AbiDQGmP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Apr 2022 02:42:15 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DF922C107
-        for <netdev@vger.kernel.org>; Sat, 16 Apr 2022 23:39:41 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id o2so19930316lfu.13
-        for <netdev@vger.kernel.org>; Sat, 16 Apr 2022 23:39:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=openvz-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :references:content-language:in-reply-to:content-transfer-encoding;
-        bh=bT5KP076LNXAkBuT6bxsWqWs6Rnf/a89eLMuVK8//BE=;
-        b=ncW0cuAMb8hBdKsyH8A3kwzpFlf5AjHuKNEWWaWOGkn5vtR0OwYflZ/UOyblXqRhoX
-         kbsctJzKaEA9bWHOVkTV9KuCRQcRcOgvcUf41KIzu3vHK2W9CC4bp4s9AHaibfLLOQjS
-         bT1e05vF0QYw5pL8iOoteYlboX9TqJwxMFp/G4XDGLWUN1+Kmy6fQdP8Kl/4NuFsySkn
-         HzOuRVfYzz0kv3CUSF1d0XcVL91nMfwKTE/4x0Inr2clsZHHMcHM8uhguc3zAzvEA9cl
-         WWfK9ozD2CGno/6VT0O3Ng+LCRT/WPIh/FlwpOJ46w4aohgfKTn2GFxLEpSzV5i7vrat
-         rK0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:references:content-language:in-reply-to
-         :content-transfer-encoding;
-        bh=bT5KP076LNXAkBuT6bxsWqWs6Rnf/a89eLMuVK8//BE=;
-        b=siIoqdPoap9Dib8gd+LeTjismnkS0r2KQfPDbiDVUU87KFlAHtf+TptX1KKUDuGJUY
-         QajOEcdF69vegyJv/eM+GsiDVHFB7+q3SnXuggv3t22bFe/j6554/obEFR1BZrY0+M7f
-         c9faVRHfqPRkoEq2BPCOb6917RHJTlOQ5ZV8tQTZLdqBykSXGyl9dAmpECl1B23wOYRI
-         saRPV9zJj4aubwLCa0aEOzUEcRq5f5GN7B47vbV5tyAoS0mMosXKXNNXYFJzJ3diszES
-         JJ5oFapWmIeDhFfmG24TBlhsd6F4AbmvSJk0vyTaIkPHL/vIVOjFRFgRvCYZ4VgopJvC
-         etJw==
-X-Gm-Message-State: AOAM5327O5IOZG9Ui+tj6xhl0+MJDLUTb5XQeXBi0gGWP+XWGBq+uvOn
-        oLlDDmWjkb/YyUWDWGyEHycwEw==
-X-Google-Smtp-Source: ABdhPJyDayD1yzsslV7LgR6+8/ExlagCq2BG2TF0dic2T/PuIDSyOXUYXztnIZD0s2fB6srWdeqxNQ==
-X-Received: by 2002:a05:6512:1326:b0:45a:3a4:f25a with SMTP id x38-20020a056512132600b0045a03a4f25amr4319176lfu.575.1650177579195;
-        Sat, 16 Apr 2022 23:39:39 -0700 (PDT)
-Received: from [192.168.1.65] ([46.188.121.177])
-        by smtp.gmail.com with ESMTPSA id x40-20020a056512132800b004489691436esm872040lfu.146.2022.04.16.23.39.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 16 Apr 2022 23:39:38 -0700 (PDT)
-Message-ID: <55605876-d05a-8be3-a6ae-ec26de9ee178@openvz.org>
-Date:   Sun, 17 Apr 2022 09:39:37 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-From:   Vasily Averin <vvs@openvz.org>
-Subject: [PATCH memcg RFC] net: set proper memcg for net_init hooks
- allocations
-To:     Vlastimil Babka <vbabka@suse.cz>,
-        Roman Gushchin <roman.gushchin@linux.dev>
-Cc:     kernel@openvz.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, cgroups@vger.kernel.org,
-        Shakeel Butt <shakeelb@google.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Florian Westphal <fw@strlen.de>,
+        with ESMTP id S231880AbiDQHNT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Apr 2022 03:13:19 -0400
+X-Greylist: delayed 379 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 17 Apr 2022 00:10:42 PDT
+Received: from mailout3.hostsharing.net (mailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f236:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1FD83E5F3;
+        Sun, 17 Apr 2022 00:10:42 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by mailout3.hostsharing.net (Postfix) with ESMTPS id 6ADFD101E9E63;
+        Sun, 17 Apr 2022 09:04:21 +0200 (CEST)
+Received: from localhost (unknown [89.246.108.87])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by h08.hostsharing.net (Postfix) with ESMTPSA id 2449D621EA2E;
+        Sun, 17 Apr 2022 09:04:21 +0200 (CEST)
+X-Mailbox-Line: From 18b3541e5372bc9b9fc733d422f4e698c089077c Mon Sep 17 00:00:00 2001
+Message-Id: <18b3541e5372bc9b9fc733d422f4e698c089077c.1650177997.git.lukas@wunner.de>
+From:   Lukas Wunner <lukas@wunner.de>
+Date:   Sun, 17 Apr 2022 09:04:19 +0200
+Subject: [PATCH] net: linkwatch: ignore events for unregistered netdevs
+To:     Oliver Neukum <oneukum@suse.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-References: <46c1c59e-1368-620d-e57a-f35c2c82084d@linux.dev>
-Content-Language: en-US
-In-Reply-To: <46c1c59e-1368-620d-e57a-f35c2c82084d@linux.dev>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, Jann Horn <jannh@google.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Jacky Chou <jackychou@asix.com.tw>, Willy Tarreau <w@1wt.eu>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Philipp Rosenberger <p.rosenberger@kunbus.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-__register_pernet_operations() executes init hook of registered
-pernet_operation structure in all existing net namespaces.
+Jann Horn reports a use-after-free on disconnect of a USB Ethernet
+(ax88179_178a.c).  Oleksij Rempel has witnessed the same issue with a
+different driver (ax88172a.c).
 
-Typically, these hooks are called by a process associated with
-the specified net namespace, and all __GFP_ACCOUNTING marked
-allocation are accounted for corresponding container/memcg.
+Jann's report (linked below) explains the root cause in great detail,
+but the gist is that USB Ethernet drivers call linkwatch_fire_event()
+between unregister_netdev() and free_netdev().  The asynchronous work
+linkwatch_event() may thus access the netdev after it's been freed.
 
-However __register_pernet_operations() calls the hooks in the same
-context, and as a result all marked allocations are accounted
-to one memcg for all processed net namespaces.
+USB Ethernet may not even be the only culprit.  To address the problem
+in the most general way, ignore link events once a netdev's state has
+been set to NETREG_UNREGISTERED.
 
-This patch adjusts active memcg for each net namespace and helps
-to account memory allocated inside ops_init() into the proper memcg.
+That happens in netdev_run_todo() immediately before the call to
+linkwatch_forget_dev().  Note that lweventlist_lock (and its implied
+memory barrier) guarantees that a linkwatch_add_event() running after
+linkwatch_forget_dev() will see the netdev's new state and bail out.
+An unregistered netdev is therefore never added to link_watch_list
+(but may have its __LINK_STATE_LINKWATCH_PENDING bit set, which should
+not matter).  That obviates the need to invoke linkwatch_run_queue() in
+netdev_wait_allrefs(), so drop it.
 
-Signed-off-by: Vasily Averin <vvs@openvz.org>
+In a sense, the present commit is to *no longer* registered netdevs as
+commit b47300168e77 ("net: Do not fire linkwatch events until the device
+is registered.") is to *not yet* registered netdevs.
+
+Reported-by: Jann Horn <jannh@google.com>
+Link: https://lore.kernel.org/netdev/CAG48ez0MHBbENX5gCdHAUXZ7h7s20LnepBF-pa5M=7Bi-jZrEA@mail.gmail.com/
+Reported-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Link: https://lore.kernel.org/netdev/20220315113841.GA22337@pengutronix.de/
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Cc: stable@vger.kernel.org
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Oliver Neukum <oneukum@suse.com>
+Cc: Andrew Lunn <andrew@lunn.ch>
 ---
-Dear Vlastimil, Roman,
-I'm not sure that memcg is used correctly here, 
-is it perhaps some additional locking required?
----
- net/core/net_namespace.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ include/linux/netdevice.h |  2 --
+ net/core/dev.c            | 17 -----------------
+ net/core/link_watch.c     | 10 ++--------
+ 3 files changed, 2 insertions(+), 27 deletions(-)
 
-diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
-index a5b5bb99c644..171c6e0b2337 100644
---- a/net/core/net_namespace.c
-+++ b/net/core/net_namespace.c
-@@ -26,6 +26,7 @@
- #include <net/net_namespace.h>
- #include <net/netns/generic.h>
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 59e27a2b7bf0..5d950b45b59d 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -4805,8 +4805,6 @@ extern const struct kobj_ns_type_operations net_ns_type_operations;
  
-+#include <linux/sched/mm.h>
- /*
-  *	Our network namespace constructor/destructor lists
-  */
-@@ -1147,7 +1148,13 @@ static int __register_pernet_operations(struct list_head *list,
- 		 * setup_net() and cleanup_net() are not possible.
- 		 */
- 		for_each_net(net) {
-+			struct mem_cgroup *old, *memcg = NULL;
-+#ifdef CONFIG_MEMCG
-+			memcg = (net == &init_net) ? root_mem_cgroup : mem_cgroup_from_obj(net);
-+#endif
-+			old = set_active_memcg(memcg);
- 			error = ops_init(ops, net);
-+			set_active_memcg(old);
- 			if (error)
- 				goto out_undo;
- 			list_add_tail(&net->exit_list, &net_exit_list);
+ const char *netdev_drivername(const struct net_device *dev);
+ 
+-void linkwatch_run_queue(void);
+-
+ static inline netdev_features_t netdev_intersect_features(netdev_features_t f1,
+ 							  netdev_features_t f2)
+ {
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 8c6c08446556..0ee56965ff76 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -10140,23 +10140,6 @@ static struct net_device *netdev_wait_allrefs_any(struct list_head *list)
+ 			list_for_each_entry(dev, list, todo_list)
+ 				call_netdevice_notifiers(NETDEV_UNREGISTER, dev);
+ 
+-			__rtnl_unlock();
+-			rcu_barrier();
+-			rtnl_lock();
+-
+-			list_for_each_entry(dev, list, todo_list)
+-				if (test_bit(__LINK_STATE_LINKWATCH_PENDING,
+-					     &dev->state)) {
+-					/* We must not have linkwatch events
+-					 * pending on unregister. If this
+-					 * happens, we simply run the queue
+-					 * unscheduled, resulting in a noop
+-					 * for this device.
+-					 */
+-					linkwatch_run_queue();
+-					break;
+-				}
+-
+ 			__rtnl_unlock();
+ 
+ 			rebroadcast_time = jiffies;
+diff --git a/net/core/link_watch.c b/net/core/link_watch.c
+index 95098d1a49bd..9a0ea7cd68e4 100644
+--- a/net/core/link_watch.c
++++ b/net/core/link_watch.c
+@@ -107,7 +107,8 @@ static void linkwatch_add_event(struct net_device *dev)
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&lweventlist_lock, flags);
+-	if (list_empty(&dev->link_watch_list)) {
++	if (list_empty(&dev->link_watch_list) &&
++	    dev->reg_state < NETREG_UNREGISTERED) {
+ 		list_add_tail(&dev->link_watch_list, &lweventlist);
+ 		dev_hold_track(dev, &dev->linkwatch_dev_tracker, GFP_ATOMIC);
+ 	}
+@@ -250,13 +251,6 @@ void linkwatch_forget_dev(struct net_device *dev)
+ }
+ 
+ 
+-/* Must be called with the rtnl semaphore held */
+-void linkwatch_run_queue(void)
+-{
+-	__linkwatch_run_queue(0);
+-}
+-
+-
+ static void linkwatch_event(struct work_struct *dummy)
+ {
+ 	rtnl_lock();
 -- 
-2.31.1
+2.35.2
 
