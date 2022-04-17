@@ -2,67 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B835B5048EA
-	for <lists+netdev@lfdr.de>; Sun, 17 Apr 2022 20:29:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA7FD5048F2
+	for <lists+netdev@lfdr.de>; Sun, 17 Apr 2022 20:34:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234778AbiDQSbs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Apr 2022 14:31:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51314 "EHLO
+        id S234797AbiDQShO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Apr 2022 14:37:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232573AbiDQSbs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Apr 2022 14:31:48 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ABBE19C30
-        for <netdev@vger.kernel.org>; Sun, 17 Apr 2022 11:29:12 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id v77so22411846ybi.12
-        for <netdev@vger.kernel.org>; Sun, 17 Apr 2022 11:29:12 -0700 (PDT)
+        with ESMTP id S234793AbiDQShN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Apr 2022 14:37:13 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B7581C91B
+        for <netdev@vger.kernel.org>; Sun, 17 Apr 2022 11:34:37 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id j71so1567379pge.11
+        for <netdev@vger.kernel.org>; Sun, 17 Apr 2022 11:34:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3JYZWHOgAvsU7h9AaVhO8VrZb8WbfwhUYEiyfpkHdVw=;
-        b=T3BGvAdUme4Z/IVohuy0y6rmjcc/k/lmdp6I9waGfNh7lElPro6JrLKAiRnobObm01
-         V8Tne+WxkZD0kKzV6Rk44r86+S7NUxMs5ck+RSINqYxTnkW7cwJmpVdK5PSK3SF4MyKa
-         F6GUwev+agOXiY1SChJD6YkH9lT1+iVr5a131boCP+O1H8Yonz2irZi3kI7i7/SWYkOU
-         qRNrFwkbvfZ1WwX07Popm2O/6b6lPUgHlhKpGEkWK+bhIG/5bVAouunv3+M4MWc+bKHq
-         hsZqD+jiiTWbIeLQCAIF/WZKRfsu27o6i+2xAI0eBIxGuJj5gH14R3CKo9YVsFgWM17D
-         jALA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uONgKt3GgvDtPCtik386EiruUREVc+kLtgbjNUR2qfA=;
+        b=ffQzhNiAU1qAErrGrdLDlfx9zKYtNv6uz1/odMHcBTqiiWgend+ThX9Y+a60W28WdP
+         bI1lvDDYqHAc+tOFhvbQVeFb/0xAnN/woj9uiUegFxihVBxaHfzEUAue3IQj68Q6gMDn
+         qsOnQ7aEJhc+fzAwxEBr1Ix6hz/CeLRBBP6Aqg+BrujBdQ12ogk0UYKlyLIi1/IvpC53
+         pN7neH8YoYMigLbIGJUbxl7tMwpelWk8LaZ6J0NRL59mUWHULeIG3i/6ueCJ4bKicLvx
+         pdr2RxJgfGcg8R2OHfBphJwgZ5J/isAO5eh5b3E6OacqJVl3C2/U8xbROBDxNQEJmSjb
+         LfTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3JYZWHOgAvsU7h9AaVhO8VrZb8WbfwhUYEiyfpkHdVw=;
-        b=iDFdTMg/QsJXd6S9+ayNRjcMnwOJyFPGKdG4/PdzJeWTxi/keH8UiFET/ZtVE7C+qn
-         /mdGA5bdPbVglFx5JVR9i4ldAyhkzd5tbXiNMIZLHd0cA1b/TPH9DqDq0SMONv79Ak8L
-         Tx1R5qw86olDN2fmfC/4sYVWPjJGf15DIOWYJOzZyKhIrE9eHR0XvjV5H76UAdgokCt5
-         5VY+LEStE3ozrhU/194WpepXlX4/UZicjkucqe4EBAU4lAX4aCztFCM0ZTnzGbX2CMsQ
-         O46+pW5IuFkMGWahnia8+E+MSRyDgACxpYZPC3OqcS6k4ECgBWrtc4CsdUiO7hvhjv6q
-         qAFg==
-X-Gm-Message-State: AOAM530kSWkWEI6LBkxSGasue8ABF/PsjcBeVPIJknIA+ul/36rKE+Dq
-        bc2R0WJKl8W3dqqhD4/grlzEgjt5zaugHw+OEAMlfA==
-X-Google-Smtp-Source: ABdhPJxC0Vav1rmjeg7/DL/XxPMcf4CHqJ9nBURLS982HnyQMUmBbAjbqaXXSx7KDGQxHaCNzlZwaGsXCsPRaOL4y18=
-X-Received: by 2002:a05:6902:c9:b0:641:1998:9764 with SMTP id
- i9-20020a05690200c900b0064119989764mr7161401ybs.427.1650220151013; Sun, 17
- Apr 2022 11:29:11 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220417171027.3888810-1-eric.dumazet@gmail.com> <87czhfy3e3.fsf@igel.home>
-In-Reply-To: <87czhfy3e3.fsf@igel.home>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Sun, 17 Apr 2022 11:28:59 -0700
-Message-ID: <CANn89iL5+4YkUSMLUZxy2ed9gDjpQxJzJUoSbgyeH7iNuc9ExQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] tcp: fix signed/unsigned comparison
-To:     Andreas Schwab <schwab@linux-m68k.org>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uONgKt3GgvDtPCtik386EiruUREVc+kLtgbjNUR2qfA=;
+        b=OtbCEhopIRjGzu9rfbtsHXc1nudTOIje6XXmHq0Ortj/2YPJAp7U3Dpve/EiBK9bmw
+         fkLv3s+8Dyx1e87/toHim5irJCcW9nGmZFKJgRNlZrQCZuKyABfvoy+/ZIYmzKTkL0NV
+         sKNOLtzvOR3PDzW1lsYaH7uYMumcGsk9XjnIgcbx7cyouhFUA53dWvOg4qm1y+eh+AgA
+         4vleV8P8kYhr24wyH46JlYHaFhtO03NCPg/540c9gySgDDZbkVsjvOkpcX6uteDNn6S1
+         +vRxCZOQtzBo0BTzZGg4ugPugxJ5PfYX/fQ8xaepwqvWdRl8rvdMJiJOEd1hJkdas1G9
+         zTgg==
+X-Gm-Message-State: AOAM532IVhXAbDrtvJvNGVUeFk9NJpztmwBgkn6RhFXHQeS7h7xyPLrr
+        0dGzhQFmAzccdF795oYjnXY=
+X-Google-Smtp-Source: ABdhPJwCKseoTjRN808QsjPIoc3IaDJY0KAd9MrEP9A3sppPLc4hlBozc4OTvC3ZXfwiLwfp2KtYwg==
+X-Received: by 2002:a63:2248:0:b0:39d:48fd:7d73 with SMTP id t8-20020a632248000000b0039d48fd7d73mr7365957pgm.372.1650220476778;
+        Sun, 17 Apr 2022 11:34:36 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:e7a:3f3c:2676:804a])
+        by smtp.gmail.com with ESMTPSA id b3-20020a17090a12c300b001d28859a758sm1881153pjg.31.2022.04.17.11.34.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 Apr 2022 11:34:35 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        kernel test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        kernel test robot <lkp@intel.com>,
+        Andreas Schwab <schwab@linux-m68k.org>
+Subject: [PATCH v2 net-next] tcp: fix signed/unsigned comparison
+Date:   Sun, 17 Apr 2022 11:34:32 -0700
+Message-Id: <20220417183432.3952871-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.36.0.rc0.470.gd361397f0d-goog
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,24 +72,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 17, 2022 at 11:24 AM Andreas Schwab <schwab@linux-m68k.org> wrote:
->
-> On Apr 17 2022, Eric Dumazet wrote:
->
-> > diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> > index cf2dc19bb8c766c1d33406053fd61c0873f15489..0d88984e071531fb727bdee178b0c01fd087fe5f 100644
-> > --- a/net/ipv4/tcp_input.c
-> > +++ b/net/ipv4/tcp_input.c
-> > @@ -5959,7 +5959,7 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
-> >
-> >  step5:
-> >       reason = tcp_ack(sk, skb, FLAG_SLOWPATH | FLAG_UPDATE_TS_RECENT);
-> > -     if (reason < 0)
-> > +     if ((int)reason < 0)
-> >               goto discard;
-> >
-> >       tcp_rcv_rtt_measure_ts(sk, skb);
->
-> Shouldn't reason be negated before passing it to tcp_drop_reason?
+From: Eric Dumazet <edumazet@google.com>
 
-Good catch, thanks !
+Kernel test robot reported:
+
+smatch warnings:
+net/ipv4/tcp_input.c:5966 tcp_rcv_established() warn: unsigned 'reason' is never less than zero.
+
+I actually had one packetdrill failing because of this bug,
+and was about to send the fix :)
+
+v2: Andreas Schwab also pointed out that @reason needs to be negated
+    before we reach tcp_drop_reason()
+
+Fixes: 4b506af9c5b8 ("tcp: add two drop reasons for tcp_ack()")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Andreas Schwab <schwab@linux-m68k.org>
+---
+ net/ipv4/tcp_input.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index cf2dc19bb8c766c1d33406053fd61c0873f15489..daff631b94865ae95cbd49ed8ecf6782edaf16e7 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -5959,9 +5959,10 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
+ 
+ step5:
+ 	reason = tcp_ack(sk, skb, FLAG_SLOWPATH | FLAG_UPDATE_TS_RECENT);
+-	if (reason < 0)
++	if ((int)reason < 0) {
++		reason = -reason;
+ 		goto discard;
+-
++	}
+ 	tcp_rcv_rtt_measure_ts(sk, skb);
+ 
+ 	/* Process urgent data. */
+-- 
+2.36.0.rc0.470.gd361397f0d-goog
+
