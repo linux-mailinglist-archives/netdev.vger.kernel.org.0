@@ -2,97 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A53B5047D6
-	for <lists+netdev@lfdr.de>; Sun, 17 Apr 2022 15:06:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAB1B5047F1
+	for <lists+netdev@lfdr.de>; Sun, 17 Apr 2022 15:53:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234127AbiDQNIh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Apr 2022 09:08:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38086 "EHLO
+        id S234204AbiDQNzh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Apr 2022 09:55:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234110AbiDQNIg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Apr 2022 09:08:36 -0400
-Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6EE9B3A191;
-        Sun, 17 Apr 2022 06:05:58 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [10.15.192.164])
-        by mail-app4 (Coremail) with SMTP id cS_KCgDn76eoEFxiVqtbAQ--.23203S2;
-        Sun, 17 Apr 2022 21:05:49 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-kernel@vger.kernel.org, wg@grandegger.com, mkl@pengutronix.de
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH] drivers: net: can: Fix deadlock in grcan_close()
-Date:   Sun, 17 Apr 2022 21:05:43 +0800
-Message-Id: <20220417130543.90518-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cS_KCgDn76eoEFxiVqtbAQ--.23203S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Kr4kXF45Xw1xWr4kWr4kJFb_yoW8Gw4xpw
-        47KFyfAFWvvr4UK3Z7Xw4kZF1rZ3WDWFWUJFy5Wws5Zwn3ZF15JF1rKa4UuF47KFyDKFsx
-        uF1rXrZ3CFs8GrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkI1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJr0_GcWl84ACjcxK6I8E
-        87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c
-        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_JrI_
-        JrylYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwI
-        xGrwACjI8F5VA0II8E6IAqYI8I648v4I1l42xK82IYc2Ij64vIr41l42xK82IY6x8ErcxF
-        aVAv8VW8uw4UJr1UMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr
-        4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxG
-        rwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJw
-        CI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2
-        z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VU1a9aPUUUUU==
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgoDAVZdtZOq7gAIsr
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S229496AbiDQNzh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Apr 2022 09:55:37 -0400
+Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 539D31EC77;
+        Sun, 17 Apr 2022 06:52:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=PcP8dW0ioRzK0xPAKsYs093XS1ccwWxt22yQcI8gb10=; b=UWKQqpDU3c4xffoQchHhHqWtTF
+        AXEk2xZp4BYO03KZEIoakG2oH9LcFksrrtvo5mbOSpkTWvoMCs5t/1G05OFZ45P7BqjydMR4cYhCC
+        zN3SN8pe2rSsuGhMsiDHjJYv1/XrcKY24JgXuxd6jaglkBHWFybMIz+L2401kVVI10xW//dLag9eR
+        jmgfJzCceE51uVsXGGW0usZGkUTbbcYgdpzrumtA+T8w+V1TLC8cYsvgl8PDd3XpBZe6c8xFrk0Nl
+        2TV88rnxIMNzYLhRd3210SF2S21iWvoXPiwEotk9g7GHoXmvuaVCBrpR7C7mwX3cMUBkl+1nJB/4/
+        gHIImD9PpNYzq5Hdfu0N7+BtSqbUhDzB2jgQaADaRupzo/m8HnOoP/hXViKBhZOguXEzU62MVkiiX
+        9gcIGr+RkgSOR5KHhu4kk0OsDpBSuxqxrRxWnlKDRoAeLqIWussDZWLy/aTa7LPT9RrKmpBffKhTo
+        +hBbZ02RmAjsVbTteL0SMzl5egXD1ObNErtMI2kBcyi8OR7KNHZVcyv9DIF8raE2C9LgZSqc0GWRb
+        I4wqMu+OwMUqiONlMkvZTVys3X3V7gPj8t01J8KPH0Y/lBOnHcNaahlsV4xL8zNM+CSfCWQ+JfGfX
+        AAdigAYdjiUeO5OtDSSLx4x3Q97c1cYevUPjJxrC0=;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     asmadeus@codewreck.org
+Cc:     David Kahurani <k.kahurani@gmail.com>, davem@davemloft.net,
+        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        lucho@ionkov.net, netdev@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net,
+        David Howells <dhowells@redhat.com>, Greg Kurz <groug@kaod.org>
+Subject: Re: 9p fs-cache tests/benchmark (was: 9p fscache Duplicate cookie detected)
+Date:   Sun, 17 Apr 2022 15:52:43 +0200
+Message-ID: <8420857.9FB56xACZ5@silver>
+In-Reply-To: <YlwOdqVCBZKFTIfC@codewreck.org>
+References: <CAAZOf26g-L2nSV-Siw6mwWQv1nv6on8c0fWqB4bKmX73QAFzow@mail.gmail.com>
+ <2551609.RCmPuZc3Qn@silver> <YlwOdqVCBZKFTIfC@codewreck.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are deadlocks caused by del_timer_sync(&priv->hang_timer)
-and del_timer_sync(&priv->rr_timer) in grcan_close(), one of
-the deadlocks are shown below:
+On Sonntag, 17. April 2022 14:56:22 CEST asmadeus@codewreck.org wrote:
+> Christian Schoenebeck wrote on Thu, Apr 14, 2022 at 02:44:53PM +0200:
+> > > Yes, I'm not sure why I can't reproduce... All my computers are pretty
+> > > slow but the conditions should be met.
+> > > I'll try again with a command line closer to what you just gave here.
+> > 
+> > I'm not surprised that you could not reproduce the EBADF errors yet. To
+> > make this more clear, as for the git client errors: I have like 200+ git
+> > repositories checked out on that test VM, and only about 5 of them
+> > trigger EBADF errors on 'git pull'. But those few repositories reproduce
+> > the EBADF errors reliably here.
+> > 
+> > In other words: these EBADF errors only seem to trigger under certain
+> > circumstances, so it requires quite a bunch of test material to get a
+> > reproducer.
+> > 
+> > Like I said though, with the Bullseye installation I immediately get EBADF
+> > errors already when booting, whereas with a Buster VM it boots without
+> > errors.
+> Okay, I had missed that!
+> 
+> I've managed to reproduce with git:
+> https://gaia.codewreck.org/local/tmp/c.tar.zst
+> 
+> This archive (~300KB) when decompressed is a ~150MB repo where git reset
+> produces EBADF reliably for me.
 
-   (Thread 1)              |      (Thread 2)
-                           | grcan_reset_timer()
-grcan_close()              |  mod_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | grcan_initiate_running_reset()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
+I'm glad you were able to reproduce these EBADF errors!
 
-We hold priv->lock in position (1) of thread 1 and use
-del_timer_sync() to wait timer to stop, but timer handler
-also need priv->lock in position (2) of thread 2.
-As a result, grcan_close() will block forever.
+> From the looks of it, write fails in v9fs_write_begin, which itself
+> fails because it tries to read first on a file that was open with
+> O_WRONLY|O_CREAT|O_APPEND.
+> Since this is an append the read is necessary to populate the local page
+> cache when writing, and we're careful that the writeback fid is open in
+> write, but not about read...
+> 
+> Will have to think how we might want to handle this; perhaps just giving
+> the writeback fid read rights all the time as well...
+> Ran out of time for tonight, but hopefully we can sort it out soonish now!
 
-This patch extracts del_timer_sync() from the protection of
-spin_lock_irqsave(), which could let timer handler to obtain
-the needed lock.
+I fear that would just trade symptoms: There are use cases for write-only 
+permissions, which would then fail after such kind of simple change.
 
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
----
- drivers/net/can/grcan.c | 2 ++
- 1 file changed, 2 insertions(+)
+Independent of this EBADF issue, it would be good to know why 9p performance 
+got so slow with cache=loose by the netfs changes. Maybe David has an idea?
 
-diff --git a/drivers/net/can/grcan.c b/drivers/net/can/grcan.c
-index d0c5a7a60da..1189057b5d6 100644
---- a/drivers/net/can/grcan.c
-+++ b/drivers/net/can/grcan.c
-@@ -1102,8 +1102,10 @@ static int grcan_close(struct net_device *dev)
- 
- 	priv->closing = true;
- 	if (priv->need_txbug_workaround) {
-+		spin_unlock_irqrestore(&priv->lock, flags);
- 		del_timer_sync(&priv->hang_timer);
- 		del_timer_sync(&priv->rr_timer);
-+		spin_lock_irqsave(&priv->lock, flags);
- 	}
- 	netif_stop_queue(dev);
- 	grcan_stop_hardware(dev);
--- 
-2.17.1
+Best regards,
+Christian Schoenebeck
+
 
