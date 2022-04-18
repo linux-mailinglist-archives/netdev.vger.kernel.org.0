@@ -2,112 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DA496504CCE
-	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 08:46:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87926504CD3
+	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 08:46:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236845AbiDRGqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Apr 2022 02:46:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60738 "EHLO
+        id S236858AbiDRGrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Apr 2022 02:47:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236822AbiDRGqj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 02:46:39 -0400
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam08on2042.outbound.protection.outlook.com [40.107.101.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D18C018E3B
-        for <netdev@vger.kernel.org>; Sun, 17 Apr 2022 23:44:01 -0700 (PDT)
+        with ESMTP id S236844AbiDRGqw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 02:46:52 -0400
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam08on2045.outbound.protection.outlook.com [40.107.101.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A8A619015
+        for <netdev@vger.kernel.org>; Sun, 17 Apr 2022 23:44:07 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oP6+SwCCY4o80M84Cq4nibX4d8+G/tO+JHFynsJJ8rLJhQ9SNLyfsXVH3/jnp3WepTH/yOUPuNa2EMF9AF64neJ4SHyBeCPo+4X7YfMMk46mInnp4boVaxP69aKl/XAsmnr6BOXmfAD4WZI2mXOMEIrOURl673sUrLwrLbrYi+KeSPNCxneui9LXFraJwDi2cUJqtTbEIZBc1L/edrNv4xXw3gNYP7boepivcdz+yCUrIrJXK/WC7rT4k22dIfB3ZsqChHmTgw7jctV4x0egK2m6vwdqHIzCU98JsM4WBem0BxxVQwjzI3A1YoQXXWgEfUyBPzzCnOJxdL3XrDQQLg==
+ b=j5wgNE64YDAOlE8A7goQVl6ibR102lirtqjM0m/SCRraWzCfVTvFKwsw+RRvE44JbxWSP9ak4V48KvKhGEA1TC553A4T1hBw94PZWB/jUidpez2CMJv7OJ1lEOdKP6XzsnRxLQuF6yKnYijiuMLSyfNauENp5w1V3oNPynK53SRT0ETVi6aX9V5ewk7urGCtxpOjPzA3sFpRQhUkoZuLdqlLr2BnUaSHZW6eYJCdYyGIK88bM59qPz0pNySWbOrEhcfJa8IS4UwMbqI2rIsmQpdX7umVB5Ly4MwBfoknQV9y2sV4u5z0Tuht7Z9L5NNF5c3zKtIMlkDMVAL5Wt73sQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=SI+utdoAUEY1Q72DOJET3tiamn/+EP6TO4kXerbMMyE=;
- b=DVsuzBCaHsdp25Vi97LTX/+z9zG4KZzG4zAtFGcMf5pTPPd0bnAv8qUqXUtUKpTaxO+oBA7CY05fRkhWUR97pePnctMjnfHiq43QR1CMKJc51vXSPivOSTze/kSltCrkr4AAzsZDkSqRJxEym48cuoS1f6bZFvlqBbofV2CyWndNXTgR3neh8ls2z55xybbS+DauRR1uoKLUlRvZrdh+KbjGq376YwS1/6Y1Dx4FU+R9WJDRxJjj4EaDpKDfQ4ESlKGXldsnWbLUSbpq4THSTldk0pMmqZvtq+r92hc83RtZCfmzemQDNuLLjcPaPUx3Opbr4cN2c6cDlwkn1cAyNQ==
+ bh=mNM9fvn4FehJaHNRhByhn9HMvi1orRPrHHkbxXkl9/k=;
+ b=ag4HyGHz94XJLiXp71rpi6m4g2VKDgH4K5R6fsAWCxkaRx36u8Z+1BSYGDp4iaSNkp7QmarHJLgkVZl5n0pNM5fYoxaDDLJMkuMrShvsu6I2smj9qfVwTGJm4txyXe6aYSPzQxY72LwQiPOLeQBvxYdEBxHClhlbVLYOKQcPqSnxMxwo56kwVGxfUY8xbrUB7NskuJhY0DJIb9XlF5cPv4f6T3SQat5Ne88+59QxZ15Aj0XzXMWyvt86pu2/QKgMd6FPAH2e67KQX8H5rNsMIB00gHVBzlLFSiXpNN6hxVEjEYtEqeXOUl+iUKFZKElzcLNfn2ye0N6TmNN4xbB2YQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SI+utdoAUEY1Q72DOJET3tiamn/+EP6TO4kXerbMMyE=;
- b=HY8ll6P/KRMUMQ9LoGAIvOU67auT9esMHptWTvKF5fgwXSPYKayhip8DHsEoy2mm3AfxEKkyEuAAVceVrzc2zFm62y9ZTrXHzQbREiqnqQqygFHlUo+AMl6kk5JQR36GLjftxGnXZHuCMxCfeMzGvqfR0VdIGsUPuXbyu6d3qlMzhXF3fYQdxpkmtX+ZwKP2oto5siu1I64toPhCNnexqb7HpKv+ZpvqQh9W6ZuIlLIAI4xpmf7taRnaxLI09Bmpq07+48XS/lNZPCCEytgNfnLUw+6beZmbyaYiN2WYtzbo2pJ7Px4DayTiR+UFvZbLxYnKNIRQEMmPa8MUzFYfjQ==
+ bh=mNM9fvn4FehJaHNRhByhn9HMvi1orRPrHHkbxXkl9/k=;
+ b=mCOfZPdyYpwoNwJD7XxM9ce5yjIu5IX2ekXiQp7v2McYdM1MOCR7VihIgI2BB8yYuP06WAYUGvHKV8BLa9IJLhfsId+RjMqsrDlMFWLCi8+iQy0pW/8NLRYWP+DfZszcIC/081+B4vCkXQI5lpO9u5m1arAwXR0tzZ2oCqIbGVmo68wefF86TQqtjW7r/26ozQTr2GmWhNgS4+O6w+LSo+P1h4GEtN2SQAYplq70JTFkuAO20VVr2Fp3ckzsaHKso680YsqduhwfBHYfsa7JZdHH+fPbr32KkHG4PcLC0tyUl4ae4nA9uF/YZdi4C6byz305fVTmIZBvsuyz33p+7A==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from DM6PR12MB4337.namprd12.prod.outlook.com (2603:10b6:5:2a9::12)
  by PH0PR12MB5420.namprd12.prod.outlook.com (2603:10b6:510:e8::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20; Mon, 18 Apr
- 2022 06:44:00 +0000
+ 2022 06:44:06 +0000
 Received: from DM6PR12MB4337.namprd12.prod.outlook.com
  ([fe80::6131:18cc:19ae:2402]) by DM6PR12MB4337.namprd12.prod.outlook.com
  ([fe80::6131:18cc:19ae:2402%6]) with mapi id 15.20.5164.025; Mon, 18 Apr 2022
- 06:44:00 +0000
+ 06:44:06 +0000
 From:   Ido Schimmel <idosch@nvidia.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         jiri@nvidia.com, vadimp@nvidia.com, petrm@nvidia.com,
         andrew@lunn.ch, dsahern@gmail.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 06/17] mlxsw: spectrum: Allocate port mapping array of structs instead of pointers
-Date:   Mon, 18 Apr 2022 09:42:30 +0300
-Message-Id: <20220418064241.2925668-7-idosch@nvidia.com>
+Subject: [PATCH net-next 07/17] mlxsw: reg: Add Ports Mapping Event Configuration Register
+Date:   Mon, 18 Apr 2022 09:42:31 +0300
+Message-Id: <20220418064241.2925668-8-idosch@nvidia.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220418064241.2925668-1-idosch@nvidia.com>
 References: <20220418064241.2925668-1-idosch@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: LO4P123CA0520.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:272::16) To DM6PR12MB4337.namprd12.prod.outlook.com
+X-ClientProxiedBy: LO4P123CA0196.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:1a4::21) To DM6PR12MB4337.namprd12.prod.outlook.com
  (2603:10b6:5:2a9::12)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8dec435f-190d-4757-943e-08da2106d1f5
+X-MS-Office365-Filtering-Correlation-Id: 25814b01-f392-41a2-06a9-08da2106d55a
 X-MS-TrafficTypeDiagnostic: PH0PR12MB5420:EE_
-X-Microsoft-Antispam-PRVS: <PH0PR12MB5420F374229E809E55A2314AB2F39@PH0PR12MB5420.namprd12.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <PH0PR12MB5420278E8F3F2DB5A3B4442BB2F39@PH0PR12MB5420.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: R8iSXjLdAwBj6VN3QIvTffFNUpifWfBJK6nBpt9QTIaNa4MBtq3Iryq2eU3Krk0TIhm6QvhMGjfznoum2lYODZc82921UQre4DkKUfeiRPBcQ3+1Xa1LkoEXm/ju2M2shZR7IyY6X53Bwqz2S7U+dWPGS9FGZargg8tZu28elAolOMq3eotmXesbHunxikqiTASNn2XALktiZyrPyFGbShwRjHpub6/MKN9B8+FwImujEK1rXgZVmg3miedILBilDpO8OsYZVV/OvUAZw0HNMtsOvWadVxJUzRCmsOqC7YXRSzwUx4Pv5tTD3zBOSHTT5GxbSuYZ/zgq1d68dedhtpMiffg+QFvXY7Q8vuY2W5OksWsMNS3PnRP8cJhFARR+uqQfnCp0Ow8p5jFXXrH4us1drjDboRE5QMspMfub3neFwyZj/ZFqAR1rSvhK4cCbnJWsCmCwnHxqPO5glaBgRzMuOhzzymizespUTis7XKngxIi8dqWqIM0oQVcgn4H9qcNCz7vdcJl4fnbmTs9c1JvjATN4LnLekVtt1yN/IsTjX7f44i2XJgeE78IHOi7VjdDvA5VR9WwHVMKyVJCI/+RlAiyW6udMKQ9lZrd5OvWmFsF01WuErrS9/Oez/q6BKwFrWCbyyna7FV2zIXOqLg==
+X-Microsoft-Antispam-Message-Info: HyxCgL+hO7SN0Tw2LQfo+X3AvUIe+7iHzxSkyFwxy4DwnyaZwxh9Xm9LQcAZ2xpSmq5L/EdtzJqzh3RnrKk2vOjjUbBfkiXVL2qSptiIqf/sq8lVNe0c7pqRyeX/hXja00cjHlJz0Ado5jVxHHrQFDigl8BC6rK+J2FkL8yyjZEvyew2S3ehIt03Ud+jUgxy6FgFLnaPOP/BM48aGu96y/6oawvL0YxhczbjtnZdHK9fj2MtNcu0MsJa/FILRBwPa9MlyXmuB0d42T6pAk7XWlmjR4GttTIm3gk72JBs//GE9gn44d/NfEaDIntuQueSZ8gFFQBsg18iKX654Bk02Dn/5p4a8xr23bLi0U1igkBMduDXWY/2tNcHf951S070GpOrQMj1CnX5VZ/vKMWm+hk522W/0Il9EGCNgbsIDvUc7vspehik7jmEKSmkXsuV+lN45DKR3hVSlQ/qZtYtkfQxJ3OE9XKKVGj+N3CTuJJQHJ4hTt/e4syn6jjSd61GPLWtIC1heA2TW/mStfhdu1GoDAbqdvE9uB2qmXSLnYkyvWdPYLSljHd1K6wt9SFdD6SPwp5vpud3jNxipDRhVavMK3nTkk4h0xN76sw/qSLDEw8yVSxYyZI36ECitkptg9ROdRuDmX2vle//W6WfEA==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4337.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(316002)(6486002)(508600001)(1076003)(2906002)(6512007)(6506007)(86362001)(6666004)(36756003)(186003)(26005)(83380400001)(66946007)(38100700002)(5660300002)(66556008)(66476007)(107886003)(2616005)(4326008)(8676002)(6916009)(8936002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?uW9Z3x8Sdkg5Iz5+uh3mIM6ts6j5HSkWSbJxzUHzsKVxTUUVXF9EN/w5tt2J?=
- =?us-ascii?Q?n3eUyhjLJfGcfh6PqgZD/PDeiQORrOooQeulbxLBiQLp1gk9zkGtj4F3Cn+2?=
- =?us-ascii?Q?7gnaCe+bx3Ru3F6yY0Q2VCwPDj8BVCmZ+nvB5q7Nf7nRI1ZdQAsLLP8hqf/f?=
- =?us-ascii?Q?qEcPQQeyNfcegQr+UKamPaKpd8AfU+DmTkJR+OoKoojl8k5DTBXal2IjOYGr?=
- =?us-ascii?Q?KrjmuUp8L5YnnUnfvMrKfBxWKFtJtr+SEajo2tpRxIVYQ5ejRxNm9TmQlmBF?=
- =?us-ascii?Q?8gdANcGBV+LrMUOBvls2n4LVlH1Kh6JcapQI1Paj9w9N1FIL2DPoPEjznbwe?=
- =?us-ascii?Q?73mhdLQ6eta7YWYykPlt5BhLNXZEAiV3F0QLGEo864LGPqvtncyYnZBkzpri?=
- =?us-ascii?Q?0ESXXQCoMukpo370JH+LPDKx1Lcbfh78HdtI+kh8Sy2cFvxEGalrjCcl4UjA?=
- =?us-ascii?Q?CnQmxKZu2GP4GCxYghpaTj7jnH5Cpz6vDao6LFMK180OdGQM1BGqnzqIKmpg?=
- =?us-ascii?Q?YMRaQaiQKKy7lxgTErmDFmAccxSxWFicu3tBdrL9jIF1qtwr79pR/9Lds5Fv?=
- =?us-ascii?Q?SyqDBWYCmmJBjh38AAbTymTlxNyZRUE/OAYjkObKMD2kkA8VzkkqBRs+LJoO?=
- =?us-ascii?Q?/Rvm6VKGbblBZEMTuRWyc/yrAKbrZL/xIgl/eYVnFMF41rYpjlDDIX77hpT0?=
- =?us-ascii?Q?NVexiEqiX0sy3yZbuP5BVD/dBCVr+nKFnZ3LVIXltnhBuTHVFQLNIewAYU+q?=
- =?us-ascii?Q?dr2Wym9FqfG8pq9l0iHP8rxfOe6kMDj9D00AclsckrcnTD3duaAhMBrLTYxD?=
- =?us-ascii?Q?jsf+aMvrB4EZxgPvzorjd0g2GbOA56IYdpRktkajvhT0MB78Owkkt0Mpty91?=
- =?us-ascii?Q?uWg5bg7KQi2KgpcKM9jo3W2E6NVm481QTqSuS1A8m+y5N59CSGqPDYcs6VSm?=
- =?us-ascii?Q?BH57wfdxIX0kdXm0/A1OeypzzEylLLBkBXrXC8QRaquCiRqB/wnfG3061Wuh?=
- =?us-ascii?Q?4QQ4bhiS/x0prwZj0y3ny5LLkxJUbG8/3vAPOE6ADH66UxJb7acKOQbw8h30?=
- =?us-ascii?Q?2Yd9CTwOEI/mmEr31dvW5xRM4+tgQQoHcxlc+z/OLjFNvlM8i9wteVSURtd6?=
- =?us-ascii?Q?1FtC1BBNxX5ERdEbkzchEHJ6mPC7GhmNq4KMEDZRh2O6eO8w/owVLjV1oDFa?=
- =?us-ascii?Q?kI6A8v2W3onmk+v5n0zibrNBPPGSyjoqmF3uVGal3n2XWLbIkQqyFY1J9dJp?=
- =?us-ascii?Q?km23HVYS6xVouMnr/B3EK8KK2nQ2n/bVlmOLmPupum1+dNbFJQXgE8jV3jys?=
- =?us-ascii?Q?phUyRCJb11QWuQAADuzUaYIQQbsrJyhPFjtpP3DSLqSEBulwxylpSsFWJ+NN?=
- =?us-ascii?Q?BvZtF4/lxDI0qw6B0POX9jIIyyjhu3YOisChJUxSUFldaeMTKRmE8DVqjNNz?=
- =?us-ascii?Q?hmoNdnbtg3pRn8CcuFRsLPUEMcea0v4duE6QE3/mkEpIMiGFHdyHBR3Z5w2z?=
- =?us-ascii?Q?ukt81tggbwmcuNlmG9Ka7HWqIswYVCIRoBHIT0uzOR77q5bh52huYj4q576m?=
- =?us-ascii?Q?6fNqLuq3lAkwZmTeetGIPVBB+VkcZjC0m1JSRpCaaiYC+KEBnVEW9DoNib4s?=
- =?us-ascii?Q?Dj0S0KPTucJhdkWx3+WFLhvjcqU8wWw7hMl9FhD7aqlMqniKjfHw/KEUzyjR?=
- =?us-ascii?Q?8vLI8zsUxyjJSvBgSSJAtfaUDHBkMoUI0WVB+3GTema2wksukNtDxWBzDYTr?=
- =?us-ascii?Q?StzK29jpOg=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?5MkJC8iM2K6isAuEu21TmKyDZc6lgCyAwlnP9gUHdAC4hAABWU300Sbukaxu?=
+ =?us-ascii?Q?mX/AZatPESbIfD6+6p8Fbyf3WeWLGNu18hVr7Q8fJC32Kvqp6KHg8lX63i8Y?=
+ =?us-ascii?Q?JVL7O5Ndv3Nm3iBHSElc80tew7IWipPHp6KIo6mGr5+5GUOMMtICc0Y22/tU?=
+ =?us-ascii?Q?FSOJtf+QOp1f2P5sd/i0OcSXE813Fr4JmtbqkWlhn56Lm4Vi9DdxMUFInwOt?=
+ =?us-ascii?Q?iWyt+02en5UH6g6hUufp61UkA6jJuSZNFFbVw129Xb8js/kpW1eGFdFVoK7r?=
+ =?us-ascii?Q?QH3pvh3WeDaNZQDG8OkohD6yVm6hRPf5zg4z+4QY8S1fZ9DLcKiSIwiF6hrs?=
+ =?us-ascii?Q?ov506fAXPRn4FGVLG0tnbj7KKs0SEzWYWNx+7Msz3omOhKVo6YFOwtkgexP9?=
+ =?us-ascii?Q?vWVBnXlgNmvIKGpxv6QWch8/oX/zqpF+iR9/7/RBXbJMNTxd2/WrnFt9bDwq?=
+ =?us-ascii?Q?JxZiloP+PZuwZkeNpeVB9T98z+B1xew2bGgQMtnWIE1PDCXjYCjQ4egCvAZK?=
+ =?us-ascii?Q?D6ZAWDouGcAt8KF0TU13WtIxa9mOKr7RWDurOg+cxUvHP0xzwoOWgMFxUgHm?=
+ =?us-ascii?Q?S4yLuazlb79gChzpjdQqB5TonxuU1u3Oah0wNA62zUBI+XKL8uqTzFVebJ4T?=
+ =?us-ascii?Q?/WkLLapYkFupGkksLtpVPs70CsqiFJSzsj3GWQOzlOvVIc7KkxJtovdNmYr6?=
+ =?us-ascii?Q?DTBLIgbSKeaVslp2Ig7iG66ZJ0FaLxqOfxRdmqA9eLxQkGKqFx47/rOy1f6U?=
+ =?us-ascii?Q?Zlkeg8R8YVv96aN7LrIS8AtJBvnUcm1Tk7qi2VHEA3OAjP8TSfguvFM5ZofQ?=
+ =?us-ascii?Q?05RI5QJpprdmwGDX1182YOGP04P3x3OylLNBT2dgWywtahCh9OmZJIdJ3P/Z?=
+ =?us-ascii?Q?Z1ADL4zDrE5BNjg44yrvsQ/b0PwKBWPZaEybk50mNvLXwgNjklOyQAEpl0b0?=
+ =?us-ascii?Q?085JiSdCeDeFHM7NSGoLEokayZrgXtZDvjkSC2GyuyidDEY8ho27x9ZxbaSs?=
+ =?us-ascii?Q?oQnESlvRkjM+KKVq4O0Ey3CbsFzgVCRUMPA8nU14i/OKbJ15TjYzr9CtVUmR?=
+ =?us-ascii?Q?26h8ljrWhUCgHCbzlRXVsC6Uf7jSxixoUiorYz6R+/CuZtp9VVEtpHbK+/l2?=
+ =?us-ascii?Q?Lr+fSLkb2Uow7xunI/YXK8xQ+AzZ3vyN3v3x9YFYeMISaKLZ8jL6NY7fXNj+?=
+ =?us-ascii?Q?f/Vp6Nawoex65xdOjY2TrwBYmCjpKDCh9um3sFla+qh7etjL4CxDYxNxJCvU?=
+ =?us-ascii?Q?ZZ8wMrV7dPiAzWRuBmzFbnDfCJH4SOsEkcvqVTQhPC4y0Da8XRnQmVJuXS+T?=
+ =?us-ascii?Q?GIlMmHn2CZFJqisICImnnZKq/Eyo1EW8ojkLPeVILtNRmZ4fdf3beG2rsx2C?=
+ =?us-ascii?Q?bEyAGeM2hiD7h0HiBtd6pGftBi7ki7mBdbNi+plIzN4hiubFLUuZzR91YNLn?=
+ =?us-ascii?Q?lTFN1LEqrHhD0I+LvHUoTqXw/Syj6qlND2RLemCdr0CcFJYxk4BRXyokdMYk?=
+ =?us-ascii?Q?el7P9+8c5lvUhAlCC7INku4RJkzyjXKRkujkHXMuhKCj0qxCT1RMIUefsQ4X?=
+ =?us-ascii?Q?j0CQ6tXtAFFmIPLEbsoWm0MWg69mntVsh1ZNjAi1TVLqJRn1s8ts4ZwwYtNQ?=
+ =?us-ascii?Q?zP+JRfVzizxXqEvXZL3WNSNhhxSatZ1xQYmqirHjLEDS5wxBq3cJt6Fh7/hv?=
+ =?us-ascii?Q?awkp7eElX2K3tCygNKlTvPfBH0nWf8EW3L5DtXly9eLN5N7TthmESpBHlwbt?=
+ =?us-ascii?Q?RlT+Yyes8w=3D=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8dec435f-190d-4757-943e-08da2106d1f5
+X-MS-Exchange-CrossTenant-Network-Message-Id: 25814b01-f392-41a2-06a9-08da2106d55a
 X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4337.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Apr 2022 06:44:00.3805
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Apr 2022 06:44:06.0563
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2CSSrFcZiAvmUSxCIQ7ef5OxOlsEqhKzeflb4mRLlKePt8ZV/pcoinoy7xSmzCjFoNlCMT3fNhnTJhc4z1Btqw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: i1wIB2IMdypraX1Ro4q5B20wV8YDezlr9Ogvh3pCdBg18oftVYqcT3QOODOyAwix9fwWvIWmaTpY1ef3vPZ8Jw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5420
 X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -121,109 +121,97 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Instead of array of pointers to port mapping structures, allocate the
-array of structures directly.
+The PMECR register is used to enable/disable event triggering
+in case of local port mapping change.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlxsw/spectrum.c    | 32 +++++--------------
- .../net/ethernet/mellanox/mlxsw/spectrum.h    |  2 +-
- 2 files changed, 9 insertions(+), 25 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/reg.h | 64 +++++++++++++++++++++++
+ 1 file changed, 64 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index 120880fad7f8..55b97ccafd45 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -1891,8 +1891,8 @@ static int mlxsw_sp_ports_create(struct mlxsw_sp *mlxsw_sp)
- 		goto err_cpu_port_create;
- 
- 	for (i = 1; i < max_ports; i++) {
--		port_mapping = mlxsw_sp->port_mapping[i];
--		if (!port_mapping)
-+		port_mapping = &mlxsw_sp->port_mapping[i];
-+		if (!port_mapping->width)
- 			continue;
- 		err = mlxsw_sp_port_create(mlxsw_sp, i, false, port_mapping);
- 		if (err)
-@@ -1914,12 +1914,12 @@ static int mlxsw_sp_ports_create(struct mlxsw_sp *mlxsw_sp)
- static int mlxsw_sp_port_module_info_init(struct mlxsw_sp *mlxsw_sp)
- {
- 	unsigned int max_ports = mlxsw_core_max_ports(mlxsw_sp->core);
--	struct mlxsw_sp_port_mapping port_mapping;
-+	struct mlxsw_sp_port_mapping *port_mapping;
- 	int i;
- 	int err;
- 
- 	mlxsw_sp->port_mapping = kcalloc(max_ports,
--					 sizeof(struct mlxsw_sp_port_mapping *),
-+					 sizeof(struct mlxsw_sp_port_mapping),
- 					 GFP_KERNEL);
- 	if (!mlxsw_sp->port_mapping)
- 		return -ENOMEM;
-@@ -1928,36 +1928,20 @@ static int mlxsw_sp_port_module_info_init(struct mlxsw_sp *mlxsw_sp)
- 		if (mlxsw_core_port_is_xm(mlxsw_sp->core, i))
- 			continue;
- 
--		err = mlxsw_sp_port_module_info_get(mlxsw_sp, i, &port_mapping);
-+		port_mapping = &mlxsw_sp->port_mapping[i];
-+		err = mlxsw_sp_port_module_info_get(mlxsw_sp, i, port_mapping);
- 		if (err)
- 			goto err_port_module_info_get;
--		if (!port_mapping.width)
--			continue;
--
--		mlxsw_sp->port_mapping[i] = kmemdup(&port_mapping,
--						    sizeof(port_mapping),
--						    GFP_KERNEL);
--		if (!mlxsw_sp->port_mapping[i]) {
--			err = -ENOMEM;
--			goto err_port_module_info_dup;
--		}
- 	}
- 	return 0;
- 
- err_port_module_info_get:
--err_port_module_info_dup:
--	for (i--; i >= 1; i--)
--		kfree(mlxsw_sp->port_mapping[i]);
- 	kfree(mlxsw_sp->port_mapping);
- 	return err;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+index b8a236872fea..7b51a63d23c1 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+@@ -5875,6 +5875,69 @@ static inline void mlxsw_reg_pmtdb_pack(char *payload, u8 slot_index, u8 module,
+ 	mlxsw_reg_pmtdb_num_ports_set(payload, num_ports);
  }
  
- static void mlxsw_sp_port_module_info_fini(struct mlxsw_sp *mlxsw_sp)
- {
--	int i;
--
--	for (i = 1; i < mlxsw_core_max_ports(mlxsw_sp->core); i++)
--		kfree(mlxsw_sp->port_mapping[i]);
- 	kfree(mlxsw_sp->port_mapping);
- }
- 
-@@ -2007,8 +1991,8 @@ static void mlxsw_sp_port_unsplit_create(struct mlxsw_sp *mlxsw_sp,
- 	for (i = 0; i < count; i++) {
- 		u16 local_port = mlxsw_reg_pmtdb_port_num_get(pmtdb_pl, i);
- 
--		port_mapping = mlxsw_sp->port_mapping[local_port];
--		if (!port_mapping || !mlxsw_sp_local_port_valid(local_port))
-+		port_mapping = &mlxsw_sp->port_mapping[local_port];
-+		if (!port_mapping->width || !mlxsw_sp_local_port_valid(local_port))
- 			continue;
- 		mlxsw_sp_port_create(mlxsw_sp, local_port,
- 				     false, port_mapping);
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-index 20588e699588..68f71e77b5c7 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-@@ -164,7 +164,7 @@ struct mlxsw_sp {
- 	unsigned char base_mac[ETH_ALEN];
- 	const unsigned char *mac_mask;
- 	struct mlxsw_sp_upper *lags;
--	struct mlxsw_sp_port_mapping **port_mapping;
-+	struct mlxsw_sp_port_mapping *port_mapping;
- 	struct rhashtable sample_trigger_ht;
- 	struct mlxsw_sp_sb *sb;
- 	struct mlxsw_sp_bridge *bridge;
++/* PMECR - Ports Mapping Event Configuration Register
++ * --------------------------------------------------
++ * The PMECR register is used to enable/disable event triggering
++ * in case of local port mapping change.
++ */
++#define MLXSW_REG_PMECR_ID 0x501B
++#define MLXSW_REG_PMECR_LEN 0x20
++
++MLXSW_REG_DEFINE(pmecr, MLXSW_REG_PMECR_ID, MLXSW_REG_PMECR_LEN);
++
++/* reg_pmecr_local_port
++ * Local port number.
++ * Access: Index
++ */
++MLXSW_ITEM32_LP(reg, pmecr, 0x00, 16, 0x00, 12);
++
++/* reg_pmecr_ee
++ * Event update enable. If this bit is set, event generation will be updated
++ * based on the e field. Only relevant on Set operations.
++ * Access: WO
++ */
++MLXSW_ITEM32(reg, pmecr, ee, 0x04, 30, 1);
++
++/* reg_pmecr_eswi
++ * Software ignore enable bit. If this bit is set, the value of swi is used.
++ * If this bit is clear, the value of swi is ignored.
++ * Only relevant on Set operations.
++ * Access: WO
++ */
++MLXSW_ITEM32(reg, pmecr, eswi, 0x04, 24, 1);
++
++/* reg_pmecr_swi
++ * Software ignore. If this bit is set, the device shouldn't generate events
++ * in case of PMLP SET operation but only upon self local port mapping change
++ * (if applicable according to e configuration). This is supplementary
++ * configuration on top of e value.
++ * Access: RW
++ */
++MLXSW_ITEM32(reg, pmecr, swi, 0x04, 8, 1);
++
++enum mlxsw_reg_pmecr_e {
++	MLXSW_REG_PMECR_E_DO_NOT_GENERATE_EVENT,
++	MLXSW_REG_PMECR_E_GENERATE_EVENT,
++	MLXSW_REG_PMECR_E_GENERATE_SINGLE_EVENT,
++};
++
++/* reg_pmecr_e
++ * Event generation on local port mapping change.
++ * Access: RW
++ */
++MLXSW_ITEM32(reg, pmecr, e, 0x04, 0, 2);
++
++static inline void mlxsw_reg_pmecr_pack(char *payload, u16 local_port,
++					enum mlxsw_reg_pmecr_e e)
++{
++	MLXSW_REG_ZERO(pmecr, payload);
++	mlxsw_reg_pmecr_local_port_set(payload, local_port);
++	mlxsw_reg_pmecr_e_set(payload, e);
++	mlxsw_reg_pmecr_ee_set(payload, true);
++	mlxsw_reg_pmecr_swi_set(payload, true);
++	mlxsw_reg_pmecr_eswi_set(payload, true);
++}
++
+ /* PMPE - Port Module Plug/Unplug Event Register
+  * ---------------------------------------------
+  * This register reports any operational status change of a module.
+@@ -12678,6 +12741,7 @@ static const struct mlxsw_reg_info *mlxsw_reg_infos[] = {
+ 	MLXSW_REG(pmaos),
+ 	MLXSW_REG(pplr),
+ 	MLXSW_REG(pmtdb),
++	MLXSW_REG(pmecr),
+ 	MLXSW_REG(pmpe),
+ 	MLXSW_REG(pddr),
+ 	MLXSW_REG(pmmp),
 -- 
 2.33.1
 
