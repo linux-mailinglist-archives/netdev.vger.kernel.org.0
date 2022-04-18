@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D0DE505D11
-	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 18:55:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7273505D0A
+	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 18:55:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346725AbiDRQ5R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Apr 2022 12:57:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57454 "EHLO
+        id S1346680AbiDRQ5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Apr 2022 12:57:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229915AbiDRQ4t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 12:56:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA5F2340C8;
-        Mon, 18 Apr 2022 09:52:31 -0700 (PDT)
+        with ESMTP id S1346652AbiDRQ5F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 12:57:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E902E35AA3;
+        Mon, 18 Apr 2022 09:52:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 50F21612FB;
-        Mon, 18 Apr 2022 16:52:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34CD0C385A7;
-        Mon, 18 Apr 2022 16:52:30 +0000 (UTC)
-Subject: [PATCH RFC 12/15] SUNRPC: Add FSM machinery to handle RPC_AUTH_TLS on
- reconnect
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 548E9612DF;
+        Mon, 18 Apr 2022 16:52:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E427C385A1;
+        Mon, 18 Apr 2022 16:52:37 +0000 (UTC)
+Subject: [PATCH RFC 13/15] NFS: Replace fs_context-related dprintk() call
+ sites with tracepoints
 From:   Chuck Lever <chuck.lever@oracle.com>
 To:     netdev@vger.kernel.org, linux-nfs@vger.kernel.org,
         linux-nvme@lists.infradead.org, linux-cifs@vger.kernel.org,
         linux-fsdevel@vger.kernel.org
 Cc:     ak@tempesta-tech.com, borisp@nvidia.com, simo@redhat.com
-Date:   Mon, 18 Apr 2022 12:52:29 -0400
-Message-ID: <165030074924.5246.5399913437403260546.stgit@oracle-102.nfsv4.dev>
+Date:   Mon, 18 Apr 2022 12:52:35 -0400
+Message-ID: <165030075595.5246.450883758227828699.stgit@oracle-102.nfsv4.dev>
 In-Reply-To: <165030062272.5246.16956092606399079004.stgit@oracle-102.nfsv4.dev>
 References: <165030062272.5246.16956092606399079004.stgit@oracle-102.nfsv4.dev>
 User-Agent: StGit/1.5
@@ -45,158 +45,240 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Try STARTTLS with the RPC server peer as soon as a transport
-connection is established.
+Contributed as part of the long patch series that converts NFS from
+using dprintk to tracepoints for observability.
 
 Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 ---
- include/linux/sunrpc/clnt.h  |    1 -
- include/linux/sunrpc/sched.h |    1 +
- net/sunrpc/clnt.c            |   59 +++++++++++++++++++++++++++++++++++++++---
- 3 files changed, 56 insertions(+), 5 deletions(-)
+ fs/nfs/fs_context.c |   25 ++++++++++-------
+ fs/nfs/nfstrace.h   |   77 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 92 insertions(+), 10 deletions(-)
 
-diff --git a/include/linux/sunrpc/clnt.h b/include/linux/sunrpc/clnt.h
-index 15fd84e4c321..e10a19d136ca 100644
---- a/include/linux/sunrpc/clnt.h
-+++ b/include/linux/sunrpc/clnt.h
-@@ -209,7 +209,6 @@ int		rpc_call_sync(struct rpc_clnt *clnt,
- 			      unsigned int flags);
- struct rpc_task *rpc_call_null(struct rpc_clnt *clnt, struct rpc_cred *cred,
- 			       int flags);
--void		rpc_starttls_async(struct rpc_task *task);
- int		rpc_restart_call_prepare(struct rpc_task *);
- int		rpc_restart_call(struct rpc_task *);
- void		rpc_setbufsize(struct rpc_clnt *, unsigned int, unsigned int);
-diff --git a/include/linux/sunrpc/sched.h b/include/linux/sunrpc/sched.h
-index f8c09638fa69..0d1ae89a2339 100644
---- a/include/linux/sunrpc/sched.h
-+++ b/include/linux/sunrpc/sched.h
-@@ -139,6 +139,7 @@ struct rpc_task_setup {
- #define RPC_IS_ASYNC(t)		((t)->tk_flags & RPC_TASK_ASYNC)
- #define RPC_IS_SWAPPER(t)	((t)->tk_flags & RPC_TASK_SWAPPER)
- #define RPC_IS_CORK(t)		((t)->tk_flags & RPC_TASK_CORK)
-+#define RPC_IS_TLSPROBE(t)	((t)->tk_flags & RPC_TASK_TLSCRED)
- #define RPC_IS_SOFT(t)		((t)->tk_flags & (RPC_TASK_SOFT|RPC_TASK_TIMEOUT))
- #define RPC_IS_SOFTCONN(t)	((t)->tk_flags & RPC_TASK_SOFTCONN)
- #define RPC_WAS_SENT(t)		((t)->tk_flags & RPC_TASK_SENT)
-diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
-index e9a6622dba68..0506971410f7 100644
---- a/net/sunrpc/clnt.c
-+++ b/net/sunrpc/clnt.c
-@@ -70,6 +70,8 @@ static void	call_refresh(struct rpc_task *task);
- static void	call_refreshresult(struct rpc_task *task);
- static void	call_connect(struct rpc_task *task);
- static void	call_connect_status(struct rpc_task *task);
-+static void	call_start_tls(struct rpc_task *task);
-+static void	call_tls_status(struct rpc_task *task);
+diff --git a/fs/nfs/fs_context.c b/fs/nfs/fs_context.c
+index e2d59bb5e6bb..b52362735d12 100644
+--- a/fs/nfs/fs_context.c
++++ b/fs/nfs/fs_context.c
+@@ -21,6 +21,8 @@
+ #include "nfs.h"
+ #include "internal.h"
  
- static int	rpc_encode_header(struct rpc_task *task,
- 				  struct xdr_stream *xdr);
-@@ -77,6 +79,7 @@ static int	rpc_decode_header(struct rpc_task *task,
- 				  struct xdr_stream *xdr);
- static int	rpc_ping(struct rpc_clnt *clnt);
- static int	rpc_starttls_sync(struct rpc_clnt *clnt);
-+static void	rpc_starttls_async(struct rpc_task *task);
- static void	rpc_check_timeout(struct rpc_task *task);
++#include "nfstrace.h"
++
+ #define NFSDBG_FACILITY		NFSDBG_MOUNT
  
- static void rpc_register_client(struct rpc_clnt *clnt)
-@@ -2163,7 +2166,7 @@ call_connect_status(struct rpc_task *task)
- 	rpc_call_rpcerror(task, status);
- 	return;
- out_next:
--	task->tk_action = call_transmit;
-+	task->tk_action = call_start_tls;
- 	return;
- out_retry:
- 	/* Check for timeouts before looping back to call_bind */
-@@ -2171,6 +2174,53 @@ call_connect_status(struct rpc_task *task)
- 	rpc_check_timeout(task);
+ #if IS_ENABLED(CONFIG_NFS_V3)
+@@ -284,7 +286,7 @@ static int nfs_verify_server_address(struct sockaddr *addr)
+ 	}
+ 	}
+ 
+-	dfprintk(MOUNT, "NFS: Invalid IP address specified\n");
++	trace_nfs_mount_addr_err(addr);
+ 	return 0;
  }
  
-+static void
-+call_start_tls(struct rpc_task *task)
-+{
-+	struct rpc_xprt *xprt = task->tk_rqstp->rq_xprt;
-+	struct rpc_clnt *clnt = task->tk_client;
-+
-+	task->tk_action = call_transmit;
-+	if (RPC_IS_TLSPROBE(task))
-+		return;
-+
-+	switch (clnt->cl_xprtsec_policy) {
-+	case RPC_XPRTSEC_TLS:
-+	case RPC_XPRTSEC_MTLS:
-+		if (xprt->ops->tls_handshake_async) {
-+			task->tk_action = call_tls_status;
-+			rpc_starttls_async(task);
-+		}
-+		break;
-+	default:
-+		break;
-+	}
-+}
-+
-+static void
-+call_tls_status(struct rpc_task *task)
-+{
-+	struct rpc_xprt *xprt = task->tk_rqstp->rq_xprt;
-+	struct rpc_clnt *clnt = task->tk_client;
-+
-+	task->tk_action = call_transmit;
-+	if (!task->tk_status)
-+		return;
-+
-+	xprt_force_disconnect(xprt);
-+
-+	switch (clnt->cl_xprtsec_policy) {
-+	case RPC_XPRTSEC_TLS:
-+	case RPC_XPRTSEC_MTLS:
-+		rpc_delay(task, 5*HZ /* arbitrary */);
-+		break;
-+	default:
-+		task->tk_action = call_bind;
-+	}
-+
-+	rpc_check_timeout(task);
-+}
-+
- /*
-  * 5.	Transmit the RPC request, and wait for reply
-  */
-@@ -2355,7 +2405,7 @@ call_status(struct rpc_task *task)
- 	struct rpc_clnt	*clnt = task->tk_client;
- 	int		status;
+@@ -378,7 +380,7 @@ static int nfs_parse_security_flavors(struct fs_context *fc,
+ 	char *string = param->string, *p;
+ 	int ret;
  
--	if (!task->tk_msg.rpc_proc->p_proc)
-+	if (!task->tk_msg.rpc_proc->p_proc && !RPC_IS_TLSPROBE(task))
- 		trace_xprt_ping(task->tk_xprt, task->tk_status);
+-	dfprintk(MOUNT, "NFS: parsing %s=%s option\n", param->key, param->string);
++	trace_nfs_mount_assign(param->key, string);
  
- 	status = task->tk_status;
-@@ -2663,6 +2713,8 @@ rpc_decode_header(struct rpc_task *task, struct xdr_stream *xdr)
+ 	while ((p = strsep(&string, ":")) != NULL) {
+ 		if (!*p)
+@@ -480,7 +482,7 @@ static int nfs_fs_context_parse_param(struct fs_context *fc,
+ 	unsigned int len;
+ 	int ret, opt;
  
- out_msg_denied:
- 	error = -EACCES;
-+	if (RPC_IS_TLSPROBE(task))
-+		goto out_err;
- 	p = xdr_inline_decode(xdr, sizeof(*p));
- 	if (!p)
- 		goto out_unparsable;
-@@ -2865,7 +2917,7 @@ static const struct rpc_call_ops rpc_ops_probe_tls = {
-  * @task: an RPC task waiting for a TLS session
-  *
-  */
--void rpc_starttls_async(struct rpc_task *task)
-+static void rpc_starttls_async(struct rpc_task *task)
- {
- 	struct rpc_xprt *xprt = xprt_get(task->tk_xprt);
+-	dfprintk(MOUNT, "NFS:   parsing nfs mount option '%s'\n", param->key);
++	trace_nfs_mount_option(param);
  
-@@ -2885,7 +2937,6 @@ void rpc_starttls_async(struct rpc_task *task)
- 		     RPC_TASK_TLSCRED | RPC_TASK_SWAPPER | RPC_TASK_CORK,
- 		     &rpc_ops_probe_tls, xprt));
- }
--EXPORT_SYMBOL_GPL(rpc_starttls_async);
+ 	opt = fs_parse(fc, nfs_fs_parameters, param, &result);
+ 	if (opt < 0)
+@@ -683,6 +685,7 @@ static int nfs_fs_context_parse_param(struct fs_context *fc,
+ 			return ret;
+ 		break;
+ 	case Opt_vers:
++		trace_nfs_mount_assign(param->key, param->string);
+ 		ret = nfs_parse_version_string(fc, param->string);
+ 		if (ret < 0)
+ 			return ret;
+@@ -694,6 +697,7 @@ static int nfs_fs_context_parse_param(struct fs_context *fc,
+ 		break;
  
- struct rpc_cb_add_xprt_calldata {
- 	struct rpc_xprt_switch *xps;
+ 	case Opt_proto:
++		trace_nfs_mount_assign(param->key, param->string);
+ 		protofamily = AF_INET;
+ 		switch (lookup_constant(nfs_xprt_protocol_tokens, param->string, -1)) {
+ 		case Opt_xprt_udp6:
+@@ -729,6 +733,7 @@ static int nfs_fs_context_parse_param(struct fs_context *fc,
+ 		break;
+ 
+ 	case Opt_mountproto:
++		trace_nfs_mount_assign(param->key, param->string);
+ 		mountfamily = AF_INET;
+ 		switch (lookup_constant(nfs_xprt_protocol_tokens, param->string, -1)) {
+ 		case Opt_xprt_udp6:
+@@ -751,6 +756,7 @@ static int nfs_fs_context_parse_param(struct fs_context *fc,
+ 		break;
+ 
+ 	case Opt_addr:
++		trace_nfs_mount_assign(param->key, param->string);
+ 		len = rpc_pton(fc->net_ns, param->string, param->size,
+ 			       &ctx->nfs_server.address,
+ 			       sizeof(ctx->nfs_server._address));
+@@ -759,16 +765,19 @@ static int nfs_fs_context_parse_param(struct fs_context *fc,
+ 		ctx->nfs_server.addrlen = len;
+ 		break;
+ 	case Opt_clientaddr:
++		trace_nfs_mount_assign(param->key, param->string);
+ 		kfree(ctx->client_address);
+ 		ctx->client_address = param->string;
+ 		param->string = NULL;
+ 		break;
+ 	case Opt_mounthost:
++		trace_nfs_mount_assign(param->key, param->string);
+ 		kfree(ctx->mount_server.hostname);
+ 		ctx->mount_server.hostname = param->string;
+ 		param->string = NULL;
+ 		break;
+ 	case Opt_mountaddr:
++		trace_nfs_mount_assign(param->key, param->string);
+ 		len = rpc_pton(fc->net_ns, param->string, param->size,
+ 			       &ctx->mount_server.address,
+ 			       sizeof(ctx->mount_server._address));
+@@ -846,7 +855,6 @@ static int nfs_fs_context_parse_param(struct fs_context *fc,
+ 		 */
+ 	case Opt_sloppy:
+ 		ctx->sloppy = true;
+-		dfprintk(MOUNT, "NFS:   relaxing parsing rules\n");
+ 		break;
+ 	}
+ 
+@@ -879,10 +887,8 @@ static int nfs_parse_source(struct fs_context *fc,
+ 	size_t len;
+ 	const char *end;
+ 
+-	if (unlikely(!dev_name || !*dev_name)) {
+-		dfprintk(MOUNT, "NFS: device name not specified\n");
++	if (unlikely(!dev_name || !*dev_name))
+ 		return -EINVAL;
+-	}
+ 
+ 	/* Is the host name protected with square brakcets? */
+ 	if (*dev_name == '[') {
+@@ -922,7 +928,7 @@ static int nfs_parse_source(struct fs_context *fc,
+ 	if (!ctx->nfs_server.export_path)
+ 		goto out_nomem;
+ 
+-	dfprintk(MOUNT, "NFS: MNTPATH: '%s'\n", ctx->nfs_server.export_path);
++	trace_nfs_mount_path(ctx->nfs_server.export_path);
+ 	return 0;
+ 
+ out_bad_devname:
+@@ -1116,7 +1122,6 @@ static int nfs23_parse_monolithic(struct fs_context *fc,
+ 	return nfs_invalf(fc, "NFS: nfs_mount_data version supports only AUTH_SYS");
+ 
+ out_nomem:
+-	dfprintk(MOUNT, "NFS: not enough memory to handle mount options");
+ 	return -ENOMEM;
+ 
+ out_no_address:
+@@ -1248,7 +1253,7 @@ static int nfs4_parse_monolithic(struct fs_context *fc,
+ 	if (IS_ERR(c))
+ 		return PTR_ERR(c);
+ 	ctx->nfs_server.export_path = c;
+-	dfprintk(MOUNT, "NFS: MNTPATH: '%s'\n", c);
++	trace_nfs_mount_path(c);
+ 
+ 	c = strndup_user(data->client_addr.data, 16);
+ 	if (IS_ERR(c))
+diff --git a/fs/nfs/nfstrace.h b/fs/nfs/nfstrace.h
+index 012bd7339862..ccaeae42ee77 100644
+--- a/fs/nfs/nfstrace.h
++++ b/fs/nfs/nfstrace.h
+@@ -1609,6 +1609,83 @@ TRACE_EVENT(nfs_fh_to_dentry,
+ 		)
+ );
+ 
++TRACE_EVENT(nfs_mount_addr_err,
++	TP_PROTO(
++		const struct sockaddr *sap
++	),
++
++	TP_ARGS(sap),
++
++	TP_STRUCT__entry(
++		__array(unsigned char, addr, sizeof(struct sockaddr_in6))
++	),
++
++	TP_fast_assign(
++		memcpy(__entry->addr, sap, sizeof(__entry->addr));
++	),
++
++	TP_printk("addr=%pISpc", __entry->addr)
++);
++
++TRACE_EVENT(nfs_mount_assign,
++	TP_PROTO(
++		const char *option,
++		const char *value
++	),
++
++	TP_ARGS(option, value),
++
++	TP_STRUCT__entry(
++		__string(option, option)
++		__string(value, value)
++	),
++
++	TP_fast_assign(
++		__assign_str(option, option);
++		__assign_str(value, value);
++	),
++
++	TP_printk("option %s=%s",
++		__get_str(option), __get_str(value)
++	)
++);
++
++TRACE_EVENT(nfs_mount_option,
++	TP_PROTO(
++		const struct fs_parameter *param
++	),
++
++	TP_ARGS(param),
++
++	TP_STRUCT__entry(
++		__string(option, param->key)
++	),
++
++	TP_fast_assign(
++		__assign_str(option, param->key);
++	),
++
++	TP_printk("option %s", __get_str(option))
++);
++
++TRACE_EVENT(nfs_mount_path,
++	TP_PROTO(
++		const char *path
++	),
++
++	TP_ARGS(path),
++
++	TP_STRUCT__entry(
++		__string(path, path)
++	),
++
++	TP_fast_assign(
++		__assign_str(path, path);
++	),
++
++	TP_printk("path='%s'", __get_str(path))
++);
++
+ DECLARE_EVENT_CLASS(nfs_xdr_event,
+ 		TP_PROTO(
+ 			const struct xdr_stream *xdr,
 
 
