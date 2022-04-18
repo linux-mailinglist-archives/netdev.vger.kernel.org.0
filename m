@@ -2,42 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 771DD504A39
-	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 02:51:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D2D6504A9A
+	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 03:40:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235464AbiDRAxN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Apr 2022 20:53:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49612 "EHLO
+        id S235662AbiDRBnK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Apr 2022 21:43:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235050AbiDRAxI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Apr 2022 20:53:08 -0400
-Received: from mail-0301.mail-europe.com (mail-0301.mail-europe.com [188.165.51.139])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A13F213E3C
-        for <netdev@vger.kernel.org>; Sun, 17 Apr 2022 17:50:30 -0700 (PDT)
-Date:   Mon, 18 Apr 2022 00:50:12 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.ch;
-        s=protonmail2; t=1650243021;
-        bh=75Tpo+HGOA92D2kzNg7s2ac7IWzgwCC10Y5QV0uZWNk=;
-        h=Date:To:From:Reply-To:Subject:Message-ID:From:To:Cc:Date:Subject:
-         Reply-To:Feedback-ID:Message-ID;
-        b=RD4Pb5wjSIWIItRkRE1ouO5bLorQmlM0mTa6SlLwtiAJdD5PnBC88k38eMI0zrqNb
-         LHo70XDI0YbO54QCT9tHfu+Nnl8Xblgf7IPhZ1t5Lyr4OTZOwlTHx8q03EWoJl9Oqw
-         M9VsrSLqIBEGcMCVzAIdoS6kOptwMF3XeZenvVTNfkOcwB8x8hVMKvnG0RI5l3dAMD
-         gRVq//98cRvDFIg+horcB/XmOSWY4PN1p5gEQoYjPXFfO1vwOCySk8m+8CuO6tpJ1T
-         lv7dTqV17L+mtYCouRVQa6pDheHyX63UPA9UFgWohAuSWLIRAjOqDwvINFtVvsRnYa
-         mkkuIOt13LEWA==
-To:     pshelar@ovn.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org, dev@openvswitch.org,
-        linux-kernel@vger.kernel.org
-From:   Solomon Tan <solomonbstoner@protonmail.ch>
-Reply-To: Solomon Tan <solomonbstoner@protonmail.ch>
-Subject: [PATCH] openvswitch: meter: Remove unnecessary int
-Message-ID: <Yly1t/mE6QAGPS0e@ArchDesktop>
+        with ESMTP id S235648AbiDRBnH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Apr 2022 21:43:07 -0400
+Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA11517E36;
+        Sun, 17 Apr 2022 18:40:29 -0700 (PDT)
+Received: from mail.aspeedtech.com ([192.168.0.24])
+        by twspam01.aspeedtech.com with ESMTP id 23I1QgcW071540;
+        Mon, 18 Apr 2022 09:26:42 +0800 (GMT-8)
+        (envelope-from dylan_hung@aspeedtech.com)
+Received: from DylanHung-PC.aspeed.com (192.168.2.216) by TWMBX02.aspeed.com
+ (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 18 Apr
+ 2022 09:38:41 +0800
+From:   Dylan Hung <dylan_hung@aspeedtech.com>
+To:     <robh+dt@kernel.org>, <joel@jms.id.au>, <andrew@aj.id.au>,
+        <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <p.zabel@pengutronix.de>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <krzk+dt@kernel.org>
+CC:     <BMC-SW@aspeedtech.com>
+Subject: [PATCH net-next RESEND v5 0/3] Add reset deassertion for Aspeed MDIO
+Date:   Mon, 18 Apr 2022 09:40:56 +0800
+Message-ID: <20220418014059.3054-1-dylan_hung@aspeedtech.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,SPF_HELO_NONE,
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.2.216]
+X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
+ (192.168.0.24)
+X-DNSRBL: 
+X-MAIL: twspam01.aspeedtech.com 23I1QgcW071540
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
         SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -46,51 +51,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch addresses the checkpatch.pl warning that long long is
-preferred over long long int.
+Add missing reset deassertion for Aspeed MDIO bus controller. The reset
+is asserted by the hardware when power-on so the driver only needs to
+deassert it. To be able to work with the old DT blobs, the reset is
+optional since it may be deasserted by the bootloader or the previous
+kernel.
 
-Signed-off-by: Solomon Tan <solomonbstoner@protonmail.ch>
----
- net/openvswitch/meter.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+V5:
+- fix error of dt_binding_check
 
-diff --git a/net/openvswitch/meter.c b/net/openvswitch/meter.c
-index 04a060ac7fdf..a790920c11d6 100644
---- a/net/openvswitch/meter.c
-+++ b/net/openvswitch/meter.c
-@@ -592,8 +592,8 @@ static int ovs_meter_cmd_del(struct sk_buff *skb, struc=
-t genl_info *info)
- bool ovs_meter_execute(struct datapath *dp, struct sk_buff *skb,
- =09=09       struct sw_flow_key *key, u32 meter_id)
- {
--=09long long int now_ms =3D div_u64(ktime_get_ns(), 1000 * 1000);
--=09long long int long_delta_ms;
-+=09long long now_ms =3D div_u64(ktime_get_ns(), 1000 * 1000);
-+=09long long long_delta_ms;
- =09struct dp_meter_band *band;
- =09struct dp_meter *meter;
- =09int i, band_exceeded_max =3D -1;
-@@ -622,7 +622,7 @@ bool ovs_meter_execute(struct datapath *dp, struct sk_b=
-uff *skb,
- =09/* Make sure delta_ms will not be too large, so that bucket will not
- =09 * wrap around below.
- =09 */
--=09delta_ms =3D (long_delta_ms > (long long int)meter->max_delta_t)
-+=09delta_ms =3D (long_delta_ms > (long long)meter->max_delta_t)
- =09=09   ? meter->max_delta_t : (u32)long_delta_ms;
+V4:
+- use ASPEED_RESET_MII instead of hardcoding in dt-binding example
 
- =09/* Update meter statistics.
-@@ -645,7 +645,7 @@ bool ovs_meter_execute(struct datapath *dp, struct sk_b=
-uff *skb,
+V3:
+- remove reset property from the required list of the device tree
+  bindings
+- remove "Cc: stable@vger.kernel.org" from the commit messages
+- add more description in the commit message of the dt-binding
 
- =09/* Update all bands and find the one hit with the highest rate. */
- =09for (i =3D 0; i < meter->n_bands; ++i) {
--=09=09long long int max_bucket_size;
-+=09=09long long max_bucket_size;
+V2:
+- add reset property in the device tree bindings
+- add reset assertion in the error path and driver remove
 
- =09=09band =3D &meter->bands[i];
- =09=09max_bucket_size =3D band->burst_size * 1000LL;
---
-2.35.3
+Dylan Hung (3):
+  dt-bindings: net: add reset property for aspeed, ast2600-mdio binding
+  net: mdio: add reset control for Aspeed MDIO
+  ARM: dts: aspeed: add reset properties into MDIO nodes
 
+ .../bindings/net/aspeed,ast2600-mdio.yaml         |  6 ++++++
+ arch/arm/boot/dts/aspeed-g6.dtsi                  |  4 ++++
+ drivers/net/mdio/mdio-aspeed.c                    | 15 ++++++++++++++-
+ 3 files changed, 24 insertions(+), 1 deletion(-)
+
+-- 
+2.25.1
 
