@@ -2,64 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A702506033
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 01:25:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21A32506042
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 01:34:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235055AbiDRX2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Apr 2022 19:28:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46192 "EHLO
+        id S235370AbiDRXhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Apr 2022 19:37:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235040AbiDRX2Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 19:28:16 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D0F3201AD
-        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 16:25:36 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id g20so19142059edw.6
-        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 16:25:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=OAY9roQluBR/HPXNbf0AZodC76McxJL6e+UEQX7ux5A=;
-        b=FD81+iWVMZ62tpjKpkz7Xzi+WZGOkWyk3vQEEViAPSTyxdRnLFKdTrT6YLagGEaGDR
-         oyBHcgeJVmzPlbajLpEVm+M02W9kP81p3KiL86is2sfsnMIQs/hiFvTwPvBhOx7nvBPv
-         SxoypjX49r6aJflZTOgL24M5mlLh5HKNS9ECRSCrhGSnGE4VpYk/qkapgDUQaB/oqtMA
-         PXjZmnywkZxEtD3wgxuwFWRlslzpqM18PM424nO+aZBqHdE2UBbpdChbuUQu7+300DIz
-         KqHqya9qeEQ3V/e6V6VaD6VRKvBMPx4ig5othm4pat4P7xzzvjbu2QGELmp9Q8NRA9v4
-         ngkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=OAY9roQluBR/HPXNbf0AZodC76McxJL6e+UEQX7ux5A=;
-        b=kDHOWeUbJfSlgTDZlAPfKXeCTFtq/dT7lDYQtH38ThpLp+gjwDxCZCOb6mmgErlZQK
-         XU0BCaz+e5xKDM6GhX+f90YNyDN/8MxsQ3SX8e422SUaZ58U18T1EaJyh0D/5VxQyR8z
-         DFrmAwbSTZasDYPiWht3oiG9/zEJbKY4EkyCAm8/vY1N6HevFbS4rjERQ842vnjUjjfh
-         MA3NsXjc395hnNt9mZBPil4mEqxRuR30xWw0HG9sVfDb+bExAMZWlUnqVgu9mHPZotHQ
-         XWp0BvXHycWa2uwu5gVVTtxXbF7t1dCeYHQOvcKAQB/tg+3lbrQk7uJ+y0jRZmI5F2f7
-         VICw==
-X-Gm-Message-State: AOAM530ETco4QikHKAJB01sylw/1BfYjej6ZyZp0jfZrijEOXHco8Ne1
-        I6QZsF3fnr2qAdXMhALCnKdgfrkVnEV5BR7+jhhr1Qu5
-X-Google-Smtp-Source: ABdhPJwORQEUMQzOK0CW3TkOKigu6doL9o93c6V1tDNff09NTrRQwdGpnl5HWHSLuMUGzmfoYUrdAJaOsGJWL+kMdVQ=
-X-Received: by 2002:a05:6402:2789:b0:423:fe09:c252 with SMTP id
- b9-20020a056402278900b00423fe09c252mr686746ede.11.1650324334843; Mon, 18 Apr
- 2022 16:25:34 -0700 (PDT)
+        with ESMTP id S234905AbiDRXhU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 19:37:20 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFB3327CD2;
+        Mon, 18 Apr 2022 16:34:38 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Kj3Dr4N2zz4xNl;
+        Tue, 19 Apr 2022 09:34:35 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1650324877;
+        bh=/AeN/7aJIIso3ET4fMDtzGqTqxQGLuQTHEy8Tnj+Qh0=;
+        h=Date:From:To:Cc:Subject:From;
+        b=Orh87OQ3tq0CwVqFvHXAFQTBNqZWBQTQ/HVJJE0qQlPv961AWzRcbEIdK/VnVsJTH
+         FJ71EFObrYUmH+oit+iJ8nK7Yl50hBPBwuYT7nMCha+g6c4FJZ0SLWaZlLHCVIVswo
+         JNR34iG8wlYwcSeo3TNvMmSPctHpVJbgEdggpdXEqNQsrKOTbFyNKO/F1diR9IkOHK
+         YU20CiYZeQjRFy7C67oO/YT9qEgq99FvU11x3yAj4IAc95lfmMUszFNsLRe8s4rF12
+         PWZUEnau9HZ8q/PC8KahlUIVVcZiHY+voMyP722e/X5I/J2qDcirSaszCKxwZNPYfj
+         +MaROILBvmoVw==
+Date:   Tue, 19 Apr 2022 09:34:34 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>
+Cc:     Networking <netdev@vger.kernel.org>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20220419093434.299253fc@canb.auug.org.au>
 MIME-Version: 1.0
-References: <20220418080642.4093224e@hermes.local> <20220418221854.1827-1-gasmibal@gmail.com>
- <20220418161513.1448e5f9@hermes.local>
-In-Reply-To: <20220418161513.1448e5f9@hermes.local>
-From:   Baligh GASMI <gasmibal@gmail.com>
-Date:   Tue, 19 Apr 2022 01:25:24 +0200
-Message-ID: <CALxDnQZ+Lj0QJJR2BKgf+B8=24ZcqJMKw-SZX7n+apu10h8jfg@mail.gmail.com>
-Subject: Re: [PATCH v2] ip/iplink_virt_wifi: add support for virt_wifi
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        David Ahern <dsahern@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Type: multipart/signed; boundary="Sig_/V9uDdZ69AsCGpskbcXSi__P";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,24 +52,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sorry, I didn't catch that !
+--Sig_/V9uDdZ69AsCGpskbcXSi__P
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Le mar. 19 avr. 2022 =C3=A0 01:15, Stephen Hemminger
-<stephen@networkplumber.org> a =C3=A9crit :
->
-> On Tue, 19 Apr 2022 00:18:54 +0200
-> Baligh Gasmi <gasmibal@gmail.com> wrote:
->
-> > +/*
-> > + * iplink_virt_wifi.c        A fake implementation of cfg80211_ops tha=
-t can be tacked
-> > + *                      on to an ethernet net_device to make it appear=
- as a
-> > + *                      wireless connection.
-> > + *
-> > + * Authors:            Baligh Gasmi <gasmibal@gmail.com>
-> > + *
-> > + * SPDX-License-Identifier: GPL-2.0
-> > + */
->
-> The SPDX License Id must be first line of the file.
+Hi all,
+
+Today's linux-next merge of the net-next tree got a conflict in:
+
+  drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+
+between commit:
+
+  d08ed852560e ("net: lan966x: Make sure to release ptp interrupt")
+
+from the net tree and commit:
+
+  c8349639324a ("net: lan966x: Add FDMA functionality")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+index 95830e3e2b1f,106d8c83544d..000000000000
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+@@@ -672,8 -687,8 +687,10 @@@ static void lan966x_cleanup_ports(struc
+  		lan966x->ana_irq =3D -ENXIO;
+  	}
+ =20
+ +	if (lan966x->ptp_irq)
+ +		devm_free_irq(lan966x->dev, lan966x->ptp_irq, lan966x);
++ 	if (lan966x->fdma)
++ 		devm_free_irq(lan966x->dev, lan966x->fdma_irq, lan966x);
+  }
+ =20
+  static int lan966x_probe_port(struct lan966x *lan966x, u32 p,
+
+--Sig_/V9uDdZ69AsCGpskbcXSi__P
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJd9YoACgkQAVBC80lX
+0GyqWQf/euXTCgDxe+ali9/TS5X1yIQtAqS4WHWIZxOwbuloicnvuqvqm7tTnxxR
+Orxh6IFZx59A0k0JqV98efA0sey9e2gDKlsw5vmug92WVkW88mc3z5FLe4dqAE0M
+P0syTCPtO9GjLegmbpmRVzRHg1HbQ5hPzqG1m+EQDAx1zLnhyTt+jIWNGnXcC6P4
+HvylsXbLlcTQiVFzRgsMTOCRAKUwU8fOBxnKY+xakUadRA7Fj0XCt/nHlrh6U+G3
+ChmhPyMBLYLCSKGgtNQdiKg2knFnqTi5lBXNuwbea7OFBNzYroTASdvsqIl0MYQC
+BetiCaTVB5V+LCdbY1kSjQ2hF0iBcQ==
+=mgnY
+-----END PGP SIGNATURE-----
+
+--Sig_/V9uDdZ69AsCGpskbcXSi__P--
