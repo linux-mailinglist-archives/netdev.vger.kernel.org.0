@@ -2,116 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18D81504CDB
-	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 08:46:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A616504CFB
+	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 09:10:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236863AbiDRGsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Apr 2022 02:48:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34150 "EHLO
+        id S236914AbiDRHMa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Apr 2022 03:12:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236872AbiDRGrn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 02:47:43 -0400
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam08on2062.outbound.protection.outlook.com [40.107.100.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 642B2D9B
-        for <netdev@vger.kernel.org>; Sun, 17 Apr 2022 23:45:04 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=f+fQHbNR9wdBDsMz9NvzJsYRDkKkGuOergYDB4ck5Z5m2Gg+krOugfZU3ZKAF8smxVpRlTA6jLUDxPBq2+1TQozXot5hJBbxiFElmhEkyzkC50urtaTeRFR94C8c+ultOhNflk4OiQtCmAf1Qm6opj8lHpjqlDJpjQ8mrnLRcCZuM3RvK9lxdSsQ9uTOUP4YqKj1SQKcLTmwOgt3ziIEunrn1PlWe8lqJzJceolIYN4K6zijt+yErDORUYYB//7KsdF2RWHf6g2yTx9KV32ILbChkvgR9H2fZJbFwZg1gAslGxabrpwhZsfodIElcbUzs5gXqmXt1c8oVMwh2G0IwQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YNdCEC5WT4nq+xlbrZyPjJDXEKYwHE6ODAqUvLi0WSo=;
- b=Vv0xgI8tjVos4qxCpttc4/MoDpApk3m3qjlsG1B/FdDC6WiED5dmvcXQmh93/tnTviAXRTXrxJotkNVCkPVyln2sQi3Bvw+Fn97VYdT3EotmtundZfGXO8BsBdcLRan7OdGYXhA74ufPqgBfYPrUb2Kp1zyNeAU2QJ56PztHGdJmsMslS4ytKjO4Vavx5ZErdpl7BT4O0/xJiiurE3/OR4T0Xb6WLhbbM2ZSZKpkC3TCZ6nb83WG/dNUCFVHRRZ/QiTYX3xgYCmCuWtVxnN6h5ykdMjVYc/YkJmtqmgfdkq+FmBI3jHMLYxf5NYG4hpzkYc1Bmw6UKZ4CQ4UzURCGg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YNdCEC5WT4nq+xlbrZyPjJDXEKYwHE6ODAqUvLi0WSo=;
- b=Dyqz2TyPer8DnB540NV9xz478YFjT+g5Vx5XhNna7BoMLITY3yIcACAZgFruzhF44T180ml+nIXCoqMgmZS2Li0n/FZ/M1kwa+1+UyDDpG/o6Ki41qo864cQoo9szbXj/+HTzcM/+8X6MYI7DsPoLh1xS5U+R/sjcsmCb/vTwXHJFrs1ZK698g85ILZoLuIbcNM/mwHN4dzoVMHGN28plcJ2WLzJ+xoVtIMflwNIYfjQSvwJFw4l+rdA8sL1E04jZnDcApY4L6xn/gJhk3MtY/otjfXnfJBQ8F6RrOcNn3LLsnaX9A0Vf9wiMAHLaXqxEzkFKnRaeslVRgDMS2rN3A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB4337.namprd12.prod.outlook.com (2603:10b6:5:2a9::12)
- by MN2PR12MB3664.namprd12.prod.outlook.com (2603:10b6:208:159::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20; Mon, 18 Apr
- 2022 06:45:02 +0000
-Received: from DM6PR12MB4337.namprd12.prod.outlook.com
- ([fe80::6131:18cc:19ae:2402]) by DM6PR12MB4337.namprd12.prod.outlook.com
- ([fe80::6131:18cc:19ae:2402%6]) with mapi id 15.20.5164.025; Mon, 18 Apr 2022
- 06:45:02 +0000
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        jiri@nvidia.com, vadimp@nvidia.com, petrm@nvidia.com,
-        andrew@lunn.ch, dsahern@gmail.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 17/17] selftests: mlxsw: Introduce devlink line card provision/unprovision/activation tests
-Date:   Mon, 18 Apr 2022 09:42:41 +0300
-Message-Id: <20220418064241.2925668-18-idosch@nvidia.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220418064241.2925668-1-idosch@nvidia.com>
-References: <20220418064241.2925668-1-idosch@nvidia.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: LO2P265CA0401.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:f::29) To DM6PR12MB4337.namprd12.prod.outlook.com
- (2603:10b6:5:2a9::12)
+        with ESMTP id S230108AbiDRHM3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 03:12:29 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEE80167E4
+        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 00:09:50 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id k23so25387157ejd.3
+        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 00:09:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to;
+        bh=0v5ALLDHt+/5ZBUUi/bVrso4RkBkZJ71T4ErOVUx7pM=;
+        b=Hv4yZJ40oN3xZ5QbKm+tCU3RwPqGZcHDZhdYMcqrmROI+EcTrkzhMjFa82kVItcsMI
+         /ZTKUL7ByKCSFqi/NSTGx5veLUTJBWIy0bQLqHCcOwTOq/LjuAh+4BZS9TZ6JEATna9I
+         kuXPJPOGGaq4GrwlBMfnUJOkbsAtSJevZNFAc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:cc:references:from:in-reply-to;
+        bh=0v5ALLDHt+/5ZBUUi/bVrso4RkBkZJ71T4ErOVUx7pM=;
+        b=ZQbW4jjXLKrOMqy9YBETRCUhP/9Um2WVASLxsgssrk4kJ+u48RdCagyWYlVzx7BgGi
+         A5KQr7wNFpiYusa6+16KIX28tpQ9jaMJ3BAy2uaYgasO//Yntob8OBuedmv0RvLK5omk
+         nElTkNbrKhxBD9scifjZebfTQLJZeaj0KFg4Y3HzmnVfK6JYcfFKYpDpjdBu5qNoplSx
+         WmYc6hRDllAOB5tqyfFxTFly9G3b/hp/s/b1brKUq9z/VRuDl9mvMwli2I7HgChCSoae
+         FK30sXVrxVDPep3eZsD2yk3YKMYrikhAPi6C9GHgnrTBbx8ZKYx4NnF8iIkiZpCVEEUP
+         0tqA==
+X-Gm-Message-State: AOAM532QH/vWlYnFmjs3eLaPg9NfVNSfkkSpLzbLbRVFDUuj+9zo8qaU
+        YSrsuUY9qm2DJaVjXpDNEAdPEg==
+X-Google-Smtp-Source: ABdhPJwNslJeJPOu9xIKHkkjkmCkG4D+0D2dsckjp2gXFUxyaKK58H/Sa3ZLu63OEj/5tSYTs8lqgA==
+X-Received: by 2002:a17:907:9803:b0:6db:ab21:738e with SMTP id ji3-20020a170907980300b006dbab21738emr7692168ejc.112.1650265789329;
+        Mon, 18 Apr 2022 00:09:49 -0700 (PDT)
+Received: from [192.168.178.136] (f140230.upc-f.chello.nl. [80.56.140.230])
+        by smtp.gmail.com with ESMTPSA id l26-20020a1709062a9a00b006e7ee7ad20bsm4343343eje.149.2022.04.18.00.09.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Apr 2022 00:09:47 -0700 (PDT)
+Message-ID: <afb9ea60-7f93-a646-da82-4f408051c748@broadcom.com>
+Date:   Mon, 18 Apr 2022 09:09:46 +0200
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 18a48747-6693-45c8-19a0-08da2106f6ef
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3664:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB3664758D992694EDC6A0EF26B2F39@MN2PR12MB3664.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: p3bAD5xwVWIQWJ8bhSwvbhHT+GKTlueD3lo2mGC92ZjFVtSMNKD2hmsx4vtLenVadXCfY8czsVzLhHBKV6pSVOHmh4UfVGnOFON0nDxfGYVoyRnvMbczI6Gdm2GgMa9Lxue6bhH92c6KWW5C089nUIri5hxrmwJt7XVONkWFoOdOT+2ZTlnMjRQ72cKVboCGTUgzOl5qVIxkY94xyTqIZQaEeQb7OoZ5KeE/SZxvO3NVqIy+VaZKR4Ure9cq2U5ZVhvUMZhz2UR715mI8RT7qcRz9XhYNpmIEOf5kGGmqMj8DUlynY+qFpO2gwx9wO7UeTr3X9hLlBklknoiNZH61y5ievsbe+gBOAbUhjRRWQtMTdg72eZdzMH2hbhxTFCG3r4B9BJxg08abesitVqvlBpOBv19SQ24XYOhEUgIrAp/Ic9AMyXhMnC57Wa51S8xyuOncPURvFn+3e/YN3iZz8O0QMmJeNqm2BdNE3h3xpp0Nbi2DpTortbEXXTYmIAAoAIxLZcf5B1+IL5rx+1PwnTkl805fYfxrn/6v51BbOajcbiRqs9aYdY5Vjf0xmleUXoGzvcGZ/SDy5F/LZ2EJE7Gc966PesdT2432v6Li9n0Se+NJA1G4Z2t6pcq+k3cozZcN8iHvVHBllQwmk2YGg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4337.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(107886003)(66556008)(316002)(4326008)(8676002)(508600001)(8936002)(6486002)(66476007)(5660300002)(6512007)(186003)(66946007)(38100700002)(86362001)(26005)(83380400001)(36756003)(2616005)(6666004)(2906002)(6916009)(6506007)(1076003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+r0za6YE/Fe8iSwNZQh2mvqgfttZtFHjFR+1gmp4eL7hPHLFOkYpom0MLGhn?=
- =?us-ascii?Q?gCFYJWlkGU+UihACe6pZkxUasIZSMquI89PlLzEJG6ZYX5xeF+YVqq+EydTm?=
- =?us-ascii?Q?hN0h79Ok2Ho32PtRPQY/8asK4iOtx9M5cmMLEWDmwU2q0X9BMSncMHLcLYSe?=
- =?us-ascii?Q?ZgUofvvSMAB5B65bx3b+pY6nEuCrZM3bkSk0CIPMWJi+piGBrPfRBvESpTsW?=
- =?us-ascii?Q?5PYwPfrkv4XiFWSXX3yk4ImnmxpWfQzLbKjoCo2uPN8GVkYkjiEivVozlXcX?=
- =?us-ascii?Q?TL+Q+5SWjjau1a860DXcNte7fKyz1AVQqUOXTfZgy8PtZ/mId2YmgFjFyhD8?=
- =?us-ascii?Q?6wjLoLTVWdESsFAzIMzmeFNYFB1k0usTRSM/9gDYL40KVmbNOitfl5y6gxd7?=
- =?us-ascii?Q?8v++7KO55SZVb7pSH8O9bN1i5khFFP3gq1lYjVuI1S0T3JDuzPzftPiwAiLV?=
- =?us-ascii?Q?aopXuhQrPJVxqK5tTqCa0M0WF3gyzvMHqnjnbTuCdwdWK/YFIPqdz3mEeD86?=
- =?us-ascii?Q?8t9IjQ1VuKSjJdmwbhZdKFXgnv+MfMVY1V+tGsbiW3bhP2jgfN5VgfG32D0T?=
- =?us-ascii?Q?ipBi4DejzoYgoE7t82YiTip+MbUUBlkxkEkato5x62TmQsFYOE/dLzTP4XDG?=
- =?us-ascii?Q?149al/WG6iMgFTxQaWKBQNvDyDsaqeDWfCVVpZDX+j7pLzP09aiW9jBBvgTU?=
- =?us-ascii?Q?K7Hr3qZzIInE9zw2e9zATHxRgBfx1Q6aqH2+RrsCXNitK2Z/FFbuqY4N9BHS?=
- =?us-ascii?Q?JUoLcvDSRL87BMqvIiQiei9abiIqea3JlDAwk3OaAGXrcWEGnd75oTEUUXxl?=
- =?us-ascii?Q?YYCnxOKSJWGNpqOPkyD0N1Es7H81ADlVE8xnkigNhhEnv8gHWRaJ0g1XkAUF?=
- =?us-ascii?Q?E2UAeqAa24nS0PnuXXu8nWyUsPlN0EES+Ic6xwGlFPOWsZl8Gl/XbTeDJlRz?=
- =?us-ascii?Q?XYTK5J/J21A+VL3rQzqCL+sL99+IsQbQHhm43LLefcK4oZQRmMv5GmW77yVP?=
- =?us-ascii?Q?gfdAlgDNP1MNUBc3HqIYswePnU+j9XcpyWhBDXoA3ZFPzLtZ8beOsGd4O5lI?=
- =?us-ascii?Q?UkeFyWmS6755278FbOCpP8WRcCYjPwI4rdmW/VIbxDBCtCV/VJkigdu2MJBI?=
- =?us-ascii?Q?GSo4JnzHWeLxFR33iXmrRyjoIGoCRHXnBohC7ZbTcYez+F6ntg02Kt6r0Fn2?=
- =?us-ascii?Q?aIryJlTyLydqC03sh6gCtLkRfpMe8Wr/BTVm8OCsOVxNG4FJC27G8zCMjDFj?=
- =?us-ascii?Q?6nVRQnDD8Dw9GXmnPxukWCEhNoDXUW0datbAIo99oUwrrkSFY+6WJACxpf8m?=
- =?us-ascii?Q?O/Eehx9l5iXB/GqwL6UA0kiZZAb38jT1RiL0EggUc+/v4UigqXN9WJDJ8tKt?=
- =?us-ascii?Q?ADiNFdx/gYbt3DFm5UkdLaMQj5s6WsH+BhqaNASdLIw0Inud569Psr+0MLlN?=
- =?us-ascii?Q?Lryry4XYvKv9byr2R7kf/oGB8sLTdo2Dn/TQ/buHj89AJ0d6a1BNVZlQQnvH?=
- =?us-ascii?Q?Bps9jzJT9NHlOPj9dR5CP/4rF4tIpCxQE/v1dGHv+hGAir2SPXjqjY8C3o+b?=
- =?us-ascii?Q?qsTGx0q/LxThlm6SI+UvhTiRARot+n54NNmlLUMTTBbM5/X5OSqX5AtcKDzf?=
- =?us-ascii?Q?Bq+9mnjlYiODDsshYyROaJ1NrHwmgCmDhqp08JUR4JATNb+aj/2Yp6hxf20X?=
- =?us-ascii?Q?UEMR0LMtVh9Wy5ifdSbw56sddX5VOYH+nJYM5fzCfQ/AQcEWLV4Ow/qTPif5?=
- =?us-ascii?Q?ehYLbKLuwA=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 18a48747-6693-45c8-19a0-08da2106f6ef
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4337.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Apr 2022 06:45:02.4762
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 59R7MfaeJyzt/R+WqrkA7pkX4+T+bltEGbJy7prIFBsPf0xos65+sU/egb1ZUev4i9scb4mc+3/W4aPJlSpggw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3664
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] brcmfmac: Remove #ifdef guards for PM related functions
+To:     Paul Cercueil <paul@crapouillou.net>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Kalle Valo <kvalo@kernel.org>
+Cc:     linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220415200322.7511-1-paul@crapouillou.net>
+From:   Arend van Spriel <arend.vanspriel@broadcom.com>
+In-Reply-To: <20220415200322.7511-1-paul@crapouillou.net>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="0000000000002ca77705dce8722c"
+X-Spam-Status: No, score=-5.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -119,304 +74,157 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@nvidia.com>
+--0000000000002ca77705dce8722c
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Introduce basic line card manipulation which consists of provisioning,
-unprovisioning and activation of a line card.
+On 4/15/2022 10:03 PM, Paul Cercueil wrote:
+> Use the new DEFINE_SIMPLE_DEV_PM_OPS() and pm_sleep_ptr() macros to
+> handle the .suspend/.resume callbacks.
+> 
+> These macros allow the suspend and resume functions to be automatically
+> dropped by the compiler when CONFIG_SUSPEND is disabled, without having
+> to use #ifdef guards. The advantage is then that these functions are not
+> conditionally compiled.
 
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- .../drivers/net/mlxsw/devlink_linecard.sh     | 280 ++++++++++++++++++
- 1 file changed, 280 insertions(+)
- create mode 100755 tools/testing/selftests/drivers/net/mlxsw/devlink_linecard.sh
+The advantage stated here may not be obvious to everyone and that is 
+because it only scratches the surface. The code is always compiled 
+independent from the Kconfig options used and because of that the real 
+advantage is that build regressions are easier to catch.
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/devlink_linecard.sh b/tools/testing/selftests/drivers/net/mlxsw/devlink_linecard.sh
-new file mode 100755
-index 000000000000..08a922d8b86a
---- /dev/null
-+++ b/tools/testing/selftests/drivers/net/mlxsw/devlink_linecard.sh
-@@ -0,0 +1,280 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# In addition to the common variables, user might use:
-+# LC_SLOT - If not set, all probed line cards are going to be tested,
-+#	    with an exception of the "activation_16x100G_test".
-+#	    It set, only the selected line card is going to be used
-+#	    for tests, including "activation_16x100G_test".
-+
-+lib_dir=$(dirname $0)/../../../net/forwarding
-+
-+ALL_TESTS="
-+	unprovision_test
-+	provision_test
-+	activation_16x100G_test
-+"
-+
-+NUM_NETIFS=0
-+
-+source $lib_dir/lib.sh
-+source $lib_dir/devlink_lib.sh
-+
-+until_lc_state_is()
-+{
-+	local state=$1; shift
-+	local current=$("$@")
-+
-+	echo "$current"
-+	[ "$current" == "$state" ]
-+}
-+
-+until_lc_state_is_not()
-+{
-+	! until_lc_state_is "$@"
-+}
-+
-+lc_state_get()
-+{
-+	local lc=$1
-+
-+	devlink lc show $DEVLINK_DEV lc $lc -j | jq -e -r ".[][][].state"
-+}
-+
-+lc_wait_until_state_changes()
-+{
-+	local lc=$1
-+	local state=$2
-+	local timeout=$3 # ms
-+
-+	busywait "$timeout" until_lc_state_is_not "$state" lc_state_get "$lc"
-+}
-+
-+lc_wait_until_state_becomes()
-+{
-+	local lc=$1
-+	local state=$2
-+	local timeout=$3 # ms
-+
-+	busywait "$timeout" until_lc_state_is "$state" lc_state_get "$lc"
-+}
-+
-+until_lc_port_count_is()
-+{
-+	local port_count=$1; shift
-+	local current=$("$@")
-+
-+	echo "$current"
-+	[ $current == $port_count ]
-+}
-+
-+lc_port_count_get()
-+{
-+	local lc=$1
-+
-+	devlink port -j | jq -e -r ".[][] | select(.lc==$lc) | .port" | wc -l
-+}
-+
-+lc_wait_until_port_count_is()
-+{
-+	local lc=$1
-+	local port_count=$2
-+	local timeout=$3 # ms
-+
-+	busywait "$timeout" until_lc_port_count_is "$port_count" lc_port_count_get "$lc"
-+}
-+
-+PROV_UNPROV_TIMEOUT=8000 # ms
-+POST_PROV_ACT_TIMEOUT=2000 # ms
-+PROV_PORTS_INSTANTIATION_TIMEOUT=15000 # ms
-+
-+unprovision_one()
-+{
-+	local lc=$1
-+	local state
-+
-+	state=$(lc_state_get $lc)
-+	check_err $? "Failed to get state of linecard $lc"
-+	if [[ "$state" == "unprovisioned" ]]; then
-+		return
-+	fi
-+
-+	log_info "Unprovisioning linecard $lc"
-+
-+	devlink lc set $DEVLINK_DEV lc $lc notype
-+	check_err $? "Failed to trigger linecard $lc unprovisioning"
-+
-+	state=$(lc_wait_until_state_changes $lc "unprovisioning" \
-+		$PROV_UNPROV_TIMEOUT)
-+	check_err $? "Failed to unprovision linecard $lc (timeout)"
-+
-+	[ "$state" == "unprovisioned" ]
-+	check_err $? "Failed to unprovision linecard $lc (state=$state)"
-+}
-+
-+provision_one()
-+{
-+	local lc=$1
-+	local type=$2
-+	local state
-+
-+	log_info "Provisioning linecard $lc"
-+
-+	devlink lc set $DEVLINK_DEV lc $lc type $type
-+	check_err $? "Failed trigger linecard $lc provisioning"
-+
-+	state=$(lc_wait_until_state_changes $lc "provisioning" \
-+		$PROV_UNPROV_TIMEOUT)
-+	check_err $? "Failed to provision linecard $lc (timeout)"
-+
-+	[ "$state" == "provisioned" ] || [ "$state" == "active" ]
-+	check_err $? "Failed to provision linecard $lc (state=$state)"
-+
-+	provisioned_type=$(devlink lc show $DEVLINK_DEV lc $lc -j | jq -e -r ".[][][].type")
-+	[ "$provisioned_type" == "$type" ]
-+	check_err $? "Wrong provision type returned for linecard $lc (got \"$provisioned_type\", expected \"$type\")"
-+
-+	# Wait for possible activation to make sure the state
-+	# won't change after return from this function.
-+	state=$(lc_wait_until_state_becomes $lc "active" \
-+		$POST_PROV_ACT_TIMEOUT)
-+}
-+
-+unprovision_test()
-+{
-+	RET=0
-+	local lc
-+
-+	lc=$LC_SLOT
-+	unprovision_one $lc
-+	log_test "Unprovision"
-+}
-+
-+LC_16X100G_TYPE="16x100G"
-+LC_16X100G_PORT_COUNT=16
-+
-+supported_types_check()
-+{
-+	local lc=$1
-+	local supported_types_count
-+	local type_index
-+	local lc_16x100_found=false
-+
-+	supported_types_count=$(devlink lc show $DEVLINK_DEV lc $lc -j | \
-+				jq -e -r ".[][][].supported_types | length")
-+	[ $supported_types_count != 0 ]
-+	check_err $? "No supported types found for linecard $lc"
-+	for (( type_index=0; type_index<$supported_types_count; type_index++ ))
-+	do
-+		type=$(devlink lc show $DEVLINK_DEV lc $lc -j | \
-+		       jq -e -r ".[][][].supported_types[$type_index]")
-+		if [[ "$type" == "$LC_16X100G_TYPE" ]]; then
-+			lc_16x100_found=true
-+			break
-+		fi
-+	done
-+	[ $lc_16x100_found = true ]
-+	check_err $? "16X100G not found between supported types of linecard $lc"
-+}
-+
-+ports_check()
-+{
-+	local lc=$1
-+	local expected_port_count=$2
-+	local port_count
-+
-+	port_count=$(lc_wait_until_port_count_is $lc $expected_port_count \
-+		$PROV_PORTS_INSTANTIATION_TIMEOUT)
-+	[ $port_count != 0 ]
-+	check_err $? "No port associated with linecard $lc"
-+	[ $port_count == $expected_port_count ]
-+	check_err $? "Unexpected port count linecard $lc (got $port_count, expected $expected_port_count)"
-+}
-+
-+provision_test()
-+{
-+	RET=0
-+	local lc
-+	local type
-+	local state
-+
-+	lc=$LC_SLOT
-+	supported_types_check $lc
-+	state=$(lc_state_get $lc)
-+	check_err $? "Failed to get state of linecard $lc"
-+	if [[ "$state" != "unprovisioned" ]]; then
-+		unprovision_one $lc
-+	fi
-+	provision_one $lc $LC_16X100G_TYPE
-+	ports_check $lc $LC_16X100G_PORT_COUNT
-+	log_test "Provision"
-+}
-+
-+ACTIVATION_TIMEOUT=20000 # ms
-+
-+interface_check()
-+{
-+	ip link set $h1 up
-+	ip link set $h2 up
-+	ifaces_upped=true
-+	setup_wait
-+}
-+
-+activation_16x100G_test()
-+{
-+	RET=0
-+	local lc
-+	local type
-+	local state
-+
-+	lc=$LC_SLOT
-+	type=$LC_16X100G_TYPE
-+
-+	unprovision_one $lc
-+	provision_one $lc $type
-+	state=$(lc_wait_until_state_becomes $lc "active" \
-+		$ACTIVATION_TIMEOUT)
-+	check_err $? "Failed to get linecard $lc activated (timeout)"
-+
-+	interface_check
-+
-+	log_test "Activation 16x100G"
-+}
-+
-+setup_prepare()
-+{
-+	local lc_num=$(devlink lc show -j | jq -e -r ".[][\"$DEVLINK_DEV\"] |length")
-+	if [[ $? -ne 0 ]] || [[ $lc_num -eq 0 ]]; then
-+		echo "SKIP: No linecard support found"
-+		exit $ksft_skip
-+	fi
-+
-+	if [ -z "$LC_SLOT" ]; then
-+		echo "SKIP: \"LC_SLOT\" variable not provided"
-+		exit $ksft_skip
-+	fi
-+
-+	# Interfaces are not present during the script start,
-+	# that's why we define NUM_NETIFS here so dummy
-+	# implicit veth pairs are not created.
-+	NUM_NETIFS=2
-+	h1=${NETIFS[p1]}
-+	h2=${NETIFS[p2]}
-+	ifaces_upped=false
-+}
-+
-+cleanup()
-+{
-+	if [ "$ifaces_upped" = true ] ; then
-+		ip link set $h1 down
-+		ip link set $h2 down
-+	fi
-+}
-+
-+trap cleanup EXIT
-+
-+setup_prepare
-+
-+tests_run
-+
-+exit $EXIT_STATUS
--- 
-2.33.1
+> Some other functions not directly called by the .suspend/.resume
+> callbacks, but still related to PM were also taken outside #ifdef
+> guards.
 
+a few comments on this inline...
+
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> ---
+>   .../broadcom/brcm80211/brcmfmac/bcmsdh.c      | 44 +++++++------------
+>   .../broadcom/brcm80211/brcmfmac/sdio.c        |  5 +--
+>   .../broadcom/brcm80211/brcmfmac/sdio.h        | 16 -------
+>   3 files changed, 19 insertions(+), 46 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+> index ac02244a6fdf..a8cf5a570101 100644
+> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+
+[...]
+
+> @@ -873,7 +865,8 @@ int brcmf_sdiod_remove(struct brcmf_sdio_dev *sdiodev)
+>   		sdiodev->bus = NULL;
+>   	}
+>   
+> -	brcmf_sdiod_freezer_detach(sdiodev);
+> +	if (IS_ENABLED(CONFIG_PM_SLEEP))
+> +		brcmf_sdiod_freezer_detach(sdiodev);
+
+Please move the if statement inside the function to keep the code flow 
+in the calling function the same as before.
+
+>   
+>   	/* Disable Function 2 */
+>   	sdio_claim_host(sdiodev->func2);
+> @@ -949,9 +942,11 @@ int brcmf_sdiod_probe(struct brcmf_sdio_dev *sdiodev)
+>   		goto out;
+>   	}
+>   
+> -	ret = brcmf_sdiod_freezer_attach(sdiodev);
+> -	if (ret)
+> -		goto out;
+> +	if (IS_ENABLED(CONFIG_PM_SLEEP)) {
+> +		ret = brcmf_sdiod_freezer_attach(sdiodev);
+> +		if (ret)
+> +			goto out;
+> +	}
+
+Dito. Move the if statement inside the function.
+
+>   
+>   	/* try to attach to the target device */
+>   	sdiodev->bus = brcmf_sdio_probe(sdiodev);
+
+--0000000000002ca77705dce8722c
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+XSlOP9s1dqWlRRnnNxV7BVC87lkKKy0+1M2DOF6qRYQlnW4EfOyCToYLAG5zeV+AjepMoX6J9bUz
+yj4BlDtwH4HFjaRIlPPbdLshUA54/tV84x8woATuLGBq+hTZEpkZAgMBAAGjggHdMIIB2TAOBgNV
+HQ8BAf8EBAMCBaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJl
+Lmdsb2JhbHNpZ24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYI
+KwYBBQUHMAGGNWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24y
+Y2EyMDIwME0GA1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3
+dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqG
+OGh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3Js
+MCcGA1UdEQQgMB6BHGFyZW5kLnZhbnNwcmllbEBicm9hZGNvbS5jb20wEwYDVR0lBAwwCgYIKwYB
+BQUHAwQwHwYDVR0jBBgwFoAUljPR5lgXWzR1ioFWZNW+SN6hj88wHQYDVR0OBBYEFKb+3b9pz8zo
+0QsCHGb/p0UrBlU+MA0GCSqGSIb3DQEBCwUAA4IBAQCHisuRNqP0NfYfG3U3XF+bocf//aGLOCGj
+NvbnSbaUDT/ZkRFb9dQfDRVnZUJ7eDZWHfC+kukEzFwiSK1irDPZQAG9diwy4p9dM0xw5RXSAC1w
+FzQ0ClJvhK8PsjXF2yzITFmZsEhYEToTn2owD613HvBNijAnDDLV8D0K5gtDnVqkVB9TUAGjHsmo
+aAwIDFKdqL0O19Kui0WI1qNsu1tE2wAZk0XE9FG0OKyY2a2oFwJ85c5IO0q53U7+YePIwv4/J5aP
+OGM6lFPJCVnfKc3H76g/FyPyaE4AL/hfdNP8ObvCB6N/BVCccjNdglRsL2ewttAG3GM06LkvrLhv
+UCvjMYICbTCCAmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1z
+YTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAyMAIMMSnY
+h9J/RI6gsHbuMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCCEAKscpDh2LuhXOm1l
+BWDNmcdgGBjLAlkTxkDYwJxrjDAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ
+BTEPFw0yMjA0MTgwNzA5NDlaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCGSAFl
+AwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3DQEBBzAL
+BglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEALvVjew3eF0RYefxXw7tTDYHkIUTm0QBns1Pa
+L4IpdMbLE4Q2T9jltOgRdbgCjd1+kcmA7mRogYO0jaJKLbdOfljG6gwQv2uizmbVhHp/hKLimtqP
+tJotSps9HZYzllTcCqpKtRQg4zhpYwVPRQZcmPSSYwOKazPrcqyHoKOKYG6dp5lTSnWx/aTKZhMA
+kT+nJXtCmqKxWFwLEMACi/QjLcfSVk6MtwWNEPUhZAgYCWK8OYFktA5gRPMZvybaUEImocm6uksP
+NV4TbXBks9sUCfA6RA661sd1N4acOMW+tRdQZvvmQ2Cbp2gTjvA6KFNnrCq9UQyQb74/OQITyqR5
+FQ==
+--0000000000002ca77705dce8722c--
