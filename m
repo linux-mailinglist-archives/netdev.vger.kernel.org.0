@@ -2,121 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D02D50602A
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 01:20:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 645AE506032
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 01:25:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234817AbiDRXVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Apr 2022 19:21:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39568 "EHLO
+        id S235025AbiDRX1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Apr 2022 19:27:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234808AbiDRXUu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 19:20:50 -0400
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 754BD23BE8
-        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 16:18:10 -0700 (PDT)
-Received: by mail-qt1-x830.google.com with SMTP id hf18so10639775qtb.0
-        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 16:18:10 -0700 (PDT)
+        with ESMTP id S234935AbiDRX1y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 19:27:54 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F9562AFF
+        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 16:25:12 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id r4-20020a05600c35c400b0039295dc1fc3so406919wmq.3
+        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 16:25:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0dcJHoI59iupk/XZrTeiSOhbOxLwLKCBzj4Z2fI2tTc=;
-        b=LhCy4Xw3XN068oiUmiq1/1Q8uv7ZgPx8f0g98Osy317QhjxRDf3CkOOZPc1ftvYJnJ
-         gxOnCH8bESAgzEqHoyAL70WuiVudZ2fj2ItxFXVGHqPNIU0Hj+kI/gpT7q3dnW+7t9YN
-         ffDvkK5FKc6Flz2lKRs5lZvpB7Mi0a3S+yVSA=
+        bh=VixvTH8c3s7h5TYQKY+mn+F/MBuvDA9A4on6Alw9lyk=;
+        b=nYkyDTPtjLFjv/2iJxkZGNY+EWg1RaoNkqyW5zRXfTXQrqjy4w40Xdo8cy+pEe96rP
+         PEnRk8JIfeFwGYRfIgUqG2glpv3oT6TfCDTDDEah3ySGGVjdJ3eJywi2GCXFDL+4Jss5
+         9TgOHsndfsydavxcX75UsJlHwWooFB6Eh2uKy5zf96JXaZTC48lEFa+XukNAItTNbJTM
+         YebP5eAbnS3nVtO+YSw6KnVff6OqFt0FruGdIaWbeCB+6qED3YvcewXr0TX+KPLBAwvf
+         WNhnA9F3vs0Xm4h3z4QXEcPWihFGjL9BG0eIKwYJR/U+8xoqQM8sPvEsqUhcwz8ybFbK
+         tAFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0dcJHoI59iupk/XZrTeiSOhbOxLwLKCBzj4Z2fI2tTc=;
-        b=7HkmPkVGIVC0kIkHXzdHloxt9YalaORVcpkGw/g31srhMdUyMliQu64qmrwKEy+YIW
-         jjTLjS6rtUtPFsJ6812qtkTV49HOpYddMNiOPZg9XQZVpebQYAC5+un4egS3p2V6mJZ7
-         Jf+2x9hdniFUhlDcl9+ezo62+n1kxY+FMnw0PSDbEOPpKScT64wsLYg+72JClJanMIDb
-         logEQor9wAUq2nLHr3msNU/Djv0f1YE8cRjn+NLXVdch2qMfVwthrzcwzHTwuM284r22
-         /Babyjizw6QVL5pMl6hWa2PlEBO8uMgy2MTSee6rJoUxBRT9b4teBlyTPLr1AkKM6PxA
-         6wug==
-X-Gm-Message-State: AOAM532TKbvm8RrQ9yRZyomrdTF71hUN3WOWFcGfZsYPh+vkOJ+HcZqK
-        u54V5JYasnll2xwetEMdK1FnNA==
-X-Google-Smtp-Source: ABdhPJzVmagn0Rfc5cXZudhsLyucFUBeBfCKmqRoxtX4m60vigQt1WYkqD8XBGNWp/r7n0HZ6vDLmg==
-X-Received: by 2002:ac8:5206:0:b0:2f1:e8cc:7800 with SMTP id r6-20020ac85206000000b002f1e8cc7800mr8620403qtn.501.1650323889668;
-        Mon, 18 Apr 2022 16:18:09 -0700 (PDT)
-Received: from grundler-glapstation.lan ([70.134.62.80])
-        by smtp.gmail.com with ESMTPSA id a1-20020a05622a02c100b002f17cba4930sm8214048qtx.85.2022.04.18.16.18.08
+        bh=VixvTH8c3s7h5TYQKY+mn+F/MBuvDA9A4on6Alw9lyk=;
+        b=fPE0mlBE2gmD+a3k9kldt3S0+VSXj1V+SHnYrCkIKs4uwgVUA59vgln6GwSqqpBA+v
+         0nkNIfOX8jTo0tUPOw4cJ39lJwbGOUjPiXj6mXQDw+T5+SshIW3CMz8Nk7Omt9KsmoTL
+         ikuRMCzM6+1Ov1mZrQdwKL8ocJ/Ha/Uh8qrsCq0D2h1CdJsaiviZhbYqorWhtgHOWWKW
+         8A/fpiHffv0BYs9jMm8pHyh04nBblNooZ0lQD3cuSlB/+R44cBcgvQZFe2CdBU6rHk10
+         EIWx68eTmlJS8Ye7L7WAvahzUJD5FGSNaWX2pzIzKP9yPPA318EKW6QR4F+ncqh7wYWG
+         TO0g==
+X-Gm-Message-State: AOAM531JeBgi2lrUxA8uDT349zcKyGeM4anFt3jV4nxF1KzKrP0pE3LR
+        b+nOOxCQB4wqGjwhOhptQ+nWpOJBEVk=
+X-Google-Smtp-Source: ABdhPJwxfWos4K3OA/rd9WQM5ihdW8/UcNYFqiLaKPTzW+w5px71P8xIj2495TojOm+0sjFgfsZy5A==
+X-Received: by 2002:a05:600c:3d96:b0:38f:fbc6:da44 with SMTP id bi22-20020a05600c3d9600b0038ffbc6da44mr17081855wmb.93.1650324310782;
+        Mon, 18 Apr 2022 16:25:10 -0700 (PDT)
+Received: from localhost.localdomain (82-64-45-45.subs.proxad.net. [82.64.45.45])
+        by smtp.googlemail.com with ESMTPSA id 7-20020a056000156700b0020aa549d399sm826911wrz.11.2022.04.18.16.25.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 16:18:09 -0700 (PDT)
-From:   Grant Grundler <grundler@chromium.org>
-To:     Igor Russkikh <irusskikh@marvell.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Aashay Shringarpure <aashay@google.com>,
-        Yi Chou <yich@google.com>,
-        Shervin Oloumi <enlightened@google.com>,
-        Grant Grundler <grundler@chromium.org>
-Subject: [PATCH 5/5] net: atlantic: verify hw_head_ is reasonable
-Date:   Mon, 18 Apr 2022 16:17:46 -0700
-Message-Id: <20220418231746.2464800-6-grundler@chromium.org>
-X-Mailer: git-send-email 2.36.0.rc0.470.gd361397f0d-goog
-In-Reply-To: <20220418231746.2464800-1-grundler@chromium.org>
-References: <20220418231746.2464800-1-grundler@chromium.org>
+        Mon, 18 Apr 2022 16:25:10 -0700 (PDT)
+From:   Baligh Gasmi <gasmibal@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@kernel.org>,
+        Baligh Gasmi <gasmibal@gmail.com>
+Subject: [PATCH v4] ip/iplink_virt_wifi: add support for virt_wifi
+Date:   Tue, 19 Apr 2022 01:25:07 +0200
+Message-Id: <20220418232507.4047-1-gasmibal@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220418080642.4093224e@hermes.local>
+References: <20220418080642.4093224e@hermes.local>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bounds check hw_head index to verify it lies within the TX buffer ring.
+Add support for creating virt_wifi devices type.
 
-Unexpected values of hw_head may cause aq_ring_tx_clean to double
-dev_kfree_skb_any already cleaned parts of the ring.
+Syntax:
+$ ip link add link eth0 name wlan0 type virt_wifi
 
-Reported-by: Aashay Shringarpure <aashay@google.com>
-Reported-by: Yi Chou <yich@google.com>
-Reported-by: Shervin Oloumi <enlightened@google.com>
-Signed-off-by: Grant Grundler <grundler@chromium.org>
+Signed-off-by: Baligh Gasmi <gasmibal@gmail.com>
 ---
- .../aquantia/atlantic/hw_atl/hw_atl_b0.c      | 21 +++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ ip/Makefile           |  2 +-
+ ip/iplink.c           |  2 +-
+ ip/iplink_virt_wifi.c | 25 +++++++++++++++++++++++++
+ man/man8/ip-link.8.in |  6 +++++-
+ 4 files changed, 32 insertions(+), 3 deletions(-)
+ create mode 100644 ip/iplink_virt_wifi.c
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-index e72b9d86f6ad..9b6b93bb3e86 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-@@ -889,6 +889,27 @@ int hw_atl_b0_hw_ring_tx_head_update(struct aq_hw_s *self,
- 		err = -ENXIO;
- 		goto err_exit;
- 	}
-+
-+	/* Validate that the new hw_head_ is reasonable. */
-+	if (hw_head_ >= ring->size) {
-+		err = -ENXIO;
-+		goto err_exit;
-+	}
-+
-+	if (ring->sw_head >= ring->sw_tail) {
-+		/* Head index hasn't wrapped around to below tail index. */
-+		if (hw_head_ < ring->sw_head && hw_head_ >= ring->sw_tail) {
-+			err = -ENXIO;
-+			goto err_exit;
-+		}
-+	} else {
-+		/* Head index has wrapped around and is below tail index. */
-+		if (hw_head_ < ring->sw_head || hw_head_ >= ring->sw_tail) {
-+			err = -ENXIO;
-+			goto err_exit;
-+		}
-+	}
-+
- 	ring->hw_head = hw_head_;
- 	err = aq_hw_err_from_flags(self);
+diff --git a/ip/Makefile b/ip/Makefile
+index 0f14c609..e06a7c84 100644
+--- a/ip/Makefile
++++ b/ip/Makefile
+@@ -12,7 +12,7 @@ IPOBJ=ip.o ipaddress.o ipaddrlabel.o iproute.o iprule.o ipnetns.o \
+     iplink_geneve.o iplink_vrf.o iproute_lwtunnel.o ipmacsec.o ipila.o \
+     ipvrf.o iplink_xstats.o ipseg6.o iplink_netdevsim.o iplink_rmnet.o \
+     ipnexthop.o ipmptcp.o iplink_bareudp.o iplink_wwan.o ipioam6.o \
+-    iplink_amt.o iplink_batadv.o iplink_gtp.o
++    iplink_amt.o iplink_batadv.o iplink_gtp.o iplink_virt_wifi.o
  
+ RTMONOBJ=rtmon.o
+ 
+diff --git a/ip/iplink.c b/ip/iplink.c
+index 7accd378..dc76a12b 100644
+--- a/ip/iplink.c
++++ b/ip/iplink.c
+@@ -57,7 +57,7 @@ void iplink_types_usage(void)
+ 		"          macsec | macvlan | macvtap |\n"
+ 		"          netdevsim | nlmon | rmnet | sit | team | team_slave |\n"
+ 		"          vcan | veth | vlan | vrf | vti | vxcan | vxlan | wwan |\n"
+-		"          xfrm }\n");
++		"          xfrm | virt_wifi }\n");
+ }
+ 
+ void iplink_usage(void)
+diff --git a/ip/iplink_virt_wifi.c b/ip/iplink_virt_wifi.c
+new file mode 100644
+index 00000000..8d3054cd
+--- /dev/null
++++ b/ip/iplink_virt_wifi.c
+@@ -0,0 +1,25 @@
++/* SPDX-License-Identifier: GPL-2.0
++ *
++ * iplink_virt_wifi.c  A fake implementation of cfg80211_ops that can be tacked
++ *                     on to an ethernet net_device to make it appear as a
++ *                     wireless connection.
++ *
++ * Authors:            Baligh Gasmi <gasmibal@gmail.com>
++ */
++
++#include <stdio.h>
++#include <stdlib.h>
++
++#include "utils.h"
++#include "ip_common.h"
++
++static void virt_wifi_print_help(struct link_util *lu,
++		int argc, char **argv, FILE *f)
++{
++	fprintf(f, "Usage: ... virt_wifi \n");
++}
++
++struct link_util virt_wifi_link_util = {
++	.id		= "virt_wifi",
++	.print_help	= virt_wifi_print_help,
++};
+diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
+index ee189abc..ec3cc429 100644
+--- a/man/man8/ip-link.8.in
++++ b/man/man8/ip-link.8.in
+@@ -244,7 +244,8 @@ ip-link \- network device configuration
+ .BR netdevsim " |"
+ .BR rmnet " |"
+ .BR xfrm " |"
+-.BR gtp " ]"
++.BR gtp " |"
++.BR virt_wifi " ]"
+ 
+ .ti -8
+ .IR ETYPE " := [ " TYPE " |"
+@@ -396,6 +397,9 @@ Link types:
+ .sp
+ .BR gtp
+ - GPRS Tunneling Protocol
++.sp
++.BR virt_wifi
++- rtnetlink wifi simulation device
+ .in -8
+ 
+ .TP
 -- 
-2.36.0.rc0.470.gd361397f0d-goog
+2.25.1
 
