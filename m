@@ -2,85 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7277C50524B
-	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 14:43:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBA7D505308
+	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 14:52:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239325AbiDRMkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Apr 2022 08:40:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40062 "EHLO
+        id S240127AbiDRMzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Apr 2022 08:55:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240690AbiDRMja (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 08:39:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52BEB12AFB;
-        Mon, 18 Apr 2022 05:30:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E5E9560F0A;
-        Mon, 18 Apr 2022 12:30:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 49668C385AE;
-        Mon, 18 Apr 2022 12:30:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650285011;
-        bh=JxYUHWfGukrKeEVSVM/JogyJAEmmHT9oqMMQ5s4QGN8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=sF9sNCZVZuond4+u2k9kWnzvbIgrI9BI5bds67c/QBrn8WbjxwXQ3JqfDn2c9RFD5
-         o6Amh6OIvHjPvUc0Bx1d/YciQ907zdPhXDrScsieya7DoVsoX6Q7b981dijNRKQEdY
-         keAnos51W8qB1ZburIrtZWbfXziIBcHRLddrQ/YRv6ay/Fafn6cABKgfJ82bAKwZz9
-         wK+RqA01mZTE5x0TMFoN9hWzjXhejzw9cRCJzAvT5RRCPO6s6RgTp1pU9yIiMEXf/j
-         R82R3ERMlWtgRPqHuJVfYMvpY0kdmBDmx1bwtZelUJxYsZKbsT1793DOelrvI++Hfd
-         HbOC32ifhYf1w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 24C96E8DBD4;
-        Mon, 18 Apr 2022 12:30:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S240237AbiDRMyr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 08:54:47 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8BC313DFC;
+        Mon, 18 Apr 2022 05:35:01 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id u5-20020a17090a6a8500b001d0b95031ebso6985564pjj.3;
+        Mon, 18 Apr 2022 05:35:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BwBQWoszPE0WyBmS8eEzNdPIlmwnL6neVdJfMqZdeYs=;
+        b=puV6g1yAwYY4foiMBzImH0StiMfyjOvPeJvoVgBw5FXrWP12gxeBSDewkBPPDL0UMP
+         OnsiSeTUOtD2dt28KD7TjjUfMcvCct7teSPmd01Mi++avp/moQxkogI9938ZARZOvatB
+         C4EScWnZgyPc73V+fzOmIWkXlnn8OLQTiVroOwHGt5yhPvFJkoyINAFS87YaVa3mGo38
+         VEGR6u6xAArgzgf7QhRhwcvQ75y5W/MgnOYNyz4cJ+9uIeKR2I13+vuEW7Zr/EKeibDw
+         shtLw3sOFM7PuhJQANQts3YHpCDaT3zWuqzqNXCIuetd6O1sjU+ogdCSvutPYNDmBp60
+         ffKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BwBQWoszPE0WyBmS8eEzNdPIlmwnL6neVdJfMqZdeYs=;
+        b=Xb8utgI4FArzRafGLJgLFuTd4xNzbFxyF3GkDn85H0HNmSTMcVbFTVeumyFDkBeDqX
+         z4h78P2QFEzjjVW0zTkYWbbCpnWxI+6HGmebgQw8Yd8GavDG9UArZ65ixsgI8KrPWglo
+         vRDlLuMGOrnugl5uYUj2ZPtuDEcwzKHuhpI+liiEF1GViP19Sstf7CmCRA0jXG3VL41S
+         w4c5a/njDXV2GJXFVC9DZRhkl7QXcJXlCfX764R1EZbdribBq/6agKvlmjhjqJa3DH0W
+         vWIgJrCgV+5Z7CJxvHHwQE734RR366P/jIR+9qnvfFmjWDdK+Q6ctS97tc5QKSwZwhvK
+         ipdQ==
+X-Gm-Message-State: AOAM533zzDQtTM6xXsKiJlKWNTduKJwwArHlLf3YTqM4TrdSJGTcHoo2
+        E+IwuDTiqZR+eDYJpL7318U=
+X-Google-Smtp-Source: ABdhPJzzDcDZsjDzFZEes1dI7IHd8sgP2uwsDyC+87JYg88yja6QtTIVb54SIoCzIBV43/NDyFAWCA==
+X-Received: by 2002:a17:902:e9c4:b0:158:f77d:afb7 with SMTP id 4-20020a170902e9c400b00158f77dafb7mr6454683plk.143.1650285300765;
+        Mon, 18 Apr 2022 05:35:00 -0700 (PDT)
+Received: from localhost ([58.251.76.82])
+        by smtp.gmail.com with ESMTPSA id y131-20020a626489000000b00505a8f36965sm12354645pfb.184.2022.04.18.05.35.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Apr 2022 05:35:00 -0700 (PDT)
+From:   Yunbo Yu <yuyunbo519@gmail.com>
+To:     oliver@neukum.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yunbo Yu <yuyunbo519@gmail.com>
+Subject: [PATCH] net: cdc-ncm:  Move spin_lock_bh() to spin_lock()
+Date:   Mon, 18 Apr 2022 20:34:38 +0800
+Message-Id: <20220418123438.1240676-1-yuyunbo519@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v3] docs: net: dsa: describe issues with checksum
- offload
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165028501114.22399.12104889374283323185.git-patchwork-notify@kernel.org>
-Date:   Mon, 18 Apr 2022 12:30:11 +0000
-References: <20220416052737.25509-1-luizluca@gmail.com>
-In-Reply-To: <20220416052737.25509-1-luizluca@gmail.com>
-To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-doc@vger.kernel.org,
-        tobias@waldekranz.com, andrew@lunn.ch, f.fainelli@gmail.com,
-        vladimir.oltean@nxp.com, corbet@lwn.net, kuba@kernel.org,
-        davem@davemloft.net
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+It is unnecessary to call spin_lock_bh() for you are already in a tasklet.
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+Signed-off-by: Yunbo Yu <yuyunbo519@gmail.com>
+---
+ drivers/net/usb/cdc_ncm.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-On Sat, 16 Apr 2022 02:27:37 -0300 you wrote:
-> DSA tags before IP header (categories 1 and 2) or after the payload (3)
-> might introduce offload checksum issues.
-> 
-> Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
-> Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  Documentation/networking/dsa/dsa.rst | 17 +++++++++++++++++
->  1 file changed, 17 insertions(+)
-
-Here is the summary with links:
-  - [net-next,v3] docs: net: dsa: describe issues with checksum offload
-    https://git.kernel.org/netdev/net-next/c/a997157e42e3
-
-You are awesome, thank you!
+diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
+index 15f91d691bba..cdca00c0dc1f 100644
+--- a/drivers/net/usb/cdc_ncm.c
++++ b/drivers/net/usb/cdc_ncm.c
+@@ -1492,19 +1492,19 @@ static void cdc_ncm_txpath_bh(struct tasklet_struct *t)
+ 	struct cdc_ncm_ctx *ctx = from_tasklet(ctx, t, bh);
+ 	struct usbnet *dev = ctx->dev;
+ 
+-	spin_lock_bh(&ctx->mtx);
++	spin_lock(&ctx->mtx);
+ 	if (ctx->tx_timer_pending != 0) {
+ 		ctx->tx_timer_pending--;
+ 		cdc_ncm_tx_timeout_start(ctx);
+-		spin_unlock_bh(&ctx->mtx);
++		spin_unlock(&ctx->mtx);
+ 	} else if (dev->net != NULL) {
+ 		ctx->tx_reason_timeout++;	/* count reason for transmitting */
+-		spin_unlock_bh(&ctx->mtx);
++		spin_unlock(&ctx->mtx);
+ 		netif_tx_lock_bh(dev->net);
+ 		usbnet_start_xmit(NULL, dev->net);
+ 		netif_tx_unlock_bh(dev->net);
+ 	} else {
+-		spin_unlock_bh(&ctx->mtx);
++		spin_unlock(&ctx->mtx);
+ 	}
+ }
+ 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.25.1
 
