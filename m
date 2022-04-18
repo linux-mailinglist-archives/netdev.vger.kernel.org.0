@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 70002504C7F
-	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 08:16:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EFFB504CA2
+	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 08:30:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236719AbiDRGRQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Apr 2022 02:17:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58212 "EHLO
+        id S236102AbiDRGcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Apr 2022 02:32:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233647AbiDRGRO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 02:17:14 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47E5917AB7;
-        Sun, 17 Apr 2022 23:14:36 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id n126-20020a1c2784000000b0038e8af3e788so8281450wmn.1;
-        Sun, 17 Apr 2022 23:14:36 -0700 (PDT)
+        with ESMTP id S232367AbiDRGcH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 02:32:07 -0400
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B7F418E0E;
+        Sun, 17 Apr 2022 23:29:29 -0700 (PDT)
+Received: by mail-qk1-x72c.google.com with SMTP id b189so10562089qkf.11;
+        Sun, 17 Apr 2022 23:29:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=e8ZuwAsZvFhjWYjd8yTG5wsLv6buaB3HfTucRNG+UqI=;
-        b=WBAxuBJojSU2AxQ868FqVcQ6bk55DcVrjS+gy3jAnt3nvDlRlbljqO97Jz3Cz5AMiT
-         rA4ZZ5BibfwSetqgnPmUrzvxgW5Rr3ceJV5T4gk8DGbjt369zJGMLqsD8d7D8Sc2b1Wt
-         fJPj/M94vOwbducPtV5E9Ih0H1Ei+Oy623kbixxJycErlhhEub46YERI5B0USCLjqV9p
-         pvq4FJxxKKN4YNjvfDQwT6GLNuqnymE6X7+nDqcD2WjR/4u3vAx8degW1ZL9ouFlwHW+
-         t24S0hCJL4SePnhvBYckJXIkD5weNDMB2sTTJwICx+uvdewNGWsguBuV5ZFlwtHGzKlc
-         m02A==
+        bh=4ZNxKkB1heXshxCdkEbaHOZ1fBK6TexM+Jzjx/u/3mE=;
+        b=agKys+0f9B8+rSNrGPubzZYwAMOCNPp+KyH39Uo+8JOadAlMbwSceqA4BguldvGJWm
+         vCYjn0TUYIY5iTCMob2vo5gEz4aIH56qNPNa5gJjqGkYRI5DdPudaQC9ZSSGLVhvUAYa
+         iwEtiK9Up1VbT3mhVV9uRM28/gIfPra2kPkYhT1xA4MQXAtj3Y1nJ2F89LYtjGWW1e8F
+         dJuV5aG+dxoTH7f5n8IvyS6li71+/ufGEJeg2lITo0qho7RJ0VDWUg9NXi6ETKvG5jC1
+         I5HWD4VIVavBK5ljSscJD1c88bRlFKMcDy9xIZuCytAt+w+x2F2HcprvFCDnphXMlq11
+         KVIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=e8ZuwAsZvFhjWYjd8yTG5wsLv6buaB3HfTucRNG+UqI=;
-        b=3jRnIFeg/QoWyoTlrtU96AnptlJ0Yi95PyytQr2kusvILxroptBtBuESyHQuYfkG8R
-         3VUUU6vzfQe69Oje38oIsR7P/thjPhaclsJBFGGPrEF9HOMjmXAYrPtUtTSJ0uKJDIYi
-         AMtdolK96ISQ2JBbUIfU79ypqdqcSqHtEBlLRQmnGfq236rLVgaVxT9Fo2DUEhhDDi+k
-         WtmI5tUA3F8I9mmmi20A/FLtVpbdHpi2Oa5XeQPPia350nKi6oLriG+mADXxAbnIN/Jo
-         bV0HFwutmkLLJEQUsPbGzljxN+rKARdu9rw4pkdZNfVBJRXR/tFdyC+8/UCAZy23XYCj
-         3q9Q==
-X-Gm-Message-State: AOAM5319Quq09GsaGhytarfRifs/gbveg8eBnjwyZgnf2lloG26hmC3A
-        FsGOosYCknj+qLaikUDCA/sSWmYj+CXn7A==
-X-Google-Smtp-Source: ABdhPJyPTRA13mBsIiG+RM0ugphkP3LSbXaCVQcb4zssDaNxL91RgVJA7llncwPOS67rRpAbsu7dxw==
-X-Received: by 2002:a05:600c:5114:b0:38e:bd9c:9cb0 with SMTP id o20-20020a05600c511400b0038ebd9c9cb0mr13433157wms.153.1650262474907;
-        Sun, 17 Apr 2022 23:14:34 -0700 (PDT)
-Received: from alaa-emad ([197.57.90.163])
-        by smtp.gmail.com with ESMTPSA id z17-20020adfec91000000b0020a98f5f8a7sm1654811wrn.6.2022.04.17.23.14.33
+        bh=4ZNxKkB1heXshxCdkEbaHOZ1fBK6TexM+Jzjx/u/3mE=;
+        b=V0OgXb/xEuXcXGxoWP04owSEr0QSyY/RZd1iwB/dBAyij8CqU7LZfajlgEp6qXZupo
+         YgaQy+wDK6TUK/flTETRVWzyNKixyDByMvYiaxyIwCiTEXW1/AgIobay1M0k88g2uh+8
+         vfS5NmSnjOJDGXhvRaZ33gQAlRTPvDQKIAznabq5TTxVheCdrnO+RTUSRWerIjWYBbWb
+         weUZYnXc4y1S/DJYIgmbtwoNjkqIm2Y9e4EyPXconTcvMMB9F2zdRqqdqvUzyAQYFyke
+         1qbu/u3UEQMhG+YFE9i1q9vNUxxl1K+d1V2aOTM9EUFAJXVW+f13LDlrivraizBxkuC5
+         5HQg==
+X-Gm-Message-State: AOAM532vJpm9aMkW0uhJxMnxgM+F1zYBIJN/qzSXUDOEtA7e8fIZqej8
+        B5hrn2v3oC/kaqpm7wUj/y094Nr0QxU=
+X-Google-Smtp-Source: ABdhPJyVwl94lwStyIiTsrgoJZ1Q8p4COL0lQihBGHuXyhMvdWo+5AO0tzliP/ZkPPgeHaILIw0Q2g==
+X-Received: by 2002:a05:620a:2681:b0:67e:933e:54b6 with SMTP id c1-20020a05620a268100b0067e933e54b6mr5861271qkp.428.1650263368206;
+        Sun, 17 Apr 2022 23:29:28 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id t198-20020a3746cf000000b0069c51337badsm6238458qka.45.2022.04.17.23.29.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 Apr 2022 23:14:34 -0700 (PDT)
-From:   Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-To:     outreachy@lists.linux.dev
-Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ira.weiny@intel.com,
-        eng.alaamohamedsoliman.am@gmail.com
-Subject: [PATCH v4] intel: igb: igb_ethtool.c: Convert kmap() to kmap_local_page()
-Date:   Mon, 18 Apr 2022 08:14:30 +0200
-Message-Id: <20220418061430.6605-1-eng.alaamohamedsoliman.am@gmail.com>
-X-Mailer: git-send-email 2.35.2
+        Sun, 17 Apr 2022 23:29:27 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     grygorii.strashko@ti.com
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-omap@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] drivers: net: davinci_mdio: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Date:   Mon, 18 Apr 2022 06:29:21 +0000
+Message-Id: <20220418062921.2557884-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -70,49 +70,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The use of kmap() is being deprecated in favor of kmap_local_page()
-where it is feasible.
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-With kmap_local_page(), the mapping is per thread, CPU local and not
-globally visible. Therefore igb_check_lbtest_frame() is a function
-where the use of kmap_local_page() in place of kmap() is correctly
-suited.
+Using pm_runtime_resume_and_get is more appropriate
+for simplifing code
 
-Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
-changes in V2:
-	fix kunmap_local path value to take address of the mapped page.
----
-changes in V3:
-	edit commit message to be clearer
----
-changes in V4:
-	edit the commit message
----
- drivers/net/ethernet/intel/igb/igb_ethtool.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/ti/davinci_mdio.c | 18 ++++++------------
+ 1 file changed, 6 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-index 2a5782063f4c..c14fc871dd41 100644
---- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
-+++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-@@ -1798,14 +1798,14 @@ static int igb_check_lbtest_frame(struct igb_rx_buffer *rx_buffer,
+diff --git a/drivers/net/ethernet/ti/davinci_mdio.c b/drivers/net/ethernet/ti/davinci_mdio.c
+index fce2626e34fa..ea3772618043 100644
+--- a/drivers/net/ethernet/ti/davinci_mdio.c
++++ b/drivers/net/ethernet/ti/davinci_mdio.c
+@@ -134,11 +134,9 @@ static int davinci_mdio_reset(struct mii_bus *bus)
+ 	u32 phy_mask, ver;
+ 	int ret;
  
- 	frame_size >>= 1;
+-	ret = pm_runtime_get_sync(data->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(data->dev);
++	ret = pm_runtime_resume_and_get(data->dev);
++	if (ret < 0)
+ 		return ret;
+-	}
  
--	data = kmap(rx_buffer->page);
-+	data = kmap_local_page(rx_buffer->page);
+ 	/* wait for scan logic to settle */
+ 	msleep(PHY_MAX_ADDR * data->access_time);
+@@ -232,11 +230,9 @@ static int davinci_mdio_read(struct mii_bus *bus, int phy_id, int phy_reg)
+ 	if (phy_reg & ~PHY_REG_MASK || phy_id & ~PHY_ID_MASK)
+ 		return -EINVAL;
  
- 	if (data[3] != 0xFF ||
- 	    data[frame_size + 10] != 0xBE ||
- 	    data[frame_size + 12] != 0xAF)
- 		match = false;
+-	ret = pm_runtime_get_sync(data->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(data->dev);
++	ret = pm_runtime_resume_and_get(data->dev);
++	if (ret < 0)
+ 		return ret;
+-	}
  
--	kunmap(rx_buffer->page);
-+	kunmap_local(data);
+ 	reg = (USERACCESS_GO | USERACCESS_READ | (phy_reg << 21) |
+ 	       (phy_id << 16));
+@@ -276,11 +272,9 @@ static int davinci_mdio_write(struct mii_bus *bus, int phy_id,
+ 	if (phy_reg & ~PHY_REG_MASK || phy_id & ~PHY_ID_MASK)
+ 		return -EINVAL;
  
- 	return match;
- }
+-	ret = pm_runtime_get_sync(data->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(data->dev);
++	ret = pm_runtime_resume_and_get(data->dev);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	reg = (USERACCESS_GO | USERACCESS_WRITE | (phy_reg << 21) |
+ 		   (phy_id << 16) | (phy_data & USERACCESS_DATA));
 -- 
-2.35.2
+2.25.1
+
 
