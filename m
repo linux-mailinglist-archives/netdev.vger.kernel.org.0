@@ -2,134 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD263504AC0
-	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 03:59:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8A9D504B27
+	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 05:05:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235761AbiDRCBh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Apr 2022 22:01:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45250 "EHLO
+        id S235937AbiDRDHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Apr 2022 23:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235756AbiDRCBf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Apr 2022 22:01:35 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FEAD183B7;
-        Sun, 17 Apr 2022 18:58:56 -0700 (PDT)
-X-UUID: 0679de9cd634460f8d358ad0faa66faf-20220418
-X-UUID: 0679de9cd634460f8d358ad0faa66faf-20220418
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <lina.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1957503384; Mon, 18 Apr 2022 09:58:52 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Mon, 18 Apr 2022 09:58:51 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 18 Apr
- 2022 09:58:51 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 18 Apr 2022 09:58:50 +0800
-From:   <Lina.Wang@mediatek.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        <linux-kernel@vger.kernel.org>,
-        Maciej enczykowski <maze@google.com>,
-        <linux-kselftest@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>
-Subject: Re: [PATCH v5 1/3] selftests: bpf: add test for bpf_skb_change_proto
-Date:   Mon, 18 Apr 2022 09:52:30 +0800
-Message-ID: <20220418015230.4481-1-Lina.Wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <9dc51533-92d2-1c82-2a6e-96e1ac747bb7@iogearbox.net>
-References: <9dc51533-92d2-1c82-2a6e-96e1ac747bb7@iogearbox.net>
+        with ESMTP id S235941AbiDRDHb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Apr 2022 23:07:31 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8D4B12;
+        Sun, 17 Apr 2022 20:04:53 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id md4so11933986pjb.4;
+        Sun, 17 Apr 2022 20:04:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MxqIUjNDmotUpRJvqMX8HiRsI8PcgO9pEtW2E7+We90=;
+        b=YqY1IpEAJtY+3nSKPKovbX5ZPmB16lHTBhps7tBI5vu7uRBP7DyQW0OBOeRSOJDOn+
+         0ctKzKpzcQrGT0CvL014ak+s7bBvi4a2CsEfzfNgxKQx0KwryTGuqW41B6qcXdLyLHuX
+         L5yWrUrNqmcI9tLvM4o+DuVY9kg8G7EEVaXrmowaWOrnXobd6koUunt8Nou+iInsahHq
+         +yNKAO51p7Ti1HP7o7NWUMDr73mB66aY5o+XSnhSodHYN+Kn62U4J0dWnueB3nWQ4AWw
+         l08EQ3IhEbMApmH00CrWqw9kNQ30sQPGlKBScnJGBrsCeoLzoqod0z+qv2PHcynSm0Oj
+         GidQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MxqIUjNDmotUpRJvqMX8HiRsI8PcgO9pEtW2E7+We90=;
+        b=lfPOgAEoZt9V2y+eD++O5AR6HeuAQV5QvvBwY7b7ibO5UyGKbh5EY7STl1s/baqAAg
+         gKnfRvRluHjPqG4UUWwa9135bQQsRswPZVuB8xEQkbylIli5pV6q/codPbEanns8AC4k
+         /tmf3kY/GL3ifYuAIR3Z5Jr/SSDoLgq7sPq3atNYIcSPTdRAVoP/Yn4PJ4xG+/KUkevb
+         68euZGLOyuWR8f2fEYknQX6eX5So8ZbysM1sA4Ia/m/3z0Q4X86Qld8oJQpgQouoEqqz
+         LJtUjipSVNf5rAkxzQiwp+9lR39qKghGKg2YN5U7d5EhO5NP/5KzqVQNBK8KlVZdgiOG
+         I8Qg==
+X-Gm-Message-State: AOAM531M+mB+VbxwnbGH4JNDViNFYmr2UyePFEHXAo2ZgTdT39LtQ1Xy
+        YDjb+IXIKgs5M4UVB4l6mUQxrFF1LfN0P8XRus11l2wOyLkCRQw=
+X-Google-Smtp-Source: ABdhPJzLwuwIwIsKQeNrnOR1eH70BULF3eMjhhDGorPZ/67ziabUCa8Bt5AjvyU66TFxRjL2ouuiqWiDVlNuMvGSADM=
+X-Received: by 2002:a17:902:b18d:b0:158:9e97:deee with SMTP id
+ s13-20020a170902b18d00b001589e97deeemr9006742plr.31.1650251093000; Sun, 17
+ Apr 2022 20:04:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="y"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220409062449.3752252-1-zheyuma97@gmail.com> <CA++WF2Np7Bk_qT68Uc3mrC38mN5p3fm9eVT7VA8NoX6=es2r2w@mail.gmail.com>
+In-Reply-To: <CA++WF2Np7Bk_qT68Uc3mrC38mN5p3fm9eVT7VA8NoX6=es2r2w@mail.gmail.com>
+From:   Zheyu Ma <zheyuma97@gmail.com>
+Date:   Mon, 18 Apr 2022 11:04:41 +0800
+Message-ID: <CAMhUBjkWcg4+YYynsd90jX1A+zp95tUUcLgYrTPAqSmbxM7TJA@mail.gmail.com>
+Subject: Re: [PATCH] wireless: ipw2x00: Refine the error handling of ipw2100_pci_init_one()
+To:     Stanislav Yakovlev <stas.yakovlev@gmail.com>
+Cc:     kvalo@kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        wireless <linux-wireless@vger.kernel.org>,
+        netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2022-04-07 at 17:22 +0200, Daniel Borkmann wrote:
-> Hi Lina,
-> 
-> On 4/7/22 10:47 AM, Lina Wang wrote:
-> > The code is copied from the Android Open Source Project and the
-> > author(
-> > Maciej Żenczykowski) has gave permission to relicense it under
-> > GPLv2.
-> > 
-> > The test is to change input IPv6 packets to IPv4 ones and output
-> > IPv4 to
-> > IPv6 with bpf_skb_change_proto.
+On Thu, Apr 14, 2022 at 2:40 AM Stanislav Yakovlev
+<stas.yakovlev@gmail.com> wrote:
+>
+> On Sat, 9 Apr 2022 at 02:25, Zheyu Ma <zheyuma97@gmail.com> wrote:
+> >
+> > The driver should release resources in reverse order, i.e., the
+> > resources requested first should be released last, and the driver
+> > should adjust the order of error handling code by this rule.
+> >
+> > Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
 > > ---
-> 
-> Your patch 2/3 is utilizing this program out of
-> selftests/net/udpgro_frglist.sh,
-> however, this is a bit problematic given BPF CI which runs on every
-> BPF submitted
-> patch. Meaning, udpgro_frglist.sh won't be covered by CI and only
-> needs to be run
-> manually. Could you properly include this into test_progs from BPF
-> suite (that way,
-> BPF CI will also pick it up)? See also [2] for more complex netns
-> setups.
+> >  drivers/net/wireless/intel/ipw2x00/ipw2100.c | 34 +++++++++-----------
+> >  1 file changed, 16 insertions(+), 18 deletions(-)
+> >
+> [Skipped]
+>
+> > @@ -6306,9 +6303,13 @@ static int ipw2100_pci_init_one(struct pci_dev *pci_dev,
+> >  out:
+> >         return err;
+> >
+> > -      fail_unlock:
+> > +fail_unlock:
+> >         mutex_unlock(&priv->action_mutex);
+> > -      fail:
+> > +fail:
+> > +       pci_release_regions(pci_dev);
+> > +fail_disable:
+> > +       pci_disable_device(pci_dev);
+> We can't move these functions before the following block.
+>
+> > +fail_dev:
+> >         if (dev) {
+> >                 if (registered >= 2)
+> >                         unregister_netdev(dev);
+> This block continues with a function call to ipw2100_hw_stop_adapter
+> which assumes that device is still accessible via pci bus.
 
-more complex netns setups? Do u mean I should c code netns setups to
-make a complete bpf test?It is complicated for my case, i just want to
-simulate udp gro+ bpf to verify my fix-issue patch.
-maybe I can move nat6to4.c to net/, not bpf/prog_test, then
-udpgro_frglist.sh is complete.
+Thanks for your reminder, but the existing error handling does need to
+be revised, I got the following warning when the probing fails at
+pci_resource_flags():
 
-> > +
-> > +// bionic kernel uapi linux/udp.h header is munged...
-> 
-> nit: Throughout the file, please use C style comments as per kernel
-> coding convention.
-> 
-Np
+[   20.712160] WARNING: CPU: 1 PID: 462 at lib/iomap.c:44 pci_iounmap+0x40/0x50
+[   20.716583] RIP: 0010:pci_iounmap+0x40/0x50
+[   20.726342]  <TASK>
+[   20.726550]  ipw2100_pci_init_one+0x101/0x1ee0 [ipw2100]
 
-> > +#define __kernel_udphdr udphdr
-> > +#include <linux/udp.h>
-> > +
-> > +#include <bpf/bpf_helpers.h>
-> > +
-> > +#define htons(x) (__builtin_constant_p(x) ? ___constant_swab16(x)
-> > : __builtin_bswap16(x))
-> > +#define htonl(x) (__builtin_constant_p(x) ? ___constant_swab32(x)
-> > : __builtin_bswap32(x))
-> > +#define ntohs(x) htons(x)
-> > +#define ntohl(x) htonl(x)
-> 
-> nit: Please use libbpf's bpf_htons() and friends helpers [3].
-> 
-OK
+Since I am not familiar with the ipw2100, could someone give me some
+advice to fix this.
 
-> OT: In Cilium we run similar NAT46/64 translation for XDP and tc/BPF
-> for our LB services [4] (that is,
-> v4 VIP with v6 backends, and v6 VIP with v4 backends).
-> 
->    [4] 
-> https://github.com/cilium/cilium/blob/master/bpf/lib/nat_46x64.h
->        
-> https://github.com/cilium/cilium/blob/master/test/nat46x64/test.sh
-
-It is complicated for me, my case doesnot use XDP driver.I use xdp_dummy 
-just to enable veth NAPI GRO, not real XDP driver code. My test case is 
-simple and enough for my patch, I think. I have covered tcp and udp, 
-normal and SO_SEGMENT.
-
-Thanks!
-
+Thanks,
+Zheyu Ma
