@@ -2,205 +2,265 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F09D3504DFD
-	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 10:40:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE696504E0D
+	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 10:55:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237376AbiDRImt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Apr 2022 04:42:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37240 "EHLO
+        id S236471AbiDRI5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Apr 2022 04:57:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237367AbiDRImr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 04:42:47 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91D66430
-        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 01:40:08 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2ec0bb4b715so133300077b3.5
-        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 01:40:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VO1nEBpM2YEzpSjqSp5ZypN9/E5PvRPrZm9lD3pFwK0=;
-        b=UIaVzuEYO4Xoxd703BMfjdUKk4kojw9KBYsQ4zcjPaYygOQ4T/UOXau53e34VgPZPZ
-         +rhTZE653pDZ+6CDi5HRZE1C8QAUSsHfMBlxBrat3j4+UuH3ZWKDKp9ugeHG9IsYAIL8
-         D6evsiMhHBvRlaFWStjW9HR0t6TZQbzvB5fmvCmfNgX9WEclos33MyH9aYjOh3NfJ7N4
-         LEC94Nv2JAanVoP+y7+1nTPQNvig2q0+I0RmLN8cSUYDqUNzqw8nuQPvGUtDdsleW0rj
-         f6+aOYvlCyst3FrmsQjqKwzTpRWNV8d7e+2sQ4PrCEWOi0YyzNAJXF/1DnuRGgddyTdJ
-         QqkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VO1nEBpM2YEzpSjqSp5ZypN9/E5PvRPrZm9lD3pFwK0=;
-        b=q02ryXKLBnbxc2kR/pwwTvmQ2ft5SR5NmIjNPW1IhUes667TJWnFqNAaTjWJS0VJ/1
-         gNgdRivL4jhk0u0vo1aRWTtZRO/Rur6cChu+hg11ifZVGAgzlHiqMyd/R8lLCCLxOgv5
-         0/DtrD28f9OpW7o9DLSoq7GHuy2PG1gWBxc2fA6DGsUOwCKh4oPUcg+6uZK+rtAk8pB9
-         QFgaWteshhB3dO4rOf5zyg/p6Yv6MNk0rszaRPDiFKuIvYc87qNV3hbemU0YYD1n3/sp
-         s8hom7IhgB3X00qCSEVR0xIt9lm41BslkxbHGfRPFtMDT6xn1+lkEKAxpE5jBeT1LkIT
-         X01w==
-X-Gm-Message-State: AOAM531NCkyfXP4vrYs9ChdnuVDeur4zHMX8Jnn4MKqV5gROLvbBIXhR
-        EPbtPawaf/OLehwamZys4HyzSTjvrTAq55YVixpOzA==
-X-Google-Smtp-Source: ABdhPJwBsdJqYmnkgUOwR19QmRCRBStZn9e3VvdDBzctQiTa1N4fHUqW3RN/k4sO1BNcBrw/Ox1gi3Brn2Bt1M34N5U=
-X-Received: by 2002:a0d:f487:0:b0:2eb:54f5:3abf with SMTP id
- d129-20020a0df487000000b002eb54f53abfmr9383836ywf.141.1650271207850; Mon, 18
- Apr 2022 01:40:07 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220414110838.883074566@linuxfoundation.org>
-In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Mon, 18 Apr 2022 14:09:56 +0530
-Message-ID: <CA+G9fYvgzFW7sMZVdw5r970QNNg4OK8=pbQV0kDfbOX-rXu5Rw@mail.gmail.com>
-Subject: Re: [PATCH 4.19 000/338] 4.19.238-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com, Netdev <netdev@vger.kernel.org>,
+        with ESMTP id S231738AbiDRI5g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 04:57:36 -0400
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F24EC257;
+        Mon, 18 Apr 2022 01:54:53 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R231e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=33;SR=0;TI=SMTPD_---0VALaedj_1650272086;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VALaedj_1650272086)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 18 Apr 2022 16:54:48 +0800
+Message-ID: <1650271705.1503067-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH v9 31/32] virtio_net: support rx/tx queue resize
+Date:   Mon, 18 Apr 2022 16:48:25 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Vadim Pasternak <vadimp@nvidia.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        linux-um@lists.infradead.org, netdev <netdev@vger.kernel.org>,
+        platform-driver-x86@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        kvm <kvm@vger.kernel.org>,
+        "open list:XDP (eXpress Data Path)" <bpf@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>
+References: <20220406034346.74409-1-xuanzhuo@linux.alibaba.com>
+ <20220406034346.74409-32-xuanzhuo@linux.alibaba.com>
+ <122008a6-1e79-14d3-1478-59f96464afc9@redhat.com>
+ <1650252077.7934203-1-xuanzhuo@linux.alibaba.com>
+ <CACGkMEtZOJ2PCsJidDcFKL57Q6oLHk4TH7xtewrLCTFhrbXSAA@mail.gmail.com>
+In-Reply-To: <CACGkMEtZOJ2PCsJidDcFKL57Q6oLHk4TH7xtewrLCTFhrbXSAA@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 14 Apr 2022 at 18:45, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+On Mon, 18 Apr 2022 15:49:29 +0800, Jason Wang <jasowang@redhat.com> wrote:
+> On Mon, Apr 18, 2022 at 11:24 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> w=
+rote:
+> >
+> > On Wed, 13 Apr 2022 16:00:18 +0800, Jason Wang <jasowang@redhat.com> wr=
+ote:
+> > >
+> > > =E5=9C=A8 2022/4/6 =E4=B8=8A=E5=8D=8811:43, Xuan Zhuo =E5=86=99=E9=81=
+=93:
+> > > > This patch implements the resize function of the rx, tx queues.
+> > > > Based on this function, it is possible to modify the ring num of the
+> > > > queue.
+> > > >
+> > > > There may be an exception during the resize process, the resize may
+> > > > fail, or the vq can no longer be used. Either way, we must execute
+> > > > napi_enable(). Because napi_disable is similar to a lock, napi_enab=
+le
+> > > > must be called after calling napi_disable.
+> > > >
+> > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > > > ---
+> > > >   drivers/net/virtio_net.c | 81 +++++++++++++++++++++++++++++++++++=
++++++
+> > > >   1 file changed, 81 insertions(+)
+> > > >
+> > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > > index b8bf00525177..ba6859f305f7 100644
+> > > > --- a/drivers/net/virtio_net.c
+> > > > +++ b/drivers/net/virtio_net.c
+> > > > @@ -251,6 +251,9 @@ struct padded_vnet_hdr {
+> > > >     char padding[4];
+> > > >   };
+> > > >
+> > > > +static void virtnet_sq_free_unused_buf(struct virtqueue *vq, void =
+*buf);
+> > > > +static void virtnet_rq_free_unused_buf(struct virtqueue *vq, void =
+*buf);
+> > > > +
+> > > >   static bool is_xdp_frame(void *ptr)
+> > > >   {
+> > > >     return (unsigned long)ptr & VIRTIO_XDP_FLAG;
+> > > > @@ -1369,6 +1372,15 @@ static void virtnet_napi_enable(struct virtq=
+ueue *vq, struct napi_struct *napi)
+> > > >   {
+> > > >     napi_enable(napi);
+> > > >
+> > > > +   /* Check if vq is in reset state. The normal reset/resize proce=
+ss will
+> > > > +    * be protected by napi. However, the protection of napi is onl=
+y enabled
+> > > > +    * during the operation, and the protection of napi will end af=
+ter the
+> > > > +    * operation is completed. If re-enable fails during the proces=
+s, vq
+> > > > +    * will remain unavailable with reset state.
+> > > > +    */
+> > > > +   if (vq->reset)
+> > > > +           return;
+> > >
+> > >
+> > > I don't get when could we hit this condition.
+> > >
+> > >
+> > > > +
+> > > >     /* If all buffers were filled by other side before we napi_enab=
+led, we
+> > > >      * won't get another interrupt, so process any outstanding pack=
+ets now.
+> > > >      * Call local_bh_enable after to trigger softIRQ processing.
+> > > > @@ -1413,6 +1425,15 @@ static void refill_work(struct work_struct *=
+work)
+> > > >             struct receive_queue *rq =3D &vi->rq[i];
+> > > >
+> > > >             napi_disable(&rq->napi);
+> > > > +
+> > > > +           /* Check if vq is in reset state. See more in
+> > > > +            * virtnet_napi_enable()
+> > > > +            */
+> > > > +           if (rq->vq->reset) {
+> > > > +                   virtnet_napi_enable(rq->vq, &rq->napi);
+> > > > +                   continue;
+> > > > +           }
+> > >
+> > >
+> > > Can we do something similar in virtnet_close() by canceling the work?
+> > >
+> > >
+> > > > +
+> > > >             still_empty =3D !try_fill_recv(vi, rq, GFP_KERNEL);
+> > > >             virtnet_napi_enable(rq->vq, &rq->napi);
+> > > >
+> > > > @@ -1523,6 +1544,10 @@ static void virtnet_poll_cleantx(struct rece=
+ive_queue *rq)
+> > > >     if (!sq->napi.weight || is_xdp_raw_buffer_queue(vi, index))
+> > > >             return;
+> > > >
+> > > > +   /* Check if vq is in reset state. See more in virtnet_napi_enab=
+le() */
+> > > > +   if (sq->vq->reset)
+> > > > +           return;
+> > >
+> > >
+> > > We've disabled TX napi, any chance we can still hit this?
+> >
+> >
+> > static int virtnet_poll(struct napi_struct *napi, int budget)
+> > {
+> >         struct receive_queue *rq =3D
+> >                 container_of(napi, struct receive_queue, napi);
+> >         struct virtnet_info *vi =3D rq->vq->vdev->priv;
+> >         struct send_queue *sq;
+> >         unsigned int received;
+> >         unsigned int xdp_xmit =3D 0;
+> >
+> >         virtnet_poll_cleantx(rq);
+> > ...
+> > }
+> >
+> > This is called by rx poll. Although it is the logic of tx, it is not dr=
+iven by
+> > tx napi, but is called in rx poll.
 >
-> This is the start of the stable review cycle for the 4.19.238 release.
-> There are 338 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Sat, 16 Apr 2022 11:07:54 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.238-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+> Ok, but we need guarantee the memory ordering in this case. Disable RX
+> napi could be a solution for this.
+
+Yes, I have realized this too. I have two solutions, disable rx napi or the
+following.
+
+Thanks.
 
 
-Following kernel warning noticed on arm64 Juno-r2 while booting
-stable-rc 4.19.238. Here is the full test log link [1].
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 9bf1b6530b38..7764d1dcb831 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -135,6 +135,7 @@ struct send_queue {
+ 	struct virtnet_sq_stats stats;
 
-[    0.000000] Booting Linux on physical CPU 0x0000000100 [0x410fd033]
-[    0.000000] Linux version 4.19.238 (tuxmake@tuxmake) (gcc version
-11.2.0 (Debian 11.2.0-18)) #1 SMP PREEMPT @1650206156
-[    0.000000] Machine model: ARM Juno development board (r2)
-<trim>
-[   18.499895] ================================
-[   18.504172] WARNING: inconsistent lock state
-[   18.508451] 4.19.238 #1 Not tainted
-[   18.511944] --------------------------------
-[   18.516222] inconsistent {IN-SOFTIRQ-W} -> {SOFTIRQ-ON-W} usage.
-[   18.522242] kworker/u12:3/60 [HC0[0]:SC0[0]:HE1:SE1] takes:
-[   18.527826] (____ptrval____)
-(&(&xprt->transport_lock)->rlock){+.?.}, at: xprt_destroy+0x70/0xe0
-[   18.536648] {IN-SOFTIRQ-W} state was registered at:
-[   18.541543]   lock_acquire+0xc8/0x23c
-[   18.545216]   _raw_spin_lock+0x50/0x64
-[   18.548973]   xs_tcp_state_change+0x1b4/0x440
-[   18.553343]   tcp_rcv_state_process+0x684/0x1300
-[   18.557972]   tcp_v4_do_rcv+0x70/0x290
-[   18.561731]   tcp_v4_rcv+0xc34/0xda0
-[   18.565316]   ip_local_deliver_finish+0x16c/0x3c0
-[   18.570032]   ip_local_deliver+0x6c/0x240
-[   18.574051]   ip_rcv_finish+0x98/0xe4
-[   18.577722]   ip_rcv+0x68/0x210
-[   18.580871]   __netif_receive_skb_one_core+0x6c/0x9c
-[   18.585847]   __netif_receive_skb+0x2c/0x74
-[   18.590039]   netif_receive_skb_internal+0x88/0x20c
-[   18.594928]   netif_receive_skb+0x68/0x1a0
-[   18.599036]   smsc911x_poll+0x104/0x290
-[   18.602881]   net_rx_action+0x124/0x4bc
-[   18.606727]   __do_softirq+0x1d0/0x524
-[   18.610484]   irq_exit+0x11c/0x144
-[   18.613894]   __handle_domain_irq+0x84/0xe0
-[   18.618086]   gic_handle_irq+0x5c/0xb0
-[   18.621843]   el1_irq+0xb4/0x130
-[   18.625081]   cpuidle_enter_state+0xc0/0x3ec
-[   18.629361]   cpuidle_enter+0x38/0x4c
-[   18.633032]   do_idle+0x200/0x2c0
-[   18.636353]   cpu_startup_entry+0x30/0x50
-[   18.640372]   rest_init+0x260/0x270
-[   18.643870]   start_kernel+0x45c/0x490
-[   18.647625] irq event stamp: 18931
-[   18.651037] hardirqs last  enabled at (18931): [<ffff00000832e800>]
-kfree+0xe0/0x370
-[   18.658799] hardirqs last disabled at (18930): [<ffff00000832e7ec>]
-kfree+0xcc/0x370
-[   18.666564] softirqs last  enabled at (18920): [<ffff000008fbce94>]
-rpc_wake_up_first_on_wq+0xb4/0x1b0
-[   18.675893] softirqs last disabled at (18918): [<ffff000008fbce18>]
-rpc_wake_up_first_on_wq+0x38/0x1b0
-[   18.685217]
-[   18.685217] other info that might help us debug this:
-[   18.691758]  Possible unsafe locking scenario:
-[   18.691758]
-[   18.697689]        CPU0
-[   18.700137]        ----
-[   18.702586]   lock(&(&xprt->transport_lock)->rlock);
-[   18.707562]   <Interrupt>
-[   18.710184]     lock(&(&xprt->transport_lock)->rlock);
-[   18.715335]
-[   18.715335]  *** DEADLOCK ***
-[   18.715335]
-[   18.721270] 2 locks held by kworker/u12:3/60:
-[   18.725633]  #0: (____ptrval____)
-((wq_completion)\"rpciod\"){+.+.}, at: process_one_work+0x1e0/0x6c0
-[   18.734711]  #1: (____ptrval____)
-((work_completion)(&task->u.tk_work)){+.+.}, at:
-process_one_work+0x1e0/0x6c0
-[   18.744831]
-[   18.744831] stack backtrace:
-[   18.749202] CPU: 0 PID: 60 Comm: kworker/u12:3 Not tainted 4.19.238 #1
-[   18.755741] Hardware name: ARM Juno development board (r2) (DT)
-[   18.761678] Workqueue: rpciod rpc_async_schedule
-[   18.766305] Call trace:
-[   18.768758]  dump_backtrace+0x0/0x190
-[   18.772427]  show_stack+0x28/0x34
-[   18.775748]  dump_stack+0xb0/0xf8
-[   18.779072]  print_usage_bug.part.0+0x25c/0x270
-[   18.783613]  mark_lock+0x5d0/0x6e0
-[   18.787023]  __lock_acquire+0x6c4/0x16f0
-[   18.790955]  lock_acquire+0xc8/0x23c
-[   18.794539]  _raw_spin_lock+0x50/0x64
-[   18.798210]  xprt_destroy+0x70/0xe0
-[   18.801708]  xprt_put+0x44/0x50
-[   18.804857]  rpc_task_release_client+0x7c/0x90
-[   18.809311]  __rpc_execute+0x2a8/0x5f4
-[   18.813069]  rpc_async_schedule+0x24/0x30
-[   18.817089]  process_one_work+0x28c/0x6c0
-[   18.821108]  worker_thread+0x6c/0x450
-[   18.824779]  kthread+0x12c/0x16c
-[   18.828015]  ret_from_fork+0x10/0x24
-[   18.931718] VFS: Mounted root (nfs filesystem) on device 0:17.
+ 	struct napi_struct napi;
++	bool reset;
+ };
 
-metadata:
-  git_ref: linux-4.19.y
-  git_repo: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
-  git_sha: aaad8e56ca1e56fe34b5a33f30fb6f9279969020
-  git_describe: v4.19.238
-  kernel_version: 4.19.238
-  kernel-config: https://builds.tuxbuild.com/27vgbZzdS2aNU90tNu4Hl0IJuIP/config
+ /* Internal representation of a receive virtqueue */
+@@ -1583,6 +1587,11 @@ static void virtnet_poll_cleantx(struct receive_queu=
+e *rq)
+ 		return;
 
+ 	if (__netif_tx_trylock(txq)) {
++		if (sq->reset) {
++			__netif_tx_unlock(txq);
++			return;
++		}
++
+ 		do {
+ 			virtqueue_disable_cb(sq->vq);
+ 			free_old_xmit_skbs(sq, true);
+@@ -1828,6 +1837,56 @@ static netdev_tx_t start_xmit(struct sk_buff *skb, s=
+truct net_device *dev)
+ 	return NETDEV_TX_OK;
+ }
 
---
-Linaro LKFT
-https://lkft.linaro.org
++static int virtnet_tx_resize(struct virtnet_info *vi,
++			     struct send_queue *sq, u32 ring_num)
++{
++	struct netdev_queue *txq;
++	int err, qindex;
++
++	qindex =3D sq - vi->sq;
++
++	virtnet_napi_tx_disable(&sq->napi);
++
++	txq =3D netdev_get_tx_queue(vi->dev, qindex);
++
++	__netif_tx_lock_bh(txq);
++	netif_stop_subqueue(vi->dev, qindex);
++	sq->reset =3D true;
++	__netif_tx_unlock_bh(txq);
++
++	err =3D virtqueue_resize(sq->vq, ring_num, virtnet_sq_free_unused_buf);
++	if (err)
++		netdev_err(vi->dev, "resize tx fail: tx queue index: %d err: %d\n", qind=
+ex, err);
++
++	__netif_tx_lock_bh(txq);
++	sq->reset =3D false;
++	netif_start_subqueue(vi->dev, qindex);
++	__netif_tx_unlock_bh(txq);
++
++	virtnet_napi_tx_enable(vi, sq->vq, &sq->napi);
++	return err;
++}
++
 
-[1] https://lkft.validation.linaro.org/scheduler/job/4909565#L1141
