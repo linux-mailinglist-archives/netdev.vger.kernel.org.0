@@ -2,108 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A3D4506012
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 01:05:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2628F50601E
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 01:15:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234253AbiDRXIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Apr 2022 19:08:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58950 "EHLO
+        id S234534AbiDRXSD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Apr 2022 19:18:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231876AbiDRXIT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 19:08:19 -0400
+        with ESMTP id S234533AbiDRXSB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 19:18:01 -0400
 Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 464511DA59;
-        Mon, 18 Apr 2022 16:05:39 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id j70so746000pgd.4;
-        Mon, 18 Apr 2022 16:05:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B2A9DFAB
+        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 16:15:17 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id 203so2542623pgb.3
+        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 16:15:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bnXZNKJ0lqG/REF5S1zs8nwjxJedTJNHRhYxnhtELJ0=;
-        b=RvOPM/4dacw0btYIObMPJauAhZWHVxOndKn7yaIaylfyYpRr739cK3q4VSLvxz9ZVl
-         c8bXKxR8WnP28Qs4vj/vx80uyPsWpYeSi3Emnbl2VZzNLTmLKhEP0RCvsVBprEeJCztV
-         ihA9L/eBtJ/AG03h4BZGPY+Vt/TJ8koDoe6V38S4wxUexjLDbMRrXK5xvft6AjiNB/ZF
-         sWK6T5oQoxL3xG1Mh/wWaKFuXaE5sznkRb72612oA7kNNuiVnvUQJOsB2au5m62EBj0N
-         IKPOA6UtYUrPxpczFUDr8oYpRXxjd5aWHSypDY9gPoot9hq8nuSzEV6mwfg2CFew4RT4
-         pnwA==
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=RrhfhZGPffquYLME6QtUqceBp8LFNUZRkEv6wy05wTc=;
+        b=nItNq4Yd5giPB5S6Ajzna4fYFp6zt9eLWcttB/afck8bhHFfKUsvZ93i6NMSuJtxYQ
+         GnynQOqxUbKbyF+trgO/PqHskrDiWLS2a853vpdxRqX7Dl2TsN6gKso/XDxU6f4c7AJ6
+         qfGYA5clU/qHmrzBA8QWWD35kA5gSFF30CWH4fIf7G4K5Js3hl6I8ksu9qJ1xNtSsVJL
+         y2BASiSr5C5wahDdSrolLbmDsA5kRlk0JN1EvOXy838xvWURzO81rTcUIelw96jaDlLN
+         wZzWfUWqS1I3XQa0qAiMP+aqnTwWAYnbJ0d78n4sVFc5vjOpjhYmtPcmqpmsdiWK4c+n
+         z83A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bnXZNKJ0lqG/REF5S1zs8nwjxJedTJNHRhYxnhtELJ0=;
-        b=8N/cv5XGpTa/AKWXNuzTUKjc01enW0Vu7tkdDOke32sh69BcA2CipoTb+pB1cVQf+h
-         XY7sUohx1JKlzfai5cfgB+9l3ILAHBzD8GmP42kUuFzHbSyInWn5Pk0l7KQ4bmQfxy2H
-         CvqPYe7GM/ufdLyhkIdhxj31XZXIufZqCJbImV/kem2VEr9GydVMeJDMDLmnnWnDcxqj
-         V16G9YWSO2IdTQs+G/a5oE3UrjyzbWr3zXdvt406vtmx4J9Xtnt9RwOSna8fRhYBiGiS
-         5B/KdbIldsccAFIL4PKIb6q8Wt6kc6enyZ4pOnxext0nKoU/R9vczzmz3G1lRcru0RSW
-         0ddQ==
-X-Gm-Message-State: AOAM531zl8RgdiS0Q9uhUJmZqSoQ5s0zDZa8dvMs7wAdcsYzwGMPBtN/
-        p0F9bZJgzTtEYpLKrywjNIitSK5Unt9RqdoBK68=
-X-Google-Smtp-Source: ABdhPJxPu99TBd/RNqb2gVnSmQXxG8P+pPy4L1EWmA1gW2tHOYNAfNK3m8q8Yl/YSfOx5b1Gemd/arFUiwWhjdkpvtw=
-X-Received: by 2002:a63:7c42:0:b0:39c:c333:b3d4 with SMTP id
- l2-20020a637c42000000b0039cc333b3d4mr12045371pgn.456.1650323138736; Mon, 18
- Apr 2022 16:05:38 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=RrhfhZGPffquYLME6QtUqceBp8LFNUZRkEv6wy05wTc=;
+        b=fHFMQS/epf5uDhpZd4TAKbla4W3Y9UIryGdBtBt/O/yFKXgKxn4zKQZiNsUFcTDxbb
+         jgBKJ3jx/9q0ZOWPSfAVjPysui5hDyLtVlO8eQtZucUJ5lc8d0KId6NKDavNB5Xd7v+C
+         2EXrpNnLywHQbzUiostnyTESmiBV7Vhkos36k6zUe9m/UOGRryeXQQBiLIqFx/GBm74j
+         ZNUCGKLaxln3YlOC42JFdeAiTGg8FgpI1FtSYiZ/BIajlG/tH1T3nMSVtcjzXkd169k4
+         fbeemUPcMQKS5ojG78pSkkoTTkdt5GPNHKzEg41EXPrNYBNuJ7FmS204JxL+4QBmptpt
+         aSdA==
+X-Gm-Message-State: AOAM531oVX6hD/CLyQ30uBVnpQRsSQCJTAZhsJ+l+/i5gQPyHLmNVC6b
+        w0LyKGXmk/tg4G1NMrwQCrY8aw==
+X-Google-Smtp-Source: ABdhPJwOQWZk9I23o5Zm0FgWRr1Yu6DLBN/QZsdzy7YRIiuEuR3Ngft5iOEC6pqC8efsMPrX2UGGFQ==
+X-Received: by 2002:a63:5317:0:b0:399:58e9:882b with SMTP id h23-20020a635317000000b0039958e9882bmr12033784pgb.306.1650323716994;
+        Mon, 18 Apr 2022 16:15:16 -0700 (PDT)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id y26-20020a056a00181a00b004fe3a6f02cesm14639781pfa.85.2022.04.18.16.15.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Apr 2022 16:15:16 -0700 (PDT)
+Date:   Mon, 18 Apr 2022 16:15:13 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Baligh Gasmi <gasmibal@gmail.com>
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>
+Subject: Re: [PATCH v2] ip/iplink_virt_wifi: add support for virt_wifi
+Message-ID: <20220418161513.1448e5f9@hermes.local>
+In-Reply-To: <20220418221854.1827-1-gasmibal@gmail.com>
+References: <20220418080642.4093224e@hermes.local>
+        <20220418221854.1827-1-gasmibal@gmail.com>
 MIME-Version: 1.0
-References: <20220416062504.19005-1-luizluca@gmail.com> <CACRpkdaZUiYcw2FekoZLvn7LbVUD-_sJkHu-FLcEpJAueVCN9w@mail.gmail.com>
-In-Reply-To: <CACRpkdaZUiYcw2FekoZLvn7LbVUD-_sJkHu-FLcEpJAueVCN9w@mail.gmail.com>
-From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Date:   Mon, 18 Apr 2022 20:05:27 -0300
-Message-ID: <CAJq09z5PoaOUW22k_8Raw07-jyC45ZpgiojgL1WP59oDQC3REQ@mail.gmail.com>
-Subject: Re: [PATCH net 1/2] dt-bindings: net: dsa: realtek: cleanup
- compatible strings
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>, krzk+dt@kernel.org,
-        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On Sat, Apr 16, 2022 at 8:25 AM Luiz Angelo Daros de Luca
-> <luizluca@gmail.com> wrote:
->
-> > Compatible strings are used to help the driver find the chip ID/version
-> > register for each chip family. After that, the driver can setup the
-> > switch accordingly. Keep only the first supported model for each family
-> > as a compatible string and reference other chip models in the
-> > description.
-> >
-> > CC: devicetree@vger.kernel.org
-> > Link: https://lore.kernel.org/netdev/20220414014055.m4wbmr7tdz6hsa3m@bang-olufsen.dk/
-> > Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
->
-> OK, I suppose we know that Realtek has always maintained the
-> ID numbers in the hardware? Otherwise we will end up where
-> bindings/arm/primecell.yaml is: hardware ID numbers that were
-> supposed to be updated but weren't, so now both DT and the
-> kernel has to go through all kinds of loops and hoops to make it
-> work by encoding the number that should have been in the
-> hardware is instead in the device tree...
+On Tue, 19 Apr 2022 00:18:54 +0200
+Baligh Gasmi <gasmibal@gmail.com> wrote:
 
-Thanks, Linus. The rtl8367c driver seems to depend on information
-retrieved from registers, mainly chip id/ver. If they forget to update
-a chip id/version, it might be the case that it does not really matter
-from the driver's point of view.
-Anyway, if deemed to be necessary, adding a compatible string is much
-easier than removing one after a kernel is released.
+> +/*
+> + * iplink_virt_wifi.c	A fake implementation of cfg80211_ops that can be tacked
+> + *                      on to an ethernet net_device to make it appear as a
+> + *                      wireless connection.
+> + *
+> + * Authors:            Baligh Gasmi <gasmibal@gmail.com>
+> + *
+> + * SPDX-License-Identifier: GPL-2.0
+> + */
 
-Regards,
-
-Luiz
+The SPDX License Id must be first line of the file.
