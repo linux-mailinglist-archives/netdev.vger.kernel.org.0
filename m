@@ -2,86 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E25C6504E65
-	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 11:30:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 275B9504EA5
+	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 12:09:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236395AbiDRJcx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Apr 2022 05:32:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50912 "EHLO
+        id S235741AbiDRKLi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Apr 2022 06:11:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229562AbiDRJcv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 05:32:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9086215FFE;
-        Mon, 18 Apr 2022 02:30:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C1016119B;
-        Mon, 18 Apr 2022 09:30:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 70AC8C385A8;
-        Mon, 18 Apr 2022 09:30:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650274211;
-        bh=IqTxnwNtJXJUDGusPAvkbyyh35OmJ2YAsRP7xYuk54U=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=D5cslCjdOuqW3V6yNJd0yeShqTVKFvw62QfbrYLvh6eIVpJcd6YUm96LH015dRJ3T
-         3ygceUapvDnZm//vwRo+gwvkrMcQwCYInSLf3zPPNFcMo2mS3kr8VOv3L4vvRrUxgI
-         QJ4acKzLm2Oj2rrMd2xsSQKvNVUp2DAGWeozlNqx9j8YLACv1GmN1Zzk9Zu8XB7l3i
-         knmO8wmc6J/gUaqD7jZ/jT/hZQHXOjRpnFzpnKT7fmY2FlBKdsPnL8UvElFFJ0gZ56
-         Z3L0+FQGjlvA1Gz2UM+BsN26STQhIkW/1TqK4UDWRyALTY15CyfRGe1bt4uIVGPiUQ
-         z17AuGbBhYETQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 56A20E8DD61;
-        Mon, 18 Apr 2022 09:30:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S233592AbiDRKLh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 06:11:37 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61AB112613
+        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 03:08:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=X3856/+VzI9JJRuU4bjCfs5RMD2B4PpMeMxYDdAjx7k=; b=npb+AZ2Rw9uU2+BixuRj5mRnrl
+        2p9h+XPPzTjDx9eak/Njka8rE9OwZJ+EUsSL+Hvu99roCYK3Z4lKbMpWfyN9xzaZDC1s5izZtcUPk
+        N/R2kgyrhFsSxLHJ8nBg1wsubxJmn6PG6WlUBAODOoi2qZ9KnLgIHdj3Gl0SOMU4Vf04zlWdjTKCj
+        2YdRWsyvO3fPgq+kl0asFy/2kHd1R4Cr6Oi5xneQHgLyd1tDqOaAakBbpc/3nmz3D8iJkRcZLLqOj
+        AINFJKJZNxdQ2BW8nB856HYhvj98Iwc2Xfit7eYIgC7iZmi90KJfwCfg4eo0icbwHa5w+MLFBpez3
+        e8HTwa0Q==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58316)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ngOJU-0007zJ-Cs; Mon, 18 Apr 2022 11:08:56 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ngOJS-000822-Mn; Mon, 18 Apr 2022 11:08:54 +0100
+Date:   Mon, 18 Apr 2022 11:08:54 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Mauro Rossi <issor.oruam@gmail.com>
+Cc:     netdev@vger.kernel.org, kabel@kernel.org,
+        Chih-Wei Huang <cwhuang@android-x86.org>
+Subject: Re: FYI: net/phy/marvell10g: android kernel builing error due to
+ modpost error
+Message-ID: <Yl04ttYN95VCXan4@shell.armlinux.org.uk>
+References: <CAEQFVGYURjcCA741koGF5aeRoymwh-h+_evP5cqAxE4U8UVnbA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] can: isotp: stop timeout monitoring when no first frame
- was sent
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165027421135.11239.7151679337117584143.git-patchwork-notify@kernel.org>
-Date:   Mon, 18 Apr 2022 09:30:11 +0000
-References: <20220417152934.2696539-2-mkl@pengutronix.de>
-In-Reply-To: <20220417152934.2696539-2-mkl@pengutronix.de>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-can@vger.kernel.org, kernel@pengutronix.de,
-        socketcan@hartkopp.net,
-        syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEQFVGYURjcCA741koGF5aeRoymwh-h+_evP5cqAxE4U8UVnbA@mail.gmail.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Marc Kleine-Budde <mkl@pengutronix.de>:
-
-On Sun, 17 Apr 2022 17:29:34 +0200 you wrote:
-> From: Oliver Hartkopp <socketcan@hartkopp.net>
+On Mon, Apr 18, 2022 at 11:22:12AM +0200, Mauro Rossi wrote:
+> At the final stage of building  Linux 5.18-rc3 with the necessary AOSP
+> changes, I am getting the following building error:
 > 
-> The first attempt to fix a the 'impossible' WARN_ON_ONCE(1) in
-> isotp_tx_timer_handler() focussed on the identical CAN IDs created by
-> the syzbot reproducer and lead to upstream fix/commit 3ea566422cbd
-> ("can: isotp: sanitize CAN ID checks in isotp_bind()"). But this did
-> not catch the root cause of the wrong tx.state in the tx_timer handler.
+>   MODPOST modules-only.symvers
+> ERROR: modpost: "__compiletime_assert_344"
+> [drivers/net/phy/marvell10g.ko] undefined!
+> make[2]: *** [/home/utente/r-x86_kernel/kernel/scripts/Makefile.modpost:134:
+> modules-only.symvers] Error 1
+> make[2]: *** Deleting file 'modules-only.symvers'
+> make[1]: *** [/home/utente/r-x86_kernel/kernel/Makefile:1749: modules] Error 2
+> make[1]: *** Waiting for unfinished jobs....
 > 
-> [...]
+> It never happened before throughout all my previous android-x86 kernel
+> rc cycle build tests, which spanned from linux version 5.10 to linux
+> version 5.18rc
 
-Here is the summary with links:
-  - [net] can: isotp: stop timeout monitoring when no first frame was sent
-    https://git.kernel.org/netdev/net/c/d73497081710
+As far as I'm aware, with mainline kernels, marvell10g builds fine.
+I'm not sure how to work back from "__compiletime_assert_344" to
+where the problem could be. The "344" appears to be generated by
+the __COUNTER__ macro - and I don't know how that macro works (debian
+annoyingly don't package the GCC info docs, and the info files I have
+are out of date.)
 
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
