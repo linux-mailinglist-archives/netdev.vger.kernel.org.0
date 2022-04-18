@@ -2,72 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B5593504C66
-	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 07:48:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70002504C7F
+	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 08:16:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231879AbiDRFvW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Apr 2022 01:51:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45068 "EHLO
+        id S236719AbiDRGRQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Apr 2022 02:17:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229634AbiDRFvV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 01:51:21 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68682167D3
-        for <netdev@vger.kernel.org>; Sun, 17 Apr 2022 22:48:43 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id q19so17033990pgm.6
-        for <netdev@vger.kernel.org>; Sun, 17 Apr 2022 22:48:43 -0700 (PDT)
+        with ESMTP id S233647AbiDRGRO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 02:17:14 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47E5917AB7;
+        Sun, 17 Apr 2022 23:14:36 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id n126-20020a1c2784000000b0038e8af3e788so8281450wmn.1;
+        Sun, 17 Apr 2022 23:14:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=j96XH3Dmbi26dxD+JATf6BURmTD2c8HN91xbkVbh2po=;
-        b=OxceYtRLVE3XIAWwsHXKYktxfaEM7/gwDeUDTsJzEFuhOTe+lQfGxa6f2yBYGjDT05
-         KIl80/6RmV0ENPCyLpnVWMDfuA/o1UUpxEBXMMj2jhENoA3GvFgxk4E+oQj9MQlqYec9
-         RvzgJuV+Im9UyNPtjvLp9mV+qIYf0+YAiqV5I4QugmoBW4fTLYMEdg2HfU9fP9BatjTk
-         lB6OXLBMwi77MgpkRGYj8g0KZC3KfymKUB1VhfxPSiLhQW1uOA8MpgIPivy+WIxmc+cx
-         501tx51aIrbaMGwX0oU41re6tFEgvGr+FDRFEGF8Qds1h8ZI2g5bGSdfHRsLCer4DF88
-         JjUw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=e8ZuwAsZvFhjWYjd8yTG5wsLv6buaB3HfTucRNG+UqI=;
+        b=WBAxuBJojSU2AxQ868FqVcQ6bk55DcVrjS+gy3jAnt3nvDlRlbljqO97Jz3Cz5AMiT
+         rA4ZZ5BibfwSetqgnPmUrzvxgW5Rr3ceJV5T4gk8DGbjt369zJGMLqsD8d7D8Sc2b1Wt
+         fJPj/M94vOwbducPtV5E9Ih0H1Ei+Oy623kbixxJycErlhhEub46YERI5B0USCLjqV9p
+         pvq4FJxxKKN4YNjvfDQwT6GLNuqnymE6X7+nDqcD2WjR/4u3vAx8degW1ZL9ouFlwHW+
+         t24S0hCJL4SePnhvBYckJXIkD5weNDMB2sTTJwICx+uvdewNGWsguBuV5ZFlwtHGzKlc
+         m02A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=j96XH3Dmbi26dxD+JATf6BURmTD2c8HN91xbkVbh2po=;
-        b=XbHgX0aZtwPhyMp3tw74YP1jTg+dt7MMPkGkxtvAls+jlJKn6TVapktiZL4NWqaxGK
-         oE73NtetK1xVNjt9Am02DrxFaNtmSYffpqpSdtLc1IYz995quVcfCuW11nSsDcf5OzX9
-         WGu3z0jJvce5iaFsukrHTeCPFJCR5C72crMBMUzBo/zwpkpAHjvc14aIxzf+tQwC5b/b
-         OMvK0PEp9VG1KJ5ZWS6GvGrq4tjQpprKCnyp+UZnPq9bV8CsG+z57R+5GUh1llMDNJeX
-         +0b0PePtwOdEAiBqIrpERs9DBQmqoarzg0oxgGTMGw3WAM1TCsgfwn3DajryvemwBS6S
-         c7mw==
-X-Gm-Message-State: AOAM5315Bzs4iwyqsv7WKfYoeqW4YMJJt5cUsLhVdnPKICIR5Kbuxpni
-        0NnQuW20anwM+rrPqtyxIYApKXlrwks=
-X-Google-Smtp-Source: ABdhPJztw7j8YswdjOn3Zz4zfbyZGnvSCYyzny5Ig0HvH8+f01VQnn5NXtzwPa2bxJpsSJaSHU4KBg==
-X-Received: by 2002:a05:6a00:bd1:b0:4fa:a5d7:c082 with SMTP id x17-20020a056a000bd100b004faa5d7c082mr10527180pfu.85.1650260922684;
-        Sun, 17 Apr 2022 22:48:42 -0700 (PDT)
-Received: from Laptop-X1 ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id o34-20020a634e62000000b0039cc4376415sm11275062pgl.63.2022.04.17.22.48.38
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=e8ZuwAsZvFhjWYjd8yTG5wsLv6buaB3HfTucRNG+UqI=;
+        b=3jRnIFeg/QoWyoTlrtU96AnptlJ0Yi95PyytQr2kusvILxroptBtBuESyHQuYfkG8R
+         3VUUU6vzfQe69Oje38oIsR7P/thjPhaclsJBFGGPrEF9HOMjmXAYrPtUtTSJ0uKJDIYi
+         AMtdolK96ISQ2JBbUIfU79ypqdqcSqHtEBlLRQmnGfq236rLVgaVxT9Fo2DUEhhDDi+k
+         WtmI5tUA3F8I9mmmi20A/FLtVpbdHpi2Oa5XeQPPia350nKi6oLriG+mADXxAbnIN/Jo
+         bV0HFwutmkLLJEQUsPbGzljxN+rKARdu9rw4pkdZNfVBJRXR/tFdyC+8/UCAZy23XYCj
+         3q9Q==
+X-Gm-Message-State: AOAM5319Quq09GsaGhytarfRifs/gbveg8eBnjwyZgnf2lloG26hmC3A
+        FsGOosYCknj+qLaikUDCA/sSWmYj+CXn7A==
+X-Google-Smtp-Source: ABdhPJyPTRA13mBsIiG+RM0ugphkP3LSbXaCVQcb4zssDaNxL91RgVJA7llncwPOS67rRpAbsu7dxw==
+X-Received: by 2002:a05:600c:5114:b0:38e:bd9c:9cb0 with SMTP id o20-20020a05600c511400b0038ebd9c9cb0mr13433157wms.153.1650262474907;
+        Sun, 17 Apr 2022 23:14:34 -0700 (PDT)
+Received: from alaa-emad ([197.57.90.163])
+        by smtp.gmail.com with ESMTPSA id z17-20020adfec91000000b0020a98f5f8a7sm1654811wrn.6.2022.04.17.23.14.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 Apr 2022 22:48:42 -0700 (PDT)
-Date:   Mon, 18 Apr 2022 13:48:35 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        Willem de Bruijn <willemb@google.com>,
-        virtualization@lists.linux-foundation.org,
-        Balazs Nemeth <bnemeth@redhat.com>,
-        Mike Pattrick <mpattric@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH net 0/2] net: fix kernel dropping GSO tagged packets
-Message-ID: <Ylz7s/I8EUca82NL@Laptop-X1>
-References: <20220418044339.127545-1-liuhangbin@gmail.com>
+        Sun, 17 Apr 2022 23:14:34 -0700 (PDT)
+From:   Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+To:     outreachy@lists.linux.dev
+Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ira.weiny@intel.com,
+        eng.alaamohamedsoliman.am@gmail.com
+Subject: [PATCH v4] intel: igb: igb_ethtool.c: Convert kmap() to kmap_local_page()
+Date:   Mon, 18 Apr 2022 08:14:30 +0200
+Message-Id: <20220418061430.6605-1-eng.alaamohamedsoliman.am@gmail.com>
+X-Mailer: git-send-email 2.35.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220418044339.127545-1-liuhangbin@gmail.com>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -78,28 +70,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sorry, cc Mick for the correct address
+The use of kmap() is being deprecated in favor of kmap_local_page()
+where it is feasible.
 
-On Mon, Apr 18, 2022 at 12:43:37PM +0800, Hangbin Liu wrote:
-> Flavio reported that the kernel drops GSO VLAN tagged packet if it's
-> created with socket(AF_PACKET, SOCK_RAW, 0) plus virtio_net_hdr.
-> 
-> The reason is AF_PACKET doesn't adjust the skb network header if there is
-> a VLAN tag. And in virtio_net_hdr_to_skb() it also checks skb->protocol
-> blindly and not take care of VLAN tags.
-> 
-> The first patch adjust the network header position for AF_PACKET VLAN
-> tagged packets. The second patch fixes the VLAN protocol checking in
-> virtio_net_hdr_to_skb().
-> 
-> Hangbin Liu (2):
->   net/af_packet: adjust network header position for VLAN tagged packets
->   virtio_net: check L3 protocol for VLAN packets
-> 
->  include/linux/virtio_net.h | 26 +++++++++++++++++++-------
->  net/packet/af_packet.c     | 18 +++++++++++++-----
->  2 files changed, 32 insertions(+), 12 deletions(-)
-> 
-> -- 
-> 2.35.1
-> 
+With kmap_local_page(), the mapping is per thread, CPU local and not
+globally visible. Therefore igb_check_lbtest_frame() is a function
+where the use of kmap_local_page() in place of kmap() is correctly
+suited.
+
+Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+---
+changes in V2:
+	fix kunmap_local path value to take address of the mapped page.
+---
+changes in V3:
+	edit commit message to be clearer
+---
+changes in V4:
+	edit the commit message
+---
+ drivers/net/ethernet/intel/igb/igb_ethtool.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
+index 2a5782063f4c..c14fc871dd41 100644
+--- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
++++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
+@@ -1798,14 +1798,14 @@ static int igb_check_lbtest_frame(struct igb_rx_buffer *rx_buffer,
+ 
+ 	frame_size >>= 1;
+ 
+-	data = kmap(rx_buffer->page);
++	data = kmap_local_page(rx_buffer->page);
+ 
+ 	if (data[3] != 0xFF ||
+ 	    data[frame_size + 10] != 0xBE ||
+ 	    data[frame_size + 12] != 0xAF)
+ 		match = false;
+ 
+-	kunmap(rx_buffer->page);
++	kunmap_local(data);
+ 
+ 	return match;
+ }
+-- 
+2.35.2
+
