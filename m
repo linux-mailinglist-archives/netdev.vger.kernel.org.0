@@ -2,195 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B3B7505FB1
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 00:20:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26C15505FC6
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 00:29:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231518AbiDRWWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Apr 2022 18:22:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39070 "EHLO
+        id S231730AbiDRWbq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Apr 2022 18:31:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231379AbiDRWWY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 18:22:24 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C9E29CBD;
-        Mon, 18 Apr 2022 15:19:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650320383; x=1681856383;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=tkMPhmpg8zUnNqBW3w1L4glAPuX9BfNfJ6dlQLQ2H9M=;
-  b=STRyR/RdituV4m0VH/4ByF0w18ggDOcX57/KFCPcru1ARi7Fh/sqyudM
-   7MJPMwIpxVU/XHICxZlDKjQpPnBwFsg95Nq5vwvVV/BPAGQb1Odjkrmed
-   8/f7oTNr/QLYs4WYzPXl6JXqlfLwOHd43MtlK28+Z4ZEfBn/FnPbB8Qr/
-   vveGeI5dUZA8WQGrNY/YkPTXfhEnYcvZPDpN96qlCVkh4rzb1MV5URxtH
-   IzeFAB2mRQHsMMKnru3ER+rWXdeZtZ7mB18sBc9xO54sEIHklhwqBhGqL
-   byfwlwwF+sJMM+Z59J+wA2YtVhB47FAu0KSx+YZKWhR0MDfiYESTfDem4
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="245514082"
-X-IronPort-AV: E=Sophos;i="5.90,271,1643702400"; 
-   d="scan'208";a="245514082"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 15:19:43 -0700
-X-IronPort-AV: E=Sophos;i="5.90,271,1643702400"; 
-   d="scan'208";a="726810261"
-Received: from moseshab-mobl1.amr.corp.intel.com (HELO localhost) ([10.209.143.127])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 15:19:42 -0700
-Date:   Mon, 18 Apr 2022 15:19:41 -0700
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-Cc:     Julia Lawall <julia.lawall@inria.fr>, outreachy@lists.linux.dev,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] intel: igb: igb_ethtool.c: Convert kmap() to
- kmap_local_page()
-Message-ID: <Yl3j/bOvoX13WGSW@iweiny-desk3>
-References: <20220416111457.5868-1-eng.alaamohamedsoliman.am@gmail.com>
- <alpine.DEB.2.22.394.2204161331080.3501@hadrien>
- <df4c0f81-454d-ab96-1d74-1c4fbc3dbd63@gmail.com>
+        with ESMTP id S231727AbiDRWbo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 18:31:44 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCF0A2AC51
+        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 15:29:03 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id w4so20081150wrg.12
+        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 15:29:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=d5beLmj5AkW1uzECw07VcK6x4av7qpBuoy2CxSyhUAs=;
+        b=SVkpQYmHJrhzP1y57i0t7z4owvbzK6qMLso26vQzgdqaimeVyOYfExn2WcJOMEpNnR
+         fXBblrxD5Ne2drpQ+pBgkNunr3b4qkJbIcjvlzr1ZVPoRfw0DCT+muYXWPEdNWKm1i1n
+         v9HoGRB59QUHD2vzb7Yu7EosbvfZY4OezDzv6uUYKn8+G1RRfNtNdrDyZcVvBRB4a2vg
+         49a/qN/xz9SRKfqBbAJ7olm06ATKQ+S166tSMVUTGu0YYu6M0ms5tBsWPEaTMlSSUGUJ
+         yEwkT3J9t3H6lqv3jy6K9zmpu5/5Ehp7DkaQ2zhVsg4Gq1VxK/RDx+aMG7LQ9/gQdZQ7
+         CM1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=d5beLmj5AkW1uzECw07VcK6x4av7qpBuoy2CxSyhUAs=;
+        b=Xy3kqCWSpX5374oPwkx5axuf+0eHA96jcHJLhNYZzPWPWkuYE8SXhVsQoKLqj3Yvx3
+         EniAlLu73/MV0AUpHXVNuMrNY32EOWExNiCUrnTRUvRadUE33aihnViQxnjcG+t0H5+L
+         0/EnJDJjM/LIpkzZ4i9ySagEj0eZyZyGWqfeUAm2llqRXKxGOK81YGq7UNJ2TgPrWh/n
+         GySsbYFWz3+W83NgYzqRAzIMnbvOGerPmiMlU+T0jdVc7Y1pcdmFW23p8ZCA+ik3iIsS
+         VebfDrbCcRFfl5KqOpR++mlzEu5xvBPDc+eKYDB2Pp23tYkZ8FZPbzA4P2hRIn4afFIF
+         0OPQ==
+X-Gm-Message-State: AOAM5337Fkarmi4A6Ytv+1fBXO4Wt/fAm//0dKWUh03lIq7i2TNU09Ga
+        72D9amlIl2AkAfuID7waMG/tKije8lw=
+X-Google-Smtp-Source: ABdhPJzXAyFwZI2SRaO6FQdQViIX+9+nIx49qr5DzmnEAPZOCKbpkknqmvjXe4BZB2dQqFu8YXLwqQ==
+X-Received: by 2002:a05:6000:1842:b0:207:9b57:6bbf with SMTP id c2-20020a056000184200b002079b576bbfmr9245075wri.336.1650320942064;
+        Mon, 18 Apr 2022 15:29:02 -0700 (PDT)
+Received: from localhost.localdomain (82-64-45-45.subs.proxad.net. [82.64.45.45])
+        by smtp.googlemail.com with ESMTPSA id y11-20020a056000168b00b0020a919422ccsm5042656wrd.109.2022.04.18.15.29.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Apr 2022 15:29:01 -0700 (PDT)
+From:   Baligh Gasmi <gasmibal@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@kernel.org>,
+        Baligh Gasmi <gasmibal@gmail.com>
+Subject: [PATCH v3] ip/iplink_virt_wifi: add support for virt_wifi
+Date:   Tue, 19 Apr 2022 00:28:59 +0200
+Message-Id: <20220418222859.2324-1-gasmibal@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220418080642.4093224e@hermes.local>
+References: <20220418080642.4093224e@hermes.local>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <df4c0f81-454d-ab96-1d74-1c4fbc3dbd63@gmail.com>
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 16, 2022 at 03:14:57PM +0200, Alaa Mohamed wrote:
->    On ١٦‏/٤‏/٢٠٢٢ ١٣:٣١, Julia Lawall wrote:
-> 
-> 
->  On Sat, 16 Apr 2022, Alaa Mohamed wrote:
-> 
-> 
->  Convert kmap() to kmap_local_page()
-> 
->  With kmap_local_page(), the mapping is per thread, CPU local and not
->  globally visible.
-> 
->  It's not clearer. 
-> 
->    I mean this " fix kunmap_local path value to take address of the mapped
->    page" be more clearer
-> 
->  This is a general statement about the function.  You
->  need to explain why it is appropriate to use it here.  Unless it is the
->  case that all calls to kmap should be converted to call kmap_local_page.
-> 
->    It's required to convert all calls kmap to kmap_local_page. So, I don't
->    what should the commit message be?
-> 
->    Is this will be good :
-> 
->    "kmap_local_page() was recently developed as a replacement for kmap(). 
->    The
->    kmap_local_page() creates a mapping which is restricted to local use by a
->    single thread of execution. "
-> 
+Add support for creating virt_wifi devices type.
 
-I think I am missing some thread context here.  I'm not sure who said what
-above.  So I'm going to start over.
+Syntax:
+$ ip link add link eth0 name wlan0 type virt_wifi
 
-Alaa,
+Signed-off-by: Baligh Gasmi <gasmibal@gmail.com>
+---
+ ip/Makefile           |  2 +-
+ ip/iplink.c           |  2 +-
+ ip/iplink_virt_wifi.c | 26 ++++++++++++++++++++++++++
+ man/man8/ip-link.8.in |  6 +++++-
+ 4 files changed, 33 insertions(+), 3 deletions(-)
+ create mode 100644 ip/iplink_virt_wifi.c
 
-It is important to remember that a good commit message says 2 things.
+diff --git a/ip/Makefile b/ip/Makefile
+index 0f14c609..e06a7c84 100644
+--- a/ip/Makefile
++++ b/ip/Makefile
+@@ -12,7 +12,7 @@ IPOBJ=ip.o ipaddress.o ipaddrlabel.o iproute.o iprule.o ipnetns.o \
+     iplink_geneve.o iplink_vrf.o iproute_lwtunnel.o ipmacsec.o ipila.o \
+     ipvrf.o iplink_xstats.o ipseg6.o iplink_netdevsim.o iplink_rmnet.o \
+     ipnexthop.o ipmptcp.o iplink_bareudp.o iplink_wwan.o ipioam6.o \
+-    iplink_amt.o iplink_batadv.o iplink_gtp.o
++    iplink_amt.o iplink_batadv.o iplink_gtp.o iplink_virt_wifi.o
+ 
+ RTMONOBJ=rtmon.o
+ 
+diff --git a/ip/iplink.c b/ip/iplink.c
+index 7accd378..dc76a12b 100644
+--- a/ip/iplink.c
++++ b/ip/iplink.c
+@@ -57,7 +57,7 @@ void iplink_types_usage(void)
+ 		"          macsec | macvlan | macvtap |\n"
+ 		"          netdevsim | nlmon | rmnet | sit | team | team_slave |\n"
+ 		"          vcan | veth | vlan | vrf | vti | vxcan | vxlan | wwan |\n"
+-		"          xfrm }\n");
++		"          xfrm | virt_wifi }\n");
+ }
+ 
+ void iplink_usage(void)
+diff --git a/ip/iplink_virt_wifi.c b/ip/iplink_virt_wifi.c
+new file mode 100644
+index 00000000..dce14462
+--- /dev/null
++++ b/ip/iplink_virt_wifi.c
+@@ -0,0 +1,26 @@
++/*
++ * iplink_virt_wifi.c	A fake implementation of cfg80211_ops that can be tacked
++ *                      on to an ethernet net_device to make it appear as a
++ *                      wireless connection.
++ *
++ * Authors:            Baligh Gasmi <gasmibal@gmail.com>
++ *
++ * SPDX-License-Identifier: GPL-2.0
++ */
++
++#include <stdio.h>
++#include <stdlib.h>
++
++#include "utils.h"
++#include "ip_common.h"
++
++static void virt_wifi_print_help(struct link_util *lu,
++		int argc, char **argv, FILE *f)
++{
++	fprintf(f, "Usage: ... virt_wifi \n");
++}
++
++struct link_util virt_wifi_link_util = {
++	.id		= "virt_wifi",
++	.print_help	= virt_wifi_print_help,
++};
+diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
+index ee189abc..ec3cc429 100644
+--- a/man/man8/ip-link.8.in
++++ b/man/man8/ip-link.8.in
+@@ -244,7 +244,8 @@ ip-link \- network device configuration
+ .BR netdevsim " |"
+ .BR rmnet " |"
+ .BR xfrm " |"
+-.BR gtp " ]"
++.BR gtp " |"
++.BR virt_wifi " ]"
+ 
+ .ti -8
+ .IR ETYPE " := [ " TYPE " |"
+@@ -396,6 +397,9 @@ Link types:
+ .sp
+ .BR gtp
+ - GPRS Tunneling Protocol
++.sp
++.BR virt_wifi
++- rtnetlink wifi simulation device
+ .in -8
+ 
+ .TP
+-- 
+2.25.1
 
-	1) What is the problem you are trying to solve
-	2) Overview of the solution
-
-First off I understand your frustration.  In my opinion fixes and clean ups
-like this are very hard to write good commit messages for because so often the
-code diff seems so self explanatory.  However, each code change comes at the
-identification of a problem.  And remember that 'problem' does not always mean
-a bug fix.
-
-The deprecation of kmap() may not seem like a problem.  I mean why can't we
-just leave kmap() as it is?  It works right?
-
-But the problem is that the kmap (highmem) interface has become stale and its
-original purpose was targeted toward large memory systems with 32 bit kernels.
-There are very few systems being run like that any longer.
-
-So how do we clean up the kmap interface to be more useful to the kernel
-community now that 32 bit kernels with highmem are so rare?
-
-The community has identified that a first step of that is to move away from and
-eventually remove the kmap() call.  This is due to the call being incorrectly
-used to create long term mappings.  Most calls to kmap() are not used
-incorrectly but those call sites needed something in between kmap() and
-kmap_atmoic().  That call is kmap_local_page().
-
-Now that kmap_local_page() exists the kmap() calls can be audited and most (I
-hope most)[1] can be replaced with kmap_local_page().
-
-The change you have below is correct.  But it lacks a good commit message.  We
-need to cover the 2 points above.
-
-	1) Julia is asking why you needed to do this change.  What is the
-	   problem or reason for this change?  (Ira told you to is not a good
-	   reason.  ;-)
-
-	   PS In fact me telling you to may actually be a very bad reason...
-	   j/k ;-)
-
-	2) Why is this solution ok as part of the deprecation and removal of
-	   kmap()?
-
-A final note; the 2 above points don't need a lot of text.  Here I used
-2 simple sentences.
-
-https://lore.kernel.org/lkml/20220124015409.807587-2-ira.weiny@intel.com/
-
-I hope this helps,
-Ira
-
-[1] But not all...  some uses of kmap() have been identified as being pretty
-complex.
-
-> 
->  julia
-> 
-> 
->  Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
->  ---
->  changes in V2:
->          fix kunmap_local path value to take address of the mapped page.
->  ---
->  changes in V3:
->          edit commit message to be clearer
->  ---
->   drivers/net/ethernet/intel/igb/igb_ethtool.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
->  diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
->  index 2a5782063f4c..c14fc871dd41 100644
->  --- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
->  +++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
->  @@ -1798,14 +1798,14 @@ static int igb_check_lbtest_frame(struct igb_rx_buffer *rx_buffer,
-> 
->          frame_size >>= 1;
-> 
->  -       data = kmap(rx_buffer->page);
->  +       data = kmap_local_page(rx_buffer->page);
-> 
->          if (data[3] != 0xFF ||
->              data[frame_size + 10] != 0xBE ||
->              data[frame_size + 12] != 0xAF)
->                  match = false;
-> 
->  -       kunmap(rx_buffer->page);
->  +       kunmap_local(data);
-> 
->          return match;
->   }
->  --
->  2.35.2
