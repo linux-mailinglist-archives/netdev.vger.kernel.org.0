@@ -2,133 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 57137505B26
-	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 17:34:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29DF4505B48
+	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 17:37:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244310AbiDRPhC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Apr 2022 11:37:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46412 "EHLO
+        id S244471AbiDRPkL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Apr 2022 11:40:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237206AbiDRPgt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 11:36:49 -0400
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam08on2085.outbound.protection.outlook.com [40.107.102.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A4465838E
-        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 07:56:39 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YIkV+Fx/9aM0Y2gquRA9AChIox8YuKsZTEMwgqOUakicraP/wIDwiJKIomCZNs6rcxSlD6H6oM5TFIMbbUs7xtSjvsfXLpDjcYfFtm6029NUKjQ8nQXLSlQCxACodKByURun38Kd4biY55/eCOAlWp9f37bDDvkudQGaR4rTGMKCCmLdpESYSVzTRUZH6s/OPpnWlZF85OmZyG2KDsNpO/qK7l5QKN3VOP5T+kDKRWgJlRE+wTaKsP3hsCJA6fUbBf7TPb4pVzUlnZdnFOkc2hSFnq1hNDv8f/vRg/JtI81lEaObwB5GDhh55LEzldFpEhxbanyJ2rgPtK08v+8fZQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/C8iJSA/GCHtodKJegRggUkqsBlE+Wyin52UthjFBNY=;
- b=hhDlrSOSrpApUdH1ARV6sbFz3aUzWYDDHA1GC1dYxNeI7ONaPl+QwaawYtpY+mZSonGKkjYBcOzsOENOMnnkAYcB6Fml2H9cEtyYyqKQY4n91qzzYBm8zJYrQixUNv1DPUrgc8EBocrFL4c7A69TYibIChYpygugGGRX5aVe3sw663Y+dJxjCkKHPkLKxlVuHtxAXC2oc7E46Sv79+pu9KEaBFLyCC4gU1wrtLsD/PXYGUW06MGhiKY0OCLfvzZKKjx3/SZgJuWRDyf1DNST2DCYbGw/7AqD8dsqUbHqpydiwyoEuH5NdqIJ7/h5x/Yb5b7mPrUImZR2yDCSnOwY9w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/C8iJSA/GCHtodKJegRggUkqsBlE+Wyin52UthjFBNY=;
- b=H+YF5Tysy4itYSV8GTeRkWEvPQH3dscHfrPsPOz04utIFlHS4ucayOwCuBXmiTkMj27HY0FRAcUKCiACzfM0Jk6SjBIN9QJIQccMG79vO0lxdy5AoMIPtrnIB20qZ4lBB2izltChgSizbHhf33qN3YSriXJP5DMkq+MTh5u+DKNtDZVYaQxh8La5yGjDbfypu+ugfd7jBQfX32hh0odDrOM3cOKiJCc5C9X5v2D4Suz+gyTxnl6m3Xg80Zm4g32Qcaxj+sxCX7ZFiF5KcmVIHgBjsGw8WkVHQTc5X7QrF8HDakikpHB2t8stfeXQ9+5qqsLemcZ3UV2pltIvYWc0Tg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM4PR12MB5150.namprd12.prod.outlook.com (2603:10b6:5:391::23)
- by MW4PR12MB5667.namprd12.prod.outlook.com (2603:10b6:303:18a::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20; Mon, 18 Apr
- 2022 14:56:37 +0000
-Received: from DM4PR12MB5150.namprd12.prod.outlook.com
- ([fe80::a186:70f2:4280:14df]) by DM4PR12MB5150.namprd12.prod.outlook.com
- ([fe80::a186:70f2:4280:14df%9]) with mapi id 15.20.5164.025; Mon, 18 Apr 2022
- 14:56:37 +0000
-Message-ID: <3c90d3cd-5224-4224-e9d9-e45546ce51c6@nvidia.com>
-Date:   Mon, 18 Apr 2022 17:56:26 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH net] tls: Skip tls_append_frag on zero copy size
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Boris Pismenny <borisp@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Aviad Yehezkel <aviadye@mellanox.com>,
-        Ilya Lesokhin <ilyal@mellanox.com>, netdev@vger.kernel.org
-References: <20220413134956.3258530-1-maximmi@nvidia.com>
- <20220414122808.09f31bfe@kernel.org>
-From:   Maxim Mikityanskiy <maximmi@nvidia.com>
-In-Reply-To: <20220414122808.09f31bfe@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO4P123CA0178.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:18a::21) To DM4PR12MB5150.namprd12.prod.outlook.com
- (2603:10b6:5:391::23)
+        with ESMTP id S1345471AbiDRPj1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 11:39:27 -0400
+Received: from sonic311-30.consmr.mail.ne1.yahoo.com (sonic311-30.consmr.mail.ne1.yahoo.com [66.163.188.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF68DBF43
+        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 08:03:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1650294195; bh=Gc9y9q3ea2iik19bt9Xi/CkGjNG4yOsYbl4gU0CBB+U=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=E4a8C+9+TeHbNmvqXIxpcFJfWq7v0/M1NIsFWwLuFwA5PA/QBMHP0BYIDcLOJdqd6fZjFJZYJlHmYQXL8KPFCTK43bqWHxsvCX/SiBiRUiAuUHRUjL256aIugAQ5+dBgut4zWO8Tk7vAI/8pqT7BCOMI0URwP2GIm+1RbpM5KpyKuzIFpErSQNqYsTdT/je29DVq9S3ckY3i98NZvzteGpIpHBg440CHN1IhsPMtfVeBdCYRCjLpZyFVCce5xY0UqbgtKYI8k+lBh4uSL/elBCaIotw4HcpI2wZ6jhqY4LtCeVDzZY/iKqeTtVlJdDVykf++vUlGoE+b+HtZ9Fz07A==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1650294195; bh=OOYZDUjDYoi17BsUbFnJv6YALcd5oYgzumE6KYEoyIT=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=kfakZZrKm6x+V6FpJuwE90aBIvjqXDqsLL9I1xu4BT4GrvYEaTYCPw/q7NtYu7vrZ2cHUxSx67fqdeSV5Lc2MWK1yJdVGPcnQKmqmfG+P3Yx0FhtzuQUgJx4EbLQ7uNo6UmgAWdvVkQont4JwNCSDhecDP7Mv89h0F5QslSE/of8McRgknPOILt/F6VxkXqmTgr+dyJPHAmdvXJ0naikJaQUlSeiVKM+40WJglY6RUnD5pULYvHY5Tn8indAglNYVnLM2l/rwL0s/h3iRFCZ903BrNxZ8c6f7HLHqO18/SV0LezPr+Sipgbh57lcKUSJpmLdpC/whMHXMNH/xFtE0w==
+X-YMail-OSG: TGWlxgIVM1kOA67Ugs.oOJrv9mwi2.VdHVzrB_Fj3_v.Rsb0bcU6B2_Sylkch8I
+ 4bZAkV2gUg7J23FdcWQ94CBByMr1tlHzUmsAPghKfFtRWwnLtsIviEWjhErnplSSuZtA5o6N3kD9
+ Loqo1cjV_HkB4BA0Rh2z.S2R58wa7AdykJqj_agJQhfVzBCzyL88l4syUbSVZ1v9f_Yy113ThWhU
+ Aya.keQYdVOauyWVG_vdEUtX9lyev1_EDTt7o1eJV_gGoIACgV.6xfxO9voxtqMCai7cKjJnnSuk
+ xPw9UuOnsvjK7m2V9J4L9I5H4jEFWKdEHT_RXbs38VMuiZ_oUz1LJ1UtAAkFFohzmp._lNPzH359
+ 4nO4dLvfvfTpo8sxlqIgwlh4uctHu6Bo1VhRU7q58mtDFn93agY5leouBsJfono_h1npWhYNyodD
+ B.p.kmrfSMcTbHI4b_CAK7Yj2PCBcdY4bpY8rXrmnRDgtt.Ac94OwsdaA58FyOQRMl3ZtX.FlWIC
+ 3mY4qF6_wAOnG.DIWPfvwOYoDOYRCyyV4J1ICQ44q8FYpIjL2Vdz3DHnpKbmpHykA.5363.QqpKb
+ Jex1uZKdR2vg8ZeWWTAuWmU2KBP1OlSM82i.Fo6XNICnHKK86F65GeE8dBssgplQd9sU7RJgUSbU
+ qPreaZEJxfmk6n1XkJmsW2f1CtYU.1hCNGyWc_VZ70OjSf4ZWnYtFdmqAKOhSnpcZo4R708Sid1e
+ O87N9LSgacbdi9xrnUg91NoSRe70V7wbQckPzuevJPKMcMIqshfK2aqn9YnXT..CX835JHv8_c.X
+ gTHfM5NngTiBLvYPBUnDHgVA.BQtiGL81UNBvWWy1pBi54dDJgHwemE3cQdiArTyxgBKjulJmGbK
+ G36RbPncZYFLY6Nro2UxLmzHzXjEXEmn_8JSaP7obXgQUqaXsYK1Y0pDTUfe5tSJo684XhXjxD9b
+ DTq.bCXm2Xzc58yBrPmeQobGflB.WEoIqraOObfU_S_OOpyLCua.Mz95Oz_arz9dETlkBceQT4EO
+ k.zeNggoQrY5NTrQOkP1ATJJVap5GLpmpNnRsTNmjB9PqmQUdRa4K_8zXqwSwVTTAgbM67g3k12Z
+ sRXeAd7gOToxd3J55ktB213nyavj38iZKDwrmWMilysLUxP1TTDIltmR7zmkURI9zYSw0WgCjOVw
+ UgWlfulDAta4x1bD47UdZs5k0GqhfrpctlEHqDdhd5A1ZxBUx1ZAUsFprG_QSlfpL9tuma.bJEiR
+ pisJRfzHcgdkXFdBYgPZ0QI957.1R6.KUR4y.c_jHFC6VFyJwPkYmCSaT1NH7MISOU5pitz0a8ZF
+ lwB.WyFFyaHSi70H8y8PbmKedLYJMRc.wMSDcTRn2Lnfyul8FMTPzLAl5TIu5gwueVJOpEbmRLRh
+ .Kc55v67qwepu7kwzkeN7Aiw4b0e1n85eRXdx5Ghuej845LwD8YtO0aNuZjeHUx97GvgzFURH.bc
+ 04qWFCYPvqI.oLBgjDrTAKn8.jHVabo.XY_.fw5xtA8UyzkD3EUvNWG9WYJC6Dc4uS8pUHh1XrTJ
+ IcOjvYXNnen7H.BNKj3s6m7nlaJjmIBJVZK92ADPhYWL9rLYKlSY0QlTHD5BZ_SJai6F.6aUVub2
+ gEoPKeBdBfQAQA107iDrQVw0BdSz175_0qvtbUpezJx.i0aIN_CF8abTt04rpTyeg0TYrqewaDTR
+ GiwwE6pAOhvJ.HVESe6_11lD1sVA.6X9sSnk_SqZlrKWXhNq0ZS9KaRMIF6B9idtGoBuOT3JECuo
+ yrDHB6fdPNA5Ine7y.MKG5Wd24_R_NloU.8UhJpSVmlyp5A.yMdOLledTkL9dAGimHXG_hTD_EFk
+ MN_8eJ9I4l6gtAfo4otX9Ie1BGwThdcFyevoWeuV2SKXaZ2eZ2R3PqJJotz1njuDEPBtsRfA8k.v
+ 7xJC8sUXcMMuKxQMIrTNmdL9JoeGUEjfTloIoJ.6mBskLH55CT9YWO6aqx_mB3j5ZRU_tmWFIrBO
+ Nb9T26ZLymPFWOYA2MTTbwKpGfhDrmsEtIOeD9UI8mWcQWObs575rbI.Wz_4capJ.ulg0OFD8iyY
+ ECCLnWmm5Dw9P.Ckm_qBctsQJY.EjgTHHZbtKc7Zwgmkg3lBPIMFDGPi3GFg.DpD_2tDLchysthm
+ u_JJ9HWGDRBcwcfSqcENFewp74KvaNiehfmTef9bfKQs0zYGIRf4FvvtOWrWLMypa4N2SFkLavGq
+ ..crPBYjN2Np6zyzZfQPHLxl9GFPfmW6SDqFYkP2IJ.EbB_2Erm6pbsPVUYGfsIzucGCDfeRBMfc
+ 5Bk3F3zgokD9WV8mI59..dVg-
+X-Sonic-MF: <casey@schaufler-ca.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic311.consmr.mail.ne1.yahoo.com with HTTP; Mon, 18 Apr 2022 15:03:15 +0000
+Received: by hermes--canary-production-bf1-5f49dbcd6-b5q4c (VZM Hermes SMTP Server) with ESMTPA ID e12cdaa14792a510c07372742bad7207;
+          Mon, 18 Apr 2022 15:03:09 +0000 (UTC)
+From:   Casey Schaufler <casey@schaufler-ca.com>
+To:     casey.schaufler@intel.com, jmorris@namei.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
+Cc:     casey@schaufler-ca.com, linux-audit@redhat.com,
+        keescook@chromium.org, john.johansen@canonical.com,
+        penguin-kernel@i-love.sakura.ne.jp, paul@paul-moore.com,
+        stephen.smalley.work@gmail.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
+Subject: [PATCH v35 08/29] LSM: Use lsmblob in security_secctx_to_secid
+Date:   Mon, 18 Apr 2022 07:59:24 -0700
+Message-Id: <20220418145945.38797-9-casey@schaufler-ca.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220418145945.38797-1-casey@schaufler-ca.com>
+References: <20220418145945.38797-1-casey@schaufler-ca.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ec14cd81-c985-4afc-0fbb-08da214ba342
-X-MS-TrafficTypeDiagnostic: MW4PR12MB5667:EE_
-X-Microsoft-Antispam-PRVS: <MW4PR12MB566746F5CA2F603EF588CB90DCF39@MW4PR12MB5667.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 6KUZbT1QdiChWF5zJc23pgq1No8vrXzZo+4UbyR4RpsCla7DZ58b1ngAKfKdv7GASdBY/xUu5Ln40TS9jLXvHrOzE4DWyOASmvB1lis+zJQFBh1dFmlgnYlo4XzkjAiDR2flxsthgkNo/bednAcQrnGf8F3Dou/vXTMS6Lyx1kdnkcPCPC/B/Idul26BDmfuahvlPzELnboL/BGm6Q2AIaEnANDKQLRGW3EfpGzt/y5NPF3NQHo4s8VJoOeiBABjjZrsnadvCv7CTls+DgIWLLpaa32sQz7hOZtXo8LlHaQ/lXOvQwvjdch5jDwken+rIW/4uAo7UHqKtE80/TBMyrvvm9GZAFJp68I8Kgx+qwxWZlrHZ2OTWtnLyP8JF9b5uZ69Lmo0cC144YtPE5uxKZ4MVcBIS5BUoKQmH2VgfT2B/4kTxb50qOBbgawjg8yUPrCS43RP8WB45h+Ou6FCHWwZJ4CoBAHX1DfGLSWgHdOJndz0PAWDo2fVv1T7ljXVtxIuqSGw8v18mHZ6vTScm1wPVFG0hTKr2HMAF/kwKXa1sVkCcXzOLmPH9xnOpNzffoED6cIqhHJsFRiWHhevXqpz7s0WOOSBk6h+isp3Qe/3jd0fKvQNqQGxS3qUv2NWbfoQo3QatcfcQgQOxWMSLzgDP/3MZMjvboADXFBoamoOj73FMpg8Y+XwAUtt2Q7Orj1kbvWfpsaYHbf1TFek9E3S3jBjdzRKg98oTwfIyNc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5150.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(53546011)(2616005)(4326008)(5660300002)(38100700002)(31696002)(186003)(86362001)(8936002)(66946007)(83380400001)(8676002)(66476007)(66556008)(6506007)(6666004)(6486002)(31686004)(508600001)(36756003)(316002)(6916009)(54906003)(6512007)(2906002)(26005)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?N0s0OEtBTHpZUjFVcm4wZUE5ejRVc1BqbW9FZ0E5WTVKNWtkN0Y5THJOM0Fv?=
- =?utf-8?B?aG82c291TkhnWGx0OWdwZUpLcU95aGVFbE5iQ1dqWjF6b2M1dU5tUndqcSs5?=
- =?utf-8?B?c2JLaFZnU1pQenl1dE9ZeENBbTVacXVhMDdlVkllMVhLaXZRSHlXQlZSVUw4?=
- =?utf-8?B?N0JHWGV5dXVKUzFhL25FazBSV1RzTUVOYi85MGE1bUIySGJWbExhQ0pucHVn?=
- =?utf-8?B?M2prdUVnOXMybFVUNUd1UDc1M2FMMU9JQ3JvSXpEaDVSZ0VLei8wekJhQkVh?=
- =?utf-8?B?MjR0VWhOa3RPdXRWZ0J3TGlUQktnNDBOcUdXSGFGSmhMNm0zMmNoV1RBckI2?=
- =?utf-8?B?VUJTRmhGa2E2VHNhTDFLTkwvNWNXOVpNS1VRYjFrV3VudkZCaFpETlJucGFm?=
- =?utf-8?B?KzZhY1BNUkloeDEyRFRpc2xDWUJ2d2NlMmZiVnMwaWNKRXlWcmtyNTNOTmUy?=
- =?utf-8?B?Vm5RKzBocVc3MTJOMExHMjJuZ2tZQTFtZmxoUFBZMVVWNDU1NDUrdmhyZi9E?=
- =?utf-8?B?bHM1MnFUSEM4SUFGalRBaG1FWHFDYzVuS2dsbldzUXBUVWJtNXFnNVZjM3hY?=
- =?utf-8?B?N1V5VTA4WGVQM1NDak9qMy9FeUhRbCs2R0tvbE9wWmswRkR4UVJJcS84QXZN?=
- =?utf-8?B?b1lBeVpNUUtGMVY4REN3V1NKRlJBSFE5K1FCekZBNjR5THZwdzluMWd2aW9z?=
- =?utf-8?B?ZHNXb0VLa3lkZ1BzMFBpM1BGYWVBaktPdjhQZm45cEMwYkphd3F5a3RUeU9K?=
- =?utf-8?B?RjQ1eUlBNjl3U0N3aWUxQnlFcktNRklYUitUczY0SXpyNENmV2ZLT2pWV3lq?=
- =?utf-8?B?ZGhGUlQwdUhEQmdEMTVmb25zK290cHdYL1hxREpIT0JQMExoTDljeE9jWk9Y?=
- =?utf-8?B?NTVNcHFBV1BYb0loRDFSVy8waHFMVHFITTVudlVqRDlGczBjS1NuMCtPUlF6?=
- =?utf-8?B?WVAyZmV4Z1pXSXpGOGZrVXNLdjRHcUpCKzhteG1lWEJwdnpsRWlXaS92aFFt?=
- =?utf-8?B?RzlRT3ViNjNFOURaSFVEMjR0NFF6WWwvSjg1c2xlbVZUZ2N2R1FPYnhuV1kr?=
- =?utf-8?B?RGZrVUJXWTJPdHkxSEtkTEhBZWVPeHpGKzJ5SVI3OThxRnM0dWxYRjBtTmtQ?=
- =?utf-8?B?WldFejJzTU5vaDhlOTdiQkNTcWw1YjRBMVBTUGlEOHdvOWROYzkyTmVxRlRP?=
- =?utf-8?B?YXVBdEhRK0ZEZE85K0pKdXdpRmVGODhDTnVqbmVrRmhpMGkvK0xWTUViWkFQ?=
- =?utf-8?B?S3p2ZkhhcGI4Um52NDB1TkZQL3ZlZmExaXdJZnc0QkxjeDcwNDZmc3lwVklT?=
- =?utf-8?B?NFFRYnJmM1lwcW4vb2x5b1lIOEx5NWpIamJJSEcxSlc0YVo0Nm9SZWxZa0xI?=
- =?utf-8?B?WHdMcFg4aTYrNWY4UlpDMi9rQUhHV1UxcEpjVFFNSC82VjFKSDFZaCtLSWNj?=
- =?utf-8?B?cmE0M01CRWczU1ZsWTJncnZGRThHUGViZCtBY2RXOTRsWXBsQkEyZVhMdHR1?=
- =?utf-8?B?THIwc3dmNFc0Mm1BNGZWUzRMYWxLVE91QzY4R3hMN2ZVNzdCa21mVTNTbmYx?=
- =?utf-8?B?RlFDOThDWXppOTc0cG9SZXF2c1B3TlRVaWxzQTY1MjJZTTBad0lpVzVOajBs?=
- =?utf-8?B?Q1dGTDc4N3JqZkU2ZGdVUzFianE4NFZTWkI2djY5NnlBNU5LbDhGbHprclJ2?=
- =?utf-8?B?QytaK2E4VHFuT2dtelhQbGh0Q2NWYnJTcUoxaTBsNzVYVzJTdDhOZEY4V1dH?=
- =?utf-8?B?YTlidHNZWXNPUlM1VXd5akV1UDVpTFJQRFU5aHRGc2ZlU3RXWkN6c3pNcU5S?=
- =?utf-8?B?OE9zWTNnRlFGcFRQVTFEclVDLzlOb2RuN2s5Zmt2OGdVN25tWlpUQkl5RFlz?=
- =?utf-8?B?b1NGRjdlWDdrc0ZFT0E2eU9WTTcxUDNndEVxNlJKYzBjdWRJY3dZQjZ1UXFj?=
- =?utf-8?B?ZEFQSzhrMXRLL0xOVUJlQXp2SzZxTTRXdkVWVVltQ2pMRUUxMW03cExBYWd0?=
- =?utf-8?B?Zm84U2NlR0l6cU81YmxRVERjVFhlUkNyU3l2cDA3OXVER0VzMnJGT013T1Ar?=
- =?utf-8?B?UUk4TVBLZDFTaEs0bEVIVGk0SElOSU5Zd1F2ZGEvMWZ6aHRUcUVhOFl4QVNw?=
- =?utf-8?B?VzBUVFN3bjNvWWxZVWo5MTFPWjhSWGV0RmZ5ZGRLMjZYeXNNOE1KODFPNjM5?=
- =?utf-8?B?NExjS0VNQ2RiT3FnV2tFeFBIRjcyakE1M0l2QWEweFJidXllQnlDbm9lRWpC?=
- =?utf-8?B?ZTVZZ2EwTGJzVGRYMHh0VG9kdmg4WnBrV050dlh6bEJLd251b2FKYzdXa3VY?=
- =?utf-8?B?a0xYK1FZd3ZRZEl1M0xiT3ltai9ZVlJPNFhROXJRZ0JxNUFvVk5Idz09?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ec14cd81-c985-4afc-0fbb-08da214ba342
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5150.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Apr 2022 14:56:37.4293
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UWnIr5HuX/tAL7yiguEA5OhjnpLDbLYJ7E8MbPhRWdRTITldAYEiH/a2cugRqUoCrhLb+RvwA4u+pBtAEUc0PA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB5667
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -136,136 +78,284 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-04-14 13:28, Jakub Kicinski wrote:
-> On Wed, 13 Apr 2022 16:49:56 +0300 Maxim Mikityanskiy wrote:
->> Calling tls_append_frag when max_open_record_len == record->len might
->> add an empty fragment to the TLS record if the call happens to be on the
->> page boundary. Normally tls_append_frag coalesces the zero-sized
->> fragment to the previous one, but not if it's on page boundary.
->>
->> If a resync happens then, the mlx5 driver posts dump WQEs in
->> tx_post_resync_dump, and the empty fragment may become a data segment
->> with byte_count == 0, which will confuse the NIC and lead to a CQE
->> error.
->>
->> This commit fixes the described issue by skipping tls_append_frag on
->> zero size to avoid adding empty fragments. The fix is not in the driver,
->> because an empty fragment is hardly the desired behavior.
->>
->> Fixes: e8f69799810c ("net/tls: Add generic NIC offload infrastructure")
->> Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
->> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
->> ---
->>   net/tls/tls_device.c | 12 +++++++-----
->>   1 file changed, 7 insertions(+), 5 deletions(-)
->>
->> diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
->> index 12f7b56771d9..af875ad4a822 100644
->> --- a/net/tls/tls_device.c
->> +++ b/net/tls/tls_device.c
->> @@ -483,11 +483,13 @@ static int tls_push_data(struct sock *sk,
->>   		copy = min_t(size_t, size, (pfrag->size - pfrag->offset));
->>   		copy = min_t(size_t, copy, (max_open_record_len - record->len));
->>   
->> -		rc = tls_device_copy_data(page_address(pfrag->page) +
->> -					  pfrag->offset, copy, msg_iter);
->> -		if (rc)
->> -			goto handle_error;
->> -		tls_append_frag(record, pfrag, copy);
->> +		if (copy) {
->> +			rc = tls_device_copy_data(page_address(pfrag->page) +
->> +						  pfrag->offset, copy, msg_iter);
->> +			if (rc)
->> +				goto handle_error;
->> +			tls_append_frag(record, pfrag, copy);
->> +		}
-> 
-> I appreciate you're likely trying to keep the fix minimal but Greg
-> always says "fix it right, worry about backports later".
-> 
-> I think we should skip more, we can reorder the mins and if
-> min(size, rec space) == 0 then we can skip the allocation as well.
+Change the security_secctx_to_secid interface to use a lsmblob
+structure in place of the single u32 secid in support of
+module stacking. Change its callers to do the same.
 
-Sorry, I didn't get the idea. Could you elaborate?
+The security module hook is unchanged, still passing back a secid.
+The infrastructure passes the correct entry from the lsmblob.
 
-Reordering the mins:
+Acked-by: Paul Moore <paul@paul-moore.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+Cc: netdev@vger.kernel.org
+Cc: netfilter-devel@vger.kernel.org
+To: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+ include/linux/security.h          | 26 ++++++++++++++++++--
+ kernel/cred.c                     |  4 +---
+ net/netfilter/nft_meta.c          | 10 ++++----
+ net/netfilter/xt_SECMARK.c        |  7 +++++-
+ net/netlabel/netlabel_unlabeled.c | 23 +++++++++++-------
+ security/security.c               | 40 ++++++++++++++++++++++++++-----
+ 6 files changed, 85 insertions(+), 25 deletions(-)
 
-copy = min_t(size_t, size, max_open_record_len - record->len);
-copy = min_t(size_t, copy, pfrag->size - pfrag->offset);
-
-I assume by skipping the allocation you mean skipping 
-tls_do_allocation(), right? Do you suggest to skip it if the result of 
-the first min_t() is 0?
-
-record->len used in the first min_t() comes from ctx->open_record, which 
-either exists or is allocated by tls_do_allocation(). If we move the 
-copy == 0 check above the tls_do_allocation() call, first we'll have to 
-check whether ctx->open_record is NULL, which is currently checked by 
-tls_do_allocation() itself.
-
-If open_record is not NULL, there isn't much to skip in 
-tls_do_allocation on copy == 0, the main part is already skipped, 
-regardless of the value of copy. If open_record is NULL, we can't skip 
-tls_do_allocation, and copy won't be 0 afterwards.
-
-To compare, before (pseudocode):
-
-tls_do_allocation {
-     if (!ctx->open_record)
-         ALLOCATE RECORD
-         Now ctx->open_record is not NULL
-     if (!sk_page_frag_refill(sk, pfrag))
-         return -ENOMEM
-}
-handle errors from tls_do_allocation
-copy = min(size, pfrag->size - pfrag->offset)
-copy = min(copy, max_open_record_len - ctx->open_record->len)
-if (copy)
-     copy data and append frag
-
-After:
-
-if (ctx->open_record) {
-     copy = min(size, max_open_record_len - ctx->open_record->len)
-     if (copy) {
-         // You want to put this part of tls_do_allocation under if (copy)?
-         if (!sk_page_frag_refill(sk, pfrag))
-             handle errors
-         copy = min(copy, pfrag->size - pfrag->offset)
-         if (copy)
-             copy data and append frag
-     }
-} else {
-     ALLOCATE RECORD
-     if (!sk_page_frag_refill(sk, pfrag))
-         handle errors
-     // Have to do this after the allocation anyway.
-     copy = min(size, max_open_record_len - ctx->open_record->len)
-     copy = min(copy, pfrag->size - pfrag->offset)
-     if (copy)
-         copy data and append frag
-}
-
-Either I totally don't get what you suggested, or it doesn't make sense 
-to me, because we have +1 branch in the common path when a record is 
-open and copy is not 0, no changes when there is no record, and more 
-repeating code hard to compress.
-
-If I missed your idea, please explain in more details.
-
-> Maybe some application wants to do zero-length sends to flush the
-> MSG_MORE and would benefit that way?
-
-If it's a zero-length send, it means that size is 0 initially, and 
-max_open_record_len - ctx->open_record->len isn't 0 (otherwise the 
-record would have been closed at a previous iteration). That doesn't 
-sound related to swapping the mins and skipping tls_do_allocation on 
-copy == 0.
-
-Thanks,
-Max
-
->>   		size -= copy;
->>   		if (!size) {
-> 
+diff --git a/include/linux/security.h b/include/linux/security.h
+index 68ab0add23d3..57879f0b9f89 100644
+--- a/include/linux/security.h
++++ b/include/linux/security.h
+@@ -199,6 +199,27 @@ static inline bool lsmblob_equal(const struct lsmblob *bloba,
+ extern int lsm_name_to_slot(char *name);
+ extern const char *lsm_slot_to_name(int slot);
+ 
++/**
++ * lsmblob_value - find the first non-zero value in an lsmblob structure.
++ * @blob: Pointer to the data
++ *
++ * This needs to be used with extreme caution, as the cases where
++ * it is appropriate are rare.
++ *
++ * Return the first secid value set in the lsmblob.
++ * There should only be one.
++ */
++static inline u32 lsmblob_value(const struct lsmblob *blob)
++{
++	int i;
++
++	for (i = 0; i < LSMBLOB_ENTRIES; i++)
++		if (blob->secid[i])
++			return blob->secid[i];
++
++	return 0;
++}
++
+ /* These functions are in security/commoncap.c */
+ extern int cap_capable(const struct cred *cred, struct user_namespace *ns,
+ 		       int cap, unsigned int opts);
+@@ -529,7 +550,8 @@ int security_setprocattr(const char *lsm, const char *name, void *value,
+ int security_netlink_send(struct sock *sk, struct sk_buff *skb);
+ int security_ismaclabel(const char *name);
+ int security_secid_to_secctx(u32 secid, char **secdata, u32 *seclen);
+-int security_secctx_to_secid(const char *secdata, u32 seclen, u32 *secid);
++int security_secctx_to_secid(const char *secdata, u32 seclen,
++			     struct lsmblob *blob);
+ void security_release_secctx(char *secdata, u32 seclen);
+ void security_inode_invalidate_secctx(struct inode *inode);
+ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -1384,7 +1406,7 @@ static inline int security_secid_to_secctx(u32 secid, char **secdata, u32 *secle
+ 
+ static inline int security_secctx_to_secid(const char *secdata,
+ 					   u32 seclen,
+-					   u32 *secid)
++					   struct lsmblob *blob)
+ {
+ 	return -EOPNOTSUPP;
+ }
+diff --git a/kernel/cred.c b/kernel/cred.c
+index 3925d38f49f4..adea727744f4 100644
+--- a/kernel/cred.c
++++ b/kernel/cred.c
+@@ -791,14 +791,12 @@ EXPORT_SYMBOL(set_security_override);
+ int set_security_override_from_ctx(struct cred *new, const char *secctx)
+ {
+ 	struct lsmblob blob;
+-	u32 secid;
+ 	int ret;
+ 
+-	ret = security_secctx_to_secid(secctx, strlen(secctx), &secid);
++	ret = security_secctx_to_secid(secctx, strlen(secctx), &blob);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	lsmblob_init(&blob, secid);
+ 	return set_security_override(new, &blob);
+ }
+ EXPORT_SYMBOL(set_security_override_from_ctx);
+diff --git a/net/netfilter/nft_meta.c b/net/netfilter/nft_meta.c
+index ac4859241e17..fc0028c9e33d 100644
+--- a/net/netfilter/nft_meta.c
++++ b/net/netfilter/nft_meta.c
+@@ -860,21 +860,21 @@ static const struct nla_policy nft_secmark_policy[NFTA_SECMARK_MAX + 1] = {
+ 
+ static int nft_secmark_compute_secid(struct nft_secmark *priv)
+ {
+-	u32 tmp_secid = 0;
++	struct lsmblob blob;
+ 	int err;
+ 
+-	err = security_secctx_to_secid(priv->ctx, strlen(priv->ctx), &tmp_secid);
++	err = security_secctx_to_secid(priv->ctx, strlen(priv->ctx), &blob);
+ 	if (err)
+ 		return err;
+ 
+-	if (!tmp_secid)
++	if (!lsmblob_is_set(&blob))
+ 		return -ENOENT;
+ 
+-	err = security_secmark_relabel_packet(tmp_secid);
++	err = security_secmark_relabel_packet(lsmblob_value(&blob));
+ 	if (err)
+ 		return err;
+ 
+-	priv->secid = tmp_secid;
++	priv->secid = lsmblob_value(&blob);
+ 	return 0;
+ }
+ 
+diff --git a/net/netfilter/xt_SECMARK.c b/net/netfilter/xt_SECMARK.c
+index 498a0bf6f044..87ca3a537d1c 100644
+--- a/net/netfilter/xt_SECMARK.c
++++ b/net/netfilter/xt_SECMARK.c
+@@ -42,13 +42,14 @@ secmark_tg(struct sk_buff *skb, const struct xt_secmark_target_info_v1 *info)
+ 
+ static int checkentry_lsm(struct xt_secmark_target_info_v1 *info)
+ {
++	struct lsmblob blob;
+ 	int err;
+ 
+ 	info->secctx[SECMARK_SECCTX_MAX - 1] = '\0';
+ 	info->secid = 0;
+ 
+ 	err = security_secctx_to_secid(info->secctx, strlen(info->secctx),
+-				       &info->secid);
++				       &blob);
+ 	if (err) {
+ 		if (err == -EINVAL)
+ 			pr_info_ratelimited("invalid security context \'%s\'\n",
+@@ -56,6 +57,10 @@ static int checkentry_lsm(struct xt_secmark_target_info_v1 *info)
+ 		return err;
+ 	}
+ 
++	/* xt_secmark_target_info can't be changed to use lsmblobs because
++	 * it is exposed as an API. Use lsmblob_value() to get the one
++	 * value that got set by security_secctx_to_secid(). */
++	info->secid = lsmblob_value(&blob);
+ 	if (!info->secid) {
+ 		pr_info_ratelimited("unable to map security context \'%s\'\n",
+ 				    info->secctx);
+diff --git a/net/netlabel/netlabel_unlabeled.c b/net/netlabel/netlabel_unlabeled.c
+index 8490e46359ae..f3e2cde76919 100644
+--- a/net/netlabel/netlabel_unlabeled.c
++++ b/net/netlabel/netlabel_unlabeled.c
+@@ -880,7 +880,7 @@ static int netlbl_unlabel_staticadd(struct sk_buff *skb,
+ 	void *addr;
+ 	void *mask;
+ 	u32 addr_len;
+-	u32 secid;
++	struct lsmblob blob;
+ 	struct netlbl_audit audit_info;
+ 
+ 	/* Don't allow users to add both IPv4 and IPv6 addresses for a
+@@ -904,13 +904,18 @@ static int netlbl_unlabel_staticadd(struct sk_buff *skb,
+ 	ret_val = security_secctx_to_secid(
+ 		                  nla_data(info->attrs[NLBL_UNLABEL_A_SECCTX]),
+ 				  nla_len(info->attrs[NLBL_UNLABEL_A_SECCTX]),
+-				  &secid);
++				  &blob);
+ 	if (ret_val != 0)
+ 		return ret_val;
+ 
++	/* netlbl_unlhsh_add will be changed to pass a struct lsmblob *
++	 * instead of a u32 later in this patch set. security_secctx_to_secid()
++	 * will only be setting one entry in the lsmblob struct, so it is
++	 * safe to use lsmblob_value() to get that one value. */
++
+ 	return netlbl_unlhsh_add(&init_net,
+-				 dev_name, addr, mask, addr_len, secid,
+-				 &audit_info);
++				 dev_name, addr, mask, addr_len,
++				 lsmblob_value(&blob), &audit_info);
+ }
+ 
+ /**
+@@ -931,7 +936,7 @@ static int netlbl_unlabel_staticadddef(struct sk_buff *skb,
+ 	void *addr;
+ 	void *mask;
+ 	u32 addr_len;
+-	u32 secid;
++	struct lsmblob blob;
+ 	struct netlbl_audit audit_info;
+ 
+ 	/* Don't allow users to add both IPv4 and IPv6 addresses for a
+@@ -953,13 +958,15 @@ static int netlbl_unlabel_staticadddef(struct sk_buff *skb,
+ 	ret_val = security_secctx_to_secid(
+ 		                  nla_data(info->attrs[NLBL_UNLABEL_A_SECCTX]),
+ 				  nla_len(info->attrs[NLBL_UNLABEL_A_SECCTX]),
+-				  &secid);
++				  &blob);
+ 	if (ret_val != 0)
+ 		return ret_val;
+ 
++	/* security_secctx_to_secid() will only put one secid into the lsmblob
++	 * so it's safe to use lsmblob_value() to get the secid. */
+ 	return netlbl_unlhsh_add(&init_net,
+-				 NULL, addr, mask, addr_len, secid,
+-				 &audit_info);
++				 NULL, addr, mask, addr_len,
++				 lsmblob_value(&blob), &audit_info);
+ }
+ 
+ /**
+diff --git a/security/security.c b/security/security.c
+index e9f1487af0e5..f814a41c5d9f 100644
+--- a/security/security.c
++++ b/security/security.c
+@@ -2211,10 +2211,22 @@ int security_secid_to_secctx(u32 secid, char **secdata, u32 *seclen)
+ }
+ EXPORT_SYMBOL(security_secid_to_secctx);
+ 
+-int security_secctx_to_secid(const char *secdata, u32 seclen, u32 *secid)
++int security_secctx_to_secid(const char *secdata, u32 seclen,
++			     struct lsmblob *blob)
+ {
+-	*secid = 0;
+-	return call_int_hook(secctx_to_secid, 0, secdata, seclen, secid);
++	struct security_hook_list *hp;
++	int rc;
++
++	lsmblob_init(blob, 0);
++	hlist_for_each_entry(hp, &security_hook_heads.secctx_to_secid, list) {
++		if (WARN_ON(hp->lsmid->slot < 0 || hp->lsmid->slot >= lsm_slot))
++			continue;
++		rc = hp->hook.secctx_to_secid(secdata, seclen,
++					      &blob->secid[hp->lsmid->slot]);
++		if (rc != 0)
++			return rc;
++	}
++	return 0;
+ }
+ EXPORT_SYMBOL(security_secctx_to_secid);
+ 
+@@ -2365,10 +2377,26 @@ int security_socket_getpeersec_stream(struct socket *sock, char __user *optval,
+ 				optval, optlen, len);
+ }
+ 
+-int security_socket_getpeersec_dgram(struct socket *sock, struct sk_buff *skb, u32 *secid)
++int security_socket_getpeersec_dgram(struct socket *sock, struct sk_buff *skb,
++				     u32 *secid)
+ {
+-	return call_int_hook(socket_getpeersec_dgram, -ENOPROTOOPT, sock,
+-			     skb, secid);
++	struct security_hook_list *hp;
++	int rc = -ENOPROTOOPT;
++
++	/*
++	 * Only one security module should provide a real hook for
++	 * this. A stub or bypass like is used in BPF should either
++	 * (somehow) leave rc unaltered or return -ENOPROTOOPT.
++	 */
++	hlist_for_each_entry(hp, &security_hook_heads.socket_getpeersec_dgram,
++			     list) {
++		if (WARN_ON(hp->lsmid->slot < 0 || hp->lsmid->slot >= lsm_slot))
++			continue;
++		rc = hp->hook.socket_getpeersec_dgram(sock, skb, secid);
++		if (rc != -ENOPROTOOPT)
++			break;
++	}
++	return rc;
+ }
+ EXPORT_SYMBOL(security_socket_getpeersec_dgram);
+ 
+-- 
+2.35.1
 
