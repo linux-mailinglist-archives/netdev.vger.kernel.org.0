@@ -2,66 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D32D505BF8
-	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 17:51:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C981505BFE
+	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 17:52:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345947AbiDRPxw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Apr 2022 11:53:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42526 "EHLO
+        id S1345500AbiDRPys (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Apr 2022 11:54:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345953AbiDRPx3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 11:53:29 -0400
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC441BF43
-        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 08:38:52 -0700 (PDT)
-Received: by mail-qk1-x72f.google.com with SMTP id a186so8707941qkc.10
-        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 08:38:52 -0700 (PDT)
+        with ESMTP id S1345804AbiDRPyb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 11:54:31 -0400
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC8BD2E9E7
+        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 08:41:22 -0700 (PDT)
+Received: by mail-qk1-x72a.google.com with SMTP id s4so11486012qkh.0
+        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 08:41:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=pggPuZdJ0sh0DRZQ6dxN1mTrIZCiKodH9ePXo1UN6eE=;
-        b=D85011SQWwV83FLxK51Peevvwd4ygZVvdHSSDq2iGCAnmuVu4r/QmheA0MxMwgmMKy
-         jKtH66gyQ40X5rSCIC0pIsxnnVTO9w6eOD/QQljIwubCF43VGrGUdOTddMfHOYM0aY76
-         p4k71idrzpokpYOY/K/iA6KNsQcz/75pbFcGvKxDurgjL26JSEcFxvSXU0Zmc9iXKDWG
-         r10Rl1GDm6832/dHtfVS8JHg92I9Rf5zWOJf4abgfl3kLEihzSWSKBK4GW1oeHVZps5e
-         OK7x5IYnLR0jKmTBgYQk1C6uYGB2RCx+6dkjS/G2JOJhpDmYjy0w/4eS7vw/9SgJib46
-         4rYQ==
+        bh=NIlNiSkkSkgTapGfecwZRIqvyhekuiNyDyxM96ZsPI4=;
+        b=POT7koJZVyf0j8gHL1RT150kUn1gZh12BE6+ykwhi2ekMHb9lLcuhssdNkfU9EKQbP
+         KTVQyXsUAxGT3DnmFoWpXcZNl9zALhEWEu7dIuhij8G9o/x8U0dUhSFq1GkW8M+/s+9y
+         gAWfNf4fYr8wqMpwKIho3ACE3aWTuTZeeLcyDfvTQYAbcRom7YBgM+5Wo5o+N3RE/31y
+         Zjn1jyQibJg/33NOqMSuBOzXusme3ILdVzopHP2QB6giyeEAk1uQx08Tg5ViIv5bOta6
+         M/CJwER9qKu6iV2k4lQzf6mBn/o5/EJSuvtzGoNwln8UBranoqu0EnOnWLN30jDsjfW5
+         1F1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=pggPuZdJ0sh0DRZQ6dxN1mTrIZCiKodH9ePXo1UN6eE=;
-        b=pQptgC5cibP8OGUv9h3WepzOf6p43pOM3GfbImvnnjUhGki4hvs/E/vRqprBz2QhR2
-         dplkP50+q+0H+1aZkwtf12ycDY/sWxK7sGvt66CXKc8Le4dpKWg+k7SUQwkXYVmPZvx9
-         4Rkzr4r8XSTghbywtOlKAXMi9HmmbiXuMIwuLBCC/kztiDyTCYUWtxl3BxKJuIKjmkb9
-         eAsfkvzThyudHHG1xoYBvhuoAvnoOdkS31+CuBYXMorSgogaXjmc2GPZGXeaNvJcXA3A
-         bFRRMdT9ohqeoU11TYAKHvsNUttbRXy3CtiLfayQznQ27UKEPSiDlMHEcs5z66iFtdwi
-         T7mQ==
-X-Gm-Message-State: AOAM533rdApX0DeLNcSc+jiYy6Iqa8LVkpbnGspjw2wutzWSZUrv0fv4
-        a65lPAghWAbjUUNdhWueMRXy2hhqKys=
-X-Google-Smtp-Source: ABdhPJwDAhvGUJqv80TIz+BmGBDAnCOALLy7YpwR8AKc0I26kL8zIJ7gRJoUs3xKmBHG5Nto5avWnQ==
-X-Received: by 2002:a05:620a:24c4:b0:69e:a0ad:ff5d with SMTP id m4-20020a05620a24c400b0069ea0adff5dmr2908643qkn.11.1650296331902;
-        Mon, 18 Apr 2022 08:38:51 -0700 (PDT)
-Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com. [209.85.128.180])
-        by smtp.gmail.com with ESMTPSA id g21-20020ac85815000000b002e06e2623a7sm7917924qtg.0.2022.04.18.08.38.51
+        bh=NIlNiSkkSkgTapGfecwZRIqvyhekuiNyDyxM96ZsPI4=;
+        b=kYCdig/bPloXaj+9pisuqskmWmuA5rLX+JKZrA1Ie051AESRN4OIeTWgUW1YYIPdzB
+         PUWgdQqdSk3EOjTqWVOdHJiF4OVDSpLcsS04rq+nItEyMXsZNpOXw0D/vFqwoa+DL64e
+         EUXnVFV8fx85ejCcQ/BlzO1ehvm+uR4xnBiZwzuIzQbedAMgBcDLevat5hzNpatuPWHr
+         h31XiGtResa2Loq3eRf6eInCGyGfvIRlNo/QVtvpGI4p/DeoJqGZC4qkI6W1hTGt9SQ6
+         EBOGsWPngj9SBJgilgShK1NyW57LMigr+UqI/ekeYxhgpgQL3221/kYm6p6ChAYDpr4g
+         454w==
+X-Gm-Message-State: AOAM530T0OAiD80YCl2B1el3Kh74Sv+ttKSGhOL7Ifi2t5bk8GImz8VM
+        +5IjM2BgHolA6MqTQe6kGGU8QlMWtA8=
+X-Google-Smtp-Source: ABdhPJwGZ7Ba83JeGCLZUvj5yO95zB5yryD52mIu0TS+4TpQdgFS7v8MbaPbV1wkYhHbC0thTOxYTg==
+X-Received: by 2002:a05:620a:2a14:b0:69e:9996:4d2b with SMTP id o20-20020a05620a2a1400b0069e99964d2bmr3376103qkp.280.1650296481810;
+        Mon, 18 Apr 2022 08:41:21 -0700 (PDT)
+Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com. [209.85.219.180])
+        by smtp.gmail.com with ESMTPSA id y66-20020a37af45000000b0067dc0fc539fsm6846887qke.86.2022.04.18.08.41.21
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Apr 2022 08:38:51 -0700 (PDT)
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-2edbd522c21so142748597b3.13
-        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 08:38:51 -0700 (PDT)
-X-Received: by 2002:a81:1345:0:b0:2ec:31ea:dfdb with SMTP id
- 66-20020a811345000000b002ec31eadfdbmr10771840ywt.351.1650296330562; Mon, 18
- Apr 2022 08:38:50 -0700 (PDT)
+        Mon, 18 Apr 2022 08:41:21 -0700 (PDT)
+Received: by mail-yb1-f180.google.com with SMTP id f38so26211239ybi.3
+        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 08:41:21 -0700 (PDT)
+X-Received: by 2002:a25:b94a:0:b0:644:db14:ff10 with SMTP id
+ s10-20020a25b94a000000b00644db14ff10mr7288155ybm.648.1650296480886; Mon, 18
+ Apr 2022 08:41:20 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220418044339.127545-1-liuhangbin@gmail.com> <20220418044339.127545-2-liuhangbin@gmail.com>
-In-Reply-To: <20220418044339.127545-2-liuhangbin@gmail.com>
+References: <20220418044339.127545-1-liuhangbin@gmail.com> <20220418044339.127545-3-liuhangbin@gmail.com>
+In-Reply-To: <20220418044339.127545-3-liuhangbin@gmail.com>
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 18 Apr 2022 11:38:14 -0400
-X-Gmail-Original-Message-ID: <CA+FuTScQ=tP=cr5f2S97Z7ex1HMX5R-C0W6JE2Bx5UWgiGknZA@mail.gmail.com>
-Message-ID: <CA+FuTScQ=tP=cr5f2S97Z7ex1HMX5R-C0W6JE2Bx5UWgiGknZA@mail.gmail.com>
-Subject: Re: [PATCH net 1/2] net/af_packet: adjust network header position for
- VLAN tagged packets
+Date:   Mon, 18 Apr 2022 11:40:44 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSdTbpYGJo6ec2Ti+djXCj=gBAQpv9ZVaTtaJA-QUNNgYQ@mail.gmail.com>
+Message-ID: <CA+FuTSdTbpYGJo6ec2Ti+djXCj=gBAQpv9ZVaTtaJA-QUNNgYQ@mail.gmail.com>
+Subject: Re: [PATCH net 2/2] virtio_net: check L3 protocol for VLAN packets
 To:     Hangbin Liu <liuhangbin@gmail.com>
 Cc:     netdev@vger.kernel.org, "Michael S . Tsirkin" <mst@redhat.com>,
         Jason Wang <jasowang@redhat.com>,
@@ -72,8 +71,7 @@ Cc:     netdev@vger.kernel.org, "Michael S . Tsirkin" <mst@redhat.com>,
         virtualization@lists.linux-foundation.org,
         Balazs Nemeth <bnemeth@redhat.com>,
         Mike Pattrick <mailmpattric@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Flavio Leitner <fbl@redhat.com>
+        Eric Dumazet <edumazet@google.com>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -87,105 +85,91 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Mon, Apr 18, 2022 at 12:44 AM Hangbin Liu <liuhangbin@gmail.com> wrote:
 >
-> Flavio reported that the kernel drops GSO VLAN tagged packet if it's
-> created with socket(AF_PACKET, SOCK_RAW, 0) plus virtio_net_hdr.
+> For gso packets, virtio_net_hdr_to_skb() will check the protocol via
+> virtio_net_hdr_match_proto(). But a packet may come from a raw socket
+> with a VLAN tag. Checking the VLAN protocol for virtio net_hdr makes no
+> sense. Let's check the L3 protocol if it's a VLAN packet.
 >
-> The reason is AF_PACKET doesn't adjust the skb network header if there is
-> a VLAN tag. Then after virtio_net_hdr_set_proto() called, the skb->protocol
-> will be set to ETH_P_IP/IPv6. And in later inet/ipv6_gso_segment() the skb
-> is dropped as network header position is invalid.
+> Make the virtio_net_hdr_match_proto() checking for all skbs instead of
+> only skb without protocol setting.
 >
-> Fix it by adjusting network header position in packet_parse_headers()
-> and move the function before calling virtio_net_hdr_* functions.
+> Also update the data, protocol parameter for
+> skb_flow_dissect_flow_keys_basic() as the skb->protocol may not IP or IPv6.
 >
-> I also moved skb->no_fcs setting upper to make all skb setting together
-> and keep consistence of function packet_sendmsg_spkt().
->
-> No need to update tpacket_snd() as it calls packet_parse_headers() in
-> tpacket_fill_skb() before calling virtio_net_hdr_* functions.
->
-> Fixes: 75c65772c3d1 ("net/packet: Ask driver for protocol if not provided by user")
-> Reported-by: Flavio Leitner <fbl@redhat.com>
+> Fixes: 7e5cced9ca84 ("net: accept UFOv6 packages in virtio_net_hdr_to_skb")
 > Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-
-Strictly speaking VLAN tagged GSO packets have never been supported.
-The only defined types are TCP and UDP over IPv4 and IPv6:
-
-  define VIRTIO_NET_HDR_GSO_TCPV4        1       /* GSO frame, IPv4 TCP (TSO) */
-  define VIRTIO_NET_HDR_GSO_UDP          3       /* GSO frame, IPv4 UDP (UFO) */
-  define VIRTIO_NET_HDR_GSO_TCPV6        4       /* GSO frame, IPv6 TCP */
-
-I don't think this is a bug, more a stretching of the definition of those flags.
-
 > ---
->  net/packet/af_packet.c | 18 +++++++++++++-----
->  1 file changed, 13 insertions(+), 5 deletions(-)
+>  include/linux/virtio_net.h | 26 +++++++++++++++++++-------
+>  1 file changed, 19 insertions(+), 7 deletions(-)
 >
-> diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-> index 002d2b9c69dd..cfdbda28ef82 100644
-> --- a/net/packet/af_packet.c
-> +++ b/net/packet/af_packet.c
-> @@ -1924,12 +1924,20 @@ static int packet_rcv_spkt(struct sk_buff *skb, struct net_device *dev,
+> diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net.h
+> index a960de68ac69..97b4f9680786 100644
+> --- a/include/linux/virtio_net.h
+> +++ b/include/linux/virtio_net.h
+> @@ -3,6 +3,7 @@
+>  #define _LINUX_VIRTIO_NET_H
 >
->  static void packet_parse_headers(struct sk_buff *skb, struct socket *sock)
->  {
-> +       int depth;
+>  #include <linux/if_vlan.h>
+> +#include <uapi/linux/if_arp.h>
+>  #include <uapi/linux/tcp.h>
+>  #include <uapi/linux/udp.h>
+>  #include <uapi/linux/virtio_net.h>
+> @@ -102,25 +103,36 @@ static inline int virtio_net_hdr_to_skb(struct sk_buff *skb,
+>                  */
+>                 if (gso_type && skb->network_header) {
+
+This whole branch should not be taken by well formed packets. It is
+inside the else clause of
+
+       if (hdr->flags & VIRTIO_NET_HDR_F_NEEDS_CSUM) {
+          ..
+       } else {
+
+GSO packets should always request checksum offload. The fact that we
+try to patch up some incomplete packets should not have to be expanded
+if we expand support to include VLAN.
+
+>                         struct flow_keys_basic keys;
+> +                       __be16 protocol;
+>
+>                         if (!skb->protocol) {
+> -                               __be16 protocol = dev_parse_header_protocol(skb);
+> +                               protocol = dev_parse_header_protocol(skb);
+>
+>                                 if (!protocol)
+>                                         virtio_net_hdr_set_proto(skb, hdr);
+> -                               else if (!virtio_net_hdr_match_proto(protocol, hdr->gso_type))
+> -                                       return -EINVAL;
+>                                 else
+>                                         skb->protocol = protocol;
+> +                       } else {
+> +                               protocol = skb->protocol;
+>                         }
 > +
->         if ((!skb->protocol || skb->protocol == htons(ETH_P_ALL)) &&
->             sock->type == SOCK_RAW) {
->                 skb_reset_mac_header(skb);
->                 skb->protocol = dev_parse_header_protocol(skb);
->         }
->
-> +       /* Move network header to the right position for VLAN tagged packets */
-> +       if (likely(skb->dev->type == ARPHRD_ETHER) &&
-> +           eth_type_vlan(skb->protocol) &&
-> +           __vlan_get_protocol(skb, skb->protocol, &depth) != 0)
-> +               skb_set_network_header(skb, depth);
+> +                       /* Get L3 protocol if current protocol is VLAN */
+> +                       if (likely(skb->dev->type == ARPHRD_ETHER) &&
+> +                           eth_type_vlan(protocol))
+> +                               protocol = vlan_get_protocol(skb);
 > +
->         skb_probe_transport_header(skb);
->  }
->
-> @@ -3047,6 +3055,11 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
-
->         skb->mark = sockc.mark;
->         skb->tstamp = sockc.transmit_time;
->
-> +       if (unlikely(extra_len == 4))
-> +               skb->no_fcs = 1;
+> +                       if (!virtio_net_hdr_match_proto(protocol, hdr->gso_type))
+> +                               return -EINVAL;
 > +
-> +       packet_parse_headers(skb, sock);
-> +
->         if (has_vnet_hdr) {
->                 err = virtio_net_hdr_to_skb(skb, &vnet_hdr, vio_le());
->                 if (err)
-> @@ -3055,11 +3068,6 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
->                 virtio_net_hdr_set_proto(skb, &vnet_hdr);
->         }
+>  retry:
+>                         if (!skb_flow_dissect_flow_keys_basic(NULL, skb, &keys,
+> -                                                             NULL, 0, 0, 0,
+> -                                                             0)) {
+> +                                                             skb->data, protocol,
+> +                                                             skb_network_offset(skb),
+> +                                                             skb_headlen(skb), 0)) {
+>                                 /* UFO does not specify ipv4 or 6: try both */
+>                                 if (gso_type & SKB_GSO_UDP &&
+> -                                   skb->protocol == htons(ETH_P_IP)) {
+> -                                       skb->protocol = htons(ETH_P_IPV6);
+> +                                   protocol == htons(ETH_P_IP)) {
+> +                                       protocol = htons(ETH_P_IPV6);
+>                                         goto retry;
+>                                 }
+>                                 return -EINVAL;
+> --
+> 2.35.1
 >
-> -       packet_parse_headers(skb, sock);
-> -
-> -       if (unlikely(extra_len == 4))
-> -               skb->no_fcs = 1;
-> -
-
-Moving packet_parse_headers before or after virtio_net_hdr_to_skb may
-have additional subtle effects on protocol detection.
-
-I think it's probably okay, as tpacket_snd also calls in the inverse
-order. But there have been many issues in this codepath.
-
-We should also maintain feature consistency between packet_snd,
-tpacket_snd and to the limitations of its feature set to
-packet_sendmsg_spkt. The no_fcs is already lacking in tpacket_snd as
-far as I can tell. But packet_sendmsg_spkt also sets it and calls
-packet_parse_headers.
-
-Because this patch touches many other packets besides the ones
-intended, I am a bit concerned about unintended consequences. Perhaps
-stretching the definition of the flags to include VLAN is acceptable
-(unlike outright tunnels), but even then I would suggest for net-next.
-
->         err = po->xmit(skb);
->         if (unlikely(err != 0)) {
->                 if (err > 0)
