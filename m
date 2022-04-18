@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A3AD6505CB6
-	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 18:49:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5723A505CBD
+	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 18:50:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346437AbiDRQwV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Apr 2022 12:52:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52140 "EHLO
+        id S1346425AbiDRQxA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Apr 2022 12:53:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346425AbiDRQwT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 12:52:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A27432ED9;
-        Mon, 18 Apr 2022 09:49:39 -0700 (PDT)
+        with ESMTP id S1346447AbiDRQwa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 12:52:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBDF82BC3;
+        Mon, 18 Apr 2022 09:49:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B690E612E4;
-        Mon, 18 Apr 2022 16:49:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9833DC385AA;
-        Mon, 18 Apr 2022 16:49:37 +0000 (UTC)
-Subject: [PATCH RFC 2/5] tls: build proto after context has been initialized
+        by ams.source.kernel.org (Postfix) with ESMTPS id 70666B80FF4;
+        Mon, 18 Apr 2022 16:49:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93B34C385AA;
+        Mon, 18 Apr 2022 16:49:44 +0000 (UTC)
+Subject: [PATCH RFC 3/5] net/tls: Add an AF_TLSH address family
 From:   Chuck Lever <chuck.lever@oracle.com>
 To:     netdev@vger.kernel.org, linux-nfs@vger.kernel.org,
         linux-nvme@lists.infradead.org, linux-cifs@vger.kernel.org,
         linux-fsdevel@vger.kernel.org
 Cc:     ak@tempesta-tech.com, borisp@nvidia.com, simo@redhat.com
-Date:   Mon, 18 Apr 2022 12:49:36 -0400
-Message-ID: <165030057652.5073.10364318727607743572.stgit@oracle-102.nfsv4.dev>
+Date:   Mon, 18 Apr 2022 12:49:43 -0400
+Message-ID: <165030058340.5073.5461321687798728373.stgit@oracle-102.nfsv4.dev>
 In-Reply-To: <165030051838.5073.8699008789153780301.stgit@oracle-102.nfsv4.dev>
 References: <165030051838.5073.8699008789153780301.stgit@oracle-102.nfsv4.dev>
 User-Agent: StGit/1.5
@@ -44,38 +44,125 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hannes Reinecke <hare@suse.de>
+Add definitions for an AF_TLSH address family. The next patch
+explains its purpose and operation.
 
-We have to build the proto ops only after the context has been
-initialized, as otherwise we might crash when I/O is ongoing
-during initialisation.
-
-Signed-off-by: Hannes Reinecke <hare@suse.de>
 Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 ---
- net/tls/tls_main.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ include/linux/socket.h                         |    4 +++-
+ net/core/sock.c                                |    2 +-
+ net/socket.c                                   |    1 +
+ security/selinux/hooks.c                       |    4 +++-
+ security/selinux/include/classmap.h            |    4 +++-
+ tools/perf/trace/beauty/include/linux/socket.h |    4 +++-
+ 6 files changed, 14 insertions(+), 5 deletions(-)
 
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index 7b2b0e7ffee4..7eca4d9a83c4 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -836,8 +836,6 @@ static int tls_init(struct sock *sk)
- 	struct tls_context *ctx;
- 	int rc = 0;
+diff --git a/include/linux/socket.h b/include/linux/socket.h
+index 6f85f5d957ef..fc28c68e6b5f 100644
+--- a/include/linux/socket.h
++++ b/include/linux/socket.h
+@@ -226,8 +226,9 @@ struct ucred {
+ #define AF_MCTP		45	/* Management component
+ 				 * transport protocol
+ 				 */
++#define AF_TLSH		46	/* TLS handshake request */
  
--	tls_build_proto(sk);
--
- #ifdef CONFIG_TLS_TOE
- 	if (tls_toe_bypass(sk))
- 		return 0;
-@@ -862,6 +860,7 @@ static int tls_init(struct sock *sk)
+-#define AF_MAX		46	/* For now.. */
++#define AF_MAX		47	/* For now.. */
  
- 	ctx->tx_conf = TLS_BASE;
- 	ctx->rx_conf = TLS_BASE;
-+	tls_build_proto(sk);
- 	update_sk_prot(sk, ctx);
- out:
- 	write_unlock_bh(&sk->sk_callback_lock);
+ /* Protocol families, same as address families. */
+ #define PF_UNSPEC	AF_UNSPEC
+@@ -278,6 +279,7 @@ struct ucred {
+ #define PF_SMC		AF_SMC
+ #define PF_XDP		AF_XDP
+ #define PF_MCTP		AF_MCTP
++#define PF_TLSH		AF_TLSH
+ #define PF_MAX		AF_MAX
+ 
+ /* Maximum queue length specifiable by listen.  */
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 1180a0cb0110..81bc14b67468 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -224,7 +224,7 @@ static struct lock_class_key af_family_kern_slock_keys[AF_MAX];
+   x "AF_IEEE802154",	x "AF_CAIF"	,	x "AF_ALG"      , \
+   x "AF_NFC"   ,	x "AF_VSOCK"    ,	x "AF_KCM"      , \
+   x "AF_QIPCRTR",	x "AF_SMC"	,	x "AF_XDP"	, \
+-  x "AF_MCTP"  , \
++  x "AF_MCTP"  ,	x "AF_TLSH"	, \
+   x "AF_MAX"
+ 
+ static const char *const af_family_key_strings[AF_MAX+1] = {
+diff --git a/net/socket.c b/net/socket.c
+index 6887840682bb..fc43ebd5ad66 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -214,6 +214,7 @@ static const char * const pf_family_names[] = {
+ 	[PF_SMC]	= "PF_SMC",
+ 	[PF_XDP]	= "PF_XDP",
+ 	[PF_MCTP]	= "PF_MCTP",
++	[PF_TLSH]	= "PF_TLSH",
+ };
+ 
+ /*
+diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+index e9e959343de9..734e284eb06a 100644
+--- a/security/selinux/hooks.c
++++ b/security/selinux/hooks.c
+@@ -1259,7 +1259,9 @@ static inline u16 socket_type_to_security_class(int family, int type, int protoc
+ 			return SECCLASS_XDP_SOCKET;
+ 		case PF_MCTP:
+ 			return SECCLASS_MCTP_SOCKET;
+-#if PF_MAX > 46
++		case PF_TLSH:
++			return SECCLASS_TLSH_SOCKET;
++#if PF_MAX > 47
+ #error New address family defined, please update this function.
+ #endif
+ 		}
+diff --git a/security/selinux/include/classmap.h b/security/selinux/include/classmap.h
+index 35aac62a662e..673b51f8281d 100644
+--- a/security/selinux/include/classmap.h
++++ b/security/selinux/include/classmap.h
+@@ -237,6 +237,8 @@ struct security_class_mapping secclass_map[] = {
+ 	  { COMMON_SOCK_PERMS, NULL } },
+ 	{ "smc_socket",
+ 	  { COMMON_SOCK_PERMS, NULL } },
++	{ "tlsh_socket",
++	  { COMMON_SOCK_PERMS, NULL } },
+ 	{ "infiniband_pkey",
+ 	  { "access", NULL } },
+ 	{ "infiniband_endport",
+@@ -257,6 +259,6 @@ struct security_class_mapping secclass_map[] = {
+ 	{ NULL }
+   };
+ 
+-#if PF_MAX > 46
++#if PF_MAX > 47
+ #error New address family defined, please update secclass_map.
+ #endif
+diff --git a/tools/perf/trace/beauty/include/linux/socket.h b/tools/perf/trace/beauty/include/linux/socket.h
+index 6f85f5d957ef..fc28c68e6b5f 100644
+--- a/tools/perf/trace/beauty/include/linux/socket.h
++++ b/tools/perf/trace/beauty/include/linux/socket.h
+@@ -226,8 +226,9 @@ struct ucred {
+ #define AF_MCTP		45	/* Management component
+ 				 * transport protocol
+ 				 */
++#define AF_TLSH		46	/* TLS handshake request */
+ 
+-#define AF_MAX		46	/* For now.. */
++#define AF_MAX		47	/* For now.. */
+ 
+ /* Protocol families, same as address families. */
+ #define PF_UNSPEC	AF_UNSPEC
+@@ -278,6 +279,7 @@ struct ucred {
+ #define PF_SMC		AF_SMC
+ #define PF_XDP		AF_XDP
+ #define PF_MCTP		AF_MCTP
++#define PF_TLSH		AF_TLSH
+ #define PF_MAX		AF_MAX
+ 
+ /* Maximum queue length specifiable by listen.  */
 
 
