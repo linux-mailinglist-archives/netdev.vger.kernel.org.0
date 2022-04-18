@@ -2,379 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BBA4C5059AC
-	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 16:28:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A859E505A51
+	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 16:51:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344377AbiDRO1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Apr 2022 10:27:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53308 "EHLO
+        id S1345033AbiDROyH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Apr 2022 10:54:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345414AbiDROY4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 10:24:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D944D37A1E;
-        Mon, 18 Apr 2022 06:19:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 664E660F56;
-        Mon, 18 Apr 2022 13:19:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 193D6C385A1;
-        Mon, 18 Apr 2022 13:19:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650287996;
-        bh=1Mi8biN2KXQIL140qKALu53xSNHOc/pw3Qr7fbr4D6o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WoqjP/z4vP+CLTdu2OPcK+LiqSuJjy2wEemTGDavUd+ptfClsDVTIyn+tOl8VXBOB
-         OkzSMdHQC0FSumISRB0rRbeA15G1zlL7jH+teXQU+/6g/hY4ReVsoLF0lRPbkcaDC+
-         o+dqj1IphYKvzRHQPfr8yleB7PAm+qP172HMOIiodQfCpuFHpkLC0jmxBi86ZGO4ih
-         WTPvZa7u0pt3pcrqRHfODwj8Bh1qlg72eYlXN7HY2ij2417MgeTQqS1p/DwjpdrkEN
-         yqqfCpygeAMdirbL+ebfHnpJSgaMeahjcPP5MhoYN01i7Ywpvn8DUYv3sv4toYahD7
-         aOZGNFz4rmdsQ==
-Date:   Mon, 18 Apr 2022 21:19:50 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Abel Vesa <abel.vesa@nxp.com>
-Cc:     Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <fabio.estevam@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        devicetree@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-mmc@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, Jacky Bai <ping.bai@nxp.com>
-Subject: Re: [PATCH v6 06/13] arm64: dts: freescale: Add i.MX8DXL evk board
- support
-Message-ID: <20220418131950.GR391514@dragon>
-References: <20220413103356.3433637-1-abel.vesa@nxp.com>
- <20220413103356.3433637-7-abel.vesa@nxp.com>
+        with ESMTP id S238013AbiDROxz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 10:53:55 -0400
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86738B6D;
+        Mon, 18 Apr 2022 06:41:37 -0700 (PDT)
+Received: by mail-oi1-x22e.google.com with SMTP id z8so14793705oix.3;
+        Mon, 18 Apr 2022 06:41:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ubhpGHFm7fEE+X8m8UI6hc3ul0maTC3658iNeOw7TAY=;
+        b=X1fIQ3C0f/dmi+lxG8SHihJHytTYm6s7FC8V/gRLYwqsPBCemryemlPNU4HjfwXGei
+         Jud4et1Q+XFryinXvIP7652iPWkvTTx4qzhmBPIk5/vKGsKVJvF61DkZs9Itr47BwDVL
+         CFL02MyVLCGUNyGd4wAKAtIonZXW8fhkzdL6AHZkNB7nxj50APoN9qPTWV3LwzJ7sFvl
+         0cUL7dUv9D9pptuo8QnMB92Uvj8qgJu2+82kblvR1mJcqjMk0zc1ZCbahI4lkAjfCmGi
+         7R5drwtvBHKzx2PJys4TP4H44tqNUWV6QOzt8lqHZU1VdaGqlNVB5gwnzZKcNMSMBp1F
+         6hNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=ubhpGHFm7fEE+X8m8UI6hc3ul0maTC3658iNeOw7TAY=;
+        b=DxHJo5M0rlBs3tor6+Zso7FJ4a9sdG1Rgnf5DgL9IJc2qnq8jALLu2eQLpZZ9o7QRZ
+         tc47XxkmJjs9oYHR1h5FlJopW2ASoW/L4HAn4E4uWULtxaCc8A2NSPd0bX+BgqYx9Wvi
+         dZuTevcb2xJpSN1eWgR7KB+DGm+CdkVGWZVLcZgaf3pyJkCsCLwCEHSKt64odsNY/EdY
+         RLfnmCpyiWP/hC+ISR5VHNBiIDJmJin15lEwNR4AA5nHBJlJ6F2o5q/DPOtb/H7yaAAs
+         LTxBQ5Y05GVpaujFtLJZhTtBSN75EdX+ReOMV3q0+w4IFgL+64Kw6Ro95Nh3x0GY2Mev
+         gp2A==
+X-Gm-Message-State: AOAM5319ZJ2WDRe2ZPh3GvvEFhDQvVWgyLbHIvluHydibmH69VwT1Mef
+        YEaNhRiiO9dW7/m+IPu/xXE=
+X-Google-Smtp-Source: ABdhPJxe/5f38q7xHC0JZap0vWgJrQeiMxC+J+P92aDcVm+6vWHzXxjEYEjOPaueJZkxl8C711eWzQ==
+X-Received: by 2002:aca:d1a:0:b0:322:35db:2c0 with SMTP id 26-20020aca0d1a000000b0032235db02c0mr5290438oin.82.1650289295359;
+        Mon, 18 Apr 2022 06:41:35 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id i16-20020a056870d41000b000e1a3a897basm4126947oag.26.2022.04.18.06.41.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Apr 2022 06:41:34 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Mon, 18 Apr 2022 06:41:33 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Lin Ma <linma@zju.edu.cn>
+Cc:     krzk@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mudongliangabcd@gmail.com
+Subject: Re: [PATCH v0] nfc: nci: add flush_workqueue to prevent uaf
+Message-ID: <20220418134133.GA872670@roeck-us.net>
+References: <20220412160430.11581-1-linma@zju.edu.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220413103356.3433637-7-abel.vesa@nxp.com>
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220412160430.11581-1-linma@zju.edu.cn>
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 01:33:49PM +0300, Abel Vesa wrote:
-> From: Jacky Bai <ping.bai@nxp.com>
+On Wed, Apr 13, 2022 at 12:04:30AM +0800, Lin Ma wrote:
+> Our detector found a concurrent use-after-free bug when detaching an
+> NCI device. The main reason for this bug is the unexpected scheduling
+> between the used delayed mechanism (timer and workqueue).
 > 
-> Add i.MX8DXL EVK board support.
+> The race can be demonstrated below:
 > 
-> Signed-off-by: Jacky Bai <ping.bai@nxp.com>
-> Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
+> Thread-1                           Thread-2
+>                                  | nci_dev_up()
+>                                  |   nci_open_device()
+>                                  |     __nci_request(nci_reset_req)
+>                                  |       nci_send_cmd
+>                                  |         queue_work(cmd_work)
+> nci_unregister_device()          |
+>   nci_close_device()             | ...
+>     del_timer_sync(cmd_timer)[1] |
+> ...                              | Worker
+> nci_free_device()                | nci_cmd_work()
+>   kfree(ndev)[3]                 |   mod_timer(cmd_timer)[2]
+> 
+> In short, the cleanup routine thought that the cmd_timer has already
+> been detached by [1] but the mod_timer can re-attach the timer [2], even
+> it is already released [3], resulting in UAF.
+> 
+> This UAF is easy to trigger, crash trace by POC is like below
+> 
+> [   66.703713] ==================================================================
+> [   66.703974] BUG: KASAN: use-after-free in enqueue_timer+0x448/0x490
+> [   66.703974] Write of size 8 at addr ffff888009fb7058 by task kworker/u4:1/33
+> [   66.703974]
+> [   66.703974] CPU: 1 PID: 33 Comm: kworker/u4:1 Not tainted 5.18.0-rc2 #5
+> [   66.703974] Workqueue: nfc2_nci_cmd_wq nci_cmd_work
+> [   66.703974] Call Trace:
+> [   66.703974]  <TASK>
+> [   66.703974]  dump_stack_lvl+0x57/0x7d
+> [   66.703974]  print_report.cold+0x5e/0x5db
+> [   66.703974]  ? enqueue_timer+0x448/0x490
+> [   66.703974]  kasan_report+0xbe/0x1c0
+> [   66.703974]  ? enqueue_timer+0x448/0x490
+> [   66.703974]  enqueue_timer+0x448/0x490
+> [   66.703974]  __mod_timer+0x5e6/0xb80
+> [   66.703974]  ? mark_held_locks+0x9e/0xe0
+> [   66.703974]  ? try_to_del_timer_sync+0xf0/0xf0
+> [   66.703974]  ? lockdep_hardirqs_on_prepare+0x17b/0x410
+> [   66.703974]  ? queue_work_on+0x61/0x80
+> [   66.703974]  ? lockdep_hardirqs_on+0xbf/0x130
+> [   66.703974]  process_one_work+0x8bb/0x1510
+> [   66.703974]  ? lockdep_hardirqs_on_prepare+0x410/0x410
+> [   66.703974]  ? pwq_dec_nr_in_flight+0x230/0x230
+> [   66.703974]  ? rwlock_bug.part.0+0x90/0x90
+> [   66.703974]  ? _raw_spin_lock_irq+0x41/0x50
+> [   66.703974]  worker_thread+0x575/0x1190
+> [   66.703974]  ? process_one_work+0x1510/0x1510
+> [   66.703974]  kthread+0x2a0/0x340
+> [   66.703974]  ? kthread_complete_and_exit+0x20/0x20
+> [   66.703974]  ret_from_fork+0x22/0x30
+> [   66.703974]  </TASK>
+> [   66.703974]
+> [   66.703974] Allocated by task 267:
+> [   66.703974]  kasan_save_stack+0x1e/0x40
+> [   66.703974]  __kasan_kmalloc+0x81/0xa0
+> [   66.703974]  nci_allocate_device+0xd3/0x390
+> [   66.703974]  nfcmrvl_nci_register_dev+0x183/0x2c0
+> [   66.703974]  nfcmrvl_nci_uart_open+0xf2/0x1dd
+> [   66.703974]  nci_uart_tty_ioctl+0x2c3/0x4a0
+> [   66.703974]  tty_ioctl+0x764/0x1310
+> [   66.703974]  __x64_sys_ioctl+0x122/0x190
+> [   66.703974]  do_syscall_64+0x3b/0x90
+> [   66.703974]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> [   66.703974]
+> [   66.703974] Freed by task 406:
+> [   66.703974]  kasan_save_stack+0x1e/0x40
+> [   66.703974]  kasan_set_track+0x21/0x30
+> [   66.703974]  kasan_set_free_info+0x20/0x30
+> [   66.703974]  __kasan_slab_free+0x108/0x170
+> [   66.703974]  kfree+0xb0/0x330
+> [   66.703974]  nfcmrvl_nci_unregister_dev+0x90/0xd0
+> [   66.703974]  nci_uart_tty_close+0xdf/0x180
+> [   66.703974]  tty_ldisc_kill+0x73/0x110
+> [   66.703974]  tty_ldisc_hangup+0x281/0x5b0
+> [   66.703974]  __tty_hangup.part.0+0x431/0x890
+> [   66.703974]  tty_release+0x3a8/0xc80
+> [   66.703974]  __fput+0x1f0/0x8c0
+> [   66.703974]  task_work_run+0xc9/0x170
+> [   66.703974]  exit_to_user_mode_prepare+0x194/0x1a0
+> [   66.703974]  syscall_exit_to_user_mode+0x19/0x50
+> [   66.703974]  do_syscall_64+0x48/0x90
+> [   66.703974]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> 
+> To fix the UAF, this patch adds flush_workqueue() to ensure the
+> nci_cmd_work is finished before the following del_timer_sync.
+> This combination will promise the timer is actually detached.
+> 
+> Fixes: 6a2968aaf50c ("NFC: basic NCI protocol implementation")
+> Signed-off-by: Lin Ma <linma@zju.edu.cn>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 > ---
->  arch/arm64/boot/dts/freescale/Makefile        |   1 +
->  arch/arm64/boot/dts/freescale/imx8dxl-evk.dts | 266 ++++++++++++++++++
->  2 files changed, 267 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/freescale/imx8dxl-evk.dts
+>  net/nfc/nci/core.c | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
-> diff --git a/arch/arm64/boot/dts/freescale/Makefile b/arch/arm64/boot/dts/freescale/Makefile
-> index 85c2c9ba5110..d6be4e8ff3c2 100644
-> --- a/arch/arm64/boot/dts/freescale/Makefile
-> +++ b/arch/arm64/boot/dts/freescale/Makefile
-> @@ -98,6 +98,7 @@ dtb-$(CONFIG_ARCH_MXC) += imx8mq-pico-pi.dtb
->  dtb-$(CONFIG_ARCH_MXC) += imx8mq-thor96.dtb
->  dtb-$(CONFIG_ARCH_MXC) += imx8mq-zii-ultra-rmb3.dtb
->  dtb-$(CONFIG_ARCH_MXC) += imx8mq-zii-ultra-zest.dtb
-> +dtb-$(CONFIG_ARCH_MXC) += imx8dxl-evk.dtb
-
-Out of alphabetical order.
-
->  dtb-$(CONFIG_ARCH_MXC) += imx8qm-mek.dtb
->  dtb-$(CONFIG_ARCH_MXC) += imx8qxp-ai_ml.dtb
->  dtb-$(CONFIG_ARCH_MXC) += imx8qxp-colibri-eval-v3.dtb
-> diff --git a/arch/arm64/boot/dts/freescale/imx8dxl-evk.dts b/arch/arm64/boot/dts/freescale/imx8dxl-evk.dts
-> new file mode 100644
-> index 000000000000..68dfe722af6d
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/freescale/imx8dxl-evk.dts
-> @@ -0,0 +1,266 @@
-> +// SPDX-License-Identifier: GPL-2.0+
-> +/*
-> + * Copyright 2019-2021 NXP
-> + */
-> +
-> +/dts-v1/;
-> +
-> +#include "imx8dxl.dtsi"
-> +
-> +/ {
-> +	model = "Freescale i.MX8DXL EVK";
-> +	compatible = "fsl,imx8dxl-evk", "fsl,imx8dxl";
-> +
-> +	chosen {
-> +		stdout-path = &lpuart0;
-> +	};
-> +
-> +	memory@80000000 {
-> +		device_type = "memory";
-> +		reg = <0x00000000 0x80000000 0 0x40000000>;
-> +	};
-> +
-> +	reserved-memory {
-> +		#address-cells = <2>;
-> +		#size-cells = <2>;
-> +		ranges;
-> +
-> +		/*
-> +		 * 0x8800_0000 ~ 0x8FFF_FFFF is reserved for M4
-> +		 * Shouldn't be used at A core and Linux side.
-> +		 *
+> diff --git a/net/nfc/nci/core.c b/net/nfc/nci/core.c
+> index d2537383a3e8..0d7763c322b5 100644
+> --- a/net/nfc/nci/core.c
+> +++ b/net/nfc/nci/core.c
+> @@ -560,6 +560,10 @@ static int nci_close_device(struct nci_dev *ndev)
+>  	mutex_lock(&ndev->req_lock);
+>  
+>  	if (!test_and_clear_bit(NCI_UP, &ndev->flags)) {
+> +		/* Need to flush the cmd wq in case
+> +		 * there is a queued/running cmd_work
 > +		 */
-> +		m4_reserved: m4@88000000 {
-> +			no-map;
-> +			reg = <0 0x88000000 0 0x8000000>;
-> +		};
-> +
-> +		/* global autoconfigured region for contiguous allocations */
-> +		linux,cma {
-> +			compatible = "shared-dma-pool";
-> +			reusable;
-> +			size = <0 0x14000000>;
-> +			alloc-ranges = <0 0x98000000 0 0x14000000>;
-> +			linux,cma-default;
-> +		};
-> +	};
-> +
-> +	reg_usdhc2_vmmc: usdhc2-vmmc {
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "SD1_SPWR";
-> +		regulator-min-microvolt = <3000000>;
-> +		regulator-max-microvolt = <3000000>;
-> +		gpio = <&lsio_gpio4 30 GPIO_ACTIVE_HIGH>;
-> +		enable-active-high;
-> +		off-on-delay-us = <3480>;
-> +	};
-> +};
-> +
-> +&lpuart0 {
-> +	pinctrl-names = "default";
-> +	pinctrl-0 = <&pinctrl_lpuart0>;
-> +	status = "okay";
-> +};
-> +
-> +&lpuart1 {
-> +	pinctrl-names = "default";
-> +	pinctrl-0 = <&pinctrl_lpuart1>;
-> +	status = "okay";
-> +};
-> +
-> +&lsio_gpio4 {
-> +	status = "okay";
-> +};
-> +
-> +&lsio_gpio5 {
-> +	status = "okay";
-> +};
-> +
-> +&thermal_zones {
-> +	pmic-thermal0 {
-> +		polling-delay-passive = <250>;
-> +		polling-delay = <2000>;
-> +		thermal-sensors = <&tsens IMX_SC_R_PMIC_0>;
+> +		flush_workqueue(ndev->cmd_wq);
+>  		del_timer_sync(&ndev->cmd_timer);
 
-Newline between properties and child node.
+I have been wondering about this and the same code further below.
+What prevents the command timer from firing after the call to
+flush_workqueue() ?
 
-> +		trips {
-> +			pmic_alert0: trip0 {
-> +				temperature = <110000>;
-> +				hysteresis = <2000>;
-> +				type = "passive";
-> +			};
+Thanks,
+Guenter
 
-Newline between nodes.
-
-> +			pmic_crit0: trip1 {
-> +				temperature = <125000>;
-> +				hysteresis = <2000>;
-> +				type = "critical";
-> +			};
-> +		};
-> +		cooling-maps {
-> +			map0 {
-> +				trip = <&pmic_alert0>;
-> +				cooling-device =
-> +					<&A35_0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-> +					<&A35_1 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
-> +			};
-> +		};
-> +	};
-> +};
-> +
-> +&usdhc1 {
-> +		pinctrl-names = "default", "state_100mhz", "state_200mhz";
-> +		pinctrl-0 = <&pinctrl_usdhc1>;
-> +		pinctrl-1 = <&pinctrl_usdhc1_100mhz>;
-> +		pinctrl-2 = <&pinctrl_usdhc1_200mhz>;
-> +		bus-width = <8>;
-> +		no-sd;
-> +		no-sdio;
-> +		non-removable;
-> +		status = "okay";
-
-One level indent is good enough.
-
-Shawn
-
-> +};
-> +
-> +&usdhc2 {
-> +		pinctrl-names = "default", "state_100mhz", "state_200mhz";
-> +		pinctrl-0 = <&pinctrl_usdhc2>, <&pinctrl_usdhc2_gpio>;
-> +		pinctrl-1 = <&pinctrl_usdhc2_100mhz>, <&pinctrl_usdhc2_gpio>;
-> +		pinctrl-2 = <&pinctrl_usdhc2_200mhz>, <&pinctrl_usdhc2_gpio>;
-> +		bus-width = <4>;
-> +		vmmc-supply = <&reg_usdhc2_vmmc>;
-> +		cd-gpios = <&lsio_gpio5 1 GPIO_ACTIVE_LOW>;
-> +		wp-gpios = <&lsio_gpio5 0 GPIO_ACTIVE_HIGH>;
-> +		max-frequency = <100000000>;
-> +		status = "okay";
-> +};
-> +
-> +&iomuxc {
-> +	pinctrl-names = "default";
-> +	pinctrl-0 = <&pinctrl_hog>;
-> +
-> +	pinctrl_hog: hoggrp {
-> +		fsl,pins = <
-> +			IMX8DXL_COMP_CTL_GPIO_1V8_3V3_GPIORHB_PAD	0x000514a0
-> +			IMX8DXL_COMP_CTL_GPIO_1V8_3V3_GPIORHK_PAD	0x000014a0
-> +			IMX8DXL_SPI3_CS0_ADMA_ACM_MCLK_OUT1		0x0600004c
-> +			IMX8DXL_SNVS_TAMPER_OUT1_LSIO_GPIO2_IO05_IN	0x0600004c
-> +		>;
-> +	};
-> +
-> +	pinctrl_i2c2: i2c2grp {
-> +		fsl,pins = <
-> +			IMX8DXL_SPI1_SCK_ADMA_I2C2_SDA		0x06000021
-> +			IMX8DXL_SPI1_SDO_ADMA_I2C2_SCL		0x06000021
-> +		>;
-> +	};
-> +
-> +	pinctrl_i2c3: i2c3grp {
-> +		fsl,pins = <
-> +			IMX8DXL_SPI1_CS0_ADMA_I2C3_SDA		0x06000021
-> +			IMX8DXL_SPI1_SDI_ADMA_I2C3_SCL		0x06000021
-> +		>;
-> +	};
-> +
-> +	pinctrl_lpuart0: lpuart0grp {
-> +		fsl,pins = <
-> +			IMX8DXL_UART0_RX_ADMA_UART0_RX		0x06000020
-> +			IMX8DXL_UART0_TX_ADMA_UART0_TX		0x06000020
-> +		>;
-> +	};
-> +
-> +	pinctrl_lpuart1: lpuart1grp {
-> +		fsl,pins = <
-> +			IMX8DXL_UART1_TX_ADMA_UART1_TX          0x06000020
-> +			IMX8DXL_UART1_RX_ADMA_UART1_RX          0x06000020
-> +			IMX8DXL_UART1_RTS_B_ADMA_UART1_RTS_B    0x06000020
-> +			IMX8DXL_UART1_CTS_B_ADMA_UART1_CTS_B    0x06000020
-> +		>;
-> +	};
-> +
-> +	pinctrl_usdhc1: usdhc1grp {
-> +		fsl,pins = <
-> +			IMX8DXL_EMMC0_CLK_CONN_EMMC0_CLK	0x06000041
-> +			IMX8DXL_EMMC0_CMD_CONN_EMMC0_CMD	0x00000021
-> +			IMX8DXL_EMMC0_DATA0_CONN_EMMC0_DATA0	0x00000021
-> +			IMX8DXL_EMMC0_DATA1_CONN_EMMC0_DATA1	0x00000021
-> +			IMX8DXL_EMMC0_DATA2_CONN_EMMC0_DATA2	0x00000021
-> +			IMX8DXL_EMMC0_DATA3_CONN_EMMC0_DATA3	0x00000021
-> +			IMX8DXL_EMMC0_DATA4_CONN_EMMC0_DATA4	0x00000021
-> +			IMX8DXL_EMMC0_DATA5_CONN_EMMC0_DATA5	0x00000021
-> +			IMX8DXL_EMMC0_DATA6_CONN_EMMC0_DATA6	0x00000021
-> +			IMX8DXL_EMMC0_DATA7_CONN_EMMC0_DATA7	0x00000021
-> +			IMX8DXL_EMMC0_STROBE_CONN_EMMC0_STROBE	0x00000041
-> +		>;
-> +	};
-> +
-> +	pinctrl_usdhc1_100mhz: usdhc1grp100mhz {
-> +		fsl,pins = <
-> +			IMX8DXL_EMMC0_CLK_CONN_EMMC0_CLK	0x06000041
-> +			IMX8DXL_EMMC0_CMD_CONN_EMMC0_CMD	0x00000021
-> +			IMX8DXL_EMMC0_DATA0_CONN_EMMC0_DATA0	0x00000021
-> +			IMX8DXL_EMMC0_DATA1_CONN_EMMC0_DATA1	0x00000021
-> +			IMX8DXL_EMMC0_DATA2_CONN_EMMC0_DATA2	0x00000021
-> +			IMX8DXL_EMMC0_DATA3_CONN_EMMC0_DATA3	0x00000021
-> +			IMX8DXL_EMMC0_DATA4_CONN_EMMC0_DATA4	0x00000021
-> +			IMX8DXL_EMMC0_DATA5_CONN_EMMC0_DATA5	0x00000021
-> +			IMX8DXL_EMMC0_DATA6_CONN_EMMC0_DATA6	0x00000021
-> +			IMX8DXL_EMMC0_DATA7_CONN_EMMC0_DATA7	0x00000021
-> +			IMX8DXL_EMMC0_STROBE_CONN_EMMC0_STROBE	0x00000041
-> +		>;
-> +	};
-> +
-> +	pinctrl_usdhc1_200mhz: usdhc1grp200mhz {
-> +		fsl,pins = <
-> +			IMX8DXL_EMMC0_CLK_CONN_EMMC0_CLK	0x06000041
-> +			IMX8DXL_EMMC0_CMD_CONN_EMMC0_CMD	0x00000021
-> +			IMX8DXL_EMMC0_DATA0_CONN_EMMC0_DATA0	0x00000021
-> +			IMX8DXL_EMMC0_DATA1_CONN_EMMC0_DATA1	0x00000021
-> +			IMX8DXL_EMMC0_DATA2_CONN_EMMC0_DATA2	0x00000021
-> +			IMX8DXL_EMMC0_DATA3_CONN_EMMC0_DATA3	0x00000021
-> +			IMX8DXL_EMMC0_DATA4_CONN_EMMC0_DATA4	0x00000021
-> +			IMX8DXL_EMMC0_DATA5_CONN_EMMC0_DATA5	0x00000021
-> +			IMX8DXL_EMMC0_DATA6_CONN_EMMC0_DATA6	0x00000021
-> +			IMX8DXL_EMMC0_DATA7_CONN_EMMC0_DATA7	0x00000021
-> +			IMX8DXL_EMMC0_STROBE_CONN_EMMC0_STROBE	0x00000041
-> +		>;
-> +	};
-> +
-> +	pinctrl_usdhc2_gpio: usdhc2gpiogrp {
-> +		fsl,pins = <
-> +			IMX8DXL_ENET0_RGMII_TX_CTL_LSIO_GPIO4_IO30	0x00000040 /* RESET_B */
-> +			IMX8DXL_ENET0_RGMII_TXD1_LSIO_GPIO5_IO00	0x00000021 /* WP */
-> +			IMX8DXL_ENET0_RGMII_TXD2_LSIO_GPIO5_IO01	0x00000021 /* CD */
-> +		>;
-> +	};
-> +
-> +	pinctrl_usdhc2: usdhc2grp {
-> +		fsl,pins = <
-> +			IMX8DXL_ENET0_RGMII_RXC_CONN_USDHC1_CLK		0x06000041
-> +			IMX8DXL_ENET0_RGMII_RX_CTL_CONN_USDHC1_CMD	0x00000021
-> +			IMX8DXL_ENET0_RGMII_RXD0_CONN_USDHC1_DATA0	0x00000021
-> +			IMX8DXL_ENET0_RGMII_RXD1_CONN_USDHC1_DATA1	0x00000021
-> +			IMX8DXL_ENET0_RGMII_RXD2_CONN_USDHC1_DATA2	0x00000021
-> +			IMX8DXL_ENET0_RGMII_RXD3_CONN_USDHC1_DATA3	0x00000021
-> +			IMX8DXL_ENET0_RGMII_TXD0_CONN_USDHC1_VSELECT	0x00000021
-> +		>;
-> +	};
-> +
-> +	pinctrl_usdhc2_100mhz: usdhc2grp100mhz {
-> +		fsl,pins = <
-> +			IMX8DXL_ENET0_RGMII_RXC_CONN_USDHC1_CLK		0x06000041
-> +			IMX8DXL_ENET0_RGMII_RX_CTL_CONN_USDHC1_CMD	0x00000021
-> +			IMX8DXL_ENET0_RGMII_RXD0_CONN_USDHC1_DATA0	0x00000021
-> +			IMX8DXL_ENET0_RGMII_RXD1_CONN_USDHC1_DATA1	0x00000021
-> +			IMX8DXL_ENET0_RGMII_RXD2_CONN_USDHC1_DATA2	0x00000021
-> +			IMX8DXL_ENET0_RGMII_RXD3_CONN_USDHC1_DATA3	0x00000021
-> +			IMX8DXL_ENET0_RGMII_TXD0_CONN_USDHC1_VSELECT	0x00000021
-> +		>;
-> +	};
-> +
-> +	pinctrl_usdhc2_200mhz: usdhc2grp200mhz {
-> +		fsl,pins = <
-> +			IMX8DXL_ENET0_RGMII_RXC_CONN_USDHC1_CLK		0x06000041
-> +			IMX8DXL_ENET0_RGMII_RX_CTL_CONN_USDHC1_CMD	0x00000021
-> +			IMX8DXL_ENET0_RGMII_RXD0_CONN_USDHC1_DATA0	0x00000021
-> +			IMX8DXL_ENET0_RGMII_RXD1_CONN_USDHC1_DATA1	0x00000021
-> +			IMX8DXL_ENET0_RGMII_RXD2_CONN_USDHC1_DATA2	0x00000021
-> +			IMX8DXL_ENET0_RGMII_RXD3_CONN_USDHC1_DATA3	0x00000021
-> +			IMX8DXL_ENET0_RGMII_TXD0_CONN_USDHC1_VSELECT	0x00000021
-> +		>;
-> +	};
-> +};
-> -- 
-> 2.34.1
-> 
+>  		del_timer_sync(&ndev->data_timer);
+>  		mutex_unlock(&ndev->req_lock);
