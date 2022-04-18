@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A3185504BC1
-	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 06:44:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5593504C66
+	for <lists+netdev@lfdr.de>; Mon, 18 Apr 2022 07:48:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236524AbiDREqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Apr 2022 00:46:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52796 "EHLO
+        id S231879AbiDRFvW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Apr 2022 01:51:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236523AbiDREqu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 00:46:50 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0497817AAA
-        for <netdev@vger.kernel.org>; Sun, 17 Apr 2022 21:44:12 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id q3so11485442plg.3
-        for <netdev@vger.kernel.org>; Sun, 17 Apr 2022 21:44:11 -0700 (PDT)
+        with ESMTP id S229634AbiDRFvV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 01:51:21 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68682167D3
+        for <netdev@vger.kernel.org>; Sun, 17 Apr 2022 22:48:43 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id q19so17033990pgm.6
+        for <netdev@vger.kernel.org>; Sun, 17 Apr 2022 22:48:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=9GlZqr5GHjmACFFd+00ZZBjVRiXmjoK19qAAw32r+hw=;
-        b=bCDnswZNlMSZrIKM2V9jcmv7D5SqlDQ+Izu66mbYVw8cGs/JERaTwDV2bF+aUqK6Yl
-         Hs6kKAJ2kSeaFgUcxmYQO4LNyIPkep8zMm0qoTtVaHjlBOclVLpPX222+vZkMg5FLMuX
-         zXQVOg8aQIN1ft71y/u+PdNhVwFyrSUvNt3yLmb/KCP0sVmqpnTfGG2DWXdwPz80Oso1
-         jJide6O8/KzmhR34jjsfR7HWDUDW4NF2h7ojlOW9ZStn54PZUWO9/lKKRazGU9+ZBJfG
-         SiFjIqEZJMPJNuuUBU1+xY0Jmc72ADJI8X9drUY/eOm04eFepLQ7/TB9L9ZZt75M3a7q
-         teDw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=j96XH3Dmbi26dxD+JATf6BURmTD2c8HN91xbkVbh2po=;
+        b=OxceYtRLVE3XIAWwsHXKYktxfaEM7/gwDeUDTsJzEFuhOTe+lQfGxa6f2yBYGjDT05
+         KIl80/6RmV0ENPCyLpnVWMDfuA/o1UUpxEBXMMj2jhENoA3GvFgxk4E+oQj9MQlqYec9
+         RvzgJuV+Im9UyNPtjvLp9mV+qIYf0+YAiqV5I4QugmoBW4fTLYMEdg2HfU9fP9BatjTk
+         lB6OXLBMwi77MgpkRGYj8g0KZC3KfymKUB1VhfxPSiLhQW1uOA8MpgIPivy+WIxmc+cx
+         501tx51aIrbaMGwX0oU41re6tFEgvGr+FDRFEGF8Qds1h8ZI2g5bGSdfHRsLCer4DF88
+         JjUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=9GlZqr5GHjmACFFd+00ZZBjVRiXmjoK19qAAw32r+hw=;
-        b=nGoY4r5ilAf1tTQRIwVopUHf6laPjF/TfKpLO9Ny68510ucRec6YPP0e5nktcJ6dg2
-         YZ3/shRXozn9Ic81CukpxCKvaD65nFkYcmQSVFK6hlmhi5Km4ZSWj8NxI3/QjdTIb51T
-         e0ypn4GWjnRrQck0eGKQECoFvMNjFvp+hXdxJGTFJIpVnk0sNiMxXQfHopkjpVNM0u8d
-         6okoTBLynWyyJtscaP9r+1ayA1GQQdRsN93oMXHKThtlcUlOQ4jqEGBZE3dnLsMUbC9j
-         COwNE87HpSlsA7YB8gXEXqi8s72otRKIx7iFgrYX27V8omC6pb7qA469Qu6cZsYVGSAv
-         T60g==
-X-Gm-Message-State: AOAM533y9eJGKXAZfYfxEH4dqjB4+hoS3mrrxgxj6GIxSoxsU3gvsCt+
-        Z37askohULvlNtwReWukm0tTnQZHuSw=
-X-Google-Smtp-Source: ABdhPJwxdEgBtw92zBkACb0WlXz8qeOjvmgexTblhoiKfXRlg0fWFOV1F5G+0TZe9CHVLzmqFJ1H8A==
-X-Received: by 2002:a17:902:b596:b0:158:f23a:c789 with SMTP id a22-20020a170902b59600b00158f23ac789mr6876053pls.57.1650257051289;
-        Sun, 17 Apr 2022 21:44:11 -0700 (PDT)
-Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id w7-20020aa79547000000b0050a63adbb32sm3948110pfq.112.2022.04.17.21.44.06
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=j96XH3Dmbi26dxD+JATf6BURmTD2c8HN91xbkVbh2po=;
+        b=XbHgX0aZtwPhyMp3tw74YP1jTg+dt7MMPkGkxtvAls+jlJKn6TVapktiZL4NWqaxGK
+         oE73NtetK1xVNjt9Am02DrxFaNtmSYffpqpSdtLc1IYz995quVcfCuW11nSsDcf5OzX9
+         WGu3z0jJvce5iaFsukrHTeCPFJCR5C72crMBMUzBo/zwpkpAHjvc14aIxzf+tQwC5b/b
+         OMvK0PEp9VG1KJ5ZWS6GvGrq4tjQpprKCnyp+UZnPq9bV8CsG+z57R+5GUh1llMDNJeX
+         +0b0PePtwOdEAiBqIrpERs9DBQmqoarzg0oxgGTMGw3WAM1TCsgfwn3DajryvemwBS6S
+         c7mw==
+X-Gm-Message-State: AOAM5315Bzs4iwyqsv7WKfYoeqW4YMJJt5cUsLhVdnPKICIR5Kbuxpni
+        0NnQuW20anwM+rrPqtyxIYApKXlrwks=
+X-Google-Smtp-Source: ABdhPJztw7j8YswdjOn3Zz4zfbyZGnvSCYyzny5Ig0HvH8+f01VQnn5NXtzwPa2bxJpsSJaSHU4KBg==
+X-Received: by 2002:a05:6a00:bd1:b0:4fa:a5d7:c082 with SMTP id x17-20020a056a000bd100b004faa5d7c082mr10527180pfu.85.1650260922684;
+        Sun, 17 Apr 2022 22:48:42 -0700 (PDT)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id o34-20020a634e62000000b0039cc4376415sm11275062pgl.63.2022.04.17.22.48.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 Apr 2022 21:44:10 -0700 (PDT)
+        Sun, 17 Apr 2022 22:48:42 -0700 (PDT)
+Date:   Mon, 18 Apr 2022 13:48:35 +0800
 From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     "Michael S . Tsirkin" <mst@redhat.com>,
@@ -58,17 +59,15 @@ Cc:     "Michael S . Tsirkin" <mst@redhat.com>,
         Willem de Bruijn <willemb@google.com>,
         virtualization@lists.linux-foundation.org,
         Balazs Nemeth <bnemeth@redhat.com>,
-        Mike Pattrick <mailmpattric@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net 2/2] virtio_net: check L3 protocol for VLAN packets
-Date:   Mon, 18 Apr 2022 12:43:39 +0800
-Message-Id: <20220418044339.127545-3-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220418044339.127545-1-liuhangbin@gmail.com>
+        Mike Pattrick <mpattric@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net 0/2] net: fix kernel dropping GSO tagged packets
+Message-ID: <Ylz7s/I8EUca82NL@Laptop-X1>
 References: <20220418044339.127545-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220418044339.127545-1-liuhangbin@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -79,79 +78,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For gso packets, virtio_net_hdr_to_skb() will check the protocol via
-virtio_net_hdr_match_proto(). But a packet may come from a raw socket
-with a VLAN tag. Checking the VLAN protocol for virtio net_hdr makes no
-sense. Let's check the L3 protocol if it's a VLAN packet.
+Sorry, cc Mick for the correct address
 
-Make the virtio_net_hdr_match_proto() checking for all skbs instead of
-only skb without protocol setting.
-
-Also update the data, protocol parameter for
-skb_flow_dissect_flow_keys_basic() as the skb->protocol may not IP or IPv6.
-
-Fixes: 7e5cced9ca84 ("net: accept UFOv6 packages in virtio_net_hdr_to_skb")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- include/linux/virtio_net.h | 26 +++++++++++++++++++-------
- 1 file changed, 19 insertions(+), 7 deletions(-)
-
-diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net.h
-index a960de68ac69..97b4f9680786 100644
---- a/include/linux/virtio_net.h
-+++ b/include/linux/virtio_net.h
-@@ -3,6 +3,7 @@
- #define _LINUX_VIRTIO_NET_H
- 
- #include <linux/if_vlan.h>
-+#include <uapi/linux/if_arp.h>
- #include <uapi/linux/tcp.h>
- #include <uapi/linux/udp.h>
- #include <uapi/linux/virtio_net.h>
-@@ -102,25 +103,36 @@ static inline int virtio_net_hdr_to_skb(struct sk_buff *skb,
- 		 */
- 		if (gso_type && skb->network_header) {
- 			struct flow_keys_basic keys;
-+			__be16 protocol;
- 
- 			if (!skb->protocol) {
--				__be16 protocol = dev_parse_header_protocol(skb);
-+				protocol = dev_parse_header_protocol(skb);
- 
- 				if (!protocol)
- 					virtio_net_hdr_set_proto(skb, hdr);
--				else if (!virtio_net_hdr_match_proto(protocol, hdr->gso_type))
--					return -EINVAL;
- 				else
- 					skb->protocol = protocol;
-+			} else {
-+				protocol = skb->protocol;
- 			}
-+
-+			/* Get L3 protocol if current protocol is VLAN */
-+			if (likely(skb->dev->type == ARPHRD_ETHER) &&
-+			    eth_type_vlan(protocol))
-+				protocol = vlan_get_protocol(skb);
-+
-+			if (!virtio_net_hdr_match_proto(protocol, hdr->gso_type))
-+				return -EINVAL;
-+
- retry:
- 			if (!skb_flow_dissect_flow_keys_basic(NULL, skb, &keys,
--							      NULL, 0, 0, 0,
--							      0)) {
-+							      skb->data, protocol,
-+							      skb_network_offset(skb),
-+							      skb_headlen(skb), 0)) {
- 				/* UFO does not specify ipv4 or 6: try both */
- 				if (gso_type & SKB_GSO_UDP &&
--				    skb->protocol == htons(ETH_P_IP)) {
--					skb->protocol = htons(ETH_P_IPV6);
-+				    protocol == htons(ETH_P_IP)) {
-+					protocol = htons(ETH_P_IPV6);
- 					goto retry;
- 				}
- 				return -EINVAL;
--- 
-2.35.1
-
+On Mon, Apr 18, 2022 at 12:43:37PM +0800, Hangbin Liu wrote:
+> Flavio reported that the kernel drops GSO VLAN tagged packet if it's
+> created with socket(AF_PACKET, SOCK_RAW, 0) plus virtio_net_hdr.
+> 
+> The reason is AF_PACKET doesn't adjust the skb network header if there is
+> a VLAN tag. And in virtio_net_hdr_to_skb() it also checks skb->protocol
+> blindly and not take care of VLAN tags.
+> 
+> The first patch adjust the network header position for AF_PACKET VLAN
+> tagged packets. The second patch fixes the VLAN protocol checking in
+> virtio_net_hdr_to_skb().
+> 
+> Hangbin Liu (2):
+>   net/af_packet: adjust network header position for VLAN tagged packets
+>   virtio_net: check L3 protocol for VLAN packets
+> 
+>  include/linux/virtio_net.h | 26 +++++++++++++++++++-------
+>  net/packet/af_packet.c     | 18 +++++++++++++-----
+>  2 files changed, 32 insertions(+), 12 deletions(-)
+> 
+> -- 
+> 2.35.1
+> 
