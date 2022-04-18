@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 54FC6506029
+	by mail.lfdr.de (Postfix) with ESMTP id 9D02D50602A
 	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 01:20:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234834AbiDRXUw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Apr 2022 19:20:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39566 "EHLO
+        id S234817AbiDRXVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Apr 2022 19:21:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234785AbiDRXUt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 19:20:49 -0400
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 091FA24080
-        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 16:18:09 -0700 (PDT)
-Received: by mail-qt1-x835.google.com with SMTP id fu34so2406043qtb.8
-        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 16:18:08 -0700 (PDT)
+        with ESMTP id S234808AbiDRXUu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 19:20:50 -0400
+Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 754BD23BE8
+        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 16:18:10 -0700 (PDT)
+Received: by mail-qt1-x830.google.com with SMTP id hf18so10639775qtb.0
+        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 16:18:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=NlRd4j5md/1GciWxxdILk90+l0dQrFXO0akgvKuGKys=;
-        b=hOG03vLUq3iZ50ueHjZVfyhoguvGmU1Wah3UxbLvRBUMDP7zKkkkBuYjd7CwcdDpmd
-         wvvPtX/TM+hZxbHCcAAw7kNp7MW8z7+1X6+Xn1Ap+JnbWmme+Uhk6SUloc93MCqSiBSy
-         dPQSoaoWybf/RQ5HVgmoPZD+Gdyrau6flv0MU=
+        bh=0dcJHoI59iupk/XZrTeiSOhbOxLwLKCBzj4Z2fI2tTc=;
+        b=LhCy4Xw3XN068oiUmiq1/1Q8uv7ZgPx8f0g98Osy317QhjxRDf3CkOOZPc1ftvYJnJ
+         gxOnCH8bESAgzEqHoyAL70WuiVudZ2fj2ItxFXVGHqPNIU0Hj+kI/gpT7q3dnW+7t9YN
+         ffDvkK5FKc6Flz2lKRs5lZvpB7Mi0a3S+yVSA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=NlRd4j5md/1GciWxxdILk90+l0dQrFXO0akgvKuGKys=;
-        b=XnUStgDRhXexnk2igQP4GA1yjAnmse49WAvf/iw0Y+ntabxJmEQd+U2fBQPWOfz7Ik
-         axT9CEEljD05dQljI/80PQ8sCpSKMRS+KBJwp0weHXF3Wp4T3QfbOaUv+tm/T8VcK9C9
-         pwyRklfxB/e46O4NtBpo1GyXkQN2PkVuuxSXd1VJQDVieGsc0UtyARj41mz7XPnHaqwL
-         9sMDLneYl9ar/Woh52jiIhfURzr7anT4Bttfa54OHsuAKiK/jU9C4W7OUyQusDyy3eeT
-         qQQ5Q0Vki/zub8xOZclRh/bhtsAZoPCWgvu3HKTn8OKxjs23QAObJWLbsMyoa1HY9AF5
-         174A==
-X-Gm-Message-State: AOAM532JAyV35AryayaxjV98Bi+c06WwCTTJP0aqk4VlvReHFoa9fHxX
-        FFgzjYoOkwtCrTVsKW14S/xK1AUyQ1mPPA==
-X-Google-Smtp-Source: ABdhPJz4CCSb9zYc5fCCMVLbVMjPO5dyAl5MissvY4yDiiQdYIkuU7OrNjGBrPyf5pI+AKWPBQ6/zw==
-X-Received: by 2002:a05:622a:40f:b0:2f1:f97b:7519 with SMTP id n15-20020a05622a040f00b002f1f97b7519mr6638240qtx.391.1650323888201;
-        Mon, 18 Apr 2022 16:18:08 -0700 (PDT)
+        bh=0dcJHoI59iupk/XZrTeiSOhbOxLwLKCBzj4Z2fI2tTc=;
+        b=7HkmPkVGIVC0kIkHXzdHloxt9YalaORVcpkGw/g31srhMdUyMliQu64qmrwKEy+YIW
+         jjTLjS6rtUtPFsJ6812qtkTV49HOpYddMNiOPZg9XQZVpebQYAC5+un4egS3p2V6mJZ7
+         Jf+2x9hdniFUhlDcl9+ezo62+n1kxY+FMnw0PSDbEOPpKScT64wsLYg+72JClJanMIDb
+         logEQor9wAUq2nLHr3msNU/Djv0f1YE8cRjn+NLXVdch2qMfVwthrzcwzHTwuM284r22
+         /Babyjizw6QVL5pMl6hWa2PlEBO8uMgy2MTSee6rJoUxBRT9b4teBlyTPLr1AkKM6PxA
+         6wug==
+X-Gm-Message-State: AOAM532TKbvm8RrQ9yRZyomrdTF71hUN3WOWFcGfZsYPh+vkOJ+HcZqK
+        u54V5JYasnll2xwetEMdK1FnNA==
+X-Google-Smtp-Source: ABdhPJzVmagn0Rfc5cXZudhsLyucFUBeBfCKmqRoxtX4m60vigQt1WYkqD8XBGNWp/r7n0HZ6vDLmg==
+X-Received: by 2002:ac8:5206:0:b0:2f1:e8cc:7800 with SMTP id r6-20020ac85206000000b002f1e8cc7800mr8620403qtn.501.1650323889668;
+        Mon, 18 Apr 2022 16:18:09 -0700 (PDT)
 Received: from grundler-glapstation.lan ([70.134.62.80])
-        by smtp.gmail.com with ESMTPSA id a1-20020a05622a02c100b002f17cba4930sm8214048qtx.85.2022.04.18.16.18.06
+        by smtp.gmail.com with ESMTPSA id a1-20020a05622a02c100b002f17cba4930sm8214048qtx.85.2022.04.18.16.18.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 16:18:07 -0700 (PDT)
+        Mon, 18 Apr 2022 16:18:09 -0700 (PDT)
 From:   Grant Grundler <grundler@chromium.org>
 To:     Igor Russkikh <irusskikh@marvell.com>
 Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
@@ -54,9 +54,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
         Yi Chou <yich@google.com>,
         Shervin Oloumi <enlightened@google.com>,
         Grant Grundler <grundler@chromium.org>
-Subject: [PATCH 4/5] net: atlantic: add check for MAX_SKB_FRAGS
-Date:   Mon, 18 Apr 2022 16:17:45 -0700
-Message-Id: <20220418231746.2464800-5-grundler@chromium.org>
+Subject: [PATCH 5/5] net: atlantic: verify hw_head_ is reasonable
+Date:   Mon, 18 Apr 2022 16:17:46 -0700
+Message-Id: <20220418231746.2464800-6-grundler@chromium.org>
 X-Mailer: git-send-email 2.36.0.rc0.470.gd361397f0d-goog
 In-Reply-To: <20220418231746.2464800-1-grundler@chromium.org>
 References: <20220418231746.2464800-1-grundler@chromium.org>
@@ -72,47 +72,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Enforce that the CPU can not get stuck in an infinite loop.
+Bounds check hw_head index to verify it lies within the TX buffer ring.
+
+Unexpected values of hw_head may cause aq_ring_tx_clean to double
+dev_kfree_skb_any already cleaned parts of the ring.
 
 Reported-by: Aashay Shringarpure <aashay@google.com>
 Reported-by: Yi Chou <yich@google.com>
 Reported-by: Shervin Oloumi <enlightened@google.com>
 Signed-off-by: Grant Grundler <grundler@chromium.org>
 ---
- drivers/net/ethernet/aquantia/atlantic/aq_ring.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ .../aquantia/atlantic/hw_atl/hw_atl_b0.c      | 21 +++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-index bc1952131799..8201ce7adb77 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-@@ -363,6 +363,7 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
- 			continue;
- 
- 		if (!buff->is_eop) {
-+			unsigned int frag_cnt = 0U;
- 			buff_ = buff;
- 			do {
- 				bool is_rsc_completed = true;
-@@ -371,6 +372,8 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
- 					err = -EIO;
- 					goto err_exit;
- 				}
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+index e72b9d86f6ad..9b6b93bb3e86 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+@@ -889,6 +889,27 @@ int hw_atl_b0_hw_ring_tx_head_update(struct aq_hw_s *self,
+ 		err = -ENXIO;
+ 		goto err_exit;
+ 	}
 +
-+				frag_cnt++;
- 				next_ = buff_->next,
- 				buff_ = &self->buff_ring[next_];
- 				is_rsc_completed =
-@@ -378,7 +381,8 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
- 							    next_,
- 							    self->hw_head);
++	/* Validate that the new hw_head_ is reasonable. */
++	if (hw_head_ >= ring->size) {
++		err = -ENXIO;
++		goto err_exit;
++	}
++
++	if (ring->sw_head >= ring->sw_tail) {
++		/* Head index hasn't wrapped around to below tail index. */
++		if (hw_head_ < ring->sw_head && hw_head_ >= ring->sw_tail) {
++			err = -ENXIO;
++			goto err_exit;
++		}
++	} else {
++		/* Head index has wrapped around and is below tail index. */
++		if (hw_head_ < ring->sw_head || hw_head_ >= ring->sw_tail) {
++			err = -ENXIO;
++			goto err_exit;
++		}
++	}
++
+ 	ring->hw_head = hw_head_;
+ 	err = aq_hw_err_from_flags(self);
  
--				if (unlikely(!is_rsc_completed)) {
-+				if (unlikely(!is_rsc_completed) ||
-+				    frag_cnt > MAX_SKB_FRAGS) {
- 					err = 0;
- 					goto err_exit;
- 				}
 -- 
 2.36.0.rc0.470.gd361397f0d-goog
 
