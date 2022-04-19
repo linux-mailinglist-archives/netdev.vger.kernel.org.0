@@ -2,162 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F31C5070C0
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 16:38:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 655805070E5
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 16:46:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353502AbiDSOkU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 10:40:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56558 "EHLO
+        id S1346048AbiDSOrX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 10:47:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353466AbiDSOkP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 10:40:15 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC782205DC
-        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 07:37:32 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id q3so22092787wrj.7
-        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 07:37:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=N48TJvmdh/Y4TlGVjzLHWIp+ix5BlHPty8FNkZ2jyGU=;
-        b=QGX8RsYoWV2lbS0+dRPRUPeX3F7/sp0475iEfethV67+LXSi5rs60Ri8P67Kkgaq34
-         GC1C6Jbcp983sPCebc4469qfx19oVcqwCdWvVHZUR/WbCPV2c/FzMXHe7YRd+LJPhcWE
-         sWKi9m0p3CLfyz7vXbVj4/BzAF6T4Xa/S7+2iAF8i+vyHAvTWbOSg0e8KHp+0DvWsCXW
-         7Unp9qSYlyEBcG4fpGaiMJCRdVe4k+OF47YUI9eksvGx59g1rVLYP7Dz89+kzwGypcL6
-         9keQSnLkM6RWe/tFYD0RplPK44Rf49CBcgDWTrYyVhD+vlAIlmsEmUwHpcwTuBhk9Dii
-         F0PQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=N48TJvmdh/Y4TlGVjzLHWIp+ix5BlHPty8FNkZ2jyGU=;
-        b=IvG9ypZOpKDQZE9I/aKAYvizBcGFT7i64n93NkVTpC9fboQz990zIrC/G961suT/jN
-         LwP+t0s3JxE+/T7kyMG+FkhhkifWX21o+3DGSwpF1p8qUrf11I5bgUAyNDpqyy9k+Z7u
-         K/Q++sJGv/p8mEHCYfdxfiMgjGeUeH+eqXruBYQBqX5dgD7xgyMLAzMjIa+aJx1U96HI
-         SaPhmB4zjZXlOfI15dzJlotR4R/onery+yOcEGjOB0sTeMWdYc5gIhX6EYkGgchj2O/n
-         nX/WcLn+RMfKOnIL3luRsAXG1ig0KzrDZQe8Hv9yIO6SdVM+HQQ4FpyPaH2PpKfrkKyq
-         EmRg==
-X-Gm-Message-State: AOAM532YOXDjZK3RMsE5oLj2jouuxTNSl9q+0sq2LXQTUYVuPWtAwLHl
-        1XPBcYH1ex28V7bXah0oxss=
-X-Google-Smtp-Source: ABdhPJwFmZEGVV6kftf1hPg1ct4cFd5013y2olZXUSuPpHy8RVQoOM/dIVuQpAX3tOxY7SIvZXDXbA==
-X-Received: by 2002:a5d:4ec1:0:b0:207:b1c0:a417 with SMTP id s1-20020a5d4ec1000000b00207b1c0a417mr11620959wrv.561.1650379051339;
-        Tue, 19 Apr 2022 07:37:31 -0700 (PDT)
-Received: from alaa-emad ([102.41.109.205])
-        by smtp.gmail.com with ESMTPSA id r21-20020a05600c35d500b0039295759a55sm6773905wmq.12.2022.04.19.07.37.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 07:37:30 -0700 (PDT)
-From:   Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     outreachy@lists.linux.dev, roopa@nvidia.com,
-        roopa.prabhu@gmail.com, jdenham@redhat.com, sbrivio@redhat.com,
-        eng.alaamohamedsoliman.am@gmail.com
-Subject: [PATCH net-next 2/2] net: vxlan: vxlan_core.c: Add extack support to vxlan_fdb_delet
-Date:   Tue, 19 Apr 2022 16:37:18 +0200
-Message-Id: <c6765ff1f66cf74ba6f25ba9b1c91dfe410abcfd.1650377624.git.eng.alaamohamedsoliman.am@gmail.com>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <cover.1650377624.git.eng.alaamohamedsoliman.am@gmail.com>
-References: <cover.1650377624.git.eng.alaamohamedsoliman.am@gmail.com>
+        with ESMTP id S1353629AbiDSOrI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 10:47:08 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83C623A5C7
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 07:44:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650379458; x=1681915458;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=V1y39dchULVYyeKFeiaIXNKnbicJEjGT3wOOfMDkWeE=;
+  b=W/4N+yYzC7W7tuJnuo64zgc/YaBWkioHzEBpOyqCrJbj4hFdad7eTnT9
+   En8Lw3srOhwDmeIeEkXqmwUwYcziX45hsJHDuzUEL5VaGEL2KdBUnC0s0
+   aRsZOzLcq/piyKRMKGJzqccIeGLGJwBYvwESYrSvQVMp2/zn15+5xYMnC
+   75rY7xZxanXNI7IXMAlZxraYt/+LfuPvKd33VN2Zssyr9eLJDNkGwqXWO
+   Wur3oGjfU3LWbwCukM8qGst4W0jAPo+6wrgtGzMjiLmJkW18hzXs2xJ6u
+   MnDvSIaDO2kKAVS0M/QChCchsAC5sC/6s3CPV+KiKFuYOE7ZV9pv89Vjx
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="263540740"
+X-IronPort-AV: E=Sophos;i="5.90,272,1643702400"; 
+   d="scan'208";a="263540740"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 07:44:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,272,1643702400"; 
+   d="scan'208";a="861280448"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga005.fm.intel.com with ESMTP; 19 Apr 2022 07:44:15 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 23JEiDmu032074;
+        Tue, 19 Apr 2022 15:44:13 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Jian Shen <shenjian15@huawei.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        ecree.xilinx@gmail.com, hkallweit1@gmail.com, saeed@kernel.org,
+        leon@kernel.org, netdev@vger.kernel.org, linuxarm@openeuler.org,
+        lipeng321@huawei.com
+Subject: Re: [RFCv6 PATCH net-next 01/19] net: introduce operation helpers for netdev features
+Date:   Tue, 19 Apr 2022 16:40:45 +0200
+Message-Id: <20220419144045.1664765-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220419022206.36381-2-shenjian15@huawei.com>
+References: <20220419022206.36381-1-shenjian15@huawei.com> <20220419022206.36381-2-shenjian15@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add extack to vxlan_fdb_delet and vxlan_fdb_parse
+From: Jian Shen <shenjian15@huawei.com>
+Date: Tue, 19 Apr 2022 10:21:48 +0800
 
-Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
----
- drivers/net/vxlan/vxlan_core.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+> Introduce a set of bitmap operation helpers for netdev features,
+> then we can use them to replace the logical operation with them.
+> As the nic driversare not supposed to modify netdev_features
+> directly, it also introduces wrappers helpers to this.
+> 
+> The implementation of these helpers are based on the old prototype
+> of netdev_features_t is still u64. I will rewrite them on the last
+> patch, when the prototype changes.
+> 
+> To avoid interdependencies between netdev_features_helper.h and
+> netdevice.h, put the helpers for testing feature is set in the
+> netdevice.h, and move advandced helpers like
+> netdev_get_wanted_features() and netdev_intersect_features() to
+> netdev_features_helper.h.
+> 
+> Signed-off-by: Jian Shen <shenjian15@huawei.com>
+> ---
+>  .../net/ethernet/netronome/nfp/nfp_net_repr.c |   1 +
+>  include/linux/netdev_features.h               |  12 +
+>  include/linux/netdev_features_helper.h        | 604 ++++++++++++++++++
+>  include/linux/netdevice.h                     |  45 +-
+>  net/8021q/vlan_dev.c                          |   1 +
+>  net/core/dev.c                                |   1 +
+>  6 files changed, 646 insertions(+), 18 deletions(-)
+>  create mode 100644 include/linux/netdev_features_helper.h
+> 
+> diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c b/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
+> index ba3fa7eac98d..08f2c54e0a11 100644
+> --- a/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
+> +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
+> @@ -4,6 +4,7 @@
+>  #include <linux/etherdevice.h>
+>  #include <linux/io-64-nonatomic-hi-lo.h>
+>  #include <linux/lockdep.h>
+> +#include <linux/netdev_features_helper.h>
+>  #include <net/dst_metadata.h>
+>  
+>  #include "nfpcore/nfp_cpp.h"
+> diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
+> index 2c6b9e416225..e2b66fa3d7d6 100644
+> --- a/include/linux/netdev_features.h
+> +++ b/include/linux/netdev_features.h
+> @@ -11,6 +11,18 @@
+>  
+>  typedef u64 netdev_features_t;
+>  
+> +struct netdev_feature_set {
+> +	unsigned int cnt;
+> +	unsigned short feature_bits[];
+> +};
+> +
+> +#define DECLARE_NETDEV_FEATURE_SET(name, features...)		\
+> +	static unsigned short __##name##_s[] = {features};	\
+> +	struct netdev_feature_set name = {			\
 
-diff --git a/drivers/net/vxlan/vxlan_core.c b/drivers/net/vxlan/vxlan_core.c
-index cf2f60037340..4ecbb5878fe2 100644
---- a/drivers/net/vxlan/vxlan_core.c
-+++ b/drivers/net/vxlan/vxlan_core.c
-@@ -1129,18 +1129,20 @@ static void vxlan_fdb_dst_destroy(struct vxlan_dev *vxlan, struct vxlan_fdb *f,
+I suggest using `const` here. Those sets are needed only to
+initialize bitmaps, that's it. They are not supposed to be
+modified. This would be one more hardening here to avoid some weird
+usages of sets, and also would place them in .rodata instead of just
+.data.
 
- static int vxlan_fdb_parse(struct nlattr *tb[], struct vxlan_dev *vxlan,
- 			   union vxlan_addr *ip, __be16 *port, __be32 *src_vni,
--			   __be32 *vni, u32 *ifindex, u32 *nhid)
-+			   __be32 *vni, u32 *ifindex, u32 *nhid, struct netlink_ext_ack *extack)
- {
- 	struct net *net = dev_net(vxlan->dev);
- 	int err;
+Function                                     old     new   delta
+main                                          35      33      -2
+Total: Before=78, After=76, chg -2.56%
+add/remove: 0/2 grow/shrink: 0/0 up/down: 0/-14 (-14)
+Data                                         old     new   delta
+arr1                                           6       -      -6
+arr2                                           8       -      -8
+Total: Before=15, After=1, chg -93.33%
+add/remove: 2/0 grow/shrink: 0/0 up/down: 14/0 (14)
+RO Data                                      old     new   delta
+arr1                                           -       8      +8
+arr2                                           -       6      +6
+Total: Before=36, After=50, chg +38.89%
 
- 	if (tb[NDA_NH_ID] && (tb[NDA_DST] || tb[NDA_VNI] || tb[NDA_IFINDEX] ||
- 	    tb[NDA_PORT]))
-+		NL_SET_ERR_MSG(extack, "Missing required arguments");
- 		return -EINVAL;
+As you can see, there's a 2-byte code optimization. And that was
+just a simpliest oneliner. The gains will be much bigger from the
+real usages.
 
- 	if (tb[NDA_DST]) {
- 		err = vxlan_nla_get_addr(ip, tb[NDA_DST]);
- 		if (err)
-+			NL_SET_ERR_MSG(extack, "Unsupported address family");
- 			return err;
- 	} else {
- 		union vxlan_addr *remote = &vxlan->default_dst.remote_ip;
-@@ -1158,6 +1160,7 @@ static int vxlan_fdb_parse(struct nlattr *tb[], struct vxlan_dev *vxlan,
+> +		.cnt = ARRAY_SIZE(__##name##_s),		\
+> +		.feature_bits = {features},			\
+> +	}
 
- 	if (tb[NDA_PORT]) {
- 		if (nla_len(tb[NDA_PORT]) != sizeof(__be16))
-+			NL_SET_ERR_MSG(extack, "Invalid vxlan port");
- 			return -EINVAL;
- 		*port = nla_get_be16(tb[NDA_PORT]);
- 	} else {
-@@ -1166,6 +1169,7 @@ static int vxlan_fdb_parse(struct nlattr *tb[], struct vxlan_dev *vxlan,
+The problem with the current macro is that it doesn't allow to
+declare feature sets as static. Because the temporary array for
+counting the number of bits goes first, and doing
 
- 	if (tb[NDA_VNI]) {
- 		if (nla_len(tb[NDA_VNI]) != sizeof(u32))
-+			NL_SET_ERR_MSG(extack, "Invalid vni");
- 			return -EINVAL;
- 		*vni = cpu_to_be32(nla_get_u32(tb[NDA_VNI]));
- 	} else {
-@@ -1174,6 +1178,7 @@ static int vxlan_fdb_parse(struct nlattr *tb[], struct vxlan_dev *vxlan,
+static DECLARE_NETDEV_FEATURE_SET();
 
- 	if (tb[NDA_SRC_VNI]) {
- 		if (nla_len(tb[NDA_SRC_VNI]) != sizeof(u32))
-+			NL_SET_ERR_MSG(extack, "Invalid src vni");
- 			return -EINVAL;
- 		*src_vni = cpu_to_be32(nla_get_u32(tb[NDA_SRC_VNI]));
- 	} else {
-@@ -1184,10 +1189,12 @@ static int vxlan_fdb_parse(struct nlattr *tb[], struct vxlan_dev *vxlan,
- 		struct net_device *tdev;
+wouldn't change anything.
+But we want to have most feature sets static as they will be needed
+only inside one file. Making every of them global would hurt
+optimization.
 
- 		if (nla_len(tb[NDA_IFINDEX]) != sizeof(u32))
-+			NL_SET_ERR_MSG(extack, "Invalid ifindex");
- 			return -EINVAL;
- 		*ifindex = nla_get_u32(tb[NDA_IFINDEX]);
- 		tdev = __dev_get_by_index(net, *ifindex);
- 		if (!tdev)
-+			NL_SET_ERR_MSG(extack,"Device not found");
- 			return -EADDRNOTAVAIL;
- 	} else {
- 		*ifindex = 0;
-@@ -1226,7 +1233,7 @@ static int vxlan_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
- 		return -EINVAL;
+At the end, I came to
 
- 	err = vxlan_fdb_parse(tb, vxlan, &ip, &port, &src_vni, &vni, &ifindex,
--			      &nhid);
-+			      &nhid, extack);
- 	if (err)
- 		return err;
+#define DECLARE_NETDEV_FEATURE_SET(name, features...)			\
+	const struct netdev_feature_set name = {			\
+		.feature_bits = { features },				\
+		.cnt = sizeof((u16 []){ features }) / sizeof(u16),	\
+	}
 
-@@ -1291,7 +1298,7 @@ static int vxlan_fdb_delete(struct ndmsg *ndm, struct nlattr *tb[],
- 	int err;
+because ARRAY_SIZE() can be taken only from a variable, not from
+a compound literal.
+But this one is actually OK. We don't need ARRAY_SIZE() in here
+since we define an unnamed array of an explicit type that we know
+for sure inline. So there's no chance to do it wrong as long as
+the @features argument is correct.
 
- 	err = vxlan_fdb_parse(tb, vxlan, &ip, &port, &src_vni, &vni, &ifindex,
--			      &nhid);
-+			      &nhid, extack);
- 	if (err)
- 		return err;
+The ability to make it static is important. For example, when I
+marked them both static, I got
 
---
-2.35.2
+add/remove: 0/0 grow/shrink: 0/0 up/down: 0/0 (0)
+Function                                     old     new   delta
+Total: Before=76, After=76, chg +0.00%
+add/remove: 0/0 grow/shrink: 0/0 up/down: 0/0 (0)
+Data                                         old     new   delta
+Total: Before=1, After=1, chg +0.00%
+add/remove: 0/2 grow/shrink: 0/0 up/down: 0/-14 (-14)
+RO Data                                      old     new   delta
+arr1                                           6       -      -6
+arr2                                           8       -      -8
+Total: Before=50, After=36, chg -28.00%
 
+i.e. both of the sets were removed, because my main() was:
+
+	printf("cnt1: %u, cnt2: %u\n", arr1.cnt, arr2.cnt);
+
+The compiler saw that I don't use them, except for printing values
+which are actually compile-time constants, and wiped them.
+Previously, they were global so it didn't have a clue if they're
+used anywhere else.
+This was a simple stupid example, but it will bring a lot more value
+in real use cases. So please consider my variant :D
+
+> +
+>  enum {
+>  	NETIF_F_SG_BIT,			/* Scatter/gather IO. */
+>  	NETIF_F_IP_CSUM_BIT,		/* Can checksum TCP/UDP over IPv4. */
+
+--- 8< ---
+
+> -- 
+> 2.33.0
+
+Thanks,
+Al
