@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18921506216
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 04:28:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD9A750621F
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 04:28:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236654AbiDSCah convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 18 Apr 2022 22:30:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34234 "EHLO
+        id S1344623AbiDSCai (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Apr 2022 22:30:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233778AbiDSCag (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 22:30:36 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FF3D2C12C
+        with ESMTP id S233778AbiDSCah (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 22:30:37 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9C2C2C138
         for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 19:27:55 -0700 (PDT)
-Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kj71v6WfkzFpgs;
-        Tue, 19 Apr 2022 10:25:23 +0800 (CST)
+Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Kj6zj60b8zCrD9;
+        Tue, 19 Apr 2022 10:23:29 +0800 (CST)
 Received: from localhost.localdomain (10.67.165.24) by
  dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -27,13 +27,15 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
         <alexandr.lobakin@intel.com>, <saeed@kernel.org>, <leon@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linuxarm@openeuler.org>,
         <lipeng321@huawei.com>
-Subject: [RFCv6 PATCH net-next 00/19] net: extend the type of netdev_features_t to bitmap
-Date:   Tue, 19 Apr 2022 10:21:47 +0800
-Message-ID: <20220419022206.36381-1-shenjian15@huawei.com>
+Subject: [RFCv6 PATCH net-next 01/19] net: introduce operation helpers for netdev features
+Date:   Tue, 19 Apr 2022 10:21:48 +0800
+Message-ID: <20220419022206.36381-2-shenjian15@huawei.com>
 X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220419022206.36381-1-shenjian15@huawei.com>
+References: <20220419022206.36381-1-shenjian15@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
 X-Originating-IP: [10.67.165.24]
 X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
  dggpeml500022.china.huawei.com (7.185.36.66)
@@ -47,135 +49,764 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For the prototype of netdev_features_t is u64, and the number
-of netdevice feature bits is 64 now. So there is no space to
-introduce new feature bit.
+Introduce a set of bitmap operation helpers for netdev features,
+then we can use them to replace the logical operation with them.
+As the nic driversare not supposed to modify netdev_features
+directly, it also introduces wrappers helpers to this.
 
-This patchset try to solve it by change the prototype of
-netdev_features_t from u64 to structure below:
-	typedef struct {
-		DECLARE_BITMAP(bits, NETDEV_FEATURE_COUNT);
-	} netdev_features_t;
+The implementation of these helpers are based on the old prototype
+of netdev_features_t is still u64. I will rewrite them on the last
+patch, when the prototype changes.
 
-With this change, it's necessary to introduce a set of bitmap
-operation helpers for netdev features. As the nic drivers are
-not supposed to modify netdev_features directly, it also
-introduces wrappers helpers to this. [patch 1]
+To avoid interdependencies between netdev_features_helper.h and
+netdevice.h, put the helpers for testing feature is set in the
+netdevice.h, and move advandced helpers like
+netdev_get_wanted_features() and netdev_intersect_features() to
+netdev_features_helper.h.
 
-To avoid mistake using NETIF_F_XXX as NETIF_F_XXX_BIT as
-input macroes for above helpers, remove all the macroes
-of NETIF_F_XXX. [patch 19]
-
-The features group macroes in netdev_features.h are replaced
-by a set of const features defined in netdev_features.c. [patch 2-3]
-For example:
-macro NETIF_F_ALL_TSO is replaced by netdev_all_tso_features
-
-There are some drivers(e.g. sfc) use netdev_features in global
-structure initialization. Changed the its netdev_features_t memeber
-to netdev_features_t *, and make it prefer to a netdev_features_t
-global variables. [patch 4]
-
-As suggestion from Andrew Lunn, I wrote some semantic patches to do the
-work(replacing the netdev features operator by helpers). [patch 7-18]
-To make the semantic patches simple, I split the complex opreation of
-netdev_features to simple logical operation. [patch 5, 6]
-
-With the prototype is no longer u64, the implementation of print interface
-for netdev features(%pNF) is changed to bitmap. [patch 19]
-
-The whole work is not complete yet. I just use these changes
-on several files(hns3 driver, sfc drivers, net/ethtool, net/core/dev.c),
-in order to show how these helpers will be used. I will apply these helpers
-to the whole tree later, sofar I want to get more suggestions for this
-scheme, any comments would be appreciated.
-
-The former discussion please see [1][2][3][4].
-
-[1]:https://www.spinics.net/lists/netdev/msg769952.html
-[2]:https://www.spinics.net/lists/netdev/msg777764.html
-[3]:https://lore.kernel.org/netdev/20211107101519.29264-1-shenjian15@huawei.com/T/
-[4]:https://www.spinics.net/lists/netdev/msg809293.html
-
-
-ChangeLog:
-V5-V6: suggestions from Jakub Kicinski:
-drop the rename for netdev->features
-simplify names of some helpers, and move them to a new header file
-refine the implement for netdev_features_set_array
-V4->V5:
-adjust the patch structure, use semantic patch with coccinelle
-V3->V4:
-rename netdev->features to netdev->active_features
-remove helpes for handle first 64 bits
-remove __NETIF_F(name) macroes
-replace features group macroes with const features
-V2->V3:
-use structure for bitmap, suggest by Edward Cree
-V1->V2:
-Extend the prototype from u64 to bitmap, suggest by Andrew Lunn
-
-Jian Shen (19):
-  net: introduce operation helpers for netdev features
-  net: replace general features macroes with global netdev_features
-    variables
-  net: replace multiple feature bits with netdev features array
-  net: sfc: replace const features initialization with netdev features
-    array
-  net: simplify the netdev features expression
-  net: adjust variables definition for netdev_features_t
-  net: use netdev_feature_add helpers
-  net: use netdev_features_or helpers
-  net: use netdev_features_xor helpers
-  net: use netdev_feature_del helpers
-  net: use netdev_features_andnot helpers
-  net: use netdev_feature_test helpers
-  net: use netdev_features_intersects helpers
-  net: use netdev_features_and helpers
-  net: use netdev_features_subset helpers
-  net: use netdev_features_equal helpers
-  net: use netdev_features_copy helpers
-  net: use netdev_xxx_features helpers
-  net: redefine the prototype of netdev_features_t
-
- .../net/ethernet/hisilicon/hns3/hns3_enet.c   | 108 ++-
- .../ethernet/hisilicon/hns3/hns3_ethtool.c    |   4 +-
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
+---
  .../net/ethernet/netronome/nfp/nfp_net_repr.c |   1 +
- drivers/net/ethernet/sfc/ef10.c               |  38 +-
- drivers/net/ethernet/sfc/ef100_nic.c          |  48 +-
- drivers/net/ethernet/sfc/ef100_rx.c           |   4 +-
- drivers/net/ethernet/sfc/ef100_tx.c           |   8 +-
- drivers/net/ethernet/sfc/ef10_sriov.c         |   6 +-
- drivers/net/ethernet/sfc/efx.c                |  82 ++-
- drivers/net/ethernet/sfc/efx_common.c         |  31 +-
- drivers/net/ethernet/sfc/falcon/efx.c         |  67 +-
- drivers/net/ethernet/sfc/falcon/efx.h         |   3 +
- drivers/net/ethernet/sfc/falcon/falcon.c      |   4 +-
- drivers/net/ethernet/sfc/falcon/net_driver.h  |   5 +-
- drivers/net/ethernet/sfc/falcon/rx.c          |   4 +-
- drivers/net/ethernet/sfc/farch.c              |   2 +-
- drivers/net/ethernet/sfc/mcdi_filters.c       |  13 +-
- drivers/net/ethernet/sfc/mcdi_port_common.c   |   2 +-
- drivers/net/ethernet/sfc/net_driver.h         |   5 +-
- drivers/net/ethernet/sfc/rx.c                 |   2 +-
- drivers/net/ethernet/sfc/rx_common.c          |   4 +-
- drivers/net/ethernet/sfc/rx_common.h          |   4 +
- drivers/net/ethernet/sfc/siena.c              |   3 +-
- drivers/net/wireguard/device.c                |  10 +-
- include/linux/netdev_features.h               | 193 ++----
- include/linux/netdev_features_helper.h        | 653 ++++++++++++++++++
- include/linux/netdevice.h                     | 109 +--
- lib/vsprintf.c                                |  11 +-
+ include/linux/netdev_features.h               |  12 +
+ include/linux/netdev_features_helper.h        | 604 ++++++++++++++++++
+ include/linux/netdevice.h                     |  45 +-
  net/8021q/vlan_dev.c                          |   1 +
- net/core/Makefile                             |   2 +-
- net/core/dev.c                                | 389 +++++++----
- net/core/netdev_features.c                    | 241 +++++++
- net/ethtool/features.c                        |  90 +--
- net/ethtool/ioctl.c                           | 135 ++--
- 34 files changed, 1723 insertions(+), 559 deletions(-)
+ net/core/dev.c                                |   1 +
+ 6 files changed, 646 insertions(+), 18 deletions(-)
  create mode 100644 include/linux/netdev_features_helper.h
- create mode 100644 net/core/netdev_features.c
 
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c b/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
+index ba3fa7eac98d..08f2c54e0a11 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
+@@ -4,6 +4,7 @@
+ #include <linux/etherdevice.h>
+ #include <linux/io-64-nonatomic-hi-lo.h>
+ #include <linux/lockdep.h>
++#include <linux/netdev_features_helper.h>
+ #include <net/dst_metadata.h>
+ 
+ #include "nfpcore/nfp_cpp.h"
+diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
+index 2c6b9e416225..e2b66fa3d7d6 100644
+--- a/include/linux/netdev_features.h
++++ b/include/linux/netdev_features.h
+@@ -11,6 +11,18 @@
+ 
+ typedef u64 netdev_features_t;
+ 
++struct netdev_feature_set {
++	unsigned int cnt;
++	unsigned short feature_bits[];
++};
++
++#define DECLARE_NETDEV_FEATURE_SET(name, features...)		\
++	static unsigned short __##name##_s[] = {features};	\
++	struct netdev_feature_set name = {			\
++		.cnt = ARRAY_SIZE(__##name##_s),		\
++		.feature_bits = {features},			\
++	}
++
+ enum {
+ 	NETIF_F_SG_BIT,			/* Scatter/gather IO. */
+ 	NETIF_F_IP_CSUM_BIT,		/* Can checksum TCP/UDP over IPv4. */
+diff --git a/include/linux/netdev_features_helper.h b/include/linux/netdev_features_helper.h
+new file mode 100644
+index 000000000000..5cc6368f65e5
+--- /dev/null
++++ b/include/linux/netdev_features_helper.h
+@@ -0,0 +1,604 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * Network device features helpers.
++ */
++#ifndef _LINUX_NETDEV_FEATURES_HELPER_H
++#define _LINUX_NETDEV_FEATURES_HELPER_H
++
++#include <linux/netdevice.h>
++
++static inline void netdev_features_zero(netdev_features_t *dst)
++{
++	*dst = 0;
++}
++
++static inline void netdev_features_fill(netdev_features_t *dst)
++{
++	*dst = ~0ULL;
++}
++
++static inline bool netdev_features_empty(const netdev_features_t src)
++{
++	return src == 0;
++}
++
++/* helpers for netdev features '==' operation */
++static inline bool netdev_features_equal(const netdev_features_t src1,
++					 const netdev_features_t src2)
++{
++	return src1 == src2;
++}
++
++/* active_feature prefer to netdev->features */
++#define netdev_active_features_equal(ndev, __features) \
++		netdev_features_equal(ndev->features, __features)
++
++#define netdev_hw_features_equal(ndev, __features) \
++		netdev_features_equal(ndev->hw_features, __features)
++
++#define netdev_wanted_features_equal(ndev, __features) \
++		netdev_features_equal(ndev->wanted_features, __features)
++
++#define netdev_vlan_features_equal(ndev, __features) \
++		netdev_features_equal(ndev->vlan_features, __features)
++
++#define netdev_hw_enc_features_equal(ndev, __features) \
++		netdev_features_equal(ndev->hw_enc_features, __features)
++
++#define netdev_mpls_features_equal(ndev, __features) \
++		netdev_features_equal(ndev->mpls_features, __features)
++
++#define netdev_gso_partial_features_equal(ndev, __features) \
++		netdev_features_equal(ndev->gso_partial_features, __features)
++
++/* helpers for netdev features '&' operation */
++static inline netdev_features_t
++netdev_features_and(const netdev_features_t a, const netdev_features_t b)
++{
++	return a & b;
++}
++
++#define netdev_active_features_and(ndev, __features) \
++		netdev_features_and(ndev->features, __features)
++
++#define netdev_hw_features_and(ndev, __features) \
++		netdev_features_and(ndev->hw_features, __features)
++
++#define netdev_wanted_features_and(ndev, __features) \
++		netdev_features_and(ndev->wanted_features, __features)
++
++#define netdev_vlan_features_and(ndev, __features) \
++		netdev_features_and(ndev->vlan_features, __features)
++
++#define netdev_hw_enc_features_and(ndev, __features) \
++		netdev_features_and(ndev->hw_enc_features, __features)
++
++#define netdev_mpls_features_and(ndev, __features) \
++		netdev_features_and(ndev->mpls_features, __features)
++
++#define netdev_gso_partial_features_and(ndev, __features) \
++		netdev_features_and(ndev->gso_partial_features, __features)
++
++/* helpers for netdev features '&=' operation */
++static inline void
++netdev_features_mask(netdev_features_t *dst,
++			   const netdev_features_t features)
++{
++	*dst = netdev_features_and(*dst, features);
++}
++
++static inline void
++netdev_active_features_mask(struct net_device *ndev,
++			    const netdev_features_t features)
++{
++	ndev->features = netdev_active_features_and(ndev, features);
++}
++
++static inline void
++netdev_hw_features_mask(struct net_device *ndev,
++			const netdev_features_t features)
++{
++	ndev->hw_features = netdev_hw_features_and(ndev, features);
++}
++
++static inline void
++netdev_wanted_features_mask(struct net_device *ndev,
++			    const netdev_features_t features)
++{
++	ndev->wanted_features = netdev_wanted_features_and(ndev, features);
++}
++
++static inline void
++netdev_vlan_features_mask(struct net_device *ndev,
++			  const netdev_features_t features)
++{
++	ndev->vlan_features = netdev_vlan_features_and(ndev, features);
++}
++
++static inline void
++netdev_hw_enc_features_mask(struct net_device *ndev,
++			    const netdev_features_t features)
++{
++	ndev->hw_enc_features = netdev_hw_enc_features_and(ndev, features);
++}
++
++static inline void
++netdev_mpls_features_mask(struct net_device *ndev,
++			  const netdev_features_t features)
++{
++	ndev->mpls_features = netdev_mpls_features_and(ndev, features);
++}
++
++static inline void
++netdev_gso_partial_features_mask(struct net_device *ndev,
++				 const netdev_features_t features)
++{
++	ndev->gso_partial_features = netdev_mpls_features_and(ndev, features);
++}
++
++/* helpers for netdev features '|' operation */
++static inline netdev_features_t
++netdev_features_or(const netdev_features_t a, const netdev_features_t b)
++{
++	return a | b;
++}
++
++#define netdev_active_features_or(ndev, __features) \
++		netdev_features_or(ndev->features, __features)
++
++#define netdev_hw_features_or(ndev, __features) \
++		netdev_features_or(ndev->hw_features, __features)
++
++#define netdev_wanted_features_or(ndev, __features) \
++		netdev_features_or(ndev->wanted_features, __features)
++
++#define netdev_vlan_features_or(ndev, __features) \
++		netdev_features_or(ndev->vlan_features, __features)
++
++#define netdev_hw_enc_features_or(ndev, __features) \
++		netdev_features_or(ndev->hw_enc_features, __features)
++
++#define netdev_mpls_features_or(ndev, __features) \
++		netdev_features_or(ndev->mpls_features, __features)
++
++#define netdev_gso_partial_features_or(ndev, __features) \
++		netdev_features_or(ndev->gso_partial_features, __features)
++
++/* helpers for netdev features '|=' operation */
++static inline void
++netdev_features_set(netdev_features_t *dst, const netdev_features_t features)
++{
++	*dst = netdev_features_or(*dst, features);
++}
++
++static inline void
++netdev_active_features_set(struct net_device *ndev,
++			   const netdev_features_t features)
++{
++	ndev->features = netdev_active_features_or(ndev, features);
++}
++
++static inline void
++netdev_hw_features_set(struct net_device *ndev,
++		       const netdev_features_t features)
++{
++	ndev->hw_features = netdev_hw_features_or(ndev, features);
++}
++
++static inline void
++netdev_wanted_features_set(struct net_device *ndev,
++			   const netdev_features_t features)
++{
++	ndev->wanted_features = netdev_wanted_features_or(ndev, features);
++}
++
++static inline void
++netdev_vlan_features_set(struct net_device *ndev,
++			 const netdev_features_t features)
++{
++	ndev->vlan_features = netdev_vlan_features_or(ndev, features);
++}
++
++static inline void
++netdev_hw_enc_features_set(struct net_device *ndev,
++			   const netdev_features_t features)
++{
++	ndev->hw_enc_features = netdev_hw_enc_features_or(ndev, features);
++}
++
++static inline void
++netdev_mpls_features_set(struct net_device *ndev,
++			 const netdev_features_t features)
++{
++	ndev->mpls_features = netdev_mpls_features_or(ndev, features);
++}
++
++static inline void
++netdev_gso_partial_features_set(struct net_device *ndev,
++				const netdev_features_t features)
++{
++	ndev->gso_partial_features = netdev_mpls_features_or(ndev, features);
++}
++
++/* helpers for netdev features '^' operation */
++static inline netdev_features_t
++netdev_features_xor(const netdev_features_t a, const netdev_features_t b)
++{
++	return a ^ b;
++}
++
++#define netdev_active_features_xor(ndev, __features) \
++		netdev_features_xor(ndev->features, __features)
++
++#define netdev_hw_features_xor(ndev, __features) \
++		netdev_features_xor(ndev->hw_features, __features)
++
++#define netdev_wanted_features_xor(ndev, __features) \
++		netdev_features_xor(ndev->wanted_features, __features)
++
++#define netdev_vlan_features_xor(ndev, __features) \
++		netdev_features_xor(ndev->vlan_features, __features)
++
++#define netdev_hw_enc_features_xor(ndev, __features) \
++		netdev_features_xor(ndev->hw_enc_features, __features)
++
++#define netdev_mpls_features_xor(ndev, __features) \
++		netdev_features_xor(ndev->mpls_features, __features)
++
++#define netdev_gso_partial_features_xor(ndev, __features) \
++		netdev_features_xor(ndev->gso_partial_features, __features)
++
++/* helpers for netdev features '^=' operation */
++static inline void
++netdev_features_toggle(netdev_features_t *dst, const netdev_features_t features)
++{
++	*dst = netdev_features_xor(*dst, features);
++}
++
++static inline void
++netdev_active_features_toggle(struct net_device *ndev,
++			      const netdev_features_t features)
++{
++	ndev->features = netdev_active_features_xor(ndev, features);
++}
++
++static inline void
++netdev_hw_features_toggle(struct net_device *ndev,
++			      const netdev_features_t features)
++{
++	ndev->hw_features = netdev_hw_features_xor(ndev, features);
++}
++
++static inline void
++netdev_wanted_features_toggle(struct net_device *ndev,
++				  const netdev_features_t features)
++{
++	ndev->wanted_features = netdev_wanted_features_xor(ndev, features);
++}
++
++static inline void
++netdev_vlan_features_toggle(struct net_device *ndev,
++				const netdev_features_t features)
++{
++	ndev->vlan_features = netdev_vlan_features_xor(ndev, features);
++}
++
++static inline void
++netdev_hw_enc_features_toggle(struct net_device *ndev,
++			      const netdev_features_t features)
++{
++	ndev->hw_enc_features = netdev_hw_enc_features_xor(ndev, features);
++}
++
++static inline void
++netdev_mpls_features_toggle(struct net_device *ndev,
++			    const netdev_features_t features)
++{
++	ndev->mpls_features = netdev_mpls_features_xor(ndev, features);
++}
++
++static inline void
++netdev_gso_partial_features_toggle(struct net_device *ndev,
++				   const netdev_features_t features)
++{
++	ndev->gso_partial_features =
++			netdev_gso_partial_features_xor(ndev, features);
++}
++
++/* helpers for netdev features '& ~' operation */
++static inline netdev_features_t
++netdev_features_andnot(const netdev_features_t a, const netdev_features_t b)
++{
++	return a & ~b;
++}
++
++#define netdev_active_features_andnot(ndev, __features) \
++		netdev_features_andnot(ndev->features, __features)
++
++#define netdev_hw_features_andnot(ndev, __features) \
++		netdev_features_andnot(ndev->hw_features, __features)
++
++#define netdev_wanted_features_andnot(ndev, __features) \
++		netdev_features_andnot(ndev->wanted_features, __features)
++
++#define netdev_vlan_features_andnot(ndev, __features) \
++		netdev_features_andnot(ndev->vlan_features, __features)
++
++#define netdev_hw_enc_features_andnot(ndev, __features) \
++		netdev_features_andnot(ndev->hw_enc_features, __features)
++
++#define netdev_mpls_features_andnot(ndev, __features) \
++		netdev_features_andnot(ndev->mpls_features, __features)
++
++#define netdev_gso_partial_features_andnot(ndev, __features) \
++		netdev_features_andnot(ndev->gso_partial_features, __features)
++
++#define netdev_active_features_andnot_r(ndev, __features) \
++		netdev_features_andnot(__features, ndev->features)
++
++#define netdev_hw_features_andnot_r(ndev, __features) \
++		netdev_features_andnot(__features, ndev->hw_features)
++
++#define netdev_wanted_features_andnot_r(ndev, __features) \
++		netdev_features_andnot(__features, ndev->wanted_features)
++
++#define netdev_vlan_features_andnot_r(ndev, __features) \
++		netdev_features_andnot(__features, ndev->vlan_features)
++
++#define netdev_hw_enc_features_andnot_r(ndev, __features) \
++		netdev_features_andnot(__features, ndev->hw_enc_features)
++
++#define netdev_mpls_features_andnot_r(ndev, __features) \
++		netdev_features_andnot(__features, ndev->mpls_features)
++
++#define netdev_gso_partial_features_andnot_r(ndev, __features) \
++		netdev_features_andnot(__features, ndev->gso_partial_features)
++
++static inline void
++netdev_features_clear(netdev_features_t *dst, const netdev_features_t features)
++{
++	*dst = netdev_features_andnot(*dst, features);
++}
++
++static inline void
++netdev_active_features_clear(struct net_device *ndev,
++			     const netdev_features_t features)
++{
++	ndev->features = netdev_active_features_andnot(ndev, features);
++}
++
++static inline void
++netdev_hw_features_clear(struct net_device *ndev,
++			 const netdev_features_t features)
++{
++	ndev->hw_features = netdev_hw_features_andnot(ndev, features);
++}
++
++static inline void
++netdev_wanted_features_clear(struct net_device *ndev,
++			     const netdev_features_t features)
++{
++	ndev->wanted_features = netdev_wanted_features_andnot(ndev, features);
++}
++
++static inline void
++netdev_vlan_features_clear(struct net_device *ndev,
++			   const netdev_features_t features)
++{
++	ndev->vlan_features = netdev_vlan_features_andnot(ndev, features);
++}
++
++static inline void
++netdev_hw_enc_features_clear(struct net_device *ndev,
++			     const netdev_features_t features)
++{
++	ndev->hw_enc_features = netdev_hw_enc_features_andnot(ndev, features);
++}
++
++static inline void
++netdev_mpls_features_clear(struct net_device *ndev,
++			   const netdev_features_t features)
++{
++	ndev->mpls_features = netdev_mpls_features_andnot(ndev, features);
++}
++
++static inline void
++netdev_gso_partial_features_clear(struct net_device *ndev,
++				  const netdev_features_t features)
++{
++	ndev->gso_partial_features =
++		netdev_gso_partial_features_andnot(ndev, features);
++}
++
++/* helpers for netdev features 'set bit' operation */
++static inline void netdev_feature_add(int nr, netdev_features_t *src)
++{
++	*src |= __NETIF_F_BIT(nr);
++}
++
++#define netdev_active_feature_add(ndev, nr) \
++		netdev_feature_add(nr, &ndev->features)
++
++#define netdev_hw_feature_add(ndev, nr) \
++		netdev_feature_add(nr, &ndev->hw_features)
++
++#define netdev_wanted_feature_add(ndev, nr) \
++		netdev_feature_add(nr, &ndev->wanted_features)
++
++#define netdev_vlan_feature_add(ndev, nr) \
++		netdev_feature_add(nr, &ndev->vlan_features)
++
++#define netdev_hw_enc_feature_add(ndev, nr) \
++		netdev_feature_add(nr, &ndev->hw_enc_features)
++
++#define netdev_mpls_feature_add(ndev, nr) \
++		netdev_feature_add(nr, &ndev->mpls_features)
++
++#define netdev_gso_partial_feature_add(ndev, nr) \
++		netdev_feature_add(nr, &ndev->gso_partial_features)
++
++/* helpers for netdev features 'set bit array' operation */
++static inline void
++netdev_features_set_array(const struct netdev_feature_set *set,
++			  netdev_features_t *dst)
++{
++	int i;
++
++	for (i = 0; i < set->cnt; i++)
++		netdev_feature_add(set->feature_bits[i], dst);
++}
++
++#define netdev_active_features_set_array(ndev, set) \
++		netdev_features_set_array(set, &ndev->features)
++
++#define netdev_hw_features_set_array(ndev, set) \
++		netdev_features_set_array(set, &ndev->hw_features)
++
++#define netdev_wanted_features_set_array(ndev, set) \
++		netdev_features_set_array(set, &ndev->wanted_features)
++
++#define netdev_vlan_features_set_array(ndev, set) \
++		netdev_features_set_array(set, &ndev->vlan_features)
++
++#define netdev_hw_enc_features_set_array(ndev, set) \
++		netdev_features_set_array(set, &ndev->hw_enc_features)
++
++#define netdev_mpls_features_set_array(ndev, set) \
++		netdev_features_set_array(set, &ndev->mpls_features)
++
++#define netdev_gso_partial_features_set_array(ndev, set) \
++		netdev_features_set_array(set, &ndev->gso_partial_features)
++
++/* helpers for netdev features 'clear bit' operation */
++static inline void netdev_feature_del(int nr, netdev_features_t *src)
++{
++	*src &= ~__NETIF_F_BIT(nr);
++}
++
++#define netdev_active_feature_del(ndev, nr) \
++		netdev_feature_del(nr, &ndev->features)
++
++#define netdev_hw_feature_del(ndev, nr) \
++		netdev_feature_del(nr, &ndev->hw_features)
++
++#define netdev_wanted_feature_del(ndev, nr) \
++		netdev_feature_del(nr, &ndev->wanted_features)
++
++#define netdev_vlan_feature_del(ndev, nr) \
++		netdev_feature_del(nr, &ndev->vlan_features)
++
++#define netdev_hw_enc_feature_del(ndev, nr) \
++		netdev_feature_del(nr, &ndev->hw_enc_features)
++
++#define netdev_mpls_feature_del(ndev, nr) \
++		netdev_feature_del(nr, &ndev->mpls_features)
++
++#define netdev_gso_partial_feature_del(ndev, nr) \
++		netdev_feature_del(nr, &ndev->gso_partial_features)
++
++static inline bool netdev_features_intersects(const netdev_features_t src1,
++					      const netdev_features_t src2)
++{
++	return (src1 & src2) > 0;
++}
++
++#define netdev_active_features_intersects(ndev, __features) \
++		netdev_features_intersects(ndev->features, __features)
++
++#define netdev_hw_features_intersects(ndev, __features) \
++		netdev_features_intersects(ndev->hw_features, __features)
++
++#define netdev_wanted_features_intersects(ndev, __features) \
++		netdev_features_intersects(ndev->wanted_features, __features)
++
++#define netdev_vlan_features_intersects(ndev, __features) \
++		netdev_features_intersects(ndev->vlan_features, __features)
++
++#define netdev_hw_enc_features_intersects(ndev, __features) \
++		netdev_features_intersects(ndev->hw_enc_features, __features)
++
++#define netdev_mpls_features_intersects(ndev, __features) \
++		netdev_features_intersects(ndev->mpls_features, __features)
++
++#define netdev_gso_partial_features_intersects(ndev, __features) \
++		netdev_features_intersects(ndev->gso_partial_features, __features)
++
++/* helpers for netdev features '=' operation */
++static inline void netdev_active_features_copy(struct net_device *netdev,
++					       const netdev_features_t src)
++{
++	netdev->features = src;
++}
++
++static inline void netdev_hw_features_copy(struct net_device *ndev,
++					   const netdev_features_t src)
++{
++	ndev->hw_features = src;
++}
++
++static inline void netdev_wanted_features_copy(struct net_device *ndev,
++					       const netdev_features_t src)
++{
++	ndev->wanted_features = src;
++}
++
++static inline void netdev_vlan_features_copy(struct net_device *ndev,
++					     const netdev_features_t src)
++{
++	ndev->vlan_features = src;
++}
++
++static inline void netdev_hw_enc_features_copy(struct net_device *ndev,
++					       const netdev_features_t src)
++{
++	ndev->hw_enc_features = src;
++}
++
++static inline void netdev_mpls_features_copy(struct net_device *ndev,
++					     const netdev_features_t src)
++{
++	ndev->mpls_features = src;
++}
++
++static inline void netdev_gso_partial_features_copy(struct net_device *ndev,
++						    const netdev_features_t src)
++{
++	ndev->gso_partial_features = src;
++}
++
++/* helpers for netdev features 'get' operation */
++#define netdev_active_features(ndev)	((ndev)->features)
++#define netdev_hw_features(ndev)	((ndev)->hw_features)
++#define netdev_wanted_features(ndev)	((ndev)->wanted_features)
++#define netdev_vlan_features(ndev)	((ndev)->vlan_features)
++#define netdev_hw_enc_features(ndev)	((ndev)->hw_enc_features)
++#define netdev_mpls_features(ndev)	((ndev)->mpls_features)
++#define netdev_gso_partial_features(ndev)	((ndev)->gso_partial_features)
++
++/* helpers for netdev features 'subset' */
++static inline bool netdev_features_subset(const netdev_features_t src1,
++					  const netdev_features_t src2)
++{
++	return (src1 & src2) == src2;
++}
++
++static inline netdev_features_t netdev_intersect_features(netdev_features_t f1,
++							  netdev_features_t f2)
++{
++	if ((f1 ^ f2) & NETIF_F_HW_CSUM) {
++		if (f1 & NETIF_F_HW_CSUM)
++			f1 |= (NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM);
++		else
++			f2 |= (NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM);
++	}
++
++	return f1 & f2;
++}
++
++static inline netdev_features_t
++netdev_get_wanted_features(struct net_device *dev)
++{
++	return (dev->features & ~dev->hw_features) | dev->wanted_features;
++}
++
++#endif
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 7b2a0b739684..a092423653e2 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -2304,6 +2304,33 @@ struct net_device {
+ };
+ #define to_net_dev(d) container_of(d, struct net_device, dev)
+ 
++/* helpers for netdev features 'test bit' operation */
++static inline bool netdev_feature_test(int nr, const netdev_features_t src)
++{
++	return (src & __NETIF_F_BIT(nr)) > 0;
++}
++
++#define netdev_active_feature_test(ndev, nr) \
++		netdev_feature_test(nr, ndev->features)
++
++#define netdev_hw_feature_test(ndev, nr) \
++		netdev_feature_test(nr, ndev->hw_features)
++
++#define netdev_wanted_feature_test(ndev, nr) \
++		netdev_feature_test(nr, ndev->wanted_features)
++
++#define netdev_vlan_feature_test(ndev, nr) \
++		netdev_feature_test(nr, ndev->vlan_features)
++
++#define netdev_hw_enc_feature_test(ndev, nr) \
++		netdev_feature_test(nr, ndev->hw_enc_features)
++
++#define netdev_mpls_feature_test(ndev, nr) \
++		netdev_feature_test(nr, ndev->mpls_features)
++
++#define netdev_gso_partial_feature_test(ndev, nr) \
++		netdev_feature_test(nr, ndev->gso_partial_features)
++
+ static inline bool netif_elide_gro(const struct net_device *dev)
+ {
+ 	if (!(dev->features & NETIF_F_GRO) || dev->xdp_prog)
+@@ -4815,24 +4842,6 @@ const char *netdev_drivername(const struct net_device *dev);
+ 
+ void linkwatch_run_queue(void);
+ 
+-static inline netdev_features_t netdev_intersect_features(netdev_features_t f1,
+-							  netdev_features_t f2)
+-{
+-	if ((f1 ^ f2) & NETIF_F_HW_CSUM) {
+-		if (f1 & NETIF_F_HW_CSUM)
+-			f1 |= (NETIF_F_IP_CSUM|NETIF_F_IPV6_CSUM);
+-		else
+-			f2 |= (NETIF_F_IP_CSUM|NETIF_F_IPV6_CSUM);
+-	}
+-
+-	return f1 & f2;
+-}
+-
+-static inline netdev_features_t netdev_get_wanted_features(
+-	struct net_device *dev)
+-{
+-	return (dev->features & ~dev->hw_features) | dev->wanted_features;
+-}
+ netdev_features_t netdev_increment_features(netdev_features_t all,
+ 	netdev_features_t one, netdev_features_t mask);
+ 
+diff --git a/net/8021q/vlan_dev.c b/net/8021q/vlan_dev.c
+index e5d23e75572a..2c9b353f13e8 100644
+--- a/net/8021q/vlan_dev.c
++++ b/net/8021q/vlan_dev.c
+@@ -24,6 +24,7 @@
+ #include <linux/net_tstamp.h>
+ #include <linux/etherdevice.h>
+ #include <linux/ethtool.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/phy.h>
+ #include <net/arp.h>
+ 
+diff --git a/net/core/dev.c b/net/core/dev.c
+index d5a362d53b34..4d6b57752eee 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -88,6 +88,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/if_ether.h>
+ #include <linux/netdevice.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/etherdevice.h>
+ #include <linux/ethtool.h>
+ #include <linux/skbuff.h>
 -- 
 2.33.0
 
