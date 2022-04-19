@@ -2,48 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 98D2150766D
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 19:22:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E60BB507673
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 19:26:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350098AbiDSRZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 13:25:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48208 "EHLO
+        id S245052AbiDSR33 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 13:29:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348515AbiDSRZJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 13:25:09 -0400
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 344243C4B3;
-        Tue, 19 Apr 2022 10:22:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1650388939; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        with ESMTP id S245193AbiDSR3P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 13:29:15 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EF56D21B3
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 10:26:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650389190;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=V5MZ44J/2p8fy6DuvcxG86awKyPycaxt+fsG7bZhs1M=;
-        b=NEBwuEgxhM19apjy6kKt9GrTDsZoBBGDWU2ZgYgPer3n7SvOqsFJ+DUsQ1pIgB4+F/vk9H
-        rOGiYyfKvkzS7g0Rp9uvovjoBpTIvxp+4Xo7qjs+6+DZK09qsExxcwTLRoRDdzu7z97trg
-        EYYwEDCxzmZcauHNO2JYncVeYrydSD8=
-Date:   Tue, 19 Apr 2022 18:22:09 +0100
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH] brcmfmac: Remove #ifdef guards for PM related functions
-To:     Arend van Spriel <arend.vanspriel@broadcom.com>
-Cc:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>, linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Message-Id: <X8KLAR.4CU0LCMZIMJH@crapouillou.net>
-In-Reply-To: <afb9ea60-7f93-a646-da82-4f408051c748@broadcom.com>
-References: <20220415200322.7511-1-paul@crapouillou.net>
-        <afb9ea60-7f93-a646-da82-4f408051c748@broadcom.com>
+        bh=KnT56PJN9F9nxcZCdsEbo1AgUlkLyacJ520jZAzXohM=;
+        b=MYOkJM/XKdlOHnKmCD3eEYJIM9uUmQYqtf9i3SvD17NYPxWzvYzP1mmWLDYaPX5Okkob50
+        U9KV6/ZmZfG5hMmTgb5LvTDxB64aToHVQzVmM0UbmBNgk33Jp5fGSTnfizLAWmcYA5BDmK
+        qnQwUHINtBuKwbWNYbBxAORoNf8vb0U=
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
+ [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-412-hBe7CVIRNUytrpfFH5JZrg-1; Tue, 19 Apr 2022 13:26:29 -0400
+X-MC-Unique: hBe7CVIRNUytrpfFH5JZrg-1
+Received: by mail-il1-f199.google.com with SMTP id p10-20020a056e02104a00b002caa828f7b1so9952883ilj.7
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 10:26:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:references:mime-version:in-reply-to:date
+         :message-id:subject:to:cc;
+        bh=KnT56PJN9F9nxcZCdsEbo1AgUlkLyacJ520jZAzXohM=;
+        b=GL0wrjWcCVhiQnwYaJf4nRsaw/IT1kfo0EUAOiRhE/kvYh7N86jjfV88mXQ69RXkqM
+         WPi9kZMv8fNh2KiNePDj46QJ8gwSzyzYN4n9+OmiYcqO+Ady7uh6mX6gddadJ5CVhTeC
+         b0mUxSWIYUDcdRp5E3atxRcF5hS5KfxPoeuYdQOoA/vAiK9xMF761Zs/xoE0xZLcrCWo
+         0IjfaUUmT3aJsCp7Q2vkc/hjNFa25sFc5IN4MXPEun57ocGk7X0/fFHxkRoZ/4fIgIOc
+         JkZT3rTBZdXcBa5U90mJjPrEKeproEjwJsDF9xUgRBiyD8DPiyXCye/TL38Y6W+ZtgNe
+         Jktg==
+X-Gm-Message-State: AOAM530JSEUUqDIA2sCqtsBD4TC2U4e0nnmDbemkp81dvv80hPwRKScl
+        70ezHmx3fxmXCMNeM4gjUxTtC020OmobR1jDGHU8cKa0gM2wgJ9lJY1y9rTa1/lwxToZlCfMS28
+        VPwkReq2WsQ2CumcElnuahUHVoHSukraI
+X-Received: by 2002:a05:6e02:16c5:b0:2cc:450a:df7d with SMTP id 5-20020a056e0216c500b002cc450adf7dmr2062029ilx.39.1650389188033;
+        Tue, 19 Apr 2022 10:26:28 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwqy2ykOW7FmenhOJHQOJvmdpfac55ywUqXQ5q/skGurVLHoT5jBVZi3AnZ9DrY9sO3Fw8nJTYkF0xO4xZK36E=
+X-Received: by 2002:a05:6e02:16c5:b0:2cc:450a:df7d with SMTP id
+ 5-20020a056e0216c500b002cc450adf7dmr2062022ilx.39.1650389187774; Tue, 19 Apr
+ 2022 10:26:27 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 19 Apr 2022 12:26:27 -0500
+From:   Marcelo Ricardo Leitner <mleitner@redhat.com>
+References: <20210809070455.21051-1-liuhangbin@gmail.com> <162850320655.31628.17692584840907169170.git-patchwork-notify@kernel.org>
+ <CAHsH6GuZciVLrn7J-DR4S+QU7Xrv422t1kfMyA7r=jADssNw+A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+In-Reply-To: <CAHsH6GuZciVLrn7J-DR4S+QU7Xrv422t1kfMyA7r=jADssNw+A@mail.gmail.com>
+Date:   Tue, 19 Apr 2022 12:26:27 -0500
+Message-ID: <CALnP8ZackbaUGJ_31LXyZpk3_AVi2Z-cDhexH8WKYZjjKTLGfw@mail.gmail.com>
+Subject: Re: [PATCH net] net: sched: act_mirred: Reset ct info when
+ mirror/redirect skb
+To:     Eyal Birger <eyal.birger@gmail.com>
+Cc:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, kuba@kernel.org, ahleihel@redhat.com,
+        dcaratti@redhat.com, aconole@redhat.com, roid@nvidia.com,
+        Shmulik Ladkani <shmulik.ladkani@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -51,88 +78,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Arend,
+Hi,
 
-Le lun., avril 18 2022 at 09:09:46 +0200, Arend van Spriel=20
-<arend.vanspriel@broadcom.com> a =E9crit :
-> On 4/15/2022 10:03 PM, Paul Cercueil wrote:
->> Use the new DEFINE_SIMPLE_DEV_PM_OPS() and pm_sleep_ptr() macros to
->> handle the .suspend/.resume callbacks.
->>=20
->> These macros allow the suspend and resume functions to be=20
->> automatically
->> dropped by the compiler when CONFIG_SUSPEND is disabled, without=20
->> having
->> to use #ifdef guards. The advantage is then that these functions are=20
->> not
->> conditionally compiled.
->=20
-> The advantage stated here may not be obvious to everyone and that is=20
-> because it only scratches the surface. The code is always compiled=20
-> independent from the Kconfig options used and because of that the=20
-> real advantage is that build regressions are easier to catch.
+On Tue, Apr 19, 2022 at 07:50:38PM +0300, Eyal Birger wrote:
+> Hi,
+>
+> On Mon, Aug 9, 2021 at 1:29 PM <patchwork-bot+netdevbpf@kernel.org> wrote:
+> >
+> > Hello:
+> >
+> > This patch was applied to netdev/net.git (refs/heads/master):
+> >
+> > On Mon,  9 Aug 2021 15:04:55 +0800 you wrote:
+> > > When mirror/redirect a skb to a different port, the ct info should be reset
+> > > for reclassification. Or the pkts will match unexpected rules. For example,
+> > > with following topology and commands:
+> > >
+> > >     -----------
+> > >               |
+> > >        veth0 -+-------
+> > >               |
+> > >        veth1 -+-------
+> > >               |
+> > >
+> > > [...]
+> >
+> > Here is the summary with links:
+> >   - [net] net: sched: act_mirred: Reset ct info when mirror/redirect skb
+> >     https://git.kernel.org/netdev/net/c/d09c548dbf3b
+>
+> Unfortunately this commit breaks DNAT when performed before going via mirred
+> egress->ingress.
+>
+> The reason is that connection tracking is lost and therefore a new state
+> is created on ingress.
+>
+> This breaks existing setups.
+>
+> See below a simplified script reproducing this issue.
 
-Exactly. I will improve the commit message to make this a bit more=20
-explicit.
+I guess I can understand why the reproducer triggers it, but I fail to
+see the actual use case you have behind it. Can you please elaborate
+on it?
 
->> Some other functions not directly called by the .suspend/.resume
->> callbacks, but still related to PM were also taken outside #ifdef
->> guards.
->=20
-> a few comments on this inline...
->=20
->> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
->> ---
->>   .../broadcom/brcm80211/brcmfmac/bcmsdh.c      | 44=20
->> +++++++------------
->>   .../broadcom/brcm80211/brcmfmac/sdio.c        |  5 +--
->>   .../broadcom/brcm80211/brcmfmac/sdio.h        | 16 -------
->>   3 files changed, 19 insertions(+), 46 deletions(-)
->>=20
->> diff --git=20
->> a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c=20
->> b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
->> index ac02244a6fdf..a8cf5a570101 100644
->> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
->> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
->=20
-> [...]
->=20
->> @@ -873,7 +865,8 @@ int brcmf_sdiod_remove(struct brcmf_sdio_dev=20
->> *sdiodev)
->>   		sdiodev->bus =3D NULL;
->>   	}
->>   =7F-	brcmf_sdiod_freezer_detach(sdiodev);
->> +	if (IS_ENABLED(CONFIG_PM_SLEEP))
->> +		brcmf_sdiod_freezer_detach(sdiodev);
->=20
-> Please move the if statement inside the function to keep the code=20
-> flow in the calling function the same as before.
->=20
->>   =7F  	/* Disable Function 2 */
->>   	sdio_claim_host(sdiodev->func2);
->> @@ -949,9 +942,11 @@ int brcmf_sdiod_probe(struct brcmf_sdio_dev=20
->> *sdiodev)
->>   		goto out;
->>   	}
->>   =7F-	ret =3D brcmf_sdiod_freezer_attach(sdiodev);
->> -	if (ret)
->> -		goto out;
->> +	if (IS_ENABLED(CONFIG_PM_SLEEP)) {
->> +		ret =3D brcmf_sdiod_freezer_attach(sdiodev);
->> +		if (ret)
->> +			goto out;
->> +	}
->=20
-> Dito. Move the if statement inside the function.
-
-Sure.
-
-Cheers,
--Paul
-
->=20
->>   =7F  	/* try to attach to the target device */
->>   	sdiodev->bus =3D brcmf_sdio_probe(sdiodev);
-
+>
+> Therefore I suggest this commit be reverted and a knob is introduced to mirred
+> for clearing ct as needed.
+>
+> Eyal.
+>
+> Reproduction script:
+>
+> #!/bin/bash
+>
+> ip netns add a
+> ip netns add b
+>
+> ip netns exec a sysctl -w net.ipv4.conf.all.forwarding=1
+> ip netns exec a sysctl -w net.ipv4.conf.all.accept_local=1
+>
+> ip link add veth0 netns a type veth peer name veth0 netns b
+> ip -net a link set veth0 up
+> ip -net a addr add dev veth0 198.51.100.1/30
+>
+> ip -net a link add dum0 type dummy
+> ip -net a link set dev dum0 up
+> ip -net a addr add dev dum0 198.51.100.2/32
+>
+> ip netns exec a iptables -t nat -I OUTPUT -d 10.0.0.1 -j DNAT
+> --to-destination 10.0.0.2
+> ip -net a route add default dev dum0
+> ip -net a rule add pref 50 iif dum0 lookup 1000
+> ip -net a route add table 1000 default dev veth0
+>
+> ip netns exec a tc qdisc add dev dum0 clsact
+> ip netns exec a tc filter add dev dum0 parent ffff:fff3 prio 50 basic
+> action mirred ingress redirect dev dum0
+>
+> ip -net b link set veth0 up
+> ip  -net b addr add 10.0.0.2/32 dev veth0
+> ip  -net b addr add 198.51.100.3/30 dev veth0
+>
+> ip netns exec a ping 10.0.0.1
+> >
+> > You are awesome, thank you!
+> > --
+> > Deet-doot-dot, I am a bot.
+> > https://korg.docs.kernel.org/patchwork/pwbot.html
+> >
+> >
+>
 
