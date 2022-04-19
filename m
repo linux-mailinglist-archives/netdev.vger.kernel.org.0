@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C81D550621C
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 04:28:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD19250620F
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 04:28:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236420AbiDSCap (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Apr 2022 22:30:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34292 "EHLO
+        id S238568AbiDSCam (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Apr 2022 22:30:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344578AbiDSCai (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 22:30:38 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD2A02E68B
+        with ESMTP id S238008AbiDSCah (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 22:30:37 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3C752E688
         for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 19:27:55 -0700 (PDT)
 Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kj73y49N2zfYsX;
-        Tue, 19 Apr 2022 10:27:10 +0800 (CST)
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kj74h0LFgzhXbH;
+        Tue, 19 Apr 2022 10:27:48 +0800 (CST)
 Received: from localhost.localdomain (10.67.165.24) by
  dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 19 Apr 2022 10:27:53 +0800
+ 15.1.2375.24; Tue, 19 Apr 2022 10:27:54 +0800
 From:   Jian Shen <shenjian15@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
         <ecree.xilinx@gmail.com>, <hkallweit1@gmail.com>,
         <alexandr.lobakin@intel.com>, <saeed@kernel.org>, <leon@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linuxarm@openeuler.org>,
         <lipeng321@huawei.com>
-Subject: [RFCv6 PATCH net-next 02/19] net: replace general features macroes with global netdev_features variables
-Date:   Tue, 19 Apr 2022 10:21:49 +0800
-Message-ID: <20220419022206.36381-3-shenjian15@huawei.com>
+Subject: [RFCv6 PATCH net-next 03/19] net: replace multiple feature bits with netdev features array
+Date:   Tue, 19 Apr 2022 10:21:50 +0800
+Message-ID: <20220419022206.36381-4-shenjian15@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220419022206.36381-1-shenjian15@huawei.com>
 References: <20220419022206.36381-1-shenjian15@huawei.com>
@@ -49,580 +49,334 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are many netdev_features bits group used in kernel. The definition
-will be illegal when using feature bit more than 64. Replace these macroes
-with global netdev_features variables, initialize them when netdev module
-init.
+There are many netdev_features bits group used in drivers, replace them
+with netdev features array.
 
 Signed-off-by: Jian Shen <shenjian15@huawei.com>
 ---
- drivers/net/wireguard/device.c  |  10 +-
- include/linux/netdev_features.h | 102 +++++++++-----
- net/core/Makefile               |   2 +-
- net/core/dev.c                  |  87 ++++++++++++
- net/core/netdev_features.c      | 241 ++++++++++++++++++++++++++++++++
- 5 files changed, 400 insertions(+), 42 deletions(-)
- create mode 100644 net/core/netdev_features.c
+ .../net/ethernet/hisilicon/hns3/hns3_enet.c   | 44 ++++++++++++++-----
+ drivers/net/ethernet/sfc/ef10.c               | 11 ++++-
+ drivers/net/ethernet/sfc/ef100_nic.c          | 24 +++++++---
+ drivers/net/ethernet/sfc/efx.c                | 21 ++++++---
+ drivers/net/ethernet/sfc/falcon/efx.c         | 10 +++--
+ drivers/net/ethernet/sfc/falcon/net_driver.h  |  1 +
+ drivers/net/ethernet/sfc/net_driver.h         |  1 +
+ net/ethtool/ioctl.c                           | 17 +++++--
+ 8 files changed, 100 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/net/wireguard/device.c b/drivers/net/wireguard/device.c
-index 0fad1331303c..bca987ed02c9 100644
---- a/drivers/net/wireguard/device.c
-+++ b/drivers/net/wireguard/device.c
-@@ -273,9 +273,9 @@ static const struct device_type device_type = { .name = KBUILD_MODNAME };
- static void wg_setup(struct net_device *dev)
- {
- 	struct wg_device *wg = netdev_priv(dev);
--	enum { WG_NETDEV_FEATURES = NETIF_F_HW_CSUM | NETIF_F_RXCSUM |
-+	netdev_features_t wg_netdev_features = NETIF_F_HW_CSUM | NETIF_F_RXCSUM |
- 				    NETIF_F_SG | NETIF_F_GSO |
--				    NETIF_F_GSO_SOFTWARE | NETIF_F_HIGHDMA };
-+				    NETIF_F_GSO_SOFTWARE | NETIF_F_HIGHDMA;
- 	const int overhead = MESSAGE_MINIMUM_LENGTH + sizeof(struct udphdr) +
- 			     max(sizeof(struct ipv6hdr), sizeof(struct iphdr));
- 
-@@ -289,9 +289,9 @@ static void wg_setup(struct net_device *dev)
- 	dev->flags = IFF_POINTOPOINT | IFF_NOARP;
- 	dev->priv_flags |= IFF_NO_QUEUE;
- 	dev->features |= NETIF_F_LLTX;
--	dev->features |= WG_NETDEV_FEATURES;
--	dev->hw_features |= WG_NETDEV_FEATURES;
--	dev->hw_enc_features |= WG_NETDEV_FEATURES;
-+	dev->features |= wg_netdev_features;
-+	dev->hw_features |= wg_netdev_features;
-+	dev->hw_enc_features |= wg_netdev_features;
- 	dev->mtu = ETH_DATA_LEN - overhead;
- 	dev->max_mtu = round_down(INT_MAX, MESSAGE_PADDING_MULTIPLE) - overhead;
- 
-diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
-index e2b66fa3d7d6..16b2313e1dec 100644
---- a/include/linux/netdev_features.h
-+++ b/include/linux/netdev_features.h
-@@ -7,6 +7,7 @@
- 
- #include <linux/types.h>
- #include <linux/bitops.h>
-+#include <linux/cache.h>
- #include <asm/byteorder.h>
- 
- typedef u64 netdev_features_t;
-@@ -113,6 +114,55 @@ enum {
- 	/**/NETDEV_FEATURE_COUNT
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+index 14dc12c2155d..74ebba5b9bc3 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+@@ -12,6 +12,7 @@
+ #include <linux/ip.h>
+ #include <linux/ipv6.h>
+ #include <linux/module.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/pci.h>
+ #include <linux/aer.h>
+ #include <linux/skbuff.h>
+@@ -3253,23 +3254,46 @@ static struct pci_driver hns3_driver = {
+ 	.err_handler    = &hns3_err_handler,
  };
  
-+extern netdev_features_t netdev_ethtool_features __ro_after_init;
-+extern netdev_features_t netdev_never_change_features __ro_after_init;
-+extern netdev_features_t netdev_gso_features_mask __ro_after_init;
-+extern netdev_features_t netdev_ip_csum_features __ro_after_init;
-+extern netdev_features_t netdev_csum_features_mask __ro_after_init;
-+extern netdev_features_t netdev_general_tso_features __ro_after_init;
-+extern netdev_features_t netdev_all_tso_features __ro_after_init;
-+extern netdev_features_t netdev_tso_ecn_features __ro_after_init;
-+extern netdev_features_t netdev_all_fcoe_features __ro_after_init;
-+extern netdev_features_t netdev_gso_software_features __ro_after_init;
-+extern netdev_features_t netdev_one_for_all_features __ro_after_init;
-+extern netdev_features_t netdev_all_for_all_features __ro_after_init;
-+extern netdev_features_t netdev_upper_disable_features __ro_after_init;
-+extern netdev_features_t netdev_soft_features __ro_after_init;
-+extern netdev_features_t netdev_soft_off_features __ro_after_init;
-+extern netdev_features_t netdev_all_vlan_features __ro_after_init;
-+extern netdev_features_t netdev_rx_vlan_features __ro_after_init;
-+extern netdev_features_t netdev_tx_vlan_features __ro_after_init;
-+extern netdev_features_t netdev_ctag_vlan_features __ro_after_init;
-+extern netdev_features_t netdev_stag_vlan_features __ro_after_init;
-+extern netdev_features_t netdev_vlan_filter_features __ro_after_init;
-+extern netdev_features_t netdev_gso_encap_all_features __ro_after_init;
-+extern netdev_features_t netdev_xfrm_features __ro_after_init;
-+extern netdev_features_t netdev_tls_features __ro_after_init;
-+extern netdev_features_t netdev_csum_gso_features_mask __ro_after_init;
-+extern struct netdev_feature_set netif_f_never_change_feature_set;
-+extern struct netdev_feature_set netif_f_gso_feature_set_mask;
-+extern struct netdev_feature_set netif_f_ip_csum_feature_set;
-+extern struct netdev_feature_set netif_f_csum_feature_set_mask;
-+extern struct netdev_feature_set netif_f_general_tso_feature_set;
-+extern struct netdev_feature_set netif_f_all_tso_feature_set;
-+extern struct netdev_feature_set netif_f_tso_ecn_feature_set;
-+extern struct netdev_feature_set netif_f_all_fcoe_feature_set;
-+extern struct netdev_feature_set netif_f_gso_soft_feature_set;
-+extern struct netdev_feature_set netif_f_one_for_all_feature_set;
-+extern struct netdev_feature_set netif_f_all_for_all_feature_set;
-+extern struct netdev_feature_set netif_f_upper_disables_feature_set;
-+extern struct netdev_feature_set netif_f_soft_feature_set;
-+extern struct netdev_feature_set netif_f_soft_off_feature_set;
-+extern struct netdev_feature_set netif_f_vlan_feature_set;
-+extern struct netdev_feature_set netif_f_tx_vlan_feature_set;
-+extern struct netdev_feature_set netif_f_rx_vlan_feature_set;
-+extern struct netdev_feature_set netif_f_vlan_filter_feature_set;
-+extern struct netdev_feature_set netif_f_ctag_vlan_feature_set;
-+extern struct netdev_feature_set netif_f_stag_vlan_feature_set;
-+extern struct netdev_feature_set netif_f_gso_encap_feature_set;
-+extern struct netdev_feature_set netif_f_xfrm_feature_set;
-+extern struct netdev_feature_set netif_f_tls_feature_set;
-+
- /* copy'n'paste compression ;) */
- #define __NETIF_F_BIT(bit)	((netdev_features_t)1 << (bit))
- #define __NETIF_F(name)		__NETIF_F_BIT(NETIF_F_##name##_BIT)
-@@ -204,73 +254,53 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
- 
- /* Features valid for ethtool to change */
- /* = all defined minus driver/device-class-related */
--#define NETIF_F_NEVER_CHANGE	(NETIF_F_VLAN_CHALLENGED | \
--				 NETIF_F_LLTX | NETIF_F_NETNS_LOCAL)
-+#define NETIF_F_NEVER_CHANGE	netdev_never_change_features
- 
- /* remember that ((t)1 << t_BITS) is undefined in C99 */
--#define NETIF_F_ETHTOOL_BITS	((__NETIF_F_BIT(NETDEV_FEATURE_COUNT - 1) | \
--		(__NETIF_F_BIT(NETDEV_FEATURE_COUNT - 1) - 1)) & \
--		~NETIF_F_NEVER_CHANGE)
-+#define NETIF_F_ETHTOOL_BITS	netdev_ethtool_features
- 
- /* Segmentation offload feature mask */
--#define NETIF_F_GSO_MASK	(__NETIF_F_BIT(NETIF_F_GSO_LAST + 1) - \
--		__NETIF_F_BIT(NETIF_F_GSO_SHIFT))
-+#define NETIF_F_GSO_MASK	netdev_gso_features_mask
- 
- /* List of IP checksum features. Note that NETIF_F_HW_CSUM should not be
-  * set in features when NETIF_F_IP_CSUM or NETIF_F_IPV6_CSUM are set--
-  * this would be contradictory
-  */
--#define NETIF_F_CSUM_MASK	(NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM | \
--				 NETIF_F_HW_CSUM)
-+#define NETIF_F_CSUM_MASK	netdev_csum_features_mask
- 
--#define NETIF_F_ALL_TSO 	(NETIF_F_TSO | NETIF_F_TSO6 | \
--				 NETIF_F_TSO_ECN | NETIF_F_TSO_MANGLEID)
-+#define NETIF_F_ALL_TSO		netdev_all_tso_features
- 
--#define NETIF_F_ALL_FCOE	(NETIF_F_FCOE_CRC | NETIF_F_FCOE_MTU | \
--				 NETIF_F_FSO)
-+#define NETIF_F_ALL_FCOE	netdev_all_fcoe_features
- 
- /* List of features with software fallbacks. */
--#define NETIF_F_GSO_SOFTWARE	(NETIF_F_ALL_TSO | NETIF_F_GSO_SCTP |	     \
--				 NETIF_F_GSO_UDP_L4 | NETIF_F_GSO_FRAGLIST)
-+#define NETIF_F_GSO_SOFTWARE	netdev_gso_software_features
- 
- /*
-  * If one device supports one of these features, then enable them
-  * for all in netdev_increment_features.
-  */
--#define NETIF_F_ONE_FOR_ALL	(NETIF_F_GSO_SOFTWARE | NETIF_F_GSO_ROBUST | \
--				 NETIF_F_SG | NETIF_F_HIGHDMA |		\
--				 NETIF_F_FRAGLIST | NETIF_F_VLAN_CHALLENGED)
-+#define NETIF_F_ONE_FOR_ALL	netdev_one_for_all_features
- 
- /*
-  * If one device doesn't support one of these features, then disable it
-  * for all in netdev_increment_features.
-  */
--#define NETIF_F_ALL_FOR_ALL	(NETIF_F_NOCACHE_COPY | NETIF_F_FSO)
-+#define NETIF_F_ALL_FOR_ALL	netdev_all_for_all_features
- 
- /*
-  * If upper/master device has these features disabled, they must be disabled
-  * on all lower/slave devices as well.
-  */
--#define NETIF_F_UPPER_DISABLES	NETIF_F_LRO
-+#define NETIF_F_UPPER_DISABLES	netdev_upper_disable_features
- 
- /* changeable features with no special hardware requirements */
--#define NETIF_F_SOFT_FEATURES	(NETIF_F_GSO | NETIF_F_GRO)
-+#define NETIF_F_SOFT_FEATURES	netdev_soft_features
- 
- /* Changeable features with no special hardware requirements that defaults to off. */
--#define NETIF_F_SOFT_FEATURES_OFF	(NETIF_F_GRO_FRAGLIST | NETIF_F_GRO_UDP_FWD)
--
--#define NETIF_F_VLAN_FEATURES	(NETIF_F_HW_VLAN_CTAG_FILTER | \
--				 NETIF_F_HW_VLAN_CTAG_RX | \
--				 NETIF_F_HW_VLAN_CTAG_TX | \
--				 NETIF_F_HW_VLAN_STAG_FILTER | \
--				 NETIF_F_HW_VLAN_STAG_RX | \
--				 NETIF_F_HW_VLAN_STAG_TX)
--
--#define NETIF_F_GSO_ENCAP_ALL	(NETIF_F_GSO_GRE |			\
--				 NETIF_F_GSO_GRE_CSUM |			\
--				 NETIF_F_GSO_IPXIP4 |			\
--				 NETIF_F_GSO_IPXIP6 |			\
--				 NETIF_F_GSO_UDP_TUNNEL |		\
--				 NETIF_F_GSO_UDP_TUNNEL_CSUM)
-+#define NETIF_F_SOFT_FEATURES_OFF	netdev_soft_off_features
-+
-+#define NETIF_F_VLAN_FEATURES	netdev_all_vlan_features
-+
-+#define NETIF_F_GSO_ENCAP_ALL	netdev_gso_encap_all_features
- 
- #endif	/* _LINUX_NETDEV_FEATURES_H */
-diff --git a/net/core/Makefile b/net/core/Makefile
-index a8e4f737692b..9d2127d25d72 100644
---- a/net/core/Makefile
-+++ b/net/core/Makefile
-@@ -11,7 +11,7 @@ obj-$(CONFIG_SYSCTL) += sysctl_net_core.o
- obj-y		     += dev.o dev_addr_lists.o dst.o netevent.o \
- 			neighbour.o rtnetlink.o utils.o link_watch.o filter.o \
- 			sock_diag.o dev_ioctl.o tso.o sock_reuseport.o \
--			fib_notifier.o xdp.o flow_offload.o gro.o
-+			fib_notifier.o xdp.o flow_offload.o gro.o netdev_features.o
- 
- obj-$(CONFIG_NETDEV_ADDR_LIST_TEST) += dev_addr_lists_test.o
- 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 4d6b57752eee..85bb418e8ef1 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -146,6 +146,7 @@
- #include <linux/sctp.h>
- #include <net/udp_tunnel.h>
- #include <linux/net_namespace.h>
-+#include <linux/netdev_features_helper.h>
- #include <linux/indirect_call_wrapper.h>
- #include <net/devlink.h>
- #include <linux/pm_runtime.h>
-@@ -11255,6 +11256,90 @@ static struct pernet_operations __net_initdata default_device_ops = {
- 	.exit_batch = default_device_exit_batch,
- };
- 
-+static void netdev_features_init(void)
-+{
-+	netdev_features_t features;
-+
-+	netdev_features_set_array(&netif_f_never_change_feature_set,
-+				  &netdev_never_change_features);
-+
-+	netdev_features_set_array(&netif_f_gso_feature_set_mask,
-+				  &netdev_gso_features_mask);
-+
-+	netdev_features_set_array(&netif_f_ip_csum_feature_set,
-+				  &netdev_ip_csum_features);
-+
-+	netdev_features_set_array(&netif_f_csum_feature_set_mask,
-+				  &netdev_csum_features_mask);
-+
-+	netdev_features_set_array(&netif_f_general_tso_feature_set,
-+				  &netdev_general_tso_features);
-+
-+	netdev_features_set_array(&netif_f_all_tso_feature_set,
-+				  &netdev_all_tso_features);
-+
-+	netdev_features_set_array(&netif_f_tso_ecn_feature_set,
-+				  &netdev_tso_ecn_features);
-+
-+	netdev_features_set_array(&netif_f_all_fcoe_feature_set,
-+				  &netdev_all_fcoe_features);
-+
-+	netdev_features_set_array(&netif_f_gso_soft_feature_set,
-+				  &netdev_gso_software_features);
-+
-+	netdev_features_set_array(&netif_f_one_for_all_feature_set,
-+				  &netdev_one_for_all_features);
-+
-+	netdev_features_set_array(&netif_f_all_for_all_feature_set,
-+				  &netdev_all_for_all_features);
-+
-+	netdev_features_set_array(&netif_f_upper_disables_feature_set,
-+				  &netdev_upper_disable_features);
-+
-+	netdev_features_set_array(&netif_f_soft_feature_set,
-+				  &netdev_soft_features);
-+
-+	netdev_features_set_array(&netif_f_soft_off_feature_set,
-+				  &netdev_soft_off_features);
-+
-+	netdev_features_set_array(&netif_f_rx_vlan_feature_set,
-+				  &netdev_rx_vlan_features);
-+
-+	netdev_features_set_array(&netif_f_tx_vlan_feature_set,
-+				  &netdev_tx_vlan_features);
-+
-+	netdev_features_set_array(&netif_f_vlan_filter_feature_set,
-+				  &netdev_vlan_filter_features);
-+
-+	netdev_all_vlan_features = netdev_rx_vlan_features;
-+	netdev_features_set(&netdev_all_vlan_features, netdev_tx_vlan_features);
-+	netdev_features_set(&netdev_all_vlan_features,
-+			    netdev_vlan_filter_features);
-+
-+	netdev_features_set_array(&netif_f_ctag_vlan_feature_set,
-+				  &netdev_ctag_vlan_features);
-+
-+	netdev_features_set_array(&netif_f_stag_vlan_feature_set,
-+				  &netdev_stag_vlan_features);
-+
-+	netdev_features_set_array(&netif_f_gso_encap_feature_set,
-+				  &netdev_gso_encap_all_features);
-+
-+	netdev_features_set_array(&netif_f_xfrm_feature_set,
-+				  &netdev_xfrm_features);
-+
-+	netdev_features_set_array(&netif_f_tls_feature_set,
-+				  &netdev_tls_features);
-+
-+	netdev_csum_gso_features_mask =
-+		netdev_features_or(netdev_gso_software_features,
-+				   netdev_csum_features_mask);
-+
-+	netdev_features_fill(&features);
-+	netdev_ethtool_features =
-+		netdev_features_andnot(features, netdev_never_change_features);
-+}
-+
- /*
-  *	Initialize the DEV module. At boot time this walks the device list and
-  *	unhooks any devices that fail to initialise (normally hardware not
-@@ -11285,6 +11370,8 @@ static int __init net_dev_init(void)
- 	if (register_pernet_subsys(&netdev_net_ops))
- 		goto out;
- 
-+	netdev_features_init();
-+
- 	/*
- 	 *	Initialise the packet receive queues.
- 	 */
-diff --git a/net/core/netdev_features.c b/net/core/netdev_features.c
-new file mode 100644
-index 000000000000..db870038213a
---- /dev/null
-+++ b/net/core/netdev_features.c
-@@ -0,0 +1,241 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Network device features.
-+ */
-+
-+#include <linux/netdev_features.h>
-+#include <linux/netdev_features_helper.h>
-+
-+netdev_features_t netdev_ethtool_features __ro_after_init;
-+EXPORT_SYMBOL_GPL(netdev_ethtool_features);
-+
-+netdev_features_t netdev_never_change_features __ro_after_init;
-+EXPORT_SYMBOL_GPL(netdev_never_change_features);
-+
-+netdev_features_t netdev_gso_features_mask __ro_after_init;
-+EXPORT_SYMBOL_GPL(netdev_gso_features_mask);
-+
-+netdev_features_t netdev_ip_csum_features __ro_after_init;
-+EXPORT_SYMBOL_GPL(netdev_ip_csum_features);
-+
-+netdev_features_t netdev_csum_features_mask __ro_after_init;
-+EXPORT_SYMBOL_GPL(netdev_csum_features_mask);
-+
-+netdev_features_t netdev_general_tso_features __ro_after_init;
-+EXPORT_SYMBOL_GPL(netdev_general_tso_features);
-+
-+netdev_features_t netdev_all_tso_features __ro_after_init;
-+EXPORT_SYMBOL_GPL(netdev_all_tso_features);
-+
-+netdev_features_t netdev_tso_ecn_features __ro_after_init;
-+EXPORT_SYMBOL_GPL(netdev_tso_ecn_features);
-+
-+netdev_features_t netdev_all_fcoe_features __ro_after_init;
-+EXPORT_SYMBOL_GPL(netdev_all_fcoe_features);
-+
-+netdev_features_t netdev_gso_software_features __ro_after_init;
-+EXPORT_SYMBOL_GPL(netdev_gso_software_features);
-+
-+netdev_features_t netdev_one_for_all_features __ro_after_init;
-+EXPORT_SYMBOL_GPL(netdev_one_for_all_features);
-+
-+netdev_features_t netdev_all_for_all_features __ro_after_init;
-+EXPORT_SYMBOL_GPL(netdev_all_for_all_features);
-+
-+netdev_features_t netdev_upper_disable_features __ro_after_init;
-+EXPORT_SYMBOL_GPL(netdev_upper_disable_features);
-+
-+netdev_features_t netdev_soft_features __ro_after_init;
-+EXPORT_SYMBOL_GPL(netdev_soft_features);
-+
-+netdev_features_t netdev_soft_off_features __ro_after_init;
-+EXPORT_SYMBOL_GPL(netdev_soft_off_features);
-+
-+netdev_features_t netdev_all_vlan_features __ro_after_init;
-+EXPORT_SYMBOL_GPL(netdev_all_vlan_features);
-+
-+netdev_features_t netdev_vlan_filter_features __ro_after_init;
-+EXPORT_SYMBOL_GPL(netdev_vlan_filter_features);
-+
-+netdev_features_t netdev_rx_vlan_features __ro_after_init;
-+EXPORT_SYMBOL_GPL(netdev_rx_vlan_features);
-+
-+netdev_features_t netdev_tx_vlan_features __ro_after_init;
-+EXPORT_SYMBOL_GPL(netdev_tx_vlan_features);
-+
-+netdev_features_t netdev_ctag_vlan_features __ro_after_init;
-+EXPORT_SYMBOL_GPL(netdev_ctag_vlan_features);
-+
-+netdev_features_t netdev_stag_vlan_features __ro_after_init;
-+EXPORT_SYMBOL_GPL(netdev_stag_vlan_features);
-+
-+netdev_features_t netdev_gso_encap_all_features __ro_after_init;
-+EXPORT_SYMBOL_GPL(netdev_gso_encap_all_features);
-+
-+netdev_features_t netdev_xfrm_features __ro_after_init;
-+EXPORT_SYMBOL_GPL(netdev_xfrm_features);
-+
-+netdev_features_t netdev_tls_features __ro_after_init;
-+EXPORT_SYMBOL_GPL(netdev_tls_features);
-+
-+netdev_features_t netdev_csum_gso_features_mask __ro_after_init;
-+EXPORT_SYMBOL_GPL(netdev_csum_gso_features_mask);
-+
-+DECLARE_NETDEV_FEATURE_SET(netif_f_never_change_feature_set,
-+			   NETIF_F_VLAN_CHALLENGED_BIT,
-+			   NETIF_F_LLTX_BIT,
-+			   NETIF_F_NETNS_LOCAL_BIT);
-+EXPORT_SYMBOL_GPL(netif_f_never_change_feature_set);
-+
-+DECLARE_NETDEV_FEATURE_SET(netif_f_gso_feature_set_mask,
++DECLARE_NETDEV_FEATURE_SET(hns3_default_feature_set,
++			   NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
++			   NETIF_F_HW_VLAN_CTAG_RX_BIT,
++			   NETIF_F_HW_VLAN_CTAG_TX_BIT,
++			   NETIF_F_RXCSUM_BIT,
++			   NETIF_F_SG_BIT,
++			   NETIF_F_GSO_BIT,
++			   NETIF_F_GRO_BIT,
 +			   NETIF_F_TSO_BIT,
-+			   NETIF_F_GSO_ROBUST_BIT,
-+			   NETIF_F_TSO_ECN_BIT,
-+			   NETIF_F_TSO_MANGLEID_BIT,
 +			   NETIF_F_TSO6_BIT,
-+			   NETIF_F_FSO_BIT,
 +			   NETIF_F_GSO_GRE_BIT,
 +			   NETIF_F_GSO_GRE_CSUM_BIT,
-+			   NETIF_F_GSO_IPXIP4_BIT,
-+			   NETIF_F_GSO_IPXIP6_BIT,
++			   NETIF_F_GSO_UDP_TUNNEL_BIT,
++			   NETIF_F_SCTP_CRC_BIT,
++			   NETIF_F_FRAGLIST);
++
++DECLARE_NETDEV_FEATURE_SET(hns3_vlan_off_feature_set,
++			   NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
++			   NETIF_F_HW_VLAN_CTAG_RX_BIT,
++			   NETIF_F_HW_VLAN_CTAG_TX_BIT,
++			   NETIF_F_GRO_HW_BIT,
++			   NETIF_F_NTUPLE_BIT,
++			   NETIF_F_HW_TC_BIT);
++
+ /* set default feature to hns3 */
+ static void hns3_set_default_feature(struct net_device *netdev)
+ {
+ 	struct hnae3_handle *h = hns3_get_handle(netdev);
+ 	struct pci_dev *pdev = h->pdev;
+ 	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(pdev);
++	netdev_features_t vlan_off_features;
++	netdev_features_t features;
+ 
+ 	netdev->priv_flags |= IFF_UNICAST_FLT;
+ 
+ 	netdev->gso_partial_features |= NETIF_F_GSO_GRE_CSUM;
+ 
+-	netdev->features |= NETIF_F_HW_VLAN_CTAG_FILTER |
+-		NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX |
+-		NETIF_F_RXCSUM | NETIF_F_SG | NETIF_F_GSO |
+-		NETIF_F_GRO | NETIF_F_TSO | NETIF_F_TSO6 | NETIF_F_GSO_GRE |
+-		NETIF_F_GSO_GRE_CSUM | NETIF_F_GSO_UDP_TUNNEL |
+-		NETIF_F_SCTP_CRC | NETIF_F_FRAGLIST;
++	netdev_features_zero(&features);
++	netdev_features_set_array(&hns3_default_feature_set, &features);
++	netdev->features |= features;
+ 
+ 	if (ae_dev->dev_version >= HNAE3_DEVICE_VERSION_V2) {
+ 		netdev->features |= NETIF_F_GRO_HW;
+@@ -3296,10 +3320,10 @@ static void hns3_set_default_feature(struct net_device *netdev)
+ 	if (!test_bit(HNAE3_DEV_SUPPORT_VLAN_FLTR_MDF_B, ae_dev->caps))
+ 		netdev->hw_features &= ~NETIF_F_HW_VLAN_CTAG_FILTER;
+ 
+-	netdev->vlan_features |= netdev->features &
+-		~(NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_HW_VLAN_CTAG_TX |
+-		  NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_GRO_HW | NETIF_F_NTUPLE |
+-		  NETIF_F_HW_TC);
++	netdev_features_zero(&vlan_off_features);
++	netdev_features_set_array(&hns3_vlan_off_feature_set,
++				  &vlan_off_features);
++	netdev->vlan_features |= netdev->features & ~vlan_off_features;
+ 
+ 	netdev->hw_enc_features |= netdev->vlan_features | NETIF_F_TSO_MANGLEID;
+ }
+diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+index 50d535981a35..bb31043902e4 100644
+--- a/drivers/net/ethernet/sfc/ef10.c
++++ b/drivers/net/ethernet/sfc/ef10.c
+@@ -1301,6 +1301,12 @@ static void efx_ef10_fini_nic(struct efx_nic *efx)
+ 	nic_data->mc_stats = NULL;
+ }
+ 
++DECLARE_NETDEV_FEATURE_SET(ef10_tso_feature_set,
++			   NETIF_F_GSO_UDP_TUNNEL_BIT,
++			   NETIF_F_GSO_GRE_BIT,
++			   NETIF_F_GSO_UDP_TUNNEL_CSUM_BIT,
++			   NETIF_F_GSO_GRE_CSUM_BIT);
++
+ static int efx_ef10_init_nic(struct efx_nic *efx)
+ {
+ 	struct efx_ef10_nic_data *nic_data = efx->nic_data;
+@@ -1356,8 +1362,9 @@ static int efx_ef10_init_nic(struct efx_nic *efx)
+ 	if (efx_has_cap(efx, TX_TSO_V2_ENCAP)) {
+ 		netdev_features_t encap_tso_features;
+ 
+-		encap_tso_features = NETIF_F_GSO_UDP_TUNNEL | NETIF_F_GSO_GRE |
+-			NETIF_F_GSO_UDP_TUNNEL_CSUM | NETIF_F_GSO_GRE_CSUM;
++		netdev_features_zero(&encap_tso_features);
++		netdev_features_set_array(&ef10_tso_feature_set,
++					  &encap_tso_features);
+ 
+ 		hw_enc_features |= encap_tso_features | NETIF_F_TSO;
+ 		efx->net_dev->features |= encap_tso_features;
+diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
+index a07cbf45a326..18bf6a33b355 100644
+--- a/drivers/net/ethernet/sfc/ef100_nic.c
++++ b/drivers/net/ethernet/sfc/ef100_nic.c
+@@ -147,6 +147,15 @@ static int ef100_get_mac_address(struct efx_nic *efx, u8 *mac_address)
+ 	return 0;
+ }
+ 
++DECLARE_NETDEV_FEATURE_SET(ef100_tso_feature_set,
++			   NETIF_F_TSO_BIT,
++			   NETIF_F_TSO6_BIT,
++			   NETIF_F_GSO_PARTIAL_BIT,
 +			   NETIF_F_GSO_UDP_TUNNEL_BIT,
 +			   NETIF_F_GSO_UDP_TUNNEL_CSUM_BIT,
-+			   NETIF_F_GSO_PARTIAL_BIT,
-+			   NETIF_F_GSO_TUNNEL_REMCSUM_BIT,
-+			   NETIF_F_GSO_SCTP_BIT,
-+			   NETIF_F_GSO_ESP_BIT,
-+			   NETIF_F_GSO_UDP_BIT,
-+			   NETIF_F_GSO_UDP_L4_BIT,
-+			   NETIF_F_GSO_FRAGLIST_BIT);
-+EXPORT_SYMBOL_GPL(netif_f_gso_feature_set_mask);
++			   NETIF_F_GSO_GRE_BIT,
++			   NETIF_F_GSO_GRE_CSUM_BIT);
 +
-+DECLARE_NETDEV_FEATURE_SET(netif_f_ip_csum_feature_set,
-+			   NETIF_F_IP_CSUM_BIT,
-+			   NETIF_F_IPV6_CSUM_BIT);
-+EXPORT_SYMBOL_GPL(netif_f_ip_csum_feature_set);
+ static int efx_ef100_init_datapath_caps(struct efx_nic *efx)
+ {
+ 	MCDI_DECLARE_BUF(outbuf, MC_CMD_GET_CAPABILITIES_V7_OUT_LEN);
+@@ -185,10 +194,10 @@ static int efx_ef100_init_datapath_caps(struct efx_nic *efx)
+ 
+ 	if (efx_ef100_has_cap(nic_data->datapath_caps2, TX_TSO_V3)) {
+ 		struct net_device *net_dev = efx->net_dev;
+-		netdev_features_t tso = NETIF_F_TSO | NETIF_F_TSO6 | NETIF_F_GSO_PARTIAL |
+-					NETIF_F_GSO_UDP_TUNNEL | NETIF_F_GSO_UDP_TUNNEL_CSUM |
+-					NETIF_F_GSO_GRE | NETIF_F_GSO_GRE_CSUM;
++		netdev_features_t tso;
+ 
++		netdev_features_zero(&tso);
++		netdev_features_set_array(&ef100_tso_feature_set, &tso);
+ 		net_dev->features |= tso;
+ 		net_dev->hw_features |= tso;
+ 		net_dev->hw_enc_features |= tso;
+@@ -1105,6 +1114,11 @@ static int ef100_check_design_params(struct efx_nic *efx)
+ 	return rc;
+ }
+ 
++DECLARE_NETDEV_FEATURE_SET(ef100_vlan_feature_set,
++			   NETIF_F_HW_CSUM_BIT,
++			   NETIF_F_SG_BIT,
++			   NETIF_F_HIGHDMA_BIT);
 +
-+DECLARE_NETDEV_FEATURE_SET(netif_f_csum_feature_set_mask,
-+			   NETIF_F_IP_CSUM_BIT,
-+			   NETIF_F_IPV6_CSUM_BIT,
-+			   NETIF_F_HW_CSUM_BIT);
-+EXPORT_SYMBOL_GPL(netif_f_csum_feature_set_mask);
-+
-+DECLARE_NETDEV_FEATURE_SET(netif_f_general_tso_feature_set,
+ /*	NIC probe and remove
+  */
+ static int ef100_probe_main(struct efx_nic *efx)
+@@ -1126,8 +1140,8 @@ static int ef100_probe_main(struct efx_nic *efx)
+ 	net_dev->features |= efx->type->offload_features;
+ 	net_dev->hw_features |= efx->type->offload_features;
+ 	net_dev->hw_enc_features |= efx->type->offload_features;
+-	net_dev->vlan_features |= NETIF_F_HW_CSUM | NETIF_F_SG |
+-				  NETIF_F_HIGHDMA | NETIF_F_ALL_TSO;
++	net_dev->vlan_features |= NETIF_F_ALL_TSO;
++	netdev_vlan_features_set_array(net_dev, &ef100_vlan_feature_set);
+ 
+ 	/* Populate design-parameter defaults */
+ 	nic_data->tso_max_hdr_len = ESE_EF100_DP_GZ_TSO_MAX_HDR_LEN_DEFAULT;
+diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
+index 302dc835ac3d..bd76e1c5f879 100644
+--- a/drivers/net/ethernet/sfc/efx.c
++++ b/drivers/net/ethernet/sfc/efx.c
+@@ -988,6 +988,18 @@ static int efx_pci_probe_main(struct efx_nic *efx)
+ 	return rc;
+ }
+ 
++DECLARE_NETDEV_FEATURE_SET(efx_active_feature_set,
++			   NETIF_F_SG_BIT,
 +			   NETIF_F_TSO_BIT,
-+			   NETIF_F_TSO6_BIT);
-+EXPORT_SYMBOL_GPL(netif_f_general_tso_feature_set);
++			   NETIF_F_RXCSUM_BIT,
++			   NETIF_F_RXALL_BIT);
 +
-+DECLARE_NETDEV_FEATURE_SET(netif_f_all_tso_feature_set,
-+			   NETIF_F_TSO_BIT,
-+			   NETIF_F_TSO6_BIT,
-+			   NETIF_F_TSO_ECN_BIT,
-+			   NETIF_F_TSO_MANGLEID_BIT);
-+EXPORT_SYMBOL_GPL(netif_f_all_tso_feature_set);
-+
-+DECLARE_NETDEV_FEATURE_SET(netif_f_tso_ecn_feature_set,
-+			   NETIF_F_TSO_ECN_BIT);
-+EXPORT_SYMBOL_GPL(netif_f_tso_ecn_feature_set);
-+
-+DECLARE_NETDEV_FEATURE_SET(netif_f_all_fcoe_feature_set,
-+			   NETIF_F_FCOE_CRC_BIT,
-+			   NETIF_F_FCOE_MTU_BIT,
-+			   NETIF_F_FSO_BIT);
-+EXPORT_SYMBOL_GPL(netif_f_all_fcoe_feature_set);
-+
-+DECLARE_NETDEV_FEATURE_SET(netif_f_gso_soft_feature_set,
-+			   NETIF_F_TSO_BIT,
-+			   NETIF_F_TSO6_BIT,
-+			   NETIF_F_TSO_ECN_BIT,
-+			   NETIF_F_TSO_MANGLEID_BIT,
-+			   NETIF_F_GSO_SCTP_BIT,
-+			   NETIF_F_GSO_UDP_L4_BIT,
-+			   NETIF_F_GSO_FRAGLIST_BIT);
-+EXPORT_SYMBOL_GPL(netif_f_gso_soft_feature_set);
-+
-+DECLARE_NETDEV_FEATURE_SET(netif_f_one_for_all_feature_set,
-+			   NETIF_F_TSO_BIT,
-+			   NETIF_F_TSO6_BIT,
-+			   NETIF_F_TSO_ECN_BIT,
-+			   NETIF_F_TSO_MANGLEID_BIT,
-+			   NETIF_F_GSO_SCTP_BIT,
-+			   NETIF_F_GSO_UDP_L4_BIT,
-+			   NETIF_F_GSO_FRAGLIST_BIT,
-+			   NETIF_F_GSO_ROBUST_BIT,
++DECLARE_NETDEV_FEATURE_SET(efx_vlan_feature_set,
++			   NETIF_F_HW_CSUM_BIT,
 +			   NETIF_F_SG_BIT,
 +			   NETIF_F_HIGHDMA_BIT,
-+			   NETIF_F_FRAGLIST_BIT,
-+			   NETIF_F_VLAN_CHALLENGED);
-+EXPORT_SYMBOL_GPL(netif_f_one_for_all_feature_set);
++			   NETIF_F_RXCSUM_BIT);
 +
-+DECLARE_NETDEV_FEATURE_SET(netif_f_all_for_all_feature_set,
-+			   NETIF_F_NOCACHE_COPY_BIT,
-+			   NETIF_F_FSO_BIT);
-+EXPORT_SYMBOL_GPL(netif_f_all_for_all_feature_set);
+ static int efx_pci_probe_post_io(struct efx_nic *efx)
+ {
+ 	struct net_device *net_dev = efx->net_dev;
+@@ -1004,17 +1016,16 @@ static int efx_pci_probe_post_io(struct efx_nic *efx)
+ 	}
+ 
+ 	/* Determine netdevice features */
+-	net_dev->features |= (efx->type->offload_features | NETIF_F_SG |
+-			      NETIF_F_TSO | NETIF_F_RXCSUM | NETIF_F_RXALL);
++	net_dev->features |= efx->type->offload_features;
++	netdev_active_features_set_array(net_dev, &efx_active_feature_set);
+ 	if (efx->type->offload_features & (NETIF_F_IPV6_CSUM | NETIF_F_HW_CSUM))
+ 		net_dev->features |= NETIF_F_TSO6;
+ 	/* Check whether device supports TSO */
+ 	if (!efx->type->tso_versions || !efx->type->tso_versions(efx))
+ 		net_dev->features &= ~NETIF_F_ALL_TSO;
+ 	/* Mask for features that also apply to VLAN devices */
+-	net_dev->vlan_features |= (NETIF_F_HW_CSUM | NETIF_F_SG |
+-				   NETIF_F_HIGHDMA | NETIF_F_ALL_TSO |
+-				   NETIF_F_RXCSUM);
++	net_dev->vlan_features |= NETIF_F_ALL_TSO;
++	netdev_vlan_features_set_array(net_dev, &efx_vlan_feature_set);
+ 
+ 	net_dev->hw_features |= net_dev->features & ~efx->fixed_features;
+ 
+diff --git a/drivers/net/ethernet/sfc/falcon/efx.c b/drivers/net/ethernet/sfc/falcon/efx.c
+index 60c595ef7589..eeae4edf4a47 100644
+--- a/drivers/net/ethernet/sfc/falcon/efx.c
++++ b/drivers/net/ethernet/sfc/falcon/efx.c
+@@ -2859,6 +2859,12 @@ static int ef4_pci_probe_main(struct ef4_nic *efx)
+ 	return rc;
+ }
+ 
++DECLARE_NETDEV_FEATURE_SET(efx_vlan_feature_set,
++			   NETIF_F_HW_CSUM_BIT,
++			   NETIF_F_SG_BIT,
++			   NETIF_F_HIGHDMA_BIT,
++			   NETIF_F_RXCSUM_BIT);
 +
-+DECLARE_NETDEV_FEATURE_SET(netif_f_upper_disables_feature_set,
-+			   NETIF_F_LRO_BIT);
-+EXPORT_SYMBOL_GPL(netif_f_upper_disables_feature_set);
+ /* NIC initialisation
+  *
+  * This is called at module load (or hotplug insertion,
+@@ -2907,9 +2913,7 @@ static int ef4_pci_probe(struct pci_dev *pci_dev,
+ 	net_dev->features |= (efx->type->offload_features | NETIF_F_SG |
+ 			      NETIF_F_RXCSUM);
+ 	/* Mask for features that also apply to VLAN devices */
+-	net_dev->vlan_features |= (NETIF_F_HW_CSUM | NETIF_F_SG |
+-				   NETIF_F_HIGHDMA | NETIF_F_RXCSUM);
+-
++	netdev_vlan_features_set_array(net_dev, &efx_vlan_feature_set);
+ 	net_dev->hw_features = net_dev->features & ~efx->fixed_features;
+ 
+ 	/* Disable VLAN filtering by default.  It may be enforced if
+diff --git a/drivers/net/ethernet/sfc/falcon/net_driver.h b/drivers/net/ethernet/sfc/falcon/net_driver.h
+index a381cf9ec4f3..e1c7e3098a95 100644
+--- a/drivers/net/ethernet/sfc/falcon/net_driver.h
++++ b/drivers/net/ethernet/sfc/falcon/net_driver.h
+@@ -26,6 +26,7 @@
+ #include <linux/vmalloc.h>
+ #include <linux/i2c.h>
+ #include <linux/mtd/mtd.h>
++#include <linux/netdev_features_helper.h>
+ #include <net/busy_poll.h>
+ 
+ #include "enum.h"
+diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
+index c75dc75e2857..2407fd4ef785 100644
+--- a/drivers/net/ethernet/sfc/net_driver.h
++++ b/drivers/net/ethernet/sfc/net_driver.h
+@@ -25,6 +25,7 @@
+ #include <linux/rwsem.h>
+ #include <linux/vmalloc.h>
+ #include <linux/mtd/mtd.h>
++#include <linux/netdev_features_helper.h>
+ #include <net/busy_poll.h>
+ #include <net/xdp.h>
+ 
+diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+index 326e14ee05db..243ee8a0bd18 100644
+--- a/net/ethtool/ioctl.c
++++ b/net/ethtool/ioctl.c
+@@ -15,6 +15,7 @@
+ #include <linux/errno.h>
+ #include <linux/ethtool.h>
+ #include <linux/netdevice.h>
++#include <linux/netdev_features_helper.h>
+ #include <linux/net_tstamp.h>
+ #include <linux/phy.h>
+ #include <linux/bitops.h>
+@@ -288,9 +289,13 @@ static int ethtool_set_one_feature(struct net_device *dev,
+ 
+ #define ETH_ALL_FLAGS    (ETH_FLAG_LRO | ETH_FLAG_RXVLAN | ETH_FLAG_TXVLAN | \
+ 			  ETH_FLAG_NTUPLE | ETH_FLAG_RXHASH)
+-#define ETH_ALL_FEATURES (NETIF_F_LRO | NETIF_F_HW_VLAN_CTAG_RX | \
+-			  NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_NTUPLE | \
+-			  NETIF_F_RXHASH)
 +
-+DECLARE_NETDEV_FEATURE_SET(netif_f_soft_feature_set,
-+			   NETIF_F_GSO_BIT,
-+			   NETIF_F_GRO_BIT);
-+EXPORT_SYMBOL_GPL(netif_f_soft_feature_set);
-+
-+DECLARE_NETDEV_FEATURE_SET(netif_f_soft_off_feature_set,
-+			   NETIF_F_GRO_FRAGLIST_BIT,
-+			   NETIF_F_GRO_UDP_FWD_BIT);
-+EXPORT_SYMBOL_GPL(netif_f_soft_off_feature_set);
-+
-+DECLARE_NETDEV_FEATURE_SET(netif_f_vlan_feature_set,
-+			   NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
++DECLARE_NETDEV_FEATURE_SET(ethtool_all_feature_set,
++			   NETIF_F_LRO_BIT,
 +			   NETIF_F_HW_VLAN_CTAG_RX_BIT,
 +			   NETIF_F_HW_VLAN_CTAG_TX_BIT,
-+			   NETIF_F_HW_VLAN_STAG_FILTER_BIT,
-+			   NETIF_F_HW_VLAN_STAG_RX_BIT,
-+			   NETIF_F_HW_VLAN_STAG_TX_BIT);
-+EXPORT_SYMBOL_GPL(netif_f_vlan_feature_set);
++			   NETIF_F_NTUPLE_BIT,
++			   NETIF_F_RXHASH_BIT);
+ 
+ static u32 __ethtool_get_flags(struct net_device *dev)
+ {
+@@ -313,6 +318,7 @@ static u32 __ethtool_get_flags(struct net_device *dev)
+ static int __ethtool_set_flags(struct net_device *dev, u32 data)
+ {
+ 	netdev_features_t features = 0, changed;
++	netdev_features_t eth_all_features;
+ 
+ 	if (data & ~ETH_ALL_FLAGS)
+ 		return -EINVAL;
+@@ -328,8 +334,11 @@ static int __ethtool_set_flags(struct net_device *dev, u32 data)
+ 	if (data & ETH_FLAG_RXHASH)
+ 		features |= NETIF_F_RXHASH;
+ 
++	netdev_features_zero(&eth_all_features);
++	netdev_features_set_array(&ethtool_all_feature_set, &eth_all_features);
 +
-+DECLARE_NETDEV_FEATURE_SET(netif_f_tx_vlan_feature_set,
-+			   NETIF_F_HW_VLAN_CTAG_TX_BIT,
-+			   NETIF_F_HW_VLAN_STAG_TX_BIT);
-+EXPORT_SYMBOL_GPL(netif_f_tx_vlan_feature_set);
-+
-+DECLARE_NETDEV_FEATURE_SET(netif_f_rx_vlan_feature_set,
-+			   NETIF_F_HW_VLAN_CTAG_RX_BIT,
-+			   NETIF_F_HW_VLAN_STAG_RX_BIT);
-+EXPORT_SYMBOL_GPL(netif_f_rx_vlan_feature_set);
-+
-+DECLARE_NETDEV_FEATURE_SET(netif_f_vlan_filter_feature_set,
-+			   NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
-+			   NETIF_F_HW_VLAN_STAG_FILTER_BIT);
-+EXPORT_SYMBOL_GPL(netif_f_vlan_filter_feature_set);
-+
-+DECLARE_NETDEV_FEATURE_SET(netif_f_ctag_vlan_feature_set,
-+			   NETIF_F_HW_VLAN_CTAG_TX_BIT,
-+			   NETIF_F_HW_VLAN_CTAG_RX_BIT);
-+EXPORT_SYMBOL_GPL(netif_f_ctag_vlan_feature_set);
-+
-+DECLARE_NETDEV_FEATURE_SET(netif_f_stag_vlan_feature_set,
-+			   NETIF_F_HW_VLAN_STAG_TX_BIT,
-+			   NETIF_F_HW_VLAN_STAG_RX_BIT);
-+EXPORT_SYMBOL_GPL(netif_f_stag_vlan_feature_set);
-+
-+DECLARE_NETDEV_FEATURE_SET(netif_f_gso_encap_feature_set,
-+			   NETIF_F_GSO_GRE_BIT,
-+			   NETIF_F_GSO_GRE_CSUM_BIT,
-+			   NETIF_F_GSO_IPXIP4_BIT,
-+			   NETIF_F_GSO_IPXIP6_BIT,
-+			   NETIF_F_GSO_UDP_TUNNEL_BIT,
-+			   NETIF_F_GSO_UDP_TUNNEL_CSUM_BIT);
-+EXPORT_SYMBOL_GPL(netif_f_gso_encap_feature_set);
-+
-+DECLARE_NETDEV_FEATURE_SET(netif_f_xfrm_feature_set,
-+			   NETIF_F_HW_ESP_BIT,
-+			   NETIF_F_HW_ESP_TX_CSUM_BIT,
-+			   NETIF_F_GSO_ESP_BIT);
-+EXPORT_SYMBOL_GPL(netif_f_xfrm_feature_set);
-+
-+DECLARE_NETDEV_FEATURE_SET(netif_f_tls_feature_set,
-+			   NETIF_F_HW_TLS_TX_BIT,
-+			   NETIF_F_HW_TLS_RX_BIT);
-+EXPORT_SYMBOL_GPL(netif_f_tls_feature_set);
+ 	/* allow changing only bits set in hw_features */
+-	changed = (features ^ dev->features) & ETH_ALL_FEATURES;
++	changed = (features ^ dev->features) & eth_all_features;
+ 	if (changed & ~dev->hw_features)
+ 		return (changed & dev->hw_features) ? -EINVAL : -EOPNOTSUPP;
+ 
 -- 
 2.33.0
 
