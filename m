@@ -2,100 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 692B9506D59
+	by mail.lfdr.de (Postfix) with ESMTP id DE7A5506D5A
 	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 15:20:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348484AbiDSNWz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 09:22:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50220 "EHLO
+        id S1349866AbiDSNW7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 09:22:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349866AbiDSNWx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 09:22:53 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECADEDF04
-        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 06:20:10 -0700 (PDT)
-Received: from kwepemi100004.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KjPYG0LB3zhXYy;
-        Tue, 19 Apr 2022 21:20:02 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- kwepemi100004.china.huawei.com (7.221.188.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 19 Apr 2022 21:20:07 +0800
-Received: from [127.0.0.1] (10.67.101.149) by kwepemm600017.china.huawei.com
- (7.193.23.234) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 19 Apr
- 2022 21:20:06 +0800
-Subject: Re: [PATCH ethtool-next] ethtool: netlink: add support to get/set tx
- push by ethtool -G/g
-To:     Michal Kubecek <mkubecek@suse.cz>,
-        Guangbin Huang <huangguangbin2@huawei.com>
-References: <20220419125030.3230-1-huangguangbin2@huawei.com>
- <20220419130702.xlnodeeeycn6jja6@lion.mk-sys.cz>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <lipeng321@huawei.com>
-From:   "wangjie (L)" <wangjie125@huawei.com>
-Message-ID: <1b67ba4e-c470-bb78-392c-dc9a187ea7b8@huawei.com>
-Date:   Tue, 19 Apr 2022 21:20:05 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+        with ESMTP id S1348439AbiDSNW5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 09:22:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A8CFDF8A
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 06:20:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 810F161630
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 13:20:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DB5D4C385AD;
+        Tue, 19 Apr 2022 13:20:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650374412;
+        bh=DC0Xb0Npd1G7yjXbe9NNKYjqNA35lhaHmwTAus+3eaM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=B9RoW+J4yBLLYQ11j2RVTSD10csbeDau3/PMQ5dN8DTmaEeIk+WOPI5NdNO+nWuGS
+         ZWH+5SOsN/FyIMmxLXudPZW6SQuIoAWzhtNeQckriP9PGYrTFl60QeCcjhBXxhOo4Z
+         3LRWtXoYlhdLefTRXW6tgBbBoDlcxWZTk2Gynk+1RfWcGWmTLcmR7wS4D0qUmoCR7T
+         /kh1V7Eo621l5q9qLWdrpEFrzzc+samt8nyhmP1ImQ3mkqP4+gjJ1EFLbPyYttGrV0
+         XAukDfvqsOWbEkyCXc/zUOUIhtEjdxNz9ifm6OmXY2pqRhyU0YTIca/iuUOHQmIU50
+         eR7gwZIZ10vpA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B96D2E8DD61;
+        Tue, 19 Apr 2022 13:20:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20220419130702.xlnodeeeycn6jja6@lion.mk-sys.cz>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.101.149]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,
-        SCC_BODY_URI_ONLY,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] netlink: reset network and mac headers in netlink_dump()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165037441175.13215.17556619254098753644.git-patchwork-notify@kernel.org>
+Date:   Tue, 19 Apr 2022 13:20:11 +0000
+References: <20220415181442.551228-1-eric.dumazet@gmail.com>
+In-Reply-To: <20220415181442.551228-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, edumazet@google.com,
+        syzkaller@googlegroups.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-On 2022/4/19 21:07, Michal Kubecek wrote:
-> On Tue, Apr 19, 2022 at 08:50:30PM +0800, Guangbin Huang wrote:
->> From: Jie Wang <wangjie125@huawei.com>
->>
->> Currently tx push is a standard feature for NICs such as Mellanox, HNS3.
->> But there is no command to set or get this feature.
->>
->> So this patch adds support for "ethtool -G <dev> tx-push on|off" and
->> "ethtool -g <dev>" to set/get tx push mode.
->>
->> Signed-off-by: Jie Wang <wangjie125@huawei.com>
->> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
->> ---
+On Fri, 15 Apr 2022 11:14:42 -0700 you wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> netlink_dump() is allocating an skb, reserves space in it
+> but forgets to reset network header.
+> 
+> This allows a BPF program, invoked later from sk_filter()
+> to access uninitialized kernel memory from the reserved
+> space.
+> 
 > [...]
->> diff --git a/uapi/linux/ethtool_netlink.h b/uapi/linux/ethtool_netlink.h
->> index d8b19cf98003..79fe0bf686f3 100644
->> --- a/uapi/linux/ethtool_netlink.h
->> +++ b/uapi/linux/ethtool_netlink.h
->> @@ -330,6 +330,7 @@ enum {
->>  	ETHTOOL_A_RINGS_RX_JUMBO,			/* u32 */
->>  	ETHTOOL_A_RINGS_TX,				/* u32 */
->>  	ETHTOOL_A_RINGS_RX_BUF_LEN,                     /* u32 */
->> +	ETHTOOL_A_RINGS_TX_PUSH = 13,			/* u8  */
->>
->>  	/* add new constants above here */
->>  	__ETHTOOL_A_RINGS_CNT,
->
-> Please update the uapi headers from sanitized kernel headers as
-> described here:
->
->   https://www.kernel.org/pub/software/network/ethtool/devel.html
->
-> (the paragraph starting "If you need new or updated definitions..." near
-> the end of the page).
->
-> Michal
-Thank you for your guidance. I will use the method to update the uapi 
-headers in patch v2
->
+
+Here is the summary with links:
+  - [net] netlink: reset network and mac headers in netlink_dump()
+    https://git.kernel.org/netdev/net/c/99c07327ae11
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
