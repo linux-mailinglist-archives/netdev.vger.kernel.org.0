@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF5335062D2
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 05:35:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C35E5062B6
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 05:35:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347970AbiDSDfm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Apr 2022 23:35:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33616 "EHLO
+        id S1348029AbiDSDfq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Apr 2022 23:35:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347609AbiDSDfl (ORCPT
+        with ESMTP id S1347661AbiDSDfl (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 23:35:41 -0400
 Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A45A2BB0B;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A40C2BB09;
         Mon, 18 Apr 2022 20:32:55 -0700 (PDT)
-Received: from kwepemi100011.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kj8Sv3DffzFpXP;
-        Tue, 19 Apr 2022 11:30:23 +0800 (CST)
+Received: from kwepemi500008.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kj8Wg2DwFzhXw1;
+        Tue, 19 Apr 2022 11:32:47 +0800 (CST)
 Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi100011.china.huawei.com (7.221.188.134) with Microsoft SMTP Server
+ kwepemi500008.china.huawei.com (7.221.188.139) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2375.24; Tue, 19 Apr 2022 11:32:53 +0800
 Received: from localhost.localdomain (10.67.165.24) by
  kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 19 Apr 2022 11:32:52 +0800
+ 15.1.2375.24; Tue, 19 Apr 2022 11:32:53 +0800
 From:   Guangbin Huang <huangguangbin2@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
         <chenhao288@hisilicon.com>
-Subject: [PATCH V2 net-next 1/9] net: hns3: add ethtool parameter check for CQE/EQE mode
-Date:   Tue, 19 Apr 2022 11:27:01 +0800
-Message-ID: <20220419032709.15408-2-huangguangbin2@huawei.com>
+Subject: [PATCH V2 net-next 2/9] net: hns3: refactor hns3_set_ringparam()
+Date:   Tue, 19 Apr 2022 11:27:02 +0800
+Message-ID: <20220419032709.15408-3-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220419032709.15408-1-huangguangbin2@huawei.com>
 References: <20220419032709.15408-1-huangguangbin2@huawei.com>
@@ -52,141 +52,144 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yufeng Mo <moyufeng@huawei.com>
+From: Hao Chen <chenhao288@hisilicon.com>
 
-For DEVICE_VERSION_V2, the hardware does not support the CQE mode.
-So add capability bit for coalesce CQE mode and add parameter check
-for it in ethtool.
+Use struct hns3_ring_param to replace variable new/old_xxx and
+add hns3_is_ringparam_changed() to judge them if is changed to
+improve code readability.
 
-Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
+Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hnae3.h   |  4 +++
- .../hns3/hns3_common/hclge_comm_cmd.c         |  2 ++
- .../hns3/hns3_common/hclge_comm_cmd.h         |  1 +
- .../net/ethernet/hisilicon/hns3/hns3_enet.c   |  5 +---
- .../ethernet/hisilicon/hns3/hns3_ethtool.c    | 28 +++++++++++++++++--
- 5 files changed, 33 insertions(+), 7 deletions(-)
+ .../ethernet/hisilicon/hns3/hns3_ethtool.c    | 65 ++++++++++++-------
+ .../ethernet/hisilicon/hns3/hns3_ethtool.h    |  6 ++
+ 2 files changed, 49 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index 79c64f4e67d2..8a3a446219f7 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -96,6 +96,7 @@ enum HNAE3_DEV_CAP_BITS {
- 	HNAE3_DEV_SUPPORT_PORT_VLAN_BYPASS_B,
- 	HNAE3_DEV_SUPPORT_VLAN_FLTR_MDF_B,
- 	HNAE3_DEV_SUPPORT_MC_MAC_MNG_B,
-+	HNAE3_DEV_SUPPORT_CQ_B,
- };
- 
- #define hnae3_dev_fd_supported(hdev) \
-@@ -155,6 +156,9 @@ enum HNAE3_DEV_CAP_BITS {
- #define hnae3_ae_dev_mc_mac_mng_supported(ae_dev) \
- 	test_bit(HNAE3_DEV_SUPPORT_MC_MAC_MNG_B, (ae_dev)->caps)
- 
-+#define hnae3_ae_dev_cq_supported(ae_dev) \
-+	test_bit(HNAE3_DEV_SUPPORT_CQ_B, (ae_dev)->caps)
-+
- enum HNAE3_PF_CAP_BITS {
- 	HNAE3_PF_SUPPORT_VLAN_FLTR_MDF_B = 0,
- };
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.c b/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.c
-index c15ca710dabb..c8b151d29f53 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.c
-@@ -149,6 +149,7 @@ static const struct hclge_comm_caps_bit_map hclge_pf_cmd_caps[] = {
- 	{HCLGE_COMM_CAP_PORT_VLAN_BYPASS_B,
- 	 HNAE3_DEV_SUPPORT_PORT_VLAN_BYPASS_B},
- 	{HCLGE_COMM_CAP_PORT_VLAN_BYPASS_B, HNAE3_DEV_SUPPORT_VLAN_FLTR_MDF_B},
-+	{HCLGE_COMM_CAP_CQ_B, HNAE3_DEV_SUPPORT_CQ_B},
- };
- 
- static const struct hclge_comm_caps_bit_map hclge_vf_cmd_caps[] = {
-@@ -160,6 +161,7 @@ static const struct hclge_comm_caps_bit_map hclge_vf_cmd_caps[] = {
- 	{HCLGE_COMM_CAP_QB_B, HNAE3_DEV_SUPPORT_QB_B},
- 	{HCLGE_COMM_CAP_TX_PUSH_B, HNAE3_DEV_SUPPORT_TX_PUSH_B},
- 	{HCLGE_COMM_CAP_RXD_ADV_LAYOUT_B, HNAE3_DEV_SUPPORT_RXD_ADV_LAYOUT_B},
-+	{HCLGE_COMM_CAP_CQ_B, HNAE3_DEV_SUPPORT_CQ_B},
- };
- 
- static void
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.h
-index 876650eddac4..7a7d4cf9bf35 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.h
-@@ -338,6 +338,7 @@ enum HCLGE_COMM_CAP_BITS {
- 	HCLGE_COMM_CAP_PAUSE_B = 14,
- 	HCLGE_COMM_CAP_RXD_ADV_LAYOUT_B = 15,
- 	HCLGE_COMM_CAP_PORT_VLAN_BYPASS_B = 17,
-+	HCLGE_COMM_CAP_CQ_B = 18,
- };
- 
- enum HCLGE_COMM_API_CAP_BITS {
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 14dc12c2155d..7e9f9da2f392 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -5159,10 +5159,7 @@ static void hns3_set_cq_period_mode(struct hns3_nic_priv *priv,
- 			priv->tqp_vector[i].rx_group.dim.mode = mode;
- 	}
- 
--	/* only device version above V3(include V3), GL can switch CQ/EQ
--	 * period mode.
--	 */
--	if (ae_dev->dev_version >= HNAE3_DEVICE_VERSION_V3) {
-+	if (hnae3_ae_dev_cq_supported(ae_dev)) {
- 		u32 new_mode;
- 		u64 reg;
- 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index 9f4111fd2986..8663ba5d41d8 100644
+index 8663ba5d41d8..e647751e9054 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -1415,11 +1415,33 @@ static int hns3_check_ql_coalesce_param(struct net_device *netdev,
+@@ -1106,6 +1106,36 @@ static int hns3_check_ringparam(struct net_device *ndev,
  	return 0;
  }
  
--static int hns3_check_coalesce_para(struct net_device *netdev,
--				    struct ethtool_coalesce *cmd)
-+static int
-+hns3_check_cqe_coalesce_param(struct net_device *netdev,
-+			      struct kernel_ethtool_coalesce *kernel_coal)
++static bool
++hns3_is_ringparam_changed(struct net_device *ndev,
++			  struct ethtool_ringparam *param,
++			  struct kernel_ethtool_ringparam *kernel_param,
++			  struct hns3_ring_param *old_ringparam,
++			  struct hns3_ring_param *new_ringparam)
 +{
-+	struct hnae3_handle *handle = hns3_get_handle(netdev);
-+	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(handle->pdev);
++	struct hns3_nic_priv *priv = netdev_priv(ndev);
++	struct hnae3_handle *h = priv->ae_handle;
++	u16 queue_num = h->kinfo.num_tqps;
 +
-+	if ((kernel_coal->use_cqe_mode_tx || kernel_coal->use_cqe_mode_rx) &&
-+	    !hnae3_ae_dev_cq_supported(ae_dev)) {
-+		netdev_err(netdev, "coalesced cqe mode is not supported\n");
-+		return -EOPNOTSUPP;
++	new_ringparam->tx_desc_num = ALIGN(param->tx_pending,
++					   HNS3_RING_BD_MULTIPLE);
++	new_ringparam->rx_desc_num = ALIGN(param->rx_pending,
++					   HNS3_RING_BD_MULTIPLE);
++	old_ringparam->tx_desc_num = priv->ring[0].desc_num;
++	old_ringparam->rx_desc_num = priv->ring[queue_num].desc_num;
++	old_ringparam->rx_buf_len = priv->ring[queue_num].buf_size;
++	new_ringparam->rx_buf_len = kernel_param->rx_buf_len;
++
++	if (old_ringparam->tx_desc_num == new_ringparam->tx_desc_num &&
++	    old_ringparam->rx_desc_num == new_ringparam->rx_desc_num &&
++	    old_ringparam->rx_buf_len == new_ringparam->rx_buf_len) {
++		netdev_info(ndev, "ringparam not changed\n");
++		return false;
 +	}
 +
-+	return 0;
++	return true;
 +}
 +
-+static int
-+hns3_check_coalesce_para(struct net_device *netdev,
-+			 struct ethtool_coalesce *cmd,
-+			 struct kernel_ethtool_coalesce *kernel_coal)
+ static int hns3_change_rx_buf_len(struct net_device *ndev, u32 rx_buf_len)
  {
- 	int ret;
+ 	struct hns3_nic_priv *priv = netdev_priv(ndev);
+@@ -1151,14 +1181,11 @@ static int hns3_set_ringparam(struct net_device *ndev,
+ 			      struct kernel_ethtool_ringparam *kernel_param,
+ 			      struct netlink_ext_ack *extack)
+ {
++	struct hns3_ring_param old_ringparam, new_ringparam;
+ 	struct hns3_nic_priv *priv = netdev_priv(ndev);
+ 	struct hnae3_handle *h = priv->ae_handle;
+ 	struct hns3_enet_ring *tmp_rings;
+ 	bool if_running = netif_running(ndev);
+-	u32 old_tx_desc_num, new_tx_desc_num;
+-	u32 old_rx_desc_num, new_rx_desc_num;
+-	u16 queue_num = h->kinfo.num_tqps;
+-	u32 old_rx_buf_len;
+ 	int ret, i;
  
-+	ret = hns3_check_cqe_coalesce_param(netdev, kernel_coal);
-+	if (ret)
-+		return ret;
-+
- 	ret = hns3_check_gl_coalesce_para(netdev, cmd);
- 	if (ret) {
- 		netdev_err(netdev,
-@@ -1494,7 +1516,7 @@ static int hns3_set_coalesce(struct net_device *netdev,
- 	if (hns3_nic_resetting(netdev))
- 		return -EBUSY;
- 
--	ret = hns3_check_coalesce_para(netdev, cmd);
-+	ret = hns3_check_coalesce_para(netdev, cmd, kernel_coal);
+ 	ret = hns3_check_ringparam(ndev, param, kernel_param);
+@@ -1169,15 +1196,8 @@ static int hns3_set_ringparam(struct net_device *ndev,
  	if (ret)
  		return ret;
  
+-	/* Hardware requires that its descriptors must be multiple of eight */
+-	new_tx_desc_num = ALIGN(param->tx_pending, HNS3_RING_BD_MULTIPLE);
+-	new_rx_desc_num = ALIGN(param->rx_pending, HNS3_RING_BD_MULTIPLE);
+-	old_tx_desc_num = priv->ring[0].desc_num;
+-	old_rx_desc_num = priv->ring[queue_num].desc_num;
+-	old_rx_buf_len = priv->ring[queue_num].buf_size;
+-	if (old_tx_desc_num == new_tx_desc_num &&
+-	    old_rx_desc_num == new_rx_desc_num &&
+-	    kernel_param->rx_buf_len == old_rx_buf_len)
++	if (!hns3_is_ringparam_changed(ndev, param, kernel_param,
++				       &old_ringparam, &new_ringparam))
+ 		return 0;
+ 
+ 	tmp_rings = hns3_backup_ringparam(priv);
+@@ -1188,24 +1208,25 @@ static int hns3_set_ringparam(struct net_device *ndev,
+ 	}
+ 
+ 	netdev_info(ndev,
+-		    "Changing Tx/Rx ring depth from %u/%u to %u/%u, Changing rx buffer len from %d to %d\n",
+-		    old_tx_desc_num, old_rx_desc_num,
+-		    new_tx_desc_num, new_rx_desc_num,
+-		    old_rx_buf_len, kernel_param->rx_buf_len);
++		    "Changing Tx/Rx ring depth from %u/%u to %u/%u, Changing rx buffer len from %u to %u\n",
++		    old_ringparam.tx_desc_num, old_ringparam.rx_desc_num,
++		    new_ringparam.tx_desc_num, new_ringparam.rx_desc_num,
++		    old_ringparam.rx_buf_len, new_ringparam.rx_buf_len);
+ 
+ 	if (if_running)
+ 		ndev->netdev_ops->ndo_stop(ndev);
+ 
+-	hns3_change_all_ring_bd_num(priv, new_tx_desc_num, new_rx_desc_num);
+-	hns3_change_rx_buf_len(ndev, kernel_param->rx_buf_len);
++	hns3_change_all_ring_bd_num(priv, new_ringparam.tx_desc_num,
++				    new_ringparam.rx_desc_num);
++	hns3_change_rx_buf_len(ndev, new_ringparam.rx_buf_len);
+ 	ret = hns3_init_all_ring(priv);
+ 	if (ret) {
+ 		netdev_err(ndev, "set ringparam fail, revert to old value(%d)\n",
+ 			   ret);
+ 
+-		hns3_change_rx_buf_len(ndev, old_rx_buf_len);
+-		hns3_change_all_ring_bd_num(priv, old_tx_desc_num,
+-					    old_rx_desc_num);
++		hns3_change_rx_buf_len(ndev, old_ringparam.rx_buf_len);
++		hns3_change_all_ring_bd_num(priv, old_ringparam.tx_desc_num,
++					    old_ringparam.rx_desc_num);
+ 		for (i = 0; i < h->kinfo.num_tqps * 2; i++)
+ 			memcpy(&priv->ring[i], &tmp_rings[i],
+ 			       sizeof(struct hns3_enet_ring));
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h
+index 822d6fcbc73b..da207d1d9aa9 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h
+@@ -28,4 +28,10 @@ struct hns3_ethtool_link_ext_state_mapping {
+ 	u8 link_ext_substate;
+ };
+ 
++struct hns3_ring_param {
++	u32 tx_desc_num;
++	u32 rx_desc_num;
++	u32 rx_buf_len;
++};
++
+ #endif
 -- 
 2.33.0
 
