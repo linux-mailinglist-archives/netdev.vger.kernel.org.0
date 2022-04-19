@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7040B50764C
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 19:15:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47CEB50765A
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 19:16:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244868AbiDSRSA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 13:18:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42238 "EHLO
+        id S235438AbiDSRT1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 13:19:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244899AbiDSRR6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 13:17:58 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC9AB2F03C
-        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 10:15:14 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id i27so34279378ejd.9
-        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 10:15:14 -0700 (PDT)
+        with ESMTP id S237020AbiDSRTX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 13:19:23 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE94F326ED
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 10:16:39 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id b24so22122688edu.10
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 10:16:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=AtjXOsHlK9eyHHkvm9QZjO06qTJJZ3Wd/uhXMxNSjLQ=;
-        b=WtrunEWglTej8VZdgqxkla1eqEadaDz0xI0/AKNfx5d158HIi5q2+afNKGmBBF80WT
-         cxfEKsUlrBh3xk/0AqPudv2veVZs7T8DOPnkaYbfizndS0ZNa6YzkcmxnmWsPjdRqzMs
-         u42ll784Gr4lwNprj7lX817Yx0pC9hi/VbwpCRGp+Whd5bAC8CwQePxGXeA/jFNVcyWT
-         85Oy3b8DecyvM6yImpSU6et3gEFX4XBhWepJ8Wnq6iEWsu2s5eOJhiZDvbreRhyE48FY
-         BwCeqJpu2nTsFPLSAFERCbh5l4mU8qUDKa79ijKHEywjutYa5eMki+eEAYYUxDVe0SX2
-         BOpw==
+        bh=sRRRCI+pOhM/ZaZmdA9UGYOXQpM1lHGpFsorKxIRoRs=;
+        b=Viv0ULTjPx0zMOpGsXXKkg33bW3UUSFAUs4XHv5EN50UEcE75mhVKakdzq9+/IMAvr
+         1WeEu4PTNv9Yf9XxP1a7wSkhHFoZ9eK+aZlaJ11YhNTQLr6hNkbLwNlaDvQNSnkA5IpZ
+         kTdujRZ+hLRgLEs8DCOBO8FsDUJCwyIbxSLaX3OFKrKEHFKup3FteBr9Y0Zjr5uhA08w
+         /SnPZN7zXU3chJvGWrGRQw7kxddCzWrce4xPDQpo/WUNEmTUxAhrqfYU9GL6bgYFBrqJ
+         Mqk4XRmDYnGQ8ScqWtpN/e9fLNJyJmqfXgTE22TtEmXzSEFY2HjzSqiDeNb3iBM8wawq
+         NSbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=AtjXOsHlK9eyHHkvm9QZjO06qTJJZ3Wd/uhXMxNSjLQ=;
-        b=ueD7Ek/lyJSz+LX/Ma2m/Va3DLYHklTwNAy4JytmGGRJyE8rYgXepHvoNQJFXX3Uzj
-         pMMuSAuYR5l/AodnrZPmNGfbcVIvA57QJNqZyHXlpzHZMirBJSmD5szMZXV1haAWvR55
-         Mpx4+6eJWdpV6/UzdwDxNUBxLd9DjXCWBccwbtVKb0YGr1pGzws4V1IczdKVGagvkDqR
-         No6cNvhjgdvJC3yp6RskY3q6GPIFoCRaXsVlfqa0vZKOCKA61La6SfA26ZvdIR1lc7zd
-         cPD+SDUDRqYlr10kRVraUp5dyRZ0h2sVMqS0JEabZLLrKdf891/p6n50qxEmdOAsvEku
-         VL1w==
-X-Gm-Message-State: AOAM532IMQK93BlY+oUVA5l3GtS4/R7HavQ7BYSn1z+zYAOvrgkNE1/d
-        j/dgEeGqHIbjS1B1Rq4vfZa0WY4xTPd4qcUsAPw=
-X-Google-Smtp-Source: ABdhPJzQgGE6m5EpLLU+yLgU3S1In2DXps7613asuJRZ8bHRW3aPNGYgYBBuBF0fd4OFYbj3o2wzjA==
-X-Received: by 2002:a17:906:7304:b0:6da:9243:865 with SMTP id di4-20020a170906730400b006da92430865mr14272724ejc.665.1650388513377;
-        Tue, 19 Apr 2022 10:15:13 -0700 (PDT)
+        bh=sRRRCI+pOhM/ZaZmdA9UGYOXQpM1lHGpFsorKxIRoRs=;
+        b=5+RVVmb/WU5wO5f2m6zpYiPBP5ZFeKtJ0x13PfMcJBy0WzlBZYWQGmNdwZLVLZJlGH
+         4Drunq8bcgA0T5JpHqeknvvVX6ZDj756PYC0aU3yCSfNNsHmQKOdpStD9Tpo0+s3a2xx
+         Zpcu3C7itKoJrZBZdaSJywL9RHgkqMg2dLoFqWzyFLWlZ+4u3e63HSPUP8QgtYiAGSSA
+         zEg/ii5C0fgjGNh0UT1vfShpfh5bsNQiE+L4318Om4t7JcZO/7Jd6UTnun0YY/2Y3TYJ
+         ToksyGMXjstKF/SsKw2Eu9ypgpUaYUuWk7e/5yXPiYWYxJfkSX1Sw/eReK9WooHRHz0D
+         NGKA==
+X-Gm-Message-State: AOAM533pbZId2humS/GkKPXrYFQx8o5QFfUPzwS1InzXLca6I8LmzNyF
+        ExtsEcUDn/YhjZerfb9Ufkl26cuDxmArWmqH/nc=
+X-Google-Smtp-Source: ABdhPJxyQVccWali8Dds40txoG/XUg9BvkxxeYtAqWm9sL587BOskhaK0xBDTEahG6aLoeeKnDXbTA==
+X-Received: by 2002:a05:6402:2059:b0:41d:82c2:208a with SMTP id bc25-20020a056402205900b0041d82c2208amr18490876edb.379.1650388598555;
+        Tue, 19 Apr 2022 10:16:38 -0700 (PDT)
 Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id h9-20020aa7c949000000b0041b4d8ae50csm8594054edt.34.2022.04.19.10.15.12
+        by smtp.gmail.com with ESMTPSA id n14-20020a50934e000000b0042053e79386sm8762750eda.91.2022.04.19.10.16.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 10:15:12 -0700 (PDT)
+        Tue, 19 Apr 2022 10:16:38 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     sthemmin@microsoft.com, dsahern@gmail.com
-Subject: [patch iproute2-main] devlink: fix "devlink health dump" command without arg
-Date:   Tue, 19 Apr 2022 19:15:11 +0200
-Message-Id: <20220419171511.1147781-1-jiri@resnulli.us>
+Subject: [patch iproute2-next] devlink: introduce -h[ex] cmdline option to allow dumping numbers in hex format
+Date:   Tue, 19 Apr 2022 19:16:37 +0200
+Message-Id: <20220419171637.1147925-1-jiri@resnulli.us>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -67,63 +67,109 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Fix bug when user calls "devlink health dump" without "show" or "clear":
-$ devlink health dump
-Command "(null)" not found
+For health reporter dumps it is quite convenient to have the numbers in
+hexadecimal format. Introduce a command line option to allow user to
+achieve that output.
 
-Put the dump command into a separate helper as it is usual in the rest
-of the code. Also, treat no cmd as "show", as it is common for other
-devlink objects.
-
-Fixes: 041e6e651a8e ("devlink: Add devlink health dump show command")
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- devlink/devlink.c | 25 ++++++++++++++++++-------
- 1 file changed, 18 insertions(+), 7 deletions(-)
+ devlink/devlink.c  | 19 +++++++++++++------
+ man/man8/devlink.8 |  4 ++++
+ 2 files changed, 17 insertions(+), 6 deletions(-)
 
 diff --git a/devlink/devlink.c b/devlink/devlink.c
-index da9f97788bcf..aab739f7f437 100644
+index aab739f7f437..bc681737ec8a 100644
 --- a/devlink/devlink.c
 +++ b/devlink/devlink.c
-@@ -8526,6 +8526,23 @@ static void cmd_health_help(void)
- 	pr_err("                          [ auto_dump    { true | false } ]\n");
+@@ -367,6 +367,7 @@ struct dl {
+ 	bool pretty_output;
+ 	bool verbose;
+ 	bool stats;
++	bool hex;
+ 	struct {
+ 		bool present;
+ 		char *bus_name;
+@@ -8044,6 +8045,8 @@ static int cmd_health_dump_clear(struct dl *dl)
+ 
+ static int fmsg_value_show(struct dl *dl, int type, struct nlattr *nl_data)
+ {
++	const char *num_fmt = dl->hex ? "%x" : "%u";
++	const char *num64_fmt = dl->hex ? "%"PRIx64 : "%"PRIu64;
+ 	uint8_t *data;
+ 	uint32_t len;
+ 
+@@ -8053,16 +8056,16 @@ static int fmsg_value_show(struct dl *dl, int type, struct nlattr *nl_data)
+ 		print_bool(PRINT_ANY, NULL, "%s", mnl_attr_get_u8(nl_data));
+ 		break;
+ 	case MNL_TYPE_U8:
+-		print_uint(PRINT_ANY, NULL, "%u", mnl_attr_get_u8(nl_data));
++		print_uint(PRINT_ANY, NULL, num_fmt, mnl_attr_get_u8(nl_data));
+ 		break;
+ 	case MNL_TYPE_U16:
+-		print_uint(PRINT_ANY, NULL, "%u", mnl_attr_get_u16(nl_data));
++		print_uint(PRINT_ANY, NULL, num_fmt, mnl_attr_get_u16(nl_data));
+ 		break;
+ 	case MNL_TYPE_U32:
+-		print_uint(PRINT_ANY, NULL, "%u", mnl_attr_get_u32(nl_data));
++		print_uint(PRINT_ANY, NULL, num_fmt, mnl_attr_get_u32(nl_data));
+ 		break;
+ 	case MNL_TYPE_U64:
+-		print_u64(PRINT_ANY, NULL, "%"PRIu64, mnl_attr_get_u64(nl_data));
++		print_u64(PRINT_ANY, NULL, num64_fmt, mnl_attr_get_u64(nl_data));
+ 		break;
+ 	case MNL_TYPE_NUL_STRING:
+ 		print_string(PRINT_ANY, NULL, "%s", mnl_attr_get_str(nl_data));
+@@ -8939,7 +8942,7 @@ static void help(void)
+ 	pr_err("Usage: devlink [ OPTIONS ] OBJECT { COMMAND | help }\n"
+ 	       "       devlink [ -f[orce] ] -b[atch] filename -N[etns] netnsname\n"
+ 	       "where  OBJECT := { dev | port | sb | monitor | dpipe | resource | region | health | trap }\n"
+-	       "       OPTIONS := { -V[ersion] | -n[o-nice-names] | -j[son] | -p[retty] | -v[erbose] -s[tatistics] }\n");
++	       "       OPTIONS := { -V[ersion] | -n[o-nice-names] | -j[son] | -p[retty] | -v[erbose] -s[tatistics] -h[ex] }\n");
  }
  
-+static int cmd_health_dump(struct dl *dl)
-+{
-+	if (dl_argv_match(dl, "help")) {
-+		cmd_health_help();
-+		return 0;
-+	} else if (dl_argv_match(dl, "show") ||
-+		   dl_argv_match(dl, "list") || dl_no_arg(dl)) {
-+		dl_arg_inc(dl);
-+		return cmd_health_dump_show(dl);
-+	} else if (dl_argv_match(dl, "clear")) {
-+		dl_arg_inc(dl);
-+		return cmd_health_dump_clear(dl);
-+	}
-+	pr_err("Command \"%s\" not found\n", dl_argv(dl));
-+	return -ENOENT;
-+}
+ static int dl_cmd(struct dl *dl, int argc, char **argv)
+@@ -9053,6 +9056,7 @@ int main(int argc, char **argv)
+ 		{ "statistics",		no_argument,		NULL, 's' },
+ 		{ "Netns",		required_argument,	NULL, 'N' },
+ 		{ "iec",		no_argument,		NULL, 'i' },
++		{ "hex",		no_argument,		NULL, 'h' },
+ 		{ NULL, 0, NULL, 0 }
+ 	};
+ 	const char *batch_file = NULL;
+@@ -9068,7 +9072,7 @@ int main(int argc, char **argv)
+ 		return EXIT_FAILURE;
+ 	}
+ 
+-	while ((opt = getopt_long(argc, argv, "Vfb:njpvsN:i",
++	while ((opt = getopt_long(argc, argv, "Vfb:njpvsN:ih",
+ 				  long_options, NULL)) >= 0) {
+ 
+ 		switch (opt) {
+@@ -9106,6 +9110,9 @@ int main(int argc, char **argv)
+ 		case 'i':
+ 			use_iec = true;
+ 			break;
++		case 'h':
++			dl->hex = true;
++			break;
+ 		default:
+ 			pr_err("Unknown option.\n");
+ 			help();
+diff --git a/man/man8/devlink.8 b/man/man8/devlink.8
+index 840cf44cf97b..3797a27cefc5 100644
+--- a/man/man8/devlink.8
++++ b/man/man8/devlink.8
+@@ -63,6 +63,10 @@ Switches to the specified network namespace.
+ .BR "\-i", " --iec"
+ Print human readable rates in IEC units (e.g. 1Ki = 1024).
+ 
++.TP
++.BR "\-h", " --hex"
++Print dump numbers in hexadecimal format.
 +
- static int cmd_health(struct dl *dl)
- {
- 	if (dl_argv_match(dl, "help")) {
-@@ -8546,13 +8563,7 @@ static int cmd_health(struct dl *dl)
- 		return cmd_health_test(dl);
- 	} else if (dl_argv_match(dl, "dump")) {
- 		dl_arg_inc(dl);
--		if (dl_argv_match(dl, "show")) {
--			dl_arg_inc(dl);
--			return cmd_health_dump_show(dl);
--		} else if (dl_argv_match(dl, "clear")) {
--			dl_arg_inc(dl);
--			return cmd_health_dump_clear(dl);
--		}
-+		return cmd_health_dump(dl);
- 	} else if (dl_argv_match(dl, "set")) {
- 		dl_arg_inc(dl);
- 		return cmd_health_set_params(dl);
+ .SS
+ .I OBJECT
+ 
 -- 
 2.35.1
 
