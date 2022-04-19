@@ -2,93 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C546506868
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 12:12:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D7AE50687A
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 12:14:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350522AbiDSKOt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 06:14:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39836 "EHLO
+        id S240336AbiDSKQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 06:16:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350513AbiDSKOp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 06:14:45 -0400
-Received: from mg.sunplus.com (mswedge1.sunplus.com [60.248.182.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C84A11BE85;
-        Tue, 19 Apr 2022 03:12:01 -0700 (PDT)
-X-MailGates: (compute_score:DELIVER,40,3)
-Received: from 172.17.9.202
-        by mg01.sunplus.com with MailGates ESMTP Server V5.0(27730:0:AUTH_RELAY)
-        (envelope-from <wells.lu@sunplus.com>); Tue, 19 Apr 2022 18:07:55 +0800 (CST)
-Received: from sphcmbx02.sunplus.com.tw (172.17.9.112) by
- sphcmbx01.sunplus.com.tw (172.17.9.202) with Microsoft SMTP Server (TLS) id
- 15.0.1497.26; Tue, 19 Apr 2022 18:07:55 +0800
-Received: from sphcmbx02.sunplus.com.tw ([fe80::fd3d:ad1a:de2a:18bd]) by
- sphcmbx02.sunplus.com.tw ([fe80::fd3d:ad1a:de2a:18bd%14]) with mapi id
- 15.00.1497.026; Tue, 19 Apr 2022 18:07:55 +0800
-From:   =?big5?B?V2VsbHMgTHUgp2aq2sTL?= <wells.lu@sunplus.com>
-To:     Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
-CC:     Wells Lu <wellslutw@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-        "roopa@nvidia.com" <roopa@nvidia.com>,
-        "edumazet@google.com" <edumazet@google.com>
-Subject: RE: [PATCH net-next v8 2/2] net: ethernet: Add driver for Sunplus
- SP7021
-Thread-Topic: [PATCH net-next v8 2/2] net: ethernet: Add driver for Sunplus
- SP7021
-Thread-Index: AQHYTt60q5RPpkXZvk6NoPqcLCmB1Kzuz6GAgAAV3oCACBN/MA==
-Date:   Tue, 19 Apr 2022 10:07:55 +0000
-Message-ID: <e784ab5356aa4b6e93765b54bdefea0a@sphcmbx02.sunplus.com.tw>
-References: <1649817118-14667-1-git-send-email-wellslutw@gmail.com>
- <1649817118-14667-3-git-send-email-wellslutw@gmail.com>
- <20220414141825.50eb8b6a@kernel.org> <Ylgjab6qLsrzKZKc@lunn.ch>
-In-Reply-To: <Ylgjab6qLsrzKZKc@lunn.ch>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [172.25.108.39]
-Content-Type: text/plain; charset="big5"
-Content-Transfer-Encoding: base64
+        with ESMTP id S229866AbiDSKQn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 06:16:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D31825C53
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 03:14:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9F3EB815D8
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 10:13:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4013C385A7;
+        Tue, 19 Apr 2022 10:13:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650363238;
+        bh=s/gKmqAuzdty+kGylc0lVYpcfR5z/aek1ZDpCxeOUkU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=kgsITyojMLCyI0znJFglm4sdlP2lRZB3Ituid0HNmfydbmkH1mfc1t7pVuUKRt42n
+         h8sXKSbqXOWO1QbN89zdc8B+/J9AQ2QjITgyGY8cX+H7u2LnMSn4UmXuNLSaHYfRQG
+         pOKTmWj8PssD5mn4oE1VLIss3cZxvyNR3XKCn/HwFja80NVocdSxHC3BP9LGjJ6c+e
+         hXdDnl3R7H03ouVZDmGc+7AS81G7JxbS7fyvYO6193wxoraUj67PAguwhticH/tzgs
+         yfx0OdOJcMKY4Y8Rz583oXUZIS/NTlKe6FSTw+CH6yG7FsxpBUGo8IWWejbriveS8g
+         l5dNlK2Cacxdw==
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        linux-netdev <netdev@vger.kernel.org>,
+        Raed Salem <raeds@nvidia.com>
+Subject: [PATCH net-next v1 00/17] Extra IPsec cleanup
+Date:   Tue, 19 Apr 2022 13:13:36 +0300
+Message-Id: <cover.1650363043.git.leonro@nvidia.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiA+ID4gKwkJLyogR2V0IG1hYy1hZGRyZXNzIGZyb20gbnZtZW0uICovDQo+ID4gPiArCQlyZXQg
-PSBzcGwyc3dfbnZtZW1fZ2V0X21hY19hZGRyZXNzKCZwZGV2LT5kZXYsIHBvcnRfbnAsIG1hY19h
-ZGRyKTsNCj4gPiA+ICsJCWlmIChyZXQpIHsNCj4gPiA+ICsJCQlkZXZfaW5mbygmcGRldi0+ZGV2
-LCAiR2VuZXJhdGUgYSByYW5kb20gbWFjIGFkZHJlc3MhXG4iKTsNCj4gPiA+ICsNCj4gPiA+ICsJ
-CQkvKiBHZW5lcmF0ZSBhIG1hYyBhZGRyZXNzIHVzaW5nIE9VSSBvZiBTdW5wbHVzIFRlY2hub2xv
-Z3kNCj4gPiA+ICsJCQkgKiBhbmQgcmFuZG9tIGNvbnRyb2xsZXIgbnVtYmVyLg0KPiA+ID4gKwkJ
-CSAqLw0KPiA+ID4gKwkJCW1hY19hZGRyWzBdID0gMHhmYzsgLyogT1VJIG9mIFN1bnBsdXM6IGZj
-OjRiOmJjICovDQo+ID4gPiArCQkJbWFjX2FkZHJbMV0gPSAweDRiOw0KPiA+ID4gKwkJCW1hY19h
-ZGRyWzJdID0gMHhiYzsNCj4gPiA+ICsJCQltYWNfYWRkclszXSA9IGdldF9yYW5kb21faW50KCkg
-JSAyNTY7DQo+ID4gPiArCQkJbWFjX2FkZHJbNF0gPSBnZXRfcmFuZG9tX2ludCgpICUgMjU2Ow0K
-PiA+ID4gKwkJCW1hY19hZGRyWzVdID0gZ2V0X3JhbmRvbV9pbnQoKSAlIDI1NjsNCj4gPg0KPiA+
-IEkgZG9uJ3QgdGhpbmsgeW91IGNhbiBkbyB0aGF0LiBFaXRoZXIgeW91IHVzZSB5b3VyIE9VSSBh
-bmQgYXNzaWduIHRoZQ0KPiA+IGFkZHJlc3MgYXQgbWFudWZhY3R1cmUgb3IgeW91IG11c3QgdXNl
-IGEgbG9jYWxseSBhZG1pbmlzdGVyZWQgYWRkcmVzcy4NCj4gPiBBbmQgaWYgbG9jYWxseSBhZG1p
-bmlzdGVyZWQgYWRkcmVzcyBpcyB1c2VkIGl0IGJldHRlciBiZSBjb21wbGV0ZWx5DQo+ID4gcmFu
-ZG9tIHRvIGxvd2VyIHRoZSBwcm9iYWJpbGl0eSBvZiBjb2xsaXNpb24gdG8gYWJzb2x1dGUgbWlu
-aW11bS4NCj4gDQo+IEkgY29tbWVudGVkIGFib3V0IHRoYXQgaW4gYW4gZWFybGllciB2ZXJzaW9u
-IG9mIHRoZXNlIHBhdGNoZXMuIFdlIHByb2JhYmx5IG5lZWQgYSBxdW90ZQ0KPiBmcm9tIHRoZSA4
-MDIuMSBvciA4MDIuMyB3aGljaCBzYXlzIHRoaXMgaXMgTy5LLg0KPiANCj4gCSBBbmRyZXcNCg0K
-SGkgQW5kcmV3LA0KDQpJIHBsYW4gdG8gcmVwbGFjZSBhYm92ZSBzdGF0ZW1lbnRzIHdpdGg6DQoN
-CglldGhfcmFuZG9tX2FkZHIobWFjX2FkZHIpOw0KDQpldGhfcmFuZG9tX2FkZHIoKSBnZW5lcmF0
-ZXMgbG9jYWxseSBhZG1pbmlzdGVyZWQgKHJhbmRvbSkgYWRkcmVzcy4NCg0KRG8geW91IG1lYW4g
-SSBjYW4ga2VlcCB1c2UgdGhlIG1hYyBhZGRyZXNzOiAiT1VJICsgcmFuZG9tIG51bWJlciI/DQpP
-bmx5IG5lZWQgdG8gYWRkIGNvbW1lbnQgZm9yIGl0LiANCldoYXQgY29tbWVudCBzaG91bGQgSSBh
-ZGQ/IFdoaWNoIG9uZSBkbyB5b3UgcmVjb21tZW5kPw0KDQpUaGFuayB5b3UgdmVyeSBtdWNoIGZv
-ciB5b3VyIHJldmlldy4NCg0KDQpCZXN0IHJlZ2FyZHMsDQpXZWxscw0KDQo=
+From: Leon Romanovsky <leonro@nvidia.com>
+
+Changelog:
+v1:
+ * changed target from mlx5-next to net-next.
+ * Improved commit message in patch #1
+ * Left function names intact, with _accel_ word in it.
+v0: https://lore.kernel.org/all/cover.1649578827.git.leonro@nvidia.com
+
+--------------------
+After FPGA IPsec removal, we can go further and make sure that flow
+steering logic is aligned to mlx5_core standard together with deep
+cleaning of whole IPsec path.
+
+Thanks
+
+Leon Romanovsky (17):
+  net/mlx5: Simplify IPsec flow steering init/cleanup functions
+  net/mlx5: Check IPsec TX flow steering namespace in advance
+  net/mlx5: Don't hide fallback to software IPsec in FS code
+  net/mlx5: Reduce useless indirection in IPsec FS add/delete flows
+  net/mlx5: Store IPsec ESN update work in XFRM state
+  net/mlx5: Remove useless validity check
+  net/mlx5: Merge various control path IPsec headers into one file
+  net/mlx5: Remove indirections from esp functions
+  net/mlx5: Simplify HW context interfaces by using SA entry
+  net/mlx5: Clean IPsec FS add/delete rules
+  net/mlx5: Make sure that no dangling IPsec FS pointers exist
+  net/mlx5: Don't advertise IPsec netdev support for non-IPsec device
+  net/mlx5: Simplify IPsec capabilities logic
+  net/mlx5: Remove not-supported ICV length
+  net/mlx5: Cleanup XFRM attributes struct
+  net/mlx5: Allow future addition of IPsec object modifiers
+  net/mlx5: Don't perform lookup after already known sec_path
+
+ .../net/ethernet/mellanox/mlx5/core/en/fs.h   |   1 -
+ .../ethernet/mellanox/mlx5/core/en/params.c   |   2 +-
+ .../mellanox/mlx5/core/en_accel/ipsec.c       | 174 +++------
+ .../mellanox/mlx5/core/en_accel/ipsec.h       |  85 +++-
+ .../mellanox/mlx5/core/en_accel/ipsec_fs.c    | 362 ++++++------------
+ .../mellanox/mlx5/core/en_accel/ipsec_fs.h    |   4 +-
+ .../mlx5/core/en_accel/ipsec_offload.c        | 331 +++-------------
+ .../mlx5/core/en_accel/ipsec_offload.h        |  14 -
+ .../mellanox/mlx5/core/en_accel/ipsec_rxtx.c  |   6 +-
+ .../mellanox/mlx5/core/en_accel/ipsec_stats.c |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |   1 -
+ .../net/ethernet/mellanox/mlx5/core/en_rx.c   |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/main.c    |   2 +-
+ include/linux/mlx5/accel.h                    | 153 --------
+ include/linux/mlx5/mlx5_ifc.h                 |   2 -
+ 15 files changed, 320 insertions(+), 823 deletions(-)
+ delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.h
+ delete mode 100644 include/linux/mlx5/accel.h
+
+-- 
+2.35.1
+
