@@ -2,953 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CFB5506221
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 04:28:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B93050626A
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 04:59:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236327AbiDSCbW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Apr 2022 22:31:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34786 "EHLO
+        id S1345875AbiDSDAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Apr 2022 23:00:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344733AbiDSCa6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 22:30:58 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80F8A2E9E8
-        for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 19:27:58 -0700 (PDT)
-Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kj71z1BWtzFq52;
-        Tue, 19 Apr 2022 10:25:27 +0800 (CST)
-Received: from localhost.localdomain (10.67.165.24) by
- dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 19 Apr 2022 10:27:56 +0800
-From:   Jian Shen <shenjian15@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
-        <ecree.xilinx@gmail.com>, <hkallweit1@gmail.com>,
-        <alexandr.lobakin@intel.com>, <saeed@kernel.org>, <leon@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linuxarm@openeuler.org>,
-        <lipeng321@huawei.com>
-Subject: [RFCv6 PATCH net-next 19/19] net: redefine the prototype of netdev_features_t
-Date:   Tue, 19 Apr 2022 10:22:06 +0800
-Message-ID: <20220419022206.36381-20-shenjian15@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220419022206.36381-1-shenjian15@huawei.com>
-References: <20220419022206.36381-1-shenjian15@huawei.com>
+        with ESMTP id S239164AbiDSDA3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 23:00:29 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2119.outbound.protection.outlook.com [40.107.220.119])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 994CE2654C;
+        Mon, 18 Apr 2022 19:57:47 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oBUcl09OKnN6RjMNMhZb8izHsPkDLHbPoEBMg0pv4NddllAW7ARyEIi4VKvfSCTXQ1BMMvTT41uzkf62IlWG+Ztj2ROI2+OO3PWsq6APGzKS39TsDzv/KCsZF8t2M84t/cC0vTO9D7SrMwvoWj5HPrtbuJ1w3UbNpj8ZbDVJMsu1X0ORVRvRKlmjGndsA7BR/AadHHWielhDIN8LLKP2AfFJjhFNwAHwXcs/lsYloHWV5wWbXWl+0iG5J1T3qHg8ohU4Us0ceiVzjboc+bCiHS3oEYD7dyPhsDRNw3B0lmCZZbN8w5bZrnjqkhOZLBUiuxviBOgo5+peoFF7Dj27dw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ywIBjsTeW7N602NiIL36HzzAbRHftDJkgOIYDkj3bM4=;
+ b=C5bxt4nZDfKKAcFpQ1RpTEF4V94Mf6h/HDs1tgwVcHUTwmDtYbl1EfxZHDQvPtnfnDD+GGhEflp5ZZIdCxeuVq3zYPGO6/2P8jA5g5UrIBQjNaJ9EaE9zHA6Ur7XDuRqB9ur7x9dFITv0KRdo4dWbbN+wek+fmjoxEHHB3kKnx8FlbVVo1AAmW6F31gKrFdtxzvLiKECrmwJHmNhczRkoR7Ohy+F0hM1xAqBLUUohu0zwgxZrYB08zTob9eXW1OoSeEtJZGo7glOjkfgskH+HOKQk7/6/CoTPOZZSn0hCE0DxDLWRGRRZ5BeMzZQdu4S57sbnEYG2eqAOf/N2BV8iA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=hammerspace.com; dmarc=pass action=none
+ header.from=hammerspace.com; dkim=pass header.d=hammerspace.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hammerspace.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ywIBjsTeW7N602NiIL36HzzAbRHftDJkgOIYDkj3bM4=;
+ b=gg6eT6lmW9SIBPityw5pFBrn4Gu8UrrIL4zGOrVDRYX5nieOQ0teO5lq6m6FcaL3EjGso31kZuR0KK9VbSlZ/s1PjgbibVlQRIu3NvwsUpkyxYAHUcVi6UKHwsToYmxNzAMtSLWl5FhROVGWtVYPnlTTciMJ4GBbSIE6LiGlHTk=
+Received: from CH0PR13MB5084.namprd13.prod.outlook.com (2603:10b6:610:111::7)
+ by PH7PR13MB5527.namprd13.prod.outlook.com (2603:10b6:510:139::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.6; Tue, 19 Apr
+ 2022 02:57:44 +0000
+Received: from CH0PR13MB5084.namprd13.prod.outlook.com
+ ([fe80::c0b:4fda:5713:9006]) by CH0PR13MB5084.namprd13.prod.outlook.com
+ ([fe80::c0b:4fda:5713:9006%7]) with mapi id 15.20.5186.013; Tue, 19 Apr 2022
+ 02:57:44 +0000
+From:   Trond Myklebust <trondmy@hammerspace.com>
+To:     "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+        "chuck.lever@oracle.com" <chuck.lever@oracle.com>,
+        "linux-cifs@vger.kernel.org" <linux-cifs@vger.kernel.org>
+CC:     "borisp@nvidia.com" <borisp@nvidia.com>,
+        "simo@redhat.com" <simo@redhat.com>,
+        "ak@tempesta-tech.com" <ak@tempesta-tech.com>
+Subject: Re: [PATCH RFC 08/15] SUNRPC: Add RPC_TASK_CORK flag
+Thread-Topic: [PATCH RFC 08/15] SUNRPC: Add RPC_TASK_CORK flag
+Thread-Index: AQHYU0T20WiaobmnKkCy/6DDEwmcKKz2i/CA
+Date:   Tue, 19 Apr 2022 02:57:44 +0000
+Message-ID: <a771c65353d0805fc5f028fa56691ee762d6843f.camel@hammerspace.com>
+References: <165030062272.5246.16956092606399079004.stgit@oracle-102.nfsv4.dev>
+         <165030072175.5246.14868635576137008067.stgit@oracle-102.nfsv4.dev>
+In-Reply-To: <165030072175.5246.14868635576137008067.stgit@oracle-102.nfsv4.dev>
+Accept-Language: en-US, en-GB
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=hammerspace.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: bcbb1dda-00b6-438d-9654-08da21b06076
+x-ms-traffictypediagnostic: PH7PR13MB5527:EE_
+x-microsoft-antispam-prvs: <PH7PR13MB5527C8346E54E22C15055B3FB8F29@PH7PR13MB5527.namprd13.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ZkywK9PT3+PkNs/8pjMJr2Fsw86JziP7HgUU3spfqWRL5iOs97Dk7LffDEj2KxGeesJeAT2h+CTWtIX+tI7tRo7bcnTZGRupbm2W0scQ4dEFmURl0pufLTjFPLrBfBwIUiuFlM4p+LLpJ9ACFwA9mil3YHvxWk7GWRDgFbIrMFJ9L1A7b8hQSRSSl6RaWdv/2eDS3jBgBp2jqBzDAqY9ZzcP9zy4S/NWLAv2rAoa8UHHpjxQkxEhGdKoYpIm+GJjWcn8QTbzsMA/cv1UJ3jXm98mODlEPDI2Bo2UBF9ALiMYfBXD5Do/UyZCsRKCKo088+++L5ZSEyVzye27zgJt8qYE+z9yTs4wwXdBiJus81z3G0RFAtS2hS36GCd9qmEizjSpvHD5WycxElml2TJH1jtNYlm3aGdwM3YMCmyPTOQZBOsJvPsTNY9yEeNz4DUsNv7p+64LqNoiZNmE2bIUn+t1wAkTP/MC9MnfiGfPtPRR5CFcR2/kiqGv8f7HmrSjYU+W+tLXUbZ9TmbUrmIsbpKgZ1Q/uNskN/IN0Ory6WcHIOSJtk0hnOeeZ1W8KIeszRj6LJO8cRQF5KoTmZ6LGvMqXpL30KM4g6EDjiQaysgNjV9uktOFIBfaG6vV0rBoulpBC30C+te5Z0E3PJhTK+dKadGMs5FL2ZsnpNQWIkEUYFbw+g+nLJ3D5cAf+p7hTiYGV73sDA2YoawoI5I6iK5zxzR4qfAWr3hVRjA2+i9Ca5BRfBJfvDl7+qBM5Wvl
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR13MB5084.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(38070700005)(38100700002)(5660300002)(122000001)(8936002)(71200400001)(508600001)(6486002)(86362001)(83380400001)(186003)(6512007)(2906002)(2616005)(26005)(6506007)(76116006)(4326008)(316002)(54906003)(66946007)(110136005)(66556008)(36756003)(66476007)(64756008)(66446008)(8676002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?V3QxNGtWNnBiQys5TTVqZ3ppbVdTQjlnTlhwZnZYR0p2V1hRR1ZEaDVKOENS?=
+ =?utf-8?B?VlJ4SVhwOXdVUEEyQll3OThnSHV4QUVhNFpPMTdPWGVXVjRjeUtlM1dQTGNM?=
+ =?utf-8?B?em9pUDNRaUZZWU1nVU5vYVZRMnpjYU0wY0FreHM1VW1zRFpwRE13M1l4eWVX?=
+ =?utf-8?B?SFhaMlREUFRwRXhWM3dTZGdEbVRrL3lsRzk1MGcyQlEvdjVpNkp1eVZZdnho?=
+ =?utf-8?B?THlRU0hIVzNyVzdYbkFlTjhiYm9oQXZuNW1yQkNwanJjbFo5bHJjS0RocURj?=
+ =?utf-8?B?VlNCZmozMys5R21senAvaUFFdW1EQjNWeHRpU0RsVDBCK2pmM2lXSHZTZTQx?=
+ =?utf-8?B?S0xhYkNneThteDllTnVTUjhvWVpLbHhkVXZsekJVVXFmQlFPMEZPYTM1TFFl?=
+ =?utf-8?B?VHBHcTB1alZ2akgxZUVNNkhvZDFCMmFaVW5jU3hScmQrOHN0azZxT0FUU0JG?=
+ =?utf-8?B?WkN6bGx6MVY1WE15d05jZmtZTFZsWG9nUjVGSVVRYnpvZnJ3MVlwMkFnRW5X?=
+ =?utf-8?B?WjNjbFRzY1lOTG94Ni9WSmpjSzN1TS9HSFdEN2x5bklQWnF0NlZHSnhQamJI?=
+ =?utf-8?B?ZkdxRlJDb2FCVXBod3dBRGloWVVSMUZrb1B5bTF3dTVtY0JETnJJdG94RGVT?=
+ =?utf-8?B?dnAyc3J4RDNuQ3Erb3FucC81UVdPS1k1aVFDY1gxUE01dkNCSlhwUStUdHFK?=
+ =?utf-8?B?MHRQLzVISEVyLzVDNm1KOExEWmttMWdLTkJGb0s2R3RIMlEySHJRWGNGSmcr?=
+ =?utf-8?B?a2cyeW5qTUJQQWhOdXhnQTU2MXhYUnhVTkVIRlFiMTluN3NwbFJPTjk3aFUy?=
+ =?utf-8?B?Vzc5M1Y1YURkcVhMRXVULzBvV01sSE1IMzFHdDRMak9qdTg2TVZuem9LUWZV?=
+ =?utf-8?B?S3l3OXVOOHYzeHVxQk4zMGlQblNzUk5tOUZkRllxRW1ZYzlCbVVKUDI1bm04?=
+ =?utf-8?B?YXBMcWpGajJOOWdpOW9xOG5Fa0prRzdyWGpYVXVGNzFpNGVaWU55YXlsOExB?=
+ =?utf-8?B?d0pnL2pqaXVTVkhIM2EwRGRQTm0xZzBMN1dha00wSWlXV2ZqdWRsUHNYamNT?=
+ =?utf-8?B?WFhBT1R3TUJTMC81bGRhU043eHpveU1KaGhQWVNEZ0czRWFkS0FtMUhXand6?=
+ =?utf-8?B?enVaV0hiRE1ycGUveWpGOGlUeWs3Y3JLSFVpNVNkSVhPV0xkWVJQb1NheWts?=
+ =?utf-8?B?VFRORGJTMU16UnFrZEhhaURmNW5GVEozNlo5V045SWlhVWdBTHlkOTVOWUgv?=
+ =?utf-8?B?T21Ec2FSWk40dHVIUmlnOGtKUHZ6blF4WUlCRnltK2kzRERnSy9ZRVdZenFu?=
+ =?utf-8?B?Q202WG5MM3p1bFo5b0xzSzZuUFFmNE9RTSt4UVBNa0VOOFJRZkp5Y1IvM3lC?=
+ =?utf-8?B?bDE1YjhOMjZOaERlUFRFOThrTmpDUmNyZlc3c1dZY1NYUzRVZEJCU3ZTZzNL?=
+ =?utf-8?B?Y0NYb0FBMitPTVlTS0d4YzdDSWpyOUNMZDVEeE13UGNxYldVWHc3VzhDZWIx?=
+ =?utf-8?B?Y2dtNURLL0pPSk1GTm1zOUVhN3A0TkhoUHhPMEQ0RHB3a0o3bkJqRnh3cmtK?=
+ =?utf-8?B?S2JMa2xnQ2xNQXlzZmVXWUVuR014ZUZqM0k3MlNSa2hkbitYN2lueWVMVDVj?=
+ =?utf-8?B?Q2g5N1ZyMExPMUFGWUErd1lwSkw1eFgxSUYrUkpDY0c3aC9NdlhjYUJ4Y1FV?=
+ =?utf-8?B?K0tCeTBQYTVHVEZHTWt0ZTVuQUtlNEtvNmE3Szdkd1Mybmk2NWorUmgySyt2?=
+ =?utf-8?B?VWNzOGY4U290RlIvZUl1TlE0blBKV3ZtWWp5UGFTc3dveXJ1M0JKVVFlY003?=
+ =?utf-8?B?ZlNFbVpMUGIzb2VxS3V2dm1LUkZzck1VRmdObC9zOGxmY0EwbytVbnNlYm1D?=
+ =?utf-8?B?bGFLMTA1NTdCUHc4bGVZdzg3RkdHOU16WW5VaXBoRG90WWh2azJPK1NsTWVi?=
+ =?utf-8?B?RFZYNHhvSHpPK09HOUNneUFFbUxtOG9FeDZSS29CcnY5eDEyYU1DUkcxd3U0?=
+ =?utf-8?B?UWU0dWdUNlJTaG42TGJsNW9hOVRPUEJ0aWNVNC9GQlQvTkY3NnY3M1dsd2dv?=
+ =?utf-8?B?RTB5U0hDdFUzZkJxb0tNZXo1cFFydjRiTzFMYUV1S2xFZW1Gc3ZTV210eEJh?=
+ =?utf-8?B?aWZyYng2M2ZmUzg1T3p0SFRtbGdKbTBPRC8yc3Y1Z2U0NVV5QWZqWm1zai9X?=
+ =?utf-8?B?Y1VteC84OVI3aFNLT3B0RWlBamRFVENseFNOeFlVcXVReGQybllrNlhBVjg3?=
+ =?utf-8?B?aExwK3RNakRQWnJDUnVtSVVjK0h0WnRqQXptWWhGSlcreXJsVDJ6emdMVS8r?=
+ =?utf-8?B?Mm1aLzVaVmVlVG5YNHhBaTlsd3lJVlh2NTV2VGZtNVhYaUFQOG1JcFp0azNV?=
+ =?utf-8?Q?0VUIQ1lefF6G/NGQ=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <150CD6D5B8E32444B8E1DEE799A02689@namprd13.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500022.china.huawei.com (7.185.36.66)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-OriginatorOrg: hammerspace.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CH0PR13MB5084.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bcbb1dda-00b6-438d-9654-08da21b06076
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Apr 2022 02:57:44.2379
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 0d4fed5c-3a70-46fe-9430-ece41741f59e
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: LldBuGp6l/lxZNpbsFvdt/kVjPKVNMK1+ebWk1lTSTAnZlGvQlS4zkLzfrlDsGthST6nFHwkcRhFUdUUdjob8A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR13MB5527
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For the prototype of netdev_features_t is u64, and the number
-of netdevice feature bits is 64 now. So there is no space to
-introduce new feature bit. Change the prototype of netdev_features_t
-from u64 to structure below:
-	typedef struct {
-		DECLARE_BITMAP(bits, NETDEV_FEATURE_COUNT);
-	} netdev_features_t;
-
-Rewrite the netdev_features helpers to adapt with new prototype.
-
-To avoid mistake using NETIF_F_XXX as NETIF_F_XXX_BIT as
-input macroes for above helpers, remove all the macroes
-of NETIF_F_XXX for single feature bit.
-
-With the prototype is no longer u64, the implementation of print
-interface for netdev features(%pNF) is changed to bitmap. So
-does the implementation of net/ethtool/.
-
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
----
- include/linux/netdev_features.h        |  87 +---------------
- include/linux/netdev_features_helper.h | 133 ++++++++++++++++---------
- include/linux/netdevice.h              |  45 +++++----
- lib/vsprintf.c                         |  11 +-
- net/core/dev.c                         |  30 +++---
- net/ethtool/features.c                 |  84 +++++-----------
- net/ethtool/ioctl.c                    |  31 +++---
- 7 files changed, 175 insertions(+), 246 deletions(-)
-
-diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
-index 16b2313e1dec..4cc66b017bce 100644
---- a/include/linux/netdev_features.h
-+++ b/include/linux/netdev_features.h
-@@ -10,8 +10,6 @@
- #include <linux/cache.h>
- #include <asm/byteorder.h>
- 
--typedef u64 netdev_features_t;
--
- struct netdev_feature_set {
- 	unsigned int cnt;
- 	unsigned short feature_bits[];
-@@ -163,94 +161,11 @@ extern struct netdev_feature_set netif_f_gso_encap_feature_set;
- extern struct netdev_feature_set netif_f_xfrm_feature_set;
- extern struct netdev_feature_set netif_f_tls_feature_set;
- 
--/* copy'n'paste compression ;) */
--#define __NETIF_F_BIT(bit)	((netdev_features_t)1 << (bit))
--#define __NETIF_F(name)		__NETIF_F_BIT(NETIF_F_##name##_BIT)
--
--#define NETIF_F_FCOE_CRC	__NETIF_F(FCOE_CRC)
--#define NETIF_F_FCOE_MTU	__NETIF_F(FCOE_MTU)
--#define NETIF_F_FRAGLIST	__NETIF_F(FRAGLIST)
--#define NETIF_F_FSO		__NETIF_F(FSO)
--#define NETIF_F_GRO		__NETIF_F(GRO)
--#define NETIF_F_GRO_HW		__NETIF_F(GRO_HW)
--#define NETIF_F_GSO		__NETIF_F(GSO)
--#define NETIF_F_GSO_ROBUST	__NETIF_F(GSO_ROBUST)
--#define NETIF_F_HIGHDMA		__NETIF_F(HIGHDMA)
--#define NETIF_F_HW_CSUM		__NETIF_F(HW_CSUM)
--#define NETIF_F_HW_VLAN_CTAG_FILTER __NETIF_F(HW_VLAN_CTAG_FILTER)
--#define NETIF_F_HW_VLAN_CTAG_RX	__NETIF_F(HW_VLAN_CTAG_RX)
--#define NETIF_F_HW_VLAN_CTAG_TX	__NETIF_F(HW_VLAN_CTAG_TX)
--#define NETIF_F_IP_CSUM		__NETIF_F(IP_CSUM)
--#define NETIF_F_IPV6_CSUM	__NETIF_F(IPV6_CSUM)
--#define NETIF_F_LLTX		__NETIF_F(LLTX)
--#define NETIF_F_LOOPBACK	__NETIF_F(LOOPBACK)
--#define NETIF_F_LRO		__NETIF_F(LRO)
--#define NETIF_F_NETNS_LOCAL	__NETIF_F(NETNS_LOCAL)
--#define NETIF_F_NOCACHE_COPY	__NETIF_F(NOCACHE_COPY)
--#define NETIF_F_NTUPLE		__NETIF_F(NTUPLE)
--#define NETIF_F_RXCSUM		__NETIF_F(RXCSUM)
--#define NETIF_F_RXHASH		__NETIF_F(RXHASH)
--#define NETIF_F_SCTP_CRC	__NETIF_F(SCTP_CRC)
--#define NETIF_F_SG		__NETIF_F(SG)
--#define NETIF_F_TSO6		__NETIF_F(TSO6)
--#define NETIF_F_TSO_ECN		__NETIF_F(TSO_ECN)
--#define NETIF_F_TSO		__NETIF_F(TSO)
--#define NETIF_F_VLAN_CHALLENGED	__NETIF_F(VLAN_CHALLENGED)
--#define NETIF_F_RXFCS		__NETIF_F(RXFCS)
--#define NETIF_F_RXALL		__NETIF_F(RXALL)
--#define NETIF_F_GSO_GRE		__NETIF_F(GSO_GRE)
--#define NETIF_F_GSO_GRE_CSUM	__NETIF_F(GSO_GRE_CSUM)
--#define NETIF_F_GSO_IPXIP4	__NETIF_F(GSO_IPXIP4)
--#define NETIF_F_GSO_IPXIP6	__NETIF_F(GSO_IPXIP6)
--#define NETIF_F_GSO_UDP_TUNNEL	__NETIF_F(GSO_UDP_TUNNEL)
--#define NETIF_F_GSO_UDP_TUNNEL_CSUM __NETIF_F(GSO_UDP_TUNNEL_CSUM)
--#define NETIF_F_TSO_MANGLEID	__NETIF_F(TSO_MANGLEID)
--#define NETIF_F_GSO_PARTIAL	 __NETIF_F(GSO_PARTIAL)
--#define NETIF_F_GSO_TUNNEL_REMCSUM __NETIF_F(GSO_TUNNEL_REMCSUM)
--#define NETIF_F_GSO_SCTP	__NETIF_F(GSO_SCTP)
--#define NETIF_F_GSO_ESP		__NETIF_F(GSO_ESP)
--#define NETIF_F_GSO_UDP		__NETIF_F(GSO_UDP)
--#define NETIF_F_HW_VLAN_STAG_FILTER __NETIF_F(HW_VLAN_STAG_FILTER)
--#define NETIF_F_HW_VLAN_STAG_RX	__NETIF_F(HW_VLAN_STAG_RX)
--#define NETIF_F_HW_VLAN_STAG_TX	__NETIF_F(HW_VLAN_STAG_TX)
--#define NETIF_F_HW_L2FW_DOFFLOAD	__NETIF_F(HW_L2FW_DOFFLOAD)
--#define NETIF_F_HW_TC		__NETIF_F(HW_TC)
--#define NETIF_F_HW_ESP		__NETIF_F(HW_ESP)
--#define NETIF_F_HW_ESP_TX_CSUM	__NETIF_F(HW_ESP_TX_CSUM)
--#define	NETIF_F_RX_UDP_TUNNEL_PORT  __NETIF_F(RX_UDP_TUNNEL_PORT)
--#define NETIF_F_HW_TLS_RECORD	__NETIF_F(HW_TLS_RECORD)
--#define NETIF_F_GSO_UDP_L4	__NETIF_F(GSO_UDP_L4)
--#define NETIF_F_HW_TLS_TX	__NETIF_F(HW_TLS_TX)
--#define NETIF_F_HW_TLS_RX	__NETIF_F(HW_TLS_RX)
--#define NETIF_F_GRO_FRAGLIST	__NETIF_F(GRO_FRAGLIST)
--#define NETIF_F_GSO_FRAGLIST	__NETIF_F(GSO_FRAGLIST)
--#define NETIF_F_HW_MACSEC	__NETIF_F(HW_MACSEC)
--#define NETIF_F_GRO_UDP_FWD	__NETIF_F(GRO_UDP_FWD)
--#define NETIF_F_HW_HSR_TAG_INS	__NETIF_F(HW_HSR_TAG_INS)
--#define NETIF_F_HW_HSR_TAG_RM	__NETIF_F(HW_HSR_TAG_RM)
--#define NETIF_F_HW_HSR_FWD	__NETIF_F(HW_HSR_FWD)
--#define NETIF_F_HW_HSR_DUP	__NETIF_F(HW_HSR_DUP)
--
--/* Finds the next feature with the highest number of the range of start till 0.
-- */
--static inline int find_next_netdev_feature(u64 feature, unsigned long start)
--{
--	/* like BITMAP_LAST_WORD_MASK() for u64
--	 * this sets the most significant 64 - start to 0.
--	 */
--	feature &= ~0ULL >> (-start & ((sizeof(feature) * 8) - 1));
--
--	return fls64(feature) - 1;
--}
--
- /* This goes for the MSB to the LSB through the set feature bits,
-  * mask_addr should be a u64 and bit an int
-  */
- #define for_each_netdev_feature(mask_addr, bit)				\
--	for ((bit) = find_next_netdev_feature((mask_addr),		\
--					      NETDEV_FEATURE_COUNT);	\
--	     (bit) >= 0;						\
--	     (bit) = find_next_netdev_feature((mask_addr), (bit) - 1))
-+	for_each_set_bit(bit, (unsigned long *)(mask_addr.bits), NETDEV_FEATURE_COUNT)
- 
- /* Features valid for ethtool to change */
- /* = all defined minus driver/device-class-related */
-diff --git a/include/linux/netdev_features_helper.h b/include/linux/netdev_features_helper.h
-index 6b2a9080fdea..43103acc23f4 100644
---- a/include/linux/netdev_features_helper.h
-+++ b/include/linux/netdev_features_helper.h
-@@ -9,24 +9,24 @@
- 
- static inline void netdev_features_zero(netdev_features_t *dst)
- {
--	*dst = 0;
-+	bitmap_zero(dst->bits, NETDEV_FEATURE_COUNT);
- }
- 
- static inline void netdev_features_fill(netdev_features_t *dst)
- {
--	*dst = ~0ULL;
-+	bitmap_fill(dst->bits, NETDEV_FEATURE_COUNT);
- }
- 
- static inline bool netdev_features_empty(const netdev_features_t src)
- {
--	return src == 0;
-+	return bitmap_empty(src.bits, NETDEV_FEATURE_COUNT);
- }
- 
- /* helpers for netdev features '==' operation */
- static inline bool netdev_features_equal(const netdev_features_t src1,
- 					 const netdev_features_t src2)
- {
--	return src1 == src2;
-+	return bitmap_equal(src1.bits, src2.bits, NETDEV_FEATURE_COUNT);
- }
- 
- /* active_feature prefer to netdev->features */
-@@ -55,7 +55,10 @@ static inline bool netdev_features_equal(const netdev_features_t src1,
- static inline netdev_features_t
- netdev_features_and(const netdev_features_t a, const netdev_features_t b)
- {
--	return a & b;
-+	netdev_features_t dst;
-+
-+	bitmap_and(dst.bits, a.bits, b.bits, NETDEV_FEATURE_COUNT);
-+	return dst;
- }
- 
- #define netdev_active_features_and(ndev, __features) \
-@@ -84,63 +87,74 @@ static inline void
- netdev_features_mask(netdev_features_t *dst,
- 			   const netdev_features_t features)
- {
--	*dst = netdev_features_and(*dst, features);
-+	bitmap_and(dst->bits, dst->bits, features.bits, NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_active_features_mask(struct net_device *ndev,
- 			    const netdev_features_t features)
- {
--	ndev->features = netdev_active_features_and(ndev, features);
-+	bitmap_and(ndev->features.bits, ndev->features.bits, features.bits,
-+		   NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_hw_features_mask(struct net_device *ndev,
- 			const netdev_features_t features)
- {
--	ndev->hw_features = netdev_hw_features_and(ndev, features);
-+	bitmap_and(ndev->hw_features.bits, ndev->hw_features.bits,
-+		   features.bits, NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_wanted_features_mask(struct net_device *ndev,
- 			    const netdev_features_t features)
- {
--	ndev->wanted_features = netdev_wanted_features_and(ndev, features);
-+	bitmap_and(ndev->wanted_features.bits, ndev->wanted_features.bits,
-+		   features.bits, NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_vlan_features_mask(struct net_device *ndev,
- 			  const netdev_features_t features)
- {
--	ndev->vlan_features = netdev_vlan_features_and(ndev, features);
-+	bitmap_and(ndev->vlan_features.bits, ndev->vlan_features.bits,
-+		   features.bits, NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_hw_enc_features_mask(struct net_device *ndev,
- 			    const netdev_features_t features)
- {
--	ndev->hw_enc_features = netdev_hw_enc_features_and(ndev, features);
-+	bitmap_and(ndev->hw_enc_features.bits, ndev->hw_enc_features.bits,
-+		   features.bits, NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_mpls_features_mask(struct net_device *ndev,
- 			  const netdev_features_t features)
- {
--	ndev->mpls_features = netdev_mpls_features_and(ndev, features);
-+	bitmap_and(ndev->mpls_features.bits, ndev->mpls_features.bits,
-+		   features.bits, NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_gso_partial_features_mask(struct net_device *ndev,
- 				 const netdev_features_t features)
- {
--	ndev->gso_partial_features = netdev_mpls_features_and(ndev, features);
-+	bitmap_and(ndev->gso_partial_features.bits,
-+		   ndev->gso_partial_features.bits, features.bits,
-+		   NETDEV_FEATURE_COUNT);
- }
- 
- /* helpers for netdev features '|' operation */
- static inline netdev_features_t
- netdev_features_or(const netdev_features_t a, const netdev_features_t b)
- {
--	return a | b;
-+	netdev_features_t dst;
-+
-+	bitmap_or(dst.bits, a.bits, b.bits, NETDEV_FEATURE_COUNT);
-+	return dst;
- }
- 
- #define netdev_active_features_or(ndev, __features) \
-@@ -168,63 +182,74 @@ netdev_features_or(const netdev_features_t a, const netdev_features_t b)
- static inline void
- netdev_features_set(netdev_features_t *dst, const netdev_features_t features)
- {
--	*dst = netdev_features_or(*dst, features);
-+	bitmap_or(dst->bits, dst->bits, features.bits, NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_active_features_set(struct net_device *ndev,
- 			   const netdev_features_t features)
- {
--	ndev->features = netdev_active_features_or(ndev, features);
-+	bitmap_or(ndev->features.bits, ndev->features.bits, features.bits,
-+		  NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_hw_features_set(struct net_device *ndev,
- 		       const netdev_features_t features)
- {
--	ndev->hw_features = netdev_hw_features_or(ndev, features);
-+	bitmap_or(ndev->hw_features.bits, ndev->hw_features.bits, features.bits,
-+		  NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_wanted_features_set(struct net_device *ndev,
- 			   const netdev_features_t features)
- {
--	ndev->wanted_features = netdev_wanted_features_or(ndev, features);
-+	bitmap_or(ndev->wanted_features.bits, ndev->wanted_features.bits,
-+		  features.bits, NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_vlan_features_set(struct net_device *ndev,
- 			 const netdev_features_t features)
- {
--	ndev->vlan_features = netdev_vlan_features_or(ndev, features);
-+	bitmap_or(ndev->vlan_features.bits, ndev->vlan_features.bits,
-+		  features.bits, NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_hw_enc_features_set(struct net_device *ndev,
- 			   const netdev_features_t features)
- {
--	ndev->hw_enc_features = netdev_hw_enc_features_or(ndev, features);
-+	bitmap_or(ndev->hw_enc_features.bits, ndev->hw_enc_features.bits,
-+		  features.bits, NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_mpls_features_set(struct net_device *ndev,
- 			 const netdev_features_t features)
- {
--	ndev->mpls_features = netdev_mpls_features_or(ndev, features);
-+	bitmap_or(ndev->mpls_features.bits, ndev->mpls_features.bits,
-+		  features.bits, NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_gso_partial_features_set(struct net_device *ndev,
- 				const netdev_features_t features)
- {
--	ndev->gso_partial_features = netdev_mpls_features_or(ndev, features);
-+	bitmap_or(ndev->gso_partial_features.bits,
-+		  ndev->gso_partial_features.bits, features.bits,
-+		  NETDEV_FEATURE_COUNT);
- }
- 
- /* helpers for netdev features '^' operation */
- static inline netdev_features_t
- netdev_features_xor(const netdev_features_t a, const netdev_features_t b)
- {
--	return a ^ b;
-+	netdev_features_t dst;
-+
-+	bitmap_xor(dst.bits, a.bits, b.bits, NETDEV_FEATURE_COUNT);
-+	return dst;
- }
- 
- #define netdev_active_features_xor(ndev, __features) \
-@@ -259,57 +284,67 @@ static inline void
- netdev_active_features_toggle(struct net_device *ndev,
- 			      const netdev_features_t features)
- {
--	ndev->features = netdev_active_features_xor(ndev, features);
-+	bitmap_xor(ndev->features.bits, ndev->features.bits, features.bits,
-+		   NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_hw_features_toggle(struct net_device *ndev,
- 			      const netdev_features_t features)
- {
--	ndev->hw_features = netdev_hw_features_xor(ndev, features);
-+	bitmap_xor(ndev->hw_features.bits, ndev->hw_features.bits,
-+		   features.bits, NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_wanted_features_toggle(struct net_device *ndev,
- 				  const netdev_features_t features)
- {
--	ndev->wanted_features = netdev_wanted_features_xor(ndev, features);
-+	bitmap_xor(ndev->wanted_features.bits, ndev->wanted_features.bits,
-+		   features.bits, NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_vlan_features_toggle(struct net_device *ndev,
- 				const netdev_features_t features)
- {
--	ndev->vlan_features = netdev_vlan_features_xor(ndev, features);
-+	bitmap_xor(ndev->vlan_features.bits, ndev->vlan_features.bits,
-+		   features.bits, NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_hw_enc_features_toggle(struct net_device *ndev,
- 			      const netdev_features_t features)
- {
--	ndev->hw_enc_features = netdev_hw_enc_features_xor(ndev, features);
-+	bitmap_xor(ndev->hw_enc_features.bits, ndev->hw_enc_features.bits,
-+		   features.bits, NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_mpls_features_toggle(struct net_device *ndev,
- 			    const netdev_features_t features)
- {
--	ndev->mpls_features = netdev_mpls_features_xor(ndev, features);
-+	bitmap_xor(ndev->mpls_features.bits, ndev->mpls_features.bits,
-+		   features.bits, NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_gso_partial_features_toggle(struct net_device *ndev,
- 				   const netdev_features_t features)
- {
--	ndev->gso_partial_features =
--			netdev_gso_partial_features_xor(ndev, features);
-+	bitmap_xor(ndev->gso_partial_features.bits,
-+		   ndev->gso_partial_features.bits, features.bits,
-+		   NETDEV_FEATURE_COUNT);
- }
- 
- /* helpers for netdev features '& ~' operation */
- static inline netdev_features_t
- netdev_features_andnot(const netdev_features_t a, const netdev_features_t b)
- {
--	return a & ~b;
-+	netdev_features_t dst;
-+
-+	bitmap_andnot(dst.bits, a.bits, b.bits, NETDEV_FEATURE_COUNT);
-+	return dst;
- }
- 
- #define netdev_active_features_andnot(ndev, __features) \
-@@ -357,63 +392,71 @@ netdev_features_andnot(const netdev_features_t a, const netdev_features_t b)
- static inline void
- netdev_features_clear(netdev_features_t *dst, const netdev_features_t features)
- {
--	*dst = netdev_features_andnot(*dst, features);
-+	bitmap_andnot(dst->bits, dst->bits, features.bits,
-+		      NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_active_features_clear(struct net_device *ndev,
- 			     const netdev_features_t features)
- {
--	ndev->features = netdev_active_features_andnot(ndev, features);
-+	bitmap_andnot(ndev->features.bits, ndev->features.bits, features.bits,
-+		      NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_hw_features_clear(struct net_device *ndev,
- 			 const netdev_features_t features)
- {
--	ndev->hw_features = netdev_hw_features_andnot(ndev, features);
-+	bitmap_andnot(ndev->features.bits, ndev->features.bits, features.bits,
-+		      NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_wanted_features_clear(struct net_device *ndev,
- 			     const netdev_features_t features)
- {
--	ndev->wanted_features = netdev_wanted_features_andnot(ndev, features);
-+	bitmap_andnot(ndev->wanted_features.bits, ndev->wanted_features.bits,
-+		      features.bits, NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_vlan_features_clear(struct net_device *ndev,
- 			   const netdev_features_t features)
- {
--	ndev->vlan_features = netdev_vlan_features_andnot(ndev, features);
-+	bitmap_andnot(ndev->vlan_features.bits, ndev->vlan_features.bits,
-+		      features.bits, NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_hw_enc_features_clear(struct net_device *ndev,
- 			     const netdev_features_t features)
- {
--	ndev->hw_enc_features = netdev_hw_enc_features_andnot(ndev, features);
-+	bitmap_andnot(ndev->hw_enc_features.bits, ndev->hw_enc_features.bits,
-+		      features.bits, NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_mpls_features_clear(struct net_device *ndev,
- 			   const netdev_features_t features)
- {
--	ndev->mpls_features = netdev_mpls_features_andnot(ndev, features);
-+	bitmap_andnot(ndev->mpls_features.bits, ndev->mpls_features.bits,
-+		      features.bits, NETDEV_FEATURE_COUNT);
- }
- 
- static inline void
- netdev_gso_partial_features_clear(struct net_device *ndev,
- 				  const netdev_features_t features)
- {
--	ndev->gso_partial_features =
--		netdev_gso_partial_features_andnot(ndev, features);
-+	bitmap_andnot(ndev->gso_partial_features.bits,
-+		      ndev->gso_partial_features.bits, features.bits,
-+		      NETDEV_FEATURE_COUNT);
- }
- 
- /* helpers for netdev features 'set bit' operation */
- static inline void netdev_feature_add(int nr, netdev_features_t *src)
- {
--	*src |= __NETIF_F_BIT(nr);
-+	__set_bit(nr, src->bits);
- }
- 
- #define netdev_active_feature_add(ndev, nr) \
-@@ -472,7 +515,7 @@ netdev_features_set_array(const struct netdev_feature_set *set,
- /* helpers for netdev features 'clear bit' operation */
- static inline void netdev_feature_del(int nr, netdev_features_t *src)
- {
--	*src &= ~__NETIF_F_BIT(nr);
-+	__clear_bit(nr, src->bits);
- }
- 
- #define netdev_active_feature_del(ndev, nr) \
-@@ -499,7 +542,7 @@ static inline void netdev_feature_del(int nr, netdev_features_t *src)
- static inline bool netdev_features_intersects(const netdev_features_t src1,
- 					      const netdev_features_t src2)
- {
--	return (src1 & src2) > 0;
-+	return bitmap_intersects(src1.bits, src2.bits, NETDEV_FEATURE_COUNT);
- }
- 
- #define netdev_active_features_intersects(ndev, __features) \
-@@ -579,7 +622,7 @@ static inline void netdev_gso_partial_features_copy(struct net_device *ndev,
- static inline bool netdev_features_subset(const netdev_features_t src1,
- 					  const netdev_features_t src2)
- {
--	return (src1 & src2) == src2;
-+	return bitmap_subset(src1.bits, src2.bits, NETDEV_FEATURE_COUNT);
- }
- 
- static inline netdev_features_t netdev_intersect_features(netdev_features_t f1,
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 91983aede92c..0c1a19671c1e 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -4869,30 +4869,31 @@ netdev_features_t netif_skb_features(struct sk_buff *skb);
- 
- static inline bool net_gso_ok(netdev_features_t features, int gso_type)
- {
--	netdev_features_t feature = (netdev_features_t)gso_type << NETIF_F_GSO_SHIFT;
-+#define GSO_INDEX(x)	((1ULL << (x)) >> NETIF_F_GSO_SHIFT)
-+	netdev_features_t feature;
- 
- 	/* check flags correspondence */
--	BUILD_BUG_ON(SKB_GSO_TCPV4   != (NETIF_F_TSO >> NETIF_F_GSO_SHIFT));
--	BUILD_BUG_ON(SKB_GSO_DODGY   != (NETIF_F_GSO_ROBUST >> NETIF_F_GSO_SHIFT));
--	BUILD_BUG_ON(SKB_GSO_TCP_ECN != (NETIF_F_TSO_ECN >> NETIF_F_GSO_SHIFT));
--	BUILD_BUG_ON(SKB_GSO_TCP_FIXEDID != (NETIF_F_TSO_MANGLEID >> NETIF_F_GSO_SHIFT));
--	BUILD_BUG_ON(SKB_GSO_TCPV6   != (NETIF_F_TSO6 >> NETIF_F_GSO_SHIFT));
--	BUILD_BUG_ON(SKB_GSO_FCOE    != (NETIF_F_FSO >> NETIF_F_GSO_SHIFT));
--	BUILD_BUG_ON(SKB_GSO_GRE     != (NETIF_F_GSO_GRE >> NETIF_F_GSO_SHIFT));
--	BUILD_BUG_ON(SKB_GSO_GRE_CSUM != (NETIF_F_GSO_GRE_CSUM >> NETIF_F_GSO_SHIFT));
--	BUILD_BUG_ON(SKB_GSO_IPXIP4  != (NETIF_F_GSO_IPXIP4 >> NETIF_F_GSO_SHIFT));
--	BUILD_BUG_ON(SKB_GSO_IPXIP6  != (NETIF_F_GSO_IPXIP6 >> NETIF_F_GSO_SHIFT));
--	BUILD_BUG_ON(SKB_GSO_UDP_TUNNEL != (NETIF_F_GSO_UDP_TUNNEL >> NETIF_F_GSO_SHIFT));
--	BUILD_BUG_ON(SKB_GSO_UDP_TUNNEL_CSUM != (NETIF_F_GSO_UDP_TUNNEL_CSUM >> NETIF_F_GSO_SHIFT));
--	BUILD_BUG_ON(SKB_GSO_PARTIAL != (NETIF_F_GSO_PARTIAL >> NETIF_F_GSO_SHIFT));
--	BUILD_BUG_ON(SKB_GSO_TUNNEL_REMCSUM != (NETIF_F_GSO_TUNNEL_REMCSUM >> NETIF_F_GSO_SHIFT));
--	BUILD_BUG_ON(SKB_GSO_SCTP    != (NETIF_F_GSO_SCTP >> NETIF_F_GSO_SHIFT));
--	BUILD_BUG_ON(SKB_GSO_ESP != (NETIF_F_GSO_ESP >> NETIF_F_GSO_SHIFT));
--	BUILD_BUG_ON(SKB_GSO_UDP != (NETIF_F_GSO_UDP >> NETIF_F_GSO_SHIFT));
--	BUILD_BUG_ON(SKB_GSO_UDP_L4 != (NETIF_F_GSO_UDP_L4 >> NETIF_F_GSO_SHIFT));
--	BUILD_BUG_ON(SKB_GSO_FRAGLIST != (NETIF_F_GSO_FRAGLIST >> NETIF_F_GSO_SHIFT));
--
--	return (features & feature) == feature;
-+		BUILD_BUG_ON(SKB_GSO_TCPV4   != GSO_INDEX(NETIF_F_TSO_BIT));
-+	BUILD_BUG_ON(SKB_GSO_DODGY   != GSO_INDEX(NETIF_F_GSO_ROBUST_BIT));
-+	BUILD_BUG_ON(SKB_GSO_TCP_ECN != GSO_INDEX(NETIF_F_TSO_ECN_BIT));
-+	BUILD_BUG_ON(SKB_GSO_TCP_FIXEDID != GSO_INDEX(NETIF_F_TSO_MANGLEID_BIT));
-+	BUILD_BUG_ON(SKB_GSO_TCPV6   != GSO_INDEX(NETIF_F_TSO6_BIT));
-+	BUILD_BUG_ON(SKB_GSO_FCOE    != GSO_INDEX(NETIF_F_FSO_BIT));
-+	BUILD_BUG_ON(SKB_GSO_GRE     != GSO_INDEX(NETIF_F_GSO_GRE_BIT));
-+	BUILD_BUG_ON(SKB_GSO_GRE_CSUM != GSO_INDEX(NETIF_F_GSO_GRE_CSUM_BIT));
-+	BUILD_BUG_ON(SKB_GSO_IPXIP4  != GSO_INDEX(NETIF_F_GSO_IPXIP4_BIT));
-+	BUILD_BUG_ON(SKB_GSO_IPXIP6  != GSO_INDEX(NETIF_F_GSO_IPXIP6_BIT));
-+	BUILD_BUG_ON(SKB_GSO_UDP_TUNNEL != GSO_INDEX(NETIF_F_GSO_UDP_TUNNEL_BIT));
-+	BUILD_BUG_ON(SKB_GSO_UDP_TUNNEL_CSUM != GSO_INDEX(NETIF_F_GSO_UDP_TUNNEL_CSUM_BIT));
-+	BUILD_BUG_ON(SKB_GSO_PARTIAL != GSO_INDEX(NETIF_F_GSO_PARTIAL_BIT));
-+	BUILD_BUG_ON(SKB_GSO_TUNNEL_REMCSUM != GSO_INDEX(NETIF_F_GSO_TUNNEL_REMCSUM_BIT));
-+	BUILD_BUG_ON(SKB_GSO_SCTP    != GSO_INDEX(NETIF_F_GSO_SCTP_BIT));
-+	BUILD_BUG_ON(SKB_GSO_ESP != GSO_INDEX(NETIF_F_GSO_ESP_BIT));
-+	BUILD_BUG_ON(SKB_GSO_UDP != GSO_INDEX(NETIF_F_GSO_UDP_BIT));
-+	BUILD_BUG_ON(SKB_GSO_UDP_L4 != GSO_INDEX(NETIF_F_GSO_UDP_L4_BIT));
-+	BUILD_BUG_ON(SKB_GSO_FRAGLIST != GSO_INDEX(NETIF_F_GSO_FRAGLIST_BIT));
-+
-+	return bitmap_subset(features.bits, feature.bits, NETDEV_FEATURE_COUNT);
- }
- 
- static inline bool skb_gso_ok(struct sk_buff *skb, netdev_features_t features)
-diff --git a/lib/vsprintf.c b/lib/vsprintf.c
-index 40d26a07a133..6660d897b8b4 100644
---- a/lib/vsprintf.c
-+++ b/lib/vsprintf.c
-@@ -1753,25 +1753,24 @@ char *uuid_string(char *buf, char *end, const u8 *addr,
- }
- 
- static noinline_for_stack
--char *netdev_bits(char *buf, char *end, const void *addr,
-+char *netdev_bits(char *buf, char *end, void *addr,
- 		  struct printf_spec spec,  const char *fmt)
- {
--	unsigned long long num;
--	int size;
-+	unsigned long *bitmap;
- 
- 	if (check_pointer(&buf, end, addr, spec))
- 		return buf;
- 
- 	switch (fmt[1]) {
- 	case 'F':
--		num = *(const netdev_features_t *)addr;
--		size = sizeof(netdev_features_t);
-+		bitmap = *(netdev_features_t *)addr->bits;
-+		spec->field_width = NETDEV_FEATURE_COUNT;
- 		break;
- 	default:
- 		return error_string(buf, end, "(%pN?)", spec);
- 	}
- 
--	return special_hex_number(buf, end, num, size);
-+	return bitmap_string(buf, end, add->bits, spec, fmt);
- }
- 
- static noinline_for_stack
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 0962935f478e..15880102d169 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -9458,17 +9458,15 @@ static netdev_features_t netdev_sync_upper_features(struct net_device *lower,
- 	struct net_device *upper, netdev_features_t features)
- {
- 	netdev_features_t upper_disables;
--	netdev_features_t feature;
- 	int feature_bit;
- 
- 	upper_disables = NETIF_F_UPPER_DISABLES;
- 	for_each_netdev_feature(upper_disables, feature_bit) {
--		feature = __NETIF_F_BIT(feature_bit);
--		if (!netdev_wanted_features_intersects(upper, feature) &&
--		    netdev_features_intersects(features, feature)) {
--			netdev_dbg(lower, "Dropping feature %pNF, upper dev %s has it off.\n",
--				   &feature, upper->name);
--			netdev_features_clear(&features, feature);
-+		if (!netdev_wanted_feature_test(feature_bit, upper) &&
-+		    netdev_feature_test(feature_bit, features)) {
-+			netdev_dbg(lower, "Dropping feature bit %d, upper dev %s has it off.\n",
-+				   feature_bit, upper->name);
-+			netdev_feature_del(feature_bit, &features);
- 		}
- 	}
- 
-@@ -9479,22 +9477,20 @@ static void netdev_sync_lower_features(struct net_device *upper,
- 	struct net_device *lower, netdev_features_t features)
- {
- 	netdev_features_t upper_disables;
--	netdev_features_t feature;
- 	int feature_bit;
- 
- 	upper_disables = NETIF_F_UPPER_DISABLES;
- 	for_each_netdev_feature(upper_disables, feature_bit) {
--		feature = __NETIF_F_BIT(feature_bit);
--		if (!netdev_features_intersects(features, feature) &&
--		    netdev_active_features_intersects(lower, feature)) {
--			netdev_dbg(upper, "Disabling feature %pNF on lower dev %s.\n",
--				   &feature, lower->name);
--			netdev_wanted_features_clear(lower, feature);
-+		if (!netdev_feature_test(feature_bit, features) &&
-+		    netdev_active_feature_test(lower, feature_bit)) {
-+			netdev_dbg(upper, "Disabling feature bit %d on lower dev %s.\n",
-+				   feature_bit, lower->name);
-+			netdev_wanted_feature_del(lower, feature_bit);
- 			__netdev_update_features(lower);
- 
--			if (unlikely(netdev_active_features_intersects(lower, feature)))
--				netdev_WARN(upper, "failed to disable %pNF on %s!\n",
--					    &feature, lower->name);
-+			if (unlikely(netdev_active_feature_test(lower, feature_bit)))
-+				netdev_WARN(upper, "failed to disable feature bit %d on %s!\n",
-+					    feature_bit, lower->name);
- 			else
- 				netdev_features_change(lower);
- 		}
-diff --git a/net/ethtool/features.c b/net/ethtool/features.c
-index 93d56e8921a1..37a6144dd2fb 100644
---- a/net/ethtool/features.c
-+++ b/net/ethtool/features.c
-@@ -28,10 +28,7 @@ const struct nla_policy ethnl_features_get_policy[] = {
- 
- static void ethnl_features_to_bitmap32(u32 *dest, netdev_features_t src)
- {
--	unsigned int i;
--
--	for (i = 0; i < ETHTOOL_DEV_FEATURE_WORDS; i++)
--		dest[i] = src >> (32 * i);
-+	bitmap_to_arr32(dest, src.bits, ETHTOOL_DEV_FEATURE_WORDS);
- }
- 
- static int features_prepare_data(const struct ethnl_req_info *req_base,
-@@ -132,30 +129,6 @@ const struct nla_policy ethnl_features_set_policy[] = {
- 	[ETHTOOL_A_FEATURES_WANTED]	= { .type = NLA_NESTED },
- };
- 
--static void ethnl_features_to_bitmap(unsigned long *dest, netdev_features_t val)
--{
--	const unsigned int words = BITS_TO_LONGS(NETDEV_FEATURE_COUNT);
--	unsigned int i;
--
--	for (i = 0; i < words; i++)
--		dest[i] = (unsigned long)(val >> (i * BITS_PER_LONG));
--}
--
--static netdev_features_t ethnl_bitmap_to_features(unsigned long *src)
--{
--	const unsigned int nft_bits = sizeof(netdev_features_t) * BITS_PER_BYTE;
--	const unsigned int words = BITS_TO_LONGS(NETDEV_FEATURE_COUNT);
--	netdev_features_t ret;
--	unsigned int i;
--
--	netdev_features_zero(&ret);
--	for (i = 0; i < words; i++)
--		netdev_features_set(&ret,
--				    (netdev_features_t)(src[i]) << (i * BITS_PER_LONG));
--	ret &= ~(netdev_features_t)0 >> (nft_bits - NETDEV_FEATURE_COUNT);
--	return ret;
--}
--
- static int features_send_reply(struct net_device *dev, struct genl_info *info,
- 			       const unsigned long *wanted,
- 			       const unsigned long *wanted_mask,
-@@ -212,18 +185,17 @@ static int features_send_reply(struct net_device *dev, struct genl_info *info,
- 
- int ethnl_set_features(struct sk_buff *skb, struct genl_info *info)
- {
--	DECLARE_BITMAP(wanted_diff_mask, NETDEV_FEATURE_COUNT);
--	DECLARE_BITMAP(active_diff_mask, NETDEV_FEATURE_COUNT);
--	DECLARE_BITMAP(old_active, NETDEV_FEATURE_COUNT);
--	DECLARE_BITMAP(old_wanted, NETDEV_FEATURE_COUNT);
--	DECLARE_BITMAP(new_active, NETDEV_FEATURE_COUNT);
--	DECLARE_BITMAP(new_wanted, NETDEV_FEATURE_COUNT);
--	DECLARE_BITMAP(req_wanted, NETDEV_FEATURE_COUNT);
--	DECLARE_BITMAP(req_mask, NETDEV_FEATURE_COUNT);
- 	struct ethnl_req_info req_info = {};
- 	struct nlattr **tb = info->attrs;
-+	netdev_features_t wanted_diff_mask;
-+	netdev_features_t active_diff_mask;
-+	netdev_features_t old_active;
-+	netdev_features_t old_wanted;
-+	netdev_features_t new_active;
-+	netdev_features_t new_wanted;
-+	netdev_features_t req_wanted;
-+	netdev_features_t req_mask;
- 	struct net_device *dev;
--	netdev_features_t tmp;
- 	bool mod;
- 	int ret;
- 
-@@ -238,47 +210,43 @@ int ethnl_set_features(struct sk_buff *skb, struct genl_info *info)
- 	dev = req_info.dev;
- 
- 	rtnl_lock();
--	ethnl_features_to_bitmap(old_active, netdev_active_features(dev));
--	ethnl_features_to_bitmap(old_wanted, netdev_wanted_features(dev));
-+	old_active = netdev_active_features(dev);
-+	old_wanted = netdev_wanted_features(dev);
- 	ret = ethnl_parse_bitset(req_wanted, req_mask, NETDEV_FEATURE_COUNT,
- 				 tb[ETHTOOL_A_FEATURES_WANTED],
- 				 netdev_features_strings, info->extack);
- 	if (ret < 0)
- 		goto out_rtnl;
--	if (ethnl_bitmap_to_features(req_mask) & ~NETIF_F_ETHTOOL_BITS) {
-+	if (!netdev_features_subset(NETIF_F_ETHTOOL_BITS, req_mask)) {
- 		GENL_SET_ERR_MSG(info, "attempt to change non-ethtool features");
- 		ret = -EINVAL;
- 		goto out_rtnl;
- 	}
- 
- 	/* set req_wanted bits not in req_mask from old_wanted */
--	bitmap_and(req_wanted, req_wanted, req_mask, NETDEV_FEATURE_COUNT);
--	bitmap_andnot(new_wanted, old_wanted, req_mask, NETDEV_FEATURE_COUNT);
--	bitmap_or(req_wanted, new_wanted, req_wanted, NETDEV_FEATURE_COUNT);
--	if (!bitmap_equal(req_wanted, old_wanted, NETDEV_FEATURE_COUNT)) {
-+	netdev_features_set(&req_wanted, req_mask);
-+	new_wanted = netdev_features_andnot(old_wanted, req_mask);
-+	netdev_features_set(&req_wanted, new_wanted);
-+	if (!netdev_features_equal(req_wanted, old_wanted)) {
-+		netdev_features_t tmp;
-+
- 		netdev_wanted_features_clear(dev, netdev_hw_features(dev));
--		tmp = netdev_hw_features_and(dev,
--					     ethnl_bitmap_to_features(req_wanted));
-+		tmp = netdev_hw_features_and(dev, req_wanted);
- 		netdev_wanted_features_set(dev, tmp);
- 		__netdev_update_features(dev);
- 	}
--	ethnl_features_to_bitmap(new_active, netdev_active_features(dev));
--	mod = !bitmap_equal(old_active, new_active, NETDEV_FEATURE_COUNT);
-+	new_active = netdev_active_features(dev);
-+	mod = !netdev_features_equal(old_active, new_active);
- 
- 	ret = 0;
- 	if (!(req_info.flags & ETHTOOL_FLAG_OMIT_REPLY)) {
- 		bool compact = req_info.flags & ETHTOOL_FLAG_COMPACT_BITSETS;
- 
--		bitmap_xor(wanted_diff_mask, req_wanted, new_active,
--			   NETDEV_FEATURE_COUNT);
--		bitmap_xor(active_diff_mask, old_active, new_active,
--			   NETDEV_FEATURE_COUNT);
--		bitmap_and(wanted_diff_mask, wanted_diff_mask, req_mask,
--			   NETDEV_FEATURE_COUNT);
--		bitmap_and(req_wanted, req_wanted, wanted_diff_mask,
--			   NETDEV_FEATURE_COUNT);
--		bitmap_and(new_active, new_active, active_diff_mask,
--			   NETDEV_FEATURE_COUNT);
-+		wanted_diff_mask = netdev_features_xor(req_wanted, new_active);
-+		active_diff_mask = netdev_features_xor(old_active, new_active);
-+		netdev_features_mask(&wanted_diff_mask, req_mask);
-+		netdev_features_mask(&req_wanted, wanted_diff_mask);
-+		netdev_features_mask(&new_active, active_diff_mask);
- 
- 		ret = features_send_reply(dev, info, req_wanted,
- 					  wanted_diff_mask, new_active,
-diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
-index 02c2741c0d6b..c4725c4e7f0f 100644
---- a/net/ethtool/ioctl.c
-+++ b/net/ethtool/ioctl.c
-@@ -89,6 +89,10 @@ static int ethtool_get_features(struct net_device *dev, void __user *useraddr)
- 		.size = ETHTOOL_DEV_FEATURE_WORDS,
- 	};
- 	struct ethtool_get_features_block features[ETHTOOL_DEV_FEATURE_WORDS];
-+	u32 never_changed_arr[ETHTOOL_DEV_FEATURE_WORDS];
-+	u32 wanted_arr[ETHTOOL_DEV_FEATURE_WORDS];
-+	u32 active_arr[ETHTOOL_DEV_FEATURE_WORDS];
-+	u32 hw_arr[ETHTOOL_DEV_FEATURE_WORDS];
- 	u32 __user *sizeaddr;
- 	u32 copy_size;
- 	int i;
-@@ -96,12 +100,15 @@ static int ethtool_get_features(struct net_device *dev, void __user *useraddr)
- 	/* in case feature bits run out again */
- 	BUILD_BUG_ON(ETHTOOL_DEV_FEATURE_WORDS * sizeof(u32) > sizeof(netdev_features_t));
- 
-+	bitmap_to_arr32(hw_arr, netdev_hw_features(dev), NETDEV_FEATURE_COUNT);
-+	bitmap_to_arr32(wanted_arr, netdev_wanted_features(dev), NETDEV_FEATURE_COUNT);
-+	bitmap_to_arr32(active_arr, netdev_active_features(dev), NETDEV_FEATURE_COUNT);
-+	bitmap_to_arr32(never_changed_arr, NETIF_F_NEVER_CHANGE, NETDEV_FEATURE_COUNT);
- 	for (i = 0; i < ETHTOOL_DEV_FEATURE_WORDS; ++i) {
--		features[i].available = (u32)(netdev_hw_features(dev) >> (32 * i));
--		features[i].requested = (u32)(netdev_wanted_features(dev) >> (32 * i));
--		features[i].active = (u32)(netdev_active_features(dev) >> (32 * i));
--		features[i].never_changed =
--			(u32)(NETIF_F_NEVER_CHANGE >> (32 * i));
-+		features[i].available = hw_arr[i];
-+		features[i].requested = wanted_arr[i];
-+		features[i].active = active_arr[i];
-+		features[i].never_changed = never_changed_arr[i];
- 	}
- 
- 	sizeaddr = useraddr + offsetof(struct ethtool_gfeatures, size);
-@@ -125,6 +132,8 @@ static int ethtool_set_features(struct net_device *dev, void __user *useraddr)
- {
- 	struct ethtool_sfeatures cmd;
- 	struct ethtool_set_features_block features[ETHTOOL_DEV_FEATURE_WORDS];
-+	u32 wanted_arr[ETHTOOL_DEV_FEATURE_WORDS];
-+	u32 valid_arr[ETHTOOL_DEV_FEATURE_WORDS];
- 	netdev_features_t wanted;
- 	netdev_features_t valid;
- 	netdev_features_t tmp;
-@@ -140,14 +149,12 @@ static int ethtool_set_features(struct net_device *dev, void __user *useraddr)
- 	if (copy_from_user(features, useraddr, sizeof(features)))
- 		return -EFAULT;
- 
--	netdev_features_zero(&wanted);
--	netdev_features_zero(&valid);
- 	for (i = 0; i < ETHTOOL_DEV_FEATURE_WORDS; ++i) {
--		netdev_features_set(&valid,
--				    (netdev_features_t)features[i].valid << (32 * i));
--		netdev_features_set(&wanted,
--				    (netdev_features_t)features[i].requested << (32 * i));
-+		valid_arr[i] = features[i].valid;
-+		wanted_arr[i] = features[i].requested;
- 	}
-+	bitmap_from_arr32(valid.bits, valid_arr, NETDEV_FEATURE_COUNT);
-+	bitmap_from_arr32(wanted.bits, wanted_arr, NETDEV_FEATURE_COUNT);
- 
- 	tmp = netdev_features_andnot(valid, NETIF_F_ETHTOOL_BITS);
- 	if (tmp)
-@@ -365,7 +372,7 @@ static int __ethtool_set_flags(struct net_device *dev, u32 data)
- 	changed = netdev_active_features_xor(dev, features);
- 	netdev_features_mask(&changed, eth_all_features);
- 	tmp = netdev_hw_features_andnot_r(dev, changed);
--	if (tmp)
-+	if (!netdev_features_empty(tmp))
- 		return netdev_hw_features_intersects(dev, changed) ? -EINVAL : -EOPNOTSUPP;
- 
- 	netdev_wanted_features_clear(dev, changed);
--- 
-2.33.0
-
+T24gTW9uLCAyMDIyLTA0LTE4IGF0IDEyOjUyIC0wNDAwLCBDaHVjayBMZXZlciB3cm90ZToKPiBJ
+bnRyb2R1Y2UgYSBtZWNoYW5pc20gdG8gY2F1c2UgeHBydF90cmFuc21pdCgpIHRvIGJyZWFrIG91
+dCBvZiBpdHMKPiBzZW5kaW5nIGxvb3AgYXQgYSBzcGVjaWZpYyBycGNfcnFzdCwgcmF0aGVyIHRo
+YW4gZHJhaW5pbmcgdGhlIHdob2xlCj4gdHJhbnNtaXQgcXVldWUuCj4gCj4gVGhpcyBlbmFibGVz
+IHRoZSBjbGllbnQgdG8gc2VuZCBqdXN0IGFuIFJQQyBUTFMgcHJvYmUgYW5kIHRoZW4gd2FpdAo+
+IGZvciB0aGUgcmVzcG9uc2UgYmVmb3JlIHByb2NlZWRpbmcgd2l0aCB0aGUgcmVzdCBvZiB0aGUg
+cXVldWUuCj4gCj4gU2lnbmVkLW9mZi1ieTogQ2h1Y2sgTGV2ZXIgPGNodWNrLmxldmVyQG9yYWNs
+ZS5jb20+Cj4gLS0tCj4gwqBpbmNsdWRlL2xpbnV4L3N1bnJwYy9zY2hlZC5owqAgfMKgwqDCoCAy
+ICsrCj4gwqBpbmNsdWRlL3RyYWNlL2V2ZW50cy9zdW5ycGMuaCB8wqDCoMKgIDEgKwo+IMKgbmV0
+L3N1bnJwYy94cHJ0LmPCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfMKgwqDCoCAyICsrCj4gwqAz
+IGZpbGVzIGNoYW5nZWQsIDUgaW5zZXJ0aW9ucygrKQo+IAo+IGRpZmYgLS1naXQgYS9pbmNsdWRl
+L2xpbnV4L3N1bnJwYy9zY2hlZC5oCj4gYi9pbmNsdWRlL2xpbnV4L3N1bnJwYy9zY2hlZC5oCj4g
+aW5kZXggNTk5MTMzZmIzYzYzLi5mOGMwOTYzOGZhNjkgMTAwNjQ0Cj4gLS0tIGEvaW5jbHVkZS9s
+aW51eC9zdW5ycGMvc2NoZWQuaAo+ICsrKyBiL2luY2x1ZGUvbGludXgvc3VucnBjL3NjaGVkLmgK
+PiBAQCAtMTI1LDYgKzEyNSw3IEBAIHN0cnVjdCBycGNfdGFza19zZXR1cCB7Cj4gwqAjZGVmaW5l
+IFJQQ19UQVNLX1RMU0NSRUTCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAweDAwMDAwMDA4
+wqDCoMKgwqDCoMKgLyogVXNlCj4gQVVUSF9UTFMgY3JlZGVudGlhbCAqLwo+IMKgI2RlZmluZSBS
+UENfVEFTS19OVUxMQ1JFRFPCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoDB4MDAwMDAwMTDCoMKg
+wqDCoMKgwqAvKiBVc2UKPiBBVVRIX05VTEwgY3JlZGVudGlhbCAqLwo+IMKgI2RlZmluZSBSUENf
+Q0FMTF9NQUpPUlNFRU7CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoDB4MDAwMDAwMjDCoMKgwqDC
+oMKgwqAvKiBtYWpvcgo+IHRpbWVvdXQgc2VlbiAqLwo+ICsjZGVmaW5lIFJQQ19UQVNLX0NPUkvC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAweDAwMDAwMDQwwqDCoMKgwqDCoMKg
+LyogY29yayB0aGUKPiB4bWl0IHF1ZXVlICovCj4gwqAjZGVmaW5lIFJQQ19UQVNLX0RZTkFNSUPC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAweDAwMDAwMDgwwqDCoMKgwqDCoMKgLyogdGFz
+ayB3YXMKPiBrbWFsbG9jJ2VkICovCj4gwqAjZGVmaW5lwqDCoMKgwqDCoMKgwqDCoFJQQ19UQVNL
+X05PX1JPVU5EX1JPQklOwqDCoMKgwqDCoMKgwqDCoMKgMHgwMDAwMDEwMMKgwqDCoMKgwqDCoC8q
+Cj4gc2VuZCByZXF1ZXN0cyBvbiAibWFpbiIgeHBydCAqLwo+IMKgI2RlZmluZSBSUENfVEFTS19T
+T0ZUwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgMHgwMDAwMDIwMMKgwqDCoMKg
+wqDCoC8qIFVzZSBzb2Z0Cj4gdGltZW91dHMgKi8KPiBAQCAtMTM3LDYgKzEzOCw3IEBAIHN0cnVj
+dCBycGNfdGFza19zZXR1cCB7Cj4gwqAKPiDCoCNkZWZpbmUgUlBDX0lTX0FTWU5DKHQpwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAoKHQpLT50a19mbGFncyAmCj4gUlBDX1RBU0tfQVNZ
+TkMpCj4gwqAjZGVmaW5lIFJQQ19JU19TV0FQUEVSKHQpwqDCoMKgwqDCoMKgKCh0KS0+dGtfZmxh
+Z3MgJiBSUENfVEFTS19TV0FQUEVSKQo+ICsjZGVmaW5lIFJQQ19JU19DT1JLKHQpwqDCoMKgwqDC
+oMKgwqDCoMKgKCh0KS0+dGtfZmxhZ3MgJiBSUENfVEFTS19DT1JLKQo+IMKgI2RlZmluZSBSUENf
+SVNfU09GVCh0KcKgwqDCoMKgwqDCoMKgwqDCoCgodCktPnRrX2ZsYWdzICYKPiAoUlBDX1RBU0tf
+U09GVHxSUENfVEFTS19USU1FT1VUKSkKPiDCoCNkZWZpbmUgUlBDX0lTX1NPRlRDT05OKHQpwqDC
+oMKgwqDCoCgodCktPnRrX2ZsYWdzICYgUlBDX1RBU0tfU09GVENPTk4pCj4gwqAjZGVmaW5lIFJQ
+Q19XQVNfU0VOVCh0KcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgKCh0KS0+dGtfZmxh
+Z3MgJgo+IFJQQ19UQVNLX1NFTlQpCj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvdHJhY2UvZXZlbnRz
+L3N1bnJwYy5oCj4gYi9pbmNsdWRlL3RyYWNlL2V2ZW50cy9zdW5ycGMuaAo+IGluZGV4IDgxMTE4
+N2M0N2ViYi4uZThkNmFkZmYxYTUwIDEwMDY0NAo+IC0tLSBhL2luY2x1ZGUvdHJhY2UvZXZlbnRz
+L3N1bnJwYy5oCj4gKysrIGIvaW5jbHVkZS90cmFjZS9ldmVudHMvc3VucnBjLmgKPiBAQCAtMzEy
+LDYgKzMxMiw3IEBAIFRSQUNFX0VWRU5UKHJwY19yZXF1ZXN0LAo+IMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgeyBSUENfVEFTS19UTFNDUkVELCAiVExTQ1JFRCIKPiB9LMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoFwKPiDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoHsgUlBDX1RBU0tfTlVMTENSRURTLCAiTlVMTENSRURTIgo+IH0s
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoFwKPiDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoHsgUlBDX0NBTExfTUFKT1JTRUVOLCAiTUFKT1JTRUVOIgo+IH0s
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoFwKPiArwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgeyBSUENfVEFTS19DT1JLLCAiQ09SSyIKPiB9LMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoFwKPiDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHsgUlBDX1RBU0tfRFlOQU1JQywgIkRZTkFNSUMi
+Cj4gfSzCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBcCj4g
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB7IFJQQ19UQVNLX05PX1JPVU5EX1JPQklO
+LCAiTk9fUk9VTkRfUk9CSU4iCj4gfSzCoMKgwqDCoMKgwqDCoMKgwqDCoFwKPiDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoHsgUlBDX1RBU0tfU09GVCwgIlNPRlQiCj4gfSzCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBcCj4g
+ZGlmZiAtLWdpdCBhL25ldC9zdW5ycGMveHBydC5jIGIvbmV0L3N1bnJwYy94cHJ0LmMKPiBpbmRl
+eCA4NmQ2MmNmZmJhMGQuLjRiMzAzYjk0NWI1MSAxMDA2NDQKPiAtLS0gYS9uZXQvc3VucnBjL3hw
+cnQuYwo+ICsrKyBiL25ldC9zdW5ycGMveHBydC5jCj4gQEAgLTE2MjIsNiArMTYyMiw4IEBAIHhw
+cnRfdHJhbnNtaXQoc3RydWN0IHJwY190YXNrICp0YXNrKQo+IMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgaWYgKHhwcnRfcmVxdWVzdF9kYXRhX3JlY2VpdmVkKHRhc2spICYmCj4gwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgIXRlc3RfYml0KFJQQ19UQVNLX05F
+RURfWE1JVCwgJnRhc2stCj4gPnRrX3J1bnN0YXRlKSkKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBicmVhazsKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgaWYgKFJQQ19JU19DT1JLKHRhc2spKQo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgYnJlYWs7Cj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqBjb25kX3Jlc2NoZWRfbG9jaygmeHBydC0+cXVldWVfbG9jayk7Cj4gwqDCoMKgwqDC
+oMKgwqDCoH0KPiDCoMKgwqDCoMKgwqDCoMKgc3Bpbl91bmxvY2soJnhwcnQtPnF1ZXVlX2xvY2sp
+Owo+IAo+IAoKVGhpcyBpcyBlbnRpcmVseSB0aGUgd3JvbmcgcGxhY2UgZm9yIHRoaXMga2luZCBv
+ZiBjb250cm9sIG1lY2hhbmlzbS4KClRMUyB2cyBub3QtVExTIG5lZWRzIHRvIGJlIGRlY2lkZWQg
+dXAgZnJvbnQgd2hlbiB3ZSBpbml0aWFsaXNlIHRoZQp0cmFuc3BvcnQgKGkuZS4gYXQgbW91bnQg
+dGltZSBvciB3aGVuZXZlciB0aGUgcE5GUyBjaGFubmVscyBhcmUgc2V0CnVwKS4gT3RoZXJ3aXNl
+LCB3ZSdyZSB2dWxuZXJhYmxlIHRvIGRvd25ncmFkZSBhdHRhY2tzLgoKT25jZSB3ZSd2ZSBkZWNp
+ZGVkIHRoYXQgVExTIGlzIHRoZSByaWdodCB0aGluZyB0byBkbywgdGhlbiB3ZSBzaG91bGRuJ3QK
+ZGVjbGFyZSB0byB0aGUgUlBDIGxheWVyIHRoYXQgdGhlIFRMUy1lbmFibGVkIHRyYW5zcG9ydCBp
+cyBjb25uZWN0ZWQKdW50aWwgdGhlIHVuZGVybHlpbmcgdHJhbnNwb3J0IGNvbm5lY3Rpb24gaXMg
+ZXN0YWJsaXNoZWQsIGFuZCB0aGUgVExTCmhhbmRzaGFrZSBpcyBkb25lLgoKLS0gClRyb25kIE15
+a2xlYnVzdApMaW51eCBORlMgY2xpZW50IG1haW50YWluZXIsIEhhbW1lcnNwYWNlCnRyb25kLm15
+a2xlYnVzdEBoYW1tZXJzcGFjZS5jb20KCgo=
