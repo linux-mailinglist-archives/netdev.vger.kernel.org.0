@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD44350620D
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 04:28:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 081DD506213
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 04:28:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344579AbiDSCbD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Apr 2022 22:31:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34330 "EHLO
+        id S1344704AbiDSCbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Apr 2022 22:31:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344656AbiDSCaj (ORCPT
+        with ESMTP id S1344659AbiDSCaj (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 22:30:39 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B5612E6B3
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89BE62E6B4
         for <netdev@vger.kernel.org>; Mon, 18 Apr 2022 19:27:57 -0700 (PDT)
 Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Kj6zl6FnPzCrD1;
-        Tue, 19 Apr 2022 10:23:31 +0800 (CST)
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Kj7406txVz1GCYF;
+        Tue, 19 Apr 2022 10:27:12 +0800 (CST)
 Received: from localhost.localdomain (10.67.165.24) by
  dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -27,9 +27,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
         <alexandr.lobakin@intel.com>, <saeed@kernel.org>, <leon@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linuxarm@openeuler.org>,
         <lipeng321@huawei.com>
-Subject: [RFCv6 PATCH net-next 13/19] net: use netdev_features_intersects helpers
-Date:   Tue, 19 Apr 2022 10:22:00 +0800
-Message-ID: <20220419022206.36381-14-shenjian15@huawei.com>
+Subject: [RFCv6 PATCH net-next 14/19] net: use netdev_features_and helpers
+Date:   Tue, 19 Apr 2022 10:22:01 +0800
+Message-ID: <20220419022206.36381-15-shenjian15@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220419022206.36381-1-shenjian15@huawei.com>
 References: <20220419022206.36381-1-shenjian15@huawei.com>
@@ -49,145 +49,157 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace the '(f1 & f2)' operations of features by
-netdev_features_intersects helpers.
+Replace the '&' and '&=' operations of features by
+netdev_features_and helpers.
 
 Signed-off-by: Jian Shen <shenjian15@huawei.com>
 ---
- drivers/net/ethernet/sfc/efx_common.c |  4 ++--
- net/core/dev.c                        | 21 ++++++++++++---------
- net/ethtool/ioctl.c                   |  6 +++---
- 3 files changed, 17 insertions(+), 14 deletions(-)
+ include/linux/netdev_features_helper.h |  2 +-
+ net/core/dev.c                         | 18 ++++++++++--------
+ net/ethtool/features.c                 |  3 ++-
+ net/ethtool/ioctl.c                    | 10 +++++-----
+ 4 files changed, 18 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/efx_common.c b/drivers/net/ethernet/sfc/efx_common.c
-index 31363adcf5f1..769f3a8b3ff9 100644
---- a/drivers/net/ethernet/sfc/efx_common.c
-+++ b/drivers/net/ethernet/sfc/efx_common.c
-@@ -1364,14 +1364,14 @@ netdev_features_t efx_features_check(struct sk_buff *skb, struct net_device *dev
- 	struct efx_nic *efx = netdev_priv(dev);
+diff --git a/include/linux/netdev_features_helper.h b/include/linux/netdev_features_helper.h
+index 56bdec209b1c..79fa490b96cf 100644
+--- a/include/linux/netdev_features_helper.h
++++ b/include/linux/netdev_features_helper.h
+@@ -595,7 +595,7 @@ static inline netdev_features_t netdev_intersect_features(netdev_features_t f1,
+ 			netdev_features_set(&f2, netdev_ip_csum_features);
+ 	}
  
- 	if (skb->encapsulation) {
--		if (features & NETIF_F_GSO_MASK)
-+		if (netdev_features_intersects(features, NETIF_F_GSO_MASK))
- 			/* Hardware can only do TSO with at most 208 bytes
- 			 * of headers.
- 			 */
- 			if (skb_inner_transport_offset(skb) >
- 			    EFX_TSO2_MAX_HDRLEN)
- 				netdev_features_clear(&features, NETIF_F_GSO_MASK);
--		if (features & netdev_csum_gso_features_mask)
-+		if (netdev_features_intersects(features, netdev_csum_gso_features_mask))
- 			if (!efx_can_encap_offloads(efx, skb))
- 				netdev_features_clear(&features,
- 						      netdev_csum_gso_features_mask);
+-	return f1 & f2;
++	return netdev_features_and(f1, f2);
+ }
+ 
+ static inline netdev_features_t
 diff --git a/net/core/dev.c b/net/core/dev.c
-index 2bcb65722583..a83c2dcda755 100644
+index a83c2dcda755..7f75084bcaa7 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -3593,7 +3593,7 @@ int skb_csum_hwoffload_help(struct sk_buff *skb,
- 	if (netdev_feature_test(NETIF_F_HW_CSUM_BIT, features))
- 		return 0;
+@@ -3343,7 +3343,8 @@ struct sk_buff *__skb_gso_segment(struct sk_buff *skb,
+ 		netdev_features_t partial_features;
+ 		struct net_device *dev = skb->dev;
  
--	if (features & netdev_ip_csum_features) {
-+	if (netdev_features_intersects(features, netdev_ip_csum_features)) {
- 		switch (skb->csum_offset) {
- 		case offsetof(struct tcphdr, check):
- 		case offsetof(struct udphdr, check):
-@@ -9461,8 +9461,8 @@ static netdev_features_t netdev_sync_upper_features(struct net_device *lower,
- 	upper_disables = NETIF_F_UPPER_DISABLES;
- 	for_each_netdev_feature(upper_disables, feature_bit) {
- 		feature = __NETIF_F_BIT(feature_bit);
--		if (!(upper->wanted_features & feature)
--		    && (features & feature)) {
-+		if (!netdev_wanted_features_intersects(upper, feature) &&
-+		    netdev_features_intersects(features, feature)) {
- 			netdev_dbg(lower, "Dropping feature %pNF, upper dev %s has it off.\n",
- 				   &feature, upper->name);
- 			netdev_features_clear(&features, feature);
-@@ -9482,13 +9482,14 @@ static void netdev_sync_lower_features(struct net_device *upper,
- 	upper_disables = NETIF_F_UPPER_DISABLES;
- 	for_each_netdev_feature(upper_disables, feature_bit) {
- 		feature = __NETIF_F_BIT(feature_bit);
--		if (!(features & feature) && (lower->features & feature)) {
-+		if (!netdev_features_intersects(features, feature) &&
-+		    netdev_active_features_intersects(lower, feature)) {
- 			netdev_dbg(upper, "Disabling feature %pNF on lower dev %s.\n",
- 				   &feature, lower->name);
- 			netdev_wanted_features_clear(lower, feature);
- 			__netdev_update_features(lower);
+-		partial_features = dev->features & dev->gso_partial_features;
++		partial_features = netdev_active_features_and(dev,
++							      dev->gso_partial_features);
+ 		netdev_feature_add(NETIF_F_GSO_ROBUST_BIT, &partial_features);
+ 		if (!skb_gso_ok(skb, netdev_features_or(features, partial_features)))
+ 			netdev_feature_del(NETIF_F_GSO_PARTIAL_BIT, &features);
+@@ -3410,7 +3411,7 @@ static netdev_features_t net_mpls_features(struct sk_buff *skb,
+ 					   __be16 type)
+ {
+ 	if (eth_p_mpls(type))
+-		features &= skb->dev->mpls_features;
++		netdev_features_mask(&features, skb->dev->mpls_features);
  
--			if (unlikely(lower->features & feature))
-+			if (unlikely(netdev_active_features_intersects(lower, feature)))
- 				netdev_WARN(upper, "failed to disable %pNF on %s!\n",
- 					    &feature, lower->name);
- 			else
-@@ -9504,13 +9505,14 @@ static netdev_features_t netdev_fix_features(struct net_device *dev,
+ 	return features;
+ }
+@@ -3511,7 +3512,7 @@ netdev_features_t netif_skb_features(struct sk_buff *skb)
+ 	 * features for the netdev
+ 	 */
+ 	if (skb->encapsulation)
+-		features &= dev->hw_enc_features;
++		netdev_features_mask(&features, dev->hw_enc_features);
  
- 	/* Fix illegal checksum combinations */
- 	if (netdev_feature_test(NETIF_F_HW_CSUM_BIT, features) &&
--	    (features & netdev_ip_csum_features)) {
-+	    netdev_features_intersects(features, netdev_ip_csum_features)) {
- 		netdev_warn(dev, "mixed HW and IP checksum settings.\n");
- 		netdev_features_clear(&features, netdev_ip_csum_features);
+ 	if (skb_vlan_tagged(skb)) {
+ 		tmp = netdev_vlan_features_or(dev, netdev_tx_vlan_features);
+@@ -3522,7 +3523,7 @@ netdev_features_t netif_skb_features(struct sk_buff *skb)
+ 		tmp = dev->netdev_ops->ndo_features_check(skb, dev, features);
+ 	else
+ 		tmp = dflt_features_check(skb, dev, features);
+-	features &= tmp;
++	netdev_features_mask(&features, tmp);
+ 
+ 	return harmonize_features(skb, features);
+ }
+@@ -9954,7 +9955,8 @@ int register_netdevice(struct net_device *dev)
+ 		netdev_hw_feature_add(dev, NETIF_F_RX_UDP_TUNNEL_PORT_BIT);
  	}
  
- 	/* TSO requires that SG is present as well. */
--	if (features & NETIF_F_ALL_TSO && !netdev_feature_test(NETIF_F_SG_BIT, features)) {
-+	if (netdev_features_intersects(features, NETIF_F_ALL_TSO) &&
-+	    !netdev_feature_test(NETIF_F_SG_BIT, features)) {
- 		netdev_dbg(dev, "Dropping TSO features since no SG feature.\n");
- 		netdev_features_clear(&features, NETIF_F_ALL_TSO);
- 	}
-@@ -9538,7 +9540,8 @@ static netdev_features_t netdev_fix_features(struct net_device *dev,
- 	/* TSO ECN requires that TSO is present as well. */
- 	tmp = NETIF_F_ALL_TSO;
- 	netdev_feature_del(NETIF_F_TSO_ECN_BIT, &tmp);
--	if (!(features & tmp) && netdev_feature_test(NETIF_F_TSO_ECN_BIT, features))
-+	if (!netdev_features_intersects(features, tmp) &&
-+	    netdev_feature_test(NETIF_F_TSO_ECN_BIT, features))
- 		netdev_feature_del(NETIF_F_TSO_ECN_BIT, &features);
+-	dev->wanted_features = dev->features & dev->hw_features;
++	dev->wanted_features = netdev_active_features_and(dev,
++							  dev->hw_features);
  
- 	/* Software GSO depends on SG. */
-@@ -9548,7 +9551,7 @@ static netdev_features_t netdev_fix_features(struct net_device *dev,
- 	}
+ 	if (!(dev->flags & IFF_LOOPBACK))
+ 		netdev_hw_feature_add(dev, NETIF_F_NOCACHE_COPY_BIT);
+@@ -11074,14 +11076,14 @@ netdev_features_t netdev_increment_features(netdev_features_t all,
+ 	netdev_feature_add(NETIF_F_VLAN_CHALLENGED_BIT, &mask);
  
- 	/* GSO partial features require GSO partial be set */
--	if ((features & dev->gso_partial_features) &&
-+	if (netdev_gso_partial_features_intersects(dev, features) &&
- 	    !netdev_feature_test(NETIF_F_GSO_PARTIAL_BIT, features)) {
- 		netdev_dbg(dev,
- 			   "Dropping partially supported GSO features since no GSO partial.\n");
+ 	tmp = netdev_features_or(NETIF_F_ONE_FOR_ALL, NETIF_F_CSUM_MASK);
+-	tmp &= one;
+-	tmp &= mask;
++	netdev_features_mask(&tmp, one);
++	netdev_features_mask(&tmp, mask);
+ 	netdev_features_set(&all, tmp);
+ 
+ 	netdev_features_fill(&tmp);
+ 	netdev_features_clear(&tmp, NETIF_F_ALL_FOR_ALL);
+ 	netdev_features_set(&tmp, one);
+-	all &= tmp;
++	netdev_features_mask(&all, tmp);
+ 
+ 	/* If one device supports hw checksumming, set for all. */
+ 	if (netdev_feature_test(NETIF_F_HW_CSUM_BIT, all)) {
+diff --git a/net/ethtool/features.c b/net/ethtool/features.c
+index 2de4cabf41e0..c4d7a1f9366a 100644
+--- a/net/ethtool/features.c
++++ b/net/ethtool/features.c
+@@ -257,7 +257,8 @@ int ethnl_set_features(struct sk_buff *skb, struct genl_info *info)
+ 	bitmap_or(req_wanted, new_wanted, req_wanted, NETDEV_FEATURE_COUNT);
+ 	if (!bitmap_equal(req_wanted, old_wanted, NETDEV_FEATURE_COUNT)) {
+ 		netdev_wanted_features_clear(dev, dev->hw_features);
+-		tmp = ethnl_bitmap_to_features(req_wanted) & dev->hw_features;
++		tmp = netdev_hw_features_and(dev,
++					     ethnl_bitmap_to_features(req_wanted));
+ 		netdev_wanted_features_set(dev, tmp);
+ 		__netdev_update_features(dev);
+ 	}
 diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
-index 77f57fe00160..3fd1aa89de87 100644
+index 3fd1aa89de87..9275c1b2a7f6 100644
 --- a/net/ethtool/ioctl.c
 +++ b/net/ethtool/ioctl.c
-@@ -165,7 +165,7 @@ static int ethtool_set_features(struct net_device *dev, void __user *useraddr)
+@@ -155,12 +155,12 @@ static int ethtool_set_features(struct net_device *dev, void __user *useraddr)
+ 
+ 	netdev_hw_features_andnot_r(dev, valid);
+ 	if (tmp) {
+-		valid &= dev->hw_features;
++		netdev_features_mask(&valid, dev->hw_features);
+ 		ret |= ETHTOOL_F_UNSUPPORTED;
+ 	}
+ 
+ 	netdev_wanted_features_clear(dev, valid);
+-	tmp = wanted & valid;
++	tmp = netdev_features_and(wanted, valid);
+ 	netdev_wanted_features_set(dev, tmp);
  	__netdev_update_features(dev);
  
- 	tmp = netdev_wanted_features_xor(dev, dev->features);
--	if (tmp & valid)
-+	if (netdev_features_intersects(tmp, valid))
- 		ret |= ETHTOOL_F_WISH;
- 
- 	return ret;
-@@ -278,7 +278,7 @@ static int ethtool_get_one_feature(struct net_device *dev,
- 	};
+@@ -294,7 +294,7 @@ static int ethtool_set_one_feature(struct net_device *dev,
+ 		return -EFAULT;
  
  	mask = ethtool_get_feature_mask(ethcmd);
--	edata.data = !!(dev->features & mask);
-+	edata.data = !!netdev_active_features_intersects(dev, mask);
- 	if (copy_to_user(useraddr, &edata, sizeof(edata)))
- 		return -EFAULT;
- 	return 0;
-@@ -366,7 +366,7 @@ static int __ethtool_set_flags(struct net_device *dev, u32 data)
- 	changed &= eth_all_features;
+-	mask &= dev->hw_features;
++	netdev_features_mask(&mask, dev->hw_features);
+ 	if (!mask)
+ 		return -EOPNOTSUPP;
+ 
+@@ -363,13 +363,13 @@ static int __ethtool_set_flags(struct net_device *dev, u32 data)
+ 
+ 	/* allow changing only bits set in hw_features */
+ 	changed = netdev_active_features_xor(dev, features);
+-	changed &= eth_all_features;
++	netdev_features_mask(&changed, eth_all_features);
  	tmp = netdev_hw_features_andnot_r(dev, changed);
  	if (tmp)
--		return (changed & dev->hw_features) ? -EINVAL : -EOPNOTSUPP;
-+		return netdev_hw_features_intersects(dev, changed) ? -EINVAL : -EOPNOTSUPP;
+ 		return netdev_hw_features_intersects(dev, changed) ? -EINVAL : -EOPNOTSUPP;
  
  	netdev_wanted_features_clear(dev, changed);
- 	tmp = features & changed;
+-	tmp = features & changed;
++	tmp = netdev_features_and(features, changed);
+ 	netdev_wanted_features_set(dev, tmp);
+ 
+ 	__netdev_update_features(dev);
 -- 
 2.33.0
 
