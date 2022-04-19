@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E3695066BB
+	by mail.lfdr.de (Postfix) with ESMTP id 780715066BC
 	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 10:16:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349900AbiDSIS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 04:18:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41584 "EHLO
+        id S1349912AbiDSIS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 04:18:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349953AbiDSISQ (ORCPT
+        with ESMTP id S1349954AbiDSISQ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 04:18:16 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AE78DF36
-        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 01:15:13 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id j8so14666879pll.11
-        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 01:15:13 -0700 (PDT)
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DDE8E0AD
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 01:15:18 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id n8so14714909plh.1
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 01:15:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version;
-        bh=r98GFgL1vPFduI/1UNny7wA3xIIYn23353PVZy3Cvd8=;
-        b=Mbxp9zp2z/IcznWH8rWiTdcHu7zU48fs75NJAc2WPFr7E0YuajcwIMKq9zGsE0Op1Z
-         CJJqRBnoo2kA+TTQiXjwdvEG/tIflT635t5opPn6pNKthnidVMb/N4RSE0HuRnVOqO5v
-         kf+8BnKRSMo74rsVEnmUR1F6GKAb5x/B8kUVA=
+        bh=Dv/gjXAbHV0aJeQBkiI22YJ46DKVdZ4jwHxAeGQVUnQ=;
+        b=BxSYF11IfOsPy2aX6brnnZTp78qxq6jBDkOUxf7o/SLP4FGjRCuzQ9E4lOdnQiPbwo
+         EXvmXrlVDnZXtAFWVGi9+E2uxOUGLwPYvrdpr0m276U62nkJF3g/iZQx8jn8fK3K0WK3
+         YmaiOqDSOZnej4dsQ3+sS78mW5pMVXlksoze0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version;
-        bh=r98GFgL1vPFduI/1UNny7wA3xIIYn23353PVZy3Cvd8=;
-        b=XxqE0e7WlVnf+VA48O3AvztTg1zOdXKPtoxcZM9xjnp8HPA6844sw2nLd57qJESkRU
-         z6L2anoVCBtQDIr0qD9jfIhQLP3ncTUqOWwnd/dLI3TIWYgC1UJthU7ctxfGkoZJbrOW
-         +EgHYwtBNQiippMp+f4JpQIuskrpigwuKfVHzW5PHxrcQWlE79wswC+7DFetZjDuGJ8g
-         3gfQPIEdZ3dVFCXWvStgQIv3/SoCrdi2IImbo6okoByo61tBln7cmSaURaqKCS8uro0k
-         kJAcbYj64nkc7J1tM5k+JenDqTqTY7wu2N+H0UASsoyrHXzJnKaqifJxEE5Q1hq2IJBT
-         ToMw==
-X-Gm-Message-State: AOAM532oo18IHyFzuCHs+5YkTcpMLxYORk+RcT4aBKGqJUAtIg0/HC+V
-        Lrc9+/1zDaxnUGskD+AxNtZNeGDrVvfXxAGOE8Il8YNSSsWSO6Gm3z8Y5zS4UERMlLOz6g2Tv03
-        62wAcOI2tb1gFK4bXg+PLWJR2TyIayOdkNnP5wg3eZ4s46SzD4FZDkDEaIVUUMBA193qpDLBEHX
-        laBzxEVUNTlw==
-X-Google-Smtp-Source: ABdhPJxmSu7hu/C5oNJ0d1hbCjKUfZ4RxR8iPeePfmpiOGHT1dOuLVr2wc6fAY/GlxNDLdneeCdePg==
-X-Received: by 2002:a17:903:32d0:b0:158:fe2e:d2a7 with SMTP id i16-20020a17090332d000b00158fe2ed2a7mr8190787plr.93.1650356112493;
-        Tue, 19 Apr 2022 01:15:12 -0700 (PDT)
+        bh=Dv/gjXAbHV0aJeQBkiI22YJ46DKVdZ4jwHxAeGQVUnQ=;
+        b=lL1blnQ0lbyxCy616N4Ji8pNiu8i8aonrpDIF8pW7j2fhPRbie45O6eznMwUXLb4jd
+         EAZJszcSCyAuUX5GrbwBHuI9le//2pf58cfbCSkbLu82xw5MZkU9oHnnDdxS6O3kkL7c
+         AUz0xju74hdRzNwa+nSK4bDcHi1e5G1xRH3nlqKr1Vm0uW/pZrpq1a63fWSGOK69r0RF
+         CMLhogrYfPTKg9YuHMYq4JksK/Wx7MLb7ZqaTiiiXR32Y/xl8EtAqgk79u7+qp1Klse8
+         kMWgFU1utSTTpthhqqZCyAAEBPf2NnK4o2stzb0t0C9lFIzWpLTf8tOKLCfApY/JdlWV
+         mc4w==
+X-Gm-Message-State: AOAM532GO+S9Fmt5xTttug1xv4rCV5/+4uCOa+UsZFvNEDrYHSQHhIt7
+        zuPfeWwfQTuGL9LLP5pzM2QT+jI7jp3s/1qBWm4+s8+57kD69l8rLsbSKXN9FzevT9NclB3tNYV
+        32T2qnZ3AHuePBN5Fso7Ds6XnGgWU+sF3GNT6pgLn+3nYxX7lhDql0n59HRhO8FAONcZXyG2oOx
+        uJek/lj05QtA==
+X-Google-Smtp-Source: ABdhPJziwPmH9ZaxQXiXWDc6OwqlvrnevXdrDqFwdezfT3TrQcKSqxMyaR4qCRG8iyOU8Iejn4ZHOQ==
+X-Received: by 2002:a17:902:7088:b0:156:1aa9:79eb with SMTP id z8-20020a170902708800b001561aa979ebmr14568780plk.71.1650356117575;
+        Tue, 19 Apr 2022 01:15:17 -0700 (PDT)
 Received: from localhost.localdomain ([192.19.250.250])
-        by smtp.gmail.com with ESMTPSA id cp19-20020a056a00349300b0050a890c8c16sm4284570pfb.19.2022.04.19.01.15.07
+        by smtp.gmail.com with ESMTPSA id cp19-20020a056a00349300b0050a890c8c16sm4284570pfb.19.2022.04.19.01.15.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 01:15:12 -0700 (PDT)
+        Tue, 19 Apr 2022 01:15:17 -0700 (PDT)
 From:   Boris Sukholitko <boris.sukholitko@broadcom.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -60,15 +60,15 @@ To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     Ilya Lifshits <ilya.lifshits@broadcom.com>,
         Boris Sukholitko <boris.sukholitko@broadcom.com>
-Subject: [PATCH net-next v4 3/5] flow_dissector: Add number of vlan tags dissector
-Date:   Tue, 19 Apr 2022 11:14:32 +0300
-Message-Id: <20220419081434.5192-4-boris.sukholitko@broadcom.com>
+Subject: [PATCH net-next v4 4/5] net/sched: flower: Add number of vlan tags filter
+Date:   Tue, 19 Apr 2022 11:14:33 +0300
+Message-Id: <20220419081434.5192-5-boris.sukholitko@broadcom.com>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20220419081434.5192-1-boris.sukholitko@broadcom.com>
 References: <20220419081434.5192-1-boris.sukholitko@broadcom.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000dcd99b05dcfd79f9"
+        boundary="00000000000029fe3905dcfd7a03"
 X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -79,118 +79,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000dcd99b05dcfd79f9
+--00000000000029fe3905dcfd7a03
 Content-Transfer-Encoding: 8bit
 
-Our customers in the fiber telecom world have network configurations
-where they would like to control their traffic according to the number
-of tags appearing in the packet.
-
-For example, TR247 GPON conformance test suite specification mostly
-talks about untagged, single, double tagged packets and gives lax
-guidelines on the vlan protocol vs. number of vlan tags.
-
-This is different from the common IT networks where 802.1Q and 802.1ad
-protocols are usually describe single and double tagged packet. GPON
-configurations that we work with have arbitrary mix the above protocols
-and number of vlan tags in the packet.
-
-The goal is to make the following TC commands possible:
-
-tc filter add dev eth1 ingress flower \
-  num_of_vlans 1 vlan_prio 5 action drop
-
-From our logs, we have redirect rules such that:
-
-tc filter add dev $GPON ingress flower num_of_vlans $N \
-     action mirred egress redirect dev $DEV
-
-where N can range from 0 to 3 and $DEV is the function of $N.
-
-Also there are rules setting skb mark based on the number of vlans:
-
-tc filter add dev $GPON ingress flower num_of_vlans $N vlan_prio \
-    $P action skbedit mark $M
-
-This new dissector allows extracting the number of vlan tags existing in
-the packet.
+These are bookkeeping parts of the new num_of_vlans filter.
+Defines, dump, load and set are being done here.
 
 Signed-off-by: Boris Sukholitko <boris.sukholitko@broadcom.com>
 ---
- include/net/flow_dissector.h |  9 +++++++++
- net/core/flow_dissector.c    | 20 ++++++++++++++++++++
- 2 files changed, 29 insertions(+)
+ include/uapi/linux/pkt_cls.h |  2 ++
+ net/sched/cls_flower.c       | 14 ++++++++++++++
+ 2 files changed, 16 insertions(+)
 
-diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
-index 9f65f1bfbd24..a4c6057c7097 100644
---- a/include/net/flow_dissector.h
-+++ b/include/net/flow_dissector.h
-@@ -253,6 +253,14 @@ struct flow_dissector_key_hash {
- 	u32 hash;
+diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
+index 404f97fb239c..9a2ee1e39fad 100644
+--- a/include/uapi/linux/pkt_cls.h
++++ b/include/uapi/linux/pkt_cls.h
+@@ -587,6 +587,8 @@ enum {
+ 	TCA_FLOWER_KEY_HASH,		/* u32 */
+ 	TCA_FLOWER_KEY_HASH_MASK,	/* u32 */
+ 
++	TCA_FLOWER_KEY_NUM_OF_VLANS,    /* u8 */
++
+ 	__TCA_FLOWER_MAX,
  };
  
-+/**
-+ * struct flow_dissector_key_num_of_vlans:
-+ * @num_of_vlans: num_of_vlans value
-+ */
-+struct flow_dissector_key_num_of_vlans {
-+	u8 num_of_vlans;
-+};
-+
- enum flow_dissector_key_id {
- 	FLOW_DISSECTOR_KEY_CONTROL, /* struct flow_dissector_key_control */
- 	FLOW_DISSECTOR_KEY_BASIC, /* struct flow_dissector_key_basic */
-@@ -282,6 +290,7 @@ enum flow_dissector_key_id {
- 	FLOW_DISSECTOR_KEY_META, /* struct flow_dissector_key_meta */
- 	FLOW_DISSECTOR_KEY_CT, /* struct flow_dissector_key_ct */
- 	FLOW_DISSECTOR_KEY_HASH, /* struct flow_dissector_key_hash */
-+	FLOW_DISSECTOR_KEY_NUM_OF_VLANS, /* struct flow_dissector_key_num_of_vlans */
+diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+index 86fd0420ac4f..4ec4d742e82f 100644
+--- a/net/sched/cls_flower.c
++++ b/net/sched/cls_flower.c
+@@ -72,6 +72,7 @@ struct fl_flow_key {
+ 	} tp_range;
+ 	struct flow_dissector_key_ct ct;
+ 	struct flow_dissector_key_hash hash;
++	struct flow_dissector_key_num_of_vlans num_of_vlans;
+ } __aligned(BITS_PER_LONG / 8); /* Ensure that we can do comparisons as longs. */
  
- 	FLOW_DISSECTOR_KEY_MAX,
+ struct fl_flow_mask_range {
+@@ -712,6 +713,7 @@ static const struct nla_policy fl_policy[TCA_FLOWER_MAX + 1] = {
+ 	[TCA_FLOWER_FLAGS]		= { .type = NLA_U32 },
+ 	[TCA_FLOWER_KEY_HASH]		= { .type = NLA_U32 },
+ 	[TCA_FLOWER_KEY_HASH_MASK]	= { .type = NLA_U32 },
++	[TCA_FLOWER_KEY_NUM_OF_VLANS]	= { .type = NLA_U8 },
+ 
  };
-diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
-index 6f7ec72016dc..6aee04f75e3e 100644
---- a/net/core/flow_dissector.c
-+++ b/net/core/flow_dissector.c
-@@ -1035,6 +1035,16 @@ bool __skb_flow_dissect(const struct net *net,
- 		memcpy(key_eth_addrs, eth, sizeof(*key_eth_addrs));
- 	}
  
-+	if (dissector_uses_key(flow_dissector,
-+			       FLOW_DISSECTOR_KEY_NUM_OF_VLANS)) {
-+		struct flow_dissector_key_num_of_vlans *key_num_of_vlans;
-+
-+		key_num_of_vlans = skb_flow_dissector_target(flow_dissector,
-+							     FLOW_DISSECTOR_KEY_NUM_OF_VLANS,
-+							     target_container);
-+		key_num_of_vlans->num_of_vlans = 0;
+@@ -1615,6 +1617,11 @@ static int fl_set_key(struct net *net, struct nlattr **tb,
+ 	fl_set_key_val(tb, key->eth.src, TCA_FLOWER_KEY_ETH_SRC,
+ 		       mask->eth.src, TCA_FLOWER_KEY_ETH_SRC_MASK,
+ 		       sizeof(key->eth.src));
++	fl_set_key_val(tb, &key->num_of_vlans,
++		       TCA_FLOWER_KEY_NUM_OF_VLANS,
++		       &mask->num_of_vlans,
++		       TCA_FLOWER_UNSPEC,
++		       sizeof(key->num_of_vlans));
+ 
+ 	if (is_vlan_key(tb[TCA_FLOWER_KEY_ETH_TYPE], &ethertype, key, mask)) {
+ 		fl_set_key_vlan(tb, ethertype, TCA_FLOWER_KEY_VLAN_ID,
+@@ -1906,6 +1913,8 @@ static void fl_init_dissector(struct flow_dissector *dissector,
+ 			     FLOW_DISSECTOR_KEY_CT, ct);
+ 	FL_KEY_SET_IF_MASKED(mask, keys, cnt,
+ 			     FLOW_DISSECTOR_KEY_HASH, hash);
++	FL_KEY_SET_IF_MASKED(mask, keys, cnt,
++			     FLOW_DISSECTOR_KEY_NUM_OF_VLANS, num_of_vlans);
+ 
+ 	skb_flow_dissector_init(dissector, keys, cnt);
+ }
+@@ -2994,6 +3003,11 @@ static int fl_dump_key(struct sk_buff *skb, struct net *net,
+ 			    sizeof(key->basic.n_proto)))
+ 		goto nla_put_failure;
+ 
++	if (mask->num_of_vlans.num_of_vlans) {
++		if (nla_put_u8(skb, TCA_FLOWER_KEY_NUM_OF_VLANS, key->num_of_vlans.num_of_vlans))
++			goto nla_put_failure;
 +	}
 +
- proto_again:
- 	fdret = FLOW_DISSECT_RET_CONTINUE;
+ 	if (fl_dump_key_mpls(skb, &key->mpls, &mask->mpls))
+ 		goto nla_put_failure;
  
-@@ -1158,6 +1168,16 @@ bool __skb_flow_dissect(const struct net *net,
- 			nhoff += sizeof(*vlan);
- 		}
- 
-+		if (dissector_uses_key(flow_dissector,
-+				       FLOW_DISSECTOR_KEY_NUM_OF_VLANS)) {
-+			struct flow_dissector_key_num_of_vlans *key_nvs;
-+
-+			key_nvs = skb_flow_dissector_target(flow_dissector,
-+							    FLOW_DISSECTOR_KEY_NUM_OF_VLANS,
-+							    target_container);
-+			key_nvs->num_of_vlans++;
-+		}
-+
- 		if (dissector_vlan == FLOW_DISSECTOR_KEY_MAX) {
- 			dissector_vlan = FLOW_DISSECTOR_KEY_VLAN;
- 		} else if (dissector_vlan == FLOW_DISSECTOR_KEY_VLAN) {
 -- 
 2.29.2
 
 
---000000000000dcd99b05dcfd79f9
+--00000000000029fe3905dcfd7a03
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -261,14 +232,14 @@ bR7s0ZZh6mOhJtqk3k1L1DbDTVB4tOZXZHRDghEGaQSnwU/qxCNlvQ52fImLFVwXKPnw6+9dUvFR
 ORaZ1pZbapCGbs/4QLplv8UaBmpFfK6MW/44zcsDbtCFfgIP3fEJBByIREhvRC5mtlRtdM+SSjgS
 ZiNfUggxggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgw0
-s4pyqb3D0zeGSCUwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIOTxmLD/NqJhsKMD
-94eWNGBIdi8FtynDRuWTU6wwpEm7MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
-AQkFMQ8XDTIyMDQxOTA4MTUxMlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
+s4pyqb3D0zeGSCUwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIEBxQ654wMlZr3NK
+ehnC1U0hLSfnQaCwvNaxPrfmYsyHMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
+AQkFMQ8XDTIyMDQxOTA4MTUxN1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
 AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
-MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQAg+Sp1mxxhKDLuZWG+G0vYhmGk0lv4jmVU
-rcuGyAZ6LuNghnEqFzd+cG/RLWrrq3Ok5JpHFUfZhBkRN7F9ZdOXDAHSLaQmT5bYEvyrjxmlMJmR
-UEPiF+PYQ2iDuejUy5eU7YGjf17YDjoPy+/xfYAGlVGO1Xrp4DXw2H0fXnUlfpogRE/HDcrPKOel
-8e0/AvQjyQyT+PyDbXi+QttQb/rru0NeKj1d2ZyKb3ConumRsJrimGtRYxc8146b9RUr8g9IY5Fa
-qhsnNmqwEUuv3T3yz3FCUcfeMWgaqTBD33G0Y8h6NQVIfJDqzVz2bn723uFqthvqK/U7KC+cGH47
-X3qY
---000000000000dcd99b05dcfd79f9--
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQAqBi9YM7vKNEGh/3YZpVZfDvCKY8Wj5UZw
+WDfyQ4M3+9lWAiIAlhm4OusLbfBnj7fFxzQW2E4rMcPFNFbz2bQYKgg9WHACnX3/a5YHyjm13jtj
+1A0lu+qAxZkhRa7l/Tbne+t7uSW/08/nm9TVR63TK2sdW/ZxRFTWY+CNYgJsyOced5JpbOEvNbZW
+011pqvwli/vmj+MSJV/ZYQYX4pOPchTG0mrCDhq+ctTJve1VMYxPClN5knQa2wjsu5fTOEQ/9diS
+BVer9nYc8k8K3EjvEf9jEqU51QXDURGiwxVt5cRR3PEHl0TYqgINE2HAz0tpacVGuPaLWUO175sQ
+8aOZ
+--00000000000029fe3905dcfd7a03--
