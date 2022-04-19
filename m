@@ -2,142 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B35B850704F
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 16:28:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C44945070BE
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 16:38:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344966AbiDSO3H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 10:29:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44756 "EHLO
+        id S1350199AbiDSOkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 10:40:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349056AbiDSO27 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 10:28:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7E1577645
-        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 07:26:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650378376;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=8s+pPGRz1Zr2HimXdsiESRrW1tRMdv6YKimHzq2vGb8=;
-        b=PdVtk48CPc5l4tTUtKcYKKtS6vcFstKOFV+J+szMwzKKm/Ysr43eFpAr23UnjKFDB/13ac
-        Nck53Fa63Xyllac6MoHptm2rLUegLotZrhod9kuBei/2iSZ3HLeRtp/uHmw4sqr7bzAayD
-        /HvBCvPCedA1NMcBMNzyNMaOoBFRsqA=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-578-q9m6eMKaN4WlFxkwdK1whg-1; Tue, 19 Apr 2022 10:26:15 -0400
-X-MC-Unique: q9m6eMKaN4WlFxkwdK1whg-1
-Received: by mail-wr1-f69.google.com with SMTP id 61-20020adf80c3000000b00207a6ffdd1eso1951185wrl.14
-        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 07:26:15 -0700 (PDT)
+        with ESMTP id S1353496AbiDSOkN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 10:40:13 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B736921273
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 07:37:29 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id m14so22725238wrb.6
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 07:37:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RAoCs5pjIvVq0WUVbkPFNkpe/cBJpZ+m8wLESWjQmHM=;
+        b=Fw/TC1aAKoiFBFqe9HfnKnvddvU5kKXLOLwA0ePOD7fNxZ9+gYhAOphknG38vrxGgw
+         IxLTjWgSTfv34tgvywZ7Q89+LqcGOjutmrqAPcQOvOrVxkxeSwk7GqTtjJPiFN8ZYA1a
+         b3X+AIdGZARg+/ggcR3d21ddTopl4CVBLfU9aYTSBbOipxGYW8fvOdrMi920X6JfXcRF
+         JEr0Um+ALTBEdpAB0C0gQs01zBAJ7yETVZMnhFKr0qvSol5yYMWfs4OC9COl7xqh7JH/
+         Xl7G1rFt0o6qljvZEJWm2GdBQK2P9XkTF67izdvnAA6t6LYPDTD4l6G/9ThIURIiETBm
+         0OCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8s+pPGRz1Zr2HimXdsiESRrW1tRMdv6YKimHzq2vGb8=;
-        b=21BTcZii+PAZU8fOnsEwT08sbOpDfhhRGZW1X9CbnavikvaN5zAtm6sBss7La5Q519
-         bulgkhAf3av9St9hoXKv/9IZJvL6yiXkYgZVJkZQrclvatErw9VyRvm8DBRGzTnr/VzQ
-         H/lZ3/UxDFmW+jOtitCf/L7Fl+akgnHWlg5vh8CKMFEXL74R/76DFLaoiYp21tf2jJyJ
-         Cnum634fKgRawvd7C04VwUme1UOyk18GLd41DKbAj4PG1pFbONnAF4k9It34SOC7WYNH
-         HAHQOoL8LFI61NtxAU8FNt+3CTau3KWmsndZOY1Gp2Me2OQYstzXkMitRq9Pt0Ad2aPI
-         0YEg==
-X-Gm-Message-State: AOAM530HjRqIMaZLF8/Wc2yTytR6znTB58nxjXnJcUOV7HM5oy5hNv3X
-        XT21uFGyL++Ip3gR00Po2H7XTUdftDPNieUUmx+D34ZahkQ/YCurKRNfqwU15I9fhmIdKWJg0em
-        IVAhPcgzfVVMlqYC7
-X-Received: by 2002:a5d:584c:0:b0:20a:821a:b393 with SMTP id i12-20020a5d584c000000b0020a821ab393mr12389240wrf.141.1650378374115;
-        Tue, 19 Apr 2022 07:26:14 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyqeCv7YzF+w0wTnLztCkQOTZj9S/cIJHLdA9pOMdkh9Lf6AZp3WzsHpWOUjonfL25Rwue5jw==
-X-Received: by 2002:a5d:584c:0:b0:20a:821a:b393 with SMTP id i12-20020a5d584c000000b0020a821ab393mr12389217wrf.141.1650378373868;
-        Tue, 19 Apr 2022 07:26:13 -0700 (PDT)
-Received: from redhat.com ([2.53.17.80])
-        by smtp.gmail.com with ESMTPSA id i6-20020a0560001ac600b0020a93f75030sm5602953wry.48.2022.04.19.07.26.11
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RAoCs5pjIvVq0WUVbkPFNkpe/cBJpZ+m8wLESWjQmHM=;
+        b=Z1OvQiJQpb4LUCti7scdgCJpou/XBu2JBTrWy2fZ+He0ZvQIA102wV6+7nJbg7qOHN
+         NiXSMWf0ujr7/LOs/E3UfHbCYfClC2Q9CzrqD4/IK/5l5Wav/7qHBh/QMdeSRw9mJfF5
+         UPUrBwmUi8Y4h88DXkHTha8n5xDMsRnPJ+19MMJKbzVtLiRduKTDLhYT300y94nk+zBP
+         xu4bo8PAjdgPUxYo6ySYmUJHlHJ/RINnDj/bUkSRDiMVRZta8EZa7hp73oOJ6t9ERSoV
+         Vx3Vel9Wmg5aR/AnY0m4EovuFPF7+K/ZBX4FccjlDNiUShKkvquo/iTeT8YukiJAWZrH
+         S0Dw==
+X-Gm-Message-State: AOAM533E2oLQhf3UpwDuRNtJ/48SKM4zz6WYdu1El16AEl+ayOsXpQz/
+        byIYPVCD2K9oALNLkYIKtbE=
+X-Google-Smtp-Source: ABdhPJzt3C+DhPNcElXoPQEFk8KB8lS5/Zk0RibUrk6gs+yw34wRbDlgwnGxoMfnTPFSZ2lB6N9MDA==
+X-Received: by 2002:a5d:5544:0:b0:20a:819d:5249 with SMTP id g4-20020a5d5544000000b0020a819d5249mr11878383wrw.461.1650379048185;
+        Tue, 19 Apr 2022 07:37:28 -0700 (PDT)
+Received: from alaa-emad ([102.41.109.205])
+        by smtp.gmail.com with ESMTPSA id m20-20020a05600c3b1400b0038ebbbb2ad2sm19165526wms.44.2022.04.19.07.37.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 07:26:13 -0700 (PDT)
-Date:   Tue, 19 Apr 2022 10:26:09 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Hangbin Liu <liuhangbin@gmail.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        Mike Pattrick <mpattric@redhat.com>, netdev@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        virtualization@lists.linux-foundation.org,
-        Balazs Nemeth <bnemeth@redhat.com>,
-        Flavio Leitner <fbl@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jason Wang <jasowang@redhat.com>
-Subject: Re: [PATCH net 1/2] net/af_packet: adjust network header position
- for VLAN tagged packets
-Message-ID: <20220419101325-mutt-send-email-mst@kernel.org>
-References: <20220418044339.127545-1-liuhangbin@gmail.com>
- <20220418044339.127545-2-liuhangbin@gmail.com>
- <CA+FuTScQ=tP=cr5f2S97Z7ex1HMX5R-C0W6JE2Bx5UWgiGknZA@mail.gmail.com>
- <Yl4mU0XLmPukG0WO@Laptop-X1>
- <CA+FuTSfBU7ck91ayf_t9=7eRGJZHuWSeXzX2SxFAQMPSitY9SA@mail.gmail.com>
+        Tue, 19 Apr 2022 07:37:27 -0700 (PDT)
+From:   Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     outreachy@lists.linux.dev, roopa@nvidia.com,
+        roopa.prabhu@gmail.com, jdenham@redhat.com, sbrivio@redhat.com,
+        eng.alaamohamedsoliman.am@gmail.com
+Subject: [PATCH net-next 0/2]  Propagate extack to vxlan_fdb_delet
+Date:   Tue, 19 Apr 2022 16:37:16 +0200
+Message-Id: <cover.1650377624.git.eng.alaamohamedsoliman.am@gmail.com>
+X-Mailer: git-send-email 2.35.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+FuTSfBU7ck91ayf_t9=7eRGJZHuWSeXzX2SxFAQMPSitY9SA@mail.gmail.com>
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 09:56:02AM -0400, Willem de Bruijn wrote:
-> > >
-> > > We should also maintain feature consistency between packet_snd,
-> > > tpacket_snd and to the limitations of its feature set to
-> > > packet_sendmsg_spkt. The no_fcs is already lacking in tpacket_snd as
-> > > far as I can tell. But packet_sendmsg_spkt also sets it and calls
-> > > packet_parse_headers.
-> >
-> > Yes, I think we could fix the tpacket_snd() in another patch.
-> >
-> > There are also some duplicated codes in these *_snd functions.
-> > I think we can move them out to one single function.
-> 
-> Please don't refactor this code. It will complicate future backports
-> of stable fixes.
+In order to propagate extack to vxlan_fdb_delet and vxlan_fdb_parse,
+add extack to .ndo_fdb_del and edit all fdb del handelers
 
-Hmm I don't know offhand which duplication this refers to specifically
-so maybe it's not worth addressing specifically but generally not
-cleaning up code just because of backports seems wrong ...
 
-> > > Because this patch touches many other packets besides the ones
-> > > intended, I am a bit concerned about unintended consequences. Perhaps
-> >
-> > Yes, makes sense.
-> >
-> > > stretching the definition of the flags to include VLAN is acceptable
-> > > (unlike outright tunnels), but even then I would suggest for net-next.
-> >
-> > As I asked, I'm not familiar with virtio code. Do you think if I should
-> > add a new VIRTIO_NET_HDR_GSO_VLAN flag? It's only a L2 flag without any L3
-> > info. If I add something like VIRTIO_NET_HDR_GSO_VLAN_TCPV4/TCPV6/UDP. That
-> > would add more combinations. Which doesn't like a good idea.
-> 
-> I would prefer a new flag to denote this type, so that we can be
-> strict and only change the datapath for packets that have this flag
-> set (and thus express the intent).
-> 
-> But the VIRTIO_NET_HDR types are defined in the virtio spec. The
-> maintainers should probably chime in.
+Alaa Mohamed (2):
+  rtnetlink: add extack support in fdb del handlers
+  net: vxlan: vxlan_core.c: Add extack support to vxlan_fdb_delet
 
-Yes, it's a UAPI extension, not to be done lightly. In this case IIUC
-gso_type in the header is only u8 - 8 bits and 5 of these are already
-used.  So I don't think the virtio TC will be all that happy to burn up
-a bit unless a clear benefit can be demonstrated. 
+ drivers/net/ethernet/intel/ice/ice_main.c        |  2 +-
+ drivers/net/ethernet/mscc/ocelot_net.c           |  4 ++--
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c |  2 +-
+ drivers/net/macvlan.c                            |  2 +-
+ drivers/net/vxlan/vxlan_core.c                   | 15 +++++++++++----
+ include/linux/netdevice.h                        |  2 +-
+ net/bridge/br_fdb.c                              |  2 +-
+ net/bridge/br_private.h                          |  2 +-
+ net/core/rtnetlink.c                             |  4 ++--
+ 9 files changed, 21 insertions(+), 14 deletions(-)
 
-I agree with the net-next proposal, I think it's more a feature than a
-bugfix. In particular I think a Fixes tag can also be dropped in that
-IIUC GSO for vlan packets didn't work even before that commit - right?
-
--- 
-MST
+--
+2.35.2
 
