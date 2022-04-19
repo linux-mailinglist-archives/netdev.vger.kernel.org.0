@@ -2,142 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B346506FFE
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 16:22:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90C16507013
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 16:22:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241372AbiDSOXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 10:23:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36434 "EHLO
+        id S239011AbiDSOZQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 10:25:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353181AbiDSOWR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 10:22:17 -0400
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8140013CDB;
-        Tue, 19 Apr 2022 07:19:33 -0700 (PDT)
-Received: from [192.168.0.7] (ip5f5ae90d.dynamic.kabel-deutschland.de [95.90.233.13])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        with ESMTP id S1344026AbiDSOZN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 10:25:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3B18325E8E
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 07:22:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650378149;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=gx2u0UDEGlbJLmTjSX+0S/6XhMRFSaDMTCWYbhQAR20=;
+        b=ZAgHLUuStRZQ86OVIarpNfLn4maSjxx2yl/hHawxCCgw2D6iV67d9XRvcwqDgx7eoWy1QP
+        ptQH/TR6M+xTQTgHWGCiI99fKJCwgmZINDUf/IFkwsHXiWnDBn0Tf8jFVZf9xzvthcrudl
+        Q3wjkv3E2hLJJHXd31yesNgE+lrPRa4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-502-2Ii0ajvxNeikvyfFkEhgzQ-1; Tue, 19 Apr 2022 10:22:25 -0400
+X-MC-Unique: 2Ii0ajvxNeikvyfFkEhgzQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 7D81461CCD785;
-        Tue, 19 Apr 2022 16:19:30 +0200 (CEST)
-Message-ID: <b9804c40-3402-1dac-a9c0-db37a5360015@molgen.mpg.de>
-Date:   Tue, 19 Apr 2022 16:19:29 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [Intel-wired-lan] [PATCH 2/2] Trigger proper interrupts in
- igc_xsk_wakeup
-Content-Language: en-US
-To:     Jeff Evanson <jeff.evanson@gmail.com>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B3D86811E75;
+        Tue, 19 Apr 2022 14:22:24 +0000 (UTC)
+Received: from ceranb.redhat.com (unknown [10.40.194.169])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AAAC8145F94D;
+        Tue, 19 Apr 2022 14:22:22 +0000 (UTC)
+From:   Ivan Vecera <ivecera@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     poros@redhat.com, mschmidt@redhat.com, Fei Liu <feliu@redhat.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jeff.evanson@qsc.com
-References: <20220415210546.11294-1-jeff.evanson@qsc.com>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <20220415210546.11294-1-jeff.evanson@qsc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Brett Creeley <brett.creeley@intel.com>,
+        intel-wired-lan@lists.osuosl.org (moderated list:INTEL ETHERNET DRIVERS),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net v2] ice: Protect vf_state check by cfg_lock in ice_vc_process_vf_msg()
+Date:   Tue, 19 Apr 2022 16:22:21 +0200
+Message-Id: <20220419142221.2349382-1-ivecera@redhat.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Jeff,
+Previous patch labelled "ice: Fix incorrect locking in
+ice_vc_process_vf_msg()"  fixed an issue with ignored messages
+sent by VF driver but a small race window still left.
 
+Recently caught trace during 'ip link set ... vf 0 vlan ...' operation:
 
-Thank you for your patch.
+[ 7332.995625] ice 0000:3b:00.0: Clearing port VLAN on VF 0
+[ 7333.001023] iavf 0000:3b:01.0: Reset indication received from the PF
+[ 7333.007391] iavf 0000:3b:01.0: Scheduling reset task
+[ 7333.059575] iavf 0000:3b:01.0: PF returned error -5 (IAVF_ERR_PARAM) to our request 3
+[ 7333.059626] ice 0000:3b:00.0: Invalid message from VF 0, opcode 3, len 4, error -1
 
+Setting of VLAN for VF causes a reset of the affected VF using
+ice_reset_vf() function that runs with cfg_lock taken:
 
-Am 15.04.22 um 23:05 schrieb Jeff Evanson:
+1. ice_notify_vf_reset() informs IAVF driver that reset is needed and
+   IAVF schedules its own reset procedure
+2. Bit ICE_VF_STATE_DIS is set in vf->vf_state
+3. Misc initialization steps
+4. ice_sriov_post_vsi_rebuild() -> ice_vf_set_initialized() and that
+   clears ICE_VF_STATE_DIS in vf->vf_state
 
-1.  Add a From tag(?), so your company instead of gmail.com email is used?
-2.  Please add a prefix to the commit message summary. See `git log 
---oneline drivers/net/ethernet/igc` for examples.
+Step 3 is mentioned race window because IAVF reset procedure runs in
+parallel and one of its step is sending of VIRTCHNL_OP_GET_VF_RESOURCES
+message (opcode==3). This message is handled in ice_vc_process_vf_msg()
+and if it is received during the mentioned race window then it's
+marked as invalid and error is returned to VF driver.
 
-> in igc_xsk_wakeup, trigger the proper interrupt based on whether flags
-> contains XDP_WAKEUP_RX and/or XDP_WAKEUP_TX
+Protect vf_state check in ice_vc_process_vf_msg() by cfg_lock to avoid
+this race condition.
 
-Nit. Please add a dot/period to the end of sentences.
+Fixes: e6ba5273d4ed ("ice: Fix race conditions between virtchnl handling and VF ndo ops")
+Tested-by: Fei Liu <feliu@redhat.com>
+Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+---
+ drivers/net/ethernet/intel/ice/ice_virtchnl.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-Can you please add a paragraph on what system you experienced the 
-problem, and how to verify your fix?
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl.c b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
+index 5612c032f15a..b72606c9e6d0 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl.c
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
+@@ -3625,6 +3625,8 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event)
+ 		return;
+ 	}
+ 
++	mutex_lock(&vf->cfg_lock);
++
+ 	/* Check if VF is disabled. */
+ 	if (test_bit(ICE_VF_STATE_DIS, vf->vf_states)) {
+ 		err = -EPERM;
+@@ -3648,19 +3650,14 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event)
+ 				      NULL, 0);
+ 		dev_err(dev, "Invalid message from VF %d, opcode %d, len %d, error %d\n",
+ 			vf_id, v_opcode, msglen, err);
+-		ice_put_vf(vf);
+-		return;
++		goto finish;
+ 	}
+ 
+-	mutex_lock(&vf->cfg_lock);
+-
+ 	if (!ice_vc_is_opcode_allowed(vf, v_opcode)) {
+ 		ice_vc_send_msg_to_vf(vf, v_opcode,
+ 				      VIRTCHNL_STATUS_ERR_NOT_SUPPORTED, NULL,
+ 				      0);
+-		mutex_unlock(&vf->cfg_lock);
+-		ice_put_vf(vf);
+-		return;
++		goto finish;
+ 	}
+ 
+ 	switch (v_opcode) {
+@@ -3773,6 +3770,7 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event)
+ 			 vf_id, v_opcode, err);
+ 	}
+ 
++finish:
+ 	mutex_unlock(&vf->cfg_lock);
+ 	ice_put_vf(vf);
+ }
+-- 
+2.35.1
 
-> Signed-off-by: Jeff Evanson <jeff.evanson@qsc.com>
-> ---
->   drivers/net/ethernet/intel/igc/igc_main.c | 36 +++++++++++++++++------
->   1 file changed, 27 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-> index a36a18c84aeb..d706de95dc06 100644
-> --- a/drivers/net/ethernet/intel/igc/igc_main.c
-> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
-> @@ -6073,7 +6073,7 @@ static void igc_trigger_rxtxq_interrupt(struct igc_adapter *adapter,
->   int igc_xsk_wakeup(struct net_device *dev, u32 queue_id, u32 flags)
->   {
->   	struct igc_adapter *adapter = netdev_priv(dev);
-> -	struct igc_q_vector *q_vector;
-> +	struct igc_q_vector *txq_vector = 0, *rxq_vector = 0;
-
-Should you use NULL instead of 0?
-
-
-Kind regards,
-
-Paul
-
-
->   	struct igc_ring *ring;
->   
->   	if (test_bit(__IGC_DOWN, &adapter->state))
-> @@ -6082,17 +6082,35 @@ int igc_xsk_wakeup(struct net_device *dev, u32 queue_id, u32 flags)
->   	if (!igc_xdp_is_enabled(adapter))
->   		return -ENXIO;
->   
-> -	if (queue_id >= adapter->num_rx_queues)
-> -		return -EINVAL;
-> +	if (flags & XDP_WAKEUP_RX) {
-> +		if (queue_id >= adapter->num_rx_queues)
-> +			return -EINVAL;
->   
-> -	ring = adapter->rx_ring[queue_id];
-> +		ring = adapter->rx_ring[queue_id];
-> +		if (!ring->xsk_pool)
-> +			return -ENXIO;
->   
-> -	if (!ring->xsk_pool)
-> -		return -ENXIO;
-> +		rxq_vector = ring->q_vector;
-> +	}
-> +
-> +	if (flags & XDP_WAKEUP_TX) {
-> +		if (queue_id >= adapter->num_tx_queues)
-> +			return -EINVAL;
-> +
-> +		ring = adapter->tx_ring[queue_id];
-> +		if (!ring->xsk_pool)
-> +			return -ENXIO;
-> +
-> +		txq_vector = ring->q_vector;
-> +	}
-> +
-> +	if (rxq_vector &&
-> +	    !napi_if_scheduled_mark_missed(&rxq_vector->napi))
-> +		igc_trigger_rxtxq_interrupt(adapter, rxq_vector);
->   
-> -	q_vector = adapter->q_vector[queue_id];
-> -	if (!napi_if_scheduled_mark_missed(&q_vector->napi))
-> -		igc_trigger_rxtxq_interrupt(adapter, q_vector);
-> +	if (txq_vector && txq_vector != rxq_vector &&
-> +	    !napi_if_scheduled_mark_missed(&txq_vector->napi))
-> +		igc_trigger_rxtxq_interrupt(adapter, txq_vector);
->   
->   	return 0;
->   }
