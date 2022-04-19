@@ -2,191 +2,270 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 20DC65075F0
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 19:06:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF7055075F8
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 19:06:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355537AbiDSRHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 13:07:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53858 "EHLO
+        id S242535AbiDSRIa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 13:08:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355710AbiDSRHI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 13:07:08 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 513291583E;
-        Tue, 19 Apr 2022 10:03:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650387824; x=1681923824;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=9qpy676qE+GQBGiNZy1vWDAhbXjYL7YBg7SD1FIiYLg=;
-  b=jPJDFi10UNA5UTWPkD3v2gKiEZ3O+pYUHddOc0kAJ8V6AVOQ+HaUvFJo
-   qiWr964+NT1dctnHmOCOXr139Edj9dKvsNHAudALmr7XspbRL+rQhMVCT
-   gfNFUwIamXF/NqSbgWoXJmB7jFAZkp3yUJyOOxSCSc8vjuDcQrFvmP/r0
-   Lixc+7vC/dKgkxZu5Sind6Td16lAahKNCd2yRjbYfScin4BFT3g8x6inE
-   iA4ov5DMu7Nl01InWzPOtGCyf6nY6tx5cWCn/ovo6cCOZkcj+spU9J7/S
-   G2ImdHzkORx8uYS/CLyfYRQjHptV6xxrQPzxUrSupR9fwWc3DwrQdSnsY
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10322"; a="263279532"
-X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="263279532"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:03:43 -0700
-X-IronPort-AV: E=Sophos;i="5.90,273,1643702400"; 
-   d="scan'208";a="576190835"
-Received: from magillis-mobl.amr.corp.intel.com (HELO vcostago-mobl3) ([10.255.229.182])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2022 10:03:43 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Jeff Evanson <Jeff.Evanson@qsc.com>,
-        Jeff Evanson <jeff.evanson@gmail.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc:     "jeff.evanson@gmail.com" <jeff.evanson@gmail.com>
-Subject: RE: [PATCH 2/2] Trigger proper interrupts in igc_xsk_wakeup
-In-Reply-To: <CY4PR16MB002318405355FB6AC87CA0919BF39@CY4PR16MB0023.namprd16.prod.outlook.com>
-References: <20220415210546.11294-1-jeff.evanson@qsc.com>
- <87v8v6477g.fsf@intel.com>
- <CY4PR16MB002318405355FB6AC87CA0919BF39@CY4PR16MB0023.namprd16.prod.outlook.com>
-Date:   Tue, 19 Apr 2022 10:03:43 -0700
-Message-ID: <87v8v5t380.fsf@intel.com>
+        with ESMTP id S1355658AbiDSRIT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 13:08:19 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CE77C27;
+        Tue, 19 Apr 2022 10:05:36 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id t12so16365822pll.7;
+        Tue, 19 Apr 2022 10:05:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8ZTpwwjWiUlON22xzLgKdHd8VWcQjI2RH3VYw9E+BRA=;
+        b=XwqJYP8HTHULUm6FC3qt+UFGgILNMC6y5SOK7h+dQS1PMGzHLz7c22I9Hq2KiyNGrY
+         NUPZ8ALUQGZG1aEvAff3zRMkQx6YsgJSvPE/IKpvDl6Jjn+Dr9eHHhzf/XcizlJwOV1Y
+         cq7DdIVQdxSw9w8hVZv49SgJha1ujFm2TaI4FwNIs59mxS2wgcxnjHC4ZupavGNFzkNb
+         gEF99CdT4mVj73naw/RD4qCTKExI4BusPZtRGUkzT/tzZCMQb6yxYCEVDdTxSTJb9KVy
+         kl8ezYtXWuNT7SKwZC45EFFftkOUIbNpvjRW/0V2scbNdpa/kMCRXLfgOAqOkOpoNYR3
+         Styw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8ZTpwwjWiUlON22xzLgKdHd8VWcQjI2RH3VYw9E+BRA=;
+        b=C03LKY5UwbmocaR1zTHxbJs+9X0iKawHOup7FPinlb8HkN5PCb4lPP+VflUBfQ1vyd
+         blPZSi9Q5a59kkCRh5oBCquohCYG88Ma/GgRJNvEEgvKLZMtA/vte3DEPYU3aiwS7eGq
+         8JSKoFU/t7Lo23mddM39u4rLJPf5U0LYAUiL67ZPnWhGwSeyBpIQEMeH/IcYjjJ14vX3
+         IqIdb/RfCzsCcujO6/PoSqJ2AzsT76SNqzb8vHV6VSFIRo7fK8TJ2GavKi+tvSIrv3zg
+         OnFLtJlj1WzYOu1P5Tx99OfUHlo/xieaphm/RNo0SfblbuScQQ7QlaQJFlD/NftfRgqD
+         zIlA==
+X-Gm-Message-State: AOAM533jJhcfo1YHqdgov3Tlhbc9FUWC9pPvn6IgT+WpdTzcvfxq/EBU
+        ObEpayg9I7eRnAlgKfcBRJLE3RoeXGX9xV4/NVU=
+X-Google-Smtp-Source: ABdhPJyoNIpPkCBjZ09bvzfLUXUuLAwyF3S/416zx2JwCio6OO1NY0ChYGhIvL5goF4GFFN9KmqsRVvcwieAWx6KAqg=
+X-Received: by 2002:a17:903:2310:b0:15a:19ea:a2be with SMTP id
+ d16-20020a170903231000b0015a19eaa2bemr2590258plh.67.1650387935809; Tue, 19
+ Apr 2022 10:05:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220414161233.170780-1-sdf@google.com> <CAADnVQJ-kiWJopu+VjLDXYb9ifjKyA2h8MO=CaQppNxbHqH=-Q@mail.gmail.com>
+ <Yl2W5ThWCFPIeLW8@google.com> <CAADnVQ+X5HPDsqXX6mHWV4sT9=2gQSag5cc9w6iJG_YE577ZEw@mail.gmail.com>
+ <Yl7YXXIG/EECZxd9@google.com> <CAADnVQK8ARjeY2Vro0B0-6vxhgrWg-jhJqkbHh0s1xinSq2-+Q@mail.gmail.com>
+ <CAADnVQLvULRaAyO2E89c_FMNW9HGXr=nkFc9B5V-5WmXKbaRuw@mail.gmail.com>
+ <CAKH8qBvApjJ5G4bNMtHxT+Fcw6uKOTZh1opkaC96OT6Gq55aJg@mail.gmail.com>
+ <CAADnVQJ5qV54=7QMJfUzdAj1T31xD4aRMSin4npyNmudwP2m+g@mail.gmail.com> <CAKH8qBugYgnqj3wfOi4+974XCTH2hoGbzq43hve1_NjDwNO_eQ@mail.gmail.com>
+In-Reply-To: <CAKH8qBugYgnqj3wfOi4+974XCTH2hoGbzq43hve1_NjDwNO_eQ@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 19 Apr 2022 10:05:24 -0700
+Message-ID: <CAADnVQ+xVE2Fk5BNvSmc8H7BxQojzYACDhatRog+kqCQNG7-8w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2] bpf: move rcu lock management out of
+ BPF_PROG_RUN routines
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jeff,
+On Tue, Apr 19, 2022 at 10:01 AM Stanislav Fomichev <sdf@google.com> wrote:
+>
+> On Tue, Apr 19, 2022 at 9:49 AM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Tue, Apr 19, 2022 at 9:35 AM Stanislav Fomichev <sdf@google.com> wrote:
+> > >
+> > > On Tue, Apr 19, 2022 at 9:32 AM Alexei Starovoitov
+> > > <alexei.starovoitov@gmail.com> wrote:
+> > > >
+> > > > On Tue, Apr 19, 2022 at 9:20 AM Alexei Starovoitov
+> > > > <alexei.starovoitov@gmail.com> wrote:
+> > > > >
+> > > > > On Tue, Apr 19, 2022 at 8:42 AM <sdf@google.com> wrote:
+> > > > > >
+> > > > > > On 04/18, Alexei Starovoitov wrote:
+> > > > > > > On Mon, Apr 18, 2022 at 9:50 AM <sdf@google.com> wrote:
+> > > > > > > >
+> > > > > > > > On 04/16, Alexei Starovoitov wrote:
+> > > > > > > > > On Thu, Apr 14, 2022 at 9:12 AM Stanislav Fomichev <sdf@google.com>
+> > > > > > > wrote:
+> > > > > > > > > > +static int
+> > > > > > > > > > +bpf_prog_run_array_cg_flags(const struct cgroup_bpf *cgrp,
+> > > > > > > > > > +                           enum cgroup_bpf_attach_type atype,
+> > > > > > > > > > +                           const void *ctx, bpf_prog_run_fn
+> > > > > > > run_prog,
+> > > > > > > > > > +                           int retval, u32 *ret_flags)
+> > > > > > > > > > +{
+> > > > > > > > > > +       const struct bpf_prog_array_item *item;
+> > > > > > > > > > +       const struct bpf_prog *prog;
+> > > > > > > > > > +       const struct bpf_prog_array *array;
+> > > > > > > > > > +       struct bpf_run_ctx *old_run_ctx;
+> > > > > > > > > > +       struct bpf_cg_run_ctx run_ctx;
+> > > > > > > > > > +       u32 func_ret;
+> > > > > > > > > > +
+> > > > > > > > > > +       run_ctx.retval = retval;
+> > > > > > > > > > +       migrate_disable();
+> > > > > > > > > > +       rcu_read_lock();
+> > > > > > > > > > +       array = rcu_dereference(cgrp->effective[atype]);
+> > > > > > > > > > +       item = &array->items[0];
+> > > > > > > > > > +       old_run_ctx = bpf_set_run_ctx(&run_ctx.run_ctx);
+> > > > > > > > > > +       while ((prog = READ_ONCE(item->prog))) {
+> > > > > > > > > > +               run_ctx.prog_item = item;
+> > > > > > > > > > +               func_ret = run_prog(prog, ctx);
+> > > > > > > > > ...
+> > > > > > > > > > +       ret = bpf_prog_run_array_cg(&cgrp->bpf, CGROUP_GETSOCKOPT,
+> > > > > > > > > >                                     &ctx, bpf_prog_run, retval);
+> > > > > > > >
+> > > > > > > > > Did you check the asm that bpf_prog_run gets inlined
+> > > > > > > > > after being passed as a pointer to a function?
+> > > > > > > > > Crossing fingers... I suspect not every compiler can do that :(
+> > > > > > > > > De-virtualization optimization used to be tricky.
+> > > > > > > >
+> > > > > > > > No, I didn't, but looking at it right now, both gcc and clang
+> > > > > > > > seem to be doing inlining all way up to bpf_dispatcher_nop_func.
+> > > > > > > >
+> > > > > > > > clang:
+> > > > > > > >
+> > > > > > > >    0000000000001750 <__cgroup_bpf_run_filter_sock_addr>:
+> > > > > > > >    __cgroup_bpf_run_filter_sock_addr():
+> > > > > > > >    ./kernel/bpf/cgroup.c:1226
+> > > > > > > >    int __cgroup_bpf_run_filter_sock_addr(struct sock *sk,
+> > > > > > > >                                       struct sockaddr *uaddr,
+> > > > > > > >                                       enum cgroup_bpf_attach_type atype,
+> > > > > > > >                                       void *t_ctx,
+> > > > > > > >                                       u32 *flags)
+> > > > > > > >    {
+> > > > > > > >
+> > > > > > > >    ...
+> > > > > > > >
+> > > > > > > >    ./include/linux/filter.h:628
+> > > > > > > >                 ret = dfunc(ctx, prog->insnsi, prog->bpf_func);
+> > > > > > > >        1980:    49 8d 75 48             lea    0x48(%r13),%rsi
+> > > > > > > >    bpf_dispatcher_nop_func():
+> > > > > > > >    ./include/linux/bpf.h:804
+> > > > > > > >         return bpf_func(ctx, insnsi);
+> > > > > > > >        1984:    4c 89 f7                mov    %r14,%rdi
+> > > > > > > >        1987:    41 ff 55 30             call   *0x30(%r13)
+> > > > > > > >        198b:    89 c3                   mov    %eax,%ebx
+> > > > > > > >
+> > > > > > > > gcc (w/retpoline):
+> > > > > > > >
+> > > > > > > >    0000000000001110 <__cgroup_bpf_run_filter_sock_addr>:
+> > > > > > > >    __cgroup_bpf_run_filter_sock_addr():
+> > > > > > > >    kernel/bpf/cgroup.c:1226
+> > > > > > > >    {
+> > > > > > > >
+> > > > > > > >    ...
+> > > > > > > >
+> > > > > > > >    ./include/linux/filter.h:628
+> > > > > > > >                 ret = dfunc(ctx, prog->insnsi, prog->bpf_func);
+> > > > > > > >        11c5:    49 8d 75 48             lea    0x48(%r13),%rsi
+> > > > > > > >    bpf_dispatcher_nop_func():
+> > > > > > > >    ./include/linux/bpf.h:804
+> > > > > > > >        11c9:    48 8d 7c 24 10          lea    0x10(%rsp),%rdi
+> > > > > > > >        11ce:    e8 00 00 00 00          call   11d3
+> > > > > > > > <__cgroup_bpf_run_filter_sock_addr+0xc3>
+> > > > > > > >                         11cf: R_X86_64_PLT32
+> > > > > > > __x86_indirect_thunk_rax-0x4
+> > > > > > > >        11d3:    89 c3                   mov    %eax,%ebx
+> > > > > >
+> > > > > > > Hmm. I'm not sure how you've got this asm.
+> > > > > > > Here is what I see with gcc 8 and gcc 10:
+> > > > > > > bpf_prog_run_array_cg:
+> > > > > > > ...
+> > > > > > >          movq    %rcx, %r12      # run_prog, run_prog
+> > > > > > > ...
+> > > > > > > # ../kernel/bpf/cgroup.c:77:            run_ctx.prog_item = item;
+> > > > > > >          movq    %rbx, (%rsp)    # item, run_ctx.prog_item
+> > > > > > > # ../kernel/bpf/cgroup.c:78:            if (!run_prog(prog, ctx) &&
+> > > > > > > !IS_ERR_VALUE((long)run_ctx.retval))
+> > > > > > >          movq    %rbp, %rsi      # ctx,
+> > > > > > >          call    *%r12   # run_prog
+> > > > > >
+> > > > > > > __cgroup_bpf_run_filter_sk:
+> > > > > > >          movq    $bpf_prog_run, %rcx     #,
+> > > > > > > # ../kernel/bpf/cgroup.c:1202:  return
+> > > > > > > bpf_prog_run_array_cg(&cgrp->bpf, atype, sk, bpf_prog_run, 0);
+> > > > > > >          leaq    1520(%rax), %rdi        #, tmp92
+> > > > > > > # ../kernel/bpf/cgroup.c:1202:  return
+> > > > > > > bpf_prog_run_array_cg(&cgrp->bpf, atype, sk, bpf_prog_run, 0);
+> > > > > > >          jmp     bpf_prog_run_array_cg   #
+> > > > > >
+> > > > > > > This is without kasan, lockdep and all debug configs are off.
+> > > > > >
+> > > > > > > So the generated code is pretty bad as I predicted :(
+> > > > > >
+> > > > > > > So I'm afraid this approach is no go.
+> > > > > >
+> > > > > > I've retested again and it still unrolls it for me on gcc 11 :-/
+> > > > > > Anyway, I guess we have two options:
+> > > > > >
+> > > > > > 1. Go back to defines.
+> > > > > > 2. Don't pass a ptr to func, but pass an enum which indicates whether
+> > > > > >     to use bpf_prog_run or __bpf_prog_run_save_cb. Seems like in this
+> > > > > >     case the compiler shouldn't have any trouble unwrapping it?
+> > > > > >
+> > > > > > I'll prototype and send (2). If it won't work out we can always get back
+> > > > > > to (1).
+> > > > >
+> > > > > Going back to defines is probably not necessary.
+> > > > > Could you try moving bpf_prog_run_array_cg*() back to .h
+> > > > > and use static __always_inline ?
+> > > >
+> > > > Actually below was enough for gcc 8 and 10:
+> > > > -static int
+> > > > +static __always_inline int
+> > > >  bpf_prog_run_array_cg_flags(const struct cgroup_bpf *cgrp,
+> > > >                             enum cgroup_bpf_attach_type atype,
+> > > >                             const void *ctx, bpf_prog_run_fn run_prog,
+> > > > @@ -55,7 +55,7 @@ bpf_prog_run_array_cg_flags(const struct cgroup_bpf *cgrp,
+> > > >         return run_ctx.retval;
+> > > >  }
+> > > >
+> > > > -static int
+> > > > +static __always_inline int
+> > > >  bpf_prog_run_array_cg(const struct cgroup_bpf *cgrp,
+> > > >
+> > > > we can keep them in .c and generated code looks good.
+> > > >
+> > > > I can apply it with the above change.
+> > > > wdyt?
+> > >
+> > > Sure, let's go with that if it works! On my side, I managed to get the
+> > > same bad results on gcc-8; moving them to bpf-cgroup.h with
+> > > __always_inline seems to fix it. But if we can keep them in .c, that
+> > > looks even better.
+> >
+> > Ok. Applied.
+> >
+> > As the next step... can we combine bpf_prog_run_array_cg*()
+> > into one function?
+> > The only difference is:
+> > func_ret = run_prog(prog, ctx);
+> > if (!(func_ret & 1)
+> >   vs
+> > if (!run_prog(prog, ctx)
+> >
+> > afaik we don't have a check on the verifier side for possible
+> > return values of cgroup progs,
+> > so it might break some progs if we just do the former
+> > in both cases?
+>
+> Seems like we do have return ranges checking for cgroup progs (I'm
+> looking at check_return_code). Using bpf_prog_run_array_cg_flags
+> everywhere seems possible, I can try and post some patches if it
+> works.
 
-Jeff Evanson <Jeff.Evanson@qsc.com> writes:
-
-> Hi Vinicius. Thank you for the reply.
->
-> The scenario only happens when the transmit queue interrupt is mapped
-> to a different interrupt from the receive queue. In the case where
-> XDP_WAKEUP_TX is set in the flags argument, the previous code would
-> only trigger the interrupt for the receive queue, causing the transmit
-> queue's napi_struct to never be scheduled.
-
-This is a good explanation, adding it to the commit message for the v2
-would be a good idea.
-
->
-> In the scenario where XDP_WAKEUP_TX and XDP_WAKEUP_RX are both set in
-> flags, the receive interrupt is always triggered and the transmit
-> interrupt is only triggered when the transmit q_vector differs from
-> the receive q_vector.
-
-I missed that condition when I looked at the patch. Sorry about that.
-Makes more sense now.
-
-Acked-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-
->
-> Regards,
-> Jeff Evanson
->
-> -----Original Message-----
-> From: Vinicius Costa Gomes <vinicius.gomes@intel.com> 
-> Sent: Monday, April 18, 2022 11:45 AM
-> To: Jeff Evanson <jeff.evanson@gmail.com>; Jesse Brandeburg <jesse.brandeburg@intel.com>; Tony Nguyen <anthony.l.nguyen@intel.com>; David S. Miller <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>; intel-wired-lan@lists.osuosl.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org
-> Cc: Jeff Evanson <Jeff.Evanson@qsc.com>; jeff.evanson@gmail.com
-> Subject: Re: [PATCH 2/2] Trigger proper interrupts in igc_xsk_wakeup
->
-> -External-
->
-> Jeff Evanson <jeff.evanson@gmail.com> writes:
->
->> in igc_xsk_wakeup, trigger the proper interrupt based on whether flags 
->> contains XDP_WAKEUP_RX and/or XDP_WAKEUP_TX
->>
->> Signed-off-by: Jeff Evanson <jeff.evanson@qsc.com>
->> ---
->>  drivers/net/ethernet/intel/igc/igc_main.c | 36 
->> +++++++++++++++++------
->>  1 file changed, 27 insertions(+), 9 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c 
->> b/drivers/net/ethernet/intel/igc/igc_main.c
->> index a36a18c84aeb..d706de95dc06 100644
->> --- a/drivers/net/ethernet/intel/igc/igc_main.c
->> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
->> @@ -6073,7 +6073,7 @@ static void igc_trigger_rxtxq_interrupt(struct 
->> igc_adapter *adapter,  int igc_xsk_wakeup(struct net_device *dev, u32 
->> queue_id, u32 flags)  {
->>  	struct igc_adapter *adapter = netdev_priv(dev);
->> -	struct igc_q_vector *q_vector;
->> +	struct igc_q_vector *txq_vector = 0, *rxq_vector = 0;
->>  	struct igc_ring *ring;
->>  
->>  	if (test_bit(__IGC_DOWN, &adapter->state)) @@ -6082,17 +6082,35 @@ 
->> int igc_xsk_wakeup(struct net_device *dev, u32 queue_id, u32 flags)
->>  	if (!igc_xdp_is_enabled(adapter))
->>  		return -ENXIO;
->>  
->> -	if (queue_id >= adapter->num_rx_queues)
->> -		return -EINVAL;
->> +	if (flags & XDP_WAKEUP_RX) {
->> +		if (queue_id >= adapter->num_rx_queues)
->> +			return -EINVAL;
->>  
->> -	ring = adapter->rx_ring[queue_id];
->> +		ring = adapter->rx_ring[queue_id];
->> +		if (!ring->xsk_pool)
->> +			return -ENXIO;
->>  
->> -	if (!ring->xsk_pool)
->> -		return -ENXIO;
->> +		rxq_vector = ring->q_vector;
->> +	}
->> +
->> +	if (flags & XDP_WAKEUP_TX) {
->> +		if (queue_id >= adapter->num_tx_queues)
->> +			return -EINVAL;
->> +
->> +		ring = adapter->tx_ring[queue_id];
->> +		if (!ring->xsk_pool)
->> +			return -ENXIO;
->> +
->> +		txq_vector = ring->q_vector;
->> +	}
->> +
->> +	if (rxq_vector &&
->> +	    !napi_if_scheduled_mark_missed(&rxq_vector->napi))
->> +		igc_trigger_rxtxq_interrupt(adapter, rxq_vector);
->>  
->> -	q_vector = adapter->q_vector[queue_id];
->> -	if (!napi_if_scheduled_mark_missed(&q_vector->napi))
->> -		igc_trigger_rxtxq_interrupt(adapter, q_vector);
->> +	if (txq_vector && txq_vector != rxq_vector &&
->> +	    !napi_if_scheduled_mark_missed(&txq_vector->napi))
->> +		igc_trigger_rxtxq_interrupt(adapter, txq_vector);
->
-> Two things:
->  - My imagination was not able to produce a scenario where this commit  would solve any problems. Can you explain better the case where the  current code would cause the wrong interrupt to be generated (or miss  generating an interrupt)? (this should be in the commit message)
->  - I think that with this patch applied, there would cases (both TX and  RX flags set) that we cause two writes into the EICS register. That  could cause unnecessary wakeups.
->
->>  
->>  	return 0;
->>  }
->> --
->> 2.17.1
->>
->
-> Cheers,
-> -- 
-> Vinicius
->
-
--- 
-Vinicius
+Thanks!
+Since it's always_inline extra 'if (ret_flags) *ret_flags = ...'
+in the critical path is fine, since it will be optimized out
+by the compiler when ret_flags are NULL.
+Hopefully the compiler can hoist the check out of the while loop too
+in case it's not NULL. But no big deal.
+That array has typically only one prog in it.
