@@ -2,83 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CCEA6507AA5
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 22:06:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7421507AEB
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 22:26:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356658AbiDSUJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 16:09:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58456 "EHLO
+        id S1354068AbiDSU3W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 16:29:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355603AbiDSUJN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 16:09:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 969EB38798;
-        Tue, 19 Apr 2022 13:06:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4238CB81BE5;
-        Tue, 19 Apr 2022 20:06:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0727C385A7;
-        Tue, 19 Apr 2022 20:06:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650398787;
-        bh=4+lTB5YmUjN+zF2yL00arevxemxnjWYzr3VBboPIBu4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=sqwqTu7PvFwEJxCvnz1nOX1kl6fvoSMq11rmkgo+1zwATi3M0b6sDoijk7leRI3to
-         dELkCT0y8ekge9c6ORcBaer0wR0f+aOYGq1X41dhYjvfmFDUIkuEvppvsOL/OexIjE
-         8lyD5qQYroidDoztCRMk1d9Twuk24O0272lI7fvRAEJU/+xPauG3jBT9dmtusRFBex
-         c051cbOfKbidbKPDR5cf2ehnheH2bu9T5x4jUPClflhjPFqnI5AYjarsdBfv77Cqh2
-         +GIHZZUrSxRtXDtKhjzNSt7qzOKJDMZ4z0fY9nD+wLIfAy4GIGBJXoUYnN7G4Syaa5
-         0vodi6rfal54w==
-Message-ID: <1941bfc8-fa2a-16f6-a70b-df3b7d963dd7@kernel.org>
-Date:   Tue, 19 Apr 2022 14:06:23 -0600
+        with ESMTP id S236926AbiDSU3V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 16:29:21 -0400
+Received: from louie.mork.no (louie.mork.no [IPv6:2001:41c8:51:8a:feff:ff:fe00:e5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACA65366A7;
+        Tue, 19 Apr 2022 13:26:37 -0700 (PDT)
+Received: from canardo.dyn.mork.no ([IPv6:2a01:799:c9f:8600:0:0:0:1])
+        (authenticated bits=0)
+        by louie.mork.no (8.15.2/8.15.2) with ESMTPSA id 23JKPvrg1019330
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
+        Tue, 19 Apr 2022 21:25:59 +0100
+Received: from miraculix.mork.no ([IPv6:2a01:799:c9f:8602:8cd5:a7b0:d07:d516])
+        (authenticated bits=0)
+        by canardo.dyn.mork.no (8.15.2/8.15.2) with ESMTPSA id 23JKPsx11417014
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
+        Tue, 19 Apr 2022 22:25:54 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1650399957; bh=GL1yC0TQSRHkqmV/DSr+k6th0pBM0w7r0/8fvjcp1gQ=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=N9XJCaG7CkPGlMm9+pIlPrXlHhqrZ26J43Ph+m4WbC7YPXplpV4mz+PSFefJbgrP3
+         wA5/ElIgfAPeVymYuL0n696i2vaJWOy0YQamWajOMi6L/UOPOCg6fAcx5x9U5Blb75
+         6fum5px+jibp89M1pvOY0iFtyjirVjbBnTpJIsJE=
+Received: (nullmailer pid 913495 invoked by uid 1000);
+        Tue, 19 Apr 2022 20:25:54 -0000
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     Oliver Neukum <oneukum@suse.com>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Johan Hovold <johan@kernel.org>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Dongliang Mu <dzm91@hust.edu.cn>,
+        Oliver Neukum <oliver@neukum.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        syzbot+eabbf2aaa999cc507108@syzkaller.appspotmail.com,
+        USB <linux-usb@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] driver: usb: nullify dangling pointer in cdc_ncm_free
+Organization: m
+References: <20220409120901.267526-1-dzm91@hust.edu.cn>
+        <YlQbqnYP/jcYinvz@hovoldconsulting.com>
+        <CAHp75VeTqmdLhavZ+VbBYSFMDHr0FG4iKFGdbzE-wo5MCNikAA@mail.gmail.com>
+        <d851497f-7960-b606-2f87-eb9bff89c8ac@suse.com>
+Date:   Tue, 19 Apr 2022 22:25:54 +0200
+In-Reply-To: <d851497f-7960-b606-2f87-eb9bff89c8ac@suse.com> (Oliver Neukum's
+        message of "Tue, 19 Apr 2022 13:47:40 +0200")
+Message-ID: <871qxsrfal.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.8.0
-Subject: Re: [PATCH nf v2 2/2] netfilter: Use l3mdev flow key when re-routing
- mangled packets
-Content-Language: en-US
-To:     Martin Willi <martin@strongswan.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-References: <20220419134701.153090-1-martin@strongswan.org>
- <20220419134701.153090-3-martin@strongswan.org>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20220419134701.153090-3-martin@strongswan.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-10.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.103.5 at canardo
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/19/22 7:47 AM, Martin Willi wrote:
-> Commit 40867d74c374 ("net: Add l3mdev index to flow struct and avoid oif
-> reset for port devices") introduces a flow key specific for layer 3
-> domains, such as a VRF master device. This allows for explicit VRF domain
-> selection instead of abusing the oif flow key.
-> 
-> Update ip[6]_route_me_harder() to make use of that new key when re-routing
-> mangled packets within VRFs instead of setting the flow oif, making it
-> consistent with other users.
-> 
-> Signed-off-by: Martin Willi <martin@strongswan.org>
-> ---
->  net/ipv4/netfilter.c | 3 +--
->  net/ipv6/netfilter.c | 3 +--
->  2 files changed, 2 insertions(+), 4 deletions(-)
-> 
->
+Oliver Neukum <oneukum@suse.com> writes:
 
-This one will go to -next
+> It seems to me that fundamentally the order of actions to handle
+> a hotunplug must mirror the order in a hotplug. We can add more hooks
+> if that turns out to be necessary for some drivers, but the basic
+> reverse mirrored order must be supported and I very much favor
+> restoring it as default.
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+FWIW, I agree 100% with this.  Please go ahead with the revert of commit
+2c9d6c2b871d ("usbnet: run unbind() before unregister_netdev()").
+
+AFAICS, your proposed new hook should solve the original problem just
+fine.
+
+
+Bj=C3=B8rn
+
+
+
 
 
