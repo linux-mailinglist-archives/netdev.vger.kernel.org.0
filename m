@@ -2,122 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3563C5068DC
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 12:37:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ED2350693E
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 13:00:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348820AbiDSKkC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 06:40:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43060 "EHLO
+        id S1349052AbiDSLCX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 07:02:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238239AbiDSKkB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 06:40:01 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B91372B19F;
-        Tue, 19 Apr 2022 03:37:15 -0700 (PDT)
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23J9L0pq028174;
-        Tue, 19 Apr 2022 10:37:05 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=yC4FBruC+6vmK802CppACHaf5lBfmmagRdOytRhheOQ=;
- b=kX5fFS9LM6gl99AwAiFuCnczuIWq16fpxRKaOlSjfp+NI/mhhYZZ+ebFx5NwAxrnHBnn
- 5xwnj2E/iHCV8p5jmDYPqMjf2dZesBHRuc1IXe7bZynVAWjFvNbZzP1IV2QtA2dJmhDR
- qHpceCNU00/OO+R/tYjTdnZQYRh0SUyCKMTzWG1APo6vOxY06myW5xipjlewnCj+PNUU
- D/5hkoCDKDQjmREUO6Z5LwnRpAOBNf62ZcbxWBBi8EN4rUtJe7QljhJ1KHJfcDOEv8Ql
- ujf46z4vnLM81B5rugkyX6n5XQRztOWknBOUyXppsE7GJm1+U28kzw/nvWZ1sAp2hK53 SQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fg79x3u1s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 19 Apr 2022 10:37:05 +0000
-Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23JAb4FI026940;
-        Tue, 19 Apr 2022 10:37:04 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fg79x3u13-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 19 Apr 2022 10:37:04 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23JAb2Ei032472;
-        Tue, 19 Apr 2022 10:37:02 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma03ams.nl.ibm.com with ESMTP id 3ffne8m6g9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 19 Apr 2022 10:37:02 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23JAb0tA33423738
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 19 Apr 2022 10:37:00 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F10EDA4084;
-        Tue, 19 Apr 2022 10:36:59 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 80DC1A4085;
-        Tue, 19 Apr 2022 10:36:59 +0000 (GMT)
-Received: from [9.171.65.20] (unknown [9.171.65.20])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 19 Apr 2022 10:36:59 +0000 (GMT)
-Message-ID: <ed643c3d-6ad0-1b3c-1fe3-9157e7aa5859@linux.ibm.com>
-Date:   Tue, 19 Apr 2022 12:37:12 +0200
+        with ESMTP id S1349139AbiDSLCO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 07:02:14 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5B4E1C910
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 03:59:31 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id j8so15377270pll.11
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 03:59:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=arista.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iYXC99B6/QBZVx8POjQwakPzlm8KJ7uY65Fo+GcZWDo=;
+        b=Icj0szRdj9L+BP2I9HxNxECDXNZ9SbwSVsWpJwtieNjZj3LQv94HL6dI6EpDigpc0Q
+         4M6fVT1wumK6vKE/Nv0vE+v+Kn0p4n1kYXft9KuJKsiq0aCXOJd0N69uqjPYcQzq3tsP
+         WriMtBdobdto8Zv/zxCmm75FjgbG8KiCcIwL60ZqJnTGbqKpf84Io12JHsL4786KjYTc
+         hU4Fe5yifK53FjaQJighJno4JSMQmGd0TVOMAEGoicxwl3rJSsJPyJRNbaxpuU1lME4p
+         e02+hG0E1twcMmmTijg7LaTl4tibwycX6RNxE/X/4LzCVzJprqsEjbKacRoI6pbnaFF/
+         6Cuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iYXC99B6/QBZVx8POjQwakPzlm8KJ7uY65Fo+GcZWDo=;
+        b=0nysU6odM1X+crFWhh+P/2k1VlAVxT+FFiqlGyWyPk6qYv1OPJ5tJVSXIJDd0oZAMY
+         ftVgqmMctDRASJbHQQ6EW4TfxlDr16mOZqdLxTths1/w2WVtzpucdEAUZ8ATCn9+aiIB
+         biLdcqd3+jYYHgpVakNxu0I50z/anbexcYGWa9m1uh0x9LJ8iK4oy0q5XV1DZztZ4M01
+         CwXNGr7SnCY0HatAgp4KWZKKr9sHDf4UZ2yIrehVmuiseRgeoF4elXRt6tgZcrxakari
+         nIrRE4K/4QitpsRtKaZnP5lE3+EznU0lDWFlgNqSJxb8exrYoj3bAgHEIZRyg+gNyHje
+         IqXQ==
+X-Gm-Message-State: AOAM532NmR4rRS4YJembwma90n1MN5EliykUQvVUG6dhdykWq4kHPlbO
+        72zvS5xp869VBiO3MP7Z/WQnnNfRVlN+UA==
+X-Google-Smtp-Source: ABdhPJw8GAKzkWDVFjgiWUZG4OOYCj3yh3y7UH9wsvRIpp0bySKAxhzWWQGXsH3s39xPqQYwlc1URw==
+X-Received: by 2002:a17:902:ccd0:b0:156:7ac2:5600 with SMTP id z16-20020a170902ccd000b001567ac25600mr15239886ple.156.1650365970826;
+        Tue, 19 Apr 2022 03:59:30 -0700 (PDT)
+Received: from localhost.localdomain ([49.37.166.144])
+        by smtp.gmail.com with ESMTPSA id q203-20020a632ad4000000b003987c421eb2sm16503626pgq.34.2022.04.19.03.59.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 03:59:29 -0700 (PDT)
+From:   Arun Ajith S <aajith@arista.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
+        dsahern@kernel.org, yoshfuji@linux-ipv6.org, kuba@kernel.org,
+        pabeni@redhat.com, aajith@arista.com
+Subject: [PATCH net-next] net/ipv6: Enforce limits for accept_unsolicited_na sysctl
+Date:   Tue, 19 Apr 2022 10:59:10 +0000
+Message-Id: <20220419105910.686-1-aajith@arista.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] net/smc: sync err info when TCP connection is refused
-Content-Language: en-US
-To:     Tony Lu <tonylu@linux.alibaba.com>, yacanliu@163.com
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, liuyacan <liuyacan@corp.netease.com>
-References: <20220417123307.1094747-1-yacanliu@163.com>
- <Yl6Nnvnrvqv3ofES@TonyMac-Alibaba>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <Yl6Nnvnrvqv3ofES@TonyMac-Alibaba>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 9GZAdY8RLP3kRzLJHUpw4rQi3LJ89Rd-
-X-Proofpoint-ORIG-GUID: tTdBiRFx4PYqPSNgyd4cloEcdp8i9IBd
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-19_04,2022-04-15_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 clxscore=1011
- priorityscore=1501 bulkscore=0 mlxlogscore=999 spamscore=0 phishscore=0
- adultscore=0 impostorscore=0 lowpriorityscore=0 malwarescore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204190058
-X-Spam-Status: No, score=-5.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H4,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/04/2022 12:23, Tony Lu wrote:
-> On Sun, Apr 17, 2022 at 08:33:07PM +0800, yacanliu@163.com wrote:
->> From: liuyacan <liuyacan@corp.netease.com>
->>
->> In the current implementation, when TCP initiates a connection
->> to an unavailable [ip,port], ECONNREFUSED will be stored in the
->> TCP socket, but SMC will not. However, some apps (like curl) use
->> getsockopt(,,SO_ERROR,,) to get the error information, which makes
->> them miss the error message and behave strangely.
->>
->> Signed-off-by: liuyacan <liuyacan@corp.netease.com>
-> 
-> This fix works for me. I have tested it with curl for unavailable
-> address.
-> 
-> This patch missed net or net-next tag, I think net is preferred.
-> 
-> Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>
-> 
-> Thank you,
-> Tony Lu
+Fix mistake in the original patch where limits were specified but the
+handler didn't take care of the limits.
 
-Thank you both for the fix and the test!
+Signed-off-by: Arun Ajith S <aajith@arista.com>
+---
+ net/ipv6/addrconf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Acked-by: Karsten Graul <kgraul@linux.ibm.com>
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 6473dc84b71d..f01b8a3e1952 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -7043,7 +7043,7 @@ static const struct ctl_table addrconf_sysctl[] = {
+ 		.data		= &ipv6_devconf.accept_unsolicited_na,
+ 		.maxlen		= sizeof(int),
+ 		.mode		= 0644,
+-		.proc_handler	= proc_dointvec,
++		.proc_handler	= proc_dointvec_minmax,
+ 		.extra1		= (void *)SYSCTL_ZERO,
+ 		.extra2		= (void *)SYSCTL_ONE,
+ 	},
+-- 
+2.27.0
+
