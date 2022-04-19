@@ -2,44 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EFCF5077C9
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 20:24:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7956A507844
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 20:26:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356942AbiDSSZZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 14:25:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37434 "EHLO
+        id S1356902AbiDSSYo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 14:24:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357327AbiDSSXJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 14:23:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6346A43496;
-        Tue, 19 Apr 2022 11:15:50 -0700 (PDT)
+        with ESMTP id S1357341AbiDSSXK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 14:23:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 884C33EF03;
+        Tue, 19 Apr 2022 11:15:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1F00FB818E0;
-        Tue, 19 Apr 2022 18:15:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAC96C385A7;
-        Tue, 19 Apr 2022 18:15:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E028861426;
+        Tue, 19 Apr 2022 18:15:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FC2AC385A7;
+        Tue, 19 Apr 2022 18:15:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650392147;
-        bh=j7amTvci1rK5poKpvcIYr4L3A0uwvlLReL8CwaJdS20=;
+        s=k20201202; t=1650392153;
+        bh=+Io3hLHcIRjPNqlAsc4Dro7jHI0gIfKz6QljcJbbR9M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t7lrh+9bIHghDFvN98RiScWItVMMYxqVP+u+5qvp5QOc7qbp8KwtL0YaJG5YJgNCz
-         J/uo3h2wUdvSTUCZr57jusd5dqDLWmHW2PXM3QaMgNT1EF6a1a1z2OKTiVFr6cwOPC
-         EGmE5tFMwySgtUokbWG5njmGzloks1y5OAmg4bs407yfMvZnRFwOGSvH+YKeyKNLDF
-         aZ/9Tuy4nb+rmJNOBoB3v1BdPVz1zpowhP6Q9XZXPRwGHKXjdTjHXAkGXp13mjucKV
-         /Hj9wAeocvCxD+Qk2XvHbMe7omT9j4rflRBirsXHzbKlJqN5Vfg5Yk7if1COwhVrI5
-         9y91S008MVsXg==
+        b=Skufuqq6M3QhB8HovGk4CTwr528/0CrUOGE1IqnV1edXN/ymAZfnrvkERcp0EG7JP
+         rfifYX+4gQQBqqc70lVIMBe3hmqwD4Y1Z4Ne7oLEvyh9sER/UHIlWDIy9wzbIEoJaq
+         PvtQE/IVh9TO+K4wuPzdJO7Mk68i1zhoprgxR/+AOurp+qElybM9iFtudgDSO0Oqlj
+         YxAKV/cjd/IWAelNtHf2D7iWcPwtQJh+OXGr9DjfRwJ1G3dtiaoKVDr1Ok+g7vUqX9
+         //afhZ2az9sdZK5ayzvaFsyi1eUyjA9GMNK3ZmPeBJ7Xa4N6GCOXHDr8eJgQFyhdmJ
+         v2bNKKoCYHTyQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, madalin.bucur@nxp.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 09/12] dpaa_eth: Fix missing of_node_put in dpaa_get_ts_info()
-Date:   Tue, 19 Apr 2022 14:15:22 -0400
-Message-Id: <20220419181525.486166-9-sashal@kernel.org>
+Cc:     Tomas Melin <tomas.melin@vaisala.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, nicolas.ferre@microchip.com,
+        davem@davemloft.net, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 11/12] net: macb: Restart tx only if queue pointer is lagging
+Date:   Tue, 19 Apr 2022 14:15:24 -0400
+Message-Id: <20220419181525.486166-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220419181525.486166-1-sashal@kernel.org>
 References: <20220419181525.486166-1-sashal@kernel.org>
@@ -57,44 +58,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Tomas Melin <tomas.melin@vaisala.com>
 
-[ Upstream commit 1a7eb80d170c28be2928433702256fe2a0bd1e0f ]
+[ Upstream commit 5ad7f18cd82cee8e773d40cc7a1465a526f2615c ]
 
-Both of of_get_parent() and of_parse_phandle() return node pointer with
-refcount incremented, use of_node_put() on it to decrease refcount
-when done.
+commit 4298388574da ("net: macb: restart tx after tx used bit read")
+added support for restarting transmission. Restarting tx does not work
+in case controller asserts TXUBR interrupt and TQBP is already at the end
+of the tx queue. In that situation, restarting tx will immediately cause
+assertion of another TXUBR interrupt. The driver will end up in an infinite
+interrupt loop which it cannot break out of.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+For cases where TQBP is at the end of the tx queue, instead
+only clear TX_USED interrupt. As more data gets pushed to the queue,
+transmission will resume.
+
+This issue was observed on a Xilinx Zynq-7000 based board.
+During stress test of the network interface,
+driver would get stuck on interrupt loop within seconds or minutes
+causing CPU to stall.
+
+Signed-off-by: Tomas Melin <tomas.melin@vaisala.com>
+Tested-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Link: https://lore.kernel.org/r/20220407161659.14532-1-tomas.melin@vaisala.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/cadence/macb_main.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-index 3184c8f7cdd0..6e69bcdf9c40 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-@@ -530,11 +530,15 @@ static int dpaa_get_ts_info(struct net_device *net_dev,
- 	info->phc_index = -1;
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 460bb81acf2b..d8e4842af055 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -1364,6 +1364,7 @@ static void macb_tx_restart(struct macb_queue *queue)
+ 	unsigned int head = queue->tx_head;
+ 	unsigned int tail = queue->tx_tail;
+ 	struct macb *bp = queue->bp;
++	unsigned int head_idx, tbqp;
  
- 	fman_node = of_get_parent(mac_node);
--	if (fman_node)
-+	if (fman_node) {
- 		ptp_node = of_parse_phandle(fman_node, "ptimer-handle", 0);
-+		of_node_put(fman_node);
-+	}
+ 	if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
+ 		queue_writel(queue, ISR, MACB_BIT(TXUBR));
+@@ -1371,6 +1372,13 @@ static void macb_tx_restart(struct macb_queue *queue)
+ 	if (head == tail)
+ 		return;
  
--	if (ptp_node)
-+	if (ptp_node) {
- 		ptp_dev = of_find_device_by_node(ptp_node);
-+		of_node_put(ptp_node);
-+	}
++	tbqp = queue_readl(queue, TBQP) / macb_dma_desc_get_size(bp);
++	tbqp = macb_adj_dma_desc_idx(bp, macb_tx_ring_wrap(bp, tbqp));
++	head_idx = macb_adj_dma_desc_idx(bp, macb_tx_ring_wrap(bp, head));
++
++	if (tbqp == head_idx)
++		return;
++
+ 	macb_writel(bp, NCR, macb_readl(bp, NCR) | MACB_BIT(TSTART));
+ }
  
- 	if (ptp_dev)
- 		ptp = platform_get_drvdata(ptp_dev);
 -- 
 2.35.1
 
