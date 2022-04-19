@@ -2,44 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10661507814
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 20:25:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E4E95077E5
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 20:24:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357093AbiDSSZX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 14:25:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37226 "EHLO
+        id S1357003AbiDSSY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 14:24:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356877AbiDSSWG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 14:22:06 -0400
+        with ESMTP id S1356391AbiDSSWP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 14:22:15 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F7CA3EB98;
-        Tue, 19 Apr 2022 11:14:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ACCD3E5CE;
+        Tue, 19 Apr 2022 11:14:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1FC01B81983;
-        Tue, 19 Apr 2022 18:14:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92F79C385B0;
-        Tue, 19 Apr 2022 18:14:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 48468B81982;
+        Tue, 19 Apr 2022 18:14:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6C7CC385A9;
+        Tue, 19 Apr 2022 18:14:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650392065;
-        bh=l9uC7Jd/JtduUprt9DTiagtw6UvvCPakC11dX7OhYYk=;
+        s=k20201202; t=1650392074;
+        bh=gC60lZdSi3oRwqMdY9pNtyU8x1SgILIAISVp1gviYWw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gn4ckzZxCo8iov6EBz/bn/K81vr0ZYNC3W2kdQmmsUG3FpWCyH/b6fPahyTbC4aAg
-         qwBPqllT3SoT0gVxi0qVtC5KAU6r21oOhvmmGZ7yqE1uyu+W7b/r0kWLrplpnLLjkd
-         KlKXcJr059N7PUI/Pn5RKBtirkqBqOBoZLT1t9jaYs4E8PPbpWtvEKe557mWMLExlX
-         fCBBb2PHd772bT2ehlJ6tMJqihCBs/914+psJJGdMYmUSOVgCtk5vjswawthBlo4BR
-         fpeb65vwrUq19TYlt0VYL+ZuTlgqNbFqB8wi1S5XckrZNemR++yKjv+hhHaUK4DzFS
-         ktXHY83Nwp7eQ==
+        b=tifVCFA03DDmno95dI2tdjQU7Jst06vNhuaeDlMeNmd2QA+uvcmlH/cTEMAtgK9B6
+         i7VxSR7n6LYk1gwlJDcD5HhyFaqEhfoNuw/98nvjdHI9BON4fFHopQvIRUpBA6n8O4
+         3wX3iItJsoAya1UnLUZZGpFkBG1umKd6vBUtutA8mznRk1vjuOLo8Od3MM+buhfLcR
+         lpdyhBaIvC94abO5T7VEliVYvPz11d/hr4IDaLsX+FAaKXEAnsbNESlmsV7W/ZzcZ6
+         aJk5L/0IPK2RGD29EX0r+SeQ82mYgO1J1uU3ul/HmUeMwF2w1ymAaWiKyks2Azv2n8
+         uQLmlWYun9Yrg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, madalin.bucur@nxp.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 11/18] dpaa_eth: Fix missing of_node_put in dpaa_get_ts_info()
-Date:   Tue, 19 Apr 2022 14:13:45 -0400
-Message-Id: <20220419181353.485719-11-sashal@kernel.org>
+Cc:     Tomas Melin <tomas.melin@vaisala.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, nicolas.ferre@microchip.com,
+        davem@davemloft.net, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 14/18] net: macb: Restart tx only if queue pointer is lagging
+Date:   Tue, 19 Apr 2022 14:13:48 -0400
+Message-Id: <20220419181353.485719-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220419181353.485719-1-sashal@kernel.org>
 References: <20220419181353.485719-1-sashal@kernel.org>
@@ -57,44 +58,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Tomas Melin <tomas.melin@vaisala.com>
 
-[ Upstream commit 1a7eb80d170c28be2928433702256fe2a0bd1e0f ]
+[ Upstream commit 5ad7f18cd82cee8e773d40cc7a1465a526f2615c ]
 
-Both of of_get_parent() and of_parse_phandle() return node pointer with
-refcount incremented, use of_node_put() on it to decrease refcount
-when done.
+commit 4298388574da ("net: macb: restart tx after tx used bit read")
+added support for restarting transmission. Restarting tx does not work
+in case controller asserts TXUBR interrupt and TQBP is already at the end
+of the tx queue. In that situation, restarting tx will immediately cause
+assertion of another TXUBR interrupt. The driver will end up in an infinite
+interrupt loop which it cannot break out of.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+For cases where TQBP is at the end of the tx queue, instead
+only clear TX_USED interrupt. As more data gets pushed to the queue,
+transmission will resume.
+
+This issue was observed on a Xilinx Zynq-7000 based board.
+During stress test of the network interface,
+driver would get stuck on interrupt loop within seconds or minutes
+causing CPU to stall.
+
+Signed-off-by: Tomas Melin <tomas.melin@vaisala.com>
+Tested-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Link: https://lore.kernel.org/r/20220407161659.14532-1-tomas.melin@vaisala.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/cadence/macb_main.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-index 1268996b7030..2f9075429c43 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-@@ -489,11 +489,15 @@ static int dpaa_get_ts_info(struct net_device *net_dev,
- 	info->phc_index = -1;
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index f29ec765d684..bd13f91efe7c 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -1531,6 +1531,7 @@ static void macb_tx_restart(struct macb_queue *queue)
+ 	unsigned int head = queue->tx_head;
+ 	unsigned int tail = queue->tx_tail;
+ 	struct macb *bp = queue->bp;
++	unsigned int head_idx, tbqp;
  
- 	fman_node = of_get_parent(mac_node);
--	if (fman_node)
-+	if (fman_node) {
- 		ptp_node = of_parse_phandle(fman_node, "ptimer-handle", 0);
-+		of_node_put(fman_node);
-+	}
+ 	if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
+ 		queue_writel(queue, ISR, MACB_BIT(TXUBR));
+@@ -1538,6 +1539,13 @@ static void macb_tx_restart(struct macb_queue *queue)
+ 	if (head == tail)
+ 		return;
  
--	if (ptp_node)
-+	if (ptp_node) {
- 		ptp_dev = of_find_device_by_node(ptp_node);
-+		of_node_put(ptp_node);
-+	}
++	tbqp = queue_readl(queue, TBQP) / macb_dma_desc_get_size(bp);
++	tbqp = macb_adj_dma_desc_idx(bp, macb_tx_ring_wrap(bp, tbqp));
++	head_idx = macb_adj_dma_desc_idx(bp, macb_tx_ring_wrap(bp, head));
++
++	if (tbqp == head_idx)
++		return;
++
+ 	macb_writel(bp, NCR, macb_readl(bp, NCR) | MACB_BIT(TSTART));
+ }
  
- 	if (ptp_dev)
- 		ptp = platform_get_drvdata(ptp_dev);
 -- 
 2.35.1
 
