@@ -2,66 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 175115075BC
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 19:01:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4C3C5075EF
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 19:06:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356608AbiDSRDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 13:03:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52826 "EHLO
+        id S1355703AbiDSRHI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 13:07:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355547AbiDSRCY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 13:02:24 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23FE53EF2F
-        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 09:50:51 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id p65so32100504ybp.9
-        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 09:50:51 -0700 (PDT)
+        with ESMTP id S1355637AbiDSRG4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 13:06:56 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D949D4A
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 10:01:31 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id bv16so6164826wrb.9
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 10:01:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=fdnLyHFr6tX25lDCYj/ocTCK7A8XBtiyKi3YdmSqiLo=;
-        b=POQBZJ7k69ekGjNVV4WGFz428UQA2xyVZhm8ZN74+Ks3OFQIFTxoYWDtT/mBNcVHgr
-         yAG7+kjuEExeo3WQDAOOwouhbPRDoxo926WEyQerc9gIX/vDAvulLy6do+2B5mbSBg68
-         gIc2Bx59iKZhKEKG9WjMB89EEWsz4iRmRbi3wbGFUZCQ1BDJuBDWopMN8/nEgMqj9www
-         zDAHV4GkTyvdbNqsH8kk9hiTokZVF61ykhspJ8XkOvsQZ2nkVCDD0ZunBhmuDGa4r51m
-         PLX35FC7MLpY7+dzeTbG+1+ZSn/RvXt9FJYI3rs22GRvFQDF3b2d6eSXucgEn7+OYy/H
-         g3Pg==
+        bh=tVEtKw/4SvPK2nGENK1/390yjJ62NRL8On3Rp27u3zU=;
+        b=MUuc4L6Yma9dceTq3B2QHezqo2AShfLUCNkq5NXfgim29JXS/ONX/6OSfImJbJVx0R
+         Lbnf4sZqHdr0tHJs937OEiYcGxisjP0H0W2qNWzo33c+EhJdKaKmD6wANq+n/28uW0w0
+         ptirH3z5fGLVLKDQJtslnT/w4Qkcg/0co3mORwdc7L6E6j1V1GZ1Ror/WrIQ+KUy7bcO
+         Op1waGeFcIPsW6+65gIaGAlq4Grg4hZ+oP6hq3VuPU8mHNosBW1Rb8tuEXOmR1UPJaqe
+         45Cn38BINSTca4W8uIB2qOmvfMl8TjMhmkaWt/E1cSTcYd2jBXeICDuJp37yK5ZTzazF
+         y/EQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=fdnLyHFr6tX25lDCYj/ocTCK7A8XBtiyKi3YdmSqiLo=;
-        b=QFCdBnYvqF3KvVOJGCF+zbJK82KUXvhtyEfd9RYX6blnH0AbNPAcJaLRDq7Hzwsdak
-         58DIJ0BPByWIBdxFKsqqbVm+PB4l5gWPDaw2PxHN96qjxNoCBx5ewgsooYJN5XepVOcC
-         Jtzb31n+QyBShU99hDc/PHzZ4+ZR37NjgOsZ1Xy9Y/G0ny2EgdEL502X58KxBtrQdQku
-         th2jWNyngN7qMY0u5Eq+ixd1SbOWgB4rDGbo8LI63D4TwYrfhzGfGJ4XYejcyn7PZXmB
-         VKpEDFpHM+yB7h2sEDlGcKPB6tEDHBshRSsdlpD3HKzxv4dcGKNcZnOmkUHm7fY8rDJf
-         4CyA==
-X-Gm-Message-State: AOAM530T+ebY/i4ZZL+BFvBzwxXzw0hHu3FSImVd1egm0ZGkG9Jul0AG
-        +iUxEx75+C5G5x2P1miuyhk+cj0ooJeab5rHxzU=
-X-Google-Smtp-Source: ABdhPJzmtjSmel7a70sdRjThE4jWjTL6VvB03q5kfmLO4PsBwAwO06WgS5Ea5GRy8OjJiP81Jpx32vAcNX/u/pX/DPo=
-X-Received: by 2002:a25:8d90:0:b0:634:7136:4570 with SMTP id
- o16-20020a258d90000000b0063471364570mr15877675ybl.582.1650387049568; Tue, 19
- Apr 2022 09:50:49 -0700 (PDT)
+        bh=tVEtKw/4SvPK2nGENK1/390yjJ62NRL8On3Rp27u3zU=;
+        b=PyAQgScZFxDJf9xO4PXWyM4XTtq09w51UPgtfezwpapN3aFvV7SuNoEfeeoW5e7NSJ
+         MGMIAsE3UEy0OfncZ42pV7JN2JmedyjJY/pyuB2+q0k3uuLqRjWspkzcqXKYjBac6bEU
+         VBXUEKNEfjJP8VBg8nbV+t525wINS8hcghG6V43x5o7+ydsl7EiiPxyYSQ3CQgJjuFwq
+         my5vSPMl8A15shco7tUu2YgyIsHuHthJ5q5faKLophoMZEO4Jeh41kd7DGmyr7FSXd39
+         cALxegvszghB/PIJKfrIROkRAlla4gObwOPnvUMcNcAeiEVN81tdHEGRKHLBcaZJ8WNl
+         ZObw==
+X-Gm-Message-State: AOAM531CZ8vH2EXbsY86pGZoThp2taIdR/BLtqLr3RO/Y4DGItoihgm+
+        alQ+fEcmZmpCgG4ouQDVNwbhw7v1nyGfBotSJFTt1A==
+X-Google-Smtp-Source: ABdhPJzMeY/l+Jg74Fwytwk1Ucq/5akwKcfz0vzrvvkb4Ufi6NVuxmdrXCiYTBfMJd+xl15DK109bw1/QvdDILgf3hM=
+X-Received: by 2002:a05:6000:168c:b0:20a:84ea:6647 with SMTP id
+ y12-20020a056000168c00b0020a84ea6647mr12417322wrd.191.1650387689887; Tue, 19
+ Apr 2022 10:01:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210809070455.21051-1-liuhangbin@gmail.com> <162850320655.31628.17692584840907169170.git-patchwork-notify@kernel.org>
-In-Reply-To: <162850320655.31628.17692584840907169170.git-patchwork-notify@kernel.org>
-From:   Eyal Birger <eyal.birger@gmail.com>
-Date:   Tue, 19 Apr 2022 19:50:38 +0300
-Message-ID: <CAHsH6GuZciVLrn7J-DR4S+QU7Xrv422t1kfMyA7r=jADssNw+A@mail.gmail.com>
-Subject: Re: [PATCH net] net: sched: act_mirred: Reset ct info when
- mirror/redirect skb
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, davem@davemloft.net, kuba@kernel.org,
-        mleitner@redhat.com, ahleihel@redhat.com, dcaratti@redhat.com,
-        aconole@redhat.com, roid@nvidia.com,
-        Shmulik Ladkani <shmulik.ladkani@gmail.com>
+References: <20220414161233.170780-1-sdf@google.com> <CAADnVQJ-kiWJopu+VjLDXYb9ifjKyA2h8MO=CaQppNxbHqH=-Q@mail.gmail.com>
+ <Yl2W5ThWCFPIeLW8@google.com> <CAADnVQ+X5HPDsqXX6mHWV4sT9=2gQSag5cc9w6iJG_YE577ZEw@mail.gmail.com>
+ <Yl7YXXIG/EECZxd9@google.com> <CAADnVQK8ARjeY2Vro0B0-6vxhgrWg-jhJqkbHh0s1xinSq2-+Q@mail.gmail.com>
+ <CAADnVQLvULRaAyO2E89c_FMNW9HGXr=nkFc9B5V-5WmXKbaRuw@mail.gmail.com>
+ <CAKH8qBvApjJ5G4bNMtHxT+Fcw6uKOTZh1opkaC96OT6Gq55aJg@mail.gmail.com> <CAADnVQJ5qV54=7QMJfUzdAj1T31xD4aRMSin4npyNmudwP2m+g@mail.gmail.com>
+In-Reply-To: <CAADnVQJ5qV54=7QMJfUzdAj1T31xD4aRMSin4npyNmudwP2m+g@mail.gmail.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Tue, 19 Apr 2022 10:01:18 -0700
+Message-ID: <CAKH8qBugYgnqj3wfOi4+974XCTH2hoGbzq43hve1_NjDwNO_eQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2] bpf: move rcu lock management out of
+ BPF_PROG_RUN routines
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,84 +74,188 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Mon, Aug 9, 2021 at 1:29 PM <patchwork-bot+netdevbpf@kernel.org> wrote:
+On Tue, Apr 19, 2022 at 9:49 AM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> Hello:
->
-> This patch was applied to netdev/net.git (refs/heads/master):
->
-> On Mon,  9 Aug 2021 15:04:55 +0800 you wrote:
-> > When mirror/redirect a skb to a different port, the ct info should be reset
-> > for reclassification. Or the pkts will match unexpected rules. For example,
-> > with following topology and commands:
+> On Tue, Apr 19, 2022 at 9:35 AM Stanislav Fomichev <sdf@google.com> wrote:
 > >
-> >     -----------
-> >               |
-> >        veth0 -+-------
-> >               |
-> >        veth1 -+-------
-> >               |
+> > On Tue, Apr 19, 2022 at 9:32 AM Alexei Starovoitov
+> > <alexei.starovoitov@gmail.com> wrote:
+> > >
+> > > On Tue, Apr 19, 2022 at 9:20 AM Alexei Starovoitov
+> > > <alexei.starovoitov@gmail.com> wrote:
+> > > >
+> > > > On Tue, Apr 19, 2022 at 8:42 AM <sdf@google.com> wrote:
+> > > > >
+> > > > > On 04/18, Alexei Starovoitov wrote:
+> > > > > > On Mon, Apr 18, 2022 at 9:50 AM <sdf@google.com> wrote:
+> > > > > > >
+> > > > > > > On 04/16, Alexei Starovoitov wrote:
+> > > > > > > > On Thu, Apr 14, 2022 at 9:12 AM Stanislav Fomichev <sdf@google.com>
+> > > > > > wrote:
+> > > > > > > > > +static int
+> > > > > > > > > +bpf_prog_run_array_cg_flags(const struct cgroup_bpf *cgrp,
+> > > > > > > > > +                           enum cgroup_bpf_attach_type atype,
+> > > > > > > > > +                           const void *ctx, bpf_prog_run_fn
+> > > > > > run_prog,
+> > > > > > > > > +                           int retval, u32 *ret_flags)
+> > > > > > > > > +{
+> > > > > > > > > +       const struct bpf_prog_array_item *item;
+> > > > > > > > > +       const struct bpf_prog *prog;
+> > > > > > > > > +       const struct bpf_prog_array *array;
+> > > > > > > > > +       struct bpf_run_ctx *old_run_ctx;
+> > > > > > > > > +       struct bpf_cg_run_ctx run_ctx;
+> > > > > > > > > +       u32 func_ret;
+> > > > > > > > > +
+> > > > > > > > > +       run_ctx.retval = retval;
+> > > > > > > > > +       migrate_disable();
+> > > > > > > > > +       rcu_read_lock();
+> > > > > > > > > +       array = rcu_dereference(cgrp->effective[atype]);
+> > > > > > > > > +       item = &array->items[0];
+> > > > > > > > > +       old_run_ctx = bpf_set_run_ctx(&run_ctx.run_ctx);
+> > > > > > > > > +       while ((prog = READ_ONCE(item->prog))) {
+> > > > > > > > > +               run_ctx.prog_item = item;
+> > > > > > > > > +               func_ret = run_prog(prog, ctx);
+> > > > > > > > ...
+> > > > > > > > > +       ret = bpf_prog_run_array_cg(&cgrp->bpf, CGROUP_GETSOCKOPT,
+> > > > > > > > >                                     &ctx, bpf_prog_run, retval);
+> > > > > > >
+> > > > > > > > Did you check the asm that bpf_prog_run gets inlined
+> > > > > > > > after being passed as a pointer to a function?
+> > > > > > > > Crossing fingers... I suspect not every compiler can do that :(
+> > > > > > > > De-virtualization optimization used to be tricky.
+> > > > > > >
+> > > > > > > No, I didn't, but looking at it right now, both gcc and clang
+> > > > > > > seem to be doing inlining all way up to bpf_dispatcher_nop_func.
+> > > > > > >
+> > > > > > > clang:
+> > > > > > >
+> > > > > > >    0000000000001750 <__cgroup_bpf_run_filter_sock_addr>:
+> > > > > > >    __cgroup_bpf_run_filter_sock_addr():
+> > > > > > >    ./kernel/bpf/cgroup.c:1226
+> > > > > > >    int __cgroup_bpf_run_filter_sock_addr(struct sock *sk,
+> > > > > > >                                       struct sockaddr *uaddr,
+> > > > > > >                                       enum cgroup_bpf_attach_type atype,
+> > > > > > >                                       void *t_ctx,
+> > > > > > >                                       u32 *flags)
+> > > > > > >    {
+> > > > > > >
+> > > > > > >    ...
+> > > > > > >
+> > > > > > >    ./include/linux/filter.h:628
+> > > > > > >                 ret = dfunc(ctx, prog->insnsi, prog->bpf_func);
+> > > > > > >        1980:    49 8d 75 48             lea    0x48(%r13),%rsi
+> > > > > > >    bpf_dispatcher_nop_func():
+> > > > > > >    ./include/linux/bpf.h:804
+> > > > > > >         return bpf_func(ctx, insnsi);
+> > > > > > >        1984:    4c 89 f7                mov    %r14,%rdi
+> > > > > > >        1987:    41 ff 55 30             call   *0x30(%r13)
+> > > > > > >        198b:    89 c3                   mov    %eax,%ebx
+> > > > > > >
+> > > > > > > gcc (w/retpoline):
+> > > > > > >
+> > > > > > >    0000000000001110 <__cgroup_bpf_run_filter_sock_addr>:
+> > > > > > >    __cgroup_bpf_run_filter_sock_addr():
+> > > > > > >    kernel/bpf/cgroup.c:1226
+> > > > > > >    {
+> > > > > > >
+> > > > > > >    ...
+> > > > > > >
+> > > > > > >    ./include/linux/filter.h:628
+> > > > > > >                 ret = dfunc(ctx, prog->insnsi, prog->bpf_func);
+> > > > > > >        11c5:    49 8d 75 48             lea    0x48(%r13),%rsi
+> > > > > > >    bpf_dispatcher_nop_func():
+> > > > > > >    ./include/linux/bpf.h:804
+> > > > > > >        11c9:    48 8d 7c 24 10          lea    0x10(%rsp),%rdi
+> > > > > > >        11ce:    e8 00 00 00 00          call   11d3
+> > > > > > > <__cgroup_bpf_run_filter_sock_addr+0xc3>
+> > > > > > >                         11cf: R_X86_64_PLT32
+> > > > > > __x86_indirect_thunk_rax-0x4
+> > > > > > >        11d3:    89 c3                   mov    %eax,%ebx
+> > > > >
+> > > > > > Hmm. I'm not sure how you've got this asm.
+> > > > > > Here is what I see with gcc 8 and gcc 10:
+> > > > > > bpf_prog_run_array_cg:
+> > > > > > ...
+> > > > > >          movq    %rcx, %r12      # run_prog, run_prog
+> > > > > > ...
+> > > > > > # ../kernel/bpf/cgroup.c:77:            run_ctx.prog_item = item;
+> > > > > >          movq    %rbx, (%rsp)    # item, run_ctx.prog_item
+> > > > > > # ../kernel/bpf/cgroup.c:78:            if (!run_prog(prog, ctx) &&
+> > > > > > !IS_ERR_VALUE((long)run_ctx.retval))
+> > > > > >          movq    %rbp, %rsi      # ctx,
+> > > > > >          call    *%r12   # run_prog
+> > > > >
+> > > > > > __cgroup_bpf_run_filter_sk:
+> > > > > >          movq    $bpf_prog_run, %rcx     #,
+> > > > > > # ../kernel/bpf/cgroup.c:1202:  return
+> > > > > > bpf_prog_run_array_cg(&cgrp->bpf, atype, sk, bpf_prog_run, 0);
+> > > > > >          leaq    1520(%rax), %rdi        #, tmp92
+> > > > > > # ../kernel/bpf/cgroup.c:1202:  return
+> > > > > > bpf_prog_run_array_cg(&cgrp->bpf, atype, sk, bpf_prog_run, 0);
+> > > > > >          jmp     bpf_prog_run_array_cg   #
+> > > > >
+> > > > > > This is without kasan, lockdep and all debug configs are off.
+> > > > >
+> > > > > > So the generated code is pretty bad as I predicted :(
+> > > > >
+> > > > > > So I'm afraid this approach is no go.
+> > > > >
+> > > > > I've retested again and it still unrolls it for me on gcc 11 :-/
+> > > > > Anyway, I guess we have two options:
+> > > > >
+> > > > > 1. Go back to defines.
+> > > > > 2. Don't pass a ptr to func, but pass an enum which indicates whether
+> > > > >     to use bpf_prog_run or __bpf_prog_run_save_cb. Seems like in this
+> > > > >     case the compiler shouldn't have any trouble unwrapping it?
+> > > > >
+> > > > > I'll prototype and send (2). If it won't work out we can always get back
+> > > > > to (1).
+> > > >
+> > > > Going back to defines is probably not necessary.
+> > > > Could you try moving bpf_prog_run_array_cg*() back to .h
+> > > > and use static __always_inline ?
+> > >
+> > > Actually below was enough for gcc 8 and 10:
+> > > -static int
+> > > +static __always_inline int
+> > >  bpf_prog_run_array_cg_flags(const struct cgroup_bpf *cgrp,
+> > >                             enum cgroup_bpf_attach_type atype,
+> > >                             const void *ctx, bpf_prog_run_fn run_prog,
+> > > @@ -55,7 +55,7 @@ bpf_prog_run_array_cg_flags(const struct cgroup_bpf *cgrp,
+> > >         return run_ctx.retval;
+> > >  }
+> > >
+> > > -static int
+> > > +static __always_inline int
+> > >  bpf_prog_run_array_cg(const struct cgroup_bpf *cgrp,
+> > >
+> > > we can keep them in .c and generated code looks good.
+> > >
+> > > I can apply it with the above change.
+> > > wdyt?
 > >
-> > [...]
+> > Sure, let's go with that if it works! On my side, I managed to get the
+> > same bad results on gcc-8; moving them to bpf-cgroup.h with
+> > __always_inline seems to fix it. But if we can keep them in .c, that
+> > looks even better.
 >
-> Here is the summary with links:
->   - [net] net: sched: act_mirred: Reset ct info when mirror/redirect skb
->     https://git.kernel.org/netdev/net/c/d09c548dbf3b
-
-Unfortunately this commit breaks DNAT when performed before going via mirred
-egress->ingress.
-
-The reason is that connection tracking is lost and therefore a new state
-is created on ingress.
-
-This breaks existing setups.
-
-See below a simplified script reproducing this issue.
-
-Therefore I suggest this commit be reverted and a knob is introduced to mirred
-for clearing ct as needed.
-
-Eyal.
-
-Reproduction script:
-
-#!/bin/bash
-
-ip netns add a
-ip netns add b
-
-ip netns exec a sysctl -w net.ipv4.conf.all.forwarding=1
-ip netns exec a sysctl -w net.ipv4.conf.all.accept_local=1
-
-ip link add veth0 netns a type veth peer name veth0 netns b
-ip -net a link set veth0 up
-ip -net a addr add dev veth0 198.51.100.1/30
-
-ip -net a link add dum0 type dummy
-ip -net a link set dev dum0 up
-ip -net a addr add dev dum0 198.51.100.2/32
-
-ip netns exec a iptables -t nat -I OUTPUT -d 10.0.0.1 -j DNAT
---to-destination 10.0.0.2
-ip -net a route add default dev dum0
-ip -net a rule add pref 50 iif dum0 lookup 1000
-ip -net a route add table 1000 default dev veth0
-
-ip netns exec a tc qdisc add dev dum0 clsact
-ip netns exec a tc filter add dev dum0 parent ffff:fff3 prio 50 basic
-action mirred ingress redirect dev dum0
-
-ip -net b link set veth0 up
-ip  -net b addr add 10.0.0.2/32 dev veth0
-ip  -net b addr add 198.51.100.3/30 dev veth0
-
-ip netns exec a ping 10.0.0.1
+> Ok. Applied.
 >
-> You are awesome, thank you!
-> --
-> Deet-doot-dot, I am a bot.
-> https://korg.docs.kernel.org/patchwork/pwbot.html
+> As the next step... can we combine bpf_prog_run_array_cg*()
+> into one function?
+> The only difference is:
+> func_ret = run_prog(prog, ctx);
+> if (!(func_ret & 1)
+>   vs
+> if (!run_prog(prog, ctx)
 >
->
+> afaik we don't have a check on the verifier side for possible
+> return values of cgroup progs,
+> so it might break some progs if we just do the former
+> in both cases?
+
+Seems like we do have return ranges checking for cgroup progs (I'm
+looking at check_return_code). Using bpf_prog_run_array_cg_flags
+everywhere seems possible, I can try and post some patches if it
+works.
