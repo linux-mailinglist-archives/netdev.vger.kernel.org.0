@@ -2,80 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C61915061BD
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 03:37:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B452D5061C3
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 03:41:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245556AbiDSBkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Apr 2022 21:40:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47476 "EHLO
+        id S1343491AbiDSBnr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Apr 2022 21:43:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245585AbiDSBkW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 21:40:22 -0400
-Received: from mail.meizu.com (edge05.meizu.com [157.122.146.251])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 999D123145;
-        Mon, 18 Apr 2022 18:37:39 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail12.meizu.com
- (172.16.1.108) with Microsoft SMTP Server (TLS) id 14.3.487.0; Tue, 19 Apr
- 2022 09:37:39 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Tue, 19 Apr
- 2022 09:37:37 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     Pontus Fuchs <pontus.fuchs@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     Haowen Bai <baihaowen@meizu.com>, <linux-wireless@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH] ar5523: Use kzalloc instead of kmalloc/memset
-Date:   Tue, 19 Apr 2022 09:37:31 +0800
-Message-ID: <1650332252-4994-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
+        with ESMTP id S245727AbiDSBnp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 21:43:45 -0400
+Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 418B525C77;
+        Mon, 18 Apr 2022 18:41:05 -0700 (PDT)
+Received: by mail-qt1-x832.google.com with SMTP id fu34so2573174qtb.8;
+        Mon, 18 Apr 2022 18:41:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WNU/TphCFnbVlBp1Z5GLi2lvQvgI9Sbk164GKyVPu8E=;
+        b=pfU22xzLs21/6Lq/Rrj8jK21a5J0ZtShm14Q1ECtF8xkydqjTPPth5Hf0uUGkd+z2H
+         rBa1VP3+KB/MHJXwCo2BQOrsV0/tPZUz0ddrVNhel8yV8aSGm1ci2ATaJBtRDK8+iyAp
+         yEYrhhDv4+frxfPpvrUYlrExB6gM3Gd8Mns8qKQGbodSz8Gv791RKfkIrbDVtqQLYk9+
+         01glCHJ649U6gSAbcM2vGOcNYebrd2uHjOr/TRU4L8RHovjy6EXALfVDD3K7QIDrPPEj
+         2rLMdo1Q+aNgk0QqEirQ42TTryNRnM4p5lgm3k+RdhRd2b1Kh5qAnvedFjHRTQ+9L1XC
+         3RyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WNU/TphCFnbVlBp1Z5GLi2lvQvgI9Sbk164GKyVPu8E=;
+        b=tZfJ437m1TzcpQhz8x61IlJ1Pjs9aW9bvTHWS1OCOXfytG1quRENNn+ZiRoyvgFgu3
+         hGz7NDMvBpwplArshOw+UEFgjmN+WTarEufa+NlPyrl7QbhKnGxFSsMrHXsSj6DwZB4w
+         5DbQZfbGEIHJS72bXbZSZfTAfGI9xlCUe8RoMlnNEYSPEX9NjR3v2+IHkRkLIw9ggMtm
+         nn76B9ZgX4qhTUNIIjPUWt2E01PJzkCDPytwpcCq5LZDaLTfaESfMuJzJ+GbDLyJdiFu
+         8dkeFaXeH4X3K54P/vbvXjL+XY5riWvgeU1n71TwLjwWOhxI24Xi3cOIBXm/W52NFAUE
+         L65w==
+X-Gm-Message-State: AOAM532PwRovrVhiw7oqUL5km77SeS8o5+SMUpROMJQAh9lK5OHpTFm/
+        7HZgBg1ONdSCl/iMNCKCsss=
+X-Google-Smtp-Source: ABdhPJxW6v4zSCrzZlfYGwY7zwHvHS0HEYIJAi4Sf+TOZJQVtZsBpPB1dvzIRUobBStfs2t4C4oGbw==
+X-Received: by 2002:a05:622a:1813:b0:2f1:fb18:3ea3 with SMTP id t19-20020a05622a181300b002f1fb183ea3mr5998736qtc.108.1650332464480;
+        Mon, 18 Apr 2022 18:41:04 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id 187-20020a370bc4000000b0069c8f01368csm6490447qkl.92.2022.04.18.18.41.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Apr 2022 18:41:04 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: lv.ruyi@zte.com.cn
+To:     f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com,
+        andrew@lunn.ch
+Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] net: ethernet: mtk_eth_soc: fix error check return value of debugfs_create_dir()
+Date:   Tue, 19 Apr 2022 01:40:56 +0000
+Message-Id: <20220419014056.2561750-1-lv.ruyi@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,KHOP_HELO_FCRDNS,
-        SPF_HELO_NONE,SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use kzalloc rather than duplicating its implementation, which
-makes code simple and easy to understand.
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+If an error occurs, debugfs_create_file() will return ERR_PTR(-ERROR),
+so use IS_ERR() to check it.
+
+Fixes: 804775dfc288 ("net: ethernet: mtk_eth_soc: add support for Wireless Ethernet Dispatch (WED)")
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
 ---
- drivers/net/wireless/ath/ar5523/ar5523.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/mediatek/mtk_wed_debugfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ar5523/ar5523.c b/drivers/net/wireless/ath/ar5523/ar5523.c
-index 00ddeee123c2..9f84a6fde0c2 100644
---- a/drivers/net/wireless/ath/ar5523/ar5523.c
-+++ b/drivers/net/wireless/ath/ar5523/ar5523.c
-@@ -1500,7 +1500,7 @@ static int ar5523_load_firmware(struct usb_device *dev)
- 		return -ENOENT;
- 	}
+diff --git a/drivers/net/ethernet/mediatek/mtk_wed_debugfs.c b/drivers/net/ethernet/mediatek/mtk_wed_debugfs.c
+index a81d3fd1a439..0c284c18a8d7 100644
+--- a/drivers/net/ethernet/mediatek/mtk_wed_debugfs.c
++++ b/drivers/net/ethernet/mediatek/mtk_wed_debugfs.c
+@@ -165,7 +165,7 @@ void mtk_wed_hw_add_debugfs(struct mtk_wed_hw *hw)
  
--	txblock = kmalloc(sizeof(*txblock), GFP_KERNEL);
-+	txblock = kzalloc(sizeof(*txblock), GFP_KERNEL);
- 	if (!txblock)
- 		goto out;
+ 	snprintf(hw->dirname, sizeof(hw->dirname), "wed%d", hw->index);
+ 	dir = debugfs_create_dir(hw->dirname, NULL);
+-	if (!dir)
++	if (IS_ERR(dir))
+ 		return;
  
-@@ -1512,7 +1512,6 @@ static int ar5523_load_firmware(struct usb_device *dev)
- 	if (!fwbuf)
- 		goto out_free_rxblock;
- 
--	memset(txblock, 0, sizeof(struct ar5523_fwblock));
- 	txblock->flags = cpu_to_be32(AR5523_WRITE_BLOCK);
- 	txblock->total = cpu_to_be32(fw->size);
- 
+ 	hw->debugfs_dir = dir;
 -- 
-2.7.4
+2.25.1
 
