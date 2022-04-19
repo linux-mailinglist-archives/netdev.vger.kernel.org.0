@@ -2,162 +2,525 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 182C8506D46
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 15:14:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79E9A506D54
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 15:19:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238517AbiDSNQp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 09:16:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44220 "EHLO
+        id S1343745AbiDSNVu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 09:21:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231312AbiDSNQo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 09:16:44 -0400
-Received: from EUR02-VE1-obe.outbound.protection.outlook.com (mail-eopbgr20123.outbound.protection.outlook.com [40.107.2.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97CB6338B3;
-        Tue, 19 Apr 2022 06:14:00 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Dm6pissZsLx5PKexOwbqWwv/4mfsa9gl1noWGTiUP0ngbhp4f7HrfNabJ35aExxeYwAlFCo2nKEu1Fgb5sjILgrmxc1UFqj0i8qFs29xmviVWXBOjCorm7B77EOsCGbsvdIWqL7LO4rLX0StVszZ9sBWbVJUzpNxYISUcU55R296oGEnTYseXlpAGzzpx6jpbGLoUPLMOVObrH+5ocbkKC+eklxmGChiHha4RFFkZj7IY/i24SDaaZOYt9j0hhjdn4qscMf/vTcnLbFlDdohEuOhD/vnagxD6va+ghDMme1nrAnR0FFaubGNu9ntu2slv72GitZj2g6fPTUXg067RQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VoYypxePYLZiZz5bpaTg4YNDERYnNkJtxfOAtghP/NY=;
- b=FWOw+i22UZQrHhV5Q1ngciCnv1jibO2GQvwizonUcZx0SsNCtgGDDAsQtENkzi/C6xmKBqmpWqQ++EIRYdMiW39N/XAvnrofib3nhxXMQYMURXVHB35N3a7JvvDY3FLplQRuQ8x7cQ/5ygm6Lh5Eb5dACD9X6wvivs6FqDRNDXrx17izqajntUQo3K3houACmFpu9BpKawnKCg+WErv95Vfep+1Y8n8lp370TtYV28UpwAcjvbpAyx7XbuAeKZeK56dfYzCDf0Arq+biqHXbOY98h8bzA5iNUKy7YmFlajgZLSuq5WU2Lwbfz3aeN2Rx93oXzwp6wRM1XpmAfuI9HA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bang-olufsen.dk; dmarc=pass action=none
- header.from=bang-olufsen.dk; dkim=pass header.d=bang-olufsen.dk; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bang-olufsen.dk;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VoYypxePYLZiZz5bpaTg4YNDERYnNkJtxfOAtghP/NY=;
- b=T2zkrs8u8XBdMHpEoIw8KKAjRWp42PryW7OK0CXoaLRkSivFWhXR6EVitnVvnRZ22tMPgcyInCPULytzJDEkmRyQQRSb/PrsUTypITjOXtWzJXJ9fpr3eh6cnco2DcAU6/3BloqEdUdrhEVVQIBAIFoS+DTUjlDYiEmEQ8dfQ3A=
-Received: from AM6PR03MB3943.eurprd03.prod.outlook.com (2603:10a6:20b:26::24)
- by DU0PR03MB8342.eurprd03.prod.outlook.com (2603:10a6:10:3a5::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Tue, 19 Apr
- 2022 13:13:56 +0000
-Received: from AM6PR03MB3943.eurprd03.prod.outlook.com
- ([fe80::a443:52f8:22c3:1d82]) by AM6PR03MB3943.eurprd03.prod.outlook.com
- ([fe80::a443:52f8:22c3:1d82%3]) with mapi id 15.20.5164.025; Tue, 19 Apr 2022
- 13:13:56 +0000
-From:   =?utf-8?B?QWx2aW4gxaBpcHJhZ2E=?= <ALSI@bang-olufsen.dk>
-To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "olteanv@gmail.com" <olteanv@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Re: [PATCH net v2 1/2] dt-bindings: net: dsa: realtek: cleanup
- compatible strings
-Thread-Topic: [PATCH net v2 1/2] dt-bindings: net: dsa: realtek: cleanup
- compatible strings
-Thread-Index: AQHYU30cVvAvKL/RyUaWN8kP+4vAsKz3N6qA
-Date:   Tue, 19 Apr 2022 13:13:56 +0000
-Message-ID: <20220419131355.zzass4zmweqfnkbz@bang-olufsen.dk>
-References: <20220418233558.13541-1-luizluca@gmail.com>
-In-Reply-To: <20220418233558.13541-1-luizluca@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=bang-olufsen.dk;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 44402493-343e-449b-f38b-08da220675dd
-x-ms-traffictypediagnostic: DU0PR03MB8342:EE_
-x-microsoft-antispam-prvs: <DU0PR03MB834255F6EB695B2E6C1C64F283F29@DU0PR03MB8342.eurprd03.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Asc/4rcRnfrzVJYcROILfAz8G9DQKDZWM2jTF/3doWjZHbpx3bhUFEoxcF7v2M8uyvZAk2np51O7oJPEt9Iui7qU4snpAy1hlBZTn9ib77EwStsLT3npRPGmntMEEYIpmihj8jAIYUoFLOTdOo8h/+D0c5Yr4LPChlbNFfqfehBComa6juKExpa0VXF82w9GAMz5WDBRgqBqnm9hhVY3n+74pFuyDQvy6vouhO8mxgjnEMUDmJkJ/lf6PjVK+XQGBgVzfLNBt5BN9eQ1g91eLmiDjqn0lBn1+/1DfH77Fz35Hb5P9Cbcdi0Kkjm4lkSuBZf8kq0tZr0SLIq86p+nQZkx+M8iVoBaue1wbzHJzxmO9XMUFSJJac9pgV6fRcuo4nPrezX19obl2ixZaReodxDmtvbUiEKeeCBmbGAnpEZz2J/r0/YLVbMDdhK9Gw7P2xsIRdleEbQWjl78ZTapisZqJb1BP1pNHtqrbnQngntpJ2JkqXogN1ChYSmnbv69RGtT+rhZTFiQNwvletKOBaGlLa6FWnM1Ha5MscLOdRKx9n0ivQCeWHsAMqe6U32HVuBN1M68s2SLKOvhvZFGBhMgqjEZE4pRzaJGNYr+C6s1UTE02yzFtzVmBr22fQICkf3esSmrrQqHFETnhpo2LleY1ap6zqufcb/tIn9tTDEUgjeyYadw4LiPeRDe3n4QSFOkao/akOJp/BVJxMu/08gXybMC219y/mWYr8K2ehCBwDdNVb5s2FyHZvk1Sk01ua55fNkgz0vF/RX8uRxTzUR5j92qMl7EZZDLwMWoP08=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR03MB3943.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(508600001)(38100700002)(4744005)(8676002)(6506007)(2616005)(8976002)(7416002)(86362001)(66446008)(5660300002)(85182001)(2906002)(36756003)(85202003)(71200400001)(966005)(8936002)(26005)(54906003)(66574015)(122000001)(186003)(38070700005)(76116006)(6486002)(66476007)(66556008)(316002)(66946007)(91956017)(4326008)(1076003)(83380400001)(6916009)(6512007)(64756008);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?TXZ0Qlc0ZzEvbDJMTkMwQTM0dVlJSnp5dEIxd1BoVU5zVy9DZForemtlcGZE?=
- =?utf-8?B?Z1JNd0FBOStXbmxkYW5VM2tlVzQrb2pSdlByZXo5V09GSTdmclI4SWo1ekFJ?=
- =?utf-8?B?bXNwaitaYWg3UEsvZjlac2toVWkrQktJRE5sUjlQTW1HbGdUL01vYmJCR09v?=
- =?utf-8?B?SEpoMWRMSTlIUndEWVYxb2EvRW84YmR6cmJPRXVCTEdnbHpON3NpRzlaUWVJ?=
- =?utf-8?B?TXRYSFN6ajVHOURNUS9HL295am0zaU9aVzRJeFkwV29YKzVkSjlFd0dwa09M?=
- =?utf-8?B?NXVSNGFNNXV3cmZUOGlsZlJvdGUyUmdLUWF3YTRoTDl5VTl0NXF1VlA1MmVo?=
- =?utf-8?B?a0l6M01Jc0ZVbzh5dHE0a3pEa2lLQm9lQTN6allSYzNSVURWNVpzVW9kWWZS?=
- =?utf-8?B?N2ZVM0VGa1g2Sy9BOTFINnBDVFo4elQySlNoRlFqSTRTeVczeXVZZmQwcDh1?=
- =?utf-8?B?N2gxc0llV3p4Z3RqbjFydHFnNUVRYVpvaHlyWkdEa0twUTNzTlBOZzgyQ1ZE?=
- =?utf-8?B?S2ZWbVVSRG9LbTRWSFdXaDZhWUZLVFBXL00veThwenB4TmlkL0dVWG5haDdk?=
- =?utf-8?B?aEpSd285L2wzTDRxOGluTDR0YTJxai9EK0NlUXRJVFRJMUdvTXdOQ3ZLNnRU?=
- =?utf-8?B?dEpwMTBOUWYvYlRuZWZKWXhkU2lkTDBxT0RXc2JuUENYdjlhekt2Qkx4TUFK?=
- =?utf-8?B?MkpKazVlbnFpanNqdWd6WUJwdVgzNytiNXdaOE0wT25kdG93TkU0eVEyanN4?=
- =?utf-8?B?ak1kRVI5Z1NhWUVsYi9SR3VHUmF5eFpvV1NjelhhTW45TVcrRlZ3d2lLSHoy?=
- =?utf-8?B?WFZWanAwQ2FLcnpTQTd0SVJyYlhuaHZCQmNLYkR0UVorSUxLa3plSTdvS1BG?=
- =?utf-8?B?MkdISVVUOXduN3F0eWtwUy9FT1UzeUFqR1NhMFI1YllTZnJveGsvU2l3U0VH?=
- =?utf-8?B?TGdxVDBGLzZZMUJPRnNHSDJ6T0dDWCtVOG1hWHFtR2sxdUphNit1SU1PbFNm?=
- =?utf-8?B?eEhGYStXRXNiZ0dicGg4aVcvZ0JKQk55aWxKRXFLeDRMNFl5VVp6aTBYbDBC?=
- =?utf-8?B?amxybk56cXpsNkNubUVjTmRlem5idERleVE3YlRyNm9QblBkN0FIUzlnZS9H?=
- =?utf-8?B?QytDMTNkTE9FTGNWbEd0M282UHpGYktXQ0RwcFhaenpSU0QvT3hWcHZhMHNu?=
- =?utf-8?B?Qk9NV3hvRWdiTUNWZllrdnR3WGVtNFFNd3B3d1F3WGI0NWN0bk96cTlmNzBq?=
- =?utf-8?B?ZGRkNGpKbmlRWE1JRHp1QVovTVRHdVVXWnhqMDh5NHVEWDlORjUzTGpyMzJC?=
- =?utf-8?B?a3E2YWJnckpvdml0eFJ5dXlLVXgwYzJyTmhwbHpTWWJta2pmWEZ2cHgyMDVR?=
- =?utf-8?B?c0VLOXh0YTE0TnQrK29Ub0ZmYjkycC9NcGxlaXM3MlZvcUpwQ09MNmU4UmhR?=
- =?utf-8?B?N041YXlxU3BmUXp1WW5kazdPZUN0amgxZVltQWFHMDQ0cXFvc2hPQ3ArRFY5?=
- =?utf-8?B?ZWp5OThiZEE1YVZGbWhtR092Q01TQXdqQzY4K1dCZmZYVnRaVUpFeVhSSWpG?=
- =?utf-8?B?RFlucWJGTjMzbklJRHJrRklRb25UOEhnazhPNDVzZ2ZxV2FMQmMzN3hDRDBo?=
- =?utf-8?B?RDk4aHVGRmhTOFpRaDk3ZllDc2Y3TFAvdlNRaVg5Q2ltR2RXSUxsRUpveVQ5?=
- =?utf-8?B?NndDRGxFRDNuTWNGVXRQdEsyRVI3TGFoS1lqNnk3NWp4NzN5eUN5MWhKZlhC?=
- =?utf-8?B?c3pETDREREp3WlBQeDNZUU9OUGxFK3I5RGEvak9ua0dBYWlnNVJ6N2hIN3Jz?=
- =?utf-8?B?Z0g3WktpM0tpYUFLMU9oOEF3aVZpaE9nRldFaC9zQmM2d1l0bUMvT3M4cW5T?=
- =?utf-8?B?U2tGWU9qU0wvL0sxMHlwWlk0OHZDYnozOGtBZUFLNEIwR0pGN1JrLzNaUmZF?=
- =?utf-8?B?U2RkSE0zNVprVFM0U2hJWnNWN1oyZ0kvN1lPcDhRTVZib2RSREliZDFaMXUx?=
- =?utf-8?B?aWszSjV6NFN5Rit0TzErMUk3czkwaGVGREY2YzRrWTBJMnhzSi9CaVBYR1k1?=
- =?utf-8?B?TU9BQXVxblZVNW5MSXR2RGJGbVBFam1SMHpYeTVDY3ZiaHROZzJ6c0tGcElI?=
- =?utf-8?B?MVkway9MS1J2Q1lwYjI0WHl6akNjRVR4YVBRUmxuSTVwK3FxaDV3TzloTERW?=
- =?utf-8?B?RG8zY1FGb2o5RVVJWGROamxicEJSM1JwQWtQWmRrZGVodVl4ZmxHRmVpV0ZT?=
- =?utf-8?B?ZllDUDVFQjlxN0tBa25RYnYvSUxYWUhETnpEQ3JqUHdmVENucm4zTEVWVFk4?=
- =?utf-8?B?NTdwNFVVaWFqdGVqdVUyck5JQ0YyaGpjNmx0UGhPb043ZVFFTDlRTmo5VFB0?=
- =?utf-8?Q?pWP8T833p9bM7XRo=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <0D5C01FFBD4C8149A7BF0778C3AFD6AB@eurprd03.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        with ESMTP id S238617AbiDSNVs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 09:21:48 -0400
+Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0D56344FC;
+        Tue, 19 Apr 2022 06:19:04 -0700 (PDT)
+Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-e2afb80550so17453301fac.1;
+        Tue, 19 Apr 2022 06:19:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qc96gzqHX94BRmbmLrvST8DH0uqjMvRH71BNut5/OZw=;
+        b=P/wQNrJetZWXq6hOsAWyULu/G61N3YfJ2fJbCWkMnZnyC6ia7VYiMILQNYR8NKGMfq
+         LTduAP2l8dr2vVbtZ5fQboIhA+S+jfBDi6O2sKpgropbus5HfTqiHcKnMMrwUZoutre0
+         CEkxT4iZZpjG48RPymqcS45dMuZlwZ4h61zhrx3ax5gX0Rl9an8toxn2nuQuRiGI8hah
+         jyuHPoANwKA2MX/H40266kLbmvr+N5yFEbJLUZapgKKCn+5DhrkZPQ2N0rkI/icnITVL
+         fosA4Wf16F3MPRbYRVysDVwE4JK5lN383wKO0pdIKt6kVDgnxoTGcII0M/JUYO5BAd22
+         oXOg==
+X-Gm-Message-State: AOAM530QyRferHAH78hCNJMTkPnXY4pct1teH4wNxH+FjSne6RSv+SVq
+        K3k8Old89bDN/OUGziyZHw==
+X-Google-Smtp-Source: ABdhPJxIyMpwu6wfNwhGRGfJ1+A2KTXsZDYQSLAZ5d06ERqIsdRk7aq1HJmL8UKG9vcFx2hZu2HtBQ==
+X-Received: by 2002:a05:6870:171b:b0:e5:b044:194e with SMTP id h27-20020a056870171b00b000e5b044194emr6253627oae.22.1650374344053;
+        Tue, 19 Apr 2022 06:19:04 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id g25-20020a544f99000000b002da70c710b8sm5143029oiy.54.2022.04.19.06.19.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 06:19:03 -0700 (PDT)
+Received: (nullmailer pid 2321312 invoked by uid 1000);
+        Tue, 19 Apr 2022 13:19:02 -0000
+Date:   Tue, 19 Apr 2022 08:19:02 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, nbd@nbd.name, lorenzo.bianconi@redhat.com,
+        devicetree@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, john@phrozen.org
+Subject: Re: [PATCH v2 net-next] dt-bindings: net: mediatek,net: convert to
+ the json-schema
+Message-ID: <Yl62xsh/gBrE0kaB@robh.at.kernel.org>
+References: <2e9baf65a82de427a59fbaeaf04dde7bc5598375.1650041917.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: bang-olufsen.dk
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR03MB3943.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 44402493-343e-449b-f38b-08da220675dd
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Apr 2022 13:13:56.8037
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 210d08b8-83f7-470a-bc96-381193ca14a1
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ntNkRiasFq0bnPMv7IvarlD8vpXcJbTNKzsenj5lgBn8An1qQ4zBQ4p+tZmTDt5w6gZqvHpklGmMlZb8e0Hrqg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR03MB8342
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2e9baf65a82de427a59fbaeaf04dde7bc5598375.1650041917.git.lorenzo@kernel.org>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gTW9uLCBBcHIgMTgsIDIwMjIgYXQgMDg6MzU6NTdQTSAtMDMwMCwgTHVpeiBBbmdlbG8gRGFy
-b3MgZGUgTHVjYSB3cm90ZToNCj4gQ29tcGF0aWJsZSBzdHJpbmdzIGFyZSB1c2VkIHRvIGhlbHAg
-dGhlIGRyaXZlciBmaW5kIHRoZSBjaGlwIElEL3ZlcnNpb24NCj4gcmVnaXN0ZXIgZm9yIGVhY2gg
-Y2hpcCBmYW1pbHkuIEFmdGVyIHRoYXQsIHRoZSBkcml2ZXIgY2FuIHNldHVwIHRoZQ0KPiBzd2l0
-Y2ggYWNjb3JkaW5nbHkuIEtlZXAgb25seSB0aGUgZmlyc3Qgc3VwcG9ydGVkIG1vZGVsIGZvciBl
-YWNoIGZhbWlseQ0KPiBhcyBhIGNvbXBhdGlibGUgc3RyaW5nIGFuZCByZWZlcmVuY2Ugb3RoZXIg
-Y2hpcCBtb2RlbHMgaW4gdGhlDQo+IGRlc2NyaXB0aW9uLg0KPiANCj4gVGhlIHJlbW92ZWQgY29t
-cGF0aWJsZSBzdHJpbmdzIGhhdmUgbmV2ZXIgYmVlbiB1c2VkIGluIGEgcmVsZWFzZWQga2VybmVs
-Lg0KPiANCj4gQ0M6IGRldmljZXRyZWVAdmdlci5rZXJuZWwub3JnDQo+IExpbms6IGh0dHBzOi8v
-bG9yZS5rZXJuZWwub3JnL25ldGRldi8yMDIyMDQxNDAxNDA1NS5tNHdibXI3dGR6NmhzYTNtQGJh
-bmctb2x1ZnNlbi5kay8NCj4gU2lnbmVkLW9mZi1ieTogTHVpeiBBbmdlbG8gRGFyb3MgZGUgTHVj
-YSA8bHVpemx1Y2FAZ21haWwuY29tPg0KPiAtLS0NCj4gIC4uLi9kZXZpY2V0cmVlL2JpbmRpbmdz
-L25ldC9kc2EvcmVhbHRlay55YW1sICB8IDM1ICsrKysrKysrLS0tLS0tLS0tLS0NCj4gIDEgZmls
-ZSBjaGFuZ2VkLCAxNCBpbnNlcnRpb25zKCspLCAyMSBkZWxldGlvbnMoLSkNCg0KSSB0aGluayB0
-aGlzIGlzIE9LIG5vdy4gSSdsbCBmb2xsb3cgdXAgd2l0aCB3aGF0ZXZlciByZXBseSBJIGdldCBm
-cm9tIFJlYWx0ZWsNCnJlZ2FyZGluZyB0aGUgcmV2aXNpb24gSUQgcmVnaXN0ZXIgdmFsdWVzIGZv
-ciBzd2l0Y2hlcyB3ZSBkbyBub3Qgb3duLg0KDQpSZXZpZXdlZC1ieTogQWx2aW4gxaBpcHJhZ2Eg
-PGFsc2lAYmFuZy1vbHVmc2VuLmRrPg==
+On Fri, Apr 15, 2022 at 07:06:09PM +0200, Lorenzo Bianconi wrote:
+> This patch converts the existing mediatek-net.txt binding file
+> in yaml format.
+> 
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+> Changes since v1:
+> - set resets maxItems to 3
+> - fix cci-control-port usage in example
+> 
+> This patch is based on commits [0] and [1] available in net-next tree but not
+> in Linus's one yet.
+> 
+> [0] 1dafd0d60703 ("dt-bindings: net: mediatek: add optional properties for the SoC ethernet core")
+> [1] 4263f77a5144 ("net: ethernet: mtk_eth_soc: use standard property for cci-control-port")
+> ---
+>  .../devicetree/bindings/net/mediatek,net.yaml | 294 ++++++++++++++++++
+>  .../devicetree/bindings/net/mediatek-net.txt  | 108 -------
+>  2 files changed, 294 insertions(+), 108 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/net/mediatek,net.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/net/mediatek-net.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/net/mediatek,net.yaml b/Documentation/devicetree/bindings/net/mediatek,net.yaml
+> new file mode 100644
+> index 000000000000..e744ab96ecac
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/mediatek,net.yaml
+> @@ -0,0 +1,294 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/mediatek,net.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: MediaTek Frame Engine Ethernet controller
+> +
+> +maintainers:
+> +  - Lorenzo Bianconi <lorenzo@kernel.org>
+> +  - Felix Fietkau <nbd@nbd.name>
+> +
+> +description:
+> +  The frame engine ethernet controller can be found on MediaTek SoCs. These SoCs
+> +  have dual GMAC ports.
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - mediatek,mt2701-eth
+> +      - mediatek,mt7623-eth
+> +      - mediatek,mt7622-eth
+> +      - mediatek,mt7629-eth
+> +      - ralink,rt5350-eth
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    minItems: 3
+> +    maxItems: 3
+> +
+> +  power-domains:
+> +    maxItems: 1
+> +
+> +  resets:
+> +    maxItems: 3
+> +
+> +  reset-names:
+> +    items:
+> +      - const: fe
+> +      - const: gmac
+> +      - const: ppe
+> +
+> +  mediatek,ethsys:
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +    description:
+> +      Phandle to the syscon node that handles the port setup.
+> +
+> +  cci-control-port: true
+> +
+> +  mediatek,hifsys:
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +    description:
+> +      Phandle to the mediatek hifsys controller used to provide various clocks
+> +      and reset to the system.
+> +
+> +  dma-coherent: true
+> +
+> +  mdio-bus:
+> +    $ref: mdio.yaml#
+> +    unevaluatedProperties: false
+> +
+> +  "#address-cells":
+> +    const: 1
+> +
+> +  "#size-cells":
+> +    const: 0
+> +
+> +allOf:
+> +  - $ref: "ethernet-controller.yaml#"
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            enum:
+> +              - mediatek,mt2701-eth
+> +              - mediatek,mt7623-eth
+> +    then:
+> +      properties:
+> +        clocks:
+> +          minItems: 4
+> +          maxItems: 4
+> +
+> +        clock-names:
+> +          additionalItems: false
+
+You shouldn't need this.
+
+> +          items:
+> +            - const: ethif
+> +            - const: esw
+> +            - const: gp1
+> +            - const: gp2
+> +
+> +        mediatek,pctl:
+> +          $ref: /schemas/types.yaml#/definitions/phandle
+> +          description:
+> +            Phandle to the syscon node that handles the ports slew rate and
+> +            driver current.
+> +
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            const: mediatek,mt7622-eth
+> +    then:
+> +      properties:
+> +        clocks:
+> +          minItems: 11
+> +          maxItems: 11
+> +
+> +        clock-names:
+> +          additionalItems: false
+> +          items:
+> +            - const: ethif
+> +            - const: esw
+> +            - const: gp0
+> +            - const: gp1
+> +            - const: gp2
+> +            - const: sgmii_tx250m
+> +            - const: sgmii_rx250m
+> +            - const: sgmii_cdr_ref
+> +            - const: sgmii_cdr_fb
+> +            - const: sgmii_ck
+> +            - const: eth2pll
+> +
+> +        mediatek,sgmiisys:
+> +          $ref: /schemas/types.yaml#/definitions/phandle-array
+> +          maxItems: 1
+
+A list or 1 item? If only 1, then use 'phandle'. A 'phandle-array' is 
+really a matrix, so if you have multiple phandles, you need:
+
+minItems: 1
+maxItems: max # of phandles
+items:
+  maxItems: 1
+
+> +          description:
+> +            A list of phandle to the syscon node that handles the SGMII setup which is required for
+> +            those SoCs equipped with SGMII.
+> +
+> +        mediatek,wed:
+> +          $ref: /schemas/types.yaml#/definitions/phandle-array
+> +          minItems: 2
+> +          maxItems: 2
+
+minItems: 2
+maxItems: 2
+items:
+  maxItems: 1
+
+> +          description:
+> +            List of phandles to wireless ethernet dispatch nodes.
+> +
+> +        mediatek,pcie-mirror:
+> +          $ref: /schemas/types.yaml#/definitions/phandle
+> +          description:
+> +            Phandle to the mediatek pcie-mirror controller.
+> +
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            const: mediatek,mt7629-eth
+> +    then:
+> +      properties:
+> +        clocks:
+> +          minItems: 17
+> +          maxItems: 17
+> +
+> +        clock-names:
+> +          additionalItems: false
+> +          items:
+> +            - const: ethif
+> +            - const: sgmiitop
+> +            - const: esw
+> +            - const: gp0
+> +            - const: gp1
+> +            - const: gp2
+> +            - const: fe
+> +            - const: sgmii_tx250m
+> +            - const: sgmii_rx250m
+> +            - const: sgmii_cdr_ref
+> +            - const: sgmii_cdr_fb
+> +            - const: sgmii2_tx250m
+> +            - const: sgmii2_rx250m
+> +            - const: sgmii2_cdr_ref
+> +            - const: sgmii2_cdr_fb
+> +            - const: sgmii_ck
+> +            - const: eth2pll
+> +
+> +        mediatek,infracfg:
+> +          $ref: /schemas/types.yaml#/definitions/phandle
+> +          description:
+> +            Phandle to the syscon node that handles the path from GMAC to
+> +            PHY variants.
+> +
+> +        mediatek,sgmiisys:
+> +          $ref: /schemas/types.yaml#/definitions/phandle-array
+> +          maxItems: 2
+> +          description:
+> +            A list of phandle to the syscon node that handles the SGMII setup which is required for
+> +            those SoCs equipped with SGMII.
+
+Don't define properties twice. Define it at the top level and then just 
+add any additional constraints in the if/then schemas.
+
+> +
+> +patternProperties:
+> +  "^mac@[0-1]$":
+> +    type: object
+> +    additionalProperties: false
+> +    allOf:
+> +      - $ref: ethernet-controller.yaml#
+> +    description:
+> +      Ethernet MAC node
+> +    properties:
+> +      compatible:
+> +        const: mediatek,eth-mac
+> +
+> +      reg:
+> +        maxItems: 1
+> +
+> +      phy-handle: true
+> +
+> +      phy-mode: true
+> +
+> +    required:
+> +      - reg
+> +      - compatible
+> +      - phy-handle
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - clocks
+> +  - clock-names
+> +  - power-domains
+> +  - mediatek,ethsys
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    #include <dt-bindings/clock/mt7622-clk.h>
+> +    #include <dt-bindings/power/mt7622-power.h>
+> +
+> +    soc {
+> +      #address-cells = <2>;
+> +      #size-cells = <2>;
+> +
+> +      ethernet: ethernet@1b100000 {
+> +        compatible = "mediatek,mt7622-eth";
+> +        reg = <0 0x1b100000 0 0x20000>;
+> +        interrupts = <GIC_SPI 223 IRQ_TYPE_LEVEL_LOW>,
+> +                     <GIC_SPI 224 IRQ_TYPE_LEVEL_LOW>,
+> +                     <GIC_SPI 225 IRQ_TYPE_LEVEL_LOW>;
+> +        clocks = <&topckgen CLK_TOP_ETH_SEL>,
+> +                 <&ethsys CLK_ETH_ESW_EN>,
+> +                 <&ethsys CLK_ETH_GP0_EN>,
+> +                 <&ethsys CLK_ETH_GP1_EN>,
+> +                 <&ethsys CLK_ETH_GP2_EN>,
+> +                 <&sgmiisys CLK_SGMII_TX250M_EN>,
+> +                 <&sgmiisys CLK_SGMII_RX250M_EN>,
+> +                 <&sgmiisys CLK_SGMII_CDR_REF>,
+> +                 <&sgmiisys CLK_SGMII_CDR_FB>,
+> +                 <&topckgen CLK_TOP_SGMIIPLL>,
+> +                 <&apmixedsys CLK_APMIXED_ETH2PLL>;
+> +        clock-names = "ethif", "esw", "gp0", "gp1", "gp2",
+> +                      "sgmii_tx250m", "sgmii_rx250m",
+> +                      "sgmii_cdr_ref", "sgmii_cdr_fb", "sgmii_ck",
+> +                      "eth2pll";
+> +        power-domains = <&scpsys MT7622_POWER_DOMAIN_ETHSYS>;
+> +        mediatek,ethsys = <&ethsys>;
+> +        mediatek,sgmiisys = <&sgmiisys>;
+> +        cci-control-port = <&cci_control2>;
+> +        mediatek,pcie-mirror = <&pcie_mirror>;
+> +        mediatek,hifsys = <&hifsys>;
+> +        dma-coherent;
+> +
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        mdio0: mdio-bus {
+> +          #address-cells = <1>;
+> +          #size-cells = <0>;
+> +
+> +          phy0: ethernet-phy@0 {
+> +            reg = <0>;
+> +          };
+> +
+> +          phy1: ethernet-phy@1 {
+> +            reg = <1>;
+> +          };
+> +        };
+> +
+> +        gmac0: mac@0 {
+> +          compatible = "mediatek,eth-mac";
+> +          phy-mode = "rgmii";
+> +          phy-handle = <&phy0>;
+> +          reg = <0>;
+> +        };
+> +
+> +        gmac1: mac@1 {
+> +          compatible = "mediatek,eth-mac";
+> +          phy-mode = "rgmii";
+> +          phy-handle = <&phy1>;
+> +          reg = <1>;
+> +        };
+> +      };
+> +    };
+> diff --git a/Documentation/devicetree/bindings/net/mediatek-net.txt b/Documentation/devicetree/bindings/net/mediatek-net.txt
+> deleted file mode 100644
+> index f18d70189375..000000000000
+> --- a/Documentation/devicetree/bindings/net/mediatek-net.txt
+> +++ /dev/null
+> @@ -1,108 +0,0 @@
+> -MediaTek Frame Engine Ethernet controller
+> -=========================================
+> -
+> -The frame engine ethernet controller can be found on MediaTek SoCs. These SoCs
+> -have dual GMAC each represented by a child node..
+> -
+> -* Ethernet controller node
+> -
+> -Required properties:
+> -- compatible: Should be
+> -		"mediatek,mt2701-eth": for MT2701 SoC
+> -		"mediatek,mt7623-eth", "mediatek,mt2701-eth": for MT7623 SoC
+> -		"mediatek,mt7622-eth": for MT7622 SoC
+> -		"mediatek,mt7629-eth": for MT7629 SoC
+> -		"ralink,rt5350-eth": for Ralink Rt5350F and MT7628/88 SoC
+> -- reg: Address and length of the register set for the device
+> -- interrupts: Should contain the three frame engines interrupts in numeric
+> -	order. These are fe_int0, fe_int1 and fe_int2.
+> -- clocks: the clock used by the core
+> -- clock-names: the names of the clock listed in the clocks property. These are
+> -	"ethif", "esw", "gp2", "gp1" : For MT2701 and MT7623 SoC
+> -        "ethif", "esw", "gp0", "gp1", "gp2", "sgmii_tx250m", "sgmii_rx250m",
+> -	"sgmii_cdr_ref", "sgmii_cdr_fb", "sgmii_ck", "eth2pll" : For MT7622 SoC
+> -	"ethif", "sgmiitop", "esw", "gp0", "gp1", "gp2", "fe", "sgmii_tx250m",
+> -	"sgmii_rx250m", "sgmii_cdr_ref", "sgmii_cdr_fb", "sgmii2_tx250m",
+> -	"sgmii2_rx250m", "sgmii2_cdr_ref", "sgmii2_cdr_fb", "sgmii_ck",
+> -	"eth2pll" : For MT7629 SoC.
+> -- power-domains: phandle to the power domain that the ethernet is part of
+> -- resets: Should contain phandles to the ethsys reset signals
+> -- reset-names: Should contain the names of reset signal listed in the resets
+> -		property
+> -		These are "fe", "gmac" and "ppe"
+> -- mediatek,ethsys: phandle to the syscon node that handles the port setup
+> -- mediatek,infracfg: phandle to the syscon node that handles the path from
+> -	GMAC to PHY variants, which is required for MT7629 SoC.
+> -- mediatek,sgmiisys: a list of phandles to the syscon node that handles the
+> -	SGMII setup which is required for those SoCs equipped with SGMII such
+> -	as MT7622 and MT7629 SoC. And MT7622 have only one set of SGMII shared
+> -	by GMAC1 and GMAC2; MT7629 have two independent sets of SGMII directed
+> -	to GMAC1 and GMAC2, respectively.
+> -- mediatek,pctl: phandle to the syscon node that handles the ports slew rate
+> -	and driver current: only for MT2701 and MT7623 SoC
+> -
+> -Optional properties:
+> -- dma-coherent: present if dma operations are coherent
+> -- mediatek,cci-control: phandle to the cache coherent interconnect node
+> -- mediatek,hifsys: phandle to the mediatek hifsys controller used to provide
+> -	various clocks and reset to the system.
+> -- mediatek,wed: a list of phandles to wireless ethernet dispatch nodes for
+> -	MT7622 SoC.
+> -- mediatek,pcie-mirror: phandle to the mediatek pcie-mirror controller for
+> -	MT7622 SoC.
+> -
+> -* Ethernet MAC node
+> -
+> -Required properties:
+> -- compatible: Should be "mediatek,eth-mac"
+> -- reg: The number of the MAC
+> -- phy-handle: see ethernet.txt file in the same directory and
+> -	the phy-mode "trgmii" required being provided when reg
+> -	is equal to 0 and the MAC uses fixed-link to connect
+> -	with internal switch such as MT7530.
+> -
+> -Example:
+> -
+> -eth: ethernet@1b100000 {
+> -	compatible = "mediatek,mt7623-eth";
+> -	reg = <0 0x1b100000 0 0x20000>;
+> -	clocks = <&topckgen CLK_TOP_ETHIF_SEL>,
+> -		 <&ethsys CLK_ETHSYS_ESW>,
+> -		 <&ethsys CLK_ETHSYS_GP2>,
+> -		 <&ethsys CLK_ETHSYS_GP1>;
+> -	clock-names = "ethif", "esw", "gp2", "gp1";
+> -	interrupts = <GIC_SPI 200 IRQ_TYPE_LEVEL_LOW
+> -		      GIC_SPI 199 IRQ_TYPE_LEVEL_LOW
+> -		      GIC_SPI 198 IRQ_TYPE_LEVEL_LOW>;
+> -	power-domains = <&scpsys MT2701_POWER_DOMAIN_ETH>;
+> -	resets = <&ethsys MT2701_ETHSYS_ETH_RST>;
+> -	reset-names = "eth";
+> -	mediatek,ethsys = <&ethsys>;
+> -	mediatek,pctl = <&syscfg_pctl_a>;
+> -	#address-cells = <1>;
+> -	#size-cells = <0>;
+> -
+> -	gmac1: mac@0 {
+> -		compatible = "mediatek,eth-mac";
+> -		reg = <0>;
+> -		phy-handle = <&phy0>;
+> -	};
+> -
+> -	gmac2: mac@1 {
+> -		compatible = "mediatek,eth-mac";
+> -		reg = <1>;
+> -		phy-handle = <&phy1>;
+> -	};
+> -
+> -	mdio-bus {
+> -		phy0: ethernet-phy@0 {
+> -			reg = <0>;
+> -			phy-mode = "rgmii";
+> -		};
+> -
+> -		phy1: ethernet-phy@1 {
+> -			reg = <1>;
+> -			phy-mode = "rgmii";
+> -		};
+> -	};
+> -};
+> -- 
+> 2.35.1
+> 
+> 
