@@ -2,195 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B71B506706
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 10:35:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48FC450671A
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 10:45:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343562AbiDSIg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 04:36:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36614 "EHLO
+        id S1350104AbiDSIrp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 04:47:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350045AbiDSIgu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 04:36:50 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34AA92AE1A;
-        Tue, 19 Apr 2022 01:34:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1650357249; x=1681893249;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=/gJV2Fw9EGqVFCyRqnQHv2MA1z3B7qFZ/NhR/jGQ3sA=;
-  b=2lepcXqy8l1ylj1o9SiN5IA5ozGb1dKrKe5GNXDfmbsHM++3UCuDt1AW
-   A9mUwjI6s0t8F4ZCS0doANgjbdkB1GlIEjXK7LapXSZ4WOWR7d3nIeTx8
-   ZkGJTUCne5hwhuqfhTXZ3XL2EpTi2C3GdhsICJISwu2yZUg57zHOLENFd
-   IAlxYqnBJN+TGCGotHv3g7HsXgtI+3dMzWXWKHFJyjU6uE40H+524SgsQ
-   tuQL7nGZIHorNxSnOFo0dFahBtxtvdnpocM7PyLtZ1WgkvzeqVlrtwvYM
-   7TIWtqJj0Hmw8dIK3lw6xzmjVWPxPabss2oVDJAk41EVBkGjALwhj9/qi
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,272,1643698800"; 
-   d="scan'208";a="170068196"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Apr 2022 01:34:08 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 19 Apr 2022 01:34:08 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 19 Apr 2022 01:34:06 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <UNGLinuxDriver@microchip.com>, <richardcochran@gmail.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [RFC PATCH net-next 2/2] net: phy: micrel: Implement set/get_adj_latency for lan8814
-Date:   Tue, 19 Apr 2022 10:37:04 +0200
-Message-ID: <20220419083704.48573-3-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220419083704.48573-1-horatiu.vultur@microchip.com>
-References: <20220419083704.48573-1-horatiu.vultur@microchip.com>
+        with ESMTP id S1344465AbiDSIrp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 04:47:45 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEDD62631
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 01:45:03 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id b7so5181162plh.2
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 01:45:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=X2KGsW6b0Sn4O5TobSGtAgwWDjHoIqdrX635z8HKk2g=;
+        b=Z3YP7m4Hi6+FbbD8Pnt/OWzIrDKkf6UfsHwQvK7UkBJGn9KWGJp9u6A9GOgNT39Mo4
+         7VPRpOFFgWnQVrCAn0U+yjsfqW8nsa1HS161EzNFM9M6K0+y7baRoQqCi9mYhULFDm63
+         3XYnPBSqcy5QvjwcXaE+ZXkKM35xDhm9xJpuWArDis1vDoNlKNs89nOW6nP826ubtk11
+         ZhE6HcUqkbUBhs3w1Mf4zelk1cFSUSMuoj4z+2m/IhFCednSaLj4TBbHrvo7S2rA0nnl
+         XX63DdRKyvzwQwiMUGNomNWPNpio6EXg19+zd+MBkNBlMkcFD8LeElTWD34d528yBFFI
+         QOJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=X2KGsW6b0Sn4O5TobSGtAgwWDjHoIqdrX635z8HKk2g=;
+        b=01ewTQgNhGBUzm92GMPpu8aD2rRWjCp23rM3+k5lB/EyNkQGIrzxWW3E1syLqDjZfH
+         G6+HjLyySzSMDwDCVIWJ66uHFiN2rhOe2xuNedSYD/i5VmymqCJE7ReaABvlwnXRxVpu
+         RRYrTbiTUw+zjiebikCTgONq3dSdSIWbb8Lz0ctxVIrAJ0suKUE9LCaLY5J1vzuemHnJ
+         0AxV0rpUcLHdHdW3ICtCVwIvsJNRYsFE4decimJaR62DcusI7jhY/deQijqzoJvnV3Q9
+         Conqa2B9UVuLz3wnfto3SbiHOY5OoCYVTMup1yEFZG6UUbaksgJ5iHPZ/GaTYpbMXIR4
+         VKHw==
+X-Gm-Message-State: AOAM530L3wi90sBeI9QKiiolIHSSvUgvEsUKtjmaLc0OUDU7m+pAHZPA
+        rEW3e6Twk0jGI01IUoLRg9rQyYfiLaQ=
+X-Google-Smtp-Source: ABdhPJyFqIglBKxu7J04iHFtU350zwAdnM+M5XIktrt7xCTxHoX5QbGCHczZPGQuJJmX0Rum6gYnjg==
+X-Received: by 2002:a17:902:f24b:b0:158:f5c3:a210 with SMTP id j11-20020a170902f24b00b00158f5c3a210mr11336632plc.65.1650357903104;
+        Tue, 19 Apr 2022 01:45:03 -0700 (PDT)
+Received: from pek-lpggp6.wrs.com (unknown-105-123.windriver.com. [147.11.105.123])
+        by smtp.gmail.com with ESMTPSA id k11-20020a056a00168b00b004f7e1555538sm16190618pfc.190.2022.04.19.01.44.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 01:45:02 -0700 (PDT)
+From:   Kevin Hao <haokexin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Dejin Zheng <zhengdejin5@gmail.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v2 net] net: stmmac: Use readl_poll_timeout_atomic() in atomic state
+Date:   Tue, 19 Apr 2022 16:42:26 +0800
+Message-Id: <20220419084226.38340-1-haokexin@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The lan8814 driver supports adjustments of the latency in the silicon
-based on the speed and direction, therefore implement set/get_adj_latency
-to adjust the HW.
+The init_systime() may be invoked in atomic state. We have observed the
+following call trace when running "phc_ctl /dev/ptp0 set" on a Intel
+Agilex board.
+  BUG: sleeping function called from invalid context at drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c:74
+  in_atomic(): 1, irqs_disabled(): 128, non_block: 0, pid: 381, name: phc_ctl
+  preempt_count: 1, expected: 0
+  RCU nest depth: 0, expected: 0
+  Preemption disabled at:
+  [<ffff80000892ef78>] stmmac_set_time+0x34/0x8c
+  CPU: 2 PID: 381 Comm: phc_ctl Not tainted 5.18.0-rc2-next-20220414-yocto-standard+ #567
+  Hardware name: SoCFPGA Agilex SoCDK (DT)
+  Call trace:
+   dump_backtrace.part.0+0xc4/0xd0
+   show_stack+0x24/0x40
+   dump_stack_lvl+0x7c/0xa0
+   dump_stack+0x18/0x34
+   __might_resched+0x154/0x1c0
+   __might_sleep+0x58/0x90
+   init_systime+0x78/0x120
+   stmmac_set_time+0x64/0x8c
+   ptp_clock_settime+0x60/0x9c
+   pc_clock_settime+0x6c/0xc0
+   __arm64_sys_clock_settime+0x88/0xf0
+   invoke_syscall+0x5c/0x130
+   el0_svc_common.constprop.0+0x4c/0x100
+   do_el0_svc+0x7c/0xa0
+   el0_svc+0x58/0xcc
+   el0t_64_sync_handler+0xa4/0x130
+   el0t_64_sync+0x18c/0x190
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+So we should use readl_poll_timeout_atomic() here instead of
+readl_poll_timeout().
+
+Also adjust the delay time to 10us to fix a "__bad_udelay" build error
+reported by "kernel test robot <lkp@intel.com>". I have tested this on
+Intel Agilex and NXP S32G boards, there is no delay needed at all.
+So the 10us delay should be long enough for most cases.
+
+Fixes: ff8ed737860e ("net: stmmac: use readl_poll_timeout() function in init_systime()")
+Signed-off-by: Kevin Hao <haokexin@gmail.com>
 ---
- drivers/net/phy/micrel.c | 87 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 87 insertions(+)
+v2: Fix the "__bad_udelay" build error.
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 96840695debd..099d1ecd6dad 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -120,6 +120,15 @@
- #define PTP_TIMESTAMP_EN_PDREQ_			BIT(2)
- #define PTP_TIMESTAMP_EN_PDRES_			BIT(3)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
+index 22fea0f67245..92d32940aff0 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
+@@ -71,9 +71,9 @@ static int init_systime(void __iomem *ioaddr, u32 sec, u32 nsec)
+ 	writel(value, ioaddr + PTP_TCR);
  
-+#define PTP_RX_LATENCY_1000			0x0224
-+#define PTP_TX_LATENCY_1000			0x0225
-+
-+#define PTP_RX_LATENCY_100			0x0222
-+#define PTP_TX_LATENCY_100			0x0223
-+
-+#define PTP_RX_LATENCY_10			0x0220
-+#define PTP_TX_LATENCY_10			0x0221
-+
- #define PTP_TX_PARSE_L2_ADDR_EN			0x0284
- #define PTP_RX_PARSE_L2_ADDR_EN			0x0244
- 
-@@ -208,6 +217,16 @@
- #define PTP_TSU_INT_STS_PTP_RX_TS_OVRFL_INT_	BIT(1)
- #define PTP_TSU_INT_STS_PTP_RX_TS_EN_		BIT(0)
- 
-+/* Represents the reset value of the latency registers,
-+ * The values are express in ns
-+ */
-+#define LAN8814_RX_10_LATENCY			8874
-+#define LAN8814_TX_10_LATENCY			11850
-+#define LAN8814_RX_100_LATENCY			2346
-+#define LAN8814_TX_100_LATENCY			705
-+#define LAN8814_RX_1000_LATENCY			429
-+#define LAN8814_TX_1000_LATENCY			201
-+
- /* PHY Control 1 */
- #define MII_KSZPHY_CTRL_1			0x1e
- #define KSZ8081_CTRL1_MDIX_STAT			BIT(4)
-@@ -2657,6 +2676,72 @@ static int lan8804_config_init(struct phy_device *phydev)
- 	return 0;
+ 	/* wait for present system time initialize to complete */
+-	return readl_poll_timeout(ioaddr + PTP_TCR, value,
++	return readl_poll_timeout_atomic(ioaddr + PTP_TCR, value,
+ 				 !(value & PTP_TCR_TSINIT),
+-				 10000, 100000);
++				 10, 100000);
  }
  
-+static int lan8814_set_adj_latency(struct phy_device *phydev,
-+				   enum ethtool_link_mode_bit_indices link_mode,
-+				   s32 rx, s32 tx)
-+{
-+	switch (link_mode) {
-+	case ETHTOOL_LINK_MODE_10baseT_Half_BIT:
-+	case ETHTOOL_LINK_MODE_10baseT_Full_BIT:
-+		rx += LAN8814_RX_10_LATENCY;
-+		tx += LAN8814_TX_10_LATENCY;
-+		lanphy_write_page_reg(phydev, 5, PTP_RX_LATENCY_10, rx);
-+		lanphy_write_page_reg(phydev, 5, PTP_TX_LATENCY_10, tx);
-+		return 0;
-+	case ETHTOOL_LINK_MODE_100baseT_Half_BIT:
-+	case ETHTOOL_LINK_MODE_100baseT_Full_BIT:
-+		rx += LAN8814_RX_100_LATENCY;
-+		tx += LAN8814_TX_100_LATENCY;
-+		lanphy_write_page_reg(phydev, 5, PTP_RX_LATENCY_100, rx);
-+		lanphy_write_page_reg(phydev, 5, PTP_TX_LATENCY_100, tx);
-+		return 0;
-+	case ETHTOOL_LINK_MODE_1000baseT_Half_BIT:
-+	case ETHTOOL_LINK_MODE_1000baseT_Full_BIT:
-+		rx += LAN8814_RX_1000_LATENCY;
-+		tx += LAN8814_TX_1000_LATENCY;
-+		lanphy_write_page_reg(phydev, 5, PTP_RX_LATENCY_1000, rx);
-+		lanphy_write_page_reg(phydev, 5, PTP_TX_LATENCY_1000, tx);
-+		return 0;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int lan8814_get_adj_latency(struct phy_device *phydev,
-+				   enum ethtool_link_mode_bit_indices link_mode,
-+				   s32 *rx, s32 *tx)
-+{
-+	switch (link_mode) {
-+	case ETHTOOL_LINK_MODE_10baseT_Half_BIT:
-+	case ETHTOOL_LINK_MODE_10baseT_Full_BIT:
-+		*rx = lanphy_read_page_reg(phydev, 5, PTP_RX_LATENCY_10);
-+		*tx = lanphy_read_page_reg(phydev, 5, PTP_TX_LATENCY_10);
-+		*rx -= LAN8814_RX_10_LATENCY;
-+		*tx -= LAN8814_TX_10_LATENCY;
-+		return 0;
-+	case ETHTOOL_LINK_MODE_100baseT_Half_BIT:
-+	case ETHTOOL_LINK_MODE_100baseT_Full_BIT:
-+		*rx = lanphy_read_page_reg(phydev, 5, PTP_RX_LATENCY_100);
-+		*tx = lanphy_read_page_reg(phydev, 5, PTP_TX_LATENCY_100);
-+		*rx -= LAN8814_RX_100_LATENCY;
-+		*tx -= LAN8814_TX_100_LATENCY;
-+		return 0;
-+	case ETHTOOL_LINK_MODE_1000baseT_Half_BIT:
-+	case ETHTOOL_LINK_MODE_1000baseT_Full_BIT:
-+		*rx = lanphy_read_page_reg(phydev, 5, PTP_RX_LATENCY_1000);
-+		*tx = lanphy_read_page_reg(phydev, 5, PTP_TX_LATENCY_1000);
-+		*rx -= LAN8814_RX_1000_LATENCY;
-+		*tx -= LAN8814_TX_1000_LATENCY;
-+		return 0;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
- static irqreturn_t lan8814_handle_interrupt(struct phy_device *phydev)
- {
- 	u16 tsu_irq_status;
-@@ -3052,6 +3137,8 @@ static struct phy_driver ksphy_driver[] = {
- 	.resume		= kszphy_resume,
- 	.config_intr	= lan8814_config_intr,
- 	.handle_interrupt = lan8814_handle_interrupt,
-+	.set_adj_latency = lan8814_set_adj_latency,
-+	.get_adj_latency = lan8814_get_adj_latency,
- }, {
- 	.phy_id		= PHY_ID_LAN8804,
- 	.phy_id_mask	= MICREL_PHY_ID_MASK,
+ static int config_addend(void __iomem *ioaddr, u32 addend)
 -- 
-2.33.0
+2.34.1
 
