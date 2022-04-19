@@ -2,103 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 45E8D506FBE
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 16:07:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B346506FFE
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 16:22:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352106AbiDSOJT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 10:09:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52232 "EHLO
+        id S241372AbiDSOXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 10:23:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351004AbiDSOJS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 10:09:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7BA6B2AC43
-        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 07:06:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650377194;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=UrvBWaRXV3DlLVU6RimSG2jNQYfccJ/kwX+dgBkIis4=;
-        b=dhWVkO0z5IhByvCWbQ3TO8Qm2V1gZDYcPXki3l2UFdqWUUD/Mm4vSq3H+1Vpm4pGQfXJAJ
-        HlVidfvAKEDhHFpyRehX7B6UQLJneE762ummu9gyNV9Q/4bVTdfeIvDh7AyYL6E88B/Jr6
-        nxxXQKovb+NMG5eXZX/UsmdhoWSM87U=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-619-du3UIhV9PuqJ8XV6a6kC3A-1; Tue, 19 Apr 2022 10:06:33 -0400
-X-MC-Unique: du3UIhV9PuqJ8XV6a6kC3A-1
-Received: by mail-qk1-f200.google.com with SMTP id j24-20020a37ef18000000b0069eafae30b1so3020101qkk.8
-        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 07:06:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UrvBWaRXV3DlLVU6RimSG2jNQYfccJ/kwX+dgBkIis4=;
-        b=cRN5+SGLIH3zACKn5xxThY7qkYOMfPLpy+7qfAvk2uJ09R3/iehoV6HFpCjOEuALOJ
-         Qx/PWFhdfhGGRg41MrZMWw8j+0Tyn/dg95OiBm+tktidjmD+YcQ7lGkPYncHLtsl9tcN
-         W/EbGZUKK81/xxRpKPWi4OE8fpjdNoYAzxg4nL3qlH0lvNHITba4DE9dTISX1WOgLyGk
-         43RByltQXU3g5moIwMGNAdRP2614EbQkOAwOEnKkS3bNxbBVsxscFeJjtGZlnjGFY2QN
-         fgD1Bar8t2mylO766/e93lzoHzvNlhFGRYto2weOZKFt6zgL2zK2wkIgdgCuLf65R+9Q
-         q6KA==
-X-Gm-Message-State: AOAM530Bf7z3ZWwlEPUoDeKInCbzVue1BggvjguCXdB83Aw2E9cXR/wv
-        FqnpwA9JhXkd97yp8mDAG7s617s9m3Du0dLf9PeEV7TshgfZqq9ywrI0F/Y620Myy1wknMeyAdd
-        AUxru/oZUvDUtU620
-X-Received: by 2002:a05:620a:258b:b0:680:f66e:3381 with SMTP id x11-20020a05620a258b00b00680f66e3381mr9472891qko.291.1650377192263;
-        Tue, 19 Apr 2022 07:06:32 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyB9cTVt0zydUHqWyNffYIDfCm9PGrZ/QTxmXsfj7ORbXn7UsWYrkuGD73ZFStBSxvCCJ7yOg==
-X-Received: by 2002:a05:620a:258b:b0:680:f66e:3381 with SMTP id x11-20020a05620a258b00b00680f66e3381mr9472870qko.291.1650377192017;
-        Tue, 19 Apr 2022 07:06:32 -0700 (PDT)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id 2-20020a05620a06c200b0069ea498aec7sm59151qky.16.2022.04.19.07.06.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 07:06:31 -0700 (PDT)
-From:   Tom Rix <trix@redhat.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
-Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH] USB2NET : SR9800 : change SR9800_BULKIN_SIZE from global to static
-Date:   Tue, 19 Apr 2022 10:06:25 -0400
-Message-Id: <20220419140625.2886328-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        with ESMTP id S1353181AbiDSOWR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 10:22:17 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8140013CDB;
+        Tue, 19 Apr 2022 07:19:33 -0700 (PDT)
+Received: from [192.168.0.7] (ip5f5ae90d.dynamic.kabel-deutschland.de [95.90.233.13])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 7D81461CCD785;
+        Tue, 19 Apr 2022 16:19:30 +0200 (CEST)
+Message-ID: <b9804c40-3402-1dac-a9c0-db37a5360015@molgen.mpg.de>
+Date:   Tue, 19 Apr 2022 16:19:29 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [Intel-wired-lan] [PATCH 2/2] Trigger proper interrupts in
+ igc_xsk_wakeup
+Content-Language: en-US
+To:     Jeff Evanson <jeff.evanson@gmail.com>
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jeff.evanson@qsc.com
+References: <20220415210546.11294-1-jeff.evanson@qsc.com>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <20220415210546.11294-1-jeff.evanson@qsc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Smatch reports this issue
-sr9800.h:166:53: warning: symbol 'SR9800_BULKIN_SIZE' was not declared. Should it be static?
+Dear Jeff,
 
-Global variables should not be defined in header files.
-This only works because sr9800.h in only included by sr9800.c
-Change the storage-class specifier to static.
-And since it does not change add type qualifier const.
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/net/usb/sr9800.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thank you for your patch.
 
-diff --git a/drivers/net/usb/sr9800.h b/drivers/net/usb/sr9800.h
-index 18f670251275..952e6f7c0321 100644
---- a/drivers/net/usb/sr9800.h
-+++ b/drivers/net/usb/sr9800.h
-@@ -163,7 +163,7 @@
- #define SR9800_MAX_BULKIN_24K		6
- #define SR9800_MAX_BULKIN_32K		7
- 
--struct {unsigned short size, byte_cnt, threshold; } SR9800_BULKIN_SIZE[] = {
-+static const struct {unsigned short size, byte_cnt, threshold; } SR9800_BULKIN_SIZE[] = {
- 	/* 2k */
- 	{2048, 0x8000, 0x8001},
- 	/* 4k */
--- 
-2.27.0
 
+Am 15.04.22 um 23:05 schrieb Jeff Evanson:
+
+1.  Add a From tag(?), so your company instead of gmail.com email is used?
+2.  Please add a prefix to the commit message summary. See `git log 
+--oneline drivers/net/ethernet/igc` for examples.
+
+> in igc_xsk_wakeup, trigger the proper interrupt based on whether flags
+> contains XDP_WAKEUP_RX and/or XDP_WAKEUP_TX
+
+Nit. Please add a dot/period to the end of sentences.
+
+Can you please add a paragraph on what system you experienced the 
+problem, and how to verify your fix?
+
+> Signed-off-by: Jeff Evanson <jeff.evanson@qsc.com>
+> ---
+>   drivers/net/ethernet/intel/igc/igc_main.c | 36 +++++++++++++++++------
+>   1 file changed, 27 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+> index a36a18c84aeb..d706de95dc06 100644
+> --- a/drivers/net/ethernet/intel/igc/igc_main.c
+> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
+> @@ -6073,7 +6073,7 @@ static void igc_trigger_rxtxq_interrupt(struct igc_adapter *adapter,
+>   int igc_xsk_wakeup(struct net_device *dev, u32 queue_id, u32 flags)
+>   {
+>   	struct igc_adapter *adapter = netdev_priv(dev);
+> -	struct igc_q_vector *q_vector;
+> +	struct igc_q_vector *txq_vector = 0, *rxq_vector = 0;
+
+Should you use NULL instead of 0?
+
+
+Kind regards,
+
+Paul
+
+
+>   	struct igc_ring *ring;
+>   
+>   	if (test_bit(__IGC_DOWN, &adapter->state))
+> @@ -6082,17 +6082,35 @@ int igc_xsk_wakeup(struct net_device *dev, u32 queue_id, u32 flags)
+>   	if (!igc_xdp_is_enabled(adapter))
+>   		return -ENXIO;
+>   
+> -	if (queue_id >= adapter->num_rx_queues)
+> -		return -EINVAL;
+> +	if (flags & XDP_WAKEUP_RX) {
+> +		if (queue_id >= adapter->num_rx_queues)
+> +			return -EINVAL;
+>   
+> -	ring = adapter->rx_ring[queue_id];
+> +		ring = adapter->rx_ring[queue_id];
+> +		if (!ring->xsk_pool)
+> +			return -ENXIO;
+>   
+> -	if (!ring->xsk_pool)
+> -		return -ENXIO;
+> +		rxq_vector = ring->q_vector;
+> +	}
+> +
+> +	if (flags & XDP_WAKEUP_TX) {
+> +		if (queue_id >= adapter->num_tx_queues)
+> +			return -EINVAL;
+> +
+> +		ring = adapter->tx_ring[queue_id];
+> +		if (!ring->xsk_pool)
+> +			return -ENXIO;
+> +
+> +		txq_vector = ring->q_vector;
+> +	}
+> +
+> +	if (rxq_vector &&
+> +	    !napi_if_scheduled_mark_missed(&rxq_vector->napi))
+> +		igc_trigger_rxtxq_interrupt(adapter, rxq_vector);
+>   
+> -	q_vector = adapter->q_vector[queue_id];
+> -	if (!napi_if_scheduled_mark_missed(&q_vector->napi))
+> -		igc_trigger_rxtxq_interrupt(adapter, q_vector);
+> +	if (txq_vector && txq_vector != rxq_vector &&
+> +	    !napi_if_scheduled_mark_missed(&txq_vector->napi))
+> +		igc_trigger_rxtxq_interrupt(adapter, txq_vector);
+>   
+>   	return 0;
+>   }
