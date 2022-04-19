@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D0E8E507066
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 16:28:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 230CC50707A
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 16:28:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353269AbiDSO0o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 10:26:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41222 "EHLO
+        id S1347535AbiDSO0g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 10:26:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347442AbiDSO0d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 10:26:33 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9676A2AE11;
+        with ESMTP id S231808AbiDSO0c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 10:26:32 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19EE625E8E;
         Tue, 19 Apr 2022 07:23:47 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KjQyf1Kt1zhXZm;
-        Tue, 19 Apr 2022 22:23:38 +0800 (CST)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KjQxx17wLzfYqr;
+        Tue, 19 Apr 2022 22:23:01 +0800 (CST)
 Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2375.24; Tue, 19 Apr 2022 22:23:45 +0800
 Received: from k04.huawei.com (10.67.174.115) by
@@ -33,9 +33,9 @@ CC:     <andrii@kernel.org>, <ast@kernel.org>, <daniel@iogearbox.net>,
         <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
         <paul.walmsley@sifive.com>, <palmer@dabbelt.com>,
         <aou@eecs.berkeley.edu>, <pulehui@huawei.com>
-Subject: [PATCH v2 bpf-next 1/2] libbpf: Fix usdt_cookie being cast to 32 bits
-Date:   Tue, 19 Apr 2022 22:52:37 +0800
-Message-ID: <20220419145238.482134-2-pulehui@huawei.com>
+Subject: [PATCH v2 bpf-next 2/2] libbpf: Support riscv USDT argument parsing logic
+Date:   Tue, 19 Apr 2022 22:52:38 +0800
+Message-ID: <20220419145238.482134-3-pulehui@huawei.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220419145238.482134-1-pulehui@huawei.com>
 References: <20220419145238.482134-1-pulehui@huawei.com>
@@ -55,77 +55,151 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The usdt_cookie is defined as __u64, which should not be
-used as a long type because it will be cast to 32 bits
-in 32-bit platforms.
+Add riscv-specific USDT argument specification parsing logic.
+riscv USDT argument format is shown below:
+- Memory dereference case:
+  "size@off(reg)", e.g. "-8@-88(s0)"
+- Constant value case:
+  "size@val", e.g. "4@5"
+- Register read case:
+  "size@reg", e.g. "-8@a1"
+
+s8 will be marked as poison while it's a reg of riscv, we need
+to alias it in advance. Both RV32 and RV64 have been tested.
 
 Signed-off-by: Pu Lehui <pulehui@huawei.com>
 ---
- tools/lib/bpf/libbpf.c          | 2 +-
- tools/lib/bpf/libbpf_internal.h | 2 +-
- tools/lib/bpf/usdt.c            | 8 ++++----
- 3 files changed, 6 insertions(+), 6 deletions(-)
+v1-v2:
+ - Add brief test results.
+ - Make reg_map more intuitive.
+ tools/lib/bpf/usdt.c | 107 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 107 insertions(+)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index bf4f7ac54..33d21ed7c 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -10982,7 +10982,7 @@ struct bpf_link *bpf_program__attach_usdt(const struct bpf_program *prog,
- 	char resolved_path[512];
- 	struct bpf_object *obj = prog->obj;
- 	struct bpf_link *link;
--	long usdt_cookie;
-+	__u64 usdt_cookie;
- 	int err;
- 
- 	if (!OPTS_VALID(opts, bpf_uprobe_opts))
-diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
-index 080272421..054cd8e93 100644
---- a/tools/lib/bpf/libbpf_internal.h
-+++ b/tools/lib/bpf/libbpf_internal.h
-@@ -571,6 +571,6 @@ struct bpf_link * usdt_manager_attach_usdt(struct usdt_manager *man,
- 					   const struct bpf_program *prog,
- 					   pid_t pid, const char *path,
- 					   const char *usdt_provider, const char *usdt_name,
--					   long usdt_cookie);
-+					   __u64 usdt_cookie);
- 
- #endif /* __LIBBPF_LIBBPF_INTERNAL_H */
 diff --git a/tools/lib/bpf/usdt.c b/tools/lib/bpf/usdt.c
-index 934c25301..8e77a7260 100644
+index 8e77a7260..f1c9339cf 100644
 --- a/tools/lib/bpf/usdt.c
 +++ b/tools/lib/bpf/usdt.c
-@@ -557,10 +557,10 @@ static int parse_usdt_note(Elf *elf, const char *path, long base_addr,
- 			   GElf_Nhdr *nhdr, const char *data, size_t name_off, size_t desc_off,
- 			   struct usdt_note *usdt_note);
+@@ -10,6 +10,11 @@
+ #include <linux/ptrace.h>
+ #include <linux/kernel.h>
  
--static int parse_usdt_spec(struct usdt_spec *spec, const struct usdt_note *note, long usdt_cookie);
-+static int parse_usdt_spec(struct usdt_spec *spec, const struct usdt_note *note, __u64 usdt_cookie);
++/* s8 will be marked as poison while it's a reg of riscv */
++#if defined(__riscv)
++#define rv_s8 s8
++#endif
++
+ #include "bpf.h"
+ #include "libbpf.h"
+ #include "libbpf_common.h"
+@@ -1400,6 +1405,108 @@ static int parse_usdt_arg(const char *arg_str, int arg_num, struct usdt_arg_spec
+ 	return len;
+ }
  
- static int collect_usdt_targets(struct usdt_manager *man, Elf *elf, const char *path, pid_t pid,
--				const char *usdt_provider, const char *usdt_name, long usdt_cookie,
-+				const char *usdt_provider, const char *usdt_name, __u64 usdt_cookie,
- 				struct usdt_target **out_targets, size_t *out_target_cnt)
- {
- 	size_t off, name_off, desc_off, seg_cnt = 0, lib_seg_cnt = 0, target_cnt = 0;
-@@ -939,7 +939,7 @@ static int allocate_spec_id(struct usdt_manager *man, struct hashmap *specs_hash
- struct bpf_link *usdt_manager_attach_usdt(struct usdt_manager *man, const struct bpf_program *prog,
- 					  pid_t pid, const char *path,
- 					  const char *usdt_provider, const char *usdt_name,
--					  long usdt_cookie)
-+					  __u64 usdt_cookie)
- {
- 	int i, fd, err, spec_map_fd, ip_map_fd;
- 	LIBBPF_OPTS(bpf_uprobe_opts, opts);
-@@ -1141,7 +1141,7 @@ static int parse_usdt_note(Elf *elf, const char *path, long base_addr,
++#elif defined(__riscv)
++
++static int calc_pt_regs_off(const char *reg_name)
++{
++	static struct {
++		const char *name;
++		size_t pt_regs_off;
++	} reg_map[] = {
++		{ "ra", offsetof(struct user_regs_struct, ra) },
++		{ "sp", offsetof(struct user_regs_struct, sp) },
++		{ "gp", offsetof(struct user_regs_struct, gp) },
++		{ "tp", offsetof(struct user_regs_struct, tp) },
++		{ "a0", offsetof(struct user_regs_struct, a0) },
++		{ "a1", offsetof(struct user_regs_struct, a1) },
++		{ "a2", offsetof(struct user_regs_struct, a2) },
++		{ "a3", offsetof(struct user_regs_struct, a3) },
++		{ "a4", offsetof(struct user_regs_struct, a4) },
++		{ "a5", offsetof(struct user_regs_struct, a5) },
++		{ "a6", offsetof(struct user_regs_struct, a6) },
++		{ "a7", offsetof(struct user_regs_struct, a7) },
++		{ "s0", offsetof(struct user_regs_struct, s0) },
++		{ "s1", offsetof(struct user_regs_struct, s1) },
++		{ "s2", offsetof(struct user_regs_struct, s2) },
++		{ "s3", offsetof(struct user_regs_struct, s3) },
++		{ "s4", offsetof(struct user_regs_struct, s4) },
++		{ "s5", offsetof(struct user_regs_struct, s5) },
++		{ "s6", offsetof(struct user_regs_struct, s6) },
++		{ "s7", offsetof(struct user_regs_struct, s7) },
++		{ "s8", offsetof(struct user_regs_struct, rv_s8) },
++		{ "s9", offsetof(struct user_regs_struct, s9) },
++		{ "s10", offsetof(struct user_regs_struct, s10) },
++		{ "s11", offsetof(struct user_regs_struct, s11) },
++		{ "t0", offsetof(struct user_regs_struct, t0) },
++		{ "t1", offsetof(struct user_regs_struct, t1) },
++		{ "t2", offsetof(struct user_regs_struct, t2) },
++		{ "t3", offsetof(struct user_regs_struct, t3) },
++		{ "t4", offsetof(struct user_regs_struct, t4) },
++		{ "t5", offsetof(struct user_regs_struct, t5) },
++		{ "t6", offsetof(struct user_regs_struct, t6) },
++	};
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(reg_map); i++) {
++		if (strcmp(reg_name, reg_map[i].name) == 0)
++			return reg_map[i].pt_regs_off;
++	}
++
++	pr_warn("usdt: unrecognized register '%s'\n", reg_name);
++	return -ENOENT;
++}
++
++static int parse_usdt_arg(const char *arg_str, int arg_num, struct usdt_arg_spec *arg)
++{
++	char *reg_name = NULL;
++	int arg_sz, len, reg_off;
++	long off;
++
++	if (sscanf(arg_str, " %d @ %ld ( %m[a-z0-9] ) %n", &arg_sz, &off, &reg_name, &len) == 3) {
++		/* Memory dereference case, e.g., -8@-88(s0) */
++		arg->arg_type = USDT_ARG_REG_DEREF;
++		arg->val_off = off;
++		reg_off = calc_pt_regs_off(reg_name);
++		free(reg_name);
++		if (reg_off < 0)
++			return reg_off;
++		arg->reg_off = reg_off;
++	} else if (sscanf(arg_str, " %d @ %ld %n", &arg_sz, &off, &len) == 2) {
++		/* Constant value case, e.g., 4@5 */
++		arg->arg_type = USDT_ARG_CONST;
++		arg->val_off = off;
++		arg->reg_off = 0;
++	} else if (sscanf(arg_str, " %d @ %m[a-z0-9] %n", &arg_sz, &reg_name, &len) == 2) {
++		/* Register read case, e.g., -8@a1 */
++		arg->arg_type = USDT_ARG_REG;
++		arg->val_off = 0;
++		reg_off = calc_pt_regs_off(reg_name);
++		free(reg_name);
++		if (reg_off < 0)
++			return reg_off;
++		arg->reg_off = reg_off;
++	} else {
++		pr_warn("usdt: unrecognized arg #%d spec '%s'\n", arg_num, arg_str);
++		return -EINVAL;
++	}
++
++	arg->arg_signed = arg_sz < 0;
++	if (arg_sz < 0)
++		arg_sz = -arg_sz;
++
++	switch (arg_sz) {
++	case 1: case 2: case 4: case 8:
++		arg->arg_bitshift = 64 - arg_sz * 8;
++		break;
++	default:
++		pr_warn("usdt: unsupported arg #%d (spec '%s') size: %d\n",
++			arg_num, arg_str, arg_sz);
++		return -EINVAL;
++	}
++
++	return len;
++}
++
+ #else
  
- static int parse_usdt_arg(const char *arg_str, int arg_num, struct usdt_arg_spec *arg);
- 
--static int parse_usdt_spec(struct usdt_spec *spec, const struct usdt_note *note, long usdt_cookie)
-+static int parse_usdt_spec(struct usdt_spec *spec, const struct usdt_note *note, __u64 usdt_cookie)
- {
- 	const char *s;
- 	int len;
+ static int parse_usdt_arg(const char *arg_str, int arg_num, struct usdt_arg_spec *arg)
 -- 
 2.25.1
 
