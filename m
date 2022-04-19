@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B452D5061C3
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 03:41:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCDFA5061C8
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 03:45:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343491AbiDSBnr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Apr 2022 21:43:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51426 "EHLO
+        id S1343709AbiDSBri (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Apr 2022 21:47:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245727AbiDSBnp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 21:43:45 -0400
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 418B525C77;
-        Mon, 18 Apr 2022 18:41:05 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id fu34so2573174qtb.8;
-        Mon, 18 Apr 2022 18:41:05 -0700 (PDT)
+        with ESMTP id S1343749AbiDSBrb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 21:47:31 -0400
+Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D10D267F;
+        Mon, 18 Apr 2022 18:44:48 -0700 (PDT)
+Received: by mail-qv1-xf2a.google.com with SMTP id a5so12164690qvx.1;
+        Mon, 18 Apr 2022 18:44:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=WNU/TphCFnbVlBp1Z5GLi2lvQvgI9Sbk164GKyVPu8E=;
-        b=pfU22xzLs21/6Lq/Rrj8jK21a5J0ZtShm14Q1ECtF8xkydqjTPPth5Hf0uUGkd+z2H
-         rBa1VP3+KB/MHJXwCo2BQOrsV0/tPZUz0ddrVNhel8yV8aSGm1ci2ATaJBtRDK8+iyAp
-         yEYrhhDv4+frxfPpvrUYlrExB6gM3Gd8Mns8qKQGbodSz8Gv791RKfkIrbDVtqQLYk9+
-         01glCHJ649U6gSAbcM2vGOcNYebrd2uHjOr/TRU4L8RHovjy6EXALfVDD3K7QIDrPPEj
-         2rLMdo1Q+aNgk0QqEirQ42TTryNRnM4p5lgm3k+RdhRd2b1Kh5qAnvedFjHRTQ+9L1XC
-         3RyA==
+        bh=iPR7KjpiiS3B+4FaAzRwBvS4FN94Ws45XLOjIugVXyo=;
+        b=LQeVQPjY46lbhT9D9zrmgV26yhpAcYsK5dOpHlz8O9ifKtMt1R1BBE8Abw4tCQ5TUz
+         UIqwDDLvhq2OzvClOlkT4W1g4Y5g4IyjVgWMs0CwqzlgyrgC3u0UeaNurUPZA3vhMRQa
+         3WOY1+FCHh9sg/pgbfYQGFaD4acMz57b4NMILZv35J1qyQbDELE4Or4rrSEr54fM26/z
+         3IuAkxOMztfElGCU56Fr6t4PSZM68gYqQbyCkl3Z6TmRMe+gr9aC4SLpg6unPEV+NTJg
+         upK0Uwn0l3RExPehhqlCBmegmPbZ9OsLTRcEPIZIZWhP/TP5ch8It8V/WaIm3Rqn8fLv
+         zfrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=WNU/TphCFnbVlBp1Z5GLi2lvQvgI9Sbk164GKyVPu8E=;
-        b=tZfJ437m1TzcpQhz8x61IlJ1Pjs9aW9bvTHWS1OCOXfytG1quRENNn+ZiRoyvgFgu3
-         hGz7NDMvBpwplArshOw+UEFgjmN+WTarEufa+NlPyrl7QbhKnGxFSsMrHXsSj6DwZB4w
-         5DbQZfbGEIHJS72bXbZSZfTAfGI9xlCUe8RoMlnNEYSPEX9NjR3v2+IHkRkLIw9ggMtm
-         nn76B9ZgX4qhTUNIIjPUWt2E01PJzkCDPytwpcCq5LZDaLTfaESfMuJzJ+GbDLyJdiFu
-         8dkeFaXeH4X3K54P/vbvXjL+XY5riWvgeU1n71TwLjwWOhxI24Xi3cOIBXm/W52NFAUE
-         L65w==
-X-Gm-Message-State: AOAM532PwRovrVhiw7oqUL5km77SeS8o5+SMUpROMJQAh9lK5OHpTFm/
-        7HZgBg1ONdSCl/iMNCKCsss=
-X-Google-Smtp-Source: ABdhPJxW6v4zSCrzZlfYGwY7zwHvHS0HEYIJAi4Sf+TOZJQVtZsBpPB1dvzIRUobBStfs2t4C4oGbw==
-X-Received: by 2002:a05:622a:1813:b0:2f1:fb18:3ea3 with SMTP id t19-20020a05622a181300b002f1fb183ea3mr5998736qtc.108.1650332464480;
-        Mon, 18 Apr 2022 18:41:04 -0700 (PDT)
+        bh=iPR7KjpiiS3B+4FaAzRwBvS4FN94Ws45XLOjIugVXyo=;
+        b=mpi7J1hwNGfgfQ1VP12dQR7nqlByEKNHiOp9RTzLSo34FXQi9pFQffW/QRrknCPHQR
+         /dZlX0r7w+44jJq6DPDLtB7hnxX0RUghEvZeTHTieyr2yrhG1IkI5eXKP17KD45p50xs
+         mDqmXkoGS3LQOI5vINXaUYmy27aghti8exYA3qh6LVHG3AEddPWSM0/94LTXGDkgGtOO
+         FMcWZi4z0sK1vW7M6yVq5m6LcJRNtC7u01BHfggQU9zgLkmnz7xtksAbBwwaREY6JfrK
+         4TCiql0/1e+x7CcJvMbm/UNZTHCURljaEtcCSclIeMqVK52LZKFuYSFIoV5aQdd7ttHf
+         vAuw==
+X-Gm-Message-State: AOAM531XrUFhEVp/N9w+H33dlPDPhvrgcBbZ/aEAEMD9lZfn/6kKnRPA
+        tFVtDCjwWK/+cc0FqNUHUl5o6McjKqA=
+X-Google-Smtp-Source: ABdhPJySdFp7tUmJanTf/0OISbH3xa9Zz1MI3078odp0PXs6D4/nuFCcqkCE6Sx4vD2Tg5FUBL0t3g==
+X-Received: by 2002:a05:6214:21a4:b0:446:5514:82b7 with SMTP id t4-20020a05621421a400b00446551482b7mr6225710qvc.54.1650332687225;
+        Mon, 18 Apr 2022 18:44:47 -0700 (PDT)
 Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id 187-20020a370bc4000000b0069c8f01368csm6490447qkl.92.2022.04.18.18.41.00
+        by smtp.gmail.com with ESMTPSA id w3-20020a376203000000b0069e9a4568f9sm2655790qkb.125.2022.04.18.18.44.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 18:41:04 -0700 (PDT)
+        Mon, 18 Apr 2022 18:44:46 -0700 (PDT)
 From:   cgel.zte@gmail.com
 X-Google-Original-From: lv.ruyi@zte.com.cn
 To:     f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com,
@@ -55,9 +55,9 @@ Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
         kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Lv Ruyi <lv.ruyi@zte.com.cn>,
         Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] net: ethernet: mtk_eth_soc: fix error check return value of debugfs_create_dir()
-Date:   Tue, 19 Apr 2022 01:40:56 +0000
-Message-Id: <20220419014056.2561750-1-lv.ruyi@zte.com.cn>
+Subject: [PATCH] net: phy: fix error check return value of phy_read()
+Date:   Tue, 19 Apr 2022 01:44:39 +0000
+Message-Id: <20220419014439.2561835-1-lv.ruyi@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -73,29 +73,30 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-If an error occurs, debugfs_create_file() will return ERR_PTR(-ERROR),
-so use IS_ERR() to check it.
+phy_read() returns a negative number if there's an error, but the
+error-checking code in the bcm87xx driver's config_intr function
+triggers if phy_read() returns non-zero.  Correct that.
 
-Fixes: 804775dfc288 ("net: ethernet: mtk_eth_soc: add support for Wireless Ethernet Dispatch (WED)")
 Reported-by: Zeal Robot <zealci@zte.com.cn>
 Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
 ---
- drivers/net/ethernet/mediatek/mtk_wed_debugfs.c | 2 +-
+ drivers/net/phy/bcm87xx.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_wed_debugfs.c b/drivers/net/ethernet/mediatek/mtk_wed_debugfs.c
-index a81d3fd1a439..0c284c18a8d7 100644
---- a/drivers/net/ethernet/mediatek/mtk_wed_debugfs.c
-+++ b/drivers/net/ethernet/mediatek/mtk_wed_debugfs.c
-@@ -165,7 +165,7 @@ void mtk_wed_hw_add_debugfs(struct mtk_wed_hw *hw)
+diff --git a/drivers/net/phy/bcm87xx.c b/drivers/net/phy/bcm87xx.c
+index 313563482690..e62b53718010 100644
+--- a/drivers/net/phy/bcm87xx.c
++++ b/drivers/net/phy/bcm87xx.c
+@@ -146,7 +146,7 @@ static int bcm87xx_config_intr(struct phy_device *phydev)
  
- 	snprintf(hw->dirname, sizeof(hw->dirname), "wed%d", hw->index);
- 	dir = debugfs_create_dir(hw->dirname, NULL);
--	if (!dir)
-+	if (IS_ERR(dir))
- 		return;
+ 	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
+ 		err = phy_read(phydev, BCM87XX_LASI_STATUS);
+-		if (err)
++		if (err < 0)
+ 			return err;
  
- 	hw->debugfs_dir = dir;
+ 		reg |= 1;
 -- 
 2.25.1
+
 
