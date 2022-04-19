@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 78F96506702
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 10:35:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B71B506706
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 10:35:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350054AbiDSIg4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 04:36:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36604 "EHLO
+        id S1343562AbiDSIg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 04:36:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343768AbiDSIgu (ORCPT
+        with ESMTP id S1350045AbiDSIgu (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 04:36:50 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AD8727FEB;
-        Tue, 19 Apr 2022 01:34:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34AA92AE1A;
+        Tue, 19 Apr 2022 01:34:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1650357247; x=1681893247;
+  t=1650357249; x=1681893249;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=XdW08Py1YP21b97JQu1mB+MqRhlfnPj5Y35sUtUMmik=;
-  b=ra3akAO2VlwEe4gnLlD9ajK/196kAQOYpTbkwIHYVjXdBi8eiBlufKTX
-   gucylmIV4h9q9AOnyXqDawt+nYJtAPBP2uunqLHC9D3cmo6qLOR0msQmI
-   C83lQ1s9PqJY/8qpoIc3VEwp+ExonaHuK2wgo/dxrNh+yzgDqG0S3V7lA
-   KJC5kkW6uIYqMNwxAQRdLvaLC4gCyr3AYyz+isi3MeQ2ItBpP/D+Os/fL
-   MuakYWHyNz8A2wFNrMImnOQKiZsXppsxtsdAK0lZpDWltcxZiinRj21yL
-   /SAe8at2SnllQb6Qx1H57UioAiFaXq8cQVCCcT1zuqiHz6RKPhfFDO4rE
-   w==;
+  bh=/gJV2Fw9EGqVFCyRqnQHv2MA1z3B7qFZ/NhR/jGQ3sA=;
+  b=2lepcXqy8l1ylj1o9SiN5IA5ozGb1dKrKe5GNXDfmbsHM++3UCuDt1AW
+   A9mUwjI6s0t8F4ZCS0doANgjbdkB1GlIEjXK7LapXSZ4WOWR7d3nIeTx8
+   ZkGJTUCne5hwhuqfhTXZ3XL2EpTi2C3GdhsICJISwu2yZUg57zHOLENFd
+   IAlxYqnBJN+TGCGotHv3g7HsXgtI+3dMzWXWKHFJyjU6uE40H+524SgsQ
+   tuQL7nGZIHorNxSnOFo0dFahBtxtvdnpocM7PyLtZ1WgkvzeqVlrtwvYM
+   7TIWtqJj0Hmw8dIK3lw6xzmjVWPxPabss2oVDJAk41EVBkGjALwhj9/qi
+   g==;
 X-IronPort-AV: E=Sophos;i="5.90,272,1643698800"; 
-   d="scan'208";a="160923880"
+   d="scan'208";a="170068196"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Apr 2022 01:34:06 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Apr 2022 01:34:08 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 19 Apr 2022 01:34:06 -0700
+ 15.1.2375.17; Tue, 19 Apr 2022 01:34:08 -0700
 Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 19 Apr 2022 01:34:03 -0700
+ 15.1.2375.17 via Frontend Transport; Tue, 19 Apr 2022 01:34:06 -0700
 From:   Horatiu Vultur <horatiu.vultur@microchip.com>
 To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
         <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
         <UNGLinuxDriver@microchip.com>, <richardcochran@gmail.com>,
         Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [RFC PATCH net-next 1/2] net: phy: Add phy latency adjustment support in phy framework.
-Date:   Tue, 19 Apr 2022 10:37:03 +0200
-Message-ID: <20220419083704.48573-2-horatiu.vultur@microchip.com>
+Subject: [RFC PATCH net-next 2/2] net: phy: micrel: Implement set/get_adj_latency for lan8814
+Date:   Tue, 19 Apr 2022 10:37:04 +0200
+Message-ID: <20220419083704.48573-3-horatiu.vultur@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220419083704.48573-1-horatiu.vultur@microchip.com>
 References: <20220419083704.48573-1-horatiu.vultur@microchip.com>
@@ -63,138 +63,134 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add adjustment support for latency for the phy using sysfs.
-This is used to adjust the latency of the phy based on link mode
-and direction.
+The lan8814 driver supports adjustments of the latency in the silicon
+based on the speed and direction, therefore implement set/get_adj_latency
+to adjust the HW.
 
 Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- .../ABI/testing/sysfs-class-net-phydev        | 10 ++++
- drivers/net/phy/phy_device.c                  | 58 +++++++++++++++++++
- include/linux/phy.h                           |  9 +++
- 3 files changed, 77 insertions(+)
+ drivers/net/phy/micrel.c | 87 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 87 insertions(+)
 
-diff --git a/Documentation/ABI/testing/sysfs-class-net-phydev b/Documentation/ABI/testing/sysfs-class-net-phydev
-index ac722dd5e694..a99bbfeddb6f 100644
---- a/Documentation/ABI/testing/sysfs-class-net-phydev
-+++ b/Documentation/ABI/testing/sysfs-class-net-phydev
-@@ -63,3 +63,13 @@ Description:
- 		only used internally by the kernel and their placement are
- 		not meant to be stable across kernel versions. This is intended
- 		for facilitating the debugging of PHY drivers.
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index 96840695debd..099d1ecd6dad 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -120,6 +120,15 @@
+ #define PTP_TIMESTAMP_EN_PDREQ_			BIT(2)
+ #define PTP_TIMESTAMP_EN_PDRES_			BIT(3)
+ 
++#define PTP_RX_LATENCY_1000			0x0224
++#define PTP_TX_LATENCY_1000			0x0225
 +
-+What:		/sys/class/mdio_bus/<bus>/<device>/adjust_latency
-+Date:		April 2022
-+KernelVersion:	5.19
-+Contact:	netdev@vger.kernel.org
-+Description:
-+		This file adjusts the latency in the PHY. To set value,
-+		write three integers into the file: interface mode, RX latency,
-+		TX latency. When the file is read, it returns the supported
-+		interface modes and the latency values.
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 8406ac739def..80bf04ca0e02 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -529,6 +529,48 @@ static ssize_t phy_dev_flags_show(struct device *dev,
++#define PTP_RX_LATENCY_100			0x0222
++#define PTP_TX_LATENCY_100			0x0223
++
++#define PTP_RX_LATENCY_10			0x0220
++#define PTP_TX_LATENCY_10			0x0221
++
+ #define PTP_TX_PARSE_L2_ADDR_EN			0x0284
+ #define PTP_RX_PARSE_L2_ADDR_EN			0x0244
+ 
+@@ -208,6 +217,16 @@
+ #define PTP_TSU_INT_STS_PTP_RX_TS_OVRFL_INT_	BIT(1)
+ #define PTP_TSU_INT_STS_PTP_RX_TS_EN_		BIT(0)
+ 
++/* Represents the reset value of the latency registers,
++ * The values are express in ns
++ */
++#define LAN8814_RX_10_LATENCY			8874
++#define LAN8814_TX_10_LATENCY			11850
++#define LAN8814_RX_100_LATENCY			2346
++#define LAN8814_TX_100_LATENCY			705
++#define LAN8814_RX_1000_LATENCY			429
++#define LAN8814_TX_1000_LATENCY			201
++
+ /* PHY Control 1 */
+ #define MII_KSZPHY_CTRL_1			0x1e
+ #define KSZ8081_CTRL1_MDIX_STAT			BIT(4)
+@@ -2657,6 +2676,72 @@ static int lan8804_config_init(struct phy_device *phydev)
+ 	return 0;
  }
- static DEVICE_ATTR_RO(phy_dev_flags);
  
-+static ssize_t adjust_latency_show(struct device *dev,
-+				   struct device_attribute *attr, char *buf)
++static int lan8814_set_adj_latency(struct phy_device *phydev,
++				   enum ethtool_link_mode_bit_indices link_mode,
++				   s32 rx, s32 tx)
 +{
-+	struct phy_device *phydev = to_phy_device(dev);
-+	ssize_t count = 0;
-+	int err, i;
-+	s32 rx, tx;
-+
-+	for (i = 0; i < __ETHTOOL_LINK_MODE_MASK_NBITS; ++i) {
-+		err = phydev->drv->get_adj_latency(phydev, i, &rx, &tx);
-+		if (err == -EINVAL)
-+			continue;
-+
-+		count += sprintf(&buf[count], "%d rx: %d, tx: %d\n", i, rx, tx);
++	switch (link_mode) {
++	case ETHTOOL_LINK_MODE_10baseT_Half_BIT:
++	case ETHTOOL_LINK_MODE_10baseT_Full_BIT:
++		rx += LAN8814_RX_10_LATENCY;
++		tx += LAN8814_TX_10_LATENCY;
++		lanphy_write_page_reg(phydev, 5, PTP_RX_LATENCY_10, rx);
++		lanphy_write_page_reg(phydev, 5, PTP_TX_LATENCY_10, tx);
++		return 0;
++	case ETHTOOL_LINK_MODE_100baseT_Half_BIT:
++	case ETHTOOL_LINK_MODE_100baseT_Full_BIT:
++		rx += LAN8814_RX_100_LATENCY;
++		tx += LAN8814_TX_100_LATENCY;
++		lanphy_write_page_reg(phydev, 5, PTP_RX_LATENCY_100, rx);
++		lanphy_write_page_reg(phydev, 5, PTP_TX_LATENCY_100, tx);
++		return 0;
++	case ETHTOOL_LINK_MODE_1000baseT_Half_BIT:
++	case ETHTOOL_LINK_MODE_1000baseT_Full_BIT:
++		rx += LAN8814_RX_1000_LATENCY;
++		tx += LAN8814_TX_1000_LATENCY;
++		lanphy_write_page_reg(phydev, 5, PTP_RX_LATENCY_1000, rx);
++		lanphy_write_page_reg(phydev, 5, PTP_TX_LATENCY_1000, tx);
++		return 0;
++	default:
++		return -EINVAL;
 +	}
 +
-+	return count;
++	return 0;
 +}
 +
-+static ssize_t adjust_latency_store(struct device *dev,
-+				    struct device_attribute *attr,
-+				    const char *buf, size_t count)
++static int lan8814_get_adj_latency(struct phy_device *phydev,
++				   enum ethtool_link_mode_bit_indices link_mode,
++				   s32 *rx, s32 *tx)
 +{
-+	struct phy_device *phydev = to_phy_device(dev);
-+	enum ethtool_link_mode_bit_indices link_mode;
-+	int cnt, err = -EINVAL;
-+	s32 rx, tx;
-+
-+	cnt = sscanf(buf, "%u %d %d", &link_mode, &rx, &tx);
-+	if (cnt != 3)
-+		goto out;
-+
-+	err = phydev->drv->set_adj_latency(phydev, link_mode, rx, tx);
-+	if (err)
-+		goto out;
-+
-+	return count;
-+out:
-+	return err;
-+}
-+static DEVICE_ATTR_RW(adjust_latency);
-+
- static struct attribute *phy_dev_attrs[] = {
- 	&dev_attr_phy_id.attr,
- 	&dev_attr_phy_interface.attr,
-@@ -3009,6 +3051,16 @@ static int phy_probe(struct device *dev)
- 
- 	phydev->drv = phydrv;
- 
-+	if (phydev->drv &&
-+	    phydev->drv->set_adj_latency &&
-+	    phydev->drv->get_adj_latency) {
-+		err = sysfs_create_file(&phydev->mdio.dev.kobj,
-+					&dev_attr_adjust_latency.attr);
-+		if (err)
-+			phydev_err(phydev, "error creating 'adjust_latency' sysfs entry\n");
-+		err = 0;
++	switch (link_mode) {
++	case ETHTOOL_LINK_MODE_10baseT_Half_BIT:
++	case ETHTOOL_LINK_MODE_10baseT_Full_BIT:
++		*rx = lanphy_read_page_reg(phydev, 5, PTP_RX_LATENCY_10);
++		*tx = lanphy_read_page_reg(phydev, 5, PTP_TX_LATENCY_10);
++		*rx -= LAN8814_RX_10_LATENCY;
++		*tx -= LAN8814_TX_10_LATENCY;
++		return 0;
++	case ETHTOOL_LINK_MODE_100baseT_Half_BIT:
++	case ETHTOOL_LINK_MODE_100baseT_Full_BIT:
++		*rx = lanphy_read_page_reg(phydev, 5, PTP_RX_LATENCY_100);
++		*tx = lanphy_read_page_reg(phydev, 5, PTP_TX_LATENCY_100);
++		*rx -= LAN8814_RX_100_LATENCY;
++		*tx -= LAN8814_TX_100_LATENCY;
++		return 0;
++	case ETHTOOL_LINK_MODE_1000baseT_Half_BIT:
++	case ETHTOOL_LINK_MODE_1000baseT_Full_BIT:
++		*rx = lanphy_read_page_reg(phydev, 5, PTP_RX_LATENCY_1000);
++		*tx = lanphy_read_page_reg(phydev, 5, PTP_TX_LATENCY_1000);
++		*rx -= LAN8814_RX_1000_LATENCY;
++		*tx -= LAN8814_TX_1000_LATENCY;
++		return 0;
++	default:
++		return -EINVAL;
 +	}
 +
- 	/* Disable the interrupt if the PHY doesn't support it
- 	 * but the interrupt is still a valid one
- 	 */
-@@ -3112,6 +3164,12 @@ static int phy_remove(struct device *dev)
- 	if (phydev->drv && phydev->drv->remove)
- 		phydev->drv->remove(phydev);
- 
-+	if (phydev->drv &&
-+	    phydev->drv->set_adj_latency &&
-+	    phydev->drv->get_adj_latency)
-+		sysfs_remove_file(&phydev->mdio.dev.kobj,
-+				  &dev_attr_adjust_latency.attr);
++	return 0;
++}
 +
- 	/* Assert the reset signal */
- 	phy_device_reset(phydev, 1);
- 
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 36ca2b5c2253..584e467ff4d1 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -932,6 +932,15 @@ struct phy_driver {
- 	int (*get_sqi)(struct phy_device *dev);
- 	/** @get_sqi_max: Get the maximum signal quality indication */
- 	int (*get_sqi_max)(struct phy_device *dev);
-+	/** @set_adj_latency: Set the latency values of the PHY */
-+	int (*set_adj_latency)(struct phy_device *dev,
-+			       enum ethtool_link_mode_bit_indices link_mode,
-+			       s32 rx, s32 tx);
-+	/** @get_latency: Get the latency values of the PHY */
-+	int (*get_adj_latency)(struct phy_device *dev,
-+			       enum ethtool_link_mode_bit_indices link_mode,
-+			       s32 *rx, s32 *tx);
-+
- };
- #define to_phy_driver(d) container_of(to_mdio_common_driver(d),		\
- 				      struct phy_driver, mdiodrv)
+ static irqreturn_t lan8814_handle_interrupt(struct phy_device *phydev)
+ {
+ 	u16 tsu_irq_status;
+@@ -3052,6 +3137,8 @@ static struct phy_driver ksphy_driver[] = {
+ 	.resume		= kszphy_resume,
+ 	.config_intr	= lan8814_config_intr,
+ 	.handle_interrupt = lan8814_handle_interrupt,
++	.set_adj_latency = lan8814_set_adj_latency,
++	.get_adj_latency = lan8814_get_adj_latency,
+ }, {
+ 	.phy_id		= PHY_ID_LAN8804,
+ 	.phy_id_mask	= MICREL_PHY_ID_MASK,
 -- 
 2.33.0
 
