@@ -2,111 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D48E6506682
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 10:08:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FAAA50668B
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 10:10:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349713AbiDSIKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 04:10:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60138 "EHLO
+        id S243806AbiDSIM5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 04:12:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233480AbiDSIKh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 04:10:37 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BB0472715E
-        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 01:07:54 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-127-e4KWbpF-O9CJiTd9liyVDw-1; Tue, 19 Apr 2022 09:07:51 +0100
-X-MC-Unique: e4KWbpF-O9CJiTd9liyVDw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.32; Tue, 19 Apr 2022 09:07:50 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.033; Tue, 19 Apr 2022 09:07:50 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Alexander Lobakin' <alobakin@pm.me>, Song Liu <song@kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        "Arnaldo Carvalho de Melo" <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "Alexander Shishkin" <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Jesper Dangaard Brouer" <hawk@kernel.org>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        "Jonathan Lemon" <jonathan.lemon@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        "Nick Desaulniers" <ndesaulniers@google.com>,
-        Dmitrii Dolgov <9erthalion6@gmail.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Tiezhu Yang <yangtiezhu@loongson.cn>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        "Chenbo Feng" <fengc@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Thomas Graf <tgraf@suug.ch>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        "linux-perf-users@vger.kernel.org" <linux-perf-users@vger.kernel.org>,
-        "open list" <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "llvm@lists.linux.dev" <llvm@lists.linux.dev>
-Subject: RE: [PATCH bpf-next 07/11] samples: bpf: fix uin64_t format literals
-Thread-Topic: [PATCH bpf-next 07/11] samples: bpf: fix uin64_t format literals
-Thread-Index: AQHYUbspso42ifnDw02kovtD5V7S26z25T3g
-Date:   Tue, 19 Apr 2022 08:07:50 +0000
-Message-ID: <9465da05497746b3b70d7c841a585d5b@AcuMS.aculab.com>
-References: <20220414223704.341028-1-alobakin@pm.me>
- <20220414223704.341028-8-alobakin@pm.me>
- <CAPhsuW7FuAKX0fJ1XPfFWWwRS+wTW0qA49V-iQVzxv4jOb47MA@mail.gmail.com>
- <20220416174816.198651-1-alobakin@pm.me>
-In-Reply-To: <20220416174816.198651-1-alobakin@pm.me>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S243633AbiDSIM4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 04:12:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B22F2DED7
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 01:10:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 54A1CB811BE
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 08:10:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E996AC385AA;
+        Tue, 19 Apr 2022 08:10:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650355811;
+        bh=hWbm4/obit205R3vqD9FGO7Pgsb1m5/OYbhCYUjhpMA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=MpjJP4eP9QDDneKlIDUbB6QGCcLxYxxTTy5/p8BGGjRS+NXhqrRzCSe64uSuTY3qi
+         SgMpa6zmMJ37eLb44sYdoXxkueJTP6KDEHax9nB/WGaYxvHES290gfuryU6SzoVMqD
+         KMco6U6iu1qWOHTO36YVxYKI5wKBsdJVNRa3Ntlv3AeRkhhptWbnIuJFxJGgp0ZdQc
+         BGwunZ6cLdl1IPz1fU4sSA6o3NmxC7XbdJDYUT2VqcembbFRwVbspHEezBIECamEu7
+         cIzlSZLbCmKgCFiT6v01Jr8W8VvhqpgxR6mZmbGfmNblh3zm2y0a2egmeaIUCj41vV
+         ZhjJXY/lxuzRA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C124AE8DD61;
+        Tue, 19 Apr 2022 08:10:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: dsa: hellcreek: Calculate checksums in tagger
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165035581078.3970.8684001040570635218.git-patchwork-notify@kernel.org>
+Date:   Tue, 19 Apr 2022 08:10:10 +0000
+References: <20220415103320.90657-1-kurt@linutronix.de>
+In-Reply-To: <20220415103320.90657-1-kurt@linutronix.de>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogQWxleGFuZGVyIExvYmFraW4NCj4gU2VudDogMTYgQXByaWwgMjAyMiAxODo1NQ0KPiBU
-bzogU29uZyBMaXUgPHNvbmdAa2VybmVsLm9yZz4NCj4gDQo+IEZyb206IFNvbmcgTGl1IDxzb25n
-QGtlcm5lbC5vcmc+DQo+IERhdGU6IEZyaSwgMTUgQXByIDIwMjIgMTY6NTI6MTMgLTA3MDANCj4g
-DQo+ID4gT24gVGh1LCBBcHIgMTQsIDIwMjIgYXQgMzo0NiBQTSBBbGV4YW5kZXIgTG9iYWtpbiA8
-YWxvYmFraW5AcG0ubWU+IHdyb3RlOg0KPiA+ID4NCj4gPiA+IFRoZXJlJ3MgYSBjb3VwbGUgcGxh
-Y2VzIHdoZXJlIHVpbjY0X3QgaXMgYmVpbmcgcGFzc2VkIGFzIGFuICVsZA0KPiA+ID4gZm9ybWF0
-IGFyZ3VtZW50LCB3aGljaCBpcyBpbmNvcnJlY3QgKHNob3VsZCBiZSAlbGxkKS4gRml4IHRoZW0u
-DQo+ID4NCj4gPiBUaGlzIHdpbGwgY2F1c2Ugc29tZSB3YXJuaW5nIG9uIHNvbWUgNjQtYml0IGNv
-bXBpbGVyLCBubz8NCj4gDQo+IE9oIHdhaXQsIEkgYWNjaWRlbnRpYWxseSBtZW50aW9uZWQgJWxk
-IGFuZCAlbGxkIGFsdGhvdWdoIGluIGZhY3QgSQ0KPiBjaGFuZ2VkICVsdSB0byAlbGx1LiBTbyB0
-aGVyZSB3b24ndCBiZSBhbnkgY29tcGlsZXIgd2FybmluZ3MuIEknbGwNCj4gZml4IHRoZSBjb21t
-aXQgbWVzc2FnZSBpbiB2Mi4NCg0KVGhhdCB3b24ndCBtYWtlIGFueSBkaWZmZXJlbmNlLg0KVGhl
-IGNvcnJlY3Qgd2F5IHRvIHByaW50IHVpbnQ2NF90IGlzIHVzaW5nIFBSSXU2NC4NCg0KCURhdmlk
-DQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBG
-YXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2
-IChXYWxlcykNCg==
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
+
+On Fri, 15 Apr 2022 12:33:20 +0200 you wrote:
+> In case the checksum calculation is offloaded to the DSA master network
+> interface, it will include the switch trailing tag. As soon as the switch strips
+> that tag on egress, the calculated checksum is wrong.
+> 
+> Therefore, add the checksum calculation to the tagger (if required) before
+> adding the switch tag. This way, the hellcreek code works with all DSA master
+> interfaces regardless of their declared feature set.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net] net: dsa: hellcreek: Calculate checksums in tagger
+    https://git.kernel.org/netdev/net/c/0763120b0904
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
