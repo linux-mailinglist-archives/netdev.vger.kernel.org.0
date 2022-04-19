@@ -2,75 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 973D9506B60
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 13:47:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CD16506B6E
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 13:50:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351832AbiDSLtB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 07:49:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39370 "EHLO
+        id S1351900AbiDSLw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 07:52:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351821AbiDSLsp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 07:48:45 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 752292A25B;
-        Tue, 19 Apr 2022 04:46:03 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KjMRx5SMtz1J9j7;
-        Tue, 19 Apr 2022 19:45:17 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 19 Apr
- 2022 19:46:00 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <hawk@kernel.org>, <john.fastabend@gmail.com>, <andrii@kernel.org>,
-        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
-        <kpsingh@kernel.org>
-CC:     <weiyongjun1@huawei.com>, <shaozhengchao@huawei.com>,
-        <yuehaibing@huawei.com>
-Subject: [PATCH bpf-next] samples/bpf: reduce the sampling interval in xdp1_user
-Date:   Tue, 19 Apr 2022 19:47:46 +0800
-Message-ID: <20220419114746.291613-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S1352017AbiDSLwy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 07:52:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB40E22514
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 04:50:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E21B61492
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 11:50:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id ADD2AC385AA;
+        Tue, 19 Apr 2022 11:50:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650369011;
+        bh=bJa+LcxAkU7ZCKzATeHokWrOmPv+3ypu58jX3W3s74s=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=r6DqFMClGrx/xV59wS/dq5copPHPnb2Qx94H9DhTWNtQFNYjovWUQ9wLy2OnjvEeu
+         /U/M30J+96d6DQeGTobYzpk5hivvXxvgNDNVfR4Ao/QhmM+liCVcFA0UJbIxVu9Ehm
+         Rr/YniH+F1N3j2FAxJPMk/TNdbSdaiZTyva6g9u/A8wRjbPMSoEUBEPUrAEtWvGd3u
+         ES0/iS/OqWNAZNmCyfoRTaQDwkknHm6a8trnFVfMRwb8pBRmWis0u8iWwoASRTQ9hy
+         GRMz3NjYNU4Zu8v7m2R/HY3Z7U2cGdtEnIjCyKRvJi6tqNkZ3rEXZBAzYy44jxhsSd
+         JXRn3J7VvQEfg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 95F33EAC09C;
+        Tue, 19 Apr 2022 11:50:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v5 net-next 0/4] rtnetlink: improve ALT_IFNAME config and fix
+ dangerous GROUP usage
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165036901161.1040.3143036434940769413.git-patchwork-notify@kernel.org>
+Date:   Tue, 19 Apr 2022 11:50:11 +0000
+References: <20220415165330.10497-1-florent.fourcot@wifirst.fr>
+In-Reply-To: <20220415165330.10497-1-florent.fourcot@wifirst.fr>
+To:     Florent Fourcot <florent.fourcot@wifirst.fr>
+Cc:     netdev@vger.kernel.org, cong.wang@bytedance.com,
+        edumazet@google.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If interval is 2, and sum - prev[key] = 1, the result = 0. This will
-mislead the tester that the port has no traffic right now. So reduce the
-sampling interval to 1.
+Hello:
 
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
- samples/bpf/xdp1_user.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This series was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-diff --git a/samples/bpf/xdp1_user.c b/samples/bpf/xdp1_user.c
-index 631f0cabe139..bacebb4b602f 100644
---- a/samples/bpf/xdp1_user.c
-+++ b/samples/bpf/xdp1_user.c
-@@ -161,7 +161,7 @@ int main(int argc, char **argv)
- 	}
- 	prog_id = info.id;
- 
--	poll_stats(map_fd, 2);
-+	poll_stats(map_fd, 1);
- 
- 	return 0;
- }
+On Fri, 15 Apr 2022 18:53:26 +0200 you wrote:
+> First commit forbids dangerous calls when both IFNAME and GROUP are
+> given, since it can introduce unexpected behaviour when IFNAME does not
+> match any interface.
+> 
+> Second patch achieves primary goal of this patchset to fix/improve
+> IFLA_ALT_IFNAME attribute, since previous code was never working for
+> newlink/setlink. ip-link command is probably getting interface index
+> before, and was not using this feature.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v5,net-next,1/4] rtnetlink: return ENODEV when ifname does not exist and group is given
+    https://git.kernel.org/netdev/net-next/c/ef2a7c9065ce
+  - [v5,net-next,2/4] rtnetlink: enable alt_ifname for setlink/newlink
+    https://git.kernel.org/netdev/net-next/c/5ea08b5286f6
+  - [v5,net-next,3/4] rtnetlink: return ENODEV when IFLA_ALT_IFNAME is used in dellink
+    https://git.kernel.org/netdev/net-next/c/dee04163e9f2
+  - [v5,net-next,4/4] rtnetlink: return EINVAL when request cannot succeed
+    https://git.kernel.org/netdev/net-next/c/b6177d3240a4
+
+You are awesome, thank you!
 -- 
-2.17.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
