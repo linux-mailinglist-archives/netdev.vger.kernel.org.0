@@ -2,63 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CCDFA5061C8
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 03:45:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 143065061D5
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 03:52:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343709AbiDSBri (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Apr 2022 21:47:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53434 "EHLO
+        id S239958AbiDSBzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Apr 2022 21:55:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343749AbiDSBrb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 21:47:31 -0400
-Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D10D267F;
-        Mon, 18 Apr 2022 18:44:48 -0700 (PDT)
-Received: by mail-qv1-xf2a.google.com with SMTP id a5so12164690qvx.1;
-        Mon, 18 Apr 2022 18:44:48 -0700 (PDT)
+        with ESMTP id S233223AbiDSBzD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Apr 2022 21:55:03 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90AD41EC62;
+        Mon, 18 Apr 2022 18:52:22 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id d198so9342303qkc.12;
+        Mon, 18 Apr 2022 18:52:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iPR7KjpiiS3B+4FaAzRwBvS4FN94Ws45XLOjIugVXyo=;
-        b=LQeVQPjY46lbhT9D9zrmgV26yhpAcYsK5dOpHlz8O9ifKtMt1R1BBE8Abw4tCQ5TUz
-         UIqwDDLvhq2OzvClOlkT4W1g4Y5g4IyjVgWMs0CwqzlgyrgC3u0UeaNurUPZA3vhMRQa
-         3WOY1+FCHh9sg/pgbfYQGFaD4acMz57b4NMILZv35J1qyQbDELE4Or4rrSEr54fM26/z
-         3IuAkxOMztfElGCU56Fr6t4PSZM68gYqQbyCkl3Z6TmRMe+gr9aC4SLpg6unPEV+NTJg
-         upK0Uwn0l3RExPehhqlCBmegmPbZ9OsLTRcEPIZIZWhP/TP5ch8It8V/WaIm3Rqn8fLv
-         zfrw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=J7x6RHJjVOP6JJpTtFmXSE8AFbsY9RkxCow2mq3xx84=;
+        b=Inr814cus80rxIujEAiX/uzkL7nLz4oEogx68KmUDBGD9OMSXoz+2FijnJS8SmvJwF
+         xmUEbQqZYmU3Jvxodxb/v8MnJjsLPtXWmWO4ReJmh4RVJbnq+r6LOEX6h2DXMk7+i9HS
+         ZRk+upBisaOd+tii0BhfUVKRYG65ZuZ9JjW+ACIoMr+C4luRQ8mJjhpaNdMAarQgW+tg
+         /D5b30/fnIEc6MmzEv7qqziqjbnGTcShSvvHVEgn6NWEK+nndhdpx4lz/INeU51JWLEt
+         WgKNNxB6nBk0jOKSU1YJtmlI9dJSyb0begH/knsL4T1uNn3g2Er3KnVbX9TgG8TxzwoF
+         mvkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iPR7KjpiiS3B+4FaAzRwBvS4FN94Ws45XLOjIugVXyo=;
-        b=mpi7J1hwNGfgfQ1VP12dQR7nqlByEKNHiOp9RTzLSo34FXQi9pFQffW/QRrknCPHQR
-         /dZlX0r7w+44jJq6DPDLtB7hnxX0RUghEvZeTHTieyr2yrhG1IkI5eXKP17KD45p50xs
-         mDqmXkoGS3LQOI5vINXaUYmy27aghti8exYA3qh6LVHG3AEddPWSM0/94LTXGDkgGtOO
-         FMcWZi4z0sK1vW7M6yVq5m6LcJRNtC7u01BHfggQU9zgLkmnz7xtksAbBwwaREY6JfrK
-         4TCiql0/1e+x7CcJvMbm/UNZTHCURljaEtcCSclIeMqVK52LZKFuYSFIoV5aQdd7ttHf
-         vAuw==
-X-Gm-Message-State: AOAM531XrUFhEVp/N9w+H33dlPDPhvrgcBbZ/aEAEMD9lZfn/6kKnRPA
-        tFVtDCjwWK/+cc0FqNUHUl5o6McjKqA=
-X-Google-Smtp-Source: ABdhPJySdFp7tUmJanTf/0OISbH3xa9Zz1MI3078odp0PXs6D4/nuFCcqkCE6Sx4vD2Tg5FUBL0t3g==
-X-Received: by 2002:a05:6214:21a4:b0:446:5514:82b7 with SMTP id t4-20020a05621421a400b00446551482b7mr6225710qvc.54.1650332687225;
-        Mon, 18 Apr 2022 18:44:47 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=J7x6RHJjVOP6JJpTtFmXSE8AFbsY9RkxCow2mq3xx84=;
+        b=PcKMfKheRCTtQES8lBVM4C9l7wGPZvi6JDk+gEGLU1teiFs5LWmMP+7PLPIOraw+Rl
+         MJSvq3tIbjOgOUaFi3VtrO53LbdsA0L92TnCYOqRQB5px4uf9MLorMEmmNw1A2+bZL/u
+         kdw1+rVjXPcGFH9iIDW87MRj7Bu26tQnFGzRtWXTUUHnBmwSrh8yYZ+TpE3JiXfwsLEk
+         +f7MgaL5Ueb7qQ6tk/6DMMMKqNyy6u08kJAFhdBrMi+Mg0qhGSrvSrlbyLXh5T53r4lF
+         G2X88GM4oZYXxbKP39mZIrzv/DlxXdWplUruXVpChyGKEn5t527tHbK9pjQfQCugEUWb
+         +anA==
+X-Gm-Message-State: AOAM5320ZX4mjz5qZHXREe1VGcLNc1pRnWiCrQb3paBlnjckb8+h4SAw
+        CrW675VSj3t7xFdtG5Ir1qM=
+X-Google-Smtp-Source: ABdhPJztID5/0vPuAzBWkdlrZtnLGluRAXeAVIqZj3k0RVMIGtNNeGzxjPiMnTSEzk0h2YC7VD86Hw==
+X-Received: by 2002:a05:620a:2988:b0:69c:6fef:4661 with SMTP id r8-20020a05620a298800b0069c6fef4661mr8188474qkp.165.1650333141754;
+        Mon, 18 Apr 2022 18:52:21 -0700 (PDT)
 Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id w3-20020a376203000000b0069e9a4568f9sm2655790qkb.125.2022.04.18.18.44.43
+        by smtp.gmail.com with ESMTPSA id t19-20020ac85893000000b002e1afa26591sm9410769qta.52.2022.04.18.18.52.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 18:44:46 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: lv.ruyi@zte.com.cn
-To:     f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com,
-        andrew@lunn.ch
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] net: phy: fix error check return value of phy_read()
-Date:   Tue, 19 Apr 2022 01:44:39 +0000
-Message-Id: <20220419014439.2561835-1-lv.ruyi@zte.com.cn>
+        Mon, 18 Apr 2022 18:52:21 -0700 (PDT)
+From:   Lv Ruyi <cgel.zte@gmail.com>
+X-Google-Original-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+To:     cgel.zte@gmail.com
+Cc:     andrew@lunn.ch, bcm-kernel-feedback-list@broadcom.com,
+        davem@davemloft.net, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux@armlinux.org.uk, lv.ruyi@zte.com.cn, netdev@vger.kernel.org,
+        pabeni@redhat.com, zealci@zte.com.cn
+Subject: Re: [PATCH] net: ethernet: mtk_eth_soc: fix error check return value of debugfs_create_dir()
+Date:   Tue, 19 Apr 2022 01:52:15 +0000
+Message-Id: <20220419015215.2561973-1-lv.ruyi@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220419014056.2561750-1-lv.ruyi@zte.com.cn>
+References: <20220419014056.2561750-1-lv.ruyi@zte.com.cn>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -71,32 +73,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+so sorry, please ignore the noise, I sent the mail to the wrong person.
 
-phy_read() returns a negative number if there's an error, but the
-error-checking code in the bcm87xx driver's config_intr function
-triggers if phy_read() returns non-zero.  Correct that.
-
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
----
- drivers/net/phy/bcm87xx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/phy/bcm87xx.c b/drivers/net/phy/bcm87xx.c
-index 313563482690..e62b53718010 100644
---- a/drivers/net/phy/bcm87xx.c
-+++ b/drivers/net/phy/bcm87xx.c
-@@ -146,7 +146,7 @@ static int bcm87xx_config_intr(struct phy_device *phydev)
- 
- 	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
- 		err = phy_read(phydev, BCM87XX_LASI_STATUS);
--		if (err)
-+		if (err < 0)
- 			return err;
- 
- 		reg |= 1;
--- 
-2.25.1
-
-
+Thanks
+Lv Ruyi
