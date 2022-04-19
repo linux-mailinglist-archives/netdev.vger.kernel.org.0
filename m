@@ -2,60 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E4779507769
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 20:15:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B4205077A1
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 20:15:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356471AbiDSSPY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 14:15:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51952 "EHLO
+        id S1356396AbiDSSPR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 14:15:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356430AbiDSSPA (ORCPT
+        with ESMTP id S1356409AbiDSSPA (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 14:15:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 473053E0CE;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 549E63E0D2;
         Tue, 19 Apr 2022 11:12:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C4C40B81846;
-        Tue, 19 Apr 2022 18:12:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6527C385A5;
-        Tue, 19 Apr 2022 18:11:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CD81460C87;
+        Tue, 19 Apr 2022 18:12:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C567C385A9;
+        Tue, 19 Apr 2022 18:11:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650391919;
-        bh=0up0+3ng2gkf9fVKVYD32dBPHhE8G+CBylS47GayzIM=;
+        s=k20201202; t=1650391921;
+        bh=qmlk7RokZF/lJHMgXkXxFzwtYZ21SxX7MjgtQRqnqr8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BgJnXoAnztUwhEXeSFvBpU1cQ1h0mNwvkDtS2qkC5vm5nbaroG/Hy5Kp8HTczLkwZ
-         uLkNVXwXBYo6B4H1P7EDISH4TyjmXZBPXlkmbvCTrT1pH5qHiMZPwfwWWRFpyScHxt
-         qwUf4NtOiMumZ2D1KaTe5lLbsrIet2Q0wecx2iROeGPUDdynoY6LiJT193uMGzsdJs
-         /TvIsmEfG06TNAT8dyLtcg9Runsf8E+g/7tKX8EAj4+YlUFZAGLy1fkPC092OjlsP8
-         UC0N8dCjZdcxuMS9hVYarRDtdDTuxwBBVyh63HV6aOfRq5RyQN9WOFpn3fFtX3pkIX
-         wFpl3ZCUysz4g==
+        b=mdRrhcdqSPYJXZCooCxECQpKENP85LmVSmiDwpMvKOzsnkXLuov557W+tFy+3HDsf
+         8B38zxjwrz9Ji6i1QvR6WDdRnArPk9VrUHHb+Vpw+5oJTSh3mBlmQhT5XWvscwjeru
+         IGBapjKTTLGvGztD8FIXln7+l4Fp9CCiOUbdEGjvSiKjRjXp53ebmu67QN4OcN0buE
+         OV6v0LysYickXqjesYC2ATvQXEUY2qMNKOJuZMa3J65hhWQdMXmxIL8oFwMvcSPvqw
+         UOHZl5YRffigTNSfZpS/tPmFAf/8H0M83LAgK+VF+nBENOOApY981eZc5gY6xVmd84
+         JSFgfY7hh80rQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Borislav Petkov <bp@alien8.de>, Borislav Petkov <bp@suse.de>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        brcm80211-dev-list.pdl@broadcom.com, netdev@vger.kernel.org,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Sasha Levin <sashal@kernel.org>, pabeni@redhat.com,
-        hdegoede@redhat.com, linus.walleij@linaro.org, mbrugger@suse.com,
-        wsa+renesas@sang-engineering.com, marcan@marcan.st,
-        jiaqing.zhao@intel.com, shenyang39@huawei.com, angus@akkea.ca,
-        mike.rudenko@gmail.com, linux-wireless@vger.kernel.org,
-        SHA-cyfmac-dev-list@infineon.com
-Subject: [PATCH AUTOSEL 5.17 16/34] brcmfmac: sdio: Fix undefined behavior due to shift overflowing the constant
-Date:   Tue, 19 Apr 2022 14:10:43 -0400
-Message-Id: <20220419181104.484667-16-sashal@kernel.org>
+Cc:     Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, madalin.bucur@nxp.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 17/34] dpaa_eth: Fix missing of_node_put in dpaa_get_ts_info()
+Date:   Tue, 19 Apr 2022 14:10:44 -0400
+Message-Id: <20220419181104.484667-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220419181104.484667-1-sashal@kernel.org>
 References: <20220419181104.484667-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -69,53 +57,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Borislav Petkov <bp@alien8.de>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit 6fb3a5868b2117611f41e421e10e6a8c2a13039a ]
+[ Upstream commit 1a7eb80d170c28be2928433702256fe2a0bd1e0f ]
 
-Fix:
+Both of of_get_parent() and of_parse_phandle() return node pointer with
+refcount incremented, use of_node_put() on it to decrease refcount
+when done.
 
-  drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c: In function ‘brcmf_sdio_drivestrengthinit’:
-  drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c:3798:2: error: case label does not reduce to an integer constant
-    case SDIOD_DRVSTR_KEY(BRCM_CC_43143_CHIP_ID, 17):
-    ^~~~
-  drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c:3809:2: error: case label does not reduce to an integer constant
-    case SDIOD_DRVSTR_KEY(BRCM_CC_43362_CHIP_ID, 13):
-    ^~~~
-
-See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
-details as to why it triggers with older gccs only.
-
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: Arend van Spriel <aspriel@gmail.com>
-Cc: Franky Lin <franky.lin@broadcom.com>
-Cc: Hante Meuleman <hante.meuleman@broadcom.com>
-Cc: Kalle Valo <kvalo@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: brcm80211-dev-list.pdl@broadcom.com
-Cc: netdev@vger.kernel.org
-Acked-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/Ykx0iRlvtBnKqtbG@zn.tnic
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-index 5d156e591b35..f7961b22e051 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-@@ -557,7 +557,7 @@ enum brcmf_sdio_frmtype {
- 	BRCMF_SDIO_FT_SUB,
- };
+diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
+index 763d2c7b5fb1..5750f9a56393 100644
+--- a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
++++ b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
+@@ -489,11 +489,15 @@ static int dpaa_get_ts_info(struct net_device *net_dev,
+ 	info->phc_index = -1;
  
--#define SDIOD_DRVSTR_KEY(chip, pmu)     (((chip) << 16) | (pmu))
-+#define SDIOD_DRVSTR_KEY(chip, pmu)     (((unsigned int)(chip) << 16) | (pmu))
+ 	fman_node = of_get_parent(mac_node);
+-	if (fman_node)
++	if (fman_node) {
+ 		ptp_node = of_parse_phandle(fman_node, "ptimer-handle", 0);
++		of_node_put(fman_node);
++	}
  
- /* SDIO Pad drive strength to select value mappings */
- struct sdiod_drive_str {
+-	if (ptp_node)
++	if (ptp_node) {
+ 		ptp_dev = of_find_device_by_node(ptp_node);
++		of_node_put(ptp_node);
++	}
+ 
+ 	if (ptp_dev)
+ 		ptp = platform_get_drvdata(ptp_dev);
 -- 
 2.35.1
 
