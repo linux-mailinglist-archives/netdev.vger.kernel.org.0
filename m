@@ -2,70 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8233250730D
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 18:36:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6619B507471
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 18:47:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354679AbiDSQih (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 12:38:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49792 "EHLO
+        id S1354917AbiDSQnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 12:43:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354668AbiDSQif (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 12:38:35 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4233B13E27
-        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 09:35:51 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id n40-20020a05600c3ba800b0038ff1939b16so1879188wms.2
-        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 09:35:51 -0700 (PDT)
+        with ESMTP id S1354935AbiDSQmj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 12:42:39 -0400
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0C706176
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 09:39:55 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id p65so32045522ybp.9
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 09:39:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=N1iz2LuZBbh6iNPZGLMmhJtFze0j8ZOzB6NCaN/Mr1g=;
-        b=XFRu6nLSpPZeUzxnmh/4jtM/SKAzcOQWJ42hog9VWVNmWcDaAZcvqcYoaSzbl7sRVy
-         bpubwoHDV90MqnDV3u4TXEObfEAFabRDcBLkYr9/URXu4wEKho0V4CqzD40yM1/xTmgL
-         VQkdJjjDhP+/cBL62noKAnDE7FJZFTTHA/igrfmXssEatnfL0NcdRhQI2BfPLyi8mQHw
-         zZUKHCsZa35BI/wHkwADRDOva1uDLqNLseuumWM+BkCv1i3/pn5DKO9NA5t+GRBDa91Z
-         iwZGqn3rb1nDGNmZGXObfn3dRcCKNMTPMomyoB34zKssvgjv8WxfuCwn+kZvKqAGpYkj
-         9TOA==
+        bh=jUMpmyyz1q870jNGo8q/qELDjEbutmuL+ZQZKZNpdrw=;
+        b=BdDFztFw1+xEkMaLy69YqbGlYKVXJiVCnfg0rdteoE2DTRXJHTkhr8rDq2O76cohRG
+         TZlp7c6HhvMoZjLPGAUcXFT7rDlikbyO3m1lDYIvofeRVen97QZY62ZhGJO3CXPzp10J
+         ZXfJDIYOiToadpvjUwfxNqCL0beSO93ukYc0e7uU39v5Ut+r3BFgUQEd864JOxDFWKuQ
+         RNA0rGovHpkTN9+1G6F1WX3HfLp290+sbqzPq2nHxWXvJaRjQMmHwH7VX0taE71hjDdd
+         Y/CMNaCLOZL41yIo0P7peJ/W6ViZsFwymTM62TmoXGVcLFaYVVnNkHNG9ePtwPRZ0ZZJ
+         hQ4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=N1iz2LuZBbh6iNPZGLMmhJtFze0j8ZOzB6NCaN/Mr1g=;
-        b=1JMs4j7z1M+p4INI0TX1BNOiv7k4JgefM7OLp5/5uhgj/xoyrp9HcTG9WNY6JAIR0l
-         aV76GyfGR/7cQTuVaFjM7mrdNQCWikV+SXNXjBLpRcG8DUznxSfDcPitag9+0fez9ua2
-         EDeKAUqo/tRavvLhW4SXbgodA6w4REOAJqWEtZjUPtAglXdeYWSNZWjvkfbafyUjJ51S
-         57/7zjptgQPabDVU1Web95VeKc+0n5HFqGoDZvRINXnhfdqtHFmEbGRx5ycPOhKYOryS
-         pc8IN9+vvir5iNiP/r1oXQWuUAENn31WGqLvLtQkIcbcLqWNWW7hAr59VNp4ExSE/LOx
-         5DTg==
-X-Gm-Message-State: AOAM530qFussZkHgVX5OEfvhOS17p9rMFcIebAxDsrp+TDD1ZqmJb0Rw
-        2TA73Pzvd+krnwMU3yKz9MGGw7RaewjsL5eY5E0pzg==
-X-Google-Smtp-Source: ABdhPJzx3Oyxfc7vyLwHOmxVNMpO/fjNMD4juCfvvA+TEjsnN8OmRXZVbgdiMjrtWnmzI9OvsclbwWyFM7iAQ137eFw=
-X-Received: by 2002:a7b:cd04:0:b0:38e:d7a4:1548 with SMTP id
- f4-20020a7bcd04000000b0038ed7a41548mr16520844wmj.73.1650386149475; Tue, 19
- Apr 2022 09:35:49 -0700 (PDT)
+        bh=jUMpmyyz1q870jNGo8q/qELDjEbutmuL+ZQZKZNpdrw=;
+        b=XAfhYsve9QDVv1JREa3GB6WrPp+g02axJ0WwKO91I0rZljfSmAfvGt4nktWkF7muo9
+         oSvVkoe1dbqhBFvhRVlYk0Auf/m/Gck8SNeFTqc4esicUc1BJ6uyytChpHQXHQ5fmEcJ
+         lWIdcvWcDpyViO3ka5H7f4LDDWwrxKdIr/HhUVjSHc2HLOFc4+BroCV3gYQ2JamCbHAY
+         u8YmMbg38RkFvHJxbM6j7EqqGqYW46XSypwry67ZqQo0JutLfpu/RJbZEEyAe9pkF2Ml
+         vuRMUFDK9ksL7R6CwcjO06bo5txf3Xmi//ZGp7wth5zq0cGu24fQmddv+zH1eglWc2jO
+         dV+w==
+X-Gm-Message-State: AOAM533mxt84wvliQbifLMUBfIiT3Sq9A3jIWVRYfs2/vBDqcgaXQCYb
+        bSDcv6YTgY+8SY8YWws291GeLFrBAL9zknlm9dc=
+X-Google-Smtp-Source: ABdhPJw71wlGSxdW6UcBAvM//DtnjZ7vuOU+w+7NGCiMVeeR0+MUICu9Pv8bB8MpmaBC7EWAAiWV2EqzJsZDxylk368=
+X-Received: by 2002:a05:6902:389:b0:633:31c1:d0f7 with SMTP id
+ f9-20020a056902038900b0063331c1d0f7mr15284558ybs.543.1650386394679; Tue, 19
+ Apr 2022 09:39:54 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220414161233.170780-1-sdf@google.com> <CAADnVQJ-kiWJopu+VjLDXYb9ifjKyA2h8MO=CaQppNxbHqH=-Q@mail.gmail.com>
- <Yl2W5ThWCFPIeLW8@google.com> <CAADnVQ+X5HPDsqXX6mHWV4sT9=2gQSag5cc9w6iJG_YE577ZEw@mail.gmail.com>
- <Yl7YXXIG/EECZxd9@google.com> <CAADnVQK8ARjeY2Vro0B0-6vxhgrWg-jhJqkbHh0s1xinSq2-+Q@mail.gmail.com>
- <CAADnVQLvULRaAyO2E89c_FMNW9HGXr=nkFc9B5V-5WmXKbaRuw@mail.gmail.com>
-In-Reply-To: <CAADnVQLvULRaAyO2E89c_FMNW9HGXr=nkFc9B5V-5WmXKbaRuw@mail.gmail.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Tue, 19 Apr 2022 09:35:37 -0700
-Message-ID: <CAKH8qBvApjJ5G4bNMtHxT+Fcw6uKOTZh1opkaC96OT6Gq55aJg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2] bpf: move rcu lock management out of
- BPF_PROG_RUN routines
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>
+References: <CAEQFVGYURjcCA741koGF5aeRoymwh-h+_evP5cqAxE4U8UVnbA@mail.gmail.com>
+ <Yl04ttYN95VCXan4@shell.armlinux.org.uk>
+In-Reply-To: <Yl04ttYN95VCXan4@shell.armlinux.org.uk>
+From:   Mauro Rossi <issor.oruam@gmail.com>
+Date:   Tue, 19 Apr 2022 18:39:42 +0200
+Message-ID: <CAEQFVGZnyyCT7F-Jud-o+5OWzxDTgztbZT2Sm+ixtQ1yKOS2+g@mail.gmail.com>
+Subject: Re: FYI: net/phy/marvell10g: android kernel builing error due to
+ modpost error
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, kabel@kernel.org,
+        Chih-Wei Huang <cwhuang@android-x86.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,163 +67,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 9:32 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Tue, Apr 19, 2022 at 9:20 AM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Tue, Apr 19, 2022 at 8:42 AM <sdf@google.com> wrote:
-> > >
-> > > On 04/18, Alexei Starovoitov wrote:
-> > > > On Mon, Apr 18, 2022 at 9:50 AM <sdf@google.com> wrote:
-> > > > >
-> > > > > On 04/16, Alexei Starovoitov wrote:
-> > > > > > On Thu, Apr 14, 2022 at 9:12 AM Stanislav Fomichev <sdf@google.com>
-> > > > wrote:
-> > > > > > > +static int
-> > > > > > > +bpf_prog_run_array_cg_flags(const struct cgroup_bpf *cgrp,
-> > > > > > > +                           enum cgroup_bpf_attach_type atype,
-> > > > > > > +                           const void *ctx, bpf_prog_run_fn
-> > > > run_prog,
-> > > > > > > +                           int retval, u32 *ret_flags)
-> > > > > > > +{
-> > > > > > > +       const struct bpf_prog_array_item *item;
-> > > > > > > +       const struct bpf_prog *prog;
-> > > > > > > +       const struct bpf_prog_array *array;
-> > > > > > > +       struct bpf_run_ctx *old_run_ctx;
-> > > > > > > +       struct bpf_cg_run_ctx run_ctx;
-> > > > > > > +       u32 func_ret;
-> > > > > > > +
-> > > > > > > +       run_ctx.retval = retval;
-> > > > > > > +       migrate_disable();
-> > > > > > > +       rcu_read_lock();
-> > > > > > > +       array = rcu_dereference(cgrp->effective[atype]);
-> > > > > > > +       item = &array->items[0];
-> > > > > > > +       old_run_ctx = bpf_set_run_ctx(&run_ctx.run_ctx);
-> > > > > > > +       while ((prog = READ_ONCE(item->prog))) {
-> > > > > > > +               run_ctx.prog_item = item;
-> > > > > > > +               func_ret = run_prog(prog, ctx);
-> > > > > > ...
-> > > > > > > +       ret = bpf_prog_run_array_cg(&cgrp->bpf, CGROUP_GETSOCKOPT,
-> > > > > > >                                     &ctx, bpf_prog_run, retval);
-> > > > >
-> > > > > > Did you check the asm that bpf_prog_run gets inlined
-> > > > > > after being passed as a pointer to a function?
-> > > > > > Crossing fingers... I suspect not every compiler can do that :(
-> > > > > > De-virtualization optimization used to be tricky.
-> > > > >
-> > > > > No, I didn't, but looking at it right now, both gcc and clang
-> > > > > seem to be doing inlining all way up to bpf_dispatcher_nop_func.
-> > > > >
-> > > > > clang:
-> > > > >
-> > > > >    0000000000001750 <__cgroup_bpf_run_filter_sock_addr>:
-> > > > >    __cgroup_bpf_run_filter_sock_addr():
-> > > > >    ./kernel/bpf/cgroup.c:1226
-> > > > >    int __cgroup_bpf_run_filter_sock_addr(struct sock *sk,
-> > > > >                                       struct sockaddr *uaddr,
-> > > > >                                       enum cgroup_bpf_attach_type atype,
-> > > > >                                       void *t_ctx,
-> > > > >                                       u32 *flags)
-> > > > >    {
-> > > > >
-> > > > >    ...
-> > > > >
-> > > > >    ./include/linux/filter.h:628
-> > > > >                 ret = dfunc(ctx, prog->insnsi, prog->bpf_func);
-> > > > >        1980:    49 8d 75 48             lea    0x48(%r13),%rsi
-> > > > >    bpf_dispatcher_nop_func():
-> > > > >    ./include/linux/bpf.h:804
-> > > > >         return bpf_func(ctx, insnsi);
-> > > > >        1984:    4c 89 f7                mov    %r14,%rdi
-> > > > >        1987:    41 ff 55 30             call   *0x30(%r13)
-> > > > >        198b:    89 c3                   mov    %eax,%ebx
-> > > > >
-> > > > > gcc (w/retpoline):
-> > > > >
-> > > > >    0000000000001110 <__cgroup_bpf_run_filter_sock_addr>:
-> > > > >    __cgroup_bpf_run_filter_sock_addr():
-> > > > >    kernel/bpf/cgroup.c:1226
-> > > > >    {
-> > > > >
-> > > > >    ...
-> > > > >
-> > > > >    ./include/linux/filter.h:628
-> > > > >                 ret = dfunc(ctx, prog->insnsi, prog->bpf_func);
-> > > > >        11c5:    49 8d 75 48             lea    0x48(%r13),%rsi
-> > > > >    bpf_dispatcher_nop_func():
-> > > > >    ./include/linux/bpf.h:804
-> > > > >        11c9:    48 8d 7c 24 10          lea    0x10(%rsp),%rdi
-> > > > >        11ce:    e8 00 00 00 00          call   11d3
-> > > > > <__cgroup_bpf_run_filter_sock_addr+0xc3>
-> > > > >                         11cf: R_X86_64_PLT32
-> > > > __x86_indirect_thunk_rax-0x4
-> > > > >        11d3:    89 c3                   mov    %eax,%ebx
-> > >
-> > > > Hmm. I'm not sure how you've got this asm.
-> > > > Here is what I see with gcc 8 and gcc 10:
-> > > > bpf_prog_run_array_cg:
-> > > > ...
-> > > >          movq    %rcx, %r12      # run_prog, run_prog
-> > > > ...
-> > > > # ../kernel/bpf/cgroup.c:77:            run_ctx.prog_item = item;
-> > > >          movq    %rbx, (%rsp)    # item, run_ctx.prog_item
-> > > > # ../kernel/bpf/cgroup.c:78:            if (!run_prog(prog, ctx) &&
-> > > > !IS_ERR_VALUE((long)run_ctx.retval))
-> > > >          movq    %rbp, %rsi      # ctx,
-> > > >          call    *%r12   # run_prog
-> > >
-> > > > __cgroup_bpf_run_filter_sk:
-> > > >          movq    $bpf_prog_run, %rcx     #,
-> > > > # ../kernel/bpf/cgroup.c:1202:  return
-> > > > bpf_prog_run_array_cg(&cgrp->bpf, atype, sk, bpf_prog_run, 0);
-> > > >          leaq    1520(%rax), %rdi        #, tmp92
-> > > > # ../kernel/bpf/cgroup.c:1202:  return
-> > > > bpf_prog_run_array_cg(&cgrp->bpf, atype, sk, bpf_prog_run, 0);
-> > > >          jmp     bpf_prog_run_array_cg   #
-> > >
-> > > > This is without kasan, lockdep and all debug configs are off.
-> > >
-> > > > So the generated code is pretty bad as I predicted :(
-> > >
-> > > > So I'm afraid this approach is no go.
-> > >
-> > > I've retested again and it still unrolls it for me on gcc 11 :-/
-> > > Anyway, I guess we have two options:
-> > >
-> > > 1. Go back to defines.
-> > > 2. Don't pass a ptr to func, but pass an enum which indicates whether
-> > >     to use bpf_prog_run or __bpf_prog_run_save_cb. Seems like in this
-> > >     case the compiler shouldn't have any trouble unwrapping it?
-> > >
-> > > I'll prototype and send (2). If it won't work out we can always get back
-> > > to (1).
-> >
-> > Going back to defines is probably not necessary.
-> > Could you try moving bpf_prog_run_array_cg*() back to .h
-> > and use static __always_inline ?
->
-> Actually below was enough for gcc 8 and 10:
-> -static int
-> +static __always_inline int
->  bpf_prog_run_array_cg_flags(const struct cgroup_bpf *cgrp,
->                             enum cgroup_bpf_attach_type atype,
->                             const void *ctx, bpf_prog_run_fn run_prog,
-> @@ -55,7 +55,7 @@ bpf_prog_run_array_cg_flags(const struct cgroup_bpf *cgrp,
->         return run_ctx.retval;
->  }
->
-> -static int
-> +static __always_inline int
->  bpf_prog_run_array_cg(const struct cgroup_bpf *cgrp,
->
-> we can keep them in .c and generated code looks good.
->
-> I can apply it with the above change.
-> wdyt?
+Hi Russell,
 
-Sure, let's go with that if it works! On my side, I managed to get the
-same bad results on gcc-8; moving them to bpf-cgroup.h with
-__always_inline seems to fix it. But if we can keep them in .c, that
-looks even better.
+On Mon, Apr 18, 2022 at 12:08 PM Russell King (Oracle)
+<linux@armlinux.org.uk> wrote:
+>
+> On Mon, Apr 18, 2022 at 11:22:12AM +0200, Mauro Rossi wrote:
+> > At the final stage of building  Linux 5.18-rc3 with the necessary AOSP
+> > changes, I am getting the following building error:
+> >
+> >   MODPOST modules-only.symvers
+> > ERROR: modpost: "__compiletime_assert_344"
+> > [drivers/net/phy/marvell10g.ko] undefined!
+> > make[2]: *** [/home/utente/r-x86_kernel/kernel/scripts/Makefile.modpost:134:
+> > modules-only.symvers] Error 1
+> > make[2]: *** Deleting file 'modules-only.symvers'
+> > make[1]: *** [/home/utente/r-x86_kernel/kernel/Makefile:1749: modules] Error 2
+> > make[1]: *** Waiting for unfinished jobs....
+> >
+> > It never happened before throughout all my previous android-x86 kernel
+> > rc cycle build tests, which spanned from linux version 5.10 to linux
+> > version 5.18rc
+>
+> As far as I'm aware, with mainline kernels, marvell10g builds fine.
+
+Thanks for response, I will also check that when
+https://android.googlesource.com/kernel/common-patches/ becomes
+available for kernel-5.18rc(s)
+
+> I'm not sure how to work back from "__compiletime_assert_344" to
+> where the problem could be. The "344" appears to be generated by
+> the __COUNTER__ macro - and I don't know how that macro works (debian
+> annoyingly don't package the GCC info docs, and the info files I have
+> are out of date.)
+
+Looking at the error printout, it seams indeed that modpost parsed
+modules-only.symvers file line-by-line
+and (my assumption, correct me if I may be wrong) encountered some
+'undefined!' symbol at line 344 of  modules-only.symvers and pointed
+out that marvell10g.ko module is the one associated with the missing
+symbol
+
+I have tried to copy
+$OUT/target/product/x86_64/obj/kernel/modules-only.symvers to be able
+to inspect which symbol is listed at line 344,
+but even with "watch -n 0.1 cp ..." command I am not able to save the
+generated modules-only.symvers before it is deleted, therefore I am
+not able to inspect line 344
+
+Is there a way to have modpost modified for printing the symbol
+instead of the "indirection" of "__compiletime_assert_344" ?
+
+As other info, I had to cross compile using prebuilt clang 11.0.2
+(kernel version constraint) and set  LLVM_IAS=0 to disable the llvm
+integrated assembler to be able to build, but I don't think that
+should cause the missing symbol as I don't see any assembler code is
+needed to build marvell10g.ko module
+
+KR
+Mauro
+
+>
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
