@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA1955079B8
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 21:02:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34D3C5079AD
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 21:02:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357514AbiDSTEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 15:04:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51108 "EHLO
+        id S1357502AbiDSTEn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 15:04:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357522AbiDSTEF (ORCPT
+        with ESMTP id S1357527AbiDSTEF (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 15:04:05 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E69113F33A
-        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 12:01:12 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2f18a73fabeso58492267b3.20
-        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 12:01:12 -0700 (PDT)
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 118653F8A9
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 12:01:15 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id o188-20020a2541c5000000b0064334935847so10009286yba.16
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 12:01:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=1wpu/2fkzFB2CurskyJE/udheO6ocUD/juFoWBoHGfs=;
-        b=L0B6qy4XlHlzjvNZuBbG99U68yulDvo3DmypVNXmIbO8Q9u4+j6H8YZmv5QVjXyvZk
-         xXktsumOCK791goWNLPmhOxiW68BdT74lrZHifpN8DgWCJPCZ5g1KadrCicKiHYvFg22
-         HJsGJKn6sp1EuK9eX0cwjTi5Y7W0yaBCI/cueKSksrntQlVj5wmf+YL1sAiltPXm14vs
-         5Vk5xQBQ/VFOWBt39xdNjet2CC8lnBGak9IuJqtyGIVVNYnLOovD4qCOyRpCPM+Z4db5
-         1tak+R148ULPdoszZ2Ap5rsydx+pLwBU9Y+40/e1uU1Ck1wAI599+W4O6Q3R28er2bmp
-         XDSA==
+        bh=7FEbUMCmq3os2Yda/eEiHufzKdbzHqu7v9kf+ItQjhA=;
+        b=OVFj2O/jmF37yyWx1bCZqitlC9OSfN8rt9YbFUCGV8uko2CMB45Xgqmvw2WI9k7jo2
+         j51v8ehbBomHOrXhi+4iSB6zngbwNhlKA2gQvOpIVAuXUxeVFqmzt3k2pku4juwFLci9
+         ghEKQ3wyNCWL6C2zmfov7p3XEMWcMap8emFRAaQ+7ikG8d1DvqTKUE9VVUWPSO/CCkeL
+         N92KKhcuAYKVMaDDI4DMHyAZd6Y8KzsEngX5Y2853vo6KpxASD+x+kauxccgqdcHF82b
+         dU/KqLlq4PxGddwapAo9DJfHOSYu+wksODJY9A5SKRcwHTWsMNtN2AA88DTv8DdiC8Bs
+         1Ung==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=1wpu/2fkzFB2CurskyJE/udheO6ocUD/juFoWBoHGfs=;
-        b=XAlrfvpyqk2ZPxc73qpU+BVgnExN12RxD8Ba8PIOCIQ/twdmJVJ7sryA/A2HRyuD1l
-         c3NkWBd0TkXXsJkBCki5K1/ZRysEfaLF75r/snAgQJWx9vsW31j17kvLSGRM6tdUKd7b
-         B8HLeABzcrmf1UHXMnbIMfLCmXQ1bGZvbJz/v1qFOoZhEiEpjASG3xyrfeqj48nLaM6S
-         pgucVnhVBX0f5gwcbazBzCiQdLzmRzUgDtkb7x0xB8txH84hkSzvFydPZbvYag7JLG/J
-         vLY95kPHsGk7ppJtNGL/VkcS059iIXU2fZtHWiFpDQ2XiGfuCS03UMxBwi9Nw+vhxaPf
-         sUZg==
-X-Gm-Message-State: AOAM530H8yQFEO8z5ZZkzEX7bJL4PNeouqAjT/eVO/qxFDZ6+U/LKKq6
-        WSUc0Nc4DyI/gm2nPMU0PP7kDmdiWl5ht1J6b9i4Ob05n/VA1KKZb2Flmnxcn3XjIC0DxzFBf17
-        WHxyA6JEPT6vF0VoFk3xDODJNwgIFvTLa/lP6BBoMzrV8V2k+Encxlw==
-X-Google-Smtp-Source: ABdhPJy9hXq9TKBr14UfXWfwK0mGlf1WPZ8JY8b+9XS0w+xrW3JZk/QpC4osoPYSelSXjEVA54xGVIA=
+        bh=7FEbUMCmq3os2Yda/eEiHufzKdbzHqu7v9kf+ItQjhA=;
+        b=QTIiBd0JpjDq35GcpFgX0ujnfuJVhcZeQPYYt4gGawTQ+hDWLpcP4SXWFxEWToPAdS
+         /jleW6jpvJmak7VzuQvxRfZO/ZZtHQphPwOcNOv8mEIYIF669BRfXRj7jqQ2t+ywz6Op
+         rDUQ6vr0YOvSzDI6GQ2NEsnMlHpqE26FpvDLdzdMBlv+Ea7pxhNKnS8HB62etWCAcbBA
+         ifN6wWaPYZkRWFm2d64WcUUxR3XofLAHIMVrnqrWw7KZW51cLbkDNOMkVk4Y75wJ7OKl
+         fCFef/QEF7N1X8uZodcPGjSzan/HK/EBNa4iL9LnyOC+6rloyfpgBhE+GskhhqwJ1+Kl
+         pcLg==
+X-Gm-Message-State: AOAM532N+FUO9BT6bc3A2mRCM+9A6T64dpFRWF6VoKEKQ3rY2LcxP1lT
+        OZhbmrq5lc9UDRAF1zz6lacW2m/EntaMvoVXcxbDMhzNZJspkvzCwqz9+Vubeyf9MsAW9JxGTKw
+        4iC5vnlyJJ2YPcXhozAL+XIgLTrDQ3pEmgSckm2cB/CUcmyG+scZRNQ==
+X-Google-Smtp-Source: ABdhPJzySR8R/wgZlQEwxQexYL8k++2PDSdxvQVuzK8L3wIV+ySYwKbC6M5oTl57KrYVaR1zZGVzwrE=
 X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:37f:6746:8e66:a291])
- (user=sdf job=sendgmr) by 2002:a05:690c:30f:b0:2ef:414c:a3ab with SMTP id
- bg15-20020a05690c030f00b002ef414ca3abmr17363204ywb.0.1650394872082; Tue, 19
- Apr 2022 12:01:12 -0700 (PDT)
-Date:   Tue, 19 Apr 2022 12:00:51 -0700
+ (user=sdf job=sendgmr) by 2002:a25:41cf:0:b0:641:1857:ac7c with SMTP id
+ o198-20020a2541cf000000b006411857ac7cmr16662119yba.281.1650394874254; Tue, 19
+ Apr 2022 12:01:14 -0700 (PDT)
+Date:   Tue, 19 Apr 2022 12:00:52 -0700
 In-Reply-To: <20220419190053.3395240-1-sdf@google.com>
-Message-Id: <20220419190053.3395240-7-sdf@google.com>
+Message-Id: <20220419190053.3395240-8-sdf@google.com>
 Mime-Version: 1.0
 References: <20220419190053.3395240-1-sdf@google.com>
 X-Mailer: git-send-email 2.36.0.rc0.470.gd361397f0d-goog
-Subject: [PATCH bpf-next v5 6/8] libbpf: add lsm_cgoup_sock type
+Subject: [PATCH bpf-next v5 7/8] selftests/bpf: lsm_cgroup functional test
 From:   Stanislav Fomichev <sdf@google.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
@@ -61,53 +61,379 @@ Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-lsm_cgroup/ is the prefix for BPF_LSM_CGROUP.
+Functional test that exercises the following:
+
+1. apply default sk_priority policy
+2. permit TX-only AF_PACKET socket
+3. cgroup attach/detach/replace
+4. reusing trampoline shim
 
 Signed-off-by: Stanislav Fomichev <sdf@google.com>
 ---
- tools/bpf/bpftool/common.c | 1 +
- tools/lib/bpf/libbpf.c     | 2 ++
- 2 files changed, 3 insertions(+)
+ .../selftests/bpf/prog_tests/lsm_cgroup.c     | 213 ++++++++++++++++++
+ .../testing/selftests/bpf/progs/lsm_cgroup.c  | 126 +++++++++++
+ 2 files changed, 339 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/lsm_cgroup.c
+ create mode 100644 tools/testing/selftests/bpf/progs/lsm_cgroup.c
 
-diff --git a/tools/bpf/bpftool/common.c b/tools/bpf/bpftool/common.c
-index c740142c24d8..a7a913784c47 100644
---- a/tools/bpf/bpftool/common.c
-+++ b/tools/bpf/bpftool/common.c
-@@ -66,6 +66,7 @@ const char * const attach_type_name[__MAX_BPF_ATTACH_TYPE] = {
- 	[BPF_TRACE_FEXIT]		= "fexit",
- 	[BPF_MODIFY_RETURN]		= "mod_ret",
- 	[BPF_LSM_MAC]			= "lsm_mac",
-+	[BPF_LSM_CGROUP]		= "lsm_cgroup",
- 	[BPF_SK_LOOKUP]			= "sk_lookup",
- 	[BPF_TRACE_ITER]		= "trace_iter",
- 	[BPF_XDP_DEVMAP]		= "xdp_devmap",
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index bf4f7ac54ebf..912cfa13814d 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -8701,6 +8701,7 @@ static const struct bpf_sec_def section_defs[] = {
- 	SEC_DEF("freplace/",		EXT, 0, SEC_ATTACH_BTF, attach_trace),
- 	SEC_DEF("lsm/",			LSM, BPF_LSM_MAC, SEC_ATTACH_BTF, attach_lsm),
- 	SEC_DEF("lsm.s/",		LSM, BPF_LSM_MAC, SEC_ATTACH_BTF | SEC_SLEEPABLE, attach_lsm),
-+	SEC_DEF("lsm_cgroup/",	LSM, BPF_LSM_CGROUP, SEC_ATTACH_BTF),
- 	SEC_DEF("iter/",		TRACING, BPF_TRACE_ITER, SEC_ATTACH_BTF, attach_iter),
- 	SEC_DEF("iter.s/",		TRACING, BPF_TRACE_ITER, SEC_ATTACH_BTF | SEC_SLEEPABLE, attach_iter),
- 	SEC_DEF("syscall",		SYSCALL, 0, SEC_SLEEPABLE),
-@@ -9122,6 +9123,7 @@ void btf_get_kernel_prefix_kind(enum bpf_attach_type attach_type,
- 		*kind = BTF_KIND_TYPEDEF;
- 		break;
- 	case BPF_LSM_MAC:
-+	case BPF_LSM_CGROUP:
- 		*prefix = BTF_LSM_PREFIX;
- 		*kind = BTF_KIND_FUNC;
- 		break;
+diff --git a/tools/testing/selftests/bpf/prog_tests/lsm_cgroup.c b/tools/testing/selftests/bpf/prog_tests/lsm_cgroup.c
+new file mode 100644
+index 000000000000..fbd6ed29f7d4
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/lsm_cgroup.c
+@@ -0,0 +1,213 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include <sys/types.h>
++#include <sys/socket.h>
++#include <test_progs.h>
++
++#include "lsm_cgroup.skel.h"
++#include "cgroup_helpers.h"
++#include "network_helpers.h"
++
++void test_lsm_cgroup(void)
++{
++	DECLARE_LIBBPF_OPTS(bpf_prog_attach_opts, attach_opts);
++	DECLARE_LIBBPF_OPTS(bpf_link_update_opts, update_opts);
++	int cgroup_fd, cgroup_fd2, err, fd, prio;
++	int listen_fd, client_fd, accepted_fd;
++	struct lsm_cgroup *skel = NULL;
++	int post_create_prog_fd2 = -1;
++	int post_create_prog_fd = -1;
++	int bind_link_fd2 = -1;
++	int bind_prog_fd2 = -1;
++	int alloc_prog_fd = -1;
++	int bind_prog_fd = -1;
++	int bind_link_fd = -1;
++	int clone_prog_fd = -1;
++	socklen_t socklen;
++
++	cgroup_fd = test__join_cgroup("/sock_policy");
++	if (!ASSERT_GE(cgroup_fd, 0, "join_cgroup"))
++		goto close_skel;
++
++	cgroup_fd2 = create_and_get_cgroup("/sock_policy2");
++	if (!ASSERT_GE(cgroup_fd2, 0, "create second cgroup"))
++		goto close_skel;
++
++	skel = lsm_cgroup__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "open_and_load"))
++		goto close_cgroup;
++
++	post_create_prog_fd = bpf_program__fd(skel->progs.socket_post_create);
++	post_create_prog_fd2 = bpf_program__fd(skel->progs.socket_post_create2);
++	bind_prog_fd = bpf_program__fd(skel->progs.socket_bind);
++	bind_prog_fd2 = bpf_program__fd(skel->progs.socket_bind2);
++	alloc_prog_fd = bpf_program__fd(skel->progs.socket_alloc);
++	clone_prog_fd = bpf_program__fd(skel->progs.socket_clone);
++
++	err = bpf_prog_attach(alloc_prog_fd, cgroup_fd, BPF_LSM_CGROUP, 0);
++	if (!ASSERT_OK(err, "attach alloc_prog_fd"))
++		goto detach_cgroup;
++
++	err = bpf_prog_attach(clone_prog_fd, cgroup_fd, BPF_LSM_CGROUP, 0);
++	if (!ASSERT_OK(err, "attach clone_prog_fd"))
++		goto detach_cgroup;
++
++	/* Make sure replacing works.
++	 */
++
++	err = bpf_prog_attach(post_create_prog_fd, cgroup_fd,
++			      BPF_LSM_CGROUP, 0);
++	if (!ASSERT_OK(err, "attach post_create_prog_fd"))
++		goto close_cgroup;
++
++	attach_opts.replace_prog_fd = post_create_prog_fd;
++	err = bpf_prog_attach_opts(post_create_prog_fd2, cgroup_fd,
++				   BPF_LSM_CGROUP, &attach_opts);
++	if (!ASSERT_OK(err, "prog replace post_create_prog_fd"))
++		goto detach_cgroup;
++
++	/* Try the same attach/replace via link API.
++	 */
++
++	bind_link_fd = bpf_link_create(bind_prog_fd, cgroup_fd,
++				       BPF_LSM_CGROUP, NULL);
++	if (!ASSERT_GE(bind_link_fd, 0, "link create bind_prog_fd"))
++		goto detach_cgroup;
++
++	update_opts.old_prog_fd = bind_prog_fd;
++	update_opts.flags = BPF_F_REPLACE;
++
++	err = bpf_link_update(bind_link_fd, bind_prog_fd2, &update_opts);
++	if (!ASSERT_OK(err, "link update bind_prog_fd"))
++		goto detach_cgroup;
++
++	/* Attach another instance of bind program to another cgroup.
++	 * This should trigger the reuse of the trampoline shim (two
++	 * programs attaching to the same btf_id).
++	 */
++
++	bind_link_fd2 = bpf_link_create(bind_prog_fd2, cgroup_fd2,
++					BPF_LSM_CGROUP, NULL);
++	if (!ASSERT_GE(bind_link_fd2, 0, "link create bind_prog_fd2"))
++		goto detach_cgroup;
++
++	/* AF_UNIX is prohibited.
++	 */
++
++	fd = socket(AF_UNIX, SOCK_STREAM, 0);
++	ASSERT_LT(fd, 0, "socket(AF_UNIX)");
++
++	/* AF_INET6 gets default policy (sk_priority).
++	 */
++
++	fd = socket(AF_INET6, SOCK_STREAM, 0);
++	if (!ASSERT_GE(fd, 0, "socket(SOCK_STREAM)"))
++		goto detach_cgroup;
++
++	prio = 0;
++	socklen = sizeof(prio);
++	ASSERT_GE(getsockopt(fd, SOL_SOCKET, SO_PRIORITY, &prio, &socklen), 0,
++		  "getsockopt");
++	ASSERT_EQ(prio, 123, "sk_priority");
++
++	close(fd);
++
++	/* TX-only AF_PACKET is allowed.
++	 */
++
++	ASSERT_LT(socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL)), 0,
++		  "socket(AF_PACKET, ..., ETH_P_ALL)");
++
++	fd = socket(AF_PACKET, SOCK_RAW, 0);
++	ASSERT_GE(fd, 0, "socket(AF_PACKET, ..., 0)");
++
++	/* TX-only AF_PACKET can not be rebound.
++	 */
++
++	struct sockaddr_ll sa = {
++		.sll_family = AF_PACKET,
++		.sll_protocol = htons(ETH_P_ALL),
++	};
++	ASSERT_LT(bind(fd, (struct sockaddr *)&sa, sizeof(sa)), 0,
++		  "bind(ETH_P_ALL)");
++
++	close(fd);
++
++	/* Trigger passive open.
++	 */
++
++	listen_fd = start_server(AF_INET6, SOCK_STREAM, "::1", 0, 0);
++	ASSERT_GE(listen_fd, 0, "start_server");
++	client_fd = connect_to_fd(listen_fd, 0);
++	ASSERT_GE(client_fd, 0, "connect_to_fd");
++	accepted_fd = accept(listen_fd, NULL, NULL);
++	ASSERT_GE(accepted_fd, 0, "accept");
++
++	prio = 0;
++	socklen = sizeof(prio);
++	ASSERT_GE(getsockopt(accepted_fd, SOL_SOCKET, SO_PRIORITY, &prio, &socklen), 0,
++		  "getsockopt");
++	ASSERT_EQ(prio, 234, "sk_priority");
++
++	/* These are replaced and never called. */
++	ASSERT_EQ(skel->bss->called_socket_post_create, 0, "called_create");
++	ASSERT_EQ(skel->bss->called_socket_bind, 0, "called_bind");
++
++	/* AF_INET6+SOCK_STREAM
++	 * AF_PACKET+SOCK_RAW
++	 * listen_fd
++	 * client_fd
++	 * accepted_fd
++	 */
++	ASSERT_EQ(skel->bss->called_socket_post_create2, 5, "called_create2");
++
++	/* start_server
++	 * bind(ETH_P_ALL)
++	 */
++	ASSERT_EQ(skel->bss->called_socket_bind2, 2, "called_bind2");
++	/* Single accept(). */
++	ASSERT_EQ(skel->bss->called_socket_clone, 1, "called_clone");
++
++	/* AF_UNIX+SOCK_STREAM (failed)
++	 * AF_INET6+SOCK_STREAM
++	 * AF_PACKET+SOCK_RAW (failed)
++	 * AF_PACKET+SOCK_RAW
++	 * listen_fd
++	 * client_fd
++	 * accepted_fd
++	 */
++	ASSERT_EQ(skel->bss->called_socket_alloc, 7, "called_alloc");
++
++	/* Make sure other cgroup doesn't trigger the programs.
++	 */
++
++	if (!ASSERT_OK(join_cgroup(""), "join root cgroup"))
++		goto detach_cgroup;
++
++	fd = socket(AF_INET6, SOCK_STREAM, 0);
++	if (!ASSERT_GE(fd, 0, "socket(SOCK_STREAM)"))
++		goto detach_cgroup;
++
++	prio = 0;
++	socklen = sizeof(prio);
++	ASSERT_GE(getsockopt(fd, SOL_SOCKET, SO_PRIORITY, &prio, &socklen), 0,
++		  "getsockopt");
++	ASSERT_EQ(prio, 0, "sk_priority");
++
++	close(fd);
++
++detach_cgroup:
++	ASSERT_GE(bpf_prog_detach2(post_create_prog_fd2, cgroup_fd,
++				   BPF_LSM_CGROUP), 0, "detach_create");
++	close(bind_link_fd);
++	/* Don't close bind_link_fd2, exercise cgroup release cleanup. */
++	ASSERT_GE(bpf_prog_detach2(alloc_prog_fd, cgroup_fd,
++				   BPF_LSM_CGROUP), 0, "detach_alloc");
++	ASSERT_GE(bpf_prog_detach2(clone_prog_fd, cgroup_fd,
++				   BPF_LSM_CGROUP), 0, "detach_clone");
++
++close_cgroup:
++	close(cgroup_fd);
++close_skel:
++	lsm_cgroup__destroy(skel);
++}
+diff --git a/tools/testing/selftests/bpf/progs/lsm_cgroup.c b/tools/testing/selftests/bpf/progs/lsm_cgroup.c
+new file mode 100644
+index 000000000000..70f4ffd90d49
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/lsm_cgroup.c
+@@ -0,0 +1,126 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include "vmlinux.h"
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_tracing.h>
++
++char _license[] SEC("license") = "GPL";
++
++#ifndef AF_PACKET
++#define AF_PACKET 17
++#endif
++
++#ifndef AF_UNIX
++#define AF_UNIX 1
++#endif
++
++#ifndef EPERM
++#define EPERM 1
++#endif
++
++int called_socket_post_create;
++int called_socket_post_create2;
++int called_socket_bind;
++int called_socket_bind2;
++int called_socket_alloc;
++int called_socket_clone;
++
++static __always_inline int real_create(struct socket *sock, int family,
++				       int protocol)
++{
++	struct sock *sk;
++
++	/* Reject non-tx-only AF_PACKET.
++	 */
++	if (family == AF_PACKET && protocol != 0)
++		return 0; /* EPERM */
++
++	sk = sock->sk;
++	if (!sk)
++		return 1;
++
++	/* The rest of the sockets get default policy.
++	 */
++	sk->sk_priority = 123;
++	return 1;
++}
++
++/* __cgroup_bpf_run_lsm_socket */
++SEC("lsm_cgroup/socket_post_create")
++int BPF_PROG(socket_post_create, struct socket *sock, int family,
++	     int type, int protocol, int kern)
++{
++	called_socket_post_create++;
++	return real_create(sock, family, protocol);
++}
++
++/* __cgroup_bpf_run_lsm_socket */
++SEC("lsm_cgroup/socket_post_create")
++int BPF_PROG(socket_post_create2, struct socket *sock, int family,
++	     int type, int protocol, int kern)
++{
++	called_socket_post_create2++;
++	return real_create(sock, family, protocol);
++}
++
++static __always_inline int real_bind(struct socket *sock,
++				     struct sockaddr *address,
++				     int addrlen)
++{
++	struct sockaddr_ll sa = {};
++
++	if (sock->sk->__sk_common.skc_family != AF_PACKET)
++		return 1;
++
++	if (sock->sk->sk_kern_sock)
++		return 1;
++
++	bpf_probe_read_kernel(&sa, sizeof(sa), address);
++	if (sa.sll_protocol)
++		return 0; /* EPERM */
++
++	return 1;
++}
++
++/* __cgroup_bpf_run_lsm_socket */
++SEC("lsm_cgroup/socket_bind")
++int BPF_PROG(socket_bind, struct socket *sock, struct sockaddr *address,
++	     int addrlen)
++{
++	called_socket_bind++;
++	return real_bind(sock, address, addrlen);
++}
++
++/* __cgroup_bpf_run_lsm_socket */
++SEC("lsm_cgroup/socket_bind")
++int BPF_PROG(socket_bind2, struct socket *sock, struct sockaddr *address,
++	     int addrlen)
++{
++	called_socket_bind2++;
++	return real_bind(sock, address, addrlen);
++}
++
++/* __cgroup_bpf_run_lsm_current (via bpf_lsm_current_hooks) */
++SEC("lsm_cgroup/sk_alloc_security")
++int BPF_PROG(socket_alloc, struct sock *sk, int family, gfp_t priority)
++{
++	called_socket_alloc++;
++	if (family == AF_UNIX)
++		return 0; /* EPERM */
++	return 1;
++}
++
++/* __cgroup_bpf_run_lsm_sock */
++SEC("lsm_cgroup/inet_csk_clone")
++int BPF_PROG(socket_clone, struct sock *newsk, const struct request_sock *req)
++{
++	called_socket_clone++;
++
++	if (!newsk)
++		return 1;
++
++	/* Accepted request sockets get a different priority.
++	 */
++	newsk->sk_priority = 234;
++	return 1;
++}
 -- 
 2.36.0.rc0.470.gd361397f0d-goog
 
