@@ -2,77 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D7A285065E3
+	by mail.lfdr.de (Postfix) with ESMTP id 900805065E2
 	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 09:30:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349398AbiDSHcX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 03:32:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53560 "EHLO
+        id S1349397AbiDSHcZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 03:32:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349367AbiDSHcV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 03:32:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1586D31DFE
-        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 00:29:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650353373;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qvQQnX3WJ1O+c8AM33EECNVK+BAhJ0ReCydNRlwYc0w=;
-        b=SoQp0oeGKRWtUPo0LM2dtI85P41Gnuk9R1ZUKHXqeWXgglYZqkLaYA0VDkKiz+JERhDzSv
-        jZyXlvkAtcP/kSJp6vnKmATyR5XltA1t+YcwYlhfa0OJgPBUVKUU65sQnlkDyuXt8N5Gi3
-        aZTzIuKDJfmVv0h0OGOcLlpKBGo5064=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-437-_XpXlxw_OLiWS3Qrrya2jQ-1; Tue, 19 Apr 2022 03:29:32 -0400
-X-MC-Unique: _XpXlxw_OLiWS3Qrrya2jQ-1
-Received: by mail-wm1-f69.google.com with SMTP id k16-20020a7bc310000000b0038e6cf00439so830744wmj.0
-        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 00:29:32 -0700 (PDT)
+        with ESMTP id S1349399AbiDSHcX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 03:32:23 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC67C329BE
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 00:29:40 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id ay36-20020a05600c1e2400b0038ebc885115so544886wmb.1
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 00:29:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=wifirst.fr; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=iPg4GAXhj4CWyp1VfgiAr0TxQ5d3+sxUJDJLVeV60no=;
+        b=h1fB/R87kv6DeYZJY/lvfyS+u/WhMqwlqQyq846AEEQaZUM0cZ+OJTpjgqqsIAe0oW
+         g5MnpGUWIK/7aeMBuXU51yDHXKzD6qjGQli/VxUMZnnxC2EkysgEWuIT5H4kagJFV4kU
+         0QPv3LOe8tNeBa0tccv8U1lioCNkWWalbuYH14UDV9BHMejMY7BDRUx/CP1pRsSsMztA
+         6ShW64/gSQgU5BVPojbroDbjUTe7estuQPCCtVMbjzqFzp6cz10f7V2vlivM4SEMUJXd
+         s74OBKJtrZZEVuY1QTq44HbOrFBX3ndMoDJ89makbtOuIT8YeD/DlXvNyT8bSMN+62bg
+         NpCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=qvQQnX3WJ1O+c8AM33EECNVK+BAhJ0ReCydNRlwYc0w=;
-        b=xmnK0u+diDyyYz7oJswvDalXHaiVf3yCv+EpCBHL/oK+tqJsQDLa7OENk+IJFqxjt+
-         gek0M2hFTD/5M/Alt8YAr6K+0wID+So+Hpo1C6JJXbdZrFYjyZQYq401R7iL573xjxfx
-         CMgmzJNm4wqmeiqvXeP3eM+nZniBwbClBepJCWcgU8mX99DgbHyYS67zQcmnOLatTxn+
-         +PM3/PwHeh1h+xVjKYDgAJy/s5OtkF5oAz7e+OgoQQCly3y84zGvn/8ViAtQ7rD7PFwH
-         oDA/kCENkyweaXUo8kA0pw4X2VUKlZ0Yl9+0hkDAL0y4hbi4VbapkTqSg15l1x5f3FSf
-         pjSA==
-X-Gm-Message-State: AOAM5314hAx0uJrA1RCLnlWBTbDzXTZK4kcuM3jBLJyUr1OkZpCnS084
-        q0cwYWW16J6FEY7x2qlRxkpLmx0NF8sPZ83jhWmVAsGM2W1/GZKAIDTtju/0wAhScFDX2pvO/pz
-        kYjPRbjPNNWEhIzTU
-X-Received: by 2002:a05:600c:206:b0:38e:b6b4:a2d6 with SMTP id 6-20020a05600c020600b0038eb6b4a2d6mr14574507wmi.156.1650353371117;
-        Tue, 19 Apr 2022 00:29:31 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy5Pu8g2po/QIskvpzd7OvuvOxSUOCn0SycUJ5J0RTseeEDBVjkgZR3umgRDnf8T3fQmpCg6Q==
-X-Received: by 2002:a05:600c:206:b0:38e:b6b4:a2d6 with SMTP id 6-20020a05600c020600b0038eb6b4a2d6mr14574496wmi.156.1650353370939;
-        Tue, 19 Apr 2022 00:29:30 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-96-237.dyn.eolo.it. [146.241.96.237])
-        by smtp.gmail.com with ESMTPSA id g8-20020a05600c4ec800b0039290a5b827sm7990169wmq.24.2022.04.19.00.29.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 00:29:30 -0700 (PDT)
-Message-ID: <5f5be1321b5ba6b721f9d0aab563d36133328d33.camel@redhat.com>
-Subject: Re: [PATCH net-next v2] sungem: Prepare cleanup of powerpc's
- asm/prom.h
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Date:   Tue, 19 Apr 2022 09:29:29 +0200
-In-Reply-To: <11d54e799ff339f9d4aa00a741dc1e04755db7a7.1650012142.git.christophe.leroy@csgroup.eu>
-References: <11d54e799ff339f9d4aa00a741dc1e04755db7a7.1650012142.git.christophe.leroy@csgroup.eu>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=iPg4GAXhj4CWyp1VfgiAr0TxQ5d3+sxUJDJLVeV60no=;
+        b=DQMXvf/c7WAX0M978s6UoRCkrAo4M3GKJG9N0Ksnm0jMpF++0/8Jx6wng6YgKxawZP
+         PQQAu+CVwSIB3336DHK3V1DUrZHZBH3TNuq4XjnSmLappSmSeCdAQqeOstLOJoNgOMJ/
+         NF0mfM9jPmKpOg2gbi+cQoI9WnDwbU3Og9zk9v3+ujQkUAenYOoh+a3ZBJTzK26Byf7Z
+         vHKIscfR3tywF9KW4K54FFu/Y+l0ubTQeVREMPwDLMnfDPTFV0g8sTjwQXULf/H5TUhg
+         /5soTpzyq7IfgPcaFmM6wIJkxdTcW38m0NU4gdFJvdyG3l+kDxqS2hIjwfppSMR3oMNy
+         KsDA==
+X-Gm-Message-State: AOAM530ZhxNlNA+y9K0ddH+7aGkDqA5ZC/9buuzGadaprj48EBnl4X6Q
+        zGJrEuyGsByo3mXHWtG4uKELXQ==
+X-Google-Smtp-Source: ABdhPJwrEMJBCve8f9P/zsP/ooKICAp+w4oydl4NMWE9TCcFoBKXRM839c+GRxKJvsrZwTpNVEWSkg==
+X-Received: by 2002:a05:600c:1c1f:b0:38e:c425:5b1a with SMTP id j31-20020a05600c1c1f00b0038ec4255b1amr14669826wms.69.1650353379026;
+        Tue, 19 Apr 2022 00:29:39 -0700 (PDT)
+Received: from [10.4.59.131] (wifirst-46-193-244.20.cust.wifirst.net. [46.193.244.20])
+        by smtp.gmail.com with ESMTPSA id m21-20020a05600c3b1500b003928f20b7besm7897855wms.42.2022.04.19.00.29.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Apr 2022 00:29:38 -0700 (PDT)
+Message-ID: <d63921e9-2306-a153-48fe-a1f65157aafa@wifirst.fr>
+Date:   Tue, 19 Apr 2022 09:29:37 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v5 net-next 1/4] rtnetlink: return ENODEV when ifname does
+ not exist and group is given
+Content-Language: en-US
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, cong.wang@bytedance.com,
+        edumazet@google.com, Brian Baboch <brian.baboch@wifirst.fr>
+References: <20220415165330.10497-1-florent.fourcot@wifirst.fr>
+ <20220415165330.10497-2-florent.fourcot@wifirst.fr>
+ <20220415122432.5db0de59@hermes.local>
+From:   Florent Fourcot <florent.fourcot@wifirst.fr>
+In-Reply-To: <20220415122432.5db0de59@hermes.local>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -81,32 +78,22 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello,
 
-On Fri, 2022-04-15 at 10:43 +0200, Christophe Leroy wrote:
-> powerpc's asm/prom.h brings some headers that it doesn't
-> need itself.
-> 
-> In order to clean it up in a further step, first clean all
-> files that include asm/prom.h
-> 
-> Some files don't need asm/prom.h at all. For those ones,
-> just remove inclusion of asm/prom.h
-> 
-> Some files don't need any of the items provided by asm/prom.h,
-> but need some of the headers included by asm/prom.h. For those
-> ones, add the needed headers that are brought by asm/prom.h at
-> the moment, then remove asm/prom.h
-> 
-> Some files really need asm/prom.h but also need some of the
-> headers included by asm/prom.h. For those one, leave asm/prom.h
-> but also add the needed headers so that they can be removed
-> from asm/prom.h in a later step.
 
-This commit message is a little confusing, as this patch covers only a
-single case of the above. I suggest to replace re-phrase the commit
-message to be more specific. You could also explcitly mention which
-symbols from linux/of.h sungem_phy.c needs, if the list is short.
+>> +		if (link_specified)
+>> +			return -ENODEV;
+> 
+> Please add extack error message as well?
+> Simple errno's are harder to debug.
+
+
+What kind of message have you in mind for that one? Something like 
+"Interface not found" does not have extra information for ENODEV code.
+
+At this place, one gave interface index or interface name, and nothing 
+matched.
+
 
 Thanks,
 
-Paolo
-
+-- 
+Florent Fourcot.
