@@ -2,93 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EA69508B82
-	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 17:04:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52CF9508BBF
+	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 17:10:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379904AbiDTPGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Apr 2022 11:06:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37396 "EHLO
+        id S1380039AbiDTPNW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Apr 2022 11:13:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379812AbiDTPGh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 11:06:37 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D211427C6;
-        Wed, 20 Apr 2022 08:03:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=MqRy5uOENRenwCweqKVKazl/zwptPRAhGLk8TN0xBVE=; b=ZfNSnErbK5pFp00soQ9733fFLA
-        D/eTR2WsYJ3a4BdstrPQAdKRFg7TymQik1QrmrVN8abvu9E1ZF7oqp6LtwhwVtOI69AJGmINAcc+c
-        dGQGB9l7+RX98w2vluAbST2VgwLpjEW75o1jnYd2PdADD0cUIy2un17/Eavpcsp7P5Bo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nhBrH-00Gg5f-DV; Wed, 20 Apr 2022 17:03:07 +0200
-Date:   Wed, 20 Apr 2022 17:03:07 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk,
-        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/5] net: phy: marvell: Add LED accessors for Marvell
- 88E1510
-Message-ID: <YmAgq1pm37Glw2v+@lunn.ch>
-References: <20220420124053.853891-1-kai.heng.feng@canonical.com>
- <20220420124053.853891-5-kai.heng.feng@canonical.com>
+        with ESMTP id S1380077AbiDTPMp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 11:12:45 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1E081BEB8;
+        Wed, 20 Apr 2022 08:09:59 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 5B4A1210E4;
+        Wed, 20 Apr 2022 15:09:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1650467398; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=E9Za1fy7SJZVuU3gsJHYcUnfUQspR3rknfU8bXQql9Y=;
+        b=s7o4aJsXllglxjEicM+le/pE5Q4+nZsQh1+qkc+l1wMXB8I5KM8EXHpK9vVJQBopp4olwE
+        /0eL2tvJFzr8/5F+QMy5ysfmCp4A5ramqeRsMJKSZCtFDWgeFHKh6l0oEFDWWCNJk0EhzP
+        yXIHNy0QuiJkmeTPgRibcNpvjDS2yuo=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 96AE513AD5;
+        Wed, 20 Apr 2022 15:09:57 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id QAKAI0UiYGJILQAAMHmgww
+        (envelope-from <jgross@suse.com>); Wed, 20 Apr 2022 15:09:57 +0000
+From:   Juergen Gross <jgross@suse.com>
+To:     xen-devel@lists.xenproject.org, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-integrity@vger.kernel.org,
+        linux-pci@vger.kernel.org
+Cc:     Juergen Gross <jgross@suse.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        =?UTF-8?q?Roger=20Pau=20Monn=C3=A9?= <roger.pau@citrix.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        Peter Huewe <peterhuewe@gmx.de>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH 00/18] xen: simplify frontend side ring setup
+Date:   Wed, 20 Apr 2022 17:09:24 +0200
+Message-Id: <20220420150942.31235-1-jgross@suse.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220420124053.853891-5-kai.heng.feng@canonical.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 08:40:51PM +0800, Kai-Heng Feng wrote:
-> Implement get_led_config() and set_led_config() callbacks so phy core
-> can use firmware LED as platform requested.
-> 
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> ---
->  drivers/net/phy/marvell.c | 26 ++++++++++++++++++++++++++
->  1 file changed, 26 insertions(+)
-> 
-> diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-> index 2702faf7b0f60..c5f13e09b0692 100644
-> --- a/drivers/net/phy/marvell.c
-> +++ b/drivers/net/phy/marvell.c
-> @@ -750,6 +750,30 @@ static int m88e1510_config_aneg(struct phy_device *phydev)
->  	return err;
->  }
->  
-> +static int marvell_get_led_config(struct phy_device *phydev)
-> +{
-> +	int led;
-> +
-> +	led = phy_read_paged(phydev, MII_MARVELL_LED_PAGE, MII_PHY_LED_CTRL);
-> +	if (led < 0) {
-> +		phydev_warn(phydev, "Fail to get marvell phy LED.\n");
-> +		led = 0;
-> +	}
+Many Xen PV frontends share similar code for setting up a ring page
+(allocating and granting access for the backend) and for tearing it
+down.
 
-I've said this multiple times, there are three LED registers, The
-Function Control register, the Priority Control register and the Timer
-control register. It is the combination of all three that defines how
-the LEDs work. You need to save all of them.
+Create new service functions doing all needed steps in one go.
 
-And you need to make your API generic enough that the PHY driver can
-save anywhere from 1 bit to 42 bytes of configuration.
+This requires all frontends to use a common value for an invalid
+grant reference in order to make the functions idempotent.
 
-I don't know ACPI, but i'm pretty sure this is not the ACPI way of
-doing this. I think you should be defining an ACPI method, which
-phylib can call after initialising the hardware to allow the firmware
-to configure the LED.
+Juergen Gross (18):
+  xen/blkfront: switch blkfront to use INVALID_GRANT_REF
+  xen/netfront: switch netfront to use INVALID_GRANT_REF
+  xen/scsifront: remove unused GRANT_INVALID_REF definition
+  xen/usb: switch xen-hcd to use INVALID_GRANT_REF
+  xen/drm: switch xen_drm_front to use INVALID_GRANT_REF
+  xen/sound: switch xen_snd_front to use INVALID_GRANT_REF
+  xen/dmabuf: switch gntdev-dmabuf to use INVALID_GRANT_REF
+  xen/shbuf: switch xen-front-pgdir-shbuf to use INVALID_GRANT_REF
+  xen/xenbus: add xenbus_setup_ring() service function
+  xen/blkfront: use xenbus_setup_ring() and xenbus_teardown_ring()
+  xen/netfront: use xenbus_setup_ring() and xenbus_teardown_ring()
+  xen/tpmfront: use xenbus_setup_ring() and xenbus_teardown_ring()
+  xen/drmfront: use xenbus_setup_ring() and xenbus_teardown_ring()
+  xen/pcifront: use xenbus_setup_ring() and xenbus_teardown_ring()
+  xen/scsifront: use xenbus_setup_ring() and xenbus_teardown_ring()
+  xen/usbfront: use xenbus_setup_ring() and xenbus_teardown_ring()
+  xen/sndfront: use xenbus_setup_ring() and xenbus_teardown_ring()
+  xen/xenbus: eliminate xenbus_grant_ring()
 
-     Andrew
+ drivers/block/xen-blkfront.c                | 54 ++++----------
+ drivers/char/tpm/xen-tpmfront.c             | 18 +----
+ drivers/gpu/drm/xen/xen_drm_front.h         |  9 ---
+ drivers/gpu/drm/xen/xen_drm_front_evtchnl.c | 40 +++-------
+ drivers/net/xen-netfront.c                  | 77 ++++++--------------
+ drivers/pci/xen-pcifront.c                  | 19 +----
+ drivers/scsi/xen-scsifront.c                | 30 ++------
+ drivers/usb/host/xen-hcd.c                  | 59 ++++-----------
+ drivers/xen/gntdev-dmabuf.c                 | 13 +---
+ drivers/xen/xen-front-pgdir-shbuf.c         | 17 +----
+ drivers/xen/xenbus/xenbus_client.c          | 81 ++++++++++++++++-----
+ include/xen/xenbus.h                        |  4 +-
+ sound/xen/xen_snd_front_evtchnl.c           | 41 +++--------
+ sound/xen/xen_snd_front_evtchnl.h           |  9 ---
+ 14 files changed, 156 insertions(+), 315 deletions(-)
+
+-- 
+2.34.1
+
