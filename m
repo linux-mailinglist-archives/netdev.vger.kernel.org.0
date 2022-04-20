@@ -2,206 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B58BC5093BB
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 01:48:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3761B509403
+	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 01:57:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383285AbiDTXvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Apr 2022 19:51:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54112 "EHLO
+        id S1383335AbiDTX7u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Apr 2022 19:59:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383278AbiDTXvE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 19:51:04 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49B763B54E
-        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 16:48:16 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id h8so5722768ybj.11
-        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 16:48:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=q3O9US0n2UzXan2e21MKKNaMm8F8Zb9/4YNMGiLrWSA=;
-        b=phouAeM8+n8/21EdjUq29cMvCCmXV7I+mFVHMA8yRhbI2ZeFhFME+GsM/YdkOJ+z/C
-         09m7jApTuCTrba/kNnDGoZSYEvoGHgSOiITF5H9A3af9FDDIcvsqoDLKu6yuIdfB9IPX
-         l9D/NwMBQdwML+N7r71OOoBnqETGhQ28QVV55htKbX1W/CUzBTfuAv4ecz8RKIEQjmGU
-         Km2uONTd50ZhFS0i3aQHRgc5CjKQ7Hy0Zu8yU2+wPZvLti/8mCg9sotjWVhRQk6yEDtv
-         K1qMIuG30ErHEDEB5Goe0y0nhRc0kQTfVt+A+TMJWRgza//sPVxMl833ROub+LS1u7mN
-         TGEA==
+        with ESMTP id S1355420AbiDTX7t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 19:59:49 -0400
+Received: from mail-pl1-x663.google.com (mail-pl1-x663.google.com [IPv6:2607:f8b0:4864:20::663])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4A123B2AC
+        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 16:57:00 -0700 (PDT)
+Received: by mail-pl1-x663.google.com with SMTP id c23so3290374plo.0
+        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 16:57:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=q3O9US0n2UzXan2e21MKKNaMm8F8Zb9/4YNMGiLrWSA=;
-        b=VALlDwPdcZePFqAismQvMm3XDv0hOUq2nBa5GtpKh5Iz37b4s8mrMpu4R0jqV+8Bll
-         Ei3Mqd0SpaQf5MIi8QPNap13ClQApZi9i0jwCddVFUcAKGL5NTSXBNYTorcKxz1dkDSx
-         /5lih8wk/Yr5yA5wdVOuQuyNNSksKzlku5JT6jCIUITbNkSWzkuys32tLOJUsiGbxTag
-         TtqIIDgb6m2zOvonl0Hzx+eqzKX8vuaInmpCb2wPtHdMHzmnqCdmeoJyclTjAMbqsDkM
-         Ly8OLO1q+OkUO/VZsJ9QhKwyU8tl1jGexXCy7O6P7cSWcaPZ6D52gmwmNQrCbLX0FO3d
-         3gow==
-X-Gm-Message-State: AOAM532dVqKiGmRhAvg6BAsk2l4NDQAjQsMqDSOvjdbA/hjU3BSEWol9
-        wGCiA9tqhPavgHOeVwiw2utbEND4slKZX9qehU2lmw==
-X-Google-Smtp-Source: ABdhPJzWLoKAq5dHEia+wimiT6TUUscUqI7ZhR1vGw31AVQAJjofyoXALdULrnUoTC9yRFf+12BPW0BeXJZlf+J/VTE=
-X-Received: by 2002:a25:2d4d:0:b0:641:d14e:ff85 with SMTP id
- s13-20020a252d4d000000b00641d14eff85mr21674484ybe.128.1650498495301; Wed, 20
- Apr 2022 16:48:15 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220414110838.883074566@linuxfoundation.org> <CA+G9fYvgzFW7sMZVdw5r970QNNg4OK8=pbQV0kDfbOX-rXu5Rw@mail.gmail.com>
-In-Reply-To: <CA+G9fYvgzFW7sMZVdw5r970QNNg4OK8=pbQV0kDfbOX-rXu5Rw@mail.gmail.com>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Thu, 21 Apr 2022 05:18:03 +0530
-Message-ID: <CA+G9fYscMP+DTzaQGw1p-KxyhPi0JB64ABDu_aNSU0r+_VgBHg@mail.gmail.com>
-Subject: Re: [PATCH 4.19 000/338] 4.19.238-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com, Netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, NeilBrown <neilb@suse.de>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        linux-nfs@vger.kernel.org,
-        Anna Schumaker <anna.schumaker@netapp.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        h=x-gm-message-state:dkim-signature:date:to:subject:user-agent
+         :content-transfer-encoding:message-id:from;
+        bh=cabBHowk07oUnQRoZ+JOkWMaGIxjcsUNAYkcyps7474=;
+        b=0xQivewDu/pfoy7LNCCiGE3aJ3LLr8ZB+8QVZwjmQQqmDxk4lr4HNinxMp909vxvKR
+         1gJgf9xyR/fjGgwbZrrieUuCEUieo6PQ8Hthd7koDswuLpt6Fq2c6aKUkwr8YESysVRG
+         cJ/gE78jfPBLSU7mVewQjcZzvmj49clK7h/1YUvaY4E/pRPG9WygnNrSdQA8dnSq+rD6
+         htH+32CvoN8AGkXcGnfTkcymwtqGFuwzxob0mQC/+6rTR18TdDSdeSmwq+cNnQrM5Y0C
+         zc0Wh8lNn8J2PU0xGoAoxPz8CaVerY2tjTCB4TVMmyOE9pqB0AaE34Oe8gAH2NrL6pOt
+         ydWg==
+X-Gm-Message-State: AOAM533O6TH7viomrgEuTAwFhU96+GOcgNjKNh6JunxZ0zr5xEwbL2F6
+        EtqMvgTdrPaTeZlXgXfduJR4eh8Q9nGSCRPHqL3mYWKWoP8D
+X-Google-Smtp-Source: ABdhPJz5sQOTT40Pi4MODlLH3Ns+UE/Rkl3Qn7qK/pZnLGy6gWay8SFoISVHcYSHc4JyCpCUTzbBnvRE+Wnp
+X-Received: by 2002:a17:902:d344:b0:158:408c:4d5f with SMTP id l4-20020a170902d34400b00158408c4d5fmr23163975plk.122.1650499020024;
+        Wed, 20 Apr 2022 16:57:00 -0700 (PDT)
+Received: from smtp.aristanetworks.com (mx.aristanetworks.com. [162.210.129.12])
+        by smtp-relay.gmail.com with ESMTPS id l12-20020a170903120c00b001569d32d9f6sm823324plh.60.2022.04.20.16.56.59
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 20 Apr 2022 16:57:00 -0700 (PDT)
+X-Relaying-Domain: arista.com
+Received: from us226.sjc.aristanetworks.com (us226.sjc.aristanetworks.com [10.243.208.9])
+        by smtp.aristanetworks.com (Postfix) with ESMTP id 9C8C75088E9;
+        Wed, 20 Apr 2022 16:56:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
+        s=Arista-A; t=1650499019;
+        bh=cabBHowk07oUnQRoZ+JOkWMaGIxjcsUNAYkcyps7474=;
+        h=Date:To:Subject:From:From;
+        b=eZoqAaOQskRlf9TLPEYx030mT56ZDxW9XtD+2SFaFBdJjCEVKYhT46iPcYtyl0S6F
+         Utzx2mfmpDefclTIsUR9A6PRGfCR4r3eMJZOvIV1EzNcZX4LfAUT6Ua7LNUEpsG52g
+         APWk+UP3NfvheRPXYshfpIDlqVY4D9EvjgfzcY9burbtSu3H7mot4FRA3QickLWqxj
+         wigBRKuutEl20GkQNfy9k6FZT6OgZB6G9RApXGXZqeKTwlonsip2fWgliRFVZCCg52
+         m0LXFoAN4f4+7WECzc9cQPKZdTlTNI5WgdhuH2mkRknB1HvBf7QDuhqQV5OOMIswxC
+         i40hwPkiON1Xw==
+Received: by us226.sjc.aristanetworks.com (Postfix, from userid 10189)
+        id 830155EC021C; Wed, 20 Apr 2022 16:56:59 -0700 (PDT)
+Date:   Wed, 20 Apr 2022 16:56:59 -0700
+To:     pabeni@redhat.com, kuba@kernel.org, dsahern@kernel.org,
+        yoshfuji@linux-ipv6.org, davem@davemloft.net, edumazet@google.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        fruggeri@arista.com
+Subject: [PATCH] tcp: md5: incorrect tcp_header_len for incoming
+ connections
+User-Agent: Heirloom mailx 12.5 7/5/10
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-Id: <20220420235659.830155EC021C@us226.sjc.aristanetworks.com>
+From:   fruggeri@arista.com (Francesco Ruggeri)
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 18 Apr 2022 at 14:09, Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
->
-> On Thu, 14 Apr 2022 at 18:45, Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > This is the start of the stable review cycle for the 4.19.238 release.
-> > There are 338 patches in this series, all will be posted as a response
-> > to this one.  If anyone has any issues with these being applied, please
-> > let me know.
-> >
-> > Responses should be made by Sat, 16 Apr 2022 11:07:54 +0000.
-> > Anything received after that time might be too late.
-> >
-> > The whole patch series can be found in one patch at:
-> >         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.238-rc1.gz
-> > or in the git tree and branch at:
-> >         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
-> > and the diffstat can be found below.
-> >
-> > thanks,
-> >
-> > greg k-h
->
->
-> Following kernel warning noticed on arm64 Juno-r2 while booting
-> stable-rc 4.19.238. Here is the full test log link [1].
->
-> [    0.000000] Booting Linux on physical CPU 0x0000000100 [0x410fd033]
-> [    0.000000] Linux version 4.19.238 (tuxmake@tuxmake) (gcc version
-> 11.2.0 (Debian 11.2.0-18)) #1 SMP PREEMPT @1650206156
-> [    0.000000] Machine model: ARM Juno development board (r2)
-> <trim>
-> [   18.499895] ================================
-> [   18.504172] WARNING: inconsistent lock state
-> [   18.508451] 4.19.238 #1 Not tainted
-> [   18.511944] --------------------------------
-> [   18.516222] inconsistent {IN-SOFTIRQ-W} -> {SOFTIRQ-ON-W} usage.
-> [   18.522242] kworker/u12:3/60 [HC0[0]:SC0[0]:HE1:SE1] takes:
-> [   18.527826] (____ptrval____)
-> (&(&xprt->transport_lock)->rlock){+.?.}, at: xprt_destroy+0x70/0xe0
-> [   18.536648] {IN-SOFTIRQ-W} state was registered at:
-> [   18.541543]   lock_acquire+0xc8/0x23c
-> [   18.545216]   _raw_spin_lock+0x50/0x64
-> [   18.548973]   xs_tcp_state_change+0x1b4/0x440
-> [   18.553343]   tcp_rcv_state_process+0x684/0x1300
-> [   18.557972]   tcp_v4_do_rcv+0x70/0x290
-> [   18.561731]   tcp_v4_rcv+0xc34/0xda0
-> [   18.565316]   ip_local_deliver_finish+0x16c/0x3c0
-> [   18.570032]   ip_local_deliver+0x6c/0x240
-> [   18.574051]   ip_rcv_finish+0x98/0xe4
-> [   18.577722]   ip_rcv+0x68/0x210
-> [   18.580871]   __netif_receive_skb_one_core+0x6c/0x9c
-> [   18.585847]   __netif_receive_skb+0x2c/0x74
-> [   18.590039]   netif_receive_skb_internal+0x88/0x20c
-> [   18.594928]   netif_receive_skb+0x68/0x1a0
-> [   18.599036]   smsc911x_poll+0x104/0x290
-> [   18.602881]   net_rx_action+0x124/0x4bc
-> [   18.606727]   __do_softirq+0x1d0/0x524
-> [   18.610484]   irq_exit+0x11c/0x144
-> [   18.613894]   __handle_domain_irq+0x84/0xe0
-> [   18.618086]   gic_handle_irq+0x5c/0xb0
-> [   18.621843]   el1_irq+0xb4/0x130
-> [   18.625081]   cpuidle_enter_state+0xc0/0x3ec
-> [   18.629361]   cpuidle_enter+0x38/0x4c
-> [   18.633032]   do_idle+0x200/0x2c0
-> [   18.636353]   cpu_startup_entry+0x30/0x50
-> [   18.640372]   rest_init+0x260/0x270
-> [   18.643870]   start_kernel+0x45c/0x490
-> [   18.647625] irq event stamp: 18931
-> [   18.651037] hardirqs last  enabled at (18931): [<ffff00000832e800>]
-> kfree+0xe0/0x370
-> [   18.658799] hardirqs last disabled at (18930): [<ffff00000832e7ec>]
-> kfree+0xcc/0x370
-> [   18.666564] softirqs last  enabled at (18920): [<ffff000008fbce94>]
-> rpc_wake_up_first_on_wq+0xb4/0x1b0
-> [   18.675893] softirqs last disabled at (18918): [<ffff000008fbce18>]
-> rpc_wake_up_first_on_wq+0x38/0x1b0
-> [   18.685217]
-> [   18.685217] other info that might help us debug this:
-> [   18.691758]  Possible unsafe locking scenario:
-> [   18.691758]
-> [   18.697689]        CPU0
-> [   18.700137]        ----
-> [   18.702586]   lock(&(&xprt->transport_lock)->rlock);
-> [   18.707562]   <Interrupt>
-> [   18.710184]     lock(&(&xprt->transport_lock)->rlock);
-> [   18.715335]
-> [   18.715335]  *** DEADLOCK ***
+In tcp_create_openreq_child we adjust tcp_header_len for md5 using the
+remote address in newsk. But that address is still 0 in newsk at this
+point, and it is only set later by the callers (tcp_v[46]_syn_recv_sock).
+Use the address from the request socket instead.
 
-My bisect script pointed to the following kernel commit,
+Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
+---
+ net/ipv4/tcp_minisocks.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-BAT BISECTION OLD: This iteration (kernel rev
-2d235d26dcf81d34c93ba8616d75c804b5ee5f3f) presents old behavior.
-242a3e0c75b64b4ced82e29e07a6d6d98eeec826 is the first new commit
-commit 242a3e0c75b64b4ced82e29e07a6d6d98eeec826
-Author: NeilBrown <neilb@suse.de>
-Date:   Tue Mar 8 13:42:17 2022 +1100
+diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
+index 6366df7aaf2a..6854bb1fb32b 100644
+--- a/net/ipv4/tcp_minisocks.c
++++ b/net/ipv4/tcp_minisocks.c
+@@ -531,7 +531,7 @@ struct sock *tcp_create_openreq_child(const struct sock *sk,
+ 	newtp->tsoffset = treq->ts_off;
+ #ifdef CONFIG_TCP_MD5SIG
+ 	newtp->md5sig_info = NULL;	/*XXX*/
+-	if (newtp->af_specific->md5_lookup(sk, newsk))
++	if (treq->af_specific->req_md5_lookup(sk, req_to_sk(req)))
+ 		newtp->tcp_header_len += TCPOLEN_MD5SIG_ALIGNED;
+ #endif
+ 	if (skb->len >= TCP_MSS_DEFAULT + newtp->tcp_header_len)
+-- 
+2.28.0
 
-    SUNRPC: avoid race between mod_timer() and del_timer_sync()
 
-    commit 3848e96edf4788f772d83990022fa7023a233d83 upstream.
-
-    xprt_destory() claims XPRT_LOCKED and then calls del_timer_sync().
-    Both xprt_unlock_connect() and xprt_release() call
-     ->release_xprt()
-    which drops XPRT_LOCKED and *then* xprt_schedule_autodisconnect()
-    which calls mod_timer().
-
-    This may result in mod_timer() being called *after* del_timer_sync().
-    When this happens, the timer may fire long after the xprt has been freed,
-    and run_timer_softirq() will probably crash.
-
-    The pairing of ->release_xprt() and xprt_schedule_autodisconnect() is
-    always called under ->transport_lock.  So if we take ->transport_lock to
-    call del_timer_sync(), we can be sure that mod_timer() will run first
-    (if it runs at all).
-
-    Cc: stable@vger.kernel.org
-    Signed-off-by: NeilBrown <neilb@suse.de>
-    Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
- net/sunrpc/xprt.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-
- --
-Linaro LKFT
-https://lkft.linaro.org
