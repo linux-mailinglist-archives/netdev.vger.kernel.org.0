@@ -2,116 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA90250805B
-	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 07:01:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37AB7508070
+	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 07:14:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349509AbiDTFEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Apr 2022 01:04:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35092 "EHLO
+        id S1350143AbiDTFQn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Apr 2022 01:16:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349475AbiDTFEO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 01:04:14 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 509A125EB9
-        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 22:01:29 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id s18so1194736ejr.0
-        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 22:01:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=NpFVcX/rQ4/pDaNkozRjOJ0rrg5LCyeh7gZ9ZrDTO40=;
-        b=d3nWhttd5RRkY9ZRXXFek2pXWjALd/FZbysGHwVWyAPSLQsiopcIonJW2Cr+QkIYmS
-         tXf8InTOePvpULLpqWk9NvSdrjZXkVGLUTEiJupK+DBUp1E/AfjgJo3hym3kzuFy2ckX
-         RrsVBhK7NAdvJWCWZj6yzR9sVU5tAtAKRoFEHKM35cXOvXzsQY+7HZLfJ3QHkOqx52vv
-         Ml024GGF6BPU6PQ+AwljljbBBWs06bCzqITbmT76GWIqDt5UWtcBR7hTA7gsLTfEUsZR
-         hgLLDRt4C+FOuf/wBrvbHfnPyiCUo04xSjD1KK5G+4nuMKyHhiCcdHWr4i35fSqnCvAj
-         hmIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=NpFVcX/rQ4/pDaNkozRjOJ0rrg5LCyeh7gZ9ZrDTO40=;
-        b=pDVPZZEy6NGTswhXEDeAaawjl6GTIC/VojB2/F9TkOPtRTcMI/gdLZWY1bfuNZwv24
-         Pxx8iXXat03LOXyRJo91/QLZtfryW9sieIV/XYN1To0x5UDlfN1jC9x3cvq4zm6b6/EL
-         i68PC0tyzB9QOlX29qkE0rnSlow/frtIP78JQLPRBgNswLRR9WErYYmyxjyCHByEwdbq
-         Xx9bq5QiHdO4+P4z7mgs72Hn9Qbk/AHoQSh8Kyxj4Did/fEvDUBjP7TSV9FXuVvqhnea
-         yR8QRC2o0opuyprKixvNXuNxunBApzdcMJ6rRlSDErURxXs4ja0Lnm8EGs4V8gwPlkh5
-         J57A==
-X-Gm-Message-State: AOAM533kQMdhcX2e+NOQjxooKRWaTRX0W5MVNbbCFzDYHQzF9UatE8kn
-        Uxby4huxF+HT+oD/dZHN3UWrDRhwgOT6mT31wBA=
-X-Google-Smtp-Source: ABdhPJxo5z09Cj7K/MMsHAxFatlz6zMbXHmRmLITft3p/H0sNoakLV9p3Agenl0JkbOZmKKUmIlyU7ePDG5OKuoEVYU=
-X-Received: by 2002:a17:906:36c8:b0:6e7:a66f:766e with SMTP id
- b8-20020a17090636c800b006e7a66f766emr16884096ejc.354.1650430887741; Tue, 19
- Apr 2022 22:01:27 -0700 (PDT)
+        with ESMTP id S232351AbiDTFQm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 01:16:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD9533E3A;
+        Tue, 19 Apr 2022 22:13:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9659B81244;
+        Wed, 20 Apr 2022 05:13:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC9DFC385A0;
+        Wed, 20 Apr 2022 05:13:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650431634;
+        bh=Xl8xanXzGG/XbMPJDPUaNRxh8BraaLlRbxRew5ksBiw=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=MWRbUBz9aU0uUj7CU39+2wGmazTXtMvR03ApKZl5oW7EFAVuhS5jKf7sp03Q9r9S/
+         JPPbgcGQiWfrN8OXQ9DsliVf5S5ZV/BvfTSU1BuKOqln8qdq/EypwAvgz1QwP8Xr4d
+         yX1den7jqPZaRgiuM588z3n/dS4IvviSoB7ZmOWeNdMNQMnouRFfgPuz1lRohNclPl
+         15SyuSrsu/1OtpHeV7kDRj4sX7XF31fygnHkVtAGWoX2CwcI/yQoRIkIEkC78tNz1Y
+         rhjcIig2B7J0YCIuF8MPsm06kuInhm56U70+8sBEMyv0DdgArF6Ic73iWHs5WSYV3+
+         9hSf3BfWl3+Tw==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Jani Nikula <jani.nikula@intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 0/1] add support for enum module parameters
+References: <20220414123033.654198-1-jani.nikula@intel.com>
+        <YlgfXxjefuxiXjtC@kroah.com> <87a6cneoco.fsf@intel.com>
+Date:   Wed, 20 Apr 2022 08:13:47 +0300
+In-Reply-To: <87a6cneoco.fsf@intel.com> (Jani Nikula's message of "Thu, 14 Apr
+        2022 17:22:47 +0300")
+Message-ID: <87sfq8qqus.fsf@tynnyri.adurom.net>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-References: <20220420045512.GA1289782@jaehee-ThinkPad-X1-Extreme>
-In-Reply-To: <20220420045512.GA1289782@jaehee-ThinkPad-X1-Extreme>
-From:   Jaehee <jhpark1013@gmail.com>
-Date:   Wed, 20 Apr 2022 01:01:16 -0400
-Message-ID: <CAA1TwFDXYFm4HaTuka_0ZcdD0BENwbCAGDKF44=_wpP3nTiWpg@mail.gmail.com>
-Subject: Re: [PATCH net-next] selftests: net: vrf_strict_mode_test: add
- support to select a test to run
-To:     Outreachy Linux Kernel <outreachy@lists.linux.dev>,
-        Julia Denham <jdenham@redhat.com>,
-        Roopa Prabhu <roopa.prabhu@gmail.com>,
-        Stefano Brivio <sbrivio@redhat.com>, netdev@vger.kernel.org,
-        Jaehee Park <jhpark1013@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sorry, I sent two of the same patch by accident. Please ignore this one.
++ linux-wireless, netdev
+
+Jani Nikula <jani.nikula@intel.com> writes:
+
+> On Thu, 14 Apr 2022, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+>> On Thu, Apr 14, 2022 at 03:30:32PM +0300, Jani Nikula wrote:
+>>> Hey, I've sent this before, ages ago, but haven't really followed
+>>> through with it. I still think it would be useful for many scenarios
+>>> where a plain number is a clumsy interface for a module param.
+>>> 
+>>> Thoughts?
+>>
+>> We should not be adding new module parameters anyway (they operate on
+>> code, not data/devices), so what would this be used for?
+>
+> I think it's just easier to use names than random values, and this also
+> gives you range check on the input.
+>
+> I also keep telling people not to add new module parameters, but it's
+> not like they're going away anytime soon.
+>
+> If there's a solution to being able to pass device specific debug
+> parameters at probe time, I'm all ears. At least i915 has a bunch of
+> things which can't really be changed after probe, when debugfs for the
+> device is around. Module parameters aren't ideal, but debugfs doesn't
+> work for this.
+
+Wireless drivers would also desperately need to pass device specific
+parameters at (or before) probe time. And not only debug parameters but
+also configuration parameters, for example firmware memory allocations
+schemes (optimise for features vs number of clients etc) and whatnot.
+
+Any ideas how to implement that? Is there any prior work for anything
+like this? This is pretty hard limiting usability of upstream wireless
+drivers and I really want to find a proper solution.
 
 
-On Wed, Apr 20, 2022 at 12:55 AM Jaehee Park <jhpark1013@gmail.com> wrote:
->
-> Add a boilerplate test loop to run all tests in
-> vrf_strict_mode_test.sh.
->
-> Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
-> ---
->  .../testing/selftests/net/vrf_strict_mode_test.sh  | 14 +++++++++++++-
->  1 file changed, 13 insertions(+), 1 deletion(-)
->
-> diff --git a/tools/testing/selftests/net/vrf_strict_mode_test.sh b/tools/testing/selftests/net/vrf_strict_mode_test.sh
-> index 865d53c1781c..116ca43381b5 100755
-> --- a/tools/testing/selftests/net/vrf_strict_mode_test.sh
-> +++ b/tools/testing/selftests/net/vrf_strict_mode_test.sh
-> @@ -14,6 +14,8 @@ INIT_NETNS_NAME="init"
->
->  PAUSE_ON_FAIL=${PAUSE_ON_FAIL:=no}
->
-> +TESTS="vrf_strict_mode_tests_init vrf_strict_mode_tests_testns vrf_strict_mode_tests_mix"
-> +
->  log_test()
->  {
->         local rc=$1
-> @@ -391,7 +393,17 @@ fi
->  cleanup &> /dev/null
->
->  setup
-> -vrf_strict_mode_tests
-> +for t in $TESTS
-> +do
-> +       case $t in
-> +       vrf_strict_mode_tests_init|vrf_strict_mode_init) vrf_strict_mode_tests_init;;
-> +       vrf_strict_mode_tests_testns|vrf_strict_mode_testns) vrf_strict_mode_tests_testns;;
-> +       vrf_strict_mode_tests_mix|vrf_strict_mode_mix) vrf_strict_mode_tests_mix;;
-> +
-> +       help) echo "Test names: $TESTS"; exit 0;;
-> +
-> +       esac
-> +done
->  cleanup
->
->  print_log_test_results
-> --
-> 2.25.1
->
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
