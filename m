@@ -2,106 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 581105085A6
-	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 12:18:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3396D5085AD
+	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 12:20:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244785AbiDTKVE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Apr 2022 06:21:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51508 "EHLO
+        id S1377574AbiDTKXA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Apr 2022 06:23:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230378AbiDTKVD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 06:21:03 -0400
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D732B641B
-        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 03:18:16 -0700 (PDT)
-Received: from fsav113.sakura.ne.jp (fsav113.sakura.ne.jp [27.133.134.240])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 23KAHtls083375;
-        Wed, 20 Apr 2022 19:17:55 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav113.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav113.sakura.ne.jp);
- Wed, 20 Apr 2022 19:17:55 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav113.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 23KAHthu083371
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Wed, 20 Apr 2022 19:17:55 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <cb2f74ea-74ce-2dba-c5e3-e4672f1be663@I-love.SAKURA.ne.jp>
-Date:   Wed, 20 Apr 2022 19:17:53 +0900
+        with ESMTP id S1377530AbiDTKW6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 06:22:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 302241400E
+        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 03:20:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BBB9061790
+        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 10:20:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 038FEC385A8;
+        Wed, 20 Apr 2022 10:20:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650450011;
+        bh=/kdrOscUXpoTe8OKXrVoGjhZrmlONVarr3cDpQHst9I=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=r4euG7tA1dKEixKtNEorriN9zHT/PHz65n++wmmdngajFBvjX1BpmR3HS1B3dPmvs
+         ACZgRaO+sTLRl06co6jxBAGu3LelTq4yHaKHEM1KeJ/wBs+FAJGvAsD4E6fMgq5wTr
+         6ZnzYXjhj60w5lsL1Bj+8+cUUKgdIV7jHj2JYbZBALB3tmeZnmAgXTqL9TZ6jN2IYa
+         vN+NChKpFlgPwqWcQ3HwsrIr8aJiLlxUBB57D2nzj7Xii3XbeUPUtjSTo+zEnEem46
+         YNRr/+IHFg9WfL5CXNU3E6T1UwiNn3zWi8InFzzv3zTUPS7ssBEebc5l1BTcrAxn0E
+         miEuziuYqydIQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DC37EE7399D;
+        Wed, 20 Apr 2022 10:20:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] wwan_hwsim: Avoid flush_scheduled_work() usage
-Content-Language: en-US
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Network Development <netdev@vger.kernel.org>
-References: <0bc6443a-dbac-70ab-bf99-9a439e35f3ef@I-love.SAKURA.ne.jp>
- <CAMZdPi_uieGNWyGAAywBz2Utg0iW1jGUTWzUbj3SmsZ+-iDTfQ@mail.gmail.com>
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <CAMZdPi_uieGNWyGAAywBz2Utg0iW1jGUTWzUbj3SmsZ+-iDTfQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 net] net: stmmac: Use readl_poll_timeout_atomic() in atomic
+ state
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165045001089.14273.9231245992154971496.git-patchwork-notify@kernel.org>
+Date:   Wed, 20 Apr 2022 10:20:10 +0000
+References: <20220419084226.38340-1-haokexin@gmail.com>
+In-Reply-To: <20220419084226.38340-1-haokexin@gmail.com>
+To:     Kevin Hao <haokexin@gmail.com>
+Cc:     netdev@vger.kernel.org, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        mcoquelin.stm32@gmail.com, zhengdejin5@gmail.com,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/04/20 18:53, Loic Poulain wrote:
->> @@ -506,9 +507,15 @@ static int __init wwan_hwsim_init(void)
->>         if (wwan_hwsim_devsnum < 0 || wwan_hwsim_devsnum > 128)
->>                 return -EINVAL;
->>
->> +       wwan_wq = alloc_workqueue("wwan_wq", 0, 0);
->> +       if (!wwan_wq)
->> +               return -ENOMEM;
->> +
->>         wwan_hwsim_class = class_create(THIS_MODULE, "wwan_hwsim");
->> -       if (IS_ERR(wwan_hwsim_class))
->> +       if (IS_ERR(wwan_hwsim_class)) {
->> +               destroy_workqueue(wwan_wq);
->>                 return PTR_ERR(wwan_hwsim_class);
->> +       }
->>
->>         wwan_hwsim_debugfs_topdir = debugfs_create_dir("wwan_hwsim", NULL);
->>         wwan_hwsim_debugfs_devcreate =
->> @@ -524,6 +531,7 @@ static int __init wwan_hwsim_init(void)
->>
->>  err_clean_devs:
+Hello:
 
-Do you want
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-	debugfs_remove(wwan_hwsim_debugfs_devcreate);
-
-here (as a separate patch)?
-
->>         wwan_hwsim_free_devs();
->> +       destroy_workqueue(wwan_wq);
->>         debugfs_remove(wwan_hwsim_debugfs_topdir);
->>         class_destroy(wwan_hwsim_class);
->>
->> @@ -534,7 +542,7 @@ static void __exit wwan_hwsim_exit(void)
->>  {
->>         debugfs_remove(wwan_hwsim_debugfs_devcreate);   /* Avoid new devs */
->>         wwan_hwsim_free_devs();
->> -       flush_scheduled_work();         /* Wait deletion works completion */
->> +       destroy_workqueue(wwan_wq);             /* Wait deletion works completion */
+On Tue, 19 Apr 2022 16:42:26 +0800 you wrote:
+> The init_systime() may be invoked in atomic state. We have observed the
+> following call trace when running "phc_ctl /dev/ptp0 set" on a Intel
+> Agilex board.
+>   BUG: sleeping function called from invalid context at drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c:74
+>   in_atomic(): 1, irqs_disabled(): 128, non_block: 0, pid: 381, name: phc_ctl
+>   preempt_count: 1, expected: 0
+>   RCU nest depth: 0, expected: 0
+>   Preemption disabled at:
+>   [<ffff80000892ef78>] stmmac_set_time+0x34/0x8c
+>   CPU: 2 PID: 381 Comm: phc_ctl Not tainted 5.18.0-rc2-next-20220414-yocto-standard+ #567
+>   Hardware name: SoCFPGA Agilex SoCDK (DT)
+>   Call trace:
+>    dump_backtrace.part.0+0xc4/0xd0
+>    show_stack+0x24/0x40
+>    dump_stack_lvl+0x7c/0xa0
+>    dump_stack+0x18/0x34
+>    __might_resched+0x154/0x1c0
+>    __might_sleep+0x58/0x90
+>    init_systime+0x78/0x120
+>    stmmac_set_time+0x64/0x8c
+>    ptp_clock_settime+0x60/0x9c
+>    pc_clock_settime+0x6c/0xc0
+>    __arm64_sys_clock_settime+0x88/0xf0
+>    invoke_syscall+0x5c/0x130
+>    el0_svc_common.constprop.0+0x4c/0x100
+>    do_el0_svc+0x7c/0xa0
+>    el0_svc+0x58/0xcc
+>    el0t_64_sync_handler+0xa4/0x130
+>    el0t_64_sync+0x18c/0x190
 > 
-> Wouldn't it be simpler to just remove the flush call. It Looks like
-> all ports have been removed at that point, and all works cancelled,
-> right?
+> [...]
 
-I guess that this flush_scheduled_work() is for waiting for schedule_work(&dev->del_work) from
-wwan_hwsim_debugfs_devdestroy_write(). That is, if wwan_hwsim_debugfs_devdestroy_write() already
-scheduled this work, wwan_hwsim_dev_del() from wwan_hwsim_dev_del_work() might be still in progress
-even after wwan_hwsim_dev_del() from wwan_hwsim_free_devs() from wwan_hwsim_exit() returned.
+Here is the summary with links:
+  - [v2,net] net: stmmac: Use readl_poll_timeout_atomic() in atomic state
+    https://git.kernel.org/netdev/net/c/234901de2bc6
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
