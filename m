@@ -2,51 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F0D450855C
-	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 12:01:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9ADD650855F
+	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 12:01:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377437AbiDTKDD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Apr 2022 06:03:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35974 "EHLO
+        id S1377443AbiDTKDE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Apr 2022 06:03:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351387AbiDTKDB (ORCPT
+        with ESMTP id S1352379AbiDTKDB (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 06:03:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 150BC1ADB9;
-        Wed, 20 Apr 2022 03:00:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4EEF1ADAA;
+        Wed, 20 Apr 2022 03:00:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D9E2616F9;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CD1861731;
         Wed, 20 Apr 2022 10:00:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id BF5FEC385AB;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B5201C385A0;
         Wed, 20 Apr 2022 10:00:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1650448814;
-        bh=dhQfBfjBfd8kHtAso1G7CgeR9goZyo+iYz7i15tnhZU=;
+        bh=gz5XYCnVpMEI1KvfPfqvKxfI/QYUIW9H/MW0rMMG75E=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=jziENf8qx3k6pjF3Qapz2Au1lB/stnW91cw12IXcoWDLzfujWTs7BgfgJXCW6FQkb
-         E5YW53m9a2HFCyN6zG4TM9Gp1Fjfuc+Mvw/Vsu/VrBNy7gALNg3LH455pvFfC3uTZq
-         4UJMwgX5agPYWeaIU2orl88mEfjR10RP1bQjs9c+d2h9OEiwd49xLzyRQ1zC151N6y
-         w0yZs+Y/9lTPIvVMjc3bRv7lMYMFt2GawH34yPtmCOZ3KNNq2jJr+oAYZjMOsjER2J
-         4qV2CacYjbBfULBTpSdyBLZOWYUcmptzF1IDSD77CJ5exG72Uk/wO98qEL8sPeGxRF
-         +aH0ruS5yCu5w==
+        b=E4oOJ6GJSJM9Qg54Fm3JYgKZVKXOc6upQhZ6YolOt3bfSK5dv3cqBhWKuUT4xvLVw
+         ITKPLqlD2sa4vHR6wyLIROUa0rPnlfu4xOO2Dw6sOufdp8/jyBVunDrc8UfcM1i9dK
+         uopJLsWIWpgE5UBr7jyK0ESlGGfEF7cjhlkb8HEdBFMU0V7BDJfdq2D/7SLoJB392r
+         k7v2WtOZUqCQ2w7bUzYqXaQp51ncDj1zduSCwKwV7wrQZThuxRbRvUffRZLK9GHwey
+         8/ig6Sgv35RYQ6EpmYLeSTeavqXxyVYrieKTyGdKMJC/U5u8JjlDHsX+VnY2oAfnOs
+         6T1cRHilbQ2gA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A2AD8F0383D;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 971CBE7399D;
         Wed, 20 Apr 2022 10:00:14 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH V2 net-next 0/9] net: hns3: updates for -next
+Subject: Re: [PATCH net-next v5 0/3] net: atlantic: Add XDP support
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165044881465.4054.9283567188625331679.git-patchwork-notify@kernel.org>
+Message-Id: <165044881461.4054.10110464875115970804.git-patchwork-notify@kernel.org>
 Date:   Wed, 20 Apr 2022 10:00:14 +0000
-References: <20220419032709.15408-1-huangguangbin2@huawei.com>
-In-Reply-To: <20220419032709.15408-1-huangguangbin2@huawei.com>
-To:     Guangbin Huang <huangguangbin2@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lipeng321@huawei.com,
-        chenhao288@hisilicon.com
+References: <20220417101247.13544-1-ap420073@gmail.com>
+In-Reply-To: <20220417101247.13544-1-ap420073@gmail.com>
+To:     Taehee Yoo <ap420073@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, irusskikh@marvell.com, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        kpsingh@kernel.org, bpf@vger.kernel.org
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -61,39 +63,26 @@ Hello:
 This series was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Tue, 19 Apr 2022 11:27:00 +0800 you wrote:
-> This series includes some updates for the HNS3 ethernet driver.
+On Sun, 17 Apr 2022 10:12:44 +0000 you wrote:
+> This patchset is to make atlantic to support multi-buffer XDP.
 > 
-> Change logs:
-> V1 -> V2:
->  - Fix failed to apply to net-next problem.
+> The first patch implement control plane of xdp.
+> The aq_xdp(), callback of .xdp_bpf is added.
 > 
-> Hao Chen (3):
->   net: hns3: refactor hns3_set_ringparam()
->   net: hns3: add log for setting tx spare buf size
->   net: hns3: remove unnecessary line wrap for hns3_set_tunable
+> The second patch implements data plane of xdp.
+> XDP_TX, XDP_DROP, and XDP_PASS is supported.
+> __aq_ring_xdp_clean() is added to receive and execute xdp program.
+> aq_nic_xmit_xdpf() is added to send packet by XDP.
 > 
 > [...]
 
 Here is the summary with links:
-  - [V2,net-next,1/9] net: hns3: add ethtool parameter check for CQE/EQE mode
-    https://git.kernel.org/netdev/net-next/c/286c61e72797
-  - [V2,net-next,2/9] net: hns3: refactor hns3_set_ringparam()
-    https://git.kernel.org/netdev/net-next/c/07fdc163ac88
-  - [V2,net-next,3/9] net: hns3: refine the definition for struct hclge_pf_to_vf_msg
-    https://git.kernel.org/netdev/net-next/c/6fde96df0447
-  - [V2,net-next,4/9] net: hns3: add failure logs in hclge_set_vport_mtu
-    https://git.kernel.org/netdev/net-next/c/bcc7a98f0d3c
-  - [V2,net-next,5/9] net: hns3: add log for setting tx spare buf size
-    https://git.kernel.org/netdev/net-next/c/2373b35c24ff
-  - [V2,net-next,6/9] net: hns3: update the comment of function hclgevf_get_mbx_resp
-    https://git.kernel.org/netdev/net-next/c/2e0f53887011
-  - [V2,net-next,7/9] net: hns3: fix the wrong words in comments
-    https://git.kernel.org/netdev/net-next/c/9c657cbc2c15
-  - [V2,net-next,8/9] net: hns3: replace magic value by HCLGE_RING_REG_OFFSET
-    https://git.kernel.org/netdev/net-next/c/350cb4409246
-  - [V2,net-next,9/9] net: hns3: remove unnecessary line wrap for hns3_set_tunable
-    https://git.kernel.org/netdev/net-next/c/29c17cb67271
+  - [net-next,v5,1/3] net: atlantic: Implement xdp control plane
+    https://git.kernel.org/netdev/net-next/c/0d14657f4083
+  - [net-next,v5,2/3] net: atlantic: Implement xdp data plane
+    https://git.kernel.org/netdev/net-next/c/26efaef759a1
+  - [net-next,v5,3/3] net: atlantic: Implement .ndo_xdp_xmit handler
+    https://git.kernel.org/netdev/net-next/c/45638f013a63
 
 You are awesome, thank you!
 -- 
