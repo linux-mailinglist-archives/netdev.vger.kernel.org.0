@@ -2,345 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C98E508211
-	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 09:27:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62D3A50826F
+	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 09:42:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359682AbiDTH3o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Apr 2022 03:29:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47552 "EHLO
+        id S1376292AbiDTHpJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Apr 2022 03:45:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240513AbiDTH3n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 03:29:43 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E8E51107;
-        Wed, 20 Apr 2022 00:26:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1650439617; x=1681975617;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=7x/XmTCdteW2wLfZrPwcs45IaGMX+USYibzSNolEiYk=;
-  b=mRUUDrfbd+i3sxBDYTW2qlmkigvCpqmXD5N5xpbvIjHQWEtf+ayp7OpP
-   fWnMLeESsXPJsmxs2BO4yVws7E1o7Nwy0d2DudzIjNiYUXKxDNpYjD5tf
-   ucFOrkv/ZNkfP6+SgkZtSUWwaIbJNVLAx6rB8TrAue0p5E6bQt13PtYNW
-   Cjqc3BSMDFjltG3j49hcPZqLRtcMilUMzLEwL9lil/kmpptxyI+BFTatq
-   8RS7dqhkJ9S9k1fWIWowIuTUXDCEKFkIPAwGmwJm7BALcbqmT4QoNJbLF
-   7R3WW5F1KQnvRCIZMzTTQ4QeXrffGlekqyIB8C737OdVogD+HfyGwjYPv
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,275,1643698800"; 
-   d="scan'208";a="156118661"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Apr 2022 00:26:56 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 20 Apr 2022 00:26:56 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 20 Apr 2022 00:26:50 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, <UNGLinuxDriver@microchip.com>,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: [RFC Patch net-next] net: dsa: ksz: added the generic port_stp_state_set function
-Date:   Wed, 20 Apr 2022 12:56:47 +0530
-Message-ID: <20220420072647.22192-1-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.33.0
+        with ESMTP id S241235AbiDTHpH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 03:45:07 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2109.outbound.protection.outlook.com [40.107.220.109])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D54F03B027;
+        Wed, 20 Apr 2022 00:42:21 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=J+6Qsl+kW/CQopP9wEewdPNoQFDv6LiQbu7QQFFf4CrBUAaU97HAftB73LNEV0SxTFXB1oET9CgU1y6Mz4glP73B+4Mo1S8Ea5T1lUpZHD29pfGRSpITT4tvIpi3s3KSzXN2RISVxoEHTlWMo66kSKV//ghz7ZVkue7PINqNu9R3oMUHd92l8k2mBjLyTxvU6Qnlf/EuxP8/dwW1pILcTklkpe+jotByuLmXrtLYLXlLywwIbOPRD9S4Zxe6wlVTKAQwMnC91NTjN6E0PVAudLDqi93r9SOTzXLE/AH5Gtdjh5ODKMx2QoZYAyuWVeXSGdoOYVhOSvhBuL/R8ZXGAQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=vCozZzejFPhQmuXHuDCO7m5sCqSouCTwQ9geU26eS4c=;
+ b=bRqeKG5Mp/ZvPpIs/o/UZGf5NoU2LRPdEJL5aDqilU5syjmOfF+PGbp918IVhlahlon5y5sHF1DZQeDgY/gUiXZ+jUvBy9JbXFBqFJTQ+OoNC87u2Vw4JmX4XJx/ymvhWCf5dTDDKJhhlQK+N7UqjtsQehhmwbi4226+uYjSJFDviicJ2oyq6g/k048V/lwQTPhPwwAcQF0rg3nGP1f9kouvN3ANy8onE22GuDdMa+Vzvn8h4JZLnAQwugGCiQnXDWujZm3NGelj/rmxdXFNSyyAcu4GxX4qQjT2UwmeEiHSSV+XR1BN74FTEFU0UsTRYFpZs+60h2aN1RBZMKVA9w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vCozZzejFPhQmuXHuDCO7m5sCqSouCTwQ9geU26eS4c=;
+ b=RlPlEqjIdSponJNLeEaN6UwFFa3E/6eDx9vRyugtB8YeUjJ32sMItaKYHhMWvYhY4+toxdn0Eb2OwqSqXej88iZzQT+5rjHVgVJHE1kgoHUmNodv+A49H+5ziokT3S6xgbiKdoksafpVShvID/YWEWcxnuqXnmDJSupg0Boy8cg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from DM6PR13MB3705.namprd13.prod.outlook.com (2603:10b6:5:24c::16)
+ by MW5PR13MB5486.namprd13.prod.outlook.com (2603:10b6:303:195::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.10; Wed, 20 Apr
+ 2022 07:42:17 +0000
+Received: from DM6PR13MB3705.namprd13.prod.outlook.com
+ ([fe80::5cb2:d978:65bc:9137]) by DM6PR13MB3705.namprd13.prod.outlook.com
+ ([fe80::5cb2:d978:65bc:9137%5]) with mapi id 15.20.5186.014; Wed, 20 Apr 2022
+ 07:42:17 +0000
+Date:   Wed, 20 Apr 2022 15:42:11 +0800
+From:   Yinjun Zhang <yinjun.zhang@corigine.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
+        linux-pci@vger.kernel.org, Simon Horman <simon.horman@corigine.com>
+Subject: Re: [PATCH net-next] PCI: add Corigine vendor ID into pci_ids.h
+Message-ID: <20220420074211.GA27487@nj-rack01-04.nji.corigine.com>
+References: <1650362568-11119-1-git-send-email-yinjun.zhang@corigine.com>
+ <Yl8w5XK54fB/rx9c@lunn.ch>
+ <20220420015952.GB4636@nj-rack01-04.nji.corigine.com>
+ <Yl+kUqyMUTIadDMz@unreal>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yl+kUqyMUTIadDMz@unreal>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-ClientProxiedBy: HKAPR04CA0013.apcprd04.prod.outlook.com
+ (2603:1096:203:d0::23) To DM6PR13MB3705.namprd13.prod.outlook.com
+ (2603:10b6:5:24c::16)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 582cf8c8-2be5-485e-a955-08da22a14af9
+X-MS-TrafficTypeDiagnostic: MW5PR13MB5486:EE_
+X-Microsoft-Antispam-PRVS: <MW5PR13MB5486214E1511DE9824A9FACDFCF59@MW5PR13MB5486.namprd13.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Rd+S9dJabiQggIcSrvnnHQufSJPojn8V2kAs10GleII9mcs32uwqdne1JTlod71W94thIVI8zWvJRUHYvn1htOsXFa1rECGlUoQk81HMNBuAsGhq2X6CQJTbqzfa8WzYSO8sRj6SGFiXfCVItKqUm8VCD5Endc9sMTTnN1VecHFx5wUfM29p8JV1wpS7aUGTxy5S+T3xbRYc6kCcGnThSQozyCJLhssnc6o0mGR6mGJnFAx2qB2Sglo2uTz9cUTSLDksNkcAOwrZU5i8j3Ej82Yh2Y6xOX/yFsDBycpIGnWMydYCuSXrJe5CqFcU4z0KV0ZPPJ1S4LVVnL91+XMlSWhSRIT3weOxc72T9uH9a5NZHvjO0hDicBJbJvQGoiFE64iXUCne7heZUNqTNCTnRQLrY60BZ1s+rAd2DYBwfpzE5fT/bDcJN0eJ2jp6dYyTuZWzvoDp8CCUgOkyxGv1g7I9FGMKsSQNuOrCj363aNwfaLArGUvYNQvAaDGrKKUsIAaAUjcWQyVl6inttYLL9ASklfsF3qNRayOUBzDeCiwREsEKU354HiKC30VpJvrarI020GQ/LgfzYLB7knsFV9FJfOMQ1MIGfpM6pVGvgHj6X1ZRysZHPTxn64KYyYbJ9jDj1vTdhJLDqmXDZ+B9i826b6geR7+AoaZwhxRbTWMhW4RcQPdJfPfOdvYSC5uEQUGh/z4nwnoD+JNeXHVg3H39JrKp6bI9kwJlK6vuBXslOmZfM3QSMRRBLRMHHaNc
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR13MB3705.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(39840400004)(346002)(136003)(376002)(366004)(396003)(508600001)(5660300002)(54906003)(83380400001)(316002)(2906002)(33656002)(86362001)(8936002)(52116002)(8676002)(1076003)(6506007)(6666004)(44832011)(186003)(6486002)(107886003)(66476007)(6512007)(66946007)(26005)(66556008)(38100700002)(6916009)(38350700002)(4326008);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?va7CzD1hDG102vSyo/OH4PxEGRKIDOdMTU4YrBno3YyakpGUj/CbSUQLl4Rv?=
+ =?us-ascii?Q?WObu2B1VjmvVAfBRm/2zgrmf/FEpY8wc0PeFJcGyiiO+1SRppF7NE9hM9Sbs?=
+ =?us-ascii?Q?KdXg42T2bChC6XmUcyUngUoqKWuq54xPUONOSrHw5XCOw0A4HBzJg89qTe6s?=
+ =?us-ascii?Q?PJkksB0C7lH+dR3DsFADq6Lnf09pe+o9zo+GVKMow5BLMUglutOIOx2TkeSR?=
+ =?us-ascii?Q?BEknvoAsCpu3xcj9L28zmw15EEDoCpuC8Kw6Lt74ujccp0s4RthCyXCYL8RU?=
+ =?us-ascii?Q?mtN7HzPxuLsv088HXhQSrW+MQM9Na8ZSxIRfyfuYVXrL9WHuw2P1xlMqSCCX?=
+ =?us-ascii?Q?sKoexLR/MDzDKxnAWSJu2jErYkcY0abZluEjsuoyKMrpQgnuH+x+MWbU3/Sr?=
+ =?us-ascii?Q?6ab1GTEnz4xCTc1A8dPJBuzWCww9+2nYypuSh3zpd4RU55tCBK11p14S4PC2?=
+ =?us-ascii?Q?q4KpM9pN5hAfCGhz8LdhlMAOV8HlkJ8sriJXmDjIZ1PCaX3WMJZVt5xwXseo?=
+ =?us-ascii?Q?cUidI74qfKmPReThckt1FucN0wKHexaUoRp9pofjpXZJR/iaterOeadwn5tw?=
+ =?us-ascii?Q?yvp70s83eDEozgMZqROH3wkeyk7U5Fx+CjNiHdREepTUCNK/9pFiJBBxvQfm?=
+ =?us-ascii?Q?uM7EnyiFHk0PZGZmXQS86aKgwvNCHPLaX6xoSYHmYTgkcY2iCV9s6r5YtvIH?=
+ =?us-ascii?Q?l4xcdVsGE98J4RGkwqExCxvC3tVPBKzXrlNaLr4dSNtn4QagCopPvUiXok3D?=
+ =?us-ascii?Q?/Sfj4PfSIHLmyUCmXRQCucP/A1UJsvL0S1G+9wp9Dy2ANnOHsw7LIcjlPPsJ?=
+ =?us-ascii?Q?Fsyv7x/rII8kirLXzi95nw1LMFjuFQ66VqaNR8KY9UmMTE4O0ffGUkeInlBP?=
+ =?us-ascii?Q?IBU2rVfuPzKtX/3NC/HwE1ITteTfLuevqfXDiepXDPBoELnPfohSqFxXhuwu?=
+ =?us-ascii?Q?aPLku4ii8Fwy2nYd95Os/wtGVs7IvAIKiBuMXxSScHsg3SL2ymJW1Ofclwur?=
+ =?us-ascii?Q?PAgguDQvaaeMd0GFiyNkdPV2HNp8BTwKFZQ0wZowLzk0iS7VYvwZSFrZf8n/?=
+ =?us-ascii?Q?kQz6fs5NF8/Ubvu3fM3bMVLlTjYGVNWtonFFiF+9MmJRCe+4orZ17hlOR21l?=
+ =?us-ascii?Q?EUe2Kr5L/Td569O8BgHwdInfaNm2ZwrPOpOjQmmTwShjv1KfAjIEQah14NKY?=
+ =?us-ascii?Q?fLZukgDHBP8MxLSXf6LO7ZAsZe020kgOI10pN9AlJUqL1O0ABzwLaw96azdC?=
+ =?us-ascii?Q?OFbcGcxdU6CcOvs98JVI07j1Y/9yjvzL3wTdN0w0DeEDxfFfjNta/iPxCuca?=
+ =?us-ascii?Q?PoNAx3iKxVuYmKUfucH/riCK4qgrCG664jRSPZsP5E6OSbVYKkmCnmp1gBYe?=
+ =?us-ascii?Q?EDiU0Mir5dHJcc2ADlIDWHb7AWfVw3XYm9svzBJFLgy9virnS6/3UjvlMNUo?=
+ =?us-ascii?Q?49BMcLKBsZPganYT6Ml/pVBkpUgHGM3M9rfWZ+/qGmqvxqBj024cVg46XhBC?=
+ =?us-ascii?Q?CTMvgNLZIblOtZYoEduSxgMpqpGSaSEXXZzh35X9RqN6p/ALplx0wpM/ER2B?=
+ =?us-ascii?Q?Jifblr5bWtLt+RnwM9UsWMGyJkqA4kapZCHXjYNbeOHZXIHtynN/sp9vHn4e?=
+ =?us-ascii?Q?SeFl5u3fn901Ijp5vbt+NXLrvNXIrsVFHLNjYkMGa8VKI/xPpbmz/Zj68+k8?=
+ =?us-ascii?Q?bCGH9wn8uDost8bxcs8xT3OzYyqecYO5jxuhq010dY96inxDAG1w6SknpKib?=
+ =?us-ascii?Q?UNTDxW+kPPFRROKU95rynythle+xAzo=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 582cf8c8-2be5-485e-a955-08da22a14af9
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR13MB3705.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2022 07:42:17.2895
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: u5s2wWJVLTXCeL+tZ3ymPBPeLw77c3O97ecy3TM9XUKIHernPsX8hZUcY2tL3eJq3iTFHDB3w2D12zHnzfvU4rjCNyo351y49okzmJoxyWw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW5PR13MB5486
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ksz8795 and ksz9477 uses the same algorithm for the
-port_stp_state_set function except the register address is different. So
-moved the algorithm to the ksz_common.c and used the dev_ops for
-register read and write. This function can also used for the lan937x
-part. Hence making it generic for all the parts.
+On Wed, Apr 20, 2022 at 09:12:34AM +0300, Leon Romanovsky wrote:
+> On Wed, Apr 20, 2022 at 09:59:52AM +0800, Yinjun Zhang wrote:
+> > On Wed, Apr 20, 2022 at 12:00:05AM +0200, Andrew Lunn wrote:
+> > > On Tue, Apr 19, 2022 at 06:02:48PM +0800, Yinjun Zhang wrote:
+> > > > Cc: Bjorn Helgaas <bhelgaas@google.com>
+> > > > Cc: linux-pci@vger.kernel.org
+> > > > Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
+> > > > Signed-off-by: Simon Horman <simon.horman@corigine.com>
+> > > > ---
+> > > >  include/linux/pci_ids.h | 2 ++
+> > > 
+> > > The very top of this file says:
+> > > 
+> > >  *      Do not add new entries to this file unless the definitions
+> > >  *      are shared between multiple drivers.
+> > > 
+> > > Please add to the commit messages the two or more drivers which share
+> > > this definition.
+> > 
+> > It will be used by ethernet and infiniband driver as we can see now,
+> > I'll update the commit message if you think it's a good practice.
+> 
+> Are you going to submit completely separated infiniband driver that has
+> PCI logic in drivers/infiniband without connection todrivers/net/ethernet ...?
+> 
+> If yes, it is very uncommon in infiniband world.
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
----
- drivers/net/dsa/microchip/ksz8795.c     | 37 ++++---------------------
- drivers/net/dsa/microchip/ksz8795_reg.h |  3 --
- drivers/net/dsa/microchip/ksz9477.c     | 36 ++++--------------------
- drivers/net/dsa/microchip/ksz9477_reg.h |  4 ---
- drivers/net/dsa/microchip/ksz_common.c  | 37 +++++++++++++++++++++++++
- drivers/net/dsa/microchip/ksz_common.h  |  8 ++++++
- 6 files changed, 55 insertions(+), 70 deletions(-)
+No, we'll follow the convention, the connection with driver/net/ethernet
+is necessary. We've discussed internally that direct ref to VID/DID is not
+a good way.
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index b2752978cb09..0873b668913d 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -1025,42 +1025,14 @@ static void ksz8_cfg_port_member(struct ksz_device *dev, int port, u8 member)
- 	ksz_pwrite8(dev, port, P_MIRROR_CTRL, data);
- }
- 
--static void ksz8_port_stp_state_set(struct dsa_switch *ds, int port, u8 state)
-+static void ksz8_cfg_stp_state(struct ksz_device *dev, int port, u8 val)
- {
--	struct ksz_device *dev = ds->priv;
--	struct ksz_port *p;
- 	u8 data;
- 
- 	ksz_pread8(dev, port, P_STP_CTRL, &data);
- 	data &= ~(PORT_TX_ENABLE | PORT_RX_ENABLE | PORT_LEARN_DISABLE);
--
--	switch (state) {
--	case BR_STATE_DISABLED:
--		data |= PORT_LEARN_DISABLE;
--		break;
--	case BR_STATE_LISTENING:
--		data |= (PORT_RX_ENABLE | PORT_LEARN_DISABLE);
--		break;
--	case BR_STATE_LEARNING:
--		data |= PORT_RX_ENABLE;
--		break;
--	case BR_STATE_FORWARDING:
--		data |= (PORT_TX_ENABLE | PORT_RX_ENABLE);
--		break;
--	case BR_STATE_BLOCKING:
--		data |= PORT_LEARN_DISABLE;
--		break;
--	default:
--		dev_err(ds->dev, "invalid STP state: %d\n", state);
--		return;
--	}
--
-+	data |= val;
- 	ksz_pwrite8(dev, port, P_STP_CTRL, data);
--
--	p = &dev->ports[port];
--	p->stp_state = state;
--
--	ksz_update_port_member(dev, port);
- }
- 
- static void ksz8_flush_dyn_mac_table(struct ksz_device *dev, int port)
-@@ -1385,7 +1357,7 @@ static void ksz8_config_cpu_port(struct dsa_switch *ds)
- 	for (i = 0; i < dev->phy_port_cnt; i++) {
- 		p = &dev->ports[i];
- 
--		ksz8_port_stp_state_set(ds, i, BR_STATE_DISABLED);
-+		ksz_port_stp_state_set(ds, i, BR_STATE_DISABLED);
- 
- 		/* Last port may be disabled. */
- 		if (i == dev->phy_port_cnt)
-@@ -1542,7 +1514,7 @@ static const struct dsa_switch_ops ksz8_switch_ops = {
- 	.get_sset_count		= ksz_sset_count,
- 	.port_bridge_join	= ksz_port_bridge_join,
- 	.port_bridge_leave	= ksz_port_bridge_leave,
--	.port_stp_state_set	= ksz8_port_stp_state_set,
-+	.port_stp_state_set	= ksz_port_stp_state_set,
- 	.port_fast_age		= ksz_port_fast_age,
- 	.port_vlan_filtering	= ksz8_port_vlan_filtering,
- 	.port_vlan_add		= ksz8_port_vlan_add,
-@@ -1761,6 +1733,7 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
- 	.cfg_port_member = ksz8_cfg_port_member,
- 	.flush_dyn_mac_table = ksz8_flush_dyn_mac_table,
- 	.port_setup = ksz8_port_setup,
-+	.cfg_stp_state = ksz8_cfg_stp_state,
- 	.r_phy = ksz8_r_phy,
- 	.w_phy = ksz8_w_phy,
- 	.r_dyn_mac_table = ksz8_r_dyn_mac_table,
-diff --git a/drivers/net/dsa/microchip/ksz8795_reg.h b/drivers/net/dsa/microchip/ksz8795_reg.h
-index d74defcd86b4..4109433b6b6c 100644
---- a/drivers/net/dsa/microchip/ksz8795_reg.h
-+++ b/drivers/net/dsa/microchip/ksz8795_reg.h
-@@ -160,9 +160,6 @@
- #define PORT_DISCARD_NON_VID		BIT(5)
- #define PORT_FORCE_FLOW_CTRL		BIT(4)
- #define PORT_BACK_PRESSURE		BIT(3)
--#define PORT_TX_ENABLE			BIT(2)
--#define PORT_RX_ENABLE			BIT(1)
--#define PORT_LEARN_DISABLE		BIT(0)
- 
- #define REG_PORT_1_CTRL_3		0x13
- #define REG_PORT_2_CTRL_3		0x23
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 8222c8a6c5ec..96248de95749 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -514,41 +514,14 @@ static void ksz9477_cfg_port_member(struct ksz_device *dev, int port,
- 	ksz_pwrite32(dev, port, REG_PORT_VLAN_MEMBERSHIP__4, member);
- }
- 
--static void ksz9477_port_stp_state_set(struct dsa_switch *ds, int port,
--				       u8 state)
-+static void ksz9477_cfg_stp_state(struct ksz_device *dev, int port, u8 val)
- {
--	struct ksz_device *dev = ds->priv;
--	struct ksz_port *p = &dev->ports[port];
- 	u8 data;
- 
- 	ksz_pread8(dev, port, P_STP_CTRL, &data);
- 	data &= ~(PORT_TX_ENABLE | PORT_RX_ENABLE | PORT_LEARN_DISABLE);
--
--	switch (state) {
--	case BR_STATE_DISABLED:
--		data |= PORT_LEARN_DISABLE;
--		break;
--	case BR_STATE_LISTENING:
--		data |= (PORT_RX_ENABLE | PORT_LEARN_DISABLE);
--		break;
--	case BR_STATE_LEARNING:
--		data |= PORT_RX_ENABLE;
--		break;
--	case BR_STATE_FORWARDING:
--		data |= (PORT_TX_ENABLE | PORT_RX_ENABLE);
--		break;
--	case BR_STATE_BLOCKING:
--		data |= PORT_LEARN_DISABLE;
--		break;
--	default:
--		dev_err(ds->dev, "invalid STP state: %d\n", state);
--		return;
--	}
--
-+	data |= val;
- 	ksz_pwrite8(dev, port, P_STP_CTRL, data);
--	p->stp_state = state;
--
--	ksz_update_port_member(dev, port);
- }
- 
- static void ksz9477_flush_dyn_mac_table(struct ksz_device *dev, int port)
-@@ -1404,7 +1377,7 @@ static void ksz9477_config_cpu_port(struct dsa_switch *ds)
- 			continue;
- 		p = &dev->ports[i];
- 
--		ksz9477_port_stp_state_set(ds, i, BR_STATE_DISABLED);
-+		ksz_port_stp_state_set(ds, i, BR_STATE_DISABLED);
- 		p->on = 1;
- 		if (i < dev->phy_port_cnt)
- 			p->phy = 1;
-@@ -1481,7 +1454,7 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
- 	.get_sset_count		= ksz_sset_count,
- 	.port_bridge_join	= ksz_port_bridge_join,
- 	.port_bridge_leave	= ksz_port_bridge_leave,
--	.port_stp_state_set	= ksz9477_port_stp_state_set,
-+	.port_stp_state_set	= ksz_port_stp_state_set,
- 	.port_fast_age		= ksz_port_fast_age,
- 	.port_vlan_filtering	= ksz9477_port_vlan_filtering,
- 	.port_vlan_add		= ksz9477_port_vlan_add,
-@@ -1682,6 +1655,7 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
- 	.cfg_port_member = ksz9477_cfg_port_member,
- 	.flush_dyn_mac_table = ksz9477_flush_dyn_mac_table,
- 	.port_setup = ksz9477_port_setup,
-+	.cfg_stp_state = ksz9477_cfg_stp_state,
- 	.r_mib_cnt = ksz9477_r_mib_cnt,
- 	.r_mib_pkt = ksz9477_r_mib_pkt,
- 	.r_mib_stat64 = ksz9477_r_mib_stats64,
-diff --git a/drivers/net/dsa/microchip/ksz9477_reg.h b/drivers/net/dsa/microchip/ksz9477_reg.h
-index 0bd58467181f..7a2c8d4767af 100644
---- a/drivers/net/dsa/microchip/ksz9477_reg.h
-+++ b/drivers/net/dsa/microchip/ksz9477_reg.h
-@@ -1586,10 +1586,6 @@
- 
- #define REG_PORT_LUE_MSTP_STATE		0x0B04
- 
--#define PORT_TX_ENABLE			BIT(2)
--#define PORT_RX_ENABLE			BIT(1)
--#define PORT_LEARN_DISABLE		BIT(0)
--
- /* C - PTP */
- 
- #define REG_PTP_PORT_RX_DELAY__2	0x0C00
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 8014b18d9391..08e8f09b6bc0 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -372,6 +372,43 @@ int ksz_enable_port(struct dsa_switch *ds, int port, struct phy_device *phy)
- }
- EXPORT_SYMBOL_GPL(ksz_enable_port);
- 
-+void ksz_port_stp_state_set(struct dsa_switch *ds, int port,
-+			    u8 state)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	struct ksz_port *p;
-+	u8 data;
-+
-+	switch (state) {
-+	case BR_STATE_DISABLED:
-+		data = PORT_LEARN_DISABLE;
-+		break;
-+	case BR_STATE_LISTENING:
-+		data = (PORT_RX_ENABLE | PORT_LEARN_DISABLE);
-+		break;
-+	case BR_STATE_LEARNING:
-+		data = PORT_RX_ENABLE;
-+		break;
-+	case BR_STATE_FORWARDING:
-+		data = (PORT_TX_ENABLE | PORT_RX_ENABLE);
-+		break;
-+	case BR_STATE_BLOCKING:
-+		data = PORT_LEARN_DISABLE;
-+		break;
-+	default:
-+		dev_err(ds->dev, "invalid STP state: %d\n", state);
-+		return;
-+	}
-+
-+	dev->dev_ops->cfg_stp_state(dev, port, data);
-+
-+	p = &dev->ports[port];
-+	p->stp_state = state;
-+
-+	ksz_update_port_member(dev, port);
-+}
-+EXPORT_SYMBOL_GPL(ksz_port_stp_state_set);
-+
- struct ksz_device *ksz_switch_alloc(struct device *base, void *priv)
- {
- 	struct dsa_switch *ds;
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 485d4a948c38..360b98c7b0d2 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -119,6 +119,7 @@ struct ksz_dev_ops {
- 	void (*flush_dyn_mac_table)(struct ksz_device *dev, int port);
- 	void (*port_cleanup)(struct ksz_device *dev, int port);
- 	void (*port_setup)(struct ksz_device *dev, int port, bool cpu_port);
-+	void (*cfg_stp_state)(struct ksz_device *dev, int port, u8 state);
- 	void (*r_phy)(struct ksz_device *dev, u16 phy, u16 reg, u16 *val);
- 	void (*w_phy)(struct ksz_device *dev, u16 phy, u16 reg, u16 val);
- 	int (*r_dyn_mac_table)(struct ksz_device *dev, u16 addr, u8 *mac_addr,
-@@ -165,6 +166,8 @@ int ksz_port_bridge_join(struct dsa_switch *ds, int port,
- 			 struct netlink_ext_ack *extack);
- void ksz_port_bridge_leave(struct dsa_switch *ds, int port,
- 			   struct dsa_bridge bridge);
-+void ksz_port_stp_state_set(struct dsa_switch *ds, int port,
-+			    u8 state);
- void ksz_port_fast_age(struct dsa_switch *ds, int port);
- int ksz_port_fdb_dump(struct dsa_switch *ds, int port, dsa_fdb_dump_cb_t *cb,
- 		      void *data);
-@@ -292,6 +295,11 @@ static inline void ksz_regmap_unlock(void *__mtx)
- 	mutex_unlock(mtx);
- }
- 
-+/* STP State Defines */
-+#define PORT_TX_ENABLE			BIT(2)
-+#define PORT_RX_ENABLE			BIT(1)
-+#define PORT_LEARN_DISABLE		BIT(0)
-+
- /* Regmap tables generation */
- #define KSZ_SPI_OP_RD		3
- #define KSZ_SPI_OP_WR		2
+I'll move the VID macro into driver header files for now.
+Also thanks for pointing this out, Andrew. 
 
-base-commit: cc4bdef26ecd56de16a04bc6d99aa10ff9076498
--- 
-2.33.0
+Cc: Bjorn Helgaas
 
+> 
+> I would like to see this PCI patch submitted when it is actually used.
+> 
+> Thanks
+> 
+> > 
+> > > 
+> > > Thanks
+> > > 
+> > >      Andrew
