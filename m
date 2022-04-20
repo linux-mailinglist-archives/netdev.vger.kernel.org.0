@@ -2,135 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDD42507EC9
-	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 04:22:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D9A1507EEE
+	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 04:36:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356849AbiDTCZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 22:25:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52572 "EHLO
+        id S1358990AbiDTCjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 22:39:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241584AbiDTCZT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 22:25:19 -0400
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8589833E8D
-        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 19:22:35 -0700 (PDT)
-Received: from fsav415.sakura.ne.jp (fsav415.sakura.ne.jp [133.242.250.114])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 23K2MDpo016072;
-        Wed, 20 Apr 2022 11:22:13 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav415.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav415.sakura.ne.jp);
- Wed, 20 Apr 2022 11:22:13 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav415.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 23K2MCHW016067
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Wed, 20 Apr 2022 11:22:13 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <0bc6443a-dbac-70ab-bf99-9a439e35f3ef@I-love.SAKURA.ne.jp>
-Date:   Wed, 20 Apr 2022 11:22:10 +0900
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Content-Language: en-US
-To:     Loic Poulain <loic.poulain@linaro.org>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S1358983AbiDTCi7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 22:38:59 -0400
+Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net (zg8tmty1ljiyny4xntqumjca.icoremail.net [165.227.154.27])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 891B8237D7
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 19:36:09 -0700 (PDT)
+Received: from 102.localdomain (unknown [117.28.111.162])
+        by app1 (Coremail) with SMTP id xjNnewBHTwt3cV9inKEAAA--.45S2;
+        Wed, 20 Apr 2022 10:35:37 +0800 (CST)
+From:   Pengcheng Yang <yangpc@wangsu.com>
+To:     Eric Dumazet <edumazet@google.com>,
+        Neal Cardwell <ncardwell@google.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Network Development <netdev@vger.kernel.org>
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Subject: [PATCH] wwan_hwsim: Avoid flush_scheduled_work() usage
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Pengcheng Yang <yangpc@wangsu.com>
+Subject: [PATCH net v3] tcp: ensure to use the most recently sent skb when filling the rate sample
+Date:   Wed, 20 Apr 2022 10:34:41 +0800
+Message-Id: <1650422081-22153-1-git-send-email-yangpc@wangsu.com>
+X-Mailer: git-send-email 1.8.3.1
+X-CM-TRANSID: xjNnewBHTwt3cV9inKEAAA--.45S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxAF1DAw1rAFWUtF1rAF4Utwb_yoW5KFy8pF
+        Wvkr9xWr1kJrWrtrn7t3ykJw1F9ws5Gr1fWFWDuw1YywsxG34xWF1vqryUtay5WFZ2vFWf
+        tw1qgF1Uu3WDWaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvY1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJr0_GcWl84ACjcxK6I8E
+        87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c
+        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_
+        Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwI
+        xGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r4UMxAIw28IcxkI7VAKI48J
+        MxAIw28IcVCjz48v1sIEY20_Xr1UJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c
+        02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_
+        GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7
+        CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v2
+        6r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0J
+        UHWlkUUUUU=
+X-CM-SenderInfo: p1dqw1nf6zt0xjvxhudrp/
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
+        T_SPF_TEMPERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Flushing system-wide workqueues is dangerous and will be forbidden.
-Replace system_wq with local wwan_wq.
+If an ACK (s)acks multiple skbs, we favor the information
+from the most recently sent skb by choosing the skb with
+the highest prior_delivered count. But in the interval
+between receiving ACKs, we send multiple skbs with the same
+prior_delivered, because the tp->delivered only changes
+when we receive an ACK.
 
-Link: https://lkml.kernel.org/r/49925af7-78a8-a3dd-bce6-cfc02e1a9236@I-love.SAKURA.ne.jp
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+We used RACK's solution, copying tcp_rack_sent_after() as
+tcp_skb_sent_after() helper to determine "which packet was
+sent last?". Later, we will use tcp_skb_sent_after() instead
+in RACK.
+
+Fixes: b9f64820fb22 ("tcp: track data delivery rate for a TCP connection")
+Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
+Cc: Neal Cardwell <ncardwell@google.com>
+Cc: Paolo Abeni <pabeni@redhat.com>
 ---
-Note: This patch is only compile tested. By the way, don't you want to call
-debugfs_remove(wwan_hwsim_debugfs_devcreate) at err_clean_devs label in
-wwan_hwsim_init() like wwan_hwsim_exit() does, for debugfs_create_file("devcreate")
-is called before "goto err_clean_devs" happens?
+ include/net/tcp.h   |  6 ++++++
+ net/ipv4/tcp_rate.c | 11 ++++++++---
+ 2 files changed, 14 insertions(+), 3 deletions(-)
 
- drivers/net/wwan/wwan_hwsim.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/wwan/wwan_hwsim.c b/drivers/net/wwan/wwan_hwsim.c
-index 5b62cf3b3c42..2136319f588f 100644
---- a/drivers/net/wwan/wwan_hwsim.c
-+++ b/drivers/net/wwan/wwan_hwsim.c
-@@ -33,6 +33,7 @@ static struct dentry *wwan_hwsim_debugfs_devcreate;
- static DEFINE_SPINLOCK(wwan_hwsim_devs_lock);
- static LIST_HEAD(wwan_hwsim_devs);
- static unsigned int wwan_hwsim_dev_idx;
-+static struct workqueue_struct *wwan_wq;
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 6d50a66..fcd69fc 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -1042,6 +1042,7 @@ struct rate_sample {
+ 	int  losses;		/* number of packets marked lost upon ACK */
+ 	u32  acked_sacked;	/* number of packets newly (S)ACKed upon ACK */
+ 	u32  prior_in_flight;	/* in flight before this ACK */
++	u32  last_end_seq;	/* end_seq of most recently ACKed packet */
+ 	bool is_app_limited;	/* is sample from packet with bubble in pipe? */
+ 	bool is_retrans;	/* is sample from retransmission? */
+ 	bool is_ack_delayed;	/* is this (likely) a delayed ACK? */
+@@ -1158,6 +1159,11 @@ void tcp_rate_gen(struct sock *sk, u32 delivered, u32 lost,
+ 		  bool is_sack_reneg, struct rate_sample *rs);
+ void tcp_rate_check_app_limited(struct sock *sk);
  
- struct wwan_hwsim_dev {
- 	struct list_head list;
-@@ -371,7 +372,7 @@ static ssize_t wwan_hwsim_debugfs_portdestroy_write(struct file *file,
- 	 * waiting this callback to finish in the debugfs_remove() call. So,
- 	 * use workqueue.
- 	 */
--	schedule_work(&port->del_work);
-+	queue_work(wwan_wq, &port->del_work);
- 
- 	return count;
- }
-@@ -416,7 +417,7 @@ static ssize_t wwan_hwsim_debugfs_devdestroy_write(struct file *file,
- 	 * waiting this callback to finish in the debugfs_remove() call. So,
- 	 * use workqueue.
- 	 */
--	schedule_work(&dev->del_work);
-+	queue_work(wwan_wq, &dev->del_work);
- 
- 	return count;
- }
-@@ -506,9 +507,15 @@ static int __init wwan_hwsim_init(void)
- 	if (wwan_hwsim_devsnum < 0 || wwan_hwsim_devsnum > 128)
- 		return -EINVAL;
- 
-+	wwan_wq = alloc_workqueue("wwan_wq", 0, 0);
-+	if (!wwan_wq)
-+		return -ENOMEM;
++static inline bool tcp_skb_sent_after(u64 t1, u64 t2, u32 seq1, u32 seq2)
++{
++	return t1 > t2 || (t1 == t2 && after(seq1, seq2));
++}
 +
- 	wwan_hwsim_class = class_create(THIS_MODULE, "wwan_hwsim");
--	if (IS_ERR(wwan_hwsim_class))
-+	if (IS_ERR(wwan_hwsim_class)) {
-+		destroy_workqueue(wwan_wq);
- 		return PTR_ERR(wwan_hwsim_class);
-+	}
- 
- 	wwan_hwsim_debugfs_topdir = debugfs_create_dir("wwan_hwsim", NULL);
- 	wwan_hwsim_debugfs_devcreate =
-@@ -524,6 +531,7 @@ static int __init wwan_hwsim_init(void)
- 
- err_clean_devs:
- 	wwan_hwsim_free_devs();
-+	destroy_workqueue(wwan_wq);
- 	debugfs_remove(wwan_hwsim_debugfs_topdir);
- 	class_destroy(wwan_hwsim_class);
- 
-@@ -534,7 +542,7 @@ static void __exit wwan_hwsim_exit(void)
+ /* These functions determine how the current flow behaves in respect of SACK
+  * handling. SACK is negotiated with the peer, and therefore it can vary
+  * between different flows.
+diff --git a/net/ipv4/tcp_rate.c b/net/ipv4/tcp_rate.c
+index 617b818..a8f6d9d 100644
+--- a/net/ipv4/tcp_rate.c
++++ b/net/ipv4/tcp_rate.c
+@@ -74,27 +74,32 @@ void tcp_rate_skb_sent(struct sock *sk, struct sk_buff *skb)
+  *
+  * If an ACK (s)acks multiple skbs (e.g., stretched-acks), this function is
+  * called multiple times. We favor the information from the most recently
+- * sent skb, i.e., the skb with the highest prior_delivered count.
++ * sent skb, i.e., the skb with the most recently sent time and the highest
++ * sequence.
+  */
+ void tcp_rate_skb_delivered(struct sock *sk, struct sk_buff *skb,
+ 			    struct rate_sample *rs)
  {
- 	debugfs_remove(wwan_hwsim_debugfs_devcreate);	/* Avoid new devs */
- 	wwan_hwsim_free_devs();
--	flush_scheduled_work();		/* Wait deletion works completion */
-+	destroy_workqueue(wwan_wq);		/* Wait deletion works completion */
- 	debugfs_remove(wwan_hwsim_debugfs_topdir);
- 	class_destroy(wwan_hwsim_class);
- }
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	struct tcp_skb_cb *scb = TCP_SKB_CB(skb);
++	u64 tx_tstamp;
+ 
+ 	if (!scb->tx.delivered_mstamp)
+ 		return;
+ 
++	tx_tstamp = tcp_skb_timestamp_us(skb);
+ 	if (!rs->prior_delivered ||
+-	    after(scb->tx.delivered, rs->prior_delivered)) {
++	    tcp_skb_sent_after(tx_tstamp, tp->first_tx_mstamp,
++			       scb->end_seq, rs->last_end_seq)) {
+ 		rs->prior_delivered_ce  = scb->tx.delivered_ce;
+ 		rs->prior_delivered  = scb->tx.delivered;
+ 		rs->prior_mstamp     = scb->tx.delivered_mstamp;
+ 		rs->is_app_limited   = scb->tx.is_app_limited;
+ 		rs->is_retrans	     = scb->sacked & TCPCB_RETRANS;
++		rs->last_end_seq     = scb->end_seq;
+ 
+ 		/* Record send time of most recently ACKed packet: */
+-		tp->first_tx_mstamp  = tcp_skb_timestamp_us(skb);
++		tp->first_tx_mstamp  = tx_tstamp;
+ 		/* Find the duration of the "send phase" of this window: */
+ 		rs->interval_us = tcp_stamp_us_delta(tp->first_tx_mstamp,
+ 						     scb->tx.first_tx_mstamp);
 -- 
-2.32.0
+1.8.3.1
+
