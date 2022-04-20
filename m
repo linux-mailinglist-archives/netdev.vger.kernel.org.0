@@ -2,59 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE661508DD2
-	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 18:55:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80368508E06
+	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 19:07:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380804AbiDTQ57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Apr 2022 12:57:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45060 "EHLO
+        id S1380891AbiDTRK1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Apr 2022 13:10:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380876AbiDTQ5s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 12:57:48 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D590626D7
-        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 09:55:00 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id 11so3154019edw.0
-        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 09:55:00 -0700 (PDT)
+        with ESMTP id S1380890AbiDTRK0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 13:10:26 -0400
+Received: from mail-vs1-xe2b.google.com (mail-vs1-xe2b.google.com [IPv6:2607:f8b0:4864:20::e2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F899A1AC;
+        Wed, 20 Apr 2022 10:07:39 -0700 (PDT)
+Received: by mail-vs1-xe2b.google.com with SMTP id r1so2130945vsi.12;
+        Wed, 20 Apr 2022 10:07:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=AVhwXWB2m+bXpnKErBOOZwqaaygODehd/Foni28JqcU=;
-        b=eNCMSkbFpTqDKMBZcHRaXP6r8UyecgrRl26r2vmkcFPRlqr+B4/t/KjFVQZ4QpBeR9
-         iHK6TciYi/9+BJ2TrKCGk7awWlBF/DDkPh5LbDGPx0KWt4fTaryvUj3KcbmKZTNygAnk
-         jTYjx9/NXfHVnzfYTQDAnLfzTYf9JeHq3sYtiBh7AWkM5iQLyJpVl2Tmybs0FkOEsSwD
-         k195jZbEban0HCZgwoTAYAWlU8uqf9MT//1t4JhjO5ccz4WSTIn69zVXGUVg0e2Iv44s
-         gpch/M3QHzVCAa4BWOkJkG0OlG1J9cY+sgAUCxsylmLqDtRpQ4qq8n0N1LNPd9eVXBi2
-         JPvQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7wzRThF5HaMonZLDTFgx0pibWyxVIQs6oTZK8LgP7Rk=;
+        b=DIRM9JAA75v6UB8C3NSUnFYtbGPd/6hGhEKGkyI+Qzs60Io3TIPm88HkB1ucaEZpUO
+         tpM93Zbvl4jgUFSDoE4EoTeK/OEylNiGBJXMwM7V+qQDeF1wYJ7OoFK0oty62mH9NDuz
+         nG8q5XHmMEiRTwqLUHGRn/xscX49csCdN5yb2XWU6CJaStkPgBBY2zZj3pc2qa7BmrB2
+         JLhYu1voLabqjhPlEX5dEdbIrCkLwOekaD0SZh1jcGX20ucW3tZGLk8RK8icG4S1lVVz
+         eRKqffFRMSZBeqmHCRtpIQ1PR7Hj4mN8iS96oc8YcGGNnXfRMwsVdtZDZtaSFVIdgCI9
+         L8aQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=AVhwXWB2m+bXpnKErBOOZwqaaygODehd/Foni28JqcU=;
-        b=bosDGc6xcr3/5MC/Ky5z7oY6OY1BaR4E6YpYbALAgxvc78Zq5Cq51/49wBG94ipcF0
-         GVoBy41siLNK+XbbxWMqMSZKHpveIb6QeWw7uyUmrWkBoiPkV5LS5NSw+g1cJJR+l6Na
-         xQGvn16fjfdTqmrFDNawfZdourrnnXNLCTvkic/UOK3j6/vS0ju0NRYtnbZotnj0goDp
-         YjxnoUocqXJ7x+HSOTaQu8DXANQZKWaZ+beD5TN5LC+ZxsnFDboGcOpjiS94rhbe4IjA
-         5gLnMovdZQRDwlxreighRvbWFm/hAVJWOHgixTfvwtEbrExM+fvDAqPReIJV/J8HDJJ2
-         P6jg==
-X-Gm-Message-State: AOAM530R1nYUzzQDwU74u9UdbelCB8w47tsuE/l2FMMaBT9MQaLQaDqy
-        mXaVaEWgW6RSZvc8LtLVGMdZT2t4Ak0=
-X-Google-Smtp-Source: ABdhPJxQ59ECz/PR7dLMYWZUMWDtjGECeKdL3PgWoNsvxlCeZYOVyeAG13MEMPinrdH5nJTtISoKbA==
-X-Received: by 2002:a50:ef03:0:b0:41d:7084:13e8 with SMTP id m3-20020a50ef03000000b0041d708413e8mr24444034eds.54.1650473699263;
-        Wed, 20 Apr 2022 09:54:59 -0700 (PDT)
-Received: from skbuf ([188.26.185.183])
-        by smtp.gmail.com with ESMTPSA id fy29-20020a1709069f1d00b006e8d248fc2csm6690019ejc.108.2022.04.20.09.54.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 09:54:58 -0700 (PDT)
-Date:   Wed, 20 Apr 2022 19:54:57 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: IPv6 multicast with VRF
-Message-ID: <20220420165457.kd5yz6a6itqfcysj@skbuf>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7wzRThF5HaMonZLDTFgx0pibWyxVIQs6oTZK8LgP7Rk=;
+        b=HXCEvX3FfW/eRPlZmFcjejoV1b/es2/JRqNpGWTF1JYVBlyhZ8swpIf6NJYFAI2xbF
+         6kNvgB/5+lG4RLWMm6LFmd9iUEACFtg9hUC9921RZar9YhWEWSCERzJVbkiTNsnNwPlx
+         Rix2cPsSjOQflM65Ia5comUobDE+VqvXU++QTD7w6Aduq6UBFviyv1NPFcvDe7ViII1B
+         ZD79ihfksAnLJ6aOe2vAvzOpemDGlzS9EqvweFKzRon07HDGSVTVXdgkAw1p0v3Au49T
+         SrLV7CpGouCKrQ398mB7ym+ihf4YOx5U/6J383RbMJjegi2B4/Rjtpotqg1cfQTIGZEQ
+         Md9g==
+X-Gm-Message-State: AOAM531aL6sbeLMBdh7Qu20UATMaDQSnZQ3aLEHzxfdtTpTg83PXXPJb
+        ut1auZx7LYaKa5jYNwb4zaJAXHlmuODTi+Xt2dE=
+X-Google-Smtp-Source: ABdhPJwosYeXjdDFdfe3eeuiuX8GCcuD9bNGCVWpuxBZPWoXVPR9lp6Cb9JSRQa3umfSF+agDr9O5WRgsMqQGbAUo80=
+X-Received: by 2002:a67:f80b:0:b0:32a:17d6:7fb2 with SMTP id
+ l11-20020a67f80b000000b0032a17d67fb2mr6249988vso.40.1650474458618; Wed, 20
+ Apr 2022 10:07:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <CAEf4BzbiVeQfhxEu908w2mU4d8+5kKeMknuvhzCXuxM9pJ1jmQ@mail.gmail.com>
+ <20220415141355.4329-1-tadeusz.struk@linaro.org>
+In-Reply-To: <20220415141355.4329-1-tadeusz.struk@linaro.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 20 Apr 2022 10:07:27 -0700
+Message-ID: <CAEf4Bzah9K7dEa_7sXE4TnkuMTRHypMU9DxiLezgRvLjcqE_YA@mail.gmail.com>
+Subject: Re: [PATCH v2] bpf: Fix KASAN use-after-free Read in compute_effective_progs
+To:     Tadeusz Struk <tadeusz.struk@linaro.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        linux- stable <stable@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -65,55 +75,152 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Fri, Apr 15, 2022 at 7:14 AM Tadeusz Struk <tadeusz.struk@linaro.org> wrote:
+>
+> Syzbot found a Use After Free bug in compute_effective_progs().
+> The reproducer creates a number of BPF links, and causes a fault
+> injected alloc to fail, while calling bpf_link_detach on them.
+> Link detach triggers the link to be freed by bpf_link_free(),
+> which calls __cgroup_bpf_detach() and update_effective_progs().
+> If the memory allocation in this function fails, the function restores
+> the pointer to the bpf_cgroup_link on the cgroup list, but the memory
+> gets freed just after it returns. After this, every subsequent call to
+> update_effective_progs() causes this already deallocated pointer to be
+> dereferenced in prog_list_length(), and triggers KASAN UAF error.
+>
+> To fix this issue don't preserve the pointer to the prog or link in the
+> list, but remove it and rearrange the effective table without
+> shrinking it. The subsequent call to __cgroup_bpf_detach() or
+> __cgroup_bpf_detach() will correct it.
+>
+> Cc: "Alexei Starovoitov" <ast@kernel.org>
+> Cc: "Daniel Borkmann" <daniel@iogearbox.net>
+> Cc: "Andrii Nakryiko" <andrii@kernel.org>
+> Cc: "Martin KaFai Lau" <kafai@fb.com>
+> Cc: "Song Liu" <songliubraving@fb.com>
+> Cc: "Yonghong Song" <yhs@fb.com>
+> Cc: "John Fastabend" <john.fastabend@gmail.com>
+> Cc: "KP Singh" <kpsingh@kernel.org>
+> Cc: <netdev@vger.kernel.org>
+> Cc: <bpf@vger.kernel.org>
+> Cc: <stable@vger.kernel.org>
+> Cc: <linux-kernel@vger.kernel.org>
+>
+> Link: https://syzkaller.appspot.com/bug?id=8ebf179a95c2a2670f7cf1ba62429ec044369db4
+> Fixes: af6eea57437a ("bpf: Implement bpf_link-based cgroup BPF program attachment")
+> Reported-by: <syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com>
+> Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+> ---
+> v2: Add a fall back path that removes a prog from the effective progs
+>     table in case detach fails to allocate memory in compute_effective_progs().
+> ---
+>  kernel/bpf/cgroup.c | 55 +++++++++++++++++++++++++++++++++++++++------
+>  1 file changed, 48 insertions(+), 7 deletions(-)
+>
+> diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+> index 128028efda64..5a64cece09f3 100644
+> --- a/kernel/bpf/cgroup.c
+> +++ b/kernel/bpf/cgroup.c
+> @@ -723,10 +723,8 @@ static int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
+>         pl->link = NULL;
+>
+>         err = update_effective_progs(cgrp, atype);
+> -       if (err)
+> -               goto cleanup;
+>
+> -       /* now can actually delete it from this cgroup list */
+> +       /* now can delete it from this cgroup list */
+>         list_del(&pl->node);
+>         kfree(pl);
+>         if (list_empty(progs))
+> @@ -735,12 +733,55 @@ static int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
+>         if (old_prog)
+>                 bpf_prog_put(old_prog);
+>         static_branch_dec(&cgroup_bpf_enabled_key[atype]);
+> -       return 0;
+> +
+> +       if (!err)
+> +               return 0;
+>
+>  cleanup:
+> -       /* restore back prog or link */
+> -       pl->prog = old_prog;
+> -       pl->link = link;
+> +       /*
+> +        * If compute_effective_progs failed with -ENOMEM, i.e. alloc for
+> +        * cgrp->bpf.inactive table failed, we can recover by removing
+> +        * the detached prog from effective table and rearranging it.
+> +        */
+> +       if (err == -ENOMEM) {
+> +               struct bpf_prog_array_item *item;
+> +               struct bpf_prog *prog_tmp, *prog_detach, *prog_last;
+> +               struct bpf_prog_array *array;
+> +               int index = 0, index_detach = -1;
+> +
+> +               array = cgrp->bpf.effective[atype];
+> +               item = &array->items[0];
+> +
+> +               if (prog)
+> +                       prog_detach = prog;
+> +               else
+> +                       prog_detach = link->link.prog;
+> +
+> +               if (!prog_detach)
+> +                       return -EINVAL;
+> +
+> +               while ((prog_tmp = READ_ONCE(item->prog))) {
+> +                       if (prog_tmp == prog_detach)
+> +                               index_detach = index;
+> +                       item++;
+> +                       index++;
+> +                       prog_last = prog_tmp;
+> +               }
+> +
+> +               /* Check if we found what's needed for removing the prog */
+> +               if (index_detach == -1 || index_detach == index-1)
+> +                       return -EINVAL;
+> +
+> +               /* Remove the last program in the array */
+> +               if (bpf_prog_array_delete_safe_at(array, index-1))
+> +                       return -EINVAL;
+> +
+> +               /* and update the detached with the last just removed */
+> +               if (bpf_prog_array_update_at(array, index_detach, prog_last))
+> +                       return -EINVAL;
+> +
+> +               err = 0;
+> +       }
 
-I don't have experience with either IPv6 multicast or VRF, yet I need to
-send some IPv6 multicast packets from a device enslaved to a VRF, and I
-don't really know what's wrong with the routing table setup.
+There are a bunch of problems with this implementation.
 
-The system is configured in the following way:
+1. We should do this fallback right after update_effective_progs()
+returns error, before we get to list_del(&pl->node) and subsequent
+code that does some additional things (like clearing flags and stuff).
+This additional code needs to run even if update_effective_progs()
+fails. So I suggest to extract the logic of removing program from
+effective prog arrays into a helper function and doing
 
- ip link set dev eth0 up
+err = update_effective_progs(...);
+if (err)
+    purge_effective_progs();
 
- # The kernel kindly creates a ff00::/8 route for IPv6 multicast traffic
- # in the local table, and I think this is what makes multicast route
- # lookups find the egress device.
- ip -6 route show table local
-local ::1 dev lo proto kernel metric 0 pref medium
-local fe80::204:9fff:fe05:f4ab dev eth0 proto kernel metric 0 pref medium
-multicast ff00::/8 dev eth0 proto kernel metric 256 pref medium
+where purge_effective_progs() will be the logic you are adding. And it
+will be void function because it can't fail.
 
- ip -6 route get ff02::1
-multicast ff02::1 dev eth0 table local proto kernel src fe80::204:9fff:fe05:f4ab metric 256 pref medium
+2. We have to update not just cgrp->bpf.effective array, but all the
+descendants' lists as well. See what update_effective_progs() is
+doing, it has css_for_each_descendant_pre() iteration. You need to do
+it here as well. But instead of doing compute_effective_progs() which
+allocates a new copy of an array we'll need to update existing array
+in place.
 
- ip link add dev vrf0 type vrf table 3 && ip link set dev vrf0 up
+3. Not clear why you need to do both bpf_prog_array_delete_safe_at()
+and bpf_prog_array_update_at(), isn't delete_safe_at() enought?
 
- ip -4 route add table 3 unreachable default metric 4278198272
 
- ip -6 route add table 3 unreachable default metric 4278198272
-
- ip link set dev eth0 master vrf0
-
-The problem seems to be that, although the "ff00::/8 dev eth0" route
-migrates from table 255 to table 3, route lookups after this point fail
-to find it and return -ENETUNREACH (ip6_null_entry).
-
- ip -6 route show table local
-local ::1 dev lo proto kernel metric 0 pref medium
-
- ip -6 route show table main
-::1 dev lo proto kernel metric 256 pref medium
-
- ip -6 route show table 3
-local fe80::204:9fff:fe05:f4ab dev eth0 proto kernel metric 0 pref medium
-fe80::/64 dev eth0 proto kernel metric 256 pref medium
-multicast ff00::/8 dev eth0 proto kernel metric 256 pref medium
-unreachable default dev lo metric 4278198272 pref medium
-
- ip -6 route get ff02::1
-RTNETLINK answers: Network is unreachable
-
- ip -6 route get vrf vrf0 ff02::1
-RTNETLINK answers: Network is unreachable
-
-I'm not exactly sure what is missing?
+>         return err;
+>  }
+>
+> --
+> 2.35.1
+>
