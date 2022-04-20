@@ -2,68 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E4D3509389
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 01:21:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AE0E50938C
+	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 01:21:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383154AbiDTXY3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Apr 2022 19:24:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59864 "EHLO
+        id S1383164AbiDTXYh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Apr 2022 19:24:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232806AbiDTXY1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 19:24:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 36F291B7B6
-        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 16:21:40 -0700 (PDT)
+        with ESMTP id S232806AbiDTXYb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 19:24:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3AA4D1B7B6
+        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 16:21:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650496899;
+        s=mimecast20190719; t=1650496903;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=k5L7j2fJ+L907oBgkd9l6h6lJ3Ziohgmrwe/AW3irxA=;
-        b=YA7agoqPgEjKRrqxm6a1m0Ocd94xXT3PUHn0s6ML8qp/K7QlBVuWe7wy2uccrl6WdwTq/r
-        bLJAXttKyTmxkXQJ/yT9YNMJWeYhBkM7gRlXzrJnDstAN0oQhglMC8l38ARqm3eEtaPqER
-        hFQEDIgHWj5RiUfiJz4cDYyDq774w2w=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=5JKI0IEkS5l0w87wfQkP90Czk2fyxaoY1z6ZxZgHPTk=;
+        b=H4X0ElQEm3n2XmKTxsLsU61PcZFkaTUJ3/xz19aj0wWFYzXyTkbU4VMudhqEYJj5CFG0SK
+        aJUtSAEXQdxGCy0FRTCbG0mGROU3WbabVzCnT6nVB5VBQ/Se5uhvVflXwAVyhgT/yR6yz6
+        BDN9XK8IrD56Q0ykkm2rAtc8YFlINAg=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-45-4-TpeIIWNi-lyCm_PYNXQQ-1; Wed, 20 Apr 2022 19:21:38 -0400
-X-MC-Unique: 4-TpeIIWNi-lyCm_PYNXQQ-1
-Received: by mail-wm1-f70.google.com with SMTP id q6-20020a1cf306000000b0038c5726365aso1637249wmq.3
-        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 16:21:38 -0700 (PDT)
+ us-mta-60-KB2z5MVqPouUYDLaAY7Zpw-1; Wed, 20 Apr 2022 19:21:41 -0400
+X-MC-Unique: KB2z5MVqPouUYDLaAY7Zpw-1
+Received: by mail-wm1-f72.google.com with SMTP id n4-20020a1ca404000000b00392b49c7ae3so118082wme.3
+        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 16:21:41 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=k5L7j2fJ+L907oBgkd9l6h6lJ3Ziohgmrwe/AW3irxA=;
-        b=JMICWVtv6mrlbcI1T/3F4oSzStCuhAVmG2jrZYGjP9o4nkC5k5TKbCjZEKXQNWqK3f
-         h3qojCaz1EBeeeDs5MaEpBhw00zLBrv7TXkemXD+yF94zKGOI68qizeCZkQcNvoPKQ7b
-         SoFfmUjt3cELdELjt5yAqFkWUzrBiVEY/OWPixta52W3180wR1+AsWJ4Iqo2ZLDxZnjw
-         p0L2ZIDiTh9myeJ5ilBtsTN7dkFmdx+73qIliaWZ5oXSx/C+t8f85irGc1LIaaLi9KmK
-         l79KCDl6enqdioeMwQlSiL6NlIvwkcPnJCQEUjNvEGOSYVN6CXCVgzLBXcQUVgSEq6Mt
-         VcAg==
-X-Gm-Message-State: AOAM530cGFOc0N0UT2igyr6uTXeOy0uXfTIrq73rvZ0Iy7n8cgL5CWMl
-        MJQGd1H+l7ePX3a/F7SfOdrTszq8rtUE2dCrCUpRrM5CzqUt/K6oWsfvNlG7Q4EQ4FZZdYrQGZk
-        nFidTKdNIzU4VSBKf
-X-Received: by 2002:a05:6000:18cb:b0:207:8c65:3fd4 with SMTP id w11-20020a05600018cb00b002078c653fd4mr17250694wrq.131.1650496896543;
-        Wed, 20 Apr 2022 16:21:36 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwnqRGxW7K+/DGxqy5HuA6ehIaLHbq5paltJgXKymrarYvf0AEhxe1WC5bFKgjT1WvSm37tfQ==
-X-Received: by 2002:a05:6000:18cb:b0:207:8c65:3fd4 with SMTP id w11-20020a05600018cb00b002078c653fd4mr17250682wrq.131.1650496896320;
-        Wed, 20 Apr 2022 16:21:36 -0700 (PDT)
+        bh=5JKI0IEkS5l0w87wfQkP90Czk2fyxaoY1z6ZxZgHPTk=;
+        b=kSf+C0E+fvr6Y+exHENEcSWP3ViQm+Es+hqM8yFPpHhnqbGYAPvr3Gbp6Rgg74vEo2
+         uTzMO8Bae3v07xmGRMUPI7zLb4KcKJvhjTk+CFpEc5p21YufbszxKIWHKtUjNnFUaZqS
+         sM93VXMiFSWY9/kwQlL7kB7nnZQ/UGKqJj3NEM/MYWv3IcTHurocqnAAAjJ5oJmp4kJj
+         aAXCxQS9p08zL1vN6RNmIk2An08jDcmwS3V/QfN7a6Hq3qO9/8X52f40Y8/BboXqg+vN
+         Y53JR3cLMHQFfhpd19gaH1AaC2wv/JHpYNIlO07IYj7nuglFU06mxMD6ucIxLpYiKia5
+         YCwA==
+X-Gm-Message-State: AOAM5325ZRLgXoznKc1I4Wi/KfVD5AIrnZvkKdN9y/5ND8wBsbDwkZGF
+        nTSpChUVnY6VoB9/8dYcrOU9nHsLd3MpCw1Gwchv7/BDGEpuAfzoKfKnHbCRl3FyWKQ5PuG5xVd
+        XbWkH7cV4D/FpSkk4
+X-Received: by 2002:a7b:c201:0:b0:38f:f7f5:f6db with SMTP id x1-20020a7bc201000000b0038ff7f5f6dbmr5724058wmi.191.1650496900566;
+        Wed, 20 Apr 2022 16:21:40 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzlMkx5P8NxGaq2mJxf9J09MPWikDHTdr520GZ7cegpVWFw25Y9w9DS/2oH2vkWtiWHuIdKUw==
+X-Received: by 2002:a7b:c201:0:b0:38f:f7f5:f6db with SMTP id x1-20020a7bc201000000b0038ff7f5f6dbmr5724046wmi.191.1650496900380;
+        Wed, 20 Apr 2022 16:21:40 -0700 (PDT)
 Received: from debian.home (2a01cb058d3818005c1e4a7b0f47339f.ipv6.abo.wanadoo.fr. [2a01:cb05:8d38:1800:5c1e:4a7b:f47:339f])
-        by smtp.gmail.com with ESMTPSA id h206-20020a1c21d7000000b003925bfba0e3sm585205wmh.25.2022.04.20.16.21.35
+        by smtp.gmail.com with ESMTPSA id v11-20020a056000144b00b0020a9c02f60dsm841171wrx.50.2022.04.20.16.21.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 16:21:36 -0700 (PDT)
-Date:   Thu, 21 Apr 2022 01:21:33 +0200
+        Wed, 20 Apr 2022 16:21:40 -0700 (PDT)
+Date:   Thu, 21 Apr 2022 01:21:37 +0200
 From:   Guillaume Nault <gnault@redhat.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     netdev@vger.kernel.org,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, dccp@vger.kernel.org
-Subject: [PATCH net-next 2/3] ipv4: Avoid using RTO_ONLINK with
- ip_route_connect().
-Message-ID: <492f91626cab774d7dda27147629c3d56537f847.1650470610.git.gnault@redhat.com>
+        David Ahern <dsahern@kernel.org>
+Subject: [PATCH net-next 3/3] ipv4: Initialise ->flowi4_scope properly in
+ ICMP handlers.
+Message-ID: <3aabf0b36042c11bc97343f899563cef2b9288e5.1650470610.git.gnault@redhat.com>
 References: <cover.1650470610.git.gnault@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -71,194 +71,162 @@ Content-Disposition: inline
 In-Reply-To: <cover.1650470610.git.gnault@redhat.com>
 X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that ip_rt_fix_tos() doesn't reset ->flowi4_scope unconditionally,
-we don't have to rely on the RTO_ONLINK bit to properly set the scope
-of a flowi4 structure. We can just set ->flowi4_scope explicitly and
-avoid using RTO_ONLINK in ->flowi4_tos.
+All the *_redirect() and *_update_pmtu() functions initialise their
+struct flowi4 variable with either __build_flow_key() or
+build_sk_flow_key(). When sk is provided, these functions use
+RT_CONN_FLAGS() to set ->flowi4_tos and always use RT_SCOPE_UNIVERSE
+for ->flowi4_scope. Then they rely on ip_rt_fix_tos() to adjust the
+scope based on the RTO_ONLINK bit and to mask the tos with
+IPTOS_RT_MASK.
 
-This patch converts callers of ip_route_connect(). Instead of setting
-the tos parameter with RT_CONN_FLAGS(sk), as all callers do, we can:
+This patch modifies __build_flow_key() and build_sk_flow_key() to
+properly initialise ->flowi4_tos and ->flowi4_scope, so that the
+ICMP redirects and PMTU handlers don't need an extra call to
+ip_rt_fix_tos() before doing a fib lookup. That is, we:
 
-  1- Drop the tos parameter from ip_route_connect(): its value was
-     entirely based on sk, which is also passed as parameter.
+  * Drop RT_CONN_FLAGS(): use ip_sock_rt_tos() and ip_sock_rt_scope()
+    instead, so that we don't have to rely on ip_rt_fix_tos() to adjust
+    the scope anymore.
 
-  2- Set ->flowi4_scope depending on the SOCK_LOCALROUTE socket option
-     instead of always initialising it with RT_SCOPE_UNIVERSE (let's
-     define ip_sock_rt_scope() for this purpose).
+  * Apply IPTOS_RT_MASK to the tos, so that we don't need
+    ip_rt_fix_tos() to do it for us.
 
-  3- Avoid overloading ->flowi4_tos with RTO_ONLINK: since the scope is
-     now properly initialised, we don't need to tell ip_rt_fix_tos() to
-     adjust ->flowi4_scope for us. So let's define ip_sock_rt_tos(),
-     which is the same as RT_CONN_FLAGS() but without the RTO_ONLINK
-     bit overload.
+  * Drop the ip_rt_fix_tos() calls that now become useless.
+
+The only remaining ip_rt_fix_tos() caller is ip_route_output_key_hash()
+which needs it as long as external callers still use the RTO_ONLINK
+flag.
 
 Note:
-  In the original ip_route_connect() code, __ip_route_output_key()
-  might clear the RTO_ONLINK bit of fl4->flowi4_tos (because of
-  ip_rt_fix_tos()). Therefore flowi4_update_output() had to reuse the
-  original tos variable. Now that we don't set RTO_ONLINK any more,
-  this is not a problem and we can use fl4->flowi4_tos in
-  flowi4_update_output().
+  This patch also drops some useless RT_TOS() calls as IPTOS_RT_MASK is
+  a stronger mask.
 
 Signed-off-by: Guillaume Nault <gnault@redhat.com>
 ---
- include/net/route.h | 36 ++++++++++++++++++++++++------------
- net/dccp/ipv4.c     |  5 ++---
- net/ipv4/af_inet.c  |  6 +++---
- net/ipv4/datagram.c |  7 +++----
- net/ipv4/tcp_ipv4.c |  5 ++---
- 5 files changed, 34 insertions(+), 25 deletions(-)
+ net/ipv4/route.c | 37 +++++++++++++++++--------------------
+ 1 file changed, 17 insertions(+), 20 deletions(-)
 
-diff --git a/include/net/route.h b/include/net/route.h
-index 25404fc2b483..991a3985712d 100644
---- a/include/net/route.h
-+++ b/include/net/route.h
-@@ -43,6 +43,19 @@
- #define RT_CONN_FLAGS(sk)   (RT_TOS(inet_sk(sk)->tos) | sock_flag(sk, SOCK_LOCALROUTE))
- #define RT_CONN_FLAGS_TOS(sk,tos)   (RT_TOS(tos) | sock_flag(sk, SOCK_LOCALROUTE))
- 
-+static inline __u8 ip_sock_rt_scope(const struct sock *sk)
-+{
-+	if (sock_flag(sk, SOCK_LOCALROUTE))
-+		return RT_SCOPE_LINK;
-+
-+	return RT_SCOPE_UNIVERSE;
-+}
-+
-+static inline __u8 ip_sock_rt_tos(const struct sock *sk)
-+{
-+	return RT_TOS(inet_sk(sk)->tos);
-+}
-+
- struct ip_tunnel_info;
- struct fib_nh;
- struct fib_info;
-@@ -289,39 +302,38 @@ static inline char rt_tos2priority(u8 tos)
-  * ip_route_newports() calls.
-  */
- 
--static inline void ip_route_connect_init(struct flowi4 *fl4, __be32 dst, __be32 src,
--					 u32 tos, int oif, u8 protocol,
-+static inline void ip_route_connect_init(struct flowi4 *fl4, __be32 dst,
-+					 __be32 src, int oif, u8 protocol,
- 					 __be16 sport, __be16 dport,
--					 struct sock *sk)
-+					 const struct sock *sk)
- {
- 	__u8 flow_flags = 0;
- 
- 	if (inet_sk(sk)->transparent)
- 		flow_flags |= FLOWI_FLAG_ANYSRC;
- 
--	flowi4_init_output(fl4, oif, sk->sk_mark, tos, RT_SCOPE_UNIVERSE,
--			   protocol, flow_flags, dst, src, dport, sport,
--			   sk->sk_uid);
-+	flowi4_init_output(fl4, oif, sk->sk_mark, ip_sock_rt_tos(sk),
-+			   ip_sock_rt_scope(sk), protocol, flow_flags, dst,
-+			   src, dport, sport, sk->sk_uid);
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index d8f82c0ac132..ffbe2e4f8c89 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -508,23 +508,24 @@ static void ip_rt_fix_tos(struct flowi4 *fl4)
  }
  
--static inline struct rtable *ip_route_connect(struct flowi4 *fl4,
--					      __be32 dst, __be32 src, u32 tos,
--					      int oif, u8 protocol,
-+static inline struct rtable *ip_route_connect(struct flowi4 *fl4, __be32 dst,
-+					      __be32 src, int oif, u8 protocol,
- 					      __be16 sport, __be16 dport,
- 					      struct sock *sk)
+ static void __build_flow_key(const struct net *net, struct flowi4 *fl4,
+-			     const struct sock *sk,
+-			     const struct iphdr *iph,
+-			     int oif, u8 tos,
+-			     u8 prot, u32 mark, int flow_flags)
++			     const struct sock *sk, const struct iphdr *iph,
++			     int oif, __u8 tos, u8 prot, u32 mark,
++			     int flow_flags)
  {
- 	struct net *net = sock_net(sk);
++	__u8 scope = RT_SCOPE_UNIVERSE;
++
+ 	if (sk) {
+ 		const struct inet_sock *inet = inet_sk(sk);
+ 
+ 		oif = sk->sk_bound_dev_if;
+ 		mark = sk->sk_mark;
+-		tos = RT_CONN_FLAGS(sk);
++		tos = ip_sock_rt_tos(sk);
++		scope = ip_sock_rt_scope(sk);
+ 		prot = inet->hdrincl ? IPPROTO_RAW : sk->sk_protocol;
+ 	}
+-	flowi4_init_output(fl4, oif, mark, tos,
+-			   RT_SCOPE_UNIVERSE, prot,
+-			   flow_flags,
+-			   iph->daddr, iph->saddr, 0, 0,
++
++	flowi4_init_output(fl4, oif, mark, tos & IPTOS_RT_MASK, scope,
++			   prot, flow_flags, iph->daddr, iph->saddr, 0, 0,
+ 			   sock_net_uid(net, sk));
+ }
+ 
+@@ -534,9 +535,9 @@ static void build_skb_flow_key(struct flowi4 *fl4, const struct sk_buff *skb,
+ 	const struct net *net = dev_net(skb->dev);
+ 	const struct iphdr *iph = ip_hdr(skb);
+ 	int oif = skb->dev->ifindex;
+-	u8 tos = RT_TOS(iph->tos);
+ 	u8 prot = iph->protocol;
+ 	u32 mark = skb->mark;
++	__u8 tos = iph->tos;
+ 
+ 	__build_flow_key(net, fl4, sk, iph, oif, tos, prot, mark, 0);
+ }
+@@ -552,7 +553,8 @@ static void build_sk_flow_key(struct flowi4 *fl4, const struct sock *sk)
+ 	if (inet_opt && inet_opt->opt.srr)
+ 		daddr = inet_opt->opt.faddr;
+ 	flowi4_init_output(fl4, sk->sk_bound_dev_if, sk->sk_mark,
+-			   RT_CONN_FLAGS(sk), RT_SCOPE_UNIVERSE,
++			   ip_sock_rt_tos(sk) & IPTOS_RT_MASK,
++			   ip_sock_rt_scope(sk),
+ 			   inet->hdrincl ? IPPROTO_RAW : sk->sk_protocol,
+ 			   inet_sk_flowi_flags(sk),
+ 			   daddr, inet->inet_saddr, 0, 0, sk->sk_uid);
+@@ -825,14 +827,13 @@ static void ip_do_redirect(struct dst_entry *dst, struct sock *sk, struct sk_buf
+ 	const struct iphdr *iph = (const struct iphdr *) skb->data;
+ 	struct net *net = dev_net(skb->dev);
+ 	int oif = skb->dev->ifindex;
+-	u8 tos = RT_TOS(iph->tos);
+ 	u8 prot = iph->protocol;
+ 	u32 mark = skb->mark;
++	__u8 tos = iph->tos;
+ 
+ 	rt = (struct rtable *) dst;
+ 
+ 	__build_flow_key(net, &fl4, sk, iph, oif, tos, prot, mark, 0);
+-	ip_rt_fix_tos(&fl4);
+ 	__ip_do_redirect(rt, skb, &fl4, true);
+ }
+ 
+@@ -1061,7 +1062,6 @@ static void ip_rt_update_pmtu(struct dst_entry *dst, struct sock *sk,
+ 	struct flowi4 fl4;
+ 
+ 	ip_rt_build_flow_key(&fl4, sk, skb);
+-	ip_rt_fix_tos(&fl4);
+ 
+ 	/* Don't make lookup fail for bridged encapsulations */
+ 	if (skb && netif_is_any_bridge_port(skb->dev))
+@@ -1078,8 +1078,8 @@ void ipv4_update_pmtu(struct sk_buff *skb, struct net *net, u32 mtu,
+ 	struct rtable *rt;
+ 	u32 mark = IP4_REPLY_MARK(net, skb->mark);
+ 
+-	__build_flow_key(net, &fl4, NULL, iph, oif,
+-			 RT_TOS(iph->tos), protocol, mark, 0);
++	__build_flow_key(net, &fl4, NULL, iph, oif, iph->tos, protocol, mark,
++			 0);
+ 	rt = __ip_route_output_key(net, &fl4);
+ 	if (!IS_ERR(rt)) {
+ 		__ip_rt_update_pmtu(rt, &fl4, mtu);
+@@ -1136,8 +1136,6 @@ void ipv4_sk_update_pmtu(struct sk_buff *skb, struct sock *sk, u32 mtu)
+ 			goto out;
+ 
+ 		new = true;
+-	} else {
+-		ip_rt_fix_tos(&fl4);
+ 	}
+ 
+ 	__ip_rt_update_pmtu((struct rtable *)xfrm_dst_path(&rt->dst), &fl4, mtu);
+@@ -1169,8 +1167,7 @@ void ipv4_redirect(struct sk_buff *skb, struct net *net,
+ 	struct flowi4 fl4;
  	struct rtable *rt;
  
--	ip_route_connect_init(fl4, dst, src, tos, oif, protocol,
--			      sport, dport, sk);
-+	ip_route_connect_init(fl4, dst, src, oif, protocol, sport, dport, sk);
- 
- 	if (!dst || !src) {
- 		rt = __ip_route_output_key(net, fl4);
- 		if (IS_ERR(rt))
- 			return rt;
- 		ip_rt_put(rt);
--		flowi4_update_output(fl4, oif, tos, fl4->daddr, fl4->saddr);
-+		flowi4_update_output(fl4, oif, fl4->flowi4_tos, fl4->daddr,
-+				     fl4->saddr);
- 	}
- 	security_sk_classify_flow(sk, flowi4_to_flowi_common(fl4));
- 	return ip_route_output_flow(net, fl4, sk);
-diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
-index ae662567a6cb..82696ab86f74 100644
---- a/net/dccp/ipv4.c
-+++ b/net/dccp/ipv4.c
-@@ -76,9 +76,8 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
- 	orig_dport = usin->sin_port;
- 	fl4 = &inet->cork.fl.u.ip4;
- 	rt = ip_route_connect(fl4, nexthop, inet->inet_saddr,
--			      RT_CONN_FLAGS(sk), sk->sk_bound_dev_if,
--			      IPPROTO_DCCP,
--			      orig_sport, orig_dport, sk);
-+			      sk->sk_bound_dev_if, IPPROTO_DCCP, orig_sport,
-+			      orig_dport, sk);
- 	if (IS_ERR(rt))
- 		return PTR_ERR(rt);
- 
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index 195ecfa2f000..93da9f783bec 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -1233,9 +1233,9 @@ static int inet_sk_reselect_saddr(struct sock *sk)
- 
- 	/* Query new route. */
- 	fl4 = &inet->cork.fl.u.ip4;
--	rt = ip_route_connect(fl4, daddr, 0, RT_CONN_FLAGS(sk),
--			      sk->sk_bound_dev_if, sk->sk_protocol,
--			      inet->inet_sport, inet->inet_dport, sk);
-+	rt = ip_route_connect(fl4, daddr, 0, sk->sk_bound_dev_if,
-+			      sk->sk_protocol, inet->inet_sport,
-+			      inet->inet_dport, sk);
- 	if (IS_ERR(rt))
- 		return PTR_ERR(rt);
- 
-diff --git a/net/ipv4/datagram.c b/net/ipv4/datagram.c
-index 48f337ccf949..ffd57523331f 100644
---- a/net/ipv4/datagram.c
-+++ b/net/ipv4/datagram.c
-@@ -44,10 +44,9 @@ int __ip4_datagram_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len
- 			saddr = inet->mc_addr;
- 	}
- 	fl4 = &inet->cork.fl.u.ip4;
--	rt = ip_route_connect(fl4, usin->sin_addr.s_addr, saddr,
--			      RT_CONN_FLAGS(sk), oif,
--			      sk->sk_protocol,
--			      inet->inet_sport, usin->sin_port, sk);
-+	rt = ip_route_connect(fl4, usin->sin_addr.s_addr, saddr, oif,
-+			      sk->sk_protocol, inet->inet_sport,
-+			      usin->sin_port, sk);
- 	if (IS_ERR(rt)) {
- 		err = PTR_ERR(rt);
- 		if (err == -ENETUNREACH)
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 157265aecbed..2c2d42142555 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -229,9 +229,8 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
- 	orig_dport = usin->sin_port;
- 	fl4 = &inet->cork.fl.u.ip4;
- 	rt = ip_route_connect(fl4, nexthop, inet->inet_saddr,
--			      RT_CONN_FLAGS(sk), sk->sk_bound_dev_if,
--			      IPPROTO_TCP,
--			      orig_sport, orig_dport, sk);
-+			      sk->sk_bound_dev_if, IPPROTO_TCP, orig_sport,
-+			      orig_dport, sk);
- 	if (IS_ERR(rt)) {
- 		err = PTR_ERR(rt);
- 		if (err == -ENETUNREACH)
+-	__build_flow_key(net, &fl4, NULL, iph, oif,
+-			 RT_TOS(iph->tos), protocol, 0, 0);
++	__build_flow_key(net, &fl4, NULL, iph, oif, iph->tos, protocol, 0, 0);
+ 	rt = __ip_route_output_key(net, &fl4);
+ 	if (!IS_ERR(rt)) {
+ 		__ip_do_redirect(rt, skb, &fl4, false);
 -- 
 2.21.3
 
