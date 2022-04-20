@@ -2,154 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D20E75091A6
-	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 22:52:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB4695091AA
+	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 22:53:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382274AbiDTUyh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Apr 2022 16:54:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36964 "EHLO
+        id S1382038AbiDTUzd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Apr 2022 16:55:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358062AbiDTUyg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 16:54:36 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2100.outbound.protection.outlook.com [40.107.22.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFB4317E11;
-        Wed, 20 Apr 2022 13:51:47 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eNO08+F1b4glwLSu0axL8vzY268XdsMuj3WEh2Cz19a0KaDRdQa1YqP2EsQjrU4rnSQmkQy54jwNL8HZreusZDqzKQvwO3ujjB46DKedDtI1JHzz3oWF1wS1wQsvoyWx0Edq3HiLHEhAaHrFbD/+pAm9ONe+3uhiNySe9bgUGLCxIWpyUmr6Q2bLOcNHivaru21wKtHNxz/vSfCkYdWoHMdfEx13EV86gGG4Wh1NHr3NZZeRZ9lo3+WStSyqZtW5Ds29Mgw4AI2yNsbgVojK+pOsoQFZ1aF8R7r1RHJCjSlJ2XFykGBlFE5z2ghpy0OJmhDVXNopIZCSc85jAihSIQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BxBILNihGtyY6rBstYsAHqeDbbxKn0dB4PuzoEZrhBI=;
- b=c70r0P+vL6rTJpTZrHMhZFjgV9GMGLs7E1FlYYfzbd8kVyDt7HVNKDQ9uf4SkefUyjlsHIefkuzPXvbTBcqoAPTAo9RcYByh88VZJDRhYjdARtwFDij3Yt1nn6uNzCEh2jaNdVcECEjzUwzC9g8+DghzfbqprmjtQDKBoOo5pjwFBrtOVn+ChOXEtvTK4b22+Ewn7prFMp55GkipTh52ZbSMtFPRfJi8PauqA04euixMVnQneQ13W7CKeMIZ1irsD9rX0N6Iw3DQKWdc/dDByZC22ah3irqFCpYGPwGQ5dTBRaR+kTin27SUQPDK1JV8bEHcMT52E3tUw8jOfHDGkg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=silicom-usa.com; dmarc=pass action=none
- header.from=silicom-usa.com; dkim=pass header.d=silicom-usa.com; arc=none
+        with ESMTP id S238578AbiDTUzc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 16:55:32 -0400
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19A7C1ADAA;
+        Wed, 20 Apr 2022 13:52:45 -0700 (PDT)
+Received: by mail-qk1-x72d.google.com with SMTP id q75so2173080qke.6;
+        Wed, 20 Apr 2022 13:52:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=SILICOMLTD.onmicrosoft.com; s=selector2-SILICOMLTD-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BxBILNihGtyY6rBstYsAHqeDbbxKn0dB4PuzoEZrhBI=;
- b=ntyAmYRyNf58EOs4yVkQt6KPP2kWAAqK4OQegst1cnfLl4JC2D4SaUoafpHjhdQcR+MHAqMG5JZ950u9fXaYNJIAxyblDFfVzmuNURszeaSidEpRGLJWRFP1+NvIsvVUCO5tw24LRyaGf+LpVuU34ZPbAenQGx/jgl/JiyXe1Ic=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=silicom-usa.com;
-Received: from AM0PR0402MB3506.eurprd04.prod.outlook.com
- (2603:10a6:208:17::29) by DU2PR04MB8647.eurprd04.prod.outlook.com
- (2603:10a6:10:2de::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.13; Wed, 20 Apr
- 2022 20:51:44 +0000
-Received: from AM0PR0402MB3506.eurprd04.prod.outlook.com
- ([fe80::193e:c83e:7e13:ddb]) by AM0PR0402MB3506.eurprd04.prod.outlook.com
- ([fe80::193e:c83e:7e13:ddb%6]) with mapi id 15.20.5164.026; Wed, 20 Apr 2022
- 20:51:44 +0000
-From:   Jeff Daly <jeffd@silicom-usa.com>
-To:     intel-wired-lan@osuosl.org
-Cc:     Stephen Douthit <stephend@silicom-usa.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Don Skidmore <donald.c.skidmore@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        intel-wired-lan@lists.osuosl.org (moderated list:INTEL ETHERNET DRIVERS),
-        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH 1/1] ixgbe: correct SDP0 check of SFP cage for X550
-Date:   Wed, 20 Apr 2022 16:51:30 -0400
-Message-Id: <20220420205130.23616-1-jeffd@silicom-usa.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BL1PR13CA0325.namprd13.prod.outlook.com
- (2603:10b6:208:2c1::30) To AM0PR0402MB3506.eurprd04.prod.outlook.com
- (2603:10a6:208:17::29)
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cScurUMpYFRygaW6/SiHr7VE5fv8vZDygvnl1ZVKk1Q=;
+        b=pmRo+iuKIEfPCaM59DnAIZqj1JQD1PdLf8Uw8qFUwq/w/vRYbgy0JYB2fD0vXT4pgT
+         k7cG5olVjALJLnibzW0uMMPp2wP0Yj+SBWj/8pNtMxGhXbIsM5NXhXx99C53eD54IruZ
+         k3ENDY6oucsuvxSRoZ4HsuagIXEyr7P+fgsHcLdTPHNVNIe7mZyS8wxvlEpLNIBbZOEm
+         S7xwiqGmQ/lNGF5LAfMzmIQErt4MNXhIGGcsIqJoTv/LG4VS2A8aAmNx5N5cHM/zW7z+
+         8kw6NuIys8wu3SZLbUYOYwHX7buQ1rT4ZV5r1Z79Hy7cXBfqbdWVx1mY14r+X8ZUZj1Q
+         ldZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cScurUMpYFRygaW6/SiHr7VE5fv8vZDygvnl1ZVKk1Q=;
+        b=RlKKC7moGjJQVXwgK4gnY7ElkyUGOK+6YId1wGvJ8e8ffEx7L9r/Zgrvj87YU/WTiG
+         uS7qeysEzmU57oUaxa3YEneVH5vPWuARRRxcPzUhVUQlbmwuzq0AlJ2ulD0USbuAdFsV
+         PjI1UAUQXEZUOFBtnzK66XaibSxxT9aVQ0FutwM7XGFFxW5Bozfy3ilm2Fq5JtI2ARIw
+         b7djDFz47mvAvZlb2qhnQUt4pOGzZe232a+17kameUz+IzvWn/LvsNCcjczfIliWdZUQ
+         FGsDvAi889uiObomPteEuxZK9xeFJ9UDTmLrtS5bgRFkN3Palb5EVydmhkHe7ZbZe4FZ
+         jk1g==
+X-Gm-Message-State: AOAM5305lAjT/jARxMhjTMDvY45TyVcpaA4wG6E0NgdfTnPKW/VXV1Vk
+        uoRbXZYnmSa9s2PFxd9CmgQitjtRGyOI1g==
+X-Google-Smtp-Source: ABdhPJzqQOOtJRmj/yGdYQ817Q66sX9m+I8wr+mgbfUsXpu0ku2jOuc+yguogDN3xZ5D41UN6EZ14A==
+X-Received: by 2002:a05:620a:bc8:b0:67a:fe6a:22ac with SMTP id s8-20020a05620a0bc800b0067afe6a22acmr13630180qki.28.1650487963663;
+        Wed, 20 Apr 2022 13:52:43 -0700 (PDT)
+Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id 187-20020a370bc4000000b0069c8f01368csm2060445qkl.92.2022.04.20.13.52.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Apr 2022 13:52:42 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>
+Subject: [PATCH net] sctp: check asoc strreset_chunk in sctp_generate_reconf_event
+Date:   Wed, 20 Apr 2022 16:52:41 -0400
+Message-Id: <3000f8b12920ae81b84dceead6dcc90bb00c0403.1650487961.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: df23258d-0d95-46b7-b96f-08da230f9402
-X-MS-TrafficTypeDiagnostic: DU2PR04MB8647:EE_
-X-Microsoft-Antispam-PRVS: <DU2PR04MB8647D5EB07CAF31872862303EAF59@DU2PR04MB8647.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: aB4Yb5NAD+PVtb9srNdn2PKhkJV5vpQRs4xGrYvQMdFYNktKQ4B/IbJb2Kq+qu/dsbnhpMpzoFqny1jakHfUZPiRlrDGbyqchHGY7i+N3gY0YWzFahVlSwU9rS7DHYzTLdtqrTEXBYwsfBPXjvOr2JUGa4zjDOxYtaVUAn0tHl0BdcKko6A0QFBy2eN6ZrMD1LdesZXyPCH1yOPInRmDCwTHW5qC0R+eku+dB6MANnDUdqje0XjOJNJnJQ3qAwBfx1HPOntAQaNzCxWm/4FX4U1iUWvX7qHsbDKNX5oq7rP/c3nVClVrKtpaTcwL+e1xISluCuMtQ+SmnXO8uhoLMVskupP+AsqyrIqA1Gywhi5XYTp4CgpwnUOXsLs4dhVdp1r1nEmUP41WVuMz6dPWC9c85xy2A3wiaAuUQ+VBHYLnUDQDQEPUAAF9NNnH3W/bpWeUBjvI4aHw74eSBx9VXA5dEtSeVLrVr1AezgLNkXlT/g4eILa5iD6CqW0abwcvCOjGdhDG+KExL7aWnGgM4jsuu/KdWACS3YaQt+C0sYexhm8RIxGtIvDRMZGSBZyK2BQwb2OY1kIES0nMJ+G6+Rxr62yJQU5yeESUfMQjW4MX0785UNdEc3hN+2NBdilxtMnIGO6C2OfmOUgJahNP2j2YolLByOFSqNJyM2GPSqZpH3a1ZS+QyxAqYyZbpoGLG3d4cOJ/oBCKRCuRNz1LSg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR0402MB3506.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(5660300002)(38100700002)(38350700002)(8936002)(316002)(86362001)(66556008)(4326008)(54906003)(66946007)(6916009)(8676002)(7416002)(6512007)(6506007)(66476007)(52116002)(26005)(83380400001)(1076003)(2616005)(508600001)(6486002)(186003)(6666004)(2906002)(36756003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FAhNooq9rQjaTRX1oFwrACdrVekyyocNc1NJ3ZSLwUckDZRP2fv09qriSGR7?=
- =?us-ascii?Q?3h3MsNAF9elqtehJIMkgE5nEJpDrJKfjaZRFUiBAdqxgOosU19SKZq4460ZC?=
- =?us-ascii?Q?U2eTJmn5rLLEpptWc0sjKZHy1a5pFNFO/CMzPiduKpEamnmKWRMaogA55b8/?=
- =?us-ascii?Q?opYBcZ110SEM6k6JDHkMLi7SLIkV10r9URLRGg5YURsNURqHkev9ZpvrwFI6?=
- =?us-ascii?Q?ncFaJLCSFb9GSbLir+wl8Yg54vTdJ6F9HUXMaRFmfFpUy9nRBeluIo5581Lh?=
- =?us-ascii?Q?x0AQr3gS354/TFRhqtMNJsWS2HoJS6BTaZusIyTfs6SzmPvWlaUG6XsGz2nc?=
- =?us-ascii?Q?zAfcKFfhmfZyJd4jAFUZcclwgnr2jc67KZgmeEhYUqVDrEazRUjuBsyDOrac?=
- =?us-ascii?Q?UyvmqCrEiHtogypXedr90PaSDsDZ9g2bX084PXsiiVj5PM+f4yOxVimHwiVn?=
- =?us-ascii?Q?e8QTNx3Bsm720a/KWt+FEJM7+jgXF4p0ip6g9XtrMqMb066wn4Iuw5y3JfZh?=
- =?us-ascii?Q?u3pZNKsvuks7Zj2SoUJisyeHBPe23tv515a11hwQA4kjL3Mf5q7InuvL2vHU?=
- =?us-ascii?Q?Kjf49GehlIx0pMyFByjwiUtzIvw5rco6ZhrzfNGiO7ecNAEhuhtXBWq1k3tb?=
- =?us-ascii?Q?d8Q4CJpFnuDb8N+ulJYJo8INb0nUPf9Ik0Vm6/EnrxFrvik9Qg08OA+eX8F7?=
- =?us-ascii?Q?5f7BjJhskXI7azHsE0gAvRToNibPHi2rP6fElXRd6QDFOKgHnm4vprxxlc94?=
- =?us-ascii?Q?Sy4/H7SM8dia7iyg0WKWA+qH//xEoZ1FkF/oi1C9yrBHFplsTVeb5cKEHu5S?=
- =?us-ascii?Q?ZnUCanAiRlASQPfZJlcTfwNGNfh+NJzNSolQc81cXOkgNlk8wQBIj4o86zsy?=
- =?us-ascii?Q?rsqO1yzGC5Xj9zsC67THOD/v8cngBO8nsGFqs6sT4T42TFzfOuksA+Tr07WU?=
- =?us-ascii?Q?bY+G18obz6CD8gY5tNGhUlbYywAz544+ZUXXXTYhD7fOoNUzKSZGnIs45DRy?=
- =?us-ascii?Q?p+MqF9Kt6eaQYxGXQ8e/aH5M4Oku32VQw9JhKUYvGAYCUNwc/xLdvCaql4Im?=
- =?us-ascii?Q?PqTLSOMMdKb1Oa0xFa1wUpDYHOYcnUqrNWiV8Twbv2xhgxvB7QaPp1FkPT8k?=
- =?us-ascii?Q?vp6Bq3J2yyjPLxRY1SCAlyvK88se7W8PalHvVRd86X0DDJPLpVoASYr8UmUB?=
- =?us-ascii?Q?ON+FrehAngLQrLsRkfZxqx9hqmsosZbJABbF4ZtFToChgN/pJtZ5T+W2k/jf?=
- =?us-ascii?Q?m4ADRnc0dX+DRxEKoVPsYJQoVivKBhQuzcO2McBwlS5t+H2X6A0vadzZQmUe?=
- =?us-ascii?Q?cGxnRPXj1+xatwh32SfBpr70yHjxq7sQw+l5zj5ITOHsgicsouqguQiH5az5?=
- =?us-ascii?Q?46wbbAZ1a960cyMwTpT9anw9TuQiENbe7+FEXfgLBz8ALjC39boT1jfxRvOm?=
- =?us-ascii?Q?yLadWqVV4CAfytTcBnSjbCJ1mWlzbcanRQoF/Dh56oWGcVRJvPc57TY3yaA+?=
- =?us-ascii?Q?Plo0oPM3F2Fj3ra2nejF775vf5pUvADAVb4nDoW6veq1xfjgwGPrCyaI0uPn?=
- =?us-ascii?Q?JxneZuW6n5La47Dc6E0KTAuYRsqwV6GPhFuZcsH1YC2VmpajHQfAQIHHSi28?=
- =?us-ascii?Q?QlFo6D+fhEZ3CLT0Sv5t7DxZcNH1VtCpxRxSe8E7iw4J0UWV32dYX6ONddF+?=
- =?us-ascii?Q?vicOA1ljx7m92o3VY6CN6QRkz6RmJkL9mjyHPu6qtG/uqGv2k9D9gDYHBUQE?=
- =?us-ascii?Q?JrVbvL4jiw=3D=3D?=
-X-OriginatorOrg: silicom-usa.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: df23258d-0d95-46b7-b96f-08da230f9402
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR0402MB3506.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2022 20:51:44.3534
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: c9e326d8-ce47-4930-8612-cc99d3c87ad1
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zvxcMskD6CkHDN54sodZKERmF6DXmDsgzBc4FZOFSH5kBE8PveQJC14hp3+lDFoU46hfpWdoUytx5JSf93jrBQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR04MB8647
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SDP0 for X550 NICs is active low to indicate the presence of an SFP in the
-cage (MOD_ABS#).  Invert the results of the logical AND to set
-sfp_cage_full variable correctly.
+A null pointer reference issue can be triggered when the response of a
+stream reconf request arrives after the timer is triggered, such as:
 
-Fixes: aac9e053f104 ("ixgbe: cleanup crosstalk fix")
+  send Incoming SSN Reset Request --->
+  CPU0:
+   reconf timer is triggered,
+   go to the handler code before hold sk lock
+                            <--- reply with Outgoing SSN Reset Request
+  CPU1:
+   process Outgoing SSN Reset Request,
+   and set asoc->strreset_chunk to NULL
+  CPU0:
+   continue the handler code, hold sk lock,
+   and try to hold asoc->strreset_chunk, crash!
 
-Suggested-by: Stephen Douthit <stephend@silicom-usa.com>
-Signed-off-by: Jeff Daly <jeffd@silicom-usa.com>
+In Ying Xu's testing, the call trace is:
+
+  [ ] BUG: kernel NULL pointer dereference, address: 0000000000000010
+  [ ] RIP: 0010:sctp_chunk_hold+0xe/0x40 [sctp]
+  [ ] Call Trace:
+  [ ]  <IRQ>
+  [ ]  sctp_sf_send_reconf+0x2c/0x100 [sctp]
+  [ ]  sctp_do_sm+0xa4/0x220 [sctp]
+  [ ]  sctp_generate_reconf_event+0xbd/0xe0 [sctp]
+  [ ]  call_timer_fn+0x26/0x130
+
+This patch is to fix it by returning from the timer handler if asoc
+strreset_chunk is already set to NULL.
+
+Fixes: 7b9438de0cd4 ("sctp: add stream reconf timer")
+Reported-by: Ying Xu <yinxu@redhat.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_common.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/sctp/sm_sideeffect.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
-index 4c26c4b92f07..26d16bc85c59 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
-@@ -3308,8 +3308,8 @@ s32 ixgbe_check_mac_link_generic(struct ixgbe_hw *hw, ixgbe_link_speed *speed,
- 			break;
- 		case ixgbe_mac_X550EM_x:
- 		case ixgbe_mac_x550em_a:
--			sfp_cage_full = IXGBE_READ_REG(hw, IXGBE_ESDP) &
--					IXGBE_ESDP_SDP0;
-+			sfp_cage_full = !(IXGBE_READ_REG(hw, IXGBE_ESDP) &
-+					IXGBE_ESDP_SDP0);
- 			break;
- 		default:
- 			/* sanity check - No SFP+ devices here */
+diff --git a/net/sctp/sm_sideeffect.c b/net/sctp/sm_sideeffect.c
+index b3815b568e8e..463c4a58d2c3 100644
+--- a/net/sctp/sm_sideeffect.c
++++ b/net/sctp/sm_sideeffect.c
+@@ -458,6 +458,10 @@ void sctp_generate_reconf_event(struct timer_list *t)
+ 		goto out_unlock;
+ 	}
+ 
++	/* This happens when the response arrives after the timer is triggered. */
++	if (!asoc->strreset_chunk)
++		goto out_unlock;
++
+ 	error = sctp_do_sm(net, SCTP_EVENT_T_TIMEOUT,
+ 			   SCTP_ST_TIMEOUT(SCTP_EVENT_TIMEOUT_RECONF),
+ 			   asoc->state, asoc->ep, asoc,
 -- 
-2.25.1
+2.31.1
 
