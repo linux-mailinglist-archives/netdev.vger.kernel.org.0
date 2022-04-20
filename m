@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AEB02508E4D
-	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 19:18:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C45C8508E57
+	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 19:20:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355747AbiDTRVH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Apr 2022 13:21:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38212 "EHLO
+        id S1351561AbiDTRXc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Apr 2022 13:23:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235399AbiDTRVG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 13:21:06 -0400
-Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F60E45AF4;
-        Wed, 20 Apr 2022 10:18:20 -0700 (PDT)
-Received: by mail-vs1-xe35.google.com with SMTP id t202so2173807vst.8;
-        Wed, 20 Apr 2022 10:18:20 -0700 (PDT)
+        with ESMTP id S1344045AbiDTRXa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 13:23:30 -0400
+Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C611533E3E;
+        Wed, 20 Apr 2022 10:20:42 -0700 (PDT)
+Received: by mail-vs1-xe2c.google.com with SMTP id m14so2173051vsp.11;
+        Wed, 20 Apr 2022 10:20:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=E8pbstQIKMU8n6W0382loX5SA213a1sxeL3uH3Qg3JI=;
-        b=k3XSeJBNpwXtCKAiE6JPyVsJWnTxJ4iqv54j9tbN8FuaqK46ZMp4gtSFZCjKfonLPE
-         R/cnoFlLe7QKfuwRT9aYsfaMsGKOets5M+f+K9PmO09ISJssgjjb52fl+KGPKvKJOdks
-         FYpMcjAmjLbc8HeOPo6IiJ1qSx1KwtuP4hStjQ48xQbeH2F/YNOSCVUEwjNItGkzQ2lf
-         8WBUkXWJOTK9mXA0qLglRkFXFzxbf1t1YRo3No1Y6xRmw7sEBSY6xxuOuHoOuzHR4Yk3
-         e5Z5bS3okR3eq8MWMu5cq91aUu191A6fSfCRx7XiR9Nm4CoAYk+UVlYzPRle/M1JzMJr
-         DTuw==
+        bh=vceL50BIp2v6AiSQ6YiQr6PR8WOQ5ol+sLtkOLau4XA=;
+        b=dPSQHu6nx3iobsZSUWBFmXF4+kbgM/szfCsN6teKAmJ9FpHP0/BQhQ7vkzc+xC4nqd
+         MlYf4fGWTY35ANgfJwFGNPL2LOBp1umldmad29D2CJ0hU0Mxls3ffBj/tXq7HqkEq6/B
+         JKnor+MXg9+H+0s9wpmSgYrMl2w3+eijPyNKoEydWt9ON88mle7z56kT7U/ydH0cRWZq
+         NWOYdeVdI8wJRc2PzplJ31uJGHcyViapKYwj22j/YU5QeaZC9gLRDGu4gDXoELQm8aPJ
+         79wH0nGGRPIWA560g2smnsMVD4weZ/45UYENV/J0QkSL2DtXM7tjN0jxyEtXlz8eUnS1
+         /f+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=E8pbstQIKMU8n6W0382loX5SA213a1sxeL3uH3Qg3JI=;
-        b=pzOQzXzzadA7KMuQTcn9m9y0awaElFzr18a/kvmqdlpOrO6nVT7k8dTM64HItfKOMU
-         bSocJW9eL2kWZ4+7wDRWR/eiN1zxpTiVAodqI62b2QyfltUXcxNoSK5giJIN8+a2ns0Q
-         yQyX5cz+FS7gBTUaEE7rzthdqSGqpOZV6nYmiddVbqFhh+G5lbVgvnxNHPOBLUyKaBwd
-         A5PQsEsd1G/iWhL6NaDEnIUqE+/2cpFLQoL6+8EA5+ol44d8ugCJDmiubU4LKqT83jTT
-         2ao/KJ47iO98ff+OouQaPDUNYpfDxXOU1bUQ7QkPgxyzFlIvzjhSiWKvvsHKUwd12CjX
-         mLhA==
-X-Gm-Message-State: AOAM530GpNG7b4LEQtoPmkhQHZXcRDTLyngTPi1YXXld15RFO7fBCMmz
-        sQILDIrFUN4s8ucBwUh2qlp2gyT5e++FEKxnwew=
-X-Google-Smtp-Source: ABdhPJwcuJYCkBW10RtqOqWTejiFdCLoEZrniTSO/MDyY/NMI4lGYtijRlZqeNR9qXFnkLnvS8yvyDGcgoCFEdKHVDY=
-X-Received: by 2002:a67:f80b:0:b0:32a:17d6:7fb2 with SMTP id
- l11-20020a67f80b000000b0032a17d67fb2mr6263197vso.40.1650475099231; Wed, 20
- Apr 2022 10:18:19 -0700 (PDT)
+        bh=vceL50BIp2v6AiSQ6YiQr6PR8WOQ5ol+sLtkOLau4XA=;
+        b=z+4bFm0zMTWbqHjqtPnJqzpwnd9ZNLLLD/SsghQyu9zNyvDRMb6SkSXUf933bUd37y
+         haAi/mPn8uM2v1eKQswWSSywSutLU01lrAv1NVtMDaWXABTzlHuVXDh9iQ9dfHoM0Zet
+         FH2mYY6SOkQRCqUIHiuigjv9xi8dZs4Epl7bJBFvVNtFbp8oyMeCDNM63MkFoDIR5XCY
+         adzGawu1lTprfvMS51cCFzxY/dNf0BkqiFkP3IEzeygEa3tCrMrWmM+4bve7Gn9xTtFv
+         +8FuqzUjPF898FhdXP4Q7n3b7rluoGBvJPITszW+MT2TsWDIfDAr3Dl2xoHBuyXQsXE8
+         57gA==
+X-Gm-Message-State: AOAM533OfAnNCcrEY1QeuTr67T+tYhM0rRVwV4kRbqrIYyEckUq3jg6x
+        vtVBHhx6Dj+SkYyet7j8ivELF1ozqAbUXv82dmY=
+X-Google-Smtp-Source: ABdhPJwa5MK25KXgiSTD0eO/ewqGUYce48kyJBJEdJott0E9+lLwDRk0RiatpUDoEtgOvwNXhLZUz4i9JP7/swbztEA=
+X-Received: by 2002:a67:f693:0:b0:328:295b:3077 with SMTP id
+ n19-20020a67f693000000b00328295b3077mr6552415vso.80.1650475241848; Wed, 20
+ Apr 2022 10:20:41 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220414223704.341028-1-alobakin@pm.me> <20220414223704.341028-9-alobakin@pm.me>
-In-Reply-To: <20220414223704.341028-9-alobakin@pm.me>
+References: <20220414223704.341028-1-alobakin@pm.me>
+In-Reply-To: <20220414223704.341028-1-alobakin@pm.me>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 20 Apr 2022 10:18:08 -0700
-Message-ID: <CAEf4BzZVohaHdCTz_KFVdEus2pndLTZvg=BHfujpgt29qbio3Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 08/11] samples: bpf: fix shifting unsigned long
- by 32 positions
-To:     Alexander Lobakin <alobakin@pm.me>, Yonghong Song <yhs@fb.com>
+Date:   Wed, 20 Apr 2022 10:20:31 -0700
+Message-ID: <CAEf4Bza2H=vd+2nWV26UXBJCbMJkAVt2kggEj7Jxe8UVcs-qkw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 00/11] bpf: random unpopular userspace fixes (32
+ bit et al.)
+To:     Alexander Lobakin <alobakin@pm.me>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
@@ -64,7 +64,7 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Jiri Olsa <jolsa@kernel.org>,
         Namhyung Kim <namhyung@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -99,36 +99,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 3:46 PM Alexander Lobakin <alobakin@pm.me> wrote:
+On Thu, Apr 14, 2022 at 3:44 PM Alexander Lobakin <alobakin@pm.me> wrote:
 >
-> On 32 bit systems, shifting an unsigned long by 32 positions
-> yields the following warning:
+> This mostly issues the cross build (1) errors for 32 bit (2)
+> MIPS (3) with minimal configuration (4) on Musl (5). The majority
+> of them aren't yesterday's, so it is a "who does need it outside
+> of x86_64 or ARM64?" moment again.
+> Trivial stuff in general, not counting the bpf_cookie build fix.
 >
-> samples/bpf/tracex2_kern.c:60:23: warning: shift count >= width of type [-Wshift-count-overflow]
->         unsigned int hi = v >> 32;
->                             ^  ~~
->
-
-long is always 64-bit in BPF, but I suspect this is due to
-samples/bpf/Makefile still using this clang + llc combo, where clang
-is called with native target and llc for -target bpf. Not sure if we
-are ready to ditch that complicated combination. Yonghong, do we still
-need that or can we just use -target bpf in samples/bpf?
-
-
-> The usual way to avoid this is to shift by 16 two times (see
-> upper_32_bits() macro in the kernel). Use it across the BPF sample
-> code as well.
->
-> Fixes: d822a1926849 ("samples/bpf: Add counting example for kfree_skb() function calls and the write() syscall")
-> Fixes: 0fb1170ee68a ("bpf: BPF based latency tracing")
-> Fixes: f74599f7c530 ("bpf: Add tests and samples for LWT-BPF")
-> Signed-off-by: Alexander Lobakin <alobakin@pm.me>
-> ---
->  samples/bpf/lathist_kern.c      | 2 +-
->  samples/bpf/lwt_len_hist_kern.c | 2 +-
->  samples/bpf/tracex2_kern.c      | 2 +-
->  3 files changed, 3 insertions(+), 3 deletions(-)
+> Alexander Lobakin (11):
+>   bpf, perf: fix bpftool compilation with !CONFIG_PERF_EVENTS
+>   bpf: always emit struct bpf_perf_link BTF
+>   tools, bpf: fix bpftool build with !CONFIG_BPF_EVENTS
+>   samples: bpf: add 'asm/mach-generic' include path for every MIPS
+>   samples: bpf: use host bpftool to generate vmlinux.h, not target
+>   tools, bpf: fix fcntl.h include in bpftool
+>   samples: bpf: fix uin64_t format literals
+>   samples: bpf: fix shifting unsigned long by 32 positions
+>   samples: bpf: fix include order for non-Glibc environments
+>   samples: bpf: fix -Wsequence-point
+>   samples: bpf: xdpsock: fix -Wmaybe-uninitialized
 >
 
-[...]
+For consistency with majority of other commits, can you please use
+"samples/bpf: " prefix for samples/bpf changes and "bpftool: " for
+bpftool's ones? Thanks!
+
+>  include/linux/perf_event.h              |  2 ++
+>  kernel/bpf/syscall.c                    |  4 +++-
+>  samples/bpf/Makefile                    |  7 ++++---
+>  samples/bpf/cookie_uid_helper_example.c | 12 ++++++------
+>  samples/bpf/lathist_kern.c              |  2 +-
+>  samples/bpf/lwt_len_hist_kern.c         |  2 +-
+>  samples/bpf/lwt_len_hist_user.c         |  4 ++--
+>  samples/bpf/task_fd_query_user.c        |  2 +-
+>  samples/bpf/test_lru_dist.c             |  3 ++-
+>  samples/bpf/tracex2_kern.c              |  2 +-
+>  samples/bpf/xdpsock_user.c              |  5 +++--
+>  tools/bpf/bpftool/tracelog.c            |  2 +-
+>  12 files changed, 27 insertions(+), 20 deletions(-)
+>
+> --
+> 2.35.2
+>
+>
