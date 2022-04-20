@@ -2,73 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 720CB507F1A
-	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 04:50:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9552C507F20
+	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 04:54:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346007AbiDTCxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 22:53:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49602 "EHLO
+        id S1348230AbiDTC4v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 22:56:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241926AbiDTCxQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 22:53:16 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A15D431341
-        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 19:50:30 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id n17so296418ljc.11
-        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 19:50:30 -0700 (PDT)
+        with ESMTP id S237337AbiDTC4t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 22:56:49 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E909A35DFD
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 19:54:04 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id mm4-20020a17090b358400b001cb93d8b137so3719402pjb.2
+        for <netdev@vger.kernel.org>; Tue, 19 Apr 2022 19:54:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=jxe6aaDFwdux36JQcvP6igMTeJQ+Mr5d6kdF2Kkf4S8=;
-        b=Itd/G3B/lluDFqySfzU6vHOEE6ZtjTSLxvXR8SIXyHdZHcqi5xrd7BCHTUZaVCXUYM
-         72WeGzv3i5w4lUY4YVjjSzjWqRLvW9tbV6E4qPD2XavlfDB4E8L0+vsFl2KqydaVpJrD
-         FtUX8Ok7/mgsUF6LzCZLN6gKXBE935wANTgWetF516EIhzL49G09bnjVuNXSDuxje1Zt
-         Wf6SRyeZvKUH2oySSlPaXGffm3PLRr0CRI4zep5lpPaeuCZ/71jdcjDh1AX4LAtJGvUF
-         D+U1LRPpo6t0KzPS9Rnkt/f8/hQFSmh15GrZSLqfy/sTeSz80iKQaL3BJjAyoR2aSioU
-         nw9Q==
+        bh=joW4E1DvY2ZDaPO9F2hhaKB7krtMJP5lrijMxwNZx/0=;
+        b=BDflj+4tZSgvh6oXEd03Jy13Hi6i9qev0o4zLWFcmBraWQzv3slhOd6FBHEkYinJp3
+         bDOCspCj+WIrThNsWuFI4AvES8CL59eHyY/RnBjyJXmNMUOBFc3DPjjgzdg3yvLWRQ0P
+         bcuk2gzZVdPlr6g14Yi1NnEKe4vXS9XKtLJwfVCrdjAHn/QWLRVo/ZChljZBTzl3oEF7
+         tzMVlIErDme52Ro+CTjWP0zTH6YJqkFXzD+rgwOLEyZHZG2u4piwD8R8DywERa/Cip/t
+         6+HofYtuZsAvpOq/7u47JpeQLRavubvmGWzboFB88Mw1EsbUiXz661ETUk1HUFKUPFi5
+         cadQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to:content-transfer-encoding;
-        bh=jxe6aaDFwdux36JQcvP6igMTeJQ+Mr5d6kdF2Kkf4S8=;
-        b=3VzVJTvh5OqIXugm2bqkV6eOuFHQ8NcTCwvS4TWdRGbCRsuGvAK1cSJ7Gi1j8p2LbF
-         jIK8GcdQhZH8ezCPbxlkjoZAHaR/ZvG9rIaMrEO1Lan4lvMlHp4y7vPi9168BmgCrWX5
-         +sDIzUKDJJQaR941M/kOs35zfxfmALTax/8l8p6ASALQEaqA6nrRErahav5j0axgjpU3
-         Hj+GaQQOL0AGE83sohVE36VxeRULACtmEQaafoudRbeE6V4JQgTK6ZdC2gRj9PKdksh7
-         xppr2G2SifH3u97ONp1na3aHKRJwLOY6w/NvH89zJy/CzSoSfrT+6c0/ayQxQRrI/NTy
-         prNw==
-X-Gm-Message-State: AOAM533cfKA58LeCZ7Kv8o6udoGyG0755JiDMY6AnOeIUYtOVwB3P/+E
-        BlXFA1p7xtb/zrb7YU0S4mH1OaCsitjucxrTyMk=
-X-Google-Smtp-Source: ABdhPJzjs85Rq/YKb010AcP60dWdMJeWg09+fckyA0AmK+77lKbvn1SPnrVYfadXnIJ6HNmZEeMxPngGaaF/Hv2YSJo=
-X-Received: by 2002:a2e:9d06:0:b0:24c:7dee:4d58 with SMTP id
- t6-20020a2e9d06000000b0024c7dee4d58mr11925723lji.177.1650423028982; Tue, 19
- Apr 2022 19:50:28 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=joW4E1DvY2ZDaPO9F2hhaKB7krtMJP5lrijMxwNZx/0=;
+        b=v8xZrHAr7/F9/UqqgeXMgvy+dfkF3Tz9zHD/Uw3OxI/BkzvFpK8IKCepL5xtIwUrHq
+         h48OcIm+oOeHIGZnZnMyKXl5xAa2zVDBqQHCW2iRjF/aBjBpxoByEEkWY2iKhQuNg0q+
+         7gCtAyi34OGsQFdELa4TsYSfpl7Rzbn08o6SSATX7EdJT3ZECfPGOtBwrYbSr5IUg8Ya
+         aWQqSPu5XTmU5DOkBClZaaOPx1awaPeXdyUtu4VTtXU3br35J1XxNbRngQ5NCT0g9jF6
+         /97KjLjtNe/mgibG8XZtvewA6bfnzIFuUpZyN6fYcOnJ9gacTEtclcGZ9Y7yjdPyvqEA
+         yv5Q==
+X-Gm-Message-State: AOAM532tA9FNhTMfzawnOVZuOSXy2uBFVWXephRTa4xinPg/6jshXpO4
+        PGDdq+ZQ+bqfNBmXePnXWF45E+dYz+/sDg==
+X-Google-Smtp-Source: ABdhPJxUpDmL/U1pQZA3hSndCGKDmBRp/g/RFwK78bd7R96hqhNcLUq4NnFY90gY4TCEGBi/4a5APw==
+X-Received: by 2002:a17:902:7d86:b0:156:434a:a901 with SMTP id a6-20020a1709027d8600b00156434aa901mr19000083plm.77.1650423244144;
+        Tue, 19 Apr 2022 19:54:04 -0700 (PDT)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id z5-20020a056a00240500b004e15d39f15fsm18561268pfh.83.2022.04.19.19.54.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Apr 2022 19:54:03 -0700 (PDT)
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>
+Subject: [PATCH iproute2-next] ip-link: put types on man page in alphabetic order
+Date:   Tue, 19 Apr 2022 19:54:01 -0700
+Message-Id: <20220420025401.25664-1-stephen@networkplumber.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Sender: alobadodji@gmail.com
-Received: by 2002:a05:651c:505:0:0:0:0 with HTTP; Tue, 19 Apr 2022 19:50:28
- -0700 (PDT)
-From:   Miss Reacheal <reacheal4u@gmail.com>
-Date:   Wed, 20 Apr 2022 02:50:28 +0000
-X-Google-Sender-Auth: 69LSrBzlnyfAVbbkdMq9_4j59Og
-Message-ID: <CACNx-8pkM1gxbV+mKdLo--moTFSDshqgx_AziAixxnBcYX1BAg@mail.gmail.com>
-Subject: Re: Hello Dear
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-X-Spam-Status: No, score=2.1 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,HK_NAME_FM_MR_MRS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: **
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-5L2g5aW977yMDQoNCuS9oOaUtuWIsOaIkeS5i+WJjeeahOa2iOaBr+S6huWQl++8nyDmiJHkuYvl
-iY3ogZTns7vov4fkvaDvvIzkvYbmtojmga/lpLHotKXkuobvvIzmiYDku6XmiJHlhrPlrprlho3l
-hpnkuIDmrKHjgIIg6K+356Gu6K6k5oKo5piv5ZCm5pS25Yiw5q2k5L+h5oGv77yM5Lul5L6/5oiR
-57un57ut77yMDQoNCuetieW+heS9oOeahOetlOWkjeOAgg0KDQrpl67lgJnvvIwNCueRnueni+Ww
-j+WnkA0K
+Lets try and keep man pages using alpha order, it looks like
+it started that way then drifted.
+
+Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
+---
+ man/man8/ip-link.8.in | 48 +++++++++++++++++++++----------------------
+ 1 file changed, 24 insertions(+), 24 deletions(-)
+
+diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
+index ec3cc4297da5..477e5ae24772 100644
+--- a/man/man8/ip-link.8.in
++++ b/man/man8/ip-link.8.in
+@@ -209,43 +209,43 @@ ip-link \- network device configuration
+ .ti -8
+ .IR TYPE " := [ "
+ .BR amt " | "
+-.BR bridge " | "
++.BR bareudp " |"
+ .BR bond " | "
++.BR bridge " | "
+ .BR can " | "
+ .BR dummy " | "
+-.BR hsr " | "
+-.BR ifb " | "
+-.BR ipoib " |"
+-.BR macvlan  " | "
+-.BR macvtap  " | "
+-.BR vcan " | "
+-.BR vxcan " | "
+-.BR veth " | "
+-.BR vlan " | "
+-.BR vxlan " |"
+-.BR ip6tnl " |"
+-.BR ipip " |"
+-.BR sit " |"
++.BR erspan " |"
++.BR geneve " |"
+ .BR gre " |"
+ .BR gretap " |"
+-.BR erspan " |"
++.BR gtp " |"
++.BR hsr " | "
++.BR ifb " | "
++.BR ip6erspan " |"
+ .BR ip6gre " |"
+ .BR ip6gretap " |"
+-.BR ip6erspan " |"
+-.BR vti " |"
+-.BR nlmon " |"
++.BR ip6tnl " |"
++.BR ipip " |"
++.BR ipoib " |"
+ .BR ipvlan " |"
+ .BR ipvtap " |"
+ .BR lowpan " |"
+-.BR geneve " |"
+-.BR bareudp " |"
+-.BR vrf " |"
+ .BR macsec " |"
++.BR macvlan  " | "
++.BR macvtap  " | "
+ .BR netdevsim " |"
++.BR nlmon " |"
+ .BR rmnet " |"
+-.BR xfrm " |"
+-.BR gtp " |"
+-.BR virt_wifi " ]"
++.BR sit " |"
++.BR vcan " | "
++.BR veth " | "
++.BR virt_wifi " |"
++.BR vlan " | "
++.BR vrf " |"
++.BR vti " |"
++.BR vxcan " | "
++.BR vxlan " |"
++.BR xfrm " ]"
+ 
+ .ti -8
+ .IR ETYPE " := [ " TYPE " |"
+-- 
+2.35.1
+
