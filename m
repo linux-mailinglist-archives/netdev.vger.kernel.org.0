@@ -2,68 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 80368508E06
-	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 19:07:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD3BD508E1C
+	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 19:12:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380891AbiDTRK1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Apr 2022 13:10:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56546 "EHLO
+        id S1380938AbiDTRPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Apr 2022 13:15:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380890AbiDTRK0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 13:10:26 -0400
-Received: from mail-vs1-xe2b.google.com (mail-vs1-xe2b.google.com [IPv6:2607:f8b0:4864:20::e2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F899A1AC;
-        Wed, 20 Apr 2022 10:07:39 -0700 (PDT)
-Received: by mail-vs1-xe2b.google.com with SMTP id r1so2130945vsi.12;
-        Wed, 20 Apr 2022 10:07:39 -0700 (PDT)
+        with ESMTP id S1380918AbiDTRPA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 13:15:00 -0400
+Received: from mail-vk1-xa2d.google.com (mail-vk1-xa2d.google.com [IPv6:2607:f8b0:4864:20::a2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38F0E4578A;
+        Wed, 20 Apr 2022 10:12:13 -0700 (PDT)
+Received: by mail-vk1-xa2d.google.com with SMTP id j4so1097916vki.8;
+        Wed, 20 Apr 2022 10:12:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=7wzRThF5HaMonZLDTFgx0pibWyxVIQs6oTZK8LgP7Rk=;
-        b=DIRM9JAA75v6UB8C3NSUnFYtbGPd/6hGhEKGkyI+Qzs60Io3TIPm88HkB1ucaEZpUO
-         tpM93Zbvl4jgUFSDoE4EoTeK/OEylNiGBJXMwM7V+qQDeF1wYJ7OoFK0oty62mH9NDuz
-         nG8q5XHmMEiRTwqLUHGRn/xscX49csCdN5yb2XWU6CJaStkPgBBY2zZj3pc2qa7BmrB2
-         JLhYu1voLabqjhPlEX5dEdbIrCkLwOekaD0SZh1jcGX20ucW3tZGLk8RK8icG4S1lVVz
-         eRKqffFRMSZBeqmHCRtpIQ1PR7Hj4mN8iS96oc8YcGGNnXfRMwsVdtZDZtaSFVIdgCI9
-         L8aQ==
+        bh=pYT8LiXPjG72JXyjXh0PA/0j6snOgjAInfuhdQQzK4A=;
+        b=ZiyMakZPe2qW167OmeXyl2TuWZG/d54+3LqcHKYeCbiytsFzupldZcNEbtc3woraMi
+         WuZQ+m7C4d9rEtCo8dS0y+0oipuQi3dRdUE78C8HHIGJOduFOGUFCTxyH/J+xxMObUeo
+         3fx2WciP5/4tsVV5rAi1F2Rjh5wBollI5V+EK2kAG90dGELPOYf3oi7PG7tVGwYw9Oqs
+         38Jjf6kXP8UYlQkmvWHW62Hj8xWG/XVyj/kAmay4gjQ4liV5GP258qHLLDahX87U4Zce
+         TRodUG0FEsekwpItF7t9i66GVhDI7kAzoaTbxbuxVpnEzRABk4BlKz0aQ1H7VVD+nloQ
+         4k0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=7wzRThF5HaMonZLDTFgx0pibWyxVIQs6oTZK8LgP7Rk=;
-        b=HXCEvX3FfW/eRPlZmFcjejoV1b/es2/JRqNpGWTF1JYVBlyhZ8swpIf6NJYFAI2xbF
-         6kNvgB/5+lG4RLWMm6LFmd9iUEACFtg9hUC9921RZar9YhWEWSCERzJVbkiTNsnNwPlx
-         Rix2cPsSjOQflM65Ia5comUobDE+VqvXU++QTD7w6Aduq6UBFviyv1NPFcvDe7ViII1B
-         ZD79ihfksAnLJ6aOe2vAvzOpemDGlzS9EqvweFKzRon07HDGSVTVXdgkAw1p0v3Au49T
-         SrLV7CpGouCKrQ398mB7ym+ihf4YOx5U/6J383RbMJjegi2B4/Rjtpotqg1cfQTIGZEQ
-         Md9g==
-X-Gm-Message-State: AOAM531aL6sbeLMBdh7Qu20UATMaDQSnZQ3aLEHzxfdtTpTg83PXXPJb
-        ut1auZx7LYaKa5jYNwb4zaJAXHlmuODTi+Xt2dE=
-X-Google-Smtp-Source: ABdhPJwosYeXjdDFdfe3eeuiuX8GCcuD9bNGCVWpuxBZPWoXVPR9lp6Cb9JSRQa3umfSF+agDr9O5WRgsMqQGbAUo80=
-X-Received: by 2002:a67:f80b:0:b0:32a:17d6:7fb2 with SMTP id
- l11-20020a67f80b000000b0032a17d67fb2mr6249988vso.40.1650474458618; Wed, 20
- Apr 2022 10:07:38 -0700 (PDT)
+        bh=pYT8LiXPjG72JXyjXh0PA/0j6snOgjAInfuhdQQzK4A=;
+        b=PcaOulyZDpfPeuCc4tNbK28k45lRdo0dRQzBXGotTiqvMnzfw983G1iIun8UG9pRZv
+         3Y0ZHIrSLwtGEry5YLQj/bQXnruGC9ZEECmnkaS4ls8/mh61vma3rE7VOdzBOosiB9ts
+         pkIt8RpfpgQL0wPzDhO5Fp/HvqZPWJ0eUWN1wWXpBuBEH8+pf3OhNxtKCZ3TKCabaNBH
+         IE896RFVkfNe2KvvWFnyQ3dlRZn52VimRBbORjYwjquSme9mJPqL0HiLjoEPjOZYQ2Mf
+         ejq6JtC8X5wMvtjsBVCaKnB9HqFnQkbVZjIwtA0MhskMzA0/WNH2tm+nzzGI2XGrRYDp
+         yPbw==
+X-Gm-Message-State: AOAM532A6QbIluQTjvo5y2gJc6ton/biNuFYMi/XI0wexHQtJwyDHTaK
+        PAv+Bikdsi1cfwJg54GEmlIPHdi17pH6uw7QDM8=
+X-Google-Smtp-Source: ABdhPJxnS1xt53URfkC+Hi8iynVsfEwenj/2vAUetV4O4xWYXcnniqZonwmQezQoWp3xT03XpQs1W0FscQZQVDNUGLE=
+X-Received: by 2002:a1f:abc5:0:b0:343:20e4:890f with SMTP id
+ u188-20020a1fabc5000000b0034320e4890fmr6765514vke.20.1650474732358; Wed, 20
+ Apr 2022 10:12:12 -0700 (PDT)
 MIME-Version: 1.0
-References: <CAEf4BzbiVeQfhxEu908w2mU4d8+5kKeMknuvhzCXuxM9pJ1jmQ@mail.gmail.com>
- <20220415141355.4329-1-tadeusz.struk@linaro.org>
-In-Reply-To: <20220415141355.4329-1-tadeusz.struk@linaro.org>
+References: <20220414223704.341028-1-alobakin@pm.me> <20220414223704.341028-4-alobakin@pm.me>
+In-Reply-To: <20220414223704.341028-4-alobakin@pm.me>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 20 Apr 2022 10:07:27 -0700
-Message-ID: <CAEf4Bzah9K7dEa_7sXE4TnkuMTRHypMU9DxiLezgRvLjcqE_YA@mail.gmail.com>
-Subject: Re: [PATCH v2] bpf: Fix KASAN use-after-free Read in compute_effective_progs
-To:     Tadeusz Struk <tadeusz.struk@linaro.org>
+Date:   Wed, 20 Apr 2022 10:12:01 -0700
+Message-ID: <CAEf4BzZiuD+bJ2zMikrb_W6KUHWjEqu6jwp5cNEgaHdSgRhUtA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 03/11] tools, bpf: fix bpftool build with !CONFIG_BPF_EVENTS
+To:     Alexander Lobakin <alobakin@pm.me>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        linux- stable <stable@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Dmitrii Dolgov <9erthalion6@gmail.com>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Chenbo Feng <fengc@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Daniel Wagner <daniel.wagner@bmw-carit.de>,
+        Thomas Graf <tgraf@suug.ch>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
         open list <linux-kernel@vger.kernel.org>,
-        syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        llvm@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -75,152 +98,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 15, 2022 at 7:14 AM Tadeusz Struk <tadeusz.struk@linaro.org> wrote:
+On Thu, Apr 14, 2022 at 3:45 PM Alexander Lobakin <alobakin@pm.me> wrote:
 >
-> Syzbot found a Use After Free bug in compute_effective_progs().
-> The reproducer creates a number of BPF links, and causes a fault
-> injected alloc to fail, while calling bpf_link_detach on them.
-> Link detach triggers the link to be freed by bpf_link_free(),
-> which calls __cgroup_bpf_detach() and update_effective_progs().
-> If the memory allocation in this function fails, the function restores
-> the pointer to the bpf_cgroup_link on the cgroup list, but the memory
-> gets freed just after it returns. After this, every subsequent call to
-> update_effective_progs() causes this already deallocated pointer to be
-> dereferenced in prog_list_length(), and triggers KASAN UAF error.
+> Fix the following error when building bpftool:
 >
-> To fix this issue don't preserve the pointer to the prog or link in the
-> list, but remove it and rearrange the effective table without
-> shrinking it. The subsequent call to __cgroup_bpf_detach() or
-> __cgroup_bpf_detach() will correct it.
+>   CLANG   profiler.bpf.o
+>   CLANG   pid_iter.bpf.o
+> skeleton/profiler.bpf.c:18:21: error: invalid application of 'sizeof' to an incomplete type 'struct bpf_perf_event_value'
+>         __uint(value_size, sizeof(struct bpf_perf_event_value));
+>                            ^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> tools/bpf/bpftool/bootstrap/libbpf/include/bpf/bpf_helpers.h:13:39: note: expanded from macro '__uint'
+>                                       ^~~
+> tools/bpf/bpftool/bootstrap/libbpf/include/bpf/bpf_helper_defs.h:7:8: note: forward declaration of 'struct bpf_perf_event_value'
+> struct bpf_perf_event_value;
+>        ^
 >
-> Cc: "Alexei Starovoitov" <ast@kernel.org>
-> Cc: "Daniel Borkmann" <daniel@iogearbox.net>
-> Cc: "Andrii Nakryiko" <andrii@kernel.org>
-> Cc: "Martin KaFai Lau" <kafai@fb.com>
-> Cc: "Song Liu" <songliubraving@fb.com>
-> Cc: "Yonghong Song" <yhs@fb.com>
-> Cc: "John Fastabend" <john.fastabend@gmail.com>
-> Cc: "KP Singh" <kpsingh@kernel.org>
-> Cc: <netdev@vger.kernel.org>
-> Cc: <bpf@vger.kernel.org>
-> Cc: <stable@vger.kernel.org>
-> Cc: <linux-kernel@vger.kernel.org>
+> struct bpf_perf_event_value is being used in the kernel only when
+> CONFIG_BPF_EVENTS is enabled, so it misses a BTF entry then.
+> Emit the type unconditionally to fix the problem.
 >
-> Link: https://syzkaller.appspot.com/bug?id=8ebf179a95c2a2670f7cf1ba62429ec044369db4
-> Fixes: af6eea57437a ("bpf: Implement bpf_link-based cgroup BPF program attachment")
-> Reported-by: <syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com>
-> Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+> Fixes: 47c09d6a9f67 ("bpftool: Introduce "prog profile" command")
+> Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 > ---
-> v2: Add a fall back path that removes a prog from the effective progs
->     table in case detach fails to allocate memory in compute_effective_progs().
-> ---
->  kernel/bpf/cgroup.c | 55 +++++++++++++++++++++++++++++++++++++++------
->  1 file changed, 48 insertions(+), 7 deletions(-)
+>  kernel/bpf/syscall.c | 1 +
+>  1 file changed, 1 insertion(+)
 >
-> diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-> index 128028efda64..5a64cece09f3 100644
-> --- a/kernel/bpf/cgroup.c
-> +++ b/kernel/bpf/cgroup.c
-> @@ -723,10 +723,8 @@ static int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
->         pl->link = NULL;
->
->         err = update_effective_progs(cgrp, atype);
-> -       if (err)
-> -               goto cleanup;
->
-> -       /* now can actually delete it from this cgroup list */
-> +       /* now can delete it from this cgroup list */
->         list_del(&pl->node);
->         kfree(pl);
->         if (list_empty(progs))
-> @@ -735,12 +733,55 @@ static int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
->         if (old_prog)
->                 bpf_prog_put(old_prog);
->         static_branch_dec(&cgroup_bpf_enabled_key[atype]);
-> -       return 0;
-> +
-> +       if (!err)
-> +               return 0;
->
->  cleanup:
-> -       /* restore back prog or link */
-> -       pl->prog = old_prog;
-> -       pl->link = link;
-> +       /*
-> +        * If compute_effective_progs failed with -ENOMEM, i.e. alloc for
-> +        * cgrp->bpf.inactive table failed, we can recover by removing
-> +        * the detached prog from effective table and rearranging it.
-> +        */
-> +       if (err == -ENOMEM) {
-> +               struct bpf_prog_array_item *item;
-> +               struct bpf_prog *prog_tmp, *prog_detach, *prog_last;
-> +               struct bpf_prog_array *array;
-> +               int index = 0, index_detach = -1;
-> +
-> +               array = cgrp->bpf.effective[atype];
-> +               item = &array->items[0];
-> +
-> +               if (prog)
-> +                       prog_detach = prog;
-> +               else
-> +                       prog_detach = link->link.prog;
-> +
-> +               if (!prog_detach)
-> +                       return -EINVAL;
-> +
-> +               while ((prog_tmp = READ_ONCE(item->prog))) {
-> +                       if (prog_tmp == prog_detach)
-> +                               index_detach = index;
-> +                       item++;
-> +                       index++;
-> +                       prog_last = prog_tmp;
-> +               }
-> +
-> +               /* Check if we found what's needed for removing the prog */
-> +               if (index_detach == -1 || index_detach == index-1)
-> +                       return -EINVAL;
-> +
-> +               /* Remove the last program in the array */
-> +               if (bpf_prog_array_delete_safe_at(array, index-1))
-> +                       return -EINVAL;
-> +
-> +               /* and update the detached with the last just removed */
-> +               if (bpf_prog_array_update_at(array, index_detach, prog_last))
-> +                       return -EINVAL;
-> +
-> +               err = 0;
-> +       }
+> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> index 34fdf27d14cf..dd8284a60a8e 100644
+> --- a/kernel/bpf/syscall.c
+> +++ b/kernel/bpf/syscall.c
+> @@ -4286,6 +4286,7 @@ static int link_create(union bpf_attr *attr, bpfptr_t uattr)
+>                 goto out;
+>         case BPF_PROG_TYPE_PERF_EVENT:
+>         case BPF_PROG_TYPE_TRACEPOINT:
+> +               BTF_TYPE_EMIT(struct bpf_perf_event_value);
 
-There are a bunch of problems with this implementation.
+same as for previous two patches, if there are types that bpftool
+expects and might not be in vmlinux.h due to different kernel
+configurations, it's cleaner to just define their minimal local
+definitions with __attribute__((preserve_access_index))
 
-1. We should do this fallback right after update_effective_progs()
-returns error, before we get to list_del(&pl->node) and subsequent
-code that does some additional things (like clearing flags and stuff).
-This additional code needs to run even if update_effective_progs()
-fails. So I suggest to extract the logic of removing program from
-effective prog arrays into a helper function and doing
-
-err = update_effective_progs(...);
-if (err)
-    purge_effective_progs();
-
-where purge_effective_progs() will be the logic you are adding. And it
-will be void function because it can't fail.
-
-2. We have to update not just cgrp->bpf.effective array, but all the
-descendants' lists as well. See what update_effective_progs() is
-doing, it has css_for_each_descendant_pre() iteration. You need to do
-it here as well. But instead of doing compute_effective_progs() which
-allocates a new copy of an array we'll need to update existing array
-in place.
-
-3. Not clear why you need to do both bpf_prog_array_delete_safe_at()
-and bpf_prog_array_update_at(), isn't delete_safe_at() enought?
-
-
->         return err;
->  }
->
+>                 if (attr->link_create.attach_type != BPF_PERF_EVENT) {
+>                         ret = -EINVAL;
+>                         goto out;
 > --
-> 2.35.1
+> 2.35.2
+>
 >
