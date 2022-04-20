@@ -2,349 +2,725 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B1994507A66
-	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 21:40:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2586F507A08
+	for <lists+netdev@lfdr.de>; Tue, 19 Apr 2022 21:13:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345567AbiDSTnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Apr 2022 15:43:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58308 "EHLO
+        id S1354346AbiDSTQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Apr 2022 15:16:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233847AbiDSTnG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 15:43:06 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E889F403DD;
-        Tue, 19 Apr 2022 12:40:22 -0700 (PDT)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23JIc9QW024754;
-        Tue, 19 Apr 2022 19:40:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-id : content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=8sM6FeFXDnCNhHJgp9rwZ7df9bNZPUQSK9c5e9DLV10=;
- b=gbL+28G+H5/1LRo9HyequsYPO+0iqzlXl8022jmrq+vUiyaRugxyX3hrSbzDSGL8ZYAa
- NZHfOi814rn0vV2wWRMY6LuVuY5EUJFmA/0S/jUpwb0Noy0H5XzZK0uQoAi9hk+8hQzV
- kyQCzEC6TITYZ10jJJE/68Dyqr7RaiYpYe1obfd2aDXdxDVkFZW6pj8d2/Aht88NoQ3q
- aWC0aFWnjfoJvUz5FaZr1G8hzUIv/l866ij2UTnuLD53HwQjhaYv/Zj1wnY4ktoiu0Sc
- 38ZStJ95xc62vhZXDhfL8Qoe3BFwBmeE2SNlj2Fbii3phoicoOpZVlPu+QQu4HRkTOLa bg== 
-Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3ffnp9ex3c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 19 Apr 2022 19:40:14 +0000
-Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 23JJQh5P040925;
-        Tue, 19 Apr 2022 19:40:12 GMT
-Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2174.outbound.protection.outlook.com [104.47.56.174])
-        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3ffm891qmm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 19 Apr 2022 19:40:12 +0000
+        with ESMTP id S241145AbiDSTQL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Apr 2022 15:16:11 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2139.outbound.protection.outlook.com [40.107.244.139])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAF4E3EF0D;
+        Tue, 19 Apr 2022 12:13:26 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VVz5cnZzKVvlC1s6iWEbaHqNhUPOzv3VlVR7T2vWVub0TLnyyW7ABgY4Wco+7KAo2JVMGriicJeRjePjsMDVFIkDAn7HKTyunf/avRbPwlthiu+bGm5VjKFdbX9+YGf52jvKecIlzfy/OWBngCXsJi3ajLDG6mrIMI5oXlL5DiTSgYOYhvA9LOaeuBEvdttrFXkHHiLdB5iTjtPJfQ0VKMXlDw8xVqN5PF+LGlvLoxLq8isBO1kodhrszi0T8Puae732unhM6XqcetrvXsVnEB9iwx2+GLBXIDU2yEttoK+wz+2UNyLYmzqi7cYgjQyCH/Knn6vMSjz/xOshkYqOSA==
+ b=Xjr3aIsF8bJx8CHleyJ0GkA/bm9FMZceFyKmhZLzvsA4LEnzEeFFW1DvrDd84WOTfpzeaFz/c494Gjkzn+vcDsIuTq9q5f8BJOtYDgmzoqXqkU5/1xqaTcnzgY0BcHXK3GTbVgYGUut0BPeEcnIne29iPlX55Dsw+wer6FVDvO6lfRkAsVNXUIOYqFC+302a2cxtSVehozUYm73XrI5pWrLuHgCZ11aQVqUMeujs5z7aOO4dX3OpFxuRvKd70Oz74crrTgnmBaLESh9ge0pBi2YXzTn9IdmK78Yz2ER4WwhwZtIYjiGOM5FJry4Xuy9GbacbI/3pidJHHuQl3eCUSg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8sM6FeFXDnCNhHJgp9rwZ7df9bNZPUQSK9c5e9DLV10=;
- b=BRORaBAsYmkznNC6GnDmTjbbB3TP7i4iVV4k11hkN6wfddlel/p3rZavdm9HT2Yze8YkGfylagrJQ1o0riMqDd70uebsyw8JRujkm+G1z73DCKQfYYgq1qWAximmu/m2psaUELX5f5CUqBjuNG/CF2QXyVq4PeiYGO44foJgbWEDRE5w6jisb+kRTFER4aU2AK3tSXDcBMlM85a9JA+5kbmM5GqWv6hIyuH23L6G93xM3vv/ixfZMfXYLAwKFPQBL3VotyTqef46gsnb4YU6kqK3v/IMuPtXvQy84BXIhDN1qFoKYEL9h8TJz4hyWlnTHnt7huuFlzpLe34yQXPc9A==
+ bh=arj+0HeIT+5WvxCqG/lp6wj7qSjCoE7VFj69Nf/lo0c=;
+ b=N3N7zUfc8EXmi+/Iby4Wvlfv8+I55t45aKaSCh8JsscgBeH16cHTcHcPVkalK4cwVTkEydZ+TVGoFzERhQnmd2wvO4CEoGuiWtdzs8VWYjUkVo6Jubw7QyVaXgGsP46KNOSLvIWPWqiBYY5yEfTN8zjfUjvDIeemMJ9U12qsWrnbhYEG0Ow3P0IEEvebmyfAIZpVBf2BAls+i5v19NyK6QMD8xvolNGw9mU6Q2NJv3JGk+SO0hMPf+4j7x/+TqR3QFl4zzZvYlF5mJAUw00fjXtJWoHQL2oTZFsin7waXvVliLyvIBpRnYEfWETF5v2hYgCDTso8PZTfLJRu8Wvp5Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8sM6FeFXDnCNhHJgp9rwZ7df9bNZPUQSK9c5e9DLV10=;
- b=A4aVRvrhPuTxFjIn0uY6Gs+9RarOJvqQ4469Y6EppVwixJUqTnc1Is/f/sQB5YR9JmMQT67qekeSa2J556x6BRzehaTwn/Iwtwqi9Rfj953zqzMoXTHvRhDHo7WkWn1WAVuhL/q9nSGCb0qPE+qRekfueuC9otY2xuJjQDdkI6Y=
-Received: from BN0PR10MB5128.namprd10.prod.outlook.com (2603:10b6:408:117::24)
- by BN0PR10MB5333.namprd10.prod.outlook.com (2603:10b6:408:115::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.18; Tue, 19 Apr
- 2022 19:40:10 +0000
-Received: from BN0PR10MB5128.namprd10.prod.outlook.com
- ([fe80::f427:92a0:da5d:7d49]) by BN0PR10MB5128.namprd10.prod.outlook.com
- ([fe80::f427:92a0:da5d:7d49%7]) with mapi id 15.20.5164.025; Tue, 19 Apr 2022
- 19:40:10 +0000
-From:   Chuck Lever III <chuck.lever@oracle.com>
-To:     Trond Myklebust <trondmy@hammerspace.com>
-CC:     "linux-cifs@vger.kernel.org" <linux-cifs@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "simo@redhat.com" <simo@redhat.com>,
-        "ak@tempesta-tech.com" <ak@tempesta-tech.com>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        "borisp@nvidia.com" <borisp@nvidia.com>
-Subject: Re: [PATCH RFC 08/15] SUNRPC: Add RPC_TASK_CORK flag
-Thread-Topic: [PATCH RFC 08/15] SUNRPC: Add RPC_TASK_CORK flag
-Thread-Index: AQHYU0UH7NIJR860dUOYblj2e849Maz2i/EAgAEAwYCAAA1cAIAACfaA
-Date:   Tue, 19 Apr 2022 19:40:10 +0000
-Message-ID: <B7355D85-1CCF-4836-9B85-E6C9E019CD9E@oracle.com>
-References: <165030062272.5246.16956092606399079004.stgit@oracle-102.nfsv4.dev>
- <165030072175.5246.14868635576137008067.stgit@oracle-102.nfsv4.dev>
- <a771c65353d0805fc5f028fa56691ee762d6843f.camel@hammerspace.com>
- <AE1190F4-EDE4-4C2D-94C9-02A5EDAAFBC6@oracle.com>
- <36618d90e44961aed7b40c4640952fd574fce60c.camel@hammerspace.com>
-In-Reply-To: <36618d90e44961aed7b40c4640952fd574fce60c.camel@hammerspace.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3654.120.0.1.13)
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2c814be9-2790-4374-78af-08da223c6a2f
-x-ms-traffictypediagnostic: BN0PR10MB5333:EE_
-x-microsoft-antispam-prvs: <BN0PR10MB5333E1B1D4A08FEFB0BA11E293F29@BN0PR10MB5333.namprd10.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: SmsNWy4YtQDi8ma4AE4DyqCnn13lHItcPLsZEYVIUw7Rl19/X1S1dYPJSues0uk9Sr/mxzti6Anz9yXUH3tKFb/PvoQVi6kyeR0x5NLfj/a5RkGfEnIcK8sbEAxGq5aFQ50cwzEhrrEIHf9gqrdIOqPfTSV0jDAyNUYRb514Y7uL9MIxLsKoQAqALjfzYHL9PZuOHPsRcLqj3P0/1pRc/zggiR3hf8FHhvWVsP6fsqovcCvQe+4RujYno9TL3+HyFbmp6OnBjW9Xow6b/5AvuTZyyfVS6zwtKzYmGvHb6IH807WwEJ4gfa+YtkB6L6kYCaML/uOA4UiqGjSmMGYdmHB95MBdenTmCRCh/gkjgJIXnCxzrBTAysTacR10vACQ8ESIUm3uOenzuzYbaffcckl2wpsXoTt5Uxt/KZAEiq4ph32B6HYeahCstRKgiqs80OrI+hB7O/+tMIMAs9ccss5VOWoZygF/UBsugTu5Rerj7oCWaEAtuj1v+Sl52ep4k7X632E6e1K24ssfkkZ8VpOfD9pACZry/I7ITAQ3IbKk/V28oP40P1gUPfcaMOw5rwR3ICOI05omY+tBkvFjDf8r4sHlLEbhkOp5sQwrm8O+AoxbEjxMa635lbTNDvuohq10v5vq1Wvw6NSEQPJ7GuEnHUnpQL+e3Yx4jHOHVRa1N+mFvgRIdX0pFaldhz5mV0NyYuEeXJ1s6brw3jWvJnnGm4G7ScZ+x89a/OOl9c0p6WX/aG3PYiuDbnUz2GU/
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN0PR10MB5128.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(2906002)(8936002)(53546011)(122000001)(8676002)(76116006)(4326008)(33656002)(508600001)(83380400001)(5660300002)(36756003)(66476007)(54906003)(71200400001)(186003)(6486002)(91956017)(66556008)(64756008)(26005)(6506007)(6916009)(66946007)(86362001)(316002)(38100700002)(6512007)(66446008)(2616005)(38070700005)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?8xmoy22Y/2vkwO2khRzfk276rPKErJa0gNJ6JWmYTzmndQNFMDan0RUGgt9O?=
- =?us-ascii?Q?7W1TGcijE2xwOfTmSOd8VdoVIgNn2kBvP7MKnu2gg4Zm0HQfHsj3DH8oXCZI?=
- =?us-ascii?Q?VAqDiyBXyOo5/p36G0kEGjB+d9P0ZJUxDYlmMEsl06jiHmGZaaNfE6a2KlOR?=
- =?us-ascii?Q?mZdu0q1F9uzlQSCJXEA/KGyBi5j1wmd/uzPD3/yo/JsZno9172bjoqEdJKMs?=
- =?us-ascii?Q?WGHRyZbX7E4LW6z2AZiBZq6qT4WtoVdFhIzLcNfbK07JUGKs6BdOUEMfiY5M?=
- =?us-ascii?Q?fJNlA5pBOOBcUhMPgGy3iBKxqGhpTJe6ynRONH9iz3JwsLBVHSF55RMZfn6h?=
- =?us-ascii?Q?HGUUmHalavgXZ34pi/AZ3dl625l3+/6qjkGbDloqgj/8dlkprkoW2LXB227o?=
- =?us-ascii?Q?1FSFZ2pVqIp+CibRePyW6mbdMv3a1x6BkN/zA6gYX6buVwhzr4tXA+M8gOlZ?=
- =?us-ascii?Q?liF1Yi8G70oEOy1NIfwvNyl1JtEob80mBz5gOCQ3dUgN+feK87aj4AuWFdMJ?=
- =?us-ascii?Q?QJgzWHRqVrkAhZPNSv65cM0IAEHEfSl1AMnysY17nOYrvDCdMJ5AYznfbR89?=
- =?us-ascii?Q?siNQUFAK5YEBOGIhTh8QYM1oKKPDlCgqPUlrXndCblP/TMx6LwgWbzvKQi3T?=
- =?us-ascii?Q?xLFyLl8jDEIUeHjNHfQatvFsL15RrcPl2CfHqAkUDOw949HweQWnlQNFjr7W?=
- =?us-ascii?Q?Oi2Rkwb0xFcAU5hQRpRYBwPeCaMSj4MQJHurNsgl4GG/b/qeWbMqfVPoWqSQ?=
- =?us-ascii?Q?r9KEgBxi81o0Su6g5K9TQVfW8LLNY6/kFSlTMcxRdqsTyfTkyFSDb4Qog2Li?=
- =?us-ascii?Q?z645FWfNZxgHgDgio0bTuqw2jCf9bl+NKAJ5avKm6Okm6viKTZ5HOEZ05HEQ?=
- =?us-ascii?Q?ka8ltv8NuhTPLS2sCFVOx5cz9LOj6eq54JRQeXk7HAa8B1uUMKCy+0upbT0m?=
- =?us-ascii?Q?qfVEDARpgFVBDr8q1zKWGgOPDinzvXnkR+AUhH+5f8y+qgtLF7dhuvOCPMYz?=
- =?us-ascii?Q?yQ3mm7niha+mafSTOH8PnwM5u0SzJToaWptYdUNenHw90XaAvIqbXKeY2hBW?=
- =?us-ascii?Q?5DtD8MYClZKGvUvPwRF0mJxxTluI0S5oKmUspr2jP8qP1gANFeaOpYQjf3GB?=
- =?us-ascii?Q?4ehjN4HXyv7tHIOzPX8UaDWldqvyTFbpjys26Kk3Bw4xEojgqLnPyAYAniOf?=
- =?us-ascii?Q?8UNP1SazJK1uJY72IzI6Rd+2Nv+X3oAllQJPSNkMcMm7RW/a1+6vCxP83k6F?=
- =?us-ascii?Q?V9xol5ELuq9w1yPTAYdkkoqUPvudq3B7qi9tBfb/KKFWFuf4W/ZCt/F7gyA2?=
- =?us-ascii?Q?HU86OOIBOAmgDq2eHox5ERjdTCeppm52r+p+4Vg3H1GhevAaODxzh97OzQZH?=
- =?us-ascii?Q?w2RK1bgkFbLjrHeB1B4bXuSP7SlXTD94REUD2P2ovvsXElQXzpNE9xsAkyAH?=
- =?us-ascii?Q?wFeKMZKPyLwOz+HQUe+4Gp/3xaIEIQ1ls/oirNUADorKZve8hrWVCXqw2HaX?=
- =?us-ascii?Q?KU2AkJyM9x44N2u6+tvGS7noC0aoIRWDXF2C9zxto0FvPgBqxN1qjbSDiGWb?=
- =?us-ascii?Q?yL9prdKWWYw+/Qtv8iwLwEszfsQERFGdheIUE3rbcAsX8LcaEhvDQIIoKbES?=
- =?us-ascii?Q?LOSxXyH0SUzPIaWXgY5ecHAeCghC4IMmnqcbaZGTZ0AKodDl4+Yy7b+AA8Yb?=
- =?us-ascii?Q?dmAcnNo1Y2xVKPIoQjf7E9PwjDR2dSJ7GavGnVFUBoyIlIna3dBAdHFeS5wW?=
- =?us-ascii?Q?q6myeIinlqYldk0pLLgWEZcZhVlTTpU=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <CCA815AB4FC1AC479E9A3206739D3865@namprd10.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+ bh=arj+0HeIT+5WvxCqG/lp6wj7qSjCoE7VFj69Nf/lo0c=;
+ b=xQxqi6kQR0f7yCfG1/g2RWVC1s0qT73TgDVHpMiyzmYOIZYPxJdwt3BYuEQqy7pnPpDrWaPZkzdt/MDzyikM+iPX+kwvR1u9+g/H67uaIaMsfjl///EBrdDP2xs0GKukthxhRIFRXA0Q35QPn9qA0ClLnE+bZRFaewXvao1MUk8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by BL3PR10MB5489.namprd10.prod.outlook.com
+ (2603:10b6:208:33c::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.13; Tue, 19 Apr
+ 2022 19:13:23 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::4581:787c:1a7a:873e]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::4581:787c:1a7a:873e%3]) with mapi id 15.20.5164.026; Tue, 19 Apr 2022
+ 19:13:23 +0000
+Date:   Tue, 19 Apr 2022 19:13:18 -0700
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
+        linux-phy@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Hector Martin <marcan@marcan.st>,
+        Angela Czubak <acz@semihalf.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        katie.morris@in-advantage.com
+Subject: Re: [RFC v7 net-next 10/13] mfd: ocelot: add support for the vsc7512
+ chip via spi
+Message-ID: <20220420021318.GA1220@COLIN-DESKTOP1.localdomain>
+References: <20220307021208.2406741-1-colin.foster@in-advantage.com>
+ <20220307021208.2406741-11-colin.foster@in-advantage.com>
+ <YlaKlhiQEWMxJxhU@google.com>
+ <Yl57uP+rsl/bsI4i@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <Yl57uP+rsl/bsI4i@google.com>
+X-ClientProxiedBy: MW4PR04CA0130.namprd04.prod.outlook.com
+ (2603:10b6:303:84::15) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
 MIME-Version: 1.0
-X-OriginatorOrg: oracle.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 2d01dd7d-471d-4561-3df3-08da2238ac70
+X-MS-TrafficTypeDiagnostic: BL3PR10MB5489:EE_
+X-Microsoft-Antispam-PRVS: <BL3PR10MB5489FB5E32F85ACF5E1B199CA4F29@BL3PR10MB5489.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gMge5GI8pNFjFoShODG5e3Ws3TKPNiCq+jgp8fWfDI139GZbUk5IYq7YGdD3d5g5ZEt3KHbruT/wfxy5Aw0pHviaD+ngdim7od+GKYpXnXA8zflApxR9O1zGGAw7b6S791RwSQGYSIMp/P4GfPGUU/BqqJ5MciVLqp29H8TbTe+a+PDvUQtcU4KF9FJ+VCz0dp6BTDFrVKa0Ug8JulxAMiiGdl6vRnADfO5rNquRbUj4NTArZ59jycT3vFEATtmy0ucSoEpOP+e0kLQhU8F75p5uZOgO4/kqb7/GZotm8W1XKtbBMxtl9DugKgWUcVGJEwIfSK10U+fAn5T9f/3Ch0rGwaCAq5x4ZrS8rk0/YPGE3lWVTGu+pChHshfTbBO0DxSduONb9sYwxzB3uNzpd7tKTC3uS7tjASCHmjN7zUuB9MUlw6WxXtnWx3VzZZpo1NIji5LEKWhvYlBIyBLgvqgGL5KFKdHWKvRaUCu3go5z0o60UmfCiq8uimbyV7dsqrOYx3gvv8/6WEYS4uhUR/2BdWNy8eEy+KqwNJOOrXg4fi5ebCBukfGcM8HuGK5EbeJgmaXqHTfX6xoD8d/N7f2ITHfGRZ8lV3t2CtOyZoYwTdG9HMzkNwGe9rGfl2dkk7OZDi/2YHl8frBK6P3dkxDNAfyCZ7w1O4QGrMJ0ARMXJ8nHNQ2vomBBcn8EAId/DX2mNjsAdBz+EGpTaXIozZyLBnK+jUuKo+xm3wD/abYCLOwqwGRRgQbQEp82DliAjdlxcOefj65QBoK+7EUqgSY8zUOvzydVUsNcW5yRt0A=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(396003)(39830400003)(346002)(376002)(136003)(366004)(83380400001)(107886003)(186003)(26005)(38350700002)(1076003)(30864003)(38100700002)(5660300002)(8936002)(7416002)(44832011)(508600001)(316002)(66946007)(6666004)(6512007)(2906002)(6506007)(52116002)(8676002)(4326008)(33656002)(66556008)(66476007)(6916009)(54906003)(966005)(6486002)(9686003)(86362001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?L3l2dXkzeTd3WlN6NFV5eWlzZUU4NVFUK0ZHT0t5SmRuV2FFSkVHUm9OTkhr?=
+ =?utf-8?B?Njk5WkYxQnhnMFNCZ05oYitWRmxjUnpaOWN5ZEtzWjZEYUs3cHQzQXlEa0Iz?=
+ =?utf-8?B?R1Vla2JEaUlwV2szOW1jZnk4ZEJwUENwVzg3Wm1UUnZjc2lGL05DT3ZxYllM?=
+ =?utf-8?B?eHhkN1JEaW4xVmJmNEpHVk1RN3c5elV5UmI2UERNeHhBM3dEaWIwcmRZSUxZ?=
+ =?utf-8?B?MDBkay9HdnRaT0krSi9FNW9nNVNBOTdFU0FBTWozUTNFQmFRQ01HUTQ3Q2Ny?=
+ =?utf-8?B?R2lOMlAxeU5UUUF1SXJPYXJIc0h3UDRQdWdKeE1sY0owTnMrYlVnM3lrTjg0?=
+ =?utf-8?B?bmpJdm5XSVBnckxoL0tVSFNKTll0NTgweVU4QTlwTFp4Zkt3YzlPR1UzMEZ4?=
+ =?utf-8?B?NHFhbTAyczRhbUtsUVNGNjNkZTA0N2d0bFpTUHBvMlBVV2c0ZXZ5aUgwaGRX?=
+ =?utf-8?B?SmltUDdZL0M0UCtWS3dHeHpCbDZWRWYwR0hhYTBXZnlJbFAyVktmY3B3UmhW?=
+ =?utf-8?B?ZUZLZ0ZMUjJxaXNRK2tBalpBQUUydmRCNjRQN0FHOHBkNlhzZmpScmVISm93?=
+ =?utf-8?B?cmtOb1JQdTBEcktkWlhINnRPWHVFb1dUMXM5WEg1Nmhrd3NiVmRIVEhkSjdX?=
+ =?utf-8?B?bnBSTGgvRUFiSU9yNHd1MlhFTWVIVXgxWFkrUUswbXl4V00xaW5LVi9GSTFl?=
+ =?utf-8?B?Z0UxVXlVdlFWRGFEZkxNUytJcnJPVWNIRmM4ektPTDBvQk0wRHR0L3NCZURK?=
+ =?utf-8?B?Tmp6N0huMkU2T2dNK3l3ODhiS2p2YnhtL01YcWNIYm8yekJ6dzJsZXNrTVlv?=
+ =?utf-8?B?b2JOU2FVOTJuNHE0My9ON1F0c3ZMY0k2ZkdBOEQwVW5DMGhEZHJadDU3Nzkw?=
+ =?utf-8?B?K0FLZ1AwZ2FlcTFNWE5rcjVRbXEzMllBUzczZFFONGd2TS96RnZwTWgydFJz?=
+ =?utf-8?B?Q3U1KzVoWjBQQ3FMRUxVZUh4V3U4VS9XMXFscDgrTGVHTU9EMWczanRSR0JG?=
+ =?utf-8?B?S3QrNFhrWXRxdUphUDI1b0pIUVc0ejhRclcwUWE1THRZSndQQTdYYWJTVzhK?=
+ =?utf-8?B?Zk40NGozNVFLNXRWSys1Qi9WZ2dnVVprUG84RU9ibkFjN25HdE9IelpYNHhx?=
+ =?utf-8?B?bXFhWTR5TVBtZUJoMFgvcU0rRmVHTmpzNklhQ05IMmsreE5JVmtXTW1ycGlK?=
+ =?utf-8?B?MmpTUnBNL3hSa3dVVGtGaTQ3enMxdWNkaEpUa1dGUktHcWQ2UmQxcGpUUnFq?=
+ =?utf-8?B?RXZtKzlDQ0x5YXFGdDVrOUxsOXp6QTBoNlVMY2F1WHVTZUk2a2ovN3dxbjdu?=
+ =?utf-8?B?d0FuWVBDQkFua0hzZmFYdENDS1g5MnJyLzdIRGU4c0JwelVZNUw0U0c2cVgz?=
+ =?utf-8?B?M1NGTFFKendYTnV1eE5qTDZ5VFoyRUNocm9BNmRJSi9Oa1NScFNialoxL1k4?=
+ =?utf-8?B?VFJGKzNKNzdEc29IYnA3QjJFbDR1amRyV2ZvYUllU3hKZ1Nqd1JacGRBMnhE?=
+ =?utf-8?B?ZVdDZG96R1NzRmNXWDBJeHZtNEZJZ3ZsVFhORHdBQ3ZRZE9TNzJ4Q2o0bUFK?=
+ =?utf-8?B?Z1pid3gwOGNJb1pPNWg4QnpxbDFlNkRHcjVJWWVSZzJuR0JTbU9lWXRpYnBG?=
+ =?utf-8?B?alcxY2JOb0puS1NDS3JCTkpVV0Z6WEcxZUVCNUYxbnBXVXhFUFRiM1AyclpU?=
+ =?utf-8?B?N3ZteDIrZG5HVk95S2JwTm1pS1AwSlV4VU5YbjdqazEzZFZnbjNVb2lOVkxw?=
+ =?utf-8?B?U09KS2xyTkExZUkyU25Cc2pNWVJvb2IvRWM0K09Gem1oUXAyK1ZjTlJyZnlO?=
+ =?utf-8?B?ckFjYWVUdXRWMkJvUjRWNWVRK0FtTkpEcmFQcUFrZHNXOHRFSGV1Qk1INW91?=
+ =?utf-8?B?SG9JNU9hVUF5UFJteWM4VnRaMzYrSkdUbFVRUjcvOE83ampZcmo3dzFNSURY?=
+ =?utf-8?B?MjUxNzhBc3pIdTIvRmRPdTdEa2FPU1orNkN0LzZKQ0NndWJzT2dMd3BsVHh5?=
+ =?utf-8?B?MnlOL0orMWNmVXdtV1JsbVk4RXpJTmtvc0M1K2FrbUhVYjN1TktpYnVURkRr?=
+ =?utf-8?B?RHRQYlF2TzdObmJTM2RaWjAvbVQxMVhXckRzOGJyY1ZCVFErcnpQM1RaUms0?=
+ =?utf-8?B?VWQzQnAxM2NkdFNQeUFadmltM3d0RzhvTWRMNGVIYlVyQTVKNWtxUm9CRnhi?=
+ =?utf-8?B?M2ZZOExxa3IvS0VlaEluQlY1TlpXeit1YVJ3d3lZSEdRRVBkY1d5b3BvZ3Uz?=
+ =?utf-8?B?T096SmY2c2tYYThiU3d3NjFZejBuMzdpSmJSclIrRkNGVUpMaHI4OS84YU1m?=
+ =?utf-8?B?S0h5d0g1Ykh1cXhoNmdnbjA2ZjdPcFBlbDBJK1ZxUXhLbDFReXRQa2NPWWh0?=
+ =?utf-8?Q?+4627X4owyOgNvbU=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2d01dd7d-471d-4561-3df3-08da2238ac70
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN0PR10MB5128.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2c814be9-2790-4374-78af-08da223c6a2f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Apr 2022 19:40:10.0287
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2022 19:13:23.6333
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: FcHnq8nCDMNIlaHVyXFuRkkp6mTg+OyXL6RxPVFM2ZT8PNkf+a1NMkro5donsHi+RCaY75iyrW3NPISCey8tWQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR10MB5333
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.858
- definitions=2022-04-19_07:2022-04-15,2022-04-19 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 bulkscore=0
- suspectscore=0 mlxscore=0 spamscore=0 mlxlogscore=999 phishscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204190110
-X-Proofpoint-ORIG-GUID: wWBQEIw0JjFBAdLu1n6rFZh2iyaKQLzn
-X-Proofpoint-GUID: wWBQEIw0JjFBAdLu1n6rFZh2iyaKQLzn
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: AvZeJeTVtGc6VbjPpxRdcvz22hqsBofcgP7EBrxMo8GJ+NiSd7D0y9aDo8Ap5c5vC2Cf22nt9MorpabZuNrhdSxZwyMyO3KM/1su1W6f8q0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR10MB5489
+X-Spam-Status: No, score=0.0 required=5.0 tests=BAYES_00,DATE_IN_FUTURE_06_12,
+        DKIM_SIGNED,DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,WEIRD_QUOTING
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Thanks for the feedback Lee,
+
+I'll do some final cleanup (hopefully this month...?) and prepare
+another patch set.
 
 
-> On Apr 19, 2022, at 3:04 PM, Trond Myklebust <trondmy@hammerspace.com> wr=
-ote:
->=20
-> On Tue, 2022-04-19 at 18:16 +0000, Chuck Lever III wrote:
->>=20
->>=20
->>> On Apr 18, 2022, at 10:57 PM, Trond Myklebust
->>> <trondmy@hammerspace.com> wrote:
->>>=20
->>> On Mon, 2022-04-18 at 12:52 -0400, Chuck Lever wrote:
->>>> Introduce a mechanism to cause xprt_transmit() to break out of
->>>> its
->>>> sending loop at a specific rpc_rqst, rather than draining the
->>>> whole
->>>> transmit queue.
->>>>=20
->>>> This enables the client to send just an RPC TLS probe and then
->>>> wait
->>>> for the response before proceeding with the rest of the queue.
->>>>=20
->>>> Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
->>>> ---
->>>>  include/linux/sunrpc/sched.h  |    2 ++
->>>>  include/trace/events/sunrpc.h |    1 +
->>>>  net/sunrpc/xprt.c             |    2 ++
->>>>  3 files changed, 5 insertions(+)
->>>>=20
->>>> diff --git a/include/linux/sunrpc/sched.h
->>>> b/include/linux/sunrpc/sched.h
->>>> index 599133fb3c63..f8c09638fa69 100644
->>>> --- a/include/linux/sunrpc/sched.h
->>>> +++ b/include/linux/sunrpc/sched.h
->>>> @@ -125,6 +125,7 @@ struct rpc_task_setup {
->>>>  #define RPC_TASK_TLSCRED               0x00000008      /* Use
->>>> AUTH_TLS credential */
->>>>  #define RPC_TASK_NULLCREDS             0x00000010      /* Use
->>>> AUTH_NULL credential */
->>>>  #define RPC_CALL_MAJORSEEN             0x00000020      /* major
->>>> timeout seen */
->>>> +#define RPC_TASK_CORK                  0x00000040      /* cork
->>>> the
->>>> xmit queue */
->>>>  #define RPC_TASK_DYNAMIC               0x00000080      /* task
->>>> was
->>>> kmalloc'ed */
->>>>  #define        RPC_TASK_NO_ROUND_ROBIN         0x00000100    =20
->>>> /*
->>>> send requests on "main" xprt */
->>>>  #define RPC_TASK_SOFT                  0x00000200      /* Use
->>>> soft
->>>> timeouts */
->>>> @@ -137,6 +138,7 @@ struct rpc_task_setup {
->>>> =20
->>>>  #define RPC_IS_ASYNC(t)                ((t)->tk_flags &
->>>> RPC_TASK_ASYNC)
->>>>  #define RPC_IS_SWAPPER(t)      ((t)->tk_flags &
->>>> RPC_TASK_SWAPPER)
->>>> +#define RPC_IS_CORK(t)         ((t)->tk_flags & RPC_TASK_CORK)
->>>>  #define RPC_IS_SOFT(t)         ((t)->tk_flags &
->>>> (RPC_TASK_SOFT|RPC_TASK_TIMEOUT))
->>>>  #define RPC_IS_SOFTCONN(t)     ((t)->tk_flags &
->>>> RPC_TASK_SOFTCONN)
->>>>  #define RPC_WAS_SENT(t)                ((t)->tk_flags &
->>>> RPC_TASK_SENT)
->>>> diff --git a/include/trace/events/sunrpc.h
->>>> b/include/trace/events/sunrpc.h
->>>> index 811187c47ebb..e8d6adff1a50 100644
->>>> --- a/include/trace/events/sunrpc.h
->>>> +++ b/include/trace/events/sunrpc.h
->>>> @@ -312,6 +312,7 @@ TRACE_EVENT(rpc_request,
->>>>                 { RPC_TASK_TLSCRED, "TLSCRED"
->>>> },                        \
->>>>                 { RPC_TASK_NULLCREDS, "NULLCREDS"
->>>> },                    \
->>>>                 { RPC_CALL_MAJORSEEN, "MAJORSEEN"
->>>> },                    \
->>>> +               { RPC_TASK_CORK, "CORK"
->>>> },                              \
->>>>                 { RPC_TASK_DYNAMIC, "DYNAMIC"
->>>> },                        \
->>>>                 { RPC_TASK_NO_ROUND_ROBIN, "NO_ROUND_ROBIN"
->>>> },          \
->>>>                 { RPC_TASK_SOFT, "SOFT"
->>>> },                              \
->>>> diff --git a/net/sunrpc/xprt.c b/net/sunrpc/xprt.c
->>>> index 86d62cffba0d..4b303b945b51 100644
->>>> --- a/net/sunrpc/xprt.c
->>>> +++ b/net/sunrpc/xprt.c
->>>> @@ -1622,6 +1622,8 @@ xprt_transmit(struct rpc_task *task)
->>>>                 if (xprt_request_data_received(task) &&
->>>>                     !test_bit(RPC_TASK_NEED_XMIT, &task-
->>>>> tk_runstate))
->>>>                         break;
->>>> +               if (RPC_IS_CORK(task))
->>>> +                       break;
->>>>                 cond_resched_lock(&xprt->queue_lock);
->>>>         }
->>>>         spin_unlock(&xprt->queue_lock);
->>>>=20
->>>>=20
->>>=20
->>> This is entirely the wrong place for this kind of control
->>> mechanism.
->>=20
->> I'm not sure I entirely understand your concern, so bear with
->> me while I try to clarify.
->>=20
->>=20
->>> TLS vs not-TLS needs to be decided up front when we initialise the
->>> transport (i.e. at mount time or whenever the pNFS channels are set
->>> up). Otherwise, we're vulnerable to downgrade attacks.
->>=20
->> Downgrade attacks are prevented by using "xprtsec=3Dtls" because
->> in that case, transport creation fails if either the AUTH_TLS
->> fails or the handshake fails.
->>=20
->> The TCP connection has to be established first, though. Then the
->> client can send the RPC_AUTH_TLS probe, which is the same as the
->> NULL ping that it already sends. That mechanism is independent
->> of the lower layer transport (TCP in this case).
->>=20
->> Therefore, RPC traffic must be stoppered while the client:
->>=20
->> 1. waits for the AUTH_TLS probe's reply, and
->>=20
->> 2. waits for the handshake to complete
->>=20
->> Because an RPC message is involved in this interaction, I didn't
->> see a way to implement it completely within xprtsock's TCP
->> connection logic. IMO, driving the handshake has to be done by
->> the generic RPC client.
->>=20
->> So, do you mean that I need to replace RPC_TASK_CORK with a
->> special return code from xs_tcp_send_request() ?
->=20
->=20
-> I mean the right mechanism for controlling whether or not the transport
-> is ready to serve RPC requests is through the XPRT_CONNECTED flag. All
-> the existing generic RPC error handling, congestion handling, etc
-> depends on that flag being set correctly.
->=20
-> Until the TLS socket has completed its handshake protocol and is ready
-> to transmit data, it should not be declared connected. The distinction
-> between the two states 'TCP is unconnected' and 'TLS handshake is
-> incomplete' is a socket/transport setup detail as far as the RPC xprt
-> layer is concerned: just another set of intermediate states between
-> SYN_SENT and ESTABLISHED.
+Something I plan to do, lest anyone object, is send the next patch set
+that explicitly states that ports 4-10 currently aren't supported, and 
+inform a user as such. One main reason for this is that the additional
+ports rely on the drivers/phy/mscc/phy-ocelot-serdes driver, which
+utilizes syscon_node_to_regmap. The same issue comes up, where syscon of
+course only supports mmio. I can foresee that being worthy of its own
+rounds of reviews, and will change the .
 
-First, TLS is technically an upper layer protocol. It's not
-part of the transport protocol. This is exactly how it's
-implemented in the Linux kernel. And, TLS works on transports
-other than TCP, so that makes it a reasonable candidate for
-treatment in the generic client rather than in a particular
-transport mechanism.
-
-Second, the "intermediate states" would be /outside/ of SYN_SENT
-and ESTABLISHED. A TCP transport has to be in the ESTABLISHED
-state (ie, the transport's connection handshake has to be
-complete) before any TLS traffic can go over it.
-
-Most importantly, the client has to send an RPC message first
-before it can start a TLS handshake. The RPC-with-TLS protocol
-specification requires that the handshake be preceded with the
-NULL AUTH_TLS request, which is an RPC. Otherwise, there's no
-way for the server end to know when to expect a handshake.
-
-In today's RPC client, the underlying connection has to be in
-the XPRT_CONNECTED state before the RPC client can exchange any
-RPC transaction, including AUTH_TLS NULL.
-
-To make it work the way you've suggested, we would have to build
-a mechanism that could send the AUTH_TLS NULL and receive and
-parse its reply /before/ the client has put the transport into
-the XPRT_CONNECTED state, and that NULL request would have to
-be driven from inside the transport instance (not via the FSM
-where all other RPC traffic originates).
-
-Do you have any suggestions about how to make this last point
-less painful?
+But I'm quite new to this process - so if that isn't an acceptable path
+forward I understand.
 
 
---
-Chuck Lever
+On Tue, Apr 19, 2022 at 10:07:04AM +0100, Lee Jones wrote:
+> [Adding everyone/lists back on Cc]
 
+Oops... I'm not sure how I did that. Thanks!
 
+> 
+> On Thu, 14 Apr 2022, Colin Foster wrote:
+> 
+> > Hi Lee,
+> > 
+> > Thanks for the feedback. I agree with (and have made) your suggestions.
+> > Additional comments below.
+> 
+> I'm swamped right now, so I cannot do a full re-review, but please see
+> in-line for a couple of (most likely flippant i.e. not fully
+> thought out comments).
+> 
+> Please submit the changes you end up making off the back of this
+> review and I'll conduct another on the next version you send.
+> 
+> > On Wed, Apr 13, 2022 at 09:32:22AM +0100, Lee Jones wrote:
+> > > On Sun, 06 Mar 2022, Colin Foster wrote:
+> > > 
+> > [...]
+> > > > +
+> > > > +int ocelot_core_init(struct ocelot_core *core)
+> > > > +{
+> > > > +	struct device *dev = core->dev;
+> > > > +	int ret;
+> > > > +
+> > > > +	dev_set_drvdata(dev, core);
+> > > > +
+> > > > +	core->gcb_regmap = ocelot_devm_regmap_init(core, dev,
+> > > > +						   &vsc7512_gcb_resource);
+> > > 
+> > > This just ends up calling ocelot_spi_devm_get_regmap() right?
+> > > 
+> > > Why not call that from inside ocelot-spi.c where 'core' was allocated?
+> > 
+> > core->gcb_regmap doesn't handle anything more than chip reset. This will
+> > have to happen regardless of the interface.
+> > 
+> > The "spi" part uses the core->cpuorg_regmap, which is needed for
+> > configuring the SPI bus. In the case of I2C, this cpu_org regmap
+> > (likely?) wouldn't be necessary, but the gcb_regmap absolutely would.
+> > That's why gcb is allocated in core and cpuorg is allocated in SPI.
+> > 
+> > The previous RFC had cpuorg_regmap hidden inside a private struct to
+> > emphasize this separation. As you pointed out, there was a lot of
+> > bouncing between "core" structs and "spi" structs that got ugly.
+> > 
+> > (Looking at this more now... the value of cpuorg_regmap should have been
+> > in the CONFIG_MFD_OCELOT_SPI ifdef, which might have made this
+> > distinction more clear)
+> 
+> The TL;DR of my review point would be to make this as simple as
+> possible.  If you can call a single function, instead of needlessly
+> sending the thread of execution through three, please do.
+> 
+> > > > +	if (IS_ERR(core->gcb_regmap))
+> > > > +		return -ENOMEM;
+> > > > +
+> > > > +	ret = ocelot_reset(core);
+> > > > +	if (ret) {
+> > > > +		dev_err(dev, "Failed to reset device: %d\n", ret);
+> > > > +		return ret;
+> > > > +	}
+> > > > +
+> > > > +	/*
+> > > > +	 * A chip reset will clear the SPI configuration, so it needs to be done
+> > > > +	 * again before we can access any registers
+> > > > +	 */
+> > > > +	ret = ocelot_spi_initialize(core);
+> > > 
+> > > Not a fan of calling back into the file which called us.
+> > > 
+> > > And what happens if SPI isn't controlling us?
+> > > 
+> > > Doesn't the documentation above say this device can also be
+> > > communicated with via I2C and PCIe?
+> > 
+> > During the last RFC this was done through a callback. You had requested
+> > I not use callbacks.
+> > 
+> > From that exchange:
+> > """"
+> > > > > +	ret = core->config->init_bus(core->config);
+> > > >
+> > > > You're not writing a bus.  I doubt you need ops call-backs.
+> > >
+> > > In the case of SPI, the chip needs to be configured both before and
+> > > after reset. It sets up the bus for endianness, padding bytes, etc. This
+> > > is currently achieved by running "ocelot_spi_init_bus" once during SPI
+> > > probe, and once immediately after chip reset.
+> > >
+> > > For other control mediums I doubt this is necessary. Perhaps "init_bus"
+> > > is a misnomer in this scenario...
+> > 
+> > Please find a clearer way to do this without function pointers.
+> > """"
+> 
+> Yes, I remember.
+> 
+> This is an improvement on that, but it doesn't mean it's ideal.
+> 
+> > The idea is that we set up the SPI bus so we can read registers. The
+> > protocol changes based on bus speed, so this is necessary.
+> > 
+> > This initial setup is done in ocelot-spi.c, before ocelot_core_init is
+> > called.
+> > 
+> > We then reset the chip by writing some registers. This chip reset also
+> > clears the SPI configuration, so we need to reconfigure the SPI bus
+> > before we can read any additional registers.
+> > 
+> > Short of using function pointers, I imagine this will have to be
+> > something akin to:
+> > 
+> > if (core->is_spi) {
+> >     ocelot_spi_initalize();
+> > }
+> 
+> What about if, instead of calling from SPI into Core, which calls back
+> into SPI again, you do this from SPI instead:
+> 
+> [flippant - I haven't fully assessed the viability of this suggestion]
+> 
+> foo_type spi_probe(bar_type baz)
+> {
+>   setup_spi();
+> 
+>   core_init();
+> 
+>   more_spi_stuff();
+> }
+> 
+> > I feel if the additional buses are added, they'll have to implement this
+> > type of change. But as I don't (and don't plan to) have hardware to
+> > build those interfaces out, right now ocelot_core assumes the bus is
+> > SPI.
+> 
+> What are the chances of someone else coming along and implementing the
+> other interfaces?  You might very well be over-complicating this
+> implementation for support that may never be required.
 
+I had one person email me about this already, though I understand they
+went another direction.
+
+But I could see this back-and-forth going away. I'll take another look
+at it and try to clean it up a little more.
+
+> 
+> > > > +	if (ret) {
+> > > > +		dev_err(dev, "Failed to initialize SPI interface: %d\n", ret);
+> > > > +		return ret;
+> > > > +	}
+> > > > +
+> > > > +	ret = devm_mfd_add_devices(dev, PLATFORM_DEVID_AUTO, vsc7512_devs,
+> > > > +				   ARRAY_SIZE(vsc7512_devs), NULL, 0, NULL);
+> > > > +	if (ret) {
+> > > > +		dev_err(dev, "Failed to add sub-devices: %d\n", ret);
+> > > > +		return ret;
+> > > > +	}
+> > > > +
+> > > > +	return 0;
+> > > > +}
+> > > > +EXPORT_SYMBOL(ocelot_core_init);
+> > > > +
+> > > > +MODULE_DESCRIPTION("Externally Controlled Ocelot Chip Driver");
+> > > > +MODULE_AUTHOR("Colin Foster <colin.foster@in-advantage.com>");
+> > > > +MODULE_LICENSE("GPL v2");
+> > > > diff --git a/drivers/mfd/ocelot-spi.c b/drivers/mfd/ocelot-spi.c
+> > > > new file mode 100644
+> > > > index 000000000000..c788e239c9a7
+> > > > --- /dev/null
+> > > > +++ b/drivers/mfd/ocelot-spi.c
+> > > > @@ -0,0 +1,313 @@
+> > > > +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+> > > > +/*
+> > > > + * SPI core driver for the Ocelot chip family.
+> > > > + *
+> > > > + * This driver will handle everything necessary to allow for communication over
+> > > > + * SPI to the VSC7511, VSC7512, VSC7513 and VSC7514 chips. The main functions
+> > > > + * are to prepare the chip's SPI interface for a specific bus speed, and a host
+> > > > + * processor's endianness. This will create and distribute regmaps for any MFD
+> > > 
+> > > As above, please drop references to MFD.
+> > > 
+> > > > + * children.
+> > > > + *
+> > > > + * Copyright 2021 Innovative Advantage Inc.
+> > > > + *
+> > > > + * Author: Colin Foster <colin.foster@in-advantage.com>
+> > > > + */
+> > > > +
+> > > > +#include <linux/iopoll.h>
+> > > > +#include <linux/kconfig.h>
+> > > > +#include <linux/module.h>
+> > > > +#include <linux/of.h>
+> > > > +#include <linux/regmap.h>
+> > > > +#include <linux/spi/spi.h>
+> > > > +
+> > > > +#include <asm/byteorder.h>
+> > > > +
+> > > > +#include "ocelot.h"
+> > > > +
+> > > > +#define DEV_CPUORG_IF_CTRL	0x0000
+> > > > +#define DEV_CPUORG_IF_CFGSTAT	0x0004
+> > > > +
+> > > > +#define CFGSTAT_IF_NUM_VCORE	(0 << 24)
+> > > > +#define CFGSTAT_IF_NUM_VRAP	(1 << 24)
+> > > > +#define CFGSTAT_IF_NUM_SI	(2 << 24)
+> > > > +#define CFGSTAT_IF_NUM_MIIM	(3 << 24)
+> > > > +
+> > > > +
+> > > > +static const struct resource vsc7512_dev_cpuorg_resource = {
+> > > > +	.start	= 0x71000000,
+> > > > +	.end	= 0x710002ff,
+> > > 
+> > > No magic numbers.  Please define these addresses.
+> > 
+> > I missed these. Thanks.
+> > 
+> > > 
+> > > > +	.name	= "devcpu_org",
+> > > > +};
+> > > > +
+> > > > +#define VSC7512_BYTE_ORDER_LE 0x00000000
+> > > > +#define VSC7512_BYTE_ORDER_BE 0x81818181
+> > > > +#define VSC7512_BIT_ORDER_MSB 0x00000000
+> > > > +#define VSC7512_BIT_ORDER_LSB 0x42424242
+> > > > +
+> > > > +int ocelot_spi_initialize(struct ocelot_core *core)
+> > > > +{
+> > > > +	u32 val, check;
+> > > > +	int err;
+> > > > +
+> > > > +#ifdef __LITTLE_ENDIAN
+> > > > +	val = VSC7512_BYTE_ORDER_LE;
+> > > > +#else
+> > > > +	val = VSC7512_BYTE_ORDER_BE;
+> > > > +#endif
+> > > 
+> > > Not a fan of ifdefery in the middle of C files.
+> > > 
+> > > Please create a macro or define somewhere.
+> > 
+> > I'll clear this up in comments and move things around. This macro
+> > specifically tends to lend itself to this type of ifdef dropping:
+> > 
+> > https://elixir.bootlin.com/linux/v5.18-rc2/C/ident/__LITTLE_ENDIAN
+> 
+> I see that the majority of implementations exist in header files as I
+> would expect.  With respect to the others, past acceptance and what is
+> acceptable in other subsystems has little bearing on what will be
+> accepted here and now.
+> 
+> > The comment I'm adding is:
+> >         /*
+> >          * The SPI address must be big-endian, but we want the payload to match
+> >          * our CPU. These are two bits (0 and 1) but they're repeated such that
+> >          * the write from any configuration will be valid. The four
+> >          * configurations are:
+> >          *
+> >          * 0b00: little-endian, MSB first
+> >          * |            111111   | 22221111 | 33222222 |
+> >          * | 76543210 | 54321098 | 32109876 | 10987654 |
+> >          *
+> >          * 0b01: big-endian, MSB first
+> >          * | 33222222 | 22221111 | 111111   |          |
+> >          * | 10987654 | 32109876 | 54321098 | 76543210 |
+> >          *
+> >          * 0b10: little-endian, LSB first
+> >          * |              111111 | 11112222 | 22222233 |
+> >          * | 01234567 | 89012345 | 67890123 | 45678901 |
+> >          *
+> >          * 0b11: big-endian, LSB first
+> >          * | 22222233 | 11112222 |   111111 |          |
+> >          * | 45678901 | 67890123 | 89012345 | 01234567 |
+> >          */
+> > 
+> > With this info, would you recommend:
+> > 1. A file-scope static const at the top of this file
+> > 2. A macro assigned to one of those sequences
+> > 3. A function to "detect" which architecture we're running
+> 
+> I do not have a strong opinion.
+> 
+> Just tuck the #iferry away somewhere in a header file.
+
+Will do
+
+> 
+> > > > +	err = regmap_write(core->cpuorg_regmap, DEV_CPUORG_IF_CTRL, val);
+> > > > +	if (err)
+> > > > +		return err;
+> > > 
+> > > Comment.
+> > > 
+> > > > +	val = core->spi_padding_bytes;
+> > > > +	err = regmap_write(core->cpuorg_regmap, DEV_CPUORG_IF_CFGSTAT, val);
+> > > > +	if (err)
+> > > > +		return err;
+> > > 
+> > > Comment.
+> > 
+> > Adding:
+> > 
+> > /*
+> >  * Apply the number of padding bytes between a read request and the data
+> >  * payload. Some registers have access times of up to 1us, so if the
+> >  * first payload bit is shifted out too quickly, the read will fail.
+> >  */
+> > 
+> > > 
+> > > > +	/*
+> > > > +	 * After we write the interface configuration, read it back here. This
+> > > > +	 * will verify several different things. The first is that the number of
+> > > > +	 * padding bytes actually got written correctly. These are found in bits
+> > > > +	 * 0:3.
+> > > > +	 *
+> > > > +	 * The second is that bit 16 is cleared. Bit 16 is IF_CFGSTAT:IF_STAT,
+> > > > +	 * and will be set if the register access is too fast. This would be in
+> > > > +	 * the condition that the number of padding bytes is insufficient for
+> > > > +	 * the SPI bus frequency.
+> > > > +	 *
+> > > > +	 * The last check is for bits 31:24, which define the interface by which
+> > > > +	 * the registers are being accessed. Since we're accessing them via the
+> > > > +	 * serial interface, it must return IF_NUM_SI.
+> > > > +	 */
+> > > > +	check = val | CFGSTAT_IF_NUM_SI;
+> > > > +
+> > > > +	err = regmap_read(core->cpuorg_regmap, DEV_CPUORG_IF_CFGSTAT, &val);
+> > > > +	if (err)
+> > > > +		return err;
+> > > > +
+> > > > +	if (check != val)
+> > > > +		return -ENODEV;
+> > > > +
+> > > > +	return 0;
+> > > > +}
+> > > > +EXPORT_SYMBOL(ocelot_spi_initialize);
+> > > > +
+> > > > +/*
+> > > > + * The SPI protocol for interfacing with the ocelot chips uses 24 bits, while
+> > > > + * the register locations are defined as 32-bit. The least significant two bits
+> > > > + * get shifted out, as register accesses must always be word-aligned, leaving
+> > > > + * bits 21:0 as the 22-bit address. It must always be big-endian, whereas the
+> > > > + * payload can be optimized for bit / byte order to match whatever architecture
+> > > > + * the controlling CPU has.
+> > > > + */
+> > > > +static unsigned int ocelot_spi_translate_address(unsigned int reg)
+> > > > +{
+> > > > +	return cpu_to_be32((reg & 0xffffff) >> 2);
+> > > > +}
+> > > > +
+> > > > +struct ocelot_spi_regmap_context {
+> > > > +	u32 base;
+> > > > +	struct ocelot_core *core;
+> > > > +};
+> > > > +
+> > > > +static int ocelot_spi_reg_read(void *context, unsigned int reg,
+> > > > +			       unsigned int *val)
+> > > > +{
+> > > > +	struct ocelot_spi_regmap_context *regmap_context = context;
+> > > > +	struct ocelot_core *core = regmap_context->core;
+> > > > +	struct spi_transfer tx, padding, rx;
+> > > > +	struct spi_message msg;
+> > > 
+> > > How big are all of these?
+> > > 
+> > > We will receive warnings if they occupy too much stack space.
+> > 
+> > Looking at the structs they're on the order of 10s of bytes. Maybe 70
+> > bytes per instance (back of napkin calculation)
+> > 
+> > But it seems very common to stack-allocate spi_transfers:
+> > 
+> > https://elixir.bootlin.com/linux/v5.18-rc2/source/drivers/spi/spi.c#L4097
+> > https://elixir.bootlin.com/linux/v5.18-rc2/source/include/linux/spi/spi.h#L1244
+> > 
+> > Do you have a feel for at what point that becomes a concern?
+> 
+> That's fine.  I just want you to bear this in mind.
+> 
+> I wish to prevent adding yet more W=1 level warnings into the kernel.
+> 
+> > > > +	struct spi_device *spi;
+> > > > +	unsigned int addr;
+> > > > +	u8 *tx_buf;
+> > > > +
+> > > > +	spi = core->spi;
+> > > > +
+> > > > +	addr = ocelot_spi_translate_address(reg + regmap_context->base);
+> > > > +	tx_buf = (u8 *)&addr;
+> > > > +
+> > > > +	spi_message_init(&msg);
+> > > > +
+> > > > +	memset(&tx, 0, sizeof(tx));
+> > > > +
+> > > > +	/* Ignore the first byte for the 24-bit address */
+> > > > +	tx.tx_buf = &tx_buf[1];
+> > > > +	tx.len = 3;
+> > > > +
+> > > > +	spi_message_add_tail(&tx, &msg);
+> > > > +
+> > > > +	if (core->spi_padding_bytes > 0) {
+> > > > +		u8 dummy_buf[16] = {0};
+> > > > +
+> > > > +		memset(&padding, 0, sizeof(padding));
+> > > > +
+> > > > +		/* Just toggle the clock for padding bytes */
+> > > > +		padding.len = core->spi_padding_bytes;
+> > > > +		padding.tx_buf = dummy_buf;
+> > > > +		padding.dummy_data = 1;
+> > > > +
+> > > > +		spi_message_add_tail(&padding, &msg);
+> > > > +	}
+> > > > +
+> > > > +	memset(&rx, 0, sizeof(rx));
+> > > > +	rx.rx_buf = val;
+> > > > +	rx.len = 4;
+> > > > +
+> > > > +	spi_message_add_tail(&rx, &msg);
+> > > > +
+> > > > +	return spi_sync(spi, &msg);
+> > > > +}
+> > > > +
+> > > > +static int ocelot_spi_reg_write(void *context, unsigned int reg,
+> > > > +				unsigned int val)
+> > > > +{
+> > > > +	struct ocelot_spi_regmap_context *regmap_context = context;
+> > > > +	struct ocelot_core *core = regmap_context->core;
+> > > > +	struct spi_transfer tx[2] = {0};
+> > > > +	struct spi_message msg;
+> > > > +	struct spi_device *spi;
+> > > > +	unsigned int addr;
+> > > > +	u8 *tx_buf;
+> > > > +
+> > > > +	spi = core->spi;
+> > > > +
+> > > > +	addr = ocelot_spi_translate_address(reg + regmap_context->base);
+> > > > +	tx_buf = (u8 *)&addr;
+> > > > +
+> > > > +	spi_message_init(&msg);
+> > > > +
+> > > > +	/* Ignore the first byte for the 24-bit address and set the write bit */
+> > > > +	tx_buf[1] |= BIT(7);
+> > > > +	tx[0].tx_buf = &tx_buf[1];
+> > > > +	tx[0].len = 3;
+> > > > +
+> > > > +	spi_message_add_tail(&tx[0], &msg);
+> > > > +
+> > > > +	memset(&tx[1], 0, sizeof(struct spi_transfer));
+> > > > +	tx[1].tx_buf = &val;
+> > > > +	tx[1].len = 4;
+> > > > +
+> > > > +	spi_message_add_tail(&tx[1], &msg);
+> > > > +
+> > > > +	return spi_sync(spi, &msg);
+> > > > +}
+> > > > +
+> > > > +static const struct regmap_config ocelot_spi_regmap_config = {
+> > > > +	.reg_bits = 24,
+> > > > +	.reg_stride = 4,
+> > > > +	.val_bits = 32,
+> > > > +
+> > > > +	.reg_read = ocelot_spi_reg_read,
+> > > > +	.reg_write = ocelot_spi_reg_write,
+> > > > +
+> > > > +	.max_register = 0xffffffff,
+> > > > +	.use_single_write = true,
+> > > > +	.use_single_read = true,
+> > > > +	.can_multi_write = false,
+> > > > +
+> > > > +	.reg_format_endian = REGMAP_ENDIAN_BIG,
+> > > > +	.val_format_endian = REGMAP_ENDIAN_NATIVE,
+> > > > +};
+> > > > +
+> > > > +struct regmap *
+> > > > +ocelot_spi_devm_get_regmap(struct ocelot_core *core, struct device *child,
+> > > > +			   const struct resource *res)
+> > > 
+> > > This seems to always initialise a new Regmap.
+> > > 
+> > > To me 'get' implies that it could fetch an already existing one.
+> > > 
+> > > ... and *perhaps* init a new one if none exists..
+> > 
+> > That's exactly what my intention was when I started.
+> > 
+> > But it seems like *if* that is something that is required, it should be
+> > done through a syscon / device tree implementation and not be snuck into
+> > this regmap getter. I was trying to do too much.
+> > 
+> > I'm renaming to "init"
+> > 
+> > > 
+> > > > +{
+> > > > +	struct ocelot_spi_regmap_context *context;
+> > > > +	struct regmap_config regmap_config;
+> > > > +
+> > > > +	context = devm_kzalloc(child, sizeof(*context), GFP_KERNEL);
+> > > > +	if (IS_ERR(context))
+> > > > +		return ERR_CAST(context);
+> > > > +
+> > > > +	context->base = res->start;
+> > > > +	context->core = core;
+> > > > +
+> > > > +	memcpy(&regmap_config, &ocelot_spi_regmap_config,
+> > > > +	       sizeof(ocelot_spi_regmap_config));
+> > > > +
+> > > > +	regmap_config.name = res->name;
+> > > > +	regmap_config.max_register = res->end - res->start;
+> > > > +
+> > > > +	return devm_regmap_init(child, NULL, context, &regmap_config);
+> > > > +}
+> > > > +
+> > > > +static int ocelot_spi_probe(struct spi_device *spi)
+> > > > +{
+> > > > +	struct device *dev = &spi->dev;
+> > > > +	struct ocelot_core *core;
+> > > 
+> > > This would be more in keeping with current drivers if you dropped the
+> > > '_core' part of the struct name and called the variable ddata.
+> > 
+> > There's already a "struct ocelot" defined in include/soc/mscc/ocelot.h.
+> > I suppose it could be renamed to align with what it actually is: the
+> > "switch" component of the ocelot chip.
+> > 
+> > Vladimir, Alexandre, Horaitu, others:
+> > Any opinions about this becoming "struct ocelot" and the current struct
+> > being "struct ocelot_switch"?
+> > 
+> > Or maybe a technical / philosophical question: is "ocelot" the switch
+> > core that can be implemented in other hardware? Or is it the chip family
+> > entirely, (pinctrl, sgpio, etc.) who's switch core was brought into
+> > other products?
+> > 
+> > The existing struct change would hit about 30 files.
+> > https://elixir.bootlin.com/linux/v5.18-rc2/C/ident/ocelot
+> 
+> That's not ideal.
+> 
+> Please consider using 'ocelot_ddata' for now and consider a larger
+> overhaul at a later date, if it makes sense to do so.
+> 
+> [...]
+> 
+> -- 
+> Lee Jones [李琼斯]
+> Principal Technical Lead - Developer Services
+> Linaro.org │ Open source software for Arm SoCs
+> Follow Linaro: Facebook | Twitter | Blog
