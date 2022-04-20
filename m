@@ -2,99 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A88E0508691
-	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 13:05:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FE565086C9
+	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 13:17:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377901AbiDTLHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Apr 2022 07:07:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42552 "EHLO
+        id S1377960AbiDTLUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Apr 2022 07:20:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377925AbiDTLHc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 07:07:32 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B24BF40922;
-        Wed, 20 Apr 2022 04:04:45 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id bg9so1287441pgb.9;
-        Wed, 20 Apr 2022 04:04:45 -0700 (PDT)
+        with ESMTP id S1376877AbiDTLUI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 07:20:08 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2083.outbound.protection.outlook.com [40.107.244.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D28E30F75;
+        Wed, 20 Apr 2022 04:17:22 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JTJSj9x6zvCyvy+1YhVuuVplERK4f4VHsonwePo5aTp2a7kftp3/J+A2HVQML1/0h9YIfu9bl25/0jcme7SqTdddGErTMb5OLCqeVjzbRPb3BE1OX3/qlL7HUT+fVy79ilyXAIBWhqY3Uy0H8Ge0JopSCpDYAzcQWECoXBmGHHE+BAEpbRhhs3zgQtc8S2ihRyWsStgVO8LyX10Ww7/LprzKVi5HzhKkDr6SG1SkyI8oxP5xG1zqmXvcVXbHeq0bbe2Fj7q+F7WypX4mf4Uc0dYUVEPegGM0BpnbJyICdw0/sviqg3apqMvBphA2dJ4bq/0FojZmbnLhqstQ1bIP8A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xtkqNVxnHtOO4IBmOowEnDnsq9i4POkmbX1fJsXPCLU=;
+ b=C7XSfFZRPyOXKFpO1vBucVEamczLWQSOi5pOBtEN9dvWGpfhCm8JeJwOX9FoRiDi80Rnc5sEvtfpSCA9PhmP8HPEyPBK5H/NDEwsaBQ5cdbrfHJKCpb0pBJ0edl6TDrvJpD5wd2qCDNt0X+KpifnbOBSX2eDvz23hWzYh3CyV9UBMCIMc2MMD/3/0sLzzug/RkaRaFOjQBBw2iCdu+iwkG0vDMyKtcBviha/QPDKpHL3hLsaIxuEF04+pu4CE829Hq/Psse69goyKcZHbYSw9hU3n5nP9suO0pWsqBhXc662yQt7lXEk/COSMkDjguAIHDM74AdwHiTy2jTsLHPmbw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=davemloft.net smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=istBcC3E+ZfmnTVNwIQY13Lw4u8eYbcp2nzpLROkbBI=;
-        b=OICJCxQMDwd1vs4XzPMekvCpmXwSxW2ZGh51UdQuKK/laHpnboXnd0SWvXxloUdK5y
-         +ldYsum6A30rGWFxEi907juiG+AU3JoYb7T9UzB7RhD4FF3XZlFxm6MW9jGxhJL5SCiU
-         C6nTPo+4cBm3t4p4D3HrfUa+QKqvs4EMa8prxdIYrcscyIcZikoyumtnyH/Kp32CMuk8
-         jOuHOSguzTe8kn9qSavT+2/90JqzW/30wNyzROD/bTYWoT5Mj5yK90G1KDHcNExT/JNG
-         Z8hJiJcJ6kJvPwxW8KqjZFxRgo1NeCzZapnMPxBXFi0Qf+PYp7oj/LucgPDY6uFWPoim
-         DLSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=istBcC3E+ZfmnTVNwIQY13Lw4u8eYbcp2nzpLROkbBI=;
-        b=DzgeH8V229NKlaoa+nbiw6pXmMHDhjfJ5IaOLSCJRUy9I3WIdX+jiFVkaF+OZ5I1uJ
-         G05aWslkZmZp13Ou5nGa10EDBLWgNZighVkjUOV+W+lqVN8lHwIxCymqAnJ2mLoMjkXM
-         7j2Df2az8k9OOCm10qtHoz+iBy5egehxRMAbH3NrlAIPqIHJvvRVkDGaJObXotd0tAxr
-         AS8izVabhrKOrTNRlSzeQxCyYDRrzNBQMRV9y5L7UNxyhKbTxnNYnw+g5LyGGRimINey
-         p8F3BwSOnrH7fRAcvm7cNQ6x8vP8nGtio4kQOeTS/sFpvOOgmsMCMQr1GDQtv4Y16j+l
-         02LA==
-X-Gm-Message-State: AOAM530JNCvUnDfZSllwYTD2M7cj6hRwxbBz9+g3TsxLKzN0jyXJbA5x
-        9xLns5q6kj7sGiCmSlj0t6o7J4mUjWxzCtw2J7Q=
-X-Google-Smtp-Source: ABdhPJxn8fjBrGRORfApKRIdrWwb1dxLHKva9lU9NPKnQthxOu1OcjREgtVL0Rwq5+NTxtjogYlfQA==
-X-Received: by 2002:a62:87c5:0:b0:50a:9380:3d26 with SMTP id i188-20020a6287c5000000b0050a93803d26mr8746908pfe.27.1650452685208;
-        Wed, 20 Apr 2022 04:04:45 -0700 (PDT)
-Received: from localhost.localdomain ([159.226.95.43])
-        by smtp.googlemail.com with ESMTPSA id b11-20020a621b0b000000b00505c6892effsm19660658pfb.26.2022.04.20.04.04.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 04:04:44 -0700 (PDT)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH] net: dsa: Add missing of_node_put() in dsa_port_link_register_of
-Date:   Wed, 20 Apr 2022 19:04:08 +0800
-Message-Id: <20220420110413.17828-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.17.1
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xtkqNVxnHtOO4IBmOowEnDnsq9i4POkmbX1fJsXPCLU=;
+ b=rUJqNMkjKn6NaEe9/AYFR/FS5F3F/2pVLlzrBkfudLYGQs0AtHfH0u8uz/SjFdTywKbix1ScDn4/B8vse8hWw+DZp4pEYCaDZtfGz9Qr53eblttxG38z5BjFZfLpxhAFGGI3PET782wnXqBS4L4fcJYlIpK07DN4zb0J3NT+jQs=
+Received: from DM6PR02CA0166.namprd02.prod.outlook.com (2603:10b6:5:332::33)
+ by DM6PR02MB6249.namprd02.prod.outlook.com (2603:10b6:5:1d0::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20; Wed, 20 Apr
+ 2022 11:17:20 +0000
+Received: from DM3NAM02FT013.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:5:332:cafe::54) by DM6PR02CA0166.outlook.office365.com
+ (2603:10b6:5:332::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.13 via Frontend
+ Transport; Wed, 20 Apr 2022 11:17:20 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com;
+Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
+ DM3NAM02FT013.mail.protection.outlook.com (10.13.5.126) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5186.14 via Frontend Transport; Wed, 20 Apr 2022 11:17:19 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Wed, 20 Apr 2022 04:17:18 -0700
+Received: from smtp.xilinx.com (172.19.127.95) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Wed, 20 Apr 2022 04:17:17 -0700
+Envelope-to: git@xilinx.com,
+ davem@davemloft.net,
+ kuba@kernel.org,
+ pabeni@redhat.com,
+ robh+dt@kernel.org,
+ krzk+dt@kernel.org,
+ nicolas.ferre@microchip.com,
+ claudiu.beznea@microchip.com,
+ netdev@vger.kernel.org,
+ devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Received: from [10.254.241.50] (port=50612)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <michal.simek@xilinx.com>)
+        id 1nh8Kj-0002wf-KO; Wed, 20 Apr 2022 04:17:17 -0700
+Message-ID: <df99f712-f02b-c331-601b-5e61e4766ccc@xilinx.com>
+Date:   Wed, 20 Apr 2022 13:17:14 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 2/2] net: macb: In ZynqMP initialization make SGMII phy
+ configuration optional
+Content-Language: en-US
+To:     Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
+        <nicolas.ferre@microchip.com>, <claudiu.beznea@microchip.com>
+CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <harinik@xilinx.com>,
+        <git@xilinx.com>
+References: <1650452590-32948-1-git-send-email-radhey.shyam.pandey@xilinx.com>
+ <1650452590-32948-3-git-send-email-radhey.shyam.pandey@xilinx.com>
+From:   Michal Simek <michal.simek@xilinx.com>
+In-Reply-To: <1650452590-32948-3-git-send-email-radhey.shyam.pandey@xilinx.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 241a0fb6-36c6-48d1-4cb5-08da22bf55b6
+X-MS-TrafficTypeDiagnostic: DM6PR02MB6249:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR02MB624910E3AC63144EE0C6E014C6F59@DM6PR02MB6249.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: VyCl7YBc5p8GwDWhU16Wr4tXlTwqWp9kOGomz5Y03nxUW5r+Br8bB2eyDjy9x8Btw8XjglZPzEUGbC/xufYIrnT9b8C6rSez0X7Vc77F4m968M862eF4syop2Bm3GdbBwHmxJxdqCKRM19iudGR+BT3jRoB0TSMvHzl6zujc1aVHQWrfzxQw+JemPeHh6QXk7YxWh8A1nKHSSgjkFNsw4Q77aN2XG0u4UeSuMvRdcfPlQJ/Q+vNMyVeQK+9WIgV14HTBIUUoZIYcyoLIonUGRILIJtVeThpRImJILZJ/Lr2ALozOLzCdQ3N1jhyVFdex6+OYJ353XKdpP1wL2dXHkPY90sRDXDoGdUqqGc3SN2PCj8KvYkSE6zz+XnLzcskNOYGysOZdJkfmW3R6mnjhLbyufew2WedFAwd6ZGvlXXj8rb6da92tnxIhepVUPASibbBqUuGamkl2w4uTbX4zAfWu33Uqh9kQQ6M5hD1BKmF+oK9nFiLm616MeYfPW+ERid4rYUdYMDhAUZCX9sbh+sYxDYbNhSRLTt6D9sZI0TJEXIlNsAU7Jp30ud8Q5sZ9kkxK19eDgZFsj7Wbcx6e0+72t9aiiO/qZNsSNj9RPJhaPA3v5uro/A8B4NPkzDWeMAZZjCexdkTY51RZk02W3gKQioarPYoXpDA6o8Usy0Lb0HXNlMQ5zbkMgkzCohmvdZwhDEZhr4Peo7RB9Inzu0zLe+LxQ5casfATzNf14B4=
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(44832011)(7636003)(2616005)(54906003)(83380400001)(110136005)(31686004)(6666004)(316002)(36860700001)(82310400005)(40460700003)(356005)(107886003)(31696002)(36756003)(26005)(186003)(70586007)(508600001)(70206006)(53546011)(4326008)(8676002)(336012)(8936002)(426003)(47076005)(2906002)(5660300002)(9786002)(7416002)(50156003)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2022 11:17:19.7517
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 241a0fb6-36c6-48d1-4cb5-08da22bf55b6
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT013.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR02MB6249
+X-Spam-Status: No, score=-6.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
-of_node_put() will check for NULL value.
 
-Fixes: a20f997010c4 ("net: dsa: Don't instantiate phylink for CPU/DSA ports unless needed")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
- net/dsa/port.c | 2 ++
- 1 file changed, 2 insertions(+)
 
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 32d472a82241..cdc56ba11f52 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -1620,8 +1620,10 @@ int dsa_port_link_register_of(struct dsa_port *dp)
- 			if (ds->ops->phylink_mac_link_down)
- 				ds->ops->phylink_mac_link_down(ds, port,
- 					MLO_AN_FIXED, PHY_INTERFACE_MODE_NA);
-+			of_node_put(phy_np);
- 			return dsa_port_phylink_register(dp);
- 		}
-+		of_node_put(phy_np);
- 		return 0;
- 	}
- 
--- 
-2.17.1
+On 4/20/22 13:03, Radhey Shyam Pandey wrote:
+> In the macb binding documentation "phys" is an optional property. Make
+> implementation in line with it. This change allows the traditional flow
+> in which first stage bootloader does PS-GT configuration to work along
+> with newer use cases in which PS-GT configuration is managed by the
+> phy-zynqmp driver.
+> 
+> It fixes below macb probe failure when macb DT node doesn't have SGMII
+> phys handle.
+> "macb ff0b0000.ethernet: error -ENODEV: failed to get PS-GTR PHY"
+> 
+> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+> ---
+>   drivers/net/ethernet/cadence/macb_main.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+> index a5140d4d3baf..6434e74c04f1 100644
+> --- a/drivers/net/ethernet/cadence/macb_main.c
+> +++ b/drivers/net/ethernet/cadence/macb_main.c
+> @@ -4588,7 +4588,7 @@ static int zynqmp_init(struct platform_device *pdev)
+>   
+>   	if (bp->phy_interface == PHY_INTERFACE_MODE_SGMII) {
+>   		/* Ensure PS-GTR PHY device used in SGMII mode is ready */
+> -		bp->sgmii_phy = devm_phy_get(&pdev->dev, "sgmii-phy");
+> +		bp->sgmii_phy = devm_phy_optional_get(&pdev->dev, NULL);
+>   
+>   		if (IS_ERR(bp->sgmii_phy)) {
+>   			ret = PTR_ERR(bp->sgmii_phy);
 
+Reviewed-by: Michal Simek <michal.simek@xilinx.com>
+
+Thanks,
+Michal
