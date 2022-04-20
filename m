@@ -2,111 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CCE4508902
-	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 15:13:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8606D50893F
+	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 15:26:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345616AbiDTNQU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Apr 2022 09:16:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55246 "EHLO
+        id S1379048AbiDTN2o convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 20 Apr 2022 09:28:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240898AbiDTNQT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 09:16:19 -0400
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA73C3A196
-        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 06:13:31 -0700 (PDT)
-Received: by mail-qt1-x82c.google.com with SMTP id hh4so883449qtb.10
-        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 06:13:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EBpAB6FDbZK4zE5ed/nvxGtuXnn9kJ3DTB27o6boGrA=;
-        b=AAoC49XgCBYwRBkrug5A93BfpSzwnQ2QHz5ADG0+GiiOROP4ryHDBT40BHJNx2DRpi
-         FPmkM0rFi1kUDUbBXKJhLI7gvWIldjfT17sU38UFTuvGNbd7GA5M/2ALIFsEsFAOEtRW
-         92RZAMOukvGoszrxxXrmOkNmN0wvR+/Lt2gNi/AXvuncfrNvsa9cUmIrMOfxDG8Us3yF
-         EMJiC0i+yiO9+yJGF5Agf2+WPmqwpbybOCwxnjhl/wBmM9zEKyyeZ/IW4oeflKm2R06p
-         J93ryrZQVS/iPlo51erMrOY3R252amSBMiCEYwHi409wR8BYTd7kM8qbBi9uf9azmNvR
-         MSqw==
+        with ESMTP id S1379036AbiDTN2l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 09:28:41 -0400
+Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D322C42A0C;
+        Wed, 20 Apr 2022 06:25:54 -0700 (PDT)
+Received: by mail-qt1-f170.google.com with SMTP id fu34so913641qtb.8;
+        Wed, 20 Apr 2022 06:25:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EBpAB6FDbZK4zE5ed/nvxGtuXnn9kJ3DTB27o6boGrA=;
-        b=MnSeQOU7rbQzhssoD7EG7BRV0iwjiztCllw5I4Vm5EjeUxkfpquizKLthpGQueNy8N
-         oI/E3sx5s7fAwFhQ5BIq3ZQ/3HLEq+GwM+tLNyqAzDYkC1CQx5cAB8vkEj7+HqYN7Tos
-         DD1hAQxJcM8Bqvr8HzjEw3vX80uE21m2H/oBaJ9grR+SHKm1J99M+EV6b4QyuGMVM2Rq
-         tNS+3pOmiAvXZqFLzeRQZXU6X6nqluXqDLeQwb3CKDu0DUJ/d7X1Nzra/OYZVNkl3mmG
-         rlR+WfqPfGyMBTluiCnCa5C0a7j7hsBuP6/d0Uh8iu5nLZ01up3fkRz5dxhM8Fq4kKGk
-         98Nw==
-X-Gm-Message-State: AOAM531/LdPh/Xh4WncIVn4xFpC91JbcqR1xTJXahMV/2CQ7gj0dF7CO
-        gCjxc1Yq1LoVtU+ODPROD3/Tzfxp++o=
-X-Google-Smtp-Source: ABdhPJzfJoWz1bAmZwm11k66KgoQlpF+f6G/IlosLxIx72XIAIC8B7hoHmVE+lFynM9gP/as0SMu+g==
-X-Received: by 2002:a05:622a:30a:b0:2f2:4a5:59b1 with SMTP id q10-20020a05622a030a00b002f204a559b1mr8187053qtw.546.1650460410995;
-        Wed, 20 Apr 2022 06:13:30 -0700 (PDT)
-Received: from mail-yb1-f178.google.com (mail-yb1-f178.google.com. [209.85.219.178])
-        by smtp.gmail.com with ESMTPSA id g4-20020ac87d04000000b002e06b4674a1sm1757336qtb.61.2022.04.20.06.13.30
-        for <netdev@vger.kernel.org>
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=rFIpc07kdcdErSG52Vnbbh7AXlY7+Cv1PmRK4le+8hE=;
+        b=qg+WFdkx4IbdGAhs6Qg8ioPAL7HPsKaHU9gHRJX4SoGOKv3t0XJrr6VSrjoyezTaLX
+         cEAfNbtVAWjOkGXTB0BGTDKdf6ph1+vJtTQSqVqwpi+tfGtAv/CHct/aaAeVDgNCdj5L
+         zGwf0cIgTKADFvc0LSXaAQvaT7ZrzGOZNmIgOFEvjxaO7cqN17QfpHkrGB+KAg0eBXve
+         9MHe6YV611CU5lYPvMpp1tBHwojtqR7Vje6CDdNoL7WaKZV1x3Tns3kgzfRijuvtoX1g
+         UejEVI9pGaRGJ1Hl/k6HPPMRjRJbQbZFa8oYuwqe7gDWcMPJXoz/EJWerv9ExzwWAoZM
+         azLA==
+X-Gm-Message-State: AOAM531cEGJVvRDu8jIqDbAABj+O2E6mBlsKPTLQqsx7QJSu0QoIt8Fm
+        wWvfgoF+KurBQNisLxOJ4/31c3mQ2+EUBg==
+X-Google-Smtp-Source: ABdhPJy1h9FAARtdksCNxxWNLmD6QSb2LbPLHU2aqWwqhgHDmK+7y/M0BDYaDsymgIgngtXhwDIaKg==
+X-Received: by 2002:ac8:5f07:0:b0:2e1:d695:d857 with SMTP id x7-20020ac85f07000000b002e1d695d857mr13815421qta.40.1650461153730;
+        Wed, 20 Apr 2022 06:25:53 -0700 (PDT)
+Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com. [209.85.219.170])
+        by smtp.gmail.com with ESMTPSA id n11-20020a05622a11cb00b002f344f11849sm293030qtk.71.2022.04.20.06.25.52
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Apr 2022 06:13:30 -0700 (PDT)
-Received: by mail-yb1-f178.google.com with SMTP id x200so2730812ybe.13
-        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 06:13:30 -0700 (PDT)
-X-Received: by 2002:a05:6902:1202:b0:641:e3c5:f989 with SMTP id
- s2-20020a056902120200b00641e3c5f989mr19463989ybu.532.1650460409740; Wed, 20
- Apr 2022 06:13:29 -0700 (PDT)
+        Wed, 20 Apr 2022 06:25:52 -0700 (PDT)
+Received: by mail-yb1-f170.google.com with SMTP id f38so2841486ybi.3;
+        Wed, 20 Apr 2022 06:25:52 -0700 (PDT)
+X-Received: by 2002:a05:6902:724:b0:644:c37b:4e21 with SMTP id
+ l4-20020a056902072400b00644c37b4e21mr19809816ybt.6.1650461152378; Wed, 20 Apr
+ 2022 06:25:52 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220418044339.127545-1-liuhangbin@gmail.com> <20220418044339.127545-3-liuhangbin@gmail.com>
- <CA+FuTSdTbpYGJo6ec2Ti+djXCj=gBAQpv9ZVaTtaJA-QUNNgYQ@mail.gmail.com>
- <Yl4pG8MN7jxVybPB@Laptop-X1> <CA+FuTSdLGUgbkP3U+zmqoFzrewnUUN3pci8q8oNfHzo11ZhRZg@mail.gmail.com>
- <Yl9d2L39BzUiLINN@Laptop-X1>
-In-Reply-To: <Yl9d2L39BzUiLINN@Laptop-X1>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 20 Apr 2022 09:12:53 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSdrramQiwoUQ7bn+US+CDFWXKr8-Bzb8X1JzJbyMNcK8A@mail.gmail.com>
-Message-ID: <CA+FuTSdrramQiwoUQ7bn+US+CDFWXKr8-Bzb8X1JzJbyMNcK8A@mail.gmail.com>
-Subject: Re: [PATCH net 2/2] virtio_net: check L3 protocol for VLAN packets
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        Mike Pattrick <mpattric@redhat.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        virtualization@lists.linux-foundation.org,
-        Balazs Nemeth <bnemeth@redhat.com>,
+References: <20220414122250.158113-1-clement.leger@bootlin.com> <20220414122250.158113-5-clement.leger@bootlin.com>
+In-Reply-To: <20220414122250.158113-5-clement.leger@bootlin.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 20 Apr 2022 15:25:39 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXcnZ64q+VAMW9f4PNTXR4o+zW9s7EHZQWWh++x94Pz7g@mail.gmail.com>
+Message-ID: <CAMuHMdXcnZ64q+VAMW9f4PNTXR4o+zW9s7EHZQWWh++x94Pz7g@mail.gmail.com>
+Subject: Re: [PATCH net-next 04/12] net: pcs: add Renesas MII converter driver
+To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?Q?Miqu=C3=A8l_Raynal?= <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 19, 2022 at 9:16 PM Hangbin Liu <liuhangbin@gmail.com> wrote:
->
-> Hi Willem,
->
-> On Tue, Apr 19, 2022 at 09:52:46AM -0400, Willem de Bruijn wrote:
-> > Segmentation offload requires checksum offload. Packets that request
->
-> OK, makes sense.
->
-> > GSO but not NEEDS_CSUM are an aberration. We had to go out of our way
-> > to handle them because the original implementation did not explicitly
-> > flag and drop these. But we should not extend that to new types.
->
-> So do you mean, the current gso types are enough, we should not extend to
-> handle VLAN headers if no NEEDS_CSUM flag. This patch can be dropped, right?
+Hi Clément,
 
-That's right.
+Thanks for your patch!
+Only cosmetic comments from me, as I'm not too familiar with MII.
 
-> Although I don't understand why we should not extend to support VLAN GSO.
-> I'm OK if you think this patch should be dropped when I re-post patch 1/2 to
-> net-next.
+On Thu, Apr 14, 2022 at 2:24 PM Clément Léger <clement.leger@bootlin.com> wrote:
+> Add PCS driver for the MII converter that is present on Renesas RZ/N1
+
+Add a ... on the ...
+
+> SoC. This MII converter is reponsible of converting MII to RMII/RGMII
+
+responsible for
+
+> or act as a MII passtrough. Exposing it as a PCS allows to reuse it
+
+pass-through
+
+> in both the switch driver and the stmmac driver. Currently, this driver
+> only allows the PCS to be used by the dual Cortex-A7 subsystem since
+> the register locking system is not used.
 >
-> Thanks
-> Hangbin
+> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+
+> --- a/drivers/net/pcs/Kconfig
+> +++ b/drivers/net/pcs/Kconfig
+> @@ -18,4 +18,11 @@ config PCS_LYNX
+>           This module provides helpers to phylink for managing the Lynx PCS
+>           which is part of the Layerscape and QorIQ Ethernet SERDES.
+>
+> +config PCS_RZN1_MIIC
+> +       tristate "Renesas RZN1 MII converter"
+
+RZ/N1
+
+> +       help
+> +         This module provides a driver for the MII converter that is available
+> +         on RZN1 SoC. This PCS convert MII to RMII/RGMII or can be in
+
+RZ/N1
+
+> +         passthrough mode for MII.
+> +
+>  endmenu
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
