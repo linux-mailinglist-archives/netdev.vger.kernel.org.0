@@ -2,119 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E59A508DCD
-	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 18:53:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE661508DD2
+	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 18:55:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380791AbiDTQ4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Apr 2022 12:56:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43330 "EHLO
+        id S1380804AbiDTQ57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Apr 2022 12:57:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234342AbiDTQ4b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 12:56:31 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B8FB3E5C4;
-        Wed, 20 Apr 2022 09:53:43 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id lc2so4733866ejb.12;
-        Wed, 20 Apr 2022 09:53:43 -0700 (PDT)
+        with ESMTP id S1380876AbiDTQ5s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 12:57:48 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D590626D7
+        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 09:55:00 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id 11so3154019edw.0
+        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 09:55:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Rfm74VEUMWZeXlpuLUyC+UQS6WldzCAHTX0ZUV4DSls=;
-        b=blpgcPwCTkxucUu2qZrWjwcq7sstE9xLRf5AbMMlxE8YZrJ0K0DNZxOq4mCHEiyIyZ
-         XdoMlOsuUf/eyx3g2tt7V7BIGpKZARWCyw1YovPsqhkocExAa58e2kNc0dv0QBaUvZTa
-         ObRRFqQ4FyNMmEiFGHCCqZyPP+x7gzFpMJbnyt2QOVwKfhkFb3cu+p9W2jcva0Vxo2JL
-         lO9F9NUmdDYZfFpt3wm6+UBs1MD6omwNrsa9yUtpOxuAmZ8f7zy3kfQpG3afpx91hIaT
-         XBh/sjnCyaTmpslP6liNlZldDuaPtD9AyVqE2rsH4dciA+m8PBxfVU+bGhG2acy4lRXn
-         OzIQ==
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=AVhwXWB2m+bXpnKErBOOZwqaaygODehd/Foni28JqcU=;
+        b=eNCMSkbFpTqDKMBZcHRaXP6r8UyecgrRl26r2vmkcFPRlqr+B4/t/KjFVQZ4QpBeR9
+         iHK6TciYi/9+BJ2TrKCGk7awWlBF/DDkPh5LbDGPx0KWt4fTaryvUj3KcbmKZTNygAnk
+         jTYjx9/NXfHVnzfYTQDAnLfzTYf9JeHq3sYtiBh7AWkM5iQLyJpVl2Tmybs0FkOEsSwD
+         k195jZbEban0HCZgwoTAYAWlU8uqf9MT//1t4JhjO5ccz4WSTIn69zVXGUVg0e2Iv44s
+         gpch/M3QHzVCAa4BWOkJkG0OlG1J9cY+sgAUCxsylmLqDtRpQ4qq8n0N1LNPd9eVXBi2
+         JPvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Rfm74VEUMWZeXlpuLUyC+UQS6WldzCAHTX0ZUV4DSls=;
-        b=Ga428sQXnIt8y9TLN9dmCYe7YR4MYziCIzq3hq6bdMmKcZjyn51xtepg9cix9q1RA8
-         pkag3NnZqTrXRckXKQaAMxunTI6ms+d7r+DFWUXPYsFuoi7izJZpaDR5ftEtCEMKvCiX
-         MWlGxUl0BholX0v6rqAxngtSDTAtbsCfYcGs8S1+4lm+WunImFlqgcZ42noHAHKGByPU
-         y63dpo+dMTy5vkjtG5pEfJZSJoWtvrzTcaZCfaVBF1ZPHxU1KaYysuhW5jKs/FaIs6Et
-         a18e+jT6b9HcTy9Pv4Y22CVLcFlyp/hVNjrp7owktUwWiOedrtEZPS5XKE6l/fR7n2C8
-         e3yg==
-X-Gm-Message-State: AOAM533pMuWmFHM8YB4K9t2ki8U9RAy6SevE0cKDGC0pvkmwPvcvu2Ef
-        vET3Dw2uUYnREZoxJil+5dk=
-X-Google-Smtp-Source: ABdhPJxQ3uQH39NmcFzDqchDbenZC7Dj2C9W1dhPLDuReZA2QBfhi5bpkVEuZLM9fty7klo1viKK2g==
-X-Received: by 2002:a17:907:6d96:b0:6e8:d7d9:d573 with SMTP id sb22-20020a1709076d9600b006e8d7d9d573mr19276189ejc.90.1650473621788;
-        Wed, 20 Apr 2022 09:53:41 -0700 (PDT)
-Received: from leap.localnet (host-79-50-86-254.retail.telecomitalia.it. [79.50.86.254])
-        by smtp.gmail.com with ESMTPSA id ee17-20020a056402291100b0041fe1e4e342sm10006539edb.27.2022.04.20.09.53.39
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=AVhwXWB2m+bXpnKErBOOZwqaaygODehd/Foni28JqcU=;
+        b=bosDGc6xcr3/5MC/Ky5z7oY6OY1BaR4E6YpYbALAgxvc78Zq5Cq51/49wBG94ipcF0
+         GVoBy41siLNK+XbbxWMqMSZKHpveIb6QeWw7uyUmrWkBoiPkV5LS5NSw+g1cJJR+l6Na
+         xQGvn16fjfdTqmrFDNawfZdourrnnXNLCTvkic/UOK3j6/vS0ju0NRYtnbZotnj0goDp
+         YjxnoUocqXJ7x+HSOTaQu8DXANQZKWaZ+beD5TN5LC+ZxsnFDboGcOpjiS94rhbe4IjA
+         5gLnMovdZQRDwlxreighRvbWFm/hAVJWOHgixTfvwtEbrExM+fvDAqPReIJV/J8HDJJ2
+         P6jg==
+X-Gm-Message-State: AOAM530R1nYUzzQDwU74u9UdbelCB8w47tsuE/l2FMMaBT9MQaLQaDqy
+        mXaVaEWgW6RSZvc8LtLVGMdZT2t4Ak0=
+X-Google-Smtp-Source: ABdhPJxQ59ECz/PR7dLMYWZUMWDtjGECeKdL3PgWoNsvxlCeZYOVyeAG13MEMPinrdH5nJTtISoKbA==
+X-Received: by 2002:a50:ef03:0:b0:41d:7084:13e8 with SMTP id m3-20020a50ef03000000b0041d708413e8mr24444034eds.54.1650473699263;
+        Wed, 20 Apr 2022 09:54:59 -0700 (PDT)
+Received: from skbuf ([188.26.185.183])
+        by smtp.gmail.com with ESMTPSA id fy29-20020a1709069f1d00b006e8d248fc2csm6690019ejc.108.2022.04.20.09.54.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Apr 2022 09:53:40 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Jaehee Park <jhpark1013@gmail.com>, Kalle Valo <kvalo@kernel.org>
-Cc:     =?ISO-8859-1?Q?J=E9r=F4me?= Pouiller <jerome.pouiller@silabs.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        outreachy@lists.linux.dev, Stefano Brivio <sbrivio@redhat.com>
-Subject: Re: [PATCH] wfx: use container_of() to get vif
-Date:   Wed, 20 Apr 2022 18:53:39 +0200
-Message-ID: <2258432.bcXerOTE6V@leap>
-In-Reply-To: <87y200nf0a.fsf@kernel.org>
-References: <20220418035110.GA937332@jaehee-ThinkPad-X1-Extreme> <87y200nf0a.fsf@kernel.org>
+        Wed, 20 Apr 2022 09:54:58 -0700 (PDT)
+Date:   Wed, 20 Apr 2022 19:54:57 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: IPv6 multicast with VRF
+Message-ID: <20220420165457.kd5yz6a6itqfcysj@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On mercoled=C3=AC 20 aprile 2022 13:57:57 CEST Kalle Valo wrote:
-> Jaehee Park <jhpark1013@gmail.com> writes:
->=20
-> > Currently, upon virtual interface creation, wfx_add_interface() stores
-> > a reference to the corresponding struct ieee80211_vif in private data,
-> > for later usage. This is not needed when using the container_of
-> > construct. This construct already has all the info it needs to retrieve
-> > the reference to the corresponding struct from the offset that is
-> > already available, inherent in container_of(), between its type and
-> > member inputs (struct ieee80211_vif and drv_priv, respectively).
-> > Remove vif (which was previously storing the reference to the struct
-> > ieee80211_vif) from the struct wfx_vif, define a function
-> > wvif_to_vif(wvif) for container_of(), and replace all wvif->vif with
-> > the newly defined container_of construct.
-> >
-> > Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
->=20
-> [...]
->=20
-> > +static inline struct ieee80211_vif *wvif_to_vif(struct wfx_vif *wvif)
-> > +{
-> > +	return container_of((void *)wvif, struct ieee80211_vif,=20
-drv_priv);
-> > +}
->=20
-> Why the void pointer cast? Avoid casts as much possible.
+Hi,
 
-In a previous email Jaehee wrote that she could compile her changes only by=
-=20
-using that "(void *)" cast.
+I don't have experience with either IPv6 multicast or VRF, yet I need to
+send some IPv6 multicast packets from a device enslaved to a VRF, and I
+don't really know what's wrong with the routing table setup.
 
-I replied that probably this is a hint that something is broken, although=20
-my argument is not necessarily a "proof". Might very well be that this cast=
-=20
-was needed in this particular situation but I cannot see why.
+The system is configured in the following way:
 
-@Jaehee, please try to explain why this "(void *)" cast is actually=20
-necessary and why your changes cannot avoid it.
+ ip link set dev eth0 up
 
-Thanks,
+ # The kernel kindly creates a ff00::/8 route for IPv6 multicast traffic
+ # in the local table, and I think this is what makes multicast route
+ # lookups find the egress device.
+ ip -6 route show table local
+local ::1 dev lo proto kernel metric 0 pref medium
+local fe80::204:9fff:fe05:f4ab dev eth0 proto kernel metric 0 pref medium
+multicast ff00::/8 dev eth0 proto kernel metric 256 pref medium
 
-=46abio M. De Francesco
+ ip -6 route get ff02::1
+multicast ff02::1 dev eth0 table local proto kernel src fe80::204:9fff:fe05:f4ab metric 256 pref medium
 
+ ip link add dev vrf0 type vrf table 3 && ip link set dev vrf0 up
 
+ ip -4 route add table 3 unreachable default metric 4278198272
 
+ ip -6 route add table 3 unreachable default metric 4278198272
+
+ ip link set dev eth0 master vrf0
+
+The problem seems to be that, although the "ff00::/8 dev eth0" route
+migrates from table 255 to table 3, route lookups after this point fail
+to find it and return -ENETUNREACH (ip6_null_entry).
+
+ ip -6 route show table local
+local ::1 dev lo proto kernel metric 0 pref medium
+
+ ip -6 route show table main
+::1 dev lo proto kernel metric 256 pref medium
+
+ ip -6 route show table 3
+local fe80::204:9fff:fe05:f4ab dev eth0 proto kernel metric 0 pref medium
+fe80::/64 dev eth0 proto kernel metric 256 pref medium
+multicast ff00::/8 dev eth0 proto kernel metric 256 pref medium
+unreachable default dev lo metric 4278198272 pref medium
+
+ ip -6 route get ff02::1
+RTNETLINK answers: Network is unreachable
+
+ ip -6 route get vrf vrf0 ff02::1
+RTNETLINK answers: Network is unreachable
+
+I'm not exactly sure what is missing?
