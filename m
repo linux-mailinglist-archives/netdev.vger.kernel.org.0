@@ -2,51 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BBD00508E70
-	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 19:29:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 126E4508E71
+	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 19:29:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381097AbiDTRcE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Apr 2022 13:32:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45046 "EHLO
+        id S1381092AbiDTRcF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Apr 2022 13:32:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235399AbiDTRcC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 13:32:02 -0400
+        with ESMTP id S1381094AbiDTRcD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 13:32:03 -0400
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CBEA46B0E
-        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 10:29:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E939E46B0F;
+        Wed, 20 Apr 2022 10:29:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1650475756; x=1682011756;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=dCgTHxftR8Cl2G6xgS86qDmLpyxtR4iV2gDR3AL/FRQ=;
-  b=YwEPq5XKNn7lLy2oyFW2CVvYbvSZ6xb2N7pRhNuQLLMpYv9Crq0uW76q
-   yMWrOAbkbC9xruSxew09ESd0lJ2hnX0R3vp0RHL+7aey9DxkNy34Jnfle
-   UKWHXy82Hxv3vqn509cq/lJtFEbJvDum2tPBS6qXvWuEIRj7RkxKavvp0
-   zvzhDvSerdrtuYdqiYIKTGQnBBks0X6DcAkBht0OOok+Df6cjfFMr1sxf
-   89OjpYTW7ghGPFQcXs8Bb4/J05whq5G6lGGspQ5CujP8ZiJWsijysKndN
-   itE8XZr9FPR25gDQQI1jWm0kIRjE25J8CZaBI1BOg2FwMvT+mFNmQEvNX
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="244037002"
+  bh=okP95UrQIanvdcD+EtP4ivdyN/wVqj7tuFHBGJdRWnE=;
+  b=QCEIzdAnqZ0Cw9Y5/ThwB+1PZjC/vwju1Yqxys/XlUeQfNex7XtsJCgM
+   ow0o7rhanyPn3KjZ/Ebgj062z0JJq5Kp5fTtAvC2tEGGHaOjqCDyN4yBy
+   87ZU1oMfMYMK3nKBcDUQ0mbF66lrLcZMgZS3y0uo+zx7ndd5TCscYEhKA
+   Zjbg1iBRgDXsRj2nWkWnGVuSqkWIMgyAvhTDfeydrn+tx22F/QuEcMNDy
+   Lr3Htwq3JOR2nfduBXGerMuoy8P7rfVDfY6KaTap72CL5RhhsxMDjcKgS
+   oNfAYKir6f3Y51mj/h+DHAsC0tU/haK0maYksM/5HHZftICmd6V6/AONa
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="244037004"
 X-IronPort-AV: E=Sophos;i="5.90,276,1643702400"; 
-   d="scan'208";a="244037002"
+   d="scan'208";a="244037004"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
   by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2022 10:29:15 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,276,1643702400"; 
-   d="scan'208";a="727594575"
+   d="scan'208";a="727594578"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga005.jf.intel.com with ESMTP; 20 Apr 2022 10:29:15 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
-Cc:     Michal Maloszewski <michal.maloszewski@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        sassmann@redhat.com,
-        Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net 1/2] iavf: Fix error when changing ring parameters on ice PF
-Date:   Wed, 20 Apr 2022 10:26:23 -0700
-Message-Id: <20220420172624.931237-2-anthony.l.nguyen@intel.com>
+Cc:     Xiaomeng Tong <xiam0nd.tong@gmail.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com, sassmann@redhat.com,
+        stable@vger.kernel.org, Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH net 2/2] i40e: i40e_main: fix a missing check on list iterator
+Date:   Wed, 20 Apr 2022 10:26:24 -0700
+Message-Id: <20220420172624.931237-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220420172624.931237-1-anthony.l.nguyen@intel.com>
 References: <20220420172624.931237-1-anthony.l.nguyen@intel.com>
@@ -61,43 +59,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michal Maloszewski <michal.maloszewski@intel.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-Reset is triggered when ring parameters are being changed through
-ethtool and queues are reconfigured for VF's VSI. If ring is changed
-again immediately, then the next reset could be executed before
-queues could be properly reinitialized on VF's VSI. It caused ice PF
-to mess up the VSI resource tree.
+The bug is here:
+	ret = i40e_add_macvlan_filter(hw, ch->seid, vdev->dev_addr, &aq_err);
 
-Add a check in iavf_set_ringparam for adapter and VF's queue
-state. If VF is currently resetting or queues are disabled for the VF
-return with EAGAIN error.
+The list iterator 'ch' will point to a bogus position containing
+HEAD if the list is empty or no element is found. This case must
+be checked before any use of the iterator, otherwise it will
+lead to a invalid memory access.
 
-Fixes: d732a1844507 ("i40evf: fix crash when changing ring sizes")
-Signed-off-by: Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>
-Signed-off-by: Michal Maloszewski <michal.maloszewski@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+To fix this bug, use a new variable 'iter' as the list iterator,
+while use the origin variable 'ch' as a dedicated pointer to
+point to the found element.
+
+Cc: stable@vger.kernel.org
+Fixes: 1d8d80b4e4ff6 ("i40e: Add macvlan support on i40e")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/iavf/iavf_ethtool.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 27 +++++++++++----------
+ 1 file changed, 14 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
-index 3bb56714beb0..08efbc50fbe9 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
-@@ -631,6 +631,11 @@ static int iavf_set_ringparam(struct net_device *netdev,
- 	if ((ring->rx_mini_pending) || (ring->rx_jumbo_pending))
- 		return -EINVAL;
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index 6778df2177a1..98871f014994 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -7549,42 +7549,43 @@ static void i40e_free_macvlan_channels(struct i40e_vsi *vsi)
+ static int i40e_fwd_ring_up(struct i40e_vsi *vsi, struct net_device *vdev,
+ 			    struct i40e_fwd_adapter *fwd)
+ {
++	struct i40e_channel *ch = NULL, *ch_tmp, *iter;
+ 	int ret = 0, num_tc = 1,  i, aq_err;
+-	struct i40e_channel *ch, *ch_tmp;
+ 	struct i40e_pf *pf = vsi->back;
+ 	struct i40e_hw *hw = &pf->hw;
  
-+	if (adapter->state == __IAVF_RESETTING ||
-+	    (adapter->state == __IAVF_RUNNING &&
-+	     (adapter->flags & IAVF_FLAG_QUEUES_DISABLED)))
-+		return -EAGAIN;
+-	if (list_empty(&vsi->macvlan_list))
+-		return -EINVAL;
+-
+ 	/* Go through the list and find an available channel */
+-	list_for_each_entry_safe(ch, ch_tmp, &vsi->macvlan_list, list) {
+-		if (!i40e_is_channel_macvlan(ch)) {
+-			ch->fwd = fwd;
++	list_for_each_entry_safe(iter, ch_tmp, &vsi->macvlan_list, list) {
++		if (!i40e_is_channel_macvlan(iter)) {
++			iter->fwd = fwd;
+ 			/* record configuration for macvlan interface in vdev */
+ 			for (i = 0; i < num_tc; i++)
+ 				netdev_bind_sb_channel_queue(vsi->netdev, vdev,
+ 							     i,
+-							     ch->num_queue_pairs,
+-							     ch->base_queue);
+-			for (i = 0; i < ch->num_queue_pairs; i++) {
++							     iter->num_queue_pairs,
++							     iter->base_queue);
++			for (i = 0; i < iter->num_queue_pairs; i++) {
+ 				struct i40e_ring *tx_ring, *rx_ring;
+ 				u16 pf_q;
+ 
+-				pf_q = ch->base_queue + i;
++				pf_q = iter->base_queue + i;
+ 
+ 				/* Get to TX ring ptr */
+ 				tx_ring = vsi->tx_rings[pf_q];
+-				tx_ring->ch = ch;
++				tx_ring->ch = iter;
+ 
+ 				/* Get the RX ring ptr */
+ 				rx_ring = vsi->rx_rings[pf_q];
+-				rx_ring->ch = ch;
++				rx_ring->ch = iter;
+ 			}
++			ch = iter;
+ 			break;
+ 		}
+ 	}
+ 
++	if (!ch)
++		return -EINVAL;
 +
- 	if (ring->tx_pending > IAVF_MAX_TXD ||
- 	    ring->tx_pending < IAVF_MIN_TXD ||
- 	    ring->rx_pending > IAVF_MAX_RXD ||
+ 	/* Guarantee all rings are updated before we update the
+ 	 * MAC address filter.
+ 	 */
 -- 
 2.31.1
 
