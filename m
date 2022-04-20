@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 00CD9508E36
-	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 19:15:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AEB02508E4D
+	for <lists+netdev@lfdr.de>; Wed, 20 Apr 2022 19:18:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380996AbiDTRSM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Apr 2022 13:18:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35160 "EHLO
+        id S1355747AbiDTRVH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Apr 2022 13:21:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381042AbiDTRRq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 13:17:46 -0400
-Received: from mail-vk1-xa30.google.com (mail-vk1-xa30.google.com [IPv6:2607:f8b0:4864:20::a30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 294A32BD7;
-        Wed, 20 Apr 2022 10:14:58 -0700 (PDT)
-Received: by mail-vk1-xa30.google.com with SMTP id c4so1096743vkq.9;
-        Wed, 20 Apr 2022 10:14:58 -0700 (PDT)
+        with ESMTP id S235399AbiDTRVG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 13:21:06 -0400
+Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F60E45AF4;
+        Wed, 20 Apr 2022 10:18:20 -0700 (PDT)
+Received: by mail-vs1-xe35.google.com with SMTP id t202so2173807vst.8;
+        Wed, 20 Apr 2022 10:18:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=d76SzSLsBTkFqFFguIDMrMvNHnCvFYILc5XiPKskwYo=;
-        b=Gju+6I2rCSYu423lBeSyL0oV5n9GSgLkcJh4F2N6s0OI6R11yXpVW3Lvg5ysdv8Ka+
-         HH563Lr1r3cjei21MPMfIeUe1ngDm9GNnlgGaRzjS57S4/T4EwLCjP/1zQfsjmnMG6sH
-         /cv+/+MR9RxgVL+5WwO4iT8lHYIz5t4YwNMTAga5Wu0/xX6Dlw28CANZIGfH82hcaoC1
-         zOAMpZ+kO7DEPK9sPDTrAhoGQrELT9mP8tlq5zbmtoIa75nxxt3qdgnOROc2dz5/Cj2w
-         hEqq3pN5wlD5eQcXJB76l/sZbv2x3uEJcoAZeKA+hhltTm3In7Th887jdy4rIvz0GU7Y
-         lSyA==
+        bh=E8pbstQIKMU8n6W0382loX5SA213a1sxeL3uH3Qg3JI=;
+        b=k3XSeJBNpwXtCKAiE6JPyVsJWnTxJ4iqv54j9tbN8FuaqK46ZMp4gtSFZCjKfonLPE
+         R/cnoFlLe7QKfuwRT9aYsfaMsGKOets5M+f+K9PmO09ISJssgjjb52fl+KGPKvKJOdks
+         FYpMcjAmjLbc8HeOPo6IiJ1qSx1KwtuP4hStjQ48xQbeH2F/YNOSCVUEwjNItGkzQ2lf
+         8WBUkXWJOTK9mXA0qLglRkFXFzxbf1t1YRo3No1Y6xRmw7sEBSY6xxuOuHoOuzHR4Yk3
+         e5Z5bS3okR3eq8MWMu5cq91aUu191A6fSfCRx7XiR9Nm4CoAYk+UVlYzPRle/M1JzMJr
+         DTuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=d76SzSLsBTkFqFFguIDMrMvNHnCvFYILc5XiPKskwYo=;
-        b=7zboJY2CtSl62rnr4oFVPzmghAKI32K0hjyKYS07dYe9KWSaK/DKCZ7lVfLhP7JNwS
-         X2hKeGe3WEINtP1GrdUZqDDdqP5jzR+r8kblJBR5di3MZRByvFG7hSx0dKx3WFur0Da7
-         U+Fr4gb8ScFesk5cc0eVAfFR5DsEnqYwfKXTQaPN1wXPNpzCGkWL3DIBHum7xenqMlv8
-         fO8RWK0KOYlstZHOU1x+XrDxRDRg+6x0ooogjWVvdl910IWpAf9wbleA5TjYawupnRSW
-         6zRE+pZ9vabp4A3kjZM8aR/fv4kaCAqOzYKJxU3BoDDUFzf2GzcG9Xruo1Tw61OtSdDC
-         D3dA==
-X-Gm-Message-State: AOAM5312q+vkqXxAxZJFi+Q2YbYavDWHNmJSui1TcYAlu9L3VYzK9nMO
-        99miOSct7U2Lsa5L0Uq6mF8AuHFd4S7m6kGscEQ=
-X-Google-Smtp-Source: ABdhPJzCk1CPND/tmyjLwT0j9L9ckm9gszTVGpOnR/dZfdzYIBae1hLXue47DPEDB9+arzUsxUO71KIhbqhPk7K3OvI=
-X-Received: by 2002:ac5:cd88:0:b0:32c:5497:6995 with SMTP id
- i8-20020ac5cd88000000b0032c54976995mr6271589vka.33.1650474897363; Wed, 20 Apr
- 2022 10:14:57 -0700 (PDT)
+        bh=E8pbstQIKMU8n6W0382loX5SA213a1sxeL3uH3Qg3JI=;
+        b=pzOQzXzzadA7KMuQTcn9m9y0awaElFzr18a/kvmqdlpOrO6nVT7k8dTM64HItfKOMU
+         bSocJW9eL2kWZ4+7wDRWR/eiN1zxpTiVAodqI62b2QyfltUXcxNoSK5giJIN8+a2ns0Q
+         yQyX5cz+FS7gBTUaEE7rzthdqSGqpOZV6nYmiddVbqFhh+G5lbVgvnxNHPOBLUyKaBwd
+         A5PQsEsd1G/iWhL6NaDEnIUqE+/2cpFLQoL6+8EA5+ol44d8ugCJDmiubU4LKqT83jTT
+         2ao/KJ47iO98ff+OouQaPDUNYpfDxXOU1bUQ7QkPgxyzFlIvzjhSiWKvvsHKUwd12CjX
+         mLhA==
+X-Gm-Message-State: AOAM530GpNG7b4LEQtoPmkhQHZXcRDTLyngTPi1YXXld15RFO7fBCMmz
+        sQILDIrFUN4s8ucBwUh2qlp2gyT5e++FEKxnwew=
+X-Google-Smtp-Source: ABdhPJwcuJYCkBW10RtqOqWTejiFdCLoEZrniTSO/MDyY/NMI4lGYtijRlZqeNR9qXFnkLnvS8yvyDGcgoCFEdKHVDY=
+X-Received: by 2002:a67:f80b:0:b0:32a:17d6:7fb2 with SMTP id
+ l11-20020a67f80b000000b0032a17d67fb2mr6263197vso.40.1650475099231; Wed, 20
+ Apr 2022 10:18:19 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220414223704.341028-1-alobakin@pm.me> <20220414223704.341028-8-alobakin@pm.me>
-In-Reply-To: <20220414223704.341028-8-alobakin@pm.me>
+References: <20220414223704.341028-1-alobakin@pm.me> <20220414223704.341028-9-alobakin@pm.me>
+In-Reply-To: <20220414223704.341028-9-alobakin@pm.me>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 20 Apr 2022 10:14:46 -0700
-Message-ID: <CAEf4BzZZ7Hxg4XgTTF4m=wG6aMZi88WMXrMgV3_4rs0FPugrtA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 07/11] samples: bpf: fix uin64_t format literals
-To:     Alexander Lobakin <alobakin@pm.me>
+Date:   Wed, 20 Apr 2022 10:18:08 -0700
+Message-ID: <CAEf4BzZVohaHdCTz_KFVdEus2pndLTZvg=BHfujpgt29qbio3Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 08/11] samples: bpf: fix shifting unsigned long
+ by 32 positions
+To:     Alexander Lobakin <alobakin@pm.me>, Yonghong Song <yhs@fb.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
@@ -63,7 +64,7 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Jiri Olsa <jolsa@kernel.org>,
         Namhyung Kim <namhyung@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Song Liu <songliubraving@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -100,21 +101,34 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Thu, Apr 14, 2022 at 3:46 PM Alexander Lobakin <alobakin@pm.me> wrote:
 >
-> There's a couple places where uin64_t is being passed as an %ld
-> format argument, which is incorrect (should be %lld). Fix them.
-
-It depends on architecture, on some it will be %lu, on some it will be
-%llu. But instead of PRIu64, just cast it to size_t and use %zu as
-formatter
-
+> On 32 bit systems, shifting an unsigned long by 32 positions
+> yields the following warning:
 >
-> Fixes: 51570a5ab2b7 ("A Sample of using socket cookie and uid for traffic monitoring")
-> Fixes: 00f660eaf378 ("Sample program using SO_COOKIE")
+> samples/bpf/tracex2_kern.c:60:23: warning: shift count >= width of type [-Wshift-count-overflow]
+>         unsigned int hi = v >> 32;
+>                             ^  ~~
+>
+
+long is always 64-bit in BPF, but I suspect this is due to
+samples/bpf/Makefile still using this clang + llc combo, where clang
+is called with native target and llc for -target bpf. Not sure if we
+are ready to ditch that complicated combination. Yonghong, do we still
+need that or can we just use -target bpf in samples/bpf?
+
+
+> The usual way to avoid this is to shift by 16 two times (see
+> upper_32_bits() macro in the kernel). Use it across the BPF sample
+> code as well.
+>
+> Fixes: d822a1926849 ("samples/bpf: Add counting example for kfree_skb() function calls and the write() syscall")
+> Fixes: 0fb1170ee68a ("bpf: BPF based latency tracing")
+> Fixes: f74599f7c530 ("bpf: Add tests and samples for LWT-BPF")
 > Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 > ---
->  samples/bpf/cookie_uid_helper_example.c | 12 ++++++------
->  samples/bpf/lwt_len_hist_user.c         |  4 ++--
->  2 files changed, 8 insertions(+), 8 deletions(-)
+>  samples/bpf/lathist_kern.c      | 2 +-
+>  samples/bpf/lwt_len_hist_kern.c | 2 +-
+>  samples/bpf/tracex2_kern.c      | 2 +-
+>  3 files changed, 3 insertions(+), 3 deletions(-)
 >
 
 [...]
