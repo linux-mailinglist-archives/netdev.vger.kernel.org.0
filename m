@@ -2,112 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8935F5099A7
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 09:56:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65DDF5099D4
+	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 09:56:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385937AbiDUHm6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 03:42:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33470 "EHLO
+        id S1385961AbiDUHob (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 03:44:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386067AbiDUHmV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 03:42:21 -0400
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183DD1B78B;
-        Thu, 21 Apr 2022 00:39:28 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 8C43DC0006;
-        Thu, 21 Apr 2022 07:39:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650526767;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qYEuMKcRPLE7kv8cT5u0HPUdYyTsqKBj+98EErK/TJ0=;
-        b=cB4C5DPCEOYqaVr9TDlENrzgBO5YhoarBWOEZgIWnUCbvvjTlFrP03L1s5ToSBdMOUPO8m
-        dnq1jUaH8UIPO3XlNQhX1uCuKQI6QAill+P6dq5dTL5b5u9DFOOUg0b6ju7dUtPNY5+kLy
-        ohRTLazqOvlRjrQCy0V/ZTsCl2HZcvcbwFlDCui7i9IegCqRbHDt87bmhylkc7MVKEBn4w
-        UL80gxiE8d2mxED8UxMeuQtrpINohimKy2k5T5ddfmU2AgUkgcpEL66Kydzt28aowuN7ay
-        RabEWJWw9osi10CVeYQD+jyv4aYzANUS8n0jOOw2PCuNxCqLj9c7VHTQXyFIHg==
-Date:   Thu, 21 Apr 2022 09:38:03 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 08/12] net: dsa: rzn1-a5psw: add FDB support
-Message-ID: <20220421093803.64ad7cc8@fixe.home>
-In-Reply-To: <20220420195214.dnekbfhha53trbke@skbuf>
-References: <20220414122250.158113-1-clement.leger@bootlin.com>
-        <20220414122250.158113-9-clement.leger@bootlin.com>
-        <20220414175140.p2vyy7f7yk6vlomi@skbuf>
-        <20220420101648.7aa973b2@fixe.home>
-        <20220420195214.dnekbfhha53trbke@skbuf>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        with ESMTP id S1386070AbiDUHnW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 03:43:22 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B3081A3A7
+        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 00:40:20 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nhRQ0-0000ar-Le; Thu, 21 Apr 2022 09:40:00 +0200
+Received: from pengutronix.de (2a03-f580-87bc-d400-6754-95df-0276-ee1b.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:6754:95df:276:ee1b])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id D488767FF4;
+        Thu, 21 Apr 2022 07:39:56 +0000 (UTC)
+Date:   Thu, 21 Apr 2022 09:39:56 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Martin Jerabek <martin.jerabek01@gmail.com>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build warning after merge of the net-next tree
+Message-ID: <20220421073956.uin74ejmt6okxly7@pengutronix.de>
+References: <20220421170749.1c0b56db@canb.auug.org.au>
+ <202204210929.46477.pisa@cmp.felk.cvut.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="sak2e7zagjnn2h7n"
+Content-Disposition: inline
+In-Reply-To: <202204210929.46477.pisa@cmp.felk.cvut.cz>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le Wed, 20 Apr 2022 22:52:14 +0300,
-Vladimir Oltean <olteanv@gmail.com> a =C3=A9crit :
 
-> > >=20
-> > > Shouldn't this contain something along the lines of a VID, FID, somet=
-hing? =20
-> >=20
-> > This is extracted directly from the datasheet [1]. The switch FDB table
-> > does not seems to store the VID with the entries (See page 300).
-> >=20
-> > [1]
-> > https://www.renesas.com/us/en/document/mah/rzn1d-group-rzn1s-group-rzn1=
-l-group-users-manual-r-engine-and-ethernet-peripherals =20
->=20
-> Thanks for the link. I see that the switch has a non-partitionable
-> lookup table, not even by VLAN. A shame.
->=20
-> This is also in contrast with the software bridge driver, where FDB and
-> MDB entries can have independent destinations per VID.
->=20
-> So there's nothing you can do beyond limiting to a single offloaded
-> bridge and hoping for the best w.r.t. per-VLAN forwarding destinations.
->=20
-> Note that if you limit to a single bridge does not mean that you can
-> declare ds->fdb_isolation =3D true. Declaring that would opt you into
-> unicast and multicast filtering towards the CPU, i.o.w. a method for
-> software to only receive the addresses it has expressed an interest in,
-> rather than all packets received on standalone ports. The way that is
-> implemented in DSA is by adding FDB and MDB entries on the management
-> port, and it would break a lot of things without a partitioning scheme
-> for the lookup table.
+--sak2e7zagjnn2h7n
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks Vladimir, it confirms what I thought.
+On 21.04.2022 09:29:46, Pavel Pisa wrote:
+> On Thursday 21 of April 2022 09:07:49 Stephen Rothwell wrote:
+> > After merging the net-next tree, today's linux-next build (htmldocs)
+> > produced this warning:
+> >
+> > Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst:
+> > WARNING: document isn't included in any toctree
+> >
+> > Introduced by commit
+> >
+> >   c3a0addefbde ("docs: ctucanfd: CTU CAN FD open-source IP core
+> > documentation.")
+>=20
+> I would be happy for suggestion for reference location.
+>=20
+> Is the next file right location=20
+>=20
+>   Documentation/networking/device_drivers/can/index.rst
+>=20
+> for reference to
+>=20
+>   Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst
+
+Feel free to send a patch. I'm happy to take it.
+
+Marc
 
 --=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--sak2e7zagjnn2h7n
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmJhCkkACgkQrX5LkNig
+010qMwf/dypxeuTZEC6vQRlb1ngYhbb7US1donTW/CjSBuCOs1px084X/jcKr5aO
+Dbgr6dMvcou4OV6OIrYmd0kWBBv4bjh1lZbm2eJEVZJPVlA2MzAs5D/xZNtQRKcf
+bo3v49Yi57f+99IBHKcOA1NazqBxBHe38U1cUFufxLgvKvCjN396aeKIKtPzngCW
+aOXx/+4oOiGqbAabsIG7CXGhayE+/474OA21JuMRzjV7HJJonG0a2xc9rU16tmyi
+79muP/gdkXYf26ECB5U2rfYuv6D5Q3i0/B18Prr1/xJqmWKUuTDsWa0z5Acbbvm8
+w62k0M/zuKO98p03bs3nQMT2FgFOYw==
+=5rUs
+-----END PGP SIGNATURE-----
+
+--sak2e7zagjnn2h7n--
