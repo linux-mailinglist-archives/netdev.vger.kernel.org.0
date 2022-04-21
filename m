@@ -2,85 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B1B5509FCE
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 14:40:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C54C509FDF
+	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 14:43:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385259AbiDUMnD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 08:43:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44826 "EHLO
+        id S1385160AbiDUMp6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 08:45:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385061AbiDUMnB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 08:43:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC4BD1CFEA;
-        Thu, 21 Apr 2022 05:40:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 49A2B61C5A;
-        Thu, 21 Apr 2022 12:40:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A79B4C385A1;
-        Thu, 21 Apr 2022 12:40:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650544811;
-        bh=W830rsXdVoz6lGkLr6jz/XzdBaWMYcxDel5ra7LJO3I=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=np8KbkB0CuWJSnDyEtWq9lIDu9iGdDihH9vlphk/9CiKjmUBY07helW6DRA4DTiht
-         6ft88xPDrmjvSuJYSMHuhEvtxw6kOzAxWZ05vbnc4MtGPNNAhhk0Rsc+B1kEzlBvDk
-         +lQo259F0CJ8vgYyffcUe/eyQWJm42da85stthOAxEUO1oIwEEErYv2LIVJ2Ia4fyj
-         jkCeHdrcbAIRLHFsczGlU+38OIQ1D+QY3vT4zQkAxoSomKnWhOllDb4HucfdoXbUO/
-         CvZn5FudSKhCsBOQMum2bOTcOaS6Pk4F6laLcArvOrFc87rCb4GN18b/UAe/0gk+oa
-         VyKG52+Ma4iTw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 86F04EAC09C;
-        Thu, 21 Apr 2022 12:40:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S1382867AbiDUMp5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 08:45:57 -0400
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F16F3193C
+        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 05:43:05 -0700 (PDT)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-2ef5380669cso50538397b3.9
+        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 05:43:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=mIeaFctSEsoLR3nyyuA41iSSvZNBM5Q8wFrycCuIYd0=;
+        b=KXYF894QW3BVp1KxCI27PWhMQYj4M4ylYYwG7Yf04NN9QxFYtaz2+8p7cG7Ji/55oc
+         adAynaaeQi29SGnJQgiIPYmgYdUxtsXWgoBt9UchRFhL98aDuVkwMpc3sgIRRLr/NVG/
+         a4vF+JUL24/l3aA5LFq3NkMY3wRZ95/TuQhYxHi1SH7WFMc+vShS/cqEL68p2290Jclr
+         cezFVzxw3ESfictsSZs3mzFnxuv0xX8Ehyzq0lDF99IUtqHB5iNNxk09vhJ6jIpBVqgi
+         LcE1s/BV4XSHrA8mJJxR/ZK7oc7oJ1YpToPiXlryVX9g0NVeipsi/5sZHt7ZaEYR1omr
+         RE5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=mIeaFctSEsoLR3nyyuA41iSSvZNBM5Q8wFrycCuIYd0=;
+        b=yNhhkPyIJpSTgAmTaUtKKO7WZCT31WJGmTP3jWjzFGZ1dDzYEDs3CPJrBY4AKHDeaP
+         OiVwdb20oZS6ptODaPTnNpH6QNWn+s3EAXmhV5ZHEFy8pVlWi8n8oe0Ew9D8gu5dOLHP
+         iK2oLpCTXcjDUMc+EkeYzIw7V/i8/YF4hXiFPGZ5vSmWabP+Ljo/on5Me23RaMA83NKb
+         AEUDoyCtpw4NNl684ULyMD33yFooE2Befzd+uhAO8tkLzXyDYwnO++SRqimuj0h4HM/2
+         hcLAgGB7dDu1R8VXIVTdJSCKLatb2hgX0YOk+/SV3dDoHYObDV0bKaC65mYKxQaDhuAj
+         JyPQ==
+X-Gm-Message-State: AOAM532Q73BMBALqcyShEmJ40J6XUq/q7GA9baaqGNt7g10VxFD/RrvB
+        UzZc0K4gkUvbYlIp08Ba4CnXg80tdCG+YksGP4t6XQ==
+X-Google-Smtp-Source: ABdhPJyEfDDMcm+W2/EznDqS4w3LFcFNuK1bvTNWZkaZ4X2f6GD98Cqgg53dYwlqWQw5Zie9b1Lj+QH8A31CKOrXqoc=
+X-Received: by 2002:a81:478b:0:b0:2ea:da8c:5c21 with SMTP id
+ u133-20020a81478b000000b002eada8c5c21mr26608137ywa.189.1650544984778; Thu, 21
+ Apr 2022 05:43:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] drivers: net: davinci_mdio: using pm_runtime_resume_and_get
- instead of pm_runtime_get_sync
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165054481154.27620.9902312033676025709.git-patchwork-notify@kernel.org>
-Date:   Thu, 21 Apr 2022 12:40:11 +0000
-References: <20220418062921.2557884-1-chi.minghao@zte.com.cn>
-In-Reply-To: <20220418062921.2557884-1-chi.minghao@zte.com.cn>
-To:     Lv Ruyi <cgel.zte@gmail.com>
-Cc:     grygorii.strashko@ti.com, davem@davemloft.net, kuba@kernel.org,
-        linux-omap@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, chi.minghao@zte.com.cn,
-        zealci@zte.com.cn
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Thu, 21 Apr 2022 18:12:54 +0530
+Message-ID: <CA+G9fYvO5OERA0k-r=Q8gbGdUKm0VppL2KPJ9e-R0NreBESo_g@mail.gmail.com>
+Subject: [next] LTP: netns_breakns: Command \"add\" is unknown, try \"ip link help\".
+To:     LTP List <ltp@lists.linux.it>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        "vadimp@nvidia.com" <vadimp@nvidia.com>, idosch@nvidia.com,
+        Raju.Lakkaraju@microchip.com, jiri@nvidia.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Regressions found on all devices LTP containers test cases failed on
+Linux next-20220420. [1]
 
-This patch was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
-
-On Mon, 18 Apr 2022 06:29:21 +0000 you wrote:
-> From: Minghao Chi <chi.minghao@zte.com.cn>
-> 
-> Using pm_runtime_resume_and_get is more appropriate
-> for simplifing code
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-> 
-> [...]
-
-Here is the summary with links:
-  - drivers: net: davinci_mdio: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
-    https://git.kernel.org/netdev/net-next/c/4facbe3d4426
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+  - ltp-containers-tests/netns_comm_ns_exec_ipv6_ioctl
+  - ltp-containers-tests/netns_breakns_ns_exec_ipv6_netlink
+  - ltp-containers-tests/netns_breakns_ip_ipv6_netlink
+  - ltp-containers-tests/netns_breakns_ns_exec_ipv4_ioctl
+  - ltp-containers-tests/netns_breakns_ip_ipv4_netlink
+  - ltp-containers-tests/netns_comm_ip_ipv6_ioctl
+  - ltp-containers-tests/netns_comm_ip_ipv4_netlink
+  - ltp-containers-tests/netns_comm_ns_exec_ipv4_netlink
+  - ltp-containers-tests/netns_breakns_ns_exec_ipv6_ioctl
+  - ltp-containers-tests/netns_comm_ip_ipv6_netlink
+  - ltp-containers-tests/netns_comm_ns_exec_ipv4_ioctl
+  - ltp-containers-tests/netns_breakns_ns_exec_ipv4_netlink
+  - ltp-containers-tests/netns_breakns_ip_ipv4_ioctl
+  - ltp-containers-tests/netns_comm_ip_ipv4_ioctl
+  - ltp-containers-tests/netns_breakns_ip_ipv6_ioctl
+  - ltp-containers-tests/netns_comm_ns_exec_ipv6_netlink
 
 
+Test log:
+---------
+netns_breakns 1 TINFO: timeout per run is 0h 15m 0s
+Command \"add\" is unknown, try \"ip link help\".
+netns_breakns 1 TBROK: unable to create veth pair devices
+Command \"delete\" is unknown, try \"ip link help\".
+
+
+Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+
+metadata:
+  git_ref: master
+  git_repo: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next
+  git_sha: f1244c81da13009dbf61cb807f45881501c44789
+  git_describe: next-20220420
+  kernel_version: 5.18.0-rc3
+  kernel-config: https://builds.tuxbuild.com/283Ot2o4P4hh7rNSH56BnbPbNba/config
+  build-url: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next/-/pipelines/520334286
+  artifact-location: https://builds.tuxbuild.com/283Ot2o4P4hh7rNSH56BnbPbNba
+
+I will bisect these failures.
+
+--
+Linaro LKFT
+https://lkft.linaro.org
+
+[1] https://lkft.validation.linaro.org/scheduler/job/4925635#L1272
