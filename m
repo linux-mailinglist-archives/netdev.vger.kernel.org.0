@@ -2,50 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B167250A64C
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 18:54:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA0F450A658
+	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 18:55:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357491AbiDUQ4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 12:56:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38318 "EHLO
+        id S231940AbiDUQ6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 12:58:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231334AbiDUQ4S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 12:56:18 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 850E949907;
-        Thu, 21 Apr 2022 09:53:28 -0700 (PDT)
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nha3X-0008eV-6I; Thu, 21 Apr 2022 18:53:23 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nha3W-000O6u-TK; Thu, 21 Apr 2022 18:53:22 +0200
-Subject: Re: [PATCH bpf-next] selftests/bpf: fix prog_tests/uprobe_autoattach
- compilation error
-To:     Artem Savkov <asavkov@redhat.com>,
-        Alan Maguire <alan.maguire@oracle.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-References: <20220421132317.1583867-1-asavkov@redhat.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <e5919342-0697-65f0-063f-4941e74fe1ca@iogearbox.net>
-Date:   Thu, 21 Apr 2022 18:53:22 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S1390522AbiDUQ5z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 12:57:55 -0400
+Received: from mail-ua1-x929.google.com (mail-ua1-x929.google.com [IPv6:2607:f8b0:4864:20::929])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 858D22738
+        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 09:55:05 -0700 (PDT)
+Received: by mail-ua1-x929.google.com with SMTP id a14so2018364uan.9
+        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 09:55:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2feid4PrG147T6WY9Gvx9U/HJbVi9jT1QER9Uve8Tmk=;
+        b=KCYAfW/4qvbVC11m71tRGW/IlzlEqcdA0q3gy8VwUlXNzC4cblmh7AvyUxftDxb2dJ
+         6fAOyk1PelQIpSXoO+0H/GLr4q4SS0geYWvTyt6S7f4NFyoitQ/r6FAd/ZzCx5vuS4Ed
+         qKT6EFVfru3nrekFZPBzHL9c/0FXN+uA/eKfKCR+vE2wujbdh/hKzyPmkCdcx5/yvHGK
+         y9TxpxZ+/ajMxNqC4+F0dOHqv85ia39eLdq2XRJSIWjZll6zW2TMaui1uKSPs9E500tj
+         166DnkNoVrhjDV0u1A2+T+wlYZHhYrBOD/YdEFxUgh9LDamXxtbllPt3hKXpiuyCUpL6
+         /rSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2feid4PrG147T6WY9Gvx9U/HJbVi9jT1QER9Uve8Tmk=;
+        b=r3Ib0gc7GKbK4jqRprzM2YmWUpGw6CXf6z1fE9k+4LPhvXOBKv2sgYuZizZSfMs2RS
+         UCHxq+xBg+S+OoXaycYvtEHFHRKv9kixJbrBx+qelF5OKXFWPA/VCTZeXFa3voe+WruB
+         e0bsgX/DKPUgVs2B9kN/VxEzl5y8gCAmwbohPouhALuziOeuL639G5UDgytUCkLt7MSD
+         u2IElLxgEZISsoy5HNyS3yk80RG58Ii+FFFDku284odvIu/GZx3x2RpkJj9IDwfYt8dk
+         nIyYjk4dYiwiUTm06xM2MirWefPcQLxyjodcPy/av03eA4Y2k89tvnYucgFvS5E+m6U8
+         vbDw==
+X-Gm-Message-State: AOAM533Ic2dnlHCdG5bqB590PjYFOS8EAXoDL+hZRxzfFRgbtZ38DSbW
+        RUkiBrpnyhXOvNWZxnyU0StIXu2kYn/09zp+RUw=
+X-Google-Smtp-Source: ABdhPJziQoCmQhTN1qqADnfUQEl3FgPRcMFKWoIeeY/t9YsWyvp6chtXv/ABFKF5YuC8vTdihJPw7VIJiYoOcrlepQ0=
+X-Received: by 2002:ab0:407:0:b0:35f:ef75:81e8 with SMTP id
+ 7-20020ab00407000000b0035fef7581e8mr236576uav.91.1650560104554; Thu, 21 Apr
+ 2022 09:55:04 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20220421132317.1583867-1-asavkov@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26519/Thu Apr 21 10:23:36 2022)
-X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+References: <0bc6443a-dbac-70ab-bf99-9a439e35f3ef@I-love.SAKURA.ne.jp> <CAMZdPi_uieGNWyGAAywBz2Utg0iW1jGUTWzUbj3SmsZ+-iDTfQ@mail.gmail.com>
+In-Reply-To: <CAMZdPi_uieGNWyGAAywBz2Utg0iW1jGUTWzUbj3SmsZ+-iDTfQ@mail.gmail.com>
+From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Date:   Thu, 21 Apr 2022 19:54:53 +0300
+Message-ID: <CAHNKnsTkBiS8EKHXiF1MxoRfmGrv_Zrtgc2gaciCmZQREQULMQ@mail.gmail.com>
+Subject: Re: [PATCH] wwan_hwsim: Avoid flush_scheduled_work() usage
+To:     Loic Poulain <loic.poulain@linaro.org>
+Cc:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -54,50 +69,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/21/22 3:23 PM, Artem Savkov wrote:
-> I am getting the following compilation error for prog_tests/uprobe_autoattach.c
-> 
-> tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c: In function ‘test_uprobe_autoattach’:
-> ./test_progs.h:209:26: error: pointer ‘mem’ may be used after ‘free’ [-Werror=use-after-free]
-> 
-> mem variable is now used in one of the asserts so it shouldn't be freed right
-> away. Move free(mem) after the assert block.
+Hello Loic,
 
-Looks good, but I rephrased this a bit to avoid confusion. It's false positive given we
-only compare the addresses but don't deref mem, which the compiler might not be able to
-follow in this case.
+On Wed, Apr 20, 2022 at 12:53 PM Loic Poulain <loic.poulain@linaro.org> wrote:
+> On Wed, 20 Apr 2022 at 04:22, Tetsuo Handa
+> <penguin-kernel@i-love.sakura.ne.jp> wrote:
+>>
+>> Flushing system-wide workqueues is dangerous and will be forbidden.
+>> Replace system_wq with local wwan_wq.
+>>
+>> Link: https://lkml.kernel.org/r/49925af7-78a8-a3dd-bce6-cfc02e1a9236@I-love.SAKURA.ne.jp
+> > Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+>
+> Could you add a 'Fixes' tag?
 
-https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/commit/?id=6a12b8e20d7e72386594a9dbe7bf2d7fae3b3aa6
+From what I understand, an inaccurate flushing of the system work
+queue can potentially cause a system freeze. That is why
+flush_scheduled_work() is planned to be removed. The hwsim module is
+just a random function user without any known issues. So, a 'fixes'
+tag is not required here, and there is no need to bother the stable
+team with a change backport.
 
-Thanks,
-Daniel
+Anyway, Tetsuo, you missed a target tree in the subject. If this is
+not a fix, then you probably should target your changes to the
+'net-next' tree.
 
-> Fixes: 1717e248014c ("selftests/bpf: Uprobe tests should verify param/return values")
-> Signed-off-by: Artem Savkov <asavkov@redhat.com>
-> ---
->   tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c b/tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c
-> index d6003dc8cc99..35b87c7ba5be 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c
-> @@ -34,7 +34,6 @@ void test_uprobe_autoattach(void)
->   
->   	/* trigger & validate shared library u[ret]probes attached by name */
->   	mem = malloc(malloc_sz);
-> -	free(mem);
->   
->   	ASSERT_EQ(skel->bss->uprobe_byname_parm1, trigger_val, "check_uprobe_byname_parm1");
->   	ASSERT_EQ(skel->bss->uprobe_byname_ran, 1, "check_uprobe_byname_ran");
-> @@ -44,6 +43,8 @@ void test_uprobe_autoattach(void)
->   	ASSERT_EQ(skel->bss->uprobe_byname2_ran, 3, "check_uprobe_byname2_ran");
->   	ASSERT_EQ(skel->bss->uretprobe_byname2_rc, mem, "check_uretprobe_byname2_rc");
->   	ASSERT_EQ(skel->bss->uretprobe_byname2_ran, 4, "check_uretprobe_byname2_ran");
-> +
-> +	free(mem);
->   cleanup:
->   	test_uprobe_autoattach__destroy(skel);
->   }
-> 
-
+-- 
+Sergey
