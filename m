@@ -2,52 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C7F9B50A031
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 15:00:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C08D450A034
+	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 15:01:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229696AbiDUNDG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 09:03:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54866 "EHLO
+        id S229750AbiDUNDt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 09:03:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229669AbiDUNDF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 09:03:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE0453894;
-        Thu, 21 Apr 2022 06:00:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 372CEB8245E;
-        Thu, 21 Apr 2022 13:00:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CD5C6C385A8;
-        Thu, 21 Apr 2022 13:00:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650546012;
-        bh=u+fTpf0LKqlrNXsOjKkONBHQScd20FGQHEw3f+GMdV0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ftdA+ZufYL/pLeA6VzNkSa/bOeSxDZLwAsEVn1E5KZdOwwOCSr7sTDHhuWDEskxjT
-         veUroQSH3Mi+4qPCztbgAJMt7L98nTqV9VXOhQcmHbsgDEc8ZevPPce7K+Zbos/ZE6
-         +9DJSHFAmp2G1zRRt1ZxYi1Ks3KJKr8dqORPRbNRSP4OXN8rYRytwroS5GFFQcf5Tx
-         hK4hmbOETARYY/O/xF7r0P+lPanIy+YbC0f6Fs6zKwpY2/rXOnwIN6oh4FBqKQU43d
-         sX1KipmJhMlbXy3ZgNPFTTydoZDsaKG/qWPAwvT++12LGvveTl0QNsDt6fSL/y6+qU
-         j7pswRnkUV1jQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AA013EAC09C;
-        Thu, 21 Apr 2022 13:00:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229669AbiDUNDt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 09:03:49 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02DFE6327;
+        Thu, 21 Apr 2022 06:00:59 -0700 (PDT)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kkd272qRRzhY2n;
+        Thu, 21 Apr 2022 21:00:47 +0800 (CST)
+Received: from dggphis33418.huawei.com (10.244.148.83) by
+ kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 21 Apr 2022 21:00:56 +0800
+From:   Gaosheng Cui <cuigaosheng1@huawei.com>
+To:     <cuigaosheng1@huawei.com>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <andrii@kernel.org>, <kafai@fb.com>,
+        <songliubraving@fb.com>, <yhs@fb.com>, <john.fastabend@gmail.com>,
+        <kpsingh@kernel.org>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <gongruiqi1@huawei.com>,
+        <wangweiyang2@huawei.com>
+Subject: [PATCH -next] libbpf: Add additional null-pointer checking in make_parent_dir
+Date:   Thu, 21 Apr 2022 21:00:56 +0800
+Message-ID: <20220421130056.2510372-1-cuigaosheng1@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: eql: Use kzalloc instead of kmalloc/memset
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165054601269.6081.6899957117612196905.git-patchwork-notify@kernel.org>
-Date:   Thu, 21 Apr 2022 13:00:12 +0000
-References: <1650277333-31090-1-git-send-email-baihaowen@meizu.com>
-In-Reply-To: <1650277333-31090-1-git-send-email-baihaowen@meizu.com>
-To:     Haowen Bai <baihaowen@meizu.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.244.148.83]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemi500012.china.huawei.com (7.221.188.12)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,27 +48,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+The make_parent_dir is called without null-pointer checking for path,
+such as bpf_link__pin. To ensure there is no null-pointer dereference
+in make_parent_dir, so make_parent_dir requires additional null-pointer
+checking for path.
 
-This patch was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
+---
+ tools/lib/bpf/libbpf.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-On Mon, 18 Apr 2022 18:22:13 +0800 you wrote:
-> Use kzalloc rather than duplicating its implementation, which
-> makes code simple and easy to understand.
-> 
-> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-> ---
->  drivers/net/eql.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-
-Here is the summary with links:
-  - net: eql: Use kzalloc instead of kmalloc/memset
-    https://git.kernel.org/netdev/net-next/c/9c8774e629a1
-
-You are awesome, thank you!
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index b53e51884f9e..5786e6184bf5 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -7634,6 +7634,9 @@ static int make_parent_dir(const char *path)
+ 	char *dname, *dir;
+ 	int err = 0;
+ 
++	if (path == NULL)
++		return -EINVAL;
++
+ 	dname = strdup(path);
+ 	if (dname == NULL)
+ 		return -ENOMEM;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.25.1
 
