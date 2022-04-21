@@ -2,392 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AA29509FF5
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 14:47:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1406150A023
+	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 14:58:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385639AbiDUMuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 08:50:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48696 "EHLO
+        id S229529AbiDUNAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 09:00:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383225AbiDUMuX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 08:50:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 724AC326E1
-        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 05:47:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650545251;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=t4gvH2vkKY20OkhKQ0uTd4eiUeQRQjWF42e9zqTkqwk=;
-        b=ILl4kZuMM8Ay4YW7Gu+bFYVCl11mz9Np1aZvkGCdwRjp2eMYfFvxLnKWOON7dGCLbVbo0I
-        cEmIA0KYYqTBlM4FH5aqmwjzgp6dZ6wzmX14LfEFzQHP5mzM1uGOSRfd1VqB156LvGBGRY
-        oE0PBZQcaQDmmsbabyIfDAeiPjgU76E=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-58-61RhXjKUPOamj5GZVbvs8w-1; Thu, 21 Apr 2022 08:47:30 -0400
-X-MC-Unique: 61RhXjKUPOamj5GZVbvs8w-1
-Received: by mail-wm1-f69.google.com with SMTP id d6-20020a05600c34c600b0039296a2ac7cso2384373wmq.1
-        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 05:47:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=t4gvH2vkKY20OkhKQ0uTd4eiUeQRQjWF42e9zqTkqwk=;
-        b=fm33/iAHLl6rXqcG8PqiZoo29ulbc18pMuFGB5ZWQIWHd2dLluYUrgH+NTf8LGHyAI
-         f3r/NYfGwf8v+In1m130s0k0JoSZ2FoeyNp8z702Ij+X66W1f825JsK6JwLTMraejFhp
-         vcsOWoN/yi6vbyGDveM4E074fdbX/sIXAJm8awOiaWfODqEJ9l9GZNBOTO/3uYrjPLI/
-         O9qAMnqHXVUs3S1oo4eaPxNlMNOYphd7dEp7EonwWIm0Hy0+VBAzD9N9caOBwk2vXtIn
-         suBQn8K/MZQU1YsgB7WQCI6GYDqN59LS8zSfOTNariz39K/Jf0UaJJDJ5wlBVXSwbSNs
-         exQQ==
-X-Gm-Message-State: AOAM531bbeTY+k+bal/yM8aE6KcTQ5RpqR2gu1qsuPR6l7RkAnvUOakM
-        izJRCCScpbvNtmhEOZ1l/rwRA7/Joip5RoikuAfYAjAvQ7kfthS3Ev1X/cK/t8ASGb5l6WiqoXO
-        shL1tfqUmpiTUSSkk
-X-Received: by 2002:adf:a1c4:0:b0:20a:92c3:abfd with SMTP id v4-20020adfa1c4000000b0020a92c3abfdmr16250991wrv.551.1650545249142;
-        Thu, 21 Apr 2022 05:47:29 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzNvqmlN+NOkQKuiX0HreL9YQ2wIB18U0+VTWvC8PxKuFqoa+IbMCvW3kg2W9ulhvz4NJMCSQ==
-X-Received: by 2002:adf:a1c4:0:b0:20a:92c3:abfd with SMTP id v4-20020adfa1c4000000b0020a92c3abfdmr16250966wrv.551.1650545248916;
-        Thu, 21 Apr 2022 05:47:28 -0700 (PDT)
-Received: from debian.home (2a01cb058d3818005c1e4a7b0f47339f.ipv6.abo.wanadoo.fr. [2a01:cb05:8d38:1800:5c1e:4a7b:f47:339f])
-        by smtp.gmail.com with ESMTPSA id 3-20020a056000154300b0020a9dcac3c2sm2836850wry.20.2022.04.21.05.47.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 05:47:28 -0700 (PDT)
-Date:   Thu, 21 Apr 2022 14:47:26 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, Ariel Elior <aelior@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        Nikolay Assa <nassa@marvell.com>,
-        Prabhakar Kushwaha <pkushwaha@marvell.com>,
-        Omkar Kulkarni <okulkarni@marvell.com>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        Shai Malin <smalin@marvell.com>, Hannes Reinecke <hare@suse.de>
-Subject: [PATCH net-next] qed: Remove IP services API.
-Message-ID: <351ac8c847980e22850eb390553f8cc0e1ccd0ce.1650545051.git.gnault@redhat.com>
+        with ESMTP id S229517AbiDUNAk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 09:00:40 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC4E031201;
+        Thu, 21 Apr 2022 05:57:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=2BsecxFaWO+6hY04Blnscj25pg5IT+XD6dNTKQ9lWJI=; b=k/LuANzaW0rc0DneIOMPjHLS/w
+        VPa4TP7Nyvqyhn27E+eSkn+c28FI+MC25A/Zoyd4F7j5bNgObcxyqWAStj+G0TzOxdj3evxBr0gBZ
+        d16R2BEo775oAsjykjzjwtYjMZLhcX18jLbU9RKWB7EWuaWpSBEXi2AE6PRwpf2Pvaok=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nhWNN-00GnoN-Pi; Thu, 21 Apr 2022 14:57:37 +0200
+Date:   Thu, 21 Apr 2022 14:57:37 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 4/5] net: phy: marvell: Add LED accessors for Marvell
+ 88E1510
+Message-ID: <YmFUwXLDIW5ouDCd@lunn.ch>
+References: <20220420124053.853891-1-kai.heng.feng@canonical.com>
+ <20220420124053.853891-5-kai.heng.feng@canonical.com>
+ <YmAgq1pm37Glw2v+@lunn.ch>
+ <CAAd53p6UAhDC2mGkz3_HgVs7kFgCwjfu2R+9FfROhToH2R6CjA@mail.gmail.com>
+ <YmFFWd42Nol7Lrlm@lunn.ch>
+ <CAAd53p6vUcUu=H=cDMh07zcUUDM8WTp+F_L+jiJSWKqd37+MDg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <CAAd53p6vUcUu=H=cDMh07zcUUDM8WTp+F_L+jiJSWKqd37+MDg@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-qed_nvmetcp_ip_services.c and its corresponding header file were
-introduced in commit 806ee7f81a2b ("qed: Add IP services APIs support")
-but there's still no users for any of the functions they declare.
-Since these files are effectively unused, let's just drop them.
+On Thu, Apr 21, 2022 at 08:24:00PM +0800, Kai-Heng Feng wrote:
+> On Thu, Apr 21, 2022 at 7:51 PM Andrew Lunn <andrew@lunn.ch> wrote:
+> >
+> > > This is not feasible.
+> > > If BIOS can define a method and restore the LED by itself, it can put
+> > > the method inside its S3 method and I don't have to work on this at
+> > > the first place.
+> >
+> > So maybe just declare the BIOS as FUBAR and move on to the next issue
+> > assigned to you.
+> >
+> > Do we really want the maintenance burden of this code for one machines
+> > BIOS?
+> 
+> Wasn't this the "set precedence" we discussed earlier for? Someone has
+> to be the first, and more users will leverage the new property we
+> added.
 
-Found by code inspection. Compile-tested only.
-
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
----
- drivers/net/ethernet/qlogic/qed/Makefile      |   3 +-
- .../qlogic/qed/qed_nvmetcp_ip_services.c      | 238 ------------------
- .../linux/qed/qed_nvmetcp_ip_services_if.h    |  29 ---
- 3 files changed, 1 insertion(+), 269 deletions(-)
- delete mode 100644 drivers/net/ethernet/qlogic/qed/qed_nvmetcp_ip_services.c
- delete mode 100644 include/linux/qed/qed_nvmetcp_ip_services_if.h
-
-diff --git a/drivers/net/ethernet/qlogic/qed/Makefile b/drivers/net/ethernet/qlogic/qed/Makefile
-index 0d9c2fe0245d..3d2098f21bb7 100644
---- a/drivers/net/ethernet/qlogic/qed/Makefile
-+++ b/drivers/net/ethernet/qlogic/qed/Makefile
-@@ -30,8 +30,7 @@ qed-$(CONFIG_QED_OOO) += qed_ooo.o
+I both agree and disagree. I'm trying to make this feature generic,
+unlike you who seem to be doing the minimal, only saving one of three
+LED configuration registers. But on the other hand, i'm not sure there
+will be more users. Do you have a list of machines where the BIOS is
+FUBAR? Is it one machine? A range of machines from one vendor, or
+multiple vendors with multiple machines. I would feel better about the
+maintenance burden if i knew that this was going to be used a lot.
  
- qed-$(CONFIG_QED_NVMETCP) +=	\
- 	qed_nvmetcp.o		\
--	qed_nvmetcp_fw_funcs.o	\
--	qed_nvmetcp_ip_services.o
-+	qed_nvmetcp_fw_funcs.o
- 
- qed-$(CONFIG_QED_RDMA) +=	\
- 	qed_iwarp.o		\
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_nvmetcp_ip_services.c b/drivers/net/ethernet/qlogic/qed/qed_nvmetcp_ip_services.c
-deleted file mode 100644
-index 7e286cddbedb..000000000000
---- a/drivers/net/ethernet/qlogic/qed/qed_nvmetcp_ip_services.c
-+++ /dev/null
-@@ -1,238 +0,0 @@
--// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
--/*
-- * Copyright 2021 Marvell. All rights reserved.
-- */
--
--#include <linux/types.h>
--#include <asm/byteorder.h>
--#include <asm/param.h>
--#include <linux/delay.h>
--#include <linux/pci.h>
--#include <linux/dma-mapping.h>
--#include <linux/etherdevice.h>
--#include <linux/kernel.h>
--#include <linux/stddef.h>
--#include <linux/errno.h>
--
--#include <net/tcp.h>
--
--#include <linux/qed/qed_nvmetcp_ip_services_if.h>
--
--#define QED_IP_RESOL_TIMEOUT  4
--
--int qed_route_ipv4(struct sockaddr_storage *local_addr,
--		   struct sockaddr_storage *remote_addr,
--		   struct sockaddr *hardware_address,
--		   struct net_device **ndev)
--{
--	struct neighbour *neigh = NULL;
--	__be32 *loc_ip, *rem_ip;
--	struct rtable *rt;
--	int rc = -ENXIO;
--	int retry;
--
--	loc_ip = &((struct sockaddr_in *)local_addr)->sin_addr.s_addr;
--	rem_ip = &((struct sockaddr_in *)remote_addr)->sin_addr.s_addr;
--	*ndev = NULL;
--	rt = ip_route_output(&init_net, *rem_ip, *loc_ip, 0/*tos*/, 0/*oif*/);
--	if (IS_ERR(rt)) {
--		pr_err("lookup route failed\n");
--		rc = PTR_ERR(rt);
--		goto return_err;
--	}
--
--	neigh = dst_neigh_lookup(&rt->dst, rem_ip);
--	if (!neigh) {
--		rc = -ENOMEM;
--		ip_rt_put(rt);
--		goto return_err;
--	}
--
--	*ndev = rt->dst.dev;
--	ip_rt_put(rt);
--
--	/* If not resolved, kick-off state machine towards resolution */
--	if (!(neigh->nud_state & NUD_VALID))
--		neigh_event_send(neigh, NULL);
--
--	/* query neighbor until resolved or timeout */
--	retry = QED_IP_RESOL_TIMEOUT;
--	while (!(neigh->nud_state & NUD_VALID) && retry > 0) {
--		msleep(1000);
--		retry--;
--	}
--
--	if (neigh->nud_state & NUD_VALID) {
--		/* copy resolved MAC address */
--		neigh_ha_snapshot(hardware_address->sa_data, neigh, *ndev);
--		hardware_address->sa_family = (*ndev)->type;
--		rc = 0;
--	}
--
--	neigh_release(neigh);
--	if (!(*loc_ip)) {
--		*loc_ip = inet_select_addr(*ndev, *rem_ip, RT_SCOPE_UNIVERSE);
--		local_addr->ss_family = AF_INET;
--	}
--
--return_err:
--
--	return rc;
--}
--EXPORT_SYMBOL(qed_route_ipv4);
--
--int qed_route_ipv6(struct sockaddr_storage *local_addr,
--		   struct sockaddr_storage *remote_addr,
--		   struct sockaddr *hardware_address,
--		   struct net_device **ndev)
--{
--	struct neighbour *neigh = NULL;
--	struct dst_entry *dst;
--	struct flowi6 fl6;
--	int rc = -ENXIO;
--	int retry;
--
--	memset(&fl6, 0, sizeof(fl6));
--	fl6.saddr = ((struct sockaddr_in6 *)local_addr)->sin6_addr;
--	fl6.daddr = ((struct sockaddr_in6 *)remote_addr)->sin6_addr;
--	dst = ip6_route_output(&init_net, NULL, &fl6);
--	if (!dst || dst->error) {
--		if (dst) {
--			dst_release(dst);
--			pr_err("lookup route failed %d\n", dst->error);
--		}
--
--		goto out;
--	}
--
--	neigh = dst_neigh_lookup(dst, &fl6.daddr);
--	if (neigh) {
--		*ndev = ip6_dst_idev(dst)->dev;
--
--		/* If not resolved, kick-off state machine towards resolution */
--		if (!(neigh->nud_state & NUD_VALID))
--			neigh_event_send(neigh, NULL);
--
--		/* query neighbor until resolved or timeout */
--		retry = QED_IP_RESOL_TIMEOUT;
--		while (!(neigh->nud_state & NUD_VALID) && retry > 0) {
--			msleep(1000);
--			retry--;
--		}
--
--		if (neigh->nud_state & NUD_VALID) {
--			neigh_ha_snapshot((u8 *)hardware_address->sa_data,
--					  neigh, *ndev);
--			hardware_address->sa_family = (*ndev)->type;
--			rc = 0;
--		}
--
--		neigh_release(neigh);
--
--		if (ipv6_addr_any(&fl6.saddr)) {
--			if (ipv6_dev_get_saddr(dev_net(*ndev), *ndev,
--					       &fl6.daddr, 0, &fl6.saddr)) {
--				pr_err("Unable to find source IP address\n");
--				goto out;
--			}
--
--			local_addr->ss_family = AF_INET6;
--			((struct sockaddr_in6 *)local_addr)->sin6_addr =
--								fl6.saddr;
--		}
--	}
--
--	dst_release(dst);
--
--out:
--
--	return rc;
--}
--EXPORT_SYMBOL(qed_route_ipv6);
--
--void qed_vlan_get_ndev(struct net_device **ndev, u16 *vlan_id)
--{
--	if (is_vlan_dev(*ndev)) {
--		*vlan_id = vlan_dev_vlan_id(*ndev);
--		*ndev = vlan_dev_real_dev(*ndev);
--	}
--}
--EXPORT_SYMBOL(qed_vlan_get_ndev);
--
--struct pci_dev *qed_validate_ndev(struct net_device *ndev)
--{
--	struct net_device *upper;
--	struct pci_dev *pdev;
--
--	for_each_pci_dev(pdev) {
--		if (pdev->driver &&
--		    !strcmp(pdev->driver->name, "qede")) {
--			upper = pci_get_drvdata(pdev);
--			if (upper->ifindex == ndev->ifindex)
--				return pdev;
--		}
--	}
--
--	return NULL;
--}
--EXPORT_SYMBOL(qed_validate_ndev);
--
--__be16 qed_get_in_port(struct sockaddr_storage *sa)
--{
--	return sa->ss_family == AF_INET
--		? ((struct sockaddr_in *)sa)->sin_port
--		: ((struct sockaddr_in6 *)sa)->sin6_port;
--}
--EXPORT_SYMBOL(qed_get_in_port);
--
--int qed_fetch_tcp_port(struct sockaddr_storage local_ip_addr,
--		       struct socket **sock, u16 *port)
--{
--	struct sockaddr_storage sa;
--	int rc = 0;
--
--	rc = sock_create(local_ip_addr.ss_family, SOCK_STREAM, IPPROTO_TCP,
--			 sock);
--	if (rc) {
--		pr_warn("failed to create socket: %d\n", rc);
--		goto err;
--	}
--
--	(*sock)->sk->sk_allocation = GFP_KERNEL;
--	sk_set_memalloc((*sock)->sk);
--
--	rc = kernel_bind(*sock, (struct sockaddr *)&local_ip_addr,
--			 sizeof(local_ip_addr));
--
--	if (rc) {
--		pr_warn("failed to bind socket: %d\n", rc);
--		goto err_sock;
--	}
--
--	rc = kernel_getsockname(*sock, (struct sockaddr *)&sa);
--	if (rc < 0) {
--		pr_warn("getsockname() failed: %d\n", rc);
--		goto err_sock;
--	}
--
--	*port = ntohs(qed_get_in_port(&sa));
--
--	return 0;
--
--err_sock:
--	sock_release(*sock);
--	sock = NULL;
--err:
--
--	return rc;
--}
--EXPORT_SYMBOL(qed_fetch_tcp_port);
--
--void qed_return_tcp_port(struct socket *sock)
--{
--	if (sock && sock->sk) {
--		tcp_set_state(sock->sk, TCP_CLOSE);
--		sock_release(sock);
--	}
--}
--EXPORT_SYMBOL(qed_return_tcp_port);
-diff --git a/include/linux/qed/qed_nvmetcp_ip_services_if.h b/include/linux/qed/qed_nvmetcp_ip_services_if.h
-deleted file mode 100644
-index 3604aee53796..000000000000
---- a/include/linux/qed/qed_nvmetcp_ip_services_if.h
-+++ /dev/null
-@@ -1,29 +0,0 @@
--/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
--/*
-- * Copyright 2021 Marvell. All rights reserved.
-- */
--
--#ifndef _QED_IP_SERVICES_IF_H
--#define _QED_IP_SERVICES_IF_H
--
--#include <linux/types.h>
--#include <net/route.h>
--#include <net/ip6_route.h>
--#include <linux/inetdevice.h>
--
--int qed_route_ipv4(struct sockaddr_storage *local_addr,
--		   struct sockaddr_storage *remote_addr,
--		   struct sockaddr *hardware_address,
--		   struct net_device **ndev);
--int qed_route_ipv6(struct sockaddr_storage *local_addr,
--		   struct sockaddr_storage *remote_addr,
--		   struct sockaddr *hardware_address,
--		   struct net_device **ndev);
--void qed_vlan_get_ndev(struct net_device **ndev, u16 *vlan_id);
--struct pci_dev *qed_validate_ndev(struct net_device *ndev);
--void qed_return_tcp_port(struct socket *sock);
--int qed_fetch_tcp_port(struct sockaddr_storage local_ip_addr,
--		       struct socket **sock, u16 *port);
--__be16 qed_get_in_port(struct sockaddr_storage *sa);
--
--#endif /* _QED_IP_SERVICES_IF_H */
--- 
-2.21.3
+> > Maybe the better solution is to push back on the vendor and its
+> > BIOS, tell them how they should of done this, if the BIOS wants to be
+> > in control of the LEDs it needs to offer the methods to control the
+> > LEDs. And then hopefully the next machine the vendor produces will
+> > have working BIOS.
+> 
+> The BIOS doesn't want to control the LED. It just provides a default
+> LED setting suitable for this platform, so the driver can use this
+> value over the hardcoded one in marvell phy driver.
 
+Exactly, it wants to control the LED, and tell the OS not to touch it
+ever.
+
+> So this really has nothing to do with with any ACPI method.
+> I believe the new property can be useful for DT world too.
+
+DT generally never trusts the bootloader to do anything. So i doubt
+such a DT property would ever be used. Also, DT is about describing
+the hardware, not how to configure the hardware. So you could list
+there is a PHY LED, what colour it is, etc. But in general, you would
+not describe how it is configured, that something else is configuring
+it and it should be left alone.
+
+> > Your other option is to take part in the effort to add control of the
+> > LEDs via the standard Linux LED subsystem. The Marvel PHY driver is
+> > likely to be one of the first to gain support this for. So you can
+> > then totally take control of the LED from the BIOS and put it in the
+> > users hands. And such a solution will be applicable to many machines,
+> > not just one.
+> 
+> This series just wants to use the default value platform firmware provides.
+> Create a sysfs to let user meddle with LED value doesn't really help
+> the case here.
+
+I would disagree. You can add a systemd service to configure it at
+boot however you want. It opens up the possibility to implement
+ethtool --identify in a generic way, etc. It is a much more powerful
+and useful feature than saying 'don't touch', and also it justify the
+maintenance burden.
+
+     Andrew
