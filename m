@@ -2,100 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67B7050986F
+	by mail.lfdr.de (Postfix) with ESMTP id B2EBA509870
 	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 09:06:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385402AbiDUG7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 02:59:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33790 "EHLO
+        id S1385467AbiDUG7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 02:59:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385443AbiDUG6r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 02:58:47 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90C5715A3C;
-        Wed, 20 Apr 2022 23:55:56 -0700 (PDT)
-X-UUID: c2c7cc54b950481eb43bf43fecc95331-20220421
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:830c6e4e-ed07-45ec-8f49-f9924753a6c2,OB:0,LO
-        B:0,IP:0,URL:8,TC:0,Content:0,EDM:0,RT:0,SF:50,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:58
-X-CID-INFO: VERSION:1.1.4,REQID:830c6e4e-ed07-45ec-8f49-f9924753a6c2,OB:0,LOB:
-        0,IP:0,URL:8,TC:0,Content:0,EDM:0,RT:0,SF:50,FILE:0,RULE:Release_Ham,ACTIO
-        N:release,TS:58
-X-CID-META: VersionHash:faefae9,CLOUDID:e67f73f0-da02-41b4-b6df-58f4ccd36682,C
-        OID:bfaf4f356833,Recheck:0,SF:13|15|28|17|19|48,TC:nil,Content:0,EDM:-3,Fi
-        le:nil,QS:0,BEC:nil
-X-UUID: c2c7cc54b950481eb43bf43fecc95331-20220421
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <lina.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1400714960; Thu, 21 Apr 2022 14:55:48 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 21 Apr 2022 14:55:47 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 21 Apr
- 2022 14:55:46 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 21 Apr 2022 14:55:45 +0800
-From:   <Lina.Wang@mediatek.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     Alexei Starovoitov <ast@kernel.org>,
+        with ESMTP id S1385464AbiDUG7U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 02:59:20 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E791582C;
+        Wed, 20 Apr 2022 23:56:31 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id k22so5272546wrd.2;
+        Wed, 20 Apr 2022 23:56:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=PMcv2vjMUzwczrQYsKN+kw5OQQ/UjaS2R/dcykc8xFg=;
+        b=IshB+dnedMBwSej+YQ79VoKemg7w1sJXget+/jlAu6TnYws///3Jj0sZGQlw8GwxVr
+         CORGdZTubBRfiycG8ReL2YX0BCt4EOxpESvpGsGPavKUCR4ysBOl8F2+31NMm8SZsaoT
+         RuRxAeH0NELu96+xrOIhKJXvTVRi+EubtgegIFm3xe8RRYQGv0/Yfiai+J8DASissvLB
+         0hM7zxYts4QDNmLS+vKKhytArYFpBlfDdZK9EvwWGEPzHRsKNngnl5tl/o6WAlYJa5eA
+         gmdvP30t1Pd3HASfFwKFaWiasVZn4NIEl4cKRQvbWBASXmjbZLGWo1NrCWorOxEfTfLn
+         ZP5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=PMcv2vjMUzwczrQYsKN+kw5OQQ/UjaS2R/dcykc8xFg=;
+        b=fkgniZ9CMWyqZSKC9lSRySl40XJ6EwYslKAynR2raSKoHcBye75JDJNbSkB5GchpIR
+         HTc8McFT4Sw2y0r3TaqOA9d4j4imCe5EAbtV+SY5V/KRH/Zv7uXO9w+MSoqoF3CJrHtl
+         v5ja9DLqRti1OYDdvKlOFcobmjXkgB2HEFyGEquz0uHMOfnQmD2xecX5FNOECYuJT67q
+         /5rSthju2wX1ubSOdu0UZRLfliYO3Am/XCtomYZJXD6wBJMNlCKVO2UyHFKvKt1iNI3W
+         FPPhSCygZwV1bYvQZEL0RrPr1tF+gBQIM8I+D943IkRw+MuBgCW18ieTLAajGi1aQIQ+
+         lqIg==
+X-Gm-Message-State: AOAM532YejFvYFTNFJwkR3FLaFcSM/308rcECCfpwzTFAZ2zC6jnM84o
+        F3GgDQJhoO3zEtGOW+7N/noSsN5NLeU6R82i
+X-Google-Smtp-Source: ABdhPJy+U9hILKyrD+kgqCMLYoMz6ua57rn5c3tUrz+cx0GY9GA70N0oNJND5CUv1zl3KOtCSgCDPg==
+X-Received: by 2002:a5d:6104:0:b0:20a:b027:dc3f with SMTP id v4-20020a5d6104000000b0020ab027dc3fmr4584122wrt.94.1650524190065;
+        Wed, 20 Apr 2022 23:56:30 -0700 (PDT)
+Received: from krava ([193.85.244.190])
+        by smtp.gmail.com with ESMTPSA id k65-20020a1ca144000000b003929a64ab63sm1264902wme.38.2022.04.20.23.56.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Apr 2022 23:56:29 -0700 (PDT)
+Date:   Thu, 21 Apr 2022 08:56:26 +0200
+From:   Jiri Olsa <olsajiri@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        <linux-kernel@vger.kernel.org>,
-        Maciej enczykowski <maze@google.com>,
-        <linux-kselftest@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>
-Subject: Re: [PATCH v5 1/3] selftests: bpf: add test for bpf_skb_change_proto
-Date:   Thu, 21 Apr 2022 14:49:24 +0800
-Message-ID: <20220421064924.25706-1-Lina.Wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <9dc51533-92d2-1c82-2a6e-96e1ac747bb7@iogearbox.net>
-References: <9dc51533-92d2-1c82-2a6e-96e1ac747bb7@iogearbox.net>
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: Re: [PATCHv2 bpf-next 4/4] selftests/bpf: Add attach bench test
+Message-ID: <YmEAGhGVhyiHBQ3S@krava>
+References: <20220418124834.829064-1-jolsa@kernel.org>
+ <20220418124834.829064-5-jolsa@kernel.org>
+ <CAEf4BzYuvLgVtxbtz7pjCmtSp0hEKJd0peCnbX0E_-Tqy5g4dw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="y"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzYuvLgVtxbtz7pjCmtSp0hEKJd0peCnbX0E_-Tqy5g4dw@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2022-04-07 at 17:22 +0200, Daniel Borkmann wrote:
-> Hi Lina,
+On Wed, Apr 20, 2022 at 02:56:53PM -0700, Andrii Nakryiko wrote:
+
+SNIP
+
+> > +#define DEBUGFS "/sys/kernel/debug/tracing/"
+> > +
+> > +static int get_syms(char ***symsp, size_t *cntp)
+> > +{
+> > +       size_t cap = 0, cnt = 0, i;
+> > +       char *name, **syms = NULL;
+> > +       struct hashmap *map;
+> > +       char buf[256];
+> > +       FILE *f;
+> > +       int err;
+> > +
+> > +       /*
+> > +        * The available_filter_functions contains many duplicates,
+> > +        * but other than that all symbols are usable in kprobe multi
+> > +        * interface.
+> > +        * Filtering out duplicates by using hashmap__add, which won't
+> > +        * add existing entry.
+> > +        */
+> > +       f = fopen(DEBUGFS "available_filter_functions", "r");
 > 
-> On 4/7/22 10:47 AM, Lina Wang wrote:
-> > The code is copied from the Android Open Source Project and the
-> > author(
-> > Maciej Żenczykowski) has gave permission to relicense it under
-> > GPLv2.
-> > 
-> > The test is to change input IPv6 packets to IPv4 ones and output
-> > IPv4 to
-> > IPv6 with bpf_skb_change_proto.
-> > ---
+> nit: DEBUGFS "constant" just makes it harder to follow the code and
+> doesn't add anything, please just use the full path here directly
+
+there's another one DEBUGFS in trace_helpers.c,
+we could put it in trace_helpers.h
+
 > 
-> Your patch 2/3 is utilizing this program out of
-> selftests/net/udpgro_frglist.sh,
-> however, this is a bit problematic given BPF CI which runs on every
-> BPF submitted
-> patch. Meaning, udpgro_frglist.sh won't be covered by CI and only
-> needs to be run
-> manually. Could you properly include this into test_progs from BPF
-> suite (that way,
-> BPF CI will also pick it up)? See also [2] for more complex netns
+> > +       if (!f)
+> > +               return -EINVAL;
+> > +
+> > +       map = hashmap__new(symbol_hash, symbol_equal, NULL);
+> > +       err = libbpf_get_error(map);
+> 
+> hashmap__new() is an internal API, so please use IS_ERR() directly
+> here. libbpf_get_error() should be used for public libbpf APIs, and
+> preferably not in libbpf 1.0 mode
 
-Please check my previous response, do you agree with me? I can move such nat6to4.c to net/, not bpf/, no need to add bpf test progs
+ok
 
-Thanks!
+> 
+> > +       if (err)
+> > +               goto error;
+> > +
+> > +       while (fgets(buf, sizeof(buf), f)) {
+> > +               /* skip modules */
+> > +               if (strchr(buf, '['))
+> > +                       continue;
+> 
+> [...]
+> 
+> > +       attach_delta = (attach_end_ns - attach_start_ns) / 1000000000.0;
+> > +       detach_delta = (detach_end_ns - detach_start_ns) / 1000000000.0;
+> > +
+> > +       fprintf(stderr, "%s: found %lu functions\n", __func__, cnt);
+> > +       fprintf(stderr, "%s: attached in %7.3lfs\n", __func__, attach_delta);
+> > +       fprintf(stderr, "%s: detached in %7.3lfs\n", __func__, detach_delta);
+> 
+> 
+> why stderr? just do printf() and let test_progs handle output
 
+ok
+
+> 
+> 
+> > +
+> > +cleanup:
+> > +       kprobe_multi_empty__destroy(skel);
+> > +       if (syms) {
+> > +               for (i = 0; i < cnt; i++)
+> > +                       free(syms[i]);
+> > +               free(syms);
+> > +       }
+> > +}
+> > +
+> >  void test_kprobe_multi_test(void)
+> >  {
+> >         if (!ASSERT_OK(load_kallsyms(), "load_kallsyms"))
+> > @@ -320,4 +454,6 @@ void test_kprobe_multi_test(void)
+> >                 test_attach_api_syms();
+> >         if (test__start_subtest("attach_api_fails"))
+> >                 test_attach_api_fails();
+> > +       if (test__start_subtest("bench_attach"))
+> > +               test_bench_attach();
+> >  }
+> > diff --git a/tools/testing/selftests/bpf/progs/kprobe_multi_empty.c b/tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
+> > new file mode 100644
+> > index 000000000000..be9e3d891d46
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
+> > @@ -0,0 +1,12 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +#include <linux/bpf.h>
+> > +#include <bpf/bpf_helpers.h>
+> > +#include <bpf/bpf_tracing.h>
+> > +
+> > +char _license[] SEC("license") = "GPL";
+> > +
+> > +SEC("kprobe.multi/*")
+> 
+> use SEC("kprobe.multi") to make it clear that we are attaching it "manually"?
+
+yep, will do
+
+thanks,
+jirka
