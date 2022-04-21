@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B9D850A9F7
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 22:29:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2D1C50A9FB
+	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 22:32:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392373AbiDUUbz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 16:31:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48222 "EHLO
+        id S1392386AbiDUUfo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 16:35:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389385AbiDUUbw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 16:31:52 -0400
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D678E4DF59;
-        Thu, 21 Apr 2022 13:29:01 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VAhY.oD_1650572933;
-Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VAhY.oD_1650572933)
+        with ESMTP id S230203AbiDUUfn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 16:35:43 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A384C4AE16;
+        Thu, 21 Apr 2022 13:32:52 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VAhaFaY_1650573164;
+Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VAhaFaY_1650573164)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 22 Apr 2022 04:28:58 +0800
+          Fri, 22 Apr 2022 04:32:49 +0800
 From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 To:     pisa@cmp.felk.cvut.cz
 Cc:     ondrej.ille@gmail.com, wg@grandegger.com, mkl@pengutronix.de,
@@ -26,9 +26,9 @@ Cc:     ondrej.ille@gmail.com, wg@grandegger.com, mkl@pengutronix.de,
         linux-kernel@vger.kernel.org,
         Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
         Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH] can: ctucanfd: Remove unused including <linux/version.h>
-Date:   Fri, 22 Apr 2022 04:28:52 +0800
-Message-Id: <20220421202852.2693-1-jiapeng.chong@linux.alibaba.com>
+Subject: [PATCH] can: ctucanfd: Remove unnecessary print function dev_err()
+Date:   Fri, 22 Apr 2022 04:32:42 +0800
+Message-Id: <20220421203242.7335-1-jiapeng.chong@linux.alibaba.com>
 X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -42,29 +42,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Eliminate the follow versioncheck warning:
+The print function dev_err() is redundant because platform_get_irq()
+already prints an error.
 
-./drivers/net/can/ctucanfd/ctucanfd_base.c: 34 linux/version.h not
-needed.
+Eliminate the follow coccicheck warnings:
+
+./drivers/net/can/ctucanfd/ctucanfd_platform.c:67:2-9: line 67 is
+redundant because platform_get_irq() already prints an error.
 
 Reported-by: Abaci Robot <abaci@linux.alibaba.com>
 Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 ---
- drivers/net/can/ctucanfd/ctucanfd_base.c | 1 -
+ drivers/net/can/ctucanfd/ctucanfd_platform.c | 1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/can/ctucanfd/ctucanfd_base.c b/drivers/net/can/ctucanfd/ctucanfd_base.c
-index 7a4550f60abb..be90136be442 100644
---- a/drivers/net/can/ctucanfd/ctucanfd_base.c
-+++ b/drivers/net/can/ctucanfd/ctucanfd_base.c
-@@ -31,7 +31,6 @@
- #include <linux/can/error.h>
- #include <linux/can/led.h>
- #include <linux/pm_runtime.h>
--#include <linux/version.h>
- 
- #include "ctucanfd.h"
- #include "ctucanfd_kregs.h"
+diff --git a/drivers/net/can/ctucanfd/ctucanfd_platform.c b/drivers/net/can/ctucanfd/ctucanfd_platform.c
+index 5e4806068662..89d54c2151e1 100644
+--- a/drivers/net/can/ctucanfd/ctucanfd_platform.c
++++ b/drivers/net/can/ctucanfd/ctucanfd_platform.c
+@@ -64,7 +64,6 @@ static int ctucan_platform_probe(struct platform_device *pdev)
+ 	}
+ 	irq = platform_get_irq(pdev, 0);
+ 	if (irq < 0) {
+-		dev_err(dev, "Cannot find interrupt.\n");
+ 		ret = irq;
+ 		goto err;
+ 	}
 -- 
 2.20.1.7.g153144c
 
