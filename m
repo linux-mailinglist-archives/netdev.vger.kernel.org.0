@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43624509449
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 02:57:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A12F4509445
+	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 02:57:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346941AbiDUAob (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Apr 2022 20:44:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38524 "EHLO
+        id S1383488AbiDUAmv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Apr 2022 20:42:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383530AbiDUAmZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 20:42:25 -0400
-Received: from mail-4322.protonmail.ch (mail-4322.protonmail.ch [185.70.43.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37DB82A262;
-        Wed, 20 Apr 2022 17:39:37 -0700 (PDT)
-Date:   Thu, 21 Apr 2022 00:39:32 +0000
+        with ESMTP id S1383557AbiDUAmg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 20:42:36 -0400
+Received: from mail-4316.protonmail.ch (mail-4316.protonmail.ch [185.70.43.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68239C15;
+        Wed, 20 Apr 2022 17:39:48 -0700 (PDT)
+Date:   Thu, 21 Apr 2022 00:39:41 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
-        s=protonmail2; t=1650501575;
-        bh=0PStfJn/A30V4r63nD53fw6U9MRSxUFeg0SQxYCDl8o=;
+        s=protonmail2; t=1650501586;
+        bh=OfNKhPyskwu1Q+3O0NrPPcm3lyoLjqwkLF7TAXF+zrM=;
         h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
          References:Feedback-ID:From:To:Cc:Date:Subject:Reply-To:
          Feedback-ID:Message-ID;
-        b=ha5O7GsYjAxVIWUiwEWS6Wh5ksolr7RWStN0fdNIJ4VKKHWIRQCtr+M06ZWxebTuW
-         vhPVsPi2kytoKb9p90Ziwj2ZT+KPMZ1jXcVqqHchqse4S/0jcOUPyM7PM5N+qZ4WkU
-         4k4dlSRssuF+OIoMhDXH4fKm/4l4HLB1pl+nLsAmFildlGsK4XKckGPjUQOve0rsk7
-         cwaEtCPHImlTgg6dDkMdKMls+EjdbjJZ/VD/AxWg1Wfauq2sy4zdW4DaNttbPEM5FV
-         davbM8BIOnKyQl6s3wJgCNuNXlP1GHlHIehk2M4F60+Y0ixcbzaqgkz+G32ZZKp6AW
-         Vg8LiqmlPGU7Q==
+        b=Gv76EDdwK9liHoTdSS5w4HVGCnBoPqoi3KllzNoPJOPyTIw/8Wv6ASNOOEnAaaiV7
+         USoT99Z/UgYq7jIIHonFsaWa295GFVDledCPqvv3mz7wzzRaM9oi7RZGOTMwP/80Lv
+         +CJeuYfL8NoE16JL/srqKP5qB3g3DZShwM0RmOEnc7Si7lfo2mrbjnj9Dfrcjasi3W
+         FIPRcZY2BdqZJo73Tjn/lEAio+PldaIxuztKQQ8UvgQ+ImRZ/HhuoMp9mWCKdRHTxt
+         Fdfv7fMtgrfHze1/IHWmrEvY+i9eObYepH/YJIb/LcRSJGQI05eT+pPIjO35jDwWWK
+         LSsqxigXJRV/w==
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>
@@ -38,8 +38,8 @@ Cc:     Alexander Lobakin <alobakin@pm.me>,
         bpf@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH v2 bpf 07/11] samples/bpf: fix uin64_t format literals
-Message-ID: <20220421003152.339542-8-alobakin@pm.me>
+Subject: [PATCH v2 bpf 08/11] samples/bpf: fix false-positive right-shift underflow warnings
+Message-ID: <20220421003152.339542-9-alobakin@pm.me>
 In-Reply-To: <20220421003152.339542-1-alobakin@pm.me>
 References: <20220421003152.339542-1-alobakin@pm.me>
 Feedback-ID: 22809121:user:proton
@@ -47,7 +47,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H4,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H3,
         RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -56,81 +56,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There's a couple places where uin64_t is being passed as an %lu
-format argument. That type is defined as unsigned long on 64-bit
-systems and as unsigned long long on 32-bit, so neither %lu nor
-%llu are not universal.
-One of the options is %PRIu64, but since it's always 8-byte long,
-just cast it to the _proper_ __u64 and print as %llu.
+On 32 bit systems, shifting an unsigned long by 32 positions
+yields the following warning:
 
-Fixes: 51570a5ab2b7 ("A Sample of using socket cookie and uid for traffic m=
-onitoring")
-Fixes: 00f660eaf378 ("Sample program using SO_COOKIE")
+samples/bpf/tracex2_kern.c:60:23: warning: shift count >=3D width of type [=
+-Wshift-count-overflow]
+        unsigned int hi =3D v >> 32;
+                            ^  ~~
+
+sizeof(long) is always 8 for the BPF architecture, so this is not
+correct, but the BPF samples Makefile still uses the Clang native +
+LLC combo which enforces that.
+Until the samples are switched to `-target bpf`, do it the usual
+way: shift by 16 two times (see upper_32_bits() macro in the
+kernel).
+
+Fixes: d822a1926849 ("samples/bpf: Add counting example for kfree_skb() fun=
+ction calls and the write() syscall")
+Fixes: 0fb1170ee68a ("bpf: BPF based latency tracing")
+Fixes: f74599f7c530 ("bpf: Add tests and samples for LWT-BPF")
+Acked-by: Song Liu <songliubraving@fb.com>
 Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 ---
- samples/bpf/cookie_uid_helper_example.c | 12 ++++++------
- samples/bpf/lwt_len_hist_user.c         |  7 ++++---
- 2 files changed, 10 insertions(+), 9 deletions(-)
+ samples/bpf/lathist_kern.c      | 2 +-
+ samples/bpf/lwt_len_hist_kern.c | 2 +-
+ samples/bpf/tracex2_kern.c      | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/samples/bpf/cookie_uid_helper_example.c b/samples/bpf/cookie_u=
-id_helper_example.c
-index f0df3dda4b1f..269fac58fd5c 100644
---- a/samples/bpf/cookie_uid_helper_example.c
-+++ b/samples/bpf/cookie_uid_helper_example.c
-@@ -207,9 +207,9 @@ static void print_table(void)
- =09=09=09error(1, errno, "fail to get entry value of Key: %u\n",
- =09=09=09=09curN);
- =09=09} else {
--=09=09=09printf("cookie: %u, uid: 0x%x, Packet Count: %lu,"
--=09=09=09=09" Bytes Count: %lu\n", curN, curEntry.uid,
--=09=09=09=09curEntry.packets, curEntry.bytes);
-+=09=09=09printf("cookie: %u, uid: 0x%x, Packet Count: %llu, Bytes Count: %=
-llu\n",
-+=09=09=09       curN, curEntry.uid, (__u64)curEntry.packets,
-+=09=09=09       (__u64)curEntry.bytes);
- =09=09}
- =09}
- }
-@@ -265,9 +265,9 @@ static void udp_client(void)
- =09=09if (res < 0)
- =09=09=09error(1, errno, "lookup sk stat failed, cookie: %lu\n",
- =09=09=09      cookie);
--=09=09printf("cookie: %lu, uid: 0x%x, Packet Count: %lu,"
--=09=09=09" Bytes Count: %lu\n\n", cookie, dataEntry.uid,
--=09=09=09dataEntry.packets, dataEntry.bytes);
-+=09=09printf("cookie: %llu, uid: 0x%x, Packet Count: %llu, Bytes Count: %l=
-lu\n\n",
-+=09=09       (__u64)cookie, dataEntry.uid, (__u64)dataEntry.packets,
-+=09=09       (__u64)dataEntry.bytes);
- =09}
- =09close(s_send);
- =09close(s_rcv);
-diff --git a/samples/bpf/lwt_len_hist_user.c b/samples/bpf/lwt_len_hist_use=
-r.c
-index 430a4b7e353e..c682faa75a2b 100644
---- a/samples/bpf/lwt_len_hist_user.c
-+++ b/samples/bpf/lwt_len_hist_user.c
-@@ -44,7 +44,8 @@ int main(int argc, char **argv)
+diff --git a/samples/bpf/lathist_kern.c b/samples/bpf/lathist_kern.c
+index 4adfcbbe6ef4..9744ed547abe 100644
+--- a/samples/bpf/lathist_kern.c
++++ b/samples/bpf/lathist_kern.c
+@@ -53,7 +53,7 @@ static unsigned int log2(unsigned int v)
 
- =09while (bpf_map_get_next_key(map_fd, &key, &next_key) =3D=3D 0) {
- =09=09if (next_key >=3D MAX_INDEX) {
--=09=09=09fprintf(stderr, "Key %lu out of bounds\n", next_key);
-+=09=09=09fprintf(stderr, "Key %llu out of bounds\n",
-+=09=09=09=09(__u64)next_key);
- =09=09=09continue;
- =09=09}
+ static unsigned int log2l(unsigned long v)
+ {
+-=09unsigned int hi =3D v >> 32;
++=09unsigned int hi =3D (v >> 16) >> 16;
 
-@@ -66,8 +67,8 @@ int main(int argc, char **argv)
+ =09if (hi)
+ =09=09return log2(hi) + 32;
+diff --git a/samples/bpf/lwt_len_hist_kern.c b/samples/bpf/lwt_len_hist_ker=
+n.c
+index 1fa14c54963a..bf32fa04c91f 100644
+--- a/samples/bpf/lwt_len_hist_kern.c
++++ b/samples/bpf/lwt_len_hist_kern.c
+@@ -49,7 +49,7 @@ static unsigned int log2(unsigned int v)
 
- =09for (i =3D 1; i <=3D max_key + 1; i++) {
- =09=09stars(starstr, data[i - 1], max_value, MAX_STARS);
--=09=09printf("%8ld -> %-8ld : %-8ld |%-*s|\n",
--=09=09       (1l << i) >> 1, (1l << i) - 1, data[i - 1],
-+=09=09printf("%8ld -> %-8ld : %-8lld |%-*s|\n",
-+=09=09       (1l << i) >> 1, (1l << i) - 1, (__u64)data[i - 1],
- =09=09       MAX_STARS, starstr);
- =09}
+ static unsigned int log2l(unsigned long v)
+ {
+-=09unsigned int hi =3D v >> 32;
++=09unsigned int hi =3D (v >> 16) >> 16;
+ =09if (hi)
+ =09=09return log2(hi) + 32;
+ =09else
+diff --git a/samples/bpf/tracex2_kern.c b/samples/bpf/tracex2_kern.c
+index 5bc696bac27d..6bf22056ff95 100644
+--- a/samples/bpf/tracex2_kern.c
++++ b/samples/bpf/tracex2_kern.c
+@@ -57,7 +57,7 @@ static unsigned int log2(unsigned int v)
 
+ static unsigned int log2l(unsigned long v)
+ {
+-=09unsigned int hi =3D v >> 32;
++=09unsigned int hi =3D (v >> 16) >> 16;
+ =09if (hi)
+ =09=09return log2(hi) + 32;
+ =09else
 --
 2.36.0
 
