@@ -2,73 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7D37509497
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 03:16:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78BA25094E2
+	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 04:00:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383602AbiDUBSu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Apr 2022 21:18:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45502 "EHLO
+        id S1383769AbiDUCDH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Apr 2022 22:03:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233373AbiDUBSt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 21:18:49 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6966712AF0
-        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 18:16:01 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id k29so3291890pgm.12
-        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 18:16:01 -0700 (PDT)
+        with ESMTP id S1383783AbiDUCDC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 22:03:02 -0400
+Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D81BB1208A
+        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 19:00:13 -0700 (PDT)
+Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-2ec04a2ebadso37391927b3.12
+        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 19:00:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=+I9N4jIKIfkX9P2x9psVpYzNUmL0G2RB/oOphV/ZpCc=;
-        b=g4zkej6zOwFRFRa1LQeAWTe14tM2fi4Mnw6vLL/rjL5jiDrkopkz+Cx74nboH/6DV5
-         diWL063nsGSr9zbjYZ9cknKeX1QIc7Bu4tgGiKWh5RFt+QQG5jnZtDhNe9uAhF/ytKyL
-         3rKJMGpKm4Q2EEbCFWoCECct62oRPWlSsRZpW3mhPLN894tQio39Oqn7iTuUzxohUH+D
-         msvdDgYk03dYA7muojIJpw6JqSP0If+KuLumhL6c0luYjHgv8EFWK4dmTamKlMDgPn0Q
-         FgJlEiougcJr5NSOXcb+6NLFja1Fm8tYCYyZvmbKGSUTU/BnNg1Hg5KXC1Owdn0/oiZd
-         uD5Q==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AE7l3U3Ok/l/ma4wVBxTAWhqFVPfRK/mIEy0ba9HyK0=;
+        b=mZ9Ge9eiHVANFgD4+KOUXL1r2F71/Kiyi5Ioyx/BT61bDLjjP95WftDAMJrBH//GBC
+         kV63YgO+r6UptKN1T3M+prV/q4e1QlwHPXiwAuPcyrYzA/F1hQbLYtN1JgyS55X3OimJ
+         eOBuVnNJg4CnBIZLypL2m4P06HJxTDCet3rYw5r1EAw/FPMrPwUF2xXOTRWKVcVet2Lq
+         S/uQ6UisWZiXssiKxQJ7aiN30BdjW6+ETRI0pR5fQmWbIt+FzLk1ZBLDUx6HmxEkmfT/
+         7WSh2BNHOP5jm4tR7JnBcG55if9Tr9Ri4sRI97AEOydNb3VDhfC5keLovEe+sLJlHw0F
+         9lGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=+I9N4jIKIfkX9P2x9psVpYzNUmL0G2RB/oOphV/ZpCc=;
-        b=bP8/Z5abW2Kag4W7v4kYIXiQEKGDhxR54XspXHi4Sm4JQT1Jz1aHRhOwzrEEzrLIpr
-         BqSS1MBMzJgrBbfejLl/+U4gWqlD4KClbm6sC3953Op2a2ZpypCf+Ct2HtBh6d5ybnLv
-         geI9viBbA0BkMWRJPwQed1J2DQvd92vPymGgqP5ug2rotXCZb63/EeyDESrJ+pQYwOel
-         drlOyu7A7pU01PhnkAnKoO0zUaNTgFtnuNbvmucm7JXuNnSjCajOYbj5XbKgfXNbk7g0
-         BlEWMdjVxs5akBMG+CTIMIuZWJbKTt2uSK2Rvj5bC+Fp8RW/PqQ/p8inyP/t4xVLpu99
-         ZpVg==
-X-Gm-Message-State: AOAM533BElPBRiMgikbdmEmQPVJ/aowQb6TDS6y+eXotGk4uVH6C+/EP
-        XNk/1qRQs0QmzuF76ggXMWlS6aN9IvY=
-X-Google-Smtp-Source: ABdhPJwzbXQq+x11JaadtOF20Qyb+UNu39UkQ9rKzidcTt5UzyzyiTgAGNOk8ChsebU1dsLAn6sGXQ==
-X-Received: by 2002:a05:6a00:124f:b0:50a:72ed:c924 with SMTP id u15-20020a056a00124f00b0050a72edc924mr19913554pfi.31.1650503760841;
-        Wed, 20 Apr 2022 18:16:00 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id z5-20020a056a00240500b004e15d39f15fsm22197404pfh.83.2022.04.20.18.15.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Apr 2022 18:16:00 -0700 (PDT)
-Message-ID: <d1db8978-a866-9552-50e6-34507bfcd62d@gmail.com>
-Date:   Wed, 20 Apr 2022 18:15:56 -0700
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AE7l3U3Ok/l/ma4wVBxTAWhqFVPfRK/mIEy0ba9HyK0=;
+        b=DXkBU4dR5plGtl01wHZgv3sJxlqH+4xKwLegdOqjthYDhz48T0xF35PPXzM1hqH6ap
+         tqlw8DCJj47HiMi6HOzsKPVpp+X4TGVnJ3bKx5OJOXOkyJTXeTeUjrhMtoUr5eho9mzc
+         /4wbNIkyDJKJpL0eZoG4n/Kj2hZD2lRqmHs5M2mSpdOlprCz+PJgpChbh9v+RgjXs4b+
+         4deGRdSq179K2wDwJvsQwoTwdn3znY+X0x43+VggFs0DbXwGBP55V/zzYxUHp0+U7VFt
+         e6vkps1cbVxUgTCYpd+xvSBwMGK8XjgGZ23p8BzY168X+OHjaNiiGcDsvqRVEe9tLfng
+         ncfQ==
+X-Gm-Message-State: AOAM532AHoGCm5sU1kYdBAHLBF1qq42ML9AKeGadiOm5/++BQzhFH9Qz
+        9Q2fR8tO9Nx3U27pBO1Voh1BXCQH/OP1ezlrplZPKw==
+X-Google-Smtp-Source: ABdhPJxY/JAVTGMP2eoLuvovfMVq8brdmJ26/zPXma9LAq3yXWvRIrK3lcHo514gkcUIfT8zyY3+9TvhKloqfqWgcQs=
+X-Received: by 2002:a0d:cb07:0:b0:2f1:c718:b273 with SMTP id
+ n7-20020a0dcb07000000b002f1c718b273mr11764955ywd.467.1650506412639; Wed, 20
+ Apr 2022 19:00:12 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH net-next] Revert "rtnetlink: return EINVAL when request
- cannot succeed"
-Content-Language: en-US
-To:     Florent Fourcot <florent.fourcot@wifirst.fr>,
-        netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Brian Baboch <brian.baboch@wifirst.fr>
-References: <Yl6iFqPFrdvD1wam@zx2c4.com>
- <20220419125151.15589-1-florent.fourcot@wifirst.fr>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-In-Reply-To: <20220419125151.15589-1-florent.fourcot@wifirst.fr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20220421005026.686A45EC01F2@us226.sjc.aristanetworks.com>
+In-Reply-To: <20220421005026.686A45EC01F2@us226.sjc.aristanetworks.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 20 Apr 2022 19:00:01 -0700
+Message-ID: <CANn89iJ-iMgoy9AYoAhZ3y8wcNCsQ5Bu=4rnC3x1o9UY07E9Ag@mail.gmail.com>
+Subject: Re: [PATCH v2 net] tcp: md5: incorrect tcp_header_len for incoming connections
+To:     Francesco Ruggeri <fruggeri@arista.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Miller <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,23 +70,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Apr 20, 2022 at 5:50 PM Francesco Ruggeri <fruggeri@arista.com> wrote:
+>
+> In tcp_create_openreq_child we adjust tcp_header_len for md5 using the
+> remote address in newsk. But that address is still 0 in newsk at this
+> point, and it is only set later by the callers (tcp_v[46]_syn_recv_sock).
+> Use the address from the request socket instead.
+>
+>
+>
+> Fixes: cfb6eeb4c860 ("[TCP]: MD5 Signature Option (RFC2385) support.")
+> Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
 
-On 4/19/22 05:51, Florent Fourcot wrote:
-> This reverts commit b6177d3240a4
->
-> ip-link command is testing kernel capability by sending a RTM_NEWLINK
-> request, without any argument. It accepts everything in reply, except
-> EOPNOTSUPP and EINVAL (functions iplink_have_newlink / accept_msg)
->
-> So we must keep compatiblity here, invalid empty message should not
-> return EINVAL
->
-> Signed-off-by: Florent Fourcot <florent.fourcot@wifirst.fr>
-
+Thanks for fixing this Francesco.
 
 Reviewed-by: Eric Dumazet <edumazet@google.com>
-
-
-Thanks for fixing this issue.
-
-
