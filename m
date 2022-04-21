@@ -2,107 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2642650A0AA
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 15:22:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 013D250A0BC
+	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 15:24:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231896AbiDUNYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 09:24:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43394 "EHLO
+        id S1350360AbiDUN0e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 09:26:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231823AbiDUNYk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 09:24:40 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1285338BF;
-        Thu, 21 Apr 2022 06:21:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650547310; x=1682083310;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=JUa5m/3AYneWyoIuicUzQgOmiMwiYyHAEiy56xSFTB8=;
-  b=eYUiRkf5fjcORMCKhvBaKuFevbvu3xGuaaPKKGTqEL0uBslI+bfATDON
-   wygAKtT4kL+k5CYlFGpUa68yEKkZWU/gmL3iIRYgYrXMf4zMO7QfqEsPI
-   cAxTk0yTIRXf3XAatwYYNvB43110/eMoHtqrc36CYVTW+isGu4aZmnS0S
-   +Wc6IfedIvS9/+klXC7HHJvamj9NE3P6V9wvJcTkyi3aJZoijHyT72+gN
-   CzhZaPPCGN4mt8gVENUQaS+GMWeFGxclu/230TPqmv1gJnxhZ32hDcmvw
-   TbUoB4zn1XnpF+/ssH4ApNGThEJOdpWUhOS1SXHtTs4jViSERE45bLRUT
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="251664928"
-X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="251664928"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 06:21:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="593655747"
-Received: from boxer.igk.intel.com ([10.102.20.173])
-  by orsmga001.jf.intel.com with ESMTP; 21 Apr 2022 06:21:48 -0700
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        sfr@canb.auug.org.au, andrii@kernel.org
-Cc:     netdev@vger.kernel.org, magnus.karlsson@intel.com,
-        linux-next@vger.kernel.org,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH bpf-next 2/2] i40e: xsk: get rid of redundant 'fallthrough'
-Date:   Thu, 21 Apr 2022 15:21:26 +0200
-Message-Id: <20220421132126.471515-3-maciej.fijalkowski@intel.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220421132126.471515-1-maciej.fijalkowski@intel.com>
-References: <20220421132126.471515-1-maciej.fijalkowski@intel.com>
+        with ESMTP id S1377865AbiDUN02 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 09:26:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8097C37019
+        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 06:23:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650547404;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=cbmH4M7d4GLcYeIEHq42CQGiQzmje9WO0ROuhEyNljM=;
+        b=GUe6LtTagkIuhfCb5JXIgwk2dUU8wWh7Q9ezBtgrGHhcdhtKw4x/nmu6C1mMo+vLnap57c
+        qm25NO9/8gd8xu2mTGpyW99traqcyPE76q9wJ3J7AEVo9fvJozyczpIyfBm1Sfa0VlKf2Z
+        8i3x8nZDXe4/UAcKJGYVnEdSql3DM3U=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-313-4GoSzyGXNYWGSMbuc4VzIA-1; Thu, 21 Apr 2022 09:23:20 -0400
+X-MC-Unique: 4GoSzyGXNYWGSMbuc4VzIA-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1C7F61014A68;
+        Thu, 21 Apr 2022 13:23:20 +0000 (UTC)
+Received: from shodan.usersys.redhat.com (unknown [10.43.17.22])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id EA385572344;
+        Thu, 21 Apr 2022 13:23:19 +0000 (UTC)
+Received: by shodan.usersys.redhat.com (Postfix, from userid 1000)
+        id C35B01C016C; Thu, 21 Apr 2022 15:23:18 +0200 (CEST)
+From:   Artem Savkov <asavkov@redhat.com>
+To:     Alan Maguire <alan.maguire@oracle.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, Artem Savkov <asavkov@redhat.com>
+Subject: [PATCH bpf-next] selftests/bpf: fix prog_tests/uprobe_autoattach compilation error
+Date:   Thu, 21 Apr 2022 15:23:17 +0200
+Message-Id: <20220421132317.1583867-1-asavkov@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Intel drivers translate actions returned from XDP programs to their own
-return codes that have the following mapping:
+I am getting the following compilation error for prog_tests/uprobe_autoattach.c
 
-XDP_REDIRECT -> I40E_XDP_{REDIR,CONSUMED}
-XDP_TX -> I40E_XDP_{TX,CONSUMED}
-XDP_DROP -> I40E_XDP_CONSUMED
-XDP_ABORTED -> I40E_XDP_CONSUMED
-XDP_PASS -> I40E_XDP_PASS
+tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c: In function ‘test_uprobe_autoattach’:
+./test_progs.h:209:26: error: pointer ‘mem’ may be used after ‘free’ [-Werror=use-after-free]
 
-Commit b8aef650e549 ("i40e, xsk: Terminate Rx side of NAPI when XSK Rx
-queue gets full") introduced new translation
+mem variable is now used in one of the asserts so it shouldn't be freed right
+away. Move free(mem) after the assert block.
 
-XDP_REDIRECT -> I40E_XDP_EXIT
-
-which is set when XSK RQ gets full and to indicate that driver should
-stop further Rx processing. This happens for unsuccessful
-xdp_do_redirect() so it is valuable to call trace_xdp_exception() for
-this case. In order to avoid I40E_XDP_EXIT -> IXGBE_XDP_CONSUMED
-overwrite, XDP_DROP case was moved above which in turn made the
-'fallthrough' that is in XDP_ABORTED useless as it became the last label
-in the switch statement.
-
-Simply drop this leftover.
-
-Fixes: b8aef650e549 ("i40e, xsk: Terminate Rx side of NAPI when XSK Rx queue gets full")
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Fixes: 1717e248014c ("selftests/bpf: Uprobe tests should verify param/return values")
+Signed-off-by: Artem Savkov <asavkov@redhat.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_xsk.c | 1 -
- 1 file changed, 1 deletion(-)
+ tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-index 050280fd10c1..af3e7e6afc85 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-@@ -189,7 +189,6 @@ static int i40e_run_xdp_zc(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
- 		result = I40E_XDP_CONSUMED;
- out_failure:
- 		trace_xdp_exception(rx_ring->netdev, xdp_prog, act);
--		fallthrough; /* handle aborts by dropping packet */
- 	}
- 	return result;
+diff --git a/tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c b/tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c
+index d6003dc8cc99..35b87c7ba5be 100644
+--- a/tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c
++++ b/tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c
+@@ -34,7 +34,6 @@ void test_uprobe_autoattach(void)
+ 
+ 	/* trigger & validate shared library u[ret]probes attached by name */
+ 	mem = malloc(malloc_sz);
+-	free(mem);
+ 
+ 	ASSERT_EQ(skel->bss->uprobe_byname_parm1, trigger_val, "check_uprobe_byname_parm1");
+ 	ASSERT_EQ(skel->bss->uprobe_byname_ran, 1, "check_uprobe_byname_ran");
+@@ -44,6 +43,8 @@ void test_uprobe_autoattach(void)
+ 	ASSERT_EQ(skel->bss->uprobe_byname2_ran, 3, "check_uprobe_byname2_ran");
+ 	ASSERT_EQ(skel->bss->uretprobe_byname2_rc, mem, "check_uretprobe_byname2_rc");
+ 	ASSERT_EQ(skel->bss->uretprobe_byname2_ran, 4, "check_uretprobe_byname2_ran");
++
++	free(mem);
+ cleanup:
+ 	test_uprobe_autoattach__destroy(skel);
  }
 -- 
-2.27.0
+2.35.1
 
