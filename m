@@ -2,202 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D44FF509A19
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 10:06:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84C94509A48
+	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 10:17:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386401AbiDUIFn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 04:05:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55946 "EHLO
+        id S1386484AbiDUING (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 04:13:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230143AbiDUIFj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 04:05:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 72CEB1C920
-        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 01:02:50 -0700 (PDT)
+        with ESMTP id S1386502AbiDUIMn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 04:12:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 66562E69
+        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 01:09:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650528169;
+        s=mimecast20190719; t=1650528593;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=p7er01rcZIWPhWabLFGP6DqeKEF6sxpgGAt7I3QDHYU=;
-        b=LGGiNE3IlLNEJdCIaNw1VVgFAQ20nzCzkR5lLAe1hWTI3uRa+e1TFhnLGGUpnSh/TacLfs
-        aVqUrzSHrSCtkDnkHZsILv+HTL5cOUtNj0FRwwmDEYcNaGydppiv0CeApVlD6XmTPVAJId
-        jn3knIesSRizxdatqIvyth7OgCH0B0Q=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=p5mkp6RgcSobuU7TrowdyzROdlgIwSdHC604GfrT0MY=;
+        b=XqADFnvMV1d4VAhOFkM/AyTvFwFbwu3ollVd7T0tqJyNbEeAm4oWpYTfMtusAfepEFbQ++
+        j7BHjk1T6OZYfdt8eGhYLcdIIqhOToGnJxeWakGRo14JmF8PR0PdNBrYijrsXt/CQ8YoAB
+        kx76NfD1/ctLVpXezbAPhvuOAMl6wzY=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-199-pXRJIFVOM4KweYPrTFUqMA-1; Thu, 21 Apr 2022 04:02:48 -0400
-X-MC-Unique: pXRJIFVOM4KweYPrTFUqMA-1
-Received: by mail-qk1-f200.google.com with SMTP id c8-20020a05620a268800b0069c0f1b3206so2832209qkp.18
-        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 01:02:48 -0700 (PDT)
+ us-mta-246-693u_FUROdubgTZnjaKo-A-1; Thu, 21 Apr 2022 04:09:52 -0400
+X-MC-Unique: 693u_FUROdubgTZnjaKo-A-1
+Received: by mail-qk1-f197.google.com with SMTP id bj2-20020a05620a190200b005084968bb24so2834769qkb.23
+        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 01:09:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=p7er01rcZIWPhWabLFGP6DqeKEF6sxpgGAt7I3QDHYU=;
-        b=uKZGnhS3xgXSZclqE4Flb4+YPcDK2+s4vkFsRhsd3Myz2H+yZFjAOthRr+/0jEyCrO
-         pWfPKx8nKtDgPa5M9o5gHT9JkwzoHGHJMA3bqkft+SpB3KDUVtf175IDfpH62++UBsJo
-         IO3XT3OWstWuC7kjLeLMjYwdzs0I3KUvHtZlzEBiTtNw4QWmTK89U+qvDkKGSqEGqKjd
-         kl+Q2jFCXuiQpcU+8YfM2m7rEpQHmmyEC2h2WFiQPJncTLHWTgVylvQkei1ov1AmDG8L
-         zzF7FjGOAOyW8HOiMBhGFO2CPhvNwwP4sXAirQg+a53+P8jneDFG53eJulVQkPOYXhU5
-         YvOg==
-X-Gm-Message-State: AOAM532LKxmSgW9PmRC2GZCBGtruEdhXiDQyDUk4nUV7rhPV2lzQsfbD
-        jIETp7LDfaLKxexvP8DYQRaWRiSgLC/SHAi4F1wxWM68izaR4/PIHdCfmQks9NcHQ56WHfANBqO
-        OM+NeEjjdg4QJs2cs
-X-Received: by 2002:a05:622a:1750:b0:2f1:f7c1:894 with SMTP id l16-20020a05622a175000b002f1f7c10894mr15176825qtk.259.1650528167780;
-        Thu, 21 Apr 2022 01:02:47 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy0WIBPn04nK0pxz2TA+z4IAYntqGXRykynS7jdVQ5NR4GVfF/RPYsIsBzqbhXzB1YWmtFl6Q==
-X-Received: by 2002:a05:622a:1750:b0:2f1:f7c1:894 with SMTP id l16-20020a05622a175000b002f1f7c10894mr15176809qtk.259.1650528167518;
-        Thu, 21 Apr 2022 01:02:47 -0700 (PDT)
+        bh=p5mkp6RgcSobuU7TrowdyzROdlgIwSdHC604GfrT0MY=;
+        b=URZTUKixA77S/219WrYZwYP4c9A2RUEF43j0k8NULFLGRLECWL13rDD5IpMhTGj9VU
+         tcxQLdOsZ3gW5msL8woZMtJ3RzmQoOutL1O+md5PRA2T2F9Oqrl4A+lSIZ3gaAJaKaLc
+         DvZ4Vnn/qn3SdzEi3VRxWERj62s0HWjCRDf9w5113h4k6CB5X0PlhcbyUuPp/U2QZwKh
+         Um8p+RABFi5GZRyHlZ+/TuczTcttWKclZgLpPyinpFY91ss9QxAG1FK/9i8GJXSB8qQp
+         UsomJmTZchp6Qr65yMg+x/2pr2RJSJVoIg1kNnZkiqg2gIhn7+irVMDWKuejXY9rV+ln
+         zh6g==
+X-Gm-Message-State: AOAM5337xo8yS6O0h6yAZsdV9ZTvHcVdi2sX/HiUSLPKj9eWf4TIfN82
+        QpkT+jT8y8JNIWz3tc+J7dE++qANx4kklSkh6ExzkoY7GA0i8p3hWe3zM+fq/z6h8H9B/iVu6PK
+        CoVpjweDRSqBUji2k
+X-Received: by 2002:ac8:5d8e:0:b0:2f1:fbc6:ae89 with SMTP id d14-20020ac85d8e000000b002f1fbc6ae89mr13320683qtx.647.1650528591619;
+        Thu, 21 Apr 2022 01:09:51 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxSWl/IdeBjalShp/k7O4K9i4aFpme9ARCm4osm7hX2EifpK6owbeUtv7Nf9MMUd0R2II36pw==
+X-Received: by 2002:ac8:5d8e:0:b0:2f1:fbc6:ae89 with SMTP id d14-20020ac85d8e000000b002f1fbc6ae89mr13320674qtx.647.1650528591406;
+        Thu, 21 Apr 2022 01:09:51 -0700 (PDT)
 Received: from gerbillo.redhat.com (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.gmail.com with ESMTPSA id m10-20020a05622a054a00b002eb965bbc3esm3155926qtx.93.2022.04.21.01.02.44
+        by smtp.gmail.com with ESMTPSA id c131-20020a379a89000000b0069c903625absm2686220qke.102.2022.04.21.01.09.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 01:02:46 -0700 (PDT)
-Message-ID: <9325d344e8a6b1a4720022697792a84e545fef62.camel@redhat.com>
-Subject: Re: [PATCH] net: linkwatch: ignore events for unregistered netdevs
+        Thu, 21 Apr 2022 01:09:50 -0700 (PDT)
+Message-ID: <a3596a37f72d6df35a6de4e0cf912d2f6d434bbc.camel@redhat.com>
+Subject: Re: [PATCH] net/smc: sync err info when TCP connection is refused
 From:   Paolo Abeni <pabeni@redhat.com>
-To:     Lukas Wunner <lukas@wunner.de>, Oliver Neukum <oneukum@suse.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Jann Horn <jannh@google.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Jacky Chou <jackychou@asix.com.tw>, Willy Tarreau <w@1wt.eu>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date:   Thu, 21 Apr 2022 10:02:43 +0200
-In-Reply-To: <18b3541e5372bc9b9fc733d422f4e698c089077c.1650177997.git.lukas@wunner.de>
-References: <18b3541e5372bc9b9fc733d422f4e698c089077c.1650177997.git.lukas@wunner.de>
+To:     yacanliu@163.com, kgraul@linux.ibm.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, liuyacan <liuyacan@corp.netease.com>
+Date:   Thu, 21 Apr 2022 10:09:48 +0200
+In-Reply-To: <20220417123307.1094747-1-yacanliu@163.com>
+References: <20220417123307.1094747-1-yacanliu@163.com>
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2022-04-17 at 09:04 +0200, Lukas Wunner wrote:
-> Jann Horn reports a use-after-free on disconnect of a USB Ethernet
-> (ax88179_178a.c).  Oleksij Rempel has witnessed the same issue with a
-> different driver (ax88172a.c).
+On Sun, 2022-04-17 at 20:33 +0800, yacanliu@163.com wrote:
+> From: liuyacan <liuyacan@corp.netease.com>
 > 
-> Jann's report (linked below) explains the root cause in great detail,
-> but the gist is that USB Ethernet drivers call linkwatch_fire_event()
-> between unregister_netdev() and free_netdev().  The asynchronous work
-> linkwatch_event() may thus access the netdev after it's been freed.
+> In the current implementation, when TCP initiates a connection
+> to an unavailable [ip,port], ECONNREFUSED will be stored in the
+> TCP socket, but SMC will not. However, some apps (like curl) use
+> getsockopt(,,SO_ERROR,,) to get the error information, which makes
+> them miss the error message and behave strangely.
 > 
-> USB Ethernet may not even be the only culprit.  To address the problem
-> in the most general way, ignore link events once a netdev's state has
-> been set to NETREG_UNREGISTERED.
-> 
-> That happens in netdev_run_todo() immediately before the call to
-> linkwatch_forget_dev().  Note that lweventlist_lock (and its implied
-> memory barrier) guarantees that a linkwatch_add_event() running after
-> linkwatch_forget_dev() will see the netdev's new state and bail out.
-> An unregistered netdev is therefore never added to link_watch_list
-> (but may have its __LINK_STATE_LINKWATCH_PENDING bit set, which should
-> not matter).  That obviates the need to invoke linkwatch_run_queue() in
-> netdev_wait_allrefs(), so drop it.
-> 
-> In a sense, the present commit is to *no longer* registered netdevs as
-> commit b47300168e77 ("net: Do not fire linkwatch events until the device
-> is registered.") is to *not yet* registered netdevs.
-> 
-> Reported-by: Jann Horn <jannh@google.com>
-> Link: https://lore.kernel.org/netdev/CAG48ez0MHBbENX5gCdHAUXZ7h7s20LnepBF-pa5M=7Bi-jZrEA@mail.gmail.com/
-> Reported-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> Link: https://lore.kernel.org/netdev/20220315113841.GA22337@pengutronix.de/
-> Signed-off-by: Lukas Wunner <lukas@wunner.de>
-> Cc: stable@vger.kernel.org
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Oliver Neukum <oneukum@suse.com>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> ---
->  include/linux/netdevice.h |  2 --
->  net/core/dev.c            | 17 -----------------
->  net/core/link_watch.c     | 10 ++--------
->  3 files changed, 2 insertions(+), 27 deletions(-)
-> 
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index 59e27a2b7bf0..5d950b45b59d 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -4805,8 +4805,6 @@ extern const struct kobj_ns_type_operations net_ns_type_operations;
->  
->  const char *netdev_drivername(const struct net_device *dev);
->  
-> -void linkwatch_run_queue(void);
-> -
->  static inline netdev_features_t netdev_intersect_features(netdev_features_t f1,
->  							  netdev_features_t f2)
->  {
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 8c6c08446556..0ee56965ff76 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -10140,23 +10140,6 @@ static struct net_device *netdev_wait_allrefs_any(struct list_head *list)
->  			list_for_each_entry(dev, list, todo_list)
->  				call_netdevice_notifiers(NETDEV_UNREGISTER, dev);
->  
-> -			__rtnl_unlock();
-> -			rcu_barrier();
-> -			rtnl_lock();
-> -
-> -			list_for_each_entry(dev, list, todo_list)
-> -				if (test_bit(__LINK_STATE_LINKWATCH_PENDING,
-> -					     &dev->state)) {
-> -					/* We must not have linkwatch events
-> -					 * pending on unregister. If this
-> -					 * happens, we simply run the queue
-> -					 * unscheduled, resulting in a noop
-> -					 * for this device.
-> -					 */
-> -					linkwatch_run_queue();
-> -					break;
-> -				}
-> -
->  			__rtnl_unlock();
->  
->  			rebroadcast_time = jiffies;
-> diff --git a/net/core/link_watch.c b/net/core/link_watch.c
-> index 95098d1a49bd..9a0ea7cd68e4 100644
-> --- a/net/core/link_watch.c
-> +++ b/net/core/link_watch.c
-> @@ -107,7 +107,8 @@ static void linkwatch_add_event(struct net_device *dev)
->  	unsigned long flags;
->  
->  	spin_lock_irqsave(&lweventlist_lock, flags);
-> -	if (list_empty(&dev->link_watch_list)) {
-> +	if (list_empty(&dev->link_watch_list) &&
-> +	    dev->reg_state < NETREG_UNREGISTERED) {
->  		list_add_tail(&dev->link_watch_list, &lweventlist);
->  		dev_hold_track(dev, &dev->linkwatch_dev_tracker, GFP_ATOMIC);
->  	
+> Signed-off-by: liuyacan <liuyacan@corp.netease.com>
 
-What about testing dev->reg_state in linkwatch_fire_event() before
-setting the __LINK_STATE_LINKWATCH_PENDING bit, so that we don't leave
-the device in an unexpected state?
+Could you please formally re-submit for -net (inclusing NET into the
+patch subj) with a suitable 'fixes' tag? You can retain the already
+collected reviewed/ack-by tags.
 
-Other than that, it looks good to me, but potentially quite risky. 
-
-Looking at the original report it looks like the issue could be
-resolved with a more usb-specific change: e.g. it looks like
-usbnet_defer_kevent() is not acquiring a dev reference as it should.
-
-Have you considered that path?
-
-Thanks,
+Thanks!
 
 Paolo
-
 
