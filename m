@@ -2,46 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C836950987A
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 09:06:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CC155098DB
+	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 09:20:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385579AbiDUHHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 03:07:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39054 "EHLO
+        id S1376885AbiDUHKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 03:10:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385559AbiDUHHe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 03:07:34 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4181115704;
-        Thu, 21 Apr 2022 00:04:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=zBXWLNnXpk4rildATDLl07tkcfHH7qx/rs6eJc2jVvY=; b=QR0Xe8VEKwSitBZoLjmLhc8fq8
-        Lr97HHHJhJPho3My5cPAj3WFl0XUehAS9E+qEfCT/Lq6WDrFnYeWYcShZdet8No9amJuD3NdnhpXg
-        A2WH2R3rSaIEsCxFrj4AW4IgVwsRmuLSHamhv5gA1JmwuKLVy4Zwc1fRRbXymaAOFUWY/Fo25jO/Y
-        Rv07h3ZFVNmYVZsAr2+KfR9itkDS/IPJLGd4Zit2F7zasrKi43a339FOQVRyOyxnkylnHwxU0xPsw
-        c+T5CEboHhoU2XsgyUtATcYfhWl+O7Eg4aZlYpZqDsNyqmG71+b+KUGXTz4CsIQO92nqN/AR8/lSc
-        vuSIbYrQ==;
-Received: from [2001:4bb8:191:364b:7b50:153f:5622:82f7] (helo=localhost)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nhQrr-00BwId-CM; Thu, 21 Apr 2022 07:04:43 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     akpm@linux-foundation.org
-Cc:     x86@kernel.org, linux-alpha@vger.kernel.org,
-        linux-m68k@lists.linux-m68k.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH] net: unexport csum_and_copy_{from,to}_user
-Date:   Thu, 21 Apr 2022 09:04:40 +0200
-Message-Id: <20220421070440.1282704-1-hch@lst.de>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S229902AbiDUHKm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 03:10:42 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C92816595;
+        Thu, 21 Apr 2022 00:07:54 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KkTBt6Cw8z4x7V;
+        Thu, 21 Apr 2022 17:07:50 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1650524872;
+        bh=FFVJbC5IdcEfkW8gho2dj5lOtNJGtVZWhAKi4jyzt0Y=;
+        h=Date:From:To:Cc:Subject:From;
+        b=tjqf3+5IILss+BhDOeVYVyLgXP+tP4hXmNGGhUwlfkqc99of9VzIMPCQb1wb0tZ7S
+         ikctHrp/qMcvYUlouilVzetUzsKopuEYsFup7wqWXyO8Co2+FWQoNnXP5PA2mi86+6
+         hb/L8svf9dzIhKFW5JuRr2gbfLAfN/LsMM8wVI3CB7MTgX644y/gU+4fBiis7NO0yf
+         S1krm+YrmHDeGQC6MTGY2xnCqJsjl55z3PVn7CzZZatLwEv7Hj1rXgG1/YpwX8Ouqo
+         o5cWPPKqi3GnIn9tZi9W3pwzMxo6NPH62v97blTxY6Lp8L8eX6GUK6HvL59h93N7Ux
+         hDpERgOFjKo7Q==
+Date:   Thu, 21 Apr 2022 17:07:49 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Martin Jerabek <martin.jerabek01@gmail.com>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        Pavel Pisa <pisa@cmp.felk.cvut.cz>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build warning after merge of the net-next tree
+Message-ID: <20220421170749.1c0b56db@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Type: multipart/signed; boundary="Sig_/gPSSxANV3piWA3_G/Y.5WA4";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -49,80 +54,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-csum_and_copy_from_user and csum_and_copy_to_user are exported by
-a few architectures, but not actually used in modular code.  Drop
-the exports.
+--Sig_/gPSSxANV3piWA3_G/Y.5WA4
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- arch/alpha/lib/csum_partial_copy.c   | 1 -
- arch/m68k/lib/checksum.c             | 2 --
- arch/powerpc/lib/checksum_wrappers.c | 2 --
- arch/x86/lib/csum-wrappers_64.c      | 2 --
- 4 files changed, 7 deletions(-)
+Hi all,
 
-diff --git a/arch/alpha/lib/csum_partial_copy.c b/arch/alpha/lib/csum_partial_copy.c
-index 1931a04af85a2..4d180d96f09e4 100644
---- a/arch/alpha/lib/csum_partial_copy.c
-+++ b/arch/alpha/lib/csum_partial_copy.c
-@@ -353,7 +353,6 @@ csum_and_copy_from_user(const void __user *src, void *dst, int len)
- 		return 0;
- 	return __csum_and_copy(src, dst, len);
- }
--EXPORT_SYMBOL(csum_and_copy_from_user);
- 
- __wsum
- csum_partial_copy_nocheck(const void *src, void *dst, int len)
-diff --git a/arch/m68k/lib/checksum.c b/arch/m68k/lib/checksum.c
-index 7e6afeae62177..5acb821849d30 100644
---- a/arch/m68k/lib/checksum.c
-+++ b/arch/m68k/lib/checksum.c
-@@ -265,8 +265,6 @@ csum_and_copy_from_user(const void __user *src, void *dst, int len)
- 	return sum;
- }
- 
--EXPORT_SYMBOL(csum_and_copy_from_user);
--
- 
- /*
-  * copy from kernel space while checksumming, otherwise like csum_partial
-diff --git a/arch/powerpc/lib/checksum_wrappers.c b/arch/powerpc/lib/checksum_wrappers.c
-index f3999cbb2fcc4..1a14c8780278c 100644
---- a/arch/powerpc/lib/checksum_wrappers.c
-+++ b/arch/powerpc/lib/checksum_wrappers.c
-@@ -24,7 +24,6 @@ __wsum csum_and_copy_from_user(const void __user *src, void *dst,
- 	user_read_access_end();
- 	return csum;
- }
--EXPORT_SYMBOL(csum_and_copy_from_user);
- 
- __wsum csum_and_copy_to_user(const void *src, void __user *dst, int len)
- {
-@@ -38,4 +37,3 @@ __wsum csum_and_copy_to_user(const void *src, void __user *dst, int len)
- 	user_write_access_end();
- 	return csum;
- }
--EXPORT_SYMBOL(csum_and_copy_to_user);
-diff --git a/arch/x86/lib/csum-wrappers_64.c b/arch/x86/lib/csum-wrappers_64.c
-index 189344924a2be..145f9a0bde29a 100644
---- a/arch/x86/lib/csum-wrappers_64.c
-+++ b/arch/x86/lib/csum-wrappers_64.c
-@@ -32,7 +32,6 @@ csum_and_copy_from_user(const void __user *src, void *dst, int len)
- 	user_access_end();
- 	return sum;
- }
--EXPORT_SYMBOL(csum_and_copy_from_user);
- 
- /**
-  * csum_and_copy_to_user - Copy and checksum to user space.
-@@ -57,7 +56,6 @@ csum_and_copy_to_user(const void *src, void __user *dst, int len)
- 	user_access_end();
- 	return sum;
- }
--EXPORT_SYMBOL(csum_and_copy_to_user);
- 
- /**
-  * csum_partial_copy_nocheck - Copy and checksum.
--- 
-2.30.2
+After merging the net-next tree, today's linux-next build (htmldocs)
+produced this warning:
 
+Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst: WARNIN=
+G: document isn't included in any toctree
+
+Introduced by commit
+
+  c3a0addefbde ("docs: ctucanfd: CTU CAN FD open-source IP core documentati=
+on.")
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/gPSSxANV3piWA3_G/Y.5WA4
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJhAsUACgkQAVBC80lX
+0Gw+ewf/RiYj/MmHPXdohs+xS/yx68oTUzw5WYDX85Mhau2z8Qd3XW/5R56iue1/
+67D5T2vzYyxrTHTAt86/z0/uEzx+nWnVbRzfdovVXCKXd+afL4wM2+U2+iPSkg23
+BdbXY4KbrSvlqou7EU5mN75CAuuLtGoKp/jKk7rD06P1irjhOwRHCJnwAiRyiWuO
++dB8YWQMzNF0ZEbI7DjeyaH8/HZpeB9vqJSoJhD+2fk83hO7H3YWC3edtGoZLegt
+//8P3T7W7XOTtYvkbAz1aQ4XUEO4j3IUgzxmVcubbYTRM1HwCu9LVQj+Z0NEbibi
+lgiHmjP2izn7hwvwyvjCmYIZQZLCwA==
+=wjZ9
+-----END PGP SIGNATURE-----
+
+--Sig_/gPSSxANV3piWA3_G/Y.5WA4--
