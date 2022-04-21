@@ -2,129 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0B7050A5CC
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 18:34:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CD7950A500
+	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 18:06:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230507AbiDUQ1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 12:27:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60582 "EHLO
+        id S1390480AbiDUQJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 12:09:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390508AbiDUQKo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 12:10:44 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D18CE4739D;
-        Thu, 21 Apr 2022 09:07:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650557274; x=1682093274;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=KQxlSh7y7Ioxngv76mOQ0Wat/WwN5UNp4E4vSzos96M=;
-  b=QNcFA8UcTE/3DXsK0ex4HS/LseHG4yotonKqpa5KElZclX7Ep9Jpgjw/
-   fKoEnHJUdIcRwlwSB5Ocri7Ao6N8nAkOOGFD6S4FHR3tspR70GleoFjsm
-   1zyWVOcziRLog4PR7brXPxF2+pE9Qryyv4siOoYA6mzxu85tKVDVaYNDu
-   MT6Nkh8swHSc7P2ZyPLg6HO3xcTpXQt0Tb0d/DGiOV08VZfwLL79IFsY0
-   0e+cM6/rgSbe7yWzbAxrmTktoTOpuOTXivbf5lOrlHNQqmyqtk06YaA7z
-   eu7j7+KNsgF/qYkTUCtMQdn+3SQ3jGcIQULOR0MzhVjMo9j/XsP11K5+8
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="327306972"
-X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
-   d="scan'208";a="327306972"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 09:05:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,279,1643702400"; 
-   d="scan'208";a="658590992"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga002.fm.intel.com with ESMTP; 21 Apr 2022 09:04:58 -0700
-Received: from lincoln.igk.intel.com (lincoln.igk.intel.com [10.102.21.235])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 23LG4uCp031724;
-        Thu, 21 Apr 2022 17:04:57 +0100
-From:   Larysa Zaremba <larysa.zaremba@intel.com>
-To:     bpf <bpf@vger.kernel.org>
-Cc:     Larysa Zaremba <larysa.zaremba@intel.com>,
-        netdev <netdev@vger.kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke Hoiland-Jorgensen <toke@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>
-Subject: Accessing XDP packet memory from the end
-Date:   Thu, 21 Apr 2022 17:56:20 +0200
-Message-Id: <20220421155620.81048-1-larysa.zaremba@intel.com>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S1390477AbiDUQJI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 12:09:08 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D21947541
+        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 09:06:18 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id x9so2475589ybe.11
+        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 09:06:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ao6JOiGIKhmxQmFS+ZxxkcT+hGHLZDm7zhluUVW/Z6M=;
+        b=Dd857z3OI6w2cEAe8C8V/nguYgDUfEPP8fcN4RVDjtv0JlbqIVek/rswzW4ANfgXtv
+         0gG8TZ6cCPCz3C5/QLiXvIcJ6G6oJTfzX50xaGJDrEcFkrma29C29FX/EFozYAhK3ov7
+         7e5+TsxXBYvPGAjaUA/yZGvlYZ3AwvEiVjIwTDeFWfTBzSha3z1DQJg227DXeBpJhLGq
+         ezavNTz4G7pcKsFRZdisaU2xN/ffE5tuOJ92mdLvd8n8cpVepi+qyayZPbPG4WgQsJV6
+         /fBQ40Yte+8Mcm/Zzl7bwvW7H8vXpwZj2P0noXg34m7afARKuVWHRmXGcvy/1wDfC9Dm
+         mHOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ao6JOiGIKhmxQmFS+ZxxkcT+hGHLZDm7zhluUVW/Z6M=;
+        b=isZuIe/1S+OCS5rW00R7XG3vLajsjnUiqB/PDb7r7ljMbp0syFQ1O0+3BIYN4Pn6bE
+         qHZdpzpbBPYLAil4BgxDykGhA/H832fpL7EBaDwl5WUx60nFlhDOGbIOyEPSqs93hb0/
+         1hB2rz2QNXx8u0S0I6j/CpixI3Ki6Z54a/OAEdnRDV+yR4uX/YhZiKg7uueAop4FdCSC
+         NISOavnAdWRyvZHDQmQfEV+tiVWCwDqqCPH77krP84L5yfRw5h/ctGpwGrhEHB4j65Za
+         2vfGWJgZSLr4ebKrgfyZnVn0NhNVLnC4NfOZia/F3/ryXMcNu1b/C4eDPZHrsHToVulW
+         inxQ==
+X-Gm-Message-State: AOAM530TboQeC/4c65tiFhY64yURmRD4hIKm+Eh2IAkjkvphX7oip8ZO
+        GlKRgj3/9mtGPxP6AFxP5sxiP7Eb/LtzPR4pydshdA==
+X-Google-Smtp-Source: ABdhPJz/v/SaLTJH6sJ0oDo4t/7tVNKumYOANhbVm8wuCj6UJIN4fpBkKrs8HINUpizT1KD8o45mabmJAByAG9kzeNw=
+X-Received: by 2002:a25:ea48:0:b0:644:e2e5:309 with SMTP id
+ o8-20020a25ea48000000b00644e2e50309mr357251ybe.407.1650557176979; Thu, 21 Apr
+ 2022 09:06:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <YmFjdOp+R5gVGZ7p@linutronix.de>
+In-Reply-To: <YmFjdOp+R5gVGZ7p@linutronix.de>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 21 Apr 2022 09:06:05 -0700
+Message-ID: <CANn89iKjSmnTSzzHdnP-HEYMajrz+MOrjFooaMFop4Vo43kLdg@mail.gmail.com>
+Subject: Re: [PATCH net] net: Use this_cpu_inc() to increment net->core_stats
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear all,
-Our team has encountered a need of accessing data_meta in a following way:
+On Thu, Apr 21, 2022 at 7:00 AM Sebastian Andrzej Siewior
+<bigeasy@linutronix.de> wrote:
+>
 
-int xdp_meta_prog(struct xdp_md *ctx)
-{
-	void *data_meta_ptr = (void *)(long)ctx->data_meta;
-	void *data_end = (void *)(long)ctx->data_end;
-	void *data = (void *)(long)ctx->data;
-	u64 data_size = sizeof(u32);
-	u32 magic_meta;
-	u8 offset;
+>                 for_each_possible_cpu(i) {
+>                         core_stats = per_cpu_ptr(p, i);
+> -                       storage->rx_dropped += local_read(&core_stats->rx_dropped);
+> -                       storage->tx_dropped += local_read(&core_stats->tx_dropped);
+> -                       storage->rx_nohandler += local_read(&core_stats->rx_nohandler);
+> +                       storage->rx_dropped += core_stats->rx_dropped;
+> +                       storage->tx_dropped += core_stats->tx_dropped;
+> +                       storage->rx_nohandler += core_stats->rx_nohandler;
 
-	offset = (u8)((s64)data - (s64)data_meta_ptr);
-	if (offset < data_size) {
-		bpf_printk("invalid offset: %ld\n", offset);
-		return XDP_DROP;
-	}
+I think that one of the reasons for me to use  local_read() was that
+it provided what was needed to avoid future syzbot reports.
 
-	data_meta_ptr += offset;
-	data_meta_ptr -= data_size;
+Perhaps use READ_ONCE() here ?
 
-	if (data_meta_ptr + data_size > data) {
-		return XDP_DROP;
-	}
-		
-	magic_meta = *((u32 *)data);
-	bpf_printk("Magic: %d\n", magic_meta);
-	return XDP_PASS;
-}
-
-Unfortunately, verifier claims this code attempts to access packet with
-an offset of -2 (a constant part) and negative offset is generally forbidden.
-
-For now we have 2 solutions, one is using bpf_xdp_adjust_meta(),
-which is pretty good, but not ideal for the hot path.
-The second one is the patch at the end.
-
-Do you see any other way of accessing memory from the end of data_meta/data?
-What do you think about both suggested solutions?
-
-Best regards,
-Larysa Zaremba
-
----
-
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -3576,8 +3576,11 @@ static int check_packet_access(struct bpf_verifier_env *env, u32 regno, int off,
- 	}
- 
- 	err = reg->range < 0 ? -EINVAL :
--	      __check_mem_access(env, regno, off, size, reg->range,
--				 zero_size_allowed);
-+	      __check_mem_access(env, regno, off + reg->smin_value, size,
-+				 reg->range + reg->smin_value, zero_size_allowed);
-+	err = err ? :
-+	      __check_mem_access(env, regno, off + reg->umax_value, size,
-+				 reg->range + reg->umax_value, zero_size_allowed);
- 	if (err) {
- 		verbose(env, "R%d offset is outside of the packet\n", regno);
- 		return err;
+Yes, we have many similar folding loops that are  simply assuming
+compiler won't do stupid things.
