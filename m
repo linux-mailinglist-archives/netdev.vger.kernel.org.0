@@ -2,67 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DAF5550A53C
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 18:24:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE8D150A5C3
+	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 18:34:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229684AbiDUQ10 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 12:27:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35018 "EHLO
+        id S229800AbiDUQdn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 12:33:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390633AbiDUQRm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 12:17:42 -0400
-Received: from mail-ua1-x931.google.com (mail-ua1-x931.google.com [IPv6:2607:f8b0:4864:20::931])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF1319C
-        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 09:14:51 -0700 (PDT)
-Received: by mail-ua1-x931.google.com with SMTP id m19so1996930uao.1
-        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 09:14:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TAx04H2ooTA7R83mV0WEPiN2U0g3qljg3FT+IIJR2tc=;
-        b=iHLAxH0A55dhgJw3wkbgnWuIySyLwi6CXzVt7MgdAYNyb1FWLrXxXBrPicMaclLE/t
-         +COAhJ383m3CO/oL692Qy4aYl/dH/+YJjjEwJftCmT5Z7x/DZtsxJ8d0W/kyC4NmupFa
-         Z/FygVVk9BUixLxYcoOk1LQYXI9pX3wncRkvmfsZI/xCXBpB2f9tHr+O0TWIO1pN8h6Q
-         7/pYRFa01f68Im8pyGH+pBfagHYK3Jf26vAalUhULPaa1y5tFwFy0S7H+9khHjCMBcVM
-         ooF3fJNSGc1Q9DqI7FSGpYfXU4NFkOHB6NPRL3k80HOiLo8JpZZQ1Unz0USejd5HwcIQ
-         UkTQ==
+        with ESMTP id S1390544AbiDUQdP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 12:33:15 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3B27B4BFF3
+        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 09:27:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650558472;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TOtejBcNLZ5DcaXPXYAL05tigOBHQkfjxArCAlT0UcQ=;
+        b=SqoKMMu2Fp/15qnFf10uxZeHYRx4GIOsKvGkkQ5GVZhlYBvlBFe+KnOvzfKahy6wqMBHPp
+        iDVika23WxOgMUaQOsJ5TnhkAnLK8vDGIGPqMPC+qo0/wpuPUZ5eA9Bu7z53ZB6w7FVlSY
+        8NQpFaoLHEViqo+oswN7sCzxaaTBTNg=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-152-uNjqjcZrMcWIwrn28ZcBOA-1; Thu, 21 Apr 2022 12:27:51 -0400
+X-MC-Unique: uNjqjcZrMcWIwrn28ZcBOA-1
+Received: by mail-ej1-f71.google.com with SMTP id qa31-20020a170907869f00b006ef7a20fdc6so2766775ejc.5
+        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 09:27:50 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TAx04H2ooTA7R83mV0WEPiN2U0g3qljg3FT+IIJR2tc=;
-        b=PFH3aaPzUiywhpT4HW8pVLn0kDzUJi7NLC7QaKjTjmFfOAbRmbS+cUpbul7lFuGrog
-         FkVS/Mja2x+avFj0C7T/UweAYyuQoBvrYi8TD+3i/MvqAdQw06p29K8lesOyuW3IThCI
-         ZwJfmwuej2PgsTQJpn2dFM98TIyArYaCYsP21BEILjElp12Fczla90V/OdsR1DifJ4Vl
-         OXadj1WUKIAtfNSVkczhOOk7mFjgRPsx6TLPFTXr4u1x1Epryw/UlhO4BWxm7iJqK+FN
-         OfQIWdb9aGveMX4JziE/eHh0x7wDGCumblFFrRjjXOeXWaDjkUpaDatpUeLiEfrzSNUx
-         CxDw==
-X-Gm-Message-State: AOAM530MD9Bri4IAU9jnBau+TsGAur+QaB0jgjJutYKmaxMfIHdih0XU
-        q7QijCIi+CvxFADxemUpufq5baAHGcBBzfIrmfA=
-X-Google-Smtp-Source: ABdhPJxczbVdH2vw3V2o9HxKvH0GOuNY800KQa8cJUah9vKZ2oZt+8UV7MM/g7BWWxBxWFAqoNV2lVZuDpy/saXF2Kg=
-X-Received: by 2002:ab0:375b:0:b0:355:c2b3:f6c with SMTP id
- i27-20020ab0375b000000b00355c2b30f6cmr196152uat.84.1650557690817; Thu, 21 Apr
- 2022 09:14:50 -0700 (PDT)
+        h=x-gm-message-state:from:message-id:date:mime-version:user-agent:cc
+         :subject:content-language:to:references:in-reply-to
+         :content-transfer-encoding;
+        bh=TOtejBcNLZ5DcaXPXYAL05tigOBHQkfjxArCAlT0UcQ=;
+        b=qXfv6eULm8uXCB4QalCBhIlXgxmMWEAH++6GG8afrVgY/RHRI7+ntsPp96SOs8kAZY
+         DfE18yZII+sqWwt/qKzdtgcqOFVHqXe/9uOJ/2XMDGu6AdRQb873w2xJIqzbgjerpSk0
+         mU4ROaf18IV5hhszhBWDzlOvc37l39UHcnd5oFUU+xg/3fRzCgcUE5OY3m0P0VfvFAiz
+         eQSot0Hk2xCEaYd1NqDSDSlpq8x3bfxnYpf54iGAAccYaEIQrM5jUf9eXcd3GRInntYu
+         ylFibfrdQTuA7wPwRBYLMGpCizAtLqXcGMItpVWt+x33R3cXM6/+1JoxCVUkUQGJ69tW
+         jblw==
+X-Gm-Message-State: AOAM530wStZSH7f4UNhZDCPOjplrsC/08TBGIA3/Q681s3G/8S7KQ72F
+        6iuzBL3XbAY2w9KrFYIv6PSSA4WFXuSgSc3Md/3kKR6yBgoLjVJtnuAa7lSyTMWUkqMDJpitmlj
+        3fQ2wNMY/dA/26808
+X-Received: by 2002:a17:906:5cb:b0:6cf:954:d84d with SMTP id t11-20020a17090605cb00b006cf0954d84dmr330072ejt.560.1650558469831;
+        Thu, 21 Apr 2022 09:27:49 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwVXdHGccv+gnrvFUjA5eq0cPv81/PWP6CCf7Wg6ao1loaIbrfFS/VNN4FhXEhpiPKT4AxYPg==
+X-Received: by 2002:a17:906:5cb:b0:6cf:954:d84d with SMTP id t11-20020a17090605cb00b006cf0954d84dmr330042ejt.560.1650558469574;
+        Thu, 21 Apr 2022 09:27:49 -0700 (PDT)
+Received: from [192.168.0.50] (87-59-106-155-cable.dk.customer.tdc.net. [87.59.106.155])
+        by smtp.gmail.com with ESMTPSA id r3-20020aa7cb83000000b0041b573e2654sm11582246edt.94.2022.04.21.09.27.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Apr 2022 09:27:49 -0700 (PDT)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <f1417959-4b0d-7c33-4b2b-08989bb86b23@redhat.com>
+Date:   Thu, 21 Apr 2022 18:27:47 +0200
 MIME-Version: 1.0
-References: <0bc6443a-dbac-70ab-bf99-9a439e35f3ef@I-love.SAKURA.ne.jp>
- <CAMZdPi_uieGNWyGAAywBz2Utg0iW1jGUTWzUbj3SmsZ+-iDTfQ@mail.gmail.com> <cb2f74ea-74ce-2dba-c5e3-e4672f1be663@I-love.SAKURA.ne.jp>
-In-Reply-To: <cb2f74ea-74ce-2dba-c5e3-e4672f1be663@I-love.SAKURA.ne.jp>
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Thu, 21 Apr 2022 19:14:40 +0300
-Message-ID: <CAHNKnsQxfy0rR4wiUCsEZnf=q5HnLW4CceD99P4yPoP7PO_b=w@mail.gmail.com>
-Subject: Re: [PATCH] wwan_hwsim: Avoid flush_scheduled_work() usage
-To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc:     Loic Poulain <loic.poulain@linaro.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.0
+Cc:     brouer@redhat.com, netdev <netdev@vger.kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Toke Hoiland-Jorgensen <toke@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        "xdp-hints@xdp-project.net" <xdp-hints@xdp-project.net>
+Subject: Re: Accessing XDP packet memory from the end
+Content-Language: en-US
+To:     Larysa Zaremba <larysa.zaremba@intel.com>,
+        bpf <bpf@vger.kernel.org>
+References: <20220421155620.81048-1-larysa.zaremba@intel.com>
+In-Reply-To: <20220421155620.81048-1-larysa.zaremba@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,72 +89,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Tetsuo,
 
-On Wed, Apr 20, 2022 at 1:17 PM Tetsuo Handa
-<penguin-kernel@i-love.sakura.ne.jp> wrote:
-> On 2022/04/20 18:53, Loic Poulain wrote:
->>> @@ -506,9 +507,15 @@ static int __init wwan_hwsim_init(void)
->>>         if (wwan_hwsim_devsnum < 0 || wwan_hwsim_devsnum > 128)
->>>                 return -EINVAL;
->>>
->>> +       wwan_wq = alloc_workqueue("wwan_wq", 0, 0);
->>> +       if (!wwan_wq)
->>> +               return -ENOMEM;
->>> +
->>>         wwan_hwsim_class = class_create(THIS_MODULE, "wwan_hwsim");
->>> -       if (IS_ERR(wwan_hwsim_class))
->>> +       if (IS_ERR(wwan_hwsim_class)) {
->>> +               destroy_workqueue(wwan_wq);
->>>                 return PTR_ERR(wwan_hwsim_class);
->>> +       }
->>>
->>>         wwan_hwsim_debugfs_topdir = debugfs_create_dir("wwan_hwsim", NULL);
->>>         wwan_hwsim_debugfs_devcreate =
->>> @@ -524,6 +531,7 @@ static int __init wwan_hwsim_init(void)
->>>
->>>  err_clean_devs:
->
-> Do you want
->
->         debugfs_remove(wwan_hwsim_debugfs_devcreate);
->
-> here (as a separate patch)?
 
-Nope. But I will not be against such a patch. I remove the "devcreate"
-file in wwwan_hwsim_exit() to prevent new emulated device creation
-while the workqueue flushing, which can take a sufficient time. Here
-we cleanup the leftovers of the attempt to automatically create
-emulated devices. Here is no workqueue flushing, so the race window is
-very tight.
+On 21/04/2022 17.56, Larysa Zaremba wrote:
+> Dear all,
+> Our team has encountered a need of accessing data_meta in a following way:
+> 
+> int xdp_meta_prog(struct xdp_md *ctx)
+> {
+> 	void *data_meta_ptr = (void *)(long)ctx->data_meta;
+> 	void *data_end = (void *)(long)ctx->data_end;
+> 	void *data = (void *)(long)ctx->data;
+> 	u64 data_size = sizeof(u32);
+> 	u32 magic_meta;
+> 	u8 offset;
+> 
+> 	offset = (u8)((s64)data - (s64)data_meta_ptr);
 
-In other words, the preparatory debugfs file removal is practically
-not required here, but it will not hurt anyone. And possibly will make
-the code less questionable.
+I'm not sure the verifier can handle this 'offset' calc. As it cannot
+statically know the sized based on this statement. Maybe this is not the
+issue.
 
->>>         wwan_hwsim_free_devs();
->>> +       destroy_workqueue(wwan_wq);
->>>         debugfs_remove(wwan_hwsim_debugfs_topdir);
->>>         class_destroy(wwan_hwsim_class);
->>>
->>> @@ -534,7 +542,7 @@ static void __exit wwan_hwsim_exit(void)
->>>  {
->>>         debugfs_remove(wwan_hwsim_debugfs_devcreate);   /* Avoid new devs */
->>>         wwan_hwsim_free_devs();
->>> -       flush_scheduled_work();         /* Wait deletion works completion */
->>> +       destroy_workqueue(wwan_wq);             /* Wait deletion works completion */
->>
->> Wouldn't it be simpler to just remove the flush call. It Looks like
->> all ports have been removed at that point, and all works cancelled,
->> right?
->
-> I guess that this flush_scheduled_work() is for waiting for schedule_work(&dev->del_work) from
-> wwan_hwsim_debugfs_devdestroy_write(). That is, if wwan_hwsim_debugfs_devdestroy_write() already
-> scheduled this work, wwan_hwsim_dev_del() from wwan_hwsim_dev_del_work() might be still in progress
-> even after wwan_hwsim_dev_del() from wwan_hwsim_free_devs() from wwan_hwsim_exit() returned.
+> 	if (offset < data_size) {
+> 		bpf_printk("invalid offset: %ld\n", offset);
+> 		return XDP_DROP;
+> 	}
+> 
+> 	data_meta_ptr += offset;
+> 	data_meta_ptr -= data_size;
+> 
+> 	if (data_meta_ptr + data_size > data) {
+> 		return XDP_DROP;
+> 	}
+> 		
+> 	magic_meta = *((u32 *)data);
+> 	bpf_printk("Magic: %d\n", magic_meta);
+> 	return XDP_PASS;
+> }
+> 
+> Unfortunately, verifier claims this code attempts to access packet with
+> an offset of -2 (a constant part) and negative offset is generally forbidden.
 
-Exactly. This code will wait for the completion of the work that was
-scheduled somewhere else.
+Are you forgetting to mention:
+  - Have you modified the NIC driver to adjust data_meta pointer and 
+provide info in this area?
 
--- 
-Sergey
+p.s. this is exactly what I'm also working towards[1], so I'll be happy
+to collaborate.  I'm missing the driver code, as link[1] is focused on
+decoding BTF data_meta area in userspace for AF_XDP.
+
+[1] 
+https://github.com/xdp-project/bpf-examples/tree/master/AF_XDP-interaction
+
+> For now we have 2 solutions, one is using bpf_xdp_adjust_meta(),
+> which is pretty good, but not ideal for the hot path.
+> The second one is the patch at the end.
+> 
+
+Are you saying, verifier cannot handle that driver changed data_meta 
+pointer and provided info there (without calling bpf_xdp_adjust_meta)?
+
+
+> Do you see any other way of accessing memory from the end of data_meta/data?
+> What do you think about both suggested solutions?
+> 
+> Best regards,
+> Larysa Zaremba
+> 
+> ---
+> 
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -3576,8 +3576,11 @@ static int check_packet_access(struct bpf_verifier_env *env, u32 regno, int off,
+>   	}
+>   
+>   	err = reg->range < 0 ? -EINVAL :
+> -	      __check_mem_access(env, regno, off, size, reg->range,
+> -				 zero_size_allowed);
+> +	      __check_mem_access(env, regno, off + reg->smin_value, size,
+> +				 reg->range + reg->smin_value, zero_size_allowed);
+> +	err = err ? :
+> +	      __check_mem_access(env, regno, off + reg->umax_value, size,
+> +				 reg->range + reg->umax_value, zero_size_allowed);
+>   	if (err) {
+>   		verbose(env, "R%d offset is outside of the packet\n", regno);
+>   		return err;
+> 
+
