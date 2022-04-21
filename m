@@ -2,72 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 105D950A0D9
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 15:31:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB59A50A0FD
+	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 15:40:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385870AbiDUNdg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 09:33:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51650 "EHLO
+        id S1386554AbiDUNnF convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 21 Apr 2022 09:43:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358404AbiDUNdb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 09:33:31 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6986918340
-        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 06:30:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=PxUmZ2CxHLIu9mwYA1zs6hKOX8cIVgW8NkKgnMjC/Ys=; b=0FA+/5/4W4+gov+D5ZdX3J/E6j
-        YLL3ZD4hNIHd/agJ2OFGYyI26S2p2f0au0H5MJSVLUsJcVndF4aWdsJmM5dHeTnNs93hY1MHFDgH2
-        UG6kgnBcaiAXBC7vqHwGe4x6JYrAXI3pNfsSnmhfMRVHBqcrkUs29S2mZKQjpNb9rbMY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nhWtK-00Go5U-JP; Thu, 21 Apr 2022 15:30:38 +0200
-Date:   Thu, 21 Apr 2022 15:30:38 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Josua Mayer <josua@solid-run.com>, netdev@vger.kernel.org,
-        alvaro.karsz@solid-run.com, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>
-Subject: Re: [PATCH v2 3/3] ARM: dts: imx6qdl-sr-som: update phy
- configuration for som revision 1.9
-Message-ID: <YmFcfhzOmi1GwTvS@lunn.ch>
-References: <20220410104626.11517-1-josua@solid-run.com>
- <20220419102709.26432-1-josua@solid-run.com>
- <20220419102709.26432-4-josua@solid-run.com>
- <YmFNpLLLDzBNPqGf@lunn.ch>
- <YmFWFzYz/iV4t2cW@shell.armlinux.org.uk>
+        with ESMTP id S236274AbiDUNmb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 09:42:31 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1130436E38
+        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 06:39:40 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-53-Np9PkOOsNdmDk6-m1EH31g-1; Thu, 21 Apr 2022 14:39:38 +0100
+X-MC-Unique: Np9PkOOsNdmDk6-m1EH31g-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.32; Thu, 21 Apr 2022 14:39:37 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.033; Thu, 21 Apr 2022 14:39:37 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Andrew Lunn' <andrew@lunn.ch>,
+        Joakim Tjernlund <Joakim.Tjernlund@infinera.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Eric Gratorp <Eric.Gratorp@infinera.com>
+Subject: RE: Ethernet TX buffer crossing 4K boundary?
+Thread-Topic: Ethernet TX buffer crossing 4K boundary?
+Thread-Index: AQHYVXvl3rebTRAZhU2ZMhDjXdVWLaz6XoDw
+Date:   Thu, 21 Apr 2022 13:39:37 +0000
+Message-ID: <5f7abe88a55a40d9a6a7f03f9c6af48c@AcuMS.aculab.com>
+References: <7e3fa36a3e16aca6fd7d00cadeeba8a8d71ceb0d.camel@infinera.com>
+ <YmFO431VWIR7e2hi@lunn.ch>
+In-Reply-To: <YmFO431VWIR7e2hi@lunn.ch>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YmFWFzYz/iV4t2cW@shell.armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> The only other ways around this that I can see would be to have some
-> way to flag in DT that the PHYs are "optional" - if they're not found
-> while probing the hardware, then don't whinge about them. Or have
-> u-boot discover which address the PHY is located, and update the DT
-> blob passed to the kernel to disable the PHY addresses that aren't
-> present. Or edit the DT to update the node name and reg property. Or
-> something along those lines.
+From: Andrew Lunn
+> Sent: 21 April 2022 13:33
+> 
+> On Wed, Apr 20, 2022 at 09:09:58PM +0000, Joakim Tjernlund wrote:
+> > We have this custom Ethernet controller that cannot DMA a buffer if the buffer crosses 4K boundary.
 
-uboot sounds like the best option. I don't know if we currently
-support the status property for PHYs. Maybe the .dtsi file should have
-them all status = "disabled"; and uboot can flip the populated ones to
-"okay". Or maybe the other way around to handle older bootloaders.
+Fix the hardware :-)
 
-	Andrew
+> > Any ideas how to deal with that limitation in the driver?
+> 
+> Does the DMA support scatter gather? You might be able to tweak the
+> generic scatter gather code to generate two blocks if it crosses the
+> boundary.
+
+I'd also look at the USB3 xhci code.
+That also has a perverse set of restrictions on buffer alignment.
+Might give you some hints.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
