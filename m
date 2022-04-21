@@ -2,67 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 78BA25094E2
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 04:00:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F1B350950A
+	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 04:27:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383769AbiDUCDH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Apr 2022 22:03:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42942 "EHLO
+        id S1343518AbiDUCac (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Apr 2022 22:30:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383783AbiDUCDC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 22:03:02 -0400
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D81BB1208A
-        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 19:00:13 -0700 (PDT)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-2ec04a2ebadso37391927b3.12
-        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 19:00:13 -0700 (PDT)
+        with ESMTP id S243732AbiDUCac (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 22:30:32 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93DE62BF0;
+        Wed, 20 Apr 2022 19:27:43 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id y20so7142853eju.7;
+        Wed, 20 Apr 2022 19:27:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AE7l3U3Ok/l/ma4wVBxTAWhqFVPfRK/mIEy0ba9HyK0=;
-        b=mZ9Ge9eiHVANFgD4+KOUXL1r2F71/Kiyi5Ioyx/BT61bDLjjP95WftDAMJrBH//GBC
-         kV63YgO+r6UptKN1T3M+prV/q4e1QlwHPXiwAuPcyrYzA/F1hQbLYtN1JgyS55X3OimJ
-         eOBuVnNJg4CnBIZLypL2m4P06HJxTDCet3rYw5r1EAw/FPMrPwUF2xXOTRWKVcVet2Lq
-         S/uQ6UisWZiXssiKxQJ7aiN30BdjW6+ETRI0pR5fQmWbIt+FzLk1ZBLDUx6HmxEkmfT/
-         7WSh2BNHOP5jm4tR7JnBcG55if9Tr9Ri4sRI97AEOydNb3VDhfC5keLovEe+sLJlHw0F
-         9lGw==
+         :cc:content-transfer-encoding;
+        bh=R3JuWxV3MEVv1Lzcod+dHK0KjwdRCKAyPORx4Cnws3Y=;
+        b=YmffCP0vsltafj0PR01HbipYBVztaVFa0dkqW7KzyhMrRRZxn2+UgbgF09l4C6DG23
+         vD1E1GS210baqKsSLGQwPTwuPYitinUMRBogRf9EmVi+W43AvkGk3/rm5LcVzcq5/QEi
+         8po1wsvLj9nhjnsezpZSW8DJ1RshRr0KZJU1lKWWM9Y4fqvrDXcaWM2ZIT8qXjee6fpa
+         D89RRkitKmLFtBM4mOdfjBpYJGZddh6I8LsIDSSeYATKCoHhRxwjbTPz1QiP4pPPOIkB
+         +vyBYuDxWdyjksxd9xfaymviHVxjhTWDFI2V54VKG1+Xr0igYxDj08KGEsyDWYCMAk4Z
+         nM9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AE7l3U3Ok/l/ma4wVBxTAWhqFVPfRK/mIEy0ba9HyK0=;
-        b=DXkBU4dR5plGtl01wHZgv3sJxlqH+4xKwLegdOqjthYDhz48T0xF35PPXzM1hqH6ap
-         tqlw8DCJj47HiMi6HOzsKPVpp+X4TGVnJ3bKx5OJOXOkyJTXeTeUjrhMtoUr5eho9mzc
-         /4wbNIkyDJKJpL0eZoG4n/Kj2hZD2lRqmHs5M2mSpdOlprCz+PJgpChbh9v+RgjXs4b+
-         4deGRdSq179K2wDwJvsQwoTwdn3znY+X0x43+VggFs0DbXwGBP55V/zzYxUHp0+U7VFt
-         e6vkps1cbVxUgTCYpd+xvSBwMGK8XjgGZ23p8BzY168X+OHjaNiiGcDsvqRVEe9tLfng
-         ncfQ==
-X-Gm-Message-State: AOAM532AHoGCm5sU1kYdBAHLBF1qq42ML9AKeGadiOm5/++BQzhFH9Qz
-        9Q2fR8tO9Nx3U27pBO1Voh1BXCQH/OP1ezlrplZPKw==
-X-Google-Smtp-Source: ABdhPJxY/JAVTGMP2eoLuvovfMVq8brdmJ26/zPXma9LAq3yXWvRIrK3lcHo514gkcUIfT8zyY3+9TvhKloqfqWgcQs=
-X-Received: by 2002:a0d:cb07:0:b0:2f1:c718:b273 with SMTP id
- n7-20020a0dcb07000000b002f1c718b273mr11764955ywd.467.1650506412639; Wed, 20
- Apr 2022 19:00:12 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=R3JuWxV3MEVv1Lzcod+dHK0KjwdRCKAyPORx4Cnws3Y=;
+        b=bdQwMgnaGdNgLmgACqYA1a8lxkzynKq2MqL6A7hUozzTdI3j/rtbqmdc1j/yiRFzMf
+         7p5a4xof7DffkZ2xeoZEUe3sumhP5ACdOTLtc8+K1kEF2UyEMdCLNXP+v4eLOsJaCMPF
+         PPEhD6YVeSmJBr0s0BrtUB3KbyxIH744Y6Vb9Y0K8P1zuDaNQV07hLaVPHy031uOnesj
+         EScyk3dPSTS/C98Oghggt8ATszXJpx6gN2ApubRJE6HkKarCk6UH0fEZwb2PvzDrYfTI
+         9mdsfjEcSJ4NzO5gXUlWsNKTJYgUELkwIecLgnnVVQ9MAoWY6i39FaRGT76Uof00qSzF
+         SdMA==
+X-Gm-Message-State: AOAM530BPRO2MxhWYUTEwUvuW5RjLGUzXkwyMsjOTki978WtL/1Krrtt
+        YM4sIsSFSr2aDJaM7vbc/x9B2uBkfgRCINUb2CU=
+X-Google-Smtp-Source: ABdhPJxvipLBGmLxZpw6NAUSz1qUACyI4Q9SC2Vznyp+9pzjd8/bGlMlbItSS3SvX1Vk9pIjqmwcQsaLXR3ZvRFGZ3M=
+X-Received: by 2002:a17:907:7204:b0:6e8:c1e9:49f7 with SMTP id
+ dr4-20020a170907720400b006e8c1e949f7mr20948912ejc.251.1650508062095; Wed, 20
+ Apr 2022 19:27:42 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220421005026.686A45EC01F2@us226.sjc.aristanetworks.com>
-In-Reply-To: <20220421005026.686A45EC01F2@us226.sjc.aristanetworks.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 20 Apr 2022 19:00:01 -0700
-Message-ID: <CANn89iJ-iMgoy9AYoAhZ3y8wcNCsQ5Bu=4rnC3x1o9UY07E9Ag@mail.gmail.com>
-Subject: Re: [PATCH v2 net] tcp: md5: incorrect tcp_header_len for incoming connections
-To:     Francesco Ruggeri <fruggeri@arista.com>
-Cc:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Miller <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
+References: <20220420122307.5290-1-xiangxia.m.yue@gmail.com> <878rrzj4r6.fsf@toke.dk>
+In-Reply-To: <878rrzj4r6.fsf@toke.dk>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Thu, 21 Apr 2022 10:27:05 +0800
+Message-ID: <CAMDZJNVo1dwUA3gkUc8UKEthDtM8m2yif-4CE7aGxtJyANVgpw@mail.gmail.com>
+Subject: Re: [net-next v1] bpf: add bpf_ktime_get_real_ns helper
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Joanne Koong <joannekoong@fb.com>,
+        Geliang Tang <geliang.tang@suse.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,18 +79,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 5:50 PM Francesco Ruggeri <fruggeri@arista.com> wrote:
+On Wed, Apr 20, 2022 at 8:53 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@kern=
+el.org> wrote:
 >
-> In tcp_create_openreq_child we adjust tcp_header_len for md5 using the
-> remote address in newsk. But that address is still 0 in newsk at this
-> point, and it is only set later by the callers (tcp_v[46]_syn_recv_sock).
-> Use the address from the request socket instead.
+> xiangxia.m.yue@gmail.com writes:
 >
+> > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> >
+> > This patch introduce a new bpf_ktime_get_real_ns helper, which may
+> > help us to measure the skb latency in the ingress/forwarding path:
+> >
+> > HW/SW[1] -> ip_rcv/tcp_rcv_established -> tcp_recvmsg_locked/tcp_update=
+_recv_tstamps
+> >
+> > * Insert BPF kprobe into ip_rcv/tcp_rcv_established invoking this helpe=
+r.
+> >   Then we can inspect how long time elapsed since HW/SW.
+> > * If inserting BPF kprobe tcp_update_recv_tstamps invoked by tcp_recvms=
+g,
+> >   we can measure how much latency skb in tcp receive queue. The reason =
+for
+> >   this can be application fetch the TCP messages too late.
 >
->
-> Fixes: cfb6eeb4c860 ("[TCP]: MD5 Signature Option (RFC2385) support.")
-> Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
+> Why not just use one of the existing ktime helpers and also add a BPF
+> probe to set the initial timestamp instead of relying on skb->tstamp?
+Yes, That also looks good to me.
+> -Toke
 
-Thanks for fixing this Francesco.
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+
+--=20
+Best regards, Tonghao
