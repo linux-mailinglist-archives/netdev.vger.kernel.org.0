@@ -2,149 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3419650A1B4
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 16:11:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 822EA50A1ED
+	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 16:16:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389012AbiDUOLL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 10:11:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46736 "EHLO
+        id S1387806AbiDUOSt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 10:18:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388936AbiDUOLH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 10:11:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E81603AA67
-        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 07:08:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650550096;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=QysMU2yYugYFLYjW2LOfTqqKvlLZq8H2fqc/5Hi2OwA=;
-        b=Ax7o4mC6y4m4rWcXvieI+cev99D7t9Uy3ZN+x1m+HvGY2O1SRfWccxaQFWiYDIMnJ8oYua
-        96Opj0Gk5Ui5eqe8bWJYVAEOuWK4KA8SjSDJDZU3pTzRsJmAeEZhpe+1bGhinAiYKE5D7x
-        IuR2WIoStE4j9jB9b/2M/Kd5Ki+osH4=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-321-UPDxcGE3Npu1pWS4OD6mjQ-1; Thu, 21 Apr 2022 10:08:12 -0400
-X-MC-Unique: UPDxcGE3Npu1pWS4OD6mjQ-1
-Received: by mail-ej1-f71.google.com with SMTP id sd37-20020a1709076e2500b006f01130b21fso1601785ejc.7
-        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 07:08:12 -0700 (PDT)
+        with ESMTP id S1389075AbiDUOSr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 10:18:47 -0400
+Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3514D2180B
+        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 07:15:57 -0700 (PDT)
+Received: by mail-qk1-x734.google.com with SMTP id j9so3629762qkg.1
+        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 07:15:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sgRgJQIriKo+0gldCYXcf1J9czouFNPq/lzf0Sf3+Go=;
+        b=GkRi3mklj8SbZaBA+Pk73wqiwBIMA0328RZifBNc1s6tbEqsEzxmbM3O929vxzl7pO
+         yup1LjVjvGvGPMsBlm7DRidlmyTp7smf4rulaATMIReQncfDofyFL6E8rorYBjAgiKgZ
+         QXyz2nz736aMN5BCzw5ip2EQiMcoZIlkoE7RgHpbQELz2jBEKmcYEjFuRe1B5TKb5ENJ
+         +BABjcGltgOjImVJ89DT9NghIWFV7x+vX7ZPhjlvJ7ndU7SQepmftq/S2wYCV1ay6Khy
+         45OVKxPVHGpuqG3p0hQz0pQrrQhwkfYyrw+GtHKDA4owuyNarTjFiaq63hxaoY4FhNNY
+         LIuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=QysMU2yYugYFLYjW2LOfTqqKvlLZq8H2fqc/5Hi2OwA=;
-        b=AxCYjywZkTx7mGLUpYBIxCMtq3YuoaVrGll4fe14PcO+FlxJ6HUDK44PJkSD6m5y++
-         LoGsT+YPGoQN58NtqNzznE5sQhQiraA/DY6R5eP1ZllStNhqonFziwbIq8N9UvTY8ynT
-         /UaC2LNwUBZ5qznfcJzL/McTwfNk6sbRCFkaVjLHkGyBT/6A3/RlVO5mygP7QJela5mr
-         17e2fKKKV2weyk0qJHHlHZE5a3I/5v7bXOwlVjfJvaYzyIfjKp2ROSse3Q4tQUWnoeDB
-         fqX9rDLRFm3tQ5X33DGQz7pdc770AW1eAxhd565+kKGy880UqNLI6JzgHOmAOBqpul/6
-         yJnA==
-X-Gm-Message-State: AOAM533maxGQI8OC9+kMsWrLst4MBA6DSlseGvMNl9JvnY7vgb/AntH1
-        ulb3jjwMID2hWX/YBu6kjm0ZzCFoMNHBNjuREQ8ns8j5Gbrt0R31wTjJqBKzGNLMMGVqx1TPRQ9
-        r4du8nasKZfbXjoiV
-X-Received: by 2002:aa7:d2d6:0:b0:423:97a4:801c with SMTP id k22-20020aa7d2d6000000b0042397a4801cmr28374706edr.383.1650550091510;
-        Thu, 21 Apr 2022 07:08:11 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz3UzhXjJKIUWIe+FtmghcBY3LXg/jvh/2MMeLG1JqYitGhX//nK2tUibwxnsLz37Kl67RNDA==
-X-Received: by 2002:aa7:d2d6:0:b0:423:97a4:801c with SMTP id k22-20020aa7d2d6000000b0042397a4801cmr28374687edr.383.1650550091329;
-        Thu, 21 Apr 2022 07:08:11 -0700 (PDT)
-Received: from sgarzare-redhat ([217.171.75.76])
-        by smtp.gmail.com with ESMTPSA id ee17-20020a056402291100b0041fe1e4e342sm11340261edb.27.2022.04.21.07.08.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 07:08:10 -0700 (PDT)
-Date:   Thu, 21 Apr 2022 16:08:05 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
-Cc:     KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-hyperv@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/5] hv_sock: Add validation for untrusted Hyper-V values
-Message-ID: <20220421140805.qg4cwqhsq5vuqkut@sgarzare-redhat>
-References: <20220420200720.434717-1-parri.andrea@gmail.com>
- <20220420200720.434717-4-parri.andrea@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sgRgJQIriKo+0gldCYXcf1J9czouFNPq/lzf0Sf3+Go=;
+        b=FmdANBaNGzUwvJiojTj47mewr0mucJZ3f6IvTZFxryA67F5BL2XykOJpFLCVo20R4b
+         Z5+OMNKVGKdHTrHk95uflPUPCPVYUcY3ol4wxhh4PlvrjrFTawSZsWfbOBYuyWItRON0
+         hQCnlxkSJmBPhUWBVjkza0a9g6UDaTt8+zux4elIKMEpbN1UHNRSaqmQGB9H4OVaHExV
+         sc/n01KHTC2dXXt9FmX6MFxZYwFv42pHjfO9GvY+3KiIRPk6YIYcRAU2UNYX/uWcVrFc
+         vKm/2rYG5/gcP3KetuF8h2oyg7zl/AZE0eqiSAieX7LdQQqCBsr2VtTw+/HbI3SwT/iO
+         /46w==
+X-Gm-Message-State: AOAM531bxOaH+sQJUuj6STBWYp3O6Mn8ALTmXibmKCW5C7A1Ett2npkT
+        xPVeIkdgKKik8pejwCf8LdmgShHhX0M=
+X-Google-Smtp-Source: ABdhPJynUDUj98VrOxGWNNKZpx455anA+Gak29GFseIFOso86WE3XXTnLnMzMs4e8kkA8uRtcJWvsw==
+X-Received: by 2002:a05:620a:d50:b0:67e:e2b:a552 with SMTP id o16-20020a05620a0d5000b0067e0e2ba552mr15092674qkl.401.1650550556286;
+        Thu, 21 Apr 2022 07:15:56 -0700 (PDT)
+Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com. [209.85.128.175])
+        by smtp.gmail.com with ESMTPSA id m63-20020a37a342000000b0069eb2145b00sm2932531qke.58.2022.04.21.07.15.55
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Apr 2022 07:15:55 -0700 (PDT)
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-2edbd522c21so53229777b3.13
+        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 07:15:55 -0700 (PDT)
+X-Received: by 2002:a81:3902:0:b0:2eb:f9f0:4b0c with SMTP id
+ g2-20020a813902000000b002ebf9f04b0cmr25723280ywa.419.1650550554896; Thu, 21
+ Apr 2022 07:15:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220420200720.434717-4-parri.andrea@gmail.com>
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <20220420082758.581245-1-liuhangbin@gmail.com> <CA+FuTScyF4BKEcNSCYOv8SBA_EmB806YtKA17jb3F+fymVF-Pg@mail.gmail.com>
+ <YmDCHI330AUfcYKa@Laptop-X1>
+In-Reply-To: <YmDCHI330AUfcYKa@Laptop-X1>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 21 Apr 2022 10:15:16 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSckEJVUH1Q2vBxGbfPgVteyDVmTfjJC6hBj=qRP+JcAxA@mail.gmail.com>
+Message-ID: <CA+FuTSckEJVUH1Q2vBxGbfPgVteyDVmTfjJC6hBj=qRP+JcAxA@mail.gmail.com>
+Subject: Re: [PATCH net-next] net/af_packet: add VLAN support for AF_PACKET
+ SOCK_RAW GSO
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        netdev@vger.kernel.org, "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>,
+        virtualization@lists.linux-foundation.org,
+        Balazs Nemeth <bnemeth@redhat.com>,
+        Mike Pattrick <mpattric@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 10:07:18PM +0200, Andrea Parri (Microsoft) wrote:
->For additional robustness in the face of Hyper-V errors or malicious
->behavior, validate all values that originate from packets that Hyper-V
->has sent to the guest in the host-to-guest ring buffer.  Ensure that
->invalid values cannot cause data being copied out of the bounds of the
->source buffer in hvs_stream_dequeue().
+On Wed, Apr 20, 2022 at 10:32 PM Hangbin Liu <liuhangbin@gmail.com> wrote:
 >
->Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
->---
-> include/linux/hyperv.h           |  5 +++++
-> net/vmw_vsock/hyperv_transport.c | 11 +++++++++--
-> 2 files changed, 14 insertions(+), 2 deletions(-)
+> On Wed, Apr 20, 2022 at 09:45:15AM -0400, Willem de Bruijn wrote:
+> > On Wed, Apr 20, 2022 at 4:28 AM Hangbin Liu <liuhangbin@gmail.com> wrote:
+> > >
+> > > Currently, the kernel drops GSO VLAN tagged packet if it's created with
+> > > socket(AF_PACKET, SOCK_RAW, 0) plus virtio_net_hdr.
+> > >
+> > > The reason is AF_PACKET doesn't adjust the skb network header if there is
+> > > a VLAN tag. Then after virtio_net_hdr_set_proto() called, the skb->protocol
+> > > will be set to ETH_P_IP/IPv6. And in later inet/ipv6_gso_segment() the skb
+> > > is dropped as network header position is invalid.
+> > >
+> > > Let's handle VLAN packets by adjusting network header position in
+> > > packet_parse_headers(), and move the function in packet_snd() before
+> > > calling virtio_net_hdr_set_proto().
+> >
+> > The network header is set in
+> >
+> >         skb_reset_network_header(skb);
+> >
+> >         err = -EINVAL;
+> >         if (sock->type == SOCK_DGRAM) {
+> >                 offset = dev_hard_header(skb, dev, ntohs(proto), addr,
+> > NULL, len);
+> >                 if (unlikely(offset < 0))
+> >                         goto out_free;
+> >         } else if (reserve) {
+> >                 skb_reserve(skb, -reserve);
+> >                 if (len < reserve + sizeof(struct ipv6hdr) &&
+> >                     dev->min_header_len != dev->hard_header_len)
+> >                         skb_reset_network_header(skb);
+> >         }
+> >
+> > If all that is needed is to move the network header beyond an optional
+> > VLAN tag in the case of SOCK_RAW, then this can be done in the else
+> > for Ethernet packets.
 >
->diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
->index fe2e0179ed51e..55478a6810b60 100644
->--- a/include/linux/hyperv.h
->+++ b/include/linux/hyperv.h
->@@ -1663,6 +1663,11 @@ static inline u32 hv_pkt_datalen(const struct vmpacket_descriptor *desc)
-> 	return (desc->len8 << 3) - (desc->offset8 << 3);
-> }
+> Before we set network position, we need to check the skb->protocol to make
+> sure it's a VLAN packet.
 >
->+/* Get packet length associated with descriptor */
->+static inline u32 hv_pkt_len(const struct vmpacket_descriptor *desc)
->+{
->+	return desc->len8 << 3;
->+}
+> If we set skb->protocol and adjust network header here, like
+> packet_parse_headers() does. How should we do with later
 >
-> struct vmpacket_descriptor *
-> hv_pkt_iter_first_raw(struct vmbus_channel *channel);
->diff --git a/net/vmw_vsock/hyperv_transport.c b/net/vmw_vsock/hyperv_transport.c
->index 8c37d07017fc4..092cadc2c866d 100644
->--- a/net/vmw_vsock/hyperv_transport.c
->+++ b/net/vmw_vsock/hyperv_transport.c
->@@ -577,12 +577,19 @@ static bool hvs_dgram_allow(u32 cid, u32 port)
-> static int hvs_update_recv_data(struct hvsock *hvs)
-> {
-> 	struct hvs_recv_buf *recv_buf;
->-	u32 payload_len;
->+	u32 pkt_len, payload_len;
->+
->+	pkt_len = hv_pkt_len(hvs->recv_desc);
->+
->+	/* Ensure the packet is big enough to read its header */
->+	if (pkt_len < HVS_HEADER_LEN)
->+		return -EIO;
+>         skb->protocol = proto;
+>         skb->dev = dev;
 >
-> 	recv_buf = (struct hvs_recv_buf *)(hvs->recv_desc + 1);
-> 	payload_len = recv_buf->hdr.data_size;
+> settings?
 >
->-	if (payload_len > HVS_MTU_SIZE)
->+	/* Ensure the packet is big enough to read its payload */
->+	if (payload_len > pkt_len - HVS_HEADER_LEN || payload_len > HVS_MTU_SIZE)
+> If you are afraid that skb_probe_transport_header(skb) would affect the
+> virtio_net_hdr operation. How about split the skb_probe_transport_header()
+> from packet_parse_headers()? Something like
+>
+> --- a/net/packet/af_packet.c
+> +++ b/net/packet/af_packet.c
+> @@ -1924,13 +1924,19 @@ static int packet_rcv_spkt(struct sk_buff *skb, struct net_device *dev,
+>
+>  static void packet_parse_headers(struct sk_buff *skb, struct socket *sock)
+>  {
+> +       int depth;
+> +
+>         if ((!skb->protocol || skb->protocol == htons(ETH_P_ALL)) &&
+>             sock->type == SOCK_RAW) {
+>                 skb_reset_mac_header(skb);
+>                 skb->protocol = dev_parse_header_protocol(skb);
+>         }
+>
+> -       skb_probe_transport_header(skb);
+> +       /* Move network header to the right position for VLAN tagged packets */
+> +       if (likely(skb->dev->type == ARPHRD_ETHER) &&
+> +           eth_type_vlan(skb->protocol) &&
+> +           __vlan_get_protocol(skb, skb->protocol, &depth) != 0)
+> +               skb_set_network_header(skb, depth);
+>  }
+>
+>  /*
+> @@ -3047,6 +3055,8 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+>         skb->mark = sockc.mark;
+>         skb->tstamp = sockc.transmit_time;
+>
+> +       packet_parse_headers(skb, sock);
+> +
+>         if (has_vnet_hdr) {
+>                 err = virtio_net_hdr_to_skb(skb, &vnet_hdr, vio_le());
+>                 if (err)
+> @@ -3055,7 +3065,7 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+>                 virtio_net_hdr_set_proto(skb, &vnet_hdr);
+>         }
+>
+> -       packet_parse_headers(skb, sock);
+> +       skb_probe_transport_header(skb);
+>
+>         if (unlikely(extra_len == 4))
+>                 skb->no_fcs = 1;
+>
+>
+> >
+> > It is not safe to increase reserve, as that would eat into the
+> > reserved hlen LL_RESERVED_SPACE(dev), which does not account for
+> > optional VLAN headers.
+> >
+> > Instead of setting here first, then patching up again later in
+> > packet_parse_headers.
+> >
+> > This change affects all packets with VLAN headers, not just those with
+> > GSO. I imagine that moving the network header is safe for all, but
+> > don't know that code well enough to verify that it does not have
+> > unintended side effects. Does dev_queue_xmit expect the network header
+> > to point to the start of the VLAN headers or after, for instance?
+>
+> I think adjust the network position should be safe, as tap device also did that.
 
-checkpatch warns that we exceed 80 characters, I do not have a strong 
-opinion on this, but if you have to resend better break the condition 
-into 2 lines.
+Oh, it's great to be able to point to such prior art. Can you mention
+that in the commit message?
 
-Maybe even update or remove the comment? (it only describes the first 
-condition, but the conditions are pretty clear, so I don't think it adds 
-much).
+Your approach does sound simpler than the above. Thanks for looking
+into that alternative, though.
 
-Thanks,
-Stefano
-
+>
+> Thanks
+> Hangbin
