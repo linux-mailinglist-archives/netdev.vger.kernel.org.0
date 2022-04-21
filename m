@@ -2,88 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E99F450A723
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 19:30:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55C7B50A72F
+	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 19:33:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390792AbiDURcP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 13:32:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59992 "EHLO
+        id S1390635AbiDURgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 13:36:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390788AbiDURcP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 13:32:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F205248898
-        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 10:29:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650562164;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=e9DZ+W1tXa8dFqgf2097OZ0qGTRPNdwwslU5YUVe0Xk=;
-        b=dxWwJxchc47py0hes9iudp8MMP/VN11MnJGIVVcxjlOyFgqdJNJaTK1Rm7Kr9ybDdn8M3J
-        XE15DOL2S9Y6ahT5QCPIXKjH3YwMeQ8935khmjdfWgIpigZiewTSFpL70Vks5oUlQe5aAz
-        ASEeil8GD1nUgxeAUK2B704B6kRoH/I=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-675-tnkI7wWFPTSa6b_M4Jj5jw-1; Thu, 21 Apr 2022 13:29:18 -0400
-X-MC-Unique: tnkI7wWFPTSa6b_M4Jj5jw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1358C800B28;
-        Thu, 21 Apr 2022 17:29:18 +0000 (UTC)
-Received: from sparkplug.usersys.redhat.com (unknown [10.40.192.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2FAE29D61;
-        Thu, 21 Apr 2022 17:29:16 +0000 (UTC)
-Date:   Thu, 21 Apr 2022 19:29:13 +0200
-From:   Artem Savkov <asavkov@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alan Maguire <alan.maguire@oracle.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH bpf-next] selftests/bpf: fix prog_tests/uprobe_autoattach
- compilation error
-Message-ID: <YmGUaXfBywiSQ+Sy@sparkplug.usersys.redhat.com>
-References: <20220421132317.1583867-1-asavkov@redhat.com>
- <e5919342-0697-65f0-063f-4941e74fe1ca@iogearbox.net>
+        with ESMTP id S1390618AbiDURfz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 13:35:55 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C45F4990E
+        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 10:33:03 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id iq10so1822632pjb.0
+        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 10:33:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=tNVhvJ/Zn4Qjp/Wh4qlL0sHAvit4aP8pftBdQEwpj8Q=;
+        b=KnluVB8n7ICCuvzH9qC7Xk0TpgDgtkXsKGCfoy76e8uyeCuLE4dAwwe5W6N0bx1dOZ
+         TD4IjMp5KazqmS4MP8cv2U0SwDEPvJvybzT2hJqtfiRhlckdAPDt2p6Ov1uPv8B4VusG
+         udFGhTwQ1XG5O2z9llUB60saBQNP3CywkYquSTONKk8KV+n3iOgqsXu8oGi7HMFkIDyc
+         iQuSjR+Usym/D8VPZ8rlPpaAJHsYu2bBnQcR223vz8HMoXXWruE6knSK9fEMR1ZBh+bH
+         vu+q7XHJJOAGSm1rwFAqdamdwFr9yW8937f1kXu01ziCP3YggKaAEgScimJse+Dj0mAP
+         56Tw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=tNVhvJ/Zn4Qjp/Wh4qlL0sHAvit4aP8pftBdQEwpj8Q=;
+        b=2jCfB3gxzMHpSoF6frgpPdb7U9o9gwJJ6sR2oxIkqkzMzKf90l/lykalBeHmN1wsHt
+         3QI28abLhjg48PxGTrmTV6iyYbrpvvoeP1GHY703f2/8sdBGWpx9yjb11vvYnm4JACME
+         CsckkNa4UL8ez1WoE2x7e+9eyEs/PKg2ewq8FIiKH9QjX8D8uHYhKZC888loMpYxHK+3
+         Sb9QJpqBDIc6JMtHbmTRyTUiha8S7j5cGz00dBBbjn36WmdltCfsQfamy6ZFtUuoz9uZ
+         Wdebet+Kd2rpdDGeZVt00JgsE9R0PVsQDT0vzrOAIjSN1xDSgqYi3Dw3iI9EgXVq1gF0
+         AT/Q==
+X-Gm-Message-State: AOAM53084bld1bJK5KewG3yTjLj08E1edwdOrytmmJqsI0sx38xyA30L
+        CWztjPfesx1T74PpNmOeeq1wPv5zHX8=
+X-Google-Smtp-Source: ABdhPJzI3SO/sdca5yCpuixtibhuTC2i1F87faFDgcU2b5Wj8kTwIIwUpP7O8ejevOPJHsdypqyUYA==
+X-Received: by 2002:a17:902:e541:b0:159:db95:9d30 with SMTP id n1-20020a170902e54100b00159db959d30mr556073plf.91.1650562382727;
+        Thu, 21 Apr 2022 10:33:02 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id y190-20020a62cec7000000b0050adbfee09asm3288186pfg.187.2022.04.21.10.32.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Apr 2022 10:33:01 -0700 (PDT)
+Message-ID: <32e384b0-53ab-c813-fe70-2588d46ed7b2@gmail.com>
+Date:   Thu, 21 Apr 2022 10:32:43 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <e5919342-0697-65f0-063f-4941e74fe1ca@iogearbox.net>
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: Support for IEEE1588 timestamping in the BCM54210PE PHY using the
+ kernel mii_timestamper interface
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>, Lasse Johnsen <lasse@timebeat.app>
+Cc:     netdev@vger.kernel.org, richardcochran@gmail.com,
+        Gordon Hollingworth <gordon@raspberrypi.com>,
+        Ahmad Byagowi <clk@fb.com>
+References: <928593CA-9CE9-4A54-B84A-9973126E026D@timebeat.app>
+ <YmBc2E2eCPHMA7lR@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <YmBc2E2eCPHMA7lR@lunn.ch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 06:53:22PM +0200, Daniel Borkmann wrote:
-> On 4/21/22 3:23 PM, Artem Savkov wrote:
-> > I am getting the following compilation error for prog_tests/uprobe_autoattach.c
-> > 
-> > tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c: In function ‘test_uprobe_autoattach’:
-> > ./test_progs.h:209:26: error: pointer ‘mem’ may be used after ‘free’ [-Werror=use-after-free]
-> > 
-> > mem variable is now used in one of the asserts so it shouldn't be freed right
-> > away. Move free(mem) after the assert block.
-> 
-> Looks good, but I rephrased this a bit to avoid confusion. It's false positive given we
-> only compare the addresses but don't deref mem, which the compiler might not be able to
-> follow in this case.
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/commit/?id=6a12b8e20d7e72386594a9dbe7bf2d7fae3b3aa6
+On 4/20/22 12:19, Andrew Lunn wrote:
+> On Wed, Apr 20, 2022 at 03:03:26PM +0100, Lasse Johnsen wrote:
+>> Hello,
+>>
+>>
+>> The attached set of patches adds support for the IEEE1588 functionality on the BCM54210PE PHY using the Linux Kernel mii_timestamper interface. The BCM54210PE PHY can be found in the Raspberry PI Compute Module 4 and the work has been undertaken by Timebeat.app on behalf of Raspberry PI with help and support from the nice engineers at Broadcom.
 
-Right. Thank you for fixing up the commit message.
-
+Lasse, can you copy the maintainers listed for 
+drivers/net/phy/broadcom.c in the future? Thank you.
 -- 
- Artem
-
+Florian
