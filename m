@@ -2,115 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 864B650A991
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 21:54:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C493150A9CC
+	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 22:11:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392114AbiDUT40 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 15:56:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56294 "EHLO
+        id S1392184AbiDUUO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 16:14:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392109AbiDUT4Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 15:56:25 -0400
-Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 746554D256
-        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 12:53:33 -0700 (PDT)
-Received: by mail-il1-x12d.google.com with SMTP id d4so3737868iln.6
-        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 12:53:33 -0700 (PDT)
+        with ESMTP id S232946AbiDUUO0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 16:14:26 -0400
+Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8FCC5F79
+        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 13:11:35 -0700 (PDT)
+Received: by mail-pf1-x44a.google.com with SMTP id y23-20020a62b517000000b004fd8affa86aso3562148pfe.12
+        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 13:11:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4Fp8I2teBvC2LPg6RF/V9ydJf/9piC7RkC1O1f16Dt8=;
-        b=EiQ7b3lZ3OWSwuxcqo952gjjmRgTBoeyntgQI/ebdhKMrYIkf6YLGQamXtzh7xp7cf
-         Yxd9oN7eIjfMzRNhOsAT6kIxjJFbk7DrUA5Se6gmoxVpra51PH+IeghUi+kI50W6P7D+
-         AhL8r2v0Xmjh8JBB1JT5+WLPiMX0ssQxonFSE=
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=xl86mN30osJz9axtr4HGKyAY6n8mDzLbZshrFbw38w0=;
+        b=gFkWCHa0kM5FoJwOLehhGiuzSVMGJFSP6kpu5y/jfku9ja7w/KaVHxwr7SiVN7dhFO
+         TXcrvIApr+h5KMnT2X5rpNveSJ6aHKpjUvDM3w79BsZcM2ru/CGt14N3SsqsaYPgjt/e
+         CZJdiFv/XNMSBdAvQMT3hisULGE/bSJbkU+TCDUV+yWaEl1yotxLjNG0psnSxzUAZq5V
+         uufSROGLvdW6S9kxg8WdJdZwW+jaKUJ7nGD0pDRdz7J/uhOiiOznfNi5OkTLPxdEYA55
+         gxWqgGgIPlT2kwSvHimP3dM8Y1cDh09Qm5Q7FUH6xOg02fuLdsIhmDoS5twaC/e8fq42
+         yyPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4Fp8I2teBvC2LPg6RF/V9ydJf/9piC7RkC1O1f16Dt8=;
-        b=X/QDEDjhf5fKZnHLcj8e1m5In207xGAt9MAlAf0keMMkvYLu0KiJ1DJUijL7ycAl8l
-         W+g+2pA54lWSJNWi48qh992SiAQy/cB1jVMXrEhBeBbfh6e4X35pbm1N9vZOIAmfnWgN
-         1DqeTbmOrKnj+urbjK2cxBKlaq6bg6WVQ1N1Uz3RZ+JeuhRoQEmixn1zD9w7fGItUsjB
-         Yw/8l9lF1iOxl7H3xvcCky/MzQ1fVjVPZX2Q1DCtpsMcqpb+0SF/D1xa8stgNTr9wfzp
-         mpeGTuIpEJRKu5NjVA+CfV9eTJ3SOZVrd4WVd7JbhICD3nD/PvHoyqGDAGxXyE+G59Bu
-         TZpA==
-X-Gm-Message-State: AOAM533Bguv8UjNfYfQZCtH+fCM6XbEWJYW371zfsiu0+854/5L0+1PU
-        uLRO5i/EIoeXXNy1zY8hhcv5FMoC+ov1yl0mSfFc6A==
-X-Google-Smtp-Source: ABdhPJz/vbMC6EQBuL+cwufIsiRm5Sq9qShZyqMFEJQfkpAkkJFjGcqcgvTrNwiR3f42gDv04B6ZxJrQPydbI9eEk9Q=
-X-Received: by 2002:a05:6e02:1a01:b0:2cc:5497:3ded with SMTP id
- s1-20020a056e021a0100b002cc54973dedmr624769ild.322.1650570812678; Thu, 21 Apr
- 2022 12:53:32 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220418231746.2464800-1-grundler@chromium.org>
-In-Reply-To: <20220418231746.2464800-1-grundler@chromium.org>
-From:   Grant Grundler <grundler@chromium.org>
-Date:   Thu, 21 Apr 2022 12:53:21 -0700
-Message-ID: <CANEJEGtaFCRhVBaVtHrQiJvwsuBk3f_4RNTg87CWERHt+453KA@mail.gmail.com>
-Subject: Re: [PATCH 0/5] net: atlantic: more fuzzing fixes
-To:     Grant Grundler <grundler@chromium.org>
-Cc:     Igor Russkikh <irusskikh@marvell.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Aashay Shringarpure <aashay@google.com>,
-        Yi Chou <yich@google.com>,
-        Shervin Oloumi <enlightened@google.com>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=xl86mN30osJz9axtr4HGKyAY6n8mDzLbZshrFbw38w0=;
+        b=kBea0W+GIMVa7UMaboYOTBJSrmZs1o+6qyQlUnd9sIhErzE8hmeVqrY64nGC4bI620
+         vxP4Bj4jqyydLOgrtfrrvF0Hd2fWEtHz2XwEMaPCcBP4D5hJaG6EhqC7ZPjQfUfM+8pT
+         LIBdzoW9ZucnSPbs617+B8ZaT3qp2mGuoQxi9j0VqxgR18REKrJzhuEdRWj9qH/jdf3B
+         i3rRGrQnzEHOONLI2xxqmsPVyQC70jjzrt2jMwbEnD8D4fubP05nowWhEA6nxlmBxXrz
+         abMCUdKZ51nkCii27X/mnOV2wkGEkUo0JbWlxmYKYSN7BXJ+rxq3rWkK43sCg1VBnlf7
+         Oy/A==
+X-Gm-Message-State: AOAM531BmWwuRfbkcdizoFN2ByqphsKNP1k5DW6sRzl7882AA5skO39m
+        TKPclRSDE5cCSl8uNxYNSRm55bHf28tY
+X-Google-Smtp-Source: ABdhPJxyvpg4HtUlA89af+J7Dme3WMKLPbKVtxgtzLdRK7v4TUf4kWl54uuECS4cN+EmT6zJ1xdxlQoD39xX
+X-Received: from connoro.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:a99])
+ (user=connoro job=sendgmr) by 2002:a17:902:f605:b0:14d:9e11:c864 with SMTP id
+ n5-20020a170902f60500b0014d9e11c864mr1097012plg.54.1650571895188; Thu, 21 Apr
+ 2022 13:11:35 -0700 (PDT)
+Date:   Thu, 21 Apr 2022 20:11:25 +0000
+Message-Id: <20220421201125.13907-1-connoro@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
+Subject: [PATCH bpf-next] libbpf: also check /sys/kernel/tracing for tracefs files
+From:   "Connor O'Brien" <connoro@google.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Connor O'Brien" <connoro@google.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Igor,
-Will you have a chance to comment on this in the near future?
-Should someone else review/integrate these patches?
+libbpf looks for tracefs files only under debugfs, but tracefs may be
+mounted even if debugfs is not. When /sys/kernel/debug/tracing is
+absent, try looking under /sys/kernel/tracing instead.
 
-I'm asking since I've seen no comments in the past three days.
+Signed-off-by: Connor O'Brien <connoro@google.com>
+---
+ tools/lib/bpf/libbpf.c | 26 +++++++++++++++++++-------
+ 1 file changed, 19 insertions(+), 7 deletions(-)
 
-cheers,
-grant
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 68cc134d070d..6ef587329eb2 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -10140,10 +10140,16 @@ static void gen_kprobe_legacy_event_name(char *buf, size_t buf_sz,
+ 		 __sync_fetch_and_add(&index, 1));
+ }
+ 
++static bool debugfs_available(void)
++{
++	return !access("/sys/kernel/debug/tracing", F_OK);
++}
++
+ static int add_kprobe_event_legacy(const char *probe_name, bool retprobe,
+ 				   const char *kfunc_name, size_t offset)
+ {
+-	const char *file = "/sys/kernel/debug/tracing/kprobe_events";
++	const char *file = debugfs_available() ? "/sys/kernel/debug/tracing/kprobe_events" :
++		"/sys/kernel/tracing/kprobe_events";
+ 
+ 	return append_to_file(file, "%c:%s/%s %s+0x%zx",
+ 			      retprobe ? 'r' : 'p',
+@@ -10153,7 +10159,8 @@ static int add_kprobe_event_legacy(const char *probe_name, bool retprobe,
+ 
+ static int remove_kprobe_event_legacy(const char *probe_name, bool retprobe)
+ {
+-	const char *file = "/sys/kernel/debug/tracing/kprobe_events";
++	const char *file = debugfs_available() ? "/sys/kernel/debug/tracing/kprobe_events" :
++		"/sys/kernel/tracing/kprobe_events";
+ 
+ 	return append_to_file(file, "-:%s/%s", retprobe ? "kretprobes" : "kprobes", probe_name);
+ }
+@@ -10163,7 +10170,8 @@ static int determine_kprobe_perf_type_legacy(const char *probe_name, bool retpro
+ 	char file[256];
+ 
+ 	snprintf(file, sizeof(file),
+-		 "/sys/kernel/debug/tracing/events/%s/%s/id",
++		 debugfs_available() ? "/sys/kernel/debug/tracing/events/%s/%s/id" :
++		 "/sys/kernel/tracing/events/%s/%s/id",
+ 		 retprobe ? "kretprobes" : "kprobes", probe_name);
+ 
+ 	return parse_uint_from_file(file, "%d\n");
+@@ -10493,7 +10501,8 @@ static void gen_uprobe_legacy_event_name(char *buf, size_t buf_sz,
+ static inline int add_uprobe_event_legacy(const char *probe_name, bool retprobe,
+ 					  const char *binary_path, size_t offset)
+ {
+-	const char *file = "/sys/kernel/debug/tracing/uprobe_events";
++	const char *file = debugfs_available() ? "/sys/kernel/debug/tracing/uprobe_events" :
++		"/sys/kernel/tracing/uprobe_events";
+ 
+ 	return append_to_file(file, "%c:%s/%s %s:0x%zx",
+ 			      retprobe ? 'r' : 'p',
+@@ -10503,7 +10512,8 @@ static inline int add_uprobe_event_legacy(const char *probe_name, bool retprobe,
+ 
+ static inline int remove_uprobe_event_legacy(const char *probe_name, bool retprobe)
+ {
+-	const char *file = "/sys/kernel/debug/tracing/uprobe_events";
++	const char *file = debugfs_available() ? "/sys/kernel/debug/tracing/uprobe_events" :
++		"/sys/kernel/tracing/uprobe_events";
+ 
+ 	return append_to_file(file, "-:%s/%s", retprobe ? "uretprobes" : "uprobes", probe_name);
+ }
+@@ -10513,7 +10523,8 @@ static int determine_uprobe_perf_type_legacy(const char *probe_name, bool retpro
+ 	char file[512];
+ 
+ 	snprintf(file, sizeof(file),
+-		 "/sys/kernel/debug/tracing/events/%s/%s/id",
++		 debugfs_available() ? "/sys/kernel/debug/tracing/events/%s/%s/id" :
++		 "/sys/kernel/tracing/events/%s/%s/id",
+ 		 retprobe ? "uretprobes" : "uprobes", probe_name);
+ 
+ 	return parse_uint_from_file(file, "%d\n");
+@@ -11071,7 +11082,8 @@ static int determine_tracepoint_id(const char *tp_category,
+ 	int ret;
+ 
+ 	ret = snprintf(file, sizeof(file),
+-		       "/sys/kernel/debug/tracing/events/%s/%s/id",
++		       debugfs_available() ? "/sys/kernel/debug/tracing/events/%s/%s/id" :
++		       "/sys/kernel/tracing/events/%s/%s/id",
+ 		       tp_category, tp_name);
+ 	if (ret < 0)
+ 		return -errno;
+-- 
+2.36.0.rc2.479.g8af0fa9b8e-goog
 
-
-On Mon, Apr 18, 2022 at 4:17 PM Grant Grundler <grundler@chromium.org> wrote:
->
-> The Chrome OS fuzzing team posted a "Fuzzing" report for atlantic driver
-> in Q4 2021 using Chrome OS v5.4 kernel and "Cable Matters
-> Thunderbolt 3 to 10 Gb Ethernet" (b0 version):
->     https://docs.google.com/document/d/e/2PACX-1vT4oCGNhhy_AuUqpu6NGnW0N9HF_jxf2kS7raOpOlNRqJNiTHAtjiHRthXYSeXIRTgfeVvsEt0qK9qK/pub
->
-> It essentially describes four problems:
-> 1) validate rxd_wb->next_desc_ptr before populating buff->next
-> 2) "frag[0] not initialized" case in aq_ring_rx_clean()
-> 3) limit iterations handling fragments in aq_ring_rx_clean()
-> 4) validate hw_head_ in hw_atl_b0_hw_ring_tx_head_update()
->
-> I've added one "clean up" contribution:
->     "net: atlantic: reduce scope of is_rsc_complete"
->
-> I tested the "original" patches using chromeos-v5.4 kernel branch:
->     https://chromium-review.googlesource.com/q/hashtag:pcinet-atlantic-2022q1+(status:open%20OR%20status:merged)
->
-> The fuzzing team will retest using the chromeos-v5.4 patches and the b0 HW.
->
-> I've forward ported those patches to 5.18-rc2 and compiled them but am
-> currently unable to test them on 5.18-rc2 kernel (logistics problems).
->
-> I'm confident in all but the last patch:
->    "net: atlantic: verify hw_head_ is reasonable"
->
-> Please verify I'm not confusing how ring->sw_head and ring->sw_tail
-> are used in hw_atl_b0_hw_ring_tx_head_update().
->
-> Credit largely goes to Chrome OS Fuzzing team members:
->     Aashay Shringarpure, Yi Chou, Shervin Oloumi
->
-> cheers,
-> grant
