@@ -2,81 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 19F10509DC2
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 12:36:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 728F6509DD6
+	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 12:41:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388449AbiDUKjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 06:39:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59012 "EHLO
+        id S1388480AbiDUKnG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 06:43:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348260AbiDUKjK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 06:39:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E9F48252B8
-        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 03:36:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650537380;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=CUudNcrJ1xRNDS1+KVl4Z0t857WYmRRKh3nXvmEZfk0=;
-        b=jJ0MNVfEEJoWcFRJvlKJhAPnyKB8EqCP6vBBfc8WyRRzdZwPVMR8ZkeN5l3H2FBj43kW2f
-        yqqnxqS6BYFpjSuv766SgqsfcWYsGZ4lFgMW4KP94WUjiwTJnTfxU46wjpAyqfT6JjUGC7
-        UQcnX8OooUh6bKefREtjhXnknvTC4kY=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-626-nLlxoeJ0O0OU8ItYH0q6RA-1; Thu, 21 Apr 2022 06:36:16 -0400
-X-MC-Unique: nLlxoeJ0O0OU8ItYH0q6RA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7DF5D29DD992;
-        Thu, 21 Apr 2022 10:36:15 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.13])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C67C140F4940;
-        Thu, 21 Apr 2022 10:36:13 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <YlySEa6QGmIHlrdG@codewreck.org>
-References: <YlySEa6QGmIHlrdG@codewreck.org> <CAAZOf26g-L2nSV-Siw6mwWQv1nv6on8c0fWqB4bKmX73QAFzow@mail.gmail.com> <2551609.RCmPuZc3Qn@silver> <YlwOdqVCBZKFTIfC@codewreck.org> <8420857.9FB56xACZ5@silver> <YlyFEuTY7tASl8aY@codewreck.org>
-To:     asmadeus@codewreck.org
-Cc:     dhowells@redhat.com,
-        Christian Schoenebeck <linux_oss@crudebyte.com>,
-        David Kahurani <k.kahurani@gmail.com>, davem@davemloft.net,
-        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        lucho@ionkov.net, netdev@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net, Greg Kurz <groug@kaod.org>
-Subject: Re: 9p EBADF with cache enabled (Was: 9p fs-cache tests/benchmark (was: 9p fscache Duplicate cookie detected))
+        with ESMTP id S1388506AbiDUKmy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 06:42:54 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 734C4632F;
+        Thu, 21 Apr 2022 03:40:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650537604; x=1682073604;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=NddSWJoAozQ1EYJ37VPzzZinpQJPIh7Wk/vDkRTtCkE=;
+  b=SqhSbONwGwAjtROqoYblMnOBy+bmGoWnlak6zyQZvORHorV47lqqsEGM
+   zBSz6X3zo/lUChlRheiXdxlo2F07WsmUFWh1cdrTs2QUCPGAzfSKw4Jk+
+   eYHHFE2hZJ/s9zFFqIz/KLC7TVViyZdiT2Vb6sPFBKgOgiBHgdv5lVYc5
+   dCuaFZ2K5CY8rZa82Q8Gok5djCVYid81R8huq8tNHlIGDLCjXzWN2PAjs
+   iDVdR5bh/TvyCtRWfYQ8NA54buwttsbADspo3z9SHD0pxBirEZXsrmUlT
+   nZcNd+ihOs8+KnkibAqtgka3IaczL6Fm3ulc+DTB56fJ6h4zR6UbWVMHz
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="264076423"
+X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
+   d="scan'208";a="264076423"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 03:40:03 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
+   d="scan'208";a="562520470"
+Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
+  by fmsmga007.fm.intel.com with ESMTP; 21 Apr 2022 03:40:01 -0700
+Date:   Thu, 21 Apr 2022 12:40:01 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build failure after merge of the bpf-next tree
+Message-ID: <YmE0geKVcfQtsBmz@boxer>
+References: <20220419115620.65580586@canb.auug.org.au>
+ <20220421103200.2b4e8424@canb.auug.org.au>
+ <ac093b0a-dba7-b8b8-8a70-fccbed8fee76@iogearbox.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1050015.1650537372.1@warthog.procyon.org.uk>
-Date:   Thu, 21 Apr 2022 11:36:12 +0100
-Message-ID: <1050016.1650537372@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ac093b0a-dba7-b8b8-8a70-fccbed8fee76@iogearbox.net>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-asmadeus@codewreck.org wrote:
+On Thu, Apr 21, 2022 at 11:45:46AM +0200, Daniel Borkmann wrote:
+> On 4/21/22 2:32 AM, Stephen Rothwell wrote:
+> > Hi all,
+> 
+> Maciej, I presume you are already working on a follow-up for the below?
 
-> 	int fd = open(argv[1], O_WRONLY|O_APPEND);
-> 	if (fd < 0)
-> 		return 1;
-> 	if (write(fd, "test\n", 5) < 0)
+Yikes! I missed that, let's blame easter break for that.
+I'm on it.
 
-I think I need to implement the ability to store writes in non-uptodate pages
-without needing to read from the server as NFS does.  This may fix the
-performance drop also.
-
-David
-
+> 
+> > On Tue, 19 Apr 2022 11:56:20 +1000 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+> > > 
+> > > After merging the bpf-next tree, today's linux-next build
+> > > (x86_64 allmodconfig) failed like this:
+> > > 
+> > > In file included from include/linux/compiler_types.h:73,
+> > >                   from <command-line>:
+> > > drivers/net/ethernet/intel/i40e/i40e_xsk.c: In function 'i40e_run_xdp_zc':
+> > > include/linux/compiler_attributes.h:222:41: error: attribute 'fallthrough' not preceding a case label or default label [-Werror]
+> > >    222 | # define fallthrough                    __attribute__((__fallthrough__))
+> > >        |                                         ^~~~~~~~~~~~~
+> > > drivers/net/ethernet/intel/i40e/i40e_xsk.c:192:17: note: in expansion of macro 'fallthrough'
+> > >    192 |                 fallthrough; /* handle aborts by dropping packet */
+> > >        |                 ^~~~~~~~~~~
+> > > cc1: all warnings being treated as errors
+> > > In file included from include/linux/compiler_types.h:73,
+> > >                   from <command-line>:
+> > > drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c: In function 'ixgbe_run_xdp_zc':
+> > > include/linux/compiler_attributes.h:222:41: error: attribute 'fallthrough' not preceding a case label or default label [-Werror]
+> > >    222 | # define fallthrough                    __attribute__((__fallthrough__))
+> > >        |                                         ^~~~~~~~~~~~~
+> > > drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c:147:17: note: in expansion of macro 'fallthrough'
+> > >    147 |                 fallthrough; /* handle aborts by dropping packet */
+> > >        |                 ^~~~~~~~~~~
+> > > cc1: all warnings being treated as errors
+> > > 
+> > > Caused by commits
+> > > 
+> > >    b8aef650e549 ("i40e, xsk: Terminate Rx side of NAPI when XSK Rx queue gets full")
+> > >    c7dd09fd4628 ("ixgbe, xsk: Terminate Rx side of NAPI when XSK Rx queue gets full")
+> > > 
+> > > I have used the bpf-next tree from next-20220414 for today.
+> > 
+> > I am still getting these failures ...
+> > 
+> 
