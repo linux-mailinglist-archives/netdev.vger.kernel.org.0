@@ -2,104 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 98972509450
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 02:58:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7D37509497
+	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 03:16:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383519AbiDUAxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Apr 2022 20:53:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49292 "EHLO
+        id S1383602AbiDUBSu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Apr 2022 21:18:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345488AbiDUAxP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 20:53:15 -0400
-Received: from mail-vs1-xe64.google.com (mail-vs1-xe64.google.com [IPv6:2607:f8b0:4864:20::e64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 693D1FD37
-        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 17:50:28 -0700 (PDT)
-Received: by mail-vs1-xe64.google.com with SMTP id v133so3142962vsv.7
-        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 17:50:28 -0700 (PDT)
+        with ESMTP id S233373AbiDUBSt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Apr 2022 21:18:49 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6966712AF0
+        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 18:16:01 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id k29so3291890pgm.12
+        for <netdev@vger.kernel.org>; Wed, 20 Apr 2022 18:16:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=+I9N4jIKIfkX9P2x9psVpYzNUmL0G2RB/oOphV/ZpCc=;
+        b=g4zkej6zOwFRFRa1LQeAWTe14tM2fi4Mnw6vLL/rjL5jiDrkopkz+Cx74nboH/6DV5
+         diWL063nsGSr9zbjYZ9cknKeX1QIc7Bu4tgGiKWh5RFt+QQG5jnZtDhNe9uAhF/ytKyL
+         3rKJMGpKm4Q2EEbCFWoCECct62oRPWlSsRZpW3mhPLN894tQio39Oqn7iTuUzxohUH+D
+         msvdDgYk03dYA7muojIJpw6JqSP0If+KuLumhL6c0luYjHgv8EFWK4dmTamKlMDgPn0Q
+         FgJlEiougcJr5NSOXcb+6NLFja1Fm8tYCYyZvmbKGSUTU/BnNg1Hg5KXC1Owdn0/oiZd
+         uD5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:dkim-signature:date:to:subject:user-agent
-         :content-transfer-encoding:message-id:from;
-        bh=LWwI/BH/zs2PRw3S4cSl2rzpqJDY2RDYVUt6dkvsFts=;
-        b=J9LRPrupXwurpDK+q2WrGfoHHxe1IoZj8AOWRHx/39OwShdQAzwu8lUbtLgEz65SAi
-         pLWXPjvGYv/xP1MoVO1EelEuHUYPPL2BvCaZ/HDawcXP36gEI93S5aI5BhjH3tLHkHdA
-         EVvao3pFpg8fiTlOeNyZpxSjUB4asKgEe0J7na5KHwW45GlFVEEGMz+vhdSD+649rsCT
-         9FEp+/DCCPYTDAK0WbJ660TxFnlb3kORHgO+tZq3RCcosVV9CKfSzrNg3gj3ewsVIt57
-         6v0HQHkfmfsZKzFRADyZ3HYVE6zAhjlEARhAMuafzG+ZuCS/yWee94XGDKo/bitp+Q3l
-         6NGQ==
-X-Gm-Message-State: AOAM530Vc3K5qFQFC4bdBCdIIowIARcY2KMEDHT1plcAYI3bAiDvTlkf
-        gj1tGEy6whVNMMgsII27T2PmN4lRRwH2S535SWT0ERlAqJG+
-X-Google-Smtp-Source: ABdhPJyx6JAyhWnwk8dFTXuMp9aOxl0jWB4NUgPircADTj8bfDwnEJh0lEtqyaEjDlkH/FqSpr9mgZ+oqwCp
-X-Received: by 2002:a67:c894:0:b0:324:c5da:a9b5 with SMTP id v20-20020a67c894000000b00324c5daa9b5mr7816833vsk.33.1650502227526;
-        Wed, 20 Apr 2022 17:50:27 -0700 (PDT)
-Received: from smtp.aristanetworks.com (mx.aristanetworks.com. [162.210.129.12])
-        by smtp-relay.gmail.com with ESMTPS id x15-20020ab036ef000000b0035d3d7f148asm404575uau.12.2022.04.20.17.50.27
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 20 Apr 2022 17:50:27 -0700 (PDT)
-X-Relaying-Domain: arista.com
-Received: from us226.sjc.aristanetworks.com (us226.sjc.aristanetworks.com [10.243.208.9])
-        by smtp.aristanetworks.com (Postfix) with ESMTP id 8A460509630;
-        Wed, 20 Apr 2022 17:50:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
-        s=Arista-A; t=1650502226;
-        bh=LWwI/BH/zs2PRw3S4cSl2rzpqJDY2RDYVUt6dkvsFts=;
-        h=Date:To:Subject:From:From;
-        b=dlEfqT+bunv39xlhI4BWZj3ZFE2fBZRwOljFenOnq0kVMO5dgZUvvoqpPNUpt3j27
-         3MwqQJdRXQ+5uBrapZF3vwa7f88Y0gKgk1dTbRHIZ2EC4vWdgKr+ohlqCb2XdAHr8M
-         feM/14h0lZe8PpqWOlaYO0MZOuGiTaekvbO6aNG2AXrDO6DQqyiEvJphKtp9CH9Te/
-         aBEFQNSAYCPKNMnoOMDF3hK5uRwi3b/9P6p7vt71AWwUwG+a5ljbq05Oj3xGpZrWad
-         HMVEaR/BglSTorvNgSoe+fItLi9YiiNx/hYOsvPQWl3+sDOMaAZ3/H0DLxAvfd0EA3
-         qgrh5v1ko5hWg==
-Received: by us226.sjc.aristanetworks.com (Postfix, from userid 10189)
-        id 686A45EC01F2; Wed, 20 Apr 2022 17:50:26 -0700 (PDT)
-Date:   Wed, 20 Apr 2022 17:50:26 -0700
-To:     pabeni@redhat.com, kuba@kernel.org, dsahern@kernel.org,
-        yoshfuji@linux-ipv6.org, davem@davemloft.net, edumazet@google.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        fruggeri@arista.com
-Subject: [PATCH v2 net] tcp: md5: incorrect tcp_header_len for incoming
- connections
-User-Agent: Heirloom mailx 12.5 7/5/10
-Content-Type: text/plain; charset=us-ascii
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=+I9N4jIKIfkX9P2x9psVpYzNUmL0G2RB/oOphV/ZpCc=;
+        b=bP8/Z5abW2Kag4W7v4kYIXiQEKGDhxR54XspXHi4Sm4JQT1Jz1aHRhOwzrEEzrLIpr
+         BqSS1MBMzJgrBbfejLl/+U4gWqlD4KClbm6sC3953Op2a2ZpypCf+Ct2HtBh6d5ybnLv
+         geI9viBbA0BkMWRJPwQed1J2DQvd92vPymGgqP5ug2rotXCZb63/EeyDESrJ+pQYwOel
+         drlOyu7A7pU01PhnkAnKoO0zUaNTgFtnuNbvmucm7JXuNnSjCajOYbj5XbKgfXNbk7g0
+         BlEWMdjVxs5akBMG+CTIMIuZWJbKTt2uSK2Rvj5bC+Fp8RW/PqQ/p8inyP/t4xVLpu99
+         ZpVg==
+X-Gm-Message-State: AOAM533BElPBRiMgikbdmEmQPVJ/aowQb6TDS6y+eXotGk4uVH6C+/EP
+        XNk/1qRQs0QmzuF76ggXMWlS6aN9IvY=
+X-Google-Smtp-Source: ABdhPJwzbXQq+x11JaadtOF20Qyb+UNu39UkQ9rKzidcTt5UzyzyiTgAGNOk8ChsebU1dsLAn6sGXQ==
+X-Received: by 2002:a05:6a00:124f:b0:50a:72ed:c924 with SMTP id u15-20020a056a00124f00b0050a72edc924mr19913554pfi.31.1650503760841;
+        Wed, 20 Apr 2022 18:16:00 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id z5-20020a056a00240500b004e15d39f15fsm22197404pfh.83.2022.04.20.18.15.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Apr 2022 18:16:00 -0700 (PDT)
+Message-ID: <d1db8978-a866-9552-50e6-34507bfcd62d@gmail.com>
+Date:   Wed, 20 Apr 2022 18:15:56 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net-next] Revert "rtnetlink: return EINVAL when request
+ cannot succeed"
+Content-Language: en-US
+To:     Florent Fourcot <florent.fourcot@wifirst.fr>,
+        netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Brian Baboch <brian.baboch@wifirst.fr>
+References: <Yl6iFqPFrdvD1wam@zx2c4.com>
+ <20220419125151.15589-1-florent.fourcot@wifirst.fr>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+In-Reply-To: <20220419125151.15589-1-florent.fourcot@wifirst.fr>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-Id: <20220421005026.686A45EC01F2@us226.sjc.aristanetworks.com>
-From:   fruggeri@arista.com (Francesco Ruggeri)
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-6.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In tcp_create_openreq_child we adjust tcp_header_len for md5 using the
-remote address in newsk. But that address is still 0 in newsk at this
-point, and it is only set later by the callers (tcp_v[46]_syn_recv_sock).
-Use the address from the request socket instead.
 
-v2: Added "Fixes:" line.
+On 4/19/22 05:51, Florent Fourcot wrote:
+> This reverts commit b6177d3240a4
+>
+> ip-link command is testing kernel capability by sending a RTM_NEWLINK
+> request, without any argument. It accepts everything in reply, except
+> EOPNOTSUPP and EINVAL (functions iplink_have_newlink / accept_msg)
+>
+> So we must keep compatiblity here, invalid empty message should not
+> return EINVAL
+>
+> Signed-off-by: Florent Fourcot <florent.fourcot@wifirst.fr>
 
-Fixes: cfb6eeb4c860 ("[TCP]: MD5 Signature Option (RFC2385) support.")
-Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
----
- net/ipv4/tcp_minisocks.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index 6366df7aaf2a..6854bb1fb32b 100644
---- a/net/ipv4/tcp_minisocks.c
-+++ b/net/ipv4/tcp_minisocks.c
-@@ -531,7 +531,7 @@ struct sock *tcp_create_openreq_child(const struct sock *sk,
- 	newtp->tsoffset = treq->ts_off;
- #ifdef CONFIG_TCP_MD5SIG
- 	newtp->md5sig_info = NULL;	/*XXX*/
--	if (newtp->af_specific->md5_lookup(sk, newsk))
-+	if (treq->af_specific->req_md5_lookup(sk, req_to_sk(req)))
- 		newtp->tcp_header_len += TCPOLEN_MD5SIG_ALIGNED;
- #endif
- 	if (skb->len >= TCP_MSS_DEFAULT + newtp->tcp_header_len)
--- 
-2.28.0
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+
+
+Thanks for fixing this issue.
 
 
