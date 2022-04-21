@@ -2,120 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A3171509B05
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 10:49:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 152F9509B50
+	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 10:57:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386882AbiDUIuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 04:50:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59328 "EHLO
+        id S230432AbiDUI6i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 04:58:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386852AbiDUIuK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 04:50:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C0B9313E86
-        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 01:47:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650530839;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cmuFO35zQUp1s4VhyCud3srWXPlk5AJzSrlDvha5upI=;
-        b=ZI1d3mTwo3AKBjUbqtJhR3SD2AIzw6ppBes3+gnMnPoAlHrztCfAhf3x4PjuPPY8brrtnC
-        Im/AYttT/5ufwIHQU/UAa9Qmm/To+gSOmxMOLsCJKdNmvjRxle1cS4tzVFFqzlDF+mJNxM
-        woBuLxcy9//LVtBO7thaSn2HV3gigL4=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-325-UbLBWSK3P6Wy2Vk78u20_A-1; Thu, 21 Apr 2022 04:47:18 -0400
-X-MC-Unique: UbLBWSK3P6Wy2Vk78u20_A-1
-Received: by mail-qt1-f199.google.com with SMTP id r16-20020ac87950000000b002f34f162c75so290427qtt.9
-        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 01:47:18 -0700 (PDT)
+        with ESMTP id S230393AbiDUI6h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 04:58:37 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 112751AF2C;
+        Thu, 21 Apr 2022 01:55:49 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id m14so5675067wrb.6;
+        Thu, 21 Apr 2022 01:55:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Rx6YW0z7TNgwrZzCOM/LadQs2IROT5w7euvFjQgv97I=;
+        b=KF2vkyN/kcWb3uC+3v/wWOoqsfdtj2UwSVyPlTbFTNKEMy6eNSh3WI6DKjEac6mKA0
+         eEE8dgZGBRacJwS9FyI8He8jccbvTR4qE3SfEzC+aN3FFphgG0TwKMcwB9lG50K/Pktd
+         E4sXnZ/laH6RvPi7kFR+vqz+PdnLuOvtgjfCSW5YNmwDzfRY2qOm5hhHs4jhI1zsQzrw
+         lsH+f15LfyCR1YAEdKKamN5rLaOe5H75Xn8NuHuYKv923XxcNklBgNqO8oFyR1VUPiwr
+         i+gxqvXyh+jb7ttNvF4IahsukBwcsXUuzZh6xUweqravQosdFu/rcgeBazlpbywI/C/H
+         m0xw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=cmuFO35zQUp1s4VhyCud3srWXPlk5AJzSrlDvha5upI=;
-        b=VtG+yDVSwZ8LZxHrcRAHtFZJ+u3OEfYPsN2hyARTyjv6hMkXaI8MnDAG6Nbw+K3vjs
-         ut9L00bS2NNX4yxNePEn+gRVHIqlhdCiraHtVJ78Exe5GdKn/MYK5E1oYckg/iYsaRwt
-         78Grpkf+/u+0I3zcakWkHI6cJWAojAXAMZOBmsqgRemyPDtm9cfZVE4mmpwCzLT5aQxF
-         PRK5yreOedTJJo+WWyOe4j3eiSWyk2S+yZgH9mwImXFsheQKZvNBSHca8DR2m/3qyXbm
-         Y0xXKkTtAU/b+umS7q3Ji1guOB4DaFIqBQ/SxmcLwucsVAg4sOQ/l9/8MqeU/LtrPikz
-         IQPg==
-X-Gm-Message-State: AOAM532Vi8nPdL2FUNutEJLxGOvi4ImDwwQp3xHF/F2KWqCmcJMQev5d
-        upnC2brujXmtnwLQpJ9RoVGjY/QyH/E7NGhovk8uBkbMcCd7MUGPTkC2nm1B8ugSICq7MlgZgGN
-        sh4+Q3gXppSxdCSqb
-X-Received: by 2002:a05:6214:2a8d:b0:446:5a52:47f5 with SMTP id jr13-20020a0562142a8d00b004465a5247f5mr14666506qvb.131.1650530838157;
-        Thu, 21 Apr 2022 01:47:18 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx2GJ8m4EUIE8m8G2Vb5sGhuPqmE97xodK09lR4BsEnMPjsLVXYZ96WzI2QTuXoVzXWb0tD1w==
-X-Received: by 2002:a05:6214:2a8d:b0:446:5a52:47f5 with SMTP id jr13-20020a0562142a8d00b004465a5247f5mr14666492qvb.131.1650530837957;
-        Thu, 21 Apr 2022 01:47:17 -0700 (PDT)
-Received: from gerbillo.redhat.com (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.gmail.com with ESMTPSA id e13-20020a05620a12cd00b0069e908ab48dsm2559403qkl.106.2022.04.21.01.47.16
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Rx6YW0z7TNgwrZzCOM/LadQs2IROT5w7euvFjQgv97I=;
+        b=EDCjv1fnVn6NW6MwW0jkyOYAXL2JUtMyIs4UdeO8YkANYkCZOYNatxPIQmhGuv/Cb/
+         6DVaF3DgqulcWE5mX5FEF2N+500RHeK7mEQ1mVTpd+Qt1qp8kO+fgX/XGwuaOpGfBcgh
+         KAKGR+M4w+cXlXEbOicApajlw0KwMf8vI98BsaFI6ognymyKmmxOI8BjfxDUQEITOd6K
+         6xSN8b95iR2upxHpg0LfXdJaf+8qk8A9J6u0a4OnNoZUUNBOql8+Y/YCdQlJ5ujjp4Zj
+         vbmTD8WLaV5RWkxXq6cqxBDTOw+OZhteOzf4UApsfynFtbhehvIJ/TZbgXNEfKmzPgK4
+         HFUg==
+X-Gm-Message-State: AOAM531uUP3GyxUC/J65wlUE8Ow3GWrmXPHf9VNzBNozEeX4SRlUK6zY
+        LhWIhaAzmaKvYeYeUA/D850=
+X-Google-Smtp-Source: ABdhPJxWKzmGEVET2B/IQtcjzG1GiBxqmi9/CRN/U34lV/Xj2CT045mFHvG8LKRvHXGM3gcTi8SiiA==
+X-Received: by 2002:a5d:52c9:0:b0:207:99d3:7b4d with SMTP id r9-20020a5d52c9000000b0020799d37b4dmr19770425wrv.77.1650531347604;
+        Thu, 21 Apr 2022 01:55:47 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id m4-20020a7bcb84000000b00389efb7a5b4sm1539091wmi.17.2022.04.21.01.55.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 01:47:17 -0700 (PDT)
-Message-ID: <84310b72be223d736c8ac9fc58eb4936a98aa839.camel@redhat.com>
-Subject: Re: [PATCH] openvswitch: meter: Remove unnecessary int
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Solomon Tan <solomonbstoner@protonmail.ch>, pshelar@ovn.org,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        dev@openvswitch.org, linux-kernel@vger.kernel.org
-Date:   Thu, 21 Apr 2022 10:47:14 +0200
-In-Reply-To: <Yly1t/mE6QAGPS0e@ArchDesktop>
-References: <Yly1t/mE6QAGPS0e@ArchDesktop>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Thu, 21 Apr 2022 01:55:47 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] net: hns3: Fix spelling mistake "actvie" -> "active"
+Date:   Thu, 21 Apr 2022 09:55:46 +0100
+Message-Id: <20220421085546.321792-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2022-04-18 at 00:50 +0000, Solomon Tan wrote:
-> This patch addresses the checkpatch.pl warning that long long is
-> preferred over long long int.
+There is a spelling mistake in a netdev_info message. Fix it.
 
-Please don't do that. This kind of changes cause e.g. backporting issue
-for any later relevant bugfix touching the same area, for no real
-benefit. 
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Documentation/process/2.Process.rst
-
-explicltly states to avoid this kind of patches.
-> 
-> Signed-off-by: Solomon Tan <solomonbstoner@protonmail.ch>
-> ---
->  net/openvswitch/meter.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/net/openvswitch/meter.c b/net/openvswitch/meter.c
-> index 04a060ac7fdf..a790920c11d6 100644
-> --- a/net/openvswitch/meter.c
-> +++ b/net/openvswitch/meter.c
-> @@ -592,8 +592,8 @@ static int ovs_meter_cmd_del(struct sk_buff *skb, struct genl_info *info)
->  bool ovs_meter_execute(struct datapath *dp, struct sk_buff *skb,
->  		       struct sw_flow_key *key, u32 meter_id)
->  {
-> -	long long int now_ms = div_u64(ktime_get_ns(), 1000 * 1000);
-> -	long long int long_delta_ms;
-> +	long long now_ms = div_u64(ktime_get_ns(), 1000 * 1000);
-> +	long long long_delta_ms;
->  	struct dp_meter_band *band;
->  	struct dp_meter *meter;
->  	int i, band_exceeded_max = -1;
-
-Additionally the patch is mangled by non plain-text encoding.
-
-For any later submissions (regarding some other different topic) please
-ensure that your client/mailer send purely plain-text messages,
-
-Thanks,
-
-Paolo
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+index bb001f597857..1db8a86f046d 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+@@ -1915,7 +1915,7 @@ static int hns3_set_tunable(struct net_device *netdev,
+ 			return ret;
+ 		}
+ 
+-		netdev_info(netdev, "the actvie tx spare buf size is %u, due to page order\n",
++		netdev_info(netdev, "the active tx spare buf size is %u, due to page order\n",
+ 			    priv->ring->tx_spare->len);
+ 
+ 		break;
+-- 
+2.35.1
 
