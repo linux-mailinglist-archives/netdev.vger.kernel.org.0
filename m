@@ -2,91 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CD7950A500
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 18:06:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63AFB50A536
+	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 18:24:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390480AbiDUQJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 12:09:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59828 "EHLO
+        id S230327AbiDUQ1X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 12:27:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390477AbiDUQJI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 12:09:08 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D21947541
-        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 09:06:18 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id x9so2475589ybe.11
-        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 09:06:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ao6JOiGIKhmxQmFS+ZxxkcT+hGHLZDm7zhluUVW/Z6M=;
-        b=Dd857z3OI6w2cEAe8C8V/nguYgDUfEPP8fcN4RVDjtv0JlbqIVek/rswzW4ANfgXtv
-         0gG8TZ6cCPCz3C5/QLiXvIcJ6G6oJTfzX50xaGJDrEcFkrma29C29FX/EFozYAhK3ov7
-         7e5+TsxXBYvPGAjaUA/yZGvlYZ3AwvEiVjIwTDeFWfTBzSha3z1DQJg227DXeBpJhLGq
-         ezavNTz4G7pcKsFRZdisaU2xN/ffE5tuOJ92mdLvd8n8cpVepi+qyayZPbPG4WgQsJV6
-         /fBQ40Yte+8Mcm/Zzl7bwvW7H8vXpwZj2P0noXg34m7afARKuVWHRmXGcvy/1wDfC9Dm
-         mHOg==
+        with ESMTP id S1390630AbiDUQRY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 12:17:24 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BAA4F4504D
+        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 09:14:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650557673;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1ngZ3ZDY9ywW927Z5RN+MQNpAIO8k9NmG/nkTnk+1Gs=;
+        b=RQV6R/OB43yQqrkm5oggp9zm3OQVzwmouCHF2z78ixodK8OWZ+73QtiVn5v5sLXs/47n/e
+        LBEFsbpvqxHeeZj870spCCxizcQfMiXe9l8nIRG/ZqVnUtZVauDPYTWM8n3jqP48B57MtD
+        I1PDHote2fMra8vv+o1SdBPcIs4Yu+I=
+Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
+ [209.85.208.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-265-EyGPkcQPMk-DVDAdrprVIQ-1; Thu, 21 Apr 2022 12:14:32 -0400
+X-MC-Unique: EyGPkcQPMk-DVDAdrprVIQ-1
+Received: by mail-lj1-f198.google.com with SMTP id 20-20020a05651c009400b002462f08f8d2so1704973ljq.2
+        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 09:14:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ao6JOiGIKhmxQmFS+ZxxkcT+hGHLZDm7zhluUVW/Z6M=;
-        b=isZuIe/1S+OCS5rW00R7XG3vLajsjnUiqB/PDb7r7ljMbp0syFQ1O0+3BIYN4Pn6bE
-         qHZdpzpbBPYLAil4BgxDykGhA/H832fpL7EBaDwl5WUx60nFlhDOGbIOyEPSqs93hb0/
-         1hB2rz2QNXx8u0S0I6j/CpixI3Ki6Z54a/OAEdnRDV+yR4uX/YhZiKg7uueAop4FdCSC
-         NISOavnAdWRyvZHDQmQfEV+tiVWCwDqqCPH77krP84L5yfRw5h/ctGpwGrhEHB4j65Za
-         2vfGWJgZSLr4ebKrgfyZnVn0NhNVLnC4NfOZia/F3/ryXMcNu1b/C4eDPZHrsHToVulW
-         inxQ==
-X-Gm-Message-State: AOAM530TboQeC/4c65tiFhY64yURmRD4hIKm+Eh2IAkjkvphX7oip8ZO
-        GlKRgj3/9mtGPxP6AFxP5sxiP7Eb/LtzPR4pydshdA==
-X-Google-Smtp-Source: ABdhPJz/v/SaLTJH6sJ0oDo4t/7tVNKumYOANhbVm8wuCj6UJIN4fpBkKrs8HINUpizT1KD8o45mabmJAByAG9kzeNw=
-X-Received: by 2002:a25:ea48:0:b0:644:e2e5:309 with SMTP id
- o8-20020a25ea48000000b00644e2e50309mr357251ybe.407.1650557176979; Thu, 21 Apr
- 2022 09:06:16 -0700 (PDT)
+        bh=1ngZ3ZDY9ywW927Z5RN+MQNpAIO8k9NmG/nkTnk+1Gs=;
+        b=DQ4671nJwEZ0by01MWsSh1DuuBcHQtLN//k+l6F/nWnNBycpDVu4sECu069larz/Se
+         S3Uvv1RpX2megXLIE/fYlxO0Z1udjAJTTyY+FsXjXArAA29rGsACaFby+aZusC6qBKTJ
+         g274V/xmy8tAF+U1vrCYjTgEGhowyr5FtA+WXNWQ+2miRZ6SGbUQKZiMK0yTQLXZdT0h
+         xeuBD/rpCL/B+Vz7KtLLMiM5HBDoQi9wEY1YP4rG1dGmplk5Ljg6ZYnk2S22Fx6R+nda
+         ZetmWmgt+iZRzHOrUy/axG5HKzM15Vi1JboPBOhBhxGphcUeNyuTKl8kZQHfyXBf8MBJ
+         hreQ==
+X-Gm-Message-State: AOAM533vI3TPbdJ35cynZWr9Y3Jjqs6visyvLF9/bP9JEZqKR8ojZGHZ
+        GoRJ3RkPtJX0nGW8nv0meMJ9REMF+dg42Ofy9zTh6TDtuBWc6VYsamQW2ORKJk7Ha5ZI/+/5qX8
+        QBPByocr9EWRBbq0d1+KWCHsgo6GwU1t9
+X-Received: by 2002:a05:6512:68b:b0:471:d466:979b with SMTP id t11-20020a056512068b00b00471d466979bmr145639lfe.519.1650557671047;
+        Thu, 21 Apr 2022 09:14:31 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyH8/DjjuvvyMkckIHc+m1v/FBNR0YvL8JTrt6ayXJd/rtn7oBKbgJ1GEaT0nlskTay3z63zTKH5i8fe1g198I=
+X-Received: by 2002:a05:6512:68b:b0:471:d466:979b with SMTP id
+ t11-20020a056512068b00b00471d466979bmr145622lfe.519.1650557670855; Thu, 21
+ Apr 2022 09:14:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <YmFjdOp+R5gVGZ7p@linutronix.de>
-In-Reply-To: <YmFjdOp+R5gVGZ7p@linutronix.de>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 21 Apr 2022 09:06:05 -0700
-Message-ID: <CANn89iKjSmnTSzzHdnP-HEYMajrz+MOrjFooaMFop4Vo43kLdg@mail.gmail.com>
-Subject: Re: [PATCH net] net: Use this_cpu_inc() to increment net->core_stats
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+References: <20220420200720.434717-1-parri.andrea@gmail.com>
+ <20220420200720.434717-4-parri.andrea@gmail.com> <20220421140805.qg4cwqhsq5vuqkut@sgarzare-redhat>
+ <20220421152827.GB4679@anparri>
+In-Reply-To: <20220421152827.GB4679@anparri>
+From:   Stefano Garzarella <sgarzare@redhat.com>
+Date:   Thu, 21 Apr 2022 18:14:19 +0200
+Message-ID: <CAGxU2F6UCiFQrXu4Nn=jNPbuE8i5hYe=Hkwak43kTMQoCQQy2A@mail.gmail.com>
+Subject: Re: [PATCH 3/5] hv_sock: Add validation for untrusted Hyper-V values
+To:     Andrea Parri <parri.andrea@gmail.com>
+Cc:     KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>
+        Paolo Abeni <pabeni@redhat.com>, linux-hyperv@vger.kernel.org,
+        Linux Virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        kernel list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 7:00 AM Sebastian Andrzej Siewior
-<bigeasy@linutronix.de> wrote:
+On Thu, Apr 21, 2022 at 5:30 PM Andrea Parri <parri.andrea@gmail.com> wrote:
 >
+> > > @@ -577,12 +577,19 @@ static bool hvs_dgram_allow(u32 cid, u32 port)
+> > > static int hvs_update_recv_data(struct hvsock *hvs)
+> > > {
+> > >     struct hvs_recv_buf *recv_buf;
+> > > -   u32 payload_len;
+> > > +   u32 pkt_len, payload_len;
+> > > +
+> > > +   pkt_len = hv_pkt_len(hvs->recv_desc);
+> > > +
+> > > +   /* Ensure the packet is big enough to read its header */
+> > > +   if (pkt_len < HVS_HEADER_LEN)
+> > > +           return -EIO;
+> > >
+> > >     recv_buf = (struct hvs_recv_buf *)(hvs->recv_desc + 1);
+> > >     payload_len = recv_buf->hdr.data_size;
+> > >
+> > > -   if (payload_len > HVS_MTU_SIZE)
+> > > +   /* Ensure the packet is big enough to read its payload */
+> > > +   if (payload_len > pkt_len - HVS_HEADER_LEN || payload_len > HVS_MTU_SIZE)
+> >
+> > checkpatch warns that we exceed 80 characters, I do not have a strong
+> > opinion on this, but if you have to resend better break the condition into 2
+> > lines.
+>
+> Will break if preferred.  (but does it really warn??  I understand that
+> the warning was deprecated and the "limit" increased to 100 chars...)
 
->                 for_each_possible_cpu(i) {
->                         core_stats = per_cpu_ptr(p, i);
-> -                       storage->rx_dropped += local_read(&core_stats->rx_dropped);
-> -                       storage->tx_dropped += local_read(&core_stats->tx_dropped);
-> -                       storage->rx_nohandler += local_read(&core_stats->rx_nohandler);
-> +                       storage->rx_dropped += core_stats->rx_dropped;
-> +                       storage->tx_dropped += core_stats->tx_dropped;
-> +                       storage->rx_nohandler += core_stats->rx_nohandler;
+I see the warn here:
+https://patchwork.kernel.org/project/netdevbpf/patch/20220420200720.434717-4-parri.andrea@gmail.com/
 
-I think that one of the reasons for me to use  local_read() was that
-it provided what was needed to avoid future syzbot reports.
+in the kernel doc [1] we still say we prefer 80 columns, so I try to
+follow, especially when it doesn't make things worse.
 
-Perhaps use READ_ONCE() here ?
+[1] https://docs.kernel.org/process/coding-style.html#breaking-long-lines-and-strings
 
-Yes, we have many similar folding loops that are  simply assuming
-compiler won't do stupid things.
+>
+>
+> > Maybe even update or remove the comment? (it only describes the first
+> > condition, but the conditions are pretty clear, so I don't think it adds
+> > much).
+>
+> Works for me.  (taking it as this applies to the previous comment too.)
+
+Yep.
+
+Thanks,
+Stefano
+
