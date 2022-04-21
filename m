@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B87650AB2E
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 00:07:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C7EB50AB32
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 00:08:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442335AbiDUWKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 18:10:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52564 "EHLO
+        id S1442349AbiDUWLF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 18:11:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442329AbiDUWKJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 18:10:09 -0400
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D8FC43EDA;
-        Thu, 21 Apr 2022 15:07:18 -0700 (PDT)
-Received: by mail-qk1-x729.google.com with SMTP id d19so4628956qko.3;
-        Thu, 21 Apr 2022 15:07:18 -0700 (PDT)
+        with ESMTP id S1442351AbiDUWLE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 18:11:04 -0400
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA234EDDD;
+        Thu, 21 Apr 2022 15:08:13 -0700 (PDT)
+Received: by mail-qv1-xf35.google.com with SMTP id d9so4723648qvm.4;
+        Thu, 21 Apr 2022 15:08:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dHjxXbwqQtvuaoMXA8rnRVhFdDW5Qn6yct5S95Sj8t8=;
-        b=R0K21wwZUQgYRQkZyYk2MgjbTh1op68EOEMB7a/0wZzSCvNxKBK3SRr5scZjRjXTUv
-         YgqDfK4ojDnh5VQHbHZ1u39MdB536P2yphnBnttiKbXnAutfBLX8Eio2FVU3PSeEPh/F
-         gMeiRyzfQJxk61Ggkh5gk7XQM1OSWry9buPnbswlOraYP5J5JBsjQhpuTFzgqdeYprKH
-         eGjGGbmllXxtBERoK2KbhVGlUziL9Y3gtCBjpSnPy5QfUeprGtBxqjSMfp0iDJ7AAjMd
-         dxW/qCbFh3K4Qh8VNmCz19Pbo4oXTC1dWK2q/zMqeUJwy+76Q2p34Ddf/7N/sDUxybUJ
-         PBdg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=6gYFSoVcpwLd28VgNWwfiPjbVU28eosEw1LDKSZ8KQc=;
+        b=ZJDNoA9FyoglICDWyPkyyPe9AqQzHNUZSXcw2ST/ZWMMRff+/7FUB2XngF5Gad1Xax
+         756WjkDh9c+tZBn2MKByXXylogEPCrIgdkFXvWbxNocv2EpK8I7JbxENgwhvcf72qDNr
+         WoIoCxeHdzlLfUvVZz+BWTTscphkXG8wWf2BjLRYfXnD64NxQsXv1sI/5h7ZHEYnNArW
+         CnHcpoYEi9DsmlPnI0q9HeT5xo+tPZzr1Y65b2+424+m3w3TGGlIuIZh7eon4MEVnQAz
+         QLjwm6yPntWJ6MuHZrF70BwHvB/h/N/FIiIYHO7cxvkLVgeKg7RfGfSWfluM6e9mQnJc
+         d/UA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dHjxXbwqQtvuaoMXA8rnRVhFdDW5Qn6yct5S95Sj8t8=;
-        b=OqJzbvnwQj96Xk8o+paMQPaHw7R9QPnLi7kl/RB79VfFhhL5RuIdisQ/nYSUelSy62
-         KVuS0HBZi0oQ/yBAuS3a2qYBYgJeWMo+znm4dYiSNNoO1CmsHQtCaz9OnT0IivUCqI+k
-         +nLNQULQWaJWtv1TEiL2kISEyZEohWZudrYfBK12x7SObaob/5oUYtqYp7gI7i3kfzNU
-         o2bLoIcUOFo1XAPibCx/OMy+y+E0RUe2T8o//wPdR+qWi2cmCMK9mrH+L0AztBNP5TUD
-         5MW2NC4BaASnhqd193eHF90SwF/5ZwrO/HdMsOs6DUo7rYOcNTq+itxeh52hRtZardRp
-         NtIg==
-X-Gm-Message-State: AOAM53251cO9kjLtEGH2t9H3I1rv9357i1bvmftX8S+eZxhz26V+U3Vz
-        ti0hKNf96lhlck1/TqWuoQ==
-X-Google-Smtp-Source: ABdhPJyTKFTL4G7a4bLctY8+jXS7slkKaGynDvczVmu3NReacce8r3V5EJtqIdlo4MgELG/l/xfCeQ==
-X-Received: by 2002:a05:620a:13fc:b0:69e:90a3:e1bc with SMTP id h28-20020a05620a13fc00b0069e90a3e1bcmr941061qkl.645.1650578837697;
-        Thu, 21 Apr 2022 15:07:17 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=6gYFSoVcpwLd28VgNWwfiPjbVU28eosEw1LDKSZ8KQc=;
+        b=TOLuLvmu3ctT1ZDcI8BJbJAR2y5zD2BEAIlMqUQWCGsx25Nl8Sfm3PQ065R6qYXFmc
+         4Dg0ieWjCizAsqtTgN+y6vS9yGy2xdyO4dqAbTbAwyX3fs0JEu08PIvpa9kVjdOyYMrn
+         H51OMJcbJQdP3aplzz6UvJ6crBD3rn3yZq+RHzoafVlR1xnvGnQHhuvayzYTPrYz9a+c
+         B8DUchF+AKKKTIiuWVLr8U8CN5XPqPFIKKevZo0Im92DP2s0w0JVYFbsJAK6XEkfs1FF
+         w5+e//1kjJjzJoiD23tGjba0eHDY4YPNdUFV7gUIKSQDE3zcOshW8Q2HkTxFwTjEezmP
+         80iQ==
+X-Gm-Message-State: AOAM531NuWxIP1bNBQ1GTPdxeFIpczEkR54WFVpt4XEm7TK/5uqCJ0/J
+        3wzimtHgdOkuzbQVnJsF3Ls49aPdoQ==
+X-Google-Smtp-Source: ABdhPJzLoETi2+sYSibFwua+LrkvqKACoyLJUhtbvOHHyfuCf5ADpsXYHj4JeNsBsKTC/gMi+c4MwQ==
+X-Received: by 2002:a05:6214:5284:b0:444:10c8:ee59 with SMTP id kj4-20020a056214528400b0044410c8ee59mr1525618qvb.68.1650578892675;
+        Thu, 21 Apr 2022 15:08:12 -0700 (PDT)
 Received: from bytedance.attlocal.net (ec2-13-57-97-131.us-west-1.compute.amazonaws.com. [13.57.97.131])
-        by smtp.gmail.com with ESMTPSA id b84-20020ae9eb57000000b0069c8ca73b94sm89468qkg.115.2022.04.21.15.07.13
+        by smtp.gmail.com with ESMTPSA id h18-20020ac85e12000000b002f341c6d20esm182178qtx.80.2022.04.21.15.08.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 15:07:17 -0700 (PDT)
+        Thu, 21 Apr 2022 15:08:12 -0700 (PDT)
 From:   Peilin Ye <yepeilin.cs@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -66,10 +66,12 @@ Cc:     Peilin Ye <peilin.ye@bytedance.com>, "xeb@mail.ru" <xeb@mail.ru>,
         KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
         bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
         Peilin Ye <yepeilin.cs@gmail.com>
-Subject: [PATCH net 0/3] ip_gre, ip6_gre: o_seqno fixes
-Date:   Thu, 21 Apr 2022 15:06:39 -0700
-Message-Id: <cover.1650575919.git.peilin.ye@bytedance.com>
+Subject: [PATCH net 1/3] ip_gre: Make o_seqno start from 0 in native mode
+Date:   Thu, 21 Apr 2022 15:07:57 -0700
+Message-Id: <dd63f881729052aa4e08a5c7cb9732724c557dfd.1650575919.git.peilin.ye@bytedance.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1650575919.git.peilin.ye@bytedance.com>
+References: <cover.1650575919.git.peilin.ye@bytedance.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -84,45 +86,42 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Peilin Ye <peilin.ye@bytedance.com>
 
-Hi all,
+For GRE and GRETAP devices, currently o_seqno starts from 1 in native
+mode.  According to RFC 2890 2.2., "The first datagram is sent with a
+sequence number of 0."  Fix it.
 
-As pointed out [1] by Jakub Kicinski, currently using TUNNEL_SEQ in
-collect_md mode is racy for [IP6]GRE[TAP] devices, since they (typically,
-e.g. if created using "ip") use lockless TX.
+It is worth mentioning that o_seqno already starts from 0 in collect_md
+mode, see gre_fb_xmit(), where tunnel->o_seqno is passed to
+gre_build_header() before getting incremented.
 
-Patch [3/3] fixes it by making o_seqno atomic_t.
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+---
+ net/ipv4/ip_gre.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-As mentioned by Eric Dumazet in commit b790e01aee74 ("ip_gre: lockless
-xmit"), making o_seqno atomic_t increases "chance for packets being out
-of order at receiver" when using lockless TX.
-
-Another way to fix it would be: users must specify "external" and "oseq"
-at the same time if they want the kernel to allow using TUNNEL_SEQ (e.g.
-via eBPF) in collect_md mode, but that would break userspace.
-
-I found another issue while reading the code: patches [1,2/3] make o_seqno
-start from 0 in native mode, as described in RFC 2890 [2] section 2.2.:
-"The first datagram is sent with a sequence number of 0."
-
-Now we could make [IP6]GRE[TAP] (and probably [IP6]ERSPAN ?) devices
-completely NETIF_F_LLTX, but that's out of scope of this fix and will be
-sent as separate [net-next] patches.
-
-[1] https://lore.kernel.org/netdev/20220415191133.0597a79a@kernel.org/
-[2] https://datatracker.ietf.org/doc/html/rfc2890#section-2.2
-
-Thanks,
-Peilin Ye (3):
-  ip_gre: Make o_seqno start from 0 in native mode
-  ip6_gre: Make o_seqno start from 0 in native mode
-  ip_gre, ip6_gre: Fix race condition on o_seqno in collect_md mode
-
- include/net/ip6_tunnel.h |  2 +-
- include/net/ip_tunnels.h |  2 +-
- net/ipv4/ip_gre.c        | 12 +++++-------
- net/ipv6/ip6_gre.c       | 16 ++++++++--------
- 4 files changed, 15 insertions(+), 17 deletions(-)
-
+diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
+index 99db2e41ed10..ca70b92e80d9 100644
+--- a/net/ipv4/ip_gre.c
++++ b/net/ipv4/ip_gre.c
+@@ -459,14 +459,12 @@ static void __gre_xmit(struct sk_buff *skb, struct net_device *dev,
+ 		       __be16 proto)
+ {
+ 	struct ip_tunnel *tunnel = netdev_priv(dev);
+-
+-	if (tunnel->parms.o_flags & TUNNEL_SEQ)
+-		tunnel->o_seqno++;
++	__be16 flags = tunnel->parms.o_flags;
+ 
+ 	/* Push GRE header. */
+ 	gre_build_header(skb, tunnel->tun_hlen,
+-			 tunnel->parms.o_flags, proto, tunnel->parms.o_key,
+-			 htonl(tunnel->o_seqno));
++			 flags, proto, tunnel->parms.o_key,
++			 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++) : 0);
+ 
+ 	ip_tunnel_xmit(skb, dev, tnl_params, tnl_params->protocol);
+ }
 -- 
 2.20.1
 
