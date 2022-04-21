@@ -2,73 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E7D2550AADD
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 23:40:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B87650AB2E
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 00:07:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231443AbiDUVka (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 17:40:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59646 "EHLO
+        id S1442335AbiDUWKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 18:10:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442130AbiDUVk3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 17:40:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76D464BFF7;
-        Thu, 21 Apr 2022 14:37:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 31931B82975;
-        Thu, 21 Apr 2022 21:37:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C3436C385A7;
-        Thu, 21 Apr 2022 21:37:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650577055;
-        bh=IFjzHuk5h9dCyJBtcXNPuz7l7hjRk25FR13nx9zL0HY=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=olBbHjiG98YExS7Yk9YGAqZ6Sdb+M6hGhGSExFNZou6mwGsj9WR7KDPr9VZ3r2DHx
-         frAK/uW/Xu46Tk2F/Yhk5iRlVCcwEiJOlL/hvbN5waE6Va3lXc4/aOLgWWNZeg2jlz
-         k/Iw2vX6CD6Z9uX5N03ux/ou1zEgB4If3wH4r9rjHcDcxZFGglUfrYcGRBofAyN2On
-         4lb+17nwVn7Jj96J+BLzYZHjFI1q7m99VbClqi5DcD2Gf5gh2TsnmyQVxje8rrdvbt
-         y0X8vxTH6WH6Lsy/g7jZ68KOcfPeXq0c3Jvi0N7cp0FxAPigA+9mqUJTvfU/iVCYrT
-         sL+xwnLD9A+vw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AF36AE85D90;
-        Thu, 21 Apr 2022 21:37:35 +0000 (UTC)
-Subject: Re: [GIT PULL] Networking for 5.18-rc4
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220421105218.18005-1-pabeni@redhat.com>
-References: <20220421105218.18005-1-pabeni@redhat.com>
-X-PR-Tracked-List-Id: <netdev.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220421105218.18005-1-pabeni@redhat.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.18-rc4
-X-PR-Tracked-Commit-Id: bc6de2878429e85c1f1afaa566f7b5abb2243eef
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 59f0c2447e2553b0918b4a9fd38763a5c0587d02
-Message-Id: <165057705570.12453.7526198717622777838.pr-tracker-bot@kernel.org>
-Date:   Thu, 21 Apr 2022 21:37:35 +0000
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S1442329AbiDUWKJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 18:10:09 -0400
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D8FC43EDA;
+        Thu, 21 Apr 2022 15:07:18 -0700 (PDT)
+Received: by mail-qk1-x729.google.com with SMTP id d19so4628956qko.3;
+        Thu, 21 Apr 2022 15:07:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dHjxXbwqQtvuaoMXA8rnRVhFdDW5Qn6yct5S95Sj8t8=;
+        b=R0K21wwZUQgYRQkZyYk2MgjbTh1op68EOEMB7a/0wZzSCvNxKBK3SRr5scZjRjXTUv
+         YgqDfK4ojDnh5VQHbHZ1u39MdB536P2yphnBnttiKbXnAutfBLX8Eio2FVU3PSeEPh/F
+         gMeiRyzfQJxk61Ggkh5gk7XQM1OSWry9buPnbswlOraYP5J5JBsjQhpuTFzgqdeYprKH
+         eGjGGbmllXxtBERoK2KbhVGlUziL9Y3gtCBjpSnPy5QfUeprGtBxqjSMfp0iDJ7AAjMd
+         dxW/qCbFh3K4Qh8VNmCz19Pbo4oXTC1dWK2q/zMqeUJwy+76Q2p34Ddf/7N/sDUxybUJ
+         PBdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dHjxXbwqQtvuaoMXA8rnRVhFdDW5Qn6yct5S95Sj8t8=;
+        b=OqJzbvnwQj96Xk8o+paMQPaHw7R9QPnLi7kl/RB79VfFhhL5RuIdisQ/nYSUelSy62
+         KVuS0HBZi0oQ/yBAuS3a2qYBYgJeWMo+znm4dYiSNNoO1CmsHQtCaz9OnT0IivUCqI+k
+         +nLNQULQWaJWtv1TEiL2kISEyZEohWZudrYfBK12x7SObaob/5oUYtqYp7gI7i3kfzNU
+         o2bLoIcUOFo1XAPibCx/OMy+y+E0RUe2T8o//wPdR+qWi2cmCMK9mrH+L0AztBNP5TUD
+         5MW2NC4BaASnhqd193eHF90SwF/5ZwrO/HdMsOs6DUo7rYOcNTq+itxeh52hRtZardRp
+         NtIg==
+X-Gm-Message-State: AOAM53251cO9kjLtEGH2t9H3I1rv9357i1bvmftX8S+eZxhz26V+U3Vz
+        ti0hKNf96lhlck1/TqWuoQ==
+X-Google-Smtp-Source: ABdhPJyTKFTL4G7a4bLctY8+jXS7slkKaGynDvczVmu3NReacce8r3V5EJtqIdlo4MgELG/l/xfCeQ==
+X-Received: by 2002:a05:620a:13fc:b0:69e:90a3:e1bc with SMTP id h28-20020a05620a13fc00b0069e90a3e1bcmr941061qkl.645.1650578837697;
+        Thu, 21 Apr 2022 15:07:17 -0700 (PDT)
+Received: from bytedance.attlocal.net (ec2-13-57-97-131.us-west-1.compute.amazonaws.com. [13.57.97.131])
+        by smtp.gmail.com with ESMTPSA id b84-20020ae9eb57000000b0069c8ca73b94sm89468qkg.115.2022.04.21.15.07.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Apr 2022 15:07:17 -0700 (PDT)
+From:   Peilin Ye <yepeilin.cs@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Peilin Ye <peilin.ye@bytedance.com>, "xeb@mail.ru" <xeb@mail.ru>,
+        William Tu <u9012063@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Peilin Ye <yepeilin.cs@gmail.com>
+Subject: [PATCH net 0/3] ip_gre, ip6_gre: o_seqno fixes
+Date:   Thu, 21 Apr 2022 15:06:39 -0700
+Message-Id: <cover.1650575919.git.peilin.ye@bytedance.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Thu, 21 Apr 2022 12:52:18 +0200:
+From: Peilin Ye <peilin.ye@bytedance.com>
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.18-rc4
+Hi all,
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/59f0c2447e2553b0918b4a9fd38763a5c0587d02
+As pointed out [1] by Jakub Kicinski, currently using TUNNEL_SEQ in
+collect_md mode is racy for [IP6]GRE[TAP] devices, since they (typically,
+e.g. if created using "ip") use lockless TX.
 
-Thank you!
+Patch [3/3] fixes it by making o_seqno atomic_t.
+
+As mentioned by Eric Dumazet in commit b790e01aee74 ("ip_gre: lockless
+xmit"), making o_seqno atomic_t increases "chance for packets being out
+of order at receiver" when using lockless TX.
+
+Another way to fix it would be: users must specify "external" and "oseq"
+at the same time if they want the kernel to allow using TUNNEL_SEQ (e.g.
+via eBPF) in collect_md mode, but that would break userspace.
+
+I found another issue while reading the code: patches [1,2/3] make o_seqno
+start from 0 in native mode, as described in RFC 2890 [2] section 2.2.:
+"The first datagram is sent with a sequence number of 0."
+
+Now we could make [IP6]GRE[TAP] (and probably [IP6]ERSPAN ?) devices
+completely NETIF_F_LLTX, but that's out of scope of this fix and will be
+sent as separate [net-next] patches.
+
+[1] https://lore.kernel.org/netdev/20220415191133.0597a79a@kernel.org/
+[2] https://datatracker.ietf.org/doc/html/rfc2890#section-2.2
+
+Thanks,
+Peilin Ye (3):
+  ip_gre: Make o_seqno start from 0 in native mode
+  ip6_gre: Make o_seqno start from 0 in native mode
+  ip_gre, ip6_gre: Fix race condition on o_seqno in collect_md mode
+
+ include/net/ip6_tunnel.h |  2 +-
+ include/net/ip_tunnels.h |  2 +-
+ net/ipv4/ip_gre.c        | 12 +++++-------
+ net/ipv6/ip6_gre.c       | 16 ++++++++--------
+ 4 files changed, 15 insertions(+), 17 deletions(-)
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.20.1
+
