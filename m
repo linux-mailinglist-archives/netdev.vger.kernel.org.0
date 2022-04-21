@@ -2,132 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A21350AB91
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 00:37:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8015550AB95
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 00:40:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442516AbiDUWkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 18:40:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39288 "EHLO
+        id S1391098AbiDUWmR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 18:42:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241336AbiDUWkk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 18:40:40 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8493D43EE4;
-        Thu, 21 Apr 2022 15:37:49 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id s14so6842346plk.8;
-        Thu, 21 Apr 2022 15:37:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=TGnA1HghBHzaSRRxb3yDXY7uSkV0l4dlxYm07Mzp3eI=;
-        b=dFLWUJYXH3dFISAztAecv3Yf1mdemauc2q2OxHs3xuKtNlSr8LppwaIILxfTl/CNyR
-         kr3THRthZfoHqEj/5OGLdycki5BRTSoCriRigD1l0TtUqzKqN6uI3LzFSDvVctO3E1RE
-         NCAtYPJ4GhVtCp3b/XFDm4PNopKSQONjpmTayoBiOEG7uwfZm/v745lmKWTdqS0mmKGO
-         t58jj8zjJLgWKNup0fbSpaSCt5i1Ec+cPtsCYrHiVS3VT5hRArzMIlfGmVnBBqpGcYCJ
-         iMwDqG7VnTYEDh46pkMd9Lk8zPW49PsPzUD5sN9IxcfZCtjbqN7VbItpzPg0+jwGmXnc
-         PYMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=TGnA1HghBHzaSRRxb3yDXY7uSkV0l4dlxYm07Mzp3eI=;
-        b=bBv45CFsheNbKCWBxLWUX7fevJ1HpvNDF0xtl1Qf8PpR//dzL3/AUl3RMRrVpT6oEH
-         bxM2aq0bNBE4InSQYX6Ir5HKBNYhRZPPftX3YYWX2O+iWxC5NxomPc5TlpLvY2M8J7YR
-         NJikwukYBF6HpT9Ak6vgWLIe48Q8trudnxAn/fbZYa4m+ZllTxtKwlMegHtAm+O100Zl
-         Is2IrYe3ZQRaHG1ZNGQHcU/T2H/n2gpuEB6xgv72om4k2HaEg0oZYbgZoDyPLJy9F57z
-         mf9p4IZqiaAuh2wAJv0+fPPE2aXkzVZovLTAPszLyYY57yMIeoem83NFxA5Hr0Wvp5Xy
-         Faww==
-X-Gm-Message-State: AOAM533oJDeHuzZakzs86R+xkbnV/3TR2dKfg9+i6BThUptOMqjZPpM6
-        0vKnuMebVd1nP6P96iSSjtQ=
-X-Google-Smtp-Source: ABdhPJyNyMh4f9ttsXoUCQvgvV3/EczKj7xpB1seRJ+GIVxpp3qneANx5XSejTG4GOcpcOVRgP+Mfg==
-X-Received: by 2002:a17:90a:1d0e:b0:1cb:50ec:27f with SMTP id c14-20020a17090a1d0e00b001cb50ec027fmr12881829pjd.195.1650580668980;
-        Thu, 21 Apr 2022 15:37:48 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:15fa])
-        by smtp.gmail.com with ESMTPSA id l2-20020a056a0016c200b004f7e3181a41sm143768pfc.98.2022.04.21.15.37.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 15:37:48 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Thu, 21 Apr 2022 12:37:46 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Bui Quang Minh <minhquangbui99@gmail.com>
-Cc:     Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
-        cgroups@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+        with ESMTP id S1347687AbiDUWmO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 18:42:14 -0400
+Received: from mail-4316.protonmail.ch (mail-4316.protonmail.ch [185.70.43.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17D1848E65
+        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 15:39:23 -0700 (PDT)
+Date:   Thu, 21 Apr 2022 22:39:12 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
+        s=protonmail2; t=1650580761;
+        bh=Yhil5SnZy5w0YFI1CyB509cNQ0BZWHi5ErmFYmrsw9Q=;
+        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
+         References:Feedback-ID:From:To:Cc:Date:Subject:Reply-To:
+         Feedback-ID:Message-ID;
+        b=eamBUXUYBoTqnQ+ht9RBNFqzzwjqfosV6T5SX/5ajS52XHKblPybywY+xVmD8BoWK
+         SB6jrS7WDFnLJtaPZe6MTOFhaFJW0A13KCvxaWiPyizuWh+8fwO/aKq0UlhfMicqQe
+         T+Dc9namZOgCb0fDotip028nghFhQlEZxDHlLa7cseD6HgK2jye+UKUSF6iymJbGFy
+         x2wwl/qzfjdVcJ4LOMa5dNzcho5b3AhqWVwYrIbA8gLtGBPt0/8A3mRKyHVUfIrYG3
+         50hXg/UYe224tWuLi2sN5M9Frb//sGcwM2MtmaRlVpWzPez9DwZ7vI09bt1B/iasPt
+         3i9dmvbSxAoHA==
+To:     Alexei Starovoitov <ast@kernel.org>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
+        =?utf-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH v2] cgroup: Kill the parent controller when its last
- child is killed
-Message-ID: <YmHcuuhKYfjI8nXA@slm.duckdns.org>
-References: <20220404142535.145975-1-minhquangbui99@gmail.com>
- <Ykss1N/VYX7femqw@slm.duckdns.org>
- <20220405091158.GA13806@blackbody.suse.cz>
- <bdd4104d-390e-74c7-0de1-a275044831a5@gmail.com>
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Song Liu <songliubraving@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: Re: [PATCH v2 bpf 00/11] bpf: random unpopular userspace fixes (32 bit et al)
+Message-ID: <20220421223201.322686-1-alobakin@pm.me>
+In-Reply-To: <CAADnVQJJiBO5T3dvYaifhu3crmce7CH9b5ioc1u4=Y25SUxVRA@mail.gmail.com>
+References: <20220421003152.339542-1-alobakin@pm.me> <CAADnVQJJiBO5T3dvYaifhu3crmce7CH9b5ioc1u4=Y25SUxVRA@mail.gmail.com>
+Feedback-ID: 22809121:user:proton
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bdd4104d-390e-74c7-0de1-a275044831a5@gmail.com>
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 09:58:01PM +0700, Bui Quang Minh wrote:
-> @@ -5152,12 +5153,28 @@ static void css_release_work_fn(struct work_struct
-> *work)
->                 container_of(work, struct cgroup_subsys_state,
-> destroy_work);
->         struct cgroup_subsys *ss = css->ss;
->         struct cgroup *cgrp = css->cgroup;
-> +       struct cgroup *parent = cgroup_parent(cgrp);
-> 
->         mutex_lock(&cgroup_mutex);
-> 
->         css->flags |= CSS_RELEASED;
->         list_del_rcu(&css->sibling);
-> 
-> +       /*
-> +        * If parent doesn't have any children, start killing it.
-> +        * And don't kill the default root.
-> +        */
-> +       if (parent && list_empty(&parent->self.children) &&
-> +           parent->flags & CGRP_UMOUNT &&
-> +           parent != &cgrp_dfl_root.cgrp &&
-> +           !percpu_ref_is_dying(&parent->self.refcnt)) {
-> +#ifdef CONFIG_CGROUP_BPF
-> +               if (!percpu_ref_is_dying(&cgrp->bpf.refcnt))
-> +                       cgroup_bpf_offline(parent);
-> +#endif
-> +               percpu_ref_kill(&parent->self.refcnt);
-> +       }
-> +
->         if (ss) {
->                 /* css release path */
->                 if (!list_empty(&css->rstat_css_node)) {
-> 
-> The idea is to set a flag in the umount path, in the rmdir it will destroy
-> the css in case its direct parent is umounted, no recursive here. This is
-> just an incomplete example, we may need to reset that flag when remounting.
+From: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date: Wed, 20 Apr 2022 17:40:34 -0700
 
-I'm generally against adding complexities for this given that it's never
-gonna be actually reliable. If adding one liner flush_workqueue makes life
-easier in some cases, why not? But the root cause is something which can't
-be solved from messing with release / umount paths and something we decided
-against supporting.
+> On Wed, Apr 20, 2022 at 5:38 PM Alexander Lobakin <alobakin@pm.me> wrote:
+>
+> Again?
+>
+> -----BEGIN PGP MESSAGE-----
+> Version: ProtonMail
+>
+> wcFMA165ASBBe6s8AQ/8C9y4TqXgASA5xBT7UIf2GyTQRjKWcy/6kT1dkjkF
+> FldAOhehhgLYjLJzNAIkecOQfz/XNapW3GdrQDq11pq9Bzs1SJJekGXlHVIW
+>
+> Sorry I'm tossing the series out of patchwork.
 
-Thanks.
+Oh sorry, I was hoping upgrading Bridge would help >_<
 
--- 
-tejun
+Let me know if you're reading this particular message in your inbox
+finely. Toke guessed it precisely regarding the per-recipient lists
+-- Proton by default saves every address I've ever sent mails to to
+Contacts and then tries to fetch PGP public keys for each contact.
+Again, for some reason, for a couple addresses, including
+ast@kernel.org, it managed to fetch something, but that something
+was sorta broken. So at the end I've been having broken PGP for
+the address I've never manually set or even wanted PGP.
+If it's still messed, I'll contact support then. Sorry again for
+this.
+
+Thanks,
+Al
+
