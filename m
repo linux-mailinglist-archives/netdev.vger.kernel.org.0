@@ -2,113 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D674C50AAA3
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 23:18:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7D2550AADD
+	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 23:40:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1441887AbiDUVUc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 17:20:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49390 "EHLO
+        id S231443AbiDUVka (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 17:40:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1441876AbiDUVUb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 17:20:31 -0400
-Received: from mailgw.felk.cvut.cz (mailgw.felk.cvut.cz [147.32.82.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B74F4C436;
-        Thu, 21 Apr 2022 14:17:40 -0700 (PDT)
-Received: from mailgw.felk.cvut.cz (localhost.localdomain [127.0.0.1])
-        by mailgw.felk.cvut.cz (Proxmox) with ESMTP id E1E6330B2948;
-        Thu, 21 Apr 2022 23:17:08 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        cmp.felk.cvut.cz; h=cc:cc:content-transfer-encoding:content-type
-        :content-type:date:from:from:in-reply-to:message-id:mime-version
-        :references:reply-to:subject:subject:to:to; s=felkmail; bh=hbDk3
-        3ZxCTMt1n/ItJN8YwASodp90ZfV7RkeZbyKvBA=; b=JXaYXnh4S5p9PnmzC/iDG
-        8xXu0hfWRsG2RAVXouI0BQG0Vz17pBvgxnZaIeeIUfEaeEV7SJyI2+gPoD3ahI3V
-        VrWa35/is0O/avx9tK/SsB6bd9lHxjtaQSh7LwAlwVtfvAnQStUQegI2mg+V3tvN
-        X7ZoQCTXJXrPfennmi0ooN7FanynE0AYCT5V7wBDXPrICFqS+N4HGsIYV98X2G6g
-        yk75Qn8nIdBCVEpFnu09d2TCJXzeE20Y6pu7DJKbukxjImvUrqvktetlJnB0Kieb
-        ES7LXEBd/231Yhr41jETg4yfMlYJUB4GKWfmW9QTor9huptSu3n8ittWNToskIZe
-        w==
-Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
-        by mailgw.felk.cvut.cz (Proxmox) with ESMTPS id 309B630B2943;
-        Thu, 21 Apr 2022 23:17:08 +0200 (CEST)
-Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
-        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 23LLH7TQ026503;
-        Thu, 21 Apr 2022 23:17:07 +0200
-Received: (from pisa@localhost)
-        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 23LLH7gv026502;
-        Thu, 21 Apr 2022 23:17:07 +0200
-X-Authentication-Warning: haar.felk.cvut.cz: pisa set sender to pisa@cmp.felk.cvut.cz using -f
-From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Subject: Re: [PATCH] can: ctucanfd: Remove unused including <linux/version.h>
-Date:   Thu, 21 Apr 2022 23:17:07 +0200
-User-Agent: KMail/1.9.10
-Cc:     ondrej.ille@gmail.com, wg@grandegger.com, mkl@pengutronix.de,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
-References: <20220421202852.2693-1-jiapeng.chong@linux.alibaba.com>
-In-Reply-To: <20220421202852.2693-1-jiapeng.chong@linux.alibaba.com>
-X-KMail-QuotePrefix: > 
-MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <202204212317.07635.pisa@cmp.felk.cvut.cz>
-X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S1442130AbiDUVk3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 17:40:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76D464BFF7;
+        Thu, 21 Apr 2022 14:37:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 31931B82975;
+        Thu, 21 Apr 2022 21:37:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C3436C385A7;
+        Thu, 21 Apr 2022 21:37:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650577055;
+        bh=IFjzHuk5h9dCyJBtcXNPuz7l7hjRk25FR13nx9zL0HY=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=olBbHjiG98YExS7Yk9YGAqZ6Sdb+M6hGhGSExFNZou6mwGsj9WR7KDPr9VZ3r2DHx
+         frAK/uW/Xu46Tk2F/Yhk5iRlVCcwEiJOlL/hvbN5waE6Va3lXc4/aOLgWWNZeg2jlz
+         k/Iw2vX6CD6Z9uX5N03ux/ou1zEgB4If3wH4r9rjHcDcxZFGglUfrYcGRBofAyN2On
+         4lb+17nwVn7Jj96J+BLzYZHjFI1q7m99VbClqi5DcD2Gf5gh2TsnmyQVxje8rrdvbt
+         y0X8vxTH6WH6Lsy/g7jZ68KOcfPeXq0c3Jvi0N7cp0FxAPigA+9mqUJTvfU/iVCYrT
+         sL+xwnLD9A+vw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AF36AE85D90;
+        Thu, 21 Apr 2022 21:37:35 +0000 (UTC)
+Subject: Re: [GIT PULL] Networking for 5.18-rc4
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220421105218.18005-1-pabeni@redhat.com>
+References: <20220421105218.18005-1-pabeni@redhat.com>
+X-PR-Tracked-List-Id: <netdev.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220421105218.18005-1-pabeni@redhat.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.18-rc4
+X-PR-Tracked-Commit-Id: bc6de2878429e85c1f1afaa566f7b5abb2243eef
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 59f0c2447e2553b0918b4a9fd38763a5c0587d02
+Message-Id: <165057705570.12453.7526198717622777838.pr-tracker-bot@kernel.org>
+Date:   Thu, 21 Apr 2022 21:37:35 +0000
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks for checking
+The pull request you sent on Thu, 21 Apr 2022 12:52:18 +0200:
 
-On Thursday 21 of April 2022 22:28:52 Jiapeng Chong wrote:
-> Eliminate the follow versioncheck warning:
->
-> ./drivers/net/can/ctucanfd/ctucanfd_base.c: 34 linux/version.h not
-> needed.
->
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.18-rc4
 
-Acked-by: Pave Pisa <pisa@cmp.felk.cvut.cz>
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/59f0c2447e2553b0918b4a9fd38763a5c0587d02
 
-> ---
->  drivers/net/can/ctucanfd/ctucanfd_base.c | 1 -
->  1 file changed, 1 deletion(-)
->
-> diff --git a/drivers/net/can/ctucanfd/ctucanfd_base.c
-> b/drivers/net/can/ctucanfd/ctucanfd_base.c index 7a4550f60abb..be90136be442
-> 100644
-> --- a/drivers/net/can/ctucanfd/ctucanfd_base.c
-> +++ b/drivers/net/can/ctucanfd/ctucanfd_base.c
-> @@ -31,7 +31,6 @@
->  #include <linux/can/error.h>
->  #include <linux/can/led.h>
->  #include <linux/pm_runtime.h>
-> -#include <linux/version.h>
->
->  #include "ctucanfd.h"
->  #include "ctucanfd_kregs.h"
-
+Thank you!
 
 -- 
-Yours sincerely
-
-                Pavel Pisa
-    phone:      +420 603531357
-    e-mail:     pisa@cmp.felk.cvut.cz
-    Department of Control Engineering FEE CVUT
-    Karlovo namesti 13, 121 35, Prague 2
-    university: http://control.fel.cvut.cz/
-    personal:   http://cmp.felk.cvut.cz/~pisa
-    projects:   https://www.openhub.net/accounts/ppisa
-    CAN related:http://canbus.pages.fel.cvut.cz/
-    Open Technologies Research Education and Exchange Services
-    https://gitlab.fel.cvut.cz/otrees/org/-/wikis/home
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
