@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 78578509E14
-	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 12:55:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD1A6509E17
+	for <lists+netdev@lfdr.de>; Thu, 21 Apr 2022 12:56:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388606AbiDUK5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 06:57:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39938 "EHLO
+        id S1380390AbiDUK7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 06:59:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240175AbiDUK5G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 06:57:06 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B1812B18D;
-        Thu, 21 Apr 2022 03:54:17 -0700 (PDT)
+        with ESMTP id S231478AbiDUK7D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 06:59:03 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8512128983;
+        Thu, 21 Apr 2022 03:56:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650538457; x=1682074457;
+  t=1650538575; x=1682074575;
   h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=GnT4SrJqOLSZlKeeUebougUUm0THwO8n63ba7RH8Fhk=;
-  b=LsKONnW53fDCZOBDG9VvwUu1bvni+pPgm5rnE1eD+3LWNs7NQoRX8fpT
-   EkN4qkiV7UHrqIU8Py+hEMMeXwNAbDnjMa4XwlEEHjokKvLH3i9SMCQCY
-   5IokTgBexKtfZ8PafdhW9gMzZ83IBoAShtmgd0lWg6GXdUsUHfIOt9TF7
-   6yejlZ3lNGmbmf0WWVRQJyuHBnOWfTFndySPWnXZw/5bbMft6RXwTdQo1
-   /F3ZJEG5vDDqCeDbeBQbioxp1uxHh/IwbcLG8WvBLRNEtERqXwtoV9Sr8
-   rZCWC1ksREtXdhWvi6QILhd+B1n7aLBYvoSsqipKpyNx58GELlolw9tTu
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="251628398"
+   references:mime-version;
+  bh=zFIS0j4pLGZeSZGC4JxB1VOzAz8efnue2qPwuSgIIfg=;
+  b=LSA1n2YEVCRws91BHEa7r/aZa9HnWVwzBk7qjFwowfywXT1gaOMyShP0
+   +ZlUEqJYeh70D1kZ8kL72nyjfYPfPFgmbKflGEOeDdjrS2JV6gD3nkADb
+   lib1qCrSl5oi7iw5LcuRftwp+lVAdK7pDgmSWtSJ/hgqnhTOwu1eOWYjc
+   7csE8h+dE7AadJ/uJTNZ0xTtylxP5lvUcPtLH7qjvgqALzeRxCBhvvmsz
+   AXopfnfg1GACXai2lN2S4b1+YYwFcKo3zAlb1TkD6gkBLLNt13uXg1wDu
+   F2evJfNIy+dFGfoLPoIkNWiWtzHisDaK32CKk03ufnfz08qwtMmIpwveN
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="289428273"
 X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="251628398"
+   d="scan'208";a="289428273"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 03:54:16 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 03:56:14 -0700
 X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; 
-   d="scan'208";a="577160429"
+   d="scan'208";a="577162025"
 Received: from bpeddu-mobl.amr.corp.intel.com ([10.251.216.95])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 03:54:10 -0700
-Date:   Thu, 21 Apr 2022 13:54:08 +0300 (EEST)
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 03:56:07 -0700
+Date:   Thu, 21 Apr 2022 13:56:05 +0300 (EEST)
 From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>
 cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
@@ -50,16 +50,15 @@ cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
         moises.veleta@intel.com, pierre-louis.bossart@intel.com,
         muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
         sreehari.kancharla@intel.com, madhusmita.sahu@intel.com
-Subject: Re: [PATCH net-next v6 08/13] net: wwan: t7xx: Add data path
+Subject: Re: [PATCH net-next v6 09/13] net: wwan: t7xx: Add WWAN network
  interface
-In-Reply-To: <20220407223629.21487-9-ricardo.martinez@linux.intel.com>
-Message-ID: <8ae9719c-296-6b8a-5ac8-776afe1a0a2@linux.intel.com>
-References: <20220407223629.21487-1-ricardo.martinez@linux.intel.com> <20220407223629.21487-9-ricardo.martinez@linux.intel.com>
+In-Reply-To: <20220407223629.21487-10-ricardo.martinez@linux.intel.com>
+Message-ID: <bee4ff3c-d1f-6360-de50-c1d7cf5183c9@linux.intel.com>
+References: <20220407223629.21487-1-ricardo.martinez@linux.intel.com> <20220407223629.21487-10-ricardo.martinez@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; CHARSET=US-ASCII
-Content-ID: <7f973260-38d4-46f7-a25b-7eed10268ecf@linux.intel.com>
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+Content-Type: multipart/mixed; boundary="8323329-1695390184-1650538573=:1673"
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -68,31 +67,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323329-1695390184-1650538573=:1673
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+
 On Thu, 7 Apr 2022, Ricardo Martinez wrote:
 
 > From: Haijun Liu <haijun.liu@mediatek.com>
 > 
-> Data Path Modem AP Interface (DPMAIF) HIF layer provides methods
-> for initialization, ISR, control and event handling of TX/RX flows.
-> 
-> DPMAIF TX
-> Exposes the 'dmpaif_tx_send_skb' function which can be used by the
-> network device to transmit packets.
-> The uplink data management uses a Descriptor Ring Buffer (DRB).
-> First DRB entry is a message type that will be followed by 1 or more
-> normal DRB entries. Message type DRB will hold the skb information
-> and each normal DRB entry holds a pointer to the skb payload.
-> 
-> DPMAIF RX
-> The downlink buffer management uses Buffer Address Table (BAT) and
-> Packet Information Table (PIT) rings.
-> The BAT ring holds the address of skb data buffer for the HW to use,
-> while the PIT contains metadata about a whole network packet including
-> a reference to the BAT entry holding the data buffer address.
-> The driver reads the PIT and BAT entries written by the modem, when
-> reaching a threshold, the driver will reload the PIT and BAT rings.
+> Creates the Cross Core Modem Network Interface (CCMNI) which implements
+> the wwan_ops for registration with the WWAN framework, CCMNI also
+> implements the net_device_ops functions used by the network device.
+> Network device operations include open, close, start transmission, TX
+> timeout and change MTU.
 > 
 > Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
+> Co-developed-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
 > Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
 > Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
 > Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
@@ -100,48 +93,9 @@ On Thu, 7 Apr 2022, Ricardo Martinez wrote:
 > >From a WWAN framework perspective:
 > Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
 
-> +       if (txq->tx_skb_head.qlen >= txq->tx_list_max_len)
-> +               goto report_full_state;
-> +
-> +       skb_cb = T7XX_SKB_CB(skb);
-> +       skb_cb->txq_number = txq_number;
-> +       skb_queue_tail(&txq->tx_skb_head, skb);
-> +       wake_up(&dpmaif_ctrl->tx_wq);
-> +       return 0;
-> +
-> +report_full_state:
-> +       callbacks = dpmaif_ctrl->callbacks;
-> +       callbacks->state_notify(dpmaif_ctrl->t7xx_dev, DMPAIF_TXQ_STATE_FULL, txq_number>
-> +       return -EBUSY;
-> +}
-
-Should this actually report full earlier so that the queue can be stopped 
-before NETDEV_TX_BUSY has to be returned (by the callers in 09/13)?
-(see Documentation/networking/driver.rst)
-
-> +		/* Wait for active Tx to be doneg */
-
-doneg -> done
-
-> +struct dpmaif_drb {
-> +	__le32 header;
-> +	union {
-> +		struct {
-> +			__le32 data_addr_l;
-> +			__le32 data_addr_h;
-> +			__le32 reserved;
-> +		} pd;
-> +		struct {
-> +			__le32 msg_hdr;
-> +			__le32 reserved1;
-> +			__le32 reserved2;
-> +		} msg;
-> +	};
-> +};
-
-"reserved" and "reserved2" could be placed outside of the union
-as they have the same offset.
-
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
 -- 
  i.
+
+--8323329-1695390184-1650538573=:1673--
