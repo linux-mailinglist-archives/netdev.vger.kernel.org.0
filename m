@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D02850B4D0
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 12:16:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C59EE50B4CE
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 12:16:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446469AbiDVKSn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Apr 2022 06:18:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52394 "EHLO
+        id S245455AbiDVKTA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Apr 2022 06:19:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446464AbiDVKSe (ORCPT
+        with ESMTP id S1446470AbiDVKSe (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 06:18:34 -0400
 Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70049.outbound.protection.outlook.com [40.107.7.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AB06329A9
-        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 03:15:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 070DD35AB6
+        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 03:15:33 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SNm4lNRgvp2GEChB0yvqAh5/4KZ7m3Xemc8q+sa0bisCQOzFa8uy13ahrZV3KQb74w7hfKIiS2PoqlRYmeZQSK5wWX3FdmkmtiWuOlFIcnkU+rDbmVK0CBMfay+s1hrn8nRsvL1RQnE2HOdEwKyhWHMIz7QPUdTQu822qPOzQ2/75aCbDQ6mlVqi2II058z6W5ZB0hXQb4h5fHSDQpf4NAqrjLZG9jvtOoCklVN4TA0VG7PH2YVpGHyTXd6KSOMDAOuTTjOvjNODZh4aT+Fjm792pzHhaN4wn9uhylH4zsVOsqkwCJVDfAd/kudLzhViWXuRx/DNgqD4RLs5cEH6vQ==
+ b=GGL6ZYv4QRTnwFChhoZo2wf0As2tcdfCH8d2P+zZeHcJNUwMIq+tSjquiIG7tW7xGLkMwoavA2TSW7W0rFMR7b2VegHSiMEoLspI/djzrYYDouHCfQV+IgdbEJ4fWlG4NZislJybCM8vDG7VCQ6sjEh1LNuSn+rJ8TJt4zUvuN19kuteyMX1mtRO+b3e5AUCGGmWfS/diVsOCJxyE/qPVyel1VrWK4Rpwzn+bdq5NaZiqc18F7mclR8NoKmjgJtEH58mU3mdGk8DhrwmzNsqjVZYuTNfjC3LaXBHa2keROsuTWFL3jMbQvtXHMyaZbaeOIu+TtQ4RxWvPkPOj3yIkQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rglzcloAro3lBMip8aZQ6Ic+gAjm48vqecjyiEHeSnw=;
- b=YMxn2vKKScHm1HPt2DqLzXZ9ocyGZrwABmyiP08vY93++MMxeoi34tUQlYYv8oicmBd39mg1STU5edxkiKUXcK08NudIQe4PSgdRxYP7+aFRYSI3rBVMXc8XeXXo41Rk48ogh4VtZVruEDP1pJNe/foFXhU1+1vZ2QzY7JRJL95WINCI4cPaABseIRoqQy6sTfXLa4VcMy3BKXujiUco904QrgH8Lk0ih0NNRpD1G0KKdjubtrSB+MJq8zTR7rQylRpEGlrkIIeZ+ZxLjJPJy4JPADCaa9HduAE4CZR8pfmO4hNU3B+2NQztrxIH/Z4R0SxRiu4HIv+qxHC2yLNARQ==
+ bh=juwRL/b4qn8r3Plx4wvLAOCeAgppCd42xd12YwekAzo=;
+ b=gV+FtV1VJpRg9J9Zp8ZNWBZ+CaN2U8osWos74yw43kKJEZ/yYhTKEY75ZgoAgb8j5BuJDRGH32xKWfNZcfEHOgkOEk7kl5rE/53WE0yavXbSlvIbeAkGbMM7nB50KVSrXez2eYESnEmzLAogDvNbPqjJo7m6VnjFpGVAoZKUGfmhZDskM+y5dqrChricYh276SRw0r5707oddydIaCpp/0qKLrKbgQtJgRGqQrE5bye3iPd7Lug6nkolKiW+C9MkKpEs9zO6rsbQVvZz0z18tdgDxC6nWLuh94rzEx85wUIekQKxW13zugRanWXbMPlTFpRl22woYANEw/cQgp/hdg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rglzcloAro3lBMip8aZQ6Ic+gAjm48vqecjyiEHeSnw=;
- b=br6+jrnQbelSWXXO09OvoULJh6Vdpj9saxf7Qu55JxaW/V6aPoGXNlyFt7D8Gi098HpIrPeIU+qnRmE2Fum21G9YuWnnzbBfZi4S/SWRCgpA5ZqlvZDliC8FuZ6kJtDQbZsJYvQ/gqUOUU2WgzpNzG1QWcyR7S9G3cUnDCd9SYE=
+ bh=juwRL/b4qn8r3Plx4wvLAOCeAgppCd42xd12YwekAzo=;
+ b=mmmKQ4dTNSDsw+tqltY8IHtBwbmx25qyiu5a7anVxW03vfDxC+AxqUbp/Qiw5MYcCrTM4rmu6Qb3guMNiXUZcPwz86romEdX5SHbPjf/11gC7HEI06Ol49ZlqTAp6MF1ayJG48B8QE4LeSMAz/DeYkhCQDCxHHHZI+JWTA0CNFA=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR0402MB3856.eurprd04.prod.outlook.com (2603:10a6:803:21::24) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Fri, 22 Apr
- 2022 10:15:26 +0000
+ 2022 10:15:27 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::8ed:49e7:d2e7:c55e]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::8ed:49e7:d2e7:c55e%3]) with mapi id 15.20.5164.025; Fri, 22 Apr 2022
- 10:15:26 +0000
+ 10:15:27 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -61,9 +61,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         DENG Qingfang <dqfext@gmail.com>,
         Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH net-next 7/8] selftests: forwarding: add a test for local_termination.sh
-Date:   Fri, 22 Apr 2022 13:15:03 +0300
-Message-Id: <20220422101504.3729309-8-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 8/8] selftests: drivers: dsa: add a subset of forwarding selftests
+Date:   Fri, 22 Apr 2022 13:15:04 +0300
+Message-Id: <20220422101504.3729309-9-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220422101504.3729309-1-vladimir.oltean@nxp.com>
 References: <20220422101504.3729309-1-vladimir.oltean@nxp.com>
@@ -74,55 +74,55 @@ X-ClientProxiedBy: VI1P195CA0057.EURP195.PROD.OUTLOOK.COM
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5aa93866-58b9-4a6f-4f20-08da244904ba
+X-MS-Office365-Filtering-Correlation-Id: a8ff6283-b9a7-4a76-e0e1-08da24490571
 X-MS-TrafficTypeDiagnostic: VI1PR0402MB3856:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB385657F84AE7370BC43FF708E0F79@VI1PR0402MB3856.eurprd04.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB3856F3A49BD83B872241A3FFE0F79@VI1PR0402MB3856.eurprd04.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: DzRpZntMCm1fdMK6zqDtdOrI27hdqhlBlHZtOwq6zYEdXwYa7cw5HnYU1bkaB23OyrYt667bExWLTP6/qNPt5F84zunpUr0PGH1Za2xDHRB/AtxGYX0xJ35gJ4KwmDvKXjyIQew+dIDeLAxU3SmYENxO7gkrs7+z1pr2ui/yAXUApHigqZaR7PVDAMsD6bWbDG39JQ5m7c0ds37kAU+Fd2eHnxf71nw8VUNv/ly9GLF6nWb8LM6pVIDilZUNN5ssKdP5EWEakFM3GgyfMd0q7/gmW9iEvFzGbodjUO8JcpVt5AjIDm+QgrU3yFQBXULdGd1bq4quKhjCrbJY1YUuYJJ1a+FA3h+f7eo9lETniF+07o8suhJRGV7OE+FEDE1e2GVz29560dxnn63IkDJru7+jFyWv2udjTEvQAx86rCx/0in+/h8iKW7XKaHpX7r8GN6Ngxrkfd1XCTO3wLoWtek40dXKS1tR3Cp4sh2zLh/79hfoGsZzmfdiAIeNPLNY+Op+YPSo0TTrz9Y5mF4lWn9KSz0sdcP/2qO7RXTvtlTfoNNO7UPe+xLL2KmOXg72bmiGAdscv4wgToxK1Y+o+/6rcWOZb6XMCCzF7G/T3YkwZczwcsmWhhFWvpBcX1ogjknxiYhG4md3oavZcCLN6JOBXKeI0Fa06z6cKbjQ6yd62MYCWqGC7Yg1rselIPJwbcwDr8co6+X9ZTUlOUeueA==
+X-Microsoft-Antispam-Message-Info: irSu3dZAINRsPUZX1kMo0lF/3lIewb1DZXI77OcCSupmNQgBRXeJLAWPUdZvwPCC+AIGyrcZCAk2yYdCrDqR2eqyC/OPrkNHx9kTavlxfc21O3gNg12Of8AfiDR1qpHWUwmoHbbv6brWHkKQnUQAJSLaALZtFjHGIeIPUrAfB5Ffn6d18wZPh++iNUHABkYwMfme5OFDDh50KpTcEqhyKlPzl6ds+5axCEzk0doPLRr9zE9vVHulvZ0E3QBfUXJA26a82zznQfusnsPkW/8yK2PXOEZLiIU/WToldrp5LPgh+V6faEWJqTIpJMYHFOjwkM7T01oNCr/ti7UWISW+H4pH9rIxNaTzVPgeVX2uDPSm5+qrh7eWGxZozfeuRINaH0aTxo5rFu8iSxNTC70wBzbhx+Udlqk07ycgZ38qvug+Ck/1bWDwrH4Yg43U8lXtCqDQx5P5YlAeDMZT2Etc4D950p1e6YDxInaJFWvPlMEE/iPTSQbLEVwFlYhUz1P+GZtuER3wjaqFTHboT0jb1xS2yWxMrdcCXF/Dv74gwBC+utd9h8qUx8W1++xZW+OK4DC26S94u0VBkNMOmoRkknwkMSkBSXLN/OAFRxdMVNawDO+8V8Id4C8DF9vREfuWDBtlxwzBwmovQN3yE2/i2iS/MIWdCjCpe91N+c0dlNQ1sqq6MYlb2w3Uv0lMf08OD1Q8PPyqV84uHYfuTmVIgA==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6506007)(5660300002)(36756003)(86362001)(52116002)(8936002)(2616005)(6666004)(6486002)(508600001)(1076003)(186003)(44832011)(26005)(38100700002)(6512007)(83380400001)(2906002)(316002)(38350700002)(6916009)(66556008)(66476007)(54906003)(66946007)(7416002)(8676002)(4326008);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?rrbmZfI/SrdjeTSpkC4brIMux3LzHjb7AnDF8HGI4YB0GsxCOvkqXealZ6Gf?=
- =?us-ascii?Q?S77tv0oxDKwiyK3x2bKIf7Cg7nY3aAtnyOU+OBvVMvTiP1Wa73Wv9K8re51T?=
- =?us-ascii?Q?aUDCQghzz+EYGkQJ6SW/3OvIwzchgJfQtoouBywI0StfxXLnBDgla4h3dnNY?=
- =?us-ascii?Q?yaix8R9ALYD19JpQ0AzMuauCaCM/jzjUW8RrCqEltYFakTXWns/kJ6i1ARjL?=
- =?us-ascii?Q?8+eFds2LPaAlzy3mxjgTSgq7o6xIFikjOgqaSXVlxYtMkJoVGXx6p69e8Jck?=
- =?us-ascii?Q?BPV9oEsXL9duDmz6rnaxg4swgczNTx/RmLE2lLoh5gFJptfp2XxHPYI5zVDa?=
- =?us-ascii?Q?g+VNNFa1+TyBialTXxk4YS0trfngpYB+2peRCLDUwZ7A1JUQr0p70H3sCOcW?=
- =?us-ascii?Q?yTSIL9rg20RgkV0hzLMhJSDU+fFis5WkUhuDyDahJq2ls9mSdnG0qLBCWfRj?=
- =?us-ascii?Q?kjweze6d5L/SOyQiv6wfg9HejEZko/L5FnlMe95+pNN4RK2nRAB1uE3MuZQ8?=
- =?us-ascii?Q?9s0IoCJ7FYgdMA4WSDV+3M2dPmX4Eua8DBGr008rtCH4qfz35ITe/sKfS7z4?=
- =?us-ascii?Q?XHq0fOY7XSy5B1pIFwnHvjn+VL6yOvlgtn4hYdCuPYsnwigV51A973oL0XaU?=
- =?us-ascii?Q?pfnMmILYdpMsrINU++YAOalAX0qfFjHAMB8xRfWixjuT0NBdUC/3z0Vv00Tl?=
- =?us-ascii?Q?pJIwB4S882tsf+WNKIVKJFkrF+BYYUFABi6q7RHxyrl4UGr5Fd+UPhXVme3+?=
- =?us-ascii?Q?j/fllNDme4O+fdlA03iIpes+3LSofX2HwpGVB/+PwhL05gY2ZsCdmpNozP/R?=
- =?us-ascii?Q?YPMEcTlfg8L/JxZwp/CBS9irxvfn52W/52pKLEYmRDW53g8LhO0IxeadojfO?=
- =?us-ascii?Q?+j+0zAD0BFPyGqfmRlPcDiE1xhfeBnhcuYcuxltYKIhi9w/jJ2F5H8RmkciL?=
- =?us-ascii?Q?fUwTG5cEchOU1t6Y5A7pNAbCou6FKtpzHqo2n3c1Yk/XiraPQBhl4H7xr2m8?=
- =?us-ascii?Q?caoPir7KnD4Qf7kYBL+xvNd/5LBjnbqAqiHbl0E+LCNOlCT3rbAEDVMqslrc?=
- =?us-ascii?Q?Lzd59wUuj7qnoyTnTGXHTIN16Xf2cpxayEc+XXF+HLTY5svHZrIEelKI+wo0?=
- =?us-ascii?Q?r5H0kISb+EIovZH/dpz0qpJQ1DcXkNv9G2fd6GGYZXMQyTwEw76fr1tRum7v?=
- =?us-ascii?Q?qlLqrf3XrXGGFhD/7VaVQa/77Lli33Buh8YCzNBW40SKhhJhSvfcymW+QUNz?=
- =?us-ascii?Q?Qe1PHJvMim/zvv6tib4ZRGeW3SpjaY0mg4oabmmID9oGzP/P7f4RqAYknAbI?=
- =?us-ascii?Q?VSsMA0ENRG+fWsyWUaJF1rCzimMcm2WIAhCoG395VHbuiLwEPk/0hJIDKSzs?=
- =?us-ascii?Q?YYukZRjtCdNtrkxfx3D4cr3PJUIAh/1gCa7v4amfGSPGkNqTbADJcz1Gizsz?=
- =?us-ascii?Q?POZ5vCIe2uoqACQhfCSvubfA18FJDBaUmkb76BRzBQHkrJBdXc7uJDZEJhmd?=
- =?us-ascii?Q?r3hILHVm7a2qrb5MIFSsZ+XEg3Cii5dafqHZgdtiZVdgf3U0XBJNBorzopKb?=
- =?us-ascii?Q?OgPyFjX2o3+fuJlQ4aSyjEdUquroKaS+68gOL/okGYu4flfvGJF9Q64xA/ZW?=
- =?us-ascii?Q?l42UfNhbIFmVXsrU8XO3tq1FZt1sWxsiuHB6QWnegV76tcDiKlZTje8eP5sK?=
- =?us-ascii?Q?Ri0Xx0DBbHEECwb7icTu7hAiYHMxenvsiuWAhNXojEc9usFCB2CLnB5bu7FJ?=
- =?us-ascii?Q?W1toKfw/efAi+UpAMc27qjABHj48WQA=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?IWj4o/SwV+lDxT6YmFm9m/3L0GFdrTongJYmAvW2D4qi8YHdj00DSY9ekeTZ?=
+ =?us-ascii?Q?ZbdpgEV3E4LY5tI8twnpkv1DGYnkeeMQKhkQVPpVo0c3scJqsgoviJ8H5on8?=
+ =?us-ascii?Q?7tb4CcXKFRpLoYafLbgiXTYUiGlk9/VTk3TsdQgiGr6YXRU+fjpJ2XkjHFlQ?=
+ =?us-ascii?Q?GnfjbusVcWZoCGjwnrhpiiMJt2mp4YVx1TKDQisaxBwlyaUemD67VXKImATF?=
+ =?us-ascii?Q?7WFQlzhtcDMdYRlMMbpdJZQ3QsOiItThNZNTEFsb9/eKdoKjua54wTSrDHgP?=
+ =?us-ascii?Q?Mw+5+ZF9eVq4bRP5+NuzEEFkOaGI5VXQZu2Lj4lutHf6vMmDZbVNc2zzWaCq?=
+ =?us-ascii?Q?ybkxg345Ip5Xwrqsr9yIyN7HjqBf8HoQrY5Jnguoz/XDCIZV940D77QCisAU?=
+ =?us-ascii?Q?4FPPcGkU28BeydMD3NEatD77gU2VffGOM3St4pM5e8y9AXLTw1ZEVFo4HbSA?=
+ =?us-ascii?Q?UapW1Zh8IkoLL5Bf6iCXQLBw2EFFEUlAsv1ZecucxWZQSAtIGU2T+KOJDIPz?=
+ =?us-ascii?Q?fXv3gc4HlRa/PabM84GWn+9jaHsREDJkjNcuOPgkJoMoJqyLQiyWnnufrtwu?=
+ =?us-ascii?Q?/d2vwvWc/VA/+CxVAazUGOTiXrMQZJ842sXTTeTlZ/WRSVq+jEyoc6Xb1xVs?=
+ =?us-ascii?Q?vRiaTEdzjgcdH0MEMR37Z2LO5G8gY7o2BhqIKihMSPQP/7K6AxIwb30yFzAQ?=
+ =?us-ascii?Q?y433GSg3N5PbYFn2TVZUsUhrVNShXhlD43iEm84v/bTNd1fiQ829CLU1G+EN?=
+ =?us-ascii?Q?/AjVvTjzgDjZuA6OqdWxxQFpN+D+Tj/UWpvE9NnZuuD7QVUF0Co3ma1vp2XZ?=
+ =?us-ascii?Q?xnG0+V6RaEeUKucbBeoknHZS8dbcNs9gVzL7gV0iblLQlq3MDlSIEnNpR0iD?=
+ =?us-ascii?Q?LEq79hN314Qys4tqpUjT0/7Y88ohYpsO1YNTQ5nebvDL2jzmSewUaWzm2pmL?=
+ =?us-ascii?Q?lg8Pur22UGoWhgF/EOKod0Wx15moZdBpsMEpFIe4hDpaWqyzqgz+CZVJvGzU?=
+ =?us-ascii?Q?rHJrLKARy979Ulu5Aeam56SA1cfssHVLCOMe4kdKG3EP5uOs8DVJNdouA1RE?=
+ =?us-ascii?Q?5GROB3KFbujtySTC1M8nuc084IEBKGFEpsBTRdUfN1vyWQodgEo5cv315RQq?=
+ =?us-ascii?Q?e9jJfMAlrvduRwFKN9i6GYWhb0MJgYit/YJbugKgGPoic2lQWb2SQtBc+yyq?=
+ =?us-ascii?Q?aks0Keqi3leviwgu54bGIKagA3Z/e4lNPkv4GjqylC4ftPwKuV7UGKkzToWg?=
+ =?us-ascii?Q?KiGCVknjU4MV83rt5S5FnGDsA7Xw4j3bHOJWbA5LAj2g85xxL+gOqR7l6XTF?=
+ =?us-ascii?Q?6biGobqFg1Hteg6WNpoJQTCiKiC2sZo55j9sOqjiHESWr3Nabw6T8OgOZAEV?=
+ =?us-ascii?Q?xewOBytGTpIwoQrb2TOpkw6UypdIlRMT1V6+sx3aV99hp9U3KotFRpULt6iC?=
+ =?us-ascii?Q?JDsym4I9x/CWoK1113kVmRkcgtE7tYvZaLxRVo+4Qny71shrwBg91npmC9gu?=
+ =?us-ascii?Q?cmQwJACGnWUKKVZHjwtEPcz9oW12lYvtBafGHW/ax95f5NuFqQZECfhHYETf?=
+ =?us-ascii?Q?TUt8my9HqE+YLKo1CPQ8pgUKUZJjhG4TD2d1KIRHt0Ap14JwslEuj8g/DhvQ?=
+ =?us-ascii?Q?PWavh7/yAZw9PVOWw/5kkz5bvuQ63BBWOPJg0yBi2FKVTQZnuJoUWQxCMQjo?=
+ =?us-ascii?Q?05Vr+Qkf1mdegO6RYiMp8vegIF6fmQDBzHypq8YK4fuefFE0/dkemu4p5G8F?=
+ =?us-ascii?Q?zA5RIqDhOEflgdH5ahJLOUQT18ZcXFQ=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5aa93866-58b9-4a6f-4f20-08da244904ba
+X-MS-Exchange-CrossTenant-Network-Message-Id: a8ff6283-b9a7-4a76-e0e1-08da24490571
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2022 10:15:26.1252
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2022 10:15:27.2189
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: y4BSB82PGjTNPoSubT3ttcismbwDYsrtEzaReQVqfUWwQwd6/e6Q/1lbJjADT0DeT59wFZH47XHZ8qf3KG4vdQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1zpIPirDrVEf6GvXsyJgbO1t+1VALMxnwf4i6PBjMG0B32drjo2Ie9VJhGFo18g0pvPvSRG5cgDqYM2Z+Dz4nA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3856
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -134,352 +134,119 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This tests the capability of switch ports to filter out undesired
-traffic. Different drivers are expected to have different capabilities
-here (so some may fail and some may pass), yet the test still has some
-value, for example to check for regressions.
+This adds an initial subset of forwarding selftests which I considered
+to be relevant for DSA drivers, along with a forwarding.config that
+makes it easier to run them (disables veth pair creation, makes sure MAC
+addresses are unique and stable).
 
-There are 2 kinds of failures, one is when a packet which should have
-been accepted isn't (and that should be fixed), and the other "failure"
-(as reported by the test) is when a packet could have been filtered out
-(for being unnecessary) yet it was received.
-
-The bridge driver fares particularly badly at this test:
-
-TEST: br0: Unicast IPv4 to primary MAC address                      [ OK ]
-TEST: br0: Unicast IPv4 to macvlan MAC address                      [ OK ]
-TEST: br0: Unicast IPv4 to unknown MAC address                      [FAIL]
-        reception succeeded, but should have failed
-TEST: br0: Unicast IPv4 to unknown MAC address, promisc             [ OK ]
-TEST: br0: Unicast IPv4 to unknown MAC address, allmulti            [FAIL]
-        reception succeeded, but should have failed
-TEST: br0: Multicast IPv4 to joined group                           [ OK ]
-TEST: br0: Multicast IPv4 to unknown group                          [FAIL]
-        reception succeeded, but should have failed
-TEST: br0: Multicast IPv4 to unknown group, promisc                 [ OK ]
-TEST: br0: Multicast IPv4 to unknown group, allmulti                [ OK ]
-TEST: br0: Multicast IPv6 to joined group                           [ OK ]
-TEST: br0: Multicast IPv6 to unknown group                          [FAIL]
-        reception succeeded, but should have failed
-TEST: br0: Multicast IPv6 to unknown group, promisc                 [ OK ]
-TEST: br0: Multicast IPv6 to unknown group, allmulti                [ OK ]
-
-mainly because it does not implement IFF_UNICAST_FLT. Yet I still think
-having the test (with the failures) is useful in case somebody wants to
-tackle that problem in the future, to make an easy before-and-after
-comparison.
+The intention is to request driver writers to run these selftests during
+review and make sure that the tests pass, or at least that the problems
+are known.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- .../net/forwarding/local_termination.sh       | 299 ++++++++++++++++++
- 1 file changed, 299 insertions(+)
- create mode 100755 tools/testing/selftests/net/forwarding/local_termination.sh
+ tools/testing/selftests/drivers/net/dsa/bridge_locked_port.sh  | 1 +
+ tools/testing/selftests/drivers/net/dsa/bridge_mdb.sh          | 1 +
+ tools/testing/selftests/drivers/net/dsa/bridge_mld.sh          | 1 +
+ tools/testing/selftests/drivers/net/dsa/bridge_vlan_aware.sh   | 1 +
+ tools/testing/selftests/drivers/net/dsa/bridge_vlan_mcast.sh   | 1 +
+ tools/testing/selftests/drivers/net/dsa/bridge_vlan_unaware.sh | 1 +
+ tools/testing/selftests/drivers/net/dsa/forwarding.config      | 2 ++
+ tools/testing/selftests/drivers/net/dsa/lib.sh                 | 1 +
+ tools/testing/selftests/drivers/net/dsa/local_termination.sh   | 1 +
+ tools/testing/selftests/drivers/net/dsa/no_forwarding.sh       | 1 +
+ 10 files changed, 11 insertions(+)
+ create mode 120000 tools/testing/selftests/drivers/net/dsa/bridge_locked_port.sh
+ create mode 120000 tools/testing/selftests/drivers/net/dsa/bridge_mdb.sh
+ create mode 120000 tools/testing/selftests/drivers/net/dsa/bridge_mld.sh
+ create mode 120000 tools/testing/selftests/drivers/net/dsa/bridge_vlan_aware.sh
+ create mode 120000 tools/testing/selftests/drivers/net/dsa/bridge_vlan_mcast.sh
+ create mode 120000 tools/testing/selftests/drivers/net/dsa/bridge_vlan_unaware.sh
+ create mode 100644 tools/testing/selftests/drivers/net/dsa/forwarding.config
+ create mode 120000 tools/testing/selftests/drivers/net/dsa/lib.sh
+ create mode 120000 tools/testing/selftests/drivers/net/dsa/local_termination.sh
+ create mode 120000 tools/testing/selftests/drivers/net/dsa/no_forwarding.sh
 
-diff --git a/tools/testing/selftests/net/forwarding/local_termination.sh b/tools/testing/selftests/net/forwarding/local_termination.sh
-new file mode 100755
-index 000000000000..c5b0cbc85b3e
+diff --git a/tools/testing/selftests/drivers/net/dsa/bridge_locked_port.sh b/tools/testing/selftests/drivers/net/dsa/bridge_locked_port.sh
+new file mode 120000
+index 000000000000..f5eb940c4c7c
 --- /dev/null
-+++ b/tools/testing/selftests/net/forwarding/local_termination.sh
-@@ -0,0 +1,299 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+
-+ALL_TESTS="standalone bridge"
-+NUM_NETIFS=2
-+PING_COUNT=1
-+REQUIRE_MTOOLS=yes
-+REQUIRE_MZ=no
-+
-+source lib.sh
-+
-+H1_IPV4="192.0.2.1"
-+H2_IPV4="192.0.2.2"
-+H1_IPV6="2001:db8:1::1"
-+H2_IPV6="2001:db8:1::2"
-+
-+BRIDGE_ADDR="00:00:de:ad:be:ee"
-+MACVLAN_ADDR="00:00:de:ad:be:ef"
-+UNKNOWN_UC_ADDR1="de:ad:be:ef:ee:03"
-+UNKNOWN_UC_ADDR2="de:ad:be:ef:ee:04"
-+UNKNOWN_UC_ADDR3="de:ad:be:ef:ee:05"
-+JOINED_IPV4_MC_ADDR="225.1.2.3"
-+UNKNOWN_IPV4_MC_ADDR1="225.1.2.4"
-+UNKNOWN_IPV4_MC_ADDR2="225.1.2.5"
-+UNKNOWN_IPV4_MC_ADDR3="225.1.2.6"
-+JOINED_IPV6_MC_ADDR="ff2e::0102:0304"
-+UNKNOWN_IPV6_MC_ADDR1="ff2e::0102:0305"
-+UNKNOWN_IPV6_MC_ADDR2="ff2e::0102:0306"
-+UNKNOWN_IPV6_MC_ADDR3="ff2e::0102:0307"
-+
-+JOINED_MACV4_MC_ADDR="01:00:5e:01:02:03"
-+UNKNOWN_MACV4_MC_ADDR1="01:00:5e:01:02:04"
-+UNKNOWN_MACV4_MC_ADDR2="01:00:5e:01:02:05"
-+UNKNOWN_MACV4_MC_ADDR3="01:00:5e:01:02:06"
-+JOINED_MACV6_MC_ADDR="33:33:01:02:03:04"
-+UNKNOWN_MACV6_MC_ADDR1="33:33:01:02:03:05"
-+UNKNOWN_MACV6_MC_ADDR2="33:33:01:02:03:06"
-+UNKNOWN_MACV6_MC_ADDR3="33:33:01:02:03:07"
-+
-+NON_IP_MC="01:02:03:04:05:06"
-+NON_IP_PKT="00:04 48:45:4c:4f"
-+BC="ff:ff:ff:ff:ff:ff"
-+
-+# Disable promisc to ensure we don't receive unknown MAC DA packets
-+export TCPDUMP_EXTRA_FLAGS="-pl"
-+
-+h1=${NETIFS[p1]}
-+h2=${NETIFS[p2]}
-+
-+send_non_ip()
-+{
-+	local if_name=$1
-+	local smac=$2
-+	local dmac=$3
-+
-+	$MZ -q $if_name "$dmac $smac $NON_IP_PKT"
-+}
-+
-+send_uc_ipv4()
-+{
-+	local if_name=$1
-+	local dmac=$2
-+
-+	ip neigh add $H2_IPV4 lladdr $dmac dev $if_name
-+	ping_do $if_name $H2_IPV4
-+	ip neigh del $H2_IPV4 dev $if_name
-+}
-+
-+check_rcv()
-+{
-+	local if_name=$1
-+	local type=$2
-+	local pattern=$3
-+	local should_receive=$4
-+	local should_fail=
-+
-+	[ $should_receive = true ] && should_fail=0 || should_fail=1
-+	RET=0
-+
-+	tcpdump_show $if_name | grep -q "$pattern"
-+
-+	check_err_fail "$should_fail" "$?" "reception"
-+
-+	log_test "$if_name: $type"
-+}
-+
-+mc_route_prepare()
-+{
-+	local if_name=$1
-+	local vrf_name=$(master_name_get $if_name)
-+
-+	ip route add 225.100.1.0/24 dev $if_name vrf $vrf_name
-+	ip -6 route add ff2e::/64 dev $if_name vrf $vrf_name
-+}
-+
-+mc_route_destroy()
-+{
-+	local if_name=$1
-+	local vrf_name=$(master_name_get $if_name)
-+
-+	ip route del 225.100.1.0/24 dev $if_name vrf $vrf_name
-+	ip -6 route del ff2e::/64 dev $if_name vrf $vrf_name
-+}
-+
-+run_test()
-+{
-+	local rcv_if_name=$1
-+	local smac=$(mac_get $h1)
-+	local rcv_dmac=$(mac_get $rcv_if_name)
-+
-+	tcpdump_start $rcv_if_name
-+
-+	mc_route_prepare $h1
-+	mc_route_prepare $rcv_if_name
-+
-+	send_uc_ipv4 $h1 $rcv_dmac
-+	send_uc_ipv4 $h1 $MACVLAN_ADDR
-+	send_uc_ipv4 $h1 $UNKNOWN_UC_ADDR1
-+
-+	ip link set dev $rcv_if_name promisc on
-+	send_uc_ipv4 $h1 $UNKNOWN_UC_ADDR2
-+	mc_send $h1 $UNKNOWN_IPV4_MC_ADDR2
-+	mc_send $h1 $UNKNOWN_IPV6_MC_ADDR2
-+	ip link set dev $rcv_if_name promisc off
-+
-+	mc_join $rcv_if_name $JOINED_IPV4_MC_ADDR
-+	mc_send $h1 $JOINED_IPV4_MC_ADDR
-+	mc_leave
-+
-+	mc_join $rcv_if_name $JOINED_IPV6_MC_ADDR
-+	mc_send $h1 $JOINED_IPV6_MC_ADDR
-+	mc_leave
-+
-+	mc_send $h1 $UNKNOWN_IPV4_MC_ADDR1
-+	mc_send $h1 $UNKNOWN_IPV6_MC_ADDR1
-+
-+	ip link set dev $rcv_if_name allmulticast on
-+	send_uc_ipv4 $h1 $UNKNOWN_UC_ADDR3
-+	mc_send $h1 $UNKNOWN_IPV4_MC_ADDR3
-+	mc_send $h1 $UNKNOWN_IPV6_MC_ADDR3
-+	ip link set dev $rcv_if_name allmulticast off
-+
-+	mc_route_destroy $rcv_if_name
-+	mc_route_destroy $h1
-+
-+	sleep 1
-+
-+	tcpdump_stop $rcv_if_name
-+
-+	check_rcv $rcv_if_name "Unicast IPv4 to primary MAC address" \
-+		"$smac > $rcv_dmac, ethertype IPv4 (0x0800)" \
-+		true
-+
-+	check_rcv $rcv_if_name "Unicast IPv4 to macvlan MAC address" \
-+		"$smac > $MACVLAN_ADDR, ethertype IPv4 (0x0800)" \
-+		true
-+
-+	check_rcv $rcv_if_name "Unicast IPv4 to unknown MAC address" \
-+		"$smac > $UNKNOWN_UC_ADDR1, ethertype IPv4 (0x0800)" \
-+		false
-+
-+	check_rcv $rcv_if_name "Unicast IPv4 to unknown MAC address, promisc" \
-+		"$smac > $UNKNOWN_UC_ADDR2, ethertype IPv4 (0x0800)" \
-+		true
-+
-+	check_rcv $rcv_if_name "Unicast IPv4 to unknown MAC address, allmulti" \
-+		"$smac > $UNKNOWN_UC_ADDR3, ethertype IPv4 (0x0800)" \
-+		false
-+
-+	check_rcv $rcv_if_name "Multicast IPv4 to joined group" \
-+		"$smac > $JOINED_MACV4_MC_ADDR, ethertype IPv4 (0x0800)" \
-+		true
-+
-+	check_rcv $rcv_if_name "Multicast IPv4 to unknown group" \
-+		"$smac > $UNKNOWN_MACV4_MC_ADDR1, ethertype IPv4 (0x0800)" \
-+		false
-+
-+	check_rcv $rcv_if_name "Multicast IPv4 to unknown group, promisc" \
-+		"$smac > $UNKNOWN_MACV4_MC_ADDR2, ethertype IPv4 (0x0800)" \
-+		true
-+
-+	check_rcv $rcv_if_name "Multicast IPv4 to unknown group, allmulti" \
-+		"$smac > $UNKNOWN_MACV4_MC_ADDR3, ethertype IPv4 (0x0800)" \
-+		true
-+
-+	check_rcv $rcv_if_name "Multicast IPv6 to joined group" \
-+		"$smac > $JOINED_MACV6_MC_ADDR, ethertype IPv6 (0x86dd)" \
-+		true
-+
-+	check_rcv $rcv_if_name "Multicast IPv6 to unknown group" \
-+		"$smac > $UNKNOWN_MACV6_MC_ADDR1, ethertype IPv6 (0x86dd)" \
-+		false
-+
-+	check_rcv $rcv_if_name "Multicast IPv6 to unknown group, promisc" \
-+		"$smac > $UNKNOWN_MACV6_MC_ADDR2, ethertype IPv6 (0x86dd)" \
-+		true
-+
-+	check_rcv $rcv_if_name "Multicast IPv6 to unknown group, allmulti" \
-+		"$smac > $UNKNOWN_MACV6_MC_ADDR3, ethertype IPv6 (0x86dd)" \
-+		true
-+
-+	tcpdump_cleanup $rcv_if_name
-+}
-+
-+h1_create()
-+{
-+	simple_if_init $h1 $H1_IPV4/24 $H1_IPV6/64
-+}
-+
-+h1_destroy()
-+{
-+	simple_if_fini $h1 $H1_IPV4/24 $H1_IPV6/64
-+}
-+
-+h2_create()
-+{
-+	simple_if_init $h2 $H2_IPV4/24 $H2_IPV6/64
-+}
-+
-+h2_destroy()
-+{
-+	simple_if_fini $h2 $H2_IPV4/24 $H2_IPV6/64
-+}
-+
-+bridge_create()
-+{
-+	ip link add br0 type bridge
-+	ip link set br0 address $BRIDGE_ADDR
-+	ip link set br0 up
-+
-+	ip link set $h2 master br0
-+	ip link set $h2 up
-+
-+	simple_if_init br0 $H2_IPV4/24 $H2_IPV6/64
-+}
-+
-+bridge_destroy()
-+{
-+	simple_if_fini br0 $H2_IPV4/24 $H2_IPV6/64
-+
-+	ip link del br0
-+}
-+
-+standalone()
-+{
-+	h1_create
-+	h2_create
-+
-+	ip link add link $h2 name macvlan0 type macvlan mode private
-+	ip link set macvlan0 address $MACVLAN_ADDR
-+	ip link set macvlan0 up
-+
-+	run_test $h2
-+
-+	ip link del macvlan0
-+
-+	h2_destroy
-+	h1_destroy
-+}
-+
-+bridge()
-+{
-+	h1_create
-+	bridge_create
-+
-+	ip link add link br0 name macvlan0 type macvlan mode private
-+	ip link set macvlan0 address $MACVLAN_ADDR
-+	ip link set macvlan0 up
-+
-+	run_test br0
-+
-+	ip link del macvlan0
-+
-+	bridge_destroy
-+	h1_destroy
-+}
-+
-+cleanup()
-+{
-+	pre_cleanup
-+	vrf_cleanup
-+}
-+
-+setup_prepare()
-+{
-+	vrf_prepare
-+	# setup_wait() needs this
-+	ip link set $h1 up
-+	ip link set $h2 up
-+}
-+
-+trap cleanup EXIT
-+
-+setup_prepare
-+setup_wait
-+
-+tests_run
-+
-+exit $EXIT_STATUS
++++ b/tools/testing/selftests/drivers/net/dsa/bridge_locked_port.sh
+@@ -0,0 +1 @@
++../../../net/forwarding/bridge_locked_port.sh
+\ No newline at end of file
+diff --git a/tools/testing/selftests/drivers/net/dsa/bridge_mdb.sh b/tools/testing/selftests/drivers/net/dsa/bridge_mdb.sh
+new file mode 120000
+index 000000000000..76492da525f7
+--- /dev/null
++++ b/tools/testing/selftests/drivers/net/dsa/bridge_mdb.sh
+@@ -0,0 +1 @@
++../../../net/forwarding/bridge_mdb.sh
+\ No newline at end of file
+diff --git a/tools/testing/selftests/drivers/net/dsa/bridge_mld.sh b/tools/testing/selftests/drivers/net/dsa/bridge_mld.sh
+new file mode 120000
+index 000000000000..81a7e0df0474
+--- /dev/null
++++ b/tools/testing/selftests/drivers/net/dsa/bridge_mld.sh
+@@ -0,0 +1 @@
++../../../net/forwarding/bridge_mld.sh
+\ No newline at end of file
+diff --git a/tools/testing/selftests/drivers/net/dsa/bridge_vlan_aware.sh b/tools/testing/selftests/drivers/net/dsa/bridge_vlan_aware.sh
+new file mode 120000
+index 000000000000..9831ed74376a
+--- /dev/null
++++ b/tools/testing/selftests/drivers/net/dsa/bridge_vlan_aware.sh
+@@ -0,0 +1 @@
++../../../net/forwarding/bridge_vlan_aware.sh
+\ No newline at end of file
+diff --git a/tools/testing/selftests/drivers/net/dsa/bridge_vlan_mcast.sh b/tools/testing/selftests/drivers/net/dsa/bridge_vlan_mcast.sh
+new file mode 120000
+index 000000000000..7f3c3f0bf719
+--- /dev/null
++++ b/tools/testing/selftests/drivers/net/dsa/bridge_vlan_mcast.sh
+@@ -0,0 +1 @@
++../../../net/forwarding/bridge_vlan_mcast.sh
+\ No newline at end of file
+diff --git a/tools/testing/selftests/drivers/net/dsa/bridge_vlan_unaware.sh b/tools/testing/selftests/drivers/net/dsa/bridge_vlan_unaware.sh
+new file mode 120000
+index 000000000000..bf1a57e6bde1
+--- /dev/null
++++ b/tools/testing/selftests/drivers/net/dsa/bridge_vlan_unaware.sh
+@@ -0,0 +1 @@
++../../../net/forwarding/bridge_vlan_unaware.sh
+\ No newline at end of file
+diff --git a/tools/testing/selftests/drivers/net/dsa/forwarding.config b/tools/testing/selftests/drivers/net/dsa/forwarding.config
+new file mode 100644
+index 000000000000..7adc1396fae0
+--- /dev/null
++++ b/tools/testing/selftests/drivers/net/dsa/forwarding.config
+@@ -0,0 +1,2 @@
++NETIF_CREATE=no
++STABLE_MAC_ADDRS=yes
+diff --git a/tools/testing/selftests/drivers/net/dsa/lib.sh b/tools/testing/selftests/drivers/net/dsa/lib.sh
+new file mode 120000
+index 000000000000..39c96828c5ef
+--- /dev/null
++++ b/tools/testing/selftests/drivers/net/dsa/lib.sh
+@@ -0,0 +1 @@
++../../../net/forwarding/lib.sh
+\ No newline at end of file
+diff --git a/tools/testing/selftests/drivers/net/dsa/local_termination.sh b/tools/testing/selftests/drivers/net/dsa/local_termination.sh
+new file mode 120000
+index 000000000000..c08166f84501
+--- /dev/null
++++ b/tools/testing/selftests/drivers/net/dsa/local_termination.sh
+@@ -0,0 +1 @@
++../../../net/forwarding/local_termination.sh
+\ No newline at end of file
+diff --git a/tools/testing/selftests/drivers/net/dsa/no_forwarding.sh b/tools/testing/selftests/drivers/net/dsa/no_forwarding.sh
+new file mode 120000
+index 000000000000..b9757466bc97
+--- /dev/null
++++ b/tools/testing/selftests/drivers/net/dsa/no_forwarding.sh
+@@ -0,0 +1 @@
++../../../net/forwarding/no_forwarding.sh
+\ No newline at end of file
 -- 
 2.25.1
 
