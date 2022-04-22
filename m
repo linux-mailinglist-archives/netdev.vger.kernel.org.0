@@ -2,98 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EE6CF50B518
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 12:30:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B19C150B588
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 12:48:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446484AbiDVKdm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Apr 2022 06:33:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32878 "EHLO
+        id S1446861AbiDVKvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Apr 2022 06:51:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237215AbiDVKdm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 06:33:42 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B434BE30
-        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 03:30:49 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id p18so4717406edr.7
-        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 03:30:49 -0700 (PDT)
+        with ESMTP id S1446679AbiDVKvD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 06:51:03 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFBC855204
+        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 03:48:09 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id 21so9947673edv.1
+        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 03:48:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=EM/g9GQPepqt/1Hqpj9DFQ9VXH5iBM8LW7YClivD+HM=;
-        b=cVHE+MQ4RqMoauzz/cc7arlqLacNIpEab0hGnfwWwJ8tz3mbFmzfvXRookGL7CsuRj
-         h4Ue+EvapB0MhOQkRHuD/xsAW88lMeUpz+5a4S/gmQYsLvjGgBsWeYmXfHG+T9PyBFvu
-         5Rz/q/W/05kpz1zJ9RgFm6Vw8zhpuHnvdV/c0azeoFu7zqp1/cheslvB78pzJriLHiZg
-         PCTgulewthFqt40hi/PXzA934/nuDMoG/CkcOw8tnZA/jZn3shJSKssJG+6aZrwYsfr/
-         6HseulRNnsXNAFRhgtqdGXr20k2BtuWAReu0su3tVfo3btQAjVnSs+cZJxYrGeIoJYzN
-         YBJQ==
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VAsRRop2pV4ZTVr7B5XC8yRu2f0AvXYEM5JlYoO6X9I=;
+        b=URZruV4HFT/3ZB49dataOpdWp/YjepectaxFEsx8rweDlxosoE4tVP+E+rUiVnMdGV
+         i51YYXsxvl88T3vQqFVrxfEx7np289ASHG93+1q/tkkae9AA0GWtHSzh9rP2Ivu/4feq
+         qtPTiHclnsOwxPNged/45qXsprx3VrGebUUfZOYCi2xnjVFsnSEtZXeym7Zzin0rbSz0
+         bsX5z6zIKfOCZG5RydwoeRKdLaVs3r0Z1QeywnIrV7aIHSlAmRqGBx8ROfHMWWp+gJdv
+         o/O5DSFFoCZxLv78xB7jLvOIHXnbQn3iRNgO8AuDN+emK0BwUoyZJiOckSLqNIZ1FmeE
+         y4vA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=EM/g9GQPepqt/1Hqpj9DFQ9VXH5iBM8LW7YClivD+HM=;
-        b=4xtZ+XIKawWW1O41fSEAJjW9h03gjkAuQvp6PwSaoJ+ubm1JwPoSVnH0TItH6b5STc
-         mlMSTwv1BG6uaHyd1neiFC80/fNyJYtyv55OZ+NUxXM0UHYXw9QZg4r/VLvUT74QraPF
-         0v75bTRxBCd89C+pTtz77KXL19xY5bqmPBf7ExW6Ixxv8zIc/ygGuECp0UxoVhSLtVyF
-         30xa0PNAvuLK3DYrm04D1p38uJ8Cbp02hYZkG9v0ZFYKjkmjcz59shDyogascd1+ckxH
-         iuqE1T1/CELVhs+jmaX78IeAto31+z6OGAfi6Y2kp0nvqbMwJqBDReJRRfQEQwwe8ESa
-         hJQw==
-X-Gm-Message-State: AOAM531pMonImcHIjTeMYJ22XdsG19JM0rZrYjm6R6/90R1NKkaRNXmi
-        ZjSPpdlwhNlMfb8notlm6cAC/A==
-X-Google-Smtp-Source: ABdhPJz8CbwXKiMdoZM435jaKFYmhtcig80PHos2oozJonLpiiwUlfWniaM5smj/GLjS2jrTazr0FA==
-X-Received: by 2002:aa7:c9ce:0:b0:425:c396:dde with SMTP id i14-20020aa7c9ce000000b00425c3960ddemr669481edt.397.1650623448000;
-        Fri, 22 Apr 2022 03:30:48 -0700 (PDT)
-Received: from [192.168.0.232] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id q7-20020a170906540700b006d5eca5c9cfsm611021ejo.191.2022.04.22.03.30.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Apr 2022 03:30:47 -0700 (PDT)
-Message-ID: <c60f5823-4e25-39d5-c62a-0392fe9eb322@linaro.org>
-Date:   Fri, 22 Apr 2022 12:30:46 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] NFC: nfcmrvl: fix error check return value of
- irq_of_parse_and_map()
-Content-Language: en-US
-To:     cgel.zte@gmail.com, davem@davemloft.net
-Cc:     kuba@kernel.org, lv.ruyi@zte.com.cn, yashsri421@gmail.com,
-        sameo@linux.intel.com, cuissard@marvell.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Zeal Robot <zealci@zte.com.cn>
-References: <20220422084605.2775542-1-lv.ruyi@zte.com.cn>
+        bh=VAsRRop2pV4ZTVr7B5XC8yRu2f0AvXYEM5JlYoO6X9I=;
+        b=OTYTMNyApYXCVTAC2wIc4uvODldBWaMN1jmRTU9yEholoSAnB1KYPnNfeyu3S9SvqV
+         QRcbjLrZe58aSIhTP/MomMFoDCE6E6LthUIRQJF5a3T5aD6J7v+ov523lSsQdiX3+zxg
+         OSg/ocUzeWfqORDf7NbKJrdo72Vr/VaR258XWL36d4eBnRvpH5JHKUaE4RpDq8xq4Od2
+         0f5pgE4ueN+gG7iDEYB2dasF8ZKxhSE1pR26TLxBxBQS0S+uvpd2HL0y84Asxp542LIF
+         scQG3kOOKyM+CEW+zfFOC6IpcCOJ73SBwn1sxf+tBS4g/m0ao9vozlSehMRoMPTq4/oB
+         daGA==
+X-Gm-Message-State: AOAM533leHy/LcFKckhpn0uBR6+u1c7I58VM8XiKQHsumCYzy20KJeXX
+        W54cMhxZR6T1NIqLDLikDlb6IQ==
+X-Google-Smtp-Source: ABdhPJxsOyTkFpBIBoHx5hMe4weI1kgD/ah4F3MXOPXUb1oNT1HMAUOGq/zMWhbt6QFpoJexxkjJBQ==
+X-Received: by 2002:a05:6402:7d3:b0:41d:9152:cad with SMTP id u19-20020a05640207d300b0041d91520cadmr4226041edy.370.1650624488537;
+        Fri, 22 Apr 2022 03:48:08 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id z16-20020a17090665d000b006e8789e8cedsm615266ejn.204.2022.04.22.03.48.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Apr 2022 03:48:08 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220422084605.2775542-1-lv.ruyi@zte.com.cn>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Vincent Cuissard <cuissard@marvell.com>,
+        Samuel Ortiz <sameo@linux.intel.com>, linux-nfc@lists.01.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] nfc: nfcmrvl: spi: Fix irq_of_parse_and_map() return value
+Date:   Fri, 22 Apr 2022 12:47:58 +0200
+Message-Id: <20220422104758.64039-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22/04/2022 10:46, cgel.zte@gmail.com wrote:
-> From: Lv Ruyi <lv.ruyi@zte.com.cn>
-> 
-> The irq_of_parse_and_map() function returns 0 on failure, and does not
-> return an negative value.
-> 
-> Fixes: 	b5b3e23e4cac ("NFC: nfcmrvl: add i2c driver")
+The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
 
-Some unneeded indentation above.
+Fixes: caf6e49bf6d0 ("NFC: nfcmrvl: add spi driver")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Except that:
+---
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+This is another issue to https://lore.kernel.org/all/20220422084605.2775542-1-lv.ruyi@zte.com.cn/
+---
+ drivers/nfc/nfcmrvl/spi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+diff --git a/drivers/nfc/nfcmrvl/spi.c b/drivers/nfc/nfcmrvl/spi.c
+index a38e2fcdfd39..01f0a08a381c 100644
+--- a/drivers/nfc/nfcmrvl/spi.c
++++ b/drivers/nfc/nfcmrvl/spi.c
+@@ -115,7 +115,7 @@ static int nfcmrvl_spi_parse_dt(struct device_node *node,
+ 	}
+ 
+ 	ret = irq_of_parse_and_map(node, 0);
+-	if (ret < 0) {
++	if (!ret) {
+ 		pr_err("Unable to get irq, error: %d\n", ret);
+ 		return ret;
+ 	}
+-- 
+2.32.0
 
-
-
-
-Best regards,
-Krzysztof
