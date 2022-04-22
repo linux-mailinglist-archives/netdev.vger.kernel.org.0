@@ -2,91 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DCFA650BDD0
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 19:01:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3940650BDD7
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 19:03:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237739AbiDVREe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Apr 2022 13:04:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52416 "EHLO
+        id S1348198AbiDVRGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Apr 2022 13:06:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230289AbiDVREd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 13:04:33 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E50C56A41E;
-        Fri, 22 Apr 2022 10:01:38 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id bv19so17559919ejb.6;
-        Fri, 22 Apr 2022 10:01:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=dRt/jR85kRicxEUhK1JqoJCyTsq8d1Ddz7419Ukqr3g=;
-        b=MwjYZ7qV/qk74QwHLrDpFyYe7qW1bVrrhttKMwYATQVrLQa0vp7MNTURL/BJxQf+H1
-         a+ZQ8epUaHzJ7LMDbVecNqQGtdb83QTweuKSDqVY3vfKjEyhvOiMSUTK4EPtW5xdxExQ
-         ZsuzWEx5CaPEsTcllmRkeaXG/4YdOOG3OkJ7YkfZ/fjgQxZEzKXSQYNIM6M4yltvbLZj
-         1AhKlQzVK0OdqLJbo5TKrklv2PHosgJogPFbHTrgx96W6i10iG0xyRZTe6kO0noEUDvr
-         qd9NyMQJARBWVSLFBD9T716TV9UktYneYRZl5XwW2hGVdwxJYxv1nPdQ2blahsbbCgfO
-         8hrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dRt/jR85kRicxEUhK1JqoJCyTsq8d1Ddz7419Ukqr3g=;
-        b=wkQt8tfSVbYnYpY2RUMLiLyVF/kwB8RlEhnCD8pBoGpLca6r0H/uOew9gq7Fe86kkt
-         kifGqxks6FrUZ1Y/R8TglntMxuk2kWxoRKHi/omHlOvP8r9H+MeiiWjF7+p7xOIG9FNn
-         sDTpGZbGW8s83jjui2Dgv8j8xirGmBRqSC7oJStfZmoM+hJi8j2jerQ7IGnMHKMaZqCC
-         seOCrdJ0wTgpnYx2SbQKcJRZdCeQ2Ei78j+aNhHoCJXYqr6ZndzGrA00mYBLxcLkquiC
-         dDbRnS4lStrKYQ12afC23ihAznWqH2w/PYIzXSr2sQkn8l5WQXx5X6ScXvgpqa46R2/W
-         hmEg==
-X-Gm-Message-State: AOAM531vObH15k0HRnlPTIlwYBoWj5w3uJVMNBXGfQXbUUmw/enMufJ+
-        3Ro7bj+nYX1NVCbp+8V0pEs=
-X-Google-Smtp-Source: ABdhPJwkloO6wFKF3wsvvFuA3uUm2MnZyAvWSKFcHvW2sdIQ6A9XHVZ2jL0sDhN1Ak6T/k6dbdLaAg==
-X-Received: by 2002:a17:906:c2c9:b0:6e8:5ee7:e621 with SMTP id ch9-20020a170906c2c900b006e85ee7e621mr5169389ejb.760.1650646897142;
-        Fri, 22 Apr 2022 10:01:37 -0700 (PDT)
-Received: from skbuf ([188.25.160.86])
-        by smtp.gmail.com with ESMTPSA id kb9-20020a1709070f8900b006e889aad94esm917423ejc.128.2022.04.22.10.01.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 10:01:36 -0700 (PDT)
-Date:   Fri, 22 Apr 2022 20:01:35 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: Re: [RFC Patch net-next] net: dsa: ksz: added the generic
- port_stp_state_set function
-Message-ID: <20220422170135.ctkibqs3lunbeo44@skbuf>
-References: <20220420072647.22192-1-arun.ramadoss@microchip.com>
+        with ESMTP id S241661AbiDVRGY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 13:06:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8F236FA04;
+        Fri, 22 Apr 2022 10:03:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 34347B8311D;
+        Fri, 22 Apr 2022 17:03:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3083C385A4;
+        Fri, 22 Apr 2022 17:03:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650647007;
+        bh=Xo8DuXhvaecEdzq/s8yjTmStQeqLUDbXLz2tAC/LGqc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Vmsk6spFqgx2kreMHrxlERhR0MBxeBvbV7QnMgMeCTIl5gO7NqR9d113MN3bGAM5e
+         1ELKycDB9FrZPBPi7ewwTgfYiSNnpfllnAL9+yjV0XHz0fZSomiFdG0BRZmX3raWiX
+         rGXxWZl4fO9k0sQJny2FaV0wEOaJpPg9nDEWKYyY496WG+tm3Aw5v184UYu6FZsVU2
+         +0l4ui3HX/8yuiUqjCEntLdjCLGmmpdFtuuRJ03BL5tl/HwILCVWjlzIhuLE+P+xBb
+         XVbkz4v55jIRBjLcu3U2Z+jlB4+kirXYz/9/CSmoLstcEwzSCSmg0GtHpnjoTLaSgp
+         RCZs/g4E3bVOA==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 35AD6400B1; Fri, 22 Apr 2022 14:03:24 -0300 (-03)
+Date:   Fri, 22 Apr 2022 14:03:24 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        linux-perf-users@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Ian Rogers <irogers@google.com>
+Subject: Re: [PATCH perf/core 3/5] perf tools: Move libbpf init in
+ libbpf_init function
+Message-ID: <YmLf3PQ9ws2C/Myu@kernel.org>
+References: <20220422100025.1469207-1-jolsa@kernel.org>
+ <20220422100025.1469207-4-jolsa@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220420072647.22192-1-arun.ramadoss@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220422100025.1469207-4-jolsa@kernel.org>
+X-Url:  http://acmel.wordpress.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 12:56:47PM +0530, Arun Ramadoss wrote:
-> The ksz8795 and ksz9477 uses the same algorithm for the
-> port_stp_state_set function except the register address is different. So
-> moved the algorithm to the ksz_common.c and used the dev_ops for
-> register read and write. This function can also used for the lan937x
-> part. Hence making it generic for all the parts.
-> 
-> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-> ---
+Em Fri, Apr 22, 2022 at 12:00:23PM +0200, Jiri Olsa escreveu:
+> Moving the libbpf init code into single function,
+> so we have single place doing that.
 
-If the entire port STP state change procedure is the same, just a
-register offset is different, can you not create a common STP state
-procedure that takes the register offset as argument, and gets called
-with different offset arguments from ksz8795.c and from ksz9477.c?
+Cherry picked this one, waiting for Andrii to chime in wrt the libbpf
+changes, if its acceptable, how to proceed, i.e. in what tree to carry
+these?
+
+- Arnaldo
+ 
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  tools/perf/util/bpf-loader.c | 27 ++++++++++++++++++---------
+>  1 file changed, 18 insertions(+), 9 deletions(-)
+> 
+> diff --git a/tools/perf/util/bpf-loader.c b/tools/perf/util/bpf-loader.c
+> index b72cef1ae959..f8ad581ea247 100644
+> --- a/tools/perf/util/bpf-loader.c
+> +++ b/tools/perf/util/bpf-loader.c
+> @@ -99,16 +99,26 @@ static int bpf_perf_object__add(struct bpf_object *obj)
+>  	return perf_obj ? 0 : -ENOMEM;
+>  }
+>  
+> +static int libbpf_init(void)
+> +{
+> +	if (libbpf_initialized)
+> +		return 0;
+> +
+> +	libbpf_set_print(libbpf_perf_print);
+> +	libbpf_initialized = true;
+> +	return 0;
+> +}
+> +
+>  struct bpf_object *
+>  bpf__prepare_load_buffer(void *obj_buf, size_t obj_buf_sz, const char *name)
+>  {
+>  	LIBBPF_OPTS(bpf_object_open_opts, opts, .object_name = name);
+>  	struct bpf_object *obj;
+> +	int err;
+>  
+> -	if (!libbpf_initialized) {
+> -		libbpf_set_print(libbpf_perf_print);
+> -		libbpf_initialized = true;
+> -	}
+> +	err = libbpf_init();
+> +	if (err)
+> +		return ERR_PTR(err);
+>  
+>  	obj = bpf_object__open_mem(obj_buf, obj_buf_sz, &opts);
+>  	if (IS_ERR_OR_NULL(obj)) {
+> @@ -135,14 +145,13 @@ struct bpf_object *bpf__prepare_load(const char *filename, bool source)
+>  {
+>  	LIBBPF_OPTS(bpf_object_open_opts, opts, .object_name = filename);
+>  	struct bpf_object *obj;
+> +	int err;
+>  
+> -	if (!libbpf_initialized) {
+> -		libbpf_set_print(libbpf_perf_print);
+> -		libbpf_initialized = true;
+> -	}
+> +	err = libbpf_init();
+> +	if (err)
+> +		return ERR_PTR(err);
+>  
+>  	if (source) {
+> -		int err;
+>  		void *obj_buf;
+>  		size_t obj_buf_sz;
+>  
+> -- 
+> 2.35.1
+
+-- 
+
+- Arnaldo
