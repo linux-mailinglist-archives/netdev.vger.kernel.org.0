@@ -2,49 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C27D50C123
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 23:36:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1381650C133
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 23:36:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230058AbiDVVix (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Apr 2022 17:38:53 -0400
+        id S230119AbiDVViw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Apr 2022 17:38:52 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229771AbiDVViu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 17:38:50 -0400
+        with ESMTP id S230062AbiDVVit (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 17:38:49 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DEC62C8C2C
-        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 13:44:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DCFE29DF15;
+        Fri, 22 Apr 2022 13:44:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1FF41B8324F
-        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 20:37:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77543C385A4;
-        Fri, 22 Apr 2022 20:37:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C8204B8325D;
+        Fri, 22 Apr 2022 20:44:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAD2DC385A0;
+        Fri, 22 Apr 2022 20:44:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650659833;
-        bh=x2hjpVNnxnh6dBDxe9dPKJ8Pr/ILIc46TtPLOJq2RnU=;
+        s=k20201202; t=1650660247;
+        bh=HnbkQVOtfa7+/56LQ5INga98V0wHs2i7oJ/vI85Yrbo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JmLoiWnWmXiWqAxeQXI3qHAY1Py7zEmqIZ8bBxrKwZm5uEvfdGZMjjUXTy6kr9oXX
-         5RlS7k7LRt9iOz+K6FMobs8pNnqY8h+Y5hntWANkaa7BbqkjymyxLhFiab5mZ76J0r
-         fUmi4P71EuBBOcbs7TDCoRj5f4P4Q0RsQIHcRVXD9iORNS3Pcc5srlB64s6YPIzwZI
-         cOtE+SJDAg11V+zjKuN1HMLKmhNxHXOkRPzBetdmTz6LO3OboONRdtVAsfglUU0yD5
-         FL8Y4LxWz1HKpbGXNJGkZKXd7QgJah8gF0jhMe+DqDpnQiaRE6QZUZBjxoLW8LuM6X
-         32YHiSdcsD4AA==
-Date:   Fri, 22 Apr 2022 13:37:12 -0700
+        b=ncbmxN3DmsIJneYRy5/ENYjoC5IpODUGNtoqIcYvp/kNhyNvjtlhNgLsf6F+yjb1g
+         jVstrDggPk3uYKOKKFux0FNjQg3bs96RfiXaseCMLwErKmAc8oBTYrAdPRplYUgsCr
+         QYNI4YeEOzSnE32G+XYQ8zz4EfY8tkrhGUEPj68EpOas+hjCUvS65aUIip7ajutCsd
+         +gdiDnVGG5UwdRzvLF6aiIWhUeiNmoIpEkflQamA1hjzkDrTzh8s4lIvT10OyyMXKF
+         AaV6d/p07sO4C8+ML8hhojkVpFX7fBRXEmpsgecLOiAB2R/yWEnqoAlV1bTEkyIF0K
+         ZJXv69B6gizkw==
+Date:   Fri, 22 Apr 2022 13:44:05 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Pengcheng Yang <yangpc@wangsu.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Neal Cardwell <ncardwell@google.com>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net v3] tcp: ensure to use the most recently sent skb
- when filling the rate sample
-Message-ID: <20220422133712.17eebbcb@kernel.org>
-In-Reply-To: <1650422081-22153-1-git-send-email-yangpc@wangsu.com>
-References: <1650422081-22153-1-git-send-email-yangpc@wangsu.com>
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     Jani Nikula <jani.nikula@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 0/1] add support for enum module parameters
+Message-ID: <20220422134405.7a519a0f@kernel.org>
+In-Reply-To: <87sfq8qqus.fsf@tynnyri.adurom.net>
+References: <20220414123033.654198-1-jani.nikula@intel.com>
+        <YlgfXxjefuxiXjtC@kroah.com>
+        <87a6cneoco.fsf@intel.com>
+        <87sfq8qqus.fsf@tynnyri.adurom.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -57,24 +60,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 20 Apr 2022 10:34:41 +0800 Pengcheng Yang wrote:
-> If an ACK (s)acks multiple skbs, we favor the information
-> from the most recently sent skb by choosing the skb with
-> the highest prior_delivered count. But in the interval
-> between receiving ACKs, we send multiple skbs with the same
-> prior_delivered, because the tp->delivered only changes
-> when we receive an ACK.
+On Wed, 20 Apr 2022 08:13:47 +0300 Kalle Valo wrote:
+> Wireless drivers would also desperately need to pass device specific
+> parameters at (or before) probe time. And not only debug parameters but
+> also configuration parameters, for example firmware memory allocations
+> schemes (optimise for features vs number of clients etc) and whatnot.
 > 
-> We used RACK's solution, copying tcp_rack_sent_after() as
-> tcp_skb_sent_after() helper to determine "which packet was
-> sent last?". Later, we will use tcp_skb_sent_after() instead
-> in RACK.
-> 
-> Fixes: b9f64820fb22 ("tcp: track data delivery rate for a TCP connection")
-> Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
-> Cc: Neal Cardwell <ncardwell@google.com>
-> Cc: Paolo Abeni <pabeni@redhat.com>
+> Any ideas how to implement that? Is there any prior work for anything
+> like this? This is pretty hard limiting usability of upstream wireless
+> drivers and I really want to find a proper solution.
 
-Somehow this patch got marked as archived in patchwork. Reviving it now.
-
-Eric, Neal, ack?
+In netdev we have devlink which is used for all sort of device
+configuration. devlink-resource sounds like what you need,
+but it'd have to be extended to support configuration which requires
+reload/re-probe. Currently only devlink-params support that but params
+were a mistake so don't use that.
