@@ -2,75 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FD3050B04C
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 08:14:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93C3750B057
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 08:16:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444260AbiDVGPa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Apr 2022 02:15:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51100 "EHLO
+        id S1444277AbiDVGRn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Apr 2022 02:17:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229813AbiDVGP3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 02:15:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8533250067;
-        Thu, 21 Apr 2022 23:12:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0AFC6B82A8B;
-        Fri, 22 Apr 2022 06:12:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8884BC385A0;
-        Fri, 22 Apr 2022 06:12:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650607954;
-        bh=sQ993ibhAeZKDcNyaBxUh8xxW2w0Mr0D59fXMweNxDo=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=MO2Y585mR5sjxallnGbTxLm7lumX8vaQRJ1VQ77iUu+P4Lv4T6D9/Ra2zZZXIZP4H
-         /9kITjFvEp3MuTorG+KCGgZgqyuxJEs+mats6svXnewEo/I3CG6U5nybxQTqbc/6vT
-         v7wn5/fR9gBsCVYQNW1ck7iOwRlVdKTvKMwPPwAOcTnMQx1qU3GWBBdPr0C/rTFEuZ
-         VuX+91k4L/1K4/GgRe8wz2tsXi6HLDCSSFPdH+4eFodyOQGPWGXOIM58GFHMMH6FaX
-         xjZY/NAo1Q1ElIgWRaoh8aK0ZSjnRbsXQKNBR0fkkC3OHmnuL15oqqjzT5UVYcMIIr
-         Oq6UNsKnGi4ZA==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Yunbo Yu <yuyunbo519@gmail.com>
-Cc:     nbd@nbd.name, lorenzo@kernel.org, ryder.lee@mediatek.com,
-        shayne.chen@mediatek.com, sean.wang@mediatek.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        matthias.bgg@gmail.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] =?utf-8?B?bXQ3Nu+8mm10NzYwM++8mg==?= move
- spin_lock_bh() to spin_lock()
-References: <20220422060723.424862-1-yuyunbo519@gmail.com>
-Date:   Fri, 22 Apr 2022 09:12:28 +0300
-In-Reply-To: <20220422060723.424862-1-yuyunbo519@gmail.com> (Yunbo Yu's
-        message of "Fri, 22 Apr 2022 14:07:23 +0800")
-Message-ID: <87y1zxmysz.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S1442942AbiDVGRl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 02:17:41 -0400
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAF2750072;
+        Thu, 21 Apr 2022 23:14:48 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1650608086;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=DjdOTui0POHi92i5Qf8axlO2tlre4sLJsGmaIO2yyyo=;
+        b=afLqpNepCA2qZ7NooyGZHehv1zWlhdfT5NU5maBIeanvB41X38R4km33gc0ch41vZd6KsK
+        ObUUWK+H1aCxj+0hhsc23IA1C+/1vmZjQ0QO36gQ+0DY6QyIZSm5ltORLtydd9cm2Vsdyr
+        wCryWK5pCihyGPjiVqfGoeK1CECqXy8=
+From:   Yajun Deng <yajun.deng@linux.dev>
+To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yajun Deng <yajun.deng@linux.dev>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH net-next] arp: fix unused variable warnning when CONFIG_PROC_FS=n
+Date:   Fri, 22 Apr 2022 14:14:31 +0800
+Message-Id: <20220422061431.1905579-1-yajun.deng@linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Yunbo Yu <yuyunbo519@gmail.com> writes:
+net/ipv4/arp.c:1412:36: warning: unused variable 'arp_seq_ops' [-Wunused-const-variable]
 
-> It is unnecessary to call spin_lock_bh(), for you are already in a tasklet.
->
-> Signed-off-by: Yunbo Yu <yuyunbo519@gmail.com>
+Add #ifdef CONFIG_PROC_FS for 'arp_seq_ops'.
 
-Why do you use unicode character "=EF=BC=9A"[1] as colon in the title?
-After all recent news about left-to-right trickery all special
-characters make me suspicious.
+Fixes: e968b1b3e9b8 ("arp: Remove #ifdef CONFIG_PROC_FS")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+---
+ net/ipv4/arp.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-https://www.fileformat.info/info/unicode/char/ff1a/index.htm
-
+diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
+index 2d0c05ca9c6f..ab4a5601c82a 100644
+--- a/net/ipv4/arp.c
++++ b/net/ipv4/arp.c
+@@ -1304,9 +1304,9 @@ static struct packet_type arp_packet_type __read_mostly = {
+ 	.func =	arp_rcv,
+ };
+ 
++#ifdef CONFIG_PROC_FS
+ #if IS_ENABLED(CONFIG_AX25)
+ 
+-/* ------------------------------------------------------------------------ */
+ /*
+  *	ax25 -> ASCII conversion
+  */
+@@ -1412,16 +1412,13 @@ static void *arp_seq_start(struct seq_file *seq, loff_t *pos)
+ 	return neigh_seq_start(seq, pos, &arp_tbl, NEIGH_SEQ_SKIP_NOARP);
+ }
+ 
+-/* ------------------------------------------------------------------------ */
+-
+ static const struct seq_operations arp_seq_ops = {
+ 	.start	= arp_seq_start,
+ 	.next	= neigh_seq_next,
+ 	.stop	= neigh_seq_stop,
+ 	.show	= arp_seq_show,
+ };
+-
+-/* ------------------------------------------------------------------------ */
++#endif /* CONFIG_PROC_FS */
+ 
+ static int __net_init arp_net_init(struct net *net)
+ {
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.25.1
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
