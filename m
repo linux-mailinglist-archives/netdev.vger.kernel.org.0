@@ -2,246 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CC1C50B26B
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 09:59:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 306AB50B26E
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 09:59:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445408AbiDVIAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Apr 2022 04:00:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39730 "EHLO
+        id S1445379AbiDVICP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Apr 2022 04:02:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445412AbiDVIAB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 04:00:01 -0400
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24247527FC;
-        Fri, 22 Apr 2022 00:56:30 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VAlrUeF_1650614188;
-Received: from e02h04404.eu6sqa(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0VAlrUeF_1650614188)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 22 Apr 2022 15:56:28 +0800
-From:   Wen Gu <guwen@linux.alibaba.com>
-To:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net 2/2] net/smc: Fix slab-out-of-bounds issue in fallback
-Date:   Fri, 22 Apr 2022 15:56:19 +0800
-Message-Id: <1650614179-11529-3-git-send-email-guwen@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1650614179-11529-1-git-send-email-guwen@linux.alibaba.com>
-References: <1650614179-11529-1-git-send-email-guwen@linux.alibaba.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S1349087AbiDVICK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 04:02:10 -0400
+Received: from m1541.mail.126.com (m1541.mail.126.com [220.181.15.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 84C62522DB;
+        Fri, 22 Apr 2022 00:59:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=KOOwj
+        Ngxtpj+BOV9RiocwkEJ5gaHVgyNXKB2q9i864s=; b=I2bcLGGMBZdE8yJCQe73E
+        ublKXrfowHicATx4CEeGLTb6eCcoRMxL5WoQOTv2+7QZxwlqAzF4e/JPdbJi3Hv0
+        A8AVgXuuhLURpEiqwFDsWBb4y1DE5YvfB6w7f1mKr1sC1ZbZ4TWP3y/hEY3dxCYf
+        tslRTLpgh+V2PhvjmdSg5c=
+Received: from zhaojunkui2008$126.com ( [58.213.83.157] ) by
+ ajax-webmail-wmsvr41 (Coremail) ; Fri, 22 Apr 2022 15:58:26 +0800 (CST)
+X-Originating-IP: [58.213.83.157]
+Date:   Fri, 22 Apr 2022 15:58:26 +0800 (CST)
+From:   z <zhaojunkui2008@126.com>
+To:     "Kalle Valo" <kvalo@kernel.org>
+Cc:     "Jakub Kicinski" <kubakici@wp.pl>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        bernard@vivo.com
+Subject: Re:Re: [PATCH] mediatek/mt7601u: add debugfs exit function
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210622(1d4788a8)
+ Copyright (c) 2002-2022 www.mailtech.cn 126com
+In-Reply-To: <87k0bhmuh6.fsf@kernel.org>
+References: <20220422070325.465918-1-zhaojunkui2008@126.com>
+ <87k0bhmuh6.fsf@kernel.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
+MIME-Version: 1.0
+Message-ID: <6fd91edd.4c2b.1805047850c.Coremail.zhaojunkui2008@126.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: KcqowADn9t4jYGJiD_oRAA--.42888W
+X-CM-SenderInfo: p2kd0y5xqn3xasqqmqqrswhudrp/1tbiuQPqqlpD8lH33AAAsr
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot reported a slab-out-of-bounds/use-after-free issue,
-which was caused by accessing an already freed smc sock in
-fallback-specific callback functions of clcsock.
-
-This patch fixes the issue by restoring fallback-specific
-callback functions to original ones and resetting clcsock
-sk_user_data to NULL before freeing smc sock.
-
-Meanwhile, this patch introduces sk_callback_lock to make
-the access and assignment to sk_user_data mutually exclusive.
-
-Reported-by: syzbot+b425899ed22c6943e00b@syzkaller.appspotmail.com
-Fixes: 341adeec9ada ("net/smc: Forward wakeup to smc socket waitqueue after fallback")
-Link: https://lore.kernel.org/r/00000000000013ca8105d7ae3ada@google.com/
-Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
----
- net/smc/af_smc.c    | 80 ++++++++++++++++++++++++++++++++++++++---------------
- net/smc/smc_close.c |  2 ++
- 2 files changed, 59 insertions(+), 23 deletions(-)
-
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 7ee356f..6eb3421 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -243,11 +243,27 @@ struct proto smc_proto6 = {
- };
- EXPORT_SYMBOL_GPL(smc_proto6);
- 
-+static void smc_fback_restore_callbacks(struct smc_sock *smc)
-+{
-+	struct sock *clcsk = smc->clcsock->sk;
-+
-+	write_lock_bh(&clcsk->sk_callback_lock);
-+	clcsk->sk_user_data = NULL;
-+
-+	smc_clcsock_restore_cb(&clcsk->sk_state_change, &smc->clcsk_state_change);
-+	smc_clcsock_restore_cb(&clcsk->sk_data_ready, &smc->clcsk_data_ready);
-+	smc_clcsock_restore_cb(&clcsk->sk_write_space, &smc->clcsk_write_space);
-+	smc_clcsock_restore_cb(&clcsk->sk_error_report, &smc->clcsk_error_report);
-+
-+	write_unlock_bh(&clcsk->sk_callback_lock);
-+}
-+
- static void smc_restore_fallback_changes(struct smc_sock *smc)
- {
- 	if (smc->clcsock->file) { /* non-accepted sockets have no file yet */
- 		smc->clcsock->file->private_data = smc->sk.sk_socket;
- 		smc->clcsock->file = NULL;
-+		smc_fback_restore_callbacks(smc);
- 	}
- }
- 
-@@ -745,48 +761,57 @@ static void smc_fback_forward_wakeup(struct smc_sock *smc, struct sock *clcsk,
- 
- static void smc_fback_state_change(struct sock *clcsk)
- {
--	struct smc_sock *smc =
--		smc_clcsock_user_data(clcsk);
-+	struct smc_sock *smc;
- 
--	if (!smc)
--		return;
--	smc_fback_forward_wakeup(smc, clcsk, smc->clcsk_state_change);
-+	read_lock_bh(&clcsk->sk_callback_lock);
-+	smc = smc_clcsock_user_data(clcsk);
-+	if (smc)
-+		smc_fback_forward_wakeup(smc, clcsk,
-+					 smc->clcsk_state_change);
-+	read_unlock_bh(&clcsk->sk_callback_lock);
- }
- 
- static void smc_fback_data_ready(struct sock *clcsk)
- {
--	struct smc_sock *smc =
--		smc_clcsock_user_data(clcsk);
-+	struct smc_sock *smc;
- 
--	if (!smc)
--		return;
--	smc_fback_forward_wakeup(smc, clcsk, smc->clcsk_data_ready);
-+	read_lock_bh(&clcsk->sk_callback_lock);
-+	smc = smc_clcsock_user_data(clcsk);
-+	if (smc)
-+		smc_fback_forward_wakeup(smc, clcsk,
-+					 smc->clcsk_data_ready);
-+	read_unlock_bh(&clcsk->sk_callback_lock);
- }
- 
- static void smc_fback_write_space(struct sock *clcsk)
- {
--	struct smc_sock *smc =
--		smc_clcsock_user_data(clcsk);
-+	struct smc_sock *smc;
- 
--	if (!smc)
--		return;
--	smc_fback_forward_wakeup(smc, clcsk, smc->clcsk_write_space);
-+	read_lock_bh(&clcsk->sk_callback_lock);
-+	smc = smc_clcsock_user_data(clcsk);
-+	if (smc)
-+		smc_fback_forward_wakeup(smc, clcsk,
-+					 smc->clcsk_write_space);
-+	read_unlock_bh(&clcsk->sk_callback_lock);
- }
- 
- static void smc_fback_error_report(struct sock *clcsk)
- {
--	struct smc_sock *smc =
--		smc_clcsock_user_data(clcsk);
-+	struct smc_sock *smc;
- 
--	if (!smc)
--		return;
--	smc_fback_forward_wakeup(smc, clcsk, smc->clcsk_error_report);
-+	read_lock_bh(&clcsk->sk_callback_lock);
-+	smc = smc_clcsock_user_data(clcsk);
-+	if (smc)
-+		smc_fback_forward_wakeup(smc, clcsk,
-+					 smc->clcsk_error_report);
-+	read_unlock_bh(&clcsk->sk_callback_lock);
- }
- 
- static void smc_fback_replace_callbacks(struct smc_sock *smc)
- {
- 	struct sock *clcsk = smc->clcsock->sk;
- 
-+	write_lock_bh(&clcsk->sk_callback_lock);
- 	clcsk->sk_user_data = (void *)((uintptr_t)smc | SK_USER_DATA_NOCOPY);
- 
- 	smc_clcsock_replace_cb(&clcsk->sk_state_change, smc_fback_state_change,
-@@ -797,6 +822,8 @@ static void smc_fback_replace_callbacks(struct smc_sock *smc)
- 			       &smc->clcsk_write_space);
- 	smc_clcsock_replace_cb(&clcsk->sk_error_report, smc_fback_error_report,
- 			       &smc->clcsk_error_report);
-+
-+	write_unlock_bh(&clcsk->sk_callback_lock);
- }
- 
- static int smc_switch_to_fallback(struct smc_sock *smc, int reason_code)
-@@ -2368,17 +2395,20 @@ static void smc_tcp_listen_work(struct work_struct *work)
- 
- static void smc_clcsock_data_ready(struct sock *listen_clcsock)
- {
--	struct smc_sock *lsmc =
--		smc_clcsock_user_data(listen_clcsock);
-+	struct smc_sock *lsmc;
- 
-+	read_lock_bh(&listen_clcsock->sk_callback_lock);
-+	lsmc = smc_clcsock_user_data(listen_clcsock);
- 	if (!lsmc)
--		return;
-+		goto out;
- 	lsmc->clcsk_data_ready(listen_clcsock);
- 	if (lsmc->sk.sk_state == SMC_LISTEN) {
- 		sock_hold(&lsmc->sk); /* sock_put in smc_tcp_listen_work() */
- 		if (!queue_work(smc_tcp_ls_wq, &lsmc->tcp_listen_work))
- 			sock_put(&lsmc->sk);
- 	}
-+out:
-+	read_unlock_bh(&listen_clcsock->sk_callback_lock);
- }
- 
- static int smc_listen(struct socket *sock, int backlog)
-@@ -2410,10 +2440,12 @@ static int smc_listen(struct socket *sock, int backlog)
- 	/* save original sk_data_ready function and establish
- 	 * smc-specific sk_data_ready function
- 	 */
-+	write_lock_bh(&smc->clcsock->sk->sk_callback_lock);
- 	smc->clcsock->sk->sk_user_data =
- 		(void *)((uintptr_t)smc | SK_USER_DATA_NOCOPY);
- 	smc_clcsock_replace_cb(&smc->clcsock->sk->sk_data_ready,
- 			       smc_clcsock_data_ready, &smc->clcsk_data_ready);
-+	write_unlock_bh(&smc->clcsock->sk->sk_callback_lock);
- 
- 	/* save original ops */
- 	smc->ori_af_ops = inet_csk(smc->clcsock->sk)->icsk_af_ops;
-@@ -2428,9 +2460,11 @@ static int smc_listen(struct socket *sock, int backlog)
- 
- 	rc = kernel_listen(smc->clcsock, backlog);
- 	if (rc) {
-+		write_lock_bh(&smc->clcsock->sk->sk_callback_lock);
- 		smc_clcsock_restore_cb(&smc->clcsock->sk->sk_data_ready,
- 				       &smc->clcsk_data_ready);
- 		smc->clcsock->sk->sk_user_data = NULL;
-+		write_unlock_bh(&smc->clcsock->sk->sk_callback_lock);
- 		goto out;
- 	}
- 	sk->sk_max_ack_backlog = backlog;
-diff --git a/net/smc/smc_close.c b/net/smc/smc_close.c
-index 7bd1ef5..31db743 100644
---- a/net/smc/smc_close.c
-+++ b/net/smc/smc_close.c
-@@ -214,9 +214,11 @@ int smc_close_active(struct smc_sock *smc)
- 		sk->sk_state = SMC_CLOSED;
- 		sk->sk_state_change(sk); /* wake up accept */
- 		if (smc->clcsock && smc->clcsock->sk) {
-+			write_lock_bh(&smc->clcsock->sk->sk_callback_lock);
- 			smc_clcsock_restore_cb(&smc->clcsock->sk->sk_data_ready,
- 					       &smc->clcsk_data_ready);
- 			smc->clcsock->sk->sk_user_data = NULL;
-+			write_unlock_bh(&smc->clcsock->sk->sk_callback_lock);
- 			rc = kernel_sock_shutdown(smc->clcsock, SHUT_RDWR);
- 		}
- 		smc_close_cleanup_listen(sk);
--- 
-1.8.3.1
-
+SEkgS2FsbGUgVmFsbzoKCkF0IDIwMjItMDQtMjIgMTU6NDU6NTcsICJLYWxsZSBWYWxvIiA8a3Zh
+bG9Aa2VybmVsLm9yZz4gd3JvdGU6Cj5CZXJuYXJkIFpoYW8gPHpoYW9qdW5rdWkyMDA4QDEyNi5j
+b20+IHdyaXRlczoKPgo+PiBXaGVuIG10NzYwMXUgbG9hZGVkLCB0aGVyZSBhcmUgdHdvIGNhc2Vz
+Ogo+PiBGaXJzdCB3aGVuIG10NzYwMXUgaXMgbG9hZGVkLCBpbiBmdW5jdGlvbiBtdDc2MDF1X3By
+b2JlLCBpZgo+PiBmdW5jdGlvbiBtdDc2MDF1X3Byb2JlIHJ1biBpbnRvIGVycm9yIGxhYmxlIGVy
+cl9odywKPj4gbXQ3NjAxdV9jbGVhbnVwIGRpZG5gdCBjbGVhbnVwIHRoZSBkZWJ1Z2ZzIG5vZGUu
+Cj4+IFNlY29uZCB3aGVuIHRoZSBtb2R1bGUgZGlzY29ubmVjdCwgaW4gZnVuY3Rpb24gbXQ3NjAx
+dV9kaXNjb25uZWN0LAo+PiBtdDc2MDF1X2NsZWFudXAgZGlkbmB0IGNsZWFudXAgdGhlIGRlYnVn
+ZnMgbm9kZS4KPj4gVGhpcyBwYXRjaCBhZGQgZGVidWdmcyBleGl0IGZ1bmN0aW9uIGFuZCB0cnkg
+dG8gY2xlYW51cCBkZWJ1Z2ZzCj4+IG5vZGUgd2hlbiBtdDc2MDF1IGxvYWRlZCBmYWlsIG9yIHVu
+bG9hZGVkLgo+Pgo+PiBTaWduZWQtb2ZmLWJ5OiBCZXJuYXJkIFpoYW8gPHpoYW9qdW5rdWkyMDA4
+QDEyNi5jb20+Cj4+IC0tLQo+PiAgLi4uL25ldC93aXJlbGVzcy9tZWRpYXRlay9tdDc2MDF1L2Rl
+YnVnZnMuYyAgIHwgMjUgKysrKysrKysrKystLS0tLS0tLQo+PiAgZHJpdmVycy9uZXQvd2lyZWxl
+c3MvbWVkaWF0ZWsvbXQ3NjAxdS9pbml0LmMgIHwgIDUgKysrKwo+PiAgLi4uL25ldC93aXJlbGVz
+cy9tZWRpYXRlay9tdDc2MDF1L210NzYwMXUuaCAgIHwgIDQgKysrCj4+ICAzIGZpbGVzIGNoYW5n
+ZWQsIDI0IGluc2VydGlvbnMoKyksIDEwIGRlbGV0aW9ucygtKQo+Pgo+PiBkaWZmIC0tZ2l0IGEv
+ZHJpdmVycy9uZXQvd2lyZWxlc3MvbWVkaWF0ZWsvbXQ3NjAxdS9kZWJ1Z2ZzLmMgYi9kcml2ZXJz
+L25ldC93aXJlbGVzcy9tZWRpYXRlay9tdDc2MDF1L2RlYnVnZnMuYwo+PiBpbmRleCAyMDY2OWVh
+Y2I2NmUuLjFhZTNkNzVkM2M5YiAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy9uZXQvd2lyZWxlc3Mv
+bWVkaWF0ZWsvbXQ3NjAxdS9kZWJ1Z2ZzLmMKPj4gKysrIGIvZHJpdmVycy9uZXQvd2lyZWxlc3Mv
+bWVkaWF0ZWsvbXQ3NjAxdS9kZWJ1Z2ZzLmMKPj4gQEAgLTEyNCwxNyArMTI0LDIyIEBAIERFRklO
+RV9TSE9XX0FUVFJJQlVURShtdDc2MDF1X2VlcHJvbV9wYXJhbSk7Cj4+ICAKPj4gIHZvaWQgbXQ3
+NjAxdV9pbml0X2RlYnVnZnMoc3RydWN0IG10NzYwMXVfZGV2ICpkZXYpCj4+ICB7Cj4+IC0Jc3Ry
+dWN0IGRlbnRyeSAqZGlyOwo+PiAtCj4+IC0JZGlyID0gZGVidWdmc19jcmVhdGVfZGlyKCJtdDc2
+MDF1IiwgZGV2LT5ody0+d2lwaHktPmRlYnVnZnNkaXIpOwo+PiAtCWlmICghZGlyKQo+PiArCWRl
+di0+cm9vdF9kaXIgPSBkZWJ1Z2ZzX2NyZWF0ZV9kaXIoIm10NzYwMXUiLCBkZXYtPmh3LT53aXBo
+eS0+ZGVidWdmc2Rpcik7Cj4+ICsJaWYgKCFkZXYtPnJvb3RfZGlyKQo+PiAgCQlyZXR1cm47Cj4+
+ICAKPj4gLQlkZWJ1Z2ZzX2NyZWF0ZV91OCgidGVtcGVyYXR1cmUiLCAwNDAwLCBkaXIsICZkZXYt
+PnJhd190ZW1wKTsKPj4gLQlkZWJ1Z2ZzX2NyZWF0ZV91MzIoInRlbXBfbW9kZSIsIDA0MDAsIGRp
+ciwgJmRldi0+dGVtcF9tb2RlKTsKPj4gKwlkZWJ1Z2ZzX2NyZWF0ZV91OCgidGVtcGVyYXR1cmUi
+LCAwNDAwLCBkZXYtPnJvb3RfZGlyLCAmZGV2LT5yYXdfdGVtcCk7Cj4+ICsJZGVidWdmc19jcmVh
+dGVfdTMyKCJ0ZW1wX21vZGUiLCAwNDAwLCBkZXYtPnJvb3RfZGlyLCAmZGV2LT50ZW1wX21vZGUp
+Owo+PiArCj4+ICsJZGVidWdmc19jcmVhdGVfdTMyKCJyZWdpZHgiLCAwNjAwLCBkZXYtPnJvb3Rf
+ZGlyLCAmZGV2LT5kZWJ1Z2ZzX3JlZyk7Cj4+ICsJZGVidWdmc19jcmVhdGVfZmlsZSgicmVndmFs
+IiwgMDYwMCwgZGV2LT5yb290X2RpciwgZGV2LCAmZm9wc19yZWd2YWwpOwo+PiArCWRlYnVnZnNf
+Y3JlYXRlX2ZpbGUoImFtcGR1X3N0YXQiLCAwNDAwLCBkZXYtPnJvb3RfZGlyLCBkZXYsICZtdDc2
+MDF1X2FtcGR1X3N0YXRfZm9wcyk7Cj4+ICsJZGVidWdmc19jcmVhdGVfZmlsZSgiZWVwcm9tX3Bh
+cmFtIiwgMDQwMCwgZGV2LT5yb290X2RpciwgZGV2LCAmbXQ3NjAxdV9lZXByb21fcGFyYW1fZm9w
+cyk7Cj4+ICt9Cj4+ICAKPj4gLQlkZWJ1Z2ZzX2NyZWF0ZV91MzIoInJlZ2lkeCIsIDA2MDAsIGRp
+ciwgJmRldi0+ZGVidWdmc19yZWcpOwo+PiAtCWRlYnVnZnNfY3JlYXRlX2ZpbGUoInJlZ3ZhbCIs
+IDA2MDAsIGRpciwgZGV2LCAmZm9wc19yZWd2YWwpOwo+PiAtCWRlYnVnZnNfY3JlYXRlX2ZpbGUo
+ImFtcGR1X3N0YXQiLCAwNDAwLCBkaXIsIGRldiwgJm10NzYwMXVfYW1wZHVfc3RhdF9mb3BzKTsK
+Pj4gLQlkZWJ1Z2ZzX2NyZWF0ZV9maWxlKCJlZXByb21fcGFyYW0iLCAwNDAwLCBkaXIsIGRldiwg
+Jm10NzYwMXVfZWVwcm9tX3BhcmFtX2ZvcHMpOwo+PiArdm9pZCBtdDc2MDF1X2V4aXRfZGVidWdm
+cyhzdHJ1Y3QgbXQ3NjAxdV9kZXYgKmRldikKPj4gK3sKPj4gKwlpZiAoIWRldi0+cm9vdF9kaXIp
+Cj4+ICsJCXJldHVybjsKPj4gKwlkZWJ1Z2ZzX3JlbW92ZShkZXYtPnJvb3RfZGlyKTsKPgo+ZGVi
+dWdmc19yZW1vdmUoKSBoYXMgSVNfRVJSX09SX05VTEwoKSBjaGVjaywgc28gbm8gbmVlZCB0byBj
+aGVjayBmb3IKPm51bGwgaGVyZS4KR290IGl0LCB0aGFua3MhCgo+PiAgfQo+PiBkaWZmIC0tZ2l0
+IGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvbWVkaWF0ZWsvbXQ3NjAxdS9pbml0LmMgYi9kcml2ZXJz
+L25ldC93aXJlbGVzcy9tZWRpYXRlay9tdDc2MDF1L2luaXQuYwo+PiBpbmRleCA1ZDllOTUyYjI5
+NjYuLjFlOTA1ZWYyZWQxOSAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvbWVk
+aWF0ZWsvbXQ3NjAxdS9pbml0LmMKPj4gKysrIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvbWVkaWF0
+ZWsvbXQ3NjAxdS9pbml0LmMKPj4gQEAgLTQyNyw2ICs0MjcsOSBAQCB2b2lkIG10NzYwMXVfY2xl
+YW51cChzdHJ1Y3QgbXQ3NjAxdV9kZXYgKmRldikKPj4gIAltdDc2MDF1X3N0b3BfaGFyZHdhcmUo
+ZGV2KTsKPj4gIAltdDc2MDF1X2RtYV9jbGVhbnVwKGRldik7Cj4+ICAJbXQ3NjAxdV9tY3VfY21k
+X2RlaW5pdChkZXYpOwo+PiArI2lmZGVmIENPTkZJR19ERUJVR19GUwo+PiArCW10NzYwMXVfZXhp
+dF9kZWJ1Z2ZzKGRldik7Cj4+ICsjZW5kaWYKPj4gIH0KPj4gIAo+PiAgc3RydWN0IG10NzYwMXVf
+ZGV2ICptdDc2MDF1X2FsbG9jX2RldmljZShzdHJ1Y3QgZGV2aWNlICpwZGV2KQo+PiBAQCAtNjI1
+LDcgKzYyOCw5IEBAIGludCBtdDc2MDF1X3JlZ2lzdGVyX2RldmljZShzdHJ1Y3QgbXQ3NjAxdV9k
+ZXYgKmRldikKPj4gIAlpZiAocmV0KQo+PiAgCQlyZXR1cm4gcmV0Owo+PiAgCj4+ICsjaWZkZWYg
+Q09ORklHX0RFQlVHX0ZTCj4+ICAJbXQ3NjAxdV9pbml0X2RlYnVnZnMoZGV2KTsKPj4gKyNlbmRp
+Zgo+Cj5BcmUgdGhlc2UgdHdvIGlmZGVmcyByZWFsbHkgbmVlZGVkPyBkZWJ1Z2ZzIGZ1bmN0aW9u
+cyBhcmUgZW1wdHkKPmZ1bmN0aW9ucyB3aGVuIENPTkZJR19ERUJVR19GUyBpcyBkaXNhYmxlZC4K
+SWZkZWYgZG9lc24ndCBzZWVtIHRvIG1ha2UgbXVjaCBzZW5zZSwgdGhhbmtzIGZvciB5b3VyIGFk
+dmljZSEKCj4+IC0tLSBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL21lZGlhdGVrL210NzYwMXUvbXQ3
+NjAxdS5oCj4+ICsrKyBiL2RyaXZlcnMvbmV0L3dpcmVsZXNzL21lZGlhdGVrL210NzYwMXUvbXQ3
+NjAxdS5oCj4+IEBAIC0yNDIsNiArMjQyLDkgQEAgc3RydWN0IG10NzYwMXVfZGV2IHsKPj4gIAl1
+MzIgcmZfcGFfbW9kZVsyXTsKPj4gIAo+PiAgCXN0cnVjdCBtYWNfc3RhdHMgc3RhdHM7Cj4+ICsj
+aWZkZWYgQ09ORklHX0RFQlVHX0ZTCj4+ICsJc3RydWN0IGRlbnRyeSAqcm9vdF9kaXI7Cj4+ICsj
+ZW5kaWYKPgo+SSB3b3VsZCByZW1vdmUgdGhpcyBpZmRlZiwgaXQncyBqdXN0IHNhdmluZyBvbmUg
+cG9pbnRlciBzaXplLiBMZXNzCj5pZmRlZnMgd2UgaGF2ZSB0aGUgYmV0dGVyLgpJIHdvdWxkIG1v
+ZGlmeSB0aGUgY29kZSBhbmQgcmVzdWJtaXQgYSBwYXRjaCwgdGhhbmsgeW91IHZlcnkgbXVjaCEK
+CkJSLy9CZXJuYXJkCj4tLSAKPmh0dHBzOi8vcGF0Y2h3b3JrLmtlcm5lbC5vcmcvcHJvamVjdC9s
+aW51eC13aXJlbGVzcy9saXN0Lwo+Cj5odHRwczovL3dpcmVsZXNzLndpa2kua2VybmVsLm9yZy9l
+bi9kZXZlbG9wZXJzL2RvY3VtZW50YXRpb24vc3VibWl0dGluZ3BhdGNoZXMK
