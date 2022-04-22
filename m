@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E0C2850B4CB
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 12:16:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D02850B4D0
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 12:16:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446467AbiDVKSk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Apr 2022 06:18:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52204 "EHLO
+        id S1446469AbiDVKSn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Apr 2022 06:18:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353984AbiDVKSV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 06:18:21 -0400
+        with ESMTP id S1446464AbiDVKSe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 06:18:34 -0400
 Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70049.outbound.protection.outlook.com [40.107.7.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30EFC30571
-        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 03:15:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AB06329A9
+        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 03:15:31 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UxqWeprz12jJftiMfem1K5qa7hkUU+EBdwu0fjcDScRMb5/mOIBwtUXJ0G+o6JpmaUikbY1s+o5dVZsGuf0ZEK26muqMtRPlCo+/9zSnws2fz5yCW2m7n1lOVg+yK/AqY2a3gD1q/EXACEZp9RHOd9njRDo3ZjXjHGoW4/fpk6Nrn+CUVNENT/lBIw6Yd6mHk6CGPweD1I3sSFzYtFv0SzXbGPy4MyGkiYUIp6mOD7ShukyJirnOqYtUgGTtp+EYgEREwv0RGmAX5B9o7PN7rr0qSuChud7V4BQp1xOS2inx4yZzszShyUkux8WjQTQxgh/PtiR21PzI2uA53Jjzog==
+ b=SNm4lNRgvp2GEChB0yvqAh5/4KZ7m3Xemc8q+sa0bisCQOzFa8uy13ahrZV3KQb74w7hfKIiS2PoqlRYmeZQSK5wWX3FdmkmtiWuOlFIcnkU+rDbmVK0CBMfay+s1hrn8nRsvL1RQnE2HOdEwKyhWHMIz7QPUdTQu822qPOzQ2/75aCbDQ6mlVqi2II058z6W5ZB0hXQb4h5fHSDQpf4NAqrjLZG9jvtOoCklVN4TA0VG7PH2YVpGHyTXd6KSOMDAOuTTjOvjNODZh4aT+Fjm792pzHhaN4wn9uhylH4zsVOsqkwCJVDfAd/kudLzhViWXuRx/DNgqD4RLs5cEH6vQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Jt4d+IS8gg0NxBZDCnI8FEk3BrIouluT6r4s5pkKDSo=;
- b=El4j8QjvYS+Nlu7IFEmx/Myo9dnwPKvg70IKN0ZbCme6sZ/md+Rt0bw3snwrQB39C3YEv+aDTZVujFXCmuYM8gxMLBmVJFOt2YZufw5XIUOXjKv5fpYfNGtUy4rLufPJDZ6dpOey940ArEyJ0Y0I2O9SyxBFT//EXMe5s2BftoC5kre6PFotuqfzP0HCbrZJcIZk/gcWp9tAf/fiEQ9+jddNixCN3iDSNUuQr9qq/h94QlqywZceiJntQuugmOctMi/INS9LNGc91eUqmVyEEsaDdSNHDsAJe1FIEO8jY38TPWlW3ba0W9G3Og2ik1L2RSVRHgQkhcUWSvGQnMIZzQ==
+ bh=rglzcloAro3lBMip8aZQ6Ic+gAjm48vqecjyiEHeSnw=;
+ b=YMxn2vKKScHm1HPt2DqLzXZ9ocyGZrwABmyiP08vY93++MMxeoi34tUQlYYv8oicmBd39mg1STU5edxkiKUXcK08NudIQe4PSgdRxYP7+aFRYSI3rBVMXc8XeXXo41Rk48ogh4VtZVruEDP1pJNe/foFXhU1+1vZ2QzY7JRJL95WINCI4cPaABseIRoqQy6sTfXLa4VcMy3BKXujiUco904QrgH8Lk0ih0NNRpD1G0KKdjubtrSB+MJq8zTR7rQylRpEGlrkIIeZ+ZxLjJPJy4JPADCaa9HduAE4CZR8pfmO4hNU3B+2NQztrxIH/Z4R0SxRiu4HIv+qxHC2yLNARQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Jt4d+IS8gg0NxBZDCnI8FEk3BrIouluT6r4s5pkKDSo=;
- b=CjqMnlbPHefXWj4m03JmRGum7jUpMPkjVdYE7cKr7grpzm5qXoo2LrQjfz0NDyxYbXcK7gEo7jJ9nmGhSkwbW7WfYl0Az9o0XovVLYx8QreJJSy5M9jRybrwMIYnCjtqZajOoqAXo2AI6NzLK2LZTzydEihBt8B6nkpJgUyh6o4=
+ bh=rglzcloAro3lBMip8aZQ6Ic+gAjm48vqecjyiEHeSnw=;
+ b=br6+jrnQbelSWXXO09OvoULJh6Vdpj9saxf7Qu55JxaW/V6aPoGXNlyFt7D8Gi098HpIrPeIU+qnRmE2Fum21G9YuWnnzbBfZi4S/SWRCgpA5ZqlvZDliC8FuZ6kJtDQbZsJYvQ/gqUOUU2WgzpNzG1QWcyR7S9G3cUnDCd9SYE=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR0402MB3856.eurprd04.prod.outlook.com (2603:10a6:803:21::24) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Fri, 22 Apr
- 2022 10:15:25 +0000
+ 2022 10:15:26 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::8ed:49e7:d2e7:c55e]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::8ed:49e7:d2e7:c55e%3]) with mapi id 15.20.5164.025; Fri, 22 Apr 2022
- 10:15:25 +0000
+ 10:15:26 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -61,9 +61,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         DENG Qingfang <dqfext@gmail.com>,
         Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH net-next 6/8] selftests: forwarding: add a no_forwarding.sh test
-Date:   Fri, 22 Apr 2022 13:15:02 +0300
-Message-Id: <20220422101504.3729309-7-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 7/8] selftests: forwarding: add a test for local_termination.sh
+Date:   Fri, 22 Apr 2022 13:15:03 +0300
+Message-Id: <20220422101504.3729309-8-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220422101504.3729309-1-vladimir.oltean@nxp.com>
 References: <20220422101504.3729309-1-vladimir.oltean@nxp.com>
@@ -74,55 +74,55 @@ X-ClientProxiedBy: VI1P195CA0057.EURP195.PROD.OUTLOOK.COM
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5dfc18a0-f365-4389-cfdc-08da24490415
+X-MS-Office365-Filtering-Correlation-Id: 5aa93866-58b9-4a6f-4f20-08da244904ba
 X-MS-TrafficTypeDiagnostic: VI1PR0402MB3856:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB3856C790E41B1283A9B3C4D2E0F79@VI1PR0402MB3856.eurprd04.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB385657F84AE7370BC43FF708E0F79@VI1PR0402MB3856.eurprd04.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vT8PY9NY0AGsCeZA9omXRzQMg4uhOcRhMIT57W618aTLWEGwPOQoaX+uKXq/eBvCVTeJYvN8P2D/+woMlqGdylr4kjsCfYW1qRG70XxT6QwdXWu7pbtuBv53oZPgEGNR645cxY6V+qU4eo+oS4P8+leIyCDLYlrkjQ3fa/eosVTolkZwPdLYW4nIWhVF8gV7C1FtYuEUYyrhMYJL6v/RKHXdgApjR3Kme0eMkfaUCpqdOD11mi8AHZ575R68XJON1JTDUR1E+59UXKu3Mwn4SSULoLER/65Jil7U67bArYfUt+8m+z3qqLcV74FMyPqeQr9nROGiNB/Jkwr5YOs11s9dh0Lwl08WbVjfOEni3on+RNePYyH57sqzSX89SgY5xMSZUWNOMXTBlkqAX/OKqGNdfUe8c5pCTTYDm3U/h2Np21fJXq8PkqVYquFz6NdalivNMg/8NCOF7uk3sVIotNv/2vptn83Kuie4XRiiaMnbns1P1NjB5CnwTOU+C1cZCAcPPgkiU0g8IuJnKt8WoYlgctREaApN62EjggJkTfhNertolm2LdBXeNU/HmFzFzMWY8HL/mZbZyO1Kq3RS7qsSFaC2fEqiYO1EgV+ilhsiGIaixhzLLZf4SQTo+ztZMxBskkdHeb7JO76OP//sk2Gl7Xysnwh9v363rVhl4SRtkw9nKFNsug53np+gXuYCLcxQn8wznOERbUZsATmzqA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6506007)(5660300002)(36756003)(86362001)(52116002)(8936002)(2616005)(40140700001)(6666004)(6486002)(508600001)(1076003)(186003)(44832011)(26005)(38100700002)(6512007)(2906002)(316002)(38350700002)(6916009)(66556008)(66476007)(54906003)(66946007)(7416002)(8676002)(4326008);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: DzRpZntMCm1fdMK6zqDtdOrI27hdqhlBlHZtOwq6zYEdXwYa7cw5HnYU1bkaB23OyrYt667bExWLTP6/qNPt5F84zunpUr0PGH1Za2xDHRB/AtxGYX0xJ35gJ4KwmDvKXjyIQew+dIDeLAxU3SmYENxO7gkrs7+z1pr2ui/yAXUApHigqZaR7PVDAMsD6bWbDG39JQ5m7c0ds37kAU+Fd2eHnxf71nw8VUNv/ly9GLF6nWb8LM6pVIDilZUNN5ssKdP5EWEakFM3GgyfMd0q7/gmW9iEvFzGbodjUO8JcpVt5AjIDm+QgrU3yFQBXULdGd1bq4quKhjCrbJY1YUuYJJ1a+FA3h+f7eo9lETniF+07o8suhJRGV7OE+FEDE1e2GVz29560dxnn63IkDJru7+jFyWv2udjTEvQAx86rCx/0in+/h8iKW7XKaHpX7r8GN6Ngxrkfd1XCTO3wLoWtek40dXKS1tR3Cp4sh2zLh/79hfoGsZzmfdiAIeNPLNY+Op+YPSo0TTrz9Y5mF4lWn9KSz0sdcP/2qO7RXTvtlTfoNNO7UPe+xLL2KmOXg72bmiGAdscv4wgToxK1Y+o+/6rcWOZb6XMCCzF7G/T3YkwZczwcsmWhhFWvpBcX1ogjknxiYhG4md3oavZcCLN6JOBXKeI0Fa06z6cKbjQ6yd62MYCWqGC7Yg1rselIPJwbcwDr8co6+X9ZTUlOUeueA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6506007)(5660300002)(36756003)(86362001)(52116002)(8936002)(2616005)(6666004)(6486002)(508600001)(1076003)(186003)(44832011)(26005)(38100700002)(6512007)(83380400001)(2906002)(316002)(38350700002)(6916009)(66556008)(66476007)(54906003)(66946007)(7416002)(8676002)(4326008);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4LW5o6/024jVPcJ50U/13SccP1l0CwPmDzHzk0q5xw3rDR9CbkmWcGP0w20N?=
- =?us-ascii?Q?oJ+iyPO5MnkMV8FqHAhQLe5JJA5lMsas4sa065Btc8T7BArCPiTJimLan0cK?=
- =?us-ascii?Q?JZI3brobR5nPUqA1F6iZ89ZzHJLJ/FAjX93hApepcAnQVpzAs3QYetNkm48Q?=
- =?us-ascii?Q?f18TuqZHw4a/1CbTTN1QZETreisau2Zlbqv4g66PWBI4qywGD3beJs9rIu11?=
- =?us-ascii?Q?tZPCpPfv+VqFUDa3xxbDUMKgHsmXlk4JO0BWHO84JqkH2aWFQQrrQCMxJAs9?=
- =?us-ascii?Q?9S577lZxRFiz1kaqT66aNM3xF/SBMlbPzpp7et2NRz+XzdjlGQzrNsLKkDW9?=
- =?us-ascii?Q?HUPX8P7C5MuRWVrrTCgfs16Hgt2fAOzMe2B88w4w5m/+EFV96Sqp8OO9U//9?=
- =?us-ascii?Q?lFTiMPKl4keHXdddaXZPonsDBn50YUlrJAaRQ02cNf/NSjHi0eVdVemWHora?=
- =?us-ascii?Q?k1iGpSaVaZUKY7ehee+Wmjcp6ikFAiz9JXDrt5hMVDROWnqgBzIS5/mHI3bH?=
- =?us-ascii?Q?LHQPTZW9A6GJKO6t/je3i6HKaBPeifPD26kctQBLWYlrurWY/ZLgEvDos6VV?=
- =?us-ascii?Q?pF3t8En/cdDGQSSOrGkpgSb4QkkSPy1cIO0l450+wKoHBqzcv8MOUdeWqON0?=
- =?us-ascii?Q?KOV6xScvKFY5Rqmk3hWEAixn6RJoJHy2OT9z+FetBJt2lqO9hEkEBrceLgdU?=
- =?us-ascii?Q?MRV1ZcPNoWfucFgUkptLaA31DoRoBHOA7kYfC38B13mi7JS5Utg+uLw26hXZ?=
- =?us-ascii?Q?EzvYi7dAfavg5j3LB9MzqhfHipYh0kH1X/WjXcrMQ/bPxTf9tZHvoTOJ33g/?=
- =?us-ascii?Q?VydmWzp35NjabGHb4N6GWn5IYg3NArOBU5c8lewiMDEf1j1sNZ0wbTmIA3bz?=
- =?us-ascii?Q?J9gQH7S/heN3EDsgPD8LroupJp6PT3lokZFpEOZgsK7+dbkC89nIhgyZsJv5?=
- =?us-ascii?Q?I6JOuNI2qZjjfc82QSzXYlA3lp08azx3DiWMgsMmD90dZRyisBVzhMv3LQVy?=
- =?us-ascii?Q?75USFcki/D69C9rVi2cwaMemzDz5q8SRxSTb/hrtSAzdjFpvzKHPXhni78jG?=
- =?us-ascii?Q?oWibeAS9WRiG0kXodOA8HfLu6dTpZnsB2K8sgJBq3CdtmZ5yj+OtuR/i7k2e?=
- =?us-ascii?Q?YZ6r6BJyhwiQpgxuTp5tRytucOYH9ZO9LrLRD6SRy3IGo1a0OP3uV602BsZZ?=
- =?us-ascii?Q?Q8jH9X1hQVT6hW214Tmw4oL3lNJmJcj6hy4TD5NOvaHmW1vXSXg97GOA0WME?=
- =?us-ascii?Q?1VJ/ttNTXCnoYGYPuy+vR8qxWwgGIocXLHHBo11bTXq1ycb5mgZNpm35zTfW?=
- =?us-ascii?Q?O0Ru3Vk59G8NSVcPqhtW19iFBpNsXmAoA5avtL2dFRQJBozVxhWaS4HDTuuO?=
- =?us-ascii?Q?Xse3vPoHjM2PMOMdlMTgXd92iq8fPD8fjgte0eF56nLf+ACQZ4CQSOqWxgbZ?=
- =?us-ascii?Q?10lU1MWnm88+EfNhwbD9ibUEMpd/ITftTwZ6xhJKPK2BZat+UfZTWjimPERt?=
- =?us-ascii?Q?2MFzxIcbWUWfd4AF6gc3MFBP+/xD7rsUBaHdwLYpJy/+sZUataill5mBe7N3?=
- =?us-ascii?Q?0FCvkgreGcVj0km7RL5jd7qxQTmiXe1y2MO2ugnIU/05T35qAeP1U2eu+iM3?=
- =?us-ascii?Q?vmSsu/RWPoG8pyoTMdfO6RjtjyUjjgrl3kS3iEWKTVP9NsnHBzajXjjnU1Bp?=
- =?us-ascii?Q?Qp9fFE2AjRmp5FCKKDmFXmwqBAdaOPCBB5Z2iFaGFhNRyjDy7SfO6ac4n5s2?=
- =?us-ascii?Q?RvZh1f+LaP6Lc13l1cS3Oogb/vEJ0SY=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?rrbmZfI/SrdjeTSpkC4brIMux3LzHjb7AnDF8HGI4YB0GsxCOvkqXealZ6Gf?=
+ =?us-ascii?Q?S77tv0oxDKwiyK3x2bKIf7Cg7nY3aAtnyOU+OBvVMvTiP1Wa73Wv9K8re51T?=
+ =?us-ascii?Q?aUDCQghzz+EYGkQJ6SW/3OvIwzchgJfQtoouBywI0StfxXLnBDgla4h3dnNY?=
+ =?us-ascii?Q?yaix8R9ALYD19JpQ0AzMuauCaCM/jzjUW8RrCqEltYFakTXWns/kJ6i1ARjL?=
+ =?us-ascii?Q?8+eFds2LPaAlzy3mxjgTSgq7o6xIFikjOgqaSXVlxYtMkJoVGXx6p69e8Jck?=
+ =?us-ascii?Q?BPV9oEsXL9duDmz6rnaxg4swgczNTx/RmLE2lLoh5gFJptfp2XxHPYI5zVDa?=
+ =?us-ascii?Q?g+VNNFa1+TyBialTXxk4YS0trfngpYB+2peRCLDUwZ7A1JUQr0p70H3sCOcW?=
+ =?us-ascii?Q?yTSIL9rg20RgkV0hzLMhJSDU+fFis5WkUhuDyDahJq2ls9mSdnG0qLBCWfRj?=
+ =?us-ascii?Q?kjweze6d5L/SOyQiv6wfg9HejEZko/L5FnlMe95+pNN4RK2nRAB1uE3MuZQ8?=
+ =?us-ascii?Q?9s0IoCJ7FYgdMA4WSDV+3M2dPmX4Eua8DBGr008rtCH4qfz35ITe/sKfS7z4?=
+ =?us-ascii?Q?XHq0fOY7XSy5B1pIFwnHvjn+VL6yOvlgtn4hYdCuPYsnwigV51A973oL0XaU?=
+ =?us-ascii?Q?pfnMmILYdpMsrINU++YAOalAX0qfFjHAMB8xRfWixjuT0NBdUC/3z0Vv00Tl?=
+ =?us-ascii?Q?pJIwB4S882tsf+WNKIVKJFkrF+BYYUFABi6q7RHxyrl4UGr5Fd+UPhXVme3+?=
+ =?us-ascii?Q?j/fllNDme4O+fdlA03iIpes+3LSofX2HwpGVB/+PwhL05gY2ZsCdmpNozP/R?=
+ =?us-ascii?Q?YPMEcTlfg8L/JxZwp/CBS9irxvfn52W/52pKLEYmRDW53g8LhO0IxeadojfO?=
+ =?us-ascii?Q?+j+0zAD0BFPyGqfmRlPcDiE1xhfeBnhcuYcuxltYKIhi9w/jJ2F5H8RmkciL?=
+ =?us-ascii?Q?fUwTG5cEchOU1t6Y5A7pNAbCou6FKtpzHqo2n3c1Yk/XiraPQBhl4H7xr2m8?=
+ =?us-ascii?Q?caoPir7KnD4Qf7kYBL+xvNd/5LBjnbqAqiHbl0E+LCNOlCT3rbAEDVMqslrc?=
+ =?us-ascii?Q?Lzd59wUuj7qnoyTnTGXHTIN16Xf2cpxayEc+XXF+HLTY5svHZrIEelKI+wo0?=
+ =?us-ascii?Q?r5H0kISb+EIovZH/dpz0qpJQ1DcXkNv9G2fd6GGYZXMQyTwEw76fr1tRum7v?=
+ =?us-ascii?Q?qlLqrf3XrXGGFhD/7VaVQa/77Lli33Buh8YCzNBW40SKhhJhSvfcymW+QUNz?=
+ =?us-ascii?Q?Qe1PHJvMim/zvv6tib4ZRGeW3SpjaY0mg4oabmmID9oGzP/P7f4RqAYknAbI?=
+ =?us-ascii?Q?VSsMA0ENRG+fWsyWUaJF1rCzimMcm2WIAhCoG395VHbuiLwEPk/0hJIDKSzs?=
+ =?us-ascii?Q?YYukZRjtCdNtrkxfx3D4cr3PJUIAh/1gCa7v4amfGSPGkNqTbADJcz1Gizsz?=
+ =?us-ascii?Q?POZ5vCIe2uoqACQhfCSvubfA18FJDBaUmkb76BRzBQHkrJBdXc7uJDZEJhmd?=
+ =?us-ascii?Q?r3hILHVm7a2qrb5MIFSsZ+XEg3Cii5dafqHZgdtiZVdgf3U0XBJNBorzopKb?=
+ =?us-ascii?Q?OgPyFjX2o3+fuJlQ4aSyjEdUquroKaS+68gOL/okGYu4flfvGJF9Q64xA/ZW?=
+ =?us-ascii?Q?l42UfNhbIFmVXsrU8XO3tq1FZt1sWxsiuHB6QWnegV76tcDiKlZTje8eP5sK?=
+ =?us-ascii?Q?Ri0Xx0DBbHEECwb7icTu7hAiYHMxenvsiuWAhNXojEc9usFCB2CLnB5bu7FJ?=
+ =?us-ascii?Q?W1toKfw/efAi+UpAMc27qjABHj48WQA=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5dfc18a0-f365-4389-cfdc-08da24490415
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5aa93866-58b9-4a6f-4f20-08da244904ba
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2022 10:15:25.0315
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2022 10:15:26.1252
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NsBP3YcA84a5o0NZPeWx7xfonIOv97i4kXslGWsq7FSXpeBKW0m3BqI9/5dod4VwjulFZ33OuGlbtKzrKeZR2A==
+X-MS-Exchange-CrossTenant-UserPrincipalName: y4BSB82PGjTNPoSubT3ttcismbwDYsrtEzaReQVqfUWwQwd6/e6Q/1lbJjADT0DeT59wFZH47XHZ8qf3KG4vdQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3856
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -134,53 +134,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bombard a standalone switch port with various kinds of traffic to ensure
-it is really standalone and doesn't leak packets to other switch ports.
-Also check for switch ports in different bridges, and switch ports in a
-VLAN-aware bridge but having different pvids. No forwarding should take
-place in either case.
+This tests the capability of switch ports to filter out undesired
+traffic. Different drivers are expected to have different capabilities
+here (so some may fail and some may pass), yet the test still has some
+value, for example to check for regressions.
+
+There are 2 kinds of failures, one is when a packet which should have
+been accepted isn't (and that should be fixed), and the other "failure"
+(as reported by the test) is when a packet could have been filtered out
+(for being unnecessary) yet it was received.
+
+The bridge driver fares particularly badly at this test:
+
+TEST: br0: Unicast IPv4 to primary MAC address                      [ OK ]
+TEST: br0: Unicast IPv4 to macvlan MAC address                      [ OK ]
+TEST: br0: Unicast IPv4 to unknown MAC address                      [FAIL]
+        reception succeeded, but should have failed
+TEST: br0: Unicast IPv4 to unknown MAC address, promisc             [ OK ]
+TEST: br0: Unicast IPv4 to unknown MAC address, allmulti            [FAIL]
+        reception succeeded, but should have failed
+TEST: br0: Multicast IPv4 to joined group                           [ OK ]
+TEST: br0: Multicast IPv4 to unknown group                          [FAIL]
+        reception succeeded, but should have failed
+TEST: br0: Multicast IPv4 to unknown group, promisc                 [ OK ]
+TEST: br0: Multicast IPv4 to unknown group, allmulti                [ OK ]
+TEST: br0: Multicast IPv6 to joined group                           [ OK ]
+TEST: br0: Multicast IPv6 to unknown group                          [FAIL]
+        reception succeeded, but should have failed
+TEST: br0: Multicast IPv6 to unknown group, promisc                 [ OK ]
+TEST: br0: Multicast IPv6 to unknown group, allmulti                [ OK ]
+
+mainly because it does not implement IFF_UNICAST_FLT. Yet I still think
+having the test (with the failures) is useful in case somebody wants to
+tackle that problem in the future, to make an easy before-and-after
+comparison.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- .../selftests/net/forwarding/no_forwarding.sh | 261 ++++++++++++++++++
- 1 file changed, 261 insertions(+)
- create mode 100755 tools/testing/selftests/net/forwarding/no_forwarding.sh
+ .../net/forwarding/local_termination.sh       | 299 ++++++++++++++++++
+ 1 file changed, 299 insertions(+)
+ create mode 100755 tools/testing/selftests/net/forwarding/local_termination.sh
 
-diff --git a/tools/testing/selftests/net/forwarding/no_forwarding.sh b/tools/testing/selftests/net/forwarding/no_forwarding.sh
+diff --git a/tools/testing/selftests/net/forwarding/local_termination.sh b/tools/testing/selftests/net/forwarding/local_termination.sh
 new file mode 100755
-index 000000000000..af3b398d13f0
+index 000000000000..c5b0cbc85b3e
 --- /dev/null
-+++ b/tools/testing/selftests/net/forwarding/no_forwarding.sh
-@@ -0,0 +1,261 @@
++++ b/tools/testing/selftests/net/forwarding/local_termination.sh
+@@ -0,0 +1,299 @@
 +#!/bin/bash
 +# SPDX-License-Identifier: GPL-2.0
 +
-+ALL_TESTS="standalone two_bridges one_bridge_two_pvids"
-+NUM_NETIFS=4
++ALL_TESTS="standalone bridge"
++NUM_NETIFS=2
++PING_COUNT=1
++REQUIRE_MTOOLS=yes
++REQUIRE_MZ=no
 +
 +source lib.sh
-+
-+h1=${NETIFS[p1]}
-+h2=${NETIFS[p3]}
-+swp1=${NETIFS[p2]}
-+swp2=${NETIFS[p4]}
 +
 +H1_IPV4="192.0.2.1"
 +H2_IPV4="192.0.2.2"
 +H1_IPV6="2001:db8:1::1"
 +H2_IPV6="2001:db8:1::2"
 +
-+IPV4_ALLNODES="224.0.0.1"
-+IPV6_ALLNODES="ff02::1"
-+MACV4_ALLNODES="01:00:5e:00:00:01"
-+MACV6_ALLNODES="33:33:00:00:00:01"
++BRIDGE_ADDR="00:00:de:ad:be:ee"
++MACVLAN_ADDR="00:00:de:ad:be:ef"
++UNKNOWN_UC_ADDR1="de:ad:be:ef:ee:03"
++UNKNOWN_UC_ADDR2="de:ad:be:ef:ee:04"
++UNKNOWN_UC_ADDR3="de:ad:be:ef:ee:05"
++JOINED_IPV4_MC_ADDR="225.1.2.3"
++UNKNOWN_IPV4_MC_ADDR1="225.1.2.4"
++UNKNOWN_IPV4_MC_ADDR2="225.1.2.5"
++UNKNOWN_IPV4_MC_ADDR3="225.1.2.6"
++JOINED_IPV6_MC_ADDR="ff2e::0102:0304"
++UNKNOWN_IPV6_MC_ADDR1="ff2e::0102:0305"
++UNKNOWN_IPV6_MC_ADDR2="ff2e::0102:0306"
++UNKNOWN_IPV6_MC_ADDR3="ff2e::0102:0307"
++
++JOINED_MACV4_MC_ADDR="01:00:5e:01:02:03"
++UNKNOWN_MACV4_MC_ADDR1="01:00:5e:01:02:04"
++UNKNOWN_MACV4_MC_ADDR2="01:00:5e:01:02:05"
++UNKNOWN_MACV4_MC_ADDR3="01:00:5e:01:02:06"
++JOINED_MACV6_MC_ADDR="33:33:01:02:03:04"
++UNKNOWN_MACV6_MC_ADDR1="33:33:01:02:03:05"
++UNKNOWN_MACV6_MC_ADDR2="33:33:01:02:03:06"
++UNKNOWN_MACV6_MC_ADDR3="33:33:01:02:03:07"
++
 +NON_IP_MC="01:02:03:04:05:06"
 +NON_IP_PKT="00:04 48:45:4c:4f"
 +BC="ff:ff:ff:ff:ff:ff"
 +
-+# The full 4K VLAN space is too much to check, so strategically pick some
-+# values which should provide reasonable coverage
-+vids=(0 1 2 5 10 20 50 100 200 500 1000 1000 2000 4000 4094)
++# Disable promisc to ensure we don't receive unknown MAC DA packets
++export TCPDUMP_EXTRA_FLAGS="-pl"
++
++h1=${NETIFS[p1]}
++h2=${NETIFS[p2]}
 +
 +send_non_ip()
 +{
@@ -201,166 +249,140 @@ index 000000000000..af3b398d13f0
 +	ip neigh del $H2_IPV4 dev $if_name
 +}
 +
-+send_mc_ipv4()
-+{
-+	local if_name=$1
-+
-+	ping_do $if_name $IPV4_ALLNODES "-I $if_name"
-+}
-+
-+send_uc_ipv6()
-+{
-+	local if_name=$1
-+	local dmac=$2
-+
-+	ip -6 neigh add $H2_IPV6 lladdr $dmac dev $if_name
-+	ping6_do $if_name $H2_IPV6
-+	ip -6 neigh del $H2_IPV6 dev $if_name
-+}
-+
-+send_mc_ipv6()
-+{
-+	local if_name=$1
-+
-+	ping6_do $if_name $IPV6_ALLNODES%$if_name
-+}
-+
 +check_rcv()
 +{
 +	local if_name=$1
 +	local type=$2
 +	local pattern=$3
-+	local should_fail=1
++	local should_receive=$4
++	local should_fail=
 +
++	[ $should_receive = true ] && should_fail=0 || should_fail=1
 +	RET=0
 +
 +	tcpdump_show $if_name | grep -q "$pattern"
 +
 +	check_err_fail "$should_fail" "$?" "reception"
 +
-+	log_test "$type"
++	log_test "$if_name: $type"
++}
++
++mc_route_prepare()
++{
++	local if_name=$1
++	local vrf_name=$(master_name_get $if_name)
++
++	ip route add 225.100.1.0/24 dev $if_name vrf $vrf_name
++	ip -6 route add ff2e::/64 dev $if_name vrf $vrf_name
++}
++
++mc_route_destroy()
++{
++	local if_name=$1
++	local vrf_name=$(master_name_get $if_name)
++
++	ip route del 225.100.1.0/24 dev $if_name vrf $vrf_name
++	ip -6 route del ff2e::/64 dev $if_name vrf $vrf_name
 +}
 +
 +run_test()
 +{
-+	local test_name="$1"
++	local rcv_if_name=$1
 +	local smac=$(mac_get $h1)
-+	local dmac=$(mac_get $h2)
-+	local h1_ipv6_lladdr=$(ipv6_lladdr_get $h1)
-+	local vid=
++	local rcv_dmac=$(mac_get $rcv_if_name)
 +
-+	echo "$test_name: Sending packets"
++	tcpdump_start $rcv_if_name
 +
-+	tcpdump_start $h2
++	mc_route_prepare $h1
++	mc_route_prepare $rcv_if_name
 +
-+	send_non_ip $h1 $smac $dmac
-+	send_non_ip $h1 $smac $NON_IP_MC
-+	send_non_ip $h1 $smac $BC
-+	send_uc_ipv4 $h1 $dmac
-+	send_mc_ipv4 $h1
-+	send_uc_ipv6 $h1 $dmac
-+	send_mc_ipv6 $h1
++	send_uc_ipv4 $h1 $rcv_dmac
++	send_uc_ipv4 $h1 $MACVLAN_ADDR
++	send_uc_ipv4 $h1 $UNKNOWN_UC_ADDR1
 +
-+	for vid in "${vids[@]}"; do
-+		vlan_create $h1 $vid
-+		simple_if_init $h1.$vid $H1_IPV4/24 $H1_IPV6/64
++	ip link set dev $rcv_if_name promisc on
++	send_uc_ipv4 $h1 $UNKNOWN_UC_ADDR2
++	mc_send $h1 $UNKNOWN_IPV4_MC_ADDR2
++	mc_send $h1 $UNKNOWN_IPV6_MC_ADDR2
++	ip link set dev $rcv_if_name promisc off
 +
-+		send_non_ip $h1.$vid $smac $dmac
-+		send_non_ip $h1.$vid $smac $NON_IP_MC
-+		send_non_ip $h1.$vid $smac $BC
-+		send_uc_ipv4 $h1.$vid $dmac
-+		send_mc_ipv4 $h1.$vid
-+		send_uc_ipv6 $h1.$vid $dmac
-+		send_mc_ipv6 $h1.$vid
++	mc_join $rcv_if_name $JOINED_IPV4_MC_ADDR
++	mc_send $h1 $JOINED_IPV4_MC_ADDR
++	mc_leave
 +
-+		simple_if_fini $h1.$vid $H1_IPV4/24 $H1_IPV6/64
-+		vlan_destroy $h1 $vid
-+	done
++	mc_join $rcv_if_name $JOINED_IPV6_MC_ADDR
++	mc_send $h1 $JOINED_IPV6_MC_ADDR
++	mc_leave
++
++	mc_send $h1 $UNKNOWN_IPV4_MC_ADDR1
++	mc_send $h1 $UNKNOWN_IPV6_MC_ADDR1
++
++	ip link set dev $rcv_if_name allmulticast on
++	send_uc_ipv4 $h1 $UNKNOWN_UC_ADDR3
++	mc_send $h1 $UNKNOWN_IPV4_MC_ADDR3
++	mc_send $h1 $UNKNOWN_IPV6_MC_ADDR3
++	ip link set dev $rcv_if_name allmulticast off
++
++	mc_route_destroy $rcv_if_name
++	mc_route_destroy $h1
 +
 +	sleep 1
 +
-+	echo "$test_name: Checking which packets were received"
++	tcpdump_stop $rcv_if_name
 +
-+	tcpdump_stop $h2
++	check_rcv $rcv_if_name "Unicast IPv4 to primary MAC address" \
++		"$smac > $rcv_dmac, ethertype IPv4 (0x0800)" \
++		true
 +
-+	check_rcv $h2 "$test_name: Unicast non-IP untagged" \
-+		"$smac > $dmac, 802.3, length 4:"
++	check_rcv $rcv_if_name "Unicast IPv4 to macvlan MAC address" \
++		"$smac > $MACVLAN_ADDR, ethertype IPv4 (0x0800)" \
++		true
 +
-+	check_rcv $h2 "$test_name: Multicast non-IP untagged" \
-+		"$smac > $NON_IP_MC, 802.3, length 4:"
++	check_rcv $rcv_if_name "Unicast IPv4 to unknown MAC address" \
++		"$smac > $UNKNOWN_UC_ADDR1, ethertype IPv4 (0x0800)" \
++		false
 +
-+	check_rcv $h2 "$test_name: Broadcast non-IP untagged" \
-+		"$smac > $BC, 802.3, length 4:"
++	check_rcv $rcv_if_name "Unicast IPv4 to unknown MAC address, promisc" \
++		"$smac > $UNKNOWN_UC_ADDR2, ethertype IPv4 (0x0800)" \
++		true
 +
-+	check_rcv $h2 "$test_name: Unicast IPv4 untagged" \
-+		"$smac > $dmac, ethertype IPv4 (0x0800)"
++	check_rcv $rcv_if_name "Unicast IPv4 to unknown MAC address, allmulti" \
++		"$smac > $UNKNOWN_UC_ADDR3, ethertype IPv4 (0x0800)" \
++		false
 +
-+	check_rcv $h2 "$test_name: Multicast IPv4 untagged" \
-+		"$smac > $MACV4_ALLNODES, ethertype IPv4 (0x0800).*: $H1_IPV4 > $IPV4_ALLNODES"
++	check_rcv $rcv_if_name "Multicast IPv4 to joined group" \
++		"$smac > $JOINED_MACV4_MC_ADDR, ethertype IPv4 (0x0800)" \
++		true
 +
-+	check_rcv $h2 "$test_name: Unicast IPv6 untagged" \
-+		"$smac > $dmac, ethertype IPv6 (0x86dd).*8: $H1_IPV6 > $H2_IPV6"
++	check_rcv $rcv_if_name "Multicast IPv4 to unknown group" \
++		"$smac > $UNKNOWN_MACV4_MC_ADDR1, ethertype IPv4 (0x0800)" \
++		false
 +
-+	check_rcv $h2 "$test_name: Multicast IPv6 untagged" \
-+		"$smac > $MACV6_ALLNODES, ethertype IPv6 (0x86dd).*: $h1_ipv6_lladdr > $IPV6_ALLNODES"
++	check_rcv $rcv_if_name "Multicast IPv4 to unknown group, promisc" \
++		"$smac > $UNKNOWN_MACV4_MC_ADDR2, ethertype IPv4 (0x0800)" \
++		true
 +
-+	for vid in "${vids[@]}"; do
-+		check_rcv $h2 "$test_name: Unicast non-IP VID $vid" \
-+			"$smac > $dmac, ethertype 802.1Q (0x8100).*vlan $vid,.*length 4"
++	check_rcv $rcv_if_name "Multicast IPv4 to unknown group, allmulti" \
++		"$smac > $UNKNOWN_MACV4_MC_ADDR3, ethertype IPv4 (0x0800)" \
++		true
 +
-+		check_rcv $h2 "$test_name: Multicast non-IP VID $vid" \
-+			"$smac > $NON_IP_MC, ethertype 802.1Q (0x8100).*vlan $vid,.*length 4"
++	check_rcv $rcv_if_name "Multicast IPv6 to joined group" \
++		"$smac > $JOINED_MACV6_MC_ADDR, ethertype IPv6 (0x86dd)" \
++		true
 +
-+		check_rcv $h2 "$test_name: Broadcast non-IP VID $vid" \
-+			"$smac > $BC, ethertype 802.1Q (0x8100).*vlan $vid,.*length 4"
++	check_rcv $rcv_if_name "Multicast IPv6 to unknown group" \
++		"$smac > $UNKNOWN_MACV6_MC_ADDR1, ethertype IPv6 (0x86dd)" \
++		false
 +
-+		check_rcv $h2 "$test_name: Unicast IPv4 VID $vid" \
-+			"$smac > $dmac, ethertype 802.1Q (0x8100).*vlan $vid,.*ethertype IPv4 (0x0800), $H1_IPV4 > $H2_IPV4"
++	check_rcv $rcv_if_name "Multicast IPv6 to unknown group, promisc" \
++		"$smac > $UNKNOWN_MACV6_MC_ADDR2, ethertype IPv6 (0x86dd)" \
++		true
 +
-+		check_rcv $h2 "$test_name: Multicast IPv4 VID $vid" \
-+			"$smac > $MACV4_ALLNODES, ethertype 802.1Q (0x8100).*vlan $vid,.*ethertype IPv4 (0x0800), $H1_IPV4 > $IPV4_ALLNODES"
++	check_rcv $rcv_if_name "Multicast IPv6 to unknown group, allmulti" \
++		"$smac > $UNKNOWN_MACV6_MC_ADDR3, ethertype IPv6 (0x86dd)" \
++		true
 +
-+		check_rcv $h2 "$test_name: Unicast IPv6 VID $vid" \
-+			"$smac > $dmac, ethertype 802.1Q (0x8100).*vlan $vid,.*ethertype IPv6 (0x86dd), $H1_IPV6 > $H2_IPV6"
-+
-+		check_rcv $h2 "$test_name: Multicast IPv6 VID $vid" \
-+			"$smac > $MACV6_ALLNODES, ethertype 802.1Q (0x8100).*vlan $vid,.*ethertype IPv6 (0x86dd), $h1_ipv6_lladdr > $IPV6_ALLNODES"
-+	done
-+
-+	tcpdump_cleanup $h2
-+}
-+
-+standalone()
-+{
-+	run_test "Standalone switch ports"
-+}
-+
-+two_bridges()
-+{
-+	ip link add br0 type bridge && ip link set br0 up
-+	ip link add br1 type bridge && ip link set br1 up
-+	ip link set $swp1 master br0
-+	ip link set $swp2 master br1
-+
-+	run_test "Switch ports in different bridges"
-+
-+	ip link del br1
-+	ip link del br0
-+}
-+
-+one_bridge_two_pvids()
-+{
-+	ip link add br0 type bridge vlan_filtering 1 vlan_default_pvid 0
-+	ip link set br0 up
-+	ip link set $swp1 master br0
-+	ip link set $swp2 master br0
-+
-+	bridge vlan add dev $swp1 vid 1 pvid untagged
-+	bridge vlan add dev $swp1 vid 2 pvid untagged
-+
-+	run_test "Switch ports in VLAN-aware bridge with different PVIDs"
-+
-+	ip link del br0
++	tcpdump_cleanup $rcv_if_name
 +}
 +
 +h1_create()
@@ -383,26 +405,71 @@ index 000000000000..af3b398d13f0
 +	simple_if_fini $h2 $H2_IPV4/24 $H2_IPV6/64
 +}
 +
-+cleanup()
++bridge_create()
 +{
-+	pre_cleanup
++	ip link add br0 type bridge
++	ip link set br0 address $BRIDGE_ADDR
++	ip link set br0 up
++
++	ip link set $h2 master br0
++	ip link set $h2 up
++
++	simple_if_init br0 $H2_IPV4/24 $H2_IPV6/64
++}
++
++bridge_destroy()
++{
++	simple_if_fini br0 $H2_IPV4/24 $H2_IPV6/64
++
++	ip link del br0
++}
++
++standalone()
++{
++	h1_create
++	h2_create
++
++	ip link add link $h2 name macvlan0 type macvlan mode private
++	ip link set macvlan0 address $MACVLAN_ADDR
++	ip link set macvlan0 up
++
++	run_test $h2
++
++	ip link del macvlan0
 +
 +	h2_destroy
 +	h1_destroy
++}
 +
++bridge()
++{
++	h1_create
++	bridge_create
++
++	ip link add link br0 name macvlan0 type macvlan mode private
++	ip link set macvlan0 address $MACVLAN_ADDR
++	ip link set macvlan0 up
++
++	run_test br0
++
++	ip link del macvlan0
++
++	bridge_destroy
++	h1_destroy
++}
++
++cleanup()
++{
++	pre_cleanup
 +	vrf_cleanup
 +}
 +
 +setup_prepare()
 +{
 +	vrf_prepare
-+
-+	h1_create
-+	h2_create
-+	# we call simple_if_init from the test itself, but setup_wait expects
-+	# that we call it from here, and waits until the interfaces are up
-+	ip link set dev $swp1 up
-+	ip link set dev $swp2 up
++	# setup_wait() needs this
++	ip link set $h1 up
++	ip link set $h2 up
 +}
 +
 +trap cleanup EXIT
