@@ -2,143 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F66A50AF5C
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 07:07:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FC0050AFD6
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 08:00:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444071AbiDVFKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Apr 2022 01:10:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47716 "EHLO
+        id S232938AbiDVGAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Apr 2022 02:00:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444052AbiDVFKh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 01:10:37 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53CB04BBB5;
-        Thu, 21 Apr 2022 22:07:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650604065; x=1682140065;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=zLyK1VfPZcWeTRL84aSwetNS1RsgGB8NmLFyPkDWGM0=;
-  b=mV7rVfzCk9BXnOAUp3b2m/CMhmIUlNliOCRoB1z3Jf3c6BQ3tLfiRp2Q
-   y3IdEQCpb/xDfyxmSmeTBrFjcU1SWkDOiEZ+Yvu408c7npXe7FzLB3KzV
-   Eypmh4s6DxesIonV76hP0AeeZ5BRZbiMq06atU3yC9GjiwV3vwPOgt7vP
-   0WpWf9krisspuEFGkJkNEVdcjT2Ei4AYjDn4BMYlXChxAEtTwfe/9Jhpf
-   1HD5GFVqMZUTUe2EJPdJQwAkjrbGoa1J0jgQcsER9Kf8iaib7Y24sVPT9
-   hAByTJ8UXOknoMVIMAn3F10e6sNEBgdd85aqQ3EY4jwJao12NWxp2iPt+
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="244501170"
-X-IronPort-AV: E=Sophos;i="5.90,280,1643702400"; 
-   d="scan'208";a="244501170"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 22:07:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,280,1643702400"; 
-   d="scan'208";a="593989379"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 21 Apr 2022 22:07:41 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nhlW8-0009FA-Nd;
-        Fri, 22 Apr 2022 05:07:40 +0000
-Date:   Fri, 22 Apr 2022 13:07:20 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Yu Zhe <yuzhe@nfschina.com>, mareklindner@neomailbox.ch,
-        sw@simonwunderlich.de, a@unstable.cc, sven@narfation.org,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
-Cc:     kbuild-all@lists.01.org, b.a.t.m.a.n@lists.open-mesh.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        liqiong@nfschina.com, kernel-janitors@vger.kernel.org,
-        Yu Zhe <yuzhe@nfschina.com>
-Subject: Re: [PATCH] batman-adv: remove unnecessary type castings
-Message-ID: <202204221227.5z0xsJa9-lkp@intel.com>
-References: <20220421154829.9775-1-yuzhe@nfschina.com>
+        with ESMTP id S233011AbiDVGAg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 02:00:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53EB84F9D8;
+        Thu, 21 Apr 2022 22:57:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E480161D9D;
+        Fri, 22 Apr 2022 05:57:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A684C385A9;
+        Fri, 22 Apr 2022 05:57:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650607051;
+        bh=Rvf90UcwzPbS3F5AqAtneVu3nF9B07X7cwvF7nN8ENI=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=bBXFaJywcqTcX8KxDYflryjhANwgEc2Bam3efuHS/L8sddABY8ol1JI333xINwl/x
+         mkC4XgNcMUNV1ZyKxdgrMcIb67PF5i8sOG1mN5LY/P2TBErRJPCha8euLdDppa/YBT
+         hRZLeqNjkb59HQX8W1QqAa5GIOYRRtNjUE6AVdECGvddUCG+SoZw9GBIzhMLhYO1Cn
+         wttlxzGWVq4Ishol80XcTWBC87GvIb+BjnbvfgbpQTsL+l0Ev6Lrixyboso7u3R7Kk
+         wrG+pUgEDv85U3YCcrGtAOU/UVkdgxuNo8gKLGJbiGLi2h2R51VtJ0JhjRhBdIQL0U
+         5XtEbXYyKMPHA==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Bernard Zhao <zhaojunkui2008@126.com>
+Cc:     Jakub Kicinski <kubakici@wp.pl>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        bernard@vivo.com
+Subject: Re: [PATCH] net/wireless: add debugfs exit function
+In-Reply-To: <20220422012830.342993-1-zhaojunkui2008@126.com> (Bernard Zhao's
+        message of "Thu, 21 Apr 2022 18:28:30 -0700")
+References: <20220422012830.342993-1-zhaojunkui2008@126.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+Date:   Fri, 22 Apr 2022 08:57:25 +0300
+Message-ID: <877d7hoe2i.fsf@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220421154829.9775-1-yuzhe@nfschina.com>
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Yu,
+Bernard Zhao <zhaojunkui2008@126.com> writes:
 
-Thank you for the patch! Perhaps something to improve:
+> This patch add exit debugfs function to mt7601u.
+> Debugfs need to be cleanup when module is unloaded or load fail.
 
-[auto build test WARNING on linus/master]
-[also build test WARNING on v5.18-rc3 next-20220421]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+"load fail"? Please be more specific, are you saying that the second
+module load fails or what?
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Yu-Zhe/batman-adv-remove-unnecessary-type-castings/20220421-235254
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git b253435746d9a4a701b5f09211b9c14d3370d0da
-config: parisc-randconfig-s031-20220421 (https://download.01.org/0day-ci/archive/20220422/202204221227.5z0xsJa9-lkp@intel.com/config)
-compiler: hppa-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/intel-lab-lkp/linux/commit/2474b41c585e849d3546e0aba8f3c862735a04ff
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Yu-Zhe/batman-adv-remove-unnecessary-type-castings/20220421-235254
-        git checkout 2474b41c585e849d3546e0aba8f3c862735a04ff
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=parisc SHELL=/bin/bash net/batman-adv/
+>  drivers/net/wireless/mediatek/mt7601u/debugfs.c | 9 +++++++--
+>  drivers/net/wireless/mediatek/mt7601u/init.c    | 1 +
+>  drivers/net/wireless/mediatek/mt7601u/mt7601u.h | 1 +
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+The title should be:
 
+mt7601u: add debugfs exit function
 
-sparse warnings: (new ones prefixed by >>)
->> net/batman-adv/bridge_loop_avoidance.c:68:42: sparse: sparse: incorrect type in initializer (different modifiers) @@     expected struct batadv_bla_claim *claim @@     got void const *data @@
-   net/batman-adv/bridge_loop_avoidance.c:68:42: sparse:     expected struct batadv_bla_claim *claim
-   net/batman-adv/bridge_loop_avoidance.c:68:42: sparse:     got void const *data
->> net/batman-adv/bridge_loop_avoidance.c:68:42: sparse: sparse: incorrect type in initializer (different modifiers) @@     expected struct batadv_bla_claim *claim @@     got void const *data @@
-   net/batman-adv/bridge_loop_avoidance.c:68:42: sparse:     expected struct batadv_bla_claim *claim
-   net/batman-adv/bridge_loop_avoidance.c:68:42: sparse:     got void const *data
---
->> net/batman-adv/translation-table.c:109:12: sparse: sparse: incorrect type in assignment (different modifiers) @@     expected struct batadv_tt_common_entry *tt @@     got void const *data @@
-   net/batman-adv/translation-table.c:109:12: sparse:     expected struct batadv_tt_common_entry *tt
-   net/batman-adv/translation-table.c:109:12: sparse:     got void const *data
->> net/batman-adv/translation-table.c:109:12: sparse: sparse: incorrect type in assignment (different modifiers) @@     expected struct batadv_tt_common_entry *tt @@     got void const *data @@
-   net/batman-adv/translation-table.c:109:12: sparse:     expected struct batadv_tt_common_entry *tt
-   net/batman-adv/translation-table.c:109:12: sparse:     got void const *data
+> --- a/drivers/net/wireless/mediatek/mt7601u/debugfs.c
+> +++ b/drivers/net/wireless/mediatek/mt7601u/debugfs.c
+> @@ -9,6 +9,8 @@
+>  #include "mt7601u.h"
+>  #include "eeprom.h"
+>  
+> +static struct dentry *dir;
 
-vim +68 net/batman-adv/bridge_loop_avoidance.c
-
-    53	
-    54	static void batadv_bla_periodic_work(struct work_struct *work);
-    55	static void
-    56	batadv_bla_send_announce(struct batadv_priv *bat_priv,
-    57				 struct batadv_bla_backbone_gw *backbone_gw);
-    58	
-    59	/**
-    60	 * batadv_choose_claim() - choose the right bucket for a claim.
-    61	 * @data: data to hash
-    62	 * @size: size of the hash table
-    63	 *
-    64	 * Return: the hash index of the claim
-    65	 */
-    66	static inline u32 batadv_choose_claim(const void *data, u32 size)
-    67	{
-  > 68		struct batadv_bla_claim *claim = data;
-    69		u32 hash = 0;
-    70	
-    71		hash = jhash(&claim->addr, sizeof(claim->addr), hash);
-    72		hash = jhash(&claim->vid, sizeof(claim->vid), hash);
-    73	
-    74		return hash % size;
-    75	}
-    76	
+How will this work when there are multiple mt7601u devices? Because of
+that, avoid using non-const static variables.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
