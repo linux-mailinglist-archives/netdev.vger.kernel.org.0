@@ -2,157 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75FE950B8CD
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 15:41:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5F4050B9FB
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 16:22:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234176AbiDVNoO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Apr 2022 09:44:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41466 "EHLO
+        id S1448564AbiDVOYP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Apr 2022 10:24:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233026AbiDVNoN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 09:44:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0AABD57140
-        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 06:41:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650634879;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xPTgBo2Wg2SsrR1XREtXV36ZNQWIrw1JspysXs/uuMI=;
-        b=eV2aulF2hTbgKwwBdvrOdE3gFnkolMxbr+JMax+TF+2xiCFj8ve8NF+yz9p10o/hJoC90p
-        vViM3YecjpvDRjY8QN3G9Vc3YaOLrskAPlbVMwtNya+7jDTll4bYo8ZQx3mhsqeqiwHuRd
-        3Ryne2ZX01TXcxNQ7+UWWNJgyARRfxY=
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com
- [209.85.166.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-99-IkjH5RZaPZeEHV2B9Bcm4w-1; Fri, 22 Apr 2022 09:41:18 -0400
-X-MC-Unique: IkjH5RZaPZeEHV2B9Bcm4w-1
-Received: by mail-il1-f198.google.com with SMTP id i22-20020a056e021d1600b002cd69a8f421so2317411ila.6
-        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 06:41:17 -0700 (PDT)
+        with ESMTP id S1448333AbiDVOYO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 10:24:14 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DC991CFCE
+        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 07:21:19 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id w4so11247972wrg.12
+        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 07:21:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=timebeat-app.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=Wxg8wAvTVjJFfin5zoWS3aVg9XeTLHhrTUk9id2daTE=;
+        b=AkZJeH0DvaQjb7x9pECpuTrcz6mU9kAaz5QBQdUx5qG9fmQwzNHoBJ9jr2WEVi48bN
+         Vziob9nmYbS3usZhOxTy7MuINB59REN7/E5aYaa4dlDG/+q4P3G0Es+ByyEMf3Jbq0eD
+         9rWDmo2v7FlNjP+PQKmPxc3NZ9C1ijP9WZ1mIYB0srhWG0qr82UTkK7KjssTtuOqeQaL
+         uhtSbdOKtdDRYjaDB6fxjv9N8zj/iitV448PoXZfhEGR9BLSdbNKJLGhunbmqObzykc4
+         oXLer3BSfzFK1I41gbM5Foq/0exxX+1tGCd6+6bLMGGPE+dfisCPylVEbvnC8NdZVMqe
+         ykdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:references:mime-version:in-reply-to:date
-         :message-id:subject:to:cc;
-        bh=xPTgBo2Wg2SsrR1XREtXV36ZNQWIrw1JspysXs/uuMI=;
-        b=Yp5rpJ3sTih3MSEj6zLr8YodRX4YoxTj533JgaF3lhG8itXxcBI0/afIxTq7aBttRX
-         +NULP1RYdUyYsxM7a30YAnfaRYSkEgd0UGWQYzZGQ6UKpYqz+LoNAKwk8I6yc+mNdKlT
-         jps2woanjXNiaoP8r61/ORUAnJEZ0VaA7El4ru0QB+1MpAzT1mkkxcyxaMhx0bC0/lwF
-         ST14RNf+tdRFFtAS/iIsFpvuBd1Jl8k5Fkg/qiyXOroPRs6PehXVELponZFHS+gJ695n
-         ThUFSPuhpTo0h1D2p8LLbitzo6ZsgFtWwjPUqKpDG3SINDqqpbMje/QiRFV+WeOwKeqq
-         ztVQ==
-X-Gm-Message-State: AOAM532f9FVZhIQqJoDpV9G+ezx6yrylHzAiGKJCxEjtVLI0P5ogvyna
-        WZzayuEOQnGJRH8JR+rFfDd7Vu00Ly96A2NwGnn6TooMmlygXvWhnnowRefzAm9K0z0DdkuDPAx
-        W2V3ovd9tm1GIhw/zKoaaqcR58hiZjAHu
-X-Received: by 2002:a92:6907:0:b0:2bc:4b18:e671 with SMTP id e7-20020a926907000000b002bc4b18e671mr1819786ilc.299.1650634877255;
-        Fri, 22 Apr 2022 06:41:17 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy+hixxVb4n0UqBn887npOqa/WtM36LXanw4r9zr7FX08Uhkxt26XUkOJSUDskVqubLN6ZNi155LVQ/UxaVxmw=
-X-Received: by 2002:a92:6907:0:b0:2bc:4b18:e671 with SMTP id
- e7-20020a926907000000b002bc4b18e671mr1819772ilc.299.1650634877056; Fri, 22
- Apr 2022 06:41:17 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Fri, 22 Apr 2022 08:41:16 -0500
-From:   Marcelo Ricardo Leitner <mleitner@redhat.com>
-References: <20210809070455.21051-1-liuhangbin@gmail.com> <162850320655.31628.17692584840907169170.git-patchwork-notify@kernel.org>
- <CAHsH6GuZciVLrn7J-DR4S+QU7Xrv422t1kfMyA7r=jADssNw+A@mail.gmail.com>
- <CALnP8ZackbaUGJ_31LXyZpk3_AVi2Z-cDhexH8WKYZjjKTLGfw@mail.gmail.com>
- <CAHsH6GvoDr5qOKsvvuShfHFi4CsCfaC-pUbxTE6OfYWhgTf9bg@mail.gmail.com> <YmE5N0aNisKVLAyt@Laptop-X1>
-MIME-Version: 1.0
-In-Reply-To: <YmE5N0aNisKVLAyt@Laptop-X1>
-Date:   Fri, 22 Apr 2022 08:41:16 -0500
-Message-ID: <CALnP8ZY9hkiWyxjrVTdq=NFA0PYjt7f9YbSEJrbt-EQoRAk6gw@mail.gmail.com>
-Subject: Re: [PATCH net] net: sched: act_mirred: Reset ct info when
- mirror/redirect skb
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     Eyal Birger <eyal.birger@gmail.com>, netdev@vger.kernel.org,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, kuba@kernel.org, ahleihel@redhat.com,
-        dcaratti@redhat.com, aconole@redhat.com, roid@nvidia.com,
-        Shmulik Ladkani <shmulik.ladkani@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=Wxg8wAvTVjJFfin5zoWS3aVg9XeTLHhrTUk9id2daTE=;
+        b=51fBk2ESWPuuPk69HDYsAv5qOO6P2uzaQDLBxwn2WCAK6MLsULE/jXXojd3Pe/4fE/
+         kXFjwdwVsj3VnlOZ6Mi6ubtIutk2ik0LWxhT7xf88IV48IuwbVORInoG7oiTQ8QrPAyh
+         sXVzddJaOpU7LoJAyrAI8ZDN3XJIGIKcygCfq9ESYTUlggIH7vWAnBKr5duH9NpA4yvr
+         7e1wBH2sITl7ly3IaltWSauCVcLgM1TMLOx6qhs7tQKObj7JAhZkX/xOAr0MrcMp2uxT
+         m2vJl470CrQQowAsyNFFrjQ7HcB1vD2ZCGW1ReNXr5CwTvRujZn06dwBwJEfYHu5m2/S
+         6nRw==
+X-Gm-Message-State: AOAM532dkC1Rr7oNTxAj0iOL80bb159KXkZ1wfVP/a5nKuPh8Jvi7vsk
+        cYQ/SZUVooWniBut55Xpyw6MSg==
+X-Google-Smtp-Source: ABdhPJxGE9bFJ8DvuRhnFJUZS3fnfoXmZtLGfX6qjEThpEJb0idTTKBosys0G2NeGb3PdBneuoW3SQ==
+X-Received: by 2002:a5d:444f:0:b0:20a:cd55:8c32 with SMTP id x15-20020a5d444f000000b0020acd558c32mr1457415wrr.586.1650637277472;
+        Fri, 22 Apr 2022 07:21:17 -0700 (PDT)
+Received: from smtpclient.apple ([95.175.197.5])
+        by smtp.gmail.com with ESMTPSA id i6-20020a0560001ac600b0020a93f75030sm1867672wry.48.2022.04.22.07.21.16
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 22 Apr 2022 07:21:17 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: [PATCH net-next] 1588 support on bcm54210pe
+From:   Lasse Johnsen <lasse@timebeat.app>
+In-Reply-To: <YmBc2E2eCPHMA7lR@lunn.ch>
+Date:   Fri, 22 Apr 2022 15:21:16 +0100
+Cc:     netdev@vger.kernel.org, richardcochran@gmail.com,
+        Gordon Hollingworth <gordon@raspberrypi.com>,
+        Ahmad Byagowi <clk@fb.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Florian Fainelli <f.fainelli@gmail.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <C6DCE6EC-926D-4EDF-AFE9-F949C0F55B7F@timebeat.app>
+References: <928593CA-9CE9-4A54-B84A-9973126E026D@timebeat.app>
+ <YmBc2E2eCPHMA7lR@lunn.ch>
+To:     Andrew Lunn <andrew@lunn.ch>
+X-Mailer: Apple Mail (2.3696.80.82.1.1)
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NEUTRAL autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 07:00:07PM +0800, Hangbin Liu wrote:
-> Hi Eyal,
-> On Tue, Apr 19, 2022 at 09:14:38PM +0300, Eyal Birger wrote:
-> > > > > On Mon,  9 Aug 2021 15:04:55 +0800 you wrote:
-> > > > > > When mirror/redirect a skb to a different port, the ct info should be reset
-> > > > > > for reclassification. Or the pkts will match unexpected rules. For example,
-> > > > > > with following topology and commands:
-> > > > > >
-> > > > > >     -----------
-> > > > > >               |
-> > > > > >        veth0 -+-------
-> > > > > >               |
-> > > > > >        veth1 -+-------
-> > > > > >               |
-> > > > > >
-> > > > > > [...]
-> > > > >
-> > > > > Here is the summary with links:
-> > > > >   - [net] net: sched: act_mirred: Reset ct info when mirror/redirect skb
-> > > > >     https://git.kernel.org/netdev/net/c/d09c548dbf3b
-> > > >
-> > > > Unfortunately this commit breaks DNAT when performed before going via mirred
-> > > > egress->ingress.
-> > > >
-> > > > The reason is that connection tracking is lost and therefore a new state
-> > > > is created on ingress.
-> > > >
-> > > > This breaks existing setups.
-> > > >
-> > > > See below a simplified script reproducing this issue.
->
-> I think we come in to a paradox state. Some user don't want to have previous
-> ct info after mirror, while others would like to keep. In my understanding,
-> when we receive a pkt from a interface, the skb should be clean and no ct info
-> at first. But I may wrong.
+Hi Andrew,
 
-Makes sense to me. Moreover, there were a couple of fixes on this on
-mirred around that time frame/area (like f799ada6bf23 ("net: sched:
-act_mirred: drop dst for the direction from egress to ingress")). That's
-because we are seeing that mirred xmit action when switching to
-ingress direction should be as close skb_scrub_packet. OVS needs this
-scrubbing as well, btw. This ct information could be easily stale if
-there were other packet changes after it.
+> On 20 Apr 2022, at 20:19, Andrew Lunn <andrew@lunn.ch> wrote:
+>=20
+> On Wed, Apr 20, 2022 at 03:03:26PM +0100, Lasse Johnsen wrote:
+>> Hello,
+>>=20
+>>=20
+>> The attached set of patches adds support for the IEEE1588 =
+functionality on the BCM54210PE PHY using the Linux Kernel =
+mii_timestamper interface. The BCM54210PE PHY can be found in the =
+Raspberry PI Compute Module 4 and the work has been undertaken by =
+Timebeat.app on behalf of Raspberry PI with help and support from the =
+nice engineers at Broadcom.
+>=20
+> Hi Lasse
+>=20
+> There are a few process issues you should address.
+>=20
+> Please wrap your email at about 80 characters.
+>=20
+> Please take a read of
+>=20
+> https://www.kernel.org/doc/html/latest/process/submitting-patches.html
+>=20
+> and
+>=20
+> =
+https://www.kernel.org/doc/html/latest/process/maintainer-netdev.html#netd=
+ev-faq
+>=20
+> It is a bit of a learning curve getting patches accepted, and you have
+> to follow the processes defined in these documents.
 
-Point being, if we really need the knob for backwards compatibility
-here, it may have to be a broader one.
+I have read the documents, I understand about 10% of them and I am =
+considering jumping off a tall building :-)
 
->
-> Jamal, Wang Cong, Jiri, do you have any comments?
->
-> > >
-> > > I guess I can understand why the reproducer triggers it, but I fail to
-> > > see the actual use case you have behind it. Can you please elaborate
-> > > on it?
-> >
-> > One use case we use mirred egress->ingress redirect for is when we want to
-> > reroute a packet after applying some change to the packet which would affect
-> > its routing. for example consider a bpf program running on tc ingress (after
-> > mirred) setting the skb->mark based on some criteria.
-> >
-> > So you have something like:
-> >
-> > packet routed to dummy device based on some criteria ->
-> >   mirred redirect to ingress ->
-> >     classification by ebpf logic at tc ingress ->
-> >        packet routed again
-> >
-> > We have a setup where DNAT is performed before this flow in that case the
-> > ebpf logic needs to see the packet after the NAT.
->
-> Is it possible to check whether it's need to set the skb->mark before DNAT?
-> So we can update it before egress and no need to re-route.
->
-> Thanks
-> Hangbin
->
+I=E2=80=99ve changed the subject of the email. How did I do?
 
+>=20
+>> arch/arm/configs/bcm2711_defconfig            |    1 +
+>> arch/arm64/configs/bcm2711_defconfig          |    1 +
+>=20
+> You will need to split these changes up. defconfg changes go via the
+> Broadcom maintainers. PHY driver changes go via netdev. You can
+> initially post them as a series, but in the end you might need to send
+> them to different people/lists.
+>=20
+
+Ok. I was asked by Florian to put the Broadcom maintainers in Cc so I =
+will do this to begin with.
+
+>> +obj-$(CONFIG_BCM54120PE_PHY)	+=3D bcm54210pe_ptp.o
+>=20
+> How specific is this code to the bcm54210pe? Should it work for any
+> bcm54xxx PHY? You might want to name this file broadcom_ptp.c if it
+> will work with any PHY supported by broadcom.c.
+
+I am confident that this code is relevant exclusively to the BCM54210PE. =
+It will not even work with the BCM54210, BCM54210S and BCM54210SE PHYs.
+
+>=20
+>> +static bool bcm54210pe_fetch_timestamp(u8 txrx, u8 message_type, u16 =
+seq_id, struct bcm54210pe_private *private, u64 *timestamp)
+>> +{
+>> +	struct bcm54210pe_circular_buffer_item *item;=20
+>> +	struct list_head *this, *next;
+>> +
+>> +	u8 index =3D (txrx * 4) + message_type;
+>> +
+>> +	if(index >=3D CIRCULAR_BUFFER_COUNT)
+>> +	{
+>> +		return false;
+>> +	}
+>=20
+> Please run your code through ./scripts/checkpatch.pl. You will find
+> the code has a number of code style issues which need cleaning up.
+
+I am about to respond to Richard's mail with an amended set of patches =
+which is much cleaner. checkpatch now complains only about a Signed-off =
+line and asks if Maintainers needs updating because I=E2=80=99ve added a =
+file (I guess it probably does).=20
+
+>=20
+>> +#if IS_ENABLED (CONFIG_BCM54120PE_PHY)
+>> +{
+>> +	.phy_id		=3D PHY_ID_BCM54213PE,
+>> +	.phy_id_mask	=3D 0xffffffff,
+>> +        .name           =3D "Broadcom BCM54210PE",
+>> +        /* PHY_GBIT_FEATURES */
+>> +        .config_init    =3D bcm54xx_config_init,
+>> +        .ack_interrupt  =3D bcm_phy_ack_intr,
+>> +        .config_intr    =3D bcm_phy_config_intr,
+>> +	.probe		=3D bcm54210pe_probe,
+>> +#elif
+>> +{=20
+>> 	.phy_id		=3D PHY_ID_BCM54213PE,
+>> 	.phy_id_mask	=3D 0xffffffff,
+>> 	.name		=3D "Broadcom BCM54213PE",
+>> @@ -786,6 +804,7 @@ static struct phy_driver broadcom_drivers[] =3D {
+>> 	.config_init	=3D bcm54xx_config_init,
+>> 	.ack_interrupt	=3D bcm_phy_ack_intr,
+>> 	.config_intr	=3D bcm_phy_config_intr,
+>> +#endif
+>=20
+> Don't replace the existing entry, extend it with your new
+> functionality.
+
+Is what you propose possible? Isn=E2=80=99t the issue here that the two =
+PHYs (54213PE and 54210PE) present themselves with the same phy ID? If =
+there is a way to seperate them then I will need your instruction on how =
+to do it.=20
+
+>=20
+> 	Andrew
+
+All the best,
+
+Lasse=
