@@ -2,63 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F4DA50BE99
+	by mail.lfdr.de (Postfix) with ESMTP id 77E1550BE9A
 	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 19:28:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232085AbiDVRbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Apr 2022 13:31:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33224 "EHLO
+        id S232369AbiDVRbL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Apr 2022 13:31:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232010AbiDVRbA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 13:31:00 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2062d.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe5b::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 635EA96807;
-        Fri, 22 Apr 2022 10:28:00 -0700 (PDT)
+        with ESMTP id S232240AbiDVRbD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 13:31:03 -0400
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on20619.outbound.protection.outlook.com [IPv6:2a01:111:f400:7ea9::619])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C320E0AFF;
+        Fri, 22 Apr 2022 10:28:04 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SBz0XOslKpNwVJo6O4bKGFO1RQcbz5rq39Diy63tSXMsS8xA58Uyb/O1+aYjE+6GsIq8BJbLDBQjBlpCS4L+9lAyqCRuwF44BFllRwVrDSfgzpvuJCJadweIxecLB69vxtRuFLSHgwjUsETCqa7fijcEG410XBxLUNzMOzx1YpC9UlBEkuFStXh4EQs5/cyZh+MI3UWg9UfEm+jCdB8uSJ8/gJES6GeIbap6XmdrlikvUCGsWxMneJiupfNn+ptHCeKcp/TIfmOu0wxYMkvPN7uunDVmkNohCqjHh/GBSaEdRr0oaExO7QdWMhoSdwkaZaKTiCqNcmKMHp8HUxFVaA==
+ b=njGlzrh3rp6FJN8mZL4aR9I4vLI80LjcmDOfFHwVSO8ge02Vd2zlKH/V/9W+PcHuJt2uND8FAJ+C+rnuE1lSsI0WlQfcoue6y3Tlv/6QGEnMD4b5rf5MI9pbaRKzr66j9Zw0s6GE9/wgSWu1stRiouY25dk5QKMXPsfrH5E+k+g+fNvomfYKvPhXHGrc3KBdLqJgXBPukCHVciCRkAtItveQ6RhH4E2x2Shxs/rJa5krGkwlnYSPYCeYSsCi4alCg9r22wGoSMfopT0LywXOPlQqes62gPsSD/aAOoWcUY3AHnIk5STY2EGfOCj2LRWEa3UsneNoCxDazLysyjH5pg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hFQwhPnaKv6Borx7fkXbGSMbgkP1qrsQyquN1OU7cpw=;
- b=PGGtMvkkLJvj4WSV983k/Hv4MTSQXtybdhRxaF7Ake3MDDTQmwSOKJkTFR9WFcZfsLWVKT+8Yxz5O1z29fXcMWBKt3z7qJ8qtEslJxnBo4p5rmp3wshYmJcX4xHx41OWjyPyDkWN4117HqPz0IKhDRNu4V+aV6ccTF7v6nnbP2sQZSDS3USNxJMZUQEA+gqP27AD1y2cOxTL3HxFmX5Cuvar5gyhyxNRloUxz1phG44lao86VNsInKSJSeKJ0zFfodAfzwG364+dUgO8/9Cw7dZsJJX2j6fs6K4LbeQPpgCWbIYIXZdMP/kNxqLfLXa98TGzddxCcleUDMf6c7ZkZQ==
+ bh=PBxjIJXUpxaypfpvp0DBL33GiDacwKv5E5TgW6IbTLw=;
+ b=cEc9KYrtGl2LcjcHDhtQ15oLxThgHA9MSiBSN207K3oNYvB8n/l0t0Cb03iXAEUWSK87kpEy/NdnPaUWwhRpVqTi2SmMmurpytf9LMFgt2UjaQvhP639cL5Mt0UfOOHKjwDPNrbYf0GLWr1u+6ZE4dq39QentI53BtxqA8SOy5O9SNujxnJLVBUi0g4T0mjbFDlm4Ftg2PeWhawS8edwUSDm/kGl0B0LtuTs9/2+0abYTuCh3BIYRCAH+ZYP+WFcqouTOKZbLMv7ONqrlu7tMqF/dWFskv6+wYptaf9qD4q+Gme8ytdFzzC0dcsHPDU/1LcV2STZ7AQC/XGgRWDHrA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
+ 12.22.5.236) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
  (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
  (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hFQwhPnaKv6Borx7fkXbGSMbgkP1qrsQyquN1OU7cpw=;
- b=Z+uPWzWdgnpl4DylgYmrOLW+F53+hXwYBMClsmNrArrAmRr2chlgPATy7JOtcbON0MxOJydSjtZveGASSXD8ZbhSAq1TIivsMY+Ej5ITziesFS0o9RJGHOJqsQ70vfpZOOkFX9Nc4AGQhf44rjEwKTAbp1DcVo3vjKbjulwP8hyp2rErXq44wl7qOyg9cGx/m8LkHlokxk3Oa6OgCP8y/V4QZWaK8cRTtyIkcsvgZEyI4JImg+/VmBcRWuC6tHv3zW0tQZwpu354oWAK07kpibOApGwOuH1VE4Btw72DD4JxUVfRXX57Nyn44a2ki84+/qtu3oBLGqNMOOOlyeADSw==
-Received: from DS7PR05CA0057.namprd05.prod.outlook.com (2603:10b6:8:2f::21) by
- DM5PR12MB1227.namprd12.prod.outlook.com (2603:10b6:3:76::19) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5186.15; Fri, 22 Apr 2022 17:24:51 +0000
-Received: from DM6NAM11FT049.eop-nam11.prod.protection.outlook.com
- (2603:10b6:8:2f:cafe::39) by DS7PR05CA0057.outlook.office365.com
- (2603:10b6:8:2f::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.6 via Frontend
- Transport; Fri, 22 Apr 2022 17:24:51 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ bh=PBxjIJXUpxaypfpvp0DBL33GiDacwKv5E5TgW6IbTLw=;
+ b=sYhSVjlwh84YubagawBjQOTPcmcN5GIlmTgQyWCxcoTxQKGFgmYKN4CTxtB1aGlwo7GdOMBNkdUxDdWw1DiaT1huA9pLfrg+wEBh2ACKbCidK6ZfUlug3Ri228k/pmKlOYMQWcFruS9uDetSmYfhaZAtLSJdTzW4ZaZ0PYvVQGuFtVqxGHk9MaHoYuKFxZYL/VU+gGU6BTS6zRfGJxBTlW7zzjCjJ0exzHEkxGZeKOqOfDs25ygvZoqswj86y8nlLVo23tGh9lKcsOP8hfNz7U3Frr+kKojYiJIPBHgUeyCE+4zrpFNmx6bbS603urjICwyFXcr2Bg6cKUl0pEyvkg==
+Received: from MW4PR03CA0282.namprd03.prod.outlook.com (2603:10b6:303:b5::17)
+ by DM6PR12MB4268.namprd12.prod.outlook.com (2603:10b6:5:223::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.13; Fri, 22 Apr
+ 2022 17:24:58 +0000
+Received: from CO1NAM11FT046.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b5:cafe::4b) by MW4PR03CA0282.outlook.office365.com
+ (2603:10b6:303:b5::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14 via Frontend
+ Transport; Fri, 22 Apr 2022 17:24:58 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.234) by
- DM6NAM11FT049.mail.protection.outlook.com (10.13.172.188) with Microsoft SMTP
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.236) by
+ CO1NAM11FT046.mail.protection.outlook.com (10.13.174.203) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5186.14 via Frontend Transport; Fri, 22 Apr 2022 17:24:51 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Fri, 22 Apr
- 2022 17:24:50 +0000
+ 15.20.5186.14 via Frontend Transport; Fri, 22 Apr 2022 17:24:58 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by DRHQMAIL109.nvidia.com
+ (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Fri, 22 Apr
+ 2022 17:24:58 +0000
 Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail203.nvidia.com
  (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 22 Apr
- 2022 10:24:49 -0700
+ 2022 10:24:57 -0700
 Received: from vdi.nvidia.com (10.127.8.12) by mail.nvidia.com (10.129.68.7)
  with Microsoft SMTP Server id 15.2.986.22 via Frontend Transport; Fri, 22 Apr
- 2022 10:24:42 -0700
+ 2022 10:24:50 -0700
 From:   Maxim Mikityanskiy <maximmi@nvidia.com>
 To:     <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         "Daniel Borkmann" <daniel@iogearbox.net>,
@@ -84,9 +85,9 @@ CC:     Tariq Toukan <tariqt@nvidia.com>, Martin KaFai Lau <kafai@fb.com>,
         "Kumar Kartikeya Dwivedi" <memxor@gmail.com>,
         Florian Westphal <fw@strlen.de>, <pabeni@redhat.com>,
         Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: [PATCH bpf-next v6 2/6] bpf: Fix documentation of th_len in bpf_tcp_{gen,check}_syncookie
-Date:   Fri, 22 Apr 2022 20:24:18 +0300
-Message-ID: <20220422172422.4037988-3-maximmi@nvidia.com>
+Subject: [PATCH bpf-next v6 3/6] bpf: Allow helpers to accept pointers with a fixed size
+Date:   Fri, 22 Apr 2022 20:24:19 +0300
+Message-ID: <20220422172422.4037988-4-maximmi@nvidia.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220422172422.4037988-1-maximmi@nvidia.com>
 References: <20220422172422.4037988-1-maximmi@nvidia.com>
@@ -95,24 +96,24 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d12bb455-ffab-489a-8c6d-08da24850237
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1227:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR12MB12274E34D73244E108655BF6DCF79@DM5PR12MB1227.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 3e1f77b9-89ec-4057-1411-08da248506ab
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4268:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB4268900A6BAADB41E3BB2831DCF79@DM6PR12MB4268.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: IR3M05sSOktLkmsyf6KS9wf45AaoUIqKRqAcML9azIR/BgalFKqZjYvdORJ0WbcXwJNDrmMc51dqeWd2q652dWIag76Rm8i1hMXqlPg0Eaa9EVgHMl8xAx6jnmviSB7eNgtSFuFPOeYt8D6bJ7nngaKqBBoa30R2CeyQT8HIB+EcIdZG03a63wU2rtUEaFSoTgqqnFY9AiL+wdTrZ0cLGz98AMiGe6NAKrorcHlgOkfKyA0+evkvVoacaLvqt2DIZAjD5IzqlJOW0wQR+6kx545/wEKA8ZDFSu5HMf4xSFwK0GevBtezjhrz7lYrJ2K+6SSsyROsVaRSxH5m3l2zQFGLelCSnHJNb/zYRWtqTy2dz+xTjxAhMjm5yGo4ABh42B0K7iYaBFyhMDwBB9J0uTzjYAK+5/tV847Qa6bkOqluX0Bh4Mb+FN7fmBZRnVdrC23Kslua6BeNcyOHSqS3PwbvfoQkiCdXx3JtqO5ht44sBvtDPEhi2Qdo/MMacQyJCutU/r/NLD0miWlZzWTwAPgIEi376cZC3Ipkh5gwF3xXnaTCl/qjLadWs1XqaTqXittuZGznPSyGSUMtafmxODSLMyMBuEqq4P446gSCy4kCo+4rKJ0mXa+K0mM/gAP3pekqYAvFCSMX8+SDyRoYn9H0ceRGyiZfClt3nADxqgUIgM4djLV7JRrsM1mcc0/VLIo+6xUmB621p4xSi8peOA==
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(5660300002)(316002)(110136005)(186003)(8936002)(7416002)(54906003)(1076003)(36756003)(107886003)(47076005)(426003)(336012)(83380400001)(26005)(7696005)(2616005)(6666004)(508600001)(36860700001)(86362001)(2906002)(356005)(40460700003)(82310400005)(8676002)(4326008)(81166007)(70586007)(70206006)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: mlcDUITy6TGvIl6ZleNdv7oN3NKYxFwFk8BqzUeNcsA0hYCsE7R8dKIvkdH19sog8fJC9g15AgzUNDUdNyf67Z/ZS6zl5MN/c5YHgMNgeB09YRkgWR2HpvDk9LkSC+vMnT9eAqcGkR4kHDWv+gnQJ/R83LXOCxD6DHWBn7ZT4ZYYUTXjAu8jMNuLhGG9MLVa5ynQ3d9GAJth84hXi4jVQkKtxzHVvbEtOE4I3WVw8baOgiJjqIV7Rr+SuRxO/dEXvhTT+3xJv7YZ+Nlb+uD8WrJFAokf1RYVGDR8x0rIa2pmEVgxwpgb/Yp9M+A+lqvMSOCHkA9xddfXLibJrTW4mWf0FPOTYKkKtEsYF70rf7LVg1rINaON6G0y7Q5X9BCucUOUNfqbfJ/2ssKYh5gG48PAR16ZkcCazQU2+gkbSzAS32djH9TxFSTtVBiCrsA35HSEABFp3fHgvT/EM9idD2cABhBz7sJKr/iOMLoKzIbJZdNMkwKoLUkSFrDjBGictcKjhsS1Fag8WOWTjGslvgpXvCrtGz8AEuA3iCG69ObimU6CagyOdLofenEsX41J4XoXticNyO6BsG8GR2NI+Cwxzml6SXYbsCDgE4Zel5ps8Vn9js/Kq+h0wYCBQG2D7m4wpEmwcsKQDsCNTLOtBj6be1YmqJhM20qJWX1x4HrQSm4JKubPM4uTdNKuv54WESjOcApFiQddWCYo3S2xqme+ctzdH+Urk8JcS5r/pC3Zw9PeKu8OBqPGblUH+FJjVj0zffE9+buLhCpxmXI5wA==
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(81166007)(8936002)(7416002)(86362001)(5660300002)(70586007)(2906002)(70206006)(40460700003)(356005)(508600001)(47076005)(54906003)(83380400001)(186003)(8676002)(4326008)(26005)(110136005)(36756003)(426003)(336012)(6666004)(107886003)(7696005)(316002)(36860700001)(82310400005)(2616005)(1076003)(461764006)(36900700001)(309714004);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2022 17:24:51.1385
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2022 17:24:58.6378
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d12bb455-ffab-489a-8c6d-08da24850237
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3e1f77b9-89ec-4057-1411-08da248506ab
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT049.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT046.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1227
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4268
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         SPF_HELO_PASS,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
@@ -122,84 +123,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bpf_tcp_gen_syncookie expects the full length of the TCP header (with
-all options), and bpf_tcp_check_syncookie accepts lengths bigger than
-sizeof(struct tcphdr). Fix the documentation that says these lengths
-should be exactly sizeof(struct tcphdr).
+Before this commit, the BPF verifier required ARG_PTR_TO_MEM arguments
+to be followed by ARG_CONST_SIZE holding the size of the memory region.
+The helpers had to check that size in runtime.
 
-While at it, fix a typo in the name of struct ipv6hdr.
+There are cases where the size expected by a helper is a compile-time
+constant. Checking it in runtime is an unnecessary overhead and waste of
+BPF registers.
+
+This commit allows helpers to accept ARG_PTR_TO_MEM arguments without
+the corresponding ARG_CONST_SIZE, given that they define the memory
+region size in struct bpf_func_proto.
 
 Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 ---
- include/uapi/linux/bpf.h       | 10 ++++++----
- tools/include/uapi/linux/bpf.h | 10 ++++++----
- 2 files changed, 12 insertions(+), 8 deletions(-)
+ include/linux/bpf.h   | 10 ++++++++++
+ kernel/bpf/verifier.c | 26 +++++++++++++++-----------
+ 2 files changed, 25 insertions(+), 11 deletions(-)
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index d14b10b85e51..5e1679af8282 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -3587,10 +3587,11 @@ union bpf_attr {
-  *
-  * 		*iph* points to the start of the IPv4 or IPv6 header, while
-  * 		*iph_len* contains **sizeof**\ (**struct iphdr**) or
-- * 		**sizeof**\ (**struct ip6hdr**).
-+ * 		**sizeof**\ (**struct ipv6hdr**).
-  *
-  * 		*th* points to the start of the TCP header, while *th_len*
-- * 		contains **sizeof**\ (**struct tcphdr**).
-+ *		contains the length of the TCP header (at least
-+ *		**sizeof**\ (**struct tcphdr**)).
-  * 	Return
-  * 		0 if *iph* and *th* are a valid SYN cookie ACK, or a negative
-  * 		error otherwise.
-@@ -3773,10 +3774,11 @@ union bpf_attr {
-  *
-  *		*iph* points to the start of the IPv4 or IPv6 header, while
-  *		*iph_len* contains **sizeof**\ (**struct iphdr**) or
-- *		**sizeof**\ (**struct ip6hdr**).
-+ *		**sizeof**\ (**struct ipv6hdr**).
-  *
-  *		*th* points to the start of the TCP header, while *th_len*
-- *		contains the length of the TCP header.
-+ *		contains the length of the TCP header with options (at least
-+ *		**sizeof**\ (**struct tcphdr**)).
-  *	Return
-  *		On success, lower 32 bits hold the generated SYN cookie in
-  *		followed by 16 bits which hold the MSS value for that cookie,
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index d14b10b85e51..5e1679af8282 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -3587,10 +3587,11 @@ union bpf_attr {
-  *
-  * 		*iph* points to the start of the IPv4 or IPv6 header, while
-  * 		*iph_len* contains **sizeof**\ (**struct iphdr**) or
-- * 		**sizeof**\ (**struct ip6hdr**).
-+ * 		**sizeof**\ (**struct ipv6hdr**).
-  *
-  * 		*th* points to the start of the TCP header, while *th_len*
-- * 		contains **sizeof**\ (**struct tcphdr**).
-+ *		contains the length of the TCP header (at least
-+ *		**sizeof**\ (**struct tcphdr**)).
-  * 	Return
-  * 		0 if *iph* and *th* are a valid SYN cookie ACK, or a negative
-  * 		error otherwise.
-@@ -3773,10 +3774,11 @@ union bpf_attr {
-  *
-  *		*iph* points to the start of the IPv4 or IPv6 header, while
-  *		*iph_len* contains **sizeof**\ (**struct iphdr**) or
-- *		**sizeof**\ (**struct ip6hdr**).
-+ *		**sizeof**\ (**struct ipv6hdr**).
-  *
-  *		*th* points to the start of the TCP header, while *th_len*
-- *		contains the length of the TCP header.
-+ *		contains the length of the TCP header with options (at least
-+ *		**sizeof**\ (**struct tcphdr**)).
-  *	Return
-  *		On success, lower 32 bits hold the generated SYN cookie in
-  *		followed by 16 bits which hold the MSS value for that cookie,
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 7bf441563ffc..914b571bbf3a 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -465,6 +465,16 @@ struct bpf_func_proto {
+ 		};
+ 		u32 *arg_btf_id[5];
+ 	};
++	union {
++		struct {
++			size_t arg1_size;
++			size_t arg2_size;
++			size_t arg3_size;
++			size_t arg4_size;
++			size_t arg5_size;
++		};
++		size_t arg_size[5];
++	};
+ 	int *ret_btf_id; /* return value btf_id */
+ 	bool (*allowed)(const struct bpf_prog *prog);
+ };
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 71827d14724a..368fab3dfca5 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -5602,6 +5602,11 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
+ 		 * next is_mem_size argument below.
+ 		 */
+ 		meta->raw_mode = (arg_type == ARG_PTR_TO_UNINIT_MEM);
++		if (fn->arg_size[arg]) {
++			err = check_helper_mem_access(env, regno,
++						      fn->arg_size[arg], false,
++						      meta);
++		}
+ 	} else if (arg_type_is_mem_size(arg_type)) {
+ 		bool zero_size_allowed = (arg_type == ARG_CONST_SIZE_OR_ZERO);
+ 
+@@ -5941,13 +5946,12 @@ static bool check_raw_mode_ok(const struct bpf_func_proto *fn)
+ 	return count <= 1;
+ }
+ 
+-static bool check_args_pair_invalid(enum bpf_arg_type arg_curr,
+-				    enum bpf_arg_type arg_next)
++static bool check_args_pair_invalid(const struct bpf_func_proto *fn, int arg)
+ {
+-	return (arg_type_is_mem_ptr(arg_curr) &&
+-	        !arg_type_is_mem_size(arg_next)) ||
+-	       (!arg_type_is_mem_ptr(arg_curr) &&
+-		arg_type_is_mem_size(arg_next));
++	if (arg_type_is_mem_ptr(fn->arg_type[arg]))
++		return arg_type_is_mem_size(fn->arg_type[arg + 1]) ==
++			!!fn->arg_size[arg];
++	return arg_type_is_mem_size(fn->arg_type[arg + 1]) || fn->arg_size[arg];
+ }
+ 
+ static bool check_arg_pair_ok(const struct bpf_func_proto *fn)
+@@ -5958,11 +5962,11 @@ static bool check_arg_pair_ok(const struct bpf_func_proto *fn)
+ 	 * helper function specification.
+ 	 */
+ 	if (arg_type_is_mem_size(fn->arg1_type) ||
+-	    arg_type_is_mem_ptr(fn->arg5_type)  ||
+-	    check_args_pair_invalid(fn->arg1_type, fn->arg2_type) ||
+-	    check_args_pair_invalid(fn->arg2_type, fn->arg3_type) ||
+-	    check_args_pair_invalid(fn->arg3_type, fn->arg4_type) ||
+-	    check_args_pair_invalid(fn->arg4_type, fn->arg5_type))
++	    (arg_type_is_mem_ptr(fn->arg5_type) && !fn->arg5_size) ||
++	    check_args_pair_invalid(fn, 1) ||
++	    check_args_pair_invalid(fn, 2) ||
++	    check_args_pair_invalid(fn, 3) ||
++	    check_args_pair_invalid(fn, 4))
+ 		return false;
+ 
+ 	return true;
 -- 
 2.30.2
 
