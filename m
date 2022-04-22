@@ -2,110 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67FD050B5D3
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 13:02:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D3F550B5DE
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 13:05:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446816AbiDVLF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Apr 2022 07:05:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58216 "EHLO
+        id S1447000AbiDVLIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Apr 2022 07:08:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446800AbiDVLF1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 07:05:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 442C65622C
-        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 04:02:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650625353;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        with ESMTP id S245078AbiDVLIE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 07:08:04 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D376D55238;
+        Fri, 22 Apr 2022 04:05:09 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 85C6A1F745;
+        Fri, 22 Apr 2022 11:05:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1650625508; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=ZyHAq8XvVGq2hZYkl/QwRkAUTtNiHFZTrfQAk4QcfNI=;
-        b=KBQHAbGW+PLrkQ7yQa+5AJG9Y1cld2G9zqgyPcr6+BeU7VJYrD6aw9p0rXEAgiKizzXyPL
-        x8o9d7tjr65+xZ0jIub+om3Sv1zT4wBGkFVvhgP7lwyWzy5VlRneo0u3JlowAxk8dXcAoy
-        1/rA034FIqkdR5b6Wh5jfZZRcD+IF/I=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-442-6t0hRrSdPzWpUrdsNqHs2A-1; Fri, 22 Apr 2022 07:02:32 -0400
-X-MC-Unique: 6t0hRrSdPzWpUrdsNqHs2A-1
-Received: by mail-wm1-f72.google.com with SMTP id v62-20020a1cac41000000b0038cfe6edf3fso5906096wme.5
-        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 04:02:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZyHAq8XvVGq2hZYkl/QwRkAUTtNiHFZTrfQAk4QcfNI=;
-        b=q/JUmJ+pOkFR7vQ8L3EoVgwtw7WRWagVYez7i6ebiTaj2K+IKIiuD0enh8aVDFyntQ
-         bmiMu754G3t1Rl9+xNxVRy+lhr72aD4i9U3XCl0Owc23wWs/1Z5bPv+aARck35VfP2o1
-         fHQiYfbCL4b6jYx96L3OSWHllzUx4ddKnYejvpskhfdRRH+WfbulZdmvwqZM4AbkTqHn
-         XUeuLDWvmZ4h5KZJ4RJqQUHGUXCgXJboJUWZRkL9fm1ScP914X8PaNZQxijTlUbzvb6d
-         4kl2qXOjJy3Lq9SJ/CD9zSj+MmYEAr9wJKqlKL7jfWXyPdab91SVl6yDUKNGanGXycft
-         1Lag==
-X-Gm-Message-State: AOAM5318HvlpXmjBRRbkQl1/5MJhsXPdy5SRAnAc3SSC9Xvag9aYN0+k
-        Lxgy9GQdHAFwhS/TAEJINJHAO323EzygbSoMtl6Ua5MWK6PT/0DsBxHgaHh6un1GfjZysYB6ICo
-        tr/kGUWyJoVLOCc6F
-X-Received: by 2002:a5d:4888:0:b0:207:ad8b:e534 with SMTP id g8-20020a5d4888000000b00207ad8be534mr3054351wrq.325.1650625351085;
-        Fri, 22 Apr 2022 04:02:31 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz5KDHAyqMTVOXlPYgdsFNWeD0RjDElwWKKy8+vAIVq0lSzAkGokyJMdVzf2Awq+RspMcySUg==
-X-Received: by 2002:a5d:4888:0:b0:207:ad8b:e534 with SMTP id g8-20020a5d4888000000b00207ad8be534mr3054328wrq.325.1650625350805;
-        Fri, 22 Apr 2022 04:02:30 -0700 (PDT)
-Received: from debian.home (2a01cb058d3818005c1e4a7b0f47339f.ipv6.abo.wanadoo.fr. [2a01:cb05:8d38:1800:5c1e:4a7b:f47:339f])
-        by smtp.gmail.com with ESMTPSA id l6-20020a1c2506000000b0038e6fe8e8d8sm1740027wml.5.2022.04.22.04.02.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 04:02:30 -0700 (PDT)
-Date:   Fri, 22 Apr 2022 13:02:28 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     David Ahern <dsahern@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        dccp@vger.kernel.org
-Subject: Re: [PATCH net-next 0/3] ipv4: First steps toward removing RTO_ONLINK
-Message-ID: <20220422110228.GB15621@debian.home>
-References: <cover.1650470610.git.gnault@redhat.com>
- <2ee8fb0d-aeb4-5010-bc8c-16cbd6e88eff@kernel.org>
+        bh=XTMtHe0DEbqpErS7R1TOOp7bMasIBNeqbkGsdmdc7Ko=;
+        b=DmAowioWLy8q8gJS/SZc36jXbfkIdJwSSjsgJm84KkmORCTeRBGeM09xLnm2auCaldw7vo
+        9TXlA5rQ653io4fIcCQIE189VIAv9PTX/BDhefqN6exSlqsaHCa8XSG7AwoAMqnsc6wRGg
+        0mCC4yuHYyIqjLc3C6dpDnTg/MUIZjc=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2C231131BD;
+        Fri, 22 Apr 2022 11:05:08 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 9pPTCeSLYmIhNgAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Fri, 22 Apr 2022 11:05:08 +0000
+Date:   Fri, 22 Apr 2022 13:05:06 +0200
+From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+To:     Tejun Heo <tj@kernel.org>
+Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>, cgroups@vger.kernel.org,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, stable@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+e42ae441c3b10acf9e9d@syzkaller.appspotmail.com
+Subject: Re: [PATCH] cgroup: don't queue css_release_work if one already
+ pending
+Message-ID: <20220422100400.GA29552@blackbody.suse.cz>
+References: <20220412192459.227740-1-tadeusz.struk@linaro.org>
+ <20220414164409.GA5404@blackbody.suse.cz>
+ <YmHwOAdGY2Lwl+M3@slm.duckdns.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2ee8fb0d-aeb4-5010-bc8c-16cbd6e88eff@kernel.org>
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <YmHwOAdGY2Lwl+M3@slm.duckdns.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 09:10:21PM -0600, David Ahern wrote:
-> On 4/20/22 5:21 PM, Guillaume Nault wrote:
-> > RTO_ONLINK is a flag that allows to reduce the scope of route lookups.
-> > It's stored in a normally unused bit of the ->flowi4_tos field, in
-> > struct flowi4. However it has several problems:
-> > 
-> >  * This bit is also used by ECN. Although ECN bits are supposed to be
-> >    cleared before doing a route lookup, it happened that some code
-> >    paths didn't properly sanitise their ->flowi4_tos. So this mechanism
-> >    is fragile and we had bugs in the past where ECN bits slipped in and
-> >    could end up being erroneously interpreted as RTO_ONLINK.
-> > 
-> >  * A dscp_t type was recently introduced to ensure ECN bits are cleared
-> >    during route lookups. ->flowi4_tos is the most important structure
-> >    field to convert, but RTO_ONLINK prevents such conversion, as dscp_t
-> >    mandates that ECN bits (where RTO_ONLINK is stored) be zero.
-> > 
-> > Therefore we need to stop using RTO_ONLINK altogether. Fortunately
-> > RTO_ONLINK isn't a necessity. Instead of passing a flag in ->flowi4_tos
-> > to tell the route lookup function to restrict the scope, we can simply
-> > initialise the scope correctly.
-> > 
-> 
-> I believe the set looks ok. I think the fib test coverage in selftests
-> could use more tests to cover tos.
+On Thu, Apr 21, 2022 at 02:00:56PM -1000, Tejun Heo <tj@kernel.org> wrote:
+> If this is the case, we need to hold an extra reference to be put by the
+> css_killed_work_fn(), right?
 
-Yes, this is on my todo list. I also plan to review existing tests that
-cover route lookups with link scope, and extend them if necessary.
+I looked into it a bit more lately and found that there already is such
+a fuse in kill_css() [1].
 
-Thanks for the review.
+At the same type syzbots stack trace demonstrates the fuse is
+ineffective
+
+> css_release+0xae/0xc0 kernel/cgroup/cgroup.c:5146                    (**)
+> percpu_ref_put_many include/linux/percpu-refcount.h:322 [inline]
+> percpu_ref_put include/linux/percpu-refcount.h:338 [inline]
+> percpu_ref_call_confirm_rcu lib/percpu-refcount.c:162 [inline]        (*)
+> percpu_ref_switch_to_atomic_rcu+0x5a2/0x5b0 lib/percpu-refcount.c:199
+> rcu_do_batch+0x4f8/0xbc0 kernel/rcu/tree.c:2485
+> rcu_core+0x59b/0xe30 kernel/rcu/tree.c:2722
+> rcu_core_si+0x9/0x10 kernel/rcu/tree.c:2735
+> __do_softirq+0x27e/0x596 kernel/softirq.c:305
+
+(*) this calls css_killed_ref_fn confirm_switch
+(**) zero references after confirmed kill?
+
+So, I was also looking at the possible race with css_free_rwork_fn()
+(from failed css_create()) but that would likely emit a warning from
+__percpu_ref_exit().
+
+So, I still think there's something fishy (so far possible only via
+artificial ENOMEM injection) that needs an explanation...
+
+Michal
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/kernel/cgroup/cgroup.c#n5608
 
