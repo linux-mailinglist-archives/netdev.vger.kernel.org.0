@@ -2,145 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB59450AD99
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 04:09:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FE2850ADB4
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 04:22:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233257AbiDVCLp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 22:11:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53866 "EHLO
+        id S233328AbiDVCXc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 22:23:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233237AbiDVCLp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 22:11:45 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A2664A93B
-        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 19:08:53 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id d15so7681597pll.10
-        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 19:08:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=tGU0K/EJxxDbBmweff8atM832lgytSb9he/rkce3zvQ=;
-        b=YVQ7kSICEskADr8JmScGWjcxFjG1JvTOzuYgzSypS+vzYcdjYUJup1k/Q2btFW+pyF
-         4dCaa+qvhnsPGC2w8yOKHZwkpSwWZpDuwUF54gdQd2OAF1YZ9ns5MqMLimCtUgonbPFY
-         nkwztCavLkFkUhKFu5GukZwGUoU0lcuCc2q1cMZlochUqP6paWGslVcA0xhmbISzBwqJ
-         dT4zlOzP+aKmLJz3uCDXHOPlHeMkegjLbHu4hZ1UcfDEKLeH4vuhd3b9ZcOctZqDP16t
-         OkHGnJys4Jr9/pqcgTbJiWfdSjX8KAjq4ygU/i8bwN9AIWn0phMUjJEA9CfrvckMua/w
-         nYLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tGU0K/EJxxDbBmweff8atM832lgytSb9he/rkce3zvQ=;
-        b=nKMZUEY0cJGSpMd3db8Z8KPMQ6GSarAZMNhYtVOr7tREzUO9zqYQaruGORRYe0yiYg
-         xY31ZNRKFTf0pasH1fxMvEhMovlZQphr5eWFs0hV8Qryncj7mGLgvX6pG9jmo/eLEe58
-         vcTvw7UVSKu5udwZyKxXA5mtO1JPZ0em69uP2ImBGm4FWsNKrYEH7+S2JWOMXOwzZYdO
-         X4vDNRiGF757VRjEysHlOfyMANKI/1khwfGhsTr+bhP6OuOlUxo6Q3jk42aQBPS5ZCib
-         4MCoOn1BEj8edMquonTaXOHzknRPJ+IbitNdTSzR64tzGf3TOGIiRl+IexOy53JHMtS7
-         cYkg==
-X-Gm-Message-State: AOAM532TZLGJ4b/OH45HhW5KA+0FXV43TgF2JAoosEMRW9pKfA7Qes1q
-        oIbd0v7GX6S6s6X5DABGKoI=
-X-Google-Smtp-Source: ABdhPJydAt6ziMUyapUSN9sMwvtT577wOrAWRKB7gUzSncqG9jt7o9+kSZslaZHcT68AtgrosbGYzA==
-X-Received: by 2002:a17:902:d709:b0:155:d473:2be0 with SMTP id w9-20020a170902d70900b00155d4732be0mr2155735ply.151.1650593332643;
-        Thu, 21 Apr 2022 19:08:52 -0700 (PDT)
-Received: from Laptop-X1 ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id v16-20020a62a510000000b0050759c9a891sm433737pfm.6.2022.04.21.19.08.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 19:08:51 -0700 (PDT)
-Date:   Fri, 22 Apr 2022 10:08:44 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     netdev@vger.kernel.org, "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        virtualization@lists.linux-foundation.org,
-        Balazs Nemeth <bnemeth@redhat.com>,
-        Mike Pattrick <mpattric@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH net-next] net/af_packet: add VLAN support for AF_PACKET
- SOCK_RAW GSO
-Message-ID: <YmIOLBihyeLy+PCS@Laptop-X1>
-References: <20220420082758.581245-1-liuhangbin@gmail.com>
- <CA+FuTScyF4BKEcNSCYOv8SBA_EmB806YtKA17jb3F+fymVF-Pg@mail.gmail.com>
- <YmDCHI330AUfcYKa@Laptop-X1>
- <CA+FuTSckEJVUH1Q2vBxGbfPgVteyDVmTfjJC6hBj=qRP+JcAxA@mail.gmail.com>
+        with ESMTP id S231551AbiDVCXa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 22:23:30 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BD9149263;
+        Thu, 21 Apr 2022 19:20:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650594039; x=1682130039;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=QY4+iCfT1Wy7jYCT0r02vdmfMy8p/eY4uf/pYw6auo0=;
+  b=HKEz8YOdSu3RZK4fAnYRh7BHINw7nMzZib5wXpmfSBqnA4jBUCObmv2X
+   g4QRYnlHolKlKxzyobwzHQmRdet4RdGDlADyJ2Z+S8pI+IzcQkbG+FmDW
+   YiNh6G24uKLXcC20bqmIEvzVcE7Cbr+mszAVOJD36albcEPNA0zBhab3P
+   7vthFME8sQjpWVccDd4763SMcfoTWCl4X3UhvQ9z71D9AvaYk/U+PxqCb
+   SP0/JSkKDbFYLgPJkG/ZreHkKPS/fNaqf5UU+1QSJAXiXzZBymvz5PLpl
+   qJXTa2XK7ymEQk8v0th2WyrD1PDnuBEeygB3SzT4PZ6YaZlqv8/q11soy
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="251868464"
+X-IronPort-AV: E=Sophos;i="5.90,280,1643702400"; 
+   d="scan'208";a="251868464"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2022 19:20:38 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,280,1643702400"; 
+   d="scan'208";a="562849639"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 21 Apr 2022 19:20:35 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nhiuQ-00097C-Jl;
+        Fri, 22 Apr 2022 02:20:34 +0000
+Date:   Fri, 22 Apr 2022 10:20:20 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Yu Zhe <yuzhe@nfschina.com>, mareklindner@neomailbox.ch,
+        sw@simonwunderlich.de, a@unstable.cc, sven@narfation.org,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
+Cc:     kbuild-all@lists.01.org, b.a.t.m.a.n@lists.open-mesh.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        liqiong@nfschina.com, kernel-janitors@vger.kernel.org,
+        Yu Zhe <yuzhe@nfschina.com>
+Subject: Re: [PATCH] batman-adv: remove unnecessary type castings
+Message-ID: <202204221027.ETcMYyKP-lkp@intel.com>
+References: <20220421154829.9775-1-yuzhe@nfschina.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CA+FuTSckEJVUH1Q2vBxGbfPgVteyDVmTfjJC6hBj=qRP+JcAxA@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220421154829.9775-1-yuzhe@nfschina.com>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Willem,
-On Thu, Apr 21, 2022 at 10:15:16AM -0400, Willem de Bruijn wrote:
-> Your approach does sound simpler than the above. Thanks for looking
-> into that alternative, though.
+Hi Yu,
 
-Sorry I have to bring this topic back. I just remembered that
-tpacket_snd() already called skb_probe_transport_header() before calling
-virtio_net_hdr_* functions. e.g.
+Thank you for the patch! Perhaps something to improve:
 
-- tpacket_snd()
-  - tpacket_fill_skb()
-    - packet_parse_headers()
-      - skb_probe_transport_header()
-  - if (po->has_vnet_hdr)
-    - virtio_net_hdr_to_skb()
-    - virtio_net_hdr_set_proto()
+[auto build test WARNING on linus/master]
+[also build test WARNING on v5.18-rc3 next-20220421]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-While for packet_snd()
+url:    https://github.com/intel-lab-lkp/linux/commits/Yu-Zhe/batman-adv-remove-unnecessary-type-castings/20220421-235254
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git b253435746d9a4a701b5f09211b9c14d3370d0da
+config: m68k-defconfig (https://download.01.org/0day-ci/archive/20220422/202204221027.ETcMYyKP-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/2474b41c585e849d3546e0aba8f3c862735a04ff
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Yu-Zhe/batman-adv-remove-unnecessary-type-castings/20220421-235254
+        git checkout 2474b41c585e849d3546e0aba8f3c862735a04ff
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash net/batman-adv/
 
-- packet_snd()
-  - if (has_vnet_hdr)
-    - virtio_net_hdr_to_skb()
-    - virtio_net_hdr_set_proto()
-  - packet_parse_headers()
-    - skb_probe_transport_header()
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-If we split skb_probe_transport_header() from packet_parse_headers() and
-move it before calling virtio_net_hdr_* function in packet_snd(). Should
-we do the same for tpacket_snd(), i.e. move skb_probe_transport_header()
-after the virtio_net_hdr_* function?
+All warnings (new ones prefixed by >>):
 
-I think it really doesn't matter whether calls skb_probe_transport_header()
-before or after virtio_net_hdr_* functions if we could set the skb->protocol
-and network header correctly. Because
+   net/batman-adv/bridge_loop_avoidance.c: In function 'batadv_choose_claim':
+>> net/batman-adv/bridge_loop_avoidance.c:68:42: warning: initialization discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+      68 |         struct batadv_bla_claim *claim = data;
+         |                                          ^~~~
 
-- skb_probe_transport_header()
-  - skb_flow_dissect_flow_keys_basic()
-    - __skb_flow_dissect()
 
-In __skb_flow_dissect()
-```
- * @data: raw buffer pointer to the packet, if NULL use skb->data
- * @proto: protocol for which to get the flow, if @data is NULL use skb->protocol
- * @nhoff: network header offset, if @data is NULL use skb_network_offset(skb)
- * @hlen: packet header length, if @data is NULL use skb_headlen(skb)
-```
+vim +/const +68 net/batman-adv/bridge_loop_avoidance.c
 
-So when data is NULL, we need to make sure the protocol, network header offset,
-packet header length are correct.
+    53	
+    54	static void batadv_bla_periodic_work(struct work_struct *work);
+    55	static void
+    56	batadv_bla_send_announce(struct batadv_priv *bat_priv,
+    57				 struct batadv_bla_backbone_gw *backbone_gw);
+    58	
+    59	/**
+    60	 * batadv_choose_claim() - choose the right bucket for a claim.
+    61	 * @data: data to hash
+    62	 * @size: size of the hash table
+    63	 *
+    64	 * Return: the hash index of the claim
+    65	 */
+    66	static inline u32 batadv_choose_claim(const void *data, u32 size)
+    67	{
+  > 68		struct batadv_bla_claim *claim = data;
+    69		u32 hash = 0;
+    70	
+    71		hash = jhash(&claim->addr, sizeof(claim->addr), hash);
+    72		hash = jhash(&claim->vid, sizeof(claim->vid), hash);
+    73	
+    74		return hash % size;
+    75	}
+    76	
 
-Before this patch, the VLAN packet network header offset is incorrect when calls
-skb_probe_transport_header(). After the fix, this issue should be gone
-and we can call skb_probe_transport_header() safely.
-
-So my conclusion is. There is no need to split packet_parse_headers(). Move
-packet_parse_headers() before calling virtio_net_hdr_* function in packet_snd()
-should be safe.
-
-Please pardon me if I didn't make something clear.
-Let's me know what do you think.
-
-Thanks
-Hangbin
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
