@@ -2,53 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FF9B50B6FB
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 14:10:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C75AB50B70D
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 14:12:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447356AbiDVMNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Apr 2022 08:13:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36284 "EHLO
+        id S1447267AbiDVMOd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Apr 2022 08:14:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447380AbiDVMNI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 08:13:08 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6693F31DC0;
-        Fri, 22 Apr 2022 05:10:15 -0700 (PDT)
+        with ESMTP id S1445865AbiDVMO2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 08:14:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C621117E;
+        Fri, 22 Apr 2022 05:11:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B193ACE294A;
-        Fri, 22 Apr 2022 12:10:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B6C11C385AF;
-        Fri, 22 Apr 2022 12:10:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650629411;
-        bh=APf6jpXDGLxUKrbqLvbwJKYkxkT1guioJa+IJ2L+G9A=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=qFf9pDF6O2aKZekydt5IMEiOdRH93m+x7li7xLdVUvBD1AgBjcUF0o3CshJss9e9Q
-         27+UhZ8k1QyxkAqPiCR7/4rLNJJY2uLt35BtPqQlrizSB4uH1xrG3qmyDuVC/M5jm0
-         j3e0Mu4E3D9lFto+s9pO77m22WhBd9cJEPr2TiyJj0aA6HQgw/zZk8LS0CK2cZH7i1
-         6NiHoCwqFNL9D1E79l1n8iIXdYCAFTXZEbLmP1NvPXhXRTjt3QG/6ZCtxZwXLNs/5d
-         d/85uSebmFBfG8TEYKigRqWQgf20a2QyTyakIgCJQy8VETRNgQu9D7suU+XSy3vqPk
-         5wzF/SIu4Cr3A==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9983CE8DD61;
-        Fri, 22 Apr 2022 12:10:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 788DD61FC0;
+        Fri, 22 Apr 2022 12:11:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61A49C385A4;
+        Fri, 22 Apr 2022 12:11:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650629494;
+        bh=H3Qej2YHR+TlaLMizz7+0fGPZ3Mtnj1GowHYNjqgcNQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YA0QT/RZtRQe3Fz37wzFITM8RhMzmyY0o4QKfeFMYl/dMhe2o5ULX1sqm2E3DWM34
+         vkp633FqTdwW+cyxW8qJ5gld7X0nyy2LTpJP3AErBnC33NJnNKf16z7ReeEDEabr2+
+         Ecx5Ph4AWW4epwvoZTQUIZA+dmXGgbVP6sDJUZzI=
+Date:   Fri, 22 Apr 2022 14:11:31 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Lungash <denizlungash@gmail.com>
+Cc:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
+        Coiby Xu <coiby.xu@gmail.com>, netdev@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        outreachy@lists.linux.dev
+Subject: Re: [PATCH] staging: qlge: Fix line wrapping
+Message-ID: <YmKbc9Ib9vXgDnBg@kroah.com>
+References: <YmJseHLyoAJWOGpc@kali-h6>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: dsa: Add missing of_node_put() in
- dsa_port_link_register_of
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165062941162.4368.17163300316112678882.git-patchwork-notify@kernel.org>
-Date:   Fri, 22 Apr 2022 12:10:11 +0000
-References: <20220420110413.17828-1-linmq006@gmail.com>
-In-Reply-To: <20220420110413.17828-1-linmq006@gmail.com>
-To:     Miaoqian Lin <linmq006@gmail.com>
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, linux@armlinux.org.uk, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YmJseHLyoAJWOGpc@kali-h6>
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -58,28 +51,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Wed, 20 Apr 2022 19:04:08 +0800 you wrote:
-> The device_node pointer is returned by of_parse_phandle()  with refcount
-> incremented. We should use of_node_put() on it when done.
-> of_node_put() will check for NULL value.
+On Fri, Apr 22, 2022 at 11:51:04AM +0300, Lungash wrote:
+> This patch fixes line wrapping following kernel coding style.
 > 
-> Fixes: a20f997010c4 ("net: dsa: Don't instantiate phylink for CPU/DSA ports unless needed")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> Task on TODO list
 > 
-> [...]
+> * fix weird line wrapping (all over, ex. the ql_set_routing_reg() calls in
+>   qlge_set_multicast_list()).
+> 
+> Signed-off-by: Lungash <denzlungash@gmail.com>
 
-Here is the summary with links:
-  - net: dsa: Add missing of_node_put() in dsa_port_link_register_of
-    https://git.kernel.org/netdev/net/c/fc06b2867f4c
+We need a "full" name here, whatever you sign legal documents with.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> ---
+>  drivers/staging/qlge/qlge_main.c | 235 ++++++++++++++-----------------
+>  1 file changed, 107 insertions(+), 128 deletions(-)
+> 
+> diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+> index 113a3efd12e9..309db00e0b22 100644
+> --- a/drivers/staging/qlge/qlge_main.c
+> +++ b/drivers/staging/qlge/qlge_main.c
+> @@ -499,77 +499,57 @@ static int qlge_set_routing_reg(struct qlge_adapter *qdev, u32 index, u32 mask,
+>  
+>  	switch (mask) {
+>  	case RT_IDX_CAM_HIT:
+> -		{
+> -			value = RT_IDX_DST_CAM_Q |	/* dest */
+> -			    RT_IDX_TYPE_NICQ |	/* type */
+> -			    (RT_IDX_CAM_HIT_SLOT << RT_IDX_IDX_SHIFT);/* index */
+> -			break;
+> -		}
+> +		value = RT_IDX_DST_CAM_Q |	/* dest */
+> +			RT_IDX_TYPE_NICQ |	/* type */
+> +			(RT_IDX_CAM_HIT_SLOT << RT_IDX_IDX_SHIFT);/* index */
+> +		break;
+
+The original was fine, but yes, the {} can be removed, but that does not
+have to do with the TODO item here.  Please only do one type of fixup at
+a time.
+
+>  
+> -static int qlge_validate_flash(struct qlge_adapter *qdev, u32 size, const char *str)
+> +static int qlge_validate_flash(struct qlge_adapter *qdev, u32 size,
+> +			       const char *str)
+
+You just made this look worse, why?
+
+> -static int qlge_read_flash_word(struct qlge_adapter *qdev, int offset, __le32 *data)
+> +static int qlge_read_flash_word(struct qlge_adapter *qdev, int offset,
+> +				__le32 *data)
+
+Same here, why change the original?
+
+> @@ -2952,8 +2936,8 @@ static int qlge_start_rx_ring(struct qlge_adapter *qdev, struct rx_ring *rx_ring
+>  		(rx_ring->cq_id * RX_RING_SHADOW_SPACE);
+>  	u64 shadow_reg_dma = qdev->rx_ring_shadow_reg_dma +
+>  		(rx_ring->cq_id * RX_RING_SHADOW_SPACE);
+> -	void __iomem *doorbell_area =
+> -		qdev->doorbell_area + (DB_PAGE_SIZE * (128 + rx_ring->cq_id));
+> +	void __iomem *doorbell_area = qdev->doorbell_area +
+> +		(DB_PAGE_SIZE * (128 + rx_ring->cq_id));
+
+This does not look better, why not put it all on one line?
 
 
+thanks,
+
+greg k-h
