@@ -2,103 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B18D150AC9B
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 02:01:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F3C650ACA1
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 02:02:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442781AbiDVADy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 20:03:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58126 "EHLO
+        id S1354866AbiDVAFV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 20:05:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1441834AbiDVADw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 20:03:52 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E460144769;
-        Thu, 21 Apr 2022 17:00:59 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id n8so7203855plh.1;
-        Thu, 21 Apr 2022 17:00:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=zNM0T6G9nbgHrNZ4fTkXwyWCBaHcehFw/2xC4YUFDsI=;
-        b=EuvVsx4ZgPslFCb7gOV55CeCnLpdDVKzvax8LPd7QTAK+3cU87Nftp2h7LeD7u3x2U
-         PO69KJYfLa71urQQP2eN+4+QzGZOFbUrNStJDozSoWX4l5jGuO1fYDQUPM7oTzQ8wB2U
-         8EIgEV6FSttJlevNQj86csduSGRTjcTwZHEIHMy9jGjOczOnergao1IJkSzCCnshkNPJ
-         Py6NTTy2g3djoSt3B+mT0dIwNsW/H2Eqoy9JrURvzKTT9fe9QNKppdTpHmWnLEPGs5gR
-         mcaxAyyi41329d31VgPJuKePYtKsinZGMVLpeuN/3ZZvqvZv6ZUF8piVfQllRNkVMPdm
-         7ZLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition
-         :content-transfer-encoding:in-reply-to;
-        bh=zNM0T6G9nbgHrNZ4fTkXwyWCBaHcehFw/2xC4YUFDsI=;
-        b=4HnZN7U4hdqGNz2gxOt8cs4uMQhPhHWINIIi229/C8bJf0VHPpeotkrASIZQVu5SD+
-         29/ZmnGL55SEpj4luZPkl9u/IDXg3EEliIXD65sW6l1eRUMCYKpNH9jTTCPR2ro1FP4/
-         Sw7Jy+ZTRWsC1dRz8TjxreC9HHaBYT33kq9tXbcPuUNxd1YHMFkGtObGvXRBH7RpvJe2
-         PAfMxjlNlAlrbnQEhdXBHfMBXGJeWoC/8xxuehwBuAFmdZ+JBmTzKovtq5OeCtwHZJ5F
-         6dBZ9MxRIff1TYTMxUrgnJxBLgacFLc9R9HdN7P+wuMUTzvwfMYSATnRWTzbn+R3kBFb
-         ONHA==
-X-Gm-Message-State: AOAM530i/cMQ54mTDXH5D/Fql11fBRUh4n9+wa4q5ZSfoePjpwt5YESz
-        9wjQigu0C9OugzHUdp7jl3g=
-X-Google-Smtp-Source: ABdhPJxz3NmXXbUUbQ3NvykiAKXEknpp47eUrgOLe/3aWtrn3sSIrFY8IHtbDQGUfcjACG6SN923fA==
-X-Received: by 2002:a17:902:ab56:b0:15a:ccc7:a311 with SMTP id ij22-20020a170902ab5600b0015accc7a311mr1722336plb.22.1650585659276;
-        Thu, 21 Apr 2022 17:00:59 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:15fa])
-        by smtp.gmail.com with ESMTPSA id ck20-20020a17090afe1400b001cd4989ff3dsm4180906pjb.4.2022.04.21.17.00.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Apr 2022 17:00:58 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Thu, 21 Apr 2022 14:00:56 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
-Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>, cgroups@vger.kernel.org,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, stable@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+e42ae441c3b10acf9e9d@syzkaller.appspotmail.com
-Subject: Re: [PATCH] cgroup: don't queue css_release_work if one already
- pending
-Message-ID: <YmHwOAdGY2Lwl+M3@slm.duckdns.org>
-References: <20220412192459.227740-1-tadeusz.struk@linaro.org>
- <20220414164409.GA5404@blackbody.suse.cz>
+        with ESMTP id S229892AbiDVAFU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 20:05:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665CD47382;
+        Thu, 21 Apr 2022 17:02:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 277E0B821CA;
+        Fri, 22 Apr 2022 00:02:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FEECC385A7;
+        Fri, 22 Apr 2022 00:02:26 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="U1g8W4w5"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1650585744;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=s9YJ+AxOvCGo+608yNkBuz6fniGjDnN27/vTN4qozqQ=;
+        b=U1g8W4w5mXPOSzp02yDVyUOJq3OHK6F9LOhkjdvSk/1MX063a58lwwKfrPDj2Y/UZx+loo
+        Xl7bK2lV1BkP7iJYsjq9sNzhJ57z5tVGLY5eAZpvDF5S/QviE4shKPxlmkmyp5JR9LxTyZ
+        c5LFRt48T/pkfculMStrb+EsyJSr7VI=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id eaac2843 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 22 Apr 2022 00:02:24 +0000 (UTC)
+Date:   Fri, 22 Apr 2022 02:02:21 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Charles-Francois Natali <cf.natali@gmail.com>
+Cc:     wireguard@lists.zx2c4.com, netdev@vger.kernel.org,
+        linux-crypto@vger.kernel.org,
+        Daniel Jordan <daniel.m.jordan@oracle.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Subject: Re: [PATCH] WireGuard: restrict packet handling to non-isolated CPUs.
+Message-ID: <YmHwjdfZJJ2DeLTK@zx2c4.com>
+References: <20220405212129.2270-1-cf.natali@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220414164409.GA5404@blackbody.suse.cz>
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+In-Reply-To: <20220405212129.2270-1-cf.natali@gmail.com>
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 06:44:09PM +0200, Michal Koutný wrote:
-> I suspect the double-queuing is a result of the fact that there exists
-> only the single reference to the css->refcnt. I.e. it's
-> percpu_ref_kill_and_confirm()'d and released both at the same time.
+netdev@ - Original thread is at
+https://lore.kernel.org/wireguard/20220405212129.2270-1-cf.natali@gmail.com/
+
+Hi Charles-FranÃ§ois,
+
+On Tue, Apr 05, 2022 at 10:21:29PM +0100, Charles-Francois Natali wrote:
+> WireGuard currently uses round-robin to dispatch the handling of
+> packets, handling them on all online CPUs, including isolated ones
+> (isolcpus).
 > 
-> (Normally (when not killing the last reference), css->destroy_work reuse
-> is not a problem because of the sequenced chain
-> css_killed_work_fn()->css_put()->css_release().)
+> This is unfortunate because it causes significant latency on isolated
+> CPUs - see e.g. below over 240 usec:
+> 
+> kworker/47:1-2373323 [047] 243644.756405: funcgraph_entry: |
+> process_one_work() { kworker/47:1-2373323 [047] 243644.756406:
+> funcgraph_entry: | wg_packet_decrypt_worker() { [...]
+> kworker/47:1-2373323 [047] 243644.756647: funcgraph_exit: 0.591 us | }
+> kworker/47:1-2373323 [047] 243644.756647: funcgraph_exit: ! 242.655 us
+> | }
+> 
+> Instead, restrict to non-isolated CPUs.
 
-If this is the case, we need to hold an extra reference to be put by the
-css_killed_work_fn(), right?
+Huh, interesting... I haven't seen this feature before. What's the
+intended use case? To never run _anything_ on those cores except
+processes you choose? To run some things but not intensive things? Is it
+sort of a RT-lite?
 
-Thanks.
+I took a look in padata/pcrypt and it doesn't look like they're
+examining the housekeeping mask at all. Grepping for
+housekeeping_cpumask doesn't appear to show many results in things like
+workqueues, but rather in core scheduling stuff. So I'm not quite sure
+what to make of this patch.
 
--- 
-tejun
+I suspect the thing to do might be to patch both wireguard and padata,
+and send a patch series to me, the padata people, and
+netdev@vger.kernel.org, and we can all hash this out together.
+
+Regarding your patch, is there a way to make that a bit more succinct,
+without introducing all of those helper functions? It seems awfully
+verbose for something that seems like a matter of replacing the online
+mask with the housekeeping mask.
+
+Jason
