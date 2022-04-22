@@ -2,94 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A4A250B639
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 13:34:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67FD050B5D3
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 13:02:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351594AbiDVLgw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Apr 2022 07:36:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45404 "EHLO
+        id S1446816AbiDVLF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Apr 2022 07:05:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239757AbiDVLgu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 07:36:50 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D1B7F14
-        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 04:33:56 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id bv16so10602855wrb.9
-        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 04:33:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=uz+KcNIj+v9WSFSUjytskdEFRoZIQjG/EVCHIE7PoXA=;
-        b=gzbQuJCj0I2T04uY0UYnVWLijPTDjp9cU8gjljlQbHYCpA8RUc0SI+1iOS8JCVDX30
-         wHYpTjb2TVGttz0rLW8wUREcv0cSVao2eWrMuveVbBcuvb69FNpN1EiELHQyz7N6bS5c
-         3TUxO7P8UkMUTNvh+TLzQ0YBXD9IfwQPSNMvk=
+        with ESMTP id S1446800AbiDVLF1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 07:05:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 442C65622C
+        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 04:02:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650625353;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZyHAq8XvVGq2hZYkl/QwRkAUTtNiHFZTrfQAk4QcfNI=;
+        b=KBQHAbGW+PLrkQ7yQa+5AJG9Y1cld2G9zqgyPcr6+BeU7VJYrD6aw9p0rXEAgiKizzXyPL
+        x8o9d7tjr65+xZ0jIub+om3Sv1zT4wBGkFVvhgP7lwyWzy5VlRneo0u3JlowAxk8dXcAoy
+        1/rA034FIqkdR5b6Wh5jfZZRcD+IF/I=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-442-6t0hRrSdPzWpUrdsNqHs2A-1; Fri, 22 Apr 2022 07:02:32 -0400
+X-MC-Unique: 6t0hRrSdPzWpUrdsNqHs2A-1
+Received: by mail-wm1-f72.google.com with SMTP id v62-20020a1cac41000000b0038cfe6edf3fso5906096wme.5
+        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 04:02:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=uz+KcNIj+v9WSFSUjytskdEFRoZIQjG/EVCHIE7PoXA=;
-        b=yydS/T0oGiHrmuIfaKYkLfId1mLyMUhocqhz6O868WvVg8iEUjV6yl1apPVxKUhSmE
-         JaZOCJ1qO4wB4xwIGh6vBRTbg/Nl/JIhHJlwYCMsAcotNJHXPPHKWS8fNArvwGgXhJ/2
-         w5C+7GwUTWFcamo2kYIoj9niuDJJdqhNkbyVvok7lRX/aVXatFY7nWlLcE8bfE4Vrf5M
-         S6LFt66CPEJgNFH6PV/IipSRipg+ZxTDmvNbKMRKxPxlizb1Dl1ATamoAoYUAN5Ot8qV
-         TgTcl/xk/qFr7j34WuoFjXJK4rMDqeQ0iv6+ANks4YWIioc+zb7n8Xpq+e2MPKSYSmoG
-         zwbw==
-X-Gm-Message-State: AOAM530uduBSXpC3o3dQPGo1uoiqNe2Fw0oOFt124n5SpY1uYYOZrPNv
-        ZwBaAweDR3xxUn5buDa5iQm9iw==
-X-Google-Smtp-Source: ABdhPJytQeZpvy34ZOAAMQB7w6jF7X6Nf/OgCkIilBTulJnvg3gtBspcR68ouVwuJUzFMunZvSQqjw==
-X-Received: by 2002:a5d:4e08:0:b0:20a:8f9e:beef with SMTP id p8-20020a5d4e08000000b0020a8f9ebeefmr3571401wrt.8.1650627235044;
-        Fri, 22 Apr 2022 04:33:55 -0700 (PDT)
-Received: from cloudflare.com (79.184.126.143.ipv4.supernova.orange.pl. [79.184.126.143])
-        by smtp.gmail.com with ESMTPSA id r25-20020adfa159000000b0020ac9758f17sm1338619wrr.23.2022.04.22.04.33.54
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ZyHAq8XvVGq2hZYkl/QwRkAUTtNiHFZTrfQAk4QcfNI=;
+        b=q/JUmJ+pOkFR7vQ8L3EoVgwtw7WRWagVYez7i6ebiTaj2K+IKIiuD0enh8aVDFyntQ
+         bmiMu754G3t1Rl9+xNxVRy+lhr72aD4i9U3XCl0Owc23wWs/1Z5bPv+aARck35VfP2o1
+         fHQiYfbCL4b6jYx96L3OSWHllzUx4ddKnYejvpskhfdRRH+WfbulZdmvwqZM4AbkTqHn
+         XUeuLDWvmZ4h5KZJ4RJqQUHGUXCgXJboJUWZRkL9fm1ScP914X8PaNZQxijTlUbzvb6d
+         4kl2qXOjJy3Lq9SJ/CD9zSj+MmYEAr9wJKqlKL7jfWXyPdab91SVl6yDUKNGanGXycft
+         1Lag==
+X-Gm-Message-State: AOAM5318HvlpXmjBRRbkQl1/5MJhsXPdy5SRAnAc3SSC9Xvag9aYN0+k
+        Lxgy9GQdHAFwhS/TAEJINJHAO323EzygbSoMtl6Ua5MWK6PT/0DsBxHgaHh6un1GfjZysYB6ICo
+        tr/kGUWyJoVLOCc6F
+X-Received: by 2002:a5d:4888:0:b0:207:ad8b:e534 with SMTP id g8-20020a5d4888000000b00207ad8be534mr3054351wrq.325.1650625351085;
+        Fri, 22 Apr 2022 04:02:31 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz5KDHAyqMTVOXlPYgdsFNWeD0RjDElwWKKy8+vAIVq0lSzAkGokyJMdVzf2Awq+RspMcySUg==
+X-Received: by 2002:a5d:4888:0:b0:207:ad8b:e534 with SMTP id g8-20020a5d4888000000b00207ad8be534mr3054328wrq.325.1650625350805;
+        Fri, 22 Apr 2022 04:02:30 -0700 (PDT)
+Received: from debian.home (2a01cb058d3818005c1e4a7b0f47339f.ipv6.abo.wanadoo.fr. [2a01:cb05:8d38:1800:5c1e:4a7b:f47:339f])
+        by smtp.gmail.com with ESMTPSA id l6-20020a1c2506000000b0038e6fe8e8d8sm1740027wml.5.2022.04.22.04.02.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 04:33:54 -0700 (PDT)
-References: <20220414162220.1985095-1-xukuohai@huawei.com>
- <20220414162220.1985095-5-xukuohai@huawei.com>
-User-agent: mu4e 1.6.10; emacs 27.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Xu Kuohai <xukuohai@huawei.com>
-Cc:     bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
+        Fri, 22 Apr 2022 04:02:30 -0700 (PDT)
+Date:   Fri, 22 Apr 2022 13:02:28 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     David Ahern <dsahern@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        hpa@zytor.com, Shuah Khan <shuah@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Daniel Kiss <daniel.kiss@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Delyan Kratunov <delyank@fb.com>, kernel-team@cloudflare.com
-Subject: Re: [PATCH bpf-next v2 4/6] bpf, arm64: Impelment
- bpf_arch_text_poke() for arm64
-Date:   Fri, 22 Apr 2022 12:54:02 +0200
-In-reply-to: <20220414162220.1985095-5-xukuohai@huawei.com>
-Message-ID: <87levxfj32.fsf@cloudflare.com>
+        dccp@vger.kernel.org
+Subject: Re: [PATCH net-next 0/3] ipv4: First steps toward removing RTO_ONLINK
+Message-ID: <20220422110228.GB15621@debian.home>
+References: <cover.1650470610.git.gnault@redhat.com>
+ <2ee8fb0d-aeb4-5010-bc8c-16cbd6e88eff@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2ee8fb0d-aeb4-5010-bc8c-16cbd6e88eff@kernel.org>
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -97,175 +78,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Xu,
+On Thu, Apr 21, 2022 at 09:10:21PM -0600, David Ahern wrote:
+> On 4/20/22 5:21 PM, Guillaume Nault wrote:
+> > RTO_ONLINK is a flag that allows to reduce the scope of route lookups.
+> > It's stored in a normally unused bit of the ->flowi4_tos field, in
+> > struct flowi4. However it has several problems:
+> > 
+> >  * This bit is also used by ECN. Although ECN bits are supposed to be
+> >    cleared before doing a route lookup, it happened that some code
+> >    paths didn't properly sanitise their ->flowi4_tos. So this mechanism
+> >    is fragile and we had bugs in the past where ECN bits slipped in and
+> >    could end up being erroneously interpreted as RTO_ONLINK.
+> > 
+> >  * A dscp_t type was recently introduced to ensure ECN bits are cleared
+> >    during route lookups. ->flowi4_tos is the most important structure
+> >    field to convert, but RTO_ONLINK prevents such conversion, as dscp_t
+> >    mandates that ECN bits (where RTO_ONLINK is stored) be zero.
+> > 
+> > Therefore we need to stop using RTO_ONLINK altogether. Fortunately
+> > RTO_ONLINK isn't a necessity. Instead of passing a flag in ->flowi4_tos
+> > to tell the route lookup function to restrict the scope, we can simply
+> > initialise the scope correctly.
+> > 
+> 
+> I believe the set looks ok. I think the fib test coverage in selftests
+> could use more tests to cover tos.
 
-Thanks for working on this.
+Yes, this is on my todo list. I also plan to review existing tests that
+cover route lookups with link scope, and extend them if necessary.
 
-We are also looking forward to using fentry hooks on arm64.
-In particular, attaching to entry/exit into/from XDP progs.
+Thanks for the review.
 
-On Thu, Apr 14, 2022 at 12:22 PM -04, Xu Kuohai wrote:
-> Impelment bpf_arch_text_poke() for arm64, so bpf trampoline code can use
-> it to replace nop with jump, or replace jump with nop.
->
-> Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
-> Acked-by: Song Liu <songliubraving@fb.com>
-> ---
->  arch/arm64/net/bpf_jit_comp.c | 52 +++++++++++++++++++++++++++++++++++
->  1 file changed, 52 insertions(+)
->
-> diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
-> index 8ab4035dea27..1a1c3ea75ee2 100644
-> --- a/arch/arm64/net/bpf_jit_comp.c
-> +++ b/arch/arm64/net/bpf_jit_comp.c
-> @@ -9,6 +9,7 @@
->  
->  #include <linux/bitfield.h>
->  #include <linux/bpf.h>
-> +#include <linux/memory.h>
->  #include <linux/filter.h>
->  #include <linux/printk.h>
->  #include <linux/slab.h>
-> @@ -18,6 +19,7 @@
->  #include <asm/cacheflush.h>
->  #include <asm/debug-monitors.h>
->  #include <asm/insn.h>
-> +#include <asm/patching.h>
->  #include <asm/set_memory.h>
->  
->  #include "bpf_jit.h"
-> @@ -1529,3 +1531,53 @@ void bpf_jit_free_exec(void *addr)
->  {
->  	return vfree(addr);
->  }
-> +
-> +static int gen_branch_or_nop(enum aarch64_insn_branch_type type, void *ip,
-> +			     void *addr, u32 *insn)
-> +{
-> +	if (!addr)
-> +		*insn = aarch64_insn_gen_nop();
-> +	else
-> +		*insn = aarch64_insn_gen_branch_imm((unsigned long)ip,
-> +						    (unsigned long)addr,
-> +						    type);
-> +
-> +	return *insn != AARCH64_BREAK_FAULT ? 0 : -EFAULT;
-> +}
-> +
-> +int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type poke_type,
-> +		       void *old_addr, void *new_addr)
-> +{
-> +	int ret;
-> +	u32 old_insn;
-> +	u32 new_insn;
-> +	u32 replaced;
-> +	enum aarch64_insn_branch_type branch_type;
-> +
-> +	if (poke_type == BPF_MOD_CALL)
-> +		branch_type = AARCH64_INSN_BRANCH_LINK;
-
-This path, bpf_arch_text_poke(<ip>, BPF_MOD_CALL, ...), is what we hit
-when attaching a BPF program entry. It is exercised by selftest #232
-xdp_bpf2bpf.
-
-However, with this patchset alone it will not work because we don't
-emit, yet, the ftrace patch (MOV X9, LR; NOP) as a part of BPF prog
-prologue, like ftrace_init_nop() does. So patching attempt will fail.
-
-I think that is what you mentioned to in your reply to Hou [1]
-
-So my question is - is support for attaching to BPF progs in scope for
-this patchset?
-
-If no, then perhaps it would be better for now to fail early with
-something like -EOPNOTSUPP when poke_type is BPF_MOD_CALL, rather then
-attempt to patch the code.
-
-If you plan to enable it as a part of this patchset, then I've given it
-a quick try, and it seems that not a lot is needed get fentry to BPF
-attachment to work.
-
-I'm including the diff for my quick and dirty attempt below. With that
-patch on top, the xdp_bpf2bpf tests pass:
-
-#232 xdp_bpf2bpf:OK
-
-[1] https://lore.kernel.org/bpf/d8c4f1fb-a020-9457-44e2-dc63982a9213@huawei.com/
-
-> +	else
-> +		branch_type = AARCH64_INSN_BRANCH_NOLINK;
-> +
-> +	if (gen_branch_or_nop(branch_type, ip, old_addr, &old_insn) < 0)
-> +		return -EFAULT;
-> +
-> +	if (gen_branch_or_nop(branch_type, ip, new_addr, &new_insn) < 0)
-> +		return -EFAULT;
-> +
-> +	mutex_lock(&text_mutex);
-> +	if (aarch64_insn_read(ip, &replaced)) {
-> +		ret = -EFAULT;
-> +		goto out;
-> +	}
-> +
-> +	if (replaced != old_insn) {
-> +		ret = -EFAULT;
-> +		goto out;
-> +	}
-> +
-> +	ret =  aarch64_insn_patch_text_nosync((void *)ip, new_insn);
-> +out:
-> +	mutex_unlock(&text_mutex);
-
-The body of this critical section is identical as ftrace_modify_code().
-Perhaps we could export it and reuse?
-
-> +	return ret;
-> +}
-
----
-diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
-index 5f6bd755050f..94d8251500ab 100644
---- a/arch/arm64/net/bpf_jit_comp.c
-+++ b/arch/arm64/net/bpf_jit_comp.c
-@@ -240,9 +240,9 @@ static bool is_lsi_offset(int offset, int scale)
- /* Tail call offset to jump into */
- #if IS_ENABLED(CONFIG_ARM64_BTI_KERNEL) || \
- 	IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL)
--#define PROLOGUE_OFFSET 9
-+#define PROLOGUE_OFFSET 11
- #else
--#define PROLOGUE_OFFSET 8
-+#define PROLOGUE_OFFSET 10
- #endif
- 
- static int build_prologue(struct jit_ctx *ctx, bool ebpf_from_cbpf)
-@@ -281,6 +281,10 @@ static int build_prologue(struct jit_ctx *ctx, bool ebpf_from_cbpf)
- 	 *
- 	 */
- 
-+	/* Set up ftrace patch (initially in disabled state) */
-+	emit(A64_MOV(1, A64_R(9), A64_LR), ctx);
-+	emit(A64_NOP, ctx);
-+
- 	/* Sign lr */
- 	if (IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL))
- 		emit(A64_PACIASP, ctx);
-@@ -1888,10 +1892,16 @@ int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type poke_type,
- 	u32 replaced;
- 	enum aarch64_insn_branch_type branch_type;
- 
--	if (poke_type == BPF_MOD_CALL)
-+	if (poke_type == BPF_MOD_CALL) {
- 		branch_type = AARCH64_INSN_BRANCH_LINK;
--	else
-+		/*
-+		 * Adjust addr to point at the BL in the callsite.
-+		 * See ftrace_init_nop() for the callsite sequence.
-+		 */
-+		ip = (void *)((unsigned long)ip + AARCH64_INSN_SIZE);
-+	} else {
- 		branch_type = AARCH64_INSN_BRANCH_NOLINK;
-+	}
- 
- 	if (gen_branch_or_nop(branch_type, ip, old_addr, &old_insn) < 0)
- 		return -EFAULT;
