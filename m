@@ -2,190 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BAEC50C42E
-	for <lists+netdev@lfdr.de>; Sat, 23 Apr 2022 01:12:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E539550C2E4
+	for <lists+netdev@lfdr.de>; Sat, 23 Apr 2022 01:09:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233823AbiDVWqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Apr 2022 18:46:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42186 "EHLO
+        id S233669AbiDVWoL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Apr 2022 18:44:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233549AbiDVWqD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 18:46:03 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FF362DB5ED
-        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 14:36:24 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id d15so13565528pll.10
-        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 14:36:24 -0700 (PDT)
+        with ESMTP id S233662AbiDVWoC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 18:44:02 -0400
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D38F2BBA1C
+        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 14:40:27 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id s4so6800989qkh.0
+        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 14:40:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=g1lhuaRo3OOBQYJGPWFnF2A4YTaYfbs5BOZ6154kPPo=;
-        b=aSJsfyvDPzJr+t3yGXwXl5WobCcJE53xF3XcRSEi62fWSPYhIIBg4bmwnqlzui09V/
-         OKm/Z0EqqyNVfUJBltjQAPUJDxOZ5morYlyeE9eDo2p8YwxN3zTWgrbvSGJv9GDti6Qd
-         EXy0NOe962hzUjWyUZQ8jfPyGLLbItte7B51JP12b7btpvHeae5cj2lkKh6JTj+xj31T
-         FgB/UJKM9RhJmx1TuPysdode4zeUz1bKjlyQoq2IAEpP1rS3xRdLnsgGEavsHHyDLO8l
-         UEr73I86PaU/o2LBdf5z63BQ4o1kfgPPbYAU8dUVqgwsqAz7B3R2optcjKStc4QLi4cn
-         lqtA==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=X3jmrp9pTRv13ERfd24S+BNAmPr2s08tVQATG4YHUlI=;
+        b=PeMUPreV4X4m1QbrqoSErYIw7TY5RJtJFjtE3UvbI9L1JGck3l52g90PJqKpnjpsmx
+         AM8SY/SgMDx4z+tVUcRPKc1qzvY4v7r/lIvCcQA974wNPSyyEPY9V4pQ8VZ1o9QSNdow
+         LQOp2w+WFFa7UE6LV3OR1n3ZdzId36u/hsWhXmE+C77KgXOC5wRRAgOIX3wJ/Os5JCCf
+         +HrZRIemdwA2FSOI51ix1h6aNF3vgkSEY4XiNiRPsChiM4v9DHPUxbyvPn6PY7U9LIYe
+         GrLZ2cjNFpmq0TXgkXgs3AbY7WgVpMjq8yiNFu3pDAqeiZnRi/MGBF27u5WKHrN+qpGo
+         ncdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=g1lhuaRo3OOBQYJGPWFnF2A4YTaYfbs5BOZ6154kPPo=;
-        b=Bg5orYM1Fzh8LcE390xsoasEhflbC8x/e3/Izx7HaiSVkddAkWdJ00FZvCNwIOSZ1I
-         WALR9v9km3v2NbSS+3Gwr1ymrC49uYGkfz29nCKPWg6r2YY41PEQ2NWURsvtngqNB9cu
-         crSto8Xx0ewx7vB8mL6UIVnOdY9UNwR11+1Sd5M/FaTeX3pS9yYMjKSweUnonoGRtleH
-         mLUjEy5I/xsZwEeY537w1JPoAmJ/oLtwKy+n8j7+3GnpU8PmI0QERWXv9k6UHtr9Ylr4
-         eBpUCKkGMm0JPB5rlnbPyDOAwpNyD4htXKidhKoHPeuhmJldWVgR5e6fDQ09UTW3LTnC
-         Yj8g==
-X-Gm-Message-State: AOAM530nhc/GZkwwQ6bjR7S6NQ0DXd/MpG8IqAEAu87onTGeICl3m8jU
-        qIr0RzMU77SXd+XdnSfCLDhjtPqv7o+6oA==
-X-Google-Smtp-Source: ABdhPJzgSQ/Cf6lM+gnTgpnhse3RwCp7ZLyIsGXi2t1mol23P/8+4gIHGhkUz1f9HnXxUGK3rV6OSg==
-X-Received: by 2002:a17:90b:124c:b0:1bc:369b:7db5 with SMTP id gx12-20020a17090b124c00b001bc369b7db5mr18309010pjb.179.1650663383575;
-        Fri, 22 Apr 2022 14:36:23 -0700 (PDT)
-Received: from [192.168.0.5] ([50.53.169.105])
-        by smtp.gmail.com with ESMTPSA id i1-20020a17090a650100b001cd8e9ea22asm6884895pjj.52.2022.04.22.14.36.22
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=X3jmrp9pTRv13ERfd24S+BNAmPr2s08tVQATG4YHUlI=;
+        b=uQQ5dOFPkAcxEwr01qpTzssCbkHBuJpm76QC2NpqwBfDak9RhaLPzlC4pRHN6AwUZw
+         dd9eP5DyVcmIhPXmCIm1uqnHwcqxeZRLTr+TbO9Ip6wok61+wqavmWiOSD217R0VNWnF
+         Ae/iAbKXUqZoe/CIeskX9ejW2/N/ehXlvqNLt6T3HCRBzabmSrgwO26GfxMo+zt29PLW
+         eHQ3oozLhxOnut5/EBAQH0v3ohDMHGzsEwLWGaB6+cAL4+MBS8mpXumC7qj2DRXrU5Og
+         PCTazgml0N/4Dz+8J1HsXQKSIl88G8ksTyCXDvEda0oegSGCmVUrSweFnYeBM7Y35e/d
+         Y5+Q==
+X-Gm-Message-State: AOAM5327MiW49zLK6Ilwx8HZE8Upzi00hk9dweehe65ZZSBgKFm7sP/2
+        tAxqW/YaLOdTfiTqDLv2tyP91NIF7Tw=
+X-Google-Smtp-Source: ABdhPJxz6OG6Mg2ggRsBS3/M9v1lmbS5JcYohsASl3+uq111evwENDiiJVgoLjI385G0jy0iXdmGSA==
+X-Received: by 2002:a05:620a:280d:b0:67d:2480:fdea with SMTP id f13-20020a05620a280d00b0067d2480fdeamr3940112qkp.157.1650663626285;
+        Fri, 22 Apr 2022 14:40:26 -0700 (PDT)
+Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com. [209.85.219.169])
+        by smtp.gmail.com with ESMTPSA id d9-20020a05620a158900b0069ec88bfc13sm1398904qkk.50.2022.04.22.14.40.25
+        for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Apr 2022 14:36:23 -0700 (PDT)
-Message-ID: <56b4d3e4-0274-10d8-0746-954750eac085@pensando.io>
-Date:   Fri, 22 Apr 2022 14:36:21 -0700
+        Fri, 22 Apr 2022 14:40:26 -0700 (PDT)
+Received: by mail-yb1-f169.google.com with SMTP id b95so16802015ybi.1
+        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 14:40:25 -0700 (PDT)
+X-Received: by 2002:a25:b94a:0:b0:644:db14:ff10 with SMTP id
+ s10-20020a25b94a000000b00644db14ff10mr6458202ybm.648.1650663625249; Fri, 22
+ Apr 2022 14:40:25 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.8.0
-Subject: Re: [patch iproute2-next] devlink: introduce -h[ex] cmdline option to
- allow dumping numbers in hex format
-Content-Language: en-US
-To:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
-Cc:     sthemmin@microsoft.com, dsahern@gmail.com
-References: <20220419171637.1147925-1-jiri@resnulli.us>
-From:   Shannon Nelson <snelson@pensando.io>
-In-Reply-To: <20220419171637.1147925-1-jiri@resnulli.us>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220420082758.581245-1-liuhangbin@gmail.com> <CA+FuTScyF4BKEcNSCYOv8SBA_EmB806YtKA17jb3F+fymVF-Pg@mail.gmail.com>
+ <YmDCHI330AUfcYKa@Laptop-X1> <CA+FuTSckEJVUH1Q2vBxGbfPgVteyDVmTfjJC6hBj=qRP+JcAxA@mail.gmail.com>
+ <YmIOLBihyeLy+PCS@Laptop-X1>
+In-Reply-To: <YmIOLBihyeLy+PCS@Laptop-X1>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 22 Apr 2022 17:39:48 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSfzcAUXrxzbLd-MPctTyLu8USJQ4gvsqPBfLpA+svYMYA@mail.gmail.com>
+Message-ID: <CA+FuTSfzcAUXrxzbLd-MPctTyLu8USJQ4gvsqPBfLpA+svYMYA@mail.gmail.com>
+Subject: Re: [PATCH net-next] net/af_packet: add VLAN support for AF_PACKET
+ SOCK_RAW GSO
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        netdev@vger.kernel.org, "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>,
+        virtualization@lists.linux-foundation.org,
+        Balazs Nemeth <bnemeth@redhat.com>,
+        Mike Pattrick <mpattric@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/19/22 10:16 AM, Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@nvidia.com>
-> 
-> For health reporter dumps it is quite convenient to have the numbers in
-> hexadecimal format. Introduce a command line option to allow user to
-> achieve that output.
-> 
-> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
-> ---
->   devlink/devlink.c  | 19 +++++++++++++------
->   man/man8/devlink.8 |  4 ++++
->   2 files changed, 17 insertions(+), 6 deletions(-)
-> 
-> diff --git a/devlink/devlink.c b/devlink/devlink.c
-> index aab739f7f437..bc681737ec8a 100644
-> --- a/devlink/devlink.c
-> +++ b/devlink/devlink.c
-> @@ -367,6 +367,7 @@ struct dl {
->   	bool pretty_output;
->   	bool verbose;
->   	bool stats;
-> +	bool hex;
->   	struct {
->   		bool present;
->   		char *bus_name;
-> @@ -8044,6 +8045,8 @@ static int cmd_health_dump_clear(struct dl *dl)
->   
->   static int fmsg_value_show(struct dl *dl, int type, struct nlattr *nl_data)
->   {
-> +	const char *num_fmt = dl->hex ? "%x" : "%u";
-> +	const char *num64_fmt = dl->hex ? "%"PRIx64 : "%"PRIu64;
+On Thu, Apr 21, 2022 at 10:10 PM Hangbin Liu <liuhangbin@gmail.com> wrote:
+>
+> Hi Willem,
+> On Thu, Apr 21, 2022 at 10:15:16AM -0400, Willem de Bruijn wrote:
+> > Your approach does sound simpler than the above. Thanks for looking
+> > into that alternative, though.
+>
+> Sorry I have to bring this topic back. I just remembered that
+> tpacket_snd() already called skb_probe_transport_header() before calling
+> virtio_net_hdr_* functions. e.g.
+>
+> - tpacket_snd()
+>   - tpacket_fill_skb()
+>     - packet_parse_headers()
+>       - skb_probe_transport_header()
+>   - if (po->has_vnet_hdr)
+>     - virtio_net_hdr_to_skb()
+>     - virtio_net_hdr_set_proto()
+>
+> While for packet_snd()
+>
+> - packet_snd()
+>   - if (has_vnet_hdr)
+>     - virtio_net_hdr_to_skb()
+>     - virtio_net_hdr_set_proto()
+>   - packet_parse_headers()
+>     - skb_probe_transport_header()
+>
+> If we split skb_probe_transport_header() from packet_parse_headers() and
+> move it before calling virtio_net_hdr_* function in packet_snd(). Should
+> we do the same for tpacket_snd(), i.e. move skb_probe_transport_header()
+> after the virtio_net_hdr_* function?
 
-Can we get a leading "0x" on these to help identify that they are hex 
-digits?
+That sounds like the inverse: "move after" instead of "move before"?
 
->   	uint8_t *data;
->   	uint32_t len;
->   
-> @@ -8053,16 +8056,16 @@ static int fmsg_value_show(struct dl *dl, int type, struct nlattr *nl_data)
->   		print_bool(PRINT_ANY, NULL, "%s", mnl_attr_get_u8(nl_data));
->   		break;
->   	case MNL_TYPE_U8:
-> -		print_uint(PRINT_ANY, NULL, "%u", mnl_attr_get_u8(nl_data));
-> +		print_uint(PRINT_ANY, NULL, num_fmt, mnl_attr_get_u8(nl_data));
->   		break;
->   	case MNL_TYPE_U16:
-> -		print_uint(PRINT_ANY, NULL, "%u", mnl_attr_get_u16(nl_data));
-> +		print_uint(PRINT_ANY, NULL, num_fmt, mnl_attr_get_u16(nl_data));
->   		break;
->   	case MNL_TYPE_U32:
-> -		print_uint(PRINT_ANY, NULL, "%u", mnl_attr_get_u32(nl_data));
-> +		print_uint(PRINT_ANY, NULL, num_fmt, mnl_attr_get_u32(nl_data));
->   		break;
->   	case MNL_TYPE_U64:
-> -		print_u64(PRINT_ANY, NULL, "%"PRIu64, mnl_attr_get_u64(nl_data));
-> +		print_u64(PRINT_ANY, NULL, num64_fmt, mnl_attr_get_u64(nl_data));
->   		break;
->   	case MNL_TYPE_NUL_STRING:
->   		print_string(PRINT_ANY, NULL, "%s", mnl_attr_get_str(nl_data));
-> @@ -8939,7 +8942,7 @@ static void help(void)
->   	pr_err("Usage: devlink [ OPTIONS ] OBJECT { COMMAND | help }\n"
->   	       "       devlink [ -f[orce] ] -b[atch] filename -N[etns] netnsname\n"
->   	       "where  OBJECT := { dev | port | sb | monitor | dpipe | resource | region | health | trap }\n"
-> -	       "       OPTIONS := { -V[ersion] | -n[o-nice-names] | -j[son] | -p[retty] | -v[erbose] -s[tatistics] }\n");
-> +	       "       OPTIONS := { -V[ersion] | -n[o-nice-names] | -j[son] | -p[retty] | -v[erbose] -s[tatistics] -h[ex] }\n");
->   }
->   
->   static int dl_cmd(struct dl *dl, int argc, char **argv)
-> @@ -9053,6 +9056,7 @@ int main(int argc, char **argv)
->   		{ "statistics",		no_argument,		NULL, 's' },
->   		{ "Netns",		required_argument,	NULL, 'N' },
->   		{ "iec",		no_argument,		NULL, 'i' },
-> +		{ "hex",		no_argument,		NULL, 'h' },
+But I thought the plan was to go back to your last patch which brings
+packet_snd in line with tpacket_snd by moving packet_parse_headers in
+its entirety before virtio_net_hdr_*?
 
-Can we use 'x' instead of 'h' here?  Most times '-h' means 'help', and 
-might surprise unsuspecting users when it isn't a help flag.
+> I think it really doesn't matter whether calls skb_probe_transport_header()
+> before or after virtio_net_hdr_* functions if we could set the skb->protocol
+> and network header correctly. Because
+>
+> - skb_probe_transport_header()
+>   - skb_flow_dissect_flow_keys_basic()
+>     - __skb_flow_dissect()
+>
+> In __skb_flow_dissect()
+> ```
+>  * @data: raw buffer pointer to the packet, if NULL use skb->data
+>  * @proto: protocol for which to get the flow, if @data is NULL use skb->protocol
+>  * @nhoff: network header offset, if @data is NULL use skb_network_offset(skb)
+>  * @hlen: packet header length, if @data is NULL use skb_headlen(skb)
+> ```
+>
+> So when data is NULL, we need to make sure the protocol, network header offset,
+> packet header length are correct.
+>
+> Before this patch, the VLAN packet network header offset is incorrect when calls
+> skb_probe_transport_header(). After the fix, this issue should be gone
+> and we can call skb_probe_transport_header() safely.
+>
+> So my conclusion is. There is no need to split packet_parse_headers(). Move
+> packet_parse_headers() before calling virtio_net_hdr_* function in packet_snd()
+> should be safe.
 
-Thanks,
-sln
+Ack. Sorry if my last response was not entirely clear on this point.
 
->   		{ NULL, 0, NULL, 0 }
->   	};
->   	const char *batch_file = NULL;
-> @@ -9068,7 +9072,7 @@ int main(int argc, char **argv)
->   		return EXIT_FAILURE;
->   	}
->   
-> -	while ((opt = getopt_long(argc, argv, "Vfb:njpvsN:i",
-> +	while ((opt = getopt_long(argc, argv, "Vfb:njpvsN:ih",
->   				  long_options, NULL)) >= 0) {
->   
->   		switch (opt) {
-> @@ -9106,6 +9110,9 @@ int main(int argc, char **argv)
->   		case 'i':
->   			use_iec = true;
->   			break;
-> +		case 'h':
-> +			dl->hex = true;
-> +			break;
->   		default:
->   			pr_err("Unknown option.\n");
->   			help();
-> diff --git a/man/man8/devlink.8 b/man/man8/devlink.8
-> index 840cf44cf97b..3797a27cefc5 100644
-> --- a/man/man8/devlink.8
-> +++ b/man/man8/devlink.8
-> @@ -63,6 +63,10 @@ Switches to the specified network namespace.
->   .BR "\-i", " --iec"
->   Print human readable rates in IEC units (e.g. 1Ki = 1024).
->   
-> +.TP
-> +.BR "\-h", " --hex"
-> +Print dump numbers in hexadecimal format.
-> +
->   .SS
->   .I OBJECT
->   
+> Please pardon me if I didn't make something clear.
+> Let's me know what do you think.
+>
+> Thanks
+> Hangbin
