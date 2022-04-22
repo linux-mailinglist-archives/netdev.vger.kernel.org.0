@@ -2,94 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 79B5F50BF2B
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 20:01:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAB7550BFBD
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 20:28:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229598AbiDVSCy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Apr 2022 14:02:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57632 "EHLO
+        id S229918AbiDVSMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Apr 2022 14:12:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235772AbiDVR7O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 13:59:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37F50C0E5F;
-        Fri, 22 Apr 2022 10:56:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2959260C4F;
-        Fri, 22 Apr 2022 17:56:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB90EC385A4;
-        Fri, 22 Apr 2022 17:56:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650650178;
-        bh=pELO3OB3ysuZ0HLLVF+76Td+K+2oS2riNU2A6pWuAQQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=onsonSbGFnf70GvkcHnOGcW60J4t+hCRPSu27HBZyLxIKZue1AzAFSAp7gjH7msAy
-         t0bWaVEpRA3WGOcgHuNeTG/TtRZ6zffLZCIUwOnkpyZuVEPHXLRWW2Cal/dtJ12T5v
-         nTpxci8oAWZSo5QBpzz4QmqdenLo4Zdre1qx51M/ZAJWSaYp0pLZwwlIpuSxFUBSas
-         9FbqfJRUNPSMmuAUcLXE7jpiZa5GdlBpR92NXQldxxWavP+ByXXe8cui3KbuaeSaMp
-         59jKUGcsn/PmnuFTs4UduUHL6KQwJQrU9bAyp8M/VwDEzFcbNdGhncx4chluhE/ar/
-         WfBea4fkJeprA==
-Date:   Fri, 22 Apr 2022 10:56:16 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alvin =?UTF-8?B?xaBpcHJhZ2E=?= <alsi@bang-olufsen.dk>,
+        with ESMTP id S237276AbiDVSGr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 14:06:47 -0400
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3855DE49EE;
+        Fri, 22 Apr 2022 11:03:48 -0700 (PDT)
+Received: from relay2-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::222])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id 9BFA3C1EAB;
+        Fri, 22 Apr 2022 18:03:30 +0000 (UTC)
+Received: (Authenticated sender: maxime.chevallier@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 9D3B140004;
+        Fri, 22 Apr 2022 18:03:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1650650591;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=DzFYMdqiUbF9fkv7pZJyHpakFyvM1o8fMoCSIs24IhI=;
+        b=RGvD/NEBQqLT/SR04JDPMP/MpuR40CZoxYwPDS/m1/julhFNlmXsZMWK/wwoXBpMnUXz98
+        iwmD98uPcM1m2u+EvaRCGz7mIbu+3ZfhF0yLWjaGENudt90TaWLhSevlOFduTUlO8UJqva
+        ASh13xDJ4Ood7hCa/QYKKo20gl9VEKa4+z6auIKXxhkGYVrmYQIHomzae8yL7IEm8FENOu
+        DQ3x0KWanLSz6v6eEv7NHStsdHifXkufpIQxK1oBJfXwkTus0zVjUms7z2BAcd2Wt9jIV3
+        gE56JdI5XEFjbgMGT8OmPY4QpUSOnQ5Vif9xuyvRbCa+lXMTTj5hnpPNV4AM7w==
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>
+Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
         Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>, krzk+dt@kernel.org,
-        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net v2 1/2] dt-bindings: net: dsa: realtek: cleanup
- compatible strings
-Message-ID: <20220422105616.15f4695d@kernel.org>
-In-Reply-To: <CAJq09z5zU1WT4bHjv-=aX49XweKnOmLhnL2w8gSaBe7=Ov1APw@mail.gmail.com>
-References: <20220418233558.13541-1-luizluca@gmail.com>
-        <165044941250.8751.17513068846690831070.git-patchwork-notify@kernel.org>
-        <CAJq09z5zU1WT4bHjv-=aX49XweKnOmLhnL2w8gSaBe7=Ov1APw@mail.gmail.com>
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Luka Perkov <luka.perkov@sartura.hr>,
+        Robert Marko <robert.marko@sartura.hr>
+Subject: [PATCH net-next 0/5] net: ipqess: introduce Qualcomm IPQESS driver
+Date:   Fri, 22 Apr 2022 20:03:00 +0200
+Message-Id: <20220422180305.301882-1-maxime.chevallier@bootlin.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 20 Apr 2022 17:29:00 -0300 Luiz Angelo Daros de Luca wrote:
-> > This series was applied to netdev/net-next.git (master)
-> > by David S. Miller <davem@davemloft.net>:
-> >
-> > On Mon, 18 Apr 2022 20:35:57 -0300 you wrote:  
-> > > Compatible strings are used to help the driver find the chip ID/version
-> > > register for each chip family. After that, the driver can setup the
-> > > switch accordingly. Keep only the first supported model for each family
-> > > as a compatible string and reference other chip models in the
-> > > description.
-> > >
-> > > The removed compatible strings have never been used in a released kernel.
-> > >
-> > > [...]  
-> >
-> > Here is the summary with links:
-> >   - [net,v2,1/2] dt-bindings: net: dsa: realtek: cleanup compatible strings
-> >     https://git.kernel.org/netdev/net-next/c/6f2d04ccae9b
-> >   - [net,v2,2/2] net: dsa: realtek: remove realtek,rtl8367s string
-> >     https://git.kernel.org/netdev/net-next/c/fcd30c96af95
-> >  
-> 
-> I was expecting to get those patches merged to net as well. Otherwise,
-> the "realtek,rtl8367s" we are removing will get into a released
-> kernel.
+Hello everyone,
 
-Seems reasonable. Unless someone objects I'll "yolo it" and apply 
-the patches to net as well.
+This series introduces a new driver, for the Qualcomm IPQESS Ethernet
+Controller, found on the IPQ4019.
+
+The driver itself is pretty straightforward, but has lived out-of-tree
+for a while. I've done my best to clean-up some outdated API calls, but
+some might remain.
+
+This controller is somewhat special, since it's part of the IPQ4019 SoC
+which also includes an QCA8K switch, and uses the IPQESS controller for
+the CPU port. The switch is so tightly intergrated with the MAC that it
+is connected to the MAC using an internal link (hence the fact that we
+only support PHY_INTERFACE_MODE_INTERNAL), and this has some
+consequences on the DSA side.
+
+The tagging for the switch isn't done inband as most switch do, but
+out-of-band, the DSA tag being included in the DMA descriptor.
+
+So, this series also includes a new DSA tagging protocol, that sets the
+DSA port index into skb->shinfo, so that the MAC driver can use it to
+build the descriptor. This is definitely unusual, so I'l very openned to
+suggestions, comments and reviews on the tagging side of this series.
+
+Thanks to the Sartura folks who worked on a base version of this driver,
+and provided test hardware.
+
+Best regards,
+
+Maxime Chevallier
+
+Maxime Chevallier (5):
+  net: ipqess: introduce the Qualcomm IPQESS driver
+  net: dsa: add out-of-band tagging protocol
+  net: ipqess: Add out-of-band DSA tagging support
+  net: dt-bindings: Introduce the Qualcomm IPQESS Ethernet controller
+  ARM: dts: qcom: ipq4019: Add description for the IPQESS Ethernet
+    controller
+
+ .../devicetree/bindings/net/qcom,ipqess.yaml  |   94 ++
+ MAINTAINERS                                   |    6 +
+ arch/arm/boot/dts/qcom-ipq4019.dtsi           |   42 +
+ drivers/net/ethernet/qualcomm/Kconfig         |   11 +
+ drivers/net/ethernet/qualcomm/Makefile        |    2 +
+ drivers/net/ethernet/qualcomm/ipqess/Makefile |    8 +
+ drivers/net/ethernet/qualcomm/ipqess/ipqess.c | 1258 +++++++++++++++++
+ drivers/net/ethernet/qualcomm/ipqess/ipqess.h |  515 +++++++
+ .../ethernet/qualcomm/ipqess/ipqess_ethtool.c |  168 +++
+ include/linux/skbuff.h                        |    7 +
+ include/net/dsa.h                             |    2 +
+ net/dsa/Kconfig                               |    7 +
+ net/dsa/Makefile                              |    1 +
+ net/dsa/tag_oob.c                             |   45 +
+ 14 files changed, 2166 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/qcom,ipqess.yaml
+ create mode 100644 drivers/net/ethernet/qualcomm/ipqess/Makefile
+ create mode 100644 drivers/net/ethernet/qualcomm/ipqess/ipqess.c
+ create mode 100644 drivers/net/ethernet/qualcomm/ipqess/ipqess.h
+ create mode 100644 drivers/net/ethernet/qualcomm/ipqess/ipqess_ethtool.c
+ create mode 100644 net/dsa/tag_oob.c
+
+-- 
+2.35.1
+
