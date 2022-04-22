@@ -2,79 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 171B050BFB8
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 20:28:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CB4B50C009
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 20:57:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230193AbiDVSXf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Apr 2022 14:23:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48028 "EHLO
+        id S230212AbiDVSxh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Apr 2022 14:53:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231911AbiDVSXd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 14:23:33 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 989281102A0
-        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 11:20:34 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id h5so7961733pgc.7
-        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 11:20:34 -0700 (PDT)
+        with ESMTP id S230087AbiDVSxc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 14:53:32 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 986191FC1E2;
+        Fri, 22 Apr 2022 11:46:28 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id p21so9523789ioj.4;
+        Fri, 22 Apr 2022 11:46:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=AcwyL+VzOQ65vJV+fsz8Rk3YFL7NLc4igMwKsxYEcXo=;
-        b=f5Xg1N4G2k/OC883Em8K1hnxg++yPa1xZ66t6YM3tugTPRxEoSd6Xg5tUe1dmtUPfK
-         pvrtx5Ipxdzq3hX8DgAZoHmkvnZIFWE7W3G/lIq/B6N6qnxe4Td4M5AhopjVfxPNjZWS
-         kWYlBx1upQjfRCccCF1mvBWDOpLnPNTgxiR8AGUMdWmI9APU93X4J3nez4k2N+VCzKNe
-         0V9t/lOPoP92vqyO1PWQwd73HoRTkOVNAg3Uele7L6tscpMCnrBGwizonLppXYC9ABj5
-         IlrZms9ba0N+X83y5zqGCWQfwoMdkNmyq/pB7187sQEVpwUJacBVTNeX3sLImNiAgfkP
-         pRsw==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=VZJZWU/RxygMbphG0Oj9zjd06v34ardwpbG1ITBoIDw=;
+        b=YZrWTzrqWk1rSABVylk7srJID3fDK9uMYJG42OPvae8wfCRKj7ksYtYZn7xN0yrP8i
+         e41Zp35cubbwqYSgd29HYOnVMmbr5qt6fEZ8X/yNW7wvKE6Of2E2X84vq2sbLpm0v1ft
+         7Yc10MU2AuvdmmQhwLN/afW/ybLHkuYWzff9R78t3w/+XyhG60uKEsY2w5UdcUX6Fu2J
+         LMy2HV3lFWnIFWErseiwxIAg5WQVCIyoHpY/usBPF0WEoB6IZcWuDlIdWhOUBNbbC3U9
+         o1RNHfw+J/BuziFmLiNgBRaa2DJDNESPnhnvUgumXYSBsoCUt6ByYC2DxaEy9zCJP3wE
+         T5/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=AcwyL+VzOQ65vJV+fsz8Rk3YFL7NLc4igMwKsxYEcXo=;
-        b=aAM5FX+I5uuPCWWINkuxwOAuzFRNoAtRWHAnaUevi0fKtEnKERY95XtnhGThTBr8KS
-         5Sk2SYDqyImXLMFAcE7s8amt3aj6DLLIzXwsFhQaGlHR0yqIpS64w/35XBro1yO7B6a+
-         eVqFe2YR/Q7E8GNN4/h2YdZlYMomlwsqwYdHCU7ORTw0qGX0YlZ/buwXz/lsBHChEHHY
-         YdUgb75ZoUXR+xCZF+5YCMjx2vYtuov6zGsPHjsj91VGXFYh8X3xasc4NNS2qqli/3EF
-         pZR4PEGrTWm6817cD+6KfaJUOI44Bh/bFrv7otBbYIjNXnxdngyuYRf0V7MQcdSMXg3m
-         1eBA==
-X-Gm-Message-State: AOAM532U/s7+s42uKpRkXUNfjfwWHDHosmR51DAiqmI9eBfXEH1X9J4K
-        PaAih7dqOLedea68kix0dNI=
-X-Google-Smtp-Source: ABdhPJwNgzZ3se1oDqWaUa1fz3WwHqk9RsPU54+uDg+4CWrYyDvRqIA3rprQE/V8v77Q9QNcNtaEnQ==
-X-Received: by 2002:a05:6a00:a8b:b0:4cd:6030:4df3 with SMTP id b11-20020a056a000a8b00b004cd60304df3mr6292864pfl.40.1650651611521;
-        Fri, 22 Apr 2022 11:20:11 -0700 (PDT)
-Received: from [100.127.84.93] ([2620:10d:c090:400::5:f83e])
-        by smtp.gmail.com with ESMTPSA id d8-20020a056a00198800b004fab740dbe6sm3435619pfl.15.2022.04.22.11.20.09
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 22 Apr 2022 11:20:10 -0700 (PDT)
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     Lasse Johnsen <lasse@timebeat.app>
-Cc:     Richard Cochran <richardcochran@gmail.com>, netdev@vger.kernel.org,
-        Gordon Hollingworth <gordon@raspberrypi.com>,
-        Ahmad Byagowi <clk@fb.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=VZJZWU/RxygMbphG0Oj9zjd06v34ardwpbG1ITBoIDw=;
+        b=kHZH3WGNLzMYnQKcX8w+DjR3WAXSQpLinbGqW5w6I+rEOnh/ZT64SWJeh7jkE1ri7j
+         /iwRNcrdmd97m71ku5XJFNqyrMxi6BVVW0jGxKaXVSnV2t/66ka04Vp2aLIlErHhVgnC
+         +OGvv8fw17i7m7UnCgvFD+rYGoa0L5jQWh1QsUVIZKmhT+BvANvGQQcij+xy6Orper7K
+         Hoaqy2IDoz/f2oXlF2a5CklBXkODa3cwecJP86EFBqxjZBptJ6DFmqGf2c8UORPPtNe0
+         dUeTaKqxyUz+Z5fYw8btueZwrfZzPwxp0xeb5xwicVl13DuW/pb/jgOjet2PpmGBtzu5
+         9sZQ==
+X-Gm-Message-State: AOAM532BUKYCl2ZIoeMNB2cEkA9lRvdRRPihzegTQz15+rknz0Fo4eYD
+        LjU777hxgeqezvjk64N+zI41Sghjp+I=
+X-Google-Smtp-Source: ABdhPJzt8+ULZ4U/JS1QogjvrFZ9RPxY2qsOw5RmC0oJk1pCiWYhJttEH2fg8OhbQGWlcVH7Xy1Pxw==
+X-Received: by 2002:a65:41c3:0:b0:363:5711:e234 with SMTP id b3-20020a6541c3000000b003635711e234mr5039062pgq.386.1650652113575;
+        Fri, 22 Apr 2022 11:28:33 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id b17-20020a056a000a9100b004e1b7cdb8fdsm3593300pfl.70.2022.04.22.11.28.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Apr 2022 11:28:32 -0700 (PDT)
+Message-ID: <68c4710d-013e-85e0-154d-413f4e13b27e@gmail.com>
+Date:   Fri, 22 Apr 2022 11:28:30 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net-next 2/5] net: dsa: add out-of-band tagging protocol
+Content-Language: en-US
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        davem@davemloft.net, Rob Herring <robh+dt@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
         Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
-        bcm-kernel-feedback-list@broadcom.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net-next v2] net: phy: broadcom: 1588 support on bcm54210pe
-Date:   Fri, 22 Apr 2022 11:20:07 -0700
-X-Mailer: MailMate (1.14r5852)
-Message-ID: <FCDBE44F-57EB-420E-844B-29BBB37EA2C6@gmail.com>
-In-Reply-To: <567C8D9F-BF2B-4DE6-8991-DB86A845C49C@timebeat.app>
-References: <928593CA-9CE9-4A54-B84A-9973126E026D@timebeat.app>
- <20220421144825.GA11810@hoboy.vegasvil.org>
- <208820C3-E4C8-4B75-B926-15BCD844CE96@timebeat.app>
- <20220422152209.cwofghzr2wyxopek@bsd-mbp.local>
- <567C8D9F-BF2B-4DE6-8991-DB86A845C49C@timebeat.app>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        linux-arm-kernel@lists.infradead.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Luka Perkov <luka.perkov@sartura.hr>,
+        Robert Marko <robert.marko@sartura.hr>
+References: <20220422180305.301882-1-maxime.chevallier@bootlin.com>
+ <20220422180305.301882-3-maxime.chevallier@bootlin.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220422180305.301882-3-maxime.chevallier@bootlin.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -83,36 +82,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22 Apr 2022, at 11:11, Lasse Johnsen wrote:
+On 4/22/22 11:03, Maxime Chevallier wrote:
+> This tagging protocol is designed for the situation where the link
+> between the MAC and the Switch is designed such that the Destination
+> Port, which is usually embedded in some part of the Ethernet Header, is
+> sent out-of-band, and isn't present at all in the Ethernet frame.
+> 
+> This can happen when the MAC and Switch are tightly integrated on an
+> SoC, as is the case with the Qualcomm IPQ4019 for example, where the DSA
+> tag is inserted directly into the DMA descriptors. In that case,
+> the MAC driver is responsible for sending the tag to the switch using
+> the out-of-band medium. To do so, the MAC driver needs to have the
+> information of the destination port for that skb.
+> 
+> This tagging protocol relies on a new set of fields in skb->shinfo to
+> transmit the dsa tagging information to and from the MAC driver.
+> 
+> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
 
-> Hi Jonathan,
->
-> I suspect you make the conflation I also made when I started working on=
- this PHY driver. Broadcom has a number of different, nearly identical ch=
-ips. The BCM54210, the BCM54210E, the BCM54210PE, the BCM54210S and the B=
-CM54210SE.
->
-> It=E2=80=99s hard to imagine, but only the BCM54210PE is a first genera=
-tion PHY and the BCM54210 (and others) are second generation. I have to b=
-e mighty careful not to breach my NDA, but I can furnish you with these q=
-uotes directly from the Broadcom engineers I worked with during the devel=
-opment:
->
-> 24 March:
->
-> "The BCM54210PE is the first-gen 40-nm GPHY, but the BCM54210 is the se=
-cond-gen 40-nm GPHY.=E2=80=9D
->
-> "The 1588 Inband function only applied to BCM54210 or later PHYs. It do=
-esn't be supported in the BCM54210PE=E2=80=9D
->
-> So, I quite agree with you that in-band would be preferable (subject to=
- the issue with hawking the reserved field used in 1588-2019 I described =
-in my note to Richard), but I am convinced that it is not supported in th=
-e BCM54210PE. Indeed if you are looking at a document describing features=
- based on the RDB register access method it is not supported by the BCM54=
-210PE.
+First off, I am not a big fan of expanding skb::shared_info because it 
+is sensitive to cache line sizes and is critical for performance at much 
+higher speeds, I would expect Eric and Jakub to not be terribly happy 
+about it.
 
-Uhm, I have inbound timestamps working for RX on an RPI CM4.
-=E2=80=94
-Jonathan
+The Broadcom systemport (bcmsysport.c) has a mode where it can extract 
+the Broadcom tag and put it in front of the actual packet contents which 
+appears to be very similar here. From there on, you can have two strategies:
+
+- have the Ethernet controller mangle the packet contents such that the 
+QCA tag is located in front of the actual Ethernet frame and create a 
+new tagging protocol variant for QCA, similar to the TAG_BRCM versus 
+TAG_BRCM_PREPEND
+
+- provide the necessary information for the tagger to work using an out 
+of band mechanism, which is what you have done, in which case, maybe you 
+can use skb->cb[] instead of using skb::shared_info?
+-- 
+Florian
