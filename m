@@ -2,208 +2,308 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7987B50BBBC
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 17:32:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FD2650BBEF
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 17:43:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449080AbiDVPfX convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 22 Apr 2022 11:35:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43710 "EHLO
+        id S1449593AbiDVPqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Apr 2022 11:46:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385481AbiDVPfV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 11:35:21 -0400
-X-Greylist: delayed 303 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 22 Apr 2022 08:32:26 PDT
-Received: from de-smtp-delivery-213.mimecast.com (de-smtp-delivery-213.mimecast.com [194.104.109.213])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 522C65C661
-        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 08:32:26 -0700 (PDT)
-Received: from CHE01-GV0-obe.outbound.protection.outlook.com
- (mail-gv0che01lp2046.outbound.protection.outlook.com [104.47.22.46]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- de-mta-16-bNLCtF9kMw65wnxknaxtkA-1; Fri, 22 Apr 2022 17:26:15 +0200
-X-MC-Unique: bNLCtF9kMw65wnxknaxtkA-1
-Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:2e::8) by
- ZRAP278MB0528.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:2f::7) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5186.14; Fri, 22 Apr 2022 15:26:14 +0000
-Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
- ([fe80::f465:3051:c795:3c2]) by ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
- ([fe80::f465:3051:c795:3c2%9]) with mapi id 15.20.5186.015; Fri, 22 Apr 2022
- 15:26:14 +0000
-Date:   Fri, 22 Apr 2022 17:26:12 +0200
-From:   Francesco Dolcini <francesco.dolcini@toradex.com>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S1449543AbiDVPpm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 11:45:42 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 988C45D67A
+        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 08:42:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=pxd/i0KUK7DOtkkvmBm3c1BstTXH9qolGaKYQxizxow=; b=5TymPEcugeyz5zWORHjOIEF4vd
+        CDMAGZWeqcvZhLZUYRVI0ev+YWoO/xidba3HxXerlKPAUph+7nOLFAvITh9TmVzsrVIRlDMKTAYh0
+        j0YQX2asIHpkxmrbNDL7GA05JnCWtBlpty2b0hRR+lyJ+5ZRd4FmKbK1NKtHxGnVoYNo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nhvQg-00H07P-JY; Fri, 22 Apr 2022 17:42:42 +0200
+Date:   Fri, 22 Apr 2022 17:42:42 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Lasse Johnsen <lasse@timebeat.app>
+Cc:     Richard Cochran <richardcochran@gmail.com>, netdev@vger.kernel.org,
+        Gordon Hollingworth <gordon@raspberrypi.com>,
+        Ahmad Byagowi <clk@fb.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        bcm-kernel-feedback-list@broadcom.com,
         "David S. Miller" <davem@davemloft.net>,
-        Fabio Estevam <festevam@gmail.com>,
-        Tim Harvey <tharvey@gateworks.com>
-Subject: FEC MDIO read timeout on linkup
-Message-ID: <20220422152612.GA510015@francesco-nb.int.toradex.com>
-X-ClientProxiedBy: MR1P264CA0059.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:501:3e::9) To ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:2e::8)
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net-next v2] net: phy: broadcom: 1588 support on
+ bcm54210pe
+Message-ID: <YmLM8pFMVifHj7GG@lunn.ch>
+References: <928593CA-9CE9-4A54-B84A-9973126E026D@timebeat.app>
+ <20220421144825.GA11810@hoboy.vegasvil.org>
+ <208820C3-E4C8-4B75-B926-15BCD844CE96@timebeat.app>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7208ca7d-fd59-4dc2-c438-08da24746ffc
-X-MS-TrafficTypeDiagnostic: ZRAP278MB0528:EE_
-X-Microsoft-Antispam-PRVS: <ZRAP278MB052875CF1FF460F50EEC815CE2F79@ZRAP278MB0528.CHEP278.PROD.OUTLOOK.COM>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0
-X-Microsoft-Antispam-Message-Info: 8ZK2FiSen6JipRSh6Bx/I/nELjkGl02A4pXFExWI7NNNSCFWMy+ctRGTz+lvmPeJqgJznzFVOmPSGRvz/mGeKkbf5zvYLWGbpD0k0AYKMqGOmaBUHfm/uS8C7rKh6Oywz/fd1hamm/vZ7Om1J74LRxAXi8qazJ81+MVUB9q/trT/CYlGeocMkFkK2mT/JDCKOBCz2IC3nPJM7GS6WX1kssKsHfMC272nlsZoNosgZ1FEk9olMvyQ7uHbF0GTk+4ndVfTMs+AXPjf6gF5H34ZtPDf1ccSH25X0LtTAvXsDmNM0qNp99FSKOlh7MilLq+2BEE+w+U9OHla8FqwKd51YIKkfbSGNXkIViDzH2GV8mFA2zF4HixWLj980hmWgjAKSEKlqj+ksne3sbia/KBfJrmULHcq8OLJO0PhoGJDLTdASQ4z8sKASZpfzkmgxSs4FuxGjdNk70JEKPjG+PCbegpF2r4CIlpXIa7xta5euVcfv+SdgjKs7BVRydnRot607vkZ0nGAqnMKApelzsmkiFLv9LCqG2zw6rwZn5nzcDcarKlh6XogzRDUDPAL5tcktDXuR2z4dmaF7Dr2oU03pv8i4B30dUoxS16TntFYH6fKFnxvaXGC0Y3XlTpiVQ4HuJcBbgLfBX9aERddE1yZg8kFAFzmP+4JQW4u1EZJ3soCR4Nbb9xhzirEYIwWFmqd43StzJ/U6RpsD/tq+8XBx32OgpHFhJQFmmVnklEdcecvUU85N6CmdeGVHDCSnLBQSOljGPS3gOsVY57Xzh5vXJ7rtyX/KV8rhurvuA2X5to=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(396003)(366004)(346002)(39850400004)(376002)(136003)(54906003)(110136005)(6512007)(966005)(6486002)(316002)(186003)(1076003)(26005)(508600001)(86362001)(5660300002)(8936002)(7416002)(83380400001)(45080400002)(2906002)(44832011)(4326008)(8676002)(38350700002)(66946007)(66476007)(66556008)(52116002)(6506007)(33656002)(38100700002);DIR:OUT;SFP:1102
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FFgg2Wh/T8oKQR67i4R8tMDfLAaGNs+0aWydF6xsBqOK6EJ/jAMMDOMV6ebR?=
- =?us-ascii?Q?PUAgzCMZB38NWGsGiHq2WMZ2gtFjX/gSf79rI1RJ1jl07NKi7Mc+PNBCVaam?=
- =?us-ascii?Q?oU/7bL5VLX7wOKkHcDXE0fSDcm5GDcjoy1soUaXL16y5dmfqqbBOkRtzwz7V?=
- =?us-ascii?Q?MojpIuku1JwLsu7+J0ywJeQZo59BLOdzy9KWgp5UsLNUrhOojWT/rQAewcrr?=
- =?us-ascii?Q?u7kdSILBFult6ILIbfsxCybYY+JANLEnPT1CGwEUHMuEQv1pYrybCjS9Sw6A?=
- =?us-ascii?Q?qjeQclagK+TsRDp1+MBvWHUlISfmNSzYJducnip7a+RFYVaQ/A82gAWjhpz9?=
- =?us-ascii?Q?33nuwLF7X8JnJqysuA0tbg40bIVjop4zwXVif3CdEizoyBI9ZZKc+312FTYh?=
- =?us-ascii?Q?t/iUvgioVt0XApKeFGitHnWWvqPUFnmSHChp8WK4HQtiXsbb7OvHd8lkGhES?=
- =?us-ascii?Q?iXnDfMZMsc3vCHuA45C8Cddcp1DgFJ7c6g5oTjX/dLWo3qE0kbSuyypZwSvS?=
- =?us-ascii?Q?5D1vyO0K+VQjitZ5argBhx14KfQE9BMkPbKoBQ1Bud52R08INJFD1PodvbGa?=
- =?us-ascii?Q?VfcUqtDb+RiNrimKs8YVHPquH4xYc5utOnlAlr8vdX+oB/gf/USbBzJtSZtx?=
- =?us-ascii?Q?jS1XCcZerDAcDzRIzt2IMjl4XU+lA/cXnYPDvlohU7+1xE1gcc6lbkvF644x?=
- =?us-ascii?Q?8M5z6+MLImFDK0SEWVWZvkR5wk5UQP+2njMR+h/d5ZeBMrC1vEcBoGRxnL4C?=
- =?us-ascii?Q?qg635erzyof2XgovbbhjRHU0OAnDMgm5Tvb8AUchgNQg7iAk+eEWweF5mGjD?=
- =?us-ascii?Q?Jgocxh8ebIlHLUGdr85Ahy/p2ZzpPmgvymlPnZePbgDaLIiFzaKJyUY+nNJg?=
- =?us-ascii?Q?OJxYJ5mwdT01wkjns08huLN4mheB7M0lOMlfoEL6my6DATjjWg5uW9lkmGUp?=
- =?us-ascii?Q?fA4r4cJVbVKBtEf2Rq7I4T94vdLnwXyfQOLz2BJgiqKZnEz9vaLH/LBXJRKC?=
- =?us-ascii?Q?wyEZeIBSj4UyLm8qizxePVuUURBf1kw9K8UflrfvUUJ7QxEMGu+X9NqRtWvQ?=
- =?us-ascii?Q?8p9RXe3wx1M8IuQ/Tn2U+I2kXFhvKhrRdAxBAU7/hrq3i7IGIMlEbc73LP3W?=
- =?us-ascii?Q?yPU6vxUfWx6kcgHUenbusiAald6JLQUq8n5KdplaK7lRBomhq+ggyBUKETlp?=
- =?us-ascii?Q?UnvOcG9zyb5zNeflMhIQbfcYOBRvd6srDvkV0GhK1ZMhvTE3PL6tV0KoEhM4?=
- =?us-ascii?Q?l7HvTSOPyuViYUNfQaXtj4CsTQFpqTDqtUpsYTZ5B6EcA1Pdm2BtA2MG1k21?=
- =?us-ascii?Q?1jCr2W8oNEt2WIh3zBdTvy9AFuoiBCDLEunW7zbgD7LIEKn7ZAlfLSyTGDCl?=
- =?us-ascii?Q?lRZddBDWVtz1ddUM8I85d5WA+3bOhWogLQZ7iXGLc5Q5iZKBTQhKL/oLr8zf?=
- =?us-ascii?Q?yGtn6VgJZgWOWbK0cHAT52yrOVkOUwQ2S2jWL+XOGH8lWOIGFhBKCM9+d1XQ?=
- =?us-ascii?Q?nRYFk8xwjtjv5zhsk/KCXy3wRfBZO7uq73xepKdfikl10QPAGFGWhN52/nHw?=
- =?us-ascii?Q?iJXTuIv+1bWLN342V2GUA+xV0NSd/Inmkn6JrDxOERpZ9kLBD7iKbv7WIYG3?=
- =?us-ascii?Q?W5N8xuWfXGF+PRUvny8binqqQkUoxQD39Q1bbjrk+Ke6H7bjgj36OdCW3s9c?=
- =?us-ascii?Q?hP1i3kl94j0gRp2KhVfmFEw2/T8OHKK53BgAYbGR+O8H7ebxF6p9k612jqYV?=
- =?us-ascii?Q?t2JI6/WWjPDeejlHTGNfNPqWliBxoNE=3D?=
-X-OriginatorOrg: toradex.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7208ca7d-fd59-4dc2-c438-08da24746ffc
-X-MS-Exchange-CrossTenant-AuthSource: ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2022 15:26:14.0769
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: bzqJolp9CBNBd27mANAsf4QKY6/rcNn/7lxOiqHfp8jLwWp//bqmLDD741gaVHf8sycDNwWEIIoGRbbd0oP887xmH4m5jLod1CVr7tW+Fzo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZRAP278MB0528
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CDE13A77 smtp.mailfrom=francesco.dolcini@toradex.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: toradex.com
-Content-Type: text/plain; charset=WINDOWS-1252
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <208820C3-E4C8-4B75-B926-15BCD844CE96@timebeat.app>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello all,
-I have been recently trying to debug an issue with FEC driver erroring
-a MDIO read timeout during linkup [0]. At the beginning I was working
-with an old 5.4 kernel, but today I tried with the current master
-(5.18.0-rc3-00080-gd569e86915b7) and the issue is just there.
+On Fri, Apr 22, 2022 at 04:08:18PM +0100, Lasse Johnsen wrote:
 
-I'm also aware of the old discussions on the topic and I tried to
-increase the timeout without success (even if I'm not sure is relevant
-with the newer polling solution).
+Hi Lasse
 
-The issue was reproduced on an apalis-imx6 that has a KSZ9131
-ethernet connected to the FEC MAC.
+Don't attach a patch to the end of a discussion. What you email is
+what comes out of git-format patch. Nothing added.
 
-No load on the machine, 4 cores just idling during my test.
+If you want to discuss review comments, just reply to the email with
+the comments. 
 
-What I can see from the code is that the timeout is coming from
-net/phy/micrel.c:kszphy_handle_interrupt().
+> From 3fcbbac9fe85909877f15d95f7a1e64dd6d06ab7 Mon Sep 17 00:00:00 2001
+> From: Lasse Johnsen <l@ssejohnsen.me>
+> Date: Sat, 5 Feb 2022 09:34:19 -0500
+> Subject: [PATCH] Added support for IEEE1588 timestamping for the BCM54210PE
+>  PHY using the kernel mii_timestamper interface
+> 
+> ---
+>  arch/arm/configs/bcm2711_defconfig            |    1 +
+>  arch/arm64/configs/bcm2711_defconfig          |    1 +
+>  .../net/ethernet/broadcom/genet/bcmgenet.c    |    8 +-
+>  drivers/net/phy/Makefile                      |    1 +
+>  drivers/net/phy/bcm54210pe_ptp.c              | 1382 +++++++++++++++++
+>  drivers/net/phy/bcm54210pe_ptp.h              |   85 +
+>  drivers/net/phy/broadcom.c                    |   21 +-
+>  drivers/ptp/Kconfig                           |   17 +
 
-Could this be some sort of race condition? Any suggestion for debugging
-this?
+You need to break this up into a patch series. You probably want the
+following patches:
 
-Here the stack trace:
-
-[  146.195696] fec 2188000.ethernet eth0: MDIO read timeout
-[  146.201779] ------------[ cut here ]------------
-[  146.206671] WARNING: CPU: 0 PID: 571 at drivers/net/phy/phy.c:942 phy_error+0x24/0x6c
-[  146.214744] Modules linked in: bnep imx_vdoa imx_sdma evbug
-[  146.220640] CPU: 0 PID: 571 Comm: irq/128-2188000 Not tainted 5.18.0-rc3-00080-gd569e86915b7 #9
-[  146.229563] Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
-[  146.236257]  unwind_backtrace from show_stack+0x10/0x14
-[  146.241640]  show_stack from dump_stack_lvl+0x58/0x70
-[  146.246841]  dump_stack_lvl from __warn+0xb4/0x24c
-[  146.251772]  __warn from warn_slowpath_fmt+0x5c/0xd4
-[  146.256873]  warn_slowpath_fmt from phy_error+0x24/0x6c
-[  146.262249]  phy_error from kszphy_handle_interrupt+0x40/0x48
-[  146.268159]  kszphy_handle_interrupt from irq_thread_fn+0x1c/0x78
-[  146.274417]  irq_thread_fn from irq_thread+0xf0/0x1dc
-[  146.279605]  irq_thread from kthread+0xe4/0x104
-[  146.284267]  kthread from ret_from_fork+0x14/0x28
-[  146.289164] Exception stack(0xe6fa1fb0 to 0xe6fa1ff8)
-[  146.294448] 1fa0:                                     00000000 00000000 00000000 00000000
-[  146.302842] 1fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-[  146.311281] 1fe0: 00000000 00000000 00000000 00000000 00000013 00000000
-[  146.318262] irq event stamp: 12325
-[  146.321780] hardirqs last  enabled at (12333): [<c01984c4>] __up_console_sem+0x50/0x60
-[  146.330013] hardirqs last disabled at (12342): [<c01984b0>] __up_console_sem+0x3c/0x60
-[  146.338259] softirqs last  enabled at (12324): [<c01017f0>] __do_softirq+0x2c0/0x624
-[  146.346311] softirqs last disabled at (12319): [<c01300ac>] __irq_exit_rcu+0x138/0x178
-[  146.354447] ---[ end trace 0000000000000000 ]---
+defconfig changes
+The core ptp code, in library form
+Extensions to drivers/net/phy/broadcom.c to use the new code
+bcmgenet.c change.
 
 
-The issue is not systematic, however using the following script is
-pretty easy (minutes) to trigger:
+> +static u64 four_u16_to_ns(u16 *four_u16)
+> +{
+> +	u32 seconds;
+> +	u32 nanoseconds;
+> +	struct timespec64 ts;
+> +	u16 *ptr;
 
-```
-#!/bin/bash
+Now it has been through checkpatch, it is starting to look like Linux
+code :-)
 
-count=0
+Network drivers have a few extra code style hoops to jump
+through. Variables should be sorted longest to shortest. So you want:
 
-wait_link_or_exit()
-{
-	tmo=600
-	while ! ethtool eth0 |grep -qF 'Link detected: yes'
-	do
-		sleep 0.1
-		tmo=$((tmo - 1))
-		[ $tmo -gt 0 ] || exit 1
-	done
-}
+> +	struct timespec64 ts;
+> +	u32 nanoseconds;
+> +	u32 seconds;
+> +	u16 *ptr;
 
-while true
-do
-	count=$((count + 1))
-	echo "run $count"
+This is known as reverse Christmas tree.
 
-	ethtool -s eth0 speed 10 duplex half autoneg on
-	wait_link_or_exit
+> +static int bcm54210pe_interrupts_enable(struct phy_device *phydev, bool fsync_en, bool sop_en)
 
-	ethtool -s eth0 speed 10 duplex full autoneg on
-	wait_link_or_exit
+Although Linux as a whole allows 100 character lines, networking
+mostly stays with 80. I'm not sure it is strictly enforced, but it is
+a good idea to try to keep with it.
 
-	ethtool -s eth0 speed 100 duplex half autoneg on
-	wait_link_or_exit
+> +{
+> +	u16 interrupt_mask;
+> +
+> +	interrupt_mask = 0;
 
-	ethtool -s eth0 speed 100 duplex full autoneg on
-	wait_link_or_exit
-done
+You can combine these into one line.
 
-```
+> +static int bcm54210pe_get80bittime(struct bcm54210pe_private *private,
+> +				   struct timespec64 *ts,
+> +				   struct ptp_system_timestamp *sts)
+> +{
+> +	struct phy_device *phydev;
+> +	u16 nco_6_register_value;
+> +	int i;
+> +	u64 time_stamp_48, time_stamp_80, control_ts;
+> +
+> +	phydev = private->phydev;
+> +
+> +	// Capture timestamp on next framesync
+> +	nco_6_register_value = 0x2000;
 
-Francesco
+You should not have magic numbers. Please add a #define. If the
+#define has a sensible name, it should then be obvious you are
+capturing a timestamp on the next frame sync and so you don't need the
+comment.
 
-[0] https://lore.kernel.org/all/20220325140808.GA1047855@francesco-nb.int.toradex.com/
+> +
+> +	// Lock
+> +	mutex_lock(&private->clock_lock);
 
+Comments like this don't add any value. I can see it is a lock because
+you are calling mutex_lock.
 
+> +static int bcm54210pe_perout_enable(struct bcm54210pe_private *private, s64 period,
+> +				    s64 pulsewidth, int enable)
+> +{
+> +	struct phy_device *phydev;
+> +	u16 nco_6_register_value, frequency_hi, frequency_lo,
+> +		pulsewidth_reg, pulse_start_hi, pulse_start_lo;
+> +	int err;
+> +
+> +	phydev = private->phydev;
+> +
+> +	if (enable) {
+> +		frequency_hi = 0;
+> +		frequency_lo = 0;
+> +		pulsewidth_reg = 0;
+> +		pulse_start_hi = 0;
+> +		pulse_start_lo = 0;
+> +
+> +		// Convert interval pulse spacing (period) and pulsewidth to 8 ns units
+> +		period /= 8;
+> +		pulsewidth /= 8;
+> +
+> +		// Mode 2 only: If pulsewidth is not explicitly set with PTP_PEROUT_DUTY_CYCLE
+> +		if (pulsewidth == 0) {
+> +			if (period < 2500) {
+> +				// At a frequency at less than 20us (2500 x 8ns) set
+> +				// pulse length to 1/10th of the interval pulse spacing
+> +				pulsewidth = period / 10;
+> +
+> +				// Where the interval pulse spacing is short,
+> +				// ensure we set a pulse length of 8ns
+> +				if (pulsewidth == 0)
+> +					pulsewidth = 1;
+> +
+> +			} else {
+> +				// Otherwise set pulse with to 4us (8ns x 500 = 4us)
+> +				pulsewidth = 500;
+> +			}
+> +		}
+> +
+> +		if (private->perout_mode == SYNC_OUT_MODE_1) {
+> +			// Set period
+> +			private->perout_period = period;
+> +
+> +			if (!private->perout_en) {
+> +				// Set enable per_out
+> +				private->perout_en = true;
+> +				schedule_delayed_work(&private->perout_ws, msecs_to_jiffies(1));
+> +			}
+> +
+> +			err = 0;
+> +
+> +		} else if (private->perout_mode == SYNC_OUT_MODE_2) {
+> +			// Set enable per_out
+> +			private->perout_en = true;
+> +
+> +			// Calculate registers
+> +
+> +			// Lowest 16 bits of 8ns interval pulse spacing [15:0]
+> +			frequency_lo	= (u16)period;
+> +
+> +			// Highest 14 bits of 8ns interval pulse spacing [29:16]
+> +			frequency_hi	= (u16)(0x3FFF & (period >> 16));
+> +
+> +			// 2 lowest bits of 8ns pulse length [1:0]
+> +			frequency_hi   |= (u16)pulsewidth << 14;
+> +
+> +			// 7 highest bit  of 8 ns pulse length [8:2]
+> +			pulsewidth_reg	= (u16)(0x7F & (pulsewidth >> 2));
+> +
+> +			// Get base value
+> +			nco_6_register_value = bcm54210pe_get_base_nco6_reg(private,
+> +									    nco_6_register_value,
+> +									    true);
+> +
+> +			mutex_lock(&private->clock_lock);
+> +
+> +			// Write to register
+> +			err = bcm_phy_write_exp(phydev, NSE_DPPL_NCO_6_REG,
+> +						nco_6_register_value);
+> +
+> +			// Set sync out pulse interval spacing and pulse length
+> +			err |= bcm_phy_write_exp(phydev, NSE_DPPL_NCO_3_0_REG, frequency_lo);
+> +			err |= bcm_phy_write_exp(phydev, NSE_DPPL_NCO_3_1_REG, frequency_hi);
+> +			err |= bcm_phy_write_exp(phydev, NSE_DPPL_NCO_3_2_REG, pulsewidth_reg);
+> +
+> +			// On next framesync load sync out frequency
+> +			err |= bcm_phy_write_exp(phydev, SHADOW_REG_LOAD, 0x0200);
+> +
+> +			// Trigger immediate framesync
+> +			err |= bcm_phy_modify_exp(phydev, NSE_DPPL_NCO_6_REG, 0x003C, 0x0020);
+> +
+> +			mutex_unlock(&private->clock_lock);
+> +		}
+> +	} else {
+> +		// Set disable pps
+> +		private->perout_en = false;
+> +
+> +		// Get base value
+> +		nco_6_register_value = bcm54210pe_get_base_nco6_reg(private,
+> +								    nco_6_register_value,
+> +								    false);
+> +
+> +		mutex_lock(&private->clock_lock);
+> +
+> +		// Write to register
+> +		err = bcm_phy_write_exp(phydev, NSE_DPPL_NCO_6_REG, nco_6_register_value);
+> +
+> +		mutex_unlock(&private->clock_lock);
+> +	}
+> +
+> +	return err;
+
+This is a pretty big function, and its indentation gets pretty deep. The coding style:
+
+https://www.kernel.org/doc/html/latest/process/coding-style.html#functions
+
+says:
+
+Functions should be short and sweet, and do just one thing. They
+should fit on one or two screenfuls of text (the ISO/ANSI screen size
+is 80x24, as we all know), and do one thing and do that well.
+
+Maybe you can break this up into helpers.
+
+> +void bcm54210pe_txtstamp(struct mii_timestamper *mii_ts, struct sk_buff *skb, int type)
+> +{
+> +	struct bcm54210pe_private *private = container_of(mii_ts, struct bcm54210pe_private,
+> +							  mii_ts);
+> +
+> +	switch (private->hwts_tx_en) {
+> +	case HWTSTAMP_TX_ON:
+> +	{
+> +		skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
+> +		skb_queue_tail(&private->tx_skb_queue, skb);
+> +		schedule_work(&private->txts_work);
+> +		break;
+> +	}
+> +
+> +	case HWTSTAMP_TX_OFF:
+> +	{
+> +	}
+
+That just looks odd.
+
+Should there be a break? Do you want to fall through? If you do want
+to fall through, you need to mark it so. But since it is empty, i
+guess you don't want to fall through?
+
+> +
+> +	default:
+> +	{
+> +		kfree_skb(skb);
+> +		break;
+> +	}
+> +	}
+> +}
