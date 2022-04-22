@@ -2,173 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C28A350B1DA
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 09:41:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B714C50B1F6
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 09:47:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445018AbiDVHnT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Apr 2022 03:43:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55056 "EHLO
+        id S1445010AbiDVHtD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Apr 2022 03:49:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444994AbiDVHm7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 03:42:59 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42A0762C0
-        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 00:40:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=+bzX6unppLALgZs9OoXLQbo40iIdG37hYXyc56Z92tc=; b=NAHi85kV312BPTu4lpVF9UNmPb
-        gjqYEZhmd49y17idhmp01B8yVRRl1sLXThu30fRbqCsd8dPdALX6Z0Cu86bsiJxOYaSuNvzH4+Rg/
-        x9Om0U0iPmhVL4M/IF0Lr/8oC8FDN0L1hjFZFtc50sveJ2h2uMLmh1zQQ0NvvjKVdNqQerA6M4k80
-        PTRQKX4HQz/0cPzgWnRre3X5uGwKlZpMXfHDHbhtm/9Oa8UNp4jcjaVEdnhAc0M35rVojd9OsbohZ
-        iaiw+4O9EFFyKQTheS39n2oQmtZ6+8MrGKDjZTcVcgy5Yl+nekryID3ofJqbpMIQ2KPMXzVUsb/F3
-        IbKT8Mug==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58364)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nhntY-0004Hj-5w; Fri, 22 Apr 2022 08:39:59 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nhntV-0003V2-TQ; Fri, 22 Apr 2022 08:39:57 +0100
-Date:   Fri, 22 Apr 2022 08:39:57 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S242661AbiDVHtA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 03:49:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02F87434B4;
+        Fri, 22 Apr 2022 00:46:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A88A1B829DC;
+        Fri, 22 Apr 2022 07:46:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17E2BC385A0;
+        Fri, 22 Apr 2022 07:45:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650613562;
+        bh=d7DdfLVHBzoMwY9s9afOMHivuS5z7UO53y+qRExaI4g=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=g2Ix2CmD+h6XYXS+ZxSj7/TtWfmzDMgqg280d2chhORi0tqBDGCr+AcUsnJT4qRBb
+         sRRUcsC04Us16r9ELqy1MpknoMXvx/MQwBJ/Lj8FA9QDa+iWTjowciFQbg0tJC60lH
+         NHyR5m3HH5jKcsl/CpJ4cIMq5MOMudSJlSeYUXjMIXXzHdXi+SJcZZLPsfS2QQcD94
+         qV9oD7mYtKr1cGETBv0p3SuxvN9KxbHSixLkV5FaQ/UYL3YpoPzwpHBcjD2NCd18TV
+         2SMpZmgormeA4vc4aG4ohUEpEhor7wrPAiUYdKPnsH0zhqZXrm17dGVECoJSaWtrMy
+         9kP2dbAoyV7xg==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Bernard Zhao <zhaojunkui2008@126.com>
+Cc:     Jakub Kicinski <kubakici@wp.pl>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH net-next 5/5] net: dsa: b53: mark as non-legacy
-Message-ID: <YmJbzay/OiSAxYWF@shell.armlinux.org.uk>
-References: <YhS3cko8D5c5tr+E@shell.armlinux.org.uk>
- <E1nMSDS-00A2Ru-6J@rmk-PC.armlinux.org.uk>
- <28bb4c50-c79e-8f09-2a00-ebbaa91ba1a6@gmail.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        bernard@vivo.com
+Subject: Re: [PATCH] mediatek/mt7601u: add debugfs exit function
+References: <20220422070325.465918-1-zhaojunkui2008@126.com>
+Date:   Fri, 22 Apr 2022 10:45:57 +0300
+In-Reply-To: <20220422070325.465918-1-zhaojunkui2008@126.com> (Bernard Zhao's
+        message of "Fri, 22 Apr 2022 00:03:25 -0700")
+Message-ID: <87k0bhmuh6.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <28bb4c50-c79e-8f09-2a00-ebbaa91ba1a6@gmail.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 03:31:26PM -0700, Florian Fainelli wrote:
-> Hi Russell,
-> 
-> On 2/22/22 02:16, Russell King (Oracle) wrote:
-> > The B53 driver does not make use of the speed, duplex, pause or
-> > advertisement in its phylink_mac_config() implementation, so it can be
-> > marked as a non-legacy driver.
-> > 
-> > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> > ---
-> >   drivers/net/dsa/b53/b53_common.c | 6 ++++++
-> >   1 file changed, 6 insertions(+)
-> > 
-> > diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-> > index 50a372dc32ae..83bf30349c26 100644
-> > --- a/drivers/net/dsa/b53/b53_common.c
-> > +++ b/drivers/net/dsa/b53/b53_common.c
-> > @@ -1346,6 +1346,12 @@ static void b53_phylink_get_caps(struct dsa_switch *ds, int port,
-> >   	/* Get the implementation specific capabilities */
-> >   	if (dev->ops->phylink_get_caps)
-> >   		dev->ops->phylink_get_caps(dev, port, config);
-> > +
-> > +	/* This driver does not make use of the speed, duplex, pause or the
-> > +	 * advertisement in its mac_config, so it is safe to mark this driver
-> > +	 * as non-legacy.
-> > +	 */
-> > +	config->legacy_pre_march2020 = false;
-> 
-> This patch appears to cause a regression for me, I am not sure why I did not
-> notice it back when I tested it but I suspect it had to do with me testing
-> only with a copper module and not with a fiber module.
-> 
-> Now that I tested it again, the SFP port (port 5 in my set-up) link up
-> interrupt does not fire up when setting config->legacy_pre_march2020 to
-> false.
-> 
-> Here is a working log with phylink debugging enabled:
-> 
-> # udhcpc -i sfp
-> udhcpc: started, v1.35.0
-> [   49.479637] bgmac-enet 18024000.ethernet eth2: Link is Up - 1Gbps/Full -
-> flow control off
-> [   49.488139] Generic PHY fixed-0:02: PHY state change UP -> RUNNING
-> [   49.488256] b53-srab-switch 18036000.ethernet-switch sfp: configuring for
-> inband/1000base-x link mode
-> [   49.504062] b53-srab-switch 18036000.ethernet-switch sfp: major config
-> 1000base-x
-> [   49.511800] b53-srab-switch 18036000.ethernet-switch sfp:
-> phylink_mac_config: mode=inband/1000base-x/Unknown/Unknown
-> adv=0000000,00000201
-> [   49.527504] b53-srab-switch 18036000.ethernet-switch sfp: mac link down
-> [   49.535044] sfp sfp: SM: enter present:down:down event dev_up
-> [   49.541006] sfp sfp: tx disable 1 -> 0
-> [   49.544897] sfp sfp: SM: exit present:up:wait
-> [   49.549509] IPv6: ADDRCONF(NETDEV_CHANGE): eth2: link becomes ready
-> udhcpc: broadcasting discover
-> [   49.595185] sfp sfp: SM: enter present:up:wait event timeout
-> [   49.601064] sfp sfp: SM: exit present:up:link_up
-> [   52.388917] b53-srab-switch 18036000.ethernet-switch sfp: mac link up
-> [   52.396513] b53-srab-switch 18036000.ethernet-switch sfp: Link is Up -
-> 1Gbps/Full - flow control rx/tx
-> [   52.406145] IPv6: ADDRCONF(NETDEV_CHANGE): sfp: link becomes ready
-> udhcpc: broadcasting discover
-> udhcpc: broadcasting select for 192.168.3.156, server 192.168.3.1
-> udhcpc: lease of 192.168.3.156 obtained from 192.168.3.1, lease time 600
-> deleting routers
-> adding dns 192.168.1.1
-> 
-> and one that is not working with phylink debugging enabled:
-> 
-> # udhcpc -i sfp
-> udhcpc: started, v1.35.0
-> [   27.863529] bgmac-enet 18024000.ethernet eth2: Link is Up - 1Gbps/Full -
-> flow control off
-> [   27.872021] Generic PHY fixed-0:02: PHY state change UP -> RUNNING
-> [   27.872120] b53-srab-switch 18036000.ethernet-switch sfp: configuring for
-> inband/1000base-x link mode
-> [   27.887952] b53-srab-switch 18036000.ethernet-switch sfp: major config
-> 1000base-x
-> [   27.895689] b53-srab-switch 18036000.ethernet-switch sfp:
-> phylink_mac_config: mode=inband/1000base-x/Unknown/Unknown
-> adv=0000000,00000201
-> [   27.895802] b53-srab-switch 18036000.ethernet-switch sfp: mac link down
-> [   27.911945] sfp sfp: SM: enter present:down:down event dev_up
-> [   27.923947] sfp sfp: tx disable 1 -> 0
-> [   27.927835] sfp sfp: SM: exit present:up:wait
-> [   27.932442] IPv6: ADDRCONF(NETDEV_CHANGE): eth2: link becomes ready
-> udhcpc: broadcasting discover
-> [   27.978181] sfp sfp: SM: enter present:up:wait event timeout
-> [   27.984056] sfp sfp: SM: exit present:up:link_up
-> [   30.686440] b53-srab-switch 18036000.ethernet-switch sfp: mac link up
-> udhcpc: broadcasting discover
-> udhcpc: broadcasting discover
-> 
-> The mac side appears to be UP but not no carrier is set to the sfp network
-> device. Do you have any idea why that would happen?
+Bernard Zhao <zhaojunkui2008@126.com> writes:
 
-Oh, it's because setting that flag means we're wanting the PCS methods
-rather than the legacy MAC methods for an_restart and getting the PCS
-link state - so the patch in question was submitted too early (it
-should have been _after_ the conversion to PCS.)
+> When mt7601u loaded, there are two cases:
+> First when mt7601u is loaded, in function mt7601u_probe, if
+> function mt7601u_probe run into error lable err_hw,
+> mt7601u_cleanup didn`t cleanup the debugfs node.
+> Second when the module disconnect, in function mt7601u_disconnect,
+> mt7601u_cleanup didn`t cleanup the debugfs node.
+> This patch add debugfs exit function and try to cleanup debugfs
+> node when mt7601u loaded fail or unloaded.
+>
+> Signed-off-by: Bernard Zhao <zhaojunkui2008@126.com>
+> ---
+>  .../net/wireless/mediatek/mt7601u/debugfs.c   | 25 +++++++++++--------
+>  drivers/net/wireless/mediatek/mt7601u/init.c  |  5 ++++
+>  .../net/wireless/mediatek/mt7601u/mt7601u.h   |  4 +++
+>  3 files changed, 24 insertions(+), 10 deletions(-)
+>
+> diff --git a/drivers/net/wireless/mediatek/mt7601u/debugfs.c b/drivers/net/wireless/mediatek/mt7601u/debugfs.c
+> index 20669eacb66e..1ae3d75d3c9b 100644
+> --- a/drivers/net/wireless/mediatek/mt7601u/debugfs.c
+> +++ b/drivers/net/wireless/mediatek/mt7601u/debugfs.c
+> @@ -124,17 +124,22 @@ DEFINE_SHOW_ATTRIBUTE(mt7601u_eeprom_param);
+>  
+>  void mt7601u_init_debugfs(struct mt7601u_dev *dev)
+>  {
+> -	struct dentry *dir;
+> -
+> -	dir = debugfs_create_dir("mt7601u", dev->hw->wiphy->debugfsdir);
+> -	if (!dir)
+> +	dev->root_dir = debugfs_create_dir("mt7601u", dev->hw->wiphy->debugfsdir);
+> +	if (!dev->root_dir)
+>  		return;
+>  
+> -	debugfs_create_u8("temperature", 0400, dir, &dev->raw_temp);
+> -	debugfs_create_u32("temp_mode", 0400, dir, &dev->temp_mode);
+> +	debugfs_create_u8("temperature", 0400, dev->root_dir, &dev->raw_temp);
+> +	debugfs_create_u32("temp_mode", 0400, dev->root_dir, &dev->temp_mode);
+> +
+> +	debugfs_create_u32("regidx", 0600, dev->root_dir, &dev->debugfs_reg);
+> +	debugfs_create_file("regval", 0600, dev->root_dir, dev, &fops_regval);
+> +	debugfs_create_file("ampdu_stat", 0400, dev->root_dir, dev, &mt7601u_ampdu_stat_fops);
+> +	debugfs_create_file("eeprom_param", 0400, dev->root_dir, dev, &mt7601u_eeprom_param_fops);
+> +}
+>  
+> -	debugfs_create_u32("regidx", 0600, dir, &dev->debugfs_reg);
+> -	debugfs_create_file("regval", 0600, dir, dev, &fops_regval);
+> -	debugfs_create_file("ampdu_stat", 0400, dir, dev, &mt7601u_ampdu_stat_fops);
+> -	debugfs_create_file("eeprom_param", 0400, dir, dev, &mt7601u_eeprom_param_fops);
+> +void mt7601u_exit_debugfs(struct mt7601u_dev *dev)
+> +{
+> +	if (!dev->root_dir)
+> +		return;
+> +	debugfs_remove(dev->root_dir);
 
-If we get the patch reverted in net-next, and then convert b53 to use
-PCS support, we'll then be putting the patch back, so I wonder if it
-would just make sense to apply the PCS conversion patch, possibly
-adding a comment in the commit message pointing out that this fixes
-the b53 legacy_pre_march2020 patch. Thoughts?
+debugfs_remove() has IS_ERR_OR_NULL() check, so no need to check for
+null here.
+
+>  }
+> diff --git a/drivers/net/wireless/mediatek/mt7601u/init.c b/drivers/net/wireless/mediatek/mt7601u/init.c
+> index 5d9e952b2966..1e905ef2ed19 100644
+> --- a/drivers/net/wireless/mediatek/mt7601u/init.c
+> +++ b/drivers/net/wireless/mediatek/mt7601u/init.c
+> @@ -427,6 +427,9 @@ void mt7601u_cleanup(struct mt7601u_dev *dev)
+>  	mt7601u_stop_hardware(dev);
+>  	mt7601u_dma_cleanup(dev);
+>  	mt7601u_mcu_cmd_deinit(dev);
+> +#ifdef CONFIG_DEBUG_FS
+> +	mt7601u_exit_debugfs(dev);
+> +#endif
+>  }
+>  
+>  struct mt7601u_dev *mt7601u_alloc_device(struct device *pdev)
+> @@ -625,7 +628,9 @@ int mt7601u_register_device(struct mt7601u_dev *dev)
+>  	if (ret)
+>  		return ret;
+>  
+> +#ifdef CONFIG_DEBUG_FS
+>  	mt7601u_init_debugfs(dev);
+> +#endif
+
+Are these two ifdefs really needed? debugfs functions are empty
+functions when CONFIG_DEBUG_FS is disabled.
+
+> --- a/drivers/net/wireless/mediatek/mt7601u/mt7601u.h
+> +++ b/drivers/net/wireless/mediatek/mt7601u/mt7601u.h
+> @@ -242,6 +242,9 @@ struct mt7601u_dev {
+>  	u32 rf_pa_mode[2];
+>  
+>  	struct mac_stats stats;
+> +#ifdef CONFIG_DEBUG_FS
+> +	struct dentry *root_dir;
+> +#endif
+
+I would remove this ifdef, it's just saving one pointer size. Less
+ifdefs we have the better.
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
