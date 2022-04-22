@@ -2,100 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 50D5850B332
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 10:47:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5360550B384
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 11:06:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445592AbiDVItH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Apr 2022 04:49:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45270 "EHLO
+        id S1345864AbiDVJF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Apr 2022 05:05:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445577AbiDVItG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 04:49:06 -0400
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 034D4532E9;
-        Fri, 22 Apr 2022 01:46:14 -0700 (PDT)
-Received: by mail-qt1-x829.google.com with SMTP id ay11so5052340qtb.4;
-        Fri, 22 Apr 2022 01:46:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=W4w/iK0rp5BN8/CHDCqXsD0JJrK3FIxJXY/tHyFUfOQ=;
-        b=YfviSKz71YQd0Yit4e9xX3jfCaw/+6s86fQWMXC/9UliAZ401BXuL/5UHi+VgA4jCU
-         U3/C7n2iCvSODB4ZWTS42dtPNdHIqz+0funNyJ34Dn0aPD6VOmsxw+2QiSYFIoYN2lYq
-         DUuchZ7S2/CQSGAoDpKK7hm2NV4BI/WgkvhOIIlsTDjAJqNNOIpACVLKYl7XRur7QoK6
-         jdgY4Pr6RcgKLZIruCiHzdwq6dL1uAmNqFXQCZPggO1Zq+OS+Cybyc/JX2WAP3Xvr+0Y
-         meA63t5Sgx86mdRET+T7mR0jdFlfvmKNQlvt5cGOIyU5G5S5f3W4nFEyHNG9GG9OwKIO
-         6oYQ==
+        with ESMTP id S235103AbiDVJF2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 05:05:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B6E405370B
+        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 02:02:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650618154;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=k5XMi3GRpGxoXEQ7zwj6cuCTJHahj0aDPgM7FPSBDAw=;
+        b=Ui65FztgzZcE3MfkrqceuckUdU08jnOHotUO43Stu3v2vqahB08zc+0+7QXjXRADFkcM4g
+        go6gYEUH7RPlrxKQdOLQyfjhMO+HCr7x5d+aTC1Tjk69aLV4gioP6A6Q3s8yUTAv1rkMEa
+        ef8sPG5ytkUDrfba+yvV9/txyf41hJ4=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-390-O5XiOJUTMpmqrmLLHBK5kA-1; Fri, 22 Apr 2022 05:02:32 -0400
+X-MC-Unique: O5XiOJUTMpmqrmLLHBK5kA-1
+Received: by mail-wr1-f69.google.com with SMTP id v21-20020adfa1d5000000b0020a80b3b107so1664643wrv.0
+        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 02:02:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=W4w/iK0rp5BN8/CHDCqXsD0JJrK3FIxJXY/tHyFUfOQ=;
-        b=RnO8TafrYIl1jFIBcNUDWI9J44KoCs+cIW6npM6HfOLlqZQZgY9vSG6ZmayDcgK57R
-         iQ9fELXVeS0NCeVx0q/Ehhle1G6F8HGGL/TlwiwxU+eWoX1DCM1+52RyS1pEXkLQ5KAo
-         qCETR5r7zWeirvviaeQKyab6iOCUN8nuUrR99qsNlMiSseW0Ce1YgJrpoGtmIuhfKnpK
-         34pyabOs3AKjCKpwTO6+zTwRExdGOAQW83rpfx8PgtrYK/zx5gXl/AuL4lPmywYBKt6L
-         UjLRYADrkrmS9UmLEub6aYizgePfyRJ9iQEtNhzvhTM2QHK2MjwXILdD/xCGdeQ4o3Dh
-         gCtg==
-X-Gm-Message-State: AOAM533XFKmNbSdLji8QaHYrKTADnCfUNFW2hOncAPD1o7QSqmvb3t//
-        2n1x/P+YsksCgxlx3i4o78w=
-X-Google-Smtp-Source: ABdhPJxvT5z2VQ+20WmPRjokT+8ToUV+14zDgpwKtIxyk/zk6vjaq85whpcKkVq6pbiFEaRha9cqkA==
-X-Received: by 2002:a05:622a:6201:b0:2f1:d669:5ee9 with SMTP id hj1-20020a05622a620100b002f1d6695ee9mr2347259qtb.190.1650617173129;
-        Fri, 22 Apr 2022 01:46:13 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id j18-20020a37a012000000b0069e92753d72sm641306qke.88.2022.04.22.01.46.09
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=k5XMi3GRpGxoXEQ7zwj6cuCTJHahj0aDPgM7FPSBDAw=;
+        b=0XoKEAxDMLR58y84yCFc+lZoF6ndbOm290pGKngAZGkZrX24hnDIRN59HV5xTlbaEQ
+         606fVGyy0ocbn+BHFh4eSc43t2/Kd2c2DxZ4JpmeviHz6vGqg3DupMK/4bzYu1Twy3Yw
+         PdNLK9uKAtRFcIyFFKakdfxI/ZjtHVvxLHC9OJDPZfUL/y2mvBX3Yi8r/pQ1oexOjsDU
+         L3qElRy5J2PGi1j7hS28Udc/5D+YND/nc6X9RJEL8gq0EYnWsXk/v9SAWU9yEbU5h9PR
+         2MoUK4BgBmp8prjdSdduRYwhFa4MbRoAs8EVcQCRX4w/8qGiNMDgCwkO0hPc1zIzKRkK
+         +DeQ==
+X-Gm-Message-State: AOAM533CPfY65NEM3JPkxOZAk8OGESfRhK5aIRLlpu1Pszz0ujVPQd/H
+        Dc2L3nIBXzmJM3yiyLzruFjIcmWyr1KAtaXs9HramfqwkhJyBzXtrb7HkSPN8P5BDiztTPBGogw
+        zPtG1iG+u+AwbQIT0
+X-Received: by 2002:a05:600c:4fd0:b0:392:8cd5:8abe with SMTP id o16-20020a05600c4fd000b003928cd58abemr12355485wmq.73.1650618149568;
+        Fri, 22 Apr 2022 02:02:29 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx2kQS78ba3SGeyN9fgL3N7K3eqXxiVbdnmWv8N0QHwJAz+Xuy68DB4MJOpa+Pf7VXogOQVYQ==
+X-Received: by 2002:a05:600c:4fd0:b0:392:8cd5:8abe with SMTP id o16-20020a05600c4fd000b003928cd58abemr12355465wmq.73.1650618149296;
+        Fri, 22 Apr 2022 02:02:29 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-96-237.dyn.eolo.it. [146.241.96.237])
+        by smtp.gmail.com with ESMTPSA id p1-20020adfaa01000000b0020ab1e305f1sm1228559wrd.22.2022.04.22.02.02.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Apr 2022 01:46:12 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: lv.ruyi@zte.com.cn
-To:     krzysztof.kozlowski@linaro.org, davem@davemloft.net
-Cc:     kuba@kernel.org, lv.ruyi@zte.com.cn, yashsri421@gmail.com,
-        sameo@linux.intel.com, cuissard@marvell.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] NFC: nfcmrvl: fix error check return value of irq_of_parse_and_map()
-Date:   Fri, 22 Apr 2022 08:46:05 +0000
-Message-Id: <20220422084605.2775542-1-lv.ruyi@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Fri, 22 Apr 2022 02:02:28 -0700 (PDT)
+Message-ID: <319497a698ba77244aa935c13dc9b93c893dbbc3.camel@redhat.com>
+Subject: Re: [PATCH net-next] net: generalize skb freeing deferral to
+ per-cpu lists
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>, Eric Dumazet <edumazet@google.com>
+Date:   Fri, 22 Apr 2022 11:02:27 +0200
+In-Reply-To: <20220421153920.3637792-1-eric.dumazet@gmail.com>
+References: <20220421153920.3637792-1-eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+Hi,
 
-The irq_of_parse_and_map() function returns 0 on failure, and does not
-return an negative value.
+Looks great! I have a few questions below mostly to understand better
+how it works...
 
-Fixes: 	b5b3e23e4cac ("NFC: nfcmrvl: add i2c driver")
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
----
- drivers/nfc/nfcmrvl/i2c.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Thu, 2022-04-21 at 08:39 -0700, Eric Dumazet wrote:
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index 84d78df60453955a8eaf05847f6e2145176a727a..2fe311447fae5e860eee95f6e8772926d4915e9f 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -1080,6 +1080,7 @@ struct sk_buff {
+>  		unsigned int	sender_cpu;
+>  	};
+>  #endif
+> +	u16			alloc_cpu;
 
-diff --git a/drivers/nfc/nfcmrvl/i2c.c b/drivers/nfc/nfcmrvl/i2c.c
-index ceef81d93ac9..7dcc97707363 100644
---- a/drivers/nfc/nfcmrvl/i2c.c
-+++ b/drivers/nfc/nfcmrvl/i2c.c
-@@ -167,7 +167,7 @@ static int nfcmrvl_i2c_parse_dt(struct device_node *node,
- 		pdata->irq_polarity = IRQF_TRIGGER_RISING;
- 
- 	ret = irq_of_parse_and_map(node, 0);
--	if (ret < 0) {
-+	if (!ret) {
- 		pr_err("Unable to get irq, error: %d\n", ret);
- 		return ret;
- 	}
--- 
-2.25.1
+I *think* we could in theory fetch the CPU that allocated the skb from
+the napi_id - adding a cpu field to napi_struct and implementing an
+helper to fetch it. Have you considered that option? or the napi lookup
+would be just too expensive?
 
+[...]
+
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 4a77ebda4fb155581a5f761a864446a046987f51..4136d9c0ada6870ea0f7689702bdb5f0bbf29145 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -4545,6 +4545,12 @@ static void rps_trigger_softirq(void *data)
+>  
+>  #endif /* CONFIG_RPS */
+>  
+> +/* Called from hardirq (IPI) context */
+> +static void trigger_rx_softirq(void *data)
+
+Perhaps '__always_unused' ? (But the compiler doesn't complain here)
+
+> @@ -6486,3 +6487,46 @@ void __skb_ext_put(struct skb_ext *ext)
+>  }
+>  EXPORT_SYMBOL(__skb_ext_put);
+>  #endif /* CONFIG_SKB_EXTENSIONS */
+> +
+> +/**
+> + * skb_attempt_defer_free - queue skb for remote freeing
+> + * @skb: buffer
+> + *
+> + * Put @skb in a per-cpu list, using the cpu which
+> + * allocated the skb/pages to reduce false sharing
+> + * and memory zone spinlock contention.
+> + */
+> +void skb_attempt_defer_free(struct sk_buff *skb)
+> +{
+> +	int cpu = skb->alloc_cpu;
+> +	struct softnet_data *sd;
+> +	unsigned long flags;
+> +	bool kick;
+> +
+> +	if (WARN_ON_ONCE(cpu >= nr_cpu_ids) || !cpu_online(cpu)) {
+> +		__kfree_skb(skb);
+> +		return;
+> +	}
+
+I'm wondering if we should skip even when cpu == smp_processor_id()? 
+
+> +
+> +	sd = &per_cpu(softnet_data, cpu);
+> +	/* We do not send an IPI or any signal.
+> +	 * Remote cpu will eventually call skb_defer_free_flush()
+> +	 */
+> +	spin_lock_irqsave(&sd->skb_defer_list.lock, flags);
+> +	__skb_queue_tail(&sd->skb_defer_list, skb);
+> +
+> +	/* kick every time queue length reaches 128.
+> +	 * This should avoid blocking in smp_call_function_single_async().
+> +	 * This condition should hardly be bit under normal conditions,
+> +	 * unless cpu suddenly stopped to receive NIC interrupts.
+> +	 */
+> +	kick = skb_queue_len(&sd->skb_defer_list) == 128;
+
+Out of sheer curiosity why 128? I guess it's should be larger then
+NAPI_POLL_WEIGHT, to cope with with maximum theorethical burst len?
+
+Thanks!
+
+Paolo
 
