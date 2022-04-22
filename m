@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CAF9150BD41
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 18:40:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D9CF50BD49
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 18:41:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349414AbiDVQnL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Apr 2022 12:43:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43674 "EHLO
+        id S1449763AbiDVQn4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Apr 2022 12:43:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449746AbiDVQnK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 12:43:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F325E6335
-        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 09:40:16 -0700 (PDT)
+        with ESMTP id S1449755AbiDVQnz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 12:43:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4081E5EDE2
+        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 09:41:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 94E1862104
-        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 16:40:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B738EC385A0;
-        Fri, 22 Apr 2022 16:40:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F2F59B831BC
+        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 16:41:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AB23C385A8;
+        Fri, 22 Apr 2022 16:40:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650645616;
-        bh=8+3mbxubWHDo+aOSTZTjV9v5jyTv6+7Bu8mQBsIYKMo=;
+        s=k20201202; t=1650645659;
+        bh=GdVBCuNqKqtbGdf+WuJP2+LimbZ98txv5RWt2y4+MK8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=TDvQdqLGQp64loG8118+nIHFMnsp49ZLC1bs46MT1bKHa9Y0bVWqAz/ApSokXXGWO
-         q8DT6+VKhT/Vw3bw2YjwADBi/QILiYRgtiWudhVmgc48EQQyKRNzaC2ALXleEfvX3V
-         gXOrdOf1AsRSCoWFbc6wfxlgjKlcxSOY27ozSInibMnujuNLiu5FVq6sGy3Iot0/UR
-         u79AoYWniGRnt94yaNc3BzssBvbzqvCCTAkzcCMMaIUoLkEUiHR4gr+QomGznl3wf3
-         s6+0ZQvCQpbO1k5dFY/zYSEgxsZxYuVbcFDCwgzWng6T/14FoL7iN53ZGOIdB0NUdC
-         Xl3xj5NA4Ddvg==
-Date:   Fri, 22 Apr 2022 09:40:14 -0700
+        b=m40Nl5ELRMVTN4IIyiC/6yU+7dcB+Y7gcTngYhPB/LnWPwn3iOfgiCC4UGESPrOBP
+         fCLynpgo1JxoH44hITP/dyRjAJD7kcPitNuI9GUpKlpUz037U6mCaGHOgXqnYXO2pH
+         1RX1erHER6p8M42yDJM0SV7d68N4lLi0w88mCYBBuT44ywpm0N7bUY8hFYAv2MJv9p
+         yhVTPx3aJKRhtjD7Lpg+jf+uIHf2vLP5y1WGWu9KirvrEi1XqPXkxM0Z7+vRZ4RGKw
+         5HopG4ZoagJKzX1//7ifkxwxEr6IYFCjU1iRayJKxPnUgcfcuI6pUXy0M69QKZGac0
+         PAXZtChb66NUw==
+Date:   Fri, 22 Apr 2022 09:40:58 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Eric Dumazet <eric.dumazet@gmail.com>
 Cc:     "David S . Miller" <davem@davemloft.net>,
@@ -40,7 +40,7 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>
 Subject: Re: [PATCH net-next] net: generalize skb freeing deferral to
  per-cpu lists
-Message-ID: <20220422094014.1bcf78d5@kernel.org>
+Message-ID: <20220422094058.30f34bb4@kernel.org>
 In-Reply-To: <20220421153920.3637792-1-eric.dumazet@gmail.com>
 References: <20220421153920.3637792-1-eric.dumazet@gmail.com>
 MIME-Version: 1.0
@@ -56,27 +56,17 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On Thu, 21 Apr 2022 08:39:20 -0700 Eric Dumazet wrote:
-> 10 runs of one TCP_STREAM flow
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index 84d78df60453955a8eaf05847f6e2145176a727a..2fe311447fae5e860eee95f6e8772926d4915e9f 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -1080,6 +1080,7 @@ struct sk_buff {
+>  		unsigned int	sender_cpu;
+>  	};
+>  #endif
+> +	u16			alloc_cpu;
+>  #ifdef CONFIG_NETWORK_SECMARK
+>  	__u32		secmark;
+>  #endif
 
-Was the test within a NUMA node or cross-node?
-
-For my learning - could this change cause more cache line bouncing 
-than individual per-socket lists for non-RFS setups. Multiple CPUs 
-may try to queue skbs for freeing on one remove node.
-
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index 7dccbfd1bf5635c27514c70b4a06d3e6f74395dd..0162a9bdc9291e7aae967a044788d09bd2ef2423 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -3081,6 +3081,9 @@ struct softnet_data {
->  	struct sk_buff_head	input_pkt_queue;
->  	struct napi_struct	backlog;
->  
-> +	/* Another possibly contended cache line */
-> +	struct sk_buff_head	skb_defer_list ____cacheline_aligned_in_smp;
-
-If so maybe we can avoid some dirtying and use a single-linked list? 
-No point modifying the cache line of the skb already on the list.
-
-> +	call_single_data_t  csd_defer;
->  };
+nit: kdoc missing
