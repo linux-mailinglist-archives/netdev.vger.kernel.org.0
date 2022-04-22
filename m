@@ -2,536 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3559650BAFB
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 17:01:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7ACF850BB05
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 17:01:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449119AbiDVPDe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Apr 2022 11:03:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47042 "EHLO
+        id S1449122AbiDVPDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Apr 2022 11:03:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449172AbiDVPDC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 11:03:02 -0400
-Received: from mint-fitpc2.mph.net (unknown [81.168.73.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 188ED7650
-        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 08:00:06 -0700 (PDT)
-Received: from palantir17.mph.net (unknown [192.168.0.4])
-        by mint-fitpc2.mph.net (Postfix) with ESMTP id 1E3F7320133;
-        Fri, 22 Apr 2022 16:00:06 +0100 (BST)
-Received: from localhost ([::1] helo=palantir17.mph.net)
-        by palantir17.mph.net with esmtp (Exim 4.89)
-        (envelope-from <habetsm.xilinx@gmail.com>)
-        id 1nhulR-0007Az-Sp; Fri, 22 Apr 2022 16:00:05 +0100
-Subject: [PATCH net-next 14/28] sfc/siena: Rename functions in ptp.h to
- avoid conflicts with sfc
-From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     kuba@kernel.org, pabeni@redhat.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com
-Date:   Fri, 22 Apr 2022 16:00:05 +0100
-Message-ID: <165063960573.27138.4074590328651108662.stgit@palantir17.mph.net>
-In-Reply-To: <165063937837.27138.6911229584057659609.stgit@palantir17.mph.net>
-References: <165063937837.27138.6911229584057659609.stgit@palantir17.mph.net>
-User-Agent: StGit/0.17.1-dirty
+        with ESMTP id S1449188AbiDVPDJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 11:03:09 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AEFA1EADD
+        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 08:00:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=eqPmiPUKWMwCVShjXPYp4+CGZAFOhveuCqk+2i/0fds=; b=Bp
+        3XZrVixAu9x2rirP0uw+ZuglXim7601HMrH74XCStrEHJmNkRHe3uL2nfXrtUMPQDwL6KdXNOYW/D
+        84RZ0dHo7M+UbwKw+1WJg3+xIjUWBy5lHHdOHqCCOi4sscQt/+3r7y9lAz3omwqojHNVwxkad1Lzl
+        OeOs1Z4YvvO9XNk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nhulT-00Gzdq-W4; Fri, 22 Apr 2022 17:00:08 +0200
+Date:   Fri, 22 Apr 2022 17:00:07 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Lasse Johnsen <lasse@timebeat.app>
+Cc:     netdev@vger.kernel.org, richardcochran@gmail.com,
+        Gordon Hollingworth <gordon@raspberrypi.com>,
+        Ahmad Byagowi <clk@fb.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH net-next] 1588 support on bcm54210pe
+Message-ID: <YmLC98NMfHUxwPF6@lunn.ch>
+References: <928593CA-9CE9-4A54-B84A-9973126E026D@timebeat.app>
+ <YmBc2E2eCPHMA7lR@lunn.ch>
+ <C6DCE6EC-926D-4EDF-AFE9-F949C0F55B7F@timebeat.app>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=1.7 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-        FORGED_GMAIL_RCVD,FREEMAIL_FROM,KHOP_HELO_FCRDNS,MAY_BE_FORGED,
-        NML_ADSP_CUSTOM_MED,SPF_HELO_NONE,SPF_SOFTFAIL autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <C6DCE6EC-926D-4EDF-AFE9-F949C0F55B7F@timebeat.app>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For siena use efx_siena_ as the function prefix.
-Some functions can become static in ptp.c.
+On Fri, Apr 22, 2022 at 03:21:16PM +0100, Lasse Johnsen wrote:
+> Hi Andrew,
+> 
+> > On 20 Apr 2022, at 20:19, Andrew Lunn <andrew@lunn.ch> wrote:
+> > 
+> > On Wed, Apr 20, 2022 at 03:03:26PM +0100, Lasse Johnsen wrote:
+> >> Hello,
+> >> 
+> >> 
+> >> The attached set of patches adds support for the IEEE1588 functionality on the BCM54210PE PHY using the Linux Kernel mii_timestamper interface. The BCM54210PE PHY can be found in the Raspberry PI Compute Module 4 and the work has been undertaken by Timebeat.app on behalf of Raspberry PI with help and support from the nice engineers at Broadcom.
+> > 
+> > Hi Lasse
+> > 
+> > There are a few process issues you should address.
+> > 
+> > Please wrap your email at about 80 characters.
 
-Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
----
- drivers/net/ethernet/sfc/siena/efx.c            |    4 +-
- drivers/net/ethernet/sfc/siena/efx_common.c     |    4 +-
- drivers/net/ethernet/sfc/siena/ethtool.c        |    2 -
- drivers/net/ethernet/sfc/siena/ethtool_common.c |    6 +--
- drivers/net/ethernet/sfc/siena/mcdi.c           |    4 +-
- drivers/net/ethernet/sfc/siena/ptp.c            |   53 ++++++++++++-----------
- drivers/net/ethernet/sfc/siena/ptp.h            |   46 ++++++++++----------
- drivers/net/ethernet/sfc/siena/siena.c          |   17 ++++---
- drivers/net/ethernet/sfc/siena/tx.c             |    4 +-
- drivers/net/ethernet/sfc/siena/tx_common.c      |    6 +--
- 10 files changed, 74 insertions(+), 72 deletions(-)
+Still not wrapped. Kernel developers tend to be old school, still
+believe a terminal is 80 characters wide, and has 25 lines, just like
+the VT100 they grew up with. It can be hard to get some email clients
+to do this correctly, which is why most use mutt.
 
-diff --git a/drivers/net/ethernet/sfc/siena/efx.c b/drivers/net/ethernet/sfc/siena/efx.c
-index ddd9dda1779e..0587877cc809 100644
---- a/drivers/net/ethernet/sfc/siena/efx.c
-+++ b/drivers/net/ethernet/sfc/siena/efx.c
-@@ -494,9 +494,9 @@ static int efx_ioctl(struct net_device *net_dev, struct ifreq *ifr, int cmd)
- 	struct mii_ioctl_data *data = if_mii(ifr);
- 
- 	if (cmd == SIOCSHWTSTAMP)
--		return efx_ptp_set_ts_config(efx, ifr);
-+		return efx_siena_ptp_set_ts_config(efx, ifr);
- 	if (cmd == SIOCGHWTSTAMP)
--		return efx_ptp_get_ts_config(efx, ifr);
-+		return efx_siena_ptp_get_ts_config(efx, ifr);
- 
- 	/* Convert phy_id from older PRTAD/DEVAD format */
- 	if ((cmd == SIOCGMIIREG || cmd == SIOCSMIIREG) &&
-diff --git a/drivers/net/ethernet/sfc/siena/efx_common.c b/drivers/net/ethernet/sfc/siena/efx_common.c
-index fc2677e9020a..1f9d9d248daa 100644
---- a/drivers/net/ethernet/sfc/siena/efx_common.c
-+++ b/drivers/net/ethernet/sfc/siena/efx_common.c
-@@ -434,7 +434,7 @@ static void efx_start_datapath(struct efx_nic *efx)
- 	/* Initialise the channels */
- 	efx_siena_start_channels(efx);
- 
--	efx_ptp_start_datapath(efx);
-+	efx_siena_ptp_start_datapath(efx);
- 
- 	if (netif_device_present(efx->net_dev))
- 		netif_tx_wake_all_queues(efx->net_dev);
-@@ -445,7 +445,7 @@ static void efx_stop_datapath(struct efx_nic *efx)
- 	EFX_ASSERT_RESET_SERIALISED(efx);
- 	BUG_ON(efx->port_enabled);
- 
--	efx_ptp_stop_datapath(efx);
-+	efx_siena_ptp_stop_datapath(efx);
- 
- 	efx_siena_stop_channels(efx);
- }
-diff --git a/drivers/net/ethernet/sfc/siena/ethtool.c b/drivers/net/ethernet/sfc/siena/ethtool.c
-index 429653a49dee..63388bec421d 100644
---- a/drivers/net/ethernet/sfc/siena/ethtool.c
-+++ b/drivers/net/ethernet/sfc/siena/ethtool.c
-@@ -235,7 +235,7 @@ static int efx_ethtool_get_ts_info(struct net_device *net_dev,
- 				    SOF_TIMESTAMPING_SOFTWARE);
- 	ts_info->phc_index = -1;
- 
--	efx_ptp_get_ts_info(efx, ts_info);
-+	efx_siena_ptp_get_ts_info(efx, ts_info);
- 	return 0;
- }
- 
-diff --git a/drivers/net/ethernet/sfc/siena/ethtool_common.c b/drivers/net/ethernet/sfc/siena/ethtool_common.c
-index 6fd09f119dce..11108a6de717 100644
---- a/drivers/net/ethernet/sfc/siena/ethtool_common.c
-+++ b/drivers/net/ethernet/sfc/siena/ethtool_common.c
-@@ -448,7 +448,7 @@ int efx_siena_ethtool_get_sset_count(struct net_device *net_dev, int string_set)
- 		return efx->type->describe_stats(efx, NULL) +
- 		       EFX_ETHTOOL_SW_STAT_COUNT +
- 		       efx_describe_per_queue_stats(efx, NULL) +
--		       efx_ptp_describe_stats(efx, NULL);
-+		       efx_siena_ptp_describe_stats(efx, NULL);
- 	case ETH_SS_TEST:
- 		return efx_ethtool_fill_self_tests(efx, NULL, NULL, NULL);
- 	default:
-@@ -472,7 +472,7 @@ void efx_siena_ethtool_get_strings(struct net_device *net_dev,
- 		strings += EFX_ETHTOOL_SW_STAT_COUNT * ETH_GSTRING_LEN;
- 		strings += (efx_describe_per_queue_stats(efx, strings) *
- 			    ETH_GSTRING_LEN);
--		efx_ptp_describe_stats(efx, strings);
-+		efx_siena_ptp_describe_stats(efx, strings);
- 		break;
- 	case ETH_SS_TEST:
- 		efx_ethtool_fill_self_tests(efx, NULL, strings, NULL);
-@@ -554,7 +554,7 @@ void efx_siena_ethtool_get_stats(struct net_device *net_dev,
- 		}
- 	}
- 
--	efx_ptp_update_stats(efx, data);
-+	efx_siena_ptp_update_stats(efx, data);
- }
- 
- /* This must be called with rtnl_lock held. */
-diff --git a/drivers/net/ethernet/sfc/siena/mcdi.c b/drivers/net/ethernet/sfc/siena/mcdi.c
-index 7f8f0889bf8d..ff426b228cb2 100644
---- a/drivers/net/ethernet/sfc/siena/mcdi.c
-+++ b/drivers/net/ethernet/sfc/siena/mcdi.c
-@@ -1363,10 +1363,10 @@ void efx_mcdi_process_event(struct efx_channel *channel,
- 	case MCDI_EVENT_CODE_PTP_RX:
- 	case MCDI_EVENT_CODE_PTP_FAULT:
- 	case MCDI_EVENT_CODE_PTP_PPS:
--		efx_ptp_event(efx, event);
-+		efx_siena_ptp_event(efx, event);
- 		break;
- 	case MCDI_EVENT_CODE_PTP_TIME:
--		efx_time_sync_event(channel, event);
-+		efx_siena_time_sync_event(channel, event);
- 		break;
- 	case MCDI_EVENT_CODE_TX_FLUSH:
- 	case MCDI_EVENT_CODE_RX_FLUSH:
-diff --git a/drivers/net/ethernet/sfc/siena/ptp.c b/drivers/net/ethernet/sfc/siena/ptp.c
-index daf23070d353..b67417063a80 100644
---- a/drivers/net/ethernet/sfc/siena/ptp.c
-+++ b/drivers/net/ethernet/sfc/siena/ptp.c
-@@ -355,7 +355,7 @@ static int efx_phc_settime(struct ptp_clock_info *ptp,
- static int efx_phc_enable(struct ptp_clock_info *ptp,
- 			  struct ptp_clock_request *request, int on);
- 
--bool efx_ptp_use_mac_tx_timestamps(struct efx_nic *efx)
-+bool efx_siena_ptp_use_mac_tx_timestamps(struct efx_nic *efx)
- {
- 	return efx_has_cap(efx, TX_MAC_TIMESTAMPING);
- }
-@@ -365,7 +365,7 @@ bool efx_ptp_use_mac_tx_timestamps(struct efx_nic *efx)
-  */
- static bool efx_ptp_want_txqs(struct efx_channel *channel)
- {
--	return efx_ptp_use_mac_tx_timestamps(channel->efx);
-+	return efx_siena_ptp_use_mac_tx_timestamps(channel->efx);
- }
- 
- #define PTP_SW_STAT(ext_name, field_name)				\
-@@ -393,7 +393,7 @@ static const unsigned long efx_ptp_stat_mask[] = {
- 	[0 ... BITS_TO_LONGS(PTP_STAT_COUNT) - 1] = ~0UL,
- };
- 
--size_t efx_ptp_describe_stats(struct efx_nic *efx, u8 *strings)
-+size_t efx_siena_ptp_describe_stats(struct efx_nic *efx, u8 *strings)
- {
- 	if (!efx->ptp_data)
- 		return 0;
-@@ -402,7 +402,7 @@ size_t efx_ptp_describe_stats(struct efx_nic *efx, u8 *strings)
- 				      efx_ptp_stat_mask, strings);
- }
- 
--size_t efx_ptp_update_stats(struct efx_nic *efx, u64 *stats)
-+size_t efx_siena_ptp_update_stats(struct efx_nic *efx, u64 *stats)
- {
- 	MCDI_DECLARE_BUF(inbuf, MC_CMD_PTP_IN_STATUS_LEN);
- 	MCDI_DECLARE_BUF(outbuf, MC_CMD_PTP_OUT_STATUS_LEN);
-@@ -536,14 +536,14 @@ static ktime_t efx_ptp_s_qns_to_ktime_correction(u32 nic_major, u32 nic_minor,
- 	return kt;
- }
- 
--struct efx_channel *efx_ptp_channel(struct efx_nic *efx)
-+struct efx_channel *efx_siena_ptp_channel(struct efx_nic *efx)
- {
- 	return efx->ptp_data ? efx->ptp_data->channel : NULL;
- }
- 
- static u32 last_sync_timestamp_major(struct efx_nic *efx)
- {
--	struct efx_channel *channel = efx_ptp_channel(efx);
-+	struct efx_channel *channel = efx_siena_ptp_channel(efx);
- 	u32 major = 0;
- 
- 	if (channel)
-@@ -606,13 +606,13 @@ efx_ptp_mac_nic_to_ktime_correction(struct efx_nic *efx,
- 	return kt;
- }
- 
--ktime_t efx_ptp_nic_to_kernel_time(struct efx_tx_queue *tx_queue)
-+ktime_t efx_siena_ptp_nic_to_kernel_time(struct efx_tx_queue *tx_queue)
- {
- 	struct efx_nic *efx = tx_queue->efx;
- 	struct efx_ptp_data *ptp = efx->ptp_data;
- 	ktime_t kt;
- 
--	if (efx_ptp_use_mac_tx_timestamps(efx))
-+	if (efx_siena_ptp_use_mac_tx_timestamps(efx))
- 		kt = efx_ptp_mac_nic_to_ktime_correction(efx, ptp,
- 				tx_queue->completed_timestamp_major,
- 				tx_queue->completed_timestamp_minor,
-@@ -1437,7 +1437,7 @@ static const struct ptp_clock_info efx_phc_clock_info = {
- };
- 
- /* Initialise PTP state. */
--int efx_ptp_probe(struct efx_nic *efx, struct efx_channel *channel)
-+static int efx_ptp_probe(struct efx_nic *efx, struct efx_channel *channel)
- {
- 	struct efx_ptp_data *ptp;
- 	int rc = 0;
-@@ -1464,7 +1464,7 @@ int efx_ptp_probe(struct efx_nic *efx, struct efx_channel *channel)
- 		goto fail2;
- 	}
- 
--	if (efx_ptp_use_mac_tx_timestamps(efx)) {
-+	if (efx_siena_ptp_use_mac_tx_timestamps(efx)) {
- 		ptp->xmit_skb = efx_ptp_xmit_skb_queue;
- 		/* Request sync events on this channel. */
- 		channel->sync_events_state = SYNC_EVENTS_QUIESCENT;
-@@ -1553,7 +1553,7 @@ static int efx_ptp_probe_channel(struct efx_channel *channel)
- 	return 0;
- }
- 
--void efx_ptp_remove(struct efx_nic *efx)
-+static void efx_ptp_remove(struct efx_nic *efx)
- {
- 	if (!efx->ptp_data)
- 		return;
-@@ -1593,7 +1593,7 @@ static void efx_ptp_get_channel_name(struct efx_channel *channel,
- /* Determine whether this packet should be processed by the PTP module
-  * or transmitted conventionally.
-  */
--bool efx_ptp_is_ptp_tx(struct efx_nic *efx, struct sk_buff *skb)
-+bool efx_siena_ptp_is_ptp_tx(struct efx_nic *efx, struct sk_buff *skb)
- {
- 	return efx->ptp_data &&
- 		efx->ptp_data->enabled &&
-@@ -1699,7 +1699,7 @@ static bool efx_ptp_rx(struct efx_channel *channel, struct sk_buff *skb)
-  * itself, through an MCDI call.  MCDI calls aren't permitted
-  * in the transmit path so defer the actual transmission to a suitable worker.
-  */
--int efx_ptp_tx(struct efx_nic *efx, struct sk_buff *skb)
-+int efx_siena_ptp_tx(struct efx_nic *efx, struct sk_buff *skb)
- {
- 	struct efx_ptp_data *ptp = efx->ptp_data;
- 
-@@ -1713,13 +1713,13 @@ int efx_ptp_tx(struct efx_nic *efx, struct sk_buff *skb)
- 	return NETDEV_TX_OK;
- }
- 
--int efx_ptp_get_mode(struct efx_nic *efx)
-+int efx_siena_ptp_get_mode(struct efx_nic *efx)
- {
- 	return efx->ptp_data->mode;
- }
- 
--int efx_ptp_change_mode(struct efx_nic *efx, bool enable_wanted,
--			unsigned int new_mode)
-+int efx_siena_ptp_change_mode(struct efx_nic *efx, bool enable_wanted,
-+			      unsigned int new_mode)
- {
- 	if ((enable_wanted != efx->ptp_data->enabled) ||
- 	    (enable_wanted && (efx->ptp_data->mode != new_mode))) {
-@@ -1777,7 +1777,8 @@ static int efx_ptp_ts_init(struct efx_nic *efx, struct hwtstamp_config *init)
- 	return 0;
- }
- 
--void efx_ptp_get_ts_info(struct efx_nic *efx, struct ethtool_ts_info *ts_info)
-+void efx_siena_ptp_get_ts_info(struct efx_nic *efx,
-+			       struct ethtool_ts_info *ts_info)
- {
- 	struct efx_ptp_data *ptp = efx->ptp_data;
- 	struct efx_nic *primary = efx->primary;
-@@ -1797,7 +1798,7 @@ void efx_ptp_get_ts_info(struct efx_nic *efx, struct ethtool_ts_info *ts_info)
- 	ts_info->rx_filters = ptp->efx->type->hwtstamp_filters;
- }
- 
--int efx_ptp_set_ts_config(struct efx_nic *efx, struct ifreq *ifr)
-+int efx_siena_ptp_set_ts_config(struct efx_nic *efx, struct ifreq *ifr)
- {
- 	struct hwtstamp_config config;
- 	int rc;
-@@ -1817,7 +1818,7 @@ int efx_ptp_set_ts_config(struct efx_nic *efx, struct ifreq *ifr)
- 		? -EFAULT : 0;
- }
- 
--int efx_ptp_get_ts_config(struct efx_nic *efx, struct ifreq *ifr)
-+int efx_siena_ptp_get_ts_config(struct efx_nic *efx, struct ifreq *ifr)
- {
- 	if (!efx->ptp_data)
- 		return -EOPNOTSUPP;
-@@ -1898,7 +1899,7 @@ static void ptp_event_pps(struct efx_nic *efx, struct efx_ptp_data *ptp)
- 		queue_work(ptp->pps_workwq, &ptp->pps_work);
- }
- 
--void efx_ptp_event(struct efx_nic *efx, efx_qword_t *ev)
-+void efx_siena_ptp_event(struct efx_nic *efx, efx_qword_t *ev)
- {
- 	struct efx_ptp_data *ptp = efx->ptp_data;
- 	int code = EFX_QWORD_FIELD(*ev, MCDI_EVENT_CODE);
-@@ -1949,7 +1950,7 @@ void efx_ptp_event(struct efx_nic *efx, efx_qword_t *ev)
- 	}
- }
- 
--void efx_time_sync_event(struct efx_channel *channel, efx_qword_t *ev)
-+void efx_siena_time_sync_event(struct efx_channel *channel, efx_qword_t *ev)
- {
- 	struct efx_nic *efx = channel->efx;
- 	struct efx_ptp_data *ptp = efx->ptp_data;
-@@ -1985,8 +1986,8 @@ static inline u32 efx_rx_buf_timestamp_minor(struct efx_nic *efx, const u8 *eh)
- #endif
- }
- 
--void __efx_rx_skb_attach_timestamp(struct efx_channel *channel,
--				   struct sk_buff *skb)
-+void __efx_siena_rx_skb_attach_timestamp(struct efx_channel *channel,
-+					 struct sk_buff *skb)
- {
- 	struct efx_nic *efx = channel->efx;
- 	struct efx_ptp_data *ptp = efx->ptp_data;
-@@ -2171,7 +2172,7 @@ static const struct efx_channel_type efx_ptp_channel_type = {
- 	.keep_eventq		= false,
- };
- 
--void efx_ptp_defer_probe_with_channel(struct efx_nic *efx)
-+void efx_siena_ptp_defer_probe_with_channel(struct efx_nic *efx)
- {
- 	/* Check whether PTP is implemented on this NIC.  The DISABLE
- 	 * operation will succeed if and only if it is implemented.
-@@ -2181,7 +2182,7 @@ void efx_ptp_defer_probe_with_channel(struct efx_nic *efx)
- 			&efx_ptp_channel_type;
- }
- 
--void efx_ptp_start_datapath(struct efx_nic *efx)
-+void efx_siena_ptp_start_datapath(struct efx_nic *efx)
- {
- 	if (efx_ptp_restart(efx))
- 		netif_err(efx, drv, efx->net_dev, "Failed to restart PTP.\n");
-@@ -2190,7 +2191,7 @@ void efx_ptp_start_datapath(struct efx_nic *efx)
- 		efx->type->ptp_set_ts_sync_events(efx, true, true);
- }
- 
--void efx_ptp_stop_datapath(struct efx_nic *efx)
-+void efx_siena_ptp_stop_datapath(struct efx_nic *efx)
- {
- 	/* temporarily disable timestamping */
- 	if (efx->type->ptp_set_ts_sync_events)
-diff --git a/drivers/net/ethernet/sfc/siena/ptp.h b/drivers/net/ethernet/sfc/siena/ptp.h
-index 9855e8c9e544..4172f90e9f6f 100644
---- a/drivers/net/ethernet/sfc/siena/ptp.h
-+++ b/drivers/net/ethernet/sfc/siena/ptp.h
-@@ -13,33 +13,33 @@
- #include "net_driver.h"
- 
- struct ethtool_ts_info;
--int efx_ptp_probe(struct efx_nic *efx, struct efx_channel *channel);
--void efx_ptp_defer_probe_with_channel(struct efx_nic *efx);
--struct efx_channel *efx_ptp_channel(struct efx_nic *efx);
--void efx_ptp_remove(struct efx_nic *efx);
--int efx_ptp_set_ts_config(struct efx_nic *efx, struct ifreq *ifr);
--int efx_ptp_get_ts_config(struct efx_nic *efx, struct ifreq *ifr);
--void efx_ptp_get_ts_info(struct efx_nic *efx, struct ethtool_ts_info *ts_info);
--bool efx_ptp_is_ptp_tx(struct efx_nic *efx, struct sk_buff *skb);
--int efx_ptp_get_mode(struct efx_nic *efx);
--int efx_ptp_change_mode(struct efx_nic *efx, bool enable_wanted,
--			unsigned int new_mode);
--int efx_ptp_tx(struct efx_nic *efx, struct sk_buff *skb);
--void efx_ptp_event(struct efx_nic *efx, efx_qword_t *ev);
--size_t efx_ptp_describe_stats(struct efx_nic *efx, u8 *strings);
--size_t efx_ptp_update_stats(struct efx_nic *efx, u64 *stats);
--void efx_time_sync_event(struct efx_channel *channel, efx_qword_t *ev);
--void __efx_rx_skb_attach_timestamp(struct efx_channel *channel,
--				   struct sk_buff *skb);
-+void efx_siena_ptp_defer_probe_with_channel(struct efx_nic *efx);
-+struct efx_channel *efx_siena_ptp_channel(struct efx_nic *efx);
-+int efx_siena_ptp_set_ts_config(struct efx_nic *efx, struct ifreq *ifr);
-+int efx_siena_ptp_get_ts_config(struct efx_nic *efx, struct ifreq *ifr);
-+void efx_siena_ptp_get_ts_info(struct efx_nic *efx,
-+			       struct ethtool_ts_info *ts_info);
-+bool efx_siena_ptp_is_ptp_tx(struct efx_nic *efx, struct sk_buff *skb);
-+int efx_siena_ptp_get_mode(struct efx_nic *efx);
-+int efx_siena_ptp_change_mode(struct efx_nic *efx, bool enable_wanted,
-+			      unsigned int new_mode);
-+int efx_siena_ptp_tx(struct efx_nic *efx, struct sk_buff *skb);
-+void efx_siena_ptp_event(struct efx_nic *efx, efx_qword_t *ev);
-+size_t efx_siena_ptp_describe_stats(struct efx_nic *efx, u8 *strings);
-+size_t efx_siena_ptp_update_stats(struct efx_nic *efx, u64 *stats);
-+void efx_siena_time_sync_event(struct efx_channel *channel, efx_qword_t *ev);
-+void __efx_siena_rx_skb_attach_timestamp(struct efx_channel *channel,
-+					 struct sk_buff *skb);
- static inline void efx_rx_skb_attach_timestamp(struct efx_channel *channel,
- 					       struct sk_buff *skb)
- {
- 	if (channel->sync_events_state == SYNC_EVENTS_VALID)
--		__efx_rx_skb_attach_timestamp(channel, skb);
-+		__efx_siena_rx_skb_attach_timestamp(channel, skb);
- }
--void efx_ptp_start_datapath(struct efx_nic *efx);
--void efx_ptp_stop_datapath(struct efx_nic *efx);
--bool efx_ptp_use_mac_tx_timestamps(struct efx_nic *efx);
--ktime_t efx_ptp_nic_to_kernel_time(struct efx_tx_queue *tx_queue);
-+
-+void efx_siena_ptp_start_datapath(struct efx_nic *efx);
-+void efx_siena_ptp_stop_datapath(struct efx_nic *efx);
-+bool efx_siena_ptp_use_mac_tx_timestamps(struct efx_nic *efx);
-+ktime_t efx_siena_ptp_nic_to_kernel_time(struct efx_tx_queue *tx_queue);
- 
- #endif /* EFX_PTP_H */
-diff --git a/drivers/net/ethernet/sfc/siena/siena.c b/drivers/net/ethernet/sfc/siena/siena.c
-index 726dd4b72779..d70e481d0c73 100644
---- a/drivers/net/ethernet/sfc/siena/siena.c
-+++ b/drivers/net/ethernet/sfc/siena/siena.c
-@@ -143,27 +143,28 @@ static int siena_ptp_set_ts_config(struct efx_nic *efx,
- 	switch (init->rx_filter) {
- 	case HWTSTAMP_FILTER_NONE:
- 		/* if TX timestamping is still requested then leave PTP on */
--		return efx_ptp_change_mode(efx,
--					   init->tx_type != HWTSTAMP_TX_OFF,
--					   efx_ptp_get_mode(efx));
-+		return efx_siena_ptp_change_mode(efx,
-+					init->tx_type != HWTSTAMP_TX_OFF,
-+					efx_siena_ptp_get_mode(efx));
- 	case HWTSTAMP_FILTER_PTP_V1_L4_EVENT:
- 	case HWTSTAMP_FILTER_PTP_V1_L4_SYNC:
- 	case HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ:
- 		init->rx_filter = HWTSTAMP_FILTER_PTP_V1_L4_EVENT;
--		return efx_ptp_change_mode(efx, true, MC_CMD_PTP_MODE_V1);
-+		return efx_siena_ptp_change_mode(efx, true, MC_CMD_PTP_MODE_V1);
- 	case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
- 	case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
- 	case HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ:
- 		init->rx_filter = HWTSTAMP_FILTER_PTP_V2_L4_EVENT;
--		rc = efx_ptp_change_mode(efx, true,
--					 MC_CMD_PTP_MODE_V2_ENHANCED);
-+		rc = efx_siena_ptp_change_mode(efx, true,
-+					       MC_CMD_PTP_MODE_V2_ENHANCED);
- 		/* bug 33070 - old versions of the firmware do not support the
- 		 * improved UUID filtering option. Similarly old versions of the
- 		 * application do not expect it to be enabled. If the firmware
- 		 * does not accept the enhanced mode, fall back to the standard
- 		 * PTP v2 UUID filtering. */
- 		if (rc != 0)
--			rc = efx_ptp_change_mode(efx, true, MC_CMD_PTP_MODE_V2);
-+			rc = efx_siena_ptp_change_mode(efx, true,
-+						       MC_CMD_PTP_MODE_V2);
- 		return rc;
- 	default:
- 		return -ERANGE;
-@@ -329,7 +330,7 @@ static int siena_probe_nic(struct efx_nic *efx)
- #ifdef CONFIG_SFC_SRIOV
- 	efx_siena_sriov_probe(efx);
- #endif
--	efx_ptp_defer_probe_with_channel(efx);
-+	efx_siena_ptp_defer_probe_with_channel(efx);
- 
- 	return 0;
- 
-diff --git a/drivers/net/ethernet/sfc/siena/tx.c b/drivers/net/ethernet/sfc/siena/tx.c
-index 2e9b0f172b4a..f78c2a868e4b 100644
---- a/drivers/net/ethernet/sfc/siena/tx.c
-+++ b/drivers/net/ethernet/sfc/siena/tx.c
-@@ -318,13 +318,13 @@ netdev_tx_t efx_siena_hard_start_xmit(struct sk_buff *skb,
- 
- 	/* PTP "event" packet */
- 	if (unlikely(efx_xmit_with_hwtstamp(skb)) &&
--	    unlikely(efx_ptp_is_ptp_tx(efx, skb))) {
-+	    unlikely(efx_siena_ptp_is_ptp_tx(efx, skb))) {
- 		/* There may be existing transmits on the channel that are
- 		 * waiting for this packet to trigger the doorbell write.
- 		 * We need to send the packets at this point.
- 		 */
- 		efx_tx_send_pending(efx_get_tx_channel(efx, index));
--		return efx_ptp_tx(efx, skb);
-+		return efx_siena_ptp_tx(efx, skb);
- 	}
- 
- 	tx_queue = efx_get_tx_queue(efx, index, type);
-diff --git a/drivers/net/ethernet/sfc/siena/tx_common.c b/drivers/net/ethernet/sfc/siena/tx_common.c
-index 66adc8525a3a..31e9888e71df 100644
---- a/drivers/net/ethernet/sfc/siena/tx_common.c
-+++ b/drivers/net/ethernet/sfc/siena/tx_common.c
-@@ -80,8 +80,8 @@ void efx_siena_init_tx_queue(struct efx_tx_queue *tx_queue)
- 	tx_queue->old_read_count = 0;
- 	tx_queue->empty_read_count = 0 | EFX_EMPTY_COUNT_VALID;
- 	tx_queue->xmit_pending = false;
--	tx_queue->timestamping = (efx_ptp_use_mac_tx_timestamps(efx) &&
--				  tx_queue->channel == efx_ptp_channel(efx));
-+	tx_queue->timestamping = (efx_siena_ptp_use_mac_tx_timestamps(efx) &&
-+				  tx_queue->channel == efx_siena_ptp_channel(efx));
- 	tx_queue->completed_timestamp_major = 0;
- 	tx_queue->completed_timestamp_minor = 0;
- 
-@@ -148,7 +148,7 @@ static void efx_dequeue_buffer(struct efx_tx_queue *tx_queue,
- 			struct skb_shared_hwtstamps hwtstamp;
- 
- 			hwtstamp.hwtstamp =
--				efx_ptp_nic_to_kernel_time(tx_queue);
-+				efx_siena_ptp_nic_to_kernel_time(tx_queue);
- 			skb_tstamp_tx(skb, &hwtstamp);
- 
- 			tx_queue->completed_timestamp_major = 0;
+> > Please take a read of
+> > 
+> > https://www.kernel.org/doc/html/latest/process/submitting-patches.html
+> > 
+> > and
+> > 
+> > https://www.kernel.org/doc/html/latest/process/maintainer-netdev.html#netdev-faq
+> > 
+> > It is a bit of a learning curve getting patches accepted, and you have
+> > to follow the processes defined in these documents.
+> 
+> I have read the documents, I understand about 10% of them and I am considering jumping off a tall building :-)
 
+As i said, it is a learning curve, but we are here to help.
+
+> I’ve changed the subject of the email. How did I do?
+
+I step in the right direction.
+
+git log --oneline drivers/net/phy/broadcom.c
+bf8bfc4336f7 net: phy: broadcom: Fix brcm_fet_config_init()
+d15c7e875d44 net: phy: broadcom: hook up soft_reset for BCM54616S
+72e78d22e152 net: phy: broadcom: Utilize appropriate suspend for BCM54810/11
+38b6a9073007 net: phy: broadcom: Wire suspend/resume for BCM50610 and BCM50610M
+d6da08ed1425 net: phy: broadcom: Add IDDQ-SR mode
+8dc84dcd7f74 net: phy: broadcom: Enable 10BaseT DAC early wake
+ad4e1e48a629 net: phy: broadcom: re-add check for PHY_BRCM_DIS_TXCRXC_NOENRGY on the BCM54811 PHY
+5a32fcdb1e68 net: phy: broadcom: Add statistics for all Gigabit PHYs
+b1dd9bf688b0 net: phy: broadcom: Fix RGMII delays for BCM50160 and BCM50610M
+
+The prefix "net: phy: broadcom" helps get the right people to review
+your patch. Florian will be looking for anything "broadcom". I look
+for anything "phy".
+
+> Ok. I was asked by Florian to put the Broadcom maintainers in Cc so I will do this to begin with.
+
+There is a tool to help you get the correct people to send patches to:
+
+./scripts/get_maintainer.pl <FILENAME>.patch
+
+and it will give you something like:
+
+Florian Fainelli <f.fainelli@gmail.com> (supporter:BROADCOM ETHERNET PHY DRIVERS)
+Andrew Lunn <andrew@lunn.ch> (maintainer:ETHERNET PHY LIBRARY)
+Heiner Kallweit <hkallweit1@gmail.com> (maintainer:ETHERNET PHY LIBRARY)
+Russell King <linux@armlinux.org.uk> (reviewer:ETHERNET PHY LIBRARY)
+"David S. Miller" <davem@davemloft.net> (maintainer:NETWORKING DRIVERS)
+Jakub Kicinski <kuba@kernel.org> (maintainer:NETWORKING DRIVERS)
+Paolo Abeni <pabeni@redhat.com> (maintainer:NETWORKING DRIVERS)
+bcm-kernel-feedback-list@broadcom.com (open list:BROADCOM ETHERNET PHY DRIVERS)
+netdev@vger.kernel.org (open list:BROADCOM ETHERNET PHY DRIVERS)
+linux-kernel@vger.kernel.org (open list)
+
+> >> +obj-$(CONFIG_BCM54120PE_PHY)	+= bcm54210pe_ptp.o
+> > 
+> > How specific is this code to the bcm54210pe? Should it work for any
+> > bcm54xxx PHY? You might want to name this file broadcom_ptp.c if it
+> > will work with any PHY supported by broadcom.c.
+> 
+
+> I am confident that this code is relevant exclusively to the
+> BCM54210PE. It will not even work with the BCM54210, BCM54210S and
+> BCM54210SE PHYs.
+
+Florian can probably tell us more, but often hardware like this is
+shared by multiple devices. If it is, you might want to use a more
+generic prefix.
+
+> >> +static bool bcm54210pe_fetch_timestamp(u8 txrx, u8 message_type, u16 seq_id, struct bcm54210pe_private *private, u64 *timestamp)
+> >> +{
+> >> +	struct bcm54210pe_circular_buffer_item *item; 
+> >> +	struct list_head *this, *next;
+> >> +
+> >> +	u8 index = (txrx * 4) + message_type;
+> >> +
+> >> +	if(index >= CIRCULAR_BUFFER_COUNT)
+> >> +	{
+> >> +		return false;
+> >> +	}
+> > 
+> > Please run your code through ./scripts/checkpatch.pl. You will find
+> > the code has a number of code style issues which need cleaning up.
+ 
+> I am about to respond to Richard's mail with an amended set of
+> patches which is much cleaner. checkpatch now complains only about a
+> Signed-off line and asks if Maintainers needs updating because I’ve
+> added a file (I guess it probably does).
+
+Signed-off-by is important. Without it, your patch will not get
+accepted. Did a number of people write the code? You might need
+Signed-off-by: from each of them, or you need to use
+Co-Developed-by.
+
+https://www.kernel.org/doc/html/latest/process/submitting-patches.html#when-to-use-acked-by-cc-and-co-developed-by
+
+Please try to use
+
+git format-patch
+
+and
+
+git send-email
+
+when sending your updated patches. It is a good idea to pass
+--cover-letter to git format-patch, and give a 'big picture'
+explanation in patch 0/X, along with a list of what you have changed
+since the last version. Please also remember to put "v2: in the
+subject, "patch net-next v2", so we can keep track of the different
+versions.
+
+> >> +#if IS_ENABLED (CONFIG_BCM54120PE_PHY)
+> >> +{
+> >> +	.phy_id		= PHY_ID_BCM54213PE,
+> >> +	.phy_id_mask	= 0xffffffff,
+> >> +        .name           = "Broadcom BCM54210PE",
+> >> +        /* PHY_GBIT_FEATURES */
+> >> +        .config_init    = bcm54xx_config_init,
+> >> +        .ack_interrupt  = bcm_phy_ack_intr,
+> >> +        .config_intr    = bcm_phy_config_intr,
+> >> +	.probe		= bcm54210pe_probe,
+> >> +#elif
+> >> +{ 
+> >> 	.phy_id		= PHY_ID_BCM54213PE,
+> >> 	.phy_id_mask	= 0xffffffff,
+> >> 	.name		= "Broadcom BCM54213PE",
+> >> @@ -786,6 +804,7 @@ static struct phy_driver broadcom_drivers[] = {
+> >> 	.config_init	= bcm54xx_config_init,
+> >> 	.ack_interrupt	= bcm_phy_ack_intr,
+> >> 	.config_intr	= bcm_phy_config_intr,
+> >> +#endif
+> > 
+> > Don't replace the existing entry, extend it with your new
+> > functionality.
+ 
+
+> Is what you propose possible? Isn’t the issue here that the two PHYs
+> (54213PE and 54210PE) present themselves with the same phy ID?
+
+Ah, they should not do that. There are solutions to this, but lets
+leave this as is for the moment. Lets get other issues solved first.
+
+      Andrew
