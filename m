@@ -2,125 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 21E5C50AD96
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 04:03:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB59450AD99
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 04:09:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377622AbiDVCFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 22:05:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51534 "EHLO
+        id S233257AbiDVCLp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 22:11:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233237AbiDVCFH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 22:05:07 -0400
-X-Greylist: delayed 1988 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Apr 2022 19:02:15 PDT
-Received: from m15111.mail.126.com (m15111.mail.126.com [220.181.15.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 171DE4A92D;
-        Thu, 21 Apr 2022 19:02:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=b328s
-        Yp84i/CvToFx9BMqGedw/IAbOAcUjUC3unR+0k=; b=go+2Bo+2qK87t7eB6c+oo
-        Atu+RHLiaYM/OoANhqq6GbeDToLyMNrYUptCdn7qpK9oLrgDIFezVn6kjgtMFVcv
-        CcYuKed7tcGSJoPhT3CHMieau6v5R+W6ICcVWTUlGTtf6ThywAY9KI3FpT5B3k26
-        FzpSgMdJUiKtg2teYzWIIU=
-Received: from ubuntu.localdomain (unknown [58.213.83.157])
-        by smtp1 (Coremail) with SMTP id C8mowABHTzfABGJiO8MNBA--.8225S4;
-        Fri, 22 Apr 2022 09:28:34 +0800 (CST)
-From:   Bernard Zhao <zhaojunkui2008@126.com>
-To:     Jakub Kicinski <kubakici@wp.pl>, Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S233237AbiDVCLp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 22:11:45 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A2664A93B
+        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 19:08:53 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id d15so7681597pll.10
+        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 19:08:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=tGU0K/EJxxDbBmweff8atM832lgytSb9he/rkce3zvQ=;
+        b=YVQ7kSICEskADr8JmScGWjcxFjG1JvTOzuYgzSypS+vzYcdjYUJup1k/Q2btFW+pyF
+         4dCaa+qvhnsPGC2w8yOKHZwkpSwWZpDuwUF54gdQd2OAF1YZ9ns5MqMLimCtUgonbPFY
+         nkwztCavLkFkUhKFu5GukZwGUoU0lcuCc2q1cMZlochUqP6paWGslVcA0xhmbISzBwqJ
+         dT4zlOzP+aKmLJz3uCDXHOPlHeMkegjLbHu4hZ1UcfDEKLeH4vuhd3b9ZcOctZqDP16t
+         OkHGnJys4Jr9/pqcgTbJiWfdSjX8KAjq4ygU/i8bwN9AIWn0phMUjJEA9CfrvckMua/w
+         nYLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=tGU0K/EJxxDbBmweff8atM832lgytSb9he/rkce3zvQ=;
+        b=nKMZUEY0cJGSpMd3db8Z8KPMQ6GSarAZMNhYtVOr7tREzUO9zqYQaruGORRYe0yiYg
+         xY31ZNRKFTf0pasH1fxMvEhMovlZQphr5eWFs0hV8Qryncj7mGLgvX6pG9jmo/eLEe58
+         vcTvw7UVSKu5udwZyKxXA5mtO1JPZ0em69uP2ImBGm4FWsNKrYEH7+S2JWOMXOwzZYdO
+         X4vDNRiGF757VRjEysHlOfyMANKI/1khwfGhsTr+bhP6OuOlUxo6Q3jk42aQBPS5ZCib
+         4MCoOn1BEj8edMquonTaXOHzknRPJ+IbitNdTSzR64tzGf3TOGIiRl+IexOy53JHMtS7
+         cYkg==
+X-Gm-Message-State: AOAM532TZLGJ4b/OH45HhW5KA+0FXV43TgF2JAoosEMRW9pKfA7Qes1q
+        oIbd0v7GX6S6s6X5DABGKoI=
+X-Google-Smtp-Source: ABdhPJydAt6ziMUyapUSN9sMwvtT577wOrAWRKB7gUzSncqG9jt7o9+kSZslaZHcT68AtgrosbGYzA==
+X-Received: by 2002:a17:902:d709:b0:155:d473:2be0 with SMTP id w9-20020a170902d70900b00155d4732be0mr2155735ply.151.1650593332643;
+        Thu, 21 Apr 2022 19:08:52 -0700 (PDT)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id v16-20020a62a510000000b0050759c9a891sm433737pfm.6.2022.04.21.19.08.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Apr 2022 19:08:51 -0700 (PDT)
+Date:   Fri, 22 Apr 2022 10:08:44 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     netdev@vger.kernel.org, "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     bernard@vivo.com, Bernard Zhao <zhaojunkui2008@126.com>
-Subject: [PATCH] net/wireless: add debugfs exit function
-Date:   Thu, 21 Apr 2022 18:28:30 -0700
-Message-Id: <20220422012830.342993-1-zhaojunkui2008@126.com>
-X-Mailer: git-send-email 2.33.1
+        Maxim Mikityanskiy <maximmi@mellanox.com>,
+        virtualization@lists.linux-foundation.org,
+        Balazs Nemeth <bnemeth@redhat.com>,
+        Mike Pattrick <mpattric@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next] net/af_packet: add VLAN support for AF_PACKET
+ SOCK_RAW GSO
+Message-ID: <YmIOLBihyeLy+PCS@Laptop-X1>
+References: <20220420082758.581245-1-liuhangbin@gmail.com>
+ <CA+FuTScyF4BKEcNSCYOv8SBA_EmB806YtKA17jb3F+fymVF-Pg@mail.gmail.com>
+ <YmDCHI330AUfcYKa@Laptop-X1>
+ <CA+FuTSckEJVUH1Q2vBxGbfPgVteyDVmTfjJC6hBj=qRP+JcAxA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: C8mowABHTzfABGJiO8MNBA--.8225S4
-X-Coremail-Antispam: 1Uf129KBjvJXoWxWryDur13Jw1kJr4rGr15Jwb_yoW5Gw1xpa
-        yUKa4Ykw18Zr1DJ3y8AF4UAFyrG3Zagry7GF90v34ru348Ar1Fq3W0qFW7Aa40qFWUCa45
-        tF4UtFnrGryIvFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zizBT7UUUUU=
-X-Originating-IP: [58.213.83.157]
-X-CM-SenderInfo: p2kd0y5xqn3xasqqmqqrswhudrp/1tbiYAPqqlpEG-QfMQAAs8
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+FuTSckEJVUH1Q2vBxGbfPgVteyDVmTfjJC6hBj=qRP+JcAxA@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch add exit debugfs function to mt7601u.
-Debugfs need to be cleanup when module is unloaded or load fail.
+Hi Willem,
+On Thu, Apr 21, 2022 at 10:15:16AM -0400, Willem de Bruijn wrote:
+> Your approach does sound simpler than the above. Thanks for looking
+> into that alternative, though.
 
-Signed-off-by: Bernard Zhao <zhaojunkui2008@126.com>
----
- drivers/net/wireless/mediatek/mt7601u/debugfs.c | 9 +++++++--
- drivers/net/wireless/mediatek/mt7601u/init.c    | 1 +
- drivers/net/wireless/mediatek/mt7601u/mt7601u.h | 1 +
- 3 files changed, 9 insertions(+), 2 deletions(-)
+Sorry I have to bring this topic back. I just remembered that
+tpacket_snd() already called skb_probe_transport_header() before calling
+virtio_net_hdr_* functions. e.g.
 
-diff --git a/drivers/net/wireless/mediatek/mt7601u/debugfs.c b/drivers/net/wireless/mediatek/mt7601u/debugfs.c
-index 20669eacb66e..5ae27aae685b 100644
---- a/drivers/net/wireless/mediatek/mt7601u/debugfs.c
-+++ b/drivers/net/wireless/mediatek/mt7601u/debugfs.c
-@@ -9,6 +9,8 @@
- #include "mt7601u.h"
- #include "eeprom.h"
- 
-+static struct dentry *dir;
-+
- static int
- mt76_reg_set(void *data, u64 val)
- {
-@@ -124,8 +126,6 @@ DEFINE_SHOW_ATTRIBUTE(mt7601u_eeprom_param);
- 
- void mt7601u_init_debugfs(struct mt7601u_dev *dev)
- {
--	struct dentry *dir;
--
- 	dir = debugfs_create_dir("mt7601u", dev->hw->wiphy->debugfsdir);
- 	if (!dir)
- 		return;
-@@ -138,3 +138,8 @@ void mt7601u_init_debugfs(struct mt7601u_dev *dev)
- 	debugfs_create_file("ampdu_stat", 0400, dir, dev, &mt7601u_ampdu_stat_fops);
- 	debugfs_create_file("eeprom_param", 0400, dir, dev, &mt7601u_eeprom_param_fops);
- }
-+
-+void mt7601u_exit_debugfs(struct mt7601u_dev *dev)
-+{
-+	debugfs_remove(dir);
-+}
-diff --git a/drivers/net/wireless/mediatek/mt7601u/init.c b/drivers/net/wireless/mediatek/mt7601u/init.c
-index 5d9e952b2966..eacdd5785fa6 100644
---- a/drivers/net/wireless/mediatek/mt7601u/init.c
-+++ b/drivers/net/wireless/mediatek/mt7601u/init.c
-@@ -427,6 +427,7 @@ void mt7601u_cleanup(struct mt7601u_dev *dev)
- 	mt7601u_stop_hardware(dev);
- 	mt7601u_dma_cleanup(dev);
- 	mt7601u_mcu_cmd_deinit(dev);
-+	mt7601u_exit_debugfs(dev);
- }
- 
- struct mt7601u_dev *mt7601u_alloc_device(struct device *pdev)
-diff --git a/drivers/net/wireless/mediatek/mt7601u/mt7601u.h b/drivers/net/wireless/mediatek/mt7601u/mt7601u.h
-index a122f1dd38f6..a77bfef0d39f 100644
---- a/drivers/net/wireless/mediatek/mt7601u/mt7601u.h
-+++ b/drivers/net/wireless/mediatek/mt7601u/mt7601u.h
-@@ -279,6 +279,7 @@ struct mt7601u_rxwi;
- extern const struct ieee80211_ops mt7601u_ops;
- 
- void mt7601u_init_debugfs(struct mt7601u_dev *dev);
-+void mt7601u_exit_debugfs(struct mt7601u_dev *dev);
- 
- u32 mt7601u_rr(struct mt7601u_dev *dev, u32 offset);
- void mt7601u_wr(struct mt7601u_dev *dev, u32 offset, u32 val);
--- 
-2.33.1
+- tpacket_snd()
+  - tpacket_fill_skb()
+    - packet_parse_headers()
+      - skb_probe_transport_header()
+  - if (po->has_vnet_hdr)
+    - virtio_net_hdr_to_skb()
+    - virtio_net_hdr_set_proto()
 
+While for packet_snd()
+
+- packet_snd()
+  - if (has_vnet_hdr)
+    - virtio_net_hdr_to_skb()
+    - virtio_net_hdr_set_proto()
+  - packet_parse_headers()
+    - skb_probe_transport_header()
+
+If we split skb_probe_transport_header() from packet_parse_headers() and
+move it before calling virtio_net_hdr_* function in packet_snd(). Should
+we do the same for tpacket_snd(), i.e. move skb_probe_transport_header()
+after the virtio_net_hdr_* function?
+
+I think it really doesn't matter whether calls skb_probe_transport_header()
+before or after virtio_net_hdr_* functions if we could set the skb->protocol
+and network header correctly. Because
+
+- skb_probe_transport_header()
+  - skb_flow_dissect_flow_keys_basic()
+    - __skb_flow_dissect()
+
+In __skb_flow_dissect()
+```
+ * @data: raw buffer pointer to the packet, if NULL use skb->data
+ * @proto: protocol for which to get the flow, if @data is NULL use skb->protocol
+ * @nhoff: network header offset, if @data is NULL use skb_network_offset(skb)
+ * @hlen: packet header length, if @data is NULL use skb_headlen(skb)
+```
+
+So when data is NULL, we need to make sure the protocol, network header offset,
+packet header length are correct.
+
+Before this patch, the VLAN packet network header offset is incorrect when calls
+skb_probe_transport_header(). After the fix, this issue should be gone
+and we can call skb_probe_transport_header() safely.
+
+So my conclusion is. There is no need to split packet_parse_headers(). Move
+packet_parse_headers() before calling virtio_net_hdr_* function in packet_snd()
+should be safe.
+
+Please pardon me if I didn't make something clear.
+Let's me know what do you think.
+
+Thanks
+Hangbin
