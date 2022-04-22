@@ -2,52 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FC0050AFD6
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 08:00:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 292C850AFDD
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 08:00:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232938AbiDVGAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Apr 2022 02:00:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40880 "EHLO
+        id S232920AbiDVGDE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Apr 2022 02:03:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233011AbiDVGAg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 02:00:36 -0400
+        with ESMTP id S233188AbiDVGCl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 02:02:41 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53EB84F9D8;
-        Thu, 21 Apr 2022 22:57:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 796CA4F9E8;
+        Thu, 21 Apr 2022 22:59:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E480161D9D;
-        Fri, 22 Apr 2022 05:57:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A684C385A9;
-        Fri, 22 Apr 2022 05:57:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 14E0D61DCB;
+        Fri, 22 Apr 2022 05:59:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A62DC385A0;
+        Fri, 22 Apr 2022 05:59:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650607051;
-        bh=Rvf90UcwzPbS3F5AqAtneVu3nF9B07X7cwvF7nN8ENI=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=bBXFaJywcqTcX8KxDYflryjhANwgEc2Bam3efuHS/L8sddABY8ol1JI333xINwl/x
-         mkC4XgNcMUNV1ZyKxdgrMcIb67PF5i8sOG1mN5LY/P2TBErRJPCha8euLdDppa/YBT
-         hRZLeqNjkb59HQX8W1QqAa5GIOYRRtNjUE6AVdECGvddUCG+SoZw9GBIzhMLhYO1Cn
-         wttlxzGWVq4Ishol80XcTWBC87GvIb+BjnbvfgbpQTsL+l0Ev6Lrixyboso7u3R7Kk
-         wrG+pUgEDv85U3YCcrGtAOU/UVkdgxuNo8gKLGJbiGLi2h2R51VtJ0JhjRhBdIQL0U
-         5XtEbXYyKMPHA==
+        s=k20201202; t=1650607188;
+        bh=Z6tYJdQ52dK4e0TCyEc9tLY3AwqFGgq40orqV6fBm6I=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=r84SSopwf/s426Y3Tqm8PhD7fx4YvbRG9di2doiNhFgYM+pLczZUTEomOCqe8/n7i
+         QwGm6NDr/N6xfl8Vz0vxV4TIvWnvavgsATCFf4wYOo7OuRCIjXseHk300sUFZHYWZ+
+         8Xi4gOKnnH4If6c4M9JE7MxoR/tfQJWFPoK3WxO/gG89eb6fAAVwO8pnMxhcq3QMzu
+         OefWm0STllhbrVFwX/caHXJzOjWhG3CqpJhuofyMIww6R4LvXLD7fLuZnmkCee/ZwS
+         8Cd3aG68oWXgXwrIQJqeA4Z9dyxFNxOk8+FPUBpMBxLCecW9rHVO8Z/dRtqztCCx6b
+         s3RANwmlupXdg==
 From:   Kalle Valo <kvalo@kernel.org>
-To:     Bernard Zhao <zhaojunkui2008@126.com>
-Cc:     Jakub Kicinski <kubakici@wp.pl>,
+To:     Hermes Zhang <chenhui.zhang@axis.com>
+Cc:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        bernard@vivo.com
-Subject: Re: [PATCH] net/wireless: add debugfs exit function
-In-Reply-To: <20220422012830.342993-1-zhaojunkui2008@126.com> (Bernard Zhao's
-        message of "Thu, 21 Apr 2022 18:28:30 -0700")
-References: <20220422012830.342993-1-zhaojunkui2008@126.com>
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, <kernel@axis.com>,
+        Hermes Zhang <chenhuiz@axis.com>,
+        <linux-wireless@vger.kernel.org>,
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        <SHA-cyfmac-dev-list@infineon.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] brcmfmac: of: introduce new property to allow disable PNO
+References: <20220422044419.3415842-1-chenhui.zhang@axis.com>
+Date:   Fri, 22 Apr 2022 08:59:43 +0300
+In-Reply-To: <20220422044419.3415842-1-chenhui.zhang@axis.com> (Hermes Zhang's
+        message of "Fri, 22 Apr 2022 12:44:18 +0800")
+Message-ID: <8735i5odyo.fsf@kernel.org>
 User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
-Date:   Fri, 22 Apr 2022 08:57:25 +0300
-Message-ID: <877d7hoe2i.fsf@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -59,32 +62,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bernard Zhao <zhaojunkui2008@126.com> writes:
+Hermes Zhang <chenhui.zhang@axis.com> writes:
 
-> This patch add exit debugfs function to mt7601u.
-> Debugfs need to be cleanup when module is unloaded or load fail.
+> From: Hermes Zhang <chenhuiz@axis.com>
+>
+> The PNO feature need to be disable for some scenario in different
+> product. This commit introduce a new property to allow the
+> product-specific toggling of this feature.
 
-"load fail"? Please be more specific, are you saying that the second
-module load fails or what?
+"some scenario"? That's not really helpful.
 
->  drivers/net/wireless/mediatek/mt7601u/debugfs.c | 9 +++++++--
->  drivers/net/wireless/mediatek/mt7601u/init.c    | 1 +
->  drivers/net/wireless/mediatek/mt7601u/mt7601u.h | 1 +
-
-The title should be:
-
-mt7601u: add debugfs exit function
-
-> --- a/drivers/net/wireless/mediatek/mt7601u/debugfs.c
-> +++ b/drivers/net/wireless/mediatek/mt7601u/debugfs.c
-> @@ -9,6 +9,8 @@
->  #include "mt7601u.h"
->  #include "eeprom.h"
+> Signed-off-by: Hermes Zhang <chenhuiz@axis.com>
+> ---
+>
+> Notes:
+>     Change property name to brcm,pno-disable
+>
+>  drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
+> index 8623bde5eb70..121a195e4054 100644
+> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
+> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
+> @@ -11,6 +11,7 @@
+>  #include "core.h"
+>  #include "common.h"
+>  #include "of.h"
+> +#include "feature.h"
 >  
-> +static struct dentry *dir;
+>  static int brcmf_of_get_country_codes(struct device *dev,
+>  				      struct brcmf_mp_device *settings)
+> @@ -102,6 +103,9 @@ void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
+>  	if (bus_type != BRCMF_BUSTYPE_SDIO)
+>  		return;
+>  
+> +	if (of_find_property(np, "brcm,pno-disable", NULL))
+> +		settings->feature_disable |= BIT(BRCMF_FEAT_PNO);
 
-How will this work when there are multiple mt7601u devices? Because of
-that, avoid using non-const static variables.
+Is this DT property documented and acked by the Device Tree maintainers?
+AFAIK DT is not supposed to be used as a software configuration
+database.
 
 -- 
 https://patchwork.kernel.org/project/linux-wireless/list/
