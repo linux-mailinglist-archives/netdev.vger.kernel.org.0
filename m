@@ -2,152 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C577550AE3B
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 04:55:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2834950AE4F
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 05:02:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443621AbiDVC55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 22:57:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47252 "EHLO
+        id S1443639AbiDVDEt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 23:04:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229901AbiDVC54 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 22:57:56 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12E912229E;
-        Thu, 21 Apr 2022 19:55:03 -0700 (PDT)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KkzXZ0ZspzhXkY;
-        Fri, 22 Apr 2022 10:54:54 +0800 (CST)
-Received: from [10.67.110.176] (10.67.110.176) by
- kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 22 Apr 2022 10:55:01 +0800
-Subject: Re: [PATCH -next] libbpf: Add additional null-pointer checking in
- make_parent_dir
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        <gongruiqi1@huawei.com>, <wangweiyang2@huawei.com>
-References: <20220421130056.2510372-1-cuigaosheng1@huawei.com>
- <CAEf4Bza3inoAHsS0w=nKXNgxyFqzPXJVyDHq03Foody6Vgp7=Q@mail.gmail.com>
-From:   cuigaosheng <cuigaosheng1@huawei.com>
-Message-ID: <60b4e208-efed-c2fb-d1e0-125e5409c861@huawei.com>
-Date:   Fri, 22 Apr 2022 10:55:00 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        with ESMTP id S231341AbiDVDEr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 23:04:47 -0400
+Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C92EF4D240
+        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 20:01:54 -0700 (PDT)
+Received: from fsav116.sakura.ne.jp (fsav116.sakura.ne.jp [27.133.134.243])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 23M31OSk038755;
+        Fri, 22 Apr 2022 12:01:24 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav116.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav116.sakura.ne.jp);
+ Fri, 22 Apr 2022 12:01:24 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav116.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 23M31Otc038751
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Fri, 22 Apr 2022 12:01:24 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Message-ID: <7390d51f-60e2-3cee-5277-b819a55ceabe@I-love.SAKURA.ne.jp>
+Date:   Fri, 22 Apr 2022 12:01:24 +0900
 MIME-Version: 1.0
-In-Reply-To: <CAEf4Bza3inoAHsS0w=nKXNgxyFqzPXJVyDHq03Foody6Vgp7=Q@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.110.176]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemi500012.china.huawei.com (7.221.188.12)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Content-Language: en-US
+To:     Loic Poulain <loic.poulain@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Network Development <netdev@vger.kernel.org>
+From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Subject: [PATCH v2] wwan_hwsim: Avoid flush_scheduled_work() usage
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This email adjusts the code format.
+Flushing system-wide workqueues is dangerous and will be forbidden.
+Replace system_wq with local wwan_wq.
 
-I don't understand why we don't check path for NULL, bpf_link__pin is an 
-external
-interface, It will be called by external functions and provide input 
-parameters,
-for example in samples/bpf/hbm.c:
+While we are at it, make err_clean_devs: label of wwan_hwsim_init()
+behave like wwan_hwsim_exit(), for it is theoretically possible to call
+wwan_hwsim_debugfs_devcreate_write()/wwan_hwsim_debugfs_devdestroy_write()
+by the moment wwan_hwsim_init_devs() returns.
 
-> 201         link = bpf_program__attach_cgroup(bpf_prog, cg1);
-> 202         if (libbpf_get_error(link)) {
-> 203                 fprintf(stderr, "ERROR: bpf_program__attach_cgroup 
-> failed\n");
-> 204                 goto err;
-> 205         }
-> 206
-> 207         sprintf(cg_pin_path, "/sys/fs/bpf/hbm%d", cg_id);
-> 208         rc = bpf_link__pin(link, cg_pin_path);
-> 209         if (rc < 0) {
-> 210                 printf("ERROR: bpf_link__pin failed: %d\n", rc);
-> 211                 goto err;
-> 212         }
+Link: https://lkml.kernel.org/r/49925af7-78a8-a3dd-bce6-cfc02e1a9236@I-love.SAKURA.ne.jp
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Reviewed-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+---
+Changes in v2:
+  Keep flush_workqueue(wwan_wq) explicit in order to match the comment.
+  Make error path of wwan_hwsim_init() identical to wwan_hwsim_exit().
 
-if cg_pin_path is NULL, strdup(NULL) will trigger a segmentation fault in
-make_parent_dir, I think we should avoid this and add null-pointer checking
-for path, just like check_path:
->  7673 static int check_path(const char *path)
->  7674 {
->  7675         char *cp, errmsg[STRERR_BUFSIZE];
->  7676         struct statfs st_fs;
->  7677         char *dname, *dir;
->  7678         int err = 0;
->  7679
->  7680         if (path == NULL)
->  7681                 return -EINVAL;
->  7682
->  7683         dname = strdup(path);
->  7684         if (dname == NULL)
->  7685                 return -ENOMEM;
->  7686
->  7687         dir = dirname(dname);
->  7688         if (statfs(dir, &st_fs)) {
->  7689                 cp = libbpf_strerror_r(errno, errmsg, 
-> sizeof(errmsg));
->  7690                 pr_warn("failed to statfs %s: %s\n", dir, cp);
->  7691                 err = -errno;
->  7692         }
->  7693         free(dname);
->  7694
->  7695         if (!err && st_fs.f_type != BPF_FS_MAGIC) {
->  7696                 pr_warn("specified path %s is not on BPF FS\n", 
-> path);
->  7697                 err = -EINVAL;
->  7698         }
->  7699
->  7700         return err;
->  7701 }
+ drivers/net/wwan/wwan_hwsim.c | 22 +++++++++++++++++-----
+ 1 file changed, 17 insertions(+), 5 deletions(-)
 
-Thanks.
+diff --git a/drivers/net/wwan/wwan_hwsim.c b/drivers/net/wwan/wwan_hwsim.c
+index 5b62cf3b3c42..fad642f9ffd8 100644
+--- a/drivers/net/wwan/wwan_hwsim.c
++++ b/drivers/net/wwan/wwan_hwsim.c
+@@ -33,6 +33,7 @@ static struct dentry *wwan_hwsim_debugfs_devcreate;
+ static DEFINE_SPINLOCK(wwan_hwsim_devs_lock);
+ static LIST_HEAD(wwan_hwsim_devs);
+ static unsigned int wwan_hwsim_dev_idx;
++static struct workqueue_struct *wwan_wq;
+ 
+ struct wwan_hwsim_dev {
+ 	struct list_head list;
+@@ -371,7 +372,7 @@ static ssize_t wwan_hwsim_debugfs_portdestroy_write(struct file *file,
+ 	 * waiting this callback to finish in the debugfs_remove() call. So,
+ 	 * use workqueue.
+ 	 */
+-	schedule_work(&port->del_work);
++	queue_work(wwan_wq, &port->del_work);
+ 
+ 	return count;
+ }
+@@ -416,7 +417,7 @@ static ssize_t wwan_hwsim_debugfs_devdestroy_write(struct file *file,
+ 	 * waiting this callback to finish in the debugfs_remove() call. So,
+ 	 * use workqueue.
+ 	 */
+-	schedule_work(&dev->del_work);
++	queue_work(wwan_wq, &dev->del_work);
+ 
+ 	return count;
+ }
+@@ -506,9 +507,15 @@ static int __init wwan_hwsim_init(void)
+ 	if (wwan_hwsim_devsnum < 0 || wwan_hwsim_devsnum > 128)
+ 		return -EINVAL;
+ 
++	wwan_wq = alloc_workqueue("wwan_wq", 0, 0);
++	if (!wwan_wq)
++		return -ENOMEM;
++
+ 	wwan_hwsim_class = class_create(THIS_MODULE, "wwan_hwsim");
+-	if (IS_ERR(wwan_hwsim_class))
+-		return PTR_ERR(wwan_hwsim_class);
++	if (IS_ERR(wwan_hwsim_class)) {
++		err = PTR_ERR(wwan_hwsim_class);
++		goto err_wq_destroy;
++	}
+ 
+ 	wwan_hwsim_debugfs_topdir = debugfs_create_dir("wwan_hwsim", NULL);
+ 	wwan_hwsim_debugfs_devcreate =
+@@ -523,9 +530,13 @@ static int __init wwan_hwsim_init(void)
+ 	return 0;
+ 
+ err_clean_devs:
++	debugfs_remove(wwan_hwsim_debugfs_devcreate);	/* Avoid new devs */
+ 	wwan_hwsim_free_devs();
++	flush_workqueue(wwan_wq);	/* Wait deletion works completion */
+ 	debugfs_remove(wwan_hwsim_debugfs_topdir);
+ 	class_destroy(wwan_hwsim_class);
++err_wq_destroy:
++	destroy_workqueue(wwan_wq);
+ 
+ 	return err;
+ }
+@@ -534,9 +545,10 @@ static void __exit wwan_hwsim_exit(void)
+ {
+ 	debugfs_remove(wwan_hwsim_debugfs_devcreate);	/* Avoid new devs */
+ 	wwan_hwsim_free_devs();
+-	flush_scheduled_work();		/* Wait deletion works completion */
++	flush_workqueue(wwan_wq);	/* Wait deletion works completion */
+ 	debugfs_remove(wwan_hwsim_debugfs_topdir);
+ 	class_destroy(wwan_hwsim_class);
++	destroy_workqueue(wwan_wq);
+ }
+ 
+ module_init(wwan_hwsim_init);
+-- 
+2.32.0
 
-
-在 2022/4/22 0:55, Andrii Nakryiko 写道:
-> On Thu, Apr 21, 2022 at 6:01 AM Gaosheng Cui <cuigaosheng1@huawei.com> wrote:
->> The make_parent_dir is called without null-pointer checking for path,
->> such as bpf_link__pin. To ensure there is no null-pointer dereference
->> in make_parent_dir, so make_parent_dir requires additional null-pointer
->> checking for path.
->>
->> Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
->> ---
->>   tools/lib/bpf/libbpf.c | 3 +++
->>   1 file changed, 3 insertions(+)
->>
->> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
->> index b53e51884f9e..5786e6184bf5 100644
->> --- a/tools/lib/bpf/libbpf.c
->> +++ b/tools/lib/bpf/libbpf.c
->> @@ -7634,6 +7634,9 @@ static int make_parent_dir(const char *path)
->>          char *dname, *dir;
->>          int err = 0;
->>
->> +       if (path == NULL)
->> +               return -EINVAL;
->> +
-> API contract is that path shouldn't be NULL. Just like we don't check
-> link, obj, prog for NULL in every single API, I don't think we need to
-> do it here, unless I'm missing something?
->
->>          dname = strdup(path);
->>          if (dname == NULL)
->>                  return -ENOMEM;
->> --
->> 2.25.1
->>
-> .
