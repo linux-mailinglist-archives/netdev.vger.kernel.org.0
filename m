@@ -2,95 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7433950AC37
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 01:45:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B18D150AC9B
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 02:01:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242576AbiDUXrY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 19:47:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45594 "EHLO
+        id S1442781AbiDVADy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 20:03:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352487AbiDUXrW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 19:47:22 -0400
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27E273EBB5
-        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 16:44:32 -0700 (PDT)
-Received: by mail-ot1-x32d.google.com with SMTP id e15-20020a9d63cf000000b006054e65aaecso4369155otl.0
-        for <netdev@vger.kernel.org>; Thu, 21 Apr 2022 16:44:32 -0700 (PDT)
+        with ESMTP id S1441834AbiDVADw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 20:03:52 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E460144769;
+        Thu, 21 Apr 2022 17:00:59 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id n8so7203855plh.1;
+        Thu, 21 Apr 2022 17:00:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ipi7vy/XqKXxDevk9uzIafC4wO5mSq+VuTBT1AV0Idw=;
-        b=i/IncPbeY3mMMXRDoGqvCwthe4k7VlYSofs4KmSPRvvy7f5ezHS8zz7Y9GgztcT+cO
-         fKdy5HO0O1Qdoy2kaER3R0HS5MWC81nFL4zm9nBFlT2S4wiEqqfTt/rUABtt3w5GzZ7m
-         VNc4JWeZK/K7zBRtNm3W/DyIt64YZI+RDgChUb9AFrOOYnZR+AB4kG3VVv7Oe9VC9MCu
-         m4YeuCwoVIeBcFKTVCDhkdM53plrFE9lJ1Ut6waDMK7hnvtXc2yaZFR9cWygbu4vkuhN
-         upP8hP4Ex1UVpklFF+i7VQAiSP28fHWDVMiof6wX4oUtsSEglti/8MiO8JCEYTnd6xBZ
-         IwTA==
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=zNM0T6G9nbgHrNZ4fTkXwyWCBaHcehFw/2xC4YUFDsI=;
+        b=EuvVsx4ZgPslFCb7gOV55CeCnLpdDVKzvax8LPd7QTAK+3cU87Nftp2h7LeD7u3x2U
+         PO69KJYfLa71urQQP2eN+4+QzGZOFbUrNStJDozSoWX4l5jGuO1fYDQUPM7oTzQ8wB2U
+         8EIgEV6FSttJlevNQj86csduSGRTjcTwZHEIHMy9jGjOczOnergao1IJkSzCCnshkNPJ
+         Py6NTTy2g3djoSt3B+mT0dIwNsW/H2Eqoy9JrURvzKTT9fe9QNKppdTpHmWnLEPGs5gR
+         mcaxAyyi41329d31VgPJuKePYtKsinZGMVLpeuN/3ZZvqvZv6ZUF8piVfQllRNkVMPdm
+         7ZLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ipi7vy/XqKXxDevk9uzIafC4wO5mSq+VuTBT1AV0Idw=;
-        b=ixjvkun2CjsU+UTZMlNbvgbAecemSIGTsBLcAlM+H9jB1COm4U8qR6LdwXBiRaJcmP
-         TUsWf8YS6po4nSVEPX7B/YWf37F1q4hNh8E99+8QvdYqIWFqczqOysnCwNAlERcTIfh/
-         iCee588a9MGB8Dk4+Mqs+dlOBPXCkFrxMuoHbvYpUicwwY4iirahkB0B/buwuMiwsPBV
-         46Pt6NzqLBopQPDB1YtXOyvow5ETv1DUyH1Q2KrUh/fuqqZBBGWS/qqMq4oPD7rib8An
-         kgSQxm3mfkw8020xj5GY7NWibEbGcZ4WdiUQFDggB+vYbxr2wRRdDtMGh+N1Eg+HTrrq
-         TyLg==
-X-Gm-Message-State: AOAM532AhxUfIhNbl9dL4dtqW3GR8GnEyYfJEtQgbvP85bu+LPvb7ks5
-        xQyPd6ViW8WwAK5spiU1MSTjaSQSB5mYtg==
-X-Google-Smtp-Source: ABdhPJzEPWWd8KcQQqjpRUO73IO22ZcFSJKDJhCglS20P93Txo54NGNY8Y34aFLbMEZmhaiOj4Z/sg==
-X-Received: by 2002:a05:6830:2810:b0:605:689d:4fd9 with SMTP id w16-20020a056830281000b00605689d4fd9mr822293otu.212.1650584671500;
-        Thu, 21 Apr 2022 16:44:31 -0700 (PDT)
-Received: from [172.16.0.2] ([8.48.134.69])
-        by smtp.googlemail.com with ESMTPSA id g8-20020acab608000000b002ecf38fb699sm189399oif.38.2022.04.21.16.44.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Apr 2022 16:44:30 -0700 (PDT)
-Message-ID: <b5eedf0d-1866-2b8c-10a7-d682060ae6cd@gmail.com>
-Date:   Thu, 21 Apr 2022 17:44:29 -0600
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition
+         :content-transfer-encoding:in-reply-to;
+        bh=zNM0T6G9nbgHrNZ4fTkXwyWCBaHcehFw/2xC4YUFDsI=;
+        b=4HnZN7U4hdqGNz2gxOt8cs4uMQhPhHWINIIi229/C8bJf0VHPpeotkrASIZQVu5SD+
+         29/ZmnGL55SEpj4luZPkl9u/IDXg3EEliIXD65sW6l1eRUMCYKpNH9jTTCPR2ro1FP4/
+         Sw7Jy+ZTRWsC1dRz8TjxreC9HHaBYT33kq9tXbcPuUNxd1YHMFkGtObGvXRBH7RpvJe2
+         PAfMxjlNlAlrbnQEhdXBHfMBXGJeWoC/8xxuehwBuAFmdZ+JBmTzKovtq5OeCtwHZJ5F
+         6dBZ9MxRIff1TYTMxUrgnJxBLgacFLc9R9HdN7P+wuMUTzvwfMYSATnRWTzbn+R3kBFb
+         ONHA==
+X-Gm-Message-State: AOAM530i/cMQ54mTDXH5D/Fql11fBRUh4n9+wa4q5ZSfoePjpwt5YESz
+        9wjQigu0C9OugzHUdp7jl3g=
+X-Google-Smtp-Source: ABdhPJxz3NmXXbUUbQ3NvykiAKXEknpp47eUrgOLe/3aWtrn3sSIrFY8IHtbDQGUfcjACG6SN923fA==
+X-Received: by 2002:a17:902:ab56:b0:15a:ccc7:a311 with SMTP id ij22-20020a170902ab5600b0015accc7a311mr1722336plb.22.1650585659276;
+        Thu, 21 Apr 2022 17:00:59 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::5:15fa])
+        by smtp.gmail.com with ESMTPSA id ck20-20020a17090afe1400b001cd4989ff3dsm4180906pjb.4.2022.04.21.17.00.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Apr 2022 17:00:58 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Thu, 21 Apr 2022 14:00:56 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>, cgroups@vger.kernel.org,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, stable@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+e42ae441c3b10acf9e9d@syzkaller.appspotmail.com
+Subject: Re: [PATCH] cgroup: don't queue css_release_work if one already
+ pending
+Message-ID: <YmHwOAdGY2Lwl+M3@slm.duckdns.org>
+References: <20220412192459.227740-1-tadeusz.struk@linaro.org>
+ <20220414164409.GA5404@blackbody.suse.cz>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.8.0
-Subject: Re: IPv6 multicast with VRF
-Content-Language: en-US
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org
-References: <20220420165457.kd5yz6a6itqfcysj@skbuf>
- <97eaffb8-2125-834e-641f-c99c097b6ee2@gmail.com>
- <20220420191824.wgdh5tr3mzisalsh@skbuf>
- <a5fdf1dc-61ef-29ba-91c3-5339c4086ec8@gmail.com>
- <20220421092429.waykidesd7de4q3o@skbuf>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20220421092429.waykidesd7de4q3o@skbuf>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220414164409.GA5404@blackbody.suse.cz>
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/21/22 3:24 AM, Vladimir Oltean wrote:
->>>  ip -6 route get ff02::1%eth0
->>> Error: inet6 prefix is expected rather than "ff02::1%eth0".
->>
->> ip -6 ro get oif eth0 ff02::1
->>
->> (too many syntax differences between tools)
+On Thu, Apr 14, 2022 at 06:44:09PM +0200, Michal Koutný wrote:
+> I suspect the double-queuing is a result of the fact that there exists
+> only the single reference to the css->refcnt. I.e. it's
+> percpu_ref_kill_and_confirm()'d and released both at the same time.
 > 
-> Could you explain why specifying the oif is needed here? If I don't do
+> (Normally (when not killing the last reference), css->destroy_work reuse
+> is not a problem because of the sequenced chain
+> css_killed_work_fn()->css_put()->css_release().)
 
-multicast and linklocal are local to a device, so you need to specify
-which interface to use.
+If this is the case, we need to hold an extra reference to be put by the
+css_killed_work_fn(), right?
 
-> it, I still can't find the route. Either that, or what would an
-> application need to do to find the route from the VRF FIB?
+Thanks.
 
-applications bind their sockets to a VRF device or a port device.
-
+-- 
+tejun
