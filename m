@@ -2,257 +2,284 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EA8E50BED9
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 19:37:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22BDE50BEF2
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 19:45:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234137AbiDVRjb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Apr 2022 13:39:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42702 "EHLO
+        id S229920AbiDVRsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Apr 2022 13:48:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234165AbiDVRj2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 13:39:28 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A066DBCB64;
-        Fri, 22 Apr 2022 10:36:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650648983; x=1682184983;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ZEpaktPAhBfcH1j+/z/T41kMvD8alIN8R86i3Pz3/1A=;
-  b=eAb3IUOuVhQOjkaWctfHA+a2IuvLLPnigCaUa9cnRRsHNkfrZfQVFUk9
-   7/bo0ppuRsPoP7Y+VfjE/th8T/y43g3URh77nrx0ZMuxEaUytOBE3ar/K
-   iOnwwK+DSre4qA71VZ9pENTOOVAQWX7nXNYR0T11hb6/v6slRSfWWuxD2
-   3hEZMJvMZH2+jbILyqtkm5K4tR+iI/9b9Xd7e9QgOQeYclT8BFRiyL/2F
-   niwfPFQRYXqW2LsSf7w+W98VEyWng4/n9aijbwfSz4ry8LJhk88DDXzkU
-   nEDQqHOoPYpnqh4oLunHNYDZkkuf3B5m51dCjNc7tCDU32X6Qwtqn0png
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="327655511"
-X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="327655511"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2022 10:35:58 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,282,1643702400"; 
-   d="scan'208";a="627076900"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 22 Apr 2022 10:35:54 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nhxCD-000APG-LM;
-        Fri, 22 Apr 2022 17:35:53 +0000
-Date:   Sat, 23 Apr 2022 01:35:32 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ong Boon Leong <boon.leong.ong@intel.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: Re: [PATCH net-next 1/4] net: pcs: xpcs: add CL37 1000BASE-X AN
- support
-Message-ID: <202204230159.Tixm42oR-lkp@intel.com>
-References: <20220422073505.810084-2-boon.leong.ong@intel.com>
+        with ESMTP id S234528AbiDVRrx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 13:47:53 -0400
+Received: from IND01-BMX-obe.outbound.protection.outlook.com (mail-bmxind01olkn2082d.outbound.protection.outlook.com [IPv6:2a01:111:f403:7011::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7E6D2AD;
+        Fri, 22 Apr 2022 10:44:57 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=U0iR1/aoyLcZPuFZv282SZUnGH1523Ft+3TQCN/kbPgg0VRfNSC1Gd/4nLYl+KErLzfGgFooVsewhMmSnIvCBvBlIwkKriyEn9wE2Fe9+SFEKDMcrIA8FFf3+oXR+YHnXdWatL7LlgAwGBkle17mDpET9JElh61CKzfQxpQFMMbCVe+8yYnB+fLyLBuSXC50S1f9ZNRax4djVzN6fe5WZ6pMhJ8cR+Gzx/9c233+9z/cYO81gYangHCg1GgqKsmiuxMjl6wigOpO4Vf+B+GNpxkul05EkIgHM4RInm9/7yEcH93+Q1DnX62MNMoyAYbYdzL2/IQZYX0nNPt+uU+9rg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=u1KFyICb1KBU4A7oOn9tY7K4r2OyuSHdK/CPyRic/9Y=;
+ b=lRmcjfFLBEGV13tjMvDhXUBGXLloOgWZhtRC/Ar4za7lrta8IuBJmyeyP5/oicXGarVytnzgAPN+X+xHuUwaD9fG5HqWwkxUXZUqWYVMLGcBVmNPPN6ZWWFcpy62aQRsIew3oPKJelFbry2RMdmfouGOctJdo4xCWBHMgbwmIhdDFRulr3rbj+JTzN/FJ93hL/LvWu4XVxjVE9UMkEpWENfs67t2bLJe50Pfl7VHLVhf1h9akhI2dKO9TesSuf1wOSaqmwAbkiZ5t/5O4gPR4IA1bsyKpbOlzNPT/2txzla1x1O5Mc7/9296pcHdFa5gcmw4V+MWWR3ZW7VZiT11mA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=live.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=u1KFyICb1KBU4A7oOn9tY7K4r2OyuSHdK/CPyRic/9Y=;
+ b=Ui9DLHmWjts9SEd9BFmONG+Kri45HVyGUxU735RciqGBFhRfdbPZH9ic60W7H2DmN4R58K9lh/0UpgvMV9WktHtbLJ8/+9IA4H6vf+WDiwu67zQPcW+9nsjLtZf+GKThFpeNuafVk3ois7CvIpTPkg7YcjKLj1pA59s23x+6Z3NMrRWcUXEaM8mBhKBFqB9GNTnuEWbimteWnbCLNPDirYfacexLqba/J6WmqWH6BTkUJP2olm6NkxCsQaXTXYBEOEHi7V/WXSWn5v50YSwf/eDV7mGNOTQQNc0VpRtiNcvNqirjO7LsDzM8Vcj+mAXCZnl0jGnqRUpEgZg36ZfqfA==
+Received: from PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM (2603:1096:c01:1b::13)
+ by PN0PR01MB7952.INDPRD01.PROD.OUTLOOK.COM (2603:1096:c01:44::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.13; Fri, 22 Apr
+ 2022 17:39:20 +0000
+Received: from PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM
+ ([fe80::3d8a:448e:5dc6:510a]) by PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM
+ ([fe80::3d8a:448e:5dc6:510a%6]) with mapi id 15.20.5186.015; Fri, 22 Apr 2022
+ 17:39:20 +0000
+From:   Aditya Garg <gargaditya08@live.com>
+To:     "jarkko@kernel.org" <jarkko@kernel.org>,
+        "zohar@linux.ibm.com" <zohar@linux.ibm.com>,
+        "dmitry.kasatkin@gmail.com" <dmitry.kasatkin@gmail.com>,
+        "jmorris@namei.org" <jmorris@namei.org>,
+        "serge@hallyn.com" <serge@hallyn.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "yhs@fb.com" <yhs@fb.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>
+CC:     "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Orlando Chamberlain <redecorating@protonmail.com>,
+        "admin@kodeit.net" <admin@kodeit.net>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: [PATCH v7 RESEND] efi: Do not import certificates from UEFI Secure
+ Boot for T2 Macs
+Thread-Topic: [PATCH v7 RESEND] efi: Do not import certificates from UEFI
+ Secure Boot for T2 Macs
+Thread-Index: AQHYVm/lf8oZJ0+bFUqnMcRigUBj+g==
+Date:   Fri, 22 Apr 2022 17:39:19 +0000
+Message-ID: <C704A64D-171F-4253-B2E3-42C3AFAF08A7@live.com>
+References: <652C3E9E-CB97-4C70-A961-74AF8AEF9E39@live.com>
+ <94DD0D83-8FDE-4A61-AAF0-09A0175A0D0D@live.com>
+ <590ED76A-EE91-4ED1-B524-BC23419C051E@live.com>
+ <E9C28706-2546-40BF-B32C-66A047BE9EFB@live.com>
+ <02125722-91FC-43D3-B63C-1B789C2DA8C3@live.com>
+ <958B8D22-F11E-4B5D-9F44-6F0626DBCB63@live.com>
+In-Reply-To: <958B8D22-F11E-4B5D-9F44-6F0626DBCB63@live.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-tmn:  [j+6HjTJ2dHgpkG9sPJ7uzxmi9j7JMZcJ]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d81c4a98-0b5b-48a4-265e-08da2487080f
+x-ms-traffictypediagnostic: PN0PR01MB7952:EE_
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: mSUbC4y/lKf+DBxcb2foKf7X13cvtM2yitj9KfFLvYZm9dcD4Vkc3DUS2doMiMDHmQYgJ+QfJEIx+lmB6tBdpjNidkTJ43xz/VDuvVT4HXamK2b94wSSzDtnwQeaIkeWLwcMuT+PIrj/40PJpkEKPobOg6AkuY7I0IfpN70v4MvGnCBbw9nbAIMaKHZAY3dAq6eKMA6qgR4qvBVq5UfgU6hwTXEtY5Qa78Enbz5i7mHPBNY1+B9WlAVgZkVTwQtXsjymlwA3CtzWtQrYHzdL4z0KlvP71Vbqiub4YC78AS5q7OeqA58FYGTT05lxZzG9tziVVcBZCE7gaWxsZtpAXysz6uHz76EtesWEBC6NtXVb6pCKQSxhfMg6qQzgSUQ62VquFbePW02lQxhDdq8czeFX2Zcaha2IQ+Vnx5SoeN5jqpqR0ArVxv2RHyFLgEM/Re/j018l6wkoGv/vcm4oikHItNRdHL+5hlXNV/AVf/MNhXB6j8FB83hgOL++PdgFWtCUJrFO0GOm4NAwuNotDLhiUpyWLqR/lq+BqqiJnn8A+TBBUbPVeHXwfE4LrfKnDok2B6b3lZsHpZuJC85FDw==
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ctHfdRcak71ZoYK5TnYtbzZjoz/eKCe5HDiYv0YWh92D8bu9REOljkNMJQsh?=
+ =?us-ascii?Q?zF/OmZ8UQdx0rqmLppDgxkUPZ9TnIdu1nQuYwP36JNw9WOrmB0r2u60+yuoK?=
+ =?us-ascii?Q?NGAx5p3zdrno6vx/+Q7jdZqmtQuIjZm4Ues3HFRYneYjR7MfIhs9pROqzYJi?=
+ =?us-ascii?Q?nGURxrHX8PpjBlTlM/Ux1lRe1CgrR4qEzPMd64w20NkeOz5MxMTrB6ycw1Dx?=
+ =?us-ascii?Q?i5gxZ/MuCm8PJGxw3Z1sWfUXXO3HzyfVMPrYCbF6J4dP5uSnX/OPQWezS01O?=
+ =?us-ascii?Q?j+XrNeCMklA2/3UiQ3iATN0s4tMbf3hPADb3mm4nPuRHeytGh6GGsUG7UELB?=
+ =?us-ascii?Q?lJDfhorDBg+ZRg4ZHrXhktaYLxDNngXuBMXxkeuSw2Vpz/n59KNibXuehklb?=
+ =?us-ascii?Q?tF6ChBm3COqvNeb2tA53Qga8zte7GChXVu6tzSX9RpPJP+FRaRplb6T3R4dM?=
+ =?us-ascii?Q?PnouABbQ+E1Tnj+6uKuWCLCOTeEIiejOQLKJXf5eao2a5/AkrGTRms514ZBJ?=
+ =?us-ascii?Q?yljvSAOhBr5FkSUJw3cvfOqLaRu4568XsRRqEIGlj++gAIulajd3ZmbAbz05?=
+ =?us-ascii?Q?WV0+Wdg9Iksrq7QbeuLsFJMOt9qoaD34lvIHLzFNKSEzu+5Y+H7MLOgjXgTO?=
+ =?us-ascii?Q?WEXYkLmDWQxowJYqAmtI7YnCoQDKXGLJmNluJCC/Sc8MUvz4maWfnqYzotCp?=
+ =?us-ascii?Q?BCNSnOkJzXtn8cUJxRIP/zHydn0TrorsohDVd4xqAbcFzc8op9Z0+QKO3k96?=
+ =?us-ascii?Q?hGDK8yWRSbxmp4Y+Pz/yrO4x1+6YTECnLWW/IScL13G4qbZV8dRhtd6+3nmI?=
+ =?us-ascii?Q?uuy7BygQuxTRPSYC4Qvt43gcN2C+T/uQ7zGQ1FgVE5KItUTpyyTe46xJaiPj?=
+ =?us-ascii?Q?QQFZAHEG7HQluFP4oFFR9K0MXeXmPEjtk1mvzKMEsoCbMO9e0xb2X9JK1ob5?=
+ =?us-ascii?Q?OBKmT9utxP59ZUTgNgc7U5Pe4FjQDybjhegqLDP9ozy3TQuJtoflFAfirzxs?=
+ =?us-ascii?Q?WvMtrg3grg4lhwcBB7wHOL5Xt8hKhpcDLKnnW14DxUEEKQQjAMClB6Es0nkY?=
+ =?us-ascii?Q?QBP/r9uRaHN8LzqOnBVk4sB2UHXhwdEF/g+dOVE9Ds/SZ+uSi9ALU9jDAQrr?=
+ =?us-ascii?Q?SdDSjEaZFBNkq97l9DG2QaoWS9DDXL/WMlUBSPkwuhc/RPsYGO1k8F7BgH+3?=
+ =?us-ascii?Q?FEFjmkmrWUJJNkDFsZ5j0khGU3Vidq4qoNCuTwQ6UVtbV4X+1vu8ZBs8WNJY?=
+ =?us-ascii?Q?pe3yCxIrgp8t6qzf2kwfyLxL5l7QuwkSxvnuhpimy8w1olrmaVUk7TcEJDVK?=
+ =?us-ascii?Q?B6jSGu/ZzDYlXWKJnd4lbJMzRiXJiteT2nID1XN2drBSOAqZxfj2y7lq3PKY?=
+ =?us-ascii?Q?VQlQ8XfhYO/myMdsW0BAnhQ9KXwxPzfCuSL6XSZAS8LqtWMgMqKO7HLOa6LN?=
+ =?us-ascii?Q?fZ9fQONYzJE=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <FEBAE4A5EAE3BA4F9CB2F31FE1B78CC2@INDPRD01.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220422073505.810084-2-boon.leong.ong@intel.com>
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-42ed3.templateTenant
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: d81c4a98-0b5b-48a4-265e-08da2487080f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Apr 2022 17:39:20.0586
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PN0PR01MB7952
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ong,
+From: Aditya Garg <gargaditya08@live.com>
 
-Thank you for the patch! Yet something to improve:
+On Apple T2 Macs, when Linux attempts to read the db and dbx efi variables
+at early boot to load UEFI Secure Boot certificates, a page fault occurs
+in Apple firmware code and EFI runtime services are disabled with the
+following logs:
 
-[auto build test ERROR on net-next/master]
+[Firmware Bug]: Page fault caused by firmware at PA: 0xffffb1edc0068000
+WARNING: CPU: 3 PID: 104 at arch/x86/platform/efi/quirks.c:735 efi_crash_gr=
+acefully_on_page_fault+0x50/0xf0
+(Removed some logs from here)
+Call Trace:
+ <TASK>
+ page_fault_oops+0x4f/0x2c0
+ ? search_bpf_extables+0x6b/0x80
+ ? search_module_extables+0x50/0x80
+ ? search_exception_tables+0x5b/0x60
+ kernelmode_fixup_or_oops+0x9e/0x110
+ __bad_area_nosemaphore+0x155/0x190
+ bad_area_nosemaphore+0x16/0x20
+ do_kern_addr_fault+0x8c/0xa0
+ exc_page_fault+0xd8/0x180
+ asm_exc_page_fault+0x1e/0x30
+(Removed some logs from here)
+ ? __efi_call+0x28/0x30
+ ? switch_mm+0x20/0x30
+ ? efi_call_rts+0x19a/0x8e0
+ ? process_one_work+0x222/0x3f0
+ ? worker_thread+0x4a/0x3d0
+ ? kthread+0x17a/0x1a0
+ ? process_one_work+0x3f0/0x3f0
+ ? set_kthread_struct+0x40/0x40
+ ? ret_from_fork+0x22/0x30
+ </TASK>
+---[ end trace 1f82023595a5927f ]---
+efi: Froze efi_rts_wq and disabled EFI Runtime Services
+integrity: Couldn't get size: 0x8000000000000015
+integrity: MODSIGN: Couldn't get UEFI db list
+efi: EFI Runtime Services are disabled!
+integrity: Couldn't get size: 0x8000000000000015
+integrity: Couldn't get UEFI dbx list
+integrity: Couldn't get size: 0x8000000000000015
+integrity: Couldn't get mokx list
+integrity: Couldn't get size: 0x80000000
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Ong-Boon-Leong/pcs-xpcs-stmmac-add-1000BASE-X-AN-for-network-switch/20220422-154446
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 9c8774e629a1950c24b44e3c8fb93d76fb644b49
-config: i386-randconfig-a013 (https://download.01.org/0day-ci/archive/20220423/202204230159.Tixm42oR-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5bd87350a5ae429baf8f373cb226a57b62f87280)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/dc88c5b7c183eeaff9db0e88d7b0d1d7f73e830b
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Ong-Boon-Leong/pcs-xpcs-stmmac-add-1000BASE-X-AN-for-network-switch/20220422-154446
-        git checkout dc88c5b7c183eeaff9db0e88d7b0d1d7f73e830b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/dsa/sja1105/
+So we avoid reading these UEFI variables and thus prevent the crash.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Aditya Garg <gargaditya08@live.com>
+Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
+---
+v2 :- Reduce code size of the table.
+v3 :- Close the brackets which were left open by mistake.
+v4 :- Fix comment style issues, remove blank spaces and limit use of dmi_fi=
+rst_match()
+v4 RESEND :- Add stable to cc
+v5 :- Rewrite the description
+v6 :- Make description more clear
+v7 :- Minor changes and add reviewed by
+ .../platform_certs/keyring_handler.h          |  8 +++++
+ security/integrity/platform_certs/load_uefi.c | 33 +++++++++++++++++++
+ 2 files changed, 41 insertions(+)
 
-All errors (new ones prefixed by >>):
+diff --git a/security/integrity/platform_certs/keyring_handler.h b/security=
+/integrity/platform_certs/keyring_handler.h
+index 284558f30..212d894a8 100644
+--- a/security/integrity/platform_certs/keyring_handler.h
++++ b/security/integrity/platform_certs/keyring_handler.h
+@@ -35,3 +35,11 @@ efi_element_handler_t get_handler_for_mok(const efi_guid=
+_t *sig_type);
+ efi_element_handler_t get_handler_for_dbx(const efi_guid_t *sig_type);
+=20
+ #endif
++
++#ifndef UEFI_QUIRK_SKIP_CERT
++#define UEFI_QUIRK_SKIP_CERT(vendor, product) \
++		 .matches =3D { \
++			DMI_MATCH(DMI_BOARD_VENDOR, vendor), \
++			DMI_MATCH(DMI_PRODUCT_NAME, product), \
++		},
++#endif
+diff --git a/security/integrity/platform_certs/load_uefi.c b/security/integ=
+rity/platform_certs/load_uefi.c
+index 5f45c3c07..1a7e7d597 100644
+--- a/security/integrity/platform_certs/load_uefi.c
++++ b/security/integrity/platform_certs/load_uefi.c
+@@ -3,6 +3,7 @@
+ #include <linux/kernel.h>
+ #include <linux/sched.h>
+ #include <linux/cred.h>
++#include <linux/dmi.h>
+ #include <linux/err.h>
+ #include <linux/efi.h>
+ #include <linux/slab.h>
+@@ -12,6 +13,31 @@
+ #include "../integrity.h"
+ #include "keyring_handler.h"
+=20
++/*
++ * On T2 Macs reading the db and dbx efi variables to load UEFI Secure Boo=
+t
++ * certificates causes occurrence of a page fault in Apple's firmware and
++ * a crash disabling EFI runtime services. The following quirk skips readi=
+ng
++ * these variables.
++ */
++static const struct dmi_system_id uefi_skip_cert[] =3D {
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,2") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,3") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,4") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,2") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,3") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,4") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir8,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir8,2") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir9,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacMini8,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacPro7,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "iMac20,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "iMac20,2") },
++	{ }
++};
++
+ /*
+  * Look to see if a UEFI variable called MokIgnoreDB exists and return tru=
+e if
+  * it does.
+@@ -138,6 +164,13 @@ static int __init load_uefi_certs(void)
+ 	unsigned long dbsize =3D 0, dbxsize =3D 0, mokxsize =3D 0;
+ 	efi_status_t status;
+ 	int rc =3D 0;
++	const struct dmi_system_id *dmi_id;
++
++	dmi_id =3D dmi_first_match(uefi_skip_cert);
++	if (dmi_id) {
++		pr_err("Reading UEFI Secure Boot Certs is not supported on T2 Macs.\n");
++		return false;
++	}
+=20
+ 	if (!efi_rt_services_supported(EFI_RT_SUPPORTED_GET_VARIABLE))
+ 		return false;
+--=20
+2.25.1
 
->> drivers/net/dsa/sja1105/sja1105_main.c:2334:52: error: too few arguments to function call, expected 4, have 3
-                   rc = xpcs_do_config(xpcs, priv->phy_mode[i], mode);
-                        ~~~~~~~~~~~~~~                              ^
-   include/linux/pcs/pcs-xpcs.h:33:5: note: 'xpcs_do_config' declared here
-   int xpcs_do_config(struct dw_xpcs *xpcs, phy_interface_t interface,
-       ^
-   1 error generated.
 
-
-vim +2334 drivers/net/dsa/sja1105/sja1105_main.c
-
-2eea1fa82f681b Vladimir Oltean 2019-11-12  2224  
-6666cebc5e306f Vladimir Oltean 2019-05-02  2225  /* For situations where we need to change a setting at runtime that is only
-6666cebc5e306f Vladimir Oltean 2019-05-02  2226   * available through the static configuration, resetting the switch in order
-6666cebc5e306f Vladimir Oltean 2019-05-02  2227   * to upload the new static config is unavoidable. Back up the settings we
-6666cebc5e306f Vladimir Oltean 2019-05-02  2228   * modify at runtime (currently only MAC) and restore them after uploading,
-6666cebc5e306f Vladimir Oltean 2019-05-02  2229   * such that this operation is relatively seamless.
-6666cebc5e306f Vladimir Oltean 2019-05-02  2230   */
-2eea1fa82f681b Vladimir Oltean 2019-11-12  2231  int sja1105_static_config_reload(struct sja1105_private *priv,
-2eea1fa82f681b Vladimir Oltean 2019-11-12  2232  				 enum sja1105_reset_reason reason)
-6666cebc5e306f Vladimir Oltean 2019-05-02  2233  {
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2234  	struct ptp_system_timestamp ptp_sts_before;
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2235  	struct ptp_system_timestamp ptp_sts_after;
-82760d7f2ea638 Vladimir Oltean 2021-05-24  2236  	int speed_mbps[SJA1105_MAX_NUM_PORTS];
-84db00f2c04338 Vladimir Oltean 2021-05-31  2237  	u16 bmcr[SJA1105_MAX_NUM_PORTS] = {0};
-6666cebc5e306f Vladimir Oltean 2019-05-02  2238  	struct sja1105_mac_config_entry *mac;
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2239  	struct dsa_switch *ds = priv->ds;
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2240  	s64 t1, t2, t3, t4;
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2241  	s64 t12, t34;
-6666cebc5e306f Vladimir Oltean 2019-05-02  2242  	int rc, i;
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2243  	s64 now;
-6666cebc5e306f Vladimir Oltean 2019-05-02  2244  
-af580ae2dcb250 Vladimir Oltean 2019-11-09  2245  	mutex_lock(&priv->mgmt_lock);
-af580ae2dcb250 Vladimir Oltean 2019-11-09  2246  
-6666cebc5e306f Vladimir Oltean 2019-05-02  2247  	mac = priv->static_config.tables[BLK_IDX_MAC_CONFIG].entries;
-6666cebc5e306f Vladimir Oltean 2019-05-02  2248  
-8400cff60b472c Vladimir Oltean 2019-06-08  2249  	/* Back up the dynamic link speed changed by sja1105_adjust_port_config
-8400cff60b472c Vladimir Oltean 2019-06-08  2250  	 * in order to temporarily restore it to SJA1105_SPEED_AUTO - which the
-8400cff60b472c Vladimir Oltean 2019-06-08  2251  	 * switch wants to see in the static config in order to allow us to
-8400cff60b472c Vladimir Oltean 2019-06-08  2252  	 * change it through the dynamic interface later.
-6666cebc5e306f Vladimir Oltean 2019-05-02  2253  	 */
-542043e91df452 Vladimir Oltean 2021-05-24  2254  	for (i = 0; i < ds->num_ports; i++) {
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2255  		u32 reg_addr = mdiobus_c45_addr(MDIO_MMD_VEND2, MDIO_CTRL1);
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2256  
-41fed17fdbe531 Vladimir Oltean 2021-05-31  2257  		speed_mbps[i] = sja1105_port_speed_to_ethtool(priv,
-41fed17fdbe531 Vladimir Oltean 2021-05-31  2258  							      mac[i].speed);
-41fed17fdbe531 Vladimir Oltean 2021-05-31  2259  		mac[i].speed = priv->info->port_speed[SJA1105_SPEED_AUTO];
-6666cebc5e306f Vladimir Oltean 2019-05-02  2260  
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2261  		if (priv->xpcs[i])
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2262  			bmcr[i] = mdiobus_read(priv->mdio_pcs, i, reg_addr);
-84db00f2c04338 Vladimir Oltean 2021-05-31  2263  	}
-ffe10e679cec9a Vladimir Oltean 2020-03-20  2264  
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2265  	/* No PTP operations can run right now */
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2266  	mutex_lock(&priv->ptp_data.lock);
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2267  
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2268  	rc = __sja1105_ptp_gettimex(ds, &now, &ptp_sts_before);
-61c77533b82ba8 Vladimir Oltean 2021-06-18  2269  	if (rc < 0) {
-61c77533b82ba8 Vladimir Oltean 2021-06-18  2270  		mutex_unlock(&priv->ptp_data.lock);
-61c77533b82ba8 Vladimir Oltean 2021-06-18  2271  		goto out;
-61c77533b82ba8 Vladimir Oltean 2021-06-18  2272  	}
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2273  
-6666cebc5e306f Vladimir Oltean 2019-05-02  2274  	/* Reset switch and send updated static configuration */
-6666cebc5e306f Vladimir Oltean 2019-05-02  2275  	rc = sja1105_static_config_upload(priv);
-61c77533b82ba8 Vladimir Oltean 2021-06-18  2276  	if (rc < 0) {
-61c77533b82ba8 Vladimir Oltean 2021-06-18  2277  		mutex_unlock(&priv->ptp_data.lock);
-61c77533b82ba8 Vladimir Oltean 2021-06-18  2278  		goto out;
-61c77533b82ba8 Vladimir Oltean 2021-06-18  2279  	}
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2280  
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2281  	rc = __sja1105_ptp_settime(ds, 0, &ptp_sts_after);
-61c77533b82ba8 Vladimir Oltean 2021-06-18  2282  	if (rc < 0) {
-61c77533b82ba8 Vladimir Oltean 2021-06-18  2283  		mutex_unlock(&priv->ptp_data.lock);
-61c77533b82ba8 Vladimir Oltean 2021-06-18  2284  		goto out;
-61c77533b82ba8 Vladimir Oltean 2021-06-18  2285  	}
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2286  
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2287  	t1 = timespec64_to_ns(&ptp_sts_before.pre_ts);
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2288  	t2 = timespec64_to_ns(&ptp_sts_before.post_ts);
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2289  	t3 = timespec64_to_ns(&ptp_sts_after.pre_ts);
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2290  	t4 = timespec64_to_ns(&ptp_sts_after.post_ts);
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2291  	/* Mid point, corresponds to pre-reset PTPCLKVAL */
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2292  	t12 = t1 + (t2 - t1) / 2;
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2293  	/* Mid point, corresponds to post-reset PTPCLKVAL, aka 0 */
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2294  	t34 = t3 + (t4 - t3) / 2;
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2295  	/* Advance PTPCLKVAL by the time it took since its readout */
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2296  	now += (t34 - t12);
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2297  
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2298  	__sja1105_ptp_adjtime(ds, now);
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2299  
-6cf99c13ea07b5 Vladimir Oltean 2019-11-09  2300  	mutex_unlock(&priv->ptp_data.lock);
-6666cebc5e306f Vladimir Oltean 2019-05-02  2301  
-2eea1fa82f681b Vladimir Oltean 2019-11-12  2302  	dev_info(priv->ds->dev,
-2eea1fa82f681b Vladimir Oltean 2019-11-12  2303  		 "Reset switch and programmed static config. Reason: %s\n",
-2eea1fa82f681b Vladimir Oltean 2019-11-12  2304  		 sja1105_reset_reasons[reason]);
-2eea1fa82f681b Vladimir Oltean 2019-11-12  2305  
-6666cebc5e306f Vladimir Oltean 2019-05-02  2306  	/* Configure the CGU (PLLs) for MII and RMII PHYs.
-6666cebc5e306f Vladimir Oltean 2019-05-02  2307  	 * For these interfaces there is no dynamic configuration
-6666cebc5e306f Vladimir Oltean 2019-05-02  2308  	 * needed, since PLLs have same settings at all speeds.
-6666cebc5e306f Vladimir Oltean 2019-05-02  2309  	 */
-cb5a82d2b9aaca Vladimir Oltean 2021-06-18  2310  	if (priv->info->clocking_setup) {
-c50376783f23ff Vladimir Oltean 2021-05-24  2311  		rc = priv->info->clocking_setup(priv);
-6666cebc5e306f Vladimir Oltean 2019-05-02  2312  		if (rc < 0)
-6666cebc5e306f Vladimir Oltean 2019-05-02  2313  			goto out;
-cb5a82d2b9aaca Vladimir Oltean 2021-06-18  2314  	}
-6666cebc5e306f Vladimir Oltean 2019-05-02  2315  
-542043e91df452 Vladimir Oltean 2021-05-24  2316  	for (i = 0; i < ds->num_ports; i++) {
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2317  		struct dw_xpcs *xpcs = priv->xpcs[i];
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2318  		unsigned int mode;
-84db00f2c04338 Vladimir Oltean 2021-05-31  2319  
-8400cff60b472c Vladimir Oltean 2019-06-08  2320  		rc = sja1105_adjust_port_config(priv, i, speed_mbps[i]);
-6666cebc5e306f Vladimir Oltean 2019-05-02  2321  		if (rc < 0)
-6666cebc5e306f Vladimir Oltean 2019-05-02  2322  			goto out;
-ffe10e679cec9a Vladimir Oltean 2020-03-20  2323  
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2324  		if (!xpcs)
-84db00f2c04338 Vladimir Oltean 2021-05-31  2325  			continue;
-84db00f2c04338 Vladimir Oltean 2021-05-31  2326  
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2327  		if (bmcr[i] & BMCR_ANENABLE)
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2328  			mode = MLO_AN_INBAND;
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2329  		else if (priv->fixed_link[i])
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2330  			mode = MLO_AN_FIXED;
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2331  		else
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2332  			mode = MLO_AN_PHY;
-ffe10e679cec9a Vladimir Oltean 2020-03-20  2333  
-3ad1d171548e85 Vladimir Oltean 2021-06-11 @2334  		rc = xpcs_do_config(xpcs, priv->phy_mode[i], mode);
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2335  		if (rc < 0)
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2336  			goto out;
-ffe10e679cec9a Vladimir Oltean 2020-03-20  2337  
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2338  		if (!phylink_autoneg_inband(mode)) {
-ffe10e679cec9a Vladimir Oltean 2020-03-20  2339  			int speed = SPEED_UNKNOWN;
-ffe10e679cec9a Vladimir Oltean 2020-03-20  2340  
-56b63466333b25 Vladimir Oltean 2021-06-11  2341  			if (priv->phy_mode[i] == PHY_INTERFACE_MODE_2500BASEX)
-56b63466333b25 Vladimir Oltean 2021-06-11  2342  				speed = SPEED_2500;
-56b63466333b25 Vladimir Oltean 2021-06-11  2343  			else if (bmcr[i] & BMCR_SPEED1000)
-ffe10e679cec9a Vladimir Oltean 2020-03-20  2344  				speed = SPEED_1000;
-84db00f2c04338 Vladimir Oltean 2021-05-31  2345  			else if (bmcr[i] & BMCR_SPEED100)
-ffe10e679cec9a Vladimir Oltean 2020-03-20  2346  				speed = SPEED_100;
-053d8ad10d585a Vladimir Oltean 2021-03-04  2347  			else
-ffe10e679cec9a Vladimir Oltean 2020-03-20  2348  				speed = SPEED_10;
-ffe10e679cec9a Vladimir Oltean 2020-03-20  2349  
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2350  			xpcs_link_up(&xpcs->pcs, mode, priv->phy_mode[i],
-3ad1d171548e85 Vladimir Oltean 2021-06-11  2351  				     speed, DUPLEX_FULL);
-ffe10e679cec9a Vladimir Oltean 2020-03-20  2352  		}
-ffe10e679cec9a Vladimir Oltean 2020-03-20  2353  	}
-4d7525085a9ba8 Vladimir Oltean 2020-05-28  2354  
-4d7525085a9ba8 Vladimir Oltean 2020-05-28  2355  	rc = sja1105_reload_cbs(priv);
-4d7525085a9ba8 Vladimir Oltean 2020-05-28  2356  	if (rc < 0)
-4d7525085a9ba8 Vladimir Oltean 2020-05-28  2357  		goto out;
-6666cebc5e306f Vladimir Oltean 2019-05-02  2358  out:
-af580ae2dcb250 Vladimir Oltean 2019-11-09  2359  	mutex_unlock(&priv->mgmt_lock);
-af580ae2dcb250 Vladimir Oltean 2019-11-09  2360  
-6666cebc5e306f Vladimir Oltean 2019-05-02  2361  	return rc;
-6666cebc5e306f Vladimir Oltean 2019-05-02  2362  }
-6666cebc5e306f Vladimir Oltean 2019-05-02  2363  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
