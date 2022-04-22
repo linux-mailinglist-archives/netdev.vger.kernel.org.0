@@ -2,86 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B96BD50AE61
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 05:10:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 428A550AE7D
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 05:26:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443710AbiDVDNS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Apr 2022 23:13:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58392 "EHLO
+        id S1443733AbiDVD1u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Apr 2022 23:27:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443666AbiDVDNQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 23:13:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46BF64C789;
-        Thu, 21 Apr 2022 20:10:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D4EB061C32;
-        Fri, 22 Apr 2022 03:10:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC948C385BB;
-        Fri, 22 Apr 2022 03:10:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650597024;
-        bh=67F6OE4ldagYpkh/rSuYDnD7ifOiAmX/4fAdaoeN0Hg=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=eVI/VUt5SaBRpUUUuuFcGzBh+RnSSSNF2u1m+8OPBfneTg3f8UXCESyfDo9bEaIkC
-         dd/U+SnHv++LZLKtDekvZLT+NFKYTTk8Vw43KzcARBomMvZKXp7PKYDGlM2pGnL+hk
-         YWzrdFLgvAKzcNF0b44BU70m/W7SaT5otvdP6ztMwIR9op+74BfoMQQTB9Nw/EwyVC
-         oXTHkNe3cRD8sO41nyt/1hi1YoDEUCdHSNyceFCnDpNwJlfB9bjoI/xWnenPg66dNC
-         9qDWf7X03s9EOdTr+NbqZur8kmAf4+PhFXZZdoFXpCQguiVj9IlRMnqdfKsEwl/gtC
-         tKaeNbN1YbkmA==
-Message-ID: <2ee8fb0d-aeb4-5010-bc8c-16cbd6e88eff@kernel.org>
-Date:   Thu, 21 Apr 2022 21:10:21 -0600
+        with ESMTP id S1443780AbiDVD1h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Apr 2022 23:27:37 -0400
+Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFA4C4D623;
+        Thu, 21 Apr 2022 20:24:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1650597885;
+  x=1682133885;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=bDkBpCp5feiSpGjQLvuWHjxX6inrI6WZw2ly5p4/hyc=;
+  b=N9pLSulflr/MM0RUc0XqBOIWnAq6kiaaQJGofAMCTLKAoGcBQnW34b+y
+   zOzr2jQPzLv7RecuQxmwQjsxKsc4QBUnXXVgvzJryKJe2qdmS3LgbWbIX
+   7Yb299Gqh+z/D43Fam19M/W/l1D4X2i0f8WtsbIi5VXt/qKH8wIT2Yj7w
+   D8A8XuiqaIkYVz81hoO1FrOBfFyfEnOX2zLOqKQtvVIcMCFlSiqI06I2g
+   j2FVpsLg6vZCUkmLKPEzu+cPZ4TvOUpyxOz9tfLwT4lGQpcBqXpq03xDf
+   rHMOEISXg5ZKO+NBDoPrMLHfnNjNQYUc9j9ULhX/F6Z3U9JDFZdY8eE62
+   w==;
+From:   Hermes Zhang <chenhui.zhang@axis.com>
+To:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
+CC:     <kernel@axis.com>, Hermes Zhang <chenhuiz@axis.com>,
+        <linux-wireless@vger.kernel.org>,
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        <SHA-cyfmac-dev-list@infineon.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] brcmfmac: of: introduce new property to allow disable PNO
+Date:   Fri, 22 Apr 2022 11:24:28 +0800
+Message-ID: <20220422032428.3404284-1-chenhui.zhang@axis.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.8.0
-Subject: Re: [PATCH net-next 0/3] ipv4: First steps toward removing RTO_ONLINK
-Content-Language: en-US
-To:     Guillaume Nault <gnault@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        dccp@vger.kernel.org
-References: <cover.1650470610.git.gnault@redhat.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <cover.1650470610.git.gnault@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-10.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/20/22 5:21 PM, Guillaume Nault wrote:
-> RTO_ONLINK is a flag that allows to reduce the scope of route lookups.
-> It's stored in a normally unused bit of the ->flowi4_tos field, in
-> struct flowi4. However it has several problems:
-> 
->  * This bit is also used by ECN. Although ECN bits are supposed to be
->    cleared before doing a route lookup, it happened that some code
->    paths didn't properly sanitise their ->flowi4_tos. So this mechanism
->    is fragile and we had bugs in the past where ECN bits slipped in and
->    could end up being erroneously interpreted as RTO_ONLINK.
-> 
->  * A dscp_t type was recently introduced to ensure ECN bits are cleared
->    during route lookups. ->flowi4_tos is the most important structure
->    field to convert, but RTO_ONLINK prevents such conversion, as dscp_t
->    mandates that ECN bits (where RTO_ONLINK is stored) be zero.
-> 
-> Therefore we need to stop using RTO_ONLINK altogether. Fortunately
-> RTO_ONLINK isn't a necessity. Instead of passing a flag in ->flowi4_tos
-> to tell the route lookup function to restrict the scope, we can simply
-> initialise the scope correctly.
-> 
+From: Hermes Zhang <chenhuiz@axis.com>
 
-I believe the set looks ok. I think the fib test coverage in selftests
-could use more tests to cover tos.
+The PNO feature need to be disable for some scenario in different
+product. This commit introduce a new property to allow the
+product-specific toggling of this feature.
+
+Signed-off-by: Hermes Zhang <chenhuiz@axis.com>
+---
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
+index 8623bde5eb70..15f190368a8b 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
+@@ -11,6 +11,7 @@
+ #include "core.h"
+ #include "common.h"
+ #include "of.h"
++#include "feature.h"
+ 
+ static int brcmf_of_get_country_codes(struct device *dev,
+ 				      struct brcmf_mp_device *settings)
+@@ -102,6 +103,9 @@ void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
+ 	if (bus_type != BRCMF_BUSTYPE_SDIO)
+ 		return;
+ 
++	if (of_find_property(np, "pno-disable", NULL))
++		settings->feature_disable |= BIT(BRCMF_FEAT_PNO);
++
+ 	if (of_property_read_u32(np, "brcm,drive-strength", &val) == 0)
+ 		sdio->drive_strength = val;
+ 
+-- 
+2.30.2
 
