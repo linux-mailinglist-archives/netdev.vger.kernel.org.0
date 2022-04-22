@@ -2,161 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DCDEC50BAD8
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 16:55:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2282450BAE4
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 16:57:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448650AbiDVO6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Apr 2022 10:58:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41494 "EHLO
+        id S1449031AbiDVPAE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Apr 2022 11:00:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449026AbiDVO6C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 10:58:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A2B86461
-        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 07:55:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5DFABB83076
-        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 14:55:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3355C385A0;
-        Fri, 22 Apr 2022 14:55:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650639304;
-        bh=WvGXYxh5DWdQ4KtteGEWx8/2trBxXAHe+taf2ZduHSo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Wt5Jngh5fgPN3HE1MZWUZCENcCujRC2HZMbJXE2Q/sNstHe4h/V+rwPnJi8uMVi6B
-         gDMz4Ok9txK3Y5guzpbPGKf7JVMx9laJLLB+Pa1pu2spb/w0B8kjRjWNYk+vSv8olu
-         J9MMGeFGPUSbuRdkN3+jfughDl2OFO5zXq4npcWPoYFrRXYGL3YKrCKSFFYpJ48J4N
-         Igmqw8nTiBExi1LhlB/s44Yblahzd1+m9TOoSWcXT35S0UUKkqp9K3VhkDJpKfgJTf
-         MrdLHX4YQnY28PyfFtqgWaJBW3nS2Dw9LmQitbv1NzTLUTMnfR1lErzadLLR03DJE9
-         /BmQ7qHthQFcw==
-Date:   Fri, 22 Apr 2022 07:55:02 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Maxim Mikityanskiy <maximmi@nvidia.com>
-Cc:     Boris Pismenny <borisp@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Aviad Yehezkel <aviadye@mellanox.com>,
-        Ilya Lesokhin <ilyal@mellanox.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH net] tls: Skip tls_append_frag on zero copy size
-Message-ID: <20220422075502.27532722@kernel.org>
-In-Reply-To: <da984a08-1730-1b0c-d845-cf7ec732ba4c@nvidia.com>
-References: <20220413134956.3258530-1-maximmi@nvidia.com>
-        <20220414122808.09f31bfe@kernel.org>
-        <3c90d3cd-5224-4224-e9d9-e45546ce51c6@nvidia.com>
-        <da984a08-1730-1b0c-d845-cf7ec732ba4c@nvidia.com>
+        with ESMTP id S1448433AbiDVPAC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 11:00:02 -0400
+Received: from mint-fitpc2.mph.net (unknown [81.168.73.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E588D5AA72
+        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 07:57:08 -0700 (PDT)
+Received: from palantir17.mph.net (unknown [192.168.0.4])
+        by mint-fitpc2.mph.net (Postfix) with ESMTP id 90A1F320133;
+        Fri, 22 Apr 2022 15:57:06 +0100 (BST)
+Received: from localhost ([::1] helo=palantir17.mph.net)
+        by palantir17.mph.net with esmtp (Exim 4.89)
+        (envelope-from <habetsm.xilinx@gmail.com>)
+        id 1nhuiY-00077l-9c; Fri, 22 Apr 2022 15:57:06 +0100
+Subject: [PATCH linx-net 00/28]: Move Siena into a separate subdirectory
+From:   Martin Habets <habetsm.xilinx@gmail.com>
+To:     kuba@kernel.org, pabeni@redhat.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com
+Date:   Fri, 22 Apr 2022 15:57:06 +0100
+Message-ID: <165063937837.27138.6911229584057659609.stgit@palantir17.mph.net>
+User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=4.3 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+        FORGED_GMAIL_RCVD,FREEMAIL_FROM,KHOP_HELO_FCRDNS,MAY_BE_FORGED,
+        NML_ADSP_CUSTOM_MED,SPF_HELO_NONE,SPF_SOFTFAIL,SPOOFED_FREEMAIL,
+        SPOOF_GMAIL_MID autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 21 Apr 2022 12:47:18 +0300 Maxim Mikityanskiy wrote:
-> On 2022-04-18 17:56, Maxim Mikityanskiy wrote:
-> > On 2022-04-14 13:28, Jakub Kicinski wrote: =20
-> >> I appreciate you're likely trying to keep the fix minimal but Greg
-> >> always says "fix it right, worry about backports later".
-> >>
-> >> I think we should skip more, we can reorder the mins and if
-> >> min(size, rec space) =3D=3D 0 then we can skip the allocation as well.=
- =20
-> >=20
-> > Sorry, I didn't get the idea. Could you elaborate?
-> >=20
-> > Reordering the mins:
-> >=20
-> > copy =3D min_t(size_t, size, max_open_record_len - record->len);
-> > copy =3D min_t(size_t, copy, pfrag->size - pfrag->offset);
-> >=20
-> > I assume by skipping the allocation you mean skipping=20
-> > tls_do_allocation(), right? Do you suggest to skip it if the result of=
-=20
-> > the first min_t() is 0?
-> >=20
-> > record->len used in the first min_t() comes from ctx->open_record, whic=
-h=20
-> > either exists or is allocated by tls_do_allocation(). If we move the=20
-> > copy =3D=3D 0 check above the tls_do_allocation() call, first we'll hav=
-e to=20
-> > check whether ctx->open_record is NULL, which is currently checked by=20
-> > tls_do_allocation() itself.
-> >=20
-> > If open_record is not NULL, there isn't much to skip in=20
-> > tls_do_allocation on copy =3D=3D 0, the main part is already skipped,=20
-> > regardless of the value of copy. If open_record is NULL, we can't skip=
-=20
-> > tls_do_allocation, and copy won't be 0 afterwards.
-> >=20
-> > To compare, before (pseudocode):
-> >=20
-> > tls_do_allocation {
-> >  =C2=A0=C2=A0=C2=A0 if (!ctx->open_record)
-> >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ALLOCATE RECORD
-> >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Now ctx->open_record is not=
- NULL
-> >  =C2=A0=C2=A0=C2=A0 if (!sk_page_frag_refill(sk, pfrag))
-> >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return -ENOMEM
-> > }
-> > handle errors from tls_do_allocation
-> > copy =3D min(size, pfrag->size - pfrag->offset)
-> > copy =3D min(copy, max_open_record_len - ctx->open_record->len)
-> > if (copy)
-> >  =C2=A0=C2=A0=C2=A0 copy data and append frag
-> >=20
-> > After:
-> >=20
-> > if (ctx->open_record) {
-> >  =C2=A0=C2=A0=C2=A0 copy =3D min(size, max_open_record_len - ctx->open_=
-record->len)
-> >  =C2=A0=C2=A0=C2=A0 if (copy) {
-> >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 // You want to put this par=
-t of tls_do_allocation under if (copy)?
-> >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (!sk_page_frag_refill(sk=
-, pfrag))
-> >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 han=
-dle errors
-> >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 copy =3D min(copy, pfrag->s=
-ize - pfrag->offset)
-> >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (copy)
-> >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 cop=
-y data and append frag
-> >  =C2=A0=C2=A0=C2=A0 }
-> > } else {
-> >  =C2=A0=C2=A0=C2=A0 ALLOCATE RECORD
-> >  =C2=A0=C2=A0=C2=A0 if (!sk_page_frag_refill(sk, pfrag))
-> >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 handle errors
-> >  =C2=A0=C2=A0=C2=A0 // Have to do this after the allocation anyway.
-> >  =C2=A0=C2=A0=C2=A0 copy =3D min(size, max_open_record_len - ctx->open_=
-record->len)
-> >  =C2=A0=C2=A0=C2=A0 copy =3D min(copy, pfrag->size - pfrag->offset)
-> >  =C2=A0=C2=A0=C2=A0 if (copy)
-> >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 copy data and append frag
-> > }
-> >=20
-> > Either I totally don't get what you suggested, or it doesn't make sense=
-=20
-> > to me, because we have +1 branch in the common path when a record is=20
-> > open and copy is not 0, no changes when there is no record, and more=20
-> > repeating code hard to compress.
-> >=20
-> > If I missed your idea, please explain in more details. =20
->=20
-> Jakub, is your comment still relevant after my response? If not, can the=
-=20
-> patch be merged?
+The Siena NICs (SFN5000 and SFN6000 series) went EOL in November 2021.
+Most of these adapters have been remove from our test labs, and testing
+has been reduced to a minimum.
 
-I'd prefer if you refactored the code so tls_push_data() looks more
-natural. But the patch is correct so if you don't want to you can
-repost.
+This patch series creates a separate kernel module for the Siena architecture,
+analogous to what was done for Falcon some years ago.
+This reduces our maintenance for the sfc.ko module, and allows us to
+enhance the EF10 and EF100 drivers without the risk of breaking Siena NICs.
 
-Sorry for the delay.
+After this series Siena code can be removed from sfc.ko. That will be posted
+as a separate (small) series.
+The Siena module is not built by default, but can be enabled
+using Kconfig option SFC_SIENA. This will create module sfc-siena.ko.
+
+	Patches
+
+Patch 1 disables the Siena code in the sfc.ko module.
+Patches 2-4 establish the code base for the Siena driver.
+Patches 5-20 ensure the allyesconfig build succeeds.
+Patches 21-28 make changes specfic to the Siena module.
+
+I do not expect patch 2 and 3 to be reviewed, they are FYI only.
+No checkpatch issues were resolved as part of these 2, but they
+were fixed in the subsequent patches.
+
+	Testing
+
+Various build tests were done such as allyesconfig, W=1 and sparse.
+The new sfc-siena.ko and sfc.ko modules were tested on a machine with both
+these NICs in them, and several tests were run on both drivers.
+Inserting the updated sfc.ko and the new sfc-siena.ko modules at the same
+time works, so no external functions exist with the same name.
+
+Martin Habets <habetsm.xilinx@gmail.com>
+---
+
+Martin Habets (28):
+      sfc: Disable Siena support
+      sfc: Move Siena specific files
+      sfc: Copy shared files needed for Siena
+      sfc: Remove build references to missing functionality
+      sfc/siena: Rename functions in efx_common.h to avoid conflicts with sfc
+      sfc/siena: Rename functions in efx.h to avoid conflicts with sfc
+      sfc/siena: Rename functions in efx_channels.h to avoid conflicts with sfc
+      sfc/siena: Update nic.h to avoid conflicts with sfc
+      sfc/siena: Remove unused functions in tx.h to avoid conflicts with sfc
+      sfc/siena: Rename functions in rx_common.h to avoid conflicts with sfc
+      sfc/siena: Rename functions in tx_common.h to avoid conflicts with sfc
+      sfc/siena: Rename functions in selftest.h to avoid conflicts with sfc
+      sfc/siena: Rename functions in ethtool_common.h to avoid conflicts with sfc
+      sfc/siena: Rename functions in ptp.h to avoid conflicts with sfc
+      sfc/siena: Rename functions in mcdi.h to avoid conflicts with sfc
+      sfc/siena: Rename functions in mcdi_port.h to avoid conflicts with sfc
+      sfc/siena: Rename functions in mcdi_port_common.h to avoid conflicts with sfc
+      sfc/siena: Rename loopback_mode in net_driver.h to avoid a conflict with sfc
+      sfc/siena: Rename functions in nic_common.h to avoid conflicts with sfc
+      sfc/siena: Inline functions in sriov.h to avoid conflicts with sfc
+      sfc: Add a basic Siena module
+      siena: Make the (un)load message more specific
+      siena: Make MTD support specific for Siena
+      siena: Make SRIOV support specific for Siena
+      siena: Make HWMON support specific for Siena
+      sfc/siena: Make MCDI logging support specific for Siena
+      sfc/siena: Make PTP and reset support specific for Siena
+      sfc/siena: Reinstate SRIOV init/fini function calls
+
+
+ drivers/net/ethernet/sfc/Kconfig                  |   15 
+ drivers/net/ethernet/sfc/Makefile                 |    5 
+ drivers/net/ethernet/sfc/efx.c                    |   17 
+ drivers/net/ethernet/sfc/farch.c                  | 2988 ---
+ drivers/net/ethernet/sfc/nic.h                    |    4 
+ drivers/net/ethernet/sfc/siena.c                  | 1109 -
+ drivers/net/ethernet/sfc/siena/Kconfig            |   45 
+ drivers/net/ethernet/sfc/siena/Makefile           |   11 
+ drivers/net/ethernet/sfc/siena/bitfield.h         |  614 +
+ drivers/net/ethernet/sfc/siena/efx.c              | 1325 +
+ drivers/net/ethernet/sfc/siena/efx.h              |  218 
+ drivers/net/ethernet/sfc/siena/efx_channels.c     | 1360 +
+ drivers/net/ethernet/sfc/siena/efx_channels.h     |   45 
+ drivers/net/ethernet/sfc/siena/efx_common.c       | 1408 +
+ drivers/net/ethernet/sfc/siena/efx_common.h       |  118 
+ drivers/net/ethernet/sfc/siena/enum.h             |  176 
+ drivers/net/ethernet/sfc/siena/ethtool.c          |  282 
+ drivers/net/ethernet/sfc/siena/ethtool_common.c   | 1340 +
+ drivers/net/ethernet/sfc/siena/ethtool_common.h   |   60 
+ drivers/net/ethernet/sfc/siena/farch.c            | 2990 +++
+ drivers/net/ethernet/sfc/siena/farch_regs.h       | 2929 +++
+ drivers/net/ethernet/sfc/siena/filter.h           |  309 
+ drivers/net/ethernet/sfc/siena/io.h               |  310 
+ drivers/net/ethernet/sfc/siena/mcdi.c             | 2260 ++
+ drivers/net/ethernet/sfc/siena/mcdi.h             |  386 
+ drivers/net/ethernet/sfc/siena/mcdi_mon.c         |  531 +
+ drivers/net/ethernet/sfc/siena/mcdi_pcol.h        |21968 +++++++++++++++++++++
+ drivers/net/ethernet/sfc/siena/mcdi_port.c        |  110 
+ drivers/net/ethernet/sfc/siena/mcdi_port.h        |   17 
+ drivers/net/ethernet/sfc/siena/mcdi_port_common.c | 1282 +
+ drivers/net/ethernet/sfc/siena/mcdi_port_common.h |   58 
+ drivers/net/ethernet/sfc/siena/mtd.c              |  124 
+ drivers/net/ethernet/sfc/siena/net_driver.h       | 1715 ++
+ drivers/net/ethernet/sfc/siena/nic.c              |  530 +
+ drivers/net/ethernet/sfc/siena/nic.h              |  206 
+ drivers/net/ethernet/sfc/siena/nic_common.h       |  251 
+ drivers/net/ethernet/sfc/siena/ptp.c              | 2201 ++
+ drivers/net/ethernet/sfc/siena/ptp.h              |   45 
+ drivers/net/ethernet/sfc/siena/rx.c               |  400 
+ drivers/net/ethernet/sfc/siena/rx_common.c        | 1091 +
+ drivers/net/ethernet/sfc/siena/rx_common.h        |  110 
+ drivers/net/ethernet/sfc/siena/selftest.c         |  807 +
+ drivers/net/ethernet/sfc/siena/selftest.h         |   52 
+ drivers/net/ethernet/sfc/siena/siena.c            | 1113 +
+ drivers/net/ethernet/sfc/siena/siena_sriov.c      | 1687 ++
+ drivers/net/ethernet/sfc/siena/siena_sriov.h      |   79 
+ drivers/net/ethernet/sfc/siena/sriov.h            |   83 
+ drivers/net/ethernet/sfc/siena/tx.c               |  395 
+ drivers/net/ethernet/sfc/siena/tx.h               |   40 
+ drivers/net/ethernet/sfc/siena/tx_common.c        |  448 
+ drivers/net/ethernet/sfc/siena/tx_common.h        |   39 
+ drivers/net/ethernet/sfc/siena/vfdi.h             |  252 
+ drivers/net/ethernet/sfc/siena/workarounds.h      |   28 
+ drivers/net/ethernet/sfc/siena_sriov.c            | 1686 --
+ drivers/net/ethernet/sfc/siena_sriov.h            |   76 
+ 55 files changed, 51859 insertions(+), 5889 deletions(-)
+ delete mode 100644 drivers/net/ethernet/sfc/farch.c
+ delete mode 100644 drivers/net/ethernet/sfc/siena.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/Kconfig
+ create mode 100644 drivers/net/ethernet/sfc/siena/Makefile
+ create mode 100644 drivers/net/ethernet/sfc/siena/bitfield.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/efx.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/efx.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/efx_channels.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/efx_channels.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/efx_common.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/efx_common.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/enum.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/ethtool.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/ethtool_common.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/ethtool_common.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/farch.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/farch_regs.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/filter.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/io.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/mcdi.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/mcdi.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/mcdi_mon.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/mcdi_pcol.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/mcdi_port.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/mcdi_port.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/mcdi_port_common.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/mcdi_port_common.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/mtd.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/net_driver.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/nic.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/nic.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/nic_common.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/ptp.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/ptp.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/rx.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/rx_common.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/rx_common.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/selftest.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/selftest.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/siena.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/siena_sriov.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/siena_sriov.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/sriov.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/tx.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/tx.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/tx_common.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/tx_common.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/vfdi.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/workarounds.h
+ delete mode 100644 drivers/net/ethernet/sfc/siena_sriov.c
+ delete mode 100644 drivers/net/ethernet/sfc/siena_sriov.h
+
+--
+Martin Habets <habetsm.xilinx@gmail.com>
