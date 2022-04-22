@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D7A2450BCEC
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 18:26:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EB8850BCF0
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 18:26:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388807AbiDVQ3S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Apr 2022 12:29:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58108 "EHLO
+        id S1449611AbiDVQ3e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Apr 2022 12:29:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388271AbiDVQ3G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 12:29:06 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FF865EBD5;
-        Fri, 22 Apr 2022 09:26:12 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id v1so6874968ljv.3;
-        Fri, 22 Apr 2022 09:26:12 -0700 (PDT)
+        with ESMTP id S1449068AbiDVQ3a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 12:29:30 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CF9D5EBCF;
+        Fri, 22 Apr 2022 09:26:32 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id h27so14908076lfj.13;
+        Fri, 22 Apr 2022 09:26:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=OUrh1efILjSaXAe3E+x72wbjb4Twp+oR0/Kr58Ftb1I=;
-        b=neTqDyK4aAIR67hd1swkp8mYa9tzbLhOQWDj+BlQv9zVZKesSfhf4hbdYhES2RrGi+
-         wdkyLVrY/H9uld+HjfN2z8GZYN5vPnAvVA2EaGPbADSjaNLzia315Hae9wpp2cbxKtzu
-         XIGbsxc69sSCh42qP+S9Tmg00rn4QInpT2BjwfHsh/PmVMqOqad1h1aPch5BerJMNXgY
-         q4VHWzYOLK8XvTio3vDY1U5p4e/+pKOAW5K4H6VsJDzX2wc+RMTw/41H5R2Ei2Thnasa
-         ibLk3Z7ky0yLPVY0xhTdpZYzBaTsh1UqF5AftDVPBSXbAcxKESQ1fL25UBvdhEWZ9IwT
-         Z+og==
+        bh=W3ErJKSyUTgCN7lxhUsHpBZ8kXzxl1Rq4h0+SNf6uoY=;
+        b=Ia0j6KGxWiQ7sqdpSo46uRPYP0MGBWqmGDErUg8qWvJliL+Iao9XN3Co/DGRdNrZ+F
+         dqi7SP6C+gK6MVeonXKINF/p0Ty9rShxMSTxTrH4tJ0Lpb+6QyWzc2NxAl593aN2yZ4u
+         D5w44oaLVC6G7Lo3aJCFWg7IWSxyV5sbF8927WkrQHujA6aLpZOr7ooghtqN/HDvT6Ua
+         Tr/XGmCIfHucgWgjiDviYO+/0dUXSS8JbfeETVCkqR+Vp7pg4vnRX9KTzGNkH211S43I
+         krhswQ4Y2wXJH+8/2ejGZdVBqAaueCumvDkB3uEuTHsqS+ebaNINs9pBgQtYe/RUBXaR
+         VAdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=OUrh1efILjSaXAe3E+x72wbjb4Twp+oR0/Kr58Ftb1I=;
-        b=o4S7fPNuFAk1R9vRMSWiVHK5IEeoPddm5HTx8Pjr83jk/u3f1yPVE/3NnPkc74Z9I4
-         YfdRmsjO5hIS96ts3vG/GlrmZTI0m9QCSVst81Xr5m3TDQP8tffoSWcwtkShqi4cpVUw
-         /SKi4mtDbZDPqoz058pjl+EIhyoVAvRTmhJjBv25FL4MVz4ltuGBosnS6eILPonZSnby
-         J64tuhgOQ8hqWJxO7nWhirpiZA8bI2ZFw1+J3nU9QOLyMhKICAqeEbWv3I80hQkIELI4
-         578IZ/wZyc7jPf9W4HWPzKFMNVq6t/fE0RDBKdM3jtSMgHL48p/pKuIzIq7e2fWfoQNN
-         RSxQ==
-X-Gm-Message-State: AOAM531F6qwA/9avifp++rCL9QfA4XzoAo3+ixDpShaoIGSz0Oj/RXE9
-        Nsv5xJXo33BTS8ocvO48DArDwRbo4ZIRc1zHCqo=
-X-Google-Smtp-Source: ABdhPJxl93mRTqmHk5RcUeYPYvix1Cpy+0bZNXL/KAiekKHLEbjGStmDNS+MrDAw/M/kWuqw6DqHw126o2x4x2WvQIs=
-X-Received: by 2002:a05:651c:1991:b0:24a:c757:e5c9 with SMTP id
- bx17-20020a05651c199100b0024ac757e5c9mr3209733ljb.222.1650644770240; Fri, 22
- Apr 2022 09:26:10 -0700 (PDT)
+        bh=W3ErJKSyUTgCN7lxhUsHpBZ8kXzxl1Rq4h0+SNf6uoY=;
+        b=7t8K3cJKIsi/95j60gwZLtvQm+30lfDjPdQYxh3NOI0dBddWc/gXCwMehDeFvVMnMH
+         z7HoBAy1kj3JM8oilXoiBi9s7tHJpSyOMHkU2nE9QOgIrERcedp18JyYuxbMLx2HsgMV
+         AgZHA40hMdMQNdjfi7r1fYs/IGz6uYNh5PaJuaLN2Y7AfUeVOmtGE8usnARq+n7ugSSY
+         lznDyUTWPGWozqJBM37I7Whv2EvrKQF5hRIiTqR97IN7w7vm3rMxc/isrc5njRf2CTnY
+         oRYtU9+cOeUzXOxdoZTdWpyFaRlGsWGZPyMDOj8eyHHoew3Nd80iqA47LVVuCgy7S99v
+         slfg==
+X-Gm-Message-State: AOAM5302sQFCPExWvRxXBfMTVbpR3d8WZlA5c+67SbQ/x+Qr3omHmaA3
+        uU/q378h5iD1DQYSTfNn7R2slW0X+JRz6PZ1rl8=
+X-Google-Smtp-Source: ABdhPJx5lev57lC8P2TC16HcJcGi6BTAZ/DAoOM7RfmEuXR34RWx9GJGZMhbVLdVgat+bJow2ck/NvNl2R2+Ok08Jhw=
+X-Received: by 2002:a19:7b17:0:b0:46e:cb82:fe24 with SMTP id
+ w23-20020a197b17000000b0046ecb82fe24mr3642082lfc.194.1650644790219; Fri, 22
+ Apr 2022 09:26:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1650575919.git.peilin.ye@bytedance.com> <dd63f881729052aa4e08a5c7cb9732724c557dfd.1650575919.git.peilin.ye@bytedance.com>
-In-Reply-To: <dd63f881729052aa4e08a5c7cb9732724c557dfd.1650575919.git.peilin.ye@bytedance.com>
+References: <cover.1650575919.git.peilin.ye@bytedance.com> <950bfd124e4f87bd9e1acbf6303545875c3681fe.1650575919.git.peilin.ye@bytedance.com>
+In-Reply-To: <950bfd124e4f87bd9e1acbf6303545875c3681fe.1650575919.git.peilin.ye@bytedance.com>
 From:   William Tu <u9012063@gmail.com>
-Date:   Fri, 22 Apr 2022 09:25:33 -0700
-Message-ID: <CALDO+SZqYGWnFLDBqQ+qUE7Tjg4M06aAQWsC6tomx406sN=93A@mail.gmail.com>
-Subject: Re: [PATCH net 1/3] ip_gre: Make o_seqno start from 0 in native mode
+Date:   Fri, 22 Apr 2022 09:25:53 -0700
+Message-ID: <CALDO+SZNeBrupoCigpM9g5TEGAgEi6k8+usXc0O8RqkLmeO99Q@mail.gmail.com>
+Subject: Re: [PATCH net 2/3] ip6_gre: Make o_seqno start from 0 in native mode
 To:     Peilin Ye <yepeilin.cs@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -85,15 +85,16 @@ On Thu, Apr 21, 2022 at 3:08 PM Peilin Ye <yepeilin.cs@gmail.com> wrote:
 >
 > From: Peilin Ye <peilin.ye@bytedance.com>
 >
-> For GRE and GRETAP devices, currently o_seqno starts from 1 in native
-> mode.  According to RFC 2890 2.2., "The first datagram is sent with a
-> sequence number of 0."  Fix it.
+> For IP6GRE and IP6GRETAP devices, currently o_seqno starts from 1 in
+> native mode.  According to RFC 2890 2.2., "The first datagram is sent
+> with a sequence number of 0."  Fix it.
 >
 > It is worth mentioning that o_seqno already starts from 0 in collect_md
-> mode, see gre_fb_xmit(), where tunnel->o_seqno is passed to
-> gre_build_header() before getting incremented.
+> mode, see the "if (tunnel->parms.collect_md)" clause in __gre6_xmit(),
+> where tunnel->o_seqno is passed to gre_build_header() before getting
+> incremented.
 >
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Fixes: c12b395a4664 ("gre: Support GRE over IPv6")
 > Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
 
 LGTM
