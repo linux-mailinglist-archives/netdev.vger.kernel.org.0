@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A4E550BB1F
-	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 17:06:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD5FE50BB12
+	for <lists+netdev@lfdr.de>; Fri, 22 Apr 2022 17:06:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449139AbiDVPGK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Apr 2022 11:06:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49020 "EHLO
+        id S245028AbiDVPGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Apr 2022 11:06:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449224AbiDVPFm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 11:05:42 -0400
+        with ESMTP id S1449143AbiDVPFv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Apr 2022 11:05:51 -0400
 Received: from mint-fitpc2.mph.net (unknown [81.168.73.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DAC125D5E2
-        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 08:02:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 18E165C872
+        for <netdev@vger.kernel.org>; Fri, 22 Apr 2022 08:02:58 -0700 (PDT)
 Received: from palantir17.mph.net (unknown [192.168.0.4])
-        by mint-fitpc2.mph.net (Postfix) with ESMTP id 32119320133;
-        Fri, 22 Apr 2022 16:02:45 +0100 (BST)
+        by mint-fitpc2.mph.net (Postfix) with ESMTP id 6A38C320133;
+        Fri, 22 Apr 2022 16:02:57 +0100 (BST)
 Received: from localhost ([::1] helo=palantir17.mph.net)
         by palantir17.mph.net with esmtp (Exim 4.89)
         (envelope-from <habetsm.xilinx@gmail.com>)
-        id 1nhuo0-0007Fo-VC; Fri, 22 Apr 2022 16:02:45 +0100
-Subject: [PATCH net-next 27/28] sfc/siena: Make PTP and reset support
- specific for Siena
+        id 1nhuoD-0007G2-6r; Fri, 22 Apr 2022 16:02:57 +0100
+Subject: [PATCH net-next 28/28] sfc/siena: Reinstate SRIOV init/fini
+ function calls
 From:   Martin Habets <habetsm.xilinx@gmail.com>
 To:     kuba@kernel.org, pabeni@redhat.com, davem@davemloft.net
 Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com
-Date:   Fri, 22 Apr 2022 16:02:44 +0100
-Message-ID: <165063976481.27138.16338765780955164021.stgit@palantir17.mph.net>
+Date:   Fri, 22 Apr 2022 16:02:57 +0100
+Message-ID: <165063977707.27138.12095529676111503437.stgit@palantir17.mph.net>
 In-Reply-To: <165063937837.27138.6911229584057659609.stgit@palantir17.mph.net>
 References: <165063937837.27138.6911229584057659609.stgit@palantir17.mph.net>
 User-Agent: StGit/0.17.1-dirty
@@ -45,60 +45,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Martin Habets <martinh@xilinx.com>
-
-Change the clock name and work queue names to differentiate them from
-the names used in sfc.ko.
+They were removed in patch 1 since they are not used for EF10.
+Put that code back for Siena, with the prototypes in siena_sriov.h
+since that file is a more applicable for it.
 
 Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
 ---
- drivers/net/ethernet/sfc/siena/efx_common.c |    2 +-
- drivers/net/ethernet/sfc/siena/ptp.c        |    7 ++++---
- 2 files changed, 5 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/sfc/siena/efx.c         |   16 ++++++++++++++++
+ drivers/net/ethernet/sfc/siena/siena_sriov.h |    3 +++
+ 2 files changed, 19 insertions(+)
 
-diff --git a/drivers/net/ethernet/sfc/siena/efx_common.c b/drivers/net/ethernet/sfc/siena/efx_common.c
-index a615bffcbad4..954daf464abb 100644
---- a/drivers/net/ethernet/sfc/siena/efx_common.c
-+++ b/drivers/net/ethernet/sfc/siena/efx_common.c
-@@ -112,7 +112,7 @@ static struct workqueue_struct *reset_workqueue;
+diff --git a/drivers/net/ethernet/sfc/siena/efx.c b/drivers/net/ethernet/sfc/siena/efx.c
+index 718b07b1ed28..236e033f9f3d 100644
+--- a/drivers/net/ethernet/sfc/siena/efx.c
++++ b/drivers/net/ethernet/sfc/siena/efx.c
+@@ -32,6 +32,9 @@
+ #include "io.h"
+ #include "selftest.h"
+ #include "sriov.h"
++#ifdef CONFIG_SFC_SIENA_SRIOV
++#include "siena_sriov.h"
++#endif
  
- int efx_siena_create_reset_workqueue(void)
+ #include "mcdi_port_common.h"
+ #include "mcdi_pcol.h"
+@@ -1271,6 +1274,12 @@ static int __init efx_init_module(void)
+ 	if (rc)
+ 		goto err_notifier;
+ 
++#ifdef CONFIG_SFC_SIENA_SRIOV
++	rc = efx_init_sriov();
++	if (rc)
++		goto err_sriov;
++#endif
++
+ 	rc = efx_siena_create_reset_workqueue();
+ 	if (rc)
+ 		goto err_reset;
+@@ -1284,6 +1293,10 @@ static int __init efx_init_module(void)
+  err_pci:
+ 	efx_siena_destroy_reset_workqueue();
+  err_reset:
++#ifdef CONFIG_SFC_SIENA_SRIOV
++	efx_fini_sriov();
++ err_sriov:
++#endif
+ 	unregister_netdevice_notifier(&efx_netdev_notifier);
+  err_notifier:
+ 	return rc;
+@@ -1295,6 +1308,9 @@ static void __exit efx_exit_module(void)
+ 
+ 	pci_unregister_driver(&efx_pci_driver);
+ 	efx_siena_destroy_reset_workqueue();
++#ifdef CONFIG_SFC_SIENA_SRIOV
++	efx_fini_sriov();
++#endif
+ 	unregister_netdevice_notifier(&efx_netdev_notifier);
+ 
+ }
+diff --git a/drivers/net/ethernet/sfc/siena/siena_sriov.h b/drivers/net/ethernet/sfc/siena/siena_sriov.h
+index 69a7a18e9ba0..50f6e924495e 100644
+--- a/drivers/net/ethernet/sfc/siena/siena_sriov.h
++++ b/drivers/net/ethernet/sfc/siena/siena_sriov.h
+@@ -60,6 +60,9 @@ static inline bool efx_siena_sriov_enabled(struct efx_nic *efx)
  {
--	reset_workqueue = create_singlethread_workqueue("sfc_reset");
-+	reset_workqueue = create_singlethread_workqueue("sfc_siena_reset");
- 	if (!reset_workqueue) {
- 		printk(KERN_ERR "Failed to create reset workqueue\n");
- 		return -ENOMEM;
-diff --git a/drivers/net/ethernet/sfc/siena/ptp.c b/drivers/net/ethernet/sfc/siena/ptp.c
-index 8e18da096595..7c46752e6eae 100644
---- a/drivers/net/ethernet/sfc/siena/ptp.c
-+++ b/drivers/net/ethernet/sfc/siena/ptp.c
-@@ -1422,7 +1422,7 @@ static void efx_ptp_worker(struct work_struct *work)
- 
- static const struct ptp_clock_info efx_phc_clock_info = {
- 	.owner		= THIS_MODULE,
--	.name		= "sfc",
-+	.name		= "sfc_siena",
- 	.max_adj	= MAX_PPB,
- 	.n_alarm	= 0,
- 	.n_ext_ts	= 0,
-@@ -1458,7 +1458,7 @@ static int efx_ptp_probe(struct efx_nic *efx, struct efx_channel *channel)
- 
- 	skb_queue_head_init(&ptp->rxq);
- 	skb_queue_head_init(&ptp->txq);
--	ptp->workwq = create_singlethread_workqueue("sfc_ptp");
-+	ptp->workwq = create_singlethread_workqueue("sfc_siena_ptp");
- 	if (!ptp->workwq) {
- 		rc = -ENOMEM;
- 		goto fail2;
-@@ -1502,7 +1502,8 @@ static int efx_ptp_probe(struct efx_nic *efx, struct efx_channel *channel)
- 			goto fail3;
- 		} else if (ptp->phc_clock) {
- 			INIT_WORK(&ptp->pps_work, efx_ptp_pps_worker);
--			ptp->pps_workwq = create_singlethread_workqueue("sfc_pps");
-+			ptp->pps_workwq =
-+				create_singlethread_workqueue("sfc_siena_pps");
- 			if (!ptp->pps_workwq) {
- 				rc = -ENOMEM;
- 				goto fail4;
+ 	return efx->vf_init_count != 0;
+ }
++
++int efx_init_sriov(void);
++void efx_fini_sriov(void);
+ #else /* !CONFIG_SFC_SIENA_SRIOV */
+ static inline bool efx_siena_sriov_enabled(struct efx_nic *efx)
+ {
 
