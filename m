@@ -2,90 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B36A50C82F
-	for <lists+netdev@lfdr.de>; Sat, 23 Apr 2022 10:07:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4092850C845
+	for <lists+netdev@lfdr.de>; Sat, 23 Apr 2022 10:40:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234153AbiDWIJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Apr 2022 04:09:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35888 "EHLO
+        id S234260AbiDWImT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Apr 2022 04:42:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230527AbiDWIJB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 04:09:01 -0400
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 100ED18B27;
-        Sat, 23 Apr 2022 01:06:05 -0700 (PDT)
-Received: by mail-qt1-f170.google.com with SMTP id x12so7035393qtp.9;
-        Sat, 23 Apr 2022 01:06:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MnsKeIXdOWL+qzKGmeKdJ+/k4zo4q4coagprsKaIqao=;
-        b=50LLgeICQMYEHCGzTMVsYBaia6P4/Sj/MQsSMwn5Y/MO5sbWpwTyKvBUp1KbCAToVB
-         fMtvKAAMDEDMWKLk7B8a3z2GGj5FEqI9c++BKfrB0ejY2MbCXI7hNM46eNCkkYUUaa5j
-         RCB/NlK2TzZnGJdSDhPn7HDF1tO7vJ+INFnWU7UtqCwEagGr6PidZ61tu0MPX6uabGE5
-         hkJSJg3Au+OH7QpbrZgFRTNmhEcudFtLgI++9OOHR0wPJIHFhFFxcPSql4AJh3M3HhPe
-         TvSQ5aTO9XHQm742Na255pDV0d5FHlAu/MTOPNFoOcBNfDaLx+uELtnwiR3rJeLBCmHI
-         iwzA==
-X-Gm-Message-State: AOAM533lbLR9y/e1tWMQn28vvvykjAu+o94PKrRCFFyAW1O5hlIU7Q/z
-        ebLOhiFHS+j2HnD8HJ/DAJnyk6VQsnrzyg==
-X-Google-Smtp-Source: ABdhPJyzFyUzhtRKooaZxY5e32ekOZF9n9jze/MIsSQAmgUqA5O1HKJgnjDOXK743w4sWH6UKQfIsw==
-X-Received: by 2002:a05:622a:105:b0:2e1:d653:c325 with SMTP id u5-20020a05622a010500b002e1d653c325mr5794028qtw.75.1650701164124;
-        Sat, 23 Apr 2022 01:06:04 -0700 (PDT)
-Received: from mail-yb1-f176.google.com (mail-yb1-f176.google.com. [209.85.219.176])
-        by smtp.gmail.com with ESMTPSA id z15-20020a05622a060f00b002e2070bf899sm2527344qta.90.2022.04.23.01.06.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 23 Apr 2022 01:06:03 -0700 (PDT)
-Received: by mail-yb1-f176.google.com with SMTP id b95so18391783ybi.1;
-        Sat, 23 Apr 2022 01:06:03 -0700 (PDT)
-X-Received: by 2002:a5b:984:0:b0:63f:8c38:676c with SMTP id
- c4-20020a5b0984000000b0063f8c38676cmr8029426ybq.393.1650701163360; Sat, 23
- Apr 2022 01:06:03 -0700 (PDT)
+        with ESMTP id S234205AbiDWImO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 04:42:14 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D0B515C29B;
+        Sat, 23 Apr 2022 01:39:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650703158; x=1682239158;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=i9L7QIiqrDSO2UicXrZ7/EMlVdX5GRYWe4z8LgmUPKc=;
+  b=C7ILNI8lWgTQ+3JEJXmWS1e2DIYd8nGmCPnQcRs1Dg07cLYZ1zNNeaf6
+   MEPULS41H54kZqc2Aq0XwS2O7rDKPHh/z8YqQ6rkoF+q8Bgceb6YqR3j9
+   ALcEwOULPncNzPmoOC8TOr3gksQIMCiJl47zKe3PPJc4JWA7yjS/DIgLP
+   CLSkCivXlrJJsnFnkIYOCwI1gcWIHTCi/D6Xh9RLoKaY3ldSRf3C4qFwt
+   wSaWl9K/1Fw/kSO5z8Aqk2j1Y/5tB3NKkHfbkdia/VhmQgoMdgjqbe2+6
+   vkaXfXXVkGQ47hPJV11x+KfgafnjWo7YkMRh2hga8nxGodAS2Aim//T3U
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="265037384"
+X-IronPort-AV: E=Sophos;i="5.90,284,1643702400"; 
+   d="scan'208";a="265037384"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2022 01:39:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,284,1643702400"; 
+   d="scan'208";a="556778864"
+Received: from lkp-server01.sh.intel.com (HELO dd58949a6e39) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 23 Apr 2022 01:39:11 -0700
+Received: from kbuild by dd58949a6e39 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1niBIM-000051-Pz;
+        Sat, 23 Apr 2022 08:39:10 +0000
+Date:   Sat, 23 Apr 2022 16:38:54 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Maxim Mikityanskiy <maximmi@nvidia.com>, bpf@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, Tariq Toukan <tariqt@nvidia.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Petar Penkov <ppenkov@google.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Joe Stringer <joe@cilium.io>,
+        Florent Revest <revest@chromium.org>,
+        linux-kselftest@vger.kernel.org,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@toke.dk>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Florian Westphal <fw@strlen.de>, pabeni@redhat.com,
+        Maxim Mikityanskiy <maximmi@nvidia.com>
+Subject: Re: [PATCH bpf-next v6 3/6] bpf: Allow helpers to accept pointers
+ with a fixed size
+Message-ID: <202204231646.yQjLArUK-lkp@intel.com>
+References: <20220422172422.4037988-4-maximmi@nvidia.com>
 MIME-Version: 1.0
-References: <20220421070440.1282704-1-hch@lst.de>
-In-Reply-To: <20220421070440.1282704-1-hch@lst.de>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Sat, 23 Apr 2022 10:05:51 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUw6c-dEOJUyZaQqOj=udmk9X8pxyd-nyph4K4at7iaDQ@mail.gmail.com>
-Message-ID: <CAMuHMdUw6c-dEOJUyZaQqOj=udmk9X8pxyd-nyph4K4at7iaDQ@mail.gmail.com>
-Subject: Re: [PATCH] net: unexport csum_and_copy_{from,to}_user
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220422172422.4037988-4-maximmi@nvidia.com>
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 11:14 PM Christoph Hellwig <hch@lst.de> wrote:
-> csum_and_copy_from_user and csum_and_copy_to_user are exported by
-> a few architectures, but not actually used in modular code.  Drop
-> the exports.
->
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+Hi Maxim,
 
->  arch/m68k/lib/checksum.c             | 2 --
+Thank you for the patch! Perhaps something to improve:
 
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+[auto build test WARNING on bpf-next/master]
 
-Gr{oetje,eeting}s,
+url:    https://github.com/intel-lab-lkp/linux/commits/Maxim-Mikityanskiy/bpf-Use-ipv6_only_sock-in-bpf_tcp_gen_syncookie/20220423-022511
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+config: arc-randconfig-r036-20220422 (https://download.01.org/0day-ci/archive/20220423/202204231646.yQjLArUK-lkp@intel.com/config)
+compiler: arc-elf-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/e374c2f19a674b586212d155ecb708aaa86dcd2c
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Maxim-Mikityanskiy/bpf-Use-ipv6_only_sock-in-bpf_tcp_gen_syncookie/20220423-022511
+        git checkout e374c2f19a674b586212d155ecb708aaa86dcd2c
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash kernel/bpf/
 
-                        Geert
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+All warnings (new ones prefixed by >>):
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+   kernel/bpf/verifier.c: In function 'check_helper_call':
+>> kernel/bpf/verifier.c:5954:49: warning: array subscript 5 is above array bounds of 'const enum bpf_arg_type[5]' [-Warray-bounds]
+    5954 |         return arg_type_is_mem_size(fn->arg_type[arg + 1]) || fn->arg_size[arg];
+         |                                     ~~~~~~~~~~~~^~~~~~~~~
+   In file included from include/linux/bpf-cgroup.h:5,
+                    from kernel/bpf/verifier.c:7:
+   include/linux/bpf.h:456:35: note: while referencing 'arg_type'
+     456 |                 enum bpf_arg_type arg_type[5];
+         |                                   ^~~~~~~~
+   kernel/bpf/verifier.c:5952:57: warning: array subscript 5 is above array bounds of 'const enum bpf_arg_type[5]' [-Warray-bounds]
+    5952 |                 return arg_type_is_mem_size(fn->arg_type[arg + 1]) ==
+         |                                             ~~~~~~~~~~~~^~~~~~~~~
+   In file included from include/linux/bpf-cgroup.h:5,
+                    from kernel/bpf/verifier.c:7:
+   include/linux/bpf.h:456:35: note: while referencing 'arg_type'
+     456 |                 enum bpf_arg_type arg_type[5];
+         |                                   ^~~~~~~~
+
+
+vim +5954 kernel/bpf/verifier.c
+
+  5948	
+  5949	static bool check_args_pair_invalid(const struct bpf_func_proto *fn, int arg)
+  5950	{
+  5951		if (arg_type_is_mem_ptr(fn->arg_type[arg]))
+  5952			return arg_type_is_mem_size(fn->arg_type[arg + 1]) ==
+  5953				!!fn->arg_size[arg];
+> 5954		return arg_type_is_mem_size(fn->arg_type[arg + 1]) || fn->arg_size[arg];
+  5955	}
+  5956	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
