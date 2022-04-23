@@ -2,178 +2,269 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D30E050CD5A
-	for <lists+netdev@lfdr.de>; Sat, 23 Apr 2022 22:12:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FB8D50CD59
+	for <lists+netdev@lfdr.de>; Sat, 23 Apr 2022 22:05:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236992AbiDWUOc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Apr 2022 16:14:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47312 "EHLO
+        id S236990AbiDWUIq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Apr 2022 16:08:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236988AbiDWUOb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 16:14:31 -0400
-X-Greylist: delayed 552 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 23 Apr 2022 13:11:32 PDT
-Received: from relais-inet.orange.com (relais-inet.orange.com [80.12.70.35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D0C3473B2
-        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 13:11:32 -0700 (PDT)
-Received: from opfednr00.francetelecom.fr (unknown [xx.xx.xx.64])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by opfednr27.francetelecom.fr (ESMTP service) with ESMTPS id 4Km2HZ75cFz4whx
-        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 22:02:18 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=orange.com;
-        s=ORANGE001; t=1650744139;
-        bh=9E77cgeDIyW54O11FaPS7uxHnsXHTBJ73UnWVjAY3Dw=;
-        h=Message-ID:Date:MIME-Version:From:Subject:To:Content-Type:
-         Content-Transfer-Encoding;
-        b=rAA1+8bTpzzb6rs6KzTUhYYxYBVevwzj7FGJ5e5a/qkMOXpG2T946IxhQEDnSqscC
-         TJITpB6pU+hu+ByFztTI9oRdHiAKeqfOLnTZeDUe3fqdsCu6eoF/zPSLCNBi1z9ORa
-         4UIrrTgX/6EfcmMa2qeYH/Swx0ps9hgRX+AoneIjKa+oMFzcf6ff/xZ5719JcwwFu8
-         lCYxT2rCMNUt2PZqJm2CnqsV8Wca1VY/8icuYARU7mkd5jw6ai+WogeFoM21Yx9oaA
-         PuuQFDRyq/l00neLElLU7IBZzt0O3RuQ9gFFb1u+Q0tZ7QnWh7x6u8rpCvmepq/I65
-         5BfoLPciuTb3w==
-Message-ID: <16469_1650744138_62645B4A_16469_436_1_4756cc37-340b-f2f6-e004-0d77573f33df@orange.com>
-Date:   Sat, 23 Apr 2022 22:02:18 +0200
+        with ESMTP id S236988AbiDWUIq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 16:08:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A4B37187446
+        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 13:05:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650744346;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=omqCTV7z0t9cAhQIWiyGEWe7yOix1dL5G0MldE6hRWE=;
+        b=MKgz7uuKvNw3mwBqo7aFQhcszb2s/hMfWGZRALN8jaJgVx96W7l3LEKXM3eneH4C8bGkUM
+        DEr8RYxwB+NnpXyw0JcdoXTzcJV0VGUPA/G84MP47aXVul+4sE0xJkCM9h2KpuTtkWszmg
+        mdOaw8t+h3ColmFqTa17U5k2R23Up5M=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-179-yqtl-5ZdPvygrnMox-a1Fw-1; Sat, 23 Apr 2022 16:05:44 -0400
+X-MC-Unique: yqtl-5ZdPvygrnMox-a1Fw-1
+Received: by mail-ej1-f70.google.com with SMTP id nc20-20020a1709071c1400b006f3726da7d3so720860ejc.15
+        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 13:05:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=omqCTV7z0t9cAhQIWiyGEWe7yOix1dL5G0MldE6hRWE=;
+        b=rm75ZNLKj2iK89lRnfq6KnNcn85TMeubXc0Gr/3DEme2u234T4g3M8qSVjx3Dd82LH
+         3A2fpP0Z4VX2fxDH/E6TQT/mAugDMm//0sdTG1YpVzVuK0NJCl+dygmFZYMtvC/khZ2z
+         JaG50YnRESCfVSroCpYx/xFDar6gt7Gw5rt8F5nQ6dhHoRl1WOpp+pvh0pISNFmq3v7o
+         nh/pPQSPnJT03DjcxBL6Q9Y4pBQ99RcCw8HNpHHVb5eWM2Z0RWkmVQCgUnqSDNRvcO/D
+         TAJcuYo/dqJsNuIfGxohHauRSoOOxJpF9Xdwx38S6tvkSPpFWB9Jlnu+ecO7Hhz0HM0X
+         pGxw==
+X-Gm-Message-State: AOAM530MfBfpsK89IbQdsELe2//lmT064Uf13sssPwLN/u63jUOOgkAF
+        JMu7TuOiCEu8NmTSS46Fhewy3xu20RvVSLcJeADblUWauCvNWrGbVRYEse/MK6UikKe+Upq4tsM
+        +BNOh2SPc8HNWxpHY
+X-Received: by 2002:aa7:c793:0:b0:408:4a69:90b4 with SMTP id n19-20020aa7c793000000b004084a6990b4mr11441733eds.58.1650744342332;
+        Sat, 23 Apr 2022 13:05:42 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwNATyw5D0bERdGDSDbR5cr0iO3FsZbehP/gW+psGoNThVAdHDplZOXPi3qHJP4nJhcVj+Z6w==
+X-Received: by 2002:aa7:c793:0:b0:408:4a69:90b4 with SMTP id n19-20020aa7c793000000b004084a6990b4mr11441658eds.58.1650744341414;
+        Sat, 23 Apr 2022 13:05:41 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id e19-20020a056402105300b004162d0b4cbbsm2502266edu.93.2022.04.23.13.05.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 23 Apr 2022 13:05:40 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id DE7992D1FA3; Sat, 23 Apr 2022 22:05:39 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     Larysa Zaremba <larysa.zaremba@intel.com>,
+        bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>
+Subject: Re: Accessing XDP packet memory from the end
+In-Reply-To: <20220422164137.875143-1-alexandr.lobakin@intel.com>
+References: <20220421155620.81048-1-larysa.zaremba@intel.com>
+ <87czhagxuw.fsf@toke.dk>
+ <20220422164137.875143-1-alexandr.lobakin@intel.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Sat, 23 Apr 2022 22:05:39 +0200
+Message-ID: <87a6cbd0q4.fsf@toke.dk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux i686; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-From:   <alexandre.ferrieux@orange.com>
-Subject: Zero-Day bug in VLAN offloading + cooked AF_PACKET
-To:     <netdev@vger.kernel.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.115.26.50]
-X-ClientProxiedBy: OPE16NORMBX305.corporate.adroot.infra.ftgroup
- (10.115.27.10) To OPE16NORMBX107.corporate.adroot.infra.ftgroup (10.115.27.4)
-X-Spam-Status: No, score=-0.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_MUA_MOZILLA,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Alexander Lobakin <alexandr.lobakin@intel.com> writes:
 
-I know the subject sounds like this belongs in libpcap bug reports; indeed it 
-started there [1]. However, after some digging, it really looks like there's an 
-issue in what the kernel itself provides.
+> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> Date: Thu, 21 Apr 2022 19:17:11 +0200
+>
+>> Larysa Zaremba <larysa.zaremba@intel.com> writes:
+>>=20
+>> > Dear all,
+>> > Our team has encountered a need of accessing data_meta in a following =
+way:
+>> >
+>> > int xdp_meta_prog(struct xdp_md *ctx)
+>> > {
+>> > 	void *data_meta_ptr =3D (void *)(long)ctx->data_meta;
+>> > 	void *data_end =3D (void *)(long)ctx->data_end;
+>> > 	void *data =3D (void *)(long)ctx->data;
+>> > 	u64 data_size =3D sizeof(u32);
+>> > 	u32 magic_meta;
+>> > 	u8 offset;
+>> >
+>> > 	offset =3D (u8)((s64)data - (s64)data_meta_ptr);
+>> > 	if (offset < data_size) {
+>> > 		bpf_printk("invalid offset: %ld\n", offset);
+>> > 		return XDP_DROP;
+>> > 	}
+>> >
+>> > 	data_meta_ptr +=3D offset;
+>> > 	data_meta_ptr -=3D data_size;
+>> >
+>> > 	if (data_meta_ptr + data_size > data) {
+>> > 		return XDP_DROP;
+>> > 	}
+>> >=20=09=09
+>> > 	magic_meta =3D *((u32 *)data);
+>> > 	bpf_printk("Magic: %d\n", magic_meta);
+>> > 	return XDP_PASS;
+>> > }
+>> >
+>> > Unfortunately, verifier claims this code attempts to access packet with
+>> > an offset of -2 (a constant part) and negative offset is generally for=
+bidden.
+>> >
+>> > For now we have 2 solutions, one is using bpf_xdp_adjust_meta(),
+>> > which is pretty good, but not ideal for the hot path.
+>> > The second one is the patch at the end.
+>> >
+>> > Do you see any other way of accessing memory from the end of data_meta=
+/data?
+>> > What do you think about both suggested solutions?
+>>=20
+>> The problem is that the compiler is generating code that the verifier
+>> doesn't understand. It's notoriously hard to get LLVM to produce code
+>> that preserves the right bounds checks which is why projects like Cilium
+>> use helpers with inline ASM to produce the right loads, like in [0].
+>>=20
+>> Adapting that cilium helper to load from the metadata area, your example
+>> can be rewritten as follows (which works just fine with no verifier
+>> changes):
+>>=20
+>> static __always_inline int
+>> xdp_load_meta_bytes(const struct xdp_md *ctx, __u64 off, void *to, const=
+ __u64 len)
+>> {
+>> 	void *from;
+>> 	int ret;
+>> 	/* LLVM tends to generate code that verifier doesn't understand,
+>> 	 * so force it the way we want it in order to open up a range
+>> 	 * on the reg.
+>> 	 */
+>> 	asm volatile("r1 =3D *(u32 *)(%[ctx] +8)\n\t"
+>> 		     "r2 =3D *(u32 *)(%[ctx] +0)\n\t"
+>> 		     "%[off] &=3D %[offmax]\n\t"
+>> 		     "r1 +=3D %[off]\n\t"
+>> 		     "%[from] =3D r1\n\t"
+>> 		     "r1 +=3D %[len]\n\t"
+>> 		     "if r1 > r2 goto +2\n\t"
+>> 		     "%[ret] =3D 0\n\t"
+>> 		     "goto +1\n\t"
+>> 		     "%[ret] =3D %[errno]\n\t"
+>> 		     : [ret]"=3Dr"(ret), [from]"=3Dr"(from)
+>> 		     : [ctx]"r"(ctx), [off]"r"(off), [len]"ri"(len),
+>> 		       [offmax]"i"(__CTX_OFF_MAX), [errno]"i"(-EINVAL)
+>> 		     : "r1", "r2");
+>> 	if (!ret)
+>> 		__builtin_memcpy(to, from, len);
+>> 	return ret;
+>> }
+>>=20
+>>=20
+>> SEC("xdp")
+>> int xdp_meta_prog(struct xdp_md *ctx)
+>> {
+>>         void *data_meta_ptr =3D (void *)(long)ctx->data_meta;
+>>         void *data =3D (void *)(long)ctx->data;
+>>         __u32 magic_meta;
+>>         __u8 offset;
+>> 	int ret;
+>>=20
+>>         offset =3D (__u8)((__s64)data - (__s64)data_meta_ptr);
+>> 	ret =3D xdp_load_meta_bytes(ctx, offset - 4, &magic_meta, sizeof(magic_=
+meta));
+>> 	if (ret) {
+>> 		bpf_printk("load bytes failed: %d\n", ret);
+>>                 return XDP_DROP;
+>> 	}
+>>=20
+>>         bpf_printk("Magic: %d\n", magic_meta);
+>>         return XDP_PASS;
+>> }
+>
+> At the moment, we use this (based on Cilium's and your), it works
+> just like we want C code to work previously:
+>
+> #define __CTX_OFF_MAX 0xff
+>
+> static __always_inline void *
+> can_i_access_meta_please(const struct xdp_md *ctx, __u64 off, const __u64=
+ len)
+> {
+> 	void *ret;
+>
+> 	/* LLVM tends to generate code that verifier doesn't understand,
+> 	 * so force it the way we want it in order to open up a range
+> 	 * on the reg.
+> 	 */
+> 	asm volatile("r1 =3D *(u32 *)(%[ctx] +8)\n\t"
+> 		     "r2 =3D *(u32 *)(%[ctx] +0)\n\t"
+> 		     "%[off] &=3D %[offmax]\n\t"
+> 		     "r1 +=3D %[off]\n\t"
+> 		     "%[ret] =3D r1\n\t"
+> 		     "r1 +=3D %[len]\n\t"
+> 		     "if r1 > r2 goto +1\n\t"
+> 		     "goto +1\n\t"
+> 		     "%[ret] =3D %[null]\n\t"
+> 		     : [ret]"=3Dr"(ret)
+> 		     : [ctx]"r"(ctx), [off]"r"(off), [len]"ri"(len),
+> 		       [offmax]"i"(__CTX_OFF_MAX), [null]"i"(NULL)
+> 		     : "r1", "r2");
+>
+> 	return ret;
+> }
+>
+> SEC("xdp")
+> int xdp_prognum_n0_meta(struct xdp_md *ctx)
+> {
+> 	void *data_meta =3D (void *)(__s64)ctx->data_meta;
+> 	void *data =3D (void *)(__s64)ctx->data;
+> 	struct xdp_meta_generic *md;
+> 	__u64 offset;
+>
+> 	offset =3D (__u64)((__s64)data - (__s64)data_meta);
+>
+> 	md =3D can_i_access_meta_please(ctx, offset, sizeof(*md));
+> 	if (__builtin_expect(!md, 0)) {
+> 		bpf_printk("No you can't\n");
+> 		return XDP_DROP;
+> 	}
+>
+> 	bpf_printk("Magic: 0x%04x\n", md->magic_id);
+> 	return XDP_PASS;
+> }
+>
+> Thanks for the help!
 
-TL;DR: outgoing VLAN-tagged traffic to non-offloaded interfaces is captured as 
-corrupted in cooked mode, and has been so since at least 3.4...
+Great! You're welcome! :)
 
-One popular way of doing captures with libpcap-based tools like tcpdump, is the 
-so-called "cooked mode". This is what you get with "tcpdump -i any". The kernel 
-API used for this, documented in packet(7), is a socket of family AF_PACKET and 
-protocol level SOCK_DGRAM. Contrarily to SOCK_RAW, SOCK_DGRAM provides a kind of 
-"near L3" abstraction, stripping most of the L2 headers from the original 
-packets. For example, when using recvmsg(),
+> It's a shame LLVM still suck on generating correct object code from C.
+> I guess we'll define a helper above in one of the headers to not
+> copy-paste it back and forth between each program wanting to access
+> only the generic part of the metadata (which is always being placed at
+> the end).
 
-  - the .msg_iov (main payload) of the recvmsg() is the packet starting at the 
-L3 header
-  - the .msg_name (aka "address") is a sockaddr_ll structure containing some L2 
-information: ethertype, source MAC address.
-  - the .msg_control (aka metadata, activated with PACKET_AUXDATA sockopt) may 
-contain VLAN information: TCI, TPID.
+Yeah, it would be nice if LLVM could just generate code that works, but
+in the meantime we'll just have to define a helper. I suspect we'll need
+to define some helper functions to work with xdp-hints style metadata
+field anyway, so wrapping the reader into that somewhere would probably
+make sense, no?
 
-All this works beautifully most of the time, with or without VLAN tags, as the 
-ethertype is correctly extracted and conveyed in the sockaddr_ll. This allows 
-any consumer of the L3 frame to decode it properly, knowing exactly wich L3 it's 
-looking at.
-
-However, there's a catch: for outgoing packets, *if* the interface has no 
-hardware VLAN offloading, the ethertype gets overwritten by ... the TPID 
-(0x8100). As a result, a consumer of the L3 frame has absolutely no way to 
-recover its type.
-
-As a demo, here is what the venerable "tcpdump -i any" says of an outgoing ARP 
-packet on VLAN interface eth0.24, after VLAN offloading has been disabled via 
-"ethtool -K". Two lines are generated, as the packet is seen on both eth0.24 
-(first line) and eth0 (second line):
-
-  15:06:37.681328 ARP, Request who-has 1.0.24.3 tell 1.0.24.1, length 28
-  15:06:37.681336 ethertype IPv4, IP0
-
-The first line is correct, as the frame is captured before handling by the 8021q 
-module. The second is not !!
-
-This is the result of the ethertype being overwritten. The actual value is 
-0x8100, which tcpdump decodes as a 802.1Q TPID, thus shifting the L3 beginning 
-by 4 bytes, ending up seeing a nonsensical "IPv0" frame.
-
-To prove that this is *not* an issue in libpcap or tcpdump, here are the three 
-aforementioned pieces of the packet, gotten by a simple test program doing 
-recvmsg() on an AF_PACKET+SOCK_DGRAM capture socket:
-
-  On VLAN interface eth0.24: (the "^^^^" show the ethertype's position)
-  --------------------------
-
-   - metadata:     107:8:010000001c0000001c0000000000000000000000
-   - sockaddr_ll:  1100080606000000010004060025903285a70000
-                       ^^^^
-   - L3 frame:     00010800060400010025903285a70100180100000000000001001803
-
-  On parent interface eth0:
-  -------------------------
-
-   - metadata:     107:8:010000001c0000001c0000000000000000000000
-   - sockaddr_ll:  1100810004000000010004060025903285a70000
-                       ^^^^
-   - L3 frame:     00010800060400010025903285a70100180100000000000001001803
-
-As is clear above, the second instance contains no trace of the original ARP 
-ethertype 0x0806.
-
-By contrast, if we re-enable VLAN offloading,
-
-    - the first instance (on subinterface) is unchanged
-    - the second instance (on parent interface) is back to normal, with a 
-correct ARP ethertype (^^^^=0806) *and* VLAN info in the metadata (TCI-TPID, 
-byte-swapped =1800,0081):
-
-  On parent interface eth0:
-  -------------------------
-
-   - metadata:     107:8:510000001c0000001c0000000000000018000081
-                                                         TCI-TPID
-   - sockaddr_ll:  1100080604000000010004060025903285a70000
-                       ^^^^
-   - L3 frame:     00010800060400010025903285a70100180100000000000001001803
-
-And sure enough, tcpdump is happy again:
-
-  21:44:18.481331 ARP, Request who-has 1.0.24.3 tell 1.0.24.1, length 28
-  21:44:18.481338 ethertype ARP, ARP, Request who-has 1.0.24.3 tell 1.0.24.1, 
-length 28
-
-I have found this bug active on an old machine with kernel 3.4.
-In the URL below you'll find more details on ftrace-based evidence, hinting at 
-the 8021q module.
-However, I am *not* familiar enough with the Linux network stack (and special 
-cases like offloading) to suggest a fix, sorry.
-I hope a knowledgeable person will consider this nasty enough to deserve their 
-attention.
-
-Thanks in advance !
-
--Alex
-
-
-[1] https://github.com/the-tcpdump-group/libpcap/issues/1105
-
-_________________________________________________________________________________________________________________________
-
-Ce message et ses pieces jointes peuvent contenir des informations confidentielles ou privilegiees et ne doivent donc
-pas etre diffuses, exploites ou copies sans autorisation. Si vous avez recu ce message par erreur, veuillez le signaler
-a l'expediteur et le detruire ainsi que les pieces jointes. Les messages electroniques etant susceptibles d'alteration,
-Orange decline toute responsabilite si ce message a ete altere, deforme ou falsifie. Merci.
-
-This message and its attachments may contain confidential or privileged information that may be protected by law;
-they should not be distributed, used or copied without authorisation.
-If you have received this email in error, please notify the sender and delete this message and its attachments.
-As emails may be altered, Orange is not liable for messages that have been modified, changed or falsified.
-Thank you.
+-Toke
 
