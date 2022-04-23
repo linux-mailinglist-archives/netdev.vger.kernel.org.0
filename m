@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E8C950CBB3
-	for <lists+netdev@lfdr.de>; Sat, 23 Apr 2022 17:23:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A76450CBB0
+	for <lists+netdev@lfdr.de>; Sat, 23 Apr 2022 17:23:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232971AbiDWP0N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Apr 2022 11:26:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49226 "EHLO
+        id S232825AbiDWP0L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Apr 2022 11:26:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232786AbiDWP0H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 11:26:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E441340DC
-        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 08:23:10 -0700 (PDT)
+        with ESMTP id S232782AbiDWP0F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 11:26:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DF1B33EB5
+        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 08:23:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9C02B80CCA
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D397360916
         for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 15:23:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28944C385A5;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6ADDC385AE;
         Sat, 23 Apr 2022 15:23:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650727387;
-        bh=e/zfScGVuopU8PyymRkFp3yiGtMt1HyYl+Xh1LiNJ84=;
+        s=k20201202; t=1650727388;
+        bh=rOx4xgNOOjQem/D9bbV2YUdibw3hn+YHtvP17Pu7bOg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dr5yYIok7xD9pYkNdS/MijEvb4vM99ClD0JFZUNiqD4m1PxRfGkZDPytbpBJHgWHq
-         quRatiYBfSB/zTUAntt5ip5YxANI/JPLjrT/N6Gs/bAEbLfH3ZDhy91Z42ZPwWuaYi
-         g5tBhaPxOSYY+6G3hQFRK6p9wFS4GCdfRJOqf3LFjQDcBV5jUaLucJ7PSw9xCtAD7J
-         zUBe9/JQM3V9/1Jd6F8N/jZjgNUAw3wqLgRIflW/s7aYWcsoCxvRSyR3u2VUHvUBTS
-         ou3ESqwa9hxNs38oa88KyfN8PkK0u2qsdPDeuY4egtDP+TL3jb8LOllbXQScZtQTXk
-         eQR48QU72CaTw==
+        b=Ezwutf8QLGl+dN05EVegoPdYeRNtKCbTw3XNhy57AO52X0sqT5cZMblvIK4j9zUbi
+         w3CagxpTzdxaYB8zUVBCwa0azyiB5+rxMTbNtv+ub2H3ha70jCkU/p+LP4/5xHeCYp
+         3gUjeHxNcsqw0RCl38RfOBlfxCKTKXhNkzK65EsCsy7Cdx5eGTR3a3tH7h/JPtERd4
+         wAwmB8X5DxuAJj6Q+NlQ2Nzlx1VZ6jaXlw/X0NX4KpPbkjgKQ9HYv0Qq7gxtm/N+J7
+         fpolM0knDmSpVWL2UKNYrB0wTCrPWuX1SH3nD5RpMQMXkDSXG9tADWNIlH+Eur0APp
+         7QJ8wJx0W/7LA==
 From:   David Ahern <dsahern@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     stephen@networkplumber.org, toke@redhat.com, haliu@redhat.com,
         David Ahern <dsahern@kernel.org>
-Subject: [PATCH iproute2-next 2/3] libbpf: Remove use of bpf_program__set_priv and bpf_program__priv
-Date:   Sat, 23 Apr 2022 09:22:59 -0600
-Message-Id: <20220423152300.16201-3-dsahern@kernel.org>
+Subject: [PATCH iproute2-next 3/3] libbpf: Remove use of bpf_map_is_offload_neutral
+Date:   Sat, 23 Apr 2022 09:23:00 -0600
+Message-Id: <20220423152300.16201-4-dsahern@kernel.org>
 X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 In-Reply-To: <20220423152300.16201-1-dsahern@kernel.org>
 References: <20220423152300.16201-1-dsahern@kernel.org>
@@ -52,70 +52,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bpf_program__set_priv and bpf_program__priv are deprecated as of
-libbpf v0.7+. Rather than store the map as priv on the program,
-change find_legacy_tail_calls to take an argument to return a reference
-to the map.
-
-find_legacy_tail_calls is invoked twice from load_bpf_object - the
-first time to check for programs that should be loaded. In this case
-a reference to the map is not needed, but it does validate the map
-exists. The second is invoked from update_legacy_tail_call_maps where
-the map pointer is needed.
+bpf_map_is_offload_neutral is deprecated as of v0.8+;
+import definition to maintain backwards compatibility.
 
 Signed-off-by: David Ahern <dsahern@kernel.org>
 ---
- lib/bpf_libbpf.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+ lib/bpf_libbpf.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/lib/bpf_libbpf.c b/lib/bpf_libbpf.c
-index f723f6310c28..7dd1faf536f4 100644
+index 7dd1faf536f4..7b16ee71589d 100644
 --- a/lib/bpf_libbpf.c
 +++ b/lib/bpf_libbpf.c
-@@ -151,7 +151,8 @@ handle_legacy_map_in_map(struct bpf_object *obj, struct bpf_map *inner_map,
+@@ -249,6 +249,11 @@ static int handle_legacy_maps(struct bpf_object *obj)
  	return ret;
  }
  
--static int find_legacy_tail_calls(struct bpf_program *prog, struct bpf_object *obj)
-+static int find_legacy_tail_calls(struct bpf_program *prog, struct bpf_object *obj,
-+				  struct bpf_map **pmap)
++static bool bpf_map_is_offload_neutral(const struct bpf_map *map)
++{
++	return bpf_map__type(map) == BPF_MAP_TYPE_PERF_EVENT_ARRAY;
++}
++
+ static int load_bpf_object(struct bpf_cfg_in *cfg)
  {
- 	unsigned int map_id, key_id;
- 	const char *sec_name;
-@@ -175,8 +176,8 @@ static int find_legacy_tail_calls(struct bpf_program *prog, struct bpf_object *o
- 	if (!map)
- 		return -1;
+ 	struct bpf_program *p, *prog = NULL;
+@@ -294,7 +299,7 @@ static int load_bpf_object(struct bpf_cfg_in *cfg)
+ 	}
  
--	/* Save the map here for later updating */
--	bpf_program__set_priv(prog, map, NULL);
-+	if (pmap)
-+		*pmap = map;
+ 	bpf_object__for_each_map(map, obj) {
+-		if (!bpf_map__is_offload_neutral(map))
++		if (!bpf_map_is_offload_neutral(map))
+ 			bpf_map__set_ifindex(map, cfg->ifindex);
+ 	}
  
- 	return 0;
- }
-@@ -190,8 +191,10 @@ static int update_legacy_tail_call_maps(struct bpf_object *obj)
- 	struct bpf_map *map;
- 
- 	bpf_object__for_each_program(prog, obj) {
--		map = bpf_program__priv(prog);
--		if (!map)
-+		/* load_bpf_object has already verified find_legacy_tail_calls
-+		 * succeeds when it should
-+		 */
-+		if (find_legacy_tail_calls(prog, obj, &map) < 0)
- 			continue;
- 
- 		prog_fd = bpf_program__fd(prog);
-@@ -275,7 +278,8 @@ static int load_bpf_object(struct bpf_cfg_in *cfg)
- 
- 		/* Only load the programs that will either be subsequently
- 		 * attached or inserted into a tail call map */
--		if (find_legacy_tail_calls(p, obj) < 0 && !prog_to_attach) {
-+		if (find_legacy_tail_calls(p, obj, NULL) < 0 &&
-+		    !prog_to_attach) {
- 			ret = bpf_program__set_autoload(p, false);
- 			if (ret)
- 				return -EINVAL;
 -- 
 2.24.3 (Apple Git-128)
 
