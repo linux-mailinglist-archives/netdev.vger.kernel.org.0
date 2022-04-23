@@ -2,60 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FEBA50CBB1
-	for <lists+netdev@lfdr.de>; Sat, 23 Apr 2022 17:23:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F49F50CBDA
+	for <lists+netdev@lfdr.de>; Sat, 23 Apr 2022 17:35:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232963AbiDWP0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Apr 2022 11:26:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49432 "EHLO
+        id S230228AbiDWPid (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Apr 2022 11:38:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232813AbiDWP0J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 11:26:09 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41A0734B98
-        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 08:23:11 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id r13so21638913ejd.5
-        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 08:23:11 -0700 (PDT)
+        with ESMTP id S234934AbiDWPi0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 11:38:26 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3CCB26F4
+        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 08:35:28 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id el3so8940548edb.11
+        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 08:35:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=WJBCHoxVYGrbwueiOOwbMXbHWsQtw8pd815AtpG8TyI=;
-        b=Xm5tJyZv9Q85NRPl2sMFeCCZzMEZHbFkyRMYF+I5abhbdio1axwRs5Cm0kxZeRjAM1
-         V9CxLTxY0ydiIQ8/snKqJp8Nig0jT3D+rCYC5ePCSZ9/tjLlfo/GFqu/wSMhmDI3YleP
-         tpEfOgaqu+9fY+2rlF3j5JpVdMFb1KN3twvBEgSXSmGTA5sc6K09pW7wBgUe4ziKLvS7
-         vihrbPv+3eWSqHu8Va4Nqd2WymOP8vq4gw3csylGo6WMItnjIT1gVdZl1zIF1rvZrRa5
-         QOuwg716znT3w8/vFkOpJ1WD5JQbj2n1s6bLM3VAAJA8pSiDQGcy0jTzvf0meRZIGWMP
-         b69w==
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=o/CJ5WWEETXK69oPoyBSWz7VeMGOtK+lSlLywL1D9Nk=;
+        b=BE3VvQpPCKWlIFjbA3lVG7mn7VcetLMgpTQeJFc6keKzpdsTRzAdiruWx3JIgEoCdB
+         COovHQS6riaiG6GDioqj2MVosUXmiVj/GfhxtDEn51EtX3HGSCd1Fu0mdPvJANsLhMc1
+         NhSUikBjtpDdsA62BxR1jH+SZqACfkrVSk2yTgfEK72AHBHspklM3hHbC3o6upvGXpdu
+         ZiB1Uh/pLD4/jH7wKdgElUN3kMDCtRXmPtys1UQSqOSmcF4ILo5Z5zauUHx3LrsoNmBP
+         Up3XYD7er2+fkF3WwuKbPNhDh4Jov5a17GpbEkpj8qBpEoYuqGoIsUxERDX5NZBrNS15
+         5y+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+         :content-language:from:to:cc:references:in-reply-to
          :content-transfer-encoding;
-        bh=WJBCHoxVYGrbwueiOOwbMXbHWsQtw8pd815AtpG8TyI=;
-        b=GzI6wWOSq2yLPpCrzmcurvAW9MmRzA0hMOiMhj3nMwf1EerOrdt2AFbm83si5huxJe
-         Li85qlHAlOsc9HuG3PdX11QXLy+91njbS73vT5fJHHqolQMUMovUz6Fgzco0qu1HEbJL
-         GYFlXRB+V9lZ+EyW8tVIwYa5pqEgiPS/XkVxpRPDQ2Ziw0R/L9Hjawi4df/9qkqjYg0i
-         fUlgFBzrp02FYTwCIztuRV09qc6V2DyeCaOXFUcPstoupHU07DX/a4TK8cAxoGnXp7Nk
-         H8kINSq7do4eNhlgvEJ1hYrJxhiNLE9F7SVdQn5YcBzqSYrp+9vO0sqJ3MW0lEU4Jw8I
-         HUQg==
-X-Gm-Message-State: AOAM532vn3BbtWPVOHpAARyfNvvgSZrSfpedLjaxuVovWEMXtAjsKEnw
-        ouTKvDFFiF9va7NnWuJ3VVqA8g==
-X-Google-Smtp-Source: ABdhPJz1ukbXoPhNeVWKYuRCnGbcnrl6H/8epB4s8oVT1TOoAONFfbfiJjhtTkqDI9uHKBqVhZywxw==
-X-Received: by 2002:a17:907:8a1a:b0:6ef:fb70:1c4b with SMTP id sc26-20020a1709078a1a00b006effb701c4bmr8553522ejc.342.1650727389660;
-        Sat, 23 Apr 2022 08:23:09 -0700 (PDT)
+        bh=o/CJ5WWEETXK69oPoyBSWz7VeMGOtK+lSlLywL1D9Nk=;
+        b=GMKu5Mx3uVqnJU7katHKbTlJT00eQmuMOlcijYnltBfvj+wM8M5gosW31IB3GBTxIR
+         dOJcPtEUCNS9icLnZZ21X3rDwgwpeR4ns5nP9FKzyYTE/QVKAT9zuBE6e1pYpi43fyWI
+         bsiMXf5WkyRI3wnTBd2PUteMmoWM2zfare3dRp1WxG23p0fGhjmqfgIz6Hky2vmQ3N2X
+         BrHaWPJcQV8OHMTxRzKMaqRSWUI6eFUq44Ee9108lzLh8laNdh3f4ZC5XlakxMqyZCkg
+         TZ7sFFGVEzo/rnfrGGW6y0mqrUD0aJT8poGLJ28/wzuNbVnD6nuTCDo2aSqjUptRdhIA
+         CQZg==
+X-Gm-Message-State: AOAM5337EoNrqFNf/L9SoljhrkC9ksNB3ncPbbTlWtIIOJDZfAIb/kwo
+        cXVe1mO0mdBhmPOhX0zmKbhYgPm5UfJiOmkH
+X-Google-Smtp-Source: ABdhPJxFI9jbc24y64+cuaiBnirbclKSmsPpxv/8DfB0P4w7IIklyDTTiU+OBAHP6TmH1ZYIuNgIJg==
+X-Received: by 2002:aa7:dd87:0:b0:425:c104:71bf with SMTP id g7-20020aa7dd87000000b00425c10471bfmr8179979edv.110.1650728127336;
+        Sat, 23 Apr 2022 08:35:27 -0700 (PDT)
 Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id n13-20020a170906724d00b006cedd6d7e24sm1756415ejk.119.2022.04.23.08.23.07
+        by smtp.gmail.com with ESMTPSA id g15-20020a170906520f00b006cd07ba40absm1763359ejm.160.2022.04.23.08.35.26
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 23 Apr 2022 08:23:09 -0700 (PDT)
-Message-ID: <ff95db6e-5a0a-7e63-080f-c719ac434c34@blackwall.org>
-Date:   Sat, 23 Apr 2022 18:23:06 +0300
+        Sat, 23 Apr 2022 08:35:26 -0700 (PDT)
+Message-ID: <c7e49737-c5f8-5164-88ad-599c828c5d23@blackwall.org>
+Date:   Sat, 23 Apr 2022 18:35:25 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
 Subject: Re: [PATCH net] virtio_net: fix wrong buf address calculation when
  using xdp
 Content-Language: en-US
+From:   Nikolay Aleksandrov <razor@blackwall.org>
 To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 Cc:     kuba@kernel.org, davem@davemloft.net, stable@vger.kernel.org,
         Jason Wang <jasowang@redhat.com>,
@@ -69,293 +70,135 @@ References: <20220423112612.2292774-1-razor@blackwall.org>
  <1650724608.256497-2-xuanzhuo@linux.alibaba.com>
  <c206c147-ad7e-b615-2e96-572482335563@blackwall.org>
  <1650726113.2334588-1-xuanzhuo@linux.alibaba.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <1650726113.2334588-1-xuanzhuo@linux.alibaba.com>
+ <ff95db6e-5a0a-7e63-080f-c719ac434c34@blackwall.org>
+In-Reply-To: <ff95db6e-5a0a-7e63-080f-c719ac434c34@blackwall.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 23/04/2022 18:01, Xuan Zhuo wrote:
-> On Sat, 23 Apr 2022 17:58:05 +0300, Nikolay Aleksandrov <razor@blackwall.org> wrote:
->> On 23/04/2022 17:36, Xuan Zhuo wrote:
->>> On Sat, 23 Apr 2022 17:30:11 +0300, Nikolay Aleksandrov <razor@blackwall.org> wrote:
->>>> On 23/04/2022 17:16, Nikolay Aleksandrov wrote:
->>>>> On 23/04/2022 16:31, Xuan Zhuo wrote:
->>>>>> On Sat, 23 Apr 2022 14:26:12 +0300, Nikolay Aleksandrov <razor@blackwall.org> wrote:
->>>>>>> We received a report[1] of kernel crashes when Cilium is used in XDP
->>>>>>> mode with virtio_net after updating to newer kernels. After
->>>>>>> investigating the reason it turned out that when using mergeable bufs
->>>>>>> with an XDP program which adjusts xdp.data or xdp.data_meta page_to_buf()
->>>>>>> calculates the build_skb address wrong because the offset can become less
->>>>>>> than the headroom so it gets the address of the previous page (-X bytes
->>>>>>> depending on how lower offset is):
->>>>>>>  page_to_skb: page addr ffff9eb2923e2000 buf ffff9eb2923e1ffc offset 252 headroom 256
->>>>>>>
->>>>>>> This is a pr_err() I added in the beginning of page_to_skb which clearly
->>>>>>> shows offset that is less than headroom by adding 4 bytes of metadata
->>>>>>> via an xdp prog. The calculations done are:
->>>>>>>  receive_mergeable():
->>>>>>>  headroom = VIRTIO_XDP_HEADROOM; // VIRTIO_XDP_HEADROOM == 256 bytes
->>>>>>>  offset = xdp.data - page_address(xdp_page) -
->>>>>>>           vi->hdr_len - metasize;
->>>>>>>
->>>>>>>  page_to_skb():
->>>>>>>  p = page_address(page) + offset;
->>>>>>>  ...
->>>>>>>  buf = p - headroom;
->>>>>>>
->>>>>>> Now buf goes -4 bytes from the page's starting address as can be seen
->>>>>>> above which is set as skb->head and skb->data by build_skb later. Depending
->>>>>>> on what's done with the skb (when it's freed most often) we get all kinds
->>>>>>> of corruptions and BUG_ON() triggers in mm[2]. The story of the faulty
->>>>>>> commit is interesting because the patch was sent and applied twice (it
->>>>>>> seems the first one got lost during merge back in 5.13 window). The
->>>>>>> first version of the patch that was applied as:
->>>>>>>  commit 7bf64460e3b2 ("virtio-net: get build_skb() buf by data ptr")
->>>>>>> was actually correct because it calculated the page starting address
->>>>>>> without relying on offset or headroom, but then the second version that
->>>>>>> was applied as:
->>>>>>>  commit 8fb7da9e9907 ("virtio_net: get build_skb() buf by data ptr")
->>>>>>> was wrong and added the above calculation.
->>>>>>> An example xdp prog[3] is below.
->>>>>>>
->>>>>>> [1] https://github.com/cilium/cilium/issues/19453
->>>>>>>
->>>>>>> [2] Two of the many traces:
->>>>>>>  [   40.437400] BUG: Bad page state in process swapper/0  pfn:14940
->>>>>>>  [   40.916726] BUG: Bad page state in process systemd-resolve  pfn:053b7
->>>>>>>  [   41.300891] kernel BUG at include/linux/mm.h:720!
->>>>>>>  [   41.301801] invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
->>>>>>>  [   41.302784] CPU: 1 PID: 1181 Comm: kubelet Kdump: loaded Tainted: G    B   W         5.18.0-rc1+ #37
->>>>>>>  [   41.304458] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.15.0-1.fc35 04/01/2014
->>>>>>>  [   41.306018] RIP: 0010:page_frag_free+0x79/0xe0
->>>>>>>  [   41.306836] Code: 00 00 75 ea 48 8b 07 a9 00 00 01 00 74 e0 48 8b 47 48 48 8d 50 ff a8 01 48 0f 45 fa eb d0 48 c7 c6 18 b8 30 a6 e8 d7 f8 fc ff <0f> 0b 48 8d 78 ff eb bc 48 8b 07 a9 00 00 01 00 74 3a 66 90 0f b6
->>>>>>>  [   41.310235] RSP: 0018:ffffac05c2a6bc78 EFLAGS: 00010292
->>>>>>>  [   41.311201] RAX: 000000000000003e RBX: 0000000000000000 RCX: 0000000000000000
->>>>>>>  [   41.312502] RDX: 0000000000000001 RSI: ffffffffa6423004 RDI: 00000000ffffffff
->>>>>>>  [   41.313794] RBP: ffff993c98823600 R08: 0000000000000000 R09: 00000000ffffdfff
->>>>>>>  [   41.315089] R10: ffffac05c2a6ba68 R11: ffffffffa698ca28 R12: ffff993c98823600
->>>>>>>  [   41.316398] R13: ffff993c86311ebc R14: 0000000000000000 R15: 000000000000005c
->>>>>>>  [   41.317700] FS:  00007fe13fc56740(0000) GS:ffff993cdd900000(0000) knlGS:0000000000000000
->>>>>>>  [   41.319150] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->>>>>>>  [   41.320152] CR2: 000000c00008a000 CR3: 0000000014908000 CR4: 0000000000350ee0
->>>>>>>  [   41.321387] Call Trace:
->>>>>>>  [   41.321819]  <TASK>
->>>>>>>  [   41.322193]  skb_release_data+0x13f/0x1c0
->>>>>>>  [   41.322902]  __kfree_skb+0x20/0x30
->>>>>>>  [   41.343870]  tcp_recvmsg_locked+0x671/0x880
->>>>>>>  [   41.363764]  tcp_recvmsg+0x5e/0x1c0
->>>>>>>  [   41.384102]  inet_recvmsg+0x42/0x100
->>>>>>>  [   41.406783]  ? sock_recvmsg+0x1d/0x70
->>>>>>>  [   41.428201]  sock_read_iter+0x84/0xd0
->>>>>>>  [   41.445592]  ? 0xffffffffa3000000
->>>>>>>  [   41.462442]  new_sync_read+0x148/0x160
->>>>>>>  [   41.479314]  ? 0xffffffffa3000000
->>>>>>>  [   41.496937]  vfs_read+0x138/0x190
->>>>>>>  [   41.517198]  ksys_read+0x87/0xc0
->>>>>>>  [   41.535336]  do_syscall_64+0x3b/0x90
->>>>>>>  [   41.551637]  entry_SYSCALL_64_after_hwframe+0x44/0xae
->>>>>>>  [   41.568050] RIP: 0033:0x48765b
->>>>>>>  [   41.583955] Code: e8 4a 35 fe ff eb 88 cc cc cc cc cc cc cc cc e8 fb 7a fe ff 48 8b 7c 24 10 48 8b 74 24 18 48 8b 54 24 20 48 8b 44 24 08 0f 05 <48> 3d 01 f0 ff ff 76 20 48 c7 44 24 28 ff ff ff ff 48 c7 44 24 30
->>>>>>>  [   41.632818] RSP: 002b:000000c000a2f5b8 EFLAGS: 00000212 ORIG_RAX: 0000000000000000
->>>>>>>  [   41.664588] RAX: ffffffffffffffda RBX: 000000c000062000 RCX: 000000000048765b
->>>>>>>  [   41.681205] RDX: 0000000000005e54 RSI: 000000c000e66000 RDI: 0000000000000016
->>>>>>>  [   41.697164] RBP: 000000c000a2f608 R08: 0000000000000001 R09: 00000000000001b4
->>>>>>>  [   41.713034] R10: 00000000000000b6 R11: 0000000000000212 R12: 00000000000000e9
->>>>>>>  [   41.728755] R13: 0000000000000001 R14: 000000c000a92000 R15: ffffffffffffffff
->>>>>>>  [   41.744254]  </TASK>
->>>>>>>  [   41.758585] Modules linked in: br_netfilter bridge veth netconsole virtio_net
->>>>>>>
->>>>>>>  and
->>>>>>>
->>>>>>>  [   33.524802] BUG: Bad page state in process systemd-network  pfn:11e60
->>>>>>>  [   33.528617] page ffffe05dc0147b00 ffffe05dc04e7a00 ffff8ae9851ec000 (1) len 82 offset 252 metasize 4 hroom 0 hdr_len 12 data ffff8ae9851ec10c data_meta ffff8ae9851ec108 data_end ffff8ae9851ec14e
->>>>>>>  [   33.529764] page:000000003792b5ba refcount:0 mapcount:-512 mapping:0000000000000000 index:0x0 pfn:0x11e60
->>>>>>>  [   33.532463] flags: 0xfffffc0000000(node=0|zone=1|lastcpupid=0x1fffff)
->>>>>>>  [   33.532468] raw: 000fffffc0000000 0000000000000000 dead000000000122 0000000000000000
->>>>>>>  [   33.532470] raw: 0000000000000000 0000000000000000 00000000fffffdff 0000000000000000
->>>>>>>  [   33.532471] page dumped because: nonzero mapcount
->>>>>>>  [   33.532472] Modules linked in: br_netfilter bridge veth netconsole virtio_net
->>>>>>>  [   33.532479] CPU: 0 PID: 791 Comm: systemd-network Kdump: loaded Not tainted 5.18.0-rc1+ #37
->>>>>>>  [   33.532482] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.15.0-1.fc35 04/01/2014
->>>>>>>  [   33.532484] Call Trace:
->>>>>>>  [   33.532496]  <TASK>
->>>>>>>  [   33.532500]  dump_stack_lvl+0x45/0x5a
->>>>>>>  [   33.532506]  bad_page.cold+0x63/0x94
->>>>>>>  [   33.532510]  free_pcp_prepare+0x290/0x420
->>>>>>>  [   33.532515]  free_unref_page+0x1b/0x100
->>>>>>>  [   33.532518]  skb_release_data+0x13f/0x1c0
->>>>>>>  [   33.532524]  kfree_skb_reason+0x3e/0xc0
->>>>>>>  [   33.532527]  ip6_mc_input+0x23c/0x2b0
->>>>>>>  [   33.532531]  ip6_sublist_rcv_finish+0x83/0x90
->>>>>>>  [   33.532534]  ip6_sublist_rcv+0x22b/0x2b0
->>>>>>>
->>>>>>> [3] XDP program to reproduce(xdp_pass.c):
->>>>>>>  #include <linux/bpf.h>
->>>>>>>  #include <bpf/bpf_helpers.h>
->>>>>>>
->>>>>>>  SEC("xdp_pass")
->>>>>>>  int xdp_pkt_pass(struct xdp_md *ctx)
->>>>>>>  {
->>>>>>>           bpf_xdp_adjust_head(ctx, -(int)32);
->>>>>>>           return XDP_PASS;
->>>>>>>  }
->>>>>>>
->>>>>>>  char _license[] SEC("license") = "GPL";
->>>>>>>
->>>>>>>  compile: clang -O2 -g -Wall -target bpf -c xdp_pass.c -o xdp_pass.o
->>>>>>>  load on virtio_net: ip link set enp1s0 xdpdrv obj xdp_pass.o sec xdp_pass
->>>>>>>
->>>>>>> CC: stable@vger.kernel.org
->>>>>>> CC: Jason Wang <jasowang@redhat.com>
->>>>>>> CC: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
->>>>>>> CC: Daniel Borkmann <daniel@iogearbox.net>
->>>>>>> CC: "Michael S. Tsirkin" <mst@redhat.com>
->>>>>>> CC: virtualization@lists.linux-foundation.org
->>>>>>> Fixes: 8fb7da9e9907 ("virtio_net: get build_skb() buf by data ptr")
->>>>>>> Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
->>>>>>> ---
->>>>>>>  drivers/net/virtio_net.c | 8 ++++++--
->>>>>>>  1 file changed, 6 insertions(+), 2 deletions(-)
->>>>>>>
->>>>>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
->>>>>>> index 87838cbe38cf..0687dd88e97f 100644
->>>>>>> --- a/drivers/net/virtio_net.c
->>>>>>> +++ b/drivers/net/virtio_net.c
->>>>>>> @@ -434,9 +434,13 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
->>>>>>>  	 * Buffers with headroom use PAGE_SIZE as alloc size, see
->>>>>>>  	 * add_recvbuf_mergeable() + get_mergeable_buf_len()
->>>>>>>  	 */
->>>>>>> -	truesize = headroom ? PAGE_SIZE : truesize;
->>>>>>> +	if (headroom) {
->>>>>>> +		truesize = PAGE_SIZE;
->>>>>>> +		buf = (char *)((unsigned long)p & PAGE_MASK);
+On 23/04/2022 18:23, Nikolay Aleksandrov wrote:
+> On 23/04/2022 18:01, Xuan Zhuo wrote:
+>> On Sat, 23 Apr 2022 17:58:05 +0300, Nikolay Aleksandrov <razor@blackwall.org> wrote:
+>>> On 23/04/2022 17:36, Xuan Zhuo wrote:
+>>>> On Sat, 23 Apr 2022 17:30:11 +0300, Nikolay Aleksandrov <razor@blackwall.org> wrote:
+>>>>> On 23/04/2022 17:16, Nikolay Aleksandrov wrote:
+>>>>>> On 23/04/2022 16:31, Xuan Zhuo wrote:
+>>>>>>> On Sat, 23 Apr 2022 14:26:12 +0300, Nikolay Aleksandrov <razor@blackwall.org> wrote:
+[snip]
+>>>>>>> +                                                      VIRTIO_XDP_HEADROOM - metazie);
+>>>>>>>                                 return head_skb;
+>>>>>>>                         }
+>>>>>>>                         break;
 >>>>>>
->>>>>> The reason for not doing this is that buf and p may not be on the same page, and
->>>>>> buf is probably not page-aligned.
+>>>>>> That patch doesn't fix it, as I said with xdp you can move both data and data_meta.
+>>>>>> So just doing that would take care of the meta, but won't take care of moving data.
 >>>>>>
->>>>>> The implementation of virtio-net merge is add_recvbuf_mergeable(), which
->>>>>> allocates a large block of memory at one time, and allocates from it each time.
->>>>>> Although in xdp mode, each allocation is page_size, it does not guarantee that
->>>>>> each allocation is page-aligned .
->>>>>>
->>>>>> The problem here is that the value of headroom is wrong, the package is
->>>>>> structured like this:
->>>>>>
->>>>>> from device    | headroom          | virtio-net hdr | data |
->>>>>> after xdp      | headroom  |  virtio-net hdr | meta | data |
 >>>>>
->>>>> You're free to push data back (not necessarily through meta).
->>>>> You don't have virtio-net hdr for the xdp case (hdr_valid is false there).
->>>>>
->>>>>>
->>>>>> The page_address(page) + offset we pass to page_to_skb() points to the
->>>>>> virtio-net hdr.
->>>>>>
->>>>>> So I think it might be better to change it this way.
->>>>>>
->>>>>> Thanks.
->>>>>>
->>>>>>
->>>>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
->>>>>> index 87838cbe38cf..086ae835ec86 100644
->>>>>> --- a/drivers/net/virtio_net.c
->>>>>> +++ b/drivers/net/virtio_net.c
->>>>>> @@ -1012,7 +1012,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->>>>>>                                 head_skb = page_to_skb(vi, rq, xdp_page, offset,
->>>>>>                                                        len, PAGE_SIZE, false,
->>>>>>                                                        metasize,
->>>>>> -                                                      VIRTIO_XDP_HEADROOM);
->>>>>> +                                                      VIRTIO_XDP_HEADROOM - metazie);
->>>>>>                                 return head_skb;
->>>>>>                         }
->>>>>>                         break;
->>>>>
->>>>> That patch doesn't fix it, as I said with xdp you can move both data and data_meta.
->>>>> So just doing that would take care of the meta, but won't take care of moving data.
->>>>>
+>>>>> Also it doesn't take care of the case where page_to_skb() is called with the original page
+>>>>> i.e. when we already have headroom, so we hit the next/standard page_to_skb() call (xdp_page == page).
 >>>>
->>>> Also it doesn't take care of the case where page_to_skb() is called with the original page
->>>> i.e. when we already have headroom, so we hit the next/standard page_to_skb() call (xdp_page == page).
->>>
->>> Yes, you are right.
->>>
+>>>> Yes, you are right.
 >>>>
->>>> The above change guarantees that buf and p will be in the same page
+>>>>>
+>>>>> The above change guarantees that buf and p will be in the same page
+>>>>
+>>>>
+>>>> How can this be guaranteed?
+>>>>
+>>>> 1. For example, we applied for a 32k buffer first, and took away 1500 + hdr_len
+>>>>    from the allocation.
+>>>> 2. set xdp
+>>>> 3. alloc for new buffer
+>>>>
 >>>
+>>> p = page_address(page) + offset;
+>>> buf = p & PAGE_MASK; // whatever page p lands in is where buf is set
 >>>
->>> How can this be guaranteed?
->>>
->>> 1. For example, we applied for a 32k buffer first, and took away 1500 + hdr_len
->>>    from the allocation.
->>> 2. set xdp
->>> 3. alloc for new buffer
->>>
+>>> => p and buf are always in the same page, no?
 >>
->> p = page_address(page) + offset;
->> buf = p & PAGE_MASK; // whatever page p lands in is where buf is set
+>> I don't think it is, it's entirely possible to split on two pages.
 >>
->> => p and buf are always in the same page, no?
-> 
-> I don't think it is, it's entirely possible to split on two pages.
-> 
+>>>
+>>>> The buffer allocated in the third step must be unaligned, and it is entirely
+>>>> possible that p and buf are not on the same page.
+>>>>
+>>>> I fixed my previous patch.
+>>>>
+>>>> Thanks.
+>>>>
+>>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+>>>> index 87838cbe38cf..d95e82255b94 100644
+>>>> --- a/drivers/net/virtio_net.c
+>>>> +++ b/drivers/net/virtio_net.c
+>>>> @@ -1005,6 +1005,8 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
+>>>>                          * xdp.data_meta were adjusted
+>>>>                          */
+>>>>                         len = xdp.data_end - xdp.data + vi->hdr_len + metasize;
+>>>> +
+>>>> +                       headroom = xdp.data - vi->hdr_len - metasize - (buf - headroom);
+>>>
+>>> This is wrong, xdp.data isn't related to buf in the xdp_linearize_page() case.
 >>
->>> The buffer allocated in the third step must be unaligned, and it is entirely
->>> possible that p and buf are not on the same page.
->>>
->>> I fixed my previous patch.
->>>
->>> Thanks.
->>>
->>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
->>> index 87838cbe38cf..d95e82255b94 100644
->>> --- a/drivers/net/virtio_net.c
->>> +++ b/drivers/net/virtio_net.c
->>> @@ -1005,6 +1005,8 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->>>                          * xdp.data_meta were adjusted
->>>                          */
->>>                         len = xdp.data_end - xdp.data + vi->hdr_len + metasize;
->>> +
->>> +                       headroom = xdp.data - vi->hdr_len - metasize - (buf - headroom);
+>> Yes, you are right. For the case of xdp_linearize_page() , we should change it.
 >>
->> This is wrong, xdp.data isn't related to buf in the xdp_linearize_page() case.
+>>    headroom = xdp.data - vi->hdr_len - metasize - page_address(xdp_page);
+>>
+>> Thanks.
+>>
 > 
-> Yes, you are right. For the case of xdp_linearize_page() , we should change it.
+> That is equal to offset:
+>                        offset = xdp.data - page_address(xdp_page) -
+>                                  vi->hdr_len - metasize;
 > 
->    headroom = xdp.data - vi->hdr_len - metasize - page_address(xdp_page);
-> 
-> Thanks.
+> So I do agree that it will work, it is effectively what I also suggested in the
+> other email and it will be equal to just doing buf = page_address() in the xdp_linearize
+> case because p = page_address + offset, and now we do buf = p - headroom where headroom also
+> equals offset, so we get buf = page_address().
 > 
 
-That is equal to offset:
-                       offset = xdp.data - page_address(xdp_page) -
-                                 vi->hdr_len - metasize;
+All of the above is equivalent to:
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 87838cbe38cf..12e88980e4b3 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -1012,8 +1012,10 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
+                                head_skb = page_to_skb(vi, rq, xdp_page, offset,
+                                                       len, PAGE_SIZE, false,
+                                                       metasize,
+-                                                      VIRTIO_XDP_HEADROOM);
++                                                      offset);
+                                return head_skb;
++                       } else {
++                               headroom = xdp.data - (buf - headroom) - vi->hdr_len - metasize;
+                        }
+                        break;
+                case XDP_TX:
 
-So I do agree that it will work, it is effectively what I also suggested in the
-other email and it will be equal to just doing buf = page_address() in the xdp_linearize
-case because p = page_address + offset, and now we do buf = p - headroom where headroom also
-equals offset, so we get buf = page_address().
+I agree with that, it is also equivalent to my proposal in the other email. It adjusts the new
+headroom after the xdp prog which is ok. I'll wait (and test it in the meantime) for other
+feedback and if all agree I'll post v2.
 
+>>
+>>>
+>>>>                         /* We can only create skb based on xdp_page. */
+>>>>                         if (unlikely(xdp_page != page)) {
+>>>>                                 rcu_read_unlock();
+>>>> @@ -1012,7 +1014,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
+>>>>                                 head_skb = page_to_skb(vi, rq, xdp_page, offset,
+>>>>                                                        len, PAGE_SIZE, false,
+>>>>                                                        metasize,
+>>>> -                                                      VIRTIO_XDP_HEADROOM);
+>>>> +                                                      headroom);
+>>>>                                 return head_skb;
+>>>>                         }
+>>>>                         break;
+>>>
 > 
->>
->>>                         /* We can only create skb based on xdp_page. */
->>>                         if (unlikely(xdp_page != page)) {
->>>                                 rcu_read_unlock();
->>> @@ -1012,7 +1014,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->>>                                 head_skb = page_to_skb(vi, rq, xdp_page, offset,
->>>                                                        len, PAGE_SIZE, false,
->>>                                                        metasize,
->>> -                                                      VIRTIO_XDP_HEADROOM);
->>> +                                                      headroom);
->>>                                 return head_skb;
->>>                         }
->>>                         break;
->>
 
