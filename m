@@ -2,164 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 45C2150CAD7
-	for <lists+netdev@lfdr.de>; Sat, 23 Apr 2022 15:53:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A34A50CAE5
+	for <lists+netdev@lfdr.de>; Sat, 23 Apr 2022 16:00:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235849AbiDWNzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Apr 2022 09:55:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55728 "EHLO
+        id S235176AbiDWODB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Apr 2022 10:03:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235842AbiDWNzu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 09:55:50 -0400
-Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E8BB15708;
-        Sat, 23 Apr 2022 06:52:52 -0700 (PDT)
-Received: by mail-ot1-x329.google.com with SMTP id e15-20020a9d63cf000000b006054e65aaecso7508810otl.0;
-        Sat, 23 Apr 2022 06:52:52 -0700 (PDT)
+        with ESMTP id S232145AbiDWODA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 10:03:00 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33B15270A
+        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 07:00:03 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id i38so298210ybj.13
+        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 07:00:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=glcKdBqRA2i6LZMNuWIeDf+vpXAFKLwX/8Rt5E789cI=;
-        b=aKI7PAVjjMm2ZSI2pcfc9k7v7p3TWbHHjeK/XH9IYVwwKEkjtnDnM401eva2hYm99l
-         UFxmjebyivKz1r2nk9vVfZzxW20YF5KNggnYXZAYJ8E+fJQ9BKTKHi0rjP45gVMxPAoF
-         PDZHheMMiASnGzMHtHS3Xx+AGHiMqHbwedIC/wAaRnPx9ZLnZdGnyPpPjhvqzH714BBY
-         uGZht11/jSdwNEH8kuavCkRjo7azLCdq+BwlKj3FbJ4GEAxKmq9xF/b1ASrGlF7/oqQt
-         oLVakidSieSRIq4fdzs5pssTkezG3/jpEADZ3iYZAmFi4N/SO7bOJsceLZlMw1tG+9YG
-         xJTg==
+        d=nathanrossi.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=2C1eFtKNGX8QEDYqrcJVwsDL7oT/Kam52huekmVegQo=;
+        b=XTircMFL8zRWlN8/rGu9vK37+rPtyDeJfvoMV1EWVg0pBORBQGY5b9jTCUyhxKsMXq
+         UQbNLgMoEV5wFnqN5ZlHKh9yv8+/nP++Fa/ZiXGSjVxuMNskc1M2tdJ9x7NDtsYd9cXh
+         6PkKzvOa3dc9u7U+DZfgdbj+Ln5B1NDS2J+JwyX8NMOXdvzsj7b9kNDwemz9Yw83jwLI
+         R/DTe730vmYbRC9wB0Du1/n8H+eMp891GNk2RWKuTECtV6N/52QhT+VZlVg6UQX++k6p
+         aRkKZD8qJxwNGR8drt73gzUpuU1usUig5eaf6RVizLlrwOLABJEPIizHK69kLbRiEtot
+         VxSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=glcKdBqRA2i6LZMNuWIeDf+vpXAFKLwX/8Rt5E789cI=;
-        b=hRGzut03o1Wbhzpivj2jFyeHTrKosc3sV2IKlmwM8MuyOAW7SJnigkWosTaxxLRQ7O
-         UNZhzlmgto3O+vpj+d8gAwpiVU4ZTp/4On+yw5foZjHID3UgeR4sTLA4zdGOohIwfJKT
-         u4+Yb96CN+It0ZspA2LDVHmp5bBFcCrhmcUtibCRkuY9NuK4NvIVpwRMAum4Z9sDTbiu
-         flYrUarEFcS9ABcFMzHQT60dQn7qn0pwhh72bZd2Jws4gbFhan55pXXvHW+kJXEgNgM1
-         4r5RrG6XnGvaW6kqBr1zxbHYDOMsda/phrWdKBzEML6aqynqVDt1O1g92M+n7YdyhaBJ
-         Zdgg==
-X-Gm-Message-State: AOAM5318GQYJ5GhkqOxRIKJc1wougFqbRLkvrosdGclri7VqOYB2BbOs
-        PojzvubxkO71B+qi3s33pXk=
-X-Google-Smtp-Source: ABdhPJz3HKRzw5ZYJnvTUBsAoDIXYpqqx2OHhzEXcRJ98gx/IZhCnSrOfDQhKSwDDbUvGF7H5cMsuQ==
-X-Received: by 2002:a9d:6d8e:0:b0:5e6:bf81:f7ff with SMTP id x14-20020a9d6d8e000000b005e6bf81f7ffmr3446799otp.383.1650721971704;
-        Sat, 23 Apr 2022 06:52:51 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id o133-20020acaf08b000000b002ef7562e07csm1834027oih.41.2022.04.23.06.52.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Apr 2022 06:52:50 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Sat, 23 Apr 2022 06:52:49 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Lin Ma <linma@zju.edu.cn>
-Cc:     krzk@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mudongliangabcd@gmail.com
-Subject: Re: [PATCH v0] nfc: nci: add flush_workqueue to prevent uaf
-Message-ID: <20220423135249.GA3958174@roeck-us.net>
-References: <20220412160430.11581-1-linma@zju.edu.cn>
- <20220418134133.GA872670@roeck-us.net>
- <524c4fb6.6e33.1803cf85ae9.Coremail.linma@zju.edu.cn>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=2C1eFtKNGX8QEDYqrcJVwsDL7oT/Kam52huekmVegQo=;
+        b=usf2Pqve99v8WVfF38ewrr2R6X+VMnNZwcjiVLiY6NLRbh8hlHC19QpZm2mWyAlT4B
+         4evdcDUf9EkDTXZTGd4UGfxs6/c7kp8SWPRAfTW09Q0+C8AV/z9KA+t/7yJtVjpo7vRD
+         3C25VSrqFjqN7siLuG5JK2SvPf4d2Ors0lCk6fsHHc4VjOHKSnICKacdOp5BKNp7tK4Y
+         m9E0pFSoJOSbDsCgL/3kD1TtJ9YfLUrJag645hrr6A/vIRpLlyxih8babDRblLhqaoOS
+         4ueDIhV6wsFSFiqgsXqAfUVcjVU4QuecJNitT0WEqZlnKPm9SlcL/wP1TD1UBQVi+HZR
+         NJVA==
+X-Gm-Message-State: AOAM5323D+z6qvQ9CJ9jrblcu5IXD+36lFaojOuOgz/41r8sGtSibXUZ
+        eAi0aYlQiO2Tz34CWdjHLiJFGrHgg6PShcRf994dnw==
+X-Google-Smtp-Source: ABdhPJw+6alGxQ5KA63kaNTSaD/ft5OlfJq36gmp979GfuKe4y2aNDOpk5mPA/+KIzk4Tl9zk70ZBdyuSaLzubWRIkY=
+X-Received: by 2002:a25:e056:0:b0:645:d68d:8474 with SMTP id
+ x83-20020a25e056000000b00645d68d8474mr6281907ybg.294.1650722402279; Sat, 23
+ Apr 2022 07:00:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <524c4fb6.6e33.1803cf85ae9.Coremail.linma@zju.edu.cn>
-X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+References: <20220423132035.238704-1-nathan@nathanrossi.com> <20220423152523.1f38e2d8@thinkpad>
+In-Reply-To: <20220423152523.1f38e2d8@thinkpad>
+From:   Nathan Rossi <nathan@nathanrossi.com>
+Date:   Sat, 23 Apr 2022 23:59:50 +1000
+Message-ID: <CA+aJhH0FMBfvaww3EZEwTwfO8PdWJKoDFF2s50-Pp8Tx-b-vCQ@mail.gmail.com>
+Subject: Re: [PATCH] net: dsa: mv88e6xxx: Skip cmode writable for mv88e6*41 if unchanged
+To:     =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 18, 2022 at 09:59:10PM +0800, Lin Ma wrote:
-> Hello Guenter,
-> 
-> > I have been wondering about this and the same code further below.
-> > What prevents the command timer from firing after the call to
-> > flush_workqueue() ?
-> > 
-> > Thanks,
-> > Guenter
-> > 
-> 
-> From my understanding, once the flush_workqueue() is executed, the work that queued in
-> ndev->cmd_wq will be taken the care of.
-> 
-> That is, once the flush_workqueue() is finished, it promises there is no executing or 
-> pending nci_cmd_work() ever.
-> 
-> static void nci_cmd_work(struct work_struct *work)
-> {
->     // ...
-> 		mod_timer(&ndev->cmd_timer,
-> 			  jiffies + msecs_to_jiffies(NCI_CMD_TIMEOUT));
->     // ...
-> }
-> 
-> The command timer is still able be fired because the mod_timer() here. That is why the
-> del_timer_sync() is necessary after the flush_workqueue().
-> 
-> One very puzzling part is that you may find out the timer queue the work again
-> 
-> /* NCI command timer function */
-> static void nci_cmd_timer(struct timer_list *t)
-> {
->     // ...
-> 	queue_work(ndev->cmd_wq, &ndev->cmd_work);
-> }
-> 
-> But I found that this is okay because there is no packets in ndev->cmd_q buffers hence 
-> even there is a queued nci_cmd_work(), it simply checks the queue and returns.
-> 
-> That is, the old race picture as below
-> 
-> > Thread-1                           Thread-2
-> >                                  | nci_dev_up()
-> >                                  |   nci_open_device()
-> >                                  |     __nci_request(nci_reset_req)
-> >                                  |       nci_send_cmd
-> >                                  |         queue_work(cmd_work)
-> > nci_unregister_device()          |
-> >   nci_close_device()             | ...
-> >     del_timer_sync(cmd_timer)[1] |
-> > ...                              | Worker
-> > nci_free_device()                | nci_cmd_work()
-> >   kfree(ndev)[3]                 |   mod_timer(cmd_timer)[2]
-> 
-> is impossible now because the patched flush_workqueue() make the race like below
-> 
-> > Thread-1                           Thread-2
-> >                                  | nci_dev_up()
-> >                                  |   nci_open_device()
-> >                                  |     __nci_request(nci_reset_req)
-> >                                  |       nci_send_cmd
-> >                                  |         queue_work(cmd_work)
-> > nci_unregister_device()          |
-> >   nci_close_device()             | ...
-> >     flush_workqueue()[patch]     | Worker
-> >                                  | nci_cmd_work()
-> >                                  |   mod_timer(cmd_timer)[2]
-> >     // work over then return
-> >     del_timer_sync(cmd_timer)[1] |
-> >                                  | Timer
-> >                                  | nci_cmd_timer()
-> >                                  | 
-> >     // timer over then return    |
-> > ...                              |
-> > nci_free_device()                | 
-> >   kfree(ndev)[3]                 | 
-> 
-> 
-> With above thinkings and the given fact that my POC didn't raise the UAF, I think the 
-> flush_workqueue() + del_timer_sync() combination is okay to hinder this race.
-> 
-> Tell me if there is anything wrong.
-> 
+On Sat, 23 Apr 2022 at 23:25, Marek Beh=C3=BAn <kabel@kernel.org> wrote:
+>
+> On Sat, 23 Apr 2022 13:20:35 +0000
+> Nathan Rossi <nathan@nathanrossi.com> wrote:
+>
+> > The mv88e6341_port_set_cmode function always calls the set writable
+> > regardless of whether the current cmode is different from the desired
+> > cmode. This is problematic for specific configurations of the mv88e6341
+> > and mv88e6141 (in single chip adddressing mode?) where the hidden
+> > registers are not accessible.
+>
+> I don't have a problem with skipping setting cmode writable if cmode is
+> not being changed. But hidden registers should be accessible regardless
+> of whether you are using single chip addressing mode or not. You need
+> to find why it isn't working for you, this is a bug.
 
-Thanks a lot for the detailed explanation and analysis.
-I agree with your conclusion.
+I did try to debug the hidden register access, unfortunately with the
+device I have the hidden registers do not behave correctly. It simply
+times out waiting for the busy bit to change. I was not sure the
+reason why and suspected it was something specific to the single mode,
+and unfortunately the only information I have regarding these
+registers is the kernel code itself. Perhaps it is specific to some
+other pin configuration or the specific chip revision? If you have any
+additional information for these hidden registers it would be very
+helpful in debugging. For reference the device is a MV88E6141,
+manufactured in 2019 week 47 (in a Netgate SG-3100).
 
-Guenter
+Thanks,
+Nathan
+
+>
+> Marek
