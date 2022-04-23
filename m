@@ -2,244 +2,283 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 011C850CB38
-	for <lists+netdev@lfdr.de>; Sat, 23 Apr 2022 16:30:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0512750CB34
+	for <lists+netdev@lfdr.de>; Sat, 23 Apr 2022 16:30:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235630AbiDWOdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Apr 2022 10:33:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53430 "EHLO
+        id S235142AbiDWOdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Apr 2022 10:33:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234415AbiDWOds (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 10:33:48 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FBE9289B4;
-        Sat, 23 Apr 2022 07:30:50 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id 15so1307100pgf.4;
-        Sat, 23 Apr 2022 07:30:50 -0700 (PDT)
+        with ESMTP id S234415AbiDWOdL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 10:33:11 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63AF028E06
+        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 07:30:14 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id el3so8821756edb.11
+        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 07:30:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IbYzjBMPd51boeHwhH3wuc9Vn0/S8H3iRbP4T06Ug/A=;
-        b=e9kxM39mRig/k57Ub+oGcFMcpzV47OT4eNveol/LKX9UORSpHXh/KjtegfnWHITvlm
-         jJp1c7Aa+U91Dy7KWeYRbNW5QH9l21dc9SkmTW2kR9kBVpP02GiiShVXYuvFGzpYALZj
-         vBFGEmX7C80dxIYPi8X39MEmSiD95SJApig2bubiz3EiInmdAc6wJsm3Wk2eIhkH1K0D
-         pLo1KbIf7XARqxRc/DLTwJuZb2jb6tR07DAiD5AKQbeodRyfTSD8e2ZG66HmJxG5Khy6
-         5d5dEASAAbsHJKu4SCE6hf8c9dcBEF3g6n34w0o7xZIZXAbsxWPHssUjUQHb2Q8+qUnk
-         /oHg==
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=/VzrKB8AI+UT10BlSME1sX29acp4A7aoD4KRvGPakt0=;
+        b=OXa6XKtZmQre/1/GKDXkrb7s2zxL3ad6h29IoFeuYjVvrfscThhNomcRf3iN/eVSF3
+         HvojA4cPJZ7uL9elAu9Jn0cOvXVUfXdojNpdOmuFh32B84oaQwg8glUKzj/he0+V6HQV
+         Wf6Z+y2rPy6hZ9seJHRKpFFE8KgHTPzxxDPJOysaa2OxX51jZFft/TYrb2OSq/i85Izy
+         idlQWLVdcYyCc8BXF8G1h/4OzPL5vhxu4nDJimQt/wSvyEWlOp9xKEf1dpSoBt/qkU0c
+         ZEUfmbUj3aL9Hn9DNGxHf5UBtBEnyvU3OL0aKSr0iEEMDVnJSBh7U5CglPauhVGJ28NA
+         xNzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
          :content-transfer-encoding;
-        bh=IbYzjBMPd51boeHwhH3wuc9Vn0/S8H3iRbP4T06Ug/A=;
-        b=lYEOY3KFolTAVX7rJhkt2hzbEaidFW02DJpjnqTDgp5lBNlh+C4yu1IcV1Necq68zr
-         t0p+Frk4XNArr2EOuH1/+EQXUCZUz5AFaZPsLpn8PorkiG4YGnR0rtDvcJtk0QZMS68w
-         mEe79qT7ackOjEQGr06p5W+vgoIdGy0PlKIuvi4kouIEwTrS5vRjS9fwHtMOO/++dTxZ
-         6ih2inF3lj6DcG3tQX6nKOUVojZjwslCYHXO4Sc6tH1Hjxb/nYNwOXAvA58dUGYQljsO
-         tJ7Sh2bwPaYaxC2HdgA3AzB3KZCcGiCjSh/hMK3OAkTlq2PP/ijdMoeN4/4bfg9jqAhy
-         zuuQ==
-X-Gm-Message-State: AOAM533HLmsKTismb9ljfSh0fbg9Ptp1DfF+G2Ym7oPJPV0zOzrh14jV
-        EXumTgVIXbdUOsK8efbovAk=
-X-Google-Smtp-Source: ABdhPJxhAIxDc9NmJoC5o4P8rTL4BbAzX+TMNG/y7XV9K86jlKj5vfeK3KWWsG1w0N86098N8ariGQ==
-X-Received: by 2002:a63:fd04:0:b0:3aa:6473:1859 with SMTP id d4-20020a63fd04000000b003aa64731859mr8226012pgh.151.1650724249799;
-        Sat, 23 Apr 2022 07:30:49 -0700 (PDT)
-Received: from localhost.localdomain ([223.212.58.71])
-        by smtp.gmail.com with ESMTPSA id d8-20020aa78688000000b00505793566f7sm5778399pfo.211.2022.04.23.07.30.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Apr 2022 07:30:49 -0700 (PDT)
-From:   Yuntao Wang <ytcoode@gmail.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Yuntao Wang <ytcoode@gmail.com>
-Subject: [PATCH bpf-next] selftests/bpf: Fix incorrect TRUNNER_BINARY name output
-Date:   Sat, 23 Apr 2022 22:30:07 +0800
-Message-Id: <20220423143007.423526-1-ytcoode@gmail.com>
-X-Mailer: git-send-email 2.35.3
+        bh=/VzrKB8AI+UT10BlSME1sX29acp4A7aoD4KRvGPakt0=;
+        b=kIlDcn9TnC2ak79/sKJVO+Pd5Bg5d3VMMlCUio/OjDCNn+jebP90ZSeVQEBWJjMsVb
+         deQ2u8TStb+PjBWXXv237N/lRV26cgkDOS20AkVutZmU03SEb8F39vrJUMITWeAmginW
+         X0QhzZX6DPNe+uOIjPbMkZAW68ACxzBCqdRyGeyd0KVQ3ChHl/+al09nlecbQKb2GPKq
+         eLhWFGq6fsajakUGtF7VH5udw/LGbQt/ZawMkFskCMCmSJUiEloWMuJIL2P6Ju7bIOJA
+         GKsBDT81CxmbidIL8lVNvvCPmaF23RJ+YBNX7ykZEuxEpMpSOQYNTpKIiJNdXQxXRYO9
+         UJAA==
+X-Gm-Message-State: AOAM531HedIoioyMcPIWlfRL91C0R3ci+h0GGdz0zN8sLSdyCWv+R+B5
+        +L4se8aOEnKH+U97F5aYD87ZTQ==
+X-Google-Smtp-Source: ABdhPJw9kOkO0al8otH8hsgqVAIL0GqyG2g5vTtjrjbYBt7079PaWCmiaw4KABvllK/4Mjk9Dnui4Q==
+X-Received: by 2002:a05:6402:1a34:b0:425:ca01:58ec with SMTP id be20-20020a0564021a3400b00425ca0158ecmr4746999edb.373.1650724212892;
+        Sat, 23 Apr 2022 07:30:12 -0700 (PDT)
+Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
+        by smtp.gmail.com with ESMTPSA id n14-20020a50934e000000b0042053e79386sm2267624eda.91.2022.04.23.07.30.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 23 Apr 2022 07:30:12 -0700 (PDT)
+Message-ID: <a58bfd2c-4f83-11fe-08d1-19c1d6497fc2@blackwall.org>
+Date:   Sat, 23 Apr 2022 17:30:11 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net] virtio_net: fix wrong buf address calculation when
+ using xdp
+Content-Language: en-US
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, stable@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+References: <20220423112612.2292774-1-razor@blackwall.org>
+ <1650720683.8168066-1-xuanzhuo@linux.alibaba.com>
+ <8d511a16-8d69-82b1-48a1-24de3a592aef@blackwall.org>
+In-Reply-To: <8d511a16-8d69-82b1-48a1-24de3a592aef@blackwall.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, when we run 'make test_progs', the output is:
+On 23/04/2022 17:16, Nikolay Aleksandrov wrote:
+> On 23/04/2022 16:31, Xuan Zhuo wrote:
+>> On Sat, 23 Apr 2022 14:26:12 +0300, Nikolay Aleksandrov <razor@blackwall.org> wrote:
+>>> We received a report[1] of kernel crashes when Cilium is used in XDP
+>>> mode with virtio_net after updating to newer kernels. After
+>>> investigating the reason it turned out that when using mergeable bufs
+>>> with an XDP program which adjusts xdp.data or xdp.data_meta page_to_buf()
+>>> calculates the build_skb address wrong because the offset can become less
+>>> than the headroom so it gets the address of the previous page (-X bytes
+>>> depending on how lower offset is):
+>>>  page_to_skb: page addr ffff9eb2923e2000 buf ffff9eb2923e1ffc offset 252 headroom 256
+>>>
+>>> This is a pr_err() I added in the beginning of page_to_skb which clearly
+>>> shows offset that is less than headroom by adding 4 bytes of metadata
+>>> via an xdp prog. The calculations done are:
+>>>  receive_mergeable():
+>>>  headroom = VIRTIO_XDP_HEADROOM; // VIRTIO_XDP_HEADROOM == 256 bytes
+>>>  offset = xdp.data - page_address(xdp_page) -
+>>>           vi->hdr_len - metasize;
+>>>
+>>>  page_to_skb():
+>>>  p = page_address(page) + offset;
+>>>  ...
+>>>  buf = p - headroom;
+>>>
+>>> Now buf goes -4 bytes from the page's starting address as can be seen
+>>> above which is set as skb->head and skb->data by build_skb later. Depending
+>>> on what's done with the skb (when it's freed most often) we get all kinds
+>>> of corruptions and BUG_ON() triggers in mm[2]. The story of the faulty
+>>> commit is interesting because the patch was sent and applied twice (it
+>>> seems the first one got lost during merge back in 5.13 window). The
+>>> first version of the patch that was applied as:
+>>>  commit 7bf64460e3b2 ("virtio-net: get build_skb() buf by data ptr")
+>>> was actually correct because it calculated the page starting address
+>>> without relying on offset or headroom, but then the second version that
+>>> was applied as:
+>>>  commit 8fb7da9e9907 ("virtio_net: get build_skb() buf by data ptr")
+>>> was wrong and added the above calculation.
+>>> An example xdp prog[3] is below.
+>>>
+>>> [1] https://github.com/cilium/cilium/issues/19453
+>>>
+>>> [2] Two of the many traces:
+>>>  [   40.437400] BUG: Bad page state in process swapper/0  pfn:14940
+>>>  [   40.916726] BUG: Bad page state in process systemd-resolve  pfn:053b7
+>>>  [   41.300891] kernel BUG at include/linux/mm.h:720!
+>>>  [   41.301801] invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
+>>>  [   41.302784] CPU: 1 PID: 1181 Comm: kubelet Kdump: loaded Tainted: G    B   W         5.18.0-rc1+ #37
+>>>  [   41.304458] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.15.0-1.fc35 04/01/2014
+>>>  [   41.306018] RIP: 0010:page_frag_free+0x79/0xe0
+>>>  [   41.306836] Code: 00 00 75 ea 48 8b 07 a9 00 00 01 00 74 e0 48 8b 47 48 48 8d 50 ff a8 01 48 0f 45 fa eb d0 48 c7 c6 18 b8 30 a6 e8 d7 f8 fc ff <0f> 0b 48 8d 78 ff eb bc 48 8b 07 a9 00 00 01 00 74 3a 66 90 0f b6
+>>>  [   41.310235] RSP: 0018:ffffac05c2a6bc78 EFLAGS: 00010292
+>>>  [   41.311201] RAX: 000000000000003e RBX: 0000000000000000 RCX: 0000000000000000
+>>>  [   41.312502] RDX: 0000000000000001 RSI: ffffffffa6423004 RDI: 00000000ffffffff
+>>>  [   41.313794] RBP: ffff993c98823600 R08: 0000000000000000 R09: 00000000ffffdfff
+>>>  [   41.315089] R10: ffffac05c2a6ba68 R11: ffffffffa698ca28 R12: ffff993c98823600
+>>>  [   41.316398] R13: ffff993c86311ebc R14: 0000000000000000 R15: 000000000000005c
+>>>  [   41.317700] FS:  00007fe13fc56740(0000) GS:ffff993cdd900000(0000) knlGS:0000000000000000
+>>>  [   41.319150] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>>>  [   41.320152] CR2: 000000c00008a000 CR3: 0000000014908000 CR4: 0000000000350ee0
+>>>  [   41.321387] Call Trace:
+>>>  [   41.321819]  <TASK>
+>>>  [   41.322193]  skb_release_data+0x13f/0x1c0
+>>>  [   41.322902]  __kfree_skb+0x20/0x30
+>>>  [   41.343870]  tcp_recvmsg_locked+0x671/0x880
+>>>  [   41.363764]  tcp_recvmsg+0x5e/0x1c0
+>>>  [   41.384102]  inet_recvmsg+0x42/0x100
+>>>  [   41.406783]  ? sock_recvmsg+0x1d/0x70
+>>>  [   41.428201]  sock_read_iter+0x84/0xd0
+>>>  [   41.445592]  ? 0xffffffffa3000000
+>>>  [   41.462442]  new_sync_read+0x148/0x160
+>>>  [   41.479314]  ? 0xffffffffa3000000
+>>>  [   41.496937]  vfs_read+0x138/0x190
+>>>  [   41.517198]  ksys_read+0x87/0xc0
+>>>  [   41.535336]  do_syscall_64+0x3b/0x90
+>>>  [   41.551637]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+>>>  [   41.568050] RIP: 0033:0x48765b
+>>>  [   41.583955] Code: e8 4a 35 fe ff eb 88 cc cc cc cc cc cc cc cc e8 fb 7a fe ff 48 8b 7c 24 10 48 8b 74 24 18 48 8b 54 24 20 48 8b 44 24 08 0f 05 <48> 3d 01 f0 ff ff 76 20 48 c7 44 24 28 ff ff ff ff 48 c7 44 24 30
+>>>  [   41.632818] RSP: 002b:000000c000a2f5b8 EFLAGS: 00000212 ORIG_RAX: 0000000000000000
+>>>  [   41.664588] RAX: ffffffffffffffda RBX: 000000c000062000 RCX: 000000000048765b
+>>>  [   41.681205] RDX: 0000000000005e54 RSI: 000000c000e66000 RDI: 0000000000000016
+>>>  [   41.697164] RBP: 000000c000a2f608 R08: 0000000000000001 R09: 00000000000001b4
+>>>  [   41.713034] R10: 00000000000000b6 R11: 0000000000000212 R12: 00000000000000e9
+>>>  [   41.728755] R13: 0000000000000001 R14: 000000c000a92000 R15: ffffffffffffffff
+>>>  [   41.744254]  </TASK>
+>>>  [   41.758585] Modules linked in: br_netfilter bridge veth netconsole virtio_net
+>>>
+>>>  and
+>>>
+>>>  [   33.524802] BUG: Bad page state in process systemd-network  pfn:11e60
+>>>  [   33.528617] page ffffe05dc0147b00 ffffe05dc04e7a00 ffff8ae9851ec000 (1) len 82 offset 252 metasize 4 hroom 0 hdr_len 12 data ffff8ae9851ec10c data_meta ffff8ae9851ec108 data_end ffff8ae9851ec14e
+>>>  [   33.529764] page:000000003792b5ba refcount:0 mapcount:-512 mapping:0000000000000000 index:0x0 pfn:0x11e60
+>>>  [   33.532463] flags: 0xfffffc0000000(node=0|zone=1|lastcpupid=0x1fffff)
+>>>  [   33.532468] raw: 000fffffc0000000 0000000000000000 dead000000000122 0000000000000000
+>>>  [   33.532470] raw: 0000000000000000 0000000000000000 00000000fffffdff 0000000000000000
+>>>  [   33.532471] page dumped because: nonzero mapcount
+>>>  [   33.532472] Modules linked in: br_netfilter bridge veth netconsole virtio_net
+>>>  [   33.532479] CPU: 0 PID: 791 Comm: systemd-network Kdump: loaded Not tainted 5.18.0-rc1+ #37
+>>>  [   33.532482] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.15.0-1.fc35 04/01/2014
+>>>  [   33.532484] Call Trace:
+>>>  [   33.532496]  <TASK>
+>>>  [   33.532500]  dump_stack_lvl+0x45/0x5a
+>>>  [   33.532506]  bad_page.cold+0x63/0x94
+>>>  [   33.532510]  free_pcp_prepare+0x290/0x420
+>>>  [   33.532515]  free_unref_page+0x1b/0x100
+>>>  [   33.532518]  skb_release_data+0x13f/0x1c0
+>>>  [   33.532524]  kfree_skb_reason+0x3e/0xc0
+>>>  [   33.532527]  ip6_mc_input+0x23c/0x2b0
+>>>  [   33.532531]  ip6_sublist_rcv_finish+0x83/0x90
+>>>  [   33.532534]  ip6_sublist_rcv+0x22b/0x2b0
+>>>
+>>> [3] XDP program to reproduce(xdp_pass.c):
+>>>  #include <linux/bpf.h>
+>>>  #include <bpf/bpf_helpers.h>
+>>>
+>>>  SEC("xdp_pass")
+>>>  int xdp_pkt_pass(struct xdp_md *ctx)
+>>>  {
+>>>           bpf_xdp_adjust_head(ctx, -(int)32);
+>>>           return XDP_PASS;
+>>>  }
+>>>
+>>>  char _license[] SEC("license") = "GPL";
+>>>
+>>>  compile: clang -O2 -g -Wall -target bpf -c xdp_pass.c -o xdp_pass.o
+>>>  load on virtio_net: ip link set enp1s0 xdpdrv obj xdp_pass.o sec xdp_pass
+>>>
+>>> CC: stable@vger.kernel.org
+>>> CC: Jason Wang <jasowang@redhat.com>
+>>> CC: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+>>> CC: Daniel Borkmann <daniel@iogearbox.net>
+>>> CC: "Michael S. Tsirkin" <mst@redhat.com>
+>>> CC: virtualization@lists.linux-foundation.org
+>>> Fixes: 8fb7da9e9907 ("virtio_net: get build_skb() buf by data ptr")
+>>> Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
+>>> ---
+>>>  drivers/net/virtio_net.c | 8 ++++++--
+>>>  1 file changed, 6 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+>>> index 87838cbe38cf..0687dd88e97f 100644
+>>> --- a/drivers/net/virtio_net.c
+>>> +++ b/drivers/net/virtio_net.c
+>>> @@ -434,9 +434,13 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
+>>>  	 * Buffers with headroom use PAGE_SIZE as alloc size, see
+>>>  	 * add_recvbuf_mergeable() + get_mergeable_buf_len()
+>>>  	 */
+>>> -	truesize = headroom ? PAGE_SIZE : truesize;
+>>> +	if (headroom) {
+>>> +		truesize = PAGE_SIZE;
+>>> +		buf = (char *)((unsigned long)p & PAGE_MASK);
+>>
+>> The reason for not doing this is that buf and p may not be on the same page, and
+>> buf is probably not page-aligned.
+>>
+>> The implementation of virtio-net merge is add_recvbuf_mergeable(), which
+>> allocates a large block of memory at one time, and allocates from it each time.
+>> Although in xdp mode, each allocation is page_size, it does not guarantee that
+>> each allocation is page-aligned .
+>>
+>> The problem here is that the value of headroom is wrong, the package is
+>> structured like this:
+>>
+>> from device    | headroom          | virtio-net hdr | data |
+>> after xdp      | headroom  |  virtio-net hdr | meta | data |
+> 
+> You're free to push data back (not necessarily through meta).
+> You don't have virtio-net hdr for the xdp case (hdr_valid is false there).
+> 
+>>
+>> The page_address(page) + offset we pass to page_to_skb() points to the
+>> virtio-net hdr.
+>>
+>> So I think it might be better to change it this way.
+>>
+>> Thanks.
+>>
+>>
+>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+>> index 87838cbe38cf..086ae835ec86 100644
+>> --- a/drivers/net/virtio_net.c
+>> +++ b/drivers/net/virtio_net.c
+>> @@ -1012,7 +1012,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
+>>                                 head_skb = page_to_skb(vi, rq, xdp_page, offset,
+>>                                                        len, PAGE_SIZE, false,
+>>                                                        metasize,
+>> -                                                      VIRTIO_XDP_HEADROOM);
+>> +                                                      VIRTIO_XDP_HEADROOM - metazie);
+>>                                 return head_skb;
+>>                         }
+>>                         break;
+> 
+> That patch doesn't fix it, as I said with xdp you can move both data and data_meta.
+> So just doing that would take care of the meta, but won't take care of moving data.
+> 
 
-  CLNG-BPF [test_maps] atomic_bounds.o
-  ...
-  GEN-SKEL [test_progs] atomic_bounds.skel.h
-  ...
-  TEST-OBJ [test_progs] align.test.o
-  ...
-  TEST-HDR [test_progs] tests.h
-  EXT-OBJ  [test_progs] test_progs.o
-  ...
-  BINARY   test_progs
+Also it doesn't take care of the case where page_to_skb() is called with the original page
+i.e. when we already have headroom, so we hit the next/standard page_to_skb() call (xdp_page == page).
 
-As you can see, the TRUNNER_BINARY name in the CLNG-BPF part is test_maps,
-which is incorrect.
+The above change guarantees that buf and p will be in the same page and the skb_reserve() call will
+make skb->data point to p - buf, i.e. to the beginning of the valid data in that page.
+Unfortunately the new headroom will not be correct if it is a frag, it will be longer.
 
-Similarly, when we run 'make test_maps', the output is:
-
-  CLNG-BPF [test_maps] atomic_bounds.o
-  ...
-  GEN-SKEL [test_progs] atomic_bounds.skel.h
-  ...
-  TEST-OBJ [test_maps] array_map_batch_ops.test.o
-  ...
-  TEST-HDR [test_maps] tests.h
-  EXT-OBJ  [test_maps] test_maps.o
-  ...
-  BINARY   test_maps
-
-At this time, the TRUNNER_BINARY name in the GEN-SKEL part is wrong.
-
-Again, if we run 'make /full/path/to/selftests/bpf/test_vmlinux.skel.h',
-the output is:
-
-  CLNG-BPF [test_maps] test_vmlinux.o
-  GEN-SKEL [test_progs] test_vmlinux.skel.h
-
-Here, the TRUNNER_BINARY names are inappropriate and meaningless, they
-should be removed.
-
-This patch fixes these and all other similar issues.
-
-With the patch applied, the output becomes:
-
-  $ make test_progs
-
-  CLNG-BPF [test_progs] atomic_bounds.o
-  ...
-  GEN-SKEL [test_progs] atomic_bounds.skel.h
-  ...
-  TEST-OBJ [test_progs] align.test.o
-  ...
-  TEST-HDR [test_progs] tests.h
-  EXT-OBJ  [test_progs] test_progs.o
-  ...
-  BINARY   test_progs
-
-  $ make test_maps
-
-  CLNG-BPF [test_maps] atomic_bounds.o
-  ...
-  GEN-SKEL [test_maps] atomic_bounds.skel.h
-  ...
-  TEST-OBJ [test_maps] array_map_batch_ops.test.o
-  ...
-  TEST-HDR [test_maps] tests.h
-  EXT-OBJ  [test_maps] test_maps.o
-  ...
-  BINARY   test_maps
-
-  $ make /full/path/to/selftests/bpf/test_vmlinux.skel.h
-
-  CLNG-BPF test_vmlinux.o
-  GEN-SKEL test_vmlinux.skel.h
-
-Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
----
- tools/testing/selftests/bpf/Makefile | 20 ++++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
-
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index bafdc5373a13..3cf444cb20af 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -413,7 +413,7 @@ $(TRUNNER_BPF_OBJS): $(TRUNNER_OUTPUT)/%.o:				\
- 					  $(TRUNNER_BPF_CFLAGS))
- 
- $(TRUNNER_BPF_SKELS): %.skel.h: %.o $(BPFTOOL) | $(TRUNNER_OUTPUT)
--	$$(call msg,GEN-SKEL,$(TRUNNER_BINARY),$$@)
-+	$$(call msg,GEN-SKEL,$$(TRUNNER_BINARY),$$@)
- 	$(Q)$$(BPFTOOL) gen object $$(<:.o=.linked1.o) $$<
- 	$(Q)$$(BPFTOOL) gen object $$(<:.o=.linked2.o) $$(<:.o=.linked1.o)
- 	$(Q)$$(BPFTOOL) gen object $$(<:.o=.linked3.o) $$(<:.o=.linked2.o)
-@@ -422,7 +422,7 @@ $(TRUNNER_BPF_SKELS): %.skel.h: %.o $(BPFTOOL) | $(TRUNNER_OUTPUT)
- 	$(Q)$$(BPFTOOL) gen subskeleton $$(<:.o=.linked3.o) name $$(notdir $$(<:.o=)) > $$(@:.skel.h=.subskel.h)
- 
- $(TRUNNER_BPF_LSKELS): %.lskel.h: %.o $(BPFTOOL) | $(TRUNNER_OUTPUT)
--	$$(call msg,GEN-SKEL,$(TRUNNER_BINARY),$$@)
-+	$$(call msg,GEN-SKEL,$$(TRUNNER_BINARY),$$@)
- 	$(Q)$$(BPFTOOL) gen object $$(<:.o=.linked1.o) $$<
- 	$(Q)$$(BPFTOOL) gen object $$(<:.o=.linked2.o) $$(<:.o=.linked1.o)
- 	$(Q)$$(BPFTOOL) gen object $$(<:.o=.linked3.o) $$(<:.o=.linked2.o)
-@@ -430,12 +430,12 @@ $(TRUNNER_BPF_LSKELS): %.lskel.h: %.o $(BPFTOOL) | $(TRUNNER_OUTPUT)
- 	$(Q)$$(BPFTOOL) gen skeleton -L $$(<:.o=.linked3.o) name $$(notdir $$(<:.o=_lskel)) > $$@
- 
- $(TRUNNER_BPF_SKELS_LINKED): $(TRUNNER_BPF_OBJS) $(BPFTOOL) | $(TRUNNER_OUTPUT)
--	$$(call msg,LINK-BPF,$(TRUNNER_BINARY),$$(@:.skel.h=.o))
-+	$$(call msg,LINK-BPF,$$(TRUNNER_BINARY),$$(@:.skel.h=.o))
- 	$(Q)$$(BPFTOOL) gen object $$(@:.skel.h=.linked1.o) $$(addprefix $(TRUNNER_OUTPUT)/,$$($$(@F)-deps))
- 	$(Q)$$(BPFTOOL) gen object $$(@:.skel.h=.linked2.o) $$(@:.skel.h=.linked1.o)
- 	$(Q)$$(BPFTOOL) gen object $$(@:.skel.h=.linked3.o) $$(@:.skel.h=.linked2.o)
- 	$(Q)diff $$(@:.skel.h=.linked2.o) $$(@:.skel.h=.linked3.o)
--	$$(call msg,GEN-SKEL,$(TRUNNER_BINARY),$$@)
-+	$$(call msg,GEN-SKEL,$$(TRUNNER_BINARY),$$@)
- 	$(Q)$$(BPFTOOL) gen skeleton $$(@:.skel.h=.linked3.o) name $$(notdir $$(@:.skel.h=)) > $$@
- 	$(Q)$$(BPFTOOL) gen subskeleton $$(@:.skel.h=.linked3.o) name $$(notdir $$(@:.skel.h=)) > $$(@:.skel.h=.subskel.h)
- endif
-@@ -444,7 +444,7 @@ endif
- ifeq ($($(TRUNNER_TESTS_DIR)-tests-hdr),)
- $(TRUNNER_TESTS_DIR)-tests-hdr := y
- $(TRUNNER_TESTS_HDR): $(TRUNNER_TESTS_DIR)/*.c
--	$$(call msg,TEST-HDR,$(TRUNNER_BINARY),$$@)
-+	$$(call msg,TEST-HDR,$$(TRUNNER_BINARY),$$@)
- 	$$(shell (echo '/* Generated header, do not edit */';					\
- 		  sed -n -E 's/^void (serial_)?test_([a-zA-Z0-9_]+)\((void)?\).*/DEFINE_TEST(\2)/p'	\
- 			$(TRUNNER_TESTS_DIR)/*.c | sort ;	\
-@@ -461,7 +461,7 @@ $(TRUNNER_TEST_OBJS): $(TRUNNER_OUTPUT)/%.test.o:			\
- 		      $(TRUNNER_BPF_LSKELS)				\
- 		      $(TRUNNER_BPF_SKELS_LINKED)			\
- 		      $$(BPFOBJ) | $(TRUNNER_OUTPUT)
--	$$(call msg,TEST-OBJ,$(TRUNNER_BINARY),$$@)
-+	$$(call msg,TEST-OBJ,$$(TRUNNER_BINARY),$$@)
- 	$(Q)cd $$(@D) && $$(CC) -I. $$(CFLAGS) -c $(CURDIR)/$$< $$(LDLIBS) -o $$(@F)
- 
- $(TRUNNER_EXTRA_OBJS): $(TRUNNER_OUTPUT)/%.o:				\
-@@ -469,17 +469,19 @@ $(TRUNNER_EXTRA_OBJS): $(TRUNNER_OUTPUT)/%.o:				\
- 		       $(TRUNNER_EXTRA_HDRS)				\
- 		       $(TRUNNER_TESTS_HDR)				\
- 		       $$(BPFOBJ) | $(TRUNNER_OUTPUT)
--	$$(call msg,EXT-OBJ,$(TRUNNER_BINARY),$$@)
-+	$$(call msg,EXT-OBJ,$$(TRUNNER_BINARY),$$@)
- 	$(Q)$$(CC) $$(CFLAGS) -c $$< $$(LDLIBS) -o $$@
- 
- # non-flavored in-srctree builds receive special treatment, in particular, we
- # do not need to copy extra resources (see e.g. test_btf_dump_case())
- $(TRUNNER_BINARY)-extras: $(TRUNNER_EXTRA_FILES) | $(TRUNNER_OUTPUT)
- ifneq ($2:$(OUTPUT),:$(shell pwd))
--	$$(call msg,EXT-COPY,$(TRUNNER_BINARY),$(TRUNNER_EXTRA_FILES))
-+	$$(call msg,EXT-COPY,$$(TRUNNER_BINARY),$(TRUNNER_EXTRA_FILES))
- 	$(Q)rsync -aq $$^ $(TRUNNER_OUTPUT)/
- endif
- 
-+$(OUTPUT)/$(TRUNNER_BINARY): TRUNNER_BINARY = $(TRUNNER_BINARY)
-+
- $(OUTPUT)/$(TRUNNER_BINARY): $(TRUNNER_TEST_OBJS)			\
- 			     $(TRUNNER_EXTRA_OBJS) $$(BPFOBJ)		\
- 			     $(RESOLVE_BTFIDS)				\
-@@ -489,6 +491,8 @@ $(OUTPUT)/$(TRUNNER_BINARY): $(TRUNNER_TEST_OBJS)			\
- 	$(Q)$(RESOLVE_BTFIDS) --btf $(TRUNNER_OUTPUT)/btf_data.o $$@
- 	$(Q)ln -sf $(if $2,..,.)/tools/build/bpftool/bootstrap/bpftool $(if $2,$2/)bpftool
- 
-+TRUNNER_BINARY =
-+
- endef
- 
- # Define test_progs test runner.
--- 
-2.35.3
 
