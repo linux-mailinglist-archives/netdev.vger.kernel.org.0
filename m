@@ -2,98 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 24AD850CD0A
-	for <lists+netdev@lfdr.de>; Sat, 23 Apr 2022 20:56:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E74F150CD33
+	for <lists+netdev@lfdr.de>; Sat, 23 Apr 2022 21:36:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236815AbiDWS7Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Apr 2022 14:59:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51834 "EHLO
+        id S236880AbiDWTi6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Apr 2022 15:38:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236811AbiDWS7W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 14:59:22 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54CB61C5E39
-        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 11:56:24 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id p18so8922400edr.7
-        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 11:56:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=MrTvfbh80/nABjva/CFwZXvVtFfjS4p1cdRggyuMyb0=;
-        b=ppMuSB/nzYeA11aQy1DjSqKy2Wgoy6ZkwZidEhMzkqXN4kk/dIXaw+R3AGu0AMtsv2
-         udES9lYGsq16likT9Bhj6hoAOghIycaugD3/esamC5Pm6ryIYm+9De4VlVxOz2znnj2L
-         M0bufMh81qx1LC5z3VXG5GzsoVGPcBuJ7JX74lBLXwLr9krnuq2W5FxJVEaeChYA7gfC
-         qteBQ55ZE1gFvtT82d5Bv+VuNJb0S2rfEv81V8Eui0Jlg3RhJRMWwyzBc7p0dJtmyLwR
-         AJQ8pMPjT23ME5D77zMTKVh54XReYrruQT5gaM7LX5GXGEaA220RjQJx45WmQd51jghJ
-         WEPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=MrTvfbh80/nABjva/CFwZXvVtFfjS4p1cdRggyuMyb0=;
-        b=EF6tEB7V+rDNbzSM4RNLfxvvBCkCvAiK3nKZABIBuXE+Zms2dbv+kiBZde5qc07llg
-         yKKrCtK04uDrxdzFYrOCUPE4VS3+nHawXi8zvuTEv4C2zb7ZGtdJXT9IhRu3H0QVZssa
-         9QSSRzCptuoYd2fIXC33LT+gTbJ1eHXhj39kIfX4nSfWhOL02/1Ov0m/quX6SM4QAwmV
-         Zev84ogVf9DSYFYDX1h/xj1TdRifry/jVTR0gL2aZ+x1ZAr9EcpMJ4AZmNJJNoYYZPtI
-         tAgxzlOaJW/rwtItdVeQ9zRNPLDbccNAZ1wUKW+/gTuBsA9lIF/1pzYsDvqnvv1p/m4L
-         ABUw==
-X-Gm-Message-State: AOAM531glLpRq4QCV1bX2lQ/B5pAoR8SQs5buGll3Jbqj8iIxq/3mPFd
-        vwyTwSklhqtOftwkAEUR3PoErQ==
-X-Google-Smtp-Source: ABdhPJyWCQyw2YMQrWuMvFGV/Ao0pGu3jAcyM/WTvK2mI7V2a9M8hrt1sPfK5Mwmsv2vlV/hFxVa0A==
-X-Received: by 2002:a05:6402:34cd:b0:424:793:9f65 with SMTP id w13-20020a05640234cd00b0042407939f65mr11177304edc.88.1650740182965;
-        Sat, 23 Apr 2022 11:56:22 -0700 (PDT)
-Received: from [192.168.0.234] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id fx3-20020a170906b74300b006daecedee44sm1916058ejb.220.2022.04.23.11.56.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 23 Apr 2022 11:56:22 -0700 (PDT)
-Message-ID: <da7f4830-aaeb-bb26-e58a-62e67b51645a@linaro.org>
-Date:   Sat, 23 Apr 2022 20:56:21 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] dt-bindings: can: renesas,rcar-canfd: Document RZ/G2UL
- support
-Content-Language: en-US
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        with ESMTP id S236600AbiDWTi4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 15:38:56 -0400
+Received: from bmailout2.hostsharing.net (bmailout2.hostsharing.net [83.223.78.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6E205E162
+        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 12:35:56 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout2.hostsharing.net (Postfix) with ESMTPS id 9F4C9280253C4;
+        Sat, 23 Apr 2022 21:35:54 +0200 (CEST)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id 9047FAEC9E; Sat, 23 Apr 2022 21:35:54 +0200 (CEST)
+Date:   Sat, 23 Apr 2022 21:35:54 +0200
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Oliver Neukum <oneukum@suse.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        linux-renesas-soc@vger.kernel.org
-References: <20220423130743.123198-1-biju.das.jz@bp.renesas.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220423130743.123198-1-biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        Jakub Kicinski <kuba@kernel.org>, Jann Horn <jannh@google.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Jacky Chou <jackychou@asix.com.tw>, Willy Tarreau <w@1wt.eu>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Philipp Rosenberger <p.rosenberger@kunbus.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] net: linkwatch: ignore events for unregistered netdevs
+Message-ID: <20220423193554.GA14389@wunner.de>
+References: <18b3541e5372bc9b9fc733d422f4e698c089077c.1650177997.git.lukas@wunner.de>
+ <9325d344e8a6b1a4720022697792a84e545fef62.camel@redhat.com>
+ <20220423160723.GA20330@wunner.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220423160723.GA20330@wunner.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 23/04/2022 15:07, Biju Das wrote:
-> Add CANFD binding documentation for Renesas R9A07G043 (RZ/G2UL) SoC.
-> 
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+On Sat, Apr 23, 2022 at 06:07:23PM +0200, Lukas Wunner wrote:
+> On Thu, Apr 21, 2022 at 10:02:43AM +0200, Paolo Abeni wrote:
+> > On Sun, 2022-04-17 at 09:04 +0200, Lukas Wunner wrote:
+> > > --- a/net/core/link_watch.c
+> > > +++ b/net/core/link_watch.c
+> > > @@ -107,7 +107,8 @@ static void linkwatch_add_event(struct net_device *dev)
+> > >  	unsigned long flags;
+> > >  
+> > >  	spin_lock_irqsave(&lweventlist_lock, flags);
+> > > -	if (list_empty(&dev->link_watch_list)) {
+> > > +	if (list_empty(&dev->link_watch_list) &&
+> > > +	    dev->reg_state < NETREG_UNREGISTERED) {
+> > >  		list_add_tail(&dev->link_watch_list, &lweventlist);
+> > >  		dev_hold_track(dev, &dev->linkwatch_dev_tracker, GFP_ATOMIC);
+> > >  	
+> > 
+> > What about testing dev->reg_state in linkwatch_fire_event() before
+> > setting the __LINK_STATE_LINKWATCH_PENDING bit, so that we don't leave
+> > the device in an unexpected state?
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+About __LINK_STATE_LINKWATCH_PENDING being set even though the netdev
+is not on link_watch_list:
 
+After this patch (which removes one user of __LINK_STATE_LINKWATCH_PENDING)
+the only purpose of the flag is a small speed-up of linkwatch_fire_event():
+If the netdev is already on link_watch_list, the function skips acquiring
+lweventlist_lock.
 
-Best regards,
-Krzysztof
+I don't think this is a hotpath, so the small speed-up is probably not worth
+it and the flag could be removed completely in a follow-up patch.
+
+There is a single other (somewhat oddball) user of the flag in
+bond_should_notify_peers() in drivers/net/bonding/bond_main.c.
+It would be possible to replace it with "!list_empty(&dev->link_watch_list)".
+I don't think acquiring lweventlist_lock is necessary for that because
+test_bit() is unordered (per Documentation/atomic_bitops.txt) and the
+check is racy anyway.
+
+Thanks,
+
+Lukas
