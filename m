@@ -2,69 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D861B50CC2F
-	for <lists+netdev@lfdr.de>; Sat, 23 Apr 2022 18:08:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0742C50CCC2
+	for <lists+netdev@lfdr.de>; Sat, 23 Apr 2022 19:49:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233378AbiDWQLM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Apr 2022 12:11:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53316 "EHLO
+        id S236712AbiDWRwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Apr 2022 13:52:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229552AbiDWQLK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 12:11:10 -0400
-Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B711613018F
-        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 09:08:13 -0700 (PDT)
-Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-2eba37104a2so113083537b3.0
-        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 09:08:13 -0700 (PDT)
+        with ESMTP id S236691AbiDWRwc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 13:52:32 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7459B1C82E5
+        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 10:49:33 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id g23so6972925edy.13
+        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 10:49:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7ya74eRat9eGj9VpDr1M1ckTJtJkRtfzBLWmWW8GVMk=;
-        b=kx9e+lLT2LvuKV99Ei4Ytihk+YeYPaT9sRo2NdfVl4r7FmLdgw3Sdad+ZfeC3eVDaD
-         l+A20VnqmuojZtOdlg+PLLE4+896mrUvct+A1c5S1yvwdNGQtXDjxsuQXaMjan5L2FpI
-         lxEPUXlSi/1qdZiY+ZOZMaUgP0ahyof4zAyNoDMXQrS7CgQrVcXlGdAbKfBMUIeNdmli
-         6PaobtgaJb24vNU4o5qRSJfjv8Gl/d+PoLM41viPqryfN0V0R22CzcC/kOHmmKbwE7pq
-         Fgxg9TX3CrnzvGlJCtOr2HmB4QFMjiqDU+TqraKFw6nOQj7Y4qju5gojcwdv+p50/TwW
-         cu7g==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=zzTlr5i1vBH3eZkwgYdNgfi9JX5fLc8qr1ql93tJV/Y=;
+        b=K+1SaZwztaHUvVqD4eNlYpZBN76mjtx6X5TywZ3y38vEWUlCs3d3C8MG++H7IoHYDC
+         obAlZ/MFE+RmLzK9BST6KuGjJgj2nvuxyf+EArxIFmALpq7dutV6VEVcrWnef1iZqfqu
+         gsvljKL8WC0w2kuY/LP5FZJr0Cljwtb0q6RJYd5mHPwTHiHZQMBsMsbMIkawn+YRaPV5
+         xR6zfWn6NS16/H+5Phh3JIRq6JLCN3166AGSz5ZSR/j3UDt27gwBrNEW3Jjy3UFAYwl/
+         O5ehOaVT1XdJYZaveHMdsVPQP/+X762VrAFvmtHYQHPLhYENkSK48IKmGKBAYGwuZ0vC
+         ol5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7ya74eRat9eGj9VpDr1M1ckTJtJkRtfzBLWmWW8GVMk=;
-        b=2xaNzOr6/+iAejWvNPzJwYt41kz+R8rjZYEJezii0pJhG5oc7sgWjUbs9ikNi/A5Kt
-         m0weQ0vhY3in33at08k1Blgk6buHxp56/MVL+EaMaDXvKi7UmMutYlCBK44I5pmW06DE
-         wZcXIJA6WR0gCqw/qQmwmoJtFZN7km/6EMHI58fG+y22V5fQjfRK0JfU5YKIJHySaduV
-         lS+s6Noounll1LlO8Rvy1eR0gsTyZgLNrwJInR4/cMWcOVm4a9tZ688lHzMyVNE4jhYG
-         4ls+CoeuKTaoeYk1dVMh/WqQGZ1VaWGQ2w6tT3+AxNVm4JQlK8XOtyMq8/qnQmQrMa48
-         zd/g==
-X-Gm-Message-State: AOAM5313QoA4PF9c3jRUW8aQqFvthcHk7mZoOttSWek9DjdpXM8wrbk+
-        YtRDmsoRmhSiFLSrF2KPjpzxTMcABufVHpCukXgXWclTKgWglneg
-X-Google-Smtp-Source: ABdhPJyCexgTZnYE2oIqV8jpKPyewC/zwS4eqJvjWe7zvA+bfICAYRAu/QqRAC0CFjUv4kh6eo8eoEce+4ETbAMPJCw=
-X-Received: by 2002:a81:203:0:b0:2f7:d70f:1b2 with SMTP id 3-20020a810203000000b002f7d70f01b2mr117375ywc.463.1650730092819;
- Sat, 23 Apr 2022 09:08:12 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=zzTlr5i1vBH3eZkwgYdNgfi9JX5fLc8qr1ql93tJV/Y=;
+        b=dtEucROXkotBkBnVufsvUJoG6GUNi/dcgCoSHcAR8UmgGqLSAqiax2Zo4OV1Pv/stl
+         f/lqD+ugrtbHJK7X7SgBrg8iONzz+IljTmNPzHTjLFqpXw2SFOHCSCua3f8pXTD81ylL
+         9/ZWbYcHlPuWAf9QsUT0JowOmPhMxuQVVMYB4FcXIacgZWWgJwLV9Ga376GZVzqAWuiK
+         1v1JLnbL2nsQ3frkkTfzaKe//Er0d1m35M/c5LgLJt7L9BA57xp2i0BxakYPirV0nPdx
+         KPPdvbQ8gPj5NRXMVwWSTiMapFwcTyPHQLN7cvYOsDnKDbAA340fTvVF8g/+3z9mtRVV
+         5Ikw==
+X-Gm-Message-State: AOAM5333l1MdBSegRSJ9e8+/IR8Mxkc6w3tRlGSpbz3dcs1hmnYUsl9d
+        mwg2JEyIIFUaG//Gt50vsrnuRQ==
+X-Google-Smtp-Source: ABdhPJw/vOnH+HBxj1ggcvptoHPHf/x94iLfOJcPMwCd4J+FV95mNVywr9SyxLVrLvWEXCzt9EK7aA==
+X-Received: by 2002:a05:6402:4493:b0:41d:83ca:35d6 with SMTP id er19-20020a056402449300b0041d83ca35d6mr10731655edb.89.1650736172007;
+        Sat, 23 Apr 2022 10:49:32 -0700 (PDT)
+Received: from [192.168.0.234] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id r22-20020a17090638d600b006d584aaa9c9sm1871730ejd.133.2022.04.23.10.49.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 23 Apr 2022 10:49:31 -0700 (PDT)
+Message-ID: <34d3bfdc-cf8c-bf63-4f67-57c8d6c9b780@linaro.org>
+Date:   Sat, 23 Apr 2022 19:49:30 +0200
 MIME-Version: 1.0
-References: <20210809070455.21051-1-liuhangbin@gmail.com> <162850320655.31628.17692584840907169170.git-patchwork-notify@kernel.org>
- <CAHsH6GuZciVLrn7J-DR4S+QU7Xrv422t1kfMyA7r=jADssNw+A@mail.gmail.com>
- <CALnP8ZackbaUGJ_31LXyZpk3_AVi2Z-cDhexH8WKYZjjKTLGfw@mail.gmail.com>
- <CAHsH6GvoDr5qOKsvvuShfHFi4CsCfaC-pUbxTE6OfYWhgTf9bg@mail.gmail.com>
- <YmE5N0aNisKVLAyt@Laptop-X1> <CALnP8ZY9hkiWyxjrVTdq=NFA0PYjt7f9YbSEJrbt-EQoRAk6gw@mail.gmail.com>
-In-Reply-To: <CALnP8ZY9hkiWyxjrVTdq=NFA0PYjt7f9YbSEJrbt-EQoRAk6gw@mail.gmail.com>
-From:   Eyal Birger <eyal.birger@gmail.com>
-Date:   Sat, 23 Apr 2022 19:08:01 +0300
-Message-ID: <CAHsH6GtYXEVE_dbSyQ81_X7UOdd8U5a5QLUAsRx9+-nG3uZXmQ@mail.gmail.com>
-Subject: Re: [PATCH net] net: sched: act_mirred: Reset ct info when
- mirror/redirect skb
-To:     Marcelo Ricardo Leitner <mleitner@redhat.com>
-Cc:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, kuba@kernel.org, ahleihel@redhat.com,
-        dcaratti@redhat.com, aconole@redhat.com, roid@nvidia.com,
-        Shmulik Ladkani <shmulik.ladkani@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net-next 4/5] net: dt-bindings: Introduce the Qualcomm
+ IPQESS Ethernet controller
+Content-Language: en-US
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        davem@davemloft.net, Rob Herring <robh+dt@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Luka Perkov <luka.perkov@sartura.hr>,
+        Robert Marko <robert.marko@sartura.hr>
+References: <20220422180305.301882-1-maxime.chevallier@bootlin.com>
+ <20220422180305.301882-5-maxime.chevallier@bootlin.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220422180305.301882-5-maxime.chevallier@bootlin.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,91 +84,131 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 4:41 PM Marcelo Ricardo Leitner
-<mleitner@redhat.com> wrote:
->
-> On Thu, Apr 21, 2022 at 07:00:07PM +0800, Hangbin Liu wrote:
-> > Hi Eyal,
-> > On Tue, Apr 19, 2022 at 09:14:38PM +0300, Eyal Birger wrote:
-> > > > > > On Mon,  9 Aug 2021 15:04:55 +0800 you wrote:
-> > > > > > > When mirror/redirect a skb to a different port, the ct info should be reset
-> > > > > > > for reclassification. Or the pkts will match unexpected rules. For example,
-> > > > > > > with following topology and commands:
-> > > > > > >
-> > > > > > >     -----------
-> > > > > > >               |
-> > > > > > >        veth0 -+-------
-> > > > > > >               |
-> > > > > > >        veth1 -+-------
-> > > > > > >               |
-> > > > > > >
-> > > > > > > [...]
-> > > > > >
-> > > > > > Here is the summary with links:
-> > > > > >   - [net] net: sched: act_mirred: Reset ct info when mirror/redirect skb
-> > > > > >     https://git.kernel.org/netdev/net/c/d09c548dbf3b
-> > > > >
-> > > > > Unfortunately this commit breaks DNAT when performed before going via mirred
-> > > > > egress->ingress.
-> > > > >
-> > > > > The reason is that connection tracking is lost and therefore a new state
-> > > > > is created on ingress.
-> > > > >
-> > > > > This breaks existing setups.
-> > > > >
-> > > > > See below a simplified script reproducing this issue.
-> >
-> > I think we come in to a paradox state. Some user don't want to have previous
-> > ct info after mirror, while others would like to keep. In my understanding,
-> > when we receive a pkt from a interface, the skb should be clean and no ct info
-> > at first. But I may wrong.
->
-> Makes sense to me. Moreover, there were a couple of fixes on this on
-> mirred around that time frame/area (like f799ada6bf23 ("net: sched:
-> act_mirred: drop dst for the direction from egress to ingress")). That's
-> because we are seeing that mirred xmit action when switching to
-> ingress direction should be as close skb_scrub_packet. OVS needs this
-> scrubbing as well, btw. This ct information could be easily stale if
-> there were other packet changes after it.
+On 22/04/2022 20:03, Maxime Chevallier wrote:
+> Add the DT binding for the IPQESS Ethernet Controller. This is a simple
+> controller, only requiring the phy-mode, interrupts, clocks, and
+> possibly a MAC address setting.
+> 
+> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+> ---
+>  .../devicetree/bindings/net/qcom,ipqess.yaml  | 94 +++++++++++++++++++
+>  1 file changed, 94 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/qcom,ipqess.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/net/qcom,ipqess.yaml b/Documentation/devicetree/bindings/net/qcom,ipqess.yaml
+> new file mode 100644
+> index 000000000000..8fec5633692f
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/qcom,ipqess.yaml
+> @@ -0,0 +1,94 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/qcom,ipqess.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Qualcomm IPQ ESS EDMA Ethernet Controller Device Tree Bindings
 
-Makes sense to me too. The main reason for bringing this up was that it's a
-subtle change and wasn't trivial to figure out.
+s/Device Tree Bindings//
 
->
-> Point being, if we really need the knob for backwards compatibility
-> here, it may have to be a broader one.
+> +
+> +allOf:
+> +  - $ref: "ethernet-controller.yaml#"
 
-FWIW the dst change was ok in our setups.
+allOf goes after maintainers.
 
->
-> >
-> > Jamal, Wang Cong, Jiri, do you have any comments?
-> >
-> > > >
-> > > > I guess I can understand why the reproducer triggers it, but I fail to
-> > > > see the actual use case you have behind it. Can you please elaborate
-> > > > on it?
-> > >
-> > > One use case we use mirred egress->ingress redirect for is when we want to
-> > > reroute a packet after applying some change to the packet which would affect
-> > > its routing. for example consider a bpf program running on tc ingress (after
-> > > mirred) setting the skb->mark based on some criteria.
-> > >
-> > > So you have something like:
-> > >
-> > > packet routed to dummy device based on some criteria ->
-> > >   mirred redirect to ingress ->
-> > >     classification by ebpf logic at tc ingress ->
-> > >        packet routed again
-> > >
-> > > We have a setup where DNAT is performed before this flow in that case the
-> > > ebpf logic needs to see the packet after the NAT.
-> >
-> > Is it possible to check whether it's need to set the skb->mark before DNAT?
-> > So we can update it before egress and no need to re-route.
+> +
+> +maintainers:
+> +  - Maxime Chevallier <maxime.chevallier@bootlin.com>
+> +
+> +properties:
+> +  compatible:
+> +    const: qcom,ipq4019e-ess-edma
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    minItems: 2
+> +    maxItems: 32
+> +    description: One interrupt per tx and rx queue, with up to 16 queues.
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +  phy-mode: true
+> +
+> +  fixed-link: true
+> +
+> +  mac-address: true
 
-For future reference, we worked around this issue by moving some of the
-relevant ebpf functionality to the lwt output hook which allows classification
-and rerouting.
+You don't need all these three. They come from ethernet-controller and
+you use unevaluatedProperties.
 
-Eyal.
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - clocks
+> +  - phy-mode
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    gmac: ethernet@c080000 {
+> +        compatible = "qcom,ipq4019-ess-edma";
+> +        reg = <0xc080000 0x8000>;
+> +        interrupts = <GIC_SPI  65 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI  66 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI  67 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI  68 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI  69 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI  70 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI  71 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI  72 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI  73 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI  74 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI  75 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI  76 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI  77 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI  78 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI  79 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI  80 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI 240 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI 241 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI 242 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI 243 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI 244 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI 245 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI 246 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI 247 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI 248 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI 249 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI 250 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI 251 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI 252 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI 253 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI 254 IRQ_TYPE_EDGE_RISING>,
+> +                     <GIC_SPI 255 IRQ_TYPE_EDGE_RISING>;
+> +
+> +        status = "okay";
+
+No status in the example.
+
+> +
+> +        phy-mode = "internal";
+> +        fixed-link {
+> +            speed = <1000>;
+> +            full-duplex;
+> +            pause;
+> +            asym-pause;
+> +        };
+> +    };
+> +
+> +...
+
+
+Best regards,
+Krzysztof
