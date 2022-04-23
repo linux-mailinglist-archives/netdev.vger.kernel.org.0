@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 987B850CA75
-	for <lists+netdev@lfdr.de>; Sat, 23 Apr 2022 15:15:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8DED50CA73
+	for <lists+netdev@lfdr.de>; Sat, 23 Apr 2022 15:15:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235461AbiDWNR4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Apr 2022 09:17:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58634 "EHLO
+        id S235653AbiDWNRy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Apr 2022 09:17:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235682AbiDWNRj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 09:17:39 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CEF51DD225
-        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 06:14:41 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id u7so1411895plg.13
-        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 06:14:41 -0700 (PDT)
+        with ESMTP id S235710AbiDWNRo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 09:17:44 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A67001EE8EC
+        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 06:14:47 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id k14so9596926pga.0
+        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 06:14:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=nathanrossi.com; s=google;
-        h=date:message-id:from:to:cc:subject:content-transfer-encoding
-         :mime-version;
-        bh=tZUrl8zLKA5D27ChnNocJe50cIVDD1SSEejUzU+DrrI=;
-        b=i8TV0Ww6bdfK6ykIROfAsZnjEnJS3ZqNeUmA+qBRONVVVWSA6HP7wmhLSMJ/1ajzS2
-         1o/dWYH5BLqrzbKnSTDQqcrQCb5aeZybM4qBk3u2gZY8g1LlaHKf0YZiWtSH+lfjbLuU
-         dE6kSOCKlwFPt7rMjY1dKGKkMnqPq4cy3zBkWrQXJQNiQ1cJ3fASGNc87w97yg7wN2hJ
-         VFdh4FsAiuXCwepwqOzSv3BwVpgTL33i5n1qahZpnvEcrfiS9QWYPGuI/hPFHJlVljJc
-         QjGgo4FUYb8oRQQvhcY+OtCjLsH3iRfmoUz258vD/GURt1qy3KVAv5K2lxgwc4YoBdwr
-         JVEA==
+        h=date:message-id:in-reply-to:references:from:to:cc:subject
+         :content-transfer-encoding:mime-version;
+        bh=4YclSW6gUKf5MgMzUrKvKMBlGt79OLyjo7N4NZYQLB4=;
+        b=WiAmBJNtVS5Qme3dVsWfGzHmGL14wb5EWoGeGXZlWQzPxpmicnYHiK8+jczdgzrxbp
+         b40OJs8mAVOMoNeZX65SDMe0cOKwV2AmNqeBqtTbTFzG5QoLkaYE00ujDsyfF3X3bQ6v
+         Gqi/QkepW9fIHrdYbd+KLQfOT0jixMVs20vDIPNudoyTL4y+NClZ0PIJXeHG5TUy1Vly
+         QC0QkgYkBkF9E5QFrCnKnwwaw7lN4j+5w3uqWSF5aF2BWQWy5a7L4lyd4QWum7wjBBO6
+         j9p1yutM0bcGJfOYj3tidBLQF+7snY50iVlwMhXnTbxMHYW2ha/Qu/QoSMeJ3VPw4Czj
+         UmIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject
-         :content-transfer-encoding:mime-version;
-        bh=tZUrl8zLKA5D27ChnNocJe50cIVDD1SSEejUzU+DrrI=;
-        b=bpDtGtBH33L71hBs1452j8S/DWw8/jo345LUQhxP8yQzuQfts5aROjtwg6DPFJqYmX
-         NU3aCRdTp/addo0+Dr+bsWEHGYHCRNN/vGiJn0if8P77CNzuR0yJzE9/55CaGOXi5ESO
-         QgosxK+kcmDSWtpaWgHqEi6wquziOK2c5jDlUIHlcI036EopkLjF7TOppWDhBbgfp8W8
-         095ah05jjrdWMkQmWOj/ADoxm1SHp2j6h6P3WRYnimV7yZ3yvYOU3nzMg0BKRfpb38dX
-         PgQIKVMhflgpXbH1JFpJGXwTdUtJbb5jbAIm4qJLskMEGFBtIvJ6LyRqcszFrvLOu6ao
-         DolQ==
-X-Gm-Message-State: AOAM5334V07BSqvxTuYKfgJFYLiOo+XDzWaqIFneSAs5wxXu6jSsXcUm
-        sWE29BZR/zF4jc029yQwP4BSkw==
-X-Google-Smtp-Source: ABdhPJzvdhfEGUXSzxlB9k8D2vR5vqIHv5iTi//MSitWGnSl/f7S28O/LHFKUDRMmL7GEWmFRCicZw==
-X-Received: by 2002:a17:902:e94f:b0:14f:1636:c8a8 with SMTP id b15-20020a170902e94f00b0014f1636c8a8mr9338301pll.130.1650719680802;
-        Sat, 23 Apr 2022 06:14:40 -0700 (PDT)
+        h=x-gm-message-state:date:message-id:in-reply-to:references:from:to
+         :cc:subject:content-transfer-encoding:mime-version;
+        bh=4YclSW6gUKf5MgMzUrKvKMBlGt79OLyjo7N4NZYQLB4=;
+        b=pnLR0S4K7vLwdr/+BbMqvw6Q296Mx9rpETu00HdNitcM4ZGNhZdHq70UMZnKhtX+rL
+         +pfSa+NGFHi5IuJxZZGq84xK53Owuf+k/7XUpmzcP354f1FKwU16y05mpGrG5L0pqrDI
+         j3F4ZZ+TeCTZPGG7fnfD4SrCNzBR8neXlBr1CW1CcwVHwrKH9TmGo3uARlF3ideAHxrP
+         aBmQg2F8I3gAGNBsGajTziPFyZYsjuVyFB3t6Mzxslb02htzUDNHfElEz34VWXwlqkOL
+         rc/TUsx6T5TMraA3azPuE4dqcB4ZTOmfMHDBtn/6egcA4jZC8P+5wMtb0ShaWloAIlIa
+         KctA==
+X-Gm-Message-State: AOAM531LUxP38AVg6A0qvCRaQ6A1rZ/SxCWBFeqPZX0s9Bb3FfYYSrWV
+        KPOLDz/r+jHkKhOsTkJS7NsIHMt668PpmNlO
+X-Google-Smtp-Source: ABdhPJyWb4INtP/Dw8rk2zW4A2CHp/HGtqOO06IJCI2rvVP802Z4aQjnRm4vdVlEnQPwHJEn6lU3Sg==
+X-Received: by 2002:a65:4189:0:b0:3a2:1682:5fc with SMTP id a9-20020a654189000000b003a2168205fcmr7884940pgq.426.1650719687253;
+        Sat, 23 Apr 2022 06:14:47 -0700 (PDT)
 Received: from [127.0.1.1] (117-20-68-98.751444.bne.nbn.aussiebb.net. [117.20.68.98])
-        by smtp.gmail.com with UTF8SMTPSA id w7-20020a63a747000000b003991d7d3728sm5103337pgo.74.2022.04.23.06.14.35
+        by smtp.gmail.com with UTF8SMTPSA id j10-20020a17090a734a00b001bf31f7520csm941202pjs.1.2022.04.23.06.14.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Apr 2022 06:14:40 -0700 (PDT)
+        Sat, 23 Apr 2022 06:14:46 -0700 (PDT)
 Date:   Sat, 23 Apr 2022 13:14:27 +0000
-Message-Id: <20220423131427.237160-1-nathan@nathanrossi.com>
+Message-Id: <20220423131427.237160-2-nathan@nathanrossi.com>
+In-Reply-To: <20220423131427.237160-1-nathan@nathanrossi.com>
+References: <20220423131427.237160-1-nathan@nathanrossi.com>
 From:   Nathan Rossi <nathan@nathanrossi.com>
-To:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Nathan Rossi <nathan@nathanrossi.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -59,10 +60,8 @@ Cc:     Nathan Rossi <nathan@nathanrossi.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Subject: [PATCH 1/2] dt-bindings: net: dsa: marvell: Add single-chip-address property
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 2/2] net: dsa: mv88e6xxx: Handle single-chip-address OF property
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 MIME-Version: 1.0
@@ -76,35 +75,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some Marvell DSA devices can be accessed in a single chip addressing
-mode. This is currently configured by setting the address of the switch
-to 0. However switches in this configuration do not respond to address
-0, only responding to higher addresses (fixed addressed based on the
-switch model) for the individual ports/etc. This is a feature to allow
-for other phys to exist on the same mdio bus.
-
-This change defines a 'single-chip-address' property in order to
-explicitly define that the chip is accessed in this mode. This allows
-for a switch to have an address defined other than 0, so that address
-0 can be used for another mdio device.
+Handle the parsing and use of single chip addressing when the switch has
+the single-chip-address property defined. This allows for specifying the
+switch as using single chip addressing even when mdio address 0 is used
+by another device on the bus. This is a feature of some switches (e.g.
+the MV88E6341/MV88E6141) where the switch shares the bus only responding
+to the higher 16 addresses.
 
 Signed-off-by: Nathan Rossi <nathan@nathanrossi.com>
 ---
- Documentation/devicetree/bindings/net/dsa/marvell.txt | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/dsa/mv88e6xxx/smi.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/marvell.txt b/Documentation/devicetree/bindings/net/dsa/marvell.txt
-index 2363b41241..5c7304274c 100644
---- a/Documentation/devicetree/bindings/net/dsa/marvell.txt
-+++ b/Documentation/devicetree/bindings/net/dsa/marvell.txt
-@@ -46,6 +46,8 @@ Optional properties:
- - mdio?		: Container of PHYs and devices on the external MDIO
- 			  bus. The node must contains a compatible string of
- 			  "marvell,mv88e6xxx-mdio-external"
-+- single-chip-address	: Device is configured to use single chip addressing
-+			  mode.
- 
- Example:
- 
+diff --git a/drivers/net/dsa/mv88e6xxx/smi.c b/drivers/net/dsa/mv88e6xxx/smi.c
+index a990271b74..1eb31c1563 100644
+--- a/drivers/net/dsa/mv88e6xxx/smi.c
++++ b/drivers/net/dsa/mv88e6xxx/smi.c
+@@ -171,9 +171,12 @@ static const struct mv88e6xxx_bus_ops mv88e6xxx_smi_indirect_ops = {
+ int mv88e6xxx_smi_init(struct mv88e6xxx_chip *chip,
+ 		       struct mii_bus *bus, int sw_addr)
+ {
++	struct device_node *np = chip->dev->of_node;
++
+ 	if (chip->info->dual_chip)
+ 		chip->smi_ops = &mv88e6xxx_smi_dual_direct_ops;
+-	else if (sw_addr == 0)
++	else if (sw_addr == 0 ||
++		 (np && of_property_read_bool(np, "single-chip-address")))
+ 		chip->smi_ops = &mv88e6xxx_smi_direct_ops;
+ 	else if (chip->info->multi_chip)
+ 		chip->smi_ops = &mv88e6xxx_smi_indirect_ops;
 ---
 2.35.2
