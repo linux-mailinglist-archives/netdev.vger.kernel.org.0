@@ -2,64 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EC1350C8CD
-	for <lists+netdev@lfdr.de>; Sat, 23 Apr 2022 11:49:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C42DF50C91A
+	for <lists+netdev@lfdr.de>; Sat, 23 Apr 2022 12:16:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234660AbiDWJvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Apr 2022 05:51:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59214 "EHLO
+        id S234840AbiDWKSf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Apr 2022 06:18:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234603AbiDWJvI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 05:51:08 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E3EFF5;
-        Sat, 23 Apr 2022 02:48:11 -0700 (PDT)
-Received: from mail-wm1-f50.google.com ([209.85.128.50]) by
- mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1Mdvyi-1oHoND33Ek-00b06H; Sat, 23 Apr 2022 11:48:09 +0200
-Received: by mail-wm1-f50.google.com with SMTP id v64-20020a1cac43000000b0038cfd1b3a6dso9458750wme.5;
-        Sat, 23 Apr 2022 02:48:09 -0700 (PDT)
-X-Gm-Message-State: AOAM532mkaZkI76BSgwQ1G5OuUdvION8dU+2nNRM6n0FEmBSrtS2IHGw
-        FddRzAQcH35evr/ohZ7bJW2E8JZbwNM7dkBQ3Hg=
-X-Google-Smtp-Source: ABdhPJzB571QS23ads9/X6bqp8kn5uvfGAj6Ip74WQj7sqmxjMCA85CiNrM4H8Eqf/GMMA0WHQ6q++BsxTECp2b2his=
-X-Received: by 2002:a7b:ce15:0:b0:38e:b7b0:79be with SMTP id
- m21-20020a7bce15000000b0038eb7b079bemr7890160wmc.71.1650707289338; Sat, 23
- Apr 2022 02:48:09 -0700 (PDT)
+        with ESMTP id S232359AbiDWKSe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 06:18:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 414AD6972A
+        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 03:15:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650708935;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Nnu/RwyQm3ejKaQwoN4NCJcZ0nanUujxwSLD2x1jY2o=;
+        b=DfmGZYR249HLckvjHjh43v420ExcRxVlsN3aM7DZ079r4FWUatz6/hDNOyP67PaJIIYN3i
+        O7CrbG1lElxBDWYXu5yUMuNobtzb+WcfXHtMBXMwU6o/MjrR61RHs/L7hsY8UK7qTiHJf8
+        kzPVYAo+Fs8vuqdjzVhDKUh9ufzWvb4=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-674-pshl6yfwO1e5w0rDgnjiQA-1; Sat, 23 Apr 2022 06:15:31 -0400
+X-MC-Unique: pshl6yfwO1e5w0rDgnjiQA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6AFAF380670C;
+        Sat, 23 Apr 2022 10:15:30 +0000 (UTC)
+Received: from ceranb (unknown [10.39.192.68])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 27402C28102;
+        Sat, 23 Apr 2022 10:15:28 +0000 (UTC)
+Date:   Sat, 23 Apr 2022 12:15:27 +0200
+From:   Ivan Vecera <ivecera@redhat.com>
+To:     "Ertman, David M" <david.m.ertman@intel.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        poros <poros@redhat.com>, mschmidt <mschmidt@redhat.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
+        "moderated list:INTEL ETHERNET DRIVERS" 
+        <intel-wired-lan@lists.osuosl.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net v3] ice: Fix race during aux device (un)plugging
+Message-ID: <20220423121527.79fa5efb@ceranb>
+In-Reply-To: <MW5PR11MB58110D02BF761C889B29CBC7DDF79@MW5PR11MB5811.namprd11.prod.outlook.com>
+References: <20220421060906.1902576-1-ivecera@redhat.com>
+        <MW5PR11MB581100DBD307763A92012BEADDF79@MW5PR11MB5811.namprd11.prod.outlook.com>
+        <MW5PR11MB58110D02BF761C889B29CBC7DDF79@MW5PR11MB5811.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-References: <20220421070440.1282704-1-hch@lst.de>
-In-Reply-To: <20220421070440.1282704-1-hch@lst.de>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Sat, 23 Apr 2022 11:47:53 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2Tw+fdf-dTKfu+aFFv010u50+LhiiVBRRujfSFNrqbEA@mail.gmail.com>
-Message-ID: <CAK8P3a2Tw+fdf-dTKfu+aFFv010u50+LhiiVBRRujfSFNrqbEA@mail.gmail.com>
-Subject: Re: [PATCH] net: unexport csum_and_copy_{from,to}_user
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Networking <netdev@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:albdKOiXIS0kHHBHYY/wSNMr7J/VHZ4po6jMFPsFdo/ckkLmRZa
- 1VoBD2lMusGXaTOwKgePBGAhmIIgg4ksXVIhQxQnCSs95SoLNISfvuy4D40bYKb27RKGdQI
- MBQEYj/TSdoQ2SGoHwx2yo8dSb4WNYFlScICDWv3K4qjj25L1+QaRDujS/YE7nt/ZcjDJv+
- g6zIVbk2QNn3vSaIawtvw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:/UwY+B2U1fQ=:/s5taf5kqaEeN/04c0o4ZL
- tOjTQMMUPayGnj3PlwbTCyCZn/kZQNCI1ks8gqpkpaFdbqd9fKfyZr9SCIV2Pd7DiYfXhv9Q0
- SnFnrXvpkZLtZdtm6TR8qKk7Sr3cxJ8SqQALjJlwahu3NxIf7CGHERqQX3wpVyQohoXalcIyj
- L6iPMtQz0yBlEeavOU+sH15UXllHxXH6Ptqumxsqt6gSK6h/LqZCz6feQAHZh8WCSdTJqtXUm
- K9ys7IZRng53Y6cjdZW4dkay1Lp1OjQqqq2ngwhB8BIB4u0GIthybNMCXF7S+etW4yM6hD9Dz
- 8RfXJzcgO7MEUhbnzUIUqx77ebsF8XKdErGaXYjCqnAwS1iy7lGLbSlGAngsOve2W1/j+r83o
- 1K/jjhU4v7No5EEh9EIuSes2Oga6dE5unUkjz+jiRNV/3KWomV8TQWWTpMMG9rFJAlGlPNo6z
- NAlXy/FGeIrkysBG/Yrxt3CGWmysxKp7MHp1VgyR66GAoNF+5r3YzMEBrEd6Ku0e1219qSp9x
- rFPB9zl+vCXhDthB3+gljgOu5GdF+20eJYGZNIDMIo0Mi7PRDF8G2gqh8e6Vx2hxa4ivt4VlL
- WJV2RVfSzOdOiiBuatQO2FsUweKVq/xAXmqDAXnPo/Au6usY+/I1HuKT42hmG8T3NfruVvZPs
- OtRnxz2+OzWS6UETIsr4Kpx+NqATOeB1qN2CXDC+6iY3a2HvZ1TPw5cJjDWKphxNY4O+z80Dp
- xsUkBWMxsTGebKuCzONT30s16j4s51kZfbiC6rHDxkpQU0P+f/X0ylEy7Vvu/bc7qfEA8HMNX
- nN/hJSWiE1lYASQ6K5955iUCwkiwdFN3ZzayU0/qJ1GI3n4rBM=
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_MSPIKE_H2,
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -68,12 +72,189 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 21, 2022 at 9:04 AM Christoph Hellwig <hch@lst.de> wrote:
->
-> csum_and_copy_from_user and csum_and_copy_to_user are exported by
-> a few architectures, but not actually used in modular code.  Drop
-> the exports.
->
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+On Fri, 22 Apr 2022 20:55:10 +0000
+"Ertman, David M" <david.m.ertman@intel.com> wrote:
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+> > -----Original Message-----
+> > From: Ertman, David M
+> > Sent: Friday, April 22, 2022 10:42 AM
+> > To: Ivan Vecera <ivecera@redhat.com>; netdev@vger.kernel.org
+> > Cc: poros <poros@redhat.com>; mschmidt <mschmidt@redhat.com>; Leon
+> > Romanovsky <leon@kernel.org>; Brandeburg, Jesse
+> > <jesse.brandeburg@intel.com>; Nguyen, Anthony L
+> > <anthony.l.nguyen@intel.com>; David S. Miller <davem@davemloft.net>;
+> > Jakub Kicinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>;
+> > Saleem, Shiraz <shiraz.saleem@intel.com>; moderated list:INTEL ETHERNET
+> > DRIVERS <intel-wired-lan@lists.osuosl.org>; open list <linux-  
+> > kernel@vger.kernel.org>  
+> > Subject: RE: [PATCH net v3] ice: Fix race during aux device (un)plugging
+> >   
+> > > -----Original Message-----
+> > > From: Ivan Vecera <ivecera@redhat.com>
+> > > Sent: Wednesday, April 20, 2022 11:09 PM
+> > > To: netdev@vger.kernel.org
+> > > Cc: poros <poros@redhat.com>; mschmidt <mschmidt@redhat.com>;  
+> > Leon  
+> > > Romanovsky <leon@kernel.org>; Brandeburg, Jesse
+> > > <jesse.brandeburg@intel.com>; Nguyen, Anthony L
+> > > <anthony.l.nguyen@intel.com>; David S. Miller <davem@davemloft.net>;
+> > > Jakub Kicinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>;
+> > > Ertman, David M <david.m.ertman@intel.com>; Saleem, Shiraz
+> > > <shiraz.saleem@intel.com>; moderated list:INTEL ETHERNET DRIVERS  
+> > <intel-  
+> > > wired-lan@lists.osuosl.org>; open list <linux-kernel@vger.kernel.org>
+> > > Subject: [PATCH net v3] ice: Fix race during aux device (un)plugging
+> > >
+> > > Function ice_plug_aux_dev() assigns pf->adev field too early prior
+> > > aux device initialization and on other side ice_unplug_aux_dev()
+> > > starts aux device deinit and at the end assigns NULL to pf->adev.
+> > > This is wrong because pf->adev should always be non-NULL only when
+> > > aux device is fully initialized and ready. This wrong order causes
+> > > a crash when ice_send_event_to_aux() call occurs because that function
+> > > depends on non-NULL value of pf->adev and does not assume that
+> > > aux device is half-initialized or half-destroyed.
+> > > After order correction the race window is tiny but it is still there,
+> > > as Leon mentioned and manipulation with pf->adev needs to be protected
+> > > by mutex.
+> > >
+> > > Fix (un-)plugging functions so pf->adev field is set after aux device
+> > > init and prior aux device destroy and protect pf->adev assignment by
+> > > new mutex. This mutex is also held during ice_send_event_to_aux()
+> > > call to ensure that aux device is valid during that call. Device
+> > > lock used ice_send_event_to_aux() to avoid its concurrent run can
+> > > be removed as this is secured by that mutex.
+> > >
+> > > Reproducer:
+> > > cycle=1
+> > > while :;do
+> > >         echo "#### Cycle: $cycle"
+> > >
+> > >         ip link set ens7f0 mtu 9000
+> > >         ip link add bond0 type bond mode 1 miimon 100
+> > >         ip link set bond0 up
+> > >         ifenslave bond0 ens7f0
+> > >         ip link set bond0 mtu 9000
+> > >         ethtool -L ens7f0 combined 1
+> > >         ip link del bond0
+> > >         ip link set ens7f0 mtu 1500
+> > >         sleep 1
+> > >
+> > >         let cycle++
+> > > done
+> > >
+> > > In short when the device is added/removed to/from bond the aux device
+> > > is unplugged/plugged. When MTU of the device is changed an event is
+> > > sent to aux device asynchronously. This can race with (un)plugging
+> > > operation and because pf->adev is set too early (plug) or too late
+> > > (unplug) the function ice_send_event_to_aux() can touch uninitialized
+> > > or destroyed fields. In the case of crash below pf->adev->dev.mutex.
+> > >
+> > > Crash:
+> > > [   53.372066] bond0: (slave ens7f0): making interface the new active one
+> > > [   53.378622] bond0: (slave ens7f0): Enslaving as an active interface with an  
+> > u  
+> > > p link
+> > > [   53.386294] IPv6: ADDRCONF(NETDEV_CHANGE): bond0: link becomes
+> > > ready
+> > > [   53.549104] bond0: (slave ens7f1): Enslaving as a backup interface with an
+> > > up
+> > >  link
+> > > [   54.118906] ice 0000:ca:00.0 ens7f0: Number of in use tx queues changed
+> > > inval
+> > > idating tc mappings. Priority traffic classification disabled!
+> > > [   54.233374] ice 0000:ca:00.1 ens7f1: Number of in use tx queues changed
+> > > inval
+> > > idating tc mappings. Priority traffic classification disabled!
+> > > [   54.248204] bond0: (slave ens7f0): Releasing backup interface
+> > > [   54.253955] bond0: (slave ens7f1): making interface the new active one
+> > > [   54.274875] bond0: (slave ens7f1): Releasing backup interface
+> > > [   54.289153] bond0 (unregistering): Released all slaves
+> > > [   55.383179] MII link monitoring set to 100 ms
+> > > [   55.398696] bond0: (slave ens7f0): making interface the new active one
+> > > [   55.405241] BUG: kernel NULL pointer dereference, address:
+> > > 0000000000000080
+> > > [   55.405289] bond0: (slave ens7f0): Enslaving as an active interface with an  
+> > u  
+> > > p link
+> > > [   55.412198] #PF: supervisor write access in kernel mode
+> > > [   55.412200] #PF: error_code(0x0002) - not-present page
+> > > [   55.412201] PGD 25d2ad067 P4D 0
+> > > [   55.412204] Oops: 0002 [#1] PREEMPT SMP NOPTI
+> > > [   55.412207] CPU: 0 PID: 403 Comm: kworker/0:2 Kdump: loaded Tainted:  
+> > G  
+> > > S
+> > >            5.17.0-13579-g57f2d6540f03 #1
+> > > [   55.429094] bond0: (slave ens7f1): Enslaving as a backup interface with an
+> > > up
+> > >  link
+> > > [   55.430224] Hardware name: Dell Inc. PowerEdge R750/06V45N, BIOS  
+> > 1.4.4  
+> > > 10/07/
+> > > 2021
+> > > [   55.430226] Workqueue: ice ice_service_task [ice]
+> > > [   55.468169] RIP: 0010:mutex_unlock+0x10/0x20
+> > > [   55.472439] Code: 0f b1 13 74 96 eb e0 4c 89 ee eb d8 e8 79 54 ff ff 66 0f 1f  
+> > 84  
+> > > 00 00 00 00 00 0f 1f 44 00 00 65 48 8b 04 25 40 ef 01 00 31 d2 <f0> 48 0f b1 17  
+> > 75  
+> > > 01 c3 e9 e3 fe ff ff 0f 1f 00 0f 1f 44 00 00 48
+> > > [   55.491186] RSP: 0018:ff4454230d7d7e28 EFLAGS: 00010246
+> > > [   55.496413] RAX: ff1a79b208b08000 RBX: ff1a79b2182e8880 RCX:
+> > > 0000000000000001
+> > > [   55.503545] RDX: 0000000000000000 RSI: ff4454230d7d7db0 RDI:
+> > > 0000000000000080
+> > > [   55.510678] RBP: ff1a79d1c7e48b68 R08: ff4454230d7d7db0 R09:
+> > > 0000000000000041
+> > > [   55.517812] R10: 00000000000000a5 R11: 00000000000006e6 R12:
+> > > ff1a79d1c7e48bc0
+> > > [   55.524945] R13: 0000000000000000 R14: ff1a79d0ffc305c0 R15:
+> > > 0000000000000000
+> > > [   55.532076] FS:  0000000000000000(0000) GS:ff1a79d0ffc00000(0000)
+> > > knlGS:0000000000000000
+> > > [   55.540163] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > [   55.545908] CR2: 0000000000000080 CR3: 00000003487ae003 CR4:
+> > > 0000000000771ef0
+> > > [   55.553041] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
+> > > 0000000000000000
+> > > [   55.560173] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
+> > > 0000000000000400
+> > > [   55.567305] PKRU: 55555554
+> > > [   55.570018] Call Trace:
+> > > [   55.572474]  <TASK>
+> > > [   55.574579]  ice_service_task+0xaab/0xef0 [ice]
+> > > [   55.579130]  process_one_work+0x1c5/0x390
+> > > [   55.583141]  ? process_one_work+0x390/0x390
+> > > [   55.587326]  worker_thread+0x30/0x360
+> > > [   55.590994]  ? process_one_work+0x390/0x390
+> > > [   55.595180]  kthread+0xe6/0x110
+> > > [   55.598325]  ? kthread_complete_and_exit+0x20/0x20
+> > > [   55.603116]  ret_from_fork+0x1f/0x30
+> > > [   55.606698]  </TASK>
+> > >
+> > > Fixes: f9f5301e7e2d ("ice: Register auxiliary device to provide RDMA")
+> > > Cc: Leon Romanovsky <leon@kernel.org>
+> > > Signed-off-by: Ivan Vecera <ivecera@redhat.com>  
+> > 
+> > Sorry for previous mis-reply - hit the wrong button.
+> > 
+> > LGTM
+> > Acked-by: Dave Ertman <david.m.ertman@intel.com>  
+> 
+> After thinking about this for a bit longer, I did think of one issue.
+> 
+> With the removal of the device_lock in ice_send_event_to_aux(), there is no guarantee that the
+> function pointer will not become NULL by the auxiliary_driver unloading.  It is a very small window,
+> but it could happen.
+> 
+> I think the device_lock should probably stay also.
+> 
+> DaveE
+> 
+
+The function pointer can't become NULL but adev->dev.driver can. So yeah, you are right the device lock
+needs to be held as well.
+Will submit v4.
+
+Thx,
+Ivan
+
