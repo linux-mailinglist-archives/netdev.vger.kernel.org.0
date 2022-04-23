@@ -2,168 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1338550CB65
-	for <lists+netdev@lfdr.de>; Sat, 23 Apr 2022 16:42:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8EE550CB6F
+	for <lists+netdev@lfdr.de>; Sat, 23 Apr 2022 16:46:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230152AbiDWOoc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Apr 2022 10:44:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36360 "EHLO
+        id S230387AbiDWOtr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Apr 2022 10:49:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230121AbiDWOob (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 10:44:31 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 325D1D4472
-        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 07:41:34 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id j2so19499664ybu.0
-        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 07:41:34 -0700 (PDT)
+        with ESMTP id S229445AbiDWOtp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 10:49:45 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6850F21250
+        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 07:46:48 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id l7so21559108ejn.2
+        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 07:46:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=nathanrossi.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Xea/ooL0oXQr48b59SjzLL2di9oPZrvbBXHt0wat3jc=;
-        b=VpMPIOjOPRfPsA5kT+RVI6LIkgrPRSEhBxxCycmmriboalFnHZKg9ebRbAeSZ0AylJ
-         53JinkuYkyfLJnUoDEdgy6nuNtVb1iIn68aGCQanDvreWw/BaIhREYxzEN34vN9Le6R6
-         CaJUvkavT/umtxEhhvs4E46Zz+2oHy1bpzTBaTBcFv9TwpXn0ek5ldst3nLNl3gEtBxb
-         ITzc8AJ/ShTSyTr5KnRObrbq/a1+EAqWznf95hx+fqxqychkdFqUaMQc3okP6tuT+GZr
-         TAhmQb/C5f2ulGMEU4wvDSgLK3EgBwRO0a0mJ5lldjr5TQeZ+WZXgcfVF2oHY7isz9WZ
-         3/hw==
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=5uDQPPMsTk5W1n+QET2AQT3aKlOkVlFk36DfAPXFLwY=;
+        b=bx4VgBMgIxqMa5uTA+nBFx3NnuqBgeQNC5+M53Pdp83FF6w5I83pJ9VgyOvjaC70bx
+         OhTfqFt6VGVJFFkoWFjC2ZoJoWwr8hbw+r2KzdIKmvUMQfBOcUFKHoAk6EPBxe+rh3D5
+         prrWLJkhzRyUQHSf7HPHrrNT7uV71sqPjW0iG3Py0g5s+U+aA0Wx8zL49DSi9hvbz1Ah
+         pSjGpuQfFL5g5lUZmTSEab+2Dmih+b5NH9lANiWftUQMajOAuyTf/ps5D1nWqLPGzEFf
+         9JWnYQkaDRHXeUxqKCm2lY+HMgge67UqQKmV3h4E+5GjbJ3RgzY6dHJN/FZYv2aAwDIK
+         Pyhg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Xea/ooL0oXQr48b59SjzLL2di9oPZrvbBXHt0wat3jc=;
-        b=sbmLMCHQA06VYWnsIW1AnoYCOC94Bw2cFuDld4dCsylnuGf0Xd3mFnfIeZ3tDTfLiz
-         iZOOVcfxosEzivSIeewFUyxxCtLkSyi3PNjJ8EtFTWh/6M/GpwCs11B4LHh14nwdWeld
-         VTu1IJB7tC1qWBBDeLRPsbWMpiEjh8TB/PZeNhuP+w95hQauI4qM+pFh74IyucnPJzHn
-         36K+IdpaskKpu5Ap9aQIQ+DDvUI2fFozQPU3YXOFOIg075ZJe/SXoL2CN/MTU5hM1SUI
-         orrWSLFCUjn74j6boO7rMqIar9WCVKGfQKHLDjx2ZOiaitefqxsmHvWdtQfifuagFWBJ
-         1oqg==
-X-Gm-Message-State: AOAM530ud1qVWo/Csvf5C6fLEuxEL1ounJTZf4y3SkXrIBJVH0/x86oq
-        U6UPy9ch4Gh98rkfjLY1miGI+XXXQ8Eot17W+76k3VXViKuyFh/c
-X-Google-Smtp-Source: ABdhPJx7MQMqxc6szpt3wAHoBUFuvlBgosdX8utQ5F+DTI9tcw27agSFUd5ZmgiQru4z6NkEKr4c1mEK3vvCwkafq78=
-X-Received: by 2002:a5b:a43:0:b0:63d:c248:13a5 with SMTP id
- z3-20020a5b0a43000000b0063dc24813a5mr9196772ybq.614.1650724893453; Sat, 23
- Apr 2022 07:41:33 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=5uDQPPMsTk5W1n+QET2AQT3aKlOkVlFk36DfAPXFLwY=;
+        b=GEg+6LVyZYu3WhYnopOfsZIWNkmkDBkaw9izlPuZccVhEwkf5C/g+KCKSu/Htlu+c5
+         sOTb8LiEgjXzfqXNwO5/oaBVYwqPSbr7ZuZSoE8/fZdQ76WLDdduBSqvI6mAbm1mX/tW
+         TniLJ1iQHtj3O01j5psYVmLHZjt+z0cDasJmRQOGdV0Qm7NLKl+T2AL435POZY58RwTl
+         ucg/7ceV1TmrQBv7K9kcbLFv7gXjO+kxeyL/ay5+1xVPJ3sOIQz76xAq9T23MGuGQNwT
+         W5ydbRu1QhBKza9GcRATgZvOM0zTC81IiCXWxmHOLTuBF0DF9VaY1UdQqsfrn7xsxJV6
+         ayYg==
+X-Gm-Message-State: AOAM530AyfFmW4Xubhpc9EIP+hGmbDU6q2k8kjIei0/C8ACi/eYTldWh
+        lUCKkFIITTDQnwtc/M+V/2J9IQ==
+X-Google-Smtp-Source: ABdhPJymOSpmVHDxroZCJlsNOHForVzEgS121+nl4ECu1VXW721AdsIdMBm+g4Gx7KJ7dcBqF+3eGQ==
+X-Received: by 2002:a17:907:868c:b0:6f2:d939:630c with SMTP id qa12-20020a170907868c00b006f2d939630cmr6713845ejc.211.1650725206757;
+        Sat, 23 Apr 2022 07:46:46 -0700 (PDT)
+Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
+        by smtp.gmail.com with ESMTPSA id r3-20020aa7cb83000000b0041b573e2654sm2270648edt.94.2022.04.23.07.46.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 23 Apr 2022 07:46:46 -0700 (PDT)
+Message-ID: <89a628a2-f31c-7740-fdf1-1bc8023636cd@blackwall.org>
+Date:   Sat, 23 Apr 2022 17:46:45 +0300
 MIME-Version: 1.0
-References: <20220423131427.237160-1-nathan@nathanrossi.com>
- <20220423131427.237160-2-nathan@nathanrossi.com> <YmQIHWL4iTS5qVIz@lunn.ch>
-In-Reply-To: <YmQIHWL4iTS5qVIz@lunn.ch>
-From:   Nathan Rossi <nathan@nathanrossi.com>
-Date:   Sun, 24 Apr 2022 00:41:22 +1000
-Message-ID: <CA+aJhH3EtAxAKy8orC-SU8UnagBCibF3dHXrp78zfjuAzj4vUg@mail.gmail.com>
-Subject: Re: [PATCH 2/2] net: dsa: mv88e6xxx: Handle single-chip-address OF property
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net] virtio_net: fix wrong buf address calculation when
+ using xdp
+Content-Language: en-US
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, stable@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+References: <20220423112612.2292774-1-razor@blackwall.org>
+ <1650720683.8168066-1-xuanzhuo@linux.alibaba.com>
+ <8d511a16-8d69-82b1-48a1-24de3a592aef@blackwall.org>
+ <a58bfd2c-4f83-11fe-08d1-19c1d6497fc2@blackwall.org>
+In-Reply-To: <a58bfd2c-4f83-11fe-08d1-19c1d6497fc2@blackwall.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 24 Apr 2022 at 00:07, Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Sat, Apr 23, 2022 at 01:14:27PM +0000, Nathan Rossi wrote:
-> > Handle the parsing and use of single chip addressing when the switch has
-> > the single-chip-address property defined. This allows for specifying the
-> > switch as using single chip addressing even when mdio address 0 is used
-> > by another device on the bus. This is a feature of some switches (e.g.
-> > the MV88E6341/MV88E6141) where the switch shares the bus only responding
-> > to the higher 16 addresses.
->
-> Hi Nathan
->
-> I think i'm missing something in this explanation:
->
-> smi.c says:
->
-> /* The switch ADDR[4:1] configuration pins define the chip SMI device address
->  * (ADDR[0] is always zero, thus only even SMI addresses can be strapped).
->  *
->  * When ADDR is all zero, the chip uses Single-chip Addressing Mode, assuming it
->  * is the only device connected to the SMI master. In this mode it responds to
->  * all 32 possible SMI addresses, and thus maps directly the internal devices.
->  *
->  * When ADDR is non-zero, the chip uses Multi-chip Addressing Mode, allowing
->  * multiple devices to share the SMI interface. In this mode it responds to only
->  * 2 registers, used to indirectly access the internal SMI devices.
->  *
->  * Some chips use a different scheme: Only the ADDR4 pin is used for
->  * configuration, and the device responds to 16 of the 32 SMI
->  * addresses, allowing two to coexist on the same SMI interface.
->  */
->
-> So if ADDR = 0, it takes up the whole bus. And in this case reg = 0.
-> If ADDR != 0, it is in multi chip mode, and DT reg = ADDR.
->
-> int mv88e6xxx_smi_init(struct mv88e6xxx_chip *chip,
->                        struct mii_bus *bus, int sw_addr)
-> {
->         if (chip->info->dual_chip)
->                 chip->smi_ops = &mv88e6xxx_smi_dual_direct_ops;
->         else if (sw_addr == 0)
->                 chip->smi_ops = &mv88e6xxx_smi_direct_ops;
->         else if (chip->info->multi_chip)
->                 chip->smi_ops = &mv88e6xxx_smi_indirect_ops;
->         else
->                 return -EINVAL;
->
-> This seems to implement what is above. smi_direct_ops == whole bus,
-> smi_indirect_ops == multi-chip mode.
->
-> In what situation do you see this not working? What device are you
-> using, what does you DT look like, and what at the ADDR value?
+On 23/04/2022 17:30, Nikolay Aleksandrov wrote:
+> On 23/04/2022 17:16, Nikolay Aleksandrov wrote:
+>> On 23/04/2022 16:31, Xuan Zhuo wrote:
+>>> On Sat, 23 Apr 2022 14:26:12 +0300, Nikolay Aleksandrov <razor@blackwall.org> wrote:
+>>>> We received a report[1] of kernel crashes when Cilium is used in XDP
+>>>> mode with virtio_net after updating to newer kernels. After
+>>>> investigating the reason it turned out that when using mergeable bufs
+>>>> with an XDP program which adjusts xdp.data or xdp.data_meta page_to_buf()
+>>>> calculates the build_skb address wrong because the offset can become less
+>>>> than the headroom so it gets the address of the previous page (-X bytes
+>>>> depending on how lower offset is):
+>>>>  page_to_skb: page addr ffff9eb2923e2000 buf ffff9eb2923e1ffc offset 252 headroom 256
+>>>>
+>>>> This is a pr_err() I added in the beginning of page_to_skb which clearly
+>>>> shows offset that is less than headroom by adding 4 bytes of metadata
+>>>> via an xdp prog. The calculations done are:
+>>>>  receive_mergeable():
+>>>>  headroom = VIRTIO_XDP_HEADROOM; // VIRTIO_XDP_HEADROOM == 256 bytes
+>>>>  offset = xdp.data - page_address(xdp_page) -
+>>>>           vi->hdr_len - metasize;
+>>>>
+>>>>  page_to_skb():
+>>>>  p = page_address(page) + offset;
+>>>>  ...
+>>>>  buf = p - headroom;
+>>>>
+>>>> Now buf goes -4 bytes from the page's starting address as can be seen
+>>>> above which is set as skb->head and skb->data by build_skb later. Depending
+>>>> on what's done with the skb (when it's freed most often) we get all kinds
+>>>> of corruptions and BUG_ON() triggers in mm[2]. The story of the faulty
+>>>> commit is interesting because the patch was sent and applied twice (it
+>>>> seems the first one got lost during merge back in 5.13 window). The
+>>>> first version of the patch that was applied as:
+>>>>  commit 7bf64460e3b2 ("virtio-net: get build_skb() buf by data ptr")
+>>>> was actually correct because it calculated the page starting address
+>>>> without relying on offset or headroom, but then the second version that
+>>>> was applied as:
+>>>>  commit 8fb7da9e9907 ("virtio_net: get build_skb() buf by data ptr")
+>>>> was wrong and added the above calculation.
+>>>> An example xdp prog[3] is below.
+>>>>
+>>>> [1] https://github.com/cilium/cilium/issues/19453
+>>>>
+>>>> [2] Two of the many traces:
+[snip]
+>>>>  drivers/net/virtio_net.c | 8 ++++++--
+>>>>  1 file changed, 6 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+>>>> index 87838cbe38cf..0687dd88e97f 100644
+>>>> --- a/drivers/net/virtio_net.c
+>>>> +++ b/drivers/net/virtio_net.c
+>>>> @@ -434,9 +434,13 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
+>>>>  	 * Buffers with headroom use PAGE_SIZE as alloc size, see
+>>>>  	 * add_recvbuf_mergeable() + get_mergeable_buf_len()
+>>>>  	 */
+>>>> -	truesize = headroom ? PAGE_SIZE : truesize;
+>>>> +	if (headroom) {
+>>>> +		truesize = PAGE_SIZE;
+>>>> +		buf = (char *)((unsigned long)p & PAGE_MASK);
+>>>
+>>> The reason for not doing this is that buf and p may not be on the same page, and
+>>> buf is probably not page-aligned.
+>>>
+>>> The implementation of virtio-net merge is add_recvbuf_mergeable(), which
+>>> allocates a large block of memory at one time, and allocates from it each time.
+>>> Although in xdp mode, each allocation is page_size, it does not guarantee that
+>>> each allocation is page-aligned .
+>>>
+>>> The problem here is that the value of headroom is wrong, the package is
+>>> structured like this:
+>>>
+>>> from device    | headroom          | virtio-net hdr | data |
+>>> after xdp      | headroom  |  virtio-net hdr | meta | data |
+>>
+>> You're free to push data back (not necessarily through meta).
+>> You don't have virtio-net hdr for the xdp case (hdr_valid is false there).
+>>
+>>>
+>>> The page_address(page) + offset we pass to page_to_skb() points to the
+>>> virtio-net hdr.
+>>>
+>>> So I think it might be better to change it this way.
+>>>
+>>> Thanks.
+>>>
+>>>
+>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+>>> index 87838cbe38cf..086ae835ec86 100644
+>>> --- a/drivers/net/virtio_net.c
+>>> +++ b/drivers/net/virtio_net.c
+>>> @@ -1012,7 +1012,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
+>>>                                 head_skb = page_to_skb(vi, rq, xdp_page, offset,
+>>>                                                        len, PAGE_SIZE, false,
+>>>                                                        metasize,
+>>> -                                                      VIRTIO_XDP_HEADROOM);
+>>> +                                                      VIRTIO_XDP_HEADROOM - metazie);
+>>>                                 return head_skb;
+>>>                         }
+>>>                         break;
+>>
+>> That patch doesn't fix it, as I said with xdp you can move both data and data_meta.
+>> So just doing that would take care of the meta, but won't take care of moving data.
+>>
+> 
+> Also it doesn't take care of the case where page_to_skb() is called with the original page
+> i.e. when we already have headroom, so we hit the next/standard page_to_skb() call (xdp_page == page).
+> 
+> The above change guarantees that buf and p will be in the same page and the skb_reserve() call will
+> make skb->data point to p - buf, i.e. to the beginning of the valid data in that page.
+> Unfortunately the new headroom will not be correct if it is a frag, it will be longer.
+> 
+> 
 
-The device I am using is the MV88E6141, it follows the second scheme
-such that it only responds to the upper 16 of the 32 SMI addresses in
-single chip addressing mode. I am able to define the switch at address
-0, and everything works. However in the device I am using (Netgate
-SG-3100) the ethernet phys for the non switch ethernet interfaces are
-also on the same mdio bus as the switch. One of those phys is
-configured with address 0. Defining both the ethernet-phy and switch
-as address 0 does not work.
+Completely untested alternative could be based on the offset size, that is if it has
+eaten into the headroom and is smaller then we swap them (that means we start at page
+boundary since we have headroom guaranteed space):
+ buf = page_address(page) + (offset > headroom ? offset - headroom : 0);
 
-The device tree I have looks like:
+or perhaps in current code terms:
+ buf = p - (offset > headroom ? headroom : offset);
 
-&mdio {
-    status = "okay";
-    pinctrl-0 = <&mdio_pins>;
-    pinctrl-names = "default";
+That means offset is somewhere inside the headroom of the buf and, the buf itself
+starts at page boundary (when offset < headroom). I think this preserves the correct
+headroom for the new skb. WDYT?
 
-    phy0: ethernet-phy@0 {
-        status = "okay";
-        reg = <0>;
-    };
+Cheers,
+ Nik
 
-    phy1: ethernet-phy@1 {
-        status = "okay";
-        reg = <1>;
-    };
 
-    switch0: switch0@16 {
-        compatible = "marvell,mv88e6141", "marvell,mv88e6085";
-        single-chip-address;
-        reg = <16>; /* first port in single address mode */
-        dsa,member = <0 0>;
-        status = "okay";
 
-... ports/mdio nodes ...
-    };
-};
-
-Thanks,
-Nathan
-
->
-> Thanks
->         Andrew
