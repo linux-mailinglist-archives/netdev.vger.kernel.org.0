@@ -2,113 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EAE050C939
-	for <lists+netdev@lfdr.de>; Sat, 23 Apr 2022 12:31:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E95DE50C956
+	for <lists+netdev@lfdr.de>; Sat, 23 Apr 2022 12:40:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234923AbiDWK36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Apr 2022 06:29:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45654 "EHLO
+        id S234837AbiDWKfU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Apr 2022 06:35:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234287AbiDWK3x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 06:29:53 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 686A563BCC;
-        Sat, 23 Apr 2022 03:26:57 -0700 (PDT)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23N5iGYR022826;
-        Sat, 23 Apr 2022 10:26:49 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=YU6DuhMWdcCqR/esisKnTr9adDxkr5LITBnMOC56St0=;
- b=HvszEA+1PbErzd7LQ4sjqKedhogooYyUWasDXm97cypyjJ6hJhUfpVHh02Sk7H0xtfpR
- shAZDQt/dlOlqTPc9girsE83tA+bbeNucKXoHuufp49bnffPMdb72RusoaHdXCCVW/M6
- 0vVnM7vzILMhEbwgorjElEF0PaI7wnhcIus8gDGOb8jsjvIFu3gdFzlu94XegVCM0FKO
- O0dZPfP4HjQSZUSw0Vry7Q/hGmmByHo9onoDnXGiokc1fjAA3A99twrBt6jZxi7TUFrN
- 2QHh4EmYYe5Im/cg/yfoAFgePVqXCq7UY3inqGt+UcOdec8BOQK2cnHrT0kgQjiNboKa pg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fmbjtjm55-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 23 Apr 2022 10:26:49 +0000
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23NANtUo018886;
-        Sat, 23 Apr 2022 10:26:48 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fmbjtjm4w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 23 Apr 2022 10:26:48 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23NAJBCn026117;
-        Sat, 23 Apr 2022 10:26:46 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma03ams.nl.ibm.com with ESMTP id 3fm938r9jv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 23 Apr 2022 10:26:46 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23NAQh4717301768
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 23 Apr 2022 10:26:43 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B840611C04A;
-        Sat, 23 Apr 2022 10:26:43 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 61E1111C04C;
-        Sat, 23 Apr 2022 10:26:43 +0000 (GMT)
-Received: from [9.171.84.240] (unknown [9.171.84.240])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Sat, 23 Apr 2022 10:26:43 +0000 (GMT)
-Message-ID: <67d3e987-47ba-160f-ed73-0dfe1e92c513@linux.ibm.com>
-Date:   Sat, 23 Apr 2022 12:26:43 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH net 0/2] net/smc: Two fixes for smc fallback
-Content-Language: en-US
-To:     Wen Gu <guwen@linux.alibaba.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1650614179-11529-1-git-send-email-guwen@linux.alibaba.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <1650614179-11529-1-git-send-email-guwen@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 2CUIawL_-KQQfU_dJDQmS3Xqj4MoEqJX
-X-Proofpoint-GUID: kOD7krKXrfscmW1WgjmafpbaIVQaF47V
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        with ESMTP id S232591AbiDWKfQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 06:35:16 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05761167E3;
+        Sat, 23 Apr 2022 03:32:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650709939; x=1682245939;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=99EiatxEAzm7mLpblkfbmxHzYEHnM6shM4C4UTNQKG4=;
+  b=NHy0IDNchryk1SJA9SO8XDITMfgqgsxuFgbOvrLE1iEn0yaMK7At/ZJt
+   STnhAjO+Ri/hjVblyAboZP2ZM/yQIOHPYtU/QzD86gYulj4T9UJPxpmaJ
+   IiguQqKLE3U1V7E+Xb/TVngpTnZtp6XwUEuK6qov1inQ+KlbKyWpgUW2z
+   wqH075QS/1sciDLkBMsRn9b8IwZklC/CmS9wiLaia2yZTw++VopmAqTjs
+   XC7Dne9N2Zpc0NhcZqwDSI+6qfkgturJpnU6Vgo9FvTnOMyBDVuiEUGZe
+   xl+3YdHyP5k0uwcZER0STOzjB9Y+tfQb6Wf9/vxaI+gvzYhvDbS7tNk8K
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="290008027"
+X-IronPort-AV: E=Sophos;i="5.90,284,1643702400"; 
+   d="scan'208";a="290008027"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2022 03:32:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,284,1643702400"; 
+   d="scan'208";a="627338427"
+Received: from lkp-server01.sh.intel.com (HELO dd58949a6e39) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 23 Apr 2022 03:32:16 -0700
+Received: from kbuild by dd58949a6e39 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1niD3o-0000AT-7v;
+        Sat, 23 Apr 2022 10:32:16 +0000
+Date:   Sat, 23 Apr 2022 18:31:40 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Vasily Averin <vvs@openvz.org>, Vlastimil Babka <vbabka@suse.cz>,
+        Shakeel Butt <shakeelb@google.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, kernel@openvz.org,
+        Florian Westphal <fw@strlen.de>, linux-kernel@vger.kernel.org,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Michal Hocko <mhocko@suse.com>, cgroups@vger.kernel.org,
+        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH] net: set proper memcg for net_init hooks allocations
+Message-ID: <202204231806.8O86U791-lkp@intel.com>
+References: <6f38e02b-9af3-4dcf-9000-1118a04b13c7@openvz.org>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-23_01,2022-04-22_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- malwarescore=0 bulkscore=0 phishscore=0 adultscore=0 lowpriorityscore=0
- spamscore=0 suspectscore=0 clxscore=1015 priorityscore=1501
- mlxlogscore=908 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204230046
-X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6f38e02b-9af3-4dcf-9000-1118a04b13c7@openvz.org>
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22/04/2022 09:56, Wen Gu wrote:
-> This patch set includes two fixes for smc fallback:
-> 
-> Patch 1/2 introduces some simple helpers to wrap the replacement
-> and restore of clcsock's callback functions. Make sure that only
-> the original callbacks will be saved and not overwritten.
-> 
-> Patch 2/2 fixes a syzbot reporting slab-out-of-bound issue where
-> smc_fback_error_report() accesses the already freed smc sock (see
-> https://lore.kernel.org/r/00000000000013ca8105d7ae3ada@google.com/).
-> The patch fixes it by resetting sk_user_data and restoring clcsock
-> callback functions timely in fallback situation.
+Hi Vasily,
 
-Thank you for the analysis and the fix!
+Thank you for the patch! Perhaps something to improve:
 
-For the series:
-Acked-by: Karsten Graul <kgraul@linux.ibm.com>
+[auto build test WARNING on linus/master]
+[also build test WARNING on v5.18-rc3 next-20220422]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Vasily-Averin/net-set-proper-memcg-for-net_init-hooks-allocations/20220423-160759
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git c00c5e1d157bec0ef0b0b59aa5482eb8dc7e8e49
+config: riscv-randconfig-r042-20220422 (https://download.01.org/0day-ci/archive/20220423/202204231806.8O86U791-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5bd87350a5ae429baf8f373cb226a57b62f87280)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv64-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/3b379e5391e36e13b9f36305aa6d233fb03d4e58
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Vasily-Averin/net-set-proper-memcg-for-net_init-hooks-allocations/20220423-160759
+        git checkout 3b379e5391e36e13b9f36305aa6d233fb03d4e58
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/gpu/drm/exynos/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   In file included from drivers/gpu/drm/exynos/exynos_drm_dma.c:15:
+   In file included from drivers/gpu/drm/exynos/exynos_drm_drv.h:16:
+   In file included from include/drm/drm_crtc.h:28:
+   In file included from include/linux/i2c.h:19:
+   In file included from include/linux/regulator/consumer.h:35:
+   In file included from include/linux/suspend.h:5:
+   In file included from include/linux/swap.h:9:
+   include/linux/memcontrol.h:1773:21: error: call to undeclared function 'css_tryget'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+           } while (memcg && !css_tryget(&memcg->css));
+                              ^
+   include/linux/memcontrol.h:1773:38: error: incomplete definition of type 'struct mem_cgroup'
+           } while (memcg && !css_tryget(&memcg->css));
+                                          ~~~~~^
+   include/linux/mm_types.h:31:8: note: forward declaration of 'struct mem_cgroup'
+   struct mem_cgroup;
+          ^
+>> drivers/gpu/drm/exynos/exynos_drm_dma.c:55:35: warning: implicit conversion from 'unsigned long long' to 'unsigned int' changes value from 18446744073709551615 to 4294967295 [-Wconstant-conversion]
+           dma_set_max_seg_size(subdrv_dev, DMA_BIT_MASK(32));
+           ~~~~~~~~~~~~~~~~~~~~             ^~~~~~~~~~~~~~~~
+   include/linux/dma-mapping.h:76:40: note: expanded from macro 'DMA_BIT_MASK'
+   #define DMA_BIT_MASK(n) (((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
+                                          ^~~~~
+   1 warning and 2 errors generated.
+
+
+vim +55 drivers/gpu/drm/exynos/exynos_drm_dma.c
+
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  33  
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  34  /*
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  35   * drm_iommu_attach_device- attach device to iommu mapping
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  36   *
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  37   * @drm_dev: DRM device
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  38   * @subdrv_dev: device to be attach
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  39   *
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  40   * This function should be called by sub drivers to attach it to iommu
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  41   * mapping.
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  42   */
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  43  static int drm_iommu_attach_device(struct drm_device *drm_dev,
+07dc3678bacc2a Marek Szyprowski 2020-03-09  44  				struct device *subdrv_dev, void **dma_priv)
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  45  {
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  46  	struct exynos_drm_private *priv = drm_dev->dev_private;
+b9c633882de460 Marek Szyprowski 2020-06-01  47  	int ret = 0;
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  48  
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  49  	if (get_dma_ops(priv->dma_dev) != get_dma_ops(subdrv_dev)) {
+6f83d20838c099 Inki Dae         2019-04-15  50  		DRM_DEV_ERROR(subdrv_dev, "Device %s lacks support for IOMMU\n",
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  51  			  dev_name(subdrv_dev));
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  52  		return -EINVAL;
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  53  	}
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  54  
+ddfd4ab6bb0883 Marek Szyprowski 2020-07-07 @55  	dma_set_max_seg_size(subdrv_dev, DMA_BIT_MASK(32));
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  56  	if (IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)) {
+07dc3678bacc2a Marek Szyprowski 2020-03-09  57  		/*
+07dc3678bacc2a Marek Szyprowski 2020-03-09  58  		 * Keep the original DMA mapping of the sub-device and
+07dc3678bacc2a Marek Szyprowski 2020-03-09  59  		 * restore it on Exynos DRM detach, otherwise the DMA
+07dc3678bacc2a Marek Szyprowski 2020-03-09  60  		 * framework considers it as IOMMU-less during the next
+07dc3678bacc2a Marek Szyprowski 2020-03-09  61  		 * probe (in case of deferred probe or modular build)
+07dc3678bacc2a Marek Szyprowski 2020-03-09  62  		 */
+07dc3678bacc2a Marek Szyprowski 2020-03-09  63  		*dma_priv = to_dma_iommu_mapping(subdrv_dev);
+07dc3678bacc2a Marek Szyprowski 2020-03-09  64  		if (*dma_priv)
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  65  			arm_iommu_detach_device(subdrv_dev);
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  66  
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  67  		ret = arm_iommu_attach_device(subdrv_dev, priv->mapping);
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  68  	} else if (IS_ENABLED(CONFIG_IOMMU_DMA)) {
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  69  		ret = iommu_attach_device(priv->mapping, subdrv_dev);
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  70  	}
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  71  
+b9c633882de460 Marek Szyprowski 2020-06-01  72  	return ret;
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  73  }
+67fbf3a3ef8443 Andrzej Hajda    2018-10-12  74  
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
