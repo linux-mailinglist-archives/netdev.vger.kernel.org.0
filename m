@@ -2,99 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A94450CE6D
-	for <lists+netdev@lfdr.de>; Sun, 24 Apr 2022 04:22:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9DC750CE7A
+	for <lists+netdev@lfdr.de>; Sun, 24 Apr 2022 04:30:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237484AbiDXCZb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Apr 2022 22:25:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57978 "EHLO
+        id S237709AbiDXCdi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Apr 2022 22:33:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229779AbiDXCZa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 22:25:30 -0400
-Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12BD8237FD;
-        Sat, 23 Apr 2022 19:22:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1650766950;
-  x=1682302950;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=QDh0au46jwGUKNxxZkaZpw8h8HU6jf4Ztj+mwSJXuEk=;
-  b=hoRItIIpXJVMNqiT1T4kGsVH4TPcT9U+AlvzuxlBZUFSWIEfP4BfnK76
-   ZCQ/m7PB5udbTK5mjIW7hfSJyxI8tBfNjM9+EmY+CXnGdvhikq6O3OHaE
-   /pIq+4Mi9PAarSBEjoAtbOE3u7YOl9eSRA41qgOxO7mgTCb1gUdQZu7zt
-   bCreesVyHjovGu7mZO/rlQbc85G/rwxQQL5nTknWaTph6xVGxZRfqQFgJ
-   QyRRYUvB7vTntHFRGZcE00Hz7khDoQUx3Yl6GfuNBzL2XTZHHhMRTwvz7
-   4ZpV25h/tj+PXPuGxO1k/OxuGa+HkNiV1ahslMYh6bxu5VBRVYszAKzhg
-   w==;
-From:   Hermes Zhang <chenhui.zhang@axis.com>
-To:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     <kernel@axis.com>, Hermes Zhang <chenhuiz@axis.com>,
-        <linux-wireless@vger.kernel.org>,
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        <SHA-cyfmac-dev-list@infineon.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3] brcmfmac: of: introduce new property to allow disable PNO
-Date:   Sun, 24 Apr 2022 10:22:24 +0800
-Message-ID: <20220424022224.3609950-1-chenhui.zhang@axis.com>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S235794AbiDXCdh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 22:33:37 -0400
+X-Greylist: delayed 400 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 23 Apr 2022 19:30:38 PDT
+Received: from smtp2.emailarray.com (smtp.emailarray.com [69.28.212.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAD2927FE9
+        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 19:30:38 -0700 (PDT)
+Received: (qmail 42047 invoked by uid 89); 24 Apr 2022 02:23:57 -0000
+Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTc0LjIxLjE0NC4yOQ==) (POLARISLOCAL)  
+  by smtp2.emailarray.com with SMTP; 24 Apr 2022 02:23:57 -0000
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com,
+        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        richardcochran@gmail.com
+Cc:     netdev@vger.kernel.org, kernel-team@fb.com
+Subject: [PATCH net-next v1 0/4] Broadcom PTP PHY support
+Date:   Sat, 23 Apr 2022 19:23:52 -0700
+Message-Id: <20220424022356.587949-1-jonathan.lemon@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
-        SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=0.5 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+        FORGED_GMAIL_RCVD,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,NML_ADSP_CUSTOM_MED,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hermes Zhang <chenhuiz@axis.com>
+This adds PTP support for the Broadcom PHY BCM54210E (and the
+specific variant BCM54213PE that the rpi-5.15 branch uses).
 
-Some versions of the Broadcom firmware for this chip seem to hang
-if the PNO feature is enabled when connecting to a dummy or
-non-existent AP.
-Add a new property to allow the disabling of PNO for devices with
-this specific firmware.
+This has only been tested on the RPI CM4, which has one port.
 
-Signed-off-by: Hermes Zhang <chenhuiz@axis.com>
----
+There are other Broadcom chips which may benefit from using the 
+same framework here, although with different register sets.
 
-Notes:
-    Comments update
+Jonathan Lemon (4):
+  net: phy: broadcom: Add PTP support for some Broadcom PHYs.
+  net: phy: broadcom: Add Broadcom PTP hooks to bcm-phy-lib
+  net: phy: broadcom: Hook up the PTP PHY functions
+  net: phy: Kconfig: Add broadcom PTP PHY library
 
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/phy/Kconfig       |  10 +
+ drivers/net/phy/Makefile      |   1 +
+ drivers/net/phy/bcm-phy-lib.c |  13 +
+ drivers/net/phy/bcm-phy-lib.h |   3 +
+ drivers/net/phy/bcm-phy-ptp.c | 736 ++++++++++++++++++++++++++++++++++
+ drivers/net/phy/broadcom.c    |  23 +-
+ 6 files changed, 782 insertions(+), 4 deletions(-)
+ create mode 100644 drivers/net/phy/bcm-phy-ptp.c
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-index 8623bde5eb70..121a195e4054 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-@@ -11,6 +11,7 @@
- #include "core.h"
- #include "common.h"
- #include "of.h"
-+#include "feature.h"
- 
- static int brcmf_of_get_country_codes(struct device *dev,
- 				      struct brcmf_mp_device *settings)
-@@ -102,6 +103,9 @@ void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
- 	if (bus_type != BRCMF_BUSTYPE_SDIO)
- 		return;
- 
-+	if (of_find_property(np, "brcm,pno-disable", NULL))
-+		settings->feature_disable |= BIT(BRCMF_FEAT_PNO);
-+
- 	if (of_property_read_u32(np, "brcm,drive-strength", &val) == 0)
- 		sdio->drive_strength = val;
- 
 -- 
-2.30.2
+2.31.1
 
