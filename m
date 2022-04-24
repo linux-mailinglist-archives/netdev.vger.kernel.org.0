@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E3A050D2B6
+	by mail.lfdr.de (Postfix) with ESMTP id 566CA50D2B7
 	for <lists+netdev@lfdr.de>; Sun, 24 Apr 2022 17:35:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233043AbiDXPhL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Apr 2022 11:37:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36938 "EHLO
+        id S232361AbiDXPhE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Apr 2022 11:37:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240451AbiDXPbX (ORCPT
+        with ESMTP id S240449AbiDXPbX (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 11:31:23 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67305171C04;
-        Sun, 24 Apr 2022 08:28:21 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KmX5y3wNhzGp3T;
-        Sun, 24 Apr 2022 23:25:42 +0800 (CST)
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAEC8171C03;
+        Sun, 24 Apr 2022 08:28:20 -0700 (PDT)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KmX8l38tLzhYWb;
+        Sun, 24 Apr 2022 23:28:07 +0800 (CST)
 Received: from huawei.com (10.67.174.197) by kwepemi500013.china.huawei.com
  (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sun, 24 Apr
- 2022 23:28:15 +0800
+ 2022 23:28:16 +0800
 From:   Xu Kuohai <xukuohai@huawei.com>
 To:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
@@ -57,9 +57,9 @@ CC:     Catalin Marinas <catalin.marinas@arm.com>,
         Mark Brown <broonie@kernel.org>,
         Delyan Kratunov <delyank@fb.com>,
         Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Subject: [PATCH bpf-next v3 1/7] arm64: ftrace: Add ftrace direct call support
-Date:   Sun, 24 Apr 2022 11:40:22 -0400
-Message-ID: <20220424154028.1698685-2-xukuohai@huawei.com>
+Subject: [PATCH bpf-next v3 2/7] ftrace: Fix deadloop caused by direct call in ftrace selftest
+Date:   Sun, 24 Apr 2022 11:40:23 -0400
+Message-ID: <20220424154028.1698685-3-xukuohai@huawei.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220424154028.1698685-1-xukuohai@huawei.com>
 References: <20220424154028.1698685-1-xukuohai@huawei.com>
@@ -78,113 +78,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add ftrace direct support for arm64.
+After direct call is enabled for arm64, ftrace selftest enters a
+dead loop:
 
-1. When there is custom trampoline only, replace the fentry nop to a
-   jump instruction that jumps directly to the custom trampoline.
+<trace_selftest_dynamic_test_func>:
+00  bti     c
+01  mov     x9, x30                            <trace_direct_tramp>:
+02  bl      <trace_direct_tramp>    ---------->     ret
+                                                     |
+                                         lr/x30 is 03, return to 03
+                                                     |
+03  mov     w0, #0x0   <-----------------------------|
+     |                                               |
+     |                   dead loop!                  |
+     |                                               |
+04  ret   ---- lr/x30 is still 03, go back to 03 ----|
 
-2. When ftrace trampoline and custom trampoline coexist, jump from
-   fentry to ftrace trampoline first, then jump to custom trampoline
-   when ftrace trampoline exits. The current unused register
-   pt_regs->orig_x0 is used as an intermediary for jumping from ftrace
-   trampoline to custom trampoline.
+The reason is that when the direct caller trace_direct_tramp() returns
+to the patched function trace_selftest_dynamic_test_func(), lr is still
+the address after the instrumented instruction in the patched function,
+so when the patched function exits, it returns to itself!
 
+To fix this issue, we need to restore lr before trace_direct_tramp()
+exits, so rewrite a dedicated trace_direct_tramp() for arm64.
+
+Reported-by: Li Huafei <lihuafei1@huawei.com>
 Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
-Acked-by: Song Liu <songliubraving@fb.com>
 ---
- arch/arm64/Kconfig               |  2 ++
- arch/arm64/include/asm/ftrace.h  | 12 ++++++++++++
- arch/arm64/kernel/asm-offsets.c  |  1 +
- arch/arm64/kernel/entry-ftrace.S | 18 +++++++++++++++---
- 4 files changed, 30 insertions(+), 3 deletions(-)
+ kernel/trace/trace_selftest.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 57c4c995965f..81cc330daafc 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -177,6 +177,8 @@ config ARM64
- 	select HAVE_DYNAMIC_FTRACE
- 	select HAVE_DYNAMIC_FTRACE_WITH_REGS \
- 		if $(cc-option,-fpatchable-function-entry=2)
-+	select HAVE_DYNAMIC_FTRACE_WITH_DIRECT_CALLS \
-+		if DYNAMIC_FTRACE_WITH_REGS
- 	select FTRACE_MCOUNT_USE_PATCHABLE_FUNCTION_ENTRY \
- 		if DYNAMIC_FTRACE_WITH_REGS
- 	select HAVE_EFFICIENT_UNALIGNED_ACCESS
-diff --git a/arch/arm64/include/asm/ftrace.h b/arch/arm64/include/asm/ftrace.h
-index 1494cfa8639b..14a35a5df0a1 100644
---- a/arch/arm64/include/asm/ftrace.h
-+++ b/arch/arm64/include/asm/ftrace.h
-@@ -78,6 +78,18 @@ static inline unsigned long ftrace_call_adjust(unsigned long addr)
- 	return addr;
- }
+diff --git a/kernel/trace/trace_selftest.c b/kernel/trace/trace_selftest.c
+index abcadbe933bb..d2eff2b1d743 100644
+--- a/kernel/trace/trace_selftest.c
++++ b/kernel/trace/trace_selftest.c
+@@ -785,8 +785,24 @@ static struct fgraph_ops fgraph_ops __initdata  = {
+ };
  
-+#ifdef CONFIG_HAVE_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
-+static inline void arch_ftrace_set_direct_caller(struct pt_regs *regs,
-+						 unsigned long addr)
-+{
-+	/*
-+	 * Place custom trampoline address in regs->orig_x0 to let ftrace
-+	 * trampoline jump to it.
-+	 */
-+	regs->orig_x0 = addr;
-+}
-+#endif /* CONFIG_HAVE_DYNAMIC_FTRACE_WITH_DIRECT_CALLS */
+ #ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
++#ifdef CONFIG_ARM64
++extern void trace_direct_tramp(void);
 +
- #ifdef CONFIG_DYNAMIC_FTRACE_WITH_REGS
- struct dyn_ftrace;
- int ftrace_init_nop(struct module *mod, struct dyn_ftrace *rec);
-diff --git a/arch/arm64/kernel/asm-offsets.c b/arch/arm64/kernel/asm-offsets.c
-index 1197e7679882..b1ed0bf01c59 100644
---- a/arch/arm64/kernel/asm-offsets.c
-+++ b/arch/arm64/kernel/asm-offsets.c
-@@ -80,6 +80,7 @@ int main(void)
-   DEFINE(S_SDEI_TTBR1,		offsetof(struct pt_regs, sdei_ttbr1));
-   DEFINE(S_PMR_SAVE,		offsetof(struct pt_regs, pmr_save));
-   DEFINE(S_STACKFRAME,		offsetof(struct pt_regs, stackframe));
-+  DEFINE(S_ORIG_X0,		offsetof(struct pt_regs, orig_x0));
-   DEFINE(PT_REGS_SIZE,		sizeof(struct pt_regs));
-   BLANK();
- #ifdef CONFIG_COMPAT
-diff --git a/arch/arm64/kernel/entry-ftrace.S b/arch/arm64/kernel/entry-ftrace.S
-index e535480a4069..dfe62c55e3a2 100644
---- a/arch/arm64/kernel/entry-ftrace.S
-+++ b/arch/arm64/kernel/entry-ftrace.S
-@@ -60,6 +60,9 @@
- 	str	x29, [sp, #S_FP]
- 	.endif
++asm (
++"	.pushsection	.text, \"ax\", @progbits\n"
++"	.type		trace_direct_tramp, %function\n"
++"	.global		trace_direct_tramp\n"
++"trace_direct_tramp:"
++"	mov	x10, x30\n"
++"	mov	x30, x9\n"
++"	ret	x10\n"
++"	.size		trace_direct_tramp, .-trace_direct_tramp\n"
++"	.popsection\n"
++);
++#else
+ noinline __noclone static void trace_direct_tramp(void) { }
+ #endif
++#endif
  
-+	/* Set orig_x0 to zero  */
-+	str     xzr, [sp, #S_ORIG_X0]
-+
- 	/* Save the callsite's SP and LR */
- 	add	x10, sp, #(PT_REGS_SIZE + 16)
- 	stp	x9, x10, [sp, #S_LR]
-@@ -119,12 +122,21 @@ ftrace_common_return:
- 	/* Restore the callsite's FP, LR, PC */
- 	ldr	x29, [sp, #S_FP]
- 	ldr	x30, [sp, #S_LR]
--	ldr	x9, [sp, #S_PC]
--
-+	ldr	x10, [sp, #S_PC]
-+
-+	ldr	x11, [sp, #S_ORIG_X0]
-+	cbz	x11, 1f
-+	/* Set x9 to parent ip before jump to custom trampoline */
-+	mov	x9,  x30
-+	/* Set lr to self ip */
-+	ldr	x30, [sp, #S_PC]
-+	/* Set x10 (used for return address) to custom trampoline */
-+	mov	x10, x11
-+1:
- 	/* Restore the callsite's SP */
- 	add	sp, sp, #PT_REGS_SIZE + 16
- 
--	ret	x9
-+	ret	x10
- SYM_CODE_END(ftrace_common)
- 
- #ifdef CONFIG_FUNCTION_GRAPH_TRACER
+ /*
+  * Pretty much the same than for the function tracer from which the selftest
 -- 
 2.30.2
 
