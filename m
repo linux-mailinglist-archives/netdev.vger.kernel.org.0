@@ -2,104 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0900750D2A6
-	for <lists+netdev@lfdr.de>; Sun, 24 Apr 2022 17:09:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AC0150D2B4
+	for <lists+netdev@lfdr.de>; Sun, 24 Apr 2022 17:35:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231846AbiDXPMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Apr 2022 11:12:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51206 "EHLO
+        id S233602AbiDXPhd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Apr 2022 11:37:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231605AbiDXPMO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 11:12:14 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F21BE66F9E;
-        Sun, 24 Apr 2022 08:09:12 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id j8so21587553pll.11;
-        Sun, 24 Apr 2022 08:09:12 -0700 (PDT)
+        with ESMTP id S240087AbiDXPZO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 11:25:14 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F87F39B9C
+        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 08:22:13 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id l7so25205792ejn.2
+        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 08:22:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Zx+YaIWJey4qzWLJKHpX/8eOZNZqHoxAIr2LpwgG1oI=;
-        b=HhLSNzrntAkIJsbkeLJX1axnBynXa/65EKVtiiPG3OTpRFtGTY6JuKYM0zZ3vvfCBU
-         RDlSqOhkO//MsibbAJeiWs3yE7x87TYQ0etBqLO9gD+yuk/bm6Pr4ygJidzPk96veBZf
-         O7daXyq6RFvuIjPSsoqcXYrTqEJ2EPX+VvgCYl82uK2X+ZEiNBkGHxx5GWPfQyEpQA/3
-         fug9YV3FWKx2+I8p4sOGf4wtGu8bqTgUjFuxiKI/ptKAl347VEcig9SdJ+lS8EjGX9ap
-         R9ru4MrPUGLJIGMa1aZDahFU+dIHSf6x3k00yUd/ZfQUk/MUkyjO7ul59tt5itjSglHR
-         P1KA==
+         :content-disposition:in-reply-to;
+        bh=JvwMaNfpyczcBz5FjlcmZ5tT4tBB4pJUkY5VC5Yl08k=;
+        b=Z4XeHrbt4PNpBQEEW2O8Cv/abfRosw9nTHVB11JUPU+VcHQ/OsH2PeKK3Vb++6ZuP6
+         Y1Iy2J5QaI3bzFjHOO+j8PtilLUjaceub84QlAlpbkbZZokSkx+q+r6/thQ3+Q+o3YhC
+         VT/9LvC77zoZdQD9jcmHpOSpq7LMw6fFpXmrq1VCEabtEM8W7ghuHi10H3lHDkTOYrLE
+         XEWkn6Hvu5pjOs5KDqh3hekPTVxDHcOsdWwwWsFQ0VQaVznN5wjm2Ria4Inx3bHlCoct
+         bfJyC2GyYYkmQk8tPhX3gFHpoKCn7sKnuq7WgMUig3wjo7msJmasGUZYsnXL0ipCJBGx
+         sJpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Zx+YaIWJey4qzWLJKHpX/8eOZNZqHoxAIr2LpwgG1oI=;
-        b=Z+42264eGnyXaFoJO+1bijug32qAqWydAJfKKvsqrg+2ibfUy/Jlr+va0qlJLrzLYl
-         eArsR6BsWuBk0dIMaaYNiTBsV0rVD6IPWVlQreFq1k6Am3BhZF8qG/+70KP33vk/Z6Kw
-         hmIsC7Ar0hdZqrE4Tf+m0iQ/sB4R88x7qKTji0xvoOr4ejhGxDIYOvqrn+Ml2Lh2ncAc
-         O8/BvIPJUpBFwVz3NkH6L8+L0rOnLxpueNtyws/eZW5LJ3e9b8W3j2xOC+dGXry7nQMs
-         tTZmOEgTKt3ZK+JGnVObOdyk61erneeE9ZzEgTc0VPtb3bM2uIxFE2OFjiY7fUmrGf8a
-         QZqg==
-X-Gm-Message-State: AOAM533wNzQazEBheZQU9MD3JKf/UH8yhRd8dk5GqrZ2insD0IEPTwXE
-        STANntHpSju92dmcipFeeL23vucDepM=
-X-Google-Smtp-Source: ABdhPJzFGGBCFpxapSXUNHoP4G5tCoGTm2UyFllGwbA9dCszVILsFulse0PeoGl54W7MuZ5CAuRDCA==
-X-Received: by 2002:a17:902:a585:b0:14d:58ef:65 with SMTP id az5-20020a170902a58500b0014d58ef0065mr13834388plb.139.1650812952455;
-        Sun, 24 Apr 2022 08:09:12 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id h13-20020a056a00230d00b004f427ffd485sm9382792pfh.143.2022.04.24.08.09.10
+         :mime-version:content-disposition:in-reply-to;
+        bh=JvwMaNfpyczcBz5FjlcmZ5tT4tBB4pJUkY5VC5Yl08k=;
+        b=XBUGKjKMRfJsU3muomZTaEVBrCu35pNENu0+SBpSO7UtbYvBTZLw1yAuLkNgSt0s1a
+         pcm5nlBtRnTcW+wgGjDaHCU9WQ+tjt2ZK5VguwHCDDI634wv+SmkpVMx7yIIh7JpOdiU
+         KyQXgISZN/3fdRuNUsYkPRM7YiA8FmL51OMHq67xm2B8v/ABscvjfOgEFdwI7WEUS5hV
+         4T1g6TblKyCChIjtUSZDuUzQDXNd0vMXo+5P4289fXme+CXarTnqGhbTbS2NzLSjkNvV
+         qiVIgMiJtFJFpgsCcveBPaBr6Z+7KhafNfrfs5H58TJhoJlLujY4Mqbce8Cb0awgs+Oa
+         HO8Q==
+X-Gm-Message-State: AOAM531WlcN6BcQbSnQ2aODoQsxYmeQGu7gtULxfX1Q5uwueuQzN+AFk
+        p3dQ2qx1qkPS1YK7wWf9xRkpig==
+X-Google-Smtp-Source: ABdhPJzmw2hXC9+KxqcyIogQ1sGB29hYOGxq6qBBX2IiElUpSPzpeEwu7QAlHQ3yskB9NidScLhrew==
+X-Received: by 2002:a17:906:66c8:b0:6e8:8b06:1b32 with SMTP id k8-20020a17090666c800b006e88b061b32mr12265608ejp.236.1650813732169;
+        Sun, 24 Apr 2022 08:22:12 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s ([104.245.96.34])
+        by smtp.gmail.com with ESMTPSA id c13-20020a056402100d00b0042294fdbcf9sm3328082edu.14.2022.04.24.08.22.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Apr 2022 08:09:11 -0700 (PDT)
-Date:   Sun, 24 Apr 2022 08:09:09 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net-next 5/5] net: lan966x: Add support for PTP_PF_EXTTS
-Message-ID: <20220424150909.GA29569@hoboy.vegasvil.org>
-References: <20220424145824.2931449-1-horatiu.vultur@microchip.com>
- <20220424145824.2931449-6-horatiu.vultur@microchip.com>
+        Sun, 24 Apr 2022 08:22:11 -0700 (PDT)
+Date:   Sun, 24 Apr 2022 23:22:04 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Timothy Hayes <timothy.hayes@arm.com>
+Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        acme@kernel.org, John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH 1/3] perf: arm-spe: Fix addresses of synthesized SPE
+ events
+Message-ID: <20220424152204.GA1810164@leoy-ThinkPad-X240s>
+References: <20220421165205.117662-1-timothy.hayes@arm.com>
+ <20220421165205.117662-2-timothy.hayes@arm.com>
+ <20220424122831.GC978927@leoy-ThinkPad-X240s>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220424145824.2931449-6-horatiu.vultur@microchip.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220424122831.GC978927@leoy-ThinkPad-X240s>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 24, 2022 at 04:58:24PM +0200, Horatiu Vultur wrote:
+On Sun, Apr 24, 2022 at 08:28:31PM +0800, Leo Yan wrote:
+> On Thu, Apr 21, 2022 at 05:52:03PM +0100, Timothy Hayes wrote:
+> > This patch corrects a bug whereby synthesized events from SPE
+> > samples are missing virtual addresses.
+> > 
+> > Signed-off-by: Timothy Hayes <timothy.hayes@arm.com>
+> 
+> Reviewed-by: Leo Yan <leo.yan@linaro.org>
 
-> @@ -321,6 +321,63 @@ irqreturn_t lan966x_ptp_irq_handler(int irq, void *args)
->  	return IRQ_HANDLED;
->  }
->  
-> +irqreturn_t lan966x_ptp_ext_irq_handler(int irq, void *args)
-> +{
-> +	struct lan966x *lan966x = args;
-> +	struct lan966x_phc *phc;
-> +	unsigned long flags;
-> +	u64 time = 0;
-> +	time64_t s;
-> +	int pin, i;
-> +	s64 ns;
-> +
-> +	if (!(lan_rd(lan966x, PTP_PIN_INTR)))
-> +		return IRQ_NONE;
-> +
-> +	/* Go through all domains and see which pin generated the interrupt */
-> +	for (i = 0; i < LAN966X_PHC_COUNT; ++i) {
-> +		struct ptp_clock_event ptp_event = {0};
-> +
-> +		phc = &lan966x->phc[i];
-> +		pin = ptp_find_pin(phc->clock, PTP_PF_EXTTS, 0);
+Supplement for fixed tag:
 
-Not safe to call ptp_find_pin() from ISR.  See comment in include/linux/ptp_clock_kernel.h
+Since patches 01, 02 are fixing bugs, please add fixed tag [1]:
+
+Fixes: 54f7815efef7 ("perf arm-spe: Fill address info for samples")
 
 Thanks,
-Richard
+Leo
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/process/submitting-patches.rst#n138
