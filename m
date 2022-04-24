@@ -2,82 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8994B50D21A
-	for <lists+netdev@lfdr.de>; Sun, 24 Apr 2022 15:47:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AA2950D24B
+	for <lists+netdev@lfdr.de>; Sun, 24 Apr 2022 16:35:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234075AbiDXNuB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Apr 2022 09:50:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34904 "EHLO
+        id S239423AbiDXOhv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Apr 2022 10:37:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233019AbiDXNuA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 09:50:00 -0400
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C503716C176
-        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 06:46:59 -0700 (PDT)
-Received: by mail-qk1-x730.google.com with SMTP id q75so9100858qke.6
-        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 06:46:59 -0700 (PDT)
+        with ESMTP id S239412AbiDXOho (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 10:37:44 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB54B338A9;
+        Sun, 24 Apr 2022 07:34:43 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id n8so21552375plh.1;
+        Sun, 24 Apr 2022 07:34:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8dwBFVIXy534bKGTyyuJDK1gwkEa8o2qP7YdajUgu+g=;
-        b=FDkvAgGJ0PNObM/pCjxbWmTzNac5Abl0qKcS/HIco9/IQWF/WCLCbIi0rOXELA4qn6
-         lSTMqWF/bEQROUJqEOEpx+Uu7nWjFz6463+8HYFmn2ETfkEngvRqkpU12Pt6zhzL5rCS
-         bKn+Hq0lzHn3XLpvDTHWBTtOl23F5TLp/BIbL9qiExOPLM+0yQ7IibHzl7UhhFMMMeSe
-         1ndmRdGC1it3S3VickSXM/DIn0qUXIAS7FpajpuxwlJX2GprH32Y/I89kV+Xz/FxtsUc
-         j0GnQL7hHBHwNvOw5tVhUFpaWNCWr3AvacGSUv8LJ/hyFhEpExE1LWvaU4MxoOcUoqVv
-         +6bg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TraAa9qxjleDjcKSV6cdBET+ximOcYjIqFdHiJLXCNQ=;
+        b=d42AiVW50s9TABrjm13XKqTRuodcUHYC6ylnEacp7SaTKcZQ5YklbmqLVJEgRUkeZ+
+         OBeikygE/Ma1lpsB3lIymZrourtRKOLjmMvUstuwB7qev2+BQQryYsRE/f8imrv5NmBA
+         2+nJ/ZO2yvMVfPq8k650+ce/lwDGp6XuZYdwOYBKBbtRl80uniIZ5baC4/9LLdOEGTMu
+         VDwkgZ7d1k7mqBSccztD29kt9v9YAWd2mPl4o4wdrRAh1FjvhT+vf3ACl8OC0PXag828
+         ftIC/UFPZ6ZFGXAr5CLVaufPBfiJzZOq9MQCPogN/a4ISyhPHnuEec+iVXfos9X2JMh4
+         G5+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8dwBFVIXy534bKGTyyuJDK1gwkEa8o2qP7YdajUgu+g=;
-        b=0P9C8PdJGK/eQynhgu64rRzL88JQWvvUCKnGcF/vm9IckNhvGtsDJSJFHzn/Nik085
-         2pj1PKiE7rU7nRULOztAuldhqRqc+S0ASfQQi8woLpQ8k7lJ80Qr1HmThspBp6l9oTQO
-         9yLJIfbX8GPG8w9kpzOb8gpKVFjRdIpRc5uXkSiO6WpZiaRgZwSS5ZqiLzCPiJabwkaQ
-         TQqe/TQuIsBJ6GIW6gCvPlVxFiKqo1wVgEdEvLwYi0UpZToZkG87uVheA+Jd9tr0y6rB
-         zcBwTYBcF2wGWVOQGtKrVzHJleo65fXaQZrLXybNtCvs/DdTO9jxiQGFi3zjN7An7K+4
-         IxcQ==
-X-Gm-Message-State: AOAM531KDZZ5imjAtIJxQ1nIXOyfZYjUyJSkqjMgNhcaV1uq+nV4URrO
-        D5v7d0WrM58F/L6Fb7S2apQTV/9mXu8=
-X-Google-Smtp-Source: ABdhPJwkjb39nEs/Ze1rM0scEBviQEPZI5TwLdXZP0etwYr676pp2I22ggDFk2Oc2buFmVt5M4qe5g==
-X-Received: by 2002:a05:620a:1654:b0:69c:7035:b31f with SMTP id c20-20020a05620a165400b0069c7035b31fmr7628282qko.546.1650808018912;
-        Sun, 24 Apr 2022 06:46:58 -0700 (PDT)
-Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com. [209.85.219.175])
-        by smtp.gmail.com with ESMTPSA id w22-20020a05622a135600b002f3677c36d1sm573401qtk.27.2022.04.24.06.46.57
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 24 Apr 2022 06:46:57 -0700 (PDT)
-Received: by mail-yb1-f175.google.com with SMTP id r189so22707158ybr.6
-        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 06:46:57 -0700 (PDT)
-X-Received: by 2002:a05:6902:10c2:b0:645:192e:1a88 with SMTP id
- w2-20020a05690210c200b00645192e1a88mr13139818ybu.117.1650808016622; Sun, 24
- Apr 2022 06:46:56 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TraAa9qxjleDjcKSV6cdBET+ximOcYjIqFdHiJLXCNQ=;
+        b=UIrNp61sCj2+PoJBLQLGXeZpfc8oT7g/08uWPxQBZIxnec+o/kII0ivJWi5LM78Blq
+         3IpgLT9//s5MZ2BYZ2fpfFGULszlavKPj3l+NHADGQ6j3h9tBQrwVWV0TCpF7kYTjkJa
+         rmU6w14bs3mgoHV44pROcU+i8V9RA0ISvuiUC1BEM0TBaVh9Tdl7ZwqzTFzaAc54yj+l
+         CjwZhobNu5CFt7cn3rxKPypnjX5DHErQV9p2JouX5/Sd0YhruISdxiChuwe4XwnPWrSW
+         6qqIQLhVR7m3mCgnacCKmwXLdBsF6FPE52iQNfXnsUfTRa0owM74gNqlzjAD5LvWBKLX
+         oaug==
+X-Gm-Message-State: AOAM531DCK+yDu80tfuDgfeCU4esjBHkwKMbbD7fmToVc6if/Ff0TSqI
+        X9/aHTpA75neYz/z3xQbot7baFvzgoG52w==
+X-Google-Smtp-Source: ABdhPJwTZ6KgukTB9CJWdmkYdUg6KWAiPkj0nDfLsny3nxvpcrrj6CMe+ZGCdXYmnQBissnFmI0UaA==
+X-Received: by 2002:a17:902:f605:b0:154:aa89:bd13 with SMTP id n5-20020a170902f60500b00154aa89bd13mr13819802plg.112.1650810883135;
+        Sun, 24 Apr 2022 07:34:43 -0700 (PDT)
+Received: from localhost.localdomain ([223.212.58.71])
+        by smtp.gmail.com with ESMTPSA id n16-20020a17090a091000b001d2bff34228sm5659369pjn.9.2022.04.24.07.34.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Apr 2022 07:34:42 -0700 (PDT)
+From:   Yuntao Wang <ytcoode@gmail.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yuntao Wang <ytcoode@gmail.com>
+Subject: [PATCH bpf-next] libbpf: Remove unnecessary type cast
+Date:   Sun, 24 Apr 2022 22:34:20 +0800
+Message-Id: <20220424143420.457082-1-ytcoode@gmail.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-References: <20220420082758.581245-1-liuhangbin@gmail.com> <CA+FuTScyF4BKEcNSCYOv8SBA_EmB806YtKA17jb3F+fymVF-Pg@mail.gmail.com>
- <YmDCHI330AUfcYKa@Laptop-X1> <CA+FuTSckEJVUH1Q2vBxGbfPgVteyDVmTfjJC6hBj=qRP+JcAxA@mail.gmail.com>
- <YmIOLBihyeLy+PCS@Laptop-X1> <CA+FuTSfzcAUXrxzbLd-MPctTyLu8USJQ4gvsqPBfLpA+svYMYA@mail.gmail.com>
- <YmS2Gd6c1b+o5nyR@Laptop-X1>
-In-Reply-To: <YmS2Gd6c1b+o5nyR@Laptop-X1>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Sun, 24 Apr 2022 09:46:19 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSe7zNmJ0JpouMoCFrt5AR19HJQVzDsB3BK46A9rNfowYw@mail.gmail.com>
-Message-ID: <CA+FuTSe7zNmJ0JpouMoCFrt5AR19HJQVzDsB3BK46A9rNfowYw@mail.gmail.com>
-Subject: Re: [PATCH net-next] net/af_packet: add VLAN support for AF_PACKET
- SOCK_RAW GSO
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        netdev@vger.kernel.org, "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        virtualization@lists.linux-foundation.org,
-        Balazs Nemeth <bnemeth@redhat.com>,
-        Mike Pattrick <mpattric@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -88,36 +73,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 23, 2022 at 10:31 PM Hangbin Liu <liuhangbin@gmail.com> wrote:
->
-> On Fri, Apr 22, 2022 at 05:39:48PM -0400, Willem de Bruijn wrote:
-> > > If we split skb_probe_transport_header() from packet_parse_headers() and
-> > > move it before calling virtio_net_hdr_* function in packet_snd(). Should
-> > > we do the same for tpacket_snd(), i.e. move skb_probe_transport_header()
-> > > after the virtio_net_hdr_* function?
-> >
-> > That sounds like the inverse: "move after" instead of "move before"?
->
-> That's for "split packet_parse_headers()" option.
->
-> >
-> > But I thought the plan was to go back to your last patch which brings
-> > packet_snd in line with tpacket_snd by moving packet_parse_headers in
-> > its entirety before virtio_net_hdr_*?
->
-> Yes, exactly.
->
-> > > So my conclusion is. There is no need to split packet_parse_headers(). Move
-> > > packet_parse_headers() before calling virtio_net_hdr_* function in packet_snd()
-> > > should be safe.
-> >
-> > Ack. Sorry if my last response was not entirely clear on this point.
->
-> Thanks a lot for your review. Do you think if I need to re-post the patch?
-> Or will you give an Acked-by for this one?
+The link variable is already of type 'struct bpf_link *', casting it to
+'struct bpf_link *' is redundant, drop it.
 
-Please resubmit. And then please also add the comment about tap having
-the same path.
+Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+---
+ tools/lib/bpf/libbpf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->
-> Hangbin
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 9a213aaaac8a..cc1a8fc47f72 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -11270,7 +11270,7 @@ static struct bpf_link *bpf_program__attach_btf_id(const struct bpf_program *pro
+ 		return libbpf_err_ptr(pfd);
+ 	}
+ 	link->fd = pfd;
+-	return (struct bpf_link *)link;
++	return link;
+ }
+ 
+ struct bpf_link *bpf_program__attach_trace(const struct bpf_program *prog)
+-- 
+2.35.3
+
