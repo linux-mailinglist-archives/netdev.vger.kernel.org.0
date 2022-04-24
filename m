@@ -2,77 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E58250CE79
-	for <lists+netdev@lfdr.de>; Sun, 24 Apr 2022 04:29:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4E4450CEC0
+	for <lists+netdev@lfdr.de>; Sun, 24 Apr 2022 04:58:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237708AbiDXCcx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Apr 2022 22:32:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60030 "EHLO
+        id S237858AbiDXDAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Apr 2022 23:00:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237427AbiDXCcw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 22:32:52 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F376E1AB8E0
-        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 19:29:53 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id q19so10523948pgm.6
-        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 19:29:53 -0700 (PDT)
+        with ESMTP id S237791AbiDXDAq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 23:00:46 -0400
+Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D863413F261;
+        Sat, 23 Apr 2022 19:57:47 -0700 (PDT)
+Received: by mail-qt1-x82e.google.com with SMTP id ay11so8234032qtb.4;
+        Sat, 23 Apr 2022 19:57:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=UhsZaluN5dnOKO3U0Krppq9VaLGF2RdY+bajBrR8028=;
-        b=LF1cemno9GFo6gpDhieYb6gKUzr+sC6+6wg2sRBjjYpBbNtDVi3yncL3LPzLhDKLB2
-         LKiKoYfP0DBjxgfCAxgGKF3FgYGkNNZLXoaTg34vT+Rto++IHQWAl2YzypH2z4n2QEwB
-         sJ0B0apKUuHQG2gGttSUbRO5+CfLx8aCN3gCWIEN8VW3iwpIb5RabpR+hRIU6mcQbSLD
-         IEJotVfH03fhcd9nuUe6uDttO+kj1YGnmW7p/3EzvWmELSkEslRNXxHYVT1+mb9zCM7x
-         lGbyv5VHJI6s9C9e84Z3eXZ9EisUeXcnOfuNn3QuvHt8om3ixgdDjM/yfz4GFPlck058
-         IbgA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=XjCdzYbvTiumAbdBQKpwnCmY/DB2qhX1zt/3WHbpTBY=;
+        b=ayegxzyF/KPCw0iAe5COmtVy6cQmP7gjyGCPRXwzyrlmv2fFvDaSBDDq5X71qGEf1p
+         sS56u+5lXrAnX8OHWy0sR9L6itSfjlpk5zIYmnekVgolat1BLi4h2Og3clylnKgfl0gt
+         2+jENAj2WkR8fuiv5p/BoeQ+jGlAYlUxDggLlqobnquHJbriTwz0qUyjkOC4uVRa5jEd
+         sb+eoFdDGOOmRJkrgVRqNbiZSHg7uEI5FSIOpOrUmPPTsBZfp8AeNmFd33MCeGEZ3pF8
+         5l3SIqQxl24U4DEUd+4kx8IevioIRcJm4kx24gP3Z+KCzX1+v1GOwRpuNy059UNu2UeG
+         95bQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UhsZaluN5dnOKO3U0Krppq9VaLGF2RdY+bajBrR8028=;
-        b=dT9zNx4eIM01ZVDo6Wu+5QVheMxJuwN9nSB+Z17oG0AR9edDDdCoWuJRnrMj8at828
-         /zRbiqFNFmCVJ6bePEy5bTaDznAAWUzQuBV4fZsqfQlWi92gF7pG/ISO+6DIohRq4y1s
-         +bmU2YBHqc4HKOt1GSQhVfrtQMSuCQDXWmyT3ln7FD9e54uXnX5y3SslcLZ1H2t6U+8L
-         tC43u3jBFPvhwxdF06AsZskj/iBipxedNnrBljJXta06sE4wDJVCNcGX5hHeuRg2infB
-         KhQv1FIW0z2T7ZgGGoxYHcdLa6fAlregZA3miCfOxd551XajUYTbpAeIEF2UTIUx195q
-         /aHg==
-X-Gm-Message-State: AOAM533EgMUfydMS4VGjdZ8Cx9QDFQvSiFL1kW5p1vt2zNBGtQ+bZ7aW
-        ZPML0hl6AgDNV7izg4Td4MGnHv8NmOk=
-X-Google-Smtp-Source: ABdhPJxc2t/eQsDsrBhxh5508hCySY6AvC2iaiAbY6ZY/PDdw5eu+FrebLTlxemRKXvnkMePjkSR9Q==
-X-Received: by 2002:a65:618d:0:b0:39e:2d10:6d69 with SMTP id c13-20020a65618d000000b0039e2d106d69mr9720773pgv.468.1650767393474;
-        Sat, 23 Apr 2022 19:29:53 -0700 (PDT)
-Received: from Laptop-X1 ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id d8-20020aa78688000000b00505793566f7sm6681301pfo.211.2022.04.23.19.29.48
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=XjCdzYbvTiumAbdBQKpwnCmY/DB2qhX1zt/3WHbpTBY=;
+        b=kYXCN9qHO4JCGj3ijctr2yXkODNxescviuO48cVMAOHuvqW9lmmhptizPcse/uYsYA
+         cp9CIYZ4wtqequdsYMss0EJr02mxt+Lg6lWfP972jB1xdlVDbTkmA55KNQ39LKE+Dp9G
+         56nEk8mAGFC1Z4VjceeFACA4+rlx0zIrOOoUwtMVPmame4hCmDQ34f2k9ppSM6GZYZvV
+         WwIQ+ZGtnDtxVkYQjbqlhBT1+VJNkTe0hOa2cuLc2+XcXxzAexEGO9smXAU/l7tPPga+
+         dl62SKX435SXo7LFgDd9TqDPTV2+FmNjFDTegJqdymHeqfRPgFw9AXy0DbcSHuvGdrTh
+         Xdtg==
+X-Gm-Message-State: AOAM530/Jq7WBRvvSYX0wK0WXKpuCy3f52uarJhhIeDAvkKWJmoUbNAC
+        Shz2BrPEUq+7rsps/BEDoZvWbMT+2T0=
+X-Google-Smtp-Source: ABdhPJwq7R1leUtmM43JRhupWQb4TivSOH5A2uF9lwwk82MGTOMgFt7wf6hY3YMrr0jMaMcrSD9vtg==
+X-Received: by 2002:ac8:5b0d:0:b0:2f3:4377:713b with SMTP id m13-20020ac85b0d000000b002f34377713bmr8031486qtw.588.1650769067040;
+        Sat, 23 Apr 2022 19:57:47 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id x24-20020ac87318000000b002f1fc5fcaedsm3629753qto.68.2022.04.23.19.57.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Apr 2022 19:29:52 -0700 (PDT)
-Date:   Sun, 24 Apr 2022 10:29:45 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     netdev@vger.kernel.org, "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        virtualization@lists.linux-foundation.org,
-        Balazs Nemeth <bnemeth@redhat.com>,
-        Mike Pattrick <mpattric@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH net-next] net/af_packet: add VLAN support for AF_PACKET
- SOCK_RAW GSO
-Message-ID: <YmS2Gd6c1b+o5nyR@Laptop-X1>
-References: <20220420082758.581245-1-liuhangbin@gmail.com>
- <CA+FuTScyF4BKEcNSCYOv8SBA_EmB806YtKA17jb3F+fymVF-Pg@mail.gmail.com>
- <YmDCHI330AUfcYKa@Laptop-X1>
- <CA+FuTSckEJVUH1Q2vBxGbfPgVteyDVmTfjJC6hBj=qRP+JcAxA@mail.gmail.com>
- <YmIOLBihyeLy+PCS@Laptop-X1>
- <CA+FuTSfzcAUXrxzbLd-MPctTyLu8USJQ4gvsqPBfLpA+svYMYA@mail.gmail.com>
+        Sat, 23 Apr 2022 19:57:45 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: lv.ruyi@zte.com.cn
+To:     kuba@kernel.org
+Cc:     cgel.zte@gmail.com, cuissard@marvell.com, davem@davemloft.net,
+        krzysztof.kozlowski@linaro.org, linux-kernel@vger.kernel.org,
+        lv.ruyi@zte.com.cn, netdev@vger.kernel.org, sameo@linux.intel.com,
+        yashsri421@gmail.com, Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH v2] NFC: nfcmrvl: fix error check return value of irq_of_parse_and_map()
+Date:   Sun, 24 Apr 2022 02:57:10 +0000
+Message-Id: <20220424025710.3166034-1-lv.ruyi@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220422160931.6a4eca42@kernel.org>
+References: <20220422160931.6a4eca42@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+FuTSfzcAUXrxzbLd-MPctTyLu8USJQ4gvsqPBfLpA+svYMYA@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -83,30 +72,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 05:39:48PM -0400, Willem de Bruijn wrote:
-> > If we split skb_probe_transport_header() from packet_parse_headers() and
-> > move it before calling virtio_net_hdr_* function in packet_snd(). Should
-> > we do the same for tpacket_snd(), i.e. move skb_probe_transport_header()
-> > after the virtio_net_hdr_* function?
-> 
-> That sounds like the inverse: "move after" instead of "move before"?
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-That's for "split packet_parse_headers()" option.
+The irq_of_parse_and_map() function returns 0 on failure, and does not
+return an negative value.
 
-> 
-> But I thought the plan was to go back to your last patch which brings
-> packet_snd in line with tpacket_snd by moving packet_parse_headers in
-> its entirety before virtio_net_hdr_*?
+Fixes: b5b3e23e4cac ("NFC: nfcmrvl: add i2c driver")
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+---
+v2: don't print ret, and return -EINVAL rather than 0
+---
+ drivers/nfc/nfcmrvl/i2c.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Yes, exactly.
+diff --git a/drivers/nfc/nfcmrvl/i2c.c b/drivers/nfc/nfcmrvl/i2c.c
+index ceef81d93ac9..01329b91d59d 100644
+--- a/drivers/nfc/nfcmrvl/i2c.c
++++ b/drivers/nfc/nfcmrvl/i2c.c
+@@ -167,9 +167,9 @@ static int nfcmrvl_i2c_parse_dt(struct device_node *node,
+ 		pdata->irq_polarity = IRQF_TRIGGER_RISING;
+ 
+ 	ret = irq_of_parse_and_map(node, 0);
+-	if (ret < 0) {
+-		pr_err("Unable to get irq, error: %d\n", ret);
+-		return ret;
++	if (!ret) {
++		pr_err("Unable to get irq\n");
++		return -EINVAL;
+ 	}
+ 	pdata->irq = ret;
+ 
+-- 
+2.25.1
 
-> > So my conclusion is. There is no need to split packet_parse_headers(). Move
-> > packet_parse_headers() before calling virtio_net_hdr_* function in packet_snd()
-> > should be safe.
-> 
-> Ack. Sorry if my last response was not entirely clear on this point.
-
-Thanks a lot for your review. Do you think if I need to re-post the patch?
-Or will you give an Acked-by for this one?
-
-Hangbin
