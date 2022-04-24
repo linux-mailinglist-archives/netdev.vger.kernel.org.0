@@ -2,94 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FA7C50D5E5
-	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 01:01:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8020A50D5F3
+	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 01:25:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239848AbiDXXEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Apr 2022 19:04:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33068 "EHLO
+        id S239875AbiDXXTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Apr 2022 19:19:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233081AbiDXXEj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 19:04:39 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0163434B98;
-        Sun, 24 Apr 2022 16:01:37 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id q19so11940161pgm.6;
-        Sun, 24 Apr 2022 16:01:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=s1BNXjd8cb+tHinFYr/exe+lPULhk8THSbaXt5aXW98=;
-        b=ZEMy8WIbmX6koudQDZSOTIz/ULGDtpdyBocskD+NrIYVa7dxqthaXnl8dsS/WYR/5t
-         89YD7+ZPOy0ocXbyU2Xko7OM+d3YSyvjHZRaZhoYHrTEvKX9FB1W5gToeSt4kY2asOR9
-         QOs++We4m4SPkr6rBYWA2eTys//pGzydIeJUGXYny1hdrVuO1KIFlJih6HPAId9taQQd
-         4cLVQq+y5Uujrpi8XoomSyx6GXaggCvTTZZiFQdiHyoJjbNs572zRsUHqPpTfSkA4TU6
-         GCkkXY7LQ29y709+vmATdC+ojuYugXfz+WSd0ZMLeNds2ier1gG7BX0YHwOVQUv6C4rX
-         ZiyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=s1BNXjd8cb+tHinFYr/exe+lPULhk8THSbaXt5aXW98=;
-        b=6Xk0y2E05VN7CQEWJeP417Bbj94hLTrtbOzbE+iSNj6nIeJLkbklzU+xZhplL8nfGM
-         iWdy342Sv8hB2DVhu33dSkJIg5wpqT4x/gB0LlN31+rN3mgjm1F64WOwrH6Xw5kAvicp
-         k1ybeDZg+rF+BR4acbRLPtLPEPtqThA9V8lmq4ref/8W4+L+9NC71XaSdxL/eeH76ay4
-         iG9yB0sKM9T1NzG6jFgX2p1lGZrZurH7hhcsuEwKT4QJeQOh3CM4UxcgR9nq7Ofox/0V
-         xCiOU870d+EVsgFmYZdAzreGxxoYO/DjiB9VKkDoM60GztYCehupjKj8BzNYUJy4bEhV
-         IGnA==
-X-Gm-Message-State: AOAM5328n/pi4kAFjOSmMy/ijYSMA3QXHmZeItfVRltUqJeNRe64zI6K
-        MZm7t6hrNHHTFTTKTXTz+LA=
-X-Google-Smtp-Source: ABdhPJx+inVB7C8Y1knalNuPog1W48QrwaNzqTXZLC71TUI/pGy7qIgItp22YUYsXYl/gQfGesmReQ==
-X-Received: by 2002:aa7:8385:0:b0:4f6:ef47:e943 with SMTP id u5-20020aa78385000000b004f6ef47e943mr16239456pfm.38.1650841297462;
-        Sun, 24 Apr 2022 16:01:37 -0700 (PDT)
-Received: from ?IPV6:2600:8802:b00:4a48:e8c2:61e6:29d3:3011? ([2600:8802:b00:4a48:e8c2:61e6:29d3:3011])
-        by smtp.gmail.com with ESMTPSA id g12-20020a056a001a0c00b004e1307b249csm9555884pfv.69.2022.04.24.16.01.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 24 Apr 2022 16:01:35 -0700 (PDT)
-Message-ID: <7316bb36-a5b6-b34a-1299-98605ce9d2c2@gmail.com>
-Date:   Sun, 24 Apr 2022 16:01:34 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [Patch net-next] net: dsa: ksz: added the generic
- port_stp_state_set function
-Content-Language: en-US
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        with ESMTP id S233081AbiDXXTt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 19:19:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9545DA14;
+        Sun, 24 Apr 2022 16:16:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A30F061403;
+        Sun, 24 Apr 2022 23:16:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC5D0C385A9;
+        Sun, 24 Apr 2022 23:16:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650842204;
+        bh=6T03LaLReh/sJQiUkLFFqaOo6i6Nc3czaMED5kSzdis=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Oo1NQDqPa9tuSnDmrEoK713ufmriHKL3PDGnGM87OPsOownItQTSWT7prWtXciVMJ
+         W4gFw0ZAcjFH1aLKZlj/lxef1AdQOwhHk8ZWjyzUCYkfnIHDDKyP4DkSoVWO4k1lFv
+         d+QvM6tltsONzKMEayOzGYwsmupOZENfrgY5JwpuYxJNo8W5T4HQpn/g0pkilZ6VSS
+         G5MVxPZnzOPBnr7A3V7CSopraCyaZ/H07qeP39rdlLMYvrXOpUM7GfzQdd/cwiCiUP
+         gH8EmfKUAw836si+MzXfzoTMIgjdjOWfKHDAM8Y17grmTuraYM0CgmlQwyqi2BMiPC
+         IhXqwJxDV8m3Q==
+Date:   Mon, 25 Apr 2022 01:16:38 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Nathan Rossi <nathan@nathanrossi.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>
-References: <20220424112831.11504-1-arun.ramadoss@microchip.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220424112831.11504-1-arun.ramadoss@microchip.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH v2] net: dsa: mv88e6xxx: Fix port_hidden_wait to account
+ for port_base_addr
+Message-ID: <20220425011638.70065c7b@thinkpad>
+In-Reply-To: <YmXQK7Wzb1GDxwRP@lunn.ch>
+References: <20220424153143.323338-1-nathan@nathanrossi.com>
+        <YmWkgkILCrBP5hRG@lunn.ch>
+        <20220424213359.246cd5ab@thinkpad>
+        <YmXQK7Wzb1GDxwRP@lunn.ch>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, 25 Apr 2022 00:33:15 +0200
+Andrew Lunn <andrew@lunn.ch> wrote:
 
+> On Sun, Apr 24, 2022 at 09:33:59PM +0200, Marek Beh=C3=BAn wrote:
+> > On Sun, 24 Apr 2022 21:26:58 +0200
+> > Andrew Lunn <andrew@lunn.ch> wrote:
+> >  =20
+> > > On Sun, Apr 24, 2022 at 03:31:43PM +0000, Nathan Rossi wrote: =20
+> > > > The other port_hidden functions rely on the port_read/port_write
+> > > > functions to access the hidden control port. These functions apply =
+the
+> > > > offset for port_base_addr where applicable. Update port_hidden_wait=
+ to
+> > > > use the port_wait_bit so that port_base_addr offsets are accounted =
+for
+> > > > when waiting for the busy bit to change.
+> > > >=20
+> > > > Without the offset the port_hidden_wait function would timeout on
+> > > > devices that have a non-zero port_base_addr (e.g. MV88E6141), howev=
+er
+> > > > devices that have a zero port_base_addr would operate correctly (e.=
+g.
+> > > > MV88E6390).
+> > > >=20
+> > > > Fixes: ea89098ef9a5 ("net: dsa: mv88x6xxx: mv88e6390 errata")   =20
+> > >=20
+> > > That is further back than needed. And due to the code moving around
+> > > and getting renamed, you are added extra burden on those doing the
+> > > back port for no actual gain.
+> > >=20
+> > > Please verify what i suggested, 609070133aff1 is better and then
+> > > repost. =20
+> >=20
+> > The bug was introduced by ea89098ef9a5. =20
+>=20
+> I have to disagree with that. ea89098ef9a5 adds:
+>=20
+> mv88e6390_hidden_wait()
+>=20
+> The mv88e6390_ means it should be used with the mv88e6390 family. And
+> all members of that family have port offset 0. There is no bug here.
+>=20
+> 609070133aff1 renames it to mv88e6xxx_port_hidden_wait(). It now has
+> the generic mv88e6xxx_ prefix, so we can expect it to work with any
+> device. But it does not. This is where the bug has introduced.
 
-On 4/24/2022 4:28 AM, Arun Ramadoss wrote:
-> The ksz8795 and ksz9477 uses the same algorithm for the
-> port_stp_state_set function except the register address is different. So
-> moved the algorithm to the ksz_common.c and used the dev_ops for
-> register read and write. This function can also used for the lan937x
-> part. Hence making it generic for all the parts.
-> 
-> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+You are right. My bad, sorry.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Marek
