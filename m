@@ -2,115 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 02B9950CE00
-	for <lists+netdev@lfdr.de>; Sun, 24 Apr 2022 01:01:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B135450CE4A
+	for <lists+netdev@lfdr.de>; Sun, 24 Apr 2022 03:57:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233350AbiDWXDR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Apr 2022 19:03:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53732 "EHLO
+        id S237529AbiDXCAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Apr 2022 22:00:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231690AbiDWXDQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 19:03:16 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 647CE53738
-        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 16:00:17 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id m20so2142540ejj.10
-        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 16:00:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=3QBd2G2aZjvPIlQVfUzMKqliUmMW6oCJslRCFwoaxhI=;
-        b=Eqm+jTY3bs4ULYM0nOB03k10+Svn4xVtLKpFDd5SWUqcchNFjgq7KsG7lWlFnNqIQD
-         j9XggUsvD9cQtLuC+DnTYWVASpPtq+y9R+7ssAQkN4k0AGSZyqpDXL9VnvDjq+RNL4r9
-         lLEZv8DC4yXRKazGRD7QiSKVNxWAKRa8PO6kO0oaGLtayij+rCnJT5wqgn27JD2wTIk0
-         6WY0Vgai3P8bk3dluV1y5vh0+uIyoLD3OX7svnNb9xJYBzmx6VUhUCH2ly520IzTPqUW
-         +j1C2JTPH0GcPnG6B4KyBG8osRH5FJN2A3zb3mQV0v3BKlbzfBDArWWCbp76KJ1jSQCI
-         JPNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=3QBd2G2aZjvPIlQVfUzMKqliUmMW6oCJslRCFwoaxhI=;
-        b=PI6SL3zL0T7p4t/n5mYaysSjKHLTWpqiu+Bg65I5yaXJQD1m40BM3h17+mj63K1fxJ
-         Ux17wGIek02BSjP3Y30TQhqIY91PqXBo5IqaPk0f8diAPvG0jSHF0UGgJRFdbyuogA9s
-         Uk7xI+ILMtcoEsNyU6/AHYhonvbqSTiiw0n0X9i2/6mV45DiyVpqB0olkFWjGZylnVe1
-         PRotgKouTH9uIk0sZIv9mrMiowD0WyQICKwJ4+Y4mSFXZexJ6OtZi3XpItHa459B5T8S
-         JjBUXkxe48VQGsjDR13IY87SF59rGn5TaDqPbWeP+xSrXPMTUCIuE77M4eZ8V6I8vCo4
-         QnjA==
-X-Gm-Message-State: AOAM531Kct0lM5Wl6QFYYcRapNP0RUkkSQFzXKD7YDynIRw196n+slId
-        +X1OAnvdOV/C96Mp2C6ZPxXN7w==
-X-Google-Smtp-Source: ABdhPJzpB3Vf2L4wPFGrVsJfpBQ2OLcpKxuPQCSeeVgK1GHdiRzef5uzC4teMJQgd6OJS3bM0GfNKg==
-X-Received: by 2002:a17:907:c29:b0:6f3:8d26:c330 with SMTP id ga41-20020a1709070c2900b006f38d26c330mr27075ejc.215.1650754815797;
-        Sat, 23 Apr 2022 16:00:15 -0700 (PDT)
-Received: from [192.168.0.117] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id fy29-20020a1709069f1d00b006e8d248fc2csm2047005ejc.108.2022.04.23.16.00.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 23 Apr 2022 16:00:15 -0700 (PDT)
-Message-ID: <0d3b9da5-3f26-a1a1-1bde-9b6332e6e8f2@blackwall.org>
-Date:   Sun, 24 Apr 2022 02:00:13 +0300
+        with ESMTP id S231462AbiDXCAN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Apr 2022 22:00:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9CE1A36E00
+        for <netdev@vger.kernel.org>; Sat, 23 Apr 2022 18:57:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650765432;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=mF6O9lh/P4rVHPLQSeYSJTiFD0hXfhYv4TWQuI6B0pM=;
+        b=Go6YroW0xg7Ie8yZFtbcqDDpOUtk7fNRZYzilXxyF248kAJTjD/YReQxc/93dgXm7O7yuk
+        fblpVaAjypGI26cWNf9HJzEpApwFFCcTeeSYJas4+Bio+C+CYxzuMwFLx68rxbdDn3RCfR
+        HJBKkVWblPUjo68mKbGoNgMSt6I5yxM=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-441-8Can3zfPOPGvCtm9cG69wg-1; Sat, 23 Apr 2022 21:57:11 -0400
+X-MC-Unique: 8Can3zfPOPGvCtm9cG69wg-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 25C9582A682;
+        Sun, 24 Apr 2022 01:57:11 +0000 (UTC)
+Received: from Laptop-X1 (ovpn-13-51.pek2.redhat.com [10.72.13.51])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 28125111E3FD;
+        Sun, 24 Apr 2022 01:57:01 +0000 (UTC)
+Date:   Sun, 24 Apr 2022 09:56:57 +0800
+From:   Hangbin Liu <haliu@redhat.com>
+To:     David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
+        toke@redhat.com, Paul Chaignon <paul@isovalent.com>
+Subject: Re: [PATCH iproute2-next 1/3] libbpf: Use bpf_object__load instead
+ of bpf_object__load_xattr
+Message-ID: <YmSuaX7MUIqoNbC3@Laptop-X1>
+References: <20220423152300.16201-1-dsahern@kernel.org>
+ <20220423152300.16201-2-dsahern@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH net-next v2 1/2] rtnetlink: add extack support in fdb del
- handlers
-Content-Language: en-US
-To:     Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>,
-        netdev@vger.kernel.org
-Cc:     outreachy@lists.linux.dev, roopa@nvidia.com,
-        roopa.prabhu@gmail.com, jdenham@redhat.com, sbrivio@redhat.com
-References: <cover.1650754228.git.eng.alaamohamedsoliman.am@gmail.com>
- <6a77eca533b7048b85bf0ffe0c3904d36045c320.1650754231.git.eng.alaamohamedsoliman.am@gmail.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <6a77eca533b7048b85bf0ffe0c3904d36045c320.1650754231.git.eng.alaamohamedsoliman.am@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220423152300.16201-2-dsahern@kernel.org>
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/24/22 01:54, Alaa Mohamed wrote:
-> Add extack support to .ndo_fdb_del in netdevice.h and
-> all related methods.
+Hi David,
+
+This patch revert c04e45d0 lib/bpf: fix verbose flag when using libbpf,
+Should we set prog->log_level directly before it loaded, like
+bpf_program__set_log_level() does?
+
+Thanks
+Hangbin
+On Sat, Apr 23, 2022 at 09:22:58AM -0600, David Ahern wrote:
+> bpf_object__load_xattr is deprecated as of v0.8+; remove it
+> in favor of bpf_object__load.
 > 
-> Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+> Signed-off-by: David Ahern <dsahern@kernel.org>
 > ---
-
-Please CC all patch-related maintainers next time. One comment below.
-
->   drivers/net/ethernet/intel/ice/ice_main.c        | 3 +--
->   drivers/net/ethernet/mscc/ocelot_net.c           | 4 ++--
->   drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c | 2 +-
->   drivers/net/macvlan.c                            | 2 +-
->   drivers/net/vxlan/vxlan_core.c                   | 2 +-
->   include/linux/netdevice.h                        | 2 +-
->   net/bridge/br_fdb.c                              | 2 +-
->   net/bridge/br_private.h                          | 2 +-
->   net/core/rtnetlink.c                             | 4 ++--
->   9 files changed, 11 insertions(+), 12 deletions(-)
+>  lib/bpf_libbpf.c | 7 +------
+>  1 file changed, 1 insertion(+), 6 deletions(-)
 > 
-> diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-> index d768925785ca..5f9cb4830956 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_main.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-> @@ -5678,10 +5678,9 @@ ice_fdb_add(struct ndmsg *ndm, struct nlattr __always_unused *tb[],
->   static int
->   ice_fdb_del(struct ndmsg *ndm, __always_unused struct nlattr *tb[],
->   	    struct net_device *dev, const unsigned char *addr,
-> -	    __always_unused u16 vid)
-> +	    __always_unused u16 vid, struct netlink_ext_ack *extack)
->   {
->   	int err;
+> diff --git a/lib/bpf_libbpf.c b/lib/bpf_libbpf.c
+> index f4f98caa1e58..f723f6310c28 100644
+> --- a/lib/bpf_libbpf.c
+> +++ b/lib/bpf_libbpf.c
+> @@ -248,7 +248,6 @@ static int handle_legacy_maps(struct bpf_object *obj)
+>  
+>  static int load_bpf_object(struct bpf_cfg_in *cfg)
+>  {
+> -	struct bpf_object_load_attr attr = {};
+>  	struct bpf_program *p, *prog = NULL;
+>  	struct bpf_object *obj;
+>  	char root_path[PATH_MAX];
+> @@ -305,11 +304,7 @@ static int load_bpf_object(struct bpf_cfg_in *cfg)
+>  	if (ret)
+>  		goto unload_obj;
+>  
+> -	attr.obj = obj;
+> -	if (cfg->verbose)
+> -		attr.log_level = 2;
 > -
+> -	ret = bpf_object__load_xattr(&attr);
+> +	ret = bpf_object__load(obj);
+>  	if (ret)
+>  		goto unload_obj;
+>  
+> -- 
+> 2.24.3 (Apple Git-128)
+> 
 
-I don't think you should remove this new line.
-
->   	if (ndm->ndm_state & NUD_PERMANENT) {
->   		netdev_err(dev, "FDB only supports static addresses\n");
->   		return -EINVAL;
