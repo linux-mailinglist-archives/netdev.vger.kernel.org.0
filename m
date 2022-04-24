@@ -2,105 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 956A650D3DF
-	for <lists+netdev@lfdr.de>; Sun, 24 Apr 2022 19:21:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7CC650D3ED
+	for <lists+netdev@lfdr.de>; Sun, 24 Apr 2022 19:24:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236397AbiDXRX4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Apr 2022 13:23:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60840 "EHLO
+        id S236431AbiDXR0w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Apr 2022 13:26:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236289AbiDXRXz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 13:23:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 510B65675F;
-        Sun, 24 Apr 2022 10:20:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 19ECE611DE;
-        Sun, 24 Apr 2022 17:20:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32ED0C385A7;
-        Sun, 24 Apr 2022 17:20:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650820852;
-        bh=8YAkiDCHNS9PdDSByTQ12GIjlNhj3SzM6u+5fNxbJO0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=YKQ5u6j6e5I5Oog+kDMGmMr9uNIdmteV8T84bSi60THEFgfwCVfnMfukav2R3rMSe
-         hb7A6oRKc5XLbqzAbUwGEBkyxg67ytcaGZ7UqP5lHohQARzzzqPLPxGObMli4olfzE
-         RjbxRkbwYsykQ8KL3T4VNvJ7XLpdNfaXw/n88bODDbSnK7JyHD/vBqZblaJBXFIT+C
-         KiWu1JbznqX2Uwn4wu/2af6sN7rg94QMvEMewiDOXwK9mHZfX5dZwyf7Lj9CdxyQob
-         xPCpWPrTYW0z83wyRUypkQ0E1qNnciMAr18tvbTkxUt3HUniIYXLxg8991za+bR3sP
-         mcIuUk02voFgw==
-Date:   Sun, 24 Apr 2022 19:20:46 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Nathan Rossi <nathan@nathanrossi.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH v2] net: dsa: mv88e6xxx: Fix port_hidden_wait to account
- for port_base_addr
-Message-ID: <20220424192046.6f77655a@thinkpad>
-In-Reply-To: <20220424153143.323338-1-nathan@nathanrossi.com>
-References: <20220424153143.323338-1-nathan@nathanrossi.com>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S235912AbiDXR0u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 13:26:50 -0400
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8318C6F29;
+        Sun, 24 Apr 2022 10:23:49 -0700 (PDT)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2f7d19cac0bso21354617b3.13;
+        Sun, 24 Apr 2022 10:23:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YP4CFWK7HD5zbQQCiHXFOxCd4gvriaqa4PSVAkwYD2Y=;
+        b=J1B76Uc6W5H4i84tst6fK/J3fqrqroX17RTpUKxb5+lSi681fWSr7h2nuCVJRBju6e
+         9x7rvOHsIGg23NBlKqw2IgEm5oaziaxxc9pPuSFciMDCCuncjy+gd+alyx9fCXu/Rmji
+         2w/E7oYzl7Oaa3WNzbTKp4WEHrbd889u1S0lqi5FQOh8JyLS9L8IKYGzpZ7GmOzZFHQL
+         WEmp7SkoSwTMny7h5CoQiHrvmPzq0EpswgDUbBIHj4bKVVw81FDGWqp81c4kYJogwBV4
+         ZLejh5FP0Und6A/2RqdH3FDTeoo4QF7wActcNHvMOAtDaadiptURUjm+15jd4YPMCrwI
+         zGaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YP4CFWK7HD5zbQQCiHXFOxCd4gvriaqa4PSVAkwYD2Y=;
+        b=0fj2HheEq0Nv4Tm46mrkqSIqlVqyd/qPj0bHiJGCbcwjuGq+vnp2In7cs57fnnB4xo
+         j5QKY6vfjZCjrrneOym1BIBB1VkWZ9etjyfcALReN7oPqt1a9LTEyFeuD95qRjIXGjhg
+         HBHab1CjMqL4Vzhk0OKK7Nj8IZnEcTgNQhyOGA5EpUJhAAAf3r27hpFG3BTZ83gcYXHI
+         g0ncZIOOEP1iou5zsOGfKYgZ+GjDLpfsDjpmgeBnW8eSrHCCKN2RHX8Hp8uw6Lo0cGK+
+         KPzUwIDmnmPP3xcAZUUtbgfRiiglMISXidrWOoedtTrWJ9PqLQijRLbk1ByMTTKGArhW
+         7W5w==
+X-Gm-Message-State: AOAM532IZR5iEAOAnWaYLnSdcfcvvCfRe/5/1fM/ie3doifgyU8d4q3X
+        rO+r8o6f79+h16PkAg2xWwTUWh3y05Uxm/ld0QM=
+X-Google-Smtp-Source: ABdhPJxMx12ZFvBuKwIXcIKSrgtMOfuE8SGnBNhjMk2G8yiYyFJtpKy9xK6jCLZkWDmgtwMB5dox4jIFRT6S1I0q7h0=
+X-Received: by 2002:a0d:f041:0:b0:2f4:cdae:6046 with SMTP id
+ z62-20020a0df041000000b002f4cdae6046mr12859500ywe.315.1650821028778; Sun, 24
+ Apr 2022 10:23:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20220424165309.241796-1-eyal.birger@gmail.com>
+In-Reply-To: <20220424165309.241796-1-eyal.birger@gmail.com>
+From:   Eyal Birger <eyal.birger@gmail.com>
+Date:   Sun, 24 Apr 2022 20:23:37 +0300
+Message-ID: <CAHsH6Gtpu-+79r2wrs1U=X=wMjVh2MfNxdgDtsL7yOfsKzKXDA@mail.gmail.com>
+Subject: Re: [PATCH bpf] selftests/bpf: test setting tunnel key from lwt xmit
+To:     shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org
+Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, posk@google.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 24 Apr 2022 15:31:43 +0000
-Nathan Rossi <nathan@nathanrossi.com> wrote:
-
-> The other port_hidden functions rely on the port_read/port_write
-> functions to access the hidden control port. These functions apply the
-> offset for port_base_addr where applicable. Update port_hidden_wait to
-> use the port_wait_bit so that port_base_addr offsets are accounted for
-> when waiting for the busy bit to change.
->=20
-> Without the offset the port_hidden_wait function would timeout on
-> devices that have a non-zero port_base_addr (e.g. MV88E6141), however
-> devices that have a zero port_base_addr would operate correctly (e.g.
-> MV88E6390).
->=20
-> Fixes: ea89098ef9a5 ("net: dsa: mv88x6xxx: mv88e6390 errata")
-> Signed-off-by: Nathan Rossi <nathan@nathanrossi.com>
+On Sun, Apr 24, 2022 at 7:53 PM Eyal Birger <eyal.birger@gmail.com> wrote:
+>
+> This commit adds test_egress_md() tests which perform a similar flow as
+> test_egress() only that they use gre devices in collect_md mode and set
+> the tunnel key from lwt bpf xmit.
+>
+> VRF scenarios are not checked since it is currently not possible to set
+> the underlying device or vrf from bpf_set_tunnel_key().
+>
+> This introduces minor changes to the existing setup for consistency with
+> the new tests:
+>
+> - GRE key must exist as bpf_set_tunnel_key() explicitly sets the
+>   TUNNEL_KEY flag
+>
+> - Source address for GRE traffic is set to IPv*_5 instead of IPv*_1 since
+>   GRE traffic is sent via veth5 so its address is selected when using
+>   bpf_set_tunnel_key()
+>
+> Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
 > ---
-> Changes in v2:
-> - Add fixes
-> ---
->  drivers/net/dsa/mv88e6xxx/port_hidden.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/net/dsa/mv88e6xxx/port_hidden.c b/drivers/net/dsa/mv=
-88e6xxx/port_hidden.c
-> index b49d05f0e1..7a9f9ff6de 100644
-> --- a/drivers/net/dsa/mv88e6xxx/port_hidden.c
-> +++ b/drivers/net/dsa/mv88e6xxx/port_hidden.c
-> @@ -40,8 +40,9 @@ int mv88e6xxx_port_hidden_wait(struct mv88e6xxx_chip *c=
-hip)
->  {
->  	int bit =3D __bf_shf(MV88E6XXX_PORT_RESERVED_1A_BUSY);
-> =20
-> -	return mv88e6xxx_wait_bit(chip, MV88E6XXX_PORT_RESERVED_1A_CTRL_PORT,
-> -				  MV88E6XXX_PORT_RESERVED_1A, bit, 0);
-> +	return mv88e6xxx_port_wait_bit(chip,
-> +				       MV88E6XXX_PORT_RESERVED_1A_CTRL_PORT,
-> +				       MV88E6XXX_PORT_RESERVED_1A, bit, 0);
->  }
-> =20
->  int mv88e6xxx_port_hidden_read(struct mv88e6xxx_chip *chip, int block, i=
-nt port,
+>  .../selftests/bpf/progs/test_lwt_ip_encap.c   | 51 ++++++++++-
+>  .../selftests/bpf/test_lwt_ip_encap.sh        | 85 ++++++++++++++++++-
+>  2 files changed, 128 insertions(+), 8 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/progs/test_lwt_ip_encap.c b/tools/testing/selftests/bpf/progs/test_lwt_ip_encap.c
+> index d6cb986e7533..39c6bd5402ae 100644
+> --- a/tools/testing/selftests/bpf/progs/test_lwt_ip_encap.c
+> +++ b/tools/testing/selftests/bpf/progs/test_lwt_ip_encap.c
 
-Reviewed-by: Marek Beh=C3=BAn <kabel@kernel.org>
+Thinking about this some more, I'm not sure if these tests fit better here
+or in test_tunnel.sh.
+
+If the latter is preferred, please drop this patch and I'll submit one for
+test_tunnel.sh.
+
+Eyal.
