@@ -2,83 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 29A8850D271
-	for <lists+netdev@lfdr.de>; Sun, 24 Apr 2022 16:53:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38CBC50D278
+	for <lists+netdev@lfdr.de>; Sun, 24 Apr 2022 16:53:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238388AbiDXOzk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Apr 2022 10:55:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49170 "EHLO
+        id S239483AbiDXO4V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Apr 2022 10:56:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231394AbiDXOzj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 10:55:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D000337BC8;
-        Sun, 24 Apr 2022 07:52:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7A60BB80E4A;
-        Sun, 24 Apr 2022 14:52:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4BECC385A7;
-        Sun, 24 Apr 2022 14:52:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650811955;
-        bh=VrS0Ke+JASD9dwCpktBbdVYtkBgBLsMZ1lrYaYJS8p0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bViU/5daBiG3nNi+NMeZ6PRCZUGkw2A3WoWzVEJK6a120AeuckM3gQPdbIGTrnJ72
-         HMcluBSRkIH4Vh5kgyuVKIEvE05JqSHfzSKnSD0GaD2taomlcPy1FqIlgob/5HHBWE
-         UgA5CzdF5H8rrKeIA3/AhaCG2O5xG5p+GziL9KobCAR5598aZ8GuEDTJgv/978i33g
-         cr/D9svcZB8eMXgZQdRgCoCouLjIvJzj6F5z3C/pEKWMo22dFTxVrWoOfXOF+Mc2/M
-         qx3FxCXfdOrMngoppEedD4jcxgM1deqQMya+dwDgtwbQnksCMVM8z5lhYGH4dpYYoZ
-         AVK7fRzZLVjIw==
-Date:   Sun, 24 Apr 2022 16:52:28 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Nathan Rossi <nathan@nathanrossi.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH] net: dsa: mv88e6xxx: Fix port_hidden_wait to account
- for port_base_addr
-Message-ID: <20220424165228.4030aea6@thinkpad>
-In-Reply-To: <20220424141759.315303-1-nathan@nathanrossi.com>
-References: <20220424141759.315303-1-nathan@nathanrossi.com>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S239480AbiDXO4T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 10:56:19 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 218DEDAA03
+        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 07:53:17 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id m20so4344302ejj.10
+        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 07:53:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=PljnxRUh81pT/VZFsSxpCxfxThaMnEo3K5gwtxML1T4=;
+        b=HPK1Fjl//ahLaP1lNA4NCbDVTK5dLYlXgM5pM42npxjQZKjO5L9/PdF8l7lGR+id0d
+         ZnvgI0tC1zbFtZrmiJK2y52v84g9Y+w0AF5Zt9IAPvXJ1gHzny119IxGNvrK+e3TYJ4u
+         Y8rptqx/qBwsXxnS7f3mTiPtWUBlHBlQ8JkfVLwxpVb/UrRFErhEaZRwiX5S5Rv6vPXW
+         VQNWs1UCCJCC+rblI5xV7mDQLGIlW1+IdMc9fRmwH3q4frHl5f/WsbO1PmH/Hc+HBLm+
+         UOmY6g+Q/jK77zTLxpstRUKCEecv/HgTLR/EgcdKccd6Gp1y71jMUnHcF/iHoANcNRBN
+         BFcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=PljnxRUh81pT/VZFsSxpCxfxThaMnEo3K5gwtxML1T4=;
+        b=Mayp2yB0qyGJCDUE/D3miy4rbUelUfsqo4ZG8wusGvbd4W0XVYH2uVCdF2S9oGQXuZ
+         7C7wKMos9daSHODfUqNAlCeCJGHhtfvEVhlGpwSQR8t+7WG1orHMrIBdgFIkhpEIC0MP
+         PO3Il+HOnnvtRCJtJDZarjppwH8v2FjodTf9J0g/UPLllYldgqTBasMyGZbim0dgOt9U
+         0wipngddl7ZDZlZn4sgyfyMkcDYYbfeCtbqUUyK9OuIktHuSkoKKM8wadDbPwtJrFA7F
+         XBn7k+ZTU/+AnWwkB5X6/q+qNXuBgqc5xY2ilHM1J+EgRq0izKMX7soffab7NFYF3Aut
+         NwDA==
+X-Gm-Message-State: AOAM5321AVKnvYY6th7u0103hzPaFdQNBDTJ3g5U53coDEa0RCrfkjhH
+        eXspASt8BszOAVLNBk3QFYyRefLrOGoydvpqQ4Q=
+X-Google-Smtp-Source: ABdhPJxP6gdki3QWyI62X0hWhCeuw+jp1SO/FmJ3sHN5jeLes6QLGVCoRpETcIf1m/9BtNHG/zYBEg==
+X-Received: by 2002:a17:907:6e25:b0:6f0:99d4:9711 with SMTP id sd37-20020a1709076e2500b006f099d49711mr12019128ejc.511.1650811995192;
+        Sun, 24 Apr 2022 07:53:15 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s ([104.245.96.34])
+        by smtp.gmail.com with ESMTPSA id gz15-20020a170906f2cf00b006f3802a963fsm1161681ejb.21.2022.04.24.07.53.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Apr 2022 07:53:14 -0700 (PDT)
+Date:   Sun, 24 Apr 2022 22:53:07 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Timothy Hayes <timothy.hayes@arm.com>
+Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        acme@kernel.org, John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH 3/3] perf test: Add perf_event_attr test for Arm SPE
+Message-ID: <20220424145307.GE978927@leoy-ThinkPad-X240s>
+References: <20220421165205.117662-1-timothy.hayes@arm.com>
+ <20220421165205.117662-4-timothy.hayes@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220421165205.117662-4-timothy.hayes@arm.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 24 Apr 2022 14:17:59 +0000
-Nathan Rossi <nathan@nathanrossi.com> wrote:
-
-> The other port_hidden functions rely on the port_read/port_write
-> functions to access the hidden control port. These functions apply the
-> offset for port_base_addr where applicable. Update port_hidden_wait to
-> use the port_wait_bit so that port_base_addr offsets are accounted for
-> when waiting for the busy bit to change.
+On Thu, Apr 21, 2022 at 05:52:05PM +0100, Timothy Hayes wrote:
+> Adds a perf_event_attr test for Arm SPE in which the presence of
+> physical addresses are checked when SPE unit is run with pa_enable=1.
 > 
-> Without the offset the port_hidden_wait function would timeout on
-> devices that have a non-zero port_base_addr (e.g. MV88E6141), however
-> devices that have a zero port_base_addr would operate correctly (e.g.
-> MV88E6390).
+> Signed-off-by: Timothy Hayes <timothy.hayes@arm.com>
 
-So basically the code is accessing the wrong register for devices with
-non-zero port_base_addr. This means that the patch should have a Fixes
-tag with the commit that introduced this bug, so that it gets
-backported to relevant stable versions.
+Reviewed-by: Leo Yan <leo.yan@linaro.org>
+Tested-by: Leo Yan <leo.yan@linaro.org>
 
-Could you resend with Fixes tag?
-
-Marek
+> ---
+>  tools/perf/tests/attr/README                         |  1 +
+>  .../perf/tests/attr/test-record-spe-physical-address | 12 ++++++++++++
+>  2 files changed, 13 insertions(+)
+>  create mode 100644 tools/perf/tests/attr/test-record-spe-physical-address
+> 
+> diff --git a/tools/perf/tests/attr/README b/tools/perf/tests/attr/README
+> index 454505d343fa..eb3f7d4bb324 100644
+> --- a/tools/perf/tests/attr/README
+> +++ b/tools/perf/tests/attr/README
+> @@ -60,6 +60,7 @@ Following tests are defined (with perf commands):
+>    perf record -R kill                           (test-record-raw)
+>    perf record -c 2 -e arm_spe_0// -- kill       (test-record-spe-period)
+>    perf record -e arm_spe_0/period=3/ -- kill    (test-record-spe-period-term)
+> +  perf record -e arm_spe_0/pa_enable=1/ -- kill (test-record-spe-physical-address)
+>    perf stat -e cycles kill                      (test-stat-basic)
+>    perf stat kill                                (test-stat-default)
+>    perf stat -d kill                             (test-stat-detailed-1)
+> diff --git a/tools/perf/tests/attr/test-record-spe-physical-address b/tools/perf/tests/attr/test-record-spe-physical-address
+> new file mode 100644
+> index 000000000000..7ebcf5012ce3
+> --- /dev/null
+> +++ b/tools/perf/tests/attr/test-record-spe-physical-address
+> @@ -0,0 +1,12 @@
+> +[config]
+> +command = record
+> +args    = --no-bpf-event -e arm_spe_0/pa_enable=1/ -- kill >/dev/null 2>&1
+> +ret     = 1
+> +arch    = aarch64
+> +
+> +[event-10:base-record-spe]
+> +# 622727 is the decimal of IP|TID|TIME|CPU|IDENTIFIER|DATA_SRC|PHYS_ADDR
+> +sample_type=622727
+> +
+> +# dummy event
+> +[event-1:base-record-spe]
+> \ No newline at end of file
+> -- 
+> 2.25.1
+> 
