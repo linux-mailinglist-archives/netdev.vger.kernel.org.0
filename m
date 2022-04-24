@@ -2,78 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AC0150D2B4
-	for <lists+netdev@lfdr.de>; Sun, 24 Apr 2022 17:35:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FD7250D2BA
+	for <lists+netdev@lfdr.de>; Sun, 24 Apr 2022 17:35:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233602AbiDXPhd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Apr 2022 11:37:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43018 "EHLO
+        id S232659AbiDXPhI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Apr 2022 11:37:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240087AbiDXPZO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 11:25:14 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F87F39B9C
-        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 08:22:13 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id l7so25205792ejn.2
-        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 08:22:13 -0700 (PDT)
+        with ESMTP id S240741AbiDXPfB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 11:35:01 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7379D171C01
+        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 08:32:00 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id k4so10114612plk.7
+        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 08:32:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=JvwMaNfpyczcBz5FjlcmZ5tT4tBB4pJUkY5VC5Yl08k=;
-        b=Z4XeHrbt4PNpBQEEW2O8Cv/abfRosw9nTHVB11JUPU+VcHQ/OsH2PeKK3Vb++6ZuP6
-         Y1Iy2J5QaI3bzFjHOO+j8PtilLUjaceub84QlAlpbkbZZokSkx+q+r6/thQ3+Q+o3YhC
-         VT/9LvC77zoZdQD9jcmHpOSpq7LMw6fFpXmrq1VCEabtEM8W7ghuHi10H3lHDkTOYrLE
-         XEWkn6Hvu5pjOs5KDqh3hekPTVxDHcOsdWwwWsFQ0VQaVznN5wjm2Ria4Inx3bHlCoct
-         bfJyC2GyYYkmQk8tPhX3gFHpoKCn7sKnuq7WgMUig3wjo7msJmasGUZYsnXL0ipCJBGx
-         sJpQ==
+        d=nathanrossi.com; s=google;
+        h=date:message-id:from:to:cc:subject:content-transfer-encoding
+         :mime-version;
+        bh=DPNto3RCybjogKfr456o+QEcokurj06jetoOd1VBs74=;
+        b=Kb28HEvQESzMvIBoLcX56XxVgEM+RnJHXrpj37528afTgp5M3XHE4/G5VHSKlDTP1a
+         SYUo447iH71nX8OvnfTf28m2Hielc6+e3XygAR4dUxK3AThrSpYR8XRn25b1cSL1znrf
+         1PFEQRjw1lxEWr9moRYYsItBgY69ADMrm6JN7axZ2Tdp4degAxJGGA6G39LBVcGcLvqW
+         Ul+ZiA6guY7o7v13drb7yIuaZEOzpPbgc2y8aQDe+17KuEwzEUztgzKhLUPl1hT95BUw
+         vNEymW4QNodpWQnSrx6tEFi9ZvWwmD4quTO3Y0TgngJPWWSdMIPCDxJrl2htOzyZMxZf
+         03zQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=JvwMaNfpyczcBz5FjlcmZ5tT4tBB4pJUkY5VC5Yl08k=;
-        b=XBUGKjKMRfJsU3muomZTaEVBrCu35pNENu0+SBpSO7UtbYvBTZLw1yAuLkNgSt0s1a
-         pcm5nlBtRnTcW+wgGjDaHCU9WQ+tjt2ZK5VguwHCDDI634wv+SmkpVMx7yIIh7JpOdiU
-         KyQXgISZN/3fdRuNUsYkPRM7YiA8FmL51OMHq67xm2B8v/ABscvjfOgEFdwI7WEUS5hV
-         4T1g6TblKyCChIjtUSZDuUzQDXNd0vMXo+5P4289fXme+CXarTnqGhbTbS2NzLSjkNvV
-         qiVIgMiJtFJFpgsCcveBPaBr6Z+7KhafNfrfs5H58TJhoJlLujY4Mqbce8Cb0awgs+Oa
-         HO8Q==
-X-Gm-Message-State: AOAM531WlcN6BcQbSnQ2aODoQsxYmeQGu7gtULxfX1Q5uwueuQzN+AFk
-        p3dQ2qx1qkPS1YK7wWf9xRkpig==
-X-Google-Smtp-Source: ABdhPJzmw2hXC9+KxqcyIogQ1sGB29hYOGxq6qBBX2IiElUpSPzpeEwu7QAlHQ3yskB9NidScLhrew==
-X-Received: by 2002:a17:906:66c8:b0:6e8:8b06:1b32 with SMTP id k8-20020a17090666c800b006e88b061b32mr12265608ejp.236.1650813732169;
-        Sun, 24 Apr 2022 08:22:12 -0700 (PDT)
-Received: from leoy-ThinkPad-X240s ([104.245.96.34])
-        by smtp.gmail.com with ESMTPSA id c13-20020a056402100d00b0042294fdbcf9sm3328082edu.14.2022.04.24.08.22.06
+        h=x-gm-message-state:date:message-id:from:to:cc:subject
+         :content-transfer-encoding:mime-version;
+        bh=DPNto3RCybjogKfr456o+QEcokurj06jetoOd1VBs74=;
+        b=qnJjChWyi2OEH6ek1AKd7Ua24mq65KtbXneP42tVQEqyU9CQvh5vSqlQI/W6e9/2s/
+         huE2vcbI3XGc+qJFHalr+yx7mdWG5ZAJT5sU79BL/oC4oeZkpTdDQ/ZW2KnIkOBQhDTZ
+         ohSnwCnROUYivF+XSebWD8wBFvAOLV6tY/UHzvd4pvCphrDN750TeORuSwm6TCLhCkiQ
+         DNrZN7t9c4ZoXAJi6DFnclqkRdYE8HNIr7oRveCsTHEvAh6i+eyIg5esH/ASvyc49p+n
+         aCYNcG74Kqgtd9BYQ+kSEbzGb/nqVrKF14QHrGWaRFh78oqXpk9/hTPWUxNjXtBwoS0K
+         OoUw==
+X-Gm-Message-State: AOAM5305JHaQ4yeqcVO5S3HME6NthNLSvcrNSk+fSHHMx9bVxqTwO38L
+        QKkLxLCmwoOQQNmRHhVBVCTpjw==
+X-Google-Smtp-Source: ABdhPJyETDVhVTYNkCKpQXCEPpl7+sz2RmWm0F2IMHyootGSXwrP7S6fl4n0LIJfkleB3tYY+cstng==
+X-Received: by 2002:a17:90a:db45:b0:1d9:29d0:4c6e with SMTP id u5-20020a17090adb4500b001d929d04c6emr9037581pjx.46.1650814320015;
+        Sun, 24 Apr 2022 08:32:00 -0700 (PDT)
+Received: from [127.0.1.1] (117-20-68-98.751444.bne.nbn.aussiebb.net. [117.20.68.98])
+        by smtp.gmail.com with UTF8SMTPSA id u25-20020aa78399000000b00505f75651e7sm8374307pfm.158.2022.04.24.08.31.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Apr 2022 08:22:11 -0700 (PDT)
-Date:   Sun, 24 Apr 2022 23:22:04 +0800
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Timothy Hayes <timothy.hayes@arm.com>
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        acme@kernel.org, John Garry <john.garry@huawei.com>,
-        Will Deacon <will@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH 1/3] perf: arm-spe: Fix addresses of synthesized SPE
- events
-Message-ID: <20220424152204.GA1810164@leoy-ThinkPad-X240s>
-References: <20220421165205.117662-1-timothy.hayes@arm.com>
- <20220421165205.117662-2-timothy.hayes@arm.com>
- <20220424122831.GC978927@leoy-ThinkPad-X240s>
+        Sun, 24 Apr 2022 08:31:59 -0700 (PDT)
+Date:   Sun, 24 Apr 2022 15:31:43 +0000
+Message-Id: <20220424153143.323338-1-nathan@nathanrossi.com>
+From:   Nathan Rossi <nathan@nathanrossi.com>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Nathan Rossi <nathan@nathanrossi.com>,
+        Marek Behun <kabel@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH v2] net: dsa: mv88e6xxx: Fix port_hidden_wait to account for
+ port_base_addr
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220424122831.GC978927@leoy-ThinkPad-X240s>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
@@ -84,22 +74,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 24, 2022 at 08:28:31PM +0800, Leo Yan wrote:
-> On Thu, Apr 21, 2022 at 05:52:03PM +0100, Timothy Hayes wrote:
-> > This patch corrects a bug whereby synthesized events from SPE
-> > samples are missing virtual addresses.
-> > 
-> > Signed-off-by: Timothy Hayes <timothy.hayes@arm.com>
-> 
-> Reviewed-by: Leo Yan <leo.yan@linaro.org>
+The other port_hidden functions rely on the port_read/port_write
+functions to access the hidden control port. These functions apply the
+offset for port_base_addr where applicable. Update port_hidden_wait to
+use the port_wait_bit so that port_base_addr offsets are accounted for
+when waiting for the busy bit to change.
 
-Supplement for fixed tag:
+Without the offset the port_hidden_wait function would timeout on
+devices that have a non-zero port_base_addr (e.g. MV88E6141), however
+devices that have a zero port_base_addr would operate correctly (e.g.
+MV88E6390).
 
-Since patches 01, 02 are fixing bugs, please add fixed tag [1]:
+Fixes: ea89098ef9a5 ("net: dsa: mv88x6xxx: mv88e6390 errata")
+Signed-off-by: Nathan Rossi <nathan@nathanrossi.com>
+---
+Changes in v2:
+- Add fixes
+---
+ drivers/net/dsa/mv88e6xxx/port_hidden.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-Fixes: 54f7815efef7 ("perf arm-spe: Fill address info for samples")
+diff --git a/drivers/net/dsa/mv88e6xxx/port_hidden.c b/drivers/net/dsa/mv88e6xxx/port_hidden.c
+index b49d05f0e1..7a9f9ff6de 100644
+--- a/drivers/net/dsa/mv88e6xxx/port_hidden.c
++++ b/drivers/net/dsa/mv88e6xxx/port_hidden.c
+@@ -40,8 +40,9 @@ int mv88e6xxx_port_hidden_wait(struct mv88e6xxx_chip *chip)
+ {
+ 	int bit = __bf_shf(MV88E6XXX_PORT_RESERVED_1A_BUSY);
+ 
+-	return mv88e6xxx_wait_bit(chip, MV88E6XXX_PORT_RESERVED_1A_CTRL_PORT,
+-				  MV88E6XXX_PORT_RESERVED_1A, bit, 0);
++	return mv88e6xxx_port_wait_bit(chip,
++				       MV88E6XXX_PORT_RESERVED_1A_CTRL_PORT,
++				       MV88E6XXX_PORT_RESERVED_1A, bit, 0);
+ }
+ 
+ int mv88e6xxx_port_hidden_read(struct mv88e6xxx_chip *chip, int block, int port,
+---
+2.35.2
 
-Thanks,
-Leo
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/process/submitting-patches.rst#n138
