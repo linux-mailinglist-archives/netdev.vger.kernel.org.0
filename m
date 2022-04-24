@@ -2,143 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E428050D1CB
-	for <lists+netdev@lfdr.de>; Sun, 24 Apr 2022 15:03:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4861E50D1C0
+	for <lists+netdev@lfdr.de>; Sun, 24 Apr 2022 15:00:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232807AbiDXNGX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Apr 2022 09:06:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48328 "EHLO
+        id S231464AbiDXNDD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Apr 2022 09:03:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232131AbiDXNGQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 09:06:16 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C33E17C533;
-        Sun, 24 Apr 2022 06:03:15 -0700 (PDT)
-Received: from kwepemi100025.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KmSwb62Q0z1JBQx;
-        Sun, 24 Apr 2022 21:02:23 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi100025.china.huawei.com (7.221.188.158) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sun, 24 Apr 2022 21:03:13 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sun, 24 Apr 2022 21:03:13 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
-        <chenhao288@hisilicon.com>
-Subject: [PATCH net 6/6] net: hns3: add return value for mailbox handling in PF
-Date:   Sun, 24 Apr 2022 20:57:25 +0800
-Message-ID: <20220424125725.43232-7-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220424125725.43232-1-huangguangbin2@huawei.com>
-References: <20220424125725.43232-1-huangguangbin2@huawei.com>
+        with ESMTP id S231205AbiDXNDC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 09:03:02 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F00F17E0C
+        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 06:00:00 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id be20so7181441edb.12
+        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 06:00:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xiS7jXTGQnjBRoWj5ugUGTqfRqlbiuFUwXWLNi1EeJU=;
+        b=SoA9P8/6lxB7hLukKtbzsp9CZjR0hxa/1dGYCHYuHry7e1fzAxQ6TYBM8js3bDZUdT
+         iOm61Ysfp+VWCcf+9mqf0kUzLrJUYw7YuJ15uXa1Qg/j5yGudMfYL9/jYojurUwjC/PT
+         EF4eq9ZGJxtYkojhD+sVMg2nwuFOqrgxJSR6D5TaQWwjSD288Y4Ge6oKuMs4n8E7w6aM
+         xlBuR90SsvtbwqDUVbaqEvYNuhXy9uc6zPZnL2UfwXO7tlG42uwMzk9iwiMgihzm2CQo
+         Q3x7R66oab/+2CtRiaVN33ycNZmpYEmz8Y7GZZ01aEkb9YareOofyAESNR8hK7Nytuwx
+         horA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xiS7jXTGQnjBRoWj5ugUGTqfRqlbiuFUwXWLNi1EeJU=;
+        b=rhLJz2rlUYQcHf99dA9bs18Wz7MI6jOBNFmcPsShzyN8XoFjv3M8auGuWX1/hUUskX
+         STmjZAcL835t/RyDUf1eD8lBAwfsq47ygwcwhqmi3xzY6mkTejKau7qkpWYHIUGNq/Rm
+         CD+Nrnnxn1t1pyysyAOplfP7YdTtHtSNvoJ+uHyVvs5HBsGU6Tb0i7/BFFYzJIAGdhEd
+         zxrHT6haPt4T37BOajdqiLTSNvDAmJoI93/8gDqdhiVVtf0s5LbB2VLYQx/WxjrYb7JQ
+         rXnYaG/tTcrTakNjWxhqvZH3JRJLIlD8QWBqA9xOHwi/gbg2s5OnSfCcSY5N2Uiw+33n
+         xB+g==
+X-Gm-Message-State: AOAM533HwSM+Lxbb+WeIyybBJeJGCmRzoj2MQBHWNyUCWXdwb8YzxxsZ
+        3qpi1PRiUH1zwQQXue9rirSpeg==
+X-Google-Smtp-Source: ABdhPJzWd6TnX8cfWuoEpPnonVAdlLmH1faYJGpdsybfh5SgAIg5RUp8Wh3mjpXz0jixZJTcziCJFw==
+X-Received: by 2002:a05:6402:2985:b0:425:d51f:ae4 with SMTP id eq5-20020a056402298500b00425d51f0ae4mr6102711edb.379.1650805198838;
+        Sun, 24 Apr 2022 05:59:58 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s ([104.245.96.34])
+        by smtp.gmail.com with ESMTPSA id y14-20020a056402440e00b00416046b623csm3408984eda.2.2022.04.24.05.59.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Apr 2022 05:59:58 -0700 (PDT)
+Date:   Sun, 24 Apr 2022 20:59:51 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Timothy Hayes <timothy.hayes@arm.com>
+Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        acme@kernel.org, John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH 2/3] perf: arm-spe: Fix SPE events with phys addresses
+Message-ID: <20220424125951.GD978927@leoy-ThinkPad-X240s>
+References: <20220421165205.117662-1-timothy.hayes@arm.com>
+ <20220421165205.117662-3-timothy.hayes@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220421165205.117662-3-timothy.hayes@arm.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+Hi Timothy,
 
-Currently, there are some querying mailboxes sent from VF to PF,
-and VF will wait the PF's handling result. For mailbox
-HCLGE_MBX_GET_QID_IN_PF and HCLGE_MBX_GET_RSS_KEY, it may fail
-when the input parameter is invalid, but the prototype of their
-handler function is void. In this case, PF always return success
-to VF, which may cause the VF get incorrect result.
+On Thu, Apr 21, 2022 at 05:52:04PM +0100, Timothy Hayes wrote:
+> This patch corrects a bug whereby SPE collection is invoked with
+> pa_enable=1 but synthesized events fail to show physical addresses.
+> 
+> Signed-off-by: Timothy Hayes <timothy.hayes@arm.com>
+> ---
+>  tools/perf/arch/arm64/util/arm-spe.c | 10 ++++++++++
+>  tools/perf/util/arm-spe.c            |  3 ++-
+>  2 files changed, 12 insertions(+), 1 deletion(-)
+> 
+> diff --git a/tools/perf/arch/arm64/util/arm-spe.c b/tools/perf/arch/arm64/util/arm-spe.c
+> index af4d63af8072..e8b577d33e53 100644
+> --- a/tools/perf/arch/arm64/util/arm-spe.c
+> +++ b/tools/perf/arch/arm64/util/arm-spe.c
+> @@ -148,6 +148,7 @@ static int arm_spe_recording_options(struct auxtrace_record *itr,
+>  	bool privileged = perf_event_paranoid_check(-1);
+>  	struct evsel *tracking_evsel;
+>  	int err;
+> +	u64 bit;
+>  
+>  	sper->evlist = evlist;
+>  
+> @@ -245,6 +246,15 @@ static int arm_spe_recording_options(struct auxtrace_record *itr,
+>  	 */
+>  	evsel__set_sample_bit(arm_spe_evsel, DATA_SRC);
+>  
+> +	/*
+> +	 * The PHYS_ADDR flag does not affect the driver behaviour, it is used to
+> +	 * inform that the resulting output's SPE samples contain physical addresses
+> +	 * where applicable.
+> +	 */
+> +	bit = perf_pmu__format_bits(&arm_spe_pmu->format, "pa_enable");
+> +	if (arm_spe_evsel->core.attr.config & bit)
+> +		evsel__set_sample_bit(arm_spe_evsel, PHYS_ADDR);
+> +
+>  	/* Add dummy event to keep tracking */
+>  	err = parse_events(evlist, "dummy:u", NULL);
+>  	if (err)
+> diff --git a/tools/perf/util/arm-spe.c b/tools/perf/util/arm-spe.c
+> index 151cc38a171c..1a80151baed9 100644
+> --- a/tools/perf/util/arm-spe.c
+> +++ b/tools/perf/util/arm-spe.c
+> @@ -1033,7 +1033,8 @@ arm_spe_synth_events(struct arm_spe *spe, struct perf_session *session)
+>  	memset(&attr, 0, sizeof(struct perf_event_attr));
+>  	attr.size = sizeof(struct perf_event_attr);
+>  	attr.type = PERF_TYPE_HARDWARE;
+> -	attr.sample_type = evsel->core.attr.sample_type & PERF_SAMPLE_MASK;
+> +	attr.sample_type = evsel->core.attr.sample_type &
+> +				(PERF_SAMPLE_MASK | PERF_SAMPLE_PHYS_ADDR);
 
-Fixes it by adding return value for these function.
+I verified this patch and I can confirm the physical address can be
+dumped successfully.
 
-Fixes: 63b1279d9905 ("net: hns3: check queue id range before using")
-Fixes: 532cfc0df1e4 ("net: hns3: add a check for index in hclge_get_rss_key()")
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- .../hisilicon/hns3/hns3pf/hclge_mbx.c         | 22 ++++++++++---------
- 1 file changed, 12 insertions(+), 10 deletions(-)
+I have a more general question, seems to me, we need to change the
+macro PERF_SAMPLE_MASK in the file util/event.h as below, so
+here doesn't need to 'or' the flag PERF_SAMPLE_PHYS_ADDR anymore.
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-index 53f939923c28..7998ca617a92 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-@@ -594,9 +594,9 @@ static int hclge_set_vf_mtu(struct hclge_vport *vport,
- 	return hclge_set_vport_mtu(vport, mtu);
- }
- 
--static void hclge_get_queue_id_in_pf(struct hclge_vport *vport,
--				     struct hclge_mbx_vf_to_pf_cmd *mbx_req,
--				     struct hclge_respond_to_vf_msg *resp_msg)
-+static int hclge_get_queue_id_in_pf(struct hclge_vport *vport,
-+				    struct hclge_mbx_vf_to_pf_cmd *mbx_req,
-+				    struct hclge_respond_to_vf_msg *resp_msg)
- {
- 	struct hnae3_handle *handle = &vport->nic;
- 	struct hclge_dev *hdev = vport->back;
-@@ -606,17 +606,18 @@ static void hclge_get_queue_id_in_pf(struct hclge_vport *vport,
- 	if (queue_id >= handle->kinfo.num_tqps) {
- 		dev_err(&hdev->pdev->dev, "Invalid queue id(%u) from VF %u\n",
- 			queue_id, mbx_req->mbx_src_vfid);
--		return;
-+		return -EINVAL;
- 	}
- 
- 	qid_in_pf = hclge_covert_handle_qid_global(&vport->nic, queue_id);
- 	memcpy(resp_msg->data, &qid_in_pf, sizeof(qid_in_pf));
- 	resp_msg->len = sizeof(qid_in_pf);
-+	return 0;
- }
- 
--static void hclge_get_rss_key(struct hclge_vport *vport,
--			      struct hclge_mbx_vf_to_pf_cmd *mbx_req,
--			      struct hclge_respond_to_vf_msg *resp_msg)
-+static int hclge_get_rss_key(struct hclge_vport *vport,
-+			     struct hclge_mbx_vf_to_pf_cmd *mbx_req,
-+			     struct hclge_respond_to_vf_msg *resp_msg)
- {
- #define HCLGE_RSS_MBX_RESP_LEN	8
- 	struct hclge_dev *hdev = vport->back;
-@@ -634,13 +635,14 @@ static void hclge_get_rss_key(struct hclge_vport *vport,
- 		dev_warn(&hdev->pdev->dev,
- 			 "failed to get the rss hash key, the index(%u) invalid !\n",
- 			 index);
--		return;
-+		return -EINVAL;
- 	}
- 
- 	memcpy(resp_msg->data,
- 	       &rss_cfg->rss_hash_key[index * HCLGE_RSS_MBX_RESP_LEN],
- 	       HCLGE_RSS_MBX_RESP_LEN);
- 	resp_msg->len = HCLGE_RSS_MBX_RESP_LEN;
-+	return 0;
- }
- 
- static void hclge_link_fail_parse(struct hclge_dev *hdev, u8 link_fail_code)
-@@ -816,10 +818,10 @@ void hclge_mbx_handler(struct hclge_dev *hdev)
- 					"VF fail(%d) to set mtu\n", ret);
- 			break;
- 		case HCLGE_MBX_GET_QID_IN_PF:
--			hclge_get_queue_id_in_pf(vport, req, &resp_msg);
-+			ret = hclge_get_queue_id_in_pf(vport, req, &resp_msg);
- 			break;
- 		case HCLGE_MBX_GET_RSS_KEY:
--			hclge_get_rss_key(vport, req, &resp_msg);
-+			ret = hclge_get_rss_key(vport, req, &resp_msg);
- 			break;
- 		case HCLGE_MBX_GET_LINK_MODE:
- 			hclge_get_link_mode(vport, req);
--- 
-2.33.0
+@Arnaldo, @Jiri, could you confirm if this is the right way to move
+forward?  I am not sure why PERF_SAMPLE_MASK doesn't contain the bit
+PERF_SAMPLE_PHYS_ADDR in current code.
 
+diff --git a/tools/perf/util/event.h b/tools/perf/util/event.h
+index cdd72e05fd28..c905ac32ebad 100644
+--- a/tools/perf/util/event.h
++++ b/tools/perf/util/event.h
+@@ -39,7 +39,7 @@ struct perf_event_attr;
+         PERF_SAMPLE_TIME | PERF_SAMPLE_ADDR |          \
+        PERF_SAMPLE_ID | PERF_SAMPLE_STREAM_ID |        \
+         PERF_SAMPLE_CPU | PERF_SAMPLE_PERIOD |         \
+-        PERF_SAMPLE_IDENTIFIER)
++        PERF_SAMPLE_IDENTIFIER | PERF_SAMPLE_PHYS_ADDR)
+
+Thanks,
+Leo
+
+>  	attr.sample_type |= PERF_SAMPLE_IP | PERF_SAMPLE_TID |
+>  			    PERF_SAMPLE_PERIOD | PERF_SAMPLE_DATA_SRC |
+>  			    PERF_SAMPLE_WEIGHT | PERF_SAMPLE_ADDR;
+> -- 
+> 2.25.1
+> 
