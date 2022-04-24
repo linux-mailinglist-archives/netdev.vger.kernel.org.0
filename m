@@ -2,96 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0158350D4D8
-	for <lists+netdev@lfdr.de>; Sun, 24 Apr 2022 21:34:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF95050D4E2
+	for <lists+netdev@lfdr.de>; Sun, 24 Apr 2022 21:37:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239043AbiDXThI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Apr 2022 15:37:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46186 "EHLO
+        id S239438AbiDXTkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Apr 2022 15:40:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbiDXThH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 15:37:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 441BA35865;
-        Sun, 24 Apr 2022 12:34:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D9353612E8;
-        Sun, 24 Apr 2022 19:34:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7ACFC385A7;
-        Sun, 24 Apr 2022 19:34:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650828845;
-        bh=1yTMsjzIPbHZvzGsCO7P4g2pcIygu8eX0O+Bh6QMs4g=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UyPBSsw5JlCD9LjskAiB6XHMmthvmaAWNa8rv8AdALS5/VS5sm0SeKb5dpABbJEVt
-         cN4HeUjQd/0ZCQ1jFRXXU5wutcGWW6E+9KpzKNsQRtZTCAQTsqwpYUD1DfQRfaFF1q
-         IO/DJUVpV99kaLATYD80QFegSRxRQggpVnArXr6oaerzFVxC3QEwDjATfnnrcrxRQc
-         pn/a6VY3OKpvCuDWRV51NrnbpSwz3K0D/jgKd8WTuFwyvJUM4kMKbInGOhrzhsUGes
-         eEiNYHKlhM4RI8StNcZB0yfmAVYBGddWlopdp9MSlry2XFM5BtqgM7DOw9W/sC/uP1
-         CcY+U9rv47PKw==
-Date:   Sun, 24 Apr 2022 21:33:59 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Nathan Rossi <nathan@nathanrossi.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH v2] net: dsa: mv88e6xxx: Fix port_hidden_wait to account
- for port_base_addr
-Message-ID: <20220424213359.246cd5ab@thinkpad>
-In-Reply-To: <YmWkgkILCrBP5hRG@lunn.ch>
-References: <20220424153143.323338-1-nathan@nathanrossi.com>
-        <YmWkgkILCrBP5hRG@lunn.ch>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S239339AbiDXTkK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 15:40:10 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5552336E14
+        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 12:37:09 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id p65so23584787ybp.9
+        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 12:37:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YnAouN3/QaYFQRA8k13sFCBqmUwn7Rgk9ylA4812FH8=;
+        b=c6Em+6CnMcjxwIpmPMF3mQtrjKK1n945ZGOqB2TSqSUOMdIcu6cu/8GQFKj9K02tht
+         wTmKciCz18mtlFc/a4tRAO5YLUunRb99GWyqzWupZi0PwIVgqtTivE5mEL29JvKLE4Bm
+         /BM/rUBriv3TzWh94cx/POpRvspabs4G6hBqjYKdMRC74S25kqA2ApVPtkmnUNYMg4aK
+         q6bUvpH8of+oT8hzjDTBhniZDOPN8r8idVPwaCMlDzgKQarSo8BRRv/v/c97/Q5uPYRq
+         ucMcz+oI/DNPTjsnwjXrDSH07+aGOR6NX4qv8QrASThiwosqMIT+ECB4dXvZyU0DtRjo
+         7+vw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YnAouN3/QaYFQRA8k13sFCBqmUwn7Rgk9ylA4812FH8=;
+        b=b67GFN+Zky8wi7avxkO3y9SrHhkmMJB+EddJql1HaGjgU8gqyOvy94vDTCmYdXvti0
+         1LvbAjCaqhLGnZKhxXlm0iZfxjdVrCKsU3vud8978XQWlpnVxwZ07pewWALmmnULxjdf
+         pTvudienXoWIDEkuEBiNGzAw6R8NvKrlVPgS74TWv6FTHLKgpa1/bf77mzxGWQBl5p0Z
+         XkpCm/PJAhh5F+T1h93rPrTDi3jkURPzaXRqjLE1PN2tHWyPRamV3gBYBncA+HAURtpT
+         yjQl3zkigUguOOd9RoxOiOyfgZNQgdlvhbDpoOkRQkIoVoLYS2WNJ0eM+zmkk22d68Z6
+         OwcA==
+X-Gm-Message-State: AOAM532cITaC3iTvUwr9cS5jSinvzLue0LqriitbJu+QxaPyBR3Mj/Zl
+        4j+Z47Rb1QwAuiTBsVwQbRmaaEDjT0gpGH0+motZOXSL0CSKolaR
+X-Google-Smtp-Source: ABdhPJxPee0rQQxRVcJIKv7ARIsp8dN+dBXkPrOltW7JPYE4strNgNlr+7QNfAU8CKBa6dZD3jpZYe8+5LsV3O60wBM=
+X-Received: by 2002:a05:6902:c9:b0:641:1998:9764 with SMTP id
+ i9-20020a05690200c900b0064119989764mr13153900ybs.427.1650829028283; Sun, 24
+ Apr 2022 12:37:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20220421005026.686A45EC01F2@us226.sjc.aristanetworks.com>
+In-Reply-To: <20220421005026.686A45EC01F2@us226.sjc.aristanetworks.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Sun, 24 Apr 2022 12:36:57 -0700
+Message-ID: <CANn89iKM-f=VLfwb9wq8+_bmaLjP_Xg5CanqJWhans2DXE=v5w@mail.gmail.com>
+Subject: Re: [PATCH v2 net] tcp: md5: incorrect tcp_header_len for incoming connections
+To:     Francesco Ruggeri <fruggeri@arista.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Miller <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 24 Apr 2022 21:26:58 +0200
-Andrew Lunn <andrew@lunn.ch> wrote:
+On Wed, Apr 20, 2022 at 5:50 PM Francesco Ruggeri <fruggeri@arista.com> wrote:
+>
+> In tcp_create_openreq_child we adjust tcp_header_len for md5 using the
+> remote address in newsk. But that address is still 0 in newsk at this
+> point, and it is only set later by the callers (tcp_v[46]_syn_recv_sock).
+> Use the address from the request socket instead.
+>
+> v2: Added "Fixes:" line.
+>
+> Fixes: cfb6eeb4c860 ("[TCP]: MD5 Signature Option (RFC2385) support.")
+> Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
+> ---
+>  net/ipv4/tcp_minisocks.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
+> index 6366df7aaf2a..6854bb1fb32b 100644
+> --- a/net/ipv4/tcp_minisocks.c
+> +++ b/net/ipv4/tcp_minisocks.c
+> @@ -531,7 +531,7 @@ struct sock *tcp_create_openreq_child(const struct sock *sk,
+>         newtp->tsoffset = treq->ts_off;
+>  #ifdef CONFIG_TCP_MD5SIG
+>         newtp->md5sig_info = NULL;      /*XXX*/
+> -       if (newtp->af_specific->md5_lookup(sk, newsk))
+> +       if (treq->af_specific->req_md5_lookup(sk, req_to_sk(req)))
 
-> On Sun, Apr 24, 2022 at 03:31:43PM +0000, Nathan Rossi wrote:
-> > The other port_hidden functions rely on the port_read/port_write
-> > functions to access the hidden control port. These functions apply the
-> > offset for port_base_addr where applicable. Update port_hidden_wait to
-> > use the port_wait_bit so that port_base_addr offsets are accounted for
-> > when waiting for the busy bit to change.
-> > 
-> > Without the offset the port_hidden_wait function would timeout on
-> > devices that have a non-zero port_base_addr (e.g. MV88E6141), however
-> > devices that have a zero port_base_addr would operate correctly (e.g.
-> > MV88E6390).
-> > 
-> > Fixes: ea89098ef9a5 ("net: dsa: mv88x6xxx: mv88e6390 errata")  
-> 
-> That is further back than needed. And due to the code moving around
-> and getting renamed, you are added extra burden on those doing the
-> back port for no actual gain.
-> 
-> Please verify what i suggested, 609070133aff1 is better and then
-> repost.
+Wait a minute.
 
-The bug was introduced by ea89098ef9a5.
-609070133aff1 is only requirement for this fix, but Fixes tag should reference
-the commit which introduced the bug, afaik.
+Are you sure treq->af_specific is initialized at this point ?
 
-So it should be 
+I should have tested this one liner patch really :/
 
-Fixes: ea89098ef9a5 ("net: dsa: mv88x6xxx: mv88e6390 errata")
-Cc: stable@vger.kernel.org # 609070133aff ("net: dsa: mv88e6xxx: update code operating on hidden registers")
+I think that for syncookies, treq->af_specific is not initialized,
+because we do not go through
+tcp_conn_request() helper, but instead use cookie_tcp_reqsk_alloc()
 
-Marek
+Before your patch treq->af_specific was only used during SYNACK
+generation, which does not happen in syncookie more while receiving
+the third packet.
+
+I will test something like this patch. We could move the init after
+cookie_tcp_reqsk_alloc() has been called, but I prefer using the same
+construct than tcp_conn_request()
+
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index be712fb9ddd71b2b320356677f3aa1c6759e2698..9987b3fba9f202632916cc439af9d17f1e68bcd3
+100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -480,6 +480,7 @@ int __cookie_v4_check(const struct iphdr *iph,
+const struct tcphdr *th,
+                      u32 cookie);
+ struct sock *cookie_v4_check(struct sock *sk, struct sk_buff *skb);
+ struct request_sock *cookie_tcp_reqsk_alloc(const struct request_sock_ops *ops,
++                                           const struct
+tcp_request_sock_ops *af_ops,
+                                            struct sock *sk, struct
+sk_buff *skb);
+ #ifdef CONFIG_SYN_COOKIES
+
+diff --git a/net/ipv4/syncookies.c b/net/ipv4/syncookies.c
+index 2cb3b852d14861231ac47f0b3e4daeb57682ffd2..f191bfa996d71f11ef786a0a3bcb8f737622d37a
+100644
+--- a/net/ipv4/syncookies.c
++++ b/net/ipv4/syncookies.c
+@@ -281,6 +281,7 @@ bool cookie_ecn_ok(const struct
+tcp_options_received *tcp_opt,
+ EXPORT_SYMBOL(cookie_ecn_ok);
+
+ struct request_sock *cookie_tcp_reqsk_alloc(const struct request_sock_ops *ops,
++                                           const struct
+tcp_request_sock_ops *af_ops,
+                                            struct sock *sk,
+                                            struct sk_buff *skb)
+ {
+@@ -297,6 +298,8 @@ struct request_sock *cookie_tcp_reqsk_alloc(const
+struct request_sock_ops *ops,
+                return NULL;
+
+        treq = tcp_rsk(req);
++       /* treq->af_specific might be used to perform TCP_MD5 lookup */
++       treq->af_specific = af_ops;
+        treq->syn_tos = TCP_SKB_CB(skb)->ip_dsfield;
+ #if IS_ENABLED(CONFIG_MPTCP)
+        treq->is_mptcp = sk_is_mptcp(sk);
+@@ -364,7 +367,8 @@ struct sock *cookie_v4_check(struct sock *sk,
+struct sk_buff *skb)
+                goto out;
+
+        ret = NULL;
+-       req = cookie_tcp_reqsk_alloc(&tcp_request_sock_ops, sk, skb);
++       req = cookie_tcp_reqsk_alloc(&tcp_request_sock_ops,
++                                    &tcp_request_sock_ipv4_ops, sk, skb);
+        if (!req)
+                goto out;
+
+diff --git a/net/ipv6/syncookies.c b/net/ipv6/syncookies.c
+index d1b61d00368e1f58725e9997f74a0b144901277e..9cc123f000fbcfbeff7728bfee5339d6dd6470f9
+100644
+--- a/net/ipv6/syncookies.c
++++ b/net/ipv6/syncookies.c
+@@ -170,7 +170,8 @@ struct sock *cookie_v6_check(struct sock *sk,
+struct sk_buff *skb)
+                goto out;
+
+        ret = NULL;
+-       req = cookie_tcp_reqsk_alloc(&tcp6_request_sock_ops, sk, skb);
++       req = cookie_tcp_reqsk_alloc(&tcp6_request_sock_ops,
++                                    &tcp_request_sock_ipv6_ops, sk, skb);
+        if (!req)
+                goto out;
