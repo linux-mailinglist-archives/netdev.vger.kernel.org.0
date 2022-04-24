@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC7E350D1C9
+	by mail.lfdr.de (Postfix) with ESMTP id 2FADC50D1C7
 	for <lists+netdev@lfdr.de>; Sun, 24 Apr 2022 15:03:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232435AbiDXNGT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Apr 2022 09:06:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48230 "EHLO
+        id S232417AbiDXNGR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Apr 2022 09:06:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231910AbiDXNGP (ORCPT
+        with ESMTP id S231924AbiDXNGP (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 09:06:15 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C650917C528;
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB4BF17C52F;
         Sun, 24 Apr 2022 06:03:14 -0700 (PDT)
-Received: from kwepemi100026.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KmSrM1SrYzCs8h;
-        Sun, 24 Apr 2022 20:58:43 +0800 (CST)
+Received: from kwepemi100022.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KmSxH11cFzhYV6;
+        Sun, 24 Apr 2022 21:02:59 +0800 (CST)
 Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi100026.china.huawei.com (7.221.188.60) with Microsoft SMTP Server
+ kwepemi100022.china.huawei.com (7.221.188.126) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sun, 24 Apr 2022 21:03:12 +0800
+ 15.1.2375.24; Sun, 24 Apr 2022 21:03:13 +0800
 Received: from localhost.localdomain (10.67.165.24) by
  kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -30,9 +30,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
         <chenhao288@hisilicon.com>
-Subject: [PATCH net 3/6] net: hns3: fix error log of tx/rx tqps stats
-Date:   Sun, 24 Apr 2022 20:57:22 +0800
-Message-ID: <20220424125725.43232-4-huangguangbin2@huawei.com>
+Subject: [PATCH net 4/6] net: hns3: modify the return code of hclge_get_ring_chain_from_mbx
+Date:   Sun, 24 Apr 2022 20:57:23 +0800
+Message-ID: <20220424125725.43232-5-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220424125725.43232-1-huangguangbin2@huawei.com>
 References: <20220424125725.43232-1-huangguangbin2@huawei.com>
@@ -51,40 +51,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peng Li <lipeng321@huawei.com>
+From: Jie Wang <wangjie125@huawei.com>
 
-The comments in function hclge_comm_tqps_update_stats is not right,
-so fix it.
+Currently, function hclge_get_ring_chain_from_mbx will return -ENOMEM if
+ring_num is bigger than HCLGE_MBX_MAX_RING_CHAIN_PARAM_NUM. It is better to
+return -EINVAL for the invalid parameter case.
 
-Fixes: 287db5c40d15 ("net: hns3: create new set of common tqp stats APIs for PF and VF reuse")
-Signed-off-by: Peng Li <lipeng321@huawei.com>
+So this patch fixes it by return -EINVAL in this abnormal branch.
+
+Fixes: 5d02a58dae60 ("net: hns3: fix for buffer overflow smatch warning")
+Signed-off-by: Jie Wang <wangjie125@huawei.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- .../hisilicon/hns3/hns3_common/hclge_comm_tqp_stats.c         | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_tqp_stats.c b/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_tqp_stats.c
-index 0c60f41fca8a..f3c9395d8351 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_tqp_stats.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_tqp_stats.c
-@@ -75,7 +75,7 @@ int hclge_comm_tqps_update_stats(struct hnae3_handle *handle,
- 		ret = hclge_comm_cmd_send(hw, &desc, 1);
- 		if (ret) {
- 			dev_err(&hw->cmq.csq.pdev->dev,
--				"failed to get tqp stat, ret = %d, tx = %u.\n",
-+				"failed to get tqp stat, ret = %d, rx = %u.\n",
- 				ret, i);
- 			return ret;
- 		}
-@@ -89,7 +89,7 @@ int hclge_comm_tqps_update_stats(struct hnae3_handle *handle,
- 		ret = hclge_comm_cmd_send(hw, &desc, 1);
- 		if (ret) {
- 			dev_err(&hw->cmq.csq.pdev->dev,
--				"failed to get tqp stat, ret = %d, rx = %u.\n",
-+				"failed to get tqp stat, ret = %d, tx = %u.\n",
- 				ret, i);
- 			return ret;
- 		}
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
+index 6799d16de34b..36cbafc5f944 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
+@@ -176,7 +176,7 @@ static int hclge_get_ring_chain_from_mbx(
+ 	ring_num = req->msg.ring_num;
+ 
+ 	if (ring_num > HCLGE_MBX_MAX_RING_CHAIN_PARAM_NUM)
+-		return -ENOMEM;
++		return -EINVAL;
+ 
+ 	for (i = 0; i < ring_num; i++) {
+ 		if (req->msg.param[i].tqp_index >= vport->nic.kinfo.rss_size) {
 -- 
 2.33.0
 
