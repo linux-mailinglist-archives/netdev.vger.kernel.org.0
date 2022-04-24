@@ -2,269 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DB5F50D4EC
-	for <lists+netdev@lfdr.de>; Sun, 24 Apr 2022 21:55:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 300F150D516
+	for <lists+netdev@lfdr.de>; Sun, 24 Apr 2022 22:35:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239378AbiDXT6T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Apr 2022 15:58:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38500 "EHLO
+        id S239585AbiDXUiP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Apr 2022 16:38:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230098AbiDXT6R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 15:58:17 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62F0A814A0
-        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 12:55:15 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id p18so11034341edr.7
-        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 12:55:15 -0700 (PDT)
+        with ESMTP id S239581AbiDXUiP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 16:38:15 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7E6A644D1
+        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 13:35:13 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id s17so22704045plg.9
+        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 13:35:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=0EgzoIHWVkAfvNpSWOnmV5LtfT6ZJcYhH7++3XB+glE=;
-        b=xQq3liiyVG1TK522MGl5jBLsfT/Uix5DJ3L1iQks/PUiduhaj0NF/URdGJsujPgbam
-         hLbi8IT6w9lG9NEFjrvb1UR+ca1mCX4b1Qa0CVbMAeny61wANYKKF9H4J11T+QSnUlBA
-         2l8hLqraXLvGyde7o9+APzhMhr3bL33Y+fT0z2fCfZIWjS+jC+OmP1EfZpvczGWyq1Z7
-         Q0c4u1b3TdLlzdFuNAllSb77AKFMOjv3sPo5qKywJgVDxQaMebwYqhmm8497vdHoGQfR
-         mzs5YY8oyumj/q4pmo14yIiCU20R9SOZBaFVepZFNOAUC0i6Vz0LA50TSIWTJyCFrgON
-         8+WQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7HO0jzjb7JO+HXqzRnWkAeAIEP4UJiL+srj42ZoD/MM=;
+        b=UR8m4CpoQVVroHm2coSPMCN0naRZxcwppQqLgGKSNtQok2q5ymj6kd/VEthKGYjCii
+         zC9Smj8osmioMlUexlFX+mzwHcV5I1l3M4aD/04rsw5+UEnaK6VTXLqQATUo/ck8SrpD
+         Xfk/VZ+EZ//N4zQXBRmwy8opQgAcMxuxiu5vpku6Zczn4izEY/vpZECXK/qCr9kN4fYB
+         r0qhjVxiKpcUBVJ6yPMtZhX4+7w5464BpHaZjpkHmx7UCuxpaoiGhcvT9PcgBS+Ox2Nb
+         t5q6t9DYCBDyMQTlGZ1tasYLtKIt6JpM3qNiPFhRSXRfVb+yyFsflBn+tEhLNOLxw73v
+         xTbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=0EgzoIHWVkAfvNpSWOnmV5LtfT6ZJcYhH7++3XB+glE=;
-        b=nE/n+8rOLH0GcI9Ii4ZSvpyEXcMVAy9R8wHfUw1QL2+wGg7RyV82VPVj4F/1Nb2+id
-         n2+Q3L2GCZvzn36commQOt+nJ1lNWm9HMrFovpNIAr8L7M2VRQg093iv2DaaMY/nr+fj
-         HvUFsIBjj/KO5tOB2ea4pd/Sv2z1uq26FXarHznQexgvgKX54qPSzIbJFEfInMbRXPrm
-         2ne9/w4k4WuJjeBzx9lTiwcHz7WJgoUl+SxBFZjxgeG4bUaIW8kitwXqElTTVQvWYYFJ
-         pwcdasU8gfQDupGdhwwkOEF8mBhzSDI8t7P3DfD1REF85GPMZYpd010nGSJ4NRY2EHRx
-         RxXA==
-X-Gm-Message-State: AOAM530xtXPpv2TIM/UcwbqXGSlwOvvWozlihPPN/2hptpKxtKpW2zfF
-        Umf0IZAq0Tjsy7zfaOlHKsfv8A==
-X-Google-Smtp-Source: ABdhPJz6ve1Rq1+ti2Su45rUdME4EcceTyNugTL4H+TaGplQOA859Ym6fFwT4XVgVKJqQLv4t58Z/g==
-X-Received: by 2002:a50:8d8a:0:b0:423:d77b:a683 with SMTP id r10-20020a508d8a000000b00423d77ba683mr15397163edh.138.1650830113696;
-        Sun, 24 Apr 2022 12:55:13 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id e26-20020a50a69a000000b00425c11446fasm3325897edc.3.2022.04.24.12.55.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 24 Apr 2022 12:55:13 -0700 (PDT)
-Message-ID: <4bf69eef-7444-1238-0f4a-fb0fccda080c@blackwall.org>
-Date:   Sun, 24 Apr 2022 22:55:11 +0300
+        bh=7HO0jzjb7JO+HXqzRnWkAeAIEP4UJiL+srj42ZoD/MM=;
+        b=OmOY5y7HbEJy1COze8xu5r+byeiCwspbZrjyNrrWS9w8HIsitOhNp1vWC1dABscF0i
+         6Xt9VEo3W3a/p6BE633Tdgm76YLFavx0CP/97JsmC/pHMbfnVjGW0i/VV4DE2lhZ8K/p
+         mnwODyq0s4KaNhY7BzQ27Ts3LSs5RJuoEC81PB+SC/978wJaaVJ5OsDH+kvsvvq/r6yz
+         B6K096qAzp8LAkOaNiiDY4ceCCCwrLg1taedPkiYSGCOOeA7RGUMcz6JqOzfMOCapfM6
+         KxS9Tz5IjjPMoEA/PlArwDESuVAlWdoyXhhy9KqV1lHSpIGddWagZsXUqzKzjNk+RveN
+         W5Ug==
+X-Gm-Message-State: AOAM533t4DN33k5YnixUZx50gKQVuOpaD9aIncI2l1UY8hkVXtyN+lmm
+        Fc14n3VaQDl1TMhcQn2d2VU=
+X-Google-Smtp-Source: ABdhPJydRxxyeop/A0cit23DWUjE7kTOMnwIx9Mw4r/GBkpiTG8M/5OIoj6jK1bnOW+Wc+uXelJCwA==
+X-Received: by 2002:a17:902:aa88:b0:156:914b:dc79 with SMTP id d8-20020a170902aa8800b00156914bdc79mr14747826plr.138.1650832513042;
+        Sun, 24 Apr 2022 13:35:13 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:deb1:6b52:39aa:3e96])
+        by smtp.gmail.com with ESMTPSA id z28-20020a62d11c000000b0050d2daec38esm3737493pfg.113.2022.04.24.13.35.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Apr 2022 13:35:12 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Francesco Ruggeri <fruggeri@arista.com>
+Subject: [PATCH net] tcp: make sure treq->af_specific is initialized
+Date:   Sun, 24 Apr 2022 13:35:09 -0700
+Message-Id: <20220424203509.2801158-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH net-next v3 1/2] rtnetlink: add extack support in fdb del
- handlers
-Content-Language: en-US
-To:     Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>,
-        netdev@vger.kernel.org
-Cc:     outreachy@lists.linux.dev, roopa@nvidia.com, jdenham@redhat.com,
-        sbrivio@redhat.com, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
-        alexandre.belloni@bootlin.com, shshaikh@marvell.com,
-        manishc@marvell.com, intel-wired-lan@lists.osuosl.org,
-        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        GR-Linux-NIC-Dev@marvell.com, bridge@lists.linux-foundation.org
-References: <cover.1650800975.git.eng.alaamohamedsoliman.am@gmail.com>
- <c3a882e4fb6f9228f704ebe3c1fcace14ee6cdf2.1650800975.git.eng.alaamohamedsoliman.am@gmail.com>
- <7c8367b6-95c7-ea39-fafe-72495f343625@blackwall.org>
- <d89eefc2-664f-8537-d10e-6fdfbb6823ed@gmail.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <d89eefc2-664f-8537-d10e-6fdfbb6823ed@gmail.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24/04/2022 22:49, Alaa Mohamed wrote:
-> 
-> On ٢٤‏/٤‏/٢٠٢٢ ٢١:٠٢, Nikolay Aleksandrov wrote:
->> On 24/04/2022 15:09, Alaa Mohamed wrote:
->>> Add extack support to .ndo_fdb_del in netdevice.h and
->>> all related methods.
->>>
->>> Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
->>> ---
->>> changes in V3:
->>>          fix errors reported by checkpatch.pl
->>> ---
->>>   drivers/net/ethernet/intel/ice/ice_main.c        | 4 ++--
->>>   drivers/net/ethernet/mscc/ocelot_net.c           | 4 ++--
->>>   drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c | 2 +-
->>>   drivers/net/macvlan.c                            | 2 +-
->>>   drivers/net/vxlan/vxlan_core.c                   | 2 +-
->>>   include/linux/netdevice.h                        | 2 +-
->>>   net/bridge/br_fdb.c                              | 2 +-
->>>   net/bridge/br_private.h                          | 2 +-
->>>   net/core/rtnetlink.c                             | 4 ++--
->>>   9 files changed, 12 insertions(+), 12 deletions(-)
->>>
->>> diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
->>> index d768925785ca..7b55d8d94803 100644
->>> --- a/drivers/net/ethernet/intel/ice/ice_main.c
->>> +++ b/drivers/net/ethernet/intel/ice/ice_main.c
->>> @@ -5678,10 +5678,10 @@ ice_fdb_add(struct ndmsg *ndm, struct nlattr __always_unused *tb[],
->>>   static int
->>>   ice_fdb_del(struct ndmsg *ndm, __always_unused struct nlattr *tb[],
->>>           struct net_device *dev, const unsigned char *addr,
->>> -        __always_unused u16 vid)
->>> +        __always_unused u16 vid, struct netlink_ext_ack *extack)
->>>   {
->>>       int err;
->>> -
->>> +
->> What's changed here?
-> 
-> In the previous version, I removed the blank line after "int err;" and you said I shouldn't so I added blank line.
-> 
+From: Eric Dumazet <edumazet@google.com>
 
-Yeah, my question is are you fixing a dos ending or something else?
-The blank line is already there, what's wrong with it?
+syzbot complained about a recent change in TCP stack,
+hitting a NULL pointer [1]
 
-The point is it's not nice to mix style fixes and other changes, more so
-if nothing is mentioned in the commit message.
+tcp request sockets have an af_specific pointer, which
+was used before the blamed change only for SYNACK generation
+in non SYNCOOKIE mode.
 
->>
->>>       if (ndm->ndm_state & NUD_PERMANENT) {
->>>           netdev_err(dev, "FDB only supports static addresses\n");
->>>           return -EINVAL;
->>> diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
->>> index 247bc105bdd2..e07c64e3159c 100644
->>> --- a/drivers/net/ethernet/mscc/ocelot_net.c
->>> +++ b/drivers/net/ethernet/mscc/ocelot_net.c
->>> @@ -774,14 +774,14 @@ static int ocelot_port_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
->>>
->>>   static int ocelot_port_fdb_del(struct ndmsg *ndm, struct nlattr *tb[],
->>>                      struct net_device *dev,
->>> -                   const unsigned char *addr, u16 vid)
->>> +                   const unsigned char *addr, u16 vid, struct netlink_ext_ack *extack)
->>>   {
->>>       struct ocelot_port_private *priv = netdev_priv(dev);
->>>       struct ocelot_port *ocelot_port = &priv->port;
->>>       struct ocelot *ocelot = ocelot_port->ocelot;
->>>       int port = priv->chip_port;
->>>
->>> -    return ocelot_fdb_del(ocelot, port, addr, vid, ocelot_port->bridge);
->>> +    return ocelot_fdb_del(ocelot, port, addr, vid, ocelot_port->bridge, extack);
->>>   }
->>>
->>>   static int ocelot_port_fdb_dump(struct sk_buff *skb,
->>> diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
->>> index d320567b2cca..51fa23418f6a 100644
->>> --- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
->>> +++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
->>> @@ -368,7 +368,7 @@ static int qlcnic_set_mac(struct net_device *netdev, void *p)
->>>
->>>   static int qlcnic_fdb_del(struct ndmsg *ndm, struct nlattr *tb[],
->>>               struct net_device *netdev,
->>> -            const unsigned char *addr, u16 vid)
->>> +            const unsigned char *addr, u16 vid, struct netlink_ext_ack *extack)
->>>   {
->>>       struct qlcnic_adapter *adapter = netdev_priv(netdev);
->>>       int err = -EOPNOTSUPP;
->>> diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
->>> index 069e8824c264..ffd34d9f7049 100644
->>> --- a/drivers/net/macvlan.c
->>> +++ b/drivers/net/macvlan.c
->>> @@ -1017,7 +1017,7 @@ static int macvlan_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
->>>
->>>   static int macvlan_fdb_del(struct ndmsg *ndm, struct nlattr *tb[],
->>>                  struct net_device *dev,
->>> -               const unsigned char *addr, u16 vid)
->>> +               const unsigned char *addr, u16 vid, struct netlink_ext_ack *extack)
->>>   {
->>>       struct macvlan_dev *vlan = netdev_priv(dev);
->>>       int err = -EINVAL;
->>> diff --git a/drivers/net/vxlan/vxlan_core.c b/drivers/net/vxlan/vxlan_core.c
->>> index de97ff98d36e..cf2f60037340 100644
->>> --- a/drivers/net/vxlan/vxlan_core.c
->>> +++ b/drivers/net/vxlan/vxlan_core.c
->>> @@ -1280,7 +1280,7 @@ int __vxlan_fdb_delete(struct vxlan_dev *vxlan,
->>>   /* Delete entry (via netlink) */
->>>   static int vxlan_fdb_delete(struct ndmsg *ndm, struct nlattr *tb[],
->>>                   struct net_device *dev,
->>> -                const unsigned char *addr, u16 vid)
->>> +                const unsigned char *addr, u16 vid, struct netlink_ext_ack *extack)
->>>   {
->>>       struct vxlan_dev *vxlan = netdev_priv(dev);
->>>       union vxlan_addr ip;
->>> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
->>> index 28ea4f8269d4..d0d2a8f33c73 100644
->>> --- a/include/linux/netdevice.h
->>> +++ b/include/linux/netdevice.h
->>> @@ -1509,7 +1509,7 @@ struct net_device_ops {
->>>                              struct nlattr *tb[],
->>>                              struct net_device *dev,
->>>                              const unsigned char *addr,
->>> -                           u16 vid);
->>> +                           u16 vid, struct netlink_ext_ack *extack);
->>>       int            (*ndo_fdb_dump)(struct sk_buff *skb,
->>>                           struct netlink_callback *cb,
->>>                           struct net_device *dev,
->>> diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
->>> index 6ccda68bd473..5bfce2e9a553 100644
->>> --- a/net/bridge/br_fdb.c
->>> +++ b/net/bridge/br_fdb.c
->>> @@ -1110,7 +1110,7 @@ static int __br_fdb_delete(struct net_bridge *br,
->>>   /* Remove neighbor entry with RTM_DELNEIGH */
->>>   int br_fdb_delete(struct ndmsg *ndm, struct nlattr *tb[],
->>>             struct net_device *dev,
->>> -          const unsigned char *addr, u16 vid)
->>> +          const unsigned char *addr, u16 vid, struct netlink_ext_ack *extack)
->>>   {
->>>       struct net_bridge_vlan_group *vg;
->>>       struct net_bridge_port *p = NULL;
->>> diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
->>> index 18ccc3d5d296..95348c1c9ce5 100644
->>> --- a/net/bridge/br_private.h
->>> +++ b/net/bridge/br_private.h
->>> @@ -780,7 +780,7 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
->>>              const unsigned char *addr, u16 vid, unsigned long flags);
->>>
->>>   int br_fdb_delete(struct ndmsg *ndm, struct nlattr *tb[],
->>> -          struct net_device *dev, const unsigned char *addr, u16 vid);
->>> +          struct net_device *dev, const unsigned char *addr, u16 vid, struct netlink_ext_ack *extack);
->> This is way too long (111 chars) and checkpatch should've complained about it.
->> WARNING: line length of 111 exceeds 100 columns
->> #234: FILE: net/bridge/br_private.h:782:
->> +          struct net_device *dev, const unsigned char *addr, u16 vid, struct netlink_ext_ack *extack);
-> 
-> I will fix it.
-> 
->>
->>>   int br_fdb_add(struct ndmsg *nlh, struct nlattr *tb[], struct net_device *dev,
->>>              const unsigned char *addr, u16 vid, u16 nlh_flags,
->>>              struct netlink_ext_ack *extack);
->>> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
->>> index 4041b3e2e8ec..99b30ae58a47 100644
->>> --- a/net/core/rtnetlink.c
->>> +++ b/net/core/rtnetlink.c
->>> @@ -4223,7 +4223,7 @@ static int rtnl_fdb_del(struct sk_buff *skb, struct nlmsghdr *nlh,
->>>           const struct net_device_ops *ops = br_dev->netdev_ops;
->>>
->>>           if (ops->ndo_fdb_del)
->>> -            err = ops->ndo_fdb_del(ndm, tb, dev, addr, vid);
->>> +            err = ops->ndo_fdb_del(ndm, tb, dev, addr, vid, extack);
->>>
->>>           if (err)
->>>               goto out;
->>> @@ -4235,7 +4235,7 @@ static int rtnl_fdb_del(struct sk_buff *skb, struct nlmsghdr *nlh,
->>>       if (ndm->ndm_flags & NTF_SELF) {
->>>           if (dev->netdev_ops->ndo_fdb_del)
->>>               err = dev->netdev_ops->ndo_fdb_del(ndm, tb, dev, addr,
->>> -                               vid);
->>> +                               vid, extack);
->>>           else
->>>               err = ndo_dflt_fdb_del(ndm, tb, dev, addr, vid);
->>>
->>> -- 
->>> 2.36.0
->>>
+tcp requests sockets momentarily created when third packet
+coming from client in SYNCOOKIE mode were not using
+treq->af_specific.
+
+Make sure this field is populated, in the same way normal
+TCP requests sockets do in tcp_conn_request().
+
+[1]
+TCP: request_sock_TCPv6: Possible SYN flooding on port 20002. Sending cookies.  Check SNMP counters.
+general protection fault, probably for non-canonical address 0xdffffc0000000001: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
+CPU: 1 PID: 3695 Comm: syz-executor864 Not tainted 5.18.0-rc3-syzkaller-00224-g5fd1fe4807f9 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:tcp_create_openreq_child+0xe16/0x16b0 net/ipv4/tcp_minisocks.c:534
+Code: 48 c1 ea 03 80 3c 02 00 0f 85 e5 07 00 00 4c 8b b3 28 01 00 00 48 b8 00 00 00 00 00 fc ff df 49 8d 7e 08 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 c9 07 00 00 48 8b 3c 24 48 89 de 41 ff 56 08 48
+RSP: 0018:ffffc90000de0588 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: ffff888076490330 RCX: 0000000000000100
+RDX: 0000000000000001 RSI: ffffffff87d67ff0 RDI: 0000000000000008
+RBP: ffff88806ee1c7f8 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff87d67f00 R11: 0000000000000000 R12: ffff88806ee1bfc0
+R13: ffff88801b0e0368 R14: 0000000000000000 R15: 0000000000000000
+FS:  00007f517fe58700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffcead76960 CR3: 000000006f97b000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <IRQ>
+ tcp_v6_syn_recv_sock+0x199/0x23b0 net/ipv6/tcp_ipv6.c:1267
+ tcp_get_cookie_sock+0xc9/0x850 net/ipv4/syncookies.c:207
+ cookie_v6_check+0x15c3/0x2340 net/ipv6/syncookies.c:258
+ tcp_v6_cookie_check net/ipv6/tcp_ipv6.c:1131 [inline]
+ tcp_v6_do_rcv+0x1148/0x13b0 net/ipv6/tcp_ipv6.c:1486
+ tcp_v6_rcv+0x3305/0x3840 net/ipv6/tcp_ipv6.c:1725
+ ip6_protocol_deliver_rcu+0x2e9/0x1900 net/ipv6/ip6_input.c:422
+ ip6_input_finish+0x14c/0x2c0 net/ipv6/ip6_input.c:464
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ NF_HOOK include/linux/netfilter.h:301 [inline]
+ ip6_input+0x9c/0xd0 net/ipv6/ip6_input.c:473
+ dst_input include/net/dst.h:461 [inline]
+ ip6_rcv_finish net/ipv6/ip6_input.c:76 [inline]
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ NF_HOOK include/linux/netfilter.h:301 [inline]
+ ipv6_rcv+0x27f/0x3b0 net/ipv6/ip6_input.c:297
+ __netif_receive_skb_one_core+0x114/0x180 net/core/dev.c:5405
+ __netif_receive_skb+0x24/0x1b0 net/core/dev.c:5519
+ process_backlog+0x3a0/0x7c0 net/core/dev.c:5847
+ __napi_poll+0xb3/0x6e0 net/core/dev.c:6413
+ napi_poll net/core/dev.c:6480 [inline]
+ net_rx_action+0x8ec/0xc60 net/core/dev.c:6567
+ __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
+ invoke_softirq kernel/softirq.c:432 [inline]
+ __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
+ irq_exit_rcu+0x5/0x20 kernel/softirq.c:649
+ sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1097
+
+Fixes: 5b0b9e4c2c89 ("tcp: md5: incorrect tcp_header_len for incoming connections")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Francesco Ruggeri <fruggeri@arista.com>
+---
+ include/net/tcp.h     | 1 +
+ net/ipv4/syncookies.c | 8 +++++++-
+ net/ipv6/syncookies.c | 3 ++-
+ 3 files changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index be712fb9ddd71b2b320356677f3aa1c6759e2698..9987b3fba9f202632916cc439af9d17f1e68bcd3 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -480,6 +480,7 @@ int __cookie_v4_check(const struct iphdr *iph, const struct tcphdr *th,
+ 		      u32 cookie);
+ struct sock *cookie_v4_check(struct sock *sk, struct sk_buff *skb);
+ struct request_sock *cookie_tcp_reqsk_alloc(const struct request_sock_ops *ops,
++					    const struct tcp_request_sock_ops *af_ops,
+ 					    struct sock *sk, struct sk_buff *skb);
+ #ifdef CONFIG_SYN_COOKIES
+ 
+diff --git a/net/ipv4/syncookies.c b/net/ipv4/syncookies.c
+index 2cb3b852d14861231ac47f0b3e4daeb57682ffd2..f33c31dd7366c06a642bdc5954856efa9d8da0ac 100644
+--- a/net/ipv4/syncookies.c
++++ b/net/ipv4/syncookies.c
+@@ -281,6 +281,7 @@ bool cookie_ecn_ok(const struct tcp_options_received *tcp_opt,
+ EXPORT_SYMBOL(cookie_ecn_ok);
+ 
+ struct request_sock *cookie_tcp_reqsk_alloc(const struct request_sock_ops *ops,
++					    const struct tcp_request_sock_ops *af_ops,
+ 					    struct sock *sk,
+ 					    struct sk_buff *skb)
+ {
+@@ -297,6 +298,10 @@ struct request_sock *cookie_tcp_reqsk_alloc(const struct request_sock_ops *ops,
+ 		return NULL;
+ 
+ 	treq = tcp_rsk(req);
++
++	/* treq->af_specific might be used to perform TCP_MD5 lookup */
++	treq->af_specific = af_ops;
++
+ 	treq->syn_tos = TCP_SKB_CB(skb)->ip_dsfield;
+ #if IS_ENABLED(CONFIG_MPTCP)
+ 	treq->is_mptcp = sk_is_mptcp(sk);
+@@ -364,7 +369,8 @@ struct sock *cookie_v4_check(struct sock *sk, struct sk_buff *skb)
+ 		goto out;
+ 
+ 	ret = NULL;
+-	req = cookie_tcp_reqsk_alloc(&tcp_request_sock_ops, sk, skb);
++	req = cookie_tcp_reqsk_alloc(&tcp_request_sock_ops,
++				     &tcp_request_sock_ipv4_ops, sk, skb);
+ 	if (!req)
+ 		goto out;
+ 
+diff --git a/net/ipv6/syncookies.c b/net/ipv6/syncookies.c
+index d1b61d00368e1f58725e9997f74a0b144901277e..9cc123f000fbcfbeff7728bfee5339d6dd6470f9 100644
+--- a/net/ipv6/syncookies.c
++++ b/net/ipv6/syncookies.c
+@@ -170,7 +170,8 @@ struct sock *cookie_v6_check(struct sock *sk, struct sk_buff *skb)
+ 		goto out;
+ 
+ 	ret = NULL;
+-	req = cookie_tcp_reqsk_alloc(&tcp6_request_sock_ops, sk, skb);
++	req = cookie_tcp_reqsk_alloc(&tcp6_request_sock_ops,
++				     &tcp_request_sock_ipv6_ops, sk, skb);
+ 	if (!req)
+ 		goto out;
+ 
+-- 
+2.36.0.rc2.479.g8af0fa9b8e-goog
 
