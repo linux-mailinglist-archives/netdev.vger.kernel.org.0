@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B3E350D2B8
-	for <lists+netdev@lfdr.de>; Sun, 24 Apr 2022 17:35:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F14E50D2BF
+	for <lists+netdev@lfdr.de>; Sun, 24 Apr 2022 17:35:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232486AbiDXPhT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Apr 2022 11:37:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36910 "EHLO
+        id S233212AbiDXPht (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Apr 2022 11:37:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240454AbiDXPbY (ORCPT
+        with ESMTP id S240452AbiDXPbY (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 11:31:24 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5CBA171C08;
-        Sun, 24 Apr 2022 08:28:21 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KmX8m3tPzzhYWy;
-        Sun, 24 Apr 2022 23:28:08 +0800 (CST)
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F4F6170E3F;
+        Sun, 24 Apr 2022 08:28:23 -0700 (PDT)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KmX615WTxzGp53;
+        Sun, 24 Apr 2022 23:25:45 +0800 (CST)
 Received: from huawei.com (10.67.174.197) by kwepemi500013.china.huawei.com
  (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sun, 24 Apr
- 2022 23:28:18 +0800
+ 2022 23:28:19 +0800
 From:   Xu Kuohai <xukuohai@huawei.com>
 To:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
@@ -57,9 +57,9 @@ CC:     Catalin Marinas <catalin.marinas@arm.com>,
         Mark Brown <broonie@kernel.org>,
         Delyan Kratunov <delyank@fb.com>,
         Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Subject: [PATCH bpf-next v3 3/7] bpf: Move is_valid_bpf_tramp_flags() to the public trampoline code
-Date:   Sun, 24 Apr 2022 11:40:24 -0400
-Message-ID: <20220424154028.1698685-4-xukuohai@huawei.com>
+Subject: [PATCH bpf-next v3 4/7] bpf, arm64: Impelment bpf_arch_text_poke() for arm64
+Date:   Sun, 24 Apr 2022 11:40:25 -0400
+Message-ID: <20220424154028.1698685-5-xukuohai@huawei.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220424154028.1698685-1-xukuohai@huawei.com>
 References: <20220424154028.1698685-1-xukuohai@huawei.com>
@@ -78,139 +78,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-is_valid_bpf_tramp_flags() is not relevant to architecture, so move it
-to the public trampoline code.
+Impelment bpf_arch_text_poke() for arm64, so bpf trampoline code can use
+it to replace nop with jump, or replace jump with nop.
 
 Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
 Acked-by: Song Liu <songliubraving@fb.com>
 ---
- arch/x86/net/bpf_jit_comp.c | 20 --------------------
- include/linux/bpf.h         |  5 +++++
- kernel/bpf/bpf_struct_ops.c |  4 ++--
- kernel/bpf/trampoline.c     | 34 +++++++++++++++++++++++++++++++---
- 4 files changed, 38 insertions(+), 25 deletions(-)
+ arch/arm64/net/bpf_jit_comp.c | 63 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 63 insertions(+)
 
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index 8fe35ed11fd6..774f05f92737 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -1900,23 +1900,6 @@ static int invoke_bpf_mod_ret(const struct btf_func_model *m, u8 **pprog,
- 	return 0;
+diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
+index 8ab4035dea27..3f9bdfec54c4 100644
+--- a/arch/arm64/net/bpf_jit_comp.c
++++ b/arch/arm64/net/bpf_jit_comp.c
+@@ -9,6 +9,7 @@
+ 
+ #include <linux/bitfield.h>
+ #include <linux/bpf.h>
++#include <linux/memory.h>
+ #include <linux/filter.h>
+ #include <linux/printk.h>
+ #include <linux/slab.h>
+@@ -18,6 +19,7 @@
+ #include <asm/cacheflush.h>
+ #include <asm/debug-monitors.h>
+ #include <asm/insn.h>
++#include <asm/patching.h>
+ #include <asm/set_memory.h>
+ 
+ #include "bpf_jit.h"
+@@ -1529,3 +1531,64 @@ void bpf_jit_free_exec(void *addr)
+ {
+ 	return vfree(addr);
  }
- 
--static bool is_valid_bpf_tramp_flags(unsigned int flags)
--{
--	if ((flags & BPF_TRAMP_F_RESTORE_REGS) &&
--	    (flags & BPF_TRAMP_F_SKIP_FRAME))
--		return false;
--
--	/*
--	 * BPF_TRAMP_F_RET_FENTRY_RET is only used by bpf_struct_ops,
--	 * and it must be used alone.
--	 */
--	if ((flags & BPF_TRAMP_F_RET_FENTRY_RET) &&
--	    (flags & ~BPF_TRAMP_F_RET_FENTRY_RET))
--		return false;
--
--	return true;
--}
--
- /* Example:
-  * __be16 eth_type_trans(struct sk_buff *skb, struct net_device *dev);
-  * its 'struct btf_func_model' will be nr_args=2
-@@ -1995,9 +1978,6 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
- 	if (nr_args > 6)
- 		return -ENOTSUPP;
- 
--	if (!is_valid_bpf_tramp_flags(flags))
--		return -EINVAL;
--
- 	/* Generated trampoline stack layout:
- 	 *
- 	 * RBP + 8         [ return address  ]
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 7bf441563ffc..90f878de2842 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -706,6 +706,11 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *tr, void *image, void *i
- 				const struct btf_func_model *m, u32 flags,
- 				struct bpf_tramp_progs *tprogs,
- 				void *orig_call);
-+int bpf_prepare_trampoline(struct bpf_tramp_image *tr, void *image, void *image_end,
-+			   const struct btf_func_model *m, u32 flags,
-+			   struct bpf_tramp_progs *tprogs,
-+			   void *orig_call);
 +
- /* these two functions are called from generated trampoline */
- u64 notrace __bpf_prog_enter(struct bpf_prog *prog);
- void notrace __bpf_prog_exit(struct bpf_prog *prog, u64 start);
-diff --git a/kernel/bpf/bpf_struct_ops.c b/kernel/bpf/bpf_struct_ops.c
-index de01d37c2d3b..3248dd86783a 100644
---- a/kernel/bpf/bpf_struct_ops.c
-+++ b/kernel/bpf/bpf_struct_ops.c
-@@ -325,8 +325,8 @@ int bpf_struct_ops_prepare_trampoline(struct bpf_tramp_progs *tprogs,
- 	tprogs[BPF_TRAMP_FENTRY].progs[0] = prog;
- 	tprogs[BPF_TRAMP_FENTRY].nr_progs = 1;
- 	flags = model->ret_size > 0 ? BPF_TRAMP_F_RET_FENTRY_RET : 0;
--	return arch_prepare_bpf_trampoline(NULL, image, image_end,
--					   model, flags, tprogs, NULL);
-+	return bpf_prepare_trampoline(NULL, image, image_end, model, flags,
-+				      tprogs, NULL);
- }
- 
- static int bpf_struct_ops_map_update_elem(struct bpf_map *map, void *key,
-diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
-index ada97751ae1b..00e6ad80fed2 100644
---- a/kernel/bpf/trampoline.c
-+++ b/kernel/bpf/trampoline.c
-@@ -360,9 +360,9 @@ static int bpf_trampoline_update(struct bpf_trampoline *tr)
- 	if (ip_arg)
- 		flags |= BPF_TRAMP_F_IP_ARG;
- 
--	err = arch_prepare_bpf_trampoline(im, im->image, im->image + PAGE_SIZE,
--					  &tr->func.model, flags, tprogs,
--					  tr->func.addr);
-+	err = bpf_prepare_trampoline(im, im->image, im->image + PAGE_SIZE,
-+				     &tr->func.model, flags, tprogs,
-+				     tr->func.addr);
- 	if (err < 0)
- 		goto out;
- 
-@@ -641,6 +641,34 @@ arch_prepare_bpf_trampoline(struct bpf_tramp_image *tr, void *image, void *image
- 	return -ENOTSUPP;
- }
- 
-+static bool is_valid_bpf_tramp_flags(unsigned int flags)
++static int gen_branch_or_nop(enum aarch64_insn_branch_type type, void *ip,
++			     void *addr, u32 *insn)
 +{
-+	if ((flags & BPF_TRAMP_F_RESTORE_REGS) &&
-+	    (flags & BPF_TRAMP_F_SKIP_FRAME))
-+		return false;
++	if (!addr)
++		*insn = aarch64_insn_gen_nop();
++	else
++		*insn = aarch64_insn_gen_branch_imm((unsigned long)ip,
++						    (unsigned long)addr,
++						    type);
 +
-+	/* BPF_TRAMP_F_RET_FENTRY_RET is only used by bpf_struct_ops,
-+	 * and it must be used alone.
-+	 */
-+	if ((flags & BPF_TRAMP_F_RET_FENTRY_RET) &&
-+	    (flags & ~BPF_TRAMP_F_RET_FENTRY_RET))
-+		return false;
-+
-+	return true;
++	return *insn != AARCH64_BREAK_FAULT ? 0 : -EFAULT;
 +}
 +
-+int bpf_prepare_trampoline(struct bpf_tramp_image *tr, void *image,
-+			   void *image_end, const struct btf_func_model *m,
-+			   u32 flags, struct bpf_tramp_progs *tprogs,
-+			   void *orig_call)
++int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type poke_type,
++		       void *old_addr, void *new_addr)
 +{
-+	if (!is_valid_bpf_tramp_flags(flags))
++	int ret;
++	u32 old_insn;
++	u32 new_insn;
++	u32 replaced;
++	enum aarch64_insn_branch_type branch_type;
++
++	if (!is_bpf_text_address((long)ip))
++		/* Only poking bpf text is supported. Since kernel function
++		 * entry is set up by ftrace, we reply on ftrace to poke kernel
++		 * functions. For kernel funcitons, bpf_arch_text_poke() is only
++		 * called after a failed poke with ftrace. In this case, there
++		 * is probably something wrong with fentry, so there is nothing
++		 * we can do here. See register_fentry, unregister_fentry and
++		 * modify_fentry for details.
++		 */
 +		return -EINVAL;
 +
-+	return arch_prepare_bpf_trampoline(tr, image, image_end, m, flags,
-+					   tprogs, orig_call);
-+}
++	if (poke_type == BPF_MOD_CALL)
++		branch_type = AARCH64_INSN_BRANCH_LINK;
++	else
++		branch_type = AARCH64_INSN_BRANCH_NOLINK;
 +
- static int __init init_trampolines(void)
- {
- 	int i;
++	if (gen_branch_or_nop(branch_type, ip, old_addr, &old_insn) < 0)
++		return -EFAULT;
++
++	if (gen_branch_or_nop(branch_type, ip, new_addr, &new_insn) < 0)
++		return -EFAULT;
++
++	mutex_lock(&text_mutex);
++	if (aarch64_insn_read(ip, &replaced)) {
++		ret = -EFAULT;
++		goto out;
++	}
++
++	if (replaced != old_insn) {
++		ret = -EFAULT;
++		goto out;
++	}
++
++	ret = aarch64_insn_patch_text_nosync((void *)ip, new_insn);
++out:
++	mutex_unlock(&text_mutex);
++	return ret;
++}
 -- 
 2.30.2
 
