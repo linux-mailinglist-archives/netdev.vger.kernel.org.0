@@ -2,58 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D85E50E075
-	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 14:36:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC38A50E07B
+	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 14:37:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233066AbiDYMjS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Apr 2022 08:39:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53852 "EHLO
+        id S241850AbiDYMkZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Apr 2022 08:40:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241195AbiDYMjO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 08:39:14 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32E7E78922;
-        Mon, 25 Apr 2022 05:36:08 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id w1so25896299lfa.4;
-        Mon, 25 Apr 2022 05:36:08 -0700 (PDT)
+        with ESMTP id S230153AbiDYMkX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 08:40:23 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B88C7523A;
+        Mon, 25 Apr 2022 05:37:20 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id x17so25909053lfa.10;
+        Mon, 25 Apr 2022 05:37:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=sw2r07tUzNeTjJz+RXy2LYwDHQp+ixSu7Pi6iHkG9jo=;
-        b=UOPv8yd4pd9blsfxCve7mkXRTIBwk901U8Z9vMT/nDNlytqwVAZm84fWln35pioioC
-         xqRFtQOcJtkVzLjqqJwf89tEKbAQF2ZOfDa/V7vUeLtXZ1Sh3b4R2rRGggB5NA1EsP3F
-         Q2NxIow6Z6GHZcBT8N7GY8ZKzlg1nK5uE5iUUKjLy2hlbLC8rn9NW1E2C04o+jzcyhmy
-         HrFcCppuj023GByYRMBW8GyVF1ZdlMKQXLAwZqCRyeS/uXNE5fUoxVbERtHPS/iYkR5a
-         5ZL2So/UIXv27V0H0G0e1xmVrb7bY02KNWeD69mosjIzV2krzSa5hJVZ4ve6cKju31WK
-         9LfQ==
+        bh=5olLS3ZJ99CLe4NAf+jzCADAttCs9uSn/beSzLiCEm0=;
+        b=kICmZBJ0a+2D4Ariynhu2BaTDqRMGB5pOeYi8EAOznoJokZ4e2HGRZj0gzzTTWJ3G5
+         mCtt0EkbIX9SPcggnqs/OdvAX6di3z/jBfLxPExt4O8R80JuHjdN4+EDkx7dpndMYite
+         1XKueOHi7tzuXYcUPB+BStPEO8FzlQI1Nm2VirHM1WkMHB8K8eAa6uXDJkEpLTOTpukB
+         aFWEYTegV88CyOAXpPw4iC/tPT6JEMoSyWTa9Py6q+TGHFHseOZ2O6zvEMEjEdyLJ3bq
+         iU4HtpWAETj3PNiYY0UGDilaEWzXWdBQBbZCp2Q7RVHWdL1OmaHzxuCloAdiAncwFVuq
+         iV0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=sw2r07tUzNeTjJz+RXy2LYwDHQp+ixSu7Pi6iHkG9jo=;
-        b=pK+jwRncJ1lXY872PFoLoakVlmkwC4RCEuHbxxMRG3Ll/NHcOB2FAB2Sq1fRjNwg4k
-         Vr4dJNzjpk49gHOOW9UmnwOTQ5y3/oSLAOzdrX6fjce2tysdSVNtSsqgPbXRfz60q6rD
-         FofMbRgWbsEbaJCvSnj3pUN6uIxB8Ra2faFJUzzArcos7UpJ7Nuekj9hoKwufmQTW0Ce
-         asuUfwr0XYW717vel6bpaNhbzINrSbYpzOn4wseYdNInnwPon3ykNBmUQrUVaERxQEwP
-         To8SUrEJhgyqsihXvEcmiGPh2HDfgBNGVU2qqiX1l+luIi5TFikWsUpFGtADzryDmopq
-         5ESg==
-X-Gm-Message-State: AOAM530tYz3dd/JOaUlC5aJgJqyR2tM44IbKmn0Ra0oCA2M+q4aNv8Ri
-        sGx5NIm1a6T/KqMf32jz9wWReH2t9pVm+hG3dw4=
-X-Google-Smtp-Source: ABdhPJzavfbozblPzbAHoFS/GQBKeD4qlBoRzDs0KPF6gvI0LpJ/TMjdrY7LWmXv917Olwy8foN/5LwO1sLm9nvfSUQ=
-X-Received: by 2002:a05:6512:15a0:b0:472:d09:a6b4 with SMTP id
- bp32-20020a05651215a000b004720d09a6b4mr1824931lfb.656.1650890166402; Mon, 25
- Apr 2022 05:36:06 -0700 (PDT)
+        bh=5olLS3ZJ99CLe4NAf+jzCADAttCs9uSn/beSzLiCEm0=;
+        b=ID047I+qsSqn16TIAPkxUe8Tia1kvY21fnxZbByVJObvVeRHnYOLRYFJ8QXufmPY7t
+         6Y3TO/hB5AbxEgN54DP+VUFhinZoR3UPRfmJhuSBHrbnsGSpHEakbb0k2qMLCWP1+3ii
+         qXQsArkXbBKvoP3Er5RfKRseOR3BqJBpBnpaDVSuOWpT5b6iYlsgtjNMVdlmVo0k1uBI
+         ZVy+eVdI724r8+Bdnl1VAAzcoxdeTX5NmXlh27hm/lq92xa1PN6FSHq5FQgjrPa3AZY7
+         jIYhYfn95koBT6x7otWEcRgeEzDaIp3GDyoBEqsgfRu3JxnVsqhhklVOb6TJP1ylIOMb
+         IvdA==
+X-Gm-Message-State: AOAM530i6Z6iO/BwuT7LxRk8HoOqrwZj1BFaMb/IIC9uTrryge3RZS3G
+        SFxaLrrA/xQ9QmLuxR9NyPGYVqX04WxpMogwD4g=
+X-Google-Smtp-Source: ABdhPJy1MDsXwtESZTScv4F2HnxLQR/mVRHFKH1qUojnvhT8PWVewsxF0Wq4pERM2CFcQzeRIg58f09iaZETLZS4rgI=
+X-Received: by 2002:a05:6512:1085:b0:472:1013:aac7 with SMTP id
+ j5-20020a056512108500b004721013aac7mr844201lfg.463.1650890238444; Mon, 25 Apr
+ 2022 05:37:18 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220406153441.1667375-1-miquel.raynal@bootlin.com>
- <20220406153441.1667375-10-miquel.raynal@bootlin.com> <CAB_54W4epiqcATJhLB9JDZPKGZTj_jbmVwDHRZT9MxtXY6g-QA@mail.gmail.com>
- <20220407100646.049467af@xps13>
-In-Reply-To: <20220407100646.049467af@xps13>
+References: <20220407100903.1695973-1-miquel.raynal@bootlin.com>
+In-Reply-To: <20220407100903.1695973-1-miquel.raynal@bootlin.com>
 From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Mon, 25 Apr 2022 08:35:55 -0400
-Message-ID: <CAB_54W5ovb9=rWB-H9oZygWuQpLSG58XFtgniNn9eDh51BBQNw@mail.gmail.com>
-Subject: Re: [PATCH v5 09/11] net: ieee802154: atusb: Call _xmit_error() when
- a transmission fails
+Date:   Mon, 25 Apr 2022 08:37:07 -0400
+Message-ID: <CAB_54W4_oDrfNFLrRMnOBqE=yxTGh97OK94Fiip1FovbHNaKBQ@mail.gmail.com>
+Subject: Re: [PATCH v6 00/10] ieee802154: Better Tx error handling
 To:     Miquel Raynal <miquel.raynal@bootlin.com>
 Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
         linux-wpan - ML <linux-wpan@vger.kernel.org>,
@@ -78,62 +75,18 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi,
 
-On Thu, Apr 7, 2022 at 4:06 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+On Thu, Apr 7, 2022 at 6:09 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 >
-> Hi Alexander,
->
-> alex.aring@gmail.com wrote on Wed, 6 Apr 2022 17:58:59 -0400:
->
-> > Hi,
-> >
-> > On Wed, Apr 6, 2022 at 11:34 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> > >
-> > > ieee802154_xmit_error() is the right helper to call when a transmission
-> > > has failed. Let's use it instead of open-coding it.
-> > >
-> > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > > ---
-> > >  drivers/net/ieee802154/atusb.c | 5 ++---
-> > >  1 file changed, 2 insertions(+), 3 deletions(-)
-> > >
-> > > diff --git a/drivers/net/ieee802154/atusb.c b/drivers/net/ieee802154/atusb.c
-> > > index f27a5f535808..d04db4d07a64 100644
-> > > --- a/drivers/net/ieee802154/atusb.c
-> > > +++ b/drivers/net/ieee802154/atusb.c
-> > > @@ -271,9 +271,8 @@ static void atusb_tx_done(struct atusb *atusb, u8 seq)
-> > >                  * unlikely case now that seq == expect is then true, but can
-> > >                  * happen and fail with a tx_skb = NULL;
-> > >                  */
-> > > -               ieee802154_wake_queue(atusb->hw);
-> > > -               if (atusb->tx_skb)
-> > > -                       dev_kfree_skb_irq(atusb->tx_skb);
-> > > +               ieee802154_xmit_error(atusb->hw, atusb->tx_skb,
-> > > +                                     IEEE802154_SYSTEM_ERROR);
-> >
-> > That should then call the xmit_error for ANY other reason which is not
-> > 802.15.4 specific which is the bus_error() function?
->
-> I'll drop the bus error function so we can stick to a regular
-> _xmit_error() call.
+> The idea here is to provide a fully synchronous Tx API and also be able
+> to be sure that a transfer has finished. This will be used later by
+> another series. However, while working on this task, it appeared
+> necessary to first rework the way MLME errors were (not) propagated to
+> the upper layers. This small series tries to tackle exactly that, before
+> introducing the synchronous API.
 >
 
-Okay, this error is only hardware related.
+Acked-by: Alexander Aring <aahringo@redhat.com>
 
-> Besides, we do not have any trac information nor any easy access to
-> what failed exactly, so it's probably best anyway.
-
-This is correct, Somebody needs to write support for it for atusb firmware. [0]
-However some transceivers can't yet or will never (because lack of
-functionality?) report such errors back... they will act a little bit
-weird.
-
-However, this return value is a BIG step moving into the right
-direction that other drivers can follow.
-
-I think for MLME ops we can definitely handle some transmit errors now
-and retry so that we don't wait for anything when we know the
-transceiver was never submitting.
+Thanks!
 
 - Alex
-
-[0] http://projects.qi-hardware.com/index.php/p/ben-wpan/source/tree/master/atusb/fw
