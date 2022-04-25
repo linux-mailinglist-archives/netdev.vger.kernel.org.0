@@ -2,60 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B55D50DEA6
-	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 13:17:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89E5950DEB0
+	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 13:20:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235496AbiDYLUe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Apr 2022 07:20:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59358 "EHLO
+        id S240961AbiDYLXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Apr 2022 07:23:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234794AbiDYLUc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 07:20:32 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80FC5C7EB1
-        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 04:17:26 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1niwib-0002gW-0j; Mon, 25 Apr 2022 13:17:25 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1niwiY-0001Al-Jm; Mon, 25 Apr 2022 13:17:22 +0200
-Date:   Mon, 25 Apr 2022 13:17:22 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Oleksij Rempel <linux@rempel-privat.de>
-Subject: Re: [RFC Patch net-next] net: dsa: ksz9477: move get_stats64 to
- ksz_common.c
-Message-ID: <20220425111722.GA24511@pengutronix.de>
-References: <20220425105500.20899-1-arun.ramadoss@microchip.com>
+        with ESMTP id S240634AbiDYLXR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 07:23:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3712F10FE5;
+        Mon, 25 Apr 2022 04:20:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EAA05B815E0;
+        Mon, 25 Apr 2022 11:20:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 993EFC385B0;
+        Mon, 25 Apr 2022 11:20:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650885611;
+        bh=IWnp5D3ggL4CK4fq3CnzOL/qFZ1Ao6c6jqN5taxJZhw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=mPiNP8CEfBdezop6wxvtesDp+rbqX7KylNTLS9pTuVRvHdpmwoJMXVM/s/waXAxiV
+         bVmphxxqdDtN4rzUatbISTVd+TT/NU7V984g5T4oj1x8N81eGHCS0z41Ml3VGmzZYT
+         FHoPL5vLnFKcbfw08AiJA6JuR7HriyBet5ne1SdAY28PPvscCg4/G/Ipnm5ycywSz5
+         KB/pjR+EvgrI9lARx4WKM4e64LMfpviUhElTCzvQPRV/dY6mQBCSv2ULkFUCKctU6C
+         4VH5kAcSW3zLJAAKtLfBLl9aztOL3F92XnZvcUKGia8RyoZTDspogIRUonY77lVrGY
+         2k7OVVV901m4A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 81F6BEAC09C;
+        Mon, 25 Apr 2022 11:20:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220425105500.20899-1-arun.ramadoss@microchip.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 13:16:18 up 25 days, 23:45, 79 users,  load average: 0.12, 0.14,
- 0.16
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [net-next: PATCH] net: dsa: remove unused headers
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165088561152.26271.12190054127991995532.git-patchwork-notify@kernel.org>
+Date:   Mon, 25 Apr 2022 11:20:11 +0000
+References: <20220425101102.2811727-1-mw@semihalf.com>
+In-Reply-To: <20220425101102.2811727-1-mw@semihalf.com>
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        upstream@semihalf.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,276 +57,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 04:25:00PM +0530, Arun Ramadoss wrote:
-> The mib counters for the ksz9477 is same for the ksz9477 switch and
-> LAN937x switch. Hence moving it to ksz_common.c file in order to have it
-> generic function. The DSA hook get_stats64 now can call ksz_get_stats64.
+Hello:
+
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Mon, 25 Apr 2022 12:11:02 +0200 you wrote:
+> Reduce a number of included headers to a necessary minimum.
 > 
-> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-
-Looks ok for me.
-
-Reviewed-by: Oleksij Rempel <o.rempel@pengutronix.de>
-
-Thank you!
-
+> Signed-off-by: Marcin Wojtas <mw@semihalf.com>
 > ---
->  drivers/net/dsa/microchip/ksz9477.c    | 98 +-------------------------
->  drivers/net/dsa/microchip/ksz_common.c | 96 +++++++++++++++++++++++++
->  drivers/net/dsa/microchip/ksz_common.h |  3 +
->  3 files changed, 101 insertions(+), 96 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-> index 4f617fee9a4e..48c90e4cda30 100644
-> --- a/drivers/net/dsa/microchip/ksz9477.c
-> +++ b/drivers/net/dsa/microchip/ksz9477.c
-> @@ -65,100 +65,6 @@ static const struct {
->  	{ 0x83, "tx_discards" },
->  };
->  
-> -struct ksz9477_stats_raw {
-> -	u64 rx_hi;
-> -	u64 rx_undersize;
-> -	u64 rx_fragments;
-> -	u64 rx_oversize;
-> -	u64 rx_jabbers;
-> -	u64 rx_symbol_err;
-> -	u64 rx_crc_err;
-> -	u64 rx_align_err;
-> -	u64 rx_mac_ctrl;
-> -	u64 rx_pause;
-> -	u64 rx_bcast;
-> -	u64 rx_mcast;
-> -	u64 rx_ucast;
-> -	u64 rx_64_or_less;
-> -	u64 rx_65_127;
-> -	u64 rx_128_255;
-> -	u64 rx_256_511;
-> -	u64 rx_512_1023;
-> -	u64 rx_1024_1522;
-> -	u64 rx_1523_2000;
-> -	u64 rx_2001;
-> -	u64 tx_hi;
-> -	u64 tx_late_col;
-> -	u64 tx_pause;
-> -	u64 tx_bcast;
-> -	u64 tx_mcast;
-> -	u64 tx_ucast;
-> -	u64 tx_deferred;
-> -	u64 tx_total_col;
-> -	u64 tx_exc_col;
-> -	u64 tx_single_col;
-> -	u64 tx_mult_col;
-> -	u64 rx_total;
-> -	u64 tx_total;
-> -	u64 rx_discards;
-> -	u64 tx_discards;
-> -};
-> -
-> -static void ksz9477_r_mib_stats64(struct ksz_device *dev, int port)
-> -{
-> -	struct rtnl_link_stats64 *stats;
-> -	struct ksz9477_stats_raw *raw;
-> -	struct ksz_port_mib *mib;
-> -
-> -	mib = &dev->ports[port].mib;
-> -	stats = &mib->stats64;
-> -	raw = (struct ksz9477_stats_raw *)mib->counters;
-> -
-> -	spin_lock(&mib->stats64_lock);
-> -
-> -	stats->rx_packets = raw->rx_bcast + raw->rx_mcast + raw->rx_ucast;
-> -	stats->tx_packets = raw->tx_bcast + raw->tx_mcast + raw->tx_ucast;
-> -
-> -	/* HW counters are counting bytes + FCS which is not acceptable
-> -	 * for rtnl_link_stats64 interface
-> -	 */
-> -	stats->rx_bytes = raw->rx_total - stats->rx_packets * ETH_FCS_LEN;
-> -	stats->tx_bytes = raw->tx_total - stats->tx_packets * ETH_FCS_LEN;
-> -
-> -	stats->rx_length_errors = raw->rx_undersize + raw->rx_fragments +
-> -		raw->rx_oversize;
-> -
-> -	stats->rx_crc_errors = raw->rx_crc_err;
-> -	stats->rx_frame_errors = raw->rx_align_err;
-> -	stats->rx_dropped = raw->rx_discards;
-> -	stats->rx_errors = stats->rx_length_errors + stats->rx_crc_errors +
-> -		stats->rx_frame_errors  + stats->rx_dropped;
-> -
-> -	stats->tx_window_errors = raw->tx_late_col;
-> -	stats->tx_fifo_errors = raw->tx_discards;
-> -	stats->tx_aborted_errors = raw->tx_exc_col;
-> -	stats->tx_errors = stats->tx_window_errors + stats->tx_fifo_errors +
-> -		stats->tx_aborted_errors;
-> -
-> -	stats->multicast = raw->rx_mcast;
-> -	stats->collisions = raw->tx_total_col;
-> -
-> -	spin_unlock(&mib->stats64_lock);
-> -}
-> -
-> -static void ksz9477_get_stats64(struct dsa_switch *ds, int port,
-> -			       struct rtnl_link_stats64 *s)
-> -{
-> -	struct ksz_device *dev = ds->priv;
-> -	struct ksz_port_mib *mib;
-> -
-> -	mib = &dev->ports[port].mib;
-> -
-> -	spin_lock(&mib->stats64_lock);
-> -	memcpy(s, &mib->stats64, sizeof(*s));
-> -	spin_unlock(&mib->stats64_lock);
-> -}
-> -
->  static void ksz_cfg(struct ksz_device *dev, u32 addr, u8 bits, bool set)
->  {
->  	regmap_update_bits(dev->regmap[0], addr, bits, set ? bits : 0);
-> @@ -1462,7 +1368,7 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
->  	.port_mdb_del           = ksz9477_port_mdb_del,
->  	.port_mirror_add	= ksz9477_port_mirror_add,
->  	.port_mirror_del	= ksz9477_port_mirror_del,
-> -	.get_stats64		= ksz9477_get_stats64,
-> +	.get_stats64		= ksz_get_stats64,
->  	.port_change_mtu	= ksz9477_change_mtu,
->  	.port_max_mtu		= ksz9477_max_mtu,
->  };
-> @@ -1653,7 +1559,7 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
->  	.port_setup = ksz9477_port_setup,
->  	.r_mib_cnt = ksz9477_r_mib_cnt,
->  	.r_mib_pkt = ksz9477_r_mib_pkt,
-> -	.r_mib_stat64 = ksz9477_r_mib_stats64,
-> +	.r_mib_stat64 = ksz_r_mib_stats64,
->  	.freeze_mib = ksz9477_freeze_mib,
->  	.port_init_cnt = ksz9477_port_init_cnt,
->  	.shutdown = ksz9477_reset_switch,
-> diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-> index 9b9f570ebb0b..10f127b09e58 100644
-> --- a/drivers/net/dsa/microchip/ksz_common.c
-> +++ b/drivers/net/dsa/microchip/ksz_common.c
-> @@ -20,6 +20,102 @@
->  
->  #include "ksz_common.h"
->  
-> +struct ksz_stats_raw {
-> +	u64 rx_hi;
-> +	u64 rx_undersize;
-> +	u64 rx_fragments;
-> +	u64 rx_oversize;
-> +	u64 rx_jabbers;
-> +	u64 rx_symbol_err;
-> +	u64 rx_crc_err;
-> +	u64 rx_align_err;
-> +	u64 rx_mac_ctrl;
-> +	u64 rx_pause;
-> +	u64 rx_bcast;
-> +	u64 rx_mcast;
-> +	u64 rx_ucast;
-> +	u64 rx_64_or_less;
-> +	u64 rx_65_127;
-> +	u64 rx_128_255;
-> +	u64 rx_256_511;
-> +	u64 rx_512_1023;
-> +	u64 rx_1024_1522;
-> +	u64 rx_1523_2000;
-> +	u64 rx_2001;
-> +	u64 tx_hi;
-> +	u64 tx_late_col;
-> +	u64 tx_pause;
-> +	u64 tx_bcast;
-> +	u64 tx_mcast;
-> +	u64 tx_ucast;
-> +	u64 tx_deferred;
-> +	u64 tx_total_col;
-> +	u64 tx_exc_col;
-> +	u64 tx_single_col;
-> +	u64 tx_mult_col;
-> +	u64 rx_total;
-> +	u64 tx_total;
-> +	u64 rx_discards;
-> +	u64 tx_discards;
-> +};
-> +
-> +void ksz_r_mib_stats64(struct ksz_device *dev, int port)
-> +{
-> +	struct rtnl_link_stats64 *stats;
-> +	struct ksz_stats_raw *raw;
-> +	struct ksz_port_mib *mib;
-> +
-> +	mib = &dev->ports[port].mib;
-> +	stats = &mib->stats64;
-> +	raw = (struct ksz_stats_raw *)mib->counters;
-> +
-> +	spin_lock(&mib->stats64_lock);
-> +
-> +	stats->rx_packets = raw->rx_bcast + raw->rx_mcast + raw->rx_ucast;
-> +	stats->tx_packets = raw->tx_bcast + raw->tx_mcast + raw->tx_ucast;
-> +
-> +	/* HW counters are counting bytes + FCS which is not acceptable
-> +	 * for rtnl_link_stats64 interface
-> +	 */
-> +	stats->rx_bytes = raw->rx_total - stats->rx_packets * ETH_FCS_LEN;
-> +	stats->tx_bytes = raw->tx_total - stats->tx_packets * ETH_FCS_LEN;
-> +
-> +	stats->rx_length_errors = raw->rx_undersize + raw->rx_fragments +
-> +		raw->rx_oversize;
-> +
-> +	stats->rx_crc_errors = raw->rx_crc_err;
-> +	stats->rx_frame_errors = raw->rx_align_err;
-> +	stats->rx_dropped = raw->rx_discards;
-> +	stats->rx_errors = stats->rx_length_errors + stats->rx_crc_errors +
-> +		stats->rx_frame_errors  + stats->rx_dropped;
-> +
-> +	stats->tx_window_errors = raw->tx_late_col;
-> +	stats->tx_fifo_errors = raw->tx_discards;
-> +	stats->tx_aborted_errors = raw->tx_exc_col;
-> +	stats->tx_errors = stats->tx_window_errors + stats->tx_fifo_errors +
-> +		stats->tx_aborted_errors;
-> +
-> +	stats->multicast = raw->rx_mcast;
-> +	stats->collisions = raw->tx_total_col;
-> +
-> +	spin_unlock(&mib->stats64_lock);
-> +}
-> +EXPORT_SYMBOL_GPL(ksz_r_mib_stats64);
-> +
-> +void ksz_get_stats64(struct dsa_switch *ds, int port,
-> +		     struct rtnl_link_stats64 *s)
-> +{
-> +	struct ksz_device *dev = ds->priv;
-> +	struct ksz_port_mib *mib;
-> +
-> +	mib = &dev->ports[port].mib;
-> +
-> +	spin_lock(&mib->stats64_lock);
-> +	memcpy(s, &mib->stats64, sizeof(*s));
-> +	spin_unlock(&mib->stats64_lock);
-> +}
-> +EXPORT_SYMBOL_GPL(ksz_get_stats64);
-> +
->  void ksz_update_port_member(struct ksz_device *dev, int port)
->  {
->  	struct ksz_port *p = &dev->ports[port];
-> diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-> index 4d978832c448..28cda79b090f 100644
-> --- a/drivers/net/dsa/microchip/ksz_common.h
-> +++ b/drivers/net/dsa/microchip/ksz_common.h
-> @@ -151,6 +151,9 @@ int ksz9477_switch_register(struct ksz_device *dev);
->  
->  void ksz_update_port_member(struct ksz_device *dev, int port);
->  void ksz_init_mib_timer(struct ksz_device *dev);
-> +void ksz_r_mib_stats64(struct ksz_device *dev, int port);
-> +void ksz_get_stats64(struct dsa_switch *ds, int port,
-> +		     struct rtnl_link_stats64 *s);
->  
->  /* Common DSA access functions */
->  
-> -- 
-> 2.33.0
-> 
-> 
+>  net/dsa/dsa.c | 9 ---------
+>  1 file changed, 9 deletions(-)
 
+Here is the summary with links:
+  - [net-next:] net: dsa: remove unused headers
+    https://git.kernel.org/netdev/net-next/c/df1cc21152ff
+
+You are awesome, thank you!
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
