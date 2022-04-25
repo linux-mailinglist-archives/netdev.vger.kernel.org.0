@@ -2,89 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BF1950DCC1
-	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 11:33:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8C0B50DD17
+	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 11:47:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235705AbiDYJgG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Apr 2022 05:36:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60202 "EHLO
+        id S237334AbiDYJuh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Apr 2022 05:50:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238867AbiDYJfg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 05:35:36 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E0D92A70D
-        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 02:31:15 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id y21so10743181edo.2
-        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 02:31:15 -0700 (PDT)
+        with ESMTP id S233456AbiDYJug (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 05:50:36 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED3941EAD2
+        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 02:47:32 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id y32so25160873lfa.6
+        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 02:47:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=nirpyaTem0CCyti3Ed23Gi64nDycJ865Scn/83+OJG4=;
-        b=71eTuaEaGYLf/4VGscVA09YYisZoz7IIHJ/db8Hs8Y51jregdajtSL9nncZduxKW2A
-         ZfIyJnZ4PQ8QbCf+dTzJcuy2fCPOf4okJj+EnJz8zZiNdXeJVsQJ4nml5+gtYzaojGNu
-         DzCtGutYPF8fcW9UPZNlC9qy7QpGQqHmDg+AsBBUWrl+xWPohuN7Kxg+eCdqlIUXvTKR
-         QyNPRyVkHlCOVfOYK5lukVO5m3VJaRrPAysBraC0dQaMg2rdJukhDyd9DORNfH5sJP/V
-         LSBuqrYq02J5QaDTswWXm0HKt9XGv13oSs0CJY/I8pGSnc6hVzYA13gKxUDP0Qbczbuu
-         yChg==
+        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=12bowfPFjwbARfkmx2Lj5itOqm+ynirWNW7FVK7hniI=;
+        b=5Y/fV5bOlbqRIvTU4g3XwwujxodwP2tMuGQVgD3u9elIt0TqXiF3oqa2mnik0Zttdv
+         aZgti99zrcwqy5e5Rj8utsjOykGuZWcnGWUrOSpy8c3p8YglUEPqr3RNargC3rJORTGi
+         3zKlaYJRyQ73MRrEh+CyKy95nlxz4ZNMPMKTpon/cFPkrdAoNUdRcdR5c+z/L5EuNNOT
+         /tJHgEGq+rOfjKdbyUcHmJxPRNvDNN8hSYn8EMO1Jw+5sXJN0AIJF4Gu0RYN0sJFeCTj
+         eBVctoXecac1j5xLhvRoUSJFEilk5G6gtmWPJ2fI5TUwXV31oZRma1qkCvhy2GNAuaX9
+         2o/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=nirpyaTem0CCyti3Ed23Gi64nDycJ865Scn/83+OJG4=;
-        b=vHQwPpadAA8uSdM3GI7T+kQxrNayFBPkkfPlZOJki4wA0y3TAdj5FPIknFU6dvu+0c
-         HNcebFOKtz138UxiwZCoqZvvK9nJangZM1Kt+mXFmh3lnEvkntU7M9gNQ0UWmS98WzPR
-         yohHHYArYGcKQiRreU8oiQLCyDt2zj+vIiraBK3nHWbr6DbbARBMEkUfgd9LEGOLuwty
-         Miep6D6U3khS0PmrLoppjPuccXGpSo1OUMBdLIQuvccQl3xnrlIULtRCE+Q6w/ts3V7P
-         mCZ3v385c4QZgCXq+TU6Mh7kTnojfMEBgjtKGINrcIFW454yiH4H9CT2+qJiCf1awhob
-         HHsg==
-X-Gm-Message-State: AOAM530vMsuQ8SwLjyG0eet3DGted44QGICgpIWq+x8i37BZxcLjkYqh
-        xmUVz6m+ntZF8ZifsgJxTa9BbQ==
-X-Google-Smtp-Source: ABdhPJzOjEHkWbUtnBm9lput7nv1C0Z8PORHBO/C6VCMfWfl7p2wUznbcA54FMNohq400KXT8/IWuA==
-X-Received: by 2002:aa7:cac8:0:b0:410:cc6c:6512 with SMTP id l8-20020aa7cac8000000b00410cc6c6512mr17764816edt.408.1650879073700;
-        Mon, 25 Apr 2022 02:31:13 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id x19-20020a05640226d300b004228faf83desm4514207edd.12.2022.04.25.02.31.12
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=12bowfPFjwbARfkmx2Lj5itOqm+ynirWNW7FVK7hniI=;
+        b=4rtn8oQ7LGp+fkXCRpdtp/htXmKv+dY9DTbv+g725U6MVPS0uqnSMT1eCzYYHcw9YO
+         399LEWFj8KIKCip5H0CaSBYRq2jV/atpcyl2ABuctgWc6aBLxAnkKuHAqaW1B4UJLHnF
+         XVU5o8KkKUCC8lCHlkI6CY7za44DFoZE0iIr1NUZt32r7SwI1FPTHj3JKg5RcKUz0EKG
+         hl6jImoIR1eqflsCQpurVH8gCE6gOAbmuYqD91oFd1FmHddGZRa6EhnEHLaEFW1FWPPb
+         /8LZo10+Tv3tW5dvNlbdD0rYHpxP8fMEA+iOEYk+7xrg4chrRS9hi/i0gzMWt0qgDULF
+         rMRA==
+X-Gm-Message-State: AOAM5335mThJwypwJuDbXBxWK2nUmVO4vOQ9v2QhVyxgYv3UBtx0KwMt
+        bxQILQ4pEj18MaZbVmOfHeIRBA==
+X-Google-Smtp-Source: ABdhPJy+BLf37kTsRJOVJ6zYJPX/6I9IDvT8ExiG0JHseh4nu7wY5hSvs12AUI/r1ijSFGAv0aJqRA==
+X-Received: by 2002:a05:6512:1083:b0:472:1013:aad1 with SMTP id j3-20020a056512108300b004721013aad1mr339738lfg.52.1650880051163;
+        Mon, 25 Apr 2022 02:47:31 -0700 (PDT)
+Received: from gilgamesh.lab.semihalf.net ([83.142.187.85])
+        by smtp.gmail.com with ESMTPSA id o6-20020ac25b86000000b0047204edfedcsm458336lfn.138.2022.04.25.02.47.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 02:31:13 -0700 (PDT)
-Date:   Mon, 25 Apr 2022 11:31:11 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Shannon Nelson <snelson@pensando.io>, netdev@vger.kernel.org,
-        sthemmin@microsoft.com
-Subject: Re: [patch iproute2-next] devlink: introduce -h[ex] cmdline option
- to allow dumping numbers in hex format
-Message-ID: <YmZqX4adcw55qSb0@nanopsycho>
-References: <20220419171637.1147925-1-jiri@resnulli.us>
- <56b4d3e4-0274-10d8-0746-954750eac085@pensando.io>
- <b386dcb4-6c1e-c615-f737-e2bb3026b976@gmail.com>
+        Mon, 25 Apr 2022 02:47:30 -0700 (PDT)
+From:   Marcin Wojtas <mw@semihalf.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        upstream@semihalf.com, Marcin Wojtas <mw@semihalf.com>
+Subject: [net: PATCH] net: dsa: add missing refcount decrementation
+Date:   Mon, 25 Apr 2022 11:47:08 +0200
+Message-Id: <20220425094708.2769275-1-mw@semihalf.com>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <b386dcb4-6c1e-c615-f737-e2bb3026b976@gmail.com>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sat, Apr 23, 2022 at 02:20:06AM CEST, dsahern@gmail.com wrote:
->On 4/22/22 3:36 PM, Shannon Nelson wrote:
->>> @@ -9053,6 +9056,7 @@ int main(int argc, char **argv)
->>>           { "statistics",        no_argument,        NULL, 's' },
->>>           { "Netns",        required_argument,    NULL, 'N' },
->>>           { "iec",        no_argument,        NULL, 'i' },
->>> +        { "hex",        no_argument,        NULL, 'h' },
->> 
->> Can we use 'x' instead of 'h' here?  Most times '-h' means 'help', and
->> might surprise unsuspecting users when it isn't a help flag.
->> 
->
->agreed. -h almost always means help
+After obtaining the "phy-handle" node, decrementing
+refcount is required. Fix that.
 
-Changed in v2.
+Fixes: a20f997010c4 ("net: dsa: Don't instantiate phylink for CPU/DSA ports unless needed")
+Signed-off-by: Marcin Wojtas <mw@semihalf.com>
+---
+ net/dsa/port.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index 32d472a82241..cdc56ba11f52 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -1620,8 +1620,10 @@ int dsa_port_link_register_of(struct dsa_port *dp)
+ 			if (ds->ops->phylink_mac_link_down)
+ 				ds->ops->phylink_mac_link_down(ds, port,
+ 					MLO_AN_FIXED, PHY_INTERFACE_MODE_NA);
++			of_node_put(phy_np);
+ 			return dsa_port_phylink_register(dp);
+ 		}
++		of_node_put(phy_np);
+ 		return 0;
+ 	}
+ 
+-- 
+2.29.0
+
