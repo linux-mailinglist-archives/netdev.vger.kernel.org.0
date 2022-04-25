@@ -2,145 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0979650DB4A
-	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 10:36:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E197950DB5B
+	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 10:38:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234314AbiDYIiC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Apr 2022 04:38:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60748 "EHLO
+        id S236360AbiDYIlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Apr 2022 04:41:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231818AbiDYIhy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 04:37:54 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E80562A18;
-        Mon, 25 Apr 2022 01:34:50 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id j2so25778740ybu.0;
-        Mon, 25 Apr 2022 01:34:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sMct1g7Ft5UceXrNYXqhHIPwAR2NJ5Bl6cV1qu2HA+s=;
-        b=pawqGCb62CA9LZy9KYSWQr+wNtuNsvOMTzJj04AtcEKjab7zDneGzZoEhQ5tLP5+mh
-         SXoPJUr9yxbnYUesH6qGtXzF9J3hmcJkTOO5pxjH9ea0J72HG/mVuYudCVJZU7Fw/BGJ
-         S47M3gBlxYGdTPHHGZAAkC/PzdFl1s5n+RoZKbau278vsOoR9DDYr1bYl5YxtxDw1VZ7
-         4ZSfgzhuc0ckgTlTQGgp0IP0adicTfsfZc3i15EF5Gvcm3GxuGCxdQowdUbdhnq/TxPw
-         ZVWUnD7gWLLFNWJAk8JKAcjOWGD+zlprXEpd4wtIJ6EX9bKAL0/0g4J6in6cmLuVQq9H
-         i+Pw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sMct1g7Ft5UceXrNYXqhHIPwAR2NJ5Bl6cV1qu2HA+s=;
-        b=3uzSIefSwv3bx7pZiBEjNhUdd04Q8+zP+rSpKUilg1sJJNjap+55qnZKB2DWRU0O8I
-         s6dDp3dsLa4LptVcc7+xvLYviIflWqRDzsrZ+rqIy9/l2v2It/40h1XvdE4Wan/HwyiA
-         CepTxqXqqAzDM/rhNoaitoLwosGvT8aFGBid+/F+aP4WeR2myM59kbh3nwVpf+X924xu
-         ksuXZhIYteOT7WUjaVW2GsTfTL1nGiIQhDiXQ0Ll8XySg9v/uVFZqFGsg2ggqfxqK3J1
-         A02dPtrQgJtAAQFHy6XIfScOWkLzkbD5yGL72VIGT46rKjCc11nmEG01JXXKjD4bQqOi
-         fKXg==
-X-Gm-Message-State: AOAM533hVixSNL6irFPRXB7RnVMw0i/TTKoVcUybgPUdJNiWnkQh/i2B
-        J8yOQO9/OqTMQujxYXXSPU982pWaUCQqGgghu4j9+hAyzJIiLA==
-X-Google-Smtp-Source: ABdhPJwoU8fVXjAPFACL8qCTQui91owZ7n7IXVAQf6AOGhmSA/9tyl3xVm1SoRuOcqKI1C+RQSY9qsuj6BAFTlaaW+I=
-X-Received: by 2002:a25:e705:0:b0:645:781a:f870 with SMTP id
- e5-20020a25e705000000b00645781af870mr14561812ybh.630.1650875689469; Mon, 25
- Apr 2022 01:34:49 -0700 (PDT)
+        with ESMTP id S236284AbiDYIlX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 04:41:23 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD3F06D4D5;
+        Mon, 25 Apr 2022 01:38:20 -0700 (PDT)
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23P7M6cE002305;
+        Mon, 25 Apr 2022 08:38:20 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=mXQw9yJibjU1LOUw/Nwttj2XAYMW9xCb91lhW+5mnS4=;
+ b=oQgDq8GPdYWc8jve/dB+rDxuDx3g93Me/f8JEDVKRHF59pYJcfomFzladwjw9pnhedWH
+ 7/kLqHqudTPKwh4LZWQCv5TUsEsnUJzWIxVoNHXp64FdtZdk+BEI/+Tvuo2tLjjh9FOg
+ CwsteKrNZcQPnyimMXPQ6+BHV1IZJ1SFMbwG4fAujh83xuDL4daWiiEOCiCkDM79AL97
+ 7hJz1BQa8D3lbwo+N1dZJivRoEsQd0g2HSHinkAb9aTB65TatzFrbVqAyTeng4hIdPt/
+ ZurnEMm6l2Bx+CuHmYJ8eCuUvPdvgIsBnnhv40I7VcZKAd49dOKfWbJryG32UuPdT1N9 6Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fmu3k44c7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 25 Apr 2022 08:38:19 +0000
+Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23P8NmgZ005178;
+        Mon, 25 Apr 2022 08:38:19 GMT
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fmu3k44b7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 25 Apr 2022 08:38:18 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23P8ZLEC019335;
+        Mon, 25 Apr 2022 08:38:17 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma01fra.de.ibm.com with ESMTP id 3fm938sp74-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 25 Apr 2022 08:38:16 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23P8cQXv6881846
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 25 Apr 2022 08:38:26 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D43FB52050;
+        Mon, 25 Apr 2022 08:38:13 +0000 (GMT)
+Received: from [9.145.148.76] (unknown [9.145.148.76])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 6067F5204E;
+        Mon, 25 Apr 2022 08:38:13 +0000 (GMT)
+Message-ID: <3572a765-17b4-b2df-e3d5-0d30485c4c67@linux.ibm.com>
+Date:   Mon, 25 Apr 2022 10:38:12 +0200
 MIME-Version: 1.0
-References: <cover.1650816929.git.pisa@cmp.felk.cvut.cz> <1fd684bcf5ddb0346aad234072f54e976a5210fb.1650816929.git.pisa@cmp.felk.cvut.cz>
- <CAMZ6RqJ1ROr-pLsJqKE=dK=cVD+-KGxSj1wPEZY-AXH9_d4xyQ@mail.gmail.com> <202204251010.39032.pisa@cmp.felk.cvut.cz>
-In-Reply-To: <202204251010.39032.pisa@cmp.felk.cvut.cz>
-From:   Vincent Mailhol <vincent.mailhol@gmail.com>
-Date:   Mon, 25 Apr 2022 17:34:38 +0900
-Message-ID: <CAMZ6RqJsg5V-4oDpXOQiNDPCLYGE5+h54xsq2=eMJo_8iqqswQ@mail.gmail.com>
-Subject: Re: [PATCH v1 1/4] can: ctucanfd: remove PCI module debug parameters
- and core debug statements
-To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>
-Cc:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Marin Jerabek <martin.jerabek01@gmail.com>,
-        Ondrej Ille <ondrej.ille@gmail.com>,
-        Jiri Novak <jnovak@fel.cvut.cz>,
-        Jaroslav Beran <jara.beran@gmail.com>,
-        Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>,
-        Carsten Emde <c.emde@osadl.org>,
-        Drew Fustini <pdp7pdp7@gmail.com>,
-        Matej Vasilevski <matej.vasilevski@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.8.1
+Subject: Re: ctcm: rename READ/WRITE defines to avoid redefinitions
+Content-Language: en-US
+To:     "Colin King (gmail)" <colin.i.king@gmail.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>
+Cc:     Christian Borntraeger <borntraeger@linux.ibm.com>,
+        linux-s390@vger.kernel.org,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <ae612043-0252-e8c3-0773-912f116421c1@gmail.com>
+From:   Alexandra Winter <wintera@linux.ibm.com>
+In-Reply-To: <ae612043-0252-e8c3-0773-912f116421c1@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: O7aAhaJNIP8QJHWu4prMcZkegVRX_kXl
+X-Proofpoint-ORIG-GUID: 3gGAMDN6DFtdax5lFiLGFEYQqHxfsrmG
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-25_02,2022-04-22_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
+ priorityscore=1501 malwarescore=0 mlxscore=0 phishscore=0 adultscore=0
+ bulkscore=0 impostorscore=0 clxscore=1011 mlxlogscore=999 suspectscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204250036
+X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon. 25 Apr 2022 at 17:10, Pavel Pisa <pisa@cmp.felk.cvut.cz> wrote:
-> Hello Vincent,
->
-> On Monday 25 of April 2022 09:48:51 Vincent Mailhol wrote:
-> > On Mon. 25 Apr. 2022 at 14:11, Pavel Pisa <pisa@cmp.felk.cvut.cz> wrote:
-> > > This and remove of inline keyword from the local static functions
-> > > should make happy all checks in actual versions of the both checkpatch.pl
-> > > and patchwork tools.
-> >
-> > The title and the description say two different things.
-> >
-> > When looking at the code, it just seemed that you squashed
-> > together two different patches: one to remove the inlines and one
-> > to remove the debug. I guess you should split it again.
->
-> if you or somebody else confirms that the three lines change
-> worth separate patch I regenerate the series.
 
-I was just troubled that the title was saying "remove debug" and
-that the body was saying "remove inline". I genuinely thought
-that you inadvertently squashed two different patches
-together.
 
-I just expect the body of the patch to give extended explanations
-of what is in the title, not to introduce something else, and
-this regardless of the number of lines being changed.
+On 24.04.22 20:58, Colin King (gmail) wrote:
+> Hi,
+> 
+> static analysis with cppcheck detected a potential null pointer deference with the following commit:
+> 
+> commit 3c09e2647b5e1f1f9fd383971468823c2505e1b0
+> Author: Ursula Braun <ursula.braun@de.ibm.com>
+> Date:   Thu Aug 12 01:58:28 2010 +0000
+> 
+>     ctcm: rename READ/WRITE defines to avoid redefinitions
+> 
+> 
+> The analysis is as follows:
+> 
+> drivers/s390/net/ctcm_sysfs.c:43:8: note: Assuming that condition 'priv' is not redundant
+>  if (!(priv && priv->channel[CTCM_READ] && ndev)) {
+>        ^
+> drivers/s390/net/ctcm_sysfs.c:42:9: note: Null pointer dereference
+>  ndev = priv->channel[CTCM_READ]->netdev;
+> 
+> The code in question is as follows:
+> 
+>         ndev = priv->channel[CTCM_READ]->netdev;
+> 
+>         ^^ priv may be null, as per check below but it is being dereferenced when assigning ndev
+> 
+>         if (!(priv && priv->channel[CTCM_READ] && ndev)) {
+>                 CTCM_DBF_TEXT(SETUP, CTC_DBF_ERROR, "bfnondev");
+>                 return -ENODEV;
+>         }
+> 
+> Colin
 
-> The changes are not based on third party patches but only
-> on indications reported by static analysis tools.
-> Remove of inline in the local static functions probably
-> does not even change code generation by current compiler
-> generation. Removed debug outputs are under local ifdef
-> disabled by default, so only real change is step down from
-> option to use module parameter to check for possible
-> broken MSI causing the problems on PCIe CTU CAN FD integration.
-> So I thought that single relatively small cleanup patch is
-> less load to maintainers.
->
-> But I have no strong preference there and will do as confirmed.
->
-> By the way, what is preference for CC, should the series
-> be sent to  linux-kernel and netdev or it is preferred for these
-> local changes to send it only to linux-can to not load others?
-> Same for CC to David Miller.
+Thank you very much for reporting this, we will provide a patch.
 
-I used to include them in the past because of
-get_maitainer.pl. But Oliver pointed out that it is not
-necessary. Now, I just sent it to linux-can and Marc (and maybe
-some driver maintainers when relevant).
+Do you have any special requests for the Reported-by flag? Or is
+Reported-by: Colin King (gmail) <colin.i.king@gmail.com>
+fine with you?
 
-> Best wishes,
->
->                 Pavel
-> --
->                 Pavel Pisa
->     phone:      +420 603531357
->     e-mail:     pisa@cmp.felk.cvut.cz
->     Department of Control Engineering FEE CVUT
->     Karlovo namesti 13, 121 35, Prague 2
->     university: http://control.fel.cvut.cz/
->     personal:   http://cmp.felk.cvut.cz/~pisa
->     projects:   https://www.openhub.net/accounts/ppisa
->     CAN related:http://canbus.pages.fel.cvut.cz/
->     Open Technologies Research Education and Exchange Services
->     https://gitlab.fel.cvut.cz/otrees/org/-/wikis/home
->
+Kind regards
+Alexandra
