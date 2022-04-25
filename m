@@ -2,89 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A03A50E6C1
-	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 19:16:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1D9350E6E6
+	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 19:21:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243826AbiDYRSb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Apr 2022 13:18:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35076 "EHLO
+        id S243274AbiDYRXb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Apr 2022 13:23:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243841AbiDYRSQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 13:18:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9320327178;
-        Mon, 25 Apr 2022 10:15:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B81E61555;
-        Mon, 25 Apr 2022 17:15:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F221C385A7;
-        Mon, 25 Apr 2022 17:15:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650906900;
-        bh=azwiyx9Qzz2iHjECwV38Z63IZrqsIDeUQJJ8RRIUH04=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=QGwM8V39fNuvjWwbX1wgqckCCOHL+wPB9GXHM2L6qGiGea94zfToiFqejWBfIfelZ
-         u11nUXYm6cKGU8vkHyJMRrW+O9aM2gqgceH2nWAzRxuLBB58XP4z5OvJkmDxn9qw2N
-         k61rh2wpE/t+KIgHbBbeyhQbDBR8uoL+ybgweqCXHgjbZtQk8X4juvfwJCe9woW6e6
-         xHa/TgqbKbKkggLwE6wE/gLm4QhrScCb/EyAz5Kqil29Dc8h8nd/t/62Jbh1gx9QIB
-         twRNHqPh32H3/1nZs+elpZWYOy0J995A8oaQYoL/IrCMOSfuVo//U12SEB0Ip2R4Ht
-         WPErAicpSEeKw==
-Date:   Mon, 25 Apr 2022 10:14:59 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Chuck Lever <chuck.lever@oracle.com>
-Cc:     netdev@vger.kernel.org, linux-nfs@vger.kernel.org,
-        linux-nvme@lists.infradead.org, linux-cifs@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, ak@tempesta-tech.com,
-        borisp@nvidia.com, simo@redhat.com
-Subject: Re: [PATCH RFC 4/5] net/tls: Add support for PF_TLSH (a TLS
- handshake listener)
-Message-ID: <20220425101459.15484d17@kernel.org>
-In-Reply-To: <165030059051.5073.16723746870370826608.stgit@oracle-102.nfsv4.dev>
-References: <165030051838.5073.8699008789153780301.stgit@oracle-102.nfsv4.dev>
-        <165030059051.5073.16723746870370826608.stgit@oracle-102.nfsv4.dev>
+        with ESMTP id S242858AbiDYRX3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 13:23:29 -0400
+Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD373340EA;
+        Mon, 25 Apr 2022 10:20:19 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout3.hostsharing.net (Postfix) with ESMTPS id F284E1032EE24;
+        Mon, 25 Apr 2022 19:20:14 +0200 (CEST)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id CB7C711767B; Mon, 25 Apr 2022 19:20:14 +0200 (CEST)
+Date:   Mon, 25 Apr 2022 19:20:14 +0200
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Jann Horn <jannh@google.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Oliver Neukum <oneukum@suse.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        netdev <netdev@vger.kernel.org>,
+        USB list <linux-usb@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Jacky Chou <jackychou@asix.com.tw>, Willy Tarreau <w@1wt.eu>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Philipp Rosenberger <p.rosenberger@kunbus.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] net: linkwatch: ignore events for unregistered netdevs
+Message-ID: <20220425172014.GA24181@wunner.de>
+References: <18b3541e5372bc9b9fc733d422f4e698c089077c.1650177997.git.lukas@wunner.de>
+ <9325d344e8a6b1a4720022697792a84e545fef62.camel@redhat.com>
+ <20220423160723.GA20330@wunner.de>
+ <20220425074146.1fa27d5f@kernel.org>
+ <CAG48ez3ibQjhs9Qxb0AAKE4-UZiZ5UdXG1JWcPWHAWBoO-1fVw@mail.gmail.com>
+ <20220425080057.0fc4ef66@kernel.org>
+ <CANn89iLwvqUJHBNifLESJyBQ85qjK42sK85Fs=QV4M7HqUXmxQ@mail.gmail.com>
+ <CAG48ez0nw7coDXYozaUOTThWLkHWZuKVUpMosY2hgVSSfeM4Pw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAG48ez0nw7coDXYozaUOTThWLkHWZuKVUpMosY2hgVSSfeM4Pw@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 18 Apr 2022 12:49:50 -0400 Chuck Lever wrote:
-> In-kernel TLS consumers need a way to perform a TLS handshake. In
-> the absence of a handshake implementation in the kernel itself, a
-> mechanism to perform the handshake in user space, using an existing
-> TLS handshake library, is necessary.
-> 
-> I've designed a way to pass a connected kernel socket endpoint to
-> user space using the traditional listen/accept mechanism. accept(2)
-> gives us a well-understood way to materialize a socket endpoint as a
-> normal file descriptor in a specific user space process. Like any
-> open socket descriptor, the accepted FD can then be passed to a
-> library such as openSSL to perform a TLS handshake.
-> 
-> This prototype currently handles only initiating client-side TLS
-> handshakes. Server-side handshakes and key renegotiation are left
-> to do.
-> 
-> Security Considerations
-> ~~~~~~~~ ~~~~~~~~~~~~~~
-> 
-> This prototype is net-namespace aware.
-> 
-> The kernel has no mechanism to attest that the listening user space
-> agent is trustworthy.
-> 
-> Currently the prototype does not handle multiple listeners that
-> overlap -- multiple listeners in the same net namespace that have
-> overlapping bind addresses.
+On Mon, Apr 25, 2022 at 05:18:51PM +0200, Jann Horn wrote:
+> Well, it's not quite a refcount. It's a count that can be incremented
+> and decremented but can't be read while the device is alive, and then
+> at some point it turns into a count that can be read and decremented
+> but can't be incremented
 
-Create the socket in user space, do all the handshakes you need there
-and then pass it to the kernel.  This is how NBD + TLS works.  Scales
-better and requires much less kernel code.
+Pardon me for being dense, but most other subsystems use the refcounting
+built into struct device (or rather, its kobject) and tear it down
+when the refcount reaches zero (e.g. pci_release_dev(), spidev_release()).
+
+What's the rationale for struct net_device rolling its own refcounting?
+Historic artifact?
+
+I think a lot of these issues would solve themselves if that was done away
+with and replaced with the generic kobject refcounting.  It's a pity that
+the tracking infrastructure is now netdev-specific and other subsystems
+cannot benefit from it.
+
+Thanks,
+
+Lukas
