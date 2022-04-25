@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B57950E659
-	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 18:59:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0356250E65A
+	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 18:59:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241573AbiDYRBp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S243673AbiDYRBp (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 25 Apr 2022 13:01:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55176 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235316AbiDYRBo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 13:01:44 -0400
+        with ESMTP id S237367AbiDYRBp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 13:01:45 -0400
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF2A038DB8
-        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 09:58:38 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="245870517"
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9058238DBB
+        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 09:58:40 -0700 (PDT)
+X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="245870523"
 X-IronPort-AV: E=Sophos;i="5.90,289,1643702400"; 
-   d="scan'208";a="245870517"
+   d="scan'208";a="245870523"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 09:58:30 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 09:58:31 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,289,1643702400"; 
-   d="scan'208";a="532207912"
+   d="scan'208";a="532207917"
 Received: from silpixa00396680.ir.intel.com (HELO silpixa00396680.ger.corp.intel.com) ([10.237.223.54])
-  by orsmga006.jf.intel.com with ESMTP; 25 Apr 2022 09:58:28 -0700
+  by orsmga006.jf.intel.com with ESMTP; 25 Apr 2022 09:58:30 -0700
 From:   Ray Kinsella <mdr@ashroe.eu>
 To:     netdev@vger.kernel.org
 Cc:     daniel@iogearbox.net, stephen@networkplumber.org,
         Ray Kinsella <mdr@ashroe.eu>
-Subject: [PATCH 0/1] updates to tc-bpf manpage
-Date:   Mon, 25 Apr 2022 17:57:32 +0100
-Message-Id: <20220425165733.240902-1-mdr@ashroe.eu>
+Subject: [PATCH 1/1] tc-bpf: added instructions to build cbpf generator
+Date:   Mon, 25 Apr 2022 17:57:33 +0100
+Message-Id: <20220425165733.240902-2-mdr@ashroe.eu>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20220425165733.240902-1-mdr@ashroe.eu>
+References: <20220425165733.240902-1-mdr@ashroe.eu>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
@@ -42,17 +44,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi folks,
+Updated the man page for tc-bpf, detailing how to build to the cbpf
+generator and using it in the subsequent example.
 
-I was a bit unsure what ML this patch should go to?
-It is a small update/fix for the tc-bpf manpage.
-
-Ray Kinsella (1):
-  tc-bpf: added instructions to build cbpf generator
-
+Signed-off-by: Ray Kinsella <mdr@ashroe.eu>
+---
  man/man8/tc-bpf.8 | 10 +++++++++-
  1 file changed, 9 insertions(+), 1 deletion(-)
 
+diff --git a/man/man8/tc-bpf.8 b/man/man8/tc-bpf.8
+index e4f68aaa..1d3ab633 100644
+--- a/man/man8/tc-bpf.8
++++ b/man/man8/tc-bpf.8
+@@ -892,13 +892,21 @@ int main(int argc, char **argv)
+ .fi
+ .in
+ 
++Build this helper by compiling the source above, and linking with
++.B libpcap
++as follows:
++
++.in +4n
++.B clang -g -O2 cbpf-gen.c -lpcap -o cbpf-gen
++.in
++
+ Given this small helper, any
+ .B tcpdump(8)
+ filter expression can be abused as a classifier where a match will
+ result in the default classid:
+ 
+ .in +4n
+-.B bpftool EN10MB 'tcp[tcpflags] & tcp-syn != 0' > /var/bpf/tcp-syn
++.B cbpf-gen 'tcp[tcpflags] & tcp-syn != 0' > /var/bpf/tcp-syn
+ .br
+ .B tc filter add dev em1 parent 1: bpf bytecode-file /var/bpf/tcp-syn flowid 1:1
+ .in
 -- 
 2.26.2
 
