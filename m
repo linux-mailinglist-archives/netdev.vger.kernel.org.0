@@ -2,147 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1304850ECE1
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 01:53:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76A4050ECE2
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 01:53:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238236AbiDYX4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Apr 2022 19:56:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58618 "EHLO
+        id S238275AbiDYX4b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Apr 2022 19:56:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229717AbiDYX4K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 19:56:10 -0400
-Received: from smtp6.emailarray.com (smtp6.emailarray.com [65.39.216.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DDE94131D
-        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 16:53:05 -0700 (PDT)
-Received: (qmail 16234 invoked by uid 89); 25 Apr 2022 23:53:03 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuNQ==) (POLARISLOCAL)  
-  by smtp6.emailarray.com with SMTP; 25 Apr 2022 23:53:03 -0000
-Date:   Mon, 25 Apr 2022 16:53:01 -0700
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     bcm-kernel-feedback-list@broadcom.com, andrew@lunn.ch,
-        hkallweit1@gmail.com, linux@armlinux.org.uk,
-        richardcochran@gmail.com, netdev@vger.kernel.org,
-        kernel-team@fb.com
-Subject: Re: [PATCH net-next v1 1/4] net: phy: broadcom: Add PTP support for
- some Broadcom PHYs.
-Message-ID: <20220425235301.hvcheqzjpnolcp6z@bsd-mbp.dhcp.thefacebook.com>
-References: <20220424022356.587949-1-jonathan.lemon@gmail.com>
- <20220424022356.587949-2-jonathan.lemon@gmail.com>
- <91d60847-4721-971d-7e86-22e1dd3c694e@gmail.com>
+        with ESMTP id S235888AbiDYX4a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 19:56:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4145C42A0C
+        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 16:53:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 02633B80CE0
+        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 23:53:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A47EC385A7;
+        Mon, 25 Apr 2022 23:53:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650930802;
+        bh=rtv0aNjantozQbyemS8v+srbXfOx8D9Z/bk9HJWiwXk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ILyLfG9f/1MBSYdZtoOMgA1OupedreOMrTo3KbMu8PUUao0tXSO1ZO740bj5+CXXk
+         qKZ07VodjsLFl28L/mdLGyX1hMEspqhy2/vjWi72YZ8mWs2IGDTsTWkaCQTZjaOW/v
+         qjNLeW5Z7iql4QlcCRdB2hZWJJbp7wFLQELdu6cAMdxPRxjgj53PUHNLbzApDj8OzQ
+         122etkkCSWLPMO6xrRC4pO8csiL+I0nEkg/ygXLZjPiZ3O43z4J2iWu0FSAfvGCJCV
+         GP+KraeMGx5GeAwjlMG+1BlX1M492UkQiai/0IUjjZAUTAdcMQcszG6GvXLm6uJOLC
+         eIG4PybM6xgyw==
+Date:   Mon, 25 Apr 2022 16:53:21 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com, Bin Chen <bin.chen@corigine.com>
+Subject: Re: [PATCH net-next] nfp: VF rate limit support
+Message-ID: <20220425165321.1856ebb7@kernel.org>
+In-Reply-To: <20220422131945.948311-1-simon.horman@corigine.com>
+References: <20220422131945.948311-1-simon.horman@corigine.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <91d60847-4721-971d-7e86-22e1dd3c694e@gmail.com>
-X-Spam-Status: No, score=0.7 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-        FORGED_GMAIL_RCVD,FREEMAIL_FROM,NML_ADSP_CUSTOM_MED,SPF_HELO_NONE,
-        SPF_SOFTFAIL,UNPARSEABLE_RELAY autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 24, 2022 at 04:27:06PM -0700, Florian Fainelli wrote:
-> 
-> 
-> On 4/23/2022 7:23 PM, Jonathan Lemon wrote:
-> > This adds PTP support for BCM54210E Broadcom PHYs, in particular,
-> > the BCM54213PE, as used in the Rasperry PI CM4.  It has only been
-> > tested on that hardware.
-> > 
-> > Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-> > ---
-> 
-> [snip]
-> 
-> Mostly checking register names/offsets/usage because I am not familiar
-> enough with how PTP is supposed to work.
-> 
-> > +#define MODE_SEL_SHIFT_PORT		0
-> > +#define MODE_SEL_SHIFT_CPU		8
-> > +
-> > +#define rx_mode(sel, evt, act) \
-> > +	(((MODE_RX_##act) << (MODE_EVT_SHIFT_##evt)) << (MODE_SEL_SHIFT_##sel))
-> > +
-> > +#define tx_mode(sel, evt, act) \
-> > +	(((MODE_TX_##act) << (MODE_EVT_SHIFT_##evt)) << (MODE_SEL_SHIFT_##sel))
-> 
-> I would capitalize these two macros to make it clear that they are exactly
-> that, macros.
+On Fri, 22 Apr 2022 15:19:45 +0200 Simon Horman wrote:
+> +	if (max_tx_rate > 0 || min_tx_rate > 0) {
+> +		if (max_tx_rate > 0 && max_tx_rate < min_tx_rate) {
+> +			nfp_warn(app->cpp, "min-tx-rate exceeds max_tx_rate.\n");
+> +			return -EINVAL;
+> +		}
 
-Ack.
+This check should be moved to the core, I reckon.
 
+> +		if (max_tx_rate > NFP_NET_VF_RATE_MAX || min_tx_rate > NFP_NET_VF_RATE_MAX) {
 
-> > +/* needs global TS capture first */
-> > +#define TX_TS_CAPTURE		0x0821
-> > +#define  TX_TS_CAP_EN			BIT(0)
-> > +#define RX_TS_CAPTURE		0x0822
-> > +#define  RX_TS_CAP_EN			BIT(0)
-> > +
-> > +#define TIME_CODE_0		0x0854
-> 
-> Maybe add a macro here as well:
-> 
-> #define TIME_CODE(x)		(TIME_CODE0 + (x))
+Please wrap the lines at 80 chars, it's actually going to be easier 
+to read here.
 
-I'd prrefer keep them separate, as not all of the registers are
-sequential - the heartbeat registers for example.
+> +			nfp_warn(app->cpp, "tx-rate exceeds 0x%x.\n", NFP_NET_VF_RATE_MAX);
 
+Does it really make sense to print the rate as hex?
 
-> > +#define SHADOW_LOAD		0x085d
-> > +#define  TIME_CODE_LOAD			BIT(10)
-> > +#define  SYNC_OUT_LOAD			BIT(9)
-> > +#define  NCO_TIME_LOAD			BIT(7)
-> 
-> NCO Divider load is bit 8 and Local time Load bit is 7, can you check which
-> one you need?
+> +			return -EINVAL;
+> +		}
 
-Local time load.  NCO divider counts the SYNC_IN pulses and generates a
-timestamp after <n> events (as I understand things).
+> @@ -261,5 +294,18 @@ int nfp_app_get_vf_config(struct net_device *netdev, int vf,
+>  	ivi->trusted = FIELD_GET(NFP_NET_VF_CFG_CTRL_TRUST, flags);
+>  	ivi->linkstate = FIELD_GET(NFP_NET_VF_CFG_CTRL_LINK_STATE, flags);
+>  
+> +	err = nfp_net_sriov_check(app, vf, NFP_NET_VF_CFG_MB_CAP_RATE, "rate");
+> +	if (!err) {
+> +		rate = readl(app->pf->vfcfg_tbl2 + vf_offset + NFP_NET_VF_CFG_RATE);
+> +
+> +		ivi->max_tx_rate = FIELD_GET(NFP_NET_VF_CFG_MAX_RATE, rate);
+> +		ivi->min_tx_rate = FIELD_GET(NFP_NET_VF_CFG_MIN_RATE, rate);
+> +
+> +		if (ivi->max_tx_rate == NFP_NET_VF_RATE_MAX)
+> +			ivi->max_tx_rate = 0;
 
- 
-> > +#define  FREQ_LOAD			BIT(6)
-> > +#define INTR_MASK		0x085e
-> > +#define INTR_STATUS		0x085f
-> > +#define  INTC_FSYNC			BIT(0)
-> > +#define  INTC_SOP			BIT(1)
-> > +
-> > +#define FREQ_REG_LSB		0x0873
-> > +#define FREQ_REG_MSB		0x0874
-> 
-> Those two hold the NCO frequency, can you rename accordingly?
+If rate == NFP_NET_VF_RATE_MAX means unset then the check on set should
+disallow it, IOW:
 
+	if (max_tx_rate >= NFP_NET_VF_RATE_MAX || 
+            min_tx_rate >= NFP_NET_VF_RATE_MAX) {
+		nfp_war(...
 
-> > +#define TS_READ_CTRL		0x0885
-> > +#define  TS_READ_START			BIT(0)
-> > +#define  TS_READ_END			BIT(1)
-> > +
-> > +#define TIMECODE_CTRL		0x08c3
-> > +#define  TX_TIMECODE_SEL		GENMASK(7, 0)
-> > +#define  RX_TIMECODE_SEL		GENMASK(15, 8)
-> 
-> This one looks out of order compared to the other registers
+no?
 
-Will rearrange the groups a bit.
+> +		if (ivi->min_tx_rate == NFP_NET_VF_RATE_MAX)
+> +			ivi->max_tx_rate = 0;
 
-
-> > +struct bcm_ptp_private *bcm_ptp_probe(struct phy_device *phydev)
-> > +{
-> > +	struct bcm_ptp_private *priv;
-> > +	struct ptp_clock *clock;
-> > +
-> > +	switch (BRCM_PHY_MODEL(phydev)) {
-> > +	case PHY_ID_BCM54210E:
-> > +#ifdef PHY_ID_BCM54213PE
-> > +	case PHY_ID_BCM54213PE:
-> > +#endif
-> 
-> This does not exist upstream.
-
-Yes, hence the #ifdef.  Will remove this for the next patch.  It's here
-since I can just copy it over to the rpi-5.15 tree and have it still
-work.
--- 
-Jonathan
+*squint* you check min and clear max, is this intentional?
