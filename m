@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1756550E312
-	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 16:27:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C86B50E324
+	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 16:29:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236146AbiDYO37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Apr 2022 10:29:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60336 "EHLO
+        id S236395AbiDYOcj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Apr 2022 10:32:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232941AbiDYO36 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 10:29:58 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2618BB66;
-        Mon, 25 Apr 2022 07:26:54 -0700 (PDT)
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nizfw-000AO2-4n; Mon, 25 Apr 2022 16:26:52 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nizfv-000L1s-Fh; Mon, 25 Apr 2022 16:26:51 +0200
-Subject: Re: [PATCH bpf-next 2/7] bpf: add bpf_skc_to_mptcp_sock_proto
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     Geliang Tang <geliang.tang@suse.com>, ast@kernel.org,
-        andrii@kernel.org, mptcp@lists.linux.dev,
-        Nicolas Rybowski <nicolas.rybowski@tessares.net>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>
-References: <20220420222459.307649-1-mathew.j.martineau@linux.intel.com>
- <20220420222459.307649-3-mathew.j.martineau@linux.intel.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <903108df-161e-515b-da3d-bff4fb49de39@iogearbox.net>
-Date:   Mon, 25 Apr 2022 16:26:50 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S236007AbiDYOc2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 10:32:28 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B72A34BB8;
+        Mon, 25 Apr 2022 07:29:23 -0700 (PDT)
+Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Kn6lb1Wj2z686wt;
+        Mon, 25 Apr 2022 22:26:51 +0800 (CST)
+Received: from [10.122.132.241] (10.122.132.241) by
+ fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Mon, 25 Apr 2022 16:29:19 +0200
+Message-ID: <3809fa82-8484-744b-a491-f8a5f7eda861@huawei.com>
+Date:   Mon, 25 Apr 2022 17:29:18 +0300
 MIME-Version: 1.0
-In-Reply-To: <20220420222459.307649-3-mathew.j.martineau@linux.intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26523/Mon Apr 25 10:20:35 2022)
-X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [RFC PATCH v4 07/15] landlock: user space API network support
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+CC:     <willemdebruijn.kernel@gmail.com>,
+        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
+        <artem.kuzin@huawei.com>, <anton.sirazetdinov@huawei.com>
+References: <20220309134459.6448-1-konstantin.meskhidze@huawei.com>
+ <20220309134459.6448-8-konstantin.meskhidze@huawei.com>
+ <d4724117-167d-00b0-1f10-749b35bffc2f@digikod.net>
+From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+In-Reply-To: <d4724117-167d-00b0-1f10-749b35bffc2f@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.122.132.241]
+X-ClientProxiedBy: lhreml753-chm.china.huawei.com (10.201.108.203) To
+ fraeml704-chm.china.huawei.com (10.206.15.53)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -54,68 +53,146 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/21/22 12:24 AM, Mat Martineau wrote:
-[...]
->   static const struct bpf_func_proto *
->   bpf_sk_base_func_proto(enum bpf_func_id func_id);
-> @@ -11279,6 +11280,19 @@ const struct bpf_func_proto bpf_skc_to_unix_sock_proto = {
->   	.ret_btf_id		= &btf_sock_ids[BTF_SOCK_TYPE_UNIX],
->   };
->   
-> +BPF_CALL_1(bpf_skc_to_mptcp_sock, struct sock *, sk)
-> +{
-> +	return (unsigned long)bpf_mptcp_sock_from_subflow(sk);
-> +}
-> +
-> +static const struct bpf_func_proto bpf_skc_to_mptcp_sock_proto = {
-> +	.func		= bpf_skc_to_mptcp_sock,
-> +	.gpl_only	= false,
-> +	.ret_type	= RET_PTR_TO_BTF_ID_OR_NULL,
-> +	.arg1_type	= ARG_PTR_TO_SOCK_COMMON,
-> +	.ret_btf_id	= &btf_sock_ids[BTF_SOCK_TYPE_MPTCP],
-> +};
 
-BPF CI (https://github.com/kernel-patches/bpf/runs/6136052684?check_suite_focus=true) fails with:
 
-   #7   base:FAIL
-   libbpf: prog '_sockops': BPF program load failed: Invalid argument
-   libbpf: prog '_sockops': -- BEGIN PROG LOAD LOG --
-   0: R1=ctx(off=0,imm=0) R10=fp0
-   ; int op = (int)ctx->op;
-   0: (61) r2 = *(u32 *)(r1 +0)          ; R1=ctx(off=0,imm=0) R2_w=scalar(umax=4294967295,var_off=(0x0; 0xffffffff))
-   ; if (op != BPF_SOCK_OPS_TCP_CONNECT_CB)
-   1: (56) if w2 != 0x3 goto pc+50       ; R2_w=3
-   ; sk = ctx->sk;
-   2: (79) r6 = *(u64 *)(r1 +184)        ; R1=ctx(off=0,imm=0) R6_w=sock_or_null(id=1,off=0,imm=0)
-   ; if (!sk)
-   3: (15) if r6 == 0x0 goto pc+48       ; R6_w=sock(off=0,imm=0)
-   ; tcp_sk = bpf_tcp_sock(sk);
-   4: (bf) r1 = r6                       ; R1_w=sock(off=0,imm=0) R6_w=sock(off=0,imm=0)
-   5: (85) call bpf_tcp_sock#96          ; R0_w=tcp_sock_or_null(id=2,off=0,imm=0)
-   6: (bf) r7 = r0                       ; R0=tcp_sock_or_null(id=2,off=0,imm=0) R7=tcp_sock_or_null(id=2,off=0,imm=0)
-   ; if (!tcp_sk)
-   7: (15) if r7 == 0x0 goto pc+44       ; R7=tcp_sock(off=0,imm=0)
-   ; if (!tcp_sk->is_mptcp) {
-   8: (61) r1 = *(u32 *)(r7 +112)        ; R1_w=scalar(umax=4294967295,var_off=(0x0; 0xffffffff)) R7=tcp_sock(off=0,imm=0)
-   ; if (!tcp_sk->is_mptcp) {
-   9: (56) if w1 != 0x0 goto pc+14 24: R0=tcp_sock(off=0,imm=0) R1_w=scalar(umax=4294967295,var_off=(0x0; 0xffffffff)) R6=sock(off=0,imm=0) R7=tcp_sock(off=0,imm=0) R10=fp0
-   ; msk = bpf_skc_to_mptcp_sock(sk);
-   24: (bf) r1 = r6                      ; R1_w=sock(off=0,imm=0) R6=sock(off=0,imm=0)
-   25: (85) call bpf_skc_to_mptcp_sock#194
-   invalid return type 8 of func bpf_skc_to_mptcp_sock#194
-   processed 34 insns (limit 1000000) max_states_per_insn 0 total_states 3 peak_states 3 mark_read 1
-   -- END PROG LOAD LOG --
-   libbpf: failed to load program '_sockops'
-   libbpf: failed to load object './mptcp_sock.o'
-   run_test:FAIL:165
-   test_base:FAIL:227
-   (network_helpers.c:88: errno: Protocol not supported) Failed to create server socket
-   test_base:FAIL:241
-   RTNETLINK answers: No such file or directory
-   Error talking to the kernel
-[...]
+4/12/2022 2:21 PM, Mickaël Salaün пишет:
+> 
+> On 09/03/2022 14:44, Konstantin Meskhidze wrote:
+>> User space API was refactored to support
+>> network actions. New network access flags,
+>> network rule and network attributes were
+>> added.
+>>
+>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>> ---
+>>
+>> Changes since v3:
+>> * Split commit.
+>> * Refactoring User API for network rule type.
+>>
+>> ---
+>>   include/uapi/linux/landlock.h | 48 +++++++++++++++++++++++++++++++++++
+>>   security/landlock/syscalls.c  |  5 ++--
+>>   2 files changed, 51 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/include/uapi/linux/landlock.h 
+>> b/include/uapi/linux/landlock.h
+>> index b3d952067f59..4fc6c793fdf4 100644
+>> --- a/include/uapi/linux/landlock.h
+>> +++ b/include/uapi/linux/landlock.h
+>> @@ -25,6 +25,13 @@ struct landlock_ruleset_attr {
+>>        * compatibility reasons.
+>>        */
+>>       __u64 handled_access_fs;
+>> +
+>> +    /**
+>> +     * @handled_access_net: Bitmask of actions (cf. `Network flags`_)
+>> +     * that is handled by this ruleset and should then be forbidden 
+>> if no
+>> +     * rule explicitly allow them.
+>> +     */
+>> +    __u64 handled_access_net;
+>>   };
+>>
+>>   /*
+>> @@ -46,6 +53,11 @@ enum landlock_rule_type {
+>>        * landlock_path_beneath_attr .
+>>        */
+>>       LANDLOCK_RULE_PATH_BENEATH = 1,
+>> +    /**
+>> +     * @LANDLOCK_RULE_NET_SERVICE: Type of a &struct
+>> +     * landlock_net_service_attr .
+>> +     */
+>> +    LANDLOCK_RULE_NET_SERVICE = 2,
+>>   };
+>>
+>>   /**
+>> @@ -70,6 +82,24 @@ struct landlock_path_beneath_attr {
+>>        */
+>>   } __attribute__((packed));
+>>
+>> +/**
+>> + * struct landlock_net_service_attr - TCP subnet definition
+>> + *
+>> + * Argument of sys_landlock_add_rule().
+>> + */
+>> +struct landlock_net_service_attr {
+>> +    /**
+>> +     * @allowed_access: Bitmask of allowed access network for services
+>> +     * (cf. `Network flags`_).
+>> +     */
+>> +    __u64 allowed_access;
+>> +    /**
+>> +     * @port: Network port
+>> +     */
+>> +    __u16 port;
+>> +
+>> +} __attribute__((packed));
+>> +
+>>   /**
+>>    * DOC: fs_access
+>>    *
+>> @@ -134,4 +164,22 @@ struct landlock_path_beneath_attr {
+>>   #define LANDLOCK_ACCESS_FS_MAKE_BLOCK            (1ULL << 11)
+>>   #define LANDLOCK_ACCESS_FS_MAKE_SYM            (1ULL << 12)
+>>
+>> +/**
+>> + * DOC: net_access
+>> + *
+>> + * Network flags
+>> + * ~~~~~~~~~~~~~~~~
+>> + *
+>> + * These flags enable to restrict a sandboxed process to a set of 
+>> network
+>> + * actions.
+>> + *
+>> + * TCP sockets with allowed actions:
+>> + *
+>> + * - %LANDLOCK_ACCESS_NET_BIND_TCP: Bind a TCP socket to a local port.
+>> + * - %LANDLOCK_ACCESS_NET_CONNECT_TCP: Connect an active TCP socket to
+>> + *   a remote port.
+>> + */
+>> +#define LANDLOCK_ACCESS_NET_BIND_TCP            (1ULL << 0)
+>> +#define LANDLOCK_ACCESS_NET_CONNECT_TCP            (1ULL << 1)
+>> +
+>>   #endif /* _UAPI_LINUX_LANDLOCK_H */
+>> diff --git a/security/landlock/syscalls.c b/security/landlock/syscalls.c
+>> index 8c0f6165fe3a..fcbce83d64ef 100644
+>> --- a/security/landlock/syscalls.c
+>> +++ b/security/landlock/syscalls.c
+>> @@ -81,8 +81,9 @@ static void build_check_abi(void)
+>>        * struct size.
+>>        */
+>>       ruleset_size = sizeof(ruleset_attr.handled_access_fs);
+>> +    ruleset_size += sizeof(ruleset_attr.handled_access_net);
+>>       BUILD_BUG_ON(sizeof(ruleset_attr) != ruleset_size);
+>> -    BUILD_BUG_ON(sizeof(ruleset_attr) != 8);
+>> +    BUILD_BUG_ON(sizeof(ruleset_attr) != 16);
+>>
+>>       path_beneath_size = sizeof(path_beneath_attr.allowed_access);
+>>       path_beneath_size += sizeof(path_beneath_attr.parent_fd);
+>> @@ -184,7 +185,7 @@ SYSCALL_DEFINE3(landlock_create_ruleset,
+>>
+>>       /* Checks content (and 32-bits cast). */
+>>       if ((ruleset_attr.handled_access_fs | LANDLOCK_MASK_ACCESS_FS) !=
+>> -            LANDLOCK_MASK_ACCESS_FS)
+>> +             LANDLOCK_MASK_ACCESS_FS)
+> 
+> Don't add cosmetic changes. FYI, I'm relying on the way Vim does line 
+> cuts, which is mostly tabs. Please try to do the same.
+> 
+   Ok. I'm using VsCode as an editor. It also could be set up to 
+different code styles.
+> 
+>>           return -EINVAL;
+>>       access_mask_set.fs = ruleset_attr.handled_access_fs;
+>>
+>> -- 
+>> 2.25.1
+>>
+> 
+> You need to also update Documentation/userspace-api/landlock.rst 
+> accordingly. You can check you changes by building the HTML doc.
 
-Looking at bpf_skc_to_tcp6_sock(), do we similarly need a BTF_TYPE_EMIT() here?
-
-Thanks,
-Daniel
+   OK. I got it. Thnaks for the comment.
+> .
