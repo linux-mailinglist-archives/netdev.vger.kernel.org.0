@@ -2,112 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8499A50D7DC
+	by mail.lfdr.de (Postfix) with ESMTP id CCF0850D7DD
 	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 05:48:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240818AbiDYDuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Apr 2022 23:50:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42850 "EHLO
+        id S240856AbiDYDuI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Apr 2022 23:50:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236822AbiDYDty (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 23:49:54 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2046.outbound.protection.outlook.com [40.107.220.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AF42DE99
-        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 20:46:09 -0700 (PDT)
+        with ESMTP id S240689AbiDYDt5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 23:49:57 -0400
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2086.outbound.protection.outlook.com [40.107.212.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6BDEE0A3
+        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 20:46:15 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aj8clBY1B/5Ahz5TdBx7AdtSrqV1KTmc5ydkBJbz1ewaLIbDAKGKZL0dOEKyuSUH1FJP+mdKhreVSnnBsWqXQU2y7O7mfHAP+07pnYJZQiWUWbiWrFu9Wa3LN7QvFGrHrc6QfFDgTt6NIOdI6zoxn04WgxYFByXzDr42p8laix0C4L6gTpnpnUj2T9csC2gf82/sOJ0brso1PA3em19WRLgu6W+Y2pN6twZYWSaPBzD68HhLx44U5dxmthyhhIFaEbcI3qgSDakn/dSSW0TWkOgXiNXdzA3RKz1U+nf5AZiN6o/Dr6p2n+APeT+WlU6rn1AgAQvJbDg/HVEWbsG4lA==
+ b=IGKh55XlnlCsJH84bCfnvTV3DA6dr/sTrlmJLrL9jKO+oVDjFPccfnYddq6/5KmSDS6p24KB4uax7WNab8EXGiBkeJTIo/Dw59245qDTayYyC1KdfCLC4JuqQoLazRjdpxla6NoGwtLmO/6vBKovCC5NXXv8Nn2ZnqEn2x7OVJ/JjU3fBkR2Wp3OJH0oXlkLWniMtfD78FKBqR/9zsZTGAJWbU5iooUIk4cr3oJsH1nuDP8LW9XIBSSV5A6FAOn7+KtaAG6JLDg7afknYoCJ6/91GUYTo9TrakF44jSHxd8TwXcyrsvv47WbFsamA0uNy2fi4im0ensPEu6ZQXKx+A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+4NoXsvHXpmEfxxC7ZIWqQpNjM7Ypxv8++LjHaLWJI0=;
- b=eYyl6CpdZrHPkj2m4QLZKpBZmuzY1zLqiMPn5JkrLzl8lfZuOGbjYCDj37cFIWdtq1Z0CrwRsueLl0SuCtYwbEFZP2LHGTVehP1bhCOUeiZZVXuNV+NSkLu5AMAMUAPHTlfpF2kKeG6NktrbUW07rF0UyNKGIIY+8cIIeG4nomlvQWFx1YhlaKTXTF4GzMQPM4ReYSXO60U9ZEpcUCnUN0mwCNF2OMk2ZHlTCViqp+3Te7vf2rN3X+TX9uNyv5gI5mYSTqm/PArk0flzeOq9bVyTD4oUCKMuxpPFxYSPmIDioSA/ZnDAv9iAxXJ/LbtK0lBfO6h2n/GSE7pnJ5Shpg==
+ bh=aysSTa+oHbqsyemPQnm4QtIeH9JQS2CS56tD6nIBd+k=;
+ b=CPngSxwBTOWaAnqEH5zlPzSCKoJ/IfYhOpupfaRALfNkQ+nRy6cVed89k+KczcSL/WIDz/2PhZRhvRn8Eqs187ZpCNkkn5NN/x8u2qJ2fH0RNgUz9PXkEHRTwaOAUh93IxGRcm5AlD6kNU8u/oYk8zno0d8Hr1xImoR1PuQVxS0DK005WVQ5YXHw5TSstNVX+0+C25TQmD37n94rx4kc3KARJmAoe2vHw5h0lfwTzvA8NMJU+e+2n0xH7+OFBApcGBm7j2M9L//srNSJXIgKSrbfb2kASHRWeNHEpbj8IcsUdxEc47t867VitYAAYCvayLxYU6hqm5b72jyfpq7Y7Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+4NoXsvHXpmEfxxC7ZIWqQpNjM7Ypxv8++LjHaLWJI0=;
- b=tXR9qurDxkuTBMRiyOz7eCDfmRLt2sjwbhAx1im0dquOHl4+OABd95q6ao1U/TpGj5/lJDMSlfJ/Fup+Y0EcBhQ3NJA+6VTtZQ8rL/xvxqtwjy37HbFVRd0casAviHhvg+oifQLRNriWN/ipa1DpPTgk1KLH3Auc4bSOTRcCmoUNmdWAGYr3jcHUN1qY7McO7eD/S9b/3j7lOrLRiCiKVxByhpUdlLf+gUunYFF78wrQj9/OAIL5ZOVKrxNabAwEaGrqywvspDVJl5ysZBt3+kyVTq68ldhnoOQtVnFy2+8/7J3H8fgvR6jfBeJHYHSWEqWAZt4OUGK27KNALAImMQ==
+ bh=aysSTa+oHbqsyemPQnm4QtIeH9JQS2CS56tD6nIBd+k=;
+ b=nR1LprGXIOfwvcv7lD72jeMSI4uFfbRsm0JJYAZeJloUH+ogWz2F7qnyt879sfXEaQuGjlBpnOjaldgOQQ/xEvn66FyF/k93Y/mYVEXxh78nmUbbU7KZP11DPGy6AYBKmK0pxum7Ef2/GEOt22P568uKnRqdO/q3WGHTIB2LEhzYFP40AtA1I9TDFvBNJKWWPMf2vMdzhaopRSs0GQwZG73dyLdgemazsJSV1Zd8Q5ge03g1ieWutUttdEjHJsohV7+RY94tneu6xx7QWgDrzud8dJ8n/hbfxEwq73gArHSGUUmXhuVHPpH+dqGI50ga5blNygVohHre7On2IuuQ0g==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from DM6PR12MB4337.namprd12.prod.outlook.com (2603:10b6:5:2a9::12)
- by MW3PR12MB4521.namprd12.prod.outlook.com (2603:10b6:303:53::13) with
+ by MWHPR1201MB0255.namprd12.prod.outlook.com (2603:10b6:301:4f::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.15; Mon, 25 Apr
- 2022 03:46:08 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Mon, 25 Apr
+ 2022 03:46:13 +0000
 Received: from DM6PR12MB4337.namprd12.prod.outlook.com
  ([fe80::45b7:af36:457d:7331]) by DM6PR12MB4337.namprd12.prod.outlook.com
  ([fe80::45b7:af36:457d:7331%6]) with mapi id 15.20.5186.021; Mon, 25 Apr 2022
- 03:46:08 +0000
+ 03:46:13 +0000
 From:   Ido Schimmel <idosch@nvidia.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
         andrew@lunn.ch, mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 07/11] mlxsw: core_linecards: Expose HW revision and INI version
-Date:   Mon, 25 Apr 2022 06:44:27 +0300
-Message-Id: <20220425034431.3161260-8-idosch@nvidia.com>
+Subject: [PATCH net-next 08/11] selftests: mlxsw: Check line card info on provisioned line card
+Date:   Mon, 25 Apr 2022 06:44:28 +0300
+Message-Id: <20220425034431.3161260-9-idosch@nvidia.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220425034431.3161260-1-idosch@nvidia.com>
 References: <20220425034431.3161260-1-idosch@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: VE1PR03CA0026.eurprd03.prod.outlook.com
- (2603:10a6:803:118::15) To DM6PR12MB4337.namprd12.prod.outlook.com
+X-ClientProxiedBy: VI1PR07CA0262.eurprd07.prod.outlook.com
+ (2603:10a6:803:b4::29) To DM6PR12MB4337.namprd12.prod.outlook.com
  (2603:10b6:5:2a9::12)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 212829dd-ba35-41ba-87e7-08da266e2193
-X-MS-TrafficTypeDiagnostic: MW3PR12MB4521:EE_
-X-Microsoft-Antispam-PRVS: <MW3PR12MB4521290076EEF6C3C04E74B7B2F89@MW3PR12MB4521.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 69f8580e-bc38-4840-0513-08da266e24ff
+X-MS-TrafficTypeDiagnostic: MWHPR1201MB0255:EE_
+X-Microsoft-Antispam-PRVS: <MWHPR1201MB0255BA37D455FD9DB40CF599B2F89@MWHPR1201MB0255.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: jUhlPJYzuxXvE9KfbbYju+0sCzEOmLJRfmzRleOHJAUJEzsiebmqgMn2fKK0OQ2GPkki5RcdT4Er9W4gmeIOnAutx3XNQQWH5DPGsyPzeSbQdo6l88NhVMt07a5D1BC5bQhIJq3kGAVx9aQGuO7mrZW10zxIswivaagYSJOoUEWDYD/m1m2T+kyWFjbHdiYNX7hRCCcwegXd5FwYjCc54FtR3OYuaudtOuKbFVdJZtCCVuT2ISvqKuZSQVR2XqgfIeQlF8v4hkZ9rOO6kJR7bQjRoxJXuzbuA7OQyiw0jy7YZghhswBXpW4iUxaa2yKmM16dPjCyEr/SVuaDzkWSI+XieERlregS1aSE54MjsVyOwCJT6vGYW9uJ4yuTMk8SoG8LuPw5sXnIhL5afUmSnjxB27vWoD5qI3JOJ9cgNeSFZa1lQSORrNzJwz9HMH1J1SNtRmDtjJStusLsJ+nFFNo2BAsnuKLijgJ0jaeaLqe5JOuZrNBs59p5D+WwyU6EOn32rmxGxuxPO7SBR9DZkZ4vwejLPm3ifckbjWchCSlHZb4SmQTT2am6+CdacFtCMeH9X22sgSm0swPb8Ol9cUwHeUX8+CJQibBuPcg3fIRwQxHaIf6/bWZOifNZrQvBJ0ZdsxbiuScKqwGxg9tccg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4337.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(26005)(4326008)(66556008)(6666004)(2616005)(66946007)(6512007)(5660300002)(107886003)(8936002)(86362001)(2906002)(1076003)(38100700002)(508600001)(6486002)(316002)(66476007)(8676002)(83380400001)(6916009)(186003)(6506007)(36756003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 3a1bjiItnjmzAM5vg+elBngUUsxXAvmtkzofD2tJp3GVyOrMBZrUHYDEfvCMfwMSkROGFzSePMjosYjaAIhYcjyRksEs1otBeKwhyrGOteyEu/wUZAueSKsLkG/b74Pxpp6fIz7MsGlCgFQiBfrKne1aehZ0dX/J4qj2VOB2glfywxhGV99rFPeZmpJ3vIdmpf+0nBbZjQ2hDqLxFG4gr6sY2uSzbm4q+8ZfuD6y6RcWYIg4wAm9ThRwrXF7oxVEhWinQSHy+B8WJsA+NkiY9h3HPyEETF+0KeKlfm386sBc2tsuReE5czrbNvCY2I0qRTLqfgNFJMKAyDPUVVZ1iMASpmKR6rReX7dcU/Ad1/luz43Vav9e4vzJmwfvscwzYQTO2r8Q4fpZ7Jf+K2GY6EiqPneRbd4W+LYlPeR8W3GFFzxks/uG7tGg0Mdlt1jFLQ1TRDRODx/+fA9TwqCmZTnT3eIIyh4iaYC4rb8BunMV2iG03Q3p+tVg0YZaSrgUTCe7LMTTNXA8KiSvVl24Nbi3YHdkjIyBuO+BdqwiTtO1ERkpKluaLUkNt2f4sLEQHWVQomZqiux4WM1zYnHama5+tuCVhLfyIcopO0OrcpHX4BUmn5OgA/n6UfZ6/6vkKAVQhESKgDEICjmhJbxtOg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4337.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(4326008)(316002)(6486002)(508600001)(8676002)(66556008)(66476007)(86362001)(6916009)(38100700002)(66946007)(5660300002)(6666004)(6506007)(2906002)(36756003)(6512007)(26005)(186003)(8936002)(2616005)(1076003)(107886003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TLzBFlAxEZ/YnciBEOE7lKa8spjh+wP2v8dUuzjSzNJ4D9ElkVgGvGH03iI2?=
- =?us-ascii?Q?RAu07BFk9GU4x5cEb/3y9gu9+w940HKQQK3UqAZt8ujfnhK3Q0ksgoBw+zWS?=
- =?us-ascii?Q?ResYpAcLLsV1zCw6m2HpunWDh70P6UyS1GocTAtbGCqfEgmMQZ3xxC+ZVPe9?=
- =?us-ascii?Q?IfeaLVMOQPlZ76GxYB28PYDCv9fyFHY2Mocw/qLzaA6Wg/CpfLLM2EO28Eaj?=
- =?us-ascii?Q?or8R0x6vZtZLUBfzwAV+1tWh+DqEcs0NAsm/gnCaTsvuEz+7QcV4g9FXEWIU?=
- =?us-ascii?Q?verwj3XSOHyZuKMOIfxbFPCLbHZJy805qV3T2/2vawsDGU1MpS7eOYjz7q75?=
- =?us-ascii?Q?BCmdo0yvi7owtcgRDo93mvKHPd/P0O+tLJKr0Un9l97/DAGe0K/IbNAKTgfN?=
- =?us-ascii?Q?aFQ9Kl/8LmZ1Roo4cCCyjhMO0R9JBs38TnEbJLNF4vt15uOqSZ7F/KW7wuvD?=
- =?us-ascii?Q?1kZTKiOafjwWsDstEWD2A6/a2pbOcVRKFBlE0a7qBXl1/uABJi7CkcPZotda?=
- =?us-ascii?Q?6DfuxYxIbCWTesObBLJRaSrVBVdyR0yYrXEBLYgX5HtjwIovFMFDc/lnaOCa?=
- =?us-ascii?Q?FWnYRrUe+hlSQP4fzpvnZ46dUXVaqtlJxRsTrpD6tsut9PYJVYV7YEsUwbU/?=
- =?us-ascii?Q?IMsf2TkNXru4/DfHoVucb4/+PEWv3zAqq6DaTTyF2ezz+ibS9SG6YGvUrtbd?=
- =?us-ascii?Q?4Tc2AYRFthvDCV+es+8MtPdubcfoxcShD43gheilszJ+nrgpY2psJzgVpSzg?=
- =?us-ascii?Q?SCwSa2x9Bf2YjkuzyTyEMMBbIBGBuvKK4AmQw/0vgOUpIC/ER55kGGZ72AF6?=
- =?us-ascii?Q?Tq/DmmDH1n8GJybzatVr8iESUK38hAgRYa/sDnBxuNJG9+T0zFhYe1MBNLWq?=
- =?us-ascii?Q?9QOKMz6rGeuE6x9OTLrCs4DEVOrTRHzJyqM6mGGFoSaPr6kKgmvKqdg246/N?=
- =?us-ascii?Q?go8cBkE8vTyGjlOwxkqRsNATuO8ArITlrjvVFbiM3B/20YVVvdJ9FGkRhTPf?=
- =?us-ascii?Q?g1jaSPM+JVHdmEU1P1ZvTJ5gTcaXuwmEUBFW7f8zmXdjil0xFiOBjtWXAaCf?=
- =?us-ascii?Q?TTV7xgB3+fDtGwZRpg+e+3HgDu0z2C+7HHz6axez8dRHVgULQq6ZidVTQx9E?=
- =?us-ascii?Q?rMqkNINabLemypVIGoEaOK1///4kn03QKVxKZMAhPeeLshjEBLkQfwyVHwDa?=
- =?us-ascii?Q?D4uHT/q4lXuHfM0ed5VCbjqFs/IoIujXZKr+/axR1Lz5RRIqe8fsQ1Q/E0Ve?=
- =?us-ascii?Q?7DHUBf9UfmxKau3LdrIOnIY3yc5y08RBgKaqfGuHchDcwQXvtA3SUyMzXIeI?=
- =?us-ascii?Q?B/98PmZ6ywFme5T4K2mVpEK5ozb8y2Tsqmb+XhF1FJZUXIbn9/fdcWTi633o?=
- =?us-ascii?Q?jpf9OGTE+HrsS9yAQR4wlMkww2/gPCSh6LQCzeVCQD2SRUInnpPm4B8EcopS?=
- =?us-ascii?Q?MMBWk0R3bOfvweqaAO6Qw1BANwyEZPgNwFZrTT9YKtRyQRXp/ISNTEp028fA?=
- =?us-ascii?Q?AqpMuQL+vXQHzR2RIAssfOhUqH2kEh2jxYSDchgctlgBr70TnXkSijpCUew/?=
- =?us-ascii?Q?ftsTaZeAxv9259DJlFjnCYha0Efnk03ToPvu+s8G7jDw98zDCR4iS5HdLcHX?=
- =?us-ascii?Q?PxK80UP7YWX/S3PMCCOc1pSaXbZWk/khR1ufmEH6cp8+okWKCaz07fEGmGsG?=
- =?us-ascii?Q?ASd1GgWFl36cV2jVAtFwKm+9oSR1+Y1e8kZI2sNcribLG3fZ90iMySYJe0Xd?=
- =?us-ascii?Q?wxOrhlPrAg=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?tTIXBvisj3uKKnyboZZxIH8GAJGHpQcIORYtEtIbdFy8rkDI8QM21d3i94IM?=
+ =?us-ascii?Q?tvP2H2JfGcf0f8Dy1Y0Q5FbJxuvWke37o9j20uMBsOC2ZtBzwRkx/SMfngPC?=
+ =?us-ascii?Q?9COi6tVMhEXlAsPw2/9PTtyo+yd9fsAhb8vc4kT8BCH0e0AGhnmspJGWp6a8?=
+ =?us-ascii?Q?F4jMb3hRjyRsbfHZ6sJyhCFwYQud+4th9S5OBfZtDDB0ImF7hWxU3ra08glx?=
+ =?us-ascii?Q?IfViOHLuKJRYjgZ40NGDoFOWajrvS0W2xqYLlq7OJ0wU33nuMLoqvOgGeZLw?=
+ =?us-ascii?Q?AjfQsncKXowqn/HbUJnP+ERAJ6bi/IlMW8CDUixnIRPJaK8vM+7DQ0nEushE?=
+ =?us-ascii?Q?Cc0akE7zWQSsSBcwOn73N9jk2o1eiK1gZzZLqZGotpovtXVbfUp5l9JYMeSd?=
+ =?us-ascii?Q?d7xUhKzoPb3PUm7cgSpbbb10w+KiIiLQcO8SLkhGTdMWoF/gLKAteDKKtcTx?=
+ =?us-ascii?Q?iUP61JTSVkg1kj+MI3ZXCE9HMbBmfGDpy7ovF6d/ZwwZRZgLMt6QtGyvDcw4?=
+ =?us-ascii?Q?XVh1TTdT+jl1W3C+QmpHlUqKaAqEV/oJYLSBtKMls9le/19znjhkbNGSxCGG?=
+ =?us-ascii?Q?VEdb1ggoHYxcy2vxd1M+Ev83KRLfk+MPRG+obwEG+shZ4RSoxSaQvFIULcmA?=
+ =?us-ascii?Q?oRrZcChfnjqgtNW1oFbFU1SQU5Wi5wCS/e7ZGWSioVDZQxWrc0o7Es5uTYbB?=
+ =?us-ascii?Q?/z9GPnKGaEtfNe0sPs9L9I3vdMEsHg9rNimsf2OVD3QyzMrJs7eoKzIMJ3Bw?=
+ =?us-ascii?Q?QBywcVbqdDBbY+q2SFB79ilpyrYWnp/xJ7Bpgv3ni5ckZe0Ymoyunxlq9XaY?=
+ =?us-ascii?Q?b/8GDaj+CJ8gkRdiU6E6wYyahKSZXRUwvTzWWLwZVw4iaFi8o78jBN8TtN6m?=
+ =?us-ascii?Q?2SXqzu46/tQ4qfkZQAPpl54AFweypwSMYvmQXD6XMVDumfvtR+YHoKa7mKFA?=
+ =?us-ascii?Q?q+lelIpmV+uHJPU7kU7ToaYIrAkWI0crJfFej46R4faoDI0KzuoU9pSaYwiB?=
+ =?us-ascii?Q?bKdQHE2n84f7BkS7ivEOyEBb6N/lANW9mKwGj9OtUyoMSy7dkZwJZKJ8TajG?=
+ =?us-ascii?Q?i0mD/I1s5mhJVYd33/iSmE94MUa47yoImqpKA+9LAf1WutKg7psReFofQWNn?=
+ =?us-ascii?Q?3wmPhnctYsPWBjVWv+iv5/Tjfa1oh1MRKv+DOwFqDDPbCTfYDHQHir29uPgn?=
+ =?us-ascii?Q?/weMA/igUxEgHzsbDcJdOB6Wq6ruw6Lfp8d6lUn5IdwcCPL/1OgGlbjsGfaT?=
+ =?us-ascii?Q?eYXMwnWZlDzVV7p3eh9FT37/PPmfUe+/j8aWolKrxiMICuEQbsT2TNtRQLuH?=
+ =?us-ascii?Q?1l+l2z8XXDioDHiQ/PIjaICFIOCPbb32O4qoWsldasDUc/lZ0F6Owqn8SnBu?=
+ =?us-ascii?Q?TgVhuhdhO1H9LH+eeNbKv0i8cjcEJcVVzRs3fxnL4BQrG2wMS1AlAfQ+2OBz?=
+ =?us-ascii?Q?G0Tv72LN2+fOU4zjHJrdUaFYhNbG12EzSZnKqvdDXVMv4DRTvN0gv/yVqtan?=
+ =?us-ascii?Q?U5B7rnfDDO2nRuZ9+c/zBNRv61ze/it4GdxsduLy13W6D1DFh1jmnLuiXHG5?=
+ =?us-ascii?Q?BHSQdbd9NQY/PS/oQO2DoTKmv/0Y9qGyoWA7Vcksin9K0r1lbE747zXrLn4Q?=
+ =?us-ascii?Q?GnZMgifVRto4hiduKz8p/ju5xDwbZsXAhsYrcvHLP3OiojevoAHoHqEtRA6F?=
+ =?us-ascii?Q?tTJiRxovuAWc2IN4fyYGtYex8d6h/dLL1yT9IjJZo7+w7wdoxmvgh0nvc/3h?=
+ =?us-ascii?Q?NId/B7xKVA=3D=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 212829dd-ba35-41ba-87e7-08da266e2193
+X-MS-Exchange-CrossTenant-Network-Message-Id: 69f8580e-bc38-4840-0513-08da266e24ff
 X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4337.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Apr 2022 03:46:07.9327
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Apr 2022 03:46:13.7640
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Dp7C6RDe0G4eGwTnIpEYe79hzVr3SydxxPZvqB9KfqVKmlEbkywYqaOt5akm3SeyQGfIlAIMLQn+08voSeKF2A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4521
+X-MS-Exchange-CrossTenant-UserPrincipalName: UDvahSaRNiQmqCpnnwB6D0q+JfwY5zCmBjCn8p8zLjJob/jJWledhHc9Tg1JcSRTMKNQq4pUhPdwxw3s3XQSmA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1201MB0255
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -120,93 +120,50 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Implement info_get() to expose HW revision of a linecard and loaded INI
-version.
+Once line card is provisioned, check if HW revision and INI version
+are exposed.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- Documentation/networking/devlink/mlxsw.rst    | 18 +++++++++++
- .../ethernet/mellanox/mlxsw/core_linecards.c  | 31 +++++++++++++++++++
- 2 files changed, 49 insertions(+)
+ .../drivers/net/mlxsw/devlink_linecard.sh       | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-diff --git a/Documentation/networking/devlink/mlxsw.rst b/Documentation/networking/devlink/mlxsw.rst
-index cf857cb4ba8f..da1fbb265a11 100644
---- a/Documentation/networking/devlink/mlxsw.rst
-+++ b/Documentation/networking/devlink/mlxsw.rst
-@@ -58,6 +58,24 @@ The ``mlxsw`` driver reports the following versions
-      - running
-      - Three digit firmware version
- 
-+Line card info versions
-+=======================
-+
-+The ``mlxsw`` driver reports the following versions for line cards
-+
-+.. list-table:: devlink line card info versions implemented
-+   :widths: 5 5 90
-+
-+   * - Name
-+     - Type
-+     - Description
-+   * - ``hw.revision``
-+     - fixed
-+     - The hardware revision for this line card
-+   * - ``ini.version``
-+     - running
-+     - Version of line card INI loaded
-+
- Driver-specific Traps
- =====================
- 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_linecards.c b/drivers/net/ethernet/mellanox/mlxsw/core_linecards.c
-index 9dd8a56add4a..b5f5b31bd31e 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core_linecards.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core_linecards.c
-@@ -834,12 +834,43 @@ static void mlxsw_linecard_types_get(struct devlink_linecard *devlink_linecard,
- 	*type_priv = ini_file;
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/devlink_linecard.sh b/tools/testing/selftests/drivers/net/mlxsw/devlink_linecard.sh
+index 67b0e56cb413..04bedd98eb8b 100755
+--- a/tools/testing/selftests/drivers/net/mlxsw/devlink_linecard.sh
++++ b/tools/testing/selftests/drivers/net/mlxsw/devlink_linecard.sh
+@@ -178,6 +178,22 @@ supported_types_check()
+ 	check_err $? "16X100G not found between supported types of linecard $lc"
  }
  
-+static int
-+mlxsw_linecard_info_get(struct devlink_linecard *devlink_linecard, void *priv,
-+			struct devlink_info_req *req,
-+			struct netlink_ext_ack *extack)
++lc_info_check()
 +{
-+	struct mlxsw_linecard *linecard = priv;
-+	char buf[32];
-+	int err;
++	local lc=$1
++	local fixed_hw_revision
++	local running_ini_version
 +
-+	mutex_lock(&linecard->lock);
-+	if (!linecard->provisioned) {
-+		err = 0;
-+		goto unlock;
-+	}
-+
-+	sprintf(buf, "%d", linecard->hw_revision);
-+	err = devlink_info_version_fixed_put(req, "hw.revision", buf);
-+	if (err)
-+		goto unlock;
-+
-+	sprintf(buf, "%d", linecard->ini_version);
-+	err = devlink_info_version_running_put(req, "ini.version", buf);
-+	if (err)
-+		goto unlock;
-+
-+unlock:
-+	mutex_unlock(&linecard->lock);
-+	return err;
++	fixed_hw_revision=$(devlink lc -v info $DEVLINK_DEV lc $lc -j | \
++			    jq -e -r '.[][][].versions.fixed."hw.revision"')
++	check_err $? "Failed to get linecard $lc fixed.hw.revision"
++	log_info "Linecard $lc fixed.hw.revision: \"$fixed_hw_revision\""
++	running_ini_version=$(devlink lc -v info $DEVLINK_DEV lc $lc -j | \
++			      jq -e -r '.[][][].versions.running."ini.version"')
++	check_err $? "Failed to get linecard $lc running.ini.version"
++	log_info "Linecard $lc running.ini.version: \"$running_ini_version\""
 +}
 +
- static const struct devlink_linecard_ops mlxsw_linecard_ops = {
- 	.provision = mlxsw_linecard_provision,
- 	.unprovision = mlxsw_linecard_unprovision,
- 	.same_provision = mlxsw_linecard_same_provision,
- 	.types_count = mlxsw_linecard_types_count,
- 	.types_get = mlxsw_linecard_types_get,
-+	.info_get = mlxsw_linecard_info_get,
- };
- 
- struct mlxsw_linecard_status_event {
+ lc_devices_check()
+ {
+ 	local lc=$1
+@@ -228,6 +244,7 @@ provision_test()
+ 	fi
+ 	provision_one $lc $LC_16X100G_TYPE
+ 	lc_devices_check $lc $LC_16X100G_DEVICE_COUNT
++	lc_info_check $lc
+ 	ports_check $lc $LC_16X100G_PORT_COUNT
+ 	log_test "Provision"
+ }
 -- 
 2.33.1
 
