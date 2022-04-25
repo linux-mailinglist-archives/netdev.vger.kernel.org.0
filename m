@@ -2,126 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5420E50D949
-	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 08:15:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57AF550D961
+	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 08:22:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235069AbiDYGR6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Apr 2022 02:17:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57286 "EHLO
+        id S232291AbiDYGZO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Apr 2022 02:25:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238853AbiDYGRz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 02:17:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C0F33AA7E;
-        Sun, 24 Apr 2022 23:14:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C33A3B80E00;
-        Mon, 25 Apr 2022 06:14:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C040C385A7;
-        Mon, 25 Apr 2022 06:14:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650867284;
-        bh=v1EEYhgeaIQehOy9KLNLh1/yZgwgLJde8BVe9q6sido=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=G/5U+XQ+siL3PwDWE7pVK6lRwMeGdekI4S0QO4Jgwibm4BTPBl36fOsZhdAaiUiS+
-         QDYwwySq/DiTevAda0978gAVWybNzmFckKkVJBlIvcPQkgLSmijnXL/3HxkR7F2axV
-         LCJu3Vlsu+Fy0OuTCbOPZtHf9AcH24ghHQMKXxS64fZ/c6tJ4eMufpKdFrn4qb6tM6
-         jp6P/AQbgdRw5Ow7OM8lwuxG0XS/utCLgTSKc9t/kEEqgZCOvl4em1P8FW0j39a9+r
-         qpbUNb5niBm3ECIm2e53Zk+pdWZ4Du4pnhdKoGnNN/9i0MJHILy7r/S8MgSxMZK//P
-         /yoQw5eO1SGbg==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Abhishek Kumar <kuabhs@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        briannorris@chromium.org, ath10k@lists.infradead.org,
-        netdev@vger.kernel.org, Wen Gong <quic_wgong@quicinc.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S230415AbiDYGZK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 02:25:10 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDF893D1F3
+        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 23:22:06 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id d15so10308395plh.2
+        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 23:22:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=D2vHRbKU83FDdxIr2wThti/Jzife/Zg94mt0wK6kucU=;
+        b=HI/qlRcukuoPFUHvIds29zjaJxgjbciChYE6qBesoE7mZndS1evUUKWs1+L0YXe98d
+         WAeY2RgTouWWOSvUY15fQvdk17D/ZGsyzVMcOyZ3uezFfG+rPyPcHJwawH2O25g0bNe8
+         KQGRIuVyA1Q9bdgKsJWWhgQsXK+Nn0rtk7DF0PSMRoAgViNbtUGR6UvRJGdd6AX+6o8+
+         cDVAJoQk13nZovnF0gW89a7SRHmlR9nyBQgw0+/ZmbkP9Fa8Fb4rQ6yrCRVwbJ+ChYP+
+         0mkuxsrnuEI6GHj3MIWQAOMcbcWaTz9mHZVa4lTu37loekf7njBxrqyQbi5cieV5mS+2
+         ZqIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=D2vHRbKU83FDdxIr2wThti/Jzife/Zg94mt0wK6kucU=;
+        b=FRzYVeD6ScMNowV7b07Lni8MaVH/vMJtoCHPiFgeVvwEXu/VwjZanMyoEpyI8kualh
+         V1WYl2ifhoVD0/UnJN6pwO38ldBdLNUMBCLPcKlmExdRP+tZsWYJEd7UvH/Ly5YlVDvG
+         37ttpVIOfgDVmDXOg7htS8N/wotLRuAio7I66ge7HAi9oMyryI9KU6W3TPlq96A/El3H
+         qAIQKjvuijVsQsV4y6ilkaedDf8bTNvN0yjyTW+rpJiMYgoEawAG0hgUByfjoDjOqwEP
+         5CV3rv1Xfs3Uzky7u2hXHv5Dj3bwLANGoeAhun0mNKjElkBzpJucPsabmcHIcLWL4HMC
+         AeJw==
+X-Gm-Message-State: AOAM53123bT6HzoTz5RgItZYtsBW5RFpbt9G9P+0z0fMrMZA7fEOLfJ7
+        nVZS1rqLaz7a8IsenElpDIX5/D7BhwE=
+X-Google-Smtp-Source: ABdhPJzXgiekNuywSfVfQ4zrv93nOBylKKPOmbrd5ZyqggFnC4sFHEn/lVRu5Nhvj/Jcqi+qU4H4Og==
+X-Received: by 2002:a17:902:f605:b0:14d:9e11:c864 with SMTP id n5-20020a170902f60500b0014d9e11c864mr16456741plg.54.1650867726097;
+        Sun, 24 Apr 2022 23:22:06 -0700 (PDT)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id y126-20020a62ce84000000b0050d223013b6sm6538772pfg.11.2022.04.24.23.22.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Apr 2022 23:22:05 -0700 (PDT)
+Date:   Mon, 25 Apr 2022 14:21:58 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH] ath10k: skip ath10k_halt during suspend for driver state RESTARTING
-References: <20220425021442.1.I650b809482e1af8d0156ed88b5dc2677a0711d46@changeid>
-Date:   Mon, 25 Apr 2022 09:14:37 +0300
-In-Reply-To: <20220425021442.1.I650b809482e1af8d0156ed88b5dc2677a0711d46@changeid>
-        (Abhishek Kumar's message of "Mon, 25 Apr 2022 02:15:20 +0000")
-Message-ID: <87czh5k7ua.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Balazs Nemeth <bnemeth@redhat.com>,
+        Mike Pattrick <mpattric@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCHv2 net-next] net/af_packet: add VLAN support for AF_PACKET
+ SOCK_RAW GSO
+Message-ID: <YmY+BoBGnzwMiEba@Laptop-X1>
+References: <20220425014502.985464-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220425014502.985464-1-liuhangbin@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Abhishek Kumar <kuabhs@chromium.org> writes:
 
-> Double free crash is observed when FW recovery(caused by wmi
-> timeout/crash) is followed by immediate suspend event. The FW recovery
-> is triggered by ath10k_core_restart() which calls driver clean up via
-> ath10k_halt(). When the suspend event occurs between the FW recovery,
-> the restart worker thread is put into frozen state until suspend completes.
-> The suspend event triggers ath10k_stop() which again triggers ath10k_halt()
-> The double invocation of ath10k_halt() causes ath10k_htt_rx_free() to be
-> called twice(Note: ath10k_htt_rx_alloc was not called by restart worker
-> thread because of its frozen state), causing the crash.
->
-> To fix this, during the suspend flow, skip call to ath10k_halt() in
-> ath10k_stop() when the current driver state is ATH10K_STATE_RESTARTING.
-> Also, for driver state ATH10K_STATE_RESTARTING, call
-> ath10k_wait_for_suspend() in ath10k_stop(). This is because call to
-> ath10k_wait_for_suspend() is skipped later in
-> [ath10k_halt() > ath10k_core_stop()] for the driver state
-> ATH10K_STATE_RESTARTING.
->
-> The frozen restart worker thread will be cancelled during resume when the
-> device comes out of suspend.
->
-> Below is the crash stack for reference:
->
-> [  428.469167] ------------[ cut here ]------------
-> [  428.469180] kernel BUG at mm/slub.c:4150!
-> [  428.469193] invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
-> [  428.469219] Workqueue: events_unbound async_run_entry_fn
-> [  428.469230] RIP: 0010:kfree+0x319/0x31b
-> [  428.469241] RSP: 0018:ffffa1fac015fc30 EFLAGS: 00010246
-> [  428.469247] RAX: ffffedb10419d108 RBX: ffff8c05262b0000
-> [  428.469252] RDX: ffff8c04a8c07000 RSI: 0000000000000000
-> [  428.469256] RBP: ffffa1fac015fc78 R08: 0000000000000000
-> [  428.469276] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  428.469285] Call Trace:
-> [  428.469295]  ? dma_free_attrs+0x5f/0x7d
-> [  428.469320]  ath10k_core_stop+0x5b/0x6f
-> [  428.469336]  ath10k_halt+0x126/0x177
-> [  428.469352]  ath10k_stop+0x41/0x7e
-> [  428.469387]  drv_stop+0x88/0x10e
-> [  428.469410]  __ieee80211_suspend+0x297/0x411
-> [  428.469441]  rdev_suspend+0x6e/0xd0
-> [  428.469462]  wiphy_suspend+0xb1/0x105
-> [  428.469483]  ? name_show+0x2d/0x2d
-> [  428.469490]  dpm_run_callback+0x8c/0x126
-> [  428.469511]  ? name_show+0x2d/0x2d
-> [  428.469517]  __device_suspend+0x2e7/0x41b
-> [  428.469523]  async_suspend+0x1f/0x93
-> [  428.469529]  async_run_entry_fn+0x3d/0xd1
-> [  428.469535]  process_one_work+0x1b1/0x329
-> [  428.469541]  worker_thread+0x213/0x372
-> [  428.469547]  kthread+0x150/0x15f
-> [  428.469552]  ? pr_cont_work+0x58/0x58
-> [  428.469558]  ? kthread_blkcg+0x31/0x31
->
-> Signed-off-by: Abhishek Kumar <kuabhs@chromium.org>
-> Co-developed-by: Wen Gong <quic_wgong@quicinc.com>
-> Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
+Cc Willem as I didn't format the address correctly.
 
-Tested-on tag missing, but I can add it if you provide it.
-
-https://wireless.wiki.kernel.org/en/users/drivers/ath10k/submittingpatches#tested-on_tag
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+On Mon, Apr 25, 2022 at 09:45:02AM +0800, Hangbin Liu wrote:
+> Currently, the kernel drops GSO VLAN tagged packet if it's created with
+> socket(AF_PACKET, SOCK_RAW, 0) plus virtio_net_hdr.
+> 
+> The reason is AF_PACKET doesn't adjust the skb network header if there is
+> a VLAN tag. Then after virtio_net_hdr_set_proto() called, the skb->protocol
+> will be set to ETH_P_IP/IPv6. And in later inet/ipv6_gso_segment() the skb
+> is dropped as network header position is invalid.
+> 
+> Let's handle VLAN packets by adjusting network header position in
+> packet_parse_headers(). The adjustment is safe and does not affect the
+> later xmit as tap device also did that.
+> 
+> In packet_snd(), packet_parse_headers() need to be moved before calling
+> virtio_net_hdr_set_proto(), so we can set correct skb->protocol and
+> network header first.
+> 
+> There is no need to update tpacket_snd() as it calls packet_parse_headers()
+> in tpacket_fill_skb(), which is already before calling virtio_net_hdr_*
+> functions.
+> 
+> skb->no_fcs setting is also moved upper to make all skb settings together
+> and keep consistency with function packet_sendmsg_spkt().
+> 
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> ---
+> 
+> v2: Rewrite commit description, no code update.
+> ---
+>  net/packet/af_packet.c | 18 +++++++++++++-----
+>  1 file changed, 13 insertions(+), 5 deletions(-)
+> 
+> diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+> index 243566129784..fd31334cf688 100644
+> --- a/net/packet/af_packet.c
+> +++ b/net/packet/af_packet.c
+> @@ -1924,12 +1924,20 @@ static int packet_rcv_spkt(struct sk_buff *skb, struct net_device *dev,
+>  
+>  static void packet_parse_headers(struct sk_buff *skb, struct socket *sock)
+>  {
+> +	int depth;
+> +
+>  	if ((!skb->protocol || skb->protocol == htons(ETH_P_ALL)) &&
+>  	    sock->type == SOCK_RAW) {
+>  		skb_reset_mac_header(skb);
+>  		skb->protocol = dev_parse_header_protocol(skb);
+>  	}
+>  
+> +	/* Move network header to the right position for VLAN tagged packets */
+> +	if (likely(skb->dev->type == ARPHRD_ETHER) &&
+> +	    eth_type_vlan(skb->protocol) &&
+> +	    __vlan_get_protocol(skb, skb->protocol, &depth) != 0)
+> +		skb_set_network_header(skb, depth);
+> +
+>  	skb_probe_transport_header(skb);
+>  }
+>  
+> @@ -3047,6 +3055,11 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+>  	skb->mark = sockc.mark;
+>  	skb->tstamp = sockc.transmit_time;
+>  
+> +	if (unlikely(extra_len == 4))
+> +		skb->no_fcs = 1;
+> +
+> +	packet_parse_headers(skb, sock);
+> +
+>  	if (has_vnet_hdr) {
+>  		err = virtio_net_hdr_to_skb(skb, &vnet_hdr, vio_le());
+>  		if (err)
+> @@ -3055,11 +3068,6 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+>  		virtio_net_hdr_set_proto(skb, &vnet_hdr);
+>  	}
+>  
+> -	packet_parse_headers(skb, sock);
+> -
+> -	if (unlikely(extra_len == 4))
+> -		skb->no_fcs = 1;
+> -
+>  	err = po->xmit(skb);
+>  	if (unlikely(err != 0)) {
+>  		if (err > 0)
+> -- 
+> 2.35.1
+> 
