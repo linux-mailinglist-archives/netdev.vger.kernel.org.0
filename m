@@ -2,67 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7714A50EC70
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 01:11:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B692F50EC74
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 01:13:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237048AbiDYXOy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Apr 2022 19:14:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53888 "EHLO
+        id S237177AbiDYXQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Apr 2022 19:16:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236153AbiDYXOx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 19:14:53 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0879B45509
-        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 16:11:47 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id b12so13793424plg.4
-        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 16:11:47 -0700 (PDT)
+        with ESMTP id S233238AbiDYXQP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 19:16:15 -0400
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62FF44705A
+        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 16:13:08 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id s70so11995921qke.8
+        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 16:13:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=ziepe.ca; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=7qfaiS7UptGcLjv78D3MJ3R6HW7ht14Xm/IpQ4WlFks=;
-        b=MmhFoO2V8w9wi8xpsU1YJ3SIL+O1UDp6+GMDMyeQp/HYO0bw9etoHhAaDiQhGx+kCo
-         9/zrw47FA6hWwth8/g/FVpkVz2aRxuLT2fHCJhSEgPH4TXyXv9Rhv+jTf2zyAbGQTK2X
-         lgZ8uSIrgQAY/M9WgRVxk0xSYXDZ7ttngcP3Q=
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=859SzIAl5s4qyDYzHMnInkzDTVU0f+lfGR9c6BypQKU=;
+        b=VFMKBb4spKVN4vXzZmGlcljUkn8jDXuHsiypBo8IpuM+TtBh+LnxNjfREzL8kMHQ+/
+         GyN6Hve3dAxf26J8NV9n1G2dLOP6w4d8Wi+PdKWvN0RNtdhCshdN4Kj01Aa42XW/S7Rz
+         7Q9T6F4NBS917g8xR2MU60I8vn2Zp7N/VQteaEwXAVlbERBnfvYLAPKIunkG0MAt3gtV
+         0vk3il+3Co25IWYnl2IT5zWZ93sJcqqHpmE++7SkTInXHWwN35cr4URvGhyuj6pyWyBf
+         iKRcbEl3hWk6wBiIdAdnote+DN2WS5js6dUKvdufawLmRDPL4DDEEFUTFynGLDs50qLB
+         BnNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7qfaiS7UptGcLjv78D3MJ3R6HW7ht14Xm/IpQ4WlFks=;
-        b=xgF9jpRPnaS41Iwx4obKvMAAFKh1Cpvw/t6f84Rls/tBHQ3WBWIpopTlmjipKNbGfL
-         57N7ZoKWtyT6RUyuLnGbtkU73mDg8agpkBkuI5OK+swlWsJfm0jKLQf1pb9yQVH1drVl
-         GBQ9lOFCmeKbQ17XlZdGBoP2raQ9IiqdSkLo+QA5Exw9geuVwD8gg+EzJk/PIIVtFdao
-         dsLDD8j6CUHovhXCcBBHpV1DtsfRemcWI7oXH9GCECkX09OAKI21OIIw5QcPvVyKeJ2R
-         biIz9H+gJqIql+84eXQiATElURx/9FFKpJcuRq4mP6RoBSEIBB1BdGRye44xzpbYQBQV
-         EwVA==
-X-Gm-Message-State: AOAM531s8ikGwIVjIGsaJrYZWs4FcLd+WnU/sEUaOhD5M3ELobSGnu+8
-        Ga3ne3f7HEN95+HUGbDdKKiYHg==
-X-Google-Smtp-Source: ABdhPJxq8tSG81ZERtNbzC6rp5Tzf57SH9Vgo2lZtFXB6AkCwnY/CL5q9qLUlUQbRHBd70yLFSRgyg==
-X-Received: by 2002:a17:90a:a82:b0:1c9:ef95:486 with SMTP id 2-20020a17090a0a8200b001c9ef950486mr34213615pjw.93.1650928307416;
-        Mon, 25 Apr 2022 16:11:47 -0700 (PDT)
-Received: from google.com ([2620:15c:202:201:84c6:2d6d:c16:1a1b])
-        by smtp.gmail.com with ESMTPSA id f4-20020aa782c4000000b00505da6251ebsm12495302pfn.154.2022.04.25.16.11.45
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=859SzIAl5s4qyDYzHMnInkzDTVU0f+lfGR9c6BypQKU=;
+        b=bc3PrGI8P0q3LTBYPK81Ks1tmhWvitdfkijzuWz7FNmolfrIhUD8Qf0TZgSr5ezmOb
+         KtN9/N3hT6C6W/dNDWEu2obmSjEMN0N6hvuxvxaob9GgS+NTOmtd2nHiBPpPIm6ElDMq
+         fgfYL2/zoWwfiQyVsuhUFUEXwKepKKqy+HUv2u4Oxo/2svtMnONvqqDZPxJTkqEHXWm2
+         Z7OlJ4CewbChlHTxSMz+qYCs0P58Q+Ok+Sf8v33FSHhaTMglWYZXLY5VgYXdx3/GuoJV
+         RgHXcUCbOj0AV3RPX/s2z6AF9gEySCA+L4b0mF4zZtZFQ4ltozRDBqdk4NuY/h02jDba
+         VyDw==
+X-Gm-Message-State: AOAM532p0u37E96vevcZfbWe8KXc1rWfBeBaWFhhw+l5ZDiv2HB4YUD3
+        nX/cs6OGIOPzQ+uJQX/675RuKr3NX3rIJQ==
+X-Google-Smtp-Source: ABdhPJyBm1rfe/bIM2Tf4Z/VxltzqOD4aEPfsMfKA3H69l46JBqz8Rvc4A+jnw7zX9p/YaPB+m+lPw==
+X-Received: by 2002:a37:4549:0:b0:69f:556c:4e38 with SMTP id s70-20020a374549000000b0069f556c4e38mr4588420qka.202.1650928387552;
+        Mon, 25 Apr 2022 16:13:07 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
+        by smtp.gmail.com with ESMTPSA id h23-20020ac87777000000b002f3604761desm5115402qtu.35.2022.04.25.16.13.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 16:11:46 -0700 (PDT)
-Date:   Mon, 25 Apr 2022 16:11:44 -0700
-From:   Brian Norris <briannorris@chromium.org>
-To:     Abhishek Kumar <kuabhs@chromium.org>
-Cc:     kvalo@kernel.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, ath10k@lists.infradead.org,
-        netdev@vger.kernel.org, Wen Gong <quic_wgong@quicinc.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH] ath10k: skip ath10k_halt during suspend for driver state
- RESTARTING
-Message-ID: <YmcqsFyCMqcWAEMM@google.com>
-References: <20220425021442.1.I650b809482e1af8d0156ed88b5dc2677a0711d46@changeid>
+        Mon, 25 Apr 2022 16:13:06 -0700 (PDT)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1nj7tB-009VkQ-Qg; Mon, 25 Apr 2022 20:13:05 -0300
+Date:   Mon, 25 Apr 2022 20:13:05 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Mateusz =?utf-8?Q?Jo=C5=84czyk?= <mat.jonczyk@o2.pl>
+Cc:     netdev@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        David Laight <David.Laight@ACULAB.COM>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        linux-rdma@vger.kernel.org
+Subject: Re: "mm: uninline copy_overflow()" breaks i386 build in Mellanox MLX4
+Message-ID: <20220425231305.GY64706@ziepe.ca>
+References: <dbd203b1-3988-4c9c-909c-2d1f7f173a0d@o2.pl>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220425021442.1.I650b809482e1af8d0156ed88b5dc2677a0711d46@changeid>
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <dbd203b1-3988-4c9c-909c-2d1f7f173a0d@o2.pl>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -71,47 +79,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 02:15:20AM +0000, Abhishek Kumar wrote:
-> --- a/drivers/net/wireless/ath/ath10k/mac.c
-> +++ b/drivers/net/wireless/ath/ath10k/mac.c
-> @@ -5345,8 +5345,22 @@ static void ath10k_stop(struct ieee80211_hw *hw)
->  
->  	mutex_lock(&ar->conf_mutex);
->  	if (ar->state != ATH10K_STATE_OFF) {
-> -		if (!ar->hw_rfkill_on)
-> -			ath10k_halt(ar);
-> +		if (!ar->hw_rfkill_on) {
-> +			/* If the current driver state is RESTARTING but not yet
-> +			 * fully RESTARTED because of incoming suspend event,
-> +			 * then ath11k_halt is already called via
+On Thu, Apr 21, 2022 at 10:47:01PM +0200, Mateusz Jończyk wrote:
+> Hello,
+> 
+> commit ad7489d5262d ("mm: uninline copy_overflow()")
+> 
+> breaks for me a build for i386 in the Mellanox MLX4 driver:
+> 
+>         In file included from ./arch/x86/include/asm/preempt.h:7,
+>                          from ./include/linux/preempt.h:78,
+>                          from ./include/linux/percpu.h:6,
+>                          from ./include/linux/context_tracking_state.h:5,
+>                          from ./include/linux/hardirq.h:5,
+>                          from drivers/net/ethernet/mellanox/mlx4/cq.c:37:
+>         In function ‘check_copy_size’,
+>             inlined from ‘copy_to_user’ at ./include/linux/uaccess.h:159:6,
+>             inlined from ‘mlx4_init_user_cqes’ at drivers/net/ethernet/mellanox/mlx4/cq.c:317:9,
+>             inlined from ‘mlx4_cq_alloc’ at drivers/net/ethernet/mellanox/mlx4/cq.c:394:10:
+>         ./include/linux/thread_info.h:228:4: error: call to ‘__bad_copy_from’ declared with attribute error: copy source size is too small
+>           228 |    __bad_copy_from();
+>               |    ^~~~~~~~~~~~~~~~~
+>         make[5]: *** [scripts/Makefile.build:288: drivers/net/ethernet/mellanox/mlx4/cq.o] Błąd 1
+>         make[4]: *** [scripts/Makefile.build:550: drivers/net/ethernet/mellanox/mlx4] Błąd 2
+>         make[3]: *** [scripts/Makefile.build:550: drivers/net/ethernet/mellanox] Błąd 2
+>         make[2]: *** [scripts/Makefile.build:550: drivers/net/ethernet] Błąd 2
+>         make[1]: *** [scripts/Makefile.build:550: drivers/net] Błąd 2
+> 
+> Reverting this commit fixes the build. Disabling Mellanox Ethernet drivers
+> in Kconfig (tested only with also disabling of all Infiniband support) also fixes the build.
+> 
+> It appears that uninlining of copy_overflow() causes GCC to analyze the code deeper.
 
-s/ath11k/ath10k/
+This looks like a compiler bug to me, array_size(entries, cqe_size)
+cannot be known at compile time, so the __builtin_constant_p(bytes)
+should be compile time false meaning the other two bad branches should
+have been eliminated.
 
-I know ath11k is the hot new thing, but this is ath10k ;)
-
-> +			 * ath10k_core_restart and should not be called here.
-
-s/ath10k/ath11k/
-
-> +			 */
-> +			if (ar->state != ATH10K_STATE_RESTARTING)
-> +				ath10k_halt(ar);
-> +			else
-> +				/* Suspending here, because when in RESTARTING
-> +				 * state, ath11k_core_stop skips
-
-s/ath10k/ath11k/
-
-> +				 * ath10k_wait_for_suspend.
-> +				 */
-> +				ath10k_wait_for_suspend(ar,
-> +							WMI_PDEV_SUSPEND_AND_DISABLE_INTR);
-> +		}
->  		ar->state = ATH10K_STATE_OFF;
->  	}
->  	mutex_unlock(&ar->conf_mutex);
-
-Otherwise, I believe this is the right solution to the problem pointed
-out in the commit message:
-
-Reviewed-by: Brian Norris <briannorris@chromium.org>
+Jason
