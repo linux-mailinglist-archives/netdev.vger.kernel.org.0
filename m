@@ -2,54 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CA53650DE5C
-	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 13:00:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3FE250DE5F
+	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 13:01:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238847AbiDYLD1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Apr 2022 07:03:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36608 "EHLO
+        id S241614AbiDYLDg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Apr 2022 07:03:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241602AbiDYLDP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 07:03:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D72D8C7F1
-        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 04:00:12 -0700 (PDT)
+        with ESMTP id S238315AbiDYLDT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 07:03:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A945B8CCFF;
+        Mon, 25 Apr 2022 04:00:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D7B1960F75
-        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 11:00:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3B7ADC385AB;
+        by ams.source.kernel.org (Postfix) with ESMTPS id F373FB815BE;
+        Mon, 25 Apr 2022 11:00:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 94204C385B0;
         Mon, 25 Apr 2022 11:00:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1650884411;
-        bh=8JN+K0pO14yQH7tPLcgdN3UzhICAlO37tob3pulLtSY=;
+        bh=Qu5ATgLDxCPCLmOegobXU0UXuqRM25UYt4vqDM5wPEk=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=sWqUElHrieEuQ+NBoGvI46y91Ps4gAwFVGlzA7ORVgk4w1qw+sQ2TeepcKy5QDwtM
-         0MHer5EAOCeiaeL56ysNJwQDhaC1mJQjDk2I9nPWFHHw234r/8SUSW996DpqKq7gER
-         Mmkg1wZZpVA+ACfgDemcr7g4HiFzv9yvb9GWnCDQzWGpHLjQw4prAP6dkKPfJz7uol
-         f28gXTANsTvCmW+c8u1zn83TVXSip7510hDbEmzbnjXRzfeUoj/zshjnyc+bzQi8sV
-         NfEeMb0EXfic0Rje9Py72KOFxufo+mb4MNGbxIFDxrzDppKd13d75uOGNnTs4vNYJA
-         F0G/5IQ/IwBeA==
+        b=HewJ+/wmSRJrkZmtRRJwrff8RPtBMQozqRN4Klg3a1Pr6x831M961CGNEqC9y1thY
+         AnhlBrcdsYSiAcm6NB3h/2bbfXdOVhESiIEUPyVKA0TZwvPcuEvoS+RCyWi1yKQHep
+         KxQlqFKcC7Z7TGVHakW0fWqoVwGQqFO1lIIN3DMpHflvqXRwQLgWhpDs3Zv9bndwVm
+         sXPODyBe3uxKTeYJXPNP4Ioag6TBDsgftyuceP9XnC0SyoOcinov3HVdA2Cvl3uETR
+         wq1/iLomHiu1PXDCCvNgICd32ikoenQbAhr36seZitROjQgV5io8/6m2cSy+fgrEL5
+         hTch38yUA3jdA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1EAC5EAC09C;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7F2F3E6D402;
         Mon, 25 Apr 2022 11:00:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/2] Fix Ocelot VLAN regressions introduced by FDB
- isolation
+Subject: Re: [PATCH net-next] arp: fix unused variable warnning when
+ CONFIG_PROC_FS=n
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165088441111.15733.14466039470125512601.git-patchwork-notify@kernel.org>
+Message-Id: <165088441151.15733.12108814407313013302.git-patchwork-notify@kernel.org>
 Date:   Mon, 25 Apr 2022 11:00:11 +0000
-References: <20220421230105.3570690-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20220421230105.3570690-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        pabeni@redhat.com, f.fainelli@gmail.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, olteanv@gmail.com,
-        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
-        UNGLinuxDriver@microchip.com
+References: <20220422061431.1905579-1-yajun.deng@linux.dev>
+In-Reply-To: <20220422061431.1905579-1-yajun.deng@linux.dev>
+To:     Yajun Deng <yajun.deng@linux.dev>
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lkp@intel.com
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -61,26 +59,23 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (master)
+This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 22 Apr 2022 02:01:03 +0300 you wrote:
-> There are 2 regressions in the VLAN handling code of the ocelot/felix
-> DSA driver which can be seen when running the bridge_vlan_aware.sh
-> selftest. These manifest in the form of valid VLAN configurations being
-> rejected by the driver with incorrect extack messages.
+On Fri, 22 Apr 2022 14:14:31 +0800 you wrote:
+> net/ipv4/arp.c:1412:36: warning: unused variable 'arp_seq_ops' [-Wunused-const-variable]
 > 
-> First regression occurs when we attempt to install an egress-untagged
-> bridge VLAN to a bridge port that was brought up *while* it was under a
-> bridge (not before).
+> Add #ifdef CONFIG_PROC_FS for 'arp_seq_ops'.
+> 
+> Fixes: e968b1b3e9b8 ("arp: Remove #ifdef CONFIG_PROC_FS")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/2] net: mscc: ocelot: ignore VID 0 added by 8021q module
-    https://git.kernel.org/netdev/net/c/9323ac367005
-  - [net,2/2] net: mscc: ocelot: don't add VID 0 to ocelot->vlans when leaving VLAN-aware bridge
-    https://git.kernel.org/netdev/net/c/1fcb8fb3522f
+  - [net-next] arp: fix unused variable warnning when CONFIG_PROC_FS=n
+    https://git.kernel.org/netdev/net-next/c/b0e653b2a0d9
 
 You are awesome, thank you!
 -- 
