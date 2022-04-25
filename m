@@ -2,144 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E86950E584
-	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 18:23:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A4C550E5A9
+	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 18:25:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243352AbiDYQZt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Apr 2022 12:25:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58254 "EHLO
+        id S243511AbiDYQ2R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Apr 2022 12:28:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243350AbiDYQZs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 12:25:48 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99D1A7487D;
-        Mon, 25 Apr 2022 09:22:43 -0700 (PDT)
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nj1U0-0007dF-N7; Mon, 25 Apr 2022 18:22:40 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nj1U0-000CR6-9n; Mon, 25 Apr 2022 18:22:40 +0200
-Subject: Re: [PATCH perf/core 1/5] libbpf: Add bpf_program__set_insns function
-To:     Jiri Olsa <jolsa@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     linux-perf-users@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Ian Rogers <irogers@google.com>
-References: <20220422100025.1469207-1-jolsa@kernel.org>
- <20220422100025.1469207-2-jolsa@kernel.org>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <52f36e85-fea6-e307-344e-5bbb5b8431f7@iogearbox.net>
-Date:   Mon, 25 Apr 2022 18:22:37 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S243530AbiDYQ1y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 12:27:54 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8697811F95E
+        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 09:24:49 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id i24so15253577pfa.7
+        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 09:24:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Fy4scNdR+gQe8khm9Rf8E41vItskGz3mg6jdYBjtzmk=;
+        b=MAjwXVtS0TOSth3fYjCdTEttJJ5Dk25IYowuZJb4odyaSAWH+UPiIuqbb9ufRknlu3
+         KbXXbzOG5/8YVBro2WrgjiRxZ1707r9gW13Jr6pxpFmEPVoo6nomoygPlXyEwCnF2KAA
+         a813mlSQSL0uJ+Q33IarwNSLZm2mcPaeQfhavx7/bj5+eOhuuTx8m2MLaBkZRaQ+uEF1
+         /Y6IzkWpvj9pXwUmT1X2C3rZUu+YKuu06hlk1Fj1IbgBDYzAhGK0rEqh2buOuUKDhKTS
+         kc5H4g8dCAaCzwiM4MlE+o7aEdByk7yNeVleJj9LVZ0tJvFYiLx+PH7RNz5K06wbhHgR
+         +DvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Fy4scNdR+gQe8khm9Rf8E41vItskGz3mg6jdYBjtzmk=;
+        b=cTy4ZOEanEj3gm6Wl3menRWrc8hkXyGMuluDmNc5meHD8HaSUGhh4aSfWDkDI1XPhL
+         s7/3DVOlLoudgGShcUCvsjLZC0wG01yl2oI2ZxhUGgyCUe5/5BhAjg9nzrRMDWKQeKzU
+         J30Mh51CKofE01Nuc0SBzGw7lL0zHDa2B6C64NhZKA3q6bjfVUU1GTdmGFPyfOaChRPP
+         KU7tStxQATf6R8X2dwerz+tTYUmI22/e7/43KqPNPs/nE5na9P6OOiNTE6pzsKURr9F+
+         J8WiiF2d35Onu13xvNtVa7Gs6y6x0aS8noZgkutnWd3ASDnFETl7TnLKP52l8lkp2QMc
+         z3pQ==
+X-Gm-Message-State: AOAM532OQEubDD8VxCgFI23wKExVuqy4tmaSVNQeR5qDAG/3lpw6PP14
+        bsX/CZPbh8fgkdHN/E4T4/3L3A==
+X-Google-Smtp-Source: ABdhPJy3+eXGqclAEFMNVelhhNbF0vgEqU5TGB4C+yC8sRaVH5zFyeHk8OdGfj3X4QNhjN1GPpxDCw==
+X-Received: by 2002:a63:a61:0:b0:39c:b654:b753 with SMTP id z33-20020a630a61000000b0039cb654b753mr15440285pgk.117.1650903889024;
+        Mon, 25 Apr 2022 09:24:49 -0700 (PDT)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id u2-20020a62d442000000b0050d404f837fsm3822645pfl.156.2022.04.25.09.24.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Apr 2022 09:24:48 -0700 (PDT)
+Date:   Mon, 25 Apr 2022 09:24:46 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Wells Lu <wellslutw@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, p.zabel@pengutronix.de,
+        pabeni@redhat.com, krzk+dt@kernel.org, roopa@nvidia.com,
+        andrew@lunn.ch, edumazet@google.com, wells.lu@sunplus.com
+Subject: Re: [PATCH net-next v9 2/2] net: ethernet: Add driver for Sunplus
+ SP7021
+Message-ID: <20220425092446.477bd8f5@hermes.local>
+In-Reply-To: <1650882640-7106-3-git-send-email-wellslutw@gmail.com>
+References: <1650882640-7106-1-git-send-email-wellslutw@gmail.com>
+        <1650882640-7106-3-git-send-email-wellslutw@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20220422100025.1469207-2-jolsa@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26523/Mon Apr 25 10:20:35 2022)
-X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/22/22 12:00 PM, Jiri Olsa wrote:
-> Adding bpf_program__set_insns that allows to set new
-> instructions for program.
-> 
-> Also moving bpf_program__attach_kprobe_multi_opts on
-> the proper name sorted place in map file.
-> 
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->   tools/lib/bpf/libbpf.c   |  8 ++++++++
->   tools/lib/bpf/libbpf.h   | 12 ++++++++++++
->   tools/lib/bpf/libbpf.map |  3 ++-
->   3 files changed, 22 insertions(+), 1 deletion(-)
-> 
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 809fe209cdcc..284790d81c1b 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -8457,6 +8457,14 @@ size_t bpf_program__insn_cnt(const struct bpf_program *prog)
->   	return prog->insns_cnt;
->   }
->   
-> +void bpf_program__set_insns(struct bpf_program *prog,
-> +			    struct bpf_insn *insns, size_t insns_cnt)
-> +{
-> +	free(prog->insns);
-> +	prog->insns = insns;
-> +	prog->insns_cnt = insns_cnt;
-> +}
-> +
->   int bpf_program__set_prep(struct bpf_program *prog, int nr_instances,
->   			  bpf_program_prep_t prep)
->   {
-> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> index 05dde85e19a6..b31ad58d335f 100644
-> --- a/tools/lib/bpf/libbpf.h
-> +++ b/tools/lib/bpf/libbpf.h
-> @@ -323,6 +323,18 @@ struct bpf_insn;
->    * different.
->    */
->   LIBBPF_API const struct bpf_insn *bpf_program__insns(const struct bpf_program *prog);
-> +
-> +/**
-> + * @brief **bpf_program__set_insns()** can set BPF program's underlying
-> + * BPF instructions.
-> + * @param prog BPF program for which to return instructions
-> + * @param insn a pointer to an array of BPF instructions
-> + * @param insns_cnt number of `struct bpf_insn`'s that form
-> + * specified BPF program
+On Mon, 25 Apr 2022 18:30:40 +0800
+Wells Lu <wellslutw@gmail.com> wrote:
+
+> diff --git a/drivers/net/ethernet/sunplus/spl2sw_driver.h b/drivers/net/ethernet/sunplus/spl2sw_driver.h
+> new file mode 100644
+> index 000000000..5f177b3af
+> --- /dev/null
+> +++ b/drivers/net/ethernet/sunplus/spl2sw_driver.h
+> @@ -0,0 +1,12 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/* Copyright Sunplus Technology Co., Ltd.
+> + *       All rights reserved.
 > + */
-> +LIBBPF_API void bpf_program__set_insns(struct bpf_program *prog,
-> +				       struct bpf_insn *insns, size_t insns_cnt);
 > +
+> +#ifndef __SPL2SW_DRIVER_H__
+> +#define __SPL2SW_DRIVER_H__
+> +
+> +#define SPL2SW_RX_NAPI_WEIGHT	16
+> +#define SPL2SW_TX_NAPI_WEIGHT	16
 
-Iiuc, patch 2 should be squashed into this one given they logically belong to the
-same change?
-
-Fwiw, I think the API description should be elaborated a bit more, in particular that
-the passed-in insns need to be from allocated dynamic memory which is later on passed
-to free(), and maybe also constraints at which point in time bpf_program__set_insns()
-may be called.. (as well as high-level description on potential use cases e.g. around
-patch 4).
-
->   /**
->    * @brief **bpf_program__insn_cnt()** returns number of `struct bpf_insn`'s
->    * that form specified BPF program.
-> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> index dd35ee58bfaa..afa10d24ab41 100644
-> --- a/tools/lib/bpf/libbpf.map
-> +++ b/tools/lib/bpf/libbpf.map
-> @@ -444,7 +444,8 @@ LIBBPF_0.8.0 {
->   	global:
->   		bpf_object__destroy_subskeleton;
->   		bpf_object__open_subskeleton;
-> +		bpf_program__attach_kprobe_multi_opts;
-> +		bpf_program__set_insns;
->   		libbpf_register_prog_handler;
->   		libbpf_unregister_prog_handler;
-> -		bpf_program__attach_kprobe_multi_opts;
->   } LIBBPF_0.7.0;
-> 
-
+Why define your own? there is NAPI_POLL_WEIGHT already
+defined in netdevice.h
