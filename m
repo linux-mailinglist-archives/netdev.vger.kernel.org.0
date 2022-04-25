@@ -2,131 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 96DD150E3FA
-	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 17:05:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B050850E400
+	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 17:06:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242728AbiDYPI3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Apr 2022 11:08:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41574 "EHLO
+        id S242460AbiDYPI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Apr 2022 11:08:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242719AbiDYPIZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 11:08:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E955F1FCF3;
-        Mon, 25 Apr 2022 08:05:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A19C6B8160D;
-        Mon, 25 Apr 2022 15:05:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65958C385A4;
-        Mon, 25 Apr 2022 15:05:14 +0000 (UTC)
-Date:   Mon, 25 Apr 2022 11:05:12 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Xu Kuohai <xukuohai@huawei.com>
-Cc:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        <hpa@zytor.com>, Shuah Khan <shuah@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Daniel Kiss <daniel.kiss@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Mark Brown <broonie@kernel.org>,
-        Delyan Kratunov <delyank@fb.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Subject: Re: [PATCH bpf-next v3 2/7] ftrace: Fix deadloop caused by direct
- call in ftrace selftest
-Message-ID: <20220425110512.538ce0bf@gandalf.local.home>
-In-Reply-To: <20220424154028.1698685-3-xukuohai@huawei.com>
-References: <20220424154028.1698685-1-xukuohai@huawei.com>
-        <20220424154028.1698685-3-xukuohai@huawei.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S233191AbiDYPI5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 11:08:57 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF6C422BCE
+        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 08:05:51 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id w187so18168540ybe.2
+        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 08:05:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=uFTNav1z5LSmioVIFxM+yd5bfsCUGOiyysRueZnybkU=;
+        b=DTmx+h0LWCwrCRwn/0uESGGf63iWcuBCJF3sKl71mM88n3DYPXt5LiWHzryN2pQTlB
+         Nt1Po/19e5MKXM2KtQQk0kzaGHOPGthd8Jbw8lQxGdqJvQG2Itnfvwwt2lB13J20UXue
+         LoMp2g3yQCgmr5pwa6oeQLmFssmsMzmEPM/6ko29Sb2KNWf86rneTIx8ZpIh8QSa+MVM
+         YmOntpLUa3sgOr+0EXaPmPm/brb/MTkc+Ir1xUaO6kjtN/lSW4o+/VlAw2s2AOr4T25C
+         uEanmQyn5RC5dBqPUnNs1fsaslXsEzw5g0KL8s8eTODK47eGk2gcX1seK9iua5tGn5o3
+         +2iw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=uFTNav1z5LSmioVIFxM+yd5bfsCUGOiyysRueZnybkU=;
+        b=fLD11aHdzi5oDNRqBF1UWAtNtcpkQOy2vP4iIkBh+yZDEUaqrVvUpE39I7nUx3bFWn
+         SD+BSqJ+woAJUIvaZ9PWyJeVUFQq+rya4zemVKcYCMD5mJuKZI3Gph0wH4GIUoe/o8H8
+         7C09ARI3MtxyMoJnQOvgy8N95l3ccCUhyicbP5aDrMFhUd71Qtxv1sT2VzHjDG7TWEHL
+         zUZtBGNUjU/oDh8mvvAHZUuMT+REWZBrdNXMm4xSqF6CLBpiPj1SuxH//LNZgXzNKqqX
+         8BxrfPeIRvSVBagpRFT9XxJR7mK0LTJwQgr/My6ZN/DhcD/jw4WJIrheYgRCAFugVcWv
+         btlQ==
+X-Gm-Message-State: AOAM533gZ0RrYN7kNGUk4TYAxVvBE7D5W2B30btbTW7wXM/PIFy04G9j
+        3owhQT/xr96jWSuAWfg/aWzVaQUXnP9hAWpDPUyxu7mOf5H7IQ==
+X-Google-Smtp-Source: ABdhPJxxfL23HUApgOQ+QNN1P5xP+P4r5SJLzaGYyILLLw3C4InUN4GdTn6vrt/ewfyDQYlTZt2TFeQI9DoWPMBTfR8=
+X-Received: by 2002:a25:ea48:0:b0:644:e2e5:309 with SMTP id
+ o8-20020a25ea48000000b00644e2e50309mr16291855ybe.407.1650899150745; Mon, 25
+ Apr 2022 08:05:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220425003407.3002429-1-eric.dumazet@gmail.com> <CAA93jw7uoMCWT9oF52NhgozgCTJ4TAxpgNMNAZTaKqCpMR7uOg@mail.gmail.com>
+In-Reply-To: <CAA93jw7uoMCWT9oF52NhgozgCTJ4TAxpgNMNAZTaKqCpMR7uOg@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 25 Apr 2022 08:05:39 -0700
+Message-ID: <CANn89iJ_tVji7LVm57Mp-NZZkza5eQf9-hqL802mvcUjs=yndQ@mail.gmail.com>
+Subject: Re: [PATCH net] tcp: fix potential xmit stalls caused by TCP_NOTSENT_LOWAT
+To:     Dave Taht <dave.taht@gmail.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>, Doug Porter <dsp@fb.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Neal Cardwell <ncardwell@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 24 Apr 2022 11:40:23 -0400
-Xu Kuohai <xukuohai@huawei.com> wrote:
+On Mon, Apr 25, 2022 at 6:16 AM Dave Taht <dave.taht@gmail.com> wrote:
+>
 
-> diff --git a/kernel/trace/trace_selftest.c b/kernel/trace/trace_selftest.c
-> index abcadbe933bb..d2eff2b1d743 100644
-> --- a/kernel/trace/trace_selftest.c
-> +++ b/kernel/trace/trace_selftest.c
-> @@ -785,8 +785,24 @@ static struct fgraph_ops fgraph_ops __initdata  = {
->  };
->  
->  #ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
-> +#ifdef CONFIG_ARM64
+>
+> Thx! We have been having very good results with TCP_NOTSENT_LOWAT set
+> to 32k or less behind an apache traffic server... and had some really
+> puzzling ones at geosync RTTs. Now I gotta go retest.
+>
+> Side question: Is there a guide/set of recommendations to setting this
+> value more appropriately, under what circumstances? Could it
+> autoconfigure?
 
-Please find a way to add this in arm specific code. Do not add architecture
-defines in generic code.
+It is a tradeoff between memory usage in the kernel (storing data in
+the socket transmit queue),
+and the number of times the application is woken up to let it push
+another chunk of data.
 
-You could add:
+32k really means : No more than one skb at a time.  (An skb can
+usually store about 64KB of payload)
 
-#ifndef ARCH_HAVE_FTRACE_DIRECT_TEST_FUNC
-noinline __noclone static void trace_direct_tramp(void) { }
-#endif
+At Google we have been using 2MB, but I suspect this was to work
+around the bug I just fixed.
+We probably could use a smaller value like 1MB, leading to one
+EPOLLOUT for 1/2 MB.
 
-here, and in arch/arm64/include/ftrace.h
+Precise values also depend on how much work is needed in
+tcp_sendmsg(), zerocopy can play a role here.
 
-#define ARCH_HAVE_FTRACE_DIRECT_TEST_FUNC
+autoconfigure ? Not sure how. Once you have provisioned a server for a
+given workload,
+you are all set. No need to tune the value as a function of the load.
 
-and define your test function in the arm64 specific code.
+>
+> net.ipv4.tcp_notsent_lowat =3D 32768
 
--- Steve
+This probably has caused many stalls on long rtt / lossy links...
 
-
-
-
-> +extern void trace_direct_tramp(void);
-> +
-> +asm (
-> +"	.pushsection	.text, \"ax\", @progbits\n"
-> +"	.type		trace_direct_tramp, %function\n"
-> +"	.global		trace_direct_tramp\n"
-> +"trace_direct_tramp:"
-> +"	mov	x10, x30\n"
-> +"	mov	x30, x9\n"
-> +"	ret	x10\n"
-> +"	.size		trace_direct_tramp, .-trace_direct_tramp\n"
-> +"	.popsection\n"
-> +);
-> +#else
->  noinline __noclone static void trace_direct_tramp(void) { }
->  #endif
-> +#endif
->  
->  /*
->   * Pretty much the same than for the function tracer from which the selftest
-
+>
+> --
+> FQ World Domination pending: https://blog.cerowrt.org/post/state_of_fq_co=
+del/
+> Dave T=C3=A4ht CEO, TekLibre, LLC
