@@ -2,130 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D868250D74C
-	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 05:01:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D6EC50D767
+	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 05:11:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240514AbiDYDEM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Apr 2022 23:04:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51806 "EHLO
+        id S240560AbiDYDNx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Apr 2022 23:13:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229577AbiDYDEK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 23:04:10 -0400
-Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F7B61B7BD;
-        Sun, 24 Apr 2022 20:01:06 -0700 (PDT)
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 6E6E2C13B4;
-        Mon, 25 Apr 2022 03:01:05 +0000 (UTC)
-Received: from pdx1-sub0-mail-a217.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 98D18C15B2;
-        Mon, 25 Apr 2022 03:01:04 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1650855664; a=rsa-sha256;
-        cv=none;
-        b=H9YMoe/idniQ4oRp9Q6cTnJUHzUf0nEAmLqRz2/zJNVBcVjQc9fxBRsxt3XyEVjIpUykph
-        Xj2yFner+wwkb+0WOAOeg7gk9L5h4VA6J5boQEulI8eu0TA7iX8KGJKVqLnzsorqNq+rug
-        rCRG9ZbQ5eG/n2DNmBnPPUXkHY/oHAhg5LawAAUg2lYfbGNgjhQ4XvDg4pUyRR4OPzYYIn
-        Crb+SuSn7dT/pvYYF9dSiaOvLcnpv3n6ZG0lQyqVolnXSKQcm+3wVbUJ1sAc0rAcmyLgA9
-        Dr75+tGuzymOuOnyU2wnUHdjNWVoqB8TEYI4akknfAMTQO2ussSSNF1OriAoAA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1650855664;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:dkim-signature;
-        bh=FnZ8llSJWkl2FqoEfQdnZQWLmuu+j68/tH7/8sZn3UY=;
-        b=TGbEm/JiTeLA8E2OINRL3m+y2CBEOvCQON2tx/bLEzyDbnXed+rFINuJto6L/S1IQ6Z68w
-        ke8TbjiObgPLkx6mLshRa4O4JSlzhREvJePtRtd8A42Ii04TjDc10tMB7+T2L0KT95Xx02
-        OXALCw0CWNkSgZ3szMyf3EzXzUP2nC/qogAgsqqusDbZiG/tYqejf+YM47chcfF247N+ug
-        d1UBtB8hWGRAulLVROZkkp8VT7QOZBAZ7xgaFQu9+PH2H7fM/vPPDbNodTb0l/65x1ObMa
-        PNvrsbbxTk1zkwz67BmxCyNwF6Oeb07cP932woFb1vhDjlbKWSzLa/Hwx2oDkA==
-ARC-Authentication-Results: i=1;
-        rspamd-6dfbdcb948-4k72z;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=ian@linux.cowan.aero
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|ian@linux.cowan.aero
-X-MailChannels-Auth-Id: dreamhost
-X-Bottle-Arch: 39d2fbac15c5e251_1650855665044_2609463641
-X-MC-Loop-Signature: 1650855665043:2074948883
-X-MC-Ingress-Time: 1650855665043
-Received: from pdx1-sub0-mail-a217.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.116.106.102 (trex/6.7.1);
-        Mon, 25 Apr 2022 03:01:05 +0000
-Received: from localhost.localdomain (unknown [69.12.38.97])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: ian@linux.cowan.aero)
-        by pdx1-sub0-mail-a217.dreamhost.com (Postfix) with ESMTPSA id 4KmqXH3M74z2n;
-        Sun, 24 Apr 2022 20:01:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.cowan.aero;
-        s=dreamhost; t=1650855664;
-        bh=FnZ8llSJWkl2FqoEfQdnZQWLmuu+j68/tH7/8sZn3UY=;
-        h=From:To:Cc:Subject:Date:Content-Transfer-Encoding;
-        b=siVSzLaEaaqZT/RAhNBylm4r5vV8JuOFCeG1sURL8AdbRiCzRrK+19KSq7aL2ienI
-         3a+BxU0wc2KXC6txjBN5UmMk4ot26YrxYU4EL6oytvRs1fWsMvrB171iaHD9q+aPcA
-         +Q/IdORkxLg8eufTGAuLMx/fc875DeZ+NJswTiZtbgAG+jba5bvXl6CVZgsor1QOzt
-         SPQHNV+e6q0i2gCyQi7FTnDZ5icniPzYtPMo7c15BVZMAgPTp6NhnFiocbiMPe+Sp6
-         5y63n74rjw1vH7P3Ii8W71f6xBaRXJyF17Uzi7OVKLuQHoS7FROATvetQUueOeKyAz
-         SLU7UvPGcJlVg==
-From:   Ian Cowan <ian@linux.cowan.aero>
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Ian Cowan <ian@linux.cowan.aero>
-Subject: [PATCH] drivers: net: bluetooth: centralize function exit and print error
-Date:   Sun, 24 Apr 2022 23:00:53 -0400
-Message-Id: <20220425030053.517168-1-ian@linux.cowan.aero>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S240568AbiDYDN2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 23:13:28 -0400
+Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0368B1C92D;
+        Sun, 24 Apr 2022 20:10:19 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [10.15.192.164])
+        by mail-app3 (Coremail) with SMTP id cC_KCgB31fALEWZi3VruAg--.23940S2;
+        Mon, 25 Apr 2022 11:10:07 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     krzysztof.kozlowski@linaro.org, linux-kernel@vger.kernel.org
+Cc:     netdev@vger.kernel.org, broonie@kernel.org,
+        akpm@linux-foundation.org, alexander.deucher@amd.com,
+        gregkh@linuxfoundation.org, davem@davemloft.net, linma@zju.edu.cn,
+        Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH] drivers: nfc: nfcmrvl: reorder destructive operations in nfcmrvl_nci_unregister_dev to avoid bugs
+Date:   Mon, 25 Apr 2022 11:10:02 +0800
+Message-Id: <20220425031002.56254-1-duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: cC_KCgB31fALEWZi3VruAg--.23940S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxAFW5Xw43WrWUAw17ZFy7Wrg_yoWrXw17pF
+        4YgFy5CF1DKr4FqF45tF4qqFyfuFZ3GFW5Cry7tr93Aws0yFWvyw1qyay5ZFnruryUJFWY
+        ka43A3s8GF4vyF7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvv1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW0oVCq3wA2z4x0Y4vEx4A2
+        jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52
+        x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUGVWU
+        XwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI4
+        8JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628vn2kIc2xKxwCF04k20xvY
+        0x0EwIxGrwCF04k20xvE74AGY7Cv6cx26r4fKr1UJr1l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr
+        1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE
+        14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7
+        IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E
+        87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73Uj
+        IFyTuYvjfUF9a9DUUUU
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgMLAVZdtZYtGwABsU
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Centralize the return for this one function, and this will add the error
-being printed if it occurs earlier in the function. The same thing will
-be returned with the logic, so the only thing that will differ is an
-extra debugging output for an error.
+There are destructive operations such as nfcmrvl_fw_dnld_abort and
+gpio_free in nfcmrvl_nci_unregister_dev. The resources such as firmware,
+gpio and so on could be destructed while the upper layer functions such as
+nfcmrvl_fw_dnld_start and nfcmrvl_nci_recv_frame is executing, which leads
+to double-free, use-after-free and null-ptr-deref bugs.
 
-Signed-off-by: Ian Cowan <ian@linux.cowan.aero>
+There are three situations that could lead to double-free bugs.
+
+The first situation is shown below:
+
+   (Thread 1)                 |      (Thread 2)
+nfcmrvl_fw_dnld_start         |
+ ...                          |  nfcmrvl_nci_unregister_dev
+ release_firmware()           |   nfcmrvl_fw_dnld_abort
+  kfree(fw) //(1)             |    fw_dnld_over
+                              |     release_firmware
+  ...                         |      kfree(fw) //(2)
+                              |     ...
+
+The second situation is shown below:
+
+   (Thread 1)                 |      (Thread 2)
+nfcmrvl_fw_dnld_start         |
+ ...                          |
+ mod_timer                    |
+ (wait a time)                |
+ fw_dnld_timeout              |  nfcmrvl_nci_unregister_dev
+   fw_dnld_over               |   nfcmrvl_fw_dnld_abort
+    release_firmware          |    fw_dnld_over
+     kfree(fw) //(1)          |     release_firmware
+     ...                      |      kfree(fw) //(2)
+
+The third situation is shown below:
+
+       (Thread 1)               |       (Thread 2)
+nfcmrvl_nci_recv_frame          |
+ if(..->fw_download_in_progress)|
+  nfcmrvl_fw_dnld_recv_frame    |
+   queue_work                   |
+                                |
+fw_dnld_rx_work                 | nfcmrvl_nci_unregister_dev
+ fw_dnld_over                   |  nfcmrvl_fw_dnld_abort
+  release_firmware              |   fw_dnld_over
+   kfree(fw) //(1)              |    release_firmware
+                                |     kfree(fw) //(2)
+
+The firmware struct is deallocated in position (1) and deallocated
+in position (2) again.
+
+The crash trace triggered by POC is like below:
+
+[  122.640457] BUG: KASAN: double-free or invalid-free in fw_dnld_over+0x28/0xf0
+[  122.640457] Call Trace:
+[  122.640457]  <TASK>
+[  122.640457]  kfree+0xb0/0x330
+[  122.640457]  fw_dnld_over+0x28/0xf0
+[  122.640457]  nfcmrvl_nci_unregister_dev+0x61/0x70
+[  122.640457]  nci_uart_tty_close+0x87/0xd0
+[  122.640457]  tty_ldisc_kill+0x3e/0x80
+[  122.640457]  tty_ldisc_hangup+0x1b2/0x2c0
+[  122.640457]  __tty_hangup.part.0+0x316/0x520
+[  122.640457]  tty_release+0x200/0x670
+[  122.640457]  __fput+0x110/0x410
+[  122.640457]  task_work_run+0x86/0xd0
+[  122.640457]  exit_to_user_mode_prepare+0x1aa/0x1b0
+[  122.640457]  syscall_exit_to_user_mode+0x19/0x50
+[  122.640457]  do_syscall_64+0x48/0x90
+[  122.640457]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  122.640457] RIP: 0033:0x7f68433f6beb
+
+What's more, there are also use-after-free and null-ptr-deref bugs
+in nfcmrvl_fw_dnld_start. If we deallocate firmware struct, gpio or
+set null to the members of priv->fw_dnld in nfcmrvl_nci_unregister_dev,
+then, we dereference firmware, gpio or the members of priv->fw_dnld in
+nfcmrvl_fw_dnld_start, the UAF or NPD bugs will happen.
+
+This patch reorders destructive operations after nci_unregister_device
+to avoid the double-free, UAF and NPD bugs, as nci_unregister_device
+is well synchronized and won't return if there is a running routine.
+This was mentioned in commit 3e3b5dfcd16a ("NFC: reorder the logic in
+nfc_{un,}register_device").
+
+Fixes: 3194c6870158 ("NFC: nfcmrvl: add firmware download support")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Reviewed-by: Lin Ma <linma@zju.edu.cn>
 ---
- net/bluetooth/6lowpan.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/nfc/nfcmrvl/main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/6lowpan.c b/net/bluetooth/6lowpan.c
-index 215af9b3b589..15928e9ce088 100644
---- a/net/bluetooth/6lowpan.c
-+++ b/net/bluetooth/6lowpan.c
-@@ -516,7 +516,7 @@ static netdev_tx_t bt_xmit(struct sk_buff *skb, struct net_device *netdev)
- 	err = setup_header(skb, netdev, &addr, &addr_type);
- 	if (err < 0) {
- 		kfree_skb(skb);
--		return NET_XMIT_DROP;
-+		goto output_error_ret;
- 	}
+diff --git a/drivers/nfc/nfcmrvl/main.c b/drivers/nfc/nfcmrvl/main.c
+index 2fcf545012b..1a5284de434 100644
+--- a/drivers/nfc/nfcmrvl/main.c
++++ b/drivers/nfc/nfcmrvl/main.c
+@@ -183,6 +183,7 @@ void nfcmrvl_nci_unregister_dev(struct nfcmrvl_private *priv)
+ {
+ 	struct nci_dev *ndev = priv->ndev;
  
- 	if (err) {
-@@ -537,6 +537,7 @@ static netdev_tx_t bt_xmit(struct sk_buff *skb, struct net_device *netdev)
++	nci_unregister_device(ndev);
+ 	if (priv->ndev->nfc_dev->fw_download_in_progress)
+ 		nfcmrvl_fw_dnld_abort(priv);
  
- 	dev_kfree_skb(skb);
+@@ -191,7 +192,6 @@ void nfcmrvl_nci_unregister_dev(struct nfcmrvl_private *priv)
+ 	if (gpio_is_valid(priv->config.reset_n_io))
+ 		gpio_free(priv->config.reset_n_io);
  
-+output_error_ret:
- 	if (err)
- 		BT_DBG("ERROR: xmit failed (%d)", err);
- 
+-	nci_unregister_device(ndev);
+ 	nci_free_device(ndev);
+ 	kfree(priv);
+ }
 -- 
-2.35.1
+2.17.1
 
