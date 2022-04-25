@@ -2,67 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DF9E50D654
-	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 02:34:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7793350D66E
+	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 03:01:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240009AbiDYAhR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Apr 2022 20:37:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58324 "EHLO
+        id S240066AbiDYBEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Apr 2022 21:04:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240008AbiDYAhQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 20:37:16 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D20851E6D
-        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 17:34:14 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id q8so279943plx.3
-        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 17:34:14 -0700 (PDT)
+        with ESMTP id S235292AbiDYBEk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 21:04:40 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F0B3DDFC
+        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 18:01:37 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id n18so23582236plg.5
+        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 18:01:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jgEGaRgvs2xfX02zkN4mkGg+qSlQt1+dViNF9TmvYQs=;
-        b=Dl4yJKzBslPAj6fB6xOpZgNQGHzexFpGSU1c1m/LEQYbl1nL1hAvYN1vYsBJ7uWegp
-         9RmFrZS1p4gh5C4PCJ6e2dzVPIP/t6jlzrCF7u5cUI46QpXaWTrlOK61i4QeNXBxPb9w
-         Wc6Y+CBoZ6yolUAO0jYMtXIDv9vkaDrdXNeeDNwW3SXhjyiwusZPCqEfQEZepkRDoQPd
-         osv5pOCYK1FE5sltyC/qyUZEVgp6fRhi9wBS8a7w4JnWHWlTVAeI+0tSF3IEaLWRtGCo
-         3Bl5Gkkp4mcAxGNcYZJ0Gtau2yYpyT/TI6+PXeeny5CElz1CKtuK/NxoPb6FgaSNOoRO
-         lqPQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=wPm01GHjG1A3jBVuhE3t6MH7VFUSZydHeAlMfIYMkLg=;
+        b=SrDCENVRdcNgTqW1oLAjK078Rnj/18J/OMxLYW1IZ/S45a2o6q4jdkqDY4Kw119XDd
+         j7OZL7ormWxMYUFJDy9OoQCzmoYISbbis/IVTKFKoomj0WdS1YtoFuqKZiFg3rnQqETN
+         8QriuPYsdbTkN6BELOSiEPTjyTxwHC0Dqd0+QR37H5it2An72hLNfaJK3J+Wz2NyONrM
+         ZdtCRbSm0Ajic0mso28Clcl7rlUbaknxoZ33Qx5BHpTwTeEgFM5CFJqjvzwyMfod0LIh
+         UXZS5O9cgElKVJDHre5fYuCNAtb7WeS7tbFN6QVu+0/SDBbDmeP38ynFfSNARng3v//E
+         hCDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jgEGaRgvs2xfX02zkN4mkGg+qSlQt1+dViNF9TmvYQs=;
-        b=NgXEkEjyUYr6n7hOPLNZAWyrCPEtTYJO4D2J+DKDzwyER8hrJz6Oe5zZ8QWPzo8fkl
-         94FUADTnKqYdtLz0VkeuIXyZUTyt2DAHbSXd2FL0xl8lqjesVBX14LHyKuhcuuEfMsOp
-         yFR9yd3Dd1jEj1j0sz2C1fNz2AvfgH2BP2Miiv1uLZQA9XK58KdSJw0891yPdKRVyPeu
-         VBrAvMVhf2jsXKHljvUYQRbEmdt8o6A7hsYMn0LRUW1bo1v6xtb9jfhmdm2ZvtJSmGD2
-         BrFMe5ALM3EwbcX2Ag9FmyW4E7sB1ZKFq6yov0SwPJ6Lzd6gN2rZ/Yy1vOpiO5PuYs4M
-         QGjA==
-X-Gm-Message-State: AOAM530Y1PUnerQeOwJ0Ku0U+YsSpmeN+vvHPQviiRYvSvpcRMnB+vuw
-        8/2H+74o4rIc+XckjodfDYE=
-X-Google-Smtp-Source: ABdhPJwDkj89t3+nhHy5XTL5mmtNLnMwBjLL5MwfKrt/fbCZf+bEqRLUmfvREjDnXo24NX66/SceXA==
-X-Received: by 2002:a17:902:b406:b0:14f:bb35:95ab with SMTP id x6-20020a170902b40600b0014fbb3595abmr15577208plr.140.1650846853687;
-        Sun, 24 Apr 2022 17:34:13 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:deb1:6b52:39aa:3e96])
-        by smtp.gmail.com with ESMTPSA id o4-20020a625a04000000b004fdf5419e41sm9222043pfb.36.2022.04.24.17.34.12
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=wPm01GHjG1A3jBVuhE3t6MH7VFUSZydHeAlMfIYMkLg=;
+        b=f/vGclCh0R1OTfbpv1Yl0ZCv1xCnEepS1uK/ITTQiqrJheMVEEKbWdzeUVLQX8rcCf
+         z6pEEhNyCRHxpV2XjV0kCM8oei0tNMDp+bkJmiKV9YsW9N9tsAJqh3eGTyArPt/K5zQy
+         P3E+0OIKMqko0SV4T6LY2q7Ujc3kRQ7oq1UTcBQFygWyB/Me/kdQsacqOH8M4GH+U2Rm
+         mdaRs1jumaLBaMJMOmU4fsFNz9PPmoxsYUosDf53Jlda2eh9AxR7TB8IXOkLfaELp8Kb
+         LbkDR7S1hhsozdKmkXpdrkEsAk/q9rTT86JtFzn9HhD+3ruy3o+vsriyLYZQg85yiJxW
+         ferQ==
+X-Gm-Message-State: AOAM532zFyVmbbt6Y0hiwM7zgLZXLEdwCfgZfb5NL9XjZgrIB/G7B8YH
+        eXqZD5H+paJ66aVt03n8Kas=
+X-Google-Smtp-Source: ABdhPJz5cg70KLdSXo5on/nXXmOeb4cWi7ea03Njm+HZRtHFsaGZs8Pd4lObkQ3kaRQMndIZIywW9g==
+X-Received: by 2002:a17:902:ab59:b0:15c:f4f3:7e3b with SMTP id ij25-20020a170902ab5900b0015cf4f37e3bmr7176176plb.24.1650848497119;
+        Sun, 24 Apr 2022 18:01:37 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id s14-20020a63dc0e000000b0039cc76bda79sm7804995pgg.40.2022.04.24.18.01.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Apr 2022 17:34:12 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Doug Porter <dsp@fb.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Neal Cardwell <ncardwell@google.com>
-Subject: [PATCH net] tcp: fix potential xmit stalls caused by TCP_NOTSENT_LOWAT
-Date:   Sun, 24 Apr 2022 17:34:07 -0700
-Message-Id: <20220425003407.3002429-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
+        Sun, 24 Apr 2022 18:01:36 -0700 (PDT)
+Date:   Sun, 24 Apr 2022 18:01:33 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com,
+        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, kernel-team@fb.com
+Subject: Re: [PATCH net-next v1 0/4] Broadcom PTP PHY support
+Message-ID: <20220425010133.GA4472@hoboy.vegasvil.org>
+References: <20220424022356.587949-1-jonathan.lemon@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220424022356.587949-1-jonathan.lemon@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -73,138 +71,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Sat, Apr 23, 2022 at 07:23:52PM -0700, Jonathan Lemon wrote:
 
-I had this bug sitting for too long in my pile, it is time to fix it.
+> There are other Broadcom chips which may benefit from using the 
+> same framework here, although with different register sets.
 
-Thanks to Doug Porter for reminding me of it!
+Based on two examples, the present 542xx and the 541xx (which I am
+familiar with), it appears that the registers sets are the same in
+gen1, just the base offset is different.
 
-We had various attempts in the past, including commit
-0cbe6a8f089e ("tcp: remove SOCK_QUEUE_SHRUNK"),
-but the issue is that TCP stack currently only generates
-EPOLLOUT from input path, when tp->snd_una has advanced
-and skb(s) cleaned from rtx queue.
+So it would be great to store the base in bcm_ptp_private, adding the
+base into each read/write operation.
 
-If a flow has a big RTT, and/or receives SACKs, it is possible
-that the notsent part (tp->write_seq - tp->snd_nxt) reaches 0
-and no more data can be sent until tp->snd_una finally advances.
+Thanks,
+Richard
 
-What is needed is to also check if POLLOUT needs to be generated
-whenever tp->snd_nxt is advanced, from output path.
-
-This bug triggers more often after an idle period, as
-we do not receive ACK for at least one RTT. tcp_notsent_lowat
-could be a fraction of what CWND and pacing rate would allow to
-send during this RTT.
-
-In a followup patch, I will remove the bogus call
-to tcp_chrono_stop(sk, TCP_CHRONO_SNDBUF_LIMITED)
-from tcp_check_space(). Fact that we have decided to generate
-an EPOLLOUT does not mean the application has immediately
-refilled the transmit queue. This optimistic call
-might have been the reason the bug seemed not too serious.
-
-Tested:
-
-200 ms rtt, 1% packet loss, 32 MB tcp_rmem[2] and tcp_wmem[2]
-
-$ echo 500000 >/proc/sys/net/ipv4/tcp_notsent_lowat
-$ cat bench_rr.sh
-SUM=0
-for i in {1..10}
-do
- V=`netperf -H remote_host -l30 -t TCP_RR -- -r 10000000,10000 -o LOCAL_BYTES_SENT | egrep -v "MIGRATED|Bytes"`
- echo $V
- SUM=$(($SUM + $V))
-done
-echo SUM=$SUM
-
-Before patch:
-$ bench_rr.sh
-130000000
-80000000
-140000000
-140000000
-140000000
-140000000
-130000000
-40000000
-90000000
-110000000
-SUM=1140000000
-
-After patch:
-$ bench_rr.sh
-430000000
-590000000
-530000000
-450000000
-450000000
-350000000
-450000000
-490000000
-480000000
-460000000
-SUM=4680000000  # This is 410 % of the value before patch.
-
-Fixes: c9bee3b7fdec ("tcp: TCP_NOTSENT_LOWAT socket option")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: Doug Porter <dsp@fb.com>
-Cc: Soheil Hassas Yeganeh <soheil@google.com>
-Cc: Neal Cardwell <ncardwell@google.com>
----
- include/net/tcp.h     |  1 +
- net/ipv4/tcp_input.c  | 12 +++++++++++-
- net/ipv4/tcp_output.c |  1 +
- 3 files changed, 13 insertions(+), 1 deletion(-)
-
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 9987b3fba9f202632916cc439af9d17f1e68bcd3..cc1295037533a7741e454f7c040f77a21deae02b 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -621,6 +621,7 @@ void tcp_synack_rtt_meas(struct sock *sk, struct request_sock *req);
- void tcp_reset(struct sock *sk, struct sk_buff *skb);
- void tcp_skb_mark_lost_uncond_verify(struct tcp_sock *tp, struct sk_buff *skb);
- void tcp_fin(struct sock *sk);
-+void tcp_check_space(struct sock *sk);
- 
- /* tcp_timer.c */
- void tcp_init_xmit_timers(struct sock *);
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 2088f93fa37b5fb9110e7933242a27bd4009990e..48f6075228600896daa6507c4cd06acfc851a0fa 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -5454,7 +5454,17 @@ static void tcp_new_space(struct sock *sk)
- 	INDIRECT_CALL_1(sk->sk_write_space, sk_stream_write_space, sk);
- }
- 
--static void tcp_check_space(struct sock *sk)
-+/* Caller made space either from:
-+ * 1) Freeing skbs in rtx queues (after tp->snd_una has advanced)
-+ * 2) Sent skbs from output queue (and thus advancing tp->snd_nxt)
-+ *
-+ * We might be able to generate EPOLLOUT to the application if:
-+ * 1) Space consumed in output/rtx queues is below sk->sk_sndbuf/2
-+ * 2) notsent amount (tp->write_seq - tp->snd_nxt) became
-+ *    small enough that tcp_stream_memory_free() decides it
-+ *    is time to generate EPOLLOUT.
-+ */
-+void tcp_check_space(struct sock *sk)
- {
- 	/* pairs with tcp_poll() */
- 	smp_mb();
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 9ede847f4199844c5884e3f62ea450562072a0a7..1ca2f28c9981018e6cfaee3435d711467af6048d 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -82,6 +82,7 @@ static void tcp_event_new_data_sent(struct sock *sk, struct sk_buff *skb)
- 
- 	NET_ADD_STATS(sock_net(sk), LINUX_MIB_TCPORIGDATASENT,
- 		      tcp_skb_pcount(skb));
-+	tcp_check_space(sk);
- }
- 
- /* SND.NXT, if window was not shrunk or the amount of shrunk was less than one
--- 
-2.36.0.rc2.479.g8af0fa9b8e-goog
 
