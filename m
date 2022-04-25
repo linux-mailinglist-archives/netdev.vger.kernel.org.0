@@ -2,127 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BFB150E4F8
-	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 18:00:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3773E50E4F9
+	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 18:01:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243070AbiDYQDO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Apr 2022 12:03:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55666 "EHLO
+        id S243143AbiDYQDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Apr 2022 12:03:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229741AbiDYQDL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 12:03:11 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC39A2FFC2;
-        Mon, 25 Apr 2022 09:00:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=tRaJqis/SWifEwnFIxuNq9dKtN4ay+SViNUuz6JWxmk=; b=ThIeBmQ7cVrq3qfftbtHsbnhFH
-        MiYIVhIeiwQ/zC36tF3MmFeJIOhZ44Dqen2123Qt3MHtjiUMCvgzTZMe09t+7P6rXQhYvtNg5n3CZ
-        bFJfNCoHoel9E7T0uxFlETsFL7flcOd06A9jeEvnoaiSxTpfA1B9vekbC8viaq2dZQ8Y=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nj17m-00HQ8g-4S; Mon, 25 Apr 2022 17:59:42 +0200
-Date:   Mon, 25 Apr 2022 17:59:42 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Cc:     "linux-imx@nxp.com" <linux-imx@nxp.com>,
-        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "joabreu@synopsys.com" <joabreu@synopsys.com>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
-        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "festevam@gmail.com" <festevam@gmail.com>
-Subject: Re: net: stmmac: dwmac-imx: half duplex crash
-Message-ID: <YmbFblFCrGFND+h/@lunn.ch>
-References: <36ba455aad3e57c0c1f75cce4ee0f3da69e139a1.camel@toradex.com>
- <YmXIo6q8vVkL6zLp@lunn.ch>
- <5e51e11bbbf6ecd0ee23b4fd2edec98e6e7fbaa8.camel@toradex.com>
+        with ESMTP id S235955AbiDYQDj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 12:03:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B1D9E00C
+        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 09:00:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A69CB818B0
+        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 16:00:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7E85C385A7;
+        Mon, 25 Apr 2022 16:00:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650902423;
+        bh=s696nV7KipsAmrhW9rB3td2CxEocQLb8L28UfYRpRXQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=I9UBIry4rzTF9qCA//ig97Ok+LLokrdGzuNx7ghDWtJ+20+EVMW6ILZvlE7Am8X6a
+         vYBjY+vz2mFHfhnm01kcMwGRaNbN3bzAjXo22lNTyuQ+mz+d/NlV0iRAT+zeZ+lNFs
+         IXGGBhP/kuK9Auhp7gSE3p3Ie9onalEiOFEmHuiFLCSl5LdWq9LoUOzOEQY7lgnjgH
+         nZ1Hh0eDIc0CNptsy3qfIX0WWUIrLTRwhv54rcQnwe+YZKWX8JI4rHd0OOOiY24wlU
+         IGdPcr+3wv0Q1WrJn9jwrjyHunEnzfyKiQY4aOQxSjRhUU+BS+AbfSFB9NnK+qE0hc
+         AeBPY6avSe4Og==
+Date:   Mon, 25 Apr 2022 09:00:21 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
+        andrew@lunn.ch, mlxsw@nvidia.com
+Subject: Re: [PATCH net-next 00/11] mlxsw: extend line card model by devices
+ and info
+Message-ID: <20220425090021.32e9a98f@kernel.org>
+In-Reply-To: <20220425034431.3161260-1-idosch@nvidia.com>
+References: <20220425034431.3161260-1-idosch@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5e51e11bbbf6ecd0ee23b4fd2edec98e6e7fbaa8.camel@toradex.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Good point. I was blinded by NXP downstream which, while listing all incl. 10baseT/Half and 100baseT/Half as
-> supported link modes, also does not work. However, upstream indeed shows only full-duplex modes as supported:
+On Mon, 25 Apr 2022 06:44:20 +0300 Ido Schimmel wrote:
+> This patchset is extending the line card model by three items:
+> 1) line card devices
+> 2) line card info
+> 3) line card device info
 > 
-> root@verdin-imx8mp-07106916:~# ethtool eth1
-> Settings for eth1:
->         Supported ports: [ TP MII ]
->         Supported link modes:   10baseT/Full 
->                                 100baseT/Full 
->                                 1000baseT/Full 
-
-So maybe we actually want ethtool to report -EINVAL when asked to do
-something which is not supported! Humm:
-
-https://elixir.bootlin.com/linux/latest/source/drivers/net/phy/phy.c#L783
-
-
-	/* We make sure that we don't pass unsupported values in to the PHY */
-	linkmode_and(advertising, advertising, phydev->supported);
-
-So maybe the unsupported mode got removed, and the PHY was asked to
-advertise nothing!
-
-Anyway, this is roughly there the check should go.
-
-> ...
+> First three patches are introducing the necessary changes in devlink
+> core.
 > 
-> Once I remove them queues being setup via device tree it shows all modes as supported again:
-> 
-> root@verdin-imx8mp-07106916:~# ethtool eth1
-> Settings for eth1:
->         Supported ports: [ TP MII ]
->         Supported link modes:   10baseT/Half 10baseT/Full 
->                                 100baseT/Half 100baseT/Full 
->                                 1000baseT/Full 
-> ...
-> 
-> However, 10baseT/Half, while no longer just crashing, still does not seem to work right. Looking at wireshark
-> traces it does send packets but seems not to ever get neither ARP nor DHCP answers (as well as any other packet
-> for that matter).
+> Then, all three extensions are implemented in mlxsw alongside with
+> selftest.
 
-So the answers are on the wire, just not received? 
+:/ what is a line card device? You must provide document what you're
+doing, this:
 
-> Looks like the same actually applies to 10baseT/Full as well. While 100baseT/Half and
-> 100baseT/Full work fine now.
-> 
-> Any idea what else could still be going wrong with them 10baseT modes?
+ .../networking/devlink/devlink-linecard.rst   |   4 +
 
-I would use mii-tool to check the status of the PHY. Make sure it
-really has negotiated 10/Half mode. After that, it is very likely to
-be a MAC problem, and i don't think i can help you.
+is not enough.
 
-> On a side note, besides modifying the device tree for such single-queue setup being half-duplex capable, is
-> there any easier way? Much nicer would, of course, be if it justworkedTM (e.g. advertise all modes but once a
-> half-duplex mode is chosen revert to such single-queue operation). Then, on the other hand, who still uses
-> half-duplex communication in this day and age (;-p).
+How many operations and attributes are you going to copy&paste?
 
-You seem to need it for some reason!
+Is linking devlink instances into a hierarchy a better approach?
 
-Anyway, it is just code. You have all the needed information in the
-adjust_link callback, so you could implement it.
-
-	    Andrew
+Would you mind if I revert this? I don't understand why the line card
+patches are applied in 6h on Sunday night, especially that RFCv1 had
+quite a long discussion. But really any uAPI additions should warrant
+longer review time, IMHO.
