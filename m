@@ -2,98 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 50E3F50E4DB
-	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 17:55:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 743F550E4BE
+	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 17:50:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236902AbiDYP6B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Apr 2022 11:58:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35556 "EHLO
+        id S243003AbiDYPxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Apr 2022 11:53:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230234AbiDYP6A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 11:58:00 -0400
-X-Greylist: delayed 322 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 25 Apr 2022 08:54:56 PDT
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A39C28930A
-        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 08:54:56 -0700 (PDT)
-Received: from toolbox.int.toradex.com ([81.221.85.15]) by mrelay.perfora.net
- (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MWj1Y-1nPCsS0WCG-00X6Jv;
- Mon, 25 Apr 2022 17:49:04 +0200
-From:   Marcel Ziswiler <marcel@ziswiler.com>
-To:     netdev@vger.kernel.org
-Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Fabio Estevam <festevam@gmail.com>,
-        Fugang Duan <fugang.duan@nxp.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Subject: [PATCH v1] net: stmmac: dwmac-imx: comment spelling fix
-Date:   Mon, 25 Apr 2022 17:48:56 +0200
-Message-Id: <20220425154856.169499-1-marcel@ziswiler.com>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S242990AbiDYPxT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 11:53:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CD1F1A80D;
+        Mon, 25 Apr 2022 08:50:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CB9CCB817A8;
+        Mon, 25 Apr 2022 15:50:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 942F1C385A9;
+        Mon, 25 Apr 2022 15:50:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650901811;
+        bh=xCiXIyB1/9rUM4Y1cYvZ+2b6PvYqWTxHDP+v2W+MwYQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=tz9w144WPnfJJL/IW3IrbxXbnD4HLlwKaqn5LIAOvkbryTIyBy3PjMImhZ+Alat1B
+         PjtVU9VjkAUDH+3+/446jAVjOZKs4a40ww9Fk/Kybqat2NUuJ6ip+Dur4FAL4qKZU+
+         GQwvqJqAJ4vfiPcTw4dS3SGxsX+fx/N57HEJ4M5BU+nVXjFgPCSADJ4JgkkCKmxKZ+
+         OnApJheuylV3Vh0Pe+DksBIsB28DNA5RLtGSX/1M7c5ip+psyiYA+erhIDb10m6AfX
+         eP4S4kV7YIgwgofr5pkaYf7I/wbuGtOFZVL8t7fugIYXFboBQab8ql+2ZBvDRxunon
+         0NCKvEsTAeSbA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7CF35E85D90;
+        Mon, 25 Apr 2022 15:50:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:mu9bK8rJ3RbONCPFleKxVm8y/XpyuFrUVOlp1t0I5GIjR1cPhEp
- JXL2fZSF7pPFx+xTLi+Aq49pJ3HiFN7lMVBI5Ts7TddFRGXvGB8ygr02VXUz6QVaext0RNv
- +0P+v4g9NVXW08d3j/ux6QoYDTiJxxLU3Q2TBwAn2swEts57tAooR2Xv62D0OE3jtmYwz7X
- cYO02AscjIs8qBwD4vRNw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:hc6RQQ0IfcI=:uwOrmQ8rU+7jQFMftyVz+W
- Um9hyolf7w07s9uAmth3EztoK4xt1a9uGFxotRtWhoPLkY8IFnbWSl7t/kYM/xOiX3pV8jKdK
- IUUls1Ayu8fyS0W+aTY/gu+oBr39/BGpqYbYJ46lSfc6HI/m1v2Zco7TijFHTFPhparAPnrQS
- PzTMXPMUESsa1LVJHF6wj4269lz8caI5a0g8pwnXYgWA62lhhxFIl8y98ht5Q4VLEJfMVAg+j
- 1HeGkoVAEURAlzlHdCTq/HNFPX/dkCD0e7r8C1HhutBgLVutrjvbM3F9ZHKSReSvRz3a8a67R
- TocW1niS2iF4/63w2g/qFMV2QyGgAgibov7Jp6THDngF7GfXnbUq5vv/sAczNl4S7vPNjl3YP
- mc4ZCYna7TBIkLGm/YsLoPXbAjFwsCutH5rbMCMDnxDFWRKeIVUvatm5kEAtDamQybHS+rFDu
- sYFC6GyNYsR0mbR9qksYlunBWdAulloiKb7gh9/oyjlbCbUoW00w4IWumG9ItX38tQW4ycfMv
- 0j+fD/IfywbhBg53gw3UokJII7yyE9jfR+1Mg6VprzBlC0UrrZh+aI7l57WC6xL6vGM2JDeLV
- lNK/BsWj3LEftyVrRJsDncz9KxBHM4a+8BlHTfIsGxghhxDthwCNs8x++qqT1KF2JovWYhZCm
- zHogce4K3nYP183USAxcTkZEHLY62ik0zRLcS7UQufOs/pCMMZssNYpfyq1eet+/6Jv8=
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_PASS,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Subject: Re: [PATCH bpf-next] libbpf: Remove unnecessary type cast
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165090181150.3120.18254701364580010836.git-patchwork-notify@kernel.org>
+Date:   Mon, 25 Apr 2022 15:50:11 +0000
+References: <20220424143420.457082-1-ytcoode@gmail.com>
+In-Reply-To: <20220424143420.457082-1-ytcoode@gmail.com>
+To:     Yuntao Wang <ytcoode@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Hello:
 
-Fix spelling in comment.
+This patch was applied to bpf/bpf-next.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
 
-Fixes: 94abdad6974a ("net: ethernet: dwmac: add ethernet glue logic for NXP imx8 chip")
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+On Sun, 24 Apr 2022 22:34:20 +0800 you wrote:
+> The link variable is already of type 'struct bpf_link *', casting it to
+> 'struct bpf_link *' is redundant, drop it.
+> 
+> Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+> ---
+>  tools/lib/bpf/libbpf.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
----
+Here is the summary with links:
+  - [bpf-next] libbpf: Remove unnecessary type cast
+    https://git.kernel.org/bpf/bpf-next/c/003fed595c0f
 
- drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
-index 84651207a1de..bd52fb7cf486 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
-@@ -197,9 +197,9 @@ imx_dwmac_parse_dt(struct imx_priv_data *dwmac, struct device *dev)
- 	}
- 
- 	if (of_machine_is_compatible("fsl,imx8mp")) {
--		/* Binding doc describes the propety:
-+		/* Binding doc describes the property:
- 		   is required by i.MX8MP.
--		   is optinoal for i.MX8DXL.
-+		   is optional for i.MX8DXL.
- 		 */
- 		dwmac->intf_regmap = syscon_regmap_lookup_by_phandle(np, "intf_mode");
- 		if (IS_ERR(dwmac->intf_regmap))
+You are awesome, thank you!
 -- 
-2.35.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
