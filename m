@@ -2,83 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C9A050D6FA
-	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 04:35:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D868250D74C
+	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 05:01:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240374AbiDYCih (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Apr 2022 22:38:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39524 "EHLO
+        id S240514AbiDYDEM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Apr 2022 23:04:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240370AbiDYCid (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 22:38:33 -0400
+        with ESMTP id S229577AbiDYDEK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 23:04:10 -0400
 Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBA7B38B6;
-        Sun, 24 Apr 2022 19:35:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F7B61B7BD;
+        Sun, 24 Apr 2022 20:01:06 -0700 (PDT)
 Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 6C54F8E19FC;
-        Mon, 25 Apr 2022 02:35:23 +0000 (UTC)
+        by relay.mailchannels.net (Postfix) with ESMTP id 6E6E2C13B4;
+        Mon, 25 Apr 2022 03:01:05 +0000 (UTC)
 Received: from pdx1-sub0-mail-a217.dreamhost.com (unknown [127.0.0.6])
         (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 8F28D8E19E9;
-        Mon, 25 Apr 2022 02:35:22 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1650854123; a=rsa-sha256;
+        by relay.mailchannels.net (Postfix) with ESMTPA id 98D18C15B2;
+        Mon, 25 Apr 2022 03:01:04 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1650855664; a=rsa-sha256;
         cv=none;
-        b=Bn3GCg5qIxFPAN0ipEYfxjwToCGQDZ+0oEim8U4qG7/ftzxtluFky0c6nL5nTmvK6zga/H
-        yjHdAlwO5gGb7cXrlHsenbNVOwRG6I5KAkVlykYDlipDgidevYuttpKWYkaLq5X1yBxzPW
-        G8nF9eyVZyBxItl18UajlxiGLKLsGB49BnGVAEK0HBWpZ3j14YnGBkJPYvLsrzzfyOzab/
-        nId6N1g++hQOPnE0TgFnyZ27bIBuH4oXLUbDq8fEHLFisfWNqlGW/K4keRZlCyJ7b7dEcb
-        Vm360xPYZGbNiEOK2rMN/LkbJvj3CBnJyuMWbxnEYO56Shw4wfxv1GMotAXpIg==
+        b=H9YMoe/idniQ4oRp9Q6cTnJUHzUf0nEAmLqRz2/zJNVBcVjQc9fxBRsxt3XyEVjIpUykph
+        Xj2yFner+wwkb+0WOAOeg7gk9L5h4VA6J5boQEulI8eu0TA7iX8KGJKVqLnzsorqNq+rug
+        rCRG9ZbQ5eG/n2DNmBnPPUXkHY/oHAhg5LawAAUg2lYfbGNgjhQ4XvDg4pUyRR4OPzYYIn
+        Crb+SuSn7dT/pvYYF9dSiaOvLcnpv3n6ZG0lQyqVolnXSKQcm+3wVbUJ1sAc0rAcmyLgA9
+        Dr75+tGuzymOuOnyU2wnUHdjNWVoqB8TEYI4akknfAMTQO2ussSSNF1OriAoAA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
  d=mailchannels.net;
-        s=arc-2022; t=1650854123;
+        s=arc-2022; t=1650855664;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:dkim-signature;
-        bh=7zItbbh/pambe0Jl/RcuQk654dqnszM7BO9yP/9Zzo8=;
-        b=Z3rPjluSQ7kWyhoj9sloYvuJIrDkZ1fqVz8R+pQseNT8QOP47ghnbZkfIrZMJrIEYcrKlw
-        QInwqSMYCgqhQpOqtevHZyh9/5bSsY8PJWl+IVBIIR0vM8DOK4zYtZ12KexEwyee4D1lif
-        hVUDnOPbwOOGDrBAb26tm4KjB0FimOC7tBXwkFpDoNyDPvIANwz9TS7w2HIGqx33iTcEy4
-        QeSmoMiIKelX46W8ekcRsy+hkREZgKWyGE5xrpraZ6E42g4LxPI89g8e9ZorhdLjQIJdr6
-        uSq9rkV0YhgMizTb0KNqzbhoAMu8qW47KKgUotdNSyLzEXkEz5UTaWTUeIRKwg==
+        bh=FnZ8llSJWkl2FqoEfQdnZQWLmuu+j68/tH7/8sZn3UY=;
+        b=TGbEm/JiTeLA8E2OINRL3m+y2CBEOvCQON2tx/bLEzyDbnXed+rFINuJto6L/S1IQ6Z68w
+        ke8TbjiObgPLkx6mLshRa4O4JSlzhREvJePtRtd8A42Ii04TjDc10tMB7+T2L0KT95Xx02
+        OXALCw0CWNkSgZ3szMyf3EzXzUP2nC/qogAgsqqusDbZiG/tYqejf+YM47chcfF247N+ug
+        d1UBtB8hWGRAulLVROZkkp8VT7QOZBAZ7xgaFQu9+PH2H7fM/vPPDbNodTb0l/65x1ObMa
+        PNvrsbbxTk1zkwz67BmxCyNwF6Oeb07cP932woFb1vhDjlbKWSzLa/Hwx2oDkA==
 ARC-Authentication-Results: i=1;
-        rspamd-6dfbdcb948-z5c67;
+        rspamd-6dfbdcb948-4k72z;
         auth=pass smtp.auth=dreamhost smtp.mailfrom=ian@linux.cowan.aero
 X-MC-Relay: Neutral
 X-MailChannels-SenderId: dreamhost|x-authsender|ian@linux.cowan.aero
 X-MailChannels-Auth-Id: dreamhost
-X-Well-Made-Whispering: 02e4ef101dcd17bf_1650854123287_99724531
-X-MC-Loop-Signature: 1650854123286:1623070866
-X-MC-Ingress-Time: 1650854123286
+X-Bottle-Arch: 39d2fbac15c5e251_1650855665044_2609463641
+X-MC-Loop-Signature: 1650855665043:2074948883
+X-MC-Ingress-Time: 1650855665043
 Received: from pdx1-sub0-mail-a217.dreamhost.com (pop.dreamhost.com
  [64.90.62.162])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.127.95.118 (trex/6.7.1);
-        Mon, 25 Apr 2022 02:35:23 +0000
+        by 100.116.106.102 (trex/6.7.1);
+        Mon, 25 Apr 2022 03:01:05 +0000
 Received: from localhost.localdomain (unknown [69.12.38.97])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: ian@linux.cowan.aero)
-        by pdx1-sub0-mail-a217.dreamhost.com (Postfix) with ESMTPSA id 4Kmpyd5V8vz1K1;
-        Sun, 24 Apr 2022 19:35:21 -0700 (PDT)
+        by pdx1-sub0-mail-a217.dreamhost.com (Postfix) with ESMTPSA id 4KmqXH3M74z2n;
+        Sun, 24 Apr 2022 20:01:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.cowan.aero;
-        s=dreamhost; t=1650854122;
-        bh=7zItbbh/pambe0Jl/RcuQk654dqnszM7BO9yP/9Zzo8=;
+        s=dreamhost; t=1650855664;
+        bh=FnZ8llSJWkl2FqoEfQdnZQWLmuu+j68/tH7/8sZn3UY=;
         h=From:To:Cc:Subject:Date:Content-Transfer-Encoding;
-        b=uxU6x2jU9IwI1OtbgTRyZ5qg0o11mcQBdJMUpNLjojl2nkDkJ/9+c1yTIcFuAjzX1
-         4Y+Unqi4fkNYCb4P9C9m69r+BWyQF4gGDBDsCusZncgD7z7/DlbIRkY+PAQfv9/ozQ
-         88qKHtS0RayWHyJ7SWovFRKVy6fUP9g+NaKPsqs//GIEWgUylV/o9bxwSi1/MjN+gT
-         SCH/bovOAZQbwiNfkG4l3m8tpHIsfl9yksOOXYH0ICv2zAX52XuHr3JEBe0+CsH/Bt
-         RZt92zht7LX/UiYz5jDQ4LSoerYvdvGgkUFmR3ZdnzIFLHGTOS4ZE+N3XMjzXQnmJu
-         8yqctGdkmSzTA==
+        b=siVSzLaEaaqZT/RAhNBylm4r5vV8JuOFCeG1sURL8AdbRiCzRrK+19KSq7aL2ienI
+         3a+BxU0wc2KXC6txjBN5UmMk4ot26YrxYU4EL6oytvRs1fWsMvrB171iaHD9q+aPcA
+         +Q/IdORkxLg8eufTGAuLMx/fc875DeZ+NJswTiZtbgAG+jba5bvXl6CVZgsor1QOzt
+         SPQHNV+e6q0i2gCyQi7FTnDZ5icniPzYtPMo7c15BVZMAgPTp6NhnFiocbiMPe+Sp6
+         5y63n74rjw1vH7P3Ii8W71f6xBaRXJyF17Uzi7OVKLuQHoS7FROATvetQUueOeKyAz
+         SLU7UvPGcJlVg==
 From:   Ian Cowan <ian@linux.cowan.aero>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ian Cowan <ian@linux.cowan.aero>
-Subject: [PATCH] net: appletalk: cleanup brace styling
-Date:   Sun, 24 Apr 2022 22:35:12 -0400
-Message-Id: <20220425023512.502988-1-ian@linux.cowan.aero>
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ian Cowan <ian@linux.cowan.aero>
+Subject: [PATCH] drivers: net: bluetooth: centralize function exit and print error
+Date:   Sun, 24 Apr 2022 23:00:53 -0400
+Message-Id: <20220425030053.517168-1-ian@linux.cowan.aero>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -91,89 +95,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This cleans up some brace styling to meet the style guide. There is one
-exception where the compiler wants unnecessary braces to prevent
-multiple if/else ambiguity.
+Centralize the return for this one function, and this will add the error
+being printed if it occurs earlier in the function. The same thing will
+be returned with the logic, so the only thing that will differ is an
+extra debugging output for an error.
 
 Signed-off-by: Ian Cowan <ian@linux.cowan.aero>
 ---
- net/appletalk/ddp.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ net/bluetooth/6lowpan.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/appletalk/ddp.c b/net/appletalk/ddp.c
-index bf5736c1d458..2709d9621b25 100644
---- a/net/appletalk/ddp.c
-+++ b/net/appletalk/ddp.c
-@@ -161,8 +161,9 @@ static void atalk_destroy_timer(struct timer_list *t)
- 	if (sk_has_allocations(sk)) {
- 		sk->sk_timer.expires = jiffies + SOCK_DESTROY_TIME;
- 		add_timer(&sk->sk_timer);
--	} else
-+	} else {
- 		sock_put(sk);
-+	}
- }
- 
- static inline void atalk_destroy_socket(struct sock *sk)
-@@ -174,8 +175,9 @@ static inline void atalk_destroy_socket(struct sock *sk)
- 		timer_setup(&sk->sk_timer, atalk_destroy_timer, 0);
- 		sk->sk_timer.expires	= jiffies + SOCK_DESTROY_TIME;
- 		add_timer(&sk->sk_timer);
--	} else
-+	} else {
- 		sock_put(sk);
-+	}
- }
- 
- /**************************************************************************\
-@@ -211,8 +213,9 @@ static void atif_drop_device(struct net_device *dev)
- 			dev_put(dev);
- 			kfree(tmp);
- 			dev->atalk_ptr = NULL;
--		} else
-+		} else {
- 			iface = &tmp->next;
-+		}
- 	}
- 	write_unlock_bh(&atalk_interfaces_lock);
- }
-@@ -444,12 +447,13 @@ static struct atalk_route *atrtr_find(struct atalk_addr *target)
- 				 */
- 				if (r->target.s_node == target->s_node)
- 					goto out;
--			} else
-+			} else {
- 				/*
- 				 * this route will work if there isn't a
- 				 * direct host route, so cache it
- 				 */
- 				net_route = r;
-+			}
- 		}
- 	}
- 
-@@ -615,8 +619,9 @@ static void atrtr_device_down(struct net_device *dev)
- 			*r = tmp->next;
- 			dev_put(dev);
- 			kfree(tmp);
--		} else
-+		} else {
- 			r = &tmp->next;
-+		}
- 	}
- 	write_unlock_bh(&atalk_routes_lock);
- 
-@@ -1386,8 +1391,9 @@ static int atalk_route_packet(struct sk_buff *skb, struct net_device *dev,
- 		struct sk_buff *nskb = skb_realloc_headroom(skb, 32);
+diff --git a/net/bluetooth/6lowpan.c b/net/bluetooth/6lowpan.c
+index 215af9b3b589..15928e9ce088 100644
+--- a/net/bluetooth/6lowpan.c
++++ b/net/bluetooth/6lowpan.c
+@@ -516,7 +516,7 @@ static netdev_tx_t bt_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 	err = setup_header(skb, netdev, &addr, &addr_type);
+ 	if (err < 0) {
  		kfree_skb(skb);
- 		skb = nskb;
--	} else
-+	} else {
- 		skb = skb_unshare(skb, GFP_ATOMIC);
-+	}
+-		return NET_XMIT_DROP;
++		goto output_error_ret;
+ 	}
  
- 	/*
- 	 * If the buffer didn't vanish into the lack of space bitbucket we can
+ 	if (err) {
+@@ -537,6 +537,7 @@ static netdev_tx_t bt_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 
+ 	dev_kfree_skb(skb);
+ 
++output_error_ret:
+ 	if (err)
+ 		BT_DBG("ERROR: xmit failed (%d)", err);
+ 
 -- 
 2.35.1
 
