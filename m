@@ -2,82 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3773E50E4F9
-	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 18:01:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C692A50E535
+	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 18:10:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243143AbiDYQDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Apr 2022 12:03:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57240 "EHLO
+        id S243322AbiDYQNC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Apr 2022 12:13:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235955AbiDYQDj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 12:03:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B1D9E00C
-        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 09:00:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A69CB818B0
-        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 16:00:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7E85C385A7;
-        Mon, 25 Apr 2022 16:00:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650902423;
-        bh=s696nV7KipsAmrhW9rB3td2CxEocQLb8L28UfYRpRXQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=I9UBIry4rzTF9qCA//ig97Ok+LLokrdGzuNx7ghDWtJ+20+EVMW6ILZvlE7Am8X6a
-         vYBjY+vz2mFHfhnm01kcMwGRaNbN3bzAjXo22lNTyuQ+mz+d/NlV0iRAT+zeZ+lNFs
-         IXGGBhP/kuK9Auhp7gSE3p3Ie9onalEiOFEmHuiFLCSl5LdWq9LoUOzOEQY7lgnjgH
-         nZ1Hh0eDIc0CNptsy3qfIX0WWUIrLTRwhv54rcQnwe+YZKWX8JI4rHd0OOOiY24wlU
-         IGdPcr+3wv0Q1WrJn9jwrjyHunEnzfyKiQY4aOQxSjRhUU+BS+AbfSFB9NnK+qE0hc
-         AeBPY6avSe4Og==
-Date:   Mon, 25 Apr 2022 09:00:21 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
-        andrew@lunn.ch, mlxsw@nvidia.com
-Subject: Re: [PATCH net-next 00/11] mlxsw: extend line card model by devices
- and info
-Message-ID: <20220425090021.32e9a98f@kernel.org>
-In-Reply-To: <20220425034431.3161260-1-idosch@nvidia.com>
-References: <20220425034431.3161260-1-idosch@nvidia.com>
+        with ESMTP id S243272AbiDYQMt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 12:12:49 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04D6D3D4A7
+        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 09:09:45 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id p6so349198pjm.1
+        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 09:09:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=TB2fpvDkBcSmdItFGFZ7RQb7sjfz3xFb/eIAVr3ICOQ=;
+        b=6DRL7KY7nKkmVUuqLu7xdYMdMPKKyAASislBlGBna7f42TDvZl3HH0awbOcD2uLQzW
+         YD92wCfNYUxFGrvpStEGnHWRrRkNNp8gqooOt0b7BiaImVkzcyPpJXpl4vZaMRnEP//i
+         VnLFynqXWlu84FJCRhTYS17vCQr5Xi8FUGG58v4CMWW5167ufUhBnx74Jm1A5PjC3Ndb
+         vfwcHHmOHwaRptEXcB6/F/dwndhFQhJaGTgIqSf6ZDMg4IbBa4431pjOjE3i92fAerwD
+         CrrLTkJKUhajJFwleXvf8Vi+4hWJJDrMFaNvjrxvOD9JYadG7TYXxHTwkH9mU1mTJ3/z
+         NJnA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=TB2fpvDkBcSmdItFGFZ7RQb7sjfz3xFb/eIAVr3ICOQ=;
+        b=M6xiEHuLDeaPZNkBO3fBOBeDZI75NMT0/d9ghhUmw+QzShGI9WkDSk0sgpObID+njz
+         Z1DiisBIEXk/qBYA8bqBg12GdQ2IFwbLllaPi/5WRegLNhuwT+gfWXG9baRyfZ46i0QX
+         GjvR5QAEg2TM8+77+jDNWJ8lbxbS8xO8dqi5gOfWVbkEQbhje9FoZ8pARUU4q5teAF5a
+         WKnPeBZKexOvTfzH6iCv1j6Lmmj/NoE8DTE9EKWpGvqEOJ4sU5EYuOBeRtOoL/jslKhf
+         0Rm3juUZKO3dAUNUlo+uKbjlTV34/bRX1YJOmCGRmNGB7p9VxZLZT/ejQGtl4tKJSSZ/
+         CIfw==
+X-Gm-Message-State: AOAM533KbNACfHvURCPtggiC2v/VMFYUsrlKkJTbTCe//fRqT2L+hzGC
+        bNb5YPGgkqtgZKDsko8XK4+kcQ==
+X-Google-Smtp-Source: ABdhPJwmqr4Y/N7HRg8t1FUAmsad5AdLualitHYCjQI9OAs18oSsgct4Cq1EsqEl22hh/GWWXd1Ihg==
+X-Received: by 2002:a17:903:20d3:b0:15b:153c:6f79 with SMTP id i19-20020a17090320d300b0015b153c6f79mr18497390plb.157.1650902984545;
+        Mon, 25 Apr 2022 09:09:44 -0700 (PDT)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id cm11-20020a17090afa0b00b001d9738fdf2asm4558305pjb.37.2022.04.25.09.09.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Apr 2022 09:09:44 -0700 (PDT)
+Date:   Mon, 25 Apr 2022 09:09:41 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, sthemmin@microsoft.com, dsahern@gmail.com,
+        snelson@pensando.io
+Subject: Re: [patch iproute2-next v2] devlink: introduce -h[ex] cmdline
+ option to allow dumping numbers in hex format
+Message-ID: <20220425090941.326d8ec8@hermes.local>
+In-Reply-To: <20220425093036.1518107-1-jiri@resnulli.us>
+References: <20220425093036.1518107-1-jiri@resnulli.us>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 25 Apr 2022 06:44:20 +0300 Ido Schimmel wrote:
-> This patchset is extending the line card model by three items:
-> 1) line card devices
-> 2) line card info
-> 3) line card device info
-> 
-> First three patches are introducing the necessary changes in devlink
-> core.
-> 
-> Then, all three extensions are implemented in mlxsw alongside with
-> selftest.
+On Mon, 25 Apr 2022 11:30:36 +0200
+Jiri Pirko <jiri@resnulli.us> wrote:
 
-:/ what is a line card device? You must provide document what you're
-doing, this:
+>  static int fmsg_value_show(struct dl *dl, int type, struct nlattr *nl_data)
+>  {
+> +	const char *num_fmt = dl->hex ? "%#x" : "%u";
+> +	const char *num64_fmt = dl->hex ? "%#"PRIx64 : "%"PRIu64;
 
- .../networking/devlink/devlink-linecard.rst   |   4 +
-
-is not enough.
-
-How many operations and attributes are you going to copy&paste?
-
-Is linking devlink instances into a hierarchy a better approach?
-
-Would you mind if I revert this? I don't understand why the line card
-patches are applied in 6h on Sunday night, especially that RFCv1 had
-quite a long discussion. But really any uAPI additions should warrant
-longer review time, IMHO.
+This is going to make it harder if/when format string properties are used.
+Not sure what the better way is.
