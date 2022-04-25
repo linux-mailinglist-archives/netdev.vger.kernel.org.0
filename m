@@ -2,166 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D6EC50D767
-	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 05:11:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00B1850D769
+	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 05:12:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240560AbiDYDNx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Apr 2022 23:13:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44944 "EHLO
+        id S233705AbiDYDPt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Apr 2022 23:15:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240568AbiDYDN2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 23:13:28 -0400
-Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0368B1C92D;
-        Sun, 24 Apr 2022 20:10:19 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [10.15.192.164])
-        by mail-app3 (Coremail) with SMTP id cC_KCgB31fALEWZi3VruAg--.23940S2;
-        Mon, 25 Apr 2022 11:10:07 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     krzysztof.kozlowski@linaro.org, linux-kernel@vger.kernel.org
-Cc:     netdev@vger.kernel.org, broonie@kernel.org,
-        akpm@linux-foundation.org, alexander.deucher@amd.com,
-        gregkh@linuxfoundation.org, davem@davemloft.net, linma@zju.edu.cn,
-        Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH] drivers: nfc: nfcmrvl: reorder destructive operations in nfcmrvl_nci_unregister_dev to avoid bugs
-Date:   Mon, 25 Apr 2022 11:10:02 +0800
-Message-Id: <20220425031002.56254-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgB31fALEWZi3VruAg--.23940S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxAFW5Xw43WrWUAw17ZFy7Wrg_yoWrXw17pF
-        4YgFy5CF1DKr4FqF45tF4qqFyfuFZ3GFW5Cry7tr93Aws0yFWvyw1qyay5ZFnruryUJFWY
-        ka43A3s8GF4vyF7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvv1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW0oVCq3wA2z4x0Y4vEx4A2
-        jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52
-        x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUGVWU
-        XwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI4
-        8JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628vn2kIc2xKxwCF04k20xvY
-        0x0EwIxGrwCF04k20xvE74AGY7Cv6cx26r4fKr1UJr1l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr
-        1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE
-        14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7
-        IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E
-        87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73Uj
-        IFyTuYvjfUF9a9DUUUU
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgMLAVZdtZYtGwABsU
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S232795AbiDYDPq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 23:15:46 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D25495158C
+        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 20:12:43 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id j8so24005179pll.11
+        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 20:12:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=ZXxjd/MPII33XETKWpx4qAcbqVCXZGWC80GHGMxlxUo=;
+        b=Vs6KufAKjRIL4dDXQYwGg9wpNNEhz5abw60qwpj36QTFfzQ54acUgbiOfVnQgrsPzG
+         gkvNDOE8vzJfeK8iQtM9//pGj+mAC+B/h0qyfdJd/7BO+loA/nb1hIkd/Yq2vcM0GMZT
+         zmoCyDKiFWqiaB4ODq5pnKK9De9YEgsM8CEpIZgQao7wFls2xK1lqoUYgL048ZEESM6Z
+         +Z0Tal468uK3ET+omF96Ag6hgvIeSgBFTVwMtpTfDV2sK2t+iCOy7ch1j/RSBOFjKPE5
+         bKnnNhS/4is4uHyS624njmQYSSqeGkrFfLtR1IxlzVxB3gyu8vzKt+hFaThB0ULNP6X7
+         ln/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=ZXxjd/MPII33XETKWpx4qAcbqVCXZGWC80GHGMxlxUo=;
+        b=Yvw2IrblP7SAdZgsmgURO+8W8fursqt2BSNxBLgboYIjJCSbp7UJXttgIY35FqXjnc
+         SIhVfRJbrYv4c1/azTsFHDa+XKnwteua0hKB098XCosBB2OU8wr0JNhK7yPwWkoK658X
+         q1asbyU+O1g9XXUJ/imRGm23WUhtmE5squl8gymCrGF8bQ26oZsi/yj2AREvNouh2hsK
+         ukqDhBXQSSiQQgBB/ylZFXTfqFFmUOHmmcjf55bVAtlz5whmuxAwfPKYNyDkFt8h1Whh
+         gYXRB2RjQfjJTJynGZ9psmnP0NxGtCyFGhi4FLm6utep6y1PLjfifqrKc55u0Eb1JYvT
+         fSYw==
+X-Gm-Message-State: AOAM533E3O4z88WxLS8HjQCHAD7hRbU6LCFUWJ7pFeioHMN58aNAtf02
+        2vNd2YrSlU0GwLWtYeadvb3ygnnkAjk=
+X-Google-Smtp-Source: ABdhPJwlHStz2HJKvVvvrbUrt9hYfWbWFWQGWXvuvMp89d1bPM/CmyhtqnqPK9DvBgxC/BptpNFBgA==
+X-Received: by 2002:a17:90b:1a89:b0:1d2:f7ae:4928 with SMTP id ng9-20020a17090b1a8900b001d2f7ae4928mr29276617pjb.46.1650856363334;
+        Sun, 24 Apr 2022 20:12:43 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id p12-20020a63ab0c000000b00381f7577a5csm7732588pgf.17.2022.04.24.20.12.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Apr 2022 20:12:42 -0700 (PDT)
+Date:   Sun, 24 Apr 2022 20:12:39 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com,
+        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, kernel-team@fb.com
+Subject: Re: [PATCH net-next v1 1/4] net: phy: broadcom: Add PTP support for
+ some Broadcom PHYs.
+Message-ID: <20220425031239.GA6294@hoboy.vegasvil.org>
+References: <20220424022356.587949-1-jonathan.lemon@gmail.com>
+ <20220424022356.587949-2-jonathan.lemon@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220424022356.587949-2-jonathan.lemon@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are destructive operations such as nfcmrvl_fw_dnld_abort and
-gpio_free in nfcmrvl_nci_unregister_dev. The resources such as firmware,
-gpio and so on could be destructed while the upper layer functions such as
-nfcmrvl_fw_dnld_start and nfcmrvl_nci_recv_frame is executing, which leads
-to double-free, use-after-free and null-ptr-deref bugs.
+On Sat, Apr 23, 2022 at 07:23:53PM -0700, Jonathan Lemon wrote:
 
-There are three situations that could lead to double-free bugs.
+> +static int bcm_ptp_settime_locked(struct bcm_ptp_private *priv,
+> +				  const struct timespec64 *ts)
+> +{
+> +	struct phy_device *phydev = priv->phydev;
+> +	u16 ctrl;
+> +
+> +	/* set up time code */
+> +	bcm_phy_write_exp(phydev, TIME_CODE_0, ts->tv_nsec);
+> +	bcm_phy_write_exp(phydev, TIME_CODE_1, ts->tv_nsec >> 16);
+> +	bcm_phy_write_exp(phydev, TIME_CODE_2, ts->tv_sec);
+> +	bcm_phy_write_exp(phydev, TIME_CODE_3, ts->tv_sec >> 16);
+> +	bcm_phy_write_exp(phydev, TIME_CODE_4, ts->tv_sec >> 32);
+> +
+> +	/* zero out NCO counter */
+> +	bcm_phy_write_exp(phydev, NCO_TIME_0, 0);
+> +	bcm_phy_write_exp(phydev, NCO_TIME_1, 0);
+> +	bcm_phy_write_exp(phydev, NCO_TIME_2_CTRL, 0);
 
-The first situation is shown below:
+You are setting the 48 bit counter to zero.
 
-   (Thread 1)                 |      (Thread 2)
-nfcmrvl_fw_dnld_start         |
- ...                          |  nfcmrvl_nci_unregister_dev
- release_firmware()           |   nfcmrvl_fw_dnld_abort
-  kfree(fw) //(1)             |    fw_dnld_over
-                              |     release_firmware
-  ...                         |      kfree(fw) //(2)
-                              |     ...
+But Lasse's version does this:
 
-The second situation is shown below:
+	// Assign original time codes (48 bit)
+	local_time_codes[2] = 0x4000;
+	local_time_codes[1] = (u16)(ts->tv_nsec >> 20);
+	local_time_codes[0] = (u16)(ts->tv_nsec >> 4);
 
-   (Thread 1)                 |      (Thread 2)
-nfcmrvl_fw_dnld_start         |
- ...                          |
- mod_timer                    |
- (wait a time)                |
- fw_dnld_timeout              |  nfcmrvl_nci_unregister_dev
-   fw_dnld_over               |   nfcmrvl_fw_dnld_abort
-    release_firmware          |    fw_dnld_over
-     kfree(fw) //(1)          |     release_firmware
-     ...                      |      kfree(fw) //(2)
+	...
 
-The third situation is shown below:
+	// Write Local Time Code Register
+	bcm_phy_write_exp(phydev, NSE_DPPL_NCO_2_0_REG, local_time_codes[0]);
+	bcm_phy_write_exp(phydev, NSE_DPPL_NCO_2_1_REG, local_time_codes[1]);
+	bcm_phy_write_exp(phydev, NSE_DPPL_NCO_2_2_REG, local_time_codes[2]);
 
-       (Thread 1)               |       (Thread 2)
-nfcmrvl_nci_recv_frame          |
- if(..->fw_download_in_progress)|
-  nfcmrvl_fw_dnld_recv_frame    |
-   queue_work                   |
-                                |
-fw_dnld_rx_work                 | nfcmrvl_nci_unregister_dev
- fw_dnld_over                   |  nfcmrvl_fw_dnld_abort
-  release_firmware              |   fw_dnld_over
-   kfree(fw) //(1)              |    release_firmware
-                                |     kfree(fw) //(2)
+My understanding is that the PPS output function uses the 48 bit
+counter, and so it ought to be set to a non-zero value.
 
-The firmware struct is deallocated in position (1) and deallocated
-in position (2) again.
+In any case, it would be nice to have the 80/48 bit register usage
+clearly explained.
 
-The crash trace triggered by POC is like below:
+> +	/* set up load on next frame sync */
+> +	bcm_phy_write_exp(phydev, SHADOW_LOAD, TIME_CODE_LOAD | NCO_TIME_LOAD);
+> +
+> +	ctrl = priv->nse_ctrl;
+> +	return bcm_ptp_framesync(phydev, NULL, ctrl | NSE_INIT);
+> +}
 
-[  122.640457] BUG: KASAN: double-free or invalid-free in fw_dnld_over+0x28/0xf0
-[  122.640457] Call Trace:
-[  122.640457]  <TASK>
-[  122.640457]  kfree+0xb0/0x330
-[  122.640457]  fw_dnld_over+0x28/0xf0
-[  122.640457]  nfcmrvl_nci_unregister_dev+0x61/0x70
-[  122.640457]  nci_uart_tty_close+0x87/0xd0
-[  122.640457]  tty_ldisc_kill+0x3e/0x80
-[  122.640457]  tty_ldisc_hangup+0x1b2/0x2c0
-[  122.640457]  __tty_hangup.part.0+0x316/0x520
-[  122.640457]  tty_release+0x200/0x670
-[  122.640457]  __fput+0x110/0x410
-[  122.640457]  task_work_run+0x86/0xd0
-[  122.640457]  exit_to_user_mode_prepare+0x1aa/0x1b0
-[  122.640457]  syscall_exit_to_user_mode+0x19/0x50
-[  122.640457]  do_syscall_64+0x48/0x90
-[  122.640457]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  122.640457] RIP: 0033:0x7f68433f6beb
-
-What's more, there are also use-after-free and null-ptr-deref bugs
-in nfcmrvl_fw_dnld_start. If we deallocate firmware struct, gpio or
-set null to the members of priv->fw_dnld in nfcmrvl_nci_unregister_dev,
-then, we dereference firmware, gpio or the members of priv->fw_dnld in
-nfcmrvl_fw_dnld_start, the UAF or NPD bugs will happen.
-
-This patch reorders destructive operations after nci_unregister_device
-to avoid the double-free, UAF and NPD bugs, as nci_unregister_device
-is well synchronized and won't return if there is a running routine.
-This was mentioned in commit 3e3b5dfcd16a ("NFC: reorder the logic in
-nfc_{un,}register_device").
-
-Fixes: 3194c6870158 ("NFC: nfcmrvl: add firmware download support")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Reviewed-by: Lin Ma <linma@zju.edu.cn>
----
- drivers/nfc/nfcmrvl/main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/nfc/nfcmrvl/main.c b/drivers/nfc/nfcmrvl/main.c
-index 2fcf545012b..1a5284de434 100644
---- a/drivers/nfc/nfcmrvl/main.c
-+++ b/drivers/nfc/nfcmrvl/main.c
-@@ -183,6 +183,7 @@ void nfcmrvl_nci_unregister_dev(struct nfcmrvl_private *priv)
- {
- 	struct nci_dev *ndev = priv->ndev;
- 
-+	nci_unregister_device(ndev);
- 	if (priv->ndev->nfc_dev->fw_download_in_progress)
- 		nfcmrvl_fw_dnld_abort(priv);
- 
-@@ -191,7 +192,6 @@ void nfcmrvl_nci_unregister_dev(struct nfcmrvl_private *priv)
- 	if (gpio_is_valid(priv->config.reset_n_io))
- 		gpio_free(priv->config.reset_n_io);
- 
--	nci_unregister_device(ndev);
- 	nci_free_device(ndev);
- 	kfree(priv);
- }
--- 
-2.17.1
-
+Thanks,
+Richard
