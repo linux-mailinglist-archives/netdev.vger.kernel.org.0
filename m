@@ -2,130 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B21FE50E474
-	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 17:31:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DFE350E47F
+	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 17:34:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242861AbiDYPel (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Apr 2022 11:34:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55542 "EHLO
+        id S242953AbiDYPhw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Apr 2022 11:37:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233670AbiDYPej (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 11:34:39 -0400
-Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCF3121E10
-        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 08:31:35 -0700 (PDT)
-Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-2f7b815ac06so76291477b3.3
-        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 08:31:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vy+FB21WXrBXjQ7F21tozMnmRPeb2Mm/IpFcaIVxQSw=;
-        b=GUbwhbPNG/ldAA8IoCHi7UFAoND3RQKCpofkGvoh8U2QqpirtbKYJKVVt521kADxZh
-         KopAssBml+OO+pGIL+UbHCpWBr5tLjnz5we4F/iWJkRGG6RAMqXU8JldJ/c3coB9zJoi
-         IyKvaMBek64xjb1i4q5yujH/ZVxCnUDviCMOQTRcZt4CVh5WyQoHIPxYEHt58u1pFgTt
-         yogAsTA89/oTgZJDYym8X17EzpqJDfYhhoQNSqOgztAHSWstA6nPAdH0s4UMZjTBC1zQ
-         buMlo0zDwHTk+aRPTEJPBdcZzFHQy5jJ/a/YtKxWANF+c5uH2BaDm3ruxyqdVPCiDgpm
-         NoPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vy+FB21WXrBXjQ7F21tozMnmRPeb2Mm/IpFcaIVxQSw=;
-        b=zncmssY+YAPIwd/lOUOWIwHBUvM0BMAwwlshvymyc+pxa6MHY0AEw4Pda9yxIybMFH
-         KrxKdXZRClFWbGFCLMcsaXhIo//Lu0upBN92NY/QqZiZUOQWMq0gbdAALyUylOpFh6AD
-         7Q6No+QeGQRhsusbludOq3TD/y5Pt6VAmnmwc/ES1idGFuyjv8fqXozmgVXCZaclicsg
-         AYl0ARJzE2qMi82BfDIUZvwHrOLnBbvuTjNIq12ccC4/6lMm0w5zvjukuE2WYNOMc4rZ
-         CpeTwfRhO//zKoc/TP6Z4HzuRtelegFLKB4gWRisQkn7SCauhXqqWn5s4PsrdMuyAfXu
-         vCRg==
-X-Gm-Message-State: AOAM532SfBRTdOVeYCpCPD0/OaWSBQd9PH0Q7yUo3h0ASzCsyiLxNIMf
-        7w/4ik+561vsMA3f/RHY7sIq7lWOrYOfbgGo6k219w==
-X-Google-Smtp-Source: ABdhPJzwiVMiukfqAVkXa10l+bUV9EmJAU94RikfESe36Px23CtYTAW/0ubzxUOIF1dONV+BbHZA7ZkjcMzMIZ4okw4=
-X-Received: by 2002:a81:1d4e:0:b0:2f7:be8b:502e with SMTP id
- d75-20020a811d4e000000b002f7be8b502emr12689770ywd.278.1650900694807; Mon, 25
- Apr 2022 08:31:34 -0700 (PDT)
+        with ESMTP id S242896AbiDYPhh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 11:37:37 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68BDF433A6
+        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 08:34:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=vc1vJetyCALjeiVyC0eBJf01H1rtj5i6FT62DV6fiXA=; b=TKYbrZFLIVsze4hCpmbRBoe78z
+        HlDjS593V41cZQVGLcjZMXK5EBrDCqk2f8wQjJb7LLAv0KMP6p9ZX/f4s1GJXJbGs747UEU+oRuX2
+        KmZcIou0hLP96N8mzzIW0FXKmqk0B03X/xViKbRVl7KJO54ixzyKKNSJukPVi1Ey2++4F5QMVzl6c
+        05fqvEufdg2wdoaEF2A5r+uzgmoFb0o2/N4mVnR4IucLaaN8d0O7gIATEFYnbytLpFkSzUN3Y9Ylm
+        iLAvVgMhejqcb6E04mij6W1tFF2Y3lcMZtwEDkLGJCOdUveG4HOGt2m5UhcUsksNblIE+Nc6R6YwC
+        i6RzWq7Q==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58400)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nj0jL-0007RU-RN; Mon, 25 Apr 2022 16:34:27 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nj0jJ-0006ez-7A; Mon, 25 Apr 2022 16:34:25 +0100
+Date:   Mon, 25 Apr 2022 16:34:25 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Baruch Siach <baruch@tkos.co.il>
+Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        netdev@vger.kernel.org, Baruch Siach <baruch.siach@siklu.com>
+Subject: Re: [PATCH] net: phy: marvell10g: fix return value on error
+Message-ID: <Yma/gSb2bRYMflV0@shell.armlinux.org.uk>
+References: <f47cb031aeae873bb008ba35001607304a171a20.1650868058.git.baruch@tkos.co.il>
 MIME-Version: 1.0
-References: <18b3541e5372bc9b9fc733d422f4e698c089077c.1650177997.git.lukas@wunner.de>
- <9325d344e8a6b1a4720022697792a84e545fef62.camel@redhat.com>
- <20220423160723.GA20330@wunner.de> <20220425074146.1fa27d5f@kernel.org>
- <CAG48ez3ibQjhs9Qxb0AAKE4-UZiZ5UdXG1JWcPWHAWBoO-1fVw@mail.gmail.com>
- <20220425080057.0fc4ef66@kernel.org> <CANn89iLwvqUJHBNifLESJyBQ85qjK42sK85Fs=QV4M7HqUXmxQ@mail.gmail.com>
- <20220425082804.209e3676@kernel.org>
-In-Reply-To: <20220425082804.209e3676@kernel.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 25 Apr 2022 08:31:23 -0700
-Message-ID: <CANn89iJPs13ndN3PCs6KDAetMUg7N5RzG9_ixvQCmswmcN28mw@mail.gmail.com>
-Subject: Re: [PATCH] net: linkwatch: ignore events for unregistered netdevs
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jann Horn <jannh@google.com>, Lukas Wunner <lukas@wunner.de>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Oliver Neukum <oneukum@suse.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        netdev <netdev@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Jacky Chou <jackychou@asix.com.tw>, Willy Tarreau <w@1wt.eu>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f47cb031aeae873bb008ba35001607304a171a20.1650868058.git.baruch@tkos.co.il>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 8:28 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Mon, 25 Apr 2022 08:13:40 -0700 Eric Dumazet wrote:
-> > dev_hold() has been an increment of a refcount, and dev_put() a decrement.
-> >
-> > Not sure why it is fundamentally broken.
->
-> Jann described a case where someone does
->
->     CPU 0      CPU 1     CPU 2
->
->   dev_hold()
->    ------  #unregister -------
->              dev_hold()
->                          dev_put()
->
-> Our check for refcount == 0 goes over the CPUs one by one,
-> so if it sums up CPUs 0 and 1 at the "unregister" point above
-> and CPU2 after the CPU1 hold and CPU2 release it will "miss"
-> one refcount.
->
-> That's a problem unless doing a dev_hold() on a netdev we only have
-> a reference on is illegal.
+On Mon, Apr 25, 2022 at 09:27:38AM +0300, Baruch Siach wrote:
+> From: Baruch Siach <baruch.siach@siklu.com>
+> 
+> Return back the error value that we get from phy_read_mmd().
+> 
+> Fixes: c84786fa8f91 ("net: phy: marvell10g: read copper results from CSSR1")
+> Signed-off-by: Baruch Siach <baruch.siach@siklu.com>
 
-What is 'illegal' is trying to keep using the device after #unregister.
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-We have barriers to prevent that.
+Thanks!
 
-Somehow a layer does not care about the barriers and pretends the
-device is still good to use.
-
-It is of course perfectly fine to stack multiple dev_hold() from one
-path (if these do not leak, but this is a different issue)
-
->
-> > There are specific steps at device dismantles making sure no more
-> > users can dev_hold()
-> >
-> > It is a contract. Any buggy layer can overwrite any piece of memory,
-> > including a refcount_t.
-> >
-> > Traditionally we could not add a test in dev_hold() to prevent an
-> > increment if the device is in dismantle phase.
-> > Maybe the situation is better nowadays.
-
-
->
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
