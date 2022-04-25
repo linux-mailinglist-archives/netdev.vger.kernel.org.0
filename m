@@ -2,211 +2,294 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E49AE50DA21
-	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 09:30:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDD5350DA6B
+	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 09:49:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237908AbiDYHdc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Apr 2022 03:33:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55012 "EHLO
+        id S234913AbiDYHwJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Apr 2022 03:52:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231828AbiDYHd3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 03:33:29 -0400
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D33FBF57
-        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 00:30:22 -0700 (PDT)
-Received: by mail-il1-f199.google.com with SMTP id q6-20020a056e0215c600b002c2c4091914so5711142ilu.14
-        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 00:30:22 -0700 (PDT)
+        with ESMTP id S240273AbiDYHwG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 03:52:06 -0400
+Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 561E5113;
+        Mon, 25 Apr 2022 00:49:03 -0700 (PDT)
+Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-2f7bb893309so59299597b3.12;
+        Mon, 25 Apr 2022 00:49:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1kjxdVxn3qHNHUInm0vSMmwIYPC1M9QvrqD0d+WZbTQ=;
+        b=O5eqZoITDAJ6lejfuyHEWeI+i1qFOqg1ZOzDvDj8K/AG0L+HZ0esRwpAkw8Ba667G7
+         RwxdMZ3IYlDsqf7fZedQJEIYF02dqY8F6TRBBGtodLwp80aipmdFH4J3Hzf4zxjlf9t8
+         3b68K+2CyP/Tohos9NI3rQhyRNbkYqxp20rmcdeKKG4gVX1CjLUKenIBsm0hzcV9+4jf
+         cQKzInXHSChdaS148AO7oF7YrzeVIavQJHZP9SZjK43a/7KEQInrla/yemkPZPRxum5v
+         0kZtiYnLGSIFZzEgArEUCRoYvVQL2nfydwK+pgsM8C3e3VYiJez2O8X3RZZKnsNpS33M
+         7bwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=QykV03u6nFhry1/I30b5ziX5l1KwwQpypiDvgy7yARw=;
-        b=FuS96oSnuVXd9kA3RwvU8mMWtgBVeYkJPhNi8ZLr49Oj9HgjQelH+BFjWx5dcDiUP8
-         93I1HYvVHfQYEqIko88ij9FDQGRdmHBUq6b/dYGGolcTWyf9p1lqv0DnsrxN03a3jcGP
-         rBvVANJspqbHFAlaQ7ytMh1J9MIQERyyQVLYBFpxNaBT1BoC+OETwJtLz2XM50RrggFW
-         6+NukEWc53QQtwARazfBe+UlvD9D54ejgnSdRx9VpnlhpPYOT7EuiG2Gv1qRbuYrWFVI
-         beRWk6+WIKAGXgzFYOHF97Oj8Q6vLrjdu760pV5woJEeUj2k5JPnHUYlVRDHAjwffA73
-         z0Fw==
-X-Gm-Message-State: AOAM530EEX0dBd4V/5T3GCYoHRVoo36DCabSSmG1kk/kChCNaYhunnJB
-        daQqQoo+3mDHTgtrUq5SnAbImLitt2zvjDih4POX2nYGXo8c
-X-Google-Smtp-Source: ABdhPJyUptAXJmyMNSQZHPki7bBkeftyzk0lXm0zjEynsq9GLZp6WoVjwQH0u6JjsS0SJFgP/GFLb0uGeIGN5kzOxwXdQtS8ni9p
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1kjxdVxn3qHNHUInm0vSMmwIYPC1M9QvrqD0d+WZbTQ=;
+        b=JFYvxYTypYlvIQrHsJhpyllN1s5D6WfuYHcPw70MGOOh6mQpl2ok9fOywH8AdMijR9
+         wKrt2SEXEW8xMhVbga45Hf6ZpANnvAZLyL+awT0XBteZXYZsznRQnyaTumKlxCu3j75O
+         Elblw1VXoZeXQs4qRjYltdokWdIqUlxLXXWiSUYg2gAy4INfYIpkn0DRUndgyIF7BiI6
+         4GcqA8WEfr1vVqv+um852V/fqI+4HrKuSgghMUsFGGMnizSgu/B0v3h3Ql2f/+2v2PtX
+         Jo8jX2WwHGxNvmoXds3eFuAi91T4IS4PUDyjOywM5XkwllKNT3mdYSrOju0LCiq8vpps
+         l/0g==
+X-Gm-Message-State: AOAM533MQkoQls/yEb7fR1sRAYyQaFI9lDPngFrWcyBcPIp/qm0S5QMw
+        YPkd/HYGZqhFrJQib039Nf8Z4W0E0F2Hj1BSS4Y=
+X-Google-Smtp-Source: ABdhPJwZ2a9PL4mrTCB37sZRWBIaYsqpgvtI9iNjtkS/grs0Ejxtwa8JLn/FG8jyxydu9s9tP/uqKEqlzR/4zbSR38I=
+X-Received: by 2002:a81:ff12:0:b0:2db:2d8a:9769 with SMTP id
+ k18-20020a81ff12000000b002db2d8a9769mr15307492ywn.172.1650872942487; Mon, 25
+ Apr 2022 00:49:02 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:1450:b0:32a:8386:c9cd with SMTP id
- l16-20020a056638145000b0032a8386c9cdmr7221579jad.249.1650871822045; Mon, 25
- Apr 2022 00:30:22 -0700 (PDT)
-Date:   Mon, 25 Apr 2022 00:30:22 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000085d75405dd758caa@google.com>
-Subject: [syzbot] INFO: task hung in tls_sw_sendmsg (3)
-From:   syzbot <syzbot+baad3750d52fcc56930b@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, ast@kernel.org, borisp@nvidia.com,
-        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
+References: <cover.1650816929.git.pisa@cmp.felk.cvut.cz> <1fd684bcf5ddb0346aad234072f54e976a5210fb.1650816929.git.pisa@cmp.felk.cvut.cz>
+In-Reply-To: <1fd684bcf5ddb0346aad234072f54e976a5210fb.1650816929.git.pisa@cmp.felk.cvut.cz>
+From:   Vincent Mailhol <vincent.mailhol@gmail.com>
+Date:   Mon, 25 Apr 2022 16:48:51 +0900
+Message-ID: <CAMZ6RqJ1ROr-pLsJqKE=dK=cVD+-KGxSj1wPEZY-AXH9_d4xyQ@mail.gmail.com>
+Subject: Re: [PATCH v1 1/4] can: ctucanfd: remove PCI module debug parameters
+ and core debug statements
+To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>
+Cc:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Marin Jerabek <martin.jerabek01@gmail.com>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        Jiri Novak <jnovak@fel.cvut.cz>,
+        Jaroslav Beran <jara.beran@gmail.com>,
+        Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>,
+        Carsten Emde <c.emde@osadl.org>,
+        Drew Fustini <pdp7pdp7@gmail.com>,
+        Matej Vasilevski <matej.vasilevski@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi Pavel,
 
-syzbot found the following issue on:
+On Mon. 25 Apr. 2022 at 14:11, Pavel Pisa <pisa@cmp.felk.cvut.cz> wrote:
+> This and remove of inline keyword from the local static functions
+> should make happy all checks in actual versions of the both checkpatch.pl
+> and patchwork tools.
 
-HEAD commit:    b253435746d9 Merge tag 'xtensa-20220416' of https://github..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=109cf862f00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=4cdc9619f45633df
-dashboard link: https://syzkaller.appspot.com/bug?extid=baad3750d52fcc56930b
-compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
+The title and the description say two different things.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+When looking at the code, it just seemed that you squashed
+together two different patches: one to remove the inlines and one
+to remove the debug. I guess you should split it again.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+baad3750d52fcc56930b@syzkaller.appspotmail.com
-
-INFO: task syz-executor.3:5663 blocked for more than 143 seconds.
-      Not tainted 5.18.0-rc3-syzkaller-00016-gb253435746d9 #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz-executor.3  state:D stack:28856 pid: 5663 ppid:  3623 flags:0x00004004
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:5073 [inline]
- __schedule+0x939/0xea0 kernel/sched/core.c:6388
- schedule+0xeb/0x1b0 kernel/sched/core.c:6460
- schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6519
- __mutex_lock_common+0xecf/0x26e0 kernel/locking/mutex.c:673
- __mutex_lock kernel/locking/mutex.c:733 [inline]
- mutex_lock_nested+0x17/0x20 kernel/locking/mutex.c:785
- tls_sw_sendmsg+0x297/0x1830 net/tls/tls_sw.c:957
- sock_sendmsg_nosec net/socket.c:705 [inline]
- sock_sendmsg net/socket.c:725 [inline]
- __sys_sendto+0x42e/0x5b0 net/socket.c:2040
- __do_sys_sendto net/socket.c:2052 [inline]
- __se_sys_sendto net/socket.c:2048 [inline]
- __x64_sys_sendto+0xda/0xf0 net/socket.c:2048
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7fd7940890e9
-RSP: 002b:00007fd79523f168 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-RAX: ffffffffffffffda RBX: 00007fd79419c030 RCX: 00007fd7940890e9
-RDX: feffffff00000000 RSI: 0000000000000000 RDI: 0000000000000003
-RBP: 00007fd7940e308d R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fffdf66ea5f R14: 00007fd79523f300 R15: 0000000000022000
- </TASK>
-
-Showing all locks held in the system:
-1 lock held by khungtaskd/28:
- #0: ffffffff8cb1ae60 (rcu_read_lock){....}-{1:2}, at: rcu_lock_acquire+0x0/0x30
-2 locks held by syslogd/2945:
- #0: ffff8880b9b39c18 (&rq->__lock){-.-.}-{2:2}, at: raw_spin_rq_lock_nested+0x25/0x110 kernel/sched/core.c:554
- #1: ffff8880b9b277c8 (&per_cpu_ptr(group->pcpu, cpu)->seq){-.-.}-{0:0}, at: psi_task_switch+0x567/0x820 kernel/sched/psi.c:889
-2 locks held by getty/3270:
- #0: ffff88814c440098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_ref_wait+0x21/0x70 drivers/tty/tty_ldisc.c:244
- #1: ffffc90002b832e8 (&ldata->atomic_read_lock){+.+.}-{3:3}, at: n_tty_read+0x6ad/0x1c90 drivers/tty/n_tty.c:2075
-3 locks held by kworker/0:3/3316:
- #0: ffff888011464d38 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x796/0xd10 kernel/workqueue.c:2262
- #1: ffffc90002f9fd00 ((work_completion)(&(&sw_ctx_tx->tx_work.work)->work)){+.+.}-{0:0}, at: process_one_work+0x7d0/0xd10 kernel/workqueue.c:2264
- #2: ffff88807cb9a0d8 (&ctx->tx_lock){+.+.}-{3:3}, at: tx_work_handler+0x111/0x150 net/tls/tls_sw.c:2300
-5 locks held by kworker/u4:6/3749:
-1 lock held by syz-executor.3/5663:
- #0: ffff88807cb9a0d8 (&ctx->tx_lock){+.+.}-{3:3}, at: tls_sw_sendmsg+0x297/0x1830 net/tls/tls_sw.c:957
-
-=============================================
-
-NMI backtrace for cpu 0
-CPU: 0 PID: 28 Comm: khungtaskd Not tainted 5.18.0-rc3-syzkaller-00016-gb253435746d9 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0x1e3/0x2cb lib/dump_stack.c:106
- nmi_cpu_backtrace+0x473/0x4a0 lib/nmi_backtrace.c:111
- nmi_trigger_cpumask_backtrace+0x168/0x280 lib/nmi_backtrace.c:62
- trigger_all_cpu_backtrace include/linux/nmi.h:146 [inline]
- check_hung_uninterruptible_tasks kernel/hung_task.c:212 [inline]
- watchdog+0xcf9/0xd40 kernel/hung_task.c:369
- kthread+0x266/0x300 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30
- </TASK>
-Sending NMI from CPU 0 to CPUs 1:
-NMI backtrace for cpu 1
-CPU: 1 PID: 45 Comm: kworker/u4:2 Not tainted 5.18.0-rc3-syzkaller-00016-gb253435746d9 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: phy7 ieee80211_iface_work
-RIP: 0010:preempt_count_add+0x4e/0x180 kernel/sched/core.c:5537
-Code: e3 00 00 00 83 3d b1 70 5c 0f 00 75 07 65 8b 05 90 39 a7 7e 65 01 1d 89 39 a7 7e 48 c7 c0 a0 a6 b7 90 48 c1 e8 03 42 8a 04 38 <84> c0 0f 85 db 00 00 00 83 3d 83 70 5c 0f 00 75 11 65 8b 05 62 39
-RSP: 0018:ffffc9000115f2e0 EFLAGS: 00000a06
-RAX: 1ffffffff216f404 RBX: 0000000000000001 RCX: ffffffff90b7a603
-RDX: dffffc0000000000 RSI: ffffffff81d6a418 RDI: 0000000000000001
-RBP: 1ffff9200022be78 R08: 0000000000000002 R09: ffffc9000115f4b0
-R10: fffff5200022be84 R11: 1ffff9200022be82 R12: ffffc9000115f798
-R13: ffffc9000115f3c0 R14: ffffffff81d6a418 R15: dffffc0000000000
-FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000c014c8aa20 CR3: 000000007e96d000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- unwind_next_frame+0xae/0x1dc0 arch/x86/kernel/unwind_orc.c:428
- arch_stack_walk+0x112/0x140 arch/x86/kernel/stacktrace.c:25
- stack_trace_save+0x12d/0x1f0 kernel/stacktrace.c:122
- kasan_save_stack mm/kasan/common.c:38 [inline]
- kasan_set_track+0x4c/0x70 mm/kasan/common.c:45
- kasan_set_free_info+0x1f/0x40 mm/kasan/generic.c:370
- ____kasan_slab_free+0xd8/0x110 mm/kasan/common.c:366
- kasan_slab_free include/linux/kasan.h:200 [inline]
- slab_free_hook mm/slub.c:1728 [inline]
- slab_free_freelist_hook+0x12e/0x1a0 mm/slub.c:1754
- slab_free mm/slub.c:3510 [inline]
- kfree+0xc6/0x210 mm/slub.c:4552
- ieee80211_bss_info_update+0x96c/0xc30 net/mac80211/scan.c:232
- ieee80211_rx_bss_info net/mac80211/ibss.c:1119 [inline]
- ieee80211_rx_mgmt_probe_beacon net/mac80211/ibss.c:1610 [inline]
- ieee80211_ibss_rx_queued_mgmt+0x1659/0x28c0 net/mac80211/ibss.c:1639
- ieee80211_iface_process_skb net/mac80211/iface.c:1527 [inline]
- ieee80211_iface_work+0x757/0xcd0 net/mac80211/iface.c:1581
- process_one_work+0x81c/0xd10 kernel/workqueue.c:2289
- worker_thread+0xb14/0x1330 kernel/workqueue.c:2436
- kthread+0x266/0x300 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30
- </TASK>
-----------------
-Code disassembly (best guess):
-   0:	e3 00                	jrcxz  0x2
-   2:	00 00                	add    %al,(%rax)
-   4:	83 3d b1 70 5c 0f 00 	cmpl   $0x0,0xf5c70b1(%rip)        # 0xf5c70bc
-   b:	75 07                	jne    0x14
-   d:	65 8b 05 90 39 a7 7e 	mov    %gs:0x7ea73990(%rip),%eax        # 0x7ea739a4
-  14:	65 01 1d 89 39 a7 7e 	add    %ebx,%gs:0x7ea73989(%rip)        # 0x7ea739a4
-  1b:	48 c7 c0 a0 a6 b7 90 	mov    $0xffffffff90b7a6a0,%rax
-  22:	48 c1 e8 03          	shr    $0x3,%rax
-  26:	42 8a 04 38          	mov    (%rax,%r15,1),%al
-* 2a:	84 c0                	test   %al,%al <-- trapping instruction
-  2c:	0f 85 db 00 00 00    	jne    0x10d
-  32:	83 3d 83 70 5c 0f 00 	cmpl   $0x0,0xf5c7083(%rip)        # 0xf5c70bc
-  39:	75 11                	jne    0x4c
-  3b:	65                   	gs
-  3c:	8b                   	.byte 0x8b
-  3d:	05                   	.byte 0x5
-  3e:	62                   	.byte 0x62
-  3f:	39                   	.byte 0x39
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> Signed-off-by: Pavel Pisa <pisa@cmp.felk.cvut.cz>
+> ---
+>  drivers/net/can/ctucanfd/ctucanfd_base.c | 33 +++---------------------
+>  drivers/net/can/ctucanfd/ctucanfd_pci.c  | 22 +++++-----------
+>  2 files changed, 9 insertions(+), 46 deletions(-)
+>
+> diff --git a/drivers/net/can/ctucanfd/ctucanfd_base.c b/drivers/net/can/ctucanfd/ctucanfd_base.c
+> index 7a4550f60abb..a1f6d37fca11 100644
+> --- a/drivers/net/can/ctucanfd/ctucanfd_base.c
+> +++ b/drivers/net/can/ctucanfd/ctucanfd_base.c
+> @@ -133,13 +133,12 @@ static u32 ctucan_read32_be(struct ctucan_priv *priv,
+>         return ioread32be(priv->mem_base + reg);
+>  }
+>
+> -static inline void ctucan_write32(struct ctucan_priv *priv, enum ctu_can_fd_can_registers reg,
+> -                                 u32 val)
+> +static void ctucan_write32(struct ctucan_priv *priv, enum ctu_can_fd_can_registers reg, u32 val)
+>  {
+>         priv->write_reg(priv, reg, val);
+>  }
+>
+> -static inline u32 ctucan_read32(struct ctucan_priv *priv, enum ctu_can_fd_can_registers reg)
+> +static u32 ctucan_read32(struct ctucan_priv *priv, enum ctu_can_fd_can_registers reg)
+>  {
+>         return priv->read_reg(priv, reg);
+>  }
+> @@ -179,8 +178,6 @@ static int ctucan_reset(struct net_device *ndev)
+>         struct ctucan_priv *priv = netdev_priv(ndev);
+>         int i = 100;
+>
+> -       ctucan_netdev_dbg(ndev, "%s\n", __func__);
+> -
+>         ctucan_write32(priv, CTUCANFD_MODE, REG_MODE_RST);
+>         clear_bit(CTUCANFD_FLAG_RX_FFW_BUFFERED, &priv->drv_flags);
+>
+> @@ -266,8 +263,6 @@ static int ctucan_set_bittiming(struct net_device *ndev)
+>         struct ctucan_priv *priv = netdev_priv(ndev);
+>         struct can_bittiming *bt = &priv->can.bittiming;
+>
+> -       ctucan_netdev_dbg(ndev, "%s\n", __func__);
+> -
+>         /* Note that bt may be modified here */
+>         return ctucan_set_btr(ndev, bt, true);
+>  }
+> @@ -283,8 +278,6 @@ static int ctucan_set_data_bittiming(struct net_device *ndev)
+>         struct ctucan_priv *priv = netdev_priv(ndev);
+>         struct can_bittiming *dbt = &priv->can.data_bittiming;
+>
+> -       ctucan_netdev_dbg(ndev, "%s\n", __func__);
+> -
+>         /* Note that dbt may be modified here */
+>         return ctucan_set_btr(ndev, dbt, false);
+>  }
+> @@ -302,8 +295,6 @@ static int ctucan_set_secondary_sample_point(struct net_device *ndev)
+>         int ssp_offset = 0;
+>         u32 ssp_cfg = 0; /* No SSP by default */
+>
+> -       ctucan_netdev_dbg(ndev, "%s\n", __func__);
+> -
+>         if (CTU_CAN_FD_ENABLED(priv)) {
+>                 netdev_err(ndev, "BUG! Cannot set SSP - CAN is enabled\n");
+>                 return -EPERM;
+> @@ -390,8 +381,6 @@ static int ctucan_chip_start(struct net_device *ndev)
+>         int err;
+>         struct can_ctrlmode mode;
+>
+> -       ctucan_netdev_dbg(ndev, "%s\n", __func__);
+> -
+>         priv->txb_prio = 0x01234567;
+>         priv->txb_head = 0;
+>         priv->txb_tail = 0;
+> @@ -457,8 +446,6 @@ static int ctucan_do_set_mode(struct net_device *ndev, enum can_mode mode)
+>  {
+>         int ret;
+>
+> -       ctucan_netdev_dbg(ndev, "%s\n", __func__);
+> -
+>         switch (mode) {
+>         case CAN_MODE_START:
+>                 ret = ctucan_reset(ndev);
+> @@ -486,7 +473,7 @@ static int ctucan_do_set_mode(struct net_device *ndev, enum can_mode mode)
+>   *
+>   * Return: Status of TXT buffer
+>   */
+> -static inline enum ctucan_txtb_status ctucan_get_tx_status(struct ctucan_priv *priv, u8 buf)
+> +static enum ctucan_txtb_status ctucan_get_tx_status(struct ctucan_priv *priv, u8 buf)
+>  {
+>         u32 tx_status = ctucan_read32(priv, CTUCANFD_TX_STATUS);
+>         enum ctucan_txtb_status status = (tx_status >> (buf * 4)) & 0x7;
+> @@ -1123,8 +1110,6 @@ static irqreturn_t ctucan_interrupt(int irq, void *dev_id)
+>         u32 imask;
+>         int irq_loops;
+>
+> -       ctucan_netdev_dbg(ndev, "%s\n", __func__);
+> -
+>         for (irq_loops = 0; irq_loops < 10000; irq_loops++) {
+>                 /* Get the interrupt status */
+>                 isr = ctucan_read32(priv, CTUCANFD_INT_STAT);
+> @@ -1198,8 +1183,6 @@ static void ctucan_chip_stop(struct net_device *ndev)
+>         u32 mask = 0xffffffff;
+>         u32 mode;
+>
+> -       ctucan_netdev_dbg(ndev, "%s\n", __func__);
+> -
+>         /* Disable interrupts and disable CAN */
+>         ctucan_write32(priv, CTUCANFD_INT_ENA_CLR, mask);
+>         ctucan_write32(priv, CTUCANFD_INT_MASK_SET, mask);
+> @@ -1222,8 +1205,6 @@ static int ctucan_open(struct net_device *ndev)
+>         struct ctucan_priv *priv = netdev_priv(ndev);
+>         int ret;
+>
+> -       ctucan_netdev_dbg(ndev, "%s\n", __func__);
+> -
+>         ret = pm_runtime_get_sync(priv->dev);
+>         if (ret < 0) {
+>                 netdev_err(ndev, "%s: pm_runtime_get failed(%d)\n",
+> @@ -1283,8 +1264,6 @@ static int ctucan_close(struct net_device *ndev)
+>  {
+>         struct ctucan_priv *priv = netdev_priv(ndev);
+>
+> -       ctucan_netdev_dbg(ndev, "%s\n", __func__);
+> -
+>         netif_stop_queue(ndev);
+>         napi_disable(&priv->napi);
+>         ctucan_chip_stop(ndev);
+> @@ -1310,8 +1289,6 @@ static int ctucan_get_berr_counter(const struct net_device *ndev, struct can_ber
+>         struct ctucan_priv *priv = netdev_priv(ndev);
+>         int ret;
+>
+> -       ctucan_netdev_dbg(ndev, "%s\n", __func__);
+> -
+>         ret = pm_runtime_get_sync(priv->dev);
+>         if (ret < 0) {
+>                 netdev_err(ndev, "%s: pm_runtime_get failed(%d)\n", __func__, ret);
+> @@ -1337,8 +1314,6 @@ int ctucan_suspend(struct device *dev)
+>         struct net_device *ndev = dev_get_drvdata(dev);
+>         struct ctucan_priv *priv = netdev_priv(ndev);
+>
+> -       ctucan_netdev_dbg(ndev, "%s\n", __func__);
+> -
+>         if (netif_running(ndev)) {
+>                 netif_stop_queue(ndev);
+>                 netif_device_detach(ndev);
+> @@ -1355,8 +1330,6 @@ int ctucan_resume(struct device *dev)
+>         struct net_device *ndev = dev_get_drvdata(dev);
+>         struct ctucan_priv *priv = netdev_priv(ndev);
+>
+> -       ctucan_netdev_dbg(ndev, "%s\n", __func__);
+> -
+>         priv->can.state = CAN_STATE_ERROR_ACTIVE;
+>
+>         if (netif_running(ndev)) {
+> diff --git a/drivers/net/can/ctucanfd/ctucanfd_pci.c b/drivers/net/can/ctucanfd/ctucanfd_pci.c
+> index c37a42480533..8f2956a8ae43 100644
+> --- a/drivers/net/can/ctucanfd/ctucanfd_pci.c
+> +++ b/drivers/net/can/ctucanfd/ctucanfd_pci.c
+> @@ -45,14 +45,6 @@
+>  #define CTUCAN_WITHOUT_CTUCAN_ID  0
+>  #define CTUCAN_WITH_CTUCAN_ID     1
+>
+> -static bool use_msi = true;
+> -module_param(use_msi, bool, 0444);
+> -MODULE_PARM_DESC(use_msi, "PCIe implementation use MSI interrupts. Default: 1 (yes)");
+> -
+> -static bool pci_use_second = true;
+> -module_param(pci_use_second, bool, 0444);
+> -MODULE_PARM_DESC(pci_use_second, "Use the second CAN core on PCIe card. Default: 1 (yes)");
+> -
+>  struct ctucan_pci_board_data {
+>         void __iomem *bar0_base;
+>         void __iomem *cra_base;
+> @@ -117,13 +109,11 @@ static int ctucan_pci_probe(struct pci_dev *pdev,
+>                 goto err_disable_device;
+>         }
+>
+> -       if (use_msi) {
+> -               ret = pci_enable_msi(pdev);
+> -               if (!ret) {
+> -                       dev_info(dev, "MSI enabled\n");
+> -                       pci_set_master(pdev);
+> -                       msi_ok = 1;
+> -               }
+> +       ret = pci_enable_msi(pdev);
+> +       if (!ret) {
+> +               dev_info(dev, "MSI enabled\n");
+> +               pci_set_master(pdev);
+> +               msi_ok = 1;
+>         }
+>
+>         dev_info(dev, "ctucan BAR0 0x%08llx 0x%08llx\n",
+> @@ -184,7 +174,7 @@ static int ctucan_pci_probe(struct pci_dev *pdev,
+>
+>         core_i++;
+>
+> -       while (pci_use_second && (core_i < num_cores)) {
+> +       while (core_i < num_cores) {
+>                 addr += 0x4000;
+>                 ret = ctucan_probe_common(dev, addr, irq, ntxbufs, 100000000,
+>                                           0, ctucan_pci_set_drvdata);
+> --
+> 2.20.1
+>
+>
