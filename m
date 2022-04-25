@@ -2,114 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9221950E9F6
-	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 22:14:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C757450EA85
+	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 22:29:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245145AbiDYURZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Apr 2022 16:17:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39724 "EHLO
+        id S245423AbiDYUbx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Apr 2022 16:31:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238124AbiDYURX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 16:17:23 -0400
-X-Greylist: delayed 514 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 25 Apr 2022 13:14:17 PDT
-Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [IPv6:2001:67c:2050:0:465::102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21CBD1240E0;
-        Mon, 25 Apr 2022 13:14:16 -0700 (PDT)
-Received: from smtp202.mailbox.org (smtp202.mailbox.org [80.241.60.245])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4KnGGV3KQxz9sQq;
-        Mon, 25 Apr 2022 22:05:38 +0200 (CEST)
-Message-ID: <6c52dc89-015a-9c51-9568-778ccb8c2dd9@hauke-m.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hauke-m.de; s=MBO0001;
-        t=1650917136;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=38IMGApEWMDQRzOu9Up92LzBejF2/6NEUKrWMdbx4cI=;
-        b=EQNXJJULaE/lP/xYon/esS8BNihN8LpOs2J1cknYX2/AEY5M4BSrpqhcaXWtoEzj+KZQBf
-        Gf/ViTcF+7fnvHnKnIPc/kf5hO7JwwR60PNyzyE4tFppH4mSX4m/dJl9x/vZfE49OAnHG6
-        IOL4aMPW4gOdM54duSST9DhK/n7JvxsvcA7LcVdhPze2bxKvFhw6lVlqlwTnDDwcl0ho/h
-        pKnkgc+uiaRKKKSY5Pl05lKZekQGRNf4Rcy12iHO9y5OqExeOdK+vBWHb+R21THynA8xGV
-        SROjM86sw94+neuYkknMylIz7+XGD/NMAL8qalPe38ipPW+pJFNfduUyzfxf8g==
-Date:   Mon, 25 Apr 2022 22:05:32 +0200
+        with ESMTP id S245551AbiDYUbn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 16:31:43 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2721531DDB;
+        Mon, 25 Apr 2022 13:28:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1650918516; x=1682454516;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=FpiU/JE3JgocdGXOl8+g5I9+KIpIYfU2V/kSMRJ742U=;
+  b=XPzuH7A0ENbF7OK4vCPhTvmFXliVzo4h5HeDnhM8AyTmk9pY7eTO6zCR
+   O+F0kxe56Cm6Hz2rnVuLS8a5RDzYPYgVGGol61yRLDsvthdeHFRT5VxYh
+   BDhkIXUJNc43s3iLt/BXhFVBvgllPHtNRhrKfRyMP0qfZYALVQQ3soeGZ
+   1FjDybEKQrDZNlaNZwhnQ4acRSIUh1RBd7Yuwgp606cQ1CE8gavfmUFIi
+   RVwDWKItvszuhP2DZNNFr8spr2T2A01IB7181hSV/gDjQVhV/ascu8rFl
+   anZCTOr0U/qnCxQCdow84u2h8Mh1oJyk32f3qfyKSLuE/aY5dntgmwsuU
+   w==;
+X-IronPort-AV: E=Sophos;i="5.90,289,1643698800"; 
+   d="scan'208";a="153762962"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 Apr 2022 13:28:35 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 25 Apr 2022 13:28:33 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Mon, 25 Apr 2022 13:28:33 -0700
+Date:   Mon, 25 Apr 2022 22:31:54 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <pabeni@redhat.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH net-next 5/5] net: lan966x: Add support for PTP_PF_EXTTS
+Message-ID: <20220425203154.vtqcumdvzghvtlad@soft-dev3-1.localhost>
+References: <20220424145824.2931449-1-horatiu.vultur@microchip.com>
+ <20220424145824.2931449-6-horatiu.vultur@microchip.com>
+ <20220424150909.GA29569@hoboy.vegasvil.org>
 MIME-Version: 1.0
-Subject: Re: [PATCH net] net: dsa: lantiq_gswip: Don't set
- GSWIP_MII_CFG_RMII_CLK
-Content-Language: en-US
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, stable@vger.kernel.org,
-        Jan Hoffmann <jan@3e8.eu>
-References: <20220425152027.2220750-1-martin.blumenstingl@googlemail.com>
-From:   Hauke Mehrtens <hauke@hauke-m.de>
-In-Reply-To: <20220425152027.2220750-1-martin.blumenstingl@googlemail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20220424150909.GA29569@hoboy.vegasvil.org>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/25/22 17:20, Martin Blumenstingl wrote:
-> Commit 4b5923249b8fa4 ("net: dsa: lantiq_gswip: Configure all remaining
-> GSWIP_MII_CFG bits") added all known bits in the GSWIP_MII_CFGp
-> register. It helped bring this register into a well-defined state so the
-> driver has to rely less on the bootloader to do things right.
-> Unfortunately it also sets the GSWIP_MII_CFG_RMII_CLK bit without any
-> possibility to configure it. Upon further testing it turns out that all
-> boards which are supported by the GSWIP driver in OpenWrt which use an
-> RMII PHY have a dedicated oscillator on the board which provides the
-> 50MHz RMII reference clock.
-> 
-> Don't set the GSWIP_MII_CFG_RMII_CLK bit (but keep the code which always
-> clears it) to fix support for the Fritz!Box 7362 SL in OpenWrt. This is
-> a board with two Atheros AR8030 RMII PHYs. With the "RMII clock" bit set
-> the MAC also generates the RMII reference clock whose signal then
-> conflicts with the signal from the oscillator on the board. This results
-> in a constant cycle of the PHY detecting link up/down (and as a result
-> of that: the two ports using the AR8030 PHYs are not working).
-> 
-> At the time of writing this patch there's no known board where the MAC
-> (GSWIP) has to generate the RMII reference clock. If needed this can be
-> implemented in future by providing a device-tree flag so the
-> GSWIP_MII_CFG_RMII_CLK bit can be toggled per port.
-> 
-> Fixes: 4b5923249b8fa4 ("net: dsa: lantiq_gswip: Configure all remaining GSWIP_MII_CFG bits")
-> Cc: stable@vger.kernel.org
-> Tested-by: Jan Hoffmann <jan@3e8.eu>
-> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+The 04/24/2022 08:09, Richard Cochran wrote:
 
-Acked-by: Hauke Mehrtens <hauke@hauke-m.de>
+Hi Richard,
 
-Looks like Linux does not have a standard device tree flag to indicate 
-that MAC should provide the RMII clock. Deactivating it is probably a 
-good solution.
-
-> ---
->   drivers/net/dsa/lantiq_gswip.c | 3 ---
->   1 file changed, 3 deletions(-)
 > 
-> diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
-> index a416240d001b..12c15da55664 100644
-> --- a/drivers/net/dsa/lantiq_gswip.c
-> +++ b/drivers/net/dsa/lantiq_gswip.c
-> @@ -1681,9 +1681,6 @@ static void gswip_phylink_mac_config(struct dsa_switch *ds, int port,
->   		break;
->   	case PHY_INTERFACE_MODE_RMII:
->   		miicfg |= GSWIP_MII_CFG_MODE_RMIIM;
-> -
-> -		/* Configure the RMII clock as output: */
-> -		miicfg |= GSWIP_MII_CFG_RMII_CLK;
->   		break;
->   	case PHY_INTERFACE_MODE_RGMII:
->   	case PHY_INTERFACE_MODE_RGMII_ID:
+> On Sun, Apr 24, 2022 at 04:58:24PM +0200, Horatiu Vultur wrote:
+> 
+> > @@ -321,6 +321,63 @@ irqreturn_t lan966x_ptp_irq_handler(int irq, void *args)
+> >       return IRQ_HANDLED;
+> >  }
+> >
+> > +irqreturn_t lan966x_ptp_ext_irq_handler(int irq, void *args)
+> > +{
+> > +     struct lan966x *lan966x = args;
+> > +     struct lan966x_phc *phc;
+> > +     unsigned long flags;
+> > +     u64 time = 0;
+> > +     time64_t s;
+> > +     int pin, i;
+> > +     s64 ns;
+> > +
+> > +     if (!(lan_rd(lan966x, PTP_PIN_INTR)))
+> > +             return IRQ_NONE;
+> > +
+> > +     /* Go through all domains and see which pin generated the interrupt */
+> > +     for (i = 0; i < LAN966X_PHC_COUNT; ++i) {
+> > +             struct ptp_clock_event ptp_event = {0};
+> > +
+> > +             phc = &lan966x->phc[i];
+> > +             pin = ptp_find_pin(phc->clock, PTP_PF_EXTTS, 0);
+> 
+> Not safe to call ptp_find_pin() from ISR.  See comment in include/linux/ptp_clock_kernel.h
 
+Good catch.
+From what I can see, I should be able to use ptp_find_pin_unlocked.
+
+> 
+> Thanks,
+> Richard
+
+-- 
+/Horatiu
