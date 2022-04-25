@@ -2,83 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 743F550E4BE
-	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 17:50:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1630550E4EA
+	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 17:57:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243003AbiDYPxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Apr 2022 11:53:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44722 "EHLO
+        id S243077AbiDYP6m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Apr 2022 11:58:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242990AbiDYPxT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 11:53:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CD1F1A80D;
-        Mon, 25 Apr 2022 08:50:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CB9CCB817A8;
-        Mon, 25 Apr 2022 15:50:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 942F1C385A9;
-        Mon, 25 Apr 2022 15:50:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650901811;
-        bh=xCiXIyB1/9rUM4Y1cYvZ+2b6PvYqWTxHDP+v2W+MwYQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=tz9w144WPnfJJL/IW3IrbxXbnD4HLlwKaqn5LIAOvkbryTIyBy3PjMImhZ+Alat1B
-         PjtVU9VjkAUDH+3+/446jAVjOZKs4a40ww9Fk/Kybqat2NUuJ6ip+Dur4FAL4qKZU+
-         GQwvqJqAJ4vfiPcTw4dS3SGxsX+fx/N57HEJ4M5BU+nVXjFgPCSADJ4JgkkCKmxKZ+
-         OnApJheuylV3Vh0Pe+DksBIsB28DNA5RLtGSX/1M7c5ip+psyiYA+erhIDb10m6AfX
-         eP4S4kV7YIgwgofr5pkaYf7I/wbuGtOFZVL8t7fugIYXFboBQab8ql+2ZBvDRxunon
-         0NCKvEsTAeSbA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7CF35E85D90;
-        Mon, 25 Apr 2022 15:50:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S243076AbiDYP6j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 11:58:39 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C44A13C739;
+        Mon, 25 Apr 2022 08:55:35 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id a15so15171703pfv.11;
+        Mon, 25 Apr 2022 08:55:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Hj2WQEXgtYZET1/PaZfEKKBYEubWRIUuesWvAxgw9ic=;
+        b=pxsOU1Sy33UHeBh+xTz2V2458CDIVGF4MUItqhkNnvl2+lrPUmKOGO6K3Iwpx9YmfX
+         xHmdxAQH1FaB63/43UEBro9q6kGVWIVVmnXgrOvidqLXeoTq1afvz2mDg1LiYA+8Jz2r
+         buCy7MPfKmIXPQC4J/XgF61wTd7eqMvRPLjQC4daUIUkbt9O3DDOtWm4BMI4vP4ptG7y
+         9stHRPCfALu9lhCWAOeDsgna3hcN0emG6C7ZyOk3VsO49foGN5ScX/yhQxZoyj4vmpch
+         wQVuzx5ivalnHSh6KbZ/+jEQSCaJSwyh8bSKQHRJkCMay6vz+lSudqoPJa+tdfsW9K9p
+         Er6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Hj2WQEXgtYZET1/PaZfEKKBYEubWRIUuesWvAxgw9ic=;
+        b=BoJozXYp0mKieGQIj0uKGrGqQR36KkT2CyMQim1/vK/Na8QGT1L1ksF0V5jyOR7BbQ
+         rqax9MR6M7wcoPgMruyQUXkznIxeHk7adjL9JOw6ijO509gzFME0wCsSG8YQpsRAKHwT
+         4Yj/e/9EiUk6hfACJp5ISTBcPzb1YysuuzSPCYMUpSFxzgUkB1XpftA8NTeGw2XokDiJ
+         dhUJ+G/azIPX9XSQQChE1Wy7hcbxeYMUvUpa/8q+t2dG4iFoTtJY67rdRNe4e7SAsVrh
+         Erc83+MCjODlWFb6xNwVj3kIzfr3TM0ImjwBSuMyo5dAaqIstab2kZFCpoXa7ym1uzlJ
+         NzWQ==
+X-Gm-Message-State: AOAM531JAzyla5ongC46coSx99hZ6TRJlW4bqHFs8YQ+htM4kUBIeMu6
+        ey2eih4jr50Cmb1okzBQ4V4=
+X-Google-Smtp-Source: ABdhPJxrt9TR/uKk3n3daDw6LV/6PdxBko3JOIDO1G9fKyUjo0xtJP/PNylMEIYFcnNnZSB5dfpFcQ==
+X-Received: by 2002:a63:8b49:0:b0:3ab:20c3:1992 with SMTP id j70-20020a638b49000000b003ab20c31992mr7016275pge.567.1650902135221;
+        Mon, 25 Apr 2022 08:55:35 -0700 (PDT)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id 123-20020a620681000000b004fa7c20d732sm11784299pfg.133.2022.04.25.08.55.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Apr 2022 08:55:34 -0700 (PDT)
+Message-ID: <966cad79-f5e2-7193-eb7d-e31ad117fbf0@gmail.com>
+Date:   Mon, 25 Apr 2022 08:55:32 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next] libbpf: Remove unnecessary type cast
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165090181150.3120.18254701364580010836.git-patchwork-notify@kernel.org>
-Date:   Mon, 25 Apr 2022 15:50:11 +0000
-References: <20220424143420.457082-1-ytcoode@gmail.com>
-In-Reply-To: <20220424143420.457082-1-ytcoode@gmail.com>
-To:     Yuntao Wang <ytcoode@gmail.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] net: phy: fix error check return value of phy_read()
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>, cgel.zte@gmail.com
+Cc:     f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+References: <20220419014439.2561835-1-lv.ruyi@zte.com.cn>
+ <Yl6mH0HKCGPxgejI@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <Yl6mH0HKCGPxgejI@lunn.ch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This patch was applied to bpf/bpf-next.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
 
-On Sun, 24 Apr 2022 22:34:20 +0800 you wrote:
-> The link variable is already of type 'struct bpf_link *', casting it to
-> 'struct bpf_link *' is redundant, drop it.
+On 4/19/2022 5:07 AM, Andrew Lunn wrote:
+> On Tue, Apr 19, 2022 at 01:44:39AM +0000, cgel.zte@gmail.com wrote:
+>> From: Lv Ruyi <lv.ruyi@zte.com.cn>
+>>
+>> phy_read() returns a negative number if there's an error, but the
+>> error-checking code in the bcm87xx driver's config_intr function
+>> triggers if phy_read() returns non-zero.  Correct that.
+>>
+>> Reported-by: Zeal Robot <zealci@zte.com.cn>
+>> Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+>> ---
+>>   drivers/net/phy/bcm87xx.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/phy/bcm87xx.c b/drivers/net/phy/bcm87xx.c
+>> index 313563482690..e62b53718010 100644
+>> --- a/drivers/net/phy/bcm87xx.c
+>> +++ b/drivers/net/phy/bcm87xx.c
+>> @@ -146,7 +146,7 @@ static int bcm87xx_config_intr(struct phy_device *phydev)
+>>   
+>>   	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
+>>   		err = phy_read(phydev, BCM87XX_LASI_STATUS);
+>> -		if (err)
+>> +		if (err < 0)
+>>   			return err;
 > 
-> Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
-> ---
->  tools/lib/bpf/libbpf.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> This should probably have a Fixes: tag, and be for net, not next-next.
+> Please read the netdev FAQ about the trees, and submittinng fixes for
+> netdev.
 
-Here is the summary with links:
-  - [bpf-next] libbpf: Remove unnecessary type cast
-    https://git.kernel.org/bpf/bpf-next/c/003fed595c0f
+Yes, it should be:
 
-You are awesome, thank you!
+Fixes: 15772e4ddf3f ("net: phy: broadcom: remove use of ack_interrupt()")
+
+Also, please subject this change properly with:
+
+net: phy: bcm87xx: Added missing error checking
+
+Thank you
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Florian
