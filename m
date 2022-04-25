@@ -2,93 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 374EC50E3C4
-	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 16:54:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C508650E3C3
+	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 16:54:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242673AbiDYO57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Apr 2022 10:57:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57276 "EHLO
+        id S242610AbiDYO56 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Apr 2022 10:57:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242675AbiDYO5y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 10:57:54 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2A3D36319;
-        Mon, 25 Apr 2022 07:54:49 -0700 (PDT)
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nj06y-000DXg-1G; Mon, 25 Apr 2022 16:54:48 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nj06x-000K3I-NO; Mon, 25 Apr 2022 16:54:47 +0200
-Subject: Re: [PATCH bpf-next] bpftoo: Support user defined vmlinux path
-To:     Jianlin Lv <iecedge@gmail.com>, bpf@vger.kernel.org
-Cc:     ast@kernel.org, andrii@kernel.org, kafai@fb.com,
-        quentin@isovalent.com, jean-philippe@linaro.org,
-        mauricio@kinvolk.io, ytcoode@gmail.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        jianlv@ebay.com
-References: <20220425075724.48540-1-jianlv@ebay.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <873eaf55-6e9d-7f19-232c-6d55e1d33d89@iogearbox.net>
-Date:   Mon, 25 Apr 2022 16:54:16 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S242652AbiDYO5q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 10:57:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530FA36319
+        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 07:54:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E2B0261679
+        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 14:54:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02F8EC385A7;
+        Mon, 25 Apr 2022 14:54:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650898480;
+        bh=HThhQr0vP/gSexyWx1y40fb3wNytnBaco4OsDRVr1m0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DUl3z7lwjUNwvl3adPL233PFQ9PY2/n6fPJ7p8Iaru6i6DEsJ8krLXF3tlGfUXZV2
+         rkNkJe8YEDWa+sDCsVcC3ONl68L+lbdHttEpiHSWmbvazTV0hRIPlPUSSJ79QRJZsX
+         iM3yVJYVaaPge/RlqFKPkV8NhUjrYRH3AZel/MCcRmGbIZNk2T6uslRAdWwQCVUtHE
+         Cau+sh6Ng+9WtD8LkP4aKArCWMK9rsZcPc4itSOmrtZF+syQ21ch5YMqzllbF53BtU
+         aCDonr1P+gDSbPL2Tbe4ye5WEDJ6/IMYafnPTSh0baHNMAo3b8Xi0XWj9KJtwQOZzN
+         VFd6VJfkOHqnw==
+Date:   Mon, 25 Apr 2022 07:54:38 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Gal Pressman <gal@nvidia.com>
+Cc:     davem@davemloft.net, pabeni@redhat.com, netdev@vger.kernel.org,
+        borisp@nvidia.com, john.fastabend@gmail.com, daniel@iogearbox.net,
+        vfedorenko@novek.ru
+Subject: Re: [PATCH net-next 08/10] tls: rx: use async as an in-out argument
+Message-ID: <20220425075438.6c87e969@kernel.org>
+In-Reply-To: <01081d46-249f-a081-f130-e0a09180d4d3@nvidia.com>
+References: <20220411191917.1240155-1-kuba@kernel.org>
+        <20220411191917.1240155-9-kuba@kernel.org>
+        <01081d46-249f-a081-f130-e0a09180d4d3@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <20220425075724.48540-1-jianlv@ebay.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26523/Mon Apr 25 10:20:35 2022)
-X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/25/22 9:57 AM, Jianlin Lv wrote:
-> From: Jianlin Lv <iecedge@gmail.com>
+On Mon, 25 Apr 2022 10:19:45 +0300 Gal Pressman wrote:
+> On 11/04/2022 22:19, Jakub Kicinski wrote:
+> > Propagating EINPROGRESS thru multiple layers of functions is
+> > error prone. Use darg->async as an in/out argument, like we
+> > use darg->zc today. On input it tells the code if async is
+> > allowed, on output if it took place.
+> >
+> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>  
 > 
-> Add EXTERNAL_PATH variable that define unconventional vmlinux path
-> 
-> Signed-off-by: Jianlin Lv <iecedge@gmail.com>
-> ---
-> When building Ubuntu-5.15.0 kernel, '../../../vmlinux' cannot locate
-> compiled vmlinux image. Incorrect vmlinux generated vmlinux.h missing some
-> structure definitions that broken compiling pipe.
+> I know this is not much to go on, but this patch broke our tls workflows
+> when device offload is enabled.
+> I'm still looking into it, but maybe you have an idea what might have
+> went wrong?
 
-You should already be able to define custom VMLINUX_BTF_PATHS, no?
+Oof right, sorry. When packet is already decrypted by HW we'll skip 
+the decrypt completely and leave async to whatever it was at input.
 
-See commit :
+Something like this?
 
-commit ec23eb705620234421fd48fc2382490fcfbafc37
-Author: Andrii Nakryiko <andriin@fb.com>
-Date:   Mon Jun 29 17:47:58 2020 -0700
+--->8---------
 
-     tools/bpftool: Allow substituting custom vmlinux.h for the build
-
-> ---
->   tools/bpf/bpftool/Makefile | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
-> index c6d2c77d0252..fefa3b763eb7 100644
-> --- a/tools/bpf/bpftool/Makefile
-> +++ b/tools/bpf/bpftool/Makefile
-> @@ -160,6 +160,7 @@ $(OBJS): $(LIBBPF) $(LIBBPF_INTERNAL_HDRS)
->   VMLINUX_BTF_PATHS ?= $(if $(O),$(O)/vmlinux)				\
->   		     $(if $(KBUILD_OUTPUT),$(KBUILD_OUTPUT)/vmlinux)	\
->   		     ../../../vmlinux					\
-> +		     $(if $(EXTERNAL_PATH),$(EXTERNAL_PATH)/vmlinux)	\
->   		     /sys/kernel/btf/vmlinux				\
->   		     /boot/vmlinux-$(shell uname -r)
->   VMLINUX_BTF ?= $(abspath $(firstword $(wildcard $(VMLINUX_BTF_PATHS))))
-> 
-
+diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+index ddbe05ec5489..80094528eadb 100644
+--- a/net/tls/tls_sw.c
++++ b/net/tls/tls_sw.c
+@@ -1562,6 +1562,7 @@ static int decrypt_skb_update(struct sock *sk, struct sk_buff *skb,
+ 
+ 	if (tlm->decrypted) {
+ 		darg->zc = false;
++		darg->async = false;
+ 		return 0;
+ 	}
+ 
+@@ -1572,6 +1573,7 @@ static int decrypt_skb_update(struct sock *sk, struct sk_buff *skb,
+ 		if (err > 0) {
+ 			tlm->decrypted = 1;
+ 			darg->zc = false;
++			darg->async = false;
+ 			goto decrypt_done;
+ 		}
+ 	}
