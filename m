@@ -2,65 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B29BF515C2D
-	for <lists+netdev@lfdr.de>; Sat, 30 Apr 2022 12:09:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BB79515CE7
+	for <lists+netdev@lfdr.de>; Sat, 30 Apr 2022 14:31:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238487AbiD3KNI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Apr 2022 06:13:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47226 "EHLO
+        id S1352785AbiD3MfM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Apr 2022 08:35:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234385AbiD3KNH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Apr 2022 06:13:07 -0400
-Received: from bmailout2.hostsharing.net (bmailout2.hostsharing.net [83.223.78.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FDFBBC3D
-        for <netdev@vger.kernel.org>; Sat, 30 Apr 2022 03:09:45 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout2.hostsharing.net (Postfix) with ESMTPS id B17FE2800B1D0;
-        Sat, 30 Apr 2022 12:09:43 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id A626411B170; Sat, 30 Apr 2022 12:09:43 +0200 (CEST)
-Date:   Sat, 30 Apr 2022 12:09:43 +0200
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Paolo Abeni <pabeni@redhat.com>, Oliver Neukum <oneukum@suse.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jann Horn <jannh@google.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Jacky Chou <jackychou@asix.com.tw>, Willy Tarreau <w@1wt.eu>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] net: linkwatch: ignore events for unregistered netdevs
-Message-ID: <20220430100943.GB18507@wunner.de>
-References: <18b3541e5372bc9b9fc733d422f4e698c089077c.1650177997.git.lukas@wunner.de>
- <9325d344e8a6b1a4720022697792a84e545fef62.camel@redhat.com>
- <20220423160723.GA20330@wunner.de>
- <20220425074146.1fa27d5f@kernel.org>
- <20220430100541.GA18507@wunner.de>
+        with ESMTP id S239427AbiD3MfL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Apr 2022 08:35:11 -0400
+X-Greylist: delayed 116124 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 30 Apr 2022 05:31:44 PDT
+Received: from spiderman.my-portal.gr (spiderman.my-portal.gr [144.76.89.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EBEFF381BB
+        for <netdev@vger.kernel.org>; Sat, 30 Apr 2022 05:31:44 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by spiderman.my-portal.gr (Postfix) with ESMTP id 5AAE7E7EFF5;
+        Tue, 26 Apr 2022 09:43:26 +0300 (EEST)
+X-Virus-Scanned: Debian amavisd-new at spiderman.my-portal.gr
+Received: from spiderman.my-portal.gr ([127.0.0.1])
+        by localhost (spiderman.my-portal.gr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 7UjKMRuqicwS; Tue, 26 Apr 2022 09:43:26 +0300 (EEST)
+Received: from www.hotelartemision.gr (localhost [127.0.0.1])
+        (Authenticated sender: info@hotelartemision.gr)
+        by spiderman.my-portal.gr (Postfix) with ESMTPA id E5B04E797DC;
+        Tue, 26 Apr 2022 00:15:04 +0300 (EEST)
+Received: from 209.107.210.62
+        (SquirrelMail authenticated user info@hotelartemision.gr)
+        by www.hotelartemision.gr with HTTP;
+        Mon, 25 Apr 2022 21:15:07 -0000
+Message-ID: <932abd42c179275f7789d6bacb265456.squirrel@www.hotelartemision.gr>
+Date:   Mon, 25 Apr 2022 21:15:07 -0000
+Subject: RE:
+From:   "Mackenzie Scott" <info@hotelartemision.gr>
+Reply-To: "Mackenzie Scott" <info@ebumk.com.br>
+User-Agent: SquirrelMail/1.4.23 [SVN]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220430100541.GA18507@wunner.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain;charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+X-Priority: 3 (Normal)
+Importance: Normal
+X-Spam-Status: No, score=3.4 required=5.0 tests=BAYES_50,LOTS_OF_MONEY,
+        MISSING_HEADERS,REPLYTO_WITHOUT_TO_CC,SPF_FAIL,SPF_HELO_NONE
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ***
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 30, 2022 at 12:05:41PM +0200, Lukas Wunner wrote:
-> But this means that we may still call linkwatch_fire_event() after
-> unregister_netdev()!
 
-I meant to say, "we may still call linkwatch_fire_event() after
-the state has changed to NETREG_UNREGISTERED".
+
+
+Xin chào,
+
+Tôi là Mackenzie Scott, v&#7907; c&#361; c&#7911;a ng&#432;&#7901;i sáng
+l&#7853;p kiêm Giám &#273;&#7889;c &#273;i&#7873;u hành Amazon (Jeff
+Bezos).
+Tôi quyên góp 4 t&#7927; &#273;ô la cho các t&#7893; ch&#7913;c t&#7915;
+thi&#7879;n, cá nhân và tr&#432;&#7901;ng cao &#273;&#7859;ng trên toàn
+c&#7847;u t&#7915; Qu&#7929; c&#7911;a Scott, &#273;&#7875; h&#7895;
+tr&#7907; ngay l&#7853;p t&#7913;c cho nh&#7919;ng ng&#432;&#7901;i
+b&#7883; thi&#7879;t h&#7841;i v&#7873; kinh t&#7871; do &#273;&#7841;i
+d&#7883;ch COVID-19 và b&#7841;n là m&#7897;t trong nh&#7919;ng
+ng&#432;&#7901;i may m&#7855;n chi&#7871;n th&#7855;ng.
+Tôi có m&#7897;t kho&#7843;n tài tr&#7907; tr&#7883; giá $ 100,800,000 cho
+b&#7841;n và c&#7897;ng &#273;&#7891;ng c&#7911;a b&#7841;n.
+Liên h&#7879; v&#7899;i tôi &#273;&#7875; bi&#7871;t thêm thông tin
+n&#7871;u b&#7841;n quan tâm.
+
+Trân tr&#7885;ng
+Mackenzie Scott
+
+
+
+
+
+
+Hello,
+
+I am Mackenzie Scott, ex-wife of Amazon founder and CEO(Jeff Bezos).
+I'm donating $ 4 billion to charities, individuals and colleges across the
+Globe from the Scott's Foundation, to provide immediate support to people
+suffering economically from the  COVID-19 pandemic and you are one of the
+lucky winners.
+I have a donation grant worth $100,800,000 for you and your community.
+Contact me for more information if you are interested.
+
+Best regards
+Mackenzie Scott
+
