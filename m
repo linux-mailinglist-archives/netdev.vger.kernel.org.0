@@ -2,111 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E49E950D7CF
-	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 05:46:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E53450D7D3
+	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 05:46:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240934AbiDYDs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Apr 2022 23:48:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41728 "EHLO
+        id S240990AbiDYDtC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Apr 2022 23:49:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240944AbiDYDsg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 23:48:36 -0400
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2073.outbound.protection.outlook.com [40.107.212.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6096125286
-        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 20:45:32 -0700 (PDT)
+        with ESMTP id S240960AbiDYDsl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Apr 2022 23:48:41 -0400
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2083.outbound.protection.outlook.com [40.107.212.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F932237C9
+        for <netdev@vger.kernel.org>; Sun, 24 Apr 2022 20:45:38 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=et5+ZWvr2QaLB1Hsg67LlowsOhgwpLPSbTbWJrknJ87bRFgcKshzwLPNwN+QYMMFxmDbu1nrWCAFu5v3OMWOkABO4QEfnpKwWomjXfnqFJxjkme3yIudqiBwkehJb6poiBf4X1+vusqnRi/3aM1IhwEDFtmATsOL1bZtqWLbXW1Rnar9GsEx3Y0Me34iddHRS1gXLtvyLKy79acVZN2VsqkMsVPLFUIVbRZd8uqjYAqvUN4uXEn3KVFb5QAAxyVmrfPnTmeHNuhNQvKUkqC1rE61jF2YksSxSdn8Bva47aQaFbyRHergg1PSrE1F8A3wRx/Qnbfn92sS2sJBXVZVHw==
+ b=ZGLr5nMdgOlSbZLAL02EWLdW6r3+mlvrrd8c76b6zJMg+PDhgUDIfcu3BucDA9KYVYJipXAUl4j5aIfUuVLu9lDl4cUoOJUWteyyulhasfq08wB8TzcNLL3GmPgoIIvh7POyBOzwj/hOxQzVlcNHflox+gHbPGPSgoT/hfRLapzm6ORSNRVHKCVIdH6p+K/cV4fVvajUqnlKsRzDchL+BTDOoQTJmlXHuqA4jx5MyqeNENBVtw2JZAO45sfUEQaahLg+axcaS+lNYxtN3mLeqZkmzh8coQraG0GHaFxL/lVUGr7NcnPxCCs/qYC8pL4QE4jC5Jps+ENy148epX3ZSg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kO5Urd5MUwOvpwNYX6h7+MgLUk8cVAj3yoE41WtjoxE=;
- b=ISahMlJoAyaKsgawSe3zChAbFkFk08JD2QAxcgpQ6WlB5EN5DdomA/SE803tT6sDGghjHuUP2xxu9GLTwF0RjfmF/5ISfOjRCfyJX3kijWQByCFpWR1EeYSzx9fD/GSy6eptT0FGpnWBKhlMrWQiUkHhwAj30gbm4ee8rT/WmSHJIIlo2wOii5ESADUBcTSEAY+omEpO+vg02Vg3WJcHixJuHafV3UEyxkvM0nvYDH0ri/iRFRwiSsi1UxJ1dZfdYD1CwQubgXYYiCZahOeXiecqpWxJz6RxRQMXUYG175iisuJdznvqBnRXaW15Ey3KP1QOlNmnNqCfWU2MQJIZaw==
+ bh=M+gRZ+10ew3xWcyfm2EImPREj/Eu7LADHERqH0CdUXg=;
+ b=Yl2aa7C+SvkVKv7GX7nLuozfQ2jnFtcmj6liMhUzirhZjUiodlUGW4CvSmZMYvV4m40eOL+UKE5C8y3J5PzndgZaOZUP+2Glqw03cGsUNTgu0gfonD3PDatO8iMaCrQVfiCm0RPUeqcf2rGX3SekChzd24r2LP5YlBc8ZOGg6C3rJ2Rhdh/rdXcxuD4ZkfxYIAblGEKjl4jiLUo5M1cSxuJ2+M+wthDJR3LRX1eJJSivZsedlGha5zD4tdtUJYzzxWcL8F+rcdf/2dyVWkLOpqipGBlYED6vNH+WrwjSybyWIfMz4zgGiSkHql74bfwmWGNaCwnZimQkw1YqNhohwQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kO5Urd5MUwOvpwNYX6h7+MgLUk8cVAj3yoE41WtjoxE=;
- b=UceySjWJQIpyvTVxn0zoCofhkEPTAGEwjyqAJwVv9MLDfJl1yJsOygjRiR7n/RkqcZFOT6cxxys7ESZZi7wQ7kp9ZS4i/al1I3LpLIMiGZDIQ8/hD1Hv8Q7cjpCa5N2/bY4DWDC1NO+Yorit+P1sUr03e1NrnHCNZrDNbNfLfI2zAhVaVndlcoQpmmGkpL9iDQu9AojM9+pVhFL8vvWiNJhqRwlUCnTdVA1GMPrYdVAb747MH50z/PUSG2Pi1LjkIj8ePk7uF67NsZtdbkelWSYk7wyxZuKYxWKLWEPbu6zwmErsydFROVH31Q2ja+lI0wElMBn0BaG8U8q8+5j8Cg==
+ bh=M+gRZ+10ew3xWcyfm2EImPREj/Eu7LADHERqH0CdUXg=;
+ b=ZgBECQN+NrMnOErs7gepEQGkJ2Jxl27XezNxyWxPjWpdiig70lOHI0HIMpSb7gNZ2vtjqeXc+otUHnjARu2w0aHnxGPmUH7byDKYCV47sjTzDa4lYgruAyfhvW3haPbJpZdn6Kd5ank80pZovGUunrAf3BvfXjd/8bnhbLSEl1k4QVa/LgJSDdZ39VGbpmwVGoXBi3ptvufFOCkFwvnu6qdd+d1xhMph0O1Q2o7tKW8KgrUFNGDp0rmV/XXlJWUnHzac7B+aXpq2czuJm4z5Quz6CDzJU2zO3NPqO6ivuVpZW6HAlmTX5aqM7eTpkaoS+FNw6Y7/CMPdDo9ECtRa2Q==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from DM6PR12MB4337.namprd12.prod.outlook.com (2603:10b6:5:2a9::12)
  by MWHPR1201MB0255.namprd12.prod.outlook.com (2603:10b6:301:4f::19) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Mon, 25 Apr
- 2022 03:45:30 +0000
+ 2022 03:45:36 +0000
 Received: from DM6PR12MB4337.namprd12.prod.outlook.com
  ([fe80::45b7:af36:457d:7331]) by DM6PR12MB4337.namprd12.prod.outlook.com
  ([fe80::45b7:af36:457d:7331%6]) with mapi id 15.20.5186.021; Mon, 25 Apr 2022
- 03:45:30 +0000
+ 03:45:36 +0000
 From:   Ido Schimmel <idosch@nvidia.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
         andrew@lunn.ch, mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 01/11] devlink: introduce line card devices support
-Date:   Mon, 25 Apr 2022 06:44:21 +0300
-Message-Id: <20220425034431.3161260-2-idosch@nvidia.com>
+Subject: [PATCH net-next 02/11] devlink: introduce line card info get message
+Date:   Mon, 25 Apr 2022 06:44:22 +0300
+Message-Id: <20220425034431.3161260-3-idosch@nvidia.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220425034431.3161260-1-idosch@nvidia.com>
 References: <20220425034431.3161260-1-idosch@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: VI1PR0102CA0068.eurprd01.prod.exchangelabs.com
- (2603:10a6:803::45) To DM6PR12MB4337.namprd12.prod.outlook.com
+X-ClientProxiedBy: VI1PR08CA0253.eurprd08.prod.outlook.com
+ (2603:10a6:803:dc::26) To DM6PR12MB4337.namprd12.prod.outlook.com
  (2603:10b6:5:2a9::12)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7e5ce86f-f315-4e9f-539b-08da266e0a45
+X-MS-Office365-Filtering-Correlation-Id: ff48d5d1-b10f-4ae6-6b3f-08da266e0eb9
 X-MS-TrafficTypeDiagnostic: MWHPR1201MB0255:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR1201MB025599B42C182BE2E5D0C906B2F89@MWHPR1201MB0255.namprd12.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <MWHPR1201MB0255663B03624A85FA8CA1D6B2F89@MWHPR1201MB0255.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: c5BUO1xQl9K9aGTqZdKWPwtD66du0dFvFL68JwHsWAsn77OwmfDyt9eZZwXaYK9bQxrpypfwjbjDbHbRIv6RPTYPYXlQ56t7CsAqXL6hQdTwIPeXYtUDvKYzdM5ZDm2oIq2LI2vDqoGbOPl8Va04QLog6YElSSsvlHieLrFUkxeCkI4VEwrqGeyx+Vxwg5WUMseqLWOsC7u1nQDFtGw3Qs0wnH9eyyi2ax02vdYY0CqKa+ieKIjhur42bPMyF/xmoWwW6JQENlsnoyFTElxWHfPqoqGzdWDx2GoxyqW8oSlsMKGNhnN+01C9XmZykr1ZB1LJ604KrSJJQ8fRJTKrSZsF/NjJiv1O7ubv82Kew9iujFO7lb1NapUPCGK8dMjNATH9jlyEG908mfKjYHf/b35f8DQrmcMti+PqUAUr8DE7Zv1XIullv+nvt+OHythzAhaPrtWJ3KiGqlqY8tXwGhRIHYNSCog/fwcK2mpe/pQbtgaq8lZiMIAt49lEfTUwy3COsvbJ+R6BFjlzwv4aQoOAhUdXl1GA7XKI2qFRyZNyHfl2WsHSCh7XNofjEbvB8AfLCpGcmnV6piFqJ9fJeRIhh5xcEDax+bgrcouYhzIt83p0aqj27uxXbaxeLIhZv9zeKoi31gnNGD0pVLPFPA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4337.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(4326008)(316002)(6486002)(508600001)(8676002)(66556008)(66476007)(86362001)(6916009)(38100700002)(66946007)(5660300002)(6666004)(6506007)(2906002)(36756003)(6512007)(83380400001)(26005)(186003)(8936002)(2616005)(1076003)(107886003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: Yjg1mQk55OjlgDz4IFgL5+6mdRLb8dj3gtiHD4alfTEeZlQi4bKWGUfmhidEgrd2O1AtuVhyvIRpPB+CTRfQYq5jIv8n6jYTBZRYGmzdAn2hZMSwNVwCDIyMikTsQad1E7jDVXYYIzTRSWr2nL1tU6Ltl7Hx1zULRO2pW0x4OgLfb/Y48HYbGZIlgBEQLKUGgJqDHeRPn/SVcZLAgN6DpV5TnNp8MlvgCfFlvL6wg6OPxfSLrl53ek0TlGdDtAHaZy7cegV2hZJtTK5sPrH0c8p/Q5scu/i4kwZFXQZU6MGmgU0uuMuTudlyZtV4JWqZKENb77fS+bZ/MAkFnmvOC7+gblX5kSqn57SoaJZ28m1sFOzC40XoT9tOgGjOdeUfnKJRL32R5gzOj2Th+1ByNWcCQ00bsUkTYVp5HlHwb93XN1Xgzojomwh4JAPoKBkjhIFDn796JAYFp5Oldrw4TPId1ZiBu5p/d9dCds6d7YG4Ls9AS9XKozlbDlbUcXBFprzF7GS/KkubM0WMK1mbmkIrxfvTthceCHerbmhM9jsuAZ71m2mBi6CvZ4a2e/YJPAtXxprbo/4wPosqYFLj7ZKTHicXrNAc8W6y6/hIhNuL6bySMjXq0+4ynCvxsgnuA/RFYivodk1YALtH0YvWmg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4337.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(4326008)(316002)(6486002)(508600001)(8676002)(66556008)(66476007)(86362001)(6916009)(38100700002)(66946007)(5660300002)(15650500001)(6666004)(6506007)(2906002)(36756003)(6512007)(83380400001)(26005)(186003)(8936002)(2616005)(1076003)(107886003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jY6YiPx20NFNWuMl2KCE87AN2rcZvfbNppzMe1nDpYpnWJxAdbwhy7liW5c+?=
- =?us-ascii?Q?mJ9M+2S+LKfm9+pk6kN3qnR5dETJrAPDktgjTQGeLQOQfVrQssysuZdeaTY9?=
- =?us-ascii?Q?Z25a82h+WUpBMwTKpW76oilDy7iqobEe7oKk/NQkZ1SAxTw2tD0Z+sP1ASO4?=
- =?us-ascii?Q?vW4NgJpqP764GT2J7+EE8N/P9CzteNss39bD9GSxTEIiBrH4hkXZfSqhuPda?=
- =?us-ascii?Q?TGv72SdvgiDE3kBO2tkIZcq96sLjhjulL2sAkgeF+TvnpS2O/VdEjXyTUhNj?=
- =?us-ascii?Q?Z05GjsGOkaDS8gjDeP5ehvYSt1HtMhVPTB8Tzvna0DCX2McC2DyP7J69GNJV?=
- =?us-ascii?Q?jEPnYMZKJRYSgKv4A6t4S2lZ4umDnwwJFKhcni0qfypm6BAsieaO3UbXbxl7?=
- =?us-ascii?Q?SxNhf6oM3snQTc+6TDHi3JQXdtGeXeTgkjPkAuyYJ/+2zLponI7RWuExBCgm?=
- =?us-ascii?Q?LQ4kjQOJYlsQoTZj8gHzPjDcwIPS5UgTWp43smjCJ8cyo9LE1NUO11Ozq9YQ?=
- =?us-ascii?Q?QzI/vWEybWj+iRe/Itct+QaOYXDCxpAGnagu6LMufq+evqI6zmh749W3n5kH?=
- =?us-ascii?Q?QW/MF1Q7BGkgHBUrc4VtHERFPXxGehB4UhPpBhCLwE0X4G+hvVC1idjohE06?=
- =?us-ascii?Q?vscH7+7zmTBKVNrWdVGiCqY97l9jIv2/DpKvmqylDz9GNxoy+Bxf2FMI7qI2?=
- =?us-ascii?Q?yQ8/CQTaVpFndtyA9FF9R0MHtWecwKd3fs2vqpZAfU5GqpLTwrodAugavpdA?=
- =?us-ascii?Q?Cg56D1qtZNQz56ARzIKl2jWCkcttY3uw+DzLDvgH/Qz0AiFZqiWgJ1wyBsbc?=
- =?us-ascii?Q?kWOAKT3q0VKtTa85WIqzCFwfD0s8uIAcJwNwvJE+sZp4Q97xBhieC5W4Pgcq?=
- =?us-ascii?Q?dSelZqZjwdxnLwdYziXISDZaOSBHzqIWRj8jM9GRggCZ3c2ZkbJ0O+UA5++9?=
- =?us-ascii?Q?72fVih9DxsgovIgCeWQyosJ0f/ZSonGchJVGX5LAhMMs3btcHH7Grw30D+em?=
- =?us-ascii?Q?4SzYsNAoSws1kNNwwPULPu6Aw4YHCjS+uR9Gr2k2y92hZdbyAaA3FLSfEjrd?=
- =?us-ascii?Q?mdIEE3YYPYVOUbnqTejUOgm5y+T6+LK2m1LweurU3v1r4Dq4X+6tEQqAFBmO?=
- =?us-ascii?Q?BLa2s5TpA1nu6HIgzC1u82GHqgA/Qrd7mN/lZMCLhuBaBrt33sTRALf+thJZ?=
- =?us-ascii?Q?Xmm7M15uCS2FPSsBSN35tO21B96pNG87bg4mH5mYenxpKWTk9IIxDHmVpp6r?=
- =?us-ascii?Q?iB4eEElY9MnflwbK4IFKRdPRaP0wNYOp0Nu/7YIiBkDSj84T8yDxUDndvBP9?=
- =?us-ascii?Q?S2yxjSy57m0SzEfQjTKuvj3XBLuxqeJBzfVjqm1I20AJeP2vnAg0T1UE6fP6?=
- =?us-ascii?Q?sYxHWh+/lWDTZ4wcy9EnS81iA79hX22AqRiItV97elZjWy4USr9W985ez4gx?=
- =?us-ascii?Q?741KghuUTiuGM4Au5Bt38VEKb84r+dVbMb6XW1qcw39cCWwy2Af1CQfugJS6?=
- =?us-ascii?Q?T5c3LbWZUcgkpuXB3KXP7vbCIH+1kUhv1R435Cf6gsgx1pqpwdeBrOGGf6XL?=
- =?us-ascii?Q?IyYnz7XQ5+Zxw/u13OAKqPHQZWLbczp/V/9iFvP7oEFnr8UvZdKFl9lgJb5b?=
- =?us-ascii?Q?gFBTnUdNXntKta+I/IItPOyoyPYvE3vWfaZxn802BTeuiuKQQtAUBS7yi67J?=
- =?us-ascii?Q?LQ94+SZyic0niS2BjE/YtohJVGKwsTMhYs5XnvfLeCxhsEzrdBmy8JOmWmUb?=
- =?us-ascii?Q?ehx4P390Bw=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?iAvC2JYe7j7Qbu4Y6W0RRt4/tcbTDxcsMx3NsX51IwGVQz6wrcSkjFep17XT?=
+ =?us-ascii?Q?nIjBk+XnTPmYRvRoeqiULkLwbmxg6k9D67LlMLXAQaffXgp6ozrbDMUI3KXg?=
+ =?us-ascii?Q?0hrwP+bL7s0IYx44Irc2TWgngUGdW7oYfroA3hIXsc295bZrkHa72PqRHqPV?=
+ =?us-ascii?Q?ccUuhYbjgF73BXIechE5Eh09HB6wAiATCgMK4Hnxki0e2a5TbaohcNZyW4LB?=
+ =?us-ascii?Q?EOyqoPE9Y2aXrBVolSChPIIi3WV/Ro0MketWdFZkSx7PTj4gGE/Sr89zO/oC?=
+ =?us-ascii?Q?v9S9MKxCSYuzclt+cuIWCnYXk0g9ggNtXdFnJ9SGoXDU7zAzUcHI0EPY7VMX?=
+ =?us-ascii?Q?x7v7IGzdkXB6RUxAnbcYOuM1iOPcobDRS7AArttzwiMxnGGs7PkbDsjYNu2g?=
+ =?us-ascii?Q?S/Idp7h5XTw92HX+PGf/JvHSjX2W9dO5XK8h/LESbxqPuEgdslYvsTi3h32U?=
+ =?us-ascii?Q?6/UaZaak/ptyGKTRRcG39RRyUSIwQE3VCpHr5SCS6lWU9/MLo/EM31b5oCSS?=
+ =?us-ascii?Q?A4zsORapNHdkaNfqMd4KTZPZOcPx7mXKN3vGgAcc9yNTpt3sa9vItXZ1DZ3Y?=
+ =?us-ascii?Q?+cYyDZgWCFh66kDZFaW5eWBipzyYyoHe6IsVb+giTpg+x4nc8fTSuRzUsdHd?=
+ =?us-ascii?Q?h9pO7OHVCM4HmNbd/yISB2mlDMPd2ePwv78NtSuYbV8QHO/wB/AYuH3ICbqj?=
+ =?us-ascii?Q?/3Zkap068bOxZzwJRKy0VRg5jPs8SRli1Kp4XikYqvsKzJk15zUzeiEAMYj1?=
+ =?us-ascii?Q?1A97AiUWh6d9tZxV7AzjxLbNTu7lTbwz3NICHB5Dn5JxNZ7G5NjhX6VV9mZg?=
+ =?us-ascii?Q?QuIEx1GUcACCuO7K7DtwGxihv7ZvQ5+8648KXU37SpaFuWdAZ7InP6lWYBKW?=
+ =?us-ascii?Q?Np3qvoXyY5NMKUhp+e4FSkvF3IGd7fmeet1lsDxfe8Uvh4WOutvgkYmAiksU?=
+ =?us-ascii?Q?3oZ0JPaZuAA4M3BVhgENq+hNTZGCIKGj2tLnrzkiaTz029NuIdFgDcEFH8XK?=
+ =?us-ascii?Q?Om8SuowdqJYRDuHjXJoIgQIS3S11LHmvlyxeYwm9XFrIAbyiBnzom/5tGTJN?=
+ =?us-ascii?Q?fzsN7NqHImLPzqItCg8HeYzNpFMQdQP5NEEV1WNl7OGcjmbfV+t2dnf6JeY3?=
+ =?us-ascii?Q?caVLnjBjArSXP+nKGjRNjl9+Zh6BWfBG0L6Pu86O2TIMOcf5uX4Jr2XzxdPJ?=
+ =?us-ascii?Q?WKJ+lfMI5MZ/Hlw3am0HPeos7Z/XhzeQCNjft84dgm1VqOLa4aVV28hz8YtB?=
+ =?us-ascii?Q?0a37VF7aDRkS+7aAx6fneTIcZegOCvjhjd7U6aW2IHagX7ElwaQ4mvBRVQ7V?=
+ =?us-ascii?Q?/yPhnzxU4pW8PZdT8v0NwcUuPDBDa27rc4Fs7cZZw9lWmJwl1hGt58gNaFr0?=
+ =?us-ascii?Q?KWly52RBmZYiBkW5jZq5dQFbT3zeYJ/Xiazjm5fzi/r7sznyJEd+B5ChkePc?=
+ =?us-ascii?Q?lo/BdlJdmniYqsVwxwW9l2qNWC2zes9N85wDsf+YcZNgIWjFnsZBkK6VjvtZ?=
+ =?us-ascii?Q?fsCgqyJMxwnxyiHj7I0PkvA6zwYoGR9yUeXk62VNq1zMzCq41ihOtKHfTpG+?=
+ =?us-ascii?Q?4N+mnaiEUUouDRcg9T7GqQnInfdRopaOyhCZoikLa2A+uuqCbxIjs0oIJuUv?=
+ =?us-ascii?Q?7VN7m68UfoufH0zZlZ5FlPt2znWNaFf88VlTYfj4X1kJEwYCwF0zqQrni7dx?=
+ =?us-ascii?Q?grwf8+EcWhCk7gduuAQ80kponuHhDcrlUxxoz/+Qj7lAf+ZsbOZkE0u71I/s?=
+ =?us-ascii?Q?rRtKwp8D6Q=3D=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7e5ce86f-f315-4e9f-539b-08da266e0a45
+X-MS-Exchange-CrossTenant-Network-Message-Id: ff48d5d1-b10f-4ae6-6b3f-08da266e0eb9
 X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4337.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Apr 2022 03:45:30.3182
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Apr 2022 03:45:36.3820
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: LEydoeOpX1n+RQzcBV6TWqPCPywtkSkliY4Ehwi5f3FpEXMuTWvhrhPd0QRTEUenB/a+SRRTLZHG91SMPE8PJg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: FoR5qqm3hj0WLWdmTmrq/l/3D+TRGDOtmBKtVjnWJq4Gb/CSogDmk1nQV37sN4KC3a8jQ+kTFsB0k14z4Ey/8w==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1201MB0255
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -120,232 +120,255 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Line card can contain one or more devices that makes sense to make
-visible to the user. For example, this can be a gearbox with
-flash memory, which could be updated.
-
-Provide the driver possibility to attach such devices to a line card
-and expose those to user.
+Allow the driver to provide per line card info get op to fill-up info,
+similar to the "devlink dev info".
 
 Example:
-$ devlink lc show pci/0000:01:00.0 lc 8
+
+$ devlink lc info pci/0000:01:00.0 lc 8
 pci/0000:01:00.0:
-  lc 8 state active type 16x100G
-    supported_types:
-      16x100G
-    devices:
-      device 0
-      device 1
-      device 2
-      device 3
+  lc 8
+    versions:
+        fixed:
+          hw.revision 0
+        running:
+          ini.version 4
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- include/net/devlink.h        |   7 +++
- include/uapi/linux/devlink.h |   3 +
- net/core/devlink.c           | 104 ++++++++++++++++++++++++++++++++++-
- 3 files changed, 113 insertions(+), 1 deletion(-)
+ .../networking/devlink/devlink-linecard.rst   |   4 +
+ include/net/devlink.h                         |   7 +-
+ include/uapi/linux/devlink.h                  |   2 +
+ net/core/devlink.c                            | 130 +++++++++++++++++-
+ 4 files changed, 138 insertions(+), 5 deletions(-)
 
+diff --git a/Documentation/networking/devlink/devlink-linecard.rst b/Documentation/networking/devlink/devlink-linecard.rst
+index 6c0b8928bc13..5a8d5989702a 100644
+--- a/Documentation/networking/devlink/devlink-linecard.rst
++++ b/Documentation/networking/devlink/devlink-linecard.rst
+@@ -14,6 +14,7 @@ system. Following operations are provided:
+   * Get a list of supported line card types.
+   * Provision of a slot with specific line card type.
+   * Get and monitor of line card state and its change.
++  * Get information about line card versions.
+ 
+ Line card according to the type may contain one or more gearboxes
+ to mux the lanes with certain speed to multiple ports with lanes
+@@ -120,3 +121,6 @@ Example usage
+ 
+     # Set slot 8 to be unprovisioned:
+     $ devlink lc set pci/0000:01:00.0 lc 8 notype
++
++    # Set info for slot 8:
++    $ devlink lc info pci/0000:01:00.0 lc 8
 diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 2a2a2a0c93f7..c84b52fb9ff0 100644
+index c84b52fb9ff0..f96dcb376630 100644
 --- a/include/net/devlink.h
 +++ b/include/net/devlink.h
-@@ -1578,6 +1578,13 @@ struct devlink_linecard *
- devlink_linecard_create(struct devlink *devlink, unsigned int linecard_index,
- 			const struct devlink_linecard_ops *ops, void *priv);
- void devlink_linecard_destroy(struct devlink_linecard *linecard);
-+struct devlink_linecard_device;
-+struct devlink_linecard_device *
-+devlink_linecard_device_create(struct devlink_linecard *linecard,
-+			       unsigned int device_index);
-+void
-+devlink_linecard_device_destroy(struct devlink_linecard *linecard,
-+				struct devlink_linecard_device *linecard_device);
- void devlink_linecard_provision_set(struct devlink_linecard *linecard,
- 				    const char *type);
- void devlink_linecard_provision_clear(struct devlink_linecard *linecard);
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index b3d40a5d72ff..cd578645f94f 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -575,6 +575,9 @@ enum devlink_attr {
- 	DEVLINK_ATTR_LINECARD_STATE,		/* u8 */
- 	DEVLINK_ATTR_LINECARD_TYPE,		/* string */
- 	DEVLINK_ATTR_LINECARD_SUPPORTED_TYPES,	/* nested */
-+	DEVLINK_ATTR_LINECARD_DEVICE_LIST,	/* nested */
-+	DEVLINK_ATTR_LINECARD_DEVICE,		/* nested */
-+	DEVLINK_ATTR_LINECARD_DEVICE_INDEX,	/* u32 */
- 
- 	/* add new attributes above here, update the policy in devlink.c */
- 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 5cc88490f18f..41d9631ceada 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -83,10 +83,11 @@ struct devlink_linecard {
- 	const struct devlink_linecard_ops *ops;
- 	void *priv;
- 	enum devlink_linecard_state state;
--	struct mutex state_lock; /* Protects state */
-+	struct mutex state_lock; /* Protects state and device_list */
- 	const char *type;
- 	struct devlink_linecard_type *types;
- 	unsigned int types_count;
-+	struct list_head device_list;
+@@ -150,6 +150,8 @@ struct devlink_port_new_attrs {
+ 	   sfnum_valid:1;
  };
+ 
++struct devlink_info_req;
++
+ /**
+  * struct devlink_linecard_ops - Linecard operations
+  * @provision: callback to provision the linecard slot with certain
+@@ -168,6 +170,7 @@ struct devlink_port_new_attrs {
+  *                  provisioned.
+  * @types_count: callback to get number of supported types
+  * @types_get: callback to get next type in list
++ * @info_get: callback to get linecard info
+  */
+ struct devlink_linecard_ops {
+ 	int (*provision)(struct devlink_linecard *linecard, void *priv,
+@@ -182,6 +185,9 @@ struct devlink_linecard_ops {
+ 	void (*types_get)(struct devlink_linecard *linecard,
+ 			  void *priv, unsigned int index, const char **type,
+ 			  const void **type_priv);
++	int (*info_get)(struct devlink_linecard *linecard, void *priv,
++			struct devlink_info_req *req,
++			struct netlink_ext_ack *extack);
+ };
+ 
+ struct devlink_sb_pool_info {
+@@ -628,7 +634,6 @@ struct devlink_flash_update_params {
+ #define DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK	BIT(1)
+ 
+ struct devlink_region;
+-struct devlink_info_req;
  
  /**
-@@ -2058,6 +2059,55 @@ struct devlink_linecard_type {
- 	const void *priv;
- };
+  * struct devlink_region_ops - Region operations
+diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+index cd578645f94f..fb8c3864457f 100644
+--- a/include/uapi/linux/devlink.h
++++ b/include/uapi/linux/devlink.h
+@@ -136,6 +136,8 @@ enum devlink_command {
+ 	DEVLINK_CMD_LINECARD_NEW,
+ 	DEVLINK_CMD_LINECARD_DEL,
  
-+struct devlink_linecard_device {
-+	struct list_head list;
-+	unsigned int index;
++	DEVLINK_CMD_LINECARD_INFO_GET,		/* can dump */
++
+ 	/* add new commands above here */
+ 	__DEVLINK_CMD_MAX,
+ 	DEVLINK_CMD_MAX = __DEVLINK_CMD_MAX - 1
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 41d9631ceada..5facd10de64a 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -2424,6 +2424,125 @@ static int devlink_nl_cmd_linecard_set_doit(struct sk_buff *skb,
+ 	return 0;
+ }
+ 
++struct devlink_info_req {
++	struct sk_buff *msg;
 +};
 +
 +static int
-+devlink_nl_linecard_device_fill(struct sk_buff *msg,
-+				struct devlink_linecard_device *linecard_device)
++devlink_nl_linecard_info_fill(struct sk_buff *msg, struct devlink *devlink,
++			      struct devlink_linecard *linecard,
++			      enum devlink_command cmd, u32 portid,
++			      u32 seq, int flags, struct netlink_ext_ack *extack)
 +{
-+	struct nlattr *attr;
-+
-+	attr = nla_nest_start(msg, DEVLINK_ATTR_LINECARD_DEVICE);
-+	if (!attr)
-+		return -EMSGSIZE;
-+	if (nla_put_u32(msg, DEVLINK_ATTR_LINECARD_DEVICE_INDEX,
-+			linecard_device->index)) {
-+		nla_nest_cancel(msg, attr);
-+		return -EMSGSIZE;
-+	}
-+	nla_nest_end(msg, attr);
-+
-+	return 0;
-+}
-+
-+static int devlink_nl_linecard_devices_fill(struct sk_buff *msg,
-+					    struct devlink_linecard *linecard)
-+{
-+	struct devlink_linecard_device *linecard_device;
-+	struct nlattr *attr;
++	struct devlink_info_req req;
++	void *hdr;
 +	int err;
 +
-+	if (list_empty(&linecard->device_list))
-+		return 0;
-+
-+	attr = nla_nest_start(msg, DEVLINK_ATTR_LINECARD_DEVICE_LIST);
-+	if (!attr)
++	hdr = genlmsg_put(msg, portid, seq, &devlink_nl_family, flags, cmd);
++	if (!hdr)
 +		return -EMSGSIZE;
-+	list_for_each_entry(linecard_device, &linecard->device_list, list) {
-+		err = devlink_nl_linecard_device_fill(msg, linecard_device);
-+		if (err) {
-+			nla_nest_cancel(msg, attr);
-+			return err;
-+		}
-+	}
-+	nla_nest_end(msg, attr);
 +
-+	return 0;
-+}
++	err = -EMSGSIZE;
++	if (devlink_nl_put_handle(msg, devlink))
++		goto nla_put_failure;
++	if (nla_put_u32(msg, DEVLINK_ATTR_LINECARD_INDEX, linecard->index))
++		goto nla_put_failure;
 +
- static int devlink_nl_linecard_fill(struct sk_buff *msg,
- 				    struct devlink *devlink,
- 				    struct devlink_linecard *linecard,
-@@ -2068,6 +2118,7 @@ static int devlink_nl_linecard_fill(struct sk_buff *msg,
- 	struct devlink_linecard_type *linecard_type;
- 	struct nlattr *attr;
- 	void *hdr;
-+	int err;
- 	int i;
- 
- 	hdr = genlmsg_put(msg, portid, seq, &devlink_nl_family, flags, cmd);
-@@ -2100,6 +2151,10 @@ static int devlink_nl_linecard_fill(struct sk_buff *msg,
- 		nla_nest_end(msg, attr);
- 	}
- 
-+	err = devlink_nl_linecard_devices_fill(msg, linecard);
++	req.msg = msg;
++	err = linecard->ops->info_get(linecard, linecard->priv, &req, extack);
 +	if (err)
 +		goto nla_put_failure;
 +
- 	genlmsg_end(msg, hdr);
- 	return 0;
- 
-@@ -10264,6 +10319,7 @@ devlink_linecard_create(struct devlink *devlink, unsigned int linecard_index,
- 	linecard->priv = priv;
- 	linecard->state = DEVLINK_LINECARD_STATE_UNPROVISIONED;
- 	mutex_init(&linecard->state_lock);
-+	INIT_LIST_HEAD(&linecard->device_list);
- 
- 	err = devlink_linecard_types_init(linecard);
- 	if (err) {
-@@ -10291,6 +10347,7 @@ void devlink_linecard_destroy(struct devlink_linecard *linecard)
- 	struct devlink *devlink = linecard->devlink;
- 
- 	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_DEL);
-+	WARN_ON(!list_empty(&linecard->device_list));
- 	mutex_lock(&devlink->linecards_lock);
- 	list_del(&linecard->list);
- 	devlink_linecard_types_fini(linecard);
-@@ -10299,6 +10356,50 @@ void devlink_linecard_destroy(struct devlink_linecard *linecard)
++	genlmsg_end(msg, hdr);
++	return 0;
++
++nla_put_failure:
++	genlmsg_cancel(msg, hdr);
++	return err;
++}
++
++static int devlink_nl_cmd_linecard_info_get_doit(struct sk_buff *skb,
++						 struct genl_info *info)
++{
++	struct devlink_linecard *linecard = info->user_ptr[1];
++	struct devlink *devlink = linecard->devlink;
++	struct sk_buff *msg;
++	int err;
++
++	if (!linecard->ops->info_get)
++		return -EOPNOTSUPP;
++
++	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
++	if (!msg)
++		return -ENOMEM;
++
++	mutex_lock(&linecard->state_lock);
++	err = devlink_nl_linecard_info_fill(msg, devlink, linecard,
++					    DEVLINK_CMD_LINECARD_INFO_GET,
++					    info->snd_portid, info->snd_seq, 0,
++					    info->extack);
++	mutex_unlock(&linecard->state_lock);
++	if (err) {
++		nlmsg_free(msg);
++		return err;
++	}
++
++	return genlmsg_reply(msg, info);
++}
++
++static int devlink_nl_cmd_linecard_info_get_dumpit(struct sk_buff *msg,
++						   struct netlink_callback *cb)
++{
++	struct devlink_linecard *linecard;
++	struct devlink *devlink;
++	int start = cb->args[0];
++	unsigned long index;
++	int idx = 0;
++	int err = 0;
++
++	mutex_lock(&devlink_mutex);
++	xa_for_each_marked(&devlinks, index, devlink, DEVLINK_REGISTERED) {
++		if (!devlink_try_get(devlink))
++			continue;
++
++		if (!net_eq(devlink_net(devlink), sock_net(msg->sk)))
++			goto retry;
++
++		mutex_lock(&devlink->linecards_lock);
++		list_for_each_entry(linecard, &devlink->linecard_list, list) {
++			if (idx < start || !linecard->ops->info_get) {
++				idx++;
++				continue;
++			}
++			mutex_lock(&linecard->state_lock);
++			err = devlink_nl_linecard_info_fill(msg, devlink, linecard,
++							    DEVLINK_CMD_LINECARD_INFO_GET,
++							    NETLINK_CB(cb->skb).portid,
++							    cb->nlh->nlmsg_seq,
++							    NLM_F_MULTI,
++							    cb->extack);
++			mutex_unlock(&linecard->state_lock);
++			if (err) {
++				mutex_unlock(&devlink->linecards_lock);
++				devlink_put(devlink);
++				goto out;
++			}
++			idx++;
++		}
++		mutex_unlock(&devlink->linecards_lock);
++retry:
++		devlink_put(devlink);
++	}
++out:
++	mutex_unlock(&devlink_mutex);
++
++	if (err != -EMSGSIZE)
++		return err;
++
++	cb->args[0] = idx;
++	return msg->len;
++}
++
+ static int devlink_nl_sb_fill(struct sk_buff *msg, struct devlink *devlink,
+ 			      struct devlink_sb *devlink_sb,
+ 			      enum devlink_command cmd, u32 portid,
+@@ -6416,10 +6535,6 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
+ 	return err;
  }
- EXPORT_SYMBOL_GPL(devlink_linecard_destroy);
  
-+/**
-+ *	devlink_linecard_device_create - Create a device on linecard
-+ *
-+ *	@linecard: devlink linecard
-+ *	@device_index: index of the linecard device
-+ *
-+ *	Return: Line card device structure or an ERR_PTR() encoded error code.
-+ */
-+struct devlink_linecard_device *
-+devlink_linecard_device_create(struct devlink_linecard *linecard,
-+			       unsigned int device_index)
-+{
-+	struct devlink_linecard_device *linecard_device;
-+
-+	linecard_device = kzalloc(sizeof(*linecard_device), GFP_KERNEL);
-+	if (!linecard_device)
-+		return ERR_PTR(-ENOMEM);
-+	linecard_device->index = device_index;
-+	mutex_lock(&linecard->state_lock);
-+	list_add_tail(&linecard_device->list, &linecard->device_list);
-+	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
-+	mutex_unlock(&linecard->state_lock);
-+	return linecard_device;
-+}
-+EXPORT_SYMBOL_GPL(devlink_linecard_device_create);
-+
-+/**
-+ *	devlink_linecard_device_destroy - Destroy device on linecard
-+ *
-+ *	@linecard: devlink linecard
-+ *	@linecard_device: devlink linecard device
-+ */
-+void
-+devlink_linecard_device_destroy(struct devlink_linecard *linecard,
-+				struct devlink_linecard_device *linecard_device)
-+{
-+	mutex_lock(&linecard->state_lock);
-+	list_del(&linecard_device->list);
-+	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
-+	mutex_unlock(&linecard->state_lock);
-+	kfree(linecard_device);
-+}
-+EXPORT_SYMBOL_GPL(devlink_linecard_device_destroy);
-+
- /**
-  *	devlink_linecard_provision_set - Set provisioning on linecard
-  *
-@@ -10331,6 +10432,7 @@ EXPORT_SYMBOL_GPL(devlink_linecard_provision_set);
- void devlink_linecard_provision_clear(struct devlink_linecard *linecard)
+-struct devlink_info_req {
+-	struct sk_buff *msg;
+-};
+-
+ int devlink_info_driver_name_put(struct devlink_info_req *req, const char *name)
  {
- 	mutex_lock(&linecard->state_lock);
-+	WARN_ON(!list_empty(&linecard->device_list));
- 	linecard->state = DEVLINK_LINECARD_STATE_UNPROVISIONED;
- 	linecard->type = NULL;
- 	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
+ 	return nla_put_string(req->msg, DEVLINK_ATTR_INFO_DRIVER_NAME, name);
+@@ -9139,6 +9254,13 @@ static const struct genl_small_ops devlink_nl_ops[] = {
+ 		.flags = GENL_ADMIN_PERM,
+ 		.internal_flags = DEVLINK_NL_FLAG_NEED_LINECARD,
+ 	},
++	{
++		.cmd = DEVLINK_CMD_LINECARD_INFO_GET,
++		.doit = devlink_nl_cmd_linecard_info_get_doit,
++		.dumpit = devlink_nl_cmd_linecard_info_get_dumpit,
++		.internal_flags = DEVLINK_NL_FLAG_NEED_LINECARD,
++		/* can be retrieved by unprivileged users */
++	},
+ 	{
+ 		.cmd = DEVLINK_CMD_SB_GET,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
 -- 
 2.33.1
 
