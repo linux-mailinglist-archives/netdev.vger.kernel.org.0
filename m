@@ -2,83 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0356250E65A
-	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 18:59:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98C9450E69D
+	for <lists+netdev@lfdr.de>; Mon, 25 Apr 2022 19:11:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243673AbiDYRBp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Apr 2022 13:01:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55238 "EHLO
+        id S242494AbiDYROf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Apr 2022 13:14:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237367AbiDYRBp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 13:01:45 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9058238DBB
-        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 09:58:40 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="245870523"
-X-IronPort-AV: E=Sophos;i="5.90,289,1643702400"; 
-   d="scan'208";a="245870523"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2022 09:58:31 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,289,1643702400"; 
-   d="scan'208";a="532207917"
-Received: from silpixa00396680.ir.intel.com (HELO silpixa00396680.ger.corp.intel.com) ([10.237.223.54])
-  by orsmga006.jf.intel.com with ESMTP; 25 Apr 2022 09:58:30 -0700
-From:   Ray Kinsella <mdr@ashroe.eu>
-To:     netdev@vger.kernel.org
-Cc:     daniel@iogearbox.net, stephen@networkplumber.org,
-        Ray Kinsella <mdr@ashroe.eu>
-Subject: [PATCH 1/1] tc-bpf: added instructions to build cbpf generator
-Date:   Mon, 25 Apr 2022 17:57:33 +0100
-Message-Id: <20220425165733.240902-2-mdr@ashroe.eu>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20220425165733.240902-1-mdr@ashroe.eu>
-References: <20220425165733.240902-1-mdr@ashroe.eu>
+        with ESMTP id S232474AbiDYROe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 13:14:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45ED213DD7;
+        Mon, 25 Apr 2022 10:11:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E976BB8185B;
+        Mon, 25 Apr 2022 17:11:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31CC6C385A7;
+        Mon, 25 Apr 2022 17:11:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650906687;
+        bh=+bgp0PfSTA56OI/cMQNiiWX7cdawrhm8C4d75Ow+If4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KYWt7eUYGSFAvr/Q6cedy60WfBDeIUGU5kVNpwszBm1hC4HazvvJ37RtMC3sUrw3m
+         XTICnlfapX5xfG8Kpf2GKjCpg4ZYW9N05NyzJ7JIG+rvm/CG0YiTqanDmom4e5kPnZ
+         f29mybYSk/SUUCCT7h79rmWanjEyeWH+HrzYgyW6pwiUjbtRnhc7QkWsV5+hb6+BOH
+         qD3IFU2pasMZgbStcsIKbzzT7nJKMyl6tmTBDJzKgorW3txcyOhKeI6a9hB2f5O+It
+         1+p4uKQrKi1WgdTvZuw2BQrolj3tu16PD4Tf0ieZGmDNNsjxmRHQzkn/PJoQyQnPVc
+         0rlhgf+IrkuvQ==
+Date:   Mon, 25 Apr 2022 10:11:26 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Chuck Lever <chuck.lever@oracle.com>
+Cc:     netdev@vger.kernel.org, linux-nfs@vger.kernel.org,
+        linux-nvme@lists.infradead.org, linux-cifs@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, ak@tempesta-tech.com,
+        borisp@nvidia.com, simo@redhat.com
+Subject: Re: [PATCH RFC 2/5] tls: build proto after context has been
+ initialized
+Message-ID: <20220425101126.0efa9f51@kernel.org>
+In-Reply-To: <165030057652.5073.10364318727607743572.stgit@oracle-102.nfsv4.dev>
+References: <165030051838.5073.8699008789153780301.stgit@oracle-102.nfsv4.dev>
+        <165030057652.5073.10364318727607743572.stgit@oracle-102.nfsv4.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_FAIL,SPF_HELO_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Updated the man page for tc-bpf, detailing how to build to the cbpf
-generator and using it in the subsequent example.
+On Mon, 18 Apr 2022 12:49:36 -0400 Chuck Lever wrote:
+> From: Hannes Reinecke <hare@suse.de>
+> 
+> We have to build the proto ops only after the context has been
+> initialized, as otherwise we might crash when I/O is ongoing
+> during initialisation.
 
-Signed-off-by: Ray Kinsella <mdr@ashroe.eu>
----
- man/man8/tc-bpf.8 | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
-
-diff --git a/man/man8/tc-bpf.8 b/man/man8/tc-bpf.8
-index e4f68aaa..1d3ab633 100644
---- a/man/man8/tc-bpf.8
-+++ b/man/man8/tc-bpf.8
-@@ -892,13 +892,21 @@ int main(int argc, char **argv)
- .fi
- .in
- 
-+Build this helper by compiling the source above, and linking with
-+.B libpcap
-+as follows:
-+
-+.in +4n
-+.B clang -g -O2 cbpf-gen.c -lpcap -o cbpf-gen
-+.in
-+
- Given this small helper, any
- .B tcpdump(8)
- filter expression can be abused as a classifier where a match will
- result in the default classid:
- 
- .in +4n
--.B bpftool EN10MB 'tcp[tcpflags] & tcp-syn != 0' > /var/bpf/tcp-syn
-+.B cbpf-gen 'tcp[tcpflags] & tcp-syn != 0' > /var/bpf/tcp-syn
- .br
- .B tc filter add dev em1 parent 1: bpf bytecode-file /var/bpf/tcp-syn flowid 1:1
- .in
--- 
-2.26.2
-
+Can you say more about the crash you see? protos are not used until 
+at least one socket calls update_sk_prot().
