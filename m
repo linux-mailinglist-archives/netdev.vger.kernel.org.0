@@ -2,80 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA1F850EF38
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 05:30:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8C7A50EF59
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 05:44:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243029AbiDZDdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Apr 2022 23:33:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52266 "EHLO
+        id S240279AbiDZDrA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Apr 2022 23:47:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240121AbiDZDda (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 23:33:30 -0400
-Received: from codeconstruct.com.au (pi.codeconstruct.com.au [203.29.241.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF231172;
-        Mon, 25 Apr 2022 20:30:16 -0700 (PDT)
-Received: from [172.16.69.231] (unknown [49.255.141.98])
-        by mail.codeconstruct.com.au (Postfix) with ESMTPSA id 1EF8420162;
-        Tue, 26 Apr 2022 11:30:08 +0800 (AWST)
+        with ESMTP id S230297AbiDZDq5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 23:46:57 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 313413CFF5
+        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 20:43:51 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id m128so12720261ybm.5
+        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 20:43:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=codeconstruct.com.au; s=2022a; t=1650943811;
-        bh=f1PVLbmLqz5IPQlx+FIi6pDmg09DbyV9nrjE0q+JCFM=;
-        h=Subject:From:To:Date:In-Reply-To:References;
-        b=VmMAdQx3aKyfOY+rj6g1bhRIBzKmKepQiEuQbMLFkWU8kPP/MfSTmHXV6GkUl7c3u
-         +kS8whk3b0qv3pNUO/ZfmjXPLOdK5VtZ5LjOOLFQEwrnKJ/4U5kMU0yWdiYIuU0zU1
-         o6h3rxrsWpoxixiiYA7IR9vbW4ts6e+IfXCaqYCnFVuq1IrpHlFQnFrIdnYotW4amP
-         tctJUUiSf8GnoN2fWLmDX1cEu4BFZa1g9fk3Zj++EsTrJAFt+5aEMpn9eTy02rpQW4
-         d+nxECahVHgOyrydzdGuJx/y8m/jXnlpP6vmUY8i9dV7RtjIfnHtZrMvtK3c3GfATl
-         e/2etEQTQntiQ==
-Message-ID: <ddea6b99f6976174f352bbbad4a6c7aa6ac6b91b.camel@codeconstruct.com.au>
-Subject: Re: [PATCH v0] mctp: defer the kfree of object mdev->addrs
-From:   Jeremy Kerr <jk@codeconstruct.com.au>
-To:     Lin Ma <linma@zju.edu.cn>, matt@codeconstruct.com.au,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Tue, 26 Apr 2022 11:30:08 +0800
-In-Reply-To: <20220422114340.32346-1-linma@zju.edu.cn>
-References: <20220422114340.32346-1-linma@zju.edu.cn>
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=pw9XaY4gtkOrBsspWIgzKqUa4c0Gs0NN9cewAyeRT7U=;
+        b=QqPY0jjbokV7X5xDjTwGHnRUOrRbomJ3Oswqvulsm3Kfva0KBi5dBdrCCTz3KVJFdI
+         xF6611/TC8rRuKuc5oZp6HnUlLSKTLmE39ikgRhCd7UcdbTxk5W8Y1cdLwDT4z7AXI46
+         bWnBywi05i+QVz4hijZQKCI8QJVe60YQCy6yP44jZOOatS2UX717IdTXU61Ht9NPXqvu
+         OybI0xU2rMEcZ+3Vhl7hEoNjfqxawiA11ane7FXTh4PFYvojZd9vEWXrijmHKhVXHl4U
+         szpvW6Te/Zply4MnJWu3C+qpjwC3ebeOLinAbYSxJjNkJe6539keFH+mKYBxA/dCxX9e
+         y6zQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=pw9XaY4gtkOrBsspWIgzKqUa4c0Gs0NN9cewAyeRT7U=;
+        b=7JnqFZIidA19KJy2pN3pxV8RFd/59tP7htlm9h/Spb0P52oooMPwzg6tD8Ovkb5xKd
+         QKQp0fE4i0R+dO399EwUu3Gi9qmXHMHJ1SahXJen2kcBfqjkcLZvFr/KEwOuOZ/IHWS1
+         v0/In2ue7c2C+OhaJHL5O1z5LW4caSy8wcJIcuHgvSVKOMLlw7FHNGzCKWZl4DnvCh3A
+         dyAe7gVHpuydNdyCyOui/Lchtma7AIh/nIvA15KIARYRIkwSwhXOdGHSdG6jsn8MYezr
+         j0ZA/HSyxnTiUmpGXtYUg2KYkVTSvoaalp5P6LtbVMg712wx1gUiKnzYwGIaAB7XkQZi
+         otcA==
+X-Gm-Message-State: AOAM530QqjED45WdCe8kz5HjCybYur/xRAcGvGqnvmpvTlbR/jRk1lSi
+        8tw9GeF42lKaEyLH4GLaLOGus1KP5MSPuTjSChgJXA==
+X-Google-Smtp-Source: ABdhPJxMho1+tp5v323CP4f7hAg1pyNR31sSvA8BdWru2l9otsnm0SQfjoWexcwE3KK4iOND787GM0du7Pyap5wEbFg=
+X-Received: by 2002:a25:6157:0:b0:645:8d0e:f782 with SMTP id
+ v84-20020a256157000000b006458d0ef782mr18210702ybb.36.1650944630221; Mon, 25
+ Apr 2022 20:43:50 -0700 (PDT)
+MIME-Version: 1.0
+References: <YmbO0pxgtKpCw4SY@linutronix.de>
+In-Reply-To: <YmbO0pxgtKpCw4SY@linutronix.de>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 25 Apr 2022 20:43:39 -0700
+Message-ID: <CANn89iKkSZ5HR=dmn57Zr4Xs6nH7PNJr+wOBZaXLu+3Lum659w@mail.gmail.com>
+Subject: Re: [PATCH v2 net] net: Use this_cpu_inc() to increment net->core_stats
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.0-1 
-MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Lin,
+On Mon, Apr 25, 2022 at 9:39 AM Sebastian Andrzej Siewior
+<bigeasy@linutronix.de> wrote:
+>
+> The macro dev_core_stats_##FIELD##_inc() disables preemption and invokes
+> netdev_core_stats_alloc() to return a per-CPU pointer.
+> netdev_core_stats_alloc() will allocate memory on its first invocation
+> which breaks on PREEMPT_RT because it requires non-atomic context for
+> memory allocation.
+>
+> This can be avoided by enabling preemption in netdev_core_stats_alloc()
+> assuming the caller always disables preemption.
+>
+> Use unsigned long as type for the counter. Use this_cpu_inc() to
+> increment the counter. Use a plain read of the counter.
+>
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> ---
+> v1=E2=80=A6v2:
+>         - Add missing __percpu annotation as noticed by Jakub + robot
+>         - Use READ_ONCE() in dev_get_stats() to avoid possible split
+>           reads, noticed by Eric.
+>
 
-> The function mctp_unregister() reclaims the device's relevant resource
-> when a netcard detaches. However, a running routine may be unaware of
-> this and cause the use-after-free of the mdev->addrs object.
+SGTM, thanks.
 
-[...]
+Note this will cause a merge conflict in net-next
 
-> To this end, just like the commit e04480920d1e ("Bluetooth: defer
-> cleanup of resources in hci_unregister_dev()")=C2=A0 this patch defers th=
-e
-> destructive kfree(mdev->addrs) in mctp_unregister to the mctp_dev_put,
-> where the refcount of mdev is zero and the entire device is reclaimed.
-> This prevents the use-after-free because the sendmsg thread holds the
-> reference of mdev in the mctp_route object.
-
-Looks good to me, thanks for checking this out.
-
-We could also check out the semantics of ->addrs over a release (perhaps
-we should clear addresses immediately with the write lock held?), but
-that would be best done as a separate change.
-
-So:
-
-Acked-by: Jeremy Kerr <jk@codeconstruct.com.au>
-
-Cheers,
-
-
-Jeremy
+Reviewed-by: Eric Dumazet <edumazet@google.com>
