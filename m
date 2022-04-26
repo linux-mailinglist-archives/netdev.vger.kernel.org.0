@@ -2,56 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B960350F16D
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 08:46:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5392E50F16F
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 08:46:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343528AbiDZGso (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 02:48:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40202 "EHLO
+        id S1343518AbiDZGsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 02:48:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343513AbiDZGsk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 02:48:40 -0400
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C99F8186FD;
-        Mon, 25 Apr 2022 23:45:32 -0700 (PDT)
-Received: by mail-io1-xd2a.google.com with SMTP id c125so18340370iof.9;
-        Mon, 25 Apr 2022 23:45:32 -0700 (PDT)
+        with ESMTP id S1343530AbiDZGso (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 02:48:44 -0400
+Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8EEE18E14;
+        Mon, 25 Apr 2022 23:45:37 -0700 (PDT)
+Received: by mail-il1-x12a.google.com with SMTP id k12so10820566ilv.3;
+        Mon, 25 Apr 2022 23:45:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=fUYbd0odstCs+XiFoMaHpPv/Lzph2nClBQiUgMUBiOQ=;
-        b=ORrk68RJd/KyYS1gcrBo3WoXUOl1eP4ZWF9Z6ihMZ5DNTBrIEPEErwJ1MEMk+Vo84R
-         RevQ/4Z2ofWIlQn42G7/UZ7YSLcqtXGsp7epU3zPOb2C1eqGRLmCB4zvNszXC+gYoM5L
-         hxwoL6cQ3NNeHrdi9ABqisrzznsqt1yQ8qnwvCSkVmLOOVh9Hf/yAu4V4jA/DNVVW8N5
-         iFmqaEo2Dyh7VWb2msCToH9WeAs9TBmFiUYAgDsXMBFTL7VlR8lLXUHBttqlea2y+dog
-         dpDUtodWpIrWL2dvKpgHJy2rOoOQS4/Bwo6Hq8j+dIOeyaH0xCuejCiQTX4Lj6NK0sng
-         9hhQ==
+        bh=333hgp36Hg+noixfGFAK/gjXVmk8k/NkyD+wV1nt6+U=;
+        b=OTngiU6FUgP4pxMwbsOrP1ikdNN9eAnMDAaAL/O7D01y1xdVge+i49kEAqH7CBlLBN
+         m9HsqFuSNTmc1/kFLo4G+4zFLbVAWO0DTDOKunFcXd1jJ7otW3O0+xeQ113OogdeZDOs
+         RNvABICR2RiYlgfjhGLLFJp2Zweiyqwnd6hWzvBWhd/Me7jZH2AZTFbHvWA8CFFFLoCt
+         zlnsh77ak1fjDUYQWIu2popvbLL/vGdOQkR8ZPJatjq85KzjFfTKzYkP4+9L7L6M5I6e
+         Bn2bWngakwUvZCSjB8Bi5TS/MpmrxzwwwwmtTBuRhxZKqKeWnF1HIXftXiw0jgtvOc98
+         GbYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=fUYbd0odstCs+XiFoMaHpPv/Lzph2nClBQiUgMUBiOQ=;
-        b=VTSiq5AbPYNu/zuZuweXgze6MIK7NkG3OXB+8+zqbf+JEK3CFYwHOR6Ag3A1Ky11SC
-         YuhD767ZzjdBMbKylvAtQoy49Gf50UyQuseTG/LCGelCwNElVaXsB3jRqiZr+MrdtKPi
-         7GFIITo7esvEZMw6Brp8+dkx+AVgWtQBlevI9kcP2cbaWYu+xBRwylLL3q2VbVJpzlqn
-         g2KmqW3nSmxcvqki20DFhDi95zVJbGxspIWBtjemkHs0V8cnRyBkQxmoWlIacAxMhJhL
-         lQtdiFo1msgVKQSBgwAlEzKMDr2YEfhYhNMFzPm4EvmNQuEX2Q+8zS7eYxLIjorNhdi8
-         RfaA==
-X-Gm-Message-State: AOAM532S5cXV/UrRJg+B6bvMRQG/9AQmvr2lW+Q0DEbGqQ3K7HiHYnOQ
-        Tk16WAGFqSJS0IH43IP6IPFQxOmzZYw0kUhOd6ZnL31o
-X-Google-Smtp-Source: ABdhPJzysE88krKvwikXRboer8fD0V8kHiurMRV/MMpH9cBeDtTAvVorWjalzHLbU5/L0zsQjZA98mcxfzqK8tbEG80=
-X-Received: by 2002:a05:6638:3393:b0:32a:93cd:7e48 with SMTP id
- h19-20020a056638339300b0032a93cd7e48mr9259336jav.93.1650955532240; Mon, 25
- Apr 2022 23:45:32 -0700 (PDT)
+        bh=333hgp36Hg+noixfGFAK/gjXVmk8k/NkyD+wV1nt6+U=;
+        b=LkUBo50g70N9hyzc0gkEnQW34o0iEduIi4bYagnV6aFm/xJOkBib0yaTUltQDBxWCw
+         FO6q2l/0hVxzlHiqe/CG2nA1/Cx80uIXi5Oswm8qdFkU+l/Xz2mWr7FWg2OqX7CtQ/oK
+         4xanNC6IjVE2qrUfXLj33KJgp+rmV2pXsnbzzsPQ0czKiq5grs5TDPtL18UAGMXpNi+M
+         SuL1hwPhQzAE+HA9T6hpCGn7wNH1El+24a0jliDJmF5jnRBCSbac2PrgGDYM+BCTtOXq
+         twpB1BI/uf1G4EsT5E95NwsHpCu7JF/A2rwObcgZR+uqhG6vSxycXSt5PdgA/2KCUVki
+         YNNQ==
+X-Gm-Message-State: AOAM530OC8jCHGdi7TLHhcdWPkgkbC8UYYZw4Hj+Ts2Wx5g+T6EpOX4m
+        hnmGHCgFCUYCjRSyddSEsjCXiAlE/x6KWWxY78XWqz1d
+X-Google-Smtp-Source: ABdhPJxdxGHiUw+PaVj554lHW1GA901g51Bd1yA/8u59uw/snaL4KCtzH9eTshJn3ftWak0NtA+TTtrCl7kH7zG9OsQ=
+X-Received: by 2002:a05:6e02:1ba3:b0:2cc:4158:d3ff with SMTP id
+ n3-20020a056e021ba300b002cc4158d3ffmr8221367ili.98.1650955537176; Mon, 25 Apr
+ 2022 23:45:37 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220423140058.54414-1-laoar.shao@gmail.com>
-In-Reply-To: <20220423140058.54414-1-laoar.shao@gmail.com>
+References: <20220423140058.54414-1-laoar.shao@gmail.com> <20220423140058.54414-2-laoar.shao@gmail.com>
+In-Reply-To: <20220423140058.54414-2-laoar.shao@gmail.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 25 Apr 2022 23:45:21 -0700
-Message-ID: <CAEf4BzbhODOBrE=unLOUpo40uUYz72BJX-+uJobiwhF9VFSizQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/4] bpf: Generate helpers for pinning through
- bpf object skeleton
+Date:   Mon, 25 Apr 2022 23:45:26 -0700
+Message-ID: <CAEf4Bza_8d_K22DFRzGHYAQdz_y1+9b_bfSc0t0EkdM4nyy7Hw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/4] libbpf: Define DEFAULT_BPFFS
 To:     Yafang Shao <laoar.shao@gmail.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -73,40 +72,76 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Sat, Apr 23, 2022 at 7:01 AM Yafang Shao <laoar.shao@gmail.com> wrote:
 >
-> Currently there're helpers for allowing to open/load/attach BPF object
-> through BPF object skeleton. Let's also add helpers for pinning through
-> BPF object skeleton. It could simplify BPF userspace code which wants to
-> pin the progs into bpffs.
+> Let's use a macro DEFAULT_BPFFS instead of the hard-coded "/sys/fs/bpf".
 >
-> After this change, with command 'bpftool gen skeleton XXX.bpf.o', the
-> helpers for pinning BPF prog will be generated in BPF object skeleton.
+> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> ---
+>  tools/lib/bpf/bpf_helpers.h | 2 +-
+>  tools/lib/bpf/libbpf.c      | 2 +-
+>  tools/lib/bpf/libbpf.h      | 6 ++++--
+>  3 files changed, 6 insertions(+), 4 deletions(-)
 >
-> The new helpers are named with __{pin, unpin}_prog, because it only pins
-> bpf progs. If the user also wants to pin bpf maps, he can use
-> LIBBPF_PIN_BY_NAME.
+> diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
+> index 44df982d2a5c..9161ebcd3466 100644
+> --- a/tools/lib/bpf/bpf_helpers.h
+> +++ b/tools/lib/bpf/bpf_helpers.h
+> @@ -137,7 +137,7 @@ struct bpf_map_def {
+>
+>  enum libbpf_pin_type {
+>         LIBBPF_PIN_NONE,
+> -       /* PIN_BY_NAME: pin maps by name (in /sys/fs/bpf by default) */
+> +       /* PIN_BY_NAME: pin maps by name (in DEFAULT_BPFFS by default) */
 
-API says it's pinning programs, but really it's trying to pin links.
-But those links might not even be created for non-auto-attachable
-programs, and for others users might or might not set
-<skel>.links.<prog_name> links.
+how is this improving things? now I need to grep some more to find out
+what's the value of DEFAULT_BPFFS is
 
-There are lots of questions about this new functionality... But the
-main one is why do we need it? What does it bring that's hard to do
-otherwise?
 
+>         LIBBPF_PIN_BY_NAME,
+>  };
 >
-> Yafang Shao (4):
->   libbpf: Define DEFAULT_BPFFS
->   libbpf: Add helpers for pinning bpf prog through bpf object skeleton
->   bpftool: Fix incorrect return in generated detach helper
->   bpftool: Generate helpers for pinning prog through bpf object skeleton
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index 9a213aaaac8a..13fcf91e9e0e 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -2180,7 +2180,7 @@ static int build_map_pin_path(struct bpf_map *map, const char *path)
+>         int len;
 >
->  tools/bpf/bpftool/gen.c     | 18 ++++++++++-
->  tools/lib/bpf/bpf_helpers.h |  2 +-
->  tools/lib/bpf/libbpf.c      | 61 ++++++++++++++++++++++++++++++++++++-
->  tools/lib/bpf/libbpf.h      | 10 ++++--
->  tools/lib/bpf/libbpf.map    |  2 ++
->  5 files changed, 88 insertions(+), 5 deletions(-)
+>         if (!path)
+> -               path = "/sys/fs/bpf";
+> +               path = DEFAULT_BPFFS;
+>
+>         len = snprintf(buf, PATH_MAX, "%s/%s", path, bpf_map__name(map));
+>         if (len < 0)
+> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+> index cdbfee60ea3e..3784867811a4 100644
+> --- a/tools/lib/bpf/libbpf.h
+> +++ b/tools/lib/bpf/libbpf.h
+> @@ -28,6 +28,8 @@ LIBBPF_API __u32 libbpf_major_version(void);
+>  LIBBPF_API __u32 libbpf_minor_version(void);
+>  LIBBPF_API const char *libbpf_version_string(void);
+>
+> +#define DEFAULT_BPFFS "/sys/fs/bpf"
+> +
+>  enum libbpf_errno {
+>         __LIBBPF_ERRNO__START = 4000,
+>
+> @@ -91,7 +93,7 @@ struct bpf_object_open_opts {
+>         bool relaxed_core_relocs;
+>         /* maps that set the 'pinning' attribute in their definition will have
+>          * their pin_path attribute set to a file in this directory, and be
+> -        * auto-pinned to that path on load; defaults to "/sys/fs/bpf".
+> +        * auto-pinned to that path on load; defaults to DEFAULT_BPFFS.
+>          */
+>         const char *pin_root_path;
+>
+> @@ -190,7 +192,7 @@ bpf_object__open_xattr(struct bpf_object_open_attr *attr);
+>
+>  enum libbpf_pin_type {
+>         LIBBPF_PIN_NONE,
+> -       /* PIN_BY_NAME: pin maps by name (in /sys/fs/bpf by default) */
+> +       /* PIN_BY_NAME: pin maps by name (in DEFAULT_BPFFS by default) */
+>         LIBBPF_PIN_BY_NAME,
+>  };
 >
 > --
 > 2.17.1
