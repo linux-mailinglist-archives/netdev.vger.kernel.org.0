@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF1A650F6DE
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 10:59:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC92B50F67F
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 10:58:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242438AbiDZJBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 05:01:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46208 "EHLO
+        id S241395AbiDZI4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 04:56:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345732AbiDZI5o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 04:57:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ECFA641F;
-        Tue, 26 Apr 2022 01:42:30 -0700 (PDT)
+        with ESMTP id S1346073AbiDZItu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 04:49:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4DDCBB921;
+        Tue, 26 Apr 2022 01:37:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F002EB81CFA;
-        Tue, 26 Apr 2022 08:42:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3965BC385A0;
-        Tue, 26 Apr 2022 08:42:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EABDDB81D19;
+        Tue, 26 Apr 2022 08:37:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58791C385A0;
+        Tue, 26 Apr 2022 08:37:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650962547;
-        bh=fzE8vYXo5wvI4ZjE9j51qmJP2/qFmdVxd/QX78EPfTA=;
+        s=korg; t=1650962269;
+        bh=qMpCqUCdhyMR/21WSKQ0+DrkxS6S4vYxyQeR11WMz/0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QdUFGNA/Tfj8kPIckI5xK+/RlNxPGOPDwOGPNTcjh/BV4jboYUDFybQAkCBd8Hiko
-         IU7TKpOAzSKLPxZ5JBKHftMq7KBW+z9kN6f1LEd0kpW0wYeAG9pVHtlcx4pAkFProR
-         st/SFBuBvVN4liUvFApBlb1avNeOJby70GAwDR4w=
+        b=edtD9RsJV3/srcc+ccAchx3L59gpzXCP/VMZ0nP15Emz7Y3k7byp7Nbpb0/8Pvzur
+         SaNN0kb6xjmAmJ1e+bYyoCP5wwlswrZe3AjTyJYX4PXXKaGqHK6EFhN8KSwTPCxT51
+         ZfjEmAiUd9/zTqS4aDKjvUW4QGg0w4l1nWYyiFNA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,15 +36,13 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         Kees Cook <keescook@chromium.org>,
         Khem Raj <raj.khem@gmail.com>
-Subject: [PATCH 5.17 001/146] etherdevice: Adjust ether_addr* prototypes to silence -Wstringop-overead
-Date:   Tue, 26 Apr 2022 10:19:56 +0200
-Message-Id: <20220426081750.095040051@linuxfoundation.org>
+Subject: [PATCH 5.15 008/124] etherdevice: Adjust ether_addr* prototypes to silence -Wstringop-overead
+Date:   Tue, 26 Apr 2022 10:20:09 +0200
+Message-Id: <20220426081747.533483888@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081750.051179617@linuxfoundation.org>
-References: <20220426081750.051179617@linuxfoundation.org>
+In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
+References: <20220426081747.286685339@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -92,7 +90,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/include/linux/etherdevice.h
 +++ b/include/linux/etherdevice.h
-@@ -134,7 +134,7 @@ static inline bool is_multicast_ether_ad
+@@ -127,7 +127,7 @@ static inline bool is_multicast_ether_ad
  #endif
  }
  
@@ -101,7 +99,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  {
  #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
  #ifdef __BIG_ENDIAN
-@@ -372,8 +372,7 @@ static inline bool ether_addr_equal(cons
+@@ -364,8 +364,7 @@ static inline bool ether_addr_equal(cons
   * Please note that alignment of addr1 & addr2 are only guaranteed to be 16 bits.
   */
  
