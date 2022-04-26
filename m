@@ -2,116 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 53B2250FF5B
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 15:41:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3349550FFFA
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 16:03:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351074AbiDZNoK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 09:44:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48780 "EHLO
+        id S1351427AbiDZOGL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 10:06:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351091AbiDZNn6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 09:43:58 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB723D48D;
-        Tue, 26 Apr 2022 06:40:46 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KnjZh6w8gzCsQ3;
-        Tue, 26 Apr 2022 21:36:12 +0800 (CST)
-Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Apr 2022 21:40:44 +0800
-Received: from k04.huawei.com (10.67.174.115) by
- dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Apr 2022 21:40:44 +0800
-From:   Pu Lehui <pulehui@huawei.com>
-To:     <bpf@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <bjorn@kernel.org>, <luke.r.nels@gmail.com>, <xi.wang@gmail.com>,
-        <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
-        <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
-        <paul.walmsley@sifive.com>, <palmer@dabbelt.com>,
-        <aou@eecs.berkeley.edu>, <pulehui@huawei.com>
-Subject: [PATCH -next 2/2] riscv, bpf: Support riscv jit to provide bpf_line_info
-Date:   Tue, 26 Apr 2022 22:09:24 +0800
-Message-ID: <20220426140924.3308472-3-pulehui@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220426140924.3308472-1-pulehui@huawei.com>
-References: <20220426140924.3308472-1-pulehui@huawei.com>
+        with ESMTP id S1351411AbiDZOGD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 10:06:03 -0400
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 308AF194B3B;
+        Tue, 26 Apr 2022 07:02:54 -0700 (PDT)
+Received: from relay4-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::224])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id A5F24CCCE7;
+        Tue, 26 Apr 2022 13:59:27 +0000 (UTC)
+Received: (Authenticated sender: maxime.chevallier@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id B1127E0005;
+        Tue, 26 Apr 2022 13:59:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1650981560;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=GTsEdXn491qPq9CntZ0vXSrj34SAbeJiBaBwaTF2/pU=;
+        b=pEbSVKbl1mUCAPjU5O2M4QD9ktkNY1MhXV702GU3++Yr3XYy4/bv1zL6bBvV4PMxLagnW4
+        /t0ra18CveutBw25GWFoPLqVkQr5soc1LpqMm4hjAunhaYTekh2qF92DcIP6Re2iaosXvi
+        NOzWesBoHBw4ez/2huWOJtg2E1dao0u6k4dC5XoB2bWEsKkBOYYEGus/dzukssvJnGQkdk
+        EX2Thw4tV80V7SR22wae7ZRuMxTHq9NDOe2zH0Tg96r9+G9zYqQ/spU4kkSkRPEtxziaUE
+        WRCRK3sYI2qaVnrvpCDmyist5DKFswrbyeRhkpDEmnajIbYsqhwImCuG0SAqvQ==
+Date:   Tue, 26 Apr 2022 15:59:18 +0200
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Luka Perkov <luka.perkov@sartura.hr>,
+        Robert Marko <robert.marko@sartura.hr>
+Subject: Re: [PATCH net-next 1/5] net: ipqess: introduce the Qualcomm IPQESS
+ driver
+Message-ID: <20220426155918.4baeafd8@pc-19.home>
+In-Reply-To: <YmMN37VjQNwhLDuX@lunn.ch>
+References: <20220422180305.301882-1-maxime.chevallier@bootlin.com>
+        <20220422180305.301882-2-maxime.chevallier@bootlin.com>
+        <YmMN37VjQNwhLDuX@lunn.ch>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.115]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500019.china.huawei.com (7.185.36.180)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for riscv jit to provide bpf_line_info.
-We need to consider the prologue offset in ctx->offset,
-but unlike x86 and arm64, ctx->offset of riscv does not
-provide an extra slot for the prologue, so here we just
-calculate the len of prologue and add it to ctx->offset
-at the end. Both RV64 and RV32 have been tested.
+Hello Andrew,
 
-Signed-off-by: Pu Lehui <pulehui@huawei.com>
----
- arch/riscv/net/bpf_jit.h      | 1 +
- arch/riscv/net/bpf_jit_core.c | 7 ++++++-
- 2 files changed, 7 insertions(+), 1 deletion(-)
+On Fri, 22 Apr 2022 22:19:43 +0200
+Andrew Lunn <andrew@lunn.ch> wrote:
 
-diff --git a/arch/riscv/net/bpf_jit.h b/arch/riscv/net/bpf_jit.h
-index 2a3715bf29fe..7dbbad7595f0 100644
---- a/arch/riscv/net/bpf_jit.h
-+++ b/arch/riscv/net/bpf_jit.h
-@@ -69,6 +69,7 @@ struct rv_jit_context {
- 	struct bpf_prog *prog;
- 	u16 *insns;		/* RV insns */
- 	int ninsns;
-+	int prologue_offset;
- 	int epilogue_offset;
- 	int *offset;		/* BPF to RV */
- 	int nexentries;
-diff --git a/arch/riscv/net/bpf_jit_core.c b/arch/riscv/net/bpf_jit_core.c
-index be743d700aa7..6383eb591b0d 100644
---- a/arch/riscv/net/bpf_jit_core.c
-+++ b/arch/riscv/net/bpf_jit_core.c
-@@ -44,7 +44,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 	unsigned int prog_size = 0, extable_size = 0;
- 	bool tmp_blinded = false, extra_pass = false;
- 	struct bpf_prog *tmp, *orig_prog = prog;
--	int pass = 0, prev_ninsns = 0, i;
-+	int pass = 0, prev_ninsns = 0, prologue_len, i;
- 	struct rv_jit_data *jit_data;
- 	struct rv_jit_context *ctx;
- 
-@@ -95,6 +95,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 			prog = orig_prog;
- 			goto out_offset;
- 		}
-+		ctx->prologue_offset = ctx->ninsns;
- 		bpf_jit_build_prologue(ctx);
- 		ctx->epilogue_offset = ctx->ninsns;
- 		bpf_jit_build_epilogue(ctx);
-@@ -161,6 +162,10 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 
- 	if (!prog->is_func || extra_pass) {
- 		bpf_jit_binary_lock_ro(jit_data->header);
-+		prologue_len = ctx->epilogue_offset - ctx->prologue_offset;
-+		for (i = 0; i < prog->len; i++)
-+			ctx->offset[i] = ninsns_rvoff(prologue_len + ctx->offset[i]);
-+		bpf_prog_fill_jited_linfo(prog, ctx->offset);
- out_offset:
- 		kfree(ctx->offset);
- 		kfree(jit_data);
--- 
-2.25.1
+Thanks for the review :)
 
+> > +static int ipqess_axi_probe(struct platform_device *pdev)
+> > +{
+> > +	struct device_node *np = pdev->dev.of_node;
+> > +	struct net_device *netdev;
+> > +	phy_interface_t phy_mode;
+> > +	struct resource *res;
+> > +	struct ipqess *ess;
+> > +	int i, err = 0;
+> > +
+> > +	netdev = devm_alloc_etherdev_mqs(&pdev->dev, sizeof(struct
+> > ipqess),
+> > +					 IPQESS_NETDEV_QUEUES,
+> > +					 IPQESS_NETDEV_QUEUES);
+> > +	if (!netdev)
+> > +		return -ENOMEM;
+> > +
+> > +	ess = netdev_priv(netdev);
+> > +	ess->netdev = netdev;
+> > +	ess->pdev = pdev;
+> > +	spin_lock_init(&ess->stats_lock);
+> > +	SET_NETDEV_DEV(netdev, &pdev->dev);
+> > +	platform_set_drvdata(pdev, netdev);  
+> 
+> ....
+> 
+> > +
+> > +	ipqess_set_ethtool_ops(netdev);
+> > +
+> > +	err = register_netdev(netdev);
+> > +	if (err)
+> > +		goto err_out;  
+> 
+> Before register_netdev() even returns, your devices can be in use, the
+> open callback called and packets sent. This is particularly true for
+> NFS root. Which means any setup done after this is probably wrong.
+
+Nice catch, thank you !
+
+> > +
+> > +	err = ipqess_hw_init(ess);
+> > +	if (err)
+> > +		goto err_out;
+> > +
+> > +	for (i = 0; i < IPQESS_NETDEV_QUEUES; i++) {
+> > +		int qid;
+> > +
+> > +		netif_tx_napi_add(netdev, &ess->tx_ring[i].napi_tx,
+> > +				  ipqess_tx_napi, 64);
+> > +		netif_napi_add(netdev,
+> > +			       &ess->rx_ring[i].napi_rx,
+> > +			       ipqess_rx_napi, 64);
+> > +
+> > +		qid = ess->tx_ring[i].idx;
+> > +		err = devm_request_irq(&ess->netdev->dev,
+> > ess->tx_irq[qid],
+> > +				       ipqess_interrupt_tx, 0,
+> > +				       ess->tx_irq_names[qid],
+> > +				       &ess->tx_ring[i]);
+> > +		if (err)
+> > +			goto err_out;
+> > +
+> > +		qid = ess->rx_ring[i].idx;
+> > +		err = devm_request_irq(&ess->netdev->dev,
+> > ess->rx_irq[qid],
+> > +				       ipqess_interrupt_rx, 0,
+> > +				       ess->rx_irq_names[qid],
+> > +				       &ess->rx_ring[i]);
+> > +		if (err)
+> > +			goto err_out;
+> > +	}  
+> 
+> All this should probably go before netdev_register().
+
+I'll fix this for V2.
+
+> > +static int ipqess_get_strset_count(struct net_device *netdev, int
+> > sset) +{
+> > +	switch (sset) {
+> > +	case ETH_SS_STATS:
+> > +		return ARRAY_SIZE(ipqess_stats);
+> > +	default:
+> > +		netdev_dbg(netdev, "%s: Invalid string set",
+> > __func__);  
+> 
+> Unsupported would be better than invalid.
+
+That's right, thanks
+
+> > +		return -EOPNOTSUPP;
+> > +	}
+> > +}  
+> 
+>   Andrew
+
+Best Regards,
+
+Maxime
