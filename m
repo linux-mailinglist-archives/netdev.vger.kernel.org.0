@@ -2,50 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF37550FDBA
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 14:53:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0BFC50FE37
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 15:02:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350235AbiDZM41 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 08:56:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55366 "EHLO
+        id S243433AbiDZNFm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 09:05:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350232AbiDZM4V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 08:56:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D51BE17CEBD;
-        Tue, 26 Apr 2022 05:53:13 -0700 (PDT)
+        with ESMTP id S1350566AbiDZNDq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 09:03:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D8E8C27;
+        Tue, 26 Apr 2022 06:00:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 710E161939;
-        Tue, 26 Apr 2022 12:53:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACE59C385AA;
-        Tue, 26 Apr 2022 12:53:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E2A260EFC;
+        Tue, 26 Apr 2022 13:00:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DF7E5C385AC;
+        Tue, 26 Apr 2022 13:00:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650977592;
-        bh=kFT9Cma09SNXoBJOeqOUQlH9X2Muy6XZAjh/1E2YLtU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mTC2qkJUSHFOYIueOWbwO0GZrOnCjbQh9ylat2e15zp/Qb0pmOaN1+Lqg/v18cVuX
-         m9yPt50jygBPC/eBrhTQeyDGpyhPZ/zyU8RO5L8uQeehQjQMSeylYXw6sQ/Im1KXuO
-         w8nFnKfTPa3xBBp0dRDGL28CL0SnBWLYzI2BJ5ZyaFc/5rcf+HXwKFbeFcCWBMI2Rz
-         +zSYnpJGSOxMcDaZWOE30y8vv7CywA/A3HUXdfrTRJEM4yaHMemfRUgoOjmYOrRLeD
-         7r+WGpGwl/K255KKdK9PAdJjgAnlKGXZvC6tN5bj9ZQgv4u3IfTBw2Dy0sigcStu5r
-         W/s/XqTx2Zl6w==
-Date:   Tue, 26 Apr 2022 05:53:11 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Helge Deller <deller@gmx.de>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-parisc@vger.kernel.org
-Subject: Re: [PATCH net-next] net: mark tulip obsolete
-Message-ID: <20220426055311.53dd8c31@kernel.org>
-In-Reply-To: <a66551f3-192a-70dc-4eb9-62090dbfe5fb@gmx.de>
-References: <20220315184342.1064038-1-kuba@kernel.org>
-        <29f1daf3-e9f2-bbc5-f5e5-6334c040e3fa@gmx.de>
-        <20220315120432.2a72810d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <a66551f3-192a-70dc-4eb9-62090dbfe5fb@gmx.de>
+        s=k20201202; t=1650978010;
+        bh=2HA9wsWe++ap3VvtZQXVolIQ4s3VI7wu+bVpKnxfwN4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=VxZpmxwaYB1qCa4KuL7G4UoJPAcSip4tT6FLIfQTHQ0bpyj7vsuTSLgZ6ufjRIiL8
+         APK5CC7G9r73++88q8aDLQvc7DsqPKijdFhE5+y6hAtRfbCqpx8NqHvzAh/Rao1wOT
+         vQS9i2Bl83G0o5c2ge8aYVqk0XyOVtam4hcnN3uUn1qDpmgNa0TcX1g5hlnrK1Z3c7
+         BzVP/vszHWys26e3NyGz75gE/LmeTx84WCou+CB92xMYywtheeYEvkwsrM8T8w/4Ap
+         Jbf/QquwJ3FOuYUB57G1eLXMoTidGPZee9Hy+lDPzGAJBDszeLyjLpOHUpxWg9FCV3
+         GOVU31Pye6xdA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C6D82E8DD67;
+        Tue, 26 Apr 2022 13:00:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v3] virtio_net: fix wrong buf address calculation when
+ using xdp
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165097801081.17994.867649031795224132.git-patchwork-notify@kernel.org>
+Date:   Tue, 26 Apr 2022 13:00:10 +0000
+References: <20220425103703.3067292-1-razor@blackwall.org>
+In-Reply-To: <20220425103703.3067292-1-razor@blackwall.org>
+To:     Nikolay Aleksandrov <razor@blackwall.org>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        stable@vger.kernel.org, jasowang@redhat.com,
+        xuanzhuo@linux.alibaba.com, daniel@iogearbox.net, mst@redhat.com,
+        virtualization@lists.linux-foundation.org
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -55,22 +58,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Mar 2022 23:18:38 +0100 Helge Deller wrote:
-> On 3/15/22 20:04, Jakub Kicinski wrote:
-> > On Tue, 15 Mar 2022 19:44:24 +0100 Helge Deller wrote:  
-> >> On 3/15/22 19:43, Jakub Kicinski wrote:  
-> >>> It's ancient, an likely completely unused at this point.
-> >>> Let's mark it obsolete to prevent refactoring.  
-> >>
-> >> NAK.
-> >>
-> >> This driver is needed by nearly all PA-RISC machines.  
-> >
-> > I was just trying to steer newcomers to code that's more relevant today.  
-> 
-> That intention is ok, but "obsolete" means it's not used any more,
-> and that's not true.
+Hello:
 
-Hi Helge! Which incarnation of tulip do you need for PA-RISC, exactly?
-I'd like to try to remove DE4X5, if that's not the one you need
-(getting rid of virt_to_bus()-using drivers).
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
+
+On Mon, 25 Apr 2022 13:37:03 +0300 you wrote:
+> We received a report[1] of kernel crashes when Cilium is used in XDP
+> mode with virtio_net after updating to newer kernels. After
+> investigating the reason it turned out that when using mergeable bufs
+> with an XDP program which adjusts xdp.data or xdp.data_meta page_to_buf()
+> calculates the build_skb address wrong because the offset can become less
+> than the headroom so it gets the address of the previous page (-X bytes
+> depending on how lower offset is):
+>  page_to_skb: page addr ffff9eb2923e2000 buf ffff9eb2923e1ffc offset 252 headroom 256
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,v3] virtio_net: fix wrong buf address calculation when using xdp
+    https://git.kernel.org/netdev/net/c/acb16b395c3f
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
