@@ -2,121 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 45CE35101B4
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 17:17:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 784ED5101DC
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 17:25:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244524AbiDZPUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 11:20:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48328 "EHLO
+        id S1352262AbiDZP2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 11:28:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352717AbiDZPTq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 11:19:46 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 757EF158F58
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 08:11:45 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id a15so18230651pfv.11
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 08:11:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=FmmmDqbHZ+ZiQlU/EzbQ7prUZMU2t+mIW8jXgI0HHbE=;
-        b=Kfo3WqaqE2+joZ/xnreYwCPHlBGHziTg2dpk3URzYayyC+DQl2CRvzMsUFiZ5Tzn8T
-         kVLlMPZ5E3cxV50MNQAeifYzxmwCUk0tZFf2L9dsQ/z9D8KTPR+z7Jf/Vgi/nxVu0INT
-         Bpf+W1X/7DWIKwF3hOWRI/BSoh30uzLTn9F1DjVJhQ3HCgsGqzrHOkQTeTHrD+A+/lvL
-         JBze2Ql4pNAaK/BrMr7RvPHrh0ROnHNDWJu/rW/gw76iaMhcFnmSHi7sZhQrEvyB5J5c
-         zzIu8sTy7WfOUXVD5nAqlBjOoIlfsCFeJz3wm/RGV3YVFNVfZAg99ojRwJlWqcJF9zNW
-         PZQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=FmmmDqbHZ+ZiQlU/EzbQ7prUZMU2t+mIW8jXgI0HHbE=;
-        b=PD0ZjlCuwT34yYGcNFkoKZlJPpmw5DDc8PexfwUXkUEKBRK0xKE5fYJuK/0mmHPrb8
-         1PMXHycj2aAsc82FGHPsWCSk4s1E8Xeoj4svnl1PpbR7Nren3BNwGAY0cBI8a7mHQVD5
-         AxeK7yhBKFBifT0gJytp4wvYRmxw7i4v4NMNA3BBV+lgZ/HVV5lQ+RlRZS3Wsei6wyOa
-         s6xBr6SDVFWO5JqrDVSGNICcer85zzWZMcGRSgeD/3rMQo+oO9yq2pzvra4QH/faYvN4
-         i5C0EMIemT9sV/AhokOjV+YXtCYtaXt7lo09xkSdTUnyAhW8Qa2tTFiuaWgyeXrsejQG
-         A6Gg==
-X-Gm-Message-State: AOAM532ZPnRTh0jWXtFBYwh/uH9L56o3Av6+0ioFxtQN5iiFBHj6a+NA
-        6aZIbNG9XDq63T/DXOUm8sXwEQ==
-X-Google-Smtp-Source: ABdhPJzEWTFJ+/ZJFwOpvlYRYVHjJG2z3teSSa1k21zGhi4vqnniued+UnQRQL6L9pJr6On+OKPYgg==
-X-Received: by 2002:a63:834a:0:b0:3ab:5ca7:3905 with SMTP id h71-20020a63834a000000b003ab5ca73905mr7105475pge.351.1650985904927;
-        Tue, 26 Apr 2022 08:11:44 -0700 (PDT)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id j189-20020a62c5c6000000b0050d59986dcdsm3165812pfg.208.2022.04.26.08.11.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 08:11:44 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 08:11:42 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Boris Sukholitko <boris.sukholitko@broadcom.com>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Ilya Lifshits <ilya.lifshits@broadcom.com>
-Subject: Re: [PATCH iproute2-next v3 0/2] f_flower: match on the number of
- vlan tags
-Message-ID: <20220426081142.71d58c1b@hermes.local>
-In-Reply-To: <20220426091417.7153-1-boris.sukholitko@broadcom.com>
-References: <20220426091417.7153-1-boris.sukholitko@broadcom.com>
+        with ESMTP id S1352241AbiDZP2B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 11:28:01 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3749221275
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 08:24:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=3C122ciisb4mthLAFdN+mdqNK636RbkbbuhW+rwhpmQ=; b=jeeDB8NlD2Z6T+fnTFM/KK5yDL
+        yxFy5jvhAma7ucizskPaRjnxnebNiQuUB7OqXM8kkwXOr14GnmLb+C0mT3c+SjyUrEctuhfH1qQn/
+        3wtE5QWGEVfP79QVQvSlo1xG0GqbjqDjHrUri4C05zlyJAypwVpg75OwSpratMDsCutY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1njN3R-00HZeR-2v; Tue, 26 Apr 2022 17:24:41 +0200
+Date:   Tue, 26 Apr 2022 17:24:41 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Ido Schimmel <idosch@idosch.org>,
+        Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, pabeni@redhat.com, jiri@nvidia.com,
+        petrm@nvidia.com, dsahern@gmail.com, mlxsw@nvidia.com
+Subject: Re: [PATCH net-next 00/11] mlxsw: extend line card model by devices
+ and info
+Message-ID: <YmgOuUPy9Digezvh@lunn.ch>
+References: <20220425034431.3161260-1-idosch@nvidia.com>
+ <20220425090021.32e9a98f@kernel.org>
+ <Ymb5DQonnrnIBG3c@shredder>
+ <20220425125218.7caa473f@kernel.org>
+ <YmeXyzumj1oTSX+x@nanopsycho>
+ <20220426054130.7d997821@kernel.org>
+ <Ymf66h5dMNOLun8k@nanopsycho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ymf66h5dMNOLun8k@nanopsycho>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 26 Apr 2022 12:14:15 +0300
-Boris Sukholitko <boris.sukholitko@broadcom.com> wrote:
+> Does not make sense to me at all. Line cards are detachable PHY sets in
+> essence, very basic functionality. They does not have buffers, health
+> and params, I don't think so. 
 
-> Hi,
-> 
-> Our customers in the fiber telecom world have network configurations
-> where they would like to control their traffic according to the number
-> of tags appearing in the packet.
-> 
-> For example, TR247 GPON conformance test suite specification mostly
-> talks about untagged, single, double tagged packets and gives lax
-> guidelines on the vlan protocol vs. number of vlan tags.
-> 
-> This is different from the common IT networks where 802.1Q and 802.1ad
-> protocols are usually describe single and double tagged packet. GPON
-> configurations that we work with have arbitrary mix the above protocols
-> and number of vlan tags in the packet.
-> 
-> The following patch series implement number of vlans flower filter. They
-> add num_of_vlans flower filter as an alternative to vlan ethtype protocol
-> matching. The end result is that the following command becomes possible:
-> 
-> tc filter add dev eth1 ingress flower \
->   num_of_vlans 1 vlan_prio 5 action drop
-> 
-> Also, from our logs, we have redirect rules such that:
-> 
-> tc filter add dev $GPON ingress flower num_of_vlans $N \
->      action mirred egress redirect dev $DEV
-> 
-> where N can range from 0 to 3 and $DEV is the function of $N.
-> 
-> Also there are rules setting skb mark based on the number of vlans:
-> 
-> tc filter add dev $GPON ingress flower num_of_vlans $N vlan_prio \
->     $P action skbedit mark $M
-> 
-> Thanks,
-> Boris.
-> 
-> - v3: rebased to the latest iproute2-next
-> - v2: add missing f_flower subject prefix
-> 
-> Boris Sukholitko (2):
->   f_flower: Add num of vlans parameter
->   f_flower: Check args with num_of_vlans
-> 
->  tc/f_flower.c | 57 ++++++++++++++++++++++++++++++++++++---------------
->  1 file changed, 41 insertions(+), 16 deletions(-)
+Ido recently added support to ethtool to upgrade the flash in SFPs.
+They are far from simple devices. Some of the GPON ones have linux
+running in them, that you can log in to.
 
-Can you do this with BPF? instead of kernel change?
+The real question is, can you do everything you need to do via
+existing uAPIs like ethtool and hwmon.
+
+	Andrew
