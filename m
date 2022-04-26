@@ -2,271 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 23B8150FA63
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 12:27:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E281350FA69
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 12:27:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344509AbiDZK2q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 06:28:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44324 "EHLO
+        id S1345385AbiDZK36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 06:29:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348845AbiDZK2I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 06:28:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D642D5DE71;
-        Tue, 26 Apr 2022 03:01:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 881C8B81D47;
-        Tue, 26 Apr 2022 10:01:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F1A3C385A4;
-        Tue, 26 Apr 2022 10:01:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650967273;
-        bh=QpZImYLme4EiJQq5ruNv0+OY+uzOjs/YbCXzxSFuCCo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XKRPriipnaberwU9XSsnbL9pNV4ANaq+YXwnl9ySmbeIqkTfRIb2jpiFpD4uWot2R
-         tB1wUMnRCjynWi+JXceE/PNc+TrDbWbmflCL0UrHavtT2L50BoLaW8mMaeJeWsga/d
-         6aLwp/D1cGHrspOxDGgRGjAI0PtOnWSAjNayyLJ63WuWefF8bgZSUYZvYFPPxql1rK
-         HESeX36K64XFebZRbpzB8Q17WKPC6W2dlhQaLDBGWtJccR0IpOmmf337IdHMt/G12t
-         +PKM90yqiNd9Z8SX7I4DEUpJnHI02wQuIopVHv15F2G4GHzsyz/bdFDgTSaHZ140ci
-         +sdwCrASZcyug==
-Date:   Tue, 26 Apr 2022 19:01:08 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Jiri Olsa <olsajiri@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: Re: [PATCHv2 bpf-next 1/4] kallsyms: Add kallsyms_lookup_names
- function
-Message-Id: <20220426190108.d9c76f5ccff52e27dbef21af@kernel.org>
-In-Reply-To: <YmJPcU9dahEatb0f@krava>
-References: <20220418124834.829064-1-jolsa@kernel.org>
-        <20220418124834.829064-2-jolsa@kernel.org>
-        <20220418233546.dfe0a1be12193c26b05cdd93@kernel.org>
-        <Yl5yHVOJpCYr+T3r@krava>
-        <YmJPcU9dahEatb0f@krava>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-9.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S1349313AbiDZK3q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 06:29:46 -0400
+Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net (zg8tmty1ljiyny4xntqumjca.icoremail.net [165.227.154.27])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id B0692387A5
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 03:04:58 -0700 (PDT)
+Received: from 102.wangsu.com (unknown [59.61.78.232])
+        by app1 (Coremail) with SMTP id SiJltADnaaqbw2diZMQAAA--.110S2;
+        Tue, 26 Apr 2022 18:04:12 +0800 (CST)
+From:   Pengcheng Yang <yangpc@wangsu.com>
+To:     Eric Dumazet <edumazet@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Yuchung Cheng <ycheng@google.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pengcheng Yang <yangpc@wangsu.com>
+Subject: [PATCH net] tcp: fix F-RTO may not work correctly when receiving DSACK
+Date:   Tue, 26 Apr 2022 18:03:39 +0800
+Message-Id: <1650967419-2150-1-git-send-email-yangpc@wangsu.com>
+X-Mailer: git-send-email 1.8.3.1
+X-CM-TRANSID: SiJltADnaaqbw2diZMQAAA--.110S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7tw4kur1rtw43AF4rAw43Wrg_yoW8tr13pa
+        1Fyryftrs5ury8Xa47XFy8W3yxWwsrC3Wfu34YkrW3KFn0gw1fZFWrtFW5CF1j9rW7KFWY
+        yFyjq3yYqa98AaUanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUU9Yb7Iv0xC_Kw4lb4IE77IF4wAFc2x0x2IEx4CE42xK8VAvwI8I
+        cIk0rVWrJVCq3wA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjx
+        v20xvE14v26r1j6r1xM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r1j6r4UM28EF7xvwVC2
+        z280aVAFwI0_Jr0_Gr1l84ACjcxK6I8E87Iv6xkF7I0E14v26r1j6r4UM2AIxVAIcxkEcV
+        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj64x0Y40En7xvr7AKxVW8
+        JVWxJwAv7VCjz48v1sIEY20_Gr4lYx0Ec7CjxVAajcxG14v26r4UJVWxJr1lOx8S6xCaFV
+        Cjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4IIrI8v6xkF7I0E8cxan2IY04v7MxkIecxE
+        wVAFwVW8twCF04k20xvY0x0EwIxGrwCF04k20xvE74AGY7Cv6cx26r48MxC20s026xCaFV
+        Cjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWl
+        x4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r
+        1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_
+        JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVWUJVW8JbIYCT
+        nIWIevJa73UjIFyTuYvjxUqxu4DUUUU
+X-CM-SenderInfo: p1dqw1nf6zt0xjvxhudrp/
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,T_SPF_TEMPERROR autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jiri,
+Currently DSACK is regarded as a dupack, which may cause
+F-RTO to incorrectly enter "loss was real" when receiving
+DSACK.
 
-Sorry for replying late.
+Packetdrill to demonstrate:
 
-On Fri, 22 Apr 2022 08:47:13 +0200
-Jiri Olsa <olsajiri@gmail.com> wrote:
+// Enable F-RTO and TLP
+    0 `sysctl -q net.ipv4.tcp_frto=2`
+    0 `sysctl -q net.ipv4.tcp_early_retrans=3`
+    0 `sysctl -q net.ipv4.tcp_congestion_control=cubic`
 
-> On Tue, Apr 19, 2022 at 10:26:05AM +0200, Jiri Olsa wrote:
-> 
-> SNIP
-> 
-> > > > +static int kallsyms_callback(void *data, const char *name,
-> > > > +			     struct module *mod, unsigned long addr)
-> > > > +{
-> > > > +	struct kallsyms_data *args = data;
-> > > > +
-> > > > +	if (!bsearch(&name, args->syms, args->cnt, sizeof(*args->syms), symbols_cmp))
-> > > > +		return 0;
-> > > > +
-> > > > +	addr = ftrace_location(addr);
-> > > > +	if (!addr)
-> > > > +		return 0;
-> > > 
-> > > Ooops, wait. Did you do this last version? I missed this point.
-> > > This changes the meanings of the kernel function.
-> > 
-> > yes, it was there before ;-) and you're right.. so some archs can
-> > return different address, I did not realize that
-> > 
-> > > 
-> > > > +
-> > > > +	args->addrs[args->found++] = addr;
-> > > > +	return args->found == args->cnt ? 1 : 0;
-> > > > +}
-> > > > +
-> > > > +/**
-> > > > + * kallsyms_lookup_names - Lookup addresses for array of symbols
-> > > 
-> > > More correctly "Lookup 'ftraced' addresses for array of sorted symbols", right?
-> > > 
-> > > I'm not sure, we can call it as a 'kallsyms' API, since this is using
-> > > kallsyms but doesn't return symbol address, but ftrace address.
-> > > I think this name misleads user to expect returning symbol address.
-> > > 
-> > > > + *
-> > > > + * @syms: array of symbols pointers symbols to resolve, must be
-> > > > + * alphabetically sorted
-> > > > + * @cnt: number of symbols/addresses in @syms/@addrs arrays
-> > > > + * @addrs: array for storing resulting addresses
-> > > > + *
-> > > > + * This function looks up addresses for array of symbols provided in
-> > > > + * @syms array (must be alphabetically sorted) and stores them in
-> > > > + * @addrs array, which needs to be big enough to store at least @cnt
-> > > > + * addresses.
-> > > 
-> > > Hmm, sorry I changed my mind. I rather like to expose kallsyms_on_each_symbol()
-> > > and provide this API from fprobe or ftrace, because this returns ftrace address
-> > > and thus this is only used from fprobe.
-> > 
-> > ok, so how about:
-> > 
-> >   int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, unsigned long *addrs);
-> 
-> quick question.. is it ok if it stays in kalsyms.c object?
+// Establish a connection
+   +0 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
+   +0 setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
+   +0 bind(3, ..., ...) = 0
+   +0 listen(3, 1) = 0
 
-I think if this is for the ftrace API, I think it should be in the ftrace.c, and
-it can remove unneeded #ifdefs in C code.
+// RTT 10ms, RTO 210ms
+  +.1 < S 0:0(0) win 32792 <mss 1000,sackOK,nop,nop,nop,wscale 7>
+   +0 > S. 0:0(0) ack 1 <...>
+ +.01 < . 1:1(0) ack 1 win 257
+   +0 accept(3, ..., ...) = 4
 
-> 
-> so we don't need to expose kallsyms_on_each_symbol,
-> and it stays in 'kalsyms' place
+// Send 2 data segments
+   +0 write(4, ..., 2000) = 2000
+   +0 > P. 1:2001(2000) ack 1
 
-We don't need to expose it to modules, but just make it into a global scope.
-I don't think that doesn't cause a problem.
+// TLP
++.022 > P. 1001:2001(1000) ack 1
 
-Thank you,
+// Continue to send 8 data segments
+   +0 write(4, ..., 10000) = 10000
+   +0 > P. 2001:10001(8000) ack 1
 
-> 
-> jirka
-> 
-> 
-> 
-> diff --git a/include/linux/kallsyms.h b/include/linux/kallsyms.h
-> index ce1bd2fbf23e..177e0b13c8c5 100644
-> --- a/include/linux/kallsyms.h
-> +++ b/include/linux/kallsyms.h
-> @@ -72,6 +72,7 @@ int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
->  #ifdef CONFIG_KALLSYMS
->  /* Lookup the address for a symbol. Returns 0 if not found. */
->  unsigned long kallsyms_lookup_name(const char *name);
-> +int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, unsigned long *addrs);
->  
->  extern int kallsyms_lookup_size_offset(unsigned long addr,
->  				  unsigned long *symbolsize,
-> @@ -103,6 +104,11 @@ static inline unsigned long kallsyms_lookup_name(const char *name)
->  	return 0;
->  }
->  
-> +static inline int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, unsigned long *addrs);
-> +{
-> +	return -ERANGE;
-> +}
-> +
->  static inline int kallsyms_lookup_size_offset(unsigned long addr,
->  					      unsigned long *symbolsize,
->  					      unsigned long *offset)
-> diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
-> index 79f2eb617a62..1e7136a765a9 100644
-> --- a/kernel/kallsyms.c
-> +++ b/kernel/kallsyms.c
-> @@ -29,6 +29,7 @@
->  #include <linux/compiler.h>
->  #include <linux/module.h>
->  #include <linux/kernel.h>
-> +#include <linux/bsearch.h>
->  
->  /*
->   * These will be re-linked against their real values
-> @@ -228,7 +229,7 @@ unsigned long kallsyms_lookup_name(const char *name)
->  	return module_kallsyms_lookup_name(name);
->  }
->  
-> -#ifdef CONFIG_LIVEPATCH
-> +#if defined(CONFIG_LIVEPATCH) || defined(CONFIG_FPROBE)
->  /*
->   * Iterate over all symbols in vmlinux.  For symbols from modules use
->   * module_kallsyms_on_each_symbol instead.
-> @@ -572,6 +573,73 @@ int sprint_backtrace_build_id(char *buffer, unsigned long address)
->  	return __sprint_symbol(buffer, address, -1, 1, 1);
->  }
->  
-> +#ifdef CONFIG_FPROBE
-> +static int symbols_cmp(const void *a, const void *b)
-> +{
-> +	const char **str_a = (const char **) a;
-> +	const char **str_b = (const char **) b;
-> +
-> +	return strcmp(*str_a, *str_b);
-> +}
-> +
-> +struct kallsyms_data {
-> +	unsigned long *addrs;
-> +	const char **syms;
-> +	size_t cnt;
-> +	size_t found;
-> +};
-> +
-> +static int kallsyms_callback(void *data, const char *name,
-> +			     struct module *mod, unsigned long addr)
-> +{
-> +	struct kallsyms_data *args = data;
-> +
-> +	if (!bsearch(&name, args->syms, args->cnt, sizeof(*args->syms), symbols_cmp))
-> +		return 0;
-> +
-> +	addr = ftrace_location(addr);
-> +	if (!addr)
-> +		return 0;
-> +
-> +	args->addrs[args->found++] = addr;
-> +	return args->found == args->cnt ? 1 : 0;
-> +}
-> +
-> +/**
-> + * ftrace_lookup_symbols - Lookup addresses for array of symbols
-> + *
-> + * @sorted_syms: array of symbols pointers symbols to resolve,
-> + * must be alphabetically sorted
-> + * @cnt: number of symbols/addresses in @syms/@addrs arrays
-> + * @addrs: array for storing resulting addresses
-> + *
-> + * This function looks up addresses for array of symbols provided in
-> + * @syms array (must be alphabetically sorted) and stores them in
-> + * @addrs array, which needs to be big enough to store at least @cnt
-> + * addresses.
-> + *
-> + * This function returns 0 if all provided symbols are found,
-> + * -ESRCH otherwise.
-> + */
-> +int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, unsigned long *addrs)
-> +{
-> +	struct kallsyms_data args;
-> +
-> +	args.addrs = addrs;
-> +	args.syms = sorted_syms;
-> +	args.cnt = cnt;
-> +	args.found = 0;
-> +	kallsyms_on_each_symbol(kallsyms_callback, &args);
-> +
-> +	return args.found == args.cnt ? 0 : -ESRCH;
-> +}
-> +#else
-> +int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, unsigned long *addrs)
-> +{
-> +	return -ERANGE;
-> +}
-> +#endif /* CONFIG_FPROBE */
-> +
->  /* To avoid using get_symbol_offset for every symbol, we carry prefix along. */
->  struct kallsym_iter {
->  	loff_t pos;
+// RTO
++.188 > . 1:1001(1000) ack 1
 
+// The original data is acked and new data is sent(F-RTO step 2.b)
+   +0 < . 1:1(0) ack 2001 win 257
+   +0 > P. 10001:12001(2000) ack 1
 
+// D-SACK caused by TLP is regarded as a dupack, this results in
+// the incorrect judgment of "loss was real"(F-RTO step 3.a)
++.022 < . 1:1(0) ack 2001 win 257 <sack 1001:2001,nop,nop>
+
+// Never-retransmitted data(3001:4001) are acked and
+// expect to switch to open state(F-RTO step 3.b)
+   +0 < . 1:1(0) ack 4001 win 257
++0 %{ assert tcpi_ca_state == 0, tcpi_ca_state }%
+
+Fixes: e33099f96d99 ("tcp: implement RFC5682 F-RTO")
+Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
+---
+ net/ipv4/tcp_input.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 1595b76..c54accc 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -3867,7 +3867,8 @@ static int tcp_ack(struct sock *sk, const struct sk_buff *skb, int flag)
+ 		tcp_process_tlp_ack(sk, ack, flag);
+ 
+ 	if (tcp_ack_is_dubious(sk, flag)) {
+-		if (!(flag & (FLAG_SND_UNA_ADVANCED | FLAG_NOT_DUP))) {
++		if (!(flag & (FLAG_SND_UNA_ADVANCED |
++			      FLAG_NOT_DUP | FLAG_DSACKING_ACK))) {
+ 			num_dupack = 1;
+ 			/* Consider if pure acks were aggregated in tcp_add_backlog() */
+ 			if (!(flag & FLAG_DATA))
 -- 
-Masami Hiramatsu <mhiramat@kernel.org>
+1.8.3.1
+
