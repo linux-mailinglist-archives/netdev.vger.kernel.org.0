@@ -2,110 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EEAF250FB38
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 12:43:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68A6450FB51
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 12:46:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349368AbiDZKqc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 06:46:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44614 "EHLO
+        id S1344781AbiDZKt3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 06:49:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349139AbiDZKpy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 06:45:54 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B6EA3B1
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 03:36:35 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id i27so35119471ejd.9
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 03:36:35 -0700 (PDT)
+        with ESMTP id S1349389AbiDZKsl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 06:48:41 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B2EFB86A
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 03:42:36 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id 79so18937792iou.7
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 03:42:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=03JHyVcnDtVRCT1SZNlsYY6E7LDhShIBmeQH7UCWb5Q=;
-        b=TLmerg/GnvN27In+YodvcDqxMfddqh49b8DPl2i75Ctw7YdreDnekmhoIONxgupBK3
-         cljPnMDHPuHi+TqxLolsnnSvvO5THxbVDg7QIxBJVf+OA5hZ7yfGtDuje2WZf7gQAKt9
-         nOMgs/BZ5KjfMPVQ43XeMYpOMBAJvJM9kOGEPfyXNbcTowT743xsqsfabmWcKwGsrBsS
-         xP7V72u+YQwHg40v3OKtYOGtEjS3HllQvWrXtbxAM0GUMTc/OFZJtR/UYB0oZwfz+BzQ
-         +c4QxCLjqHXATif+W/FxwIi6kgXHwAEJELnuUkE9MCiWiGcO8pm/Vbi5L2mned/HUKn+
-         Nkcw==
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
+        bh=aPTFbZr4LhKGppGQDkO7tNLWiZLizgW3cwR+POXjY4E=;
+        b=JoFJxyaSDCSG7DGh8LqgkxBbW0+68RQEfFq3y/8gwImTLFTt2pihl7TTRwA0j+bvJ9
+         ybwlKopxfookz6S87+/nNzIP1nngcysrNeigAj4s+6/1NiBbyr02LsYIYEnAm8DVK61p
+         HHyC3dyHcq1oabKdXPcTRtHf3wPaXkJyfILfRGH7Nd2IYZnawgq1fEqRIzOkE0+pD2uw
+         luzbJd+7vFbC/dFPWp7CwlOV3DhYuvMY3iTLRzgP3PhT27WIIosBLldFjfdzdGQllhab
+         DhMwQ8YDA16PE2TraKMtW2qYIf97RuihaNYhHeeY981WRrRxQceAZpch3cc+QvHrhyG6
+         zGAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=03JHyVcnDtVRCT1SZNlsYY6E7LDhShIBmeQH7UCWb5Q=;
-        b=J+KU88K/+sJ2hdO2Px/kDZQdZDw8zueKj10QX5Yb27Frtwdvc4AcpnX2z8eAoSqXLg
-         sHmKgUY/xIb1QQCoAacEO6wu/DBV2/uh6lSNMnyIhypdph6/Jp3T03RgGzoeZJjaAiqy
-         sF3JD8j6bFCekwxuKGOpJ+KdD90VZSh5ekk109oUrVzf2fAXGI9qrGOi6xcqpHziKvsg
-         GghzTKZbVDciz2Gj0BhKfIBXRlt25z5z8VenxaEpDV72kZePiRDHzrxovzJlE8jcZkWh
-         z/YNkNrI113S8pbM4dB1/bfxB+bck3PEqjY1Njd1YSzCRhR96HZXEXpAmrWy8wn5iFFP
-         FeVQ==
-X-Gm-Message-State: AOAM531xsev5rKWZlCRNd2vGVW1Jl6OlGLqnDugGf5/PbROXZaofwR64
-        F5UwKUcRbfIHavyeU3EssUMUFg==
-X-Google-Smtp-Source: ABdhPJw6DaMltbJJc7Yzq1Tp0x7WQkv+N3L4u8ibEqiMFEoXnXRu3hTBOVsKOG02p9gMJClHF/WxHg==
-X-Received: by 2002:a17:907:a425:b0:6f3:6b5d:a29c with SMTP id sg37-20020a170907a42500b006f36b5da29cmr15857758ejc.144.1650969393687;
-        Tue, 26 Apr 2022 03:36:33 -0700 (PDT)
-Received: from [192.168.0.249] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id i12-20020a05640200cc00b00421058b175esm5978605edu.53.2022.04.26.03.36.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Apr 2022 03:36:33 -0700 (PDT)
-Message-ID: <d1cd8e2c-d882-5f6b-863a-2c623fa38edb@linaro.org>
-Date:   Tue, 26 Apr 2022 12:36:31 +0200
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to;
+        bh=aPTFbZr4LhKGppGQDkO7tNLWiZLizgW3cwR+POXjY4E=;
+        b=eaAeHARrAXnzi6K8eNOI4OZ863hinI8kEGQ/FNrhkPE9ZHaBeTSGuaU6L58FjKKfzL
+         Lv8Tqyhk/XCcQZ7TbT83zh5MJgXYQrOhLwzpe4kGwpFReCzywOH5dVkPtgVfEqpKg9n1
+         IN3Z4r1rFxl+z1w892fWbLZANwhbzlK5FDS817ybt8vW/qBZCXYLkV8isBK9A9v6X3Aj
+         RkwFpriStrwP0yVtw6BGbCXt6DzDLAIW2IsCKTTxdpffvQGYW4l+T/VBzxCNPWpJcJJQ
+         DwJFi1eR7DnWYcD482/841zNUBbQg2UZDTbd2NCu5iFDuabzp+M/tiYJMhQxVcVoh+IB
+         mr7w==
+X-Gm-Message-State: AOAM533HW/ZS/af/I1VbMLzctheDmbR9bxvssTyOaCYI8MbS78zG8ZPS
+        g5j4I85xt4vm8TXMsvq2PPqHCRxwHlC76jS9Wq4=
+X-Google-Smtp-Source: ABdhPJyAZoJKU5v39U/F9OJbfVfX8v+HOtC5IZrIAHVuxsrGTXfMG7JOfwe2moj7DRyZLDkWf1n+saoroy3gj4rHMPM=
+X-Received: by 2002:a05:6e02:15c6:b0:2c2:5ab0:948 with SMTP id
+ q6-20020a056e0215c600b002c25ab00948mr8653138ilu.171.1650969756087; Tue, 26
+ Apr 2022 03:42:36 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 1/2] dt-bindings: mailbox: qcom-ipcc: simplify the example
-Content-Language: en-US
-To:     Jassi Brar <jassisinghbrar@gmail.com>
-Cc:     Manivannan Sadhasivam <mani@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Devicetree List <devicetree@vger.kernel.org>,
-        Andy Gross <agross@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh@kernel.org>, Alex Elder <elder@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>
-References: <20220402155551.16509-1-krzysztof.kozlowski@linaro.org>
- <a3edf0e1-644a-38b2-b23d-30cc01005786@linaro.org>
- <CABb+yY3uRxKdQ_Q-yvWipmOqLNbJXmJ141oYJnq1di_Yu66T_Q@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CABb+yY3uRxKdQ_Q-yvWipmOqLNbJXmJ141oYJnq1di_Yu66T_Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Reply-To: dr.tracymedicinemed1@gmail.com
+Sender: mrawutamamma2@gmail.com
+Received: by 2002:a6b:8d54:0:0:0:0:0 with HTTP; Tue, 26 Apr 2022 03:42:35
+ -0700 (PDT)
+From:   Dr Tracy William <ra6277708@gmail.com>
+Date:   Tue, 26 Apr 2022 18:42:35 +0800
+X-Google-Sender-Auth: oitI9buvRA74FktpLorVkvfy4Aw
+Message-ID: <CAEZRNsSOsY=QCv=Pw_mFi2k+7hRCzZmKG=xRzFRup6W3=+Gv=g@mail.gmail.com>
+Subject: From Dr Tracy from United States
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=5.7 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:d44 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.4990]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [ra6277708[at]gmail.com]
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [dr.tracymedicinemed1[at]gmail.com]
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [mrawutamamma2[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        *  3.6 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/04/2022 16:22, Jassi Brar wrote:
-> On Wed, Apr 20, 2022 at 3:42 AM Krzysztof Kozlowski
-> <krzysztof.kozlowski@linaro.org> wrote:
->>
->> On 02/04/2022 17:55, Krzysztof Kozlowski wrote:
->>> Consumer examples in the bindings of resource providers are trivial,
->>> useless and duplicating code.  Additionally the incomplete qcom,smp2p
->>> example triggers DT schema warnings.
->>>
->>> Cleanup the example by removing the consumer part and fixing the
->>> indentation to DT schema convention.
->>>
->>> Reported-by: Rob Herring <robh@kernel.org>
->>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->>
->> Jassi,
->> Do you plan to pick this mailbox patch?
->>
-> Yes, I do.  I am ok too, if you want it through some other tree as a
-> part of some bigger patchset.
+Hello Dear,
 
-It's not going through any other tree, so please pick it up.
+how are you today,I hope you are doing great.
 
-Best regards,
-Krzysztof
+It is my great pleasure to contact you,I want to make a new and
+special friend,I hope you don't mind. My name is Tracy William from
+the United States, Am an English and French nationalities. I will give
+you pictures and more details about my self as soon as i hear from
+you Kisses.
+
+Pls resply to my personal email(dr.tracymedicinemed1@gmail.com)
+
+Thanks.
+Tracy,
