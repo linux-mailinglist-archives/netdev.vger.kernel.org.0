@@ -2,73 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A9B0C50F937
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 11:58:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4606650F957
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 11:58:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345166AbiDZJ5R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 05:57:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53476 "EHLO
+        id S1348161AbiDZJ5D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 05:57:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347850AbiDZJ4w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 05:56:52 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16E7735A83
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 02:14:53 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id p6so1742040plf.9
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 02:14:53 -0700 (PDT)
+        with ESMTP id S1345113AbiDZJ4z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 05:56:55 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A9E36161
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 02:14:55 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id p12so5707951pfn.0
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 02:14:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version;
-        bh=Ylfo6LQgoTLIH9G48v53LryPtOynF+I+OX8S7pJO2O4=;
-        b=S9RQ9e77PAJdx3VOdJN7no4cA2AfD6KYxitqsYPV+so/ZPn0hMiA4Ld15evY+ZzzuB
-         BuRisuGmh4UoP2vNIi6wPJ6JSRnofeHXvHO+FhY9en5WIY+F5I5ia2znwAg8/TPHirqP
-         8iH51JCwRnxmMI+L0bahrwURGO8FQIGwZzdlk=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version;
+        bh=kBx8KTV4cCQ5F5Vp4zg+QAENCViNYF/iEP8UvSG/FiU=;
+        b=T2ZF+FtRI3el4HdOltD6A47sbXQ7CP/WA1yvqRZzzx0iu2BX+PNMPFHBmujEXKyxYO
+         oM/1YihKtvYfdhQHwkfjR6ovlNXIkPEY/SYS7aoFd7MQWfjWpFdzvbofg0sW4RFjjqUa
+         jE5G7P1QsY7NpTmIzGTagFMtcK1uqOuu7az+4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version;
-        bh=Ylfo6LQgoTLIH9G48v53LryPtOynF+I+OX8S7pJO2O4=;
-        b=SRVfzd5Nam+Zzkef6qdOTgZwzZCEn9PjlfL/nxjWdXQn+Ii97r5HpgYxL3/XZplGWB
-         /4pwfrIYTPcbrp2eLRlInyBmzH+5jZ7pcOgsYCBoQY2/7LCtEfJDCb5Uuuj/esNexGov
-         p30p60TqP8iMFzaXw5Rz8bGT/+6YJWXCjwk6lXWv7tnBuKLZB2+yHxMap4ndc2u36Vhh
-         muDWQNU++cpszuRCwOwZIeNVGtYGe0imF38k/zS2MW74kNOiajVfa6YWu4Ncj6hthSBX
-         zISwGiJtjpSEHJPwxnpIchJ0FHvUb2LpOXueT/ZfvMYaUMuXtUqPnXjUbSFghbrUWoqY
-         Wevg==
-X-Gm-Message-State: AOAM530D8rf5wtAzqodQLrpURHe0D07BDzf7cq2OeJEJy/ab5TbqVVIS
-        UOa5yqWgtP8TZIHc2du62NsYGKxzwz6GtQMIJlsqC9pYku4kcAohNmvZayf0EodkkuCNsdK7AJ0
-        QDuX+820bFCcCZ4AMSdR5BN8s4Qk2tQEehE/eTDNC0dM5fQp3nK9vh71naRcpzdi+cW51WtwgOn
-        z5o9mD
-X-Google-Smtp-Source: ABdhPJyLJIn6EpHFSIB5X3xB7awYNJUr6hcowCLB86XBWgfxLC+jGCyc9E8jj7Ikn04bAB8z1a4Adg==
-X-Received: by 2002:a17:90a:c002:b0:1d9:250a:73c8 with SMTP id p2-20020a17090ac00200b001d9250a73c8mr19683382pjt.133.1650964491922;
-        Tue, 26 Apr 2022 02:14:51 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version;
+        bh=kBx8KTV4cCQ5F5Vp4zg+QAENCViNYF/iEP8UvSG/FiU=;
+        b=8LOCdp6t2n2S4tCjM4v5T96dN5LqfbYWv1qslf7qddK4x7ZBhovsFYHmNtiqUg1mQR
+         +x3cBiw+U3KDrfyd2hvTowDIn8lHip151Of7+4Tkt6N89brt2yVkGKolCZvUIB2e+Ksr
+         eUnWjLBOUi+uc39702yt/PeklWabFlXk2pDKj3+K+kgXf04REMoVjK0QbOw6HK3vyeQM
+         tKIR/FOAAoik/MiXoWCVWsV8nMYfhlp/BoEER+CGmdFbo+frL93qwdFEU5a43YIDy6kz
+         eWU89RCcKdUaLAkKt+EhvWUF8SaN4XcyIvtMZpQm1QZY+E47m2PiF9abCLum0Kl4g19k
+         5tHg==
+X-Gm-Message-State: AOAM531K3CASzyqIOyk67frrsdYqRm1kb7fZGEE8sI4P4SwnFQiesz0F
+        lw9iBYbh2a2LbrQNm/naRo5zOr/QrrNi3f0oG4akhrPCl2pOF15wFNPfx4jqv2d1NUkeeqR8qPO
+        ACmraHHuvykCoVPRWtiLSjrOM2KbEqPnuO/WTjoP8f9PPzYbVBmkVJ1AhzXq52f7/kXFomi7NXM
+        KSuRnZ
+X-Google-Smtp-Source: ABdhPJyqsBejtjqWJfonGEdcHzxTEbNFn+5bjEijuMX+gIaJfGQb7HpsjboX722MZcl3qqQ5NNpkUg==
+X-Received: by 2002:a63:8b41:0:b0:3ab:6c5:79ba with SMTP id j62-20020a638b41000000b003ab06c579bamr11530417pge.382.1650964494931;
+        Tue, 26 Apr 2022 02:14:54 -0700 (PDT)
 Received: from localhost.localdomain ([192.19.250.250])
-        by smtp.gmail.com with ESMTPSA id z10-20020a62d10a000000b0050d3c3668bcsm7593829pfg.137.2022.04.26.02.14.48
+        by smtp.gmail.com with ESMTPSA id z10-20020a62d10a000000b0050d3c3668bcsm7593829pfg.137.2022.04.26.02.14.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 02:14:51 -0700 (PDT)
+        Tue, 26 Apr 2022 02:14:54 -0700 (PDT)
 From:   Boris Sukholitko <boris.sukholitko@broadcom.com>
 To:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>
 Cc:     Ilya Lifshits <ilya.lifshits@broadcom.com>,
         Boris Sukholitko <boris.sukholitko@broadcom.com>
-Subject: [PATCH iproute2-next v3 0/2] f_flower: match on the number of vlan tags
-Date:   Tue, 26 Apr 2022 12:14:15 +0300
-Message-Id: <20220426091417.7153-1-boris.sukholitko@broadcom.com>
+Subject: [PATCH iproute2-next v3 1/2] f_flower: Add num of vlans parameter
+Date:   Tue, 26 Apr 2022 12:14:16 +0300
+Message-Id: <20220426091417.7153-2-boris.sukholitko@broadcom.com>
 X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20220426091417.7153-1-boris.sukholitko@broadcom.com>
+References: <20220426091417.7153-1-boris.sukholitko@broadcom.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000019442805dd8b20ff"
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,MIME_NO_TEXT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.6
+        boundary="00000000000047748205dd8b20e7"
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000019442805dd8b20ff
+--00000000000047748205dd8b20e7
 Content-Transfer-Encoding: 8bit
-
-Hi,
 
 Our customers in the fiber telecom world have network configurations
 where they would like to control their traffic according to the number
@@ -83,43 +84,66 @@ protocols are usually describe single and double tagged packet. GPON
 configurations that we work with have arbitrary mix the above protocols
 and number of vlan tags in the packet.
 
-The following patch series implement number of vlans flower filter. They
-add num_of_vlans flower filter as an alternative to vlan ethtype protocol
-matching. The end result is that the following command becomes possible:
+This patch adds num_of_vlans flower key and associated print and parse
+routines. The following command becomes possible:
 
-tc filter add dev eth1 ingress flower \
-  num_of_vlans 1 vlan_prio 5 action drop
+tc filter add dev eth1 ingress flower num_of_vlans 1 action drop
 
-Also, from our logs, we have redirect rules such that:
+Signed-off-by: Boris Sukholitko <boris.sukholitko@broadcom.com>
+---
+ tc/f_flower.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-tc filter add dev $GPON ingress flower num_of_vlans $N \
-     action mirred egress redirect dev $DEV
-
-where N can range from 0 to 3 and $DEV is the function of $N.
-
-Also there are rules setting skb mark based on the number of vlans:
-
-tc filter add dev $GPON ingress flower num_of_vlans $N vlan_prio \
-    $P action skbedit mark $M
-
-Thanks,
-Boris.
-
-- v3: rebased to the latest iproute2-next
-- v2: add missing f_flower subject prefix
-
-Boris Sukholitko (2):
-  f_flower: Add num of vlans parameter
-  f_flower: Check args with num_of_vlans
-
- tc/f_flower.c | 57 ++++++++++++++++++++++++++++++++++++---------------
- 1 file changed, 41 insertions(+), 16 deletions(-)
-
+diff --git a/tc/f_flower.c b/tc/f_flower.c
+index 686cf121..25ffd295 100644
+--- a/tc/f_flower.c
++++ b/tc/f_flower.c
+@@ -48,6 +48,7 @@ static void explain(void)
+ 		"\n"
+ 		"Where: MATCH-LIST := [ MATCH-LIST ] MATCH\n"
+ 		"       MATCH      := {	indev DEV-NAME |\n"
++		"			num_of_vlans VLANS_COUNT |\n"
+ 		"			vlan_id VID |\n"
+ 		"			vlan_prio PRIORITY |\n"
+ 		"			vlan_ethtype [ ipv4 | ipv6 | ETH-TYPE ] |\n"
+@@ -1525,6 +1526,17 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
+ 			if (check_ifname(*argv))
+ 				invarg("\"indev\" not a valid ifname", *argv);
+ 			addattrstrz(n, MAX_MSG, TCA_FLOWER_INDEV, *argv);
++		} else if (matches(*argv, "num_of_vlans") == 0) {
++			__u8 num_of_vlans;
++
++			NEXT_ARG();
++			ret = get_u8(&num_of_vlans, *argv, 10);
++			if (ret < 0) {
++				fprintf(stderr, "Illegal \"num_of_vlans\"\n");
++				return -1;
++			}
++			addattr8(n, MAX_MSG,
++				 TCA_FLOWER_KEY_NUM_OF_VLANS, num_of_vlans);
+ 		} else if (matches(*argv, "vlan_id") == 0) {
+ 			__u16 vid;
+ 
+@@ -2694,6 +2706,14 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
+ 
+ 	open_json_object("keys");
+ 
++	if (tb[TCA_FLOWER_KEY_NUM_OF_VLANS]) {
++		struct rtattr *attr = tb[TCA_FLOWER_KEY_NUM_OF_VLANS];
++
++		print_nl();
++		print_uint(PRINT_ANY, "num_of_vlans", "  num_of_vlans %d",
++			   rta_getattr_u8(attr));
++	}
++
+ 	if (tb[TCA_FLOWER_KEY_VLAN_ID]) {
+ 		struct rtattr *attr = tb[TCA_FLOWER_KEY_VLAN_ID];
+ 
 -- 
 2.29.2
 
 
---00000000000019442805dd8b20ff
+--00000000000047748205dd8b20e7
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -190,14 +214,14 @@ bR7s0ZZh6mOhJtqk3k1L1DbDTVB4tOZXZHRDghEGaQSnwU/qxCNlvQ52fImLFVwXKPnw6+9dUvFR
 ORaZ1pZbapCGbs/4QLplv8UaBmpFfK6MW/44zcsDbtCFfgIP3fEJBByIREhvRC5mtlRtdM+SSjgS
 ZiNfUggxggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgw0
-s4pyqb3D0zeGSCUwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIMtboosDMu6JjOup
-69BZpMXEU3OGNJ7tPimTE9jdtFn2MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
-AQkFMQ8XDTIyMDQyNjA5MTQ1MlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
+s4pyqb3D0zeGSCUwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIHsYDAuE+TUCznlI
++EAE5hm27aLJDZPG1vUzjr39IIawMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
+AQkFMQ8XDTIyMDQyNjA5MTQ1NVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
 AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
-MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQAssrRb9q+2zDZ44fawjHro2lEI0+xBr7Sm
-D4yy+lMhggo59DnJGrJqIEvaIQHuiG6JmPj5jLNynEVd65+SjNVhl5RIFdhMmU+GprwFmNxyyyby
-jVjgfrwW016VLimBIcYy1k7YSGBg+TSFEiJ9b/vJe+zV3Sq44RUQBCh0uYvZw7QJ0eMgmiU/EYu7
-svi6Mqg6hARKJH0R2FbPX1rKjAPDlga+wrkbuaUfJyH4G97sKV5f2drN657nO9BDZJ0NzZYrPHPK
-nM/3cwIImzBTovXm8BoBRfhDxgM9r8ERxpXn3mOIkbW8MO3m8P/9/UYjQM4KwFeQuN5I4RyXvlM7
-WtXK
---00000000000019442805dd8b20ff--
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQAZ8xV+LiNB8YdvyVNymhH/iKzAcUzNuTuV
+1KOosD6x9z1GdGNw+fX3dejewesr1r4zp1lweJd6EVGrGXxIwRyxWfYy4NRx2XscaNoS3NnnWqrz
+UU6xutT4bAMg2I61q9ZgN3uCl2lDDn4WoZ3GClg3MQTFHyvqM2YQRUQjU2L+NHSEXjNnzFiB11qO
+PL46kQn7+jbFQTL6E9pM5qF96B7VhjAofOkoa5HtXtkv+v6jAdiSAiTtjq2INu9DEoDxF/m39vGO
+LSKCN5LpqUf4mchCvEitxteIrrPuMp6Oc3+eoSBgSQ2/XFx7jgWW/FKSUNRZIA64y/XWezzcg2RL
+ly/M
+--00000000000047748205dd8b20e7--
