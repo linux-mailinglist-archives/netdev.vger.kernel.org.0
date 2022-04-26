@@ -2,183 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 17B6B50F942
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 11:58:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13A7250F966
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 12:02:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241910AbiDZJ70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 05:59:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53390 "EHLO
+        id S1344779AbiDZKEe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 06:04:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348124AbiDZJ6m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 05:58:42 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 829073EF04
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 02:17:40 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id bg9so15578004pgb.9
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 02:17:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :in-reply-to;
-        bh=7ceS+yRdnFntzSXKk2JjIG2U0hQyYNZTN5rCfDdFHEQ=;
-        b=h/DIEQVVF4MrIMccbOaVlC+CLinXTWBqx415q7nwrrDbToO3NQS1vzGW0DF5NSuPss
-         LF+6yrPn1y3PC/OIRl4+Qx9UzjFpcVq640np3pvqyw/jdA8bdfwfpkT1zUBX+8FpRPdH
-         TykiDdnzSOYFc1Ie4Kyyju/1Kjpxb5b/9VHIc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:in-reply-to;
-        bh=7ceS+yRdnFntzSXKk2JjIG2U0hQyYNZTN5rCfDdFHEQ=;
-        b=1ITUAyu8g/m8zQabNSE5oPaZFUEU3Qj2t1jTXHzET0QyRyIsGMM8XB7mCHu2b+6y2C
-         SBZhfvA+k/fzy0geGl4RSPrRwnhurBm17PChvDrjpECmZ54slmJ051bfapmNnY9KLYMT
-         XAqScGCaxLf7UoVAbj3DD9Bk2npsfZ29Sh7CSmljculwEi3+oqna4Bk2Ej3TxEGkj0ow
-         cb/GcJh5770ZLhXiawbexmu09GQ8DVhnT8lKyI+bi/ObQ88CE26GiQRrKiJzBbv+lQFz
-         u7f4jgIkKAzXPnVOSTbERR5J3r4HcFocgfcamG462+N1TLq3ZaamlaYRAUYPwiFa56nv
-         Qu/Q==
-X-Gm-Message-State: AOAM531f5TI0AEpOEldKKOVlqJwghc3oOR0ddgkUOACoQjmJllrholl+
-        RrlRNdVBX6bL4u6v+w2CIrrG/A==
-X-Google-Smtp-Source: ABdhPJzWFeXdxf5KFFXqm8xCwx5qDVhkpI+cuQetdB0Yhhte9JHrVGnto5iC/Envk0A1KNg6ANTZww==
-X-Received: by 2002:a63:b24c:0:b0:398:9594:a140 with SMTP id t12-20020a63b24c000000b003989594a140mr19193236pgo.292.1650964659798;
-        Tue, 26 Apr 2022 02:17:39 -0700 (PDT)
-Received: from noodle ([192.19.250.250])
-        by smtp.gmail.com with ESMTPSA id h3-20020a62de03000000b0050d4bd4141esm3568649pfg.215.2022.04.26.02.17.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 02:17:39 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 12:17:27 +0300
-From:   Boris Sukholitko <boris.sukholitko@broadcom.com>
-To:     David Ahern <dsahern@kernel.org>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S1348401AbiDZKDh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 06:03:37 -0400
+Received: from repost01.tmes.trendmicro.eu (repost01.tmes.trendmicro.eu [18.185.115.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 467FA62BEA
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 02:24:16 -0700 (PDT)
+Received: from 104.47.5.52_.trendmicro.com (unknown [172.21.206.109])
+        by repost01.tmes.trendmicro.eu (Postfix) with SMTP id 3CE0B1000125B;
+        Tue, 26 Apr 2022 09:24:15 +0000 (UTC)
+X-TM-MAIL-RECEIVED-TIME: 1650965052.588000
+X-TM-MAIL-UUID: 6fdb132b-385e-400e-891e-685b5ea67b4e
+Received: from EUR02-HE1-obe.outbound.protection.outlook.com (unknown [104.47.5.52])
+        by repre01.tmes.trendmicro.eu (Trend Micro Email Security) with ESMTPS id 8FBA510002184;
+        Tue, 26 Apr 2022 09:24:12 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=n99BRZiHBm0Ne7FF9BH1F2LrYPmFghhMhcWCBhnpbx53z48rBCwUqSUKEv9j9YGiDh7y7cQbYq+fz52EPYbIz/CSS+9d2RaV0DNGHevvRkDNFUxb47/y7nlKKhSYC04FQ7yLIAoRQkeseIvk1PjlBNJsVm5IgH0AlizyO4ZPsxNpexp8L7jNhAgbnJ88+bRBbJ8GETtZi6zTlypJXQBLZXOiLf84Wnle2bYSZpfsrzu394VV3hqo/BuRYlojFfXYqpKwukg0Kg+uasSdgXeZX6VU74IZefnTmScZd+NbBKbs7xZ6KfKT1pvRzzgpey+rZ0pjtdm0TmfG8cTjTlGVcw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Th71CWUWUPueaJF14ZEex3R314WrrLtrwMDZZBnubuU=;
+ b=hxCShC8KihVMiAsKo4MVqW6NW9vBciQ7mHMHWJQl/CQUxj4Dubwqto405rKpw/tIyNU+uCh34r4DAZu8X6++3xG9L+/MQKW76A7/kmTW4ur2lECuVqbc9I3jt1rrzbDxgPM6Pd9skhKo2lTcyARRT/Gu7FKwI4MKPGYjh+qdTtP6/Y6G6cFCNVW4mVx0QU2Nq94sN85bvWVLiAgaMIZzeTjolwbD4RyH79gGjqbyjRK8G4kUKaTB/jGro6iX3OW08Bt5X9AeSjZ/FSE9hH494b55aJvtTmrXxQXt6VmoLkAwOpkgI4ptwqXn2csp4bMywqIojt+wJ8v+oRFpoePOUA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=opensynergy.com; dmarc=pass action=none
+ header.from=opensynergy.com; dkim=pass header.d=opensynergy.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=opensynergy.com;
+Message-ID: <ea0c7c48-a93b-e0fe-0a1d-e4c88c235f37@opensynergy.com>
+Date:   Tue, 26 Apr 2022 12:24:08 +0300
+Subject: Re: [RFC PATCH] Bluetooth: core: Allow bind HCI socket user channel
+ when HCI is UP.
+Content-Language: uk
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Vasyl Vavrychuk <vvavrychuk@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        BlueZ <linux-bluetooth@vger.kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Eric Dumazet <edumazet@google.com>,
-        zhang kai <zhangkaiheb@126.com>,
-        Yoshiki Komachi <komachi.yoshiki@gmail.com>,
-        Ilya Lifshits <ilya.lifshits@broadcom.com>
-Subject: Re: [PATCH iproute2-next v2 2/2] f_flower: Check args with
- num_of_vlans
-Message-ID: <20220426091727.GA7354@noodle>
-References: <20220412100343.27387-1-boris.sukholitko@broadcom.com>
- <20220412100343.27387-3-boris.sukholitko@broadcom.com>
- <20220426021111.GA25966@u2004-local>
+        Paolo Abeni <pabeni@redhat.com>
+References: <20220412120945.28862-1-vasyl.vavrychuk@opensynergy.com>
+ <9EA1D51C-D316-49CF-A7F8-765C58C18880@holtmann.org>
+From:   Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
+In-Reply-To: <9EA1D51C-D316-49CF-A7F8-765C58C18880@holtmann.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AM8P189CA0027.EURP189.PROD.OUTLOOK.COM
+ (2603:10a6:20b:218::32) To PAXPR04MB9106.eurprd04.prod.outlook.com
+ (2603:10a6:102:227::8)
 MIME-Version: 1.0
-In-Reply-To: <20220426021111.GA25966@u2004-local>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000019df6205dd8b2abb"
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d76ee49a-66ff-4f1b-2edd-08da2766854a
+X-MS-TrafficTypeDiagnostic: DB7PR04MB4059:EE_
+X-Microsoft-Antispam-PRVS: <DB7PR04MB40599DFBCDA6F2B676886C7CECFB9@DB7PR04MB4059.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: AKpcARHN/3PJ7bUi4d44vctkioTSQtAh5Xb/lSuAnTpTkLQkTsjQ6JwnoaSTtyEoKHbJm7QpHww6lAsU48LrZT2ZUwr59BH2lyiEKpEooD36PA2TZuw2XNxWwX2suTu4s/wbPtaxGmWIfesJk1i+wjw0OXXTzDQPNyPKCwtakPjsB0TPK5bquNGPvz07Fkt0XmmAx8QB6pc9DgGgJCeykZjevsxgWneC3coHO6v6huJUoeXDPGgTJpOE6/FArqUPRi0FIogFgqn6HoNL3ev366tpdVAsyZIv2cu1jkxPKrvcexM0mINEazYOnOiO/3QPPo+wsDftexpEkX/0dosUgL/fWMIH1R4UHGlxrSb/T1lY7DxuDMLU/vm4ygtnrqFcv4XH55aK1sF2ey++RGweDqW4TkKGODPpp4yrTxNxUqsz5im0749f1Ackj0gY6d36s0DvSq7Rd9PnCZKv6cDTqcAP176JfUogV4fWpDZHUT36B/k4yEvrCKAeLouY9opH6BjXef8eJf0FaUcZA00W0Lhcwl5EMCmY38NuoIs713CcxqKZOdzvcfFlbOOb1lpwNzmilfnQyWJRu4YMVFBvyGPBlKM6OBS25XRGMQBPzV8+dn81gv45LiZ/4l61K6Rp2SfV0Vr58EK6SMmS6XOcT9N7p+Y6WRMWK/nfE86aXo/C95OpHdhViKO8lBJ0gc7cOdXDwprohJNNhxAWGydhUHquwnS54DYuW5623zvN5zk=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB9106.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(39840400004)(376002)(136003)(396003)(346002)(66476007)(8676002)(66556008)(86362001)(42186006)(83380400001)(7416002)(31696002)(44832011)(54906003)(66946007)(38100700002)(2906002)(2616005)(186003)(316002)(110136005)(8936002)(4326008)(31686004)(36756003)(508600001)(966005)(26005)(53546011)(5660300002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?eWdibFdOWTdmTlh1K3UxblR0Y0krREZCTkdNSFV2dFpyUVdoM3hoV0tSU3Js?=
+ =?utf-8?B?K05TbTgva2U3S2dRcnNZL05kc0xmVi9kckJBZWozSFowcUdhWU5ydERTb282?=
+ =?utf-8?B?a3RGVEhrc2ZoMlNlTml5T25aZzhXS3NHM0w2SnVHcE5EQlprbmhlMS83WWVB?=
+ =?utf-8?B?ZWFCdTgwNGZ1WmRNNWNURmdmcFd6ejY3UVZpTE5Kb0V3cCtOanJiMkM2dkpR?=
+ =?utf-8?B?QmR5NWJiVWk1czUwOTJzeWFkcWJmM2gzZlJVTktVbDFHVHJ1aWROYXptd2ds?=
+ =?utf-8?B?SUVubXdvVHNidTVnSnFvT0RMU2JEWHo4R1BnRzQzWTVucE85MDNTL202TGk1?=
+ =?utf-8?B?Q3diS0R0Y1AzSGlMa3dlbzhYSjE3TkxJM2NsRGxCNmxDVkJzUkNrWlh0NmJP?=
+ =?utf-8?B?dkVFUkw5UG5HeVZZVW13ZE9CcHpRYnRzNEVZMG1oQXBZYjhUUmQvL3RmTC9C?=
+ =?utf-8?B?SnRiR29kZ0xYUmE4ZTR6ZmFXQUVMUkZjYWpFcXlpQmF0aHZRS1cyUHg0cGYz?=
+ =?utf-8?B?cG8yVStBVkJPYi9JenVwMHovTWhWRHp3blV5eVhJeHJCaFJGWWE5ZWxZS3k5?=
+ =?utf-8?B?Y3ZVYWdaNmVLSzhQVUJZMno1RFlrZ3FZWDQxdmk3bWczQngra2xOazZYLzFm?=
+ =?utf-8?B?WlY5a1hPNjMySDRscGZGUlNYK3l1b2lrOUxiOTVKaEF1WnFDTVZvQlhXTE9D?=
+ =?utf-8?B?cTMrei9hWUo5Q2N6bC84ekMwSGkrMHJ4YW9jYmNHNUs1R3B4V1dReVRGWm41?=
+ =?utf-8?B?WEkrTzJkbFYvcGFiajhvME9yblFma1dGbHF4VSt1Nzg5NzFUQWZXVmU3cFNz?=
+ =?utf-8?B?L1l1dnUreWF0UlZnVUJmOFhJSUlobldxbVlSN0tjMjVUMHZPTHhRckFDZVZt?=
+ =?utf-8?B?N0xFMFM2aFBDaFdGcmRaSVM3NjNwdGhSZEJ4V2xlS29Ub2xrY0p1NW1CUm0y?=
+ =?utf-8?B?cEhBekNTNENmZ014cFdONG0wQnZVZWFHWWNoUVlPNHZXYmwwTmpLZW9CWlhP?=
+ =?utf-8?B?WGRYMVVnMWZES0RGTWhOYjd1ZE0zTmUxaS9yWEM0Tm5lM3hzTEJsVVl1STRs?=
+ =?utf-8?B?OThQR3YwdHJ0QVB6d1RLczh4U3B4SGxNdVVLdTQ0UW40Wllac3VXWExUVitv?=
+ =?utf-8?B?aTdwYmxzWkU1MDM1bTVqNjhva0ZnU0s1d01MUWNvcXhxQzJBN2ZyNWtqcnV3?=
+ =?utf-8?B?ejNjdVVOR3dtMEpCN2UvUTc2VzkvaVJibi9nbGRxbVZkV1BCY0pld0prQlVx?=
+ =?utf-8?B?bldSWndZbjNQeitmTjNLYUJ3WHJiYzRpNVduYjltbm1nSXV4bVpSbFk3SFlO?=
+ =?utf-8?B?SW9TemUrU0d0K2NNVkRKdHU3ZGx5QVZvR3JtVlVIY1d0b2o0d2JBSXpzRFVJ?=
+ =?utf-8?B?Q2JwempHemJBaDFwclllQmdub0QwSHNIbTNmWVFhVklVNmZTWkR0T0hGSXpt?=
+ =?utf-8?B?MWVCSU1wT3N2N1MvTTg4YUY0YitRbDJZOEwrTHpiNGNYcE4vN0pRZ3pJS3NU?=
+ =?utf-8?B?bHB1NUJYazJZVHlhbzhIM0twZkRXWXVkZmZubDhFYjZyTGdQd25LSE1PNmsz?=
+ =?utf-8?B?QnlWcllFY0ZFVWpqN3g1OHhOdUR4emk1cWNZdmhYNnl3T2tSNzdsZDlMS1lK?=
+ =?utf-8?B?RlZlbkJJS2hYQ2JweCszenFRbW84Y3AvTDRieklFVUNPNXBDbTR1VzZNMEk2?=
+ =?utf-8?B?QTFVL0tRbFR2bGZ0ZFlycS9kcjQ2QWhUZ1ZPZlR3WVpmKzM1RUpXZGhNM3J1?=
+ =?utf-8?B?T0syU3FGVHdkMjVsY2xoelBFZE1VaHJQU2VnYk1lZVc0N1ZoMTlqNnhFeGl1?=
+ =?utf-8?B?c2NONW1KQmVGMUV3SnJpMjBIQkF3aWhqUG5LYWVOZzhISkN5clBYYTNMNW1j?=
+ =?utf-8?B?Wk9ETzR5MjlYR2NzTXpIT05Yc1BYaTBpSGRTeXRLajh0R2dHLzIzbWRxTHdS?=
+ =?utf-8?B?Sjk1ZlIybysvdGxKVGthZElIRkFhczdBRnNHa0FuRFVQYmR1M3FQUzk5RzJO?=
+ =?utf-8?B?S2Z1ZVRRaVhtdEdqZ2VrdEs4ZlhTRlRDYTZQaG52SHd1K3M4WlBWdFN6T3A2?=
+ =?utf-8?B?K3BuL3BDZDJ5T2U4WThIWS9ldjliUTdxWnlxSUNadFRHOTF4MlNNbVp1QkRa?=
+ =?utf-8?B?c2V5KzhtUDZPT1dqMzJSM0FIcTltS2JtditXQWgrNTIrdzkvS05kNENuY0x4?=
+ =?utf-8?B?eENQd2dlTWdHZ0Z4akRqRVcrdUpnT29jbm1wT1VhUHA5YjlEQUlvTGN1WlA1?=
+ =?utf-8?B?c2VBQkZ2M3BRMjBLU3pxekY1cktFcVZ6TmFtNzhuVk80b1dFa20yQ3RoV0JT?=
+ =?utf-8?B?dUNRYkdCdW5acHlBbXQwT1k0Smh3K3RUOVlTU21NRVhWbzVyWGlHZz09?=
+X-OriginatorOrg: opensynergy.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d76ee49a-66ff-4f1b-2edd-08da2766854a
+X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB9106.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Apr 2022 09:24:10.4599
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: lH8qmIoKXoEz+4vZXwG41xojhD1+FOAqflUD6upxbcus6iMdVe8eN0MG2O1pubv4wqJ0X3dnOXQlQZ9R+ZYf6A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4059
+X-TM-AS-ERS: 104.47.5.52-0.0.0.0
+X-TMASE-Version: StarCloud-1.3-8.8.1001-26856.006
+X-TMASE-Result: 10--19.108200-4.000000
+X-TMASE-MatchedRID: vbSD0OnL8/IMek0ClnpVp/HkpkyUphL9O8fk7n+zHAzXFJ7W3lIp49o0
+        qNbNhZKlVcLzvvAcZUct/x9i2Zd5RgzkIbwJgE/FEzEoOqAAVLNNLPQl0QAltP4DDXoaCqk7ilJ
+        mlF8p4QfplHhcW5EzjMvY6bQdecIl4FG4Cyz4VuYReM8i8p3vgEyQ5fRSh265TPm/MsQarwPU5x
+        sKpwPfyQpCfWsX3u4oF6dov8Gg2zrxlOJuQNHlfRFbgtHjUWLywqZ0OS45Py5i2IuOMF2AXLnGE
+        on+x/FhqCtC/8fgyE3r23emh+znp49+HWzUuQkw93bduyx/IZw0YL9SJPufX+QuInKvLeQ3MuTw
+        baqEJZN8WT1PvdHHDFl5gHXJcVkKeghDV/oDeqp+yskgwrfsC30tCKdnhB58vqq8s2MNhPCy5/t
+        FZu9S3Ku6xVHLhqfx33fj+sMArfMaMUyeC0staJwDp1OIv3zjQ/yXhuru+WsNTS/FFYL+sdvPwi
+        a2JVHPJpUV89uZZ78+FfDc5UEa8Q==
+X-TMASE-XGENCLOUD: 0d05273e-c75c-4aaf-8da1-b725fce82a95-0-0-200-0
+X-TM-Deliver-Signature: 7C6EE04E4EF2FE8DC664CD3501162682
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=opensynergy.com;
+        s=TM-DKIM-20210503141657; t=1650965055;
+        bh=SwOBDTwwNhfKbjVqKss7bfRJmrW2G3ePdxmtV9hFJcg=; l=2427;
+        h=Date:To:From;
+        b=B4vyy3NTDBMiHAgmu0PMIaO993dXM9TITrzEVbfWNm+M5etRk0CL8aD4FuNVakn1d
+         XUAgp9UQ2xiSYR4cebI9BXJLF7osh2MH+9o5apXFHlJwv4X2sMqCLXtHX6W7F8sfn6
+         eBBb/p28hx/lo9RDf+qlJgfrFIG5eKOpYmE/pg6/BWK2S1oNseWSwaFaEszSh9xJ2X
+         jsFx7MfoA2ISRouD5OiZwS4MFaiRJPSy1B2wrHj030dMrMROqnmULQK4pNkhRg4PBU
+         93rmbXl1KAj2jT/rjPYTG0IPVTuvRKQMOjoJqKo9qg1/5FkObbbdLG1rlFVqpgu37X
+         u/qOOd9Ntky3Q==
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000019df6205dd8b2abb
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Hi, Marcel,
 
-On Mon, Apr 25, 2022 at 08:11:11PM -0600, David Ahern wrote:
-> On Tue, Apr 12, 2022 at 01:03:43PM +0300, Boris Sukholitko wrote:
-> > Having more than one vlan allows matching on the vlan tag parameters.
-> > This patch changes vlan key validation to take number of vlan tags into
-> > account.
-> > 
-> > Signed-off-by: Boris Sukholitko <boris.sukholitko@broadcom.com>
-> > ---
-> >  tc/f_flower.c | 41 +++++++++++++++++++++++------------------
-> >  1 file changed, 23 insertions(+), 18 deletions(-)
-> > 
+On 4/22/2022 12:20 PM, Marcel Holtmann wrote:
+> Hi Vasyl,
 > 
-> does not apply cleanly to iproute2-next
+>> This is needed for user-space to ensure that HCI init scheduled from
+>> hci_register_dev is completed.
+>>
+>> Function hci_register_dev queues power_on workqueue which will run
+>> hci_power_on > hci_dev_do_open. Function hci_dev_do_open sets HCI_INIT
+>> for some time.
+>>
+>> It is not allowed to bind to HCI socket user channel when HCI_INIT is
+>> set. As result, bind might fail when user-space program is run early
+>> enough during boot.
+>>
+>> Now, user-space program can first issue HCIDEVUP ioctl to ensure HCI
+>> init scheduled at hci_register_dev was completed.
+>>
+>> Signed-off-by: Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
+>> ---
+>> net/bluetooth/hci_sock.c | 4 +---
+>> 1 file changed, 1 insertion(+), 3 deletions(-)
+>>
+>> diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
+>> index 33b3c0ffc339..c98de809f856 100644
+>> --- a/net/bluetooth/hci_sock.c
+>> +++ b/net/bluetooth/hci_sock.c
+>> @@ -1194,9 +1194,7 @@ static int hci_sock_bind(struct socket *sock, struct sockaddr *addr,
+>>
+>> 		if (test_bit(HCI_INIT, &hdev->flags) ||
+>> 		    hci_dev_test_flag(hdev, HCI_SETUP) ||
+>> -		    hci_dev_test_flag(hdev, HCI_CONFIG) ||
+>> -		    (!hci_dev_test_flag(hdev, HCI_AUTO_OFF) &&
+>> -		     test_bit(HCI_UP, &hdev->flags))) {
+>> +		    hci_dev_test_flag(hdev, HCI_CONFIG)) {
+>> 			err = -EBUSY;
+>> 			hci_dev_put(hdev);
+>> 			goto done;
+> 
+> I am not following the reasoning here. It is true that the device has to run init before you can do something with it. From mgmt interface your device will only be announced when it is really ready.
 
-Rebased in v3.
+Sorry, I am not familiar with mgmt interface. I obtain device using 
+HCIGETDEVLIST.
 
-Thanks,
-Boris.
+BTW. I have pushed related patch [1]. Comparing to this patch, [1] is 
+less intrusive since it does not effect user-space semantics.
 
---00000000000019df6205dd8b2abb
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+Patch [1] allows to ensure that device is not in HCI_INIT state by running
 
-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
-riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
-QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
-UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
-M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
-Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
-14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
-a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
-XzCCBVgwggRAoAMCAQICDDSzinKpvcPTN4ZIJTANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
-RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
-UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMTAyMjIwNzMwMDRaFw0yMjA5MDUwNzM3NTVaMIGW
-MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
-BgNVBAoTDUJyb2FkY29tIEluYy4xGTAXBgNVBAMTEEJvcmlzIFN1a2hvbGl0a28xLDAqBgkqhkiG
-9w0BCQEWHWJvcmlzLnN1a2hvbGl0a29AYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
-AQ8AMIIBCgKCAQEAy/C7bjpxs+95egWV8sWrK9KO0SQi6Nxu14tJBgP+MOK5tvokizPFHoiXTymZ
-7ClfnmbcqT4PzWgI3thyfk64bgUo1nQkCTApn7ov3IRsWjmHExLSNoJ/siUHagO6BPAk4JSycrj5
-9tC9sL4FnIAbAHmOSILCyGyyaBAcmiyH/3toYqXyjJkK+vbWQSTxk2NlqJLIN/ypLJ1pYffVZGUs
-52g1hlQtHhgLIznB1Qx3Fop3nOUk8nNpQLON/aM8K5sl18964c7aXh7YZnalUQv3md4p2rAQQqIR
-rZ8HBc7YjlZynwOnZl1NrK4cP5aM9lMkbfRGIUitHTIhoDYp8IZ1dwIDAQABo4IB3jCCAdowDgYD
-VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
-ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
-CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
-MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
-d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
-hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
-bDAoBgNVHREEITAfgR1ib3Jpcy5zdWtob2xpdGtvQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggr
-BgEFBQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUtBmGs9S4
-t1FcFSfkrP2LKQQwBKMwDQYJKoZIhvcNAQELBQADggEBAJMAjVBkRmr1lvVvEjMaLfvMhwGpUfh6
-CMZsKICyz/ZZmvTmIZNwy+7b9r6gjLCV4tP63tz4U72X9qJwfzldAlYLYWIq9e/DKDjwJRYlzN8H
-979QJ0DHPSJ9EpvSKXob7Ci/FMkTfq1eOLjkPRF72mn8KPbHjeN3VVcn7oTe5IdIXaaZTryjM5Ud
-bR7s0ZZh6mOhJtqk3k1L1DbDTVB4tOZXZHRDghEGaQSnwU/qxCNlvQ52fImLFVwXKPnw6+9dUvFR
-ORaZ1pZbapCGbs/4QLplv8UaBmpFfK6MW/44zcsDbtCFfgIP3fEJBByIREhvRC5mtlRtdM+SSjgS
-ZiNfUggxggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
-LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgw0
-s4pyqb3D0zeGSCUwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIJS9IfYf+1zzQxsE
-y6t5IM9PKtTs1klQeDr6ioiow+A4MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
-AQkFMQ8XDTIyMDQyNjA5MTc0MFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
-AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
-MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQDJuo73+3N7e0m9Mpvt3S660PxDCLsFd9dY
-2Z0vzIdU36tGh8b6hsuLft4eHR6Ew8awAUGPrXA5xZ3BtbzJ3peCRwhezAUWlYabgQ6JzPJwIoy7
-Ye30wM8JhlMEIOB1sVV7PKb5aVB+n3JOpI3gqAcn1NZONptScvNzOCqG7mpO55UYQhFGOgPd8+xR
-lSG5mLtadMmelxrihN5PXrDUTImoplDhe/krtg3GrT6HB+aINALL5n88Im5P6EoHu8L2NXJQNP/X
-nkrzQiYAn2NISDWUDzTl/AuwZhDlTOTKrqmAimGkOAjPRN/P8fAxKFozxHbJ35jS+IGhQWand82Y
-GjLR
---00000000000019df6205dd8b2abb--
+     hciconfig hci0 down
+
+This will either wait for HCI_INIT complete and then powers HCI down, or 
+cancels pending power_on.
+
+If we apply [1], we can still consider an optimization to allow binding 
+during HCI_INIT since this optimization will allow me to ommit extra
+
+     hciconfig hci0 down
+
+[1]: 
+https://lore.kernel.org/linux-bluetooth/20220426081823.21557-1-vasyl.vavrychuk@opensynergy.com/T/#u
+
+Kind regards,
+Vasyl
