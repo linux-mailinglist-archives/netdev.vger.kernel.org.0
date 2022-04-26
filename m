@@ -2,258 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4641A50F364
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 10:08:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA50350F4D0
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 10:37:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344482AbiDZILD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 04:11:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60408 "EHLO
+        id S1345289AbiDZIkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 04:40:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344467AbiDZILB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 04:11:01 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6861748E50;
-        Tue, 26 Apr 2022 01:07:46 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id d15so15063231plh.2;
-        Tue, 26 Apr 2022 01:07:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=to+ZeGhLxQcAid0Ufscg8bv/YvTBm1/R7BRG+txDPzM=;
-        b=SxQSXbCWPSYBlG3D1ymX4EnX3akJzKF1gfr3UwRqJCQSH5xVMvHQUVX/8ar5HI4N2B
-         7g92iGNC6M7i/l8cKOpoPrEDSSc8O058UCKivXYCWWWuwPO6F7Tm2Yjr+e75A6lQfx8c
-         2b3V8DWUaY4oqyT/Vyd2Jjz/m/BvBoOGOpKtYGJPeoscac686fvSOyUaMhkBDS8Q/YAY
-         Az66+HrcTzCLdPZB7yJXXlcmG+olgHvSRbTRaB/5qg6WXI5PJqGdv+xqfgo3WOSCgAua
-         un1QKL9xJ02q9NZ3W0rqgYDYonhaaBCNXTqqpcpg/SIG65qhrQGr0y7H0jj6ZV2emcUw
-         Uivw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=to+ZeGhLxQcAid0Ufscg8bv/YvTBm1/R7BRG+txDPzM=;
-        b=5ckMHO6Hn+bgk/2OpOJZ1OAcR9pdmW7xoSEeXzMMkQNuzJuQJUhxwvc/ZRJEZrjkAO
-         +VP3EE/cF6SJGJ4WHAC5NiL7K9LvEW7O7S98LIIrDoFNtVS7RhwVB5YlOSk2KW2JZyRP
-         +4CIM9ahsjWxuw3v50RTgO/lb45AJyhZqzs4NDrNfs7kq2dnDg0aC6DS+ttPEqvXDgD0
-         v+JukmjrI9Gjtf31E1pKWMbqhZg3pZya18lEhtuaHnBXXyHWVJsBcZ4oFbQDbAddomhX
-         oY9L8R6xBMkp4TVr8No+A6tjRQNB8GXj0jVaMru3YWQ6WI/QutogbGJeO7xIGGJGdktc
-         g4MQ==
-X-Gm-Message-State: AOAM530cdKLL9D4PvTDIiwjF9XEU2gK9M4Dqe+w+hZvgaQeAt6kX84cG
-        j2+JxsZEmJVqAQGnUaihA28=
-X-Google-Smtp-Source: ABdhPJwE5FdzKKcQmRuv2uacm4y/xT6q2GjcUORzi1wkxmdqNmAR0tZSEAI/JZRZ+qYtuUmtMtXA7w==
-X-Received: by 2002:a17:902:9696:b0:158:f809:310e with SMTP id n22-20020a170902969600b00158f809310emr22626342plp.16.1650960465953;
-        Tue, 26 Apr 2022 01:07:45 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.119])
-        by smtp.gmail.com with ESMTPSA id l4-20020a056a0016c400b004f79504ef9csm15134951pfc.3.2022.04.26.01.07.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 01:07:45 -0700 (PDT)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     kuba@kernel.org
-Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, pabeni@redhat.com,
-        benbjiang@tencent.com, flyingpeng@tencent.com,
-        imagedong@tencent.com, edumazet@google.com, kafai@fb.com,
-        talalahmad@google.com, keescook@chromium.org,
-        mengensun@tencent.com, dongli.zhang@oracle.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next 2/2] net: tcp: add skb drop reasons to route_req()
-Date:   Tue, 26 Apr 2022 16:07:09 +0800
-Message-Id: <20220426080709.6504-3-imagedong@tencent.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426080709.6504-1-imagedong@tencent.com>
-References: <20220426080709.6504-1-imagedong@tencent.com>
+        with ESMTP id S1345510AbiDZIjL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 04:39:11 -0400
+X-Greylist: delayed 595 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 26 Apr 2022 01:30:00 PDT
+Received: from refb02.tmes.trendmicro.eu (refb02.tmes.trendmicro.eu [18.185.115.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5600B1E6
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 01:30:00 -0700 (PDT)
+Received: from 104.47.6.53_.trendmicro.com (unknown [172.21.19.198])
+        by refb02.tmes.trendmicro.eu (Postfix) with ESMTPS id B69F81011169D
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 08:20:05 +0000 (UTC)
+Received: from 104.47.6.53_.trendmicro.com (unknown [172.21.182.42])
+        by repost01.tmes.trendmicro.eu (Postfix) with SMTP id 7A03E1000125E;
+        Tue, 26 Apr 2022 08:20:01 +0000 (UTC)
+X-TM-MAIL-RECEIVED-TIME: 1650961130.084000
+X-TM-MAIL-UUID: df213d97-d164-4352-978f-460376b902cf
+Received: from EUR02-VE1-obe.outbound.protection.outlook.com (unknown [104.47.6.53])
+        by repre01.tmes.trendmicro.eu (Trend Micro Email Security) with ESMTPS id 14DAC1000218B;
+        Tue, 26 Apr 2022 08:18:49 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Pc+nvPWZW0CPHYOoSrFjWtBIe+3TJXBG0z08NNh1fBqbLYa1+BfY5rYXTOehO1N8pfnHaTjxMjHOymkHivjdJSN7ivezoyU680vvdzNdXOXZcmXFoiMnQ/xc/F0LIsz/ouSH2NZ1rfA2PaWj6ZSiU7EbCu56jVMBXdBTgF5bIou6g7kLg+7VIsDU75XPPpumLVlSHeqJH9ROHqYqUqlbQaUCav8xQ7xmXaMdOVZriwAm3zE1bJ7Sz/Vm4f6jbU/1teHhEvKK0cEtzrP3MTb599Za0Kvix0rZxOtR+a53i56nC0Q2QDzNJp7ASh2WpHzoytiqe6yeY6bwiLWYqUYH0A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=j6+Pgu/wG1SL3tSvBgFrY1T0JrsZ6JZG5UF1jpvUBZg=;
+ b=S8CAJEUJYL56XOdVc0Y3gZLDzJs728uUR5k3O3ZZn/qDysaSDiaOmGJ0kSf0H3N+CZLKX69li1mcB2HM1oX5eYQGgHstfdG4/3G+VgPsalrUJEdodxaL99U5XQMkbUBIA9zSHMashmJUUqxcc2QEpucX5dQz7pVaCR0/XLWhWm6v2VIkXt29lpGGnF+bS7PD69IMJM3maDq/F9PWA8j+rzVq1+e0UY7sVOTljE9AltIDOD9z8oVDHOKqQNTBEOJE/Q/N8qq6TLPlLSXE2hEM5CX2a17pPt6sfJz8MfTtCa4RNQZVmwEY53mx+nlU5lNY5I1wOH6LsdpQT1dKbp+Ufg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 217.66.60.4) smtp.rcpttodomain=davemloft.net smtp.mailfrom=opensynergy.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=opensynergy.com;
+ dkim=none (message not signed); arc=none
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 217.66.60.4)
+ smtp.mailfrom=opensynergy.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=opensynergy.com;
+Received-SPF: Pass (protection.outlook.com: domain of opensynergy.com
+ designates 217.66.60.4 as permitted sender) receiver=protection.outlook.com;
+ client-ip=217.66.60.4; helo=SR-MAIL-03.open-synergy.com;
+From:   Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
+Subject: [PATCH] Bluetooth: core: Fix missing power_on work cancel on HCI close
+Date:   Tue, 26 Apr 2022 11:18:23 +0300
+Message-Id: <20220426081823.21557-1-vasyl.vavrychuk@opensynergy.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+Content-Type: text/plain
+X-MS-Office365-Filtering-Correlation-Id: 501170bf-5ec7-43e7-45a0-08da275d636e
+X-MS-TrafficTypeDiagnostic: DB7PR04MB4810:EE_
+X-Microsoft-Antispam-PRVS: <DB7PR04MB481061077A09DC5BD3B47D5AECFB9@DB7PR04MB4810.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: nHzIGoZpIsmDUs6RiGVK8InnD4XkHa8bt9DR8QLtykxgX/SBMzLSHa3KmXedey5ykTtLsI1rJo+I9cPvS3QVc0j16PRMyFgK6IXPwA3mrf2WLhmigMGoKtg1YpSTEiswcgFEFw27WThALMMo/jmU1btPcBPpYvUGVHQjqqQJKyNDk36xKaE6i+eXqIfXEdGflnkD5c/bDDYP/HCCIWus/ufC5USfsoqdtYroVkLZHmmNRutLHoKKexRsVM607tvRbW8U7MypdH4EFdoMrwHRVRJUH2HSk0X3eA3MpjcHHSFoWQPmKEI2voswYr+LAefURkCkCR7lnmrRcxllKMl8E3fbii1o8MMcpYH/RuWjVgVtvjbVhkqWKwdl3aauiTfAvuJVna4Bo7OtCoaU9XalbxDA/EZzLCM85zBI+KlcfmYdJIiGFrum21/gPMaSHn64sj6Fs3Hik0xFnw2ncP/9q8wW++CbAz6osQLxqeprvlByddTPmsJzYOut31BaTWbkr1nQQikQz3E2GSH7sdMre6uzQHgaq2wIUV2tyBHxv8fRxXRkHdgFzQ976WzCMSPJKPKwHDRkNyVFjZTed5Ay9ViEg7DpuQoExZp3cwi91BHriZyHzjKgsAljwPb3H7SG8Ut8ZQGjoEmr3FCdCJgNQFUztZ/kTPvr1XK2Z5ELlwM+uneFn6ES2iOjfz4LaPRc
+X-Forefront-Antispam-Report: CIP:217.66.60.4;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SR-MAIL-03.open-synergy.com;PTR:mx1.opensynergy.com;CAT:NONE;SFS:(13230001)(376002)(396003)(346002)(39840400004)(136003)(36840700001)(46966006)(81166007)(26005)(70586007)(36756003)(70206006)(86362001)(5660300002)(44832011)(2906002)(508600001)(4326008)(8936002)(83380400001)(40480700001)(36860700001)(54906003)(42186006)(316002)(107886003)(1076003)(336012)(186003)(82310400005)(2616005)(8676002)(47076005);DIR:OUT;SFP:1102;
+X-OriginatorOrg: opensynergy.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Apr 2022 08:18:47.9178
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 501170bf-5ec7-43e7-45a0-08da275d636e
+X-MS-Exchange-CrossTenant-Id: 800fae25-9b1b-4edc-993d-c939c4e84a64
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=800fae25-9b1b-4edc-993d-c939c4e84a64;Ip=[217.66.60.4];Helo=[SR-MAIL-03.open-synergy.com]
+X-MS-Exchange-CrossTenant-AuthSource: VI1EUR05FT018.eop-eur05.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4810
+X-TM-AS-ERS: 104.47.6.53-0.0.0.0
+X-TMASE-Version: StarCloud-1.3-8.8.1001-26856.005
+X-TMASE-Result: 10--8.517500-4.000000
+X-TMASE-MatchedRID: 87nu31iyiq0nUo7A2pUbcVVeGWZmxN2MiK5qg1cmsr/pDcNppAyF7y1s
+        QGcqD7UtOLejJ6ccXRy9XH1WKh6kzcFnRyUPbswoOGTV4fFD6yCUq+GQ/zyJdNzONa1Rspx36Ch
+        K9oqyX+Qi+t+0AiFaYvL3NxFKQpq19IaoJGJ/0IvR7uN8GOEHx2vaomg0i4KNNP1+Jpfbz7PbvL
+        AHy5vsJOgc6mX1lwNHkRoxEQkO3VF1H8bw68oiD67rlQMPRoOCxEHRux+uk8jHUU+U0ACZwBU9o
+        pSlzGWXgYVRxD442q71A99fjzIMpRmAwVUvIOlynqg/VrSZEiM=
+X-TMASE-XGENCLOUD: 6f6d8b2e-5f7b-94ae-bd38-46078b2ad1fc-0-0-200-0
+X-TM-Deliver-Signature: 8D88C8CFD38102D18328CE92B9635BE8
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=opensynergy.com;
+        s=TM-DKIM-20210503141657; t=1650961201;
+        bh=6Luu7RUoPayupfIaY3ek/X2ofFiL4Tlr868h2CngHuo=; l=1389;
+        h=From:To:Date;
+        b=R1px1OR7jwykPfyyiROy+SRztnSV+EEIwyQw024P5MMiHuLttlCHLYk/fHTSfbwfz
+         H6fEf3RkE6hRtvarGhZDQEftCv3PyndyOcku2IxGWihsLyT/fMoI9SOHcI7fqTWfGT
+         t0x09wpC/xqd9i3dyGIKh00M38eL9SU89wlHkYag1ll6sdBN4JR8RlJechKe/iQs4N
+         d0g6Ftke/aic7TC7pg3mOqnwj4yEt2aRpJJ0bdkRRCOkxOioa+OauHQ3TCKifgoMQY
+         O4IKYSpWPCsaJ8Rqh87efTWjGr3XUZcMnthsahwrSd3qQh75tiiVQ13m+FHR9voiSg
+         aeabMrsIFQh8A==
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+Move power_on work cancel to hci_dev_close_sync to ensure that power_on
+work is canceled after HCI interface down, power off, rfkill, etc.
 
-Add skb drop reasons to the route_req() in struct tcp_request_sock_ops.
-Following functions are involved:
+For example, if
 
-  tcp_v4_route_req()
-  tcp_v6_route_req()
-  subflow_v4_route_req()
-  subflow_v6_route_req()
+    hciconfig hci0 down
 
-And the new reason SKB_DROP_REASON_SECURITY is added, which is used when
-skb is dropped by LSM.
+is done early enough during boot, it may run before power_on work.
+Then, power_on work will actually bring up interface despite above
+hciconfig command.
 
-Reviewed-by: Jiang Biao <benbjiang@tencent.com>
-Reviewed-by: Hao Peng <flyingpeng@tencent.com>
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
+Signed-off-by: Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
 ---
- include/linux/skbuff.h     |  1 +
- include/net/tcp.h          |  3 ++-
- include/trace/events/skb.h |  1 +
- net/ipv4/tcp_input.c       |  2 +-
- net/ipv4/tcp_ipv4.c        | 14 +++++++++++---
- net/ipv6/tcp_ipv6.c        | 14 +++++++++++---
- net/mptcp/subflow.c        | 10 ++++++----
- 7 files changed, 33 insertions(+), 12 deletions(-)
+ net/bluetooth/hci_core.c | 2 --
+ net/bluetooth/hci_sync.c | 1 +
+ 2 files changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index f33b3636bbce..5909759e1b95 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -473,6 +473,7 @@ enum skb_drop_reason {
- 	SKB_DROP_REASON_TCP_REQQFULLDROP, /* request queue of the listen
- 					   * socket is full
- 					   */
-+	SKB_DROP_REASON_SECURITY,	/* dropped by LSM */
- 	SKB_DROP_REASON_MAX,
- };
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index b4782a6c1025..ad4f4ab0afca 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -2675,8 +2675,6 @@ void hci_unregister_dev(struct hci_dev *hdev)
+ 	list_del(&hdev->list);
+ 	write_unlock(&hci_dev_list_lock);
  
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 679b1964d494..01f841611895 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -2075,7 +2075,8 @@ struct tcp_request_sock_ops {
- 	struct dst_entry *(*route_req)(const struct sock *sk,
- 				       struct sk_buff *skb,
- 				       struct flowi *fl,
--				       struct request_sock *req);
-+				       struct request_sock *req,
-+				       enum skb_drop_reason *reason);
- 	u32 (*init_seq)(const struct sk_buff *skb);
- 	u32 (*init_ts_off)(const struct net *net, const struct sk_buff *skb);
- 	int (*send_synack)(const struct sock *sk, struct dst_entry *dst,
-diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
-index de6c93670437..aff57cd43e85 100644
---- a/include/trace/events/skb.h
-+++ b/include/trace/events/skb.h
-@@ -82,6 +82,7 @@
- 	EM(SKB_DROP_REASON_PKT_TOO_BIG, PKT_TOO_BIG)		\
- 	EM(SKB_DROP_REASON_LISTENOVERFLOWS, LISTENOVERFLOWS)	\
- 	EM(SKB_DROP_REASON_TCP_REQQFULLDROP, TCP_REQQFULLDROP)	\
-+	EM(SKB_DROP_REASON_SECURITY, SECURITY)			\
- 	EMe(SKB_DROP_REASON_MAX, MAX)
+-	cancel_work_sync(&hdev->power_on);
+-
+ 	hci_cmd_sync_clear(hdev);
  
- #undef EM
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index e0bbbd624246..2c158593dc37 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -6928,7 +6928,7 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
- 	/* Note: tcp_v6_init_req() might override ir_iif for link locals */
- 	inet_rsk(req)->ir_iif = inet_request_bound_dev_if(sk, skb);
+ 	if (!test_bit(HCI_QUIRK_NO_SUSPEND_NOTIFIER, &hdev->quirks))
+diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
+index 8f4c5698913d..c5b0dbfc0379 100644
+--- a/net/bluetooth/hci_sync.c
++++ b/net/bluetooth/hci_sync.c
+@@ -4058,6 +4058,7 @@ int hci_dev_close_sync(struct hci_dev *hdev)
  
--	dst = af_ops->route_req(sk, skb, &fl, req);
-+	dst = af_ops->route_req(sk, skb, &fl, req, &reason);
- 	if (!dst)
- 		goto drop_and_free;
+ 	bt_dev_dbg(hdev, "");
  
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index b8daf49f54a5..12acf4823488 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -1424,14 +1424,22 @@ static void tcp_v4_init_req(struct request_sock *req,
- static struct dst_entry *tcp_v4_route_req(const struct sock *sk,
- 					  struct sk_buff *skb,
- 					  struct flowi *fl,
--					  struct request_sock *req)
-+					  struct request_sock *req,
-+					  enum skb_drop_reason *reason)
- {
-+	struct dst_entry *dst;
-+
- 	tcp_v4_init_req(req, sk, skb);
- 
--	if (security_inet_conn_request(sk, skb, req))
-+	if (security_inet_conn_request(sk, skb, req)) {
-+		SKB_DR_SET(*reason, SECURITY);
- 		return NULL;
-+	}
- 
--	return inet_csk_route_req(sk, &fl->u.ip4, req);
-+	dst = inet_csk_route_req(sk, &fl->u.ip4, req);
-+	if (!dst)
-+		SKB_DR_SET(*reason, IP_OUTNOROUTES);
-+	return dst;
- }
- 
- struct request_sock_ops tcp_request_sock_ops __read_mostly = {
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 782df529ff69..d69fef0e0892 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -802,14 +802,22 @@ static void tcp_v6_init_req(struct request_sock *req,
- static struct dst_entry *tcp_v6_route_req(const struct sock *sk,
- 					  struct sk_buff *skb,
- 					  struct flowi *fl,
--					  struct request_sock *req)
-+					  struct request_sock *req,
-+					  enum skb_drop_reason *reason)
- {
-+	struct dst_entry *dst;
-+
- 	tcp_v6_init_req(req, sk, skb);
- 
--	if (security_inet_conn_request(sk, skb, req))
-+	if (security_inet_conn_request(sk, skb, req)) {
-+		SKB_DR_SET(*reason, SECURITY);
- 		return NULL;
-+	}
- 
--	return inet6_csk_route_req(sk, &fl->u.ip6, req, IPPROTO_TCP);
-+	dst = inet6_csk_route_req(sk, &fl->u.ip6, req, IPPROTO_TCP);
-+	if (!dst)
-+		SKB_DR_SET(*reason, IP_OUTNOROUTES);
-+	return dst;
- }
- 
- struct request_sock_ops tcp6_request_sock_ops __read_mostly = {
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index aba260f547da..03d07165cda6 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -283,7 +283,8 @@ EXPORT_SYMBOL_GPL(mptcp_subflow_init_cookie_req);
- static struct dst_entry *subflow_v4_route_req(const struct sock *sk,
- 					      struct sk_buff *skb,
- 					      struct flowi *fl,
--					      struct request_sock *req)
-+					      struct request_sock *req,
-+					      enum skb_drop_reason *reason)
- {
- 	struct dst_entry *dst;
- 	int err;
-@@ -291,7 +292,7 @@ static struct dst_entry *subflow_v4_route_req(const struct sock *sk,
- 	tcp_rsk(req)->is_mptcp = 1;
- 	subflow_init_req(req, sk);
- 
--	dst = tcp_request_sock_ipv4_ops.route_req(sk, skb, fl, req);
-+	dst = tcp_request_sock_ipv4_ops.route_req(sk, skb, fl, req, reason);
- 	if (!dst)
- 		return NULL;
- 
-@@ -309,7 +310,8 @@ static struct dst_entry *subflow_v4_route_req(const struct sock *sk,
- static struct dst_entry *subflow_v6_route_req(const struct sock *sk,
- 					      struct sk_buff *skb,
- 					      struct flowi *fl,
--					      struct request_sock *req)
-+					      struct request_sock *req,
-+					      enum skb_drop_reason *reason)
- {
- 	struct dst_entry *dst;
- 	int err;
-@@ -317,7 +319,7 @@ static struct dst_entry *subflow_v6_route_req(const struct sock *sk,
- 	tcp_rsk(req)->is_mptcp = 1;
- 	subflow_init_req(req, sk);
- 
--	dst = tcp_request_sock_ipv6_ops.route_req(sk, skb, fl, req);
-+	dst = tcp_request_sock_ipv6_ops.route_req(sk, skb, fl, req, reason);
- 	if (!dst)
- 		return NULL;
++	cancel_work_sync(&hdev->power_on);
+ 	cancel_delayed_work(&hdev->power_off);
+ 	cancel_delayed_work(&hdev->ncmd_timer);
  
 -- 
-2.36.0
+2.30.2
 
