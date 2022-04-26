@@ -2,45 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 58265510602
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 19:55:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FCBC510605
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 19:55:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349373AbiDZR6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 13:58:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56000 "EHLO
+        id S1346698AbiDZR6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 13:58:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346856AbiDZR6B (ORCPT
+        with ESMTP id S1346442AbiDZR6B (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 13:58:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DF32366A7;
-        Tue, 26 Apr 2022 10:54:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E25A236B5E;
+        Tue, 26 Apr 2022 10:54:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E1BB361771;
-        Tue, 26 Apr 2022 17:54:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2155BC385AA;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 502B161773;
+        Tue, 26 Apr 2022 17:54:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4981C385A4;
         Tue, 26 Apr 2022 17:54:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650995688;
-        bh=xEupKk1w2NI7Dq6VTj+IRFgXaZitcqsNwiACQjX785k=;
+        s=k20201202; t=1650995689;
+        bh=gvQBwu7SMjZ1ogKsCoMJv3pBqTX9fw9/TZB2CzDLlcA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pDLAbWxNA32dJ96b7k8rJRjgRAnTRWBcwl8MS6sTocqwiCsrVOZzvpwFym7w0zHBV
-         9rdkxp4Uvg4xkXKQ+XMNMDps8cVMuTp1aLRfQ07tdAc0JpRXnBILug1hHjXBd8rjja
-         oRiwgEdKZOjxsPs3LMuWbDXGfjrEU759smTh5POR2isAFaru11me4j/1Ip6Sh0I5Ly
-         nk8bUrphXjrd6l2ogN0248KeXF1g0b5e/HKq295X3MiNaYn3MZkpW3BRzK1BmTBSY+
-         pbmv6XT3S103+YUu4GCQJoobYqNUJfc4QxY2/mOOPRDhdxfhVthytDNngDPFvxSs6V
-         bFpzOvXW9rFCg==
+        b=KKUTw3HdQ+o5IA7sZXDcZt5nUmDOb4/wKBUg5sDOpVW2uHCP3aho9yyz+TWRPD/98
+         Rb49glTBzhjBRCO2FmnztVPSL3L5MHlJs7ZwG5MByxDarl7zWy9ts3AzSoRJ52PcGQ
+         ktAFZOEyq8G7hpKphFqmt2EH5Ptm64Ph3MSJRHrTYvwTE9Mw7MxBC0t6CBFvCYLEcu
+         XjzutbV7wAT88gaWUT7C1p3RiEg/3w5CQiOqd7bKZbyhPUkAdHyuBWfmqmfXsda0Pz
+         FjAkZ5GuQnmsM4NY3q8vo6RvIMVUUjEH2XHP5MSUPgbMo+j7AYaqoG/oKoU1l+sVXU
+         d4Tj0NfvNcs5g==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net, pabeni@redhat.com
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        corbet@lwn.net, linux-doc@vger.kernel.org,
-        alexandre.ghiti@canonical.com, linus.walleij@linaro.org,
-        juerg.haefliger@canonical.com, kilobyte@angband.pl,
-        huangguangbin2@huawei.com, lipeng321@huawei.com, arnd@arndb.de
-Subject: [PATCH net-next 4/6] net: wan: remove support for COSA and SRP synchronous serial boards
-Date:   Tue, 26 Apr 2022 10:54:34 -0700
-Message-Id: <20220426175436.417283-5-kuba@kernel.org>
+        corbet@lwn.net, linux-doc@vger.kernel.org, mkl@pengutronix.de,
+        dario.binacchi@amarulasolutions.com, m.chetan.kumar@intel.com,
+        arnd@arndb.de, juerg.haefliger@canonical.com,
+        linus.walleij@linaro.org, kilobyte@angband.pl,
+        lipeng321@huawei.com, huangguangbin2@huawei.com,
+        Alan Cox <alan@linux.intel.com>
+Subject: [PATCH net-next 5/6] net: wan: remove support for Z85230-based devices
+Date:   Tue, 26 Apr 2022 10:54:35 -0700
+Message-Id: <20220426175436.417283-6-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220426175436.417283-1-kuba@kernel.org>
 References: <20220426175436.417283-1-kuba@kernel.org>
@@ -56,728 +58,868 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Looks like all the changes to this driver had been automated
-churn since git era begun. The driver is using virt_to_bus()
-so it should be updated to a proper DMA API or removed. Given
-the latest "news" entry on the website is from 1999 I'm opting
-for the latter.
-
-I'm marking the allocated char device major number as [REMOVED],
-I reckon we can't reuse it in case some SW out there assumes its
-COSA?
+churn since git era begun. The driver is using virt_to_bus(),
+it's just a maintenance burden unlikely to have any users.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
 CC: corbet@lwn.net
 CC: linux-doc@vger.kernel.org
-CC: alexandre.ghiti@canonical.com
-CC: linus.walleij@linaro.org
-CC: juerg.haefliger@canonical.com
-CC: kilobyte@angband.pl
-CC: huangguangbin2@huawei.com
-CC: lipeng321@huawei.com
+CC: mkl@pengutronix.de
+CC: dario.binacchi@amarulasolutions.com
+CC: m.chetan.kumar@intel.com
 CC: arnd@arndb.de
-CC: Jan "Yenya" Kasprzak <kas@fi.muni.cz>
+CC: juerg.haefliger@canonical.com
+CC: linus.walleij@linaro.org
+CC: kilobyte@angband.pl
+CC: lipeng321@huawei.com
+CC: huangguangbin2@huawei.com
+CC: Alan Cox <alan@linux.intel.com>
 ---
- Documentation/admin-guide/devices.txt |    2 +-
- MAINTAINERS                           |    6 -
- drivers/net/wan/Kconfig               |   22 -
- drivers/net/wan/Makefile              |    1 -
- drivers/net/wan/cosa.c                | 2052 -------------------------
- drivers/net/wan/cosa.h                |  104 --
- 6 files changed, 1 insertion(+), 2186 deletions(-)
- delete mode 100644 drivers/net/wan/cosa.c
- delete mode 100644 drivers/net/wan/cosa.h
+ .../networking/device_drivers/index.rst       |    1 -
+ .../networking/device_drivers/wan/index.rst   |   18 -
+ .../device_drivers/wan/z8530book.rst          |  256 ---
+ drivers/net/wan/Kconfig                       |   22 -
+ drivers/net/wan/Makefile                      |    2 -
+ drivers/net/wan/hostess_sv11.c                |  336 ----
+ drivers/net/wan/sealevel.c                    |  352 ----
+ drivers/net/wan/z85230.c                      | 1641 -----------------
+ drivers/net/wan/z85230.h                      |  407 ----
+ 9 files changed, 3035 deletions(-)
+ delete mode 100644 Documentation/networking/device_drivers/wan/index.rst
+ delete mode 100644 Documentation/networking/device_drivers/wan/z8530book.rst
+ delete mode 100644 drivers/net/wan/hostess_sv11.c
+ delete mode 100644 drivers/net/wan/sealevel.c
+ delete mode 100644 drivers/net/wan/z85230.c
+ delete mode 100644 drivers/net/wan/z85230.h
 
-diff --git a/Documentation/admin-guide/devices.txt b/Documentation/admin-guide/devices.txt
-index c07dc0ee860e..9764d6edb189 100644
---- a/Documentation/admin-guide/devices.txt
-+++ b/Documentation/admin-guide/devices.txt
-@@ -1933,7 +1933,7 @@
- 		    ...
- 		255= /dev/umem/d15p15  15th partition of 16th board.
+diff --git a/Documentation/networking/device_drivers/index.rst b/Documentation/networking/device_drivers/index.rst
+index 5f5cfdb2a300..601eacaf12f3 100644
+--- a/Documentation/networking/device_drivers/index.rst
++++ b/Documentation/networking/device_drivers/index.rst
+@@ -17,7 +17,6 @@ Hardware Device Drivers
+    fddi/index
+    hamradio/index
+    qlogic/index
+-   wan/index
+    wifi/index
+    wwan/index
  
-- 117 char	COSA/SRP synchronous serial card
-+ 117 char	[REMOVED] COSA/SRP synchronous serial card
- 		  0 = /dev/cosa0c0	1st board, 1st channel
- 		  1 = /dev/cosa0c1	1st board, 2nd channel
- 		    ...
-diff --git a/MAINTAINERS b/MAINTAINERS
-index dd61684c2573..9619058bb0b9 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -5047,12 +5047,6 @@ S:	Maintained
- F:	Documentation/hwmon/corsair-psu.rst
- F:	drivers/hwmon/corsair-psu.c
- 
--COSA/SRP SYNC SERIAL DRIVER
--M:	Jan "Yenya" Kasprzak <kas@fi.muni.cz>
--S:	Maintained
--W:	http://www.fi.muni.cz/~kas/cosa/
--F:	drivers/net/wan/cosa*
+diff --git a/Documentation/networking/device_drivers/wan/index.rst b/Documentation/networking/device_drivers/wan/index.rst
+deleted file mode 100644
+index 9d9ae94f00b4..000000000000
+--- a/Documentation/networking/device_drivers/wan/index.rst
++++ /dev/null
+@@ -1,18 +0,0 @@
+-.. SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 -
- COUNTER SUBSYSTEM
- M:	William Breathitt Gray <vilhelm.gray@gmail.com>
- L:	linux-iio@vger.kernel.org
+-Classic WAN Device Drivers
+-==========================
+-
+-Contents:
+-
+-.. toctree::
+-   :maxdepth: 2
+-
+-   z8530book
+-
+-.. only::  subproject and html
+-
+-   Indices
+-   =======
+-
+-   * :ref:`genindex`
+diff --git a/Documentation/networking/device_drivers/wan/z8530book.rst b/Documentation/networking/device_drivers/wan/z8530book.rst
+deleted file mode 100644
+index fea2c40e7973..000000000000
+--- a/Documentation/networking/device_drivers/wan/z8530book.rst
++++ /dev/null
+@@ -1,256 +0,0 @@
+-=======================
+-Z8530 Programming Guide
+-=======================
+-
+-:Author: Alan Cox
+-
+-Introduction
+-============
+-
+-The Z85x30 family synchronous/asynchronous controller chips are used on
+-a large number of cheap network interface cards. The kernel provides a
+-core interface layer that is designed to make it easy to provide WAN
+-services using this chip.
+-
+-The current driver only support synchronous operation. Merging the
+-asynchronous driver support into this code to allow any Z85x30 device to
+-be used as both a tty interface and as a synchronous controller is a
+-project for Linux post the 2.4 release
+-
+-Driver Modes
+-============
+-
+-The Z85230 driver layer can drive Z8530, Z85C30 and Z85230 devices in
+-three different modes. Each mode can be applied to an individual channel
+-on the chip (each chip has two channels).
+-
+-The PIO synchronous mode supports the most common Z8530 wiring. Here the
+-chip is interface to the I/O and interrupt facilities of the host
+-machine but not to the DMA subsystem. When running PIO the Z8530 has
+-extremely tight timing requirements. Doing high speeds, even with a
+-Z85230 will be tricky. Typically you should expect to achieve at best
+-9600 baud with a Z8C530 and 64Kbits with a Z85230.
+-
+-The DMA mode supports the chip when it is configured to use dual DMA
+-channels on an ISA bus. The better cards tend to support this mode of
+-operation for a single channel. With DMA running the Z85230 tops out
+-when it starts to hit ISA DMA constraints at about 512Kbits. It is worth
+-noting here that many PC machines hang or crash when the chip is driven
+-fast enough to hold the ISA bus solid.
+-
+-Transmit DMA mode uses a single DMA channel. The DMA channel is used for
+-transmission as the transmit FIFO is smaller than the receive FIFO. it
+-gives better performance than pure PIO mode but is nowhere near as ideal
+-as pure DMA mode.
+-
+-Using the Z85230 driver
+-=======================
+-
+-The Z85230 driver provides the back end interface to your board. To
+-configure a Z8530 interface you need to detect the board and to identify
+-its ports and interrupt resources. It is also your problem to verify the
+-resources are available.
+-
+-Having identified the chip you need to fill in a struct z8530_dev,
+-which describes each chip. This object must exist until you finally
+-shutdown the board. Firstly zero the active field. This ensures nothing
+-goes off without you intending it. The irq field should be set to the
+-interrupt number of the chip. (Each chip has a single interrupt source
+-rather than each channel). You are responsible for allocating the
+-interrupt line. The interrupt handler should be set to
+-:c:func:`z8530_interrupt()`. The device id should be set to the
+-z8530_dev structure pointer. Whether the interrupt can be shared or not
+-is board dependent, and up to you to initialise.
+-
+-The structure holds two channel structures. Initialise chanA.ctrlio and
+-chanA.dataio with the address of the control and data ports. You can or
+-this with Z8530_PORT_SLEEP to indicate your interface needs the 5uS
+-delay for chip settling done in software. The PORT_SLEEP option is
+-architecture specific. Other flags may become available on future
+-platforms, eg for MMIO. Initialise the chanA.irqs to &z8530_nop to
+-start the chip up as disabled and discarding interrupt events. This
+-ensures that stray interrupts will be mopped up and not hang the bus.
+-Set chanA.dev to point to the device structure itself. The private and
+-name field you may use as you wish. The private field is unused by the
+-Z85230 layer. The name is used for error reporting and it may thus make
+-sense to make it match the network name.
+-
+-Repeat the same operation with the B channel if your chip has both
+-channels wired to something useful. This isn't always the case. If it is
+-not wired then the I/O values do not matter, but you must initialise
+-chanB.dev.
+-
+-If your board has DMA facilities then initialise the txdma and rxdma
+-fields for the relevant channels. You must also allocate the ISA DMA
+-channels and do any necessary board level initialisation to configure
+-them. The low level driver will do the Z8530 and DMA controller
+-programming but not board specific magic.
+-
+-Having initialised the device you can then call
+-:c:func:`z8530_init()`. This will probe the chip and reset it into
+-a known state. An identification sequence is then run to identify the
+-chip type. If the checks fail to pass the function returns a non zero
+-error code. Typically this indicates that the port given is not valid.
+-After this call the type field of the z8530_dev structure is
+-initialised to either Z8530, Z85C30 or Z85230 according to the chip
+-found.
+-
+-Once you have called z8530_init you can also make use of the utility
+-function :c:func:`z8530_describe()`. This provides a consistent
+-reporting format for the Z8530 devices, and allows all the drivers to
+-provide consistent reporting.
+-
+-Attaching Network Interfaces
+-============================
+-
+-If you wish to use the network interface facilities of the driver, then
+-you need to attach a network device to each channel that is present and
+-in use. In addition to use the generic HDLC you need to follow some
+-additional plumbing rules. They may seem complex but a look at the
+-example hostess_sv11 driver should reassure you.
+-
+-The network device used for each channel should be pointed to by the
+-netdevice field of each channel. The hdlc-> priv field of the network
+-device points to your private data - you will need to be able to find
+-your private data from this.
+-
+-The way most drivers approach this particular problem is to create a
+-structure holding the Z8530 device definition and put that into the
+-private field of the network device. The network device fields of the
+-channels then point back to the network devices.
+-
+-If you wish to use the generic HDLC then you need to register the HDLC
+-device.
+-
+-Before you register your network device you will also need to provide
+-suitable handlers for most of the network device callbacks. See the
+-network device documentation for more details on this.
+-
+-Configuring And Activating The Port
+-===================================
+-
+-The Z85230 driver provides helper functions and tables to load the port
+-registers on the Z8530 chips. When programming the register settings for
+-a channel be aware that the documentation recommends initialisation
+-orders. Strange things happen when these are not followed.
+-
+-:c:func:`z8530_channel_load()` takes an array of pairs of
+-initialisation values in an array of u8 type. The first value is the
+-Z8530 register number. Add 16 to indicate the alternate register bank on
+-the later chips. The array is terminated by a 255.
+-
+-The driver provides a pair of public tables. The z8530_hdlc_kilostream
+-table is for the UK 'Kilostream' service and also happens to cover most
+-other end host configurations. The z8530_hdlc_kilostream_85230 table
+-is the same configuration using the enhancements of the 85230 chip. The
+-configuration loaded is standard NRZ encoded synchronous data with HDLC
+-bitstuffing. All of the timing is taken from the other end of the link.
+-
+-When writing your own tables be aware that the driver internally tracks
+-register values. It may need to reload values. You should therefore be
+-sure to set registers 1-7, 9-11, 14 and 15 in all configurations. Where
+-the register settings depend on DMA selection the driver will update the
+-bits itself when you open or close. Loading a new table with the
+-interface open is not recommended.
+-
+-There are three standard configurations supported by the core code. In
+-PIO mode the interface is programmed up to use interrupt driven PIO.
+-This places high demands on the host processor to avoid latency. The
+-driver is written to take account of latency issues but it cannot avoid
+-latencies caused by other drivers, notably IDE in PIO mode. Because the
+-drivers allocate buffers you must also prevent MTU changes while the
+-port is open.
+-
+-Once the port is open it will call the rx_function of each channel
+-whenever a completed packet arrived. This is invoked from interrupt
+-context and passes you the channel and a network buffer (struct
+-sk_buff) holding the data. The data includes the CRC bytes so most
+-users will want to trim the last two bytes before processing the data.
+-This function is very timing critical. When you wish to simply discard
+-data the support code provides the function
+-:c:func:`z8530_null_rx()` to discard the data.
+-
+-To active PIO mode sending and receiving the ``z8530_sync_open`` is called.
+-This expects to be passed the network device and the channel. Typically
+-this is called from your network device open callback. On a failure a
+-non zero error status is returned.
+-The :c:func:`z8530_sync_close()` function shuts down a PIO
+-channel. This must be done before the channel is opened again and before
+-the driver shuts down and unloads.
+-
+-The ideal mode of operation is dual channel DMA mode. Here the kernel
+-driver will configure the board for DMA in both directions. The driver
+-also handles ISA DMA issues such as controller programming and the
+-memory range limit for you. This mode is activated by calling the
+-:c:func:`z8530_sync_dma_open()` function. On failure a non zero
+-error value is returned. Once this mode is activated it can be shut down
+-by calling the :c:func:`z8530_sync_dma_close()`. You must call
+-the close function matching the open mode you used.
+-
+-The final supported mode uses a single DMA channel to drive the transmit
+-side. As the Z85C30 has a larger FIFO on the receive channel this tends
+-to increase the maximum speed a little. This is activated by calling the
+-``z8530_sync_txdma_open``. This returns a non zero error code on failure. The
+-:c:func:`z8530_sync_txdma_close()` function closes down the Z8530
+-interface from this mode.
+-
+-Network Layer Functions
+-=======================
+-
+-The Z8530 layer provides functions to queue packets for transmission.
+-The driver internally buffers the frame currently being transmitted and
+-one further frame (in order to keep back to back transmission running).
+-Any further buffering is up to the caller.
+-
+-The function :c:func:`z8530_queue_xmit()` takes a network buffer
+-in sk_buff format and queues it for transmission. The caller must
+-provide the entire packet with the exception of the bitstuffing and CRC.
+-This is normally done by the caller via the generic HDLC interface
+-layer. It returns 0 if the buffer has been queued and non zero values
+-for queue full. If the function accepts the buffer it becomes property
+-of the Z8530 layer and the caller should not free it.
+-
+-The function :c:func:`z8530_get_stats()` returns a pointer to an
+-internally maintained per interface statistics block. This provides most
+-of the interface code needed to implement the network layer get_stats
+-callback.
+-
+-Porting The Z8530 Driver
+-========================
+-
+-The Z8530 driver is written to be portable. In DMA mode it makes
+-assumptions about the use of ISA DMA. These are probably warranted in
+-most cases as the Z85230 in particular was designed to glue to PC type
+-machines. The PIO mode makes no real assumptions.
+-
+-Should you need to retarget the Z8530 driver to another architecture the
+-only code that should need changing are the port I/O functions. At the
+-moment these assume PC I/O port accesses. This may not be appropriate
+-for all platforms. Replacing :c:func:`z8530_read_port()` and
+-``z8530_write_port`` is intended to be all that is required to port
+-this driver layer.
+-
+-Known Bugs And Assumptions
+-==========================
+-
+-Interrupt Locking
+-    The locking in the driver is done via the global cli/sti lock. This
+-    makes for relatively poor SMP performance. Switching this to use a
+-    per device spin lock would probably materially improve performance.
+-
+-Occasional Failures
+-    We have reports of occasional failures when run for very long
+-    periods of time and the driver starts to receive junk frames. At the
+-    moment the cause of this is not clear.
+-
+-Public Functions Provided
+-=========================
+-
+-.. kernel-doc:: drivers/net/wan/z85230.c
+-   :export:
+-
+-Internal Functions
+-==================
+-
+-.. kernel-doc:: drivers/net/wan/z85230.c
+-   :internal:
 diff --git a/drivers/net/wan/Kconfig b/drivers/net/wan/Kconfig
-index 588b2333cdb8..12c5b6c67ab2 100644
+index 12c5b6c67ab2..dcb069dde66b 100644
 --- a/drivers/net/wan/Kconfig
 +++ b/drivers/net/wan/Kconfig
-@@ -35,28 +35,6 @@ config HOSTESS_SV11
- 	  The driver will be compiled as a module: the
- 	  module will be called hostess_sv11.
+@@ -23,28 +23,6 @@ menuconfig WAN
  
--# The COSA/SRP driver has not been tested as non-modular yet.
--config COSA
--	tristate "COSA/SRP sync serial boards support"
--	depends on ISA && m && ISA_DMA_API && HDLC && VIRT_TO_BUS
+ if WAN
+ 
+-# There is no way to detect a comtrol sv11 - force it modular for now.
+-config HOSTESS_SV11
+-	tristate "Comtrol Hostess SV-11 support"
+-	depends on ISA && m && ISA_DMA_API && INET && HDLC && VIRT_TO_BUS
 -	help
--	  Driver for COSA and SRP synchronous serial boards.
--
--	  These boards allow to connect synchronous serial devices (for example
--	  base-band modems, or any other device with the X.21, V.24, V.35 or
--	  V.36 interface) to your Linux box. The cards can work as the
--	  character device, synchronous PPP network device, or the Cisco HDLC
--	  network device.
--
--	  You will need user-space utilities COSA or SRP boards for downloading
--	  the firmware to the cards and to set them up. Look at the
--	  <http://www.fi.muni.cz/~kas/cosa/> for more information. You can also
--	  read the comment at the top of the <file:drivers/net/wan/cosa.c> for
--	  details about the cards and the driver itself.
+-	  Driver for Comtrol Hostess SV-11 network card which
+-	  operates on low speed synchronous serial links at up to
+-	  256Kbps, supporting PPP and Cisco HDLC.
 -
 -	  The driver will be compiled as a module: the
--	  module will be called cosa.
+-	  module will be called hostess_sv11.
 -
- # There is no way to detect a Sealevel board. Force it modular
- config SEALEVEL_4021
- 	tristate "Sealevel Systems 4021 support"
+-# There is no way to detect a Sealevel board. Force it modular
+-config SEALEVEL_4021
+-	tristate "Sealevel Systems 4021 support"
+-	depends on ISA && m && ISA_DMA_API && INET && HDLC && VIRT_TO_BUS
+-	help
+-	  This is a driver for the Sealevel Systems ACB 56 serial I/O adapter.
+-
+-	  The driver will be compiled as a module: the
+-	  module will be called sealevel.
+-
+ # Generic HDLC
+ config HDLC
+ 	tristate "Generic HDLC layer"
 diff --git a/drivers/net/wan/Makefile b/drivers/net/wan/Makefile
-index 1cd42147b34f..901a094c061c 100644
+index 901a094c061c..5bec8fae47f8 100644
 --- a/drivers/net/wan/Makefile
 +++ b/drivers/net/wan/Makefile
-@@ -16,7 +16,6 @@ obj-$(CONFIG_HDLC_X25)		+= hdlc_x25.o
+@@ -14,8 +14,6 @@ obj-$(CONFIG_HDLC_FR)		+= hdlc_fr.o
+ obj-$(CONFIG_HDLC_PPP)		+= hdlc_ppp.o
+ obj-$(CONFIG_HDLC_X25)		+= hdlc_x25.o
  
- obj-$(CONFIG_HOSTESS_SV11)	+= z85230.o	hostess_sv11.o
- obj-$(CONFIG_SEALEVEL_4021)	+= z85230.o	sealevel.o
--obj-$(CONFIG_COSA)		+= cosa.o
+-obj-$(CONFIG_HOSTESS_SV11)	+= z85230.o	hostess_sv11.o
+-obj-$(CONFIG_SEALEVEL_4021)	+= z85230.o	sealevel.o
  obj-$(CONFIG_FARSYNC)		+= farsync.o
  
  obj-$(CONFIG_LAPBETHER)		+= lapbether.o
-diff --git a/drivers/net/wan/cosa.c b/drivers/net/wan/cosa.c
+diff --git a/drivers/net/wan/hostess_sv11.c b/drivers/net/wan/hostess_sv11.c
 deleted file mode 100644
-index 23d2954d9747..000000000000
---- a/drivers/net/wan/cosa.c
+index e985e54ba75d..000000000000
+--- a/drivers/net/wan/hostess_sv11.c
 +++ /dev/null
-@@ -1,2052 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0-or-later
--/* $Id: cosa.c,v 1.31 2000/03/08 17:47:16 kas Exp $ */
--
--/*  Copyright (C) 1995-1997  Jan "Yenya" Kasprzak <kas@fi.muni.cz>
-- *  Generic HDLC port Copyright (C) 2008 Krzysztof Halasa <khc@pm.waw.pl>
-- */
--
--/* The driver for the SRP and COSA synchronous serial cards.
+@@ -1,336 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-only
+-/*	Comtrol SV11 card driver
 - *
-- * HARDWARE INFO
+- *	This is a slightly odd Z85230 synchronous driver. All you need to
+- *	know basically is
 - *
-- * Both cards are developed at the Institute of Computer Science,
-- * Masaryk University (https://www.ics.muni.cz/). The hardware is
-- * developed by Jiri Novotny <novotny@ics.muni.cz>. More information
-- * and the photo of both cards is available at
-- * http://www.pavoucek.cz/cosa.html. The card documentation, firmwares
-- * and other goods can be downloaded from ftp://ftp.ics.muni.cz/pub/cosa/.
-- * For Linux-specific utilities, see below in the "Software info" section.
-- * If you want to order the card, contact Jiri Novotny.
+- *	Its a genuine Z85230
 - *
-- * The SRP (serial port?, the Czech word "srp" means "sickle") card
-- * is a 2-port intelligent (with its own 8-bit CPU) synchronous serial card
-- * with V.24 interfaces up to 80kb/s each.
+- *	It supports DMA using two DMA channels in SYNC mode. The driver doesn't
+- *	use these facilities
 - *
-- * The COSA (communication serial adapter?, the Czech word "kosa" means
-- * "scythe") is a next-generation sync/async board with two interfaces
-- * - currently any of V.24, X.21, V.35 and V.36 can be selected.
-- * It has a 16-bit SAB80166 CPU and can do up to 10 Mb/s per channel.
-- * The 8-channels version is in development.
+- *	The control port is at io+1, the data at io+3 and turning off the DMA
+- *	is done by writing 0 to io+4
 - *
-- * Both types have downloadable firmware and communicate via ISA DMA.
-- * COSA can be also a bus-mastering device.
+- *	The hardware does the bus handling to avoid the need for delays between
+- *	touching control registers.
 - *
-- * SOFTWARE INFO
+- *	Port B isn't wired (why - beats me)
 - *
-- * The homepage of the Linux driver is at https://www.fi.muni.cz/~kas/cosa/.
-- * The CVS tree of Linux driver can be viewed there, as well as the
-- * firmware binaries and user-space utilities for downloading the firmware
-- * into the card and setting up the card.
-- *
-- * The Linux driver (unlike the present *BSD drivers :-) can work even
-- * for the COSA and SRP in one computer and allows each channel to work
-- * in one of the two modes (character or network device).
-- *
-- * AUTHOR
-- *
-- * The Linux driver was written by Jan "Yenya" Kasprzak <kas@fi.muni.cz>.
-- *
-- * You can mail me bugfixes and even success reports. I am especially
-- * interested in the SMP and/or muliti-channel success/failure reports
-- * (I wonder if I did the locking properly :-).
-- *
-- * THE AUTHOR USED THE FOLLOWING SOURCES WHEN PROGRAMMING THE DRIVER
-- *
-- * The COSA/SRP NetBSD driver by Zdenek Salvet and Ivos Cernohlavek
-- * The skeleton.c by Donald Becker
-- * The SDL Riscom/N2 driver by Mike Natale
-- * The Comtrol Hostess SV11 driver by Alan Cox
-- * The Sync PPP/Cisco HDLC layer (syncppp.c) ported to Linux by Alan Cox
+- *	Generic HDLC port Copyright (C) 2008 Krzysztof Halasa <khc@pm.waw.pl>
 - */
 -
 -#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 -
 -#include <linux/module.h>
 -#include <linux/kernel.h>
--#include <linux/sched/signal.h>
--#include <linux/slab.h>
--#include <linux/poll.h>
--#include <linux/fs.h>
--#include <linux/interrupt.h>
+-#include <linux/mm.h>
+-#include <linux/net.h>
+-#include <linux/skbuff.h>
+-#include <linux/netdevice.h>
+-#include <linux/if_arp.h>
 -#include <linux/delay.h>
 -#include <linux/hdlc.h>
--#include <linux/errno.h>
 -#include <linux/ioport.h>
--#include <linux/netdevice.h>
--#include <linux/spinlock.h>
--#include <linux/mutex.h>
--#include <linux/device.h>
+-#include <linux/slab.h>
+-#include <net/arp.h>
+-
+-#include <asm/irq.h>
 -#include <asm/io.h>
 -#include <asm/dma.h>
 -#include <asm/byteorder.h>
+-#include "z85230.h"
 -
--#undef COSA_SLOW_IO	/* for testing purposes only */
+-static int dma;
 -
--#include "cosa.h"
--
--/* Maximum length of the identification string. */
--#define COSA_MAX_ID_STRING	128
--
--/* Maximum length of the channel name */
--#define COSA_MAX_NAME		(sizeof("cosaXXXcXXX") + 1)
--
--/* Per-channel data structure */
--
--struct channel_data {
--	int usage;	/* Usage count; >0 for chrdev, -1 for netdev */
--	int num;	/* Number of the channel */
--	struct cosa_data *cosa;	/* Pointer to the per-card structure */
--	int txsize;	/* Size of transmitted data */
--	char *txbuf;	/* Transmit buffer */
--	char name[COSA_MAX_NAME];	/* channel name */
--
--	/* The HW layer interface */
--	/* routine called from the RX interrupt */
--	char *(*setup_rx)(struct channel_data *channel, int size);
--	/* routine called when the RX is done (from the EOT interrupt) */
--	int (*rx_done)(struct channel_data *channel);
--	/* routine called when the TX is done (from the EOT interrupt) */
--	int (*tx_done)(struct channel_data *channel, int size);
--
--	/* Character device parts */
--	struct mutex rlock;
--	struct semaphore wsem;
--	char *rxdata;
--	int rxsize;
--	wait_queue_head_t txwaitq, rxwaitq;
--	int tx_status, rx_status;
--
--	/* generic HDLC device parts */
--	struct net_device *netdev;
--	struct sk_buff *rx_skb, *tx_skb;
--};
--
--/* cosa->firmware_status bits */
--#define COSA_FW_RESET		BIT(0)	/* Is the ROM monitor active? */
--#define COSA_FW_DOWNLOAD	BIT(1)	/* Is the microcode downloaded? */
--#define COSA_FW_START		BIT(2)	/* Is the microcode running? */
--
--struct cosa_data {
--	int num;			/* Card number */
--	char name[COSA_MAX_NAME];	/* Card name - e.g "cosa0" */
--	unsigned int datareg, statusreg;	/* I/O ports */
--	unsigned short irq, dma;	/* IRQ and DMA number */
--	unsigned short startaddr;	/* Firmware start address */
--	unsigned short busmaster;	/* Use busmastering? */
--	int nchannels;			/* # of channels on this card */
--	int driver_status;		/* For communicating with firmware */
--	int firmware_status;		/* Downloaded, reseted, etc. */
--	unsigned long rxbitmap, txbitmap;/* Bitmap of channels who are willing to send/receive data */
--	unsigned long rxtx;		/* RX or TX in progress? */
--	int enabled;
--	int usage;				/* usage count */
--	int txchan, txsize, rxsize;
--	struct channel_data *rxchan;
--	char *bouncebuf;
--	char *txbuf, *rxbuf;
--	struct channel_data *chan;
--	spinlock_t lock;	/* For exclusive operations on this structure */
--	char id_string[COSA_MAX_ID_STRING];	/* ROM monitor ID string */
--	char *type;				/* card type */
--};
--
--/* Define this if you want all the possible ports to be autoprobed.
-- * It is here but it probably is not a good idea to use this.
+-/*	Network driver support routines
 - */
--/* #define COSA_ISA_AUTOPROBE	1*/
 -
--/* Character device major number. 117 was allocated for us.
-- * The value of 0 means to allocate a first free one.
-- */
--static DEFINE_MUTEX(cosa_chardev_mutex);
--static int cosa_major = 117;
--
--/* Encoding of the minor numbers:
-- * The lowest CARD_MINOR_BITS bits means the channel on the single card,
-- * the highest bits means the card number.
-- */
--#define CARD_MINOR_BITS	4	/* How many bits in minor number are reserved
--				 * for the single card
--				 */
--/* The following depends on CARD_MINOR_BITS. Unfortunately, the "MODULE_STRING"
-- * macro doesn't like anything other than the raw number as an argument :-(
-- */
--#define MAX_CARDS	16
--/* #define MAX_CARDS	(1 << (8-CARD_MINOR_BITS)) */
--
--#define DRIVER_RX_READY		0x0001
--#define DRIVER_TX_READY		0x0002
--#define DRIVER_TXMAP_SHIFT	2
--#define DRIVER_TXMAP_MASK	0x0c	/* FIXME: 0xfc for 8-channel version */
--
--/* for cosa->rxtx - indicates whether either transmit or receive is
-- * in progress. These values are mean number of the bit.
-- */
--#define TXBIT 0
--#define RXBIT 1
--#define IRQBIT 2
--
--#define COSA_MTU 2000	/* FIXME: I don't know this exactly */
--
--#undef DEBUG_DATA //1	/* Dump the data read or written to the channel */
--#undef DEBUG_IRQS //1	/* Print the message when the IRQ is received */
--#undef DEBUG_IO   //1	/* Dump the I/O traffic */
--
--#define TX_TIMEOUT	(5 * HZ)
--
--/* Maybe the following should be allocated dynamically */
--static struct cosa_data cosa_cards[MAX_CARDS];
--static int nr_cards;
--
--#ifdef COSA_ISA_AUTOPROBE
--static int io[MAX_CARDS + 1]  = {0x220, 0x228, 0x210, 0x218, 0,};
--/* NOTE: DMA is not autoprobed!!! */
--static int dma[MAX_CARDS + 1] = {1, 7, 1, 7, 1, 7, 1, 7, 0,};
--#else
--static int io[MAX_CARDS + 1];
--static int dma[MAX_CARDS + 1];
--#endif
--/* IRQ can be safely autoprobed */
--static int irq[MAX_CARDS + 1] = {-1, -1, -1, -1, -1, -1, 0,};
--
--/* for class stuff*/
--static struct class *cosa_class;
--
--#ifdef MODULE
--module_param_hw_array(io, int, ioport, NULL, 0);
--MODULE_PARM_DESC(io, "The I/O bases of the COSA or SRP cards");
--module_param_hw_array(irq, int, irq, NULL, 0);
--MODULE_PARM_DESC(irq, "The IRQ lines of the COSA or SRP cards");
--module_param_hw_array(dma, int, dma, NULL, 0);
--MODULE_PARM_DESC(dma, "The DMA channels of the COSA or SRP cards");
--
--MODULE_AUTHOR("Jan \"Yenya\" Kasprzak, <kas@fi.muni.cz>");
--MODULE_DESCRIPTION("Modular driver for the COSA or SRP synchronous card");
--MODULE_LICENSE("GPL");
--#endif
--
--/* I use this mainly for testing purposes */
--#ifdef COSA_SLOW_IO
--#define cosa_outb outb_p
--#define cosa_outw outw_p
--#define cosa_inb  inb_p
--#define cosa_inw  inw_p
--#else
--#define cosa_outb outb
--#define cosa_outw outw
--#define cosa_inb  inb
--#define cosa_inw  inw
--#endif
--
--#define is_8bit(cosa)		(!((cosa)->datareg & 0x08))
--
--#define cosa_getstatus(cosa)	(cosa_inb((cosa)->statusreg))
--#define cosa_putstatus(cosa, stat)	(cosa_outb(stat, (cosa)->statusreg))
--#define cosa_getdata16(cosa)	(cosa_inw((cosa)->datareg))
--#define cosa_getdata8(cosa)	(cosa_inb((cosa)->datareg))
--#define cosa_putdata16(cosa, dt)	(cosa_outw(dt, (cosa)->datareg))
--#define cosa_putdata8(cosa, dt)	(cosa_outb(dt, (cosa)->datareg))
--
--/* Initialization stuff */
--static int cosa_probe(int ioaddr, int irq, int dma);
--
--/* HW interface */
--static void cosa_enable_rx(struct channel_data *chan);
--static void cosa_disable_rx(struct channel_data *chan);
--static int cosa_start_tx(struct channel_data *channel, char *buf, int size);
--static void cosa_kick(struct cosa_data *cosa);
--static int cosa_dma_able(struct channel_data *chan, char *buf, int data);
--
--/* Network device stuff */
--static int cosa_net_attach(struct net_device *dev, unsigned short encoding,
--			   unsigned short parity);
--static int cosa_net_open(struct net_device *d);
--static int cosa_net_close(struct net_device *d);
--static void cosa_net_timeout(struct net_device *d, unsigned int txqueue);
--static netdev_tx_t cosa_net_tx(struct sk_buff *skb, struct net_device *d);
--static char *cosa_net_setup_rx(struct channel_data *channel, int size);
--static int cosa_net_rx_done(struct channel_data *channel);
--static int cosa_net_tx_done(struct channel_data *channel, int size);
--
--/* Character device */
--static char *chrdev_setup_rx(struct channel_data *channel, int size);
--static int chrdev_rx_done(struct channel_data *channel);
--static int chrdev_tx_done(struct channel_data *channel, int size);
--static ssize_t cosa_read(struct file *file,
--			 char __user *buf, size_t count, loff_t *ppos);
--static ssize_t cosa_write(struct file *file,
--			  const char __user *buf, size_t count, loff_t *ppos);
--static unsigned int cosa_poll(struct file *file, poll_table *poll);
--static int cosa_open(struct inode *inode, struct file *file);
--static int cosa_release(struct inode *inode, struct file *file);
--static long cosa_chardev_ioctl(struct file *file, unsigned int cmd,
--			       unsigned long arg);
--#ifdef COSA_FASYNC_WORKING
--static int cosa_fasync(struct inode *inode, struct file *file, int on);
--#endif
--
--static const struct file_operations cosa_fops = {
--	.owner		= THIS_MODULE,
--	.llseek		= no_llseek,
--	.read		= cosa_read,
--	.write		= cosa_write,
--	.poll		= cosa_poll,
--	.unlocked_ioctl	= cosa_chardev_ioctl,
--	.open		= cosa_open,
--	.release	= cosa_release,
--#ifdef COSA_FASYNC_WORKING
--	.fasync		= cosa_fasync,
--#endif
--};
--
--/* Ioctls */
--static int cosa_start(struct cosa_data *cosa, int address);
--static int cosa_reset(struct cosa_data *cosa);
--static int cosa_download(struct cosa_data *cosa, void __user *a);
--static int cosa_readmem(struct cosa_data *cosa, void __user *a);
--
--/* COSA/SRP ROM monitor */
--static int download(struct cosa_data *cosa, const char __user *data, int addr, int len);
--static int startmicrocode(struct cosa_data *cosa, int address);
--static int readmem(struct cosa_data *cosa, char __user *data, int addr, int len);
--static int cosa_reset_and_read_id(struct cosa_data *cosa, char *id);
--
--/* Auxiliary functions */
--static int get_wait_data(struct cosa_data *cosa);
--static int put_wait_data(struct cosa_data *cosa, int data);
--static int puthexnumber(struct cosa_data *cosa, int number);
--static void put_driver_status(struct cosa_data *cosa);
--static void put_driver_status_nolock(struct cosa_data *cosa);
--
--/* Interrupt handling */
--static irqreturn_t cosa_interrupt(int irq, void *cosa);
--
--/* I/O ops debugging */
--#ifdef DEBUG_IO
--static void debug_data_in(struct cosa_data *cosa, int data);
--static void debug_data_out(struct cosa_data *cosa, int data);
--static void debug_data_cmd(struct cosa_data *cosa, int data);
--static void debug_status_in(struct cosa_data *cosa, int status);
--static void debug_status_out(struct cosa_data *cosa, int status);
--#endif
--
--static inline struct channel_data *dev_to_chan(struct net_device *dev)
+-static inline struct z8530_dev *dev_to_sv(struct net_device *dev)
 -{
--	return (struct channel_data *)dev_to_hdlc(dev)->priv;
+-	return (struct z8530_dev *)dev_to_hdlc(dev)->priv;
 -}
 -
--/* ---------- Initialization stuff ---------- */
+-/*	Frame receive. Simple for our card as we do HDLC and there
+- *	is no funny garbage involved
+- */
 -
--static int __init cosa_init(void)
+-static void hostess_input(struct z8530_channel *c, struct sk_buff *skb)
 -{
--	int i, err = 0;
--
--	if (cosa_major > 0) {
--		if (register_chrdev(cosa_major, "cosa", &cosa_fops)) {
--			pr_warn("unable to get major %d\n", cosa_major);
--			err = -EIO;
--			goto out;
--		}
--	} else {
--		cosa_major = register_chrdev(0, "cosa", &cosa_fops);
--		if (!cosa_major) {
--			pr_warn("unable to register chardev\n");
--			err = -EIO;
--			goto out;
--		}
--	}
--	for (i = 0; i < MAX_CARDS; i++)
--		cosa_cards[i].num = -1;
--	for (i = 0; io[i] != 0 && i < MAX_CARDS; i++)
--		cosa_probe(io[i], irq[i], dma[i]);
--	if (!nr_cards) {
--		pr_warn("no devices found\n");
--		unregister_chrdev(cosa_major, "cosa");
--		err = -ENODEV;
--		goto out;
--	}
--	cosa_class = class_create(THIS_MODULE, "cosa");
--	if (IS_ERR(cosa_class)) {
--		err = PTR_ERR(cosa_class);
--		goto out_chrdev;
--	}
--	for (i = 0; i < nr_cards; i++)
--		device_create(cosa_class, NULL, MKDEV(cosa_major, i), NULL,
--			      "cosa%d", i);
--	err = 0;
--	goto out;
--
--out_chrdev:
--	unregister_chrdev(cosa_major, "cosa");
--out:
--	return err;
+-	/* Drop the CRC - it's not a good idea to try and negotiate it ;) */
+-	skb_trim(skb, skb->len - 2);
+-	skb->protocol = hdlc_type_trans(skb, c->netdevice);
+-	skb_reset_mac_header(skb);
+-	skb->dev = c->netdevice;
+-	/*	Send it to the PPP layer. We don't have time to process
+-	 *	it right now.
+-	 */
+-	netif_rx(skb);
 -}
--module_init(cosa_init);
 -
--static void __exit cosa_exit(void)
+-/*	We've been placed in the UP state
+- */
+-
+-static int hostess_open(struct net_device *d)
 -{
--	struct cosa_data *cosa;
--	int i;
+-	struct z8530_dev *sv11 = dev_to_sv(d);
+-	int err = -1;
 -
--	for (i = 0; i < nr_cards; i++)
--		device_destroy(cosa_class, MKDEV(cosa_major, i));
--	class_destroy(cosa_class);
--
--	for (cosa = cosa_cards; nr_cards--; cosa++) {
--		/* Clean up the per-channel data */
--		for (i = 0; i < cosa->nchannels; i++) {
--			/* Chardev driver has no alloc'd per-channel data */
--			unregister_hdlc_device(cosa->chan[i].netdev);
--			free_netdev(cosa->chan[i].netdev);
--		}
--		/* Clean up the per-card data */
--		kfree(cosa->chan);
--		kfree(cosa->bouncebuf);
--		free_irq(cosa->irq, cosa);
--		free_dma(cosa->dma);
--		release_region(cosa->datareg, is_8bit(cosa) ? 2 : 4);
+-	/*	Link layer up
+-	 */
+-	switch (dma) {
+-	case 0:
+-		err = z8530_sync_open(d, &sv11->chanA);
+-		break;
+-	case 1:
+-		err = z8530_sync_dma_open(d, &sv11->chanA);
+-		break;
+-	case 2:
+-		err = z8530_sync_txdma_open(d, &sv11->chanA);
+-		break;
 -	}
--	unregister_chrdev(cosa_major, "cosa");
--}
--module_exit(cosa_exit);
 -
--static const struct net_device_ops cosa_ops = {
--	.ndo_open       = cosa_net_open,
--	.ndo_stop       = cosa_net_close,
+-	if (err)
+-		return err;
+-
+-	err = hdlc_open(d);
+-	if (err) {
+-		switch (dma) {
+-		case 0:
+-			z8530_sync_close(d, &sv11->chanA);
+-			break;
+-		case 1:
+-			z8530_sync_dma_close(d, &sv11->chanA);
+-			break;
+-		case 2:
+-			z8530_sync_txdma_close(d, &sv11->chanA);
+-			break;
+-		}
+-		return err;
+-	}
+-	sv11->chanA.rx_function = hostess_input;
+-
+-	/*
+-	 *	Go go go
+-	 */
+-
+-	netif_start_queue(d);
+-	return 0;
+-}
+-
+-static int hostess_close(struct net_device *d)
+-{
+-	struct z8530_dev *sv11 = dev_to_sv(d);
+-	/*	Discard new frames
+-	 */
+-	sv11->chanA.rx_function = z8530_null_rx;
+-
+-	hdlc_close(d);
+-	netif_stop_queue(d);
+-
+-	switch (dma) {
+-	case 0:
+-		z8530_sync_close(d, &sv11->chanA);
+-		break;
+-	case 1:
+-		z8530_sync_dma_close(d, &sv11->chanA);
+-		break;
+-	case 2:
+-		z8530_sync_txdma_close(d, &sv11->chanA);
+-		break;
+-	}
+-	return 0;
+-}
+-
+-/*	Passed network frames, fire them downwind.
+- */
+-
+-static netdev_tx_t hostess_queue_xmit(struct sk_buff *skb,
+-				      struct net_device *d)
+-{
+-	return z8530_queue_xmit(&dev_to_sv(d)->chanA, skb);
+-}
+-
+-static int hostess_attach(struct net_device *dev, unsigned short encoding,
+-			  unsigned short parity)
+-{
+-	if (encoding == ENCODING_NRZ && parity == PARITY_CRC16_PR1_CCITT)
+-		return 0;
+-	return -EINVAL;
+-}
+-
+-/*	Description block for a Comtrol Hostess SV11 card
+- */
+-
+-static const struct net_device_ops hostess_ops = {
+-	.ndo_open       = hostess_open,
+-	.ndo_stop       = hostess_close,
 -	.ndo_start_xmit = hdlc_start_xmit,
 -	.ndo_siocwandev = hdlc_ioctl,
--	.ndo_tx_timeout = cosa_net_timeout,
 -};
 -
--static int cosa_probe(int base, int irq, int dma)
+-static struct z8530_dev *sv11_init(int iobase, int irq)
 -{
--	struct cosa_data *cosa = cosa_cards + nr_cards;
--	int i, err = 0;
--
--	memset(cosa, 0, sizeof(struct cosa_data));
--
--	/* Checking validity of parameters: */
--	/* IRQ should be 2-7 or 10-15; negative IRQ means autoprobe */
--	if ((irq >= 0  && irq < 2) || irq > 15 || (irq < 10 && irq > 7)) {
--		pr_info("invalid IRQ %d\n", irq);
--		return -1;
--	}
--	/* I/O address should be between 0x100 and 0x3ff and should be
--	 * multiple of 8.
+-	struct z8530_dev *sv;
+-	struct net_device *netdev;
+-	/*	Get the needed I/O space
 -	 */
--	if (base < 0x100 || base > 0x3ff || base & 0x7) {
--		pr_info("invalid I/O address 0x%x\n", base);
--		return -1;
+-
+-	if (!request_region(iobase, 8, "Comtrol SV11")) {
+-		pr_warn("I/O 0x%X already in use\n", iobase);
+-		return NULL;
 -	}
--	/* DMA should be 0,1 or 3-7 */
--	if (dma < 0 || dma == 4 || dma > 7) {
--		pr_info("invalid DMA %d\n", dma);
--		return -1;
--	}
--	/* and finally, on 16-bit COSA DMA should be 4-7 and
--	 * I/O base should not be multiple of 0x10
+-
+-	sv = kzalloc(sizeof(struct z8530_dev), GFP_KERNEL);
+-	if (!sv)
+-		goto err_kzalloc;
+-
+-	/*	Stuff in the I/O addressing
 -	 */
--	if (((base & 0x8) && dma < 4) || (!(base & 0x8) && dma > 3)) {
--		pr_info("8/16 bit base and DMA mismatch (base=0x%x, dma=%d)\n",
--			base, dma);
--		return -1;
+-
+-	sv->active = 0;
+-
+-	sv->chanA.ctrlio = iobase + 1;
+-	sv->chanA.dataio = iobase + 3;
+-	sv->chanB.ctrlio = -1;
+-	sv->chanB.dataio = -1;
+-	sv->chanA.irqs = &z8530_nop;
+-	sv->chanB.irqs = &z8530_nop;
+-
+-	outb(0, iobase + 4);		/* DMA off */
+-
+-	/* We want a fast IRQ for this device. Actually we'd like an even faster
+-	 * IRQ ;) - This is one driver RtLinux is made for
+-	 */
+-
+-	if (request_irq(irq, z8530_interrupt, 0,
+-			"Hostess SV11", sv) < 0) {
+-		pr_warn("IRQ %d already in use\n", irq);
+-		goto err_irq;
 -	}
 -
--	cosa->dma = dma;
--	cosa->datareg = base;
--	cosa->statusreg = is_8bit(cosa) ? base + 1 : base + 2;
--	spin_lock_init(&cosa->lock);
+-	sv->irq = irq;
+-	sv->chanA.private = sv;
+-	sv->chanA.dev = sv;
+-	sv->chanB.dev = sv;
 -
--	if (!request_region(base, is_8bit(cosa) ? 2 : 4, "cosa"))
--		return -1;
--
--	if (cosa_reset_and_read_id(cosa, cosa->id_string) < 0) {
--		printk(KERN_DEBUG "probe at 0x%x failed.\n", base);
--		err = -1;
--		goto err_out;
--	}
--
--	/* Test the validity of identification string */
--	if (!strncmp(cosa->id_string, "SRP", 3)) {
--		cosa->type = "srp";
--	} else if (!strncmp(cosa->id_string, "COSA", 4)) {
--		cosa->type = is_8bit(cosa) ? "cosa8" : "cosa16";
--	} else {
--/* Print a warning only if we are not autoprobing */
--#ifndef COSA_ISA_AUTOPROBE
--		pr_info("valid signature not found at 0x%x\n", base);
--#endif
--		err = -1;
--		goto err_out;
--	}
--	/* Update the name of the region now we know the type of card */
--	release_region(base, is_8bit(cosa) ? 2 : 4);
--	if (!request_region(base, is_8bit(cosa) ? 2 : 4, cosa->type)) {
--		printk(KERN_DEBUG "changing name at 0x%x failed.\n", base);
--		return -1;
--	}
--
--	/* Now do IRQ autoprobe */
--	if (irq < 0) {
--		unsigned long irqs;
--/*		pr_info("IRQ autoprobe\n"); */
--		irqs = probe_irq_on();
--		/* Enable interrupt on tx buffer empty (it sure is)
--		 * really sure ?
--		 * FIXME: When this code is not used as module, we should
--		 * probably call udelay() instead of the interruptible sleep.
+-	if (dma) {
+-		/*	You can have DMA off or 1 and 3 thats the lot
+-		 *	on the Comtrol.
 -		 */
--		set_current_state(TASK_INTERRUPTIBLE);
--		cosa_putstatus(cosa, SR_TX_INT_ENA);
--		schedule_timeout(msecs_to_jiffies(300));
--		irq = probe_irq_off(irqs);
--		/* Disable all IRQs from the card */
--		cosa_putstatus(cosa, 0);
--		/* Empty the received data register */
--		cosa_getdata8(cosa);
+-		sv->chanA.txdma = 3;
+-		sv->chanA.rxdma = 1;
+-		outb(0x03 | 0x08, iobase + 4);		/* DMA on */
+-		if (request_dma(sv->chanA.txdma, "Hostess SV/11 (TX)"))
+-			goto err_txdma;
 -
--		if (irq < 0) {
--			pr_info("multiple interrupts obtained (%d, board at 0x%x)\n",
--				irq, cosa->datareg);
--			err = -1;
--			goto err_out;
--		}
--		if (irq == 0) {
--			pr_info("no interrupt obtained (board at 0x%x)\n",
--				cosa->datareg);
--		/*	return -1; */
--		}
+-		if (dma == 1)
+-			if (request_dma(sv->chanA.rxdma, "Hostess SV/11 (RX)"))
+-				goto err_rxdma;
 -	}
 -
--	cosa->irq = irq;
--	cosa->num = nr_cards;
--	cosa->usage = 0;
--	cosa->nchannels = 2;	/* FIXME: how to determine this? */
+-	/* Kill our private IRQ line the hostess can end up chattering
+-	 * until the configuration is set
+-	 */
+-	disable_irq(irq);
 -
--	if (request_irq(cosa->irq, cosa_interrupt, 0, cosa->type, cosa)) {
--		err = -1;
--		goto err_out;
+-	/*	Begin normal initialise
+-	 */
+-
+-	if (z8530_init(sv)) {
+-		pr_err("Z8530 series device not found\n");
+-		enable_irq(irq);
+-		goto free_dma;
 -	}
--	if (request_dma(cosa->dma, cosa->type)) {
--		err = -1;
--		goto err_out1;
--	}
+-	z8530_channel_load(&sv->chanB, z8530_dead_port);
+-	if (sv->type == Z85C30)
+-		z8530_channel_load(&sv->chanA, z8530_hdlc_kilostream);
+-	else
+-		z8530_channel_load(&sv->chanA, z8530_hdlc_kilostream_85230);
 -
--	cosa->bouncebuf = kmalloc(COSA_MTU, GFP_KERNEL | GFP_DMA);
--	if (!cosa->bouncebuf) {
--		err = -ENOMEM;
--		goto err_out2;
--	}
--	sprintf(cosa->name, "cosa%d", cosa->num);
+-	enable_irq(irq);
 -
--	/* Initialize the per-channel data */
--	cosa->chan = kcalloc(cosa->nchannels, sizeof(struct channel_data), GFP_KERNEL);
--	if (!cosa->chan) {
--		err = -ENOMEM;
--		goto err_out3;
--	}
+-	/*	Now we can take the IRQ
+-	 */
 -
--	for (i = 0; i < cosa->nchannels; i++) {
--		struct channel_data *chan = &cosa->chan[i];
+-	sv->chanA.netdevice = netdev = alloc_hdlcdev(sv);
+-	if (!netdev)
+-		goto free_dma;
 -
--		chan->cosa = cosa;
--		chan->num = i;
--		sprintf(chan->name, "cosa%dc%d", chan->cosa->num, i);
+-	dev_to_hdlc(netdev)->attach = hostess_attach;
+-	dev_to_hdlc(netdev)->xmit = hostess_queue_xmit;
+-	netdev->netdev_ops = &hostess_ops;
+-	netdev->base_addr = iobase;
+-	netdev->irq = irq;
 -
--		/* Initialize the chardev data structures */
--		mutex_init(&chan->rlock);
--		sema_init(&chan->wsem, 1);
--
--		/* Register the network interface */
--		chan->netdev = alloc_hdlcdev(chan);
--		if (!chan->netdev) {
--			pr_warn("%s: alloc_hdlcdev failed\n", chan->name);
--			err = -ENOMEM;
--			goto err_hdlcdev;
--		}
--		dev_to_hdlc(chan->netdev)->attach = cosa_net_attach;
--		dev_to_hdlc(chan->netdev)->xmit = cosa_net_tx;
--		chan->netdev->netdev_ops = &cosa_ops;
--		chan->netdev->watchdog_timeo = TX_TIMEOUT;
--		chan->netdev->base_addr = chan->cosa->datareg;
--		chan->netdev->irq = chan->cosa->irq;
--		chan->netdev->dma = chan->cosa->dma;
--		err = register_hdlc_device(chan->netdev);
--		if (err) {
--			netdev_warn(chan->netdev,
--				    "register_hdlc_device() failed\n");
--			free_netdev(chan->netdev);
--			goto err_hdlcdev;
--		}
+-	if (register_hdlc_device(netdev)) {
+-		pr_err("unable to register HDLC device\n");
+-		free_netdev(netdev);
+-		goto free_dma;
 -	}
 -
--	pr_info("cosa%d: %s (%s at 0x%x irq %d dma %d), %d channels\n",
--		cosa->num, cosa->id_string, cosa->type,
--		cosa->datareg, cosa->irq, cosa->dma, cosa->nchannels);
+-	z8530_describe(sv, "I/O", iobase);
+-	sv->active = 1;
+-	return sv;
 -
--	return nr_cards++;
--
--err_hdlcdev:
--	while (i-- > 0) {
--		unregister_hdlc_device(cosa->chan[i].netdev);
--		free_netdev(cosa->chan[i].netdev);
--	}
--	kfree(cosa->chan);
--err_out3:
--	kfree(cosa->bouncebuf);
--err_out2:
--	free_dma(cosa->dma);
--err_out1:
--	free_irq(cosa->irq, cosa);
--err_out:
--	release_region(cosa->datareg, is_8bit(cosa) ? 2 : 4);
--	pr_notice("cosa%d: allocating resources failed\n", cosa->num);
--	return err;
+-free_dma:
+-	if (dma == 1)
+-		free_dma(sv->chanA.rxdma);
+-err_rxdma:
+-	if (dma)
+-		free_dma(sv->chanA.txdma);
+-err_txdma:
+-	free_irq(irq, sv);
+-err_irq:
+-	kfree(sv);
+-err_kzalloc:
+-	release_region(iobase, 8);
+-	return NULL;
 -}
 -
--/*---------- network device ---------- */
+-static void sv11_shutdown(struct z8530_dev *dev)
+-{
+-	unregister_hdlc_device(dev->chanA.netdevice);
+-	z8530_shutdown(dev);
+-	free_irq(dev->irq, dev);
+-	if (dma) {
+-		if (dma == 1)
+-			free_dma(dev->chanA.rxdma);
+-		free_dma(dev->chanA.txdma);
+-	}
+-	release_region(dev->chanA.ctrlio - 1, 8);
+-	free_netdev(dev->chanA.netdevice);
+-	kfree(dev);
+-}
 -
--static int cosa_net_attach(struct net_device *dev, unsigned short encoding,
+-static int io = 0x200;
+-static int irq = 9;
+-
+-module_param_hw(io, int, ioport, 0);
+-MODULE_PARM_DESC(io, "The I/O base of the Comtrol Hostess SV11 card");
+-module_param_hw(dma, int, dma, 0);
+-MODULE_PARM_DESC(dma, "Set this to 1 to use DMA1/DMA3 for TX/RX");
+-module_param_hw(irq, int, irq, 0);
+-MODULE_PARM_DESC(irq, "The interrupt line setting for the Comtrol Hostess SV11 card");
+-
+-MODULE_AUTHOR("Alan Cox");
+-MODULE_LICENSE("GPL");
+-MODULE_DESCRIPTION("Modular driver for the Comtrol Hostess SV11");
+-
+-static struct z8530_dev *sv11_unit;
+-
+-static int sv11_module_init(void)
+-{
+-	sv11_unit = sv11_init(io, irq);
+-	if (!sv11_unit)
+-		return -ENODEV;
+-	return 0;
+-}
+-module_init(sv11_module_init);
+-
+-static void sv11_module_cleanup(void)
+-{
+-	if (sv11_unit)
+-		sv11_shutdown(sv11_unit);
+-}
+-module_exit(sv11_module_cleanup);
+diff --git a/drivers/net/wan/sealevel.c b/drivers/net/wan/sealevel.c
+deleted file mode 100644
+index eddd20aab691..000000000000
+--- a/drivers/net/wan/sealevel.c
++++ /dev/null
+@@ -1,352 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-or-later
+-/*	Sealevel Systems 4021 driver.
+- *
+- *	(c) Copyright 1999, 2001 Alan Cox
+- *	(c) Copyright 2001 Red Hat Inc.
+- *	Generic HDLC port Copyright (C) 2008 Krzysztof Halasa <khc@pm.waw.pl>
+- */
+-
+-#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+-
+-#include <linux/module.h>
+-#include <linux/kernel.h>
+-#include <linux/mm.h>
+-#include <linux/net.h>
+-#include <linux/skbuff.h>
+-#include <linux/netdevice.h>
+-#include <linux/if_arp.h>
+-#include <linux/delay.h>
+-#include <linux/hdlc.h>
+-#include <linux/ioport.h>
+-#include <linux/init.h>
+-#include <linux/slab.h>
+-#include <net/arp.h>
+-
+-#include <asm/irq.h>
+-#include <asm/io.h>
+-#include <asm/dma.h>
+-#include <asm/byteorder.h>
+-#include "z85230.h"
+-
+-struct slvl_device {
+-	struct z8530_channel *chan;
+-	int channel;
+-};
+-
+-struct slvl_board {
+-	struct slvl_device dev[2];
+-	struct z8530_dev board;
+-	int iobase;
+-};
+-
+- /*	Network driver support routines */
+-
+-static inline struct slvl_device *dev_to_chan(struct net_device *dev)
+-{
+-	return (struct slvl_device *)dev_to_hdlc(dev)->priv;
+-}
+-
+-/*	Frame receive. Simple for our card as we do HDLC and there
+- *	is no funny garbage involved
+- */
+-
+-static void sealevel_input(struct z8530_channel *c, struct sk_buff *skb)
+-{
+-	/* Drop the CRC - it's not a good idea to try and negotiate it ;) */
+-	skb_trim(skb, skb->len - 2);
+-	skb->protocol = hdlc_type_trans(skb, c->netdevice);
+-	skb_reset_mac_header(skb);
+-	skb->dev = c->netdevice;
+-	netif_rx(skb);
+-}
+-
+- /*	We've been placed in the UP state */
+-
+-static int sealevel_open(struct net_device *d)
+-{
+-	struct slvl_device *slvl = dev_to_chan(d);
+-	int err = -1;
+-	int unit = slvl->channel;
+-
+-	 /*	Link layer up. */
+-
+-	switch (unit) {
+-	case 0:
+-		err = z8530_sync_dma_open(d, slvl->chan);
+-		break;
+-	case 1:
+-		err = z8530_sync_open(d, slvl->chan);
+-		break;
+-	}
+-
+-	if (err)
+-		return err;
+-
+-	err = hdlc_open(d);
+-	if (err) {
+-		switch (unit) {
+-		case 0:
+-			z8530_sync_dma_close(d, slvl->chan);
+-			break;
+-		case 1:
+-			z8530_sync_close(d, slvl->chan);
+-			break;
+-		}
+-		return err;
+-	}
+-
+-	slvl->chan->rx_function = sealevel_input;
+-
+-	netif_start_queue(d);
+-	return 0;
+-}
+-
+-static int sealevel_close(struct net_device *d)
+-{
+-	struct slvl_device *slvl = dev_to_chan(d);
+-	int unit = slvl->channel;
+-
+-	/*	Discard new frames */
+-
+-	slvl->chan->rx_function = z8530_null_rx;
+-
+-	hdlc_close(d);
+-	netif_stop_queue(d);
+-
+-	switch (unit) {
+-	case 0:
+-		z8530_sync_dma_close(d, slvl->chan);
+-		break;
+-	case 1:
+-		z8530_sync_close(d, slvl->chan);
+-		break;
+-	}
+-	return 0;
+-}
+-
+-/*	Passed network frames, fire them downwind. */
+-
+-static netdev_tx_t sealevel_queue_xmit(struct sk_buff *skb,
+-				       struct net_device *d)
+-{
+-	return z8530_queue_xmit(dev_to_chan(d)->chan, skb);
+-}
+-
+-static int sealevel_attach(struct net_device *dev, unsigned short encoding,
 -			   unsigned short parity)
 -{
 -	if (encoding == ENCODING_NRZ && parity == PARITY_CRC16_PR1_CCITT)
@@ -785,1552 +927,2276 @@ index 23d2954d9747..000000000000
 -	return -EINVAL;
 -}
 -
--static int cosa_net_open(struct net_device *dev)
--{
--	struct channel_data *chan = dev_to_chan(dev);
--	int err;
--	unsigned long flags;
--
--	if (!(chan->cosa->firmware_status & COSA_FW_START)) {
--		pr_notice("%s: start the firmware first (status %d)\n",
--			  chan->cosa->name, chan->cosa->firmware_status);
--		return -EPERM;
--	}
--	spin_lock_irqsave(&chan->cosa->lock, flags);
--	if (chan->usage != 0) {
--		pr_warn("%s: cosa_net_open called with usage count %d\n",
--			chan->name, chan->usage);
--		spin_unlock_irqrestore(&chan->cosa->lock, flags);
--		return -EBUSY;
--	}
--	chan->setup_rx = cosa_net_setup_rx;
--	chan->tx_done = cosa_net_tx_done;
--	chan->rx_done = cosa_net_rx_done;
--	chan->usage = -1;
--	chan->cosa->usage++;
--	spin_unlock_irqrestore(&chan->cosa->lock, flags);
--
--	err = hdlc_open(dev);
--	if (err) {
--		spin_lock_irqsave(&chan->cosa->lock, flags);
--		chan->usage = 0;
--		chan->cosa->usage--;
--		spin_unlock_irqrestore(&chan->cosa->lock, flags);
--		return err;
--	}
--
--	netif_start_queue(dev);
--	cosa_enable_rx(chan);
--	return 0;
--}
--
--static netdev_tx_t cosa_net_tx(struct sk_buff *skb,
--			       struct net_device *dev)
--{
--	struct channel_data *chan = dev_to_chan(dev);
--
--	netif_stop_queue(dev);
--
--	chan->tx_skb = skb;
--	cosa_start_tx(chan, skb->data, skb->len);
--	return NETDEV_TX_OK;
--}
--
--static void cosa_net_timeout(struct net_device *dev, unsigned int txqueue)
--{
--	struct channel_data *chan = dev_to_chan(dev);
--
--	if (test_bit(RXBIT, &chan->cosa->rxtx)) {
--		chan->netdev->stats.rx_errors++;
--		chan->netdev->stats.rx_missed_errors++;
--	} else {
--		chan->netdev->stats.tx_errors++;
--		chan->netdev->stats.tx_aborted_errors++;
--	}
--	cosa_kick(chan->cosa);
--	if (chan->tx_skb) {
--		dev_kfree_skb(chan->tx_skb);
--		chan->tx_skb = NULL;
--	}
--	netif_wake_queue(dev);
--}
--
--static int cosa_net_close(struct net_device *dev)
--{
--	struct channel_data *chan = dev_to_chan(dev);
--	unsigned long flags;
--
--	netif_stop_queue(dev);
--	hdlc_close(dev);
--	cosa_disable_rx(chan);
--	spin_lock_irqsave(&chan->cosa->lock, flags);
--	if (chan->rx_skb) {
--		kfree_skb(chan->rx_skb);
--		chan->rx_skb = NULL;
--	}
--	if (chan->tx_skb) {
--		kfree_skb(chan->tx_skb);
--		chan->tx_skb = NULL;
--	}
--	chan->usage = 0;
--	chan->cosa->usage--;
--	spin_unlock_irqrestore(&chan->cosa->lock, flags);
--	return 0;
--}
--
--static char *cosa_net_setup_rx(struct channel_data *chan, int size)
--{
--	/* We can safely fall back to non-dma-able memory, because we have
--	 * the cosa->bouncebuf pre-allocated.
--	 */
--	kfree_skb(chan->rx_skb);
--	chan->rx_skb = dev_alloc_skb(size);
--	if (!chan->rx_skb) {
--		pr_notice("%s: Memory squeeze, dropping packet\n", chan->name);
--		chan->netdev->stats.rx_dropped++;
--		return NULL;
--	}
--	netif_trans_update(chan->netdev);
--	return skb_put(chan->rx_skb, size);
--}
--
--static int cosa_net_rx_done(struct channel_data *chan)
--{
--	if (!chan->rx_skb) {
--		pr_warn("%s: rx_done with empty skb!\n", chan->name);
--		chan->netdev->stats.rx_errors++;
--		chan->netdev->stats.rx_frame_errors++;
--		return 0;
--	}
--	chan->rx_skb->protocol = hdlc_type_trans(chan->rx_skb, chan->netdev);
--	chan->rx_skb->dev = chan->netdev;
--	skb_reset_mac_header(chan->rx_skb);
--	chan->netdev->stats.rx_packets++;
--	chan->netdev->stats.rx_bytes += chan->cosa->rxsize;
--	netif_rx(chan->rx_skb);
--	chan->rx_skb = NULL;
--	return 0;
--}
--
--/* ARGSUSED */
--static int cosa_net_tx_done(struct channel_data *chan, int size)
--{
--	if (!chan->tx_skb) {
--		pr_warn("%s: tx_done with empty skb!\n", chan->name);
--		chan->netdev->stats.tx_errors++;
--		chan->netdev->stats.tx_aborted_errors++;
--		return 1;
--	}
--	dev_consume_skb_irq(chan->tx_skb);
--	chan->tx_skb = NULL;
--	chan->netdev->stats.tx_packets++;
--	chan->netdev->stats.tx_bytes += size;
--	netif_wake_queue(chan->netdev);
--	return 1;
--}
--
--/*---------- Character device ---------- */
--
--static ssize_t cosa_read(struct file *file,
--			 char __user *buf, size_t count, loff_t *ppos)
--{
--	DECLARE_WAITQUEUE(wait, current);
--	unsigned long flags;
--	struct channel_data *chan = file->private_data;
--	struct cosa_data *cosa = chan->cosa;
--	char *kbuf;
--
--	if (!(cosa->firmware_status & COSA_FW_START)) {
--		pr_notice("%s: start the firmware first (status %d)\n",
--			  cosa->name, cosa->firmware_status);
--		return -EPERM;
--	}
--	if (mutex_lock_interruptible(&chan->rlock))
--		return -ERESTARTSYS;
--
--	chan->rxdata = kmalloc(COSA_MTU, GFP_DMA | GFP_KERNEL);
--	if (!chan->rxdata) {
--		mutex_unlock(&chan->rlock);
--		return -ENOMEM;
--	}
--
--	chan->rx_status = 0;
--	cosa_enable_rx(chan);
--	spin_lock_irqsave(&cosa->lock, flags);
--	add_wait_queue(&chan->rxwaitq, &wait);
--	while (!chan->rx_status) {
--		set_current_state(TASK_INTERRUPTIBLE);
--		spin_unlock_irqrestore(&cosa->lock, flags);
--		schedule();
--		spin_lock_irqsave(&cosa->lock, flags);
--		if (signal_pending(current) && chan->rx_status == 0) {
--			chan->rx_status = 1;
--			remove_wait_queue(&chan->rxwaitq, &wait);
--			__set_current_state(TASK_RUNNING);
--			spin_unlock_irqrestore(&cosa->lock, flags);
--			mutex_unlock(&chan->rlock);
--			return -ERESTARTSYS;
--		}
--	}
--	remove_wait_queue(&chan->rxwaitq, &wait);
--	__set_current_state(TASK_RUNNING);
--	kbuf = chan->rxdata;
--	count = chan->rxsize;
--	spin_unlock_irqrestore(&cosa->lock, flags);
--	mutex_unlock(&chan->rlock);
--
--	if (copy_to_user(buf, kbuf, count)) {
--		kfree(kbuf);
--		return -EFAULT;
--	}
--	kfree(kbuf);
--	return count;
--}
--
--static char *chrdev_setup_rx(struct channel_data *chan, int size)
--{
--	/* Expect size <= COSA_MTU */
--	chan->rxsize = size;
--	return chan->rxdata;
--}
--
--static int chrdev_rx_done(struct channel_data *chan)
--{
--	if (chan->rx_status) { /* Reader has died */
--		kfree(chan->rxdata);
--		up(&chan->wsem);
--	}
--	chan->rx_status = 1;
--	wake_up_interruptible(&chan->rxwaitq);
--	return 1;
--}
--
--static ssize_t cosa_write(struct file *file,
--			  const char __user *buf, size_t count, loff_t *ppos)
--{
--	DECLARE_WAITQUEUE(wait, current);
--	struct channel_data *chan = file->private_data;
--	struct cosa_data *cosa = chan->cosa;
--	unsigned long flags;
--	char *kbuf;
--
--	if (!(cosa->firmware_status & COSA_FW_START)) {
--		pr_notice("%s: start the firmware first (status %d)\n",
--			  cosa->name, cosa->firmware_status);
--		return -EPERM;
--	}
--	if (down_interruptible(&chan->wsem))
--		return -ERESTARTSYS;
--
--	if (count > COSA_MTU)
--		count = COSA_MTU;
--
--	/* Allocate the buffer */
--	kbuf = kmalloc(count, GFP_KERNEL | GFP_DMA);
--	if (!kbuf) {
--		up(&chan->wsem);
--		return -ENOMEM;
--	}
--	if (copy_from_user(kbuf, buf, count)) {
--		up(&chan->wsem);
--		kfree(kbuf);
--		return -EFAULT;
--	}
--	chan->tx_status = 0;
--	cosa_start_tx(chan, kbuf, count);
--
--	spin_lock_irqsave(&cosa->lock, flags);
--	add_wait_queue(&chan->txwaitq, &wait);
--	while (!chan->tx_status) {
--		set_current_state(TASK_INTERRUPTIBLE);
--		spin_unlock_irqrestore(&cosa->lock, flags);
--		schedule();
--		spin_lock_irqsave(&cosa->lock, flags);
--		if (signal_pending(current) && chan->tx_status == 0) {
--			chan->tx_status = 1;
--			remove_wait_queue(&chan->txwaitq, &wait);
--			__set_current_state(TASK_RUNNING);
--			chan->tx_status = 1;
--			spin_unlock_irqrestore(&cosa->lock, flags);
--			up(&chan->wsem);
--			kfree(kbuf);
--			return -ERESTARTSYS;
--		}
--	}
--	remove_wait_queue(&chan->txwaitq, &wait);
--	__set_current_state(TASK_RUNNING);
--	up(&chan->wsem);
--	spin_unlock_irqrestore(&cosa->lock, flags);
--	kfree(kbuf);
--	return count;
--}
--
--static int chrdev_tx_done(struct channel_data *chan, int size)
--{
--	if (chan->tx_status) { /* Writer was interrupted */
--		kfree(chan->txbuf);
--		up(&chan->wsem);
--	}
--	chan->tx_status = 1;
--	wake_up_interruptible(&chan->txwaitq);
--	return 1;
--}
--
--static __poll_t cosa_poll(struct file *file, poll_table *poll)
--{
--	pr_info("cosa_poll is here\n");
--	return 0;
--}
--
--static int cosa_open(struct inode *inode, struct file *file)
--{
--	struct cosa_data *cosa;
--	struct channel_data *chan;
--	unsigned long flags;
--	int n;
--	int ret = 0;
--
--	mutex_lock(&cosa_chardev_mutex);
--	n = iminor(file_inode(file)) >> CARD_MINOR_BITS;
--	if (n >= nr_cards) {
--		ret = -ENODEV;
--		goto out;
--	}
--	cosa = cosa_cards + n;
--
--	n = iminor(file_inode(file)) & ((1 << CARD_MINOR_BITS) - 1);
--	if (n >= cosa->nchannels) {
--		ret = -ENODEV;
--		goto out;
--	}
--	chan = cosa->chan + n;
--
--	file->private_data = chan;
--
--	spin_lock_irqsave(&cosa->lock, flags);
--
--	if (chan->usage < 0) { /* in netdev mode */
--		spin_unlock_irqrestore(&cosa->lock, flags);
--		ret = -EBUSY;
--		goto out;
--	}
--	cosa->usage++;
--	chan->usage++;
--
--	chan->tx_done = chrdev_tx_done;
--	chan->setup_rx = chrdev_setup_rx;
--	chan->rx_done = chrdev_rx_done;
--	spin_unlock_irqrestore(&cosa->lock, flags);
--out:
--	mutex_unlock(&cosa_chardev_mutex);
--	return ret;
--}
--
--static int cosa_release(struct inode *inode, struct file *file)
--{
--	struct channel_data *channel = file->private_data;
--	struct cosa_data *cosa;
--	unsigned long flags;
--
--	cosa = channel->cosa;
--	spin_lock_irqsave(&cosa->lock, flags);
--	cosa->usage--;
--	channel->usage--;
--	spin_unlock_irqrestore(&cosa->lock, flags);
--	return 0;
--}
--
--#ifdef COSA_FASYNC_WORKING
--static struct fasync_struct *fasync[256] = { NULL, };
--
--/* To be done ... */
--static int cosa_fasync(struct inode *inode, struct file *file, int on)
--{
--	int port = iminor(inode);
--
--	return fasync_helper(inode, file, on, &fasync[port]);
--}
--#endif
--
--/* ---------- Ioctls ---------- */
--
--/* Ioctl subroutines can safely be made inline, because they are called
-- * only from cosa_ioctl().
-- */
--static inline int cosa_reset(struct cosa_data *cosa)
--{
--	char idstring[COSA_MAX_ID_STRING];
--
--	if (cosa->usage > 1)
--		pr_info("cosa%d: WARNING: reset requested with cosa->usage > 1 (%d). Odd things may happen.\n",
--			cosa->num, cosa->usage);
--	cosa->firmware_status &= ~(COSA_FW_RESET | COSA_FW_START);
--	if (cosa_reset_and_read_id(cosa, idstring) < 0) {
--		pr_notice("cosa%d: reset failed\n", cosa->num);
--		return -EIO;
--	}
--	pr_info("cosa%d: resetting device: %s\n", cosa->num, idstring);
--	cosa->firmware_status |= COSA_FW_RESET;
--	return 0;
--}
--
--/* High-level function to download data into COSA memory. Calls download() */
--static inline int cosa_download(struct cosa_data *cosa, void __user *arg)
--{
--	struct cosa_download d;
--	int i;
--
--	if (cosa->usage > 1)
--		pr_info("%s: WARNING: download of microcode requested with cosa->usage > 1 (%d). Odd things may happen.\n",
--			cosa->name, cosa->usage);
--	if (!(cosa->firmware_status & COSA_FW_RESET)) {
--		pr_notice("%s: reset the card first (status %d)\n",
--			  cosa->name, cosa->firmware_status);
--		return -EPERM;
--	}
--
--	if (copy_from_user(&d, arg, sizeof(d)))
--		return -EFAULT;
--
--	if (d.addr < 0 || d.addr > COSA_MAX_FIRMWARE_SIZE)
--		return -EINVAL;
--	if (d.len < 0 || d.len > COSA_MAX_FIRMWARE_SIZE)
--		return -EINVAL;
--
--	/* If something fails, force the user to reset the card */
--	cosa->firmware_status &= ~(COSA_FW_RESET | COSA_FW_DOWNLOAD);
--
--	i = download(cosa, d.code, d.len, d.addr);
--	if (i < 0) {
--		pr_notice("cosa%d: microcode download failed: %d\n",
--			  cosa->num, i);
--		return -EIO;
--	}
--	pr_info("cosa%d: downloading microcode - 0x%04x bytes at 0x%04x\n",
--		cosa->num, d.len, d.addr);
--	cosa->firmware_status |= COSA_FW_RESET | COSA_FW_DOWNLOAD;
--	return 0;
--}
--
--/* High-level function to read COSA memory. Calls readmem() */
--static inline int cosa_readmem(struct cosa_data *cosa, void __user *arg)
--{
--	struct cosa_download d;
--	int i;
--
--	if (cosa->usage > 1)
--		pr_info("cosa%d: WARNING: readmem requested with cosa->usage > 1 (%d). Odd things may happen.\n",
--			cosa->num, cosa->usage);
--	if (!(cosa->firmware_status & COSA_FW_RESET)) {
--		pr_notice("%s: reset the card first (status %d)\n",
--			  cosa->name, cosa->firmware_status);
--		return -EPERM;
--	}
--
--	if (copy_from_user(&d, arg, sizeof(d)))
--		return -EFAULT;
--
--	/* If something fails, force the user to reset the card */
--	cosa->firmware_status &= ~COSA_FW_RESET;
--
--	i = readmem(cosa, d.code, d.len, d.addr);
--	if (i < 0) {
--		pr_notice("cosa%d: reading memory failed: %d\n", cosa->num, i);
--		return -EIO;
--	}
--	pr_info("cosa%d: reading card memory - 0x%04x bytes at 0x%04x\n",
--		cosa->num, d.len, d.addr);
--	cosa->firmware_status |= COSA_FW_RESET;
--	return 0;
--}
--
--/* High-level function to start microcode. Calls startmicrocode(). */
--static inline int cosa_start(struct cosa_data *cosa, int address)
--{
--	int i;
--
--	if (cosa->usage > 1)
--		pr_info("cosa%d: WARNING: start microcode requested with cosa->usage > 1 (%d). Odd things may happen.\n",
--			cosa->num, cosa->usage);
--
--	if ((cosa->firmware_status & (COSA_FW_RESET | COSA_FW_DOWNLOAD))
--		!= (COSA_FW_RESET | COSA_FW_DOWNLOAD)) {
--		pr_notice("%s: download the microcode and/or reset the card first (status %d)\n",
--			  cosa->name, cosa->firmware_status);
--		return -EPERM;
--	}
--	cosa->firmware_status &= ~COSA_FW_RESET;
--	i = startmicrocode(cosa, address);
--	if (i < 0) {
--		pr_notice("cosa%d: start microcode at 0x%04x failed: %d\n",
--			  cosa->num, address, i);
--		return -EIO;
--	}
--	pr_info("cosa%d: starting microcode at 0x%04x\n", cosa->num, address);
--	cosa->startaddr = address;
--	cosa->firmware_status |= COSA_FW_START;
--	return 0;
--}
--
--/* Buffer of size at least COSA_MAX_ID_STRING is expected */
--static inline int cosa_getidstr(struct cosa_data *cosa, char __user *string)
--{
--	int l = strlen(cosa->id_string) + 1;
--
--	if (copy_to_user(string, cosa->id_string, l))
--		return -EFAULT;
--	return l;
--}
--
--/* Buffer of size at least COSA_MAX_ID_STRING is expected */
--static inline int cosa_gettype(struct cosa_data *cosa, char __user *string)
--{
--	int l = strlen(cosa->type) + 1;
--
--	if (copy_to_user(string, cosa->type, l))
--		return -EFAULT;
--	return l;
--}
--
--static int cosa_ioctl_common(struct cosa_data *cosa,
--			     struct channel_data *channel, unsigned int cmd,
--			     unsigned long arg)
--{
--	void __user *argp = (void __user *)arg;
--
--	switch (cmd) {
--	case COSAIORSET:	/* Reset the device */
--		if (!capable(CAP_NET_ADMIN))
--			return -EACCES;
--		return cosa_reset(cosa);
--	case COSAIOSTRT:	/* Start the firmware */
--		if (!capable(CAP_SYS_RAWIO))
--			return -EACCES;
--		return cosa_start(cosa, arg);
--	case COSAIODOWNLD:	/* Download the firmware */
--		if (!capable(CAP_SYS_RAWIO))
--			return -EACCES;
--
--		return cosa_download(cosa, argp);
--	case COSAIORMEM:
--		if (!capable(CAP_SYS_RAWIO))
--			return -EACCES;
--		return cosa_readmem(cosa, argp);
--	case COSAIORTYPE:
--		return cosa_gettype(cosa, argp);
--	case COSAIORIDSTR:
--		return cosa_getidstr(cosa, argp);
--	case COSAIONRCARDS:
--		return nr_cards;
--	case COSAIONRCHANS:
--		return cosa->nchannels;
--	case COSAIOBMSET:
--		if (!capable(CAP_SYS_RAWIO))
--			return -EACCES;
--		if (is_8bit(cosa))
--			return -EINVAL;
--		if (arg != COSA_BM_OFF && arg != COSA_BM_ON)
--			return -EINVAL;
--		cosa->busmaster = arg;
--		return 0;
--	case COSAIOBMGET:
--		return cosa->busmaster;
--	}
--	return -ENOIOCTLCMD;
--}
--
--static long cosa_chardev_ioctl(struct file *file, unsigned int cmd,
--			       unsigned long arg)
--{
--	struct channel_data *channel = file->private_data;
--	struct cosa_data *cosa;
--	long ret;
--
--	mutex_lock(&cosa_chardev_mutex);
--	cosa = channel->cosa;
--	ret = cosa_ioctl_common(cosa, channel, cmd, arg);
--	mutex_unlock(&cosa_chardev_mutex);
--	return ret;
--}
--
--/*---------- HW layer interface ---------- */
--
--/* The higher layer can bind itself to the HW layer by setting the callbacks
-- * in the channel_data structure and by using these routines.
-- */
--static void cosa_enable_rx(struct channel_data *chan)
--{
--	struct cosa_data *cosa = chan->cosa;
--
--	if (!test_and_set_bit(chan->num, &cosa->rxbitmap))
--		put_driver_status(cosa);
--}
--
--static void cosa_disable_rx(struct channel_data *chan)
--{
--	struct cosa_data *cosa = chan->cosa;
--
--	if (test_and_clear_bit(chan->num, &cosa->rxbitmap))
--		put_driver_status(cosa);
--}
--
--/* FIXME: This routine probably should check for cosa_start_tx() called when
-- * the previous transmit is still unfinished. In this case the non-zero
-- * return value should indicate to the caller that the queuing(sp?) up
-- * the transmit has failed.
-- */
--static int cosa_start_tx(struct channel_data *chan, char *buf, int len)
--{
--	struct cosa_data *cosa = chan->cosa;
--	unsigned long flags;
--#ifdef DEBUG_DATA
--	int i;
--
--	pr_info("cosa%dc%d: starting tx(0x%x)",
--		chan->cosa->num, chan->num, len);
--	for (i = 0; i < len; i++)
--		pr_cont(" %02x", buf[i]&0xff);
--	pr_cont("\n");
--#endif
--	spin_lock_irqsave(&cosa->lock, flags);
--	chan->txbuf = buf;
--	chan->txsize = len;
--	if (len > COSA_MTU)
--		chan->txsize = COSA_MTU;
--	spin_unlock_irqrestore(&cosa->lock, flags);
--
--	/* Tell the firmware we are ready */
--	set_bit(chan->num, &cosa->txbitmap);
--	put_driver_status(cosa);
--
--	return 0;
--}
--
--static void put_driver_status(struct cosa_data *cosa)
--{
--	unsigned long flags;
--	int status;
--
--	spin_lock_irqsave(&cosa->lock, flags);
--
--	status = (cosa->rxbitmap ? DRIVER_RX_READY : 0)
--		| (cosa->txbitmap ? DRIVER_TX_READY : 0)
--		| (cosa->txbitmap ? ~(cosa->txbitmap << DRIVER_TXMAP_SHIFT)
--			& DRIVER_TXMAP_MASK : 0);
--	if (!cosa->rxtx) {
--		if (cosa->rxbitmap | cosa->txbitmap) {
--			if (!cosa->enabled) {
--				cosa_putstatus(cosa, SR_RX_INT_ENA);
--#ifdef DEBUG_IO
--				debug_status_out(cosa, SR_RX_INT_ENA);
--#endif
--				cosa->enabled = 1;
--			}
--		} else if (cosa->enabled) {
--			cosa->enabled = 0;
--			cosa_putstatus(cosa, 0);
--#ifdef DEBUG_IO
--			debug_status_out(cosa, 0);
--#endif
--		}
--		cosa_putdata8(cosa, status);
--#ifdef DEBUG_IO
--		debug_data_cmd(cosa, status);
--#endif
--	}
--	spin_unlock_irqrestore(&cosa->lock, flags);
--}
--
--static void put_driver_status_nolock(struct cosa_data *cosa)
--{
--	int status;
--
--	status = (cosa->rxbitmap ? DRIVER_RX_READY : 0)
--		| (cosa->txbitmap ? DRIVER_TX_READY : 0)
--		| (cosa->txbitmap ? ~(cosa->txbitmap << DRIVER_TXMAP_SHIFT)
--			& DRIVER_TXMAP_MASK : 0);
--
--	if (cosa->rxbitmap | cosa->txbitmap) {
--		cosa_putstatus(cosa, SR_RX_INT_ENA);
--#ifdef DEBUG_IO
--		debug_status_out(cosa, SR_RX_INT_ENA);
--#endif
--		cosa->enabled = 1;
--	} else {
--		cosa_putstatus(cosa, 0);
--#ifdef DEBUG_IO
--		debug_status_out(cosa, 0);
--#endif
--		cosa->enabled = 0;
--	}
--	cosa_putdata8(cosa, status);
--#ifdef DEBUG_IO
--	debug_data_cmd(cosa, status);
--#endif
--}
--
--/* The "kickme" function: When the DMA times out, this is called to
-- * clean up the driver status.
-- * FIXME: Preliminary support, the interface is probably wrong.
-- */
--static void cosa_kick(struct cosa_data *cosa)
--{
--	unsigned long flags, flags1;
--	char *s = "(probably) IRQ";
--
--	if (test_bit(RXBIT, &cosa->rxtx))
--		s = "RX DMA";
--	if (test_bit(TXBIT, &cosa->rxtx))
--		s = "TX DMA";
--
--	pr_info("%s: %s timeout - restarting\n", cosa->name, s);
--	spin_lock_irqsave(&cosa->lock, flags);
--	cosa->rxtx = 0;
--
--	flags1 = claim_dma_lock();
--	disable_dma(cosa->dma);
--	clear_dma_ff(cosa->dma);
--	release_dma_lock(flags1);
--
--	/* FIXME: Anything else? */
--	udelay(100);
--	cosa_putstatus(cosa, 0);
--	udelay(100);
--	(void)cosa_getdata8(cosa);
--	udelay(100);
--	cosa_putdata8(cosa, 0);
--	udelay(100);
--	put_driver_status_nolock(cosa);
--	spin_unlock_irqrestore(&cosa->lock, flags);
--}
--
--/* Check if the whole buffer is DMA-able. It means it is below the 16M of
-- * physical memory and doesn't span the 64k boundary. For now it seems
-- * SKB's never do this, but we'll check this anyway.
-- */
--static int cosa_dma_able(struct channel_data *chan, char *buf, int len)
--{
--	static int count;
--	unsigned long b = (unsigned long)buf;
--
--	if (b + len >= MAX_DMA_ADDRESS)
--		return 0;
--	if ((b ^ (b + len)) & 0x10000) {
--		if (count++ < 5)
--			pr_info("%s: packet spanning a 64k boundary\n",
--				chan->name);
--		return 0;
--	}
--	return 1;
--}
--
--/* ---------- The SRP/COSA ROM monitor functions ---------- */
--
--/* Downloading SRP microcode: say "w" to SRP monitor, it answers by "w=",
-- * drivers need to say 4-digit hex number meaning start address of the microcode
-- * separated by a single space. Monitor replies by saying " =". Now driver
-- * has to write 4-digit hex number meaning the last byte address ended
-- * by a single space. Monitor has to reply with a space. Now the download
-- * begins. After the download monitor replies with "\r\n." (CR LF dot).
-- */
--static int download(struct cosa_data *cosa, const char __user *microcode, int length, int address)
--{
--	int i;
--
--	if (put_wait_data(cosa, 'w') == -1)
--		return -1;
--	if ((i=get_wait_data(cosa)) != 'w') { printk("dnld: 0x%04x\n",i); return -2;}
--	if (get_wait_data(cosa) != '=')
--		return -3;
--
--	if (puthexnumber(cosa, address) < 0)
--		return -4;
--	if (put_wait_data(cosa, ' ') == -1)
--		return -10;
--	if (get_wait_data(cosa) != ' ')
--		return -11;
--	if (get_wait_data(cosa) != '=')
--		return -12;
--
--	if (puthexnumber(cosa, address + length - 1) < 0)
--		return -13;
--	if (put_wait_data(cosa, ' ') == -1)
--		return -18;
--	if (get_wait_data(cosa) != ' ')
--		return -19;
--
--	while (length--) {
--		char c;
--#ifndef SRP_DOWNLOAD_AT_BOOT
--		if (get_user(c, microcode))
--			return -23; /* ??? */
--#else
--		c = *microcode;
--#endif
--		if (put_wait_data(cosa, c) == -1)
--			return -20;
--		microcode++;
--	}
--
--	if (get_wait_data(cosa) != '\r')
--		return -21;
--	if (get_wait_data(cosa) != '\n')
--		return -22;
--	if (get_wait_data(cosa) != '.')
--		return -23;
--#if 0
--	printk(KERN_DEBUG "cosa%d: download completed.\n", cosa->num);
--#endif
--	return 0;
--}
--
--/* Starting microcode is done via the "g" command of the SRP monitor.
-- * The chat should be the following: "g" "g=" "<addr><CR>"
-- * "<CR><CR><LF><CR><LF>".
-- */
--static int startmicrocode(struct cosa_data *cosa, int address)
--{
--	if (put_wait_data(cosa, 'g') == -1)
--		return -1;
--	if (get_wait_data(cosa) != 'g')
--		return -2;
--	if (get_wait_data(cosa) != '=')
--		return -3;
--
--	if (puthexnumber(cosa, address) < 0)
--		return -4;
--	if (put_wait_data(cosa, '\r') == -1)
--		return -5;
--
--	if (get_wait_data(cosa) != '\r')
--		return -6;
--	if (get_wait_data(cosa) != '\r')
--		return -7;
--	if (get_wait_data(cosa) != '\n')
--		return -8;
--	if (get_wait_data(cosa) != '\r')
--		return -9;
--	if (get_wait_data(cosa) != '\n')
--		return -10;
--#if 0
--	printk(KERN_DEBUG "cosa%d: microcode started\n", cosa->num);
--#endif
--	return 0;
--}
--
--/* Reading memory is done via the "r" command of the SRP monitor.
-- * The chat is the following "r" "r=" "<addr> " " =" "<last_byte> " " "
-- * Then driver can read the data and the conversation is finished
-- * by SRP monitor sending "<CR><LF>." (dot at the end).
-- *
-- * This routine is not needed during the normal operation and serves
-- * for debugging purposes only.
-- */
--static int readmem(struct cosa_data *cosa, char __user *microcode, int length, int address)
--{
--	if (put_wait_data(cosa, 'r') == -1)
--		return -1;
--	if ((get_wait_data(cosa)) != 'r')
--		return -2;
--	if ((get_wait_data(cosa)) != '=')
--		return -3;
--
--	if (puthexnumber(cosa, address) < 0)
--		return -4;
--	if (put_wait_data(cosa, ' ') == -1)
--		return -5;
--	if (get_wait_data(cosa) != ' ')
--		return -6;
--	if (get_wait_data(cosa) != '=')
--		return -7;
--
--	if (puthexnumber(cosa, address + length - 1) < 0)
--		return -8;
--	if (put_wait_data(cosa, ' ') == -1)
--		return -9;
--	if (get_wait_data(cosa) != ' ')
--		return -10;
--
--	while (length--) {
--		char c;
--		int i;
--
--		i = get_wait_data(cosa);
--		if (i == -1) {
--			pr_info("0x%04x bytes remaining\n", length);
--			return -11;
--		}
--		c = i;
--#if 1
--		if (put_user(c, microcode))
--			return -23; /* ??? */
--#else
--		*microcode = c;
--#endif
--		microcode++;
--	}
--
--	if (get_wait_data(cosa) != '\r')
--		return -21;
--	if (get_wait_data(cosa) != '\n')
--		return -22;
--	if (get_wait_data(cosa) != '.')
--		return -23;
--#if 0
--	printk(KERN_DEBUG "cosa%d: readmem completed.\n", cosa->num);
--#endif
--	return 0;
--}
--
--/* This function resets the device and reads the initial prompt
-- * of the device's ROM monitor.
-- */
--static int cosa_reset_and_read_id(struct cosa_data *cosa, char *idstring)
--{
--	int i = 0, id = 0, prev = 0, curr = 0;
--
--	/* Reset the card ... */
--	cosa_putstatus(cosa, 0);
--	cosa_getdata8(cosa);
--	cosa_putstatus(cosa, SR_RST);
--	msleep(500);
--	/* Disable all IRQs from the card */
--	cosa_putstatus(cosa, 0);
--
--	/* Try to read the ID string. The card then prints out the
--	 * identification string ended by the "\n\x2e".
--	 *
--	 * The following loop is indexed through i (instead of id)
--	 * to avoid looping forever when for any reason
--	 * the port returns '\r', '\n' or '\x2e' permanently.
--	 */
--	for (i = 0; i < COSA_MAX_ID_STRING - 1; i++, prev = curr) {
--		curr = get_wait_data(cosa);
--		if (curr == -1)
--			return -1;
--
--		curr &= 0xff;
--		if (curr != '\r' && curr != '\n' && curr != 0x2e)
--			idstring[id++] = curr;
--		if (curr == 0x2e && prev == '\n')
--			break;
--	}
--	/* Perhaps we should fail when i==COSA_MAX_ID_STRING-1 ? */
--	idstring[id] = '\0';
--	return id;
--}
--
--/* ---------- Auxiliary routines for COSA/SRP monitor ---------- */
--
--/* This routine gets the data byte from the card waiting for the SR_RX_RDY
-- * bit to be set in a loop. It should be used in the exceptional cases
-- * only (for example when resetting the card or downloading the firmware.
-- */
--static int get_wait_data(struct cosa_data *cosa)
--{
--	int retries = 1000;
--
--	while (--retries) {
--		/* read data and return them */
--		if (cosa_getstatus(cosa) & SR_RX_RDY) {
--			short r;
--
--			r = cosa_getdata8(cosa);
--#if 0
--			pr_info("get_wait_data returning after %d retries\n",
--				999 - retries);
--#endif
--			return r;
--		}
--		/* sleep if not ready to read */
--		schedule_timeout_interruptible(1);
--	}
--	pr_info("timeout in get_wait_data (status 0x%x)\n",
--		cosa_getstatus(cosa));
--	return -1;
--}
--
--/* This routine puts the data byte to the card waiting for the SR_TX_RDY
-- * bit to be set in a loop. It should be used in the exceptional cases
-- * only (for example when resetting the card or downloading the firmware).
-- */
--static int put_wait_data(struct cosa_data *cosa, int data)
--{
--	int retries = 1000;
--
--	while (--retries) {
--		/* read data and return them */
--		if (cosa_getstatus(cosa) & SR_TX_RDY) {
--			cosa_putdata8(cosa, data);
--#if 0
--			pr_info("Putdata: %d retries\n", 999 - retries);
--#endif
--			return 0;
--		}
--#if 0
--		/* sleep if not ready to read */
--		schedule_timeout_interruptible(1);
--#endif
--	}
--	pr_info("cosa%d: timeout in put_wait_data (status 0x%x)\n",
--		cosa->num, cosa_getstatus(cosa));
--	return -1;
--}
--
--/* The following routine puts the hexadecimal number into the SRP monitor
-- * and verifies the proper echo of the sent bytes. Returns 0 on success,
-- * negative number on failure (-1,-3,-5,-7) means that put_wait_data() failed,
-- * (-2,-4,-6,-8) means that reading echo failed.
-- */
--static int puthexnumber(struct cosa_data *cosa, int number)
--{
--	char temp[5];
--	int i;
--
--	/* Well, I should probably replace this by something faster. */
--	sprintf(temp, "%04X", number);
--	for (i = 0; i < 4; i++) {
--		if (put_wait_data(cosa, temp[i]) == -1) {
--			pr_notice("cosa%d: puthexnumber failed to write byte %d\n",
--				  cosa->num, i);
--			return -1 - 2 * i;
--		}
--		if (get_wait_data(cosa) != temp[i]) {
--			pr_notice("cosa%d: puthexhumber failed to read echo of byte %d\n",
--				  cosa->num, i);
--			return -2 - 2 * i;
--		}
--	}
--	return 0;
--}
--
--/* ---------- Interrupt routines ---------- */
--
--/* There are three types of interrupt:
-- * At the beginning of transmit - this handled is in tx_interrupt(),
-- * at the beginning of receive - it is in rx_interrupt() and
-- * at the end of transmit/receive - it is the eot_interrupt() function.
-- * These functions are multiplexed by cosa_interrupt() according to the
-- * COSA status byte. I have moved the rx/tx/eot interrupt handling into
-- * separate functions to make it more readable. These functions are inline,
-- * so there should be no overhead of function call.
-- *
-- * In the COSA bus-master mode, we need to tell the card the address of a
-- * buffer. Unfortunately, COSA may be too slow for us, so we must busy-wait.
-- * It's time to use the bottom half :-(
-- */
--
--/* Transmit interrupt routine - called when COSA is willing to obtain
-- * data from the OS. The most tricky part of the routine is selection
-- * of channel we (OS) want to send packet for. For SRP we should probably
-- * use the round-robin approach. The newer COSA firmwares have a simple
-- * flow-control - in the status word has bits 2 and 3 set to 1 means that the
-- * channel 0 or 1 doesn't want to receive data.
-- *
-- * It seems there is a bug in COSA firmware (need to trace it further):
-- * When the driver status says that the kernel has no more data for transmit
-- * (e.g. at the end of TX DMA) and then the kernel changes its mind
-- * (e.g. new packet is queued to hard_start_xmit()), the card issues
-- * the TX interrupt but does not mark the channel as ready-to-transmit.
-- * The fix seems to be to push the packet to COSA despite its request.
-- * We first try to obey the card's opinion, and then fall back to forced TX.
-- */
--static inline void tx_interrupt(struct cosa_data *cosa, int status)
--{
--	unsigned long flags, flags1;
--#ifdef DEBUG_IRQS
--	pr_info("cosa%d: SR_DOWN_REQUEST status=0x%04x\n", cosa->num, status);
--#endif
--	spin_lock_irqsave(&cosa->lock, flags);
--	set_bit(TXBIT, &cosa->rxtx);
--	if (!test_bit(IRQBIT, &cosa->rxtx)) {
--		/* flow control, see the comment above */
--		int i = 0;
--
--		if (!cosa->txbitmap) {
--			pr_warn("%s: No channel wants data in TX IRQ. Expect DMA timeout.\n",
--				cosa->name);
--			put_driver_status_nolock(cosa);
--			clear_bit(TXBIT, &cosa->rxtx);
--			spin_unlock_irqrestore(&cosa->lock, flags);
--			return;
--		}
--		while (1) {
--			cosa->txchan++;
--			i++;
--			if (cosa->txchan >= cosa->nchannels)
--				cosa->txchan = 0;
--			if (!(cosa->txbitmap & (1 << cosa->txchan)))
--				continue;
--			if (~status &
--			    (1 << (cosa->txchan + DRIVER_TXMAP_SHIFT)))
--				break;
--			/* in second pass, accept first ready-to-TX channel */
--			if (i > cosa->nchannels) {
--				/* Can be safely ignored */
--#ifdef DEBUG_IRQS
--				printk(KERN_DEBUG "%s: Forcing TX "
--					"to not-ready channel %d\n",
--					cosa->name, cosa->txchan);
--#endif
--				break;
--			}
--		}
--
--		cosa->txsize = cosa->chan[cosa->txchan].txsize;
--		if (cosa_dma_able(cosa->chan + cosa->txchan,
--				  cosa->chan[cosa->txchan].txbuf,
--				  cosa->txsize)) {
--			cosa->txbuf = cosa->chan[cosa->txchan].txbuf;
--		} else {
--			memcpy(cosa->bouncebuf, cosa->chan[cosa->txchan].txbuf,
--			       cosa->txsize);
--			cosa->txbuf = cosa->bouncebuf;
--		}
--	}
--
--	if (is_8bit(cosa)) {
--		if (!test_bit(IRQBIT, &cosa->rxtx)) {
--			cosa_putstatus(cosa, SR_TX_INT_ENA);
--			cosa_putdata8(cosa, ((cosa->txchan << 5) & 0xe0) |
--				((cosa->txsize >> 8) & 0x1f));
--#ifdef DEBUG_IO
--			debug_status_out(cosa, SR_TX_INT_ENA);
--			debug_data_out(cosa, ((cosa->txchan << 5) & 0xe0) |
--				       ((cosa->txsize >> 8) & 0x1f));
--			debug_data_in(cosa, cosa_getdata8(cosa));
--#else
--			cosa_getdata8(cosa);
--#endif
--			set_bit(IRQBIT, &cosa->rxtx);
--			spin_unlock_irqrestore(&cosa->lock, flags);
--			return;
--		} else {
--			clear_bit(IRQBIT, &cosa->rxtx);
--			cosa_putstatus(cosa, 0);
--			cosa_putdata8(cosa, cosa->txsize & 0xff);
--#ifdef DEBUG_IO
--			debug_status_out(cosa, 0);
--			debug_data_out(cosa, cosa->txsize & 0xff);
--#endif
--		}
--	} else {
--		cosa_putstatus(cosa, SR_TX_INT_ENA);
--		cosa_putdata16(cosa, ((cosa->txchan << 13) & 0xe000)
--			| (cosa->txsize & 0x1fff));
--#ifdef DEBUG_IO
--		debug_status_out(cosa, SR_TX_INT_ENA);
--		debug_data_out(cosa, ((cosa->txchan << 13) & 0xe000) |
--			       (cosa->txsize & 0x1fff));
--		debug_data_in(cosa, cosa_getdata8(cosa));
--		debug_status_out(cosa, 0);
--#else
--		cosa_getdata8(cosa);
--#endif
--		cosa_putstatus(cosa, 0);
--	}
--
--	if (cosa->busmaster) {
--		unsigned long addr = virt_to_bus(cosa->txbuf);
--		int count = 0;
--
--		pr_info("busmaster IRQ\n");
--		while (!(cosa_getstatus(cosa) & SR_TX_RDY)) {
--			count++;
--			udelay(10);
--			if (count > 1000)
--				break;
--		}
--		pr_info("status %x\n", cosa_getstatus(cosa));
--		pr_info("ready after %d loops\n", count);
--		cosa_putdata16(cosa, (addr >> 16) & 0xffff);
--
--		count = 0;
--		while (!(cosa_getstatus(cosa) & SR_TX_RDY)) {
--			count++;
--			if (count > 1000)
--				break;
--			udelay(10);
--		}
--		pr_info("ready after %d loops\n", count);
--		cosa_putdata16(cosa, addr & 0xffff);
--		flags1 = claim_dma_lock();
--		set_dma_mode(cosa->dma, DMA_MODE_CASCADE);
--		enable_dma(cosa->dma);
--		release_dma_lock(flags1);
--	} else {
--		/* start the DMA */
--		flags1 = claim_dma_lock();
--		disable_dma(cosa->dma);
--		clear_dma_ff(cosa->dma);
--		set_dma_mode(cosa->dma, DMA_MODE_WRITE);
--		set_dma_addr(cosa->dma, virt_to_bus(cosa->txbuf));
--		set_dma_count(cosa->dma, cosa->txsize);
--		enable_dma(cosa->dma);
--		release_dma_lock(flags1);
--	}
--	cosa_putstatus(cosa, SR_TX_DMA_ENA | SR_USR_INT_ENA);
--#ifdef DEBUG_IO
--	debug_status_out(cosa, SR_TX_DMA_ENA | SR_USR_INT_ENA);
--#endif
--	spin_unlock_irqrestore(&cosa->lock, flags);
--}
--
--static inline void rx_interrupt(struct cosa_data *cosa, int status)
--{
--	unsigned long flags;
--#ifdef DEBUG_IRQS
--	pr_info("cosa%d: SR_UP_REQUEST\n", cosa->num);
--#endif
--
--	spin_lock_irqsave(&cosa->lock, flags);
--	set_bit(RXBIT, &cosa->rxtx);
--
--	if (is_8bit(cosa)) {
--		if (!test_bit(IRQBIT, &cosa->rxtx)) {
--			set_bit(IRQBIT, &cosa->rxtx);
--			put_driver_status_nolock(cosa);
--			cosa->rxsize = cosa_getdata8(cosa) << 8;
--#ifdef DEBUG_IO
--			debug_data_in(cosa, cosa->rxsize >> 8);
--#endif
--			spin_unlock_irqrestore(&cosa->lock, flags);
--			return;
--		} else {
--			clear_bit(IRQBIT, &cosa->rxtx);
--			cosa->rxsize |= cosa_getdata8(cosa) & 0xff;
--#ifdef DEBUG_IO
--			debug_data_in(cosa, cosa->rxsize & 0xff);
--#endif
--#if 0
--			pr_info("cosa%d: receive rxsize = (0x%04x)\n",
--				cosa->num, cosa->rxsize);
--#endif
--		}
--	} else {
--		cosa->rxsize = cosa_getdata16(cosa);
--#ifdef DEBUG_IO
--		debug_data_in(cosa, cosa->rxsize);
--#endif
--#if 0
--		pr_info("cosa%d: receive rxsize = (0x%04x)\n",
--			cosa->num, cosa->rxsize);
--#endif
--	}
--	if (((cosa->rxsize & 0xe000) >> 13) >= cosa->nchannels) {
--		pr_warn("%s: rx for unknown channel (0x%04x)\n",
--			cosa->name, cosa->rxsize);
--		spin_unlock_irqrestore(&cosa->lock, flags);
--		goto reject;
--	}
--	cosa->rxchan = cosa->chan + ((cosa->rxsize & 0xe000) >> 13);
--	cosa->rxsize &= 0x1fff;
--	spin_unlock_irqrestore(&cosa->lock, flags);
--
--	cosa->rxbuf = NULL;
--	if (cosa->rxchan->setup_rx)
--		cosa->rxbuf = cosa->rxchan->setup_rx(cosa->rxchan, cosa->rxsize);
--
--	if (!cosa->rxbuf) {
--reject:		/* Reject the packet */
--		pr_info("cosa%d: rejecting packet on channel %d\n",
--			cosa->num, cosa->rxchan->num);
--		cosa->rxbuf = cosa->bouncebuf;
--	}
--
--	/* start the DMA */
--	flags = claim_dma_lock();
--	disable_dma(cosa->dma);
--	clear_dma_ff(cosa->dma);
--	set_dma_mode(cosa->dma, DMA_MODE_READ);
--	if (cosa_dma_able(cosa->rxchan, cosa->rxbuf, cosa->rxsize & 0x1fff))
--		set_dma_addr(cosa->dma, virt_to_bus(cosa->rxbuf));
--	else
--		set_dma_addr(cosa->dma, virt_to_bus(cosa->bouncebuf));
--
--	set_dma_count(cosa->dma, (cosa->rxsize & 0x1fff));
--	enable_dma(cosa->dma);
--	release_dma_lock(flags);
--	spin_lock_irqsave(&cosa->lock, flags);
--	cosa_putstatus(cosa, SR_RX_DMA_ENA | SR_USR_INT_ENA);
--	if (!is_8bit(cosa) && (status & SR_TX_RDY))
--		cosa_putdata8(cosa, DRIVER_RX_READY);
--#ifdef DEBUG_IO
--	debug_status_out(cosa, SR_RX_DMA_ENA | SR_USR_INT_ENA);
--	if (!is_8bit(cosa) && (status & SR_TX_RDY))
--		debug_data_cmd(cosa, DRIVER_RX_READY);
--#endif
--	spin_unlock_irqrestore(&cosa->lock, flags);
--}
--
--static inline void eot_interrupt(struct cosa_data *cosa, int status)
--{
--	unsigned long flags, flags1;
--
--	spin_lock_irqsave(&cosa->lock, flags);
--	flags1 = claim_dma_lock();
--	disable_dma(cosa->dma);
--	clear_dma_ff(cosa->dma);
--	release_dma_lock(flags1);
--	if (test_bit(TXBIT, &cosa->rxtx)) {
--		struct channel_data *chan = cosa->chan + cosa->txchan;
--
--		if (chan->tx_done)
--			if (chan->tx_done(chan, cosa->txsize))
--				clear_bit(chan->num, &cosa->txbitmap);
--	} else if (test_bit(RXBIT, &cosa->rxtx)) {
--#ifdef DEBUG_DATA
--	{
--		int i;
--
--		pr_info("cosa%dc%d: done rx(0x%x)",
--			cosa->num, cosa->rxchan->num, cosa->rxsize);
--		for (i = 0; i < cosa->rxsize; i++)
--			pr_cont(" %02x", cosa->rxbuf[i]&0xff);
--		pr_cont("\n");
--	}
--#endif
--		/* Packet for unknown channel? */
--		if (cosa->rxbuf == cosa->bouncebuf)
--			goto out;
--		if (!cosa_dma_able(cosa->rxchan, cosa->rxbuf, cosa->rxsize))
--			memcpy(cosa->rxbuf, cosa->bouncebuf, cosa->rxsize);
--		if (cosa->rxchan->rx_done)
--			if (cosa->rxchan->rx_done(cosa->rxchan))
--				clear_bit(cosa->rxchan->num, &cosa->rxbitmap);
--	} else {
--		pr_notice("cosa%d: unexpected EOT interrupt\n", cosa->num);
--	}
--	/* Clear the RXBIT, TXBIT and IRQBIT (the latest should be
--	 * cleared anyway). We should do it as soon as possible
--	 * so that we can tell the COSA we are done and to give it a time
--	 * for recovery.
--	 */
--out:
--	cosa->rxtx = 0;
--	put_driver_status_nolock(cosa);
--	spin_unlock_irqrestore(&cosa->lock, flags);
--}
--
--static irqreturn_t cosa_interrupt(int irq, void *cosa_)
--{
--	unsigned status;
--	int count = 0;
--	struct cosa_data *cosa = cosa_;
--again:
--	status = cosa_getstatus(cosa);
--#ifdef DEBUG_IRQS
--	pr_info("cosa%d: got IRQ, status 0x%02x\n", cosa->num, status & 0xff);
--#endif
--#ifdef DEBUG_IO
--	debug_status_in(cosa, status);
--#endif
--	switch (status & SR_CMD_FROM_SRP_MASK) {
--	case SR_DOWN_REQUEST:
--		tx_interrupt(cosa, status);
--		break;
--	case SR_UP_REQUEST:
--		rx_interrupt(cosa, status);
--		break;
--	case SR_END_OF_TRANSFER:
--		eot_interrupt(cosa, status);
--		break;
--	default:
--		/* We may be too fast for SRP. Try to wait a bit more. */
--		if (count++ < 100) {
--			udelay(100);
--			goto again;
--		}
--		pr_info("cosa%d: unknown status 0x%02x in IRQ after %d retries\n",
--			cosa->num, status & 0xff, count);
--	}
--#ifdef DEBUG_IRQS
--	if (count)
--		pr_info("%s: %d-times got unknown status in IRQ\n",
--			cosa->name, count);
--	else
--		pr_info("%s: returning from IRQ\n", cosa->name);
--#endif
--	return IRQ_HANDLED;
--}
--
--/* ---------- I/O debugging routines ---------- */
--/* These routines can be used to monitor COSA/SRP I/O and to printk()
-- * the data being transferred on the data and status I/O port in a
-- * readable way.
-- */
--
--#ifdef DEBUG_IO
--static void debug_status_in(struct cosa_data *cosa, int status)
--{
--	char *s;
--
--	switch (status & SR_CMD_FROM_SRP_MASK) {
--	case SR_UP_REQUEST:
--		s = "RX_REQ";
--		break;
--	case SR_DOWN_REQUEST:
--		s = "TX_REQ";
--		break;
--	case SR_END_OF_TRANSFER:
--		s = "ET_REQ";
--		break;
--	default:
--		s = "NO_REQ";
--		break;
--	}
--	pr_info("%s: IO: status -> 0x%02x (%s%s%s%s)\n",
--		cosa->name,
--		status,
--		status & SR_USR_RQ ? "USR_RQ|" : "",
--		status & SR_TX_RDY ? "TX_RDY|" : "",
--		status & SR_RX_RDY ? "RX_RDY|" : "",
--		s);
--}
--
--static void debug_status_out(struct cosa_data *cosa, int status)
--{
--	pr_info("%s: IO: status <- 0x%02x (%s%s%s%s%s%s)\n",
--		cosa->name,
--		status,
--		status & SR_RX_DMA_ENA  ? "RXDMA|"  : "!rxdma|",
--		status & SR_TX_DMA_ENA  ? "TXDMA|"  : "!txdma|",
--		status & SR_RST         ? "RESET|"  : "",
--		status & SR_USR_INT_ENA ? "USRINT|" : "!usrint|",
--		status & SR_TX_INT_ENA  ? "TXINT|"  : "!txint|",
--		status & SR_RX_INT_ENA  ? "RXINT"   : "!rxint");
--}
--
--static void debug_data_in(struct cosa_data *cosa, int data)
--{
--	pr_info("%s: IO: data -> 0x%04x\n", cosa->name, data);
--}
--
--static void debug_data_out(struct cosa_data *cosa, int data)
--{
--	pr_info("%s: IO: data <- 0x%04x\n", cosa->name, data);
--}
--
--static void debug_data_cmd(struct cosa_data *cosa, int data)
--{
--	pr_info("%s: IO: data <- 0x%04x (%s|%s)\n",
--		cosa->name, data,
--		data & SR_RDY_RCV ? "RX_RDY" : "!rx_rdy",
--		data & SR_RDY_SND ? "TX_RDY" : "!tx_rdy");
--}
--#endif
--
--/* EOF -- this file has not been truncated */
-diff --git a/drivers/net/wan/cosa.h b/drivers/net/wan/cosa.h
-deleted file mode 100644
-index f57e0af9d56a..000000000000
---- a/drivers/net/wan/cosa.h
-+++ /dev/null
-@@ -1,104 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0-or-later */
--/* $Id: cosa.h,v 1.6 1999/01/06 14:02:44 kas Exp $ */
--
--/*
-- *  Copyright (C) 1995-1997  Jan "Yenya" Kasprzak <kas@fi.muni.cz>
-- */
--
--#ifndef COSA_H__
--#define COSA_H__
--
--#include <linux/ioctl.h>
--
--#ifdef __KERNEL__
--/* status register - output bits */
--#define SR_RX_DMA_ENA   0x04    /* receiver DMA enable bit */
--#define SR_TX_DMA_ENA   0x08    /* transmitter DMA enable bit */
--#define SR_RST          0x10    /* SRP reset */
--#define SR_USR_INT_ENA  0x20    /* user interrupt enable bit */
--#define SR_TX_INT_ENA   0x40    /* transmitter interrupt enable bit */
--#define SR_RX_INT_ENA   0x80    /* receiver interrupt enable bit */
--
--/* status register - input bits */
--#define SR_USR_RQ       0x20    /* user interrupt request pending */
--#define SR_TX_RDY       0x40    /* transmitter empty (ready) */
--#define SR_RX_RDY       0x80    /* receiver data ready */
--
--#define SR_UP_REQUEST   0x02    /* request from SRP to transfer data
--                                   up to PC */
--#define SR_DOWN_REQUEST 0x01    /* SRP is able to transfer data down
--                                   from PC to SRP */
--#define SR_END_OF_TRANSFER      0x03    /* SRP signalize end of
--                                           transfer (up or down) */
--
--#define SR_CMD_FROM_SRP_MASK    0x03    /* mask to get SRP command */
--
--/* bits in driver status byte definitions : */
--#define SR_RDY_RCV      0x01    /* ready to receive packet */
--#define SR_RDY_SND      0x02    /* ready to send packet */
--#define SR_CMD_PND      0x04    /* command pending */ /* not currently used */
--
--/* ???? */
--#define SR_PKT_UP       0x01    /* transfer of packet up in progress */
--#define SR_PKT_DOWN     0x02    /* transfer of packet down in progress */
--
--#endif /* __KERNEL__ */
--
--#define SR_LOAD_ADDR    0x4400  /* SRP microcode load address */
--#define SR_START_ADDR   0x4400  /* SRP microcode start address */
--
--#define COSA_LOAD_ADDR    0x400  /* SRP microcode load address */
--#define COSA_MAX_FIRMWARE_SIZE	0x10000
--
--/* ioctls */
--struct cosa_download {
--	int addr, len;
--	char __user *code;
+-static const struct net_device_ops sealevel_ops = {
+-	.ndo_open       = sealevel_open,
+-	.ndo_stop       = sealevel_close,
+-	.ndo_start_xmit = hdlc_start_xmit,
+-	.ndo_siocwandev = hdlc_ioctl,
 -};
 -
--/* Reset the device */
--#define COSAIORSET	_IO('C',0xf0)
+-static int slvl_setup(struct slvl_device *sv, int iobase, int irq)
+-{
+-	struct net_device *dev = alloc_hdlcdev(sv);
 -
--/* Start microcode at given address */
--#define COSAIOSTRT	_IOW('C',0xf1, int)
+-	if (!dev)
+-		return -1;
 -
--/* Read the block from the device memory */
--#define COSAIORMEM	_IOWR('C',0xf2, struct cosa_download *)
--	/* actually the struct cosa_download itself; this is to keep
--	 * the ioctl number same as in 2.4 in order to keep the user-space
--	 * utils compatible. */
+-	dev_to_hdlc(dev)->attach = sealevel_attach;
+-	dev_to_hdlc(dev)->xmit = sealevel_queue_xmit;
+-	dev->netdev_ops = &sealevel_ops;
+-	dev->base_addr = iobase;
+-	dev->irq = irq;
 -
--/* Write the block to the device memory (i.e. download the microcode) */
--#define COSAIODOWNLD	_IOW('C',0xf2, struct cosa_download *)
--	/* actually the struct cosa_download itself; this is to keep
--	 * the ioctl number same as in 2.4 in order to keep the user-space
--	 * utils compatible. */
+-	if (register_hdlc_device(dev)) {
+-		pr_err("unable to register HDLC device\n");
+-		free_netdev(dev);
+-		return -1;
+-	}
 -
--/* Read the device type (one of "srp", "cosa", and "cosa8" for now) */
--#define COSAIORTYPE	_IOR('C',0xf3, char *)
+-	sv->chan->netdevice = dev;
+-	return 0;
+-}
 -
--/* Read the device identification string */
--#define COSAIORIDSTR	_IOR('C',0xf4, char *)
--/* Maximum length of the identification string. */
--#define COSA_MAX_ID_STRING 128
+-/*	Allocate and setup Sealevel board. */
 -
--/* Increment/decrement the module usage count :-) */
--/* #define COSAIOMINC	_IO('C',0xf5) */
--/* #define COSAIOMDEC	_IO('C',0xf6) */
+-static __init struct slvl_board *slvl_init(int iobase, int irq,
+-					   int txdma, int rxdma, int slow)
+-{
+-	struct z8530_dev *dev;
+-	struct slvl_board *b;
 -
--/* Get the total number of cards installed */
--#define COSAIONRCARDS	_IO('C',0xf7)
+-	/*	Get the needed I/O space */
 -
--/* Get the number of channels on this card */
--#define COSAIONRCHANS	_IO('C',0xf8)
+-	if (!request_region(iobase, 8, "Sealevel 4021")) {
+-		pr_warn("I/O 0x%X already in use\n", iobase);
+-		return NULL;
+-	}
 -
--/* Set the driver for the bus-master operations */
--#define COSAIOBMSET	_IOW('C', 0xf9, unsigned short)
+-	b = kzalloc(sizeof(struct slvl_board), GFP_KERNEL);
+-	if (!b)
+-		goto err_kzalloc;
 -
--#define COSA_BM_OFF	0	/* Bus-mastering off - use ISA DMA (default) */
--#define COSA_BM_ON	1	/* Bus-mastering on - faster but untested */
+-	b->dev[0].chan = &b->board.chanA;
+-	b->dev[0].channel = 0;
 -
--/* Gets the busmaster status */
--#define COSAIOBMGET	_IO('C', 0xfa)
+-	b->dev[1].chan = &b->board.chanB;
+-	b->dev[1].channel = 1;
 -
--#endif /* !COSA_H__ */
+-	dev = &b->board;
+-
+-	/*	Stuff in the I/O addressing */
+-
+-	dev->active = 0;
+-
+-	b->iobase = iobase;
+-
+-	/*	Select 8530 delays for the old board */
+-
+-	if (slow)
+-		iobase |= Z8530_PORT_SLEEP;
+-
+-	dev->chanA.ctrlio = iobase + 1;
+-	dev->chanA.dataio = iobase;
+-	dev->chanB.ctrlio = iobase + 3;
+-	dev->chanB.dataio = iobase + 2;
+-
+-	dev->chanA.irqs = &z8530_nop;
+-	dev->chanB.irqs = &z8530_nop;
+-
+-	/*	Assert DTR enable DMA */
+-
+-	outb(3 | (1 << 7), b->iobase + 4);
+-
+-	/* We want a fast IRQ for this device. Actually we'd like an even faster
+-	 * IRQ ;) - This is one driver RtLinux is made for
+-	 */
+-
+-	if (request_irq(irq, z8530_interrupt, 0,
+-			"SeaLevel", dev) < 0) {
+-		pr_warn("IRQ %d already in use\n", irq);
+-		goto err_request_irq;
+-	}
+-
+-	dev->irq = irq;
+-	dev->chanA.private = &b->dev[0];
+-	dev->chanB.private = &b->dev[1];
+-	dev->chanA.dev = dev;
+-	dev->chanB.dev = dev;
+-
+-	dev->chanA.txdma = 3;
+-	dev->chanA.rxdma = 1;
+-	if (request_dma(dev->chanA.txdma, "SeaLevel (TX)"))
+-		goto err_dma_tx;
+-
+-	if (request_dma(dev->chanA.rxdma, "SeaLevel (RX)"))
+-		goto err_dma_rx;
+-
+-	disable_irq(irq);
+-
+-	/*	Begin normal initialise */
+-
+-	if (z8530_init(dev) != 0) {
+-		pr_err("Z8530 series device not found\n");
+-		enable_irq(irq);
+-		goto free_hw;
+-	}
+-	if (dev->type == Z85C30) {
+-		z8530_channel_load(&dev->chanA, z8530_hdlc_kilostream);
+-		z8530_channel_load(&dev->chanB, z8530_hdlc_kilostream);
+-	} else {
+-		z8530_channel_load(&dev->chanA, z8530_hdlc_kilostream_85230);
+-		z8530_channel_load(&dev->chanB, z8530_hdlc_kilostream_85230);
+-	}
+-
+-	/*	Now we can take the IRQ */
+-
+-	enable_irq(irq);
+-
+-	if (slvl_setup(&b->dev[0], iobase, irq))
+-		goto free_hw;
+-	if (slvl_setup(&b->dev[1], iobase, irq))
+-		goto free_netdev0;
+-
+-	z8530_describe(dev, "I/O", iobase);
+-	dev->active = 1;
+-	return b;
+-
+-free_netdev0:
+-	unregister_hdlc_device(b->dev[0].chan->netdevice);
+-	free_netdev(b->dev[0].chan->netdevice);
+-free_hw:
+-	free_dma(dev->chanA.rxdma);
+-err_dma_rx:
+-	free_dma(dev->chanA.txdma);
+-err_dma_tx:
+-	free_irq(irq, dev);
+-err_request_irq:
+-	kfree(b);
+-err_kzalloc:
+-	release_region(iobase, 8);
+-	return NULL;
+-}
+-
+-static void __exit slvl_shutdown(struct slvl_board *b)
+-{
+-	int u;
+-
+-	z8530_shutdown(&b->board);
+-
+-	for (u = 0; u < 2; u++) {
+-		struct net_device *d = b->dev[u].chan->netdevice;
+-
+-		unregister_hdlc_device(d);
+-		free_netdev(d);
+-	}
+-
+-	free_irq(b->board.irq, &b->board);
+-	free_dma(b->board.chanA.rxdma);
+-	free_dma(b->board.chanA.txdma);
+-	/* DMA off on the card, drop DTR */
+-	outb(0, b->iobase);
+-	release_region(b->iobase, 8);
+-	kfree(b);
+-}
+-
+-static int io = 0x238;
+-static int txdma = 1;
+-static int rxdma = 3;
+-static int irq = 5;
+-static bool slow;
+-
+-module_param_hw(io, int, ioport, 0);
+-MODULE_PARM_DESC(io, "The I/O base of the Sealevel card");
+-module_param_hw(txdma, int, dma, 0);
+-MODULE_PARM_DESC(txdma, "Transmit DMA channel");
+-module_param_hw(rxdma, int, dma, 0);
+-MODULE_PARM_DESC(rxdma, "Receive DMA channel");
+-module_param_hw(irq, int, irq, 0);
+-MODULE_PARM_DESC(irq, "The interrupt line setting for the SeaLevel card");
+-module_param(slow, bool, 0);
+-MODULE_PARM_DESC(slow, "Set this for an older Sealevel card such as the 4012");
+-
+-MODULE_AUTHOR("Alan Cox");
+-MODULE_LICENSE("GPL");
+-MODULE_DESCRIPTION("Modular driver for the SeaLevel 4021");
+-
+-static struct slvl_board *slvl_unit;
+-
+-static int __init slvl_init_module(void)
+-{
+-	slvl_unit = slvl_init(io, irq, txdma, rxdma, slow);
+-
+-	return slvl_unit ? 0 : -ENODEV;
+-}
+-
+-static void __exit slvl_cleanup_module(void)
+-{
+-	if (slvl_unit)
+-		slvl_shutdown(slvl_unit);
+-}
+-
+-module_init(slvl_init_module);
+-module_exit(slvl_cleanup_module);
+diff --git a/drivers/net/wan/z85230.c b/drivers/net/wan/z85230.c
+deleted file mode 100644
+index 982a03488a00..000000000000
+--- a/drivers/net/wan/z85230.c
++++ /dev/null
+@@ -1,1641 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-or-later
+-/*	(c) Copyright 1998 Alan Cox <alan@lxorguk.ukuu.org.uk>
+- *	(c) Copyright 2000, 2001 Red Hat Inc
+- *
+- *	Development of this driver was funded by Equiinet Ltd
+- *			http://www.equiinet.com
+- *
+- *	ChangeLog:
+- *
+- *	Asynchronous mode dropped for 2.2. For 2.5 we will attempt the
+- *	unification of all the Z85x30 asynchronous drivers for real.
+- *
+- *	DMA now uses get_free_page as kmalloc buffers may span a 64K
+- *	boundary.
+- *
+- *	Modified for SMP safety and SMP locking by Alan Cox
+- *					<alan@lxorguk.ukuu.org.uk>
+- *
+- *	Performance
+- *
+- *	Z85230:
+- *	Non DMA you want a 486DX50 or better to do 64Kbits. 9600 baud
+- *	X.25 is not unrealistic on all machines. DMA mode can in theory
+- *	handle T1/E1 quite nicely. In practice the limit seems to be about
+- *	512Kbit->1Mbit depending on motherboard.
+- *
+- *	Z85C30:
+- *	64K will take DMA, 9600 baud X.25 should be ok.
+- *
+- *	Z8530:
+- *	Synchronous mode without DMA is unlikely to pass about 2400 baud.
+- */
+-
+-#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+-
+-#include <linux/module.h>
+-#include <linux/kernel.h>
+-#include <linux/mm.h>
+-#include <linux/net.h>
+-#include <linux/skbuff.h>
+-#include <linux/netdevice.h>
+-#include <linux/if_arp.h>
+-#include <linux/delay.h>
+-#include <linux/hdlc.h>
+-#include <linux/ioport.h>
+-#include <linux/init.h>
+-#include <linux/gfp.h>
+-#include <asm/dma.h>
+-#include <asm/io.h>
+-#define RT_LOCK
+-#define RT_UNLOCK
+-#include <linux/spinlock.h>
+-
+-#include "z85230.h"
+-
+-/**
+- *	z8530_read_port - Architecture specific interface function
+- *	@p: port to read
+- *
+- *	Provided port access methods. The Comtrol SV11 requires no delays
+- *	between accesses and uses PC I/O. Some drivers may need a 5uS delay
+- *
+- *	In the longer term this should become an architecture specific
+- *	section so that this can become a generic driver interface for all
+- *	platforms. For now we only handle PC I/O ports with or without the
+- *	dread 5uS sanity delay.
+- *
+- *	The caller must hold sufficient locks to avoid violating the horrible
+- *	5uS delay rule.
+- */
+-
+-static inline int z8530_read_port(unsigned long p)
+-{
+-	u8 r = inb(Z8530_PORT_OF(p));
+-
+-	if (p & Z8530_PORT_SLEEP) /* gcc should figure this out efficiently ! */
+-		udelay(5);
+-	return r;
+-}
+-
+-/**
+- *	z8530_write_port - Architecture specific interface function
+- *	@p: port to write
+- *	@d: value to write
+- *
+- *	Write a value to a port with delays if need be. Note that the
+- *	caller must hold locks to avoid read/writes from other contexts
+- *	violating the 5uS rule
+- *
+- *	In the longer term this should become an architecture specific
+- *	section so that this can become a generic driver interface for all
+- *	platforms. For now we only handle PC I/O ports with or without the
+- *	dread 5uS sanity delay.
+- */
+-
+-static inline void z8530_write_port(unsigned long p, u8 d)
+-{
+-	outb(d, Z8530_PORT_OF(p));
+-	if (p & Z8530_PORT_SLEEP)
+-		udelay(5);
+-}
+-
+-static void z8530_rx_done(struct z8530_channel *c);
+-static void z8530_tx_done(struct z8530_channel *c);
+-
+-/**
+- *	read_zsreg - Read a register from a Z85230
+- *	@c: Z8530 channel to read from (2 per chip)
+- *	@reg: Register to read
+- *	FIXME: Use a spinlock.
+- *
+- *	Most of the Z8530 registers are indexed off the control registers.
+- *	A read is done by writing to the control register and reading the
+- *	register back.  The caller must hold the lock
+- */
+-
+-static inline u8 read_zsreg(struct z8530_channel *c, u8 reg)
+-{
+-	if (reg)
+-		z8530_write_port(c->ctrlio, reg);
+-	return z8530_read_port(c->ctrlio);
+-}
+-
+-/**
+- *	read_zsdata - Read the data port of a Z8530 channel
+- *	@c: The Z8530 channel to read the data port from
+- *
+- *	The data port provides fast access to some things. We still
+- *	have all the 5uS delays to worry about.
+- */
+-
+-static inline u8 read_zsdata(struct z8530_channel *c)
+-{
+-	u8 r;
+-
+-	r = z8530_read_port(c->dataio);
+-	return r;
+-}
+-
+-/**
+- *	write_zsreg - Write to a Z8530 channel register
+- *	@c: The Z8530 channel
+- *	@reg: Register number
+- *	@val: Value to write
+- *
+- *	Write a value to an indexed register. The caller must hold the lock
+- *	to honour the irritating delay rules. We know about register 0
+- *	being fast to access.
+- *
+- *      Assumes c->lock is held.
+- */
+-static inline void write_zsreg(struct z8530_channel *c, u8 reg, u8 val)
+-{
+-	if (reg)
+-		z8530_write_port(c->ctrlio, reg);
+-	z8530_write_port(c->ctrlio, val);
+-}
+-
+-/**
+- *	write_zsctrl - Write to a Z8530 control register
+- *	@c: The Z8530 channel
+- *	@val: Value to write
+- *
+- *	Write directly to the control register on the Z8530
+- */
+-
+-static inline void write_zsctrl(struct z8530_channel *c, u8 val)
+-{
+-	z8530_write_port(c->ctrlio, val);
+-}
+-
+-/**
+- *	write_zsdata - Write to a Z8530 control register
+- *	@c: The Z8530 channel
+- *	@val: Value to write
+- *
+- *	Write directly to the data register on the Z8530
+- */
+-static inline void write_zsdata(struct z8530_channel *c, u8 val)
+-{
+-	z8530_write_port(c->dataio, val);
+-}
+-
+-/*	Register loading parameters for a dead port
+- */
+-
+-u8 z8530_dead_port[] = {
+-	255
+-};
+-EXPORT_SYMBOL(z8530_dead_port);
+-
+-/*	Register loading parameters for currently supported circuit types
+- */
+-
+-/*	Data clocked by telco end. This is the correct data for the UK
+- *	"kilostream" service, and most other similar services.
+- */
+-
+-u8 z8530_hdlc_kilostream[] = {
+-	4,	SYNC_ENAB | SDLC | X1CLK,
+-	2,	0,	/* No vector */
+-	1,	0,
+-	3,	ENT_HM | RxCRC_ENAB | Rx8,
+-	5,	TxCRC_ENAB | RTS | TxENAB | Tx8 | DTR,
+-	9,	0,		/* Disable interrupts */
+-	6,	0xFF,
+-	7,	FLAG,
+-	10,	ABUNDER | NRZ | CRCPS,/*MARKIDLE ??*/
+-	11,	TCTRxCP,
+-	14,	DISDPLL,
+-	15,	DCDIE | SYNCIE | CTSIE | TxUIE | BRKIE,
+-	1,	EXT_INT_ENAB | TxINT_ENAB | INT_ALL_Rx,
+-	9,	NV | MIE | NORESET,
+-	255
+-};
+-EXPORT_SYMBOL(z8530_hdlc_kilostream);
+-
+-/*	As above but for enhanced chips.
+- */
+-
+-u8 z8530_hdlc_kilostream_85230[] = {
+-	4,	SYNC_ENAB | SDLC | X1CLK,
+-	2,	0,	/* No vector */
+-	1,	0,
+-	3,	ENT_HM | RxCRC_ENAB | Rx8,
+-	5,	TxCRC_ENAB | RTS | TxENAB | Tx8 | DTR,
+-	9,	0,		/* Disable interrupts */
+-	6,	0xFF,
+-	7,	FLAG,
+-	10,	ABUNDER | NRZ | CRCPS,	/* MARKIDLE?? */
+-	11,	TCTRxCP,
+-	14,	DISDPLL,
+-	15,	DCDIE | SYNCIE | CTSIE | TxUIE | BRKIE,
+-	1,	EXT_INT_ENAB | TxINT_ENAB | INT_ALL_Rx,
+-	9,	NV | MIE | NORESET,
+-	23,	3,		/* Extended mode AUTO TX and EOM*/
+-
+-	255
+-};
+-EXPORT_SYMBOL(z8530_hdlc_kilostream_85230);
+-
+-/**
+- *	z8530_flush_fifo - Flush on chip RX FIFO
+- *	@c: Channel to flush
+- *
+- *	Flush the receive FIFO. There is no specific option for this, we
+- *	blindly read bytes and discard them. Reading when there is no data
+- *	is harmless. The 8530 has a 4 byte FIFO, the 85230 has 8 bytes.
+- *
+- *	All locking is handled for the caller. On return data may still be
+- *	present if it arrived during the flush.
+- */
+-
+-static void z8530_flush_fifo(struct z8530_channel *c)
+-{
+-	read_zsreg(c, R1);
+-	read_zsreg(c, R1);
+-	read_zsreg(c, R1);
+-	read_zsreg(c, R1);
+-	if (c->dev->type == Z85230) {
+-		read_zsreg(c, R1);
+-		read_zsreg(c, R1);
+-		read_zsreg(c, R1);
+-		read_zsreg(c, R1);
+-	}
+-}
+-
+-/**
+- *	z8530_rtsdtr - Control the outgoing DTS/RTS line
+- *	@c: The Z8530 channel to control;
+- *	@set: 1 to set, 0 to clear
+- *
+- *	Sets or clears DTR/RTS on the requested line. All locking is handled
+- *	by the caller. For now we assume all boards use the actual RTS/DTR
+- *	on the chip. Apparently one or two don't. We'll scream about them
+- *	later.
+- */
+-
+-static void z8530_rtsdtr(struct z8530_channel *c, int set)
+-{
+-	if (set)
+-		c->regs[5] |= (RTS | DTR);
+-	else
+-		c->regs[5] &= ~(RTS | DTR);
+-	write_zsreg(c, R5, c->regs[5]);
+-}
+-
+-/**
+- *	z8530_rx - Handle a PIO receive event
+- *	@c: Z8530 channel to process
+- *
+- *	Receive handler for receiving in PIO mode. This is much like the
+- *	async one but not quite the same or as complex
+- *
+- *	Note: Its intended that this handler can easily be separated from
+- *	the main code to run realtime. That'll be needed for some machines
+- *	(eg to ever clock 64kbits on a sparc ;)).
+- *
+- *	The RT_LOCK macros don't do anything now. Keep the code covered
+- *	by them as short as possible in all circumstances - clocks cost
+- *	baud. The interrupt handler is assumed to be atomic w.r.t. to
+- *	other code - this is true in the RT case too.
+- *
+- *	We only cover the sync cases for this. If you want 2Mbit async
+- *	do it yourself but consider medical assistance first. This non DMA
+- *	synchronous mode is portable code. The DMA mode assumes PCI like
+- *	ISA DMA
+- *
+- *	Called with the device lock held
+- */
+-
+-static void z8530_rx(struct z8530_channel *c)
+-{
+-	u8 ch, stat;
+-
+-	while (1) {
+-		/* FIFO empty ? */
+-		if (!(read_zsreg(c, R0) & 1))
+-			break;
+-		ch = read_zsdata(c);
+-		stat = read_zsreg(c, R1);
+-
+-		/*	Overrun ?
+-		 */
+-		if (c->count < c->max) {
+-			*c->dptr++ = ch;
+-			c->count++;
+-		}
+-
+-		if (stat & END_FR) {
+-			/*	Error ?
+-			 */
+-			if (stat & (Rx_OVR | CRC_ERR)) {
+-				/* Rewind the buffer and return */
+-				if (c->skb)
+-					c->dptr = c->skb->data;
+-				c->count = 0;
+-				if (stat & Rx_OVR) {
+-					pr_warn("%s: overrun\n", c->dev->name);
+-					c->rx_overrun++;
+-				}
+-				if (stat & CRC_ERR) {
+-					c->rx_crc_err++;
+-					/* printk("crc error\n"); */
+-				}
+-				/* Shove the frame upstream */
+-			} else {
+-				/*	Drop the lock for RX processing, or
+-				 *	there are deadlocks
+-				 */
+-				z8530_rx_done(c);
+-				write_zsctrl(c, RES_Rx_CRC);
+-			}
+-		}
+-	}
+-	/*	Clear irq
+-	 */
+-	write_zsctrl(c, ERR_RES);
+-	write_zsctrl(c, RES_H_IUS);
+-}
+-
+-/**
+- *	z8530_tx - Handle a PIO transmit event
+- *	@c: Z8530 channel to process
+- *
+- *	Z8530 transmit interrupt handler for the PIO mode. The basic
+- *	idea is to attempt to keep the FIFO fed. We fill as many bytes
+- *	in as possible, its quite possible that we won't keep up with the
+- *	data rate otherwise.
+- */
+-
+-static void z8530_tx(struct z8530_channel *c)
+-{
+-	while (c->txcount) {
+-		/* FIFO full ? */
+-		if (!(read_zsreg(c, R0) & 4))
+-			return;
+-		c->txcount--;
+-		/*	Shovel out the byte
+-		 */
+-		write_zsreg(c, R8, *c->tx_ptr++);
+-		write_zsctrl(c, RES_H_IUS);
+-		/* We are about to underflow */
+-		if (c->txcount == 0) {
+-			write_zsctrl(c, RES_EOM_L);
+-			write_zsreg(c, R10, c->regs[10] & ~ABUNDER);
+-		}
+-	}
+-
+-	/*	End of frame TX - fire another one
+-	 */
+-
+-	write_zsctrl(c, RES_Tx_P);
+-
+-	z8530_tx_done(c);
+-	write_zsctrl(c, RES_H_IUS);
+-}
+-
+-/**
+- *	z8530_status - Handle a PIO status exception
+- *	@chan: Z8530 channel to process
+- *
+- *	A status event occurred in PIO synchronous mode. There are several
+- *	reasons the chip will bother us here. A transmit underrun means we
+- *	failed to feed the chip fast enough and just broke a packet. A DCD
+- *	change is a line up or down.
+- */
+-
+-static void z8530_status(struct z8530_channel *chan)
+-{
+-	u8 status, altered;
+-
+-	status = read_zsreg(chan, R0);
+-	altered = chan->status ^ status;
+-
+-	chan->status = status;
+-
+-	if (status & TxEOM) {
+-/*		printk("%s: Tx underrun.\n", chan->dev->name); */
+-		chan->netdevice->stats.tx_fifo_errors++;
+-		write_zsctrl(chan, ERR_RES);
+-		z8530_tx_done(chan);
+-	}
+-
+-	if (altered & chan->dcdcheck) {
+-		if (status & chan->dcdcheck) {
+-			pr_info("%s: DCD raised\n", chan->dev->name);
+-			write_zsreg(chan, R3, chan->regs[3] | RxENABLE);
+-			if (chan->netdevice)
+-				netif_carrier_on(chan->netdevice);
+-		} else {
+-			pr_info("%s: DCD lost\n", chan->dev->name);
+-			write_zsreg(chan, R3, chan->regs[3] & ~RxENABLE);
+-			z8530_flush_fifo(chan);
+-			if (chan->netdevice)
+-				netif_carrier_off(chan->netdevice);
+-		}
+-	}
+-	write_zsctrl(chan, RES_EXT_INT);
+-	write_zsctrl(chan, RES_H_IUS);
+-}
+-
+-struct z8530_irqhandler z8530_sync = {
+-	.rx = z8530_rx,
+-	.tx = z8530_tx,
+-	.status = z8530_status,
+-};
+-EXPORT_SYMBOL(z8530_sync);
+-
+-/**
+- *	z8530_dma_rx - Handle a DMA RX event
+- *	@chan: Channel to handle
+- *
+- *	Non bus mastering DMA interfaces for the Z8x30 devices. This
+- *	is really pretty PC specific. The DMA mode means that most receive
+- *	events are handled by the DMA hardware. We get a kick here only if
+- *	a frame ended.
+- */
+-
+-static void z8530_dma_rx(struct z8530_channel *chan)
+-{
+-	if (chan->rxdma_on) {
+-		/* Special condition check only */
+-		u8 status;
+-
+-		read_zsreg(chan, R7);
+-		read_zsreg(chan, R6);
+-
+-		status = read_zsreg(chan, R1);
+-
+-		if (status & END_FR)
+-			z8530_rx_done(chan);	/* Fire up the next one */
+-
+-		write_zsctrl(chan, ERR_RES);
+-		write_zsctrl(chan, RES_H_IUS);
+-	} else {
+-		/* DMA is off right now, drain the slow way */
+-		z8530_rx(chan);
+-	}
+-}
+-
+-/**
+- *	z8530_dma_tx - Handle a DMA TX event
+- *	@chan:	The Z8530 channel to handle
+- *
+- *	We have received an interrupt while doing DMA transmissions. It
+- *	shouldn't happen. Scream loudly if it does.
+- */
+-static void z8530_dma_tx(struct z8530_channel *chan)
+-{
+-	if (!chan->dma_tx) {
+-		pr_warn("Hey who turned the DMA off?\n");
+-		z8530_tx(chan);
+-		return;
+-	}
+-	/* This shouldn't occur in DMA mode */
+-	pr_err("DMA tx - bogus event!\n");
+-	z8530_tx(chan);
+-}
+-
+-/**
+- *	z8530_dma_status - Handle a DMA status exception
+- *	@chan: Z8530 channel to process
+- *
+- *	A status event occurred on the Z8530. We receive these for two reasons
+- *	when in DMA mode. Firstly if we finished a packet transfer we get one
+- *	and kick the next packet out. Secondly we may see a DCD change.
+- *
+- */
+-static void z8530_dma_status(struct z8530_channel *chan)
+-{
+-	u8 status, altered;
+-
+-	status = read_zsreg(chan, R0);
+-	altered = chan->status ^ status;
+-
+-	chan->status = status;
+-
+-	if (chan->dma_tx) {
+-		if (status & TxEOM) {
+-			unsigned long flags;
+-
+-			flags = claim_dma_lock();
+-			disable_dma(chan->txdma);
+-			clear_dma_ff(chan->txdma);
+-			chan->txdma_on = 0;
+-			release_dma_lock(flags);
+-			z8530_tx_done(chan);
+-		}
+-	}
+-
+-	if (altered & chan->dcdcheck) {
+-		if (status & chan->dcdcheck) {
+-			pr_info("%s: DCD raised\n", chan->dev->name);
+-			write_zsreg(chan, R3, chan->regs[3] | RxENABLE);
+-			if (chan->netdevice)
+-				netif_carrier_on(chan->netdevice);
+-		} else {
+-			pr_info("%s: DCD lost\n", chan->dev->name);
+-			write_zsreg(chan, R3, chan->regs[3] & ~RxENABLE);
+-			z8530_flush_fifo(chan);
+-			if (chan->netdevice)
+-				netif_carrier_off(chan->netdevice);
+-		}
+-	}
+-
+-	write_zsctrl(chan, RES_EXT_INT);
+-	write_zsctrl(chan, RES_H_IUS);
+-}
+-
+-static struct z8530_irqhandler z8530_dma_sync = {
+-	.rx = z8530_dma_rx,
+-	.tx = z8530_dma_tx,
+-	.status = z8530_dma_status,
+-};
+-
+-static struct z8530_irqhandler z8530_txdma_sync = {
+-	.rx = z8530_rx,
+-	.tx = z8530_dma_tx,
+-	.status = z8530_dma_status,
+-};
+-
+-/**
+- *	z8530_rx_clear - Handle RX events from a stopped chip
+- *	@c: Z8530 channel to shut up
+- *
+- *	Receive interrupt vectors for a Z8530 that is in 'parked' mode.
+- *	For machines with PCI Z85x30 cards, or level triggered interrupts
+- *	(eg the MacII) we must clear the interrupt cause or die.
+- */
+-
+-static void z8530_rx_clear(struct z8530_channel *c)
+-{
+-	/*	Data and status bytes
+-	 */
+-	u8 stat;
+-
+-	read_zsdata(c);
+-	stat = read_zsreg(c, R1);
+-
+-	if (stat & END_FR)
+-		write_zsctrl(c, RES_Rx_CRC);
+-	/*	Clear irq
+-	 */
+-	write_zsctrl(c, ERR_RES);
+-	write_zsctrl(c, RES_H_IUS);
+-}
+-
+-/**
+- *	z8530_tx_clear - Handle TX events from a stopped chip
+- *	@c: Z8530 channel to shut up
+- *
+- *	Transmit interrupt vectors for a Z8530 that is in 'parked' mode.
+- *	For machines with PCI Z85x30 cards, or level triggered interrupts
+- *	(eg the MacII) we must clear the interrupt cause or die.
+- */
+-
+-static void z8530_tx_clear(struct z8530_channel *c)
+-{
+-	write_zsctrl(c, RES_Tx_P);
+-	write_zsctrl(c, RES_H_IUS);
+-}
+-
+-/**
+- *	z8530_status_clear - Handle status events from a stopped chip
+- *	@chan: Z8530 channel to shut up
+- *
+- *	Status interrupt vectors for a Z8530 that is in 'parked' mode.
+- *	For machines with PCI Z85x30 cards, or level triggered interrupts
+- *	(eg the MacII) we must clear the interrupt cause or die.
+- */
+-
+-static void z8530_status_clear(struct z8530_channel *chan)
+-{
+-	u8 status = read_zsreg(chan, R0);
+-
+-	if (status & TxEOM)
+-		write_zsctrl(chan, ERR_RES);
+-	write_zsctrl(chan, RES_EXT_INT);
+-	write_zsctrl(chan, RES_H_IUS);
+-}
+-
+-struct z8530_irqhandler z8530_nop = {
+-	.rx = z8530_rx_clear,
+-	.tx = z8530_tx_clear,
+-	.status = z8530_status_clear,
+-};
+-EXPORT_SYMBOL(z8530_nop);
+-
+-/**
+- *	z8530_interrupt - Handle an interrupt from a Z8530
+- *	@irq: Interrupt number
+- *	@dev_id: The Z8530 device that is interrupting.
+- *
+- *	A Z85[2]30 device has stuck its hand in the air for attention.
+- *	We scan both the channels on the chip for events and then call
+- *	the channel specific call backs for each channel that has events.
+- *	We have to use callback functions because the two channels can be
+- *	in different modes.
+- *
+- *	Locking is done for the handlers. Note that locking is done
+- *	at the chip level (the 5uS delay issue is per chip not per
+- *	channel). c->lock for both channels points to dev->lock
+- */
+-
+-irqreturn_t z8530_interrupt(int irq, void *dev_id)
+-{
+-	struct z8530_dev *dev = dev_id;
+-	u8 intr;
+-	static volatile int locker=0;
+-	int work = 0;
+-	struct z8530_irqhandler *irqs;
+-
+-	if (locker) {
+-		pr_err("IRQ re-enter\n");
+-		return IRQ_NONE;
+-	}
+-	locker = 1;
+-
+-	spin_lock(&dev->lock);
+-
+-	while (++work < 5000) {
+-		intr = read_zsreg(&dev->chanA, R3);
+-		if (!(intr &
+-		   (CHARxIP | CHATxIP | CHAEXT | CHBRxIP | CHBTxIP | CHBEXT)))
+-			break;
+-
+-		/* This holds the IRQ status. On the 8530 you must read it
+-		 * from chan A even though it applies to the whole chip
+-		 */
+-
+-		/* Now walk the chip and see what it is wanting - it may be
+-		 * an IRQ for someone else remember
+-		 */
+-
+-		irqs = dev->chanA.irqs;
+-
+-		if (intr & (CHARxIP | CHATxIP | CHAEXT)) {
+-			if (intr & CHARxIP)
+-				irqs->rx(&dev->chanA);
+-			if (intr & CHATxIP)
+-				irqs->tx(&dev->chanA);
+-			if (intr & CHAEXT)
+-				irqs->status(&dev->chanA);
+-		}
+-
+-		irqs = dev->chanB.irqs;
+-
+-		if (intr & (CHBRxIP | CHBTxIP | CHBEXT)) {
+-			if (intr & CHBRxIP)
+-				irqs->rx(&dev->chanB);
+-			if (intr & CHBTxIP)
+-				irqs->tx(&dev->chanB);
+-			if (intr & CHBEXT)
+-				irqs->status(&dev->chanB);
+-		}
+-	}
+-	spin_unlock(&dev->lock);
+-	if (work == 5000)
+-		pr_err("%s: interrupt jammed - abort(0x%X)!\n",
+-		       dev->name, intr);
+-	/* Ok all done */
+-	locker = 0;
+-	return IRQ_HANDLED;
+-}
+-EXPORT_SYMBOL(z8530_interrupt);
+-
+-static const u8 reg_init[16] = {
+-	0, 0, 0, 0,
+-	0, 0, 0, 0,
+-	0, 0, 0, 0,
+-	0x55, 0, 0, 0
+-};
+-
+-/**
+- *	z8530_sync_open - Open a Z8530 channel for PIO
+- *	@dev:	The network interface we are using
+- *	@c:	The Z8530 channel to open in synchronous PIO mode
+- *
+- *	Switch a Z8530 into synchronous mode without DMA assist. We
+- *	raise the RTS/DTR and commence network operation.
+- */
+-int z8530_sync_open(struct net_device *dev, struct z8530_channel *c)
+-{
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(c->lock, flags);
+-
+-	c->sync = 1;
+-	c->mtu = dev->mtu + 64;
+-	c->count = 0;
+-	c->skb = NULL;
+-	c->skb2 = NULL;
+-	c->irqs = &z8530_sync;
+-
+-	/* This loads the double buffer up */
+-	z8530_rx_done(c);	/* Load the frame ring */
+-	z8530_rx_done(c);	/* Load the backup frame */
+-	z8530_rtsdtr(c, 1);
+-	c->dma_tx = 0;
+-	c->regs[R1] |= TxINT_ENAB;
+-	write_zsreg(c, R1, c->regs[R1]);
+-	write_zsreg(c, R3, c->regs[R3] | RxENABLE);
+-
+-	spin_unlock_irqrestore(c->lock, flags);
+-	return 0;
+-}
+-EXPORT_SYMBOL(z8530_sync_open);
+-
+-/**
+- *	z8530_sync_close - Close a PIO Z8530 channel
+- *	@dev: Network device to close
+- *	@c: Z8530 channel to disassociate and move to idle
+- *
+- *	Close down a Z8530 interface and switch its interrupt handlers
+- *	to discard future events.
+- */
+-int z8530_sync_close(struct net_device *dev, struct z8530_channel *c)
+-{
+-	u8 chk;
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(c->lock, flags);
+-	c->irqs = &z8530_nop;
+-	c->max = 0;
+-	c->sync = 0;
+-
+-	chk = read_zsreg(c, R0);
+-	write_zsreg(c, R3, c->regs[R3]);
+-	z8530_rtsdtr(c, 0);
+-
+-	spin_unlock_irqrestore(c->lock, flags);
+-	return 0;
+-}
+-EXPORT_SYMBOL(z8530_sync_close);
+-
+-/**
+- *	z8530_sync_dma_open - Open a Z8530 for DMA I/O
+- *	@dev: The network device to attach
+- *	@c: The Z8530 channel to configure in sync DMA mode.
+- *
+- *	Set up a Z85x30 device for synchronous DMA in both directions. Two
+- *	ISA DMA channels must be available for this to work. We assume ISA
+- *	DMA driven I/O and PC limits on access.
+- */
+-int z8530_sync_dma_open(struct net_device *dev, struct z8530_channel *c)
+-{
+-	unsigned long cflags, dflags;
+-
+-	c->sync = 1;
+-	c->mtu = dev->mtu + 64;
+-	c->count = 0;
+-	c->skb = NULL;
+-	c->skb2 = NULL;
+-
+-	/*	Load the DMA interfaces up
+-	 */
+-	c->rxdma_on = 0;
+-	c->txdma_on = 0;
+-
+-	/*	Allocate the DMA flip buffers. Limit by page size.
+-	 *	Everyone runs 1500 mtu or less on wan links so this
+-	 *	should be fine.
+-	 */
+-
+-	if (c->mtu  > PAGE_SIZE / 2)
+-		return -EMSGSIZE;
+-
+-	c->rx_buf[0] = (void *)get_zeroed_page(GFP_KERNEL | GFP_DMA);
+-	if (!c->rx_buf[0])
+-		return -ENOBUFS;
+-	c->rx_buf[1] = c->rx_buf[0] + PAGE_SIZE / 2;
+-
+-	c->tx_dma_buf[0] = (void *)get_zeroed_page(GFP_KERNEL | GFP_DMA);
+-	if (!c->tx_dma_buf[0]) {
+-		free_page((unsigned long)c->rx_buf[0]);
+-		c->rx_buf[0] = NULL;
+-		return -ENOBUFS;
+-	}
+-	c->tx_dma_buf[1] = c->tx_dma_buf[0] + PAGE_SIZE / 2;
+-
+-	c->tx_dma_used = 0;
+-	c->dma_tx = 1;
+-	c->dma_num = 0;
+-	c->dma_ready = 1;
+-
+-	/*	Enable DMA control mode
+-	 */
+-
+-	spin_lock_irqsave(c->lock, cflags);
+-
+-	/*	TX DMA via DIR/REQ
+-	 */
+-
+-	c->regs[R14] |= DTRREQ;
+-	write_zsreg(c, R14, c->regs[R14]);
+-
+-	c->regs[R1] &= ~TxINT_ENAB;
+-	write_zsreg(c, R1, c->regs[R1]);
+-
+-	/*	RX DMA via W/Req
+-	 */
+-
+-	c->regs[R1] |= WT_FN_RDYFN;
+-	c->regs[R1] |= WT_RDY_RT;
+-	c->regs[R1] |= INT_ERR_Rx;
+-	c->regs[R1] &= ~TxINT_ENAB;
+-	write_zsreg(c, R1, c->regs[R1]);
+-	c->regs[R1] |= WT_RDY_ENAB;
+-	write_zsreg(c, R1, c->regs[R1]);
+-
+-	/*	DMA interrupts
+-	 */
+-
+-	/*	Set up the DMA configuration
+-	 */
+-
+-	dflags = claim_dma_lock();
+-
+-	disable_dma(c->rxdma);
+-	clear_dma_ff(c->rxdma);
+-	set_dma_mode(c->rxdma, DMA_MODE_READ | 0x10);
+-	set_dma_addr(c->rxdma, virt_to_bus(c->rx_buf[0]));
+-	set_dma_count(c->rxdma, c->mtu);
+-	enable_dma(c->rxdma);
+-
+-	disable_dma(c->txdma);
+-	clear_dma_ff(c->txdma);
+-	set_dma_mode(c->txdma, DMA_MODE_WRITE);
+-	disable_dma(c->txdma);
+-
+-	release_dma_lock(dflags);
+-
+-	/*	Select the DMA interrupt handlers
+-	 */
+-
+-	c->rxdma_on = 1;
+-	c->txdma_on = 1;
+-	c->tx_dma_used = 1;
+-
+-	c->irqs = &z8530_dma_sync;
+-	z8530_rtsdtr(c, 1);
+-	write_zsreg(c, R3, c->regs[R3] | RxENABLE);
+-
+-	spin_unlock_irqrestore(c->lock, cflags);
+-
+-	return 0;
+-}
+-EXPORT_SYMBOL(z8530_sync_dma_open);
+-
+-/**
+- *	z8530_sync_dma_close - Close down DMA I/O
+- *	@dev: Network device to detach
+- *	@c: Z8530 channel to move into discard mode
+- *
+- *	Shut down a DMA mode synchronous interface. Halt the DMA, and
+- *	free the buffers.
+- */
+-int z8530_sync_dma_close(struct net_device *dev, struct z8530_channel *c)
+-{
+-	u8 chk;
+-	unsigned long flags;
+-
+-	c->irqs = &z8530_nop;
+-	c->max = 0;
+-	c->sync = 0;
+-
+-	/*	Disable the PC DMA channels
+-	 */
+-
+-	flags = claim_dma_lock();
+-	disable_dma(c->rxdma);
+-	clear_dma_ff(c->rxdma);
+-
+-	c->rxdma_on = 0;
+-
+-	disable_dma(c->txdma);
+-	clear_dma_ff(c->txdma);
+-	release_dma_lock(flags);
+-
+-	c->txdma_on = 0;
+-	c->tx_dma_used = 0;
+-
+-	spin_lock_irqsave(c->lock, flags);
+-
+-	/*	Disable DMA control mode
+-	 */
+-
+-	c->regs[R1] &= ~WT_RDY_ENAB;
+-	write_zsreg(c, R1, c->regs[R1]);
+-	c->regs[R1] &= ~(WT_RDY_RT | WT_FN_RDYFN | INT_ERR_Rx);
+-	c->regs[R1] |= INT_ALL_Rx;
+-	write_zsreg(c, R1, c->regs[R1]);
+-	c->regs[R14] &= ~DTRREQ;
+-	write_zsreg(c, R14, c->regs[R14]);
+-
+-	if (c->rx_buf[0]) {
+-		free_page((unsigned long)c->rx_buf[0]);
+-		c->rx_buf[0] = NULL;
+-	}
+-	if (c->tx_dma_buf[0]) {
+-		free_page((unsigned  long)c->tx_dma_buf[0]);
+-		c->tx_dma_buf[0] = NULL;
+-	}
+-	chk = read_zsreg(c, R0);
+-	write_zsreg(c, R3, c->regs[R3]);
+-	z8530_rtsdtr(c, 0);
+-
+-	spin_unlock_irqrestore(c->lock, flags);
+-
+-	return 0;
+-}
+-EXPORT_SYMBOL(z8530_sync_dma_close);
+-
+-/**
+- *	z8530_sync_txdma_open - Open a Z8530 for TX driven DMA
+- *	@dev: The network device to attach
+- *	@c: The Z8530 channel to configure in sync DMA mode.
+- *
+- *	Set up a Z85x30 device for synchronous DMA transmission. One
+- *	ISA DMA channel must be available for this to work. The receive
+- *	side is run in PIO mode, but then it has the bigger FIFO.
+- */
+-
+-int z8530_sync_txdma_open(struct net_device *dev, struct z8530_channel *c)
+-{
+-	unsigned long cflags, dflags;
+-
+-	printk("Opening sync interface for TX-DMA\n");
+-	c->sync = 1;
+-	c->mtu = dev->mtu + 64;
+-	c->count = 0;
+-	c->skb = NULL;
+-	c->skb2 = NULL;
+-
+-	/*	Allocate the DMA flip buffers. Limit by page size.
+-	 *	Everyone runs 1500 mtu or less on wan links so this
+-	 *	should be fine.
+-	 */
+-
+-	if (c->mtu > PAGE_SIZE / 2)
+-		return -EMSGSIZE;
+-
+-	c->tx_dma_buf[0] = (void *)get_zeroed_page(GFP_KERNEL | GFP_DMA);
+-	if (!c->tx_dma_buf[0])
+-		return -ENOBUFS;
+-
+-	c->tx_dma_buf[1] = c->tx_dma_buf[0] + PAGE_SIZE / 2;
+-
+-	spin_lock_irqsave(c->lock, cflags);
+-
+-	/*	Load the PIO receive ring
+-	 */
+-
+-	z8530_rx_done(c);
+-	z8530_rx_done(c);
+-
+-	/*	Load the DMA interfaces up
+-	 */
+-
+-	c->rxdma_on = 0;
+-	c->txdma_on = 0;
+-
+-	c->tx_dma_used = 0;
+-	c->dma_num = 0;
+-	c->dma_ready = 1;
+-	c->dma_tx = 1;
+-
+-	/*	Enable DMA control mode
+-	 */
+-
+-	/*	TX DMA via DIR/REQ
+-	 */
+-	c->regs[R14] |= DTRREQ;
+-	write_zsreg(c, R14, c->regs[R14]);
+-
+-	c->regs[R1] &= ~TxINT_ENAB;
+-	write_zsreg(c, R1, c->regs[R1]);
+-
+-	/*	Set up the DMA configuration
+-	 */
+-
+-	dflags = claim_dma_lock();
+-
+-	disable_dma(c->txdma);
+-	clear_dma_ff(c->txdma);
+-	set_dma_mode(c->txdma, DMA_MODE_WRITE);
+-	disable_dma(c->txdma);
+-
+-	release_dma_lock(dflags);
+-
+-	/*	Select the DMA interrupt handlers
+-	 */
+-
+-	c->rxdma_on = 0;
+-	c->txdma_on = 1;
+-	c->tx_dma_used = 1;
+-
+-	c->irqs = &z8530_txdma_sync;
+-	z8530_rtsdtr(c, 1);
+-	write_zsreg(c, R3, c->regs[R3] | RxENABLE);
+-	spin_unlock_irqrestore(c->lock, cflags);
+-
+-	return 0;
+-}
+-EXPORT_SYMBOL(z8530_sync_txdma_open);
+-
+-/**
+- *	z8530_sync_txdma_close - Close down a TX driven DMA channel
+- *	@dev: Network device to detach
+- *	@c: Z8530 channel to move into discard mode
+- *
+- *	Shut down a DMA/PIO split mode synchronous interface. Halt the DMA,
+- *	and  free the buffers.
+- */
+-
+-int z8530_sync_txdma_close(struct net_device *dev, struct z8530_channel *c)
+-{
+-	unsigned long dflags, cflags;
+-	u8 chk;
+-
+-	spin_lock_irqsave(c->lock, cflags);
+-
+-	c->irqs = &z8530_nop;
+-	c->max = 0;
+-	c->sync = 0;
+-
+-	/*	Disable the PC DMA channels
+-	 */
+-
+-	dflags = claim_dma_lock();
+-
+-	disable_dma(c->txdma);
+-	clear_dma_ff(c->txdma);
+-	c->txdma_on = 0;
+-	c->tx_dma_used = 0;
+-
+-	release_dma_lock(dflags);
+-
+-	/*	Disable DMA control mode
+-	 */
+-
+-	c->regs[R1] &= ~WT_RDY_ENAB;
+-	write_zsreg(c, R1, c->regs[R1]);
+-	c->regs[R1] &= ~(WT_RDY_RT | WT_FN_RDYFN | INT_ERR_Rx);
+-	c->regs[R1] |= INT_ALL_Rx;
+-	write_zsreg(c, R1, c->regs[R1]);
+-	c->regs[R14] &= ~DTRREQ;
+-	write_zsreg(c, R14, c->regs[R14]);
+-
+-	if (c->tx_dma_buf[0]) {
+-		free_page((unsigned long)c->tx_dma_buf[0]);
+-		c->tx_dma_buf[0] = NULL;
+-	}
+-	chk = read_zsreg(c, R0);
+-	write_zsreg(c, R3, c->regs[R3]);
+-	z8530_rtsdtr(c, 0);
+-
+-	spin_unlock_irqrestore(c->lock, cflags);
+-	return 0;
+-}
+-EXPORT_SYMBOL(z8530_sync_txdma_close);
+-
+-/*	Name strings for Z8530 chips. SGI claim to have a 130, Zilog deny
+- *	it exists...
+- */
+-static const char * const z8530_type_name[] = {
+-	"Z8530",
+-	"Z85C30",
+-	"Z85230"
+-};
+-
+-/**
+- *	z8530_describe - Uniformly describe a Z8530 port
+- *	@dev: Z8530 device to describe
+- *	@mapping: string holding mapping type (eg "I/O" or "Mem")
+- *	@io: the port value in question
+- *
+- *	Describe a Z8530 in a standard format. We must pass the I/O as
+- *	the port offset isn't predictable. The main reason for this function
+- *	is to try and get a common format of report.
+- */
+-
+-void z8530_describe(struct z8530_dev *dev, char *mapping, unsigned long io)
+-{
+-	pr_info("%s: %s found at %s 0x%lX, IRQ %d\n",
+-		dev->name,
+-		z8530_type_name[dev->type],
+-		mapping,
+-		Z8530_PORT_OF(io),
+-		dev->irq);
+-}
+-EXPORT_SYMBOL(z8530_describe);
+-
+-/*	Locked operation part of the z8530 init code
+- */
+-static inline int do_z8530_init(struct z8530_dev *dev)
+-{
+-	/* NOP the interrupt handlers first - we might get a
+-	 * floating IRQ transition when we reset the chip
+-	 */
+-	dev->chanA.irqs = &z8530_nop;
+-	dev->chanB.irqs = &z8530_nop;
+-	dev->chanA.dcdcheck = DCD;
+-	dev->chanB.dcdcheck = DCD;
+-
+-	/* Reset the chip */
+-	write_zsreg(&dev->chanA, R9, 0xC0);
+-	udelay(200);
+-	/* Now check its valid */
+-	write_zsreg(&dev->chanA, R12, 0xAA);
+-	if (read_zsreg(&dev->chanA, R12) != 0xAA)
+-		return -ENODEV;
+-	write_zsreg(&dev->chanA, R12, 0x55);
+-	if (read_zsreg(&dev->chanA, R12) != 0x55)
+-		return -ENODEV;
+-
+-	dev->type = Z8530;
+-
+-	/*	See the application note.
+-	 */
+-
+-	write_zsreg(&dev->chanA, R15, 0x01);
+-
+-	/*	If we can set the low bit of R15 then
+-	 *	the chip is enhanced.
+-	 */
+-
+-	if (read_zsreg(&dev->chanA, R15) == 0x01) {
+-		/* This C30 versus 230 detect is from Klaus Kudielka's dmascc */
+-		/* Put a char in the fifo */
+-		write_zsreg(&dev->chanA, R8, 0);
+-		if (read_zsreg(&dev->chanA, R0) & Tx_BUF_EMP)
+-			dev->type = Z85230;	/* Has a FIFO */
+-		else
+-			dev->type = Z85C30;	/* Z85C30, 1 byte FIFO */
+-	}
+-
+-	/*	The code assumes R7' and friends are
+-	 *	off. Use write_zsext() for these and keep
+-	 *	this bit clear.
+-	 */
+-
+-	write_zsreg(&dev->chanA, R15, 0);
+-
+-	/*	At this point it looks like the chip is behaving
+-	 */
+-
+-	memcpy(dev->chanA.regs, reg_init, 16);
+-	memcpy(dev->chanB.regs, reg_init, 16);
+-
+-	return 0;
+-}
+-
+-/**
+- *	z8530_init - Initialise a Z8530 device
+- *	@dev: Z8530 device to initialise.
+- *
+- *	Configure up a Z8530/Z85C30 or Z85230 chip. We check the device
+- *	is present, identify the type and then program it to hopefully
+- *	keep quite and behave. This matters a lot, a Z8530 in the wrong
+- *	state will sometimes get into stupid modes generating 10Khz
+- *	interrupt streams and the like.
+- *
+- *	We set the interrupt handler up to discard any events, in case
+- *	we get them during reset or setp.
+- *
+- *	Return 0 for success, or a negative value indicating the problem
+- *	in errno form.
+- */
+-
+-int z8530_init(struct z8530_dev *dev)
+-{
+-	unsigned long flags;
+-	int ret;
+-
+-	/* Set up the chip level lock */
+-	spin_lock_init(&dev->lock);
+-	dev->chanA.lock = &dev->lock;
+-	dev->chanB.lock = &dev->lock;
+-
+-	spin_lock_irqsave(&dev->lock, flags);
+-	ret = do_z8530_init(dev);
+-	spin_unlock_irqrestore(&dev->lock, flags);
+-
+-	return ret;
+-}
+-EXPORT_SYMBOL(z8530_init);
+-
+-/**
+- *	z8530_shutdown - Shutdown a Z8530 device
+- *	@dev: The Z8530 chip to shutdown
+- *
+- *	We set the interrupt handlers to silence any interrupts. We then
+- *	reset the chip and wait 100uS to be sure the reset completed. Just
+- *	in case the caller then tries to do stuff.
+- *
+- *	This is called without the lock held
+- */
+-int z8530_shutdown(struct z8530_dev *dev)
+-{
+-	unsigned long flags;
+-	/* Reset the chip */
+-
+-	spin_lock_irqsave(&dev->lock, flags);
+-	dev->chanA.irqs = &z8530_nop;
+-	dev->chanB.irqs = &z8530_nop;
+-	write_zsreg(&dev->chanA, R9, 0xC0);
+-	/* We must lock the udelay, the chip is offlimits here */
+-	udelay(100);
+-	spin_unlock_irqrestore(&dev->lock, flags);
+-	return 0;
+-}
+-EXPORT_SYMBOL(z8530_shutdown);
+-
+-/**
+- *	z8530_channel_load - Load channel data
+- *	@c: Z8530 channel to configure
+- *	@rtable: table of register, value pairs
+- *	FIXME: ioctl to allow user uploaded tables
+- *
+- *	Load a Z8530 channel up from the system data. We use +16 to
+- *	indicate the "prime" registers. The value 255 terminates the
+- *	table.
+- */
+-
+-int z8530_channel_load(struct z8530_channel *c, u8 *rtable)
+-{
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(c->lock, flags);
+-
+-	while (*rtable != 255) {
+-		int reg = *rtable++;
+-
+-		if (reg > 0x0F)
+-			write_zsreg(c, R15, c->regs[15] | 1);
+-		write_zsreg(c, reg & 0x0F, *rtable);
+-		if (reg > 0x0F)
+-			write_zsreg(c, R15, c->regs[15] & ~1);
+-		c->regs[reg] = *rtable++;
+-	}
+-	c->rx_function = z8530_null_rx;
+-	c->skb = NULL;
+-	c->tx_skb = NULL;
+-	c->tx_next_skb = NULL;
+-	c->mtu = 1500;
+-	c->max = 0;
+-	c->count = 0;
+-	c->status = read_zsreg(c, R0);
+-	c->sync = 1;
+-	write_zsreg(c, R3, c->regs[R3] | RxENABLE);
+-
+-	spin_unlock_irqrestore(c->lock, flags);
+-	return 0;
+-}
+-EXPORT_SYMBOL(z8530_channel_load);
+-
+-/**
+- *	z8530_tx_begin - Begin packet transmission
+- *	@c: The Z8530 channel to kick
+- *
+- *	This is the speed sensitive side of transmission. If we are called
+- *	and no buffer is being transmitted we commence the next buffer. If
+- *	nothing is queued we idle the sync.
+- *
+- *	Note: We are handling this code path in the interrupt path, keep it
+- *	fast or bad things will happen.
+- *
+- *	Called with the lock held.
+- */
+-
+-static void z8530_tx_begin(struct z8530_channel *c)
+-{
+-	unsigned long flags;
+-
+-	if (c->tx_skb)
+-		return;
+-
+-	c->tx_skb = c->tx_next_skb;
+-	c->tx_next_skb = NULL;
+-	c->tx_ptr = c->tx_next_ptr;
+-
+-	if (!c->tx_skb) {
+-		/* Idle on */
+-		if (c->dma_tx) {
+-			flags = claim_dma_lock();
+-			disable_dma(c->txdma);
+-			/*	Check if we crapped out.
+-			 */
+-			if (get_dma_residue(c->txdma)) {
+-				c->netdevice->stats.tx_dropped++;
+-				c->netdevice->stats.tx_fifo_errors++;
+-			}
+-			release_dma_lock(flags);
+-		}
+-		c->txcount = 0;
+-	} else {
+-		c->txcount = c->tx_skb->len;
+-
+-		if (c->dma_tx) {
+-			/*	FIXME. DMA is broken for the original 8530,
+-			 *	on the older parts we need to set a flag and
+-			 *	wait for a further TX interrupt to fire this
+-			 *	stage off
+-			 */
+-
+-			flags = claim_dma_lock();
+-			disable_dma(c->txdma);
+-
+-			/*	These two are needed by the 8530/85C30
+-			 *	and must be issued when idling.
+-			 */
+-			if (c->dev->type != Z85230) {
+-				write_zsctrl(c, RES_Tx_CRC);
+-				write_zsctrl(c, RES_EOM_L);
+-			}
+-			write_zsreg(c, R10, c->regs[10] & ~ABUNDER);
+-			clear_dma_ff(c->txdma);
+-			set_dma_addr(c->txdma, virt_to_bus(c->tx_ptr));
+-			set_dma_count(c->txdma, c->txcount);
+-			enable_dma(c->txdma);
+-			release_dma_lock(flags);
+-			write_zsctrl(c, RES_EOM_L);
+-			write_zsreg(c, R5, c->regs[R5] | TxENAB);
+-		} else {
+-			/* ABUNDER off */
+-			write_zsreg(c, R10, c->regs[10]);
+-			write_zsctrl(c, RES_Tx_CRC);
+-
+-			while (c->txcount && (read_zsreg(c, R0) & Tx_BUF_EMP)) {
+-				write_zsreg(c, R8, *c->tx_ptr++);
+-				c->txcount--;
+-			}
+-		}
+-	}
+-	/*	Since we emptied tx_skb we can ask for more
+-	 */
+-	netif_wake_queue(c->netdevice);
+-}
+-
+-/**
+- *	z8530_tx_done - TX complete callback
+- *	@c: The channel that completed a transmit.
+- *
+- *	This is called when we complete a packet send. We wake the queue,
+- *	start the next packet going and then free the buffer of the existing
+- *	packet. This code is fairly timing sensitive.
+- *
+- *	Called with the register lock held.
+- */
+-
+-static void z8530_tx_done(struct z8530_channel *c)
+-{
+-	struct sk_buff *skb;
+-
+-	/* Actually this can happen.*/
+-	if (!c->tx_skb)
+-		return;
+-
+-	skb = c->tx_skb;
+-	c->tx_skb = NULL;
+-	z8530_tx_begin(c);
+-	c->netdevice->stats.tx_packets++;
+-	c->netdevice->stats.tx_bytes += skb->len;
+-	dev_consume_skb_irq(skb);
+-}
+-
+-/**
+- *	z8530_null_rx - Discard a packet
+- *	@c: The channel the packet arrived on
+- *	@skb: The buffer
+- *
+- *	We point the receive handler at this function when idle. Instead
+- *	of processing the frames we get to throw them away.
+- */
+-void z8530_null_rx(struct z8530_channel *c, struct sk_buff *skb)
+-{
+-	dev_kfree_skb_any(skb);
+-}
+-EXPORT_SYMBOL(z8530_null_rx);
+-
+-/**
+- *	z8530_rx_done - Receive completion callback
+- *	@c: The channel that completed a receive
+- *
+- *	A new packet is complete. Our goal here is to get back into receive
+- *	mode as fast as possible. On the Z85230 we could change to using
+- *	ESCC mode, but on the older chips we have no choice. We flip to the
+- *	new buffer immediately in DMA mode so that the DMA of the next
+- *	frame can occur while we are copying the previous buffer to an sk_buff
+- *
+- *	Called with the lock held
+- */
+-static void z8530_rx_done(struct z8530_channel *c)
+-{
+-	struct sk_buff *skb;
+-	int ct;
+-
+-	/*	Is our receive engine in DMA mode
+-	 */
+-	if (c->rxdma_on) {
+-		/*	Save the ready state and the buffer currently
+-		 *	being used as the DMA target
+-		 */
+-		int ready = c->dma_ready;
+-		unsigned char *rxb = c->rx_buf[c->dma_num];
+-		unsigned long flags;
+-
+-		/*	Complete this DMA. Necessary to find the length
+-		 */
+-		flags = claim_dma_lock();
+-
+-		disable_dma(c->rxdma);
+-		clear_dma_ff(c->rxdma);
+-		c->rxdma_on = 0;
+-		ct = c->mtu - get_dma_residue(c->rxdma);
+-		if (ct < 0)
+-			ct = 2;	/* Shit happens.. */
+-		c->dma_ready = 0;
+-
+-		/*	Normal case: the other slot is free, start the next DMA
+-		 *	into it immediately.
+-		 */
+-
+-		if (ready) {
+-			c->dma_num ^= 1;
+-			set_dma_mode(c->rxdma, DMA_MODE_READ | 0x10);
+-			set_dma_addr(c->rxdma, virt_to_bus(c->rx_buf[c->dma_num]));
+-			set_dma_count(c->rxdma, c->mtu);
+-			c->rxdma_on = 1;
+-			enable_dma(c->rxdma);
+-			/* Stop any frames that we missed the head of
+-			 * from passing
+-			 */
+-			write_zsreg(c, R0, RES_Rx_CRC);
+-		} else {
+-			/* Can't occur as we dont reenable the DMA irq until
+-			 * after the flip is done
+-			 */
+-			netdev_warn(c->netdevice, "DMA flip overrun!\n");
+-		}
+-
+-		release_dma_lock(flags);
+-
+-		/*	Shove the old buffer into an sk_buff. We can't DMA
+-		 *	directly into one on a PC - it might be above the 16Mb
+-		 *	boundary. Optimisation - we could check to see if we
+-		 *	can avoid the copy. Optimisation 2 - make the memcpy
+-		 *	a copychecksum.
+-		 */
+-
+-		skb = dev_alloc_skb(ct);
+-		if (!skb) {
+-			c->netdevice->stats.rx_dropped++;
+-			netdev_warn(c->netdevice, "Memory squeeze\n");
+-		} else {
+-			skb_put(skb, ct);
+-			skb_copy_to_linear_data(skb, rxb, ct);
+-			c->netdevice->stats.rx_packets++;
+-			c->netdevice->stats.rx_bytes += ct;
+-		}
+-		c->dma_ready = 1;
+-	} else {
+-		RT_LOCK;
+-		skb = c->skb;
+-
+-		/*	The game we play for non DMA is similar. We want to
+-		 *	get the controller set up for the next packet as fast
+-		 *	as possible. We potentially only have one byte + the
+-		 *	fifo length for this. Thus we want to flip to the new
+-		 *	buffer and then mess around copying and allocating
+-		 *	things. For the current case it doesn't matter but
+-		 *	if you build a system where the sync irq isn't blocked
+-		 *	by the kernel IRQ disable then you need only block the
+-		 *	sync IRQ for the RT_LOCK area.
+-		 *
+-		 */
+-		ct = c->count;
+-
+-		c->skb = c->skb2;
+-		c->count = 0;
+-		c->max = c->mtu;
+-		if (c->skb) {
+-			c->dptr = c->skb->data;
+-			c->max = c->mtu;
+-		} else {
+-			c->count = 0;
+-			c->max = 0;
+-		}
+-		RT_UNLOCK;
+-
+-		c->skb2 = dev_alloc_skb(c->mtu);
+-		if (c->skb2)
+-			skb_put(c->skb2, c->mtu);
+-
+-		c->netdevice->stats.rx_packets++;
+-		c->netdevice->stats.rx_bytes += ct;
+-	}
+-	/*	If we received a frame we must now process it.
+-	 */
+-	if (skb) {
+-		skb_trim(skb, ct);
+-		c->rx_function(c, skb);
+-	} else {
+-		c->netdevice->stats.rx_dropped++;
+-		netdev_err(c->netdevice, "Lost a frame\n");
+-	}
+-}
+-
+-/**
+- *	spans_boundary - Check a packet can be ISA DMA'd
+- *	@skb: The buffer to check
+- *
+- *	Returns true if the buffer cross a DMA boundary on a PC. The poor
+- *	thing can only DMA within a 64K block not across the edges of it.
+- */
+-
+-static inline int spans_boundary(struct sk_buff *skb)
+-{
+-	unsigned long a = (unsigned long)skb->data;
+-
+-	a ^= (a + skb->len);
+-	if (a & 0x00010000)	/* If the 64K bit is different.. */
+-		return 1;
+-	return 0;
+-}
+-
+-/**
+- *	z8530_queue_xmit - Queue a packet
+- *	@c: The channel to use
+- *	@skb: The packet to kick down the channel
+- *
+- *	Queue a packet for transmission. Because we have rather
+- *	hard to hit interrupt latencies for the Z85230 per packet
+- *	even in DMA mode we do the flip to DMA buffer if needed here
+- *	not in the IRQ.
+- *
+- *	Called from the network code. The lock is not held at this
+- *	point.
+- */
+-netdev_tx_t z8530_queue_xmit(struct z8530_channel *c, struct sk_buff *skb)
+-{
+-	unsigned long flags;
+-
+-	netif_stop_queue(c->netdevice);
+-	if (c->tx_next_skb)
+-		return NETDEV_TX_BUSY;
+-
+-	/* PC SPECIFIC - DMA limits */
+-	/*	If we will DMA the transmit and its gone over the ISA bus
+-	 *	limit, then copy to the flip buffer
+-	 */
+-
+-	if (c->dma_tx &&
+-	    ((unsigned long)(virt_to_bus(skb->data + skb->len)) >=
+-	    16 * 1024 * 1024 || spans_boundary(skb))) {
+-		/*	Send the flip buffer, and flip the flippy bit.
+-		 *	We don't care which is used when just so long as
+-		 *	we never use the same buffer twice in a row. Since
+-		 *	only one buffer can be going out at a time the other
+-		 *	has to be safe.
+-		 */
+-		c->tx_next_ptr = c->tx_dma_buf[c->tx_dma_used];
+-		c->tx_dma_used ^= 1;	/* Flip temp buffer */
+-		skb_copy_from_linear_data(skb, c->tx_next_ptr, skb->len);
+-	} else {
+-		c->tx_next_ptr = skb->data;
+-	}
+-	RT_LOCK;
+-	c->tx_next_skb = skb;
+-	RT_UNLOCK;
+-
+-	spin_lock_irqsave(c->lock, flags);
+-	z8530_tx_begin(c);
+-	spin_unlock_irqrestore(c->lock, flags);
+-
+-	return NETDEV_TX_OK;
+-}
+-EXPORT_SYMBOL(z8530_queue_xmit);
+-
+-/*	Module support
+- */
+-static const char banner[] __initconst =
+-	KERN_INFO "Generic Z85C30/Z85230 interface driver v0.02\n";
+-
+-static int __init z85230_init_driver(void)
+-{
+-	printk(banner);
+-	return 0;
+-}
+-module_init(z85230_init_driver);
+-
+-static void __exit z85230_cleanup_driver(void)
+-{
+-}
+-module_exit(z85230_cleanup_driver);
+-
+-MODULE_AUTHOR("Red Hat Inc.");
+-MODULE_DESCRIPTION("Z85x30 synchronous driver core");
+-MODULE_LICENSE("GPL");
+diff --git a/drivers/net/wan/z85230.h b/drivers/net/wan/z85230.h
+deleted file mode 100644
+index 462cb620bc5d..000000000000
+--- a/drivers/net/wan/z85230.h
++++ /dev/null
+@@ -1,407 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-/*
+- *	Description of Z8530 Z85C30 and Z85230 communications chips
+- *
+- * Copyright (C) 1995 David S. Miller (davem@caip.rutgers.edu)
+- * Copyright (C) 1998 Alan Cox <alan@lxorguk.ukuu.org.uk>
+- */
+-
+-#ifndef _Z8530_H
+-#define _Z8530_H
+-
+-#include <linux/tty.h>
+-#include <linux/interrupt.h>
+-
+-/* Conversion routines to/from brg time constants from/to bits
+- * per second.
+- */
+-#define BRG_TO_BPS(brg, freq) ((freq) / 2 / ((brg) + 2))
+-#define BPS_TO_BRG(bps, freq) ((((freq) + (bps)) / (2 * (bps))) - 2)
+-
+-/* The Zilog register set */
+-
+-#define	FLAG	0x7e
+-
+-/* Write Register 0 */
+-#define	R0	0		/* Register selects */
+-#define	R1	1
+-#define	R2	2
+-#define	R3	3
+-#define	R4	4
+-#define	R5	5
+-#define	R6	6
+-#define	R7	7
+-#define	R8	8
+-#define	R9	9
+-#define	R10	10
+-#define	R11	11
+-#define	R12	12
+-#define	R13	13
+-#define	R14	14
+-#define	R15	15
+-
+-#define RPRIME	16		/* Indicate a prime register access on 230 */
+-
+-#define	NULLCODE	0	/* Null Code */
+-#define	POINT_HIGH	0x8	/* Select upper half of registers */
+-#define	RES_EXT_INT	0x10	/* Reset Ext. Status Interrupts */
+-#define	SEND_ABORT	0x18	/* HDLC Abort */
+-#define	RES_RxINT_FC	0x20	/* Reset RxINT on First Character */
+-#define	RES_Tx_P	0x28	/* Reset TxINT Pending */
+-#define	ERR_RES		0x30	/* Error Reset */
+-#define	RES_H_IUS	0x38	/* Reset highest IUS */
+-
+-#define	RES_Rx_CRC	0x40	/* Reset Rx CRC Checker */
+-#define	RES_Tx_CRC	0x80	/* Reset Tx CRC Checker */
+-#define	RES_EOM_L	0xC0	/* Reset EOM latch */
+-
+-/* Write Register 1 */
+-
+-#define	EXT_INT_ENAB	0x1	/* Ext Int Enable */
+-#define	TxINT_ENAB	0x2	/* Tx Int Enable */
+-#define	PAR_SPEC	0x4	/* Parity is special condition */
+-
+-#define	RxINT_DISAB	0	/* Rx Int Disable */
+-#define	RxINT_FCERR	0x8	/* Rx Int on First Character Only or Error */
+-#define	INT_ALL_Rx	0x10	/* Int on all Rx Characters or error */
+-#define	INT_ERR_Rx	0x18	/* Int on error only */
+-
+-#define	WT_RDY_RT	0x20	/* Wait/Ready on R/T */
+-#define	WT_FN_RDYFN	0x40	/* Wait/FN/Ready FN */
+-#define	WT_RDY_ENAB	0x80	/* Wait/Ready Enable */
+-
+-/* Write Register #2 (Interrupt Vector) */
+-
+-/* Write Register 3 */
+-
+-#define	RxENABLE	0x1	/* Rx Enable */
+-#define	SYNC_L_INH	0x2	/* Sync Character Load Inhibit */
+-#define	ADD_SM		0x4	/* Address Search Mode (SDLC) */
+-#define	RxCRC_ENAB	0x8	/* Rx CRC Enable */
+-#define	ENT_HM		0x10	/* Enter Hunt Mode */
+-#define	AUTO_ENAB	0x20	/* Auto Enables */
+-#define	Rx5		0x0	/* Rx 5 Bits/Character */
+-#define	Rx7		0x40	/* Rx 7 Bits/Character */
+-#define	Rx6		0x80	/* Rx 6 Bits/Character */
+-#define	Rx8		0xc0	/* Rx 8 Bits/Character */
+-
+-/* Write Register 4 */
+-
+-#define	PAR_ENA		0x1	/* Parity Enable */
+-#define	PAR_EVEN	0x2	/* Parity Even/Odd* */
+-
+-#define	SYNC_ENAB	0	/* Sync Modes Enable */
+-#define	SB1		0x4	/* 1 stop bit/char */
+-#define	SB15		0x8	/* 1.5 stop bits/char */
+-#define	SB2		0xc	/* 2 stop bits/char */
+-
+-#define	MONSYNC		0	/* 8 Bit Sync character */
+-#define	BISYNC		0x10	/* 16 bit sync character */
+-#define	SDLC		0x20	/* SDLC Mode (01111110 Sync Flag) */
+-#define	EXTSYNC		0x30	/* External Sync Mode */
+-
+-#define	X1CLK		0x0	/* x1 clock mode */
+-#define	X16CLK		0x40	/* x16 clock mode */
+-#define	X32CLK		0x80	/* x32 clock mode */
+-#define	X64CLK		0xC0	/* x64 clock mode */
+-
+-/* Write Register 5 */
+-
+-#define	TxCRC_ENAB	0x1	/* Tx CRC Enable */
+-#define	RTS		0x2	/* RTS */
+-#define	SDLC_CRC	0x4	/* SDLC/CRC-16 */
+-#define	TxENAB		0x8	/* Tx Enable */
+-#define	SND_BRK		0x10	/* Send Break */
+-#define	Tx5		0x0	/* Tx 5 bits (or less)/character */
+-#define	Tx7		0x20	/* Tx 7 bits/character */
+-#define	Tx6		0x40	/* Tx 6 bits/character */
+-#define	Tx8		0x60	/* Tx 8 bits/character */
+-#define	DTR		0x80	/* DTR */
+-
+-/* Write Register 6 (Sync bits 0-7/SDLC Address Field) */
+-
+-/* Write Register 7 (Sync bits 8-15/SDLC 01111110) */
+-
+-/* Write Register 8 (transmit buffer) */
+-
+-/* Write Register 9 (Master interrupt control) */
+-#define	VIS	1	/* Vector Includes Status */
+-#define	NV	2	/* No Vector */
+-#define	DLC	4	/* Disable Lower Chain */
+-#define	MIE	8	/* Master Interrupt Enable */
+-#define	STATHI	0x10	/* Status high */
+-#define	NORESET	0	/* No reset on write to R9 */
+-#define	CHRB	0x40	/* Reset channel B */
+-#define	CHRA	0x80	/* Reset channel A */
+-#define	FHWRES	0xc0	/* Force hardware reset */
+-
+-/* Write Register 10 (misc control bits) */
+-#define	BIT6	1	/* 6 bit/8bit sync */
+-#define	LOOPMODE 2	/* SDLC Loop mode */
+-#define	ABUNDER	4	/* Abort/flag on SDLC xmit underrun */
+-#define	MARKIDLE 8	/* Mark/flag on idle */
+-#define	GAOP	0x10	/* Go active on poll */
+-#define	NRZ	0	/* NRZ mode */
+-#define	NRZI	0x20	/* NRZI mode */
+-#define	FM1	0x40	/* FM1 (transition = 1) */
+-#define	FM0	0x60	/* FM0 (transition = 0) */
+-#define	CRCPS	0x80	/* CRC Preset I/O */
+-
+-/* Write Register 11 (Clock Mode control) */
+-#define	TRxCXT	0	/* TRxC = Xtal output */
+-#define	TRxCTC	1	/* TRxC = Transmit clock */
+-#define	TRxCBR	2	/* TRxC = BR Generator Output */
+-#define	TRxCDP	3	/* TRxC = DPLL output */
+-#define	TRxCOI	4	/* TRxC O/I */
+-#define	TCRTxCP	0	/* Transmit clock = RTxC pin */
+-#define	TCTRxCP	8	/* Transmit clock = TRxC pin */
+-#define	TCBR	0x10	/* Transmit clock = BR Generator output */
+-#define	TCDPLL	0x18	/* Transmit clock = DPLL output */
+-#define	RCRTxCP	0	/* Receive clock = RTxC pin */
+-#define	RCTRxCP	0x20	/* Receive clock = TRxC pin */
+-#define	RCBR	0x40	/* Receive clock = BR Generator output */
+-#define	RCDPLL	0x60	/* Receive clock = DPLL output */
+-#define	RTxCX	0x80	/* RTxC Xtal/No Xtal */
+-
+-/* Write Register 12 (lower byte of baud rate generator time constant) */
+-
+-/* Write Register 13 (upper byte of baud rate generator time constant) */
+-
+-/* Write Register 14 (Misc control bits) */
+-#define	BRENABL	1	/* Baud rate generator enable */
+-#define	BRSRC	2	/* Baud rate generator source */
+-#define	DTRREQ	4	/* DTR/Request function */
+-#define	AUTOECHO 8	/* Auto Echo */
+-#define	LOOPBAK	0x10	/* Local loopback */
+-#define	SEARCH	0x20	/* Enter search mode */
+-#define	RMC	0x40	/* Reset missing clock */
+-#define	DISDPLL	0x60	/* Disable DPLL */
+-#define	SSBR	0x80	/* Set DPLL source = BR generator */
+-#define	SSRTxC	0xa0	/* Set DPLL source = RTxC */
+-#define	SFMM	0xc0	/* Set FM mode */
+-#define	SNRZI	0xe0	/* Set NRZI mode */
+-
+-/* Write Register 15 (external/status interrupt control) */
+-#define PRIME	1	/* R5' etc register access (Z85C30/230 only) */
+-#define	ZCIE	2	/* Zero count IE */
+-#define FIFOE	4	/* Z85230 only */
+-#define	DCDIE	8	/* DCD IE */
+-#define	SYNCIE	0x10	/* Sync/hunt IE */
+-#define	CTSIE	0x20	/* CTS IE */
+-#define	TxUIE	0x40	/* Tx Underrun/EOM IE */
+-#define	BRKIE	0x80	/* Break/Abort IE */
+-
+-
+-/* Read Register 0 */
+-#define	Rx_CH_AV	0x1	/* Rx Character Available */
+-#define	ZCOUNT		0x2	/* Zero count */
+-#define	Tx_BUF_EMP	0x4	/* Tx Buffer empty */
+-#define	DCD		0x8	/* DCD */
+-#define	SYNC_HUNT	0x10	/* Sync/hunt */
+-#define	CTS		0x20	/* CTS */
+-#define	TxEOM		0x40	/* Tx underrun */
+-#define	BRK_ABRT	0x80	/* Break/Abort */
+-
+-/* Read Register 1 */
+-#define	ALL_SNT		0x1	/* All sent */
+-/* Residue Data for 8 Rx bits/char programmed */
+-#define	RES3		0x8	/* 0/3 */
+-#define	RES4		0x4	/* 0/4 */
+-#define	RES5		0xc	/* 0/5 */
+-#define	RES6		0x2	/* 0/6 */
+-#define	RES7		0xa	/* 0/7 */
+-#define	RES8		0x6	/* 0/8 */
+-#define	RES18		0xe	/* 1/8 */
+-#define	RES28		0x0	/* 2/8 */
+-/* Special Rx Condition Interrupts */
+-#define	PAR_ERR		0x10	/* Parity error */
+-#define	Rx_OVR		0x20	/* Rx Overrun Error */
+-#define	CRC_ERR		0x40	/* CRC/Framing Error */
+-#define	END_FR		0x80	/* End of Frame (SDLC) */
+-
+-/* Read Register 2 (channel b only) - Interrupt vector */
+-
+-/* Read Register 3 (interrupt pending register) ch a only */
+-#define	CHBEXT	0x1		/* Channel B Ext/Stat IP */
+-#define	CHBTxIP	0x2		/* Channel B Tx IP */
+-#define	CHBRxIP	0x4		/* Channel B Rx IP */
+-#define	CHAEXT	0x8		/* Channel A Ext/Stat IP */
+-#define	CHATxIP	0x10		/* Channel A Tx IP */
+-#define	CHARxIP	0x20		/* Channel A Rx IP */
+-
+-/* Read Register 8 (receive data register) */
+-
+-/* Read Register 10  (misc status bits) */
+-#define	ONLOOP	2		/* On loop */
+-#define	LOOPSEND 0x10		/* Loop sending */
+-#define	CLK2MIS	0x40		/* Two clocks missing */
+-#define	CLK1MIS	0x80		/* One clock missing */
+-
+-/* Read Register 12 (lower byte of baud rate generator constant) */
+-
+-/* Read Register 13 (upper byte of baud rate generator constant) */
+-
+-/* Read Register 15 (value of WR 15) */
+-
+-
+-/*
+- *	Interrupt handling functions for this SCC
+- */
+-
+-struct z8530_channel;
+- 
+-struct z8530_irqhandler
+-{
+-	void (*rx)(struct z8530_channel *);
+-	void (*tx)(struct z8530_channel *);
+-	void (*status)(struct z8530_channel *);
+-};
+-
+-/*
+- *	A channel of the Z8530
+- */
+-
+-struct z8530_channel
+-{
+-	struct		z8530_irqhandler *irqs;		/* IRQ handlers */
+-	/*
+-	 *	Synchronous
+-	 */
+-	u16		count;		/* Buyes received */
+-	u16		max;		/* Most we can receive this frame */
+-	u16		mtu;		/* MTU of the device */
+-	u8		*dptr;		/* Pointer into rx buffer */
+-	struct sk_buff	*skb;		/* Buffer dptr points into */
+-	struct sk_buff	*skb2;		/* Pending buffer */
+-	u8		status;		/* Current DCD */
+-	u8		dcdcheck;	/* which bit to check for line */
+-	u8		sync;		/* Set if in sync mode */
+-
+-	u8		regs[32];	/* Register map for the chip */
+-	u8		pendregs[32];	/* Pending register values */
+-	
+-	struct sk_buff 	*tx_skb;	/* Buffer being transmitted */
+-	struct sk_buff  *tx_next_skb;	/* Next transmit buffer */
+-	u8		*tx_ptr;	/* Byte pointer into the buffer */
+-	u8		*tx_next_ptr;	/* Next pointer to use */
+-	u8		*tx_dma_buf[2];	/* TX flip buffers for DMA */
+-	u8		tx_dma_used;	/* Flip buffer usage toggler */
+-	u16		txcount;	/* Count of bytes to transmit */
+-	
+-	void		(*rx_function)(struct z8530_channel *, struct sk_buff *);
+-	
+-	/*
+-	 *	Sync DMA
+-	 */
+-	
+-	u8		rxdma;		/* DMA channels */
+-	u8		txdma;		
+-	u8		rxdma_on;	/* DMA active if flag set */
+-	u8		txdma_on;
+-	u8		dma_num;	/* Buffer we are DMAing into */
+-	u8		dma_ready;	/* Is the other buffer free */
+-	u8		dma_tx;		/* TX is to use DMA */
+-	u8		*rx_buf[2];	/* The flip buffers */
+-	
+-	/*
+-	 *	System
+-	 */
+-	 
+-	struct z8530_dev *dev;		/* Z85230 chip instance we are from */
+-	unsigned long	ctrlio;		/* I/O ports */
+-	unsigned long	dataio;
+-
+-	/*
+-	 *	For PC we encode this way.
+-	 */	
+-#define Z8530_PORT_SLEEP	0x80000000
+-#define Z8530_PORT_OF(x)	((x)&0xFFFF)
+-
+-	u32		rx_overrun;		/* Overruns - not done yet */
+-	u32		rx_crc_err;
+-
+-	/*
+-	 *	Bound device pointers
+-	 */
+-
+-	void		*private;	/* For our owner */
+-	struct net_device	*netdevice;	/* Network layer device */
+-
+-	spinlock_t		*lock;	  /* Device lock */
+-};
+-
+-/*
+- *	Each Z853x0 device.
+- */
+-
+-struct z8530_dev
+-{
+-	char *name;	/* Device instance name */
+-	struct z8530_channel chanA;	/* SCC channel A */
+-	struct z8530_channel chanB;	/* SCC channel B */
+-	int type;
+-#define Z8530	0	/* NMOS dinosaur */	
+-#define Z85C30	1	/* CMOS - better */
+-#define Z85230	2	/* CMOS with real FIFO */
+-	int irq;	/* Interrupt for the device */
+-	int active;	/* Soft interrupt enable - the Mac doesn't 
+-			   always have a hard disable on its 8530s... */
+-	spinlock_t lock;
+-};
+-
+-
+-/*
+- *	Functions
+- */
+- 
+-extern u8 z8530_dead_port[];
+-extern u8 z8530_hdlc_kilostream_85230[];
+-extern u8 z8530_hdlc_kilostream[];
+-irqreturn_t z8530_interrupt(int, void *);
+-void z8530_describe(struct z8530_dev *, char *mapping, unsigned long io);
+-int z8530_init(struct z8530_dev *);
+-int z8530_shutdown(struct z8530_dev *);
+-int z8530_sync_open(struct net_device *, struct z8530_channel *);
+-int z8530_sync_close(struct net_device *, struct z8530_channel *);
+-int z8530_sync_dma_open(struct net_device *, struct z8530_channel *);
+-int z8530_sync_dma_close(struct net_device *, struct z8530_channel *);
+-int z8530_sync_txdma_open(struct net_device *, struct z8530_channel *);
+-int z8530_sync_txdma_close(struct net_device *, struct z8530_channel *);
+-int z8530_channel_load(struct z8530_channel *, u8 *);
+-netdev_tx_t z8530_queue_xmit(struct z8530_channel *c, struct sk_buff *skb);
+-void z8530_null_rx(struct z8530_channel *c, struct sk_buff *skb);
+-
+-
+-/*
+- *	Standard interrupt vector sets
+- */
+- 
+-extern struct z8530_irqhandler z8530_sync, z8530_async, z8530_nop;
+-
+-/*
+- *	Asynchronous Interfacing
+- */
+-
+-/*
+- * The size of the serial xmit buffer is 1 page, or 4096 bytes
+- */
+-
+-#define SERIAL_XMIT_SIZE 4096
+-#define WAKEUP_CHARS	256
+-
+-/*
+- * Events are used to schedule things to happen at timer-interrupt
+- * time, instead of at rs interrupt time.
+- */
+-#define RS_EVENT_WRITE_WAKEUP	0
+-
+-/* Internal flags used only by kernel/chr_drv/serial.c */
+-#define ZILOG_INITIALIZED	0x80000000 /* Serial port was initialized */
+-#define ZILOG_CALLOUT_ACTIVE	0x40000000 /* Call out device is active */
+-#define ZILOG_NORMAL_ACTIVE	0x20000000 /* Normal device is active */
+-#define ZILOG_BOOT_AUTOCONF	0x10000000 /* Autoconfigure port on bootup */
+-#define ZILOG_CLOSING		0x08000000 /* Serial port is closing */
+-#define ZILOG_CTS_FLOW		0x04000000 /* Do CTS flow control */
+-#define ZILOG_CHECK_CD		0x02000000 /* i.e., CLOCAL */
+-
+-#endif /* !(_Z8530_H) */
 -- 
 2.34.1
 
