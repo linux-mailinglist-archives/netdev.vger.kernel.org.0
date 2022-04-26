@@ -2,136 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BCD9850EEC5
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 04:30:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 201F350EEE2
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 04:49:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241802AbiDZCdO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Apr 2022 22:33:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48270 "EHLO
+        id S242449AbiDZCw3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Apr 2022 22:52:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234612AbiDZCdM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 22:33:12 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB8735DC3;
-        Mon, 25 Apr 2022 19:30:07 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 99F961F380;
-        Tue, 26 Apr 2022 02:30:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1650940205; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DX473lc685/tBD4BRCMRWuDdbRGCZDWIYx8mJX3hLck=;
-        b=BsQO/6RREy3URhfML1m8e6NbTRaNKruo9eoDgIrO5VITB3Syz4+hCyxu7g17DW0cDPMhQ5
-        n6VWYJEd/bgqhJvkZTWz64sQrpFqF1rUvbAjHqD8dLtJRGJSkcgCa2ca596rkG+6jkURyK
-        WAnf4JBeEOFON7XG4m/EAsVXkJagdt4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1650940205;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DX473lc685/tBD4BRCMRWuDdbRGCZDWIYx8mJX3hLck=;
-        b=sFwOwESgQ/Geeyne4VZk2i+bfUE10gpYbhO5z185tVmKyy4H4kLsVwgfKhz2rNPYtUbYHc
-        XkALn5kb06QGxrBg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3CA9813A39;
-        Tue, 26 Apr 2022 02:29:58 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id GnchOiZZZ2JdFwAAMHmgww
-        (envelope-from <neilb@suse.de>); Tue, 26 Apr 2022 02:29:58 +0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S240518AbiDZCwZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 22:52:25 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C4E2B3E
+        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 19:49:19 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id b12so14167599plg.4
+        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 19:49:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=aqwNZmlsLP2nY8OdRO3qnK+rK4uYR62ZOaw9XQvFoFo=;
+        b=SHfb7h6NtP4DfVIC6JpCMTf/67pdxkR5NudvBENFe+MuM/Lv+LmuM6S29FDZja7cI4
+         Bnp9R4H1cCCs9sl1VDFKu+4Ihby5grvALPM1rjq+SQlwqHYSChPG37DBKtaWnf0xo95n
+         7Wbo9ixx4W30XCIljhsRzt/SL8y2yqV3bZ0A5I/mneEDjjrGrnhr9pyOVShUzXI1ytq+
+         sEHca4mhy9ucCew5nXWLdI1bMYWrmcCELXVAphk79VhJzb0i+vf8TkKeXXVkeK2JTN4M
+         XQAcnidqxtAbO0gh1hFcN1UcB1AevLjF4lM5r3oZijOUiAsyWnTLJnS8WuSN2ePVkh40
+         1GGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=aqwNZmlsLP2nY8OdRO3qnK+rK4uYR62ZOaw9XQvFoFo=;
+        b=a7/z+P99fppHje1V5kyw4v0BDhVK8vl77TFYhi/ZHw82g+byQDfE/3ymMijRwWJp5T
+         xr3iVLJiZ8kKxDkE61yV4Et8jUHjX3lfZqpCeRA7vlahwY1DBKnPB0XMNF7tB2QbrW3+
+         UVQaLqwPasuxMrZ7hyUtcxjgQtCHKAtbekPqyTw+pFVfUeCkiD/tSw+/AOUbjgLYVqU4
+         rrVPhVC37MtBHDwAuOyiNzNfWXzzuCT3HxvN18w26Z3FNhyHyW06COvRfBuWeKNuIv30
+         RMvc59wdjJVx4Fwv/QyguYFADl/t5wmwknfmusbJZX87xc1N38N0k7U4YIFtQzddAJ8U
+         Bhag==
+X-Gm-Message-State: AOAM532i1s23Ww892ABXD44JkSIf6YNoxnd24uhWh81i+PD8sCzGKMm6
+        nlVFYxbUmyItp5fPCvRV8vQ=
+X-Google-Smtp-Source: ABdhPJxKuWsNSHmRCi5fm763XoaFy6ydIxAdedybJF5p/Ec1Ut7dkj5HJS1Ik/1PwPtND9n2RTbF0Q==
+X-Received: by 2002:a17:90b:1b42:b0:1d9:73b4:4433 with SMTP id nv2-20020a17090b1b4200b001d973b44433mr9382854pjb.69.1650941358871;
+        Mon, 25 Apr 2022 19:49:18 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id j64-20020a62c543000000b0050d260c0ea8sm8977420pfg.110.2022.04.25.19.49.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Apr 2022 19:49:18 -0700 (PDT)
+Date:   Mon, 25 Apr 2022 19:49:15 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com,
+        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, kernel-team@fb.com
+Subject: Re: [PATCH net-next v1 1/4] net: phy: broadcom: Add PTP support for
+ some Broadcom PHYs.
+Message-ID: <20220426024915.GA22745@hoboy.vegasvil.org>
+References: <20220424022356.587949-1-jonathan.lemon@gmail.com>
+ <20220424022356.587949-2-jonathan.lemon@gmail.com>
+ <20220425011931.GB4472@hoboy.vegasvil.org>
+ <20220425233043.q5335cvto5c6zcck@bsd-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-From:   "NeilBrown" <neilb@suse.de>
-To:     "Naresh Kamboju" <naresh.kamboju@linaro.org>
-Cc:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com, "Netdev" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        "Trond Myklebust" <trond.myklebust@hammerspace.com>,
-        linux-nfs@vger.kernel.org,
-        "Anna Schumaker" <anna.schumaker@netapp.com>
-Subject: Re: [PATCH 4.19 000/338] 4.19.238-rc1 review
-In-reply-to: <CA+G9fYscMP+DTzaQGw1p-KxyhPi0JB64ABDu_aNSU0r+_VgBHg@mail.gmail.com>
-References: <20220414110838.883074566@linuxfoundation.org>,
- <CA+G9fYvgzFW7sMZVdw5r970QNNg4OK8=pbQV0kDfbOX-rXu5Rw@mail.gmail.com>,
- <CA+G9fYscMP+DTzaQGw1p-KxyhPi0JB64ABDu_aNSU0r+_VgBHg@mail.gmail.com>
-Date:   Tue, 26 Apr 2022 12:29:55 +1000
-Message-id: <165094019509.1648.12340115187043043420@noble.neil.brown.name>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220425233043.q5335cvto5c6zcck@bsd-mbp.dhcp.thefacebook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 21 Apr 2022, Naresh Kamboju wrote:
-> On Mon, 18 Apr 2022 at 14:09, Naresh Kamboju <naresh.kamboju@linaro.org> wr=
-ote:
-> >
-> > On Thu, 14 Apr 2022 at 18:45, Greg Kroah-Hartman
-> > <gregkh@linuxfoundation.org> wrote:
-> > >
-> > > This is the start of the stable review cycle for the 4.19.238 release.
-> > > There are 338 patches in this series, all will be posted as a response
-> > > to this one.  If anyone has any issues with these being applied, please
-> > > let me know.
-> > >
-> > > Responses should be made by Sat, 16 Apr 2022 11:07:54 +0000.
-> > > Anything received after that time might be too late.
-> > >
-> > > The whole patch series can be found in one patch at:
-> > >         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patc=
-h-4.19.238-rc1.gz
-> > > or in the git tree and branch at:
-> > >         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stab=
-le-rc.git linux-4.19.y
-> > > and the diffstat can be found below.
-> > >
-> > > thanks,
-> > >
-> > > greg k-h
-> >
-> >
-> > Following kernel warning noticed on arm64 Juno-r2 while booting
-> > stable-rc 4.19.238. Here is the full test log link [1].
-> >
-> > [    0.000000] Booting Linux on physical CPU 0x0000000100 [0x410fd033]
-> > [    0.000000] Linux version 4.19.238 (tuxmake@tuxmake) (gcc version
-> > 11.2.0 (Debian 11.2.0-18)) #1 SMP PREEMPT @1650206156
-> > [    0.000000] Machine model: ARM Juno development board (r2)
-> > <trim>
-> > [   18.499895] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > [   18.504172] WARNING: inconsistent lock state
-> > [   18.508451] 4.19.238 #1 Not tainted
-> > [   18.511944] --------------------------------
-> > [   18.516222] inconsistent {IN-SOFTIRQ-W} -> {SOFTIRQ-ON-W} usage.
-> > [   18.522242] kworker/u12:3/60 [HC0[0]:SC0[0]:HE1:SE1] takes:
-> > [   18.527826] (____ptrval____)
-> > (&(&xprt->transport_lock)->rlock){+.?.}, at: xprt_destroy+0x70/0xe0
-> > [   18.536648] {IN-SOFTIRQ-W} state was registered at:
-> > [   18.541543]   lock_acquire+0xc8/0x23c
+On Mon, Apr 25, 2022 at 04:30:43PM -0700, Jonathan Lemon wrote:
+> On Sun, Apr 24, 2022 at 06:19:31PM -0700, Richard Cochran wrote:
+> > On Sat, Apr 23, 2022 at 07:23:53PM -0700, Jonathan Lemon wrote:
+> > 
+> > > +static bool bcm_ptp_rxtstamp(struct mii_timestamper *mii_ts,
+> > > +			     struct sk_buff *skb, int type)
+> > > +{
+> > > +	struct bcm_ptp_private *priv = mii2priv(mii_ts);
+> > > +	struct skb_shared_hwtstamps *hwts;
+> > > +	struct ptp_header *header;
+> > > +	u32 sec, nsec;
+> > > +	u8 *data;
+> > > +
+> > > +	if (!priv->hwts_rx)
+> > > +		return false;
+> > > +
+> > > +	header = ptp_parse_header(skb, type);
+> > > +	if (!header)
+> > > +		return false;
+> > > +
+> > > +	data = (u8 *)(header + 1);
+> > 
+> > No need to pointer math, as ptp_header already has reserved1 and reserved2.
+> > 
+> > > +	sec = get_unaligned_be32(data);
+> > 
+> > Something is missing here.  The seconds field is only four bits, so
+> > the code needs to read the 80 bit counter once in a while and augment
+> > the time stamp with the upper bits.
+> 
+> The BCM chip inserts a 64-bit sec.nsec RX timestamp immediately after
+> the PTP header.  So I'm recovering it here.  I'll also update the patch
+> to memmove() the tail of the skb up in order to remove it, just in case
+> it makes a difference.
 
-Prior to Linux 5.3, ->transport_lock needs spin_lock_bh() and=20
-spin_unlock_bh().
+Okay, this is something different.  This won't work because that
+corrupts the PTP message format.
+
+I'm talking about a different mode where the PHY places the time stamp
+into the reserved1/2 fields.
 
 Thanks,
-NeilBrown
+Richard
