@@ -2,115 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AF6450FFD9
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 15:59:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26CF850FFE0
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 16:00:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351338AbiDZOCS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 10:02:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37300 "EHLO
+        id S1344484AbiDZODd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 10:03:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351318AbiDZOCJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 10:02:09 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1A1E18EA02;
-        Tue, 26 Apr 2022 06:59:00 -0700 (PDT)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650981538;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=A2iZVgTNBSgaeoRbSzUYC9JbtTRd+xjYUfhrrkl8rhw=;
-        b=O/ZgmagFIttM/Oj0vNa1VQ1CCLIjqaWKHzuEny15FQuDDOgW4b70p7rZhsXEgtnUckXWjj
-        1KpDVu0jLM9629gMOkygcFVSUx7kHR8N7E6hDovfHzOEoM3s2Odvw3IWqzWqGfZwwQrkvY
-        8DjK/TgMO+BU0xTgVOvackORvTWWqMI3EnR0noqUk/5QVe5e1F9iDrpaeHdqSm1vOxhJJS
-        r7jFdfosahjEQ6yxFlUCDo9VhRAWQjFGCU9SGHu/GblBeGktcw8zVO5XqsIPPAv7NQAg0Y
-        7iYVCAwXWTREshV82/JcKcVdu2VXlirSA6ZZz6cBq/Fv3mvxY2tj5WT5z6AyuQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650981538;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=A2iZVgTNBSgaeoRbSzUYC9JbtTRd+xjYUfhrrkl8rhw=;
-        b=CsPZZMnCYu/3XbqW8wNsn2dnOrwdU7n6otYY7wFkbPKv68VZIvA/28JBS+SbXOUVBmzHtU
-        CJvZ18kAtTHeS6Ag==
-To:     Tan Tee Min <tee.min.tan@linux.intel.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Wong Vee Khee <vee.khee.wong@linux.intel.com>,
-        Tan Tee Min <tee.min.tan@linux.intel.com>,
-        Ling Pei Lee <pei.lee.ling@intel.com>,
-        Bhupesh Sharma <bhupesh.sharma@linaro.org>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Voon Wei Feng <weifeng.voon@intel.com>,
-        Song Yoong Siang <yoong.siang.song@intel.com>,
-        Ong@vger.kernel.org, Boon Leong <boon.leong.ong@intel.com>,
-        Tan Tee Min <tee.min.tan@intel.com>
-Subject: Re: [PATCH net 1/1] net: stmmac: disable Split Header (SPH) for
- Intel platforms
-In-Reply-To: <20220426074531.4115683-1-tee.min.tan@linux.intel.com>
-References: <20220426074531.4115683-1-tee.min.tan@linux.intel.com>
-Date:   Tue, 26 Apr 2022 15:58:56 +0200
-Message-ID: <8735i0ndy7.fsf@kurt>
+        with ESMTP id S1351358AbiDZODb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 10:03:31 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93015DFA7
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 07:00:13 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id p18so17292590edr.7
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 07:00:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=QRUz6nJ+APvaydf53NPJH0a0bYcfsG99h8bYMIKy/6c=;
+        b=OqLXHov7veJfp4iNfqguOo036SbQmeinwv2A1M+cRIO3p2HdayrHUP9cnnZkipl6Oy
+         YB1wEmRHzFIMOK0PTA4TM/wJ6pxmO9IEwKb7gx33Y/k4vdogLYMPNj2DqBkRtCER2sRi
+         K6N3IYy3eQPM13JEzm/8cUab8xiULl2jO+bQYTjBd3O+ojYiiufD2gsDsW03+B3Dj1+w
+         t48EaM/ZMrWvPDHLkW/xGiy8RIn5LxbFaiqyGnqc2v1UFT5zGXVBoG3+ddTsJJSgu0Xi
+         WccZtfPfFPS4LiQ4mTCmDRimbTTvF5DNVbI0dOFJya+SkUqQ5PqTqoexFYAPQGCSLQ6m
+         AH1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=QRUz6nJ+APvaydf53NPJH0a0bYcfsG99h8bYMIKy/6c=;
+        b=s+rvF0y4SFJLiimTdhl4f+f8Q3tK3JGEOIDHH1aJuM0/CskdqgCjvordKwnglp2lSp
+         2ssNU7s+1CEm2Lp/ThUT/m9SMBeFJVG+sbBWnTYQ4Nc2b5LVz6fPjhtDQreokuzcxCp2
+         6Rek0Wxl4y+nSlbPw1DkTcnuI59vcSm54w2P3EIiIlxG0L/RX20rHLdZx8oam0VmmtfS
+         M1CRyM5DMrVjCBZSPvpH5hcUc4R2zsKdc8zx0WdsvAvSx9CEYHZKeErD3nURPkQkZY8o
+         HIMaMlD3Tf0kgUioOmEBx4jn74Px6DbMSOsQolN26WBEAkxRs5mnwiiQ2uYug85VDqB1
+         8FrQ==
+X-Gm-Message-State: AOAM532lNUEYDY/pM89JuJfsPOkL0nnLwyzpXAHraxv2CfiTCarbjQZ0
+        +7EJyIzVYPppD9ltRdJVNUrHBg==
+X-Google-Smtp-Source: ABdhPJwxOJkjYHFo19ai/g03c6MPG/E84AfimwB6fqxMV+6JLEW0qX9WAEpDnbGughbk8aUUIj3s7g==
+X-Received: by 2002:a05:6402:948:b0:425:ea37:96b8 with SMTP id h8-20020a056402094800b00425ea3796b8mr10193600edz.90.1650981611726;
+        Tue, 26 Apr 2022 07:00:11 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id l2-20020a50cbc2000000b00425d7bd65f0sm4255650edi.0.2022.04.26.07.00.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 07:00:11 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 16:00:10 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Ido Schimmel <idosch@idosch.org>, Ido Schimmel <idosch@nvidia.com>,
+        netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
+        andrew@lunn.ch, mlxsw@nvidia.com
+Subject: Re: [PATCH net-next 00/11] mlxsw: extend line card model by devices
+ and info
+Message-ID: <Ymf66h5dMNOLun8k@nanopsycho>
+References: <20220425034431.3161260-1-idosch@nvidia.com>
+ <20220425090021.32e9a98f@kernel.org>
+ <Ymb5DQonnrnIBG3c@shredder>
+ <20220425125218.7caa473f@kernel.org>
+ <YmeXyzumj1oTSX+x@nanopsycho>
+ <20220426054130.7d997821@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220426054130.7d997821@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-
-Hi,
-
-On Tue Apr 26 2022, Tan Tee Min wrote:
-> Based on DesignWare Ethernet QoS datasheet, we are seeing the limitation
-> of Split Header (SPH) feature is not supported for Ipv4 fragmented packet.
-> This SPH limitation will cause ping failure when the packets size exceed
-> the MTU size. For example, the issue happens once the basic ping packet
-> size is larger than the configured MTU size and the data is lost inside
-> the fragmented packet, replaced by zeros/corrupted values, and leads to
-> ping fail.
+Tue, Apr 26, 2022 at 02:41:30PM CEST, kuba@kernel.org wrote:
+>On Tue, 26 Apr 2022 08:57:15 +0200 Jiri Pirko wrote:
+>> >> In this particular case, these devices are gearboxes. They are running
+>> >> their own firmware and we want user space to be able to query and update
+>> >> the running firmware version.  
+>> >
+>> >Nothing too special, then, we don't create "devices" for every
+>> >component of the system which can have a separate FW. That's where
+>> >"components" are intended to be used..  
+>> 
+>> *
+>> Sure, that is why I re-used components :)
 >
-> So, disable the Split Header for Intel platforms.
+>Well, right, I guess you did reuse them a little :)
 
-Does this issue only apply on Intel platforms?
+I use them a lot. It is not visible in this patchset, but in the
+flashing follow-up patchset.
 
-Thanks,
-Kurt
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+>
+>> But you have to somehow link the component to the particular gearbox on
+>> particular line card. Say, you need to flash GB on line card 8. This is
+>> basically providing a way to expose this relationship to user.
+>> 
+>> Also, the "lc info" shows the FW version for gearboxes. As Ido
+>> mentioned, the GB versions could be listed in "devlink dev info" in
+>> theory. But then, you need to somehow expose the relationship with
+>> line card as well.
+>
+>Why would the automation which comes to update the firmware care 
+>at all where the component is? Humans can see what the component 
+>is by looking at the name.
 
------BEGIN PGP SIGNATURE-----
+The relationship-by-name sounds a bit fragile to me. The names of
+components are up to the individual drivers.
 
-iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmJn+qATHGt1cnRAbGlu
-dXRyb25peC5kZQAKCRDBk9HyqkZzgmn6D/9qeUHNLrQQtVKYURUbC/oNztnlmc3Z
-hwrp1SHvXu96xuyNmylbZEo2zADbG258zdU8ZD3NEBdHFRA4aL6f2B239dSyry1n
-xDi1COlTs/ve7G08MZalCchNpyrgPw3JR2PP4bSWIeqbP4C13C7dZEtsPjJs8tGH
-DxelFGu0xyfDxYpkS93ebV+cMvmwyhHDHHX3mbjP6Yj7V+g8XCS7ds22k1VLP5F0
-CURBIhbl+f0XqFDc51M6wnUbmfD9nSGSuximRG1Exog1E/wrfadUOObHFFaQLBWr
-EcJdw0NEi/XnyK0G4xiP8hr1lfQmclpHD8aEMW9EprErePDqJQL596GkI3R4Ku5G
-IqkAieR62prU/Yopidw5M8EtH7FusL0zPsDXWp8jylqDUruN4ltbD1X6Cr4l9dKp
-xtXDFL73nj8/AYFKrTlrYc8isMnTxumkR6yu+N9jTgWLkAY17IJ0Bm80xKafqjAe
-xivpxueX2+/ZjnP4kYR1FzVC7CQTx81h1Cxjj9YFGWDTLlQ29vVvtV7a09zyGUOc
-qBlAYfPUHa0AQIEeDCQAJVvif005cnP87maoYPkU45oeL3GBS7Uykd/0Hfr/wpFw
-dZbLJnewfK848KvNsajR7omzWE8T34ApYJRIYIuJtfDuBBZhB/y/CgNgp1wi3LdL
-D7+1mOI7VgmBoQ==
-=YG8s
------END PGP SIGNATURE-----
---=-=-=--
+
+>
+>If we do need to know (*if*!) you can list FW components as a lc
+>attribute, no need for new commands and objects.
+
+There is no new command for that, only one nested attribute which
+carries the device list added to the existing command. They are no new
+objects, they are just few nested values.
+
+
+>
+>IMHO we should either keep lc objects simple and self contained or 
+>give them a devlink instance. Creating sub-objects from them is very
+
+Give them a devlink instance? I don't understand how. LC is not a
+separate device, far from that. That does not make any sense to me.
+
+
+>worrying. If there is _any_ chance we'll need per-lc health reporters 
+>or sbs or params(🤢) etc. etc. - let's bite the bullet _now_ and create
+>full devlink sub-instances!
+
+Does not make sense to me at all. Line cards are detachable PHY sets in
+essence, very basic functionality. They does not have buffers, health
+and params, I don't think so. 
+
+
+>
+>> I don't see any simpler iface than this.
+>
+>Based on the assumptions you've made, maybe, but the uAPI should
+>abstract away the irrelevant details. I'm questioning the assumptions.
+
+Is the FW version of gearbox on a line card irrelevand detail?
+If so, how does the user know if/when to flash it?
+If not, where would you list it if devices nest is not the correct place?
+
+
+>
+>> >> The idea (implemented in the next patchset) is to let these devices
+>> >> expose their own "component name", which can then be plugged into
+>> >> the existing flash command:
+>> >> 
+>> >>     $ devlink lc show pci/0000:01:00.0 lc 8
+>> >>     pci/0000:01:00.0:
+>> >>       lc 8 state active type 16x100G
+>> >>         supported_types:
+>> >>            16x100G
+>> >>         devices:
+>> >>           device 0 flashable true component lc8_dev0
+>> >>           device 1 flashable false
+>> >>           device 2 flashable false
+>> >>           device 3 flashable false
+>> >>     $ devlink dev flash pci/0000:01:00.0 file some_file.mfa2
+>> >> component lc8_dev0  
+>> >
+>> >IDK if it's just me or this assumes deep knowledge of the system.
+>> >I don't understand why we need to list devices 1-3 at all. And they
+>> >don't even have names. No information is exposed.   
+>> 
+>> There are 4 gearboxes on the line card. They share the same flash. So
+>> if you flash gearbox 0, the rest will use the same FW.
+>
+>o_0 so the FW component is called lcX_dev0 and yet it applies to _all_
+>devices, not just dev0?! Looking at the output above I thought other
+>devices simply don't have FW ("flashable false").
+
+Yes, device 0 is "flash master" (RW). 1-3 are RO. I know it is a bit
+confusing. Maybe Andy's suggestion of "shared" flag of some sort might
+help.
+
+
+>
+>> I'm exposing them for the sake of completeness. Also, the interface
+>> needs to be designed as a list anyway, as different line cards may
+>> have separate flash per gearbox.
+>> 
+>> What's is the harm in exposing devices 1-3? If you insist, we can hide
+>> them.
+>
+>Well, they are unnecessary (this is uAPI), and coming from the outside
+>I misinterpreted what the information reported means, so yeah, I'd
+>classify it as harmful :(
+
+UAPI is the "devices nest". It has to be list one way or another
+(we may need to expose more gearboxes anyway). So what is differently
+harmful with having list [0] or list [0,1,2,3] ?
+
