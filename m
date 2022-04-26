@@ -2,149 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13C3850F196
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 08:58:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D7D350F26B
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 09:30:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343558AbiDZHCC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 03:02:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33590 "EHLO
+        id S1343966AbiDZHdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 03:33:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343552AbiDZHB7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 03:01:59 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F5575E75C;
-        Mon, 25 Apr 2022 23:58:52 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id p18so15943464edr.7;
-        Mon, 25 Apr 2022 23:58:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yxsoS2CUH057OgoeUtgShEMwX7cTwqJSCWC/gaZwK0I=;
-        b=A1aM1LlAjf1IMw4G9HEuNjbi4D7I+HFmR8T6RmCSJ69tAIQIK+pPMaw3qlazyDPaqE
-         Kz1/FIWsRmJwqIulA18lq/IRAg2HcZMT+4ZDvZ+7OtSK+YBJ7OYzVovTc080hDflzJj/
-         aF7vu2x/j42V7qesnWKm4/TkwiK4PoSoGsExRByx7nWcm91svjNPUIm8UFrmijglCGbV
-         5ygsReqvWjruzoiMp2Ou9gKZgsYttIIp4ysC9+CxDzt38IIBF7x8DTDYWxBwGB2i3b0N
-         AATa68aC1trnVFaAUot4sF/7s4l7DVDLMEIOmy0gzkGW/ncRZSQJeOqapwpdFAWzYewT
-         IypQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yxsoS2CUH057OgoeUtgShEMwX7cTwqJSCWC/gaZwK0I=;
-        b=KmcMR+ibf+b7jp43yBtHdVXC1leMHdn1Rw+cnLalwuvR4xCWA5OqsQELcCU6Vh0Kno
-         uw2EeHChlzASMWrf4dGDPWM0eAzAWhTNthKVLBWCRPBtxctGvHq46rp9p+NZfk3+cIUR
-         7IZkVkahhvcJMAZS5SZ/3Q3p6KNHvGHWTr3E9rjKt1zGz4dPNBnZQC0bt4URF38fLn/n
-         YqyPLaojbRvN8BScDZk2M9qQayegfpHlJyTKAucegli4dBMQJ3romWqOwpY62IKRLZdR
-         Uklw83Bbnw+5jBYWrN8jG8DqlNQJAo1amowbnQ6YjAJA7KqSy8/fMW35Xtu137IcRLwg
-         lOlA==
-X-Gm-Message-State: AOAM531VMltiL03ARDUUaVrZlwAed+d5uPWOQC9+OsRavkxYwaSN6Bau
-        F0PEu2pU9IF9Ovcb24AuYaI=
-X-Google-Smtp-Source: ABdhPJy9DVgQMKYjhhKIJjro1taMS4ALKtZnjvRiwS92h4P5D0LWE441zR3aEgyOHrbKXjo1t0vdjw==
-X-Received: by 2002:a05:6402:485:b0:425:a529:c29e with SMTP id k5-20020a056402048500b00425a529c29emr23024791edv.354.1650956330863;
-        Mon, 25 Apr 2022 23:58:50 -0700 (PDT)
-Received: from krava ([193.85.244.190])
-        by smtp.gmail.com with ESMTPSA id g21-20020a056402115500b00413c824e422sm5529594edw.72.2022.04.25.23.58.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 23:58:50 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 08:58:48 +0200
-From:   Jiri Olsa <olsajiri@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Ian Rogers <irogers@google.com>
-Subject: Re: [PATCH perf/core 4/5] perf tools: Register perfkprobe libbpf
- section handler
-Message-ID: <YmeYKMixL+jvTNq9@krava>
-References: <20220422100025.1469207-1-jolsa@kernel.org>
- <20220422100025.1469207-5-jolsa@kernel.org>
- <CAEf4BzaGLRYiQtT4_HV1ntAV0Br2yyRo5sZiebVAt9QJ8WVF5g@mail.gmail.com>
+        with ESMTP id S1343964AbiDZHdP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 03:33:15 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B78B13E05;
+        Tue, 26 Apr 2022 00:30:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650958207; x=1682494207;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=wKObrh7fSqP3n86ZK/ItNBIaS4Oe4iZY4KItAxqxkks=;
+  b=ktjkc46yn9UwCsW4lCls/kWWVbYfUAx9lBqtOphMD3mEgMfnI+iTKBRl
+   +myQSawtGUcp9siXAvbKmX4GHU2z9ydzgqU/kmsJMTcnfU2AnWjpxAsUM
+   dkfGsqh4oSONDPipqPUfpY/TPo9Zh01MrK9scJiP6P71ksZEOt3I2VHrF
+   siO4t0MkyIB9bJBdQAy2bWa64TB6yMhNVRZ1z45vWCzgwulm21pLttAZh
+   5tAGUHjNHfDjXkLeH1bPj6W32OXmeChyDsL7b7bc8cZQ+eRXSqv7U5cOY
+   hPCGlCkozOxz6nwr9+0QuVxWOZ4HdQ8SItOvvGm4wklkfyBmAidKZtXSh
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="265650207"
+X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
+   d="scan'208";a="265650207"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 00:30:06 -0700
+X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
+   d="scan'208";a="579735322"
+Received: from mmilkovx-mobl.amr.corp.intel.com ([10.249.47.245])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 00:30:00 -0700
+Date:   Tue, 26 Apr 2022 10:29:55 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Sergey Ryazanov <ryazanov.s.a@gmail.com>
+cc:     Ricardo Martinez <ricardo.martinez@linux.intel.com>,
+        Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        M Chetan Kumar <m.chetan.kumar@intel.com>,
+        chandrashekar.devegowda@intel.com,
+        Intel Corporation <linuxwwan@intel.com>,
+        chiranjeevi.rapolu@linux.intel.com,
+        =?GB2312?Q?Haijun_Liu_=28=C1=F5=BA=A3=BE=FC=29?= 
+        <haijun.liu@mediatek.com>, amir.hanania@intel.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        dinesh.sharma@intel.com, eliot.lee@intel.com,
+        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
+        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
+        sreehari.kancharla@intel.com, madhusmita.sahu@intel.com
+Subject: Re: [PATCH net-next v6 08/13] net: wwan: t7xx: Add data path
+ interface
+In-Reply-To: <CAHNKnsTr3aq1sgHnZQFL7-0uHMp3Wt4PMhVgTMSAiiXT=8p35A@mail.gmail.com>
+Message-ID: <d829315b-79ca-ff88-c76-e352d8fb5b5b@linux.intel.com>
+References: <20220407223629.21487-1-ricardo.martinez@linux.intel.com> <20220407223629.21487-9-ricardo.martinez@linux.intel.com> <CAHNKnsTr3aq1sgHnZQFL7-0uHMp3Wt4PMhVgTMSAiiXT=8p35A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzaGLRYiQtT4_HV1ntAV0Br2yyRo5sZiebVAt9QJ8WVF5g@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 11:22:54PM -0700, Andrii Nakryiko wrote:
-> On Fri, Apr 22, 2022 at 3:01 AM Jiri Olsa <jolsa@kernel.org> wrote:
+On Tue, 26 Apr 2022, Sergey Ryazanov wrote:
+
+> On Fri, Apr 8, 2022 at 1:37 AM Ricardo Martinez
+> <ricardo.martinez@linux.intel.com> wrote:
+> > Data Path Modem AP Interface (DPMAIF) HIF layer provides methods
+> > for initialization, ISR, control and event handling of TX/RX flows.
 > >
-> > Perf is using section name to declare special kprobe arguments,
-> > which no longer works with current libbpf, that either requires
-> > certain form of the section name or allows to register custom
-> > handler.
+> > DPMAIF TX
+> > Exposes the 'dmpaif_tx_send_skb' function which can be used by the
+> > network device to transmit packets.
+> > The uplink data management uses a Descriptor Ring Buffer (DRB).
+> > First DRB entry is a message type that will be followed by 1 or more
+> > normal DRB entries. Message type DRB will hold the skb information
+> > and each normal DRB entry holds a pointer to the skb payload.
 > >
-> > Adding support for 'perfkprobe/' section name handler to take
-> > care of perf kprobe programs.
+> > DPMAIF RX
+> > The downlink buffer management uses Buffer Address Table (BAT) and
+> > Packet Information Table (PIT) rings.
+> > The BAT ring holds the address of skb data buffer for the HW to use,
+> > while the PIT contains metadata about a whole network packet including
+> > a reference to the BAT entry holding the data buffer address.
+> > The driver reads the PIT and BAT entries written by the modem, when
+> > reaching a threshold, the driver will reload the PIT and BAT rings.
 > >
-> > The handler servers two purposes:
-> >   - allows perf programs to have special arguments in section name
-> >   - allows perf to use pre-load callback where we can attach init
-> >     code (zeroing all argument registers) to each perf program
+> > Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
+> > Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
+> > Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+> > Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
 > >
-> > The second is essential part of new prologue generation code,
-> > that's coming in following patch.
-> >
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > ---
-> >  tools/perf/util/bpf-loader.c | 50 ++++++++++++++++++++++++++++++++++++
-> >  1 file changed, 50 insertions(+)
-> >
-> > diff --git a/tools/perf/util/bpf-loader.c b/tools/perf/util/bpf-loader.c
-> > index f8ad581ea247..92dd8cc18edb 100644
-> > --- a/tools/perf/util/bpf-loader.c
-> > +++ b/tools/perf/util/bpf-loader.c
-> > @@ -86,6 +86,7 @@ bpf_perf_object__next(struct bpf_perf_object *prev)
-> >              (perf_obj) = (tmp), (tmp) = bpf_perf_object__next(tmp))
-> >
-> >  static bool libbpf_initialized;
-> > +static int libbpf_sec_handler;
-> >
-> >  static int bpf_perf_object__add(struct bpf_object *obj)
-> >  {
-> > @@ -99,12 +100,61 @@ static int bpf_perf_object__add(struct bpf_object *obj)
-> >         return perf_obj ? 0 : -ENOMEM;
-> >  }
-> >
-> > +static struct bpf_insn prologue_init_insn[] = {
-> > +       BPF_MOV64_IMM(BPF_REG_0, 0),
-> > +       BPF_MOV64_IMM(BPF_REG_1, 0),
-> > +       BPF_MOV64_IMM(BPF_REG_2, 0),
-> > +       BPF_MOV64_IMM(BPF_REG_3, 0),
-> > +       BPF_MOV64_IMM(BPF_REG_4, 0),
-> > +       BPF_MOV64_IMM(BPF_REG_5, 0),
-> > +};
+> > From a WWAN framework perspective:
+> > Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
+> 
+> Reviewed-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+> 
+> and a small question below.
+> 
+> > diff --git a/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c b/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c
+> > ...
+> > +static bool t7xx_alloc_and_map_skb_info(const struct dpmaif_ctrl *dpmaif_ctrl,
+> > +                                       const unsigned int size, struct dpmaif_bat_skb *cur_skb)
+> > +{
+> > +       dma_addr_t data_bus_addr;
+> > +       struct sk_buff *skb;
+> > +       size_t data_len;
 > > +
-> > +#define LIBBPF_SEC_PREFIX "perfkprobe/"
+> > +       skb = __dev_alloc_skb(size, GFP_KERNEL);
+> > +       if (!skb)
+> > +               return false;
+> > +
+> > +       data_len = skb_end_pointer(skb) - skb->data;
 > 
-> libbpf allows to register fallback handler that will handle any SEC()
-> definition besides the ones that libbpf handles. Would that work in
-> this case instead of adding a custom prefix handler here? See
-> prog_tests/custom_sec_handlers.c for example:
+> Earlier you use a nice t7xx_skb_data_area_size() function here, but
+> now you opencode it. Is it a consequence of t7xx_common.h removing?
 > 
-> fallback_id = libbpf_register_prog_handler(NULL,
-> BPF_PROG_TYPE_SYSCALL, 0, &opts);
+> I would even encourage you to make this function common and place it
+> into include/linux/skbuff.h with a dedicated patch and call it
+> something like skb_data_size(). Surprisingly, there is no such helper
+> function in the kernel, and several other drivers will benefit from
+> it:
 
-nice, I did not see that.. that should be better, no need for the prefix
+I agree other than the name. IMHO, skb_data_size sounds too much "data 
+size" which it exactly isn't but just how large the memory area is (we 
+already have "datalen" anyway and on language level, those two don't sound 
+different at all). The memory area allocated may or may not have actual 
+data in it, I suggested adding "area" into it.
 
-thanks,
-jirka
+
+-- 
+ i.
+
