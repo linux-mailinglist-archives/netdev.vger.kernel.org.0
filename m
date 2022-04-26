@@ -2,45 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D879510868
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 21:05:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EC75510853
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 21:05:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353787AbiDZTFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 15:05:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42436 "EHLO
+        id S1353822AbiDZTFy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 15:05:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353764AbiDZTFj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 15:05:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94BB419982F;
-        Tue, 26 Apr 2022 12:02:24 -0700 (PDT)
+        with ESMTP id S1353773AbiDZTFk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 15:05:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31EF91999CD;
+        Tue, 26 Apr 2022 12:02:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 341B5619C5;
-        Tue, 26 Apr 2022 19:02:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7995CC385A4;
-        Tue, 26 Apr 2022 19:02:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D347FB82251;
+        Tue, 26 Apr 2022 19:02:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78745C385AD;
+        Tue, 26 Apr 2022 19:02:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650999743;
-        bh=J9fKvkWLHDd+6qz2ZBFVcWFT9ooivv7xE+aNdi+7aEU=;
+        s=k20201202; t=1650999746;
+        bh=D393BtSYLwAHXD0I165NpZZJKw/jq3qoPsQLyLfQj3U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fVftWVBv1iea8k/Y/8zcaFhY7s821InzRGZaGv22HE9Kf6YnzbNvW+p978tOh8Qk+
-         NZzXoSYc29vsdBoX6b/Aao2n5MtERj6FECIpVGz/d21NxLnxIcSpwHW9wWQyriIMQ+
-         r+LWRgg16N6bIjhA/WdiRF3w0SFRefOP8L7ngc3ieBji3W1XKGSglhcCDCT2P9DV0D
-         xpgaICLOC+a4u1tvN4o7jCgvrlCcr8Jqr8WIVHxlO/m6OcIqbVUcF9LIho9yhnHu7X
-         Vt1/fmNSMJjX/MUkqTPs5S/9/7Exvy66/AqBFY2r9Z/NMh/ESK6hTqmqt/LseImdQA
-         JPamWXecQ8etw==
+        b=bFWW4MdDIS/055D/qaa/WmXw3B5r93+e18Gfxi3otVroSy6K2Bc/Q7QgatOR1JIyk
+         s63xoCcAhnTz+Yu/QUNr701hXnz2hCtOoyMZxyW8FuaslP3zWmYWj57snYt1A0Voi7
+         9hSOBWolhTaFUG8XU4SlMgCzxCmvR9Paz+d/KYULSyD2rSeb3ug5z2KfR164eY6bhh
+         bo0vO/yUHTmqsNI7V/OkkSqar+6i7kJ1ssg9RSuRrnkes5ezf/SMW9FsjFvzcm7AB+
+         xS3fKh84QN0HoC5nyyozo5mm9FHZ2/dE7gAfdIPxFnZTYMMliuNcWLekbAxJewd25x
+         o89zh1C2bfc9w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     suresh kumar <suresh2514@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 08/15] bonding: do not discard lowest hash bit for non layer3+4 hashing
-Date:   Tue, 26 Apr 2022 15:02:07 -0400
-Message-Id: <20220426190216.2351413-8-sashal@kernel.org>
+Cc:     Duoming Zhou <duoming@zju.edu.cn>, Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, jes@trained-monkey.org,
+        davem@davemloft.net, kuba@kernel.org, linux-hippi@sunsite.dk,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 11/15] drivers: net: hippi: Fix deadlock in rr_close()
+Date:   Tue, 26 Apr 2022 15:02:10 -0400
+Message-Id: <20220426190216.2351413-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220426190216.2351413-1-sashal@kernel.org>
 References: <20220426190216.2351413-1-sashal@kernel.org>
@@ -57,97 +56,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: suresh kumar <suresh2514@gmail.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 49aefd131739df552f83c566d0665744c30b1d70 ]
+[ Upstream commit bc6de2878429e85c1f1afaa566f7b5abb2243eef ]
 
-Commit b5f862180d70 was introduced to discard lowest hash bit for layer3+4 hashing
-but it also removes last bit from non layer3+4 hashing
+There is a deadlock in rr_close(), which is shown below:
 
-Below script shows layer2+3 hashing will result in same slave to be used with above commit.
-$ cat hash.py
-#/usr/bin/python3.6
+   (Thread 1)                |      (Thread 2)
+                             | rr_open()
+rr_close()                   |  add_timer()
+ spin_lock_irqsave() //(1)   |  (wait a time)
+ ...                         | rr_timer()
+ del_timer_sync()            |  spin_lock_irqsave() //(2)
+ (wait timer to stop)        |  ...
 
-h_dests=[0xa0, 0xa1]
-h_source=0xe3
-hproto=0x8
-saddr=0x1e7aa8c0
-daddr=0x17aa8c0
+We hold rrpriv->lock in position (1) of thread 1 and
+use del_timer_sync() to wait timer to stop, but timer handler
+also need rrpriv->lock in position (2) of thread 2.
+As a result, rr_close() will block forever.
 
-for h_dest in h_dests:
-    hash = (h_dest ^ h_source ^ hproto ^ saddr ^ daddr)
-    hash ^= hash >> 16
-    hash ^= hash >> 8
-    print(hash)
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irqsave(), which could let timer handler to obtain
+the needed lock.
 
-print("with last bit removed")
-for h_dest in h_dests:
-    hash = (h_dest ^ h_source ^ hproto ^ saddr ^ daddr)
-    hash ^= hash >> 16
-    hash ^= hash >> 8
-    hash = hash >> 1
-    print(hash)
-
-Output:
-$ python3.6 hash.py
-522133332
-522133333   <-------------- will result in both slaves being used
-
-with last bit removed
-261066666
-261066666   <-------------- only single slave used
-
-Signed-off-by: suresh kumar <suresh2514@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417125519.82618-1-duoming@zju.edu.cn
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/bonding/bond_main.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ drivers/net/hippi/rrunner.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 46c3301a5e07..2e75b7e8f70b 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -3817,14 +3817,19 @@ static bool bond_flow_dissect(struct bonding *bond, struct sk_buff *skb, const v
- 	return true;
- }
+diff --git a/drivers/net/hippi/rrunner.c b/drivers/net/hippi/rrunner.c
+index 7661dbb31162..50e4bea46d67 100644
+--- a/drivers/net/hippi/rrunner.c
++++ b/drivers/net/hippi/rrunner.c
+@@ -1353,7 +1353,9 @@ static int rr_close(struct net_device *dev)
  
--static u32 bond_ip_hash(u32 hash, struct flow_keys *flow)
-+static u32 bond_ip_hash(u32 hash, struct flow_keys *flow, int xmit_policy)
- {
- 	hash ^= (__force u32)flow_get_u32_dst(flow) ^
- 		(__force u32)flow_get_u32_src(flow);
- 	hash ^= (hash >> 16);
- 	hash ^= (hash >> 8);
-+
- 	/* discard lowest hash bit to deal with the common even ports pattern */
--	return hash >> 1;
-+	if (xmit_policy == BOND_XMIT_POLICY_LAYER34 ||
-+		xmit_policy == BOND_XMIT_POLICY_ENCAP34)
-+		return hash >> 1;
-+
-+	return hash;
- }
+ 	rrpriv->fw_running = 0;
  
- /* Generate hash based on xmit policy. If @skb is given it is used to linearize
-@@ -3854,7 +3859,7 @@ static u32 __bond_xmit_hash(struct bonding *bond, struct sk_buff *skb, const voi
- 			memcpy(&hash, &flow.ports.ports, sizeof(hash));
- 	}
++	spin_unlock_irqrestore(&rrpriv->lock, flags);
+ 	del_timer_sync(&rrpriv->timer);
++	spin_lock_irqsave(&rrpriv->lock, flags);
  
--	return bond_ip_hash(hash, &flow);
-+	return bond_ip_hash(hash, &flow, bond->params.xmit_policy);
- }
- 
- /**
-@@ -5012,7 +5017,7 @@ static u32 bond_sk_hash_l34(struct sock *sk)
- 	/* L4 */
- 	memcpy(&hash, &flow.ports.ports, sizeof(hash));
- 	/* L3 */
--	return bond_ip_hash(hash, &flow);
-+	return bond_ip_hash(hash, &flow, BOND_XMIT_POLICY_LAYER34);
- }
- 
- static struct net_device *__bond_sk_get_lower_dev(struct bonding *bond,
+ 	writel(0, &regs->TxPi);
+ 	writel(0, &regs->IpRxPi);
 -- 
 2.35.1
 
