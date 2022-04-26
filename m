@@ -2,104 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E295750EF7C
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 06:02:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3662B50EFAF
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 06:17:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240614AbiDZEFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 00:05:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35578 "EHLO
+        id S244046AbiDZEU5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 00:20:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238826AbiDZEFC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 00:05:02 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6C9912A8B;
-        Mon, 25 Apr 2022 21:01:54 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KnSn01gVSzGpJf;
-        Tue, 26 Apr 2022 11:59:16 +0800 (CST)
-Received: from [10.67.111.192] (10.67.111.192) by
- kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Apr 2022 12:01:50 +0800
-Message-ID: <b8c5ba79-c6e5-10bd-1963-5a0a94b9fbbc@huawei.com>
-Date:   Tue, 26 Apr 2022 12:01:50 +0800
+        with ESMTP id S231926AbiDZEUz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 00:20:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D93E2E08E;
+        Mon, 25 Apr 2022 21:17:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 19D56608C3;
+        Tue, 26 Apr 2022 04:17:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 141D2C385A4;
+        Tue, 26 Apr 2022 04:17:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650946668;
+        bh=TuixHq3qt953bpbIPmz0Qo3+44v5gXGeaxVhFfbNx3k=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=XgoSWHrJL5WfoSsvNpJWPEDWzTLcJ1BFIRadiepELJ4ajxJ4yE/LWDP9rOhD07l6+
+         1N92N9BYdD4S9cMsivFSegPO4lZvcBAQGtKoMgC/RVKTTArAdPagQtkagKTEQ+I1qE
+         uhA5EzyFZOuXgvgmsr9diIcmfiWke1tUgpQ9UyG0Y0JCmR6ZO0/aPJTaZrewPt9DRJ
+         rx2rbCxJyZyQlsYtWtnObjFM9oq0t0q6qXFGvJ5nszKOofwAfLyisPa5KYEdcAeyd5
+         mY/uthDH15hlBJMEkvLgeyLoAhLtI0FQbJHGxK+XK8UK+phePtZiAhxcLM6appUAex
+         PSTA0kM+U0Skg==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Srinivasan Raju <srini.raju@purelifi.com>
+Cc:     Mostafa Afgani <mostafa.afgani@purelifi.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list\:NETWORKING DRIVERS \(WIRELESS\)" 
+        <linux-wireless@vger.kernel.org>,
+        "open list\:NETWORKING DRIVERS" <netdev@vger.kernel.org>
+Subject: Re: [EXTERNAL] Re: [PATCH v22 1/2] wireless: Initial driver submission for pureLiFi STA devices
+References: <20220224182042.132466-3-srini.raju@purelifi.com>
+        <165089199642.17454.12727074837478904084.kvalo@kernel.org>
+        <CWLP265MB32173F6188304F6B2CB90C79E0F89@CWLP265MB3217.GBRP265.PROD.OUTLOOK.COM>
+Date:   Tue, 26 Apr 2022 07:17:43 +0300
+In-Reply-To: <CWLP265MB32173F6188304F6B2CB90C79E0F89@CWLP265MB3217.GBRP265.PROD.OUTLOOK.COM>
+        (Srinivasan Raju's message of "Mon, 25 Apr 2022 19:11:34 +0000")
+Message-ID: <87h76g1nrs.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH bpf-next v2 4/6] bpf, arm64: Impelment
- bpf_arch_text_poke() for arm64
-Content-Language: en-US
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-CC:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        <hpa@zytor.com>, Shuah Khan <shuah@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Daniel Kiss <daniel.kiss@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Delyan Kratunov <delyank@fb.com>, <kernel-team@cloudflare.com>
-References: <20220414162220.1985095-1-xukuohai@huawei.com>
- <20220414162220.1985095-5-xukuohai@huawei.com>
- <87levxfj32.fsf@cloudflare.com>
- <13cd161b-43a2-ce66-6a27-6662fc36e063@huawei.com>
- <87pml56xsr.fsf@cloudflare.com>
-From:   Xu Kuohai <xukuohai@huawei.com>
-In-Reply-To: <87pml56xsr.fsf@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.111.192]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemi500013.china.huawei.com (7.221.188.120)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-6.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/25/2022 10:26 PM, Jakub Sitnicki wrote:
-> On Sun, Apr 24, 2022 at 01:05 PM +08, Xu Kuohai wrote:
->> Thanks for your testing and suggestion! I added bpf2bpf poking to this
->> series and rebased it to [2] a few days ago, so there are some conflicts
->> with the bpf-next branch. I'll rebase it to bpf-next and send v3.
->>
->> [2] https://lore.kernel.org/bpf/20220416042940.656344-1-kuifeng@fb.com/
-> 
-> Looking forward to it.
-> 
-> I think it would be okay to post v3 saying that it depends on the
-> "Attach a cookie to a tracing program" series and won't apply cleanly to
-> bpf-next with out.
-> 
-> It would give us more time to review.
-> .
+Srinivasan Raju <srini.raju@purelifi.com> writes:
 
-Ah, already sent v3 based on bpf-next :(, will send an update after [2]
-is merged.
+>> Unless I don't get any comments I'm planning to merge this on Wednesday.
+>
+> Thanks Kalle , I do not have any comments.
+
+Please don't use HTML, our lists drop all HTML mail.
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
