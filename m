@@ -2,129 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 851E2510273
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 18:01:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46B4B510279
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 18:01:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352747AbiDZQEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 12:04:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39564 "EHLO
+        id S1352755AbiDZQEZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 12:04:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352787AbiDZQEG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 12:04:06 -0400
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5AB9B852;
-        Tue, 26 Apr 2022 09:00:58 -0700 (PDT)
-Received: by mail-io1-xd29.google.com with SMTP id z26so2295936iot.8;
-        Tue, 26 Apr 2022 09:00:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rSkUkaURL4HEXp6eDUwobhgJ9shXFSHoWRujy366OcY=;
-        b=JVbCO8w9HFioTVzLCPlSZy/gqbi9L3wP3tTDXOrg7838Zdep5mtX0C/jgK1hqHZmFo
-         A0STunzyXvB3TrHSSdlntTc/J22RyC3/724LE9+PD8F/aUG2IR32rrzLr9N6MXwaLTyc
-         v8XUuss7zqypyM5gTYy4zNpKva27TLyIfgL/16EJMWkG52zU4QN6oM3fj1J0UcmoddDo
-         kdCBtWF2uTzWZNfsimNlZcsAQ5BLWEdU8Gtl2/NcWRT/M3FmRP6rQQeacOR2wIXhufG9
-         D4trmMdV5Ehq+yyPn5aAltPN0w+CCC3MkaZ5utA5uWB0szT3hFTIsClEckcLuQpUaNMg
-         wD0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rSkUkaURL4HEXp6eDUwobhgJ9shXFSHoWRujy366OcY=;
-        b=5rDQtYsgT20z0Yk4ZwfLHzTtvKIXb3rJLDxpc0tkE5SkMznsHA0xBAC9jAUEUYDwmr
-         8xvVnrCcdSq+hd7jdqm+GWAO2UcVLD2q+R3EeFCfarXonSAMZGLwHGlL4Fd0mo+Sst1r
-         J3DMFV6IMm03R1yec4bepobOQFEV6ULCpggVzYwI93vup6tODPmMbxsIPEnj00qeUFlE
-         1hmEK2+wYWjy+veO4GWuKhPpKJh/ZGvekzGHik1NCrhpFdf6mLLKuXzA6bLvhOjV29Lf
-         h2wQNnzNProqvyxIIVvYHO0K/+Wv6YRH5lePTgiyMylSu9gQYjqGd1Jl7Vp8EY/ST+/s
-         YvCA==
-X-Gm-Message-State: AOAM532Q7Rcsliu0L/yzqRhmD73eA8GlUMfs2igBxJ77yhfo4tTgMMjZ
-        CctHOM6EG37z817YMNFBNyWbkuJJI6thS4Ehb40=
-X-Google-Smtp-Source: ABdhPJxXbFqylLkPxB2ftBSse2QxiXC1QnILgPxBoznPtS2cd3fqktegN13uzbjMy49GM5DrZHjeL5mKZ/11JKVbAIo=
-X-Received: by 2002:a05:6638:2104:b0:326:1e94:efa6 with SMTP id
- n4-20020a056638210400b003261e94efa6mr10674733jaj.234.1650988858067; Tue, 26
- Apr 2022 09:00:58 -0700 (PDT)
+        with ESMTP id S231989AbiDZQEY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 12:04:24 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 410BF39148;
+        Tue, 26 Apr 2022 09:01:16 -0700 (PDT)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 23QD4Jhx030290;
+        Tue, 26 Apr 2022 09:00:50 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pfpt0220;
+ bh=Ns64RVPqzj5t8fFzfAwBTaVxmgzfzWvSMQkypzHFSQY=;
+ b=VoJsYwyathuslCi7TnqYxzaGxQActrorPTHuJXskaTBt3AuyvzL28dGKlSTOFlZtTAqh
+ 4MRG6pmR2j61Z/rbWNGyvwbVQdKAz896GYRCZeDfcaz5Ft5necb7DxR2Gcid25kL0lbv
+ ugRi6F6DwElLvr91FTjjzYy1iikxIo0qJyQK7V4b6BPA1+IVbdDF5nAN0DL5ubtb4Q/r
+ Zd6oRUpwi4ub+sdxyNSD2A1Me0NJCI25R0/Kt/OrzkDbBlETkqBtb2bsAbpbrJLM5b/y
+ Z3hWVpkQlOMrUx27YvySK5/5SIkMTl1QBze0R53pdRLsjxCndDXUJT4Kc0tZ9gKHkL6C lQ== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3fp868arjk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 26 Apr 2022 09:00:49 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 26 Apr
+ 2022 09:00:47 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 26 Apr 2022 09:00:47 -0700
+Received: from [10.193.34.141] (unknown [10.193.34.141])
+        by maili.marvell.com (Postfix) with ESMTP id 9FF883F7081;
+        Tue, 26 Apr 2022 09:00:40 -0700 (PDT)
+Message-ID: <23cbe4be-7ced-62da-8fdb-366b726fe10f@marvell.com>
+Date:   Tue, 26 Apr 2022 18:00:38 +0200
 MIME-Version: 1.0
-References: <20220423140058.54414-1-laoar.shao@gmail.com> <20220423140058.54414-5-laoar.shao@gmail.com>
- <33e5314f-8546-3945-c73b-25ee13d1b368@iogearbox.net>
-In-Reply-To: <33e5314f-8546-3945-c73b-25ee13d1b368@iogearbox.net>
-From:   Yafang Shao <laoar.shao@gmail.com>
-Date:   Wed, 27 Apr 2022 00:00:21 +0800
-Message-ID: <CALOAHbCikXvNEz3f8dqe8_FcNSkvhUGpJtzyvKCgnRBdXPb7Ag@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 4/4] bpftool: Generate helpers for pinning prog
- through bpf object skeleton
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:100.0) Gecko/20100101
+ Thunderbird/100.0
+Subject: Re: [EXT] Re: [PATCH 0/5] net: atlantic: more fuzzing fixes
+Content-Language: en-US
+To:     Grant Grundler <grundler@chromium.org>,
+        Dmitry Bezrukov <dbezrukov@marvell.com>
+CC:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Aashay Shringarpure <aashay@google.com>,
+        "Yi Chou" <yich@google.com>,
+        Shervin Oloumi <enlightened@google.com>
+References: <20220418231746.2464800-1-grundler@chromium.org>
+ <CANEJEGtaFCRhVBaVtHrQiJvwsuBk3f_4RNTg87CWERHt+453KA@mail.gmail.com>
+From:   Igor Russkikh <irusskikh@marvell.com>
+In-Reply-To: <CANEJEGtaFCRhVBaVtHrQiJvwsuBk3f_4RNTg87CWERHt+453KA@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-ORIG-GUID: JB8P8whE__5bQJcxk04LhDRnwK6mSzrf
+X-Proofpoint-GUID: JB8P8whE__5bQJcxk04LhDRnwK6mSzrf
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-26_04,2022-04-26_02,2022-02-23_01
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 10:03 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 4/23/22 4:00 PM, Yafang Shao wrote:
-> > After this change, with command 'bpftool gen skeleton XXX.bpf.o', the
-> > helpers for pinning BPF prog will be generated in BPF object skeleton. It
-> > could simplify userspace code which wants to pin bpf progs in bpffs.
-> >
-> > The new helpers are named with __{pin, unpin}_prog, because it only pins
-> > bpf progs. If the user also wants to pin bpf maps in bpffs, he can use
-> > LIBBPF_PIN_BY_NAME.
-> >
-> > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-> > ---
-> >   tools/bpf/bpftool/gen.c | 16 ++++++++++++++++
-> >   1 file changed, 16 insertions(+)
-> >
-> > diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
-> > index 8f76d8d9996c..1d06ebde723b 100644
-> > --- a/tools/bpf/bpftool/gen.c
-> > +++ b/tools/bpf/bpftool/gen.c
-> > @@ -1087,6 +1087,8 @@ static int do_skeleton(int argc, char **argv)
-> >                       static inline int load(struct %1$s *skel);          \n\
-> >                       static inline int attach(struct %1$s *skel);        \n\
-> >                       static inline void detach(struct %1$s *skel);       \n\
-> > +                     static inline int pin_prog(struct %1$s *skel, const char *path);\n\
-> > +                     static inline void unpin_prog(struct %1$s *skel);   \n\
-> >                       static inline void destroy(struct %1$s *skel);      \n\
-> >                       static inline const void *elf_bytes(size_t *sz);    \n\
-> >               #endif /* __cplusplus */                                    \n\
-> > @@ -1172,6 +1174,18 @@ static int do_skeleton(int argc, char **argv)
-> >               %1$s__detach(struct %1$s *obj)                              \n\
-> >               {                                                           \n\
-> >                       bpf_object__detach_skeleton(obj->skeleton);         \n\
-> > +             }                                                           \n\
-> > +                                                                         \n\
-> > +             static inline int                                           \n\
-> > +             %1$s__pin_prog(struct %1$s *obj, const char *path)          \n\
-> > +             {                                                           \n\
-> > +                     return bpf_object__pin_skeleton_prog(obj->skeleton, path);\n\
-> > +             }                                                           \n\
-> > +                                                                         \n\
-> > +             static inline void                                          \n\
-> > +             %1$s__unpin_prog(struct %1$s *obj)                          \n\
-> > +             {                                                           \n\
-> > +                     bpf_object__unpin_skeleton_prog(obj->skeleton);     \n\
-> >               }                                                           \n\
->
-> (This should also have BPF selftest code as in-tree user.)
->
+Hi Grant,
 
-Will do it, thanks.
+Sorry for the delay, I was on vacation.
+Thanks for working on this.
 
-[snip]
+I'm adding here Dmitrii, to help me review the patches.
+Dmitrii, here is a full series:
 
--- 
-Regards
-Yafang
+https://patchwork.kernel.org/project/netdevbpf/cover/20220418231746.2464800-1-grundler@chromium.org/
+
+Grant, I've reviewed and also quite OK with patches 1-4.
+
+For patch 5 - why do you think we need these extra comparisons with software head/tail?
+From what I see in logic, only the size limiting check is enough there..
+
+Other extra checks are tricky and non intuitive..
+
+Regards,
+  Igor
+
+On 4/21/2022 9:53 PM, Grant Grundler wrote:
+> External Email
+> 
+> ----------------------------------------------------------------------
+> Igor,
+> Will you have a chance to comment on this in the near future?
+> Should someone else review/integrate these patches?
+> 
+> I'm asking since I've seen no comments in the past three days.
+> 
+> cheers,
+> grant
+> 
+> 
+> On Mon, Apr 18, 2022 at 4:17 PM Grant Grundler <grundler@chromium.org> 
+> wrote:
+>>
+>> The Chrome OS fuzzing team posted a "Fuzzing" report for atlantic driver
+>> in Q4 2021 using Chrome OS v5.4 kernel and "Cable Matters
+>> Thunderbolt 3 to 10 Gb Ethernet" (b0 version):
+>>
+>> https://urldefense.proofpoint.com/v2/url?u=https-3A__docs.google.com_document_d_e_2PACX-2D1vT4oCGNhhy-5FAuUqpu6NGnW0N9HF-5Fjxf2kS7raOpOlNRqJNiTHAtjiHRthXYSeXIRTgfeVvsEt0qK9qK_pub&d=DwIBaQ&c=nKjWec2b6R0mOyPaz7xtfQ&r=3kUjVPjrPMvlbd3rzgP63W0eewvCq4D-kzQRqaXHOqU&m=QoxR8WoQQ-hpWu_tThQydP3-6zkRWACvRmj_7aY1qo2FG6DdPdI86vAYrfKQFMHX&s=620jqeSvQrGg6aotI35cWwQpjaL94s7TFeFh2cYSyvA&e=
+>>
+>> It essentially describes four problems:
+>> 1) validate rxd_wb->next_desc_ptr before populating buff->next
+>> 2) "frag[0] not initialized" case in aq_ring_rx_clean()
+>> 3) limit iterations handling fragments in aq_ring_rx_clean()
+>> 4) validate hw_head_ in hw_atl_b0_hw_ring_tx_head_update()
+>>
+>> I've added one "clean up" contribution:
+>>     "net: atlantic: reduce scope of is_rsc_complete"
+>>
+>> I tested the "original" patches using chromeos-v5.4 kernel branch:
+>>
+>> https://urldefense.proofpoint.com/v2/url?u=https-3A__chromium-2Dreview.googlesource.com_q_hashtag-3Apcinet-2Datlantic-2D2022q1-2B-28status-3Aopen-2520OR-2520status-3Amerged-29&d=DwIBaQ&c=nKjWec2b6R0mOyPaz7xtfQ&r=3kUjVPjrPMvlbd3rzgP63W0eewvCq4D-kzQRqaXHOqU&m=QoxR8WoQQ-hpWu_tThQydP3-6zkRWACvRmj_7aY1qo2FG6DdPdI86vAYrfKQFMHX&s=1a1YwJqrY-be2oDgGAG5oOyZDnqIok_2p5G-N8djo2I&e=
+>>
+>> The fuzzing team will retest using the chromeos-v5.4 patches and the b0 
+>> HW.
+>>
+>> I've forward ported those patches to 5.18-rc2 and compiled them but am
+>> currently unable to test them on 5.18-rc2 kernel (logistics problems).
+>>
+>> I'm confident in all but the last patch:
+>>    "net: atlantic: verify hw_head_ is reasonable"
+>>
+>> Please verify I'm not confusing how ring->sw_head and ring->sw_tail
+>> are used in hw_atl_b0_hw_ring_tx_head_update().
+>>
+>> Credit largely goes to Chrome OS Fuzzing team members:
+>>     Aashay Shringarpure, Yi Chou, Shervin Oloumi
+>>
+>> cheers,
+>> grant
