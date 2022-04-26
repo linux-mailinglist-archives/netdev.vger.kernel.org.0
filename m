@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DEC150F4C0
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 10:37:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4942850F3B5
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 10:26:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345111AbiDZIkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 04:40:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60248 "EHLO
+        id S1344762AbiDZI2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 04:28:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345751AbiDZIj2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 04:39:28 -0400
+        with ESMTP id S1344667AbiDZI1p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 04:27:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 043B5403C9;
-        Tue, 26 Apr 2022 01:30:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C3CD135647;
+        Tue, 26 Apr 2022 01:23:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A1766617E8;
-        Tue, 26 Apr 2022 08:30:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FAC0C385A4;
-        Tue, 26 Apr 2022 08:30:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 933D8617E8;
+        Tue, 26 Apr 2022 08:23:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A484BC385A4;
+        Tue, 26 Apr 2022 08:23:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961847;
-        bh=0tuairVe7q3IaM+IniLAqmeXoRU9B7E4EPF5fzmWeV8=;
+        s=korg; t=1650961432;
+        bh=dkv8QN0gQVSZtZdSD5Khr9zcrthMVra0NtgbZ2JmCHI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IU3dlSwgGwt7zdA0jdHj5ZqcEbHUm3GPCyNZmRz/SU0q+0AzEHHl8r7/hO1pWj+vy
-         IHbXSFpwJg5Lc8EMHXkdnz47mehWvMVtw6NJUEuIirhnlcAHM/fDmdU29njV/N4vFb
-         HQFXLgsUNZwwIDtrvO7JYiMtTvWDQZ29ueA65KXo=
+        b=Aqh1moOa8C3eMPo5rafEgZF9pWztGL8jd3t1PVv7YZPKw2QfizEz13m0SNuzSw9Db
+         Rj7HUsDmmG1PyW063n/5bts+8ZEfybwQ+xNIGQ/ipuv7EpLsFRJpLbvzRSqx7YyzWH
+         d0FSM0zRw6HAqZj60QfXgQImPkV8ENse8EuArYIw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,12 +36,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         Kees Cook <keescook@chromium.org>,
         Khem Raj <raj.khem@gmail.com>
-Subject: [PATCH 5.4 01/62] etherdevice: Adjust ether_addr* prototypes to silence -Wstringop-overead
-Date:   Tue, 26 Apr 2022 10:20:41 +0200
-Message-Id: <20220426081737.254741425@linuxfoundation.org>
+Subject: [PATCH 4.14 01/43] etherdevice: Adjust ether_addr* prototypes to silence -Wstringop-overead
+Date:   Tue, 26 Apr 2022 10:20:43 +0200
+Message-Id: <20220426081734.555738631@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
-References: <20220426081737.209637816@linuxfoundation.org>
+In-Reply-To: <20220426081734.509314186@linuxfoundation.org>
+References: <20220426081734.509314186@linuxfoundation.org>
 User-Agent: quilt/0.66
 X-stable: review
 X-Patchwork-Hint: ignore
@@ -50,8 +50,7 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -93,7 +92,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/include/linux/etherdevice.h
 +++ b/include/linux/etherdevice.h
-@@ -127,7 +127,7 @@ static inline bool is_multicast_ether_ad
+@@ -130,7 +130,7 @@ static inline bool is_multicast_ether_ad
  #endif
  }
  
@@ -102,7 +101,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  {
  #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
  #ifdef __BIG_ENDIAN
-@@ -341,8 +341,7 @@ static inline bool ether_addr_equal(cons
+@@ -344,8 +344,7 @@ static inline bool ether_addr_equal(cons
   * Please note that alignment of addr1 & addr2 are only guaranteed to be 16 bits.
   */
  
