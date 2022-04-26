@@ -2,47 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B2944510851
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 21:05:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D017B510829
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 21:05:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243997AbiDZTGX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 15:06:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43244 "EHLO
+        id S1353929AbiDZTG0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 15:06:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353806AbiDZTFu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 15:05:50 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A76A719A4AF;
-        Tue, 26 Apr 2022 12:02:42 -0700 (PDT)
+        with ESMTP id S1353820AbiDZTFy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 15:05:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86E4A19916B;
+        Tue, 26 Apr 2022 12:02:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0A873CE20EA;
-        Tue, 26 Apr 2022 19:02:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C23AC385B0;
-        Tue, 26 Apr 2022 19:02:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 21397619E9;
+        Tue, 26 Apr 2022 19:02:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F912C385A0;
+        Tue, 26 Apr 2022 19:02:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650999759;
-        bh=xCiJZCZ9ZeZ92LkRF+pni1gvqdOIeeTL+TY9tYDqNAY=;
+        s=k20201202; t=1650999765;
+        bh=MHT2SeQdtx3XYjhw3wAw0mbMJj9Ahj3yxOPq+fIpods=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hsGdXgn1j08bU7TQSxiH2Ms1QZ+gIL3C6m4Puogyk3iaN+G9Ho8IadtsKIVV3iUzz
-         Q4+WnDdAxbxQ1ivC+fD5ACwQugrDDMfHxcnl4iowo8XErQOCrypw1EElF9kZxS8oLC
-         /kdskgmZB9WqVEDDl5M43Jj7WMCcu7S/xzxLR1UQbneiSqwbDYk+DffetNDl9xShLx
-         rWbRubkpiuVJzM8onPeRjGddVA9ZJ031PU/G/FWhuNWkvvi/0HauL8WpZhLP2vksGL
-         CV/Tck/hEibm1XkGkuAqlwNf804V8PEuKsUAy4qCWC0KPFV2wwZ/AjP9r88toeET4P
-         WrDbf6FD27dew==
+        b=rw9r6My2tKyeb5kDFZ2bl7n6Qq0ZU+S0ljaJhc5gzYpmAFYDUb/EDglTbVGh7bGOr
+         fr2j+tCNI9VmwYbyp2wDUJ4c/xGmswF/4lqvqr43afYm7tsZdf2NcDdq2+mzVXQjrl
+         8uRPvn+Ii+4EHFv30bSIrnly+VDyzsEMYv7Jr8Z9iuPHo1SlkVeCEMYPqEFKBxipPB
+         ysHajIowKmEHXqf/yR8Hy1SQLJtuHXzdqH0w1TC8QZOh1QGaEsLZDe9rR7JuZFq3x7
+         5pqiQZFo4yP6cb38PnrvNBpkWy2Lcy3THgkryin7Imn9cQBCr6/DWbytJK4zTlDiwK
+         9Co4MZmTuxMaQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duoming Zhou <duoming@zju.edu.cn>, Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, jes@trained-monkey.org,
-        davem@davemloft.net, kuba@kernel.org, linux-hippi@sunsite.dk,
+Cc:     Peilin Ye <peilin.ye@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 7/9] drivers: net: hippi: Fix deadlock in rr_close()
-Date:   Tue, 26 Apr 2022 15:02:28 -0400
-Message-Id: <20220426190232.2351606-7-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 2/6] ip6_gre: Avoid updating tunnel->tun_hlen in __gre6_xmit()
+Date:   Tue, 26 Apr 2022 15:02:38 -0400
+Message-Id: <20220426190243.2351733-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220426190232.2351606-1-sashal@kernel.org>
-References: <20220426190232.2351606-1-sashal@kernel.org>
+In-Reply-To: <20220426190243.2351733-1-sashal@kernel.org>
+References: <20220426190243.2351733-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -56,51 +58,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Peilin Ye <peilin.ye@bytedance.com>
 
-[ Upstream commit bc6de2878429e85c1f1afaa566f7b5abb2243eef ]
+[ Upstream commit f40c064e933d7787ca7411b699504d7a2664c1f5 ]
 
-There is a deadlock in rr_close(), which is shown below:
+Do not update tunnel->tun_hlen in data plane code.  Use a local variable
+instead, just like "tunnel_hlen" in net/ipv4/ip_gre.c:gre_fb_xmit().
 
-   (Thread 1)                |      (Thread 2)
-                             | rr_open()
-rr_close()                   |  add_timer()
- spin_lock_irqsave() //(1)   |  (wait a time)
- ...                         | rr_timer()
- del_timer_sync()            |  spin_lock_irqsave() //(2)
- (wait timer to stop)        |  ...
-
-We hold rrpriv->lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need rrpriv->lock in position (2) of thread 2.
-As a result, rr_close() will block forever.
-
-This patch extracts del_timer_sync() from the protection of
-spin_lock_irqsave(), which could let timer handler to obtain
-the needed lock.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417125519.82618-1-duoming@zju.edu.cn
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Co-developed-by: Cong Wang <cong.wang@bytedance.com>
+Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/hippi/rrunner.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/ipv6/ip6_gre.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/hippi/rrunner.c b/drivers/net/hippi/rrunner.c
-index 22010384c4a3..b9646b369f8e 100644
---- a/drivers/net/hippi/rrunner.c
-+++ b/drivers/net/hippi/rrunner.c
-@@ -1353,7 +1353,9 @@ static int rr_close(struct net_device *dev)
+diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
+index 5dbc280d4385..e550db28aabb 100644
+--- a/net/ipv6/ip6_gre.c
++++ b/net/ipv6/ip6_gre.c
+@@ -730,6 +730,7 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+ 		struct ip_tunnel_info *tun_info;
+ 		const struct ip_tunnel_key *key;
+ 		__be16 flags;
++		int tun_hlen;
  
- 	rrpriv->fw_running = 0;
+ 		tun_info = skb_tunnel_info(skb);
+ 		if (unlikely(!tun_info ||
+@@ -748,9 +749,9 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
+ 		dsfield = key->tos;
+ 		flags = key->tun_flags &
+ 			(TUNNEL_CSUM | TUNNEL_KEY | TUNNEL_SEQ);
+-		tunnel->tun_hlen = gre_calc_hlen(flags);
++		tun_hlen = gre_calc_hlen(flags);
  
-+	spin_unlock_irqrestore(&rrpriv->lock, flags);
- 	del_timer_sync(&rrpriv->timer);
-+	spin_lock_irqsave(&rrpriv->lock, flags);
- 
- 	writel(0, &regs->TxPi);
- 	writel(0, &regs->IpRxPi);
+-		gre_build_header(skb, tunnel->tun_hlen,
++		gre_build_header(skb, tun_hlen,
+ 				 flags, protocol,
+ 				 tunnel_id_to_key32(tun_info->key.tun_id),
+ 				 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++)
 -- 
 2.35.1
 
