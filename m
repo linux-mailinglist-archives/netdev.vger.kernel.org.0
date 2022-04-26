@@ -2,86 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B10D450F9C4
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 12:09:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 501E850F9B1
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 12:09:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348325AbiDZKKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 06:10:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44566 "EHLO
+        id S1345049AbiDZKKB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 06:10:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348309AbiDZKK3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 06:10:29 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39153203F64
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 02:33:38 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id n32-20020a05600c3ba000b00393ea7192faso1142485wms.2
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 02:33:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=QVmFXOUKgYe9HzYV1uXfVn9Q6oM24hbwGSBlkuukiUk=;
-        b=XxAfZRH55ufxZ3xvIhLw62TEKAdSZwJPTTpE7ZAx6BN/+Z+r3OXvfqmIEuhxYd2T7P
-         j6SiGN9SQ2l+wEYLeKiPK9iApIu+n9PENzikZZz2W4KJwdgBtANJrdgR52hvh01S1UHg
-         rvbcVshcTHFm8kr78VMR2U4uLtQq0i70PbyOw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=QVmFXOUKgYe9HzYV1uXfVn9Q6oM24hbwGSBlkuukiUk=;
-        b=SI1z5pJdQnxEqB5jPpxI0l5PB76dtfJfY/E4dfNXh9dFGFaAfToIMaK3glGVkqtDqW
-         h6gZqoDoPXFkdqzLxvyRWjvMNw/dYuWijblswWP1ycuQuVpOvtxgRYh0T3H1iYAIHyZx
-         JOcqMEctsim25RCNxHH8k5Jvxt+o4Qnh0SxLEFGssTB6ilQe7jw4uD9FcZCr7jQ+m9uW
-         APXxW1G+UUw+WTfqKCfpxdLHmNHvIsOc5ipfU5NQEHitgpZWSAusCMavAo7yYJxtEnJ9
-         Fdr7VsBRjBOP+IFRr4SOfM5uPCdoPpnfkzP7P5VN0UdqLC/95FyuP3yxIKJVp776cNv3
-         q02g==
-X-Gm-Message-State: AOAM5303cDuR6DiJCWEAIA4IK/dxnTq9Vjq3K7Mt0KI9iqAngHiK0ZGU
-        +INsj7DCf0HixRUhjInU+9AbSA==
-X-Google-Smtp-Source: ABdhPJztUrsjinJeRPI8NhkLXuhlonHUrvrOClMy0jGOzEJrh8/CdwAkeIYdU0SNc51D9oP9PLT6Hg==
-X-Received: by 2002:a05:600c:354e:b0:393:ef51:c87d with SMTP id i14-20020a05600c354e00b00393ef51c87dmr5506659wmq.189.1650965616547;
-        Tue, 26 Apr 2022 02:33:36 -0700 (PDT)
-Received: from cloudflare.com (79.184.126.143.ipv4.supernova.orange.pl. [79.184.126.143])
-        by smtp.gmail.com with ESMTPSA id f20-20020a05600c155400b00393efff7c29sm3194301wmg.19.2022.04.26.02.33.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 02:33:36 -0700 (PDT)
-References: <20220410161042.183540-1-xiyou.wangcong@gmail.com>
-User-agent: mu4e 1.6.10; emacs 27.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     netdev@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>
-Subject: Re: [Patch bpf-next v1 0/4] sockmap: some performance optimizations
-Date:   Tue, 26 Apr 2022 11:27:24 +0200
-In-reply-to: <20220410161042.183540-1-xiyou.wangcong@gmail.com>
-Message-ID: <878rrs6vf4.fsf@cloudflare.com>
+        with ESMTP id S1348381AbiDZKI3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 06:08:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4E7637BD4
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 02:30:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4C17BB81D26
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 09:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 082F1C385AC;
+        Tue, 26 Apr 2022 09:30:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650965411;
+        bh=VfPBtSCcYNpRWaAMKCwfgfpTAPh+0ERZ1gJupXJ+0no=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=WB9g3rv1CcQVKyfLlSESHShS/5dL2efHj5xhoFGrOQmTaU/kn848fR3lJhBinovXG
+         PwMDkI5ND34tCGTDJ/1AmNZthb95adDUXgL98otmES6hM1bAO4bM8a49SQLMJgJb27
+         Ggu0GXb9GijFiBYdvOXXGnw7VXR8Hzf/Um8dBwovAC4G/QYgT6L+WFxSWr4uWZE6Wm
+         jizb6uYvJgeNscpO8sXXu/JW6yMlpu0+DIMOCWn3mCkc0/EULYdutdt3chx0MEvMPK
+         Dl2KxQ5yz9cHeTUg9M4BnDMS6+LRUx3Bd4YZyTO5FRKusk60whYJhccca42fxt+LhX
+         qAXxjBAnB/fPw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E2B76E8DD67;
+        Tue, 26 Apr 2022 09:30:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCHv2 net-next] net/af_packet: add VLAN support for AF_PACKET
+ SOCK_RAW GSO
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165096541092.4224.10118526739950405614.git-patchwork-notify@kernel.org>
+Date:   Tue, 26 Apr 2022 09:30:10 +0000
+References: <20220425014502.985464-1-liuhangbin@gmail.com>
+In-Reply-To: <20220425014502.985464-1-liuhangbin@gmail.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, mst@redhat.com, jasowang@redhat.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        maximmi@mellanox.com,
+        WillemdeBruijnwillemdebruijn.kernel@gmail.com, bnemeth@redhat.com,
+        mpattric@redhat.com, edumazet@google.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 10, 2022 at 09:10 AM -07, Cong Wang wrote:
-> From: Cong Wang <cong.wang@bytedance.com>
->
-> This patchset contains two optimizations for sockmap. The first one
-> eliminates a skb_clone() and the second one eliminates a memset(). After
-> this patchset, the throughput of UDP transmission via sockmap gets
-> improved by 61%.
+Hello:
 
-That's a pretty exact number ;-)
+This patch was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-Is this a measurement from metrics collected from a production
-enviroment, or were you using a synthetic benchmark?
+On Mon, 25 Apr 2022 09:45:02 +0800 you wrote:
+> Currently, the kernel drops GSO VLAN tagged packet if it's created with
+> socket(AF_PACKET, SOCK_RAW, 0) plus virtio_net_hdr.
+> 
+> The reason is AF_PACKET doesn't adjust the skb network header if there is
+> a VLAN tag. Then after virtio_net_hdr_set_proto() called, the skb->protocol
+> will be set to ETH_P_IP/IPv6. And in later inet/ipv6_gso_segment() the skb
+> is dropped as network header position is invalid.
+> 
+> [...]
 
-If it was the latter, would you be able to share the tooling?
+Here is the summary with links:
+  - [PATCHv2,net-next] net/af_packet: add VLAN support for AF_PACKET SOCK_RAW GSO
+    https://git.kernel.org/netdev/net-next/c/dfed913e8b55
 
-I'm looking at extending the fio net engine with sockmap support, so
-that we can have a reference benchmark. It would be helpful to see which
-sockmap setup scenarios are worth focusing on.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Thanks,
-Jakub
+
