@@ -2,189 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A15475100F4
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 16:51:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 812CB510109
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 16:54:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344498AbiDZOyp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 10:54:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42574 "EHLO
+        id S1347662AbiDZO6B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 10:58:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243963AbiDZOyo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 10:54:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55BC944755
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 07:51:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E56E261899
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 14:51:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDCE5C385A0;
-        Tue, 26 Apr 2022 14:51:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650984695;
-        bh=F8javr8Mied5dRV60ZCGWY3cQV41StthERn7962M3jc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=u5Xk8Lh313Scw/SLeobdzb9fuT8KP7PAcOexZfPJOlkMQH2r6xhSbgVajpMRHcQJO
-         j8uoGWo5qiyOs1086IGKODLNwF7+5Sz1dO28hNBWVSyTVeBuOm1Q3HihgR/p/MBMk/
-         2XDDeKwvrFrCLWXNuWZDpjsvn7fS6thTNshr/cNblU7EBcIVp8Yn0IIa2d2fP/gy9s
-         sXexF/ATUKn1HZuZACjoSmTldqbYilJPPNaemdjaMU/qEdFrllizcVcbTaX+zzuOW/
-         /V+vyHboM90MXqqE3Nw8kHWfOMGmrSRMwMcrFYvKBQ8W1VgDV1piJN4oDKqZk71lMU
-         FEixBUGpT3/mw==
-Date:   Tue, 26 Apr 2022 07:51:33 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Ido Schimmel <idosch@idosch.org>, Ido Schimmel <idosch@nvidia.com>,
-        netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
-        andrew@lunn.ch, mlxsw@nvidia.com
-Subject: Re: [PATCH net-next 00/11] mlxsw: extend line card model by devices
- and info
-Message-ID: <20220426075133.53562a2e@kernel.org>
-In-Reply-To: <Ymf66h5dMNOLun8k@nanopsycho>
-References: <20220425034431.3161260-1-idosch@nvidia.com>
-        <20220425090021.32e9a98f@kernel.org>
-        <Ymb5DQonnrnIBG3c@shredder>
-        <20220425125218.7caa473f@kernel.org>
-        <YmeXyzumj1oTSX+x@nanopsycho>
-        <20220426054130.7d997821@kernel.org>
-        <Ymf66h5dMNOLun8k@nanopsycho>
+        with ESMTP id S1345957AbiDZO6A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 10:58:00 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E354D64730
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 07:54:52 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id j8so30429945pll.11
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 07:54:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4pWgIUWm1vfKnCS00ipYgE1UCM7LlZXoPChVAV9K9vY=;
+        b=0Wk6YM6v/RR0D2QCWZIQgKAwYwkSNFSv+QC2Vx/n/HS4vhh7DR7kTdOIeA9ZFDRNrV
+         HEYXbBuOqM5ywOx20JLN3bqMJNV/V4qtZdO2vsCmZghR8BDoIXoRLzSrPuyCCVSoDJLf
+         p4smos+Io7NPYc7Vggbn8k32+jBf1nOTSHU5dxQmkSm16XfrOhag8npe2nFnbLZbbQVG
+         JR+PL7oYBv9FaerHvEN9AOv3PNR/1XwMgsqfW59tZj1J/1OQRw8PPgC0fjp5jqYdUuok
+         bIpXawKvCe2hUcDKiLBNFourxf3Qx+aDQfSMSL+eoyhrKsi219f7UE9OxfwUI920mENB
+         RLUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4pWgIUWm1vfKnCS00ipYgE1UCM7LlZXoPChVAV9K9vY=;
+        b=oTDzpHlrAc/xyO3e7X7w2bv6rneV93FTVIi2LhEPFso/90obJrj1hNHSKWuM+b8LaS
+         9nkNtv1E4yt0OJ/yhA9/woNXRET9BijXJRSmkCP6LSThLikEldoZGHJEAj+pTqJQ5xIw
+         araylJSP4/EGNTfXvW1zdUl5ouimdswtDvC9qecurfC+Qc+P2GmfxZAbvkCwZbVeRd3Y
+         n9RLVmfFdxAhLAayotE15ypr85J18vQggHlnRDFYdGc9EjBBgb/tUVbwzdbAXOoIE03y
+         /Ib4tdmHxDFxslfeAYlj5Yg2UaSeG5dDFcTSD2eZGTKV1OwMT8uqtJ/M3t9QdrnqVkfF
+         VW+Q==
+X-Gm-Message-State: AOAM532V9Qk6UF3w/6ho0CQ9DE2yvFr4UZRmtxSq4D5E0o6dA1iJF/2W
+        WcXK2/3aqAGbzf0tkmMK9o6DyL5kG27bGg==
+X-Google-Smtp-Source: ABdhPJyIQathj/0g5cUjqqFJg+FZxvWpVpM8gxDyURWqXHpy/Gj1mK3PM48tWDyDx+KKQZt77rMCUA==
+X-Received: by 2002:a17:903:32c8:b0:15d:3359:ca53 with SMTP id i8-20020a17090332c800b0015d3359ca53mr4657772plr.173.1650984892013;
+        Tue, 26 Apr 2022 07:54:52 -0700 (PDT)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id q10-20020a056a00088a00b004f7ceff389esm16579491pfj.152.2022.04.26.07.54.51
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 07:54:51 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 07:54:48 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: Fw: [Bug 215888] New: raw socket test with stress-ng trigger soft
+ lockup
+Message-ID: <20220426075448.037015eb@hermes.local>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 26 Apr 2022 16:00:10 +0200 Jiri Pirko wrote:
-> >> But you have to somehow link the component to the particular gearbox on
-> >> particular line card. Say, you need to flash GB on line card 8. This is
-> >> basically providing a way to expose this relationship to user.
-> >>=20
-> >> Also, the "lc info" shows the FW version for gearboxes. As Ido
-> >> mentioned, the GB versions could be listed in "devlink dev info" in
-> >> theory. But then, you need to somehow expose the relationship with
-> >> line card as well. =20
-> >
-> >Why would the automation which comes to update the firmware care=20
-> >at all where the component is? Humans can see what the component=20
-> >is by looking at the name. =20
->=20
-> The relationship-by-name sounds a bit fragile to me. The names of
-> components are up to the individual drivers.
 
-I asked you how the automation will operate. You must answer questions
-if you want to have a discussion. Automation is the relevant part.
-You're not designing an interface for SDK users but for end users.
 
-> >If we do need to know (*if*!) you can list FW components as a lc
-> >attribute, no need for new commands and objects. =20
->=20
-> There is no new command for that, only one nested attribute which
-> carries the device list added to the existing command. They are no new
-> objects, they are just few nested values.
+Begin forwarded message:
 
-DEVLINK_CMD_LINECARD_INFO_GET
+Date: Tue, 26 Apr 2022 09:31:50 +0000
+From: bugzilla-daemon@kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 215888] New: raw socket test with stress-ng trigger soft lockup
 
-> >IMHO we should either keep lc objects simple and self contained or=20
-> >give them a devlink instance. Creating sub-objects from them is very =20
->=20
-> Give them a devlink instance? I don't understand how. LC is not a
-> separate device, far from that. That does not make any sense to me.
 
-You can put a name of another devlink instance as an attribute of a lc.
-See below.
+https://bugzilla.kernel.org/show_bug.cgi?id=215888
 
-> >worrying. If there is _any_ chance we'll need per-lc health reporters=20
-> >or sbs or params(=F0=9F=A4=A2) etc. etc. - let's bite the bullet _now_ a=
-nd create
-> >full devlink sub-instances! =20
->=20
-> Does not make sense to me at all. Line cards are detachable PHY sets in
-> essence, very basic functionality. They does not have buffers, health
-> and params, I don't think so.=20
+            Bug ID: 215888
+           Summary: raw socket test with stress-ng trigger soft lockup
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 5.17
+          Hardware: Intel
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: blocking
+          Priority: P1
+         Component: IPV4
+          Assignee: stephen@networkplumber.org
+          Reporter: colin.king@canonical.com
+        Regression: No
 
-I guess the definition of a "line card" has become somewhat murky over
-the years, since the olden days of serial lines.
+Running stress-ng [1] with the following raw socket stressor triggers a
+softlockup on a SMP NUMA x86-64 system:
 
-Perhaps David and others can enlighten us but what I'm used to hearing
-about as a line card these days in a chassis system is a full-on switch.
-Chassis being effectively a Clos network in a box, the main difference
-being the line cards talk cells to the backplane, not full packets.
+sudo stress-ng --rawsock 20 -t 60
 
-Back in my Netronome days we called those detachable front panel gear
-boxes "phy mods". Those had nowhere near the complexity of a real line
-card. Sounds like that's more aligned with what you have.
+kernel:watchdog: BUG: soft lockup - CPU#4 stuck for 22s! [stress-ng:49781]
 
-To summarize, since your definition of a line card is a bit special,
-the less uAPI we add to fit your definition we add the better.
+Tested this on 5.17. User has also reported this against the stress-ng project:
 
-> >> I don't see any simpler iface than this. =20
-> >
-> >Based on the assumptions you've made, maybe, but the uAPI should
-> >abstract away the irrelevant details. I'm questioning the assumptions. =
-=20
->=20
-> Is the FW version of gearbox on a line card irrelevand detail?
+https://github.com/ColinIanKing/stress-ng/issues/187
 
-Not what I said.
+[1] Stress-ng:
+https://github.com/ColinIanKing/stress-ng
+git clone https://github.com/ColinIanKing/stress-ng
+cd stress-ng
+make
+sudo ./stress-ng --rawsock 0 -t 60
 
-> If so, how does the user know if/when to flash it?
-> If not, where would you list it if devices nest is not the correct place?
+-- 
+You may reply to this email to add a comment.
 
-Let me mock up what I had in mind for you since it did not come thru=20
-in the explanation:
-
-$ devlink dev info show pci/0000:01:00.0
-    versions:
-        fixed:
-          hw.revision 0
-          lc2.hw.revision a
-          lc8.hw.revision b
-        running:
-          ini.version 4
-          lc2.gearbox 1.1.3
-          lc8.gearbox 1.2.3
-
-$ devlink lc show pci/0000:01:00.0 lc 8
-pci/0000:01:00.0:
-  lc 8 state active type 16x100G
-    supported_types:
-      16x100G
-    versions:=20
-      lc8.hw.revision (a)=20
-      lc8.gearbox (1.2.3)
-
-Where the data in the brackets is optionally fetched thru the existing
-"dev info" API, but rendered together by the user space.
-
-> >> There are 4 gearboxes on the line card. They share the same flash. So
-> >> if you flash gearbox 0, the rest will use the same FW. =20
-> >
-> >o_0 so the FW component is called lcX_dev0 and yet it applies to _all_
-> >devices, not just dev0?! Looking at the output above I thought other
-> >devices simply don't have FW ("flashable false"). =20
->=20
-> Yes, device 0 is "flash master" (RW). 1-3 are RO. I know it is a bit
-> confusing. Maybe Andy's suggestion of "shared" flag of some sort might
-> help.
->=20
-> >> I'm exposing them for the sake of completeness. Also, the interface
-> >> needs to be designed as a list anyway, as different line cards may
-> >> have separate flash per gearbox.
-> >>=20
-> >> What's is the harm in exposing devices 1-3? If you insist, we can hide
-> >> them. =20
-> >
-> >Well, they are unnecessary (this is uAPI), and coming from the outside
-> >I misinterpreted what the information reported means, so yeah, I'd
-> >classify it as harmful :( =20
->=20
-> UAPI is the "devices nest". It has to be list one way or another
-> (we may need to expose more gearboxes anyway). So what is differently
-> harmful with having list [0] or list [0,1,2,3] ?
+You are receiving this mail because:
+You are the assignee for the bug.
