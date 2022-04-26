@@ -2,137 +2,301 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C98F50FE2E
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 15:02:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC6FC50FF12
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 15:32:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345347AbiDZNEg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 09:04:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60174 "EHLO
+        id S237797AbiDZNfy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 09:35:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345226AbiDZNEf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 09:04:35 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 104D11DA7D;
-        Tue, 26 Apr 2022 06:01:25 -0700 (PDT)
-Received: from kwepemi500007.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KnhlW5VlwzGp36;
-        Tue, 26 Apr 2022 20:58:47 +0800 (CST)
-Received: from kwepemm600001.china.huawei.com (7.193.23.3) by
- kwepemi500007.china.huawei.com (7.221.188.207) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Apr 2022 21:01:23 +0800
-Received: from huawei.com (10.175.113.133) by kwepemm600001.china.huawei.com
- (7.193.23.3) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 26 Apr
- 2022 21:01:22 +0800
-From:   Wang Hai <wanghai38@huawei.com>
-To:     <trond.myklebust@hammerspace.com>, <anna@kernel.org>,
-        <chuck.lever@oracle.com>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-CC:     <linux-nfs@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <wanghai38@huawei.com>
-Subject: [PATCH net] SUNRPC: Fix local socket leak in xs_local_setup_socket()
-Date:   Tue, 26 Apr 2022 21:20:11 +0800
-Message-ID: <20220426132011.25418-1-wanghai38@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S236434AbiDZNfx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 09:35:53 -0400
+Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA0753136D
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 06:32:43 -0700 (PDT)
+Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-2f7bb893309so102171207b3.12
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 06:32:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7Y1qcKhmhihjquPkNmPpQlcIRxQVN9xLFKDb4pHIlpg=;
+        b=JnSnF/ra24mcHx7zxUAEG+TCXf4om2hIoj6vPbRiIiyMS5oTcm3ivWDHPLVC/KiqaG
+         RdrWuhTQjNr8miBR5XnGFIhNvoWHC3hbWJ1f67oiMO23J573HjzpJyWgnzsQt11QB93s
+         fhtF1YtrOkqGzQpym/I5gPlFyvuQR7/eOKfHUalFdIlPcCyx8aCMdUwi58fSMjW3MwTF
+         2dPMvryNM0cXiEnbIwLDqzvTOE60VoEV6FXY6TfyPWNYahEYxgy23qRwV/3FoxGqlCJY
+         //gJ20ZJauuCUv8OJCmOK4geHbteXfaTDbMV25OCPgYRN5XDAKyKbdPMcrl2TU3Lrb6L
+         LDbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7Y1qcKhmhihjquPkNmPpQlcIRxQVN9xLFKDb4pHIlpg=;
+        b=i41ui8R9efryuftwbxvsR90A6cfQjIVpMz+/MKezDmEsBq2MtdzMPihFO748FdRqQH
+         oUimCySR+LdydsHM67fIW68LgMmb4VUZD/gANg+jWU45SxzqTt6myHtKrdKDt2l0p/OV
+         TEmXFQzB9GV80PW0euGcpWmQZFgCKf0Y4eBxTDPmhKBWDgIiCJDEpuDVt07hqrZRL2ie
+         KKCV8j5ElqPxkYQ/7tAY9kd0BxeWKOM/F4ENX7JuaFUrxWIs5Mmrp2T7bBbUQEMIZ01w
+         r6W618ttSufWEzZnuF6XzVgDBSrgTBbbPTUcll9aWwwpDcEx8/CKtlqSw4Pcejl4RSUU
+         XmKw==
+X-Gm-Message-State: AOAM533VdyxmXUw9TcGFke1ZjoKywx/Xlpx9CygCU7IJ01CpktLgSYE2
+        7jCg9I8m6enPJizOEiuiuD5J5SGW8LPr/PlyYUNs4g==
+X-Google-Smtp-Source: ABdhPJysGEq5PIYqa1dz5FvyA71TscOTkndpovrNU0LaVrg655Ys7C3LkTDvMO5q7ExfgqftRAyMhITm8uot9kIoJGU=
+X-Received: by 2002:a81:89c3:0:b0:2f3:227:d5af with SMTP id
+ z186-20020a8189c3000000b002f30227d5afmr21879072ywf.47.1650979962669; Tue, 26
+ Apr 2022 06:32:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.113.133]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600001.china.huawei.com (7.193.23.3)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20220426080709.6504-1-imagedong@tencent.com> <20220426080709.6504-2-imagedong@tencent.com>
+In-Reply-To: <20220426080709.6504-2-imagedong@tencent.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 26 Apr 2022 06:32:31 -0700
+Message-ID: <CANn89iJa3FZHXfUWHw-OwOu8X_Cc0-YzxkgE_M=8DrBN1jWnAQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/2] net: add skb drop reasons to inet connect request
+To:     Menglong Dong <menglong8.dong@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, benbjiang@tencent.com,
+        flyingpeng@tencent.com, Menglong Dong <imagedong@tencent.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kees Cook <keescook@chromium.org>, mengensun@tencent.com,
+        Dongli Zhang <dongli.zhang@oracle.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the connection to a local endpoint in xs_local_setup_socket() fails,
-fput() is missing in the error path, which will result in a socket leak.
-It can be reproduced in simple script below.
+On Tue, Apr 26, 2022 at 1:07 AM <menglong8.dong@gmail.com> wrote:
+>
+> From: Menglong Dong <imagedong@tencent.com>
+>
+> The 'conn_request()' in struct inet_connection_sock_af_ops is used to
+> process connection requesting for TCP/DCCP. Take TCP for example, it
+> is just 'tcp_v4_conn_request()'.
+>
+> When non-zero value is returned by 'tcp_v4_conn_request()', the skb
+> will be freed by kfree_skb() and a 'reset' packet will be send.
+> Otherwise, it will be freed normally.
+>
+> In this code path, 'consume_skb()' is used in many abnormal cases, such
+> as the accept queue of the listen socket full, which should be
+> 'kfree_skb()'.
+>
+> Therefore, we make a little change to the 'conn_request()' interface.
+> When 0 is returned, we call 'consume_skb()' as usual; when negative is
+> returned, we call 'kfree_skb()' and send a 'reset' as usual; when
+> positive is returned, which has not happened yet, we do nothing, and
+> skb will be freed in 'conn_request()'. Then, we can use drop reasons
+> in 'conn_request()'.
+>
+> Following new drop reasons are added:
+>
+>   SKB_DROP_REASON_LISTENOVERFLOWS
+>   SKB_DROP_REASON_TCP_REQQFULLDROP
+>
+> Reviewed-by: Jiang Biao <benbjiang@tencent.com>
+> Reviewed-by: Hao Peng <flyingpeng@tencent.com>
+> Signed-off-by: Menglong Dong <imagedong@tencent.com>
+> ---
+>  include/linux/skbuff.h     |  4 ++++
+>  include/trace/events/skb.h |  2 ++
+>  net/dccp/input.c           | 12 +++++-------
+>  net/ipv4/tcp_input.c       | 21 +++++++++++++--------
+>  net/ipv4/tcp_ipv4.c        |  3 ++-
+>  5 files changed, 26 insertions(+), 16 deletions(-)
+>
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index 84d78df60453..f33b3636bbce 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -469,6 +469,10 @@ enum skb_drop_reason {
+>         SKB_DROP_REASON_PKT_TOO_BIG,    /* packet size is too big (maybe exceed
+>                                          * the MTU)
+>                                          */
+> +       SKB_DROP_REASON_LISTENOVERFLOWS, /* accept queue of the listen socket is full */
+> +       SKB_DROP_REASON_TCP_REQQFULLDROP, /* request queue of the listen
+> +                                          * socket is full
+> +                                          */
+>         SKB_DROP_REASON_MAX,
+>  };
+>
+> diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
+> index a477bf907498..de6c93670437 100644
+> --- a/include/trace/events/skb.h
+> +++ b/include/trace/events/skb.h
+> @@ -80,6 +80,8 @@
+>         EM(SKB_DROP_REASON_IP_INADDRERRORS, IP_INADDRERRORS)    \
+>         EM(SKB_DROP_REASON_IP_INNOROUTES, IP_INNOROUTES)        \
+>         EM(SKB_DROP_REASON_PKT_TOO_BIG, PKT_TOO_BIG)            \
+> +       EM(SKB_DROP_REASON_LISTENOVERFLOWS, LISTENOVERFLOWS)    \
+> +       EM(SKB_DROP_REASON_TCP_REQQFULLDROP, TCP_REQQFULLDROP)  \
+>         EMe(SKB_DROP_REASON_MAX, MAX)
+>
+>  #undef EM
+> diff --git a/net/dccp/input.c b/net/dccp/input.c
+> index 2cbb757a894f..ed20dfe83f66 100644
+> --- a/net/dccp/input.c
+> +++ b/net/dccp/input.c
+> @@ -574,8 +574,7 @@ int dccp_rcv_state_process(struct sock *sk, struct sk_buff *skb,
+>         struct dccp_sock *dp = dccp_sk(sk);
+>         struct dccp_skb_cb *dcb = DCCP_SKB_CB(skb);
+>         const int old_state = sk->sk_state;
+> -       bool acceptable;
+> -       int queued = 0;
+> +       int err, queued = 0;
+>
+>         /*
+>          *  Step 3: Process LISTEN state
+> @@ -606,13 +605,12 @@ int dccp_rcv_state_process(struct sock *sk, struct sk_buff *skb,
+>                          */
+>                         rcu_read_lock();
+>                         local_bh_disable();
+> -                       acceptable = inet_csk(sk)->icsk_af_ops->conn_request(sk, skb) >= 0;
+> +                       err = inet_csk(sk)->icsk_af_ops->conn_request(sk, skb);
+>                         local_bh_enable();
+>                         rcu_read_unlock();
+> -                       if (!acceptable)
+> -                               return 1;
+> -                       consume_skb(skb);
+> -                       return 0;
+> +                       if (!err)
+> +                               consume_skb(skb);
+> +                       return err < 0;
+>                 }
+>                 if (dh->dccph_type == DCCP_PKT_RESET)
+>                         goto discard;
+> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+> index daff631b9486..e0bbbd624246 100644
+> --- a/net/ipv4/tcp_input.c
+> +++ b/net/ipv4/tcp_input.c
+> @@ -6411,7 +6411,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+>         struct inet_connection_sock *icsk = inet_csk(sk);
+>         const struct tcphdr *th = tcp_hdr(skb);
+>         struct request_sock *req;
+> -       int queued = 0;
+> +       int err, queued = 0;
+>         bool acceptable;
+>         SKB_DR(reason);
+>
+> @@ -6438,14 +6438,13 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+>                          */
+>                         rcu_read_lock();
+>                         local_bh_disable();
+> -                       acceptable = icsk->icsk_af_ops->conn_request(sk, skb) >= 0;
+> +                       err = icsk->icsk_af_ops->conn_request(sk, skb);
+>                         local_bh_enable();
+>                         rcu_read_unlock();
+>
+> -                       if (!acceptable)
+> -                               return 1;
+> -                       consume_skb(skb);
+> -                       return 0;
+> +                       if (!err)
+> +                               consume_skb(skb);
 
-while true
-do
-        systemctl stop rpcbind.service
-        systemctl stop rpc-statd.service
-        systemctl stop nfs-server.service
+Please, do not add more mess like that, where skb is either freed by
+the callee or the caller.
 
-        systemctl restart rpcbind.service
-        systemctl restart rpc-statd.service
-        systemctl restart nfs-server.service
-done
 
-When executing the script, you can observe that the
-"cat /proc/net/unix | wc -l" count keeps growing.
+> +                       return err < 0;
 
-Add the missing fput(), and restore transport to old socket.
+Where err is set to a negative value ?
 
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
----
- net/sunrpc/xprtsock.c | 20 ++++++++++++++++++--
- 1 file changed, 18 insertions(+), 2 deletions(-)
 
-diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
-index 0f39e08ee580..7219c545385e 100644
---- a/net/sunrpc/xprtsock.c
-+++ b/net/sunrpc/xprtsock.c
-@@ -1819,6 +1819,9 @@ static int xs_local_finish_connecting(struct rpc_xprt *xprt,
- {
- 	struct sock_xprt *transport = container_of(xprt, struct sock_xprt,
- 									xprt);
-+	struct socket *trans_sock = NULL;
-+	struct sock *trans_inet = NULL;
-+	int ret;
- 
- 	if (!transport->inet) {
- 		struct sock *sk = sock->sk;
-@@ -1835,6 +1838,9 @@ static int xs_local_finish_connecting(struct rpc_xprt *xprt,
- 
- 		xprt_clear_connected(xprt);
- 
-+		trans_sock = transport->sock;
-+		trans_inet = transport->inet;
-+
- 		/* Reset to new socket */
- 		transport->sock = sock;
- 		transport->inet = sk;
-@@ -1844,7 +1850,14 @@ static int xs_local_finish_connecting(struct rpc_xprt *xprt,
- 
- 	xs_stream_start_connect(transport);
- 
--	return kernel_connect(sock, xs_addr(xprt), xprt->addrlen, 0);
-+	ret = kernel_connect(sock, xs_addr(xprt), xprt->addrlen, 0);
-+	/* Restore to old socket */
-+	if (ret && trans_inet) {
-+		transport->sock = trans_sock;
-+		transport->inet = trans_inet;
-+	}
-+
-+	return ret;
- }
- 
- /**
-@@ -1887,7 +1900,7 @@ static int xs_local_setup_socket(struct sock_xprt *transport)
- 		xprt->stat.connect_time += (long)jiffies -
- 					   xprt->stat.connect_start;
- 		xprt_set_connected(xprt);
--		break;
-+		goto out;
- 	case -ENOBUFS:
- 		break;
- 	case -ENOENT:
-@@ -1904,6 +1917,9 @@ static int xs_local_setup_socket(struct sock_xprt *transport)
- 				xprt->address_strings[RPC_DISPLAY_ADDR]);
- 	}
- 
-+	transport->file = NULL;
-+	fput(filp);
-+
- out:
- 	xprt_clear_connecting(xprt);
- 	xprt_wake_pending_tasks(xprt, status);
--- 
-2.17.1
+>                 }
+>                 SKB_DR_SET(reason, TCP_FLAGS);
+>                 goto discard;
+> @@ -6878,6 +6877,7 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+>         bool want_cookie = false;
+>         struct dst_entry *dst;
+>         struct flowi fl;
+> +       SKB_DR(reason);
+>
+>         /* TW buckets are converted to open requests without
+>          * limitations, they conserve resources and peer is
+> @@ -6886,12 +6886,15 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+>         if ((net->ipv4.sysctl_tcp_syncookies == 2 ||
+>              inet_csk_reqsk_queue_is_full(sk)) && !isn) {
+>                 want_cookie = tcp_syn_flood_action(sk, rsk_ops->slab_name);
+> -               if (!want_cookie)
+> +               if (!want_cookie) {
+> +                       SKB_DR_SET(reason, TCP_REQQFULLDROP);
+>                         goto drop;
+> +               }
+>         }
+>
+>         if (sk_acceptq_is_full(sk)) {
+>                 NET_INC_STATS(sock_net(sk), LINUX_MIB_LISTENOVERFLOWS);
+> +               SKB_DR_SET(reason, LISTENOVERFLOWS);
+>                 goto drop;
+>         }
+>
+> @@ -6947,6 +6950,7 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+>                          */
+>                         pr_drop_req(req, ntohs(tcp_hdr(skb)->source),
+>                                     rsk_ops->family);
+> +                       SKB_DR_SET(reason, TCP_REQQFULLDROP);
+>                         goto drop_and_release;
+>                 }
+>
+> @@ -7006,7 +7010,8 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+>  drop_and_free:
+>         __reqsk_free(req);
+>  drop:
+> +       kfree_skb_reason(skb, reason);
 
+Ugh no, prefer "return reason" and leave to the caller the freeing part.
+
+Your changes are too invasive and will hurt future backports.
+
+
+>         tcp_listendrop(sk);
+> -       return 0;
+> +       return 1;
+>  }
+>  EXPORT_SYMBOL(tcp_conn_request);
+> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+> index 157265aecbed..b8daf49f54a5 100644
+> --- a/net/ipv4/tcp_ipv4.c
+> +++ b/net/ipv4/tcp_ipv4.c
+> @@ -1470,7 +1470,8 @@ int tcp_v4_conn_request(struct sock *sk, struct sk_buff *skb)
+>
+>  drop:
+>         tcp_listendrop(sk);
+> -       return 0;
+
+This return 0 meant : do not send reset.
+
+
+> +       kfree_skb_reason(skb, SKB_DROP_REASON_IP_INADDRERRORS);
+
+double kfree_skb() ?
+
+> +       return 1;
+
+-> send RESET
+
+>  }
+>  EXPORT_SYMBOL(tcp_v4_conn_request);
+>
+> --
+> 2.36.0
+>
+
+I have a hard time understanding this patch.
+
+Where is the related IPv6 change ?
+
+I really wonder if you actually have tested this.
