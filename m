@@ -2,118 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BC5A510B99
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 23:57:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC59B510BB6
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 00:11:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355633AbiDZWAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 18:00:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58476 "EHLO
+        id S244210AbiDZWOq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 18:14:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355605AbiDZWAr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 18:00:47 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FE154C7AE
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 14:57:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651010248; x=1682546248;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=uQR/9rFY6hY2tSmUCN0th77tAuxipN7j03E1ZDb6EZY=;
-  b=YpHffhdf1a+Z4rwN/Vb/g1VhEJiIt6IgwA0vNrgencTyaPeQhNJHP+t1
-   7bIuSM5w/9b/aWwChZ7unCkHtdL7Hy7PFivOqhauENlaChS85qeAKlAPy
-   xzN3eIvODTQpg1jHA78DaDjkn4dsQ8dJADVQKu7njCyQLqbCDuChMhKeS
-   n7AHshEg9Uzoe/wOTxf+fx4G6zv5Nz2PDXvxib2EeTXAyqSvmIZHIuXeM
-   TTEtlMcODQw8kMEj3GgDETCzFYb3edReJ/82o+NX00aiiWzkMha7fojta
-   s7sPPYxAC+hXUo3Rkr6WlOH7AuQLQb5wHStXYyOTaaRaLSSRAiTAkRCJG
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="352172427"
-X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
-   d="scan'208";a="352172427"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 14:57:24 -0700
-X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
-   d="scan'208";a="532878102"
-Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.10.176])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 14:57:23 -0700
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Geliang Tang <geliang.tang@suse.com>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 7/7] selftests: mptcp: print extra msg in chk_csum_nr
-Date:   Tue, 26 Apr 2022 14:57:17 -0700
-Message-Id: <20220426215717.129506-8-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426215717.129506-1-mathew.j.martineau@linux.intel.com>
-References: <20220426215717.129506-1-mathew.j.martineau@linux.intel.com>
+        with ESMTP id S232124AbiDZWOp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 18:14:45 -0400
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F68F3B002;
+        Tue, 26 Apr 2022 15:11:36 -0700 (PDT)
+Received: by mail-io1-xd2f.google.com with SMTP id c125so366712iof.9;
+        Tue, 26 Apr 2022 15:11:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fILbKujbkDe+6LP+BCuA9mzMNH72AUuUy21C/WMJlAo=;
+        b=FfGE58rDfk4rB9Q3BzlWqMhRUEY8Gt+cxWsblJTfWra/7D6XDgXLiYeWFfrP+WSP3E
+         gAEpx1ZDq933dPra7qQd4CSZKKsH23P1YvRoHCxdTxa2l36eZShw6Z84W0Ph+rTEXy0j
+         tql1olLJy6QCw4lke3j3f2jzcNRM702o38oWXrU3OCeI/SSzt0S6FhI1I4eXpkH1QJTZ
+         WY+pwraSGx9ViRimTXV9ueai56cP2Xj868237/IOwmYizo5VRomBgW+FnH7tPkvNKhes
+         iVhOnAp3HNLphl74qgCsbd3GmfqX4JbGEgwraMDylwbRRRRiwD7OgkVGSz0gbXbuQJh3
+         nWjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fILbKujbkDe+6LP+BCuA9mzMNH72AUuUy21C/WMJlAo=;
+        b=yBc/QdHlYacimOe7jstf1cvX+odS/ZTRHS6tR/C/OvOXIHEiM+/CRbARtXoQWWBdBg
+         XOCC0vFXEs8izRk9vdZ4IyDeIrR7EWMvBJuDIMZyDsIjKVUdGExPSrvMsth9+getz1OT
+         31BVWW7SzFMgyH0X65HcEL/JmL2Kux79W3W6LbUGboyaOVE4lvO07Qx+3x0PJBvXjzec
+         UY3G5q+r25efSwM3JbXzmnrm5NDO/7d0T5e/Q+jUA57MSkYjPqb/T8BaqGqleQPP+uLo
+         hNztUqnBqL2f+YyHSCTfNWtUmKyvbj0X872UDw7LowKl5M+ILJ1Ziv4nOaXg8Bwk9R+q
+         43Fw==
+X-Gm-Message-State: AOAM533fH3DQNzynVkPA9wGHIVgggfrXnw4Spxy+aYj6x4jmrqxFETTO
+        ptDzdZvL6lKBq+ooMheJpLoV2Gj2z7bV2v1Sq1M=
+X-Google-Smtp-Source: ABdhPJwSb8LXHzHQ9W8IOU/qiWUFK5ABOYeynw6E1cE7hI8yCMmU6rsNLEL26TYmz5d2mbNaDrfUdHAjMzTAoVzeVLM=
+X-Received: by 2002:a05:6638:2104:b0:326:1e94:efa6 with SMTP id
+ n4-20020a056638210400b003261e94efa6mr11337361jaj.234.1651011095978; Tue, 26
+ Apr 2022 15:11:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220422172422.4037988-1-maximmi@nvidia.com> <20220422172422.4037988-6-maximmi@nvidia.com>
+ <20220426001223.wlnfd2kmmogip5d5@MBP-98dd607d3435.dhcp.thefacebook.com>
+ <CAEf4BzaGjxsf46YPs1FRSp4kj+nkKhw7vLKAGwgrdnAuTW5+9Q@mail.gmail.com> <92e9eaf6-4d72-3173-3271-88e3b8637c7a@nvidia.com>
+In-Reply-To: <92e9eaf6-4d72-3173-3271-88e3b8637c7a@nvidia.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 26 Apr 2022 15:11:25 -0700
+Message-ID: <CAEf4BzZhjY+F9JYmT7k+m87UZ1qKuO8_Mjjq4CGgkr=z9BGDCg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v6 5/6] bpf: Add selftests for raw syncookie helpers
+To:     Maxim Mikityanskiy <maximmi@nvidia.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Petar Penkov <ppenkov@google.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Joe Stringer <joe@cilium.io>,
+        Florent Revest <revest@chromium.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Florian Westphal <fw@strlen.de>, pabeni@redhat.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Geliang Tang <geliang.tang@suse.com>
+On Tue, Apr 26, 2022 at 11:29 AM Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
+>
+> On 2022-04-26 09:26, Andrii Nakryiko wrote:
+> > On Mon, Apr 25, 2022 at 5:12 PM Alexei Starovoitov
+> > <alexei.starovoitov@gmail.com> wrote:
+> >>
+> >> On Fri, Apr 22, 2022 at 08:24:21PM +0300, Maxim Mikityanskiy wrote:
+> >>> +void test_xdp_synproxy(void)
+> >>> +{
+> >>> +     int server_fd = -1, client_fd = -1, accept_fd = -1;
+> >>> +     struct nstoken *ns = NULL;
+> >>> +     FILE *ctrl_file = NULL;
+> >>> +     char buf[1024];
+> >>> +     size_t size;
+> >>> +
+> >>> +     SYS("ip netns add synproxy");
+> >>> +
+> >>> +     SYS("ip link add tmp0 type veth peer name tmp1");
+> >>> +     SYS("ip link set tmp1 netns synproxy");
+> >>> +     SYS("ip link set tmp0 up");
+> >>> +     SYS("ip addr replace 198.18.0.1/24 dev tmp0");
+> >>> +
+> >>> +     // When checksum offload is enabled, the XDP program sees wrong
+> >>> +     // checksums and drops packets.
+> >>> +     SYS("ethtool -K tmp0 tx off");
+> >>
+> >> BPF CI image doesn't have ethtool installed.
+> >> It will take some time to get it updated. Until then we cannot land the patch set.
+> >> Can you think of a way to run this test without shelling to ethtool?
+> >
+> > Good news: we got updated CI image with ethtool, so that shouldn't be
+> > a problem anymore.
+> >
+> > Bad news: this selftest still fails, but in different place:
+> >
+> > test_synproxy:FAIL:iptables -t raw -I PREROUTING -i tmp1 -p tcp -m tcp
+> > --syn --dport 8080 -j CT --notrack unexpected error: 512 (errno 2)
+>
+> That's simply a matter of missing kernel config options:
+>
+> CONFIG_NETFILTER_SYNPROXY=y
+> CONFIG_NETFILTER_XT_TARGET_CT=y
+> CONFIG_NETFILTER_XT_MATCH_STATE=y
+> CONFIG_IP_NF_FILTER=y
+> CONFIG_IP_NF_TARGET_SYNPROXY=y
+> CONFIG_IP_NF_RAW=y
+>
+> Shall I create a pull request on github to add these options to
+> https://github.com/libbpf/libbpf/tree/master/travis-ci/vmtest/configs?
+>
 
-When the multiple checksum errors occur in chk_csum_nr(), print the
-numbers of the errors as an extra message.
+Yes, please. But also for [0], that's the one that tests all the
+not-yet-applied patches
 
-Signed-off-by: Geliang Tang <geliang.tang@suse.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- tools/testing/selftests/net/mptcp/mptcp_join.sh | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+  [0] https://github.com/kernel-patches/vmtest/
 
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-index 8023c0773d95..e5c8fc2816fb 100755
---- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
-+++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-@@ -1013,6 +1013,7 @@ chk_csum_nr()
- 	local csum_ns2=${2:-0}
- 	local count
- 	local dump_stats
-+	local extra_msg=""
- 	local allow_multi_errors_ns1=0
- 	local allow_multi_errors_ns2=0
- 
-@@ -1028,6 +1029,9 @@ chk_csum_nr()
- 	printf "%-${nr_blank}s %s" " " "sum"
- 	count=$(ip netns exec $ns1 nstat -as | grep MPTcpExtDataCsumErr | awk '{print $2}')
- 	[ -z "$count" ] && count=0
-+	if [ "$count" != "$csum_ns1" ]; then
-+		extra_msg="$extra_msg ns1=$count"
-+	fi
- 	if { [ "$count" != $csum_ns1 ] && [ $allow_multi_errors_ns1 -eq 0 ]; } ||
- 	   { [ "$count" -lt $csum_ns1 ] && [ $allow_multi_errors_ns1 -eq 1 ]; }; then
- 		echo "[fail] got $count data checksum error[s] expected $csum_ns1"
-@@ -1039,15 +1043,20 @@ chk_csum_nr()
- 	echo -n " - csum  "
- 	count=$(ip netns exec $ns2 nstat -as | grep MPTcpExtDataCsumErr | awk '{print $2}')
- 	[ -z "$count" ] && count=0
-+	if [ "$count" != "$csum_ns2" ]; then
-+		extra_msg="$extra_msg ns2=$count"
-+	fi
- 	if { [ "$count" != $csum_ns2 ] && [ $allow_multi_errors_ns2 -eq 0 ]; } ||
- 	   { [ "$count" -lt $csum_ns2 ] && [ $allow_multi_errors_ns2 -eq 1 ]; }; then
- 		echo "[fail] got $count data checksum error[s] expected $csum_ns2"
- 		fail_test
- 		dump_stats=1
- 	else
--		echo "[ ok ]"
-+		echo -n "[ ok ]"
- 	fi
- 	[ "${dump_stats}" = 1 ] && dump_stats
-+
-+	echo "$extra_msg"
- }
- 
- chk_fail_nr()
--- 
-2.36.0
-
+> > See [0].
+> >
+> >    [0] https://github.com/kernel-patches/bpf/runs/6169439612?check_suite_focus=true
+>
