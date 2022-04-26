@@ -2,133 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FA545106F9
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 20:30:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CF70510789
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 20:50:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351649AbiDZSeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 14:34:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55816 "EHLO
+        id S243457AbiDZSx1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 14:53:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351613AbiDZSd7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 14:33:59 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B89761CB0D;
-        Tue, 26 Apr 2022 11:30:51 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id k4so19446512plk.7;
-        Tue, 26 Apr 2022 11:30:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/OKcS6E5AHopfe6TSQqeBBsA+saXO4yiGsN11OQPGJ8=;
-        b=fLzncqcj0dXP5hQrUX0xFv5GFAYa+Swj7LLrKFTa4snWvd/S4QrdcP5YjXMWmQ1+es
-         xY85buGrIJWvIjLkVKPB9qzFbL7CqWqUjPMUhsb9512+Ri1BaScFpieW5mWW+F+jcKdm
-         fQzUTjRaHAizZbQr1Dh7HZ6DdIFruqmwCaxWDtMMGc9GKDvkyDAX6i5blV7wA/OmbnWU
-         fj18nAGTVQChr/G0wrGDqbL0MsAogzN+mj4xCD8IdtXoLFDWv9OZ8UIk2JXq2VX5RH0V
-         oYdnODOI2PMuPoYSzuwMnbGPA8mpqwbMwnQX5h4706OVsAELAxTj+7i78zzPaZoraqEi
-         tsqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/OKcS6E5AHopfe6TSQqeBBsA+saXO4yiGsN11OQPGJ8=;
-        b=WNuHT29N+dW9VFzZj/UTWzSpbpceUW9H62wBott3+5oJd/fV1I1tyQfmW1AFBLhBA4
-         HuLmj1pDsF21JhdcuJvavJrbgru9nNY6vMYhxlgeBEvN8sL7q1ElP3PDw4evbFOM2xo2
-         n0koFXvITNkcQRuibqb6YjY7VwQoHp45l/vYifyqmgE9I4KHyHycl5wF8PHbshNbG+AB
-         RTsyoVZIPi7F/7BDHIwtfwarYlvck6Y4tbs2voSyNSfB7Q9WRFVE8sioZtQ8V99GuX9x
-         4f8SGSTOUm5JjbKXR6H+r+iJIURE0V5215gTaLdTMC5JwVJloWilvL1NixG9CCKtGD0S
-         SS+Q==
-X-Gm-Message-State: AOAM5308kvPCdK7bKZJIcHEaxd2eyh2133DFEB8dG29gwjHhKQE6Gv8w
-        RoPx0eFuEzYnzy8uJDTUdHUUxH6CvJ/ngSRSko8=
-X-Google-Smtp-Source: ABdhPJxXiV8tIRzp6ZwyiejNDWj+U3jWbP25qY+GotbknlOieIbkJ7bbp6ln6ZKJfl/jVHt68rnqmwR6fgC8tCq5+Do=
-X-Received: by 2002:a17:90a:8591:b0:1b9:da10:2127 with SMTP id
- m17-20020a17090a859100b001b9da102127mr39272157pjn.13.1650997851279; Tue, 26
- Apr 2022 11:30:51 -0700 (PDT)
+        with ESMTP id S241389AbiDZSxW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 14:53:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43A4C1FA60;
+        Tue, 26 Apr 2022 11:50:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 35F55B82108;
+        Tue, 26 Apr 2022 18:50:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C6FC8C385A4;
+        Tue, 26 Apr 2022 18:50:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650999010;
+        bh=tU7Oo948QoJpRpeA2LgDIjOFCo0BkIHWMWHmhizqTpQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=owZmcVuKK1jkCLVHj99mz/7HIHxQ0f3kIgFBIpl7vqYqfc4GXuPXarZQhGPp5wNxP
+         YL1493V8W8hCGD7jH3yFR6PaIQq2+Z7EhM/jdPRcVUiathE5TbJyyH9n5tqSX6T2EN
+         asK6sk+tTrWo8d5fSC4pg7VlH+jm1qRJQlCvbUf9A7Wh2u6GfAqQCnQMikRCUFAA9L
+         UTiDX1CIW9GQehmpY+GrJnV9SKfkYsG1JLU2tIrcg3K7w6lc/YthsfqaEh5FDFDCjr
+         GLC8JzC+akwASCAaqRmcTUbTIIKrigPr7uOjCvVM7qhkGXcBQgt4u5Fl2ikgtJHgTS
+         pAi2e2Qe+z8dg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AAB25E8DD85;
+        Tue, 26 Apr 2022 18:50:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220424092613.863290-1-imagedong@tencent.com> <20220426182621.kgut2bpateytcxaj@MacBook-Pro.local>
-In-Reply-To: <20220426182621.kgut2bpateytcxaj@MacBook-Pro.local>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 26 Apr 2022 11:30:40 -0700
-Message-ID: <CAADnVQL0rLLUMUcfdu=-dc2BCe8AQg5oz+gt+6j95y9V1DFEYA@mail.gmail.com>
-Subject: Re: [PATCH] bpf: init map_btf_id during compiling
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next v2] bpf: compute map_btf_id during build time
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165099901069.12299.13361393417050366325.git-patchwork-notify@kernel.org>
+Date:   Tue, 26 Apr 2022 18:50:10 +0000
+References: <20220425133247.180893-1-imagedong@tencent.com>
+In-Reply-To: <20220425133247.180893-1-imagedong@tencent.com>
 To:     Menglong Dong <menglong8.dong@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, benbjiang@tencent.com,
-        Hao Peng <flyingpeng@tencent.com>,
-        Menglong Dong <imagedong@tencent.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Mengen Sun <mengensun@tencent.com>, dongli.zhang@oracle.com,
-        LKML <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Cc:     ast@kernel.org, rostedt@goodmis.org, mingo@redhat.com,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, pabeni@redhat.com, benbjiang@tencent.com,
+        flyingpeng@tencent.com, imagedong@tencent.com, edumazet@google.com,
+        kafai@fb.com, talalahmad@google.com, keescook@chromium.org,
+        mengensun@tencent.com, dongli.zhang@oracle.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org, lkp@intel.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 11:26 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Sun, Apr 24, 2022 at 05:26:13PM +0800, menglong8.dong@gmail.com wrote:
-> > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> > index 0918a39279f6..588a001cc767 100644
-> > --- a/kernel/bpf/btf.c
-> > +++ b/kernel/bpf/btf.c
-> > @@ -4727,30 +4727,6 @@ static const struct bpf_map_ops * const btf_vmlinux_map_ops[] = {
-> >  #undef BPF_MAP_TYPE
-> >  };
-> >
-> > -static int btf_vmlinux_map_ids_init(const struct btf *btf,
-> > -                                 struct bpf_verifier_log *log)
-> > -{
-> > -     const struct bpf_map_ops *ops;
-> > -     int i, btf_id;
-> > -
-> > -     for (i = 0; i < ARRAY_SIZE(btf_vmlinux_map_ops); ++i) {
-> > -             ops = btf_vmlinux_map_ops[i];
-> > -             if (!ops || (!ops->map_btf_name && !ops->map_btf_id))
-> > -                     continue;
-> > -             if (!ops->map_btf_name || !ops->map_btf_id) {
-> > -                     bpf_log(log, "map type %d is misconfigured\n", i);
-> > -                     return -EINVAL;
-> > -             }
-> > -             btf_id = btf_find_by_name_kind(btf, ops->map_btf_name,
-> > -                                            BTF_KIND_STRUCT);
-> > -             if (btf_id < 0)
-> > -                     return btf_id;
-> > -             *ops->map_btf_id = btf_id;
-> > -     }
-> > -
-> > -     return 0;
-> > -}
-> > -
-> >  static int btf_translate_to_vmlinux(struct bpf_verifier_log *log,
-> >                                    struct btf *btf,
-> >                                    const struct btf_type *t,
-> > @@ -4812,11 +4788,6 @@ struct btf *btf_parse_vmlinux(void)
-> >       /* btf_parse_vmlinux() runs under bpf_verifier_lock */
-> >       bpf_ctx_convert.t = btf_type_by_id(btf, bpf_ctx_convert_btf_id[0]);
-> >
-> > -     /* find bpf map structs for map_ptr access checking */
-> > -     err = btf_vmlinux_map_ids_init(btf, log);
-> > -     if (err < 0)
-> > -             goto errout;
-> > -
->
-> Looks nice. Please address build warn and resubmit.
+Hello:
 
-Just noticed v2. Ignore the above.
+This patch was applied to bpf/bpf-next.git (master)
+by Alexei Starovoitov <ast@kernel.org>:
+
+On Mon, 25 Apr 2022 21:32:47 +0800 you wrote:
+> From: Menglong Dong <imagedong@tencent.com>
+> 
+> For now, the field 'map_btf_id' in 'struct bpf_map_ops' for all map
+> types are computed during vmlinux-btf init:
+> 
+>   btf_parse_vmlinux() -> btf_vmlinux_map_ids_init()
+> 
+> [...]
+
+Here is the summary with links:
+  - [bpf-next,v2] bpf: compute map_btf_id during build time
+    https://git.kernel.org/bpf/bpf-next/c/c317ab71facc
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
