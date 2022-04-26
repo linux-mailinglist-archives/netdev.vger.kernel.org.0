@@ -2,70 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46EDD50F17C
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 08:47:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E7A150F18F
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 08:57:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245648AbiDZGuv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 02:50:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50172 "EHLO
+        id S1343538AbiDZHAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 03:00:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245356AbiDZGut (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 02:50:49 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AC1224977
-        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 23:47:41 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id g23so14064062edy.13
-        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 23:47:41 -0700 (PDT)
+        with ESMTP id S1343520AbiDZHAX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 03:00:23 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B9424ECEB;
+        Mon, 25 Apr 2022 23:57:16 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id r13so34093576ejd.5;
+        Mon, 25 Apr 2022 23:57:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=CiXcezkaTWAJHXfveze1tlFXrVDSwESEveCgZZDU9Wk=;
-        b=yhuk0hmmMz9s+IDBaAF8QGJOFT9T6ud7BD2sTRiJzy4PxcEFHasEDCRlGq2NTp4D6m
-         pQbRRx7w72ChmlGzc2AgNpzl0IPkzX/XwYBf4etNDXoKJIbvrF5PwHyQWdO+vsWbsXOs
-         IU5WI4sVV5Jcb8DD4n2/2ESOGV0ACZLMYu2YybtUIGfWkA8A1Ed9xFn9fBSrg6TXoffR
-         xVOzeT1/V89UDjDMPUuOrPysMQ00PbqX2BJr9hGhl2RcwRCcHlFGhc60KnSKSPVKNoR4
-         GEjSFVPZ9jl5gir/UdUUSZF4g/gK1a/RQzL7Hz+FKqdEd8JPXSTtk5vUwwioOIW6PxOd
-         YVfg==
+        bh=+D7xSiS0Km1eNdFEjShizW82VnmaVjxgZEwEZR3GerQ=;
+        b=PRig5ecewg8gI6OvCTVtRFvY4FJuZPuPazEFYXS4DxOY1ieso+OIDEaeGZrXxhlwTH
+         CrHDvPzekLD373DSewAalocKeODNUQ0XY+RokQf93EHJwhGGTyGfV04O0e81zyctmmgT
+         BKdgm+BgMSF/cc3LHf/3lpQhpx9ebi1KvwvGq0nqiYvbjbdExFgCYTNuQPURZepuMlxP
+         XyaK423H7fpfDdGKnoa3NYSCWrcVjeI6PFGpV+UeDaowm3KUrfISowgEj7Yh3whsDU3s
+         Kftm18ox8HZ83UEgDWQwHVa1gESow70Sncu/3qrEPbt4L+jkRcMQpvv2PUew7HjnADl3
+         xjnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=CiXcezkaTWAJHXfveze1tlFXrVDSwESEveCgZZDU9Wk=;
-        b=KvPUhkWpKMutLc4XIarTvXGIfn2wy1UothWvihP9CMholP2cSteQwg94FYZvclLjuA
-         WYEk0Rwia//GIPrgm/q6tBBCsTJzq3TZwd1NvOFyS+63+micXP/rb4Oitu47ImBivbsk
-         0QCU7gXNfQbxd7K7HfR3jCVMxmPqi4lqzeTjnPzGhGaYKsftylttR2cXcOGn4ycbrySh
-         QcS++agME5l63KK0lbQ+ju6Vs7z6smRT01PrjyhlBAABRQoMs6Z/ZNUVldr273tiofJ7
-         cKAP8riL26YdfCuQBMraLwxns3DisavZl50fZNaCRMNMxZQaHOmymqefhRql+Swi5Li4
-         OKzw==
-X-Gm-Message-State: AOAM531qibuGsM0XGONJueuDHcevzxKQ3eoSDip7lFUYvIq6Lzj5ezno
-        iSbcrHN3khaiJ0Tzsn8AcYNLDg==
-X-Google-Smtp-Source: ABdhPJyPmkwTVz2ZlKOYEXJ6u7apfSWJyDUreN1Mqt7ySybeRA0qkp5lP85uLljj3WQmBXu+p3NHaQ==
-X-Received: by 2002:a05:6402:22e1:b0:425:d5e5:c63 with SMTP id dn1-20020a05640222e100b00425d5e50c63mr14266544edb.185.1650955659498;
-        Mon, 25 Apr 2022 23:47:39 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id m10-20020a1709062b8a00b006f3a5d9e58csm986103ejg.131.2022.04.25.23.47.38
+        bh=+D7xSiS0Km1eNdFEjShizW82VnmaVjxgZEwEZR3GerQ=;
+        b=EfXnnjx4N0fk5iPxf72eiRryXdM4yZnNApCz8lFEv5KsCCevEWaoelAXyloJhHrH52
+         k1H1lzBnB5igSj8pzongf4ZGXEY+kcOeAg3GXpfIALvGDNU/RgZaRbBDskLSTO6OcBrH
+         kBD8uD4ZgZS/ppANEHvONzX/FOMHZKJUPHeRH/OHXLEbAT37NgPcgImTTv4iqgZ/WA+V
+         gqUNlO2os2/JlPVJgecXKDXiA5bwaoxEJetGo++qbJ+WkGAJx9X/9uev8srZJefG1LqS
+         5PkU8TCps4mHDrg2YyA4fU5Ro9ranwRNNL8gzT+/Klveh8H9K8An4UZHJY67q6GKsx8l
+         WOOA==
+X-Gm-Message-State: AOAM533wkfn/BjiBlwag6/YSEdNSChBlA661X5eUtVqT4xMI8D+Yt06t
+        ACBtEggMEm2SFCTNXItzpVs=
+X-Google-Smtp-Source: ABdhPJx3N0/KiDIvzS/xzc1MJm7tOByvA6A8pJav9doTQhdBlDpra3yH5th/yvsTD2c21sgWiKsnNQ==
+X-Received: by 2002:a17:907:7ba6:b0:6f3:8f56:793b with SMTP id ne38-20020a1709077ba600b006f38f56793bmr9735258ejc.473.1650956235030;
+        Mon, 25 Apr 2022 23:57:15 -0700 (PDT)
+Received: from krava ([193.85.244.190])
+        by smtp.gmail.com with ESMTPSA id i2-20020a1709061cc200b006f386217c6bsm2647668ejh.124.2022.04.25.23.57.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 23:47:38 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 08:47:37 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Ido Schimmel <idosch@nvidia.com>,
-        netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
-        andrew@lunn.ch, mlxsw@nvidia.com
-Subject: Re: [PATCH net-next 00/11] mlxsw: extend line card model by devices
- and info
-Message-ID: <YmeViVZ1XhCBCFLN@nanopsycho>
-References: <20220425034431.3161260-1-idosch@nvidia.com>
- <20220425090021.32e9a98f@kernel.org>
- <Ymb5DQonnrnIBG3c@shredder>
+        Mon, 25 Apr 2022 23:57:14 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 08:57:11 +0200
+From:   Jiri Olsa <olsajiri@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Ian Rogers <irogers@google.com>
+Subject: Re: [PATCH perf/core 1/5] libbpf: Add bpf_program__set_insns function
+Message-ID: <YmeXx0mfy4Nr5jEB@krava>
+References: <20220422100025.1469207-1-jolsa@kernel.org>
+ <20220422100025.1469207-2-jolsa@kernel.org>
+ <52f36e85-fea6-e307-344e-5bbb5b8431f7@iogearbox.net>
+ <CAEf4BzZOKosYRHwK2CfZzpTUcDdrLXPXbYax++Q_PHCMcNdqCw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Ymb5DQonnrnIBG3c@shredder>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+In-Reply-To: <CAEf4BzZOKosYRHwK2CfZzpTUcDdrLXPXbYax++Q_PHCMcNdqCw@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,86 +85,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Apr 25, 2022 at 09:39:57PM CEST, idosch@idosch.org wrote:
->On Mon, Apr 25, 2022 at 09:00:21AM -0700, Jakub Kicinski wrote:
->> On Mon, 25 Apr 2022 06:44:20 +0300 Ido Schimmel wrote:
->> > This patchset is extending the line card model by three items:
->> > 1) line card devices
->> > 2) line card info
->> > 3) line card device info
->> > 
->> > First three patches are introducing the necessary changes in devlink
->> > core.
->> > 
->> > Then, all three extensions are implemented in mlxsw alongside with
->> > selftest.
->> 
->> :/ what is a line card device? You must provide document what you're
->> doing, this:
->> 
->>  .../networking/devlink/devlink-linecard.rst   |   4 +
->> 
->> is not enough.
->> 
->> How many operations and attributes are you going to copy&paste?
->> 
->> Is linking devlink instances into a hierarchy a better approach?
->
->In this particular case, these devices are gearboxes. They are running
->their own firmware and we want user space to be able to query and update
->the running firmware version.
->
->The idea (implemented in the next patchset) is to let these devices
->expose their own "component name", which can then be plugged into the
->existing flash command:
->
->    $ devlink lc show pci/0000:01:00.0 lc 8
->    pci/0000:01:00.0:
->      lc 8 state active type 16x100G
->        supported_types:
->           16x100G
->        devices:
->          device 0 flashable true component lc8_dev0
->          device 1 flashable false
->          device 2 flashable false
->          device 3 flashable false
->    $ devlink dev flash pci/0000:01:00.0 file some_file.mfa2 component lc8_dev0
->
->Registering a separate devlink instance for these devices sounds like an
+On Mon, Apr 25, 2022 at 11:19:09PM -0700, Andrii Nakryiko wrote:
+> On Mon, Apr 25, 2022 at 9:22 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> >
+> > On 4/22/22 12:00 PM, Jiri Olsa wrote:
+> > > Adding bpf_program__set_insns that allows to set new
+> > > instructions for program.
+> > >
+> > > Also moving bpf_program__attach_kprobe_multi_opts on
+> > > the proper name sorted place in map file.
+> 
+> would make sense to fix it as a separate patch, it has nothing to do
+> with bpf_program__set_insns() API itself
 
-It is not a separate devlink device, not removetely. A devlink device is
-attached to some bus on the host, it contains entities like netdevices,
-etc.
+np
 
-Line card devices, on contrary, are accessible over ASIC FW interface,
-they reside on line cards. ASIC FW is using build-in SDK to communicate
-with them. There is really nothing to expose, except for the face they
-are there, with some FW version and later on (follow-up patchset) to be
-able to flash FW on them.
+> 
+> > >
+> > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > > ---
+> > >   tools/lib/bpf/libbpf.c   |  8 ++++++++
+> > >   tools/lib/bpf/libbpf.h   | 12 ++++++++++++
+> > >   tools/lib/bpf/libbpf.map |  3 ++-
+> > >   3 files changed, 22 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > > index 809fe209cdcc..284790d81c1b 100644
+> > > --- a/tools/lib/bpf/libbpf.c
+> > > +++ b/tools/lib/bpf/libbpf.c
+> > > @@ -8457,6 +8457,14 @@ size_t bpf_program__insn_cnt(const struct bpf_program *prog)
+> > >       return prog->insns_cnt;
+> > >   }
+> > >
+> > > +void bpf_program__set_insns(struct bpf_program *prog,
+> > > +                         struct bpf_insn *insns, size_t insns_cnt)
+> > > +{
+> > > +     free(prog->insns);
+> > > +     prog->insns = insns;
+> > > +     prog->insns_cnt = insns_cnt;
+> 
+> let's not store user-provided pointer here. Please realloc prog->insns
+> as necessary and copy over insns into it.
+> 
+> Also let's at least add the check for prog->loaded and return -EBUSY
+> in such a case. And of course this API should return int, not void.
 
-It's a gearbox. I found it odd to name it gearbox as in theory, there
-might be some other single purpose device on the line card of other type
-than gearbox. Therefore, "device". I admit it is a bit misleading. Idea
-for a better name?
+ok, will change
 
+> 
+> > > +}
+> > > +
+> > >   int bpf_program__set_prep(struct bpf_program *prog, int nr_instances,
+> > >                         bpf_program_prep_t prep)
+> > >   {
+> > > diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+> > > index 05dde85e19a6..b31ad58d335f 100644
+> > > --- a/tools/lib/bpf/libbpf.h
+> > > +++ b/tools/lib/bpf/libbpf.h
+> > > @@ -323,6 +323,18 @@ struct bpf_insn;
+> > >    * different.
+> > >    */
+> > >   LIBBPF_API const struct bpf_insn *bpf_program__insns(const struct bpf_program *prog);
+> > > +
+> > > +/**
+> > > + * @brief **bpf_program__set_insns()** can set BPF program's underlying
+> > > + * BPF instructions.
+> > > + * @param prog BPF program for which to return instructions
+> > > + * @param insn a pointer to an array of BPF instructions
+> > > + * @param insns_cnt number of `struct bpf_insn`'s that form
+> > > + * specified BPF program
+> > > + */
+> 
+> This API makes me want to cry... but I can't come up with anything
+> better for perf's use case.
+> 
+> But it can only more or less safely and sanely be used from the
+> prog_prepare_load_fn callback, so please add a big warning here saying
+> that this is a very advanced libbpf API and the user needs to know
+> what they are doing and this should be used from prog_prepare_load_fn
+> callback only. If bpf_program__set_insns() is called before
+> prog_prepare_load_fn any map/subprog/etc relocation will most probably
+> fail or corrupt BPF program code.
 
->overkill to me. If you are not OK with a separate command (e.g.,
->DEVLINK_CMD_LINECARD_INFO_GET), then extending DEVLINK_CMD_INFO_GET is
->also an option. We discussed this during internal review, but felt that
+will add the warnings
 
-We would need to add all the line card hierarchy into info_get. That
-would look a bit odd to me.
+> 
+> > > +LIBBPF_API void bpf_program__set_insns(struct bpf_program *prog,
+> > > +                                    struct bpf_insn *insns, size_t insns_cnt);
+> 
+> s/insns_cnt/insn_cnt/
+> 
+> > > +
+> >
+> > Iiuc, patch 2 should be squashed into this one given they logically belong to the
+> > same change?
+> >
+> > Fwiw, I think the API description should be elaborated a bit more, in particular that
+> > the passed-in insns need to be from allocated dynamic memory which is later on passed
+> > to free(), and maybe also constraints at which point in time bpf_program__set_insns()
+> > may be called.. (as well as high-level description on potential use cases e.g. around
+> > patch 4).
+> 
+> Yep, patch #1 is kind of broken without patch #2, so let's combine them.
 
+ok
 
->the current approach is cleaner.
->
->> Would you mind if I revert this?
-
-Let's see what you need to change and change it in place, if possible.
-
-
->
->I can't stop you, but keep in mind that it's already late here and that
->tomorrow I'm AFK (reserve duty) and won't be able to tag it. Jiri should
->be available to continue this discussion tomorrow morning, so probably
->best to wait for his feedback.
+thanks,
+jirka
