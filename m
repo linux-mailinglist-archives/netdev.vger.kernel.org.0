@@ -2,143 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D7D350F26B
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 09:30:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43FFE50F2AA
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 09:36:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343966AbiDZHdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 03:33:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52458 "EHLO
+        id S1344079AbiDZHjh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 03:39:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343964AbiDZHdP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 03:33:15 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B78B13E05;
-        Tue, 26 Apr 2022 00:30:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650958207; x=1682494207;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=wKObrh7fSqP3n86ZK/ItNBIaS4Oe4iZY4KItAxqxkks=;
-  b=ktjkc46yn9UwCsW4lCls/kWWVbYfUAx9lBqtOphMD3mEgMfnI+iTKBRl
-   +myQSawtGUcp9siXAvbKmX4GHU2z9ydzgqU/kmsJMTcnfU2AnWjpxAsUM
-   dkfGsqh4oSONDPipqPUfpY/TPo9Zh01MrK9scJiP6P71ksZEOt3I2VHrF
-   siO4t0MkyIB9bJBdQAy2bWa64TB6yMhNVRZ1z45vWCzgwulm21pLttAZh
-   5tAGUHjNHfDjXkLeH1bPj6W32OXmeChyDsL7b7bc8cZQ+eRXSqv7U5cOY
-   hPCGlCkozOxz6nwr9+0QuVxWOZ4HdQ8SItOvvGm4wklkfyBmAidKZtXSh
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="265650207"
-X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
-   d="scan'208";a="265650207"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 00:30:06 -0700
-X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; 
-   d="scan'208";a="579735322"
-Received: from mmilkovx-mobl.amr.corp.intel.com ([10.249.47.245])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 00:30:00 -0700
-Date:   Tue, 26 Apr 2022 10:29:55 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Sergey Ryazanov <ryazanov.s.a@gmail.com>
-cc:     Ricardo Martinez <ricardo.martinez@linux.intel.com>,
-        Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        M Chetan Kumar <m.chetan.kumar@intel.com>,
-        chandrashekar.devegowda@intel.com,
-        Intel Corporation <linuxwwan@intel.com>,
-        chiranjeevi.rapolu@linux.intel.com,
-        =?GB2312?Q?Haijun_Liu_=28=C1=F5=BA=A3=BE=FC=29?= 
-        <haijun.liu@mediatek.com>, amir.hanania@intel.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        dinesh.sharma@intel.com, eliot.lee@intel.com,
-        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
-        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
-        sreehari.kancharla@intel.com, madhusmita.sahu@intel.com
-Subject: Re: [PATCH net-next v6 08/13] net: wwan: t7xx: Add data path
- interface
-In-Reply-To: <CAHNKnsTr3aq1sgHnZQFL7-0uHMp3Wt4PMhVgTMSAiiXT=8p35A@mail.gmail.com>
-Message-ID: <d829315b-79ca-ff88-c76-e352d8fb5b5b@linux.intel.com>
-References: <20220407223629.21487-1-ricardo.martinez@linux.intel.com> <20220407223629.21487-9-ricardo.martinez@linux.intel.com> <CAHNKnsTr3aq1sgHnZQFL7-0uHMp3Wt4PMhVgTMSAiiXT=8p35A@mail.gmail.com>
+        with ESMTP id S1344221AbiDZHjO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 03:39:14 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1C1CB1D1;
+        Tue, 26 Apr 2022 00:36:06 -0700 (PDT)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KnYTw3jHmzCsQV;
+        Tue, 26 Apr 2022 15:31:32 +0800 (CST)
+Received: from [10.67.111.192] (10.67.111.192) by
+ kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 26 Apr 2022 15:36:02 +0800
+Message-ID: <79fe5bb5-c55c-7ddc-640f-50bf8bea7f0b@huawei.com>
+Date:   Tue, 26 Apr 2022 15:36:02 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH bpf-next v3 2/7] ftrace: Fix deadloop caused by direct
+ call in ftrace selftest
+Content-Language: en-US
+To:     Steven Rostedt <rostedt@goodmis.org>
+CC:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        <hpa@zytor.com>, Shuah Khan <shuah@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Daniel Kiss <daniel.kiss@arm.com>,
+        Steven Price <steven.price@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Mark Brown <broonie@kernel.org>,
+        Delyan Kratunov <delyank@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>
+References: <20220424154028.1698685-1-xukuohai@huawei.com>
+ <20220424154028.1698685-3-xukuohai@huawei.com>
+ <20220425110512.538ce0bf@gandalf.local.home>
+From:   Xu Kuohai <xukuohai@huawei.com>
+In-Reply-To: <20220425110512.538ce0bf@gandalf.local.home>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.111.192]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemi500013.china.huawei.com (7.221.188.120)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-6.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 26 Apr 2022, Sergey Ryazanov wrote:
+On 4/25/2022 11:05 PM, Steven Rostedt wrote:
+> On Sun, 24 Apr 2022 11:40:23 -0400
+> Xu Kuohai <xukuohai@huawei.com> wrote:
+> 
+>> diff --git a/kernel/trace/trace_selftest.c b/kernel/trace/trace_selftest.c
+>> index abcadbe933bb..d2eff2b1d743 100644
+>> --- a/kernel/trace/trace_selftest.c
+>> +++ b/kernel/trace/trace_selftest.c
+>> @@ -785,8 +785,24 @@ static struct fgraph_ops fgraph_ops __initdata  = {
+>>  };
+>>  
+>>  #ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
+>> +#ifdef CONFIG_ARM64
+> 
+> Please find a way to add this in arm specific code. Do not add architecture
+> defines in generic code.
+> 
+> You could add:
+> 
+> #ifndef ARCH_HAVE_FTRACE_DIRECT_TEST_FUNC
+> noinline __noclone static void trace_direct_tramp(void) { }
+> #endif
+> 
+> here, and in arch/arm64/include/ftrace.h
+> 
+> #define ARCH_HAVE_FTRACE_DIRECT_TEST_FUNC
+> 
+> and define your test function in the arm64 specific code.
+> 
+> -- Steve
+> 
+> 
 
-> On Fri, Apr 8, 2022 at 1:37 AM Ricardo Martinez
-> <ricardo.martinez@linux.intel.com> wrote:
-> > Data Path Modem AP Interface (DPMAIF) HIF layer provides methods
-> > for initialization, ISR, control and event handling of TX/RX flows.
-> >
-> > DPMAIF TX
-> > Exposes the 'dmpaif_tx_send_skb' function which can be used by the
-> > network device to transmit packets.
-> > The uplink data management uses a Descriptor Ring Buffer (DRB).
-> > First DRB entry is a message type that will be followed by 1 or more
-> > normal DRB entries. Message type DRB will hold the skb information
-> > and each normal DRB entry holds a pointer to the skb payload.
-> >
-> > DPMAIF RX
-> > The downlink buffer management uses Buffer Address Table (BAT) and
-> > Packet Information Table (PIT) rings.
-> > The BAT ring holds the address of skb data buffer for the HW to use,
-> > while the PIT contains metadata about a whole network packet including
-> > a reference to the BAT entry holding the data buffer address.
-> > The driver reads the PIT and BAT entries written by the modem, when
-> > reaching a threshold, the driver will reload the PIT and BAT rings.
-> >
-> > Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
-> > Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
-> > Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
-> > Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
-> >
-> > From a WWAN framework perspective:
-> > Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
-> 
-> Reviewed-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
-> 
-> and a small question below.
-> 
-> > diff --git a/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c b/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c
-> > ...
-> > +static bool t7xx_alloc_and_map_skb_info(const struct dpmaif_ctrl *dpmaif_ctrl,
-> > +                                       const unsigned int size, struct dpmaif_bat_skb *cur_skb)
-> > +{
-> > +       dma_addr_t data_bus_addr;
-> > +       struct sk_buff *skb;
-> > +       size_t data_len;
-> > +
-> > +       skb = __dev_alloc_skb(size, GFP_KERNEL);
-> > +       if (!skb)
-> > +               return false;
-> > +
-> > +       data_len = skb_end_pointer(skb) - skb->data;
-> 
-> Earlier you use a nice t7xx_skb_data_area_size() function here, but
-> now you opencode it. Is it a consequence of t7xx_common.h removing?
-> 
-> I would even encourage you to make this function common and place it
-> into include/linux/skbuff.h with a dedicated patch and call it
-> something like skb_data_size(). Surprisingly, there is no such helper
-> function in the kernel, and several other drivers will benefit from
-> it:
+will move this to arch/arm64/ in v4, thanks.
 
-I agree other than the name. IMHO, skb_data_size sounds too much "data 
-size" which it exactly isn't but just how large the memory area is (we 
-already have "datalen" anyway and on language level, those two don't sound 
-different at all). The memory area allocated may or may not have actual 
-data in it, I suggested adding "area" into it.
-
-
--- 
- i.
+> 
+> 
+>> +extern void trace_direct_tramp(void);
+>> +
+>> +asm (
+>> +"	.pushsection	.text, \"ax\", @progbits\n"
+>> +"	.type		trace_direct_tramp, %function\n"
+>> +"	.global		trace_direct_tramp\n"
+>> +"trace_direct_tramp:"
+>> +"	mov	x10, x30\n"
+>> +"	mov	x30, x9\n"
+>> +"	ret	x10\n"
+>> +"	.size		trace_direct_tramp, .-trace_direct_tramp\n"
+>> +"	.popsection\n"
+>> +);
+>> +#else
+>>  noinline __noclone static void trace_direct_tramp(void) { }
+>>  #endif
+>> +#endif
+>>  
+>>  /*
+>>   * Pretty much the same than for the function tracer from which the selftest
+> 
+> .
 
