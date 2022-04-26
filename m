@@ -2,53 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 51DFC510A86
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 22:33:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7200510A8A
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 22:33:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354995AbiDZUgM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 16:36:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42694 "EHLO
+        id S1355009AbiDZUgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 16:36:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354998AbiDZUgI (ORCPT
+        with ESMTP id S1354986AbiDZUgI (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 16:36:08 -0400
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C8D1A8C0E
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B27591A8178
         for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 13:32:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1651005179; x=1682541179;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=cSSLaxBacTn3ItKqsi1igTEj40iLiILdXMEk/YygOJ4=;
-  b=KWZJJOPm9Y3DA62yKF+gZ8lyXKdMsfl04+p4Bd4mQYS0cs7mgITBuZYC
-   uEdtwGpuwq0gMPNHQrTuFTpPufVD5h4PgzIeIbmnFg0cVYmX5T3HkQBGQ
-   HFE7GiplTH3RxVa+O1KPp1vPoXR7G3RCBYsnflPokmlz8FLaKeXDgWB+A
-   Et7+ZT9QvcBvPdkKgxQKR9g3Fb/zCUR43+hod1nGk4qDSjUUByC1filmn
-   RtPtEZBL0WIW5FzGjiyU2AqUdbZo0U7XUrAMpzlgl4KIGbiTyvaabeRUT
-   JBnqIop36Zagu2rNowS8W0uHJ+caBFbu0PLoHB7T26SL/TqCXOGJ8tBXe
+  bh=wpeYZBRhHvJvvteJ1OL97DFtt1b5iCQ9DraxFeZTVbY=;
+  b=DlMNP35jjLJysG3XY1FZz4WvmwITYns7OVjccv5iFfP7QCLR4IcQ6Q08
+   iVTvxrN6sfRM+xCJhH6HNkeWETOiijOOQAmM1lhar4v+fNGvCMQ4vknyd
+   pZ4T6qVlGo6dCWtZ0oFLUxcSeBRRDrusWvmqd1DJiV4lP2Jo8obKpARlm
+   U//j56lipmwNHq7t2NNBVqAjKJIVXHNS+oiTiXuJxI15kLNOtxgsGn9ce
+   AQo2YNGAYtqFAGI3hKD7mhr+v9pjHf/3ccHnbCAtRpDLv9N9cjBFus07G
+   fm+g5UsDV2uCQdFo9EBUgGUdqRE76NfD4kEnYAaORuaIK8Io7ooe0p5ug
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="253090827"
+X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="253090831"
 X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
-   d="scan'208";a="253090827"
+   d="scan'208";a="253090831"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 13:32:57 -0700
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 13:32:58 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
-   d="scan'208";a="617174558"
+   d="scan'208";a="617174562"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga008.fm.intel.com with ESMTP; 26 Apr 2022 13:32:57 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
-Cc:     Petr Oros <poros@redhat.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH net 3/4] ice: wait 5 s for EMP reset after firmware flash
-Date:   Tue, 26 Apr 2022 13:30:17 -0700
-Message-Id: <20220426203018.3790378-4-anthony.l.nguyen@intel.com>
+Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com,
+        Slawomir Laba <slawomirx.laba@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>
+Subject: [PATCH net 4/4] ice: fix use-after-free when deinitializing mailbox snapshot
+Date:   Tue, 26 Apr 2022 13:30:18 -0700
+Message-Id: <20220426203018.3790378-5-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220426203018.3790378-1-anthony.l.nguyen@intel.com>
 References: <20220426203018.3790378-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
@@ -60,107 +61,176 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Petr Oros <poros@redhat.com>
+From: Jacob Keller <jacob.e.keller@intel.com>
 
-We need to wait 5 s for EMP reset after firmware flash. Code was extracted
-from OOT driver (ice v1.8.3 downloaded from sourceforge). Without this
-wait, fw_activate let card in inconsistent state and recoverable only
-by second flash/activate. Flash was tested on these fw's:
-From -> To
- 3.00 -> 3.10/3.20
- 3.10 -> 3.00/3.20
- 3.20 -> 3.00/3.10
+During ice_sriov_configure, if num_vfs is 0, we are being asked by the
+kernel to remove all VFs.
 
-Reproducer:
-[root@host ~]# devlink dev flash pci/0000:ca:00.0 file E810_XXVDA4_FH_O_SEC_FW_1p6p1p9_NVM_3p10_PLDMoMCTP_0.11_8000AD7B.bin
-Preparing to flash
-[fw.mgmt] Erasing
-[fw.mgmt] Erasing done
-[fw.mgmt] Flashing 100%
-[fw.mgmt] Flashing done 100%
-[fw.undi] Erasing
-[fw.undi] Erasing done
-[fw.undi] Flashing 100%
-[fw.undi] Flashing done 100%
-[fw.netlist] Erasing
-[fw.netlist] Erasing done
-[fw.netlist] Flashing 100%
-[fw.netlist] Flashing done 100%
-Activate new firmware by devlink reload
-[root@host ~]# devlink dev reload pci/0000:ca:00.0 action fw_activate
-reload_actions_performed:
-    fw_activate
-[root@host ~]# ip link show ens7f0
-71: ens7f0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
-    link/ether b4:96:91:dc:72:e0 brd ff:ff:ff:ff:ff:ff
-    altname enp202s0f0
+The driver first de-initializes the snapshot before freeing all the VFs.
+This results in a use-after-free BUG detected by KASAN. The bug occurs
+because the snapshot can still be accessed until all VFs are removed.
 
-dmesg after flash:
-[   55.120788] ice: Copyright (c) 2018, Intel Corporation.
-[   55.274734] ice 0000:ca:00.0: Get PHY capabilities failed status = -5, continuing anyway
-[   55.569797] ice 0000:ca:00.0: The DDP package was successfully loaded: ICE OS Default Package version 1.3.28.0
-[   55.603629] ice 0000:ca:00.0: Get PHY capability failed.
-[   55.608951] ice 0000:ca:00.0: ice_init_nvm_phy_type failed: -5
-[   55.647348] ice 0000:ca:00.0: PTP init successful
-[   55.675536] ice 0000:ca:00.0: DCB is enabled in the hardware, max number of TCs supported on this port are 8
-[   55.685365] ice 0000:ca:00.0: FW LLDP is disabled, DCBx/LLDP in SW mode.
-[   55.692179] ice 0000:ca:00.0: Commit DCB Configuration to the hardware
-[   55.701382] ice 0000:ca:00.0: 126.024 Gb/s available PCIe bandwidth, limited by 16.0 GT/s PCIe x8 link at 0000:c9:02.0 (capable of 252.048 Gb/s with 16.0 GT/s PCIe x16 link)
-Reboot doesn’t help, only second flash/activate with OOT or patched
-driver put card back in consistent state.
+Fix this by freeing all the VFs first before calling
+ice_mbx_deinit_snapshot.
 
-After patch:
-[root@host ~]# devlink dev flash pci/0000:ca:00.0 file E810_XXVDA4_FH_O_SEC_FW_1p6p1p9_NVM_3p10_PLDMoMCTP_0.11_8000AD7B.bin
-Preparing to flash
-[fw.mgmt] Erasing
-[fw.mgmt] Erasing done
-[fw.mgmt] Flashing 100%
-[fw.mgmt] Flashing done 100%
-[fw.undi] Erasing
-[fw.undi] Erasing done
-[fw.undi] Flashing 100%
-[fw.undi] Flashing done 100%
-[fw.netlist] Erasing
-[fw.netlist] Erasing done
-[fw.netlist] Flashing 100%
-[fw.netlist] Flashing done 100%
-Activate new firmware by devlink reload
-[root@host ~]# devlink dev reload pci/0000:ca:00.0 action fw_activate
-reload_actions_performed:
-    fw_activate
-[root@host ~]# ip link show ens7f0
-19: ens7f0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
-    link/ether b4:96:91:dc:72:e0 brd ff:ff:ff:ff:ff:ff
-    altname enp202s0f0
+[  +0.032591] ==================================================================
+[  +0.000021] BUG: KASAN: use-after-free in ice_mbx_vf_state_handler+0x1c3/0x410 [ice]
+[  +0.000315] Write of size 28 at addr ffff889908eb6f28 by task kworker/55:2/1530996
 
-Fixes: 399e27dbbd9e94 ("ice: support immediate firmware activation via devlink reload")
-Signed-off-by: Petr Oros <poros@redhat.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+[  +0.000029] CPU: 55 PID: 1530996 Comm: kworker/55:2 Kdump: loaded Tainted: G S        I       5.17.0-dirty #1
+[  +0.000022] Hardware name: Dell Inc. PowerEdge R740/0923K0, BIOS 1.6.13 12/17/2018
+[  +0.000013] Workqueue: ice ice_service_task [ice]
+[  +0.000279] Call Trace:
+[  +0.000012]  <TASK>
+[  +0.000011]  dump_stack_lvl+0x33/0x42
+[  +0.000030]  print_report.cold.13+0xb2/0x6b3
+[  +0.000028]  ? ice_mbx_vf_state_handler+0x1c3/0x410 [ice]
+[  +0.000295]  kasan_report+0xa5/0x120
+[  +0.000026]  ? __switch_to_asm+0x21/0x70
+[  +0.000024]  ? ice_mbx_vf_state_handler+0x1c3/0x410 [ice]
+[  +0.000298]  kasan_check_range+0x183/0x1e0
+[  +0.000019]  memset+0x1f/0x40
+[  +0.000018]  ice_mbx_vf_state_handler+0x1c3/0x410 [ice]
+[  +0.000304]  ? ice_conv_link_speed_to_virtchnl+0x160/0x160 [ice]
+[  +0.000297]  ? ice_vsi_dis_spoofchk+0x40/0x40 [ice]
+[  +0.000305]  ice_is_malicious_vf+0x1aa/0x250 [ice]
+[  +0.000303]  ? ice_restore_all_vfs_msi_state+0x160/0x160 [ice]
+[  +0.000297]  ? __mutex_unlock_slowpath.isra.15+0x410/0x410
+[  +0.000022]  ? ice_debug_cq+0xb7/0x230 [ice]
+[  +0.000273]  ? __kasan_slab_alloc+0x2f/0x90
+[  +0.000022]  ? memset+0x1f/0x40
+[  +0.000017]  ? do_raw_spin_lock+0x119/0x1d0
+[  +0.000022]  ? rwlock_bug.part.2+0x60/0x60
+[  +0.000024]  __ice_clean_ctrlq+0x3a6/0xd60 [ice]
+[  +0.000273]  ? newidle_balance+0x5b1/0x700
+[  +0.000026]  ? ice_print_link_msg+0x2f0/0x2f0 [ice]
+[  +0.000271]  ? update_cfs_group+0x1b/0x140
+[  +0.000018]  ? load_balance+0x1260/0x1260
+[  +0.000022]  ? ice_process_vflr_event+0x27/0x130 [ice]
+[  +0.000301]  ice_service_task+0x136e/0x1470 [ice]
+[  +0.000281]  process_one_work+0x3b4/0x6c0
+[  +0.000030]  worker_thread+0x65/0x660
+[  +0.000023]  ? __kthread_parkme+0xe4/0x100
+[  +0.000021]  ? process_one_work+0x6c0/0x6c0
+[  +0.000020]  kthread+0x179/0x1b0
+[  +0.000018]  ? kthread_complete_and_exit+0x20/0x20
+[  +0.000022]  ret_from_fork+0x22/0x30
+[  +0.000026]  </TASK>
+
+[  +0.000018] Allocated by task 10742:
+[  +0.000013]  kasan_save_stack+0x1c/0x40
+[  +0.000018]  __kasan_kmalloc+0x84/0xa0
+[  +0.000016]  kmem_cache_alloc_trace+0x16c/0x2e0
+[  +0.000015]  intel_iommu_probe_device+0xeb/0x860
+[  +0.000015]  __iommu_probe_device+0x9a/0x2f0
+[  +0.000016]  iommu_probe_device+0x43/0x270
+[  +0.000015]  iommu_bus_notifier+0xa7/0xd0
+[  +0.000015]  blocking_notifier_call_chain+0x90/0xc0
+[  +0.000017]  device_add+0x5f3/0xd70
+[  +0.000014]  pci_device_add+0x404/0xa40
+[  +0.000015]  pci_iov_add_virtfn+0x3b0/0x550
+[  +0.000016]  sriov_enable+0x3bb/0x600
+[  +0.000013]  ice_ena_vfs+0x113/0xa79 [ice]
+[  +0.000293]  ice_sriov_configure.cold.17+0x21/0xe0 [ice]
+[  +0.000291]  sriov_numvfs_store+0x160/0x200
+[  +0.000015]  kernfs_fop_write_iter+0x1db/0x270
+[  +0.000018]  new_sync_write+0x21d/0x330
+[  +0.000013]  vfs_write+0x376/0x410
+[  +0.000013]  ksys_write+0xba/0x150
+[  +0.000012]  do_syscall_64+0x3a/0x80
+[  +0.000012]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+[  +0.000028] Freed by task 10742:
+[  +0.000011]  kasan_save_stack+0x1c/0x40
+[  +0.000015]  kasan_set_track+0x21/0x30
+[  +0.000016]  kasan_set_free_info+0x20/0x30
+[  +0.000012]  __kasan_slab_free+0x104/0x170
+[  +0.000016]  kfree+0x9b/0x470
+[  +0.000013]  devres_destroy+0x1c/0x20
+[  +0.000015]  devm_kfree+0x33/0x40
+[  +0.000012]  ice_mbx_deinit_snapshot+0x39/0x70 [ice]
+[  +0.000295]  ice_sriov_configure+0xb0/0x260 [ice]
+[  +0.000295]  sriov_numvfs_store+0x1bc/0x200
+[  +0.000015]  kernfs_fop_write_iter+0x1db/0x270
+[  +0.000016]  new_sync_write+0x21d/0x330
+[  +0.000012]  vfs_write+0x376/0x410
+[  +0.000012]  ksys_write+0xba/0x150
+[  +0.000012]  do_syscall_64+0x3a/0x80
+[  +0.000012]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+[  +0.000024] Last potentially related work creation:
+[  +0.000010]  kasan_save_stack+0x1c/0x40
+[  +0.000016]  __kasan_record_aux_stack+0x98/0xa0
+[  +0.000013]  insert_work+0x34/0x160
+[  +0.000015]  __queue_work+0x20e/0x650
+[  +0.000016]  queue_work_on+0x4c/0x60
+[  +0.000015]  nf_nat_masq_schedule+0x297/0x2e0 [nf_nat]
+[  +0.000034]  masq_device_event+0x5a/0x60 [nf_nat]
+[  +0.000031]  raw_notifier_call_chain+0x5f/0x80
+[  +0.000017]  dev_close_many+0x1d6/0x2c0
+[  +0.000015]  unregister_netdevice_many+0x4e3/0xa30
+[  +0.000015]  unregister_netdevice_queue+0x192/0x1d0
+[  +0.000014]  iavf_remove+0x8f9/0x930 [iavf]
+[  +0.000058]  pci_device_remove+0x65/0x110
+[  +0.000015]  device_release_driver_internal+0xf8/0x190
+[  +0.000017]  pci_stop_bus_device+0xb5/0xf0
+[  +0.000014]  pci_stop_and_remove_bus_device+0xe/0x20
+[  +0.000016]  pci_iov_remove_virtfn+0x19c/0x230
+[  +0.000015]  sriov_disable+0x4f/0x170
+[  +0.000014]  ice_free_vfs+0x9a/0x490 [ice]
+[  +0.000306]  ice_sriov_configure+0xb8/0x260 [ice]
+[  +0.000294]  sriov_numvfs_store+0x1bc/0x200
+[  +0.000015]  kernfs_fop_write_iter+0x1db/0x270
+[  +0.000016]  new_sync_write+0x21d/0x330
+[  +0.000012]  vfs_write+0x376/0x410
+[  +0.000012]  ksys_write+0xba/0x150
+[  +0.000012]  do_syscall_64+0x3a/0x80
+[  +0.000012]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+[  +0.000025] The buggy address belongs to the object at ffff889908eb6f00
+               which belongs to the cache kmalloc-96 of size 96
+[  +0.000016] The buggy address is located 40 bytes inside of
+               96-byte region [ffff889908eb6f00, ffff889908eb6f60)
+
+[  +0.000026] The buggy address belongs to the physical page:
+[  +0.000010] page:00000000b7e99a2e refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1908eb6
+[  +0.000016] flags: 0x57ffffc0000200(slab|node=1|zone=2|lastcpupid=0x1fffff)
+[  +0.000024] raw: 0057ffffc0000200 ffffea0069d9fd80 dead000000000002 ffff88810004c780
+[  +0.000015] raw: 0000000000000000 0000000000200020 00000001ffffffff 0000000000000000
+[  +0.000009] page dumped because: kasan: bad access detected
+
+[  +0.000016] Memory state around the buggy address:
+[  +0.000012]  ffff889908eb6e00: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
+[  +0.000014]  ffff889908eb6e80: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
+[  +0.000014] >ffff889908eb6f00: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
+[  +0.000011]                                   ^
+[  +0.000013]  ffff889908eb6f80: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
+[  +0.000013]  ffff889908eb7000: fa fb fb fb fb fb fb fb fc fc fc fc fa fb fb fb
+[  +0.000012] ==================================================================
+
+Fixes: 0891c89674e8 ("ice: warn about potentially malicious VFs")
+Reported-by: Slawomir Laba <slawomirx.laba@intel.com>
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/intel/ice/ice_sriov.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 5b1198859da7..9a0a358a15c2 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -6929,12 +6929,15 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
+diff --git a/drivers/net/ethernet/intel/ice/ice_sriov.c b/drivers/net/ethernet/intel/ice/ice_sriov.c
+index 8915a9d39e36..0c438219f7a3 100644
+--- a/drivers/net/ethernet/intel/ice/ice_sriov.c
++++ b/drivers/net/ethernet/intel/ice/ice_sriov.c
+@@ -1046,8 +1046,8 @@ int ice_sriov_configure(struct pci_dev *pdev, int num_vfs)
  
- 	dev_dbg(dev, "rebuilding PF after reset_type=%d\n", reset_type);
- 
-+#define ICE_EMP_RESET_SLEEP_MS 5000
- 	if (reset_type == ICE_RESET_EMPR) {
- 		/* If an EMP reset has occurred, any previously pending flash
- 		 * update will have completed. We no longer know whether or
- 		 * not the NVM update EMP reset is restricted.
- 		 */
- 		pf->fw_emp_reset_disabled = false;
-+
-+		msleep(ICE_EMP_RESET_SLEEP_MS);
- 	}
- 
- 	err = ice_init_all_ctrlq(hw);
+ 	if (!num_vfs) {
+ 		if (!pci_vfs_assigned(pdev)) {
+-			ice_mbx_deinit_snapshot(&pf->hw);
+ 			ice_free_vfs(pf);
++			ice_mbx_deinit_snapshot(&pf->hw);
+ 			if (pf->lag)
+ 				ice_enable_lag(pf->lag);
+ 			return 0;
 -- 
 2.31.1
 
