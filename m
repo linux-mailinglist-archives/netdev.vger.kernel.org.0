@@ -2,82 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E36A650FD65
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 14:43:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FB5450FD24
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 14:36:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350158AbiDZMpU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 08:45:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37748 "EHLO
+        id S1350013AbiDZMjJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 08:39:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350104AbiDZMpK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 08:45:10 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDBD1177D7C
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 05:42:02 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id bv19so35809025ejb.6
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 05:42:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=iMc0QtPSKEpCilKORLsPRdEynysoaSBpXUVRN4AkX18=;
-        b=oFBvJocHmqN33s/D+kmHj/zvtshOZgFR80CH+/y/Qxah0lYlGR397cYu3lm7UibWeB
-         +riaT2BrDRVtL+5kTPhY3j0ftWfI1BWCjNb+cSJ4hrk3i0CBp439NDnslevQ7FBP8u85
-         6Q+W1uDmBZ16/w78hT/0z5agXhYjxRT/11V5XPN5ZD09t0FDWPdFDB7UVd9jT5Sp0grq
-         LEWn3hX5Ggrd+/aWra49SDE9a2A/wPYfTtLhFWfpwskn9eMC/V/EtrDFyRmiXn8lK6vx
-         gc0UZmIHFe0qrL4sIIT7zvvEBuj5OaQuPg4Uxn3/4ATkrZi6q/pTyQ7WU3bxOZw93ltx
-         GJOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=iMc0QtPSKEpCilKORLsPRdEynysoaSBpXUVRN4AkX18=;
-        b=jw4Iro7F0trA021PcblI1XuM0kX/UP/qr2OT3exTrn1RyD2Dj358g+88HL0UQBbdQ9
-         rN6IralGOMq9CT8JOuRNHXhuFvHa0Smshf4/KkNajVhuUHsAq9koHTAjPRjET0gcLzT/
-         fNr0NSGjISx4wRhHcGX8QzP4BOIh727uaaJuGt7FBNqwN3ty20OaayhbVhAORn8VCr/2
-         YwSgCGZ+4+7mVf4P+KphPhg0mwZJux0GHDXCCxF5lKsIJYqFEOeu17JTgnIPmv/D0JqJ
-         GCuOthsMPgKYdlr2WHIkq8VaVW00TZwzwJt8jYDJvG/2xS8GOjzuaalzsoDvgsN1jgBK
-         uGBg==
-X-Gm-Message-State: AOAM530GscAuRIKW9y/yf+MjgbmUrX6GF59CR8a9El3lOgh6CNsruBnQ
-        1j0FkpwZiIUq1m7Jiy/ICfiNAE6ZO6DDj4KL
-X-Google-Smtp-Source: ABdhPJwJqcqPwkbQNQ1IeK2s+L0NxcfF/jeHt5qdyifvM4aHK55CiORvUevEZ2kWLb6SEBg4yBav2g==
-X-Received: by 2002:a17:907:7fa8:b0:6f3:b0f5:5db9 with SMTP id qk40-20020a1709077fa800b006f3b0f55db9mr2893707ejc.644.1650976921341;
-        Tue, 26 Apr 2022 05:42:01 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id he37-20020a1709073da500b006f38517dccesm3223300ejc.208.2022.04.26.05.41.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 05:42:00 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 14:41:59 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     kernel test robot <lkp@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        netdev@vger.kernel.org, Ido Schimmel <idosch@idosch.org>
-Subject: Re: [linux-next:master] BUILD REGRESSION
- e7d6987e09a328d4a949701db40ef63fbb970670
-Message-ID: <Ymfol/Cf66KCYKA1@nanopsycho>
-References: <6267862c.xuehJN2IUHn8WMof%lkp@intel.com>
- <20220426051716.7fc4b9c1@kernel.org>
+        with ESMTP id S1349993AbiDZMjI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 08:39:08 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4A1FC31;
+        Tue, 26 Apr 2022 05:35:57 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KnhD63m1Xz1JBhH;
+        Tue, 26 Apr 2022 20:35:02 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 26 Apr 2022 20:35:55 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 26 Apr
+ 2022 20:35:54 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <grygorii.strashko@ti.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>
+Subject: [PATCH -next] net: cpsw: add missing of_node_put() in cpsw_probe_dt()
+Date:   Tue, 26 Apr 2022 20:47:57 +0800
+Message-ID: <20220426124757.373587-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220426051716.7fc4b9c1@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Apr 26, 2022 at 02:17:16PM CEST, kuba@kernel.org wrote:
->On Tue, 26 Apr 2022 13:42:04 +0800 kernel test robot wrote:
->> drivers/net/ethernet/mellanox/mlxsw/core_linecards.c:851:8: warning: Use of memory after it is freed [clang-analyzer-unix.Malloc]
->
->Hi Ido, Jiri,
->
->is this one on your radar?
+If devm_kcalloc() fails, 'tmp_node' should be put in cpsw_probe_dt().
 
-Will send a fix for this, thanks.
+Fixes: ed3525eda4c4 ("net: ethernet: ti: introduce cpsw switchdev based driver part 1 - dual-emac")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/net/ethernet/ti/cpsw_new.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
+index bd4b1528cf99..b81179f7d738 100644
+--- a/drivers/net/ethernet/ti/cpsw_new.c
++++ b/drivers/net/ethernet/ti/cpsw_new.c
+@@ -1246,8 +1246,10 @@ static int cpsw_probe_dt(struct cpsw_common *cpsw)
+ 	data->slave_data = devm_kcalloc(dev, CPSW_SLAVE_PORTS_NUM,
+ 					sizeof(struct cpsw_slave_data),
+ 					GFP_KERNEL);
+-	if (!data->slave_data)
++	if (!data->slave_data) {
++		of_node_put(tmp_node);
+ 		return -ENOMEM;
++	}
+ 
+ 	/* Populate all the child nodes here...
+ 	 */
+-- 
+2.25.1
 
