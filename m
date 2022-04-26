@@ -2,204 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C2F650FA64
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 12:27:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1963350FA5A
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 12:25:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348824AbiDZK2p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 06:28:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42964 "EHLO
+        id S1345411AbiDZK2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 06:28:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348840AbiDZK2I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 06:28:08 -0400
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C21565DE64;
-        Tue, 26 Apr 2022 03:01:15 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=33;SR=0;TI=SMTPD_---0VBLW6ip_1650967268;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VBLW6ip_1650967268)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 26 Apr 2022 18:01:09 +0800
-Message-ID: <1650967148.2873914-3-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH v9 00/32] virtio pci support VIRTIO_F_RING_RESET (refactor vring)
-Date:   Tue, 26 Apr 2022 17:59:08 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org,
-        Jeff Dike <jdike@addtoit.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Vadim Pasternak <vadimp@nvidia.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        linux-um@lists.infradead.org, netdev@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org, bpf@vger.kernel.org
-References: <20220406034346.74409-1-xuanzhuo@linux.alibaba.com>
- <20220426055423-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20220426055423-mutt-send-email-mst@kernel.org>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S240759AbiDZK1R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 06:27:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF755BE49
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 03:00:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9464F6142A
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 10:00:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id ED3E9C385A0;
+        Tue, 26 Apr 2022 10:00:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650967212;
+        bh=lBo7FKZFyKjQKW5LnJrcKrxcEr1yJTi0fF8n3iAypvI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=laG7XVEo4EMunp95W+O1Jm9VWabDSfrB4FbfjJJBLyl8+w7WP2DaF72fCvli9fwTB
+         5Xwq/lnBaCx6I7AM7eMhfh4BOR8Xl0ryO5fCbWFXRCNv1+8j2n6b3KrzdTdfHaPvvo
+         WW5KzJHTyUUoMd4zWfsHmwQZdYGLqQoMt3mj3mMoX5+sDZYLc6/ILcCuRBmJ+CpEUx
+         935xRlCWiIGZUTVd+Nd+TWwwlLuciazMCoVdVa1EHchMYauu8+qlkFFRYhQbIUveRh
+         42ebbmVmnkbb1TWjVQVLiz8EA8kJuK5u4VmwUHkS0E/h2ll5ODbnKETvAYkGQm4g/7
+         zBxo84i0ZaFcw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CFAF3E8DD67;
+        Tue, 26 Apr 2022 10:00:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: phy: marvell10g: fix return value on error
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165096721184.19503.728438356781759868.git-patchwork-notify@kernel.org>
+Date:   Tue, 26 Apr 2022 10:00:11 +0000
+References: <f47cb031aeae873bb008ba35001607304a171a20.1650868058.git.baruch@tkos.co.il>
+In-Reply-To: <f47cb031aeae873bb008ba35001607304a171a20.1650868058.git.baruch@tkos.co.il>
+To:     Baruch Siach <baruch@tkos.co.il>
+Cc:     linux@armlinux.org.uk, kabel@kernel.org, netdev@vger.kernel.org,
+        baruch.siach@siklu.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 26 Apr 2022 05:55:41 -0400, "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> On Wed, Apr 06, 2022 at 11:43:14AM +0800, Xuan Zhuo wrote:
-> > The virtio spec already supports the virtio queue reset function. This patch set
-> > is to add this function to the kernel. The relevant virtio spec information is
-> > here:
-> >
-> >     https://github.com/oasis-tcs/virtio-spec/issues/124
-> >
-> > Also regarding MMIO support for queue reset, I plan to support it after this
-> > patch is passed.
->
-> Regarding the spec, there's now an issue proposing
-> some changes to the interface. What do you think about that
-> proposal? Could you respond on that thread on the virtio TC mailing list?
+Hello:
 
-I have read that thread. And also asked some questions.  I will follow that
-thread.
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-Grateful.
+On Mon, 25 Apr 2022 09:27:38 +0300 you wrote:
+> From: Baruch Siach <baruch.siach@siklu.com>
+> 
+> Return back the error value that we get from phy_read_mmd().
+> 
+> Fixes: c84786fa8f91 ("net: phy: marvell10g: read copper results from CSSR1")
+> Signed-off-by: Baruch Siach <baruch.siach@siklu.com>
+> 
+> [...]
 
->
->
-> > This patch set implements the refactoring of vring. Finally, the
-> > virtuque_resize() interface is provided based on the reset function of the
-> > transport layer.
-> >
-> > Test environment:
-> >     Host: 4.19.91
-> >     Qemu: QEMU emulator version 6.2.50 (with vq reset support)
-> >     Test Cmd:  ethtool -G eth1 rx $1 tx $2; ethtool -g eth1
-> >
-> >     The default is split mode, modify Qemu virtio-net to add PACKED feature to test
-> >     packed mode.
-> >
-> > Qemu code:
-> >     https://github.com/fengidri/qemu/compare/89f3bfa3265554d1d591ee4d7f1197b6e3397e84...master
-> >
-> > In order to simplify the review of this patch set, the function of reusing
-> > the old buffers after resize will be introduced in subsequent patch sets.
-> >
-> > Please review. Thanks.
-> >
-> > v9:
-> >   1. Provide a virtqueue_resize() interface directly
-> >   2. A patch set including vring resize, virtio pci reset, virtio-net resize
-> >   3. No more separate structs
-> >
-> > v8:
-> >   1. Provide a virtqueue_reset() interface directly
-> >   2. Split the two patch sets, this is the first part
-> >   3. Add independent allocation helper for allocating state, extra
-> >
-> > v7:
-> >   1. fix #6 subject typo
-> >   2. fix #6 ring_size_in_bytes is uninitialized
-> >   3. check by: make W=12
-> >
-> > v6:
-> >   1. virtio_pci: use synchronize_irq(irq) to sync the irq callbacks
-> >   2. Introduce virtqueue_reset_vring() to implement the reset of vring during
-> >      the reset process. May use the old vring if num of the vq not change.
-> >   3. find_vqs() support sizes to special the max size of each vq
-> >
-> > v5:
-> >   1. add virtio-net support set_ringparam
-> >
-> > v4:
-> >   1. just the code of virtio, without virtio-net
-> >   2. Performing reset on a queue is divided into these steps:
-> >     1. reset_vq: reset one vq
-> >     2. recycle the buffer from vq by virtqueue_detach_unused_buf()
-> >     3. release the ring of the vq by vring_release_virtqueue()
-> >     4. enable_reset_vq: re-enable the reset queue
-> >   3. Simplify the parameters of enable_reset_vq()
-> >   4. add container structures for virtio_pci_common_cfg
-> >
-> > v3:
-> >   1. keep vq, irq unreleased
-> >
-> > Xuan Zhuo (32):
-> >   virtio: add helper virtqueue_get_vring_max_size()
-> >   virtio: struct virtio_config_ops add callbacks for queue_reset
-> >   virtio_ring: update the document of the virtqueue_detach_unused_buf
-> >     for queue reset
-> >   virtio_ring: remove the arg vq of vring_alloc_desc_extra()
-> >   virtio_ring: extract the logic of freeing vring
-> >   virtio_ring: split: extract the logic of alloc queue
-> >   virtio_ring: split: extract the logic of alloc state and extra
-> >   virtio_ring: split: extract the logic of attach vring
-> >   virtio_ring: split: extract the logic of vq init
-> >   virtio_ring: split: introduce virtqueue_reinit_split()
-> >   virtio_ring: split: introduce virtqueue_resize_split()
-> >   virtio_ring: packed: extract the logic of alloc queue
-> >   virtio_ring: packed: extract the logic of alloc state and extra
-> >   virtio_ring: packed: extract the logic of attach vring
-> >   virtio_ring: packed: extract the logic of vq init
-> >   virtio_ring: packed: introduce virtqueue_reinit_packed()
-> >   virtio_ring: packed: introduce virtqueue_resize_packed()
-> >   virtio_ring: introduce virtqueue_resize()
-> >   virtio_pci: struct virtio_pci_common_cfg add queue_notify_data
-> >   virtio: queue_reset: add VIRTIO_F_RING_RESET
-> >   virtio_pci: queue_reset: update struct virtio_pci_common_cfg and
-> >     option functions
-> >   virtio_pci: queue_reset: extract the logic of active vq for modern pci
-> >   virtio_pci: queue_reset: support VIRTIO_F_RING_RESET
-> >   virtio: find_vqs() add arg sizes
-> >   virtio_pci: support the arg sizes of find_vqs()
-> >   virtio_mmio: support the arg sizes of find_vqs()
-> >   virtio: add helper virtio_find_vqs_ctx_size()
-> >   virtio_net: set the default max ring size by find_vqs()
-> >   virtio_net: get ringparam by virtqueue_get_vring_max_size()
-> >   virtio_net: split free_unused_bufs()
-> >   virtio_net: support rx/tx queue resize
-> >   virtio_net: support set_ringparam
-> >
-> >  arch/um/drivers/virtio_uml.c             |   3 +-
-> >  drivers/net/virtio_net.c                 | 219 +++++++-
-> >  drivers/platform/mellanox/mlxbf-tmfifo.c |   3 +
-> >  drivers/remoteproc/remoteproc_virtio.c   |   3 +
-> >  drivers/s390/virtio/virtio_ccw.c         |   4 +
-> >  drivers/virtio/virtio_mmio.c             |  11 +-
-> >  drivers/virtio/virtio_pci_common.c       |  28 +-
-> >  drivers/virtio/virtio_pci_common.h       |   3 +-
-> >  drivers/virtio/virtio_pci_legacy.c       |   8 +-
-> >  drivers/virtio/virtio_pci_modern.c       | 149 +++++-
-> >  drivers/virtio/virtio_pci_modern_dev.c   |  36 ++
-> >  drivers/virtio/virtio_ring.c             | 626 ++++++++++++++++++-----
-> >  drivers/virtio/virtio_vdpa.c             |   3 +
-> >  include/linux/virtio.h                   |   6 +
-> >  include/linux/virtio_config.h            |  38 +-
-> >  include/linux/virtio_pci_modern.h        |   2 +
-> >  include/uapi/linux/virtio_config.h       |   7 +-
-> >  include/uapi/linux/virtio_pci.h          |  14 +
-> >  18 files changed, 964 insertions(+), 199 deletions(-)
-> >
-> > --
-> > 2.31.0
->
+Here is the summary with links:
+  - net: phy: marvell10g: fix return value on error
+    https://git.kernel.org/netdev/net/c/0ed9704b660b
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
