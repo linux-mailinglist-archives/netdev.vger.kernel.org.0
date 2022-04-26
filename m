@@ -2,78 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0459510116
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 16:55:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86B90510137
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 16:58:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351791AbiDZO6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 10:58:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56898 "EHLO
+        id S1347847AbiDZPBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 11:01:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351798AbiDZO6R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 10:58:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2275D55B1;
-        Tue, 26 Apr 2022 07:55:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1026614ED;
-        Tue, 26 Apr 2022 14:55:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF6ECC385AA;
-        Tue, 26 Apr 2022 14:55:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650984906;
-        bh=mBBJfMdQEAD7EAvlp5VzkWfv+DhsEhFD059k90qHrY8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jJbrM3gMgGDpbLfXpV1GxS5xAGIKT9oFkVUo8elExDVKlC36ei9tGM8VO/S08FI/g
-         IutRjZMnUIJUjhkd1Cq++lQIeb1o36Wh09gi8lzx3cjviH9bS1WLEwJ1lmX4wDNZB8
-         lgZ/joo0wBg05ickLxda9QVf8w7EHAmpz1BeAYaFD38OThOjsiooYP1stXAAZ7g5/A
-         r0j5TMS+StWVFVN7thO6oj2fJHT2639aJHJ0Xlu39lzsAWLZ3MQZD3F0pgxfyHB602
-         MGogFrAx2zyevx4MzX79IVhGcoVX8OK0E/B6Kq5fbC1eFsxD7WiJJ98F4kQOAtNTVV
-         PT6Gg37A6BYUQ==
-Date:   Tue, 26 Apr 2022 07:55:04 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Chuck Lever III <chuck.lever@oracle.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
-        "linux-cifs@vger.kernel.org" <linux-cifs@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "ak@tempesta-tech.com" <ak@tempesta-tech.com>,
-        "borisp@nvidia.com" <borisp@nvidia.com>,
-        "simo@redhat.com" <simo@redhat.com>
-Subject: Re: [PATCH RFC 4/5] net/tls: Add support for PF_TLSH (a TLS
- handshake listener)
-Message-ID: <20220426075504.18be4ee2@kernel.org>
-In-Reply-To: <E8809EC2-D49A-4171-8C88-D5E24FFA4079@oracle.com>
-References: <165030051838.5073.8699008789153780301.stgit@oracle-102.nfsv4.dev>
-        <165030059051.5073.16723746870370826608.stgit@oracle-102.nfsv4.dev>
-        <20220425101459.15484d17@kernel.org>
-        <E8809EC2-D49A-4171-8C88-D5E24FFA4079@oracle.com>
+        with ESMTP id S1351834AbiDZPBo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 11:01:44 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DCA5B1A9B;
+        Tue, 26 Apr 2022 07:58:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1650985071;
+        bh=KLCjLhfQTgA0oKxUS8a8HV/nxwOxtsyC4o79WkTfje8=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=IIcY48H9YK8/QDBNpiRiNIjM5ijvX9dPgdmCPggiTIq7XwNedhwHy18OxeYmKHEoF
+         aTWxmr4FQ9c9f1+BSP3KA3mTvOPXFvrXnR56rwSg8opVpkVDmlW5t7ss7YGXvUhPii
+         MK5BlLt3w1SEQLCrqBWvI62kQpytjOvDD7ZZPMaA=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [80.245.77.37] ([80.245.77.37]) by web-mail.gmx.net
+ (3c-app-gmx-bs69.server.lan [172.19.170.214]) (via HTTP); Tue, 26 Apr 2022
+ 16:57:50 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Message-ID: <trinity-8ceec42c-8705-4808-b37b-9e9849ba774e-1650985070928@3c-app-gmx-bs69>
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     Frank Wunderlich <linux@fw-web.de>
+Cc:     linux-mediatek@lists.infradead.org,
+        linux-rockchip@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Aw: [RFC v1 3/3] arm64: dts: rockchip: Add mt7531 dsa node to
+ BPI-R2-Pro board
+Content-Type: text/plain; charset=UTF-8
+Date:   Tue, 26 Apr 2022 16:57:50 +0200
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <20220426134924.30372-4-linux@fw-web.de>
+References: <20220426134924.30372-1-linux@fw-web.de>
+ <20220426134924.30372-4-linux@fw-web.de>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:wBW5QJYpMHdq3PrMhGinR1AdioQG5dT+v1AUhYrsDygj5o2ETBmB7lzitdogghO9fUJ34
+ 7C+S+3eGXblSF48OoeX01rSKkoLZx+5zlIPitqd/reCb/PRwuR3znVtcbV6WiXGQw9fKCED9pXjl
+ Yqa7X5QsU8EBNE1dsh3kVNkMGRtDKOoHGLkrRf7GTn8z0SY+JQ6juNUXpn1GZl+laWiX/FtsqqgA
+ Ye27fCi0B2ZSew4gY/X1gzmzAfDOgUNCH3qY9mTUMWRxlDCIDxa1Wg084wN8Bg56b4e0IO/LVl4D
+ Qc=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:41kc6tKK5sg=:EDOaU6bOsIT1ZaYJ+7rZT4
+ ul8RUcVdFNTJTPhR0EmciMDWP/g6o5NGLfUZmDgSUNOU8LhvXxvfMQVPT8xvM5No8QyQIbn8p
+ WMKpXo9jDASBQp5oAj0e+GrzTnpb5vgLTshGaXlYY3HoKQ8wAfMaejoi/1ZxTv84/iGtHUGSY
+ /G6B35z0oyXoPDsU1l56EIMFgjGcCm183owIWmaTlTRBwLA0GVTzC4JsHMyxRP1gfzIxj22B8
+ O/D50GXl1IFfPc01KMVhe04uv3tzA6QtQQVgtRFqxnXtllj2fRbmUos/0Fm/ann/0wlOpOAtZ
+ EqUzTxAlRXhQdKgIpYjjYkzfiMcAbUs+oIVACxTJcUBBzzCygQQPs5nhdvhf0E7TZaOjV7oTG
+ RXa/eCwTZCoXO/XYcyAZC86TrMQ2sfzX2WRS0uiiEMEUzJt8xYokLe4p79IjT8zZa87WinMsl
+ QyFLU1u8cGd1nm5XZ/St9Ujq5DnuhwN67mNGTj+ieasHZSPWubsLPAHfmFtAwIG37FKgvckQn
+ KkRLuySR8bhQ99HM8D1hiPo3RvV3NsbQxWxb311FPu0Eh6OSNrZbUE3bxgTHx+HKnDxcV3f35
+ tVlt1abs3yLoH4Z3CbvTXV8g8mzJCPirOCEwhH0yv/EtSa+8tmhEsUTZ6TyZaKWp7E8j4+dFv
+ CABs6rKSUkmCf6VeZozZk0q83zD29Nep3MjfI1n60J2xSBoq0WVp0ATaLKsXCgso9g5LsjY0a
+ z251OrYA/UMD62CBfDskbdcjm/W52tCy/N+3PGEqj/65yPZIeG6Xj8rVvf9/LFDVKHFIN0y5l
+ wmiNiYq
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 26 Apr 2022 13:48:20 +0000 Chuck Lever III wrote:
-> > Create the socket in user space, do all the handshakes you need there
-> > and then pass it to the kernel.  This is how NBD + TLS works.  Scales
-> > better and requires much less kernel code.  
-> 
-> The RPC-with-TLS standard allows unencrypted RPC traffic on the connection
-> before sending ClientHello. I think we'd like to stick with creating the
-> socket in the kernel, for this reason and for the reasons Hannes mentions
-> in his reply.
+> Gesendet: Dienstag, 26. April 2022 um 15:49 Uhr
+> Von: "Frank Wunderlich" <linux@fw-web.de>
 
-Umpf, I presume that's reviewed by security people in IETF so I guess
-it's done right this time (tm).
+> +&mdio0 {
+> +	#address-cells = <1>;
+> +	#size-cells = <0>;
+> +
+> +	switch@0 {
+> +		compatible = "mediatek,mt7531";
+> +		reg = <0>;
+> +		status = "disabled";
 
-Your wording seems careful not to imply that you actually need that,
-tho. Am I over-interpreting?
+seems i had missed to delete this, but it looks like it was ignored as switch was probed
+
+> +		ports {
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+
