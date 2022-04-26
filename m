@@ -2,235 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7200510A8A
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 22:33:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6AD1510AC7
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 22:53:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355009AbiDZUgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 16:36:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42676 "EHLO
+        id S1355167AbiDZU43 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 16:56:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354986AbiDZUgI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 16:36:08 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B27591A8178
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 13:32:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651005179; x=1682541179;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=wpeYZBRhHvJvvteJ1OL97DFtt1b5iCQ9DraxFeZTVbY=;
-  b=DlMNP35jjLJysG3XY1FZz4WvmwITYns7OVjccv5iFfP7QCLR4IcQ6Q08
-   iVTvxrN6sfRM+xCJhH6HNkeWETOiijOOQAmM1lhar4v+fNGvCMQ4vknyd
-   pZ4T6qVlGo6dCWtZ0oFLUxcSeBRRDrusWvmqd1DJiV4lP2Jo8obKpARlm
-   U//j56lipmwNHq7t2NNBVqAjKJIVXHNS+oiTiXuJxI15kLNOtxgsGn9ce
-   AQo2YNGAYtqFAGI3hKD7mhr+v9pjHf/3ccHnbCAtRpDLv9N9cjBFus07G
-   fm+g5UsDV2uCQdFo9EBUgGUdqRE76NfD4kEnYAaORuaIK8Io7ooe0p5ug
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="253090831"
-X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
-   d="scan'208";a="253090831"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 13:32:58 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
-   d="scan'208";a="617174562"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga008.fm.intel.com with ESMTP; 26 Apr 2022 13:32:57 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
-Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com,
-        Slawomir Laba <slawomirx.laba@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net 4/4] ice: fix use-after-free when deinitializing mailbox snapshot
-Date:   Tue, 26 Apr 2022 13:30:18 -0700
-Message-Id: <20220426203018.3790378-5-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220426203018.3790378-1-anthony.l.nguyen@intel.com>
-References: <20220426203018.3790378-1-anthony.l.nguyen@intel.com>
+        with ESMTP id S1344812AbiDZU4W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 16:56:22 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75CC848887;
+        Tue, 26 Apr 2022 13:53:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1651006381;
+        bh=OJUDzpc6mAIOLTsHkxVTark5mkSrpVi6U11Y6K4ImT0=;
+        h=X-UI-Sender-Class:Date:To:Cc:References:From:Subject:In-Reply-To;
+        b=hJU5kmyZJFKvYpNRNn/aAYWrckDrAdyS3SksJYChvc/eVdxtwpWzkRoZegCHSqhF7
+         WoWbMLV30F264Kmdj2Cc2CR6fMfsyC2WjL9SpSdYxgsBPMwXZoNkr4XsausxQXkk1d
+         uvNakWyJfgBecGvswfa6gn5b3URlzhsz4EIzs11g=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.164.205]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mk0NU-1o7oYv2wJs-00kPCA; Tue, 26
+ Apr 2022 22:53:01 +0200
+Message-ID: <87650cea-d190-9642-edf7-7dea42802dab@gmx.de>
+Date:   Tue, 26 Apr 2022 22:53:00 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-parisc@vger.kernel.org,
+        "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>
+References: <20220315184342.1064038-1-kuba@kernel.org>
+ <29f1daf3-e9f2-bbc5-f5e5-6334c040e3fa@gmx.de>
+ <20220315120432.2a72810d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <a66551f3-192a-70dc-4eb9-62090dbfe5fb@gmx.de>
+ <20220426055311.53dd8c31@kernel.org>
+From:   Helge Deller <deller@gmx.de>
+Subject: Re: [PATCH net-next] net: mark tulip obsolete
+In-Reply-To: <20220426055311.53dd8c31@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:X0IV/WfrtR368XxtRccpFCnzGxPtA2MY3lOjvPW7m85JTtNpXF+
+ 3LVzmyqbvtZUFL0scwTOZ4zaBy6lb9r8H4EtBIc1APbHQIMAec6/6OuNoCbpRgyUMghGWjU
+ FKBvt/zpkmerpkP1FmeD8H3MhsyXOPqKgNYcQtHicencKSQyJgdigpRGokH/pkZUc0PWFUX
+ myyMvrU3E4ccNi/0H3lLw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:+wwru0dGgfQ=:CnZYp12QAiS5o0eoFgZk1t
+ 4PZNGRHjQ9ss+8Jns/5LXu43TvSSToKRH8HTAjKS1dKn+zijWFx1TO0EC0r1WmtbuL1SRTcbG
+ GoQZKDb332gAyFGKJtceDbvI2PH8mKmvSkbQrt636jz4YE8tlzFDMzL6HLDZwu5LF7g3lpuP6
+ eBoJzx5YRb3emJn38KO0bJhESivPO7Gio0Q24xslxD7uQXbLRYVI0GByJxsKgzQcF82Av5F24
+ Dc6E3ddbaEFIKwmJSgmFK2k9pbWJ7+jpN6MnYFTTuvbHMLyoes3EXvvo0koOpw1e4WQchmSHq
+ XL3bUQtDCkYf6wOT+EFic+5oU3dR3iGUlcX7Bg3OoWGgWqAPZOR9CNsPuomNQsBL2rPLzd1mA
+ t7e6ZcT5S5R8JUwrPdsN4O3qALkIm6tgOBoyjD43NcWEj2jYGiRTzoVg3U4X/mY5DvmtzTTSJ
+ 5yHfbBz+0Rb5PcX/PHPs5rSgxfqM/O0n/3tzJj/gbw/Dn7ofKtwtetj6YJKyBFPJNAAnJp1OF
+ Q1AKfmjKzKHjVMMlpzJblzkvXL2WDSpf+MI97RZulw2eYC9zxjGyONib5OzergO+Qbq3PVTFS
+ jKZvvuW1Eji67vpDY3GxBLqVg68zen77Q1tZruB30z5p3BbisbzFaUBkKPIBJmu9zdfAKtgoF
+ 8AyTP9HaaMK2bz1Lvoec7rTCoWOi3ViMELDdeieVTkBer/CMQYJo922QG8vwQayhPAxu7GNYB
+ xU1hsTWtTd2FMUc34vZ0GN46VqL3SCKLjDTz8qBN4zYHHMwoGLD4PxOgkvyuZzxvv/PZzTSZf
+ p6g79VtR3LbgVrEoaBEN2aAtLTZg4uAFqc3RvkuZGzfYYda6aydrAGoyz1hMkEA26B7kRIVSf
+ xntAp+eV3ajDmkcz9yCdjNGKBKgrguyxfr8Q5qZR0KZOfvuYIelDDFBuBO6QD9xuo36Q0HzPG
+ EBZP+1XhQToZJcMKn9DeNi0qjW/HNvLoTkxBYkjwVYfSAJwyYFGKfI4cxThSTaCJ83ioBLHsG
+ 25OTdft46ZTlIOo99Y7FYvbodwOaJF67tSYiwJECFi9EnANkQ4rf/qxtPeZ4Wu0yvek7Hu6wy
+ gCDmFvInT6R0RU=
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jacob Keller <jacob.e.keller@intel.com>
+Hi Jakub,
 
-During ice_sriov_configure, if num_vfs is 0, we are being asked by the
-kernel to remove all VFs.
+On 4/26/22 14:53, Jakub Kicinski wrote:
+> On Tue, 15 Mar 2022 23:18:38 +0100 Helge Deller wrote:
+>> On 3/15/22 20:04, Jakub Kicinski wrote:
+>>> On Tue, 15 Mar 2022 19:44:24 +0100 Helge Deller wrote:
+>>>> On 3/15/22 19:43, Jakub Kicinski wrote:
+>>>>> It's ancient, an likely completely unused at this point.
+>>>>> Let's mark it obsolete to prevent refactoring.
+>>>>
+>>>> NAK.
+>>>>
+>>>> This driver is needed by nearly all PA-RISC machines.
+>>>
+>>> I was just trying to steer newcomers to code that's more relevant toda=
+y.
+>>
+>> That intention is ok, but "obsolete" means it's not used any more,
+>> and that's not true.
+>
+> Hi Helge! Which incarnation of tulip do you need for PA-RISC, exactly?
 
-The driver first de-initializes the snapshot before freeing all the VFs.
-This results in a use-after-free BUG detected by KASAN. The bug occurs
-because the snapshot can still be accessed until all VFs are removed.
+For parisc I have:
 
-Fix this by freeing all the VFs first before calling
-ice_mbx_deinit_snapshot.
+CONFIG_NET_TULIP=3Dy
+# CONFIG_DE2104X is not set
+CONFIG_TULIP=3Dy
+# CONFIG_TULIP_MWI is not set
+# CONFIG_TULIP_MMIO is not set
+# CONFIG_TULIP_NAPI is not set
+# CONFIG_DE4X5 is not set
+# CONFIG_WINBOND_840 is not set
+# CONFIG_DM9102 is not set
+# CONFIG_ULI526X is not set
+# CONFIG_PCMCIA_XIRCOM is not set
+# CONFIG_NET_VENDOR_DLINK is not set
+# CONFIG_NET_VENDOR_EMULEX is not set
 
-[  +0.032591] ==================================================================
-[  +0.000021] BUG: KASAN: use-after-free in ice_mbx_vf_state_handler+0x1c3/0x410 [ice]
-[  +0.000315] Write of size 28 at addr ffff889908eb6f28 by task kworker/55:2/1530996
+So not the DE4X5.
 
-[  +0.000029] CPU: 55 PID: 1530996 Comm: kworker/55:2 Kdump: loaded Tainted: G S        I       5.17.0-dirty #1
-[  +0.000022] Hardware name: Dell Inc. PowerEdge R740/0923K0, BIOS 1.6.13 12/17/2018
-[  +0.000013] Workqueue: ice ice_service_task [ice]
-[  +0.000279] Call Trace:
-[  +0.000012]  <TASK>
-[  +0.000011]  dump_stack_lvl+0x33/0x42
-[  +0.000030]  print_report.cold.13+0xb2/0x6b3
-[  +0.000028]  ? ice_mbx_vf_state_handler+0x1c3/0x410 [ice]
-[  +0.000295]  kasan_report+0xa5/0x120
-[  +0.000026]  ? __switch_to_asm+0x21/0x70
-[  +0.000024]  ? ice_mbx_vf_state_handler+0x1c3/0x410 [ice]
-[  +0.000298]  kasan_check_range+0x183/0x1e0
-[  +0.000019]  memset+0x1f/0x40
-[  +0.000018]  ice_mbx_vf_state_handler+0x1c3/0x410 [ice]
-[  +0.000304]  ? ice_conv_link_speed_to_virtchnl+0x160/0x160 [ice]
-[  +0.000297]  ? ice_vsi_dis_spoofchk+0x40/0x40 [ice]
-[  +0.000305]  ice_is_malicious_vf+0x1aa/0x250 [ice]
-[  +0.000303]  ? ice_restore_all_vfs_msi_state+0x160/0x160 [ice]
-[  +0.000297]  ? __mutex_unlock_slowpath.isra.15+0x410/0x410
-[  +0.000022]  ? ice_debug_cq+0xb7/0x230 [ice]
-[  +0.000273]  ? __kasan_slab_alloc+0x2f/0x90
-[  +0.000022]  ? memset+0x1f/0x40
-[  +0.000017]  ? do_raw_spin_lock+0x119/0x1d0
-[  +0.000022]  ? rwlock_bug.part.2+0x60/0x60
-[  +0.000024]  __ice_clean_ctrlq+0x3a6/0xd60 [ice]
-[  +0.000273]  ? newidle_balance+0x5b1/0x700
-[  +0.000026]  ? ice_print_link_msg+0x2f0/0x2f0 [ice]
-[  +0.000271]  ? update_cfs_group+0x1b/0x140
-[  +0.000018]  ? load_balance+0x1260/0x1260
-[  +0.000022]  ? ice_process_vflr_event+0x27/0x130 [ice]
-[  +0.000301]  ice_service_task+0x136e/0x1470 [ice]
-[  +0.000281]  process_one_work+0x3b4/0x6c0
-[  +0.000030]  worker_thread+0x65/0x660
-[  +0.000023]  ? __kthread_parkme+0xe4/0x100
-[  +0.000021]  ? process_one_work+0x6c0/0x6c0
-[  +0.000020]  kthread+0x179/0x1b0
-[  +0.000018]  ? kthread_complete_and_exit+0x20/0x20
-[  +0.000022]  ret_from_fork+0x22/0x30
-[  +0.000026]  </TASK>
+> I'd like to try to remove DE4X5, if that's not the one you need
+> (getting rid of virt_to_bus()-using drivers).
 
-[  +0.000018] Allocated by task 10742:
-[  +0.000013]  kasan_save_stack+0x1c/0x40
-[  +0.000018]  __kasan_kmalloc+0x84/0xa0
-[  +0.000016]  kmem_cache_alloc_trace+0x16c/0x2e0
-[  +0.000015]  intel_iommu_probe_device+0xeb/0x860
-[  +0.000015]  __iommu_probe_device+0x9a/0x2f0
-[  +0.000016]  iommu_probe_device+0x43/0x270
-[  +0.000015]  iommu_bus_notifier+0xa7/0xd0
-[  +0.000015]  blocking_notifier_call_chain+0x90/0xc0
-[  +0.000017]  device_add+0x5f3/0xd70
-[  +0.000014]  pci_device_add+0x404/0xa40
-[  +0.000015]  pci_iov_add_virtfn+0x3b0/0x550
-[  +0.000016]  sriov_enable+0x3bb/0x600
-[  +0.000013]  ice_ena_vfs+0x113/0xa79 [ice]
-[  +0.000293]  ice_sriov_configure.cold.17+0x21/0xe0 [ice]
-[  +0.000291]  sriov_numvfs_store+0x160/0x200
-[  +0.000015]  kernfs_fop_write_iter+0x1db/0x270
-[  +0.000018]  new_sync_write+0x21d/0x330
-[  +0.000013]  vfs_write+0x376/0x410
-[  +0.000013]  ksys_write+0xba/0x150
-[  +0.000012]  do_syscall_64+0x3a/0x80
-[  +0.000012]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+I've CC'ed the linux-alpha mailing list, as the DE4X5 driver might be
+needed there, so removing it completely might not be the best idea.
 
-[  +0.000028] Freed by task 10742:
-[  +0.000011]  kasan_save_stack+0x1c/0x40
-[  +0.000015]  kasan_set_track+0x21/0x30
-[  +0.000016]  kasan_set_free_info+0x20/0x30
-[  +0.000012]  __kasan_slab_free+0x104/0x170
-[  +0.000016]  kfree+0x9b/0x470
-[  +0.000013]  devres_destroy+0x1c/0x20
-[  +0.000015]  devm_kfree+0x33/0x40
-[  +0.000012]  ice_mbx_deinit_snapshot+0x39/0x70 [ice]
-[  +0.000295]  ice_sriov_configure+0xb0/0x260 [ice]
-[  +0.000295]  sriov_numvfs_store+0x1bc/0x200
-[  +0.000015]  kernfs_fop_write_iter+0x1db/0x270
-[  +0.000016]  new_sync_write+0x21d/0x330
-[  +0.000012]  vfs_write+0x376/0x410
-[  +0.000012]  ksys_write+0xba/0x150
-[  +0.000012]  do_syscall_64+0x3a/0x80
-[  +0.000012]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+But since you want to remove virt_to_bus()....
+It seems this virt_to_bus() call is used for really old x86 machines/cards=
+,
+which probably aren't supported any longer.
 
-[  +0.000024] Last potentially related work creation:
-[  +0.000010]  kasan_save_stack+0x1c/0x40
-[  +0.000016]  __kasan_record_aux_stack+0x98/0xa0
-[  +0.000013]  insert_work+0x34/0x160
-[  +0.000015]  __queue_work+0x20e/0x650
-[  +0.000016]  queue_work_on+0x4c/0x60
-[  +0.000015]  nf_nat_masq_schedule+0x297/0x2e0 [nf_nat]
-[  +0.000034]  masq_device_event+0x5a/0x60 [nf_nat]
-[  +0.000031]  raw_notifier_call_chain+0x5f/0x80
-[  +0.000017]  dev_close_many+0x1d6/0x2c0
-[  +0.000015]  unregister_netdevice_many+0x4e3/0xa30
-[  +0.000015]  unregister_netdevice_queue+0x192/0x1d0
-[  +0.000014]  iavf_remove+0x8f9/0x930 [iavf]
-[  +0.000058]  pci_device_remove+0x65/0x110
-[  +0.000015]  device_release_driver_internal+0xf8/0x190
-[  +0.000017]  pci_stop_bus_device+0xb5/0xf0
-[  +0.000014]  pci_stop_and_remove_bus_device+0xe/0x20
-[  +0.000016]  pci_iov_remove_virtfn+0x19c/0x230
-[  +0.000015]  sriov_disable+0x4f/0x170
-[  +0.000014]  ice_free_vfs+0x9a/0x490 [ice]
-[  +0.000306]  ice_sriov_configure+0xb8/0x260 [ice]
-[  +0.000294]  sriov_numvfs_store+0x1bc/0x200
-[  +0.000015]  kernfs_fop_write_iter+0x1db/0x270
-[  +0.000016]  new_sync_write+0x21d/0x330
-[  +0.000012]  vfs_write+0x376/0x410
-[  +0.000012]  ksys_write+0xba/0x150
-[  +0.000012]  do_syscall_64+0x3a/0x80
-[  +0.000012]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+See drivers/net/ethernet/dec/tulip/de4x5.c:
+...
+#if !defined(__alpha__) && !defined(__powerpc__) && !defined(CONFIG_SPARC)=
+ && !defined(DE4X5_DO_MEMCPY)
+...
+    tmp =3D virt_to_bus(p->data);
+...
 
-[  +0.000025] The buggy address belongs to the object at ffff889908eb6f00
-               which belongs to the cache kmalloc-96 of size 96
-[  +0.000016] The buggy address is located 40 bytes inside of
-               96-byte region [ffff889908eb6f00, ffff889908eb6f60)
+Maybe you could simply remove the part inside #if...#else
+and insert a pr_err() instead (and return NULL)?
 
-[  +0.000026] The buggy address belongs to the physical page:
-[  +0.000010] page:00000000b7e99a2e refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1908eb6
-[  +0.000016] flags: 0x57ffffc0000200(slab|node=1|zone=2|lastcpupid=0x1fffff)
-[  +0.000024] raw: 0057ffffc0000200 ffffea0069d9fd80 dead000000000002 ffff88810004c780
-[  +0.000015] raw: 0000000000000000 0000000000200020 00000001ffffffff 0000000000000000
-[  +0.000009] page dumped because: kasan: bad access detected
-
-[  +0.000016] Memory state around the buggy address:
-[  +0.000012]  ffff889908eb6e00: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
-[  +0.000014]  ffff889908eb6e80: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
-[  +0.000014] >ffff889908eb6f00: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
-[  +0.000011]                                   ^
-[  +0.000013]  ffff889908eb6f80: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
-[  +0.000013]  ffff889908eb7000: fa fb fb fb fb fb fb fb fc fc fc fc fa fb fb fb
-[  +0.000012] ==================================================================
-
-Fixes: 0891c89674e8 ("ice: warn about potentially malicious VFs")
-Reported-by: Slawomir Laba <slawomirx.laba@intel.com>
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_sriov.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_sriov.c b/drivers/net/ethernet/intel/ice/ice_sriov.c
-index 8915a9d39e36..0c438219f7a3 100644
---- a/drivers/net/ethernet/intel/ice/ice_sriov.c
-+++ b/drivers/net/ethernet/intel/ice/ice_sriov.c
-@@ -1046,8 +1046,8 @@ int ice_sriov_configure(struct pci_dev *pdev, int num_vfs)
- 
- 	if (!num_vfs) {
- 		if (!pci_vfs_assigned(pdev)) {
--			ice_mbx_deinit_snapshot(&pf->hw);
- 			ice_free_vfs(pf);
-+			ice_mbx_deinit_snapshot(&pf->hw);
- 			if (pf->lag)
- 				ice_enable_lag(pf->lag);
- 			return 0;
--- 
-2.31.1
-
+Helge
