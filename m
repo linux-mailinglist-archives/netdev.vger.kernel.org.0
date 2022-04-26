@@ -2,54 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CDCB1510A85
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 22:33:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51DFC510A86
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 22:33:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354989AbiDZUgJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 16:36:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42640 "EHLO
+        id S1354995AbiDZUgM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 16:36:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354996AbiDZUgH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 16:36:07 -0400
+        with ESMTP id S1354998AbiDZUgI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 16:36:08 -0400
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD6BF1A863E
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 13:32:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C8D1A8C0E
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 13:32:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651005178; x=1682541178;
+  t=1651005179; x=1682541179;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=y/BTQY3r/o4cv1h3saCYo8IqE3G6X+o238EQc5B8Ldw=;
-  b=PpTJPF9unbYJEiwodY3RzAv6kUgIgTZ+yThqAlpWiPIqcELbjoQFA87U
-   B1BoOWG0K2vDKbSmFXXZSknELKJFLBkQgu9x4ntcQMj0OpzqAAW6bya/D
-   3xfH0MNeLXbyq1I6/K3heT3unpArJAoLyOq/izoS2+4/mGLrD1su0IK37
-   3dSBFvdlzAevffJJbDKRRx/nqSFW9GgMKCGVgH6DqF22QoGO6bjDqhDv5
-   2kVkCdbL1yHiJeNjSurW0OzX0gxJMEkr3NMoz7jxgbN9K5k6pydPsttyC
-   aSYAmKQh1OjxuC0TfnsxE1R45G0zWC2kg+eFRmhOB6XSDJT7r3zyaXFmU
+  bh=cSSLaxBacTn3ItKqsi1igTEj40iLiILdXMEk/YygOJ4=;
+  b=KWZJJOPm9Y3DA62yKF+gZ8lyXKdMsfl04+p4Bd4mQYS0cs7mgITBuZYC
+   uEdtwGpuwq0gMPNHQrTuFTpPufVD5h4PgzIeIbmnFg0cVYmX5T3HkQBGQ
+   HFE7GiplTH3RxVa+O1KPp1vPoXR7G3RCBYsnflPokmlz8FLaKeXDgWB+A
+   Et7+ZT9QvcBvPdkKgxQKR9g3Fb/zCUR43+hod1nGk4qDSjUUByC1filmn
+   RtPtEZBL0WIW5FzGjiyU2AqUdbZo0U7XUrAMpzlgl4KIGbiTyvaabeRUT
+   JBnqIop36Zagu2rNowS8W0uHJ+caBFbu0PLoHB7T26SL/TqCXOGJ8tBXe
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="253090824"
+X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="253090827"
 X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
-   d="scan'208";a="253090824"
+   d="scan'208";a="253090827"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
   by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 13:32:57 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; 
-   d="scan'208";a="617174555"
+   d="scan'208";a="617174558"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga008.fm.intel.com with ESMTP; 26 Apr 2022 13:32:57 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
-Cc:     Ivan Vecera <ivecera@redhat.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, Fei Liu <feliu@redhat.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net 2/4] ice: Protect vf_state check by cfg_lock in ice_vc_process_vf_msg()
-Date:   Tue, 26 Apr 2022 13:30:16 -0700
-Message-Id: <20220426203018.3790378-3-anthony.l.nguyen@intel.com>
+Cc:     Petr Oros <poros@redhat.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com, Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH net 3/4] ice: wait 5 s for EMP reset after firmware flash
+Date:   Tue, 26 Apr 2022 13:30:17 -0700
+Message-Id: <20220426203018.3790378-4-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220426203018.3790378-1-anthony.l.nguyen@intel.com>
 References: <20220426203018.3790378-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
@@ -61,92 +60,107 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ivan Vecera <ivecera@redhat.com>
+From: Petr Oros <poros@redhat.com>
 
-Previous patch labelled "ice: Fix incorrect locking in
-ice_vc_process_vf_msg()"  fixed an issue with ignored messages
-sent by VF driver but a small race window still left.
+We need to wait 5 s for EMP reset after firmware flash. Code was extracted
+from OOT driver (ice v1.8.3 downloaded from sourceforge). Without this
+wait, fw_activate let card in inconsistent state and recoverable only
+by second flash/activate. Flash was tested on these fw's:
+From -> To
+ 3.00 -> 3.10/3.20
+ 3.10 -> 3.00/3.20
+ 3.20 -> 3.00/3.10
 
-Recently caught trace during 'ip link set ... vf 0 vlan ...' operation:
+Reproducer:
+[root@host ~]# devlink dev flash pci/0000:ca:00.0 file E810_XXVDA4_FH_O_SEC_FW_1p6p1p9_NVM_3p10_PLDMoMCTP_0.11_8000AD7B.bin
+Preparing to flash
+[fw.mgmt] Erasing
+[fw.mgmt] Erasing done
+[fw.mgmt] Flashing 100%
+[fw.mgmt] Flashing done 100%
+[fw.undi] Erasing
+[fw.undi] Erasing done
+[fw.undi] Flashing 100%
+[fw.undi] Flashing done 100%
+[fw.netlist] Erasing
+[fw.netlist] Erasing done
+[fw.netlist] Flashing 100%
+[fw.netlist] Flashing done 100%
+Activate new firmware by devlink reload
+[root@host ~]# devlink dev reload pci/0000:ca:00.0 action fw_activate
+reload_actions_performed:
+    fw_activate
+[root@host ~]# ip link show ens7f0
+71: ens7f0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
+    link/ether b4:96:91:dc:72:e0 brd ff:ff:ff:ff:ff:ff
+    altname enp202s0f0
 
-[ 7332.995625] ice 0000:3b:00.0: Clearing port VLAN on VF 0
-[ 7333.001023] iavf 0000:3b:01.0: Reset indication received from the PF
-[ 7333.007391] iavf 0000:3b:01.0: Scheduling reset task
-[ 7333.059575] iavf 0000:3b:01.0: PF returned error -5 (IAVF_ERR_PARAM) to our request 3
-[ 7333.059626] ice 0000:3b:00.0: Invalid message from VF 0, opcode 3, len 4, error -1
+dmesg after flash:
+[   55.120788] ice: Copyright (c) 2018, Intel Corporation.
+[   55.274734] ice 0000:ca:00.0: Get PHY capabilities failed status = -5, continuing anyway
+[   55.569797] ice 0000:ca:00.0: The DDP package was successfully loaded: ICE OS Default Package version 1.3.28.0
+[   55.603629] ice 0000:ca:00.0: Get PHY capability failed.
+[   55.608951] ice 0000:ca:00.0: ice_init_nvm_phy_type failed: -5
+[   55.647348] ice 0000:ca:00.0: PTP init successful
+[   55.675536] ice 0000:ca:00.0: DCB is enabled in the hardware, max number of TCs supported on this port are 8
+[   55.685365] ice 0000:ca:00.0: FW LLDP is disabled, DCBx/LLDP in SW mode.
+[   55.692179] ice 0000:ca:00.0: Commit DCB Configuration to the hardware
+[   55.701382] ice 0000:ca:00.0: 126.024 Gb/s available PCIe bandwidth, limited by 16.0 GT/s PCIe x8 link at 0000:c9:02.0 (capable of 252.048 Gb/s with 16.0 GT/s PCIe x16 link)
+Reboot doesn’t help, only second flash/activate with OOT or patched
+driver put card back in consistent state.
 
-Setting of VLAN for VF causes a reset of the affected VF using
-ice_reset_vf() function that runs with cfg_lock taken:
+After patch:
+[root@host ~]# devlink dev flash pci/0000:ca:00.0 file E810_XXVDA4_FH_O_SEC_FW_1p6p1p9_NVM_3p10_PLDMoMCTP_0.11_8000AD7B.bin
+Preparing to flash
+[fw.mgmt] Erasing
+[fw.mgmt] Erasing done
+[fw.mgmt] Flashing 100%
+[fw.mgmt] Flashing done 100%
+[fw.undi] Erasing
+[fw.undi] Erasing done
+[fw.undi] Flashing 100%
+[fw.undi] Flashing done 100%
+[fw.netlist] Erasing
+[fw.netlist] Erasing done
+[fw.netlist] Flashing 100%
+[fw.netlist] Flashing done 100%
+Activate new firmware by devlink reload
+[root@host ~]# devlink dev reload pci/0000:ca:00.0 action fw_activate
+reload_actions_performed:
+    fw_activate
+[root@host ~]# ip link show ens7f0
+19: ens7f0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
+    link/ether b4:96:91:dc:72:e0 brd ff:ff:ff:ff:ff:ff
+    altname enp202s0f0
 
-1. ice_notify_vf_reset() informs IAVF driver that reset is needed and
-   IAVF schedules its own reset procedure
-2. Bit ICE_VF_STATE_DIS is set in vf->vf_state
-3. Misc initialization steps
-4. ice_sriov_post_vsi_rebuild() -> ice_vf_set_initialized() and that
-   clears ICE_VF_STATE_DIS in vf->vf_state
-
-Step 3 is mentioned race window because IAVF reset procedure runs in
-parallel and one of its step is sending of VIRTCHNL_OP_GET_VF_RESOURCES
-message (opcode==3). This message is handled in ice_vc_process_vf_msg()
-and if it is received during the mentioned race window then it's
-marked as invalid and error is returned to VF driver.
-
-Protect vf_state check in ice_vc_process_vf_msg() by cfg_lock to avoid
-this race condition.
-
-Fixes: e6ba5273d4ed ("ice: Fix race conditions between virtchnl handling and VF ndo ops")
-Tested-by: Fei Liu <feliu@redhat.com>
-Signed-off-by: Ivan Vecera <ivecera@redhat.com>
-Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Fixes: 399e27dbbd9e94 ("ice: support immediate firmware activation via devlink reload")
+Signed-off-by: Petr Oros <poros@redhat.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_virtchnl.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_main.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl.c b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-index 5612c032f15a..b72606c9e6d0 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-@@ -3625,6 +3625,8 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event)
- 		return;
- 	}
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 5b1198859da7..9a0a358a15c2 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -6929,12 +6929,15 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
  
-+	mutex_lock(&vf->cfg_lock);
+ 	dev_dbg(dev, "rebuilding PF after reset_type=%d\n", reset_type);
+ 
++#define ICE_EMP_RESET_SLEEP_MS 5000
+ 	if (reset_type == ICE_RESET_EMPR) {
+ 		/* If an EMP reset has occurred, any previously pending flash
+ 		 * update will have completed. We no longer know whether or
+ 		 * not the NVM update EMP reset is restricted.
+ 		 */
+ 		pf->fw_emp_reset_disabled = false;
 +
- 	/* Check if VF is disabled. */
- 	if (test_bit(ICE_VF_STATE_DIS, vf->vf_states)) {
- 		err = -EPERM;
-@@ -3648,19 +3650,14 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event)
- 				      NULL, 0);
- 		dev_err(dev, "Invalid message from VF %d, opcode %d, len %d, error %d\n",
- 			vf_id, v_opcode, msglen, err);
--		ice_put_vf(vf);
--		return;
-+		goto finish;
++		msleep(ICE_EMP_RESET_SLEEP_MS);
  	}
  
--	mutex_lock(&vf->cfg_lock);
--
- 	if (!ice_vc_is_opcode_allowed(vf, v_opcode)) {
- 		ice_vc_send_msg_to_vf(vf, v_opcode,
- 				      VIRTCHNL_STATUS_ERR_NOT_SUPPORTED, NULL,
- 				      0);
--		mutex_unlock(&vf->cfg_lock);
--		ice_put_vf(vf);
--		return;
-+		goto finish;
- 	}
- 
- 	switch (v_opcode) {
-@@ -3773,6 +3770,7 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event)
- 			 vf_id, v_opcode, err);
- 	}
- 
-+finish:
- 	mutex_unlock(&vf->cfg_lock);
- 	ice_put_vf(vf);
- }
+ 	err = ice_init_all_ctrlq(hw);
 -- 
 2.31.1
 
