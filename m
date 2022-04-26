@@ -2,144 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43FFE50F2AA
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 09:36:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8959650F2BA
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 09:38:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344079AbiDZHjh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 03:39:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48026 "EHLO
+        id S234970AbiDZHlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 03:41:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344221AbiDZHjO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 03:39:14 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1C1CB1D1;
-        Tue, 26 Apr 2022 00:36:06 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KnYTw3jHmzCsQV;
-        Tue, 26 Apr 2022 15:31:32 +0800 (CST)
-Received: from [10.67.111.192] (10.67.111.192) by
- kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Apr 2022 15:36:02 +0800
-Message-ID: <79fe5bb5-c55c-7ddc-640f-50bf8bea7f0b@huawei.com>
-Date:   Tue, 26 Apr 2022 15:36:02 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH bpf-next v3 2/7] ftrace: Fix deadloop caused by direct
- call in ftrace selftest
-Content-Language: en-US
-To:     Steven Rostedt <rostedt@goodmis.org>
-CC:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
+        with ESMTP id S229825AbiDZHld (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 03:41:33 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6ED16DFA0
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 00:38:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650958706;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=LzpJo1iu/LzOA4G9nSxWsey/leg3HpUfxIQwmJi9HX0=;
+        b=eXvOCrZDfZB7d3RhT/YiEp5B0myj0xxvQyL+PFDtTINjciJD2ceCvOZbueh9LBzVJFdeXo
+        8wdzrxSVfvq5d506taMyKSdxLnytPeg052sFPsf1vppl3KA6gL1qiFTVWdJGu1tJIQW05h
+        p9ux9CMAHZIVDbC4p/5MYU+vjKpTUOg=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-612-hqo09vdfNjqf7mJGkRbRLw-1; Tue, 26 Apr 2022 03:38:25 -0400
+X-MC-Unique: hqo09vdfNjqf7mJGkRbRLw-1
+Received: by mail-wr1-f69.google.com with SMTP id s14-20020adfa28e000000b0020ac7532f08so2824412wra.15
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 00:38:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=LzpJo1iu/LzOA4G9nSxWsey/leg3HpUfxIQwmJi9HX0=;
+        b=zpgAbmKqJt2bImQiBTrimGf+HYkUKLi5DLL8wH1jrICV2nFwiIgQ0EqUcxGP+u+2H5
+         ugIDYQiBNZsxR643AxAxTsrpsTAkHiT2D/jaT8k7MBX/puGd0Nc4LD50e2UhgggmtQDs
+         RxSdLVzepNNUP6X82qMPcTLbWfK2KMdSy7hFFxfshSMRHzT0n/fj6coQZaMJHNmt9ZaZ
+         KrVhdmlMnm7TPNCJHqaW6eC9VlClrIsPbr2Jh2xCwEuWQeUUUyDJLHyxORdOWNH1wB5W
+         ARZbh4DXUyCTdayfir5Vn5qC5FDWp8K5YxbAnqfHtVeyhNl0bi2m+6IHGD+C4FzlRz2m
+         KK5g==
+X-Gm-Message-State: AOAM531eLgH6chQwetB2Ra4e53bOR7s2bXGaRsTWXNP7/ZsEWRMbprAN
+        3V73I2zoNBt1YDriY7moGk7riqCYfnW4lpn3FHzCyGZDLaGPHuH4Lf8DcWdyeoDy+mD9lZmARnw
+        Nu0nivnrXSytFKo2V
+X-Received: by 2002:adf:d1ea:0:b0:20a:2823:9e22 with SMTP id g10-20020adfd1ea000000b0020a28239e22mr17341560wrd.332.1650958704103;
+        Tue, 26 Apr 2022 00:38:24 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzddT9w2YcT8YUXgopB1FrF9dk0mdAvpU8PZNJZabQUkQh3Ps05HmayEF++VL1kh8nTx2PkoQ==
+X-Received: by 2002:adf:d1ea:0:b0:20a:2823:9e22 with SMTP id g10-20020adfd1ea000000b0020a28239e22mr17341541wrd.332.1650958703836;
+        Tue, 26 Apr 2022 00:38:23 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-117-160.dyn.eolo.it. [146.241.117.160])
+        by smtp.gmail.com with ESMTPSA id m1-20020a1ca301000000b003929c4bf250sm13506607wme.13.2022.04.26.00.38.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 00:38:23 -0700 (PDT)
+Message-ID: <2c092f98a8fe1702173fe2b4999811dd2263faf3.camel@redhat.com>
+Subject: Re: [PATCH v2 net-next] net: generalize skb freeing deferral to
+ per-cpu lists
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        <hpa@zytor.com>, Shuah Khan <shuah@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Daniel Kiss <daniel.kiss@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Mark Brown <broonie@kernel.org>,
-        Delyan Kratunov <delyank@fb.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>
-References: <20220424154028.1698685-1-xukuohai@huawei.com>
- <20220424154028.1698685-3-xukuohai@huawei.com>
- <20220425110512.538ce0bf@gandalf.local.home>
-From:   Xu Kuohai <xukuohai@huawei.com>
-In-Reply-To: <20220425110512.538ce0bf@gandalf.local.home>
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>, Eric Dumazet <edumazet@google.com>
+Date:   Tue, 26 Apr 2022 09:38:22 +0200
+In-Reply-To: <20220422201237.416238-1-eric.dumazet@gmail.com>
+References: <20220422201237.416238-1-eric.dumazet@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.111.192]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemi500013.china.huawei.com (7.221.188.120)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-6.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/25/2022 11:05 PM, Steven Rostedt wrote:
-> On Sun, 24 Apr 2022 11:40:23 -0400
-> Xu Kuohai <xukuohai@huawei.com> wrote:
-> 
->> diff --git a/kernel/trace/trace_selftest.c b/kernel/trace/trace_selftest.c
->> index abcadbe933bb..d2eff2b1d743 100644
->> --- a/kernel/trace/trace_selftest.c
->> +++ b/kernel/trace/trace_selftest.c
->> @@ -785,8 +785,24 @@ static struct fgraph_ops fgraph_ops __initdata  = {
->>  };
->>  
->>  #ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
->> +#ifdef CONFIG_ARM64
-> 
-> Please find a way to add this in arm specific code. Do not add architecture
-> defines in generic code.
-> 
-> You could add:
-> 
-> #ifndef ARCH_HAVE_FTRACE_DIRECT_TEST_FUNC
-> noinline __noclone static void trace_direct_tramp(void) { }
-> #endif
-> 
-> here, and in arch/arm64/include/ftrace.h
-> 
-> #define ARCH_HAVE_FTRACE_DIRECT_TEST_FUNC
-> 
-> and define your test function in the arm64 specific code.
-> 
-> -- Steve
-> 
-> 
 
-will move this to arch/arm64/ in v4, thanks.
+Hello,
 
-> 
-> 
->> +extern void trace_direct_tramp(void);
->> +
->> +asm (
->> +"	.pushsection	.text, \"ax\", @progbits\n"
->> +"	.type		trace_direct_tramp, %function\n"
->> +"	.global		trace_direct_tramp\n"
->> +"trace_direct_tramp:"
->> +"	mov	x10, x30\n"
->> +"	mov	x30, x9\n"
->> +"	ret	x10\n"
->> +"	.size		trace_direct_tramp, .-trace_direct_tramp\n"
->> +"	.popsection\n"
->> +);
->> +#else
->>  noinline __noclone static void trace_direct_tramp(void) { }
->>  #endif
->> +#endif
->>  
->>  /*
->>   * Pretty much the same than for the function tracer from which the selftest
-> 
-> .
+I'm sorry for the late feedback. I have only a possibly relevant point
+below.
+
+On Fri, 2022-04-22 at 13:12 -0700, Eric Dumazet wrote:
+[...]
+> @@ -6571,6 +6577,28 @@ static int napi_threaded_poll(void *data)
+>  	return 0;
+>  }
+>  
+> +static void skb_defer_free_flush(struct softnet_data *sd)
+> +{
+> +	struct sk_buff *skb, *next;
+> +	unsigned long flags;
+> +
+> +	/* Paired with WRITE_ONCE() in skb_attempt_defer_free() */
+> +	if (!READ_ONCE(sd->defer_list))
+> +		return;
+> +
+> +	spin_lock_irqsave(&sd->defer_lock, flags);
+> +	skb = sd->defer_list;
+
+I *think* that this read can possibly be fused with the previous one,
+and another READ_ONCE() should avoid that.
+
+BTW it looks like this version gives slightly better results than the
+previous one, perhpas due to the single-liked list usage?
+
+Thanks!
+
+Paolo
 
