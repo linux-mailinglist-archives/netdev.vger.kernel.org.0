@@ -2,105 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D0D45510862
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 21:05:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C5A65108BE
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 21:13:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353936AbiDZTG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 15:06:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46170 "EHLO
+        id S245385AbiDZTQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 15:16:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353949AbiDZTGb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 15:06:31 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A6D819B57E;
-        Tue, 26 Apr 2022 12:03:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 407D3CE20E9;
-        Tue, 26 Apr 2022 19:03:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FAFCC385B4;
-        Tue, 26 Apr 2022 19:03:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650999786;
-        bh=zlgTwDPqMHGwCom7yT3bg2E8DypAoRsb8SCA47wPt4w=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JoK0DhuVTaN1yW3juFiH7mycJ9T5TEGQS3pVh3FxE0GHpP5o/P/YuDXx5aCcqhK4r
-         sLN6QHe15bjBlTGvJ2LhBQrlDBU9nhHjIrdzA05MgFpezK0+K03HlS48CB3mq1I631
-         xhaETGL4JR43t9dOa+KXfXKP9CmmJuKgCPKu9U3OFFt2sFMb6k8wSZucOLdxVjQp0z
-         Y8wJkthGR6P0EiQMGPL18leX0XtfD+QktjHpAVtSZG+OIVmAsAC4TbPjhtIYIYrhUn
-         CuLHJmJ0iRGOBh2zN/T11siNra12Bt/ya1+Dl106bPe+M5+KmPYnrMWEe0na8JJGr9
-         9ZmhCaJd/IkUQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duoming Zhou <duoming@zju.edu.cn>, Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, jes@trained-monkey.org,
-        davem@davemloft.net, kuba@kernel.org, linux-hippi@sunsite.dk,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 2/3] drivers: net: hippi: Fix deadlock in rr_close()
-Date:   Tue, 26 Apr 2022 15:03:02 -0400
-Message-Id: <20220426190304.2351976-2-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220426190304.2351976-1-sashal@kernel.org>
-References: <20220426190304.2351976-1-sashal@kernel.org>
+        with ESMTP id S233575AbiDZTQc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 15:16:32 -0400
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A27F319D493;
+        Tue, 26 Apr 2022 12:13:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1651000375;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=oEWQcep1X9f8aeHfmFWOpt8FIWNWJQ/z5b28ytC9iM4=;
+    b=Gle9f4+77olBM8T1Dg+EtcQ3ABOx2sXkoWDUbHvGXHzqgWZZraj5mCu1e1WIgc432n
+    mZe3DdFURB3gP8SxkHT63006HZMWtgIzFIyXIsWQ372PL4VJlgmkrEEtz2n6GJOEGHmL
+    j2+S7AEoUvotBFcaetYlFrS2+XyNRlzFgUPAQ64daplpDTGRy3AaDH9nubcSDyjxDdxK
+    j/71Pzw8McYvUXX2Vnz8cTFA0ZxK8N/dmhKt+oe8JCuY10dY+s1dPPg3+iYY08DEWBCo
+    Uag2nJuwR+KfU5aB8vVcyOJIwSgX79tGQrGZManG97a9LAqh2JVlzJC9UP7Gvb7KHE6M
+    MTSA==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdBqPeOug2krLFRKxw=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a00:6020:1cff:5b04::b82]
+    by smtp.strato.de (RZmta 47.42.2 AUTH)
+    with ESMTPSA id 4544c9y3QJCsKBL
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Tue, 26 Apr 2022 21:12:54 +0200 (CEST)
+Message-ID: <caaa6059-6172-e562-e48e-5987884052b9@hartkopp.net>
+Date:   Tue, 26 Apr 2022 21:12:48 +0200
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH net] drivers: net: can: Fix deadlock in grcan_close()
+Content-Language: en-US
+To:     Duoming Zhou <duoming@zju.edu.cn>, linux-kernel@vger.kernel.org
+Cc:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20220425042400.66517-1-duoming@zju.edu.cn>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+In-Reply-To: <20220425042400.66517-1-duoming@zju.edu.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit bc6de2878429e85c1f1afaa566f7b5abb2243eef ]
 
-There is a deadlock in rr_close(), which is shown below:
+On 25.04.22 06:24, Duoming Zhou wrote:
+> There are deadlocks caused by del_timer_sync(&priv->hang_timer)
+> and del_timer_sync(&priv->rr_timer) in grcan_close(), one of
+> the deadlocks are shown below:
+> 
+>     (Thread 1)              |      (Thread 2)
+>                             | grcan_reset_timer()
+> grcan_close()              |  mod_timer()
+>   spin_lock_irqsave() //(1) |  (wait a time)
+>   ...                       | grcan_initiate_running_reset()
+>   del_timer_sync()          |  spin_lock_irqsave() //(2)
+>   (wait timer to stop)      |  ...
+> 
+> We hold priv->lock in position (1) of thread 1 and use
+> del_timer_sync() to wait timer to stop, but timer handler
+> also need priv->lock in position (2) of thread 2.
+> As a result, grcan_close() will block forever.
+> 
+> This patch extracts del_timer_sync() from the protection of
+> spin_lock_irqsave(), which could let timer handler to obtain
+> the needed lock.
+> 
+> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+> ---
+>   drivers/net/can/grcan.c | 2 ++
+>   1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/net/can/grcan.c b/drivers/net/can/grcan.c
+> index d0c5a7a60da..1189057b5d6 100644
+> --- a/drivers/net/can/grcan.c
+> +++ b/drivers/net/can/grcan.c
+> @@ -1102,8 +1102,10 @@ static int grcan_close(struct net_device *dev)
+>   
+>   	priv->closing = true;
+>   	if (priv->need_txbug_workaround) {
+> +		spin_unlock_irqrestore(&priv->lock, flags);
+>   		del_timer_sync(&priv->hang_timer);
+>   		del_timer_sync(&priv->rr_timer);
+> +		spin_lock_irqsave(&priv->lock, flags);
 
-   (Thread 1)                |      (Thread 2)
-                             | rr_open()
-rr_close()                   |  add_timer()
- spin_lock_irqsave() //(1)   |  (wait a time)
- ...                         | rr_timer()
- del_timer_sync()            |  spin_lock_irqsave() //(2)
- (wait timer to stop)        |  ...
+It looks weird to unlock and re-lock the operations like this. This 
+breaks the intended locking for the closing process.
 
-We hold rrpriv->lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need rrpriv->lock in position (2) of thread 2.
-As a result, rr_close() will block forever.
+Isn't there any possibility to e.g. move that entire if-section before 
+the lock?
 
-This patch extracts del_timer_sync() from the protection of
-spin_lock_irqsave(), which could let timer handler to obtain
-the needed lock.
+>   	}
+>   	netif_stop_queue(dev);
+>   	grcan_stop_hardware(dev);
 
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417125519.82618-1-duoming@zju.edu.cn
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/hippi/rrunner.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/net/hippi/rrunner.c b/drivers/net/hippi/rrunner.c
-index 6f3519123eb6..0e1a422d9567 100644
---- a/drivers/net/hippi/rrunner.c
-+++ b/drivers/net/hippi/rrunner.c
-@@ -1354,7 +1354,9 @@ static int rr_close(struct net_device *dev)
- 
- 	rrpriv->fw_running = 0;
- 
-+	spin_unlock_irqrestore(&rrpriv->lock, flags);
- 	del_timer_sync(&rrpriv->timer);
-+	spin_lock_irqsave(&rrpriv->lock, flags);
- 
- 	writel(0, &regs->TxPi);
- 	writel(0, &regs->IpRxPi);
--- 
-2.35.1
-
+Regards,
+Oliver
