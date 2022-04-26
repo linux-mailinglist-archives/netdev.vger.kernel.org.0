@@ -2,110 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C0EAF50F320
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 09:53:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9D1550F348
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 10:01:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239452AbiDZHzx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 03:55:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50720 "EHLO
+        id S1344408AbiDZIER (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 04:04:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344314AbiDZHx3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 03:53:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B72A91DA7F
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 00:50:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650959419;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cgkVeFtk7kmhzt6NM7uvR8g8Xij0kTOqB1NgwHZ6ZsY=;
-        b=a59q494ptKU78H9wmlev01aL+1O07FEawGMwH+AcNno+vcdP60afKnBN70DQVTupPmPWin
-        jCeddQTo1ptMYgUwTpa+5REUAMusTduh7WV/qzasrj9rdEUHPq2E3i70YUhu5oE9vpMzwl
-        xWa9Cxc6B22gdHc6w327Nh/IvI/C+2g=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-630--QUKWP60MaeiuJucIZyQeQ-1; Tue, 26 Apr 2022 03:50:18 -0400
-X-MC-Unique: -QUKWP60MaeiuJucIZyQeQ-1
-Received: by mail-wm1-f72.google.com with SMTP id c62-20020a1c3541000000b0038ec265155fso845339wma.6
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 00:50:18 -0700 (PDT)
+        with ESMTP id S1344496AbiDZIEN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 04:04:13 -0400
+Received: from mail-vk1-xa2f.google.com (mail-vk1-xa2f.google.com [IPv6:2607:f8b0:4864:20::a2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E3327B20;
+        Tue, 26 Apr 2022 01:01:06 -0700 (PDT)
+Received: by mail-vk1-xa2f.google.com with SMTP id e7so8349456vkh.2;
+        Tue, 26 Apr 2022 01:01:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=JpdFifKs7CxW50jPfs3i6TqXo2OQsTxzT2rNlZQve7o=;
+        b=XLLmcZJORWm2MA9YZBulpcc0AbfDmwCq/jjtCH3RF+8AjkBmwRvUhpoUrr/D7XObul
+         TlPlIY023CjDfxJye/vZfj7ERoTu/9Hgl6hkKNyJRqFGeAPLT+AvRw3CRd0ZMedhsxG6
+         i6LaNLIwFYzCUSw0UDM1m1sNQHWcCLCYdwsrHCUuYO7uHCOkNHbLF7X8iOLSEIcS4IIX
+         +2uauYW9vIVINCjvlSiDrt16tiFpiT73IKWYNjPl2J4tgrGuUtY82W1hAcUjJDfexDwC
+         KYrO5QRSNUoG1OszGnr+DxTfGPRlg70Ig6uRVTAamYhYFdp8H2Zhw0RN+Ha1Leg8enqQ
+         yKkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=cgkVeFtk7kmhzt6NM7uvR8g8Xij0kTOqB1NgwHZ6ZsY=;
-        b=zNBCzjtilQjT9KxlPaovWGzql/zy7aa01BLtZUJIOrZh28XtoPMO26JL/fLZFzFRd+
-         ZC3PuFZMGUD6JubCT8j4n6S1oD/Flv2YMvXS6spK3ZOltEabUOxz4e0xtdMBVGuWr6cE
-         gNuRKVYSG8319J4YXf2im96Gn+L4IFv+vvqA8jbESYn/cBm1mADbx0C6FTtpk/w3pioG
-         Qf7K1NOoFl1fjflO+PVeXYFDBZH6GrRdA40eJkkc+2pBeMkz0DM5HTygjifPSJQMFhyz
-         Wo1mHdOZoQZTyzhXBlZkcRVhmYLBsdSx0OpWW+tZ3g+RmNTGvIO5RxS5WTTSbN7Ojkws
-         RFkQ==
-X-Gm-Message-State: AOAM530gBnn/1nS1SA8fxaldrsRKwqZoQufZTRfkhJSHH24weJ0JyoKC
-        ztMoRc/xPuBnv2V/Nog7eb1+D6BTRvy7FgCoJuZgTzmgqlGDZzIqF6cmi9ClSSmfLBMW+ES02d6
-        T71R2jxvx2RqkUKr3
-X-Received: by 2002:a05:600c:5c9:b0:38e:d44a:4cc1 with SMTP id p9-20020a05600c05c900b0038ed44a4cc1mr28698028wmd.124.1650959417063;
-        Tue, 26 Apr 2022 00:50:17 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxBXOpJmGEWozLGFN1CjEnuirBJfeA0Kz7+BA4MlA0zlr6UKrJpJpE31VOFYGB8/dXFdjuRBg==
-X-Received: by 2002:a05:600c:5c9:b0:38e:d44a:4cc1 with SMTP id p9-20020a05600c05c900b0038ed44a4cc1mr28698015wmd.124.1650959416879;
-        Tue, 26 Apr 2022 00:50:16 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-117-160.dyn.eolo.it. [146.241.117.160])
-        by smtp.gmail.com with ESMTPSA id b14-20020a7bc24e000000b003899c8053e1sm11841188wmj.41.2022.04.26.00.50.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 00:50:16 -0700 (PDT)
-Message-ID: <43773a65a27cb714e3319b06b0215fcb0471aae6.camel@redhat.com>
-Subject: Re: [PATCH] net: dsa: mv88e6xxx: Skip cmode writable for mv88e6*41
- if unchanged
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Marek =?ISO-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        Nathan Rossi <nathan@nathanrossi.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Date:   Tue, 26 Apr 2022 09:50:15 +0200
-In-Reply-To: <20220423152523.1f38e2d8@thinkpad>
-References: <20220423132035.238704-1-nathan@nathanrossi.com>
-         <20220423152523.1f38e2d8@thinkpad>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=JpdFifKs7CxW50jPfs3i6TqXo2OQsTxzT2rNlZQve7o=;
+        b=X0bdGQypU+3i32w1HiOA7oSC/EjjU/3J3gKXR0ZK5OT75D7BWium9g4PYQbqh0cXe2
+         p5F/uI4SajtDXuzbhdntjM1OKuJxi69GK88kYJ1YZ6jMwbOVWsENNJVTMGH9Rsdw5laL
+         i8xQ4vpL51ILs7stB6ydgbgSmR6FMZX99oDTfyrJK3B5H6+YTKNm7IzdEPtukzWu1b/i
+         I/wu/xfyFu/l28uRA1RNPBJKnwZPC6l5OLYPN/tKW8dEP57bbg8bDdpzDesGTinkDLFI
+         LchPU4U8syIwyBou5r31HMoavsDpgcJ6pehY5ilJ3Fh3k1bWVjsIz0i6xiew3l2MmyK0
+         i8/g==
+X-Gm-Message-State: AOAM5300ZlmHvfR04CgOlpeoJ1KCif0Qx/Xb9TNvwDpnQ17UWnIFPxk7
+        o2Xw7lxCcE5EKs7WxIwo3190+gcvKx9+T5aakdo=
+X-Google-Smtp-Source: ABdhPJz9VhrNbleoLUWmOjFU7Whei1c8JVE2x1hXtnT4UKv3R32PqntxjBBKx45GHyFvlutsA3LXv4wGCWJ74vVmuAw=
+X-Received: by 2002:a1f:e2c7:0:b0:34d:310f:6b0 with SMTP id
+ z190-20020a1fe2c7000000b0034d310f06b0mr4052769vkg.19.1650960065178; Tue, 26
+ Apr 2022 01:01:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <20220407223629.21487-1-ricardo.martinez@linux.intel.com>
+ <20220407223629.21487-9-ricardo.martinez@linux.intel.com> <CAHNKnsTr3aq1sgHnZQFL7-0uHMp3Wt4PMhVgTMSAiiXT=8p35A@mail.gmail.com>
+ <d829315b-79ca-ff88-c76-e352d8fb5b5b@linux.intel.com>
+In-Reply-To: <d829315b-79ca-ff88-c76-e352d8fb5b5b@linux.intel.com>
+From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Date:   Tue, 26 Apr 2022 11:00:54 +0300
+Message-ID: <CAHNKnsRMp9kbVLuYCe_-7BUeptmssqAN0fXJtNQ+j-ZmVEiwiw@mail.gmail.com>
+Subject: Re: [PATCH net-next v6 08/13] net: wwan: t7xx: Add data path interface
+To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Ricardo Martinez <ricardo.martinez@linux.intel.com>,
+        Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        M Chetan Kumar <m.chetan.kumar@intel.com>,
+        chandrashekar.devegowda@intel.com,
+        Intel Corporation <linuxwwan@intel.com>,
+        chiranjeevi.rapolu@linux.intel.com,
+        =?UTF-8?B?SGFpanVuIExpdSAo5YiY5rW35YabKQ==?= 
+        <haijun.liu@mediatek.com>, amir.hanania@intel.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        dinesh.sharma@intel.com, eliot.lee@intel.com,
+        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
+        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
+        sreehari.kancharla@intel.com, madhusmita.sahu@intel.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Tue, Apr 26, 2022 at 10:30 AM Ilpo J=C3=A4rvinen
+<ilpo.jarvinen@linux.intel.com> wrote:
+> On Tue, 26 Apr 2022, Sergey Ryazanov wrote:
+>> On Fri, Apr 8, 2022 at 1:37 AM Ricardo Martinez
+>> <ricardo.martinez@linux.intel.com> wrote:
+>>> Data Path Modem AP Interface (DPMAIF) HIF layer provides methods
+>>> for initialization, ISR, control and event handling of TX/RX flows.
+>>>
+>>> DPMAIF TX
+>>> Exposes the 'dmpaif_tx_send_skb' function which can be used by the
+>>> network device to transmit packets.
+>>> The uplink data management uses a Descriptor Ring Buffer (DRB).
+>>> First DRB entry is a message type that will be followed by 1 or more
+>>> normal DRB entries. Message type DRB will hold the skb information
+>>> and each normal DRB entry holds a pointer to the skb payload.
+>>>
+>>> DPMAIF RX
+>>> The downlink buffer management uses Buffer Address Table (BAT) and
+>>> Packet Information Table (PIT) rings.
+>>> The BAT ring holds the address of skb data buffer for the HW to use,
+>>> while the PIT contains metadata about a whole network packet including
+>>> a reference to the BAT entry holding the data buffer address.
+>>> The driver reads the PIT and BAT entries written by the modem, when
+>>> reaching a threshold, the driver will reload the PIT and BAT rings.
+>>>
+>>> Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
+>>> Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.c=
+om>
+>>> Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+>>> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+>>>
+>>> From a WWAN framework perspective:
+>>> Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
+>>
+>> Reviewed-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+>>
+>> and a small question below.
+>>
+>>> diff --git a/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c b/drivers/net/w=
+wan/t7xx/t7xx_hif_dpmaif_rx.c
+>>> ...
+>>> +static bool t7xx_alloc_and_map_skb_info(const struct dpmaif_ctrl *dpma=
+if_ctrl,
+>>> +                                       const unsigned int size, struct=
+ dpmaif_bat_skb *cur_skb)
+>>> +{
+>>> +       dma_addr_t data_bus_addr;
+>>> +       struct sk_buff *skb;
+>>> +       size_t data_len;
+>>> +
+>>> +       skb =3D __dev_alloc_skb(size, GFP_KERNEL);
+>>> +       if (!skb)
+>>> +               return false;
+>>> +
+>>> +       data_len =3D skb_end_pointer(skb) - skb->data;
+>>
+>> Earlier you use a nice t7xx_skb_data_area_size() function here, but
+>> now you opencode it. Is it a consequence of t7xx_common.h removing?
+>>
+>> I would even encourage you to make this function common and place it
+>> into include/linux/skbuff.h with a dedicated patch and call it
+>> something like skb_data_size(). Surprisingly, there is no such helper
+>> function in the kernel, and several other drivers will benefit from
+>> it:
+>
+> I agree other than the name. IMHO, skb_data_size sounds too much "data
+> size" which it exactly isn't but just how large the memory area is (we
+> already have "datalen" anyway and on language level, those two don't soun=
+d
+> different at all). The memory area allocated may or may not have actual
+> data in it, I suggested adding "area" into it.
 
-On Sat, 2022-04-23 at 15:25 +0200, Marek Behún wrote:
-> On Sat, 23 Apr 2022 13:20:35 +0000
-> Nathan Rossi <nathan@nathanrossi.com> wrote:
-> 
-> > The mv88e6341_port_set_cmode function always calls the set writable
-> > regardless of whether the current cmode is different from the desired
-> > cmode. This is problematic for specific configurations of the mv88e6341
-> > and mv88e6141 (in single chip adddressing mode?) where the hidden
-> > registers are not accessible.
-> 
-> I don't have a problem with skipping setting cmode writable if cmode is
-> not being changed. But hidden registers should be accessible regardless
-> of whether you are using single chip addressing mode or not. You need
-> to find why it isn't working for you, this is a bug.
+I agree, using the "area" word in the helper name gives more clue
+about its purpose, thanks.
 
-For the records, I read the above as requiring a fix the root cause, so
-I'm not applying this patch. Please correct me if I'm wrong.
-
-Thanks,
-
-Paolo
-
+--
+Sergey
