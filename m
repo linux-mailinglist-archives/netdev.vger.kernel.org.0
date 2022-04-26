@@ -2,201 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0975F50FEAD
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 15:16:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43B0550FEBA
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 15:20:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236552AbiDZNTT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 09:19:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60330 "EHLO
+        id S1350851AbiDZNXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 09:23:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350799AbiDZNS4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 09:18:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBDD89230D;
-        Tue, 26 Apr 2022 06:15:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CC99614A3;
-        Tue, 26 Apr 2022 13:15:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96AD3C385AA;
-        Tue, 26 Apr 2022 13:15:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650978947;
-        bh=/pYk0IF39cuVqn1gDqReGRf89BRsIwZNP7PwDX11BAo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=FMKz1SkGb2c+HLwfyFqr+EkJj1ifKHmoWALFZfuVRNAf3ciUn+R4ZW0Nm9fQsNuVm
-         iu62Zpf5XAdLlLSH56deLB/1qFyVAQgZm/GsBH+JxaHQRckbbGI4N1TJv8aKwtO1PT
-         0m8rbyD0xV+uZb31pzDxdXpG6wZ4qoS11a4mZG3G/CWhUCGQO/uy9V4TA7KmOnMOf7
-         oYVlN+b6g8YyMK6GJN1907JRZMUudJUJaYJJ4xHcq/G4CC5oEvGSZmtuhQ2+Vq6FmQ
-         gMnsO8GYt6Y3tyshG9pYNRTD3/6vjxXg7dO/3BpkX6oHhf44wYak2oPUrPbrURRvl7
-         jPpiYjTRJF74A==
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     intel-wired-lan@lists.osuosl.org, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, alice.michael@intel.com,
-        bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        lorenzo.bianconi@redhat.com, andrii@kernel.org,
-        magnus.karlsson@intel.com, jbrouer@redhat.com, toke@redhat.com
-Subject: [PATCH v2 net-next] ixgbe: add xdp frags support to ndo_xdp_xmit
-Date:   Tue, 26 Apr 2022 15:14:55 +0200
-Message-Id: <e36724d3cdfbedf9af1a2a7f47ebd60aa7932f83.1650978540.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S1350839AbiDZNXK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 09:23:10 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2B0FDF3F
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 06:20:00 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id r83so16074479pgr.2
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 06:20:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=HLmgdCeRQnlZPI0jqFO8y9T2xXc5m6qGLiOpaSM2FSM=;
+        b=jPCQfFTpQpV7n7pB7rQDJt9sEnkgB4WREXGbL8Dv7b1F2XbxwlGG9CjunEgd52tZNh
+         f7b7jRWcHwxnBXWkjhTIo5RsaLGht6e7tCbque3ut0TGd+K/JWFdBL3RoZ66gTg6AWOr
+         tt/4wyon5tX9Fj2AvW12rYJSMG5VjtoOlW++QPT8nwJk7gFXCOX3SrHat2epwpEjI8ww
+         AFCQ8Rn77o0zNND5MQZv31aCz2DUeV3FK9hPagKRgqmRKXpwU/XnLSgFUbHZhkfSHEkJ
+         o1Ok5lmOEVM5/v+cSqBQdoCuC+HiqBJ64GblVLjeciEYYmiEZfTWUZcMQfwIiTVE6i/p
+         J72w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=HLmgdCeRQnlZPI0jqFO8y9T2xXc5m6qGLiOpaSM2FSM=;
+        b=KKae4tQqwJREZLI/8HCbfbIhcIqj+7L9YitLZWWvXxjsFZ8Wj+auLBtfwkdjSERU+c
+         fyiAG5nzevJxGcX0LGHPBBhzvWAd7LgYHFyVoCKGhTHdiIvvxhuESP8GV6w0Ay3eeGaK
+         LGNeJO00gjQMs9SKCsB1rqL5kRNdUYV6gWGArA/1lxTUYgDNexEtSbIbM9RXvvUkjTmW
+         15iGWr+yoHWb/WBhK+Edx3tBrzFjw6Vy8ZWkO22+2dXJ01a7an/HxWZRogAfbucZ5m1t
+         dcz2phaS71qVo9iydglEJnss84pvT2QyrB/foZTemLEc+y4logV3fsKcQcE8EDkIz5e5
+         6yWA==
+X-Gm-Message-State: AOAM531z8VbECaG/na3076is5jeKMo++s/Sn223eRmZnU0s7jPN/fAbh
+        b17XcoY9GMQa4gM0AF4AZHyc4Q==
+X-Google-Smtp-Source: ABdhPJywU6zSNw8eC6iZB0lW4cMNYVRUgoT39LY8hW7zbfiZnYq6dVsSlFGb05d66NZD5nCNmqfhWQ==
+X-Received: by 2002:a63:86c8:0:b0:3aa:fa50:b002 with SMTP id x191-20020a6386c8000000b003aafa50b002mr13427236pgd.570.1650979199932;
+        Tue, 26 Apr 2022 06:19:59 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s (216.24.179.102.16clouds.com. [216.24.179.102])
+        by smtp.gmail.com with ESMTPSA id x22-20020a17090aa39600b001d95c09f877sm3120923pjp.35.2022.04.26.06.19.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 06:19:59 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 21:19:52 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     James Clark <james.clark@arm.com>
+Cc:     Timothy Hayes <timothy.hayes@arm.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        acme@kernel.org, John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH 2/3] perf: arm-spe: Fix SPE events with phys addresses
+Message-ID: <20220426131952.GA1923836@leoy-ThinkPad-X240s>
+References: <20220421165205.117662-1-timothy.hayes@arm.com>
+ <20220421165205.117662-3-timothy.hayes@arm.com>
+ <20220424125951.GD978927@leoy-ThinkPad-X240s>
+ <322009d2-330c-22d4-4075-eca2042f64e1@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <322009d2-330c-22d4-4075-eca2042f64e1@arm.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the capability to map non-linear xdp frames in XDP_TX and ndo_xdp_xmit
-callback.
+On Mon, Apr 25, 2022 at 10:12:36AM +0100, James Clark wrote:
 
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
-Changes since v1:
-- rebase on top of net-next
----
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 99 ++++++++++++-------
- 1 file changed, 63 insertions(+), 36 deletions(-)
+[...]
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index c4a4954aa317..8b84c9b2eecc 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -2344,6 +2344,7 @@ static int ixgbe_clean_rx_irq(struct ixgbe_q_vector *q_vector,
- 			hard_start = page_address(rx_buffer->page) +
- 				     rx_buffer->page_offset - offset;
- 			xdp_prepare_buff(&xdp, hard_start, offset, size, true);
-+			xdp_buff_clear_frags_flag(&xdp);
- #if (PAGE_SIZE > 4096)
- 			/* At larger PAGE_SIZE, frame_sz depend on len size */
- 			xdp.frame_sz = ixgbe_rx_frame_truesize(rx_ring, size);
-@@ -8571,57 +8572,83 @@ static u16 ixgbe_select_queue(struct net_device *dev, struct sk_buff *skb,
- int ixgbe_xmit_xdp_ring(struct ixgbe_ring *ring,
- 			struct xdp_frame *xdpf)
- {
--	struct ixgbe_tx_buffer *tx_buffer;
--	union ixgbe_adv_tx_desc *tx_desc;
--	u32 len, cmd_type;
--	dma_addr_t dma;
--	u16 i;
--
--	len = xdpf->len;
-+	struct skb_shared_info *sinfo = xdp_get_shared_info_from_frame(xdpf);
-+	u8 nr_frags = unlikely(xdp_frame_has_frags(xdpf)) ? sinfo->nr_frags : 0;
-+	u16 i = 0, index = ring->next_to_use;
-+	struct ixgbe_tx_buffer *tx_head = &ring->tx_buffer_info[index];
-+	struct ixgbe_tx_buffer *tx_buff = tx_head;
-+	union ixgbe_adv_tx_desc *tx_desc = IXGBE_TX_DESC(ring, index);
-+	u32 cmd_type, len = xdpf->len;
-+	void *data = xdpf->data;
- 
--	if (unlikely(!ixgbe_desc_unused(ring)))
-+	if (unlikely(ixgbe_desc_unused(ring) < 1 + nr_frags))
- 		return IXGBE_XDP_CONSUMED;
- 
--	dma = dma_map_single(ring->dev, xdpf->data, len, DMA_TO_DEVICE);
--	if (dma_mapping_error(ring->dev, dma))
--		return IXGBE_XDP_CONSUMED;
-+	tx_head->bytecount = xdp_get_frame_len(xdpf);
-+	tx_head->gso_segs = 1;
-+	tx_head->xdpf = xdpf;
- 
--	/* record the location of the first descriptor for this packet */
--	tx_buffer = &ring->tx_buffer_info[ring->next_to_use];
--	tx_buffer->bytecount = len;
--	tx_buffer->gso_segs = 1;
--	tx_buffer->protocol = 0;
-+	tx_desc->read.olinfo_status =
-+		cpu_to_le32(tx_head->bytecount << IXGBE_ADVTXD_PAYLEN_SHIFT);
- 
--	i = ring->next_to_use;
--	tx_desc = IXGBE_TX_DESC(ring, i);
-+	for (;;) {
-+		dma_addr_t dma;
- 
--	dma_unmap_len_set(tx_buffer, len, len);
--	dma_unmap_addr_set(tx_buffer, dma, dma);
--	tx_buffer->xdpf = xdpf;
-+		dma = dma_map_single(ring->dev, data, len, DMA_TO_DEVICE);
-+		if (dma_mapping_error(ring->dev, dma))
-+			goto unmap;
- 
--	tx_desc->read.buffer_addr = cpu_to_le64(dma);
-+		dma_unmap_len_set(tx_buff, len, len);
-+		dma_unmap_addr_set(tx_buff, dma, dma);
-+
-+		cmd_type = IXGBE_ADVTXD_DTYP_DATA | IXGBE_ADVTXD_DCMD_DEXT |
-+			   IXGBE_ADVTXD_DCMD_IFCS | len;
-+		tx_desc->read.cmd_type_len = cpu_to_le32(cmd_type);
-+		tx_desc->read.buffer_addr = cpu_to_le64(dma);
-+		tx_buff->protocol = 0;
-+
-+		if (++index == ring->count)
-+			index = 0;
-+
-+		if (i == nr_frags)
-+			break;
-+
-+		tx_buff = &ring->tx_buffer_info[index];
-+		tx_desc = IXGBE_TX_DESC(ring, index);
-+		tx_desc->read.olinfo_status = 0;
- 
-+		data = skb_frag_address(&sinfo->frags[i]);
-+		len = skb_frag_size(&sinfo->frags[i]);
-+		i++;
-+	}
- 	/* put descriptor type bits */
--	cmd_type = IXGBE_ADVTXD_DTYP_DATA |
--		   IXGBE_ADVTXD_DCMD_DEXT |
--		   IXGBE_ADVTXD_DCMD_IFCS;
--	cmd_type |= len | IXGBE_TXD_CMD;
--	tx_desc->read.cmd_type_len = cpu_to_le32(cmd_type);
--	tx_desc->read.olinfo_status =
--		cpu_to_le32(len << IXGBE_ADVTXD_PAYLEN_SHIFT);
-+	tx_desc->read.cmd_type_len |= cpu_to_le32(IXGBE_TXD_CMD);
- 
- 	/* Avoid any potential race with xdp_xmit and cleanup */
- 	smp_wmb();
- 
--	/* set next_to_watch value indicating a packet is present */
--	i++;
--	if (i == ring->count)
--		i = 0;
--
--	tx_buffer->next_to_watch = tx_desc;
--	ring->next_to_use = i;
-+	tx_head->next_to_watch = tx_desc;
-+	ring->next_to_use = index;
- 
- 	return IXGBE_XDP_TX;
-+
-+unmap:
-+	for (;;) {
-+		tx_buff = &ring->tx_buffer_info[index];
-+		if (dma_unmap_len(tx_buff, len))
-+			dma_unmap_page(ring->dev, dma_unmap_addr(tx_buff, dma),
-+				       dma_unmap_len(tx_buff, len),
-+				       DMA_TO_DEVICE);
-+		dma_unmap_len_set(tx_buff, len, 0);
-+		if (tx_buff == tx_head)
-+			break;
-+
-+		if (!index)
-+			index += ring->count;
-+		index--;
-+	}
-+
-+	return IXGBE_XDP_CONSUMED;
- }
- 
- netdev_tx_t ixgbe_xmit_frame_ring(struct sk_buff *skb,
--- 
-2.35.1
+> >> diff --git a/tools/perf/util/arm-spe.c b/tools/perf/util/arm-spe.c
+> >> index 151cc38a171c..1a80151baed9 100644
+> >> --- a/tools/perf/util/arm-spe.c
+> >> +++ b/tools/perf/util/arm-spe.c
+> >> @@ -1033,7 +1033,8 @@ arm_spe_synth_events(struct arm_spe *spe, struct perf_session *session)
+> >>  	memset(&attr, 0, sizeof(struct perf_event_attr));
+> >>  	attr.size = sizeof(struct perf_event_attr);
+> >>  	attr.type = PERF_TYPE_HARDWARE;
+> >> -	attr.sample_type = evsel->core.attr.sample_type & PERF_SAMPLE_MASK;
+> >> +	attr.sample_type = evsel->core.attr.sample_type &
+> >> +				(PERF_SAMPLE_MASK | PERF_SAMPLE_PHYS_ADDR);
+> > 
+> > I verified this patch and I can confirm the physical address can be
+> > dumped successfully.
+> > 
+> > I have a more general question, seems to me, we need to change the
+> > macro PERF_SAMPLE_MASK in the file util/event.h as below, so
+> > here doesn't need to 'or' the flag PERF_SAMPLE_PHYS_ADDR anymore.
+> > 
+> > @Arnaldo, @Jiri, could you confirm if this is the right way to move
+> > forward?  I am not sure why PERF_SAMPLE_MASK doesn't contain the bit
+> > PERF_SAMPLE_PHYS_ADDR in current code.
+> 
+> I think there is a reason that PERF_SAMPLE_MASK is a subset of all the
+> bits. This comment below suggests it. Is it so the mask only includes fields
+> that are 64bits? That makes the __evsel__sample_size() function a simple
+> multiplication of a count of all the fields that are 64bits.
 
+After reading code, seems the conclusion "a count of all the fields
+that are 64bits" is not valid.  PERF_SAMPLE_MASK contains bits
+PERF_SAMPLE_IP and PERF_SAMPLE_TID, the corresponding fields 'pid'
+and 'tid' in the structure perf_sample are u32 type.
+
+>   static int
+>   perf_event__check_size(union perf_event *event, unsigned int sample_size)
+>   {
+> 	/*
+> 	 * The evsel's sample_size is based on PERF_SAMPLE_MASK which includes
+> 	 * up to PERF_SAMPLE_PERIOD.  After that overflow() must be used to
+> 	 * check the format does not go past the end of the event.
+> 	 */
+> 	if (sample_size + sizeof(event->header) > event->header.size)
+> 		return -EFAULT;
+
+Okay, thanks for sharing the info, it does show that it's deliberately to
+not contain all fields in PERF_SAMPLE_MASK.  If so, this patch is fine
+for me:
+
+Reviewed-by: Leo Yan <leo.yan@linaro.org>
+
+
+> 	return 0;
+>   }
+> 
+> Having said that, the mask was updated once to add PERF_SAMPLE_IDENTIFIER to
+> it, so that comment is slightly out of date now.
+> 
+> 
+> > 
+> > diff --git a/tools/perf/util/event.h b/tools/perf/util/event.h
+> > index cdd72e05fd28..c905ac32ebad 100644
+> > --- a/tools/perf/util/event.h
+> > +++ b/tools/perf/util/event.h
+> > @@ -39,7 +39,7 @@ struct perf_event_attr;
+> >          PERF_SAMPLE_TIME | PERF_SAMPLE_ADDR |          \
+> >         PERF_SAMPLE_ID | PERF_SAMPLE_STREAM_ID |        \
+> >          PERF_SAMPLE_CPU | PERF_SAMPLE_PERIOD |         \
+> > -        PERF_SAMPLE_IDENTIFIER)
+> > +        PERF_SAMPLE_IDENTIFIER | PERF_SAMPLE_PHYS_ADDR)
+> > 
+> > Thanks,
+> > Leo
+> > 
+> >>  	attr.sample_type |= PERF_SAMPLE_IP | PERF_SAMPLE_TID |
+> >>  			    PERF_SAMPLE_PERIOD | PERF_SAMPLE_DATA_SRC |
+> >>  			    PERF_SAMPLE_WEIGHT | PERF_SAMPLE_ADDR;
+> >> -- 
+> >> 2.25.1
+> >>
