@@ -2,301 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC6FC50FF12
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 15:32:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0900950FF37
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 15:37:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237797AbiDZNfy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 09:35:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44528 "EHLO
+        id S231841AbiDZNk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 09:40:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236434AbiDZNfx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 09:35:53 -0400
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA0753136D
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 06:32:43 -0700 (PDT)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-2f7bb893309so102171207b3.12
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 06:32:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7Y1qcKhmhihjquPkNmPpQlcIRxQVN9xLFKDb4pHIlpg=;
-        b=JnSnF/ra24mcHx7zxUAEG+TCXf4om2hIoj6vPbRiIiyMS5oTcm3ivWDHPLVC/KiqaG
-         RdrWuhTQjNr8miBR5XnGFIhNvoWHC3hbWJ1f67oiMO23J573HjzpJyWgnzsQt11QB93s
-         fhtF1YtrOkqGzQpym/I5gPlFyvuQR7/eOKfHUalFdIlPcCyx8aCMdUwi58fSMjW3MwTF
-         2dPMvryNM0cXiEnbIwLDqzvTOE60VoEV6FXY6TfyPWNYahEYxgy23qRwV/3FoxGqlCJY
-         //gJ20ZJauuCUv8OJCmOK4geHbteXfaTDbMV25OCPgYRN5XDAKyKbdPMcrl2TU3Lrb6L
-         LDbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7Y1qcKhmhihjquPkNmPpQlcIRxQVN9xLFKDb4pHIlpg=;
-        b=i41ui8R9efryuftwbxvsR90A6cfQjIVpMz+/MKezDmEsBq2MtdzMPihFO748FdRqQH
-         oUimCySR+LdydsHM67fIW68LgMmb4VUZD/gANg+jWU45SxzqTt6myHtKrdKDt2l0p/OV
-         TEmXFQzB9GV80PW0euGcpWmQZFgCKf0Y4eBxTDPmhKBWDgIiCJDEpuDVt07hqrZRL2ie
-         KKCV8j5ElqPxkYQ/7tAY9kd0BxeWKOM/F4ENX7JuaFUrxWIs5Mmrp2T7bBbUQEMIZ01w
-         r6W618ttSufWEzZnuF6XzVgDBSrgTBbbPTUcll9aWwwpDcEx8/CKtlqSw4Pcejl4RSUU
-         XmKw==
-X-Gm-Message-State: AOAM533VdyxmXUw9TcGFke1ZjoKywx/Xlpx9CygCU7IJ01CpktLgSYE2
-        7jCg9I8m6enPJizOEiuiuD5J5SGW8LPr/PlyYUNs4g==
-X-Google-Smtp-Source: ABdhPJysGEq5PIYqa1dz5FvyA71TscOTkndpovrNU0LaVrg655Ys7C3LkTDvMO5q7ExfgqftRAyMhITm8uot9kIoJGU=
-X-Received: by 2002:a81:89c3:0:b0:2f3:227:d5af with SMTP id
- z186-20020a8189c3000000b002f30227d5afmr21879072ywf.47.1650979962669; Tue, 26
- Apr 2022 06:32:42 -0700 (PDT)
+        with ESMTP id S243111AbiDZNkY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 09:40:24 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01C194198F;
+        Tue, 26 Apr 2022 06:37:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=l4h0Ov9OzmifR5jldxkma+y1tJv7QCkgxeL1WbcVp2I=; b=vGRJbhRGckl9QnEYvsb4P+RCnc
+        cua3k6wPbIPbIu3JCsJ8VLa6meBL5p23ZHiDphp+sDc/ZuaEcKn9wMqiYtOVxS5NS5MbNnQfTC4iH
+        iEsWZAc5fY0ReNehxoSgLoHaBmifIfYByjwW15JkwHWmfYrAB+6ETgQYXrk0C1/3grjk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1njLN9-00HYfD-GM; Tue, 26 Apr 2022 15:36:55 +0200
+Date:   Tue, 26 Apr 2022 15:36:55 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Cc:     "linux-imx@nxp.com" <linux-imx@nxp.com>,
+        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "joabreu@synopsys.com" <joabreu@synopsys.com>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
+        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "festevam@gmail.com" <festevam@gmail.com>
+Subject: Re: net: stmmac: dwmac-imx: half duplex crash
+Message-ID: <Ymf1dwrwHe0PS1Cq@lunn.ch>
+References: <36ba455aad3e57c0c1f75cce4ee0f3da69e139a1.camel@toradex.com>
+ <YmXIo6q8vVkL6zLp@lunn.ch>
+ <5e51e11bbbf6ecd0ee23b4fd2edec98e6e7fbaa8.camel@toradex.com>
+ <YmbFblFCrGFND+h/@lunn.ch>
+ <8f8cdcf584c13faf8bcdc2abfdb62b09950ea652.camel@toradex.com>
 MIME-Version: 1.0
-References: <20220426080709.6504-1-imagedong@tencent.com> <20220426080709.6504-2-imagedong@tencent.com>
-In-Reply-To: <20220426080709.6504-2-imagedong@tencent.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 26 Apr 2022 06:32:31 -0700
-Message-ID: <CANn89iJa3FZHXfUWHw-OwOu8X_Cc0-YzxkgE_M=8DrBN1jWnAQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/2] net: add skb drop reasons to inet connect request
-To:     Menglong Dong <menglong8.dong@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, benbjiang@tencent.com,
-        flyingpeng@tencent.com, Menglong Dong <imagedong@tencent.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kees Cook <keescook@chromium.org>, mengensun@tencent.com,
-        Dongli Zhang <dongli.zhang@oracle.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8f8cdcf584c13faf8bcdc2abfdb62b09950ea652.camel@toradex.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 1:07 AM <menglong8.dong@gmail.com> wrote:
->
-> From: Menglong Dong <imagedong@tencent.com>
->
-> The 'conn_request()' in struct inet_connection_sock_af_ops is used to
-> process connection requesting for TCP/DCCP. Take TCP for example, it
-> is just 'tcp_v4_conn_request()'.
->
-> When non-zero value is returned by 'tcp_v4_conn_request()', the skb
-> will be freed by kfree_skb() and a 'reset' packet will be send.
-> Otherwise, it will be freed normally.
->
-> In this code path, 'consume_skb()' is used in many abnormal cases, such
-> as the accept queue of the listen socket full, which should be
-> 'kfree_skb()'.
->
-> Therefore, we make a little change to the 'conn_request()' interface.
-> When 0 is returned, we call 'consume_skb()' as usual; when negative is
-> returned, we call 'kfree_skb()' and send a 'reset' as usual; when
-> positive is returned, which has not happened yet, we do nothing, and
-> skb will be freed in 'conn_request()'. Then, we can use drop reasons
-> in 'conn_request()'.
->
-> Following new drop reasons are added:
->
->   SKB_DROP_REASON_LISTENOVERFLOWS
->   SKB_DROP_REASON_TCP_REQQFULLDROP
->
-> Reviewed-by: Jiang Biao <benbjiang@tencent.com>
-> Reviewed-by: Hao Peng <flyingpeng@tencent.com>
-> Signed-off-by: Menglong Dong <imagedong@tencent.com>
-> ---
->  include/linux/skbuff.h     |  4 ++++
->  include/trace/events/skb.h |  2 ++
->  net/dccp/input.c           | 12 +++++-------
->  net/ipv4/tcp_input.c       | 21 +++++++++++++--------
->  net/ipv4/tcp_ipv4.c        |  3 ++-
->  5 files changed, 26 insertions(+), 16 deletions(-)
->
-> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> index 84d78df60453..f33b3636bbce 100644
-> --- a/include/linux/skbuff.h
-> +++ b/include/linux/skbuff.h
-> @@ -469,6 +469,10 @@ enum skb_drop_reason {
->         SKB_DROP_REASON_PKT_TOO_BIG,    /* packet size is too big (maybe exceed
->                                          * the MTU)
->                                          */
-> +       SKB_DROP_REASON_LISTENOVERFLOWS, /* accept queue of the listen socket is full */
-> +       SKB_DROP_REASON_TCP_REQQFULLDROP, /* request queue of the listen
-> +                                          * socket is full
-> +                                          */
->         SKB_DROP_REASON_MAX,
->  };
->
-> diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
-> index a477bf907498..de6c93670437 100644
-> --- a/include/trace/events/skb.h
-> +++ b/include/trace/events/skb.h
-> @@ -80,6 +80,8 @@
->         EM(SKB_DROP_REASON_IP_INADDRERRORS, IP_INADDRERRORS)    \
->         EM(SKB_DROP_REASON_IP_INNOROUTES, IP_INNOROUTES)        \
->         EM(SKB_DROP_REASON_PKT_TOO_BIG, PKT_TOO_BIG)            \
-> +       EM(SKB_DROP_REASON_LISTENOVERFLOWS, LISTENOVERFLOWS)    \
-> +       EM(SKB_DROP_REASON_TCP_REQQFULLDROP, TCP_REQQFULLDROP)  \
->         EMe(SKB_DROP_REASON_MAX, MAX)
->
->  #undef EM
-> diff --git a/net/dccp/input.c b/net/dccp/input.c
-> index 2cbb757a894f..ed20dfe83f66 100644
-> --- a/net/dccp/input.c
-> +++ b/net/dccp/input.c
-> @@ -574,8 +574,7 @@ int dccp_rcv_state_process(struct sock *sk, struct sk_buff *skb,
->         struct dccp_sock *dp = dccp_sk(sk);
->         struct dccp_skb_cb *dcb = DCCP_SKB_CB(skb);
->         const int old_state = sk->sk_state;
-> -       bool acceptable;
-> -       int queued = 0;
-> +       int err, queued = 0;
->
->         /*
->          *  Step 3: Process LISTEN state
-> @@ -606,13 +605,12 @@ int dccp_rcv_state_process(struct sock *sk, struct sk_buff *skb,
->                          */
->                         rcu_read_lock();
->                         local_bh_disable();
-> -                       acceptable = inet_csk(sk)->icsk_af_ops->conn_request(sk, skb) >= 0;
-> +                       err = inet_csk(sk)->icsk_af_ops->conn_request(sk, skb);
->                         local_bh_enable();
->                         rcu_read_unlock();
-> -                       if (!acceptable)
-> -                               return 1;
-> -                       consume_skb(skb);
-> -                       return 0;
-> +                       if (!err)
-> +                               consume_skb(skb);
-> +                       return err < 0;
->                 }
->                 if (dh->dccph_type == DCCP_PKT_RESET)
->                         goto discard;
-> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> index daff631b9486..e0bbbd624246 100644
-> --- a/net/ipv4/tcp_input.c
-> +++ b/net/ipv4/tcp_input.c
-> @@ -6411,7 +6411,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
->         struct inet_connection_sock *icsk = inet_csk(sk);
->         const struct tcphdr *th = tcp_hdr(skb);
->         struct request_sock *req;
-> -       int queued = 0;
-> +       int err, queued = 0;
->         bool acceptable;
->         SKB_DR(reason);
->
-> @@ -6438,14 +6438,13 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
->                          */
->                         rcu_read_lock();
->                         local_bh_disable();
-> -                       acceptable = icsk->icsk_af_ops->conn_request(sk, skb) >= 0;
-> +                       err = icsk->icsk_af_ops->conn_request(sk, skb);
->                         local_bh_enable();
->                         rcu_read_unlock();
->
-> -                       if (!acceptable)
-> -                               return 1;
-> -                       consume_skb(skb);
-> -                       return 0;
-> +                       if (!err)
-> +                               consume_skb(skb);
+> > Anyway, this is roughly there the check should go.
+> 
+> You mean it would need an additional check against advertising nothing?
 
-Please, do not add more mess like that, where skb is either freed by
-the callee or the caller.
+I would check for a mode being requested which is not
+supported. phydev->supported tells you what the MAC/PHY can actually
+do. If there is a bit set which is not a member of that, return
+EINVAL. I don't think the plumbing is there, but netlink ethtool
+allows you to also return a text message via extack, so you could give
+the user a bit more information, the link mode which is invalid.
 
+> Well, we are gearing up on our automated testing infrastructure and asking my humble opinion on what exactly to
+> test concerning the Ethernet subsystem I gave the brilliant suggestion to try each and every supported link
+> mode (;-p). Which actually works just fine on every other hardware of ours just not the i.MX 8M Plus with the
+> DWMAC IP (remember, even FEC MAC works). So for now this is not something a customer of ours has real trouble
+> with but it raised some questions concerning whether or not and what exactly we do support...
 
-> +                       return err < 0;
+So in practice, this should not happen. You don't advertise the half
+modes, so you should never end up in a half mode. So it is not a
+problem :-)
 
-Where err is set to a negative value ?
-
-
->                 }
->                 SKB_DR_SET(reason, TCP_FLAGS);
->                 goto discard;
-> @@ -6878,6 +6877,7 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
->         bool want_cookie = false;
->         struct dst_entry *dst;
->         struct flowi fl;
-> +       SKB_DR(reason);
->
->         /* TW buckets are converted to open requests without
->          * limitations, they conserve resources and peer is
-> @@ -6886,12 +6886,15 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
->         if ((net->ipv4.sysctl_tcp_syncookies == 2 ||
->              inet_csk_reqsk_queue_is_full(sk)) && !isn) {
->                 want_cookie = tcp_syn_flood_action(sk, rsk_ops->slab_name);
-> -               if (!want_cookie)
-> +               if (!want_cookie) {
-> +                       SKB_DR_SET(reason, TCP_REQQFULLDROP);
->                         goto drop;
-> +               }
->         }
->
->         if (sk_acceptq_is_full(sk)) {
->                 NET_INC_STATS(sock_net(sk), LINUX_MIB_LISTENOVERFLOWS);
-> +               SKB_DR_SET(reason, LISTENOVERFLOWS);
->                 goto drop;
->         }
->
-> @@ -6947,6 +6950,7 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
->                          */
->                         pr_drop_req(req, ntohs(tcp_hdr(skb)->source),
->                                     rsk_ops->family);
-> +                       SKB_DR_SET(reason, TCP_REQQFULLDROP);
->                         goto drop_and_release;
->                 }
->
-> @@ -7006,7 +7010,8 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
->  drop_and_free:
->         __reqsk_free(req);
->  drop:
-> +       kfree_skb_reason(skb, reason);
-
-Ugh no, prefer "return reason" and leave to the caller the freeing part.
-
-Your changes are too invasive and will hurt future backports.
-
-
->         tcp_listendrop(sk);
-> -       return 0;
-> +       return 1;
->  }
->  EXPORT_SYMBOL(tcp_conn_request);
-> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-> index 157265aecbed..b8daf49f54a5 100644
-> --- a/net/ipv4/tcp_ipv4.c
-> +++ b/net/ipv4/tcp_ipv4.c
-> @@ -1470,7 +1470,8 @@ int tcp_v4_conn_request(struct sock *sk, struct sk_buff *skb)
->
->  drop:
->         tcp_listendrop(sk);
-> -       return 0;
-
-This return 0 meant : do not send reset.
-
-
-> +       kfree_skb_reason(skb, SKB_DROP_REASON_IP_INADDRERRORS);
-
-double kfree_skb() ?
-
-> +       return 1;
-
--> send RESET
-
->  }
->  EXPORT_SYMBOL(tcp_v4_conn_request);
->
-> --
-> 2.36.0
->
-
-I have a hard time understanding this patch.
-
-Where is the related IPv6 change ?
-
-I really wonder if you actually have tested this.
+	Andrew
