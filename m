@@ -2,88 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DBA7250ED42
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 02:12:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DE7350ED7F
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 02:19:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239482AbiDZAPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Apr 2022 20:15:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53014 "EHLO
+        id S238291AbiDZAWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Apr 2022 20:22:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239460AbiDZAPe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 20:15:34 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05C2F4551A;
-        Mon, 25 Apr 2022 17:12:29 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id bg9so14636852pgb.9;
-        Mon, 25 Apr 2022 17:12:29 -0700 (PDT)
+        with ESMTP id S230087AbiDZAWI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 20:22:08 -0400
+Received: from mail-vk1-xa2f.google.com (mail-vk1-xa2f.google.com [IPv6:2607:f8b0:4864:20::a2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB4541240E9;
+        Mon, 25 Apr 2022 17:19:02 -0700 (PDT)
+Received: by mail-vk1-xa2f.google.com with SMTP id d132so3168647vke.0;
+        Mon, 25 Apr 2022 17:19:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=/h+je+UV3pdLxVUQYhtb1w1rwM7UTRsxV2ZAcdTkJt8=;
-        b=ULXNiYwWF+0DYTrE3sD9xgN1oIrNDqx6x9ecrTHdI97UDwZcdnUbhKMEai84979yoi
-         CMuDhlhFdUPoqJDBCAc6qT1Wu12hIVFcxF9U96DgRyGCBq34NgZkavrBvJ2r7dc3JuGM
-         2ocX2ivvDPwlFylroyxMC6CDPiSsiqShrgveGfzR571j2lGr9N+EgrTpGkOV5VSIFaIZ
-         ufQDVyi6bngIZEZab0PHAlyjIFtaef2X5MuQAgg54xvUzZwMrT+KwkMVosBAq+9rkAYF
-         VqBZcD/1/Kbb4Xl0y0Snl2Bb+ea5sEpVxGbwgP7SaQahy9EPniuJqW0qOHX6c/hOQ0wj
-         +4Mw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=JcShw88rT2b4kuhXSIORC/0deuJ5kC0IXbgAX0EZqzI=;
+        b=ojI3z3raSNQCvhA/UQJtkSNLzwjX1wo+WliYB1VAgA8BdUjqJCaYzVo2HiZ9PEsL70
+         Who3s6o+1QXudT38AkZqLMf0hH3BYN/QLG4Hnly422lyJUgOj8bOefaVjOi5SLtcta2X
+         9RH6xvxZCK6Z17BYU1e1ouxnw4pK2ydtLre7HtUcd7VnoDYVIq1uSD9ZgIkjBkIZO6e2
+         FF18yW11sFk6BDny+NBqIZRPJ5ISmPjb+1l8D8M+QM2AnKabS2tYj57HKbNwsvUNeHvT
+         vBeuX4HF0otQkMhof7S5Y9svmybH9WxQU3n0IqJBTNDG1VMLPweSLNcdRb5g2yv1kYOF
+         AA1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/h+je+UV3pdLxVUQYhtb1w1rwM7UTRsxV2ZAcdTkJt8=;
-        b=t0S6fs7NRZdboD3E4nyjinq0PpkrtMZ3Q+czDKvQCMkeBmP+LFLJw6ekcyXnNp+Hdv
-         VLfDEIoLghd9ugxeK2gnWDDfJ5bE91VynpCCrzGFVtq8JSKu0xn2MHz0TiUq7SgOwowP
-         HG7Gzz/Znpxru5qVy3NTBJ4er1Xb5bhy2bxr28Uqq82tV1uao1DAfR6Lx2Yy/hICOQVL
-         SMn5wqGuyXfSNROELaKWlVrcCNRHJJtevzvA/L11Y+L0JzAFQ7+F/CaGh+6rcAQ7eqXW
-         eLVR8fqN6IdPDY7RJneNppYYhHoETzQlPyikolwOM8BQDy0UdSR6WEp2XGaEYUb6a0YS
-         SyXA==
-X-Gm-Message-State: AOAM532alXIgG6z3uUcxKmvnmgmRmRkSzQscQ9MQTsRrqElKl7R6A4M6
-        wI6Zcp2V0r9EdRfqlaGzxmc=
-X-Google-Smtp-Source: ABdhPJwEHbgxhHTTDTogRgZTNF422cv5BKYdqyM+WwhAXHYeYi4RNxsESEXkqW4cnydMdKJQVMGiCQ==
-X-Received: by 2002:a63:1d54:0:b0:3ab:754f:be08 with SMTP id d20-20020a631d54000000b003ab754fbe08mr3105721pgm.80.1650931948439;
-        Mon, 25 Apr 2022 17:12:28 -0700 (PDT)
-Received: from MBP-98dd607d3435.dhcp.thefacebook.com ([2620:10d:c090:400::5:438a])
-        by smtp.gmail.com with ESMTPSA id a18-20020a631a12000000b003aaedc4af99sm8079565pga.67.2022.04.25.17.12.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 17:12:27 -0700 (PDT)
-Date:   Mon, 25 Apr 2022 17:12:23 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Maxim Mikityanskiy <maximmi@nvidia.com>
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Petar Penkov <ppenkov@google.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Joe Stringer <joe@cilium.io>,
-        Florent Revest <revest@chromium.org>,
-        linux-kselftest@vger.kernel.org,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Florian Westphal <fw@strlen.de>, pabeni@redhat.com
-Subject: Re: [PATCH bpf-next v6 5/6] bpf: Add selftests for raw syncookie
- helpers
-Message-ID: <20220426001223.wlnfd2kmmogip5d5@MBP-98dd607d3435.dhcp.thefacebook.com>
-References: <20220422172422.4037988-1-maximmi@nvidia.com>
- <20220422172422.4037988-6-maximmi@nvidia.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=JcShw88rT2b4kuhXSIORC/0deuJ5kC0IXbgAX0EZqzI=;
+        b=QWwLfFPr9wkkbnT51mwReSONe2mjBZ4EWl4lnIf2F2673jGCauw1ucF0m3QZqbQ4w0
+         QMM0wo+yaXfuobs6iXwqOocRBRsCb6BAP/WXteGVkpr9HtDysJqr+7bMhlxOTwAPeTN+
+         Fk6o1DCXWQyDt8H+LcUO3U5uml+V0BHgt3Geg2zbT9NlKETFc+bcXQAK5o4cOIYZi4BR
+         BxCx+o5IhmdbvttIcnUc2UZ+uVigv9IkxyXbcrpQXWvKEpJb8Q94xKgdWIEItqyFME8T
+         cZAZRnZ8uWytx+NHDKUH3oe1ScLjiCburTTqZxwcX5YnY8iUAOrGRbmF8xStcjnAho0G
+         3KWA==
+X-Gm-Message-State: AOAM531/MQ3zoF7iHz+J3R1DgwYKRAp8S4f2MS4CMGuaZZXwcrtJaPJ9
+        xIg0IlYn8la5QZZrkYSRZl8oQ2zKPcJhKRC1PwA=
+X-Google-Smtp-Source: ABdhPJwN1wfjTGEQLN0mdwyxiTCKEtaGAdKOb89ooui9k2WgWz153e5mvCcmJ+ITcLhn7kcnVB1n3tycIml4XI3vzOY=
+X-Received: by 2002:a1f:9dca:0:b0:349:6bb2:1c1a with SMTP id
+ g193-20020a1f9dca000000b003496bb21c1amr6083936vke.1.1650932341906; Mon, 25
+ Apr 2022 17:19:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220422172422.4037988-6-maximmi@nvidia.com>
+References: <20220407223629.21487-1-ricardo.martinez@linux.intel.com> <20220407223629.21487-3-ricardo.martinez@linux.intel.com>
+In-Reply-To: <20220407223629.21487-3-ricardo.martinez@linux.intel.com>
+From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Date:   Tue, 26 Apr 2022 03:19:01 +0300
+Message-ID: <CAHNKnsRt=H_tkqG7CNf15DBYJmmunYy6vsm4HjneN47EQB_uug@mail.gmail.com>
+Subject: Re: [PATCH net-next v6 02/13] net: wwan: t7xx: Add control DMA interface
+To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>,
+        Loic Poulain <loic.poulain@linaro.org>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        M Chetan Kumar <m.chetan.kumar@intel.com>,
+        chandrashekar.devegowda@intel.com,
+        Intel Corporation <linuxwwan@intel.com>,
+        chiranjeevi.rapolu@linux.intel.com,
+        =?UTF-8?B?SGFpanVuIExpdSAo5YiY5rW35YabKQ==?= 
+        <haijun.liu@mediatek.com>, amir.hanania@intel.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        dinesh.sharma@intel.com, eliot.lee@intel.com,
+        ilpo.johannes.jarvinen@intel.com, moises.veleta@intel.com,
+        pierre-louis.bossart@intel.com, muralidharan.sethuraman@intel.com,
+        Soumya.Prakash.Mishra@intel.com, sreehari.kancharla@intel.com,
+        madhusmita.sahu@intel.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -94,26 +81,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 08:24:21PM +0300, Maxim Mikityanskiy wrote:
-> +void test_xdp_synproxy(void)
-> +{
-> +	int server_fd = -1, client_fd = -1, accept_fd = -1;
-> +	struct nstoken *ns = NULL;
-> +	FILE *ctrl_file = NULL;
-> +	char buf[1024];
-> +	size_t size;
-> +
-> +	SYS("ip netns add synproxy");
-> +
-> +	SYS("ip link add tmp0 type veth peer name tmp1");
-> +	SYS("ip link set tmp1 netns synproxy");
-> +	SYS("ip link set tmp0 up");
-> +	SYS("ip addr replace 198.18.0.1/24 dev tmp0");
-> +
-> +	// When checksum offload is enabled, the XDP program sees wrong
-> +	// checksums and drops packets.
-> +	SYS("ethtool -K tmp0 tx off");
+Hello Ricardo, Loic, Ilpo,
 
-BPF CI image doesn't have ethtool installed.
-It will take some time to get it updated. Until then we cannot land the patch set.
-Can you think of a way to run this test without shelling to ethtool?
+On Fri, Apr 8, 2022 at 1:37 AM Ricardo Martinez
+<ricardo.martinez@linux.intel.com> wrote:
+> ...
+> Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+>
+> From a WWAN framework perspective:
+> Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
+>
+> Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+
+This line with "From a WWAN framework perspective" looks confusing to
+me. Anyone not familiar with all of the iterations will be in doubt as
+to whether it belongs only to Loic's review or to both of them.
+
+How about to format this block like this:
+
+> Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+> Reviewed-by: Loic Poulain <loic.poulain@linaro.org> (WWAN framework)
+> Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+
+or like this:
+
+> Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+> Reviewed-by: Loic Poulain <loic.poulain@linaro.org> # WWAN framework
+> Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+
+Parentheses vs. comment sign. I saw people use both of these formats,
+I just do not know which is better. What do you think?
+
+--
+Sergey
