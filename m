@@ -2,103 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E274B510254
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 17:57:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CE4B51025D
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 17:58:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352683AbiDZQAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 12:00:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54782 "EHLO
+        id S1352715AbiDZQBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 12:01:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352666AbiDZQAv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 12:00:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 09407387A0
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 08:57:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650988663;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TkKuUo32/J9DonHrfJ5BZUhvklozprERW7prdcPlnX0=;
-        b=Ouj8iYo11/ZJpWQa3B3+8gyz/8iL3jUPj4T033El9J3HyzS8fEGn5P0nezkap4+5K+Rbme
-        0RfC27qVydkoKByPsOOdnh8XbdP2XROmHLo6yjld5Ifqo3uhDORl39UlYfS/9lKeeAYBK4
-        pOvCRVkwaCq7Q0hEdRURQWdM1OG7UTU=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-664-esZDktl9M7q28qjoTYO3fQ-1; Tue, 26 Apr 2022 11:57:41 -0400
-X-MC-Unique: esZDktl9M7q28qjoTYO3fQ-1
-Received: by mail-ej1-f71.google.com with SMTP id nc20-20020a1709071c1400b006f3726da7d3so4693608ejc.15
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 08:57:41 -0700 (PDT)
+        with ESMTP id S1352709AbiDZQBd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 12:01:33 -0400
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C38415F5BE;
+        Tue, 26 Apr 2022 08:58:24 -0700 (PDT)
+Received: by mail-io1-xd36.google.com with SMTP id 79so20525532iou.7;
+        Tue, 26 Apr 2022 08:58:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=d8FLyaN1lsrCzWPKXANEWACyzqrmLi1Yyh4Z8+MPj3M=;
+        b=ab0y09KjsgKm4bMjyedLySmbGf5nHdwS4JDBlHmnofM6W+bpJ6tYAGN5GYbMgFzLDf
+         eNbO2iftFU6sShQTTHGzekiztz2RG9gDfKzLPE1Xa8XvCNhpmqS7CwFhtMvb7xqhAmHU
+         rUxnKIcEqK+rsgycLTzoOqhrEHDFMRe3518MoZdhvgaQ9ntJYncGx+GLFTpfjcIYXIBG
+         RSrThPQhZSeEs5Rh0ICWc4a2O36rjRrZcGBYP61YDPV5lAeuqbIL78GP+cj5jdTmYluE
+         WVbzS5JS4hwfP5lvGu5T6N9rOcNAN5od771ouhWbfd4O/Yx/alxZcHffZ55z/9ISFcGB
+         MVQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=TkKuUo32/J9DonHrfJ5BZUhvklozprERW7prdcPlnX0=;
-        b=Eu1FpTKj1TuHQeoDbroq6QqijDwveRVFIOGxTLAPNCentnK6rWRsytPPdPNVpCBwLQ
-         ztr2Kxx/vEpaW/im7XqDDfAoGOydAH00oSkteLVjVKtlOTVVSygnS+pwJvYZn8TvuS25
-         BmtWBcuO/k7apn1vTZ8wWrEzhXn3xV9fqnYHIsqARHMAZXKGay8ziZdZtp7/nHSVOL29
-         6K4TZlG411GroKf2HDUdIqED967+z/mTq3ywNp1pMGZQ2SGc/A81oeRlu0dSbFTHeaDE
-         Sq0TBRH6K0pe6umebYmfyR5/AR/kZU+gKJzS2tdA3ATIOtjMD8uE854Kr0bvAw+B0qLx
-         2BiA==
-X-Gm-Message-State: AOAM531RloBDF5fxUVLME7/HQPrNt9AkULcCKk+J43TnYltJg4UWoCpW
-        PtsZwCKkBJSeDdUE8tHqbADyN6dgjkd6v2WQXvzSQzhkufHo2av3xNkqu0IMZnLTS04yuOpV6fd
-        rZsFcYnDJB/l6CKXB
-X-Received: by 2002:a17:906:aed8:b0:6f3:7e6b:14d with SMTP id me24-20020a170906aed800b006f37e6b014dmr14313200ejb.451.1650988660404;
-        Tue, 26 Apr 2022 08:57:40 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxLbkGySw9HKU9T5GClMyjg6GJ1qdgz4DT4v6q+yj+pA2eldbZaLN/GjYetj1UIwjjqKxbdtA==
-X-Received: by 2002:a17:906:aed8:b0:6f3:7e6b:14d with SMTP id me24-20020a170906aed800b006f37e6b014dmr14313189ejb.451.1650988660176;
-        Tue, 26 Apr 2022 08:57:40 -0700 (PDT)
-Received: from localhost ([37.161.137.75])
-        by smtp.gmail.com with ESMTPSA id u12-20020aa7d54c000000b00423e004bf9asm6490554edr.86.2022.04.26.08.57.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 08:57:39 -0700 (PDT)
-Date:   Tue, 26 Apr 2022 17:57:35 +0200
-From:   Andrea Claudi <aclaudi@redhat.com>
-To:     stephen@networkplumber.org
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com
-Subject: Re: [PATCH iproute2 0/3] Fix some typos in doc and man pages
-Message-ID: <YmgWb08vTOvF45yO@renaissance-vector>
-References: <cover.1647955885.git.aclaudi@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=d8FLyaN1lsrCzWPKXANEWACyzqrmLi1Yyh4Z8+MPj3M=;
+        b=348smgSHfFSkGS/rX4GYKgkwQDFB7gxbDXg4S2BfXfSQZuWY5Pf6pWFjjDyPnz8Akg
+         5N79ADUHOPPeMla/WrWCmco8LsZK41RcltFudOlimH/BwwkgI4UDtmDyoQi2499vl18P
+         bjXwM+V9kvemrlaRNocyVsk6Lu9/0YlkErCjYyS3abY0Kn4ikwBCVS3kk99S8VXlo9m9
+         SZAukVDd1uEIfBOeobXGQ8pWfFAzTmLtP5R4DrlzZmPNOR4jY79tBc9dZi5hInHsHO4s
+         ylefg2OYledgMx8ev8v7alH8HHETzA8iM7B+4XS4TlNJg1XVeQ2UrPEpZARRxZkWxEya
+         kmiw==
+X-Gm-Message-State: AOAM530omEp47rO65xPx12ocYa2aP6XG5nDa6MVcFj6HAjXyirGpi0ET
+        9BoVpX3Q+NIck65PdKJVQpoIZwvJ91BC2FH8GP4=
+X-Google-Smtp-Source: ABdhPJxlBp941tDGyA4ji5llToCTNpwkqcM1zPijWP6pE88/bFK42Tx/Y4oKZcA8+Yjc9x9zP66kzcBg24odBfuJiJw=
+X-Received: by 2002:a92:c247:0:b0:2cc:1798:74fe with SMTP id
+ k7-20020a92c247000000b002cc179874femr9258731ilo.239.1650988703597; Tue, 26
+ Apr 2022 08:58:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1647955885.git.aclaudi@redhat.com>
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220422100025.1469207-1-jolsa@kernel.org> <20220422100025.1469207-2-jolsa@kernel.org>
+ <52f36e85-fea6-e307-344e-5bbb5b8431f7@iogearbox.net> <CAEf4BzZOKosYRHwK2CfZzpTUcDdrLXPXbYax++Q_PHCMcNdqCw@mail.gmail.com>
+ <YmeXx0mfy4Nr5jEB@krava>
+In-Reply-To: <YmeXx0mfy4Nr5jEB@krava>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 26 Apr 2022 08:58:12 -0700
+Message-ID: <CAEf4Bza42-aN7dZAWsH1H5KNMhSZh6nUj0WQ5MkOkNjBq2At_A@mail.gmail.com>
+Subject: Re: [PATCH perf/core 1/5] libbpf: Add bpf_program__set_insns function
+To:     Jiri Olsa <olsajiri@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 03:32:02PM +0100, Andrea Claudi wrote:
-> As per description, this series contains some typo fixes on doc an man
-> pages.
-> 
-> - patch 1/3 fixes a typo in a devlink example
-> - patch 2/3 fixes typos on some man pages
-> - patch 3/3 fixes a typo in the tc actions doc
-> 
-> Andrea Claudi (3):
->   man: devlink-region: fix typo in example
->   man: fix some typos
->   doc: fix 'infact' --> 'in fact' typo
-> 
->  doc/actions/actions-general | 2 +-
->  man/man8/dcb-app.8          | 2 +-
->  man/man8/dcb-dcbx.8         | 2 +-
->  man/man8/devlink-dev.8      | 2 +-
->  man/man8/devlink-region.8   | 2 +-
->  5 files changed, 5 insertions(+), 5 deletions(-)
-> 
-> -- 
-> 2.35.1
+On Mon, Apr 25, 2022 at 11:57 PM Jiri Olsa <olsajiri@gmail.com> wrote:
 >
+> On Mon, Apr 25, 2022 at 11:19:09PM -0700, Andrii Nakryiko wrote:
+> > On Mon, Apr 25, 2022 at 9:22 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> > >
+> > > On 4/22/22 12:00 PM, Jiri Olsa wrote:
+> > > > Adding bpf_program__set_insns that allows to set new
+> > > > instructions for program.
+> > > >
+> > > > Also moving bpf_program__attach_kprobe_multi_opts on
+> > > > the proper name sorted place in map file.
+> >
+> > would make sense to fix it as a separate patch, it has nothing to do
+> > with bpf_program__set_insns() API itself
+>
+> np
+>
+> >
+> > > >
+> > > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > > > ---
+> > > >   tools/lib/bpf/libbpf.c   |  8 ++++++++
+> > > >   tools/lib/bpf/libbpf.h   | 12 ++++++++++++
+> > > >   tools/lib/bpf/libbpf.map |  3 ++-
+> > > >   3 files changed, 22 insertions(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > > > index 809fe209cdcc..284790d81c1b 100644
+> > > > --- a/tools/lib/bpf/libbpf.c
+> > > > +++ b/tools/lib/bpf/libbpf.c
+> > > > @@ -8457,6 +8457,14 @@ size_t bpf_program__insn_cnt(const struct bpf_program *prog)
+> > > >       return prog->insns_cnt;
+> > > >   }
+> > > >
+> > > > +void bpf_program__set_insns(struct bpf_program *prog,
+> > > > +                         struct bpf_insn *insns, size_t insns_cnt)
+> > > > +{
+> > > > +     free(prog->insns);
+> > > > +     prog->insns = insns;
+> > > > +     prog->insns_cnt = insns_cnt;
+> >
+> > let's not store user-provided pointer here. Please realloc prog->insns
+> > as necessary and copy over insns into it.
+> >
+> > Also let's at least add the check for prog->loaded and return -EBUSY
+> > in such a case. And of course this API should return int, not void.
+>
+> ok, will change
+>
+> >
+> > > > +}
+> > > > +
+> > > >   int bpf_program__set_prep(struct bpf_program *prog, int nr_instances,
+> > > >                         bpf_program_prep_t prep)
+> > > >   {
+> > > > diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+> > > > index 05dde85e19a6..b31ad58d335f 100644
+> > > > --- a/tools/lib/bpf/libbpf.h
+> > > > +++ b/tools/lib/bpf/libbpf.h
+> > > > @@ -323,6 +323,18 @@ struct bpf_insn;
+> > > >    * different.
+> > > >    */
+> > > >   LIBBPF_API const struct bpf_insn *bpf_program__insns(const struct bpf_program *prog);
+> > > > +
+> > > > +/**
+> > > > + * @brief **bpf_program__set_insns()** can set BPF program's underlying
+> > > > + * BPF instructions.
+> > > > + * @param prog BPF program for which to return instructions
+> > > > + * @param insn a pointer to an array of BPF instructions
+> > > > + * @param insns_cnt number of `struct bpf_insn`'s that form
+> > > > + * specified BPF program
+> > > > + */
+> >
+> > This API makes me want to cry... but I can't come up with anything
+> > better for perf's use case.
+> >
 
-Hi Stephen, is there any issue with this series? Should I resend it?
+So thinking about this some more. If we make libbpf not to close maps
+and prog FDs on BPF program load failure automatically and instead
+doing it in bpf_object__close(), which would seem to be a totally fine
+semantics and won't break any reasonable application as they always
+have to call bpf_object__close() anyways to clean up all the
+resources; we wouldn't need this horror of bpf_program__set_insns().
+Your BPF program would fail to load, but you'll get its fully prepared
+instructions with bpf_program__insns(), then you can just append
+correct preamble. Meanwhile, all the maps will be created (they are
+always created before the first program load), so all the FDs will be
+correct.
 
-Thanks,
-Andrea
+This is certainly advanced knowledge of libbpf behavior, but the use
+case you are trying to solve is also very unique and advanced (and I
+wouldn't recommend anyone trying to do this anyways). WDYT? Would that
+work?
 
+> > But it can only more or less safely and sanely be used from the
+> > prog_prepare_load_fn callback, so please add a big warning here saying
+> > that this is a very advanced libbpf API and the user needs to know
+> > what they are doing and this should be used from prog_prepare_load_fn
+> > callback only. If bpf_program__set_insns() is called before
+> > prog_prepare_load_fn any map/subprog/etc relocation will most probably
+> > fail or corrupt BPF program code.
+>
+> will add the warnings
+>
+> >
+> > > > +LIBBPF_API void bpf_program__set_insns(struct bpf_program *prog,
+> > > > +                                    struct bpf_insn *insns, size_t insns_cnt);
+> >
+> > s/insns_cnt/insn_cnt/
+> >
+> > > > +
+> > >
+> > > Iiuc, patch 2 should be squashed into this one given they logically belong to the
+> > > same change?
+> > >
+> > > Fwiw, I think the API description should be elaborated a bit more, in particular that
+> > > the passed-in insns need to be from allocated dynamic memory which is later on passed
+> > > to free(), and maybe also constraints at which point in time bpf_program__set_insns()
+> > > may be called.. (as well as high-level description on potential use cases e.g. around
+> > > patch 4).
+> >
+> > Yep, patch #1 is kind of broken without patch #2, so let's combine them.
+>
+> ok
+>
+> thanks,
+> jirka
