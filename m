@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 876E450EEF3
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 04:54:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F13A550EEFD
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 05:03:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242755AbiDZC5F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Apr 2022 22:57:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50516 "EHLO
+        id S230461AbiDZDGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Apr 2022 23:06:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242591AbiDZC47 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 22:56:59 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E30B11F637
-        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 19:53:53 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id i24so16644248pfa.7
-        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 19:53:53 -0700 (PDT)
+        with ESMTP id S229805AbiDZDGE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Apr 2022 23:06:04 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E728364BC7
+        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 20:02:58 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id q8so5800511plx.3
+        for <netdev@vger.kernel.org>; Mon, 25 Apr 2022 20:02:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=jIbGFRSUbUA+CjeG4fqZwwNEhl6pgUgn3w4NFyc7sDA=;
-        b=Kb/vbAvQV0XCQ/RqCLCDsLVD5hAZCerQC5SXN6nzNNT4ghaFokGa1HqHW7nHFwgW1Y
-         jvkVG4GJfut7U3v0ZBnCQboB2ShdPUoON5EI7s74ri9EMzeFnZEnEvRrliuUj6iofJeY
-         vCiabRssu08eGNvU0wneJcns6a5NlLAXfXnZuczCrRtb69HGBpOvGATxrPgyA45lwrbB
-         qhaAvocRl/GXpHS2qbfr8pNTtzaQPu2r30mYJr2M0zQP1GS+uAzCALdZDvYK/Qb6lhgL
-         FSLoGn0FDO0ivh986xwtxJJZ7js8Lkvu1ksdHjoIMRD0duBPZ01ws9BzBZuj7kbVzN6p
-         JyYw==
+        bh=tVNV+lpOFrQou4OBagKTX+xUF/aQUFtboYpF3YEpMw4=;
+        b=Tfu82BAJuGv9EK5XKEdk2M3DniR7klPTIYHa14Or5N0zgMZna77854owklwNSppH7B
+         K7jLjlcJPMPSCheCG2d5Ldtv5HE7vvlyC9/9rxJPv3mFKQKZ808tkK6AiGABpHiBSLe7
+         pJ39EhjfIQCsttn56n95Pl7+6mxRLNr0yf3JUEqis1+tqY2S2FkQqncHfu/JXHfgRCVF
+         H/8K4/m//xDnmWF7yYlgiAytkLSl7VCL9eq6AJ8nAcS/i/My6At2xXc3paxRKesp7u8f
+         KBCSlyGw7/jh3j3T5vWnF7cikZzn39G6DKL9NRB22369/HxMdKZKe1I8ZofAjn4ihkOj
+         R9VQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=jIbGFRSUbUA+CjeG4fqZwwNEhl6pgUgn3w4NFyc7sDA=;
-        b=0+AIvhBwKVCFcMDtvbbZexSO6pgnN6hn5xcmyzufjrHRY9wL4IyDDfuyyf5ZL3EsrY
-         A4fh9oGRsoNwkN533qBqUwaj/Yiil0GRExs5WkIhWRIgnTXxORGCm4QvIKrNQEZHmmCh
-         uHqg9C+hGHwoKrPKeoduItOHbQ50sl34S+s45OGiNEJl8IzTY1FYKempTsrEbscMaa5f
-         2k4d06xr6pVCtwzxc/E5mQ/veG2uiV+bA20cdjT3TrFGsqYzOlweK0RVXbM9a0qR7GWg
-         h0Vxl/FCMGgTlRa/MIB8fDzZ08q2un2ACQQSo1WHLxPPUiSMUtjax2YNTamkjato2niK
-         AP5Q==
-X-Gm-Message-State: AOAM532vUKvkwhv4WgX7cynifHlD6zOapzQjU7MpOcaFkQ8dctqbkBU/
-        MSC7Xco3eYRzuNRQ8Cr6aiE=
-X-Google-Smtp-Source: ABdhPJwXeCOzV87wjU+vztuwq95L1uSNxMDbiPVX5WPVxwRoXdNlHdP4UW0pQTgTV9QLUdLnfZeonw==
-X-Received: by 2002:a05:6a00:1a01:b0:505:b3e5:b5fc with SMTP id g1-20020a056a001a0100b00505b3e5b5fcmr22049101pfv.53.1650941632775;
-        Mon, 25 Apr 2022 19:53:52 -0700 (PDT)
+        bh=tVNV+lpOFrQou4OBagKTX+xUF/aQUFtboYpF3YEpMw4=;
+        b=e413TOSP2NqhdSJ6tN/ER554/vUlGhIZiJ5tOJCzYUbiawPu+XrvJe8soJRkPoYaXh
+         2KINawFq0ImFvqKw6FRdyj06ApY64Ra3HH4qJXIprK89CuMM+IuypZizLS6aFM/yFKjO
+         9wJa6BCsG4GBUj1iHsz3KQKkL3JaLl1pCXDIKlXm4sejrCnHpj7hMH7JE9xPl/XnLKXS
+         GvAcx0vn0wVbbzUoxz5GIl1ZWMSiJi/abXHQHsDSeIlD9aUofhGF1zTCByrxRf9j5xeA
+         Y8aSi8ecbWwGV9XOj4yDzFkVmIlUBmbbDjuPGEN5pyue1q4kaPGgxGT9iDqtiUNWrpjC
+         /3vQ==
+X-Gm-Message-State: AOAM531V9qKLYfzboivuV74eBTJ5IKkpb/bsrcjmq2/j9Kjh08sOdxjK
+        IteG8J3oOUemhxYMv6uotbQosQGvGMM=
+X-Google-Smtp-Source: ABdhPJymg2ILW5KsMOpM9G/PDK67qkO3NIksDbB6yUhkLvtoRT+7CjQPheiYWKhSqksGAWyqS5FvGg==
+X-Received: by 2002:a17:902:7e06:b0:159:6c1:ea2b with SMTP id b6-20020a1709027e0600b0015906c1ea2bmr20888273plm.105.1650942178476;
+        Mon, 25 Apr 2022 20:02:58 -0700 (PDT)
 Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id f14-20020a63380e000000b0038253c4d5casm11042500pga.36.2022.04.25.19.53.51
+        by smtp.gmail.com with ESMTPSA id q2-20020a17090a064200b001cd498dc152sm1596304pje.2.2022.04.25.20.02.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Apr 2022 19:53:52 -0700 (PDT)
-Date:   Mon, 25 Apr 2022 19:53:49 -0700
+        Mon, 25 Apr 2022 20:02:57 -0700 (PDT)
+Date:   Mon, 25 Apr 2022 20:02:54 -0700
 From:   Richard Cochran <richardcochran@gmail.com>
 To:     Jonathan Lemon <jonathan.lemon@gmail.com>
 Cc:     f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com,
@@ -55,15 +55,16 @@ Cc:     f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com,
         netdev@vger.kernel.org, kernel-team@fb.com
 Subject: Re: [PATCH net-next v1 1/4] net: phy: broadcom: Add PTP support for
  some Broadcom PHYs.
-Message-ID: <20220426025349.GB22745@hoboy.vegasvil.org>
+Message-ID: <20220426030254.GC22745@hoboy.vegasvil.org>
 References: <20220424022356.587949-1-jonathan.lemon@gmail.com>
  <20220424022356.587949-2-jonathan.lemon@gmail.com>
- <20220425013800.GC4472@hoboy.vegasvil.org>
- <20220425235540.vuacu26xb6bzpxob@bsd-mbp.dhcp.thefacebook.com>
+ <20220425011931.GB4472@hoboy.vegasvil.org>
+ <20220425233043.q5335cvto5c6zcck@bsd-mbp.dhcp.thefacebook.com>
+ <20220426024915.GA22745@hoboy.vegasvil.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220425235540.vuacu26xb6bzpxob@bsd-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20220426024915.GA22745@hoboy.vegasvil.org>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -75,19 +76,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 04:55:40PM -0700, Jonathan Lemon wrote:
+On Mon, Apr 25, 2022 at 07:49:15PM -0700, Richard Cochran wrote:
+> On Mon, Apr 25, 2022 at 04:30:43PM -0700, Jonathan Lemon wrote:
 
-> We could just have a chip-specific version of this function.  The
-> recovered timestamp is passed back in a structure, so the rest of the
-> code would be unchanged.
+> > The BCM chip inserts a 64-bit sec.nsec RX timestamp immediately after
+> > the PTP header.  So I'm recovering it here.  I'll also update the patch
+> > to memmove() the tail of the skb up in order to remove it, just in case
+> > it makes a difference.
+> 
+> Okay, this is something different.  This won't work because that
+> corrupts the PTP message format.
 
-Yeah, but it means that I'll have to check each and every bit of every
-register to see what other random changes are there...
-
-> Jonathan    (no, not volunteering to do this...)
-
-For now, just get your chip merged, and then the next chip's driver
-will refactor/reuse as needed.
+Wait, I see, you want to copy the back of the frame data over the time
+stamp.  That makes sense, and it avoids clobbering the reserved1 field
+(which aquired a meaning in 1588 v2.1)
 
 Thanks,
 Richard
