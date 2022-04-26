@@ -2,68 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D3F55102F4
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 18:13:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBDAF5102F5
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 18:13:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352851AbiDZQQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 12:16:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60922 "EHLO
+        id S1352850AbiDZQRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 12:17:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352848AbiDZQQ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 12:16:29 -0400
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BB889A9B4;
-        Tue, 26 Apr 2022 09:13:21 -0700 (PDT)
-Received: by mail-io1-xd2b.google.com with SMTP id 125so20589920iov.10;
-        Tue, 26 Apr 2022 09:13:21 -0700 (PDT)
+        with ESMTP id S1352708AbiDZQQ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 12:16:59 -0400
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F02659D4F1
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 09:13:51 -0700 (PDT)
+Received: by mail-yb1-xb2c.google.com with SMTP id v59so20940969ybi.12
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 09:13:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=BJMkcDCTGhP0ayLvd0I+jpervcoFaZO0k/SeCGEUu1Q=;
-        b=XU1+nhwpmvJ3MqLwmBtfHMGKM229bJRwaYofoSwWpdy4yH9uxRaeueEEENLI4HlY1o
-         3F8legZsN6VbCvwyUS0mQHlWV3OPuoEorU7g+9SOsmlTwIqY7eZYTJQOYXXrJK5UQWdC
-         B35NtUasCtsyIbbFIbm7MGNrBfEqQKu3cmiAktqgQVh0EkSrpv0Zxw4jY6M1Fdv9X8Wi
-         G7GpVPAgih6vW/6KjgRa+P0ZRFX52EKQRi24yUj7eIMv51fIFE7eYsXhf82zclwFss+u
-         IEVFZvdL7Wb5RH1e7fEavvQws3aEJNpDstJNLlS96diKmVpU3DzpsWz+P3MBNTdVg1gw
-         ZlEg==
+        bh=oCGX3SR1P5hc5jt5umlhrJ4pWqxunMPOTPtIzs5Vys8=;
+        b=mvcDXUtSUZS3BBNf6y5uaceUSYPSaFl8GV1NgbK5k38jpehG4MIKCxSHvKOXx2YPGt
+         3x/fyxHCAecj7p56h/8ZOYbL8TDf0tw/Ws1DLP9vt0TxtSTPkPGFzho81J/rqc2GLDwi
+         cYb8MXogEdnI+IFqEeZkd/t5Hk/xOFaabMZhFYeH3t5Zg8iIw2yrybf1EGkgyvoz/wY0
+         yuWG/XHmNAsKjbzjDvERTiRU+Mn73iuRDJF9wZcpEMlNec1/RXwB+/BZH4lp9lGHn8Hm
+         TPZHmoMdxncDjTXnXP7bKu9Grvg0R+3aJz8O76FSw+X3+vn5sWJcpVNfwETiyILMr1xI
+         LtBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=BJMkcDCTGhP0ayLvd0I+jpervcoFaZO0k/SeCGEUu1Q=;
-        b=P2P0gPrPxP2VS5ldyvDO9AERbnupWxr7hWosGnWnQWXK6Ytv6jHCdhvD+qFZgxeAmJ
-         yP0WT7RFRuT1WuvCdkb2ICRoUIWJDoM5XrWYPLtnzciAIyzdlwfILSGCbIAsQ75pv6mh
-         JwtJAhBgpYdvgubkGQ62zjUawCLbiHJ+qYfgMyhsqBUB27FNbVAblHxIvfM8xUP/ZFaT
-         oioMbqjKtj6EU7xjSyUDb/JDGo6Sy3JbobslxR1KZU7Ci8dChJPOE4xFh6Rp+OBZG4+0
-         k7HcJSe53V0aXSMBbemLwyMw90/Qf6BFKhEEmWHSIWDDAfvZEKl1OjQ3iRlKRLfr8hro
-         9VIQ==
-X-Gm-Message-State: AOAM530PGj2/4P/YxSDNs2jKO2Tkccb0vjXE3qLR8pfOiiiYO4U0U2cr
-        iL3i6VAxp7QlIIN2xKMjYnkNjDhTJF16/Q6KUDM=
-X-Google-Smtp-Source: ABdhPJw8r05wZcaVMjTSP8BXPs9EmptOK3ZOn2VSK5Mlwly8qpWo7cIa2/v3dQx+F8pSPSC/tb6TF4727jy6q92o4QE=
-X-Received: by 2002:a05:6e02:1846:b0:2cc:58e5:cd38 with SMTP id
- b6-20020a056e02184600b002cc58e5cd38mr10008604ilv.87.1650989600731; Tue, 26
- Apr 2022 09:13:20 -0700 (PDT)
+        bh=oCGX3SR1P5hc5jt5umlhrJ4pWqxunMPOTPtIzs5Vys8=;
+        b=6xFef+PqeqvGheHQqUSdZEtgG8cBJOWScgknDkv3w2QVb3G/B/as1pE9zU4NBKxAEu
+         ze09bufrSLtqJKZj1yky1bWJpyqI3h8qFhxBDKwwODlAb2JLwgB8cd/0H4i4euIYZrcX
+         fIkfHYUmmUS4PWN+SbgoBPdL7JCKHx9OQpYxObdLugIQXMkkqJcOwHDbcM2GIKJ3q8u8
+         eTci16BX9OM4kSxa4ZCKB3wLJn+rr/AE4ZUvJdVD7oxI+rL/C6ZM7RngaOcecEPsTx/L
+         ianxAc1SmfUYEJX8fvV51ZVwQ0Bi8Y/Aga5pw3GdPe8cZpSHpAbDmGnHFlV0z4W/nffJ
+         SlsA==
+X-Gm-Message-State: AOAM530gIIz+/wTtLaCm83UT0GT/CDPy3DVSNzSGStGqgMdgERpvzI0n
+        idpnGD8gyc8OPOXK/z1Izo3Z6cXXeqdLx4yvTzT9ww==
+X-Google-Smtp-Source: ABdhPJysJxBYzJ/5QtCMhhRYvsYaFkoyPDVAfYWLVvyhcDqHRKV2wBNVREkGjN5Q47ADZ1t3de4XkXDU4/T9Lmb1Urk=
+X-Received: by 2002:a25:6157:0:b0:645:8d0e:f782 with SMTP id
+ v84-20020a256157000000b006458d0ef782mr20927217ybb.36.1650989630929; Tue, 26
+ Apr 2022 09:13:50 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220423140058.54414-1-laoar.shao@gmail.com> <20220423140058.54414-2-laoar.shao@gmail.com>
- <CAEf4Bza_8d_K22DFRzGHYAQdz_y1+9b_bfSc0t0EkdM4nyy7Hw@mail.gmail.com>
-In-Reply-To: <CAEf4Bza_8d_K22DFRzGHYAQdz_y1+9b_bfSc0t0EkdM4nyy7Hw@mail.gmail.com>
-From:   Yafang Shao <laoar.shao@gmail.com>
-Date:   Wed, 27 Apr 2022 00:12:44 +0800
-Message-ID: <CALOAHbDPE6iSGVR1pyNkY-N3RtoGYaptqcn+Nse-T88sWcD5Xw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/4] libbpf: Define DEFAULT_BPFFS
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+References: <20220422201237.416238-1-eric.dumazet@gmail.com>
+ <2c092f98a8fe1702173fe2b4999811dd2263faf3.camel@redhat.com>
+ <CANn89iLuqGdbHkyUcTZd+Ww6vUxqNg0L4eC5Xt8bqLMDmDM18w@mail.gmail.com> <b4df9653b93b9b0bdc8a91f5560ec027848200a9.camel@redhat.com>
+In-Reply-To: <b4df9653b93b9b0bdc8a91f5560ec027848200a9.camel@redhat.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 26 Apr 2022 09:13:39 -0700
+Message-ID: <CANn89iJq1mZepnW3XMPOP298ZxoPF8Rwy0Em-NKwYs+CMUo9nw@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next] net: generalize skb freeing deferral to
+ per-cpu lists
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,41 +71,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 2:45 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Sat, Apr 23, 2022 at 7:01 AM Yafang Shao <laoar.shao@gmail.com> wrote:
-> >
-> > Let's use a macro DEFAULT_BPFFS instead of the hard-coded "/sys/fs/bpf".
-> >
-> > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-> > ---
-> >  tools/lib/bpf/bpf_helpers.h | 2 +-
-> >  tools/lib/bpf/libbpf.c      | 2 +-
-> >  tools/lib/bpf/libbpf.h      | 6 ++++--
-> >  3 files changed, 6 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
-> > index 44df982d2a5c..9161ebcd3466 100644
-> > --- a/tools/lib/bpf/bpf_helpers.h
-> > +++ b/tools/lib/bpf/bpf_helpers.h
-> > @@ -137,7 +137,7 @@ struct bpf_map_def {
-> >
-> >  enum libbpf_pin_type {
-> >         LIBBPF_PIN_NONE,
-> > -       /* PIN_BY_NAME: pin maps by name (in /sys/fs/bpf by default) */
-> > +       /* PIN_BY_NAME: pin maps by name (in DEFAULT_BPFFS by default) */
->
-> how is this improving things? now I need to grep some more to find out
-> what's the value of DEFAULT_BPFFS is
+On Tue, Apr 26, 2022 at 8:28 AM Paolo Abeni <pabeni@redhat.com> wrote:
 >
 
-The new added one also uses the "/sys/fs/bpf", so I defined a macro
-for them, then they can be kept the same.
-I won't change it if you object to it.
+> I'm unsure I explained my doubt in a clear way: what I fear is that the
+> compiler could emit a single read instruction, corresponding to the
+> READ_ONCE() outside the lock, so that the spin-locked section will
+> operate on "old" defer_list.
+>
+> If that happens we could end-up with 'defer_count' underestimating the
+> list lenght. It looks like that is tolerable, as we will still be
+> protected vs defer_list growing too much.
 
-[snip]
+defer_count is always read/written under the protection of the spinlock.
+It must be very precise, unless I am mistaken.
 
--- 
-Regards
-Yafang
+>
+> Acked-by: Paolo Abeni <pabeni@redhat.com>
+>
+>
+
+Thanks !
