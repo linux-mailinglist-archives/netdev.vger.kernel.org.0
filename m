@@ -2,46 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A8695107FA
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 21:02:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF19E5107E2
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 21:02:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353653AbiDZTFT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1353693AbiDZTFT (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 26 Apr 2022 15:05:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40288 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353063AbiDZTFN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 15:05:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5094E19917A;
+        with ESMTP id S1353165AbiDZTFO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 15:05:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1E0919980A;
         Tue, 26 Apr 2022 12:02:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E0471619B6;
-        Tue, 26 Apr 2022 19:02:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30510C385B2;
-        Tue, 26 Apr 2022 19:02:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DD206199D;
+        Tue, 26 Apr 2022 19:02:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2382AC385B1;
+        Tue, 26 Apr 2022 19:02:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650999724;
-        bh=3xObiHzauvYXUgi+HTKdEGtrc02fLNsKRtvSnMIn7h0=;
+        s=k20201202; t=1650999725;
+        bh=5BB8vQtqoB0EdnhJdulb5o79642bRYVhga3ZDYyj2PI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gGCHKiUv1VGUYaHrm4y/L5grtdkiV1IRAMPykVDwdB7dLsDxJLJ8FVUINkSoqpLDR
-         ePMiPr5xN9FUrx9gUZtREcTtHjdpys+tRUPW55BarjTlTbulDV4Bhwg57dR2LKAIFc
-         EPdI1Nrr938n6a+2fKx5+sTIjNK4nLUh1ijIW5AKsBfncnUHdy8gVyyLPul6NQb/WO
-         pufKhHNI/WlUZguz/KQ4dltQIglH5iWlqCNjugo/rG9/zUCwGKG+EtQ4Brshc01tob
-         Ub8N530aA7YP3SiBr6yGo4TP1Wu+HdP2boedZcTk+kCubvoqqnPrU8z0M3IUDXLlWY
-         svqI7v4/cTzow==
+        b=lDS8vYLLlRNKp8Tgd9aCJcrkIRrpAMQeV+N4kN4QjSseGOhaTcZ5A+ighLpiGkGtj
+         S/F77R1c1t0Q6uG+jMYg9Q2cwtyVI8GkbPgHOgjwYXCjYv973JY9CE+R2F/c7+k8nd
+         UYQKvIZLE7C4WTcD9W2KxxEBh0SmgSF/FAPOF+D5pZxtG2tsWV2hPAbXOWlleHqhrC
+         yBvgJR1tmK58CZdu317YI2y0l5sXdN7AEx9tFcRT4IB/lOpww6SWeFdQj5XGnISy3A
+         DA0sYLJq/YWV/4rFjJqGQd22uLtgvUCkX/nL2aFXP8gts7xWWMS34TQrxmtkgOOi5s
+         K9TagZ5dw9O6Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peilin Ye <peilin.ye@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
+Cc:     suresh kumar <suresh2514@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 12/22] ip6_gre: Avoid updating tunnel->tun_hlen in __gre6_xmit()
-Date:   Tue, 26 Apr 2022 15:01:35 -0400
-Message-Id: <20220426190145.2351135-12-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 14/22] bonding: do not discard lowest hash bit for non layer3+4 hashing
+Date:   Tue, 26 Apr 2022 15:01:37 -0400
+Message-Id: <20220426190145.2351135-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220426190145.2351135-1-sashal@kernel.org>
 References: <20220426190145.2351135-1-sashal@kernel.org>
@@ -58,46 +57,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+From: suresh kumar <suresh2514@gmail.com>
 
-[ Upstream commit f40c064e933d7787ca7411b699504d7a2664c1f5 ]
+[ Upstream commit 49aefd131739df552f83c566d0665744c30b1d70 ]
 
-Do not update tunnel->tun_hlen in data plane code.  Use a local variable
-instead, just like "tunnel_hlen" in net/ipv4/ip_gre.c:gre_fb_xmit().
+Commit b5f862180d70 was introduced to discard lowest hash bit for layer3+4 hashing
+but it also removes last bit from non layer3+4 hashing
 
-Co-developed-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+Below script shows layer2+3 hashing will result in same slave to be used with above commit.
+$ cat hash.py
+#/usr/bin/python3.6
+
+h_dests=[0xa0, 0xa1]
+h_source=0xe3
+hproto=0x8
+saddr=0x1e7aa8c0
+daddr=0x17aa8c0
+
+for h_dest in h_dests:
+    hash = (h_dest ^ h_source ^ hproto ^ saddr ^ daddr)
+    hash ^= hash >> 16
+    hash ^= hash >> 8
+    print(hash)
+
+print("with last bit removed")
+for h_dest in h_dests:
+    hash = (h_dest ^ h_source ^ hproto ^ saddr ^ daddr)
+    hash ^= hash >> 16
+    hash ^= hash >> 8
+    hash = hash >> 1
+    print(hash)
+
+Output:
+$ python3.6 hash.py
+522133332
+522133333   <-------------- will result in both slaves being used
+
+with last bit removed
+261066666
+261066666   <-------------- only single slave used
+
+Signed-off-by: suresh kumar <suresh2514@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/ip6_gre.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/bonding/bond_main.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
-index 8753e9cec326..b43a46449130 100644
---- a/net/ipv6/ip6_gre.c
-+++ b/net/ipv6/ip6_gre.c
-@@ -743,6 +743,7 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- 		struct ip_tunnel_info *tun_info;
- 		const struct ip_tunnel_key *key;
- 		__be16 flags;
-+		int tun_hlen;
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index aebeb46e6fa6..c9107a8b4b90 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -3819,14 +3819,19 @@ static bool bond_flow_dissect(struct bonding *bond, struct sk_buff *skb, const v
+ 	return true;
+ }
  
- 		tun_info = skb_tunnel_info_txcheck(skb);
- 		if (IS_ERR(tun_info) ||
-@@ -760,9 +761,9 @@ static netdev_tx_t __gre6_xmit(struct sk_buff *skb,
- 		dsfield = key->tos;
- 		flags = key->tun_flags &
- 			(TUNNEL_CSUM | TUNNEL_KEY | TUNNEL_SEQ);
--		tunnel->tun_hlen = gre_calc_hlen(flags);
-+		tun_hlen = gre_calc_hlen(flags);
+-static u32 bond_ip_hash(u32 hash, struct flow_keys *flow)
++static u32 bond_ip_hash(u32 hash, struct flow_keys *flow, int xmit_policy)
+ {
+ 	hash ^= (__force u32)flow_get_u32_dst(flow) ^
+ 		(__force u32)flow_get_u32_src(flow);
+ 	hash ^= (hash >> 16);
+ 	hash ^= (hash >> 8);
++
+ 	/* discard lowest hash bit to deal with the common even ports pattern */
+-	return hash >> 1;
++	if (xmit_policy == BOND_XMIT_POLICY_LAYER34 ||
++		xmit_policy == BOND_XMIT_POLICY_ENCAP34)
++		return hash >> 1;
++
++	return hash;
+ }
  
--		gre_build_header(skb, tunnel->tun_hlen,
-+		gre_build_header(skb, tun_hlen,
- 				 flags, protocol,
- 				 tunnel_id_to_key32(tun_info->key.tun_id),
- 				 (flags & TUNNEL_SEQ) ? htonl(tunnel->o_seqno++)
+ /* Generate hash based on xmit policy. If @skb is given it is used to linearize
+@@ -3856,7 +3861,7 @@ static u32 __bond_xmit_hash(struct bonding *bond, struct sk_buff *skb, const voi
+ 			memcpy(&hash, &flow.ports.ports, sizeof(hash));
+ 	}
+ 
+-	return bond_ip_hash(hash, &flow);
++	return bond_ip_hash(hash, &flow, bond->params.xmit_policy);
+ }
+ 
+ /**
+@@ -5051,7 +5056,7 @@ static u32 bond_sk_hash_l34(struct sock *sk)
+ 	/* L4 */
+ 	memcpy(&hash, &flow.ports.ports, sizeof(hash));
+ 	/* L3 */
+-	return bond_ip_hash(hash, &flow);
++	return bond_ip_hash(hash, &flow, BOND_XMIT_POLICY_LAYER34);
+ }
+ 
+ static struct net_device *__bond_sk_get_lower_dev(struct bonding *bond,
 -- 
 2.35.1
 
