@@ -2,111 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E64E9510925
+	by mail.lfdr.de (Postfix) with ESMTP id 5636D510923
 	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 21:33:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353803AbiDZTg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 15:36:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52540 "EHLO
+        id S1354226AbiDZTg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 15:36:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354165AbiDZTgZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 15:36:25 -0400
+        with ESMTP id S1344071AbiDZTg1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 15:36:27 -0400
 Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2102.outbound.protection.outlook.com [40.107.113.102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BD0119F411;
-        Tue, 26 Apr 2022 12:33:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0EE61A0B3C;
+        Tue, 26 Apr 2022 12:33:18 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=W7Peq7ljkDtvZUKXZ41R8RAtyZwnQrUjBCdslRYXibI+4KScYMyViSrIuCfruQYcvWmSgVLKlKoQWekuQbd1quSVFvKG4JRn1H2mCFh6FvTJj2Ws2hhIjkf6WwbIx4UNAfirPNwRQBnOj3M97MMPxm6gDeOoVjG4j+srlGc5trUc095uTQMAwHbhy4c+w4hnGSNNSerm9+/fvjwBK64B6K4OSAZfrV74pz49b4O2mt7NMT12TMVd317r8BBBCFa9qW3FBOmNpoNIeS9fHa5KP9e2dPA+biLZvKWs7gLDomAHBRjOtxQGIby+7pWzlEUs1XApEdg7TADe2XhTPiLfFw==
+ b=goNG3eWdCP38x9xWREnafnWXhVkdhTc7oM2cvB7VvJksQ/Vp/0iulUYGfSte8SJX+R4qgwe9XAgqoNLsmEgj7gmy7/kDFJLGwbBhgMsVLD9YuVuLxFG2LKpxnRKgGVGSm2BAQq/i6cHOTqlZA7LRf/cxm3yFNjfrG4uXBY045YW+hcXCjWOe8DHT1OR/t6OQzIX6YFgMFtOUG/7E4XUOQ6Q2kvu3HgXZLyvP/7TibagPkSDRe8pyeg8QSgpcjW3D57y7s4Nfb8tmUP31HZvpjXK7vEbmz2uP8wbBziZKga9dFRF3gK8BjVp3VetTt3ubFRz5UoqH4MBYc5qTGBAwbQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=AszbztA/VNRi1bF+UGa7MeyE8QbbTciaOZgz9KOuLWM=;
- b=MlKoa+PXg9uXkcqT0Rrq5Z+5fvAH8lA+BfQLIm4xe0ADokHo6ARSw2frfudqQs2ajAiAwUmVXCiYPF9NuBzISzEefkG0iA+bX3f7TyF+ESZy2CqL9KG8UVHiADUDI+6GP6dj3CxG94UOQFZYrRtK35DZ9wGEbJm5yspYsbLHhLDIWbHF+V8SHTGRIhlqzLYF9tW4APjPi/Sx8hYWexFlPMkKxluSNFL4/ltW63AssMNENis4t3aHWlyz/06lmQxsx5My/vCGgxkBDuelkj+4amx5YaTqm1upQwRgzZS5+ttzbDjCqWDrJJxHnOuJ4HcyiySvTk7dFn74yGzwEOYM/g==
+ bh=TvBaYEsh8ZhxyX3AhrmYg1CxLrZsnAhbVJx9PzFKR48=;
+ b=kLywC2Wy/qjPw/uAFJ1NOrZkLvHj7SQyjYALMSgK7MYw5c4VpgtoaAg4ddf/Sfm3tYu/UYq3WMUxwU8TUUdunkLQokt5Vogtd+im/f7uBdKGUjkE8/N2lbbwXHXY4I5XqSjhtnoAYqmFyl+gH85sZSRpabmrNnBV3+dtiuv/B3cSLmIWOCX5AvTCpWcxqBx4fIxX8ENXU01HMORFwjs+8uMzySLoHJ8OfkPy25tz8rJ4Wb8IeE3aBZNFTsp0fTSe/lpDDNdFkJaHz8121wkfJB0ftT49GvHch8Luy+U12npp6PRsVMM1EqbRsmyvaRJb1nKFOuAl+jyCdsnNCgNf0A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
  dkim=pass header.d=renesas.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AszbztA/VNRi1bF+UGa7MeyE8QbbTciaOZgz9KOuLWM=;
- b=PqAaTKczbgHhzTarC/cAcVa46YwpbJI8FgNBS2H7NUjrJRO9bIEStB2U1OVVPtjRFnMgcJwxaAbcS4TeSZfHvbB9OCLrGnxglmgWKz3jONXQA2VKj0F9YCEY4p3KXvaciSXMufX+GpCcZHc4IigRes9o0MytCHUJIvprbTbJWN8=
+ bh=TvBaYEsh8ZhxyX3AhrmYg1CxLrZsnAhbVJx9PzFKR48=;
+ b=ArrMlyik5JYh6nUjmaKZLUQe/GS7DAzvnqk4XH2vxaeuyEI7dsCIX2f50sePWeS6s324QF1Q54yldas59wAhX28qMKkyzdIwFREnT4bsdYTFWLDmj5P0DO3xX2wDgBGKcunu9IlVBk57g9T731izSp8Gg8kl+o7wn/JHDiCQ5jg=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=renesas.com;
 Received: from OS3PR01MB6593.jpnprd01.prod.outlook.com (2603:1096:604:101::7)
  by TYAPR01MB6475.jpnprd01.prod.outlook.com (2603:1096:400:a2::9) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Tue, 26 Apr
- 2022 19:33:14 +0000
+ 2022 19:33:17 +0000
 Received: from OS3PR01MB6593.jpnprd01.prod.outlook.com
  ([fe80::a07c:4b38:65f3:6663]) by OS3PR01MB6593.jpnprd01.prod.outlook.com
  ([fe80::a07c:4b38:65f3:6663%8]) with mapi id 15.20.5186.023; Tue, 26 Apr 2022
- 19:33:12 +0000
+ 19:33:17 +0000
 From:   Min Li <min.li.xe@renesas.com>
 To:     richardcochran@gmail.com, lee.jones@linaro.org
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Min Li <min.li.xe@renesas.com>
-Subject: [PATCH net 1/2] ptp: ptp_clockmatrix: Add PTP_CLK_REQ_EXTTS support
-Date:   Tue, 26 Apr 2022 15:32:53 -0400
-Message-Id: <1651001574-32457-1-git-send-email-min.li.xe@renesas.com>
+Subject: [PATCH net 2/2] ptp: ptp_clockmatrix: return -EBUSY if phase pull-in is in progress
+Date:   Tue, 26 Apr 2022 15:32:54 -0400
+Message-Id: <1651001574-32457-2-git-send-email-min.li.xe@renesas.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1651001574-32457-1-git-send-email-min.li.xe@renesas.com>
+References: <1651001574-32457-1-git-send-email-min.li.xe@renesas.com>
 Content-Type: text/plain
 X-ClientProxiedBy: BN8PR04CA0044.namprd04.prod.outlook.com
  (2603:10b6:408:d4::18) To OS3PR01MB6593.jpnprd01.prod.outlook.com
  (2603:1096:604:101::7)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6c5014b6-af00-492e-5058-08da27bb9a01
+X-MS-Office365-Filtering-Correlation-Id: bf6d953c-3a44-49d7-043c-08da27bb9cb0
 X-MS-TrafficTypeDiagnostic: TYAPR01MB6475:EE_
-X-Microsoft-Antispam-PRVS: <TYAPR01MB6475DBD88BD14BB47567F36DBAFB9@TYAPR01MB6475.jpnprd01.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <TYAPR01MB6475D7E11E3C67893E95FCEBBAFB9@TYAPR01MB6475.jpnprd01.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: XwemEd5JuRoTPQvToHR+W4naSUamixSKVq04Nd7h6e/ggA2qQ44Zr2rIsObk2QAvIC1pLRy35lBErCaTtnhVloiNZwEexoq4viRgE5ipGhGXyB4Hbdgsab4Zjys+a2iKvTCeMJKIf18XT/D6OtJm1j6c90gbD6IM8rNdbP7pNicdlmbBK6Ks2QQV8LVUCwgsft+0M5RzmwM042BiqIa+OOmXql8O5RvXbbvEmwA9c3vCqEfCIx7Fw6AicMKU88GxZmTORKw1C8p9zIqc+ijfL7EgFOrgjxHRP0rziOt1jUc29OfcOCeARETmZUZf1Gtfk76BBG9Ix61tjnbcrwvl3oI1Zs8gmVo8odGGfTFDLs2DQRpCdxHFFWGY3tDmP16MeAZ4lr1Ya4GDbrYAF+4NkkHPbp0qnJBZWr86ulfrFMbh8YCUvteDpXk4acTQ5v5nOHe9GD1Mbs/r2wYZCJ3Hc+RaneXIlfkhjv+XLFar8lcb5LFrF3HaohO9OqZcq0CD0mb6B6sLp99OwK6PM1BOdS8utKkQ58++qOERibR2WJ2ltVbOimlsCJEiKXVGIQfMHLB+cBq4s+IF2JTaVwswPirU/UPdP9TdaikA0eAAvY+AO4d12ptCThp30A44vsvfPZI2nCBfdIwMu7liI+2KxaAs2HxQTISyt1qfmqxN8joJIHx+xLNgsWQuwvyvWjt/wDjZu798YVC9bqOAchBMsA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS3PR01MB6593.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6506007)(8936002)(36756003)(83380400001)(5660300002)(26005)(4326008)(66476007)(186003)(8676002)(2906002)(107886003)(30864003)(2616005)(38350700002)(52116002)(86362001)(508600001)(38100700002)(6486002)(316002)(66556008)(66946007)(6666004)(6512007);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: T3aBPA80m1NuQYbkjWFrFK8JF1sHI4EB7baqCE0UiGGxlqYTZ83BCbSfwU8voqgaLASGr0rJIJeoWv2/kZyzrjEJzHxO4vPuL1ViVdFtLpAnFVy126n8nOhWfRQPdrwWBCnT2ZtWN4TtwWhjwNYdTb2jJvmQ3n7GoOFSpvGnFj6RH/kTM4+8RLVIBjtFhdQgpkVU7NPDjGDigNBWOvAj8o35n4u4kfBZlL68JHf3ay5WgTd+7mMfAP1ktFvv6vHS18hzWzt4D5mU6apZHtny/FQ4EGFneZp27xttiHQ+KpBmGyz8tpxanhwKqt7bgiusVh/D9AfJR8fIOxFUNZyknPIs1pb5faafsWHDX6xUCQvvWpz7XtIdkL+z62flPpWgb/4+suXphCyW5+B+/JXs+oy8qAjby1vBjqMlMeBPJb9M/nEFlPRjcWM6p9JCzWpgrat/JpkkKiBjbvIOcPrPN76SxQv94X2zNV7jKz0TElt/mncn74RUBvJ+9TrwcXNWUa3mdbvhlsx5jFBE4He/nzzK7wRjNI8KnjfN6rIkpJXWtC5kmPkkWPtaUqWacXLJaTPfkuIYCHdz8R1T7ZU/giFN/noiaHG2IGRMyt0KBS/ApIkJheg1yplMV7N4/8QSXlaaBmN9DUv0Uauv+oiMwlHk/ERakzDBVbgZ/7Zrzck+fU4eXPA5OBQHT2EmkumBwY9m+9gu7uSYdSIsdmYKoA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS3PR01MB6593.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6506007)(8936002)(36756003)(83380400001)(5660300002)(26005)(4326008)(66476007)(186003)(8676002)(2906002)(107886003)(2616005)(38350700002)(52116002)(86362001)(508600001)(38100700002)(6486002)(316002)(66556008)(66946007)(6666004)(6512007);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?iuKyskgFujdqByRYgtW9JNaftcuhvvvYjRrwTCK6xESfSAeHoTWcXV/P9nRM?=
- =?us-ascii?Q?vqkiUkwxwwmjdrPdHC5y5qPcOtNKjxhIk/zwPUwxyweMdpdQocXB0kUFmyG1?=
- =?us-ascii?Q?SHPlbn33p74HW03sdHeji/9C1d5msznj39mDeg7+mALpfdNrAuehHHFhyo9g?=
- =?us-ascii?Q?8JPZ7esbTPrT/NEHvp6VuPDjjV1Te5tHKvHSiVemXdC/BdHjzR1yqBAL1D+w?=
- =?us-ascii?Q?PM31Vvh3Ww+KDmDqnXqYWYHXy3J9CeV4h2J5L/3etF8vLUgoHCtCpXCIXz/g?=
- =?us-ascii?Q?UihCWBghcZPZD8N7C+96ebFgBEYEiWp4NNi3yI+1Ck4tWAWNU86ItUbqfHZc?=
- =?us-ascii?Q?kYbaHuUxmd/qtZ4rnHSrGkOA1uTfEPt7n/Ru5L/dMY6WZAO2mrKfaX6DcSY6?=
- =?us-ascii?Q?xsghpQNyrpw45g7zcjQQegRsGOFKWwaegKp1FxD3PIGOqrS3RJrSTH1NSVF7?=
- =?us-ascii?Q?J6jDPAyDZQRZqLkTESdrcCs/5pb0mpsnutNN2hsvetPt7P+pivAeQPSrCsTQ?=
- =?us-ascii?Q?Iif1GyMDuUTF94UlJJXw5FdZGAjO1r2NT41TLLI4TPqBKlHTQtatAFo7WaSQ?=
- =?us-ascii?Q?sQ5RkPshgIDduM8t3GSjk5QYBPqVGyiRGWEYOBF+XSxgoEYF6joGBi3wqSmu?=
- =?us-ascii?Q?sAIV+IU2eNt5QgDtkxeB316bNL4mT7EtMsH3j5UrTNbE3ugCpKFidBEdn51l?=
- =?us-ascii?Q?QIY/ZQKMe3aH98Dz/YQuJv37mDYYF4gYudWelXdTYl7Ob0v5gZFOPyXwQKJm?=
- =?us-ascii?Q?HQzsCEyMRTP5JWGtjrProBZwlxOXXfawVNX6Xrmz/HVZnScJB4GDPQB3Qhhu?=
- =?us-ascii?Q?ImqkZcWXPwjR6mG8awpqTsQlhfGbSICOGqxVaFabkYyPZDrE7coA9Vn3cxss?=
- =?us-ascii?Q?8Uzo5dhA7jLQjKaI8ktMeWxS4i0QP9Liq0Qz/d5+fW83KjYtBA6R5CcTjuSq?=
- =?us-ascii?Q?dvdDXf/BztFLiocZl7hXkbWQIWonBOlX6SKbTpdJ09q31BRjpR85bnCYJ7kg?=
- =?us-ascii?Q?l4s4T1+hIR6myPqtBem1PbkBrstK+pHmCk7imwsm9x6UrmxaKPLE9+Bvf5+h?=
- =?us-ascii?Q?f/mTF+veZYLNv4Tr7EBhd08AdDcfM9lOvSSekMLrNcIVVVJZzctnPs5T64v6?=
- =?us-ascii?Q?aEN4J3ujNOnsqMCQ3QMtJPBD6KN5e/v5zOQ+raQowheuSJUHmkdHQIRFGMPk?=
- =?us-ascii?Q?GGpJt0vSbIQIX0iGJOrKymvIGKm3L/aEofEp2zg2Jlg/KaZLBsWQ/1SxpBfq?=
- =?us-ascii?Q?j8JSqmoD/E0EUjprkCZ91+1He2B1mV02fydqcMefkEirSrWiqXsZtOL2zYVZ?=
- =?us-ascii?Q?u/sRTx+m7pnOchqh4jJRkWvEnyiM7cq81MUt6yPR06qdynQi0r/lYJW6PvZq?=
- =?us-ascii?Q?HwrZoXvnbjNCJ/+1uDbQA6L7ZcxClUgje3fAz2FC2k6qpzRAQg0PF1YCHR0T?=
- =?us-ascii?Q?sw05Qa/+lFBp1pjI7b1py6uA9ccttYyEhUbp2h7ZI4XfV6G4iVc9cLRFAANX?=
- =?us-ascii?Q?xL5NUP6FlgYyj2dAuaKCktDZle4fA/zA/ca/JtqnTwNZbJjm+GrkFTY1CyhI?=
- =?us-ascii?Q?EZM8AzT+tpo1IxZIl8OYILIjrR5X3ITLITonKZecOFnzlqYEcn6jGpEeTgm2?=
- =?us-ascii?Q?xYi8jnfgV0ZQprHKTDD0huXoc37YyQ+Pa1c79OMVEnml4r1oXGDvB90eZz9n?=
- =?us-ascii?Q?DGWDt1zfKjS7ML80XYlWF25b1PNJwFezfMPD1a6SQeucbmIeoTAe9dY8lcZf?=
- =?us-ascii?Q?l65SofrM3kLW0t/oPy6X709at+BkkL4=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vi14cMr3BzCoyndOahln+9w9Gq9NDiLzLaR+JlVkEH4vSmEXyYE99KHjvlqm?=
+ =?us-ascii?Q?2N6vZtMh2rxgZzGQlK9yDx29re5z4KabLMk4ESEiyvsfPkv2XObTUnTQAAXJ?=
+ =?us-ascii?Q?wzfWcOBTy3zqVDcw4bymobi60+y7l6LTzSlcEK+j19zD7k/p9jVcVfh1KIJI?=
+ =?us-ascii?Q?5YfsBHjhf6aEZmRa3L5KNi2wNb4P8+XHih1lyvjqVHVWMg+Y5bHPSPgoq1OI?=
+ =?us-ascii?Q?XZ5AZg3hggySX2XNDo23iTWny5qNNCT0iR+SP+axjQDc+P/EAkdMLUeQOhrK?=
+ =?us-ascii?Q?C9SsPJOfShOyNbObhuV1dWMktKAuhdxb9q2Sul9DAt84bJu3hzGPUCMRCRG8?=
+ =?us-ascii?Q?3ABb7uZCIvnWiQHPU4OPGtBzGhwGz3tywa5DZr/D9y/6FHk83vDPrWjRDyFq?=
+ =?us-ascii?Q?iWY7w7XFjBmGgryU9uvSwbL0MU0Tk/p8O1AKqfPfgtjc9jig+/MFjm2DKcQ7?=
+ =?us-ascii?Q?6wl+f5KjTFgCxVY6QqVpk922GpqcYp1id+PsHFBpxG654YBXA5RUsqJqsDiu?=
+ =?us-ascii?Q?/GjRZ8lv66RDBOQ2FlYKfXE6mQQxOyZVv2x7Dt+dMCthmPqsEpQt9gusJ1a+?=
+ =?us-ascii?Q?xEHjIt1AtPgTiMbxVK4WLY89s7IVLn4PL5b2xV4PXJm3wx1Y3xMlTZEcNNnV?=
+ =?us-ascii?Q?YCePCG05/eGQn6SsTjeEmsfTW3evntIOK+KRcuCn3Qq7UOroIkImS7uTbwmi?=
+ =?us-ascii?Q?XXLacDp5Sak/5eDLs5PZ1RsEoHJ7LJG2Vbzpy4yquZxaAO7GmTABqLQidY4Z?=
+ =?us-ascii?Q?Swe3KScVPdDnm14XmHnlUFll3naao4WrhVdCht4jkB3myW4yKA4yBJuUCZaT?=
+ =?us-ascii?Q?bn9hXdumOmQhCUIsvIapLBppijTvUT5SuLQbGJMwSA3kb0MV6M49IBPsDld1?=
+ =?us-ascii?Q?44MesMsw5kv2mPPi/UbVi1PPkp199aDQc2jal+O6GS/ATjMAoWm+llx7gtXv?=
+ =?us-ascii?Q?5bQXE1qoB2WWNdMPoa4jXr/BcVVi+Jsr98tsxJp2UDN0eKdjTTPb23R7b+b+?=
+ =?us-ascii?Q?XDjEvtG2/TAVcEDhghBU7xoJfYhlvwzOq0I0F/UV0UhGWZTMxbpE7VSxayvV?=
+ =?us-ascii?Q?cgWV+JGpzWMu7wMkA0MG7RAf7vo9ZpbpchG37AQlaAJCQkaUAz3AxxEUn8VE?=
+ =?us-ascii?Q?o5IAFvDpGr8zyTdq+o3UqKyV1yaSVLSCwZqyKv3YkT6xXHOvg/9u2nMTIr6Y?=
+ =?us-ascii?Q?SiN+qMR0DRBZRBLrO9gazyr3Dx4u+Ce5XnBUvIIan05IRfwfvdoR2BT7W3XY?=
+ =?us-ascii?Q?RmclORAvU+E9vjWCBvg7WwIxnoghiW2lxsbP7R4Rmwo4H2WjakLk8vrfjuzT?=
+ =?us-ascii?Q?Y57EQaDkDx47yuw1GBed3csTUlk0O21BeAGUjN2jtBJR9ZQHEyRAIglNAXCk?=
+ =?us-ascii?Q?F+2rJ5x2GcQr9NaxsMHoCQSZU1bTnQ089UhTQUB2OMQNnAXH2YIOisFkx2o1?=
+ =?us-ascii?Q?2asQsgWbem2FDPPqhrVVnc73/y1YyGX5n3fdM8Qzncu7uvBIp8K2X/eWsW5j?=
+ =?us-ascii?Q?q3KbowZqfztCC2/s/cU8S/UgI3j8D79VOekNyx2qKJXbytDa98jYXSF7Jsjg?=
+ =?us-ascii?Q?zUhBnC0oIqz27A9WcVInlK2C36k5l7EM5IPeWNje1J5NMGvEKyDZkKPw/ebL?=
+ =?us-ascii?Q?GJ8QRpG7WZ1i3kQcw5nyNf+gIpDNt9jF/1ryQptn0RWksxySSoQXdBQnzC7L?=
+ =?us-ascii?Q?vTkDlhwR3Lp1ghNXNms/vl68gxE6V506wrYYg0UpkU6S4YIHFWtuJuwy5Nag?=
+ =?us-ascii?Q?UtZjcOxMVx1LHAfhLY8KIfcTvljlPbk=3D?=
 X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6c5014b6-af00-492e-5058-08da27bb9a01
+X-MS-Exchange-CrossTenant-Network-Message-Id: bf6d953c-3a44-49d7-043c-08da27bb9cb0
 X-MS-Exchange-CrossTenant-AuthSource: OS3PR01MB6593.jpnprd01.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Apr 2022 19:33:12.5302
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Apr 2022 19:33:16.9995
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 53d82571-da19-47e4-9cb4-625a166a4a2a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PX0NeFbUWlvG2osbjmK8MMrW75EibWx3hCdqsiAPQdRpLu/+Yg6zSeGJAZKGF4fwSsfB5EN3wc9ewltKTdgb/g==
+X-MS-Exchange-CrossTenant-UserPrincipalName: Vtlu/xuETKlNImON371VpXEtK04JRF0Z/jxbOztzh/oqZpjV5umAiOWzQVtXrUnVCzogm+JRnDcBOlmf1DjNhw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB6475
-X-Spam-Status: No, score=0.9 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=no
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -114,607 +116,85 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use TOD_READ_SECONDARY for extts to keep TOD_READ_PRIMARY
-for gettime and settime exclusively
+Also removes PEROUT_ENABLE_OUTPUT_MASK
 
 Signed-off-by: Min Li <min.li.xe@renesas.com>
 ---
- drivers/ptp/ptp_clockmatrix.c    | 303 +++++++++++++++++++++++++--------------
- drivers/ptp/ptp_clockmatrix.h    |   5 +
- include/linux/mfd/idt8a340_reg.h |  12 +-
- 3 files changed, 209 insertions(+), 111 deletions(-)
+ drivers/ptp/ptp_clockmatrix.c | 32 ++------------------------------
+ drivers/ptp/ptp_clockmatrix.h |  2 --
+ 2 files changed, 2 insertions(+), 32 deletions(-)
 
 diff --git a/drivers/ptp/ptp_clockmatrix.c b/drivers/ptp/ptp_clockmatrix.c
-index 08e429a..0e8e698 100644
+index 0e8e698..7f324fd 100644
 --- a/drivers/ptp/ptp_clockmatrix.c
 +++ b/drivers/ptp/ptp_clockmatrix.c
-@@ -239,73 +239,101 @@ static int wait_for_boot_status_ready(struct idtcm *idtcm)
- 	return -EBUSY;
+@@ -1363,43 +1363,15 @@ static int idtcm_output_enable(struct idtcm_channel *channel,
+ 	return idtcm_write(idtcm, (u16)base, OUT_CTRL_1, &val, sizeof(val));
  }
  
--static int _idtcm_set_scsr_read_trig(struct idtcm_channel *channel,
--				     enum scsr_read_trig_sel trig, u8 ref)
-+static int arm_tod_read_trig_sel_refclk(struct idtcm_channel *channel, u8 ref)
- {
- 	struct idtcm *idtcm = channel->idtcm;
--	u16 tod_read_cmd = IDTCM_FW_REG(idtcm->fw_ver, V520, TOD_READ_PRIMARY_CMD);
--	u8 val;
-+	u16 tod_read_cmd = IDTCM_FW_REG(idtcm->fw_ver, V520, TOD_READ_SECONDARY_CMD);
-+	u8 val = 0;
- 	int err;
- 
--	if (trig == SCSR_TOD_READ_TRIG_SEL_REFCLK) {
--		err = idtcm_read(idtcm, channel->tod_read_primary,
--				 TOD_READ_PRIMARY_SEL_CFG_0, &val, sizeof(val));
--		if (err)
--			return err;
--
--		val &= ~(WR_REF_INDEX_MASK << WR_REF_INDEX_SHIFT);
--		val |= (ref << WR_REF_INDEX_SHIFT);
-+	val &= ~(WR_REF_INDEX_MASK << WR_REF_INDEX_SHIFT);
-+	val |= (ref << WR_REF_INDEX_SHIFT);
- 
--		err = idtcm_write(idtcm, channel->tod_read_primary,
--				  TOD_READ_PRIMARY_SEL_CFG_0, &val, sizeof(val));
--		if (err)
--			return err;
--	}
--
--	err = idtcm_read(idtcm, channel->tod_read_primary,
--			 tod_read_cmd, &val, sizeof(val));
-+	err = idtcm_write(idtcm, channel->tod_read_secondary,
-+			  TOD_READ_SECONDARY_SEL_CFG_0, &val, sizeof(val));
- 	if (err)
- 		return err;
- 
--	val &= ~(TOD_READ_TRIGGER_MASK << TOD_READ_TRIGGER_SHIFT);
--	val |= (trig << TOD_READ_TRIGGER_SHIFT);
--	val &= ~TOD_READ_TRIGGER_MODE; /* single shot */
-+	val = 0 | (SCSR_TOD_READ_TRIG_SEL_REFCLK << TOD_READ_TRIGGER_SHIFT);
-+
-+	err = idtcm_write(idtcm, channel->tod_read_secondary, tod_read_cmd,
-+			  &val, sizeof(val));
-+
-+	if (err)
-+		dev_err(idtcm->dev, "%s: err = %d", __func__, err);
- 
--	err = idtcm_write(idtcm, channel->tod_read_primary,
--			  tod_read_cmd, &val, sizeof(val));
- 	return err;
- }
- 
--static int idtcm_enable_extts(struct idtcm_channel *channel, u8 todn, u8 ref,
--			      bool enable)
-+static bool is_single_shot(u8 mask)
- {
--	struct idtcm *idtcm = channel->idtcm;
--	u8 old_mask = idtcm->extts_mask;
--	u8 mask = 1 << todn;
-+	/* Treat single bit ToD masks as continuous trigger */
-+	if ((mask == 1) || (mask == 2) || (mask == 4) || (mask == 8))
-+		return false;
-+	else
-+		return true;
-+}
-+
-+static int idtcm_extts_enable(struct idtcm_channel *channel,
-+			      struct ptp_clock_request *rq, int on)
-+{
-+	u8 index = rq->extts.index;
-+	struct idtcm *idtcm;
-+	u8 mask = 1 << index;
- 	int err = 0;
-+	u8 old_mask;
-+	int ref;
- 
--	if (todn >= MAX_TOD)
-+	idtcm = channel->idtcm;
-+	old_mask = idtcm->extts_mask;
-+
-+	/* Reject requests with unsupported flags */
-+	if (rq->extts.flags & ~(PTP_ENABLE_FEATURE |
-+				PTP_RISING_EDGE |
-+				PTP_FALLING_EDGE |
-+				PTP_STRICT_FLAGS))
-+		return -EOPNOTSUPP;
-+
-+	/* Reject requests to enable time stamping on falling edge */
-+	if ((rq->extts.flags & PTP_ENABLE_FEATURE) &&
-+	    (rq->extts.flags & PTP_FALLING_EDGE))
-+		return -EOPNOTSUPP;
-+
-+	if (index >= MAX_TOD)
- 		return -EINVAL;
- 
--	if (enable) {
--		if (ref > 0xF) /* E_REF_CLK15 */
--			return -EINVAL;
--		if (idtcm->extts_mask & mask)
--			return 0;
--		err = _idtcm_set_scsr_read_trig(&idtcm->channel[todn],
--						SCSR_TOD_READ_TRIG_SEL_REFCLK,
--						ref);
-+	if (on) {
-+		/* Support triggering more than one TOD_0/1/2/3 by same pin */
-+		/* Use the pin configured for the channel */
-+		ref = ptp_find_pin(channel->ptp_clock, PTP_PF_EXTTS, channel->tod);
-+
-+		if (ref < 0) {
-+			dev_err(idtcm->dev, "%s: No valid pin found for TOD%d!\n",
-+				__func__, channel->tod);
-+			return -EBUSY;
-+		}
-+
-+		err = arm_tod_read_trig_sel_refclk(&idtcm->channel[index], ref);
-+
- 		if (err == 0) {
- 			idtcm->extts_mask |= mask;
--			idtcm->event_channel[todn] = channel;
--			idtcm->channel[todn].refn = ref;
-+			idtcm->event_channel[index] = channel;
-+			idtcm->channel[index].refn = ref;
-+			idtcm->extts_single_shot = is_single_shot(idtcm->extts_mask);
-+
-+			if (old_mask)
-+				return 0;
-+
-+			schedule_delayed_work(&idtcm->extts_work,
-+					      msecs_to_jiffies(EXTTS_PERIOD_MS));
- 		}
--	} else
-+	} else {
- 		idtcm->extts_mask &= ~mask;
-+		idtcm->extts_single_shot = is_single_shot(idtcm->extts_mask);
- 
--	if (old_mask == 0 && idtcm->extts_mask)
--		schedule_delayed_work(&idtcm->extts_work,
--				      msecs_to_jiffies(EXTTS_PERIOD_MS));
-+		if (idtcm->extts_mask == 0)
-+			cancel_delayed_work(&idtcm->extts_work);
-+	}
- 
- 	return err;
- }
-@@ -371,6 +399,34 @@ static void wait_for_chip_ready(struct idtcm *idtcm)
- 			 "Continuing while SYS APLL/DPLL is not locked");
- }
- 
-+static int _idtcm_gettime_triggered(struct idtcm_channel *channel,
-+				    struct timespec64 *ts)
-+{
-+	struct idtcm *idtcm = channel->idtcm;
-+	u16 tod_read_cmd = IDTCM_FW_REG(idtcm->fw_ver, V520, TOD_READ_SECONDARY_CMD);
-+	u8 buf[TOD_BYTE_COUNT];
-+	u8 trigger;
-+	int err;
-+
-+	err = idtcm_read(idtcm, channel->tod_read_secondary,
-+			 tod_read_cmd, &trigger, sizeof(trigger));
-+	if (err)
-+		return err;
-+
-+	if (trigger & TOD_READ_TRIGGER_MASK)
-+		return -EBUSY;
-+
-+	err = idtcm_read(idtcm, channel->tod_read_secondary,
-+			 TOD_READ_SECONDARY_BASE, buf, sizeof(buf));
-+
-+	if (err)
-+		return err;
-+
-+	err = char_array_to_timespec(buf, sizeof(buf), ts);
-+
-+	return err;
-+}
-+
- static int _idtcm_gettime(struct idtcm_channel *channel,
- 			  struct timespec64 *ts, u8 timeout)
- {
-@@ -396,7 +452,7 @@ static int _idtcm_gettime(struct idtcm_channel *channel,
- 	} while (trigger & TOD_READ_TRIGGER_MASK);
- 
- 	err = idtcm_read(idtcm, channel->tod_read_primary,
--			 TOD_READ_PRIMARY, buf, sizeof(buf));
-+			 TOD_READ_PRIMARY_BASE, buf, sizeof(buf));
- 	if (err)
- 		return err;
- 
-@@ -415,65 +471,40 @@ static int idtcm_extts_check_channel(struct idtcm *idtcm, u8 todn)
- 
- 	extts_channel = &idtcm->channel[todn];
- 	ptp_channel = idtcm->event_channel[todn];
-+
- 	if (extts_channel == ptp_channel)
- 		dco_delay = ptp_channel->dco_delay;
- 
--	err = _idtcm_gettime(extts_channel, &ts, 1);
--	if (err == 0) {
--		event.type = PTP_CLOCK_EXTTS;
--		event.index = todn;
--		event.timestamp = timespec64_to_ns(&ts) - dco_delay;
--		ptp_clock_event(ptp_channel->ptp_clock, &event);
--	}
--	return err;
--}
-+	err = _idtcm_gettime_triggered(extts_channel, &ts);
- 
--static u8 idtcm_enable_extts_mask(struct idtcm_channel *channel,
--				    u8 extts_mask, bool enable)
+-static int idtcm_output_mask_enable(struct idtcm_channel *channel,
+-				    bool enable)
 -{
--	struct idtcm *idtcm = channel->idtcm;
--	int i, err;
-+	if (err)
-+		return err;
- 
--	for (i = 0; i < MAX_TOD; i++) {
--		u8 mask = 1 << i;
--		u8 refn = idtcm->channel[i].refn;
+-	u16 mask;
+-	int err;
+-	u8 outn;
 -
--		if (extts_mask & mask) {
--			/* check extts before disabling it */
--			if (enable == false) {
--				err = idtcm_extts_check_channel(idtcm, i);
--				/* trigger happened so we won't re-enable it */
--				if (err == 0)
--					extts_mask &= ~mask;
--			}
--			(void)idtcm_enable_extts(channel, i, refn, enable);
+-	mask = channel->output_mask;
+-	outn = 0;
+-
+-	while (mask) {
+-		if (mask & 0x1) {
+-			err = idtcm_output_enable(channel, enable, outn);
+-			if (err)
+-				return err;
 -		}
+-
+-		mask >>= 0x1;
+-		outn++;
 -	}
-+	/* Triggered - save timestamp */
-+	event.type = PTP_CLOCK_EXTTS;
-+	event.index = todn;
-+	event.timestamp = timespec64_to_ns(&ts) - dco_delay;
-+	ptp_clock_event(ptp_channel->ptp_clock, &event);
- 
--	return extts_mask;
-+	return err;
- }
- 
- static int _idtcm_gettime_immediate(struct idtcm_channel *channel,
- 				    struct timespec64 *ts)
+-
+-	return 0;
+-}
+-
+ static int idtcm_perout_enable(struct idtcm_channel *channel,
+ 			       struct ptp_perout_request *perout,
+ 			       bool enable)
  {
  	struct idtcm *idtcm = channel->idtcm;
--	u8 extts_mask = 0;
-+
-+	u16 tod_read_cmd = IDTCM_FW_REG(idtcm->fw_ver, V520, TOD_READ_PRIMARY_CMD);
-+	u8 val = (SCSR_TOD_READ_TRIG_SEL_IMMEDIATE << TOD_READ_TRIGGER_SHIFT);
+-	unsigned int flags = perout->flags;
+ 	struct timespec64 ts = {0, 0};
  	int err;
  
--	/* Disable extts */
--	if (idtcm->extts_mask) {
--		extts_mask = idtcm_enable_extts_mask(channel, idtcm->extts_mask,
--						     false);
--	}
-+	err = idtcm_write(idtcm, channel->tod_read_primary,
-+			  tod_read_cmd, &val, sizeof(val));
+-	if (flags == PEROUT_ENABLE_OUTPUT_MASK)
+-		err = idtcm_output_mask_enable(channel, enable);
+-	else
+-		err = idtcm_output_enable(channel, enable, perout->index);
++	err = idtcm_output_enable(channel, enable, perout->index);
  
--	err = _idtcm_set_scsr_read_trig(channel,
--					SCSR_TOD_READ_TRIG_SEL_IMMEDIATE, 0);
--	if (err == 0)
--		err = _idtcm_gettime(channel, ts, 10);
-+	if (err)
-+		return err;
- 
--	/* Re-enable extts */
--	if (extts_mask)
--		idtcm_enable_extts_mask(channel, extts_mask, true);
-+	err = _idtcm_gettime(channel, ts, 10);
- 
- 	return err;
- }
-@@ -1557,8 +1588,8 @@ static s32 phase_pull_in_scaled_ppm(s32 current_ppm, s32 phase_pull_in_ppb)
- 	/* ppb = scaled_ppm * 125 / 2^13 */
- 	/* scaled_ppm = ppb * 2^13 / 125 */
- 
--	s64 max_scaled_ppm = div_s64((s64)PHASE_PULL_IN_MAX_PPB << 13, 125);
--	s64 scaled_ppm = div_s64((s64)phase_pull_in_ppb << 13, 125);
-+	s64 max_scaled_ppm = (PHASE_PULL_IN_MAX_PPB << 13) / 125;
-+	s64 scaled_ppm = (phase_pull_in_ppb << 13) / 125;
- 
- 	current_ppm += scaled_ppm;
- 
-@@ -1699,9 +1730,12 @@ static int initialize_dco_operating_mode(struct idtcm_channel *channel)
- 
- /* PTP Hardware Clock interface */
- 
--/*
-+/**
-  * Maximum absolute value for write phase offset in picoseconds
-  *
-+ * @channel:  channel
-+ * @delta_ns: delta in nanoseconds
-+ *
-  * Destination signed register is 32-bit register in resolution of 50ps
-  *
-  * 0x7fffffff * 50 =  2147483647 * 50 = 107374182350
-@@ -1958,8 +1992,7 @@ static int idtcm_enable(struct ptp_clock_info *ptp,
- 			err = idtcm_perout_enable(channel, &rq->perout, true);
- 		break;
- 	case PTP_CLK_REQ_EXTTS:
--		err = idtcm_enable_extts(channel, rq->extts.index,
--					 rq->extts.rsv[0], on);
-+		err = idtcm_extts_enable(channel, rq, on);
- 		break;
- 	default:
- 		break;
-@@ -1982,13 +2015,6 @@ static int idtcm_enable_tod(struct idtcm_channel *channel)
- 	u8 cfg;
+ 	if (err) {
+ 		dev_err(idtcm->dev, "Unable to set output enable");
+@@ -1903,7 +1875,7 @@ static int idtcm_adjtime(struct ptp_clock_info *ptp, s64 delta)
  	int err;
  
--	/* STEELAI-366 - Temporary workaround for ts2phc compatibility */
--	if (0) {
--		err = idtcm_output_mask_enable(channel, false);
--		if (err)
--			return err;
--	}
--
- 	/*
- 	 * Start the TOD clock ticking.
- 	 */
-@@ -2038,17 +2064,35 @@ static void idtcm_set_version_info(struct idtcm *idtcm)
- 		 product_id, hw_rev_id, config_select);
- }
- 
-+static int idtcm_verify_pin(struct ptp_clock_info *ptp, unsigned int pin,
-+			    enum ptp_pin_function func, unsigned int chan)
-+{
-+	switch (func) {
-+	case PTP_PF_NONE:
-+	case PTP_PF_EXTTS:
-+		break;
-+	case PTP_PF_PEROUT:
-+	case PTP_PF_PHYSYNC:
-+		return -1;
-+	}
-+	return 0;
-+}
-+
-+static struct ptp_pin_desc pin_config[MAX_TOD][MAX_REF_CLK];
-+
- static const struct ptp_clock_info idtcm_caps = {
- 	.owner		= THIS_MODULE,
- 	.max_adj	= 244000,
- 	.n_per_out	= 12,
- 	.n_ext_ts	= MAX_TOD,
-+	.n_pins		= MAX_REF_CLK,
- 	.adjphase	= &idtcm_adjphase,
- 	.adjfine	= &idtcm_adjfine,
- 	.adjtime	= &idtcm_adjtime,
- 	.gettime64	= &idtcm_gettime,
- 	.settime64	= &idtcm_settime,
- 	.enable		= &idtcm_enable,
-+	.verify		= &idtcm_verify_pin,
- 	.do_aux_work	= &idtcm_work_handler,
- };
- 
-@@ -2057,12 +2101,14 @@ static const struct ptp_clock_info idtcm_caps_deprecated = {
- 	.max_adj	= 244000,
- 	.n_per_out	= 12,
- 	.n_ext_ts	= MAX_TOD,
-+	.n_pins		= MAX_REF_CLK,
- 	.adjphase	= &idtcm_adjphase,
- 	.adjfine	= &idtcm_adjfine,
- 	.adjtime	= &idtcm_adjtime_deprecated,
- 	.gettime64	= &idtcm_gettime,
- 	.settime64	= &idtcm_settime_deprecated,
- 	.enable		= &idtcm_enable,
-+	.verify		= &idtcm_verify_pin,
- 	.do_aux_work	= &idtcm_work_handler,
- };
- 
-@@ -2173,9 +2219,10 @@ static u32 idtcm_get_dco_delay(struct idtcm_channel *channel)
- 	if (n == 0)
- 		n = 1;
- 
--	fodFreq = (u32)div_u64(m, n);
-+	fodFreq = m / n;
-+
- 	if (fodFreq >= 500000000)
--		return 18 * (u32)div_u64(NSEC_PER_SEC, fodFreq);
-+		return 18 * (u64)NSEC_PER_SEC / fodFreq;
- 
- 	return 0;
- }
-@@ -2188,24 +2235,28 @@ static int configure_channel_tod(struct idtcm_channel *channel, u32 index)
- 	switch (index) {
- 	case 0:
- 		channel->tod_read_primary = IDTCM_FW_REG(fw_ver, V520, TOD_READ_PRIMARY_0);
-+		channel->tod_read_secondary = IDTCM_FW_REG(fw_ver, V520, TOD_READ_SECONDARY_0);
- 		channel->tod_write = IDTCM_FW_REG(fw_ver, V520, TOD_WRITE_0);
- 		channel->tod_n = IDTCM_FW_REG(fw_ver, V520, TOD_0);
- 		channel->sync_src = SYNC_SOURCE_DPLL0_TOD_PPS;
- 		break;
- 	case 1:
- 		channel->tod_read_primary = IDTCM_FW_REG(fw_ver, V520, TOD_READ_PRIMARY_1);
-+		channel->tod_read_secondary = IDTCM_FW_REG(fw_ver, V520, TOD_READ_SECONDARY_1);
- 		channel->tod_write = IDTCM_FW_REG(fw_ver, V520, TOD_WRITE_1);
- 		channel->tod_n = IDTCM_FW_REG(fw_ver, V520, TOD_1);
- 		channel->sync_src = SYNC_SOURCE_DPLL1_TOD_PPS;
- 		break;
- 	case 2:
- 		channel->tod_read_primary = IDTCM_FW_REG(fw_ver, V520, TOD_READ_PRIMARY_2);
-+		channel->tod_read_secondary = IDTCM_FW_REG(fw_ver, V520, TOD_READ_SECONDARY_2);
- 		channel->tod_write = IDTCM_FW_REG(fw_ver, V520, TOD_WRITE_2);
- 		channel->tod_n = IDTCM_FW_REG(fw_ver, V520, TOD_2);
- 		channel->sync_src = SYNC_SOURCE_DPLL2_TOD_PPS;
- 		break;
- 	case 3:
- 		channel->tod_read_primary = IDTCM_FW_REG(fw_ver, V520, TOD_READ_PRIMARY_3);
-+		channel->tod_read_secondary = IDTCM_FW_REG(fw_ver, V520, TOD_READ_SECONDARY_3);
- 		channel->tod_write = IDTCM_FW_REG(fw_ver, V520, TOD_WRITE_3);
- 		channel->tod_n = IDTCM_FW_REG(fw_ver, V520, TOD_3);
- 		channel->sync_src = SYNC_SOURCE_DPLL3_TOD_PPS;
-@@ -2221,6 +2272,7 @@ static int idtcm_enable_channel(struct idtcm *idtcm, u32 index)
- {
- 	struct idtcm_channel *channel;
- 	int err;
-+	int i;
- 
- 	if (!(index < MAX_TOD))
- 		return -EINVAL;
-@@ -2248,6 +2300,17 @@ static int idtcm_enable_channel(struct idtcm *idtcm, u32 index)
- 	snprintf(channel->caps.name, sizeof(channel->caps.name),
- 		 "IDT CM TOD%u", index);
- 
-+	channel->caps.pin_config = pin_config[index];
-+
-+	for (i = 0; i < channel->caps.n_pins; ++i) {
-+		struct ptp_pin_desc *ppd = &channel->caps.pin_config[i];
-+
-+		snprintf(ppd->name, sizeof(ppd->name), "input_ref%d", i);
-+		ppd->index = i;
-+		ppd->func = PTP_PF_NONE;
-+		ppd->chan = index;
-+	}
-+
- 	err = initialize_dco_operating_mode(channel);
- 	if (err)
- 		return err;
-@@ -2302,26 +2365,40 @@ static int idtcm_enable_extts_channel(struct idtcm *idtcm, u32 index)
- static void idtcm_extts_check(struct work_struct *work)
- {
- 	struct idtcm *idtcm = container_of(work, struct idtcm, extts_work.work);
--	int err, i;
-+	struct idtcm_channel *channel;
-+	u8 mask;
-+	int err;
-+	int i;
- 
- 	if (idtcm->extts_mask == 0)
- 		return;
+ 	if (channel->phase_pull_in == true)
+-		return 0;
++		return -EBUSY;
  
  	mutex_lock(idtcm->lock);
-+
- 	for (i = 0; i < MAX_TOD; i++) {
--		u8 mask = 1 << i;
-+		mask = 1 << i;
-+
-+		if ((idtcm->extts_mask & mask) == 0)
-+			continue;
- 
--		if (idtcm->extts_mask & mask) {
--			err = idtcm_extts_check_channel(idtcm, i);
-+		err = idtcm_extts_check_channel(idtcm, i);
-+
-+		if (err == 0) {
- 			/* trigger clears itself, so clear the mask */
--			if (err == 0)
-+			if (idtcm->extts_single_shot) {
- 				idtcm->extts_mask &= ~mask;
-+			} else {
-+				/* Re-arm */
-+				channel = &idtcm->channel[i];
-+				arm_tod_read_trig_sel_refclk(channel, channel->refn);
-+			}
- 		}
- 	}
- 
- 	if (idtcm->extts_mask)
- 		schedule_delayed_work(&idtcm->extts_work,
- 				      msecs_to_jiffies(EXTTS_PERIOD_MS));
-+
- 	mutex_unlock(idtcm->lock);
- }
- 
-@@ -2342,6 +2419,11 @@ static void set_default_masks(struct idtcm *idtcm)
- 	idtcm->tod_mask = DEFAULT_TOD_MASK;
- 	idtcm->extts_mask = 0;
- 
-+	idtcm->channel[0].tod = 0;
-+	idtcm->channel[1].tod = 1;
-+	idtcm->channel[2].tod = 2;
-+	idtcm->channel[3].tod = 3;
-+
- 	idtcm->channel[0].pll = DEFAULT_TOD0_PTP_PLL;
- 	idtcm->channel[1].pll = DEFAULT_TOD1_PTP_PLL;
- 	idtcm->channel[2].pll = DEFAULT_TOD2_PTP_PLL;
-@@ -2420,10 +2502,11 @@ static int idtcm_remove(struct platform_device *pdev)
- {
- 	struct idtcm *idtcm = platform_get_drvdata(pdev);
- 
--	ptp_clock_unregister_all(idtcm);
--
-+	idtcm->extts_mask = 0;
- 	cancel_delayed_work_sync(&idtcm->extts_work);
- 
-+	ptp_clock_unregister_all(idtcm);
-+
- 	return 0;
- }
  
 diff --git a/drivers/ptp/ptp_clockmatrix.h b/drivers/ptp/ptp_clockmatrix.h
-index 0f3059a..4379650 100644
+index 4379650..bf1e49409 100644
 --- a/drivers/ptp/ptp_clockmatrix.h
 +++ b/drivers/ptp/ptp_clockmatrix.h
-@@ -10,11 +10,13 @@
+@@ -54,8 +54,6 @@
+ #define LOCK_TIMEOUT_MS			(2000)
+ #define LOCK_POLL_INTERVAL_MS		(10)
  
- #include <linux/ktime.h>
- #include <linux/mfd/idt8a340_reg.h>
-+#include <linux/ptp_clock.h>
- #include <linux/regmap.h>
+-#define PEROUT_ENABLE_OUTPUT_MASK	(0xdeadbeef)
+-
+ #define IDTCM_MAX_WRITE_COUNT		(512)
  
- #define FW_FILENAME	"idtcm.bin"
- #define MAX_TOD		(4)
- #define MAX_PLL		(8)
-+#define MAX_REF_CLK	(16)
- 
- #define MAX_ABS_WRITE_PHASE_PICOSECONDS (107374182350LL)
- 
-@@ -90,6 +92,7 @@ struct idtcm_channel {
- 	u16			dpll_ctrl_n;
- 	u16			dpll_phase_pull_in;
- 	u16			tod_read_primary;
-+	u16			tod_read_secondary;
- 	u16			tod_write;
- 	u16			tod_n;
- 	u16			hw_dpll_n;
-@@ -105,6 +108,7 @@ struct idtcm_channel {
- 	/* last input trigger for extts */
- 	u8			refn;
- 	u8			pll;
-+	u8			tod;
- 	u16			output_mask;
- };
- 
-@@ -116,6 +120,7 @@ struct idtcm {
- 	enum fw_version		fw_ver;
- 	/* Polls for external time stamps */
- 	u8			extts_mask;
-+	bool			extts_single_shot;
- 	struct delayed_work	extts_work;
- 	/* Remember the ptp channel to report extts */
- 	struct idtcm_channel	*event_channel[MAX_TOD];
-diff --git a/include/linux/mfd/idt8a340_reg.h b/include/linux/mfd/idt8a340_reg.h
-index a18c153..0c70608 100644
---- a/include/linux/mfd/idt8a340_reg.h
-+++ b/include/linux/mfd/idt8a340_reg.h
-@@ -407,7 +407,7 @@
- #define TOD_READ_PRIMARY_0                0xcc40
- #define TOD_READ_PRIMARY_0_V520           0xcc50
- /* 8-bit subns, 32-bit ns, 48-bit seconds */
--#define TOD_READ_PRIMARY                  0x0000
-+#define TOD_READ_PRIMARY_BASE             0x0000
- /* Counter increments after TOD write is completed */
- #define TOD_READ_PRIMARY_COUNTER          0x000b
- /* Read trigger configuration */
-@@ -424,6 +424,16 @@
- 
- #define TOD_READ_SECONDARY_0              0xcc90
- #define TOD_READ_SECONDARY_0_V520         0xcca0
-+/* 8-bit subns, 32-bit ns, 48-bit seconds */
-+#define TOD_READ_SECONDARY_BASE           0x0000
-+/* Counter increments after TOD write is completed */
-+#define TOD_READ_SECONDARY_COUNTER        0x000b
-+/* Read trigger configuration */
-+#define TOD_READ_SECONDARY_SEL_CFG_0      0x000c
-+/* Read trigger selection */
-+#define TOD_READ_SECONDARY_CMD            0x000e
-+#define TOD_READ_SECONDARY_CMD_V520       0x000f
-+
- #define TOD_READ_SECONDARY_1              0xcca0
- #define TOD_READ_SECONDARY_1_V520         0xccb0
- #define TOD_READ_SECONDARY_2              0xccb0
+ #define PHASE_PULL_IN_MAX_PPB		(144000)
 -- 
 2.7.4
 
