@@ -2,109 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68A6450FB51
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 12:46:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6090750FB5C
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 12:48:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344781AbiDZKt3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 06:49:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44500 "EHLO
+        id S1349430AbiDZKuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 06:50:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349389AbiDZKsl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 06:48:41 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B2EFB86A
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 03:42:36 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id 79so18937792iou.7
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 03:42:36 -0700 (PDT)
+        with ESMTP id S1346469AbiDZKtb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 06:49:31 -0400
+Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D46972AC6F
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 03:45:34 -0700 (PDT)
+Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-2f7d19cac0bso70511557b3.13
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 03:45:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
-        bh=aPTFbZr4LhKGppGQDkO7tNLWiZLizgW3cwR+POXjY4E=;
-        b=JoFJxyaSDCSG7DGh8LqgkxBbW0+68RQEfFq3y/8gwImTLFTt2pihl7TTRwA0j+bvJ9
-         ybwlKopxfookz6S87+/nNzIP1nngcysrNeigAj4s+6/1NiBbyr02LsYIYEnAm8DVK61p
-         HHyC3dyHcq1oabKdXPcTRtHf3wPaXkJyfILfRGH7Nd2IYZnawgq1fEqRIzOkE0+pD2uw
-         luzbJd+7vFbC/dFPWp7CwlOV3DhYuvMY3iTLRzgP3PhT27WIIosBLldFjfdzdGQllhab
-         DhMwQ8YDA16PE2TraKMtW2qYIf97RuihaNYhHeeY981WRrRxQceAZpch3cc+QvHrhyG6
-         zGAw==
+        d=nathanrossi.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=1LbavT3LkvBnPpf+Xg/axGsnbaFHBATYMxSGbn93c9A=;
+        b=cIg12B0GcGwK6aaDPRlq4eNs7XBHGZROmNxN9pbLNI2/ziSDKEC4sgQ55w+XG4xL/R
+         MOI39pNJYUAWUqc9Y8BZXm21OQqK26E2NcASnlhKxZkdTBhq/HTiryR/v+4kA7VKbBTg
+         Hsy3CO4GKV89QUNmn9y4KDQ3CFfWtt8sn6GNqty8VscXO2Guj3y1gHCXbOLtj/TN8Qnw
+         rWemHgAeKY+8WK6rlObkeXIqq4Xkt6RAklG0BaqwKncvRGBBruVg2OtY61akuyXqchRI
+         S7bYVLDDlq99ydH3IyvGYTEHFy9KSkm9dDLEfWq0Mx0Mm8ZDfxgMub8sDNIHfSeRGZ4X
+         S9DQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to;
-        bh=aPTFbZr4LhKGppGQDkO7tNLWiZLizgW3cwR+POXjY4E=;
-        b=eaAeHARrAXnzi6K8eNOI4OZ863hinI8kEGQ/FNrhkPE9ZHaBeTSGuaU6L58FjKKfzL
-         Lv8Tqyhk/XCcQZ7TbT83zh5MJgXYQrOhLwzpe4kGwpFReCzywOH5dVkPtgVfEqpKg9n1
-         IN3Z4r1rFxl+z1w892fWbLZANwhbzlK5FDS817ybt8vW/qBZCXYLkV8isBK9A9v6X3Aj
-         RkwFpriStrwP0yVtw6BGbCXt6DzDLAIW2IsCKTTxdpffvQGYW4l+T/VBzxCNPWpJcJJQ
-         DwJFi1eR7DnWYcD482/841zNUBbQg2UZDTbd2NCu5iFDuabzp+M/tiYJMhQxVcVoh+IB
-         mr7w==
-X-Gm-Message-State: AOAM533HW/ZS/af/I1VbMLzctheDmbR9bxvssTyOaCYI8MbS78zG8ZPS
-        g5j4I85xt4vm8TXMsvq2PPqHCRxwHlC76jS9Wq4=
-X-Google-Smtp-Source: ABdhPJyAZoJKU5v39U/F9OJbfVfX8v+HOtC5IZrIAHVuxsrGTXfMG7JOfwe2moj7DRyZLDkWf1n+saoroy3gj4rHMPM=
-X-Received: by 2002:a05:6e02:15c6:b0:2c2:5ab0:948 with SMTP id
- q6-20020a056e0215c600b002c25ab00948mr8653138ilu.171.1650969756087; Tue, 26
- Apr 2022 03:42:36 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=1LbavT3LkvBnPpf+Xg/axGsnbaFHBATYMxSGbn93c9A=;
+        b=iFhWhd3JyWsSi82pt1c1r6nBeGAcBMrLTmzyGaRpy55tUoMEzNz7Y0UzoVyoJtjoI3
+         A+B3nz4fRWReHQPyK5pYldf0sQH2PaHcxDZtdg3m9ulZokIzoTd7ewwthjpXcYPbNEdl
+         XoJE6EkU6vf4WhTthiJCJJpCVJ1TldbGpd/B4oAuhLJbemN9Xdjz80o73hbv48XhdBgw
+         WY8mJExZg/HCaFWhe+n1lQlX0tA+Rt+M4TPoR3rpJSTin70lzA4uyn867qL1DrFLjOpK
+         /2RSkqFiIeP4zYOG3kM5EEHy9tQ0GwKMAi26CBeus+V2VzHEvRrGMAFrOA5Y1bKCvhWH
+         yUDg==
+X-Gm-Message-State: AOAM532/28EGS3n8nHqrY8KKgGTvdmS2/SRagX+Gu4UQTq1Y9+gdr1uC
+        uOln8c4MRrRds24jAnWb92vStruhy0U+SvEADdnTvA==
+X-Google-Smtp-Source: ABdhPJxSgedRHX+4qH42vMO9+QfPTLyf0S87cc+CNQ2WoHxOmWy0B46391HnRsFebUzXIignQYzmAWSYQ8TO8Btl0mc=
+X-Received: by 2002:a81:3648:0:b0:2eb:c4c2:2920 with SMTP id
+ d69-20020a813648000000b002ebc4c22920mr20999279ywa.291.1650969933910; Tue, 26
+ Apr 2022 03:45:33 -0700 (PDT)
 MIME-Version: 1.0
-Reply-To: dr.tracymedicinemed1@gmail.com
-Sender: mrawutamamma2@gmail.com
-Received: by 2002:a6b:8d54:0:0:0:0:0 with HTTP; Tue, 26 Apr 2022 03:42:35
- -0700 (PDT)
-From:   Dr Tracy William <ra6277708@gmail.com>
-Date:   Tue, 26 Apr 2022 18:42:35 +0800
-X-Google-Sender-Auth: oitI9buvRA74FktpLorVkvfy4Aw
-Message-ID: <CAEZRNsSOsY=QCv=Pw_mFi2k+7hRCzZmKG=xRzFRup6W3=+Gv=g@mail.gmail.com>
-Subject: From Dr Tracy from United States
-To:     undisclosed-recipients:;
+References: <20220423132035.238704-1-nathan@nathanrossi.com>
+ <20220423152523.1f38e2d8@thinkpad> <43773a65a27cb714e3319b06b0215fcb0471aae6.camel@redhat.com>
+In-Reply-To: <43773a65a27cb714e3319b06b0215fcb0471aae6.camel@redhat.com>
+From:   Nathan Rossi <nathan@nathanrossi.com>
+Date:   Tue, 26 Apr 2022 20:45:22 +1000
+Message-ID: <CA+aJhH0Eg4BnohkQupLW0u473-WmuTXD0u2ShZfU19XN7JD-ew@mail.gmail.com>
+Subject: Re: [PATCH] net: dsa: mv88e6xxx: Skip cmode writable for mv88e6*41 if unchanged
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.7 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:d44 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.4990]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [ra6277708[at]gmail.com]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [dr.tracymedicinemed1[at]gmail.com]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [mrawutamamma2[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        *  3.6 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Dear,
+On Tue, 26 Apr 2022 at 17:50, Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> Hello,
+>
+> On Sat, 2022-04-23 at 15:25 +0200, Marek Beh=C3=BAn wrote:
+> > On Sat, 23 Apr 2022 13:20:35 +0000
+> > Nathan Rossi <nathan@nathanrossi.com> wrote:
+> >
+> > > The mv88e6341_port_set_cmode function always calls the set writable
+> > > regardless of whether the current cmode is different from the desired
+> > > cmode. This is problematic for specific configurations of the mv88e63=
+41
+> > > and mv88e6141 (in single chip adddressing mode?) where the hidden
+> > > registers are not accessible.
+> >
+> > I don't have a problem with skipping setting cmode writable if cmode is
+> > not being changed. But hidden registers should be accessible regardless
+> > of whether you are using single chip addressing mode or not. You need
+> > to find why it isn't working for you, this is a bug.
+>
+> For the records, I read the above as requiring a fix the root cause, so
+> I'm not applying this patch. Please correct me if I'm wrong.
 
-how are you today,I hope you are doing great.
+You are correct. Sorry I forgot to reply to this thread after posting
+the root cause fix.
 
-It is my great pleasure to contact you,I want to make a new and
-special friend,I hope you don't mind. My name is Tracy William from
-the United States, Am an English and French nationalities. I will give
-you pictures and more details about my self as soon as i hear from
-you Kisses.
+For reference the root cause fix to the issue mentioned by this patch
+is https://lore.kernel.org/netdev/20220425070454.348584-1-nathan@nathanross=
+i.com/.
 
-Pls resply to my personal email(dr.tracymedicinemed1@gmail.com)
+Thanks,
+Nathan
 
-Thanks.
-Tracy,
+>
+> Thanks,
+>
+> Paolo
+>
