@@ -2,206 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA91B50FFEA
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 16:02:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F37A510003
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 16:06:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345706AbiDZOFT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 10:05:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50488 "EHLO
+        id S236136AbiDZOJ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 10:09:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237262AbiDZOFS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 10:05:18 -0400
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36D9D32EDC;
-        Tue, 26 Apr 2022 07:02:10 -0700 (PDT)
-Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 78A2BC0008;
-        Tue, 26 Apr 2022 14:02:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650981728;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7PQZCwiv2zEHTrq79VR/VdsVP2v14TZgynrsHMuTV/0=;
-        b=GqrophupVFhOrusBv9A1zJ+E8bt3QYe/6VKg+dF4uAcEDBOcMdPM/ms2t2RY7ms+XfPhqE
-        TKY4kXPXOQxkdjJ9AocBAj4EHj2bGV+Iox7dkQtp4mcFwCBv+15WFpRXnBqyzXo1yG1TWI
-        lcv+9wSjnqcjjiiVWzWmgKgAH86bZCUfQ7QgQHTlQzYALRjxuc2zBNHwstmIrCY0b7WhQ8
-        mCORk9Kzwq5iFkouEnUyEYEzNqArXLc1B98EoHbOZHaWhlAeE0hqRqjL1X0PYS3B088MDy
-        COySCDCntcmYyoWU3Cd35fvgbjT49Ov9b+H4AFQRCCKUBdYlGgdCJ5wdqDDpFg==
-Date:   Tue, 26 Apr 2022 16:02:06 +0200
-From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Robert Marko <robert.marko@sartura.hr>
-Subject: Re: [PATCH net-next 4/5] net: dt-bindings: Introduce the Qualcomm
- IPQESS Ethernet controller
-Message-ID: <20220426160206.1a8d425c@pc-19.home>
-In-Reply-To: <34d3bfdc-cf8c-bf63-4f67-57c8d6c9b780@linaro.org>
-References: <20220422180305.301882-1-maxime.chevallier@bootlin.com>
-        <20220422180305.301882-5-maxime.chevallier@bootlin.com>
-        <34d3bfdc-cf8c-bf63-4f67-57c8d6c9b780@linaro.org>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
+        with ESMTP id S1351447AbiDZOIx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 10:08:53 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 723B31FA77
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 07:05:46 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id l18so9677780ejc.7
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 07:05:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=v4PZftkkaFaD0w9q1I3NyqewH7haFVEmQYaSb8AaZE8=;
+        b=B6FRL/Fffce0Zf4mujR4zPGdmDIFQUnHZtD1qmYuGtSTllSwAjYqXarkfw6EgTA2R7
+         HAF/uAUzR9tujtFw/fclINawx12Vgeu7pPu8oRFl/5GGdQiY8z3BgfjGYIH/20CuAcVQ
+         Ded96JgxsHEfTKLU3bAebyDjOZogJljzubQPPUUuxxEi6MdHXFe7e5z+J2EJyDjmn/DW
+         qt3k+KVm6ROpCpmii8JPX4IPjw3wGUtZQf5ySJT+Rd0VbKEv3SbPZouo7Ii23qKZ9o6G
+         k5ToEJUvq9XU9o/SSjo6GfIO2GstRk7FRWzOJkRN9/BJ8GY2HMP/ImqugMGwdX9GbXVc
+         ZYZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=v4PZftkkaFaD0w9q1I3NyqewH7haFVEmQYaSb8AaZE8=;
+        b=Y6quqz74m0xSu2ekUilfltpuxLcHHrzHZ1AE21vTSVxYN7uS2rQaG07JnmSkldjWBg
+         Et+kXB63h2mylZy0eZ/IbtYe5GmaLedM6qe0nGEQxOAXkvYmRnxpHRmYiHCrGPFX9aLH
+         vokv4qrg+Y5pZ9VLDrmg+C9+06POAi9Ifou/PkUoGlG1lDadParHDNfdD9RrQoKA73Wn
+         MdNTnsZniHhHar+Sd2ZyI1+tyWXhkMv7DgRvHZJqWtWIZo9iZdzjGwVxIyxONL+TT6pa
+         nKoOD1fFBLfx04TlteMLj83wlk4DmNFozai+PUXdtjM2zlFigbOI7Dwldj3yIUnWYeLN
+         zEAA==
+X-Gm-Message-State: AOAM533FATcqSKSID7MeolIegruwE/SzVKNdtC5qdktsjqDvTBL/hdKX
+        d0+LdUW0tZruNmoDEJ63JLSqGw==
+X-Google-Smtp-Source: ABdhPJzPLxd/KLmoQ3q2qzaCbOHKZYETkdyxuPbFwP1CSfxOAJcuu/QmulcB2dCTlSa9Eux2h+lIIQ==
+X-Received: by 2002:a17:907:9958:b0:6e7:f67a:a1e7 with SMTP id kl24-20020a170907995800b006e7f67aa1e7mr20740543ejc.400.1650981945047;
+        Tue, 26 Apr 2022 07:05:45 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id k23-20020a1709062a5700b006ccd8fdc300sm4862561eje.180.2022.04.26.07.05.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 07:05:44 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 16:05:43 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Ido Schimmel <idosch@idosch.org>, Jakub Kicinski <kuba@kernel.org>,
+        Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, pabeni@redhat.com, jiri@nvidia.com,
+        petrm@nvidia.com, dsahern@gmail.com, mlxsw@nvidia.com
+Subject: Re: [PATCH net-next 00/11] mlxsw: extend line card model by devices
+ and info
+Message-ID: <Ymf8N19bQYcKJJ1g@nanopsycho>
+References: <20220425034431.3161260-1-idosch@nvidia.com>
+ <20220425090021.32e9a98f@kernel.org>
+ <Ymb5DQonnrnIBG3c@shredder>
+ <YmeViVZ1XhCBCFLN@nanopsycho>
+ <YmflStBQCrzP8E6t@lunn.ch>
+ <YmfoXsw+o9LE9dF3@nanopsycho>
+ <Ymf3jKNeyuYHzsBC@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ymf3jKNeyuYHzsBC@lunn.ch>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Krzysztof
+Tue, Apr 26, 2022 at 03:45:48PM CEST, andrew@lunn.ch wrote:
+>> Well, I got your point. If the HW would be designed in the way the
+>> building blocks are exposed to the host, that would work. However, that
+>> is not the case here, unfortunatelly.
+>
+>I'm with Jakub. It is the uAPI which matters here. It should look the
+>same for a SoC style enterprise router and your discombobulated TOR
+>router. How you talk to the different building blocks is an
+>implementation detail.
 
-On Sat, 23 Apr 2022 19:49:30 +0200
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
+It's not that simple. Take the gearbox for example. You say bunch of
+MDIO registers. ASIC FW has a custom SDK internally that is used to
+talk to the gearbox.
 
-Thanks a lot for the review, I'll address all your comments in a V2.
-
-> On 22/04/2022 20:03, Maxime Chevallier wrote:
-> > Add the DT binding for the IPQESS Ethernet Controller. This is a
-> > simple controller, only requiring the phy-mode, interrupts, clocks,
-> > and possibly a MAC address setting.
-> > 
-> > Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
-> > ---
-> >  .../devicetree/bindings/net/qcom,ipqess.yaml  | 94
-> > +++++++++++++++++++ 1 file changed, 94 insertions(+)
-> >  create mode 100644
-> > Documentation/devicetree/bindings/net/qcom,ipqess.yaml
-> > 
-> > diff --git a/Documentation/devicetree/bindings/net/qcom,ipqess.yaml
-> > b/Documentation/devicetree/bindings/net/qcom,ipqess.yaml new file
-> > mode 100644 index 000000000000..8fec5633692f
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/net/qcom,ipqess.yaml
-> > @@ -0,0 +1,94 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/net/qcom,ipqess.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Qualcomm IPQ ESS EDMA Ethernet Controller Device Tree
-> > Bindings  
-> 
-> s/Device Tree Bindings//
-> 
-> > +
-> > +allOf:
-> > +  - $ref: "ethernet-controller.yaml#"  
-> 
-> allOf goes after maintainers.
-> 
-> > +
-> > +maintainers:
-> > +  - Maxime Chevallier <maxime.chevallier@bootlin.com>
-> > +
-> > +properties:
-> > +  compatible:
-> > +    const: qcom,ipq4019e-ess-edma
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  interrupts:
-> > +    minItems: 2
-> > +    maxItems: 32
-> > +    description: One interrupt per tx and rx queue, with up to 16
-> > queues. +
-> > +  clocks:
-> > +    maxItems: 1
-> > +
-> > +  phy-mode: true
-> > +
-> > +  fixed-link: true
-> > +
-> > +  mac-address: true  
-> 
-> You don't need all these three. They come from ethernet-controller and
-> you use unevaluatedProperties.
-> 
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +  - interrupts
-> > +  - clocks
-> > +  - phy-mode
-> > +
-> > +unevaluatedProperties: false
-> > +
-> > +examples:
-> > +  - |
-> > +    gmac: ethernet@c080000 {
-> > +        compatible = "qcom,ipq4019-ess-edma";
-> > +        reg = <0xc080000 0x8000>;
-> > +        interrupts = <GIC_SPI  65 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI  66 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI  67 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI  68 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI  69 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI  70 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI  71 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI  72 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI  73 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI  74 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI  75 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI  76 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI  77 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI  78 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI  79 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI  80 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI 240 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI 241 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI 242 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI 243 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI 244 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI 245 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI 246 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI 247 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI 248 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI 249 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI 250 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI 251 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI 252 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI 253 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI 254 IRQ_TYPE_EDGE_RISING>,
-> > +                     <GIC_SPI 255 IRQ_TYPE_EDGE_RISING>;
-> > +
-> > +        status = "okay";  
-> 
-> No status in the example.
-> 
-> > +
-> > +        phy-mode = "internal";
-> > +        fixed-link {
-> > +            speed = <1000>;
-> > +            full-duplex;
-> > +            pause;
-> > +            asym-pause;
-> > +        };
-> > +    };
-> > +
-> > +...  
-> 
-> 
-> Best regards,
-> Krzysztof
-
-Best Regards,
-
-Maxime
+The flash, you say expose by MTD, but there is no access to it directly
+from host. Can't be done. There are HW design limitations that are
+blocking your concept.
