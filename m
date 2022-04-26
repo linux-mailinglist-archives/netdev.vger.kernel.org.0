@@ -2,299 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AC7E51021F
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 17:45:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47A25510228
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 17:48:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352480AbiDZPse (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 11:48:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33872 "EHLO
+        id S1348865AbiDZPv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 11:51:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352481AbiDZPsb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 11:48:31 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2AE912AFB;
-        Tue, 26 Apr 2022 08:45:22 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id c12so30581610plr.6;
-        Tue, 26 Apr 2022 08:45:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=xu8vZlRwQ3tIBZgu9W5je38lqnNS6mBhPAIYzgfxDUw=;
-        b=SGoh+VAqipMK2ox3PHPwV37PdR/UMVsUgA7+1p//vrSoOR6LUPviqG34C8V4+BJ/1h
-         wHNnKmBpQgnEzOcJyX1/cFQMOLW1/n4G4klGomjDUjgNiIcjkLn8Z5hkivmxLKkDBQFC
-         B4waFVyUU2AaD0tPMUt10JeX9dBBH2TP/82AyU1LFzT30ZGG5IXPzQQRekDLROIXnTpL
-         EY9owZNtNZfa0EfVfBEMBsMNBXAiQEprhNoqtsqoUBMMQsgEc+euOQvCWR6Tn89B5Jc0
-         b2df2Y6z+RieG0VsphMfx6rXNSpLIQNzt/z3xSuOLy3OakYJxGQZkNMyoaxp5+YaoMZw
-         /wUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=xu8vZlRwQ3tIBZgu9W5je38lqnNS6mBhPAIYzgfxDUw=;
-        b=PiUIIIzgj3UxOOZJj43nGjLaYjtu1/I3KDYNXTSSvr19cOKfO1NNKg6f7oUvS4UV3e
-         kaEnE2E7J1odh04SLrfNmG+BO83OJegV8kuhBQU1wuHMYb74+NhCerXB+b8ZVY6pzj7I
-         gd/tnshP6QRIkQDU6SjQ2CXWs7N61urM8XxadIxi6YRBH3cVNTJxnnLgcJeFOfYDNg4P
-         nsZj3noFW6zvcgowCjIheEqYU9WfFVHYEVMOZWqg/jXjvlsAy/e0bXSqFpxxrR6R9JjD
-         rNNHmkOhBw3zWh/DCn9ugkwH+UIq+xxxPORLV7Ubz7QP57T7j5PIy/RLGmS8LUrdQdCP
-         yY5g==
-X-Gm-Message-State: AOAM530vVJtTwNGu59/3T2SkQWwqbqC1eECKSR+JzfnLX0J5GczFanBO
-        CjTmxm6fAGXfM5yMKZR4k7k=
-X-Google-Smtp-Source: ABdhPJzsQFjPYOSt9aJIDyYEraxAJfexGOhLplqqhr9/0v6giyJc2nNYhU+K5Upi9wVDIw69rJAcag==
-X-Received: by 2002:a17:90a:4a95:b0:1d8:2918:7065 with SMTP id f21-20020a17090a4a9500b001d829187065mr25303001pjh.117.1650987921530;
-        Tue, 26 Apr 2022 08:45:21 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id gw19-20020a17090b0a5300b001d97f7fca06sm4114181pjb.24.2022.04.26.08.45.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Apr 2022 08:45:21 -0700 (PDT)
-Message-ID: <046a334b-d972-6ab9-5127-f845cef72751@gmail.com>
-Date:   Tue, 26 Apr 2022 08:45:18 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC v1 2/3] net: dsa: mt753x: make CPU-Port dynamic
+        with ESMTP id S1349544AbiDZPv5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 11:51:57 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2069.outbound.protection.outlook.com [40.107.236.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA6CB11054A
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 08:48:48 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=E9G7AbThXrifCGzMq9kkHuUctWOFAyErVk7tW2Cw0OHj1h66Ht1M/E78rkFMIvgvKvUgnF1V8R4oaDAkXiYYaRTHvDX4B8Zy9IapwyR3iROyiYsY2VHwC3RYS6f14nDD+Yr+v0thOXptRDuvwul/qNTxiVzQuoXyJAjGAkaJfo/64cTIH3c2nA23pkhAVvPcQk1ZKlhuI2DNjk8yyy80WwskR9Ms6OoQd9nwJ1Nz8FbdM38vosSid+3csBjgx7SLDaveGXTelKtjWDksrSNIAIXhn6eCkdCwUQl9OAz90Wx7gSqzCuUFGDkbcOqwJKCEGDVQm1MV01FWl80VA4/afg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7Fx3oZuWykKrFaw7fXDEKavpkkZZsTk2Di02138uam0=;
+ b=WeVT4R253cYgXT18mjXuGFCLu+cxyWdqwQkKRn4z/YtrkkFhOZCXofHxLgB8uauqT67WvDaqvY9RD1lMYmBD9DUuEU2FfhuwT5NkPvIFU3XJjIi/c94QDqu0/9Fx3v2cZM65NjSV7r2iRitLimnZ03LWXmmkXuNeRRl1YSAM0Oq0jrBPeLbdeb8ZH7y1GbSXUjImQsxKqccdSVOdCpiHXmR+NrNqcOPQNFUQ9uyAtAuKAyrrQu1Zwsfrbj1EZSWPZLTgaysO5iDUmLpkp5LRtLygQ1oPX6z3mbY7l2UWe3Ytz+3zm/R5mWUXOojfPzpiRV0KAH2qJCWm5RWYrD6t+g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7Fx3oZuWykKrFaw7fXDEKavpkkZZsTk2Di02138uam0=;
+ b=AoFl7SVQ+P9egIx3euzva8PR0p+E051khdJ8Bpk8IkYXjp/fppWgxGbn5X3yupcvwcTky/y4Bdaa2tzPKFiPR6KVKYr0uy0uJG1Okl1l52BbV3it9BrpZ256DkOaiymR5JvVKd9OhhTRAmhmLq5uBhffIRcFLKwZobt0cATTsAskK8EZmzwxkcmQv1aNfZzU/7FAnJLLVNU2wm+mB32tdYBzSmyAyjzebLQIx45ipt9SAsQ+GQBM1sE229WfQBTJT99PMLC6Fo6KkTVazGPEzrAMBfAaMqC0+EQtDM0ilcPXL+1rQaB3SEuo4nx1asnDbMuRji14+TJqoWRXq7fmvg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM4PR12MB5150.namprd12.prod.outlook.com (2603:10b6:5:391::23)
+ by BL0PR12MB4996.namprd12.prod.outlook.com (2603:10b6:208:1c6::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Tue, 26 Apr
+ 2022 15:48:47 +0000
+Received: from DM4PR12MB5150.namprd12.prod.outlook.com
+ ([fe80::a186:70f2:4280:14df]) by DM4PR12MB5150.namprd12.prod.outlook.com
+ ([fe80::a186:70f2:4280:14df%7]) with mapi id 15.20.5186.021; Tue, 26 Apr 2022
+ 15:48:47 +0000
+Message-ID: <6aee5f52-90ec-aa26-bb9c-e13e9e5abfc2@nvidia.com>
+Date:   Tue, 26 Apr 2022 18:48:37 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH net] tls: Skip tls_append_frag on zero copy size
 Content-Language: en-US
-To:     Frank Wunderlich <linux@fw-web.de>,
-        linux-mediatek@lists.infradead.org,
-        linux-rockchip@lists.infradead.org
-Cc:     Frank Wunderlich <frank-w@public-files.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Boris Pismenny <borisp@nvidia.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20220426134924.30372-1-linux@fw-web.de>
- <20220426134924.30372-3-linux@fw-web.de>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220426134924.30372-3-linux@fw-web.de>
+        Tariq Toukan <tariqt@nvidia.com>,
+        Aviad Yehezkel <aviadye@mellanox.com>,
+        Ilya Lesokhin <ilyal@mellanox.com>, netdev@vger.kernel.org
+References: <20220413134956.3258530-1-maximmi@nvidia.com>
+ <20220414122808.09f31bfe@kernel.org>
+ <3c90d3cd-5224-4224-e9d9-e45546ce51c6@nvidia.com>
+ <da984a08-1730-1b0c-d845-cf7ec732ba4c@nvidia.com>
+ <20220422075502.27532722@kernel.org>
+From:   Maxim Mikityanskiy <maximmi@nvidia.com>
+In-Reply-To: <20220422075502.27532722@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: LO4P265CA0100.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:2bc::12) To DM4PR12MB5150.namprd12.prod.outlook.com
+ (2603:10b6:5:391::23)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0ba35229-645d-4468-6f64-08da279c3fd5
+X-MS-TrafficTypeDiagnostic: BL0PR12MB4996:EE_
+X-Microsoft-Antispam-PRVS: <BL0PR12MB49966259B33E2184BA1C3D7DDCFB9@BL0PR12MB4996.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: dPvct+ALYKnQLskW/GUAjalMlLjAt8cjHIp5f0Dt/USa/uJydJRu3t4F9wvqLagtwYXVz6stFXkHsO42pGNYqF+sRcJ9xwS9bihR20YmCmg4its8LvOpJ7rSKzmraAETZogRHNSU6zFQIXaeiUg466Jvypr/fntq8wGqacXFulbqRQElZRYdY0Pe6GJdzRFZjGTISmpqJRRa4ajdTVWAHTGOYi29Lb8Y8GuIMk7BNhPqC0d8v5sfYIrfC3OPgENBpmYH3MIw7Yk5wU9gnCgGA+hD+Qdi3Z94hGZpTjNYJ+p6svX05JWusHXZcMH/Pn79ywO05/sHH319ELwg/tsGFEFucgRtsHjk1xw32Jey8TyPcbM3Sx9pHfMOsQxrwT6VVrMGBm61KR/Sj6XQ+Lz+kqO3NSnoayW2LP5ei+444k/reiM/CqId5n7BWd8XoCYd6Tdi7GqpDw/xJnFEq01JNNGa+4WcfbMumC4DlWtm4FM2qCVao8MLB0WYas3VX5XRK7xmRYn+S5pjmG52eyJ8g93Xm0Bg995a0EyLIQd37Uazv/8DT5IvuFz+AwAiXmgH7JdJJJuNcX1OZr8lcpDvJFw693/GHfd7Jpseogj+6aob2+f1A8ps4dnzy36fLfzdAyuZmp/UC0patbpByjPmB/1Jbc0rwMwmN9XrCwhprJj2YbpAOi00Z7UXd2ripxrh4U807Y15Z6zx7MEHtgokMp0uDdai6dvdkW5i77BbDEo=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5150.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(86362001)(316002)(66556008)(66946007)(53546011)(38100700002)(4326008)(8676002)(6512007)(186003)(2616005)(31686004)(8936002)(2906002)(6486002)(5660300002)(36756003)(6916009)(31696002)(66476007)(83380400001)(26005)(508600001)(6666004)(54906003)(6506007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Y0w3a0VWWGZWVVZDelRmVlBQTmY3SXFFNStxQzVwNVI1TUgzc2ljMXFxcWp0?=
+ =?utf-8?B?VWtWS3FyWXU2eWJhWWRvZU82dDVCY21nZGVRL0RVSWlJUElaaUluV1lVSEtV?=
+ =?utf-8?B?eUNGNkY1Ty91RUd2Ukx4MTIwNlVqc1BHS294VVVqWHRXNFVDNDlRRFd0RnlQ?=
+ =?utf-8?B?N21OUE80Rkl0UW1RR3JvaXVQYzRNVzYrSDF2VTNlZGFQUk83QmloVlQ3YnE2?=
+ =?utf-8?B?dkZpUmNvdlJLcjdEeHZBYlNiVGJYSW9LdCt3Vy9lTWRud0UyNGZYOGRaT2h4?=
+ =?utf-8?B?K0gvL3ByZk4xMW9rSGtsbDhVWCtyNzFWVGxMNk52MVpZcnNMbmZyd1FBRC96?=
+ =?utf-8?B?NTc5NzJPcmE4WmlsOHBnYVpGRHdzNzF0M0d0Mm8yYklIdk1TaVBYSGJUcE5v?=
+ =?utf-8?B?emY4NmU3YVJ0UG9xTXo3R203RGl1ZnJINFRuUmRXSndBVi9OOFJUOXpOTGlm?=
+ =?utf-8?B?Y3FrYTE5RlpEZ3ByMzlrajRHaEJha0tiSGtwczZJVHMzaElUdHkvL2hpN1Z6?=
+ =?utf-8?B?UXJ0OWN6TTc2RkR2RzhqVVVhcE8wODNLNEJ6K1pUalhMNy9xdVROM3l3QlVY?=
+ =?utf-8?B?d2tGUWRPOFBVeTArWWpKcVVRVW0rVUxLTEFnQWJ1OUcyS1lRMXNoQmsyc2Yw?=
+ =?utf-8?B?eFRqYlhGNHEyTGt4V2xhRUpqYjhBbE9aTngwRXMyMXAvTDJUVUNvZENmUFZJ?=
+ =?utf-8?B?d2x4RnhwTFp4R2w5R2NNaDBUTFBVWEhOMmpkaWdiUmdoTTFydHFHaUVrek85?=
+ =?utf-8?B?QmRscWd1OFI4ZXNGeWlsejZCSDZhS2huR0J5dFFrRTRmRXZuRG9yRlh1cFNY?=
+ =?utf-8?B?SjZQRWdmSk1hcVhWZVY3aVo1RDFKWEJWeTZoMkpHaUV2TVl6WFlRNHR4TGVj?=
+ =?utf-8?B?WXJzYmdBRTRLQStRQ3ovcjN2cEcxWTNySGhmK0QxUkJqajd4eUh5S21OMk5G?=
+ =?utf-8?B?Q1NzU3FsdVBMNEhUK0hsR0hNcVdEZVRzL2lZVXBmdWRGam4rNHdubnM3TXFQ?=
+ =?utf-8?B?cHRSOXBpR2pGVFhqZUduVTUxV3hIWWFoMWsxTWxNMFRmaGYyRnM5TEQ5dGp6?=
+ =?utf-8?B?eE04bTh6SEFDRjZtS2EvMXMwOGp6Y0FlNmtIMjMwenNKdUd3SUNZNGpVMzMx?=
+ =?utf-8?B?Snh3RDZHZzF4OXJJS3BtR1N4M2xZVVEyazIrL3ZQSWhRZXBYZUE3RldmazJ6?=
+ =?utf-8?B?YmFCT0JIVzlCRVNUcDVER0FyRm5BVWtKZXAxeStWcHZESG05d043YzV5MzZy?=
+ =?utf-8?B?UXA0bXlYN0c4ZzFRSW5HT0RxSVBUL0JTTlZ5dDMrNDJtUmUwS3pUMkpLTU1N?=
+ =?utf-8?B?MnppQmFpbEUrY0xTUzhtbklQd044Z3UvSUx3cXhmS0Y1NzFtQy82Szh5Zmp6?=
+ =?utf-8?B?SWRjQktGTlFLalRUK0ZwSjVsZEErUm41RS80eDZKRjF6NnFibFBBU2NGUHVq?=
+ =?utf-8?B?OHdWS1NuYkZGSHR0SGpZcHBrYTVWWE03Q2Fid1ZWZWxHNmJndWU1bldLQlE0?=
+ =?utf-8?B?NXhPZ3psTWxWNFBBOUhTV0VoS3kyMTd0dGNtcXlJclRIdXV5aHJFOERQTitk?=
+ =?utf-8?B?NVNLMjVNcVZOS2pRVzdnN3p6cVROWmVtRk5kcnhpSEM2cUwvVjVQRXpMQmxJ?=
+ =?utf-8?B?Q0taNjIrdDFIaVdQMEYxNEg0R2JHTHljTnBLLzBRbjFzdnRuS3B1SU9CRlB0?=
+ =?utf-8?B?dUxSRDJwTFVaWnNEOFJUUlN5OWZEWEhyOHd0NElRdmNPbFpOdHdURGdGeXl3?=
+ =?utf-8?B?SU1HU0Z5NFdYOElzRHpkQzhDTWVGWUhPRDYzSTJxc09ybnBJVzFVSW1nTUp5?=
+ =?utf-8?B?TXFmNDg4WGZQVWY3ZExZZ3UwMTNSc1hPeHJZdHQweDVGWGRzeWVVcTBZeXVi?=
+ =?utf-8?B?SitZc0JFdUkyM21aaFF5ckRMZGFiaWxqdTdzM0FJaEVsTXpmeFg5RUdhYzJK?=
+ =?utf-8?B?by9jRnNJYy9PYThVSmdxTGFhbHdRVFRBVDRIL0ZmVS9TNHRQdGl5TWk5aTVK?=
+ =?utf-8?B?eHE2QWl6YlZQRXBaY0UxU1EvQ2RTb09jODM3TkdwTEFRV054R25YYiszemZ1?=
+ =?utf-8?B?MnVvREtHSGNpMktwWEd0MTQ5WGplQ0Q3dDVZQ0ZRcW9tMS9jSFI0RjFSUnJT?=
+ =?utf-8?B?UUgvaytJaUpMc2pLOFgzM3IvZDZWcGpjSEorVk9SeWtkS29XM0JDK3Z6azJ4?=
+ =?utf-8?B?WHk5ekg1NmJZRlQrczlmMDlydU9zRUtWTWFieWtxVmd1dzMwOThyK0xmZlla?=
+ =?utf-8?B?M2VEY3dmd1hzMHB4TGlSYVA3TUZHSG1KdGg0SFBYWk1paU5NU1FYbzQ5NFlt?=
+ =?utf-8?B?ckxyS2RFR21NQ3l2eHFJcFpmNXIwUDNGWHRqRXYvUUdBRmNpSkpHQT09?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0ba35229-645d-4468-6f64-08da279c3fd5
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5150.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Apr 2022 15:48:47.1629
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: HBuHi78nUcxV44SOyLWS64VHaIKe+zh90BEm7F+c3uXxoOIRFKjMEEDyGZv6aCgGFR6xmjh9sk+JMHcJukG/RA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB4996
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/26/22 06:49, Frank Wunderlich wrote:
-> From: Frank Wunderlich <frank-w@public-files.de>
+On 2022-04-22 17:55, Jakub Kicinski wrote:
+> On Thu, 21 Apr 2022 12:47:18 +0300 Maxim Mikityanskiy wrote:
+>> On 2022-04-18 17:56, Maxim Mikityanskiy wrote:
+>>> On 2022-04-14 13:28, Jakub Kicinski wrote:
+>>>> I appreciate you're likely trying to keep the fix minimal but Greg
+>>>> always says "fix it right, worry about backports later".
+>>>>
+>>>> I think we should skip more, we can reorder the mins and if
+>>>> min(size, rec space) == 0 then we can skip the allocation as well.
+>>>
+>>> Sorry, I didn't get the idea. Could you elaborate?
+>>>
+>>> Reordering the mins:
+>>>
+>>> copy = min_t(size_t, size, max_open_record_len - record->len);
+>>> copy = min_t(size_t, copy, pfrag->size - pfrag->offset);
+>>>
+>>> I assume by skipping the allocation you mean skipping
+>>> tls_do_allocation(), right? Do you suggest to skip it if the result of
+>>> the first min_t() is 0?
+>>>
+>>> record->len used in the first min_t() comes from ctx->open_record, which
+>>> either exists or is allocated by tls_do_allocation(). If we move the
+>>> copy == 0 check above the tls_do_allocation() call, first we'll have to
+>>> check whether ctx->open_record is NULL, which is currently checked by
+>>> tls_do_allocation() itself.
+>>>
+>>> If open_record is not NULL, there isn't much to skip in
+>>> tls_do_allocation on copy == 0, the main part is already skipped,
+>>> regardless of the value of copy. If open_record is NULL, we can't skip
+>>> tls_do_allocation, and copy won't be 0 afterwards.
+>>>
+>>> To compare, before (pseudocode):
+>>>
+>>> tls_do_allocation {
+>>>       if (!ctx->open_record)
+>>>           ALLOCATE RECORD
+>>>           Now ctx->open_record is not NULL
+>>>       if (!sk_page_frag_refill(sk, pfrag))
+>>>           return -ENOMEM
+>>> }
+>>> handle errors from tls_do_allocation
+>>> copy = min(size, pfrag->size - pfrag->offset)
+>>> copy = min(copy, max_open_record_len - ctx->open_record->len)
+>>> if (copy)
+>>>       copy data and append frag
+>>>
+>>> After:
+>>>
+>>> if (ctx->open_record) {
+>>>       copy = min(size, max_open_record_len - ctx->open_record->len)
+>>>       if (copy) {
+>>>           // You want to put this part of tls_do_allocation under if (copy)?
+>>>           if (!sk_page_frag_refill(sk, pfrag))
+>>>               handle errors
+>>>           copy = min(copy, pfrag->size - pfrag->offset)
+>>>           if (copy)
+>>>               copy data and append frag
+>>>       }
+>>> } else {
+>>>       ALLOCATE RECORD
+>>>       if (!sk_page_frag_refill(sk, pfrag))
+>>>           handle errors
+>>>       // Have to do this after the allocation anyway.
+>>>       copy = min(size, max_open_record_len - ctx->open_record->len)
+>>>       copy = min(copy, pfrag->size - pfrag->offset)
+>>>       if (copy)
+>>>           copy data and append frag
+>>> }
+>>>
+>>> Either I totally don't get what you suggested, or it doesn't make sense
+>>> to me, because we have +1 branch in the common path when a record is
+>>> open and copy is not 0, no changes when there is no record, and more
+>>> repeating code hard to compress.
+>>>
+>>> If I missed your idea, please explain in more details.
+>>
+>> Jakub, is your comment still relevant after my response? If not, can the
+>> patch be merged?
 > 
-> Currently CPU-Port is hardcoded to Port 6.
-> 
-> On BPI-R2-Pro board this port is not connected and only Port 5 is
-> connected to gmac of SoC.
-> 
-> Replace this hardcoded CPU-Port with a member in mt7530_priv struct
-> which is set in mt753x_cpu_port_enable to the right port.
-> 
-> I defined a default in probe (in case no CPU-Port will be setup) and
-> if both cpu-port were setup port 6 will be used like the const prior
-> this patch.
-> 
-> In mt7531_setup first access is before we know which port should be used
-> (mt753x_cpu_port_enable) so section "BPDU to CPU port" needs to be moved
-> down.
-> 
-> Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
-> ---
->   drivers/net/dsa/mt7530.c | 46 ++++++++++++++++++++++------------------
->   drivers/net/dsa/mt7530.h |  2 +-
->   2 files changed, 26 insertions(+), 22 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-> index ccf4cb944167..4789105b8137 100644
-> --- a/drivers/net/dsa/mt7530.c
-> +++ b/drivers/net/dsa/mt7530.c
-> @@ -1004,6 +1004,7 @@ mt753x_cpu_port_enable(struct dsa_switch *ds, int port)
->   			return ret;
->   	}
->   
-> +	priv->cpu_port = port;
->   	/* Enable Mediatek header mode on the cpu port */
->   	mt7530_write(priv, MT7530_PVC_P(port),
->   		     PORT_SPEC_TAG);
-> @@ -1041,7 +1042,7 @@ mt7530_port_enable(struct dsa_switch *ds, int port,
->   	 * restore the port matrix if the port is the member of a certain
->   	 * bridge.
->   	 */
-> -	priv->ports[port].pm |= PCR_MATRIX(BIT(MT7530_CPU_PORT));
-> +	priv->ports[port].pm |= PCR_MATRIX(BIT(priv->cpu_port));
->   	priv->ports[port].enable = true;
->   	mt7530_rmw(priv, MT7530_PCR_P(port), PCR_MATRIX_MASK,
->   		   priv->ports[port].pm);
-> @@ -1190,8 +1191,8 @@ mt7530_port_bridge_join(struct dsa_switch *ds, int port,
->   			struct netlink_ext_ack *extack)
->   {
->   	struct dsa_port *dp = dsa_to_port(ds, port), *other_dp;
-> -	u32 port_bitmap = BIT(MT7530_CPU_PORT);
->   	struct mt7530_priv *priv = ds->priv;
-> +	u32 port_bitmap = BIT(priv->cpu_port);
+> I'd prefer if you refactored the code so tls_push_data() looks more
+> natural.
 
-No need to re-order these two lines.
+I would be happy to improve the code, but I honestly didn't understand 
+your idea. My attempt to understand it only made the code worse.
 
->   
->   	mutex_lock(&priv->reg_mutex);
->   
-> @@ -1267,9 +1268,9 @@ mt7530_port_set_vlan_unaware(struct dsa_switch *ds, int port)
->   	 * the CPU port get out of VLAN filtering mode.
->   	 */
->   	if (all_user_ports_removed) {
-> -		mt7530_write(priv, MT7530_PCR_P(MT7530_CPU_PORT),
-> +		mt7530_write(priv, MT7530_PCR_P(priv->cpu_port),
->   			     PCR_MATRIX(dsa_user_ports(priv->ds)));
-> -		mt7530_write(priv, MT7530_PVC_P(MT7530_CPU_PORT), PORT_SPEC_TAG
-> +		mt7530_write(priv, MT7530_PVC_P(priv->cpu_port), PORT_SPEC_TAG
->   			     | PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
->   	}
->   }
-> @@ -1335,8 +1336,8 @@ mt7530_port_bridge_leave(struct dsa_switch *ds, int port,
->   	 */
->   	if (priv->ports[port].enable)
->   		mt7530_rmw(priv, MT7530_PCR_P(port), PCR_MATRIX_MASK,
-> -			   PCR_MATRIX(BIT(MT7530_CPU_PORT)));
-> -	priv->ports[port].pm = PCR_MATRIX(BIT(MT7530_CPU_PORT));
-> +			   PCR_MATRIX(BIT(priv->cpu_port)));
-> +	priv->ports[port].pm = PCR_MATRIX(BIT(priv->cpu_port));
->   
->   	/* When a port is removed from the bridge, the port would be set up
->   	 * back to the default as is at initial boot which is a VLAN-unaware
-> @@ -1503,6 +1504,7 @@ static int
->   mt7530_port_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering,
->   			   struct netlink_ext_ack *extack)
->   {
-> +	struct mt7530_priv *priv = ds->priv;
+> But the patch is correct so if you don't want to you can
+> repost.
 
-Add a space to separate declaration from code.
+OK, I'm resubmitting as is, but in case you find time to elaborate on 
+your refactoring idea, I'm still open to suggestions.
 
->   	if (vlan_filtering) {
->   		/* The port is being kept as VLAN-unaware port when bridge is
->   		 * set up with vlan_filtering not being set, Otherwise, the
-> @@ -1510,7 +1512,7 @@ mt7530_port_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering,
->   		 * for becoming a VLAN-aware port.
->   		 */
->   		mt7530_port_set_vlan_aware(ds, port);
-> -		mt7530_port_set_vlan_aware(ds, MT7530_CPU_PORT);
-> +		mt7530_port_set_vlan_aware(ds, priv->cpu_port);
->   	} else {
->   		mt7530_port_set_vlan_unaware(ds, port);
->   	}
-> @@ -1526,7 +1528,7 @@ mt7530_hw_vlan_add(struct mt7530_priv *priv,
->   	u32 val;
->   
->   	new_members = entry->old_members | BIT(entry->port) |
-> -		      BIT(MT7530_CPU_PORT);
-> +		      BIT(priv->cpu_port);
->   
->   	/* Validate the entry with independent learning, create egress tag per
->   	 * VLAN and joining the port as one of the port members.
-> @@ -1550,8 +1552,8 @@ mt7530_hw_vlan_add(struct mt7530_priv *priv,
->   	 * DSA tag.
->   	 */
->   	mt7530_rmw(priv, MT7530_VAWD2,
-> -		   ETAG_CTRL_P_MASK(MT7530_CPU_PORT),
-> -		   ETAG_CTRL_P(MT7530_CPU_PORT,
-> +		   ETAG_CTRL_P_MASK(priv->cpu_port),
-> +		   ETAG_CTRL_P(priv->cpu_port,
->   			       MT7530_VLAN_EGRESS_STACK));
->   }
->   
-> @@ -1575,7 +1577,7 @@ mt7530_hw_vlan_del(struct mt7530_priv *priv,
->   	 * the entry would be kept valid. Otherwise, the entry is got to be
->   	 * disabled.
->   	 */
-> -	if (new_members && new_members != BIT(MT7530_CPU_PORT)) {
-> +	if (new_members && new_members != BIT(priv->cpu_port)) {
->   		val = IVL_MAC | VTAG_EN | PORT_MEM(new_members) |
->   		      VLAN_VALID;
->   		mt7530_write(priv, MT7530_VAWD1, val);
-> @@ -2105,7 +2107,7 @@ mt7530_setup(struct dsa_switch *ds)
->   	 * controller also is the container for two GMACs nodes representing
->   	 * as two netdev instances.
->   	 */
-> -	dn = dsa_to_port(ds, MT7530_CPU_PORT)->master->dev.of_node->parent;
-> +	dn = dsa_to_port(ds, priv->cpu_port)->master->dev.of_node->parent;
->   	ds->assisted_learning_on_cpu_port = true;
->   	ds->mtu_enforcement_ingress = true;
->   
-> @@ -2337,15 +2339,6 @@ mt7531_setup(struct dsa_switch *ds)
->   	mt7531_ind_c45_phy_write(priv, MT753X_CTRL_PHY_ADDR, MDIO_MMD_VEND2,
->   				 CORE_PLL_GROUP4, val);
->   
-> -	/* BPDU to CPU port */
-> -	mt7530_rmw(priv, MT7531_CFC, MT7531_CPU_PMAP_MASK,
-> -		   BIT(MT7530_CPU_PORT));
-> -	mt7530_rmw(priv, MT753X_BPC, MT753X_BPDU_PORT_FW_MASK,
-> -		   MT753X_BPDU_CPU_ONLY);
-> -
-> -	/* Enable and reset MIB counters */
-> -	mt7530_mib_reset(ds);
-> -
->   	for (i = 0; i < MT7530_NUM_PORTS; i++) {
->   		/* Disable forwarding by default on all ports */
->   		mt7530_rmw(priv, MT7530_PCR_P(i), PCR_MATRIX_MASK,
-> @@ -2373,6 +2366,15 @@ mt7531_setup(struct dsa_switch *ds)
->   			   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
->   	}
->   
-> +	/* BPDU to CPU port */
-> +	mt7530_rmw(priv, MT7531_CFC, MT7531_CPU_PMAP_MASK,
-> +		   BIT(priv->cpu_port));
-> +	mt7530_rmw(priv, MT753X_BPC, MT753X_BPDU_PORT_FW_MASK,
-> +		   MT753X_BPDU_CPU_ONLY);
-> +
-> +	/* Enable and reset MIB counters */
-> +	mt7530_mib_reset(ds);
-> +
->   	/* Setup VLAN ID 0 for VLAN-unaware bridges */
->   	ret = mt7530_setup_vlan0(priv);
->   	if (ret)
-> @@ -3213,6 +3215,8 @@ mt7530_probe(struct mdio_device *mdiodev)
->   	if (!priv)
->   		return -ENOMEM;
->   
-> +	priv->cpu_port = 6;
-> +
->   	priv->ds = devm_kzalloc(&mdiodev->dev, sizeof(*priv->ds), GFP_KERNEL);
->   	if (!priv->ds)
->   		return -ENOMEM;
-> diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-> index 91508e2feef9..62df8d10f6d4 100644
-> --- a/drivers/net/dsa/mt7530.h
-> +++ b/drivers/net/dsa/mt7530.h
-> @@ -8,7 +8,6 @@
->   
->   #define MT7530_NUM_PORTS		7
->   #define MT7530_NUM_PHYS			5
-> -#define MT7530_CPU_PORT			6
+Thanks.
 
-We could have kept this define and rename it MT7530_DEFAULT_CPU_PORT or 
-something and in m7530_probe() use that newly renamed constant to 
-illustrate that we have a default value assigned, just in case.
+> Sorry for the delay.
 
->   #define MT7530_NUM_FDB_RECORDS		2048
->   #define MT7530_ALL_MEMBERS		0xff
->   
-> @@ -823,6 +822,7 @@ struct mt7530_priv {
->   	u8			mirror_tx;
->   
->   	struct mt7530_port	ports[MT7530_NUM_PORTS];
-> +	int			cpu_port;
-
-This can be an unsigned integer since you do not assign negative values. 
-With that fixes, this looks good to me.
--- 
-Florian
