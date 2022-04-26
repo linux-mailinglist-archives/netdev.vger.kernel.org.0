@@ -2,68 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BBDAF5102F5
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 18:13:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 898AF5102FD
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 18:14:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352850AbiDZQRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 12:17:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34644 "EHLO
+        id S1352868AbiDZQRx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 12:17:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352708AbiDZQQ7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 12:16:59 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F02659D4F1
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 09:13:51 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id v59so20940969ybi.12
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 09:13:51 -0700 (PDT)
+        with ESMTP id S232878AbiDZQRw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 12:17:52 -0400
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F9CC9E9CA;
+        Tue, 26 Apr 2022 09:14:44 -0700 (PDT)
+Received: by mail-io1-xd30.google.com with SMTP id r28so1917446iot.1;
+        Tue, 26 Apr 2022 09:14:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=oCGX3SR1P5hc5jt5umlhrJ4pWqxunMPOTPtIzs5Vys8=;
-        b=mvcDXUtSUZS3BBNf6y5uaceUSYPSaFl8GV1NgbK5k38jpehG4MIKCxSHvKOXx2YPGt
-         3x/fyxHCAecj7p56h/8ZOYbL8TDf0tw/Ws1DLP9vt0TxtSTPkPGFzho81J/rqc2GLDwi
-         cYb8MXogEdnI+IFqEeZkd/t5Hk/xOFaabMZhFYeH3t5Zg8iIw2yrybf1EGkgyvoz/wY0
-         yuWG/XHmNAsKjbzjDvERTiRU+Mn73iuRDJF9wZcpEMlNec1/RXwB+/BZH4lp9lGHn8Hm
-         TPZHmoMdxncDjTXnXP7bKu9Grvg0R+3aJz8O76FSw+X3+vn5sWJcpVNfwETiyILMr1xI
-         LtBA==
+        bh=xQ7JAlrZNbN+4UBwUPLrm9e0Bc1f0Mue3TCyhSjw9fg=;
+        b=PsVMgd1FSGWf0143r+osiQHexPkmN4qYX84UIUdvP77H+bOL/n1Csk4f3feLmicwvY
+         ynYfrVCub9IAoFSxVMC+DO1k+lPMppP8KZtxdIr5Y9Tc87kzwFNf5LufTAwSTY0DFhZq
+         Ol8Snp6N4dxtAMQziNX0KTnJclrJMka5G3OZT2fo60XcWvgwcm5QzncrNDFqCK6QtQdZ
+         4aNcc1xMZR9vze55pliLo2gv7zkfKLiy3JOdRF5Q476eP4j42Ktl6CyMCvghV0NIz1PH
+         f6BTrZTabsYCDoZZIc+6wI3hSd4fOTelba3xSV+FRJL/SCVxfbPVHaoXQnut4bGXF+Em
+         3/RA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=oCGX3SR1P5hc5jt5umlhrJ4pWqxunMPOTPtIzs5Vys8=;
-        b=6xFef+PqeqvGheHQqUSdZEtgG8cBJOWScgknDkv3w2QVb3G/B/as1pE9zU4NBKxAEu
-         ze09bufrSLtqJKZj1yky1bWJpyqI3h8qFhxBDKwwODlAb2JLwgB8cd/0H4i4euIYZrcX
-         fIkfHYUmmUS4PWN+SbgoBPdL7JCKHx9OQpYxObdLugIQXMkkqJcOwHDbcM2GIKJ3q8u8
-         eTci16BX9OM4kSxa4ZCKB3wLJn+rr/AE4ZUvJdVD7oxI+rL/C6ZM7RngaOcecEPsTx/L
-         ianxAc1SmfUYEJX8fvV51ZVwQ0Bi8Y/Aga5pw3GdPe8cZpSHpAbDmGnHFlV0z4W/nffJ
-         SlsA==
-X-Gm-Message-State: AOAM530gIIz+/wTtLaCm83UT0GT/CDPy3DVSNzSGStGqgMdgERpvzI0n
-        idpnGD8gyc8OPOXK/z1Izo3Z6cXXeqdLx4yvTzT9ww==
-X-Google-Smtp-Source: ABdhPJysJxBYzJ/5QtCMhhRYvsYaFkoyPDVAfYWLVvyhcDqHRKV2wBNVREkGjN5Q47ADZ1t3de4XkXDU4/T9Lmb1Urk=
-X-Received: by 2002:a25:6157:0:b0:645:8d0e:f782 with SMTP id
- v84-20020a256157000000b006458d0ef782mr20927217ybb.36.1650989630929; Tue, 26
- Apr 2022 09:13:50 -0700 (PDT)
+        bh=xQ7JAlrZNbN+4UBwUPLrm9e0Bc1f0Mue3TCyhSjw9fg=;
+        b=xzSdyuTpa1gAJLdX6iroPhOEtYNM4622V/yiTkaSG0sjFVAPtY+jyfggWxkyciaStz
+         /DnW+kONrWRNmWpGOaIwy23lemeSnPMIog1M77i1Fzdv6c40EZOPVib4StRxhLhalkXP
+         OuI+SywmfsLKJUPTtdkL4JoXW6oeFsHdj/+nhWGtrstnX8osfuDbjTcsD7lMhpCgT1So
+         MVm5Gbh5XzAPu3ZVtZDuG1cvI2QwNx5vxBITuccEZOc+6SeOshMRKERHsus2DvcaU6Bk
+         qIrV9bdxValO6k8/X9zF1yCHFVjUFTBoMiBJ04+kKqZFbUwmmyyavUhQQfJiMyYEyx7N
+         4vMQ==
+X-Gm-Message-State: AOAM533hpqUsVufWsmK9Jy0f0WDZMl09mihldfpIN3BVFyrug43K38IV
+        gKYfVg8XjfQxEUhOmLGc/8fqjfSV9e5EBjrMFJ4=
+X-Google-Smtp-Source: ABdhPJzhqrR9Z509Ybk1zXarEfqo7oMWYwEwzmJk6yr2Ce+F4Fl9Vv6Knh2saA4O4OhmeM5y7MRL1sU7iskXWMQLEQY=
+X-Received: by 2002:a02:c519:0:b0:32a:e80c:a618 with SMTP id
+ s25-20020a02c519000000b0032ae80ca618mr5775965jam.140.1650989683956; Tue, 26
+ Apr 2022 09:14:43 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220422201237.416238-1-eric.dumazet@gmail.com>
- <2c092f98a8fe1702173fe2b4999811dd2263faf3.camel@redhat.com>
- <CANn89iLuqGdbHkyUcTZd+Ww6vUxqNg0L4eC5Xt8bqLMDmDM18w@mail.gmail.com> <b4df9653b93b9b0bdc8a91f5560ec027848200a9.camel@redhat.com>
-In-Reply-To: <b4df9653b93b9b0bdc8a91f5560ec027848200a9.camel@redhat.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 26 Apr 2022 09:13:39 -0700
-Message-ID: <CANn89iJq1mZepnW3XMPOP298ZxoPF8Rwy0Em-NKwYs+CMUo9nw@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next] net: generalize skb freeing deferral to
- per-cpu lists
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>
+References: <20220423140058.54414-1-laoar.shao@gmail.com> <20220423140058.54414-4-laoar.shao@gmail.com>
+ <CAEf4BzapX1CKCX5VWwMkbm5yHukq36UxwcXDduQCMW=-VEEv4Q@mail.gmail.com>
+In-Reply-To: <CAEf4BzapX1CKCX5VWwMkbm5yHukq36UxwcXDduQCMW=-VEEv4Q@mail.gmail.com>
+From:   Yafang Shao <laoar.shao@gmail.com>
+Date:   Wed, 27 Apr 2022 00:14:07 +0800
+Message-ID: <CALOAHbDWvRAe=O-cG1nOMgant38g68u0t9HsDy4RDO7bh=hnUA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 3/4] bpftool: Fix incorrect return in generated
+ detach helper
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,24 +72,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 8:28 AM Paolo Abeni <pabeni@redhat.com> wrote:
+On Tue, Apr 26, 2022 at 2:47 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
 >
+> On Sat, Apr 23, 2022 at 7:02 AM Yafang Shao <laoar.shao@gmail.com> wrote:
+> >
+> > There is no return value of bpf_object__detach_skeleton(), so we'd
+> > better not return it, that is formal.
+> >
+> > Fixes: 5dc7a8b21144 ("bpftool, selftests/bpf: Embed object file inside skeleton")
+> > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> > ---
+> >  tools/bpf/bpftool/gen.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
+> > index 7678af364793..8f76d8d9996c 100644
+> > --- a/tools/bpf/bpftool/gen.c
+> > +++ b/tools/bpf/bpftool/gen.c
+> > @@ -1171,7 +1171,7 @@ static int do_skeleton(int argc, char **argv)
+> >                 static inline void                                          \n\
+> >                 %1$s__detach(struct %1$s *obj)                              \n\
+> >                 {                                                           \n\
+> > -                       return bpf_object__detach_skeleton(obj->skeleton);  \n\
+> > +                       bpf_object__detach_skeleton(obj->skeleton);         \n\
+>
+> It's not incorrect to return the result of void-returning function in
+> another void-returning function. C compiler allows this and we rely on
+> this property very explicitly in macros like BPF_PROG and BPF_KPROBE.
+> So if anything, it's not a fix, at best improvement, but even then
+> quite optional.
 
-> I'm unsure I explained my doubt in a clear way: what I fear is that the
-> compiler could emit a single read instruction, corresponding to the
-> READ_ONCE() outside the lock, so that the spin-locked section will
-> operate on "old" defer_list.
->
-> If that happens we could end-up with 'defer_count' underestimating the
-> list lenght. It looks like that is tolerable, as we will still be
-> protected vs defer_list growing too much.
+Right, the C compiler allows it.
+I won't change it.
 
-defer_count is always read/written under the protection of the spinlock.
-It must be very precise, unless I am mistaken.
-
->
-> Acked-by: Paolo Abeni <pabeni@redhat.com>
->
->
-
-Thanks !
+-- 
+Regards
+Yafang
