@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA66E510607
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 19:55:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58265510602
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 19:55:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349445AbiDZR6L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 13:58:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56080 "EHLO
+        id S1349373AbiDZR6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 13:58:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348677AbiDZR6C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 13:58:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA83236B5C;
-        Tue, 26 Apr 2022 10:54:50 -0700 (PDT)
+        with ESMTP id S1346856AbiDZR6B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 13:58:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DF32366A7;
+        Tue, 26 Apr 2022 10:54:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3280FB8219D;
-        Tue, 26 Apr 2022 17:54:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71593C385B1;
-        Tue, 26 Apr 2022 17:54:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1BB361771;
+        Tue, 26 Apr 2022 17:54:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2155BC385AA;
+        Tue, 26 Apr 2022 17:54:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650995687;
-        bh=g0nFar7cz1XfkYCKPO5Tf0dFFJCxDQNhIY774Pd99Cs=;
+        s=k20201202; t=1650995688;
+        bh=xEupKk1w2NI7Dq6VTj+IRFgXaZitcqsNwiACQjX785k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b/7cL/7zR9+e3UyX/cV+Q9THNUcJiWzlwy6DsWcVgerESGdadAY+S1hvq+vbtD+Zi
-         aVp/t6S7+1R55qkG6iHdYM1Wk4zjhSKQtQzwVsRzjh453irs02ZzPUUSrcOqOkeLKy
-         uvycWxxB4Z3HVHQcW+fRKw82Cs+34SfG04OZLuEqjbOLdjELY57J7BCDbYRhwgwY7l
-         Oyx6SymF/6jBOfFvLxRgoIgMq7xXWqTWFI4o5fmsvDnu0z+KqzPc17lzZKWDGuryak
-         V2+NN9VH41grnDsaKIuJmHNQtMFv/KfKTAeyfzXps8QW3c7hQm/9qxXaDzR4hH+ign
-         VQ0NVLIEiZnag==
+        b=pDLAbWxNA32dJ96b7k8rJRjgRAnTRWBcwl8MS6sTocqwiCsrVOZzvpwFym7w0zHBV
+         9rdkxp4Uvg4xkXKQ+XMNMDps8cVMuTp1aLRfQ07tdAc0JpRXnBILug1hHjXBd8rjja
+         oRiwgEdKZOjxsPs3LMuWbDXGfjrEU759smTh5POR2isAFaru11me4j/1Ip6Sh0I5Ly
+         nk8bUrphXjrd6l2ogN0248KeXF1g0b5e/HKq295X3MiNaYn3MZkpW3BRzK1BmTBSY+
+         pbmv6XT3S103+YUu4GCQJoobYqNUJfc4QxY2/mOOPRDhdxfhVthytDNngDPFvxSs6V
+         bFpzOvXW9rFCg==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net, pabeni@redhat.com
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Chas Williams <3chas3@gmail.com>,
-        linux-atm-general@lists.sourceforge.net,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-mips@vger.kernel.org, arnd@arndb.de
-Subject: [PATCH net-next 3/6] net: atm: remove support for ZeitNet ZN122x ATM devices
-Date:   Tue, 26 Apr 2022 10:54:33 -0700
-Message-Id: <20220426175436.417283-4-kuba@kernel.org>
+        corbet@lwn.net, linux-doc@vger.kernel.org,
+        alexandre.ghiti@canonical.com, linus.walleij@linaro.org,
+        juerg.haefliger@canonical.com, kilobyte@angband.pl,
+        huangguangbin2@huawei.com, lipeng321@huawei.com, arnd@arndb.de
+Subject: [PATCH net-next 4/6] net: wan: remove support for COSA and SRP synchronous serial boards
+Date:   Tue, 26 Apr 2022 10:54:34 -0700
+Message-Id: <20220426175436.417283-5-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220426175436.417283-1-kuba@kernel.org>
 References: <20220426175436.417283-1-kuba@kernel.org>
@@ -55,2608 +55,2282 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This driver received nothing but automated fixes in the last 15 years.
-Since it's using virt_to_bus it's unlikely to be used on any modern
-platform.
+Looks like all the changes to this driver had been automated
+churn since git era begun. The driver is using virt_to_bus()
+so it should be updated to a proper DMA API or removed. Given
+the latest "news" entry on the website is from 1999 I'm opting
+for the latter.
+
+I'm marking the allocated char device major number as [REMOVED],
+I reckon we can't reuse it in case some SW out there assumes its
+COSA?
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: Chas Williams <3chas3@gmail.com>
-CC: linux-atm-general@lists.sourceforge.net
-CC: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-CC: linux-mips@vger.kernel.org
+CC: corbet@lwn.net
+CC: linux-doc@vger.kernel.org
+CC: alexandre.ghiti@canonical.com
+CC: linus.walleij@linaro.org
+CC: juerg.haefliger@canonical.com
+CC: kilobyte@angband.pl
+CC: huangguangbin2@huawei.com
+CC: lipeng321@huawei.com
 CC: arnd@arndb.de
+CC: Jan "Yenya" Kasprzak <kas@fi.muni.cz>
 ---
- arch/mips/configs/gpr_defconfig  |    1 -
- arch/mips/configs/mtx1_defconfig |    1 -
- drivers/atm/Kconfig              |   20 -
- drivers/atm/Makefile             |    1 -
- drivers/atm/uPD98401.h           |  293 ------
- drivers/atm/uPD98402.c           |  266 -----
- drivers/atm/uPD98402.h           |  107 --
- drivers/atm/zatm.c               | 1652 ------------------------------
- drivers/atm/zatm.h               |  104 --
- include/uapi/linux/atm_zatm.h    |   47 -
- 10 files changed, 2492 deletions(-)
- delete mode 100644 drivers/atm/uPD98401.h
- delete mode 100644 drivers/atm/uPD98402.c
- delete mode 100644 drivers/atm/uPD98402.h
- delete mode 100644 drivers/atm/zatm.c
- delete mode 100644 drivers/atm/zatm.h
- delete mode 100644 include/uapi/linux/atm_zatm.h
+ Documentation/admin-guide/devices.txt |    2 +-
+ MAINTAINERS                           |    6 -
+ drivers/net/wan/Kconfig               |   22 -
+ drivers/net/wan/Makefile              |    1 -
+ drivers/net/wan/cosa.c                | 2052 -------------------------
+ drivers/net/wan/cosa.h                |  104 --
+ 6 files changed, 1 insertion(+), 2186 deletions(-)
+ delete mode 100644 drivers/net/wan/cosa.c
+ delete mode 100644 drivers/net/wan/cosa.h
 
-diff --git a/arch/mips/configs/gpr_defconfig b/arch/mips/configs/gpr_defconfig
-index 7ed202db9ef0..d82f4ebf687f 100644
---- a/arch/mips/configs/gpr_defconfig
-+++ b/arch/mips/configs/gpr_defconfig
-@@ -178,7 +178,6 @@ CONFIG_NETCONSOLE=m
- CONFIG_ATM_TCP=m
- CONFIG_ATM_LANAI=m
- CONFIG_ATM_ENI=m
--CONFIG_ATM_ZATM=m
- CONFIG_ATM_NICSTAR=m
- CONFIG_ATM_IDT77252=m
- CONFIG_ATM_IA=m
-diff --git a/arch/mips/configs/mtx1_defconfig b/arch/mips/configs/mtx1_defconfig
-index f46ad2e294fa..0cb4d9aa14d1 100644
---- a/arch/mips/configs/mtx1_defconfig
-+++ b/arch/mips/configs/mtx1_defconfig
-@@ -255,7 +255,6 @@ CONFIG_ARCNET_COM20020_CS=m
- CONFIG_ATM_TCP=m
- CONFIG_ATM_LANAI=m
- CONFIG_ATM_ENI=m
--CONFIG_ATM_ZATM=m
- CONFIG_ATM_NICSTAR=m
- CONFIG_ATM_IDT77252=m
- CONFIG_ATM_IA=m
-diff --git a/drivers/atm/Kconfig b/drivers/atm/Kconfig
-index 9c778308722a..63cdb46a3439 100644
---- a/drivers/atm/Kconfig
-+++ b/drivers/atm/Kconfig
-@@ -146,26 +146,6 @@ config ATM_ENI_BURST_RX_2W
- 	  try this if you have disabled 4W and 8W bursts. Enabling 2W if 4W or
- 	  8W are also set may or may not improve throughput.
+diff --git a/Documentation/admin-guide/devices.txt b/Documentation/admin-guide/devices.txt
+index c07dc0ee860e..9764d6edb189 100644
+--- a/Documentation/admin-guide/devices.txt
++++ b/Documentation/admin-guide/devices.txt
+@@ -1933,7 +1933,7 @@
+ 		    ...
+ 		255= /dev/umem/d15p15  15th partition of 16th board.
  
--config ATM_ZATM
--	tristate "ZeitNet ZN1221/ZN1225"
--	depends on PCI && VIRT_TO_BUS
+- 117 char	COSA/SRP synchronous serial card
++ 117 char	[REMOVED] COSA/SRP synchronous serial card
+ 		  0 = /dev/cosa0c0	1st board, 1st channel
+ 		  1 = /dev/cosa0c1	1st board, 2nd channel
+ 		    ...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index dd61684c2573..9619058bb0b9 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -5047,12 +5047,6 @@ S:	Maintained
+ F:	Documentation/hwmon/corsair-psu.rst
+ F:	drivers/hwmon/corsair-psu.c
+ 
+-COSA/SRP SYNC SERIAL DRIVER
+-M:	Jan "Yenya" Kasprzak <kas@fi.muni.cz>
+-S:	Maintained
+-W:	http://www.fi.muni.cz/~kas/cosa/
+-F:	drivers/net/wan/cosa*
+-
+ COUNTER SUBSYSTEM
+ M:	William Breathitt Gray <vilhelm.gray@gmail.com>
+ L:	linux-iio@vger.kernel.org
+diff --git a/drivers/net/wan/Kconfig b/drivers/net/wan/Kconfig
+index 588b2333cdb8..12c5b6c67ab2 100644
+--- a/drivers/net/wan/Kconfig
++++ b/drivers/net/wan/Kconfig
+@@ -35,28 +35,6 @@ config HOSTESS_SV11
+ 	  The driver will be compiled as a module: the
+ 	  module will be called hostess_sv11.
+ 
+-# The COSA/SRP driver has not been tested as non-modular yet.
+-config COSA
+-	tristate "COSA/SRP sync serial boards support"
+-	depends on ISA && m && ISA_DMA_API && HDLC && VIRT_TO_BUS
 -	help
--	  Driver for the ZeitNet ZN1221 (MMF) and ZN1225 (UTP-5) 155 Mbps ATM
--	  adapters.
+-	  Driver for COSA and SRP synchronous serial boards.
 -
--	  To compile this driver as a module, choose M here: the module will
--	  be called zatm.
+-	  These boards allow to connect synchronous serial devices (for example
+-	  base-band modems, or any other device with the X.21, V.24, V.35 or
+-	  V.36 interface) to your Linux box. The cards can work as the
+-	  character device, synchronous PPP network device, or the Cisco HDLC
+-	  network device.
 -
--config ATM_ZATM_DEBUG
--	bool "Enable extended debugging"
--	depends on ATM_ZATM
--	help
--	  Extended debugging records various events and displays that list
--	  when an inconsistency is detected. This mechanism is faster than
--	  generally using printks, but still has some impact on performance.
--	  Note that extended debugging may create certain race conditions
--	  itself. Enable this ONLY if you suspect problems with the driver.
+-	  You will need user-space utilities COSA or SRP boards for downloading
+-	  the firmware to the cards and to set them up. Look at the
+-	  <http://www.fi.muni.cz/~kas/cosa/> for more information. You can also
+-	  read the comment at the top of the <file:drivers/net/wan/cosa.c> for
+-	  details about the cards and the driver itself.
 -
- config ATM_NICSTAR
- 	tristate "IDT 77201 (NICStAR) (ForeRunnerLE)"
- 	depends on PCI
-diff --git a/drivers/atm/Makefile b/drivers/atm/Makefile
-index 1b6a8ddaf007..c9eade92019b 100644
---- a/drivers/atm/Makefile
-+++ b/drivers/atm/Makefile
-@@ -5,7 +5,6 @@
+-	  The driver will be compiled as a module: the
+-	  module will be called cosa.
+-
+ # There is no way to detect a Sealevel board. Force it modular
+ config SEALEVEL_4021
+ 	tristate "Sealevel Systems 4021 support"
+diff --git a/drivers/net/wan/Makefile b/drivers/net/wan/Makefile
+index 1cd42147b34f..901a094c061c 100644
+--- a/drivers/net/wan/Makefile
++++ b/drivers/net/wan/Makefile
+@@ -16,7 +16,6 @@ obj-$(CONFIG_HDLC_X25)		+= hdlc_x25.o
  
- fore_200e-y	:= fore200e.o
+ obj-$(CONFIG_HOSTESS_SV11)	+= z85230.o	hostess_sv11.o
+ obj-$(CONFIG_SEALEVEL_4021)	+= z85230.o	sealevel.o
+-obj-$(CONFIG_COSA)		+= cosa.o
+ obj-$(CONFIG_FARSYNC)		+= farsync.o
  
--obj-$(CONFIG_ATM_ZATM)		+= zatm.o uPD98402.o
- obj-$(CONFIG_ATM_NICSTAR)	+= nicstar.o
- obj-$(CONFIG_ATM_IA)		+= iphase.o suni.o
- obj-$(CONFIG_ATM_FORE200E)	+= fore_200e.o
-diff --git a/drivers/atm/uPD98401.h b/drivers/atm/uPD98401.h
+ obj-$(CONFIG_LAPBETHER)		+= lapbether.o
+diff --git a/drivers/net/wan/cosa.c b/drivers/net/wan/cosa.c
 deleted file mode 100644
-index f766a5ef0c5d..000000000000
---- a/drivers/atm/uPD98401.h
+index 23d2954d9747..000000000000
+--- a/drivers/net/wan/cosa.c
 +++ /dev/null
-@@ -1,293 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--/* drivers/atm/uPD98401.h - NEC uPD98401 (SAR) declarations */
-- 
--/* Written 1995 by Werner Almesberger, EPFL LRC */
-- 
+@@ -1,2052 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-or-later
+-/* $Id: cosa.c,v 1.31 2000/03/08 17:47:16 kas Exp $ */
 -
--#ifndef DRIVERS_ATM_uPD98401_H
--#define DRIVERS_ATM_uPD98401_H
--
--
--#define MAX_CRAM_SIZE	(1 << 18)	/* 2^18 words */
--#define RAM_INCREMENT	1024		/* check in 4 kB increments */
--
--#define uPD98401_PORTS	0x24		/* probably more ? */
--
--
--/*
-- * Commands
+-/*  Copyright (C) 1995-1997  Jan "Yenya" Kasprzak <kas@fi.muni.cz>
+- *  Generic HDLC port Copyright (C) 2008 Krzysztof Halasa <khc@pm.waw.pl>
 - */
 -
--#define uPD98401_OPEN_CHAN	0x20000000 /* open channel */
--#define uPD98401_CHAN_ADDR	0x0003fff8 /*	channel address */
--#define uPD98401_CHAN_ADDR_SHIFT 3
--#define uPD98401_CLOSE_CHAN	0x24000000 /* close channel */
--#define uPD98401_CHAN_RT	0x02000000 /*	RX/TX (0 TX, 1 RX) */
--#define uPD98401_DEACT_CHAN	0x28000000 /* deactivate channel */
--#define uPD98401_TX_READY	0x30000000 /* TX ready */
--#define uPD98401_ADD_BAT	0x34000000 /* add batches */
--#define uPD98401_POOL		0x000f0000 /* pool number */
--#define uPD98401_POOL_SHIFT	16
--#define uPD98401_POOL_NUMBAT	0x0000ffff /* number of batches */
--#define uPD98401_NOP		0x3f000000 /* NOP */
--#define uPD98401_IND_ACC	0x00000000 /* Indirect Access */
--#define uPD98401_IA_RW		0x10000000 /*	Read/Write (0 W, 1 R) */
--#define uPD98401_IA_B3		0x08000000 /*	Byte select, 1 enable */
--#define uPD98401_IA_B2		0x04000000
--#define uPD98401_IA_B1		0x02000000
--#define uPD98401_IA_B0		0x01000000
--#define uPD98401_IA_BALL	0x0f000000 /*   whole longword */
--#define uPD98401_IA_TGT		0x000c0000 /*	Target */
--#define uPD98401_IA_TGT_SHIFT	18
--#define uPD98401_IA_TGT_CM	0	   /*	- Control Memory */
--#define uPD98401_IA_TGT_SAR	1	   /*	- uPD98401 registers */
--#define uPD98401_IA_TGT_PHY	3	   /*   - PHY device */
--#define uPD98401_IA_ADDR	0x0003ffff
--
--/*
-- * Command Register Status
+-/* The driver for the SRP and COSA synchronous serial cards.
+- *
+- * HARDWARE INFO
+- *
+- * Both cards are developed at the Institute of Computer Science,
+- * Masaryk University (https://www.ics.muni.cz/). The hardware is
+- * developed by Jiri Novotny <novotny@ics.muni.cz>. More information
+- * and the photo of both cards is available at
+- * http://www.pavoucek.cz/cosa.html. The card documentation, firmwares
+- * and other goods can be downloaded from ftp://ftp.ics.muni.cz/pub/cosa/.
+- * For Linux-specific utilities, see below in the "Software info" section.
+- * If you want to order the card, contact Jiri Novotny.
+- *
+- * The SRP (serial port?, the Czech word "srp" means "sickle") card
+- * is a 2-port intelligent (with its own 8-bit CPU) synchronous serial card
+- * with V.24 interfaces up to 80kb/s each.
+- *
+- * The COSA (communication serial adapter?, the Czech word "kosa" means
+- * "scythe") is a next-generation sync/async board with two interfaces
+- * - currently any of V.24, X.21, V.35 and V.36 can be selected.
+- * It has a 16-bit SAB80166 CPU and can do up to 10 Mb/s per channel.
+- * The 8-channels version is in development.
+- *
+- * Both types have downloadable firmware and communicate via ISA DMA.
+- * COSA can be also a bus-mastering device.
+- *
+- * SOFTWARE INFO
+- *
+- * The homepage of the Linux driver is at https://www.fi.muni.cz/~kas/cosa/.
+- * The CVS tree of Linux driver can be viewed there, as well as the
+- * firmware binaries and user-space utilities for downloading the firmware
+- * into the card and setting up the card.
+- *
+- * The Linux driver (unlike the present *BSD drivers :-) can work even
+- * for the COSA and SRP in one computer and allows each channel to work
+- * in one of the two modes (character or network device).
+- *
+- * AUTHOR
+- *
+- * The Linux driver was written by Jan "Yenya" Kasprzak <kas@fi.muni.cz>.
+- *
+- * You can mail me bugfixes and even success reports. I am especially
+- * interested in the SMP and/or muliti-channel success/failure reports
+- * (I wonder if I did the locking properly :-).
+- *
+- * THE AUTHOR USED THE FOLLOWING SOURCES WHEN PROGRAMMING THE DRIVER
+- *
+- * The COSA/SRP NetBSD driver by Zdenek Salvet and Ivos Cernohlavek
+- * The skeleton.c by Donald Becker
+- * The SDL Riscom/N2 driver by Mike Natale
+- * The Comtrol Hostess SV11 driver by Alan Cox
+- * The Sync PPP/Cisco HDLC layer (syncppp.c) ported to Linux by Alan Cox
 - */
 -
--#define uPD98401_BUSY		0x80000000 /* SAR is busy */
--#define uPD98401_LOCKED		0x40000000 /* SAR is locked by other CPU */
--
--/*
-- * Indications
-- */
--
--/* Normal (AAL5) Receive Indication */
--#define uPD98401_AAL5_UINFO	0xffff0000 /* user-supplied information */
--#define uPD98401_AAL5_UINFO_SHIFT 16
--#define uPD98401_AAL5_SIZE	0x0000ffff /* PDU size (in _CELLS_ !!) */
--#define uPD98401_AAL5_CHAN	0x7fff0000 /* Channel number */
--#define uPD98401_AAL5_CHAN_SHIFT	16
--#define uPD98401_AAL5_ERR	0x00008000 /* Error indication */
--#define uPD98401_AAL5_CI	0x00004000 /* Congestion Indication */
--#define uPD98401_AAL5_CLP	0x00002000 /* CLP (>= 1 cell had CLP=1) */
--#define uPD98401_AAL5_ES	0x00000f00 /* Error Status */
--#define uPD98401_AAL5_ES_SHIFT	8
--#define uPD98401_AAL5_ES_NONE	0	   /*	No error */
--#define uPD98401_AAL5_ES_FREE	1	   /*	Receiver free buf underflow */
--#define uPD98401_AAL5_ES_FIFO	2	   /*	Receiver FIFO overrun */
--#define uPD98401_AAL5_ES_TOOBIG	3	   /*	Maximum length violation */
--#define uPD98401_AAL5_ES_CRC	4	   /*	CRC error */
--#define uPD98401_AAL5_ES_ABORT	5	   /*	User abort */
--#define uPD98401_AAL5_ES_LENGTH	6	   /*   Length violation */
--#define uPD98401_AAL5_ES_T1	7	   /*	T1 error (timeout) */
--#define uPD98401_AAL5_ES_DEACT	8	   /*	Deactivated with DEACT_CHAN */
--#define uPD98401_AAL5_POOL	0x0000001f /* Free buffer pool number */
--
--/* Raw Cell Indication */
--#define uPD98401_RAW_UINFO	uPD98401_AAL5_UINFO
--#define uPD98401_RAW_UINFO_SHIFT uPD98401_AAL5_UINFO_SHIFT
--#define uPD98401_RAW_HEC	0x000000ff /* HEC */
--#define uPD98401_RAW_CHAN	uPD98401_AAL5_CHAN
--#define uPD98401_RAW_CHAN_SHIFT uPD98401_AAL5_CHAN_SHIFT
--
--/* Transmit Indication */
--#define uPD98401_TXI_CONN	0x7fff0000 /* Connection Number */
--#define uPD98401_TXI_CONN_SHIFT	16
--#define uPD98401_TXI_ACTIVE	0x00008000 /* Channel remains active */
--#define uPD98401_TXI_PQP	0x00007fff /* Packet Queue Pointer */
--
--/*
-- * Directly Addressable Registers
-- */
--
--#define uPD98401_GMR	0x00	/* General Mode Register */
--#define uPD98401_GSR	0x01	/* General Status Register */
--#define uPD98401_IMR	0x02	/* Interrupt Mask Register */
--#define uPD98401_RQU	0x03	/* Receive Queue Underrun */
--#define uPD98401_RQA	0x04	/* Receive Queue Alert */
--#define uPD98401_ADDR	0x05	/* Last Burst Address */
--#define uPD98401_VER	0x06	/* Version Number */
--#define uPD98401_SWR	0x07	/* Software Reset */
--#define uPD98401_CMR	0x08	/* Command Register */
--#define uPD98401_CMR_L	0x09	/* Command Register and Lock/Unlock */
--#define uPD98401_CER	0x0a	/* Command Extension Register */
--#define uPD98401_CER_L	0x0b	/* Command Ext Reg and Lock/Unlock */
--
--#define uPD98401_MSH(n) (0x10+(n))	/* Mailbox n Start Address High */
--#define uPD98401_MSL(n) (0x14+(n))	/* Mailbox n Start Address High */
--#define uPD98401_MBA(n) (0x18+(n))	/* Mailbox n Bottom Address */
--#define uPD98401_MTA(n) (0x1c+(n))	/* Mailbox n Tail Address */
--#define uPD98401_MWA(n) (0x20+(n))	/* Mailbox n Write Address */
--
--/* GMR is at 0x00 */
--#define uPD98401_GMR_ONE	0x80000000 /* Must be set to one */
--#define uPD98401_GMR_SLM	0x40000000 /* Address mode (0 word, 1 byte) */
--#define uPD98401_GMR_CPE	0x00008000 /* Control Memory Parity Enable */
--#define uPD98401_GMR_LP		0x00004000 /* Loopback */
--#define uPD98401_GMR_WA		0x00002000 /* Early Bus Write Abort/RDY */
--#define uPD98401_GMR_RA		0x00001000 /* Early Read Abort/RDY */
--#define uPD98401_GMR_SZ		0x00000f00 /* Burst Size Enable */
--#define uPD98401_BURST16	0x00000800 /*	16-word burst */
--#define uPD98401_BURST8		0x00000400 /*	 8-word burst */
--#define uPD98401_BURST4		0x00000200 /*	 4-word burst */
--#define uPD98401_BURST2		0x00000100 /*	 2-word burst */
--#define uPD98401_GMR_AD		0x00000080 /* Address (burst resolution) Disable */
--#define uPD98401_GMR_BO		0x00000040 /* Byte Order (0 little, 1 big) */
--#define uPD98401_GMR_PM		0x00000020 /* Bus Parity Mode (0 byte, 1 word)*/
--#define uPD98401_GMR_PC		0x00000010 /* Bus Parity Control (0even,1odd) */
--#define uPD98401_GMR_BPE	0x00000008 /* Bus Parity Enable */
--#define uPD98401_GMR_DR		0x00000004 /* Receive Drop Mode (0drop,1don't)*/
--#define uPD98401_GMR_SE		0x00000002 /* Shapers Enable */
--#define uPD98401_GMR_RE		0x00000001 /* Receiver Enable */
--
--/* GSR is at 0x01, IMR is at 0x02 */
--#define uPD98401_INT_PI		0x80000000 /* PHY interrupt */
--#define uPD98401_INT_RQA	0x40000000 /* Receive Queue Alert */
--#define uPD98401_INT_RQU	0x20000000 /* Receive Queue Underrun */
--#define uPD98401_INT_RD		0x10000000 /* Receiver Deactivated */
--#define uPD98401_INT_SPE	0x08000000 /* System Parity Error */
--#define uPD98401_INT_CPE	0x04000000 /* Control Memory Parity Error */
--#define uPD98401_INT_SBE	0x02000000 /* System Bus Error */
--#define uPD98401_INT_IND	0x01000000 /* Initialization Done */
--#define uPD98401_INT_RCR	0x0000ff00 /* Raw Cell Received */
--#define uPD98401_INT_RCR_SHIFT	8
--#define uPD98401_INT_MF		0x000000f0 /* Mailbox Full */
--#define uPD98401_INT_MF_SHIFT	4
--#define uPD98401_INT_MM		0x0000000f /* Mailbox Modified */
--
--/* VER is at 0x06 */
--#define uPD98401_MAJOR		0x0000ff00 /* Major revision */
--#define uPD98401_MAJOR_SHIFT	8
--#define uPD98401_MINOR		0x000000ff /* Minor revision */
--
--/*
-- * Indirectly Addressable Registers
-- */
--
--#define uPD98401_IM(n)	(0x40000+(n))	/* Scheduler n I and M */
--#define uPD98401_X(n)	(0x40010+(n))	/* Scheduler n X */
--#define uPD98401_Y(n)	(0x40020+(n))	/* Scheduler n Y */
--#define uPD98401_PC(n)	(0x40030+(n))	/* Scheduler n P, C, p and c */
--#define uPD98401_PS(n)	(0x40040+(n))	/* Scheduler n priority and status */
--
--/* IM contents */
--#define uPD98401_IM_I		0xff000000 /* I */
--#define uPD98401_IM_I_SHIFT	24
--#define uPD98401_IM_M		0x00ffffff /* M */
--
--/* PC contents */
--#define uPD98401_PC_P		0xff000000 /* P */
--#define uPD98401_PC_P_SHIFT	24
--#define uPD98401_PC_C		0x00ff0000 /* C */
--#define uPD98401_PC_C_SHIFT	16
--#define uPD98401_PC_p		0x0000ff00 /* p */
--#define uPD98401_PC_p_SHIFT	8
--#define uPD98401_PC_c		0x000000ff /* c */
--
--/* PS contents */
--#define uPD98401_PS_PRIO	0xf0	/* Priority level (0 high, 15 low) */
--#define uPD98401_PS_PRIO_SHIFT	4
--#define uPD98401_PS_S		0x08	/* Scan - must be 0 (internal) */
--#define uPD98401_PS_R		0x04	/* Round Robin (internal) */
--#define uPD98401_PS_A		0x02	/* Active (internal) */
--#define uPD98401_PS_E		0x01	/* Enabled */
--
--#define uPD98401_TOS	0x40100	/* Top of Stack Control Memory Address */
--#define uPD98401_SMA	0x40200	/* Shapers Control Memory Start Address */
--#define uPD98401_PMA	0x40201	/* Receive Pool Control Memory Start Address */
--#define uPD98401_T1R	0x40300	/* T1 Register */
--#define uPD98401_VRR	0x40301	/* VPI/VCI Reduction Register/Recv. Shutdown */
--#define uPD98401_TSR	0x40302	/* Time-Stamp Register */
--
--/* VRR is at 0x40301 */
--#define uPD98401_VRR_SDM	0x80000000 /* Shutdown Mode */
--#define uPD98401_VRR_SHIFT	0x000f0000 /* VPI/VCI Shift */
--#define uPD98401_VRR_SHIFT_SHIFT 16
--#define uPD98401_VRR_MASK	0x0000ffff /* VPI/VCI mask */
--
--/*
-- * TX packet descriptor
-- */
--
--#define uPD98401_TXPD_SIZE	16	   /* descriptor size (in bytes) */
--
--#define uPD98401_TXPD_V		0x80000000 /* Valid bit */
--#define uPD98401_TXPD_DP	0x40000000 /* Descriptor (1) or Pointer (0) */
--#define uPD98401_TXPD_SM	0x20000000 /* Single (1) or Multiple (0) */
--#define uPD98401_TXPD_CLPM	0x18000000 /* CLP mode */
--#define uPD98401_CLPM_0		0	   /*	00 CLP = 0 */
--#define uPD98401_CLPM_1		3	   /*	11 CLP = 1 */
--#define uPD98401_CLPM_LAST	1	   /*	01 CLP unless last cell */
--#define uPD98401_TXPD_CLPM_SHIFT 27
--#define uPD98401_TXPD_PTI	0x07000000 /* PTI pattern */
--#define uPD98401_TXPD_PTI_SHIFT	24
--#define uPD98401_TXPD_GFC	0x00f00000 /* GFC pattern */
--#define uPD98401_TXPD_GFC_SHIFT	20
--#define uPD98401_TXPD_C10	0x00040000 /* insert CRC-10 */
--#define uPD98401_TXPD_AAL5	0x00020000 /* AAL5 processing */
--#define uPD98401_TXPD_MB	0x00010000 /* TX mailbox number */
--#define uPD98401_TXPD_UU	0x0000ff00 /* CPCS-UU */
--#define uPD98401_TXPD_UU_SHIFT	8
--#define uPD98401_TXPD_CPI	0x000000ff /* CPI */
--
--/*
-- * TX buffer descriptor
-- */
--
--#define uPD98401_TXBD_SIZE	8	   /* descriptor size (in bytes) */
--
--#define uPD98401_TXBD_LAST	0x80000000 /* last buffer in packet */
--
--/*
-- * TX VC table
-- */
--
--/* 1st word has the same structure as in a TX packet descriptor */
--#define uPD98401_TXVC_L		0x80000000 /* last buffer */
--#define uPD98401_TXVC_SHP	0x0f000000 /* shaper number */
--#define uPD98401_TXVC_SHP_SHIFT	24
--#define uPD98401_TXVC_VPI	0x00ff0000 /* VPI */
--#define uPD98401_TXVC_VPI_SHIFT	16
--#define uPD98401_TXVC_VCI	0x0000ffff /* VCI */
--#define uPD98401_TXVC_QRP	6	   /* Queue Read Pointer is in word 6 */
--
--/*
-- * RX free buffer pools descriptor
-- */
--
--#define uPD98401_RXFP_ALERT	0x70000000 /* low water mark */
--#define uPD98401_RXFP_ALERT_SHIFT 28
--#define uPD98401_RXFP_BFSZ	0x0f000000 /* buffer size, 64*2^n */
--#define uPD98401_RXFP_BFSZ_SHIFT 24
--#define uPD98401_RXFP_BTSZ	0x00ff0000 /* batch size, n+1 */
--#define uPD98401_RXFP_BTSZ_SHIFT 16
--#define uPD98401_RXFP_REMAIN	0x0000ffff /* remaining batches in pool */
--
--/*
-- * RX VC table
-- */
--
--#define uPD98401_RXVC_BTSZ	0xff000000 /* remaining free buffers in batch */
--#define uPD98401_RXVC_BTSZ_SHIFT 24
--#define uPD98401_RXVC_MB	0x00200000 /* RX mailbox number */
--#define uPD98401_RXVC_POOL	0x001f0000 /* free buffer pool number */
--#define uPD98401_RXVC_POOL_SHIFT 16
--#define uPD98401_RXVC_UINFO	0x0000ffff /* user-supplied information */
--#define uPD98401_RXVC_T1	0xffff0000 /* T1 timestamp */
--#define uPD98401_RXVC_T1_SHIFT	16
--#define uPD98401_RXVC_PR	0x00008000 /* Packet Reception, 1 if busy */
--#define uPD98401_RXVC_DR	0x00004000 /* FIFO Drop */
--#define uPD98401_RXVC_OD	0x00001000 /* Drop OAM cells */
--#define uPD98401_RXVC_AR	0x00000800 /* AAL5 or raw cell; 1 if AAL5 */
--#define uPD98401_RXVC_MAXSEG	0x000007ff /* max number of segments per PDU */
--#define uPD98401_RXVC_REM	0xfffe0000 /* remaining words in curr buffer */
--#define uPD98401_RXVC_REM_SHIFT	17
--#define uPD98401_RXVC_CLP	0x00010000 /* CLP received */
--#define uPD98401_RXVC_BFA	0x00008000 /* Buffer Assigned */
--#define uPD98401_RXVC_BTA	0x00004000 /* Batch Assigned */
--#define uPD98401_RXVC_CI	0x00002000 /* Congestion Indication */
--#define uPD98401_RXVC_DD	0x00001000 /* Dropping incoming cells */
--#define uPD98401_RXVC_DP	0x00000800 /* like PR ? */
--#define uPD98401_RXVC_CURSEG	0x000007ff /* Current Segment count */
--
--/*
-- * RX lookup table
-- */
--
--#define uPD98401_RXLT_ENBL	0x8000	   /* Enable */
--
--#endif
-diff --git a/drivers/atm/uPD98402.c b/drivers/atm/uPD98402.c
-deleted file mode 100644
-index 239852d85558..000000000000
---- a/drivers/atm/uPD98402.c
-+++ /dev/null
-@@ -1,266 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0-only
--/* drivers/atm/uPD98402.c - NEC uPD98402 (PHY) declarations */
-- 
--/* Written 1995-2000 by Werner Almesberger, EPFL LRC/ICA */
-- 
--
--#include <linux/module.h>
--#include <linux/mm.h>
--#include <linux/errno.h>
--#include <linux/atmdev.h>
--#include <linux/sonet.h>
--#include <linux/init.h>
--#include <linux/slab.h>
--#include <linux/uaccess.h>
--#include <linux/atomic.h>
--
--#include "uPD98402.h"
--
--
--#if 0
--#define DPRINTK(format,args...) printk(KERN_DEBUG format,##args)
--#else
--#define DPRINTK(format,args...)
--#endif
--
--
--struct uPD98402_priv {
--	struct k_sonet_stats sonet_stats;/* link diagnostics */
--	unsigned char framing;		/* SONET/SDH framing */
--	int loop_mode;			/* loopback mode */
--	spinlock_t lock;
--};
--
--
--#define PRIV(dev) ((struct uPD98402_priv *) dev->phy_data)
--
--#define PUT(val,reg) dev->ops->phy_put(dev,val,uPD98402_##reg)
--#define GET(reg) dev->ops->phy_get(dev,uPD98402_##reg)
--
--
--static int fetch_stats(struct atm_dev *dev,struct sonet_stats __user *arg,int zero)
--{
--	struct sonet_stats tmp;
-- 	int error = 0;
--
--	atomic_add(GET(HECCT),&PRIV(dev)->sonet_stats.uncorr_hcs);
--	sonet_copy_stats(&PRIV(dev)->sonet_stats,&tmp);
--	if (arg) error = copy_to_user(arg,&tmp,sizeof(tmp));
--	if (zero && !error) {
--		/* unused fields are reported as -1, but we must not "adjust"
--		   them */
--		tmp.corr_hcs = tmp.tx_cells = tmp.rx_cells = 0;
--		sonet_subtract_stats(&PRIV(dev)->sonet_stats,&tmp);
--	}
--	return error ? -EFAULT : 0;
--}
--
--
--static int set_framing(struct atm_dev *dev,unsigned char framing)
--{
--	static const unsigned char sonet[] = { 1,2,3,0 };
--	static const unsigned char sdh[] = { 1,0,0,2 };
--	const char *set;
--	unsigned long flags;
-- 
--	switch (framing) {
--		case SONET_FRAME_SONET:
--			set = sonet;
--			break;
--		case SONET_FRAME_SDH:
--			set = sdh;
--			break;
--		default:
--			return -EINVAL;
--	}
--	spin_lock_irqsave(&PRIV(dev)->lock, flags);
--	PUT(set[0],C11T);
--	PUT(set[1],C12T);
--	PUT(set[2],C13T);
--	PUT((GET(MDR) & ~uPD98402_MDR_SS_MASK) | (set[3] <<
--	    uPD98402_MDR_SS_SHIFT),MDR);
--	spin_unlock_irqrestore(&PRIV(dev)->lock, flags);
--	return 0;
--}
--
--
--static int get_sense(struct atm_dev *dev,u8 __user *arg)
--{
--	unsigned long flags;
--	unsigned char s[3];
--
--	spin_lock_irqsave(&PRIV(dev)->lock, flags);
--	s[0] = GET(C11R);
--	s[1] = GET(C12R);
--	s[2] = GET(C13R);
--	spin_unlock_irqrestore(&PRIV(dev)->lock, flags);
--	return (put_user(s[0], arg) || put_user(s[1], arg+1) ||
--	    put_user(s[2], arg+2) || put_user(0xff, arg+3) ||
--	    put_user(0xff, arg+4) || put_user(0xff, arg+5)) ? -EFAULT : 0;
--}
--
--
--static int set_loopback(struct atm_dev *dev,int mode)
--{
--	unsigned char mode_reg;
--
--	mode_reg = GET(MDR) & ~(uPD98402_MDR_TPLP | uPD98402_MDR_ALP |
--	    uPD98402_MDR_RPLP);
--	switch (__ATM_LM_XTLOC(mode)) {
--		case __ATM_LM_NONE:
--			break;
--		case __ATM_LM_PHY:
--			mode_reg |= uPD98402_MDR_TPLP;
--			break;
--		case __ATM_LM_ATM:
--			mode_reg |= uPD98402_MDR_ALP;
--			break;
--		default:
--			return -EINVAL;
--	}
--	switch (__ATM_LM_XTRMT(mode)) {
--		case __ATM_LM_NONE:
--			break;
--		case __ATM_LM_PHY:
--			mode_reg |= uPD98402_MDR_RPLP;
--			break;
--		default:
--			return -EINVAL;
--	}
--	PUT(mode_reg,MDR);
--	PRIV(dev)->loop_mode = mode;
--	return 0;
--}
--
--
--static int uPD98402_ioctl(struct atm_dev *dev,unsigned int cmd,void __user *arg)
--{
--	switch (cmd) {
--
--		case SONET_GETSTATZ:
--                case SONET_GETSTAT:
--			return fetch_stats(dev,arg, cmd == SONET_GETSTATZ);
--		case SONET_SETFRAMING:
--			return set_framing(dev, (int)(unsigned long)arg);
--		case SONET_GETFRAMING:
--			return put_user(PRIV(dev)->framing,(int __user *)arg) ?
--			    -EFAULT : 0;
--		case SONET_GETFRSENSE:
--			return get_sense(dev,arg);
--		case ATM_SETLOOP:
--			return set_loopback(dev, (int)(unsigned long)arg);
--		case ATM_GETLOOP:
--			return put_user(PRIV(dev)->loop_mode,(int __user *)arg) ?
--			    -EFAULT : 0;
--		case ATM_QUERYLOOP:
--			return put_user(ATM_LM_LOC_PHY | ATM_LM_LOC_ATM |
--			    ATM_LM_RMT_PHY,(int __user *)arg) ? -EFAULT : 0;
--		default:
--			return -ENOIOCTLCMD;
--	}
--}
--
--
--#define ADD_LIMITED(s,v) \
--    { atomic_add(GET(v),&PRIV(dev)->sonet_stats.s); \
--    if (atomic_read(&PRIV(dev)->sonet_stats.s) < 0) \
--	atomic_set(&PRIV(dev)->sonet_stats.s,INT_MAX); }
--
--
--static void stat_event(struct atm_dev *dev)
--{
--	unsigned char events;
--
--	events = GET(PCR);
--	if (events & uPD98402_PFM_PFEB) ADD_LIMITED(path_febe,PFECB);
--	if (events & uPD98402_PFM_LFEB) ADD_LIMITED(line_febe,LECCT);
--	if (events & uPD98402_PFM_B3E) ADD_LIMITED(path_bip,B3ECT);
--	if (events & uPD98402_PFM_B2E) ADD_LIMITED(line_bip,B2ECT);
--	if (events & uPD98402_PFM_B1E) ADD_LIMITED(section_bip,B1ECT);
--}
--
--
--#undef ADD_LIMITED
--
--
--static void uPD98402_int(struct atm_dev *dev)
--{
--	static unsigned long silence = 0;
--	unsigned char reason;
--
--	while ((reason = GET(PICR))) {
--		if (reason & uPD98402_INT_LOS)
--			printk(KERN_NOTICE "%s(itf %d): signal lost\n",
--			    dev->type,dev->number);
--		if (reason & uPD98402_INT_PFM) stat_event(dev);
--		if (reason & uPD98402_INT_PCO) {
--			(void) GET(PCOCR); /* clear interrupt cause */
--			atomic_add(GET(HECCT),
--			    &PRIV(dev)->sonet_stats.uncorr_hcs);
--		}
--		if ((reason & uPD98402_INT_RFO) && 
--		    (time_after(jiffies, silence) || silence == 0)) {
--			printk(KERN_WARNING "%s(itf %d): uPD98402 receive "
--			    "FIFO overflow\n",dev->type,dev->number);
--			silence = (jiffies+HZ/2)|1;
--		}
--	}
--}
--
--
--static int uPD98402_start(struct atm_dev *dev)
--{
--	DPRINTK("phy_start\n");
--	if (!(dev->phy_data = kmalloc(sizeof(struct uPD98402_priv),GFP_KERNEL)))
--		return -ENOMEM;
--	spin_lock_init(&PRIV(dev)->lock);
--	memset(&PRIV(dev)->sonet_stats,0,sizeof(struct k_sonet_stats));
--	(void) GET(PCR); /* clear performance events */
--	PUT(uPD98402_PFM_FJ,PCMR); /* ignore frequency adj */
--	(void) GET(PCOCR); /* clear overflows */
--	PUT(~uPD98402_PCO_HECC,PCOMR);
--	(void) GET(PICR); /* clear interrupts */
--	PUT(~(uPD98402_INT_PFM | uPD98402_INT_ALM | uPD98402_INT_RFO |
--	  uPD98402_INT_LOS),PIMR); /* enable them */
--	(void) fetch_stats(dev,NULL,1); /* clear kernel counters */
--	atomic_set(&PRIV(dev)->sonet_stats.corr_hcs,-1);
--	atomic_set(&PRIV(dev)->sonet_stats.tx_cells,-1);
--	atomic_set(&PRIV(dev)->sonet_stats.rx_cells,-1);
--	return 0;
--}
--
--
--static int uPD98402_stop(struct atm_dev *dev)
--{
--	/* let SAR driver worry about stopping interrupts */
--	kfree(PRIV(dev));
--	return 0;
--}
--
--
--static const struct atmphy_ops uPD98402_ops = {
--	.start		= uPD98402_start,
--	.ioctl		= uPD98402_ioctl,
--	.interrupt	= uPD98402_int,
--	.stop		= uPD98402_stop,
--};
--
--
--int uPD98402_init(struct atm_dev *dev)
--{
--DPRINTK("phy_init\n");
--	dev->phy = &uPD98402_ops;
--	return 0;
--}
--
--
--MODULE_LICENSE("GPL");
--
--EXPORT_SYMBOL(uPD98402_init);
--
--static __init int uPD98402_module_init(void)
--{
--	return 0;
--}
--module_init(uPD98402_module_init);
--/* module_exit not defined so not unloadable */
-diff --git a/drivers/atm/uPD98402.h b/drivers/atm/uPD98402.h
-deleted file mode 100644
-index 437cfaa20c96..000000000000
---- a/drivers/atm/uPD98402.h
-+++ /dev/null
-@@ -1,107 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--/* drivers/atm/uPD98402.h - NEC uPD98402 (PHY) declarations */
-- 
--/* Written 1995 by Werner Almesberger, EPFL LRC */
--
--
--#ifndef DRIVERS_ATM_uPD98402_H
--#define DRIVERS_ATM_uPD98402_H
--
--/*
-- * Registers
-- */
--
--#define uPD98402_CMR		0x00	/* Command Register */
--#define uPD98402_MDR		0x01	/* Mode Register */
--#define uPD98402_PICR		0x02	/* PHY Interrupt Cause Register */
--#define uPD98402_PIMR		0x03	/* PHY Interrupt Mask Register */
--#define uPD98402_ACR		0x04	/* Alarm Cause Register */
--#define uPD98402_ACMR		0x05	/* Alarm Cause Mask Register */
--#define uPD98402_PCR		0x06	/* Performance Cause Register */
--#define uPD98402_PCMR		0x07	/* Performance Cause Mask Register */
--#define uPD98402_IACM		0x08	/* Internal Alarm Cause Mask Register */
--#define uPD98402_B1ECT		0x09	/* B1 Error Count Register */
--#define uPD98402_B2ECT		0x0a	/* B2 Error Count Register */
--#define uPD98402_B3ECT		0x0b	/* B3 Error Count Regster */
--#define uPD98402_PFECB		0x0c	/* Path FEBE Count Register */
--#define uPD98402_LECCT		0x0d	/* Line FEBE Count Register */
--#define uPD98402_HECCT		0x0e	/* HEC Error Count Register */
--#define uPD98402_FJCT		0x0f	/* Frequence Justification Count Reg */
--#define uPD98402_PCOCR		0x10	/* Perf. Counter Overflow Cause Reg */
--#define uPD98402_PCOMR		0x11	/* Perf. Counter Overflow Mask Reg */
--#define uPD98402_C11T		0x20	/* C11T Data Register */
--#define uPD98402_C12T		0x21	/* C12T Data Register */
--#define uPD98402_C13T		0x22	/* C13T Data Register */
--#define uPD98402_F1T		0x23	/* F1T Data Register */
--#define uPD98402_K2T		0x25	/* K2T Data Register */
--#define uPD98402_C2T		0x26	/* C2T Data Register */
--#define uPD98402_F2T		0x27	/* F2T Data Register */
--#define uPD98402_C11R		0x30	/* C11T Data Register */
--#define uPD98402_C12R		0x31	/* C12T Data Register */
--#define uPD98402_C13R		0x32	/* C13T Data Register */
--#define uPD98402_F1R		0x33	/* F1T Data Register */
--#define uPD98402_K2R		0x35	/* K2T Data Register */
--#define uPD98402_C2R		0x36	/* C2T Data Register */
--#define uPD98402_F2R		0x37	/* F2T Data Register */
--
--/* CMR is at 0x00 */
--#define uPD98402_CMR_PFRF	0x01	/* Send path FERF */
--#define uPD98402_CMR_LFRF	0x02	/* Send line FERF */
--#define uPD98402_CMR_PAIS	0x04	/* Send path AIS */
--#define uPD98402_CMR_LAIS	0x08	/* Send line AIS */
--
--/* MDR is at 0x01 */
--#define uPD98402_MDR_ALP	0x01	/* ATM layer loopback */
--#define uPD98402_MDR_TPLP	0x02	/* PMD loopback, to host */
--#define uPD98402_MDR_RPLP	0x04	/* PMD loopback, to network */
--#define uPD98402_MDR_SS0	0x08	/* SS0 */
--#define uPD98402_MDR_SS1	0x10	/* SS1 */
--#define uPD98402_MDR_SS_MASK	0x18	/* mask */
--#define uPD98402_MDR_SS_SHIFT	3	/* shift */
--#define uPD98402_MDR_HEC	0x20	/* disable HEC inbound processing */
--#define uPD98402_MDR_FSR	0x40	/* disable frame scrambler */
--#define uPD98402_MDR_CSR	0x80	/* disable cell scrambler */
--
--/* PICR is at 0x02, PIMR is at 0x03 */
--#define uPD98402_INT_PFM	0x01	/* performance counter has changed */
--#define uPD98402_INT_ALM	0x02	/* line fault */
--#define uPD98402_INT_RFO	0x04	/* receive FIFO overflow */
--#define uPD98402_INT_PCO	0x08	/* performance counter overflow */
--#define uPD98402_INT_OTD	0x20	/* OTD has occurred */
--#define uPD98402_INT_LOS	0x40	/* Loss Of Signal */
--#define uPD98402_INT_LOF	0x80	/* Loss Of Frame */
--
--/* ACR is as 0x04, ACMR is at 0x05 */
--#define uPD98402_ALM_PFRF	0x01	/* path FERF */
--#define uPD98402_ALM_LFRF	0x02	/* line FERF */
--#define uPD98402_ALM_PAIS	0x04	/* path AIS */
--#define uPD98402_ALM_LAIS	0x08	/* line AIS */
--#define uPD98402_ALM_LOD	0x10	/* loss of delineation */
--#define uPD98402_ALM_LOP	0x20	/* loss of pointer */
--#define uPD98402_ALM_OOF	0x40	/* out of frame */
--
--/* PCR is at 0x06, PCMR is at 0x07 */
--#define uPD98402_PFM_PFEB	0x01	/* path FEBE */
--#define uPD98402_PFM_LFEB	0x02	/* line FEBE */
--#define uPD98402_PFM_B3E	0x04	/* B3 error */
--#define uPD98402_PFM_B2E	0x08	/* B2 error */
--#define uPD98402_PFM_B1E	0x10	/* B1 error */
--#define uPD98402_PFM_FJ		0x20	/* frequency justification */
--
--/* IACM is at 0x08 */
--#define uPD98402_IACM_PFRF	0x01	/* don't generate path FERF */
--#define uPD98402_IACM_LFRF	0x02	/* don't generate line FERF */
--
--/* PCOCR is at 0x010, PCOMR is at 0x11 */
--#define uPD98402_PCO_B1EC	0x01	/* B1ECT overflow */
--#define uPD98402_PCO_B2EC	0x02	/* B2ECT overflow */
--#define uPD98402_PCO_B3EC	0x04	/* B3ECT overflow */
--#define uPD98402_PCO_PFBC	0x08	/* PFEBC overflow */
--#define uPD98402_PCO_LFBC	0x10	/* LFEVC overflow */
--#define uPD98402_PCO_HECC	0x20	/* HECCT overflow */
--#define uPD98402_PCO_FJC	0x40	/* FJCT overflow */
--
--
--int uPD98402_init(struct atm_dev *dev);
--
--#endif
-diff --git a/drivers/atm/zatm.c b/drivers/atm/zatm.c
-deleted file mode 100644
-index cf5fffcf98a1..000000000000
---- a/drivers/atm/zatm.c
-+++ /dev/null
-@@ -1,1652 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0-only
--/* drivers/atm/zatm.c - ZeitNet ZN122x device driver */
-- 
--/* Written 1995-2000 by Werner Almesberger, EPFL LRC/ICA */
--
+-#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 -
 -#include <linux/module.h>
 -#include <linux/kernel.h>
--#include <linux/mm.h>
--#include <linux/pci.h>
--#include <linux/errno.h>
--#include <linux/atm.h>
--#include <linux/atmdev.h>
--#include <linux/sonet.h>
--#include <linux/skbuff.h>
--#include <linux/netdevice.h>
--#include <linux/delay.h>
--#include <linux/uio.h>
--#include <linux/init.h>
--#include <linux/interrupt.h>
--#include <linux/dma-mapping.h>
--#include <linux/atm_zatm.h>
--#include <linux/capability.h>
--#include <linux/bitops.h>
--#include <linux/wait.h>
+-#include <linux/sched/signal.h>
 -#include <linux/slab.h>
--#include <asm/byteorder.h>
--#include <asm/string.h>
+-#include <linux/poll.h>
+-#include <linux/fs.h>
+-#include <linux/interrupt.h>
+-#include <linux/delay.h>
+-#include <linux/hdlc.h>
+-#include <linux/errno.h>
+-#include <linux/ioport.h>
+-#include <linux/netdevice.h>
+-#include <linux/spinlock.h>
+-#include <linux/mutex.h>
+-#include <linux/device.h>
 -#include <asm/io.h>
--#include <linux/atomic.h>
--#include <linux/uaccess.h>
--#include <linux/nospec.h>
+-#include <asm/dma.h>
+-#include <asm/byteorder.h>
 -
--#include "uPD98401.h"
--#include "uPD98402.h"
--#include "zeprom.h"
--#include "zatm.h"
+-#undef COSA_SLOW_IO	/* for testing purposes only */
 -
+-#include "cosa.h"
 -
--/*
-- * TODO:
-- *
-- * Minor features
-- *  - support 64 kB SDUs (will have to use multibuffer batches then :-( )
-- *  - proper use of CDV, credit = max(1,CDVT*PCR)
-- *  - AAL0
-- *  - better receive timestamps
-- *  - OAM
-- */
+-/* Maximum length of the identification string. */
+-#define COSA_MAX_ID_STRING	128
 -
--#define ZATM_COPPER	1
+-/* Maximum length of the channel name */
+-#define COSA_MAX_NAME		(sizeof("cosaXXXcXXX") + 1)
 -
--#if 0
--#define DPRINTK(format,args...) printk(KERN_DEBUG format,##args)
--#else
--#define DPRINTK(format,args...)
--#endif
+-/* Per-channel data structure */
 -
--#ifndef CONFIG_ATM_ZATM_DEBUG
+-struct channel_data {
+-	int usage;	/* Usage count; >0 for chrdev, -1 for netdev */
+-	int num;	/* Number of the channel */
+-	struct cosa_data *cosa;	/* Pointer to the per-card structure */
+-	int txsize;	/* Size of transmitted data */
+-	char *txbuf;	/* Transmit buffer */
+-	char name[COSA_MAX_NAME];	/* channel name */
 -
+-	/* The HW layer interface */
+-	/* routine called from the RX interrupt */
+-	char *(*setup_rx)(struct channel_data *channel, int size);
+-	/* routine called when the RX is done (from the EOT interrupt) */
+-	int (*rx_done)(struct channel_data *channel);
+-	/* routine called when the TX is done (from the EOT interrupt) */
+-	int (*tx_done)(struct channel_data *channel, int size);
 -
--#define NULLCHECK(x)
+-	/* Character device parts */
+-	struct mutex rlock;
+-	struct semaphore wsem;
+-	char *rxdata;
+-	int rxsize;
+-	wait_queue_head_t txwaitq, rxwaitq;
+-	int tx_status, rx_status;
 -
--#define EVENT(s,a,b)
--
--
--static void event_dump(void)
--{
--}
--
--
--#else
--
--
--/* 
-- * NULL pointer checking
-- */
--
--#define NULLCHECK(x) \
--  if ((unsigned long) (x) < 0x30) printk(KERN_CRIT #x "==0x%x\n", (int) (x))
--
--/*
-- * Very extensive activity logging. Greatly improves bug detection speed but
-- * costs a few Mbps if enabled.
-- */
--
--#define EV 64
--
--static const char *ev[EV];
--static unsigned long ev_a[EV],ev_b[EV];
--static int ec = 0;
--
--
--static void EVENT(const char *s,unsigned long a,unsigned long b)
--{
--	ev[ec] = s; 
--	ev_a[ec] = a;
--	ev_b[ec] = b;
--	ec = (ec+1) % EV;
--}
--
--
--static void event_dump(void)
--{
--	int n,i;
--
--	printk(KERN_NOTICE "----- event dump follows -----\n");
--	for (n = 0; n < EV; n++) {
--		i = (ec+n) % EV;
--		printk(KERN_NOTICE);
--		printk(ev[i] ? ev[i] : "(null)",ev_a[i],ev_b[i]);
--	}
--	printk(KERN_NOTICE "----- event dump ends here -----\n");
--}
--
--
--#endif /* CONFIG_ATM_ZATM_DEBUG */
--
--
--#define RING_BUSY	1	/* indication from do_tx that PDU has to be
--				   backlogged */
--
--static struct atm_dev *zatm_boards = NULL;
--static unsigned long dummy[2] = {0,0};
--
--
--#define zin_n(r) inl(zatm_dev->base+r*4)
--#define zin(r) inl(zatm_dev->base+uPD98401_##r*4)
--#define zout(v,r) outl(v,zatm_dev->base+uPD98401_##r*4)
--#define zwait() do {} while (zin(CMR) & uPD98401_BUSY)
--
--/* RX0, RX1, TX0, TX1 */
--static const int mbx_entries[NR_MBX] = { 1024,1024,1024,1024 };
--static const int mbx_esize[NR_MBX] = { 16,16,4,4 }; /* entry size in bytes */
--
--#define MBX_SIZE(i) (mbx_entries[i]*mbx_esize[i])
--
--
--/*-------------------------------- utilities --------------------------------*/
--
--
--static void zpokel(struct zatm_dev *zatm_dev,u32 value,u32 addr)
--{
--	zwait();
--	zout(value,CER);
--	zout(uPD98401_IND_ACC | uPD98401_IA_BALL |
--	    (uPD98401_IA_TGT_CM << uPD98401_IA_TGT_SHIFT) | addr,CMR);
--}
--
--
--static u32 zpeekl(struct zatm_dev *zatm_dev,u32 addr)
--{
--	zwait();
--	zout(uPD98401_IND_ACC | uPD98401_IA_BALL | uPD98401_IA_RW |
--	  (uPD98401_IA_TGT_CM << uPD98401_IA_TGT_SHIFT) | addr,CMR);
--	zwait();
--	return zin(CER);
--}
--
--
--/*------------------------------- free lists --------------------------------*/
--
--
--/*
-- * Free buffer head structure:
-- *   [0] pointer to buffer (for SAR)
-- *   [1] buffer descr link pointer (for SAR)
-- *   [2] back pointer to skb (for poll_rx)
-- *   [3] data
-- *   ...
-- */
--
--struct rx_buffer_head {
--	u32		buffer;	/* pointer to buffer (for SAR) */
--	u32		link;	/* buffer descriptor link pointer (for SAR) */
--	struct sk_buff	*skb;	/* back pointer to skb (for poll_rx) */
+-	/* generic HDLC device parts */
+-	struct net_device *netdev;
+-	struct sk_buff *rx_skb, *tx_skb;
 -};
 -
+-/* cosa->firmware_status bits */
+-#define COSA_FW_RESET		BIT(0)	/* Is the ROM monitor active? */
+-#define COSA_FW_DOWNLOAD	BIT(1)	/* Is the microcode downloaded? */
+-#define COSA_FW_START		BIT(2)	/* Is the microcode running? */
 -
--static void refill_pool(struct atm_dev *dev,int pool)
--{
--	struct zatm_dev *zatm_dev;
--	struct sk_buff *skb;
--	struct rx_buffer_head *first;
--	unsigned long flags;
--	int align,offset,free,count,size;
--
--	EVENT("refill_pool\n",0,0);
--	zatm_dev = ZATM_DEV(dev);
--	size = (64 << (pool <= ZATM_AAL5_POOL_BASE ? 0 :
--	    pool-ZATM_AAL5_POOL_BASE))+sizeof(struct rx_buffer_head);
--	if (size < PAGE_SIZE) {
--		align = 32; /* for 32 byte alignment */
--		offset = sizeof(struct rx_buffer_head);
--	}
--	else {
--		align = 4096;
--		offset = zatm_dev->pool_info[pool].offset+
--		    sizeof(struct rx_buffer_head);
--	}
--	size += align;
--	spin_lock_irqsave(&zatm_dev->lock, flags);
--	free = zpeekl(zatm_dev,zatm_dev->pool_base+2*pool) &
--	    uPD98401_RXFP_REMAIN;
--	spin_unlock_irqrestore(&zatm_dev->lock, flags);
--	if (free >= zatm_dev->pool_info[pool].low_water) return;
--	EVENT("starting ... POOL: 0x%x, 0x%x\n",
--	    zpeekl(zatm_dev,zatm_dev->pool_base+2*pool),
--	    zpeekl(zatm_dev,zatm_dev->pool_base+2*pool+1));
--	EVENT("dummy: 0x%08lx, 0x%08lx\n",dummy[0],dummy[1]);
--	count = 0;
--	first = NULL;
--	while (free < zatm_dev->pool_info[pool].high_water) {
--		struct rx_buffer_head *head;
--
--		skb = alloc_skb(size,GFP_ATOMIC);
--		if (!skb) {
--			printk(KERN_WARNING DEV_LABEL "(Itf %d): got no new "
--			    "skb (%d) with %d free\n",dev->number,size,free);
--			break;
--		}
--		skb_reserve(skb,(unsigned char *) ((((unsigned long) skb->data+
--		    align+offset-1) & ~(unsigned long) (align-1))-offset)-
--		    skb->data);
--		head = (struct rx_buffer_head *) skb->data;
--		skb_reserve(skb,sizeof(struct rx_buffer_head));
--		if (!first) first = head;
--		count++;
--		head->buffer = virt_to_bus(skb->data);
--		head->link = 0;
--		head->skb = skb;
--		EVENT("enq skb 0x%08lx/0x%08lx\n",(unsigned long) skb,
--		    (unsigned long) head);
--		spin_lock_irqsave(&zatm_dev->lock, flags);
--		if (zatm_dev->last_free[pool])
--			((struct rx_buffer_head *) (zatm_dev->last_free[pool]->
--			    data))[-1].link = virt_to_bus(head);
--		zatm_dev->last_free[pool] = skb;
--		skb_queue_tail(&zatm_dev->pool[pool],skb);
--		spin_unlock_irqrestore(&zatm_dev->lock, flags);
--		free++;
--	}
--	if (first) {
--		spin_lock_irqsave(&zatm_dev->lock, flags);
--		zwait();
--		zout(virt_to_bus(first),CER);
--		zout(uPD98401_ADD_BAT | (pool << uPD98401_POOL_SHIFT) | count,
--		    CMR);
--		spin_unlock_irqrestore(&zatm_dev->lock, flags);
--		EVENT ("POOL: 0x%x, 0x%x\n",
--		    zpeekl(zatm_dev,zatm_dev->pool_base+2*pool),
--		    zpeekl(zatm_dev,zatm_dev->pool_base+2*pool+1));
--		EVENT("dummy: 0x%08lx, 0x%08lx\n",dummy[0],dummy[1]);
--	}
--}
--
--
--static void drain_free(struct atm_dev *dev,int pool)
--{
--	skb_queue_purge(&ZATM_DEV(dev)->pool[pool]);
--}
--
--
--static int pool_index(int max_pdu)
--{
--	int i;
--
--	if (max_pdu % ATM_CELL_PAYLOAD)
--		printk(KERN_ERR DEV_LABEL ": driver error in pool_index: "
--		    "max_pdu is %d\n",max_pdu);
--	if (max_pdu > 65536) return -1;
--	for (i = 0; (64 << i) < max_pdu; i++);
--	return i+ZATM_AAL5_POOL_BASE;
--}
--
--
--/* use_pool isn't reentrant */
--
--
--static void use_pool(struct atm_dev *dev,int pool)
--{
--	struct zatm_dev *zatm_dev;
--	unsigned long flags;
--	int size;
--
--	zatm_dev = ZATM_DEV(dev);
--	if (!(zatm_dev->pool_info[pool].ref_count++)) {
--		skb_queue_head_init(&zatm_dev->pool[pool]);
--		size = pool-ZATM_AAL5_POOL_BASE;
--		if (size < 0) size = 0; /* 64B... */
--		else if (size > 10) size = 10; /* ... 64kB */
--		spin_lock_irqsave(&zatm_dev->lock, flags);
--		zpokel(zatm_dev,((zatm_dev->pool_info[pool].low_water/4) <<
--		    uPD98401_RXFP_ALERT_SHIFT) |
--		    (1 << uPD98401_RXFP_BTSZ_SHIFT) |
--		    (size << uPD98401_RXFP_BFSZ_SHIFT),
--		    zatm_dev->pool_base+pool*2);
--		zpokel(zatm_dev,(unsigned long) dummy,zatm_dev->pool_base+
--		    pool*2+1);
--		spin_unlock_irqrestore(&zatm_dev->lock, flags);
--		zatm_dev->last_free[pool] = NULL;
--		refill_pool(dev,pool);
--	}
--	DPRINTK("pool %d: %d\n",pool,zatm_dev->pool_info[pool].ref_count);
--}
--
--
--static void unuse_pool(struct atm_dev *dev,int pool)
--{
--	if (!(--ZATM_DEV(dev)->pool_info[pool].ref_count))
--		drain_free(dev,pool);
--}
--
--/*----------------------------------- RX ------------------------------------*/
--
--
--#if 0
--static void exception(struct atm_vcc *vcc)
--{
--   static int count = 0;
--   struct zatm_dev *zatm_dev = ZATM_DEV(vcc->dev);
--   struct zatm_vcc *zatm_vcc = ZATM_VCC(vcc);
--   unsigned long *qrp;
--   int i;
--
--   if (count++ > 2) return;
--   for (i = 0; i < 8; i++)
--	printk("TX%d: 0x%08lx\n",i,
--	  zpeekl(zatm_dev,zatm_vcc->tx_chan*VC_SIZE/4+i));
--   for (i = 0; i < 5; i++)
--	printk("SH%d: 0x%08lx\n",i,
--	  zpeekl(zatm_dev,uPD98401_IM(zatm_vcc->shaper)+16*i));
--   qrp = (unsigned long *) zpeekl(zatm_dev,zatm_vcc->tx_chan*VC_SIZE/4+
--     uPD98401_TXVC_QRP);
--   printk("qrp=0x%08lx\n",(unsigned long) qrp);
--   for (i = 0; i < 4; i++) printk("QRP[%d]: 0x%08lx",i,qrp[i]);
--}
--#endif
--
--
--static const char *err_txt[] = {
--	"No error",
--	"RX buf underflow",
--	"RX FIFO overrun",
--	"Maximum len violation",
--	"CRC error",
--	"User abort",
--	"Length violation",
--	"T1 error",
--	"Deactivated",
--	"???",
--	"???",
--	"???",
--	"???",
--	"???",
--	"???",
--	"???"
+-struct cosa_data {
+-	int num;			/* Card number */
+-	char name[COSA_MAX_NAME];	/* Card name - e.g "cosa0" */
+-	unsigned int datareg, statusreg;	/* I/O ports */
+-	unsigned short irq, dma;	/* IRQ and DMA number */
+-	unsigned short startaddr;	/* Firmware start address */
+-	unsigned short busmaster;	/* Use busmastering? */
+-	int nchannels;			/* # of channels on this card */
+-	int driver_status;		/* For communicating with firmware */
+-	int firmware_status;		/* Downloaded, reseted, etc. */
+-	unsigned long rxbitmap, txbitmap;/* Bitmap of channels who are willing to send/receive data */
+-	unsigned long rxtx;		/* RX or TX in progress? */
+-	int enabled;
+-	int usage;				/* usage count */
+-	int txchan, txsize, rxsize;
+-	struct channel_data *rxchan;
+-	char *bouncebuf;
+-	char *txbuf, *rxbuf;
+-	struct channel_data *chan;
+-	spinlock_t lock;	/* For exclusive operations on this structure */
+-	char id_string[COSA_MAX_ID_STRING];	/* ROM monitor ID string */
+-	char *type;				/* card type */
 -};
 -
--
--static void poll_rx(struct atm_dev *dev,int mbx)
--{
--	struct zatm_dev *zatm_dev;
--	unsigned long pos;
--	u32 x;
--	int error;
--
--	EVENT("poll_rx\n",0,0);
--	zatm_dev = ZATM_DEV(dev);
--	pos = (zatm_dev->mbx_start[mbx] & ~0xffffUL) | zin(MTA(mbx));
--	while (x = zin(MWA(mbx)), (pos & 0xffff) != x) {
--		u32 *here;
--		struct sk_buff *skb;
--		struct atm_vcc *vcc;
--		int cells,size,chan;
--
--		EVENT("MBX: host 0x%lx, nic 0x%x\n",pos,x);
--		here = (u32 *) pos;
--		if (((pos += 16) & 0xffff) == zatm_dev->mbx_end[mbx])
--			pos = zatm_dev->mbx_start[mbx];
--		cells = here[0] & uPD98401_AAL5_SIZE;
--#if 0
--printk("RX IND: 0x%x, 0x%x, 0x%x, 0x%x\n",here[0],here[1],here[2],here[3]);
--{
--unsigned long *x;
--		printk("POOL: 0x%08x, 0x%08x\n",zpeekl(zatm_dev,
--		      zatm_dev->pool_base),
--		      zpeekl(zatm_dev,zatm_dev->pool_base+1));
--		x = (unsigned long *) here[2];
--		printk("[0..3] = 0x%08lx, 0x%08lx, 0x%08lx, 0x%08lx\n",
--		    x[0],x[1],x[2],x[3]);
--}
--#endif
--		error = 0;
--		if (here[3] & uPD98401_AAL5_ERR) {
--			error = (here[3] & uPD98401_AAL5_ES) >>
--			    uPD98401_AAL5_ES_SHIFT;
--			if (error == uPD98401_AAL5_ES_DEACT ||
--			    error == uPD98401_AAL5_ES_FREE) continue;
--		}
--EVENT("error code 0x%x/0x%x\n",(here[3] & uPD98401_AAL5_ES) >>
--  uPD98401_AAL5_ES_SHIFT,error);
--		skb = ((struct rx_buffer_head *) bus_to_virt(here[2]))->skb;
--		__net_timestamp(skb);
--#if 0
--printk("[-3..0] 0x%08lx 0x%08lx 0x%08lx 0x%08lx\n",((unsigned *) skb->data)[-3],
--  ((unsigned *) skb->data)[-2],((unsigned *) skb->data)[-1],
--  ((unsigned *) skb->data)[0]);
--#endif
--		EVENT("skb 0x%lx, here 0x%lx\n",(unsigned long) skb,
--		    (unsigned long) here);
--#if 0
--printk("dummy: 0x%08lx, 0x%08lx\n",dummy[0],dummy[1]);
--#endif
--		size = error ? 0 : ntohs(((__be16 *) skb->data)[cells*
--		    ATM_CELL_PAYLOAD/sizeof(u16)-3]);
--		EVENT("got skb 0x%lx, size %d\n",(unsigned long) skb,size);
--		chan = (here[3] & uPD98401_AAL5_CHAN) >>
--		    uPD98401_AAL5_CHAN_SHIFT;
--		if (chan < zatm_dev->chans && zatm_dev->rx_map[chan]) {
--			int pos;
--			vcc = zatm_dev->rx_map[chan];
--			pos = ZATM_VCC(vcc)->pool;
--			if (skb == zatm_dev->last_free[pos])
--				zatm_dev->last_free[pos] = NULL;
--			skb_unlink(skb, zatm_dev->pool + pos);
--		}
--		else {
--			printk(KERN_ERR DEV_LABEL "(itf %d): RX indication "
--			    "for non-existing channel\n",dev->number);
--			size = 0;
--			vcc = NULL;
--			event_dump();
--		}
--		if (error) {
--			static unsigned long silence = 0;
--			static int last_error = 0;
--
--			if (error != last_error ||
--			    time_after(jiffies, silence)  || silence == 0){
--				printk(KERN_WARNING DEV_LABEL "(itf %d): "
--				    "chan %d error %s\n",dev->number,chan,
--				    err_txt[error]);
--				last_error = error;
--				silence = (jiffies+2*HZ)|1;
--			}
--			size = 0;
--		}
--		if (size && (size > cells*ATM_CELL_PAYLOAD-ATM_AAL5_TRAILER ||
--		    size <= (cells-1)*ATM_CELL_PAYLOAD-ATM_AAL5_TRAILER)) {
--			printk(KERN_ERR DEV_LABEL "(itf %d): size %d with %d "
--			    "cells\n",dev->number,size,cells);
--			size = 0;
--			event_dump();
--		}
--		if (size > ATM_MAX_AAL5_PDU) {
--			printk(KERN_ERR DEV_LABEL "(itf %d): size too big "
--			    "(%d)\n",dev->number,size);
--			size = 0;
--			event_dump();
--		}
--		if (!size) {
--			dev_kfree_skb_irq(skb);
--			if (vcc) atomic_inc(&vcc->stats->rx_err);
--			continue;
--		}
--		if (!atm_charge(vcc,skb->truesize)) {
--			dev_kfree_skb_irq(skb);
--			continue;
--		}
--		skb->len = size;
--		ATM_SKB(skb)->vcc = vcc;
--		vcc->push(vcc,skb);
--		atomic_inc(&vcc->stats->rx);
--	}
--	zout(pos & 0xffff,MTA(mbx));
--#if 0 /* probably a stupid idea */
--	refill_pool(dev,zatm_vcc->pool);
--		/* maybe this saves us a few interrupts */
--#endif
--}
--
--
--static int open_rx_first(struct atm_vcc *vcc)
--{
--	struct zatm_dev *zatm_dev;
--	struct zatm_vcc *zatm_vcc;
--	unsigned long flags;
--	unsigned short chan;
--	int cells;
--
--	DPRINTK("open_rx_first (0x%x)\n",inb_p(0xc053));
--	zatm_dev = ZATM_DEV(vcc->dev);
--	zatm_vcc = ZATM_VCC(vcc);
--	zatm_vcc->rx_chan = 0;
--	if (vcc->qos.rxtp.traffic_class == ATM_NONE) return 0;
--	if (vcc->qos.aal == ATM_AAL5) {
--		if (vcc->qos.rxtp.max_sdu > 65464)
--			vcc->qos.rxtp.max_sdu = 65464;
--			/* fix this - we may want to receive 64kB SDUs
--			   later */
--		cells = DIV_ROUND_UP(vcc->qos.rxtp.max_sdu + ATM_AAL5_TRAILER,
--				ATM_CELL_PAYLOAD);
--		zatm_vcc->pool = pool_index(cells*ATM_CELL_PAYLOAD);
--	}
--	else {
--		cells = 1;
--		zatm_vcc->pool = ZATM_AAL0_POOL;
--	}
--	if (zatm_vcc->pool < 0) return -EMSGSIZE;
--	spin_lock_irqsave(&zatm_dev->lock, flags);
--	zwait();
--	zout(uPD98401_OPEN_CHAN,CMR);
--	zwait();
--	DPRINTK("0x%x 0x%x\n",zin(CMR),zin(CER));
--	chan = (zin(CMR) & uPD98401_CHAN_ADDR) >> uPD98401_CHAN_ADDR_SHIFT;
--	spin_unlock_irqrestore(&zatm_dev->lock, flags);
--	DPRINTK("chan is %d\n",chan);
--	if (!chan) return -EAGAIN;
--	use_pool(vcc->dev,zatm_vcc->pool);
--	DPRINTK("pool %d\n",zatm_vcc->pool);
--	/* set up VC descriptor */
--	spin_lock_irqsave(&zatm_dev->lock, flags);
--	zpokel(zatm_dev,zatm_vcc->pool << uPD98401_RXVC_POOL_SHIFT,
--	    chan*VC_SIZE/4);
--	zpokel(zatm_dev,uPD98401_RXVC_OD | (vcc->qos.aal == ATM_AAL5 ?
--	    uPD98401_RXVC_AR : 0) | cells,chan*VC_SIZE/4+1);
--	zpokel(zatm_dev,0,chan*VC_SIZE/4+2);
--	zatm_vcc->rx_chan = chan;
--	zatm_dev->rx_map[chan] = vcc;
--	spin_unlock_irqrestore(&zatm_dev->lock, flags);
--	return 0;
--}
--
--
--static int open_rx_second(struct atm_vcc *vcc)
--{
--	struct zatm_dev *zatm_dev;
--	struct zatm_vcc *zatm_vcc;
--	unsigned long flags;
--	int pos,shift;
--
--	DPRINTK("open_rx_second (0x%x)\n",inb_p(0xc053));
--	zatm_dev = ZATM_DEV(vcc->dev);
--	zatm_vcc = ZATM_VCC(vcc);
--	if (!zatm_vcc->rx_chan) return 0;
--	spin_lock_irqsave(&zatm_dev->lock, flags);
--	/* should also handle VPI @@@ */
--	pos = vcc->vci >> 1;
--	shift = (1-(vcc->vci & 1)) << 4;
--	zpokel(zatm_dev,(zpeekl(zatm_dev,pos) & ~(0xffff << shift)) |
--	    ((zatm_vcc->rx_chan | uPD98401_RXLT_ENBL) << shift),pos);
--	spin_unlock_irqrestore(&zatm_dev->lock, flags);
--	return 0;
--}
--
--
--static void close_rx(struct atm_vcc *vcc)
--{
--	struct zatm_dev *zatm_dev;
--	struct zatm_vcc *zatm_vcc;
--	unsigned long flags;
--	int pos,shift;
--
--	zatm_vcc = ZATM_VCC(vcc);
--	zatm_dev = ZATM_DEV(vcc->dev);
--	if (!zatm_vcc->rx_chan) return;
--	DPRINTK("close_rx\n");
--	/* disable receiver */
--	if (vcc->vpi != ATM_VPI_UNSPEC && vcc->vci != ATM_VCI_UNSPEC) {
--		spin_lock_irqsave(&zatm_dev->lock, flags);
--		pos = vcc->vci >> 1;
--		shift = (1-(vcc->vci & 1)) << 4;
--		zpokel(zatm_dev,zpeekl(zatm_dev,pos) & ~(0xffff << shift),pos);
--		zwait();
--		zout(uPD98401_NOP,CMR);
--		zwait();
--		zout(uPD98401_NOP,CMR);
--		spin_unlock_irqrestore(&zatm_dev->lock, flags);
--	}
--	spin_lock_irqsave(&zatm_dev->lock, flags);
--	zwait();
--	zout(uPD98401_DEACT_CHAN | uPD98401_CHAN_RT | (zatm_vcc->rx_chan <<
--	    uPD98401_CHAN_ADDR_SHIFT),CMR);
--	zwait();
--	udelay(10); /* why oh why ... ? */
--	zout(uPD98401_CLOSE_CHAN | uPD98401_CHAN_RT | (zatm_vcc->rx_chan <<
--	    uPD98401_CHAN_ADDR_SHIFT),CMR);
--	zwait();
--	if (!(zin(CMR) & uPD98401_CHAN_ADDR))
--		printk(KERN_CRIT DEV_LABEL "(itf %d): can't close RX channel "
--		    "%d\n",vcc->dev->number,zatm_vcc->rx_chan);
--	spin_unlock_irqrestore(&zatm_dev->lock, flags);
--	zatm_dev->rx_map[zatm_vcc->rx_chan] = NULL;
--	zatm_vcc->rx_chan = 0;
--	unuse_pool(vcc->dev,zatm_vcc->pool);
--}
--
--
--static int start_rx(struct atm_dev *dev)
--{
--	struct zatm_dev *zatm_dev;
--	int i;
--
--	DPRINTK("start_rx\n");
--	zatm_dev = ZATM_DEV(dev);
--	zatm_dev->rx_map = kcalloc(zatm_dev->chans,
--				   sizeof(*zatm_dev->rx_map),
--				   GFP_KERNEL);
--	if (!zatm_dev->rx_map) return -ENOMEM;
--	/* set VPI/VCI split (use all VCIs and give what's left to VPIs) */
--	zpokel(zatm_dev,(1 << dev->ci_range.vci_bits)-1,uPD98401_VRR);
--	/* prepare free buffer pools */
--	for (i = 0; i <= ZATM_LAST_POOL; i++) {
--		zatm_dev->pool_info[i].ref_count = 0;
--		zatm_dev->pool_info[i].rqa_count = 0;
--		zatm_dev->pool_info[i].rqu_count = 0;
--		zatm_dev->pool_info[i].low_water = LOW_MARK;
--		zatm_dev->pool_info[i].high_water = HIGH_MARK;
--		zatm_dev->pool_info[i].offset = 0;
--		zatm_dev->pool_info[i].next_off = 0;
--		zatm_dev->pool_info[i].next_cnt = 0;
--		zatm_dev->pool_info[i].next_thres = OFF_CNG_THRES;
--	}
--	return 0;
--}
--
--
--/*----------------------------------- TX ------------------------------------*/
--
--
--static int do_tx(struct sk_buff *skb)
--{
--	struct atm_vcc *vcc;
--	struct zatm_dev *zatm_dev;
--	struct zatm_vcc *zatm_vcc;
--	u32 *dsc;
--	unsigned long flags;
--
--	EVENT("do_tx\n",0,0);
--	DPRINTK("sending skb %p\n",skb);
--	vcc = ATM_SKB(skb)->vcc;
--	zatm_dev = ZATM_DEV(vcc->dev);
--	zatm_vcc = ZATM_VCC(vcc);
--	EVENT("iovcnt=%d\n",skb_shinfo(skb)->nr_frags,0);
--	spin_lock_irqsave(&zatm_dev->lock, flags);
--	if (!skb_shinfo(skb)->nr_frags) {
--		if (zatm_vcc->txing == RING_ENTRIES-1) {
--			spin_unlock_irqrestore(&zatm_dev->lock, flags);
--			return RING_BUSY;
--		}
--		zatm_vcc->txing++;
--		dsc = zatm_vcc->ring+zatm_vcc->ring_curr;
--		zatm_vcc->ring_curr = (zatm_vcc->ring_curr+RING_WORDS) &
--		    (RING_ENTRIES*RING_WORDS-1);
--		dsc[1] = 0;
--		dsc[2] = skb->len;
--		dsc[3] = virt_to_bus(skb->data);
--		mb();
--		dsc[0] = uPD98401_TXPD_V | uPD98401_TXPD_DP | uPD98401_TXPD_SM
--		    | (vcc->qos.aal == ATM_AAL5 ? uPD98401_TXPD_AAL5 : 0 |
--		    (ATM_SKB(skb)->atm_options & ATM_ATMOPT_CLP ?
--		    uPD98401_CLPM_1 : uPD98401_CLPM_0));
--		EVENT("dsc (0x%lx)\n",(unsigned long) dsc,0);
--	}
--	else {
--printk("NONONONOO!!!!\n");
--		dsc = NULL;
--#if 0
--		u32 *put;
--		int i;
--
--		dsc = kmalloc(uPD98401_TXPD_SIZE * 2 +
--			uPD98401_TXBD_SIZE * ATM_SKB(skb)->iovcnt, GFP_ATOMIC);
--		if (!dsc) {
--			if (vcc->pop)
--				vcc->pop(vcc, skb);
--			else
--				dev_kfree_skb_irq(skb);
--			return -EAGAIN;
--		}
--		/* @@@ should check alignment */
--		put = dsc+8;
--		dsc[0] = uPD98401_TXPD_V | uPD98401_TXPD_DP |
--		    (vcc->aal == ATM_AAL5 ? uPD98401_TXPD_AAL5 : 0 |
--		    (ATM_SKB(skb)->atm_options & ATM_ATMOPT_CLP ?
--		    uPD98401_CLPM_1 : uPD98401_CLPM_0));
--		dsc[1] = 0;
--		dsc[2] = ATM_SKB(skb)->iovcnt * uPD98401_TXBD_SIZE;
--		dsc[3] = virt_to_bus(put);
--		for (i = 0; i < ATM_SKB(skb)->iovcnt; i++) {
--			*put++ = ((struct iovec *) skb->data)[i].iov_len;
--			*put++ = virt_to_bus(((struct iovec *)
--			    skb->data)[i].iov_base);
--		}
--		put[-2] |= uPD98401_TXBD_LAST;
--#endif
--	}
--	ZATM_PRV_DSC(skb) = dsc;
--	skb_queue_tail(&zatm_vcc->tx_queue,skb);
--	DPRINTK("QRP=0x%08lx\n",zpeekl(zatm_dev,zatm_vcc->tx_chan*VC_SIZE/4+
--	  uPD98401_TXVC_QRP));
--	zwait();
--	zout(uPD98401_TX_READY | (zatm_vcc->tx_chan <<
--	    uPD98401_CHAN_ADDR_SHIFT),CMR);
--	spin_unlock_irqrestore(&zatm_dev->lock, flags);
--	EVENT("done\n",0,0);
--	return 0;
--}
--
--
--static inline void dequeue_tx(struct atm_vcc *vcc)
--{
--	struct zatm_vcc *zatm_vcc;
--	struct sk_buff *skb;
--
--	EVENT("dequeue_tx\n",0,0);
--	zatm_vcc = ZATM_VCC(vcc);
--	skb = skb_dequeue(&zatm_vcc->tx_queue);
--	if (!skb) {
--		printk(KERN_CRIT DEV_LABEL "(itf %d): dequeue_tx but not "
--		    "txing\n",vcc->dev->number);
--		return;
--	}
--#if 0 /* @@@ would fail on CLP */
--if (*ZATM_PRV_DSC(skb) != (uPD98401_TXPD_V | uPD98401_TXPD_DP |
--  uPD98401_TXPD_SM | uPD98401_TXPD_AAL5)) printk("@#*$!!!!  (%08x)\n",
--  *ZATM_PRV_DSC(skb));
--#endif
--	*ZATM_PRV_DSC(skb) = 0; /* mark as invalid */
--	zatm_vcc->txing--;
--	if (vcc->pop) vcc->pop(vcc,skb);
--	else dev_kfree_skb_irq(skb);
--	while ((skb = skb_dequeue(&zatm_vcc->backlog)))
--		if (do_tx(skb) == RING_BUSY) {
--			skb_queue_head(&zatm_vcc->backlog,skb);
--			break;
--		}
--	atomic_inc(&vcc->stats->tx);
--	wake_up(&zatm_vcc->tx_wait);
--}
--
--
--static void poll_tx(struct atm_dev *dev,int mbx)
--{
--	struct zatm_dev *zatm_dev;
--	unsigned long pos;
--	u32 x;
--
--	EVENT("poll_tx\n",0,0);
--	zatm_dev = ZATM_DEV(dev);
--	pos = (zatm_dev->mbx_start[mbx] & ~0xffffUL) | zin(MTA(mbx));
--	while (x = zin(MWA(mbx)), (pos & 0xffff) != x) {
--		int chan;
--
--#if 1
--		u32 data,*addr;
--
--		EVENT("MBX: host 0x%lx, nic 0x%x\n",pos,x);
--		addr = (u32 *) pos;
--		data = *addr;
--		chan = (data & uPD98401_TXI_CONN) >> uPD98401_TXI_CONN_SHIFT;
--		EVENT("addr = 0x%lx, data = 0x%08x,",(unsigned long) addr,
--		    data);
--		EVENT("chan = %d\n",chan,0);
--#else
--NO !
--		chan = (zatm_dev->mbx_start[mbx][pos >> 2] & uPD98401_TXI_CONN)
--		>> uPD98401_TXI_CONN_SHIFT;
--#endif
--		if (chan < zatm_dev->chans && zatm_dev->tx_map[chan])
--			dequeue_tx(zatm_dev->tx_map[chan]);
--		else {
--			printk(KERN_CRIT DEV_LABEL "(itf %d): TX indication "
--			    "for non-existing channel %d\n",dev->number,chan);
--			event_dump();
--		}
--		if (((pos += 4) & 0xffff) == zatm_dev->mbx_end[mbx])
--			pos = zatm_dev->mbx_start[mbx];
--	}
--	zout(pos & 0xffff,MTA(mbx));
--}
--
--
--/*
-- * BUG BUG BUG: Doesn't handle "new-style" rate specification yet.
+-/* Define this if you want all the possible ports to be autoprobed.
+- * It is here but it probably is not a good idea to use this.
 - */
+-/* #define COSA_ISA_AUTOPROBE	1*/
 -
--static int alloc_shaper(struct atm_dev *dev,int *pcr,int min,int max,int ubr)
--{
--	struct zatm_dev *zatm_dev;
--	unsigned long flags;
--	unsigned long i,m,c;
--	int shaper;
+-/* Character device major number. 117 was allocated for us.
+- * The value of 0 means to allocate a first free one.
+- */
+-static DEFINE_MUTEX(cosa_chardev_mutex);
+-static int cosa_major = 117;
 -
--	DPRINTK("alloc_shaper (min = %d, max = %d)\n",min,max);
--	zatm_dev = ZATM_DEV(dev);
--	if (!zatm_dev->free_shapers) return -EAGAIN;
--	for (shaper = 0; !((zatm_dev->free_shapers >> shaper) & 1); shaper++);
--	zatm_dev->free_shapers &= ~1 << shaper;
--	if (ubr) {
--		c = 5;
--		i = m = 1;
--		zatm_dev->ubr_ref_cnt++;
--		zatm_dev->ubr = shaper;
--		*pcr = 0;
--	}
--	else {
--		if (min) {
--			if (min <= 255) {
--				i = min;
--				m = ATM_OC3_PCR;
--			}
--			else {
--				i = 255;
--				m = ATM_OC3_PCR*255/min;
--			}
--		}
--		else {
--			if (max > zatm_dev->tx_bw) max = zatm_dev->tx_bw;
--			if (max <= 255) {
--				i = max;
--				m = ATM_OC3_PCR;
--			}
--			else {
--				i = 255;
--				m = DIV_ROUND_UP(ATM_OC3_PCR*255, max);
--			}
--		}
--		if (i > m) {
--			printk(KERN_CRIT DEV_LABEL "shaper algorithm botched "
--			    "[%d,%d] -> i=%ld,m=%ld\n",min,max,i,m);
--			m = i;
--		}
--		*pcr = i*ATM_OC3_PCR/m;
--		c = 20; /* @@@ should use max_cdv ! */
--		if ((min && *pcr < min) || (max && *pcr > max)) return -EINVAL;
--		if (zatm_dev->tx_bw < *pcr) return -EAGAIN;
--		zatm_dev->tx_bw -= *pcr;
--	}
--	spin_lock_irqsave(&zatm_dev->lock, flags);
--	DPRINTK("i = %d, m = %d, PCR = %d\n",i,m,*pcr);
--	zpokel(zatm_dev,(i << uPD98401_IM_I_SHIFT) | m,uPD98401_IM(shaper));
--	zpokel(zatm_dev,c << uPD98401_PC_C_SHIFT,uPD98401_PC(shaper));
--	zpokel(zatm_dev,0,uPD98401_X(shaper));
--	zpokel(zatm_dev,0,uPD98401_Y(shaper));
--	zpokel(zatm_dev,uPD98401_PS_E,uPD98401_PS(shaper));
--	spin_unlock_irqrestore(&zatm_dev->lock, flags);
--	return shaper;
--}
+-/* Encoding of the minor numbers:
+- * The lowest CARD_MINOR_BITS bits means the channel on the single card,
+- * the highest bits means the card number.
+- */
+-#define CARD_MINOR_BITS	4	/* How many bits in minor number are reserved
+-				 * for the single card
+-				 */
+-/* The following depends on CARD_MINOR_BITS. Unfortunately, the "MODULE_STRING"
+- * macro doesn't like anything other than the raw number as an argument :-(
+- */
+-#define MAX_CARDS	16
+-/* #define MAX_CARDS	(1 << (8-CARD_MINOR_BITS)) */
 -
+-#define DRIVER_RX_READY		0x0001
+-#define DRIVER_TX_READY		0x0002
+-#define DRIVER_TXMAP_SHIFT	2
+-#define DRIVER_TXMAP_MASK	0x0c	/* FIXME: 0xfc for 8-channel version */
 -
--static void dealloc_shaper(struct atm_dev *dev,int shaper)
--{
--	struct zatm_dev *zatm_dev;
--	unsigned long flags;
+-/* for cosa->rxtx - indicates whether either transmit or receive is
+- * in progress. These values are mean number of the bit.
+- */
+-#define TXBIT 0
+-#define RXBIT 1
+-#define IRQBIT 2
 -
--	zatm_dev = ZATM_DEV(dev);
--	if (shaper == zatm_dev->ubr) {
--		if (--zatm_dev->ubr_ref_cnt) return;
--		zatm_dev->ubr = -1;
--	}
--	spin_lock_irqsave(&zatm_dev->lock, flags);
--	zpokel(zatm_dev,zpeekl(zatm_dev,uPD98401_PS(shaper)) & ~uPD98401_PS_E,
--	    uPD98401_PS(shaper));
--	spin_unlock_irqrestore(&zatm_dev->lock, flags);
--	zatm_dev->free_shapers |= 1 << shaper;
--}
+-#define COSA_MTU 2000	/* FIXME: I don't know this exactly */
 -
+-#undef DEBUG_DATA //1	/* Dump the data read or written to the channel */
+-#undef DEBUG_IRQS //1	/* Print the message when the IRQ is received */
+-#undef DEBUG_IO   //1	/* Dump the I/O traffic */
 -
--static void close_tx(struct atm_vcc *vcc)
--{
--	struct zatm_dev *zatm_dev;
--	struct zatm_vcc *zatm_vcc;
--	unsigned long flags;
--	int chan;
+-#define TX_TIMEOUT	(5 * HZ)
 -
--	zatm_vcc = ZATM_VCC(vcc);
--	zatm_dev = ZATM_DEV(vcc->dev);
--	chan = zatm_vcc->tx_chan;
--	if (!chan) return;
--	DPRINTK("close_tx\n");
--	if (skb_peek(&zatm_vcc->backlog)) {
--		printk("waiting for backlog to drain ...\n");
--		event_dump();
--		wait_event(zatm_vcc->tx_wait, !skb_peek(&zatm_vcc->backlog));
--	}
--	if (skb_peek(&zatm_vcc->tx_queue)) {
--		printk("waiting for TX queue to drain ...\n");
--		event_dump();
--		wait_event(zatm_vcc->tx_wait, !skb_peek(&zatm_vcc->tx_queue));
--	}
--	spin_lock_irqsave(&zatm_dev->lock, flags);
--#if 0
--	zwait();
--	zout(uPD98401_DEACT_CHAN | (chan << uPD98401_CHAN_ADDR_SHIFT),CMR);
+-/* Maybe the following should be allocated dynamically */
+-static struct cosa_data cosa_cards[MAX_CARDS];
+-static int nr_cards;
+-
+-#ifdef COSA_ISA_AUTOPROBE
+-static int io[MAX_CARDS + 1]  = {0x220, 0x228, 0x210, 0x218, 0,};
+-/* NOTE: DMA is not autoprobed!!! */
+-static int dma[MAX_CARDS + 1] = {1, 7, 1, 7, 1, 7, 1, 7, 0,};
+-#else
+-static int io[MAX_CARDS + 1];
+-static int dma[MAX_CARDS + 1];
 -#endif
--	zwait();
--	zout(uPD98401_CLOSE_CHAN | (chan << uPD98401_CHAN_ADDR_SHIFT),CMR);
--	zwait();
--	if (!(zin(CMR) & uPD98401_CHAN_ADDR))
--		printk(KERN_CRIT DEV_LABEL "(itf %d): can't close TX channel "
--		    "%d\n",vcc->dev->number,chan);
--	spin_unlock_irqrestore(&zatm_dev->lock, flags);
--	zatm_vcc->tx_chan = 0;
--	zatm_dev->tx_map[chan] = NULL;
--	if (zatm_vcc->shaper != zatm_dev->ubr) {
--		zatm_dev->tx_bw += vcc->qos.txtp.min_pcr;
--		dealloc_shaper(vcc->dev,zatm_vcc->shaper);
--	}
--	kfree(zatm_vcc->ring);
+-/* IRQ can be safely autoprobed */
+-static int irq[MAX_CARDS + 1] = {-1, -1, -1, -1, -1, -1, 0,};
+-
+-/* for class stuff*/
+-static struct class *cosa_class;
+-
+-#ifdef MODULE
+-module_param_hw_array(io, int, ioport, NULL, 0);
+-MODULE_PARM_DESC(io, "The I/O bases of the COSA or SRP cards");
+-module_param_hw_array(irq, int, irq, NULL, 0);
+-MODULE_PARM_DESC(irq, "The IRQ lines of the COSA or SRP cards");
+-module_param_hw_array(dma, int, dma, NULL, 0);
+-MODULE_PARM_DESC(dma, "The DMA channels of the COSA or SRP cards");
+-
+-MODULE_AUTHOR("Jan \"Yenya\" Kasprzak, <kas@fi.muni.cz>");
+-MODULE_DESCRIPTION("Modular driver for the COSA or SRP synchronous card");
+-MODULE_LICENSE("GPL");
+-#endif
+-
+-/* I use this mainly for testing purposes */
+-#ifdef COSA_SLOW_IO
+-#define cosa_outb outb_p
+-#define cosa_outw outw_p
+-#define cosa_inb  inb_p
+-#define cosa_inw  inw_p
+-#else
+-#define cosa_outb outb
+-#define cosa_outw outw
+-#define cosa_inb  inb
+-#define cosa_inw  inw
+-#endif
+-
+-#define is_8bit(cosa)		(!((cosa)->datareg & 0x08))
+-
+-#define cosa_getstatus(cosa)	(cosa_inb((cosa)->statusreg))
+-#define cosa_putstatus(cosa, stat)	(cosa_outb(stat, (cosa)->statusreg))
+-#define cosa_getdata16(cosa)	(cosa_inw((cosa)->datareg))
+-#define cosa_getdata8(cosa)	(cosa_inb((cosa)->datareg))
+-#define cosa_putdata16(cosa, dt)	(cosa_outw(dt, (cosa)->datareg))
+-#define cosa_putdata8(cosa, dt)	(cosa_outb(dt, (cosa)->datareg))
+-
+-/* Initialization stuff */
+-static int cosa_probe(int ioaddr, int irq, int dma);
+-
+-/* HW interface */
+-static void cosa_enable_rx(struct channel_data *chan);
+-static void cosa_disable_rx(struct channel_data *chan);
+-static int cosa_start_tx(struct channel_data *channel, char *buf, int size);
+-static void cosa_kick(struct cosa_data *cosa);
+-static int cosa_dma_able(struct channel_data *chan, char *buf, int data);
+-
+-/* Network device stuff */
+-static int cosa_net_attach(struct net_device *dev, unsigned short encoding,
+-			   unsigned short parity);
+-static int cosa_net_open(struct net_device *d);
+-static int cosa_net_close(struct net_device *d);
+-static void cosa_net_timeout(struct net_device *d, unsigned int txqueue);
+-static netdev_tx_t cosa_net_tx(struct sk_buff *skb, struct net_device *d);
+-static char *cosa_net_setup_rx(struct channel_data *channel, int size);
+-static int cosa_net_rx_done(struct channel_data *channel);
+-static int cosa_net_tx_done(struct channel_data *channel, int size);
+-
+-/* Character device */
+-static char *chrdev_setup_rx(struct channel_data *channel, int size);
+-static int chrdev_rx_done(struct channel_data *channel);
+-static int chrdev_tx_done(struct channel_data *channel, int size);
+-static ssize_t cosa_read(struct file *file,
+-			 char __user *buf, size_t count, loff_t *ppos);
+-static ssize_t cosa_write(struct file *file,
+-			  const char __user *buf, size_t count, loff_t *ppos);
+-static unsigned int cosa_poll(struct file *file, poll_table *poll);
+-static int cosa_open(struct inode *inode, struct file *file);
+-static int cosa_release(struct inode *inode, struct file *file);
+-static long cosa_chardev_ioctl(struct file *file, unsigned int cmd,
+-			       unsigned long arg);
+-#ifdef COSA_FASYNC_WORKING
+-static int cosa_fasync(struct inode *inode, struct file *file, int on);
+-#endif
+-
+-static const struct file_operations cosa_fops = {
+-	.owner		= THIS_MODULE,
+-	.llseek		= no_llseek,
+-	.read		= cosa_read,
+-	.write		= cosa_write,
+-	.poll		= cosa_poll,
+-	.unlocked_ioctl	= cosa_chardev_ioctl,
+-	.open		= cosa_open,
+-	.release	= cosa_release,
+-#ifdef COSA_FASYNC_WORKING
+-	.fasync		= cosa_fasync,
+-#endif
+-};
+-
+-/* Ioctls */
+-static int cosa_start(struct cosa_data *cosa, int address);
+-static int cosa_reset(struct cosa_data *cosa);
+-static int cosa_download(struct cosa_data *cosa, void __user *a);
+-static int cosa_readmem(struct cosa_data *cosa, void __user *a);
+-
+-/* COSA/SRP ROM monitor */
+-static int download(struct cosa_data *cosa, const char __user *data, int addr, int len);
+-static int startmicrocode(struct cosa_data *cosa, int address);
+-static int readmem(struct cosa_data *cosa, char __user *data, int addr, int len);
+-static int cosa_reset_and_read_id(struct cosa_data *cosa, char *id);
+-
+-/* Auxiliary functions */
+-static int get_wait_data(struct cosa_data *cosa);
+-static int put_wait_data(struct cosa_data *cosa, int data);
+-static int puthexnumber(struct cosa_data *cosa, int number);
+-static void put_driver_status(struct cosa_data *cosa);
+-static void put_driver_status_nolock(struct cosa_data *cosa);
+-
+-/* Interrupt handling */
+-static irqreturn_t cosa_interrupt(int irq, void *cosa);
+-
+-/* I/O ops debugging */
+-#ifdef DEBUG_IO
+-static void debug_data_in(struct cosa_data *cosa, int data);
+-static void debug_data_out(struct cosa_data *cosa, int data);
+-static void debug_data_cmd(struct cosa_data *cosa, int data);
+-static void debug_status_in(struct cosa_data *cosa, int status);
+-static void debug_status_out(struct cosa_data *cosa, int status);
+-#endif
+-
+-static inline struct channel_data *dev_to_chan(struct net_device *dev)
+-{
+-	return (struct channel_data *)dev_to_hdlc(dev)->priv;
 -}
 -
+-/* ---------- Initialization stuff ---------- */
 -
--static int open_tx_first(struct atm_vcc *vcc)
+-static int __init cosa_init(void)
 -{
--	struct zatm_dev *zatm_dev;
--	struct zatm_vcc *zatm_vcc;
+-	int i, err = 0;
+-
+-	if (cosa_major > 0) {
+-		if (register_chrdev(cosa_major, "cosa", &cosa_fops)) {
+-			pr_warn("unable to get major %d\n", cosa_major);
+-			err = -EIO;
+-			goto out;
+-		}
+-	} else {
+-		cosa_major = register_chrdev(0, "cosa", &cosa_fops);
+-		if (!cosa_major) {
+-			pr_warn("unable to register chardev\n");
+-			err = -EIO;
+-			goto out;
+-		}
+-	}
+-	for (i = 0; i < MAX_CARDS; i++)
+-		cosa_cards[i].num = -1;
+-	for (i = 0; io[i] != 0 && i < MAX_CARDS; i++)
+-		cosa_probe(io[i], irq[i], dma[i]);
+-	if (!nr_cards) {
+-		pr_warn("no devices found\n");
+-		unregister_chrdev(cosa_major, "cosa");
+-		err = -ENODEV;
+-		goto out;
+-	}
+-	cosa_class = class_create(THIS_MODULE, "cosa");
+-	if (IS_ERR(cosa_class)) {
+-		err = PTR_ERR(cosa_class);
+-		goto out_chrdev;
+-	}
+-	for (i = 0; i < nr_cards; i++)
+-		device_create(cosa_class, NULL, MKDEV(cosa_major, i), NULL,
+-			      "cosa%d", i);
+-	err = 0;
+-	goto out;
+-
+-out_chrdev:
+-	unregister_chrdev(cosa_major, "cosa");
+-out:
+-	return err;
+-}
+-module_init(cosa_init);
+-
+-static void __exit cosa_exit(void)
+-{
+-	struct cosa_data *cosa;
+-	int i;
+-
+-	for (i = 0; i < nr_cards; i++)
+-		device_destroy(cosa_class, MKDEV(cosa_major, i));
+-	class_destroy(cosa_class);
+-
+-	for (cosa = cosa_cards; nr_cards--; cosa++) {
+-		/* Clean up the per-channel data */
+-		for (i = 0; i < cosa->nchannels; i++) {
+-			/* Chardev driver has no alloc'd per-channel data */
+-			unregister_hdlc_device(cosa->chan[i].netdev);
+-			free_netdev(cosa->chan[i].netdev);
+-		}
+-		/* Clean up the per-card data */
+-		kfree(cosa->chan);
+-		kfree(cosa->bouncebuf);
+-		free_irq(cosa->irq, cosa);
+-		free_dma(cosa->dma);
+-		release_region(cosa->datareg, is_8bit(cosa) ? 2 : 4);
+-	}
+-	unregister_chrdev(cosa_major, "cosa");
+-}
+-module_exit(cosa_exit);
+-
+-static const struct net_device_ops cosa_ops = {
+-	.ndo_open       = cosa_net_open,
+-	.ndo_stop       = cosa_net_close,
+-	.ndo_start_xmit = hdlc_start_xmit,
+-	.ndo_siocwandev = hdlc_ioctl,
+-	.ndo_tx_timeout = cosa_net_timeout,
+-};
+-
+-static int cosa_probe(int base, int irq, int dma)
+-{
+-	struct cosa_data *cosa = cosa_cards + nr_cards;
+-	int i, err = 0;
+-
+-	memset(cosa, 0, sizeof(struct cosa_data));
+-
+-	/* Checking validity of parameters: */
+-	/* IRQ should be 2-7 or 10-15; negative IRQ means autoprobe */
+-	if ((irq >= 0  && irq < 2) || irq > 15 || (irq < 10 && irq > 7)) {
+-		pr_info("invalid IRQ %d\n", irq);
+-		return -1;
+-	}
+-	/* I/O address should be between 0x100 and 0x3ff and should be
+-	 * multiple of 8.
+-	 */
+-	if (base < 0x100 || base > 0x3ff || base & 0x7) {
+-		pr_info("invalid I/O address 0x%x\n", base);
+-		return -1;
+-	}
+-	/* DMA should be 0,1 or 3-7 */
+-	if (dma < 0 || dma == 4 || dma > 7) {
+-		pr_info("invalid DMA %d\n", dma);
+-		return -1;
+-	}
+-	/* and finally, on 16-bit COSA DMA should be 4-7 and
+-	 * I/O base should not be multiple of 0x10
+-	 */
+-	if (((base & 0x8) && dma < 4) || (!(base & 0x8) && dma > 3)) {
+-		pr_info("8/16 bit base and DMA mismatch (base=0x%x, dma=%d)\n",
+-			base, dma);
+-		return -1;
+-	}
+-
+-	cosa->dma = dma;
+-	cosa->datareg = base;
+-	cosa->statusreg = is_8bit(cosa) ? base + 1 : base + 2;
+-	spin_lock_init(&cosa->lock);
+-
+-	if (!request_region(base, is_8bit(cosa) ? 2 : 4, "cosa"))
+-		return -1;
+-
+-	if (cosa_reset_and_read_id(cosa, cosa->id_string) < 0) {
+-		printk(KERN_DEBUG "probe at 0x%x failed.\n", base);
+-		err = -1;
+-		goto err_out;
+-	}
+-
+-	/* Test the validity of identification string */
+-	if (!strncmp(cosa->id_string, "SRP", 3)) {
+-		cosa->type = "srp";
+-	} else if (!strncmp(cosa->id_string, "COSA", 4)) {
+-		cosa->type = is_8bit(cosa) ? "cosa8" : "cosa16";
+-	} else {
+-/* Print a warning only if we are not autoprobing */
+-#ifndef COSA_ISA_AUTOPROBE
+-		pr_info("valid signature not found at 0x%x\n", base);
+-#endif
+-		err = -1;
+-		goto err_out;
+-	}
+-	/* Update the name of the region now we know the type of card */
+-	release_region(base, is_8bit(cosa) ? 2 : 4);
+-	if (!request_region(base, is_8bit(cosa) ? 2 : 4, cosa->type)) {
+-		printk(KERN_DEBUG "changing name at 0x%x failed.\n", base);
+-		return -1;
+-	}
+-
+-	/* Now do IRQ autoprobe */
+-	if (irq < 0) {
+-		unsigned long irqs;
+-/*		pr_info("IRQ autoprobe\n"); */
+-		irqs = probe_irq_on();
+-		/* Enable interrupt on tx buffer empty (it sure is)
+-		 * really sure ?
+-		 * FIXME: When this code is not used as module, we should
+-		 * probably call udelay() instead of the interruptible sleep.
+-		 */
+-		set_current_state(TASK_INTERRUPTIBLE);
+-		cosa_putstatus(cosa, SR_TX_INT_ENA);
+-		schedule_timeout(msecs_to_jiffies(300));
+-		irq = probe_irq_off(irqs);
+-		/* Disable all IRQs from the card */
+-		cosa_putstatus(cosa, 0);
+-		/* Empty the received data register */
+-		cosa_getdata8(cosa);
+-
+-		if (irq < 0) {
+-			pr_info("multiple interrupts obtained (%d, board at 0x%x)\n",
+-				irq, cosa->datareg);
+-			err = -1;
+-			goto err_out;
+-		}
+-		if (irq == 0) {
+-			pr_info("no interrupt obtained (board at 0x%x)\n",
+-				cosa->datareg);
+-		/*	return -1; */
+-		}
+-	}
+-
+-	cosa->irq = irq;
+-	cosa->num = nr_cards;
+-	cosa->usage = 0;
+-	cosa->nchannels = 2;	/* FIXME: how to determine this? */
+-
+-	if (request_irq(cosa->irq, cosa_interrupt, 0, cosa->type, cosa)) {
+-		err = -1;
+-		goto err_out;
+-	}
+-	if (request_dma(cosa->dma, cosa->type)) {
+-		err = -1;
+-		goto err_out1;
+-	}
+-
+-	cosa->bouncebuf = kmalloc(COSA_MTU, GFP_KERNEL | GFP_DMA);
+-	if (!cosa->bouncebuf) {
+-		err = -ENOMEM;
+-		goto err_out2;
+-	}
+-	sprintf(cosa->name, "cosa%d", cosa->num);
+-
+-	/* Initialize the per-channel data */
+-	cosa->chan = kcalloc(cosa->nchannels, sizeof(struct channel_data), GFP_KERNEL);
+-	if (!cosa->chan) {
+-		err = -ENOMEM;
+-		goto err_out3;
+-	}
+-
+-	for (i = 0; i < cosa->nchannels; i++) {
+-		struct channel_data *chan = &cosa->chan[i];
+-
+-		chan->cosa = cosa;
+-		chan->num = i;
+-		sprintf(chan->name, "cosa%dc%d", chan->cosa->num, i);
+-
+-		/* Initialize the chardev data structures */
+-		mutex_init(&chan->rlock);
+-		sema_init(&chan->wsem, 1);
+-
+-		/* Register the network interface */
+-		chan->netdev = alloc_hdlcdev(chan);
+-		if (!chan->netdev) {
+-			pr_warn("%s: alloc_hdlcdev failed\n", chan->name);
+-			err = -ENOMEM;
+-			goto err_hdlcdev;
+-		}
+-		dev_to_hdlc(chan->netdev)->attach = cosa_net_attach;
+-		dev_to_hdlc(chan->netdev)->xmit = cosa_net_tx;
+-		chan->netdev->netdev_ops = &cosa_ops;
+-		chan->netdev->watchdog_timeo = TX_TIMEOUT;
+-		chan->netdev->base_addr = chan->cosa->datareg;
+-		chan->netdev->irq = chan->cosa->irq;
+-		chan->netdev->dma = chan->cosa->dma;
+-		err = register_hdlc_device(chan->netdev);
+-		if (err) {
+-			netdev_warn(chan->netdev,
+-				    "register_hdlc_device() failed\n");
+-			free_netdev(chan->netdev);
+-			goto err_hdlcdev;
+-		}
+-	}
+-
+-	pr_info("cosa%d: %s (%s at 0x%x irq %d dma %d), %d channels\n",
+-		cosa->num, cosa->id_string, cosa->type,
+-		cosa->datareg, cosa->irq, cosa->dma, cosa->nchannels);
+-
+-	return nr_cards++;
+-
+-err_hdlcdev:
+-	while (i-- > 0) {
+-		unregister_hdlc_device(cosa->chan[i].netdev);
+-		free_netdev(cosa->chan[i].netdev);
+-	}
+-	kfree(cosa->chan);
+-err_out3:
+-	kfree(cosa->bouncebuf);
+-err_out2:
+-	free_dma(cosa->dma);
+-err_out1:
+-	free_irq(cosa->irq, cosa);
+-err_out:
+-	release_region(cosa->datareg, is_8bit(cosa) ? 2 : 4);
+-	pr_notice("cosa%d: allocating resources failed\n", cosa->num);
+-	return err;
+-}
+-
+-/*---------- network device ---------- */
+-
+-static int cosa_net_attach(struct net_device *dev, unsigned short encoding,
+-			   unsigned short parity)
+-{
+-	if (encoding == ENCODING_NRZ && parity == PARITY_CRC16_PR1_CCITT)
+-		return 0;
+-	return -EINVAL;
+-}
+-
+-static int cosa_net_open(struct net_device *dev)
+-{
+-	struct channel_data *chan = dev_to_chan(dev);
+-	int err;
 -	unsigned long flags;
--	u32 *loop;
--	unsigned short chan;
--	int unlimited;
 -
--	DPRINTK("open_tx_first\n");
--	zatm_dev = ZATM_DEV(vcc->dev);
--	zatm_vcc = ZATM_VCC(vcc);
--	zatm_vcc->tx_chan = 0;
--	if (vcc->qos.txtp.traffic_class == ATM_NONE) return 0;
--	spin_lock_irqsave(&zatm_dev->lock, flags);
--	zwait();
--	zout(uPD98401_OPEN_CHAN,CMR);
--	zwait();
--	DPRINTK("0x%x 0x%x\n",zin(CMR),zin(CER));
--	chan = (zin(CMR) & uPD98401_CHAN_ADDR) >> uPD98401_CHAN_ADDR_SHIFT;
--	spin_unlock_irqrestore(&zatm_dev->lock, flags);
--	DPRINTK("chan is %d\n",chan);
--	if (!chan) return -EAGAIN;
--	unlimited = vcc->qos.txtp.traffic_class == ATM_UBR &&
--	    (!vcc->qos.txtp.max_pcr || vcc->qos.txtp.max_pcr == ATM_MAX_PCR ||
--	    vcc->qos.txtp.max_pcr >= ATM_OC3_PCR);
--	if (unlimited && zatm_dev->ubr != -1) zatm_vcc->shaper = zatm_dev->ubr;
--	else {
--		int pcr;
--
--		if (unlimited) vcc->qos.txtp.max_sdu = ATM_MAX_AAL5_PDU;
--		if ((zatm_vcc->shaper = alloc_shaper(vcc->dev,&pcr,
--		    vcc->qos.txtp.min_pcr,vcc->qos.txtp.max_pcr,unlimited))
--		    < 0) {
--			close_tx(vcc);
--			return zatm_vcc->shaper;
--		}
--		if (pcr > ATM_OC3_PCR) pcr = ATM_OC3_PCR;
--		vcc->qos.txtp.min_pcr = vcc->qos.txtp.max_pcr = pcr;
+-	if (!(chan->cosa->firmware_status & COSA_FW_START)) {
+-		pr_notice("%s: start the firmware first (status %d)\n",
+-			  chan->cosa->name, chan->cosa->firmware_status);
+-		return -EPERM;
 -	}
--	zatm_vcc->tx_chan = chan;
--	skb_queue_head_init(&zatm_vcc->tx_queue);
--	init_waitqueue_head(&zatm_vcc->tx_wait);
--	/* initialize ring */
--	zatm_vcc->ring = kzalloc(RING_SIZE,GFP_KERNEL);
--	if (!zatm_vcc->ring) return -ENOMEM;
--	loop = zatm_vcc->ring+RING_ENTRIES*RING_WORDS;
--	loop[0] = uPD98401_TXPD_V;
--	loop[1] = loop[2] = 0;
--	loop[3] = virt_to_bus(zatm_vcc->ring);
--	zatm_vcc->ring_curr = 0;
--	zatm_vcc->txing = 0;
--	skb_queue_head_init(&zatm_vcc->backlog);
--	zpokel(zatm_dev,virt_to_bus(zatm_vcc->ring),
--	    chan*VC_SIZE/4+uPD98401_TXVC_QRP);
+-	spin_lock_irqsave(&chan->cosa->lock, flags);
+-	if (chan->usage != 0) {
+-		pr_warn("%s: cosa_net_open called with usage count %d\n",
+-			chan->name, chan->usage);
+-		spin_unlock_irqrestore(&chan->cosa->lock, flags);
+-		return -EBUSY;
+-	}
+-	chan->setup_rx = cosa_net_setup_rx;
+-	chan->tx_done = cosa_net_tx_done;
+-	chan->rx_done = cosa_net_rx_done;
+-	chan->usage = -1;
+-	chan->cosa->usage++;
+-	spin_unlock_irqrestore(&chan->cosa->lock, flags);
+-
+-	err = hdlc_open(dev);
+-	if (err) {
+-		spin_lock_irqsave(&chan->cosa->lock, flags);
+-		chan->usage = 0;
+-		chan->cosa->usage--;
+-		spin_unlock_irqrestore(&chan->cosa->lock, flags);
+-		return err;
+-	}
+-
+-	netif_start_queue(dev);
+-	cosa_enable_rx(chan);
 -	return 0;
 -}
 -
--
--static int open_tx_second(struct atm_vcc *vcc)
+-static netdev_tx_t cosa_net_tx(struct sk_buff *skb,
+-			       struct net_device *dev)
 -{
--	struct zatm_dev *zatm_dev;
--	struct zatm_vcc *zatm_vcc;
+-	struct channel_data *chan = dev_to_chan(dev);
+-
+-	netif_stop_queue(dev);
+-
+-	chan->tx_skb = skb;
+-	cosa_start_tx(chan, skb->data, skb->len);
+-	return NETDEV_TX_OK;
+-}
+-
+-static void cosa_net_timeout(struct net_device *dev, unsigned int txqueue)
+-{
+-	struct channel_data *chan = dev_to_chan(dev);
+-
+-	if (test_bit(RXBIT, &chan->cosa->rxtx)) {
+-		chan->netdev->stats.rx_errors++;
+-		chan->netdev->stats.rx_missed_errors++;
+-	} else {
+-		chan->netdev->stats.tx_errors++;
+-		chan->netdev->stats.tx_aborted_errors++;
+-	}
+-	cosa_kick(chan->cosa);
+-	if (chan->tx_skb) {
+-		dev_kfree_skb(chan->tx_skb);
+-		chan->tx_skb = NULL;
+-	}
+-	netif_wake_queue(dev);
+-}
+-
+-static int cosa_net_close(struct net_device *dev)
+-{
+-	struct channel_data *chan = dev_to_chan(dev);
 -	unsigned long flags;
 -
--	DPRINTK("open_tx_second\n");
--	zatm_dev = ZATM_DEV(vcc->dev);
--	zatm_vcc = ZATM_VCC(vcc);
--	if (!zatm_vcc->tx_chan) return 0;
--	/* set up VC descriptor */
--	spin_lock_irqsave(&zatm_dev->lock, flags);
--	zpokel(zatm_dev,0,zatm_vcc->tx_chan*VC_SIZE/4);
--	zpokel(zatm_dev,uPD98401_TXVC_L | (zatm_vcc->shaper <<
--	    uPD98401_TXVC_SHP_SHIFT) | (vcc->vpi << uPD98401_TXVC_VPI_SHIFT) |
--	    vcc->vci,zatm_vcc->tx_chan*VC_SIZE/4+1);
--	zpokel(zatm_dev,0,zatm_vcc->tx_chan*VC_SIZE/4+2);
--	spin_unlock_irqrestore(&zatm_dev->lock, flags);
--	zatm_dev->tx_map[zatm_vcc->tx_chan] = vcc;
+-	netif_stop_queue(dev);
+-	hdlc_close(dev);
+-	cosa_disable_rx(chan);
+-	spin_lock_irqsave(&chan->cosa->lock, flags);
+-	if (chan->rx_skb) {
+-		kfree_skb(chan->rx_skb);
+-		chan->rx_skb = NULL;
+-	}
+-	if (chan->tx_skb) {
+-		kfree_skb(chan->tx_skb);
+-		chan->tx_skb = NULL;
+-	}
+-	chan->usage = 0;
+-	chan->cosa->usage--;
+-	spin_unlock_irqrestore(&chan->cosa->lock, flags);
 -	return 0;
 -}
 -
--
--static int start_tx(struct atm_dev *dev)
+-static char *cosa_net_setup_rx(struct channel_data *chan, int size)
 -{
--	struct zatm_dev *zatm_dev;
--	int i;
+-	/* We can safely fall back to non-dma-able memory, because we have
+-	 * the cosa->bouncebuf pre-allocated.
+-	 */
+-	kfree_skb(chan->rx_skb);
+-	chan->rx_skb = dev_alloc_skb(size);
+-	if (!chan->rx_skb) {
+-		pr_notice("%s: Memory squeeze, dropping packet\n", chan->name);
+-		chan->netdev->stats.rx_dropped++;
+-		return NULL;
+-	}
+-	netif_trans_update(chan->netdev);
+-	return skb_put(chan->rx_skb, size);
+-}
 -
--	DPRINTK("start_tx\n");
--	zatm_dev = ZATM_DEV(dev);
--	zatm_dev->tx_map = kmalloc_array(zatm_dev->chans,
--					 sizeof(*zatm_dev->tx_map),
--					 GFP_KERNEL);
--	if (!zatm_dev->tx_map) return -ENOMEM;
--	zatm_dev->tx_bw = ATM_OC3_PCR;
--	zatm_dev->free_shapers = (1 << NR_SHAPERS)-1;
--	zatm_dev->ubr = -1;
--	zatm_dev->ubr_ref_cnt = 0;
--	/* initialize shapers */
--	for (i = 0; i < NR_SHAPERS; i++) zpokel(zatm_dev,0,uPD98401_PS(i));
+-static int cosa_net_rx_done(struct channel_data *chan)
+-{
+-	if (!chan->rx_skb) {
+-		pr_warn("%s: rx_done with empty skb!\n", chan->name);
+-		chan->netdev->stats.rx_errors++;
+-		chan->netdev->stats.rx_frame_errors++;
+-		return 0;
+-	}
+-	chan->rx_skb->protocol = hdlc_type_trans(chan->rx_skb, chan->netdev);
+-	chan->rx_skb->dev = chan->netdev;
+-	skb_reset_mac_header(chan->rx_skb);
+-	chan->netdev->stats.rx_packets++;
+-	chan->netdev->stats.rx_bytes += chan->cosa->rxsize;
+-	netif_rx(chan->rx_skb);
+-	chan->rx_skb = NULL;
 -	return 0;
 -}
 -
--
--/*------------------------------- interrupts --------------------------------*/
--
--
--static irqreturn_t zatm_int(int irq,void *dev_id)
+-/* ARGSUSED */
+-static int cosa_net_tx_done(struct channel_data *chan, int size)
 -{
--	struct atm_dev *dev;
--	struct zatm_dev *zatm_dev;
--	u32 reason;
--	int handled = 0;
--
--	dev = dev_id;
--	zatm_dev = ZATM_DEV(dev);
--	while ((reason = zin(GSR))) {
--		handled = 1;
--		EVENT("reason 0x%x\n",reason,0);
--		if (reason & uPD98401_INT_PI) {
--			EVENT("PHY int\n",0,0);
--			dev->phy->interrupt(dev);
--		}
--		if (reason & uPD98401_INT_RQA) {
--			unsigned long pools;
--			int i;
--
--			pools = zin(RQA);
--			EVENT("RQA (0x%08x)\n",pools,0);
--			for (i = 0; pools; i++) {
--				if (pools & 1) {
--					refill_pool(dev,i);
--					zatm_dev->pool_info[i].rqa_count++;
--				}
--				pools >>= 1;
--			}
--		}
--		if (reason & uPD98401_INT_RQU) {
--			unsigned long pools;
--			int i;
--			pools = zin(RQU);
--			printk(KERN_WARNING DEV_LABEL "(itf %d): RQU 0x%08lx\n",
--			    dev->number,pools);
--			event_dump();
--			for (i = 0; pools; i++) {
--				if (pools & 1) {
--					refill_pool(dev,i);
--					zatm_dev->pool_info[i].rqu_count++;
--				}
--				pools >>= 1;
--			}
--		}
--		/* don't handle RD */
--		if (reason & uPD98401_INT_SPE)
--			printk(KERN_ALERT DEV_LABEL "(itf %d): system parity "
--			    "error at 0x%08x\n",dev->number,zin(ADDR));
--		if (reason & uPD98401_INT_CPE)
--			printk(KERN_ALERT DEV_LABEL "(itf %d): control memory "
--			    "parity error at 0x%08x\n",dev->number,zin(ADDR));
--		if (reason & uPD98401_INT_SBE) {
--			printk(KERN_ALERT DEV_LABEL "(itf %d): system bus "
--			    "error at 0x%08x\n",dev->number,zin(ADDR));
--			event_dump();
--		}
--		/* don't handle IND */
--		if (reason & uPD98401_INT_MF) {
--			printk(KERN_CRIT DEV_LABEL "(itf %d): mailbox full "
--			    "(0x%x)\n",dev->number,(reason & uPD98401_INT_MF)
--			    >> uPD98401_INT_MF_SHIFT);
--			event_dump();
--			    /* @@@ should try to recover */
--		}
--		if (reason & uPD98401_INT_MM) {
--			if (reason & 1) poll_rx(dev,0);
--			if (reason & 2) poll_rx(dev,1);
--			if (reason & 4) poll_tx(dev,2);
--			if (reason & 8) poll_tx(dev,3);
--		}
--		/* @@@ handle RCRn */
+-	if (!chan->tx_skb) {
+-		pr_warn("%s: tx_done with empty skb!\n", chan->name);
+-		chan->netdev->stats.tx_errors++;
+-		chan->netdev->stats.tx_aborted_errors++;
+-		return 1;
 -	}
--	return IRQ_RETVAL(handled);
+-	dev_consume_skb_irq(chan->tx_skb);
+-	chan->tx_skb = NULL;
+-	chan->netdev->stats.tx_packets++;
+-	chan->netdev->stats.tx_bytes += size;
+-	netif_wake_queue(chan->netdev);
+-	return 1;
 -}
 -
+-/*---------- Character device ---------- */
 -
--/*----------------------------- (E)EPROM access -----------------------------*/
--
--
--static void eprom_set(struct zatm_dev *zatm_dev, unsigned long value,
--		      unsigned short cmd)
+-static ssize_t cosa_read(struct file *file,
+-			 char __user *buf, size_t count, loff_t *ppos)
 -{
--	int error;
+-	DECLARE_WAITQUEUE(wait, current);
+-	unsigned long flags;
+-	struct channel_data *chan = file->private_data;
+-	struct cosa_data *cosa = chan->cosa;
+-	char *kbuf;
 -
--	if ((error = pci_write_config_dword(zatm_dev->pci_dev,cmd,value)))
--		printk(KERN_ERR DEV_LABEL ": PCI write failed (0x%02x)\n",
--		    error);
--}
--
--
--static unsigned long eprom_get(struct zatm_dev *zatm_dev, unsigned short cmd)
--{
--	unsigned int value;
--	int error;
--
--	if ((error = pci_read_config_dword(zatm_dev->pci_dev,cmd,&value)))
--		printk(KERN_ERR DEV_LABEL ": PCI read failed (0x%02x)\n",
--		    error);
--	return value;
--}
--
--
--static void eprom_put_bits(struct zatm_dev *zatm_dev, unsigned long data,
--			   int bits, unsigned short cmd)
--{
--	unsigned long value;
--	int i;
--
--	for (i = bits-1; i >= 0; i--) {
--		value = ZEPROM_CS | (((data >> i) & 1) ? ZEPROM_DI : 0);
--		eprom_set(zatm_dev,value,cmd);
--		eprom_set(zatm_dev,value | ZEPROM_SK,cmd);
--		eprom_set(zatm_dev,value,cmd);
+-	if (!(cosa->firmware_status & COSA_FW_START)) {
+-		pr_notice("%s: start the firmware first (status %d)\n",
+-			  cosa->name, cosa->firmware_status);
+-		return -EPERM;
 -	}
--}
+-	if (mutex_lock_interruptible(&chan->rlock))
+-		return -ERESTARTSYS;
 -
--
--static void eprom_get_byte(struct zatm_dev *zatm_dev, unsigned char *byte,
--			   unsigned short cmd)
--{
--	int i;
--
--	*byte = 0;
--	for (i = 8; i; i--) {
--		eprom_set(zatm_dev,ZEPROM_CS,cmd);
--		eprom_set(zatm_dev,ZEPROM_CS | ZEPROM_SK,cmd);
--		*byte <<= 1;
--		if (eprom_get(zatm_dev,cmd) & ZEPROM_DO) *byte |= 1;
--		eprom_set(zatm_dev,ZEPROM_CS,cmd);
+-	chan->rxdata = kmalloc(COSA_MTU, GFP_DMA | GFP_KERNEL);
+-	if (!chan->rxdata) {
+-		mutex_unlock(&chan->rlock);
+-		return -ENOMEM;
 -	}
--}
 -
--
--static int eprom_try_esi(struct atm_dev *dev, unsigned short cmd, int offset,
--			 int swap)
--{
--	unsigned char buf[ZEPROM_SIZE];
--	struct zatm_dev *zatm_dev;
--	int i;
--
--	zatm_dev = ZATM_DEV(dev);
--	for (i = 0; i < ZEPROM_SIZE; i += 2) {
--		eprom_set(zatm_dev,ZEPROM_CS,cmd); /* select EPROM */
--		eprom_put_bits(zatm_dev,ZEPROM_CMD_READ,ZEPROM_CMD_LEN,cmd);
--		eprom_put_bits(zatm_dev,i >> 1,ZEPROM_ADDR_LEN,cmd);
--		eprom_get_byte(zatm_dev,buf+i+swap,cmd);
--		eprom_get_byte(zatm_dev,buf+i+1-swap,cmd);
--		eprom_set(zatm_dev,0,cmd); /* deselect EPROM */
+-	chan->rx_status = 0;
+-	cosa_enable_rx(chan);
+-	spin_lock_irqsave(&cosa->lock, flags);
+-	add_wait_queue(&chan->rxwaitq, &wait);
+-	while (!chan->rx_status) {
+-		set_current_state(TASK_INTERRUPTIBLE);
+-		spin_unlock_irqrestore(&cosa->lock, flags);
+-		schedule();
+-		spin_lock_irqsave(&cosa->lock, flags);
+-		if (signal_pending(current) && chan->rx_status == 0) {
+-			chan->rx_status = 1;
+-			remove_wait_queue(&chan->rxwaitq, &wait);
+-			__set_current_state(TASK_RUNNING);
+-			spin_unlock_irqrestore(&cosa->lock, flags);
+-			mutex_unlock(&chan->rlock);
+-			return -ERESTARTSYS;
+-		}
 -	}
--	memcpy(dev->esi,buf+offset,ESI_LEN);
--	return memcmp(dev->esi,"\0\0\0\0\0",ESI_LEN); /* assumes ESI_LEN == 6 */
--}
+-	remove_wait_queue(&chan->rxwaitq, &wait);
+-	__set_current_state(TASK_RUNNING);
+-	kbuf = chan->rxdata;
+-	count = chan->rxsize;
+-	spin_unlock_irqrestore(&cosa->lock, flags);
+-	mutex_unlock(&chan->rlock);
 -
--
--static void eprom_get_esi(struct atm_dev *dev)
--{
--	if (eprom_try_esi(dev,ZEPROM_V1_REG,ZEPROM_V1_ESI_OFF,1)) return;
--	(void) eprom_try_esi(dev,ZEPROM_V2_REG,ZEPROM_V2_ESI_OFF,0);
--}
--
--
--/*--------------------------------- entries ---------------------------------*/
--
--
--static int zatm_init(struct atm_dev *dev)
--{
--	struct zatm_dev *zatm_dev;
--	struct pci_dev *pci_dev;
--	unsigned short command;
--	int error,i,last;
--	unsigned long t0,t1,t2;
--
--	DPRINTK(">zatm_init\n");
--	zatm_dev = ZATM_DEV(dev);
--	spin_lock_init(&zatm_dev->lock);
--	pci_dev = zatm_dev->pci_dev;
--	zatm_dev->base = pci_resource_start(pci_dev, 0);
--	zatm_dev->irq = pci_dev->irq;
--	if ((error = pci_read_config_word(pci_dev,PCI_COMMAND,&command))) {
--		printk(KERN_ERR DEV_LABEL "(itf %d): init error 0x%02x\n",
--		    dev->number,error);
--		return -EINVAL;
+-	if (copy_to_user(buf, kbuf, count)) {
+-		kfree(kbuf);
+-		return -EFAULT;
 -	}
--	if ((error = pci_write_config_word(pci_dev,PCI_COMMAND,
--	    command | PCI_COMMAND_IO | PCI_COMMAND_MASTER))) {
--		printk(KERN_ERR DEV_LABEL "(itf %d): can't enable IO (0x%02x)"
--		    "\n",dev->number,error);
+-	kfree(kbuf);
+-	return count;
+-}
+-
+-static char *chrdev_setup_rx(struct channel_data *chan, int size)
+-{
+-	/* Expect size <= COSA_MTU */
+-	chan->rxsize = size;
+-	return chan->rxdata;
+-}
+-
+-static int chrdev_rx_done(struct channel_data *chan)
+-{
+-	if (chan->rx_status) { /* Reader has died */
+-		kfree(chan->rxdata);
+-		up(&chan->wsem);
+-	}
+-	chan->rx_status = 1;
+-	wake_up_interruptible(&chan->rxwaitq);
+-	return 1;
+-}
+-
+-static ssize_t cosa_write(struct file *file,
+-			  const char __user *buf, size_t count, loff_t *ppos)
+-{
+-	DECLARE_WAITQUEUE(wait, current);
+-	struct channel_data *chan = file->private_data;
+-	struct cosa_data *cosa = chan->cosa;
+-	unsigned long flags;
+-	char *kbuf;
+-
+-	if (!(cosa->firmware_status & COSA_FW_START)) {
+-		pr_notice("%s: start the firmware first (status %d)\n",
+-			  cosa->name, cosa->firmware_status);
+-		return -EPERM;
+-	}
+-	if (down_interruptible(&chan->wsem))
+-		return -ERESTARTSYS;
+-
+-	if (count > COSA_MTU)
+-		count = COSA_MTU;
+-
+-	/* Allocate the buffer */
+-	kbuf = kmalloc(count, GFP_KERNEL | GFP_DMA);
+-	if (!kbuf) {
+-		up(&chan->wsem);
+-		return -ENOMEM;
+-	}
+-	if (copy_from_user(kbuf, buf, count)) {
+-		up(&chan->wsem);
+-		kfree(kbuf);
+-		return -EFAULT;
+-	}
+-	chan->tx_status = 0;
+-	cosa_start_tx(chan, kbuf, count);
+-
+-	spin_lock_irqsave(&cosa->lock, flags);
+-	add_wait_queue(&chan->txwaitq, &wait);
+-	while (!chan->tx_status) {
+-		set_current_state(TASK_INTERRUPTIBLE);
+-		spin_unlock_irqrestore(&cosa->lock, flags);
+-		schedule();
+-		spin_lock_irqsave(&cosa->lock, flags);
+-		if (signal_pending(current) && chan->tx_status == 0) {
+-			chan->tx_status = 1;
+-			remove_wait_queue(&chan->txwaitq, &wait);
+-			__set_current_state(TASK_RUNNING);
+-			chan->tx_status = 1;
+-			spin_unlock_irqrestore(&cosa->lock, flags);
+-			up(&chan->wsem);
+-			kfree(kbuf);
+-			return -ERESTARTSYS;
+-		}
+-	}
+-	remove_wait_queue(&chan->txwaitq, &wait);
+-	__set_current_state(TASK_RUNNING);
+-	up(&chan->wsem);
+-	spin_unlock_irqrestore(&cosa->lock, flags);
+-	kfree(kbuf);
+-	return count;
+-}
+-
+-static int chrdev_tx_done(struct channel_data *chan, int size)
+-{
+-	if (chan->tx_status) { /* Writer was interrupted */
+-		kfree(chan->txbuf);
+-		up(&chan->wsem);
+-	}
+-	chan->tx_status = 1;
+-	wake_up_interruptible(&chan->txwaitq);
+-	return 1;
+-}
+-
+-static __poll_t cosa_poll(struct file *file, poll_table *poll)
+-{
+-	pr_info("cosa_poll is here\n");
+-	return 0;
+-}
+-
+-static int cosa_open(struct inode *inode, struct file *file)
+-{
+-	struct cosa_data *cosa;
+-	struct channel_data *chan;
+-	unsigned long flags;
+-	int n;
+-	int ret = 0;
+-
+-	mutex_lock(&cosa_chardev_mutex);
+-	n = iminor(file_inode(file)) >> CARD_MINOR_BITS;
+-	if (n >= nr_cards) {
+-		ret = -ENODEV;
+-		goto out;
+-	}
+-	cosa = cosa_cards + n;
+-
+-	n = iminor(file_inode(file)) & ((1 << CARD_MINOR_BITS) - 1);
+-	if (n >= cosa->nchannels) {
+-		ret = -ENODEV;
+-		goto out;
+-	}
+-	chan = cosa->chan + n;
+-
+-	file->private_data = chan;
+-
+-	spin_lock_irqsave(&cosa->lock, flags);
+-
+-	if (chan->usage < 0) { /* in netdev mode */
+-		spin_unlock_irqrestore(&cosa->lock, flags);
+-		ret = -EBUSY;
+-		goto out;
+-	}
+-	cosa->usage++;
+-	chan->usage++;
+-
+-	chan->tx_done = chrdev_tx_done;
+-	chan->setup_rx = chrdev_setup_rx;
+-	chan->rx_done = chrdev_rx_done;
+-	spin_unlock_irqrestore(&cosa->lock, flags);
+-out:
+-	mutex_unlock(&cosa_chardev_mutex);
+-	return ret;
+-}
+-
+-static int cosa_release(struct inode *inode, struct file *file)
+-{
+-	struct channel_data *channel = file->private_data;
+-	struct cosa_data *cosa;
+-	unsigned long flags;
+-
+-	cosa = channel->cosa;
+-	spin_lock_irqsave(&cosa->lock, flags);
+-	cosa->usage--;
+-	channel->usage--;
+-	spin_unlock_irqrestore(&cosa->lock, flags);
+-	return 0;
+-}
+-
+-#ifdef COSA_FASYNC_WORKING
+-static struct fasync_struct *fasync[256] = { NULL, };
+-
+-/* To be done ... */
+-static int cosa_fasync(struct inode *inode, struct file *file, int on)
+-{
+-	int port = iminor(inode);
+-
+-	return fasync_helper(inode, file, on, &fasync[port]);
+-}
+-#endif
+-
+-/* ---------- Ioctls ---------- */
+-
+-/* Ioctl subroutines can safely be made inline, because they are called
+- * only from cosa_ioctl().
+- */
+-static inline int cosa_reset(struct cosa_data *cosa)
+-{
+-	char idstring[COSA_MAX_ID_STRING];
+-
+-	if (cosa->usage > 1)
+-		pr_info("cosa%d: WARNING: reset requested with cosa->usage > 1 (%d). Odd things may happen.\n",
+-			cosa->num, cosa->usage);
+-	cosa->firmware_status &= ~(COSA_FW_RESET | COSA_FW_START);
+-	if (cosa_reset_and_read_id(cosa, idstring) < 0) {
+-		pr_notice("cosa%d: reset failed\n", cosa->num);
 -		return -EIO;
 -	}
--	eprom_get_esi(dev);
--	printk(KERN_NOTICE DEV_LABEL "(itf %d): rev.%d,base=0x%x,irq=%d,",
--	    dev->number,pci_dev->revision,zatm_dev->base,zatm_dev->irq);
--	/* reset uPD98401 */
--	zout(0,SWR);
--	while (!(zin(GSR) & uPD98401_INT_IND));
--	zout(uPD98401_GMR_ONE /*uPD98401_BURST4*/,GMR);
--	last = MAX_CRAM_SIZE;
--	for (i = last-RAM_INCREMENT; i >= 0; i -= RAM_INCREMENT) {
--		zpokel(zatm_dev,0x55555555,i);
--		if (zpeekl(zatm_dev,i) != 0x55555555) last = i;
--		else {
--			zpokel(zatm_dev,0xAAAAAAAA,i);
--			if (zpeekl(zatm_dev,i) != 0xAAAAAAAA) last = i;
--			else zpokel(zatm_dev,i,i);
--		}
--	}
--	for (i = 0; i < last; i += RAM_INCREMENT)
--		if (zpeekl(zatm_dev,i) != i) break;
--	zatm_dev->mem = i << 2;
--	while (i) zpokel(zatm_dev,0,--i);
--	/* reset again to rebuild memory pointers */
--	zout(0,SWR);
--	while (!(zin(GSR) & uPD98401_INT_IND));
--	zout(uPD98401_GMR_ONE | uPD98401_BURST8 | uPD98401_BURST4 |
--	    uPD98401_BURST2 | uPD98401_GMR_PM | uPD98401_GMR_DR,GMR);
--	/* TODO: should shrink allocation now */
--	printk("mem=%dkB,%s (",zatm_dev->mem >> 10,zatm_dev->copper ? "UTP" :
--	    "MMF");
--	for (i = 0; i < ESI_LEN; i++)
--		printk("%02X%s",dev->esi[i],i == ESI_LEN-1 ? ")\n" : "-");
--	do {
--		unsigned long flags;
--
--		spin_lock_irqsave(&zatm_dev->lock, flags);
--		t0 = zpeekl(zatm_dev,uPD98401_TSR);
--		udelay(10);
--		t1 = zpeekl(zatm_dev,uPD98401_TSR);
--		udelay(1010);
--		t2 = zpeekl(zatm_dev,uPD98401_TSR);
--		spin_unlock_irqrestore(&zatm_dev->lock, flags);
--	}
--	while (t0 > t1 || t1 > t2); /* loop if wrapping ... */
--	zatm_dev->khz = t2-2*t1+t0;
--	printk(KERN_NOTICE DEV_LABEL "(itf %d): uPD98401 %d.%d at %d.%03d "
--	    "MHz\n",dev->number,
--	    (zin(VER) & uPD98401_MAJOR) >> uPD98401_MAJOR_SHIFT,
--            zin(VER) & uPD98401_MINOR,zatm_dev->khz/1000,zatm_dev->khz % 1000);
--	return uPD98402_init(dev);
--}
--
--
--static int zatm_start(struct atm_dev *dev)
--{
--	struct zatm_dev *zatm_dev = ZATM_DEV(dev);
--	struct pci_dev *pdev = zatm_dev->pci_dev;
--	unsigned long curr;
--	int pools,vccs,rx;
--	int error, i, ld;
--
--	DPRINTK("zatm_start\n");
--	zatm_dev->rx_map = zatm_dev->tx_map = NULL;
-- 	for (i = 0; i < NR_MBX; i++)
-- 		zatm_dev->mbx_start[i] = 0;
-- 	error = request_irq(zatm_dev->irq, zatm_int, IRQF_SHARED, DEV_LABEL, dev);
--	if (error < 0) {
-- 		printk(KERN_ERR DEV_LABEL "(itf %d): IRQ%d is already in use\n",
-- 		    dev->number,zatm_dev->irq);
--		goto done;
--	}
--	/* define memory regions */
--	pools = NR_POOLS;
--	if (NR_SHAPERS*SHAPER_SIZE > pools*POOL_SIZE)
--		pools = NR_SHAPERS*SHAPER_SIZE/POOL_SIZE;
--	vccs = (zatm_dev->mem-NR_SHAPERS*SHAPER_SIZE-pools*POOL_SIZE)/
--	    (2*VC_SIZE+RX_SIZE);
--	ld = -1;
--	for (rx = 1; rx < vccs; rx <<= 1) ld++;
--	dev->ci_range.vpi_bits = 0; /* @@@ no VPI for now */
--	dev->ci_range.vci_bits = ld;
--	dev->link_rate = ATM_OC3_PCR;
--	zatm_dev->chans = vccs; /* ??? */
--	curr = rx*RX_SIZE/4;
--	DPRINTK("RX pool 0x%08lx\n",curr);
--	zpokel(zatm_dev,curr,uPD98401_PMA); /* receive pool */
--	zatm_dev->pool_base = curr;
--	curr += pools*POOL_SIZE/4;
--	DPRINTK("Shapers 0x%08lx\n",curr);
--	zpokel(zatm_dev,curr,uPD98401_SMA); /* shapers */
--	curr += NR_SHAPERS*SHAPER_SIZE/4;
--	DPRINTK("Free    0x%08lx\n",curr);
--	zpokel(zatm_dev,curr,uPD98401_TOS); /* free pool */
--	printk(KERN_INFO DEV_LABEL "(itf %d): %d shapers, %d pools, %d RX, "
--	    "%ld VCs\n",dev->number,NR_SHAPERS,pools,rx,
--	    (zatm_dev->mem-curr*4)/VC_SIZE);
--	/* create mailboxes */
--	for (i = 0; i < NR_MBX; i++) {
--		void *mbx;
--		dma_addr_t mbx_dma;
--
--		if (!mbx_entries[i])
--			continue;
--		mbx = dma_alloc_coherent(&pdev->dev,
--					 2 * MBX_SIZE(i), &mbx_dma, GFP_KERNEL);
--		if (!mbx) {
--			error = -ENOMEM;
--			goto out;
--		}
--		/*
--		 * Alignment provided by dma_alloc_coherent() isn't enough
--		 * for this device.
--		 */
--		if (((unsigned long)mbx ^ mbx_dma) & 0xffff) {
--			printk(KERN_ERR DEV_LABEL "(itf %d): system "
--			       "bus incompatible with driver\n", dev->number);
--			dma_free_coherent(&pdev->dev, 2*MBX_SIZE(i), mbx, mbx_dma);
--			error = -ENODEV;
--			goto out;
--		}
--		DPRINTK("mbx@0x%08lx-0x%08lx\n", mbx, mbx + MBX_SIZE(i));
--		zatm_dev->mbx_start[i] = (unsigned long)mbx;
--		zatm_dev->mbx_dma[i] = mbx_dma;
--		zatm_dev->mbx_end[i] = (zatm_dev->mbx_start[i] + MBX_SIZE(i)) &
--					0xffff;
--		zout(mbx_dma >> 16, MSH(i));
--		zout(mbx_dma, MSL(i));
--		zout(zatm_dev->mbx_end[i], MBA(i));
--		zout((unsigned long)mbx & 0xffff, MTA(i));
--		zout((unsigned long)mbx & 0xffff, MWA(i));
--	}
--	error = start_tx(dev);
--	if (error)
--		goto out;
--	error = start_rx(dev);
--	if (error)
--		goto out_tx;
--	error = dev->phy->start(dev);
--	if (error)
--		goto out_rx;
--	zout(0xffffffff,IMR); /* enable interrupts */
--	/* enable TX & RX */
--	zout(zin(GMR) | uPD98401_GMR_SE | uPD98401_GMR_RE,GMR);
--done:
--	return error;
--
--out_rx:
--	kfree(zatm_dev->rx_map);
--out_tx:
--	kfree(zatm_dev->tx_map);
--out:
--	while (i-- > 0) {
--		dma_free_coherent(&pdev->dev, 2 * MBX_SIZE(i),
--				  (void *)zatm_dev->mbx_start[i],
--				  zatm_dev->mbx_dma[i]);
--	}
--	free_irq(zatm_dev->irq, dev);
--	goto done;
--}
--
--
--static void zatm_close(struct atm_vcc *vcc)
--{
--        DPRINTK(">zatm_close\n");
--        if (!ZATM_VCC(vcc)) return;
--	clear_bit(ATM_VF_READY,&vcc->flags);
--        close_rx(vcc);
--	EVENT("close_tx\n",0,0);
--        close_tx(vcc);
--        DPRINTK("zatm_close: done waiting\n");
--        /* deallocate memory */
--        kfree(ZATM_VCC(vcc));
--	vcc->dev_data = NULL;
--	clear_bit(ATM_VF_ADDR,&vcc->flags);
--}
--
--
--static int zatm_open(struct atm_vcc *vcc)
--{
--	struct zatm_vcc *zatm_vcc;
--	short vpi = vcc->vpi;
--	int vci = vcc->vci;
--	int error;
--
--	DPRINTK(">zatm_open\n");
--	if (!test_bit(ATM_VF_PARTIAL,&vcc->flags))
--		vcc->dev_data = NULL;
--	if (vci != ATM_VPI_UNSPEC && vpi != ATM_VCI_UNSPEC)
--		set_bit(ATM_VF_ADDR,&vcc->flags);
--	if (vcc->qos.aal != ATM_AAL5) return -EINVAL; /* @@@ AAL0 */
--	DPRINTK(DEV_LABEL "(itf %d): open %d.%d\n",vcc->dev->number,vcc->vpi,
--	    vcc->vci);
--	if (!test_bit(ATM_VF_PARTIAL,&vcc->flags)) {
--		zatm_vcc = kmalloc(sizeof(*zatm_vcc), GFP_KERNEL);
--		if (!zatm_vcc) {
--			clear_bit(ATM_VF_ADDR,&vcc->flags);
--			return -ENOMEM;
--		}
--		vcc->dev_data = zatm_vcc;
--		ZATM_VCC(vcc)->tx_chan = 0; /* for zatm_close after open_rx */
--		if ((error = open_rx_first(vcc))) {
--	                zatm_close(vcc);
--	                return error;
--	        }
--		if ((error = open_tx_first(vcc))) {
--			zatm_close(vcc);
--			return error;
--	        }
--	}
--	if (vci == ATM_VPI_UNSPEC || vpi == ATM_VCI_UNSPEC) return 0;
--	if ((error = open_rx_second(vcc))) {
--		zatm_close(vcc);
--		return error;
--        }
--	if ((error = open_tx_second(vcc))) {
--		zatm_close(vcc);
--		return error;
--        }
--	set_bit(ATM_VF_READY,&vcc->flags);
--        return 0;
--}
--
--
--static int zatm_change_qos(struct atm_vcc *vcc,struct atm_qos *qos,int flags)
--{
--	printk("Not yet implemented\n");
--	return -ENOSYS;
--	/* @@@ */
--}
--
--
--static int zatm_ioctl(struct atm_dev *dev,unsigned int cmd,void __user *arg)
--{
--	struct zatm_dev *zatm_dev;
--	unsigned long flags;
--
--	zatm_dev = ZATM_DEV(dev);
--	switch (cmd) {
--		case ZATM_GETPOOLZ:
--			if (!capable(CAP_NET_ADMIN)) return -EPERM;
--			fallthrough;
--		case ZATM_GETPOOL:
--			{
--				struct zatm_pool_info info;
--				int pool;
--
--				if (get_user(pool,
--				    &((struct zatm_pool_req __user *) arg)->pool_num))
--					return -EFAULT;
--				if (pool < 0 || pool > ZATM_LAST_POOL)
--					return -EINVAL;
--				pool = array_index_nospec(pool,
--							  ZATM_LAST_POOL + 1);
--				spin_lock_irqsave(&zatm_dev->lock, flags);
--				info = zatm_dev->pool_info[pool];
--				if (cmd == ZATM_GETPOOLZ) {
--					zatm_dev->pool_info[pool].rqa_count = 0;
--					zatm_dev->pool_info[pool].rqu_count = 0;
--				}
--				spin_unlock_irqrestore(&zatm_dev->lock, flags);
--				return copy_to_user(
--				    &((struct zatm_pool_req __user *) arg)->info,
--				    &info,sizeof(info)) ? -EFAULT : 0;
--			}
--		case ZATM_SETPOOL:
--			{
--				struct zatm_pool_info info;
--				int pool;
--
--				if (!capable(CAP_NET_ADMIN)) return -EPERM;
--				if (get_user(pool,
--				    &((struct zatm_pool_req __user *) arg)->pool_num))
--					return -EFAULT;
--				if (pool < 0 || pool > ZATM_LAST_POOL)
--					return -EINVAL;
--				pool = array_index_nospec(pool,
--							  ZATM_LAST_POOL + 1);
--				if (copy_from_user(&info,
--				    &((struct zatm_pool_req __user *) arg)->info,
--				    sizeof(info))) return -EFAULT;
--				if (!info.low_water)
--					info.low_water = zatm_dev->
--					    pool_info[pool].low_water;
--				if (!info.high_water)
--					info.high_water = zatm_dev->
--					    pool_info[pool].high_water;
--				if (!info.next_thres)
--					info.next_thres = zatm_dev->
--					    pool_info[pool].next_thres;
--				if (info.low_water >= info.high_water ||
--				    info.low_water < 0)
--					return -EINVAL;
--				spin_lock_irqsave(&zatm_dev->lock, flags);
--				zatm_dev->pool_info[pool].low_water =
--				    info.low_water;
--				zatm_dev->pool_info[pool].high_water =
--				    info.high_water;
--				zatm_dev->pool_info[pool].next_thres =
--				    info.next_thres;
--				spin_unlock_irqrestore(&zatm_dev->lock, flags);
--				return 0;
--			}
--		default:
--        		if (!dev->phy->ioctl) return -ENOIOCTLCMD;
--		        return dev->phy->ioctl(dev,cmd,arg);
--	}
--}
--
--static int zatm_send(struct atm_vcc *vcc,struct sk_buff *skb)
--{
--	int error;
--
--	EVENT(">zatm_send 0x%lx\n",(unsigned long) skb,0);
--	if (!ZATM_VCC(vcc)->tx_chan || !test_bit(ATM_VF_READY,&vcc->flags)) {
--		if (vcc->pop) vcc->pop(vcc,skb);
--		else dev_kfree_skb(skb);
--		return -EINVAL;
--	}
--	if (!skb) {
--		printk(KERN_CRIT "!skb in zatm_send ?\n");
--		if (vcc->pop) vcc->pop(vcc,skb);
--		return -EINVAL;
--	}
--	ATM_SKB(skb)->vcc = vcc;
--	error = do_tx(skb);
--	if (error != RING_BUSY) return error;
--	skb_queue_tail(&ZATM_VCC(vcc)->backlog,skb);
+-	pr_info("cosa%d: resetting device: %s\n", cosa->num, idstring);
+-	cosa->firmware_status |= COSA_FW_RESET;
 -	return 0;
 -}
 -
--
--static void zatm_phy_put(struct atm_dev *dev,unsigned char value,
--    unsigned long addr)
+-/* High-level function to download data into COSA memory. Calls download() */
+-static inline int cosa_download(struct cosa_data *cosa, void __user *arg)
 -{
--	struct zatm_dev *zatm_dev;
+-	struct cosa_download d;
+-	int i;
 -
--	zatm_dev = ZATM_DEV(dev);
--	zwait();
--	zout(value,CER);
--	zout(uPD98401_IND_ACC | uPD98401_IA_B0 |
--	    (uPD98401_IA_TGT_PHY << uPD98401_IA_TGT_SHIFT) | addr,CMR);
--}
--
--
--static unsigned char zatm_phy_get(struct atm_dev *dev,unsigned long addr)
--{
--	struct zatm_dev *zatm_dev;
--
--	zatm_dev = ZATM_DEV(dev);
--	zwait();
--	zout(uPD98401_IND_ACC | uPD98401_IA_B0 | uPD98401_IA_RW |
--	  (uPD98401_IA_TGT_PHY << uPD98401_IA_TGT_SHIFT) | addr,CMR);
--	zwait();
--	return zin(CER) & 0xff;
--}
--
--
--static const struct atmdev_ops ops = {
--	.open		= zatm_open,
--	.close		= zatm_close,
--	.ioctl		= zatm_ioctl,
--	.send		= zatm_send,
--	.phy_put	= zatm_phy_put,
--	.phy_get	= zatm_phy_get,
--	.change_qos	= zatm_change_qos,
--};
--
--static int zatm_init_one(struct pci_dev *pci_dev,
--			 const struct pci_device_id *ent)
--{
--	struct atm_dev *dev;
--	struct zatm_dev *zatm_dev;
--	int ret = -ENOMEM;
--
--	zatm_dev = kmalloc(sizeof(*zatm_dev), GFP_KERNEL);
--	if (!zatm_dev) {
--		printk(KERN_EMERG "%s: memory shortage\n", DEV_LABEL);
--		goto out;
+-	if (cosa->usage > 1)
+-		pr_info("%s: WARNING: download of microcode requested with cosa->usage > 1 (%d). Odd things may happen.\n",
+-			cosa->name, cosa->usage);
+-	if (!(cosa->firmware_status & COSA_FW_RESET)) {
+-		pr_notice("%s: reset the card first (status %d)\n",
+-			  cosa->name, cosa->firmware_status);
+-		return -EPERM;
 -	}
 -
--	dev = atm_dev_register(DEV_LABEL, &pci_dev->dev, &ops, -1, NULL);
--	if (!dev)
--		goto out_free;
+-	if (copy_from_user(&d, arg, sizeof(d)))
+-		return -EFAULT;
 -
--	ret = pci_enable_device(pci_dev);
--	if (ret < 0)
--		goto out_deregister;
+-	if (d.addr < 0 || d.addr > COSA_MAX_FIRMWARE_SIZE)
+-		return -EINVAL;
+-	if (d.len < 0 || d.len > COSA_MAX_FIRMWARE_SIZE)
+-		return -EINVAL;
 -
--	ret = pci_request_regions(pci_dev, DEV_LABEL);
--	if (ret < 0)
--		goto out_disable;
+-	/* If something fails, force the user to reset the card */
+-	cosa->firmware_status &= ~(COSA_FW_RESET | COSA_FW_DOWNLOAD);
 -
--	ret = dma_set_mask_and_coherent(&pci_dev->dev, DMA_BIT_MASK(32));
--	if (ret < 0)
--		goto out_release;
--
--	zatm_dev->pci_dev = pci_dev;
--	dev->dev_data = zatm_dev;
--	zatm_dev->copper = (int)ent->driver_data;
--	if ((ret = zatm_init(dev)) || (ret = zatm_start(dev)))
--		goto out_release;
--
--	pci_set_drvdata(pci_dev, dev);
--	zatm_dev->more = zatm_boards;
--	zatm_boards = dev;
--	ret = 0;
--out:
--	return ret;
--
--out_release:
--	pci_release_regions(pci_dev);
--out_disable:
--	pci_disable_device(pci_dev);
--out_deregister:
--	atm_dev_deregister(dev);
--out_free:
--	kfree(zatm_dev);
--	goto out;
+-	i = download(cosa, d.code, d.len, d.addr);
+-	if (i < 0) {
+-		pr_notice("cosa%d: microcode download failed: %d\n",
+-			  cosa->num, i);
+-		return -EIO;
+-	}
+-	pr_info("cosa%d: downloading microcode - 0x%04x bytes at 0x%04x\n",
+-		cosa->num, d.len, d.addr);
+-	cosa->firmware_status |= COSA_FW_RESET | COSA_FW_DOWNLOAD;
+-	return 0;
 -}
 -
--
--MODULE_LICENSE("GPL");
--
--static const struct pci_device_id zatm_pci_tbl[] = {
--	{ PCI_VDEVICE(ZEITNET, PCI_DEVICE_ID_ZEITNET_1221), ZATM_COPPER },
--	{ PCI_VDEVICE(ZEITNET, PCI_DEVICE_ID_ZEITNET_1225), 0 },
--	{ 0, }
--};
--MODULE_DEVICE_TABLE(pci, zatm_pci_tbl);
--
--static struct pci_driver zatm_driver = {
--	.name =		DEV_LABEL,
--	.id_table =	zatm_pci_tbl,
--	.probe =	zatm_init_one,
--};
--
--static int __init zatm_init_module(void)
+-/* High-level function to read COSA memory. Calls readmem() */
+-static inline int cosa_readmem(struct cosa_data *cosa, void __user *arg)
 -{
--	return pci_register_driver(&zatm_driver);
+-	struct cosa_download d;
+-	int i;
+-
+-	if (cosa->usage > 1)
+-		pr_info("cosa%d: WARNING: readmem requested with cosa->usage > 1 (%d). Odd things may happen.\n",
+-			cosa->num, cosa->usage);
+-	if (!(cosa->firmware_status & COSA_FW_RESET)) {
+-		pr_notice("%s: reset the card first (status %d)\n",
+-			  cosa->name, cosa->firmware_status);
+-		return -EPERM;
+-	}
+-
+-	if (copy_from_user(&d, arg, sizeof(d)))
+-		return -EFAULT;
+-
+-	/* If something fails, force the user to reset the card */
+-	cosa->firmware_status &= ~COSA_FW_RESET;
+-
+-	i = readmem(cosa, d.code, d.len, d.addr);
+-	if (i < 0) {
+-		pr_notice("cosa%d: reading memory failed: %d\n", cosa->num, i);
+-		return -EIO;
+-	}
+-	pr_info("cosa%d: reading card memory - 0x%04x bytes at 0x%04x\n",
+-		cosa->num, d.len, d.addr);
+-	cosa->firmware_status |= COSA_FW_RESET;
+-	return 0;
 -}
 -
--module_init(zatm_init_module);
--/* module_exit not defined so not unloadable */
-diff --git a/drivers/atm/zatm.h b/drivers/atm/zatm.h
-deleted file mode 100644
-index 8204369fe825..000000000000
---- a/drivers/atm/zatm.h
-+++ /dev/null
-@@ -1,104 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--/* drivers/atm/zatm.h - ZeitNet ZN122x device driver declarations */
+-/* High-level function to start microcode. Calls startmicrocode(). */
+-static inline int cosa_start(struct cosa_data *cosa, int address)
+-{
+-	int i;
 -
--/* Written 1995-1998 by Werner Almesberger, EPFL LRC/ICA */
+-	if (cosa->usage > 1)
+-		pr_info("cosa%d: WARNING: start microcode requested with cosa->usage > 1 (%d). Odd things may happen.\n",
+-			cosa->num, cosa->usage);
 -
+-	if ((cosa->firmware_status & (COSA_FW_RESET | COSA_FW_DOWNLOAD))
+-		!= (COSA_FW_RESET | COSA_FW_DOWNLOAD)) {
+-		pr_notice("%s: download the microcode and/or reset the card first (status %d)\n",
+-			  cosa->name, cosa->firmware_status);
+-		return -EPERM;
+-	}
+-	cosa->firmware_status &= ~COSA_FW_RESET;
+-	i = startmicrocode(cosa, address);
+-	if (i < 0) {
+-		pr_notice("cosa%d: start microcode at 0x%04x failed: %d\n",
+-			  cosa->num, address, i);
+-		return -EIO;
+-	}
+-	pr_info("cosa%d: starting microcode at 0x%04x\n", cosa->num, address);
+-	cosa->startaddr = address;
+-	cosa->firmware_status |= COSA_FW_START;
+-	return 0;
+-}
 -
--#ifndef DRIVER_ATM_ZATM_H
--#define DRIVER_ATM_ZATM_H
+-/* Buffer of size at least COSA_MAX_ID_STRING is expected */
+-static inline int cosa_getidstr(struct cosa_data *cosa, char __user *string)
+-{
+-	int l = strlen(cosa->id_string) + 1;
 -
--#include <linux/skbuff.h>
--#include <linux/atm.h>
--#include <linux/atmdev.h>
--#include <linux/sonet.h>
--#include <linux/pci.h>
+-	if (copy_to_user(string, cosa->id_string, l))
+-		return -EFAULT;
+-	return l;
+-}
 -
+-/* Buffer of size at least COSA_MAX_ID_STRING is expected */
+-static inline int cosa_gettype(struct cosa_data *cosa, char __user *string)
+-{
+-	int l = strlen(cosa->type) + 1;
 -
--#define DEV_LABEL	"zatm"
+-	if (copy_to_user(string, cosa->type, l))
+-		return -EFAULT;
+-	return l;
+-}
 -
--#define MAX_AAL5_PDU	10240	/* allocate for AAL5 PDUs of this size */
--#define MAX_RX_SIZE_LD	14	/* ceil(log2((MAX_AAL5_PDU+47)/48)) */
+-static int cosa_ioctl_common(struct cosa_data *cosa,
+-			     struct channel_data *channel, unsigned int cmd,
+-			     unsigned long arg)
+-{
+-	void __user *argp = (void __user *)arg;
 -
--#define LOW_MARK	12	/* start adding new buffers if less than 12 */
--#define HIGH_MARK	30	/* stop adding buffers after reaching 30 */
--#define OFF_CNG_THRES	5	/* threshold for offset changes */
+-	switch (cmd) {
+-	case COSAIORSET:	/* Reset the device */
+-		if (!capable(CAP_NET_ADMIN))
+-			return -EACCES;
+-		return cosa_reset(cosa);
+-	case COSAIOSTRT:	/* Start the firmware */
+-		if (!capable(CAP_SYS_RAWIO))
+-			return -EACCES;
+-		return cosa_start(cosa, arg);
+-	case COSAIODOWNLD:	/* Download the firmware */
+-		if (!capable(CAP_SYS_RAWIO))
+-			return -EACCES;
 -
--#define RX_SIZE		2	/* RX lookup entry size (in bytes) */
--#define NR_POOLS	32	/* number of free buffer pointers */
--#define POOL_SIZE	8	/* buffer entry size (in bytes) */
--#define NR_SHAPERS	16	/* number of shapers */
--#define SHAPER_SIZE	4	/* shaper entry size (in bytes) */
--#define VC_SIZE		32	/* VC dsc (TX or RX) size (in bytes) */
+-		return cosa_download(cosa, argp);
+-	case COSAIORMEM:
+-		if (!capable(CAP_SYS_RAWIO))
+-			return -EACCES;
+-		return cosa_readmem(cosa, argp);
+-	case COSAIORTYPE:
+-		return cosa_gettype(cosa, argp);
+-	case COSAIORIDSTR:
+-		return cosa_getidstr(cosa, argp);
+-	case COSAIONRCARDS:
+-		return nr_cards;
+-	case COSAIONRCHANS:
+-		return cosa->nchannels;
+-	case COSAIOBMSET:
+-		if (!capable(CAP_SYS_RAWIO))
+-			return -EACCES;
+-		if (is_8bit(cosa))
+-			return -EINVAL;
+-		if (arg != COSA_BM_OFF && arg != COSA_BM_ON)
+-			return -EINVAL;
+-		cosa->busmaster = arg;
+-		return 0;
+-	case COSAIOBMGET:
+-		return cosa->busmaster;
+-	}
+-	return -ENOIOCTLCMD;
+-}
 -
--#define RING_ENTRIES	32	/* ring entries (without back pointer) */
--#define RING_WORDS	4	/* ring element size */
--#define RING_SIZE	(sizeof(unsigned long)*(RING_ENTRIES+1)*RING_WORDS)
+-static long cosa_chardev_ioctl(struct file *file, unsigned int cmd,
+-			       unsigned long arg)
+-{
+-	struct channel_data *channel = file->private_data;
+-	struct cosa_data *cosa;
+-	long ret;
 -
--#define NR_MBX		4	/* four mailboxes */
--#define MBX_RX_0	0	/* mailbox indices */
--#define MBX_RX_1	1
--#define MBX_TX_0	2
--#define MBX_TX_1	3
+-	mutex_lock(&cosa_chardev_mutex);
+-	cosa = channel->cosa;
+-	ret = cosa_ioctl_common(cosa, channel, cmd, arg);
+-	mutex_unlock(&cosa_chardev_mutex);
+-	return ret;
+-}
 -
--struct zatm_vcc {
--	/*-------------------------------- RX part */
--	int rx_chan;			/* RX channel, 0 if none */
--	int pool;			/* free buffer pool */
--	/*-------------------------------- TX part */
--	int tx_chan;			/* TX channel, 0 if none */
--	int shaper;			/* shaper, <0 if none */
--	struct sk_buff_head tx_queue;	/* list of buffers in transit */
--	wait_queue_head_t tx_wait;	/* for close */
--	u32 *ring;			/* transmit ring */
--	int ring_curr;			/* current write position */
--	int txing;			/* number of transmits in progress */
--	struct sk_buff_head backlog;	/* list of buffers waiting for ring */
--};
+-/*---------- HW layer interface ---------- */
 -
--struct zatm_dev {
--	/*-------------------------------- TX part */
--	int tx_bw;			/* remaining bandwidth */
--	u32 free_shapers;		/* bit set */
--	int ubr;			/* UBR shaper; -1 if none */
--	int ubr_ref_cnt;		/* number of VCs using UBR shaper */
--	/*-------------------------------- RX part */
--	int pool_ref[NR_POOLS];		/* free buffer pool usage counters */
--	volatile struct sk_buff *last_free[NR_POOLS];
--					/* last entry in respective pool */
--	struct sk_buff_head pool[NR_POOLS];/* free buffer pools */
--	struct zatm_pool_info pool_info[NR_POOLS]; /* pool information */
--	/*-------------------------------- maps */
--	struct atm_vcc **tx_map;	/* TX VCCs */
--	struct atm_vcc **rx_map;	/* RX VCCs */
--	int chans;			/* map size, must be 2^n */
--	/*-------------------------------- mailboxes */
--	unsigned long mbx_start[NR_MBX];/* start addresses */
--	dma_addr_t mbx_dma[NR_MBX];
--	u16 mbx_end[NR_MBX];		/* end offset (in bytes) */
--	/*-------------------------------- other pointers */
--	u32 pool_base;			/* Free buffer pool dsc (word addr) */
--	/*-------------------------------- ZATM links */
--	struct atm_dev *more;		/* other ZATM devices */
--	/*-------------------------------- general information */
--	int mem;			/* RAM on board (in bytes) */
--	int khz;			/* timer clock */
--	int copper;			/* PHY type */
--	unsigned char irq;		/* IRQ */
--	unsigned int base;		/* IO base address */
--	struct pci_dev *pci_dev;	/* PCI stuff */
--	spinlock_t lock;
--};
+-/* The higher layer can bind itself to the HW layer by setting the callbacks
+- * in the channel_data structure and by using these routines.
+- */
+-static void cosa_enable_rx(struct channel_data *chan)
+-{
+-	struct cosa_data *cosa = chan->cosa;
 -
+-	if (!test_and_set_bit(chan->num, &cosa->rxbitmap))
+-		put_driver_status(cosa);
+-}
 -
--#define ZATM_DEV(d) ((struct zatm_dev *) (d)->dev_data)
--#define ZATM_VCC(d) ((struct zatm_vcc *) (d)->dev_data)
+-static void cosa_disable_rx(struct channel_data *chan)
+-{
+-	struct cosa_data *cosa = chan->cosa;
 -
+-	if (test_and_clear_bit(chan->num, &cosa->rxbitmap))
+-		put_driver_status(cosa);
+-}
 -
--struct zatm_skb_prv {
--	struct atm_skb_data _;		/* reserved */
--	u32 *dsc;			/* pointer to skb's descriptor */
--};
+-/* FIXME: This routine probably should check for cosa_start_tx() called when
+- * the previous transmit is still unfinished. In this case the non-zero
+- * return value should indicate to the caller that the queuing(sp?) up
+- * the transmit has failed.
+- */
+-static int cosa_start_tx(struct channel_data *chan, char *buf, int len)
+-{
+-	struct cosa_data *cosa = chan->cosa;
+-	unsigned long flags;
+-#ifdef DEBUG_DATA
+-	int i;
 -
--#define ZATM_PRV_DSC(skb) (((struct zatm_skb_prv *) (skb)->cb)->dsc)
--
+-	pr_info("cosa%dc%d: starting tx(0x%x)",
+-		chan->cosa->num, chan->num, len);
+-	for (i = 0; i < len; i++)
+-		pr_cont(" %02x", buf[i]&0xff);
+-	pr_cont("\n");
 -#endif
-diff --git a/include/uapi/linux/atm_zatm.h b/include/uapi/linux/atm_zatm.h
-deleted file mode 100644
-index 5135027b93c1..000000000000
---- a/include/uapi/linux/atm_zatm.h
-+++ /dev/null
-@@ -1,47 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
--/* atm_zatm.h - Driver-specific declarations of the ZATM driver (for use by
--		driver-specific utilities) */
+-	spin_lock_irqsave(&cosa->lock, flags);
+-	chan->txbuf = buf;
+-	chan->txsize = len;
+-	if (len > COSA_MTU)
+-		chan->txsize = COSA_MTU;
+-	spin_unlock_irqrestore(&cosa->lock, flags);
 -
--/* Written 1995-1999 by Werner Almesberger, EPFL LRC/ICA */
+-	/* Tell the firmware we are ready */
+-	set_bit(chan->num, &cosa->txbitmap);
+-	put_driver_status(cosa);
 -
+-	return 0;
+-}
 -
--#ifndef LINUX_ATM_ZATM_H
--#define LINUX_ATM_ZATM_H
+-static void put_driver_status(struct cosa_data *cosa)
+-{
+-	unsigned long flags;
+-	int status;
 -
--/*
-- * Note: non-kernel programs including this file must also include
-- * sys/types.h for struct timeval
+-	spin_lock_irqsave(&cosa->lock, flags);
+-
+-	status = (cosa->rxbitmap ? DRIVER_RX_READY : 0)
+-		| (cosa->txbitmap ? DRIVER_TX_READY : 0)
+-		| (cosa->txbitmap ? ~(cosa->txbitmap << DRIVER_TXMAP_SHIFT)
+-			& DRIVER_TXMAP_MASK : 0);
+-	if (!cosa->rxtx) {
+-		if (cosa->rxbitmap | cosa->txbitmap) {
+-			if (!cosa->enabled) {
+-				cosa_putstatus(cosa, SR_RX_INT_ENA);
+-#ifdef DEBUG_IO
+-				debug_status_out(cosa, SR_RX_INT_ENA);
+-#endif
+-				cosa->enabled = 1;
+-			}
+-		} else if (cosa->enabled) {
+-			cosa->enabled = 0;
+-			cosa_putstatus(cosa, 0);
+-#ifdef DEBUG_IO
+-			debug_status_out(cosa, 0);
+-#endif
+-		}
+-		cosa_putdata8(cosa, status);
+-#ifdef DEBUG_IO
+-		debug_data_cmd(cosa, status);
+-#endif
+-	}
+-	spin_unlock_irqrestore(&cosa->lock, flags);
+-}
+-
+-static void put_driver_status_nolock(struct cosa_data *cosa)
+-{
+-	int status;
+-
+-	status = (cosa->rxbitmap ? DRIVER_RX_READY : 0)
+-		| (cosa->txbitmap ? DRIVER_TX_READY : 0)
+-		| (cosa->txbitmap ? ~(cosa->txbitmap << DRIVER_TXMAP_SHIFT)
+-			& DRIVER_TXMAP_MASK : 0);
+-
+-	if (cosa->rxbitmap | cosa->txbitmap) {
+-		cosa_putstatus(cosa, SR_RX_INT_ENA);
+-#ifdef DEBUG_IO
+-		debug_status_out(cosa, SR_RX_INT_ENA);
+-#endif
+-		cosa->enabled = 1;
+-	} else {
+-		cosa_putstatus(cosa, 0);
+-#ifdef DEBUG_IO
+-		debug_status_out(cosa, 0);
+-#endif
+-		cosa->enabled = 0;
+-	}
+-	cosa_putdata8(cosa, status);
+-#ifdef DEBUG_IO
+-	debug_data_cmd(cosa, status);
+-#endif
+-}
+-
+-/* The "kickme" function: When the DMA times out, this is called to
+- * clean up the driver status.
+- * FIXME: Preliminary support, the interface is probably wrong.
+- */
+-static void cosa_kick(struct cosa_data *cosa)
+-{
+-	unsigned long flags, flags1;
+-	char *s = "(probably) IRQ";
+-
+-	if (test_bit(RXBIT, &cosa->rxtx))
+-		s = "RX DMA";
+-	if (test_bit(TXBIT, &cosa->rxtx))
+-		s = "TX DMA";
+-
+-	pr_info("%s: %s timeout - restarting\n", cosa->name, s);
+-	spin_lock_irqsave(&cosa->lock, flags);
+-	cosa->rxtx = 0;
+-
+-	flags1 = claim_dma_lock();
+-	disable_dma(cosa->dma);
+-	clear_dma_ff(cosa->dma);
+-	release_dma_lock(flags1);
+-
+-	/* FIXME: Anything else? */
+-	udelay(100);
+-	cosa_putstatus(cosa, 0);
+-	udelay(100);
+-	(void)cosa_getdata8(cosa);
+-	udelay(100);
+-	cosa_putdata8(cosa, 0);
+-	udelay(100);
+-	put_driver_status_nolock(cosa);
+-	spin_unlock_irqrestore(&cosa->lock, flags);
+-}
+-
+-/* Check if the whole buffer is DMA-able. It means it is below the 16M of
+- * physical memory and doesn't span the 64k boundary. For now it seems
+- * SKB's never do this, but we'll check this anyway.
+- */
+-static int cosa_dma_able(struct channel_data *chan, char *buf, int len)
+-{
+-	static int count;
+-	unsigned long b = (unsigned long)buf;
+-
+-	if (b + len >= MAX_DMA_ADDRESS)
+-		return 0;
+-	if ((b ^ (b + len)) & 0x10000) {
+-		if (count++ < 5)
+-			pr_info("%s: packet spanning a 64k boundary\n",
+-				chan->name);
+-		return 0;
+-	}
+-	return 1;
+-}
+-
+-/* ---------- The SRP/COSA ROM monitor functions ---------- */
+-
+-/* Downloading SRP microcode: say "w" to SRP monitor, it answers by "w=",
+- * drivers need to say 4-digit hex number meaning start address of the microcode
+- * separated by a single space. Monitor replies by saying " =". Now driver
+- * has to write 4-digit hex number meaning the last byte address ended
+- * by a single space. Monitor has to reply with a space. Now the download
+- * begins. After the download monitor replies with "\r\n." (CR LF dot).
+- */
+-static int download(struct cosa_data *cosa, const char __user *microcode, int length, int address)
+-{
+-	int i;
+-
+-	if (put_wait_data(cosa, 'w') == -1)
+-		return -1;
+-	if ((i=get_wait_data(cosa)) != 'w') { printk("dnld: 0x%04x\n",i); return -2;}
+-	if (get_wait_data(cosa) != '=')
+-		return -3;
+-
+-	if (puthexnumber(cosa, address) < 0)
+-		return -4;
+-	if (put_wait_data(cosa, ' ') == -1)
+-		return -10;
+-	if (get_wait_data(cosa) != ' ')
+-		return -11;
+-	if (get_wait_data(cosa) != '=')
+-		return -12;
+-
+-	if (puthexnumber(cosa, address + length - 1) < 0)
+-		return -13;
+-	if (put_wait_data(cosa, ' ') == -1)
+-		return -18;
+-	if (get_wait_data(cosa) != ' ')
+-		return -19;
+-
+-	while (length--) {
+-		char c;
+-#ifndef SRP_DOWNLOAD_AT_BOOT
+-		if (get_user(c, microcode))
+-			return -23; /* ??? */
+-#else
+-		c = *microcode;
+-#endif
+-		if (put_wait_data(cosa, c) == -1)
+-			return -20;
+-		microcode++;
+-	}
+-
+-	if (get_wait_data(cosa) != '\r')
+-		return -21;
+-	if (get_wait_data(cosa) != '\n')
+-		return -22;
+-	if (get_wait_data(cosa) != '.')
+-		return -23;
+-#if 0
+-	printk(KERN_DEBUG "cosa%d: download completed.\n", cosa->num);
+-#endif
+-	return 0;
+-}
+-
+-/* Starting microcode is done via the "g" command of the SRP monitor.
+- * The chat should be the following: "g" "g=" "<addr><CR>"
+- * "<CR><CR><LF><CR><LF>".
+- */
+-static int startmicrocode(struct cosa_data *cosa, int address)
+-{
+-	if (put_wait_data(cosa, 'g') == -1)
+-		return -1;
+-	if (get_wait_data(cosa) != 'g')
+-		return -2;
+-	if (get_wait_data(cosa) != '=')
+-		return -3;
+-
+-	if (puthexnumber(cosa, address) < 0)
+-		return -4;
+-	if (put_wait_data(cosa, '\r') == -1)
+-		return -5;
+-
+-	if (get_wait_data(cosa) != '\r')
+-		return -6;
+-	if (get_wait_data(cosa) != '\r')
+-		return -7;
+-	if (get_wait_data(cosa) != '\n')
+-		return -8;
+-	if (get_wait_data(cosa) != '\r')
+-		return -9;
+-	if (get_wait_data(cosa) != '\n')
+-		return -10;
+-#if 0
+-	printk(KERN_DEBUG "cosa%d: microcode started\n", cosa->num);
+-#endif
+-	return 0;
+-}
+-
+-/* Reading memory is done via the "r" command of the SRP monitor.
+- * The chat is the following "r" "r=" "<addr> " " =" "<last_byte> " " "
+- * Then driver can read the data and the conversation is finished
+- * by SRP monitor sending "<CR><LF>." (dot at the end).
+- *
+- * This routine is not needed during the normal operation and serves
+- * for debugging purposes only.
+- */
+-static int readmem(struct cosa_data *cosa, char __user *microcode, int length, int address)
+-{
+-	if (put_wait_data(cosa, 'r') == -1)
+-		return -1;
+-	if ((get_wait_data(cosa)) != 'r')
+-		return -2;
+-	if ((get_wait_data(cosa)) != '=')
+-		return -3;
+-
+-	if (puthexnumber(cosa, address) < 0)
+-		return -4;
+-	if (put_wait_data(cosa, ' ') == -1)
+-		return -5;
+-	if (get_wait_data(cosa) != ' ')
+-		return -6;
+-	if (get_wait_data(cosa) != '=')
+-		return -7;
+-
+-	if (puthexnumber(cosa, address + length - 1) < 0)
+-		return -8;
+-	if (put_wait_data(cosa, ' ') == -1)
+-		return -9;
+-	if (get_wait_data(cosa) != ' ')
+-		return -10;
+-
+-	while (length--) {
+-		char c;
+-		int i;
+-
+-		i = get_wait_data(cosa);
+-		if (i == -1) {
+-			pr_info("0x%04x bytes remaining\n", length);
+-			return -11;
+-		}
+-		c = i;
+-#if 1
+-		if (put_user(c, microcode))
+-			return -23; /* ??? */
+-#else
+-		*microcode = c;
+-#endif
+-		microcode++;
+-	}
+-
+-	if (get_wait_data(cosa) != '\r')
+-		return -21;
+-	if (get_wait_data(cosa) != '\n')
+-		return -22;
+-	if (get_wait_data(cosa) != '.')
+-		return -23;
+-#if 0
+-	printk(KERN_DEBUG "cosa%d: readmem completed.\n", cosa->num);
+-#endif
+-	return 0;
+-}
+-
+-/* This function resets the device and reads the initial prompt
+- * of the device's ROM monitor.
+- */
+-static int cosa_reset_and_read_id(struct cosa_data *cosa, char *idstring)
+-{
+-	int i = 0, id = 0, prev = 0, curr = 0;
+-
+-	/* Reset the card ... */
+-	cosa_putstatus(cosa, 0);
+-	cosa_getdata8(cosa);
+-	cosa_putstatus(cosa, SR_RST);
+-	msleep(500);
+-	/* Disable all IRQs from the card */
+-	cosa_putstatus(cosa, 0);
+-
+-	/* Try to read the ID string. The card then prints out the
+-	 * identification string ended by the "\n\x2e".
+-	 *
+-	 * The following loop is indexed through i (instead of id)
+-	 * to avoid looping forever when for any reason
+-	 * the port returns '\r', '\n' or '\x2e' permanently.
+-	 */
+-	for (i = 0; i < COSA_MAX_ID_STRING - 1; i++, prev = curr) {
+-		curr = get_wait_data(cosa);
+-		if (curr == -1)
+-			return -1;
+-
+-		curr &= 0xff;
+-		if (curr != '\r' && curr != '\n' && curr != 0x2e)
+-			idstring[id++] = curr;
+-		if (curr == 0x2e && prev == '\n')
+-			break;
+-	}
+-	/* Perhaps we should fail when i==COSA_MAX_ID_STRING-1 ? */
+-	idstring[id] = '\0';
+-	return id;
+-}
+-
+-/* ---------- Auxiliary routines for COSA/SRP monitor ---------- */
+-
+-/* This routine gets the data byte from the card waiting for the SR_RX_RDY
+- * bit to be set in a loop. It should be used in the exceptional cases
+- * only (for example when resetting the card or downloading the firmware.
+- */
+-static int get_wait_data(struct cosa_data *cosa)
+-{
+-	int retries = 1000;
+-
+-	while (--retries) {
+-		/* read data and return them */
+-		if (cosa_getstatus(cosa) & SR_RX_RDY) {
+-			short r;
+-
+-			r = cosa_getdata8(cosa);
+-#if 0
+-			pr_info("get_wait_data returning after %d retries\n",
+-				999 - retries);
+-#endif
+-			return r;
+-		}
+-		/* sleep if not ready to read */
+-		schedule_timeout_interruptible(1);
+-	}
+-	pr_info("timeout in get_wait_data (status 0x%x)\n",
+-		cosa_getstatus(cosa));
+-	return -1;
+-}
+-
+-/* This routine puts the data byte to the card waiting for the SR_TX_RDY
+- * bit to be set in a loop. It should be used in the exceptional cases
+- * only (for example when resetting the card or downloading the firmware).
+- */
+-static int put_wait_data(struct cosa_data *cosa, int data)
+-{
+-	int retries = 1000;
+-
+-	while (--retries) {
+-		/* read data and return them */
+-		if (cosa_getstatus(cosa) & SR_TX_RDY) {
+-			cosa_putdata8(cosa, data);
+-#if 0
+-			pr_info("Putdata: %d retries\n", 999 - retries);
+-#endif
+-			return 0;
+-		}
+-#if 0
+-		/* sleep if not ready to read */
+-		schedule_timeout_interruptible(1);
+-#endif
+-	}
+-	pr_info("cosa%d: timeout in put_wait_data (status 0x%x)\n",
+-		cosa->num, cosa_getstatus(cosa));
+-	return -1;
+-}
+-
+-/* The following routine puts the hexadecimal number into the SRP monitor
+- * and verifies the proper echo of the sent bytes. Returns 0 on success,
+- * negative number on failure (-1,-3,-5,-7) means that put_wait_data() failed,
+- * (-2,-4,-6,-8) means that reading echo failed.
+- */
+-static int puthexnumber(struct cosa_data *cosa, int number)
+-{
+-	char temp[5];
+-	int i;
+-
+-	/* Well, I should probably replace this by something faster. */
+-	sprintf(temp, "%04X", number);
+-	for (i = 0; i < 4; i++) {
+-		if (put_wait_data(cosa, temp[i]) == -1) {
+-			pr_notice("cosa%d: puthexnumber failed to write byte %d\n",
+-				  cosa->num, i);
+-			return -1 - 2 * i;
+-		}
+-		if (get_wait_data(cosa) != temp[i]) {
+-			pr_notice("cosa%d: puthexhumber failed to read echo of byte %d\n",
+-				  cosa->num, i);
+-			return -2 - 2 * i;
+-		}
+-	}
+-	return 0;
+-}
+-
+-/* ---------- Interrupt routines ---------- */
+-
+-/* There are three types of interrupt:
+- * At the beginning of transmit - this handled is in tx_interrupt(),
+- * at the beginning of receive - it is in rx_interrupt() and
+- * at the end of transmit/receive - it is the eot_interrupt() function.
+- * These functions are multiplexed by cosa_interrupt() according to the
+- * COSA status byte. I have moved the rx/tx/eot interrupt handling into
+- * separate functions to make it more readable. These functions are inline,
+- * so there should be no overhead of function call.
+- *
+- * In the COSA bus-master mode, we need to tell the card the address of a
+- * buffer. Unfortunately, COSA may be too slow for us, so we must busy-wait.
+- * It's time to use the bottom half :-(
 - */
 -
--#include <linux/atmapi.h>
--#include <linux/atmioc.h>
--
--#define ZATM_GETPOOL	_IOW('a',ATMIOC_SARPRV+1,struct atmif_sioc)
--						/* get pool statistics */
--#define ZATM_GETPOOLZ	_IOW('a',ATMIOC_SARPRV+2,struct atmif_sioc)
--						/* get statistics and zero */
--#define ZATM_SETPOOL	_IOW('a',ATMIOC_SARPRV+3,struct atmif_sioc)
--						/* set pool parameters */
--
--struct zatm_pool_info {
--	int ref_count;			/* free buffer pool usage counters */
--	int low_water,high_water;	/* refill parameters */
--	int rqa_count,rqu_count;	/* queue condition counters */
--	int offset,next_off;		/* alignment optimizations: offset */
--	int next_cnt,next_thres;	/* repetition counter and threshold */
--};
--
--struct zatm_pool_req {
--	int pool_num;			/* pool number */
--	struct zatm_pool_info info;	/* actual information */
--};
--
--#define ZATM_OAM_POOL		0	/* free buffer pool for OAM cells */
--#define ZATM_AAL0_POOL		1	/* free buffer pool for AAL0 cells */
--#define ZATM_AAL5_POOL_BASE	2	/* first AAL5 free buffer pool */
--#define ZATM_LAST_POOL	ZATM_AAL5_POOL_BASE+10 /* max. 64 kB */
--
--#define ZATM_TIMER_HISTORY_SIZE	16	/* number of timer adjustments to
--					   record; must be 2^n */
--
+-/* Transmit interrupt routine - called when COSA is willing to obtain
+- * data from the OS. The most tricky part of the routine is selection
+- * of channel we (OS) want to send packet for. For SRP we should probably
+- * use the round-robin approach. The newer COSA firmwares have a simple
+- * flow-control - in the status word has bits 2 and 3 set to 1 means that the
+- * channel 0 or 1 doesn't want to receive data.
+- *
+- * It seems there is a bug in COSA firmware (need to trace it further):
+- * When the driver status says that the kernel has no more data for transmit
+- * (e.g. at the end of TX DMA) and then the kernel changes its mind
+- * (e.g. new packet is queued to hard_start_xmit()), the card issues
+- * the TX interrupt but does not mark the channel as ready-to-transmit.
+- * The fix seems to be to push the packet to COSA despite its request.
+- * We first try to obey the card's opinion, and then fall back to forced TX.
+- */
+-static inline void tx_interrupt(struct cosa_data *cosa, int status)
+-{
+-	unsigned long flags, flags1;
+-#ifdef DEBUG_IRQS
+-	pr_info("cosa%d: SR_DOWN_REQUEST status=0x%04x\n", cosa->num, status);
 -#endif
+-	spin_lock_irqsave(&cosa->lock, flags);
+-	set_bit(TXBIT, &cosa->rxtx);
+-	if (!test_bit(IRQBIT, &cosa->rxtx)) {
+-		/* flow control, see the comment above */
+-		int i = 0;
+-
+-		if (!cosa->txbitmap) {
+-			pr_warn("%s: No channel wants data in TX IRQ. Expect DMA timeout.\n",
+-				cosa->name);
+-			put_driver_status_nolock(cosa);
+-			clear_bit(TXBIT, &cosa->rxtx);
+-			spin_unlock_irqrestore(&cosa->lock, flags);
+-			return;
+-		}
+-		while (1) {
+-			cosa->txchan++;
+-			i++;
+-			if (cosa->txchan >= cosa->nchannels)
+-				cosa->txchan = 0;
+-			if (!(cosa->txbitmap & (1 << cosa->txchan)))
+-				continue;
+-			if (~status &
+-			    (1 << (cosa->txchan + DRIVER_TXMAP_SHIFT)))
+-				break;
+-			/* in second pass, accept first ready-to-TX channel */
+-			if (i > cosa->nchannels) {
+-				/* Can be safely ignored */
+-#ifdef DEBUG_IRQS
+-				printk(KERN_DEBUG "%s: Forcing TX "
+-					"to not-ready channel %d\n",
+-					cosa->name, cosa->txchan);
+-#endif
+-				break;
+-			}
+-		}
+-
+-		cosa->txsize = cosa->chan[cosa->txchan].txsize;
+-		if (cosa_dma_able(cosa->chan + cosa->txchan,
+-				  cosa->chan[cosa->txchan].txbuf,
+-				  cosa->txsize)) {
+-			cosa->txbuf = cosa->chan[cosa->txchan].txbuf;
+-		} else {
+-			memcpy(cosa->bouncebuf, cosa->chan[cosa->txchan].txbuf,
+-			       cosa->txsize);
+-			cosa->txbuf = cosa->bouncebuf;
+-		}
+-	}
+-
+-	if (is_8bit(cosa)) {
+-		if (!test_bit(IRQBIT, &cosa->rxtx)) {
+-			cosa_putstatus(cosa, SR_TX_INT_ENA);
+-			cosa_putdata8(cosa, ((cosa->txchan << 5) & 0xe0) |
+-				((cosa->txsize >> 8) & 0x1f));
+-#ifdef DEBUG_IO
+-			debug_status_out(cosa, SR_TX_INT_ENA);
+-			debug_data_out(cosa, ((cosa->txchan << 5) & 0xe0) |
+-				       ((cosa->txsize >> 8) & 0x1f));
+-			debug_data_in(cosa, cosa_getdata8(cosa));
+-#else
+-			cosa_getdata8(cosa);
+-#endif
+-			set_bit(IRQBIT, &cosa->rxtx);
+-			spin_unlock_irqrestore(&cosa->lock, flags);
+-			return;
+-		} else {
+-			clear_bit(IRQBIT, &cosa->rxtx);
+-			cosa_putstatus(cosa, 0);
+-			cosa_putdata8(cosa, cosa->txsize & 0xff);
+-#ifdef DEBUG_IO
+-			debug_status_out(cosa, 0);
+-			debug_data_out(cosa, cosa->txsize & 0xff);
+-#endif
+-		}
+-	} else {
+-		cosa_putstatus(cosa, SR_TX_INT_ENA);
+-		cosa_putdata16(cosa, ((cosa->txchan << 13) & 0xe000)
+-			| (cosa->txsize & 0x1fff));
+-#ifdef DEBUG_IO
+-		debug_status_out(cosa, SR_TX_INT_ENA);
+-		debug_data_out(cosa, ((cosa->txchan << 13) & 0xe000) |
+-			       (cosa->txsize & 0x1fff));
+-		debug_data_in(cosa, cosa_getdata8(cosa));
+-		debug_status_out(cosa, 0);
+-#else
+-		cosa_getdata8(cosa);
+-#endif
+-		cosa_putstatus(cosa, 0);
+-	}
+-
+-	if (cosa->busmaster) {
+-		unsigned long addr = virt_to_bus(cosa->txbuf);
+-		int count = 0;
+-
+-		pr_info("busmaster IRQ\n");
+-		while (!(cosa_getstatus(cosa) & SR_TX_RDY)) {
+-			count++;
+-			udelay(10);
+-			if (count > 1000)
+-				break;
+-		}
+-		pr_info("status %x\n", cosa_getstatus(cosa));
+-		pr_info("ready after %d loops\n", count);
+-		cosa_putdata16(cosa, (addr >> 16) & 0xffff);
+-
+-		count = 0;
+-		while (!(cosa_getstatus(cosa) & SR_TX_RDY)) {
+-			count++;
+-			if (count > 1000)
+-				break;
+-			udelay(10);
+-		}
+-		pr_info("ready after %d loops\n", count);
+-		cosa_putdata16(cosa, addr & 0xffff);
+-		flags1 = claim_dma_lock();
+-		set_dma_mode(cosa->dma, DMA_MODE_CASCADE);
+-		enable_dma(cosa->dma);
+-		release_dma_lock(flags1);
+-	} else {
+-		/* start the DMA */
+-		flags1 = claim_dma_lock();
+-		disable_dma(cosa->dma);
+-		clear_dma_ff(cosa->dma);
+-		set_dma_mode(cosa->dma, DMA_MODE_WRITE);
+-		set_dma_addr(cosa->dma, virt_to_bus(cosa->txbuf));
+-		set_dma_count(cosa->dma, cosa->txsize);
+-		enable_dma(cosa->dma);
+-		release_dma_lock(flags1);
+-	}
+-	cosa_putstatus(cosa, SR_TX_DMA_ENA | SR_USR_INT_ENA);
+-#ifdef DEBUG_IO
+-	debug_status_out(cosa, SR_TX_DMA_ENA | SR_USR_INT_ENA);
+-#endif
+-	spin_unlock_irqrestore(&cosa->lock, flags);
+-}
+-
+-static inline void rx_interrupt(struct cosa_data *cosa, int status)
+-{
+-	unsigned long flags;
+-#ifdef DEBUG_IRQS
+-	pr_info("cosa%d: SR_UP_REQUEST\n", cosa->num);
+-#endif
+-
+-	spin_lock_irqsave(&cosa->lock, flags);
+-	set_bit(RXBIT, &cosa->rxtx);
+-
+-	if (is_8bit(cosa)) {
+-		if (!test_bit(IRQBIT, &cosa->rxtx)) {
+-			set_bit(IRQBIT, &cosa->rxtx);
+-			put_driver_status_nolock(cosa);
+-			cosa->rxsize = cosa_getdata8(cosa) << 8;
+-#ifdef DEBUG_IO
+-			debug_data_in(cosa, cosa->rxsize >> 8);
+-#endif
+-			spin_unlock_irqrestore(&cosa->lock, flags);
+-			return;
+-		} else {
+-			clear_bit(IRQBIT, &cosa->rxtx);
+-			cosa->rxsize |= cosa_getdata8(cosa) & 0xff;
+-#ifdef DEBUG_IO
+-			debug_data_in(cosa, cosa->rxsize & 0xff);
+-#endif
+-#if 0
+-			pr_info("cosa%d: receive rxsize = (0x%04x)\n",
+-				cosa->num, cosa->rxsize);
+-#endif
+-		}
+-	} else {
+-		cosa->rxsize = cosa_getdata16(cosa);
+-#ifdef DEBUG_IO
+-		debug_data_in(cosa, cosa->rxsize);
+-#endif
+-#if 0
+-		pr_info("cosa%d: receive rxsize = (0x%04x)\n",
+-			cosa->num, cosa->rxsize);
+-#endif
+-	}
+-	if (((cosa->rxsize & 0xe000) >> 13) >= cosa->nchannels) {
+-		pr_warn("%s: rx for unknown channel (0x%04x)\n",
+-			cosa->name, cosa->rxsize);
+-		spin_unlock_irqrestore(&cosa->lock, flags);
+-		goto reject;
+-	}
+-	cosa->rxchan = cosa->chan + ((cosa->rxsize & 0xe000) >> 13);
+-	cosa->rxsize &= 0x1fff;
+-	spin_unlock_irqrestore(&cosa->lock, flags);
+-
+-	cosa->rxbuf = NULL;
+-	if (cosa->rxchan->setup_rx)
+-		cosa->rxbuf = cosa->rxchan->setup_rx(cosa->rxchan, cosa->rxsize);
+-
+-	if (!cosa->rxbuf) {
+-reject:		/* Reject the packet */
+-		pr_info("cosa%d: rejecting packet on channel %d\n",
+-			cosa->num, cosa->rxchan->num);
+-		cosa->rxbuf = cosa->bouncebuf;
+-	}
+-
+-	/* start the DMA */
+-	flags = claim_dma_lock();
+-	disable_dma(cosa->dma);
+-	clear_dma_ff(cosa->dma);
+-	set_dma_mode(cosa->dma, DMA_MODE_READ);
+-	if (cosa_dma_able(cosa->rxchan, cosa->rxbuf, cosa->rxsize & 0x1fff))
+-		set_dma_addr(cosa->dma, virt_to_bus(cosa->rxbuf));
+-	else
+-		set_dma_addr(cosa->dma, virt_to_bus(cosa->bouncebuf));
+-
+-	set_dma_count(cosa->dma, (cosa->rxsize & 0x1fff));
+-	enable_dma(cosa->dma);
+-	release_dma_lock(flags);
+-	spin_lock_irqsave(&cosa->lock, flags);
+-	cosa_putstatus(cosa, SR_RX_DMA_ENA | SR_USR_INT_ENA);
+-	if (!is_8bit(cosa) && (status & SR_TX_RDY))
+-		cosa_putdata8(cosa, DRIVER_RX_READY);
+-#ifdef DEBUG_IO
+-	debug_status_out(cosa, SR_RX_DMA_ENA | SR_USR_INT_ENA);
+-	if (!is_8bit(cosa) && (status & SR_TX_RDY))
+-		debug_data_cmd(cosa, DRIVER_RX_READY);
+-#endif
+-	spin_unlock_irqrestore(&cosa->lock, flags);
+-}
+-
+-static inline void eot_interrupt(struct cosa_data *cosa, int status)
+-{
+-	unsigned long flags, flags1;
+-
+-	spin_lock_irqsave(&cosa->lock, flags);
+-	flags1 = claim_dma_lock();
+-	disable_dma(cosa->dma);
+-	clear_dma_ff(cosa->dma);
+-	release_dma_lock(flags1);
+-	if (test_bit(TXBIT, &cosa->rxtx)) {
+-		struct channel_data *chan = cosa->chan + cosa->txchan;
+-
+-		if (chan->tx_done)
+-			if (chan->tx_done(chan, cosa->txsize))
+-				clear_bit(chan->num, &cosa->txbitmap);
+-	} else if (test_bit(RXBIT, &cosa->rxtx)) {
+-#ifdef DEBUG_DATA
+-	{
+-		int i;
+-
+-		pr_info("cosa%dc%d: done rx(0x%x)",
+-			cosa->num, cosa->rxchan->num, cosa->rxsize);
+-		for (i = 0; i < cosa->rxsize; i++)
+-			pr_cont(" %02x", cosa->rxbuf[i]&0xff);
+-		pr_cont("\n");
+-	}
+-#endif
+-		/* Packet for unknown channel? */
+-		if (cosa->rxbuf == cosa->bouncebuf)
+-			goto out;
+-		if (!cosa_dma_able(cosa->rxchan, cosa->rxbuf, cosa->rxsize))
+-			memcpy(cosa->rxbuf, cosa->bouncebuf, cosa->rxsize);
+-		if (cosa->rxchan->rx_done)
+-			if (cosa->rxchan->rx_done(cosa->rxchan))
+-				clear_bit(cosa->rxchan->num, &cosa->rxbitmap);
+-	} else {
+-		pr_notice("cosa%d: unexpected EOT interrupt\n", cosa->num);
+-	}
+-	/* Clear the RXBIT, TXBIT and IRQBIT (the latest should be
+-	 * cleared anyway). We should do it as soon as possible
+-	 * so that we can tell the COSA we are done and to give it a time
+-	 * for recovery.
+-	 */
+-out:
+-	cosa->rxtx = 0;
+-	put_driver_status_nolock(cosa);
+-	spin_unlock_irqrestore(&cosa->lock, flags);
+-}
+-
+-static irqreturn_t cosa_interrupt(int irq, void *cosa_)
+-{
+-	unsigned status;
+-	int count = 0;
+-	struct cosa_data *cosa = cosa_;
+-again:
+-	status = cosa_getstatus(cosa);
+-#ifdef DEBUG_IRQS
+-	pr_info("cosa%d: got IRQ, status 0x%02x\n", cosa->num, status & 0xff);
+-#endif
+-#ifdef DEBUG_IO
+-	debug_status_in(cosa, status);
+-#endif
+-	switch (status & SR_CMD_FROM_SRP_MASK) {
+-	case SR_DOWN_REQUEST:
+-		tx_interrupt(cosa, status);
+-		break;
+-	case SR_UP_REQUEST:
+-		rx_interrupt(cosa, status);
+-		break;
+-	case SR_END_OF_TRANSFER:
+-		eot_interrupt(cosa, status);
+-		break;
+-	default:
+-		/* We may be too fast for SRP. Try to wait a bit more. */
+-		if (count++ < 100) {
+-			udelay(100);
+-			goto again;
+-		}
+-		pr_info("cosa%d: unknown status 0x%02x in IRQ after %d retries\n",
+-			cosa->num, status & 0xff, count);
+-	}
+-#ifdef DEBUG_IRQS
+-	if (count)
+-		pr_info("%s: %d-times got unknown status in IRQ\n",
+-			cosa->name, count);
+-	else
+-		pr_info("%s: returning from IRQ\n", cosa->name);
+-#endif
+-	return IRQ_HANDLED;
+-}
+-
+-/* ---------- I/O debugging routines ---------- */
+-/* These routines can be used to monitor COSA/SRP I/O and to printk()
+- * the data being transferred on the data and status I/O port in a
+- * readable way.
+- */
+-
+-#ifdef DEBUG_IO
+-static void debug_status_in(struct cosa_data *cosa, int status)
+-{
+-	char *s;
+-
+-	switch (status & SR_CMD_FROM_SRP_MASK) {
+-	case SR_UP_REQUEST:
+-		s = "RX_REQ";
+-		break;
+-	case SR_DOWN_REQUEST:
+-		s = "TX_REQ";
+-		break;
+-	case SR_END_OF_TRANSFER:
+-		s = "ET_REQ";
+-		break;
+-	default:
+-		s = "NO_REQ";
+-		break;
+-	}
+-	pr_info("%s: IO: status -> 0x%02x (%s%s%s%s)\n",
+-		cosa->name,
+-		status,
+-		status & SR_USR_RQ ? "USR_RQ|" : "",
+-		status & SR_TX_RDY ? "TX_RDY|" : "",
+-		status & SR_RX_RDY ? "RX_RDY|" : "",
+-		s);
+-}
+-
+-static void debug_status_out(struct cosa_data *cosa, int status)
+-{
+-	pr_info("%s: IO: status <- 0x%02x (%s%s%s%s%s%s)\n",
+-		cosa->name,
+-		status,
+-		status & SR_RX_DMA_ENA  ? "RXDMA|"  : "!rxdma|",
+-		status & SR_TX_DMA_ENA  ? "TXDMA|"  : "!txdma|",
+-		status & SR_RST         ? "RESET|"  : "",
+-		status & SR_USR_INT_ENA ? "USRINT|" : "!usrint|",
+-		status & SR_TX_INT_ENA  ? "TXINT|"  : "!txint|",
+-		status & SR_RX_INT_ENA  ? "RXINT"   : "!rxint");
+-}
+-
+-static void debug_data_in(struct cosa_data *cosa, int data)
+-{
+-	pr_info("%s: IO: data -> 0x%04x\n", cosa->name, data);
+-}
+-
+-static void debug_data_out(struct cosa_data *cosa, int data)
+-{
+-	pr_info("%s: IO: data <- 0x%04x\n", cosa->name, data);
+-}
+-
+-static void debug_data_cmd(struct cosa_data *cosa, int data)
+-{
+-	pr_info("%s: IO: data <- 0x%04x (%s|%s)\n",
+-		cosa->name, data,
+-		data & SR_RDY_RCV ? "RX_RDY" : "!rx_rdy",
+-		data & SR_RDY_SND ? "TX_RDY" : "!tx_rdy");
+-}
+-#endif
+-
+-/* EOF -- this file has not been truncated */
+diff --git a/drivers/net/wan/cosa.h b/drivers/net/wan/cosa.h
+deleted file mode 100644
+index f57e0af9d56a..000000000000
+--- a/drivers/net/wan/cosa.h
++++ /dev/null
+@@ -1,104 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0-or-later */
+-/* $Id: cosa.h,v 1.6 1999/01/06 14:02:44 kas Exp $ */
+-
+-/*
+- *  Copyright (C) 1995-1997  Jan "Yenya" Kasprzak <kas@fi.muni.cz>
+- */
+-
+-#ifndef COSA_H__
+-#define COSA_H__
+-
+-#include <linux/ioctl.h>
+-
+-#ifdef __KERNEL__
+-/* status register - output bits */
+-#define SR_RX_DMA_ENA   0x04    /* receiver DMA enable bit */
+-#define SR_TX_DMA_ENA   0x08    /* transmitter DMA enable bit */
+-#define SR_RST          0x10    /* SRP reset */
+-#define SR_USR_INT_ENA  0x20    /* user interrupt enable bit */
+-#define SR_TX_INT_ENA   0x40    /* transmitter interrupt enable bit */
+-#define SR_RX_INT_ENA   0x80    /* receiver interrupt enable bit */
+-
+-/* status register - input bits */
+-#define SR_USR_RQ       0x20    /* user interrupt request pending */
+-#define SR_TX_RDY       0x40    /* transmitter empty (ready) */
+-#define SR_RX_RDY       0x80    /* receiver data ready */
+-
+-#define SR_UP_REQUEST   0x02    /* request from SRP to transfer data
+-                                   up to PC */
+-#define SR_DOWN_REQUEST 0x01    /* SRP is able to transfer data down
+-                                   from PC to SRP */
+-#define SR_END_OF_TRANSFER      0x03    /* SRP signalize end of
+-                                           transfer (up or down) */
+-
+-#define SR_CMD_FROM_SRP_MASK    0x03    /* mask to get SRP command */
+-
+-/* bits in driver status byte definitions : */
+-#define SR_RDY_RCV      0x01    /* ready to receive packet */
+-#define SR_RDY_SND      0x02    /* ready to send packet */
+-#define SR_CMD_PND      0x04    /* command pending */ /* not currently used */
+-
+-/* ???? */
+-#define SR_PKT_UP       0x01    /* transfer of packet up in progress */
+-#define SR_PKT_DOWN     0x02    /* transfer of packet down in progress */
+-
+-#endif /* __KERNEL__ */
+-
+-#define SR_LOAD_ADDR    0x4400  /* SRP microcode load address */
+-#define SR_START_ADDR   0x4400  /* SRP microcode start address */
+-
+-#define COSA_LOAD_ADDR    0x400  /* SRP microcode load address */
+-#define COSA_MAX_FIRMWARE_SIZE	0x10000
+-
+-/* ioctls */
+-struct cosa_download {
+-	int addr, len;
+-	char __user *code;
+-};
+-
+-/* Reset the device */
+-#define COSAIORSET	_IO('C',0xf0)
+-
+-/* Start microcode at given address */
+-#define COSAIOSTRT	_IOW('C',0xf1, int)
+-
+-/* Read the block from the device memory */
+-#define COSAIORMEM	_IOWR('C',0xf2, struct cosa_download *)
+-	/* actually the struct cosa_download itself; this is to keep
+-	 * the ioctl number same as in 2.4 in order to keep the user-space
+-	 * utils compatible. */
+-
+-/* Write the block to the device memory (i.e. download the microcode) */
+-#define COSAIODOWNLD	_IOW('C',0xf2, struct cosa_download *)
+-	/* actually the struct cosa_download itself; this is to keep
+-	 * the ioctl number same as in 2.4 in order to keep the user-space
+-	 * utils compatible. */
+-
+-/* Read the device type (one of "srp", "cosa", and "cosa8" for now) */
+-#define COSAIORTYPE	_IOR('C',0xf3, char *)
+-
+-/* Read the device identification string */
+-#define COSAIORIDSTR	_IOR('C',0xf4, char *)
+-/* Maximum length of the identification string. */
+-#define COSA_MAX_ID_STRING 128
+-
+-/* Increment/decrement the module usage count :-) */
+-/* #define COSAIOMINC	_IO('C',0xf5) */
+-/* #define COSAIOMDEC	_IO('C',0xf6) */
+-
+-/* Get the total number of cards installed */
+-#define COSAIONRCARDS	_IO('C',0xf7)
+-
+-/* Get the number of channels on this card */
+-#define COSAIONRCHANS	_IO('C',0xf8)
+-
+-/* Set the driver for the bus-master operations */
+-#define COSAIOBMSET	_IOW('C', 0xf9, unsigned short)
+-
+-#define COSA_BM_OFF	0	/* Bus-mastering off - use ISA DMA (default) */
+-#define COSA_BM_ON	1	/* Bus-mastering on - faster but untested */
+-
+-/* Gets the busmaster status */
+-#define COSAIOBMGET	_IO('C', 0xfa)
+-
+-#endif /* !COSA_H__ */
 -- 
 2.34.1
 
