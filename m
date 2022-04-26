@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E47D50F4C6
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 10:37:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 437DE50F604
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 10:55:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244035AbiDZIkH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 04:40:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59362 "EHLO
+        id S1345483AbiDZIqF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 04:46:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345464AbiDZIjJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 04:39:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DBD013AB6F;
-        Tue, 26 Apr 2022 01:29:51 -0700 (PDT)
+        with ESMTP id S1346758AbiDZIpV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 04:45:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E3AC37BC7;
+        Tue, 26 Apr 2022 01:35:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 56AF7B81D01;
-        Tue, 26 Apr 2022 08:29:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88F2DC385BE;
-        Tue, 26 Apr 2022 08:29:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AAEB2B81D19;
+        Tue, 26 Apr 2022 08:35:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7D46C385A4;
+        Tue, 26 Apr 2022 08:35:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961789;
-        bh=w0FGOCu0HGhfsf/vHWDXhezZ4vO/9mPGexCH8WeywMg=;
+        s=korg; t=1650962133;
+        bh=oUoewkEYwG/81bAR7EqxcaJ8PArR3f5TfNRQJaU02l8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BtegEvd+8htHud+gDPRCgbqkRc2YNNzSIAvqj2e7SdMaZ2TwPSSiPTmPorY9jgRgN
-         NYrTswKElF2IzplhafZwyls8gWxcOwzfo3TeToD1EGz7yji4vgbE8QhUQunXjAyVct
-         JyTp/xvjGtHx9Fe6575mXGmoTuZCz2z98ALqoCzE=
+        b=slutwmpbO/HTqBZOJM7FkoCGPrsqQgE8k0yIz1SK5dX4SoLGDrcKhj0Zzn23Zpo4s
+         dqjEfxoacF1Ukas5AVvXSODtiYAPzhzfjW2eVgNu3N0SsXOG46SD/afbD3TnY/dLTQ
+         oZV7zBQzUtbvQd3BNAlfYhDMYtOqvjTDCEFoRWfY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -41,12 +41,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         brcm80211-dev-list.pdl@broadcom.com, netdev@vger.kernel.org,
         Arend van Spriel <arend.vanspriel@broadcom.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 30/62] brcmfmac: sdio: Fix undefined behavior due to shift overflowing the constant
-Date:   Tue, 26 Apr 2022 10:21:10 +0200
-Message-Id: <20220426081738.090049478@linuxfoundation.org>
+Subject: [PATCH 5.10 43/86] brcmfmac: sdio: Fix undefined behavior due to shift overflowing the constant
+Date:   Tue, 26 Apr 2022 10:21:11 +0200
+Message-Id: <20220426081742.449570331@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081737.209637816@linuxfoundation.org>
-References: <20220426081737.209637816@linuxfoundation.org>
+In-Reply-To: <20220426081741.202366502@linuxfoundation.org>
+References: <20220426081741.202366502@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -95,10 +95,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-index ef5521b9b357..ddc999670484 100644
+index 6d5d5c39c635..9929e90866f0 100644
 --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
 +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-@@ -550,7 +550,7 @@ enum brcmf_sdio_frmtype {
+@@ -557,7 +557,7 @@ enum brcmf_sdio_frmtype {
  	BRCMF_SDIO_FT_SUB,
  };
  
