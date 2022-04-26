@@ -2,119 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 00FEB510251
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 17:56:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E274B510254
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 17:57:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352670AbiDZP7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 11:59:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49242 "EHLO
+        id S1352683AbiDZQAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 12:00:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352653AbiDZP70 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 11:59:26 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C27AA31923;
-        Tue, 26 Apr 2022 08:56:18 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id p6so2732632plf.9;
-        Tue, 26 Apr 2022 08:56:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=gKqBWnCkDhPa/9nmFO0gA+P1ct06PRzyrAfrgkwdtZQ=;
-        b=cdtB0ZKQh5fHXEtqwKZRdRpRpNlc2FA7fzabvWnVsZEh471IpBAHTzhJ0Hmz6aKWju
-         iGjJYFQtjxcn2O+CnbAXLs21Io7RfvyAqUieYCysQE9eqKrhLrmTs6IgnPQ05LEoKoSa
-         mGb/AaJ1wjDcALrwlcoyeqSGW0PSQBfyDAaV1hi6bDju+mYxVqgE6lxoKN62zd+fJ9O4
-         iPU8jjQWHVocjekVmqX3dSl1+stabdTaARusTK8LuCUIxqsZKdGbEIM3iIEtAtkwquPR
-         jtRMz31oDlntY4KAFFP2KyW7KzMcwE3W55d28blpe24GvF4APEchTykTMObnsJMELQls
-         A2bQ==
+        with ESMTP id S1352666AbiDZQAv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 12:00:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 09407387A0
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 08:57:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650988663;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=TkKuUo32/J9DonHrfJ5BZUhvklozprERW7prdcPlnX0=;
+        b=Ouj8iYo11/ZJpWQa3B3+8gyz/8iL3jUPj4T033El9J3HyzS8fEGn5P0nezkap4+5K+Rbme
+        0RfC27qVydkoKByPsOOdnh8XbdP2XROmHLo6yjld5Ifqo3uhDORl39UlYfS/9lKeeAYBK4
+        pOvCRVkwaCq7Q0hEdRURQWdM1OG7UTU=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-664-esZDktl9M7q28qjoTYO3fQ-1; Tue, 26 Apr 2022 11:57:41 -0400
+X-MC-Unique: esZDktl9M7q28qjoTYO3fQ-1
+Received: by mail-ej1-f71.google.com with SMTP id nc20-20020a1709071c1400b006f3726da7d3so4693608ejc.15
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 08:57:41 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=gKqBWnCkDhPa/9nmFO0gA+P1ct06PRzyrAfrgkwdtZQ=;
-        b=qZj1ifVy0FsD1vYvhdqHtKsrdZ5SuWmt1ip2Octc+2GCWLQamdvjaH0V5N6/qhhslo
-         r3m7MVf8iOd99VwXtEGNYDOjdVsOfPy96OYl4d1JwgDQ67jrqGJO5FKRgq1CgBIaSo3Z
-         JuFo9YUdUpDhNjkCJjZxhx2p1UD5r0k7UenX6gny9GlreRKICCBAWauATFEEbesDkhvu
-         HuQ4JQqtfmzWuRk+5mpl3vzHfbMPUANzHByao5wyn+YEOFGUGQHKBReXxZbbqYHE6Ld2
-         booYhHmnB0FZ4y2J1TtbzsliJujkVIk6oanwh5lcUQbJkydajikAYpwLMMs86du5Nui2
-         nbBw==
-X-Gm-Message-State: AOAM532rPcpED6pwSg2fqIly9p6Sm8spHHaoiZddnSI/GLFFv7dkKE4o
-        cg+dluXXv6NlwVofBgY6bhI=
-X-Google-Smtp-Source: ABdhPJyqc/8SuGr06eAq/HSXJtEMhzP9i+HVQg66AphhwWBy205v6vp9EPzuIdT3+m0E5GQumrVzcQ==
-X-Received: by 2002:a17:90b:1251:b0:1d7:f7ae:9f1 with SMTP id gx17-20020a17090b125100b001d7f7ae09f1mr26323671pjb.65.1650988578270;
-        Tue, 26 Apr 2022 08:56:18 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id v18-20020a62c312000000b0050d56ae29d4sm3246368pfg.29.2022.04.26.08.56.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Apr 2022 08:56:17 -0700 (PDT)
-Message-ID: <944ffc2f-9f5a-a008-95b8-6812d5895b6d@gmail.com>
-Date:   Tue, 26 Apr 2022 08:56:15 -0700
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TkKuUo32/J9DonHrfJ5BZUhvklozprERW7prdcPlnX0=;
+        b=Eu1FpTKj1TuHQeoDbroq6QqijDwveRVFIOGxTLAPNCentnK6rWRsytPPdPNVpCBwLQ
+         ztr2Kxx/vEpaW/im7XqDDfAoGOydAH00oSkteLVjVKtlOTVVSygnS+pwJvYZn8TvuS25
+         BmtWBcuO/k7apn1vTZ8wWrEzhXn3xV9fqnYHIsqARHMAZXKGay8ziZdZtp7/nHSVOL29
+         6K4TZlG411GroKf2HDUdIqED967+z/mTq3ywNp1pMGZQ2SGc/A81oeRlu0dSbFTHeaDE
+         Sq0TBRH6K0pe6umebYmfyR5/AR/kZU+gKJzS2tdA3ATIOtjMD8uE854Kr0bvAw+B0qLx
+         2BiA==
+X-Gm-Message-State: AOAM531RloBDF5fxUVLME7/HQPrNt9AkULcCKk+J43TnYltJg4UWoCpW
+        PtsZwCKkBJSeDdUE8tHqbADyN6dgjkd6v2WQXvzSQzhkufHo2av3xNkqu0IMZnLTS04yuOpV6fd
+        rZsFcYnDJB/l6CKXB
+X-Received: by 2002:a17:906:aed8:b0:6f3:7e6b:14d with SMTP id me24-20020a170906aed800b006f37e6b014dmr14313200ejb.451.1650988660404;
+        Tue, 26 Apr 2022 08:57:40 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxLbkGySw9HKU9T5GClMyjg6GJ1qdgz4DT4v6q+yj+pA2eldbZaLN/GjYetj1UIwjjqKxbdtA==
+X-Received: by 2002:a17:906:aed8:b0:6f3:7e6b:14d with SMTP id me24-20020a170906aed800b006f37e6b014dmr14313189ejb.451.1650988660176;
+        Tue, 26 Apr 2022 08:57:40 -0700 (PDT)
+Received: from localhost ([37.161.137.75])
+        by smtp.gmail.com with ESMTPSA id u12-20020aa7d54c000000b00423e004bf9asm6490554edr.86.2022.04.26.08.57.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 08:57:39 -0700 (PDT)
+Date:   Tue, 26 Apr 2022 17:57:35 +0200
+From:   Andrea Claudi <aclaudi@redhat.com>
+To:     stephen@networkplumber.org
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com
+Subject: Re: [PATCH iproute2 0/3] Fix some typos in doc and man pages
+Message-ID: <YmgWb08vTOvF45yO@renaissance-vector>
+References: <cover.1647955885.git.aclaudi@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: Aw: Re: [RFC v1 2/3] net: dsa: mt753x: make CPU-Port dynamic
-Content-Language: en-US
-To:     Frank Wunderlich <frank-w@public-files.de>
-Cc:     Frank Wunderlich <linux@fw-web.de>,
-        linux-mediatek@lists.infradead.org,
-        linux-rockchip@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20220426134924.30372-1-linux@fw-web.de>
- <20220426134924.30372-3-linux@fw-web.de>
- <046a334b-d972-6ab9-5127-f845cef72751@gmail.com>
- <trinity-5fd6da8c-15f6-488d-a332-0ce7625f41e0-1650988498781@3c-app-gmx-bs69>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <trinity-5fd6da8c-15f6-488d-a332-0ce7625f41e0-1650988498781@3c-app-gmx-bs69>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1647955885.git.aclaudi@redhat.com>
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/26/22 08:54, Frank Wunderlich wrote:
-> Hi
+On Tue, Mar 22, 2022 at 03:32:02PM +0100, Andrea Claudi wrote:
+> As per description, this series contains some typo fixes on doc an man
+> pages.
 > 
-> thanks for fast review.
+> - patch 1/3 fixes a typo in a devlink example
+> - patch 2/3 fixes typos on some man pages
+> - patch 3/3 fixes a typo in the tc actions doc
 > 
->> Gesendet: Dienstag, 26. April 2022 um 17:45 Uhr
->> Von: "Florian Fainelli" <f.fainelli@gmail.com>
->> On 4/26/22 06:49, Frank Wunderlich wrote:
->>> From: Frank Wunderlich <frank-w@public-files.de>
+> Andrea Claudi (3):
+>   man: devlink-region: fix typo in example
+>   man: fix some typos
+>   doc: fix 'infact' --> 'in fact' typo
 > 
->>> @@ -1190,8 +1191,8 @@ mt7530_port_bridge_join(struct dsa_switch *ds, int port,
->>>    			struct netlink_ext_ack *extack)
->>>    {
->>>    	struct dsa_port *dp = dsa_to_port(ds, port), *other_dp;
->>> -	u32 port_bitmap = BIT(MT7530_CPU_PORT);
->>>    	struct mt7530_priv *priv = ds->priv;
->>> +	u32 port_bitmap = BIT(priv->cpu_port);
->>
->> No need to re-order these two lines.
+>  doc/actions/actions-general | 2 +-
+>  man/man8/dcb-app.8          | 2 +-
+>  man/man8/dcb-dcbx.8         | 2 +-
+>  man/man8/devlink-dev.8      | 2 +-
+>  man/man8/devlink-region.8   | 2 +-
+>  5 files changed, 5 insertions(+), 5 deletions(-)
 > 
-> imho it is needed as i now access priv-struct now ;) which is not available at the "old" position
+> -- 
+> 2.35.1
+>
 
-My bad, yes, I was concerned with preserving the reserve christmas tree 
-style, never mind.
--- 
-Florian
+Hi Stephen, is there any issue with this series? Should I resend it?
+
+Thanks,
+Andrea
+
