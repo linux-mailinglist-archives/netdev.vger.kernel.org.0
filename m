@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1377050F445
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 10:32:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BCD350F620
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 10:55:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344995AbiDZIfO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 04:35:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39898 "EHLO
+        id S1345724AbiDZIwU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 04:52:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345252AbiDZIe1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 04:34:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51BEF6D39C;
-        Tue, 26 Apr 2022 01:26:49 -0700 (PDT)
+        with ESMTP id S1346847AbiDZIuo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 04:50:44 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0243A17035F;
+        Tue, 26 Apr 2022 01:39:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 07444B81CED;
-        Tue, 26 Apr 2022 08:26:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A8A0C385A4;
-        Tue, 26 Apr 2022 08:26:46 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0F055CE1BBB;
+        Tue, 26 Apr 2022 08:39:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB564C385A0;
+        Tue, 26 Apr 2022 08:38:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650961606;
-        bh=IcmxqFD2X9nhz3AXQeNNFZ8G21v+9P1J/I/J4ImEWk8=;
+        s=korg; t=1650962340;
+        bh=4Wxgi3OSyAND3xCtQ83fZNlx1WUMKKBOUaA3R2KTe98=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YGk26lv4Jvx7yhQLq2iMtLY/SdE0u2beyok9mtjkcEd50Ij7a1VqWwuuCgxEw3pie
-         5haSsi1C1pIAGtWvdCEise4xV3SR9EyjQWp9QUq/NpO5WnMM3MCdOLWjWUTE8aOgf/
-         q1wy7X6rQy+Kd1l0TWLKZJ2PL7g2mI6kR3e/gW/A=
+        b=Vs7OClKK8Ch9ScopDyKQM7F4nd7SBqqOBM413HPjZQie6Rum1B07zHQbWf33lhVKD
+         0WzguPzk8yYXMxU/onieZoqcAmmsGeDLwx+DLMX7dj1mgyY5LA7xH/3B4OnpCxb+V2
+         hTFivP2lwk6snZyDoxSxN9NyFxzToc5hoSH/2C8Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -42,12 +42,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jakub Kicinski <kuba@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 23/53] mt76: Fix undefined behavior due to shift overflowing the constant
-Date:   Tue, 26 Apr 2022 10:21:03 +0200
-Message-Id: <20220426081736.328722681@linuxfoundation.org>
+Subject: [PATCH 5.15 063/124] mt76: Fix undefined behavior due to shift overflowing the constant
+Date:   Tue, 26 Apr 2022 10:21:04 +0200
+Message-Id: <20220426081749.091859619@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220426081735.651926456@linuxfoundation.org>
-References: <20220426081735.651926456@linuxfoundation.org>
+In-Reply-To: <20220426081747.286685339@linuxfoundation.org>
+References: <20220426081747.286685339@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -90,14 +90,14 @@ Signed-off-by: Kalle Valo <kvalo@kernel.org>
 Link: https://lore.kernel.org/r/20220405151517.29753-9-bp@alien8.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt76x2_pci.c | 2 +-
+ drivers/net/wireless/mediatek/mt76/mt76x2/pci.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76x2_pci.c b/drivers/net/wireless/mediatek/mt76/mt76x2_pci.c
-index 26cfda24ce08..e26947f89299 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76x2_pci.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt76x2_pci.c
-@@ -73,7 +73,7 @@ mt76pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c b/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
+index adf288e50e21..5cd0379d86de 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
++++ b/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
+@@ -80,7 +80,7 @@ mt76x2e_probe(struct pci_dev *pdev, const struct pci_device_id *id)
  	mt76_rmw_field(dev, 0x15a10, 0x1f << 16, 0x9);
  
  	/* RG_SSUSB_G1_CDR_BIC_LTR = 0xf */
