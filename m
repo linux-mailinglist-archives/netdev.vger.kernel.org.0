@@ -2,42 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 894535105FB
-	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 19:54:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEBB3510601
+	for <lists+netdev@lfdr.de>; Tue, 26 Apr 2022 19:55:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230050AbiDZR57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 13:57:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55826 "EHLO
+        id S1348319AbiDZR6D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 13:58:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346458AbiDZR56 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 13:57:58 -0400
+        with ESMTP id S1346698AbiDZR6A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 13:58:00 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43E0C36329
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 10:54:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A956369C3;
+        Tue, 26 Apr 2022 10:54:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E457AB80ECC
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 17:54:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77FD1C385A0;
+        by ams.source.kernel.org (Postfix) with ESMTPS id D43A6B8219F;
+        Tue, 26 Apr 2022 17:54:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2A03C385AD;
         Tue, 26 Apr 2022 17:54:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650995685;
-        bh=QYn+MxyoADYmkClypNdQagHn9u+DcUarYZZT5Be1aFc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=HeUU2savhGB9oTraJ4HOUEmdCbt/Irpvo/v/QPD0GW7KuC8R6tWOAjTucjD87YIMu
-         HqeSboub50o/xbRcpy+bxCUzWs8qnCHsQMPG73UfXoYbBOe14NjgOJzhdBwPPxjSqf
-         M6euwhUh+ODXZ3uKxzq/ILO+tQ9Q9ATxEzoJ51JQJTRwE6hxfUAllJfCAED9rliB5o
-         GiELyp644ycw1AbZcwgtD/3nDomYZvZ1dvJTCSJvOpFIcM6v5ICJq35Af1ECNriDlx
-         j7rrvcJCBnsxPAWNW3Y0BuSgOi4a4SWj4em7a8ObECyVCqfNWuvGyjrXNIQIoEj5dI
-         oiFMFpuZIsKhQ==
+        s=k20201202; t=1650995686;
+        bh=SBsXBz5jDGAGU2aolO1E0QpxNaFtaVAjkbBUOaqc30o=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=vIeZNckiccvjpaWI4gp4VtAph9O1JWy5Oqe/aFlltt2kFnoO+1xFaAflD6ohQEgyo
+         UwHQ+3r0k+26ciZh+EUQSeQGY1+DPlu0m7lVDkzMgEks5U6fFaDmSkO48dFmHQu449
+         vlggWLZXhLZgXR/DtE+gI2e9ChdRpmCN762Il6J3id9bpjixSXuFDI6PJli+9NnlGa
+         cKukDKoNuNgVzL0GsN+Rwgo9dBUKTxjt/r9DtWcFR1z0NnjUVTIaE0S7YOVoPDJoFI
+         1rxdybOLZFSXcZ0OO4C3cBHXp3X1T9u0RGKgxZGVfKJTriCnluV71aBvjIL7YK8omr
+         XLsLr2b90jQ+g==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 0/6] net: remove non-Ethernet drivers using virt_to_bus()
-Date:   Tue, 26 Apr 2022 10:54:30 -0700
-Message-Id: <20220426175436.417283-1-kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Chas Williams <3chas3@gmail.com>,
+        linux-atm-general@lists.sourceforge.net,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-mips@vger.kernel.org, arnd@arndb.de
+Subject: [PATCH net-next 1/6] net: atm: remove support for Fujitsu FireStream ATM devices
+Date:   Tue, 26 Apr 2022 10:54:31 -0700
+Message-Id: <20220426175436.417283-2-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220426175436.417283-1-kuba@kernel.org>
+References: <20220426175436.417283-1-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -49,82 +56,2657 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Networking is currently the main offender in using virt_to_bus().
-Frankly all the drivers which use it are super old and unlikely
-to be used today. They are just an ongoing maintenance burden.
+This driver received nothing but automated fixes (mostly spelling
+and compiler warnings) since git era begun. Since it's using
+virt_to_bus it's unlikely to be used on any modern platform.
 
-In other words this series is using virt_to_bus() as an excuse
-to shed some old stuff. Having done the tree-wide dev_addr_set()
-conversion recently I have limited sympathy for carrying dead
-code.
-
-Obviously please scream if any of these drivers _is_ in fact
-still being used. Otherwise let's take the chance, we can always
-apologize and revert if users show up later.
-
-Also I should say thanks to everyone who contributed to this code!
-The work continues to be appreciated although realistically in more
-of a "history book" fashion...
-
-Jakub Kicinski (6):
-  net: atm: remove support for Fujitsu FireStream ATM devices
-  net: atm: remove support for Madge Horizon ATM devices
-  net: atm: remove support for ZeitNet ZN122x ATM devices
-  net: wan: remove support for COSA and SRP synchronous serial boards
-  net: wan: remove support for Z85230-based devices
-  net: hamradio: remove support for DMA SCC devices
-
- Documentation/admin-guide/devices.txt         |    2 +-
- .../networking/device_drivers/index.rst       |    1 -
- .../networking/device_drivers/wan/index.rst   |   18 -
- .../device_drivers/wan/z8530book.rst          |  256 --
- MAINTAINERS                                   |    7 -
- arch/mips/configs/gpr_defconfig               |    3 -
- arch/mips/configs/mtx1_defconfig              |    3 -
- drivers/atm/Kconfig                           |   54 -
- drivers/atm/Makefile                          |    3 -
- drivers/atm/firestream.c                      | 2057 ------------
- drivers/atm/firestream.h                      |  502 ---
- drivers/atm/horizon.c                         | 2853 -----------------
- drivers/atm/horizon.h                         |  492 ---
- drivers/atm/uPD98401.h                        |  293 --
- drivers/atm/uPD98402.c                        |  266 --
- drivers/atm/uPD98402.h                        |  107 -
- drivers/atm/zatm.c                            | 1652 ----------
- drivers/atm/zatm.h                            |  104 -
- drivers/net/hamradio/Kconfig                  |   34 -
- drivers/net/hamradio/Makefile                 |    1 -
- drivers/net/hamradio/dmascc.c                 | 1450 ---------
- drivers/net/wan/Kconfig                       |   44 -
- drivers/net/wan/Makefile                      |    3 -
- drivers/net/wan/cosa.c                        | 2052 ------------
- drivers/net/wan/cosa.h                        |  104 -
- drivers/net/wan/hostess_sv11.c                |  336 --
- drivers/net/wan/sealevel.c                    |  352 --
- drivers/net/wan/z85230.c                      | 1641 ----------
- drivers/net/wan/z85230.h                      |  407 ---
- include/uapi/linux/atm_zatm.h                 |   47 -
- 30 files changed, 1 insertion(+), 15143 deletions(-)
- delete mode 100644 Documentation/networking/device_drivers/wan/index.rst
- delete mode 100644 Documentation/networking/device_drivers/wan/z8530book.rst
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+CC: Thomas Gleixner <tglx@linutronix.de>
+CC: Chas Williams <3chas3@gmail.com>
+CC: linux-atm-general@lists.sourceforge.net
+CC: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+CC: linux-mips@vger.kernel.org
+CC: arnd@arndb.de
+---
+ arch/mips/configs/gpr_defconfig  |    1 -
+ arch/mips/configs/mtx1_defconfig |    1 -
+ drivers/atm/Kconfig              |   10 -
+ drivers/atm/Makefile             |    1 -
+ drivers/atm/firestream.c         | 2057 ------------------------------
+ drivers/atm/firestream.h         |  502 --------
+ 6 files changed, 2572 deletions(-)
  delete mode 100644 drivers/atm/firestream.c
  delete mode 100644 drivers/atm/firestream.h
- delete mode 100644 drivers/atm/horizon.c
- delete mode 100644 drivers/atm/horizon.h
- delete mode 100644 drivers/atm/uPD98401.h
- delete mode 100644 drivers/atm/uPD98402.c
- delete mode 100644 drivers/atm/uPD98402.h
- delete mode 100644 drivers/atm/zatm.c
- delete mode 100644 drivers/atm/zatm.h
- delete mode 100644 drivers/net/hamradio/dmascc.c
- delete mode 100644 drivers/net/wan/cosa.c
- delete mode 100644 drivers/net/wan/cosa.h
- delete mode 100644 drivers/net/wan/hostess_sv11.c
- delete mode 100644 drivers/net/wan/sealevel.c
- delete mode 100644 drivers/net/wan/z85230.c
- delete mode 100644 drivers/net/wan/z85230.h
- delete mode 100644 include/uapi/linux/atm_zatm.h
 
+diff --git a/arch/mips/configs/gpr_defconfig b/arch/mips/configs/gpr_defconfig
+index b0489437621a..605e778dff74 100644
+--- a/arch/mips/configs/gpr_defconfig
++++ b/arch/mips/configs/gpr_defconfig
+@@ -178,7 +178,6 @@ CONFIG_NETCONSOLE=m
+ CONFIG_ATM_TCP=m
+ CONFIG_ATM_LANAI=m
+ CONFIG_ATM_ENI=m
+-CONFIG_ATM_FIRESTREAM=m
+ CONFIG_ATM_ZATM=m
+ CONFIG_ATM_NICSTAR=m
+ CONFIG_ATM_IDT77252=m
+diff --git a/arch/mips/configs/mtx1_defconfig b/arch/mips/configs/mtx1_defconfig
+index c98099f0b354..de95e7fe5a77 100644
+--- a/arch/mips/configs/mtx1_defconfig
++++ b/arch/mips/configs/mtx1_defconfig
+@@ -255,7 +255,6 @@ CONFIG_ARCNET_COM20020_CS=m
+ CONFIG_ATM_TCP=m
+ CONFIG_ATM_LANAI=m
+ CONFIG_ATM_ENI=m
+-CONFIG_ATM_FIRESTREAM=m
+ CONFIG_ATM_ZATM=m
+ CONFIG_ATM_NICSTAR=m
+ CONFIG_ATM_IDT77252=m
+diff --git a/drivers/atm/Kconfig b/drivers/atm/Kconfig
+index 7be08e24955c..360c98ad29eb 100644
+--- a/drivers/atm/Kconfig
++++ b/drivers/atm/Kconfig
+@@ -146,16 +146,6 @@ config ATM_ENI_BURST_RX_2W
+ 	  try this if you have disabled 4W and 8W bursts. Enabling 2W if 4W or
+ 	  8W are also set may or may not improve throughput.
+ 
+-config ATM_FIRESTREAM
+-	tristate "Fujitsu FireStream (FS50/FS155) "
+-	depends on PCI && VIRT_TO_BUS
+-	help
+-	  Driver for the Fujitsu FireStream 155 (MB86697) and
+-	  FireStream 50 (MB86695) ATM PCI chips.
+-
+-	  To compile this driver as a module, choose M here: the module will
+-	  be called firestream.
+-
+ config ATM_ZATM
+ 	tristate "ZeitNet ZN1221/ZN1225"
+ 	depends on PCI && VIRT_TO_BUS
+diff --git a/drivers/atm/Makefile b/drivers/atm/Makefile
+index 99ecbc280643..7d38fdaddd09 100644
+--- a/drivers/atm/Makefile
++++ b/drivers/atm/Makefile
+@@ -26,7 +26,6 @@ endif
+ 
+ obj-$(CONFIG_ATM_DUMMY)		+= adummy.o
+ obj-$(CONFIG_ATM_TCP)		+= atmtcp.o
+-obj-$(CONFIG_ATM_FIRESTREAM)	+= firestream.o
+ obj-$(CONFIG_ATM_LANAI)		+= lanai.o
+ 
+ obj-$(CONFIG_ATM_HE)		+= he.o
+diff --git a/drivers/atm/firestream.c b/drivers/atm/firestream.c
+deleted file mode 100644
+index 4f67404fe64c..000000000000
+--- a/drivers/atm/firestream.c
++++ /dev/null
+@@ -1,2057 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-or-later
+-
+-/* drivers/atm/firestream.c - FireStream 155 (MB86697) and
+- *                            FireStream  50 (MB86695) device driver 
+- */
+- 
+-/* Written & (C) 2000 by R.E.Wolff@BitWizard.nl 
+- * Copied snippets from zatm.c by Werner Almesberger, EPFL LRC/ICA 
+- * and ambassador.c Copyright (C) 1995-1999  Madge Networks Ltd 
+- */
+-
+-/*
+-*/
+-
+-
+-#include <linux/module.h>
+-#include <linux/sched.h>
+-#include <linux/kernel.h>
+-#include <linux/mm.h>
+-#include <linux/pci.h>
+-#include <linux/poison.h>
+-#include <linux/errno.h>
+-#include <linux/atm.h>
+-#include <linux/atmdev.h>
+-#include <linux/sonet.h>
+-#include <linux/skbuff.h>
+-#include <linux/netdevice.h>
+-#include <linux/delay.h>
+-#include <linux/ioport.h> /* for request_region */
+-#include <linux/uio.h>
+-#include <linux/init.h>
+-#include <linux/interrupt.h>
+-#include <linux/capability.h>
+-#include <linux/bitops.h>
+-#include <linux/slab.h>
+-#include <asm/byteorder.h>
+-#include <asm/string.h>
+-#include <asm/io.h>
+-#include <linux/atomic.h>
+-#include <linux/uaccess.h>
+-#include <linux/wait.h>
+-
+-#include "firestream.h"
+-
+-static int loopback = 0;
+-static int num=0x5a;
+-
+-/* According to measurements (but they look suspicious to me!) done in
+- * '97, 37% of the packets are one cell in size. So it pays to have
+- * buffers allocated at that size. A large jump in percentage of
+- * packets occurs at packets around 536 bytes in length. So it also
+- * pays to have those pre-allocated. Unfortunately, we can't fully
+- * take advantage of this as the majority of the packets is likely to
+- * be TCP/IP (As where obviously the measurement comes from) There the
+- * link would be opened with say a 1500 byte MTU, and we can't handle
+- * smaller buffers more efficiently than the larger ones. -- REW
+- */
+-
+-/* Due to the way Linux memory management works, specifying "576" as
+- * an allocation size here isn't going to help. They are allocated
+- * from 1024-byte regions anyway. With the size of the sk_buffs (quite
+- * large), it doesn't pay to allocate the smallest size (64) -- REW */
+-
+-/* This is all guesswork. Hard numbers to back this up or disprove this, 
+- * are appreciated. -- REW */
+-
+-/* The last entry should be about 64k. However, the "buffer size" is
+- * passed to the chip in a 16 bit field. I don't know how "65536"
+- * would be interpreted. -- REW */
+-
+-#define NP FS_NR_FREE_POOLS
+-static int rx_buf_sizes[NP]  = {128,  256,  512, 1024, 2048, 4096, 16384, 65520};
+-/* log2:                 7     8     9    10    11    12    14     16 */
+-
+-#if 0
+-static int rx_pool_sizes[NP] = {1024, 1024, 512, 256,  128,  64,   32,    32};
+-#else
+-/* debug */
+-static int rx_pool_sizes[NP] = {128,  128,  128, 64,   64,   64,   32,    32};
+-#endif
+-/* log2:                 10    10    9    8     7     6     5      5  */
+-/* sumlog2:              17    18    18   18    18    18    19     21 */
+-/* mem allocated:        128k  256k  256k 256k  256k  256k  512k   2M */
+-/* tot mem: almost 4M */
+-
+-/* NP is shorter, so that it fits on a single line. */
+-#undef NP
+-
+-
+-/* Small hardware gotcha:
+-
+-   The FS50 CAM (VP/VC match registers) always take the lowest channel
+-   number that matches. This is not a problem.
+-
+-   However, they also ignore whether the channel is enabled or
+-   not. This means that if you allocate channel 0 to 1.2 and then
+-   channel 1 to 0.0, then disabeling channel 0 and writing 0 to the
+-   match channel for channel 0 will "steal" the traffic from channel
+-   1, even if you correctly disable channel 0.
+-
+-   Workaround: 
+-
+-   - When disabling channels, write an invalid VP/VC value to the
+-   match register. (We use 0xffffffff, which in the worst case 
+-   matches VP/VC = <maxVP>/<maxVC>, but I expect it not to match
+-   anything as some "when not in use, program to 0" bits are now
+-   programmed to 1...)
+-
+-   - Don't initialize the match registers to 0, as 0.0 is a valid
+-   channel.
+-*/
+-
+-
+-/* Optimization hints and tips.
+-
+-   The FireStream chips are very capable of reducing the amount of
+-   "interrupt-traffic" for the CPU. This driver requests an interrupt on EVERY
+-   action. You could try to minimize this a bit. 
+-
+-   Besides that, the userspace->kernel copy and the PCI bus are the
+-   performance limiting issues for this driver.
+-
+-   You could queue up a bunch of outgoing packets without telling the
+-   FireStream. I'm not sure that's going to win you much though. The
+-   Linux layer won't tell us in advance when it's not going to give us
+-   any more packets in a while. So this is tricky to implement right without
+-   introducing extra delays. 
+-  
+-   -- REW
+- */
+-
+-
+-
+-
+-/* The strings that define what the RX queue entry is all about. */
+-/* Fujitsu: Please tell me which ones can have a pointer to a 
+-   freepool descriptor! */
+-static char *res_strings[] = {
+-	"RX OK: streaming not EOP", 
+-	"RX OK: streaming EOP", 
+-	"RX OK: Single buffer packet", 
+-	"RX OK: packet mode", 
+-	"RX OK: F4 OAM (end to end)", 
+-	"RX OK: F4 OAM (Segment)", 
+-	"RX OK: F5 OAM (end to end)", 
+-	"RX OK: F5 OAM (Segment)", 
+-	"RX OK: RM cell", 
+-	"RX OK: TRANSP cell", 
+-	"RX OK: TRANSPC cell", 
+-	"Unmatched cell", 
+-	"reserved 12", 
+-	"reserved 13", 
+-	"reserved 14", 
+-	"Unrecognized cell", 
+-	"reserved 16", 
+-	"reassembly abort: AAL5 abort", 
+-	"packet purged", 
+-	"packet ageing timeout", 
+-	"channel ageing timeout", 
+-	"calculated length error", 
+-	"programmed length limit error", 
+-	"aal5 crc32 error", 
+-	"oam transp or transpc crc10 error", 
+-	"reserved 25", 
+-	"reserved 26", 
+-	"reserved 27", 
+-	"reserved 28", 
+-	"reserved 29", 
+-	"reserved 30", /* FIXME: The strings between 30-40 might be wrong. */
+-	"reassembly abort: no buffers", 
+-	"receive buffer overflow", 
+-	"change in GFC", 
+-	"receive buffer full", 
+-	"low priority discard - no receive descriptor", 
+-	"low priority discard - missing end of packet", 
+-	"reserved 37",
+-	"reserved 38",
+-	"reserved 39",
+-	"reserved 40",
+-	"reserved 41", 
+-	"reserved 42", 
+-	"reserved 43", 
+-	"reserved 44", 
+-	"reserved 45", 
+-	"reserved 46", 
+-	"reserved 47", 
+-	"reserved 48", 
+-	"reserved 49", 
+-	"reserved 50", 
+-	"reserved 51", 
+-	"reserved 52", 
+-	"reserved 53", 
+-	"reserved 54", 
+-	"reserved 55", 
+-	"reserved 56", 
+-	"reserved 57", 
+-	"reserved 58", 
+-	"reserved 59", 
+-	"reserved 60", 
+-	"reserved 61", 
+-	"reserved 62", 
+-	"reserved 63", 
+-};  
+-
+-static char *irq_bitname[] = {
+-	"LPCO",
+-	"DPCO",
+-	"RBRQ0_W",
+-	"RBRQ1_W",
+-	"RBRQ2_W",
+-	"RBRQ3_W",
+-	"RBRQ0_NF",
+-	"RBRQ1_NF",
+-	"RBRQ2_NF",
+-	"RBRQ3_NF",
+-	"BFP_SC",
+-	"INIT",
+-	"INIT_ERR",
+-	"USCEO",
+-	"UPEC0",
+-	"VPFCO",
+-	"CRCCO",
+-	"HECO",
+-	"TBRQ_W",
+-	"TBRQ_NF",
+-	"CTPQ_E",
+-	"GFC_C0",
+-	"PCI_FTL",
+-	"CSQ_W",
+-	"CSQ_NF",
+-	"EXT_INT",
+-	"RXDMA_S"
+-};
+-
+-
+-#define PHY_EOF -1
+-#define PHY_CLEARALL -2
+-
+-struct reginit_item {
+-	int reg, val;
+-};
+-
+-
+-static struct reginit_item PHY_NTC_INIT[] = {
+-	{ PHY_CLEARALL, 0x40 }, 
+-	{ 0x12,  0x0001 },
+-	{ 0x13,  0x7605 },
+-	{ 0x1A,  0x0001 },
+-	{ 0x1B,  0x0005 },
+-	{ 0x38,  0x0003 },
+-	{ 0x39,  0x0006 },   /* changed here to make loopback */
+-	{ 0x01,  0x5262 },
+-	{ 0x15,  0x0213 },
+-	{ 0x00,  0x0003 },
+-	{ PHY_EOF, 0},    /* -1 signals end of list */
+-};
+-
+-
+-/* Safetyfeature: If the card interrupts more than this number of times
+-   in a jiffy (1/100th of a second) then we just disable the interrupt and
+-   print a message. This prevents the system from hanging. 
+-
+-   150000 packets per second is close to the limit a PC is going to have
+-   anyway. We therefore have to disable this for production. -- REW */
+-#undef IRQ_RATE_LIMIT // 100
+-
+-/* Interrupts work now. Unlike serial cards, ATM cards don't work all
+-   that great without interrupts. -- REW */
+-#undef FS_POLL_FREQ // 100
+-
+-/* 
+-   This driver can spew a whole lot of debugging output at you. If you
+-   need maximum performance, you should disable the DEBUG define. To
+-   aid in debugging in the field, I'm leaving the compile-time debug
+-   features enabled, and disable them "runtime". That allows me to
+-   instruct people with problems to enable debugging without requiring
+-   them to recompile... -- REW
+-*/
+-#define DEBUG
+-
+-#ifdef DEBUG
+-#define fs_dprintk(f, str...) if (fs_debug & f) printk (str)
+-#else
+-#define fs_dprintk(f, str...) /* nothing */
+-#endif
+-
+-
+-static int fs_keystream = 0;
+-
+-#ifdef DEBUG
+-/* I didn't forget to set this to zero before shipping. Hit me with a stick 
+-   if you get this with the debug default not set to zero again. -- REW */
+-static int fs_debug = 0;
+-#else
+-#define fs_debug 0
+-#endif
+-
+-#ifdef MODULE
+-#ifdef DEBUG 
+-module_param(fs_debug, int, 0644);
+-#endif
+-module_param(loopback, int, 0);
+-module_param(num, int, 0);
+-module_param(fs_keystream, int, 0);
+-/* XXX Add rx_buf_sizes, and rx_pool_sizes As per request Amar. -- REW */
+-#endif
+-
+-
+-#define FS_DEBUG_FLOW    0x00000001
+-#define FS_DEBUG_OPEN    0x00000002
+-#define FS_DEBUG_QUEUE   0x00000004
+-#define FS_DEBUG_IRQ     0x00000008
+-#define FS_DEBUG_INIT    0x00000010
+-#define FS_DEBUG_SEND    0x00000020
+-#define FS_DEBUG_PHY     0x00000040
+-#define FS_DEBUG_CLEANUP 0x00000080
+-#define FS_DEBUG_QOS     0x00000100
+-#define FS_DEBUG_TXQ     0x00000200
+-#define FS_DEBUG_ALLOC   0x00000400
+-#define FS_DEBUG_TXMEM   0x00000800
+-#define FS_DEBUG_QSIZE   0x00001000
+-
+-
+-#define func_enter() fs_dprintk(FS_DEBUG_FLOW, "fs: enter %s\n", __func__)
+-#define func_exit()  fs_dprintk(FS_DEBUG_FLOW, "fs: exit  %s\n", __func__)
+-
+-
+-static struct fs_dev *fs_boards = NULL;
+-
+-#ifdef DEBUG
+-
+-static void my_hd (void *addr, int len)
+-{
+-	int j, ch;
+-	unsigned char *ptr = addr;
+-
+-	while (len > 0) {
+-		printk ("%p ", ptr);
+-		for (j=0;j < ((len < 16)?len:16);j++) {
+-			printk ("%02x %s", ptr[j], (j==7)?" ":"");
+-		}
+-		for (  ;j < 16;j++) {
+-			printk ("   %s", (j==7)?" ":"");
+-		}
+-		for (j=0;j < ((len < 16)?len:16);j++) {
+-			ch = ptr[j];
+-			printk ("%c", (ch < 0x20)?'.':((ch > 0x7f)?'.':ch));
+-		}
+-		printk ("\n");
+-		ptr += 16;
+-		len -= 16;
+-	}
+-}
+-#else /* DEBUG */
+-static void my_hd (void *addr, int len){}
+-#endif /* DEBUG */
+-
+-/********** free an skb (as per ATM device driver documentation) **********/
+-
+-/* Hmm. If this is ATM specific, why isn't there an ATM routine for this?
+- * I copied it over from the ambassador driver. -- REW */
+-
+-static inline void fs_kfree_skb (struct sk_buff * skb) 
+-{
+-	if (ATM_SKB(skb)->vcc->pop)
+-		ATM_SKB(skb)->vcc->pop (ATM_SKB(skb)->vcc, skb);
+-	else
+-		dev_kfree_skb_any (skb);
+-}
+-
+-
+-
+-
+-/* It seems the ATM forum recommends this horribly complicated 16bit
+- * floating point format. Turns out the Ambassador uses the exact same
+- * encoding. I just copied it over. If Mitch agrees, I'll move it over
+- * to the atm_misc file or something like that. (and remove it from 
+- * here and the ambassador driver) -- REW
+- */
+-
+-/* The good thing about this format is that it is monotonic. So, 
+-   a conversion routine need not be very complicated. To be able to
+-   round "nearest" we need to take along a few extra bits. Lets
+-   put these after 16 bits, so that we can just return the top 16
+-   bits of the 32bit number as the result:
+-
+-   int mr (unsigned int rate, int r) 
+-     {
+-     int e = 16+9;
+-     static int round[4]={0, 0, 0xffff, 0x8000};
+-     if (!rate) return 0;
+-     while (rate & 0xfc000000) {
+-       rate >>= 1;
+-       e++;
+-     }
+-     while (! (rate & 0xfe000000)) {
+-       rate <<= 1;
+-       e--;
+-     }
+-
+-// Now the mantissa is in positions bit 16-25. Excepf for the "hidden 1" that's in bit 26.
+-     rate &= ~0x02000000;
+-// Next add in the exponent
+-     rate |= e << (16+9);
+-// And perform the rounding:
+-     return (rate + round[r]) >> 16;
+-   }
+-
+-   14 lines-of-code. Compare that with the 120 that the Ambassador
+-   guys needed. (would be 8 lines shorter if I'd try to really reduce
+-   the number of lines:
+-
+-   int mr (unsigned int rate, int r) 
+-   {
+-     int e = 16+9;
+-     static int round[4]={0, 0, 0xffff, 0x8000};
+-     if (!rate) return 0;
+-     for (;  rate & 0xfc000000 ;rate >>= 1, e++);
+-     for (;!(rate & 0xfe000000);rate <<= 1, e--);
+-     return ((rate & ~0x02000000) | (e << (16+9)) + round[r]) >> 16;
+-   }
+-
+-   Exercise for the reader: Remove one more line-of-code, without
+-   cheating. (Just joining two lines is cheating). (I know it's
+-   possible, don't think you've beat me if you found it... If you
+-   manage to lose two lines or more, keep me updated! ;-)
+-
+-   -- REW */
+-
+-
+-#define ROUND_UP      1
+-#define ROUND_DOWN    2
+-#define ROUND_NEAREST 3
+-/********** make rate (not quite as much fun as Horizon) **********/
+-
+-static int make_rate(unsigned int rate, int r,
+-		      u16 *bits, unsigned int *actual)
+-{
+-	unsigned char exp = -1; /* hush gcc */
+-	unsigned int man = -1;  /* hush gcc */
+-  
+-	fs_dprintk (FS_DEBUG_QOS, "make_rate %u", rate);
+-  
+-	/* rates in cells per second, ITU format (nasty 16-bit floating-point)
+-	   given 5-bit e and 9-bit m:
+-	   rate = EITHER (1+m/2^9)*2^e    OR 0
+-	   bits = EITHER 1<<14 | e<<9 | m OR 0
+-	   (bit 15 is "reserved", bit 14 "non-zero")
+-	   smallest rate is 0 (special representation)
+-	   largest rate is (1+511/512)*2^31 = 4290772992 (< 2^32-1)
+-	   smallest non-zero rate is (1+0/512)*2^0 = 1 (> 0)
+-	   simple algorithm:
+-	   find position of top bit, this gives e
+-	   remove top bit and shift (rounding if feeling clever) by 9-e
+-	*/
+-	/* Ambassador ucode bug: please don't set bit 14! so 0 rate not
+-	   representable. // This should move into the ambassador driver
+-	   when properly merged. -- REW */
+-  
+-	if (rate > 0xffc00000U) {
+-		/* larger than largest representable rate */
+-    
+-		if (r == ROUND_UP) {
+-			return -EINVAL;
+-		} else {
+-			exp = 31;
+-			man = 511;
+-		}
+-    
+-	} else if (rate) {
+-		/* representable rate */
+-    
+-		exp = 31;
+-		man = rate;
+-    
+-		/* invariant: rate = man*2^(exp-31) */
+-		while (!(man & (1<<31))) {
+-			exp = exp - 1;
+-			man = man<<1;
+-		}
+-    
+-		/* man has top bit set
+-		   rate = (2^31+(man-2^31))*2^(exp-31)
+-		   rate = (1+(man-2^31)/2^31)*2^exp 
+-		*/
+-		man = man<<1;
+-		man &= 0xffffffffU; /* a nop on 32-bit systems */
+-		/* rate = (1+man/2^32)*2^exp
+-    
+-		   exp is in the range 0 to 31, man is in the range 0 to 2^32-1
+-		   time to lose significance... we want m in the range 0 to 2^9-1
+-		   rounding presents a minor problem... we first decide which way
+-		   we are rounding (based on given rounding direction and possibly
+-		   the bits of the mantissa that are to be discarded).
+-		*/
+-
+-		switch (r) {
+-		case ROUND_DOWN: {
+-			/* just truncate */
+-			man = man>>(32-9);
+-			break;
+-		}
+-		case ROUND_UP: {
+-			/* check all bits that we are discarding */
+-			if (man & (~0U>>9)) {
+-				man = (man>>(32-9)) + 1;
+-				if (man == (1<<9)) {
+-					/* no need to check for round up outside of range */
+-					man = 0;
+-					exp += 1;
+-				}
+-			} else {
+-				man = (man>>(32-9));
+-			}
+-			break;
+-		}
+-		case ROUND_NEAREST: {
+-			/* check msb that we are discarding */
+-			if (man & (1<<(32-9-1))) {
+-				man = (man>>(32-9)) + 1;
+-				if (man == (1<<9)) {
+-					/* no need to check for round up outside of range */
+-					man = 0;
+-					exp += 1;
+-				}
+-			} else {
+-				man = (man>>(32-9));
+-			}
+-			break;
+-		}
+-		}
+-    
+-	} else {
+-		/* zero rate - not representable */
+-    
+-		if (r == ROUND_DOWN) {
+-			return -EINVAL;
+-		} else {
+-			exp = 0;
+-			man = 0;
+-		}
+-	}
+-  
+-	fs_dprintk (FS_DEBUG_QOS, "rate: man=%u, exp=%hu", man, exp);
+-  
+-	if (bits)
+-		*bits = /* (1<<14) | */ (exp<<9) | man;
+-  
+-	if (actual)
+-		*actual = (exp >= 9)
+-			? (1 << exp) + (man << (exp-9))
+-			: (1 << exp) + ((man + (1<<(9-exp-1))) >> (9-exp));
+-  
+-	return 0;
+-}
+-
+-
+-
+-
+-/* FireStream access routines */
+-/* For DEEP-DOWN debugging these can be rigged to intercept accesses to
+-   certain registers or to just log all accesses. */
+-
+-static inline void write_fs (struct fs_dev *dev, int offset, u32 val)
+-{
+-	writel (val, dev->base + offset);
+-}
+-
+-
+-static inline u32  read_fs (struct fs_dev *dev, int offset)
+-{
+-	return readl (dev->base + offset);
+-}
+-
+-
+-
+-static inline struct FS_QENTRY *get_qentry (struct fs_dev *dev, struct queue *q)
+-{
+-	return bus_to_virt (read_fs (dev, Q_WP(q->offset)) & Q_ADDR_MASK);
+-}
+-
+-
+-static void submit_qentry (struct fs_dev *dev, struct queue *q, struct FS_QENTRY *qe)
+-{
+-	u32 wp;
+-	struct FS_QENTRY *cqe;
+-
+-	/* XXX Sanity check: the write pointer can be checked to be 
+-	   still the same as the value passed as qe... -- REW */
+-	/*  udelay (5); */
+-	while ((wp = read_fs (dev, Q_WP (q->offset))) & Q_FULL) {
+-		fs_dprintk (FS_DEBUG_TXQ, "Found queue at %x full. Waiting.\n", 
+-			    q->offset);
+-		schedule ();
+-	}
+-
+-	wp &= ~0xf;
+-	cqe = bus_to_virt (wp);
+-	if (qe != cqe) {
+-		fs_dprintk (FS_DEBUG_TXQ, "q mismatch! %p %p\n", qe, cqe);
+-	}
+-
+-	write_fs (dev, Q_WP(q->offset), Q_INCWRAP);
+-
+-	{
+-		static int c;
+-		if (!(c++ % 100))
+-			{
+-				int rp, wp;
+-				rp =  read_fs (dev, Q_RP(q->offset));
+-				wp =  read_fs (dev, Q_WP(q->offset));
+-				fs_dprintk (FS_DEBUG_TXQ, "q at %d: %x-%x: %x entries.\n", 
+-					    q->offset, rp, wp, wp-rp);
+-			}
+-	}
+-}
+-
+-#ifdef DEBUG_EXTRA
+-static struct FS_QENTRY pq[60];
+-static int qp;
+-
+-static struct FS_BPENTRY dq[60];
+-static int qd;
+-static void *da[60];
+-#endif 
+-
+-static void submit_queue (struct fs_dev *dev, struct queue *q, 
+-			  u32 cmd, u32 p1, u32 p2, u32 p3)
+-{
+-	struct FS_QENTRY *qe;
+-
+-	qe = get_qentry (dev, q);
+-	qe->cmd = cmd;
+-	qe->p0 = p1;
+-	qe->p1 = p2;
+-	qe->p2 = p3;
+-	submit_qentry (dev,  q, qe);
+-
+-#ifdef DEBUG_EXTRA
+-	pq[qp].cmd = cmd;
+-	pq[qp].p0 = p1;
+-	pq[qp].p1 = p2;
+-	pq[qp].p2 = p3;
+-	qp++;
+-	if (qp >= 60) qp = 0;
+-#endif
+-}
+-
+-/* Test the "other" way one day... -- REW */
+-#if 1
+-#define submit_command submit_queue
+-#else
+-
+-static void submit_command (struct fs_dev *dev, struct queue *q, 
+-			    u32 cmd, u32 p1, u32 p2, u32 p3)
+-{
+-	write_fs (dev, CMDR0, cmd);
+-	write_fs (dev, CMDR1, p1);
+-	write_fs (dev, CMDR2, p2);
+-	write_fs (dev, CMDR3, p3);
+-}
+-#endif
+-
+-
+-
+-static void process_return_queue (struct fs_dev *dev, struct queue *q)
+-{
+-	long rq;
+-	struct FS_QENTRY *qe;
+-	void *tc;
+-  
+-	while (!((rq = read_fs (dev, Q_RP(q->offset))) & Q_EMPTY)) {
+-		fs_dprintk (FS_DEBUG_QUEUE, "reaping return queue entry at %lx\n", rq); 
+-		qe = bus_to_virt (rq);
+-    
+-		fs_dprintk (FS_DEBUG_QUEUE, "queue entry: %08x %08x %08x %08x. (%d)\n", 
+-			    qe->cmd, qe->p0, qe->p1, qe->p2, STATUS_CODE (qe));
+-
+-		switch (STATUS_CODE (qe)) {
+-		case 5:
+-			tc = bus_to_virt (qe->p0);
+-			fs_dprintk (FS_DEBUG_ALLOC, "Free tc: %p\n", tc);
+-			kfree (tc);
+-			break;
+-		}
+-    
+-		write_fs (dev, Q_RP(q->offset), Q_INCWRAP);
+-	}
+-}
+-
+-
+-static void process_txdone_queue (struct fs_dev *dev, struct queue *q)
+-{
+-	long rq;
+-	long tmp;
+-	struct FS_QENTRY *qe;
+-	struct sk_buff *skb;
+-	struct FS_BPENTRY *td;
+-
+-	while (!((rq = read_fs (dev, Q_RP(q->offset))) & Q_EMPTY)) {
+-		fs_dprintk (FS_DEBUG_QUEUE, "reaping txdone entry at %lx\n", rq); 
+-		qe = bus_to_virt (rq);
+-    
+-		fs_dprintk (FS_DEBUG_QUEUE, "queue entry: %08x %08x %08x %08x: %d\n", 
+-			    qe->cmd, qe->p0, qe->p1, qe->p2, STATUS_CODE (qe));
+-
+-		if (STATUS_CODE (qe) != 2)
+-			fs_dprintk (FS_DEBUG_TXMEM, "queue entry: %08x %08x %08x %08x: %d\n", 
+-				    qe->cmd, qe->p0, qe->p1, qe->p2, STATUS_CODE (qe));
+-
+-
+-		switch (STATUS_CODE (qe)) {
+-		case 0x01: /* This is for AAL0 where we put the chip in streaming mode */
+-			fallthrough;
+-		case 0x02:
+-			/* Process a real txdone entry. */
+-			tmp = qe->p0;
+-			if (tmp & 0x0f)
+-				printk (KERN_WARNING "td not aligned: %ld\n", tmp);
+-			tmp &= ~0x0f;
+-			td = bus_to_virt (tmp);
+-
+-			fs_dprintk (FS_DEBUG_QUEUE, "Pool entry: %08x %08x %08x %08x %p.\n", 
+-				    td->flags, td->next, td->bsa, td->aal_bufsize, td->skb );
+-      
+-			skb = td->skb;
+-			if (skb == FS_VCC (ATM_SKB(skb)->vcc)->last_skb) {
+-				FS_VCC (ATM_SKB(skb)->vcc)->last_skb = NULL;
+-				wake_up_interruptible (& FS_VCC (ATM_SKB(skb)->vcc)->close_wait);
+-			}
+-			td->dev->ntxpckts--;
+-
+-			{
+-				static int c=0;
+-	
+-				if (!(c++ % 100)) {
+-					fs_dprintk (FS_DEBUG_QSIZE, "[%d]", td->dev->ntxpckts);
+-				}
+-			}
+-
+-			atomic_inc(&ATM_SKB(skb)->vcc->stats->tx);
+-
+-			fs_dprintk (FS_DEBUG_TXMEM, "i");
+-			fs_dprintk (FS_DEBUG_ALLOC, "Free t-skb: %p\n", skb);
+-			fs_kfree_skb (skb);
+-
+-			fs_dprintk (FS_DEBUG_ALLOC, "Free trans-d: %p\n", td); 
+-			memset (td, ATM_POISON_FREE, sizeof(struct FS_BPENTRY));
+-			kfree (td);
+-			break;
+-		default:
+-			/* Here we get the tx purge inhibit command ... */
+-			/* Action, I believe, is "don't do anything". -- REW */
+-			;
+-		}
+-    
+-		write_fs (dev, Q_RP(q->offset), Q_INCWRAP);
+-	}
+-}
+-
+-
+-static void process_incoming (struct fs_dev *dev, struct queue *q)
+-{
+-	long rq;
+-	struct FS_QENTRY *qe;
+-	struct FS_BPENTRY *pe;    
+-	struct sk_buff *skb;
+-	unsigned int channo;
+-	struct atm_vcc *atm_vcc;
+-
+-	while (!((rq = read_fs (dev, Q_RP(q->offset))) & Q_EMPTY)) {
+-		fs_dprintk (FS_DEBUG_QUEUE, "reaping incoming queue entry at %lx\n", rq); 
+-		qe = bus_to_virt (rq);
+-    
+-		fs_dprintk (FS_DEBUG_QUEUE, "queue entry: %08x %08x %08x %08x.  ", 
+-			    qe->cmd, qe->p0, qe->p1, qe->p2);
+-
+-		fs_dprintk (FS_DEBUG_QUEUE, "-> %x: %s\n", 
+-			    STATUS_CODE (qe), 
+-			    res_strings[STATUS_CODE(qe)]);
+-
+-		pe = bus_to_virt (qe->p0);
+-		fs_dprintk (FS_DEBUG_QUEUE, "Pool entry: %08x %08x %08x %08x %p %p.\n", 
+-			    pe->flags, pe->next, pe->bsa, pe->aal_bufsize, 
+-			    pe->skb, pe->fp);
+-      
+-		channo = qe->cmd & 0xffff;
+-
+-		if (channo < dev->nchannels)
+-			atm_vcc = dev->atm_vccs[channo];
+-		else
+-			atm_vcc = NULL;
+-
+-		/* Single buffer packet */
+-		switch (STATUS_CODE (qe)) {
+-		case 0x1:
+-			/* Fall through for streaming mode */
+-			fallthrough;
+-		case 0x2:/* Packet received OK.... */
+-			if (atm_vcc) {
+-				skb = pe->skb;
+-				pe->fp->n--;
+-#if 0
+-				fs_dprintk (FS_DEBUG_QUEUE, "Got skb: %p\n", skb);
+-				if (FS_DEBUG_QUEUE & fs_debug) my_hd (bus_to_virt (pe->bsa), 0x20);
+-#endif
+-				skb_put (skb, qe->p1 & 0xffff); 
+-				ATM_SKB(skb)->vcc = atm_vcc;
+-				atomic_inc(&atm_vcc->stats->rx);
+-				__net_timestamp(skb);
+-				fs_dprintk (FS_DEBUG_ALLOC, "Free rec-skb: %p (pushed)\n", skb);
+-				atm_vcc->push (atm_vcc, skb);
+-				fs_dprintk (FS_DEBUG_ALLOC, "Free rec-d: %p\n", pe);
+-				kfree (pe);
+-			} else {
+-				printk (KERN_ERR "Got a receive on a non-open channel %d.\n", channo);
+-			}
+-			break;
+-		case 0x17:/* AAL 5 CRC32 error. IFF the length field is nonzero, a buffer
+-			     has been consumed and needs to be processed. -- REW */
+-			if (qe->p1 & 0xffff) {
+-				pe = bus_to_virt (qe->p0);
+-				pe->fp->n--;
+-				fs_dprintk (FS_DEBUG_ALLOC, "Free rec-skb: %p\n", pe->skb);
+-				dev_kfree_skb_any (pe->skb);
+-				fs_dprintk (FS_DEBUG_ALLOC, "Free rec-d: %p\n", pe);
+-				kfree (pe);
+-			}
+-			if (atm_vcc)
+-				atomic_inc(&atm_vcc->stats->rx_drop);
+-			break;
+-		case 0x1f: /*  Reassembly abort: no buffers. */
+-			/* Silently increment error counter. */
+-			if (atm_vcc)
+-				atomic_inc(&atm_vcc->stats->rx_drop);
+-			break;
+-		default: /* Hmm. Haven't written the code to handle the others yet... -- REW */
+-			printk (KERN_WARNING "Don't know what to do with RX status %x: %s.\n", 
+-				STATUS_CODE(qe), res_strings[STATUS_CODE (qe)]);
+-		}
+-		write_fs (dev, Q_RP(q->offset), Q_INCWRAP);
+-	}
+-}
+-
+-
+-
+-#define DO_DIRECTION(tp) ((tp)->traffic_class != ATM_NONE)
+-
+-static int fs_open(struct atm_vcc *atm_vcc)
+-{
+-	struct fs_dev *dev;
+-	struct fs_vcc *vcc;
+-	struct fs_transmit_config *tc;
+-	struct atm_trafprm * txtp;
+-	struct atm_trafprm * rxtp;
+-	/*  struct fs_receive_config *rc;*/
+-	/*  struct FS_QENTRY *qe; */
+-	int error;
+-	int bfp;
+-	int to;
+-	unsigned short tmc0;
+-	short vpi = atm_vcc->vpi;
+-	int vci = atm_vcc->vci;
+-
+-	func_enter ();
+-
+-	dev = FS_DEV(atm_vcc->dev);
+-	fs_dprintk (FS_DEBUG_OPEN, "fs: open on dev: %p, vcc at %p\n", 
+-		    dev, atm_vcc);
+-
+-	if (vci != ATM_VPI_UNSPEC && vpi != ATM_VCI_UNSPEC)
+-		set_bit(ATM_VF_ADDR, &atm_vcc->flags);
+-
+-	if ((atm_vcc->qos.aal != ATM_AAL5) &&
+-	    (atm_vcc->qos.aal != ATM_AAL2))
+-	  return -EINVAL; /* XXX AAL0 */
+-
+-	fs_dprintk (FS_DEBUG_OPEN, "fs: (itf %d): open %d.%d\n", 
+-		    atm_vcc->dev->number, atm_vcc->vpi, atm_vcc->vci);	
+-
+-	/* XXX handle qos parameters (rate limiting) ? */
+-
+-	vcc = kmalloc(sizeof(struct fs_vcc), GFP_KERNEL);
+-	fs_dprintk (FS_DEBUG_ALLOC, "Alloc VCC: %p(%zd)\n", vcc, sizeof(struct fs_vcc));
+-	if (!vcc) {
+-		clear_bit(ATM_VF_ADDR, &atm_vcc->flags);
+-		return -ENOMEM;
+-	}
+-  
+-	atm_vcc->dev_data = vcc;
+-	vcc->last_skb = NULL;
+-
+-	init_waitqueue_head (&vcc->close_wait);
+-
+-	txtp = &atm_vcc->qos.txtp;
+-	rxtp = &atm_vcc->qos.rxtp;
+-
+-	if (!test_bit(ATM_VF_PARTIAL, &atm_vcc->flags)) {
+-		if (IS_FS50(dev)) {
+-			/* Increment the channel numer: take a free one next time.  */
+-			for (to=33;to;to--, dev->channo++) {
+-				/* We only have 32 channels */
+-				if (dev->channo >= 32)
+-					dev->channo = 0;
+-				/* If we need to do RX, AND the RX is inuse, try the next */
+-				if (DO_DIRECTION(rxtp) && dev->atm_vccs[dev->channo])
+-					continue;
+-				/* If we need to do TX, AND the TX is inuse, try the next */
+-				if (DO_DIRECTION(txtp) && test_bit (dev->channo, dev->tx_inuse))
+-					continue;
+-				/* Ok, both are free! (or not needed) */
+-				break;
+-			}
+-			if (!to) {
+-				printk ("No more free channels for FS50..\n");
+-				kfree(vcc);
+-				return -EBUSY;
+-			}
+-			vcc->channo = dev->channo;
+-			dev->channo &= dev->channel_mask;
+-      
+-		} else {
+-			vcc->channo = (vpi << FS155_VCI_BITS) | (vci);
+-			if (((DO_DIRECTION(rxtp) && dev->atm_vccs[vcc->channo])) ||
+-			    ( DO_DIRECTION(txtp) && test_bit (vcc->channo, dev->tx_inuse))) {
+-				printk ("Channel is in use for FS155.\n");
+-				kfree(vcc);
+-				return -EBUSY;
+-			}
+-		}
+-		fs_dprintk (FS_DEBUG_OPEN, "OK. Allocated channel %x(%d).\n", 
+-			    vcc->channo, vcc->channo);
+-	}
+-
+-	if (DO_DIRECTION (txtp)) {
+-		tc = kmalloc (sizeof (struct fs_transmit_config), GFP_KERNEL);
+-		fs_dprintk (FS_DEBUG_ALLOC, "Alloc tc: %p(%zd)\n",
+-			    tc, sizeof (struct fs_transmit_config));
+-		if (!tc) {
+-			fs_dprintk (FS_DEBUG_OPEN, "fs: can't alloc transmit_config.\n");
+-			kfree(vcc);
+-			return -ENOMEM;
+-		}
+-
+-		/* Allocate the "open" entry from the high priority txq. This makes
+-		   it most likely that the chip will notice it. It also prevents us
+-		   from having to wait for completion. On the other hand, we may
+-		   need to wait for completion anyway, to see if it completed
+-		   successfully. */
+-
+-		switch (atm_vcc->qos.aal) {
+-		case ATM_AAL2:
+-		case ATM_AAL0:
+-		  tc->flags = 0
+-		    | TC_FLAGS_TRANSPARENT_PAYLOAD
+-		    | TC_FLAGS_PACKET
+-		    | (1 << 28)
+-		    | TC_FLAGS_TYPE_UBR /* XXX Change to VBR -- PVDL */
+-		    | TC_FLAGS_CAL0;
+-		  break;
+-		case ATM_AAL5:
+-		  tc->flags = 0
+-			| TC_FLAGS_AAL5
+-			| TC_FLAGS_PACKET  /* ??? */
+-			| TC_FLAGS_TYPE_CBR
+-			| TC_FLAGS_CAL0;
+-		  break;
+-		default:
+-			printk ("Unknown aal: %d\n", atm_vcc->qos.aal);
+-			tc->flags = 0;
+-		}
+-		/* Docs are vague about this atm_hdr field. By the way, the FS
+-		 * chip makes odd errors if lower bits are set.... -- REW */
+-		tc->atm_hdr =  (vpi << 20) | (vci << 4); 
+-		tmc0 = 0;
+-		{
+-			int pcr = atm_pcr_goal (txtp);
+-
+-			fs_dprintk (FS_DEBUG_OPEN, "pcr = %d.\n", pcr);
+-
+-			/* XXX Hmm. officially we're only allowed to do this if rounding 
+-			   is round_down -- REW */
+-			if (IS_FS50(dev)) {
+-				if (pcr > 51840000/53/8)  pcr = 51840000/53/8;
+-			} else {
+-				if (pcr > 155520000/53/8) pcr = 155520000/53/8;
+-			}
+-			if (!pcr) {
+-				/* no rate cap */
+-				tmc0 = IS_FS50(dev)?0x61BE:0x64c9; /* Just copied over the bits from Fujitsu -- REW */
+-			} else {
+-				int r;
+-				if (pcr < 0) {
+-					r = ROUND_DOWN;
+-					pcr = -pcr;
+-				} else {
+-					r = ROUND_UP;
+-				}
+-				error = make_rate (pcr, r, &tmc0, NULL);
+-				if (error) {
+-					kfree(tc);
+-					kfree(vcc);
+-					return error;
+-				}
+-			}
+-			fs_dprintk (FS_DEBUG_OPEN, "pcr = %d.\n", pcr);
+-		}
+-      
+-		tc->TMC[0] = tmc0 | 0x4000;
+-		tc->TMC[1] = 0; /* Unused */
+-		tc->TMC[2] = 0; /* Unused */
+-		tc->TMC[3] = 0; /* Unused */
+-    
+-		tc->spec = 0;    /* UTOPIA address, UDF, HEC: Unused -> 0 */
+-		tc->rtag[0] = 0; /* What should I do with routing tags??? 
+-				    -- Not used -- AS -- Thanks -- REW*/
+-		tc->rtag[1] = 0;
+-		tc->rtag[2] = 0;
+-
+-		if (fs_debug & FS_DEBUG_OPEN) {
+-			fs_dprintk (FS_DEBUG_OPEN, "TX config record:\n");
+-			my_hd (tc, sizeof (*tc));
+-		}
+-
+-		/* We now use the "submit_command" function to submit commands to
+-		   the firestream. There is a define up near the definition of
+-		   that routine that switches this routine between immediate write
+-		   to the immediate command registers and queuing the commands in
+-		   the HPTXQ for execution. This last technique might be more
+-		   efficient if we know we're going to submit a whole lot of
+-		   commands in one go, but this driver is not setup to be able to
+-		   use such a construct. So it probably doen't matter much right
+-		   now. -- REW */
+-    
+-		/* The command is IMMediate and INQueue. The parameters are out-of-line.. */
+-		submit_command (dev, &dev->hp_txq, 
+-				QE_CMD_CONFIG_TX | QE_CMD_IMM_INQ | vcc->channo,
+-				virt_to_bus (tc), 0, 0);
+-
+-		submit_command (dev, &dev->hp_txq, 
+-				QE_CMD_TX_EN | QE_CMD_IMM_INQ | vcc->channo,
+-				0, 0, 0);
+-		set_bit (vcc->channo, dev->tx_inuse);
+-	}
+-
+-	if (DO_DIRECTION (rxtp)) {
+-		dev->atm_vccs[vcc->channo] = atm_vcc;
+-
+-		for (bfp = 0;bfp < FS_NR_FREE_POOLS; bfp++)
+-			if (atm_vcc->qos.rxtp.max_sdu <= dev->rx_fp[bfp].bufsize) break;
+-		if (bfp >= FS_NR_FREE_POOLS) {
+-			fs_dprintk (FS_DEBUG_OPEN, "No free pool fits sdu: %d.\n", 
+-				    atm_vcc->qos.rxtp.max_sdu);
+-			/* XXX Cleanup? -- Would just calling fs_close work??? -- REW */
+-
+-			/* XXX clear tx inuse. Close TX part? */
+-			dev->atm_vccs[vcc->channo] = NULL;
+-			kfree (vcc);
+-			return -EINVAL;
+-		}
+-
+-		switch (atm_vcc->qos.aal) {
+-		case ATM_AAL0:
+-		case ATM_AAL2:
+-			submit_command (dev, &dev->hp_txq,
+-					QE_CMD_CONFIG_RX | QE_CMD_IMM_INQ | vcc->channo,
+-					RC_FLAGS_TRANSP |
+-					RC_FLAGS_BFPS_BFP * bfp |
+-					RC_FLAGS_RXBM_PSB, 0, 0);
+-			break;
+-		case ATM_AAL5:
+-			submit_command (dev, &dev->hp_txq,
+-					QE_CMD_CONFIG_RX | QE_CMD_IMM_INQ | vcc->channo,
+-					RC_FLAGS_AAL5 |
+-					RC_FLAGS_BFPS_BFP * bfp |
+-					RC_FLAGS_RXBM_PSB, 0, 0);
+-			break;
+-		}
+-		if (IS_FS50 (dev)) {
+-			submit_command (dev, &dev->hp_txq, 
+-					QE_CMD_REG_WR | QE_CMD_IMM_INQ,
+-					0x80 + vcc->channo,
+-					(vpi << 16) | vci, 0 ); /* XXX -- Use defines. */
+-		}
+-		submit_command (dev, &dev->hp_txq, 
+-				QE_CMD_RX_EN | QE_CMD_IMM_INQ | vcc->channo,
+-				0, 0, 0);
+-	}
+-    
+-	/* Indicate we're done! */
+-	set_bit(ATM_VF_READY, &atm_vcc->flags);
+-
+-	func_exit ();
+-	return 0;
+-}
+-
+-
+-static void fs_close(struct atm_vcc *atm_vcc)
+-{
+-	struct fs_dev *dev = FS_DEV (atm_vcc->dev);
+-	struct fs_vcc *vcc = FS_VCC (atm_vcc);
+-	struct atm_trafprm * txtp;
+-	struct atm_trafprm * rxtp;
+-
+-	func_enter ();
+-
+-	clear_bit(ATM_VF_READY, &atm_vcc->flags);
+-
+-	fs_dprintk (FS_DEBUG_QSIZE, "--==**[%d]**==--", dev->ntxpckts);
+-	if (vcc->last_skb) {
+-		fs_dprintk (FS_DEBUG_QUEUE, "Waiting for skb %p to be sent.\n", 
+-			    vcc->last_skb);
+-		/* We're going to wait for the last packet to get sent on this VC. It would
+-		   be impolite not to send them don't you think? 
+-		   XXX
+-		   We don't know which packets didn't get sent. So if we get interrupted in 
+-		   this sleep_on, we'll lose any reference to these packets. Memory leak!
+-		   On the other hand, it's awfully convenient that we can abort a "close" that
+-		   is taking too long. Maybe just use non-interruptible sleep on? -- REW */
+-		wait_event_interruptible(vcc->close_wait, !vcc->last_skb);
+-	}
+-
+-	txtp = &atm_vcc->qos.txtp;
+-	rxtp = &atm_vcc->qos.rxtp;
+-  
+-
+-	/* See App note XXX (Unpublished as of now) for the reason for the 
+-	   removal of the "CMD_IMM_INQ" part of the TX_PURGE_INH... -- REW */
+-
+-	if (DO_DIRECTION (txtp)) {
+-		submit_command (dev,  &dev->hp_txq,
+-				QE_CMD_TX_PURGE_INH | /*QE_CMD_IMM_INQ|*/ vcc->channo, 0,0,0);
+-		clear_bit (vcc->channo, dev->tx_inuse);
+-	}
+-
+-	if (DO_DIRECTION (rxtp)) {
+-		submit_command (dev,  &dev->hp_txq,
+-				QE_CMD_RX_PURGE_INH | QE_CMD_IMM_INQ | vcc->channo, 0,0,0);
+-		dev->atm_vccs [vcc->channo] = NULL;
+-  
+-		/* This means that this is configured as a receive channel */
+-		if (IS_FS50 (dev)) {
+-			/* Disable the receive filter. Is 0/0 indeed an invalid receive
+-			   channel? -- REW.  Yes it is. -- Hang. Ok. I'll use -1
+-			   (0xfff...) -- REW */
+-			submit_command (dev, &dev->hp_txq, 
+-					QE_CMD_REG_WR | QE_CMD_IMM_INQ,
+-					0x80 + vcc->channo, -1, 0 ); 
+-		}
+-	}
+-
+-	fs_dprintk (FS_DEBUG_ALLOC, "Free vcc: %p\n", vcc);
+-	kfree (vcc);
+-
+-	func_exit ();
+-}
+-
+-
+-static int fs_send (struct atm_vcc *atm_vcc, struct sk_buff *skb)
+-{
+-	struct fs_dev *dev = FS_DEV (atm_vcc->dev);
+-	struct fs_vcc *vcc = FS_VCC (atm_vcc);
+-	struct FS_BPENTRY *td;
+-
+-	func_enter ();
+-
+-	fs_dprintk (FS_DEBUG_TXMEM, "I");
+-	fs_dprintk (FS_DEBUG_SEND, "Send: atm_vcc %p skb %p vcc %p dev %p\n", 
+-		    atm_vcc, skb, vcc, dev);
+-
+-	fs_dprintk (FS_DEBUG_ALLOC, "Alloc t-skb: %p (atm_send)\n", skb);
+-
+-	ATM_SKB(skb)->vcc = atm_vcc;
+-
+-	vcc->last_skb = skb;
+-
+-	td = kmalloc (sizeof (struct FS_BPENTRY), GFP_ATOMIC);
+-	fs_dprintk (FS_DEBUG_ALLOC, "Alloc transd: %p(%zd)\n", td, sizeof (struct FS_BPENTRY));
+-	if (!td) {
+-		/* Oops out of mem */
+-		return -ENOMEM;
+-	}
+-
+-	fs_dprintk (FS_DEBUG_SEND, "first word in buffer: %x\n", 
+-		    *(int *) skb->data);
+-
+-	td->flags =  TD_EPI | TD_DATA | skb->len;
+-	td->next = 0;
+-	td->bsa  = virt_to_bus (skb->data);
+-	td->skb = skb;
+-	td->dev = dev;
+-	dev->ntxpckts++;
+-
+-#ifdef DEBUG_EXTRA
+-	da[qd] = td;
+-	dq[qd].flags = td->flags;
+-	dq[qd].next  = td->next;
+-	dq[qd].bsa   = td->bsa;
+-	dq[qd].skb   = td->skb;
+-	dq[qd].dev   = td->dev;
+-	qd++;
+-	if (qd >= 60) qd = 0;
+-#endif
+-
+-	submit_queue (dev, &dev->hp_txq, 
+-		      QE_TRANSMIT_DE | vcc->channo,
+-		      virt_to_bus (td), 0, 
+-		      virt_to_bus (td));
+-
+-	fs_dprintk (FS_DEBUG_QUEUE, "in send: txq %d txrq %d\n", 
+-		    read_fs (dev, Q_EA (dev->hp_txq.offset)) -
+-		    read_fs (dev, Q_SA (dev->hp_txq.offset)),
+-		    read_fs (dev, Q_EA (dev->tx_relq.offset)) -
+-		    read_fs (dev, Q_SA (dev->tx_relq.offset)));
+-
+-	func_exit ();
+-	return 0;
+-}
+-
+-
+-/* Some function placeholders for functions we don't yet support. */
+-
+-#if 0
+-static int fs_ioctl(struct atm_dev *dev,unsigned int cmd,void __user *arg)
+-{
+-	func_enter ();
+-	func_exit ();
+-	return -ENOIOCTLCMD;
+-}
+-
+-
+-static int fs_getsockopt(struct atm_vcc *vcc,int level,int optname,
+-			 void __user *optval,int optlen)
+-{
+-	func_enter ();
+-	func_exit ();
+-	return 0;
+-}
+-
+-
+-static int fs_setsockopt(struct atm_vcc *vcc,int level,int optname,
+-			 void __user *optval,unsigned int optlen)
+-{
+-	func_enter ();
+-	func_exit ();
+-	return 0;
+-}
+-
+-
+-static void fs_phy_put(struct atm_dev *dev,unsigned char value,
+-		       unsigned long addr)
+-{
+-	func_enter ();
+-	func_exit ();
+-}
+-
+-
+-static unsigned char fs_phy_get(struct atm_dev *dev,unsigned long addr)
+-{
+-	func_enter ();
+-	func_exit ();
+-	return 0;
+-}
+-
+-
+-static int fs_change_qos(struct atm_vcc *vcc,struct atm_qos *qos,int flags)
+-{
+-	func_enter ();
+-	func_exit ();
+-	return 0;
+-};
+-
+-#endif
+-
+-
+-static const struct atmdev_ops ops = {
+-	.open =         fs_open,
+-	.close =        fs_close,
+-	.send =         fs_send,
+-	.owner =        THIS_MODULE,
+-	/* ioctl:          fs_ioctl, */
+-	/* change_qos:     fs_change_qos, */
+-
+-	/* For now implement these internally here... */  
+-	/* phy_put:        fs_phy_put, */
+-	/* phy_get:        fs_phy_get, */
+-};
+-
+-
+-static void undocumented_pci_fix(struct pci_dev *pdev)
+-{
+-	u32 tint;
+-
+-	/* The Windows driver says: */
+-	/* Switch off FireStream Retry Limit Threshold 
+-	 */
+-
+-	/* The register at 0x28 is documented as "reserved", no further
+-	   comments. */
+-
+-	pci_read_config_dword (pdev, 0x28, &tint);
+-	if (tint != 0x80) {
+-		tint = 0x80;
+-		pci_write_config_dword (pdev, 0x28, tint);
+-	}
+-}
+-
+-
+-
+-/**************************************************************************
+- *                              PHY routines                              *
+- **************************************************************************/
+-
+-static void write_phy(struct fs_dev *dev, int regnum, int val)
+-{
+-	submit_command (dev,  &dev->hp_txq, QE_CMD_PRP_WR | QE_CMD_IMM_INQ,
+-			regnum, val, 0);
+-}
+-
+-static int init_phy(struct fs_dev *dev, struct reginit_item *reginit)
+-{
+-	int i;
+-
+-	func_enter ();
+-	while (reginit->reg != PHY_EOF) {
+-		if (reginit->reg == PHY_CLEARALL) {
+-			/* "PHY_CLEARALL means clear all registers. Numregisters is in "val". */
+-			for (i=0;i<reginit->val;i++) {
+-				write_phy (dev, i, 0);
+-			}
+-		} else {
+-			write_phy (dev, reginit->reg, reginit->val);
+-		}
+-		reginit++;
+-	}
+-	func_exit ();
+-	return 0;
+-}
+-
+-static void reset_chip (struct fs_dev *dev)
+-{
+-	int i;
+-
+-	write_fs (dev, SARMODE0, SARMODE0_SRTS0);
+-
+-	/* Undocumented delay */
+-	udelay (128);
+-
+-	/* The "internal registers are documented to all reset to zero, but 
+-	   comments & code in the Windows driver indicates that the pools are
+-	   NOT reset. */
+-	for (i=0;i < FS_NR_FREE_POOLS;i++) {
+-		write_fs (dev, FP_CNF (RXB_FP(i)), 0);
+-		write_fs (dev, FP_SA  (RXB_FP(i)), 0);
+-		write_fs (dev, FP_EA  (RXB_FP(i)), 0);
+-		write_fs (dev, FP_CNT (RXB_FP(i)), 0);
+-		write_fs (dev, FP_CTU (RXB_FP(i)), 0);
+-	}
+-
+-	/* The same goes for the match channel registers, although those are
+-	   NOT documented that way in the Windows driver. -- REW */
+-	/* The Windows driver DOES write 0 to these registers somewhere in
+-	   the init sequence. However, a small hardware-feature, will
+-	   prevent reception of data on VPI/VCI = 0/0 (Unless the channel
+-	   allocated happens to have no disabled channels that have a lower
+-	   number. -- REW */
+-
+-	/* Clear the match channel registers. */
+-	if (IS_FS50 (dev)) {
+-		for (i=0;i<FS50_NR_CHANNELS;i++) {
+-			write_fs (dev, 0x200 + i * 4, -1);
+-		}
+-	}
+-}
+-
+-static void *aligned_kmalloc(int size, gfp_t flags, int alignment)
+-{
+-	void  *t;
+-
+-	if (alignment <= 0x10) {
+-		t = kmalloc (size, flags);
+-		if ((unsigned long)t & (alignment-1)) {
+-			printk ("Kmalloc doesn't align things correctly! %p\n", t);
+-			kfree (t);
+-			return aligned_kmalloc (size, flags, alignment * 4);
+-		}
+-		return t;
+-	}
+-	printk (KERN_ERR "Request for > 0x10 alignment not yet implemented (hard!)\n");
+-	return NULL;
+-}
+-
+-static int init_q(struct fs_dev *dev, struct queue *txq, int queue,
+-		  int nentries, int is_rq)
+-{
+-	int sz = nentries * sizeof (struct FS_QENTRY);
+-	struct FS_QENTRY *p;
+-
+-	func_enter ();
+-
+-	fs_dprintk (FS_DEBUG_INIT, "Initializing queue at %x: %d entries:\n",
+-		    queue, nentries);
+-
+-	p = aligned_kmalloc (sz, GFP_KERNEL, 0x10);
+-	fs_dprintk (FS_DEBUG_ALLOC, "Alloc queue: %p(%d)\n", p, sz);
+-
+-	if (!p) return 0;
+-
+-	write_fs (dev, Q_SA(queue), virt_to_bus(p));
+-	write_fs (dev, Q_EA(queue), virt_to_bus(p+nentries-1));
+-	write_fs (dev, Q_WP(queue), virt_to_bus(p));
+-	write_fs (dev, Q_RP(queue), virt_to_bus(p));
+-	if (is_rq) {
+-		/* Configuration for the receive queue: 0: interrupt immediately,
+-		   no pre-warning to empty queues: We do our best to keep the
+-		   queue filled anyway. */
+-		write_fs (dev, Q_CNF(queue), 0 ); 
+-	}
+-
+-	txq->sa = p;
+-	txq->ea = p;
+-	txq->offset = queue; 
+-
+-	func_exit ();
+-	return 1;
+-}
+-
+-
+-static int init_fp(struct fs_dev *dev, struct freepool *fp, int queue,
+-		   int bufsize, int nr_buffers)
+-{
+-	func_enter ();
+-
+-	fs_dprintk (FS_DEBUG_INIT, "Initializing free pool at %x:\n", queue);
+-
+-	write_fs (dev, FP_CNF(queue), (bufsize * RBFP_RBS) | RBFP_RBSVAL | RBFP_CME);
+-	write_fs (dev, FP_SA(queue),  0);
+-	write_fs (dev, FP_EA(queue),  0);
+-	write_fs (dev, FP_CTU(queue), 0);
+-	write_fs (dev, FP_CNT(queue), 0);
+-
+-	fp->offset = queue; 
+-	fp->bufsize = bufsize;
+-	fp->nr_buffers = nr_buffers;
+-
+-	func_exit ();
+-	return 1;
+-}
+-
+-
+-static inline int nr_buffers_in_freepool (struct fs_dev *dev, struct freepool *fp)
+-{
+-#if 0
+-	/* This seems to be unreliable.... */
+-	return read_fs (dev, FP_CNT (fp->offset));
+-#else
+-	return fp->n;
+-#endif
+-}
+-
+-
+-/* Check if this gets going again if a pool ever runs out.  -- Yes, it
+-   does. I've seen "receive abort: no buffers" and things started
+-   working again after that...  -- REW */
+-
+-static void top_off_fp (struct fs_dev *dev, struct freepool *fp,
+-			gfp_t gfp_flags)
+-{
+-	struct FS_BPENTRY *qe, *ne;
+-	struct sk_buff *skb;
+-	int n = 0;
+-	u32 qe_tmp;
+-
+-	fs_dprintk (FS_DEBUG_QUEUE, "Topping off queue at %x (%d-%d/%d)\n", 
+-		    fp->offset, read_fs (dev, FP_CNT (fp->offset)), fp->n, 
+-		    fp->nr_buffers);
+-	while (nr_buffers_in_freepool(dev, fp) < fp->nr_buffers) {
+-
+-		skb = alloc_skb (fp->bufsize, gfp_flags);
+-		fs_dprintk (FS_DEBUG_ALLOC, "Alloc rec-skb: %p(%d)\n", skb, fp->bufsize);
+-		if (!skb) break;
+-		ne = kmalloc (sizeof (struct FS_BPENTRY), gfp_flags);
+-		fs_dprintk (FS_DEBUG_ALLOC, "Alloc rec-d: %p(%zd)\n", ne, sizeof (struct FS_BPENTRY));
+-		if (!ne) {
+-			fs_dprintk (FS_DEBUG_ALLOC, "Free rec-skb: %p\n", skb);
+-			dev_kfree_skb_any (skb);
+-			break;
+-		}
+-
+-		fs_dprintk (FS_DEBUG_QUEUE, "Adding skb %p desc %p -> %p(%p) ", 
+-			    skb, ne, skb->data, skb->head);
+-		n++;
+-		ne->flags = FP_FLAGS_EPI | fp->bufsize;
+-		ne->next  = virt_to_bus (NULL);
+-		ne->bsa   = virt_to_bus (skb->data);
+-		ne->aal_bufsize = fp->bufsize;
+-		ne->skb = skb;
+-		ne->fp = fp;
+-
+-		/*
+-		 * FIXME: following code encodes and decodes
+-		 * machine pointers (could be 64-bit) into a
+-		 * 32-bit register.
+-		 */
+-
+-		qe_tmp = read_fs (dev, FP_EA(fp->offset));
+-		fs_dprintk (FS_DEBUG_QUEUE, "link at %x\n", qe_tmp);
+-		if (qe_tmp) {
+-			qe = bus_to_virt ((long) qe_tmp);
+-			qe->next = virt_to_bus(ne);
+-			qe->flags &= ~FP_FLAGS_EPI;
+-		} else
+-			write_fs (dev, FP_SA(fp->offset), virt_to_bus(ne));
+-
+-		write_fs (dev, FP_EA(fp->offset), virt_to_bus (ne));
+-		fp->n++;   /* XXX Atomic_inc? */
+-		write_fs (dev, FP_CTU(fp->offset), 1);
+-	}
+-
+-	fs_dprintk (FS_DEBUG_QUEUE, "Added %d entries. \n", n);
+-}
+-
+-static void free_queue(struct fs_dev *dev, struct queue *txq)
+-{
+-	func_enter ();
+-
+-	write_fs (dev, Q_SA(txq->offset), 0);
+-	write_fs (dev, Q_EA(txq->offset), 0);
+-	write_fs (dev, Q_RP(txq->offset), 0);
+-	write_fs (dev, Q_WP(txq->offset), 0);
+-	/* Configuration ? */
+-
+-	fs_dprintk (FS_DEBUG_ALLOC, "Free queue: %p\n", txq->sa);
+-	kfree (txq->sa);
+-
+-	func_exit ();
+-}
+-
+-static void free_freepool(struct fs_dev *dev, struct freepool *fp)
+-{
+-	func_enter ();
+-
+-	write_fs (dev, FP_CNF(fp->offset), 0);
+-	write_fs (dev, FP_SA (fp->offset), 0);
+-	write_fs (dev, FP_EA (fp->offset), 0);
+-	write_fs (dev, FP_CNT(fp->offset), 0);
+-	write_fs (dev, FP_CTU(fp->offset), 0);
+-
+-	func_exit ();
+-}
+-
+-
+-
+-static irqreturn_t fs_irq (int irq, void *dev_id) 
+-{
+-	int i;
+-	u32 status;
+-	struct fs_dev *dev = dev_id;
+-
+-	status = read_fs (dev, ISR);
+-	if (!status)
+-		return IRQ_NONE;
+-
+-	func_enter ();
+-
+-#ifdef IRQ_RATE_LIMIT
+-	/* Aaargh! I'm ashamed. This costs more lines-of-code than the actual 
+-	   interrupt routine!. (Well, used to when I wrote that comment) -- REW */
+-	{
+-		static int lastjif;
+-		static int nintr=0;
+-    
+-		if (lastjif == jiffies) {
+-			if (++nintr > IRQ_RATE_LIMIT) {
+-				free_irq (dev->irq, dev_id);
+-				printk (KERN_ERR "fs: Too many interrupts. Turning off interrupt %d.\n", 
+-					dev->irq);
+-			}
+-		} else {
+-			lastjif = jiffies;
+-			nintr = 0;
+-		}
+-	}
+-#endif
+-	fs_dprintk (FS_DEBUG_QUEUE, "in intr: txq %d txrq %d\n", 
+-		    read_fs (dev, Q_EA (dev->hp_txq.offset)) -
+-		    read_fs (dev, Q_SA (dev->hp_txq.offset)),
+-		    read_fs (dev, Q_EA (dev->tx_relq.offset)) -
+-		    read_fs (dev, Q_SA (dev->tx_relq.offset)));
+-
+-	/* print the bits in the ISR register. */
+-	if (fs_debug & FS_DEBUG_IRQ) {
+-		/* The FS_DEBUG things are unnecessary here. But this way it is
+-		   clear for grep that these are debug prints. */
+-		fs_dprintk (FS_DEBUG_IRQ,  "IRQ status:");
+-		for (i=0;i<27;i++) 
+-			if (status & (1 << i)) 
+-				fs_dprintk (FS_DEBUG_IRQ, " %s", irq_bitname[i]);
+-		fs_dprintk (FS_DEBUG_IRQ, "\n");
+-	}
+-  
+-	if (status & ISR_RBRQ0_W) {
+-		fs_dprintk (FS_DEBUG_IRQ, "Iiiin-coming (0)!!!!\n");
+-		process_incoming (dev, &dev->rx_rq[0]);
+-		/* items mentioned on RBRQ0 are from FP 0 or 1. */
+-		top_off_fp (dev, &dev->rx_fp[0], GFP_ATOMIC);
+-		top_off_fp (dev, &dev->rx_fp[1], GFP_ATOMIC);
+-	}
+-
+-	if (status & ISR_RBRQ1_W) {
+-		fs_dprintk (FS_DEBUG_IRQ, "Iiiin-coming (1)!!!!\n");
+-		process_incoming (dev, &dev->rx_rq[1]);
+-		top_off_fp (dev, &dev->rx_fp[2], GFP_ATOMIC);
+-		top_off_fp (dev, &dev->rx_fp[3], GFP_ATOMIC);
+-	}
+-
+-	if (status & ISR_RBRQ2_W) {
+-		fs_dprintk (FS_DEBUG_IRQ, "Iiiin-coming (2)!!!!\n");
+-		process_incoming (dev, &dev->rx_rq[2]);
+-		top_off_fp (dev, &dev->rx_fp[4], GFP_ATOMIC);
+-		top_off_fp (dev, &dev->rx_fp[5], GFP_ATOMIC);
+-	}
+-
+-	if (status & ISR_RBRQ3_W) {
+-		fs_dprintk (FS_DEBUG_IRQ, "Iiiin-coming (3)!!!!\n");
+-		process_incoming (dev, &dev->rx_rq[3]);
+-		top_off_fp (dev, &dev->rx_fp[6], GFP_ATOMIC);
+-		top_off_fp (dev, &dev->rx_fp[7], GFP_ATOMIC);
+-	}
+-
+-	if (status & ISR_CSQ_W) {
+-		fs_dprintk (FS_DEBUG_IRQ, "Command executed ok!\n");
+-		process_return_queue (dev, &dev->st_q);
+-	}
+-
+-	if (status & ISR_TBRQ_W) {
+-		fs_dprintk (FS_DEBUG_IRQ, "Data transmitted!\n");
+-		process_txdone_queue (dev, &dev->tx_relq);
+-	}
+-
+-	func_exit ();
+-	return IRQ_HANDLED;
+-}
+-
+-
+-#ifdef FS_POLL_FREQ
+-static void fs_poll (struct timer_list *t)
+-{
+-	struct fs_dev *dev = from_timer(dev, t, timer);
+-  
+-	fs_irq (0, dev);
+-	dev->timer.expires = jiffies + FS_POLL_FREQ;
+-	add_timer (&dev->timer);
+-}
+-#endif
+-
+-static int fs_init(struct fs_dev *dev)
+-{
+-	struct pci_dev  *pci_dev;
+-	int isr, to;
+-	int i;
+-
+-	func_enter ();
+-	pci_dev = dev->pci_dev;
+-
+-	printk (KERN_INFO "found a FireStream %d card, base %16llx, irq%d.\n",
+-		IS_FS50(dev)?50:155,
+-		(unsigned long long)pci_resource_start(pci_dev, 0),
+-		dev->pci_dev->irq);
+-
+-	if (fs_debug & FS_DEBUG_INIT)
+-		my_hd ((unsigned char *) dev, sizeof (*dev));
+-
+-	undocumented_pci_fix (pci_dev);
+-
+-	dev->hw_base = pci_resource_start(pci_dev, 0);
+-
+-	dev->base = ioremap(dev->hw_base, 0x1000);
+-	if (!dev->base)
+-		return 1;
+-
+-	reset_chip (dev);
+-  
+-	write_fs (dev, SARMODE0, 0 
+-		  | (0 * SARMODE0_SHADEN) /* We don't use shadow registers. */
+-		  | (1 * SARMODE0_INTMODE_READCLEAR)
+-		  | (1 * SARMODE0_CWRE)
+-		  | (IS_FS50(dev) ? SARMODE0_PRPWT_FS50_5:
+-			  SARMODE0_PRPWT_FS155_3)
+-		  | (1 * SARMODE0_CALSUP_1)
+-		  | (IS_FS50(dev) ? (0
+-				   | SARMODE0_RXVCS_32
+-				   | SARMODE0_ABRVCS_32 
+-				   | SARMODE0_TXVCS_32):
+-		                  (0
+-				   | SARMODE0_RXVCS_1k
+-				   | SARMODE0_ABRVCS_1k 
+-				   | SARMODE0_TXVCS_1k)));
+-
+-	/* 10ms * 100 is 1 second. That should be enough, as AN3:9 says it takes
+-	   1ms. */
+-	to = 100;
+-	while (--to) {
+-		isr = read_fs (dev, ISR);
+-
+-		/* This bit is documented as "RESERVED" */
+-		if (isr & ISR_INIT_ERR) {
+-			printk (KERN_ERR "Error initializing the FS... \n");
+-			goto unmap;
+-		}
+-		if (isr & ISR_INIT) {
+-			fs_dprintk (FS_DEBUG_INIT, "Ha! Initialized OK!\n");
+-			break;
+-		}
+-
+-		/* Try again after 10ms. */
+-		msleep(10);
+-	}
+-
+-	if (!to) {
+-		printk (KERN_ERR "timeout initializing the FS... \n");
+-		goto unmap;
+-	}
+-
+-	/* XXX fix for fs155 */
+-	dev->channel_mask = 0x1f; 
+-	dev->channo = 0;
+-
+-	/* AN3: 10 */
+-	write_fs (dev, SARMODE1, 0 
+-		  | (fs_keystream * SARMODE1_DEFHEC) /* XXX PHY */
+-		  | ((loopback == 1) * SARMODE1_TSTLP) /* XXX Loopback mode enable... */
+-		  | (1 * SARMODE1_DCRM)
+-		  | (1 * SARMODE1_DCOAM)
+-		  | (0 * SARMODE1_OAMCRC)
+-		  | (0 * SARMODE1_DUMPE)
+-		  | (0 * SARMODE1_GPLEN) 
+-		  | (0 * SARMODE1_GNAM)
+-		  | (0 * SARMODE1_GVAS)
+-		  | (0 * SARMODE1_GPAS)
+-		  | (1 * SARMODE1_GPRI)
+-		  | (0 * SARMODE1_PMS)
+-		  | (0 * SARMODE1_GFCR)
+-		  | (1 * SARMODE1_HECM2)
+-		  | (1 * SARMODE1_HECM1)
+-		  | (1 * SARMODE1_HECM0)
+-		  | (1 << 12) /* That's what hang's driver does. Program to 0 */
+-		  | (0 * 0xff) /* XXX FS155 */);
+-
+-
+-	/* Cal prescale etc */
+-
+-	/* AN3: 11 */
+-	write_fs (dev, TMCONF, 0x0000000f);
+-	write_fs (dev, CALPRESCALE, 0x01010101 * num);
+-	write_fs (dev, 0x80, 0x000F00E4);
+-
+-	/* AN3: 12 */
+-	write_fs (dev, CELLOSCONF, 0
+-		  | (   0 * CELLOSCONF_CEN)
+-		  | (       CELLOSCONF_SC1)
+-		  | (0x80 * CELLOSCONF_COBS)
+-		  | (num  * CELLOSCONF_COPK)  /* Changed from 0xff to 0x5a */
+-		  | (num  * CELLOSCONF_COST));/* after a hint from Hang. 
+-					       * performance jumped 50->70... */
+-
+-	/* Magic value by Hang */
+-	write_fs (dev, CELLOSCONF_COST, 0x0B809191);
+-
+-	if (IS_FS50 (dev)) {
+-		write_fs (dev, RAS0, RAS0_DCD_XHLT);
+-		dev->atm_dev->ci_range.vpi_bits = 12;
+-		dev->atm_dev->ci_range.vci_bits = 16;
+-		dev->nchannels = FS50_NR_CHANNELS;
+-	} else {
+-		write_fs (dev, RAS0, RAS0_DCD_XHLT 
+-			  | (((1 << FS155_VPI_BITS) - 1) * RAS0_VPSEL)
+-			  | (((1 << FS155_VCI_BITS) - 1) * RAS0_VCSEL));
+-		/* We can chose the split arbitrarily. We might be able to 
+-		   support more. Whatever. This should do for now. */
+-		dev->atm_dev->ci_range.vpi_bits = FS155_VPI_BITS;
+-		dev->atm_dev->ci_range.vci_bits = FS155_VCI_BITS;
+-    
+-		/* Address bits we can't use should be compared to 0. */
+-		write_fs (dev, RAC, 0);
+-
+-		/* Manual (AN9, page 6) says ASF1=0 means compare Utopia address
+-		 * too.  I can't find ASF1 anywhere. Anyway, we AND with just the
+-		 * other bits, then compare with 0, which is exactly what we
+-		 * want. */
+-		write_fs (dev, RAM, (1 << (28 - FS155_VPI_BITS - FS155_VCI_BITS)) - 1);
+-		dev->nchannels = FS155_NR_CHANNELS;
+-	}
+-	dev->atm_vccs = kcalloc (dev->nchannels, sizeof (struct atm_vcc *),
+-				 GFP_KERNEL);
+-	fs_dprintk (FS_DEBUG_ALLOC, "Alloc atmvccs: %p(%zd)\n",
+-		    dev->atm_vccs, dev->nchannels * sizeof (struct atm_vcc *));
+-
+-	if (!dev->atm_vccs) {
+-		printk (KERN_WARNING "Couldn't allocate memory for VCC buffers. Woops!\n");
+-		/* XXX Clean up..... */
+-		goto unmap;
+-	}
+-
+-	dev->tx_inuse = kzalloc (dev->nchannels / 8 /* bits/byte */ , GFP_KERNEL);
+-	fs_dprintk (FS_DEBUG_ALLOC, "Alloc tx_inuse: %p(%d)\n", 
+-		    dev->atm_vccs, dev->nchannels / 8);
+-
+-	if (!dev->tx_inuse) {
+-		printk (KERN_WARNING "Couldn't allocate memory for tx_inuse bits!\n");
+-		/* XXX Clean up..... */
+-		goto unmap;
+-	}
+-	/* -- RAS1 : FS155 and 50 differ. Default (0) should be OK for both */
+-	/* -- RAS2 : FS50 only: Default is OK. */
+-
+-	/* DMAMODE, default should be OK. -- REW */
+-	write_fs (dev, DMAMR, DMAMR_TX_MODE_FULL);
+-
+-	init_q (dev, &dev->hp_txq, TX_PQ(TXQ_HP), TXQ_NENTRIES, 0);
+-	init_q (dev, &dev->lp_txq, TX_PQ(TXQ_LP), TXQ_NENTRIES, 0);
+-	init_q (dev, &dev->tx_relq, TXB_RQ, TXQ_NENTRIES, 1);
+-	init_q (dev, &dev->st_q, ST_Q, TXQ_NENTRIES, 1);
+-
+-	for (i=0;i < FS_NR_FREE_POOLS;i++) {
+-		init_fp (dev, &dev->rx_fp[i], RXB_FP(i), 
+-			 rx_buf_sizes[i], rx_pool_sizes[i]);
+-		top_off_fp (dev, &dev->rx_fp[i], GFP_KERNEL);
+-	}
+-
+-
+-	for (i=0;i < FS_NR_RX_QUEUES;i++)
+-		init_q (dev, &dev->rx_rq[i], RXB_RQ(i), RXRQ_NENTRIES, 1);
+-
+-	dev->irq = pci_dev->irq;
+-	if (request_irq (dev->irq, fs_irq, IRQF_SHARED, "firestream", dev)) {
+-		printk (KERN_WARNING "couldn't get irq %d for firestream.\n", pci_dev->irq);
+-		/* XXX undo all previous stuff... */
+-		goto unmap;
+-	}
+-	fs_dprintk (FS_DEBUG_INIT, "Grabbed irq %d for dev at %p.\n", dev->irq, dev);
+-  
+-	/* We want to be notified of most things. Just the statistics count
+-	   overflows are not interesting */
+-	write_fs (dev, IMR, 0
+-		  | ISR_RBRQ0_W 
+-		  | ISR_RBRQ1_W 
+-		  | ISR_RBRQ2_W 
+-		  | ISR_RBRQ3_W 
+-		  | ISR_TBRQ_W
+-		  | ISR_CSQ_W);
+-
+-	write_fs (dev, SARMODE0, 0 
+-		  | (0 * SARMODE0_SHADEN) /* We don't use shadow registers. */
+-		  | (1 * SARMODE0_GINT)
+-		  | (1 * SARMODE0_INTMODE_READCLEAR)
+-		  | (0 * SARMODE0_CWRE)
+-		  | (IS_FS50(dev)?SARMODE0_PRPWT_FS50_5: 
+-		                  SARMODE0_PRPWT_FS155_3)
+-		  | (1 * SARMODE0_CALSUP_1)
+-		  | (IS_FS50 (dev)?(0
+-				    | SARMODE0_RXVCS_32
+-				    | SARMODE0_ABRVCS_32 
+-				    | SARMODE0_TXVCS_32):
+-		                   (0
+-				    | SARMODE0_RXVCS_1k
+-				    | SARMODE0_ABRVCS_1k 
+-				    | SARMODE0_TXVCS_1k))
+-		  | (1 * SARMODE0_RUN));
+-
+-	init_phy (dev, PHY_NTC_INIT);
+-
+-	if (loopback == 2) {
+-		write_phy (dev, 0x39, 0x000e);
+-	}
+-
+-#ifdef FS_POLL_FREQ
+-	timer_setup(&dev->timer, fs_poll, 0);
+-	dev->timer.expires = jiffies + FS_POLL_FREQ;
+-	add_timer (&dev->timer);
+-#endif
+-
+-	dev->atm_dev->dev_data = dev;
+-  
+-	func_exit ();
+-	return 0;
+-unmap:
+-	iounmap(dev->base);
+-	return 1;
+-}
+-
+-static int firestream_init_one(struct pci_dev *pci_dev,
+-			       const struct pci_device_id *ent)
+-{
+-	struct atm_dev *atm_dev;
+-	struct fs_dev *fs_dev;
+-	
+-	if (pci_enable_device(pci_dev)) 
+-		goto err_out;
+-
+-	fs_dev = kzalloc (sizeof (struct fs_dev), GFP_KERNEL);
+-	fs_dprintk (FS_DEBUG_ALLOC, "Alloc fs-dev: %p(%zd)\n",
+-		    fs_dev, sizeof (struct fs_dev));
+-	if (!fs_dev)
+-		goto err_out;
+-	atm_dev = atm_dev_register("fs", &pci_dev->dev, &ops, -1, NULL);
+-	if (!atm_dev)
+-		goto err_out_free_fs_dev;
+-  
+-	fs_dev->pci_dev = pci_dev;
+-	fs_dev->atm_dev = atm_dev;
+-	fs_dev->flags = ent->driver_data;
+-
+-	if (fs_init(fs_dev))
+-		goto err_out_free_atm_dev;
+-
+-	fs_dev->next = fs_boards;
+-	fs_boards = fs_dev;
+-	return 0;
+-
+- err_out_free_atm_dev:
+-	atm_dev_deregister(atm_dev);
+- err_out_free_fs_dev:
+- 	kfree(fs_dev);
+- err_out:
+-	return -ENODEV;
+-}
+-
+-static void firestream_remove_one(struct pci_dev *pdev)
+-{
+-	int i;
+-	struct fs_dev *dev, *nxtdev;
+-	struct fs_vcc *vcc;
+-	struct FS_BPENTRY *fp, *nxt;
+-  
+-	func_enter ();
+-
+-#if 0
+-	printk ("hptxq:\n");
+-	for (i=0;i<60;i++) {
+-		printk ("%d: %08x %08x %08x %08x \n", 
+-			i, pq[qp].cmd, pq[qp].p0, pq[qp].p1, pq[qp].p2);
+-		qp++;
+-		if (qp >= 60) qp = 0;
+-	}
+-
+-	printk ("descriptors:\n");
+-	for (i=0;i<60;i++) {
+-		printk ("%d: %p: %08x %08x %p %p\n", 
+-			i, da[qd], dq[qd].flags, dq[qd].bsa, dq[qd].skb, dq[qd].dev);
+-		qd++;
+-		if (qd >= 60) qd = 0;
+-	}
+-#endif
+-
+-	for (dev = fs_boards;dev != NULL;dev=nxtdev) {
+-		fs_dprintk (FS_DEBUG_CLEANUP, "Releasing resources for dev at %p.\n", dev);
+-
+-		/* XXX Hit all the tx channels too! */
+-
+-		for (i=0;i < dev->nchannels;i++) {
+-			if (dev->atm_vccs[i]) {
+-				vcc = FS_VCC (dev->atm_vccs[i]);
+-				submit_command (dev,  &dev->hp_txq,
+-						QE_CMD_TX_PURGE_INH | QE_CMD_IMM_INQ | vcc->channo, 0,0,0);
+-				submit_command (dev,  &dev->hp_txq,
+-						QE_CMD_RX_PURGE_INH | QE_CMD_IMM_INQ | vcc->channo, 0,0,0);
+-
+-			}
+-		}
+-
+-		/* XXX Wait a while for the chip to release all buffers. */
+-
+-		for (i=0;i < FS_NR_FREE_POOLS;i++) {
+-			for (fp=bus_to_virt (read_fs (dev, FP_SA(dev->rx_fp[i].offset)));
+-			     !(fp->flags & FP_FLAGS_EPI);fp = nxt) {
+-				fs_dprintk (FS_DEBUG_ALLOC, "Free rec-skb: %p\n", fp->skb);
+-				dev_kfree_skb_any (fp->skb);
+-				nxt = bus_to_virt (fp->next);
+-				fs_dprintk (FS_DEBUG_ALLOC, "Free rec-d: %p\n", fp);
+-				kfree (fp);
+-			}
+-			fs_dprintk (FS_DEBUG_ALLOC, "Free rec-skb: %p\n", fp->skb);
+-			dev_kfree_skb_any (fp->skb);
+-			fs_dprintk (FS_DEBUG_ALLOC, "Free rec-d: %p\n", fp);
+-			kfree (fp);
+-		}
+-
+-		/* Hang the chip in "reset", prevent it clobbering memory that is
+-		   no longer ours. */
+-		reset_chip (dev);
+-
+-		fs_dprintk (FS_DEBUG_CLEANUP, "Freeing irq%d.\n", dev->irq);
+-		free_irq (dev->irq, dev);
+-		del_timer_sync (&dev->timer);
+-
+-		atm_dev_deregister(dev->atm_dev);
+-		free_queue (dev, &dev->hp_txq);
+-		free_queue (dev, &dev->lp_txq);
+-		free_queue (dev, &dev->tx_relq);
+-		free_queue (dev, &dev->st_q);
+-
+-		fs_dprintk (FS_DEBUG_ALLOC, "Free atmvccs: %p\n", dev->atm_vccs);
+-		kfree (dev->atm_vccs);
+-
+-		for (i=0;i< FS_NR_FREE_POOLS;i++)
+-			free_freepool (dev, &dev->rx_fp[i]);
+-    
+-		for (i=0;i < FS_NR_RX_QUEUES;i++)
+-			free_queue (dev, &dev->rx_rq[i]);
+-
+-		iounmap(dev->base);
+-		fs_dprintk (FS_DEBUG_ALLOC, "Free fs-dev: %p\n", dev);
+-		nxtdev = dev->next;
+-		kfree (dev);
+-	}
+-
+-	func_exit ();
+-}
+-
+-static const struct pci_device_id firestream_pci_tbl[] = {
+-	{ PCI_VDEVICE(FUJITSU_ME, PCI_DEVICE_ID_FUJITSU_FS50), FS_IS50},
+-	{ PCI_VDEVICE(FUJITSU_ME, PCI_DEVICE_ID_FUJITSU_FS155), FS_IS155},
+-	{ 0, }
+-};
+-
+-MODULE_DEVICE_TABLE(pci, firestream_pci_tbl);
+-
+-static struct pci_driver firestream_driver = {
+-	.name		= "firestream",
+-	.id_table	= firestream_pci_tbl,
+-	.probe		= firestream_init_one,
+-	.remove		= firestream_remove_one,
+-};
+-
+-static int __init firestream_init_module (void)
+-{
+-	int error;
+-
+-	func_enter ();
+-	error = pci_register_driver(&firestream_driver);
+-	func_exit ();
+-	return error;
+-}
+-
+-static void __exit firestream_cleanup_module(void)
+-{
+-	pci_unregister_driver(&firestream_driver);
+-}
+-
+-module_init(firestream_init_module);
+-module_exit(firestream_cleanup_module);
+-
+-MODULE_LICENSE("GPL");
+-
+-
+-
+diff --git a/drivers/atm/firestream.h b/drivers/atm/firestream.h
+deleted file mode 100644
+index 6d684160808d..000000000000
+--- a/drivers/atm/firestream.h
++++ /dev/null
+@@ -1,502 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0-or-later */
+-/* drivers/atm/firestream.h - FireStream 155 (MB86697) and
+- *                            FireStream  50 (MB86695) device driver 
+- */
+- 
+-/* Written & (C) 2000 by R.E.Wolff@BitWizard.nl 
+- * Copied snippets from zatm.c by Werner Almesberger, EPFL LRC/ICA 
+- * and ambassador.c Copyright (C) 1995-1999  Madge Networks Ltd 
+- */
+-
+-/*
+-*/
+-
+-
+-/***********************************************************************
+- *                  first the defines for the chip.                    *
+- ***********************************************************************/
+-
+-
+-/********************* General chip parameters. ************************/
+-
+-#define FS_NR_FREE_POOLS   8
+-#define FS_NR_RX_QUEUES    4
+-
+-
+-/********************* queues and queue access macros ******************/
+-
+-
+-/* A queue entry. */
+-struct FS_QENTRY {
+-	u32 cmd;
+-	u32 p0, p1, p2;
+-};
+-
+-
+-/* A freepool entry. */
+-struct FS_BPENTRY {
+-	u32 flags;
+-	u32 next;
+-	u32 bsa;
+-	u32 aal_bufsize;
+-
+-	/* The hardware doesn't look at this, but we need the SKB somewhere... */
+-	struct sk_buff *skb;
+-	struct freepool *fp;
+-	struct fs_dev *dev;
+-};
+-
+-
+-#define STATUS_CODE(qe)  ((qe->cmd >> 22) & 0x3f)
+-
+-
+-/* OFFSETS against the base of a QUEUE... */
+-#define QSA     0x00
+-#define QEA     0x04
+-#define QRP     0x08
+-#define QWP     0x0c
+-#define QCNF    0x10   /* Only for Release queues! */
+-/* Not for the transmit pending queue. */
+-
+-
+-/* OFFSETS against the base of a FREE POOL... */
+-#define FPCNF   0x00
+-#define FPSA    0x04
+-#define FPEA    0x08
+-#define FPCNT   0x0c
+-#define FPCTU   0x10
+-
+-#define Q_SA(b)     (b + QSA )
+-#define Q_EA(b)     (b + QEA )
+-#define Q_RP(b)     (b + QRP )
+-#define Q_WP(b)     (b + QWP )
+-#define Q_CNF(b)    (b + QCNF)
+-
+-#define FP_CNF(b)   (b + FPCNF)
+-#define FP_SA(b)    (b + FPSA)
+-#define FP_EA(b)    (b + FPEA)
+-#define FP_CNT(b)   (b + FPCNT)
+-#define FP_CTU(b)   (b + FPCTU)
+-
+-/* bits in a queue register. */
+-#define Q_FULL      0x1
+-#define Q_EMPTY     0x2
+-#define Q_INCWRAP   0x4
+-#define Q_ADDR_MASK 0xfffffff0
+-
+-/* bits in a FreePool config register */
+-#define RBFP_RBS    (0x1 << 16)
+-#define RBFP_RBSVAL (0x1 << 15)
+-#define RBFP_CME    (0x1 << 12)
+-#define RBFP_DLP    (0x1 << 11)
+-#define RBFP_BFPWT  (0x1 <<  0)
+-
+-
+-
+-
+-/* FireStream commands. */
+-#define QE_CMD_NULL             (0x00 << 22)
+-#define QE_CMD_REG_RD           (0x01 << 22)
+-#define QE_CMD_REG_RDM          (0x02 << 22)
+-#define QE_CMD_REG_WR           (0x03 << 22)
+-#define QE_CMD_REG_WRM          (0x04 << 22)
+-#define QE_CMD_CONFIG_TX        (0x05 << 22)
+-#define QE_CMD_CONFIG_RX        (0x06 << 22)
+-#define QE_CMD_PRP_RD           (0x07 << 22)
+-#define QE_CMD_PRP_RDM          (0x2a << 22)
+-#define QE_CMD_PRP_WR           (0x09 << 22)
+-#define QE_CMD_PRP_WRM          (0x2b << 22)
+-#define QE_CMD_RX_EN            (0x0a << 22)
+-#define QE_CMD_RX_PURGE         (0x0b << 22)
+-#define QE_CMD_RX_PURGE_INH     (0x0c << 22)
+-#define QE_CMD_TX_EN            (0x0d << 22)
+-#define QE_CMD_TX_PURGE         (0x0e << 22)
+-#define QE_CMD_TX_PURGE_INH     (0x0f << 22)
+-#define QE_CMD_RST_CG           (0x10 << 22)
+-#define QE_CMD_SET_CG           (0x11 << 22)
+-#define QE_CMD_RST_CLP          (0x12 << 22)
+-#define QE_CMD_SET_CLP          (0x13 << 22)
+-#define QE_CMD_OVERRIDE         (0x14 << 22)
+-#define QE_CMD_ADD_BFP          (0x15 << 22)
+-#define QE_CMD_DUMP_TX          (0x16 << 22)
+-#define QE_CMD_DUMP_RX          (0x17 << 22)
+-#define QE_CMD_LRAM_RD          (0x18 << 22)
+-#define QE_CMD_LRAM_RDM         (0x28 << 22)
+-#define QE_CMD_LRAM_WR          (0x19 << 22)
+-#define QE_CMD_LRAM_WRM         (0x29 << 22)
+-#define QE_CMD_LRAM_BSET        (0x1a << 22)
+-#define QE_CMD_LRAM_BCLR        (0x1b << 22)
+-#define QE_CMD_CONFIG_SEGM      (0x1c << 22)
+-#define QE_CMD_READ_SEGM        (0x1d << 22)
+-#define QE_CMD_CONFIG_ROUT      (0x1e << 22)
+-#define QE_CMD_READ_ROUT        (0x1f << 22)
+-#define QE_CMD_CONFIG_TM        (0x20 << 22)
+-#define QE_CMD_READ_TM          (0x21 << 22)
+-#define QE_CMD_CONFIG_TXBM      (0x22 << 22)
+-#define QE_CMD_READ_TXBM        (0x23 << 22)
+-#define QE_CMD_CONFIG_RXBM      (0x24 << 22)
+-#define QE_CMD_READ_RXBM        (0x25 << 22)
+-#define QE_CMD_CONFIG_REAS      (0x26 << 22)
+-#define QE_CMD_READ_REAS        (0x27 << 22)
+-
+-#define QE_TRANSMIT_DE          (0x0 << 30)
+-#define QE_CMD_LINKED           (0x1 << 30)
+-#define QE_CMD_IMM              (0x2 << 30)
+-#define QE_CMD_IMM_INQ          (0x3 << 30)
+-
+-#define TD_EPI                  (0x1 << 27)
+-#define TD_COMMAND              (0x1 << 28)
+-
+-#define TD_DATA                 (0x0 << 29)
+-#define TD_RM_CELL              (0x1 << 29)
+-#define TD_OAM_CELL             (0x2 << 29)
+-#define TD_OAM_CELL_SEGMENT     (0x3 << 29)
+-
+-#define TD_BPI                  (0x1 << 20)
+-
+-#define FP_FLAGS_EPI            (0x1 << 27)
+-
+-
+-#define TX_PQ(i)  (0x00  + (i) * 0x10)
+-#define TXB_RQ    (0x20)
+-#define ST_Q      (0x48)
+-#define RXB_FP(i) (0x90  + (i) * 0x14)
+-#define RXB_RQ(i) (0x134 + (i) * 0x14)
+-
+-
+-#define TXQ_HP 0
+-#define TXQ_LP 1
+-
+-/* Phew. You don't want to know how many revisions these simple queue
+- * address macros went through before I got them nice and compact as
+- * they are now. -- REW
+- */
+-
+-
+-/* And now for something completely different: 
+- * The rest of the registers... */
+-
+-
+-#define CMDR0 0x34
+-#define CMDR1 0x38
+-#define CMDR2 0x3c
+-#define CMDR3 0x40
+-
+-
+-#define SARMODE0     0x5c
+-
+-#define SARMODE0_TXVCS_0    (0x0 << 0)
+-#define SARMODE0_TXVCS_1k   (0x1 << 0)
+-#define SARMODE0_TXVCS_2k   (0x2 << 0)
+-#define SARMODE0_TXVCS_4k   (0x3 << 0)
+-#define SARMODE0_TXVCS_8k   (0x4 << 0)
+-#define SARMODE0_TXVCS_16k  (0x5 << 0)
+-#define SARMODE0_TXVCS_32k  (0x6 << 0)
+-#define SARMODE0_TXVCS_64k  (0x7 << 0)
+-#define SARMODE0_TXVCS_32   (0x8 << 0)
+-
+-#define SARMODE0_ABRVCS_0   (0x0 << 4)
+-#define SARMODE0_ABRVCS_512 (0x1 << 4)
+-#define SARMODE0_ABRVCS_1k  (0x2 << 4)
+-#define SARMODE0_ABRVCS_2k  (0x3 << 4)
+-#define SARMODE0_ABRVCS_4k  (0x4 << 4)
+-#define SARMODE0_ABRVCS_8k  (0x5 << 4)
+-#define SARMODE0_ABRVCS_16k (0x6 << 4)
+-#define SARMODE0_ABRVCS_32k (0x7 << 4)
+-#define SARMODE0_ABRVCS_32  (0x9 << 4) /* The others are "8", this one really has to 
+-					  be 9. Tell me you don't believe me. -- REW */
+-
+-#define SARMODE0_RXVCS_0    (0x0 << 8)
+-#define SARMODE0_RXVCS_1k   (0x1 << 8)
+-#define SARMODE0_RXVCS_2k   (0x2 << 8)
+-#define SARMODE0_RXVCS_4k   (0x3 << 8)
+-#define SARMODE0_RXVCS_8k   (0x4 << 8)
+-#define SARMODE0_RXVCS_16k  (0x5 << 8)
+-#define SARMODE0_RXVCS_32k  (0x6 << 8)
+-#define SARMODE0_RXVCS_64k  (0x7 << 8)
+-#define SARMODE0_RXVCS_32   (0x8 << 8) 
+-
+-#define SARMODE0_CALSUP_1  (0x0 << 12)
+-#define SARMODE0_CALSUP_2  (0x1 << 12)
+-#define SARMODE0_CALSUP_3  (0x2 << 12)
+-#define SARMODE0_CALSUP_4  (0x3 << 12)
+-
+-#define SARMODE0_PRPWT_FS50_0  (0x0 << 14)
+-#define SARMODE0_PRPWT_FS50_2  (0x1 << 14)
+-#define SARMODE0_PRPWT_FS50_5  (0x2 << 14)
+-#define SARMODE0_PRPWT_FS50_11 (0x3 << 14)
+-
+-#define SARMODE0_PRPWT_FS155_0 (0x0 << 14)
+-#define SARMODE0_PRPWT_FS155_1 (0x1 << 14)
+-#define SARMODE0_PRPWT_FS155_2 (0x2 << 14)
+-#define SARMODE0_PRPWT_FS155_3 (0x3 << 14)
+-
+-#define SARMODE0_SRTS0     (0x1 << 23)
+-#define SARMODE0_SRTS1     (0x1 << 24)
+-
+-#define SARMODE0_RUN       (0x1 << 25)
+-
+-#define SARMODE0_UNLOCK    (0x1 << 26)
+-#define SARMODE0_CWRE      (0x1 << 27)
+-
+-
+-#define SARMODE0_INTMODE_READCLEAR          (0x0 << 28)
+-#define SARMODE0_INTMODE_READNOCLEAR        (0x1 << 28)
+-#define SARMODE0_INTMODE_READNOCLEARINHIBIT (0x2 << 28)
+-#define SARMODE0_INTMODE_READCLEARINHIBIT   (0x3 << 28)  /* Tell me you don't believe me. */
+-
+-#define SARMODE0_GINT      (0x1 << 30)
+-#define SARMODE0_SHADEN    (0x1 << 31)
+-
+-
+-#define SARMODE1     0x60
+-
+-
+-#define SARMODE1_TRTL_SHIFT 0   /* Program to 0 */
+-#define SARMODE1_RRTL_SHIFT 4   /* Program to 0 */
+-
+-#define SARMODE1_TAGM       (0x1 <<  8)  /* Program to 0 */
+-
+-#define SARMODE1_HECM0      (0x1 <<  9)
+-#define SARMODE1_HECM1      (0x1 << 10)
+-#define SARMODE1_HECM2      (0x1 << 11)
+-
+-#define SARMODE1_GFCE       (0x1 << 14)
+-#define SARMODE1_GFCR       (0x1 << 15)
+-#define SARMODE1_PMS        (0x1 << 18)
+-#define SARMODE1_GPRI       (0x1 << 19)
+-#define SARMODE1_GPAS       (0x1 << 20)
+-#define SARMODE1_GVAS       (0x1 << 21)
+-#define SARMODE1_GNAM       (0x1 << 22)
+-#define SARMODE1_GPLEN      (0x1 << 23)
+-#define SARMODE1_DUMPE      (0x1 << 24)
+-#define SARMODE1_OAMCRC     (0x1 << 25)
+-#define SARMODE1_DCOAM      (0x1 << 26)
+-#define SARMODE1_DCRM       (0x1 << 27)
+-#define SARMODE1_TSTLP      (0x1 << 28)
+-#define SARMODE1_DEFHEC     (0x1 << 29)
+-
+-
+-#define ISR      0x64
+-#define IUSR     0x68
+-#define IMR      0x6c
+-
+-#define ISR_LPCO          (0x1 <<  0)
+-#define ISR_DPCO          (0x1 <<  1)
+-#define ISR_RBRQ0_W       (0x1 <<  2)
+-#define ISR_RBRQ1_W       (0x1 <<  3)
+-#define ISR_RBRQ2_W       (0x1 <<  4)
+-#define ISR_RBRQ3_W       (0x1 <<  5)
+-#define ISR_RBRQ0_NF      (0x1 <<  6)
+-#define ISR_RBRQ1_NF      (0x1 <<  7)
+-#define ISR_RBRQ2_NF      (0x1 <<  8)
+-#define ISR_RBRQ3_NF      (0x1 <<  9)
+-#define ISR_BFP_SC        (0x1 << 10)
+-#define ISR_INIT          (0x1 << 11)
+-#define ISR_INIT_ERR      (0x1 << 12) /* Documented as "reserved" */
+-#define ISR_USCEO         (0x1 << 13)
+-#define ISR_UPEC0         (0x1 << 14)
+-#define ISR_VPFCO         (0x1 << 15)
+-#define ISR_CRCCO         (0x1 << 16)
+-#define ISR_HECO          (0x1 << 17)
+-#define ISR_TBRQ_W        (0x1 << 18)
+-#define ISR_TBRQ_NF       (0x1 << 19)
+-#define ISR_CTPQ_E        (0x1 << 20)
+-#define ISR_GFC_C0        (0x1 << 21)
+-#define ISR_PCI_FTL       (0x1 << 22)
+-#define ISR_CSQ_W         (0x1 << 23)
+-#define ISR_CSQ_NF        (0x1 << 24)
+-#define ISR_EXT_INT       (0x1 << 25)
+-#define ISR_RXDMA_S       (0x1 << 26)
+-
+-
+-#define TMCONF 0x78
+-/* Bits? */
+-
+-
+-#define CALPRESCALE 0x7c
+-/* Bits? */
+-
+-#define CELLOSCONF 0x84
+-#define CELLOSCONF_COTS   (0x1 << 28)
+-#define CELLOSCONF_CEN    (0x1 << 27)
+-#define CELLOSCONF_SC8    (0x3 << 24)
+-#define CELLOSCONF_SC4    (0x2 << 24)
+-#define CELLOSCONF_SC2    (0x1 << 24)
+-#define CELLOSCONF_SC1    (0x0 << 24)
+-
+-#define CELLOSCONF_COBS   (0x1 << 16)
+-#define CELLOSCONF_COPK   (0x1 <<  8)
+-#define CELLOSCONF_COST   (0x1 <<  0)
+-/* Bits? */
+-
+-#define RAS0 0x1bc
+-#define RAS0_DCD_XHLT (0x1 << 31)
+-
+-#define RAS0_VPSEL    (0x1 << 16)
+-#define RAS0_VCSEL    (0x1 <<  0)
+-
+-#define RAS1 0x1c0
+-#define RAS1_UTREG    (0x1 << 5)
+-
+-
+-#define DMAMR 0x1cc
+-#define DMAMR_TX_MODE_FULL (0x0 << 0)
+-#define DMAMR_TX_MODE_PART (0x1 << 0)
+-#define DMAMR_TX_MODE_NONE (0x2 << 0) /* And 3 */
+-
+-
+-
+-#define RAS2 0x280
+-
+-#define RAS2_NNI  (0x1 << 0)
+-#define RAS2_USEL (0x1 << 1)
+-#define RAS2_UBS  (0x1 << 2)
+-
+-
+-
+-struct fs_transmit_config {
+-	u32 flags;
+-	u32 atm_hdr;
+-	u32 TMC[4];
+-	u32 spec;
+-	u32 rtag[3];
+-};
+-
+-#define TC_FLAGS_AAL5      (0x0 << 29)
+-#define TC_FLAGS_TRANSPARENT_PAYLOAD (0x1 << 29)
+-#define TC_FLAGS_TRANSPARENT_CELL    (0x2 << 29)
+-#define TC_FLAGS_STREAMING (0x1 << 28)
+-#define TC_FLAGS_PACKET    (0x0) 
+-#define TC_FLAGS_TYPE_ABR  (0x0 << 22)
+-#define TC_FLAGS_TYPE_CBR  (0x1 << 22)
+-#define TC_FLAGS_TYPE_VBR  (0x2 << 22)
+-#define TC_FLAGS_TYPE_UBR  (0x3 << 22)
+-#define TC_FLAGS_CAL0      (0x0 << 20)
+-#define TC_FLAGS_CAL1      (0x1 << 20)
+-#define TC_FLAGS_CAL2      (0x2 << 20)
+-#define TC_FLAGS_CAL3      (0x3 << 20)
+-
+-
+-#define RC_FLAGS_NAM        (0x1 << 13)
+-#define RC_FLAGS_RXBM_PSB   (0x0 << 14)
+-#define RC_FLAGS_RXBM_CIF   (0x1 << 14)
+-#define RC_FLAGS_RXBM_PMB   (0x2 << 14)
+-#define RC_FLAGS_RXBM_STR   (0x4 << 14)
+-#define RC_FLAGS_RXBM_SAF   (0x6 << 14)
+-#define RC_FLAGS_RXBM_POS   (0x6 << 14)
+-#define RC_FLAGS_BFPS       (0x1 << 17)
+-
+-#define RC_FLAGS_BFPS_BFP   (0x1 << 17)
+-
+-#define RC_FLAGS_BFPS_BFP0  (0x0 << 17)
+-#define RC_FLAGS_BFPS_BFP1  (0x1 << 17)
+-#define RC_FLAGS_BFPS_BFP2  (0x2 << 17)
+-#define RC_FLAGS_BFPS_BFP3  (0x3 << 17)
+-#define RC_FLAGS_BFPS_BFP4  (0x4 << 17)
+-#define RC_FLAGS_BFPS_BFP5  (0x5 << 17)
+-#define RC_FLAGS_BFPS_BFP6  (0x6 << 17)
+-#define RC_FLAGS_BFPS_BFP7  (0x7 << 17)
+-#define RC_FLAGS_BFPS_BFP01 (0x8 << 17)
+-#define RC_FLAGS_BFPS_BFP23 (0x9 << 17)
+-#define RC_FLAGS_BFPS_BFP45 (0xa << 17)
+-#define RC_FLAGS_BFPS_BFP67 (0xb << 17)
+-#define RC_FLAGS_BFPS_BFP07 (0xc << 17)
+-#define RC_FLAGS_BFPS_BFP27 (0xd << 17)
+-#define RC_FLAGS_BFPS_BFP47 (0xe << 17)
+-
+-#define RC_FLAGS_BFPP       (0x1 << 21)
+-#define RC_FLAGS_TEVC       (0x1 << 22)
+-#define RC_FLAGS_TEP        (0x1 << 23)
+-#define RC_FLAGS_AAL5       (0x0 << 24)
+-#define RC_FLAGS_TRANSP     (0x1 << 24)
+-#define RC_FLAGS_TRANSC     (0x2 << 24)
+-#define RC_FLAGS_ML         (0x1 << 27)
+-#define RC_FLAGS_TRBRM      (0x1 << 28)
+-#define RC_FLAGS_PRI        (0x1 << 29)
+-#define RC_FLAGS_HOAM       (0x1 << 30)
+-#define RC_FLAGS_CRC10      (0x1 << 31)
+-
+-
+-#define RAC 0x1c8
+-#define RAM 0x1c4
+-
+-
+-
+-/************************************************************************
+- *         Then the datastructures that the DRIVER uses.                *
+- ************************************************************************/
+-
+-#define TXQ_NENTRIES  32
+-#define RXRQ_NENTRIES 1024
+-
+-
+-struct fs_vcc {
+-	int channo;
+-	wait_queue_head_t close_wait;
+-	struct sk_buff *last_skb;
+-};
+-
+-
+-struct queue {
+-	struct FS_QENTRY *sa, *ea;  
+-	int offset;
+-};
+-
+-struct freepool {
+-	int offset;
+-	int bufsize;
+-	int nr_buffers;
+-	int n;
+-};
+-
+-
+-struct fs_dev {
+-	struct fs_dev *next;		/* other FS devices */
+-	int flags;
+-
+-	unsigned char irq;		/* IRQ */
+-	struct pci_dev *pci_dev;	/* PCI stuff */
+-	struct atm_dev *atm_dev;
+-	struct timer_list timer;
+-
+-	unsigned long hw_base;		/* mem base address */
+-	void __iomem *base;             /* Mapping of base address */
+-	int channo;
+-	unsigned long channel_mask;
+-
+-	struct queue    hp_txq, lp_txq, tx_relq, st_q;
+-	struct freepool rx_fp[FS_NR_FREE_POOLS];
+-	struct queue    rx_rq[FS_NR_RX_QUEUES];
+-
+-	int nchannels;
+-	struct atm_vcc **atm_vccs;
+-	void *tx_inuse;
+-	int ntxpckts;
+-};
+-
+-
+-
+-
+-/* Number of channesl that the FS50 supports. */
+-#define FS50_CHANNEL_BITS  5
+-#define FS50_NR_CHANNELS      (1 << FS50_CHANNEL_BITS)
+-
+-         
+-#define FS_DEV(atm_dev) ((struct fs_dev *) (atm_dev)->dev_data)
+-#define FS_VCC(atm_vcc) ((struct fs_vcc *) (atm_vcc)->dev_data)
+-
+-
+-#define FS_IS50  0x1
+-#define FS_IS155 0x2
+-
+-#define IS_FS50(dev)  (dev->flags & FS_IS50)
+-#define IS_FS155(dev) (dev->flags & FS_IS155)
+- 
+-/* Within limits this is user-configurable. */
+-/* Note: Currently the sum (10 -> 1k channels) is hardcoded in the driver. */
+-#define FS155_VPI_BITS 4
+-#define FS155_VCI_BITS 6
+-
+-#define FS155_CHANNEL_BITS  (FS155_VPI_BITS + FS155_VCI_BITS)
+-#define FS155_NR_CHANNELS   (1 << FS155_CHANNEL_BITS)
 -- 
 2.34.1
 
