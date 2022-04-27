@@ -2,98 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 253CA51220E
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 21:04:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1568551221B
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 21:04:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231473AbiD0THR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 15:07:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52346 "EHLO
+        id S232259AbiD0TH7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 15:07:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232434AbiD0THA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 15:07:00 -0400
-Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D00EBF71;
-        Wed, 27 Apr 2022 11:53:52 -0700 (PDT)
-Received: by mail-io1-xd35.google.com with SMTP id f2so3981801ioh.7;
-        Wed, 27 Apr 2022 11:53:52 -0700 (PDT)
+        with ESMTP id S232563AbiD0THT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 15:07:19 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA56D30F74
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 11:55:10 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id w17so5040703ybh.9
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 11:55:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=VJ91s6H07ClEByjQbgZruheBlPpsvHRlP6vfpPqzZKY=;
-        b=EKwxHil5G0kU+wbkmov0G1EaEobARTaBhSglDRm/pqjMlzyw2xWvkwLpGcmiuCwiWJ
-         At36hRwRARLjFsB0PsstrYFE9MGEZmMhqVj6IkdW1Qe3i77MufwhagvCIO3pyldfedH+
-         1L5FME3HrT5gXe+YfTuK1vScwvVdBBAvF3r85wZ4RSEairsG6Sl93FEnp+wFW9Lub42h
-         JoeSUxM+XtEzDhZiGXt0UT79mhVEXx13upi3pSqqFpUs393Ub5H4TEiurTeKxrq4SzOx
-         bx8DqZf4u4eSuipwPj4ZXSXZxkJ0PDwLmP82YCvAND/nMeSjVzccZu1gkgmHm97aBOf9
-         qsLA==
+        bh=j3lBdD4GtdfuLMXUozbnDwowFFcjMZYRVPLsP+AgMcU=;
+        b=nZjC+sPezdU6/sIyymL8+lboZ0eGQkFj48qM/Qjp/cuTUskAMS/udm47HLWj9IvxZc
+         XInlUz4NInt8kiZ5Dzw/RV/ylrqHJxUqW5pz51Fyh6lGOvxZQbXlmajOczljkcClfQ6m
+         9h87VgQF0sAuCDUHk/kXI89Bs5r0vbeyRZwfr5li6y5Imah16Jy5CbDnGQ4YJubUYfyf
+         vwL8CrE49NGXLlgSZPK9GukP16eqhvh2MpTWGbeYGfsc64gkB07ktFHsfKTKnagpa/ok
+         JtZkQJ2LNVFtN45/JIpeVAJ2RKPu2mRMvEhf6E1Nnf9j+VY7femVp98QnzT33vNTj2DC
+         RoYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=VJ91s6H07ClEByjQbgZruheBlPpsvHRlP6vfpPqzZKY=;
-        b=7DgfYkHZAWMo6vQgfeQRIq5cEzoy5ln7IM4WnC5QDK5RNvL4sWJhf8HfrdWkhFIOLV
-         hZwD88uaM1y7aZa5X4MtHbpN5H7ivchG2GjCDVFQTsjzbAoYSUehfkSZkAuaLDzYL56w
-         JYvz+MOw2q7H1gWClR1iaI273B5yOzpAZoRvmO87ppgdJHmi1VMNb/gTM48LlIBpGsJ1
-         f1IczIgT4Pmid1K7r44pCn0Pe6ahYFS9Gcl7BMy6PTzC5HKopCyfYL8vV1j5yTsBY1D+
-         vvrwmmCHmPwZF4vA2y8nGmx430i6yWvsbAA2wLJGFQdVflkg0Xb741PxTv7Q+CM3q14Y
-         CgCw==
-X-Gm-Message-State: AOAM532Bq7F0sbmi/E6zbD8SAY5HUkSBJ3uSyn/AWDmJS4Bj5awY7QNB
-        D8gF+4EQofjMuQ93QyuDwEl9BHTLQEPPi0DJ0N4=
-X-Google-Smtp-Source: ABdhPJzl9VUnx3Oh6fY4dpfEp3sorFTDo26fFd33NZFaIoxLMKHh9xEeNMXVp8dcrjOJt836MeA+18nprDrk4z78Bj8=
-X-Received: by 2002:a5d:9f4e:0:b0:652:2323:2eb8 with SMTP id
- u14-20020a5d9f4e000000b0065223232eb8mr12051724iot.79.1651085631636; Wed, 27
- Apr 2022 11:53:51 -0700 (PDT)
+        bh=j3lBdD4GtdfuLMXUozbnDwowFFcjMZYRVPLsP+AgMcU=;
+        b=joTebYDXjrthK1t7IyiX+Rj6OSSTQw6n72xnkH7frVcLw7XqIjdErcLd9p39Z4mL6Q
+         A++/MRCJ4J/of/iE1Xrmwa5E72T+/Cskm+STfUTgczo4q/JR/MrNCrJtS9fvqyaS75Fc
+         rYjsNu38s93fqiAc/buc7Dlt57d3wEGFJCrGsWZlYzL+wnyM7MTTRkCfWe0EKt3QiHIG
+         QrHNXsON5HJaJSBDUWGNskZYnXqJz34xMI7cgYl2uJh6yVXuezX1MGSUskpgqOWQCecS
+         7sOzWHs6oHVKIV7KDkoWJ7DeZXKnPSq09lQ7Ml5/7108b4t3fLmhNHOQCZFoJ7q552QM
+         D4TA==
+X-Gm-Message-State: AOAM5310NdnjU8sGYKTo7/vdN96eQR7aZOzkyrR9m5LvGEa44Qkd+pqo
+        B9bHJ32FxLnpfRZblCkW6ko8fXd8F7UE6nKom+TNKw==
+X-Google-Smtp-Source: ABdhPJzHHPoayLSkVHp95DEYm6a44e5llK2VixyILwyrvUOLFsqrlfdfrZRTos9Yhc8iYa3UFHCT1YYaAr/cy41kCqc=
+X-Received: by 2002:a25:2a49:0:b0:648:f2b4:cd3d with SMTP id
+ q70-20020a252a49000000b00648f2b4cd3dmr1024330ybq.231.1651085709765; Wed, 27
+ Apr 2022 11:55:09 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220414223704.341028-1-alobakin@pm.me> <20220414223704.341028-9-alobakin@pm.me>
- <CAEf4BzZVohaHdCTz_KFVdEus2pndLTZvg=BHfujpgt29qbio3Q@mail.gmail.com> <05d21d85-7b59-a8f9-73dc-89189986db11@fb.com>
-In-Reply-To: <05d21d85-7b59-a8f9-73dc-89189986db11@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 27 Apr 2022 11:53:40 -0700
-Message-ID: <CAEf4BzYrEfkdvP+k+np0S9-Rtf=xnpgVhL25wFgPQ81bm-_h_Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 08/11] samples: bpf: fix shifting unsigned long
- by 32 positions
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+References: <20220422201237.416238-1-eric.dumazet@gmail.com>
+ <YmlilMi5MmApVqTX@shredder> <CANn89i+x44iM97YmGa6phMMUx6L5a3Cn86aNwq3OsbQf3iVgWA@mail.gmail.com>
+ <CANn89iLue8fy-6TTEsTwzWAog-KnAcsG19up34621W8Bp+0=NQ@mail.gmail.com> <CANn89iK3uzj4MzAyPrjQVR+5fZQaBdopuMEAZGP6QmWeXZj19Q@mail.gmail.com>
+In-Reply-To: <CANn89iK3uzj4MzAyPrjQVR+5fZQaBdopuMEAZGP6QmWeXZj19Q@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 27 Apr 2022 11:54:58 -0700
+Message-ID: <CANn89iKEUb9DWWMggsTiRjuEs=+X1631q1bU=foH2krb-tiT_Q@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next] net: generalize skb freeing deferral to
+ per-cpu lists
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Dmitrii Dolgov <9erthalion6@gmail.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Tiezhu Yang <yangtiezhu@loongson.cn>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Chenbo Feng <fengc@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Daniel Wagner <daniel.wagner@bmw-carit.de>,
-        Thomas Graf <tgraf@suug.ch>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        llvm@lists.linux.dev
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -101,59 +72,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 8:55 AM Yonghong Song <yhs@fb.com> wrote:
+On Wed, Apr 27, 2022 at 10:59 AM Eric Dumazet <edumazet@google.com> wrote:
 >
->
->
-> On 4/20/22 10:18 AM, Andrii Nakryiko wrote:
-> > On Thu, Apr 14, 2022 at 3:46 PM Alexander Lobakin <alobakin@pm.me> wrote:
-> >>
-> >> On 32 bit systems, shifting an unsigned long by 32 positions
-> >> yields the following warning:
-> >>
-> >> samples/bpf/tracex2_kern.c:60:23: warning: shift count >= width of type [-Wshift-count-overflow]
-> >>          unsigned int hi = v >> 32;
-> >>                              ^  ~~
-> >>
+> On Wed, Apr 27, 2022 at 10:11 AM Eric Dumazet <edumazet@google.com> wrote:
 > >
-> > long is always 64-bit in BPF, but I suspect this is due to
-> > samples/bpf/Makefile still using this clang + llc combo, where clang
-> > is called with native target and llc for -target bpf. Not sure if we
-> > are ready to ditch that complicated combination. Yonghong, do we still
-> > need that or can we just use -target bpf in samples/bpf?
+> > On Wed, Apr 27, 2022 at 9:53 AM Eric Dumazet <edumazet@google.com> wrote:
+> > >
+> > > On Wed, Apr 27, 2022 at 8:34 AM Ido Schimmel <idosch@idosch.org> wrote:
+> > > >
+> > >
+> > > >
+> > > > Eric, with this patch I'm seeing memory leaks such as these [1][2] after
+> > > > boot. The system is using the igb driver for its management interface
+> > > > [3]. The leaks disappear after reverting the patch.
+> > > >
+> > > > Any ideas?
+> > > >
+> > >
+> > > No idea, skbs allocated to send an ACK can not be stored in receive
+> > > queue, I guess this is a kmemleak false positive.
+> > >
+> > > Stress your host for hours, and check if there are real kmemleaks, as
+> > > in memory being depleted.
+> >
+> > AT first when I saw your report I wondered if the following was needed,
+> > but I do not think so. Nothing in __kfree_skb(skb) cares about skb->next.
+> >
+> > But you might give it a try, maybe I am wrong.
+> >
+> > diff --git a/net/core/dev.c b/net/core/dev.c
+> > index 611bd719706412723561c27753150b27e1dc4e7a..9dc3443649b962586cc059899ac3d71e9c7a3559
+> > 100644
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
+> > @@ -6594,6 +6594,7 @@ static void skb_defer_free_flush(struct softnet_data *sd)
+> >
+> >         while (skb != NULL) {
+> >                 next = skb->next;
+> > +               skb_mark_not_on_list(skb);
+> >                 __kfree_skb(skb);
+> >                 skb = next;
+> >         }
 >
-> Current most bpf programs in samples/bpf do not use vmlinux.h and CO-RE.
-> They direct use kernel header files. That is why clang C -> IR
-> compilation still needs to be native.
->
-> We could just use -target bpf for the whole compilation but that needs
-> to change the code to use vmlinux.h and CO-RE. There are already a
-> couple of sample bpf programs did this.
+> Oh well, there is definitely a leak, sorry for that.
 
-Right, I guess I'm proposing to switch samples/bpf to vmlinux.h. Only
-purely networking BPF apps can get away with not using vmlinux.h
-because they might avoid dependency on kernel types. But even then a
-lot of modern networking apps seem to be gaining elements of more
-generic tracing and would rely on CO-RE for staying "portable" between
-kernels. So it might be totally fine to just use CO-RE universally in
-samples/bpf?
+Ido, can you test if the following patch solves your issue ?
+It definitely looks needed.
 
->
-> >
-> >
-> >> The usual way to avoid this is to shift by 16 two times (see
-> >> upper_32_bits() macro in the kernel). Use it across the BPF sample
-> >> code as well.
-> >>
-> >> Fixes: d822a1926849 ("samples/bpf: Add counting example for kfree_skb() function calls and the write() syscall")
-> >> Fixes: 0fb1170ee68a ("bpf: BPF based latency tracing")
-> >> Fixes: f74599f7c530 ("bpf: Add tests and samples for LWT-BPF")
-> >> Signed-off-by: Alexander Lobakin <alobakin@pm.me>
-> >> ---
-> >>   samples/bpf/lathist_kern.c      | 2 +-
-> >>   samples/bpf/lwt_len_hist_kern.c | 2 +-
-> >>   samples/bpf/tracex2_kern.c      | 2 +-
-> >>   3 files changed, 3 insertions(+), 3 deletions(-)
-> >>
-> >
-> > [...]
+Thanks !
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 611bd719706412723561c27753150b27e1dc4e7a..e09cd202fc579dfe2313243e20def8044aafafa2
+100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -6617,7 +6617,7 @@ static __latent_entropy void
+net_rx_action(struct softirq_action *h)
+
+                if (list_empty(&list)) {
+                        if (!sd_has_rps_ipi_waiting(sd) && list_empty(&repoll))
+-                               return;
++                               goto end;
+                        break;
+                }
+
+@@ -6644,6 +6644,7 @@ static __latent_entropy void
+net_rx_action(struct softirq_action *h)
+                __raise_softirq_irqoff(NET_RX_SOFTIRQ);
+
+        net_rps_action_and_irq_enable(sd);
++end:
+        skb_defer_free_flush(sd);
+ }
