@@ -2,104 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76E7351251A
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 00:12:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26B7A51253E
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 00:24:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231482AbiD0WPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 18:15:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46402 "EHLO
+        id S232355AbiD0W1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 18:27:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229937AbiD0WPY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 18:15:24 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD020DF40;
-        Wed, 27 Apr 2022 15:12:12 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id n8so2746375plh.1;
-        Wed, 27 Apr 2022 15:12:12 -0700 (PDT)
+        with ESMTP id S232353AbiD0W1s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 18:27:48 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CF382E6A9
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 15:24:35 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id x18so4391102wrc.0
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 15:24:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=openvz-org.20210112.gappssmtp.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=yY8Jm3mnGXvzVkGe0wxNhWU0mg9/dRgUWt4SGuk+Cp4=;
-        b=dzV/aIharJHjDYmpuVXUE3jjfd9jIG15hJ1SDRtu5N4Gb0ataX/pdLGzOwRl9MpB8z
-         kC0ccaiIzVDgNQxBBlm9UvqU5rb+VpJtPb+VWrPxXHvtJ47GgEHAQKWJ95SacMNm+bIp
-         FiroaESQBD9Hrz3Uzwr7Lrjnxs6YdFcXSldkr61XJ5SP7r+dm93Tp0LJgcJbdgq04sR0
-         mFMy5pjt17pAjJMSthFmOhStMw7UUOfY70S56mpx1t69r5hYdvU8fKtd/4KnwHPNs3tL
-         DdZTqR9+B1UYljDdxJ7HCkfOj1o4zd6VQj7q+yY2lQinSIoDbSSxxzyr/8yoIFZnmSeo
-         iSjw==
+        bh=oLug1+azcE2h7QMeDbpYAnTwrafPSTpRFVPk0zNJveg=;
+        b=zI/nSf1n1K3Do1i5nBCb7lwViY+DJKmUvfVcoGHl/Q5SvQj83PNn1mVYoRuClPrpw9
+         sCkAImuE2tFKtQFVPcYA9jGml9m/Bwy/ymA5Te4m1zi4dRCXKacQNmNJgYeS0VEfkWbh
+         FvpiNqvdCThOvFYOiROhJZSsBkCxP0ox1W6C1im3DrClwe4LGTwoTkmKjqIyNiDE7bF0
+         IWrLpdiZfx31n46ZBikenK9K101cENCfFgSuYqLOkJ+QkFHBJEC++7GoEDz9r43mo8AA
+         LxJWR0R9yV0SBiYBa/bFhSnWkwE1pEHgs0W4l9FVYG8LeYNpO4bMEe33NvulIrzx7+7e
+         S/ew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=yY8Jm3mnGXvzVkGe0wxNhWU0mg9/dRgUWt4SGuk+Cp4=;
-        b=cKsE23Bg1pKL6toUflrsxBgMMbO1NXOlayd2kS9B2ZxBddvSq/p0bNvH+cJBjcQpg5
-         PSMK51XedQ3NBj3QWX4zVmS/FVT0aOqo+Gcf6m7Kn0ZYgCQgi4nDB46v6KAJEM67Lxhb
-         fMLIaQpzO3iRIuaqH7MmRDHt+qupXiO9X3GqDUm8QPvRjBuEjUFJZAvCNpA67Mej4QRi
-         xzvvtwwY4XlAvhrqC/zO90sPBxc6Rdn1RgR6M185HqUdwuQlgv4Ukt4T/xJ5xRvHVMs+
-         WFMi88rkJHV/aw50nlH2guNcnhcRreUQAEVPe9j3uRg8Bjmc77Ytgb0OHVNsqcLXMT6w
-         7lMQ==
-X-Gm-Message-State: AOAM532GU352mPnklm+lkHLUy76YKeDR5bbztsc6JDwIOuKavmReYobz
-        AjRcp8bJlE3PhfHfASoDo+w=
-X-Google-Smtp-Source: ABdhPJxSZEED2LpDtARX7a47vcvQZUAG/CuLxziUvNSn92cKgGfCUKMDR6kj3I8uV4A5eq2EotCOeg==
-X-Received: by 2002:a17:902:f552:b0:15d:5abb:af5a with SMTP id h18-20020a170902f55200b0015d5abbaf5amr3877197plf.36.1651097532171;
-        Wed, 27 Apr 2022 15:12:12 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id l3-20020a17090a72c300b001d2edf4b513sm3897725pjk.56.2022.04.27.15.12.09
+        bh=oLug1+azcE2h7QMeDbpYAnTwrafPSTpRFVPk0zNJveg=;
+        b=w+Rrrlm7x638e8qrKzSGSc3yircoq4+W5Z6zi7uypY7VSMysJVjD0XzDKQPZPqihbl
+         ndmm7bMAsyRqfz57nuN7OP/9lzAXPrXisuIM+r8gUxH7ss3ZON+jACBtx1nBuLdO+Opp
+         WihsOV2WV2M6zXoMGaf1mJpmksK8c0wRqaeA6S1y7u/F7i48bmg7/RqDPWpaCrHN5Ynp
+         BIEmDHGdS8IFarQdQBYwBboTo+4Ao+l76eiq7l7LFpH+FB3bxxXAN/sOItJ3Eum3RU+T
+         GYn0WLljLe9NnhfrlxdY8ADftc8x8R+F/gXCtcjcvx75ppOHf1s6c8N4Y/TlkUx4c8py
+         p3yQ==
+X-Gm-Message-State: AOAM530d1zZWN76T5lkjXSUZH4IkIeoHtmRu9TKvkQtXd5MSep0kTT2l
+        Qwo9gBSLpukhKl3xKNBkylVt7XvT1pugbhr5
+X-Google-Smtp-Source: ABdhPJz1TeiDRK9Dtg2V4JeedZUcQpLNTqRFf/nLyars8/MHGhWw+9q7854+9snyo0BcYh5sVqbLYg==
+X-Received: by 2002:a2e:a593:0:b0:24d:b9a6:b85c with SMTP id m19-20020a2ea593000000b0024db9a6b85cmr5137954ljp.309.1651097815894;
+        Wed, 27 Apr 2022 15:16:55 -0700 (PDT)
+Received: from [192.168.1.65] ([46.188.121.177])
+        by smtp.gmail.com with ESMTPSA id a5-20020a2e9805000000b0024f12f0eb37sm999061ljj.95.2022.04.27.15.16.54
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Apr 2022 15:12:11 -0700 (PDT)
-Message-ID: <cef1c3f7-06e3-f0dd-10ce-513f35fef3d0@gmail.com>
-Date:   Wed, 27 Apr 2022 15:12:07 -0700
+        Wed, 27 Apr 2022 15:16:55 -0700 (PDT)
+Message-ID: <6b18f82d-1950-b38e-f3f5-94f6c23f0edb@openvz.org>
+Date:   Thu, 28 Apr 2022 01:16:53 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH net-next v1 3/3] net: phy: micrel: add coma mode GPIO
+ Thunderbird/91.7.0
+Subject: Re: [PATCH memcg v4] net: set proper memcg for net_init hooks
+ allocations
 Content-Language: en-US
-To:     Michael Walle <michael@walle.cc>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+To:     Shakeel Butt <shakeelb@google.com>,
+        =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
+Cc:     Vlastimil Babka <vbabka@suse.cz>,
+        Roman Gushchin <roman.gushchin@linux.dev>, kernel@openvz.org,
+        Florian Westphal <fw@strlen.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Michal Hocko <mhocko@suse.com>,
+        Cgroups <cgroups@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220427214406.1348872-1-michael@walle.cc>
- <20220427214406.1348872-4-michael@walle.cc>
- <652a5d64-4f06-7ac8-a792-df0a4b43686f@gmail.com>
- <635fd80542e089722e506bba0ff390ff@walle.cc>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <635fd80542e089722e506bba0ff390ff@walle.cc>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>
+References: <YmdeCqi6wmgiSiWh@carbon>
+ <33085523-a8b9-1bf6-2726-f456f59015ef@openvz.org>
+ <CALvZod4oaj9MpBDVUp9KGmnqu4F3UxjXgOLkrkvmRfFjA7F1dw@mail.gmail.com>
+ <20220427122232.GA9823@blackbody.suse.cz>
+ <CALvZod7v0taU51TNRu=OM5iJ-bnm1ryu9shjs80PuE-SWobqFg@mail.gmail.com>
+From:   Vasily Averin <vvs@openvz.org>
+In-Reply-To: <CALvZod7v0taU51TNRu=OM5iJ-bnm1ryu9shjs80PuE-SWobqFg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/27/22 15:08, Michael Walle wrote:
-> Am 2022-04-28 00:06, schrieb Florian Fainelli:
->> On 4/27/2022 2:44 PM, Michael Walle wrote:
->>> The LAN8814 has a coma mode pin which puts the PHY into isolate and
->>> power-dowm mode. Unfortunately, the mode cannot be disabled by a
-> s/dowm/down/
-> 
->>> register. Usually, the input pin has a pull-up and connected to a GPIO
->>> which can then be used to disable the mode. Try to get the GPIO and
->>> deassert it.
+On 4/27/22 18:06, Shakeel Butt wrote:
+> On Wed, Apr 27, 2022 at 5:22 AM Michal Koutný <mkoutny@suse.com> wrote:
 >>
->> Poor choice of word, how about deep sleep, dormant, super isolate?
-> 
-> Which one do you mean? Super isolate sounded like broadcom wording ;)
+>> On Tue, Apr 26, 2022 at 10:23:32PM -0700, Shakeel Butt <shakeelb@google.com> wrote:
+>>> [...]
+>>>>
+>>>> +static inline struct mem_cgroup *get_mem_cgroup_from_obj(void *p)
+>>>> +{
+>>>> +       struct mem_cgroup *memcg;
+>>>> +
+>>>
+>>> Do we need memcg_kmem_enabled() check here or maybe
+>>> mem_cgroup_from_obj() should be doing memcg_kmem_enabled() instead of
+>>> mem_cgroup_disabled() as we can have "cgroup.memory=nokmem" boot
+>>> param.
 
-Coma is not a great term to use IMHO. Yes Super isolate (tm) is a 
-Broadcom thing, and you can come out of super isolate mode with register 
-writes, so maybe not the best suggestion.
--- 
-Florian
+Shakeel, unfortunately I'm not ready to answer this question right now.
+I even did not noticed that memcg_kmem_enabled() and mem_cgroup_disabled()
+have a different nature.
+If you have no objections I'm going to keep this place as is and investigate
+this question later. 
+
+>> I reckon such a guard is on the charge side and readers should treat
+>> NULL and root_mem_group equally. Or is there a case when these two are
+>> different?
+>>
+>> (I can see it's different semantics when stored in current->active_memcg
+>> (and active_memcg() getter) but for such "outer" callers like here it
+>> seems equal.)
+
+Dear Michal,
+I may have misunderstood your point of view, so let me explain my vision
+in more detail.
+I do not think that NULL and root_mem_cgroup are equal here:
+- we have enabled cgroups and well-defined root_mem_cgroup,
+- this function is called from inside memcg-limited container,
+- we tried to get memcg from net, but without success,
+  and as result got NULL from  mem_cgroup_from_obj()
+  (frankly speaking I do not think this situation is really possible)
+If we keep memcg = NULL, then current's memcg will not be masked and
+net_init's allocations will be accounted to current's memcg. 
+So we need to set active_memcg to root_mem_cgroup, it helps to avoid
+incorrect accounting.
+
+> I was more thinking about possible shortcut optimization and unrelated
+> to this patch.
+> 
+> Vasily, can you please add documentation for get_mem_cgroup_from_obj()
+> similar to get_mem_cgroup_from_mm()? Also for mem_cgroup_or_root().
+> Please note that root_mem_cgroup can be NULL during early boot.
+
+Ok, thank you for the remark, I'll improve it in next patch version.
+
+Thank you,
+	Vasily Averin
