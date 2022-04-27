@@ -2,527 +2,434 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B948510F80
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 05:22:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24239510F8B
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 05:25:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357461AbiD0DZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 23:25:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59052 "EHLO
+        id S1357426AbiD0D2p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 23:28:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233352AbiD0DZq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 23:25:46 -0400
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BEC3205E2;
-        Tue, 26 Apr 2022 20:22:35 -0700 (PDT)
-Received: by mail-qk1-x72c.google.com with SMTP id q75so471096qke.6;
-        Tue, 26 Apr 2022 20:22:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=sv6j3yQkqmqlnv/D43Xt3QFUU0mKBweO3ildOel+yQ0=;
-        b=Ld1vmZkGyG2s7Qy6YmhBjJjVlHN5hziODK/eqnpBIpSoA3YfP9pvA8eNtwJzXapp+O
-         vEHgO+PtIlaiBKajsGk9BXk1JdQw5n3pGPny9gK5ZL0Hr661YyqigweG9fT+Sm95CeUF
-         xcnqVRutKzMWHgeQaTrSJVYpJT/BUl13M8MbbnxXhZgII3MI8l7bJKxRu+8FKqMitFXw
-         PLFVVHMU/YXuMPfsZy8bHZR0pEOG3AuEBB58JHsFXw//IKfAxJjQ2vutGLwZ4xhaspZH
-         t0cp0OIXVUTW3i1q4W9RPy+FN0+qIb5rva3GeycqD9ZSicvz/Er3zFg2fpY3NrFNQHai
-         qKew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=sv6j3yQkqmqlnv/D43Xt3QFUU0mKBweO3ildOel+yQ0=;
-        b=e6AvmyxWGz+omNV8UM+XLUotWwsOtmJWMXPHyGoVJL8EYQsUpyxPmHqKedIJPzm/sR
-         ZqAOB0UzfTV81UQ5DZ5pegk45Frs6q3nCUE1y1qlhlY+exMjY1HlmLQtfkFGoeXpDYHQ
-         cjWFGKiHOnkACPRUaDLqZVgqWl0GhL7FD1GwULdKRswcXinUfII/GIhbCi1tK/STd/RX
-         yi46YUyYRsLsb4eRw6WG61BdaiwaRcIaOCaBWR/fZ+yXvnSFlPzxJf33neu+2i1N64jk
-         5nZbslkBuOExaimcfO8RwobNPMEvfL/RckjfUtMvQf1v77X/sTPphToFVVvq/D6DJMH0
-         tujQ==
-X-Gm-Message-State: AOAM530gu6qOMNUSq6yq0kKEjg8gsvI30m/oH0lTx8gv0baMtYYyylfF
-        Q9NH3/f8GMM8eQAlWgbEV5I=
-X-Google-Smtp-Source: ABdhPJzESuC/cwch4IxN3PDksjLOFNh9YqBLO8cV1FYh3am8pn5iP1U+58Am0SOHQ1afQjnEsj5zxg==
-X-Received: by 2002:a37:b984:0:b0:67f:64a2:313e with SMTP id j126-20020a37b984000000b0067f64a2313emr14684905qkf.3.1651029754451;
-        Tue, 26 Apr 2022 20:22:34 -0700 (PDT)
-Received: from emn.localdomain. ([104.245.1.41])
-        by smtp.googlemail.com with ESMTPSA id h5-20020a05622a170500b002f3818c7b92sm1237450qtk.49.2022.04.26.20.22.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 20:22:34 -0700 (PDT)
-From:   Erin MacNeil <lnx.erin@gmail.com>
-To:     lnx.erin@gmail.com
-Cc:     Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Arnd Bergmann <arnd@arndb.de>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
-        Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Jeremy Kerr <jk@codeconstruct.com.au>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Akhmat Karakotov <hmukos@yandex-team.ru>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Martynas Pumputis <m@lambda.lt>,
-        Pavel Tikhomirov <ptikhomirov@virtuozzo.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Wei Wang <weiwan@google.com>, Yangbo Lu <yangbo.lu@nxp.com>,
-        Florian Westphal <fw@strlen.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Richard Palethorpe <rpalethorpe@suse.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Richard Sanger <rsanger@wand.net.nz>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        sparclinux@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-can@vger.kernel.org, linux-wpan@vger.kernel.org,
-        linux-sctp@vger.kernel.org
-Subject: [PATCH net-next v2] net: Add SO_RCVMARK socket option to provide SO_MARK with recvmsg().
-Date:   Tue, 26 Apr 2022 23:21:51 -0400
-Message-Id: <20220427032212.28470-1-lnx.erin@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <202204270907.nUUrw3dS-lkp@intel.com>
-References: <202204270907.nUUrw3dS-lkp@intel.com>
+        with ESMTP id S1350567AbiD0D2f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 23:28:35 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11339DE8C
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 20:25:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651029925; x=1682565925;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=1UgTTUqJWW2RByGdnq7W8LlUbMB6DU4g8Sg5VkgmeBs=;
+  b=D6Zbc2rAVMI0r6sqhgv26kJSW+HarkwAMkUVH8YhV2Vk3F9aKmqu/eIA
+   re9uSu6bHZk1t9pZybPonJMNVMbKm8DJYvnwLSaQrWmECNMIe6Ihf3w+x
+   agdOPtY9UOyn1QhZd4F0PN9dwGq5HCRf+iZzQwTCTlPU9KjwlGgbM0rlu
+   m4xW24ACmqriLLJZ+Lg+UVS5zvGg+20aYrYslI20W1WssLPOEGbYBZ4Uk
+   U3bhJ9ODh+omcRVtdaxz0peY1E6TiWJGWwI3x1Ezq79LMepmu8+YeNnhO
+   ydfOnn7LDql6L35LkuzScjxZ0Dv6wrERoYidgw4uX01pGxsSFjIrQVYuD
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="328741171"
+X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
+   d="scan'208";a="328741171"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 20:25:23 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
+   d="scan'208";a="807815338"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 26 Apr 2022 20:25:21 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1njYIr-0004Gg-4X;
+        Wed, 27 Apr 2022 03:25:21 +0000
+Date:   Wed, 27 Apr 2022 11:25:17 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Erin MacNeil <lnx.erin@gmail.com>, netdev@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Erin MacNeil <lnx.erin@gmail.com>
+Subject: Re: [PATCH net-next] net: Add SO_RCVMARK socket option to provide
+ SO_MARK with recvmsg().
+Message-ID: <202204271132.O9UPUBp2-lkp@intel.com>
+References: <20220426173805.2652-1-lnx.erin@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220426173805.2652-1-lnx.erin@gmail.com>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding a new socket option, SO_RCVMARK, to indicate that SO_MARK
-should be included in the ancillary data returned by recvmsg().
+Hi Erin,
 
-Renamed the sock_recv_ts_and_drops() function to sock_recv_cmsgs().
+Thank you for the patch! Yet something to improve:
 
-Signed-off-by: Erin MacNeil <lnx.erin@gmail.com>
----
- arch/alpha/include/uapi/asm/socket.h    |  2 ++
- arch/mips/include/uapi/asm/socket.h     |  2 ++
- arch/parisc/include/uapi/asm/socket.h   |  2 ++
- arch/sparc/include/uapi/asm/socket.h    |  2 ++
- include/net/sock.h                      | 18 ++++++++++--------
- include/uapi/asm-generic/socket.h       |  2 ++
- net/atm/common.c                        |  2 +-
- net/bluetooth/af_bluetooth.c            |  4 ++--
- net/can/bcm.c                           |  2 +-
- net/can/j1939/socket.c                  |  2 +-
- net/can/raw.c                           |  2 +-
- net/core/sock.c                         |  7 +++++++
- net/ieee802154/socket.c                 |  4 ++--
- net/ipv4/raw.c                          |  2 +-
- net/ipv4/udp.c                          |  2 +-
- net/ipv6/raw.c                          |  2 +-
- net/ipv6/udp.c                          |  2 +-
- net/key/af_key.c                        |  2 +-
- net/mctp/af_mctp.c                      |  2 +-
- net/packet/af_packet.c                  |  2 +-
- net/sctp/socket.c                       |  2 +-
- net/socket.c                            | 15 ++++++++++++---
- tools/include/uapi/asm-generic/socket.h |  2 ++
- 23 files changed, 57 insertions(+), 27 deletions(-)
+[auto build test ERROR on net-next/master]
 
-diff --git a/arch/alpha/include/uapi/asm/socket.h b/arch/alpha/include/uapi/asm/socket.h
-index 7d81535893af..739891b94136 100644
---- a/arch/alpha/include/uapi/asm/socket.h
-+++ b/arch/alpha/include/uapi/asm/socket.h
-@@ -135,6 +135,8 @@
- 
- #define SO_TXREHASH		74
- 
-+#define SO_RCVMARK		75
-+
- #if !defined(__KERNEL__)
- 
- #if __BITS_PER_LONG == 64
-diff --git a/arch/mips/include/uapi/asm/socket.h b/arch/mips/include/uapi/asm/socket.h
-index 1d55e57b8466..18f3d95ecfec 100644
---- a/arch/mips/include/uapi/asm/socket.h
-+++ b/arch/mips/include/uapi/asm/socket.h
-@@ -146,6 +146,8 @@
- 
- #define SO_TXREHASH		74
- 
-+#define SO_RCVMARK		75
-+
- #if !defined(__KERNEL__)
- 
- #if __BITS_PER_LONG == 64
-diff --git a/arch/parisc/include/uapi/asm/socket.h b/arch/parisc/include/uapi/asm/socket.h
-index 654061e0964e..f486d3dfb6bb 100644
---- a/arch/parisc/include/uapi/asm/socket.h
-+++ b/arch/parisc/include/uapi/asm/socket.h
-@@ -127,6 +127,8 @@
- 
- #define SO_TXREHASH		0x4048
- 
-+#define SO_RCVMARK		0x4049
-+
- #if !defined(__KERNEL__)
- 
- #if __BITS_PER_LONG == 64
-diff --git a/arch/sparc/include/uapi/asm/socket.h b/arch/sparc/include/uapi/asm/socket.h
-index 666f81e617ea..ff08038fc2b2 100644
---- a/arch/sparc/include/uapi/asm/socket.h
-+++ b/arch/sparc/include/uapi/asm/socket.h
-@@ -128,6 +128,8 @@
- 
- #define SO_TXREHASH              0x0053
- 
-+#define SO_RCVMARK               0x0054
-+
- 
- #if !defined(__KERNEL__)
- 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index a01d6c421aa2..30e7cbad194c 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -895,6 +895,7 @@ enum sock_flags {
- 	SOCK_TXTIME,
- 	SOCK_XDP, /* XDP is attached */
- 	SOCK_TSTAMP_NEW, /* Indicates 64 bit timestamps always */
-+	SOCK_RCVMARK, /* Receive SO_MARK  ancillary data with packet */
- };
- 
- #define SK_FLAGS_TIMESTAMP ((1UL << SOCK_TIMESTAMP) | (1UL << SOCK_TIMESTAMPING_RX_SOFTWARE))
-@@ -2649,20 +2650,21 @@ sock_recv_timestamp(struct msghdr *msg, struct sock *sk, struct sk_buff *skb)
- 		__sock_recv_wifi_status(msg, sk, skb);
- }
- 
--void __sock_recv_ts_and_drops(struct msghdr *msg, struct sock *sk,
--			      struct sk_buff *skb);
-+void __sock_recv_cmsgs(struct msghdr *msg, struct sock *sk,
-+		       struct sk_buff *skb);
- 
- #define SK_DEFAULT_STAMP (-1L * NSEC_PER_SEC)
--static inline void sock_recv_ts_and_drops(struct msghdr *msg, struct sock *sk,
--					  struct sk_buff *skb)
-+static inline void sock_recv_cmsgs(struct msghdr *msg, struct sock *sk,
-+				   struct sk_buff *skb)
- {
--#define FLAGS_TS_OR_DROPS ((1UL << SOCK_RXQ_OVFL)			| \
--			   (1UL << SOCK_RCVTSTAMP))
-+#define FLAGS_RECV_CMSGS ((1UL << SOCK_RXQ_OVFL)			| \
-+			   (1UL << SOCK_RCVTSTAMP)			| \
-+			   (1UL << SOCK_RCVMARK))
- #define TSFLAGS_ANY	  (SOF_TIMESTAMPING_SOFTWARE			| \
- 			   SOF_TIMESTAMPING_RAW_HARDWARE)
- 
--	if (sk->sk_flags & FLAGS_TS_OR_DROPS || sk->sk_tsflags & TSFLAGS_ANY)
--		__sock_recv_ts_and_drops(msg, sk, skb);
-+	if (sk->sk_flags & FLAGS_RECV_CMSGS || sk->sk_tsflags & TSFLAGS_ANY)
-+		__sock_recv_cmsgs(msg, sk, skb);
- 	else if (unlikely(sock_flag(sk, SOCK_TIMESTAMP)))
- 		sock_write_timestamp(sk, skb->tstamp);
- 	else if (unlikely(sk->sk_stamp == SK_DEFAULT_STAMP))
-diff --git a/include/uapi/asm-generic/socket.h b/include/uapi/asm-generic/socket.h
-index 467ca2f28760..638230899e98 100644
---- a/include/uapi/asm-generic/socket.h
-+++ b/include/uapi/asm-generic/socket.h
-@@ -130,6 +130,8 @@
- 
- #define SO_TXREHASH		74
- 
-+#define SO_RCVMARK		75
-+
- #if !defined(__KERNEL__)
- 
- #if __BITS_PER_LONG == 64 || (defined(__x86_64__) && defined(__ILP32__))
-diff --git a/net/atm/common.c b/net/atm/common.c
-index d0c8ab7ff8f6..f7019df41c3e 100644
---- a/net/atm/common.c
-+++ b/net/atm/common.c
-@@ -553,7 +553,7 @@ int vcc_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- 	error = skb_copy_datagram_msg(skb, 0, msg, copied);
- 	if (error)
- 		return error;
--	sock_recv_ts_and_drops(msg, sk, skb);
-+	sock_recv_cmsgs(msg, sk, skb);
- 
- 	if (!(flags & MSG_PEEK)) {
- 		pr_debug("%d -= %d\n", atomic_read(&sk->sk_rmem_alloc),
-diff --git a/net/bluetooth/af_bluetooth.c b/net/bluetooth/af_bluetooth.c
-index 62705734343b..b506409bb498 100644
---- a/net/bluetooth/af_bluetooth.c
-+++ b/net/bluetooth/af_bluetooth.c
-@@ -280,7 +280,7 @@ int bt_sock_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- 	skb_reset_transport_header(skb);
- 	err = skb_copy_datagram_msg(skb, 0, msg, copied);
- 	if (err == 0) {
--		sock_recv_ts_and_drops(msg, sk, skb);
-+		sock_recv_cmsgs(msg, sk, skb);
- 
- 		if (msg->msg_name && bt_sk(sk)->skb_msg_name)
- 			bt_sk(sk)->skb_msg_name(skb, msg->msg_name,
-@@ -384,7 +384,7 @@ int bt_sock_stream_recvmsg(struct socket *sock, struct msghdr *msg,
- 		copied += chunk;
- 		size   -= chunk;
- 
--		sock_recv_ts_and_drops(msg, sk, skb);
-+		sock_recv_cmsgs(msg, sk, skb);
- 
- 		if (!(flags & MSG_PEEK)) {
- 			int skb_len = skb_headlen(skb);
-diff --git a/net/can/bcm.c b/net/can/bcm.c
-index 64c07e650bb4..65ee1b784a30 100644
---- a/net/can/bcm.c
-+++ b/net/can/bcm.c
-@@ -1647,7 +1647,7 @@ static int bcm_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- 		return err;
- 	}
- 
--	sock_recv_ts_and_drops(msg, sk, skb);
-+	sock_recv_cmsgs(msg, sk, skb);
- 
- 	if (msg->msg_name) {
- 		__sockaddr_check_size(BCM_MIN_NAMELEN);
-diff --git a/net/can/j1939/socket.c b/net/can/j1939/socket.c
-index 0bb4fd3f6264..f5ecfdcf57b2 100644
---- a/net/can/j1939/socket.c
-+++ b/net/can/j1939/socket.c
-@@ -841,7 +841,7 @@ static int j1939_sk_recvmsg(struct socket *sock, struct msghdr *msg,
- 		paddr->can_addr.j1939.pgn = skcb->addr.pgn;
- 	}
- 
--	sock_recv_ts_and_drops(msg, sk, skb);
-+	sock_recv_cmsgs(msg, sk, skb);
- 	msg->msg_flags |= skcb->msg_flags;
- 	skb_free_datagram(sk, skb);
- 
-diff --git a/net/can/raw.c b/net/can/raw.c
-index 0cf728dcff36..b7dbb57557f3 100644
---- a/net/can/raw.c
-+++ b/net/can/raw.c
-@@ -866,7 +866,7 @@ static int raw_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- 		return err;
- 	}
- 
--	sock_recv_ts_and_drops(msg, sk, skb);
-+	sock_recv_cmsgs(msg, sk, skb);
- 
- 	if (msg->msg_name) {
- 		__sockaddr_check_size(RAW_MIN_NAMELEN);
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 29abec3eabd8..673b6e49f109 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -1311,6 +1311,9 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
- 
- 		__sock_set_mark(sk, val);
- 		break;
-+	case SO_RCVMARK:
-+		sock_valbool_flag(sk, SOCK_RCVMARK, valbool);
-+		break;
- 
- 	case SO_RXQ_OVFL:
- 		sock_valbool_flag(sk, SOCK_RXQ_OVFL, valbool);
-@@ -1737,6 +1740,10 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
- 		v.val = sk->sk_mark;
- 		break;
- 
-+	case SO_RCVMARK:
-+		v.val = sock_flag(sk, SOCK_RCVMARK);
-+		break;
-+
- 	case SO_RXQ_OVFL:
- 		v.val = sock_flag(sk, SOCK_RXQ_OVFL);
- 		break;
-diff --git a/net/ieee802154/socket.c b/net/ieee802154/socket.c
-index f24852814fa3..718fb77bb372 100644
---- a/net/ieee802154/socket.c
-+++ b/net/ieee802154/socket.c
-@@ -328,7 +328,7 @@ static int raw_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 	if (err)
- 		goto done;
- 
--	sock_recv_ts_and_drops(msg, sk, skb);
-+	sock_recv_cmsgs(msg, sk, skb);
- 
- 	if (flags & MSG_TRUNC)
- 		copied = skb->len;
-@@ -718,7 +718,7 @@ static int dgram_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 	if (err)
- 		goto done;
- 
--	sock_recv_ts_and_drops(msg, sk, skb);
-+	sock_recv_cmsgs(msg, sk, skb);
- 
- 	if (saddr) {
- 		/* Clear the implicit padding in struct sockaddr_ieee802154
-diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
-index 4056b0da85ea..bbd717805b10 100644
---- a/net/ipv4/raw.c
-+++ b/net/ipv4/raw.c
-@@ -783,7 +783,7 @@ static int raw_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 	if (err)
- 		goto done;
- 
--	sock_recv_ts_and_drops(msg, sk, skb);
-+	sock_recv_cmsgs(msg, sk, skb);
- 
- 	/* Copy the address. */
- 	if (sin) {
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index aa8545ca6964..9d5071c79c95 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -1909,7 +1909,7 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int flags,
- 		UDP_INC_STATS(sock_net(sk),
- 			      UDP_MIB_INDATAGRAMS, is_udplite);
- 
--	sock_recv_ts_and_drops(msg, sk, skb);
-+	sock_recv_cmsgs(msg, sk, skb);
- 
- 	/* Copy the address. */
- 	if (sin) {
-diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
-index 0d7c13d33d1a..3b7cbd522b54 100644
---- a/net/ipv6/raw.c
-+++ b/net/ipv6/raw.c
-@@ -512,7 +512,7 @@ static int rawv6_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 		*addr_len = sizeof(*sin6);
- 	}
- 
--	sock_recv_ts_and_drops(msg, sk, skb);
-+	sock_recv_cmsgs(msg, sk, skb);
- 
- 	if (np->rxopt.all)
- 		ip6_datagram_recv_ctl(sk, msg, skb);
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 688af6f809fe..3fc97d4621ac 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -391,7 +391,7 @@ int udpv6_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 	if (!peeking)
- 		SNMP_INC_STATS(mib, UDP_MIB_INDATAGRAMS);
- 
--	sock_recv_ts_and_drops(msg, sk, skb);
-+	sock_recv_cmsgs(msg, sk, skb);
- 
- 	/* Copy the address. */
- 	if (msg->msg_name) {
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index d09ec26b1081..175a162eec58 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -3711,7 +3711,7 @@ static int pfkey_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- 	if (err)
- 		goto out_free;
- 
--	sock_recv_ts_and_drops(msg, sk, skb);
-+	sock_recv_cmsgs(msg, sk, skb);
- 
- 	err = (flags & MSG_TRUNC) ? skb->len : copied;
- 
-diff --git a/net/mctp/af_mctp.c b/net/mctp/af_mctp.c
-index 221863afc4b1..c2fc2a7b2528 100644
---- a/net/mctp/af_mctp.c
-+++ b/net/mctp/af_mctp.c
-@@ -238,7 +238,7 @@ static int mctp_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- 	if (rc < 0)
- 		goto out_free;
- 
--	sock_recv_ts_and_drops(msg, sk, skb);
-+	sock_recv_cmsgs(msg, sk, skb);
- 
- 	if (addr) {
- 		struct mctp_skb_cb *cb = mctp_cb(skb);
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index fd31334cf688..677f9cfa9660 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -3477,7 +3477,7 @@ static int packet_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- 		sll->sll_protocol = skb->protocol;
- 	}
- 
--	sock_recv_ts_and_drops(msg, sk, skb);
-+	sock_recv_cmsgs(msg, sk, skb);
- 
- 	if (msg->msg_name) {
- 		const size_t max_len = min(sizeof(skb->cb),
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index 3e3fe923bed5..6d37d2dfb3da 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -2128,7 +2128,7 @@ static int sctp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 		head_skb = event->chunk->head_skb;
- 	else
- 		head_skb = skb;
--	sock_recv_ts_and_drops(msg, sk, head_skb);
-+	sock_recv_cmsgs(msg, sk, head_skb);
- 	if (sctp_ulpevent_is_notification(event)) {
- 		msg->msg_flags |= MSG_NOTIFICATION;
- 		sp->pf->event_msgname(event, msg->msg_name, addr_len);
-diff --git a/net/socket.c b/net/socket.c
-index 6887840682bb..f0c39c874665 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -930,13 +930,22 @@ static inline void sock_recv_drops(struct msghdr *msg, struct sock *sk,
- 			sizeof(__u32), &SOCK_SKB_CB(skb)->dropcount);
- }
- 
--void __sock_recv_ts_and_drops(struct msghdr *msg, struct sock *sk,
--	struct sk_buff *skb)
-+static void sock_recv_mark(struct msghdr *msg, struct sock *sk,
-+			   struct sk_buff *skb)
-+{
-+	if (sock_flag(sk, SOCK_RCVMARK) && skb)
-+		put_cmsg(msg, SOL_SOCKET, SO_MARK, sizeof(__u32),
-+			 &skb->mark);
-+}
-+
-+void __sock_recv_cmsgs(struct msghdr *msg, struct sock *sk,
-+		       struct sk_buff *skb)
- {
- 	sock_recv_timestamp(msg, sk, skb);
- 	sock_recv_drops(msg, sk, skb);
-+	sock_recv_mark(msg, sk, skb);
- }
--EXPORT_SYMBOL_GPL(__sock_recv_ts_and_drops);
-+EXPORT_SYMBOL_GPL(__sock_recv_cmsgs);
- 
- INDIRECT_CALLABLE_DECLARE(int inet_recvmsg(struct socket *, struct msghdr *,
- 					   size_t, int));
-diff --git a/tools/include/uapi/asm-generic/socket.h b/tools/include/uapi/asm-generic/socket.h
-index 77f7c1638eb1..8756df13be50 100644
---- a/tools/include/uapi/asm-generic/socket.h
-+++ b/tools/include/uapi/asm-generic/socket.h
-@@ -119,6 +119,8 @@
- 
- #define SO_DETACH_REUSEPORT_BPF 68
- 
-+#define SO_RCVMARK		75
-+
- #if !defined(__KERNEL__)
- 
- #if __BITS_PER_LONG == 64 || (defined(__x86_64__) && defined(__ILP32__))
+url:    https://github.com/intel-lab-lkp/linux/commits/Erin-MacNeil/net-Add-SO_RCVMARK-socket-option-to-provide-SO_MARK-with-recvmsg/20220427-014257
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 561215482cc69d1c758944d4463b3d5d96d37bd1
+config: mips-malta_kvm_defconfig (https://download.01.org/0day-ci/archive/20220427/202204271132.O9UPUBp2-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 1cddcfdc3c683b393df1a5c9063252eb60e52818)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install mips cross compiling tool for clang build
+        # apt-get install binutils-mips-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/ba0c57c49e3f18b23fe626dd2e603cf4ed91ebf7
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Erin-MacNeil/net-Add-SO_RCVMARK-socket-option-to-provide-SO_MARK-with-recvmsg/20220427-014257
+        git checkout ba0c57c49e3f18b23fe626dd2e603cf4ed91ebf7
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash net/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> net/core/sock.c:1314:7: error: use of undeclared identifier 'SO_RCVMARK'; did you mean 'SOCK_RCVMARK'?
+           case SO_RCVMARK:
+                ^~~~~~~~~~
+                SOCK_RCVMARK
+   include/net/sock.h:898:2: note: 'SOCK_RCVMARK' declared here
+           SOCK_RCVMARK, /* Receive SO_MARK  ancillary data with packet */
+           ^
+>> net/core/sock.c:1314:7: error: duplicate case value: '27' and 'SOCK_RCVMARK' both equal '27'
+           case SO_RCVMARK:
+                ^
+   net/core/sock.c:1288:7: note: previous case defined here
+           case SO_DETACH_FILTER:
+                ^
+   arch/mips/include/uapi/asm/socket.h:65:26: note: expanded from macro 'SO_DETACH_FILTER'
+   #define SO_DETACH_FILTER        27
+                                   ^
+   net/core/sock.c:1743:7: error: use of undeclared identifier 'SO_RCVMARK'; did you mean 'SOCK_RCVMARK'?
+           case SO_RCVMARK:
+                ^~~~~~~~~~
+                SOCK_RCVMARK
+   include/net/sock.h:898:2: note: 'SOCK_RCVMARK' declared here
+           SOCK_RCVMARK, /* Receive SO_MARK  ancillary data with packet */
+           ^
+   3 errors generated.
+
+
+vim +1314 net/core/sock.c
+
+  1031	
+  1032	/*
+  1033	 *	This is meant for all protocols to use and covers goings on
+  1034	 *	at the socket level. Everything here is generic.
+  1035	 */
+  1036	
+  1037	int sock_setsockopt(struct socket *sock, int level, int optname,
+  1038			    sockptr_t optval, unsigned int optlen)
+  1039	{
+  1040		struct so_timestamping timestamping;
+  1041		struct sock_txtime sk_txtime;
+  1042		struct sock *sk = sock->sk;
+  1043		int val;
+  1044		int valbool;
+  1045		struct linger ling;
+  1046		int ret = 0;
+  1047	
+  1048		/*
+  1049		 *	Options without arguments
+  1050		 */
+  1051	
+  1052		if (optname == SO_BINDTODEVICE)
+  1053			return sock_setbindtodevice(sk, optval, optlen);
+  1054	
+  1055		if (optlen < sizeof(int))
+  1056			return -EINVAL;
+  1057	
+  1058		if (copy_from_sockptr(&val, optval, sizeof(val)))
+  1059			return -EFAULT;
+  1060	
+  1061		valbool = val ? 1 : 0;
+  1062	
+  1063		lock_sock(sk);
+  1064	
+  1065		switch (optname) {
+  1066		case SO_DEBUG:
+  1067			if (val && !capable(CAP_NET_ADMIN))
+  1068				ret = -EACCES;
+  1069			else
+  1070				sock_valbool_flag(sk, SOCK_DBG, valbool);
+  1071			break;
+  1072		case SO_REUSEADDR:
+  1073			sk->sk_reuse = (valbool ? SK_CAN_REUSE : SK_NO_REUSE);
+  1074			break;
+  1075		case SO_REUSEPORT:
+  1076			sk->sk_reuseport = valbool;
+  1077			break;
+  1078		case SO_TYPE:
+  1079		case SO_PROTOCOL:
+  1080		case SO_DOMAIN:
+  1081		case SO_ERROR:
+  1082			ret = -ENOPROTOOPT;
+  1083			break;
+  1084		case SO_DONTROUTE:
+  1085			sock_valbool_flag(sk, SOCK_LOCALROUTE, valbool);
+  1086			sk_dst_reset(sk);
+  1087			break;
+  1088		case SO_BROADCAST:
+  1089			sock_valbool_flag(sk, SOCK_BROADCAST, valbool);
+  1090			break;
+  1091		case SO_SNDBUF:
+  1092			/* Don't error on this BSD doesn't and if you think
+  1093			 * about it this is right. Otherwise apps have to
+  1094			 * play 'guess the biggest size' games. RCVBUF/SNDBUF
+  1095			 * are treated in BSD as hints
+  1096			 */
+  1097			val = min_t(u32, val, sysctl_wmem_max);
+  1098	set_sndbuf:
+  1099			/* Ensure val * 2 fits into an int, to prevent max_t()
+  1100			 * from treating it as a negative value.
+  1101			 */
+  1102			val = min_t(int, val, INT_MAX / 2);
+  1103			sk->sk_userlocks |= SOCK_SNDBUF_LOCK;
+  1104			WRITE_ONCE(sk->sk_sndbuf,
+  1105				   max_t(int, val * 2, SOCK_MIN_SNDBUF));
+  1106			/* Wake up sending tasks if we upped the value. */
+  1107			sk->sk_write_space(sk);
+  1108			break;
+  1109	
+  1110		case SO_SNDBUFFORCE:
+  1111			if (!capable(CAP_NET_ADMIN)) {
+  1112				ret = -EPERM;
+  1113				break;
+  1114			}
+  1115	
+  1116			/* No negative values (to prevent underflow, as val will be
+  1117			 * multiplied by 2).
+  1118			 */
+  1119			if (val < 0)
+  1120				val = 0;
+  1121			goto set_sndbuf;
+  1122	
+  1123		case SO_RCVBUF:
+  1124			/* Don't error on this BSD doesn't and if you think
+  1125			 * about it this is right. Otherwise apps have to
+  1126			 * play 'guess the biggest size' games. RCVBUF/SNDBUF
+  1127			 * are treated in BSD as hints
+  1128			 */
+  1129			__sock_set_rcvbuf(sk, min_t(u32, val, sysctl_rmem_max));
+  1130			break;
+  1131	
+  1132		case SO_RCVBUFFORCE:
+  1133			if (!capable(CAP_NET_ADMIN)) {
+  1134				ret = -EPERM;
+  1135				break;
+  1136			}
+  1137	
+  1138			/* No negative values (to prevent underflow, as val will be
+  1139			 * multiplied by 2).
+  1140			 */
+  1141			__sock_set_rcvbuf(sk, max(val, 0));
+  1142			break;
+  1143	
+  1144		case SO_KEEPALIVE:
+  1145			if (sk->sk_prot->keepalive)
+  1146				sk->sk_prot->keepalive(sk, valbool);
+  1147			sock_valbool_flag(sk, SOCK_KEEPOPEN, valbool);
+  1148			break;
+  1149	
+  1150		case SO_OOBINLINE:
+  1151			sock_valbool_flag(sk, SOCK_URGINLINE, valbool);
+  1152			break;
+  1153	
+  1154		case SO_NO_CHECK:
+  1155			sk->sk_no_check_tx = valbool;
+  1156			break;
+  1157	
+  1158		case SO_PRIORITY:
+  1159			if ((val >= 0 && val <= 6) ||
+  1160			    ns_capable(sock_net(sk)->user_ns, CAP_NET_RAW) ||
+  1161			    ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN))
+  1162				sk->sk_priority = val;
+  1163			else
+  1164				ret = -EPERM;
+  1165			break;
+  1166	
+  1167		case SO_LINGER:
+  1168			if (optlen < sizeof(ling)) {
+  1169				ret = -EINVAL;	/* 1003.1g */
+  1170				break;
+  1171			}
+  1172			if (copy_from_sockptr(&ling, optval, sizeof(ling))) {
+  1173				ret = -EFAULT;
+  1174				break;
+  1175			}
+  1176			if (!ling.l_onoff)
+  1177				sock_reset_flag(sk, SOCK_LINGER);
+  1178			else {
+  1179	#if (BITS_PER_LONG == 32)
+  1180				if ((unsigned int)ling.l_linger >= MAX_SCHEDULE_TIMEOUT/HZ)
+  1181					sk->sk_lingertime = MAX_SCHEDULE_TIMEOUT;
+  1182				else
+  1183	#endif
+  1184					sk->sk_lingertime = (unsigned int)ling.l_linger * HZ;
+  1185				sock_set_flag(sk, SOCK_LINGER);
+  1186			}
+  1187			break;
+  1188	
+  1189		case SO_BSDCOMPAT:
+  1190			break;
+  1191	
+  1192		case SO_PASSCRED:
+  1193			if (valbool)
+  1194				set_bit(SOCK_PASSCRED, &sock->flags);
+  1195			else
+  1196				clear_bit(SOCK_PASSCRED, &sock->flags);
+  1197			break;
+  1198	
+  1199		case SO_TIMESTAMP_OLD:
+  1200		case SO_TIMESTAMP_NEW:
+  1201		case SO_TIMESTAMPNS_OLD:
+  1202		case SO_TIMESTAMPNS_NEW:
+  1203			sock_set_timestamp(sk, optname, valbool);
+  1204			break;
+  1205	
+  1206		case SO_TIMESTAMPING_NEW:
+  1207		case SO_TIMESTAMPING_OLD:
+  1208			if (optlen == sizeof(timestamping)) {
+  1209				if (copy_from_sockptr(&timestamping, optval,
+  1210						      sizeof(timestamping))) {
+  1211					ret = -EFAULT;
+  1212					break;
+  1213				}
+  1214			} else {
+  1215				memset(&timestamping, 0, sizeof(timestamping));
+  1216				timestamping.flags = val;
+  1217			}
+  1218			ret = sock_set_timestamping(sk, optname, timestamping);
+  1219			break;
+  1220	
+  1221		case SO_RCVLOWAT:
+  1222			if (val < 0)
+  1223				val = INT_MAX;
+  1224			if (sock->ops->set_rcvlowat)
+  1225				ret = sock->ops->set_rcvlowat(sk, val);
+  1226			else
+  1227				WRITE_ONCE(sk->sk_rcvlowat, val ? : 1);
+  1228			break;
+  1229	
+  1230		case SO_RCVTIMEO_OLD:
+  1231		case SO_RCVTIMEO_NEW:
+  1232			ret = sock_set_timeout(&sk->sk_rcvtimeo, optval,
+  1233					       optlen, optname == SO_RCVTIMEO_OLD);
+  1234			break;
+  1235	
+  1236		case SO_SNDTIMEO_OLD:
+  1237		case SO_SNDTIMEO_NEW:
+  1238			ret = sock_set_timeout(&sk->sk_sndtimeo, optval,
+  1239					       optlen, optname == SO_SNDTIMEO_OLD);
+  1240			break;
+  1241	
+  1242		case SO_ATTACH_FILTER: {
+  1243			struct sock_fprog fprog;
+  1244	
+  1245			ret = copy_bpf_fprog_from_user(&fprog, optval, optlen);
+  1246			if (!ret)
+  1247				ret = sk_attach_filter(&fprog, sk);
+  1248			break;
+  1249		}
+  1250		case SO_ATTACH_BPF:
+  1251			ret = -EINVAL;
+  1252			if (optlen == sizeof(u32)) {
+  1253				u32 ufd;
+  1254	
+  1255				ret = -EFAULT;
+  1256				if (copy_from_sockptr(&ufd, optval, sizeof(ufd)))
+  1257					break;
+  1258	
+  1259				ret = sk_attach_bpf(ufd, sk);
+  1260			}
+  1261			break;
+  1262	
+  1263		case SO_ATTACH_REUSEPORT_CBPF: {
+  1264			struct sock_fprog fprog;
+  1265	
+  1266			ret = copy_bpf_fprog_from_user(&fprog, optval, optlen);
+  1267			if (!ret)
+  1268				ret = sk_reuseport_attach_filter(&fprog, sk);
+  1269			break;
+  1270		}
+  1271		case SO_ATTACH_REUSEPORT_EBPF:
+  1272			ret = -EINVAL;
+  1273			if (optlen == sizeof(u32)) {
+  1274				u32 ufd;
+  1275	
+  1276				ret = -EFAULT;
+  1277				if (copy_from_sockptr(&ufd, optval, sizeof(ufd)))
+  1278					break;
+  1279	
+  1280				ret = sk_reuseport_attach_bpf(ufd, sk);
+  1281			}
+  1282			break;
+  1283	
+  1284		case SO_DETACH_REUSEPORT_BPF:
+  1285			ret = reuseport_detach_prog(sk);
+  1286			break;
+  1287	
+  1288		case SO_DETACH_FILTER:
+  1289			ret = sk_detach_filter(sk);
+  1290			break;
+  1291	
+  1292		case SO_LOCK_FILTER:
+  1293			if (sock_flag(sk, SOCK_FILTER_LOCKED) && !valbool)
+  1294				ret = -EPERM;
+  1295			else
+  1296				sock_valbool_flag(sk, SOCK_FILTER_LOCKED, valbool);
+  1297			break;
+  1298	
+  1299		case SO_PASSSEC:
+  1300			if (valbool)
+  1301				set_bit(SOCK_PASSSEC, &sock->flags);
+  1302			else
+  1303				clear_bit(SOCK_PASSSEC, &sock->flags);
+  1304			break;
+  1305		case SO_MARK:
+  1306			if (!ns_capable(sock_net(sk)->user_ns, CAP_NET_RAW) &&
+  1307			    !ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN)) {
+  1308				ret = -EPERM;
+  1309				break;
+  1310			}
+  1311	
+  1312			__sock_set_mark(sk, val);
+  1313			break;
+> 1314		case SO_RCVMARK:
+  1315			sock_valbool_flag(sk, SOCK_RCVMARK, valbool);
+  1316			break;
+  1317	
+  1318		case SO_RXQ_OVFL:
+  1319			sock_valbool_flag(sk, SOCK_RXQ_OVFL, valbool);
+  1320			break;
+  1321	
+  1322		case SO_WIFI_STATUS:
+  1323			sock_valbool_flag(sk, SOCK_WIFI_STATUS, valbool);
+  1324			break;
+  1325	
+  1326		case SO_PEEK_OFF:
+  1327			if (sock->ops->set_peek_off)
+  1328				ret = sock->ops->set_peek_off(sk, val);
+  1329			else
+  1330				ret = -EOPNOTSUPP;
+  1331			break;
+  1332	
+  1333		case SO_NOFCS:
+  1334			sock_valbool_flag(sk, SOCK_NOFCS, valbool);
+  1335			break;
+  1336	
+  1337		case SO_SELECT_ERR_QUEUE:
+  1338			sock_valbool_flag(sk, SOCK_SELECT_ERR_QUEUE, valbool);
+  1339			break;
+  1340	
+
 -- 
-2.20.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
