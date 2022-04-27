@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 57B25510D80
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 02:57:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73D23510D7B
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 02:57:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356502AbiD0Axd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 20:53:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44054 "EHLO
+        id S1356501AbiD0Axb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 20:53:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356497AbiD0Ax1 (ORCPT
+        with ESMTP id S1347338AbiD0Ax1 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 20:53:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D1912085
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 17:50:14 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D473311C34
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 17:50:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5283DB82415
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 00:50:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E4372C385AC;
-        Wed, 27 Apr 2022 00:50:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BDDB0611CD
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 00:50:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 23165C385B4;
+        Wed, 27 Apr 2022 00:50:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1651020612;
-        bh=KI03yIcASmEJV8m46FSiWlMMRE6ln7v2cT+Q7NQrSbQ=;
+        bh=vpDLd3Nnb8oKVr+X8UEooQ+7hydViZByyPDYHHPBfpc=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=rSo3TuvoyLR8FgStE7gDicZEhTLSsV9OL0/gkIdibtF9/S2rO+aY/bH+kDhYXdwUC
-         VY1LbFKj2YiRv86JTEZDTLtg/7tfoMtAbV7Mj8epUfPT1L2Rr0rbtfnqBuKn8x4dkY
-         nf61e1W+AbbQj96JfEgLB8NBszmgdh3Gh8sTLNRRqUYdi5OY6Su58xn9mV+M7EkTlm
-         KDeMgo5w/lOHUbTR1xwXb46rX4XUTGgqi2DzvvX3092g8NdTHUJX3wHXrigpuorMaR
-         DLw+pr3ltLch0KSpZOZvmHRaQvz5MNEk/c8FKc1cec5YGoKi/5xBGQn5QfEJAzfAan
-         4W2Js29/xWwRg==
+        b=ttTzyV8BOUJvK8ubnnZxVctO4rL5BlWJyE2z4+JKruP0ojuhuLoODnnH4XUuO0gQf
+         sHjmvkPKr73DtoKf6ZKKnKfG+mOazO+iuRnfQ9wb1y4D7tZypZoS8jIRl1m/Ozs/fA
+         42Fu/EB+USmhGUzzxTy/ljZV6jomfY/x+xTqhKB5qMNPuxt1v62CHlR43ilv5CXaM7
+         T//6zS51nSmli4an5vhQhzj2obPZiAMXJwcV2MxhZFSeK80MoNl3+KLuAo+9TN90IG
+         d/6VT2klEcZsfXmgb96/XIFbHsikdCMy0BiEr2H1SjD3SR/L0z8r807ruhcEgKyBDp
+         50Qf4WPxsSm6Q==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CA8A7EAC09C;
-        Wed, 27 Apr 2022 00:50:11 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 008F5F03848;
+        Wed, 27 Apr 2022 00:50:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: tls: fix async vs NIC crypto offload
+Subject: Re: [PATCH v2 net-next] net: generalize skb freeing deferral to per-cpu
+ lists
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165102061182.18100.7720177184206724633.git-patchwork-notify@kernel.org>
+Message-Id: <165102061199.18100.7962532951463386947.git-patchwork-notify@kernel.org>
 Date:   Wed, 27 Apr 2022 00:50:11 +0000
-References: <20220425233309.344858-1-kuba@kernel.org>
-In-Reply-To: <20220425233309.344858-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, pabeni@redhat.com,
-        gal@nvidia.com, borisp@nvidia.com, john.fastabend@gmail.com,
-        daniel@iogearbox.net
+References: <20220422201237.416238-1-eric.dumazet@gmail.com>
+In-Reply-To: <20220422201237.416238-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, edumazet@google.com
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -61,22 +61,21 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Mon, 25 Apr 2022 16:33:09 -0700 you wrote:
-> When NIC takes care of crypto (or the record has already
-> been decrypted) we forget to update darg->async. ->async
-> is supposed to mean whether record is async capable on
-> input and whether record has been queued for async crypto
-> on output.
+On Fri, 22 Apr 2022 13:12:37 -0700 you wrote:
+> From: Eric Dumazet <edumazet@google.com>
 > 
-> Reported-by: Gal Pressman <gal@nvidia.com>
-> Fixes: 3547a1f9d988 ("tls: rx: use async as an in-out argument")
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> Logic added in commit f35f821935d8 ("tcp: defer skb freeing after socket
+> lock is released") helped bulk TCP flows to move the cost of skbs
+> frees outside of critical section where socket lock was held.
+> 
+> But for RPC traffic, or hosts with RFS enabled, the solution is far from
+> being ideal.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] net: tls: fix async vs NIC crypto offload
-    https://git.kernel.org/netdev/net-next/c/c706b2b5ed74
+  - [v2,net-next] net: generalize skb freeing deferral to per-cpu lists
+    https://git.kernel.org/netdev/net-next/c/68822bdf76f1
 
 You are awesome, thank you!
 -- 
