@@ -2,94 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C00B5117B3
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 14:47:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B826B511757
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 14:46:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233119AbiD0Lxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 07:53:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51320 "EHLO
+        id S233481AbiD0MGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 08:06:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233100AbiD0Lxd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 07:53:33 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B74DE13BBCC;
-        Wed, 27 Apr 2022 04:50:21 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KpH4q0CkhzCrmM;
-        Wed, 27 Apr 2022 19:45:47 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by canpemm500010.china.huawei.com
- (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 27 Apr
- 2022 19:50:19 +0800
-From:   Liu Jian <liujian56@huawei.com>
-To:     <john.fastabend@gmail.com>, <daniel@iogearbox.net>,
-        <jakub@cloudflare.com>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <ast@kernel.org>, <andrii@kernel.org>,
-        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
-        <kpsingh@kernel.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>
-CC:     <liujian56@huawei.com>
-Subject: [PATCH bpf-next] bpf, sockmap: Call skb_linearize only when required in sk_psock_skb_ingress_enqueue
-Date:   Wed, 27 Apr 2022 19:51:50 +0800
-Message-ID: <20220427115150.210213-1-liujian56@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S233387AbiD0MGX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 08:06:23 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D61B52E4F;
+        Wed, 27 Apr 2022 05:03:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=4UVJKftZs87yAdJTdb6rVoACninShQjDA63KmfqqPBE=; b=ym6xRf2BFw6M0trBK4VpQVaGpg
+        bKpKuck5U9y+iGwFLrpo8t+SfTZ14S6UlGboDaxzLK8yTw3sXYEPOAEpCynjQoN5kqzn5dIzo41MP
+        /qmEGqZH7ppnB+lD2gEO65yVCtgOyC92mkuIGe2oU/u7WJ9By2vxB6jiANHkbEsqAd5w=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1njgNr-0006YM-Mh; Wed, 27 Apr 2022 14:03:03 +0200
+Date:   Wed, 27 Apr 2022 14:03:03 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     Steve Glendinning <steve.glendinning@shawell.net>,
+        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, Andre Edich <andre.edich@microchip.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Martyn Welch <martyn.welch@collabora.com>,
+        Gabriel Hojda <ghojda@yo2urs.ro>,
+        Christoph Fritz <chf.fritz@googlemail.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Philipp Rosenberger <p.rosenberger@kunbus.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH net-next 5/7] usbnet: smsc95xx: Forward PHY interrupts to
+ PHY driver to avoid polling
+Message-ID: <Ymkw9xHKdGYaHV5K@lunn.ch>
+References: <cover.1651037513.git.lukas@wunner.de>
+ <276a1b50cf9fcca5168ca2770a863cb56069a277.1651037513.git.lukas@wunner.de>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <276a1b50cf9fcca5168ca2770a863cb56069a277.1651037513.git.lukas@wunner.de>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The skb_to_sgvec fails only when the number of frag_list and frags exceeds
-MAX_MSG_FRAGS. Therefore, we can call skb_linearize only when the
-conversion fails.
+> @@ -606,11 +616,20 @@ static void smsc95xx_status(struct usbnet *dev, struct urb *urb)
+>  	intdata = get_unaligned_le32(urb->transfer_buffer);
+>  	netif_dbg(dev, link, dev->net, "intdata: 0x%08X\n", intdata);
+>  
+> +	/* USB interrupts are received in softirq (tasklet) context.
+> +	 * Switch to hardirq context to make genirq code happy.
+> +	 */
+> +	local_irq_save(flags);
+> +	__irq_enter_raw();
+> +
+>  	if (intdata & INT_ENP_PHY_INT_)
+> -		;
+> +		generic_handle_domain_irq(pdata->irqdomain, PHY_HWIRQ);
+>  	else
+>  		netdev_warn(dev->net, "unexpected interrupt, intdata=0x%08X\n",
+>  			    intdata);
 
-Signed-off-by: Liu Jian <liujian56@huawei.com>
----
- net/core/skmsg.c | 22 +++++++++++++---------
- 1 file changed, 13 insertions(+), 9 deletions(-)
+Ah, O.K, forget my previous comment. Maybe add something to the commit
+message that the ; will soon be replaced by a call to actually handle
+the interrupt.
 
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index cc381165ea08..22b983ade0e7 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -524,16 +524,20 @@ static int sk_psock_skb_ingress_enqueue(struct sk_buff *skb,
- {
- 	int num_sge, copied;
- 
--	/* skb linearize may fail with ENOMEM, but lets simply try again
--	 * later if this happens. Under memory pressure we don't want to
--	 * drop the skb. We need to linearize the skb so that the mapping
--	 * in skb_to_sgvec can not error.
--	 */
--	if (skb_linearize(skb))
--		return -EAGAIN;
- 	num_sge = skb_to_sgvec(skb, msg->sg.data, off, len);
--	if (unlikely(num_sge < 0))
--		return num_sge;
-+	if (num_sge < 0) {
-+		/* skb linearize may fail with ENOMEM, but lets simply try again
-+		 * later if this happens. Under memory pressure we don't want to
-+		 * drop the skb. We need to linearize the skb so that the mapping
-+		 * in skb_to_sgvec can not error.
-+		 */
-+		if (skb_linearize(skb))
-+			return -EAGAIN;
-+
-+		num_sge = skb_to_sgvec(skb, msg->sg.data, off, len);
-+		if (unlikely(num_sge < 0))
-+			return num_sge;
-+	}
- 
- 	copied = len;
- 	msg->sg.start = 0;
--- 
-2.17.1
-
+	Andrew
