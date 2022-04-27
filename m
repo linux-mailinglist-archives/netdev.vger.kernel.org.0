@@ -2,89 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B8A5510D8D
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 02:57:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BB95510D94
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 03:02:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356533AbiD0BAk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 21:00:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42034 "EHLO
+        id S1356548AbiD0BDX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 21:03:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356453AbiD0BAj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 21:00:39 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F365E2DD5E;
-        Tue, 26 Apr 2022 17:57:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651021051; x=1682557051;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ZcuTdMRt4Sh+aF1R4ZTUZYM3s8YXeD0K6R2AxevhatU=;
-  b=PKVpoChhpfqVoxbThACbh4L8EnmS2a2u8Vu3yQ4N/Yk5604OMQzv9g8W
-   g93I7SvJGTb/j0Sa3qEkhlJiGZ6J02qv5eaPun2h+Ptqo7iZDyx6Ltg5W
-   8zOCMj64BU/FBpRQmsYYoQL286gvHm6puty8TnlolpwGVClLdXDI6JhaV
-   yWnFJiXdjSIovdO2J61nWquY+Sd0d3Crun/nzAnWGabGuN34p3P5EicqE
-   UD/dvhU8rZ8jcURB/iVOi8k9jhtSKKR37EvnhzbwnzFYmjebYmTd5Ou2P
-   OABc4/39V5BVhKVI+xuar4cM+5vIZq5T5zA9QU3R3AwpHvTYYdx8UYwEW
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="246337157"
-X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
-   d="scan'208";a="246337157"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 17:57:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
-   d="scan'208";a="650457655"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 26 Apr 2022 17:57:15 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1njVzW-00048Y-Dy;
-        Wed, 27 Apr 2022 00:57:14 +0000
-Date:   Wed, 27 Apr 2022 08:57:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Duoming Zhou <duoming@zju.edu.cn>, krzysztof.kozlowski@linaro.org,
-        pabeni@redhat.com, linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, gregkh@linuxfoundation.org,
-        alexander.deucher@amd.com, broonie@kernel.org,
-        akpm@linux-foundation.org, linma@zju.edu.cn,
-        Duoming Zhou <duoming@zju.edu.cn>
-Subject: [RFC PATCH] nfc: nfcmrvl: main: nfc_download can be static
-Message-ID: <YmiU5GyeIR8W+RL7@f68e8fcc9af0>
-References: <20220426155911.77761-1-duoming@zju.edu.cn>
+        with ESMTP id S1349706AbiD0BDW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 21:03:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93FE364D6;
+        Tue, 26 Apr 2022 18:00:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F417D61B05;
+        Wed, 27 Apr 2022 01:00:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 46476C385A4;
+        Wed, 27 Apr 2022 01:00:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651021211;
+        bh=vqm946qqQBJwF4axpR8b2V8FU1H9J0rGyX36fxlNm+s=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=qgtBcxhELUXZae4iTZjvYvtosPPCmxCUlTGl9uHYezDjYNMq2ImBF+KmC5skQeRoM
+         6sK1VNwL8VBIMXlzUMFFJTS7q0866ndzDVCQRbD6lQWX0Vtg4D6Wp0BN9EYRRxQcgM
+         uelVN85qp3z2uinhJtlUqgWdBj5IYQ7b8Fe4ZfCYvR7UCIPWfqMBOBZl2IZxob8IIU
+         R/9hR6hkLHnpcQe4kWh02tr6m3wP1HN0On3+l8029qIgMYBSOeLsDNM+NtIybDlmLt
+         hLJZzPj6jy3HvaQ4Zds9GIxqPCUjtpP6hzFQ1LERpFIfgUn7RSQz2LRXNsgxBK+24l
+         QM0Ggc2Jwp/3w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1E0D7F67CA0;
+        Wed, 27 Apr 2022 01:00:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220426155911.77761-1-duoming@zju.edu.cn>
-X-Patchwork-Hint: ignore
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: dsa: lantiq_gswip: Don't set GSWIP_MII_CFG_RMII_CLK
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165102121112.22539.16102240739312593513.git-patchwork-notify@kernel.org>
+Date:   Wed, 27 Apr 2022 01:00:11 +0000
+References: <20220425152027.2220750-1-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20220425152027.2220750-1-martin.blumenstingl@googlemail.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     netdev@vger.kernel.org, hauke@hauke-m.de,
+        linux-kernel@vger.kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, stable@vger.kernel.org,
+        jan@3e8.eu
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-net/nfc/core.c:28:6: warning: symbol 'nfc_download' was not declared. Should it be static?
+Hello:
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: kernel test robot <lkp@intel.com>
----
- net/nfc/core.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-diff --git a/net/nfc/core.c b/net/nfc/core.c
-index da8199f67d42c..9035935e93d80 100644
---- a/net/nfc/core.c
-+++ b/net/nfc/core.c
-@@ -25,7 +25,7 @@
- #define NFC_CHECK_PRES_FREQ_MS	2000
- 
- int nfc_devlist_generation;
--bool nfc_download;
-+static bool nfc_download;
- DEFINE_MUTEX(nfc_devlist_mutex);
- 
- /* NFC device ID bitmap */
+On Mon, 25 Apr 2022 17:20:27 +0200 you wrote:
+> Commit 4b5923249b8fa4 ("net: dsa: lantiq_gswip: Configure all remaining
+> GSWIP_MII_CFG bits") added all known bits in the GSWIP_MII_CFGp
+> register. It helped bring this register into a well-defined state so the
+> driver has to rely less on the bootloader to do things right.
+> Unfortunately it also sets the GSWIP_MII_CFG_RMII_CLK bit without any
+> possibility to configure it. Upon further testing it turns out that all
+> boards which are supported by the GSWIP driver in OpenWrt which use an
+> RMII PHY have a dedicated oscillator on the board which provides the
+> 50MHz RMII reference clock.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net] net: dsa: lantiq_gswip: Don't set GSWIP_MII_CFG_RMII_CLK
+    https://git.kernel.org/netdev/net/c/71cffebf6358
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
