@@ -2,116 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FAC6511ECA
+	by mail.lfdr.de (Postfix) with ESMTP id DD918511ED1
 	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 20:37:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236975AbiD0R2c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 13:28:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59158 "EHLO
+        id S244047AbiD0Rdp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 13:33:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235917AbiD0R2a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 13:28:30 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CC93580F1;
-        Wed, 27 Apr 2022 10:25:18 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id k23so4795349ejd.3;
-        Wed, 27 Apr 2022 10:25:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=CjJJv/HW0W0z/VarlbGbcsPtyv0boVYsrKMhgc2MCQ4=;
-        b=EQktnjL3YTHOusdLaEOhhMGmLEkhCF8DJyOmmO0JmYYRe1iGewG9mNs4zyGi/QfEpB
-         cQ4xGWu5t7E4jBNieFbMpyYMIdTV7HvazVgeDLVaJBhG8EaLEHCAjwNoSgdZNQ+6sQbO
-         vkfHRJ/DLP4P+39eihnyFbl8CeqkmcyXkKpkdG/aQXwBz5uuBUSW8su+GkF3Ncs1FwLY
-         THIsbBseeSZ+3ocZMmGu6dYc+RekHkvcVl0zs0jD5ko84TzhMab2EVL33OIrdqifLVUd
-         +uXtqZpYGpixASjoSVfq2ZdoqT+qHbGDaIXG7Cvcy9tvrhMm2cpPWCRtx0le2ls6I1Ka
-         V4JA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=CjJJv/HW0W0z/VarlbGbcsPtyv0boVYsrKMhgc2MCQ4=;
-        b=q9SQ/pvuPDnmM22wyR9T3pX4kD/t6j2LcB/3kf6qgLaR7S3boBqUyMaIUK6vU2JCxv
-         PV4qe4YvAbWdcISA9kyevfFJKCAHex6J5GgQUt/CXs2A2BjVIAKoHV2WcAv0GYdOl/zu
-         M9Lwrp/gtJCVA1ouJ38PFk0wAIlNADc+zUZNiPxj3I23O5HbAkmG9GVoxsCYaxipJHsr
-         8DRZM95b5OYentCCuTzuKzn9VkZA8AMgfV0KPc7Xan6w99N3bxS+K+MpUoXwvyh4Icwu
-         mH3PtjjU+KcLKw1Y9BvASRsETcaRAi5pYqd+lKxJBVlwtmHPywrjEre5fsDQnuGWtxxL
-         bMkA==
-X-Gm-Message-State: AOAM533hELbfofGlq/3QbboUWbmYAY3CDYBzrLOzxvC6eDptnM9fyT+i
-        MsojRBY5uak2QIWCqiSSFkvnlyG72po=
-X-Google-Smtp-Source: ABdhPJyvqzIreW1w7c2WM0BP7M7meaKhOsxx0Nw79+KcMESI1+8narqGSZn0JGOKlHPrNBeMf4dQ9Q==
-X-Received: by 2002:a17:907:3f82:b0:6df:919c:97a with SMTP id hr2-20020a1709073f8200b006df919c097amr27280082ejc.19.1651080316670;
-        Wed, 27 Apr 2022 10:25:16 -0700 (PDT)
-Received: from skbuf ([188.25.160.86])
-        by smtp.gmail.com with ESMTPSA id g11-20020a1709061e0b00b006eff90d9c18sm7087716ejj.92.2022.04.27.10.25.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 10:25:15 -0700 (PDT)
-Date:   Wed, 27 Apr 2022 20:25:14 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        upstream@semihalf.com
-Subject: Re: [net: PATCH] net: dsa: add missing refcount decrementation
-Message-ID: <20220427172514.n4musn42dhygzbu2@skbuf>
-References: <20220425094708.2769275-1-mw@semihalf.com>
+        with ESMTP id S244102AbiD0Rdm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 13:33:42 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF5886550
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 10:30:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Ud7Dx5QnCzG3xHNdKfdM7a/es24kbCFWTnwgBlCY2vE=; b=RxxWGn+SjVL1Hj3+7e61IFPr1R
+        eNN1qBx94ZkM4MAMfpY3hUiXRZGV7ITZucVf5zicEuQKCpZUoBvHlWf3A1PG9fkcYI0xaTsIjr2e+
+        CTpOtYmUM2Nw8BcpNfozOVJa1GPJoqqx2HU+EN3/yYp22B7+Qui+QHE3EnN9VgKpc+Bs=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1njlUg-0009jF-98; Wed, 27 Apr 2022 19:30:26 +0200
+Date:   Wed, 27 Apr 2022 19:30:26 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Yuiko.Oshino@microchip.com
+Cc:     Woojung.Huh@microchip.com, davem@davemloft.net,
+        netdev@vger.kernel.org, Ravi.Hegde@microchip.com,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next v2 1/2] net: phy: microchip: update LAN88xx phy
+ ID and phy ID mask.
+Message-ID: <Yml9sjkUywbZxVZ/@lunn.ch>
+References: <20220427121957.13099-1-yuiko.oshino@microchip.com>
+ <20220427121957.13099-2-yuiko.oshino@microchip.com>
+ <YmljDTD9j3REqi47@lunn.ch>
+ <CH0PR11MB5561E9C01C5500D6301E43728EFA9@CH0PR11MB5561.namprd11.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220425094708.2769275-1-mw@semihalf.com>
+In-Reply-To: <CH0PR11MB5561E9C01C5500D6301E43728EFA9@CH0PR11MB5561.namprd11.prod.outlook.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 25, 2022 at 11:47:08AM +0200, Marcin Wojtas wrote:
-> After obtaining the "phy-handle" node, decrementing
-> refcount is required. Fix that.
+> >> The current phy IDs on the available hardware.
+> >>         LAN8742 0x0007C130, 0x0007C131
+> >>         LAN88xx 0x0007C132
+> >>
+> >> Signed-off-by: Yuiko Oshino <yuiko.oshino@microchip.com>
+> >> ---
+> >>  drivers/net/phy/microchip.c | 6 +++---
+> >>  1 file changed, 3 insertions(+), 3 deletions(-)
+> >>
+> >> diff --git a/drivers/net/phy/microchip.c b/drivers/net/phy/microchip.c
+> >> index 9f1f2b6c97d4..131caf659ed2 100644
+> >> --- a/drivers/net/phy/microchip.c
+> >> +++ b/drivers/net/phy/microchip.c
+> >> @@ -344,8 +344,8 @@ static int lan88xx_config_aneg(struct phy_device
+> >> *phydev)
+> >>
+> >>  static struct phy_driver microchip_phy_driver[] = {  {
+> >> -     .phy_id         = 0x0007c130,
+> >> -     .phy_id_mask    = 0xfffffff0,
+> >> +     .phy_id         = 0x0007c132,
+> >> +     .phy_id_mask    = 0xfffffff2,
+> >
+> >Just so my comment on the previous version does not get lost, is this the correct
+> >mask, because it is very odd. I think you really want 0xfffffffe?
+> >
+> >    Andrew
 > 
-> Fixes: a20f997010c4 ("net: dsa: Don't instantiate phylink for CPU/DSA ports unless needed")
-> Signed-off-by: Marcin Wojtas <mw@semihalf.com>
-> ---
->  net/dsa/port.c | 2 ++
->  1 file changed, 2 insertions(+)
+> Hi Andrew,
 > 
-> diff --git a/net/dsa/port.c b/net/dsa/port.c
-> index 32d472a82241..cdc56ba11f52 100644
-> --- a/net/dsa/port.c
-> +++ b/net/dsa/port.c
-> @@ -1620,8 +1620,10 @@ int dsa_port_link_register_of(struct dsa_port *dp)
->  			if (ds->ops->phylink_mac_link_down)
->  				ds->ops->phylink_mac_link_down(ds, port,
->  					MLO_AN_FIXED, PHY_INTERFACE_MODE_NA);
-> +			of_node_put(phy_np);
->  			return dsa_port_phylink_register(dp);
->  		}
-> +		of_node_put(phy_np);
->  		return 0;
->  	}
->  
-> -- 
-> 2.29.0
-> 
+> thank you for your review.
+> Yes, 0xfffffff2 is correct for us.
+> We would like to have bits for future revisions of the hardware without updating the driver source code in the future.
+> If we use 0xfffffffe, then we need to submit a patch again when we have a new hardware revision.
 
-Thanks for the patch.
+This has some risks. Do you really have enough control over the
+hardware people to say that:
 
-commit fc06b2867f4cea543505acfb194c2be4ebf0c7d3
-Author: Miaoqian Lin <linmq006@gmail.com>
-Date:   Wed Apr 20 19:04:08 2022 +0800
+LAN8742 0x0007C130, 0x0007C131, 0x0007C134, 0x0007C135, 0x0007C138, 0x0007C139, ...
+LAN88xx 0x0007C132, 0x0007C133, 0x0007C136, 0x0007C137, 0x0007C13a, 0x0007C13b, ...
 
-    net: dsa: Add missing of_node_put() in dsa_port_link_register_of
+It seems safer to wait until there is new hardware and then update the
+list given whatever they decide on is next.
 
-    The device_node pointer is returned by of_parse_phandle()  with refcount
-    incremented. We should use of_node_put() on it when done.
-    of_node_put() will check for NULL value.
+At minimum, please add a comment in the code, otherwise you are going
+to get asked, is this correct, it looks wrong?
 
-    Fixes: a20f997010c4 ("net: dsa: Don't instantiate phylink for CPU/DSA ports unless needed")
-    Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-    Signed-off-by: David S. Miller <davem@davemloft.net>
+     Andrew
