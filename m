@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 09364511DE7
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 20:36:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 171E3511E7D
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 20:37:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240330AbiD0PpB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 11:45:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46176 "EHLO
+        id S240277AbiD0Poy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 11:44:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240158AbiD0Pop (ORCPT
+        with ESMTP id S240150AbiD0Pop (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 11:44:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64A4A32040
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D227A31905
         for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 08:41:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C5811B82871
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 15:41:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59DA3C385B1;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 44C7FB82876
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 15:41:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB5F5C385B3;
         Wed, 27 Apr 2022 15:41:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651074085;
-        bh=aWusfsVygd8PAIfwUe+vR4X18nkIBQqpy5W1lvkfkOw=;
+        s=k20201202; t=1651074086;
+        bh=pKFnkLlSV3w5lA2qNH/13B5W/VVza1dsOWFPcA1sfbQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BQw2buXiViwWIPOzLlHloHm322hqN7qjqG/WnsJFtxgGlmDcBpBDw+fHycib7AZvW
-         quoHprHaeUNR8spNUbD2oRUGhNv1ZJdWPMcEluv47g6zapI4JbDSNgUAeWExm0eMiH
-         ySDYWo+gdIji8IqLOj9Gc/PBijTkToXvw+qRmkyNrxv6k6guWgY3SUD71G2nlYGc+I
-         P/14PVh2VLVo2sDdhXQqiNdChYKDLkX4fF9glEUfoT2miUq32BXjc4VKw9/bkXz64B
-         NSny9EoKjoU7hqQ5FVpJ03ij9oDzA7Kv+YV2OU18UUp9qbyfh3tlKJyjCUyRqNUQaA
-         BcOKEnaV2SUkQ==
+        b=X28T8eJhFJAIxiWJ3bGl9EyczjxtqxUVAIpm3CkA5tm3gKLHttpaALWXZhIp/hQqW
+         Ei/fVNl/TurfoIktloLCQI1JbL1YTvAqxlhSR2xuN9CYhMDuCgtOA2LhB1w+2+ACr7
+         //J4njlYCxsDM9Z5ImLM1AV4hsqXzmpeLP8clpSyKjPbcMDL1krebVb2P6Qs06dXFE
+         /pz7j0jVsOIHHvJwuMa8ZwfxRg9q3gQBdzUNk9hDZRT4uwJIeUjcT2kDCRBAtt9Gkp
+         kECErqpfutJie/I0S8mUQL361NIjjTIIeoM2iqo3doGVd1BdIXhpyw1J2tFTWokyBr
+         cu+gV1IM3VN1Q==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net, pabeni@redhat.com
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        LinoSanfilippo@gmx.de
-Subject: [PATCH net-next 07/14] slic: remove a copy of the NAPI_POLL_WEIGHT define
-Date:   Wed, 27 Apr 2022 08:41:04 -0700
-Message-Id: <20220427154111.529975-8-kuba@kernel.org>
+        rafal@milecki.pl, bcm-kernel-feedback-list@broadcom.com
+Subject: [PATCH net-next 08/14] eth: bgnet: remove a copy of the NAPI_POLL_WEIGHT define
+Date:   Wed, 27 Apr 2022 08:41:05 -0700
+Message-Id: <20220427154111.529975-9-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220427154111.529975-1-kuba@kernel.org>
 References: <20220427154111.529975-1-kuba@kernel.org>
@@ -57,38 +57,39 @@ values in the drivers just makes refactoring harder.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: LinoSanfilippo@gmx.de
+CC: rafal@milecki.pl
+CC: bcm-kernel-feedback-list@broadcom.com
 ---
- drivers/net/ethernet/alacritech/slic.h    | 2 --
- drivers/net/ethernet/alacritech/slicoss.c | 2 +-
+ drivers/net/ethernet/broadcom/bgmac.c | 2 +-
+ drivers/net/ethernet/broadcom/bgmac.h | 2 --
  2 files changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/alacritech/slic.h b/drivers/net/ethernet/alacritech/slic.h
-index 3add305d34b4..4eecbdfff3ff 100644
---- a/drivers/net/ethernet/alacritech/slic.h
-+++ b/drivers/net/ethernet/alacritech/slic.h
-@@ -265,8 +265,6 @@
- #define SLIC_NUM_STAT_DESC_ARRAYS	4
- #define SLIC_INVALID_STAT_DESC_IDX	0xffffffff
+diff --git a/drivers/net/ethernet/broadcom/bgmac.c b/drivers/net/ethernet/broadcom/bgmac.c
+index 7b525c65bacb..2dfc1e32bbb3 100644
+--- a/drivers/net/ethernet/broadcom/bgmac.c
++++ b/drivers/net/ethernet/broadcom/bgmac.c
+@@ -1527,7 +1527,7 @@ int bgmac_enet_probe(struct bgmac *bgmac)
+ 	if (bcm47xx_nvram_getenv("et0_no_txint", NULL, 0) == 0)
+ 		bgmac->int_mask &= ~BGMAC_IS_TX_MASK;
  
--#define SLIC_NAPI_WEIGHT		64
+-	netif_napi_add(net_dev, &bgmac->napi, bgmac_poll, BGMAC_WEIGHT);
++	netif_napi_add(net_dev, &bgmac->napi, bgmac_poll, NAPI_POLL_WEIGHT);
+ 
+ 	err = bgmac_phy_connect(bgmac);
+ 	if (err) {
+diff --git a/drivers/net/ethernet/broadcom/bgmac.h b/drivers/net/ethernet/broadcom/bgmac.h
+index 110088e662ea..e05ac92c0650 100644
+--- a/drivers/net/ethernet/broadcom/bgmac.h
++++ b/drivers/net/ethernet/broadcom/bgmac.h
+@@ -364,8 +364,6 @@
+ #define BGMAC_CHIPCTL_7_IF_TYPE_MII		0x00000040
+ #define BGMAC_CHIPCTL_7_IF_TYPE_RGMII		0x00000080
+ 
+-#define BGMAC_WEIGHT	64
 -
- #define SLIC_UPR_LSTAT			0
- #define SLIC_UPR_CONFIG			1
+ #define ETHER_MAX_LEN	(ETH_FRAME_LEN + ETH_FCS_LEN)
  
-diff --git a/drivers/net/ethernet/alacritech/slicoss.c b/drivers/net/ethernet/alacritech/slicoss.c
-index 1fc9a1cd3ef8..ce353b0c02a3 100644
---- a/drivers/net/ethernet/alacritech/slicoss.c
-+++ b/drivers/net/ethernet/alacritech/slicoss.c
-@@ -1803,7 +1803,7 @@ static int slic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		goto unmap;
- 	}
- 
--	netif_napi_add(dev, &sdev->napi, slic_poll, SLIC_NAPI_WEIGHT);
-+	netif_napi_add(dev, &sdev->napi, slic_poll, NAPI_POLL_WEIGHT);
- 	netif_carrier_off(dev);
- 
- 	err = register_netdev(dev);
+ /* Feature Flags */
 -- 
 2.34.1
 
