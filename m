@@ -2,44 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A2496511F01
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 20:37:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C3FE511E23
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 20:37:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240263AbiD0Pov (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 11:44:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46172 "EHLO
+        id S240237AbiD0Poz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 11:44:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240139AbiD0Poo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 11:44:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60A7BE0AC;
-        Wed, 27 Apr 2022 08:41:24 -0700 (PDT)
+        with ESMTP id S240098AbiD0Pop (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 11:44:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64B3A32048
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 08:41:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B097618F3;
-        Wed, 27 Apr 2022 15:41:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CBAAC385AF;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B80CB82539
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 15:41:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D49E9C385AD;
         Wed, 27 Apr 2022 15:41:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651074083;
-        bh=8awBbU0kDevZDPWjt3mx3CiKYVArRWf3BdXSHzS1gE4=;
+        s=k20201202; t=1651074084;
+        bh=CxinJptejkd4iR8/t6ALXHLfWP98cGmTggrkgcrQMAQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B9p5Siha/7wtpTum4+7jVOyZsUGMhLmq0aXYIcs32aHb7rkrFNBwBLetzp9dRb4G7
-         l++pFY4sBgb08gLumZ4bJ7+jaXlvEcl6pupEZ40be+gYbdn3H0+F6TkB6/RWTIuaY8
-         /TH/I8G6fsKiRgqNM2N0lYnMeVwF/U+LaIFyKgmSTJXtEI/PDMTA8Kj1QxRkfFwSHd
-         UEnrlsmzL6KO4lT9jtP3JscxCMaO2NFPT/t/u9lcQacP/sWVAhPmCPz6I7nwvpb4GI
-         FqLG+gUXbGc++WDfpnycFlDUPamM7n11L4hgJHC71m4wWI0MyJGImbL0slz+KYS3K7
-         C3hg0b6hSSQkw==
+        b=rxHDpoOIq4dU2grfCXTs+Lgn02AS3CakG+M+Zk2b6JCwqqQYvOK4kQRMGfpywdfVn
+         g0Q2nCiPL84XR5PGBSZzry3eIAHFM8G8QvcWk663OPKzzFyx8dP6x3Gy/v2ZMLMp34
+         6N9mmXq7RCYsrZhMy9vxP29xFrBAihPQZ7rfzDXp04ht8lnHwYRsVfDt7tivNiSjE+
+         v6FuJRxCA6ZOQyTw9vCqYgznChpgs7r0Q6GysF7M1XatHLmd/oBHfpj9M8PjlKgJ3M
+         fag0Gbu9g9M49bHRC4NgtjA/j+1ZeK+xmnhwiwEJ0D/9UG8oo+IEeRzFdiTQb9bv8e
+         lhiyoUNwOFI5w==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net, pabeni@redhat.com
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        grygorii.strashko@ti.com, chi.minghao@zte.com.cn,
-        vladimir.oltean@nxp.com, toke@redhat.com, chenhao288@hisilicon.com,
-        moyufeng@huawei.com, linux-omap@vger.kernel.org
-Subject: [PATCH net-next 03/14] eth: cpsw: remove a copy of the NAPI_POLL_WEIGHT define
-Date:   Wed, 27 Apr 2022 08:41:00 -0700
-Message-Id: <20220427154111.529975-4-kuba@kernel.org>
+        andriy.shevchenko@linux.intel.com
+Subject: [PATCH net-next 04/14] eth: pch_gbe: remove a copy of the NAPI_POLL_WEIGHT define
+Date:   Wed, 27 Apr 2022 08:41:01 -0700
+Message-Id: <20220427154111.529975-5-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220427154111.529975-1-kuba@kernel.org>
 References: <20220427154111.529975-1-kuba@kernel.org>
@@ -59,113 +57,67 @@ values in the drivers just makes refactoring harder.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: grygorii.strashko@ti.com
-CC: chi.minghao@zte.com.cn
-CC: vladimir.oltean@nxp.com
-CC: toke@redhat.com
-CC: chenhao288@hisilicon.com
-CC: moyufeng@huawei.com
-CC: linux-omap@vger.kernel.org
+CC: andriy.shevchenko@linux.intel.com
 ---
- drivers/net/ethernet/ti/cpsw.c      |  4 ++--
- drivers/net/ethernet/ti/cpsw_new.c  |  4 ++--
- drivers/net/ethernet/ti/cpsw_priv.c | 12 ++++++------
- drivers/net/ethernet/ti/cpsw_priv.h |  1 -
- 4 files changed, 10 insertions(+), 11 deletions(-)
+ drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
-index e6ad2e53f1cd..662435e36805 100644
---- a/drivers/net/ethernet/ti/cpsw.c
-+++ b/drivers/net/ethernet/ti/cpsw.c
-@@ -1639,10 +1639,10 @@ static int cpsw_probe(struct platform_device *pdev)
- 	ndev->ethtool_ops = &cpsw_ethtool_ops;
- 	netif_napi_add(ndev, &cpsw->napi_rx,
- 		       cpsw->quirk_irq ? cpsw_rx_poll : cpsw_rx_mq_poll,
--		       CPSW_POLL_WEIGHT);
-+		       NAPI_POLL_WEIGHT);
- 	netif_tx_napi_add(ndev, &cpsw->napi_tx,
- 			  cpsw->quirk_irq ? cpsw_tx_poll : cpsw_tx_mq_poll,
--			  CPSW_POLL_WEIGHT);
-+			  NAPI_POLL_WEIGHT);
+diff --git a/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c b/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
+index 1dc40c537281..46da937ad27f 100644
+--- a/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
++++ b/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
+@@ -32,8 +32,6 @@
+ #define PCI_DEVICE_ID_ROHM_ML7223_GBE		0x8013
+ #define PCI_DEVICE_ID_ROHM_ML7831_GBE		0x8802
  
- 	/* register the network device */
- 	SET_NETDEV_DEV(ndev, dev);
-diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
-index 0f31cb4168bb..b33781ed760e 100644
---- a/drivers/net/ethernet/ti/cpsw_new.c
-+++ b/drivers/net/ethernet/ti/cpsw_new.c
-@@ -1416,11 +1416,11 @@ static int cpsw_create_ports(struct cpsw_common *cpsw)
- 			netif_napi_add(ndev, &cpsw->napi_rx,
- 				       cpsw->quirk_irq ?
- 				       cpsw_rx_poll : cpsw_rx_mq_poll,
--				       CPSW_POLL_WEIGHT);
-+				       NAPI_POLL_WEIGHT);
- 			netif_tx_napi_add(ndev, &cpsw->napi_tx,
- 					  cpsw->quirk_irq ?
- 					  cpsw_tx_poll : cpsw_tx_mq_poll,
--					  CPSW_POLL_WEIGHT);
-+					  NAPI_POLL_WEIGHT);
+-#define PCH_GBE_TX_WEIGHT         64
+-#define PCH_GBE_RX_WEIGHT         64
+ #define PCH_GBE_RX_BUFFER_WRITE   16
+ 
+ /* Initialize the wake-on-LAN settings */
+@@ -1469,7 +1467,7 @@ pch_gbe_clean_tx(struct pch_gbe_adapter *adapter,
+ 		   tx_desc->gbec_status, tx_desc->dma_status);
+ 
+ 	unused = PCH_GBE_DESC_UNUSED(tx_ring);
+-	thresh = tx_ring->count - PCH_GBE_TX_WEIGHT;
++	thresh = tx_ring->count - NAPI_POLL_WEIGHT;
+ 	if ((tx_desc->gbec_status == DSC_INIT16) && (unused < thresh))
+ 	{  /* current marked clean, tx queue filling up, do extra clean */
+ 		int j, k;
+@@ -1482,13 +1480,13 @@ pch_gbe_clean_tx(struct pch_gbe_adapter *adapter,
+ 
+ 		/* current marked clean, scan for more that need cleaning. */
+ 		k = i;
+-		for (j = 0; j < PCH_GBE_TX_WEIGHT; j++)
++		for (j = 0; j < NAPI_POLL_WEIGHT; j++)
+ 		{
+ 			tx_desc = PCH_GBE_TX_DESC(*tx_ring, k);
+ 			if (tx_desc->gbec_status != DSC_INIT16) break; /*found*/
+ 			if (++k >= tx_ring->count) k = 0;  /*increment, wrap*/
  		}
+-		if (j < PCH_GBE_TX_WEIGHT) {
++		if (j < NAPI_POLL_WEIGHT) {
+ 			netdev_dbg(adapter->netdev,
+ 				   "clean_tx: unused=%d loops=%d found tx_desc[%x,%x:%x].gbec_status=%04x\n",
+ 				   unused, j, i, k, tx_ring->next_to_use,
+@@ -1547,7 +1545,7 @@ pch_gbe_clean_tx(struct pch_gbe_adapter *adapter,
+ 		tx_desc = PCH_GBE_TX_DESC(*tx_ring, i);
  
- 		napi_ndev = ndev;
-diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
-index 887285c57db8..758295c898ac 100644
---- a/drivers/net/ethernet/ti/cpsw_priv.c
-+++ b/drivers/net/ethernet/ti/cpsw_priv.c
-@@ -364,7 +364,7 @@ void cpsw_split_res(struct cpsw_common *cpsw)
- 	if (cpsw->tx_ch_num == rlim_ch_num) {
- 		max_rate = consumed_rate;
- 	} else if (!rlim_ch_num) {
--		ch_budget = CPSW_POLL_WEIGHT / cpsw->tx_ch_num;
-+		ch_budget = NAPI_POLL_WEIGHT / cpsw->tx_ch_num;
- 		bigest_rate = 0;
- 		max_rate = consumed_rate;
- 	} else {
-@@ -379,19 +379,19 @@ void cpsw_split_res(struct cpsw_common *cpsw)
- 		if (max_rate < consumed_rate)
- 			max_rate *= 10;
- 
--		ch_budget = (consumed_rate * CPSW_POLL_WEIGHT) / max_rate;
--		ch_budget = (CPSW_POLL_WEIGHT - ch_budget) /
-+		ch_budget = (consumed_rate * NAPI_POLL_WEIGHT) / max_rate;
-+		ch_budget = (NAPI_POLL_WEIGHT - ch_budget) /
- 			    (cpsw->tx_ch_num - rlim_ch_num);
- 		bigest_rate = (max_rate - consumed_rate) /
- 			      (cpsw->tx_ch_num - rlim_ch_num);
- 	}
- 
- 	/* split tx weight/budget */
--	budget = CPSW_POLL_WEIGHT;
-+	budget = NAPI_POLL_WEIGHT;
- 	for (i = 0; i < cpsw->tx_ch_num; i++) {
- 		ch_rate = cpdma_chan_get_rate(txv[i].ch);
- 		if (ch_rate) {
--			txv[i].budget = (ch_rate * CPSW_POLL_WEIGHT) / max_rate;
-+			txv[i].budget = (ch_rate * NAPI_POLL_WEIGHT) / max_rate;
- 			if (!txv[i].budget)
- 				txv[i].budget++;
- 			if (ch_rate > bigest_rate) {
-@@ -417,7 +417,7 @@ void cpsw_split_res(struct cpsw_common *cpsw)
- 		txv[bigest_rate_ch].budget += budget;
- 
- 	/* split rx budget */
--	budget = CPSW_POLL_WEIGHT;
-+	budget = NAPI_POLL_WEIGHT;
- 	ch_budget = budget / cpsw->rx_ch_num;
- 	for (i = 0; i < cpsw->rx_ch_num; i++) {
- 		cpsw->rxv[i].budget = ch_budget;
-diff --git a/drivers/net/ethernet/ti/cpsw_priv.h b/drivers/net/ethernet/ti/cpsw_priv.h
-index fc591f5ebe18..34230145ca0b 100644
---- a/drivers/net/ethernet/ti/cpsw_priv.h
-+++ b/drivers/net/ethernet/ti/cpsw_priv.h
-@@ -89,7 +89,6 @@ do {								\
- #define CPDMA_TXCP		0x40
- #define CPDMA_RXCP		0x60
- 
--#define CPSW_POLL_WEIGHT	64
- #define CPSW_RX_VLAN_ENCAP_HDR_SIZE		4
- #define CPSW_MIN_PACKET_SIZE_VLAN	(VLAN_ETH_ZLEN)
- #define CPSW_MIN_PACKET_SIZE	(ETH_ZLEN)
+ 		/* weight of a sort for tx, to avoid endless transmit cleanup */
+-		if (cleaned_count++ == PCH_GBE_TX_WEIGHT) {
++		if (cleaned_count++ == NAPI_POLL_WEIGHT) {
+ 			cleaned = false;
+ 			break;
+ 		}
+@@ -2519,7 +2517,7 @@ static int pch_gbe_probe(struct pci_dev *pdev,
+ 	netdev->netdev_ops = &pch_gbe_netdev_ops;
+ 	netdev->watchdog_timeo = PCH_GBE_WATCHDOG_PERIOD;
+ 	netif_napi_add(netdev, &adapter->napi,
+-		       pch_gbe_napi_poll, PCH_GBE_RX_WEIGHT);
++		       pch_gbe_napi_poll, NAPI_POLL_WEIGHT);
+ 	netdev->hw_features = NETIF_F_RXCSUM |
+ 		NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
+ 	netdev->features = netdev->hw_features;
 -- 
 2.34.1
 
