@@ -2,159 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 618215111FC
+	by mail.lfdr.de (Postfix) with ESMTP id AAEE05111FD
 	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 09:06:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358598AbiD0HJb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 03:09:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43078 "EHLO
+        id S1358563AbiD0HKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 03:10:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358595AbiD0HJ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 03:09:29 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C8D628E0B;
-        Wed, 27 Apr 2022 00:06:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1651043134;
-        bh=E31kil/RNvUPQgFAepzSBEELBXvKZrRDE3N9X6PH5T8=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=DjGNxyUD+bf4zvIFNz83qx3GE4Yvs5YLCQhUJ6l6Y9gGcU0a83Afo3A5hHD4aVhvY
-         /Ax2SBesyOiMJXLpWyF8sGln6GLim0PTIW/W5aAFWK6guzToaoczP9HdTcMDSUppcU
-         CFDxK3UdNucMrIOOjoj2JGyE5NOEba+Jpt3hmdm0=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [217.61.148.41] ([217.61.148.41]) by web-mail.gmx.net
- (3c-app-gmx-bap04.server.lan [172.19.172.74]) (via HTTP); Wed, 27 Apr 2022
- 09:05:34 +0200
+        with ESMTP id S1353855AbiD0HJ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 03:09:58 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AECF28E08
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 00:06:45 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id u3so1147598wrg.3
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 00:06:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=solid-run-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=vwRPX50lEvroOebHllBXd4aowQytW2AtEPaQabDS3xg=;
+        b=zLyPuu0aY1vy75at3uBB3XOmjLCUMqFdfLOZYraRcj1qYI5VZmvHRTabxzv4P9aRNG
+         bJZ3yasuv1CKii1xaycLZAOEE531O39Nv/zQDfHx+ficvsjmKMfNiQfoy7jofPzXt/Bw
+         +O3ovHog/MaEHpddxRfr2evFuJsZHBXcgvf9T/M64Nn/q0F4nB+I74BWkUDiN0+4/+ms
+         6rpX+6fnkGmk2tlmCzMlQvYEN+QnrOLUxHSDdmcpkpnpEVOqBI9EMoEAdtzs5tHL1iXu
+         yWG/UMgMekspgfQVyDTHM42PSUcWLJonx7582B3/tdrrBZVZ3m4ONLxzcr310mtTNfcF
+         C7nQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=vwRPX50lEvroOebHllBXd4aowQytW2AtEPaQabDS3xg=;
+        b=P9YqJeOEOiCNFb14vHqofsIriD9fcO3df5WyvgbjS/p5Ou/CTfNK1M4Tt0qi+oxyN4
+         XmR2qDw/b/1b3PaxDOyxSGarHne+jFhwEvD066BYnRtpt+1B+uab9jGeLX+DBvG3PHJZ
+         OV+Ts5l/AnZMmALUUppbri07ugxsAbOr1qX4jUqe9o2WHhNoNGFdbksY6i/VaC/JmSzr
+         Oj8fCZbuE6blWprFZ/y1KTrb12pF9EFv1cowUp87+zYFommZ+pA/eUwjUqZBe0kML06b
+         Ch7eXkGOUrRR+CMHYtN3NqUE5rLo5CisEid8cWhnbWRNloqWjDJ/X5aHAa6AcN3GO8Oa
+         TuYw==
+X-Gm-Message-State: AOAM531YnH0C9qNul7CKKwKx/0pdZPXlqJRfOKVdr0YUWiy48J0JaOMX
+        i9h/eVFgpjzZLBmlX7deljMQRMY1XcVyUs0SAj4=
+X-Google-Smtp-Source: ABdhPJwgaXOzBBMcDwDB3ZzzVV6uOy5oaPdurI5SUDUdVBupZpeFIYSqQY2I4PFEt/OetOSpfTDwcw==
+X-Received: by 2002:a5d:5690:0:b0:20a:d24b:ad12 with SMTP id f16-20020a5d5690000000b0020ad24bad12mr15793643wrv.280.1651043203634;
+        Wed, 27 Apr 2022 00:06:43 -0700 (PDT)
+Received: from [192.168.17.225] (bzq-82-81-222-124.cablep.bezeqint.net. [82.81.222.124])
+        by smtp.gmail.com with ESMTPSA id j24-20020adfa558000000b0020ae9eafef9sm2191249wrb.92.2022.04.27.00.06.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Apr 2022 00:06:42 -0700 (PDT)
+Message-ID: <651b6fce-cf2a-439f-7454-533bf830a048@solid-run.com>
+Date:   Wed, 27 Apr 2022 10:06:40 +0300
 MIME-Version: 1.0
-Message-ID: <trinity-ba152dbe-5a7c-4098-acff-3e7b225f0349-1651043134680@3c-app-gmx-bap04>
-From:   Frank Wunderlich <frank-w@public-files.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Frank Wunderlich <linux@fw-web.de>,
-        linux-mediatek@lists.infradead.org,
-        linux-rockchip@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v2 2/3] net: phy: adin: add support for clock output
+Content-Language: en-US
+To:     kernel test robot <lkp@intel.com>, netdev@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, alvaro.karsz@solid-run.com,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Aw: Re: [RFC v1 1/3] net: dsa: mt753x: make reset optional
-Content-Type: text/plain; charset=UTF-8
-Date:   Wed, 27 Apr 2022 09:05:34 +0200
-Importance: normal
-Sensitivity: Normal
-In-Reply-To: <20220426235713.engzue7ujwqjdyjc@skbuf>
-References: <20220426134924.30372-1-linux@fw-web.de>
- <20220426134924.30372-2-linux@fw-web.de>
- <20220426235713.engzue7ujwqjdyjc@skbuf>
-X-UI-Message-Type: mail
-X-Priority: 3
-X-Provags-ID: V03:K1:BgK3bwwwsZyAlEyB2njy500W/y0pBdlhH28Qhy54gfqNlVJPhRCXN1L7fzbHRwm2NhWIt
- wtsoVISknJP68kmlU/Ne3LPu27zqumySiroUKNvD3n3rqoWlVnHOi13drtzrr6X+TADx7uJfTn1t
- 9FuVVDgSJikg8OKzG6Ux/wmOpd2+Ha4EsuNnk/1NAUt6D0GiQ8XJ2/0ptYYgJM35Iogc9LRnTDY9
- 0tQmjj2r9F5tJ1GixD+w366AYglq49w0uwB4bgYnAXf/7SZ/5cdOEZKx84mARgM8OEku6HY7ilQS
- po=
-X-UI-Out-Filterresults: notjunk:1;V03:K0:BfBhc8THtNQ=:FmPM6Sbgg35utsLpoBVKWj
- RhwN3n5dcfttYrYGD3nUUmgyz76ELiRfChWBqtFpLRf+MYrR5Ovp4+BqDcC26HH6JKvRQbPA7
- RY/gZe/B3B0VSfioY+L02yptu7tp9RvbtU7AWa5JSX+XWhozJufzh3yqru38GrlZVSZ9Q5M2B
- cfEonm56YX4DHY19Gr7L6RooIe9tEZsITo4k60kO0NMGOFKJWkXUp9zVug4rxzq8oVAnpQQAj
- nWiljo9mOsuXrzJh4PXopgPEnxOL1GvFzn/l2UPX6nYp3RDn/oyMJl433iPbJPdjv+NBNwNiX
- jz89CSuXtv3yPSBI4jx6Jp1Gwbc9JV0CpiROCbLdPcUHTdBmMTZEl4J0s35pE4pLX23aOIZo8
- oU1E6gOG0Lj4xYRAuxWIIGuaTEuYW/rc462iUD0AKSkJBpO0SQ5Gq/V89G5VTPlhdfdZqrFH5
- YpRQV5TIUS4pzKIWDsuvQ4ol0910PCH3+EpUOQLVv83DVHqSyLdwbScd6q1MX+GAvNzrDrtvS
- r/AJEaZWNqnyCnWnMUQKqWGPC0fBDfbn5Fp0+XC9NZrZQLDnVmXruO5sImrB6WskfJKLmlXgF
- U/+iex/+cLAuPWqcCSir5czEZDNBdMUdqnDU8pynYFW26/3/UZfgdFpaZQ7qLfwqc/bsChUmQ
- 13DrwQHm3aFthJPqAnRJ8IcCKf/VPY1sa/o6vlLRVs4cd4wZ5J3yNxXmda1BRDVMMEbzO58zR
- BwFBEfj5Rhax1Vm1nW1RhOAs8hKEO1XC6T+7tcn5n1OQ8jY0bu7oKg3w5ky/Di554zjAphU7V
- hfikbdB
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>
+References: <20220419102709.26432-3-josua@solid-run.com>
+ <202204211324.qgcPMycQ-lkp@intel.com>
+From:   Josua Mayer <josua@solid-run.com>
+In-Reply-To: <202204211324.qgcPMycQ-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+\o/
 
-you're right, reset is already optional...
+I am going to fix this by using NULL in v3.
+Is there any other feedback I should take into account on this patch?
 
-idk why it was failing before the patch...i guess i had always defined the=
- reset in dts on switch-side and dropped it same time with this patch.
+- Josua Mayer
 
-Reset on both nodes (gmac+switch) blocks in switch driver because of exclu=
-sive (error message "could not get our reset line") and after dropping the=
- reset on gmac-side the mdio-bus does not come up after switch driver rese=
-ts gmac+switch (in loop with edefer).
-
-> Gesendet: Mittwoch, 27. April 2022 um 01:57 Uhr
-> Von: "Vladimir Oltean" <olteanv@gmail.com>
-> On Tue, Apr 26, 2022 at 03:49:22PM +0200, Frank Wunderlich wrote:
-> > From: Frank Wunderlich <frank-w@public-files.de>
-> >
-> > Currently a reset line is required, but on BPI-R2-Pro board
-> > this reset is shared with the gmac and prevents the switch to
-> > be initialized because mdio is not ready fast enough after
-> > the reset.
-> >
-> > So make the reset optional to allow shared reset lines.
+Am 21.04.22 um 09:45 schrieb kernel test robot:
+> Hi Josua,
 >
-> What does it mean "to allow shared reset lines"? Allow as in "allow them
-> to sit there, unused"?
-
-for switch part unused right, but reset-line is used by gmac. If switch do=
-es the reset, it resets the gmac too and so the mdio goes down. It took lo=
-nger to get up than the wait-poll after the reset and so i got mdio read e=
-rrors.
-
-> > -	} else {
-> > +	} else if (priv->reset) {
+> Thank you for the patch! Perhaps something to improve:
 >
-> I don't really understand this patch. gpiod_set_value_cansleep() can
-> tolerate NULL GPIO descriptors.
-
-had not looked for NULL-tolerance, so i precautionary added the check.
-
-> >  		gpiod_set_value_cansleep(priv->reset, 0);
-> >  		usleep_range(1000, 1100);
-> >  		gpiod_set_value_cansleep(priv->reset, 1);
-
-> > @@ -3272,8 +3272,7 @@ mt7530_probe(struct mdio_device *mdiodev)
-> >  		priv->reset =3D devm_gpiod_get_optional(&mdiodev->dev, "reset",
-> >  						      GPIOD_OUT_LOW);
-> >  		if (IS_ERR(priv->reset)) {
-> > -			dev_err(&mdiodev->dev, "Couldn't get our reset line\n");
-> > -			return PTR_ERR(priv->reset);
-> > +			dev_warn(&mdiodev->dev, "Couldn't get our reset line\n");
+> [auto build test WARNING on robh/for-next]
+> [also build test WARNING on net/master net-next/master v5.18-rc3 next-20220420]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch]
 >
-> I certainly don't understand why you're suppressing the pointer-encoded
-> errors here. The function used is devm_gpiod_get_optional(), which
-> returns NULL for a missing reset-gpios, not IS_ERR(something). The
-> IS_ERR(something) is actually important to not ignore, maybe it's
-> IS_ERR(-EPROBE_DEFER). And this change breaks waiting for the descriptor
-> to become available.
-
-you're right...the intention was to not leave the probe function if not re=
-set was defined...but yes, devm_gpiod_get_optional is called so reset is a=
-lready optional.
-
-> So what doesn't work without this patch, exactly?
-
-reverted the Patch in my repo and it is still working :)
-
-just ignore it. something went wrong during my tests...
-
-sorry for the inconvenience.
-
-regards Frank
+> url:    https://github.com/intel-lab-lkp/linux/commits/Josua-Mayer/dt-bindings-net-adin-document-phy-clock-output-properties/20220419-192719
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
+> config: openrisc-randconfig-s032-20220420 (https://download.01.org/0day-ci/archive/20220421/202204211324.qgcPMycQ-lkp@intel.com/config)
+> compiler: or1k-linux-gcc (GCC) 11.2.0
+> reproduce:
+>          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>          chmod +x ~/bin/make.cross
+>          # apt-get install sparse
+>          # sparse version: v0.6.4-dirty
+>          # https://github.com/intel-lab-lkp/linux/commit/74d856f1c89a6534fd58889f20ad4b481b8191c9
+>          git remote add linux-review https://github.com/intel-lab-lkp/linux
+>          git fetch --no-tags linux-review Josua-Mayer/dt-bindings-net-adin-document-phy-clock-output-properties/20220419-192719
+>          git checkout 74d856f1c89a6534fd58889f20ad4b481b8191c9
+>          # save the config file
+>          mkdir build_dir && cp config build_dir/.config
+>          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=openrisc SHELL=/bin/bash drivers/net/phy/
+>
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+>
+> sparse warnings: (new ones prefixed by >>)
+>>> drivers/net/phy/adin.c:448:27: sparse: sparse: Using plain integer as NULL pointer
+> vim +448 drivers/net/phy/adin.c
+>
+>     444	
+>     445	static int adin_config_clk_out(struct phy_device *phydev)
+>     446	{
+>     447		struct device *dev = &phydev->mdio.dev;
+>   > 448		const char *val = 0;
+>     449		u8 sel = 0;
+>     450	
+>     451		device_property_read_string(dev, "adi,phy-output-clock", &val);
+>     452		if(!val) {
+>     453			/* property not present, do not enable GP_CLK pin */
+>     454		} else if(strcmp(val, "25mhz-reference") == 0) {
+>     455			sel |= ADIN1300_GE_CLK_CFG_25;
+>     456		} else if(strcmp(val, "125mhz-free-running") == 0) {
+>     457			sel |= ADIN1300_GE_CLK_CFG_FREE_125;
+>     458		} else if(strcmp(val, "125mhz-recovered") == 0) {
+>     459			sel |= ADIN1300_GE_CLK_CFG_RCVR_125;
+>     460		} else if(strcmp(val, "adaptive-free-running") == 0) {
+>     461			sel |= ADIN1300_GE_CLK_CFG_HRT_FREE;
+>     462		} else if(strcmp(val, "adaptive-recovered") == 0) {
+>     463			sel |= ADIN1300_GE_CLK_CFG_HRT_RCVR;
+>     464		} else {
+>     465			phydev_err(phydev, "invalid adi,phy-output-clock\n");
+>     466			return -EINVAL;
+>     467		}
+>     468	
+>     469		if(device_property_read_bool(dev, "adi,phy-output-reference-clock"))
+>     470			sel |= ADIN1300_GE_CLK_CFG_REF_EN;
+>     471	
+>     472		return phy_modify_mmd(phydev, MDIO_MMD_VEND1, ADIN1300_GE_CLK_CFG_REG,
+>     473				      ADIN1300_GE_CLK_CFG_MASK, sel);
+>     474	}
+>     475	
+>
