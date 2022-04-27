@@ -2,81 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 27703511794
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 14:46:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4D28511762
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 14:46:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234356AbiD0MiR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 08:38:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38348 "EHLO
+        id S234534AbiD0Mkv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 08:40:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234177AbiD0MiP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 08:38:15 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E77CF50E3A;
-        Wed, 27 Apr 2022 05:35:03 -0700 (PDT)
-Received: from sslproxy04.your-server.de ([78.46.152.42])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1njgse-000Bll-3T; Wed, 27 Apr 2022 14:34:52 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        with ESMTP id S234432AbiD0Mkm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 08:40:42 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CDC855237
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 05:37:29 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1njgsd-000Gt8-Hj; Wed, 27 Apr 2022 14:34:51 +0200
-Subject: Re: [PATCH v5 1/3] selftests: bpf: add test for bpf_skb_change_proto
-To:     Lina.Wang@mediatek.com, "David S . Miller" <davem@davemloft.net>,
+        (envelope-from <ore@pengutronix.de>)
+        id 1njgv1-0001gD-RO; Wed, 27 Apr 2022 14:37:19 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1njgux-0006zz-Ra; Wed, 27 Apr 2022 14:37:15 +0200
+Date:   Wed, 27 Apr 2022 14:37:15 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     Steve Glendinning <steve.glendinning@shawell.net>,
+        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-kernel@vger.kernel.org, Maciej enczykowski <maze@google.com>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-References: <9dc51533-92d2-1c82-2a6e-96e1ac747bb7@iogearbox.net>
- <20220418015230.4481-1-Lina.Wang@mediatek.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <f8b9437c-3f54-3d15-d21b-cbac6e4d6911@iogearbox.net>
-Date:   Wed, 27 Apr 2022 14:34:48 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, Andre Edich <andre.edich@microchip.com>,
+        Martyn Welch <martyn.welch@collabora.com>,
+        Gabriel Hojda <ghojda@yo2urs.ro>,
+        Christoph Fritz <chf.fritz@googlemail.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Philipp Rosenberger <p.rosenberger@kunbus.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH net-next 0/7] Polling be gone on LAN95xx
+Message-ID: <20220427123715.GC17577@pengutronix.de>
+References: <cover.1651037513.git.lukas@wunner.de>
 MIME-Version: 1.0
-In-Reply-To: <20220418015230.4481-1-Lina.Wang@mediatek.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26525/Wed Apr 27 10:19:41 2022)
-X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <cover.1651037513.git.lukas@wunner.de>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 14:27:44 up 28 days, 57 min, 81 users,  load average: 0.07, 0.09,
+ 0.13
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/18/22 3:52 AM, Lina.Wang@mediatek.com wrote:
-[...]
->> OT: In Cilium we run similar NAT46/64 translation for XDP and tc/BPF
->> for our LB services [4] (that is,
->> v4 VIP with v6 backends, and v6 VIP with v4 backends).
->>
->>     [4]
->> https://github.com/cilium/cilium/blob/master/bpf/lib/nat_46x64.h
->>         
->> https://github.com/cilium/cilium/blob/master/test/nat46x64/test.sh
+On Wed, Apr 27, 2022 at 07:48:00AM +0200, Lukas Wunner wrote:
+> Do away with link status polling on LAN95XX USB Ethernet
+> and rely on interrupts instead, thereby reducing bus traffic,
+> CPU overhead and improving interface bringup latency.
 > 
-> It is complicated for me, my case doesnot use XDP driver.I use xdp_dummy
-> just to enable veth NAPI GRO, not real XDP driver code. My test case is
-> simple and enough for my patch, I think. I have covered tcp and udp,
-> normal and SO_SEGMENT.
+> The meat of the series is in patch [5/7].  The preceding and
+> following patches are various cleanups to prepare for and
+> adjust to interrupt-driven link state detection.
+> 
+> Please review and test.  Thanks!
 
-Ok, fair enough, then lets resend with the minor fixups as discussed
-earlier and worst case we can do the test_progs integration at a later
-point to avoid blocking the fix. At least there is something runnable
-under net/bpf selftests.. even if not yet in BPF CI but we can follow-up
-on it later. Thanks Lina!
+Tested-by: Oleksij Rempel <o.rempel@pengutronix.de>
+
+Tested on:
+- LAN9514 (RPi2)
+- LAN9512 (EVB)
+- LAN9500 (EVB)
+
+On USB unplug i get some not usable kernel message, but it is not the
+show stopper for me:
+smsc95xx 1-1.4.1:1.0 eth1: Error updating MAC full duplex mode
+smsc95xx 1-1.4.1:1.0 eth1: hardware isn't capable of remote wakeup
+
+Thank you!
+
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
