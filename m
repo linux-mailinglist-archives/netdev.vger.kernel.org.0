@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B42845125BB
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 00:52:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97CB55125A7
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 00:51:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238840AbiD0Wyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 18:54:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33122 "EHLO
+        id S238395AbiD0Wyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 18:54:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238247AbiD0Wyd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 18:54:33 -0400
+        with ESMTP id S238414AbiD0Wyf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 18:54:35 -0400
 Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5912D8AE7C;
-        Wed, 27 Apr 2022 15:50:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA47D8CCD3;
+        Wed, 27 Apr 2022 15:51:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
         s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=jw69MD++mJtoVz+5OF/yDyT7SM6GG1QVsO5qZnTbfPY=; b=R4BaLs+44BYJptao8GvC8ttDH3
-        QBY0eMxhKSzWFCpxMbR+Fbp293MCB3zvPYgTPMf/b3OkQdSjP24E3L8e4Mxpy4tg+aM7LX40+eANn
-        E9NmhqtSLVcTKfq6OAtiABfZVuEeL7pK/Jggwsb0Z66SwiIPgUgdk8N8FAOWtcyDE4pUFXnvlOs4u
-        KY15nvIzaU7LDhXzbLelthG04bdK8jQeGFwa+aWfBFuZkkmcHkGvkm9AzL5O497raBTZiIXIwFkMO
-        bBhCSNyrOC33WN5GrpTyqWn82roSYAhC1Njfns6EapEQdXDs5qCmdq3kXZk6bj6zjDvwVdiy1jwJ3
-        PjTlDVgw==;
+        bh=s8xeHJYGrg2PKjTPKivxQn37LuEP6tnBzN9Ru5ARxEw=; b=itLofTxVD3jMCMG1QHrJKsVczn
+        vbwUlm+NWg0pMSOCtSjWETMXDXA/dO9ti0V72q001TMmb2gIzR2yZduw7qvMkCQ0akMjJfPi2/PQc
+        iUqIhedKtPpwa0f3Qs25a8tdm2oshD1/KMZCL+mdxqH7vtpZXZFld+eSj+8owBfmLjMNmktzOqSfY
+        dTb/ic9+j716feaFlMGDFCnVL8lNNI9bMH1gzqsKPsNg72iLmPQmwnJD7EfxHW7NQoAv8T+6Y8VEH
+        2ohazyjoc9Z+MNXm7Lr7Bh3GLxJ6zmDCTC3SRdi9P8jirAP5MyZi4cLioUm7IG4Ag3/IwiKZ9+K4K
+        3P27PVmg==;
 Received: from [179.113.53.197] (helo=localhost)
         by fanzine2.igalia.com with esmtpsa 
         (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1njqUS-0001zw-SF; Thu, 28 Apr 2022 00:50:33 +0200
+        id 1njqUi-00020p-0e; Thu, 28 Apr 2022 00:50:49 +0200
 From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
 To:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
         kexec@lists.infradead.org
@@ -57,14 +57,13 @@ Cc:     linux-kernel@vger.kernel.org,
         paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
         senozhatsky@chromium.org, stern@rowland.harvard.edu,
         tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, Arjan van de Ven <arjan@linux.intel.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Xiaoming Ni <nixiaoming@huawei.com>
-Subject: [PATCH 03/30] notifier: Add panic notifiers info and purge trailing whitespaces
-Date:   Wed, 27 Apr 2022 19:48:57 -0300
-Message-Id: <20220427224924.592546-4-gpiccoli@igalia.com>
+        will@kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        David Gow <davidgow@google.com>,
+        Evan Green <evgreen@chromium.org>,
+        Julius Werner <jwerner@chromium.org>
+Subject: [PATCH 04/30] firmware: google: Convert regular spinlock into trylock on panic path
+Date:   Wed, 27 Apr 2022 19:48:58 -0300
+Message-Id: <20220427224924.592546-5-gpiccoli@igalia.com>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220427224924.592546-1-gpiccoli@igalia.com>
 References: <20220427224924.592546-1-gpiccoli@igalia.com>
@@ -79,49 +78,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Although many notifiers are mentioned in the comments, the panic
-notifiers infrastructure is not. Also, the file contains some
-trailing whitespaces. This commit fix both issues.
+Currently the gsmi driver registers a panic notifier as well as
+reboot and die notifiers. The callbacks registered are called in
+atomic and very limited context - for instance, panic disables
+preemption, local IRQs and all other CPUs that aren't running the
+current panic function.
 
-Cc: Arjan van de Ven <arjan@linux.intel.com>
-Cc: Cong Wang <xiyou.wangcong@gmail.com>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Valentin Schneider <valentin.schneider@arm.com>
-Cc: Xiaoming Ni <nixiaoming@huawei.com>
+With that said, taking a spinlock in this scenario is a
+dangerous invitation for a deadlock scenario. So, we fix
+that in this commit by changing the regular spinlock with
+a trylock, which is a safer approach.
+
+Fixes: 74c5b31c6618 ("driver: Google EFI SMI")
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Cc: David Gow <davidgow@google.com>
+Cc: Evan Green <evgreen@chromium.org>
+Cc: Julius Werner <jwerner@chromium.org>
 Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
 ---
- include/linux/notifier.h | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/firmware/google/gsmi.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/notifier.h b/include/linux/notifier.h
-index 87069b8459af..0589896fc7bd 100644
---- a/include/linux/notifier.h
-+++ b/include/linux/notifier.h
-@@ -201,12 +201,12 @@ static inline int notifier_to_errno(int ret)
+diff --git a/drivers/firmware/google/gsmi.c b/drivers/firmware/google/gsmi.c
+index adaa492c3d2d..b01ed02e4a87 100644
+--- a/drivers/firmware/google/gsmi.c
++++ b/drivers/firmware/google/gsmi.c
+@@ -629,7 +629,10 @@ static int gsmi_shutdown_reason(int reason)
+ 	if (saved_reason & (1 << reason))
+ 		return 0;
  
- /*
-  *	Declared notifiers so far. I can imagine quite a few more chains
-- *	over time (eg laptop power reset chains, reboot chain (to clean 
-+ *	over time (eg laptop power reset chains, reboot chain (to clean
-  *	device units up), device [un]mount chain, module load/unload chain,
-- *	low memory chain, screenblank chain (for plug in modular screenblankers) 
-+ *	low memory chain, screenblank chain (for plug in modular screenblankers)
-  *	VC switch chains (for loadable kernel svgalib VC switch helpers) etc...
-  */
-- 
-+
- /* CPU notfiers are defined in include/linux/cpu.h. */
+-	spin_lock_irqsave(&gsmi_dev.lock, flags);
++	if (!spin_trylock_irqsave(&gsmi_dev.lock, flags)) {
++		rc = -EBUSY;
++		goto out;
++	}
  
- /* netdevice notifiers are defined in include/linux/netdevice.h */
-@@ -217,6 +217,8 @@ static inline int notifier_to_errno(int ret)
+ 	saved_reason |= (1 << reason);
  
- /* Virtual Terminal events are defined in include/linux/vt.h. */
+@@ -646,6 +649,7 @@ static int gsmi_shutdown_reason(int reason)
  
-+/* Panic notifiers are defined in include/linux/panic_notifier.h. */
-+
- #define NETLINK_URELEASE	0x0001	/* Unicast netlink socket released */
+ 	spin_unlock_irqrestore(&gsmi_dev.lock, flags);
  
- /* Console keyboard events.
++out:
+ 	if (rc < 0)
+ 		printk(KERN_ERR "gsmi: Log Shutdown Reason failed\n");
+ 	else
 -- 
 2.36.0
 
