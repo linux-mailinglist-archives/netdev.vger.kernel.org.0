@@ -2,91 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BA65512534
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 00:23:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03583512537
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 00:23:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231851AbiD0W0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 18:26:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42952 "EHLO
+        id S232033AbiD0W0b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 18:26:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231815AbiD0W0S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 18:26:18 -0400
-Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 891A22C656;
-        Wed, 27 Apr 2022 15:23:06 -0700 (PDT)
-Received: by mail-il1-x133.google.com with SMTP id f5so863276ilj.13;
-        Wed, 27 Apr 2022 15:23:06 -0700 (PDT)
+        with ESMTP id S232037AbiD0W0a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 18:26:30 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F5C2E0BA;
+        Wed, 27 Apr 2022 15:23:17 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id s14so2736158plk.8;
+        Wed, 27 Apr 2022 15:23:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=m2zpAHo4N4DxJCqrpyoM9xFz6wA0o7g6EHge6QxNFRw=;
-        b=M4f0SnMcYdS2+nYxMbjJ3i/Kje+3f0uHeSHyDJjdIt4L25doLpC23IpA0KMbRGvpe/
-         Y5hBa6YaJ7PNTH/sPHBEXY8ZT47X52pvfq/fUHqisUvSmyhJ8M6UEb+7Ky0gogeXlW3D
-         fjHqIhPueXD8lotAnrhhSuCYAvCTC/W+0Kv3UiQCG5Uu0gWV1c5dQnJ6tpT+zxEnbT9h
-         t7fgoJVDENYDX1k7RdGFyv+NeG+Ip7f5AB5R/4Nxc+80Yok1zqSbeXbzvZDqZf1u2U3I
-         8ep1xVDhOA+Clhi/Y68lIl4KfEGQnR3Xh5EJvlfW3QqTXJE0AeQXstMDf60Hb5s8JpHq
-         4EmQ==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=XTJyE0sYRs0q7Hyafv+smNOfRDRJ91ZtPc57S/2FX00=;
+        b=WKBWN+MqlogzeqGvoosCx/VjaRp3dIbxJoFo1TmLVIY6GPXMvSn4T/A8T4ggrDmp5e
+         aM+FUv4IvEX7hucf0dUFVgHdcDqtyCE3W4LDoKle26cYOheeWbafP8ORSHMvFqJhIzu9
+         G+j5NgrcI0tfhMDi3106IXWTAs4i4CWzEDxQ9ZoVA3TB8Is++ML+XVUQR46xsFO5yKiA
+         6WSpLIQ3OiauKJDDeeCDrVhelf0OopaFfwiH7lC8F5QCO/mQovdNLeP3lbXXbj/+ZXDy
+         SwPJFenhSYPyC+7fwvYXhF01UefZVioXKBXe3sp5C1VNSQdiYMkbDG44b+iBMJFCaVFx
+         isVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=m2zpAHo4N4DxJCqrpyoM9xFz6wA0o7g6EHge6QxNFRw=;
-        b=fEwdhgkzOdux3crKVYuCsAWVmr0DM6Xxh0jSKXHM6V9KT+bTM09KZkESwRAx78qvV/
-         F4eHHCNl9C82Ci9g+ZrA43RZfj+l7kLlAl7J2yDN7Oo5hkd4vDHia2o8MU/YWoOyJ5qd
-         qjpKmO5Lm3KEiVIGx4FzEnhC+0zOeWwGU/zwkciQDqI0GBgFQOiWJb+42qieh1IlkNVJ
-         kODcaaPFrp9y9i2Jm7ZuDv9vxLgho/S1Wo1V8tifyuHzmCh/K+Poamt7BrIIZyzc8Sqf
-         xHKAoF8nCR3z03lW4es4zzzK+v0JS7ZjXupfH3Ih6cH/B+xyGrpi8nipO/juC44cShM0
-         nDRA==
-X-Gm-Message-State: AOAM532uTtOqMrXQwBO1eM88pGtyIVmJDpEADmOYZuSYpjhfpcAfppEg
-        R7cTul5tnFOAbWtDba8omrugPcb8gDNRUevorCA=
-X-Google-Smtp-Source: ABdhPJxqiR8j8bvemVOUtV1TwL7VR3W7PitBTYk8DangGIPNZSyDjL+UurL8eaT8ITiQYErdSEGqNLyFEWXCZnOoOq4=
-X-Received: by 2002:a92:6406:0:b0:2bb:f1de:e13e with SMTP id
- y6-20020a926406000000b002bbf1dee13emr11721808ilb.305.1651098185982; Wed, 27
- Apr 2022 15:23:05 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=XTJyE0sYRs0q7Hyafv+smNOfRDRJ91ZtPc57S/2FX00=;
+        b=fjXpffp3IP2t8n48z2iLXqrrNARsAddd2NOdKVGNbb1fc72DNcEFf3pDIM0SZnaHxd
+         MfSXbVsblPV+GjzcCcL6yjyjm7GAi9c1bbKvC6cjgXZo0fEXghLZ+F8aCYDD0rFYCaU9
+         cCV95L78ZJczzQWJcRt1Ar6tAeAQLBe4EbRHmQPe1rs+KKCxAnutGm7Su4R+80yo4ckV
+         xeMBtqSDYz/5w9EsH9RUlmrF1QAcdh9Nvz/OHXyeweXGspdN8RLCXUJZhbpLYdDJPeMR
+         9RKwXWlyJqc/f9hghh6EIRVr59R3YRhYO3U1lwzsOrzBlUHIsSPyLi7DFcocI/0gWRwT
+         xC9Q==
+X-Gm-Message-State: AOAM5311uUiLAGyE3lIiC6jWbaLNsJM9Y+rSnqKdkxcbMVC7/da1uZEy
+        Axndftqkrl6yjHNWwZ9PY5c=
+X-Google-Smtp-Source: ABdhPJw2OSOxSwbkaRMpjS1xPenu5H6z+yMDpucr8+TR+Nkl5nY2aoo8aRXL+bBOCnCOh43DcS/aXw==
+X-Received: by 2002:a17:90b:30c4:b0:1d8:3395:a158 with SMTP id hi4-20020a17090b30c400b001d83395a158mr32319597pjb.184.1651098197437;
+        Wed, 27 Apr 2022 15:23:17 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id n14-20020a17090ac68e00b001d9e3b0e10fsm5767471pjt.16.2022.04.27.15.23.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Apr 2022 15:23:17 -0700 (PDT)
+Message-ID: <002aafe5-2568-f153-b294-e9367b5b00c9@gmail.com>
+Date:   Wed, 27 Apr 2022 15:23:13 -0700
 MIME-Version: 1.0
-References: <20220422172422.4037988-1-maximmi@nvidia.com> <20220422172422.4037988-6-maximmi@nvidia.com>
- <20220426001223.wlnfd2kmmogip5d5@MBP-98dd607d3435.dhcp.thefacebook.com>
- <CAEf4BzaGjxsf46YPs1FRSp4kj+nkKhw7vLKAGwgrdnAuTW5+9Q@mail.gmail.com>
- <92e9eaf6-4d72-3173-3271-88e3b8637c7a@nvidia.com> <CAEf4BzZhjY+F9JYmT7k+m87UZ1qKuO8_Mjjq4CGgkr=z9BGDCg@mail.gmail.com>
- <946b8928-56b6-b6ca-ec33-6ffe7af6a90c@nvidia.com>
-In-Reply-To: <946b8928-56b6-b6ca-ec33-6ffe7af6a90c@nvidia.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 27 Apr 2022 15:22:55 -0700
-Message-ID: <CAEf4BzZqZkDB8EJh3K3TpT7N556hxCRqMF7x_Y8D05wmBGDdvA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v6 5/6] bpf: Add selftests for raw syncookie helpers
-To:     Maxim Mikityanskiy <maximmi@nvidia.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH net-next v1 3/3] net: phy: micrel: add coma mode GPIO
+Content-Language: en-US
+To:     Michael Walle <michael@walle.cc>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Petar Penkov <ppenkov@google.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Joe Stringer <joe@cilium.io>,
-        Florent Revest <revest@chromium.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Florian Westphal <fw@strlen.de>, pabeni@redhat.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220427214406.1348872-1-michael@walle.cc>
+ <20220427214406.1348872-4-michael@walle.cc>
+ <652a5d64-4f06-7ac8-a792-df0a4b43686f@gmail.com>
+ <635fd80542e089722e506bba0ff390ff@walle.cc>
+ <cef1c3f7-06e3-f0dd-10ce-513f35fef3d0@gmail.com>
+ <c9214b4cdf308b951a2da797898f3dcd@walle.cc>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <c9214b4cdf308b951a2da797898f3dcd@walle.cc>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -95,76 +85,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 10:19 AM Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
->
-> On 2022-04-27 01:11, Andrii Nakryiko wrote:
-> > On Tue, Apr 26, 2022 at 11:29 AM Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
-> >>
-> >> On 2022-04-26 09:26, Andrii Nakryiko wrote:
-> >>> On Mon, Apr 25, 2022 at 5:12 PM Alexei Starovoitov
-> >>> <alexei.starovoitov@gmail.com> wrote:
-> >>>>
-> >>>> On Fri, Apr 22, 2022 at 08:24:21PM +0300, Maxim Mikityanskiy wrote:
-> >>>>> +void test_xdp_synproxy(void)
-> >>>>> +{
-> >>>>> +     int server_fd = -1, client_fd = -1, accept_fd = -1;
-> >>>>> +     struct nstoken *ns = NULL;
-> >>>>> +     FILE *ctrl_file = NULL;
-> >>>>> +     char buf[1024];
-> >>>>> +     size_t size;
-> >>>>> +
-> >>>>> +     SYS("ip netns add synproxy");
-> >>>>> +
-> >>>>> +     SYS("ip link add tmp0 type veth peer name tmp1");
-> >>>>> +     SYS("ip link set tmp1 netns synproxy");
-> >>>>> +     SYS("ip link set tmp0 up");
-> >>>>> +     SYS("ip addr replace 198.18.0.1/24 dev tmp0");
-> >>>>> +
-> >>>>> +     // When checksum offload is enabled, the XDP program sees wrong
-> >>>>> +     // checksums and drops packets.
-> >>>>> +     SYS("ethtool -K tmp0 tx off");
-> >>>>
-> >>>> BPF CI image doesn't have ethtool installed.
-> >>>> It will take some time to get it updated. Until then we cannot land the patch set.
-> >>>> Can you think of a way to run this test without shelling to ethtool?
-> >>>
-> >>> Good news: we got updated CI image with ethtool, so that shouldn't be
-> >>> a problem anymore.
-> >>>
-> >>> Bad news: this selftest still fails, but in different place:
-> >>>
-> >>> test_synproxy:FAIL:iptables -t raw -I PREROUTING -i tmp1 -p tcp -m tcp
-> >>> --syn --dport 8080 -j CT --notrack unexpected error: 512 (errno 2)
-> >>
-> >> That's simply a matter of missing kernel config options:
-> >>
-> >> CONFIG_NETFILTER_SYNPROXY=y
-> >> CONFIG_NETFILTER_XT_TARGET_CT=y
-> >> CONFIG_NETFILTER_XT_MATCH_STATE=y
-> >> CONFIG_IP_NF_FILTER=y
-> >> CONFIG_IP_NF_TARGET_SYNPROXY=y
-> >> CONFIG_IP_NF_RAW=y
-> >>
-> >> Shall I create a pull request on github to add these options to
-> >> https://github.com/libbpf/libbpf/tree/master/travis-ci/vmtest/configs?
-> >>
-> >
-> > Yes, please. But also for [0], that's the one that tests all the
-> > not-yet-applied patches
-> >
-> >    [0] https://github.com/kernel-patches/vmtest/
->
-> Created pull requests:
->
-> https://github.com/kernel-patches/vmtest/pull/79
-> https://github.com/libbpf/libbpf/pull/490
->
+On 4/27/22 15:17, Michael Walle wrote:
+> Am 2022-04-28 00:12, schrieb Florian Fainelli:
+>> On 4/27/22 15:08, Michael Walle wrote:
+>>> Am 2022-04-28 00:06, schrieb Florian Fainelli:
+>>>> On 4/27/2022 2:44 PM, Michael Walle wrote:
+>>>>> The LAN8814 has a coma mode pin which puts the PHY into isolate and
+>>>>> power-dowm mode. Unfortunately, the mode cannot be disabled by a
+>>> s/dowm/down/
+>>>
+>>>>> register. Usually, the input pin has a pull-up and connected to a GPIO
+>>>>> which can then be used to disable the mode. Try to get the GPIO and
+>>>>> deassert it.
+>>>>
+>>>> Poor choice of word, how about deep sleep, dormant, super isolate?
+>>>
+>>> Which one do you mean? Super isolate sounded like broadcom wording ;)
+>>
+>> Coma is not a great term to use IMHO. Yes Super isolate (tm) is a
+>> Broadcom thing, and you can come out of super isolate mode with
+>> register writes, so maybe not the best suggestion.
+> 
+> I didn't come up with that name. It's all in the datasheets and it's
+> actually already used grep for "COMA_MODE" in phy/mscc. (Yes on that
+> one you can actually disable it with register access..). Even if
+> it is not a great name (which I agree), I'd use the same naming as
+> the datasheet and esp. the pin name.
 
-Merged both, thanks.
-
-
-> >>> See [0].
-> >>>
-> >>>     [0] https://github.com/kernel-patches/bpf/runs/6169439612?check_suite_focus=true
-> >>
->
+OK then, makes sense to use the datasheet name.
+-- 
+Florian
