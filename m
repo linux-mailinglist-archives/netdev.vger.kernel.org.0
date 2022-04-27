@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C97EE5111A9
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 08:50:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B76E45111A6
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 08:50:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358356AbiD0GvZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 02:51:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53282 "EHLO
+        id S1358363AbiD0Gv0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 02:51:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358340AbiD0GvX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 02:51:23 -0400
+        with ESMTP id S1358349AbiD0GvZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 02:51:25 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCAC814D29C;
-        Tue, 26 Apr 2022 23:48:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50D4914CC1F;
+        Tue, 26 Apr 2022 23:48:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1651042092; x=1682578092;
+  t=1651042096; x=1682578096;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=tyCkPocd/n9OpJ3ha9mCf5JpKKkgMlRB3JEWvILbkjQ=;
-  b=MNvHzFxLrSNGqvcog7PqkXfEY7dcVhrH4ldSgD8ykJXUm2Vq+k6Bd3d1
-   gW/wUqrrlS0BdmAzA1xCbi5Go/ZSSUWqHOCTLYIRGCx2S+EImjxVZFvxo
-   48VTNrBZlhKcbObLiwn5ldn5oyR4Oij/LYYOg4cI4fTFS09sNPJFp8KcZ
-   79o41Kkz4Af9jzkQ3pqLlnARCC1hXVpwMkv0SqSKIBYN546p1hbJAxmFN
-   7s7haIwDpamiSj5UXlfq3tciRAuADT2q2VA7ToHDAiWsSgvNbQzmNxnTB
-   FPSlq78YituzzaqBCu23RqgxNw49PuJtUwx+1OYug8VD2q/zSIrks1uLz
-   A==;
+  bh=ZDgnc/AWZ2GzndkIPVq+n1FwfPAm1cIU+Eo/I6edMr8=;
+  b=GwfAXRDCq4VsfGpN6CZ3oNJ5xHKS7wIBO+MD4mbYQQudZICfVVQo5X8z
+   hFVscbiL/8rj4q20+r/5QFGITHg/zv/Iq24IGbe7Q6GOH04GXp3Mj1RJE
+   Q4DMiZ9N4ce+d8Oz/F2il8oxFBYok9ngeVffhimmhkbDcIzkS+U1YTg8B
+   MCNBvvvhFECaaOlOZfKReVarD6JG85wOKQwpfLOy7vjO3aQDPN1Zvu1HA
+   75BKsgJjq6FDh8TGha1qkeB9hVwjiN1dx/m/ukW5D15IjevVE/Nhdaotr
+   RnnmSp/Ntl3aELKtMIxQNBhL36T0PTUxyybrZzpYzKFBP6K8YHgioaYVd
+   g==;
 X-IronPort-AV: E=Sophos;i="5.90,292,1643698800"; 
-   d="scan'208";a="161876549"
+   d="scan'208";a="161462360"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Apr 2022 23:48:11 -0700
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Apr 2022 23:48:16 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 26 Apr 2022 23:48:11 -0700
+ 15.1.2375.17; Tue, 26 Apr 2022 23:48:14 -0700
 Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 26 Apr 2022 23:48:09 -0700
+ 15.1.2375.17 via Frontend Transport; Tue, 26 Apr 2022 23:48:11 -0700
 From:   Horatiu Vultur <horatiu.vultur@microchip.com>
 To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
@@ -45,9 +45,9 @@ CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
         <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
         <UNGLinuxDriver@microchip.com>, <richardcochran@gmail.com>,
         Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v2 1/5] dt-bindings: net: lan966x: Extend with the ptp external interrupt.
-Date:   Wed, 27 Apr 2022 08:51:23 +0200
-Message-ID: <20220427065127.3765659-2-horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v2 2/5] net: lan966x: Change the PTP pin used to read/write the PHC.
+Date:   Wed, 27 Apr 2022 08:51:24 +0200
+Message-ID: <20220427065127.3765659-3-horatiu.vultur@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220427065127.3765659-1-horatiu.vultur@microchip.com>
 References: <20220427065127.3765659-1-horatiu.vultur@microchip.com>
@@ -63,34 +63,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extend dt-bindings for lan966x with ptp external interrupt. This is
-generated when an external 1pps signal is received on the ptp pin.
+To read/write a value to a PHC, it is required to use a PTP pin.
+Currently it is used pin 5, but change to pin 7 as is the last pin.
+All the other pins will have different functions.
 
 Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- .../devicetree/bindings/net/microchip,lan966x-switch.yaml       | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/net/microchip,lan966x-switch.yaml b/Documentation/devicetree/bindings/net/microchip,lan966x-switch.yaml
-index 13812768b923..131dc5a652de 100644
---- a/Documentation/devicetree/bindings/net/microchip,lan966x-switch.yaml
-+++ b/Documentation/devicetree/bindings/net/microchip,lan966x-switch.yaml
-@@ -39,6 +39,7 @@ properties:
-       - description: frame dma based extraction
-       - description: analyzer interrupt
-       - description: ptp interrupt
-+      - description: ptp external interrupt
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c b/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c
+index 0a1041da4384..3e455a3fad08 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c
+@@ -16,7 +16,7 @@
+  */
+ #define LAN966X_1PPB_FORMAT		3480517749LL
  
-   interrupt-names:
-     minItems: 1
-@@ -47,6 +48,7 @@ properties:
-       - const: fdma
-       - const: ana
-       - const: ptp
-+      - const: ptp-ext
+-#define TOD_ACC_PIN		0x5
++#define TOD_ACC_PIN		0x7
  
-   resets:
-     items:
+ enum {
+ 	PTP_PIN_ACTION_IDLE = 0,
 -- 
 2.33.0
 
