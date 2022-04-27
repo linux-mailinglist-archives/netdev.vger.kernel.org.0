@@ -2,216 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89BF751156B
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 13:33:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB3815115AD
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 13:33:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231782AbiD0LAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 07:00:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37876 "EHLO
+        id S231364AbiD0LKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 07:10:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231784AbiD0LAL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 07:00:11 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36AF43C763F
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 03:37:54 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id j4so2351078lfh.8
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 03:37:54 -0700 (PDT)
+        with ESMTP id S232426AbiD0LJr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 07:09:47 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABBC73D1EF
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 04:06:36 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id g19so2520799lfv.2
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 04:06:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=openvz-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :content-language:content-transfer-encoding;
-        bh=jRN8XksCdAf0+x8Uj8a/DButwn5KzLonnaobSsBfglg=;
-        b=DK23ya2EJ5weoMmh1t7kx/QodejkNkn8M5NyBLC6YNDDq/iyYjlsNadZ2EHYSJ5Fqg
-         v6gIuXZexBcUPt7oHC2h4qRgCgC/5A3dmpZmQsJ+8GqVCb1x/lOqbf91P7uw5Ww0uqKD
-         uyHVfyKv/F1Mc0YNVKPWcoHW3ohxieUlWta8+KHFA8/SQJvfuKwbBS+TFPT4bO6XlV24
-         H/uUZxi93xoDkhBCqfXOOKQhO/48gVdV2wprUxrQeRwT2K32euRbJz7E7YXAoFNXApwv
-         SLu4nXXcpWgbpsAiiuxu+zsOGeWaGuKPZ7cmgu84GIuIDg25iFm84RkrJJ73rKF+8/gg
-         IwGA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=gfvLeYqHPQ+5/le1PQ5m8ByHdZe6xucvGKDboobiRU0=;
+        b=IEONqacXGW4d4Shh0BedSQpSclgh5MPONe0xR8HELE1uME7x+KvZxhBOG0ICrBBtYe
+         bh1lZGb5XU9VKtGgqmX17tk1jEPz11XnlFAnqyV2QA0tQmqxCWiqri+XMFBTJ5chj2Ke
+         leWhFrYyrAQFu8R/mOMVZXcp67I3Ek+z11kNyZshDPS5YV7XX0x/FhMrNLlZL7sIAcpF
+         MrU4pL0ZOZmJrzCsiKKOg8jLjzGN4hE6o+lVcb0H12vY8+yGYYW/JEtEPjvVPGLlJXxV
+         P44OvM7Vkv9t+gPBiq2SD5hgL225lqaINSdUXNzZW500vpRDhzre4CQwcKabnsWhpCfP
+         kTXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:content-language:content-transfer-encoding;
-        bh=jRN8XksCdAf0+x8Uj8a/DButwn5KzLonnaobSsBfglg=;
-        b=XY4hDEA5kwEy84w2Rabv/9KpacsqxZPtwrmtYF1L3nKfiuQi9a2cp1Ray6ifcoOvWE
-         vIyqjy/Ihrk/KqLAbEXeRVU+sFmtRgBpqlPoFTfYHzFh9OQiSHYTZi3N/rz2D8pIjS3B
-         OgbQWiqxOMWyR7ioyyASqBwaFJhfZqbTVBi2byxurdwlnWTRbMzkgHjYJu9EBuxSS7yd
-         TVLSsnSflHit5hZhsOgzHxTuHsZNCHk4XXfcTZXNuHThYKAbnMehyQZumrBKxDUQAAgn
-         OgpN4DpvBY8VcZn8CM40Byd47CyNiq2tCM9TaQUZM5rvbexuUaKsfOD0iFMSBRaPyBrs
-         bOXw==
-X-Gm-Message-State: AOAM533kKkNO0/m4bA/MC4kle7FX6Cckrj3YMGEluAYc8dlSI/xDkbD8
-        2Ce6TPWamSQwRJankixyJtHvMA==
-X-Google-Smtp-Source: ABdhPJydThKNwg1fAKcAA4XC9MwiqCQDBZ2EHrvqh41Hwk2uoGINd3w/CMeX10Khz/ZzztPAo5aBuw==
-X-Received: by 2002:a05:6512:400a:b0:46b:8cd9:1af8 with SMTP id br10-20020a056512400a00b0046b8cd91af8mr20687452lfb.545.1651055872441;
-        Wed, 27 Apr 2022 03:37:52 -0700 (PDT)
-Received: from [192.168.1.65] ([46.188.121.177])
-        by smtp.gmail.com with ESMTPSA id m4-20020a197104000000b00471ebfc7a0bsm1840776lfc.191.2022.04.27.03.37.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Apr 2022 03:37:51 -0700 (PDT)
-Message-ID: <7e867cb0-89d6-402c-33d2-9b9ba0ba1523@openvz.org>
-Date:   Wed, 27 Apr 2022 13:37:50 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-From:   Vasily Averin <vvs@openvz.org>
-Subject: [PATCH] memcg: accounting for objects allocated for new netdevice
-To:     Roman Gushchin <roman.gushchin@linux.dev>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Shakeel Butt <shakeelb@google.com>
-Cc:     kernel@openvz.org, Florian Westphal <fw@strlen.de>,
-        linux-kernel@vger.kernel.org, Michal Hocko <mhocko@suse.com>,
-        cgroups@vger.kernel.org, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=gfvLeYqHPQ+5/le1PQ5m8ByHdZe6xucvGKDboobiRU0=;
+        b=jc9TU6XVunktN/UQasE544kNlQbZAmJZIFJbnQIan6gODfwEQ3wZJ6bObzw1iv7IvH
+         BQcHXaMYqCKr9Yq7Ko6SCwdyQElJq5mmK/thy1UYRCuuFnAftkPZZmdvxw3wNr1/Wsq1
+         sEgyhnaEPdg5nNM8K+mU+QvJWPsb3r+s4vUORRyQ+Yun3IPTKwkiL7KvBzTZ/WdXn06p
+         oNKUCjnuE5tjQlH3FVQEu7NXpKp6RVZASdQeSLs/Pi/ccQEiXGpRK8GuftllIjVjsSDZ
+         npvk9pfFl56Q5/lznB92RbVmDSWk2sKrRSdfhqKDQiRIfJEVSMggijJB7FDv35BbU3ic
+         fMow==
+X-Gm-Message-State: AOAM531q92y1IuqULqkXwViyTFamcW/8yJzpTMjL/p68pbHhxd2lmyEw
+        XOZuCTnJdiv0cpNr154sR2k=
+X-Google-Smtp-Source: ABdhPJwL+DjvGRDTfiZaady0aDXdgUi4OkzGrOGL16MolRzvWR1QPFaJTzFIXeydZXiO/ycCbxD6zA==
+X-Received: by 2002:a05:6512:694:b0:471:8eae:8c13 with SMTP id t20-20020a056512069400b004718eae8c13mr19889549lfe.37.1651057594884;
+        Wed, 27 Apr 2022 04:06:34 -0700 (PDT)
+Received: from wse-c0127 (2-104-116-184-cable.dk.customer.tdc.net. [2.104.116.184])
+        by smtp.gmail.com with ESMTPSA id d14-20020a05651c088e00b0024daf492556sm1772408ljq.131.2022.04.27.04.06.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 04:06:34 -0700 (PDT)
+From:   Hans Schultz <schultz.hans@gmail.com>
+X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Hans Schultz <schultz.hans@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Tejun Heo <tj@kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        linux-fsdevel@vger.kernel.org
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        George McCollister <george.mccollister@gmail.com>
+Subject: Re: [PATCH v2 net-next 07/10] net: dsa: request drivers to perform
+ FDB isolation
+In-Reply-To: <20220427103209.luyfereepqaha7dw@skbuf>
+References: <20220225092225.594851-1-vladimir.oltean@nxp.com>
+ <20220225092225.594851-8-vladimir.oltean@nxp.com>
+ <867d7bga78.fsf@gmail.com> <YmgaX4On/2j3lJf/@lunn.ch>
+ <20220426231755.7yhvabefzbyiaj4o@skbuf> <86ilquapl1.fsf@gmail.com>
+ <20220427103209.luyfereepqaha7dw@skbuf>
+Date:   Wed, 27 Apr 2022 13:06:32 +0200
+Message-ID: <86zgk6eqfb.fsf@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Creating a new netdevice allocates at least ~50Kb of memory for various
-kernel objects, but only ~5Kb of them are accounted to memcg. As a result,
-creating an unlimited number of netdevice inside a memcg-limited container
-does not fall within memcg restrictions, consumes a significant part
-of the host's memory, can cause global OOM and lead to random kills of
-host processes.
+On ons, apr 27, 2022 at 10:32, Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+> On Wed, Apr 27, 2022 at 10:38:18AM +0200, Hans Schultz wrote:
+>> 
+>> I see that there is definitions for 64bit mac addresses out there, which
+>> might also be needed to be supported at some point?
+>
+> I don't know about 64-bit MAC addresses, do you have more information?
+>
 
-The main consumers of non-accounted memory are:
- ~10Kb   80+ kernfs nodes
- ~6Kb    ipv6_add_dev() allocations
-  6Kb    __register_sysctl_table() allocations
-  4Kb    neigh_sysctl_register() allocations
-  4Kb    __devinet_sysctl_register() allocations
-  4Kb    __addrconf_sysctl_register() allocations
+I have only seen that there is a section about it in rfc7043:
+https://www.rfc-editor.org/rfc/rfc7043
 
-Accounting of these objects allows to increase the share of memcg-related
-memory up to 60-70% (~38Kb accounted vs ~54Kb total for dummy netdevice
-on typical VM with default Fedora 35 kernel) and this should be enough
-to somehow protect the host from misuse inside container.
-
-Other related objects are quite small and may not be taken into account
-to minimize the expected performance degradation.
-
-It should be separately mentonied ~300 bytes of percpu allocation
-of struct ipstats_mib in snmp6_alloc_dev(), on huge multi-cpu nodes
-it can become the main consumer of memory.
-
-Signed-off-by: Vasily Averin <vvs@openvz.org>
----
-RFC was discussed here:
-https://lore.kernel.org/all/a5e09e93-106d-0527-5b1e-48dbf3b48b4e@virtuozzo.com/
----
- fs/kernfs/mount.c     | 2 +-
- fs/proc/proc_sysctl.c | 2 +-
- net/core/neighbour.c  | 2 +-
- net/ipv4/devinet.c    | 2 +-
- net/ipv6/addrconf.c   | 8 ++++----
- 5 files changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/fs/kernfs/mount.c b/fs/kernfs/mount.c
-index cfa79715fc1a..2881aeeaa880 100644
---- a/fs/kernfs/mount.c
-+++ b/fs/kernfs/mount.c
-@@ -391,7 +391,7 @@ void __init kernfs_init(void)
- {
- 	kernfs_node_cache = kmem_cache_create("kernfs_node_cache",
- 					      sizeof(struct kernfs_node),
--					      0, SLAB_PANIC, NULL);
-+					      0, SLAB_PANIC | SLAB_ACCOUNT, NULL);
- 
- 	/* Creates slab cache for kernfs inode attributes */
- 	kernfs_iattrs_cache  = kmem_cache_create("kernfs_iattrs_cache",
-diff --git a/fs/proc/proc_sysctl.c b/fs/proc/proc_sysctl.c
-index 7d9cfc730bd4..df4604fea4f8 100644
---- a/fs/proc/proc_sysctl.c
-+++ b/fs/proc/proc_sysctl.c
-@@ -1333,7 +1333,7 @@ struct ctl_table_header *__register_sysctl_table(
- 		nr_entries++;
- 
- 	header = kzalloc(sizeof(struct ctl_table_header) +
--			 sizeof(struct ctl_node)*nr_entries, GFP_KERNEL);
-+			 sizeof(struct ctl_node)*nr_entries, GFP_KERNEL_ACCOUNT);
- 	if (!header)
- 		return NULL;
- 
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index ec0bf737b076..3dcda2a54f86 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -3728,7 +3728,7 @@ int neigh_sysctl_register(struct net_device *dev, struct neigh_parms *p,
- 	char neigh_path[ sizeof("net//neigh/") + IFNAMSIZ + IFNAMSIZ ];
- 	char *p_name;
- 
--	t = kmemdup(&neigh_sysctl_template, sizeof(*t), GFP_KERNEL);
-+	t = kmemdup(&neigh_sysctl_template, sizeof(*t), GFP_KERNEL_ACCOUNT);
- 	if (!t)
- 		goto err;
- 
-diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
-index fba2bffd65f7..47523fe5b891 100644
---- a/net/ipv4/devinet.c
-+++ b/net/ipv4/devinet.c
-@@ -2566,7 +2566,7 @@ static int __devinet_sysctl_register(struct net *net, char *dev_name,
- 	struct devinet_sysctl_table *t;
- 	char path[sizeof("net/ipv4/conf/") + IFNAMSIZ];
- 
--	t = kmemdup(&devinet_sysctl, sizeof(*t), GFP_KERNEL);
-+	t = kmemdup(&devinet_sysctl, sizeof(*t), GFP_KERNEL_ACCOUNT);
- 	if (!t)
- 		goto out;
- 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index f908e2fd30b2..e79621ee4a0a 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -342,7 +342,7 @@ static int snmp6_alloc_dev(struct inet6_dev *idev)
- {
- 	int i;
- 
--	idev->stats.ipv6 = alloc_percpu(struct ipstats_mib);
-+	idev->stats.ipv6 = alloc_percpu_gfp(struct ipstats_mib, GFP_KERNEL_ACCOUNT);
- 	if (!idev->stats.ipv6)
- 		goto err_ip;
- 
-@@ -358,7 +358,7 @@ static int snmp6_alloc_dev(struct inet6_dev *idev)
- 	if (!idev->stats.icmpv6dev)
- 		goto err_icmp;
- 	idev->stats.icmpv6msgdev = kzalloc(sizeof(struct icmpv6msg_mib_device),
--					   GFP_KERNEL);
-+					   GFP_KERNEL_ACCOUNT);
- 	if (!idev->stats.icmpv6msgdev)
- 		goto err_icmpmsg;
- 
-@@ -382,7 +382,7 @@ static struct inet6_dev *ipv6_add_dev(struct net_device *dev)
- 	if (dev->mtu < IPV6_MIN_MTU)
- 		return ERR_PTR(-EINVAL);
- 
--	ndev = kzalloc(sizeof(struct inet6_dev), GFP_KERNEL);
-+	ndev = kzalloc(sizeof(struct inet6_dev), GFP_KERNEL_ACCOUNT);
- 	if (!ndev)
- 		return ERR_PTR(err);
- 
-@@ -7029,7 +7029,7 @@ static int __addrconf_sysctl_register(struct net *net, char *dev_name,
- 	struct ctl_table *table;
- 	char path[sizeof("net/ipv6/conf/") + IFNAMSIZ];
- 
--	table = kmemdup(addrconf_sysctl, sizeof(addrconf_sysctl), GFP_KERNEL);
-+	table = kmemdup(addrconf_sysctl, sizeof(addrconf_sysctl), GFP_KERNEL_ACCOUNT);
- 	if (!table)
- 		goto out;
- 
--- 
-2.31.1
-
+and some in rfc7042 also.
