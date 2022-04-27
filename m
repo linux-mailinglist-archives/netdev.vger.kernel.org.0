@@ -2,150 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 31980511F90
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 20:38:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F7BB511E4C
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 20:37:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241335AbiD0QF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 12:05:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40790 "EHLO
+        id S241544AbiD0QHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 12:07:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242795AbiD0QFJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 12:05:09 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FDEF2E97B4
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 09:01:47 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id t13so1785449pgn.8
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 09:01:47 -0700 (PDT)
+        with ESMTP id S241613AbiD0QGx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 12:06:53 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAE603CD58F
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 09:03:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1651075384; x=1682611384;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=3vek9OYIPrZhLzoVs6j4xikpv3L8ds38H3eGoph32LA=;
+  b=ksmEB86YYqoZbbM6oZ4rpHQZHYQeupYr1GXkHHZBa8LMx2Gjh/sobXYf
+   FxQFpM6Lt4/GOYgofYtKDR7+20IAijt52Cr8m2V51iKiSYmdnqQMKjPvM
+   U03bPqYoGcr4c4hKZ0859ULX76MMLQXMjNk9fgX9tMm1NUpNkQ2ygiHVs
+   V1+QOFX1NEU8qIEgWsa7wtWxbW9pOIPjR0YDz4qPrPlViHZb9c4N8f6tT
+   +wDBpCZPkO+vk+d+3uRZ5UtA6kDKz78oHek+9Lo2XllJTVxuoseZ/1DHR
+   3air40bjI6Id/SNebqifLGWwyJSWTHJe9YhNwMI8AKdA4hN9PsAY3vz7z
+   w==;
+X-IronPort-AV: E=Sophos;i="5.90,293,1643698800"; 
+   d="scan'208";a="156993957"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Apr 2022 09:03:03 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 27 Apr 2022 09:03:02 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17 via Frontend Transport; Wed, 27 Apr 2022 09:03:02 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=l0N7yvrCRs8wUCfwAMqewzeDOBG3CiwOk68VnyxBsn7LKVsxN9VrA41ESZlv8dxFH21BE2LnHeY1ULZjLAYdXruRwPn1yCoAHwHd+ZtCj1eXG6QQVtGeOpuOYMaCf2Q8gevrlYTOraBo87I1Fi4f4xXoqJXCSjk2e8cvHefRophmDazfZl28HN4nfbytpw27iJl9su3NDXqSVtbr7n4V5Xh18dXj3XXC8Y82N61snf9OQG3JHgULQG/Xdmb67q5HWF4uPweaD/KnV1E69E0k+d6REwOkoKQ+xfwmKHPi1f5oO0H+02j6SZ4ETlgNRQfNYAApgO9GrkNgHFx/A6fuLw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jgLJ7O4gLrAxVbvBHilk8LI+PWSOYP3XYuQITfLZz1g=;
+ b=NnXe691BOj7ojKbtxbayQVnO+VvgKY0Kqyy1ZVUHlcQ2Nhdn0xM9T2rwNe/FVaUzg9npBL5JXtUcc2SKq1+CkXh7VurEKTyHucBF9C6fuQpejFXPGjH8u19BhMxqWy6xNrGk+R+pUa3Kc++Xr+s6ZcCBPi6XkK+6qsPhIOgV1mKefova5jaK9Z7hVXxjt5TC4/qxSQ6aUheCsQ89yhnQTmFb9sVVwhPeExmDkDMOo8s88gunUfw1AOPCiB0TtGk6i5hHeehc+/nOx0vDD1qViDeVYSe29S4pVqmgKsDVswUuFHWYlc7FbR3miKHx6DuC4sV6VSao1e9eK77sbrD+qg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=dw+HAYOwCfNXbVbq5HbCrDM1JADR4Mk+mJGW+pVBpEU=;
-        b=7MZ12ghjkOxi1opxfKBfWTLR/feI1ZQ0N6le1PnXBKWFkrEsDMfRPfwqtYJtmV4iyP
-         RU6g+15l/K56dXIGIWtX1bzbZY1bIqry3SnRynlkdzX9llCUj5Bw7JqxgRiNyNqzcdgB
-         X54ooyGSsUqWyJASlulXWQN+mS25UziDmsrX8VgXyLrCC5VxU7xo1o5mm1wnStvMTxlj
-         Jyd7DroT79zO/A2vCTro6m13ePOB54KGQOvLbfd4qzCRGX2tL3/59TFdiNc3oGhGycCr
-         VtrzuMTYyAjs2LKQ1wMRZ2YS+I92ZpxHnEM1p2tE6ovRwChFR2RR/+Y+ZXdxf9sLESiz
-         N7wA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=dw+HAYOwCfNXbVbq5HbCrDM1JADR4Mk+mJGW+pVBpEU=;
-        b=3xURX6EnnPhu+L/IWHF/s3JsbAxUSBXsHze1wrdj04QvVBze5OnQy7xQqvRe98kh/5
-         XRmQgGhfr2kzoSBjsiDhbC/2zPk5DMJdVUZQjVm3QnH3GfekRXMA9rHDfHb0u/bnw++B
-         9vCPo80XNhPG9HTcqvGkvlJxBLw3NZmmEkaT3k0K9liIb9Ct69+OUBiiYF7ZybG9AvYo
-         fz8+lacunxTCH97hY0aTqmM/KnSnJNJFnKNmQ1GlGGx+joGVuUGxrBHpX4a8YSqvaUAU
-         nlPcdYzw/kFw4QsWtUq62fw7N1JKlPSeAADQVawBQrKVmedCFBnWvjSI4PG3hTbFhYyb
-         uzjw==
-X-Gm-Message-State: AOAM533ZD5fMctNmeVisZ07lCPHrs2mp4cgBuTLf48AJyzYopVR/7RaW
-        NgunRhYFKjj1UJwdiNzpyvDuEA==
-X-Google-Smtp-Source: ABdhPJzBsObLXEbeTUUc4N2YEIvyKmMOq6wPw/EETja9ITivzJEkzimyPL0MD9vGY51KX1fQA/iU2Q==
-X-Received: by 2002:a65:410a:0:b0:399:38b9:8ba with SMTP id w10-20020a65410a000000b0039938b908bamr24213036pgp.526.1651075306584;
-        Wed, 27 Apr 2022 09:01:46 -0700 (PDT)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id w11-20020a17090a4f4b00b001d8abe4bb17sm3198081pjl.32.2022.04.27.09.01.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 09:01:46 -0700 (PDT)
-Date:   Wed, 27 Apr 2022 09:01:43 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Boris Sukholitko <boris.sukholitko@broadcom.com>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Ilya Lifshits <ilya.lifshits@broadcom.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>
-Subject: Re: [PATCH iproute2-next v3 0/2] f_flower: match on the number of
- vlan tags
-Message-ID: <20220427090143.20d75544@hermes.local>
-In-Reply-To: <20220427143200.GA23481@noodle>
-References: <20220426091417.7153-1-boris.sukholitko@broadcom.com>
-        <20220426081142.71d58c1b@hermes.local>
-        <20220427143200.GA23481@noodle>
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jgLJ7O4gLrAxVbvBHilk8LI+PWSOYP3XYuQITfLZz1g=;
+ b=tFhkhpSwUgi28qHZpcYHm3ErVbuTWZKJ5HbR3cQMODS7PVckAV5Vlaax2++GBjMZ9NP2oetbWtPZk3NRXPuMpqrADcFwuNUYph0rm0D5ZGs0EGX5N8ertmPwCaHZ+QYTSocYipksjF8SNK1cdDtZ1eazb7hb6yTYy2I0t0SJ3BI=
+Received: from CH0PR11MB5561.namprd11.prod.outlook.com (2603:10b6:610:d4::8)
+ by BY5PR11MB4484.namprd11.prod.outlook.com (2603:10b6:a03:1c3::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.20; Wed, 27 Apr
+ 2022 16:02:56 +0000
+Received: from CH0PR11MB5561.namprd11.prod.outlook.com
+ ([fe80::251b:8192:8a6c:741b]) by CH0PR11MB5561.namprd11.prod.outlook.com
+ ([fe80::251b:8192:8a6c:741b%6]) with mapi id 15.20.5206.013; Wed, 27 Apr 2022
+ 16:02:56 +0000
+From:   <Yuiko.Oshino@microchip.com>
+To:     <andrew@lunn.ch>
+CC:     <Woojung.Huh@microchip.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <Ravi.Hegde@microchip.com>,
+        <UNGLinuxDriver@microchip.com>
+Subject: RE: [PATCH net-next v2 1/2] net: phy: microchip: update LAN88xx phy
+ ID and phy ID mask.
+Thread-Topic: [PATCH net-next v2 1/2] net: phy: microchip: update LAN88xx phy
+ ID and phy ID mask.
+Thread-Index: AQHYWjEjMSibiwm9nEK9Mtud/XfbGq0D5NGAgAABvQA=
+Date:   Wed, 27 Apr 2022 16:02:56 +0000
+Message-ID: <CH0PR11MB5561E9C01C5500D6301E43728EFA9@CH0PR11MB5561.namprd11.prod.outlook.com>
+References: <20220427121957.13099-1-yuiko.oshino@microchip.com>
+ <20220427121957.13099-2-yuiko.oshino@microchip.com>
+ <YmljDTD9j3REqi47@lunn.ch>
+In-Reply-To: <YmljDTD9j3REqi47@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 48be8f4e-851a-4eea-6016-08da286764bc
+x-ms-traffictypediagnostic: BY5PR11MB4484:EE_
+x-microsoft-antispam-prvs: <BY5PR11MB448428B9F7EDB1DD80949FE48EFA9@BY5PR11MB4484.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 2jqEuvA+fL1/k+1IRUJ6/O+ACRGrW2KmBUBNY/cKPEoCKByzu9uxnZ1R+gcypCJ45MDMB7KK5owLmEEddSZXF97YIT4xVdqkiFELzjYik8+LD3i4U8PDlD3ru+mdZQjnHfkVadxoSL5OHQS5l4WIHzai5sTFPjO1wZxrqQndh+zC52dMb/6Y4FbD/dpF+QaHHL+GoGxD6CBoOtjG4ggK6YP9WNOUEPE9heC/XF+441PDz/9jj0YZt7P9AYGveg5cp0hPgHaVmhzh0KRt17ulwxnmL1dpeVXfEL/R26qRwXPcfSiBTZjAiDcEg0WQYKuG8APPaRaSQ50OkXsAwDEODDdNORszhXiyOqsC371vqCvl4s5xR8Z+ifo4xR1IJQIJUlrFfZR5S4dLN4lLJybx/quiRUglWAX+X+prQu5PCYvXuRcthyAIRL5TgYg13SzeKf8pDU+EEJCxsO0YH6HeuXGDbEgQDDWZd6LCPZnCjaszFupz98F3aUBlJm+DTpYOHJJYMVhDvL2GtI1XhbGnCdLReSbWf4Zax2iftbOat0VTukTVlcFBKfTfxFZKKBW/4CTl/RrIfBqGmiAd6qVUAViTAK4vTDXoGcQuO4V+l+NktqPbxseNiIjX1QQoIc+JI8m6vRXrK0s8a02IV9CBDZU0MLuL9dxv+LKwZJdTIoCmPcTSeq2jTbSOnELW2dn3rdcVtYm4Q1tOjvq9muShAg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR11MB5561.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(38070700005)(4326008)(66946007)(76116006)(71200400001)(8676002)(2906002)(122000001)(38100700002)(7696005)(33656002)(54906003)(6916009)(508600001)(15650500001)(55016003)(316002)(6506007)(83380400001)(66556008)(66446008)(64756008)(66476007)(5660300002)(186003)(86362001)(26005)(9686003)(8936002)(52536014)(107886003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?OqmgFQAPlZ2VE0DoH+yd7H0fY/5dMPeBYQuC0MT2KEaxRPW5L0SxruXJ65Ek?=
+ =?us-ascii?Q?volfA3xUK1YmDxvhFEIt/nzf/P4BhJDL6tPTEN+mrkDk58nSwNZmwZYU1hhr?=
+ =?us-ascii?Q?RFtKJhijh2VzHsX7KFw80hYdwNMIYy/a6VD2l5omXFU3lvcieulFL5eWva1V?=
+ =?us-ascii?Q?hu6YNftzuuS9EWVsnkQbRbQCqsyrcbSOK1PNz7//AOcUlMZ0Hnfq+DnpSjly?=
+ =?us-ascii?Q?nm1g4I37UfE1GL+zgTyThYSP5/Ld+EZ9K4fwJF89s449wvgCfvk6k8RAvG8j?=
+ =?us-ascii?Q?u6Ixq4w5vx32V95TpoM95WCn+WPRJHYVqNG2QGodx57fxUPZxXZ5mW4yw6kF?=
+ =?us-ascii?Q?QsCpI4LTwTo3zlfhr6UheNOLgFT4fWoqxrFsqJpzLoxlWx6vqjVHnS5RvKlx?=
+ =?us-ascii?Q?q4ZWzQ0rckm2pa3PZj2RH48vuOfh0OAtmLKSflQLLbJSso9JdBPRsvhoeHdn?=
+ =?us-ascii?Q?TkOsHgwEsIesxmxU11xrndiZujDQZ8UddrTIF1NQCyu/Z3TG599VXCjDYcSA?=
+ =?us-ascii?Q?hqsugjeGgDQ+GBMk7I42GwvqFU+HDxu/7k7Ah/tmep2TA6Qq+a3/iH3Wtd4R?=
+ =?us-ascii?Q?++7aenTtnh3iiqhynnxH3S2TWorPGiydMIy7OnVwUhiWz0LPdY1785gCQgP/?=
+ =?us-ascii?Q?JOSZqVvwz0KK9kXI80VgupEg5MZXQpZFh1K3kWTcIXYfhAGPKkYtaj43BEdS?=
+ =?us-ascii?Q?kc6Dtyh5wY/HQbw8RQhts9RAs1bjwt8Lg691h/OfSbupIqqxaRBUCtSuPArv?=
+ =?us-ascii?Q?CnJkR4/s3e//AD9o6LcqHZ8/zjhyf03KkiTu5AhK+p+FDLNI4N4zz578OEya?=
+ =?us-ascii?Q?zzqwajzpT6jxafCR4cNIa3KS/vFkfUje+8Wo7gtxaUukCqSZdaSux3UZg0x/?=
+ =?us-ascii?Q?ofJjvDM9fev6anEsPOQ1Txr1KIwlJPILCYxhcZiECKn8haSvWkjhohCD11kZ?=
+ =?us-ascii?Q?LveU7vSHw9+mC7FXMzJmkp1/jCYOIuBb3qHnW3lMQDhD3zS7+H15j8NIcgTk?=
+ =?us-ascii?Q?KhFzacxNWv5MjXfoUbvhJ2TnE0xIDoxLsoSSW3Xcr5R1ez3QVDTa2iz4Rn9n?=
+ =?us-ascii?Q?U2ac2oIIR1D2mBZBAC9X7Wa2RlWQYLPTB4v6MyiwFbBjkXvgHsruef2WUU51?=
+ =?us-ascii?Q?ZKVVuQ0VOzipARjwFapuzLO1sk2TSJyQVZk73IU9EG4NswMMgAHoTPe/wd79?=
+ =?us-ascii?Q?D7Vte4q/494f1N5EJfbJhrKs6u4lbNaPi6qJo7nyxoD5fOqoFNEc37DcdVxV?=
+ =?us-ascii?Q?Ad/HwF6f+2iW465adI9wZ3u20O9arVqdQ+VKwItpKYPbgi7MdfN/NeWCG3yi?=
+ =?us-ascii?Q?4W6WltiV2hoIRFAii0506VpQM/28haUUH+U+zWrRVK8bgvhR5lT4HpPV7hW8?=
+ =?us-ascii?Q?im0NhFaEViMnWhTFIWUSOfvbZrqMi42EVk5THy5NxPOnNt0XDwn7/q89aSc8?=
+ =?us-ascii?Q?HG/QfrZ4vlCIOyD8yrZfo6l5m2IiaW8tGk9uijfhkjuqh1kUu/alxwtIPu77?=
+ =?us-ascii?Q?ppUQlTtrb1/gDftUfiUn4HTlDdD8lmYkvDyWxwK3hFQb5GhzXNSIO/ZVT5pQ?=
+ =?us-ascii?Q?xF3bfh8cBShdoOLln/0/MgxYDYvZayoI04mFFJs6oaBpt+mI+GfJdpHo5ArQ?=
+ =?us-ascii?Q?TQKlHiypZxbG8EWoJcmlsbFwuf6xLbCD9ERUR/iWHjxZ/S7SeUqWbI2K7Pl4?=
+ =?us-ascii?Q?qUiXZY6l878CuKMVOgTHy+CaH+7dSJn9mkdkH+hrRx1eRETd1wAwYmpI0U0/?=
+ =?us-ascii?Q?lv+5Qgpcd9p2QDkyi169tVx6gf38NP0=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CH0PR11MB5561.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 48be8f4e-851a-4eea-6016-08da286764bc
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Apr 2022 16:02:56.2687
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: dVQDDFYXLPn5FPDXYjqLy8wm6fKdXt97Y1I3x+inQpMWeOr5PmOltQldFe3bI8bLCsyPNgOwbrDPHGGmu8/2csI8w7hOgvRaxkHO5wxKAk0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR11MB4484
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 27 Apr 2022 17:32:00 +0300
-Boris Sukholitko <boris.sukholitko@broadcom.com> wrote:
+>-----Original Message-----
+>From: Andrew Lunn <andrew@lunn.ch>
+>Sent: Wednesday, April 27, 2022 11:37 AM
+>To: Yuiko Oshino - C18177 <Yuiko.Oshino@microchip.com>
+>Cc: Woojung Huh - C21699 <Woojung.Huh@microchip.com>;
+>davem@davemloft.net; netdev@vger.kernel.org; Ravi Hegde - C21689
+><Ravi.Hegde@microchip.com>; UNGLinuxDriver
+><UNGLinuxDriver@microchip.com>
+>Subject: Re: [PATCH net-next v2 1/2] net: phy: microchip: update LAN88xx p=
+hy ID
+>and phy ID mask.
+>
+>EXTERNAL EMAIL: Do not click links or open attachments unless you know the
+>content is safe
+>
+>On Wed, Apr 27, 2022 at 05:19:56AM -0700, Yuiko Oshino wrote:
+>> update LAN88xx phy ID and phy ID mask because the existing code conflict=
+s
+>with the LAN8742 phy.
+>>
+>> The current phy IDs on the available hardware.
+>>         LAN8742 0x0007C130, 0x0007C131
+>>         LAN88xx 0x0007C132
+>>
+>> Signed-off-by: Yuiko Oshino <yuiko.oshino@microchip.com>
+>> ---
+>>  drivers/net/phy/microchip.c | 6 +++---
+>>  1 file changed, 3 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/net/phy/microchip.c b/drivers/net/phy/microchip.c
+>> index 9f1f2b6c97d4..131caf659ed2 100644
+>> --- a/drivers/net/phy/microchip.c
+>> +++ b/drivers/net/phy/microchip.c
+>> @@ -344,8 +344,8 @@ static int lan88xx_config_aneg(struct phy_device
+>> *phydev)
+>>
+>>  static struct phy_driver microchip_phy_driver[] =3D {  {
+>> -     .phy_id         =3D 0x0007c130,
+>> -     .phy_id_mask    =3D 0xfffffff0,
+>> +     .phy_id         =3D 0x0007c132,
+>> +     .phy_id_mask    =3D 0xfffffff2,
+>
+>Just so my comment on the previous version does not get lost, is this the =
+correct
+>mask, because it is very odd. I think you really want 0xfffffffe?
+>
+>    Andrew
 
-> Hi Stephen,
-> 
-> On Tue, Apr 26, 2022 at 08:11:42AM -0700, Stephen Hemminger wrote:
-> > On Tue, 26 Apr 2022 12:14:15 +0300
-> > Boris Sukholitko <boris.sukholitko@broadcom.com> wrote:
-> >   
-> > > Hi,
-> > > 
-> > > Our customers in the fiber telecom world have network configurations
-> > > where they would like to control their traffic according to the number
-> > > of tags appearing in the packet.
-> > > 
-> > > For example, TR247 GPON conformance test suite specification mostly
-> > > talks about untagged, single, double tagged packets and gives lax
-> > > guidelines on the vlan protocol vs. number of vlan tags.
-> > > 
-> > > This is different from the common IT networks where 802.1Q and 802.1ad
-> > > protocols are usually describe single and double tagged packet. GPON
-> > > configurations that we work with have arbitrary mix the above protocols
-> > > and number of vlan tags in the packet.
-> > > 
-> > > The following patch series implement number of vlans flower filter. They
-> > > add num_of_vlans flower filter as an alternative to vlan ethtype protocol
-> > > matching. The end result is that the following command becomes possible:
-> > > 
-> > > tc filter add dev eth1 ingress flower \
-> > >   num_of_vlans 1 vlan_prio 5 action drop
-> > > 
-> > > Also, from our logs, we have redirect rules such that:
-> > > 
-> > > tc filter add dev $GPON ingress flower num_of_vlans $N \
-> > >      action mirred egress redirect dev $DEV
-> > > 
-> > > where N can range from 0 to 3 and $DEV is the function of $N.
-> > > 
-> > > Also there are rules setting skb mark based on the number of vlans:
-> > > 
-> > > tc filter add dev $GPON ingress flower num_of_vlans $N vlan_prio \
-> > >     $P action skbedit mark $M
-> > > 
-> > > Thanks,
-> > > Boris.
-> > > 
-> > > - v3: rebased to the latest iproute2-next
-> > > - v2: add missing f_flower subject prefix
-> > > 
-> > > Boris Sukholitko (2):
-> > >   f_flower: Add num of vlans parameter
-> > >   f_flower: Check args with num_of_vlans
-> > > 
-> > >  tc/f_flower.c | 57 ++++++++++++++++++++++++++++++++++++---------------
-> > >  1 file changed, 41 insertions(+), 16 deletions(-)  
-> > 
-> > Can you do this with BPF? instead of kernel change?  
-> 
-> You may have missed my reply to this question at:
-> 
-> https://lore.kernel.org/netdev/20220412104514.GB27480@noodle/
-> 
-> There is also Jamal's reply further at the thread:
-> 
-> https://lore.kernel.org/netdev/b2c83f63-a2e9-92a2-f262-3aae3491dfc3@mojatatu.com/
-> 
-> Thanks,
-> Boris.
+Hi Andrew,
 
-Thanks, there is a tradeoff here, if you add more logic to the kernel, it
-impacts every user and creates long term technical debt. Your use case seemed
-quite specific to single use case.
+thank you for your review.
+Yes, 0xfffffff2 is correct for us.
+We would like to have bits for future revisions of the hardware without upd=
+ating the driver source code in the future.
+If we use 0xfffffffe, then we need to submit a patch again when we have a n=
+ew hardware revision.
 
-But also, it is an example of something where kernel already has the state
-information and it might be hard to get with BPF.
-
-Surprised that the people who do BPF at scale did not chime in on this discussion.
+Yuiko
