@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 73D23510D7B
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 02:57:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41A03510D7D
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 02:57:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356501AbiD0Axb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 20:53:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44052 "EHLO
+        id S1356510AbiD0Axg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 20:53:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347338AbiD0Ax1 (ORCPT
+        with ESMTP id S1356495AbiD0Ax1 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 20:53:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D473311C34
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 17:50:13 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E5912089;
+        Tue, 26 Apr 2022 17:50:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BDDB0611CD
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 00:50:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 23165C385B4;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E53DB8244F;
+        Wed, 27 Apr 2022 00:50:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0FC73C385AD;
         Wed, 27 Apr 2022 00:50:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1651020612;
-        bh=vpDLd3Nnb8oKVr+X8UEooQ+7hydViZByyPDYHHPBfpc=;
+        bh=5ugFcVFrOmmS9Q8uSz+4TjYa6aVuDjAntW4uD8UynZY=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ttTzyV8BOUJvK8ubnnZxVctO4rL5BlWJyE2z4+JKruP0ojuhuLoODnnH4XUuO0gQf
-         sHjmvkPKr73DtoKf6ZKKnKfG+mOazO+iuRnfQ9wb1y4D7tZypZoS8jIRl1m/Ozs/fA
-         42Fu/EB+USmhGUzzxTy/ljZV6jomfY/x+xTqhKB5qMNPuxt1v62CHlR43ilv5CXaM7
-         T//6zS51nSmli4an5vhQhzj2obPZiAMXJwcV2MxhZFSeK80MoNl3+KLuAo+9TN90IG
-         d/6VT2klEcZsfXmgb96/XIFbHsikdCMy0BiEr2H1SjD3SR/L0z8r807ruhcEgKyBDp
-         50Qf4WPxsSm6Q==
+        b=pAPNnXXEyE4nya2VSXNhs71bxP9T1wlsCGw2bB0EXVMLkKAC5Nqlks3ZaXRf0f8/m
+         S94m0uJHdR9Mx2KuO36FJ8iGA4x7kTrA3+OSrll1ogDiEh802lN/UY2BgR3ZRcpJJm
+         XmyTJyO/PWbP2M8Lw2TECVCLljVKaSkuiEvfwm8XW96VDmcAuGtjOcWrqDDIdXu6mu
+         ROTZRernPK8Y94H0cFIsqjH/gIdEgpqRjtEErV0m4WHkoO//n9QeeA4FxWmSV/XLg5
+         DO191wF4qG5MKs1Z/cUIAOYUtXyTjm8RqcfF+tW9ZoeL6NE8PhcpLe5b7ufPNIwoqt
+         qbz7PxPJ8XaNA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 008F5F03848;
-        Wed, 27 Apr 2022 00:50:12 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EA21EF03840;
+        Wed, 27 Apr 2022 00:50:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net-next] net: generalize skb freeing deferral to per-cpu
- lists
+Subject: Re: [PATCH 0/2] net: Remove unused __SLOW_DOWN_IO
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165102061199.18100.7962532951463386947.git-patchwork-notify@kernel.org>
+Message-Id: <165102061195.18100.14728173281862395377.git-patchwork-notify@kernel.org>
 Date:   Wed, 27 Apr 2022 00:50:11 +0000
-References: <20220422201237.416238-1-eric.dumazet@gmail.com>
-In-Reply-To: <20220422201237.416238-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, edumazet@google.com
+References: <20220425212644.1659070-1-helgaas@kernel.org>
+In-Reply-To: <20220425212644.1659070-1-helgaas@kernel.org>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     kuba@kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        3chas3@gmail.com, linux-atm-general@lists.sourceforge.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bhelgaas@google.com
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -58,24 +59,25 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
+This series was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Fri, 22 Apr 2022 13:12:37 -0700 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
+On Mon, 25 Apr 2022 16:26:42 -0500 you wrote:
+> From: Bjorn Helgaas <bhelgaas@google.com>
 > 
-> Logic added in commit f35f821935d8 ("tcp: defer skb freeing after socket
-> lock is released") helped bulk TCP flows to move the cost of skbs
-> frees outside of critical section where socket lock was held.
+> Remove unused mentions of __SLOW_DOWN_IO.
 > 
-> But for RPC traffic, or hosts with RFS enabled, the solution is far from
-> being ideal.
+> Bjorn Helgaas (2):
+>   net: wan: atp: remove unused eeprom_delay()
+>   net: remove comments that mention obsolete __SLOW_DOWN_IO
 > 
 > [...]
 
 Here is the summary with links:
-  - [v2,net-next] net: generalize skb freeing deferral to per-cpu lists
-    https://git.kernel.org/netdev/net-next/c/68822bdf76f1
+  - [1/2] net: wan: atp: remove unused eeprom_delay()
+    https://git.kernel.org/netdev/net-next/c/dac173db114d
+  - [2/2] net: remove comments that mention obsolete __SLOW_DOWN_IO
+    https://git.kernel.org/netdev/net-next/c/e39f63fe0d94
 
 You are awesome, thank you!
 -- 
