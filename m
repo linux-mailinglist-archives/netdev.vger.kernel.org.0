@@ -2,62 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B89D512553
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 00:36:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21130512556
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 00:36:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238118AbiD0WjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 18:39:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46276 "EHLO
+        id S233442AbiD0Wj3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 18:39:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238189AbiD0WjK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 18:39:10 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0CA16383
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 15:35:57 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id v4so4447655ljd.10
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 15:35:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=openvz-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=zxjODgdLfXb5bMGzaUtB+izM+jyIRFXXBicqRczakdE=;
-        b=kOgHkvcXiKDHcf0FPKISXEY5HqGfG/C3VTxC3r+qCyDNb58YQ2Ffm1EN+ZlnNbcklN
-         3xuHlw7dI5IAdFE/+iGt8WZvjfO7q6k8VKBoPN743YhsElb89sF9gZKHOWTWzA2c3Rwd
-         54YF4aIVaLRZWzwG0KTZKcgCLNVNHLGg3rCWfTKevXQPCDYDJ2IZuZKHtRmaqsYwSR5p
-         XpJhcPiWYNEZefwnTjp4pe/ygtOPWtd5Talc9/MypxxDHY+1wSUIaXiRzkx85TXRbhgt
-         S+SnpKe5BVSbjw/sLPVHQ/cE9dacC5fnJ8dVd88zXJ4RowaAf8I5IZSkR41CoM++9DjB
-         nvZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=zxjODgdLfXb5bMGzaUtB+izM+jyIRFXXBicqRczakdE=;
-        b=ycr5hLq+lv3RE0K5TopOdONFf+qloaRYYe6iYq/MmawJhfJ7uj9379Y96kaIhW/ecx
-         nqFJzgc0Z50m7pcY7i5+6pPlzeAFKamtd9rceH2/o6f1BlP5tX05dckdSTBnQQNCeOhH
-         hjL+/Mzb4ATMwFblPMINag5XrGF8QyruCqvDUxhZ0vcX0YU3iNB8FU4b7hacmcet2Msp
-         KvdWZd26aki0GpV9noSvlQJrfD6wc9+UPu6TJTbymdjwoJrGJchn3N4Pzn1F6knponC2
-         63YxnmquVSi7Z990lrfukUZQN9DA2wIvBs7kLv3gq2lhJfAuM5gqOMQOFqC8rLESPiOs
-         SifQ==
-X-Gm-Message-State: AOAM532zmUpFnA4K5yR/KicNzd1eJ4pH/Qy1pP/ma8nwHCvUDoLWq339
-        GlByA/elXZJqWn1LbfVN4dAViQ==
-X-Google-Smtp-Source: ABdhPJxTIRQmVTxGXf9Qi7GP7rRR0+iZpZJAWqZv6M4gFYfPHkUDB+SbCZAFITpdjJXyLHa2cnkymA==
-X-Received: by 2002:a05:651c:1542:b0:249:5d86:3164 with SMTP id y2-20020a05651c154200b002495d863164mr20114887ljp.500.1651098956152;
-        Wed, 27 Apr 2022 15:35:56 -0700 (PDT)
-Received: from [192.168.1.65] ([46.188.121.177])
-        by smtp.gmail.com with ESMTPSA id f1-20020a056512322100b00472285d5a74sm362884lfe.147.2022.04.27.15.35.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Apr 2022 15:35:55 -0700 (PDT)
-Message-ID: <53613f02-75f2-0546-d84c-a5ed989327b6@openvz.org>
-Date:   Thu, 28 Apr 2022 01:35:54 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] memcg: accounting for objects allocated for new netdevice
-Content-Language: en-US
-To:     Shakeel Butt <shakeelb@google.com>,
-        =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
-Cc:     Roman Gushchin <roman.gushchin@linux.dev>,
+        with ESMTP id S232266AbiD0Wj2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 18:39:28 -0400
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 660CD6383;
+        Wed, 27 Apr 2022 15:36:12 -0700 (PDT)
+Date:   Wed, 27 Apr 2022 15:36:03 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1651098970;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=YptwFdA8KWuDmjvuchBNuhhYcNiTn83Pm656usmn0sI=;
+        b=xurUMpP3QLqUoZxw1BdoFkYM+0wVMIHfRfnM/Miz+pyrSnam+pUfOqzeu4w7WEtz+vscdO
+        t8sZhvk29FJHTf9oMznLUlDzxrKSBESrMWIxTbOsTmuGq6MX7UWPvgVN2r6Q4pckJigj3y
+        prcDwZAQTSSNCJlRUCceBDukatZZNz4=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Roman Gushchin <roman.gushchin@linux.dev>
+To:     Vasily Averin <vvs@openvz.org>
+Cc:     Shakeel Butt <shakeelb@google.com>,
+        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
         Vlastimil Babka <vbabka@suse.cz>, kernel@openvz.org,
         Florian Westphal <fw@strlen.de>,
         LKML <linux-kernel@vger.kernel.org>,
@@ -66,22 +38,25 @@ Cc:     Roman Gushchin <roman.gushchin@linux.dev>,
         netdev <netdev@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Tejun Heo <tj@kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>
-References: <7e867cb0-89d6-402c-33d2-9b9ba0ba1523@openvz.org>
- <20220427140153.GC9823@blackbody.suse.cz>
- <CALvZod6Dz7iw=gyiQ2pDVe2RJxF-7PbVoptwFZCw=sWtxpBBGQ@mail.gmail.com>
-From:   Vasily Averin <vvs@openvz.org>
-In-Reply-To: <CALvZod6Dz7iw=gyiQ2pDVe2RJxF-7PbVoptwFZCw=sWtxpBBGQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH memcg v4] net: set proper memcg for net_init hooks
+ allocations
+Message-ID: <YmnFUwhmqJwYGQ5j@carbon>
+References: <YmdeCqi6wmgiSiWh@carbon>
+ <33085523-a8b9-1bf6-2726-f456f59015ef@openvz.org>
+ <CALvZod4oaj9MpBDVUp9KGmnqu4F3UxjXgOLkrkvmRfFjA7F1dw@mail.gmail.com>
+ <20220427122232.GA9823@blackbody.suse.cz>
+ <CALvZod7v0taU51TNRu=OM5iJ-bnm1ryu9shjs80PuE-SWobqFg@mail.gmail.com>
+ <6b18f82d-1950-b38e-f3f5-94f6c23f0edb@openvz.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+In-Reply-To: <6b18f82d-1950-b38e-f3f5-94f6c23f0edb@openvz.org>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -89,45 +64,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/27/22 19:52, Shakeel Butt wrote:
-> On Wed, Apr 27, 2022 at 7:01 AM Michal KoutnÃ½ <mkoutny@suse.com> wrote:
->>
->> Hello Vasily.
->>
->> On Wed, Apr 27, 2022 at 01:37:50PM +0300, Vasily Averin <vvs@openvz.org> wrote:
->>> diff --git a/fs/kernfs/mount.c b/fs/kernfs/mount.c
->>> index cfa79715fc1a..2881aeeaa880 100644
->>> --- a/fs/kernfs/mount.c
->>> +++ b/fs/kernfs/mount.c
->>> @@ -391,7 +391,7 @@ void __init kernfs_init(void)
->>>  {
->>>       kernfs_node_cache = kmem_cache_create("kernfs_node_cache",
->>>                                             sizeof(struct kernfs_node),
->>> -                                           0, SLAB_PANIC, NULL);
->>> +                                           0, SLAB_PANIC | SLAB_ACCOUNT, NULL);
->>
->> kernfs accounting you say?
->> kernfs backs up also cgroups, so the parent-child accounting comes to my
->> mind.
->> See the temporary switch to parent memcg in mem_cgroup_css_alloc().
->>
->> (I mean this makes some sense but I'd suggest unlumping the kernfs into
->> a separate path for possible discussion and its not-only-netdevice
->> effects.)
+On Thu, Apr 28, 2022 at 01:16:53AM +0300, Vasily Averin wrote:
+> On 4/27/22 18:06, Shakeel Butt wrote:
+> > On Wed, Apr 27, 2022 at 5:22 AM Michal Koutný <mkoutny@suse.com> wrote:
+> >>
+> >> On Tue, Apr 26, 2022 at 10:23:32PM -0700, Shakeel Butt <shakeelb@google.com> wrote:
+> >>> [...]
+> >>>>
+> >>>> +static inline struct mem_cgroup *get_mem_cgroup_from_obj(void *p)
+> >>>> +{
+> >>>> +       struct mem_cgroup *memcg;
+> >>>> +
+> >>>
+> >>> Do we need memcg_kmem_enabled() check here or maybe
+> >>> mem_cgroup_from_obj() should be doing memcg_kmem_enabled() instead of
+> >>> mem_cgroup_disabled() as we can have "cgroup.memory=nokmem" boot
+> >>> param.
 > 
-> I agree with Michal that kernfs accounting should be its own patch.
-> Internally at Google, we actually have enabled the memcg accounting of
-> kernfs nodes. We have workloads which create 100s of subcontainers and
-> without memcg accounting of kernfs we see high system overhead.
+> Shakeel, unfortunately I'm not ready to answer this question right now.
+> I even did not noticed that memcg_kmem_enabled() and mem_cgroup_disabled()
+> have a different nature.
+> If you have no objections I'm going to keep this place as is and investigate
+> this question later. 
+> 
+> >> I reckon such a guard is on the charge side and readers should treat
+> >> NULL and root_mem_group equally. Or is there a case when these two are
+> >> different?
+> >>
+> >> (I can see it's different semantics when stored in current->active_memcg
+> >> (and active_memcg() getter) but for such "outer" callers like here it
+> >> seems equal.)
+> 
+> Dear Michal,
+> I may have misunderstood your point of view, so let me explain my vision
+> in more detail.
+> I do not think that NULL and root_mem_cgroup are equal here:
+> - we have enabled cgroups and well-defined root_mem_cgroup,
+> - this function is called from inside memcg-limited container,
+> - we tried to get memcg from net, but without success,
+>   and as result got NULL from  mem_cgroup_from_obj()
+>   (frankly speaking I do not think this situation is really possible)
+> If we keep memcg = NULL, then current's memcg will not be masked and
+> net_init's allocations will be accounted to current's memcg. 
+> So we need to set active_memcg to root_mem_cgroup, it helps to avoid
+> incorrect accounting.
 
-I had this idea (i.e. move kernfs accounting into separate patch) too, 
-but finally decided to include it into current patch.
+It's way out of scope of this patch, but I think we need to stop
+using NULL as root_mem_cgroup/system scope indicator. Remaining use cases
+will be like end of cgroup iteration, active memcg not set, parent of the
+root memcg, etc.
+We can point root_mem_cgroup at a statically allocated structure
+on both CONFIG_MEMCG and !CONFIG_MEMCG.
+Does it sound reasonable or I'm missing some important points?
 
-Kernfs accounting is critical for described scenario. Without it typical
-netdevice creating will charge only ~50% of allocated memory, and the rest
-of patch does not allow to protect the host properly.
-
-Now I'm going to follow your recommendation and split the patch.
-
-Thank you,
-	Vasily Averin
+Thanks!
