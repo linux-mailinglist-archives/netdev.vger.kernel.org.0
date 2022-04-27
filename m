@@ -2,52 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41A03510D7D
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 02:57:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3DAC510D75
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 02:57:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356510AbiD0Axg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Apr 2022 20:53:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44056 "EHLO
+        id S1356504AbiD0Axe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Apr 2022 20:53:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356495AbiD0Ax1 (ORCPT
+        with ESMTP id S1356498AbiD0Ax1 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 26 Apr 2022 20:53:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E5912089;
-        Tue, 26 Apr 2022 17:50:14 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4FD21208D
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 17:50:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5E53DB8244F;
-        Wed, 27 Apr 2022 00:50:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0FC73C385AD;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B0B3E61AF5
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 00:50:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 082C4C385AF;
         Wed, 27 Apr 2022 00:50:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1651020612;
-        bh=5ugFcVFrOmmS9Q8uSz+4TjYa6aVuDjAntW4uD8UynZY=;
+        bh=lrydYJjF8fl5pv7H7jwOfVqnpBXMFfGcvaZeDdva/Fg=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=pAPNnXXEyE4nya2VSXNhs71bxP9T1wlsCGw2bB0EXVMLkKAC5Nqlks3ZaXRf0f8/m
-         S94m0uJHdR9Mx2KuO36FJ8iGA4x7kTrA3+OSrll1ogDiEh802lN/UY2BgR3ZRcpJJm
-         XmyTJyO/PWbP2M8Lw2TECVCLljVKaSkuiEvfwm8XW96VDmcAuGtjOcWrqDDIdXu6mu
-         ROTZRernPK8Y94H0cFIsqjH/gIdEgpqRjtEErV0m4WHkoO//n9QeeA4FxWmSV/XLg5
-         DO191wF4qG5MKs1Z/cUIAOYUtXyTjm8RqcfF+tW9ZoeL6NE8PhcpLe5b7ufPNIwoqt
-         qbz7PxPJ8XaNA==
+        b=MoZ1FVIDiB5o8z/s3NkMXhO/Xi8ksCvjfr1fdGZthOaGEMXyv1oy/gvJcrrLMuWkg
+         pEPhr//c53V9o4fqWeV8OVN9FA+fx0hr+iQNt7vPdJOFg17bgn9UPu7cwrNvMnMktA
+         o2Y1j0jrR0hxlE756del3m4OM9n37Bs88Dmmv+EDVg6vBCWyfseF/PYFKR/fpu2v/U
+         aGgIfVLUlEQHY4ZvN8EVCUxeOSATI3pgseRdTi6blbU/i+DXPqWEQgeIw308AML4t1
+         zJEKGX6VUDs5A1mrbZOpb52a6T7fDjGMLUpIFfyqXMNnv+K+5MFRI/cck63M/w0s9A
+         FViFwR96nJcFA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EA21EF03840;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E06D2F03841;
         Wed, 27 Apr 2022 00:50:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 0/2] net: Remove unused __SLOW_DOWN_IO
+Subject: Re: [PATCH net-next] net: dsa: mt753x: fix pcs conversion regression
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165102061195.18100.14728173281862395377.git-patchwork-notify@kernel.org>
+Message-Id: <165102061191.18100.15381630708714680923.git-patchwork-notify@kernel.org>
 Date:   Wed, 27 Apr 2022 00:50:11 +0000
-References: <20220425212644.1659070-1-helgaas@kernel.org>
-In-Reply-To: <20220425212644.1659070-1-helgaas@kernel.org>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     kuba@kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        3chas3@gmail.com, linux-atm-general@lists.sourceforge.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bhelgaas@google.com
+References: <E1nj6FW-007WZB-5Y@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1nj6FW-007WZB-5Y@rmk-PC.armlinux.org.uk>
+To:     Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Cc:     Landen.Chao@mediatek.com, dqfext@gmail.com, sean.wang@mediatek.com,
+        daniel@makrotopia.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, matthias.bgg@gmail.com,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -59,25 +61,23 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (master)
+This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Mon, 25 Apr 2022 16:26:42 -0500 you wrote:
-> From: Bjorn Helgaas <bhelgaas@google.com>
+On Mon, 25 Apr 2022 22:28:02 +0100 you wrote:
+> Daniel Golle reports that the conversion of mt753x to phylink PCS caused
+> an oops as below.
 > 
-> Remove unused mentions of __SLOW_DOWN_IO.
-> 
-> Bjorn Helgaas (2):
->   net: wan: atp: remove unused eeprom_delay()
->   net: remove comments that mention obsolete __SLOW_DOWN_IO
+> The problem is with the placement of the PCS initialisation, which
+> occurs after mt7531_setup() has been called. However, burited in this
+> function is a call to setup the CPU port, which requires the PCS
+> structure to be already setup.
 > 
 > [...]
 
 Here is the summary with links:
-  - [1/2] net: wan: atp: remove unused eeprom_delay()
-    https://git.kernel.org/netdev/net-next/c/dac173db114d
-  - [2/2] net: remove comments that mention obsolete __SLOW_DOWN_IO
-    https://git.kernel.org/netdev/net-next/c/e39f63fe0d94
+  - [net-next] net: dsa: mt753x: fix pcs conversion regression
+    https://git.kernel.org/netdev/net-next/c/fae463084032
 
 You are awesome, thank you!
 -- 
