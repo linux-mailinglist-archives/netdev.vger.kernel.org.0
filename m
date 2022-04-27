@@ -2,134 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B02D8511A92
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 16:57:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D13AC51199A
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 16:55:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235444AbiD0NVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 09:21:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44424 "EHLO
+        id S236507AbiD0Nla (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 09:41:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235530AbiD0NVg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 09:21:36 -0400
-Received: from mail-vk1-xa29.google.com (mail-vk1-xa29.google.com [IPv6:2607:f8b0:4864:20::a29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C288127172;
-        Wed, 27 Apr 2022 06:17:57 -0700 (PDT)
-Received: by mail-vk1-xa29.google.com with SMTP id h144so485686vkh.3;
-        Wed, 27 Apr 2022 06:17:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=uN2AvNgUuh26EShG8XGbjQPKMO5dYMYNA35xtbAlORY=;
-        b=eOr/moldShOW+h3PPmtHh+ZMd9DBi5jhrB5PB5xFyTFk6TfNgfDw1kPV6sx6Mx1V1U
-         Cns5hVwdsJbU6i8/HmivoJmleq7px++hl1J3EwyGLcOwwLRBNvxC4xyKlexkAC+GCVKZ
-         2g/bKjaK8YQ2gcGukqjKgQ4WdPFSR9ur2xSyns9tz+8FCYtf0b5FrJjS3uc/Xwub3Qgl
-         YzDpXY2pDhEGF8lNzRVGDcgXN/rW/aWYUgF8JmAX+CpHbGU2CScT5wAPk/5WbEDfjgIW
-         BRrwIJGxbFAhZmspPuwvWPMf4HICsLunIx9g8dY0ZaQyGjfCknC+j5Mx+cfveZ+Ay+u7
-         97ZQ==
+        with ESMTP id S236450AbiD0Nl2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 09:41:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 622A1522DB
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 06:38:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651066695;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=PSHs414nLmIXHY0MNvy/DxlhGuFhzSSXxRrlOw3+ock=;
+        b=Rq9o8Uu4ksevMbOanbe9PghKts4U+4aWwKOa0nmqOJ/RwuW7GmydhwJV9YElV+ZZj1D5M8
+        DqqeQxCBrsQAY4XDQfYdGtxekPcKZF8mnSmTVLp/ASvi9DTA6TbakbGpyMp8Z/7vsjvV/l
+        18OW89l0gT6Wgxhzs0arhFsKsgqhk1Q=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-503-7aIPd3utPPC46d965kwV2g-1; Wed, 27 Apr 2022 09:38:13 -0400
+X-MC-Unique: 7aIPd3utPPC46d965kwV2g-1
+Received: by mail-wm1-f70.google.com with SMTP id p32-20020a05600c1da000b00393fbf9ab6eso1896060wms.4
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 06:38:13 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=uN2AvNgUuh26EShG8XGbjQPKMO5dYMYNA35xtbAlORY=;
-        b=HKw8Dg8yKzL25uSahuDHfvKGzsjqQKoWUPTeb5FJvFbVP+t08vc5wKI3ppmsSdAgz6
-         6NULfZ0BhbHedpXmFqhE0e5n7WrKBr0q/vRWGnSv+ic+1aYrAw7YebLqLOtKZ01ARekB
-         3KSMAPnO8oWxVrfXYadpjuYJh1PnQXAWB4DpASer5duSTY5yrFVkjAmG5S7TrI31l27U
-         lbqgunixAtX1L2ow66vdfwCLvxTKuqcdzbLqeCz/4FQiOBrQVTKDQtBQcVumFwqSzE4D
-         1xu5oXaPvHdTthAuHo7wP3pYI1xZpfdGGo7mP1W/DG/oBFFdR8byFbCHnMLpfCOpaRWy
-         iz6Q==
-X-Gm-Message-State: AOAM533GTz4l8L7lDkFvOeDUbHQlX8oBwTyyQqcXx1umMzQM8X1oMSuA
-        j59vW/+/1r20elOrZZl65+XjFWKK3l6iwPMrbQk=
-X-Google-Smtp-Source: ABdhPJxy3WAzAZGtx686mGmZjiKglH7VD4zj+A6zktnSEohH6OWYf2drz2Bft82edO1fD2t6wcpakq1ftEMw+A7ZXeA=
-X-Received: by 2002:a1f:278b:0:b0:34d:34f3:3596 with SMTP id
- n133-20020a1f278b000000b0034d34f33596mr5900763vkn.25.1651065476900; Wed, 27
- Apr 2022 06:17:56 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220407223629.21487-1-ricardo.martinez@linux.intel.com>
- <20220407223629.21487-3-ricardo.martinez@linux.intel.com> <CAHNKnsRt=H_tkqG7CNf15DBYJmmunYy6vsm4HjneN47EQB_uug@mail.gmail.com>
- <CAMZdPi90Joo8+_44ceqS3k8ez08W_AX-eWs42F0ztDN67WR2Pw@mail.gmail.com>
-In-Reply-To: <CAMZdPi90Joo8+_44ceqS3k8ez08W_AX-eWs42F0ztDN67WR2Pw@mail.gmail.com>
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Wed, 27 Apr 2022 16:17:45 +0300
-Message-ID: <CAHNKnsTh0A85XTy8+Gk-3dCFee9ynB3+r0S3HcwJ8DkM5e4ADg@mail.gmail.com>
-Subject: Re: [PATCH net-next v6 02/13] net: wwan: t7xx: Add control DMA interface
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     Ricardo Martinez <ricardo.martinez@linux.intel.com>,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=PSHs414nLmIXHY0MNvy/DxlhGuFhzSSXxRrlOw3+ock=;
+        b=eCHvHcYBSHpfG2cWU/EEN6I4QmwzFaNfNXdjUnsBYBDo6hPjmAGLpJnyFYjcpJPa1r
+         D0klmkYuKOxfKS+zLUG0m3wcO0vBsylJOoYVmfctnHIE5DXqqsiNj3+PfFJbI+97xApn
+         T/6RmX7U2TRErIEYv7uHqi9M4MJOSHob3N76Re70+YFJrJOESVlMIrMhnBbAZhy72epD
+         me4DTbdb/NsQoz8xpwYaLS8iNZ0jIL9VFPjSZkRtV12TOCn8TDkUj5351b7+91vcQnGN
+         bxpKCIN+mqnIAIXNWXC4h3EjujzYosw3ch0oKrlcbN3ys+Ei68DNNtZCXGWn0mVPPUJv
+         ahaQ==
+X-Gm-Message-State: AOAM531B/WDfmjVAQyidm1ha0b8c7onsZwhpUrlTkFjhvnOX+CpokqWQ
+        XkpDazUlhGZiljE+xMM1i0iuIt2rNx7s6Orv+0bA2/hqjiT867hE9UOYa92ZpPXB1zYRAcpJYAk
+        6mfB34ovzw9pW3RU4
+X-Received: by 2002:a5d:40ca:0:b0:20a:cf97:f1b4 with SMTP id b10-20020a5d40ca000000b0020acf97f1b4mr18244187wrq.121.1651066692509;
+        Wed, 27 Apr 2022 06:38:12 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzosLJXqvRwF4U/eGOveNg83nSH/OQqj2msqvMJzBqQTXR97GmklzXkcLwfNLij7D2eSiit9g==
+X-Received: by 2002:a5d:40ca:0:b0:20a:cf97:f1b4 with SMTP id b10-20020a5d40ca000000b0020acf97f1b4mr18244166wrq.121.1651066692307;
+        Wed, 27 Apr 2022 06:38:12 -0700 (PDT)
+Received: from sgarzare-redhat (host-87-11-6-234.retail.telecomitalia.it. [87.11.6.234])
+        by smtp.gmail.com with ESMTPSA id r7-20020a05600c2c4700b0038eb7d8df69sm1565757wmg.11.2022.04.27.06.38.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 06:38:11 -0700 (PDT)
+Date:   Wed, 27 Apr 2022 15:38:08 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
+Cc:     KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Michael Kelley <mikelley@microsoft.com>,
         David Miller <davem@davemloft.net>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        M Chetan Kumar <m.chetan.kumar@intel.com>,
-        "Devegowda, Chandrashekar" <chandrashekar.devegowda@intel.com>,
-        Intel Corporation <linuxwwan@intel.com>,
-        chiranjeevi.rapolu@linux.intel.com,
-        =?UTF-8?B?SGFpanVuIExpdSAo5YiY5rW35YabKQ==?= 
-        <haijun.liu@mediatek.com>,
-        "Hanania, Amir" <amir.hanania@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Sharma, Dinesh" <dinesh.sharma@intel.com>,
-        "Lee, Eliot" <eliot.lee@intel.com>,
-        "Jarvinen, Ilpo Johannes" <ilpo.johannes.jarvinen@intel.com>,
-        "Veleta, Moises" <moises.veleta@intel.com>,
-        "Bossart, Pierre-louis" <pierre-louis.bossart@intel.com>,
-        "Sethuraman, Muralidharan" <muralidharan.sethuraman@intel.com>,
-        "Mishra, Soumya Prakash" <Soumya.Prakash.Mishra@intel.com>,
-        "Kancharla, Sreehari" <sreehari.kancharla@intel.com>,
-        "Sahu, Madhusmita" <madhusmita.sahu@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-hyperv@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/5] hv_sock: Copy packets sent by Hyper-V out of the
+ ring buffer
+Message-ID: <20220427133808.elbrvtvl6xplx62n@sgarzare-redhat>
+References: <20220427131225.3785-1-parri.andrea@gmail.com>
+ <20220427131225.3785-3-parri.andrea@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20220427131225.3785-3-parri.andrea@gmail.com>
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 3:35 PM Loic Poulain <loic.poulain@linaro.org> wrot=
-e:
-> On Tue, 26 Apr 2022 at 02:19, Sergey Ryazanov <ryazanov.s.a@gmail.com> wr=
-ote:
->> On Fri, Apr 8, 2022 at 1:37 AM Ricardo Martinez
->> <ricardo.martinez@linux.intel.com> wrote:
->>> ...
->>> Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
->>> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
->>>
->>> From a WWAN framework perspective:
->>> Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
->>>
->>> Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
->>
->> This line with "From a WWAN framework perspective" looks confusing to
->> me. Anyone not familiar with all of the iterations will be in doubt as
->> to whether it belongs only to Loic's review or to both of them.
->>
->> How about to format this block like this:
->>
->>> Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
->>> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
->>> Reviewed-by: Loic Poulain <loic.poulain@linaro.org> (WWAN framework)
->>> Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
->>
->> or like this:
->>
->>> Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
->>> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
->>> Reviewed-by: Loic Poulain <loic.poulain@linaro.org> # WWAN framework
->>> Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
->>
->> Parentheses vs. comment sign. I saw people use both of these formats,
->> I just do not know which is better. What do you think?
+On Wed, Apr 27, 2022 at 03:12:22PM +0200, Andrea Parri (Microsoft) wrote:
+>Pointers to VMbus packets sent by Hyper-V are used by the hv_sock driver
+>within the guest VM.  Hyper-V can send packets with erroneous values or
+>modify packet fields after they are processed by the guest.  To defend
+>against these scenarios, copy the incoming packet after validating its
+>length and offset fields using hv_pkt_iter_{first,next}().  Use
+>HVS_PKT_LEN(HVS_MTU_SIZE) to initialize the buffer which holds the
+>copies of the incoming packets.  In this way, the packet can no longer
+>be modified by the host.
 >
-> My initial comment was to highlight that someone else should double
-> check the network code, but it wasn't expected to end up in the commit
-> message. Maybe simply drop this extra comment?
+>Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+>Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+>---
+> net/vmw_vsock/hyperv_transport.c | 9 +++++++--
+> 1 file changed, 7 insertions(+), 2 deletions(-)
+>
+>diff --git a/net/vmw_vsock/hyperv_transport.c b/net/vmw_vsock/hyperv_transport.c
+>index 943352530936e..8c37d07017fc4 100644
+>--- a/net/vmw_vsock/hyperv_transport.c
+>+++ b/net/vmw_vsock/hyperv_transport.c
+>@@ -78,6 +78,9 @@ struct hvs_send_buf {
+> 					 ALIGN((payload_len), 8) + \
+> 					 VMBUS_PKT_TRAILER_SIZE)
+>
+>+/* Upper bound on the size of a VMbus packet for hv_sock */
+>+#define HVS_MAX_PKT_SIZE	HVS_PKT_LEN(HVS_MTU_SIZE)
+>+
+> union hvs_service_id {
+> 	guid_t	srv_id;
+>
+>@@ -378,6 +381,8 @@ static void hvs_open_connection(struct vmbus_channel *chan)
+> 		rcvbuf = ALIGN(rcvbuf, HV_HYP_PAGE_SIZE);
+> 	}
+>
+>+	chan->max_pkt_size = HVS_MAX_PKT_SIZE;
+>+
+> 	ret = vmbus_open(chan, sndbuf, rcvbuf, NULL, 0, hvs_channel_cb,
+> 			 conn_from_host ? new : sk);
+> 	if (ret != 0) {
+>@@ -602,7 +607,7 @@ static ssize_t hvs_stream_dequeue(struct vsock_sock *vsk, struct msghdr *msg,
+> 		return -EOPNOTSUPP;
+>
+> 	if (need_refill) {
+>-		hvs->recv_desc = hv_pkt_iter_first_raw(hvs->chan);
+>+		hvs->recv_desc = hv_pkt_iter_first(hvs->chan);
+> 		if (!hvs->recv_desc)
+> 			return -ENOBUFS;
+> 		ret = hvs_update_recv_data(hvs);
+>@@ -618,7 +623,7 @@ static ssize_t hvs_stream_dequeue(struct vsock_sock *vsk, struct msghdr *msg,
+>
+> 	hvs->recv_data_len -= to_read;
+> 	if (hvs->recv_data_len == 0) {
+>-		hvs->recv_desc = hv_pkt_iter_next_raw(hvs->chan, hvs->recv_desc);
+>+		hvs->recv_desc = hv_pkt_iter_next(hvs->chan, hvs->recv_desc);
+> 		if (hvs->recv_desc) {
+> 			ret = hvs_update_recv_data(hvs);
+> 			if (ret)
+>-- 
+>2.25.1
+>
 
-Yep, this drastically solves the problem with comment format :) I do not mi=
-nd.
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
---=20
-Sergey
