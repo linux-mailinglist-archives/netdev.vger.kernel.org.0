@@ -2,109 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ED29511022
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 06:27:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EF72511047
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 06:47:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357661AbiD0Ead (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 00:30:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43696 "EHLO
+        id S1357717AbiD0Eui (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 00:50:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357658AbiD0Ea3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 00:30:29 -0400
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F05E49C91
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 21:27:18 -0700 (PDT)
-Received: by mail-lf1-x143.google.com with SMTP id w1so1045023lfa.4
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 21:27:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=ex5vy32lCGEkQz6Zl7PaX1MVaB8jMvj7shEeLp2S2Aw=;
-        b=OKJ3PrVvYejWGoCzjdm12/4aIqpiWH6atetUmHOQCMypUuxLQ1HS/5JB2Iu2P+S1/4
-         nvAmXy6tJYs31loc9GuNPIt9nyi2CbP+mflqhw+dh9lgT8q0FSM9+WFw1JxrrZQdR5rt
-         kmauiT8WIDVoUD1Uw0fOb2s+JF+BG2U9uxCK0a6PztkDAIiKU38lcgGLFip2HLCIj2WD
-         hRZx+cbO3PUbqzSpFf3VYr5q64tFo8loLtMmSy+6ab7iFzEnResXybid5bCg7HEcN91h
-         j4s5TZ5NXcu3nMhfbWQ0ux5U++99vsQ1uqruIQzEGB9qDb+x9/v1pDWFDUH00hRxvR1C
-         KbOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=ex5vy32lCGEkQz6Zl7PaX1MVaB8jMvj7shEeLp2S2Aw=;
-        b=v0MJ+CunEUbpGrW0QrjaR/UZW0q8U0eJRTR/b68PLPxWWb3YAOhp94xi2UCJ/1uHhl
-         5iv/NWDCDzLms0UU/GUOUQWtqACGX48qM/32epdXU+AzZwmR/bCkoZPyI98XMnnxW6ep
-         eOUvcZXgU6N3knujoYeCFpYqO8qPoZAvjZnyzvcP1vkEz7z5l/K+Bqc7+H3JIIDCRyeK
-         LOHfSEOVQxNH+kdeP5E2j43w7CiVmQ3IZh+wycDR38r3aeUdHy0ynAlBMulP9HXJ7hGO
-         wpdrFNw6kniT4aSg3WojclZWQCZakeHV+Vil1cuGVd2hyHpKc8nucgkKrucXhG/g0js9
-         5u6Q==
-X-Gm-Message-State: AOAM532wIKfJQLis5wjjxdRCNJmspMKyiKcuHZstZSnMM/6AkLiMVAff
-        ViD3QMIXyTEAalFFDtPOzL1qfLEjN76lDPc0DhE=
-X-Google-Smtp-Source: ABdhPJydnihqH4qLoZEAecoAl7wrKz/LdZ/7fBHq+qr5zpGtXlPWsmlimeI2Svj/DPRjOWPdUhHivTZ0QhXs2EBXvpg=
-X-Received: by 2002:a05:6512:3f95:b0:472:c4d:30ac with SMTP id
- x21-20020a0565123f9500b004720c4d30acmr8402272lfa.51.1651033636611; Tue, 26
- Apr 2022 21:27:16 -0700 (PDT)
+        with ESMTP id S237234AbiD0Euh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 00:50:37 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44B4437026;
+        Tue, 26 Apr 2022 21:47:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651034847; x=1682570847;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=WzSMSV2TwjL7haK9v+p5S60fiyMUyMDXVixSJO/dIIo=;
+  b=Ici5j9AH+lcYEWD0cRmj8drYvdRrgB/qHvR4vxO/IxqfzaSILWisccDd
+   S9rFF51c/wGMy/88DtFUiNfa/Wsyd9CGQR0GoKgiQidKGj4ZYbJZTI1Ls
+   d5h884pXEbvfeKNGVBIE1M6pSSlFz1hIghJL59eniobRDaKc04HSp6bm9
+   PH4fCPA/Q6dsAm9+NEs6h718tuTVkQ4ZfkCLQxRb8dcSmUydTbKmgqqbz
+   7EooKEgZY2LaFqOhpROMCypUO+1MINZzC4MGcg5UrBX3x04IpjeS6Y7Cw
+   BNxED0g5Q8jjJ2lI/jFO5m0DDHZrNjfJ1UoK1g0rLxd1AfW2RNZiT7uwD
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="264657951"
+X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
+   d="scan'208";a="264657951"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2022 21:47:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; 
+   d="scan'208";a="513501004"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 26 Apr 2022 21:47:24 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1njZaF-0004L0-Vj;
+        Wed, 27 Apr 2022 04:47:23 +0000
+Date:   Wed, 27 Apr 2022 12:46:59 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Min Li <min.li.xe@renesas.com>, richardcochran@gmail.com,
+        lee.jones@linaro.org
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Min Li <min.li.xe@renesas.com>
+Subject: Re: [PATCH net 1/2] ptp: ptp_clockmatrix: Add PTP_CLK_REQ_EXTTS
+ support
+Message-ID: <202204271207.RNo6doix-lkp@intel.com>
+References: <1651001574-32457-1-git-send-email-min.li.xe@renesas.com>
 MIME-Version: 1.0
-Received: by 2002:a2e:bc05:0:0:0:0:0 with HTTP; Tue, 26 Apr 2022 21:27:16
- -0700 (PDT)
-Reply-To: khalid.loan1@outlook.com
-From:   Khalid Al <tycoonenergysd@gmail.com>
-Date:   Tue, 26 Apr 2022 21:27:16 -0700
-Message-ID: <CAE12Z9rHe4Kit5fwiFXnYDXBqYfOPS9QwN68kLRwkDRBnLukqQ@mail.gmail.com>
-Subject: INVESTMENT PARTNER NEEDED
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.9 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
-        FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        SUBJ_ALL_CAPS,UNDISC_FREEM autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:143 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [tycoonenergysd[at]gmail.com]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [khalid.loan1[at]outlook.com]
-        *  0.5 SUBJ_ALL_CAPS Subject is all capitals
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        *  3.6 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1651001574-32457-1-git-send-email-min.li.xe@renesas.com>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Min,
+
+Thank you for the patch! Perhaps something to improve:
+
+[auto build test WARNING on net/master]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Min-Li/ptp-ptp_clockmatrix-Add-PTP_CLK_REQ_EXTTS-support/20220427-033506
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git acb16b395c3f3d7502443e0c799c2b42df645642
+config: mips-allmodconfig (https://download.01.org/0day-ci/archive/20220427/202204271207.RNo6doix-lkp@intel.com/config)
+compiler: mips-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/afadc4edd1bf64b40cb61b38dedf67354baeb147
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Min-Li/ptp-ptp_clockmatrix-Add-PTP_CLK_REQ_EXTTS-support/20220427-033506
+        git checkout afadc4edd1bf64b40cb61b38dedf67354baeb147
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/iio/imu/ drivers/ptp/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/ptp/ptp_clockmatrix.c:1734: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+    * Maximum absolute value for write phase offset in picoseconds
+
+
+vim +1734 drivers/ptp/ptp_clockmatrix.c
+
+3a6ba7dc779935 Vincent Cheng 2019-10-31  1732  
+afadc4edd1bf64 Min Li        2022-04-26  1733  /**
+da9facf1c18252 Min Li        2021-09-13 @1734   * Maximum absolute value for write phase offset in picoseconds
+da9facf1c18252 Min Li        2021-09-13  1735   *
+afadc4edd1bf64 Min Li        2022-04-26  1736   * @channel:  channel
+afadc4edd1bf64 Min Li        2022-04-26  1737   * @delta_ns: delta in nanoseconds
+afadc4edd1bf64 Min Li        2022-04-26  1738   *
+425d2b1c563826 Vincent Cheng 2020-05-01  1739   * Destination signed register is 32-bit register in resolution of 50ps
+425d2b1c563826 Vincent Cheng 2020-05-01  1740   *
+425d2b1c563826 Vincent Cheng 2020-05-01  1741   * 0x7fffffff * 50 =  2147483647 * 50 = 107374182350
+425d2b1c563826 Vincent Cheng 2020-05-01  1742   */
+425d2b1c563826 Vincent Cheng 2020-05-01  1743  static int _idtcm_adjphase(struct idtcm_channel *channel, s32 delta_ns)
+425d2b1c563826 Vincent Cheng 2020-05-01  1744  {
+425d2b1c563826 Vincent Cheng 2020-05-01  1745  	struct idtcm *idtcm = channel->idtcm;
+425d2b1c563826 Vincent Cheng 2020-05-01  1746  	int err;
+425d2b1c563826 Vincent Cheng 2020-05-01  1747  	u8 i;
+425d2b1c563826 Vincent Cheng 2020-05-01  1748  	u8 buf[4] = {0};
+425d2b1c563826 Vincent Cheng 2020-05-01  1749  	s32 phase_50ps;
+425d2b1c563826 Vincent Cheng 2020-05-01  1750  	s64 offset_ps;
+425d2b1c563826 Vincent Cheng 2020-05-01  1751  
+da9facf1c18252 Min Li        2021-09-13  1752  	if (channel->mode != PTP_PLL_MODE_WRITE_PHASE) {
+da9facf1c18252 Min Li        2021-09-13  1753  		err = channel->configure_write_phase(channel);
+425d2b1c563826 Vincent Cheng 2020-05-01  1754  		if (err)
+425d2b1c563826 Vincent Cheng 2020-05-01  1755  			return err;
+425d2b1c563826 Vincent Cheng 2020-05-01  1756  	}
+425d2b1c563826 Vincent Cheng 2020-05-01  1757  
+425d2b1c563826 Vincent Cheng 2020-05-01  1758  	offset_ps = (s64)delta_ns * 1000;
+425d2b1c563826 Vincent Cheng 2020-05-01  1759  
+425d2b1c563826 Vincent Cheng 2020-05-01  1760  	/*
+425d2b1c563826 Vincent Cheng 2020-05-01  1761  	 * Check for 32-bit signed max * 50:
+425d2b1c563826 Vincent Cheng 2020-05-01  1762  	 *
+425d2b1c563826 Vincent Cheng 2020-05-01  1763  	 * 0x7fffffff * 50 =  2147483647 * 50 = 107374182350
+425d2b1c563826 Vincent Cheng 2020-05-01  1764  	 */
+425d2b1c563826 Vincent Cheng 2020-05-01  1765  	if (offset_ps > MAX_ABS_WRITE_PHASE_PICOSECONDS)
+425d2b1c563826 Vincent Cheng 2020-05-01  1766  		offset_ps = MAX_ABS_WRITE_PHASE_PICOSECONDS;
+425d2b1c563826 Vincent Cheng 2020-05-01  1767  	else if (offset_ps < -MAX_ABS_WRITE_PHASE_PICOSECONDS)
+425d2b1c563826 Vincent Cheng 2020-05-01  1768  		offset_ps = -MAX_ABS_WRITE_PHASE_PICOSECONDS;
+425d2b1c563826 Vincent Cheng 2020-05-01  1769  
+7260d1c8fd8667 Min Li        2020-12-08  1770  	phase_50ps = div_s64(offset_ps, 50);
+425d2b1c563826 Vincent Cheng 2020-05-01  1771  
+425d2b1c563826 Vincent Cheng 2020-05-01  1772  	for (i = 0; i < 4; i++) {
+425d2b1c563826 Vincent Cheng 2020-05-01  1773  		buf[i] = phase_50ps & 0xff;
+425d2b1c563826 Vincent Cheng 2020-05-01  1774  		phase_50ps >>= 8;
+425d2b1c563826 Vincent Cheng 2020-05-01  1775  	}
+425d2b1c563826 Vincent Cheng 2020-05-01  1776  
+425d2b1c563826 Vincent Cheng 2020-05-01  1777  	err = idtcm_write(idtcm, channel->dpll_phase, DPLL_WR_PHASE,
+425d2b1c563826 Vincent Cheng 2020-05-01  1778  			  buf, sizeof(buf));
+425d2b1c563826 Vincent Cheng 2020-05-01  1779  
+425d2b1c563826 Vincent Cheng 2020-05-01  1780  	return err;
+425d2b1c563826 Vincent Cheng 2020-05-01  1781  }
+425d2b1c563826 Vincent Cheng 2020-05-01  1782  
+
 -- 
-My Dear,.
-
-I represent a group of company based in Gulf Region and we are
-currently seeking means of expanding and relocating our business
-interest abroad in the following sectors: energy, real estate,
-construction, stock,mining, or any other viable sector. We are ready
-to fund any business that is capable of generating 5% (AROI) on Joint
-Venture partnership bases.
-
-We look forward to discussing this opportunity in detail with you.
-
-Urgent khalid.loan1@outlook.com
-
-Regards,
-Khalid Al Rumaihi
-Business Development Manager.
-Mana ma, Bahrain.
+0-DAY CI Kernel Test Service
+https://01.org/lkp
