@@ -2,126 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A3D2B511D8A
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 20:35:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 800DA511EAF
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 20:37:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240201AbiD0PuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 11:50:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46528 "EHLO
+        id S240398AbiD0Pvk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 11:51:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240256AbiD0PuU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 11:50:20 -0400
-Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140072.outbound.protection.outlook.com [40.107.14.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25C7E506FD;
-        Wed, 27 Apr 2022 08:47:06 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MaSjOhP49sra+25WxPbvX5MNS86Aq0wLDEvBVO2EWoDJKzoZvT2qglNEkJPARcGl0l9Z++u9Md0Myc51zmRKCNyywwUCKHrTfw0dUUt0k3yIq1OTFFC0hWuyVDkDWyczhYr8+G19HGtszmuYRJ9slpS3d8mTqEB8kBsyeA3CR17MGVCX7NIC7V7eJzOe+NyUuqaMxXe9TH9NIwJnpYgQQBf5MKJZnB8qj3EE6FW8gR2Z+T/IV25sQ6z8Is3kSPh6OoOqHbXoexE1ULoNBQBi4NWwCMQOnbJQ3J0Y8HyqmVPRz19I5bI9u89EB6QIrkldcTKXxzUmXYJ0bzwrrWnshQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zqprnRiMa79x+c0EPgRIbwGEynoKGAQyne3/nFUGuUg=;
- b=QVMyCqVQmb35kWg3LS3P5z5ha/6gYGoXFzLyfEeEkKs1AV9Z+LXWDOy4lzNGeZ9aKXq4MDP1Qx9JS01X6tD4oKliHtTfdXoemytX/C1DMUNXlQLhma5JKcIMUb2o4DQwgWdSy8UFPj53PwAqJKxxmDHFmZRwTMSx55wJguoQ6dKtcpoNw5LowDOTYswmXSbTdyJ9q6Ffp00mNvECqYkq2uMeJrPHKeoVqw0getUw1lymwRv4p3XqjDvXUJUmLMzgDyfluxf6vrXYMggCmOJwfh1xufp3R7sRSHY4DLvTCKr9H2fNX7oCbBYKSUKVBnmKWbbJKLS+GtWYm0RDBHfgYg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zqprnRiMa79x+c0EPgRIbwGEynoKGAQyne3/nFUGuUg=;
- b=OhA1liVqO8wfotGkDqiKk/aoOjX9nHu6u6w4KROG134x7aZRezdbswx6ICGKEmueZZZTKLbMOapVRWYO08AL2WZOACidmDAuSb/QGXhq0+p2VPk/Q/EI7vmcAghHUOwf8d3CDNdsm1UOXxd+BveJoET4qBbwJiMwvIK4ePHa3nc=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by AM6PR04MB5349.eurprd04.prod.outlook.com (2603:10a6:20b:9b::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.13; Wed, 27 Apr
- 2022 15:47:03 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::8ed:49e7:d2e7:c55e]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::8ed:49e7:d2e7:c55e%3]) with mapi id 15.20.5164.031; Wed, 27 Apr 2022
- 15:47:03 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>,
-        "chi.minghao@zte.com.cn" <chi.minghao@zte.com.cn>,
-        "toke@redhat.com" <toke@redhat.com>,
-        "chenhao288@hisilicon.com" <chenhao288@hisilicon.com>,
-        "moyufeng@huawei.com" <moyufeng@huawei.com>,
-        "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>
-Subject: Re: [PATCH net-next 03/14] eth: cpsw: remove a copy of the
- NAPI_POLL_WEIGHT define
-Thread-Topic: [PATCH net-next 03/14] eth: cpsw: remove a copy of the
- NAPI_POLL_WEIGHT define
-Thread-Index: AQHYWk1CLMHtk+WZGk67j9eBjXAa660D53gA
-Date:   Wed, 27 Apr 2022 15:47:03 +0000
-Message-ID: <20220427154702.fbpxfjp4h7ey5ea2@skbuf>
-References: <20220427154111.529975-1-kuba@kernel.org>
- <20220427154111.529975-4-kuba@kernel.org>
-In-Reply-To: <20220427154111.529975-4-kuba@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b10d7e22-fecb-4815-b6fe-08da28652cca
-x-ms-traffictypediagnostic: AM6PR04MB5349:EE_
-x-microsoft-antispam-prvs: <AM6PR04MB5349508B9FD9C9D36B3EAC76E0FA9@AM6PR04MB5349.eurprd04.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: m5QW4HaufYfCoFQZNMSxg47qx+qOjy5NiGRm3NFnkL0BBLz1vb6/NMX4wqK5A/jG7Pm2KmqI90VVKDc7Ugh+29bc5ib1PtWUScozJGyv7B16osXMnBrsqsQzux3DWAsCkrLBvxFPw3Tm42NlaLdHjCRh41mc8sJyB/1oGm3cTpuobm0nedbYJL4n6DrLVWXaUUmkVl6lJbV+9f+OTSCqctM8pOPtBAvaQUbrqDQQ+ACLXijkt6Mp0yDm9sxFFgmtt7cSHjQPEuN+3rdVXuB4nX7DmxfgIHjLEla5rxyEA4Wlz+3HpZDsFfr5ZQcFghddhdgMVHB3t6psfkWowYXV5T/v76AXMcc3cr0uUvnqG+/0ymMiuFo1dGTUbMfQ3z213hinTiZTwNh+EJEnHVCEscIWfs2YtQwBUZYPO6UbX6zkZyFrIHHkIJZgocVamjaxYXmIxLPKtR+iNV42I9Bfzdbqwx8lfwITtB1G/4CxX4LFHZOsSpCYL1ZCroMauQUsx5OgZAmb6Ol9iRBzd1VfALC4A9rZ59p59Da4ovesad9BJlwjbca7NcKyhtnOIgB7gCkEpD0IIw4i6cSxyFcFcrc862yX0Q4BbaDiVNPTDLIY1ZNHeIhy8mYd/uuglM3rKWkIyKlQG8jdEseOQ2tdOPW76BfdnYAtNgTcT8sLTYHypSO1ynkJdkrh1oE3jzyWOaw73j5uCFBd1yQfEWGzcwjY4WK3yZt3ZyIbVt5ejn4=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(38070700005)(38100700002)(9686003)(1076003)(6506007)(6512007)(26005)(122000001)(5660300002)(7416002)(44832011)(2906002)(186003)(4744005)(508600001)(71200400001)(6486002)(54906003)(6916009)(8936002)(76116006)(86362001)(91956017)(33716001)(8676002)(66946007)(4326008)(66476007)(64756008)(66556008)(66446008)(316002)(16393002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?MxQuT4jjr1XsdwTStEFoeGVxyRwFKZO1Uol8Pn3fgfd2Vz1i6CYHoU420YGt?=
- =?us-ascii?Q?eR0mwLPWy0rFPHcIjPTnvVqvIzzU4A5pFTiswn4MLy83d5PAbnAbM9dRzMZw?=
- =?us-ascii?Q?sVJkaBcpPxqBXqCCW+SPJoetCjHOk1rVxy6cH5R6lp2/eZrRX61MTC3PWIwK?=
- =?us-ascii?Q?vyob9eTRKmYLvrvsMhUNFM5FZwfX/GgKNivcd4h1Qc0dTAdV0bHjQy/7e3Ei?=
- =?us-ascii?Q?20gi/SZNfS0UWcmp6Q03uU92ZBv5fS7VweALp2dOmlpmxeyVnxR4/KGvi+0B?=
- =?us-ascii?Q?ucJQSYsi3rJv/1Sbw5PENXlfQVsncYKRYziukw4WsbLxJ3gvrkfPUJlHNId6?=
- =?us-ascii?Q?LWkGZNhc8styijq9U/R1lWeChuQbAWRelr0m6PaIpNuSbGlnvcgLel2Fnu6v?=
- =?us-ascii?Q?XFeBy9T/97oDZT2sVvCFPgXpZ4HTSO+M1fBCNMrJBvrkEYV9Bwcfp44pDQ5K?=
- =?us-ascii?Q?8G/SzFR9gLOkYQd2qoAwhev+zQb9MsayQDDjZAA0Bha8NtoWVWUnpZX0G+rQ?=
- =?us-ascii?Q?/5LvAHyMvlHeF7jpdJ000jEjucdQ4CzxsNWLaV6zibGKdTLO0mSmyUcISzxI?=
- =?us-ascii?Q?MLhnEEN0/OKf9Up72tJqEaZMYkNZQjCZUhB8KZUk6iiBdS9bVQjnShDlPiag?=
- =?us-ascii?Q?KhfTBxpNrp7NE+F1sJ51ZxicX+bm9lkuUpLpZUXTFBUK7GRDJJvKosjeOoXF?=
- =?us-ascii?Q?EvSfxC/vFTxTV1K0lVWEPohB4xk8AIjbLDMeiIzmxu0Zj/Jr+nlQJPdZvyAW?=
- =?us-ascii?Q?oqkVEOgcClqTdfRa6FkG/NraqjGC5GNPwuCk0Bq3L0onYnzVTtVa2w7Nyb/P?=
- =?us-ascii?Q?NRPivOeaOkgAtt851ZBwccQVG5FvZXvwliQ20iQJ4j0gDPQd5nR4ayy8cFcl?=
- =?us-ascii?Q?PyzvoIuPJ0MLyM7OOfvioeHhp1StIl1js6omOr+ShJM1yzM7F83Tces3G3qm?=
- =?us-ascii?Q?QDJ/U0U0Pc0ZiM8P57zIXQLzi9oIZvOzCJ+LMGhBOK3EMkZeusvghTz/X2fY?=
- =?us-ascii?Q?4OwHmJwTfmKkGKvv9phQygcQi8uthrKbZIHJNJ6DkM+0vBEvn3ES3R6VzpY2?=
- =?us-ascii?Q?521ioDNpYjaSZ4Uc6KzPwe3bmwCUdtwbqsfh69DeL4wr05MgCrNN0PCM2h6W?=
- =?us-ascii?Q?voxYMMv6Y2/hWL+CgLV4PZiC60Ix4FRsjqS+o+SmGj+G1KjQsyJCZ9RhXKhF?=
- =?us-ascii?Q?cTMCFfUobNKiWW2vzAENEOrJkJVddXoKaXlkjCOzaGmJVr20ijtP4daZn7+W?=
- =?us-ascii?Q?Le9w/EL4AEUw54Eq2j2DJmWHlG4a7tQi7LuaVvg3m3ohTfXiRcEiLJJ5CpPf?=
- =?us-ascii?Q?VjZZ70o+y5gLne158Tn0Mg3O9OmhjXY6RXLe5xsHokWwOb556k5iKQDHfHt2?=
- =?us-ascii?Q?r2Q/tdszyaTV0E3oZYqLUAy8EGT/KezWMCP8laQ6Rx+9ad6ZLSx7W0girmjd?=
- =?us-ascii?Q?uDGyB6MJu2WAoc9NbaOLK5L6RLmgRoLX49YBndJKDa29XziNbxaf46htK4jC?=
- =?us-ascii?Q?2Zd7wNE8JSXaziyHlbl4DKU8BvzaIhDIBtiCbzgG8iHpB0miyfiNa+tS0xbe?=
- =?us-ascii?Q?8nVofwbBp8dAn+YyCy+uTLWmsuOxoaGeP0tw6tDpYySM/cJAtsGWtIOogK0i?=
- =?us-ascii?Q?nVzIjlALlpJuSmnSbfmzbLqy9VwmhH8u+G/0w5WQwzPQAn/Ebd9HXcFIPyGO?=
- =?us-ascii?Q?t4gx6Iqphm058SWCoWMq5tqgVgsgYQ3e0BsEmfgAqrBp7RGj4t7fJ4RGYLKU?=
- =?us-ascii?Q?tlzO3Bgqik0PUpqgj3vokT+GlmeK7O4=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <77CD97BBC4E7FC4F881BC15AF64CE48A@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S240356AbiD0Pvg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 11:51:36 -0400
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3115953E12;
+        Wed, 27 Apr 2022 08:48:22 -0700 (PDT)
+Received: by mail-io1-xd36.google.com with SMTP id f2so3432957ioh.7;
+        Wed, 27 Apr 2022 08:48:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fCsHvkWCR/wWly8ths3Wi4fTVqRYBvVSb9UFDlCgn5U=;
+        b=Nhjlc0YGIjhDK9zT0+Mx9ZKF8lDQ1wUzAEjDDirrSwbTWMk85UryV3pvH7mi5209ws
+         Zs7hqOw3AUQjcXL3y94/VIXHWtoM9kl4dWdtNB0vHf4k0K9T+RVpXYoVqxWu38nK716d
+         nodHyaU1nxGJ1D1udEv9gKpzS4FJqRgxlFik6L7s21PcK7D8Va26sHF+yoIPe4QBMaAp
+         yupDqtqHYcgII6IZ4FO1d02u0v1gCfsganKrKSNMOCIpHNQyJXcjj0kXZQeoP9o74y0y
+         YKuSEWm5/1J2AfuWMNpQ4boARvKG0BfQwQKMFdzEqEH5KfiEBvn1bpRXtFJ8GPFn/z09
+         USjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fCsHvkWCR/wWly8ths3Wi4fTVqRYBvVSb9UFDlCgn5U=;
+        b=10Y+6SG/NYruARzVB7y5nLFu/NrHX1HUZNcAlu9TPgM2yN1aOXc9XPeX2z2BX9giok
+         2xKcCKJgUxmhUo3xGDxHO9CbJ4bTrmx+KxZKnTMPA+fiaLZcU9nGONygK66+VoFKAg8w
+         cDrSh70s5QKb1jpnZ3KeFygKG+xWm3d1uA/9+JFNRaayRHJmzxUXIVl927+w7QpV46Cc
+         49tUWCfxMogiU8UmW3NGhDy0kzxVqGwlLe3FdLjIYX0g/pIvaZopVTCDdFtJW+dpRaEH
+         fVDhH+YzvEUa5Fc3ObPiL8olsquKx8M0UUdGwYMlTFD53GvJqlKfKNCJPqgj7jqpduIt
+         2U1Q==
+X-Gm-Message-State: AOAM530URd7NFGTy0Os2bZ6Yl4jzaVX7MgFsEB5I+/BeKJScRwYztPkh
+        3qmrkpZf9CFtuOPRf5/npKZLMbnXH0eQ6NgntmI=
+X-Google-Smtp-Source: ABdhPJzMQXTFudrU0X7e4SN93y82D4MVOxKjJfbsDsG093qJOs5uhCb9nmXshXPaFcPKPRfiLF+lnQhYqSe/TLV5yD8=
+X-Received: by 2002:a05:6638:2652:b0:323:bbe3:550b with SMTP id
+ n18-20020a056638265200b00323bbe3550bmr5569113jat.6.1651074501582; Wed, 27 Apr
+ 2022 08:48:21 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b10d7e22-fecb-4815-b6fe-08da28652cca
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Apr 2022 15:47:03.3543
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: bsEk9KmT1GRrEP/c1t+0hVvcZiZQw+gnhA9AoYM+NI+aiq8WLr46ag551wD0+riaP7H8r9R3fMzl45nepdqicA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB5349
+References: <20220423140058.54414-1-laoar.shao@gmail.com> <20220423140058.54414-3-laoar.shao@gmail.com>
+ <29b077a7-1e99-9436-bd5a-4277651e09db@iogearbox.net> <CALOAHbAb6VH_fHAE3_tCMK0pBJCdM9PPg9pfHoye+2jq+N7DYQ@mail.gmail.com>
+ <CAEf4BzbPDhYw6DL6OySyQY1CgBCp0=RUO1FSc8CGYraJx6NMCQ@mail.gmail.com> <CALOAHbAPZVDKXE-0fBkDMdbcTZSQZjto7sjpDnG0X_cSBCV8Pw@mail.gmail.com>
+In-Reply-To: <CALOAHbAPZVDKXE-0fBkDMdbcTZSQZjto7sjpDnG0X_cSBCV8Pw@mail.gmail.com>
+From:   Yafang Shao <laoar.shao@gmail.com>
+Date:   Wed, 27 Apr 2022 23:47:43 +0800
+Message-ID: <CALOAHbB079w_KrJGP8ABJyBQd1HghP4Xza1mDwaJV6bX-=SHwA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/4] libbpf: Add helpers for pinning bpf prog
+ through bpf object skeleton
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -129,22 +73,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 08:41:00AM -0700, Jakub Kicinski wrote:
-> Defining local versions of NAPI_POLL_WEIGHT with the same
-> values in the drivers just makes refactoring harder.
->=20
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> CC: grygorii.strashko@ti.com
-> CC: chi.minghao@zte.com.cn
-> CC: vladimir.oltean@nxp.com
+On Wed, Apr 27, 2022 at 10:45 PM Yafang Shao <laoar.shao@gmail.com> wrote:
+>
+> On Wed, Apr 27, 2022 at 7:16 AM Andrii Nakryiko
+> <andrii.nakryiko@gmail.com> wrote:
+> >
+> > On Tue, Apr 26, 2022 at 8:59 AM Yafang Shao <laoar.shao@gmail.com> wrote:
+> > >
+> > > On Mon, Apr 25, 2022 at 9:57 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> > > >
+> > > > On 4/23/22 4:00 PM, Yafang Shao wrote:
+> > > > > Currently there're helpers for allowing to open/load/attach BPF object
+> > > > > through BPF object skeleton. Let's also add helpers for pinning through
+> > > > > BPF object skeleton. It could simplify BPF userspace code which wants to
+> > > > > pin the progs into bpffs.
+> > > >
+> > > > Please elaborate some more on your use case/rationale for the commit message,
+> > > > do you have orchestration code that will rely on these specifically?
+> > > >
+> > >
+> > > We have a bpf manager on our production environment to maintain the
+> > > bpf programs, some of which need to be pinned in bpffs, for example
+> > > tracing bpf programs, perf_event programs and other bpf hooks added by
+> > > ourselves for performance tuning.  These bpf programs don't need a
+> > > user agent, while they really work like a kernel module, that is why
+> > > we pin them. For these kinds of bpf programs, the bpf manager can help
+> > > to simplify the development and deployment.  Take the improvement on
+> > > development for example,  the user doesn't need to write userspace
+> > > code while he focuses on the kernel side only, and then bpf manager
+> > > will do all the other things. Below is a simple example,
+> > >    Step1, gen the skeleton for the user provided bpf object file,
+> > >               $ bpftool gen skeleton  test.bpf.o > simple.skel.h
+> > >    Step2, Compile the bpf object file into a runnable binary
+> > >               #include "simple.skel.h"
+> > >
+> > >               #define SIMPLE_BPF_PIN(name, path)  \
+> > >               ({                                                              \
+> > >                   struct name##_bpf *obj;                      \
+> > >                   int err = 0;                                            \
+> > >                                                                               \
+> > >                   obj = name##_bpf__open();                \
+> > >                    if (!obj) {                                              \
+> > >                        err = -errno;                                    \
+> > >                        goto cleanup;                                 \
+> > >                     }                                                         \
+> > >                                                                               \
+> > >                     err = name##_bpf__load(obj);           \
+> > >                     if (err)                                                 \
+> > >                         goto cleanup;                                 \
+> > >                                                                                \
+> > >                      err = name##_bpf__attach(obj);       \
+> > >                      if (err)                                                \
+> > >                          goto cleanup;                                \
+> > >                                                                                \
+> > >                      err = name##_bpf__pin_prog(obj, path);      \
+> > >                      if (err)                                                \
+> > >                          goto cleanup;                                \
+> > >                                                                               \
+> > >                       goto end;                                         \
+> > >                                                                               \
+> > >                   cleanup:                                              \
+> > >                       name##_bpf__destroy(obj);            \
+> > >                   end:                                                     \
+> > >                       err;                                                  \
+> > >                    })
+> > >
+> > >                    SIMPLE_BPF_PIN(test, "/sys/fs/bpf");
+> > >
+> > >                As the userspace code of FD-based bpf objects are all
+> > > the same,  so we can abstract them as above.  The pathset means to add
+> > > the non-exist "name##_bpf__pin_prog(obj, path)" for it.
+> > >
+> >
+> > Your BPF manager is user-space code that you control, right? I'm not
+> > sure how skeleton is helpful here given your BPF manager is generic
+> > and doesn't work with any specific skeleton, if I understand the idea.
+> > But let's assume that you use skeleton to also embed BPF ELF bytes and
+> > pass them to your manager for "activation". Once you open and load
+> > bpf_object, your BPF manager can generically iterate all BPF programs
+> > using bpf_object_for_each_program(), attempt to attach them with
+> > bpf_program__attach() (see how bpf_object__attach_skeleton is handling
+> > non-auto-attachable programs) and immediately pin the link (no need to
+> > even store it, you can destroy it after pinning immediately). All this
+> > is using generic libbpf APIs and requires no code generation.
+>
+> Many thanks for the detailed explanation. Your suggestion can also
+> work, but with the skeleton we can also generate a binary which can
+> run independently.  (Technically speaking, the binary is the same as
+> './bpf_install target.bpf.o').
+>
 
-Fine with me (I mean, I don't even know why I'm copied on cpsw changes).
+Forgot to mention that with skeleton we can also modify the global
+data defined in bpf object file, that may need to be abstracted as a
+new common helper.  The bpf_object__* functions can't do it, right ?
 
-Why is the weight even an argument to netif_napi_add() anyway?
+> >  But keep
+> > in mind that not all struct bpf_link in libbpf are pinnable (not all
+> > links have FD-based BPF link in kernel associated with them), so
+> > you'll have to deal with that somehow (and what you didn't do in this
+> > patch for libbpf implementation).
+> >
+>
+> Right, I have found it. If I understand it correctly, only the link
+> types defined in enum bpf_link_type (which is in
+> include/uapi/linux/bpf.h) are pinnable, right?
+>
+> BTW, is it possible to support pinning all struct bpf_link in libbpf ?
+>
+>
+> --
+> Regards
+> Yafang
 
-> CC: toke@redhat.com
-> CC: chenhao288@hisilicon.com
-> CC: moyufeng@huawei.com
-> CC: linux-omap@vger.kernel.org
-> ---=
+
+
+-- 
+Regards
+Yafang
