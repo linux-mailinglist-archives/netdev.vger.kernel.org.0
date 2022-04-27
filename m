@@ -2,68 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A4CC512785
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 01:28:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65C745127A3
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 01:40:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236200AbiD0XbX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 19:31:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47568 "EHLO
+        id S231504AbiD0Xnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 19:43:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235668AbiD0XbX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 19:31:23 -0400
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C41C5186E6;
-        Wed, 27 Apr 2022 16:28:10 -0700 (PDT)
-Received: by mail-io1-xd2a.google.com with SMTP id 125so4838002iov.10;
-        Wed, 27 Apr 2022 16:28:10 -0700 (PDT)
+        with ESMTP id S230409AbiD0Xnt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 19:43:49 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3293D6161F;
+        Wed, 27 Apr 2022 16:40:35 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id iq10so2795219pjb.0;
+        Wed, 27 Apr 2022 16:40:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=J+PADB9F5WqUqK6GNU+Fxyjymg7zexYWmAXBuu5DB9g=;
-        b=U7azQ2bUah5mgLR/JEX/N2A3mspp3zwA+qStLEeStwS/w5mOfeanqxTJ1Z7BpA7t77
-         sZ0ei5lKcGnDWrRQDT3q33zjz86xpbg5Rmq1Qq8gw4iA/FaZE9vx6qGrhS4mtTlrk6T9
-         B+XVrTVRwAryBUF+e1GO9yoNSwkP2HEhwXth1LBTj0wvToNjx9VyRqtyQm0Md/nR//vN
-         rkmpHlaE2fKHvCMdXR9OMwX6CcD+KVKBdR1mIq77GAGa3hYM2xzCqMmznRpl5j4X68wY
-         rMuThzJzcNs75oXtKDvpHctRzmFNKb14YbU5Gr3w+N7O+N8ZuUTgZqgmTqUdfN5d1pDG
-         sUJA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pA7N5oM5U7ZFZAud2ceA5aBZ7HfbRjldpjtLGGTMl9M=;
+        b=KRstV8sVbdRXrJDYbQQAbE4hSSSSqIetxqnPUoR5VcRKvTYr3nLanKjjGTCdcDyxad
+         pc/T3XpJk7zDtiwva7YMoSiuyOdXPTR7J5n/U6cthpJe64hcT+A4V1ZB5aJy9HMtarGV
+         MUJN1B1Q2G/VT5KwpE7RnN2XlD6TAFTHZX2/tAbQ+XZZlVFSFxJ+dGM0VsQXEhF9/ReW
+         uf9tFtOhT8Eh7WalJ4IktHDfneOVPv/zvCkhCodoZkJq6vCUScMW7o5KxJax3XpdlZa2
+         ziZUCO4OxZWi0YP2jHODU9zfV9Bge3K1dQg0+CMlgsKT89aujLsY1c7cqx//aNPOcWTV
+         BNWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=J+PADB9F5WqUqK6GNU+Fxyjymg7zexYWmAXBuu5DB9g=;
-        b=zm1lG4HUgLS+WHpKIJsR9rxFLhjv23BYl8d5+v76BeHsGU+8lkl0MwvLm7uPLf5XrX
-         W4JG3MwbihToR7P+L3GcO+fpyD0be6RfEql0j1ipEI/HkY1MMHtl6Njle6I91+ALSeKU
-         IXBgMPyrjnF+d5CtM8YaNHGY4/QTrlwneOwg4orMWYhAkfqe4NkzxvY55ytGXRt7T+2w
-         HEc/nLFnFW/IaJzUCsRB7InEXE6UgI0t+VPQSEFoxIl0XEMv1vGRu/y1u7rcWyzcTfVF
-         2FJSmeI6DGFktT3jE0xl1Em4JJ6SxabAAc3DZlEmxxpadRGf61X4GED0WfVKqEXWhc3M
-         qEng==
-X-Gm-Message-State: AOAM533reNHTqa8rYaSo/ewOTBL4XV4ffQ81FYxkVq2PfIuwIAD9/Uq1
-        ZUQaF1oUy8Gpulfqxbu+cn2UvwztJsrVulx0CmI=
-X-Google-Smtp-Source: ABdhPJwalUssHr/J/IX56j230ASTn2a0DzhQdRKHS90estxGTH5SmnfwW1oCy4oBOZPZNCVeFyK+3AZUfPLC5S3vyxw=
-X-Received: by 2002:a05:6638:533:b0:32a:d418:b77b with SMTP id
- j19-20020a056638053300b0032ad418b77bmr9771567jar.237.1651102090204; Wed, 27
- Apr 2022 16:28:10 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pA7N5oM5U7ZFZAud2ceA5aBZ7HfbRjldpjtLGGTMl9M=;
+        b=qINAb+wgAtOclzKnjQHKlAseQWKgnMMn5K4XuGcDdeQkmjyE2Bgg5rAq6OCZtuLRuV
+         XH3eLhrPF0A3X4kU1AWsibtbOj8ECdHAcfXIuVcq9peTwts+g5u5MhGQhvwqZYyTK8Fq
+         WQJBd66lrYGJx8hudb2L2mVeEGuuOnoXXzdI/JO/OOeo6+1qeJjdYOu7YPurdJzZGbNL
+         40qmzyHLjhwOVJMhnwALnZqC/RcUUw9bl+efFH8iC2g65JXbhWTayCknL9Jlk5BybGbH
+         AmDoLEP0zIRp/SK/zoerQBEfxgP+M7netM8W4PMhbmhm+RN86tHO9IrLCihY4o2I6L2/
+         Tong==
+X-Gm-Message-State: AOAM531Dng34HwcxM8OTyaCWM+i+QTbgTvXAMpJTBRazeeytPJvGqLer
+        zgLZb2UorUAb2unP7KYciWr9lT0cb7M=
+X-Google-Smtp-Source: ABdhPJxAR6SmLlCJV+Nx/EguglOhP0iM1PmcnG+nibMxg5KDRBbAFTlK2brnGzY8RNgwg8MDNMYDGA==
+X-Received: by 2002:a17:902:e791:b0:151:dbbd:aeae with SMTP id cp17-20020a170902e79100b00151dbbdaeaemr30702018plb.171.1651102832890;
+        Wed, 27 Apr 2022 16:40:32 -0700 (PDT)
+Received: from lvondent-mobl4.. (c-71-56-157-77.hsd1.or.comcast.net. [71.56.157.77])
+        by smtp.gmail.com with ESMTPSA id g11-20020a63110b000000b003c14af50614sm406747pgl.44.2022.04.27.16.40.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 16:40:32 -0700 (PDT)
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: pull request: bluetooth 2022-04-27
+Date:   Wed, 27 Apr 2022 16:40:31 -0700
+Message-Id: <20220427234031.1257281-1-luiz.dentz@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220427210345.455611-1-jolsa@kernel.org> <20220427210345.455611-6-jolsa@kernel.org>
-In-Reply-To: <20220427210345.455611-6-jolsa@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 27 Apr 2022 16:27:59 -0700
-Message-ID: <CAEf4BzaT45OszajSQJbxES1RveBh0ingzAzkK0BOchBGZuavTw@mail.gmail.com>
-Subject: Re: [PATCHv3 bpf-next 5/5] selftests/bpf: Add attach bench test
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -74,28 +66,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 2:04 PM Jiri Olsa <jolsa@kernel.org> wrote:
->
-> Adding test that reads all functions from ftrace available_filter_functions
-> file and attach them all through kprobe_multi API.
->
-> It also prints stats info with -v option, like on my setup:
->
->   test_bench_attach: found 48712 functions
->   test_bench_attach: attached in   1.069s
->   test_bench_attach: detached in   0.373s
->
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
+The following changes since commit acb16b395c3f3d7502443e0c799c2b42df645642:
 
-LGTM.
+  virtio_net: fix wrong buf address calculation when using xdp (2022-04-26 13:24:44 +0200)
 
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
+are available in the Git repository at:
 
->  .../bpf/prog_tests/kprobe_multi_test.c        | 133 ++++++++++++++++++
->  .../selftests/bpf/progs/kprobe_multi_empty.c  |  12 ++
->  2 files changed, 145 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
->
+  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth.git tags/for-net-2022-04-27
 
-[...]
+for you to fetch changes up to 9b3628d79b46f06157affc56fdb218fdd4988321:
+
+  Bluetooth: hci_sync: Cleanup hci_conn if it cannot be aborted (2022-04-26 20:10:51 +0200)
+
+----------------------------------------------------------------
+bluetooth pull request for net:
+
+ - Fix regression causing some HCI events to be discarded when they
+   shouldn't.
+
+----------------------------------------------------------------
+Luiz Augusto von Dentz (3):
+      Bluetooth: hci_event: Fix checking for invalid handle on error status
+      Bluetooth: hci_event: Fix creating hci_conn object on error status
+      Bluetooth: hci_sync: Cleanup hci_conn if it cannot be aborted
+
+ include/net/bluetooth/hci.h      |  1 +
+ include/net/bluetooth/hci_core.h |  2 +-
+ net/bluetooth/hci_conn.c         | 32 ++++++++++++----
+ net/bluetooth/hci_event.c        | 80 +++++++++++++++++++++++-----------------
+ net/bluetooth/hci_sync.c         | 11 +++++-
+ 5 files changed, 83 insertions(+), 43 deletions(-)
