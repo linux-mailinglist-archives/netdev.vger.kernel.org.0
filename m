@@ -2,67 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EAE315121FD
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 21:01:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 253CA51220E
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 21:04:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232200AbiD0TEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 15:04:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57344 "EHLO
+        id S231473AbiD0THR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 15:07:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233737AbiD0TE3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 15:04:29 -0400
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B57B458E6C;
-        Wed, 27 Apr 2022 11:51:57 -0700 (PDT)
-Received: by mail-il1-x134.google.com with SMTP id r17so559803iln.9;
-        Wed, 27 Apr 2022 11:51:57 -0700 (PDT)
+        with ESMTP id S232434AbiD0THA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 15:07:00 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D00EBF71;
+        Wed, 27 Apr 2022 11:53:52 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id f2so3981801ioh.7;
+        Wed, 27 Apr 2022 11:53:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=CZQVyLoTULJU+mTJplyB+tcWAoRmLqxiLZCPm6e6tkM=;
-        b=Gvt3j+8RE8qj68oBS43ShIr4ULawwsHV3btbQNT66M3iPKGhsRIeE8kVemedxjASnm
-         zOMVAjOSTYKUUBrYdOGHhFv2XIesCtiDWuCktL7NatWLI37TFpJZbx5cnOZVr7QWLsRv
-         T0tHgBp7vary0oChfBKOURlZTkF10n7IOJld+RkE0ntZVSWeNoMOiif4/qWIy5Late6h
-         eoxezw/oQADay2L14W6z+gP1Q7BSCZEYdxbEq883GeOBcKCo17ywHUho9okcB37Zn3Ws
-         eJE4BIEocg88sVOxLgba/8aZfGene5W73TM2iftE1gbtNRo1zhpzPw1AxjCbyS88yZLV
-         K9lA==
+        bh=VJ91s6H07ClEByjQbgZruheBlPpsvHRlP6vfpPqzZKY=;
+        b=EKwxHil5G0kU+wbkmov0G1EaEobARTaBhSglDRm/pqjMlzyw2xWvkwLpGcmiuCwiWJ
+         At36hRwRARLjFsB0PsstrYFE9MGEZmMhqVj6IkdW1Qe3i77MufwhagvCIO3pyldfedH+
+         1L5FME3HrT5gXe+YfTuK1vScwvVdBBAvF3r85wZ4RSEairsG6Sl93FEnp+wFW9Lub42h
+         JoeSUxM+XtEzDhZiGXt0UT79mhVEXx13upi3pSqqFpUs393Ub5H4TEiurTeKxrq4SzOx
+         bx8DqZf4u4eSuipwPj4ZXSXZxkJ0PDwLmP82YCvAND/nMeSjVzccZu1gkgmHm97aBOf9
+         qsLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=CZQVyLoTULJU+mTJplyB+tcWAoRmLqxiLZCPm6e6tkM=;
-        b=ii9Ghx3W+Mg07wO89YGBhG7ak1nTetfgqJjjyMCWZaAtf/bJ5LkrgenktkR2XC+jUK
-         YIkZ1BSa/UfjhlvqcadjKF0bqDNexroGu2Xk7E8bm8VV0T5DWNcpixOnJb/ui/7B8Rs2
-         8mXAHpADJefeoQqeBLdK4o0uUm72osAd08qHW3BLLy/s3CP6Akpga5sjZhiGPGcpBH6N
-         RAFevln/kvUb2bu0sC/CrMMowL3L21o/sWlc4zEgxpKy6noFvIUk+HxhwosnWKql8cFF
-         l4v/guOGSNw2qkL4vxxr46NkX5v0MTZtjKBFeqj2B7rzWj5cVDln6g+NzG3gUACBjkXX
-         ECMA==
-X-Gm-Message-State: AOAM531CdGu5zhX6oY1IykCN8HUqFeAJbAxaldTXUKDiIgLah4GlImYf
-        8S2nW6TG6CXwVfV47sFRNUXh/sBizJbZYukF0Apcatfp
-X-Google-Smtp-Source: ABdhPJwQ7uj2BAqearf4Nz8WKXGUbCgmTHrwh0dwgmM//YCMI8iz0agCwVU5VnwLbNN3fFA2nCuMtQjcLDMc23cf2uk=
-X-Received: by 2002:a92:c247:0:b0:2cc:1798:74fe with SMTP id
- k7-20020a92c247000000b002cc179874femr11638719ilo.239.1651085517052; Wed, 27
- Apr 2022 11:51:57 -0700 (PDT)
+        bh=VJ91s6H07ClEByjQbgZruheBlPpsvHRlP6vfpPqzZKY=;
+        b=7DgfYkHZAWMo6vQgfeQRIq5cEzoy5ln7IM4WnC5QDK5RNvL4sWJhf8HfrdWkhFIOLV
+         hZwD88uaM1y7aZa5X4MtHbpN5H7ivchG2GjCDVFQTsjzbAoYSUehfkSZkAuaLDzYL56w
+         JYvz+MOw2q7H1gWClR1iaI273B5yOzpAZoRvmO87ppgdJHmi1VMNb/gTM48LlIBpGsJ1
+         f1IczIgT4Pmid1K7r44pCn0Pe6ahYFS9Gcl7BMy6PTzC5HKopCyfYL8vV1j5yTsBY1D+
+         vvrwmmCHmPwZF4vA2y8nGmx430i6yWvsbAA2wLJGFQdVflkg0Xb741PxTv7Q+CM3q14Y
+         CgCw==
+X-Gm-Message-State: AOAM532Bq7F0sbmi/E6zbD8SAY5HUkSBJ3uSyn/AWDmJS4Bj5awY7QNB
+        D8gF+4EQofjMuQ93QyuDwEl9BHTLQEPPi0DJ0N4=
+X-Google-Smtp-Source: ABdhPJzl9VUnx3Oh6fY4dpfEp3sorFTDo26fFd33NZFaIoxLMKHh9xEeNMXVp8dcrjOJt836MeA+18nprDrk4z78Bj8=
+X-Received: by 2002:a5d:9f4e:0:b0:652:2323:2eb8 with SMTP id
+ u14-20020a5d9f4e000000b0065223232eb8mr12051724iot.79.1651085631636; Wed, 27
+ Apr 2022 11:53:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220423140058.54414-1-laoar.shao@gmail.com> <20220423140058.54414-3-laoar.shao@gmail.com>
- <29b077a7-1e99-9436-bd5a-4277651e09db@iogearbox.net> <CALOAHbAb6VH_fHAE3_tCMK0pBJCdM9PPg9pfHoye+2jq+N7DYQ@mail.gmail.com>
- <CAEf4BzbPDhYw6DL6OySyQY1CgBCp0=RUO1FSc8CGYraJx6NMCQ@mail.gmail.com>
- <CALOAHbAPZVDKXE-0fBkDMdbcTZSQZjto7sjpDnG0X_cSBCV8Pw@mail.gmail.com> <CALOAHbB079w_KrJGP8ABJyBQd1HghP4Xza1mDwaJV6bX-=SHwA@mail.gmail.com>
-In-Reply-To: <CALOAHbB079w_KrJGP8ABJyBQd1HghP4Xza1mDwaJV6bX-=SHwA@mail.gmail.com>
+References: <20220414223704.341028-1-alobakin@pm.me> <20220414223704.341028-9-alobakin@pm.me>
+ <CAEf4BzZVohaHdCTz_KFVdEus2pndLTZvg=BHfujpgt29qbio3Q@mail.gmail.com> <05d21d85-7b59-a8f9-73dc-89189986db11@fb.com>
+In-Reply-To: <05d21d85-7b59-a8f9-73dc-89189986db11@fb.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 27 Apr 2022 11:51:46 -0700
-Message-ID: <CAEf4BzZUsjV8-rApHRoOwiDyDqv_Wbkg8qCRPkHvybNM_x--1g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/4] libbpf: Add helpers for pinning bpf prog
- through bpf object skeleton
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+Date:   Wed, 27 Apr 2022 11:53:40 -0700
+Message-ID: <CAEf4BzYrEfkdvP+k+np0S9-Rtf=xnpgVhL25wFgPQ81bm-_h_Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 08/11] samples: bpf: fix shifting unsigned long
+ by 32 positions
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
         Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Dmitrii Dolgov <9erthalion6@gmail.com>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Chenbo Feng <fengc@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Daniel Wagner <daniel.wagner@bmw-carit.de>,
+        Thomas Graf <tgraf@suug.ch>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        llvm@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -74,139 +101,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 8:48 AM Yafang Shao <laoar.shao@gmail.com> wrote:
->
-> On Wed, Apr 27, 2022 at 10:45 PM Yafang Shao <laoar.shao@gmail.com> wrote:
-> >
-> > On Wed, Apr 27, 2022 at 7:16 AM Andrii Nakryiko
-> > <andrii.nakryiko@gmail.com> wrote:
-> > >
-> > > On Tue, Apr 26, 2022 at 8:59 AM Yafang Shao <laoar.shao@gmail.com> wrote:
-> > > >
-> > > > On Mon, Apr 25, 2022 at 9:57 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> > > > >
-> > > > > On 4/23/22 4:00 PM, Yafang Shao wrote:
-> > > > > > Currently there're helpers for allowing to open/load/attach BPF object
-> > > > > > through BPF object skeleton. Let's also add helpers for pinning through
-> > > > > > BPF object skeleton. It could simplify BPF userspace code which wants to
-> > > > > > pin the progs into bpffs.
-> > > > >
-> > > > > Please elaborate some more on your use case/rationale for the commit message,
-> > > > > do you have orchestration code that will rely on these specifically?
-> > > > >
-> > > >
-> > > > We have a bpf manager on our production environment to maintain the
-> > > > bpf programs, some of which need to be pinned in bpffs, for example
-> > > > tracing bpf programs, perf_event programs and other bpf hooks added by
-> > > > ourselves for performance tuning.  These bpf programs don't need a
-> > > > user agent, while they really work like a kernel module, that is why
-> > > > we pin them. For these kinds of bpf programs, the bpf manager can help
-> > > > to simplify the development and deployment.  Take the improvement on
-> > > > development for example,  the user doesn't need to write userspace
-> > > > code while he focuses on the kernel side only, and then bpf manager
-> > > > will do all the other things. Below is a simple example,
-> > > >    Step1, gen the skeleton for the user provided bpf object file,
-> > > >               $ bpftool gen skeleton  test.bpf.o > simple.skel.h
-> > > >    Step2, Compile the bpf object file into a runnable binary
-> > > >               #include "simple.skel.h"
-> > > >
-> > > >               #define SIMPLE_BPF_PIN(name, path)  \
-> > > >               ({                                                              \
-> > > >                   struct name##_bpf *obj;                      \
-> > > >                   int err = 0;                                            \
-> > > >                                                                               \
-> > > >                   obj = name##_bpf__open();                \
-> > > >                    if (!obj) {                                              \
-> > > >                        err = -errno;                                    \
-> > > >                        goto cleanup;                                 \
-> > > >                     }                                                         \
-> > > >                                                                               \
-> > > >                     err = name##_bpf__load(obj);           \
-> > > >                     if (err)                                                 \
-> > > >                         goto cleanup;                                 \
-> > > >                                                                                \
-> > > >                      err = name##_bpf__attach(obj);       \
-> > > >                      if (err)                                                \
-> > > >                          goto cleanup;                                \
-> > > >                                                                                \
-> > > >                      err = name##_bpf__pin_prog(obj, path);      \
-> > > >                      if (err)                                                \
-> > > >                          goto cleanup;                                \
-> > > >                                                                               \
-> > > >                       goto end;                                         \
-> > > >                                                                               \
-> > > >                   cleanup:                                              \
-> > > >                       name##_bpf__destroy(obj);            \
-> > > >                   end:                                                     \
-> > > >                       err;                                                  \
-> > > >                    })
-> > > >
-> > > >                    SIMPLE_BPF_PIN(test, "/sys/fs/bpf");
-> > > >
-> > > >                As the userspace code of FD-based bpf objects are all
-> > > > the same,  so we can abstract them as above.  The pathset means to add
-> > > > the non-exist "name##_bpf__pin_prog(obj, path)" for it.
-> > > >
-> > >
-> > > Your BPF manager is user-space code that you control, right? I'm not
-> > > sure how skeleton is helpful here given your BPF manager is generic
-> > > and doesn't work with any specific skeleton, if I understand the idea.
-> > > But let's assume that you use skeleton to also embed BPF ELF bytes and
-> > > pass them to your manager for "activation". Once you open and load
-> > > bpf_object, your BPF manager can generically iterate all BPF programs
-> > > using bpf_object_for_each_program(), attempt to attach them with
-> > > bpf_program__attach() (see how bpf_object__attach_skeleton is handling
-> > > non-auto-attachable programs) and immediately pin the link (no need to
-> > > even store it, you can destroy it after pinning immediately). All this
-> > > is using generic libbpf APIs and requires no code generation.
-> >
-> > Many thanks for the detailed explanation. Your suggestion can also
-> > work, but with the skeleton we can also generate a binary which can
-> > run independently.  (Technically speaking, the binary is the same as
-> > './bpf_install target.bpf.o').
-> >
->
-> Forgot to mention that with skeleton we can also modify the global
-> data defined in bpf object file, that may need to be abstracted as a
-> new common helper.  The bpf_object__* functions can't do it, right ?
-
-I must be missing something because I don't see how you can have
-code-generated skeleton and generic BPF manager at the same time. I'm
-not saying don't use skeleton, I'm saying you can write this link
-pinning code yourself and reuse it in your applications. You can get
-access to struct bpf_object through skel->obj.
-
->
-> > >  But keep
-> > > in mind that not all struct bpf_link in libbpf are pinnable (not all
-> > > links have FD-based BPF link in kernel associated with them), so
-> > > you'll have to deal with that somehow (and what you didn't do in this
-> > > patch for libbpf implementation).
-> > >
-> >
-> > Right, I have found it. If I understand it correctly, only the link
-> > types defined in enum bpf_link_type (which is in
-> > include/uapi/linux/bpf.h) are pinnable, right?
-> >
-
-It's more complicated. For kprobe/tracepoint, for example, depending
-on host kernel version it could be a "fake" libbpf-side-only link, or
-it could be a proper kernel object backing it. So as always, it
-depends.
-
-
-> > BTW, is it possible to support pinning all struct bpf_link in libbpf ?
-
-No, it depends on kernel support, libbpf can't do much about this.
-
-> >
-> >
-> > --
-> > Regards
-> > Yafang
+On Wed, Apr 27, 2022 at 8:55 AM Yonghong Song <yhs@fb.com> wrote:
 >
 >
 >
-> --
-> Regards
-> Yafang
+> On 4/20/22 10:18 AM, Andrii Nakryiko wrote:
+> > On Thu, Apr 14, 2022 at 3:46 PM Alexander Lobakin <alobakin@pm.me> wrote:
+> >>
+> >> On 32 bit systems, shifting an unsigned long by 32 positions
+> >> yields the following warning:
+> >>
+> >> samples/bpf/tracex2_kern.c:60:23: warning: shift count >= width of type [-Wshift-count-overflow]
+> >>          unsigned int hi = v >> 32;
+> >>                              ^  ~~
+> >>
+> >
+> > long is always 64-bit in BPF, but I suspect this is due to
+> > samples/bpf/Makefile still using this clang + llc combo, where clang
+> > is called with native target and llc for -target bpf. Not sure if we
+> > are ready to ditch that complicated combination. Yonghong, do we still
+> > need that or can we just use -target bpf in samples/bpf?
+>
+> Current most bpf programs in samples/bpf do not use vmlinux.h and CO-RE.
+> They direct use kernel header files. That is why clang C -> IR
+> compilation still needs to be native.
+>
+> We could just use -target bpf for the whole compilation but that needs
+> to change the code to use vmlinux.h and CO-RE. There are already a
+> couple of sample bpf programs did this.
+
+Right, I guess I'm proposing to switch samples/bpf to vmlinux.h. Only
+purely networking BPF apps can get away with not using vmlinux.h
+because they might avoid dependency on kernel types. But even then a
+lot of modern networking apps seem to be gaining elements of more
+generic tracing and would rely on CO-RE for staying "portable" between
+kernels. So it might be totally fine to just use CO-RE universally in
+samples/bpf?
+
+>
+> >
+> >
+> >> The usual way to avoid this is to shift by 16 two times (see
+> >> upper_32_bits() macro in the kernel). Use it across the BPF sample
+> >> code as well.
+> >>
+> >> Fixes: d822a1926849 ("samples/bpf: Add counting example for kfree_skb() function calls and the write() syscall")
+> >> Fixes: 0fb1170ee68a ("bpf: BPF based latency tracing")
+> >> Fixes: f74599f7c530 ("bpf: Add tests and samples for LWT-BPF")
+> >> Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+> >> ---
+> >>   samples/bpf/lathist_kern.c      | 2 +-
+> >>   samples/bpf/lwt_len_hist_kern.c | 2 +-
+> >>   samples/bpf/tracex2_kern.c      | 2 +-
+> >>   3 files changed, 3 insertions(+), 3 deletions(-)
+> >>
+> >
+> > [...]
