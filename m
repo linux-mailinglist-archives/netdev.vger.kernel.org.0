@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B76E45111A6
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 08:50:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 813415111A8
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 08:50:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358363AbiD0Gv0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 02:51:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53374 "EHLO
+        id S1358382AbiD0Gvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 02:51:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358349AbiD0GvZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 02:51:25 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50D4914CC1F;
-        Tue, 26 Apr 2022 23:48:15 -0700 (PDT)
+        with ESMTP id S1358379AbiD0Gve (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 02:51:34 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38F2414D287;
+        Tue, 26 Apr 2022 23:48:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1651042096; x=1682578096;
+  t=1651042098; x=1682578098;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=ZDgnc/AWZ2GzndkIPVq+n1FwfPAm1cIU+Eo/I6edMr8=;
-  b=GwfAXRDCq4VsfGpN6CZ3oNJ5xHKS7wIBO+MD4mbYQQudZICfVVQo5X8z
-   hFVscbiL/8rj4q20+r/5QFGITHg/zv/Iq24IGbe7Q6GOH04GXp3Mj1RJE
-   Q4DMiZ9N4ce+d8Oz/F2il8oxFBYok9ngeVffhimmhkbDcIzkS+U1YTg8B
-   MCNBvvvhFECaaOlOZfKReVarD6JG85wOKQwpfLOy7vjO3aQDPN1Zvu1HA
-   75BKsgJjq6FDh8TGha1qkeB9hVwjiN1dx/m/ukW5D15IjevVE/Nhdaotr
-   RnnmSp/Ntl3aELKtMIxQNBhL36T0PTUxyybrZzpYzKFBP6K8YHgioaYVd
-   g==;
+  bh=6r1YDjvwZKw998fnwn9AVswHrVH1lRXDIjoKN4aHbi8=;
+  b=tTKaX75239C/lIpn3w8vM5g/5TwJ7jZK3yoDrALIMj/3z/ZDJguYy+1U
+   VoPbbH44MZb7PS1LBYKv+9Qj8XnMmQfZ8SMlht5J8R8IkuGC1kRkWOdUo
+   HtBACVRE5xL2lXFMkXZX91pHMt7DlC2aTSi6pu5CUL1deDjbB5NeyGxXa
+   FKt6WZ6ZM5tKGNBykiYIt2wheubtRkB4dJtj3SgJ/XyWRdpmMuXwPbJ1K
+   CZGwpYs36IYVW2rWSwSv40v7xbccpZ1+U9mhXqBoVuwVubVNmE0J9Ml4s
+   +k2gRJ7irgQYJuReQMKOo9ZuFW5duXjisckXDa2I+emaj4mPB2g+iXVs4
+   A==;
 X-IronPort-AV: E=Sophos;i="5.90,292,1643698800"; 
-   d="scan'208";a="161462360"
+   d="scan'208";a="156933139"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Apr 2022 23:48:16 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Apr 2022 23:48:17 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 26 Apr 2022 23:48:14 -0700
+ 15.1.2375.17; Tue, 26 Apr 2022 23:48:17 -0700
 Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 26 Apr 2022 23:48:11 -0700
+ 15.1.2375.17 via Frontend Transport; Tue, 26 Apr 2022 23:48:14 -0700
 From:   Horatiu Vultur <horatiu.vultur@microchip.com>
 To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
@@ -45,9 +45,9 @@ CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
         <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
         <UNGLinuxDriver@microchip.com>, <richardcochran@gmail.com>,
         Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v2 2/5] net: lan966x: Change the PTP pin used to read/write the PHC.
-Date:   Wed, 27 Apr 2022 08:51:24 +0200
-Message-ID: <20220427065127.3765659-3-horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v2 3/5] net: lan966x: Add registers used to configure the PTP pin
+Date:   Wed, 27 Apr 2022 08:51:25 +0200
+Message-ID: <20220427065127.3765659-4-horatiu.vultur@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220427065127.3765659-1-horatiu.vultur@microchip.com>
 References: <20220427065127.3765659-1-horatiu.vultur@microchip.com>
@@ -56,35 +56,88 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_PASS,SPF_PASS,UPPERCASE_50_75 autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To read/write a value to a PHC, it is required to use a PTP pin.
-Currently it is used pin 5, but change to pin 7 as is the last pin.
-All the other pins will have different functions.
+Add registers that are used to configure the PTP pins. These registers
+are used to enable the interrupts per PTP pin and to set the waveform
+generated by the pin.
 
 Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../ethernet/microchip/lan966x/lan966x_regs.h | 40 +++++++++++++++++++
+ 1 file changed, 40 insertions(+)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c b/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c
-index 0a1041da4384..3e455a3fad08 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c
-@@ -16,7 +16,7 @@
-  */
- #define LAN966X_1PPB_FORMAT		3480517749LL
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h b/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
+index 2f59285bef29..8265ad89f0bc 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
+@@ -684,6 +684,24 @@ enum lan966x_target {
+ /*      FDMA:FDMA:FDMA_ERRORS */
+ #define FDMA_ERRORS               __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 412, 0, 1, 4)
  
--#define TOD_ACC_PIN		0x5
-+#define TOD_ACC_PIN		0x7
++/*      PTP:PTP_CFG:PTP_PIN_INTR */
++#define PTP_PIN_INTR              __REG(TARGET_PTP, 0, 1, 512, 0, 1, 16, 0, 0, 1, 4)
++
++#define PTP_PIN_INTR_INTR_PTP                    GENMASK(7, 0)
++#define PTP_PIN_INTR_INTR_PTP_SET(x)\
++	FIELD_PREP(PTP_PIN_INTR_INTR_PTP, x)
++#define PTP_PIN_INTR_INTR_PTP_GET(x)\
++	FIELD_GET(PTP_PIN_INTR_INTR_PTP, x)
++
++/*      PTP:PTP_CFG:PTP_PIN_INTR_ENA */
++#define PTP_PIN_INTR_ENA          __REG(TARGET_PTP, 0, 1, 512, 0, 1, 16, 4, 0, 1, 4)
++
++#define PTP_PIN_INTR_ENA_INTR_ENA                GENMASK(7, 0)
++#define PTP_PIN_INTR_ENA_INTR_ENA_SET(x)\
++	FIELD_PREP(PTP_PIN_INTR_ENA_INTR_ENA, x)
++#define PTP_PIN_INTR_ENA_INTR_ENA_GET(x)\
++	FIELD_GET(PTP_PIN_INTR_ENA_INTR_ENA, x)
++
+ /*      PTP:PTP_CFG:PTP_DOM_CFG */
+ #define PTP_DOM_CFG               __REG(TARGET_PTP, 0, 1, 512, 0, 1, 16, 12, 0, 1, 4)
  
- enum {
- 	PTP_PIN_ACTION_IDLE = 0,
+@@ -717,6 +735,12 @@ enum lan966x_target {
+ #define PTP_PIN_CFG_PIN_SYNC_GET(x)\
+ 	FIELD_GET(PTP_PIN_CFG_PIN_SYNC, x)
+ 
++#define PTP_PIN_CFG_PIN_SELECT                   GENMASK(23, 21)
++#define PTP_PIN_CFG_PIN_SELECT_SET(x)\
++	FIELD_PREP(PTP_PIN_CFG_PIN_SELECT, x)
++#define PTP_PIN_CFG_PIN_SELECT_GET(x)\
++	FIELD_GET(PTP_PIN_CFG_PIN_SELECT, x)
++
+ #define PTP_PIN_CFG_PIN_DOM                      GENMASK(17, 16)
+ #define PTP_PIN_CFG_PIN_DOM_SET(x)\
+ 	FIELD_PREP(PTP_PIN_CFG_PIN_DOM, x)
+@@ -744,6 +768,22 @@ enum lan966x_target {
+ #define PTP_TOD_NSEC_TOD_NSEC_GET(x)\
+ 	FIELD_GET(PTP_TOD_NSEC_TOD_NSEC, x)
+ 
++/*      PTP:PTP_PINS:WF_HIGH_PERIOD */
++#define PTP_WF_HIGH_PERIOD(g)     __REG(TARGET_PTP,\
++					0, 1, 0, g, 8, 64, 24, 0, 1, 4)
++
++#define PTP_WF_HIGH_PERIOD_PIN_WFH(x)            ((x) & GENMASK(29, 0))
++#define PTP_WF_HIGH_PERIOD_PIN_WFH_M             GENMASK(29, 0)
++#define PTP_WF_HIGH_PERIOD_PIN_WFH_X(x)          ((x) & GENMASK(29, 0))
++
++/*      PTP:PTP_PINS:WF_LOW_PERIOD */
++#define PTP_WF_LOW_PERIOD(g)      __REG(TARGET_PTP,\
++					0, 1, 0, g, 8, 64, 28, 0, 1, 4)
++
++#define PTP_WF_LOW_PERIOD_PIN_WFL(x)             ((x) & GENMASK(29, 0))
++#define PTP_WF_LOW_PERIOD_PIN_WFL_M              GENMASK(29, 0)
++#define PTP_WF_LOW_PERIOD_PIN_WFL_X(x)           ((x) & GENMASK(29, 0))
++
+ /*      PTP:PTP_TS_FIFO:PTP_TWOSTEP_CTRL */
+ #define PTP_TWOSTEP_CTRL          __REG(TARGET_PTP, 0, 1, 612, 0, 1, 12, 0, 0, 1, 4)
+ 
 -- 
 2.33.0
 
