@@ -2,45 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 40BDA511EE5
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 20:37:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8E05511D4F
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 20:34:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240163AbiD0Pot (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 11:44:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46176 "EHLO
+        id S240211AbiD0Pos (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 11:44:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239986AbiD0Poo (ORCPT
+        with ESMTP id S240070AbiD0Poo (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 11:44:44 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612E831531
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 08:41:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 415992E0AC;
+        Wed, 27 Apr 2022 08:41:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE667618F7
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 15:41:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 443A8C385B0;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5EB33618DF;
+        Wed, 27 Apr 2022 15:41:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB62CC385AC;
         Wed, 27 Apr 2022 15:41:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651074084;
-        bh=UQ7T/ivpJnhp+Ti+c/WaKjLjgaMTqUGoKyi4mXYztSY=;
+        s=k20201202; t=1651074085;
+        bh=Z0xLbXX/H1N+jpH3VVNc2Ehyk/u94AsbE5Ev+LudcuA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UsXrG1LE5E2RLtUlEospNCQSJAz+ihkIyJbeRakZD8CAipd9sUm9oe4AbidOAuVZG
-         ezLMIoYTsUdjLO+6fERs2D+QXE0DrCgjaXj2fu8dELW/CKGOTX/2QaTbaNZVOjaA+m
-         QihQFcX+8vr0XoAdOnG7zQQ0BLvHOqCvWgJB4qf5jRb7mGX7G9y+o6ZUb8B0Tltbwc
-         B5ZLKAWErQ/SfIHnAh+kHwxsTeH7nZTIOQe6NWZfRrHP5CyQnhDEngUMgh39VJ0Ga2
-         fxnYTI0e+v7bgqkNa5MLqbsMB4XRoKiKj8HU3gPJ9E2RDoPif/gs8IrtoE0lMe+7Rb
-         GWgEhyJd6E5VA==
+        b=W8TuRH4DIGORfU+hwQ+4vxUQEw5v7TMGR8fxtpHFJ6kbsdzGc0AX27Bfa2bPWCki5
+         8nhCNP7IiIBTqsA6l3FAgmd1GmeqW6zkahTiRq6xthq6o3LY6dz/mqXjZt4LTkcXwO
+         pXfJk2c66bvUxtP0nSUw8Htq4qS8BIwK7cJd5Xs8lrIFRg6e2Er68DjXZMUkvJZVqW
+         jd/JDz3XkJOwpmbp8LEtiEXqSLNlJndRFgVUpy38/uXQoyXtkcP8RQVeg1KNAPxzUp
+         KXv/vpluylvjGM/lWGmmOIBpZNs0grHM+nPj0LUASHZVZYQlcEjRE6FfgKW5ZKAqgd
+         FjxQd9t2mBQpQ==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net, pabeni@redhat.com
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
-        Mark-MC.Lee@mediatek.com, matthias.bgg@gmail.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH net-next 05/14] eth: mtk_eth_soc: remove a copy of the NAPI_POLL_WEIGHT define
-Date:   Wed, 27 Apr 2022 08:41:02 -0700
-Message-Id: <20220427154111.529975-6-kuba@kernel.org>
+        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        linux-usb@vger.kernel.org
+Subject: [PATCH net-next 06/14] usb: lan78xx: remove a copy of the NAPI_POLL_WEIGHT define
+Date:   Wed, 27 Apr 2022 08:41:03 -0700
+Message-Id: <20220427154111.529975-7-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220427154111.529975-1-kuba@kernel.org>
 References: <20220427154111.529975-1-kuba@kernel.org>
@@ -60,46 +58,35 @@ values in the drivers just makes refactoring harder.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: nbd@nbd.name
-CC: john@phrozen.org
-CC: sean.wang@mediatek.com
-CC: Mark-MC.Lee@mediatek.com
-CC: matthias.bgg@gmail.com
-CC: linux-arm-kernel@lists.infradead.org
-CC: linux-mediatek@lists.infradead.org
+CC: woojung.huh@microchip.com
+CC: UNGLinuxDriver@microchip.com
+CC: linux-usb@vger.kernel.org
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 4 ++--
- drivers/net/ethernet/mediatek/mtk_eth_soc.h | 1 -
- 2 files changed, 2 insertions(+), 3 deletions(-)
+ drivers/net/usb/lan78xx.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 18eebcaa6a76..31c5da5d6b72 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -3298,9 +3298,9 @@ static int mtk_probe(struct platform_device *pdev)
- 	 */
- 	init_dummy_netdev(&eth->dummy_dev);
- 	netif_napi_add(&eth->dummy_dev, &eth->tx_napi, mtk_napi_tx,
--		       MTK_NAPI_WEIGHT);
-+		       NAPI_POLL_WEIGHT);
- 	netif_napi_add(&eth->dummy_dev, &eth->rx_napi, mtk_napi_rx,
--		       MTK_NAPI_WEIGHT);
-+		       NAPI_POLL_WEIGHT);
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index 415f16662f88..94e571fb61da 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -92,8 +92,6 @@
+ 					 WAKE_MCAST | WAKE_BCAST | \
+ 					 WAKE_ARP | WAKE_MAGIC)
  
- 	platform_set_drvdata(pdev, eth);
+-#define LAN78XX_NAPI_WEIGHT		64
+-
+ #define TX_URB_NUM			10
+ #define TX_SS_URB_NUM			TX_URB_NUM
+ #define TX_HS_URB_NUM			TX_URB_NUM
+@@ -4376,7 +4374,7 @@ static int lan78xx_probe(struct usb_interface *intf,
  
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index c98c7ee42c6f..b04977fa84f6 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -24,7 +24,6 @@
- #define MTK_MAX_RX_LENGTH_2K	2048
- #define MTK_TX_DMA_BUF_LEN	0x3fff
- #define MTK_DMA_SIZE		512
--#define MTK_NAPI_WEIGHT		64
- #define MTK_MAC_COUNT		2
- #define MTK_RX_ETH_HLEN		(ETH_HLEN + ETH_FCS_LEN)
- #define MTK_RX_HLEN		(NET_SKB_PAD + MTK_RX_ETH_HLEN + NET_IP_ALIGN)
+ 	netif_set_gso_max_size(netdev, LAN78XX_TSO_SIZE(dev));
+ 
+-	netif_napi_add(netdev, &dev->napi, lan78xx_poll, LAN78XX_NAPI_WEIGHT);
++	netif_napi_add(netdev, &dev->napi, lan78xx_poll, NAPI_POLL_WEIGHT);
+ 
+ 	INIT_DELAYED_WORK(&dev->wq, lan78xx_delayedwork);
+ 	init_usb_anchor(&dev->deferred);
 -- 
 2.34.1
 
