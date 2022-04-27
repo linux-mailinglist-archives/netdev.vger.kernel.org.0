@@ -2,70 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 78E675124E9
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 23:59:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0206151250F
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 00:07:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237895AbiD0WDE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 18:03:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39686 "EHLO
+        id S230511AbiD0WKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 18:10:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237893AbiD0WDC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 18:03:02 -0400
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FCA1266E;
-        Wed, 27 Apr 2022 14:59:50 -0700 (PDT)
-Received: by mail-io1-xd33.google.com with SMTP id f2so4430163ioh.7;
-        Wed, 27 Apr 2022 14:59:50 -0700 (PDT)
+        with ESMTP id S230339AbiD0WKH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 18:10:07 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD72F49C80;
+        Wed, 27 Apr 2022 15:06:54 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id r9so2573283pjo.5;
+        Wed, 27 Apr 2022 15:06:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=EJsiHNT79VVIpSJIQf2oGVX7izbgw/olktUMj/NaMvc=;
-        b=N1VpsMpbaf/hvl2UnUGsTbZFOFYoUjP06knRAnAgXss1kHjQv9DSXlsZARkKqGWK2W
-         LkVNJy0RI2Rv9p8pb5plc9F41GPWOqADNsRzmdhmeT32cNtfflsOCvm7PoLTIeN4/88e
-         TEkuZTyTQ2iiwFb2I6V5y5YF3HhlXnhpwuvqit/Lt/kYSzQnJTNY605twOJkA/3qzKIb
-         VQf1KVD5iO2Fw4oD0FgMIc/nN2fmiVCXo7o1GTkOrwW/6kspwAJtI/bhqhG2q5AQvwxJ
-         MwB5EZWsHYaL1PIt3Vzmy3pUw6xia3k5oyqLAgkpFfOq5Q5z3WumaXbJysSAzZAkkQal
-         K7ww==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=qmucbmM52CaCl0fmfImEVzv8vNGc78ti//UJ2ph8lTQ=;
+        b=MBKmEn+ifVmmQQN0jB6bPRJ9Uq+PIDqBvsMz20cj67GLM16JtWwrEIjXik2on8oBAB
+         Ni6iGxFIVwVIi2yf0oBKVSkpqeAwF6ck7fUDd9Mex2owdpihiITEKRuUW+t/0pXezWcA
+         UMHdkrMh405wU8GVC4Ha+5P13732bL/wyh+erNgrOvjAsNXL6sC/rCsjH7IDD4Ay4G7c
+         qo3e14rz+aRBTcrw1mJ4Wvqvkon7iOxKoCDf/E1fSHWib1G7ZxZstYe8suK8NbTnnLlz
+         6hTTthiVC12LIzK243k0G2zBbi0EUkQu7bju9BhAxrvtrbgzTHxmEqQ7ZsDSQelvCg+y
+         0GXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=EJsiHNT79VVIpSJIQf2oGVX7izbgw/olktUMj/NaMvc=;
-        b=dx3YyUGnD5SIxDeqk63wrC6JdCAOgiaMKlsUVGBHuBAbJ6x2V68r+EP2nf71DyIvd/
-         dNO8Nw4d1kJVnJol71KDoK54xohvdP5maqYyf5u2JtoM+G0RJQnFL+UW1MstX95gvH/t
-         lKU/2fNyVcxc6vctMlQ2JJ5ZXNPklHh3IR6Y0Ff0nr7ucOAK/KbmdDuTmusz6kZIGrFV
-         Hn1PhZ3kCybY34ye1WW6mK3sHDrZOwMhtK7EOmzgVWRoyiNknaSYk7Z39quvoVt+cbHr
-         OrcjTnJ8SqTw/ZHlr1TpvLO21CZrM5jzbbSSqvQLiDzYhQ+lkaIE0WGlEweWSUalDSFK
-         RsHg==
-X-Gm-Message-State: AOAM531TAcFXclNh7ixTnjj63V2hPrfomcLFQ4lb/mATdVvfnppv42vm
-        r9uVyA7xS0TuMoBzSdLpVrY=
-X-Google-Smtp-Source: ABdhPJxTacxkkTRZyyS7nw+N/2vdrFweOc1WoIrlB0dTFr39gYnqo9LBAO8iPDtqPG1+DGP6CYAqWw==
-X-Received: by 2002:a5d:9316:0:b0:657:a364:ceb with SMTP id l22-20020a5d9316000000b00657a3640cebmr4232073ion.63.1651096789907;
-        Wed, 27 Apr 2022 14:59:49 -0700 (PDT)
-Received: from localhost ([172.243.153.43])
-        by smtp.gmail.com with ESMTPSA id r63-20020a6b8f42000000b00657b2837880sm2004154iod.30.2022.04.27.14.59.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 14:59:49 -0700 (PDT)
-Date:   Wed, 27 Apr 2022 14:59:41 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Liu Jian <liujian56@huawei.com>, john.fastabend@gmail.com,
-        daniel@iogearbox.net, jakub@cloudflare.com, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, ast@kernel.org,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     liujian56@huawei.com
-Message-ID: <6269bccd77ead_d9e8d20820@john.notmuch>
-In-Reply-To: <20220427115150.210213-1-liujian56@huawei.com>
-References: <20220427115150.210213-1-liujian56@huawei.com>
-Subject: RE: [PATCH bpf-next] bpf, sockmap: Call skb_linearize only when
- required in sk_psock_skb_ingress_enqueue
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=qmucbmM52CaCl0fmfImEVzv8vNGc78ti//UJ2ph8lTQ=;
+        b=BtJla3jjw2QZFmgcATdr+7IwUxaqeni9pNaGEfM7rcWGXxmuyV6jj8AVBPOQZuJTK7
+         +wfz+pJps9lES6KJSCiQToYqaw8lHPkaZKyJgtuOIW/zgN/QL4QmOcWs92gYbFMMpJsX
+         Bsk/CYB2KYaZp3ZqYGFtxom68IWBbgp49heSCuu8dZIdiDRm+dy24f9X2e//ttpOo/26
+         AbIGdY56VeesFQyMdTYf4UxBXF60SfiO26GjdON+P/DhG3Yu5Nkm4Gnj+Jsb31ZNaJ+y
+         b/D2NXBvqB3ok1vZpTiyekQvcHQ3G/A+9R7wBB5jfi//BlgfeBFuECbsw4KuqQFK5Gh5
+         I7Iw==
+X-Gm-Message-State: AOAM531X3YE+4Ytk8UsMTrsspVXIFAf5bIyVM28jyBH22WfNNPIjpHM8
+        myio3F0Hm/EqRtWNabHq5Zk=
+X-Google-Smtp-Source: ABdhPJzWXMNA1PfUcd/83ITryaBDRC/edPY0WxQbkMck4b4azmefFtjUEbNJs3Wo2J0ZQ7Xh/smv5A==
+X-Received: by 2002:a17:90b:1a8a:b0:1d2:e93e:6604 with SMTP id ng10-20020a17090b1a8a00b001d2e93e6604mr46028945pjb.233.1651097214348;
+        Wed, 27 Apr 2022 15:06:54 -0700 (PDT)
+Received: from [10.69.68.169] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id j64-20020a62c543000000b0050d260c0ea8sm16128026pfg.110.2022.04.27.15.06.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Apr 2022 15:06:53 -0700 (PDT)
+Message-ID: <652a5d64-4f06-7ac8-a792-df0a4b43686f@gmail.com>
+Date:   Wed, 27 Apr 2022 15:06:52 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH net-next v1 3/3] net: phy: micrel: add coma mode GPIO
+Content-Language: en-US
+To:     Michael Walle <michael@walle.cc>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220427214406.1348872-1-michael@walle.cc>
+ <20220427214406.1348872-4-michael@walle.cc>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220427214406.1348872-4-michael@walle.cc>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -74,15 +82,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Liu Jian wrote:
-> The skb_to_sgvec fails only when the number of frag_list and frags exceeds
-> MAX_MSG_FRAGS. Therefore, we can call skb_linearize only when the
-> conversion fails.
-> 
-> Signed-off-by: Liu Jian <liujian56@huawei.com>
-> ---
 
-Looks good.  I guess performance improvement for some use cases with lots of packets that
-no longer need linearizing must be fairly good.
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+On 4/27/2022 2:44 PM, Michael Walle wrote:
+> The LAN8814 has a coma mode pin which puts the PHY into isolate and
+> power-dowm mode. Unfortunately, the mode cannot be disabled by a
+> register. Usually, the input pin has a pull-up and connected to a GPIO
+> which can then be used to disable the mode. Try to get the GPIO and
+> deassert it.
+
+Poor choice of word, how about deep sleep, dormant, super isolate?
+-- 
+Florian
