@@ -2,57 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 430CC511348
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 10:10:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35416511369
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 10:19:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359323AbiD0INL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 04:13:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39464 "EHLO
+        id S1344335AbiD0IWo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 04:22:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244734AbiD0INK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 04:13:10 -0400
-Received: from mail.toke.dk (mail.toke.dk [45.145.95.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DEC2237C7;
-        Wed, 27 Apr 2022 01:09:58 -0700 (PDT)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
-        t=1651046996; bh=8IZuHw4VAQpc/c5fMYUJkTAtA9Skb0wCA70zXBoZJbw=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=BS81t7rBba7fCg16X7a51opdR1lsHAkf7hUUhYyD3R/Jlc1R+j6Foq3r9IXkSSoMd
-         omMpa7b2/HEraedpY7QHRmIfyiMfBh6DfT/U85mj2PzqdYXYACBNKyC9kM6y6hIcqb
-         sch64TPDLRgoWPJGI9BBDQoM2DzY5er1IZtlEvbp3IoKOO9FDirPJbQGLFZNWtmQxF
-         aAF4zV0d2UpBNpzznyip3DBopjIjXtKCjmzcio3rG9t0rYRhy5Qy00CBZSA+TGgE+C
-         a1toMfCakwBblzLBXtr9LWQA/Qzf/1B1dvba+tesey/Vx+ONnXm815pg8RjB3GdSiT
-         jP4wlWD+qIkKw==
-To:     Wan Jiabing <wanjiabing@vivo.com>, Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S1359370AbiD0IWn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 04:22:43 -0400
+Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B8EE6515B0;
+        Wed, 27 Apr 2022 01:19:31 -0700 (PDT)
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 23R8JED9002363;
+        Wed, 27 Apr 2022 10:19:14 +0200
+Date:   Wed, 27 Apr 2022 10:19:14 +0200
+From:   Willy Tarreau <w@1wt.eu>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     kael_w@yeah.net, Wan Jiabing <wanjiabing@vivo.com>
-Subject: Re: [PATCH] ath9k: hif_usb: simplify if-if to if-else
-In-Reply-To: <20220424094441.104937-1-wanjiabing@vivo.com>
-References: <20220424094441.104937-1-wanjiabing@vivo.com>
-Date:   Wed, 27 Apr 2022 10:09:56 +0200
-X-Clacks-Overhead: GNU Terry Pratchett
-Message-ID: <871qxjhrqj.fsf@toke.dk>
+        Eric Dumazet <edumazet@google.com>,
+        Moshe Kol <moshe.kol@mail.huji.ac.il>,
+        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
+        Amit Klein <aksecurity@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net 6/7] tcp: increase source port perturb table to 2^16
+Message-ID: <20220427081914.GA1724@1wt.eu>
+References: <20220427065233.2075-1-w@1wt.eu>
+ <20220427065233.2075-7-w@1wt.eu>
+ <7372f788762140d496c157813b0173e5@AcuMS.aculab.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7372f788762140d496c157813b0173e5@AcuMS.aculab.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wan Jiabing <wanjiabing@vivo.com> writes:
+On Wed, Apr 27, 2022 at 08:07:29AM +0000, David Laight wrote:
+> From: Willy Tarreau
+> > Sent: 27 April 2022 07:53
+> > 
+> > Moshe Kol, Amit Klein, and Yossi Gilad reported being able to accurately
+> > identify a client by forcing it to emit only 40 times more connections
+> > than there are entries in the table_perturb[] table. The previous two
+> > improvements consisting in resalting the secret every 10s and adding
+> > randomness to each port selection only slightly improved the situation,
+> > and the current value of 2^8 was too small as it's not very difficult
+> > to make a client emit 10k connections in less than 10 seconds.
+> > 
+> > Thus we're increasing the perturb table from 2^8 to 2^16 so that the the
+> > same precision now requires 2.6M connections, which is more difficult in
+> > this time frame and harder to hide as a background activity. The impact
+> > is that the table now uses 256 kB instead of 1 kB, which could mostly
+> > affect devices making frequent outgoing connections. However such
+> > components usually target a small set of destinations (load balancers,
+> > database clients, perf assessment tools), and in practice only a few
+> > entries will be visited, like before.
+> 
+> Increasing the table size has a bigger impact on anyone trying
+> to get the kernel to run in a limited memory footprint.
+> 
+> All these large tables (often hash tables) soon add up.
 
-> Use if and else instead of if(A) and if (!A).
->
-> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+We know, and the initial approach that required a significantly larger
+table and an extra table per namespace was a no-go. All these are part
+of the reasons for the effort it took to refine the solution in order
+to avoid such unacceptable costs. The way it was made here makes it easy
+to patch the value for small systems if needed and leaves the door open
+for a configurable setting in the future if that was estimated necessary
+for certain environments.
 
-Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@toke.dk>
+Willy
