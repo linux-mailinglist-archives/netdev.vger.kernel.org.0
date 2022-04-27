@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 171E3511E7D
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 20:37:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B123E511F45
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 20:37:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240277AbiD0Poy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 11:44:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46232 "EHLO
+        id S240264AbiD0PpC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 11:45:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240150AbiD0Pop (ORCPT
+        with ESMTP id S240155AbiD0Pop (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 11:44:45 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D227A31905
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6469D29CA0
         for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 08:41:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 44C7FB82876
+        by ams.source.kernel.org (Postfix) with ESMTPS id B0C2FB82878
         for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 15:41:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB5F5C385B3;
-        Wed, 27 Apr 2022 15:41:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 343C5C385A7;
+        Wed, 27 Apr 2022 15:41:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1651074086;
-        bh=pKFnkLlSV3w5lA2qNH/13B5W/VVza1dsOWFPcA1sfbQ=;
+        bh=oCKeNCN2yICMPChiUphgruZdKfrlQkmr9We7CZOAQBA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X28T8eJhFJAIxiWJ3bGl9EyczjxtqxUVAIpm3CkA5tm3gKLHttpaALWXZhIp/hQqW
-         Ei/fVNl/TurfoIktloLCQI1JbL1YTvAqxlhSR2xuN9CYhMDuCgtOA2LhB1w+2+ACr7
-         //J4njlYCxsDM9Z5ImLM1AV4hsqXzmpeLP8clpSyKjPbcMDL1krebVb2P6Qs06dXFE
-         /pz7j0jVsOIHHvJwuMa8ZwfxRg9q3gQBdzUNk9hDZRT4uwJIeUjcT2kDCRBAtt9Gkp
-         kECErqpfutJie/I0S8mUQL361NIjjTIIeoM2iqo3doGVd1BdIXhpyw1J2tFTWokyBr
-         cu+gV1IM3VN1Q==
+        b=CzwUuWyekiBBAnzfZCilIGLOiklv/KCnu6uE4eYKTAn4K8cppMPqMeUV9ohrGjzl3
+         LYfsJfXf/d8KJ8LIdxVTyVZFaYX6GE6wTy3TUHrilO+M2PLHzbmOTHpERx61S1nEmZ
+         6yKEBXoh8b9dNO+jZoV4edDEnttbZmX75Ln2kGpbbzoOL8XZqIDkLFSeolQOov9Hd1
+         NySD4jXTloGcTiUpUHu5AU/NTviUSLTWmISbNTbvWXefOtcqfYNooRQXoI1StgGnRb
+         DXG+87KQR+Asaj0XcAmsmr7lmsk80j1Ldl6VWPRXpjgDoFqQU83ulTGPeaYuGjhq/r
+         ZFDoKpg2XV/jQ==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net, pabeni@redhat.com
 Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        rafal@milecki.pl, bcm-kernel-feedback-list@broadcom.com
-Subject: [PATCH net-next 08/14] eth: bgnet: remove a copy of the NAPI_POLL_WEIGHT define
-Date:   Wed, 27 Apr 2022 08:41:05 -0700
-Message-Id: <20220427154111.529975-9-kuba@kernel.org>
+        irusskikh@marvell.com, epomozov@marvell.com
+Subject: [PATCH net-next 09/14] eth: atlantic: remove a copy of the NAPI_POLL_WEIGHT define
+Date:   Wed, 27 Apr 2022 08:41:06 -0700
+Message-Id: <20220427154111.529975-10-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220427154111.529975-1-kuba@kernel.org>
 References: <20220427154111.529975-1-kuba@kernel.org>
@@ -57,39 +57,53 @@ values in the drivers just makes refactoring harder.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: rafal@milecki.pl
-CC: bcm-kernel-feedback-list@broadcom.com
+CC: irusskikh@marvell.com
+CC: epomozov@marvell.com
 ---
- drivers/net/ethernet/broadcom/bgmac.c | 2 +-
- drivers/net/ethernet/broadcom/bgmac.h | 2 --
- 2 files changed, 1 insertion(+), 3 deletions(-)
+ drivers/net/ethernet/aquantia/atlantic/aq_cfg.h | 2 --
+ drivers/net/ethernet/aquantia/atlantic/aq_ptp.c | 2 +-
+ drivers/net/ethernet/aquantia/atlantic/aq_vec.c | 2 +-
+ 3 files changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bgmac.c b/drivers/net/ethernet/broadcom/bgmac.c
-index 7b525c65bacb..2dfc1e32bbb3 100644
---- a/drivers/net/ethernet/broadcom/bgmac.c
-+++ b/drivers/net/ethernet/broadcom/bgmac.c
-@@ -1527,7 +1527,7 @@ int bgmac_enet_probe(struct bgmac *bgmac)
- 	if (bcm47xx_nvram_getenv("et0_no_txint", NULL, 0) == 0)
- 		bgmac->int_mask &= ~BGMAC_IS_TX_MASK;
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_cfg.h b/drivers/net/ethernet/aquantia/atlantic/aq_cfg.h
+index 8bcda2cb3a2e..7e9c74b141ef 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_cfg.h
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_cfg.h
+@@ -65,8 +65,6 @@
+  */
+ #define AQ_CFG_RESTART_DESC_THRES   (AQ_CFG_SKB_FRAGS_MAX * 2)
  
--	netif_napi_add(net_dev, &bgmac->napi, bgmac_poll, BGMAC_WEIGHT);
-+	netif_napi_add(net_dev, &bgmac->napi, bgmac_poll, NAPI_POLL_WEIGHT);
- 
- 	err = bgmac_phy_connect(bgmac);
- 	if (err) {
-diff --git a/drivers/net/ethernet/broadcom/bgmac.h b/drivers/net/ethernet/broadcom/bgmac.h
-index 110088e662ea..e05ac92c0650 100644
---- a/drivers/net/ethernet/broadcom/bgmac.h
-+++ b/drivers/net/ethernet/broadcom/bgmac.h
-@@ -364,8 +364,6 @@
- #define BGMAC_CHIPCTL_7_IF_TYPE_MII		0x00000040
- #define BGMAC_CHIPCTL_7_IF_TYPE_RGMII		0x00000080
- 
--#define BGMAC_WEIGHT	64
+-#define AQ_CFG_NAPI_WEIGHT     64U
 -
- #define ETHER_MAX_LEN	(ETH_FRAME_LEN + ETH_FCS_LEN)
+ /*#define AQ_CFG_MAC_ADDR_PERMANENT {0x30, 0x0E, 0xE3, 0x12, 0x34, 0x56}*/
  
- /* Feature Flags */
+ #define AQ_CFG_FC_MODE AQ_NIC_FC_FULL
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c b/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
+index 06de19f63287..275324c9e51e 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
+@@ -1218,7 +1218,7 @@ int aq_ptp_init(struct aq_nic_s *aq_nic, unsigned int idx_vec)
+ 	atomic_set(&aq_ptp->offset_ingress, 0);
+ 
+ 	netif_napi_add(aq_nic_get_ndev(aq_nic), &aq_ptp->napi,
+-		       aq_ptp_poll, AQ_CFG_NAPI_WEIGHT);
++		       aq_ptp_poll, NAPI_POLL_WEIGHT);
+ 
+ 	aq_ptp->idx_vector = idx_vec;
+ 
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_vec.c b/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
+index e839e1002ec7..f0fdf20f01c1 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
+@@ -120,7 +120,7 @@ struct aq_vec_s *aq_vec_alloc(struct aq_nic_s *aq_nic, unsigned int idx,
+ 	self->rx_rings = 0;
+ 
+ 	netif_napi_add(aq_nic_get_ndev(aq_nic), &self->napi,
+-		       aq_vec_poll, AQ_CFG_NAPI_WEIGHT);
++		       aq_vec_poll, NAPI_POLL_WEIGHT);
+ 
+ err_exit:
+ 	return self;
 -- 
 2.34.1
 
