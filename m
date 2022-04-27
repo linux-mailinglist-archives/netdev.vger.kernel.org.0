@@ -2,143 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BD09511113
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 08:22:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 607B1511130
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 08:31:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358076AbiD0GZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 02:25:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39474 "EHLO
+        id S1358115AbiD0GeH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 02:34:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229813AbiD0GZW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 02:25:22 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AF568232E;
-        Tue, 26 Apr 2022 23:22:12 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kp7tN1nBDzfb9r;
-        Wed, 27 Apr 2022 14:21:16 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 27 Apr
- 2022 14:22:09 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <hawk@kernel.org>, <john.fastabend@gmail.com>, <andrii@kernel.org>,
-        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
-        <kpsingh@kernel.org>
-CC:     <weiyongjun1@huawei.com>, <shaozhengchao@huawei.com>,
-        <yuehaibing@huawei.com>
-Subject: [PATCH v2,bpf-next] samples/bpf: detach xdp prog when program exits unexpectedly in xdp_rxq_info_user
-Date:   Wed, 27 Apr 2022 14:23:38 +0800
-Message-ID: <20220427062338.80173-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S242098AbiD0GeG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 02:34:06 -0400
+X-Greylist: delayed 1589 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 26 Apr 2022 23:30:56 PDT
+Received: from mailout2.hostsharing.net (mailout2.hostsharing.net [83.223.78.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C7971C126
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 23:30:56 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by mailout2.hostsharing.net (Postfix) with ESMTPS id D784B1008D087;
+        Wed, 27 Apr 2022 08:30:54 +0200 (CEST)
+Received: from localhost (unknown [89.246.108.87])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by h08.hostsharing.net (Postfix) with ESMTPSA id AA9586000F33;
+        Wed, 27 Apr 2022 08:30:54 +0200 (CEST)
+X-Mailbox-Line: From 805ccdc606bd8898d59931bd4c7c68537ed6e550 Mon Sep 17 00:00:00 2001
+Message-Id: <805ccdc606bd8898d59931bd4c7c68537ed6e550.1651040826.git.lukas@wunner.de>
+From:   Lukas Wunner <lukas@wunner.de>
+Date:   Wed, 27 Apr 2022 08:30:51 +0200
+Subject: [PATCH net-next] net: phy: Deduplicate interrupt disablement on PHY
+ attach
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When xdp_rxq_info_user program exits unexpectedly, it doesn't detach xdp
-prog of device, and other xdp prog can't be attached to the device. So
-call init_exit() to detach xdp prog when program exits unexpectedly.
+phy_attach_direct() first calls phy_init_hw() (which restores interrupt
+settings through ->config_intr()), then calls phy_disable_interrupts().
 
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+So if phydev->interrupts was previously set to 1, interrupts are briefly
+enabled, then disabled, which seems nonsensical.
+
+If it was previously set to 0, interrupts are disabled twice, which is
+equally nonsensical.
+
+Deduplicate interrupt disablement.
+
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
 ---
- samples/bpf/xdp_rxq_info_user.c | 22 ++++++++++++++++------
- 1 file changed, 16 insertions(+), 6 deletions(-)
+ drivers/net/phy/phy_device.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/samples/bpf/xdp_rxq_info_user.c b/samples/bpf/xdp_rxq_info_user.c
-index f2d90cba5164..9f6de6508713 100644
---- a/samples/bpf/xdp_rxq_info_user.c
-+++ b/samples/bpf/xdp_rxq_info_user.c
-@@ -18,7 +18,7 @@ static const char *__doc__ = " XDP RX-queue info extract example\n\n"
- #include <getopt.h>
- #include <net/if.h>
- #include <time.h>
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 8406ac739def..f867042b2eb4 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1449,6 +1449,8 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
+ 
+ 	phydev->state = PHY_READY;
+ 
++	phydev->interrupts = PHY_INTERRUPT_DISABLED;
++
+ 	/* Port is set to PORT_TP by default and the actual PHY driver will set
+ 	 * it to different value depending on the PHY configuration. If we have
+ 	 * the generic PHY driver we can't figure it out, thus set the old
+@@ -1471,10 +1473,6 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
+ 	if (err)
+ 		goto error;
+ 
+-	err = phy_disable_interrupts(phydev);
+-	if (err)
+-		return err;
 -
-+#include <limits.h>
- #include <arpa/inet.h>
- #include <linux/if_link.h>
+ 	phy_resume(phydev);
+ 	phy_led_triggers_register(phydev);
  
-@@ -44,6 +44,9 @@ static struct bpf_map *rx_queue_index_map;
- #define EXIT_FAIL_BPF		4
- #define EXIT_FAIL_MEM		5
- 
-+#define FAIL_MEM_SIG		INT_MAX
-+#define FAIL_STAT_SIG		(INT_MAX - 1)
-+
- static const struct option long_options[] = {
- 	{"help",	no_argument,		NULL, 'h' },
- 	{"dev",		required_argument,	NULL, 'd' },
-@@ -77,6 +80,12 @@ static void int_exit(int sig)
- 			printf("program on interface changed, not removing\n");
- 		}
- 	}
-+
-+	if (sig == FAIL_MEM_SIG)
-+		exit(EXIT_FAIL_MEM);
-+	else if (sig == FAIL_STAT_SIG)
-+		exit(EXIT_FAIL);
-+
- 	exit(EXIT_OK);
- }
- 
-@@ -141,7 +150,8 @@ static char* options2str(enum cfg_options_flags flag)
- 	if (flag & READ_MEM)
- 		return "read";
- 	fprintf(stderr, "ERR: Unknown config option flags");
--	exit(EXIT_FAIL);
-+	int_exit(FAIL_STAT_SIG);
-+	return "unknown";
- }
- 
- static void usage(char *argv[])
-@@ -174,7 +184,7 @@ static __u64 gettime(void)
- 	res = clock_gettime(CLOCK_MONOTONIC, &t);
- 	if (res < 0) {
- 		fprintf(stderr, "Error with gettimeofday! (%i)\n", res);
--		exit(EXIT_FAIL);
-+		int_exit(FAIL_STAT_SIG);
- 	}
- 	return (__u64) t.tv_sec * NANOSEC_PER_SEC + t.tv_nsec;
- }
-@@ -202,7 +212,7 @@ static struct datarec *alloc_record_per_cpu(void)
- 	array = calloc(nr_cpus, sizeof(struct datarec));
- 	if (!array) {
- 		fprintf(stderr, "Mem alloc error (nr_cpus:%u)\n", nr_cpus);
--		exit(EXIT_FAIL_MEM);
-+		int_exit(FAIL_MEM_SIG);
- 	}
- 	return array;
- }
-@@ -215,7 +225,7 @@ static struct record *alloc_record_per_rxq(void)
- 	array = calloc(nr_rxqs, sizeof(struct record));
- 	if (!array) {
- 		fprintf(stderr, "Mem alloc error (nr_rxqs:%u)\n", nr_rxqs);
--		exit(EXIT_FAIL_MEM);
-+		int_exit(FAIL_MEM_SIG);
- 	}
- 	return array;
- }
-@@ -229,7 +239,7 @@ static struct stats_record *alloc_stats_record(void)
- 	rec = calloc(1, sizeof(struct stats_record));
- 	if (!rec) {
- 		fprintf(stderr, "Mem alloc error\n");
--		exit(EXIT_FAIL_MEM);
-+		int_exit(FAIL_MEM_SIG);
- 	}
- 	rec->rxq = alloc_record_per_rxq();
- 	for (i = 0; i < nr_rxqs; i++)
 -- 
-2.33.0
+2.35.2
 
