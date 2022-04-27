@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97CB55125A7
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 00:51:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F9CC5125D0
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 00:52:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238395AbiD0Wyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 18:54:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35752 "EHLO
+        id S238886AbiD0WzG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 18:55:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238414AbiD0Wyf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 18:54:35 -0400
+        with ESMTP id S237853AbiD0Wyi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 18:54:38 -0400
 Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA47D8CCD3;
-        Wed, 27 Apr 2022 15:51:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30A968CCF2;
+        Wed, 27 Apr 2022 15:51:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
         s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=s8xeHJYGrg2PKjTPKivxQn37LuEP6tnBzN9Ru5ARxEw=; b=itLofTxVD3jMCMG1QHrJKsVczn
-        vbwUlm+NWg0pMSOCtSjWETMXDXA/dO9ti0V72q001TMmb2gIzR2yZduw7qvMkCQ0akMjJfPi2/PQc
-        iUqIhedKtPpwa0f3Qs25a8tdm2oshD1/KMZCL+mdxqH7vtpZXZFld+eSj+8owBfmLjMNmktzOqSfY
-        dTb/ic9+j716feaFlMGDFCnVL8lNNI9bMH1gzqsKPsNg72iLmPQmwnJD7EfxHW7NQoAv8T+6Y8VEH
-        2ohazyjoc9Z+MNXm7Lr7Bh3GLxJ6zmDCTC3SRdi9P8jirAP5MyZi4cLioUm7IG4Ag3/IwiKZ9+K4K
-        3P27PVmg==;
+        bh=/X9VGFpkqSi0Xw+sb2fnqT5ti0fEX/+xmh5q7q7MhDY=; b=p3QOIFADQeeHCVp8bxPKwO62s+
+        EGcZOVKN2qbhBt1Pf/EZXw+tkBx2x9DRVMO1uTp94JqIADubO77jiICP/E04L/nn99FEYBzZb+44L
+        /kz24xVDrX4FFqomkvxzWUTFlHhE4ZhZCfkHWBQr0/Lzkqr3CE/w4r7fAtX83L8f0pEarK5Qx6XYH
+        4zbdyCjIZQkKS6mh2t53k79tPqORut15Ek94GDPyIzx6i+d57M9a0UcH7EVEXkkbVPk2r+5s4ram2
+        N0+1/N2WpK9qFZ8QFj+vJFSqHIZNJD4YgbbIqqLYxl+DJIQthPO2tybUvOHdIFVD8Tw3e7+DHlkve
+        LuLH0yww==;
 Received: from [179.113.53.197] (helo=localhost)
         by fanzine2.igalia.com with esmtpsa 
         (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1njqUi-00020p-0e; Thu, 28 Apr 2022 00:50:49 +0200
+        id 1njqV1-000228-53; Thu, 28 Apr 2022 00:51:08 +0200
 From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
 To:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
         kexec@lists.infradead.org
@@ -57,13 +57,15 @@ Cc:     linux-kernel@vger.kernel.org,
         paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
         senozhatsky@chromium.org, stern@rowland.harvard.edu,
         tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, Ard Biesheuvel <ardb@kernel.org>,
-        David Gow <davidgow@google.com>,
-        Evan Green <evgreen@chromium.org>,
-        Julius Werner <jwerner@chromium.org>
-Subject: [PATCH 04/30] firmware: google: Convert regular spinlock into trylock on panic path
-Date:   Wed, 27 Apr 2022 19:48:58 -0300
-Message-Id: <20220427224924.592546-5-gpiccoli@igalia.com>
+        will@kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Mihai Carabas <mihai.carabas@oracle.com>,
+        Shile Zhang <shile.zhang@linux.alibaba.com>,
+        Wang ShaoBo <bobo.shaobowang@huawei.com>,
+        zhenwei pi <pizhenwei@bytedance.com>
+Subject: [PATCH 05/30] misc/pvpanic: Convert regular spinlock into trylock on panic path
+Date:   Wed, 27 Apr 2022 19:48:59 -0300
+Message-Id: <20220427224924.592546-6-gpiccoli@igalia.com>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220427224924.592546-1-gpiccoli@igalia.com>
 References: <20220427224924.592546-1-gpiccoli@igalia.com>
@@ -78,51 +80,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently the gsmi driver registers a panic notifier as well as
-reboot and die notifiers. The callbacks registered are called in
-atomic and very limited context - for instance, panic disables
-preemption, local IRQs and all other CPUs that aren't running the
-current panic function.
+The pvpanic driver relies on panic notifiers to execute a callback
+on panic event. Such function is executed in atomic context - the
+panic function disables local IRQs, preemption and all other CPUs
+that aren't running the panic code.
 
-With that said, taking a spinlock in this scenario is a
-dangerous invitation for a deadlock scenario. So, we fix
-that in this commit by changing the regular spinlock with
-a trylock, which is a safer approach.
+With that said, it's dangerous to use regular spinlocks in such path,
+as introduced by commit b3c0f8774668 ("misc/pvpanic: probe multiple instances").
+This patch fixes that by replacing regular spinlocks with the trylock
+safer approach.
 
-Fixes: 74c5b31c6618 ("driver: Google EFI SMI")
-Cc: Ard Biesheuvel <ardb@kernel.org>
-Cc: David Gow <davidgow@google.com>
-Cc: Evan Green <evgreen@chromium.org>
-Cc: Julius Werner <jwerner@chromium.org>
+It also fixes an old comment (about a long gone framebuffer code) and
+the notifier priority - we should execute hypervisor notifiers early,
+deferring this way the panic action to the hypervisor, as expected by
+the users that are setting up pvpanic.
+
+Fixes: b3c0f8774668 ("misc/pvpanic: probe multiple instances")
+Cc: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc: Mihai Carabas <mihai.carabas@oracle.com>
+Cc: Shile Zhang <shile.zhang@linux.alibaba.com>
+Cc: Wang ShaoBo <bobo.shaobowang@huawei.com>
+Cc: zhenwei pi <pizhenwei@bytedance.com>
 Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
 ---
- drivers/firmware/google/gsmi.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/misc/pvpanic/pvpanic.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/firmware/google/gsmi.c b/drivers/firmware/google/gsmi.c
-index adaa492c3d2d..b01ed02e4a87 100644
---- a/drivers/firmware/google/gsmi.c
-+++ b/drivers/firmware/google/gsmi.c
-@@ -629,7 +629,10 @@ static int gsmi_shutdown_reason(int reason)
- 	if (saved_reason & (1 << reason))
- 		return 0;
+diff --git a/drivers/misc/pvpanic/pvpanic.c b/drivers/misc/pvpanic/pvpanic.c
+index 4b8f1c7d726d..049a12006348 100644
+--- a/drivers/misc/pvpanic/pvpanic.c
++++ b/drivers/misc/pvpanic/pvpanic.c
+@@ -34,7 +34,9 @@ pvpanic_send_event(unsigned int event)
+ {
+ 	struct pvpanic_instance *pi_cur;
  
--	spin_lock_irqsave(&gsmi_dev.lock, flags);
-+	if (!spin_trylock_irqsave(&gsmi_dev.lock, flags)) {
-+		rc = -EBUSY;
-+		goto out;
-+	}
+-	spin_lock(&pvpanic_lock);
++	if (!spin_trylock(&pvpanic_lock))
++		return;
++
+ 	list_for_each_entry(pi_cur, &pvpanic_list, list) {
+ 		if (event & pi_cur->capability & pi_cur->events)
+ 			iowrite8(event, pi_cur->base);
+@@ -55,9 +57,13 @@ pvpanic_panic_notify(struct notifier_block *nb, unsigned long code, void *unused
+ 	return NOTIFY_DONE;
+ }
  
- 	saved_reason |= (1 << reason);
++/*
++ * Call our notifier very early on panic, deferring the
++ * action taken to the hypervisor.
++ */
+ static struct notifier_block pvpanic_panic_nb = {
+ 	.notifier_call = pvpanic_panic_notify,
+-	.priority = 1, /* let this called before broken drm_fb_helper() */
++	.priority = INT_MAX,
+ };
  
-@@ -646,6 +649,7 @@ static int gsmi_shutdown_reason(int reason)
- 
- 	spin_unlock_irqrestore(&gsmi_dev.lock, flags);
- 
-+out:
- 	if (rc < 0)
- 		printk(KERN_ERR "gsmi: Log Shutdown Reason failed\n");
- 	else
+ static void pvpanic_remove(void *param)
 -- 
 2.36.0
 
