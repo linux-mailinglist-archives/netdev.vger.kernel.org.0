@@ -2,102 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EEF4A51118A
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 08:46:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46E7151119F
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 08:50:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244222AbiD0Gt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 02:49:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43788 "EHLO
+        id S1358346AbiD0GvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 02:51:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243581AbiD0GtZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 02:49:25 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56AA114C3F3
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 23:46:14 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id u3so1085421wrg.3
-        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 23:46:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3/D+QgKEFsBMR82p2RR7cNY1E/SLLYTeAIRlhtiDYMs=;
-        b=I1c5RNmAGEQjZdWencRGnFmUNiAVQweGdGr08hbWB4V/ccS1LiILs8RyHnJFxGqM+T
-         8/s/k5lgZ/R8OBy9aW6xCwKgO5WtB+XiOj6ANUm7dNZo2p+MYx2lsleC5H6XY2b8tfyM
-         60E/CdOnhnvDfJYNXNX7tFBU2es7LLkgmB/jp5fNIjKTjQCvj2PZ6ZJVtsY0GVrXQVXX
-         4ITFyEACDHSSANbAuLVvwWXFcYfazrmq1s2ef8/H9G0UY0ZoSw+iZ06XekcKppsdKABC
-         3sCMk36RhRLvOW99Q79GruqEqcsdk6RgyKky8lNEoBduMTd8aNvVNZQAclDOSh4E5kHP
-         4IwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3/D+QgKEFsBMR82p2RR7cNY1E/SLLYTeAIRlhtiDYMs=;
-        b=njWs+EcdLiIX2AnceEPvA+ldZS22l03JyjrgAk7BkVAJgSGAxMmWxBgx9wRGUisXJr
-         JJjCc5dlas+oRDLBWlGOdFz5xwfYuro/7ovr8JkNGw8/Bhb0TYZdRssX188ISJjfyBbN
-         v9iB6ELD0/98lsLSccaIJ8scMeuyO7QI/nK5F12ntDSI2dHn7k+wqx0iG/aXjOaME0Q8
-         wI4Pr1vfx0Wk/y5FaF5NWegEElo28zvHMBzOSgvv+C1aMsWSeHroU3dM0ErjG7tEMnsz
-         E9mfpi9pCnBe0vItOo749gfXMhkejOdfvM/axfT4AjZ9MGk38SlR9jKHi2XB8xzl46Pu
-         2PPw==
-X-Gm-Message-State: AOAM531CYRDqgeEthNGgwSzvns5OA1VhiNiaVGHkJtKTNqFTI/8GsBDe
-        xF+w7es21Oi1Ozcezts4Vy/P0DGg36joy1zp2zY=
-X-Google-Smtp-Source: ABdhPJy94CfIG0Q1Q1XTJFEE8ABI6Df8oxqoysGkCWNDPhpzpm2pNllsz4Iz4ijsOGgy47KEqcflfA==
-X-Received: by 2002:a5d:4348:0:b0:206:1c79:fd57 with SMTP id u8-20020a5d4348000000b002061c79fd57mr21594935wrr.344.1651041972804;
-        Tue, 26 Apr 2022 23:46:12 -0700 (PDT)
-Received: from localhost (mail.chocen-mesto.cz. [85.163.43.2])
-        by smtp.gmail.com with ESMTPSA id j24-20020adfa558000000b0020ae9eafef9sm2156734wrb.92.2022.04.26.23.46.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 23:46:12 -0700 (PDT)
-Date:   Wed, 27 Apr 2022 08:45:54 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     kernel test robot <lkp@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        netdev@vger.kernel.org, Ido Schimmel <idosch@idosch.org>
-Subject: Re: [linux-next:master] BUILD REGRESSION
- e7d6987e09a328d4a949701db40ef63fbb970670
-Message-ID: <YmjmogCkTqEMbHiY@nanopsycho>
-References: <6267862c.xuehJN2IUHn8WMof%lkp@intel.com>
- <20220426051716.7fc4b9c1@kernel.org>
- <Ymfol/Cf66KCYKA1@nanopsycho>
- <YmgIu4L6f4WfrIte@nanopsycho>
- <20220426103537.4d0f43b7@kernel.org>
+        with ESMTP id S244328AbiD0GvX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 02:51:23 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69C5D14CC1F;
+        Tue, 26 Apr 2022 23:48:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1651042091; x=1682578091;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Wrr2acTes9Dn1J1j0LC1OLNlWlSW00Omrf7FPInY+0E=;
+  b=YWzVY4L/R/BPgol7as31JIvecyXz4aUWTkAPUxZcQ8cEhzpHzSg6rEtu
+   iIpkjzf+Ql/qmBx9pG8qc+pCqhuPI5WDF8Zff7gOg0SlbUrKsIgVWH78A
+   UPfG3nPMMejpaLMM8QAi0G5vVsIgiGr232aNrYJbloq2WgYKbzFcQAuf7
+   wEIIOd8s5FHPdfXqdL/XsoAg93xb94tjN41JejfSkO8BuuNLk4RpejPUt
+   vwsCrcl75VWsSbMIuFaC9A0WMcqx7Npi0TPLLLuQqk6lvouAam1rJ8i41
+   JKD3/mxjxJ9XwzbIhRa256vtM3em2935SqXy8zmauJjaPZNQMZi36zgiJ
+   w==;
+X-IronPort-AV: E=Sophos;i="5.90,292,1643698800"; 
+   d="scan'208";a="153965848"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Apr 2022 23:48:09 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 26 Apr 2022 23:48:08 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Tue, 26 Apr 2022 23:48:06 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <UNGLinuxDriver@microchip.com>, <richardcochran@gmail.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v2 0/5] net: lan966x: Add support for PTP programmable pins
+Date:   Wed, 27 Apr 2022 08:51:22 +0200
+Message-ID: <20220427065127.3765659-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220426103537.4d0f43b7@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Apr 26, 2022 at 07:35:37PM CEST, kuba@kernel.org wrote:
->On Tue, 26 Apr 2022 16:59:07 +0200 Jiri Pirko wrote:
->> >>is this one on your radar?  
->> >
->> >Will send a fix for this, thanks.  
->> 
->> Can't find the line. I don't see
->> e7d6987e09a328d4a949701db40ef63fbb970670 in linux-next :/
->
->Eh, no idea which tree it came from, but FWIW I do have that one in my
->local tree. So here it is:
->
->   844		devlink_linecard = devlink_linecard_create(priv_to_devlink(mlxsw_core),
->   845							   slot_index, &mlxsw_linecard_ops,
->   846							   linecard);
->   847		if (IS_ERR(devlink_linecard)) {
->   848			err = PTR_ERR(devlink_linecard);
->   849			goto err_devlink_linecard_create;
->   850		}
->   851		linecard->devlink_linecard = devlink_linecard;
->   852		INIT_DELAYED_WORK(&linecard->status_event_to_dw,
->   853				  &mlxsw_linecard_status_event_to_work);
->
->Unless I'm missing something looks like a false positive :S
+Lan966x has 8 PTP programmable pins. The last pin is hardcoded to be used
+by PHC0 and all the rest are shareable between the PHCs. The PTP pins can
+implement both extts and perout functions.
 
-Yeah, that is where I ended up as well, came into conclusion I have to
-be looking at a different code.
+v1->v2:
+- use ptp_find_pin_unlocked instead of ptp_find_pin inside the irq handler.
+
+Horatiu Vultur (5):
+  dt-bindings: net: lan966x: Extend with the ptp external interrupt.
+  net: lan966x: Change the PTP pin used to read/write the PHC.
+  net: lan966x: Add registers used to configure the PTP pin
+  net: lan966x: Add support for PTP_PF_PEROUT
+  net: lan966x: Add support for PTP_PF_EXTTS
+
+ .../net/microchip,lan966x-switch.yaml         |   2 +
+ .../ethernet/microchip/lan966x/lan966x_main.c |  17 ++
+ .../ethernet/microchip/lan966x/lan966x_main.h |   4 +
+ .../ethernet/microchip/lan966x/lan966x_ptp.c  | 276 +++++++++++++++++-
+ .../ethernet/microchip/lan966x/lan966x_regs.h |  40 +++
+ 5 files changed, 338 insertions(+), 1 deletion(-)
+
+-- 
+2.33.0
+
