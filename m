@@ -2,144 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1121B511166
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 08:42:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 435F951118B
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 08:46:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358217AbiD0GpD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 02:45:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56310 "EHLO
+        id S1358261AbiD0Gso (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 02:48:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242894AbiD0GpC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 02:45:02 -0400
-Received: from mailout1.hostsharing.net (mailout1.hostsharing.net [83.223.95.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 906561D0CE;
-        Tue, 26 Apr 2022 23:41:52 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by mailout1.hostsharing.net (Postfix) with ESMTPS id 0E0401007A26C;
-        Wed, 27 Apr 2022 08:41:51 +0200 (CEST)
-Received: from localhost (unknown [89.246.108.87])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by h08.hostsharing.net (Postfix) with ESMTPSA id D28186000F33;
-        Wed, 27 Apr 2022 08:41:50 +0200 (CEST)
-X-Mailbox-Line: From 6710d8c18ff54139cdc538763ba544187c5a0cee Mon Sep 17 00:00:00 2001
-Message-Id: <6710d8c18ff54139cdc538763ba544187c5a0cee.1651041411.git.lukas@wunner.de>
-From:   Lukas Wunner <lukas@wunner.de>
-Date:   Wed, 27 Apr 2022 08:41:49 +0200
-Subject: [PATCH net] usbnet: smsc95xx: Fix deadlock on runtime resume
-To:     Steve Glendinning <steve.glendinning@shawell.net>,
-        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S239747AbiD0Gsn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 02:48:43 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B05884578D
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 23:45:32 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id w19so1393197lfu.11
+        for <netdev@vger.kernel.org>; Tue, 26 Apr 2022 23:45:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=kNopuFaI+OTYD8gqOyJVqbYSljb9D2fzYG3RIU/KQUk=;
+        b=bt9IKsJqojBmD1/bPuvz2Ah6qKgUOfMC0EKCB/0F6vHD1Hrtx50r0ETrtBQ/GdeLSs
+         g+E0wE1oeogtPpOqnBbaG9DOXD8xwaxsAUYWDM9/+UHCWhygtoQfwObr4Yhm4WyWLoC9
+         RJ7DcIGnD2m2wTG74Wd7JlkXLfVDaTLMexHjBXvTpSwOR884GoKqquKXGdgCqtHU0vRz
+         OINc6h7DbKCNLk0xJ24kyva/t+toCsh/FHninj5AviIuDbJEDOFrJbo0b2W3bpsGMR+D
+         DSC3PfMgm0wntrivEvxxkAOp45EGReBeV4VIEcMWOwf3nCVlN2cKS6Z9OeKsYtnUDZCi
+         l5iA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=kNopuFaI+OTYD8gqOyJVqbYSljb9D2fzYG3RIU/KQUk=;
+        b=ippyRYXcixAlKyaKSDcV5uue4e3C1HGV8+z/D85uhC31roi/RHGep8FMKc1pMYGE0/
+         koUXdMrIqGKQbInVK/pCBdRRzCciDDKUfzY4aqjauzx0Nd784sSql2bRBU1G/KxyGHXI
+         oiASwHf3HdasMZI19OJKNZU6ieUuj9g9Hnz9Jy5BvccrkWT2xskvjHl9Pfnt0SwXDF42
+         CYcoVZr/a4ZNRZIaEajPP/dDKIPnIUUAPK1YSKFyoV/a8AAb73F0ITGPClTPLj535qtP
+         9/R9nw7Ttb1UN3HQXzTNJRO97r80cBov9xL2jBIlmmDhWlO5maWnEdPExoDioD6tpccD
+         hh+g==
+X-Gm-Message-State: AOAM533bA3p0VE0cFwIPYTN2quMh1e467o1J5y4muV4BONr+LAzE6MON
+        IGH/oZS3NWAESGagDUY7QyY=
+X-Google-Smtp-Source: ABdhPJwk19/2OW0aUMwLZnc89T9c7+S0drwXy/r9lYUDlqNEDFmdVPc/Jf0iZHqCBignFVKvQp9Kow==
+X-Received: by 2002:a05:6512:114c:b0:471:c3c9:6c00 with SMTP id m12-20020a056512114c00b00471c3c96c00mr19475483lfg.138.1651041930843;
+        Tue, 26 Apr 2022 23:45:30 -0700 (PDT)
+Received: from wse-c0127 (2-104-116-184-cable.dk.customer.tdc.net. [2.104.116.184])
+        by smtp.gmail.com with ESMTPSA id s8-20020a05651c200800b0024f1745e0aesm500220ljo.68.2022.04.26.23.45.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Apr 2022 23:45:30 -0700 (PDT)
+From:   Hans Schultz <schultz.hans@gmail.com>
+X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>, Hans Schultz <schultz.hans@gmail.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        Andre Edich <andre.edich@microchip.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Martyn Welch <martyn.welch@collabora.com>,
-        Gabriel Hojda <ghojda@yo2urs.ro>,
-        Christoph Fritz <chf.fritz@googlemail.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        George McCollister <george.mccollister@gmail.com>
+Subject: Re: [PATCH v2 net-next 07/10] net: dsa: request drivers to perform
+ FDB isolation
+In-Reply-To: <YmgaX4On/2j3lJf/@lunn.ch>
+References: <20220225092225.594851-1-vladimir.oltean@nxp.com>
+ <20220225092225.594851-8-vladimir.oltean@nxp.com>
+ <867d7bga78.fsf@gmail.com> <YmgaX4On/2j3lJf/@lunn.ch>
+Date:   Wed, 27 Apr 2022 08:45:28 +0200
+Message-ID: <86levr9g8n.fsf@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 05b35e7eb9a1 ("smsc95xx: add phylib support") amended
-smsc95xx_resume() to call phy_init_hw().  That function waits for the
-device to runtime resume even though it is placed in the runtime resume
-path, causing a deadlock.
+On tis, apr 26, 2022 at 18:14, Andrew Lunn <andrew@lunn.ch> wrote:
+>> > @@ -941,23 +965,29 @@ struct dsa_switch_ops {
+>> >  	 * Forwarding database
+>> >  	 */
+>> >  	int	(*port_fdb_add)(struct dsa_switch *ds, int port,
+>> > -				const unsigned char *addr, u16 vid);
+>> > +				const unsigned char *addr, u16 vid,
+>> > +				struct dsa_db db);
+>>=20
+>> Hi! Wouldn't it be better to have a struct that has all the functions
+>> parameters in one instead of adding further parameters to these
+>> functions?
+>>=20
+>> I am asking because I am also needing to add a parameter to
+>> port_fdb_add(), and it would be more future oriented to have a single
+>> function parameter as a struct, so that it is easier to add parameters
+>> to these functions without hav=C3=ADng to change the prototype of the
+>> function every time.
+>
+> Hi Hans
+>
+> Please trim the text to only what is relevant when replying. It is
+> easy to miss comments when having to Page Down, Page Down, Page down,
+> to find comments.
+>
+>    Andrew
 
-The problem is that phy_init_hw() calls down to smsc95xx_mdiobus_read(),
-which never uses the _nopm variant of usbnet_read_cmd().  Amend it to
-autosense that it's called from the runtime resume/suspend path and use
-the _nopm variant if so.
+Hi Andrew,
 
-Stacktrace for posterity:
+ahh yes, my client collapses those lines, but thanks for letting me
+know. I will trim going forward.
 
-  INFO: task kworker/2:1:49 blocked for more than 122 seconds.
-  Workqueue: usb_hub_wq hub_event
-  schedule
-  rpm_resume
-  __pm_runtime_resume
-  usb_autopm_get_interface
-  usbnet_read_cmd
-  __smsc95xx_read_reg
-  __smsc95xx_phy_wait_not_busy
-  __smsc95xx_mdio_read
-  smsc95xx_mdiobus_read
-  __mdiobus_read
-  mdiobus_read
-  smsc_phy_reset
-  phy_init_hw
-  smsc95xx_resume
-  usb_resume_interface
-  usb_resume_both
-  usb_runtime_resume
-  __rpm_callback
-  rpm_callback
-  rpm_resume
-  __pm_runtime_resume
-  usb_autoresume_device
-  hub_event
-  process_one_work
-
-Fixes: 05b35e7eb9a1 ("smsc95xx: add phylib support")
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Cc: stable@vger.kernel.org # v5.10+
-Cc: Andre Edich <andre.edich@microchip.com>
----
- drivers/net/usb/smsc95xx.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
-index 4ef61f6b85df..82b8feaa5162 100644
---- a/drivers/net/usb/smsc95xx.c
-+++ b/drivers/net/usb/smsc95xx.c
-@@ -285,11 +285,21 @@ static void smsc95xx_mdio_write_nopm(struct usbnet *dev, int idx, int regval)
- 	__smsc95xx_mdio_write(dev, pdata->phydev->mdio.addr, idx, regval, 1);
- }
- 
-+static bool smsc95xx_in_pm(struct usbnet *dev)
-+{
-+#ifdef CONFIG_PM
-+	return dev->udev->dev.power.runtime_status == RPM_RESUMING ||
-+	       dev->udev->dev.power.runtime_status == RPM_SUSPENDING;
-+#else
-+	return false;
-+#endif
-+}
-+
- static int smsc95xx_mdiobus_read(struct mii_bus *bus, int phy_id, int idx)
- {
- 	struct usbnet *dev = bus->priv;
- 
--	return __smsc95xx_mdio_read(dev, phy_id, idx, 0);
-+	return __smsc95xx_mdio_read(dev, phy_id, idx, smsc95xx_in_pm(dev));
- }
- 
- static int smsc95xx_mdiobus_write(struct mii_bus *bus, int phy_id, int idx,
-@@ -297,7 +307,7 @@ static int smsc95xx_mdiobus_write(struct mii_bus *bus, int phy_id, int idx,
- {
- 	struct usbnet *dev = bus->priv;
- 
--	__smsc95xx_mdio_write(dev, phy_id, idx, regval, 0);
-+	__smsc95xx_mdio_write(dev, phy_id, idx, regval, smsc95xx_in_pm(dev));
- 	return 0;
- }
- 
--- 
-2.35.2
-
+Hans
