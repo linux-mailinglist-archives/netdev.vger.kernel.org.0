@@ -2,102 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3407511FB3
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 20:38:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1C77512119
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 20:40:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243634AbiD0RBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 13:01:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38606 "EHLO
+        id S243659AbiD0RAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 13:00:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243639AbiD0RAX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 13:00:23 -0400
-Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1C939638B;
-        Wed, 27 Apr 2022 09:57:03 -0700 (PDT)
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 23RGunuo003835;
-        Wed, 27 Apr 2022 18:56:49 +0200
-Date:   Wed, 27 Apr 2022 18:56:49 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     kernel test robot <lkp@intel.com>, netdev <netdev@vger.kernel.org>,
-        kbuild-all@lists.01.org, Jakub Kicinski <kuba@kernel.org>,
-        Moshe Kol <moshe.kol@mail.huji.ac.il>,
-        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
-        Amit Klein <aksecurity@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>
-Subject: Re: [PATCH net 1/7] secure_seq: return the full 64-bit of the siphash
-Message-ID: <20220427165649.GA3756@1wt.eu>
-References: <20220427065233.2075-2-w@1wt.eu>
- <202204271705.VrWNPv7n-lkp@intel.com>
- <20220427100714.GC1724@1wt.eu>
- <20220427163554.GA3746@1wt.eu>
- <CANn89iJTg8KZvDQ2wY=psThvS5eFzv0N15FF3CTf3i6qui=wsQ@mail.gmail.com>
+        with ESMTP id S243570AbiD0RAi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 13:00:38 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9033638B;
+        Wed, 27 Apr 2022 09:57:25 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id i27so4612816ejd.9;
+        Wed, 27 Apr 2022 09:57:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=J7iWWU5DbOIvLxFewMmC/eOeW4lAauh4Mm/EuelB7bk=;
+        b=ck/k3U/nN3UksK/sqlJmCJOICVnTW841IWX6OO4SVKyNLZeMR0BfGBOs9Bir/e1N3j
+         lJKf60yq8KMj0bAYh8u03VNb7mSWy+90+l8MyJlz5M6RpcX5ws3tEfo6suyuCXvsYXlS
+         KSuTf3+jJaG7vVXmT538qCa6n7i4b4NNmBJ7YX+6EesFMO0iHA+4+ly9ioBylTiphgld
+         2yuFVvlqjr/7Ai2I9UPSX7btrJaBsldRRU5bNk9wVe4E/v6Xk0B3ayvGXEebJeQPL3jj
+         BV657zUm1VIO+mxoFquonU5ZxFIlsOjlWosM9G10QoFgZGTtg1rZ0e2PJRpqAsO6FlsR
+         P7iA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=J7iWWU5DbOIvLxFewMmC/eOeW4lAauh4Mm/EuelB7bk=;
+        b=iXX2wFrH9yC18OX+uMUzDeRnWQv51EamJb/fvIfZOECL+E7TluDJB90TLyDix4W2yP
+         OQRrQtBcnequXeTDQ3f112iKAJb8cOylM8ynpDtVj40HscNAEIU14Zv/DMKviAino9VF
+         vN6f3LhPH9FuJp0aRA4etyZ9YbuJhVwK4A7Ar/K4awdJVeVJgTioBw1ntvX3ar8Mj+Q6
+         B5L2O6fWx898GVwDMW6g6x/cCdvq2TuXMwEKs62CtQMaA0eetiZtbD8SQw7JWB9jcIkL
+         iorj4f0HrOOnu1c+dUHU2m0wUF3eYLjKTX6eO58JzBy9pLKUuzBYH0hoka13r2v1fAaf
+         RWSw==
+X-Gm-Message-State: AOAM5325ltJvsBWeruhrVKskjZr9hki/PrOz16HFLI6TxLZm/oQjedwh
+        L9x90gLHxXs4R7L6p32H4MY=
+X-Google-Smtp-Source: ABdhPJzDLUCAaxJ8C6EauPCu3/glTPM0yGsfrgt5yrS467fot8UOF5bZziTQpX0W9ometbayK6kB6g==
+X-Received: by 2002:a17:907:3f1a:b0:6f3:8de5:aee5 with SMTP id hq26-20020a1709073f1a00b006f38de5aee5mr16782005ejc.474.1651078644370;
+        Wed, 27 Apr 2022 09:57:24 -0700 (PDT)
+Received: from skbuf ([188.25.160.86])
+        by smtp.gmail.com with ESMTPSA id a94-20020a509ee7000000b00425e7035c4bsm5683584edf.61.2022.04.27.09.57.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 09:57:23 -0700 (PDT)
+Date:   Wed, 27 Apr 2022 19:57:22 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Arun Ramadoss <arun.ramadoss@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
+        Woojung Huh <woojung.huh@microchip.com>
+Subject: Re: [RFC patch net-next 3/3] net: dsa: ksz: moved ksz9477 port
+ mirror to ksz_common.c
+Message-ID: <20220427165722.vwruo5q63stahkby@skbuf>
+References: <20220427162343.18092-1-arun.ramadoss@microchip.com>
+ <20220427162343.18092-4-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CANn89iJTg8KZvDQ2wY=psThvS5eFzv0N15FF3CTf3i6qui=wsQ@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220427162343.18092-4-arun.ramadoss@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 09:50:06AM -0700, Eric Dumazet wrote:
-> On Wed, Apr 27, 2022 at 9:35 AM Willy Tarreau <w@1wt.eu> wrote:
-> >
-> > On Wed, Apr 27, 2022 at 12:07:14PM +0200, Willy Tarreau wrote:
-> > > On Wed, Apr 27, 2022 at 05:56:41PM +0800, kernel test robot wrote:
-> > > > Hi Willy,
-> > > >
-> > > > I love your patch! Yet something to improve:
-> > > >
-> > > > [auto build test ERROR on net/master]
-> > > >
-> > > > url:    https://github.com/intel-lab-lkp/linux/commits/Willy-Tarreau/insufficient-TCP-source-port-randomness/20220427-145651
-> > > > base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 71cffebf6358a7f5031f5b208bbdc1cb4db6e539
-> > > > config: i386-randconfig-r026-20220425 (https://download.01.org/0day-ci/archive/20220427/202204271705.VrWNPv7n-lkp@intel.com/config)
-> > > > compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
-> > > > reproduce (this is a W=1 build):
-> > > >         # https://github.com/intel-lab-lkp/linux/commit/01b26e522b598adf346b809075880feab3dcdc08
-> > > >         git remote add linux-review https://github.com/intel-lab-lkp/linux
-> > > >         git fetch --no-tags linux-review Willy-Tarreau/insufficient-TCP-source-port-randomness/20220427-145651
-> > > >         git checkout 01b26e522b598adf346b809075880feab3dcdc08
-> > > >         # save the config file
-> > > >         mkdir build_dir && cp config build_dir/.config
-> > > >         make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
-> > > >
-> > > > If you fix the issue, kindly add following tag as appropriate
-> > > > Reported-by: kernel test robot <lkp@intel.com>
-> > > >
-> > > > All errors (new ones prefixed by >>):
-> > > >
-> > > >    ld: net/ipv4/inet_hashtables.o: in function `__inet_hash_connect':
-> > > > >> inet_hashtables.c:(.text+0x187d): undefined reference to `__umoddi3'
-> > >
-> > > Argh! indeed, we spoke about using div_u64_rem() at the beginning and
-> > > that one vanished over time. Will respin it.
-> >
-> > I fixed it, built it for i386 and x86_64, tested it on x86_64 and confirmed
-> > that it still does what I need. The change is only this:
-> >
-> > -       offset = (READ_ONCE(table_perturb[index]) + (port_offset >> 32)) % remaining;
-> > +       div_u64_rem(READ_ONCE(table_perturb[index]) + (port_offset >> 32), remaining, &offset);
-> >
-> > I'll send a v2 series in a few hours if there are no more comments.
-> 
-> We really do not need 33 bits here.
-> 
-> I would suggest using a 32bit divide.
-> 
-> offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32));
-> offset %= remaining;
+On Wed, Apr 27, 2022 at 09:53:43PM +0530, Arun Ramadoss wrote:
+> Moved the port_mirror_add and port_mirror_del function from ksz9477 to
 
-Yeah much better indeed, I'll do that. Thanks Eric!
+Present tense (move)
 
-Willy
+> ksz_common, to make it generic function which can be used by KSZ9477
+> based switch.
 
+Presumably you mean "which can be used by other switches" (it can
+already be used by ksz9477, so that can't be the argument for moving it)
+
+> 
+> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+> ---
+
+Looks good, except for the spelling mistakes in the code that is being
+moved (introduced in patch 1), which I expect you will update in the new
+code as well.
+
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+
+> diff --git a/drivers/net/dsa/microchip/ksz_reg.h b/drivers/net/dsa/microchip/ksz_reg.h
+> new file mode 100644
+> index 000000000000..ccd4a6568e34
+> --- /dev/null
+> +++ b/drivers/net/dsa/microchip/ksz_reg.h
+> @@ -0,0 +1,29 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * Microchip KSZ Switch register definitions
+> + *
+> + * Copyright (C) 2017-2022 Microchip Technology Inc.
+> + */
+> +
+> +#ifndef __KSZ_REGS_H
+> +#define __KSZ_REGS_H
+> +
+> +#define REG_SW_MRI_CTRL_0		0x0370
+> +
+> +#define SW_IGMP_SNOOP			BIT(6)
+> +#define SW_IPV6_MLD_OPTION		BIT(3)
+> +#define SW_IPV6_MLD_SNOOP		BIT(2)
+> +#define SW_MIRROR_RX_TX			BIT(0)
+> +
+> +/* 8 - Classification and Policing */
+> +#define REG_PORT_MRI_MIRROR_CTRL	0x0800
+> +
+> +#define PORT_MIRROR_RX			BIT(6)
+> +#define PORT_MIRROR_TX			BIT(5)
+> +#define PORT_MIRROR_SNIFFER		BIT(1)
+> +
+> +#define P_MIRROR_CTRL			REG_PORT_MRI_MIRROR_CTRL
+> +
+> +#define S_MIRROR_CTRL			REG_SW_MRI_CTRL_0
+
+Small comment: if P_MIRROR_CTRL and S_MIRROR_CTRL are expected to be at
+the same register offset for all switch families, why is there a macro
+behind a macro for their addresses?
+
+> +
+> +#endif
+> -- 
+> 2.33.0
+> 
