@@ -2,178 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E27BA51194E
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 16:55:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1F8E511B10
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 16:57:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237457AbiD0OSC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 10:18:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49764 "EHLO
+        id S237903AbiD0Ofg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 10:35:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237393AbiD0OSC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 10:18:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD95A5468C
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 07:14:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 340F861D9E
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 14:14:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C8A1C385A7;
-        Wed, 27 Apr 2022 14:14:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651068889;
-        bh=CRndAupM5/Vg0BD1j2wv4BWeO1eE1Cxrt/zsi6Q0kcc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rMEM+qkX7GJ5YfOrbQcXemeU3fQW9QV8wbGoDZaw3+Cp9ORhHYzUxEoR7f16dwvmx
-         +uZiAOSyqSSnPpT2f+jmXagzayjTpHJijw2yZohgGstD4QUgaPIKrItN64dY/tXjPl
-         cRwlg7feYFUSUyU2AOLOlKYpHz05XVlqr1P/+jBUESx/SMglbh1OJl0HYhpgq9NBjq
-         JEnuwzETRB/fTqV8/JuV5DpUoFFaoNy0E0pbnxkMW5jnbdkYWP+Mpf71us7RHBbOCt
-         P6VO0HWZcxLhf1TM7/Jv4BI4RqiHdzObTAhsNHsb85naou5S2JRCyJf75Rl48lzDJb
-         JifiCBL1QSH+Q==
-Date:   Wed, 27 Apr 2022 07:14:47 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Ido Schimmel <idosch@idosch.org>, Ido Schimmel <idosch@nvidia.com>,
-        netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
-        andrew@lunn.ch, mlxsw@nvidia.com
-Subject: Re: [PATCH net-next 00/11] mlxsw: extend line card model by devices
- and info
-Message-ID: <20220427071447.69ec3e6f@kernel.org>
-In-Reply-To: <YmjyRgYYRU/ZaF9X@nanopsycho>
-References: <20220425034431.3161260-1-idosch@nvidia.com>
-        <20220425090021.32e9a98f@kernel.org>
-        <Ymb5DQonnrnIBG3c@shredder>
-        <20220425125218.7caa473f@kernel.org>
-        <YmeXyzumj1oTSX+x@nanopsycho>
-        <20220426054130.7d997821@kernel.org>
-        <Ymf66h5dMNOLun8k@nanopsycho>
-        <20220426075133.53562a2e@kernel.org>
-        <YmjyRgYYRU/ZaF9X@nanopsycho>
+        with ESMTP id S238001AbiD0Ofe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 10:35:34 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33586201AA
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 07:32:22 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id r9so1639602pjo.5
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 07:32:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :in-reply-to;
+        bh=ibmi5FwT3/ARuOgV+GLKUMiJyps5TvTFLNDqETGz7fU=;
+        b=JCZ/VglvEZAJamzRs3wzTNiH6+A1cxm9h0xNgiBO6n4VnPys1VR4rBJRLGEtlgUcLR
+         CYf3vedkM3LS/6XaBb2IsOtBxzK3HzotaOb3Hgjkekw1l+kp0Vrd8x3i4x5awa0Dyt9r
+         huTfrEHxo8yuvh1bhC2/ttvs4usr6G4Br1b0s=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:in-reply-to;
+        bh=ibmi5FwT3/ARuOgV+GLKUMiJyps5TvTFLNDqETGz7fU=;
+        b=IzanEvKpbOBlj2m83c+blMAOIVglSLDbhKI2fwMUbL3L4sIZgQKREasZNldLArDsHi
+         /Rb/xMZ0LesUbkiI2A0lLx3Bo5l5woQ1vEDCkt74f0gHBmo4xhk8BK9IX9H4CIIBt+tn
+         rDJ33BlbjgwSbxt3TeTn6PB3E3xoMNLFn0nsSp1MNxTQO68iG3cYyvRkXUzNq8eNcpH9
+         zea8KOJDC3WRdfVVeqwj3TQFad904oW9635z4PcKPNt39K3bRBH9RkC2HLYa4wMRYz8K
+         1RCiA2owOJZcMNN2j7Ubp10+muU9ASQ5BT2txFtuFfbwcjxceK6z5hi1k3rLzwyiJDBz
+         JjPw==
+X-Gm-Message-State: AOAM53376JVwkKWR3d43E0UkHTWXSshWGdLgLUAy8cOEW+LauATEryVN
+        xYFwOvBWoWv7cJsTyGIxFXzETA==
+X-Google-Smtp-Source: ABdhPJyiMFybt1i9MaVtai/fAlIws/F6R8RrEuKP+Jjl1k+LR8RTNi6xbQJg8zZxbqqPKNKJ5/rsgQ==
+X-Received: by 2002:a17:902:9a4c:b0:158:b6f0:4aa2 with SMTP id x12-20020a1709029a4c00b00158b6f04aa2mr29009437plv.163.1651069941538;
+        Wed, 27 Apr 2022 07:32:21 -0700 (PDT)
+Received: from noodle ([192.19.250.250])
+        by smtp.gmail.com with ESMTPSA id 8-20020a17090a000800b001d90c8b6141sm3173313pja.53.2022.04.27.07.32.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Apr 2022 07:32:20 -0700 (PDT)
+Date:   Wed, 27 Apr 2022 17:32:00 +0300
+From:   Boris Sukholitko <boris.sukholitko@broadcom.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>,
+        Ilya Lifshits <ilya.lifshits@broadcom.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>
+Subject: Re: [PATCH iproute2-next v3 0/2] f_flower: match on the number of
+ vlan tags
+Message-ID: <20220427143200.GA23481@noodle>
+References: <20220426091417.7153-1-boris.sukholitko@broadcom.com>
+ <20220426081142.71d58c1b@hermes.local>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220426081142.71d58c1b@hermes.local>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="00000000000063e5c405dda3ad21"
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 27 Apr 2022 09:35:34 +0200 Jiri Pirko wrote:
-> >> The relationship-by-name sounds a bit fragile to me. The names of
-> >> components are up to the individual drivers.  
-> >
-> >I asked you how the automation will operate. You must answer questions
-> >if you want to have a discussion. Automation is the relevant part.  
+--00000000000063e5c405dda3ad21
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Hi Stephen,
+
+On Tue, Apr 26, 2022 at 08:11:42AM -0700, Stephen Hemminger wrote:
+> On Tue, 26 Apr 2022 12:14:15 +0300
+> Boris Sukholitko <boris.sukholitko@broadcom.com> wrote:
 > 
-> Automation, not sure. It would probably just see type of gearbox and
-> flash it. Not sure I understand the question, perhaps you could explain?
-> Plus, the possibility is to auto-flash the GB from driver directly.
+> > Hi,
+> > 
+> > Our customers in the fiber telecom world have network configurations
+> > where they would like to control their traffic according to the number
+> > of tags appearing in the packet.
+> > 
+> > For example, TR247 GPON conformance test suite specification mostly
+> > talks about untagged, single, double tagged packets and gives lax
+> > guidelines on the vlan protocol vs. number of vlan tags.
+> > 
+> > This is different from the common IT networks where 802.1Q and 802.1ad
+> > protocols are usually describe single and double tagged packet. GPON
+> > configurations that we work with have arbitrary mix the above protocols
+> > and number of vlan tags in the packet.
+> > 
+> > The following patch series implement number of vlans flower filter. They
+> > add num_of_vlans flower filter as an alternative to vlan ethtype protocol
+> > matching. The end result is that the following command becomes possible:
+> > 
+> > tc filter add dev eth1 ingress flower \
+> >   num_of_vlans 1 vlan_prio 5 action drop
+> > 
+> > Also, from our logs, we have redirect rules such that:
+> > 
+> > tc filter add dev $GPON ingress flower num_of_vlans $N \
+> >      action mirred egress redirect dev $DEV
+> > 
+> > where N can range from 0 to 3 and $DEV is the function of $N.
+> > 
+> > Also there are rules setting skb mark based on the number of vlans:
+> > 
+> > tc filter add dev $GPON ingress flower num_of_vlans $N vlan_prio \
+> >     $P action skbedit mark $M
+> > 
+> > Thanks,
+> > Boris.
+> > 
+> > - v3: rebased to the latest iproute2-next
+> > - v2: add missing f_flower subject prefix
+> > 
+> > Boris Sukholitko (2):
+> >   f_flower: Add num of vlans parameter
+> >   f_flower: Check args with num_of_vlans
+> > 
+> >  tc/f_flower.c | 57 ++++++++++++++++++++++++++++++++++++---------------
+> >  1 file changed, 41 insertions(+), 16 deletions(-)
 > 
-> 
-> >You're not designing an interface for SDK users but for end users.  
-> 
-> Sure, that is the aim of this API. Human end user. That is why I wanted
-> the user to see the relationships between devlink dev, line cards and
-> the gearboxes on them. If you want to limit the visibility, sure, just
-> tell me how.
+> Can you do this with BPF? instead of kernel change?
 
-Okay, we have completely different views on what the goals should be.
-Perhaps that explains the differences in the design.
+You may have missed my reply to this question at:
 
-Of the three API levels (SDK, automation, human) I think automation
-is the only one that's interesting to us in Linux. SDK interfaces are
-necessarily too low level as they expose too much of internal details
-to standardize. Humans are good with dealing with uncertainty and
-diverse so there's no a good benchmark.
+https://lore.kernel.org/netdev/20220412104514.GB27480@noodle/
 
-The benchmark for automation is - can a machine use this API across
-different vendors to reliably achieve its goals. For FW info/flashing
-the goal is keeping the FW versions up to date. This is documented:
+There is also Jamal's reply further at the thread:
 
-https://www.kernel.org/doc/html/latest/networking/devlink/devlink-flash.html#firmware-version-management
+https://lore.kernel.org/netdev/b2c83f63-a2e9-92a2-f262-3aae3491dfc3@mojatatu.com/
 
-What would the pseudo code look like with "line cards" in the picture?
-Apply RFC1925 truth 12.
+Thanks,
+Boris.
 
-> >> There is no new command for that, only one nested attribute which
-> >> carries the device list added to the existing command. They are no new
-> >> objects, they are just few nested values.  
-> >
-> >DEVLINK_CMD_LINECARD_INFO_GET  
-> 
-> Okay, that is not only to expose devices. That is also to expose info
-> about linecards, like HW revision, INI version etc. Where else to put
-> it? I can perhaps embed it into devlink dev info, but I thought separate
-> command would be more suitable. object cmd, object info cmd. It is
-> more clear I believe.
+--00000000000063e5c405dda3ad21
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
-> >> If so, how does the user know if/when to flash it?
-> >> If not, where would you list it if devices nest is not the correct place?  
-> >
-> >Let me mock up what I had in mind for you since it did not come thru 
-> >in the explanation:
-> >
-> >$ devlink dev info show pci/0000:01:00.0
-> >    versions:
-> >        fixed:
-> >          hw.revision 0
-> >          lc2.hw.revision a
-> >          lc8.hw.revision b
-> >        running:
-> >          ini.version 4
-> >          lc2.gearbox 1.1.3
-> >          lc8.gearbox 1.2.3  
-> 
-> Would be rather:
-> 
->           lc2.gearbox0 1.1.3
->           lc2.gearbox1 1.2.4
-
-I thought you said your gearboxes all the the same FW? 
-Theoretically, yes. Theoretically, I can also have nested "line cards".
-
->           lc8.gearbox0 1.2.3
-> 
-> Okay, I see. So instead of having clear api with relationships and
-> clear human+machine readability we have squahed indexes into strings.
-> I fail to see the benefit, other than no-api-extension :/ On contrary.
-
-Show me the real life use for all the "clear api with relationships"
-and I'll shut up.
-
-I would not take falling back to physical (HW) hierarchy for the API
-design as a point of pride. Seems lazy if I'm completely honest.
-Someone else's HW may have a different hierarchy, and you're just
-forcing the automation engineer iterate over irrelevant structures
-("devices").
-
-My hunch is that automation will not want to deal with line cards
-separately, and flash the entire devices in one go to a tested and
-verified bundle blob provided by the vendor. If they do want to poke 
-at line cards - the information is still there in what I described.
-
-> >$ devlink lc show pci/0000:01:00.0 lc 8
-> >pci/0000:01:00.0:
-> >  lc 8 state active type 16x100G
-> >    supported_types:
-> >      16x100G
-> >    versions: 
-> >      lc8.hw.revision (a) 
-> >      lc8.gearbox (1.2.3)
-> >
-> >Where the data in the brackets is optionally fetched thru the existing
-> >"dev info" API, but rendered together by the user space.  
-> 
-> Quite odd. I find it questionable to say at least to mix multiple
-> command netlink outputs into one output.
-
-Really? So we're going to be designing kernel APIs so that each message
-contains complete information and can't contain references now?
-
-> The processing of it would be a small nightmare considering the way
-> how the netlink message processing works in iproute2 :/
+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
+riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
+QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
+UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
+M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
+Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
+14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
+a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
+XzCCBVgwggRAoAMCAQICDDSzinKpvcPTN4ZIJTANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
+RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
+UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMTAyMjIwNzMwMDRaFw0yMjA5MDUwNzM3NTVaMIGW
+MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
+BgNVBAoTDUJyb2FkY29tIEluYy4xGTAXBgNVBAMTEEJvcmlzIFN1a2hvbGl0a28xLDAqBgkqhkiG
+9w0BCQEWHWJvcmlzLnN1a2hvbGl0a29AYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
+AQ8AMIIBCgKCAQEAy/C7bjpxs+95egWV8sWrK9KO0SQi6Nxu14tJBgP+MOK5tvokizPFHoiXTymZ
+7ClfnmbcqT4PzWgI3thyfk64bgUo1nQkCTApn7ov3IRsWjmHExLSNoJ/siUHagO6BPAk4JSycrj5
+9tC9sL4FnIAbAHmOSILCyGyyaBAcmiyH/3toYqXyjJkK+vbWQSTxk2NlqJLIN/ypLJ1pYffVZGUs
+52g1hlQtHhgLIznB1Qx3Fop3nOUk8nNpQLON/aM8K5sl18964c7aXh7YZnalUQv3md4p2rAQQqIR
+rZ8HBc7YjlZynwOnZl1NrK4cP5aM9lMkbfRGIUitHTIhoDYp8IZ1dwIDAQABo4IB3jCCAdowDgYD
+VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
+ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
+CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
+MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
+d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
+hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
+bDAoBgNVHREEITAfgR1ib3Jpcy5zdWtob2xpdGtvQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggr
+BgEFBQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUtBmGs9S4
+t1FcFSfkrP2LKQQwBKMwDQYJKoZIhvcNAQELBQADggEBAJMAjVBkRmr1lvVvEjMaLfvMhwGpUfh6
+CMZsKICyz/ZZmvTmIZNwy+7b9r6gjLCV4tP63tz4U72X9qJwfzldAlYLYWIq9e/DKDjwJRYlzN8H
+979QJ0DHPSJ9EpvSKXob7Ci/FMkTfq1eOLjkPRF72mn8KPbHjeN3VVcn7oTe5IdIXaaZTryjM5Ud
+bR7s0ZZh6mOhJtqk3k1L1DbDTVB4tOZXZHRDghEGaQSnwU/qxCNlvQ52fImLFVwXKPnw6+9dUvFR
+ORaZ1pZbapCGbs/4QLplv8UaBmpFfK6MW/44zcsDbtCFfgIP3fEJBByIREhvRC5mtlRtdM+SSjgS
+ZiNfUggxggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
+LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgw0
+s4pyqb3D0zeGSCUwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIPgRhzcKQ9+IiS7N
+Ku1lNbGqQhpzKUk69zW9q3uJgJRqMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
+AQkFMQ8XDTIyMDQyNzE0MzIyMVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
+AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQDIQ89g4cZygN5J8rW1e6jz3enOtnMyP/qp
+AoVUDAKecgV9BZeZHDRRggbvHJWdUDl0LthbvPxdOnmOdPHpv2nrpwr0H64/Tv7UnnPHmX4TJXJT
+0R/hJpFrJmXhGG+6x9Yk9v5/YIDlAWLfVlc5kWvL3Dza+Ko/d7MfIx/aWxiikDEOxXRNajoW2qh1
+qszqV7TI/OJnlb5uIfFQclyOMxyyukuJNPL3+8+a6jChGYnQd9Rk+K0FUmQzKY/ODj31GVbfadBD
+A2G9ZfnbcLkRzM+ZxssQ3WVEcC9lYm5NoDCNNd5Ocrpx/ibD8K+txRqD1tM7woRwp8UVpPKqSUoN
+1z6B
+--00000000000063e5c405dda3ad21--
