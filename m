@@ -2,324 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D6B685127B8
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 01:49:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C84B85127D5
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 01:54:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233743AbiD0Xwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 19:52:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38774 "EHLO
+        id S230341AbiD0X5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 19:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230362AbiD0Xwt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 19:52:49 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2479B3192A
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 16:49:36 -0700 (PDT)
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23RNfp6h025120
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 23:49:35 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=usS7xMhGCtUd+GqbhobakN1f7zkZ+X8+RJznNXDDduI=;
- b=p0K+U2Qe7EU+qyGrmLBUpXedUx7CiyvpmFlX1ba+nC53bJ73M8j5TNlnZeqQ0Ys64pf6
- u+g1RSnT2ogZg5RSdyTqXXus21emn25gu9uEjUHKl/q7kNipSEl52W3bq+yaaegP/dWw
- m2mabjKZgtsbWcFxGvNGC2SnZ9KgUCaMrlu2Gbf81yOknniX4x/uUIA0nIvVQNIdmcGt
- PnzY7YnspuH3aRFOk0p/MrD0roZSc7o0icozo5DimKus3p5AS6ZZo/KLJCIl0ZU8u3IA
- 8BTsSYngmYmvN5B6oC+xjk7HxbLfSrDbuKUUZQaK1Tq0GKxlPbnkVQwkzsfHKyxJLsZD NQ== 
-Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqfqpr33c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 23:49:35 +0000
-Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
-        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23RNceYB031059
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 23:49:34 GMT
-Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
-        by ppma02wdc.us.ibm.com with ESMTP id 3fm939yf55-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 23:49:34 +0000
-Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
-        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23RNnXqZ44499242
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 27 Apr 2022 23:49:33 GMT
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B3FF6124053;
-        Wed, 27 Apr 2022 23:49:33 +0000 (GMT)
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 78C29124058;
-        Wed, 27 Apr 2022 23:49:33 +0000 (GMT)
-Received: from ltcden12-lp22.aus.stglabs.ibm.com (unknown [9.40.195.165])
-        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
-        Wed, 27 Apr 2022 23:49:33 +0000 (GMT)
-From:   Dany Madden <drt@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     tlfalcon@linux.ibm.com
-Subject: [PATCH net] Revert "ibmvnic: Add ethtool private flag for driver-defined queue limits"
-Date:   Wed, 27 Apr 2022 18:51:46 -0500
-Message-Id: <20220427235146.23189-1-drt@linux.ibm.com>
-X-Mailer: git-send-email 2.26.2
+        with ESMTP id S229700AbiD0X5J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 19:57:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 050E110D;
+        Wed, 27 Apr 2022 16:53:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 92C8E614A5;
+        Wed, 27 Apr 2022 23:53:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65FB2C385AA;
+        Wed, 27 Apr 2022 23:53:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651103635;
+        bh=EamM+bDxfmz3jX7DrFUs3xgkTXROOpZ4JGaFwQ/Y3QU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jkk2UtcnFpqH2EH/z/QO9z9LQjKzH/QcWW2kvHc8mAZ6iFYGo2oF2Fb4B098XDJQC
+         1aoSrEGmG1FgiKIJ/vQorRIubhuqrGKFBe9MX1ZhuKDiS3O92ZeO29NrgMrzpEhKox
+         q7QNF5+FXLQ8L8aUAnnztQcK7ZQ03eDo1YBUEjxYFLXgWEGjoIJa3M9SEyPjT488+7
+         papRiV/xuEq7oEAtExC7N33MSGxKUcRGxgwdbRAp3iYNLBXHCFKwAsMNa4T6mMQjWw
+         UBz/7/LDIDJYKRvijouRlQP491ut7nCfIVYdfRr4uuTz1cGkSBxLs0rex7ycgK5ydZ
+         2Mfef0uyZTj/g==
+Date:   Wed, 27 Apr 2022 16:53:54 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Chuck Lever III <chuck.lever@oracle.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+        "linux-cifs@vger.kernel.org" <linux-cifs@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "ak@tempesta-tech.com" <ak@tempesta-tech.com>,
+        "borisp@nvidia.com" <borisp@nvidia.com>,
+        "simo@redhat.com" <simo@redhat.com>
+Subject: Re: [PATCH RFC 4/5] net/tls: Add support for PF_TLSH (a TLS
+ handshake listener)
+Message-ID: <20220427165354.2eed6c5b@kernel.org>
+In-Reply-To: <7B871201-AC3C-46E2-98B0-52B44530E7BD@oracle.com>
+References: <165030051838.5073.8699008789153780301.stgit@oracle-102.nfsv4.dev>
+        <165030059051.5073.16723746870370826608.stgit@oracle-102.nfsv4.dev>
+        <20220425101459.15484d17@kernel.org>
+        <E8809EC2-D49A-4171-8C88-D5E24FFA4079@oracle.com>
+        <20220426075504.18be4ee2@kernel.org>
+        <BA6BB8F6-3A2A-427B-A5D7-30B5F778B7E0@oracle.com>
+        <20220426164712.068e365c@kernel.org>
+        <7B871201-AC3C-46E2-98B0-52B44530E7BD@oracle.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: Bhve7_w7M729rw2qbIPefbmXHFPeRf9m
-X-Proofpoint-GUID: Bhve7_w7M729rw2qbIPefbmXHFPeRf9m
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-27_04,2022-04-27_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- bulkscore=0 mlxlogscore=999 lowpriorityscore=0 adultscore=0 malwarescore=0
- impostorscore=0 suspectscore=0 clxscore=1015 mlxscore=0 spamscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204270137
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 723ad916134784b317b72f3f6cf0f7ba774e5dae
+On Wed, 27 Apr 2022 14:42:53 +0000 Chuck Lever III wrote:
+> > On Apr 26, 2022, at 7:47 PM, Jakub Kicinski <kuba@kernel.org> wrote:
+> >> RPC-with-TLS requires one RPC as a "starttls" token. That could be
+> >> done in user space as part of the handshake, but it is currently
+> >> done in the kernel to enable the user agent to be shared with other
+> >> kernel consumers of TLS. Keep in mind that we already have two
+> >> real consumers: NVMe and RPC-with-TLS; and possibly QUIC.
+> >> 
+> >> You asserted earlier that creating sockets in user space "scales
+> >> better" but did not provide any data. Can we see some? How well
+> >> does it need to scale for storage protocols that use long-lived
+> >> connections?  
+> > 
+> > I meant scale with the number of possible crypto protocols, 
+> > I mentioned three there.  
+> 
+> I'm looking at previous emails. The "three crypto protocols"
+> don't stand out to me. Which ones?
 
-When client requests channel or ring size larger than what the server
-can support the server will cap the request to the supported max. So,
-the client would not be able to successfully request resources that
-exceed the server limit.
+TLS, QUIC and PSP maybe that was in a different email that what you
+quoted, sorry:
+https://lore.kernel.org/all/20220426080247.19bbb64e@kernel.org/
 
-Fixes: 723ad9161347 ("ibmvnic: Add ethtool private flag for driver-defined queue limits")
-Signed-off-by: Dany Madden <drt@linux.ibm.com>
----
- drivers/net/ethernet/ibm/ibmvnic.c | 129 ++++++++---------------------
- drivers/net/ethernet/ibm/ibmvnic.h |   6 --
- 2 files changed, 35 insertions(+), 100 deletions(-)
+PSP:
+https://raw.githubusercontent.com/google/psp/main/doc/PSP_Arch_Spec.pdf
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 77683909ca3d..5c5931dba51d 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -3210,13 +3210,8 @@ static void ibmvnic_get_ringparam(struct net_device *netdev,
- {
- 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
- 
--	if (adapter->priv_flags & IBMVNIC_USE_SERVER_MAXES) {
--		ring->rx_max_pending = adapter->max_rx_add_entries_per_subcrq;
--		ring->tx_max_pending = adapter->max_tx_entries_per_subcrq;
--	} else {
--		ring->rx_max_pending = IBMVNIC_MAX_QUEUE_SZ;
--		ring->tx_max_pending = IBMVNIC_MAX_QUEUE_SZ;
--	}
-+	ring->rx_max_pending = adapter->max_rx_add_entries_per_subcrq;
-+	ring->tx_max_pending = adapter->max_tx_entries_per_subcrq;
- 	ring->rx_mini_max_pending = 0;
- 	ring->rx_jumbo_max_pending = 0;
- 	ring->rx_pending = adapter->req_rx_add_entries_per_subcrq;
-@@ -3231,23 +3226,21 @@ static int ibmvnic_set_ringparam(struct net_device *netdev,
- 				 struct netlink_ext_ack *extack)
- {
- 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
--	int ret;
- 
--	ret = 0;
-+	if (ring->rx_pending > adapter->max_rx_add_entries_per_subcrq  ||
-+	    ring->tx_pending > adapter->max_tx_entries_per_subcrq) {
-+		netdev_err(netdev, "Invalid request.\n");
-+		netdev_err(netdev, "Max tx buffers = %llu\n",
-+			   adapter->max_rx_add_entries_per_subcrq);
-+		netdev_err(netdev, "Max rx buffers = %llu\n",
-+			   adapter->max_tx_entries_per_subcrq);
-+		return -EINVAL;
-+	}
-+
- 	adapter->desired.rx_entries = ring->rx_pending;
- 	adapter->desired.tx_entries = ring->tx_pending;
- 
--	ret = wait_for_reset(adapter);
--
--	if (!ret &&
--	    (adapter->req_rx_add_entries_per_subcrq != ring->rx_pending ||
--	     adapter->req_tx_entries_per_subcrq != ring->tx_pending))
--		netdev_info(netdev,
--			    "Could not match full ringsize request. Requested: RX %d, TX %d; Allowed: RX %llu, TX %llu\n",
--			    ring->rx_pending, ring->tx_pending,
--			    adapter->req_rx_add_entries_per_subcrq,
--			    adapter->req_tx_entries_per_subcrq);
--	return ret;
-+	return wait_for_reset(adapter);
- }
- 
- static void ibmvnic_get_channels(struct net_device *netdev,
-@@ -3255,14 +3248,8 @@ static void ibmvnic_get_channels(struct net_device *netdev,
- {
- 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
- 
--	if (adapter->priv_flags & IBMVNIC_USE_SERVER_MAXES) {
--		channels->max_rx = adapter->max_rx_queues;
--		channels->max_tx = adapter->max_tx_queues;
--	} else {
--		channels->max_rx = IBMVNIC_MAX_QUEUES;
--		channels->max_tx = IBMVNIC_MAX_QUEUES;
--	}
--
-+	channels->max_rx = adapter->max_rx_queues;
-+	channels->max_tx = adapter->max_tx_queues;
- 	channels->max_other = 0;
- 	channels->max_combined = 0;
- 	channels->rx_count = adapter->req_rx_queues;
-@@ -3275,22 +3262,11 @@ static int ibmvnic_set_channels(struct net_device *netdev,
- 				struct ethtool_channels *channels)
- {
- 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
--	int ret;
- 
--	ret = 0;
- 	adapter->desired.rx_queues = channels->rx_count;
- 	adapter->desired.tx_queues = channels->tx_count;
- 
--	ret = wait_for_reset(adapter);
--
--	if (!ret &&
--	    (adapter->req_rx_queues != channels->rx_count ||
--	     adapter->req_tx_queues != channels->tx_count))
--		netdev_info(netdev,
--			    "Could not match full channels request. Requested: RX %d, TX %d; Allowed: RX %llu, TX %llu\n",
--			    channels->rx_count, channels->tx_count,
--			    adapter->req_rx_queues, adapter->req_tx_queues);
--	return ret;
-+	return wait_for_reset(adapter);
- }
- 
- static void ibmvnic_get_strings(struct net_device *dev, u32 stringset, u8 *data)
-@@ -3298,43 +3274,32 @@ static void ibmvnic_get_strings(struct net_device *dev, u32 stringset, u8 *data)
- 	struct ibmvnic_adapter *adapter = netdev_priv(dev);
- 	int i;
- 
--	switch (stringset) {
--	case ETH_SS_STATS:
--		for (i = 0; i < ARRAY_SIZE(ibmvnic_stats);
--				i++, data += ETH_GSTRING_LEN)
--			memcpy(data, ibmvnic_stats[i].name, ETH_GSTRING_LEN);
-+	if (stringset != ETH_SS_STATS)
-+		return;
- 
--		for (i = 0; i < adapter->req_tx_queues; i++) {
--			snprintf(data, ETH_GSTRING_LEN, "tx%d_packets", i);
--			data += ETH_GSTRING_LEN;
-+	for (i = 0; i < ARRAY_SIZE(ibmvnic_stats); i++, data += ETH_GSTRING_LEN)
-+		memcpy(data, ibmvnic_stats[i].name, ETH_GSTRING_LEN);
- 
--			snprintf(data, ETH_GSTRING_LEN, "tx%d_bytes", i);
--			data += ETH_GSTRING_LEN;
-+	for (i = 0; i < adapter->req_tx_queues; i++) {
-+		snprintf(data, ETH_GSTRING_LEN, "tx%d_packets", i);
-+		data += ETH_GSTRING_LEN;
- 
--			snprintf(data, ETH_GSTRING_LEN,
--				 "tx%d_dropped_packets", i);
--			data += ETH_GSTRING_LEN;
--		}
-+		snprintf(data, ETH_GSTRING_LEN, "tx%d_bytes", i);
-+		data += ETH_GSTRING_LEN;
- 
--		for (i = 0; i < adapter->req_rx_queues; i++) {
--			snprintf(data, ETH_GSTRING_LEN, "rx%d_packets", i);
--			data += ETH_GSTRING_LEN;
-+		snprintf(data, ETH_GSTRING_LEN, "tx%d_dropped_packets", i);
-+		data += ETH_GSTRING_LEN;
-+	}
- 
--			snprintf(data, ETH_GSTRING_LEN, "rx%d_bytes", i);
--			data += ETH_GSTRING_LEN;
-+	for (i = 0; i < adapter->req_rx_queues; i++) {
-+		snprintf(data, ETH_GSTRING_LEN, "rx%d_packets", i);
-+		data += ETH_GSTRING_LEN;
- 
--			snprintf(data, ETH_GSTRING_LEN, "rx%d_interrupts", i);
--			data += ETH_GSTRING_LEN;
--		}
--		break;
-+		snprintf(data, ETH_GSTRING_LEN, "rx%d_bytes", i);
-+		data += ETH_GSTRING_LEN;
- 
--	case ETH_SS_PRIV_FLAGS:
--		for (i = 0; i < ARRAY_SIZE(ibmvnic_priv_flags); i++)
--			strcpy(data + i * ETH_GSTRING_LEN,
--			       ibmvnic_priv_flags[i]);
--		break;
--	default:
--		return;
-+		snprintf(data, ETH_GSTRING_LEN, "rx%d_interrupts", i);
-+		data += ETH_GSTRING_LEN;
- 	}
- }
- 
-@@ -3347,8 +3312,6 @@ static int ibmvnic_get_sset_count(struct net_device *dev, int sset)
- 		return ARRAY_SIZE(ibmvnic_stats) +
- 		       adapter->req_tx_queues * NUM_TX_STATS +
- 		       adapter->req_rx_queues * NUM_RX_STATS;
--	case ETH_SS_PRIV_FLAGS:
--		return ARRAY_SIZE(ibmvnic_priv_flags);
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-@@ -3401,26 +3364,6 @@ static void ibmvnic_get_ethtool_stats(struct net_device *dev,
- 	}
- }
- 
--static u32 ibmvnic_get_priv_flags(struct net_device *netdev)
--{
--	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
--
--	return adapter->priv_flags;
--}
--
--static int ibmvnic_set_priv_flags(struct net_device *netdev, u32 flags)
--{
--	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
--	bool which_maxes = !!(flags & IBMVNIC_USE_SERVER_MAXES);
--
--	if (which_maxes)
--		adapter->priv_flags |= IBMVNIC_USE_SERVER_MAXES;
--	else
--		adapter->priv_flags &= ~IBMVNIC_USE_SERVER_MAXES;
--
--	return 0;
--}
--
- static const struct ethtool_ops ibmvnic_ethtool_ops = {
- 	.get_drvinfo		= ibmvnic_get_drvinfo,
- 	.get_msglevel		= ibmvnic_get_msglevel,
-@@ -3434,8 +3377,6 @@ static const struct ethtool_ops ibmvnic_ethtool_ops = {
- 	.get_sset_count         = ibmvnic_get_sset_count,
- 	.get_ethtool_stats	= ibmvnic_get_ethtool_stats,
- 	.get_link_ksettings	= ibmvnic_get_link_ksettings,
--	.get_priv_flags		= ibmvnic_get_priv_flags,
--	.set_priv_flags		= ibmvnic_set_priv_flags,
- };
- 
- /* Routines for managing CRQs/sCRQs  */
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.h b/drivers/net/ethernet/ibm/ibmvnic.h
-index 8f5cefb932dd..1310c861bf83 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.h
-+++ b/drivers/net/ethernet/ibm/ibmvnic.h
-@@ -41,11 +41,6 @@
- 
- #define IBMVNIC_RESET_DELAY 100
- 
--static const char ibmvnic_priv_flags[][ETH_GSTRING_LEN] = {
--#define IBMVNIC_USE_SERVER_MAXES 0x1
--	"use-server-maxes"
--};
--
- struct ibmvnic_login_buffer {
- 	__be32 len;
- 	__be32 version;
-@@ -883,7 +878,6 @@ struct ibmvnic_adapter {
- 	struct ibmvnic_control_ip_offload_buffer ip_offload_ctrl;
- 	dma_addr_t ip_offload_ctrl_tok;
- 	u32 msg_enable;
--	u32 priv_flags;
- 
- 	/* Vital Product Data (VPD) */
- 	struct ibmvnic_vpd *vpd;
--- 
-2.26.2
+> The prototype has a "handshake type" option that enables the kernel
+> to request handshakes for different transport layer security
+> protocols. Is that the kind of scalability you mean?
+> 
+> For TLS, we expect to have at least:
+> 
+>  - ClientHello
+>   - X509
+>   - PSK
+>  - ServerHello
+>  - Re-key
+> 
+> It should be straightforward to add the ability to service
+> other handshake types.
+> 
+> >> I can include unit tests with the prototype. Someone needs to
+> >> educate me on what is the preferred unit test paradigm for this
+> >> type of subsystem. Examples in the current kernel code base would
+> >> help too.  
+> > 
+> > Whatever level of testing makes you as an engineer comfortable
+> > with saying "this test suite is sufficient"? ;)
+> > 
+> > For TLS we have tools/testing/selftests/net/tls.c - it's hardly
+> > an example of excellence but, you know, it catches bugs here and 
+> > there.  
+> 
+> My question wasn't clear, sorry. I meant, what framework is
+> appropriate to use for unit tests in this area?
 
+Nothing area specific, tools/testing/selftests/kselftest_harness.h
+is what the tls test uses.
+
+> >> When we started discussing TLS handshake requirements with some
+> >> community members several years ago, creating the socket in
+> >> kernel and passing it up to a user agent was the suggested design.
+> >> Has that recommendation changed since then?  
+> > 
+> > Hm, do you remember who you discussed it with? Would be good 
+> > to loop those folks in.  
+> 
+> Yes, I remember. Trond Myklebust discussed this with Dave Miller
+> during a hallway conversation at a conference (probably Plumbers)
+> in 2018 or 2019.
+> 
+> Trond is Cc'd on this thread via linux-nfs@ and Dave is Cc'd via
+> netdev@.
+> 
+> I also traded email with Boris Pismenny about this a year ago,
+> and if memory serves he also recommended passing an existing
+> socket up to user space. He is Cc'd on this directly.
+
+I see.
+
+> > I wasn't involved at the beginning of the 
+> > TLS work, I know second hand that HW offload and nbd were involved 
+> > and that the design went thru some serious re-architecting along 
+> > the way. In the beginning there was a separate socket for control
+> > records, and that was nacked.
+> > 
+> > But also (and perhaps most importantly) I'm not really objecting 
+> > to creating the socket in the kernel. I'm primarily objecting to 
+> > a second type of a special TLS socket which has TLS semantics.  
+> 
+> I don't understand your objection. Can you clarify?
+> 
+> AF_TLSH is a listen-only socket. It's just a rendezvous point
+> for passing a kernel socket up to user space. It doesn't have
+> any particular "TLS semantics". It's the user space agent
+> listening on that endpoint that implements particular handshake
+> behaviors.
+> 
+> In fact, if the name AF_TLSH gives you hives, that can be made
+> more generic.
+
+Yes, a more generic "user space please bake my socket" interface 
+is what I'm leaning towards.
+
+> However, that makes it harder for the kernel to
+> figure out which listening endpoint handles handshake requests.
+
+Right, the listening endpoint...
+
+Is it possible to instead create a fd-passing-like structured message
+which could carry the fd and all the relevant context (what goes 
+via the getsockopt() now)? 
+
+The user space agent can open such upcall socket, then bind to
+whatever entity it wants to talk to on the kernel side and read
+the notifications via recv()?
