@@ -2,127 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 05FBB512419
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 22:48:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4470512437
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 23:03:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236740AbiD0UvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 16:51:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47172 "EHLO
+        id S232110AbiD0VHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 17:07:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229567AbiD0UvL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 16:51:11 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3F9B60E7
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 13:47:57 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id m128so5577663ybm.5
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 13:47:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wjBGniCkrPPn2XJZCJS3viIi0a1wQPIJsNzJkxVm3f8=;
-        b=YXmUuFGWRsnYvsuY8WxZpw1NN/uZTGV6gHRqPICsiQRgxqgwXOkO/+BP3u7R4nLgDR
-         J8RDj5ofdIF/V7CiQyuSIh+I2b9gslArzgmXoctHFZ2Pb5ps54nc1OGV9QJYvdnjEmnk
-         Jw5sUbmAmOp2wuhVs9orQottDeetDhjjGBsT9ePMvqZbpacVgXVeoEFSJwGNOaAnNHmk
-         /GDAcTiTIawFjZ2Nuf5OSztqR1DCor1lA++7hJnYa3lx31QP+T6V0ewLkbYbqtLy8lDS
-         XYUEJ/r6FA1QXwi/uBFdEBuWntwcKM4SsOMVR8N5FUzviZ5vjiZ7F+nt2Cq5CBkTtIKG
-         hUZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wjBGniCkrPPn2XJZCJS3viIi0a1wQPIJsNzJkxVm3f8=;
-        b=bjtWa8A7mDxE1wxDIbhrCgdlmMHybvep3VX4zqVUEe2bKusKiizYCNptm2HKx4jL3l
-         UBMXwoJtoRW+olORsLFPkVy/4nNkWXxvY6n6eqJmPdigvzsPnkfpZiIreOQvRUJxM0g2
-         qiNbYYAlxw8NtXDJZCG7LAXhzREYBcd56G+mtSSzM6RkHZ/Sxiv9o4e1hryh+FtIToU6
-         V0E+tfiVPScdPkPasXrFCf8h/T7+B33OHjweFGMcVckWPcNzeyMI7wEEf4RIfZi6dngO
-         zeB5iLi1zdviuWFPjuiJVjFQAhP+D0nWVCPH+wkxjm5LQ2sg9VKysFWSPiDT3t+8dMJ7
-         gi9w==
-X-Gm-Message-State: AOAM530kzsWEgHePdJsI3UUQ4qo5gbXWEM0OlCnhAlYWDMGOHRDqFEzQ
-        GdCx+qx1lGzt5mEBiws0cIrG33Ru2ToNdRLiWgdn+g==
-X-Google-Smtp-Source: ABdhPJwN8etrWMh6Os0GxHfjXTwaVKnhY711RgcSmkqMqHskXsAPhaJWu2gLTWYYQDHYI8eCDcXjQUlF8pDMBdyhq4w=
-X-Received: by 2002:a25:ea48:0:b0:644:e2e5:309 with SMTP id
- o8-20020a25ea48000000b00644e2e50309mr27820653ybe.407.1651092476629; Wed, 27
- Apr 2022 13:47:56 -0700 (PDT)
+        with ESMTP id S229965AbiD0VHH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 17:07:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 652DD38B9;
+        Wed, 27 Apr 2022 14:03:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7908E61D92;
+        Wed, 27 Apr 2022 21:03:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6353C385A7;
+        Wed, 27 Apr 2022 21:03:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651093430;
+        bh=EXkPPwFcpeWT8TP+jJ4voP6uahjnNmfSRZbq7nYktMs=;
+        h=From:To:Cc:Subject:Date:From;
+        b=rZYfMZANmHJjQ3LiJ8AucJyHp82yFWe6DOKSEf/M1URkUYhpSki5NKq3QvJuqk9/s
+         NlFFgZtwU6W736FaniaBF4XQeiS/ajAftKXBDeEPAIJYcQiszAaCZSzqFAHSlU7a8l
+         zGz1GLlgTqj8eOAqZbKQH3W0wwjqWnyTZtIqVCJwAkA8xm/rfyctInH2hIpbUpZ1bs
+         dInMcvfCVSGuuHFQRSVSX0AYgPLF5cu15nA9q23di+vBADhyUKcX9r9P+m5SDSgLNQ
+         505yK4Lr5VQhCWPMoCo6yjHev8M1/KPidTIgP/5d6vt5XSf8d+nCkRdC5p1teKskv6
+         E9yjKYMG15k2w==
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: [PATCHv3 bpf-next 0/5] bpf: Speed up symbol resolving in kprobe multi link
+Date:   Wed, 27 Apr 2022 23:03:40 +0200
+Message-Id: <20220427210345.455611-1-jolsa@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <202204270907.nUUrw3dS-lkp@intel.com> <20220427200259.2564-1-lnx.erin@gmail.com>
-In-Reply-To: <20220427200259.2564-1-lnx.erin@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 27 Apr 2022 13:47:45 -0700
-Message-ID: <CANn89iLDK=_MBo20S09Pq2PtKKPfWMM2R9FcDUWVjX-dk6cYDA@mail.gmail.com>
-Subject: Re: [PATCH net-next v3] net: SO_RCVMARK socket option for SO_MARK
- with recvmsg()
-To:     Erin MacNeil <lnx.erin@gmail.com>
-Cc:     Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Arnd Bergmann <arnd@arndb.de>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
-        Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Jeremy Kerr <jk@codeconstruct.com.au>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Pavel Tikhomirov <ptikhomirov@virtuozzo.com>,
-        Martynas Pumputis <m@lambda.lt>,
-        Akhmat Karakotov <hmukos@yandex-team.ru>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Wei Wang <weiwan@google.com>, Yangbo Lu <yangbo.lu@nxp.com>,
-        Florian Westphal <fw@strlen.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Richard Palethorpe <rpalethorpe@suse.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Richard Sanger <rsanger@wand.net.nz>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        linux-alpha@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        sparclinux@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        linux-bluetooth@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-wpan@vger.kernel.org, linux-sctp@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 1:03 PM Erin MacNeil <lnx.erin@gmail.com> wrote:
->
-> Adding a new socket option, SO_RCVMARK, to indicate that SO_MARK
-> should be included in the ancillary data returned by recvmsg().
->
-> Renamed the sock_recv_ts_and_drops() function to sock_recv_cmsgs().
->
-> Signed-off-by: Erin MacNeil <lnx.erin@gmail.com>
->
+hi,
+sending additional fix for symbol resolving in kprobe multi link
+requested by Alexei and Andrii [1].
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+This speeds up bpftrace kprobe attachment, when using pure symbols
+(3344 symbols) to attach:
 
-Thanks.
+Before:
+
+  # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
+  ...
+  6.5681 +- 0.0225 seconds time elapsed  ( +-  0.34% )
+
+After:
+
+  # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
+  ...
+  0.5661 +- 0.0275 seconds time elapsed  ( +-  4.85% )
+
+v3 changes:
+  - renamed kallsyms_lookup_names to ftrace_lookup_symbols
+    and moved it to ftrace.c [Masami]
+  - added ack [Andrii]
+  - couple small test fixes [Andrii]
+
+v2 changes (first version [2]):
+  - removed the 2 seconds check [Alexei]
+  - moving/forcing symbols sorting out of kallsyms_lookup_names function [Alexei]
+  - skipping one array allocation and copy_from_user [Andrii]
+  - several small fixes [Masami,Andrii]
+  - build fix [kernel test robot]
+
+thanks,
+jirka
+
+
+[1] https://lore.kernel.org/bpf/CAEf4BzZtQaiUxQ-sm_hH2qKPRaqGHyOfEsW96DxtBHRaKLoL3Q@mail.gmail.com/
+[2] https://lore.kernel.org/bpf/20220407125224.310255-1-jolsa@kernel.org/
+---
+Jiri Olsa (5):
+      kallsyms: Fully export kallsyms_on_each_symbol function
+      ftrace: Add ftrace_lookup_symbols function
+      fprobe: Resolve symbols with ftrace_lookup_symbols
+      bpf: Resolve symbols with ftrace_lookup_symbols for kprobe multi link
+      selftests/bpf: Add attach bench test
+
+ include/linux/ftrace.h                                     |   6 ++++++
+ include/linux/kallsyms.h                                   |   5 +++++
+ kernel/kallsyms.c                                          |   3 +--
+ kernel/trace/bpf_trace.c                                   | 112 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++----------------------------------------------
+ kernel/trace/fprobe.c                                      |  32 ++++++++++++--------------------
+ kernel/trace/ftrace.c                                      |  62 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c | 133 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ tools/testing/selftests/bpf/progs/kprobe_multi_empty.c     |  12 ++++++++++++
+ 8 files changed, 297 insertions(+), 68 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
