@@ -2,68 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E7EF2512406
-	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 22:42:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05FBB512419
+	for <lists+netdev@lfdr.de>; Wed, 27 Apr 2022 22:48:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229552AbiD0UpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 16:45:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54238 "EHLO
+        id S236740AbiD0UvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 16:51:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234832AbiD0UpF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 16:45:05 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 739DC15805
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 13:41:52 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id d15so2597800plh.2
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 13:41:52 -0700 (PDT)
+        with ESMTP id S229567AbiD0UvL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 16:51:11 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3F9B60E7
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 13:47:57 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id m128so5577663ybm.5
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 13:47:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fcFqcWGHIUmpVEHU0uDFezBhADPZulgFXAo5qDYT4F8=;
-        b=okIQHDuQv+bifFjdzLVgX/jFABWF8vqiqDqknarn1j1u+gimjSF/5BI0jCww4Qgnz9
-         RgFVu+Rr2+j1Rz9WXjDiwbP7Hn0qep5UpM2sqiseEYOgzH2iL473r768XGzLIf8HvriB
-         3dSwEnyzJdKZ9SeV3e9+D447anh1DLkOAIgwwl9YCYIgNOaqDT1ih/fRgbkFwBR26azA
-         0mt6XvqRJTK0X03nw/AugXNlspz1fo271CRSh3H02pFS4ttIXm09QHfzNewhztGJqOR0
-         sWFbkWSxkqa/xY0HpQ0oPcr81Z+5kqArAh+BK8p/4+BpG9el+IuCrzGazO6C++/kTnk4
-         n9zA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wjBGniCkrPPn2XJZCJS3viIi0a1wQPIJsNzJkxVm3f8=;
+        b=YXmUuFGWRsnYvsuY8WxZpw1NN/uZTGV6gHRqPICsiQRgxqgwXOkO/+BP3u7R4nLgDR
+         J8RDj5ofdIF/V7CiQyuSIh+I2b9gslArzgmXoctHFZ2Pb5ps54nc1OGV9QJYvdnjEmnk
+         Jw5sUbmAmOp2wuhVs9orQottDeetDhjjGBsT9ePMvqZbpacVgXVeoEFSJwGNOaAnNHmk
+         /GDAcTiTIawFjZ2Nuf5OSztqR1DCor1lA++7hJnYa3lx31QP+T6V0ewLkbYbqtLy8lDS
+         XYUEJ/r6FA1QXwi/uBFdEBuWntwcKM4SsOMVR8N5FUzviZ5vjiZ7F+nt2Cq5CBkTtIKG
+         hUZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fcFqcWGHIUmpVEHU0uDFezBhADPZulgFXAo5qDYT4F8=;
-        b=lANUmGNfVC36C4ih2Bw5RqQXrn568+Ha+tnVT0TWyNrONcqVySyxeLF6xL15M1EoIU
-         7glo0BOZT0adjm3SvrJgRfwhBrxawD1VLaToF+j+uSoCdaiL5KRBICUpmi4zoslsaM+O
-         uW3gsqTGXHzlNHAxmRVUqq7SETDna/x6XMVAKkmc3A3GJUP87F9eM/abikcS3c7uCVhR
-         YDKKDbi9kuTds6qTKzgdmVgbHjW0+NFBBPP7YaNQDPwAqB4sp5rTTpXVw5GQ+7DKwvK/
-         yHhfXqCKxCueDHjxGb4zqyplv+lo/CVcsH1CyIkM4IESYPHx7ttGUpeA9+57BhOsRrHM
-         0jLQ==
-X-Gm-Message-State: AOAM531NLAoEI8AGokpiCjs5yPprs1A9v8eOu/yiaLAsc6jvM4XOwaiN
-        3uT2CDsMdwlj9FpjJwWZzpM=
-X-Google-Smtp-Source: ABdhPJzI+fFX+0EtRo4VMyAiWb0BDGHryiEZB0DQuF0O6U5T4VByj2UI7XrZcmKhftjxqpNPOj77Kg==
-X-Received: by 2002:a17:902:7e06:b0:159:6c1:ea2b with SMTP id b6-20020a1709027e0600b0015906c1ea2bmr29961012plm.105.1651092111856;
-        Wed, 27 Apr 2022 13:41:51 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:4601:fb6:af20:af2b])
-        by smtp.gmail.com with ESMTPSA id f16-20020a056a00239000b004fa7103e13csm21491855pfc.41.2022.04.27.13.41.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 13:41:50 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next] net: make sure net_rx_action() calls skb_defer_free_flush()
-Date:   Wed, 27 Apr 2022 13:41:47 -0700
-Message-Id: <20220427204147.1310161-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.36.0.rc2.479.g8af0fa9b8e-goog
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wjBGniCkrPPn2XJZCJS3viIi0a1wQPIJsNzJkxVm3f8=;
+        b=bjtWa8A7mDxE1wxDIbhrCgdlmMHybvep3VX4zqVUEe2bKusKiizYCNptm2HKx4jL3l
+         UBMXwoJtoRW+olORsLFPkVy/4nNkWXxvY6n6eqJmPdigvzsPnkfpZiIreOQvRUJxM0g2
+         qiNbYYAlxw8NtXDJZCG7LAXhzREYBcd56G+mtSSzM6RkHZ/Sxiv9o4e1hryh+FtIToU6
+         V0E+tfiVPScdPkPasXrFCf8h/T7+B33OHjweFGMcVckWPcNzeyMI7wEEf4RIfZi6dngO
+         zeB5iLi1zdviuWFPjuiJVjFQAhP+D0nWVCPH+wkxjm5LQ2sg9VKysFWSPiDT3t+8dMJ7
+         gi9w==
+X-Gm-Message-State: AOAM530kzsWEgHePdJsI3UUQ4qo5gbXWEM0OlCnhAlYWDMGOHRDqFEzQ
+        GdCx+qx1lGzt5mEBiws0cIrG33Ru2ToNdRLiWgdn+g==
+X-Google-Smtp-Source: ABdhPJwN8etrWMh6Os0GxHfjXTwaVKnhY711RgcSmkqMqHskXsAPhaJWu2gLTWYYQDHYI8eCDcXjQUlF8pDMBdyhq4w=
+X-Received: by 2002:a25:ea48:0:b0:644:e2e5:309 with SMTP id
+ o8-20020a25ea48000000b00644e2e50309mr27820653ybe.407.1651092476629; Wed, 27
+ Apr 2022 13:47:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <202204270907.nUUrw3dS-lkp@intel.com> <20220427200259.2564-1-lnx.erin@gmail.com>
+In-Reply-To: <20220427200259.2564-1-lnx.erin@gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 27 Apr 2022 13:47:45 -0700
+Message-ID: <CANn89iLDK=_MBo20S09Pq2PtKKPfWMM2R9FcDUWVjX-dk6cYDA@mail.gmail.com>
+Subject: Re: [PATCH net-next v3] net: SO_RCVMARK socket option for SO_MARK
+ with recvmsg()
+To:     Erin MacNeil <lnx.erin@gmail.com>
+Cc:     Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Arnd Bergmann <arnd@arndb.de>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Robin van der Gracht <robin@protonic.nl>,
+        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
+        Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jeremy Kerr <jk@codeconstruct.com.au>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Pavel Tikhomirov <ptikhomirov@virtuozzo.com>,
+        Martynas Pumputis <m@lambda.lt>,
+        Akhmat Karakotov <hmukos@yandex-team.ru>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Wei Wang <weiwan@google.com>, Yangbo Lu <yangbo.lu@nxp.com>,
+        Florian Westphal <fw@strlen.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Richard Palethorpe <rpalethorpe@suse.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Richard Sanger <rsanger@wand.net.nz>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        linux-alpha@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        sparclinux@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        linux-bluetooth@vger.kernel.org, linux-can@vger.kernel.org,
+        linux-wpan@vger.kernel.org, linux-sctp@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,41 +113,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Wed, Apr 27, 2022 at 1:03 PM Erin MacNeil <lnx.erin@gmail.com> wrote:
+>
+> Adding a new socket option, SO_RCVMARK, to indicate that SO_MARK
+> should be included in the ancillary data returned by recvmsg().
+>
+> Renamed the sock_recv_ts_and_drops() function to sock_recv_cmsgs().
+>
+> Signed-off-by: Erin MacNeil <lnx.erin@gmail.com>
+>
 
-I missed a stray return; in net_rx_action(), which very well
-is taken whenever trigger_rx_softirq() has been called on
-a cpu that is no longer receiving network packets,
-or receiving too few of them.
+Reviewed-by: Eric Dumazet <edumazet@google.com>
 
-Fixes: 68822bdf76f1 ("net: generalize skb freeing deferral to per-cpu lists")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: Ido Schimmel <idosch@nvidia.com>
----
- net/core/dev.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 611bd719706412723561c27753150b27e1dc4e7a..e09cd202fc579dfe2313243e20def8044aafafa2 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -6617,7 +6617,7 @@ static __latent_entropy void net_rx_action(struct softirq_action *h)
- 
- 		if (list_empty(&list)) {
- 			if (!sd_has_rps_ipi_waiting(sd) && list_empty(&repoll))
--				return;
-+				goto end;
- 			break;
- 		}
- 
-@@ -6644,6 +6644,7 @@ static __latent_entropy void net_rx_action(struct softirq_action *h)
- 		__raise_softirq_irqoff(NET_RX_SOFTIRQ);
- 
- 	net_rps_action_and_irq_enable(sd);
-+end:
- 	skb_defer_free_flush(sd);
- }
- 
--- 
-2.36.0.rc2.479.g8af0fa9b8e-goog
-
+Thanks.
