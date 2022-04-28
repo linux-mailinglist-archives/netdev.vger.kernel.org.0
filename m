@@ -2,43 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1824513D7B
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 23:24:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 688FE513D73
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 23:24:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352245AbiD1V1K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 17:27:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59784 "EHLO
+        id S1352253AbiD1V1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 17:27:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352199AbiD1V1B (ORCPT
+        with ESMTP id S1352099AbiD1V1B (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 17:27:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F9C6B53E4
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB8D6B9F23
         for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 14:23:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E9803B8303C
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 21:23:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FFADC385AD;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5B302B8303F
+        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 21:23:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4E9CC385A9;
         Thu, 28 Apr 2022 21:23:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651181023;
-        bh=rJ5yWuLoK/eWz3GNHUjb3cNFuO2uTbwzriSzlW94+bM=;
+        s=k20201202; t=1651181024;
+        bh=ix1JmY3/nHR1YjFoqzZ7U4J02sb0Wc79WwQkZ+yRI6k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mlzwtTUulUh+FEpZWyWnM4dpDbBhUiFLubrG6pFMmbgyB+Y3FDhmzUbpgmdtl3bfg
-         rcGAjOKPbu/dI6KNRSDJZpU85nXad7fIhHtMZQLmsSnY8fUfL6u80J+ggmoZe0Jc5L
-         itz11GsCutNBX49ZnvF6ojWGyCJiFxESok26mzm/T2nFROEqkXKRYobbLYZDUxtyiw
-         BNNDL1kzXPm2r85fcHQigX5zqBOqEjSYS7fe3MtHZvwuz23NJRX4obPeFrXXR4klL7
-         JhPaKkClcFFFyYoZn3MVt75te1+3X3H8iI75xFfoJ6U4h+kB+UPDM5BfeaZw4Jwxsh
-         +H9uKXMZmrBfA==
+        b=QM8moCLUq/5eYAqwahubUhNyw0j9BZ2FUyxrccLz9oF/MteFwbmv6JgpID8h9Z7n9
+         xo37bPSS8CAvvJw4DMgAtMWovaV0cEoqxcFjDt5K4+7wmGJjecHV8KEHoMImcC+Bzt
+         P2D/zSPHkOXDoO3wOcm++fdbdJBxgGhFTYBB3NudPeW9apcaosNexTSEOQ9kUWW+Z7
+         bx2Y0WwtjMWXuqtGiLjkDW7ILRayOF+K/WyzmdLA6u3hn0StoHUquWzoTsNX1FYIr+
+         sNRa1XcIdjbZut6JgVZqk+nrpyU5nHwQQRCM9zjvGrr9GhUTTbnfDChgChXaWBs+l/
+         xNqm3wLWBD04g==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net, pabeni@redhat.com
 Cc:     edumazet@google.com, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>, ajit.khaparde@broadcom.com,
-        sriharsha.basavapatna@broadcom.com, somnath.kotur@broadcom.com
-Subject: [PATCH net-next v2 10/15] eth: benet: remove a copy of the NAPI_POLL_WEIGHT define
-Date:   Thu, 28 Apr 2022 14:23:18 -0700
-Message-Id: <20220428212323.104417-11-kuba@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>, claudiu.manoil@nxp.com
+Subject: [PATCH net-next v2 11/15] eth: gfar: remove a copy of the NAPI_POLL_WEIGHT define
+Date:   Thu, 28 Apr 2022 14:23:19 -0700
+Message-Id: <20220428212323.104417-12-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220428212323.104417-1-kuba@kernel.org>
 References: <20220428212323.104417-1-kuba@kernel.org>
@@ -58,41 +57,39 @@ values in the drivers just makes refactoring harder.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: ajit.khaparde@broadcom.com
-CC: sriharsha.basavapatna@broadcom.com
-CC: somnath.kotur@broadcom.com
+CC: claudiu.manoil@nxp.com
 ---
- drivers/net/ethernet/emulex/benet/be.h      | 3 +--
- drivers/net/ethernet/emulex/benet/be_main.c | 2 +-
- 2 files changed, 2 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/freescale/gianfar.c | 2 +-
+ drivers/net/ethernet/freescale/gianfar.h | 3 ---
+ 2 files changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/emulex/benet/be.h b/drivers/net/ethernet/emulex/benet/be.h
-index 8689d4a51fe5..61fe9625bed1 100644
---- a/drivers/net/ethernet/emulex/benet/be.h
-+++ b/drivers/net/ethernet/emulex/benet/be.h
-@@ -101,8 +101,7 @@
- #define MAX_ROCE_EQS		5
- #define MAX_MSIX_VECTORS	32
- #define MIN_MSIX_VECTORS	1
--#define BE_NAPI_WEIGHT		64
--#define MAX_RX_POST		BE_NAPI_WEIGHT /* Frags posted at a time */
-+#define MAX_RX_POST		NAPI_POLL_WEIGHT /* Frags posted at a time */
- #define RX_FRAGS_REFILL_WM	(RX_Q_LEN - MAX_RX_POST)
- #define MAX_NUM_POST_ERX_DB	255u
- 
-diff --git a/drivers/net/ethernet/emulex/benet/be_main.c b/drivers/net/ethernet/emulex/benet/be_main.c
-index d0c262f2695a..5939068a8f62 100644
---- a/drivers/net/ethernet/emulex/benet/be_main.c
-+++ b/drivers/net/ethernet/emulex/benet/be_main.c
-@@ -2983,7 +2983,7 @@ static int be_evt_queues_create(struct be_adapter *adapter)
- 		cpumask_set_cpu(cpumask_local_spread(i, numa_node),
- 				eqo->affinity_mask);
- 		netif_napi_add(adapter->netdev, &eqo->napi, be_poll,
--			       BE_NAPI_WEIGHT);
-+			       NAPI_POLL_WEIGHT);
+diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ethernet/freescale/gianfar.c
+index 206b7a35eaf5..f0b652a65043 100644
+--- a/drivers/net/ethernet/freescale/gianfar.c
++++ b/drivers/net/ethernet/freescale/gianfar.c
+@@ -3232,7 +3232,7 @@ static int gfar_probe(struct platform_device *ofdev)
+ 	/* Register for napi ...We are registering NAPI for each grp */
+ 	for (i = 0; i < priv->num_grps; i++) {
+ 		netif_napi_add(dev, &priv->gfargrp[i].napi_rx,
+-			       gfar_poll_rx_sq, GFAR_DEV_WEIGHT);
++			       gfar_poll_rx_sq, NAPI_POLL_WEIGHT);
+ 		netif_tx_napi_add(dev, &priv->gfargrp[i].napi_tx,
+ 				  gfar_poll_tx_sq, 2);
  	}
- 	return 0;
- }
+diff --git a/drivers/net/ethernet/freescale/gianfar.h b/drivers/net/ethernet/freescale/gianfar.h
+index ca5e14f908fe..68b59d3202e3 100644
+--- a/drivers/net/ethernet/freescale/gianfar.h
++++ b/drivers/net/ethernet/freescale/gianfar.h
+@@ -52,9 +52,6 @@ struct ethtool_rx_list {
+ 	unsigned int count;
+ };
+ 
+-/* The maximum number of packets to be handled in one call of gfar_poll */
+-#define GFAR_DEV_WEIGHT 64
+-
+ /* Length for FCB */
+ #define GMAC_FCB_LEN 8
+ 
 -- 
 2.34.1
 
