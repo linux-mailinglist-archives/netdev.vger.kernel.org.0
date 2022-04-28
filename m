@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 74E325131F4
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 13:02:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5E225131EF
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 13:02:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345267AbiD1LDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 07:03:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48706 "EHLO
+        id S1345227AbiD1LDF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 07:03:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345216AbiD1LCo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 07:02:44 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E37FA144F;
-        Thu, 28 Apr 2022 03:58:57 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id 1-20020a05600c248100b00393fbf11a05so4051165wms.3;
-        Thu, 28 Apr 2022 03:58:57 -0700 (PDT)
+        with ESMTP id S1344894AbiD1LCs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 07:02:48 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 920AAA1457;
+        Thu, 28 Apr 2022 03:58:59 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id q23so6255022wra.1;
+        Thu, 28 Apr 2022 03:58:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=s+kT6lElZGiyXPNFYxpX9dPigb8JGxp1Ty3OtCWIYZk=;
-        b=KAsXqQiXisUum9sr3vDWSaGkLIRSGm9RTKRR66bEjq2G75ZFXff4MTatYHQFZiRovd
-         X4d1MfhVT76VMxJ1LBwPkeRJiJ3cCOpChI6+YON/M6w6JEEhpdOvJfE6CfEcjbsAWoDV
-         jWy4P9D7PshHJynG5LjSSuIIzeSq9K3vRNMnBGGfdsmLhOx0J3HHWqHsQ1fe1ATH7iqn
-         Gw3GMzcL96MMruiho87+F/RQmG3NavWTDdsGR5xwunqnfcFotiRHetAemSGTHOFXsqf7
-         xReGqk9clcO5qDR1t9GyVoDelpgJGe2CNgOI0sgPNb2biAbp7Uz8ztMr+mWtN2O6E1fv
-         ZsZg==
+        bh=SrhHhC4OSzNzBDK0GAKFTGso0tFf64ad1cEfyYa4l14=;
+        b=n5Tt+aHeTdA3GyiiN/j4yGT4hJ5/W1FWa95Mq1/ALsVVWONE8D4sN5YjHHd2L+3tZb
+         H4ZxhqjR0QMmRBYLdKt1w8ZtRTnemQBlUH/xvgzJwghSgRAe2fLHRrDdEKf8A+SlPQHF
+         IrwcTGZz9/d5OlFC8hFXswRdcoNFmp5Q9QXliD69zK+wZ9wDf+LXzGcF4aBGZnKxZ57V
+         A+/YTcdPA9oE5laLAe8xn84zD0ygX4tFvloUaHuCzTVV+kIVSEL9lb2jthVffx60svD+
+         hG7KTrvWLie36ioh3tuQjDRNCkGcyOG5U8hf8f8gHmnnQuFCGfWu7ne+66imaUAH8rVL
+         obRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=s+kT6lElZGiyXPNFYxpX9dPigb8JGxp1Ty3OtCWIYZk=;
-        b=Ko9OKZB9YhMWOyG1WNaYpGeZ/r8MsAsJ73OzixH72ZfsjvzPBN3Qi/jhtcQ4H6Y87w
-         ldDRLhNkBeF0DWtrA9r1Od1AjygZ3GwUPt8lmNDz5jLV0FIvapsuikpplGKryWnmBzgu
-         /TmY/OiZfQ/WnARjX+mK8VKfMdVjml39moYcxwKqBagerP6PeTRc5zX5IvaTuzjsWJze
-         YanoqEqxYPkiTUb3g7HyhCWQitNHQcfTS+Ojt6Li1wmRieCqT4xgsyY3t1vyzBlwCl1E
-         c/IB8uFOPHQNCop8f1W/NzgluUKCnaXSGixU+3iQlztvDGI5mbBIWbnO2C/YdLy5yLUs
-         xprg==
-X-Gm-Message-State: AOAM5303OZ8RLaoLvq3ggzLDKwETKPn4TePB38rRlfvRAyUphjzUgBOk
-        WeHNlZMa9+BxJvqWkbaTiIZuX2kWlIU=
-X-Google-Smtp-Source: ABdhPJwX28qMZnoY4F1Mv77Ag5sVbXb3Rj3kDgaPd57XubYoJBHS5TrQISuueViQvDdvqOi0U5a6Uw==
-X-Received: by 2002:a05:600c:ad1:b0:394:1585:a164 with SMTP id c17-20020a05600c0ad100b003941585a164mr1597209wmr.101.1651143535845;
-        Thu, 28 Apr 2022 03:58:55 -0700 (PDT)
+        bh=SrhHhC4OSzNzBDK0GAKFTGso0tFf64ad1cEfyYa4l14=;
+        b=wEdZEzD4uts4SCN2pqRwHRJmrZxQYCmdZwjxE7Zj4B5/ONIzx0U0CqFsyn1Zfy5REX
+         Xg16QoeQuumfi4OdgwuRWZUXiX6owbPPTFEfbe7pyMpBGdWUxZXfgEG8JnhDPUtOI9vV
+         lyvcdhEqV57jvgPGBOVnewbfnIXtHlnqOw+8RxiA9SFXvAr9RJ++H+fCB5EYwDEpRwHQ
+         sIn3n8047tnJbjTu/AZrb1wvtFZzC3hxi1OqWgRJw1C/9g5KQXdCSgEMp+z24HHuSJoq
+         DBgHOfubkeWM4h7wkCEcsagvqeS38mbimbunHxP0z7YCt8iRCFIEnz9yYEtA9QAvOpYH
+         Oi+Q==
+X-Gm-Message-State: AOAM533zrvCGoMLL2lM5scEtw4skiNKZ+FpydDazuXyMJYbtg1pv5daS
+        euk4cx8A7qZDopXVPNviP+WwYQaB77A=
+X-Google-Smtp-Source: ABdhPJzxkVXH4VMZUgFhULZAk+43zKGd1vXLm+7Vk9zs4sqRwQ80/Es+zJXS1CjGvGHsNFmPWX3RIg==
+X-Received: by 2002:a5d:64a3:0:b0:20a:ef5c:adfe with SMTP id m3-20020a5d64a3000000b0020aef5cadfemr6316488wrp.146.1651143537984;
+        Thu, 28 Apr 2022 03:58:57 -0700 (PDT)
 Received: from 127.0.0.1localhost (82-132-230-8.dab.02.net. [82.132.230.8])
-        by smtp.gmail.com with ESMTPSA id p4-20020a1c5444000000b00391ca5976c8sm4628139wmi.0.2022.04.28.03.58.54
+        by smtp.gmail.com with ESMTPSA id p4-20020a1c5444000000b00391ca5976c8sm4628139wmi.0.2022.04.28.03.58.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 03:58:55 -0700 (PDT)
+        Thu, 28 Apr 2022 03:58:57 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -54,9 +54,9 @@ Cc:     David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         linux-kernel@vger.kernel.org,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next 1/3] sock: dedup sock_def_write_space wmem_alloc checks
-Date:   Thu, 28 Apr 2022 11:58:17 +0100
-Message-Id: <95d349fee6504dc8bc1e8123d80915d1fe9ce91a.1650891417.git.asml.silence@gmail.com>
+Subject: [PATCH net-next 2/3] sock: optimise UDP sock_wfree() refcounting
+Date:   Thu, 28 Apr 2022 11:58:18 +0100
+Message-Id: <8b7878e1f57af29e4a693c588d3a0cc70dcf5003.1650891417.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <cover.1650891417.git.asml.silence@gmail.com>
 References: <cover.1650891417.git.asml.silence@gmail.com>
@@ -72,38 +72,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Except for minor rounding differences the first ->sk_wmem_alloc test in
-sock_def_write_space() is a hand coded version of sock_writeable().
-Replace it with the helper, and also kill the following if duplicating
-the check.
+For non SOCK_USE_WRITE_QUEUE sockets, sock_wfree() (atomically) puts
+->sk_wmem_alloc twice. It's needed to keep the socket alive while
+calling ->sk_write_space() after the first put.
+
+However, some sockets, such as UDP, are freed by RCU
+(i.e. SOCK_RCU_FREE) and use already RCU-safe sock_def_write_space().
+Carve a fast path for such sockets, put down all refs in one go before
+calling sock_def_write_space() but guard the socket from being freed
+by an RCU read section.
+
+note: because TCP sockets are marked with SOCK_USE_WRITE_QUEUE it
+doesn't add extra checks in its path.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- net/core/sock.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ net/core/sock.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
 diff --git a/net/core/sock.c b/net/core/sock.c
-index 29abec3eabd8..976ff871969e 100644
+index 976ff871969e..4ad4d6dd940e 100644
 --- a/net/core/sock.c
 +++ b/net/core/sock.c
-@@ -3194,15 +3194,14 @@ static void sock_def_write_space(struct sock *sk)
- 	/* Do not wake up a writer until he can make "significant"
- 	 * progress.  --DaveM
- 	 */
--	if ((refcount_read(&sk->sk_wmem_alloc) << 1) <= READ_ONCE(sk->sk_sndbuf)) {
-+	if (sock_writeable(sk)) {
- 		wq = rcu_dereference(sk->sk_wq);
- 		if (skwq_has_sleeper(wq))
- 			wake_up_interruptible_sync_poll(&wq->wait, EPOLLOUT |
- 						EPOLLWRNORM | EPOLLWRBAND);
+@@ -146,6 +146,8 @@
+ static DEFINE_MUTEX(proto_list_mutex);
+ static LIST_HEAD(proto_list);
  
- 		/* Should agree with poll, otherwise some programs break */
--		if (sock_writeable(sk))
--			sk_wake_async(sk, SOCK_WAKE_SPACE, POLL_OUT);
-+		sk_wake_async(sk, SOCK_WAKE_SPACE, POLL_OUT);
- 	}
++static void sock_def_write_space(struct sock *sk);
++
+ /**
+  * sk_ns_capable - General socket capability test
+  * @sk: Socket to use a capability on or through
+@@ -2320,8 +2322,20 @@ void sock_wfree(struct sk_buff *skb)
+ {
+ 	struct sock *sk = skb->sk;
+ 	unsigned int len = skb->truesize;
++	bool free;
  
- 	rcu_read_unlock();
+ 	if (!sock_flag(sk, SOCK_USE_WRITE_QUEUE)) {
++		if (sock_flag(sk, SOCK_RCU_FREE) &&
++		    sk->sk_write_space == sock_def_write_space) {
++			rcu_read_lock();
++			free = refcount_sub_and_test(len, &sk->sk_wmem_alloc);
++			sock_def_write_space(sk);
++			rcu_read_unlock();
++			if (unlikely(free))
++				__sk_free(sk);
++			return;
++		}
++
+ 		/*
+ 		 * Keep a reference on sk_wmem_alloc, this will be released
+ 		 * after sk_write_space() call
 -- 
 2.36.0
 
