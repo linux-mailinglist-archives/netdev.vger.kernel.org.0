@@ -2,104 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B54BE51343C
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 14:53:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57C9D513469
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 15:05:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346693AbiD1M4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 08:56:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56856 "EHLO
+        id S1346754AbiD1NIM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 09:08:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234288AbiD1M4J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 08:56:09 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E562AC068
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 05:52:49 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id u3so6671914wrg.3
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 05:52:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=solid-run-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ayQ6jaj3HRG+TRst7apfV+X8rdJKniYU/+Iv6hoPCH4=;
-        b=neUQ9n98qLiyxAF30ks330S4NOYEn6JgzJAsAJyzq7cCSGJ4/1qhjBSIQGnubem5CY
-         7zC/UszUd9X/BRmuofbFuGJ5YETmhgAg1IKBvnRt1nqdKGedq6v1BgwnzGR/dpJ4+PVc
-         UxtoxedLZD7YXkaRPNwICs4gAaVLiXNV+vWHDcyBCpQUAc/Zn2+d/2narT0ox4WxO0Ih
-         6BHYaLCUq/DAJ0BKRmTZ6+QP61sthGr8Qv01y2V40f/1UTKTa9L7PXBBdXOuShgar7zO
-         2pLAa22uq/fbPPMU82QZsypbefEIqSzOiD5fT37X+wkYE1Zg4WLa72GM3t9hQoBU99jA
-         H2Ew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ayQ6jaj3HRG+TRst7apfV+X8rdJKniYU/+Iv6hoPCH4=;
-        b=bw+wUXuBSnDMdF4Zv3L49ZuF4KZE3iRwoImdoFj0pcR3hfb3VxmCJj8am6rxaeHBuA
-         yEZ+0boV2QNcY0q4ks2MXgIsP/DLXPmSfcuqVl8awLxZZ9Cnz+rjrIYHu3PASaaSwqRf
-         2tIztJB0rgEYnn6cS4BNBMdK6906SjYq/otZL61rPEpJjqa4g3fF6v/6ZNrjgTaTBjbY
-         G8pym8l2Fbzk+ozZiymWnlbilgnB19upa8qRQvp1mHmV+sI0xT95h2XEaBa1tdEJlOhq
-         den4NMQkdCfbpCKEBjaYATJsLZa55vqShReLb84IKqXwKE6+Vs72qV/z7UvPpgI5hLrE
-         vujA==
-X-Gm-Message-State: AOAM530ZJVQ+Exg4UiOSLtOpW9/pqJYg6v6KGUa39HCFeES8AFevbcRZ
-        fwqGt0+rm3v5qE1djwE4DlVIOg==
-X-Google-Smtp-Source: ABdhPJyXni+pnO58WLJMvNAZ5GvJqowWD7XR5Bkqz+BnKvdkV++wbybCGrCGM3JTOwVUIHX9yBwoAw==
-X-Received: by 2002:a5d:5311:0:b0:20a:d007:b499 with SMTP id e17-20020a5d5311000000b0020ad007b499mr21956331wrv.258.1651150368164;
-        Thu, 28 Apr 2022 05:52:48 -0700 (PDT)
-Received: from [192.168.17.225] (bzq-82-81-222-124.cablep.bezeqint.net. [82.81.222.124])
-        by smtp.gmail.com with ESMTPSA id c9-20020adfa309000000b0020ad4eae9b6sm12954975wrb.100.2022.04.28.05.52.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Apr 2022 05:52:47 -0700 (PDT)
-Message-ID: <9a7490d2-7553-f0cb-8a57-9c8412259060@solid-run.com>
-Date:   Thu, 28 Apr 2022 15:52:45 +0300
+        with ESMTP id S1345704AbiD1NIL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 09:08:11 -0400
+Received: from smtpproxy21.qq.com (smtpbg701.qq.com [203.205.195.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2C1584ED1
+        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 06:04:52 -0700 (PDT)
+X-QQ-mid: bizesmtp67t1651151084t0ubflmf
+Received: from localhost.localdomain ( [58.240.82.166])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 28 Apr 2022 21:04:38 +0800 (CST)
+X-QQ-SSF: 01400000002000E0M000000A0000000
+X-QQ-FEAT: ZHWZeLXy+8e6BJiTYangnhOr5IcHo9PDpnvWd/LzUXHVBYP5Ns70+NJtTUtxx
+        L01MpdLZwTtCieUxlV8UIGqzjZfGRszS7pO8xh6GIBpyVBzL7HR/q1gSfEyLMHiTUWPYb6e
+        LzytBKJhBvGYQDlAvnb1PJcM5l9U8f7C0jrWpYitUp8ANcew4BSSrFywwKiT8/7SKMXi1aM
+        NvRixxfd88NJhhjN7sGdtrFCaq0BBxCC0b2dfsA71mGdGzxE3SGnt77lmuNQNcengdztGt8
+        pl0GwkrVhYcJv2ejnebUG5rudHVO0oD6yKydmspMLdzTUNVpJDPPuL71y0ye/og60cAbfKf
+        RFIcLQgPtwtvRxgh9eAC9xLtEg8iLQE6STJYzpRxlRiyRIs8+0=
+X-QQ-GoodBg: 1
+From:   Meng Tang <tangmeng@uniontech.com>
+To:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
+Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>
+Subject: [PATCH] Bluetooth: Add bluetooth error information for error codes
+Date:   Thu, 28 Apr 2022 21:04:35 +0800
+Message-Id: <20220428130435.896-1-tangmeng@uniontech.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v3 2/3] net: phy: adin: add support for clock output
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, alvaro.karsz@solid-run.com,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-References: <20220419102709.26432-1-josua@solid-run.com>
- <20220428082848.12191-1-josua@solid-run.com>
- <20220428082848.12191-3-josua@solid-run.com> <YmqGwjGt/Fbeu2kJ@lunn.ch>
-From:   Josua Mayer <josua@solid-run.com>
-In-Reply-To: <YmqGwjGt/Fbeu2kJ@lunn.ch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign10
+X-QQ-Bgrelay: 1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-\o/
+Bluetooth error codes to Unix errno mapping is not completed. For
+example, the following Bluetooth error codes are directly classified
+as ENOSYS.
 
-Am 28.04.22 um 15:21 schrieb Andrew Lunn:
->> +static int adin_config_clk_out(struct phy_device *phydev)
->> +{
->> +	struct device *dev = &phydev->mdio.dev;
->> +	const char *val = NULL;
->> +	u8 sel = 0;
->> +
->> +	device_property_read_string(dev, "adi,phy-output-clock", &val);
->> +	if(!val) {
-> I'm pretty sure the coding style requires a space between if and (.
-In fact it does :(
->
-> Did you use checkpatch on this?
-I remember doing it, but my mind is playing tricks on me - as right now
-checkpatch is clearly telling me 7 occurences of this style violation ...
+  /* Possible error codes */
+  #define HCI_SCO_INTERVAL_REJECTED     0x1C
+  #define HCI_SCO_AIR_MODE_REJECTED     0x1D
+  #define HCI_UNSPECIFIED_ERROR         0x1F
+  #define HCI_ROLE_CHANGE_NOT_ALLOWED   0x21
+  #define HCI_LMP_RESPONSE_TIMEOUT      0x22
+  #define HCI_UNIT_KEY_USED             0x26
+  #define HCI_INSTANT_PASSED            0x28
 
-Thank you for the fast reply, I'll make sure to fix this in a v4, if any.
-Do you want a v4 for this? Or is it worth waiting for more feedback now?
+As a result, when these error codes occur in Bluetooth, ENOSYS is
+always returned, and users cannot know the specific error codes of
+Bluetooth, thus affecting the positioning of Bluetooth problems.
 
-sincerely
-Josua Mayer
+This will make it difficult to locate and analyze Bluetooth issues.
+Therefore, I added information for bluetooth error codes that are
+not currently mapped to help users get bluetooth error codes.
+
+Signed-off-by: Meng Tang <tangmeng@uniontech.com>
+---
+ net/bluetooth/lib.c | 29 +++++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
+
+diff --git a/net/bluetooth/lib.c b/net/bluetooth/lib.c
+index 5326f41a58b7..eaf952de0ef9 100644
+--- a/net/bluetooth/lib.c
++++ b/net/bluetooth/lib.c
+@@ -122,6 +122,14 @@ int bt_to_errno(__u16 code)
+ 	case 0x1b:
+ 		return ECONNREFUSED;
+ 
++	case 0x1c:
++		printk(KERN_ERR "Bluetooth: errno(0x%02x), SCO Interval Rejected", code);
++		return ENOSYS;
++
++	case 0x1d:
++		printk(KERN_ERR "Bluetooth: errno(0x%02x), SCO Air Mode Rejected", code);
++		return ENOSYS;
++
+ 	case 0x19:
+ 	case 0x1e:
+ 	case 0x23:
+@@ -129,7 +137,28 @@ int bt_to_errno(__u16 code)
+ 	case 0x25:
+ 		return EPROTO;
+ 
++	case 0x1f:
++		printk(KERN_ERR "Bluetooth: errno(0x%02x), Unspecified Error", code);
++		return ENOSYS;
++
++	case 0x21:
++		printk(KERN_ERR "Bluetooth: errno(0x%02x), Role Change Not Allowed", code);
++		return ENOSYS;
++
++	case 0x22:
++		printk(KERN_ERR "Bluetooth: errno(0x%02x), LMP Response Timeout", code);
++		return ENOSYS;
++
++	case 0x26:
++		printk(KERN_ERR "Bluetooth: errno(0x%02x), Unit Key Used", code);
++		return ENOSYS;
++
++	case 0x28:
++		printk(KERN_ERR "Bluetooth: errno(0x%02x), Instant Passed", code);
++		return ENOSYS;
++
+ 	default:
++		printk(KERN_ERR "Bluetooth: errno(0x%02x), Error code unknown", code);
+ 		return ENOSYS;
+ 	}
+ }
+-- 
+2.20.1
+
+
 
