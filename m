@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EE045138BB
+	by mail.lfdr.de (Postfix) with ESMTP id B8B3C5138BC
 	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 17:41:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349345AbiD1PnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 11:43:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49504 "EHLO
+        id S245269AbiD1PnO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 11:43:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349428AbiD1Pm6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 11:42:58 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76380B7C79;
-        Thu, 28 Apr 2022 08:39:31 -0700 (PDT)
+        with ESMTP id S1349484AbiD1PnG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 11:43:06 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2060.outbound.protection.outlook.com [40.107.243.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6411FB82DB;
+        Thu, 28 Apr 2022 08:39:49 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PKunOf1PnWe/JQmhSbAmbpfSFFTuPi6blQohKPgLUl94er9k7WXDo0AlUSpOMdU3s0VN9AInv0S7/HRkcEZEIS9O+uaShnVoxUHIJZF2T2+Cxr99OcWXQHZCtFEhJG9O0BsPmm79MLajPxXNnPx0dPTihgAi1bS9kJO0Zzn8PoFUNJXu+/M3o77c5da7iKHnLSWKSCMeERALSz+Pf7Ezq35YpPXs07aBfnIOxSpbuo1lgWVtA/ONCTPddEaYE/eUfl6FJt8Gi6HyEGXNOr+jfToNBoGH1Hktu8cuvaTmffetwqlBak/JH2svWHc2mE3ciqewLcWykHcB6YDFrLeUrA==
+ b=NKbAvp0yGPenmJyu5+UiI6nU8SnqESfOiO0QhZ+zcVP8osGRmSlHyRUdiSXCRdMzv826hHQfqWfF5JXYEnyLvijRWKoKMINQPzW/9PDQNli/I7cnyEP5tkSVfZ48E/ZU4Shdv2LoMsPN288/qiS3aCxCMAk0Lo9k3kVKnInjYv+XJ1fvrRDP0XJlGHN2x3S2uMIuLOSiknYxxhIyA1M5TwvOQEgSAcQOsjvzU4lkra7ySXJuAxE9PEgRePn3SWTnzZT7yiW+zCHEhgfIEW/KmFXYVwZcXlInm3j4GAgBsqPRVzHFxw4c545WZrpqvzXW1mU1c2Z2avI/cK4S2Fukbw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xLW+a7hX5mLFCrc+r8yapQxHdkC+xqkVtH8IBX56oSc=;
- b=WSE9sYZYcxXoaA2pgW/iLs6x/Y4ZAHEJWo3u+RDztF6n8d0zYuPj9d3w8elU9MbVdXpteCBKcusf2d7AghKw1mf7OBL6cuTXwWIb+9VSA6bVgDjiBrConCrpELWWfn9VemgZpskdjBboIZN+SOyCPQhHwCFy8nQTioShamVQ+SWadZn5OychiIGuXhLWMDxv7CiblrKKuOZq/Bt+V1cc8YU4KRkFtQoNlVmL7jScf6G+fff+f/t2aCcp8h25EhwiikMOkWNzmLj10Y+6QlGPMNVPSfIWDrWMSGaZeRADCg3wYdss1GXaQD9aPzWs4aO3x40qUcFmQ/MMxX7pVy5jPA==
+ bh=59w7YpJuAwcBM9KrS+By5mnOyBzcaG4ItHis0Xs5jpk=;
+ b=a58ytowyDd2+S61Ts0o5NDKOuv//NaJd1Vpxfw3V0y+gNA1LQxUT8SPhcZlpgIht0WWCDnyf+bg1b3rJg0Y840m/Zb4gu964ZbeLAfaKDyW/BJ7ZnT0OYmnHOIMIe7YNKtbumGhNEKQdvzL8qmrsdbTaajKTBOfiizVBXPpW1o2gvhNqrzRgMTCEZ/zOZ6zPuOyqa0BEWIjqnS0YOHU4+YJcbm4tCCuEQymm1IIaV9cV4Ilz5vz/ldEqBXFfyuO7D8gSw9FOCgbg9ESiBV3JkC4OEkBv6aOiD2fvNSLCWjRkZrayfsNN9qkF2D+4kRz1vJq/FC3/Kzct9BZ5kb5dnA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
+ 12.22.5.235) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
  (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
  (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xLW+a7hX5mLFCrc+r8yapQxHdkC+xqkVtH8IBX56oSc=;
- b=Qt/a575YNE4IYO3oEtSAqiTfoGneLIGs29pFD2nWHQc/kiOYVAGNLDouxJ7Bu1ihFrAyOh3YFi9kdmgGB0XTLZQZAqxb6bdTtLcbyn4Ea4+hUENwIBEf9Zs0zer6+DYSn89lGTgtE7R5cEgMipSB+gBKJAv0r4X080oNSBckAnDwdhApJAjzXkaxzPX1oBP3yjcBlJv3Lwz8Knjaa1D24hyIlZMWCYYj5v9fbiNr8DfR0jeAg7gm+G4RZ5iGJNb0OfsppJ3VxCE49+eX9ZniC2UmDACw+nllQBFN0nXfrhaMX34QPahmLbaVABWDGaSHsoVbquWjrqF6lIzSoVPDbg==
-Received: from BN0PR04CA0184.namprd04.prod.outlook.com (2603:10b6:408:e9::9)
- by MWHPR12MB1294.namprd12.prod.outlook.com (2603:10b6:300:10::18) with
+ bh=59w7YpJuAwcBM9KrS+By5mnOyBzcaG4ItHis0Xs5jpk=;
+ b=ko5t29uUXt4e4kDjT/KSDMhCUwIkzBleE1ZWYWK+sD6pCgricq5K+P2DTjKInDGI+C9VKDhASk8FeWHKorbkAp1h6ys4Wy+mDEoak8BNMo789F45zi7VNK7u9CYoTqZSZG7CsEhNLxFBR5ME/pvWXEZeJdT40XeXWla1C7GlQ/XjzI4kXh+a1ercnS9WupZkJSaOmHtT635iyzHmmVxR4/IzubLmygl7Q4nBWm/iKqtN16c0xlgDA+haBbalAQdOMFwx2RMpeu38MMXmdGj/D0a7IpIIrf51AC22os8syUEO25CKEbZakHdwJBkDeYOWWksxwimRvZqgvqy2aP1+Uw==
+Received: from BN0PR03CA0017.namprd03.prod.outlook.com (2603:10b6:408:e6::22)
+ by MWHPR12MB1936.namprd12.prod.outlook.com (2603:10b6:300:114::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.13; Thu, 28 Apr
- 2022 15:39:27 +0000
-Received: from BN8NAM11FT016.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:e9:cafe::95) by BN0PR04CA0184.outlook.office365.com
- (2603:10b6:408:e9::9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.15 via Frontend
- Transport; Thu, 28 Apr 2022 15:39:27 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.17; Thu, 28 Apr
+ 2022 15:39:45 +0000
+Received: from BN8NAM11FT049.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:e6:cafe::e9) by BN0PR03CA0017.outlook.office365.com
+ (2603:10b6:408:e6::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.12 via Frontend
+ Transport; Thu, 28 Apr 2022 15:39:44 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.234) by
- BN8NAM11FT016.mail.protection.outlook.com (10.13.176.97) with Microsoft SMTP
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.235) by
+ BN8NAM11FT049.mail.protection.outlook.com (10.13.177.157) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5206.12 via Frontend Transport; Thu, 28 Apr 2022 15:39:27 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Thu, 28 Apr
- 2022 15:39:25 +0000
+ 15.20.5206.12 via Frontend Transport; Thu, 28 Apr 2022 15:39:44 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Thu, 28 Apr
+ 2022 15:39:33 +0000
 Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail205.nvidia.com
  (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 28 Apr
- 2022 08:39:24 -0700
+ 2022 08:39:32 -0700
 Received: from vdi.nvidia.com (10.127.8.12) by mail.nvidia.com (10.129.68.9)
  with Microsoft SMTP Server id 15.2.986.22 via Frontend Transport; Thu, 28 Apr
- 2022 08:39:16 -0700
+ 2022 08:39:25 -0700
 From:   Maxim Mikityanskiy <maximmi@nvidia.com>
 To:     <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         "Daniel Borkmann" <daniel@iogearbox.net>,
@@ -85,9 +85,9 @@ CC:     Tariq Toukan <tariqt@nvidia.com>, Martin KaFai Lau <kafai@fb.com>,
         "Kumar Kartikeya Dwivedi" <memxor@gmail.com>,
         Florian Westphal <fw@strlen.de>, <pabeni@redhat.com>,
         Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: [PATCH bpf-next v7 5/6] bpf: Add selftests for raw syncookie helpers
-Date:   Thu, 28 Apr 2022 18:38:32 +0300
-Message-ID: <20220428153833.278064-6-maximmi@nvidia.com>
+Subject: [PATCH bpf-next v7 6/6] bpf: Allow the new syncookie helpers to work with SKBs
+Date:   Thu, 28 Apr 2022 18:38:33 +0300
+Message-ID: <20220428153833.278064-7-maximmi@nvidia.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220428153833.278064-1-maximmi@nvidia.com>
 References: <20220428153833.278064-1-maximmi@nvidia.com>
@@ -96,24 +96,24 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: aabb68ff-cb25-457b-ccc9-08da292d473f
-X-MS-TrafficTypeDiagnostic: MWHPR12MB1294:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR12MB12943EE9E44AFD7C39A64C30DCFD9@MWHPR12MB1294.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: bfe4b8d1-ade9-4c73-2903-08da292d51b7
+X-MS-TrafficTypeDiagnostic: MWHPR12MB1936:EE_
+X-Microsoft-Antispam-PRVS: <MWHPR12MB193695B1EA66913F227CC085DCFD9@MWHPR12MB1936.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: KnSk9e0aSLzb35WBQnIo1KTCsTBm8GNl1w6EksUuyCxaLsJnxK+8pE/De2aVeDZ7Cu2MTK0eQr3bFwEV7ZNG9RgRmfOWyitQ9Ve82h8Sn8Omg4s/2KWluGfKhHLOPQmtPicpYxHf6pa16lT7nC9iwZcWanla1cy+ngLJkYjUJ1pR/yk7rPCkbhT10N5QQjwz2/VJE7JcFKsTi7ONxctZ2krgFPzpn+P9RyTeJ6vUjy3MQkfazMtantuVF9K9+Z5SUvNaUY74HQuFygjRiST0vtO3P+KvFoemQ5xrlHzV5cQnt3OJXrrckzW5WT3/y54EjmeFTBkKdfMZ4BCVVv9yq9FLwm7c4HyHtAWcxt893YCZL9d/quoteX9fLyPTbXU7ESl8l9lIqzB8vwpfUbVXzj4CMgAca1+mCc6W6yquTG7h/SZgcTAFlCas0+wQfiHbT0VOqsLIyWBKW1qh3CXCJqrKRKgvHqu80+t/VsSMCmEpxTn3KW/p56E1hFDtVsnt6zDf85aSgqZAGd6KFDWtBBMJbmJZOCeuTHpx/VMTSMn+2UDTeQeip8Wm7oUBzQNvbXV96owNoOnvIHpfxv6bUal2S4acoGow3tSZ8dWawUVTO1csvNxHU7zlmTXvZYvH/OaitKW6fYCTBoOy4qb8Yw277lRiZoMSah4No1WDy6fwn1PLDFcJfxLmspwohFSSFxqnm99M17mOU4S54iKpIlPX2TlNnt77FocK6BunoJg=
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(2906002)(30864003)(7416002)(70206006)(5660300002)(36756003)(36860700001)(316002)(7696005)(186003)(83380400001)(8676002)(4326008)(70586007)(8936002)(110136005)(54906003)(86362001)(2616005)(107886003)(336012)(47076005)(426003)(82310400005)(40460700003)(508600001)(81166007)(356005)(6666004)(1076003)(26005)(21314003)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: EFX8oN20NDZQO5KNccyNCIIg8jqwl71x5FuR90jn8sSTjgPeWsK0AvAYRmlcWWXDMaPjpygRfl9lavGTB4GHJl8w1LeDEzn9CpE/dx6P1UkXwrRhqmc1ZsLOOvEh2rBGBZMn3lwst9vM0lu/iLcDtkEAFslgW5u0TovXBzCIZVWxkblFoSDz1OV1EwnKJ6SPjE8+BpLkYvYPGf6QiRABMkRzxioOKkkvUm/KQ+EoDAF4SVw8qW89dyFQKBTXkbZhZ6e2H3ovvQMBctl7DaIxpLqHIl+4bNMhwKsKYsJ8q09ogKPimbWdaDT/bZP9vVIItCrDjAG8/rE+TTP/O91YcG6X1CfZVduIfMeMaJ1CQcO70YGtp23jTQ66tyPyBXa/x36tGRxdp3sIojWupdUsJF27FjVtKhxTKEknKk5JJsXPqzLfJH1Qd+Avu3GvJReGfRvYE0SY3Twr8TT58Z57zBP/6Mwx0mCHpslIXG3P06HQ9IBYiK722+CbN50ssKAKSAqCFlf6P4Eq7lQi4PDFwIlK6XPmAHRyz7Bw93x49G6/7JZu+PpLVxzO84HSElUDKIpjrlo5iC6xsHAcHY/cSmoXAlLcpk5BQ13peKwebXaPykiJ5fTHKw4V8K9d9K0czM8oCNUJu29OiFgpHGYtCCuXbom0QGwv9PquZNvkEnNunXcu/NjYFsqE4nuhQFWM9Hsb+bM7wbjcg+qJ0DgWuQ==
+X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(82310400005)(83380400001)(36860700001)(86362001)(40460700003)(356005)(81166007)(107886003)(508600001)(316002)(8936002)(7416002)(36756003)(30864003)(2906002)(54906003)(110136005)(4326008)(2616005)(1076003)(70206006)(70586007)(426003)(8676002)(336012)(186003)(26005)(5660300002)(6666004)(7696005)(47076005)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Apr 2022 15:39:27.0102
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Apr 2022 15:39:44.5853
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: aabb68ff-cb25-457b-ccc9-08da292d473f
+X-MS-Exchange-CrossTenant-Network-Message-Id: bfe4b8d1-ade9-4c73-2903-08da292d51b7
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT016.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT049.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1294
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1936
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -124,859 +124,333 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit adds selftests for the new BPF helpers:
-bpf_tcp_raw_{gen,check}_syncookie_ipv{4,6}.
+This commits allows the new BPF helpers to work in SKB context (in TC
+BPF programs): bpf_tcp_raw_{gen,check}_syncookie_ipv{4,6}.
 
-xdp_synproxy_kern.c is a BPF program that generates SYN cookies on
-allowed TCP ports and sends SYNACKs to clients, accelerating synproxy
-iptables module.
-
-xdp_synproxy.c is a userspace control application that allows to
-configure the following options in runtime: list of allowed ports, MSS,
-window scale, TTL.
-
-A selftest is added to prog_tests that leverages the above programs to
-test the functionality of the new helpers.
+The sample application and selftest are updated to support the TC mode.
+It's not the recommended mode of operation, because the SKB is already
+created at this point, and it's unlikely that the BPF program will
+provide any substantional speedup compared to regular SYN cookies or
+synproxy.
 
 Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 ---
- tools/testing/selftests/bpf/.gitignore        |   1 +
- tools/testing/selftests/bpf/Makefile          |   2 +-
- .../selftests/bpf/prog_tests/xdp_synproxy.c   | 109 +++
- .../selftests/bpf/progs/xdp_synproxy_kern.c   | 750 ++++++++++++++++++
- tools/testing/selftests/bpf/xdp_synproxy.c    | 418 ++++++++++
- 5 files changed, 1279 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_synproxy.c
- create mode 100644 tools/testing/selftests/bpf/progs/xdp_synproxy_kern.c
- create mode 100644 tools/testing/selftests/bpf/xdp_synproxy.c
+ net/core/filter.c                             |  10 ++
+ .../selftests/bpf/prog_tests/xdp_synproxy.c   |  53 +++++--
+ .../selftests/bpf/progs/xdp_synproxy_kern.c   | 141 +++++++++++++-----
+ tools/testing/selftests/bpf/xdp_synproxy.c    |  94 +++++++++---
+ 4 files changed, 230 insertions(+), 68 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/.gitignore b/tools/testing/selftests/bpf/.gitignore
-index 595565eb68c0..ca2f47f45670 100644
---- a/tools/testing/selftests/bpf/.gitignore
-+++ b/tools/testing/selftests/bpf/.gitignore
-@@ -43,3 +43,4 @@ test_cpp
- *.tmp
- xdpxceiver
- xdp_redirect_multi
-+xdp_synproxy
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index bafdc5373a13..1b117673778e 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -82,7 +82,7 @@ TEST_PROGS_EXTENDED := with_addr.sh \
- TEST_GEN_PROGS_EXTENDED = test_sock_addr test_skb_cgroup_id_user \
- 	flow_dissector_load test_flow_dissector test_tcp_check_syncookie_user \
- 	test_lirc_mode2_user xdping test_cpp runqslower bench bpf_testmod.ko \
--	xdpxceiver xdp_redirect_multi
-+	xdpxceiver xdp_redirect_multi xdp_synproxy
- 
- TEST_CUSTOM_PROGS = $(OUTPUT)/urandom_read
- 
+diff --git a/net/core/filter.c b/net/core/filter.c
+index ffb7e93f60c5..4f631cac3130 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -7905,6 +7905,16 @@ tc_cls_act_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return &bpf_sk_assign_proto;
+ 	case BPF_FUNC_skb_set_tstamp:
+ 		return &bpf_skb_set_tstamp_proto;
++#ifdef CONFIG_SYN_COOKIES
++	case BPF_FUNC_tcp_raw_gen_syncookie_ipv4:
++		return &bpf_tcp_raw_gen_syncookie_ipv4_proto;
++	case BPF_FUNC_tcp_raw_gen_syncookie_ipv6:
++		return &bpf_tcp_raw_gen_syncookie_ipv6_proto;
++	case BPF_FUNC_tcp_raw_check_syncookie_ipv4:
++		return &bpf_tcp_raw_check_syncookie_ipv4_proto;
++	case BPF_FUNC_tcp_raw_check_syncookie_ipv6:
++		return &bpf_tcp_raw_check_syncookie_ipv6_proto;
++#endif
+ #endif
+ 	default:
+ 		return bpf_sk_base_func_proto(func_id);
 diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_synproxy.c b/tools/testing/selftests/bpf/prog_tests/xdp_synproxy.c
-new file mode 100644
-index 000000000000..e08b28e25047
---- /dev/null
+index e08b28e25047..09320967d865 100644
+--- a/tools/testing/selftests/bpf/prog_tests/xdp_synproxy.c
 +++ b/tools/testing/selftests/bpf/prog_tests/xdp_synproxy.c
-@@ -0,0 +1,109 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <test_progs.h>
-+#include <network_helpers.h>
+@@ -1,4 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0
++#define _GNU_SOURCE
+ #include <test_progs.h>
+ #include <network_helpers.h>
+ 
+@@ -7,9 +8,11 @@
+ 		goto out; \
+ })
+ 
+-#define SYS_OUT(cmd) ({ \
+-	FILE *f = popen((cmd), "r"); \
+-	if (!ASSERT_OK_PTR(f, (cmd))) \
++#define SYS_OUT(cmd, ...) ({ \
++	char buf[1024]; \
++	snprintf(buf, sizeof(buf), (cmd), ##__VA_ARGS__); \
++	FILE *f = popen(buf, "r"); \
++	if (!ASSERT_OK_PTR(f, buf)) \
+ 		goto out; \
+ 	f; \
+ })
+@@ -21,9 +24,10 @@ static bool expect_str(char *buf, size_t size, const char *str)
+ 	return !memcmp(buf, str, size);
+ }
+ 
+-void test_xdp_synproxy(void)
++static void test_synproxy(bool xdp)
+ {
+ 	int server_fd = -1, client_fd = -1, accept_fd = -1;
++	char *prog_id, *prog_id_end;
+ 	struct nstoken *ns = NULL;
+ 	FILE *ctrl_file = NULL;
+ 	char buf[1024];
+@@ -39,8 +43,9 @@ void test_xdp_synproxy(void)
+ 	// When checksum offload is enabled, the XDP program sees wrong
+ 	// checksums and drops packets.
+ 	SYS("ethtool -K tmp0 tx off");
+-	// Workaround required for veth.
+-	SYS("ip link set tmp0 xdp object xdp_dummy.o section xdp 2> /dev/null");
++	if (xdp)
++		// Workaround required for veth.
++		SYS("ip link set tmp0 xdp object xdp_dummy.o section xdp 2> /dev/null");
+ 
+ 	ns = open_netns("synproxy");
+ 	if (!ASSERT_OK_PTR(ns, "setns"))
+@@ -60,14 +65,34 @@ void test_xdp_synproxy(void)
+ 	SYS("iptables -t filter -A INPUT \
+ 	    -i tmp1 -m state --state INVALID -j DROP");
+ 
+-	ctrl_file = SYS_OUT("./xdp_synproxy --iface tmp1 --ports 8080 --single \
+-			    --mss4 1460 --mss6 1440 --wscale 7 --ttl 64");
++	ctrl_file = SYS_OUT("./xdp_synproxy --iface tmp1 --ports 8080 \
++			    --single --mss4 1460 --mss6 1440 \
++			    --wscale 7 --ttl 64%s", xdp ? "" : " --tc");
+ 	size = fread(buf, 1, sizeof(buf), ctrl_file);
+ 	pclose(ctrl_file);
+ 	if (!ASSERT_TRUE(expect_str(buf, size, "Total SYNACKs generated: 0\n"),
+ 			 "initial SYNACKs"))
+ 		goto out;
+ 
++	if (!xdp) {
++		ctrl_file = SYS_OUT("tc filter show dev tmp1 ingress");
++		size = fread(buf, 1, sizeof(buf), ctrl_file);
++		pclose(ctrl_file);
++		prog_id = memmem(buf, size, " id ", 4);
++		if (!ASSERT_OK_PTR(prog_id, "find prog id"))
++			goto out;
++		prog_id += 4;
++		if (!ASSERT_LT(prog_id, buf + size, "find prog id begin"))
++			goto out;
++		prog_id_end = prog_id;
++		while (prog_id_end < buf + size && *prog_id_end >= '0' &&
++		       *prog_id_end <= '9')
++			prog_id_end++;
++		if (!ASSERT_LT(prog_id_end, buf + size, "find prog id end"))
++			goto out;
++		*prog_id_end = '\0';
++	}
 +
-+#define SYS(cmd) ({ \
-+	if (!ASSERT_OK(system(cmd), (cmd))) \
-+		goto out; \
-+})
-+
-+#define SYS_OUT(cmd) ({ \
-+	FILE *f = popen((cmd), "r"); \
-+	if (!ASSERT_OK_PTR(f, (cmd))) \
-+		goto out; \
-+	f; \
-+})
-+
-+static bool expect_str(char *buf, size_t size, const char *str)
-+{
-+	if (size != strlen(str))
-+		return false;
-+	return !memcmp(buf, str, size);
-+}
+ 	server_fd = start_server(AF_INET, SOCK_STREAM, "198.18.0.2", 8080, 0);
+ 	if (!ASSERT_GE(server_fd, 0, "start_server"))
+ 		goto out;
+@@ -87,7 +112,11 @@ void test_xdp_synproxy(void)
+ 	if (!ASSERT_OK_PTR(ns, "setns"))
+ 		goto out;
+ 
+-	ctrl_file = SYS_OUT("./xdp_synproxy --iface tmp1 --single");
++	if (xdp)
++		ctrl_file = SYS_OUT("./xdp_synproxy --iface tmp1 --single");
++	else
++		ctrl_file = SYS_OUT("./xdp_synproxy --prog %s --single",
++				    prog_id);
+ 	size = fread(buf, 1, sizeof(buf), ctrl_file);
+ 	pclose(ctrl_file);
+ 	if (!ASSERT_TRUE(expect_str(buf, size, "Total SYNACKs generated: 1\n"),
+@@ -107,3 +136,9 @@ void test_xdp_synproxy(void)
+ 	system("ip link del tmp0");
+ 	system("ip netns del synproxy");
+ }
 +
 +void test_xdp_synproxy(void)
 +{
-+	int server_fd = -1, client_fd = -1, accept_fd = -1;
-+	struct nstoken *ns = NULL;
-+	FILE *ctrl_file = NULL;
-+	char buf[1024];
-+	size_t size;
-+
-+	SYS("ip netns add synproxy");
-+
-+	SYS("ip link add tmp0 type veth peer name tmp1");
-+	SYS("ip link set tmp1 netns synproxy");
-+	SYS("ip link set tmp0 up");
-+	SYS("ip addr replace 198.18.0.1/24 dev tmp0");
-+
-+	// When checksum offload is enabled, the XDP program sees wrong
-+	// checksums and drops packets.
-+	SYS("ethtool -K tmp0 tx off");
-+	// Workaround required for veth.
-+	SYS("ip link set tmp0 xdp object xdp_dummy.o section xdp 2> /dev/null");
-+
-+	ns = open_netns("synproxy");
-+	if (!ASSERT_OK_PTR(ns, "setns"))
-+		goto out;
-+
-+	SYS("ip link set lo up");
-+	SYS("ip link set tmp1 up");
-+	SYS("ip addr replace 198.18.0.2/24 dev tmp1");
-+	SYS("sysctl -w net.ipv4.tcp_syncookies=2");
-+	SYS("sysctl -w net.ipv4.tcp_timestamps=1");
-+	SYS("sysctl -w net.netfilter.nf_conntrack_tcp_loose=0");
-+	SYS("iptables -t raw -I PREROUTING \
-+	    -i tmp1 -p tcp -m tcp --syn --dport 8080 -j CT --notrack");
-+	SYS("iptables -t filter -A INPUT \
-+	    -i tmp1 -p tcp -m tcp --dport 8080 -m state --state INVALID,UNTRACKED \
-+	    -j SYNPROXY --sack-perm --timestamp --wscale 7 --mss 1460");
-+	SYS("iptables -t filter -A INPUT \
-+	    -i tmp1 -m state --state INVALID -j DROP");
-+
-+	ctrl_file = SYS_OUT("./xdp_synproxy --iface tmp1 --ports 8080 --single \
-+			    --mss4 1460 --mss6 1440 --wscale 7 --ttl 64");
-+	size = fread(buf, 1, sizeof(buf), ctrl_file);
-+	pclose(ctrl_file);
-+	if (!ASSERT_TRUE(expect_str(buf, size, "Total SYNACKs generated: 0\n"),
-+			 "initial SYNACKs"))
-+		goto out;
-+
-+	server_fd = start_server(AF_INET, SOCK_STREAM, "198.18.0.2", 8080, 0);
-+	if (!ASSERT_GE(server_fd, 0, "start_server"))
-+		goto out;
-+
-+	close_netns(ns);
-+	ns = NULL;
-+
-+	client_fd = connect_to_fd(server_fd, 10000);
-+	if (!ASSERT_GE(client_fd, 0, "connect_to_fd"))
-+		goto out;
-+
-+	accept_fd = accept(server_fd, NULL, NULL);
-+	if (!ASSERT_GE(accept_fd, 0, "accept"))
-+		goto out;
-+
-+	ns = open_netns("synproxy");
-+	if (!ASSERT_OK_PTR(ns, "setns"))
-+		goto out;
-+
-+	ctrl_file = SYS_OUT("./xdp_synproxy --iface tmp1 --single");
-+	size = fread(buf, 1, sizeof(buf), ctrl_file);
-+	pclose(ctrl_file);
-+	if (!ASSERT_TRUE(expect_str(buf, size, "Total SYNACKs generated: 1\n"),
-+			 "SYNACKs after connection"))
-+		goto out;
-+
-+out:
-+	if (accept_fd >= 0)
-+		close(accept_fd);
-+	if (client_fd >= 0)
-+		close(client_fd);
-+	if (server_fd >= 0)
-+		close(server_fd);
-+	if (ns)
-+		close_netns(ns);
-+
-+	system("ip link del tmp0");
-+	system("ip netns del synproxy");
++	test_synproxy(true);
++	test_synproxy(false);
 +}
 diff --git a/tools/testing/selftests/bpf/progs/xdp_synproxy_kern.c b/tools/testing/selftests/bpf/progs/xdp_synproxy_kern.c
-new file mode 100644
-index 000000000000..9ae85b189072
---- /dev/null
+index 9ae85b189072..f70b5f776dcf 100644
+--- a/tools/testing/selftests/bpf/progs/xdp_synproxy_kern.c
 +++ b/tools/testing/selftests/bpf/progs/xdp_synproxy_kern.c
-@@ -0,0 +1,750 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+@@ -7,6 +7,9 @@
+ #include <bpf/bpf_endian.h>
+ #include <asm/errno.h>
+ 
++#define TC_ACT_OK 0
++#define TC_ACT_SHOT 2
 +
-+#include "vmlinux.h"
-+
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_endian.h>
-+#include <asm/errno.h>
-+
-+#define NSEC_PER_SEC 1000000000L
-+
-+#define ETH_ALEN 6
-+#define ETH_P_IP 0x0800
-+#define ETH_P_IPV6 0x86DD
-+
-+#define tcp_flag_word(tp) (((union tcp_word_hdr *)(tp))->words[3])
-+
-+#define IP_DF 0x4000
-+#define IP_MF 0x2000
-+#define IP_OFFSET 0x1fff
-+
-+#define NEXTHDR_TCP 6
-+
-+#define TCPOPT_NOP 1
-+#define TCPOPT_EOL 0
-+#define TCPOPT_MSS 2
-+#define TCPOPT_WINDOW 3
-+#define TCPOPT_SACK_PERM 4
-+#define TCPOPT_TIMESTAMP 8
-+
-+#define TCPOLEN_MSS 4
-+#define TCPOLEN_WINDOW 3
-+#define TCPOLEN_SACK_PERM 2
-+#define TCPOLEN_TIMESTAMP 10
-+
-+#define TCP_TS_HZ 1000
-+#define TS_OPT_WSCALE_MASK 0xf
-+#define TS_OPT_SACK (1 << 4)
-+#define TS_OPT_ECN (1 << 5)
-+#define TSBITS 6
-+#define TSMASK (((__u32)1 << TSBITS) - 1)
-+#define TCP_MAX_WSCALE 14U
-+
-+#define IPV4_MAXLEN 60
-+#define TCP_MAXLEN 60
-+
-+#define DEFAULT_MSS4 1460
-+#define DEFAULT_MSS6 1440
-+#define DEFAULT_WSCALE 7
-+#define DEFAULT_TTL 64
-+#define MAX_ALLOWED_PORTS 8
-+
-+#define swap(a, b) \
-+	do { typeof(a) __tmp = (a); (a) = (b); (b) = __tmp; } while (0)
-+
-+#define __get_unaligned_t(type, ptr) ({						\
-+	const struct { type x; } __attribute__((__packed__)) *__pptr = (typeof(__pptr))(ptr); \
-+	__pptr->x;								\
-+})
-+
-+#define get_unaligned(ptr) __get_unaligned_t(typeof(*(ptr)), (ptr))
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__type(key, __u32);
-+	__type(value, __u64);
-+	__uint(max_entries, 2);
-+} values SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__type(key, __u32);
-+	__type(value, __u16);
-+	__uint(max_entries, MAX_ALLOWED_PORTS);
-+} allowed_ports SEC(".maps");
-+
-+extern struct nf_conn *bpf_xdp_ct_lookup(struct xdp_md *xdp_ctx,
+ #define NSEC_PER_SEC 1000000000L
+ 
+ #define ETH_ALEN 6
+@@ -80,6 +83,12 @@ extern struct nf_conn *bpf_xdp_ct_lookup(struct xdp_md *xdp_ctx,
+ 					 struct bpf_ct_opts *opts,
+ 					 __u32 len_opts) __ksym;
+ 
++extern struct nf_conn *bpf_skb_ct_lookup(struct __sk_buff *skb_ctx,
 +					 struct bpf_sock_tuple *bpf_tuple,
-+					 __u32 len_tuple,
++					 u32 len_tuple,
 +					 struct bpf_ct_opts *opts,
-+					 __u32 len_opts) __ksym;
++					 u32 len_opts) __ksym;
 +
-+extern void bpf_ct_release(struct nf_conn *ct) __ksym;
-+
-+static __always_inline void swap_eth_addr(__u8 *a, __u8 *b)
-+{
-+	__u8 tmp[ETH_ALEN];
-+
-+	__builtin_memcpy(tmp, a, ETH_ALEN);
-+	__builtin_memcpy(a, b, ETH_ALEN);
-+	__builtin_memcpy(b, tmp, ETH_ALEN);
-+}
-+
-+static __always_inline __u16 csum_fold(__u32 csum)
-+{
-+	csum = (csum & 0xffff) + (csum >> 16);
-+	csum = (csum & 0xffff) + (csum >> 16);
-+	return (__u16)~csum;
-+}
-+
-+static __always_inline __u16 csum_tcpudp_magic(__be32 saddr, __be32 daddr,
-+					       __u32 len, __u8 proto,
-+					       __u32 csum)
-+{
-+	__u64 s = csum;
-+
-+	s += (__u32)saddr;
-+	s += (__u32)daddr;
-+#if defined(__BIG_ENDIAN__)
-+	s += proto + len;
-+#elif defined(__LITTLE_ENDIAN__)
-+	s += (proto + len) << 8;
-+#else
-+#error Unknown endian
-+#endif
-+	s = (s & 0xffffffff) + (s >> 32);
-+	s = (s & 0xffffffff) + (s >> 32);
-+
-+	return csum_fold((__u32)s);
-+}
-+
-+static __always_inline __u16 csum_ipv6_magic(const struct in6_addr *saddr,
-+					     const struct in6_addr *daddr,
-+					     __u32 len, __u8 proto, __u32 csum)
-+{
-+	__u64 sum = csum;
-+	int i;
-+
-+#pragma unroll
-+	for (i = 0; i < 4; i++)
-+		sum += (__u32)saddr->in6_u.u6_addr32[i];
-+
-+#pragma unroll
-+	for (i = 0; i < 4; i++)
-+		sum += (__u32)daddr->in6_u.u6_addr32[i];
-+
-+	// Don't combine additions to avoid 32-bit overflow.
-+	sum += bpf_htonl(len);
-+	sum += bpf_htonl(proto);
-+
-+	sum = (sum & 0xffffffff) + (sum >> 32);
-+	sum = (sum & 0xffffffff) + (sum >> 32);
-+
-+	return csum_fold((__u32)sum);
-+}
-+
-+static __always_inline __u64 tcp_clock_ns(void)
-+{
-+	return bpf_ktime_get_ns();
-+}
-+
-+static __always_inline __u32 tcp_ns_to_ts(__u64 ns)
-+{
-+	return ns / (NSEC_PER_SEC / TCP_TS_HZ);
-+}
-+
-+static __always_inline __u32 tcp_time_stamp_raw(void)
-+{
-+	return tcp_ns_to_ts(tcp_clock_ns());
-+}
-+
-+struct tcpopt_context {
-+	__u8 *ptr;
-+	__u8 *end;
-+	void *data_end;
-+	__be32 *tsecr;
-+	__u8 wscale;
-+	bool option_timestamp;
-+	bool option_sack;
-+};
-+
-+static int tscookie_tcpopt_parse(struct tcpopt_context *ctx)
-+{
-+	__u8 opcode, opsize;
-+
-+	if (ctx->ptr >= ctx->end)
-+		return 1;
-+	if (ctx->ptr >= ctx->data_end)
-+		return 1;
-+
-+	opcode = ctx->ptr[0];
-+
-+	if (opcode == TCPOPT_EOL)
-+		return 1;
-+	if (opcode == TCPOPT_NOP) {
-+		++ctx->ptr;
-+		return 0;
+ extern void bpf_ct_release(struct nf_conn *ct) __ksym;
+ 
+ static __always_inline void swap_eth_addr(__u8 *a, __u8 *b)
+@@ -380,7 +389,7 @@ static __always_inline int tcp_dissect(void *data, void *data_end,
+ 	return XDP_TX;
+ }
+ 
+-static __always_inline int tcp_lookup(struct xdp_md *ctx, struct header_pointers *hdr)
++static __always_inline int tcp_lookup(void *ctx, struct header_pointers *hdr, bool xdp)
+ {
+ 	struct bpf_ct_opts ct_lookup_opts = {
+ 		.netns_id = BPF_F_CURRENT_NETNS,
+@@ -410,7 +419,10 @@ static __always_inline int tcp_lookup(struct xdp_md *ctx, struct header_pointers
+ 		// The verifier can't track that either ipv4 or ipv6 is not NULL.
+ 		return XDP_ABORTED;
+ 	}
+-	ct = bpf_xdp_ct_lookup(ctx, &tup, tup_size, &ct_lookup_opts, sizeof(ct_lookup_opts));
++	if (xdp)
++		ct = bpf_xdp_ct_lookup(ctx, &tup, tup_size, &ct_lookup_opts, sizeof(ct_lookup_opts));
++	else
++		ct = bpf_skb_ct_lookup(ctx, &tup, tup_size, &ct_lookup_opts, sizeof(ct_lookup_opts));
+ 	if (ct) {
+ 		unsigned long status = ct->status;
+ 
+@@ -523,8 +535,9 @@ static __always_inline void tcpv6_gen_synack(struct header_pointers *hdr,
+ }
+ 
+ static __always_inline int syncookie_handle_syn(struct header_pointers *hdr,
+-						struct xdp_md *ctx,
+-						void *data, void *data_end)
++						void *ctx,
++						void *data, void *data_end,
++						bool xdp)
+ {
+ 	__u32 old_pkt_size, new_pkt_size;
+ 	// Unlike clang 10, clang 11 and 12 generate code that doesn't pass the
+@@ -656,8 +669,13 @@ static __always_inline int syncookie_handle_syn(struct header_pointers *hdr,
+ 	// Set the new packet size.
+ 	old_pkt_size = data_end - data;
+ 	new_pkt_size = sizeof(*hdr->eth) + ip_len + hdr->tcp->doff * 4;
+-	if (bpf_xdp_adjust_tail(ctx, new_pkt_size - old_pkt_size))
+-		return XDP_ABORTED;
++	if (xdp) {
++		if (bpf_xdp_adjust_tail(ctx, new_pkt_size - old_pkt_size))
++			return XDP_ABORTED;
++	} else {
++		if (bpf_skb_change_tail(ctx, new_pkt_size, 0))
++			return XDP_ABORTED;
++	}
+ 
+ 	values_inc_synacks();
+ 
+@@ -683,68 +701,119 @@ static __always_inline int syncookie_handle_ack(struct header_pointers *hdr)
+ 	return XDP_PASS;
+ }
+ 
+-SEC("xdp")
+-int syncookie_xdp(struct xdp_md *ctx)
++static __always_inline int syncookie_part1(void *ctx, void *data, void *data_end,
++					   struct header_pointers *hdr, bool xdp)
+ {
+-	void *data_end = (void *)(long)ctx->data_end;
+-	void *data = (void *)(long)ctx->data;
+-	struct header_pointers hdr;
+-	__s64 value;
+-	int ret;
+-
+ 	struct bpf_ct_opts ct_lookup_opts = {
+ 		.netns_id = BPF_F_CURRENT_NETNS,
+ 		.l4proto = IPPROTO_TCP,
+ 	};
++	int ret;
+ 
+-	ret = tcp_dissect(data, data_end, &hdr);
++	ret = tcp_dissect(data, data_end, hdr);
+ 	if (ret != XDP_TX)
+ 		return ret;
+ 
+-	ret = tcp_lookup(ctx, &hdr);
++	ret = tcp_lookup(ctx, hdr, xdp);
+ 	if (ret != XDP_TX)
+ 		return ret;
+ 
+ 	// Packet is TCP and doesn't belong to an established connection.
+ 
+-	if ((hdr.tcp->syn ^ hdr.tcp->ack) != 1)
++	if ((hdr->tcp->syn ^ hdr->tcp->ack) != 1)
+ 		return XDP_DROP;
+ 
+-	// Grow the TCP header to TCP_MAXLEN to be able to pass any hdr.tcp_len
++	// Grow the TCP header to TCP_MAXLEN to be able to pass any hdr->tcp_len
+ 	// to bpf_tcp_raw_gen_syncookie_ipv{4,6} and pass the verifier.
+-	if (bpf_xdp_adjust_tail(ctx, TCP_MAXLEN - hdr.tcp_len))
+-		return XDP_ABORTED;
++	if (xdp) {
++		if (bpf_xdp_adjust_tail(ctx, TCP_MAXLEN - hdr->tcp_len))
++			return XDP_ABORTED;
++	} else {
++		// Without volatile the verifier throws this error:
++		// R9 32-bit pointer arithmetic prohibited
++		volatile u64 old_len = data_end - data;
+ 
+-	data_end = (void *)(long)ctx->data_end;
+-	data = (void *)(long)ctx->data;
++		if (bpf_skb_change_tail(ctx, old_len + TCP_MAXLEN - hdr->tcp_len, 0))
++			return XDP_ABORTED;
 +	}
 +
-+	if (ctx->ptr + 1 >= ctx->end)
-+		return 1;
-+	if (ctx->ptr + 1 >= ctx->data_end)
-+		return 1;
-+	opsize = ctx->ptr[1];
-+	if (opsize < 2)
-+		return 1;
-+
-+	if (ctx->ptr + opsize > ctx->end)
-+		return 1;
-+
-+	switch (opcode) {
-+	case TCPOPT_WINDOW:
-+		if (opsize == TCPOLEN_WINDOW && ctx->ptr + TCPOLEN_WINDOW <= ctx->data_end)
-+			ctx->wscale = ctx->ptr[2] < TCP_MAX_WSCALE ? ctx->ptr[2] : TCP_MAX_WSCALE;
-+		break;
-+	case TCPOPT_TIMESTAMP:
-+		if (opsize == TCPOLEN_TIMESTAMP && ctx->ptr + TCPOLEN_TIMESTAMP <= ctx->data_end) {
-+			ctx->option_timestamp = true;
-+			/* Client's tsval becomes our tsecr. */
-+			*ctx->tsecr = get_unaligned((__be32 *)(ctx->ptr + 2));
-+		}
-+		break;
-+	case TCPOPT_SACK_PERM:
-+		if (opsize == TCPOLEN_SACK_PERM)
-+			ctx->option_sack = true;
-+		break;
-+	}
-+
-+	ctx->ptr += opsize;
-+
-+	return 0;
++	return XDP_TX;
 +}
-+
-+static int tscookie_tcpopt_parse_batch(__u32 index, void *context)
+ 
+-	if (hdr.ipv4) {
+-		hdr.eth = data;
+-		hdr.ipv4 = (void *)hdr.eth + sizeof(*hdr.eth);
++static __always_inline int syncookie_part2(void *ctx, void *data, void *data_end,
++					   struct header_pointers *hdr, bool xdp)
 +{
-+	int i;
-+
-+	for (i = 0; i < 7; i++)
-+		if (tscookie_tcpopt_parse(context))
-+			return 1;
-+	return 0;
-+}
-+
-+static __always_inline bool tscookie_init(struct tcphdr *tcp_header,
-+					  __u16 tcp_len, __be32 *tsval,
-+					  __be32 *tsecr, void *data_end)
-+{
-+	struct tcpopt_context loop_ctx = {
-+		.ptr = (__u8 *)(tcp_header + 1),
-+		.end = (__u8 *)tcp_header + tcp_len,
-+		.data_end = data_end,
-+		.tsecr = tsecr,
-+		.wscale = TS_OPT_WSCALE_MASK,
-+		.option_timestamp = false,
-+		.option_sack = false,
-+	};
-+	u32 cookie;
-+
-+	bpf_loop(6, tscookie_tcpopt_parse_batch, &loop_ctx, 0);
-+
-+	if (!loop_ctx.option_timestamp)
-+		return false;
-+
-+	cookie = tcp_time_stamp_raw() & ~TSMASK;
-+	cookie |= loop_ctx.wscale & TS_OPT_WSCALE_MASK;
-+	if (loop_ctx.option_sack)
-+		cookie |= TS_OPT_SACK;
-+	if (tcp_header->ece && tcp_header->cwr)
-+		cookie |= TS_OPT_ECN;
-+	*tsval = bpf_htonl(cookie);
-+
-+	return true;
-+}
-+
-+static __always_inline void values_get_tcpipopts(__u16 *mss, __u8 *wscale,
-+						 __u8 *ttl, bool ipv6)
-+{
-+	__u32 key = 0;
-+	__u64 *value;
-+
-+	value = bpf_map_lookup_elem(&values, &key);
-+	if (value && *value != 0) {
-+		if (ipv6)
-+			*mss = (*value >> 32) & 0xffff;
-+		else
-+			*mss = *value & 0xffff;
-+		*wscale = (*value >> 16) & 0xf;
-+		*ttl = (*value >> 24) & 0xff;
-+		return;
-+	}
-+
-+	*mss = ipv6 ? DEFAULT_MSS6 : DEFAULT_MSS4;
-+	*wscale = DEFAULT_WSCALE;
-+	*ttl = DEFAULT_TTL;
-+}
-+
-+static __always_inline void values_inc_synacks(void)
-+{
-+	__u32 key = 1;
-+	__u32 *value;
-+
-+	value = bpf_map_lookup_elem(&values, &key);
-+	if (value)
-+		__sync_fetch_and_add(value, 1);
-+}
-+
-+static __always_inline bool check_port_allowed(__u16 port)
-+{
-+	__u32 i;
-+
-+	for (i = 0; i < MAX_ALLOWED_PORTS; i++) {
-+		__u32 key = i;
-+		__u16 *value;
-+
-+		value = bpf_map_lookup_elem(&allowed_ports, &key);
-+
-+		if (!value)
-+			break;
-+		// 0 is a terminator value. Check it first to avoid matching on
-+		// a forbidden port == 0 and returning true.
-+		if (*value == 0)
-+			break;
-+
-+		if (*value == port)
-+			return true;
-+	}
-+
-+	return false;
-+}
-+
-+struct header_pointers {
-+	struct ethhdr *eth;
-+	struct iphdr *ipv4;
-+	struct ipv6hdr *ipv6;
-+	struct tcphdr *tcp;
-+	__u16 tcp_len;
-+};
-+
-+static __always_inline int tcp_dissect(void *data, void *data_end,
-+				       struct header_pointers *hdr)
-+{
-+	hdr->eth = data;
-+	if (hdr->eth + 1 > data_end)
-+		return XDP_DROP;
-+
-+	switch (bpf_ntohs(hdr->eth->h_proto)) {
-+	case ETH_P_IP:
-+		hdr->ipv6 = NULL;
-+
++	if (hdr->ipv4) {
++		hdr->eth = data;
 +		hdr->ipv4 = (void *)hdr->eth + sizeof(*hdr->eth);
-+		if (hdr->ipv4 + 1 > data_end)
-+			return XDP_DROP;
-+		if (hdr->ipv4->ihl * 4 < sizeof(*hdr->ipv4))
-+			return XDP_DROP;
-+		if (hdr->ipv4->version != 4)
-+			return XDP_DROP;
-+
-+		if (hdr->ipv4->protocol != IPPROTO_TCP)
-+			return XDP_PASS;
-+
+ 		// IPV4_MAXLEN is needed when calculating checksum.
+ 		// At least sizeof(struct iphdr) is needed here to access ihl.
+-		if ((void *)hdr.ipv4 + IPV4_MAXLEN > data_end)
++		if ((void *)hdr->ipv4 + IPV4_MAXLEN > data_end)
+ 			return XDP_ABORTED;
+-		hdr.tcp = (void *)hdr.ipv4 + hdr.ipv4->ihl * 4;
+-	} else if (hdr.ipv6) {
+-		hdr.eth = data;
+-		hdr.ipv6 = (void *)hdr.eth + sizeof(*hdr.eth);
+-		hdr.tcp = (void *)hdr.ipv6 + sizeof(*hdr.ipv6);
 +		hdr->tcp = (void *)hdr->ipv4 + hdr->ipv4->ihl * 4;
-+		break;
-+	case ETH_P_IPV6:
-+		hdr->ipv4 = NULL;
-+
++	} else if (hdr->ipv6) {
++		hdr->eth = data;
 +		hdr->ipv6 = (void *)hdr->eth + sizeof(*hdr->eth);
-+		if (hdr->ipv6 + 1 > data_end)
-+			return XDP_DROP;
-+		if (hdr->ipv6->version != 6)
-+			return XDP_DROP;
-+
-+		// XXX: Extension headers are not supported and could circumvent
-+		// XDP SYN flood protection.
-+		if (hdr->ipv6->nexthdr != NEXTHDR_TCP)
-+			return XDP_PASS;
-+
 +		hdr->tcp = (void *)hdr->ipv6 + sizeof(*hdr->ipv6);
-+		break;
-+	default:
-+		// XXX: VLANs will circumvent XDP SYN flood protection.
-+		return XDP_PASS;
-+	}
-+
-+	if (hdr->tcp + 1 > data_end)
-+		return XDP_DROP;
+ 	} else {
+ 		return XDP_ABORTED;
+ 	}
+ 
+-	if ((void *)hdr.tcp + TCP_MAXLEN > data_end)
++	if ((void *)hdr->tcp + TCP_MAXLEN > data_end)
+ 		return XDP_ABORTED;
+ 
+ 	// We run out of registers, tcp_len gets spilled to the stack, and the
+ 	// verifier forgets its min and max values checked above in tcp_dissect.
+-	hdr.tcp_len = hdr.tcp->doff * 4;
+-	if (hdr.tcp_len < sizeof(*hdr.tcp))
 +	hdr->tcp_len = hdr->tcp->doff * 4;
 +	if (hdr->tcp_len < sizeof(*hdr->tcp))
-+		return XDP_DROP;
-+
-+	return XDP_TX;
-+}
-+
-+static __always_inline int tcp_lookup(struct xdp_md *ctx, struct header_pointers *hdr)
-+{
-+	struct bpf_ct_opts ct_lookup_opts = {
-+		.netns_id = BPF_F_CURRENT_NETNS,
-+		.l4proto = IPPROTO_TCP,
-+	};
-+	struct bpf_sock_tuple tup = {};
-+	struct nf_conn *ct;
-+	__u32 tup_size;
-+
-+	if (hdr->ipv4) {
-+		// TCP doesn't normally use fragments, and XDP can't reassemble them.
-+		if ((hdr->ipv4->frag_off & bpf_htons(IP_DF | IP_MF | IP_OFFSET)) != bpf_htons(IP_DF))
-+			return XDP_DROP;
-+
-+		tup.ipv4.saddr = hdr->ipv4->saddr;
-+		tup.ipv4.daddr = hdr->ipv4->daddr;
-+		tup.ipv4.sport = hdr->tcp->source;
-+		tup.ipv4.dport = hdr->tcp->dest;
-+		tup_size = sizeof(tup.ipv4);
-+	} else if (hdr->ipv6) {
-+		__builtin_memcpy(tup.ipv6.saddr, &hdr->ipv6->saddr, sizeof(tup.ipv6.saddr));
-+		__builtin_memcpy(tup.ipv6.daddr, &hdr->ipv6->daddr, sizeof(tup.ipv6.daddr));
-+		tup.ipv6.sport = hdr->tcp->source;
-+		tup.ipv6.dport = hdr->tcp->dest;
-+		tup_size = sizeof(tup.ipv6);
-+	} else {
-+		// The verifier can't track that either ipv4 or ipv6 is not NULL.
-+		return XDP_ABORTED;
-+	}
-+	ct = bpf_xdp_ct_lookup(ctx, &tup, tup_size, &ct_lookup_opts, sizeof(ct_lookup_opts));
-+	if (ct) {
-+		unsigned long status = ct->status;
-+
-+		bpf_ct_release(ct);
-+		if (status & IPS_CONFIRMED_BIT)
-+			return XDP_PASS;
-+	} else if (ct_lookup_opts.error != -ENOENT) {
-+		return XDP_ABORTED;
-+	}
-+
-+	// error == -ENOENT || !(status & IPS_CONFIRMED_BIT)
-+	return XDP_TX;
-+}
-+
-+static __always_inline __u8 tcp_mkoptions(__be32 *buf, __be32 *tsopt, __u16 mss,
-+					  __u8 wscale)
-+{
-+	__be32 *start = buf;
-+
-+	*buf++ = bpf_htonl((TCPOPT_MSS << 24) | (TCPOLEN_MSS << 16) | mss);
-+
-+	if (!tsopt)
-+		return buf - start;
-+
-+	if (tsopt[0] & bpf_htonl(1 << 4))
-+		*buf++ = bpf_htonl((TCPOPT_SACK_PERM << 24) |
-+				   (TCPOLEN_SACK_PERM << 16) |
-+				   (TCPOPT_TIMESTAMP << 8) |
-+				   TCPOLEN_TIMESTAMP);
-+	else
-+		*buf++ = bpf_htonl((TCPOPT_NOP << 24) |
-+				   (TCPOPT_NOP << 16) |
-+				   (TCPOPT_TIMESTAMP << 8) |
-+				   TCPOLEN_TIMESTAMP);
-+	*buf++ = tsopt[0];
-+	*buf++ = tsopt[1];
-+
-+	if ((tsopt[0] & bpf_htonl(0xf)) != bpf_htonl(0xf))
-+		*buf++ = bpf_htonl((TCPOPT_NOP << 24) |
-+				   (TCPOPT_WINDOW << 16) |
-+				   (TCPOLEN_WINDOW << 8) |
-+				   wscale);
-+
-+	return buf - start;
-+}
-+
-+static __always_inline void tcp_gen_synack(struct tcphdr *tcp_header,
-+					   __u32 cookie, __be32 *tsopt,
-+					   __u16 mss, __u8 wscale)
-+{
-+	void *tcp_options;
-+
-+	tcp_flag_word(tcp_header) = TCP_FLAG_SYN | TCP_FLAG_ACK;
-+	if (tsopt && (tsopt[0] & bpf_htonl(1 << 5)))
-+		tcp_flag_word(tcp_header) |= TCP_FLAG_ECE;
-+	tcp_header->doff = 5; // doff is part of tcp_flag_word.
-+	swap(tcp_header->source, tcp_header->dest);
-+	tcp_header->ack_seq = bpf_htonl(bpf_ntohl(tcp_header->seq) + 1);
-+	tcp_header->seq = bpf_htonl(cookie);
-+	tcp_header->window = 0;
-+	tcp_header->urg_ptr = 0;
-+	tcp_header->check = 0; // Rely on hardware checksum offload.
-+
-+	tcp_options = (void *)(tcp_header + 1);
-+	tcp_header->doff += tcp_mkoptions(tcp_options, tsopt, mss, wscale);
-+}
-+
-+static __always_inline void tcpv4_gen_synack(struct header_pointers *hdr,
-+					     __u32 cookie, __be32 *tsopt)
-+{
-+	__u8 wscale;
-+	__u16 mss;
-+	__u8 ttl;
-+
-+	values_get_tcpipopts(&mss, &wscale, &ttl, false);
-+
-+	swap_eth_addr(hdr->eth->h_source, hdr->eth->h_dest);
-+
-+	swap(hdr->ipv4->saddr, hdr->ipv4->daddr);
-+	hdr->ipv4->check = 0; // Rely on hardware checksum offload.
-+	hdr->ipv4->tos = 0;
-+	hdr->ipv4->id = 0;
-+	hdr->ipv4->ttl = ttl;
-+
-+	tcp_gen_synack(hdr->tcp, cookie, tsopt, mss, wscale);
-+
-+	hdr->tcp_len = hdr->tcp->doff * 4;
-+	hdr->ipv4->tot_len = bpf_htons(sizeof(*hdr->ipv4) + hdr->tcp_len);
-+}
-+
-+static __always_inline void tcpv6_gen_synack(struct header_pointers *hdr,
-+					     __u32 cookie, __be32 *tsopt)
-+{
-+	__u8 wscale;
-+	__u16 mss;
-+	__u8 ttl;
-+
-+	values_get_tcpipopts(&mss, &wscale, &ttl, true);
-+
-+	swap_eth_addr(hdr->eth->h_source, hdr->eth->h_dest);
-+
-+	swap(hdr->ipv6->saddr, hdr->ipv6->daddr);
-+	*(__be32 *)hdr->ipv6 = bpf_htonl(0x60000000);
-+	hdr->ipv6->hop_limit = ttl;
-+
-+	tcp_gen_synack(hdr->tcp, cookie, tsopt, mss, wscale);
-+
-+	hdr->tcp_len = hdr->tcp->doff * 4;
-+	hdr->ipv6->payload_len = bpf_htons(hdr->tcp_len);
-+}
-+
-+static __always_inline int syncookie_handle_syn(struct header_pointers *hdr,
-+						struct xdp_md *ctx,
-+						void *data, void *data_end)
-+{
-+	__u32 old_pkt_size, new_pkt_size;
-+	// Unlike clang 10, clang 11 and 12 generate code that doesn't pass the
-+	// BPF verifier if tsopt is not volatile. Volatile forces it to store
-+	// the pointer value and use it directly, otherwise tcp_mkoptions is
-+	// (mis)compiled like this:
-+	//   if (!tsopt)
-+	//       return buf - start;
-+	//   reg = stored_return_value_of_tscookie_init;
-+	//   if (reg)
-+	//       tsopt = tsopt_buf;
-+	//   else
-+	//       tsopt = NULL;
-+	//   ...
-+	//   *buf++ = tsopt[1];
-+	// It creates a dead branch where tsopt is assigned NULL, but the
-+	// verifier can't prove it's dead and blocks the program.
-+	__be32 * volatile tsopt = NULL;
-+	__be32 tsopt_buf[2] = {};
-+	__u16 ip_len;
-+	__u32 cookie;
-+	__s64 value;
-+
-+	// Checksum is not yet verified, but both checksum failure and TCP
-+	// header checks return XDP_DROP, so the order doesn't matter.
-+	if (hdr->tcp->fin || hdr->tcp->rst)
-+		return XDP_DROP;
-+
-+	// Issue SYN cookies on allowed ports, drop SYN packets on blocked
-+	// ports.
-+	if (!check_port_allowed(bpf_ntohs(hdr->tcp->dest)))
-+		return XDP_DROP;
-+
-+	if (hdr->ipv4) {
-+		// Check the IPv4 and TCP checksums before creating a SYNACK.
-+		value = bpf_csum_diff(0, 0, (void *)hdr->ipv4, hdr->ipv4->ihl * 4, 0);
-+		if (value < 0)
-+			return XDP_ABORTED;
-+		if (csum_fold(value) != 0)
-+			return XDP_DROP; // Bad IPv4 checksum.
-+
-+		value = bpf_csum_diff(0, 0, (void *)hdr->tcp, hdr->tcp_len, 0);
-+		if (value < 0)
-+			return XDP_ABORTED;
-+		if (csum_tcpudp_magic(hdr->ipv4->saddr, hdr->ipv4->daddr,
-+				      hdr->tcp_len, IPPROTO_TCP, value) != 0)
-+			return XDP_DROP; // Bad TCP checksum.
-+
-+		ip_len = sizeof(*hdr->ipv4);
-+
-+		value = bpf_tcp_raw_gen_syncookie_ipv4(hdr->ipv4, hdr->tcp,
-+						       hdr->tcp_len);
-+	} else if (hdr->ipv6) {
-+		// Check the TCP checksum before creating a SYNACK.
-+		value = bpf_csum_diff(0, 0, (void *)hdr->tcp, hdr->tcp_len, 0);
-+		if (value < 0)
-+			return XDP_ABORTED;
-+		if (csum_ipv6_magic(&hdr->ipv6->saddr, &hdr->ipv6->daddr,
-+				    hdr->tcp_len, IPPROTO_TCP, value) != 0)
-+			return XDP_DROP; // Bad TCP checksum.
-+
-+		ip_len = sizeof(*hdr->ipv6);
-+
-+		value = bpf_tcp_raw_gen_syncookie_ipv6(hdr->ipv6, hdr->tcp,
-+						       hdr->tcp_len);
-+	} else {
-+		return XDP_ABORTED;
-+	}
-+
-+	if (value < 0)
-+		return XDP_ABORTED;
-+	cookie = (__u32)value;
-+
-+	if (tscookie_init((void *)hdr->tcp, hdr->tcp_len,
-+			  &tsopt_buf[0], &tsopt_buf[1], data_end))
-+		tsopt = tsopt_buf;
-+
-+	// Check that there is enough space for a SYNACK. It also covers
-+	// the check that the destination of the __builtin_memmove below
-+	// doesn't overflow.
-+	if (data + sizeof(*hdr->eth) + ip_len + TCP_MAXLEN > data_end)
-+		return XDP_ABORTED;
-+
-+	if (hdr->ipv4) {
-+		if (hdr->ipv4->ihl * 4 > sizeof(*hdr->ipv4)) {
-+			struct tcphdr *new_tcp_header;
-+
-+			new_tcp_header = data + sizeof(*hdr->eth) + sizeof(*hdr->ipv4);
-+			__builtin_memmove(new_tcp_header, hdr->tcp, sizeof(*hdr->tcp));
-+			hdr->tcp = new_tcp_header;
-+
-+			hdr->ipv4->ihl = sizeof(*hdr->ipv4) / 4;
-+		}
-+
-+		tcpv4_gen_synack(hdr, cookie, tsopt);
-+	} else if (hdr->ipv6) {
-+		tcpv6_gen_synack(hdr, cookie, tsopt);
-+	} else {
-+		return XDP_ABORTED;
-+	}
-+
-+	// Recalculate checksums.
-+	hdr->tcp->check = 0;
-+	value = bpf_csum_diff(0, 0, (void *)hdr->tcp, hdr->tcp_len, 0);
-+	if (value < 0)
-+		return XDP_ABORTED;
-+	if (hdr->ipv4) {
-+		hdr->tcp->check = csum_tcpudp_magic(hdr->ipv4->saddr,
-+						    hdr->ipv4->daddr,
-+						    hdr->tcp_len,
-+						    IPPROTO_TCP,
-+						    value);
-+
-+		hdr->ipv4->check = 0;
-+		value = bpf_csum_diff(0, 0, (void *)hdr->ipv4, sizeof(*hdr->ipv4), 0);
-+		if (value < 0)
-+			return XDP_ABORTED;
-+		hdr->ipv4->check = csum_fold(value);
-+	} else if (hdr->ipv6) {
-+		hdr->tcp->check = csum_ipv6_magic(&hdr->ipv6->saddr,
-+						  &hdr->ipv6->daddr,
-+						  hdr->tcp_len,
-+						  IPPROTO_TCP,
-+						  value);
-+	} else {
-+		return XDP_ABORTED;
-+	}
-+
-+	// Set the new packet size.
-+	old_pkt_size = data_end - data;
-+	new_pkt_size = sizeof(*hdr->eth) + ip_len + hdr->tcp->doff * 4;
-+	if (bpf_xdp_adjust_tail(ctx, new_pkt_size - old_pkt_size))
-+		return XDP_ABORTED;
-+
-+	values_inc_synacks();
-+
-+	return XDP_TX;
-+}
-+
-+static __always_inline int syncookie_handle_ack(struct header_pointers *hdr)
-+{
-+	int err;
-+
-+	if (hdr->tcp->rst)
-+		return XDP_DROP;
-+
-+	if (hdr->ipv4)
-+		err = bpf_tcp_raw_check_syncookie_ipv4(hdr->ipv4, hdr->tcp);
-+	else if (hdr->ipv6)
-+		err = bpf_tcp_raw_check_syncookie_ipv6(hdr->ipv6, hdr->tcp);
-+	else
-+		return XDP_ABORTED;
-+	if (err)
-+		return XDP_DROP;
-+
-+	return XDP_PASS;
+ 		return XDP_ABORTED;
+ 
+-	return hdr.tcp->syn ? syncookie_handle_syn(&hdr, ctx, data, data_end) :
+-			      syncookie_handle_ack(&hdr);
++	return hdr->tcp->syn ? syncookie_handle_syn(hdr, ctx, data, data_end, xdp) :
++			       syncookie_handle_ack(hdr);
 +}
 +
 +SEC("xdp")
@@ -985,489 +459,234 @@ index 000000000000..9ae85b189072
 +	void *data_end = (void *)(long)ctx->data_end;
 +	void *data = (void *)(long)ctx->data;
 +	struct header_pointers hdr;
-+	__s64 value;
 +	int ret;
 +
-+	struct bpf_ct_opts ct_lookup_opts = {
-+		.netns_id = BPF_F_CURRENT_NETNS,
-+		.l4proto = IPPROTO_TCP,
-+	};
-+
-+	ret = tcp_dissect(data, data_end, &hdr);
++	ret = syncookie_part1(ctx, data, data_end, &hdr, true);
 +	if (ret != XDP_TX)
 +		return ret;
-+
-+	ret = tcp_lookup(ctx, &hdr);
-+	if (ret != XDP_TX)
-+		return ret;
-+
-+	// Packet is TCP and doesn't belong to an established connection.
-+
-+	if ((hdr.tcp->syn ^ hdr.tcp->ack) != 1)
-+		return XDP_DROP;
-+
-+	// Grow the TCP header to TCP_MAXLEN to be able to pass any hdr.tcp_len
-+	// to bpf_tcp_raw_gen_syncookie_ipv{4,6} and pass the verifier.
-+	if (bpf_xdp_adjust_tail(ctx, TCP_MAXLEN - hdr.tcp_len))
-+		return XDP_ABORTED;
 +
 +	data_end = (void *)(long)ctx->data_end;
 +	data = (void *)(long)ctx->data;
 +
-+	if (hdr.ipv4) {
-+		hdr.eth = data;
-+		hdr.ipv4 = (void *)hdr.eth + sizeof(*hdr.eth);
-+		// IPV4_MAXLEN is needed when calculating checksum.
-+		// At least sizeof(struct iphdr) is needed here to access ihl.
-+		if ((void *)hdr.ipv4 + IPV4_MAXLEN > data_end)
-+			return XDP_ABORTED;
-+		hdr.tcp = (void *)hdr.ipv4 + hdr.ipv4->ihl * 4;
-+	} else if (hdr.ipv6) {
-+		hdr.eth = data;
-+		hdr.ipv6 = (void *)hdr.eth + sizeof(*hdr.eth);
-+		hdr.tcp = (void *)hdr.ipv6 + sizeof(*hdr.ipv6);
-+	} else {
-+		return XDP_ABORTED;
-+	}
-+
-+	if ((void *)hdr.tcp + TCP_MAXLEN > data_end)
-+		return XDP_ABORTED;
-+
-+	// We run out of registers, tcp_len gets spilled to the stack, and the
-+	// verifier forgets its min and max values checked above in tcp_dissect.
-+	hdr.tcp_len = hdr.tcp->doff * 4;
-+	if (hdr.tcp_len < sizeof(*hdr.tcp))
-+		return XDP_ABORTED;
-+
-+	return hdr.tcp->syn ? syncookie_handle_syn(&hdr, ctx, data, data_end) :
-+			      syncookie_handle_ack(&hdr);
++	return syncookie_part2(ctx, data, data_end, &hdr, true);
 +}
 +
-+char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/xdp_synproxy.c b/tools/testing/selftests/bpf/xdp_synproxy.c
-new file mode 100644
-index 000000000000..2b9585f2bc00
---- /dev/null
-+++ b/tools/testing/selftests/bpf/xdp_synproxy.c
-@@ -0,0 +1,418 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+/* Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
-+
-+#include <stdnoreturn.h>
-+#include <stdlib.h>
-+#include <stdio.h>
-+#include <string.h>
-+#include <errno.h>
-+#include <unistd.h>
-+#include <getopt.h>
-+#include <signal.h>
-+#include <sys/types.h>
-+#include <bpf/bpf.h>
-+#include <bpf/libbpf.h>
-+#include <net/if.h>
-+#include <linux/if_link.h>
-+#include <linux/limits.h>
-+
-+static unsigned int ifindex;
-+static __u32 attached_prog_id;
-+
-+static void noreturn cleanup(int sig)
++SEC("tc")
++int syncookie_tc(struct __sk_buff *skb)
 +{
-+	DECLARE_LIBBPF_OPTS(bpf_xdp_attach_opts, opts);
-+	int prog_fd;
-+	int err;
++	void *data_end = (void *)(long)skb->data_end;
++	void *data = (void *)(long)skb->data;
++	struct header_pointers hdr;
++	int ret;
 +
-+	if (attached_prog_id == 0)
-+		exit(0);
++	ret = syncookie_part1(skb, data, data_end, &hdr, false);
++	if (ret != XDP_TX)
++		return ret == XDP_PASS ? TC_ACT_OK : TC_ACT_SHOT;
 +
-+	prog_fd = bpf_prog_get_fd_by_id(attached_prog_id);
-+	if (prog_fd < 0) {
-+		fprintf(stderr, "Error: bpf_prog_get_fd_by_id: %s\n", strerror(-prog_fd));
-+		err = bpf_xdp_attach(ifindex, -1, 0, NULL);
++	data_end = (void *)(long)skb->data_end;
++	data = (void *)(long)skb->data;
++
++	ret = syncookie_part2(skb, data, data_end, &hdr, false);
++	switch (ret) {
++	case XDP_PASS:
++		return TC_ACT_OK;
++	case XDP_TX:
++		return bpf_redirect(skb->ifindex, 0);
++	default:
++		return TC_ACT_SHOT;
++	}
+ }
+ 
+ char _license[] SEC("license") = "GPL";
+diff --git a/tools/testing/selftests/bpf/xdp_synproxy.c b/tools/testing/selftests/bpf/xdp_synproxy.c
+index 2b9585f2bc00..6b37e95c38ee 100644
+--- a/tools/testing/selftests/bpf/xdp_synproxy.c
++++ b/tools/testing/selftests/bpf/xdp_synproxy.c
+@@ -18,6 +18,7 @@
+ 
+ static unsigned int ifindex;
+ static __u32 attached_prog_id;
++static bool attached_tc;
+ 
+ static void noreturn cleanup(int sig)
+ {
+@@ -28,6 +29,20 @@ static void noreturn cleanup(int sig)
+ 	if (attached_prog_id == 0)
+ 		exit(0);
+ 
++	if (attached_tc) {
++		DECLARE_LIBBPF_OPTS(bpf_tc_hook, hook,
++				    .ifindex = ifindex,
++				    .attach_point = BPF_TC_INGRESS);
++
++		err = bpf_tc_hook_destroy(&hook);
 +		if (err < 0) {
-+			fprintf(stderr, "Error: bpf_set_link_xdp_fd: %s\n", strerror(-err));
-+			fprintf(stderr, "Failed to detach XDP program\n");
++			fprintf(stderr, "Error: bpf_tc_hook_destroy: %s\n", strerror(-err));
++			fprintf(stderr, "Failed to destroy the TC hook\n");
 +			exit(1);
 +		}
++		exit(0);
++	}
++
+ 	prog_fd = bpf_prog_get_fd_by_id(attached_prog_id);
+ 	if (prog_fd < 0) {
+ 		fprintf(stderr, "Error: bpf_prog_get_fd_by_id: %s\n", strerror(-prog_fd));
+@@ -55,7 +70,7 @@ static void noreturn cleanup(int sig)
+ 
+ static noreturn void usage(const char *progname)
+ {
+-	fprintf(stderr, "Usage: %s [--iface <iface>|--prog <prog_id>] [--mss4 <mss ipv4> --mss6 <mss ipv6> --wscale <wscale> --ttl <ttl>] [--ports <port1>,<port2>,...] [--single]\n",
++	fprintf(stderr, "Usage: %s [--iface <iface>|--prog <prog_id>] [--mss4 <mss ipv4> --mss6 <mss ipv6> --wscale <wscale> --ttl <ttl>] [--ports <port1>,<port2>,...] [--single] [--tc]\n",
+ 		progname);
+ 	exit(1);
+ }
+@@ -74,7 +89,7 @@ static unsigned long parse_arg_ul(const char *progname, const char *arg, unsigne
+ }
+ 
+ static void parse_options(int argc, char *argv[], unsigned int *ifindex, __u32 *prog_id,
+-			  __u64 *tcpipopts, char **ports, bool *single)
++			  __u64 *tcpipopts, char **ports, bool *single, bool *tc)
+ {
+ 	static struct option long_options[] = {
+ 		{ "help", no_argument, NULL, 'h' },
+@@ -86,6 +101,7 @@ static void parse_options(int argc, char *argv[], unsigned int *ifindex, __u32 *
+ 		{ "ttl", required_argument, NULL, 't' },
+ 		{ "ports", required_argument, NULL, 'p' },
+ 		{ "single", no_argument, NULL, 's' },
++		{ "tc", no_argument, NULL, 'c' },
+ 		{ NULL, 0, NULL, 0 },
+ 	};
+ 	unsigned long mss4, mss6, wscale, ttl;
+@@ -143,6 +159,9 @@ static void parse_options(int argc, char *argv[], unsigned int *ifindex, __u32 *
+ 		case 's':
+ 			*single = true;
+ 			break;
++		case 'c':
++			*tc = true;
++			break;
+ 		default:
+ 			usage(argv[0]);
+ 		}
+@@ -164,7 +183,7 @@ static void parse_options(int argc, char *argv[], unsigned int *ifindex, __u32 *
+ 		usage(argv[0]);
+ }
+ 
+-static int syncookie_attach(const char *argv0, unsigned int ifindex)
++static int syncookie_attach(const char *argv0, unsigned int ifindex, bool tc)
+ {
+ 	struct bpf_prog_info info = {};
+ 	__u32 info_len = sizeof(info);
+@@ -188,9 +207,9 @@ static int syncookie_attach(const char *argv0, unsigned int ifindex)
+ 		return err;
+ 	}
+ 
+-	prog = bpf_object__find_program_by_name(obj, "syncookie_xdp");
++	prog = bpf_object__find_program_by_name(obj, tc ? "syncookie_tc" : "syncookie_xdp");
+ 	if (!prog) {
+-		fprintf(stderr, "Error: bpf_object__find_program_by_name: program syncookie_xdp was not found\n");
++		fprintf(stderr, "Error: bpf_object__find_program_by_name: program was not found\n");
+ 		return -ENOENT;
+ 	}
+ 
+@@ -201,21 +220,50 @@ static int syncookie_attach(const char *argv0, unsigned int ifindex)
+ 		fprintf(stderr, "Error: bpf_obj_get_info_by_fd: %s\n", strerror(-err));
+ 		goto out;
+ 	}
++	attached_tc = tc;
+ 	attached_prog_id = info.id;
+ 	signal(SIGINT, cleanup);
+ 	signal(SIGTERM, cleanup);
+-	err = bpf_xdp_attach(ifindex, prog_fd, XDP_FLAGS_UPDATE_IF_NOEXIST, NULL);
+-	if (err < 0) {
+-		fprintf(stderr, "Error: bpf_set_link_xdp_fd: %s\n", strerror(-err));
+-		signal(SIGINT, SIG_DFL);
+-		signal(SIGTERM, SIG_DFL);
+-		attached_prog_id = 0;
+-		goto out;
++	if (tc) {
++		DECLARE_LIBBPF_OPTS(bpf_tc_hook, hook,
++				    .ifindex = ifindex,
++				    .attach_point = BPF_TC_INGRESS);
++		DECLARE_LIBBPF_OPTS(bpf_tc_opts, opts,
++				    .handle = 1,
++				    .priority = 1,
++				    .prog_fd = prog_fd);
++
++		err = bpf_tc_hook_create(&hook);
++		if (err < 0) {
++			fprintf(stderr, "Error: bpf_tc_hook_create: %s\n",
++				strerror(-err));
++			goto fail;
++		}
++		err = bpf_tc_attach(&hook, &opts);
++		if (err < 0) {
++			fprintf(stderr, "Error: bpf_tc_attach: %s\n",
++				strerror(-err));
++			goto fail;
++		}
++
 +	} else {
-+		opts.old_prog_fd = prog_fd;
-+		err = bpf_xdp_attach(ifindex, -1, XDP_FLAGS_REPLACE, &opts);
-+		close(prog_fd);
++		err = bpf_xdp_attach(ifindex, prog_fd,
++				     XDP_FLAGS_UPDATE_IF_NOEXIST, NULL);
 +		if (err < 0) {
-+			fprintf(stderr, "Error: bpf_set_link_xdp_fd_opts: %s\n", strerror(-err));
-+			// Not an error if already replaced by someone else.
-+			if (err != -EEXIST) {
-+				fprintf(stderr, "Failed to detach XDP program\n");
-+				exit(1);
-+			}
++			fprintf(stderr, "Error: bpf_set_link_xdp_fd: %s\n",
++				strerror(-err));
++			goto fail;
 +		}
-+	}
-+	exit(0);
-+}
-+
-+static noreturn void usage(const char *progname)
-+{
-+	fprintf(stderr, "Usage: %s [--iface <iface>|--prog <prog_id>] [--mss4 <mss ipv4> --mss6 <mss ipv6> --wscale <wscale> --ttl <ttl>] [--ports <port1>,<port2>,...] [--single]\n",
-+		progname);
-+	exit(1);
-+}
-+
-+static unsigned long parse_arg_ul(const char *progname, const char *arg, unsigned long limit)
-+{
-+	unsigned long res;
-+	char *endptr;
-+
-+	errno = 0;
-+	res = strtoul(arg, &endptr, 10);
-+	if (errno != 0 || *endptr != '\0' || arg[0] == '\0' || res > limit)
-+		usage(progname);
-+
-+	return res;
-+}
-+
-+static void parse_options(int argc, char *argv[], unsigned int *ifindex, __u32 *prog_id,
-+			  __u64 *tcpipopts, char **ports, bool *single)
-+{
-+	static struct option long_options[] = {
-+		{ "help", no_argument, NULL, 'h' },
-+		{ "iface", required_argument, NULL, 'i' },
-+		{ "prog", required_argument, NULL, 'x' },
-+		{ "mss4", required_argument, NULL, 4 },
-+		{ "mss6", required_argument, NULL, 6 },
-+		{ "wscale", required_argument, NULL, 'w' },
-+		{ "ttl", required_argument, NULL, 't' },
-+		{ "ports", required_argument, NULL, 'p' },
-+		{ "single", no_argument, NULL, 's' },
-+		{ NULL, 0, NULL, 0 },
-+	};
-+	unsigned long mss4, mss6, wscale, ttl;
-+	unsigned int tcpipopts_mask = 0;
-+
-+	if (argc < 2)
-+		usage(argv[0]);
-+
-+	*ifindex = 0;
-+	*prog_id = 0;
-+	*tcpipopts = 0;
-+	*ports = NULL;
-+	*single = false;
-+
-+	while (true) {
-+		int opt;
-+
-+		opt = getopt_long(argc, argv, "", long_options, NULL);
-+		if (opt == -1)
-+			break;
-+
-+		switch (opt) {
-+		case 'h':
-+			usage(argv[0]);
-+			break;
-+		case 'i':
-+			*ifindex = if_nametoindex(optarg);
-+			if (*ifindex == 0)
-+				usage(argv[0]);
-+			break;
-+		case 'x':
-+			*prog_id = parse_arg_ul(argv[0], optarg, UINT32_MAX);
-+			if (*prog_id == 0)
-+				usage(argv[0]);
-+			break;
-+		case 4:
-+			mss4 = parse_arg_ul(argv[0], optarg, UINT16_MAX);
-+			tcpipopts_mask |= 1 << 0;
-+			break;
-+		case 6:
-+			mss6 = parse_arg_ul(argv[0], optarg, UINT16_MAX);
-+			tcpipopts_mask |= 1 << 1;
-+			break;
-+		case 'w':
-+			wscale = parse_arg_ul(argv[0], optarg, 14);
-+			tcpipopts_mask |= 1 << 2;
-+			break;
-+		case 't':
-+			ttl = parse_arg_ul(argv[0], optarg, UINT8_MAX);
-+			tcpipopts_mask |= 1 << 3;
-+			break;
-+		case 'p':
-+			*ports = optarg;
-+			break;
-+		case 's':
-+			*single = true;
-+			break;
-+		default:
-+			usage(argv[0]);
-+		}
-+	}
-+	if (optind < argc)
-+		usage(argv[0]);
-+
-+	if (tcpipopts_mask == 0xf) {
-+		if (mss4 == 0 || mss6 == 0 || wscale == 0 || ttl == 0)
-+			usage(argv[0]);
-+		*tcpipopts = (mss6 << 32) | (ttl << 24) | (wscale << 16) | mss4;
-+	} else if (tcpipopts_mask != 0) {
-+		usage(argv[0]);
-+	}
-+
-+	if (*ifindex != 0 && *prog_id != 0)
-+		usage(argv[0]);
-+	if (*ifindex == 0 && *prog_id == 0)
-+		usage(argv[0]);
-+}
-+
-+static int syncookie_attach(const char *argv0, unsigned int ifindex)
-+{
-+	struct bpf_prog_info info = {};
-+	__u32 info_len = sizeof(info);
-+	char xdp_filename[PATH_MAX];
-+	struct bpf_program *prog;
-+	struct bpf_object *obj;
-+	int prog_fd;
-+	int err;
-+
-+	snprintf(xdp_filename, sizeof(xdp_filename), "%s_kern.o", argv0);
-+	obj = bpf_object__open_file(xdp_filename, NULL);
-+	err = libbpf_get_error(obj);
-+	if (err < 0) {
-+		fprintf(stderr, "Error: bpf_object__open_file: %s\n", strerror(-err));
-+		return err;
-+	}
-+
-+	err = bpf_object__load(obj);
-+	if (err < 0) {
-+		fprintf(stderr, "Error: bpf_object__open_file: %s\n", strerror(-err));
-+		return err;
-+	}
-+
-+	prog = bpf_object__find_program_by_name(obj, "syncookie_xdp");
-+	if (!prog) {
-+		fprintf(stderr, "Error: bpf_object__find_program_by_name: program syncookie_xdp was not found\n");
-+		return -ENOENT;
-+	}
-+
-+	prog_fd = bpf_program__fd(prog);
-+
-+	err = bpf_obj_get_info_by_fd(prog_fd, &info, &info_len);
-+	if (err < 0) {
-+		fprintf(stderr, "Error: bpf_obj_get_info_by_fd: %s\n", strerror(-err));
-+		goto out;
-+	}
-+	attached_prog_id = info.id;
-+	signal(SIGINT, cleanup);
-+	signal(SIGTERM, cleanup);
-+	err = bpf_xdp_attach(ifindex, prog_fd, XDP_FLAGS_UPDATE_IF_NOEXIST, NULL);
-+	if (err < 0) {
-+		fprintf(stderr, "Error: bpf_set_link_xdp_fd: %s\n", strerror(-err));
-+		signal(SIGINT, SIG_DFL);
-+		signal(SIGTERM, SIG_DFL);
-+		attached_prog_id = 0;
-+		goto out;
-+	}
-+	err = 0;
-+out:
-+	bpf_object__close(obj);
-+	return err;
-+}
-+
-+static int syncookie_open_bpf_maps(__u32 prog_id, int *values_map_fd, int *ports_map_fd)
-+{
-+	struct bpf_prog_info prog_info;
-+	__u32 map_ids[8];
-+	__u32 info_len;
-+	int prog_fd;
-+	int err;
-+	int i;
-+
-+	*values_map_fd = -1;
-+	*ports_map_fd = -1;
-+
-+	prog_fd = bpf_prog_get_fd_by_id(prog_id);
-+	if (prog_fd < 0) {
-+		fprintf(stderr, "Error: bpf_prog_get_fd_by_id: %s\n", strerror(-prog_fd));
-+		return prog_fd;
-+	}
-+
-+	prog_info = (struct bpf_prog_info) {
-+		.nr_map_ids = 8,
-+		.map_ids = (__u64)map_ids,
-+	};
-+	info_len = sizeof(prog_info);
-+
-+	err = bpf_obj_get_info_by_fd(prog_fd, &prog_info, &info_len);
-+	if (err != 0) {
-+		fprintf(stderr, "Error: bpf_obj_get_info_by_fd: %s\n", strerror(-err));
-+		goto out;
-+	}
-+
-+	if (prog_info.type != BPF_PROG_TYPE_XDP) {
-+		fprintf(stderr, "Error: BPF prog type is not BPF_PROG_TYPE_XDP\n");
-+		err = -ENOENT;
-+		goto out;
-+	}
-+	if (prog_info.nr_map_ids < 2) {
-+		fprintf(stderr, "Error: Found %u BPF maps, expected at least 2\n",
-+			prog_info.nr_map_ids);
-+		err = -ENOENT;
-+		goto out;
-+	}
-+
-+	for (i = 0; i < prog_info.nr_map_ids; i++) {
-+		struct bpf_map_info map_info = {};
-+		int map_fd;
-+
-+		err = bpf_map_get_fd_by_id(map_ids[i]);
-+		if (err < 0) {
-+			fprintf(stderr, "Error: bpf_map_get_fd_by_id: %s\n", strerror(-err));
-+			goto err_close_map_fds;
-+		}
-+		map_fd = err;
-+
-+		info_len = sizeof(map_info);
-+		err = bpf_obj_get_info_by_fd(map_fd, &map_info, &info_len);
-+		if (err != 0) {
-+			fprintf(stderr, "Error: bpf_obj_get_info_by_fd: %s\n", strerror(-err));
-+			close(map_fd);
-+			goto err_close_map_fds;
-+		}
-+		if (strcmp(map_info.name, "values") == 0) {
-+			*values_map_fd = map_fd;
-+			continue;
-+		}
-+		if (strcmp(map_info.name, "allowed_ports") == 0) {
-+			*ports_map_fd = map_fd;
-+			continue;
-+		}
-+		close(map_fd);
-+	}
-+
-+	if (*values_map_fd != -1 && *ports_map_fd != -1) {
-+		err = 0;
-+		goto out;
-+	}
-+
-+	err = -ENOENT;
-+
-+err_close_map_fds:
-+	if (*values_map_fd != -1)
-+		close(*values_map_fd);
-+	if (*ports_map_fd != -1)
-+		close(*ports_map_fd);
-+	*values_map_fd = -1;
-+	*ports_map_fd = -1;
-+
-+out:
-+	close(prog_fd);
-+	return err;
-+}
-+
-+int main(int argc, char *argv[])
-+{
-+	int values_map_fd, ports_map_fd;
-+	__u64 tcpipopts;
-+	bool firstiter;
-+	__u64 prevcnt;
-+	__u32 prog_id;
-+	char *ports;
-+	bool single;
-+	int err = 0;
-+
-+	parse_options(argc, argv, &ifindex, &prog_id, &tcpipopts, &ports, &single);
-+
-+	if (prog_id == 0) {
-+		err = bpf_xdp_query_id(ifindex, 0, &prog_id);
-+		if (err < 0) {
-+			fprintf(stderr, "Error: bpf_get_link_xdp_id: %s\n", strerror(-err));
-+			goto out;
-+		}
-+		if (prog_id == 0) {
-+			err = syncookie_attach(argv[0], ifindex);
-+			if (err < 0)
+ 	}
+ 	err = 0;
+ out:
+ 	bpf_object__close(obj);
+ 	return err;
++fail:
++	signal(SIGINT, SIG_DFL);
++	signal(SIGTERM, SIG_DFL);
++	attached_prog_id = 0;
++	goto out;
+ }
+ 
+ static int syncookie_open_bpf_maps(__u32 prog_id, int *values_map_fd, int *ports_map_fd)
+@@ -248,11 +296,6 @@ static int syncookie_open_bpf_maps(__u32 prog_id, int *values_map_fd, int *ports
+ 		goto out;
+ 	}
+ 
+-	if (prog_info.type != BPF_PROG_TYPE_XDP) {
+-		fprintf(stderr, "Error: BPF prog type is not BPF_PROG_TYPE_XDP\n");
+-		err = -ENOENT;
+-		goto out;
+-	}
+ 	if (prog_info.nr_map_ids < 2) {
+ 		fprintf(stderr, "Error: Found %u BPF maps, expected at least 2\n",
+ 			prog_info.nr_map_ids);
+@@ -319,17 +362,22 @@ int main(int argc, char *argv[])
+ 	char *ports;
+ 	bool single;
+ 	int err = 0;
++	bool tc;
+ 
+-	parse_options(argc, argv, &ifindex, &prog_id, &tcpipopts, &ports, &single);
++	parse_options(argc, argv, &ifindex, &prog_id, &tcpipopts, &ports,
++		      &single, &tc);
+ 
+ 	if (prog_id == 0) {
+-		err = bpf_xdp_query_id(ifindex, 0, &prog_id);
+-		if (err < 0) {
+-			fprintf(stderr, "Error: bpf_get_link_xdp_id: %s\n", strerror(-err));
+-			goto out;
++		if (!tc) {
++			err = bpf_xdp_query_id(ifindex, 0, &prog_id);
++			if (err < 0) {
++				fprintf(stderr, "Error: bpf_get_link_xdp_id: %s\n",
++					strerror(-err));
 +				goto out;
-+			prog_id = attached_prog_id;
-+		}
-+	}
-+
-+	err = syncookie_open_bpf_maps(prog_id, &values_map_fd, &ports_map_fd);
-+	if (err < 0)
-+		goto out;
-+
-+	if (ports) {
-+		__u16 port_last = 0;
-+		__u32 port_idx = 0;
-+		char *p = ports;
-+
-+		fprintf(stderr, "Replacing allowed ports\n");
-+
-+		while (p && *p != '\0') {
-+			char *token = strsep(&p, ",");
-+			__u16 port;
-+
-+			port = parse_arg_ul(argv[0], token, UINT16_MAX);
-+			err = bpf_map_update_elem(ports_map_fd, &port_idx, &port, BPF_ANY);
-+			if (err != 0) {
-+				fprintf(stderr, "Error: bpf_map_update_elem: %s\n", strerror(-err));
-+				fprintf(stderr, "Failed to add port %u (index %u)\n",
-+					port, port_idx);
-+				goto out_close_maps;
 +			}
-+			fprintf(stderr, "Added port %u\n", port);
-+			port_idx++;
-+		}
-+		err = bpf_map_update_elem(ports_map_fd, &port_idx, &port_last, BPF_ANY);
-+		if (err != 0) {
-+			fprintf(stderr, "Error: bpf_map_update_elem: %s\n", strerror(-err));
-+			fprintf(stderr, "Failed to add the terminator value 0 (index %u)\n",
-+				port_idx);
-+			goto out_close_maps;
-+		}
-+	}
-+
-+	if (tcpipopts) {
-+		__u32 key = 0;
-+
-+		fprintf(stderr, "Replacing TCP/IP options\n");
-+
-+		err = bpf_map_update_elem(values_map_fd, &key, &tcpipopts, BPF_ANY);
-+		if (err != 0) {
-+			fprintf(stderr, "Error: bpf_map_update_elem: %s\n", strerror(-err));
-+			goto out_close_maps;
-+		}
-+	}
-+
-+	if ((ports || tcpipopts) && attached_prog_id == 0 && !single)
-+		goto out_close_maps;
-+
-+	prevcnt = 0;
-+	firstiter = true;
-+	while (true) {
-+		__u32 key = 1;
-+		__u64 value;
-+
-+		err = bpf_map_lookup_elem(values_map_fd, &key, &value);
-+		if (err != 0) {
-+			fprintf(stderr, "Error: bpf_map_lookup_elem: %s\n", strerror(-err));
-+			goto out_close_maps;
-+		}
-+		if (firstiter) {
-+			prevcnt = value;
-+			firstiter = false;
-+		}
-+		if (single) {
-+			printf("Total SYNACKs generated: %llu\n", value);
-+			break;
-+		}
-+		printf("SYNACKs generated: %llu (total %llu)\n", value - prevcnt, value);
-+		prevcnt = value;
-+		sleep(1);
-+	}
-+
-+out_close_maps:
-+	close(values_map_fd);
-+	close(ports_map_fd);
-+out:
-+	return err == 0 ? 0 : 1;
-+}
+ 		}
+ 		if (prog_id == 0) {
+-			err = syncookie_attach(argv[0], ifindex);
++			err = syncookie_attach(argv[0], ifindex, tc);
+ 			if (err < 0)
+ 				goto out;
+ 			prog_id = attached_prog_id;
 -- 
 2.30.2
 
