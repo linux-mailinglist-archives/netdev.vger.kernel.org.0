@@ -2,110 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E0E74513A0E
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 18:41:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E89C513A19
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 18:43:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350208AbiD1Qo7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 12:44:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56006 "EHLO
+        id S1350237AbiD1Qqi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 12:46:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349054AbiD1Qo7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 12:44:59 -0400
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 139157C7AB;
-        Thu, 28 Apr 2022 09:41:43 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id A571724000B;
-        Thu, 28 Apr 2022 16:41:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1651164102;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=wTH6ZEk/Y++FSk1qrFx/NjlNBR+hPifrLu8zie/kLiE=;
-        b=AVqOosPs4Dry4Bg/cBfEdCXTwbs0XJy/Bk28t7urXxLAXgKH1YmZC9PkFL5+h9qDiWaRQ5
-        /efDBNdqMD4qnCXnCxJNWEI1F4D4MDZ06zjzenhxUh4+vqion4neuuu7uH2pxD1ydpEHAT
-        w46Exax5a12n6oJsbTxjH++JuEZmHNsffL3us4eQ5bSps7wXk7kKbeYcm8McvadWVAOlY/
-        IdcASigH4Wp7DKBNwi/C76Sks0A2WvI8QI9AE+HnU/EDj6d9NMhVbGF4QOE0ixXOPChqBk
-        2lqhAGZ/Zbr2jdIpNq3u67VLT55dfZd+C4SGki74G6oklLNh5nAHceEy3HQMuw==
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH wpan-next] net: mac802154: Fix symbol durations
-Date:   Thu, 28 Apr 2022 18:41:40 +0200
-Message-Id: <20220428164140.251965-1-miquel.raynal@bootlin.com>
-X-Mailer: git-send-email 2.27.0
+        with ESMTP id S1350239AbiD1Qqh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 12:46:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0A21B2477
+        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 09:43:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 60EDD620B6
+        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 16:43:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 762BDC385A9;
+        Thu, 28 Apr 2022 16:43:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651164200;
+        bh=K0GnLctCOZQ+mfIprR9tjcWQVNWUb9aplXYMLJrrL0s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MneMPehbZm+09kJ0F52dIfKwQY8dj0XeIHfAdepY0GJfNcdklF4RnjOjnrbyL7Vhx
+         EguG3T+3mqy3fcxxGkhF5sX1xnienNMi/3doPYBKfbXCYt0MZ8jR3SPiXHfsaLGWai
+         3EikCye/dh8aqmLmZAqByGoKGGaKqcXBitdm3xDihNK6+dHcfI1lbxDH2G6hvT5fY6
+         poQ+n/WKu6BffQDn5H515yzRP/TeI4/7hzOKwp9PgtgcfjBfGhvMyDbdUNTnwdH0c/
+         +EiGyRLy4kCtFtOFjfChR9G20syofV/yAByj0BDkBoMGcQb/HKkrjtnwdrBYKeC0UG
+         AIO7yleKG5PWQ==
+Date:   Thu, 28 Apr 2022 09:43:19 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, pabeni@redhat.com,
+        Leon Romanovsky <leonro@nvidia.com>, netdev@vger.kernel.org,
+        Raed Salem <raeds@nvidia.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>
+Subject: Re: [PATCH net 1/1] ixgbe: ensure IPsec VF<->PF compatibility
+Message-ID: <20220428094319.04bf97fd@kernel.org>
+In-Reply-To: <20220427173152.443102-1-anthony.l.nguyen@intel.com>
+References: <20220427173152.443102-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are two major issues in the logic calculating the symbol durations
-based on the page/channel:
-- The page number is used in place of the channel value.
-- The BIT() macro is missing because we want to check the channel
-  value against a bitmask.
+On Wed, 27 Apr 2022 10:31:52 -0700 Tony Nguyen wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+> 
+> The VF driver can forward any IPsec flags and such makes the function
+> is not extendable and prone to backward/forward incompatibility.
+> 
+> If new software runs on VF, it won't know that PF configured something
+> completely different as it "knows" only XFRM_OFFLOAD_INBOUND flag.
+> 
+> Fixes: eda0333ac293 ("ixgbe: add VF IPsec management")
+> Reviewed-by: Raed Salem <raeds@nvidia.com>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> Reviewed-by: Shannon Nelson <snelson@pensando.io>
+> Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 
-Fix these two errors and apologize loudly for this mistake.
-
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
----
- net/mac802154/main.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
-
-diff --git a/net/mac802154/main.c b/net/mac802154/main.c
-index 5546ef86e231..bd7bdb1219dd 100644
---- a/net/mac802154/main.c
-+++ b/net/mac802154/main.c
-@@ -119,26 +119,26 @@ void ieee802154_configure_durations(struct wpan_phy *phy)
- 
- 	switch (phy->current_page) {
- 	case 0:
--		if (BIT(phy->current_page) & 0x1)
-+		if (BIT(phy->current_channel) & 0x1)
- 			/* 868 MHz BPSK 802.15.4-2003: 20 ksym/s */
- 			duration = 50 * NSEC_PER_USEC;
--		else if (phy->current_page & 0x7FE)
-+		else if (BIT(phy->current_channel) & 0x7FE)
- 			/* 915 MHz BPSK	802.15.4-2003: 40 ksym/s */
- 			duration = 25 * NSEC_PER_USEC;
--		else if (phy->current_page & 0x7FFF800)
-+		else if (BIT(phy->current_channel) & 0x7FFF800)
- 			/* 2400 MHz O-QPSK 802.15.4-2006: 62.5 ksym/s */
- 			duration = 16 * NSEC_PER_USEC;
- 		break;
- 	case 2:
--		if (BIT(phy->current_page) & 0x1)
-+		if (BIT(phy->current_channel) & 0x1)
- 			/* 868 MHz O-QPSK 802.15.4-2006: 25 ksym/s */
- 			duration = 40 * NSEC_PER_USEC;
--		else if (phy->current_page & 0x7FE)
-+		else if (BIT(phy->current_channel) & 0x7FE)
- 			/* 915 MHz O-QPSK 802.15.4-2006: 62.5 ksym/s */
- 			duration = 16 * NSEC_PER_USEC;
- 		break;
- 	case 3:
--		if (BIT(phy->current_page) & 0x3FFF)
-+		if (BIT(phy->current_channel) & 0x3FFF)
- 			/* 2.4 GHz CSS 802.15.4a-2007: 1/6 Msym/s */
- 			duration = 6 * NSEC_PER_USEC;
- 		break;
--- 
-2.27.0
-
+Commit f049efc7f7cd ("ixgbe: ensure IPsec VF<->PF compatibility") in
+net, thanks!
