@@ -2,106 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F01EB5134FD
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 15:23:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE4EF5134F3
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 15:23:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235715AbiD1NZ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 09:25:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55350 "EHLO
+        id S234092AbiD1N0O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 09:26:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235677AbiD1NZ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 09:25:26 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7B32FAC90C
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 06:22:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651152130;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=1cpZ1xgascUOYLsGfspUdEEjFzPcacJad6qU8kZAaSk=;
-        b=brGjntIC47r1V/XHG/aVvgms2bhLVyFKPPi9dTCazEo4K92om6js6mD0iNlyGa2nyvEjFc
-        dpk2JBImwUMlnA/CLwQm6p9JJCCXRF3TriUr7YBjsQ1k2/SkV2eCi3/J+D45pstNfP3ve9
-        n5gD/zRF4KpJwmcPKowd5C3wOipyIQY=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-125-SAy2ACDkPN6gODH8Bmechg-1; Thu, 28 Apr 2022 09:22:09 -0400
-X-MC-Unique: SAy2ACDkPN6gODH8Bmechg-1
-Received: by mail-ej1-f72.google.com with SMTP id dp12-20020a170906c14c00b006e7e8234ae2so3005937ejc.2
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 06:22:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=1cpZ1xgascUOYLsGfspUdEEjFzPcacJad6qU8kZAaSk=;
-        b=3Lw3tHNDn8ZsylWwodpAGsROm59KytEM9C7plL5N6ppo8NorAHXl6Egw/8kGqccvi8
-         /joCowq4HIM/P8xDJ/NbJ51R3IWGetRLSLlH5s4FwWPvRdJqp6W3HHZw+RMMBa5XElqW
-         C97lRhubXXQ5ef78Y6q6fFdREiFbFAmyZPkT01YIH4dqxcwRx5Q3UAVuJRR03gunmq94
-         F3lzZodKYxztu4KuspKNbG/xjc7fB6H+ELRuIkLYPEul2GGhThI3kRoLfIyX5K6A5e3g
-         lKkcU0eicF+OhH5TBZmOK634uOTYLLnF8A3c7V0jb93e12f0X/2T7S7YgPf7RZZeXFoD
-         WKzA==
-X-Gm-Message-State: AOAM532XeRPZHgnjW26niELZxgQB0e3nxwWcKTdVySVqradbiugeZqXh
-        vGq0JnUwU5perSfzWLSg9cYGq/+c/95Pm8HhJ1rPvLNfZhQCtbFNpotclh2yLqacCN8wG0rvpEe
-        1fAK6XNpPPouQAcy0
-X-Received: by 2002:a17:907:7287:b0:6f3:8414:74f1 with SMTP id dt7-20020a170907728700b006f3841474f1mr23685455ejc.123.1651152127088;
-        Thu, 28 Apr 2022 06:22:07 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwGk1cJw5aGoIsTO0w7oT+T4JksqnriBA4J7QNSfj97lfUvKKiqr6njoNbuZoBq+Nes7aHiKw==
-X-Received: by 2002:a17:907:7287:b0:6f3:8414:74f1 with SMTP id dt7-20020a170907728700b006f3841474f1mr23685372ejc.123.1651152126157;
-        Thu, 28 Apr 2022 06:22:06 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id lz12-20020a170906fb0c00b006f3a36a9807sm5210784ejb.19.2022.04.28.06.22.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 06:22:05 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id C131D2F596C; Thu, 28 Apr 2022 15:22:04 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     menglong8.dong@gmail.com, edumazet@google.com
-Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        pabeni@redhat.com, benbjiang@tencent.com, flyingpeng@tencent.com,
-        imagedong@tencent.com, kafai@fb.com, talalahmad@google.com,
-        keescook@chromium.org, mengensun@tencent.com,
-        dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 2/2] net: tcp: add skb drop reasons to
- route_req()
-In-Reply-To: <20220428073340.224391-3-imagedong@tencent.com>
-References: <20220428073340.224391-1-imagedong@tencent.com>
- <20220428073340.224391-3-imagedong@tencent.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 28 Apr 2022 15:22:04 +0200
-Message-ID: <87fslxgx6r.fsf@toke.dk>
+        with ESMTP id S1346967AbiD1N0N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 09:26:13 -0400
+Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net (zg8tmty1ljiyny4xntqumjca.icoremail.net [165.227.154.27])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 3E860AC91D;
+        Thu, 28 Apr 2022 06:22:53 -0700 (PDT)
+Received: by ajax-webmail-mail-app4 (Coremail) ; Thu, 28 Apr 2022 21:22:11
+ +0800 (GMT+08:00)
+X-Originating-IP: [125.120.151.211]
+Date:   Thu, 28 Apr 2022 21:22:11 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   "Lin Ma" <linma@zju.edu.cn>
+To:     "Greg KH" <gregkh@linuxfoundation.org>
+Cc:     "Duoming Zhou" <duoming@zju.edu.cn>,
+        krzysztof.kozlowski@linaro.org, pabeni@redhat.com,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        alexander.deucher@amd.com, akpm@linux-foundation.org,
+        broonie@kernel.org, netdev@vger.kernel.org,
+        "Jakub Kicinski" <kuba@kernel.org>
+Subject: Re: [PATCH net v4] nfc: ... device_is_registered() is data
+ race-able
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+In-Reply-To: <20220428060628.713479b2@kernel.org>
+References: <20220427011438.110582-1-duoming@zju.edu.cn>
+ <20220427174548.2ae53b84@kernel.org>
+ <38929d91.237b.1806f05f467.Coremail.linma@zju.edu.cn>
+ <YmpEZQ7EnOIWlsy8@kroah.com>
+ <2d7c9164.2b1f.1806f2a8ed9.Coremail.linma@zju.edu.cn>
+ <YmpNZOaJ1+vWdccK@kroah.com>
+ <15d09db2.2f76.1806f5c4187.Coremail.linma@zju.edu.cn>
+ <YmpcUNf7O+OK6/Ax@kroah.com> <20220428060628.713479b2@kernel.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Message-ID: <f51aa1.41ae.180705614b5.Coremail.linma@zju.edu.cn>
+X-Coremail-Locale: en_US
+X-CM-TRANSID: cS_KCgAXGfAElWpiuIz8AQ--.797W
+X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/1tbiAwMOElNG3GhOdQAEsC
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,
+        RCVD_IN_BL_SPAMCOP_NET,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-menglong8.dong@gmail.com writes:
-
-> From: Menglong Dong <imagedong@tencent.com>
->
-> Add skb drop reasons to the route_req() in struct tcp_request_sock_ops.
-> Following functions are involved:
->
->   tcp_v4_route_req()
->   tcp_v6_route_req()
->   subflow_v4_route_req()
->   subflow_v6_route_req()
->
-> And the new reason SKB_DROP_REASON_SECURITY is added, which is used when
-> skb is dropped by LSM.
-
-Could we maybe pick a slightly less generic name? If I saw
-"SKB_DROP_REASON_SECURITY" my first thought would be something related
-to *network* security, like a firewall. Maybe just SKB_DROP_REASON_LSM?
-
--Toke
-
+SGVsbG8gdGhlcmUsCgo+IAo+IFllcywgdGhhdCBsb29rcyBiZXR0ZXIsIAoKQ29vbCwgdGhhbmtz
+IGFnYWluIGZvciBnaXZpbmcgY29tbWVudHMuIDopCgo+IGJ1dCB3aGF0IGlzIHRoZSByb290IHBy
+b2JsZW0gaGVyZSB0aGF0IHlvdSBhcmUKPiB0cnlpbmcgdG8gc29sdmU/ICBXaHkgZG9lcyBORkMg
+bmVlZCB0aGlzIHdoZW4gbm8gb3RoZXIgc3Vic3lzdGVtIGRvZXM/Cj4gCgpXZWxsLCBpbiBmYWN0
+LCBtZSBhbmQgRHVvbWluZyBhcmUga2VlcCBmaW5kaW5nIGNvbmN1cnJlbmN5IGJ1Z3MgdGhhdCBo
+YXBwZW4gCmJldHdlZW4gdGhlIGRldmljZSBjbGVhbnVwL2RldGFjaCByb3V0aW5lIGFuZCBvdGhl
+ciB1bmRlcmdvaW5nIHJvdXRpbmVzLgoKVGhhdCBpcyB0byBzYXksIHdoZW4gYSBkZXZpY2UsIG5v
+IG1hdHRlciByZWFsIG9yIHZpcnR1YWwsIGlzIGRldGFjaGVkIGZyb20gCnRoZSBtYWNoaW5lLCB0
+aGUga2VybmVsIGF3YWtlIGNsZWFudXAgcm91dGluZSB0byByZWNsYWltIHRoZSByZXNvdXJjZS4g
+CkluIGN1cnJlbnQgY2FzZSwgdGhlIGNsZWFudXAgcm91dGluZSB3aWxsIGNhbGwgbmZjX3VucmVn
+aXN0ZXJfZGV2aWNlKCkuCgpPdGhlciByb3V0aW5lcywgbWFpbmx5IGZyb20gdXNlci1zcGFjZSBz
+eXN0ZW0gY2FsbHMsIG5lZWQgdG8gYmUgY2FyZWZ1bCBvZiAKdGhlIGNsZWFudXAgZXZlbnQuIElu
+IGFub3RoZXIgd29yZCwgdGhlIGtlcm5lbCBuZWVkIHRvIHN5bmNocm9uaXplIHRoZXNlIApyb3V0
+aW5lcyB0byBhdm9pZCByYWNlIGJ1Z3MuCgpJbiBvdXIgcHJhY3RpY2UsIHdlIGZpbmQgdGhhdCBt
+YW55IHN1YnN5c3RlbXMgYXJlIHByb25lIHRvIHRoaXMgdHlwZSBvZiBidWcuCgpGb3IgZXhhbXBs
+ZSwgaW4gYmx1ZXRvb3RoIHdlIGZpeAoKQlQgc3Vic3lzdGVtCiogZTJjYjZiODkxYWQyICgiYmx1
+ZXRvb3RoOiBlbGltaW5hdGUgdGhlIHBvdGVudGlhbCByYWNlIGNvbmRpdGlvbiB3aGVuIHJlbW92
+aW5nCnRoZSBIQ0kgY29udHJvbGxlciIpCiogZmE3OGQyZDFkNjRmICgiQmx1ZXRvb3RoOiBmaXgg
+ZGF0YSByYWNlcyBpbiBzbXBfdW5yZWdpc3RlcigpLCBzbXBfZGVsX2NoYW4oKSIpCi4uCgpBWDI1
+IHN1YnN5c3RlbQoqIDFhZGU0OGQwYzI3ZCAoImF4MjU6IE5QRCBidWcgd2hlbiBkZXRhY2hpbmcg
+QVgyNSBkZXZpY2UiKQouLgoKd2UgY3VycmVudGx5IGZvY3VzIG9uIHRoZSBuZXQgcmVsZXZhbnQg
+c3Vic3lzdGVtcyBhbmQgd2Ugbm93IGlzIGF1ZGl0aW5nIHRoZSBORkMgCmNvZGUuCgpJbiBhbm90
+aGVyIHdvcmQsIGFsbCBzdWJzeXN0ZW1zIG5lZWQgdG8gdGFrZSBjYXJlIG9mIHRoZSBzeW5jaHJv
+bml6YXRpb24gaXNzdWVzLgpCdXQgc2VlbXMgdGhhdCB0aGUgc29sdXRpb25zIGFyZSB2YXJpZWQg
+YmV0d2VlbiBkaWZmZXJlbnQgc3Vic3lzdGVtLiAKCkVtcGlyaWNhbGx5IHNwZWFraW5nLCBtb3N0
+IG9mIHRoZW0gdXNlIHNwZWNpZmljIGZsYWdzICsgc3BlY2lmaWMgbG9ja3MgdG8gcHJldmVudAp0
+aGUgcmFjZS4gCgpJbiBzdWNoIGNhc2VzLCBpZiB0aGUgY2xlYW51cCByb3V0aW5lIGZpcnN0IGhv
+bGQgdGhlIGxvY2ssIHRoZSBvdGhlciByb3V0aW5lcyB3aWxsCndhaXQgb24gdGhlIGxvY2tzLiBT
+aW5jZSB0aGUgY2xlYW51cCByb3V0aW5lIHdyaXRlIHRoZSBzcGVjaWZpYyBmbGFnLCB0aGUgb3Ro
+ZXIKcm91dGluZSwgYWZ0ZXIgY2hlY2sgdGhlIHNwZWNpZmljIGZsYWcsIHdpbGwgYmUgYXdhcmUg
+b2YgdGhlIGNsZWFudXAgc3R1ZmYgYW5kIGp1c3QKYWJvcnQgdGhlaXIgdGFza3MuCklmIHRoZSBv
+dGhlciByb3V0aW5lcyBmaXJzdCBob2xkIHRoZSBsb2NrLCB0aGUgY2xlYW51cCByb3V0aW5lIGp1
+c3Qgd2FpdCB0aGVtIHRvIApmaW5pc2guCgpORkMgaGVyZSBpcyBzcGVjaWFsIGJlY2F1c2UgaXQg
+dXNlcyBkZXZpY2VfaXNfcmVnaXN0ZXJlZC4gSSB0aG91Z2h0IHRoZSBhdXRob3IgbWF5CmJlbGll
+dmUgdGhpcyBtYWNybyBpcyByYWNlIGZyZWUuIEhvd2V2ZXIsIGl0IGlzIG5vdC4gU28gd2UgbmVl
+ZCB0byByZXBsYWNlIHRoaXMgY2hlY2sKdG8gbWFrZSBzdXJlIHRoZSBuZXRsaW5rIGZ1bmN0aW9u
+cyB3aWxsIDEwMCBwZXJjZW50IGJlIGF3YXJlIG9mIHRoZSBjbGVhbnVwIHJvdXRpbmUKYW5kIGFi
+b3J0IHRoZSB0YXNrIGlmIHRoZXkgZ3JhYiB0aGUgZGV2aWNlX2xvY2sgbGF0ZWx5LiBPdGhlcndp
+c2UsIHRoZSBuZWxpbmsgcm91dGluZQp3aWxsIGNhbGwgc3ViLWxheWVyIGNvZGUgYW5kIHBvc3Np
+bGJ5IGRlcmVmZXJlbmNlIHJlc291cmNlcyB0aGF0IGFscmVhZHkgZnJlZWQuCgpGb3IgZXhhbXBs
+ZSwgb25lIG9mIG15IHJlY2VudCBmaXggM2UzYjVkZmNkMTZhICgiTkZDOiByZW9yZGVyIHRoZSBs
+b2dpYyBpbiAKbmZjX3t1bix9cmVnaXN0ZXJfZGV2aWNlIikgdGFrZXMgdGhlIHN1Z2dlc3Rpb24g
+ZnJvbSBtYWludGFpbmVyIGFzIGhlIHRob3VnaHQgdGhlIApkZXZpY2VfaXNfcmVnaXN0ZXJlZCBp
+cyBlbm91Z2guIEFuZCBmb3Igbm93IHdlIGZpbmQgb3V0IHRoaXMgZGV2aWNlX2lzX3JlZ2lzdGVy
+ZWQKaXMgbm90IGVub3VnaC4KCklmIHlvdSBhcmUgd29uZGVyaW5nIGlmIG90aGVyIHN1YnN5c3Rl
+bXMgdXNlIHRoZSBjb21iaW5hdGlvbiBvZiBkZXZpY2VfaXNfcmVnaXN0ZXJlZAphcyBjaGVjayB0
+byBhdm9pZCB0aGUgcmFjZSwgSSBoYXZlIHRvIHNheSBJIGRvbid0IGtub3cuIElmIHRoZSBhbnN3
+ZXIgaXMgeWVzLCB0aGF0IGNvZGUKaXMgcG9zc2libHkgYWxzbyBwcm9uZSB0byB0aGlzIHR5cGUg
+b2YgY29uY3VycmVudCBidWcuCgo+IHRoYW5zaywKPiAKPiBncmVnIGstaAoKVGhhbmtzIGFnYWlu
+LgoKTGluIE1h
