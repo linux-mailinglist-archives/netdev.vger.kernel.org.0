@@ -2,72 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 197ED5133F2
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 14:42:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98707513421
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 14:47:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346580AbiD1Mox (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 08:44:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46982 "EHLO
+        id S1344542AbiD1MuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 08:50:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346498AbiD1Mom (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 08:44:42 -0400
-Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 55502AFAE4;
-        Thu, 28 Apr 2022 05:41:14 -0700 (PDT)
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 23SCeFwv007486;
-        Thu, 28 Apr 2022 14:40:15 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     netdev@vger.kernel.org
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Moshe Kol <moshe.kol@mail.huji.ac.il>,
-        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
-        Amit Klein <aksecurity@gmail.com>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>,
-        linux-kernel@vger.kernel.org, Willy Tarreau <w@1wt.eu>
-Subject: [PATCH v2 net 7/7] tcp: drop the hash_32() part from the index calculation
-Date:   Thu, 28 Apr 2022 14:40:01 +0200
-Message-Id: <20220428124001.7428-8-w@1wt.eu>
-X-Mailer: git-send-email 2.17.5
-In-Reply-To: <20220428124001.7428-1-w@1wt.eu>
-References: <20220428124001.7428-1-w@1wt.eu>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S245277AbiD1MuO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 08:50:14 -0400
+Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3472B37A94;
+        Thu, 28 Apr 2022 05:46:56 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=mqaio@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VBazM0Q_1651150011;
+Received: from 30.225.28.125(mailfrom:mqaio@linux.alibaba.com fp:SMTPD_---0VBazM0Q_1651150011)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 28 Apr 2022 20:46:52 +0800
+Message-ID: <5c641c77-f96d-4e75-ebc5-eef66cf0dbdc@linux.alibaba.com>
+Date:   Thu, 28 Apr 2022 20:46:51 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [PATCH net-next] hinic: fix bug of wq out of bound access
+From:   maqiao <mqaio@linux.alibaba.com>
+To:     luobin9@huawei.com, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        pabeni@redhat.com, huangguangbin2@huawei.com,
+        keescook@chromium.org, gustavoars@kernel.org
+References: <282817b0e1ae2e28fdf3ed8271a04e77f57bf42e.1651148587.git.mqaio@linux.alibaba.com>
+In-Reply-To: <282817b0e1ae2e28fdf3ed8271a04e77f57bf42e.1651148587.git.mqaio@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In commit 190cc82489f4 ("tcp: change source port randomizarion at
-connect() time"), the table_perturb[] array was introduced and an
-index was taken from the port_offset via hash_32(). But it turns
-out that hash_32() performs a multiplication while the input here
-comes from the output of SipHash in secure_seq, that is well
-distributed enough to avoid the need for yet another hash.
+cc Paolo Abeni, Guangbin Huang, Kees Cook, Gustavo A. R. Silva
 
-Suggested-by: Amit Klein <aksecurity@gmail.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Willy Tarreau <w@1wt.eu>
----
- net/ipv4/inet_hashtables.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index cc5f66328b47..a5d57fa679ca 100644
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -778,7 +778,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
- 
- 	net_get_random_once(table_perturb,
- 			    INET_TABLE_PERTURB_SIZE * sizeof(*table_perturb));
--	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
-+	index = port_offset & (INET_TABLE_PERTURB_SIZE - 1);
- 
- 	offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32);
- 	offset %= remaining;
--- 
-2.17.5
-
+在 2022/4/28 PM8:30, Qiao Ma 写道:
+> If wq has only one page, we need to check wqe rolling over page by
+> compare end_idx and curr_idx, and then copy wqe to shadow wqe to
+> avoid out of bound access.
+> This work has been done in hinic_get_wqe, but missed for hinic_read_wqe.
+> This patch fixes it, and removes unnecessary MASKED_WQE_IDX().
+> 
+> Fixes: 7dd29ee12865 ("hinic: add sriov feature support")
+> Signed-off-by: Qiao Ma <mqaio@linux.alibaba.com>
+> ---
+>   drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c | 7 +++++--
+>   1 file changed, 5 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c
+> index 5dc3743f8091..f04ac00e3e70 100644
+> --- a/drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c
+> +++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c
+> @@ -771,7 +771,7 @@ struct hinic_hw_wqe *hinic_get_wqe(struct hinic_wq *wq, unsigned int wqe_size,
+>   	/* If we only have one page, still need to get shadown wqe when
+>   	 * wqe rolling-over page
+>   	 */
+> -	if (curr_pg != end_pg || MASKED_WQE_IDX(wq, end_prod_idx) < *prod_idx) {
+> +	if (curr_pg != end_pg || end_prod_idx < *prod_idx) {
+>   		void *shadow_addr = &wq->shadow_wqe[curr_pg * wq->max_wqe_size];
+>   
+>   		copy_wqe_to_shadow(wq, shadow_addr, num_wqebbs, *prod_idx);
+> @@ -841,7 +841,10 @@ struct hinic_hw_wqe *hinic_read_wqe(struct hinic_wq *wq, unsigned int wqe_size,
+>   
+>   	*cons_idx = curr_cons_idx;
+>   
+> -	if (curr_pg != end_pg) {
+> +	/* If we only have one page, still need to get shadown wqe when
+> +	 * wqe rolling-over page
+> +	 */
+> +	if (curr_pg != end_pg || end_cons_idx < curr_cons_idx) {
+>   		void *shadow_addr = &wq->shadow_wqe[curr_pg * wq->max_wqe_size];
+>   
+>   		copy_wqe_to_shadow(wq, shadow_addr, num_wqebbs, *cons_idx);
