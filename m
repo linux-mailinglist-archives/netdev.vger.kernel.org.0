@@ -2,76 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46C5E5133BB
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 14:30:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34A105133E6
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 14:42:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346301AbiD1MeE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 08:34:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48556 "EHLO
+        id S1346378AbiD1MoJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 08:44:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346298AbiD1MeB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 08:34:01 -0400
-Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E70E5A2C4;
-        Thu, 28 Apr 2022 05:30:43 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=mqaio@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VBaxOrU_1651149040;
-Received: from localhost(mailfrom:mqaio@linux.alibaba.com fp:SMTPD_---0VBaxOrU_1651149040)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 28 Apr 2022 20:30:41 +0800
-From:   Qiao Ma <mqaio@linux.alibaba.com>
-To:     luobin9@huawei.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] hinic: fix bug of wq out of bound access
-Date:   Thu, 28 Apr 2022 20:30:16 +0800
-Message-Id: <282817b0e1ae2e28fdf3ed8271a04e77f57bf42e.1651148587.git.mqaio@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S1346431AbiD1MoG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 08:44:06 -0400
+Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1038DE010;
+        Thu, 28 Apr 2022 05:40:50 -0700 (PDT)
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 23SCeDHb007479;
+        Thu, 28 Apr 2022 14:40:13 +0200
+From:   Willy Tarreau <w@1wt.eu>
+To:     netdev@vger.kernel.org
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Moshe Kol <moshe.kol@mail.huji.ac.il>,
+        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
+        Amit Klein <aksecurity@gmail.com>,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>,
+        linux-kernel@vger.kernel.org, Willy Tarreau <w@1wt.eu>
+Subject: [PATCH v2 net 0/7] insufficient TCP source port randomness
+Date:   Thu, 28 Apr 2022 14:39:54 +0200
+Message-Id: <20220428124001.7428-1-w@1wt.eu>
+X-Mailer: git-send-email 2.17.5
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If wq has only one page, we need to check wqe rolling over page by
-compare end_idx and curr_idx, and then copy wqe to shadow wqe to
-avoid out of bound access.
-This work has been done in hinic_get_wqe, but missed for hinic_read_wqe.
-This patch fixes it, and removes unnecessary MASKED_WQE_IDX().
+Hi,
 
-Fixes: 7dd29ee12865 ("hinic: add sriov feature support")
-Signed-off-by: Qiao Ma <mqaio@linux.alibaba.com>
+In a not-yet published paper, Moshe Kol, Amit Klein, and Yossi Gilad
+report being able to accurately identify a client by forcing it to emit
+only 40 times more connections than the number of entries in the
+table_perturb[] table, which is indexed by hashing the connection tuple.
+The current 2^8 setting allows them to perform that attack with only 10k
+connections, which is not hard to achieve in a few seconds.
+
+Eric, Amit and I have been working on this for a few weeks now imagining,
+testing and eliminating a number of approaches that Amit and his team were
+still able to break or that were found to be too risky or too expensive,
+and ended up with the simple improvements in this series that resists to
+the attack, doesn't degrade the performance, and preserves a reliable port
+selection algorithm to avoid connection failures, including the odd/even
+port selection preference that allows bind() to always find a port quickly
+even under strong connect() stress.
+
+The approach relies on several factors:
+  - resalting the hash secret that's used to choose the table_perturb[]
+    entry every 10 seconds to eliminate slow attacks and force the
+    attacker to forget everything that was learned after this delay.
+    This already eliminates most of the problem because if a client
+    stays silent for more than 10 seconds there's no link between the
+    previous and the next patterns, and 10s isn't yet frequent enough
+    to cause too frequent repetition of a same port that may induce a
+    connection failure ;
+
+  - adding small random increments to the source port. Previously, a
+    random 0 or 1 was added every 16 ports. Now a random 0 to 7 is
+    added after each port. This means that with the default 32768-60999
+    range, a worst case rollover happens after 1764 connections, and
+    an average of 3137. This doesn't stop statistical attacks but
+    requires significantly more iterations of the same attack to
+    confirm a guess.
+
+  - increasing the table_perturb[] size from 2^8 to 2^16, which Amit
+    says will require 2.6 million connections to be attacked with the
+    changes above, making it pointless to get a fingerprint that will
+    only last 10 seconds. Due to the size, the table was made dynamic.
+
+  - a few minor improvements on the bits used from the hash, to eliminate
+    some unfortunate correlations that may possibly have been exploited
+    to design future attack models.
+
+These changes were tested under the most extreme conditions, up to
+1.1 million connections per second to one and a few targets, showing no
+performance regression, and only 2 connection failures within 13 billion,
+which is less than 2^-32 and perfectly within usual values.
+
+The series is split into small reviewable changes and was already reviewed
+by Amit and Eric.
+
+Regards,
+Willy
+
 ---
- drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+v2:
+  - fixed build issue reported by lkp@intel.com on 32-bit archs due
+    to the 64-by-32 divide; it's now correctly 32-by-32 as suggested
+    by Eric
+  - addressed the IPv6 hash size as well that was overlooked, as
+    reported by Jason
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c
-index 5dc3743f8091..f04ac00e3e70 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c
-@@ -771,7 +771,7 @@ struct hinic_hw_wqe *hinic_get_wqe(struct hinic_wq *wq, unsigned int wqe_size,
- 	/* If we only have one page, still need to get shadown wqe when
- 	 * wqe rolling-over page
- 	 */
--	if (curr_pg != end_pg || MASKED_WQE_IDX(wq, end_prod_idx) < *prod_idx) {
-+	if (curr_pg != end_pg || end_prod_idx < *prod_idx) {
- 		void *shadow_addr = &wq->shadow_wqe[curr_pg * wq->max_wqe_size];
- 
- 		copy_wqe_to_shadow(wq, shadow_addr, num_wqebbs, *prod_idx);
-@@ -841,7 +841,10 @@ struct hinic_hw_wqe *hinic_read_wqe(struct hinic_wq *wq, unsigned int wqe_size,
- 
- 	*cons_idx = curr_cons_idx;
- 
--	if (curr_pg != end_pg) {
-+	/* If we only have one page, still need to get shadown wqe when
-+	 * wqe rolling-over page
-+	 */
-+	if (curr_pg != end_pg || end_cons_idx < curr_cons_idx) {
- 		void *shadow_addr = &wq->shadow_wqe[curr_pg * wq->max_wqe_size];
- 
- 		copy_wqe_to_shadow(wq, shadow_addr, num_wqebbs, *cons_idx);
+This version was built for i386, armv7, x86_64, and was stress-tested on
+x86_64 under both IPv4 and IPv6. I'm reasonably confident that this time
+nothing else is missing.
+
+---
+
+Eric Dumazet (1):
+  tcp: resalt the secret every 10 seconds
+
+Willy Tarreau (6):
+  secure_seq: use the 64 bits of the siphash for port offset calculation
+  tcp: use different parts of the port_offset for index and offset
+  tcp: add small random increments to the source port
+  tcp: dynamically allocate the perturb table used by source ports
+  tcp: increase source port perturb table to 2^16
+  tcp: drop the hash_32() part from the index calculation
+
+ include/net/inet_hashtables.h |  2 +-
+ include/net/secure_seq.h      |  4 ++--
+ net/core/secure_seq.c         | 16 ++++++++-----
+ net/ipv4/inet_hashtables.c    | 42 ++++++++++++++++++++++-------------
+ net/ipv6/inet6_hashtables.c   |  4 ++--
+ 5 files changed, 43 insertions(+), 25 deletions(-)
+
 -- 
-1.8.3.1
+2.17.5
 
