@@ -2,62 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 40F335131FA
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 13:02:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 118855131FF
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 13:02:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231736AbiD1LCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 07:02:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47366 "EHLO
+        id S1345250AbiD1LDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 07:03:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345130AbiD1LBs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 07:01:48 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1B0297BAE;
-        Thu, 28 Apr 2022 03:58:20 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id e2so6233917wrh.7;
-        Thu, 28 Apr 2022 03:58:20 -0700 (PDT)
+        with ESMTP id S1345211AbiD1LCo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 07:02:44 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 932D2A1443;
+        Thu, 28 Apr 2022 03:58:55 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id n32-20020a05600c3ba000b00393ea7192faso2807202wms.2;
+        Thu, 28 Apr 2022 03:58:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=fa5CdWViNrG/NjYoLUNxCAqmUWuGkC4f1gVdrOT2E9U=;
-        b=XqghPo0bq+NQDMVeKYC7+bEpFnjXtq0XdJfAUWlpji2R6OLKU4zV1XXMkw1InubOoP
-         tBOXhI4/hmaqk5VX+EMgNJT5mXqzxT7YLcovwRrI7OJLqFEyMMLYqe1eZLVMwx5R9QiR
-         f1xhD47AbD//c2DZJ7P64+0Q/Xv2UB4RonOX8VAJwM41GbogMZZw0pnzpI2j12NS9IGH
-         veaOplXIr5eM/lnbBw3xaG4UrBJjvczUr5Ab0F/axGEszLbZK7TVAo1DDm00bMSONb2Z
-         4vDLCYk8RSX8k8geeopyk5auajhu7GXBEinIY4VCezF2zrW/LV15ZPcIRFELgI/FNdrZ
-         dQ3w==
+        bh=cvflK2CCSbF/DUYDBHiik6y6oV21pGZqGs4s1B4i5Ow=;
+        b=drsNDLfumBEK+HP8JPoZTI+Vos8DRM+zum/hIAJU+xTnEyprNqQUc6GJ0BPdTjwgdY
+         T6YaG98I1VgL2fV6Myh6lAPfhwhCSOmm8qMAe/gdmz4T3axEkC2QvugNG0GF6oN1k2ok
+         5JMQNjziheNboaE+6fJmtSbGwKr7p9jUCALNFvL+9CXf8l1drgguJdB0ixGZRUGeJ3p9
+         WNelOjD5+guWM2ASBmLY6ZErI0K8oMVseCGAOgyyRXRCSIYPNdKrkdVsxVULwITvka7w
+         8h0MwQQLbRUPP9PdhLDgRu0fESwEDz9mUIFdZtdEofmWiNvWs7tYng9ZVbE0vs33i1sZ
+         rl/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=fa5CdWViNrG/NjYoLUNxCAqmUWuGkC4f1gVdrOT2E9U=;
-        b=2FlT7Nm1vsfmqRo6CAJ0nMdthDaBYERMS9UEEJkA2h9rP8NpCQkj9WvcVXleDqub5b
-         fXO4ryGCM7I7RfScE36pZx8bQKZltUSwcISRhWjPqke8NWP5GU/7Ju5xOMMO9spIpxJZ
-         OGXzDsdTSYLUg0LqzwMbk4YoSkdr5PP4QcKoxWc1h9oThAnQ8iLsYb70Sd3FVT4LLyDp
-         1n52506OboMZMF4rqFyS5XmPCY4N8IncJGncblFYmNG7J0Fu4QzboYySzgv6jKOdcLKJ
-         FIXklXghDc9hC8X5hwdi9/f9tNcHuzv4DkrGHMe+MdBFpyF4suUGE8n34gLoDzNLisKl
-         rQVQ==
-X-Gm-Message-State: AOAM531exYlCp2NxZGMmPATiEphR2X2deLUwMOEtf0aivHlF+4mNdM/2
-        lc+FyulAL94tz6yT2DbiHIgdPMsGZqg=
-X-Google-Smtp-Source: ABdhPJxBaDUDJPVYqAVvTWOhzLh/1XCzMSyHV4cbJXze/SUe21/NorNGmow7sAPP/jaqmaRrfkl/iQ==
-X-Received: by 2002:a5d:5966:0:b0:20a:e810:5e9d with SMTP id e38-20020a5d5966000000b0020ae8105e9dmr9401074wri.240.1651143499234;
-        Thu, 28 Apr 2022 03:58:19 -0700 (PDT)
+        bh=cvflK2CCSbF/DUYDBHiik6y6oV21pGZqGs4s1B4i5Ow=;
+        b=P8+jf4OqKJ0aB3pc5mRbPzmwv8wj2o/8IdfmRecGr0xuKYv8AL6sUl1qakx1P1iQP4
+         hW8gfRKRstsBpsjrxiQxnCREA1/v7MQGEX8l70WxQmv/nr//CBLAIIor/lPS4FA5ykD1
+         vQoCrfYlAlWDR9fEj1sAYgj5glAer4lfrPZX7zeAmGT7ZF/cmxmhdv+JHAUrdwxx8yoQ
+         YyaHmhJ5cdtnS6p7Q0c9Bk3Q73LzwEvkhZT35+/y2x0ZXVWNg4C8TKSFon6BkLoIe5AL
+         6RgAnwasNrg/SQtj2ZIe8TbmXnYKbCdK6NQaI90JFxDJUiIfImQ2k5h+4D5NkYorWp5V
+         JinA==
+X-Gm-Message-State: AOAM533YASv8AGi6qKHkDtPLlWfe5AplDn9BFGJ1gcOtfDzpUMFLLMQt
+        fkhCCtqun7Up9kJNorl55eR05dz+zrs=
+X-Google-Smtp-Source: ABdhPJzVydLDIO3uQJRPu7P2r6AeMj8AqWb6ykChbvK8S65di/ILUXKm1lwedqLLjm/xC+I4IiiIKw==
+X-Received: by 2002:a1c:ed01:0:b0:394:89d:6277 with SMTP id l1-20020a1ced01000000b00394089d6277mr5334946wmh.28.1651143533994;
+        Thu, 28 Apr 2022 03:58:53 -0700 (PDT)
 Received: from 127.0.0.1localhost (82-132-230-8.dab.02.net. [82.132.230.8])
-        by smtp.gmail.com with ESMTPSA id u19-20020a05600c19d300b00393f081d49fsm4017426wmq.2.2022.04.28.03.58.17
+        by smtp.gmail.com with ESMTPSA id p4-20020a1c5444000000b00391ca5976c8sm4628139wmi.0.2022.04.28.03.58.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 03:58:18 -0700 (PDT)
+        Thu, 28 Apr 2022 03:58:53 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
         linux-kernel@vger.kernel.org,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next 1/1] tcp: optimise skb_zerocopy_iter_stream()
-Date:   Thu, 28 Apr 2022 11:57:46 +0100
-Message-Id: <a7e1690c00c5dfe700c30eb9a8a81ec59f6545dd.1650884401.git.asml.silence@gmail.com>
+Subject: [PATCH net-next 0/3] UDP sock_wfree optimisations
+Date:   Thu, 28 Apr 2022 11:58:16 +0100
+Message-Id: <cover.1650891417.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -71,40 +70,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's expensive to make a copy of 40B struct iov_iter to the point it
-was taking 0.2-0.5% of all cycles in my tests. iov_iter_revert() should
-be fine as it's a simple case without nested reverts/truncates.
+The series is not UDP specific but that the main beneficiary. 2/3 saves one
+atomic in sock_wfree() and on top 3/3 removes an extra barrier.
+Tested with UDP over dummy netdev, 2038491 -> 2099071 req/s (or around +3%).
 
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
----
+note: in regards to 1/3, there is a "Should agree with poll..." comment
+that I don't completely get, and there is no git history to explain it.
+Though I can't see how it could rely on having the second check without
+racing with tasks woken by wake_up*().
 
-split from a larger patchset, see
+The series was split from a larger patchset, see
 https://lore.kernel.org/netdev/cover.1648981570.git.asml.silence@gmail.com/
 
- net/core/skbuff.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Pavel Begunkov (3):
+  sock: dedup sock_def_write_space wmem_alloc checks
+  sock: optimise UDP sock_wfree() refcounting
+  sock: optimise sock_def_write_space barriers
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 30b523fa4ad2..e51e53f8c200 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -1350,7 +1350,6 @@ int skb_zerocopy_iter_stream(struct sock *sk, struct sk_buff *skb,
- 			     struct ubuf_info *uarg)
- {
- 	struct ubuf_info *orig_uarg = skb_zcopy(skb);
--	struct iov_iter orig_iter = msg->msg_iter;
- 	int err, orig_len = skb->len;
- 
- 	/* An skb can only point to one uarg. This edge case happens when
-@@ -1364,7 +1363,7 @@ int skb_zerocopy_iter_stream(struct sock *sk, struct sk_buff *skb,
- 		struct sock *save_sk = skb->sk;
- 
- 		/* Streams do not free skb on error. Reset to prev state. */
--		msg->msg_iter = orig_iter;
-+		iov_iter_revert(&msg->msg_iter, skb->len - orig_len);
- 		skb->sk = sk;
- 		___pskb_trim(skb, orig_len);
- 		skb->sk = save_sk;
+ net/core/sock.c | 43 ++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 40 insertions(+), 3 deletions(-)
+
 -- 
 2.36.0
 
