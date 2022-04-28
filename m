@@ -2,70 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0532C5139AA
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 18:22:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED42D5139B2
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 18:23:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349928AbiD1QZ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 12:25:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58156 "EHLO
+        id S1349954AbiD1Q0Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 12:26:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349933AbiD1QZ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 12:25:28 -0400
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE4406A43F
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 09:22:13 -0700 (PDT)
-Received: by mail-il1-f199.google.com with SMTP id q9-20020a056e02106900b002cbc8d479eeso2048790ilj.1
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 09:22:13 -0700 (PDT)
+        with ESMTP id S1349952AbiD1Q0U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 12:26:20 -0400
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 586016A43F;
+        Thu, 28 Apr 2022 09:23:05 -0700 (PDT)
+Received: by mail-il1-x135.google.com with SMTP id b5so2314192ile.0;
+        Thu, 28 Apr 2022 09:23:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BFhJTeBHegUGtkoKbPnigoTiPCA3aoao0K+t84QabKg=;
+        b=jfXKPvMzYUegjls0RnwX8rppG+Ce5wuHyePNtzxGVl+zXyb2acEES4JRq5s3Robr3W
+         AY623UmGkEqjuPDd0mngHOQHxpCkAkAFd2aFU3589FRzNtpTicD6Hv6oeXRpa0weT3yg
+         TlW5cMZ1ALl7VZHhvqWjvwEJLI4dqRtMZAOZWy/vy6R9w6RJ+3ALAjvmqjE1MkjK4gUk
+         yY0SGHz5Cwn4Dr0swRqp7cwUAfDck1LUFA/KKe0tRD3A+hu09E4eU7Gx6wJ16K7DZsvY
+         U0Kk3W6c7jGJuy4BdJsXNsiDgIt/Bbi7yvVLjPBwkQ8Z1ac6Uxb2DWlDCIc+tFJNlLhC
+         s63A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=o+NNYHCmlN18e93pwDlfBdn8EHsonjKZ0f60NMDZ1RI=;
-        b=h+MdfwVQaEfXU/U5sckTkW/IpOqm6HqDlO1LeHj4MFphgLGT6+Z7EZnvGVjUuHYlPp
-         vFRNk+TmFOokdaTV4tGZUddoLDbMG/8ejdqoZZxO3jT56H2l9gA64Kg4o+j6tnCzdswA
-         hyEp78LF8UJJkPdskcHNaSrcvZvmJgCDSSov5S4+RAxZGL9bqfBFnhuFsgJoiRoj5T9u
-         7/XOWVlACCBHB8fVJ1fZzWJZyghXEhruHxRsHxF7EHTxsOOtinUeDjz5hOy4msVdfbaL
-         DGTk17xuhayhFaaK2YCdn/fG4GlR/PrbsSQXiN64VoRcOtS2adYXEiT/D1k1Pr0cnP+G
-         5Biw==
-X-Gm-Message-State: AOAM532MooHIJv7fPSpLbVNjCRbMdfDBl5fJPicwIDfaUl0ybPrpbcLf
-        8eshMgKANaK7P+HrQ1/zvFjOjZY7PpvUhsaaKpTRYomM5hZi
-X-Google-Smtp-Source: ABdhPJwthCSp2Lm4n3Y5kn4qHfDFDWm2VeW6ZvLb5OBXd/1XBT2uHyHRxo5guK0Eto1k4dewNSUtxKnE1EqlkJqQZWjVORFVCbMd
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BFhJTeBHegUGtkoKbPnigoTiPCA3aoao0K+t84QabKg=;
+        b=Ctnm7JrB7ke6zXmNe6tMZPfChH17ByObLUj4rVaUuS2npUYx+hANZqdSh9mUJjm/0U
+         0AQ9Z3hskl8+U1rKz58dpbwakXGuZVf58Lj4NIaNAZNNH0iqMcNNWw7SCEa8YhqxcyLS
+         6t/EIyqvWoo/78T1ZyJmbAnGGlt3Y4OWTfUF89GpKQ92aOWHIstT+2uRmcbl1Alp9oqE
+         NBJ1CrwHWE1E6k8sIlloalUsgy/mGHzqw9LMBT1ditDrOjl2J+9WJCNpYR8DZ0slkqRJ
+         R33/IVtAH1OSJ+j2HVsaddS1nvKNDI0YaOAz0EZjRSe6CYqXYNo220yuCzrpHYgT4R2z
+         PQng==
+X-Gm-Message-State: AOAM530k7YGTLavmnuu1SPGXCDl33x1kslw/u9r2jCZC2JKTRiBmfXUf
+        9jIb4RGFmQjuhkZfhet6WPewyBoIoOpDBS+4Ha0=
+X-Google-Smtp-Source: ABdhPJzHur/icTYgIyTfK7H0clyD69BvncoOM31SARFGHRbB1eRkm4EmwY58j2ayT+Bf0E9S2cuGD1rcv1FWr/ye3oY=
+X-Received: by 2002:a92:c247:0:b0:2cc:1798:74fe with SMTP id
+ k7-20020a92c247000000b002cc179874femr13498199ilo.239.1651162984685; Thu, 28
+ Apr 2022 09:23:04 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a5d:898b:0:b0:649:5bbb:7d95 with SMTP id
- m11-20020a5d898b000000b006495bbb7d95mr13836886iol.107.1651162933305; Thu, 28
- Apr 2022 09:22:13 -0700 (PDT)
-Date:   Thu, 28 Apr 2022 09:22:13 -0700
-In-Reply-To: <20220428160357.3884-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000001b27aa05ddb95442@google.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in dst_destroy
-From:   syzbot <syzbot+736f4a4f98b21dba48f0@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
+References: <202204271656.OTIj2QNJ-lkp@intel.com> <Ymj5AJtiBx0UjEdT@8276d8ba1d54>
+ <CAADnVQLSfbc8rNQC+0rGxgJCbXYCENsAORZmiXqcXc+W0N8A0g@mail.gmail.com>
+In-Reply-To: <CAADnVQLSfbc8rNQC+0rGxgJCbXYCENsAORZmiXqcXc+W0N8A0g@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 28 Apr 2022 09:22:53 -0700
+Message-ID: <CAEf4BzZDmOWy+q_sqW7ziSjdqgZ9c7hGDkD4TKjAQ9dzN0_-ug@mail.gmail.com>
+Subject: Re: [PATCH] libbpf: fix returnvar.cocci warnings
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     kernel test robot <lkp@intel.com>,
+        Julia Lawall <julia.lawall@inria.fr>,
+        Andrii Nakryiko <andrii@kernel.org>, kbuild-all@lists.01.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, Apr 27, 2022 at 9:07 AM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Wed, Apr 27, 2022 at 1:04 AM kernel test robot <lkp@intel.com> wrote:
+> >
+> > From: kernel test robot <lkp@intel.com>
+> >
+> > tools/lib/bpf/relo_core.c:1064:8-11: Unneeded variable: "len". Return "0" on line 1086
+> >
+> >
+> >  Remove unneeded variable used to store return value.
+> >
+> > Generated by: scripts/coccinelle/misc/returnvar.cocci
+> >
+> > Fixes: b58af63aab11 ("libbpf: Refactor CO-RE relo human description formatting routine")
+> > CC: Andrii Nakryiko <andrii@kernel.org>
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Signed-off-by: kernel test robot <lkp@intel.com>
+> > ---
+> >
+> > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+> > head:   f02ac5c95dfd45d2f50ecc68d79177de326c668c
+> > commit: b58af63aab11e4ae00fe96de9505759cfdde8ee9 [6746/7265] libbpf: Refactor CO-RE relo human description formatting routine
+> > :::::: branch date: 2 hours ago
+> > :::::: commit date: 9 hours ago
+> >
+> >  tools/lib/bpf/relo_core.c |   10 +++++-----
+> >  1 file changed, 5 insertions(+), 5 deletions(-)
+> >
+> > --- a/tools/lib/bpf/relo_core.c
+> > +++ b/tools/lib/bpf/relo_core.c
+> > @@ -1061,7 +1061,7 @@ static int bpf_core_format_spec(char *bu
+> >         const struct btf_enum *e;
+> >         const char *s;
+> >         __u32 type_id;
+> > -       int i, len = 0;
+> > +       int i;
+> >
+> >  #define append_buf(fmt, args...)                               \
+> >         ({                                                      \
+> > @@ -1083,7 +1083,7 @@ static int bpf_core_format_spec(char *bu
+> >                    type_id, btf_kind_str(t), str_is_empty(s) ? "<anon>" : s);
+> >
+> >         if (core_relo_is_type_based(spec->relo_kind))
+> > -               return len;
+> > +               return 0;
+>
+> cocci is wrong.
+> It missed append_buf() macro.
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+Should be irrelevant once [0] lands. It makes use of that return value directly.
 
-Reported-and-tested-by: syzbot+736f4a4f98b21dba48f0@syzkaller.appspotmail.com
+  [0] https://patchwork.kernel.org/project/netdevbpf/patch/20220428041523.4089853-2-andrii@kernel.org/
 
-Tested on:
-
-commit:         8f4dd166 Merge branch 'akpm' (patches from Andrew)
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/ master
-kernel config:  https://syzkaller.appspot.com/x/.config?x=864dc6814306810
-dashboard link: https://syzkaller.appspot.com/bug?extid=736f4a4f98b21dba48f0
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=1749d79af00000
-
-Note: testing is done by a robot and is best-effort only.
+>
+> Please fix cocci so we don't have to manually deal with
+> broken patches like this one.
