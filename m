@@ -2,43 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03263513D75
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 23:24:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79D45513D7A
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 23:24:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346544AbiD1V1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 17:27:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59866 "EHLO
+        id S1352171AbiD1V1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 17:27:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352230AbiD1V1D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 17:27:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C643BF538
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 14:23:47 -0700 (PDT)
+        with ESMTP id S1352242AbiD1V1G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 17:27:06 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667FFBF948
+        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 14:23:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C8CBFB8303B
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 21:23:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 342E9C385AD;
+        by sin.source.kernel.org (Postfix) with ESMTPS id BBBE6CE2DD1
+        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 21:23:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA40AC385B1;
         Thu, 28 Apr 2022 21:23:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651181024;
-        bh=nyS/qzNVzmEkSaJ3nVwgO/8/CzgNMfDoJNAtOdzapMw=;
+        s=k20201202; t=1651181025;
+        bh=b0Skan6E/pSD77Oh8H3NQvHtdLVh9W9t15et8aOO+es=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eEmHpEq7nG3TllXLo3njBecbk4bzYKin6TfPn6Tg5vQ54YHJocmwY1zGeEnmwwAFx
-         R26kjdUo4AWhpIxeowyr1vO89EwDC42sY/yEdP+7bSMRpgQ1x4MPgQmitv3VBXbIv6
-         OT0Auon3b3NGqQMRFqJapDhW62BGkXXOK3LZqmn5qtLnkrq04xTlrFuFARuA/j+ZGU
-         mX4u7EznW7u62gGaJH6tvns8VnWOgbPzz5X3DZQ4mOpz+cwd7Za7KyO0yM63TUpyFX
-         H1LV75PQKMJzmE5O5m1e4B4G8D4JL9WxFQBgr+Pev9YejEYqxUzBMtkivsQO0acupX
-         tqWyoIoNfc6hw==
+        b=NY1JmJgfbuR4GBGDWgEF6VnVtJeaF1um2B3VrY3t8RF1GsKakbTKsnVraC4duMB32
+         WFllbOq8yigbhI/Y2VJIYBC7jQfBUkAdFEnLBZrXb6R4XwwtmKbm1Tabp4/GXwE2Fw
+         HdwOcX1n+zZKQ7lIdfcL8VClasbBAi4x89Xwvl68+C/5hvqM15MGHtieKLMPWetL2m
+         U9O8NLBKGRf0rz/lNeJi6VibpfyMbGPLV7hH/xhODRwov5eOQF1N9S2/12Sk/pRmJB
+         wLSYiHtC4krMM/r+jZgztQw89MIaGvIYOk8C+46bWb2AWhr5Zm5FXLzJ7VB+gRndGk
+         7d/Irq1zCxZhg==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net, pabeni@redhat.com
 Cc:     edumazet@google.com, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>, jdmason@kudzu.us,
-        zhengyongjun3@huawei.com, christophe.jaillet@wanadoo.fr
-Subject: [PATCH net-next v2 12/15] eth: vxge: remove a copy of the NAPI_POLL_WEIGHT define
-Date:   Thu, 28 Apr 2022 14:23:20 -0700
-Message-Id: <20220428212323.104417-13-kuba@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>,
+        Geoff Levand <geoff@infradead.org>, kou.ishizaki@toshiba.co.jp,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH net-next v2 13/15] eth: spider: remove a copy of the NAPI_POLL_WEIGHT define
+Date:   Thu, 28 Apr 2022 14:23:21 -0700
+Message-Id: <20220428212323.104417-14-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220428212323.104417-1-kuba@kernel.org>
 References: <20220428212323.104417-1-kuba@kernel.org>
@@ -56,42 +57,41 @@ X-Mailing-List: netdev@vger.kernel.org
 Defining local versions of NAPI_POLL_WEIGHT with the same
 values in the drivers just makes refactoring harder.
 
+Acked-by: Geoff Levand <geoff@infradead.org>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: jdmason@kudzu.us
-CC: zhengyongjun3@huawei.com
-CC: christophe.jaillet@wanadoo.fr
+CC: kou.ishizaki@toshiba.co.jp
+CC: linuxppc-dev@lists.ozlabs.org
 ---
- drivers/net/ethernet/neterion/vxge/vxge-main.c | 2 +-
- drivers/net/ethernet/neterion/vxge/vxge-main.h | 2 --
- 2 files changed, 1 insertion(+), 3 deletions(-)
+ drivers/net/ethernet/toshiba/spider_net.c | 2 +-
+ drivers/net/ethernet/toshiba/spider_net.h | 1 -
+ 2 files changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/neterion/vxge/vxge-main.c b/drivers/net/ethernet/neterion/vxge/vxge-main.c
-index aa7c093f1f91..db4dfae8c01d 100644
---- a/drivers/net/ethernet/neterion/vxge/vxge-main.c
-+++ b/drivers/net/ethernet/neterion/vxge/vxge-main.c
-@@ -4351,7 +4351,7 @@ vxge_probe(struct pci_dev *pdev, const struct pci_device_id *pre)
- 	}
- 	ll_config->tx_steering_type = TX_MULTIQ_STEERING;
- 	ll_config->intr_type = MSI_X;
--	ll_config->napi_weight = NEW_NAPI_WEIGHT;
-+	ll_config->napi_weight = NAPI_POLL_WEIGHT;
- 	ll_config->rth_steering = RTH_STEERING;
+diff --git a/drivers/net/ethernet/toshiba/spider_net.c b/drivers/net/ethernet/toshiba/spider_net.c
+index f47b8358669d..c09cd961edbb 100644
+--- a/drivers/net/ethernet/toshiba/spider_net.c
++++ b/drivers/net/ethernet/toshiba/spider_net.c
+@@ -2270,7 +2270,7 @@ spider_net_setup_netdev(struct spider_net_card *card)
+ 	timer_setup(&card->aneg_timer, spider_net_link_phy, 0);
  
- 	/* get the default configuration parameters */
-diff --git a/drivers/net/ethernet/neterion/vxge/vxge-main.h b/drivers/net/ethernet/neterion/vxge/vxge-main.h
-index 63f65193dd49..da9d2c191828 100644
---- a/drivers/net/ethernet/neterion/vxge/vxge-main.h
-+++ b/drivers/net/ethernet/neterion/vxge/vxge-main.h
-@@ -167,8 +167,6 @@ struct macInfo {
- struct vxge_config {
- 	int		tx_pause_enable;
- 	int		rx_pause_enable;
--
--#define	NEW_NAPI_WEIGHT	64
- 	int		napi_weight;
- 	int		intr_type;
- #define INTA	0
+ 	netif_napi_add(netdev, &card->napi,
+-		       spider_net_poll, SPIDER_NET_NAPI_WEIGHT);
++		       spider_net_poll, NAPI_POLL_WEIGHT);
+ 
+ 	spider_net_setup_netdev_ops(netdev);
+ 
+diff --git a/drivers/net/ethernet/toshiba/spider_net.h b/drivers/net/ethernet/toshiba/spider_net.h
+index 05b1a0736835..51948e2b3a34 100644
+--- a/drivers/net/ethernet/toshiba/spider_net.h
++++ b/drivers/net/ethernet/toshiba/spider_net.h
+@@ -44,7 +44,6 @@ extern char spider_net_driver_name[];
+ #define SPIDER_NET_RX_CSUM_DEFAULT		1
+ 
+ #define SPIDER_NET_WATCHDOG_TIMEOUT		50*HZ
+-#define SPIDER_NET_NAPI_WEIGHT			64
+ 
+ #define SPIDER_NET_FIRMWARE_SEQS	6
+ #define SPIDER_NET_FIRMWARE_SEQWORDS	1024
 -- 
 2.34.1
 
