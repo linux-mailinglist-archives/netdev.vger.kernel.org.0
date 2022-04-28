@@ -2,218 +2,233 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 574D7512982
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 04:31:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1783512984
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 04:31:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241422AbiD1Cef (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 22:34:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51362 "EHLO
+        id S241438AbiD1Ce6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 22:34:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241406AbiD1Cee (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 22:34:34 -0400
-Received: from mint-fitpc2.mph.net (unknown [81.168.73.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AD22086AF2
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 19:31:20 -0700 (PDT)
-Received: from palantir17.mph.net (unknown [192.168.0.4])
-        by mint-fitpc2.mph.net (Postfix) with ESMTP id E306832010B;
-        Thu, 28 Apr 2022 03:31:19 +0100 (BST)
-Received: from localhost ([::1] helo=palantir17.mph.net)
-        by palantir17.mph.net with esmtp (Exim 4.89)
-        (envelope-from <habetsm.xilinx@gmail.com>)
-        id 1njtw7-0005WO-N5; Thu, 28 Apr 2022 03:31:19 +0100
-Subject: [PATCH net-next v2 04/13] sfc: Copy shared files needed for Siena
- (part 2)
-From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     kuba@kernel.org, pabeni@redhat.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com
-Date:   Thu, 28 Apr 2022 03:31:19 +0100
-Message-ID: <165111307940.21042.17476159328933671191.stgit@palantir17.mph.net>
-In-Reply-To: <165111298464.21042.9988060027860048966.stgit@palantir17.mph.net>
-References: <165111298464.21042.9988060027860048966.stgit@palantir17.mph.net>
-User-Agent: StGit/0.17.1-dirty
+        with ESMTP id S241428AbiD1Ce5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 22:34:57 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D9C58AE56;
+        Wed, 27 Apr 2022 19:31:44 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id a1so3952539edt.3;
+        Wed, 27 Apr 2022 19:31:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rsECo+2OlRIIUX6px+ZZedqf8Qza4lbnki5ll/KBNjU=;
+        b=NLed8agnFcwlUPM9IZ/j7FQ4+Mzu64jql5QkMCdls5tCo+wgQ/hDxjoJbNKvpjMlzh
+         lpd25fx8qXqOi72uCZANGtZWU84pO5AKT2HHa5ZOPLkwf9gS5RS9gqjVv2sNhyMl2DxA
+         MMhwnMyZi19AiSh14c+t+AzGKJu+nPqGjfDOFdJLNIJbmgc/0J9FoX5tgbhCkmtmj8aK
+         4/SuilzIQcXvF6nqX1Bbr6wcf9wKhYHMPN71C/wtWl87PvP8t56CldPtruhYgZPhJ6cW
+         7qFyn2RC5ZCxhhrTO3d6EkiDfdUH1qDGtpKlDKTys2pSIWOoovAYiJYKltW8NsPvmFvU
+         flSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rsECo+2OlRIIUX6px+ZZedqf8Qza4lbnki5ll/KBNjU=;
+        b=TR5oVyRN/6pFEz/5XxPcSfs70uc8cReqybeTNaSpZuTRqLD85s35lBnG5R6b/rDs56
+         Y8DyYhk9KyfbDseTkJ8kRw1uEJIvN85qP0H05nWj8FTGaQwOEMxLmxajzoLQWJ1j6Y9S
+         ZEXsfaFtWFiD0XS2bhl8htW/lsVaqCaNBxdxGnX6+ZK8d55gp0jwd2vgVtHcOZCvOEH5
+         eUtA0ApVpfqebzSkLjMaxtzAbZ95w7CMOikizyyOKl0b0PRZHonayItgxmXUWwh1QB/g
+         h7daczHAL+J3xQ00MP3lJGH5bXcFZNq+fmA6RTOT+23QsNyL3oS1lsIWvCQ97S66wtjQ
+         3RMA==
+X-Gm-Message-State: AOAM530yT/QNx9EFyMB+6Ur1YvhIID07yWVY3bDabtRPL07Wztk7uKBt
+        h+ykICp1IUBhCWaiGsnUtrcshwtsPqhkz/QnyuQ=
+X-Google-Smtp-Source: ABdhPJwzd+wNN/Ghq9mRwrycbsK5MTBwpY7MI6hugkMW/Mi/0p4fFeNLt7O2W6LKcCYeXCzFuM5NuyJxu3SzbPpTO1I=
+X-Received: by 2002:a05:6402:358c:b0:426:19c0:2ee7 with SMTP id
+ y12-20020a056402358c00b0042619c02ee7mr5371296edc.137.1651113102771; Wed, 27
+ Apr 2022 19:31:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=1.7 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-        FORGED_GMAIL_RCVD,FREEMAIL_FROM,KHOP_HELO_FCRDNS,MAY_BE_FORGED,
-        NML_ADSP_CUSTOM_MED,SPF_HELO_NONE,SPF_SOFTFAIL autolearn=no
+References: <20220426080709.6504-1-imagedong@tencent.com> <20220426080709.6504-2-imagedong@tencent.com>
+ <CANn89iJa3FZHXfUWHw-OwOu8X_Cc0-YzxkgE_M=8DrBN1jWnAQ@mail.gmail.com>
+In-Reply-To: <CANn89iJa3FZHXfUWHw-OwOu8X_Cc0-YzxkgE_M=8DrBN1jWnAQ@mail.gmail.com>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Thu, 28 Apr 2022 10:31:31 +0800
+Message-ID: <CADxym3ZrdVWUy=vrNWMHUK83243VE_LT3WOn0ThuqnwLDNQtKw@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/2] net: add skb drop reasons to inet connect request
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Biao Jiang <benbjiang@tencent.com>,
+        Hao Peng <flyingpeng@tencent.com>,
+        Menglong Dong <imagedong@tencent.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Mengen Sun <mengensun@tencent.com>,
+        Dongli Zhang <dongli.zhang@oracle.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
-X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Martin Habets <martinh@xilinx.com>
+On Tue, Apr 26, 2022 at 9:32 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Tue, Apr 26, 2022 at 1:07 AM <menglong8.dong@gmail.com> wrote:
+> >
+[......]
+> > +                       if (!err)
+> > +                               consume_skb(skb);
+>
+> Please, do not add more mess like that, where skb is either freed by
+> the callee or the caller.
+>
 
-These are the files starting with m through w.
-No changes are done, those will be done with subsequent commits.
+Yeah, this is a little chaotic.....I just can't find a way out :/
+keeping thinking
 
-Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
----
- drivers/net/ethernet/sfc/siena/mcdi.c             |    0 
- drivers/net/ethernet/sfc/siena/mcdi.h             |    0 
- drivers/net/ethernet/sfc/siena/mcdi_mon.c         |    0 
- drivers/net/ethernet/sfc/siena/mcdi_port.c        |    0 
- drivers/net/ethernet/sfc/siena/mcdi_port.h        |    0 
- drivers/net/ethernet/sfc/siena/mcdi_port_common.c |    0 
- drivers/net/ethernet/sfc/siena/mcdi_port_common.h |    0 
- drivers/net/ethernet/sfc/siena/mtd.c              |    0 
- drivers/net/ethernet/sfc/siena/net_driver.h       |    0 
- drivers/net/ethernet/sfc/siena/nic.c              |    0 
- drivers/net/ethernet/sfc/siena/nic.h              |    0 
- drivers/net/ethernet/sfc/siena/nic_common.h       |    0 
- drivers/net/ethernet/sfc/siena/ptp.c              |    0 
- drivers/net/ethernet/sfc/siena/ptp.h              |    0 
- drivers/net/ethernet/sfc/siena/rx.c               |    0 
- drivers/net/ethernet/sfc/siena/rx_common.c        |    0 
- drivers/net/ethernet/sfc/siena/rx_common.h        |    0 
- drivers/net/ethernet/sfc/siena/selftest.c         |    0 
- drivers/net/ethernet/sfc/siena/selftest.h         |    0 
- drivers/net/ethernet/sfc/siena/sriov.c            |    0 
- drivers/net/ethernet/sfc/siena/sriov.h            |    0 
- drivers/net/ethernet/sfc/siena/tx.c               |    0 
- drivers/net/ethernet/sfc/siena/tx.h               |    0 
- drivers/net/ethernet/sfc/siena/tx_common.c        |    0 
- drivers/net/ethernet/sfc/siena/tx_common.h        |    0 
- drivers/net/ethernet/sfc/siena/vfdi.h             |    0 
- drivers/net/ethernet/sfc/siena/workarounds.h      |    0 
- 27 files changed, 0 insertions(+), 0 deletions(-)
- copy drivers/net/ethernet/sfc/{mcdi.c => siena/mcdi.c} (100%)
- copy drivers/net/ethernet/sfc/{mcdi.h => siena/mcdi.h} (100%)
- copy drivers/net/ethernet/sfc/{mcdi_mon.c => siena/mcdi_mon.c} (100%)
- copy drivers/net/ethernet/sfc/{mcdi_port.c => siena/mcdi_port.c} (100%)
- copy drivers/net/ethernet/sfc/{mcdi_port.h => siena/mcdi_port.h} (100%)
- copy drivers/net/ethernet/sfc/{mcdi_port_common.c => siena/mcdi_port_common.c} (100%)
- copy drivers/net/ethernet/sfc/{mcdi_port_common.h => siena/mcdi_port_common.h} (100%)
- copy drivers/net/ethernet/sfc/{mtd.c => siena/mtd.c} (100%)
- copy drivers/net/ethernet/sfc/{net_driver.h => siena/net_driver.h} (100%)
- copy drivers/net/ethernet/sfc/{nic.c => siena/nic.c} (100%)
- copy drivers/net/ethernet/sfc/{nic.h => siena/nic.h} (100%)
- copy drivers/net/ethernet/sfc/{nic_common.h => siena/nic_common.h} (100%)
- copy drivers/net/ethernet/sfc/{ptp.c => siena/ptp.c} (100%)
- copy drivers/net/ethernet/sfc/{ptp.h => siena/ptp.h} (100%)
- copy drivers/net/ethernet/sfc/{rx.c => siena/rx.c} (100%)
- copy drivers/net/ethernet/sfc/{rx_common.c => siena/rx_common.c} (100%)
- copy drivers/net/ethernet/sfc/{rx_common.h => siena/rx_common.h} (100%)
- copy drivers/net/ethernet/sfc/{selftest.c => siena/selftest.c} (100%)
- copy drivers/net/ethernet/sfc/{selftest.h => siena/selftest.h} (100%)
- copy drivers/net/ethernet/sfc/{sriov.c => siena/sriov.c} (100%)
- copy drivers/net/ethernet/sfc/{sriov.h => siena/sriov.h} (100%)
- copy drivers/net/ethernet/sfc/{tx.c => siena/tx.c} (100%)
- copy drivers/net/ethernet/sfc/{tx.h => siena/tx.h} (100%)
- copy drivers/net/ethernet/sfc/{tx_common.c => siena/tx_common.c} (100%)
- copy drivers/net/ethernet/sfc/{tx_common.h => siena/tx_common.h} (100%)
- copy drivers/net/ethernet/sfc/{vfdi.h => siena/vfdi.h} (100%)
- copy drivers/net/ethernet/sfc/{workarounds.h => siena/workarounds.h} (100%)
+>
+> > +                       return err < 0;
+>
+> Where err is set to a negative value ?
 
-diff --git a/drivers/net/ethernet/sfc/mcdi.c b/drivers/net/ethernet/sfc/siena/mcdi.c
-similarity index 100%
-copy from drivers/net/ethernet/sfc/mcdi.c
-copy to drivers/net/ethernet/sfc/siena/mcdi.c
-diff --git a/drivers/net/ethernet/sfc/mcdi.h b/drivers/net/ethernet/sfc/siena/mcdi.h
-similarity index 100%
-copy from drivers/net/ethernet/sfc/mcdi.h
-copy to drivers/net/ethernet/sfc/siena/mcdi.h
-diff --git a/drivers/net/ethernet/sfc/mcdi_mon.c b/drivers/net/ethernet/sfc/siena/mcdi_mon.c
-similarity index 100%
-copy from drivers/net/ethernet/sfc/mcdi_mon.c
-copy to drivers/net/ethernet/sfc/siena/mcdi_mon.c
-diff --git a/drivers/net/ethernet/sfc/mcdi_port.c b/drivers/net/ethernet/sfc/siena/mcdi_port.c
-similarity index 100%
-copy from drivers/net/ethernet/sfc/mcdi_port.c
-copy to drivers/net/ethernet/sfc/siena/mcdi_port.c
-diff --git a/drivers/net/ethernet/sfc/mcdi_port.h b/drivers/net/ethernet/sfc/siena/mcdi_port.h
-similarity index 100%
-copy from drivers/net/ethernet/sfc/mcdi_port.h
-copy to drivers/net/ethernet/sfc/siena/mcdi_port.h
-diff --git a/drivers/net/ethernet/sfc/mcdi_port_common.c b/drivers/net/ethernet/sfc/siena/mcdi_port_common.c
-similarity index 100%
-copy from drivers/net/ethernet/sfc/mcdi_port_common.c
-copy to drivers/net/ethernet/sfc/siena/mcdi_port_common.c
-diff --git a/drivers/net/ethernet/sfc/mcdi_port_common.h b/drivers/net/ethernet/sfc/siena/mcdi_port_common.h
-similarity index 100%
-copy from drivers/net/ethernet/sfc/mcdi_port_common.h
-copy to drivers/net/ethernet/sfc/siena/mcdi_port_common.h
-diff --git a/drivers/net/ethernet/sfc/mtd.c b/drivers/net/ethernet/sfc/siena/mtd.c
-similarity index 100%
-copy from drivers/net/ethernet/sfc/mtd.c
-copy to drivers/net/ethernet/sfc/siena/mtd.c
-diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/siena/net_driver.h
-similarity index 100%
-copy from drivers/net/ethernet/sfc/net_driver.h
-copy to drivers/net/ethernet/sfc/siena/net_driver.h
-diff --git a/drivers/net/ethernet/sfc/nic.c b/drivers/net/ethernet/sfc/siena/nic.c
-similarity index 100%
-copy from drivers/net/ethernet/sfc/nic.c
-copy to drivers/net/ethernet/sfc/siena/nic.c
-diff --git a/drivers/net/ethernet/sfc/nic.h b/drivers/net/ethernet/sfc/siena/nic.h
-similarity index 100%
-copy from drivers/net/ethernet/sfc/nic.h
-copy to drivers/net/ethernet/sfc/siena/nic.h
-diff --git a/drivers/net/ethernet/sfc/nic_common.h b/drivers/net/ethernet/sfc/siena/nic_common.h
-similarity index 100%
-copy from drivers/net/ethernet/sfc/nic_common.h
-copy to drivers/net/ethernet/sfc/siena/nic_common.h
-diff --git a/drivers/net/ethernet/sfc/ptp.c b/drivers/net/ethernet/sfc/siena/ptp.c
-similarity index 100%
-copy from drivers/net/ethernet/sfc/ptp.c
-copy to drivers/net/ethernet/sfc/siena/ptp.c
-diff --git a/drivers/net/ethernet/sfc/ptp.h b/drivers/net/ethernet/sfc/siena/ptp.h
-similarity index 100%
-copy from drivers/net/ethernet/sfc/ptp.h
-copy to drivers/net/ethernet/sfc/siena/ptp.h
-diff --git a/drivers/net/ethernet/sfc/rx.c b/drivers/net/ethernet/sfc/siena/rx.c
-similarity index 100%
-copy from drivers/net/ethernet/sfc/rx.c
-copy to drivers/net/ethernet/sfc/siena/rx.c
-diff --git a/drivers/net/ethernet/sfc/rx_common.c b/drivers/net/ethernet/sfc/siena/rx_common.c
-similarity index 100%
-copy from drivers/net/ethernet/sfc/rx_common.c
-copy to drivers/net/ethernet/sfc/siena/rx_common.c
-diff --git a/drivers/net/ethernet/sfc/rx_common.h b/drivers/net/ethernet/sfc/siena/rx_common.h
-similarity index 100%
-copy from drivers/net/ethernet/sfc/rx_common.h
-copy to drivers/net/ethernet/sfc/siena/rx_common.h
-diff --git a/drivers/net/ethernet/sfc/selftest.c b/drivers/net/ethernet/sfc/siena/selftest.c
-similarity index 100%
-copy from drivers/net/ethernet/sfc/selftest.c
-copy to drivers/net/ethernet/sfc/siena/selftest.c
-diff --git a/drivers/net/ethernet/sfc/selftest.h b/drivers/net/ethernet/sfc/siena/selftest.h
-similarity index 100%
-copy from drivers/net/ethernet/sfc/selftest.h
-copy to drivers/net/ethernet/sfc/siena/selftest.h
-diff --git a/drivers/net/ethernet/sfc/sriov.c b/drivers/net/ethernet/sfc/siena/sriov.c
-similarity index 100%
-copy from drivers/net/ethernet/sfc/sriov.c
-copy to drivers/net/ethernet/sfc/siena/sriov.c
-diff --git a/drivers/net/ethernet/sfc/sriov.h b/drivers/net/ethernet/sfc/siena/sriov.h
-similarity index 100%
-copy from drivers/net/ethernet/sfc/sriov.h
-copy to drivers/net/ethernet/sfc/siena/sriov.h
-diff --git a/drivers/net/ethernet/sfc/tx.c b/drivers/net/ethernet/sfc/siena/tx.c
-similarity index 100%
-copy from drivers/net/ethernet/sfc/tx.c
-copy to drivers/net/ethernet/sfc/siena/tx.c
-diff --git a/drivers/net/ethernet/sfc/tx.h b/drivers/net/ethernet/sfc/siena/tx.h
-similarity index 100%
-copy from drivers/net/ethernet/sfc/tx.h
-copy to drivers/net/ethernet/sfc/siena/tx.h
-diff --git a/drivers/net/ethernet/sfc/tx_common.c b/drivers/net/ethernet/sfc/siena/tx_common.c
-similarity index 100%
-copy from drivers/net/ethernet/sfc/tx_common.c
-copy to drivers/net/ethernet/sfc/siena/tx_common.c
-diff --git a/drivers/net/ethernet/sfc/tx_common.h b/drivers/net/ethernet/sfc/siena/tx_common.h
-similarity index 100%
-copy from drivers/net/ethernet/sfc/tx_common.h
-copy to drivers/net/ethernet/sfc/siena/tx_common.h
-diff --git a/drivers/net/ethernet/sfc/vfdi.h b/drivers/net/ethernet/sfc/siena/vfdi.h
-similarity index 100%
-copy from drivers/net/ethernet/sfc/vfdi.h
-copy to drivers/net/ethernet/sfc/siena/vfdi.h
-diff --git a/drivers/net/ethernet/sfc/workarounds.h b/drivers/net/ethernet/sfc/siena/workarounds.h
-similarity index 100%
-copy from drivers/net/ethernet/sfc/workarounds.h
-copy to drivers/net/ethernet/sfc/siena/workarounds.h
+-1 is returned in dccp_v4_conn_request()
 
+>
+>
+> >                 }
+> >                 SKB_DR_SET(reason, TCP_FLAGS);
+> >                 goto discard;
+> > @@ -6878,6 +6877,7 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+> >         bool want_cookie = false;
+> >         struct dst_entry *dst;
+> >         struct flowi fl;
+> > +       SKB_DR(reason);
+> >
+> >         /* TW buckets are converted to open requests without
+> >          * limitations, they conserve resources and peer is
+> > @@ -6886,12 +6886,15 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+> >         if ((net->ipv4.sysctl_tcp_syncookies == 2 ||
+> >              inet_csk_reqsk_queue_is_full(sk)) && !isn) {
+> >                 want_cookie = tcp_syn_flood_action(sk, rsk_ops->slab_name);
+> > -               if (!want_cookie)
+> > +               if (!want_cookie) {
+> > +                       SKB_DR_SET(reason, TCP_REQQFULLDROP);
+> >                         goto drop;
+> > +               }
+> >         }
+> >
+> >         if (sk_acceptq_is_full(sk)) {
+> >                 NET_INC_STATS(sock_net(sk), LINUX_MIB_LISTENOVERFLOWS);
+> > +               SKB_DR_SET(reason, LISTENOVERFLOWS);
+> >                 goto drop;
+> >         }
+> >
+> > @@ -6947,6 +6950,7 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+> >                          */
+> >                         pr_drop_req(req, ntohs(tcp_hdr(skb)->source),
+> >                                     rsk_ops->family);
+> > +                       SKB_DR_SET(reason, TCP_REQQFULLDROP);
+> >                         goto drop_and_release;
+> >                 }
+> >
+> > @@ -7006,7 +7010,8 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+> >  drop_and_free:
+> >         __reqsk_free(req);
+> >  drop:
+> > +       kfree_skb_reason(skb, reason);
+>
+> Ugh no, prefer "return reason" and leave to the caller the freeing part.
+>
+> Your changes are too invasive and will hurt future backports.
+>
+
+Okey, I'll try some way else.
+
+>
+> >         tcp_listendrop(sk);
+> > -       return 0;
+> > +       return 1;
+> >  }
+> >  EXPORT_SYMBOL(tcp_conn_request);
+> > diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+> > index 157265aecbed..b8daf49f54a5 100644
+> > --- a/net/ipv4/tcp_ipv4.c
+> > +++ b/net/ipv4/tcp_ipv4.c
+> > @@ -1470,7 +1470,8 @@ int tcp_v4_conn_request(struct sock *sk, struct sk_buff *skb)
+> >
+> >  drop:
+> >         tcp_listendrop(sk);
+> > -       return 0;
+>
+> This return 0 meant : do not send reset.
+>
+>
+> > +       kfree_skb_reason(skb, SKB_DROP_REASON_IP_INADDRERRORS);
+>
+> double kfree_skb() ?
+>
+> > +       return 1;
+>
+> -> send RESET
+>
+
+No, this return 1 means not send RESET and this skb is already freed in
+icsk_af_ops->conn_request(), since I made a change to the caller of
+conn_request() in tcp_rcv_state_process() and dccp_rcv_state_process():
+
+    err = icsk->icsk_af_ops->conn_request(sk, skb);
+    local_bh_enable();
+    rcu_read_unlock();
+    if (!err)
+        consume_skb(skb);
+    return err < 0;
+
+if err==1, the skb will not be freed again, as 0 is returned by
+tcp_rcv_state_process()
+
+> >  }
+> >  EXPORT_SYMBOL(tcp_v4_conn_request);
+> >
+> > --
+> > 2.36.0
+> >
+>
+> I have a hard time understanding this patch.
+>
+> Where is the related IPv6 change ?
+>
+> I really wonder if you actually have tested this.
+
+Yeah, I missed the IPv6....but it still works, the changes are
+compatible with current IPv6 code.
+
+In fact, I have tested it, and everything is ok, no double free
+happens:
+
+  drop at: tcp_conn_request+0xf1/0xcb0 (0xffffffff81d43271)
+  origin: software
+  input port ifindex: 1
+  timestamp: Thu Apr 28 10:19:42 2022 917631574 nsec
+  protocol: 0x800
+  length: 74
+  original length: 74
+  drop reason: LISTENOVERFLOWS
+
+  drop at: tcp_conn_request+0xf1/0xcb0 (0xffffffff81d43271)
+  origin: software
+  input port ifindex: 1
+  timestamp: Thu Apr 28 10:19:43 2022 930983132 nsec
+  protocol: 0x800
+  length: 74
+  original length: 74
+  drop reason: LISTENOVERFLOWS
