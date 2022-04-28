@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A3125131F0
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 13:02:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 661F05131EB
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 13:02:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345324AbiD1LD1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 07:03:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48616 "EHLO
+        id S1345164AbiD1LEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 07:04:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240459AbiD1LDA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 07:03:00 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DF38985B4;
-        Thu, 28 Apr 2022 03:59:22 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id w4so6211399wrg.12;
-        Thu, 28 Apr 2022 03:59:22 -0700 (PDT)
+        with ESMTP id S1343930AbiD1LDH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 07:03:07 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1121A9AE61;
+        Thu, 28 Apr 2022 03:59:28 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id q23so6256678wra.1;
+        Thu, 28 Apr 2022 03:59:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nuJIqlIgdFQjWwRTfq2SfS/poVF6W3nofVJduFZhe30=;
-        b=hqyGK0806qOZl7W20YYwkJtRjjRW+S7DGK6HVn0GFIbyGkmTr2Bp2H9bTwQCsYYtTd
-         YuBRMZJrMM0ZrbewQl3Hyg/iWAbSK9PXVasIL949y5IfrCjZ34md9O6BQ9cTVEXBGmTK
-         oULBxHC7qTnHxXbfrsJ9gYg1m+qrg+M9QWrQY7s4pQgeY9DQPlEu+ZiwpI0vAFk0VN8d
-         8MuRgOF1tUzHCtv6y50/YaBJVgq3dOsSZR2YKGXNery+s8EFbk5LO7taM/zVzn+OHR+z
-         BziV5Tl4QECH3GvmC7D3EEElZihKQSgxWqFURZc5KF6zFM4Abz47R1qpE4QcPIs8zWr9
-         D2pw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=JJ/Jn2CaItPG2KrWE6z6rbp+t2EL7d23+IBwd5W6Kr8=;
+        b=BTtmqWGCmABxPW53lwZmD/b/VAE84IqlAOJkfGCYrOQDB7rvCIti4hkbumbARY7ES6
+         nwbMp4prigAlU5k7f/bhzLS4eM9dQplfPndwW9fBjV/FENYRYDcBU5KpjmPfFOgZB7sI
+         6Jfu5492r8jqQ83K88JNvy3VjQRTa660KQ98gesnYPFtHJ/wzZK7JzLn0R9FNeHMndTH
+         Ji6OKF16MkdxyTtImsBlElcq5s0KJYX9Cu5LzsAi0o3zE7akyA22VBYyLeQjeINg131f
+         +ilEmO+xquKB3OLOvi1zdWlYXNaOIrlzZ6tW/FqWVRvDnFhdCXH8gtcj4e26Yhlr5z+Z
+         MtJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nuJIqlIgdFQjWwRTfq2SfS/poVF6W3nofVJduFZhe30=;
-        b=gfChJwF79RqjKLWZoQiEVdPTLoJ5OR+Qx+wQoOns/yBcUc0hDZC97FaHRfCVTZI3vv
-         hpQn+UqFUuZyQ3mUgPIVaY1xi/zRXl2+1K2qgorN4KTAA5E0nNPM0rQJhsDVdSzpxyMc
-         RzRhNFptDlrYVA+47zB0znYcv/KpGRVkKd5jjqQj9FLE8FYBd+DBY+c8um2GpGQcs3CK
-         kKeO7I3kfPS6ZSMNmmXjR+NTFpp3D5nzcknnJGy46ng7k+7GN/u5++Tyq75s4awG/rOp
-         QopDGwei3qcmf9JqXvFm9hpUxo4D2GH9Ax+i+x4svaQIvVTvDpU86A5TCLnOYeHZ+P0u
-         HxKA==
-X-Gm-Message-State: AOAM530bBBjA8eIMaAnaM9sasM45mb4l9wgMiQI9TJXSJhZt0XQJIlq+
-        9/sQzifRWHYIjPPvCNFBQe/hx0xvDKA=
-X-Google-Smtp-Source: ABdhPJyqspCMzhzZudQJDBRnyAa0QXypXSzeKCv42o4uRbKrjglRx1gX4Ft3VlWzOLGhQgh+UuA9hA==
-X-Received: by 2002:a5d:588a:0:b0:204:1f46:cf08 with SMTP id n10-20020a5d588a000000b002041f46cf08mr26655407wrf.133.1651143561089;
-        Thu, 28 Apr 2022 03:59:21 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=JJ/Jn2CaItPG2KrWE6z6rbp+t2EL7d23+IBwd5W6Kr8=;
+        b=brBadw7XtuxtfvWyqcXr51E20v6HU8wh5kfPLoR4NxhoejFGtYmPLH/5obk7yh89No
+         qtVDZ5Inv147aZELjEWwXPE/KaJ+B26wmqezWqQrvj8pTZKGU+i4Tk4siKn0KDRStaxE
+         UE01rWRAQK5im9lstKAuUucQ0BO3xVZHc5WxePy+j59CkuAARYYKJLIEIn1cjCoLMRi1
+         cw7ZarrGjJGunCP3ChMyn0dqYPV3lOIMTAeCoKgEYyWzkjoLQAZpGGQm4jNmJM0zKZfQ
+         0+wVZ9ADak+zlcy57Qp09kXnm6BBABvgpX06wNuPMiR0gQmBL1/KVT0430RjaihU7FWB
+         rt/Q==
+X-Gm-Message-State: AOAM531pLqcGESGOq6mevOX7ODRQq5EEdvWsum89608fqWHlANrLPNEE
+        lKb55gParjRbOiVW19ftrEcQRVDbzX8=
+X-Google-Smtp-Source: ABdhPJz8tngMyKNr78aheYziUbFINMy3fzZrKBXOBSG4c7opcdLd77kwyS2pdOJo43gK/lecZCf7Nw==
+X-Received: by 2002:adf:f0c6:0:b0:20a:d31b:6 with SMTP id x6-20020adff0c6000000b0020ad31b0006mr20672965wro.162.1651143566470;
+        Thu, 28 Apr 2022 03:59:26 -0700 (PDT)
 Received: from 127.0.0.1localhost (82-132-230-8.dab.02.net. [82.132.230.8])
-        by smtp.gmail.com with ESMTPSA id n10-20020a5d588a000000b002052e4aaf89sm16028895wrf.80.2022.04.28.03.59.20
+        by smtp.gmail.com with ESMTPSA id n10-20020a5d588a000000b002052e4aaf89sm16028895wrf.80.2022.04.28.03.59.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 03:59:20 -0700 (PDT)
+        Thu, 28 Apr 2022 03:59:26 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -54,10 +54,12 @@ Cc:     David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         linux-kernel@vger.kernel.org,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next 0/5] generic net and ipv6 minor optimisations
-Date:   Thu, 28 Apr 2022 11:58:43 +0100
-Message-Id: <cover.1651141755.git.asml.silence@gmail.com>
+Subject: [PATCH net-next 1/5] net: inline sock_alloc_send_skb
+Date:   Thu, 28 Apr 2022 11:58:44 +0100
+Message-Id: <589966747301e2f71377f288faf4f8db78d72405.1651141755.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.36.0
+In-Reply-To: <cover.1651141755.git.asml.silence@gmail.com>
+References: <cover.1651141755.git.asml.silence@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -70,40 +72,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-1-3 inline simple functions that only reshuffle arguments possibly adding
-extra zero args, and call another function. It was benchmarked before with
-a bunch of extra patches, see for details
+sock_alloc_send_skb() is simple and just proxying to another function,
+so we can inline it and cut associated overhead.
 
-https://lore.kernel.org/netdev/cover.1648981570.git.asml.silence@gmail.com/
+Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+---
+ include/net/sock.h | 10 ++++++++--
+ net/core/sock.c    |  7 -------
+ 2 files changed, 8 insertions(+), 9 deletions(-)
 
-It may increase the binary size, but it's the right thing to do and at least
-without modules it actually sheds some bytes for some standard-ish config.
-
-   text    data     bss     dec     hex filename
-9627200       0       0 9627200  92e640 ./arch/x86_64/boot/bzImage
-   text    data     bss     dec     hex filename
-9627104       0       0 9627104  92e5e0 ./arch/x86_64/boot/bzImage
-
-
-Pavel Begunkov (5):
-  net: inline sock_alloc_send_skb
-  net: inline skb_zerocopy_iter_dgram
-  net: inline dev_queue_xmit()
-  ipv6: help __ip6_finish_output() inlining
-  ipv6: refactor ip6_finish_output2()
-
- include/linux/netdevice.h | 14 ++++++++++++--
- include/linux/skbuff.h    | 36 ++++++++++++++++++++++--------------
- include/net/sock.h        | 10 ++++++++--
- net/core/datagram.c       |  2 --
- net/core/datagram.h       | 15 ---------------
- net/core/dev.c            | 15 ++-------------
- net/core/skbuff.c         |  7 -------
- net/core/sock.c           |  7 -------
- net/ipv6/ip6_output.c     | 25 +++++++++++++------------
- 9 files changed, 57 insertions(+), 74 deletions(-)
- delete mode 100644 net/core/datagram.h
-
+diff --git a/include/net/sock.h b/include/net/sock.h
+index a01d6c421aa2..df2e826f67ee 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1824,11 +1824,17 @@ int sock_getsockopt(struct socket *sock, int level, int op,
+ 		    char __user *optval, int __user *optlen);
+ int sock_gettstamp(struct socket *sock, void __user *userstamp,
+ 		   bool timeval, bool time32);
+-struct sk_buff *sock_alloc_send_skb(struct sock *sk, unsigned long size,
+-				    int noblock, int *errcode);
+ struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
+ 				     unsigned long data_len, int noblock,
+ 				     int *errcode, int max_page_order);
++
++static inline struct sk_buff *sock_alloc_send_skb(struct sock *sk,
++						  unsigned long size,
++						  int noblock, int *errcode)
++{
++	return sock_alloc_send_pskb(sk, size, 0, noblock, errcode, 0);
++}
++
+ void *sock_kmalloc(struct sock *sk, int size, gfp_t priority);
+ void sock_kfree_s(struct sock *sk, void *mem, int size);
+ void sock_kzfree_s(struct sock *sk, void *mem, int size);
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 29abec3eabd8..fbca35d3749a 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2631,13 +2631,6 @@ struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
+ }
+ EXPORT_SYMBOL(sock_alloc_send_pskb);
+ 
+-struct sk_buff *sock_alloc_send_skb(struct sock *sk, unsigned long size,
+-				    int noblock, int *errcode)
+-{
+-	return sock_alloc_send_pskb(sk, size, 0, noblock, errcode, 0);
+-}
+-EXPORT_SYMBOL(sock_alloc_send_skb);
+-
+ int __sock_cmsg_send(struct sock *sk, struct msghdr *msg, struct cmsghdr *cmsg,
+ 		     struct sockcm_cookie *sockc)
+ {
 -- 
 2.36.0
 
