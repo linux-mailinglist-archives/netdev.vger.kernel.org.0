@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 749015130CB
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 12:05:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9996A5130B8
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 12:05:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233997AbiD1KHr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 06:07:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58892 "EHLO
+        id S233907AbiD1KHq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 06:07:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233230AbiD1KHF (ORCPT
+        with ESMTP id S233448AbiD1KHF (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 06:07:05 -0400
 Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E65C5433A1;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E6642433A7;
         Thu, 28 Apr 2022 02:55:58 -0700 (PDT)
 Received: from linux.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9BxkNqqZGpiWHIBAA--.7516S2;
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9BxkNqqZGpiWHIBAA--.7516S3;
         Thu, 28 Apr 2022 17:55:55 +0800 (CST)
 From:   Tiezhu Yang <yangtiezhu@loongson.cn>
 To:     Alexei Starovoitov <ast@kernel.org>,
@@ -24,25 +24,29 @@ To:     Alexei Starovoitov <ast@kernel.org>,
         Jonathan Corbet <corbet@lwn.net>
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next v2 0/3] bpf, docs: Fix typos in instruction-set.rst
-Date:   Thu, 28 Apr 2022 17:55:51 +0800
-Message-Id: <1651139754-4838-1-git-send-email-yangtiezhu@loongson.cn>
+Subject: [PATCH bpf-next v2 1/3] bpf, docs: Remove duplicated word "instructions"
+Date:   Thu, 28 Apr 2022 17:55:52 +0800
+Message-Id: <1651139754-4838-2-git-send-email-yangtiezhu@loongson.cn>
 X-Mailer: git-send-email 2.1.0
-X-CM-TRANSID: AQAAf9BxkNqqZGpiWHIBAA--.7516S2
-X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
-        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUY07k0a2IF6FyUM7kC6x804xWl14x267AK
-        xVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AKwVWUJVWUGw
-        A2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20xvE14v26ryj
-        6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j6r4UJwA2z4x0Y4vEx4A2jsIE14v26F
-        4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAa
-        Y2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4
-        A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwCY02Av
-        z4vE14v_GFWl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4
-        xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43
-        MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I
-        0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v2
-        6r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07
-        j4v3bUUUUU=
+In-Reply-To: <1651139754-4838-1-git-send-email-yangtiezhu@loongson.cn>
+References: <1651139754-4838-1-git-send-email-yangtiezhu@loongson.cn>
+X-CM-TRANSID: AQAAf9BxkNqqZGpiWHIBAA--.7516S3
+X-Coremail-Antispam: 1UD129KBjvdXoWrtF4UCryftFy3XF18Wr1UAwb_yoWfArg_CF
+        y7tFW5C3Z8Ka4rKr4UCr1UXF97uFWrCr18Ar1jyrsFq34DXa1DAFZ8tryqy343Cr4xuFn8
+        JrZ7Xr13ArnxCjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbfkYjsxI4VW3JwAYFVCjjxCrM7AC8VAFwI0_Xr0_Wr1l1xkIjI8I
+        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l82xGYIkIc2x26280x7
+        IE14v26r18M28IrcIa0xkI8VCY1x0267AKxVWUCVW8JwA2ocxC64kIII0Yj41l84x0c7CE
+        w4AK67xGY2AK021l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6x
+        kF7I0E14v26F4j6r4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIE
+        c7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I
+        8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCF
+        s4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwCY02Avz4vE14v_GFWl42xK82IYc2Ij64
+        vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8G
+        jcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2I
+        x0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK
+        8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I
+        0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjxUs75oDUUUU
 X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -52,18 +56,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-v2:
-  -- update the commit message of patch #2
-  -- add new patch #3
+The word "instructions" is duplicated, remove it.
 
-Tiezhu Yang (3):
-  bpf, docs: Remove duplicated word "instructions"
-  bpf, docs: BPF_FROM_BE exists as alias for BPF_TO_BE
-  bpf, docs: Fix typo "respetively" to "respectively"
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+---
+ Documentation/bpf/instruction-set.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- Documentation/bpf/instruction-set.rst | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
+diff --git a/Documentation/bpf/instruction-set.rst b/Documentation/bpf/instruction-set.rst
+index 5300837..30b019c 100644
+--- a/Documentation/bpf/instruction-set.rst
++++ b/Documentation/bpf/instruction-set.rst
+@@ -130,7 +130,7 @@ Byte swap instructions
+ The byte swap instructions use an instruction class of ``BFP_ALU`` and a 4-bit
+ code field of ``BPF_END``.
+ 
+-The byte swap instructions instructions operate on the destination register
++The byte swap instructions operate on the destination register
+ only and do not use a separate source register or immediate value.
+ 
+ The 1-bit source operand field in the opcode is used to to select what byte
 -- 
 2.1.0
 
