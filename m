@@ -2,66 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E71F6513B9A
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 20:33:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D0C6513BE9
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 21:00:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351079AbiD1SgL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 14:36:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40238 "EHLO
+        id S1351213AbiD1TDZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 15:03:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235142AbiD1SgK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 14:36:10 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7755A0B5;
-        Thu, 28 Apr 2022 11:32:55 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id x17so10122448lfa.10;
-        Thu, 28 Apr 2022 11:32:55 -0700 (PDT)
+        with ESMTP id S1346460AbiD1TDY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 15:03:24 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16254D81;
+        Thu, 28 Apr 2022 12:00:07 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id a11so5025481pff.1;
+        Thu, 28 Apr 2022 12:00:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=iYwpAKlBkZoPA+yWEtVITUSSaNgmAu1b7cqpcYmcgAs=;
-        b=FDcR/vXjfY+XIBnB6FHqa86R83ugNPGhcGpD7RyQNBz6flZF5XQ8qaX3LsYOKtgv76
-         DowHZHgqx4Hf/pMz0PIHUZPQAUSkBX3NYZfruy8FNrnRoGqyte0OnMuKaORovJSY9K0S
-         3/BslUsyZtESxrtGXtLhaH1HozfRHq7TcfUyzEOpIYwnzAxyQK5gBxWQwkJtximsn+zq
-         xVWkwQid11qdaQRUkaIeMCsFpQhvWNtvlVkLGOB/ch7i3IhSYNqGZa0G47L2h9Gkk0xx
-         RrS5zzNtjXi0aaIPROSgngT5F2QrQu2TsPxQhktbPiUPwAK6pKbhYLfpAjgG//wIHukb
-         /uyQ==
+        bh=/2iD6fMIO5OpI4NhHgYR4lTbUFy+soiY1th9nkQv8Ck=;
+        b=e21i1X+KfnnWVIfnVWgYIrPG5kjTlM4ZyVjV+kcVGW/4qFvnMdPfe6k0eqKXgmZswW
+         O5ngKCfcoMMX4IxUw3tCi6gicyKDAQzx7bWIuQkJDV35a4kRLg6II4P8CQpLrV6+QyVg
+         q3BT4acFx0LCUY3GH78wP8KUnmE5YLm6JbZ8TRCwGv1jB2AvogIsJnZVokKPcky0aIcV
+         9P7EiNS45vw2tSW1CAyV3YikpX/QwsTX6H4WJe/kxyiDD7VTVftU24TNETSpSySIxA6A
+         C8z5MqLgsLaK/aQX0yWu/9t8wix7OM/+TKqgTLWuTrQTyKJVqPa9DlWJ6wN4XKbeXjyC
+         p1wA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=iYwpAKlBkZoPA+yWEtVITUSSaNgmAu1b7cqpcYmcgAs=;
-        b=YXr9BbA1ELKgktNdFZVvZfTdb0vuq5ScjdEBuVXlCJ6zBevZCPVr276F8LzL1flXmM
-         i49KQsAn8oBQV6wghkZvzNibFe+Wj6Dn5UNGUsl7lXBVgrBs8c2VkxxjIt3Xer/PeP7b
-         CR8vAhdJXu1ZMyqyNP1h9L2CJ+X8S7Pif5EJJRD9mi/rc0pa5ZSrJnd9aZjuQBBsjgvW
-         c/vv1Yd5Ssiw6178nucI5vPUbZwfFoAvNwto0vgv8tfoxqm8WbgGH9T+hX4gJonTmzoC
-         NzdIFDn5aKYzfnyE9BR/+8g9ffOPdafB7qljud4XvAv13dC9c5V3YnoMu7yL3e4U6Bso
-         NS+Q==
-X-Gm-Message-State: AOAM530NWI1etFvK7Zdv8+ITd608EZJH+H/emaDoAYlV58C8EMytH7TF
-        r4W3FQk4ya21TnmK8NEei4sAIbpuRTCQlnRhHvVNF78m114=
-X-Google-Smtp-Source: ABdhPJzsy1/W6+3xM32IUqcIqcmbNNq7+WISt3f7vBJVg1pdNFOhH6dUMHKesA2D182dULqFfbmthxKAaF4cv4tfYGY=
-X-Received: by 2002:a05:6512:15a0:b0:472:d09:a6b4 with SMTP id
- bp32-20020a05651215a000b004720d09a6b4mr13631034lfb.656.1651170773738; Thu, 28
- Apr 2022 11:32:53 -0700 (PDT)
+        bh=/2iD6fMIO5OpI4NhHgYR4lTbUFy+soiY1th9nkQv8Ck=;
+        b=eDN69GhtprWnoXVKt/a34OVfZabgjYNRzmoWjw46bRlAVnKDneuvyfD+j1j9QNY4vS
+         jlzUWhHp+LNsUUgF4E2oeTSl9uJvRCnLmonuJTmEib1M1CTiij5yV2O+0XyvDiYlqIpV
+         zAAvocToSW1a6Ug0EsCH0UdWlZ9KUOaQ7noWBkb5k/nkR/r8HXKwudpfH4hjT8qIKTzd
+         g6/lcE16z3DSWjLUHSCOY+gP8CygWYWqEAhSk4d18PzuayMIgwj1Uv+3agLtCqzmZ+oo
+         zVdqv090KpYBx8PIiTSyxCAs0nnu1kh9MNDbLrk83DgPl6ivX3ixrE/oRjYYRESJKjai
+         F2og==
+X-Gm-Message-State: AOAM532fjcSj/taXGI3P/fCwyKxGPR51I0YuOI40+snjbTPUW8fcA2Xq
+        6Ce5NAd0xpO8VHE2irDypoWb4prpeRvtLb8lGm0=
+X-Google-Smtp-Source: ABdhPJwT1yvmBUd/guUeVCReEkSXCfoociHMPRqgqSUYda9q8qG6XLY/rFPwIXZe80LCvGxHdIslhCEQT+vFjRnbff4=
+X-Received: by 2002:a05:6a00:8c8:b0:4fe:ecb:9b8f with SMTP id
+ s8-20020a056a0008c800b004fe0ecb9b8fmr36252185pfu.55.1651172406399; Thu, 28
+ Apr 2022 12:00:06 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220428164140.251965-1-miquel.raynal@bootlin.com>
-In-Reply-To: <20220428164140.251965-1-miquel.raynal@bootlin.com>
-From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Thu, 28 Apr 2022 14:32:42 -0400
-Message-ID: <CAB_54W5c0gATeeSEa5Wy150nT1Hoh91ygYuuNrMW4J-DQ7czGQ@mail.gmail.com>
-Subject: Re: [PATCH wpan-next] net: mac802154: Fix symbol durations
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+References: <20220407125224.310255-1-jolsa@kernel.org> <20220407125224.310255-5-jolsa@kernel.org>
+ <CAEf4BzbE1n3Lie+tWTzN69RQUWgjxePorxRr9J8CuiQVUfy-kA@mail.gmail.com>
+ <20220412094923.0abe90955e5db486b7bca279@kernel.org> <CAEf4BzaQRcZGMqq5wqHo3wSHZAAVvY6AhizDk_dV_GtnwHuxLQ@mail.gmail.com>
+ <20220416232103.c0b241c2ec7f2b3b985a2f99@kernel.org> <20220428095803.66c17c32@gandalf.local.home>
+In-Reply-To: <20220428095803.66c17c32@gandalf.local.home>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 28 Apr 2022 11:59:55 -0700
+Message-ID: <CAADnVQKi+4oBt2C__qz7QoHqTtXYLUjaqwTNFoSE=up9c9k4cA@mail.gmail.com>
+Subject: Re: [RFC bpf-next 4/4] selftests/bpf: Add attach bench test
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -73,21 +78,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Thu, Apr 28, 2022 at 12:41 PM Miquel Raynal
-<miquel.raynal@bootlin.com> wrote:
+On Thu, Apr 28, 2022 at 6:58 AM Steven Rostedt <rostedt@goodmis.org> wrote:
 >
-> There are two major issues in the logic calculating the symbol durations
-> based on the page/channel:
-> - The page number is used in place of the channel value.
-> - The BIT() macro is missing because we want to check the channel
->   value against a bitmask.
+> On Sat, 16 Apr 2022 23:21:03 +0900
+> Masami Hiramatsu <mhiramat@kernel.org> wrote:
 >
-> Fix these two errors and apologize loudly for this mistake.
+> > OK, I also confirmed that __bpf_tramp_exit is listed. (others seems no notrace)
+> >
+> > /sys/kernel/tracing # cat available_filter_functions | grep __bpf_tramp
+> > __bpf_tramp_image_release
+> > __bpf_tramp_image_put_rcu
+> > __bpf_tramp_image_put_rcu_tasks
+> > __bpf_tramp_image_put_deferred
+> > __bpf_tramp_exit
+> >
+> > My gcc is older one.
+> > gcc version 9.4.0 (Ubuntu 9.4.0-1ubuntu1~20.04.1)
+> >
+> > But it seems that __bpf_tramp_exit() doesn't call __fentry__. (I objdump'ed)
+> >
+> > ffffffff81208270 <__bpf_tramp_exit>:
+> > ffffffff81208270:       55                      push   %rbp
+> > ffffffff81208271:       48 89 e5                mov    %rsp,%rbp
+> > ffffffff81208274:       53                      push   %rbx
+> > ffffffff81208275:       48 89 fb                mov    %rdi,%rbx
+> > ffffffff81208278:       e8 83 70 ef ff          callq  ffffffff810ff300 <__rcu_read_lock>
+> > ffffffff8120827d:       31 d2                   xor    %edx,%edx
 >
-> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> You need to look deeper ;-)
+> >
+> >
+> > >
+> > > So it's quite bizarre and inconsistent.
+> >
+> > Indeed. I guess there is a bug in scripts/recordmcount.pl.
+>
+> No there isn't.
+>
+> I added the addresses it was mapping and found this:
+>
+> ffffffffa828f680 T __bpf_tramp_exit
+>
+> (which is relocated, but it's trivial to map it with the actual function).
+>
+> At the end of that function we have:
+>
+> ffffffff8128f767:       48 8d bb e0 00 00 00    lea    0xe0(%rbx),%rdi
+> ffffffff8128f76e:       48 8b 40 08             mov    0x8(%rax),%rax
+> ffffffff8128f772:       e8 89 28 d7 00          call   ffffffff82002000 <__x86_indirect_thunk_array>
+>                         ffffffff8128f773: R_X86_64_PLT32        __x86_indirect_thunk_rax-0x4
+> ffffffff8128f777:       e9 4a ff ff ff          jmp    ffffffff8128f6c6 <__bpf_tramp_exit+0x46>
+> ffffffff8128f77c:       0f 1f 40 00             nopl   0x0(%rax)
+> ffffffff8128f780:       e8 8b df dc ff          call   ffffffff8105d710 <__fentry__>
+>                         ffffffff8128f781: R_X86_64_PLT32        __fentry__-0x4
+> ffffffff8128f785:       b8 f4 fd ff ff          mov    $0xfffffdf4,%eax
+> ffffffff8128f78a:       c3                      ret
+> ffffffff8128f78b:       0f 1f 44 00 00          nopl   0x0(%rax,%rax,1)
+>
+>
+> Notice the call to fentry!
+>
+> It's due to this:
+>
+> void notrace __bpf_tramp_exit(struct bpf_tramp_image *tr)
+> {
+>         percpu_ref_put(&tr->pcref);
+> }
+>
+> int __weak
+> arch_prepare_bpf_trampoline(struct bpf_tramp_image *tr, void *image, void *image_end,
+>                             const struct btf_func_model *m, u32 flags,
+>                             struct bpf_tramp_progs *tprogs,
+>                             void *orig_call)
+> {
+>         return -ENOTSUPP;
+> }
+>
+> The weak function gets a call to ftrace, but it still gets compiled into
+> vmlinux but its symbol is dropped due to it being overridden. Thus, the
+> mcount_loc finds this call to fentry, and maps it to the symbol that is
+> before it, which just happened to be __bpf_tramp_exit.
 
-Acked-by: Alexander Aring <aahringo@redhat.com>
+Ouch. That _is_ a bug in recordmocount.
 
-- Alex
+> I made that weak function "notrace" and the __bpf_tramp_exit disappeared
+> from the available_filter_functions list.
+
+That's a hack. We cannot rely on such hacks for all weak functions.
