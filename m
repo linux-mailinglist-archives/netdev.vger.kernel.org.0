@@ -2,42 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 688FE513D73
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 23:24:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03263513D75
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 23:24:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352253AbiD1V1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 17:27:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59712 "EHLO
+        id S1346544AbiD1V1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 17:27:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352099AbiD1V1B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 17:27:01 -0400
+        with ESMTP id S1352230AbiD1V1D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 17:27:03 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB8D6B9F23
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 14:23:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C643BF538
+        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 14:23:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5B302B8303F
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 21:23:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4E9CC385A9;
-        Thu, 28 Apr 2022 21:23:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C8CBFB8303B
+        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 21:23:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 342E9C385AD;
+        Thu, 28 Apr 2022 21:23:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1651181024;
-        bh=ix1JmY3/nHR1YjFoqzZ7U4J02sb0Wc79WwQkZ+yRI6k=;
+        bh=nyS/qzNVzmEkSaJ3nVwgO/8/CzgNMfDoJNAtOdzapMw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QM8moCLUq/5eYAqwahubUhNyw0j9BZ2FUyxrccLz9oF/MteFwbmv6JgpID8h9Z7n9
-         xo37bPSS8CAvvJw4DMgAtMWovaV0cEoqxcFjDt5K4+7wmGJjecHV8KEHoMImcC+Bzt
-         P2D/zSPHkOXDoO3wOcm++fdbdJBxgGhFTYBB3NudPeW9apcaosNexTSEOQ9kUWW+Z7
-         bx2Y0WwtjMWXuqtGiLjkDW7ILRayOF+K/WyzmdLA6u3hn0StoHUquWzoTsNX1FYIr+
-         sNRa1XcIdjbZut6JgVZqk+nrpyU5nHwQQRCM9zjvGrr9GhUTTbnfDChgChXaWBs+l/
-         xNqm3wLWBD04g==
+        b=eEmHpEq7nG3TllXLo3njBecbk4bzYKin6TfPn6Tg5vQ54YHJocmwY1zGeEnmwwAFx
+         R26kjdUo4AWhpIxeowyr1vO89EwDC42sY/yEdP+7bSMRpgQ1x4MPgQmitv3VBXbIv6
+         OT0Auon3b3NGqQMRFqJapDhW62BGkXXOK3LZqmn5qtLnkrq04xTlrFuFARuA/j+ZGU
+         mX4u7EznW7u62gGaJH6tvns8VnWOgbPzz5X3DZQ4mOpz+cwd7Za7KyO0yM63TUpyFX
+         H1LV75PQKMJzmE5O5m1e4B4G8D4JL9WxFQBgr+Pev9YejEYqxUzBMtkivsQO0acupX
+         tqWyoIoNfc6hw==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net, pabeni@redhat.com
 Cc:     edumazet@google.com, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>, claudiu.manoil@nxp.com
-Subject: [PATCH net-next v2 11/15] eth: gfar: remove a copy of the NAPI_POLL_WEIGHT define
-Date:   Thu, 28 Apr 2022 14:23:19 -0700
-Message-Id: <20220428212323.104417-12-kuba@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>, jdmason@kudzu.us,
+        zhengyongjun3@huawei.com, christophe.jaillet@wanadoo.fr
+Subject: [PATCH net-next v2 12/15] eth: vxge: remove a copy of the NAPI_POLL_WEIGHT define
+Date:   Thu, 28 Apr 2022 14:23:20 -0700
+Message-Id: <20220428212323.104417-13-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220428212323.104417-1-kuba@kernel.org>
 References: <20220428212323.104417-1-kuba@kernel.org>
@@ -57,39 +58,40 @@ values in the drivers just makes refactoring harder.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: claudiu.manoil@nxp.com
+CC: jdmason@kudzu.us
+CC: zhengyongjun3@huawei.com
+CC: christophe.jaillet@wanadoo.fr
 ---
- drivers/net/ethernet/freescale/gianfar.c | 2 +-
- drivers/net/ethernet/freescale/gianfar.h | 3 ---
- 2 files changed, 1 insertion(+), 4 deletions(-)
+ drivers/net/ethernet/neterion/vxge/vxge-main.c | 2 +-
+ drivers/net/ethernet/neterion/vxge/vxge-main.h | 2 --
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ethernet/freescale/gianfar.c
-index 206b7a35eaf5..f0b652a65043 100644
---- a/drivers/net/ethernet/freescale/gianfar.c
-+++ b/drivers/net/ethernet/freescale/gianfar.c
-@@ -3232,7 +3232,7 @@ static int gfar_probe(struct platform_device *ofdev)
- 	/* Register for napi ...We are registering NAPI for each grp */
- 	for (i = 0; i < priv->num_grps; i++) {
- 		netif_napi_add(dev, &priv->gfargrp[i].napi_rx,
--			       gfar_poll_rx_sq, GFAR_DEV_WEIGHT);
-+			       gfar_poll_rx_sq, NAPI_POLL_WEIGHT);
- 		netif_tx_napi_add(dev, &priv->gfargrp[i].napi_tx,
- 				  gfar_poll_tx_sq, 2);
+diff --git a/drivers/net/ethernet/neterion/vxge/vxge-main.c b/drivers/net/ethernet/neterion/vxge/vxge-main.c
+index aa7c093f1f91..db4dfae8c01d 100644
+--- a/drivers/net/ethernet/neterion/vxge/vxge-main.c
++++ b/drivers/net/ethernet/neterion/vxge/vxge-main.c
+@@ -4351,7 +4351,7 @@ vxge_probe(struct pci_dev *pdev, const struct pci_device_id *pre)
  	}
-diff --git a/drivers/net/ethernet/freescale/gianfar.h b/drivers/net/ethernet/freescale/gianfar.h
-index ca5e14f908fe..68b59d3202e3 100644
---- a/drivers/net/ethernet/freescale/gianfar.h
-+++ b/drivers/net/ethernet/freescale/gianfar.h
-@@ -52,9 +52,6 @@ struct ethtool_rx_list {
- 	unsigned int count;
- };
+ 	ll_config->tx_steering_type = TX_MULTIQ_STEERING;
+ 	ll_config->intr_type = MSI_X;
+-	ll_config->napi_weight = NEW_NAPI_WEIGHT;
++	ll_config->napi_weight = NAPI_POLL_WEIGHT;
+ 	ll_config->rth_steering = RTH_STEERING;
  
--/* The maximum number of packets to be handled in one call of gfar_poll */
--#define GFAR_DEV_WEIGHT 64
+ 	/* get the default configuration parameters */
+diff --git a/drivers/net/ethernet/neterion/vxge/vxge-main.h b/drivers/net/ethernet/neterion/vxge/vxge-main.h
+index 63f65193dd49..da9d2c191828 100644
+--- a/drivers/net/ethernet/neterion/vxge/vxge-main.h
++++ b/drivers/net/ethernet/neterion/vxge/vxge-main.h
+@@ -167,8 +167,6 @@ struct macInfo {
+ struct vxge_config {
+ 	int		tx_pause_enable;
+ 	int		rx_pause_enable;
 -
- /* Length for FCB */
- #define GMAC_FCB_LEN 8
- 
+-#define	NEW_NAPI_WEIGHT	64
+ 	int		napi_weight;
+ 	int		intr_type;
+ #define INTA	0
 -- 
 2.34.1
 
