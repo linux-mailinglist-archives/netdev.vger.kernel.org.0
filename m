@@ -2,93 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B642512D73
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 09:55:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82D7F512D7F
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 09:56:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238594AbiD1H62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 03:58:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39174 "EHLO
+        id S1343571AbiD1H7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 03:59:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234669AbiD1H60 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 03:58:26 -0400
-Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6E776DD;
-        Thu, 28 Apr 2022 00:55:11 -0700 (PDT)
-Received: by ajax-webmail-mail-app3 (Coremail) ; Thu, 28 Apr 2022 15:55:01
- +0800 (GMT+08:00)
-X-Originating-IP: [222.205.13.90]
-Date:   Thu, 28 Apr 2022 15:55:01 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   "Lin Ma" <linma@zju.edu.cn>
-To:     "Greg KH" <gregkh@linuxfoundation.org>
-Cc:     "Jakub Kicinski" <kuba@kernel.org>,
-        "Duoming Zhou" <duoming@zju.edu.cn>,
-        krzysztof.kozlowski@linaro.org, pabeni@redhat.com,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        alexander.deucher@amd.com, akpm@linux-foundation.org,
-        broonie@kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net v4] nfc: ... device_is_registered() is data
- race-able
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <YmpEZQ7EnOIWlsy8@kroah.com>
-References: <20220427011438.110582-1-duoming@zju.edu.cn>
- <20220427174548.2ae53b84@kernel.org>
- <38929d91.237b.1806f05f467.Coremail.linma@zju.edu.cn>
- <YmpEZQ7EnOIWlsy8@kroah.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S1343552AbiD1H7H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 03:59:07 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 718E020BCE;
+        Thu, 28 Apr 2022 00:55:53 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id y76so7596046ybe.1;
+        Thu, 28 Apr 2022 00:55:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=20Ih2IlUb6bJo8fqptV5Ls545wi0cHRNM9PIwsCTWig=;
+        b=HW2WjBML2b6D8ENGrcYgynP0ORmNMbLedyIT2JE4zm4/+D7h7E8R15S6tCKjCgxE5F
+         HPDClpLA5HDi8EXbKMl8wLKRkewvh4k8OALErPK2TSkqVGmV0S0R1UN750hYUKmrx1pY
+         Gg/BQCtVK3dRfXOuO+yrJQsRiiV8j6aYc8eEYeGRcPEc9u/auRQG9WQvOlR7RD4kOWOL
+         ml2awR1e2WiKRzk1ovs7MiviE0vjXZ8MbN/PqeA12PqQHrE7MynRZ7okyCzSQjKfKaUW
+         Qj0r98qcCEme3ScPAH2ofJyQ9rh+cwToO8BU/o9ERuHNc3HES3R/W8YpF6hoXuU+kA6R
+         h8dg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=20Ih2IlUb6bJo8fqptV5Ls545wi0cHRNM9PIwsCTWig=;
+        b=NhU5tWlX0+SNOFmTnmYZtw1VHcjO52o7C+eOXlOySzp797j0f2L65AezSwulSCCnHh
+         2+++wbs8csNpwbmhEGmcCIT97kuLBhbcr97qFsh/LldghKasBMV6TZsQxAsuXzEWEw2d
+         DZ2aSIclnGLKP7Yx3f5jw5GKfWUI8tCDUfi/r1V82iWspqMQWp3qpCzDA6NVLQrpLjMb
+         xDU/W6v988sNx/mbfr0uHrHCeTBjcoLXCRhvj9PQWCxdRCR/RPye4Q3onbGuF/pEvL+p
+         70FNXDFqtKVb/9/thlSvw+/NQIiKZBkJGNkQsBgq0KPL4dcs3w7HF3gRkCiWgbpmhiwp
+         ceyg==
+X-Gm-Message-State: AOAM5320ZGHtspQZhnjvGnDRUcJJzv1xkm0NvC4HsPemXQPbqwea9GGQ
+        QVUB8bE5PBqof0tT4KKWjY9BPU5ZhlrffjbuCBg=
+X-Google-Smtp-Source: ABdhPJw8pf7dHDJGDk4MLm1MPOPR7xtPtgmoUI+cAYaw4tMFKuYcyPOqVButzGZ1veH2KFcVReaJdxuPRSjv15oQplw=
+X-Received: by 2002:a25:9845:0:b0:628:99a6:55ed with SMTP id
+ k5-20020a259845000000b0062899a655edmr29064779ybo.221.1651132552546; Thu, 28
+ Apr 2022 00:55:52 -0700 (PDT)
 MIME-Version: 1.0
-Message-ID: <2d7c9164.2b1f.1806f2a8ed9.Coremail.linma@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cC_KCgDnXmJVSGpi97osAw--.46956W
-X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/1tbiAwMOElNG3GhD8wABsM
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20220424165309.241796-1-eyal.birger@gmail.com>
+ <CAHsH6Gtpu-+79r2wrs1U=X=wMjVh2MfNxdgDtsL7yOfsKzKXDA@mail.gmail.com> <CAEf4BzZ3vDvLDQ+Wsj1z2=-exZO-t510JdWXA-1bao-shO4PJg@mail.gmail.com>
+In-Reply-To: <CAEf4BzZ3vDvLDQ+Wsj1z2=-exZO-t510JdWXA-1bao-shO4PJg@mail.gmail.com>
+From:   Eyal Birger <eyal.birger@gmail.com>
+Date:   Thu, 28 Apr 2022 10:55:41 +0300
+Message-ID: <CAHsH6GujcJP=NXXetUBcCC_qAHfXCzEbid64jRwTTgnjd7oUOw@mail.gmail.com>
+Subject: Re: [PATCH bpf] selftests/bpf: test setting tunnel key from lwt xmit
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, posk@google.com,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8gR3JlZywKCgo+IAo+IFlvdSBzaG91bGQgbm90IGJlIG1ha2luZyB0aGVzZSB0eXBlcyBv
-ZiBjaGVja3Mgb3V0c2lkZSBvZiB0aGUgZHJpdmVyCj4gY29yZS4KPiAKPiA+IFRoaXMgaXMgYnkg
-bm8gbWVhbnMgbWF0Y2hpbmcgb3VyIGV4cGVjdGF0aW9ucyBhcyBvbmUgb2Ygb3VyIHByZXZpb3Vz
-IHBhdGNoIHJlbGllcyBvbiB0aGUgZGV2aWNlX2lzX3JlZ2lzdGVyZWQgY29kZS4KPiAKPiBQbGVh
-c2UgZG8gbm90IGRvIHRoYXQuCj4gCj4gPiAKPiA+IC0+IHRoZSBwYXRjaDogM2UzYjVkZmNkMTZh
-ICgiTkZDOiByZW9yZGVyIHRoZSBsb2dpYyBpbiBuZmNfe3VuLH1yZWdpc3Rlcl9kZXZpY2UiKQo+
-ID4gCj4gPC4uLj4KPiA+IAo+ID4gSW4gYW5vdGhlciB3b3JkLCB0aGUgZGV2aWNlX2RlbCAtPiBr
-b2JqZWN0X2RlbCAtPiBfX2tvYmplY3RfZGVsIGlzIG5vdCBwcm90ZWN0ZWQgYnkgdGhlIGRldmlj
-ZV9sb2NrLgo+IAo+IE5vciBzaG91bGQgaXQgYmUuCj4gCgpJIG1heSBoYXZlIG1pc3Rha2VubHkg
-cHJlc2VudGVkIG15IHBvaW50LiBJbiBmYWN0LCB0aGVyZSBpcyBub3RoaW5nIHdyb25nIHdpdGgg
-dGhlIGRldmljZSBjb3JlLCBub3RoaW5nIHRvIGRvIHdpdGggdGhlIGludGVybmFsIG9mIGRldmlj
-ZV9kZWwgYW5kIGRldmljZV9pc19yZWdpc3RlcmVkIGltcGxlbWVudGF0aW9uLiBBbmQsIG9mIGNv
-dXJzZSwgd2Ugd2lsbCBub3QgYWRkIGFueSBjb2RlIG9yIGRvIGFueSBtb2RpZmljYXRpb24gdG8g
-dGhlIGRldmljZS9kcml2ZXIgYmFzZSBjb2RlLgoKVGhlIHBvaW50IGlzIHRoZSBjb21iaW5hdGlv
-biBvZiBkZXZpY2VfaXNfcmVnaXN0ZXJlZCArIGRldmljZV9kZWwsIHdoaWNoIGlzIHVzZWQgaW4g
-TkZDIGNvcmUsIGlzIG5vdCBzYWZlLgoKVGhhdCBpcyB0byBzYXksIGV2ZW4gdGhlIGRldmljZV9p
-c19yZWdpc3RlcmVkIGNhbiByZXR1cm4gVHJ1ZSBldmVuIHRoZSBkZXZpY2VfZGVsIGlzIGV4ZWN1
-dGluZyBpbiBhbm90aGVyIHRocmVhZC4KCihCeSBkZWJ1Z2dpbmcgd2UgdGhpbmsgdGhpcyBpcyB0
-cnVlLCBjb3JyZWN0IG1lIGlmIGl0IGlzIG5vdCkKCkhlbmNlIHdlIHdhbnQgdG8gYWRkIGFkZGl0
-aW9uYWwgc3RhdGUgaW4gbmZjX2RldiBvYmplY3QgdG8gZml4IHRoYXQsIG5vdCBnb2luZyB0byBh
-ZGQgYW55IHN0YXRlIGluIGRldmljZS9kcml2ZXIgY29yZS4KCj4gPiBUaGlzIG1lYW5zIHRoZSBk
-ZXZpY2VfbG9jayArIGRldmljZV9pc19yZWdpc3RlcmVkIGlzIHN0aWxsIHByb25lIHRvIHRoZSBk
-YXRhIHJhY2UuIEFuZCB0aGlzIGlzIG5vdCBqdXN0IHRoZSBwcm9ibGVtIHdpdGggZmlybXdhcmUg
-ZG93bmxvYWRpbmcuIFRoZSBhbGwgcmVsZXZhbnQgbmV0bGluayB0YXNrcyB0aGF0IHVzZSB0aGUg
-ZGV2aWNlX2xvY2sgKyBkZXZpY2VfaXNfcmVnaXN0ZXJlZCBpcyBwb3NzaWJsZSB0byBiZSByYWNl
-ZC4KPiA+IAo+ID4gVG8gdGhpcyBlbmQsIHdlIHdpbGwgY29tZSBvdXQgd2l0aCB0d28gcGF0Y2hl
-cywgb25lIGZvciBmaXhpbmcgdGhpcyBkZXZpY2VfaXNfcmVnaXN0ZXJlZCBieSB1c2luZyBhbm90
-aGVyIHN0YXR1cyB2YXJpYWJsZSBpbnN0ZWFkLiBUaGUgb3RoZXIgaXMgdGhlIHBhdGNoIHRoYXQg
-cmVvcmRlcnMgdGhlIGNvZGUgaW4gbmNpX3VucmVnaXN0ZXJfZGV2aWNlLgo+IAo+IFdoeSBpcyB0
-aGlzIHNvbWVob3cgdW5pcXVlIHRvIHRoZXNlIGRldmljZXM/ICBXaHkgZG8gbm8gb3RoZXIgYnVz
-ZXMgaGF2ZQo+IHRoaXMgaXNzdWU/ICBBcmUgeW91IHNvbWVob3cgYWxsb3dpbmcgYSBjb2RlIHBh
-dGggdGhhdCBzaG91bGQgbm90IGJlCj4gaGFwcGVuaW5nPwo+IAo+IHRoYW5rcywKPiAKPiBncmVn
-IGstaAoKSW4gZmFjdCwgYnkgc2VhcmNoaW5nIHRoZSBkZXZpY2VfaXNfcmVnaXN0ZXJlZCgpIHVz
-ZSBjYXNlcywgSSBmb3VuZCB0aGF0IG1vc3Qgb2YgdGhlbSBhcmUgdXNlZCBpbiBkcmllciBjb2Rl
-IGluc3RlYWQgb2YgaW4gdGhlIG5ldHdvcmsgc3RhY2suIEkgaGF2ZSBubyBpZGVhIHdoZXRoZXIg
-b3Igbm90IHRoZXkgc3VmZmVyIGZyb20gc2ltaWxhciBwcm9ibGVtcyBhbmQgSSB3aWxsIGNoZWNr
-IHRoYXQgb3V0LgoKVGhhbmtzCkxpbg==
+On Wed, Apr 27, 2022 at 10:41 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Sun, Apr 24, 2022 at 10:23 AM Eyal Birger <eyal.birger@gmail.com> wrote:
+> >
+> > On Sun, Apr 24, 2022 at 7:53 PM Eyal Birger <eyal.birger@gmail.com> wrote:
+> > >
+> > > This commit adds test_egress_md() tests which perform a similar flow as
+> > > test_egress() only that they use gre devices in collect_md mode and set
+> > > the tunnel key from lwt bpf xmit.
+> > >
+> > > VRF scenarios are not checked since it is currently not possible to set
+> > > the underlying device or vrf from bpf_set_tunnel_key().
+> > >
+> > > This introduces minor changes to the existing setup for consistency with
+> > > the new tests:
+> > >
+> > > - GRE key must exist as bpf_set_tunnel_key() explicitly sets the
+> > >   TUNNEL_KEY flag
+> > >
+> > > - Source address for GRE traffic is set to IPv*_5 instead of IPv*_1 since
+> > >   GRE traffic is sent via veth5 so its address is selected when using
+> > >   bpf_set_tunnel_key()
+> > >
+> > > Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
+> > > ---
+> > >  .../selftests/bpf/progs/test_lwt_ip_encap.c   | 51 ++++++++++-
+> > >  .../selftests/bpf/test_lwt_ip_encap.sh        | 85 ++++++++++++++++++-
+> > >  2 files changed, 128 insertions(+), 8 deletions(-)
+> > >
+> > > diff --git a/tools/testing/selftests/bpf/progs/test_lwt_ip_encap.c b/tools/testing/selftests/bpf/progs/test_lwt_ip_encap.c
+> > > index d6cb986e7533..39c6bd5402ae 100644
+> > > --- a/tools/testing/selftests/bpf/progs/test_lwt_ip_encap.c
+> > > +++ b/tools/testing/selftests/bpf/progs/test_lwt_ip_encap.c
+> >
+> > Thinking about this some more, I'm not sure if these tests fit better here
+> > or in test_tunnel.sh.
+> >
+> > If the latter is preferred, please drop this patch and I'll submit one for
+> > test_tunnel.sh.
+>
+> general preference is to put test into test_progs as those are
+> regularly and extensively exercised, while test_tunnel.sh is not
+
+Thanks. Will move the logic there then.
+>
+> >
+> > Eyal.
