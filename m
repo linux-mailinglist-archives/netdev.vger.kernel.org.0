@@ -2,64 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E15125131D2
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 12:58:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40F335131FA
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 13:02:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345016AbiD1LB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 07:01:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45330 "EHLO
+        id S231736AbiD1LCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 07:02:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344983AbiD1LBJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 07:01:09 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26092972C0;
-        Thu, 28 Apr 2022 03:57:53 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id n126-20020a1c2784000000b0038e8af3e788so2801673wmn.1;
-        Thu, 28 Apr 2022 03:57:53 -0700 (PDT)
+        with ESMTP id S1345130AbiD1LBs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 07:01:48 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1B0297BAE;
+        Thu, 28 Apr 2022 03:58:20 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id e2so6233917wrh.7;
+        Thu, 28 Apr 2022 03:58:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=YHrgbwGuKsi0qBohJI6HWm6IXg77xQmft6cGgAr+KkM=;
-        b=geUv/xTB1yFlcqVhQ60GzWNNsG614lPO6/6WQ3DoVYqwbcGCewWErkE+ItiL8s7/6K
-         Y0hz8OYfLZ++20kqDQybviBa6UMxi2i9Dhsfi66cWtpM33lKF1PJh/jTKRe/UTvv2UUt
-         WLC8RqXNQ+OdlYOsNwX93WbIaVQS+VtVBi2q7e17IgClmTDWzwNA58FfL6z6bW8OAAoI
-         XjZHIeqANnZH/2VvzzuoWzCdR09LTBSSw0dkaEl2NkVRW09GxelFWnLV8nN5CUVaIYTg
-         xnuc+R/MZSFtl501LtAYGPpsa3paf8GEsFNZPckcr05S2r21xN2VafXUAZgg/M8bPEqe
-         eYzQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fa5CdWViNrG/NjYoLUNxCAqmUWuGkC4f1gVdrOT2E9U=;
+        b=XqghPo0bq+NQDMVeKYC7+bEpFnjXtq0XdJfAUWlpji2R6OLKU4zV1XXMkw1InubOoP
+         tBOXhI4/hmaqk5VX+EMgNJT5mXqzxT7YLcovwRrI7OJLqFEyMMLYqe1eZLVMwx5R9QiR
+         f1xhD47AbD//c2DZJ7P64+0Q/Xv2UB4RonOX8VAJwM41GbogMZZw0pnzpI2j12NS9IGH
+         veaOplXIr5eM/lnbBw3xaG4UrBJjvczUr5Ab0F/axGEszLbZK7TVAo1DDm00bMSONb2Z
+         4vDLCYk8RSX8k8geeopyk5auajhu7GXBEinIY4VCezF2zrW/LV15ZPcIRFELgI/FNdrZ
+         dQ3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=YHrgbwGuKsi0qBohJI6HWm6IXg77xQmft6cGgAr+KkM=;
-        b=XlFKFd/rhxKgL1KF/dkxP1GNkfpXQ6uWvq+iXTuSrlmiXyBjGRsbDot3qPwwX/ffVL
-         1MohPgXk9L6XeTjO9Y0uxMWzsdJSNsOm2KpMoaKgtA2blKQIXkRvFksEGxDU2tZ94Q/A
-         cVCwqqNIj2NFCvAn2JY6P7l5d0xJ86Ra9tog2ohbf4qjl9MCtVXp6h7dRlSgorO8v/E6
-         we9kxksxVfxlDgWk1txECfRgy0tYh0syG8kbfhW3A2uMq03h5ZCE9HmlaPJHLEZE+9cG
-         ttgJ6NzpPDyUIBmk0hX7YYxeP8mVHSQSps2d6y/L2HcHlUwU1I5oevIy0BrkPAAHpGvh
-         gG8Q==
-X-Gm-Message-State: AOAM531uEIWml06VyEPjvUk6hoiwSv32Gt4LIXlZRDcp5N8C3Q63RMxF
-        o1FpmhvpkXZ05UJFwLwrQ6B3T51ZTLs=
-X-Google-Smtp-Source: ABdhPJwqKexuoFcmDd5VUkrdgO/u39Kb2z+ybEnox+4E3+l/os8x31qvpzppMSlGlpdKWjQE98Oafg==
-X-Received: by 2002:a05:600c:3b26:b0:393:ec10:26fb with SMTP id m38-20020a05600c3b2600b00393ec1026fbmr17924924wms.69.1651143472044;
-        Thu, 28 Apr 2022 03:57:52 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fa5CdWViNrG/NjYoLUNxCAqmUWuGkC4f1gVdrOT2E9U=;
+        b=2FlT7Nm1vsfmqRo6CAJ0nMdthDaBYERMS9UEEJkA2h9rP8NpCQkj9WvcVXleDqub5b
+         fXO4ryGCM7I7RfScE36pZx8bQKZltUSwcISRhWjPqke8NWP5GU/7Ju5xOMMO9spIpxJZ
+         OGXzDsdTSYLUg0LqzwMbk4YoSkdr5PP4QcKoxWc1h9oThAnQ8iLsYb70Sd3FVT4LLyDp
+         1n52506OboMZMF4rqFyS5XmPCY4N8IncJGncblFYmNG7J0Fu4QzboYySzgv6jKOdcLKJ
+         FIXklXghDc9hC8X5hwdi9/f9tNcHuzv4DkrGHMe+MdBFpyF4suUGE8n34gLoDzNLisKl
+         rQVQ==
+X-Gm-Message-State: AOAM531exYlCp2NxZGMmPATiEphR2X2deLUwMOEtf0aivHlF+4mNdM/2
+        lc+FyulAL94tz6yT2DbiHIgdPMsGZqg=
+X-Google-Smtp-Source: ABdhPJxBaDUDJPVYqAVvTWOhzLh/1XCzMSyHV4cbJXze/SUe21/NorNGmow7sAPP/jaqmaRrfkl/iQ==
+X-Received: by 2002:a5d:5966:0:b0:20a:e810:5e9d with SMTP id e38-20020a5d5966000000b0020ae8105e9dmr9401074wri.240.1651143499234;
+        Thu, 28 Apr 2022 03:58:19 -0700 (PDT)
 Received: from 127.0.0.1localhost (82-132-230-8.dab.02.net. [82.132.230.8])
-        by smtp.gmail.com with ESMTPSA id z11-20020a7bc14b000000b0039419dfbb39sm7547wmi.33.2022.04.28.03.57.50
+        by smtp.gmail.com with ESMTPSA id u19-20020a05600c19d300b00393f081d49fsm4017426wmq.2.2022.04.28.03.58.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 03:57:51 -0700 (PDT)
+        Thu, 28 Apr 2022 03:58:18 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
         linux-kernel@vger.kernel.org,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next 11/11] ipv6: clean up ip6_setup_cork
-Date:   Thu, 28 Apr 2022 11:56:45 +0100
-Message-Id: <683aab669ffa7db48416137c904a406a37e9a0c9.1651071843.git.asml.silence@gmail.com>
+Subject: [PATCH net-next 1/1] tcp: optimise skb_zerocopy_iter_stream()
+Date:   Thu, 28 Apr 2022 11:57:46 +0100
+Message-Id: <a7e1690c00c5dfe700c30eb9a8a81ec59f6545dd.1650884401.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <cover.1651071843.git.asml.silence@gmail.com>
-References: <cover.1651071843.git.asml.silence@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -72,77 +71,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Do a bit of refactoring for ip6_setup_cork(). Cache a xfrm_dst_path()
-result to not call it twice, reshuffle ifs to not repeat some parts
-twice and so.
+It's expensive to make a copy of 40B struct iov_iter to the point it
+was taking 0.2-0.5% of all cycles in my tests. iov_iter_revert() should
+be fine as it's a simple case without nested reverts/truncates.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- net/ipv6/ip6_output.c | 30 +++++++++++++-----------------
- 1 file changed, 13 insertions(+), 17 deletions(-)
 
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 416d14299242..a17b26d5f34d 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1358,15 +1358,13 @@ static int ip6_setup_cork(struct sock *sk, struct inet_cork_full *cork,
- 	struct ipv6_pinfo *np = inet6_sk(sk);
- 	unsigned int mtu;
- 	struct ipv6_txoptions *nopt, *opt = ipc6->opt;
-+	struct dst_entry *xrfm_dst;
+split from a larger patchset, see
+https://lore.kernel.org/netdev/cover.1648981570.git.asml.silence@gmail.com/
+
+ net/core/skbuff.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 30b523fa4ad2..e51e53f8c200 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -1350,7 +1350,6 @@ int skb_zerocopy_iter_stream(struct sock *sk, struct sk_buff *skb,
+ 			     struct ubuf_info *uarg)
+ {
+ 	struct ubuf_info *orig_uarg = skb_zcopy(skb);
+-	struct iov_iter orig_iter = msg->msg_iter;
+ 	int err, orig_len = skb->len;
  
- 	/* callers pass dst together with a reference, set it first so
- 	 * ip6_cork_release() can put it down even in case of an error.
- 	 */
- 	cork->base.dst = &rt->dst;
+ 	/* An skb can only point to one uarg. This edge case happens when
+@@ -1364,7 +1363,7 @@ int skb_zerocopy_iter_stream(struct sock *sk, struct sk_buff *skb,
+ 		struct sock *save_sk = skb->sk;
  
--	/*
--	 * setup for corking
--	 */
- 	if (opt) {
- 		if (WARN_ON(v6_cork->opt))
- 			return -EINVAL;
-@@ -1399,28 +1397,26 @@ static int ip6_setup_cork(struct sock *sk, struct inet_cork_full *cork,
- 	}
- 	v6_cork->hop_limit = ipc6->hlimit;
- 	v6_cork->tclass = ipc6->tclass;
--	if (rt->dst.flags & DST_XFRM_TUNNEL)
--		mtu = np->pmtudisc >= IPV6_PMTUDISC_PROBE ?
--		      READ_ONCE(rt->dst.dev->mtu) : dst_mtu(&rt->dst);
-+
-+	xrfm_dst = xfrm_dst_path(&rt->dst);
-+	if (dst_allfrag(xrfm_dst))
-+		cork->base.flags |= IPCORK_ALLFRAG;
-+
-+	if (np->pmtudisc < IPV6_PMTUDISC_PROBE)
-+		mtu = dst_mtu(rt->dst.flags & DST_XFRM_TUNNEL ? &rt->dst : xrfm_dst);
- 	else
--		mtu = np->pmtudisc >= IPV6_PMTUDISC_PROBE ?
--			READ_ONCE(rt->dst.dev->mtu) : dst_mtu(xfrm_dst_path(&rt->dst));
--	if (np->frag_size < mtu) {
--		if (np->frag_size)
--			mtu = np->frag_size;
--	}
-+		mtu = READ_ONCE(rt->dst.dev->mtu);
-+
-+	if (np->frag_size < mtu && np->frag_size)
-+		mtu = np->frag_size;
-+
- 	cork->base.fragsize = mtu;
- 	cork->base.gso_size = ipc6->gso_size;
- 	cork->base.tx_flags = 0;
- 	cork->base.mark = ipc6->sockc.mark;
- 	sock_tx_timestamp(sk, ipc6->sockc.tsflags, &cork->base.tx_flags);
--
--	if (dst_allfrag(xfrm_dst_path(&rt->dst)))
--		cork->base.flags |= IPCORK_ALLFRAG;
- 	cork->base.length = 0;
--
- 	cork->base.transmit_time = ipc6->sockc.transmit_time;
--
- 	return 0;
- }
- 
+ 		/* Streams do not free skb on error. Reset to prev state. */
+-		msg->msg_iter = orig_iter;
++		iov_iter_revert(&msg->msg_iter, skb->len - orig_len);
+ 		skb->sk = sk;
+ 		___pskb_trim(skb, orig_len);
+ 		skb->sk = save_sk;
 -- 
 2.36.0
 
