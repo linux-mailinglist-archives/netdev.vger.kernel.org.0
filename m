@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 661F05131EB
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 13:02:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECFDC5131F9
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 13:02:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345164AbiD1LEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 07:04:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47336 "EHLO
+        id S1345296AbiD1LET (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 07:04:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343930AbiD1LDH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 07:03:07 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1121A9AE61;
-        Thu, 28 Apr 2022 03:59:28 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id q23so6256678wra.1;
-        Thu, 28 Apr 2022 03:59:27 -0700 (PDT)
+        with ESMTP id S1345298AbiD1LDL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 07:03:11 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 017859D4E8;
+        Thu, 28 Apr 2022 03:59:32 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id r11-20020a05600c35cb00b0039409c1111bso1854598wmq.3;
+        Thu, 28 Apr 2022 03:59:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=JJ/Jn2CaItPG2KrWE6z6rbp+t2EL7d23+IBwd5W6Kr8=;
-        b=BTtmqWGCmABxPW53lwZmD/b/VAE84IqlAOJkfGCYrOQDB7rvCIti4hkbumbARY7ES6
-         nwbMp4prigAlU5k7f/bhzLS4eM9dQplfPndwW9fBjV/FENYRYDcBU5KpjmPfFOgZB7sI
-         6Jfu5492r8jqQ83K88JNvy3VjQRTa660KQ98gesnYPFtHJ/wzZK7JzLn0R9FNeHMndTH
-         Ji6OKF16MkdxyTtImsBlElcq5s0KJYX9Cu5LzsAi0o3zE7akyA22VBYyLeQjeINg131f
-         +ilEmO+xquKB3OLOvi1zdWlYXNaOIrlzZ6tW/FqWVRvDnFhdCXH8gtcj4e26Yhlr5z+Z
-         MtJQ==
+        bh=r5k1ZTMK7mSQH9mXWos/hmZJEpLUd2ex8bU7xnkW7WU=;
+        b=BiCbQzJ1UxgfgSMP82tJgGSeQrQZBhu4ySl2LOi6qrXumvH2JtQWELv7YQxIqBnX4x
+         8tmxzOPLNtGKW/wYn8wGj5+HdNmnB20qh30CTdI67xC0DsqIbRLrqJNIezCj9qDPWuXk
+         5uli2jnAE6TAO0LGz3AYIP4LAv7QIhZ6k0hvp5HyZl6xthOnYi/FZ68Cgv65bFz/nWjo
+         pew3BkE6RMRQE7CF+kGZqjDP0gPlZaB7QvwfL0ZASPkvuaUr9hv9QpzVZfYjf9mhEQJI
+         Ily8Xebav4k8Ejsbfhv1Xx51e1dsWSugFbOMYMLuUQApcEfZChYzV1J2oAcNgPHUfOQR
+         M4Dg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=JJ/Jn2CaItPG2KrWE6z6rbp+t2EL7d23+IBwd5W6Kr8=;
-        b=brBadw7XtuxtfvWyqcXr51E20v6HU8wh5kfPLoR4NxhoejFGtYmPLH/5obk7yh89No
-         qtVDZ5Inv147aZELjEWwXPE/KaJ+B26wmqezWqQrvj8pTZKGU+i4Tk4siKn0KDRStaxE
-         UE01rWRAQK5im9lstKAuUucQ0BO3xVZHc5WxePy+j59CkuAARYYKJLIEIn1cjCoLMRi1
-         cw7ZarrGjJGunCP3ChMyn0dqYPV3lOIMTAeCoKgEYyWzkjoLQAZpGGQm4jNmJM0zKZfQ
-         0+wVZ9ADak+zlcy57Qp09kXnm6BBABvgpX06wNuPMiR0gQmBL1/KVT0430RjaihU7FWB
-         rt/Q==
-X-Gm-Message-State: AOAM531pLqcGESGOq6mevOX7ODRQq5EEdvWsum89608fqWHlANrLPNEE
-        lKb55gParjRbOiVW19ftrEcQRVDbzX8=
-X-Google-Smtp-Source: ABdhPJz8tngMyKNr78aheYziUbFINMy3fzZrKBXOBSG4c7opcdLd77kwyS2pdOJo43gK/lecZCf7Nw==
-X-Received: by 2002:adf:f0c6:0:b0:20a:d31b:6 with SMTP id x6-20020adff0c6000000b0020ad31b0006mr20672965wro.162.1651143566470;
-        Thu, 28 Apr 2022 03:59:26 -0700 (PDT)
+        bh=r5k1ZTMK7mSQH9mXWos/hmZJEpLUd2ex8bU7xnkW7WU=;
+        b=Vn8tUkoZLRW7QaiF2ho/NsasvlQezC5l9Ltit66OzDHzBnqnuTG/pBuRc+04FWdS0I
+         yFfyEqyLxiFfwwkNsIqjw6Ohu1GNC5Rt/dt1Fe2Eym6jOTfD2UGmqmAK4QZcoJgrqvHb
+         LLoPNFUtHwTg6BCcKNgvPir+pZYAryNs2xQ3IVT6gyvVD4AiJsyPsj3sOOu0wyHqAoy4
+         0yZvcA3tFkncXJDaFVppasMA5J5xV8ZocERVgnH25axx68UGdJCrriaMJNfoQG4RYCRF
+         tayMpMhvrVi/0CoYZCwKJHyXWa3taz+7f2hxe5Q9ThwduuVQ2QN197I7AFI033TN+Y2a
+         ZxAg==
+X-Gm-Message-State: AOAM5307DPZLNiEjFvYgfeEdtsKmjvyEm0O443ER5R8MTTDJ2MgNZWbG
+        0mUdlOLBumvlx0IiyUz4EKrQ5C2S2dw=
+X-Google-Smtp-Source: ABdhPJybU48FPei64zykiGCI1HDY7wnNb5DGJdPnw67/1VDKwmUwYyv5obbnsCJ/5GqkULMBk/Izkg==
+X-Received: by 2002:a7b:c844:0:b0:38e:7c92:a9e3 with SMTP id c4-20020a7bc844000000b0038e7c92a9e3mr29617741wml.140.1651143570314;
+        Thu, 28 Apr 2022 03:59:30 -0700 (PDT)
 Received: from 127.0.0.1localhost (82-132-230-8.dab.02.net. [82.132.230.8])
-        by smtp.gmail.com with ESMTPSA id n10-20020a5d588a000000b002052e4aaf89sm16028895wrf.80.2022.04.28.03.59.21
+        by smtp.gmail.com with ESMTPSA id n10-20020a5d588a000000b002052e4aaf89sm16028895wrf.80.2022.04.28.03.59.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 03:59:26 -0700 (PDT)
+        Thu, 28 Apr 2022 03:59:30 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -54,9 +54,9 @@ Cc:     David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         linux-kernel@vger.kernel.org,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next 1/5] net: inline sock_alloc_send_skb
-Date:   Thu, 28 Apr 2022 11:58:44 +0100
-Message-Id: <589966747301e2f71377f288faf4f8db78d72405.1651141755.git.asml.silence@gmail.com>
+Subject: [PATCH net-next 2/5] net: inline skb_zerocopy_iter_dgram
+Date:   Thu, 28 Apr 2022 11:58:45 +0100
+Message-Id: <2159b3b4ff6bfe623e9836468aefc866ee3b4ab6.1651141755.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <cover.1651141755.git.asml.silence@gmail.com>
 References: <cover.1651141755.git.asml.silence@gmail.com>
@@ -72,57 +72,131 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sock_alloc_send_skb() is simple and just proxying to another function,
-so we can inline it and cut associated overhead.
+skb_zerocopy_iter_dgram() is a small proxy function, inline it. For
+that, move __zerocopy_sg_from_iter into linux/skbuff.h
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- include/net/sock.h | 10 ++++++++--
- net/core/sock.c    |  7 -------
- 2 files changed, 8 insertions(+), 9 deletions(-)
+ include/linux/skbuff.h | 36 ++++++++++++++++++++++--------------
+ net/core/datagram.c    |  2 --
+ net/core/datagram.h    | 15 ---------------
+ net/core/skbuff.c      |  7 -------
+ 4 files changed, 22 insertions(+), 38 deletions(-)
+ delete mode 100644 net/core/datagram.h
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index a01d6c421aa2..df2e826f67ee 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -1824,11 +1824,17 @@ int sock_getsockopt(struct socket *sock, int level, int op,
- 		    char __user *optval, int __user *optlen);
- int sock_gettstamp(struct socket *sock, void __user *userstamp,
- 		   bool timeval, bool time32);
--struct sk_buff *sock_alloc_send_skb(struct sock *sk, unsigned long size,
--				    int noblock, int *errcode);
- struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
- 				     unsigned long data_len, int noblock,
- 				     int *errcode, int max_page_order);
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 84d78df60453..57182947cc80 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -684,20 +684,6 @@ struct ubuf_info {
+ int mm_account_pinned_pages(struct mmpin *mmp, size_t size);
+ void mm_unaccount_pinned_pages(struct mmpin *mmp);
+ 
+-struct ubuf_info *msg_zerocopy_alloc(struct sock *sk, size_t size);
+-struct ubuf_info *msg_zerocopy_realloc(struct sock *sk, size_t size,
+-				       struct ubuf_info *uarg);
+-
+-void msg_zerocopy_put_abort(struct ubuf_info *uarg, bool have_uref);
+-
+-void msg_zerocopy_callback(struct sk_buff *skb, struct ubuf_info *uarg,
+-			   bool success);
+-
+-int skb_zerocopy_iter_dgram(struct sk_buff *skb, struct msghdr *msg, int len);
+-int skb_zerocopy_iter_stream(struct sock *sk, struct sk_buff *skb,
+-			     struct msghdr *msg, int len,
+-			     struct ubuf_info *uarg);
+-
+ /* This data is invariant across clones and lives at
+  * the end of the header data, ie. at skb->end.
+  */
+@@ -1676,6 +1662,28 @@ static inline void skb_set_end_offset(struct sk_buff *skb, unsigned int offset)
+ }
+ #endif
+ 
++struct ubuf_info *msg_zerocopy_alloc(struct sock *sk, size_t size);
++struct ubuf_info *msg_zerocopy_realloc(struct sock *sk, size_t size,
++				       struct ubuf_info *uarg);
 +
-+static inline struct sk_buff *sock_alloc_send_skb(struct sock *sk,
-+						  unsigned long size,
-+						  int noblock, int *errcode)
++void msg_zerocopy_put_abort(struct ubuf_info *uarg, bool have_uref);
++
++void msg_zerocopy_callback(struct sk_buff *skb, struct ubuf_info *uarg,
++			   bool success);
++
++int __zerocopy_sg_from_iter(struct sock *sk, struct sk_buff *skb,
++			    struct iov_iter *from, size_t length);
++
++static inline int skb_zerocopy_iter_dgram(struct sk_buff *skb,
++					  struct msghdr *msg, int len)
 +{
-+	return sock_alloc_send_pskb(sk, size, 0, noblock, errcode, 0);
++	return __zerocopy_sg_from_iter(skb->sk, skb, &msg->msg_iter, len);
 +}
 +
- void *sock_kmalloc(struct sock *sk, int size, gfp_t priority);
- void sock_kfree_s(struct sock *sk, void *mem, int size);
- void sock_kzfree_s(struct sock *sk, void *mem, int size);
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 29abec3eabd8..fbca35d3749a 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -2631,13 +2631,6 @@ struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
- }
- EXPORT_SYMBOL(sock_alloc_send_pskb);
++int skb_zerocopy_iter_stream(struct sock *sk, struct sk_buff *skb,
++			     struct msghdr *msg, int len,
++			     struct ubuf_info *uarg);
++
+ /* Internal */
+ #define skb_shinfo(SKB)	((struct skb_shared_info *)(skb_end_pointer(SKB)))
  
--struct sk_buff *sock_alloc_send_skb(struct sock *sk, unsigned long size,
--				    int noblock, int *errcode)
--{
--	return sock_alloc_send_pskb(sk, size, 0, noblock, errcode, 0);
--}
--EXPORT_SYMBOL(sock_alloc_send_skb);
+diff --git a/net/core/datagram.c b/net/core/datagram.c
+index 70126d15ca6e..50f4faeea76c 100644
+--- a/net/core/datagram.c
++++ b/net/core/datagram.c
+@@ -62,8 +62,6 @@
+ #include <trace/events/skb.h>
+ #include <net/busy_poll.h>
+ 
+-#include "datagram.h"
 -
- int __sock_cmsg_send(struct sock *sk, struct msghdr *msg, struct cmsghdr *cmsg,
- 		     struct sockcm_cookie *sockc)
- {
+ /*
+  *	Is a socket 'connection oriented' ?
+  */
+diff --git a/net/core/datagram.h b/net/core/datagram.h
+deleted file mode 100644
+index bcfb75bfa3b2..000000000000
+--- a/net/core/datagram.h
++++ /dev/null
+@@ -1,15 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-
+-#ifndef _NET_CORE_DATAGRAM_H_
+-#define _NET_CORE_DATAGRAM_H_
+-
+-#include <linux/types.h>
+-
+-struct sock;
+-struct sk_buff;
+-struct iov_iter;
+-
+-int __zerocopy_sg_from_iter(struct sock *sk, struct sk_buff *skb,
+-			    struct iov_iter *from, size_t length);
+-
+-#endif /* _NET_CORE_DATAGRAM_H_ */
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 30b523fa4ad2..384c6098a5f8 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -80,7 +80,6 @@
+ #include <linux/user_namespace.h>
+ #include <linux/indirect_call_wrapper.h>
+ 
+-#include "datagram.h"
+ #include "sock_destructor.h"
+ 
+ struct kmem_cache *skbuff_head_cache __ro_after_init;
+@@ -1339,12 +1338,6 @@ void msg_zerocopy_put_abort(struct ubuf_info *uarg, bool have_uref)
+ }
+ EXPORT_SYMBOL_GPL(msg_zerocopy_put_abort);
+ 
+-int skb_zerocopy_iter_dgram(struct sk_buff *skb, struct msghdr *msg, int len)
+-{
+-	return __zerocopy_sg_from_iter(skb->sk, skb, &msg->msg_iter, len);
+-}
+-EXPORT_SYMBOL_GPL(skb_zerocopy_iter_dgram);
+-
+ int skb_zerocopy_iter_stream(struct sock *sk, struct sk_buff *skb,
+ 			     struct msghdr *msg, int len,
+ 			     struct ubuf_info *uarg)
 -- 
 2.36.0
 
