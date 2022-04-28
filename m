@@ -2,82 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CAA85130DF
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 12:08:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E0015131C7
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 12:57:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234519AbiD1KKz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 06:10:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48586 "EHLO
+        id S234750AbiD1LAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 07:00:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233947AbiD1KKa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 06:10:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CAF3384
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 03:00:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CFB6CB82C87
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 10:00:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 87958C385AC;
-        Thu, 28 Apr 2022 10:00:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651140011;
-        bh=EZIKsZctWF6WRVe8UpjDYwyKKVe1UzcaU2vLkW2OR/k=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=muOppFgs2O9Nx8BdFQpKIWfe9jRKUQHGdKE1ISNu5bVpnzpZWjFyn4WvXZFAoG7Q/
-         IWciLk1fcjWcwRfgjOvrgfqAPhlL5xTV2bSEAs0NODc/0k3IAVRWm/fhNF56xirfZU
-         oe5TyV1a9jvKQRuXjdLaRuo2VH70BMQM0PgWiVwqBpv9DxvT67W2gUzFEhizKuzKLd
-         2d/B6P7D6L7x0XA4Uj67h3joPFWYX90K/Nn+9BO3/GvpOJpfrak2M99ihPiumbKWQ8
-         xulU9gkmjIfFNY1apCJ4Um5liO+NqfG1N4lEyr6iL5pZ5O7Kf7ZRFYf7gbctY7y2u9
-         PqO0f8CaFYlfA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 68BEDE8DD67;
-        Thu, 28 Apr 2022 10:00:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S232744AbiD1LAk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 07:00:40 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18A738F191;
+        Thu, 28 Apr 2022 03:57:26 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id w4so6204352wrg.12;
+        Thu, 28 Apr 2022 03:57:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qOfh1COvoyM3AZfvmUJWlbfIX8rXmjd7VDG1F1LShxs=;
+        b=ZH5AvLjAUdN7EMRNbLW3yrATVhRnYjMfgKaDBi6dfzcTAsrnCKBK9UuRE3M8HAJPSI
+         vOEPR1RaGX13td0wrXAKqODPSf+hpJWnabVrkgypQ/6HsZj826/5seKEgzmBwd8dpUgN
+         wKCBAGmxiNtvTyi90EPqT+2Kb9uuJduSbZKFD0hyaa0xB3gTuQzavbsqI+5aIQTApCnn
+         Y68FLssgft+ueSp+6Wu4fBguex7pG6aUuqmOmXRGGxrhxvktqdJvaMTY9ED7lHd7q8xw
+         unDWkiUSglqdHD+oQ5oeGm9GdbgT1N/QAeK4H3K6q2wWHlkUArkhSFdq/+jhW4JTFS8J
+         QFqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qOfh1COvoyM3AZfvmUJWlbfIX8rXmjd7VDG1F1LShxs=;
+        b=VqOs7LeQhN/0PIxCbbOiaeo+BgZDZ62Z7E48klWtlSgplrWl5mnj2+Yyj/pONl3dMn
+         hMogWKQGDwGDV1pP0q7tj7vQCu8R3DD8ZggMZUy6Lwiin7Ga1d7S3qP4DTa7FkCJ5sG0
+         P45DLSEhsXU00UusfPz+ppCO/+4KTqS9fPF0BRpEAODgHkBlFN2PV+FGrf2LFOj4r/XI
+         pnjuS8ZbKdf7JUNFZVYj1iXK75hz+c5vhECtNdRjXaWad5sXJEj+sKIcLPOfXN2nanNX
+         2EmsigGYgwgPOYdTaTEiC1Ab6bTorfB8WhKONJL3V7wsok7RuXwuLKlXf516rZC+SMhE
+         /3Mw==
+X-Gm-Message-State: AOAM530kx9oMBdB/9EaMHP5vcdOKVbbWRDUZLCrvNulwBu0lR5ITivi9
+        RZAzKgcfdo+bw13+Tm2TNe7a/dT3IYk=
+X-Google-Smtp-Source: ABdhPJwAGBZir4sJBoK5shGZ7MlV9Up15O81dvS08lr4v78slykStvPEzX1jqYmifykmPhHBsjkHVw==
+X-Received: by 2002:adf:f0cc:0:b0:20a:dfae:c13a with SMTP id x12-20020adff0cc000000b0020adfaec13amr13474443wro.335.1651143444292;
+        Thu, 28 Apr 2022 03:57:24 -0700 (PDT)
+Received: from 127.0.0.1localhost (82-132-230-8.dab.02.net. [82.132.230.8])
+        by smtp.gmail.com with ESMTPSA id z11-20020a7bc14b000000b0039419dfbb39sm7547wmi.33.2022.04.28.03.57.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Apr 2022 03:57:23 -0700 (PDT)
+From:   Pavel Begunkov <asml.silence@gmail.com>
+To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-kernel@vger.kernel.org,
+        Pavel Begunkov <asml.silence@gmail.com>
+Subject: [PATCH net-next 00/11] UDP/IPv6 refactoring
+Date:   Thu, 28 Apr 2022 11:56:31 +0100
+Message-Id: <cover.1651071843.git.asml.silence@gmail.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: make sure net_rx_action() calls
- skb_defer_free_flush()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165114001142.30186.11257518855439776785.git-patchwork-notify@kernel.org>
-Date:   Thu, 28 Apr 2022 10:00:11 +0000
-References: <20220427204147.1310161-1-eric.dumazet@gmail.com>
-In-Reply-To: <20220427204147.1310161-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, edumazet@google.com, idosch@nvidia.com
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Refactor UDP/IPv6 and especially udpv6_sendmsg() paths. The end result looks
+cleaner than it was before and the series also removes a bunch of instructions
+and other overhead from the hot path positively affecting performance.
 
-This patch was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+It was a part of a larger series, there were some perf numbers for it, see
+https://lore.kernel.org/netdev/cover.1648981570.git.asml.silence@gmail.com/
 
-On Wed, 27 Apr 2022 13:41:47 -0700 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> I missed a stray return; in net_rx_action(), which very well
-> is taken whenever trigger_rx_softirq() has been called on
-> a cpu that is no longer receiving network packets,
-> or receiving too few of them.
-> 
-> [...]
+Pavel Begunkov (11):
+  ipv6: optimise ipcm6 cookie init
+  udp/ipv6: refactor udpv6_sendmsg udplite checks
+  udp/ipv6: move pending section of udpv6_sendmsg
+  udp/ipv6: prioritise the ip6 path over ip4 checks
+  udp/ipv6: optimise udpv6_sendmsg() daddr checks
+  udp/ipv6: optimise out daddr reassignment
+  udp/ipv6: clean up udpv6_sendmsg's saddr init
+  ipv6: partially inline fl6_update_dst()
+  ipv6: refactor opts push in __ip6_make_skb()
+  ipv6: improve opt-less __ip6_make_skb()
+  ipv6: clean up ip6_setup_cork
 
-Here is the summary with links:
-  - [net-next] net: make sure net_rx_action() calls skb_defer_free_flush()
-    https://git.kernel.org/netdev/net-next/c/f3412b3879b4
+ include/net/ipv6.h    |  24 +++----
+ net/ipv6/datagram.c   |   4 +-
+ net/ipv6/exthdrs.c    |  15 ++--
+ net/ipv6/ip6_output.c |  53 +++++++-------
+ net/ipv6/raw.c        |   8 +--
+ net/ipv6/udp.c        | 158 ++++++++++++++++++++----------------------
+ net/l2tp/l2tp_ip6.c   |   8 +--
+ 7 files changed, 122 insertions(+), 148 deletions(-)
 
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.36.0
 
