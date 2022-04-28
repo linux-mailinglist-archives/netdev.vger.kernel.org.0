@@ -2,145 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5345E512990
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 04:33:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0953512A49
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 06:04:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241513AbiD1Cg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 22:36:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59132 "EHLO
+        id S240042AbiD1EHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 00:07:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241500AbiD1Cg0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 22:36:26 -0400
-Received: from mint-fitpc2.mph.net (unknown [81.168.73.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7DC8B91566
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 19:33:13 -0700 (PDT)
-Received: from palantir17.mph.net (unknown [192.168.0.4])
-        by mint-fitpc2.mph.net (Postfix) with ESMTP id C543F32010B;
-        Thu, 28 Apr 2022 03:33:12 +0100 (BST)
-Received: from localhost ([::1] helo=palantir17.mph.net)
-        by palantir17.mph.net with esmtp (Exim 4.89)
-        (envelope-from <habetsm.xilinx@gmail.com>)
-        id 1njtxw-0005YY-J8; Thu, 28 Apr 2022 03:33:12 +0100
-Subject: [PATCH net-next v2 13/13] sfc: Add a basic Siena module
-From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     kuba@kernel.org, pabeni@redhat.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com
-Date:   Thu, 28 Apr 2022 03:33:12 +0100
-Message-ID: <165111319166.21042.16548872129643550141.stgit@palantir17.mph.net>
-In-Reply-To: <165111298464.21042.9988060027860048966.stgit@palantir17.mph.net>
-References: <165111298464.21042.9988060027860048966.stgit@palantir17.mph.net>
-User-Agent: StGit/0.17.1-dirty
+        with ESMTP id S231944AbiD1EH1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 00:07:27 -0400
+Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4FB8B986C2;
+        Wed, 27 Apr 2022 21:04:10 -0700 (PDT)
+Received: by ajax-webmail-mail-app4 (Coremail) ; Thu, 28 Apr 2022 12:03:45
+ +0800 (GMT+08:00)
+X-Originating-IP: [10.190.64.199]
+Date:   Thu, 28 Apr 2022 12:03:45 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   duoming@zju.edu.cn
+To:     "Jakub Kicinski" <kuba@kernel.org>
+Cc:     krzysztof.kozlowski@linaro.org, pabeni@redhat.com,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        gregkh@linuxfoundation.org, alexander.deucher@amd.com,
+        akpm@linux-foundation.org, broonie@kernel.org,
+        netdev@vger.kernel.org, linma@zju.edu.cn
+Subject: Re: Re: [PATCH net v4] nfc: nfcmrvl: main: reorder destructive
+ operations in nfcmrvl_nci_unregister_dev to avoid bugs
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+In-Reply-To: <20220427174548.2ae53b84@kernel.org>
+References: <20220427011438.110582-1-duoming@zju.edu.cn>
+ <20220427174548.2ae53b84@kernel.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=1.7 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-        FORGED_GMAIL_RCVD,FREEMAIL_FROM,KHOP_HELO_FCRDNS,MAY_BE_FORGED,
-        NML_ADSP_CUSTOM_MED,SPF_HELO_NONE,SPF_SOFTFAIL autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Message-ID: <12cdcfe5.1d62.1806e56d31f.Coremail.duoming@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: cS_KCgBXX6ciEmpixLT0AQ--.64701W
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAggOAVZdtZcUkAABsp
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make the (un)load message more specific to differentiate it from
-the sfc.ko messages.
-
-Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
----
- drivers/net/ethernet/sfc/Kconfig        |    1 +
- drivers/net/ethernet/sfc/Makefile       |    1 +
- drivers/net/ethernet/sfc/siena/Kconfig  |   12 ++++++++++++
- drivers/net/ethernet/sfc/siena/Makefile |   11 +++++++++++
- drivers/net/ethernet/sfc/siena/efx.c    |    6 +++---
- 5 files changed, 28 insertions(+), 3 deletions(-)
- create mode 100644 drivers/net/ethernet/sfc/siena/Kconfig
- create mode 100644 drivers/net/ethernet/sfc/siena/Makefile
-
-diff --git a/drivers/net/ethernet/sfc/Kconfig b/drivers/net/ethernet/sfc/Kconfig
-index 846fff16fa48..98db551ba2b7 100644
---- a/drivers/net/ethernet/sfc/Kconfig
-+++ b/drivers/net/ethernet/sfc/Kconfig
-@@ -65,5 +65,6 @@ config SFC_MCDI_LOGGING
- 	  a sysfs file 'mcdi_logging' under the PCI device.
- 
- source "drivers/net/ethernet/sfc/falcon/Kconfig"
-+source "drivers/net/ethernet/sfc/siena/Kconfig"
- 
- endif # NET_VENDOR_SOLARFLARE
-diff --git a/drivers/net/ethernet/sfc/Makefile b/drivers/net/ethernet/sfc/Makefile
-index 838ee3cdc229..0f806ea68837 100644
---- a/drivers/net/ethernet/sfc/Makefile
-+++ b/drivers/net/ethernet/sfc/Makefile
-@@ -13,3 +13,4 @@ sfc-$(CONFIG_SFC_SRIOV)	+= sriov.o ef10_sriov.o
- obj-$(CONFIG_SFC)	+= sfc.o
- 
- obj-$(CONFIG_SFC_FALCON) += falcon/
-+obj-$(CONFIG_SFC_SIENA) += siena/
-diff --git a/drivers/net/ethernet/sfc/siena/Kconfig b/drivers/net/ethernet/sfc/siena/Kconfig
-new file mode 100644
-index 000000000000..3d52aee50d5a
---- /dev/null
-+++ b/drivers/net/ethernet/sfc/siena/Kconfig
-@@ -0,0 +1,12 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+config SFC_SIENA
-+	tristate "Solarflare SFC9000 support"
-+	depends on PCI
-+	select MDIO
-+	select CRC32
-+	help
-+	  This driver supports 10-gigabit Ethernet cards based on
-+	  the Solarflare SFC9000 controller.
-+
-+	  To compile this driver as a module, choose M here.  The module
-+	  will be called sfc-siena.
-diff --git a/drivers/net/ethernet/sfc/siena/Makefile b/drivers/net/ethernet/sfc/siena/Makefile
-new file mode 100644
-index 000000000000..74cb8b7d281e
---- /dev/null
-+++ b/drivers/net/ethernet/sfc/siena/Makefile
-@@ -0,0 +1,11 @@
-+# SPDX-License-Identifier: GPL-2.0
-+sfc-siena-y		+= farch.o siena.o \
-+			   efx.o efx_common.o efx_channels.o nic.o \
-+			   tx.o tx_common.o rx.o rx_common.o \
-+			   selftest.o ethtool.o ethtool_common.o ptp.o \
-+			   mcdi.o mcdi_port.o mcdi_port_common.o \
-+			   mcdi_mon.o
-+sfc-siena-$(CONFIG_SFC_MTD)	+= mtd.o
-+sfc-siena-$(CONFIG_SFC_SRIOV)	+= siena_sriov.o
-+
-+obj-$(CONFIG_SFC_SIENA)	+= sfc-siena.o
-diff --git a/drivers/net/ethernet/sfc/siena/efx.c b/drivers/net/ethernet/sfc/siena/efx.c
-index c0e7a919b608..18ba1d6ff16a 100644
---- a/drivers/net/ethernet/sfc/siena/efx.c
-+++ b/drivers/net/ethernet/sfc/siena/efx.c
-@@ -1265,7 +1265,7 @@ static int __init efx_init_module(void)
- {
- 	int rc;
- 
--	printk(KERN_INFO "Solarflare NET driver\n");
-+	pr_info("Solarflare Siena driver\n");
- 
- 	rc = register_netdevice_notifier(&efx_netdev_notifier);
- 	if (rc)
-@@ -1291,7 +1291,7 @@ static int __init efx_init_module(void)
- 
- static void __exit efx_exit_module(void)
- {
--	printk(KERN_INFO "Solarflare NET driver unloading\n");
-+	pr_info("Solarflare Siena driver unloading\n");
- 
- 	pci_unregister_driver(&efx_pci_driver);
- 	efx_siena_destroy_reset_workqueue();
-@@ -1304,6 +1304,6 @@ module_exit(efx_exit_module);
- 
- MODULE_AUTHOR("Solarflare Communications and "
- 	      "Michael Brown <mbrown@fensystems.co.uk>");
--MODULE_DESCRIPTION("Solarflare network driver");
-+MODULE_DESCRIPTION("Solarflare Siena network driver");
- MODULE_LICENSE("GPL");
- MODULE_DEVICE_TABLE(pci, efx_pci_table);
-
+SGVsbG8sCgpPbiBXZWQsIDI3IEFwciAyMDIyIDE3OjQ1OjQ4IC0wNzAwIEpha3ViIEtpY2luc2tp
+IHdyb3RlOgoKPiA+IGRpZmYgLS1naXQgYS9uZXQvbmZjL2NvcmUuYyBiL25ldC9uZmMvY29yZS5j
+Cj4gPiBpbmRleCBkYzdhMjQwNGVmZC4uMWQ5MTMzNGVlODYgMTAwNjQ0Cj4gPiAtLS0gYS9uZXQv
+bmZjL2NvcmUuYwo+ID4gKysrIGIvbmV0L25mYy9jb3JlLmMKPiA+IEBAIC0yNSw2ICsyNSw4IEBA
+Cj4gPiAgI2RlZmluZSBORkNfQ0hFQ0tfUFJFU19GUkVRX01TCTIwMDAKPiA+ICAKPiA+ICBpbnQg
+bmZjX2Rldmxpc3RfZ2VuZXJhdGlvbjsKPiA+ICsvKiBuZmNfZG93bmxvYWQ6IHVzZWQgdG8ganVk
+Z2Ugd2hldGhlciBuZmMgZmlybXdhcmUgZG93bmxvYWQgY291bGQgc3RhcnQgKi8KPiA+ICtzdGF0
+aWMgYm9vbCBuZmNfZG93bmxvYWQ7Cj4gPiAgREVGSU5FX01VVEVYKG5mY19kZXZsaXN0X211dGV4
+KTsKPiA+ICAKPiA+ICAvKiBORkMgZGV2aWNlIElEIGJpdG1hcCAqLwo+ID4gQEAgLTM4LDcgKzQw
+LDcgQEAgaW50IG5mY19md19kb3dubG9hZChzdHJ1Y3QgbmZjX2RldiAqZGV2LCBjb25zdCBjaGFy
+ICpmaXJtd2FyZV9uYW1lKQo+ID4gIAo+ID4gIAlkZXZpY2VfbG9jaygmZGV2LT5kZXYpOwo+ID4g
+IAo+ID4gLQlpZiAoIWRldmljZV9pc19yZWdpc3RlcmVkKCZkZXYtPmRldikpIHsKPiA+ICsJaWYg
+KCFkZXZpY2VfaXNfcmVnaXN0ZXJlZCgmZGV2LT5kZXYpIHx8ICFuZmNfZG93bmxvYWQpIHsKPiA+
+ICAJCXJjID0gLUVOT0RFVjsKPiA+ICAJCWdvdG8gZXJyb3I7Cj4gPiAgCX0KPiA+IEBAIC0xMTM0
+LDYgKzExMzYsNyBAQCBpbnQgbmZjX3JlZ2lzdGVyX2RldmljZShzdHJ1Y3QgbmZjX2RldiAqZGV2
+KQo+ID4gIAkJCWRldi0+cmZraWxsID0gTlVMTDsKPiA+ICAJCX0KPiA+ICAJfQo+ID4gKwluZmNf
+ZG93bmxvYWQgPSB0cnVlOwo+ID4gIAlkZXZpY2VfdW5sb2NrKCZkZXYtPmRldik7Cj4gPiAgCj4g
+PiAgCXJjID0gbmZjX2dlbmxfZGV2aWNlX2FkZGVkKGRldik7Cj4gPiBAQCAtMTE2Niw2ICsxMTY5
+LDcgQEAgdm9pZCBuZmNfdW5yZWdpc3Rlcl9kZXZpY2Uoc3RydWN0IG5mY19kZXYgKmRldikKPiA+
+ICAJCXJma2lsbF91bnJlZ2lzdGVyKGRldi0+cmZraWxsKTsKPiA+ICAJCXJma2lsbF9kZXN0cm95
+KGRldi0+cmZraWxsKTsKPiA+ICAJfQo+ID4gKwluZmNfZG93bmxvYWQgPSBmYWxzZTsKPiA+ICAJ
+ZGV2aWNlX3VubG9jaygmZGV2LT5kZXYpOwo+ID4gIAo+ID4gIAlpZiAoZGV2LT5vcHMtPmNoZWNr
+X3ByZXNlbmNlKSB7Cj4gCj4gWW91IGNhbid0IHVzZSBhIHNpbmdsZSBnbG9iYWwgdmFyaWFibGUs
+IHRoZXJlIGNhbiBiZSBtYW55IGRldmljZXMgCj4gZWFjaCB3aXRoIHRoZWlyIG93biBsb2NrLgo+
+IAo+IFBhb2xvIHN1Z2dlc3RlZCBhZGRpbmcgYSBsb2NrLCBpZiBzcGluIGxvY2sgZG9lc24ndCBm
+aXQgdGhlIGJpbGwKPiB3aHkgbm90IGFkZCBhIG11dGV4PwoKV2UgY291bGQgbm90IHVzZSBtdXRl
+eCBlaXRoZXIsIGJlY2F1c2UgdGhlIHJlbGVhc2VfZmlybXdhcmUoKSBpcyBhbHNvIGNhbGxlZCBi
+eSBmd19kbmxkX3RpbWVvdXQoKQp3aGljaCBpcyBhIHRpbWVyIGhhbmRsZXIuIElmIHdlIHVzZSBt
+dXRleCBsb2NrIGluIGEgdGltZXIgaGFuZGxlciwgaXQgd2lsbCBjYXVzZSBzbGVlcCBpbiBhdG9t
+aWMgYnVnLgpUaGUgcHJvY2VzcyBpcyBzaG93biBiZWxvdzoKCm5mY21ydmxfZndfZG5sZF9zdGFy
+dAogLi4uICAgICAgICAgICAgICAKIG1vZF90aW1lciAKICh3YWl0IGEgdGltZSkgIAogZndfZG5s
+ZF90aW1lb3V0CiAgIGZ3X2RubGRfb3ZlciAKICAgIHJlbGVhc2VfZmlybXdhcmUgICAgICAgCgpJ
+IHdpbGwgY2hhbmdlIHRoZSBzaW5nbGUgZ2xvYmFsIHZhcmlhYmxlIHRvIGRldi0+ZGV2X3VwIGZs
+YWcsIHdoaWNoIGlzIHNob3duIGJlbG93OgoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmZjL25mY21y
+dmwvbWFpbi5jIGIvZHJpdmVycy9uZmMvbmZjbXJ2bC9tYWluLmMKaW5kZXggMmZjZjU0NTAxMmIu
+LjFhNTI4NGRlNDM0IDEwMDY0NAotLS0gYS9kcml2ZXJzL25mYy9uZmNtcnZsL21haW4uYworKysg
+Yi9kcml2ZXJzL25mYy9uZmNtcnZsL21haW4uYwpAQCAtMTgzLDYgKzE4Myw3IEBAIHZvaWQgbmZj
+bXJ2bF9uY2lfdW5yZWdpc3Rlcl9kZXYoc3RydWN0IG5mY21ydmxfcHJpdmF0ZSAqcHJpdikKIHsK
+ICAgICAgICBzdHJ1Y3QgbmNpX2RldiAqbmRldiA9IHByaXYtPm5kZXY7CgorICAgICAgIG5jaV91
+bnJlZ2lzdGVyX2RldmljZShuZGV2KTsKICAgICAgICBpZiAocHJpdi0+bmRldi0+bmZjX2Rldi0+
+ZndfZG93bmxvYWRfaW5fcHJvZ3Jlc3MpCiAgICAgICAgICAgICAgICBuZmNtcnZsX2Z3X2RubGRf
+YWJvcnQocHJpdik7CgpAQCAtMTkxLDcgKzE5Miw2IEBAIHZvaWQgbmZjbXJ2bF9uY2lfdW5yZWdp
+c3Rlcl9kZXYoc3RydWN0IG5mY21ydmxfcHJpdmF0ZSAqcHJpdikKICAgICAgICBpZiAoZ3Bpb19p
+c192YWxpZChwcml2LT5jb25maWcucmVzZXRfbl9pbykpCiAgICAgICAgICAgICAgICBncGlvX2Zy
+ZWUocHJpdi0+Y29uZmlnLnJlc2V0X25faW8pOwoKLSAgICAgICBuY2lfdW5yZWdpc3Rlcl9kZXZp
+Y2UobmRldik7CiAgICAgICAgbmNpX2ZyZWVfZGV2aWNlKG5kZXYpOwogICAgICAgIGtmcmVlKHBy
+aXYpOwogfQpkaWZmIC0tZ2l0IGEvbmV0L25mYy9jb3JlLmMgYi9uZXQvbmZjL2NvcmUuYwppbmRl
+eCBkYzdhMjQwNGVmZC4uMDlmNTRjNTk5ZmUgMTAwNjQ0Ci0tLSBhL25ldC9uZmMvY29yZS5jCisr
+KyBiL25ldC9uZmMvY29yZS5jCkBAIC0xMTY2LDYgKzExNjYsNyBAQCB2b2lkIG5mY191bnJlZ2lz
+dGVyX2RldmljZShzdHJ1Y3QgbmZjX2RldiAqZGV2KQogICAgICAgICAgICAgICAgcmZraWxsX3Vu
+cmVnaXN0ZXIoZGV2LT5yZmtpbGwpOwogICAgICAgICAgICAgICAgcmZraWxsX2Rlc3Ryb3koZGV2
+LT5yZmtpbGwpOwogICAgICAgIH0KKyAgICAgICBkZXYtPmRldl91cCA9IGZhbHNlOwogICAgICAg
+IGRldmljZV91bmxvY2soJmRldi0+ZGV2KTsKCiAgICAgICAgaWYgKGRldi0+b3BzLT5jaGVja19w
+cmVzZW5jZSkgewoKVGhlIGFib3ZlIHNvbHV0aW9uIGhhcyBiZWVuIHRlc3RlZCwgaXQgaXMgd2Vs
+bCBzeW5jaHJvbml6ZWQuCgpCZXN0IHJlZ2FyZHMsCkR1b21pbmcgWmhvdQ==
