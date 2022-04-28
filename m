@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 94E01512AAA
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 06:45:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04D2C512AAB
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 06:45:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242761AbiD1Eso (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 00:48:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58180 "EHLO
+        id S242782AbiD1Es5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 00:48:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242750AbiD1Esk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 00:48:40 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 198067E1CC;
-        Wed, 27 Apr 2022 21:45:26 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id cx11-20020a17090afd8b00b001d9fe5965b3so4741562pjb.3;
-        Wed, 27 Apr 2022 21:45:25 -0700 (PDT)
+        with ESMTP id S242749AbiD1Esz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 00:48:55 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A55DD7E584;
+        Wed, 27 Apr 2022 21:45:31 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id s14so3320471plk.8;
+        Wed, 27 Apr 2022 21:45:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=qqLZH2kT0VZk1aTqY0djLHvcpdD94tYke0uBRNxBxKo=;
-        b=C5GChY4u5CBRL+hIkU67WO5B/AEtUj9yLTNI3ZvuwJAF+0pxp4BzAsThqBazrQ36pM
-         yBGfAEBffCqxcGXNkoiwFTVLYa5RixeZvSOlbZqGJ1NDyel+JZikML5609hjwQY9aUxJ
-         V31lswIPw9Lxtmx7bxlm25+GTIuQ9uVLbH5wr0i/1m3imbsm/eb5nbZGyg8ctHg/qpiz
-         3RbfFEawH4sV3HfAOeMFExBxzMWNvzY+brGRGufbnqwrxX5FYXmanUNJ8/s8qnmBBkKi
-         HBcb5D7ZrJ5dIQ59JOnn6hhprakFYFjiW2GjcB6gBfBdl+prtPdNRQMfvuvSV/mr1GOa
-         0nVQ==
+        bh=0QMVMVn+IZHfrtGyBLE7ozV0kzqRjUfSOXI9JDYurmk=;
+        b=kdZGx+bPasdFVsGh1wL6HqEeeqHFc/wGJdD1a3WQUdw5kRM+abybBKCx/zLr8NaPQK
+         UhrHErfGwt58Sh5AN4V6zjJow8OG8euf3Kt61cwjaW3vUFpa66KDHaUm6K36aLssEMck
+         WFdCoOzllK0k5y/czdviERyeCeL9rd2Twp5CJoFROM4IleUHgxsByoAB+jPABinv+KO6
+         vPxP3GIlAkYQO7xcAfsQNiIMRaIiNvviadu41lViW8OkLEMIZwdXpLTLfkEySVnJ10VQ
+         aHudkIjLvROK+Yq3CtCu9KNJZ5q7O4IhyX0LY99ZEiONPPhoPtyWdCz8FTMrfxlsFcHX
+         kqMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qqLZH2kT0VZk1aTqY0djLHvcpdD94tYke0uBRNxBxKo=;
-        b=agVVK3WgmJoJKfqkFSN3dxemInI9TWM93BAYQAONqZo41gzfchQMHrp0iUzmyEoScx
-         Tjbb2/uQjlKLpIvZIU7dQn2vRS9oX0ywhogtMI1kInkNNlQlP5cM5kC2dy1PdMZyo28C
-         TLaCZzmRn+0rsgPAndYb7r0EDr0Hzv8hwqZKrerOyqzVKtIu2RT7+gpSBbLoKbsGe3Yh
-         gNCF1gBtqb3DzRZ8eMuGMcR94XGTmg7Zb/SDL8aiSCTHG6wVdccBboHSswbAtYcakvT/
-         876lxtHlKb6HA4/ug0vxIVs9VvAiQeIjdgrZovqk/nxDZ3kfzE3VehMxkk9VRJTkp+MK
-         NNCg==
-X-Gm-Message-State: AOAM532nYGmc+An4PCVFz+EZMd37mmX3tPJyQJLgoltiWj140pQWh8QG
-        3zPX3fWk0kmXmf1fmI7XhCRdWwFOvQw=
-X-Google-Smtp-Source: ABdhPJxXcrF2Zv46HSOwFqqwZ0pt1cf5lLg0jz0BIQOLJ5LLLijZUgEuxQ9VHnWiyxbWPP01ZbGW7A==
-X-Received: by 2002:a17:90a:8591:b0:1b9:da10:2127 with SMTP id m17-20020a17090a859100b001b9da102127mr47623045pjn.13.1651121125346;
-        Wed, 27 Apr 2022 21:45:25 -0700 (PDT)
+        bh=0QMVMVn+IZHfrtGyBLE7ozV0kzqRjUfSOXI9JDYurmk=;
+        b=Dq6hT0LPtn1MgWxSgyzor3sDjoODx8iYfyUUvA3LZi8Mxwy1iV5cnFSm8pMVNtWIp/
+         I1vc8P4l1TuiCsguFNwFhf1m/LSg3tAvdgerTd/UmqKVy4Mt4J/BdIxhmYNiPn+X1i13
+         hPT9JX81QDWhBENiXkRFwUd/9uHLVRN1GpLWSeVynx7Z/yJ5MxPSkNY99S7/zbkv5tnG
+         Q9XlBfUGAuXY+q3wUXvcFxwD3utxLdRvy7MJX/X82ViRcypQWV4TL2esHGqxRpWL5i/O
+         reYgpt5hcHqWHAfr4nIheOugHlCjPYpqZ8b4MiX2PcN6Dlo4oGRxOsp3vaKIUWbstTO0
+         sa2w==
+X-Gm-Message-State: AOAM530V/7plq5A95JU4gBr6PyYt6r1FwVxAC0tTorcvBkE5Ow1rsqQw
+        A9tIqg1YLBKOOxdM7cMgrDhQjGorrhg=
+X-Google-Smtp-Source: ABdhPJxSglGKMD4y+4r1qwckgHK87sFA1QDZcX94BmWLXHfAQhh3Tf1dP6M8jKH1to/BJHp9UmZeTA==
+X-Received: by 2002:a17:90b:1bc3:b0:1d9:5dcd:3468 with SMTP id oa3-20020a17090b1bc300b001d95dcd3468mr23663199pjb.11.1651121130865;
+        Wed, 27 Apr 2022 21:45:30 -0700 (PDT)
 Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id f186-20020a62dbc3000000b0050d3aa8c904sm14301162pfg.206.2022.04.27.21.45.20
+        by smtp.gmail.com with ESMTPSA id f186-20020a62dbc3000000b0050d3aa8c904sm14301162pfg.206.2022.04.27.21.45.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Apr 2022 21:45:24 -0700 (PDT)
+        Wed, 27 Apr 2022 21:45:30 -0700 (PDT)
 From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -59,9 +59,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Amit Cohen <amitc@mellanox.com>,
         Petr Machata <petrm@mellanox.com>, lkp-owner@lists.01.org,
         Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net 1/2] selftests/net: add missing tests to Makefile
-Date:   Thu, 28 Apr 2022 12:45:10 +0800
-Message-Id: <20220428044511.227416-2-liuhangbin@gmail.com>
+Subject: [PATCH net 2/2] selftests/net/forwarding: add missing tests to Makefile
+Date:   Thu, 28 Apr 2022 12:45:11 +0800
+Message-Id: <20220428044511.227416-3-liuhangbin@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220428044511.227416-1-liuhangbin@gmail.com>
 References: <20220428044511.227416-1-liuhangbin@gmail.com>
@@ -81,34 +81,103 @@ When generating the selftests to another folder, the fixed tests are
 missing as they are not in Makefile, e.g.
 
   make -C tools/testing/selftests/ install \
-  	TARGETS="net" INSTALL_PATH=/tmp/kselftests
+  	TARGETS="net/forwarding" INSTALL_PATH=/tmp/kselftests
 
 Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 ---
- tools/testing/selftests/net/Makefile | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ .../testing/selftests/net/forwarding/Makefile | 33 +++++++++++++++++++
+ 1 file changed, 33 insertions(+)
 
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 3fe2515aa616..0f2ebc38d893 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -30,7 +30,7 @@ TEST_PROGS += ioam6.sh
- TEST_PROGS += gro.sh
- TEST_PROGS += gre_gso.sh
- TEST_PROGS += cmsg_so_mark.sh
--TEST_PROGS += cmsg_time.sh
-+TEST_PROGS += cmsg_time.sh cmsg_ipv6.sh
- TEST_PROGS += srv6_end_dt46_l3vpn_test.sh
- TEST_PROGS += srv6_end_dt4_l3vpn_test.sh
- TEST_PROGS += srv6_end_dt6_l3vpn_test.sh
-@@ -54,6 +54,7 @@ TEST_GEN_PROGS = reuseport_bpf reuseport_bpf_cpu reuseport_bpf_numa
- TEST_GEN_PROGS += reuseport_dualstack reuseaddr_conflict tls
- TEST_GEN_FILES += toeplitz
- TEST_GEN_FILES += cmsg_sender
-+TEST_PROGS += test_vxlan_vnifiltering.sh
+diff --git a/tools/testing/selftests/net/forwarding/Makefile b/tools/testing/selftests/net/forwarding/Makefile
+index 8fa97ae9af9e..c87e674b61b1 100644
+--- a/tools/testing/selftests/net/forwarding/Makefile
++++ b/tools/testing/selftests/net/forwarding/Makefile
+@@ -2,15 +2,31 @@
  
- TEST_FILES := settings
+ TEST_PROGS = bridge_igmp.sh \
+ 	bridge_locked_port.sh \
++	bridge_mld.sh \
+ 	bridge_port_isolation.sh \
+ 	bridge_sticky_fdb.sh \
+ 	bridge_vlan_aware.sh \
++	bridge_vlan_mcast.sh \
+ 	bridge_vlan_unaware.sh \
++	custom_multipath_hash.sh \
++	dual_vxlan_bridge.sh \
++	ethtool_extended_state.sh \
+ 	ethtool.sh \
++	gre_custom_multipath_hash.sh \
+ 	gre_inner_v4_multipath.sh \
+ 	gre_inner_v6_multipath.sh \
++	gre_multipath_nh_res.sh \
++	gre_multipath_nh.sh \
+ 	gre_multipath.sh \
++	hw_stats_l3.sh \
+ 	ip6_forward_instats_vrf.sh \
++	ip6gre_custom_multipath_hash.sh \
++	ip6gre_flat_key.sh \
++	ip6gre_flat_keys.sh \
++	ip6gre_flat.sh \
++	ip6gre_hier_key.sh \
++	ip6gre_hier_keys.sh \
++	ip6gre_hier.sh \
+ 	ip6gre_inner_v4_multipath.sh \
+ 	ip6gre_inner_v6_multipath.sh \
+ 	ipip_flat_gre_key.sh \
+@@ -34,36 +50,53 @@ TEST_PROGS = bridge_igmp.sh \
+ 	mirror_gre_vlan_bridge_1q.sh \
+ 	mirror_gre_vlan.sh \
+ 	mirror_vlan.sh \
++	pedit_dsfield.sh \
++	pedit_ip.sh \
++	pedit_l4port.sh \
++	q_in_vni_ipv6.sh \
++	q_in_vni.sh \
+ 	router_bridge.sh \
+ 	router_bridge_vlan.sh \
+ 	router_broadcast.sh \
++	router_mpath_nh_res.sh \
+ 	router_mpath_nh.sh \
+ 	router_multicast.sh \
+ 	router_multipath.sh \
++	router_nh.sh \
+ 	router.sh \
+ 	router_vid_1.sh \
+ 	sch_ets.sh \
++	sch_red.sh \
+ 	sch_tbf_ets.sh \
+ 	sch_tbf_prio.sh \
+ 	sch_tbf_root.sh \
++	skbedit_priority.sh \
+ 	tc_actions.sh \
+ 	tc_chains.sh \
+ 	tc_flower_router.sh \
+ 	tc_flower.sh \
+ 	tc_mpls_l2vpn.sh \
++	tc_police.sh \
+ 	tc_shblocks.sh \
+ 	tc_vlan_modify.sh \
++	vxlan_asymmetric_ipv6.sh \
+ 	vxlan_asymmetric.sh \
++	vxlan_bridge_1d_ipv6.sh \
++	vxlan_bridge_1d_port_8472_ipv6.sh \
+ 	vxlan_bridge_1d_port_8472.sh \
+ 	vxlan_bridge_1d.sh \
++	vxlan_bridge_1q_ipv6.sh \
++	vxlan_bridge_1q_port_8472_ipv6.sh
+ 	vxlan_bridge_1q_port_8472.sh \
+ 	vxlan_bridge_1q.sh \
++	vxlan_symmetric_ipv6.sh \
+ 	vxlan_symmetric.sh
  
+ TEST_PROGS_EXTENDED := devlink_lib.sh \
+ 	ethtool_lib.sh \
+ 	fib_offload_lib.sh \
+ 	forwarding.config.sample \
++	ip6gre_lib.sh \
+ 	ipip_lib.sh \
+ 	lib.sh \
+ 	mirror_gre_lib.sh \
 -- 
 2.35.1
 
