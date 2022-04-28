@@ -2,131 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E153513DD4
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 23:48:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F2F4513E1E
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 23:51:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352394AbiD1VvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 17:51:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42894 "EHLO
+        id S237166AbiD1VyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 17:54:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232756AbiD1VvQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 17:51:16 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60680BB0A7
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 14:48:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1651182467;
-        bh=MFzx+iTQ1YFM9KV5h6tH8q0bl9eJIeLqcOHeAa6/TDU=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=G9e2wJ9UlF3jtXQ5hZAiQzm1OJ3lusnfsP45NipzZKU9usKdLU2Oe7WlPDpFnfTKV
-         fImJYUuMtXUEYqxpQwyAREk/JZO1eJlcJVEtWFW8WWoOL5og+MXcnnD8qpkEFPFrdq
-         Lg5wP9WFmOH59lXU4TbhyDbPvlYbGR5r/oQkBhro=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [46.223.3.70] ([46.223.3.70]) by web-mail.gmx.net
- (3c-app-gmx-bap57.server.lan [172.19.172.127]) (via HTTP); Thu, 28 Apr 2022
- 23:47:47 +0200
+        with ESMTP id S1352732AbiD1Vx4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 17:53:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C644A5FF2;
+        Thu, 28 Apr 2022 14:50:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 68B7C61F84;
+        Thu, 28 Apr 2022 21:50:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A6E11C385BE;
+        Thu, 28 Apr 2022 21:50:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651182612;
+        bh=x5OnaX+XkqyXoOld6XiV9RU/QQ1gGo8AZycsnccJS60=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=PTCb8t5oJbECW+/PCbB1nNmObh9rEhyKTTMwsjLi7ml6XE/bEM4cLzOCi7579ai9d
+         n+4qqp4N1iIWmPi6o8/axbsBrpuxdnRIsgJV4tsMfQQHz9Lby40txxwcoQkedBPP6v
+         qb/DuoPvIdiikGPiDjBXWiymHtOdpiLhhyUrfc1Zqx0XzkTEFePGdJT728vUT/lntQ
+         NOQmy8NaVHN1P2Q83zFWKxs54V6ANeqyDWY+DEeBgKPop+adNXjFAWgXkOvFNQjo6g
+         OGSPV1tM0eFyjNx1zqS/CSMiWWeaKFUXw1ylVInxmS5oHyCE3VqUN6fSkN28ZyU3/X
+         Wc9Bxca/pjm9g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8C750F03875;
+        Thu, 28 Apr 2022 21:50:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Message-ID: <trinity-b3b6d48a-1d62-4280-b52e-5511074f79c9-1651182467378@3c-app-gmx-bap57>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
-        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: Aw: [PATCH net-next v2 07/15] slic: remove a copy of the
- NAPI_POLL_WEIGHT define
-Content-Type: text/plain; charset=UTF-8
-Date:   Thu, 28 Apr 2022 23:47:47 +0200
-Importance: normal
-Sensitivity: Normal
-In-Reply-To: <20220428212323.104417-8-kuba@kernel.org>
-References: <20220428212323.104417-1-kuba@kernel.org>
- <20220428212323.104417-8-kuba@kernel.org>
-X-UI-Message-Type: mail
-X-Priority: 3
-X-Provags-ID: V03:K1:NHZGPhQ00Ly7ycLcyU/K3HMfUvPZvr9EOsgl828APJl/eIav41f0ySReb8esR4b/M+3f3
- 5K2a7bOAkUgqf//6FDuVED7kn5Gk3IsZgNB7KOl9DxXFgLsZjqr97igk37ld9EgjgUOgDBWnV2oh
- FuXd5Z1OITunnTZiHkTFES2Hy0nGNAlOq/eaymLzaq9NLZdAmdprFpYWiTLT6zp85qbj/CXLZvbk
- QYoit3PlXVaf9R1fdURL6fNpq61FsDuvPEorljekkvOPTKWHvab+vRUTOG43KOORkEaA12xa03Bw
- gU=
-X-UI-Out-Filterresults: notjunk:1;V03:K0:g5fp/3B5bRo=:s1sZVO1qUxvaicOEmzbX5S
- rkUgJyPWQdlQYYeQtf1Q8xtVt32jQryN4MvwhoWiQyNvBXqCzp9hvGbMyLX7dCRPdvyC1tA1K
- KWvmX0WvAfrjtzc9jN08jL9mw+5/SpB4DE1l/FdzBpaMKRjDxdG80k44aA20ePfn8yf+/pN7O
- ZQMi6Rj+D9ru4MGUyCSXyF2k5QVzKTYZoDLvgvhdGIprQr7GyaX/YVzkWTe09CuYLp9G1V4uO
- tgzKbGp6SEN4hGlQZqLKs1L/bbt6OEXB3QkVFnK7Kq0xJ4uaOouic5Et/eg6Yz2IECrPy05fT
- iz+rARbqXoa1mO7yw+6GZqiNYUXRH43FAuUfofOtNECaoEcyZRD5U89/LEijA7EtCcUfCto7G
- I13Qd1M/JD5zHPntDvaz2rao2VGMjI0Sx5og0qmqQlmgcOzZ16m6rzgFQujCorRCZPhHBhfRx
- 7YfAMGSsE3pF3lffJjjjHdcO3mNhgnQcQJU9Mjtvwof7SEGonpogU7/XBfTPR9z0BMcZ/5Tqq
- WN2rdNNPp/z0KlItIOu3ks+YmBC0ckOlE8gxzR3vUdRZyPqSG9Te44vPYCwlvBWP9rfjf9D+G
- vq48BL3YF9arYjtpMEqfrOkxoX1h6frCkhGTAwH2mFjY2ThZe4eT138TuzRiOCHt4e42K+PXc
- DG7aAIqainTo9BRfOepqEE1lBgJYFhNG1WsjehNuEuthIDStxg4PQcEG+N0xS1bguD+CVqEXW
- xkkbWEVXBF8dZZXsiQg1TYovmoKUZuGMk+yoYwy3P0gjEP4yp9I2P7Fjn42+aVr/nS7i8zHQ8
- qDGYkcB
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,FREEMAIL_FROM,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next] bpf,
+ sockmap: Call skb_linearize only when required in
+ sk_psock_skb_ingress_enqueue
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165118261257.31667.7823567869619454038.git-patchwork-notify@kernel.org>
+Date:   Thu, 28 Apr 2022 21:50:12 +0000
+References: <20220427115150.210213-1-liujian56@huawei.com>
+In-Reply-To: <20220427115150.210213-1-liujian56@huawei.com>
+To:     Liu Jian <liujian56@huawei.com>
+Cc:     john.fastabend@gmail.com, daniel@iogearbox.net,
+        jakub@cloudflare.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, ast@kernel.org, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hello:
 
-> Gesendet: Donnerstag, 28. April 2022 um 23:23 Uhr
-> Von: "Jakub Kicinski" <kuba@kernel.org>
-> An: davem@davemloft.net, pabeni@redhat.com
-> Cc: edumazet@google.com, netdev@vger.kernel.org, "Jakub Kicinski" <kuba@=
-kernel.org>, LinoSanfilippo@gmx.de
-> Betreff: [PATCH net-next v2 07/15] slic: remove a copy of the NAPI_POLL_=
-WEIGHT define
->
-> Defining local versions of NAPI_POLL_WEIGHT with the same
-> values in the drivers just makes refactoring harder.
->
+This patch was applied to bpf/bpf-next.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
 
-Agreed, FWIW:
-Acked-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
-
-
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+On Wed, 27 Apr 2022 19:51:50 +0800 you wrote:
+> The skb_to_sgvec fails only when the number of frag_list and frags exceeds
+> MAX_MSG_FRAGS. Therefore, we can call skb_linearize only when the
+> conversion fails.
+> 
+> Signed-off-by: Liu Jian <liujian56@huawei.com>
 > ---
-> CC: LinoSanfilippo@gmx.de
-> ---
->  drivers/net/ethernet/alacritech/slic.h    | 2 --
->  drivers/net/ethernet/alacritech/slicoss.c | 2 +-
->  2 files changed, 1 insertion(+), 3 deletions(-)
->
-> diff --git a/drivers/net/ethernet/alacritech/slic.h b/drivers/net/ethern=
-et/alacritech/slic.h
-> index 3add305d34b4..4eecbdfff3ff 100644
-> --- a/drivers/net/ethernet/alacritech/slic.h
-> +++ b/drivers/net/ethernet/alacritech/slic.h
-> @@ -265,8 +265,6 @@
->  #define SLIC_NUM_STAT_DESC_ARRAYS	4
->  #define SLIC_INVALID_STAT_DESC_IDX	0xffffffff
->
-> -#define SLIC_NAPI_WEIGHT		64
-> -
->  #define SLIC_UPR_LSTAT			0
->  #define SLIC_UPR_CONFIG			1
->
-> diff --git a/drivers/net/ethernet/alacritech/slicoss.c b/drivers/net/eth=
-ernet/alacritech/slicoss.c
-> index 1fc9a1cd3ef8..ce353b0c02a3 100644
-> --- a/drivers/net/ethernet/alacritech/slicoss.c
-> +++ b/drivers/net/ethernet/alacritech/slicoss.c
-> @@ -1803,7 +1803,7 @@ static int slic_probe(struct pci_dev *pdev, const =
-struct pci_device_id *ent)
->  		goto unmap;
->  	}
->
-> -	netif_napi_add(dev, &sdev->napi, slic_poll, SLIC_NAPI_WEIGHT);
-> +	netif_napi_add(dev, &sdev->napi, slic_poll, NAPI_POLL_WEIGHT);
->  	netif_carrier_off(dev);
->
->  	err =3D register_netdev(dev);
-> --
-> 2.34.1
+>  net/core/skmsg.c | 22 +++++++++++++---------
+>  1 file changed, 13 insertions(+), 9 deletions(-)
 
-Best regards,
-Lino
+Here is the summary with links:
+  - [bpf-next] bpf, sockmap: Call skb_linearize only when required in sk_psock_skb_ingress_enqueue
+    https://git.kernel.org/bpf/bpf-next/c/3527bfe6a92d
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
