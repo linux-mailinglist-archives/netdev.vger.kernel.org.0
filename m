@@ -2,153 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B6C1A512C5F
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 09:09:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6BC6512C7A
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 09:16:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244824AbiD1HLH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 03:11:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41596 "EHLO
+        id S244956AbiD1HSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 03:18:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233708AbiD1HLG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 03:11:06 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B74B7CB03;
-        Thu, 28 Apr 2022 00:07:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1651129672; x=1682665672;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=7IQZ0nOuAp1XafDeS7vtdno92cZi3MiHQLnW4BFWw8I=;
-  b=DxZJmbVGMuB+ygO9uq4iwz8sTnBacLwZW4cYVEJV7uo9lemUHOl7AsrK
-   JL7cBExdFijKIoxUCEwo/U8sgQYS8YYw43EHiFHRUMgu/H0liEqNkOqxE
-   oZyntkFw1caPBREsradLv0T6pPLQBQad8AckBAcUZjqXRWt1bZb4w43HO
-   m+UajhpIuK94bzhquoKKHlM8bupHXXQd8jrgWEs/7W+gzwAF82uS8hDyx
-   jf4hvdBKzRkCMA4vlGNen3i6y2OSnWnK9yvHJvD0BFsSAY87nEnBsfR/q
-   BV0IczjuWeUNRjeZbazZXNMYFs74XRdyb125MxGTaEc6aL2+QjnGRrU8f
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,295,1643698800"; 
-   d="scan'208";a="157093245"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Apr 2022 00:07:51 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 28 Apr 2022 00:07:51 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 28 Apr 2022 00:07:47 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, <UNGLinuxDriver@microchip.com>,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: [Patch net] net: dsa: ksz9477: port mirror sniffing limited to one port
-Date:   Thu, 28 Apr 2022 12:37:09 +0530
-Message-ID: <20220428070709.7094-1-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.33.0
+        with ESMTP id S244936AbiD1HSb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 03:18:31 -0400
+Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0E42C972B2;
+        Thu, 28 Apr 2022 00:15:15 -0700 (PDT)
+Received: by ajax-webmail-mail-app2 (Coremail) ; Thu, 28 Apr 2022 15:15:02
+ +0800 (GMT+08:00)
+X-Originating-IP: [10.181.234.41]
+Date:   Thu, 28 Apr 2022 15:15:02 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   "Lin Ma" <linma@zju.edu.cn>
+To:     "Jakub Kicinski" <kuba@kernel.org>
+Cc:     "Duoming Zhou" <duoming@zju.edu.cn>,
+        krzysztof.kozlowski@linaro.org, pabeni@redhat.com,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        gregkh@linuxfoundation.org, alexander.deucher@amd.com,
+        akpm@linux-foundation.org, broonie@kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net v4] nfc: ... device_is_registered() is data
+ race-able
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+In-Reply-To: <20220427174548.2ae53b84@kernel.org>
+References: <20220427011438.110582-1-duoming@zju.edu.cn>
+ <20220427174548.2ae53b84@kernel.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Message-ID: <38929d91.237b.1806f05f467.Coremail.linma@zju.edu.cn>
+X-Coremail-Locale: en_US
+X-CM-TRANSID: by_KCgC3pcX3PmpioM+tAg--.58464W
+X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/1tbiAwUOElNG3GhBaQAAsT
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch limits the sniffing to only one port during the mirror add.
-And during the mirror_del it checks for all the ports using the sniff,
-if and only if no other ports are referring, sniffing is disabled.
-The code is updated based on the review comments of LAN937x port mirror
-patch.
-
-Link: https://patchwork.kernel.org/project/netdevbpf/patch/20210422094257.1641396-8-prasanna.vengateshan@microchip.com/
-Fixes: b987e98e50ab ("dsa: add DSA switch driver for Microchip KSZ9477")
-Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
----
- drivers/net/dsa/microchip/ksz9477.c | 38 ++++++++++++++++++++++++++---
- 1 file changed, 34 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 48c90e4cda30..61dd0fa97748 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -896,14 +896,32 @@ static int ksz9477_port_mirror_add(struct dsa_switch *ds, int port,
- 				   bool ingress, struct netlink_ext_ack *extack)
- {
- 	struct ksz_device *dev = ds->priv;
-+	u8 data;
-+	int p;
-+
-+	/* Limit to one sniffer port
-+	 * Check if any of the port is already set for sniffing
-+	 * If yes, instruct the user to remove the previous entry & exit
-+	 */
-+	for (p = 0; p < dev->port_cnt; p++) {
-+		/* Skip the current sniffing port */
-+		if (p == mirror->to_local_port)
-+			continue;
-+
-+		ksz_pread8(dev, p, P_MIRROR_CTRL, &data);
-+
-+		if (data & PORT_MIRROR_SNIFFER) {
-+			NL_SET_ERR_MSG_MOD(extack,
-+					   "Sniffer port is already configured, delete existing rules & retry");
-+			return -EBUSY;
-+		}
-+	}
- 
- 	if (ingress)
- 		ksz_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_RX, true);
- 	else
- 		ksz_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_TX, true);
- 
--	ksz_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_SNIFFER, false);
--
- 	/* configure mirror port */
- 	ksz_port_cfg(dev, mirror->to_local_port, P_MIRROR_CTRL,
- 		     PORT_MIRROR_SNIFFER, true);
-@@ -917,16 +935,28 @@ static void ksz9477_port_mirror_del(struct dsa_switch *ds, int port,
- 				    struct dsa_mall_mirror_tc_entry *mirror)
- {
- 	struct ksz_device *dev = ds->priv;
-+	bool in_use = false;
- 	u8 data;
-+	int p;
- 
- 	if (mirror->ingress)
- 		ksz_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_RX, false);
- 	else
- 		ksz_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_TX, false);
- 
--	ksz_pread8(dev, port, P_MIRROR_CTRL, &data);
- 
--	if (!(data & (PORT_MIRROR_RX | PORT_MIRROR_TX)))
-+	/* Check if any of the port is still referring to sniffer port */
-+	for (p = 0; p < dev->port_cnt; p++) {
-+		ksz_pread8(dev, p, P_MIRROR_CTRL, &data);
-+
-+		if ((data & (PORT_MIRROR_RX | PORT_MIRROR_TX))) {
-+			in_use = true;
-+			break;
-+		}
-+	}
-+
-+	/* delete sniffing if there are no other mirroring rules */
-+	if (!in_use)
- 		ksz_port_cfg(dev, mirror->to_local_port, P_MIRROR_CTRL,
- 			     PORT_MIRROR_SNIFFER, false);
- }
-
-base-commit: 50c6afabfd2ae91a4ff0e2feb14fe702b0688ec5
--- 
-2.33.0
-
+SGVsbG8gSmFrdWIsCgphbmQgaGVsbG8gdGhlcmUgbWFpbnRhaW5lcnMsIHdoZW4gd2UgdHJpZWQg
+dG8gZml4IHRoaXMgcmFjZSBwcm9ibGVtLCB3ZSBmb3VuZCBhbm90aGVyIHZlcnkgd2VpcmQgaXNz
+dWUgYXMgYmVsb3cKCj4gCj4gWW91IGNhbid0IHVzZSBhIHNpbmdsZSBnbG9iYWwgdmFyaWFibGUs
+IHRoZXJlIGNhbiBiZSBtYW55IGRldmljZXMgCj4gZWFjaCB3aXRoIHRoZWlyIG93biBsb2NrLgo+
+IAo+IFBhb2xvIHN1Z2dlc3RlZCBhZGRpbmcgYSBsb2NrLCBpZiBzcGluIGxvY2sgZG9lc24ndCBm
+aXQgdGhlIGJpbGwKPiB3aHkgbm90IGFkZCBhIG11dGV4PwoKVGhlIGxvY2sgcGF0Y2ggY2FuIGJl
+IGFkZGVkIHRvIG5mY21ydmwgY29kZSBidXQgd2UgcHJlZmVyIHRvIGZpeCB0aGlzIGluIHRoZSBO
+RkMgY29yZSBsYXllciBoZW5jZSBldmVyeSBvdGhlciBkcml2ZXIgdGhhdCBzdXBwb3J0cyB0aGUg
+ZmlybXdhcmUgZG93bmxvYWRpbmcgdGFzayB3aWxsIGJlIGZyZWUgb2Ygc3VjaCBhIHByb2JsZW0u
+CgpCdXQgd2hlbiB3ZSBhbmFseXplIHRoZSByYWNlIGJldHdlZW4gdGhlIG5ldGxpbmsgdGFza3Mg
+YW5kIHRoZSBjbGVhbnVwIHJvdXRpbmUsIHdlIGZpbmQgc29tZSAqY29uZGl0aW9uIGNoZWNrcyog
+ZmFpbCB0byBmdWxmaWxsIHRoZWlyIHJlc3BvbnNpYmlsaXR5LgoKRm9yIGV4YW1wbGUsIHdlIG9u
+Y2UgdGhvdWdoIHRoYXQgdGhlIGRldmljZV9sb2NrICsgZGV2aWNlX2lzX3JlZ2lzdGVyZWQgY2hl
+Y2sgY2FuIGhlbHAgdG8gZml4IHRoZSByYWNlIGFzIGJlbG93LgoKICBuZXRsaW5rIHRhc2sgICAg
+ICAgICAgICAgIHwgIGNsZWFudXAgcm91dGluZQogICAgICAgICAgICAgICAgICAgICAgICAgICAg
+fApuZmNfZ2VubF9md19kb3dubG9hZCAgICAgICAgfCBuZmNfdW5yZWdpc3Rlcl9kZXZpY2UgCiAg
+bmZjX2Z3X2Rvd25sb2FkICAgICAgICAgICB8ICAgZGV2aWNlX2RlbCAKICAgIGRldmljZV9sb2Nr
+ICAgICAgICAgICAgIHwgICAgIGRldmljZV9sb2NrCiAgICAvLyB3YWl0IGxvY2sgICAgICAgICAg
+ICB8ICAgICAgIGtvYmplY3RfZGVsCiAgICAvLyAuLi4gICAgICAgICAgICAgICAgICB8ICAgICAg
+ICAgLi4uCiAgICBkZXZpY2VfaXNfcmVnaXN0ZXJlZCAgICB8ICAgICBkZXZpY2VfdW5sb2NrICAg
+IAogICAgICByYyA9IC1FTk9ERVYgICAgICAgICAgfAoKSG93ZXZlciwgYnkgZHluYW1pYyBkZWJ1
+Z2dpbmcgdGhpcyBpc3N1ZSwgd2UgZmluZCBvdXQgdGhhdCAqKmV2ZW4gYWZ0ZXIgdGhlIGRldmlj
+ZV9kZWwqKiwgdGhlIGRldmljZV9pc19yZWdpc3RlcmVkIGNoZWNrIHN0aWxsIHJldHVybnMgVFJV
+RSEKClRoaXMgaXMgYnkgbm8gbWVhbnMgbWF0Y2hpbmcgb3VyIGV4cGVjdGF0aW9ucyBhcyBvbmUg
+b2Ygb3VyIHByZXZpb3VzIHBhdGNoIHJlbGllcyBvbiB0aGUgZGV2aWNlX2lzX3JlZ2lzdGVyZWQg
+Y29kZS4KCi0+IHRoZSBwYXRjaDogM2UzYjVkZmNkMTZhICgiTkZDOiByZW9yZGVyIHRoZSBsb2dp
+YyBpbiBuZmNfe3VuLH1yZWdpc3Rlcl9kZXZpY2UiKQoKVG8gZmluZCBvdXQgd2h5LCB3ZSBmaW5k
+IG91dCB0aGUgZGV2aWNlX2lzX3JlZ2lzdGVyZWQgaXMgaW1wbGVtZW50ZWQgbGlrZSBiZWxvdzoK
+CnN0YXRpYyBpbmxpbmUgaW50IGRldmljZV9pc19yZWdpc3RlcmVkKHN0cnVjdCBkZXZpY2UgKmRl
+dikKewoJcmV0dXJuIGRldi0+a29iai5zdGF0ZV9pbl9zeXNmczsKfQoKQnkgZGVidWdnaW5nLCB3
+ZSBmaW5kIG91dCBpbiBub3JtYWwgY2FzZSwgdGhpcyBrb2JqLnN0YXRlX2luX3N5c2ZzIHdpbGwg
+YmUgY2xlYXIgb3V0IGxpa2UgYmVsb3cKClsjMF0gMHhmZmZmZmZmZjgxZjA3NDNhIOKGkiBfX2tv
+YmplY3RfZGVsKGtvYmo9MHhmZmZmODg4MDA5Y2E3MDE4KQpbIzFdIDB4ZmZmZmZmZmY4MWYwNzg4
+MiDihpIga29iamVjdF9kZWwoa29iaj0weGZmZmY4ODgwMDljYTcwMTgpClsjMl0gMHhmZmZmZmZm
+ZjgxZjA3ODgyIOKGkiBrb2JqZWN0X2RlbChrb2JqPTB4ZmZmZjg4ODAwOWNhNzAxOCkKWyMzXSAw
+eGZmZmZmZmZmODI3NzA4ZGIg4oaSIGRldmljZV9kZWwoZGV2PTB4ZmZmZjg4ODAwOWNhNzAxOCkK
+WyM0XSAweGZmZmZmZmZmODM5NjQ5NmYg4oaSIG5mY191bnJlZ2lzdGVyX2RldmljZShkZXY9MHhm
+ZmZmODg4MDA5Y2E3MDAwKQpbIzVdIDB4ZmZmZmZmZmY4Mzk4NTBhOSDihpIgbmNpX3VucmVnaXN0
+ZXJfZGV2aWNlKG5kZXY9MHhmZmZmODg4MDA5Y2EzMDAwKQpbIzZdIDB4ZmZmZmZmZmY4MjgxMTMw
+OCDihpIgbmZjbXJ2bF9uY2lfdW5yZWdpc3Rlcl9kZXYocHJpdj0weGZmZmY4ODgwMGM4MDVjMDAp
+ClsjN10gMHhmZmZmZmZmZjgzOTkwYzRmIOKGkiBuY2lfdWFydF90dHlfY2xvc2UodHR5PTB4ZmZm
+Zjg4ODAwYjQ1MDAwMCkKWyM4XSAweGZmZmZmZmZmODIwZjZiZDMg4oaSIHR0eV9sZGlzY19raWxs
+KHR0eT0weGZmZmY4ODgwMGI0NTAwMDApClsjOV0gMHhmZmZmZmZmZjgyMGY3ZmIxIOKGkiB0dHlf
+bGRpc2NfaGFuZ3VwKHR0eT0weGZmZmY4ODgwMGI0NTAwMDAsIHJlaW5pdD0weDApCgpUaGUgY2xl
+YXIgb3V0IGlzIGluIGZ1bmN0aW9uIF9fa29iamVjdF9kZWwKCnN0YXRpYyB2b2lkIF9fa29iamVj
+dF9kZWwoc3RydWN0IGtvYmplY3QgKmtvYmopCnsKICAgLy8gLi4uCgoJa29iai0+c3RhdGVfaW5f
+c3lzZnMgPSAwOwoJa29ial9rc2V0X2xlYXZlKGtvYmopOwoJa29iai0+cGFyZW50ID0gTlVMTDsK
+fQoKVGhlIHN0cnVjdHVyZSBvZiBkZXZpY2VfZGVsIGlzIGxpa2UgYmVsb3cKCnZvaWQgZGV2aWNl
+X2RlbChzdHJ1Y3QgZGV2aWNlICpkZXYpCnsKCXN0cnVjdCBkZXZpY2UgKnBhcmVudCA9IGRldi0+
+cGFyZW50OwoJc3RydWN0IGtvYmplY3QgKmdsdWVfZGlyID0gTlVMTDsKCXN0cnVjdCBjbGFzc19p
+bnRlcmZhY2UgKmNsYXNzX2ludGY7Cgl1bnNpZ25lZCBpbnQgbm9pb19mbGFnOwoKCWRldmljZV9s
+b2NrKGRldik7CglraWxsX2RldmljZShkZXYpOwoJZGV2aWNlX3VubG9jayhkZXYpOwogICAgICAg
+IAogICAgICAgIC8vIC4uLgogICAgICAgIGtvYmplY3RfZGVsKCZkZXYtPmtvYmopOwoJY2xlYW51
+cF9nbHVlX2RpcihkZXYsIGdsdWVfZGlyKTsKCW1lbWFsbG9jX25vaW9fcmVzdG9yZShub2lvX2Zs
+YWcpOwoJcHV0X2RldmljZShwYXJlbnQpOwp9CgpJbiBhbm90aGVyIHdvcmQsIHRoZSBkZXZpY2Vf
+ZGVsIC0+IGtvYmplY3RfZGVsIC0+IF9fa29iamVjdF9kZWwgaXMgbm90IHByb3RlY3RlZCBieSB0
+aGUgZGV2aWNlX2xvY2suCgpUaGlzIG1lYW5zIHRoZSBkZXZpY2VfbG9jayArIGRldmljZV9pc19y
+ZWdpc3RlcmVkIGlzIHN0aWxsIHByb25lIHRvIHRoZSBkYXRhIHJhY2UuIEFuZCB0aGlzIGlzIG5v
+dCBqdXN0IHRoZSBwcm9ibGVtIHdpdGggZmlybXdhcmUgZG93bmxvYWRpbmcuIFRoZSBhbGwgcmVs
+ZXZhbnQgbmV0bGluayB0YXNrcyB0aGF0IHVzZSB0aGUgZGV2aWNlX2xvY2sgKyBkZXZpY2VfaXNf
+cmVnaXN0ZXJlZCBpcyBwb3NzaWJsZSB0byBiZSByYWNlZC4KClRvIHRoaXMgZW5kLCB3ZSB3aWxs
+IGNvbWUgb3V0IHdpdGggdHdvIHBhdGNoZXMsIG9uZSBmb3IgZml4aW5nIHRoaXMgZGV2aWNlX2lz
+X3JlZ2lzdGVyZWQgYnkgdXNpbmcgYW5vdGhlciBzdGF0dXMgdmFyaWFibGUgaW5zdGVhZC4gVGhl
+IG90aGVyIGlzIHRoZSBwYXRjaCB0aGF0IHJlb3JkZXJzIHRoZSBjb2RlIGluIG5jaV91bnJlZ2lz
+dGVyX2RldmljZS4KClRoYW5rcwpMaW4gTWEKCg==
