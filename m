@@ -2,100 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D2E74512E08
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 10:16:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DB51512E50
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 10:28:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343744AbiD1ITz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 04:19:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41840 "EHLO
+        id S1344189AbiD1IbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 04:31:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235364AbiD1ITy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 04:19:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B00C13CED;
-        Thu, 28 Apr 2022 01:16:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S1344142AbiD1IbC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 04:31:02 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B95EA0BD2;
+        Thu, 28 Apr 2022 01:27:49 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C4DF761F49;
-        Thu, 28 Apr 2022 08:16:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 614B5C385A9;
-        Thu, 28 Apr 2022 08:16:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1651133800;
-        bh=uyaBsEuphXYiLhzlz1YbrzEAdzSDc6RcP79zk/xCzZw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=zliC0CRx9pxFc1IgS706nqaw5DQ2lD6VWxky2vE0ZwcKEns0jPOwg7PWn3l0ljN9A
-         h9i1h78elkEKXX0vfZYJUK5OJeH9LP5GbgwJ/VD0n67bYyprgLXTaHmJsuY1jLU011
-         Oamp4pIcvzeVdXlZIiPNQZbBZVG5PrO0IuvivIQg=
-Date:   Thu, 28 Apr 2022 10:16:36 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Lin Ma <linma@zju.edu.cn>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Duoming Zhou <duoming@zju.edu.cn>,
-        krzysztof.kozlowski@linaro.org, pabeni@redhat.com,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        alexander.deucher@amd.com, akpm@linux-foundation.org,
-        broonie@kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net v4] nfc: ... device_is_registered() is data race-able
-Message-ID: <YmpNZOaJ1+vWdccK@kroah.com>
-References: <20220427011438.110582-1-duoming@zju.edu.cn>
- <20220427174548.2ae53b84@kernel.org>
- <38929d91.237b.1806f05f467.Coremail.linma@zju.edu.cn>
- <YmpEZQ7EnOIWlsy8@kroah.com>
- <2d7c9164.2b1f.1806f2a8ed9.Coremail.linma@zju.edu.cn>
+        by smtp-out1.suse.de (Postfix) with ESMTPS id CDEBA2186F;
+        Thu, 28 Apr 2022 08:27:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1651134467; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=uHWa92vFc0VKwXbjUTC1XMh188o1HlT0uQD6qb0vP48=;
+        b=ptsNFLPN4AOJ9HLpo2aUFC1C35GqsbNQmwQwd/cc0fkX9rwV4HLRJVj0WiG+95oGxsBYyw
+        5reFV928fpI3wng15ZZWSf2aMaxIkut0k3dO9MjlmOJ7aHFGqGsaFIzVlip6U6aXsYeVwo
+        KQjHMdo/P4x1VKzfCdDMkbEiS1Pfu8Q=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id EF6F413491;
+        Thu, 28 Apr 2022 08:27:46 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id ApxEOAJQamIBLgAAMHmgww
+        (envelope-from <jgross@suse.com>); Thu, 28 Apr 2022 08:27:46 +0000
+From:   Juergen Gross <jgross@suse.com>
+To:     xen-devel@lists.xenproject.org, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-integrity@vger.kernel.org,
+        linux-pci@vger.kernel.org
+Cc:     Juergen Gross <jgross@suse.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        =?UTF-8?q?Roger=20Pau=20Monn=C3=A9?= <roger.pau@citrix.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        Peter Huewe <peterhuewe@gmx.de>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH v2 00/19] xen: simplify frontend side ring setup
+Date:   Thu, 28 Apr 2022 10:27:24 +0200
+Message-Id: <20220428082743.16593-1-jgross@suse.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2d7c9164.2b1f.1806f2a8ed9.Coremail.linma@zju.edu.cn>
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 03:55:01PM +0800, Lin Ma wrote:
-> Hello Greg,
-> 
-> 
-> > 
-> > You should not be making these types of checks outside of the driver
-> > core.
-> > 
-> > > This is by no means matching our expectations as one of our previous patch relies on the device_is_registered code.
-> > 
-> > Please do not do that.
-> > 
-> > > 
-> > > -> the patch: 3e3b5dfcd16a ("NFC: reorder the logic in nfc_{un,}register_device")
-> > > 
-> > <...>
-> > > 
-> > > In another word, the device_del -> kobject_del -> __kobject_del is not protected by the device_lock.
-> > 
-> > Nor should it be.
-> > 
-> 
-> I may have mistakenly presented my point. In fact, there is nothing wrong with the device core, nothing to do with the internal of device_del and device_is_registered implementation. And, of course, we will not add any code or do any modification to the device/driver base code.
-> 
-> The point is the combination of device_is_registered + device_del, which is used in NFC core, is not safe.
+Many Xen PV frontends share similar code for setting up a ring page
+(allocating and granting access for the backend) and for tearing it
+down.
 
-It shouldn't be, if you are using it properly :)
+Create new service functions doing all needed steps in one go.
 
-> That is to say, even the device_is_registered can return True even the device_del is executing in another thread.
+This requires all frontends to use a common value for an invalid
+grant reference in order to make the functions idempotent.
 
-Yes, you should almost never use that call.  Seems the nfc subsystem is
-the most common user of it for some reason :(
+Changes in V2:
+- new patch 9 and related changes in patches 10-18
 
-> (By debugging we think this is true, correct me if it is not)
-> 
-> Hence we want to add additional state in nfc_dev object to fix that, not going to add any state in device/driver core.
+Juergen Gross (19):
+  xen/blkfront: switch blkfront to use INVALID_GRANT_REF
+  xen/netfront: switch netfront to use INVALID_GRANT_REF
+  xen/scsifront: remove unused GRANT_INVALID_REF definition
+  xen/usb: switch xen-hcd to use INVALID_GRANT_REF
+  xen/drm: switch xen_drm_front to use INVALID_GRANT_REF
+  xen/sound: switch xen_snd_front to use INVALID_GRANT_REF
+  xen/dmabuf: switch gntdev-dmabuf to use INVALID_GRANT_REF
+  xen/shbuf: switch xen-front-pgdir-shbuf to use INVALID_GRANT_REF
+  xen: update ring.h
+  xen/xenbus: add xenbus_setup_ring() service function
+  xen/blkfront: use xenbus_setup_ring() and xenbus_teardown_ring()
+  xen/netfront: use xenbus_setup_ring() and xenbus_teardown_ring()
+  xen/tpmfront: use xenbus_setup_ring() and xenbus_teardown_ring()
+  xen/drmfront: use xenbus_setup_ring() and xenbus_teardown_ring()
+  xen/pcifront: use xenbus_setup_ring() and xenbus_teardown_ring()
+  xen/scsifront: use xenbus_setup_ring() and xenbus_teardown_ring()
+  xen/usbfront: use xenbus_setup_ring() and xenbus_teardown_ring()
+  xen/sndfront: use xenbus_setup_ring() and xenbus_teardown_ring()
+  xen/xenbus: eliminate xenbus_grant_ring()
 
-What state are you trying to track here exactly?
+ drivers/block/xen-blkfront.c                | 57 +++++---------
+ drivers/char/tpm/xen-tpmfront.c             | 18 +----
+ drivers/gpu/drm/xen/xen_drm_front.h         |  9 ---
+ drivers/gpu/drm/xen/xen_drm_front_evtchnl.c | 43 +++--------
+ drivers/net/xen-netfront.c                  | 85 +++++++--------------
+ drivers/pci/xen-pcifront.c                  | 19 +----
+ drivers/scsi/xen-scsifront.c                | 31 ++------
+ drivers/usb/host/xen-hcd.c                  | 65 ++++------------
+ drivers/xen/gntdev-dmabuf.c                 | 13 +---
+ drivers/xen/xen-front-pgdir-shbuf.c         | 17 +----
+ drivers/xen/xenbus/xenbus_client.c          | 82 +++++++++++++++-----
+ include/xen/interface/io/ring.h             | 19 +++--
+ include/xen/xenbus.h                        |  4 +-
+ sound/xen/xen_snd_front_evtchnl.c           | 44 +++--------
+ sound/xen/xen_snd_front_evtchnl.h           |  9 ---
+ 15 files changed, 179 insertions(+), 336 deletions(-)
 
-thanks,
+-- 
+2.34.1
 
-greg k-h
