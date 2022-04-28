@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 54FC6512989
+	by mail.lfdr.de (Postfix) with ESMTP id E4C2751298B
 	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 04:32:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241444AbiD1Cfg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 22:35:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55674 "EHLO
+        id S241490AbiD1Cfo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 22:35:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241522AbiD1Cff (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 22:35:35 -0400
+        with ESMTP id S241468AbiD1Cfk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 22:35:40 -0400
 Received: from mint-fitpc2.mph.net (unknown [81.168.73.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3AA899136C
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 19:32:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9FB45939F1
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 19:32:23 -0700 (PDT)
 Received: from palantir17.mph.net (unknown [192.168.0.4])
-        by mint-fitpc2.mph.net (Postfix) with ESMTP id 3911632010B;
-        Thu, 28 Apr 2022 03:32:10 +0100 (BST)
+        by mint-fitpc2.mph.net (Postfix) with ESMTP id 98A6F32010B;
+        Thu, 28 Apr 2022 03:32:22 +0100 (BST)
 Received: from localhost ([::1] helo=palantir17.mph.net)
         by palantir17.mph.net with esmtp (Exim 4.89)
         (envelope-from <habetsm.xilinx@gmail.com>)
-        id 1njtww-0005XN-0N; Thu, 28 Apr 2022 03:32:10 +0100
-Subject: [PATCH net-next v2 08/13] sfc/siena: Rename RX/TX functions to
+        id 1njtx8-0005Xe-Cy; Thu, 28 Apr 2022 03:32:22 +0100
+Subject: [PATCH net-next v2 09/13] sfc/siena: Rename peripheral functions to
  avoid conflicts with sfc
 From:   Martin Habets <habetsm.xilinx@gmail.com>
 To:     kuba@kernel.org, pabeni@redhat.com, davem@davemloft.net
 Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com
-Date:   Thu, 28 Apr 2022 03:32:09 +0100
-Message-ID: <165111312971.21042.126330044420746910.stgit@palantir17.mph.net>
+Date:   Thu, 28 Apr 2022 03:32:22 +0100
+Message-ID: <165111314210.21042.16318313496221139871.stgit@palantir17.mph.net>
 In-Reply-To: <165111298464.21042.9988060027860048966.stgit@palantir17.mph.net>
 References: <165111298464.21042.9988060027860048966.stgit@palantir17.mph.net>
 User-Agent: StGit/0.17.1-dirty
@@ -46,1248 +46,1217 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 For siena use efx_siena_ as the function prefix.
-Several functions are not used in Siena, so they are removed.
-
-Use a Siena specific variable name for module parameter
-efx_separate_tx_channels.
-Move efx_fini_tx_queue() to avoid a forward declaration of
-efx_dequeue_buffer().
+This patch covers selftest.h, ptp.h, net_driver.h and ethtool_common.h.
+efx_ethtool_fill_self_tests() can become static.
+Some functions in ptp.c can also become static.
+Rename loopback_mode in net_driver.h.
 
 Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
 ---
- drivers/net/ethernet/sfc/siena/efx.c            |   15 ++-
- drivers/net/ethernet/sfc/siena/efx.h            |    4 -
- drivers/net/ethernet/sfc/siena/efx_channels.c   |   35 ++++---
- drivers/net/ethernet/sfc/siena/efx_common.c     |    4 -
- drivers/net/ethernet/sfc/siena/ethtool_common.c |   15 ++-
- drivers/net/ethernet/sfc/siena/farch.c          |    9 +-
- drivers/net/ethernet/sfc/siena/rx.c             |   22 ++--
- drivers/net/ethernet/sfc/siena/rx_common.c      |  116 ++++++++++++-----------
- drivers/net/ethernet/sfc/siena/rx_common.h      |   89 ++++++++----------
- drivers/net/ethernet/sfc/siena/tx.c             |   16 +--
- drivers/net/ethernet/sfc/siena/tx.h             |    7 -
- drivers/net/ethernet/sfc/siena/tx_common.c      |   60 ++++++++----
- drivers/net/ethernet/sfc/siena/tx_common.h      |   32 +++---
- 13 files changed, 216 insertions(+), 208 deletions(-)
+ drivers/net/ethernet/sfc/siena/efx.c            |    6 -
+ drivers/net/ethernet/sfc/siena/efx_common.c     |   12 +
+ drivers/net/ethernet/sfc/siena/ethtool.c        |   50 +++---
+ drivers/net/ethernet/sfc/siena/ethtool_common.c |  199 ++++++++++++-----------
+ drivers/net/ethernet/sfc/siena/ethtool_common.h |   95 +++++------
+ drivers/net/ethernet/sfc/siena/mcdi.c           |    4 
+ drivers/net/ethernet/sfc/siena/net_driver.h     |    6 -
+ drivers/net/ethernet/sfc/siena/ptp.c            |   53 +++---
+ drivers/net/ethernet/sfc/siena/ptp.h            |   46 +++--
+ drivers/net/ethernet/sfc/siena/rx.c             |    2 
+ drivers/net/ethernet/sfc/siena/selftest.c       |   24 +--
+ drivers/net/ethernet/sfc/siena/selftest.h       |   14 +-
+ drivers/net/ethernet/sfc/siena/siena.c          |   17 +-
+ drivers/net/ethernet/sfc/siena/tx.c             |    6 -
+ drivers/net/ethernet/sfc/siena/tx_common.c      |    6 -
+ 15 files changed, 270 insertions(+), 270 deletions(-)
 
 diff --git a/drivers/net/ethernet/sfc/siena/efx.c b/drivers/net/ethernet/sfc/siena/efx.c
-index f54f3619705a..70da9d7afbc5 100644
+index 70da9d7afbc5..0587877cc809 100644
 --- a/drivers/net/ethernet/sfc/siena/efx.c
 +++ b/drivers/net/ethernet/sfc/siena/efx.c
-@@ -58,8 +58,9 @@ MODULE_PARM_DESC(rss_cpus, "Number of CPUs to use for Receive-Side Scaling");
-  *
-  * This is only used in MSI-X interrupt mode
-  */
--bool efx_separate_tx_channels;
--module_param(efx_separate_tx_channels, bool, 0444);
-+bool efx_siena_separate_tx_channels;
-+module_param_named(efx_separate_tx_channels, efx_siena_separate_tx_channels,
-+		   bool, 0444);
- MODULE_PARM_DESC(efx_separate_tx_channels,
- 		 "Use separate channels for TX and RX");
+@@ -494,9 +494,9 @@ static int efx_ioctl(struct net_device *net_dev, struct ifreq *ifr, int cmd)
+ 	struct mii_ioctl_data *data = if_mii(ifr);
  
-@@ -306,7 +307,7 @@ static int efx_probe_nic(struct efx_nic *efx)
- 	if (efx->n_channels > 1)
- 		netdev_rss_key_fill(efx->rss_context.rx_hash_key,
- 				    sizeof(efx->rss_context.rx_hash_key));
--	efx_set_default_rx_indir_table(efx, &efx->rss_context);
-+	efx_siena_set_default_rx_indir_table(efx, &efx->rss_context);
+ 	if (cmd == SIOCSHWTSTAMP)
+-		return efx_ptp_set_ts_config(efx, ifr);
++		return efx_siena_ptp_set_ts_config(efx, ifr);
+ 	if (cmd == SIOCGHWTSTAMP)
+-		return efx_ptp_get_ts_config(efx, ifr);
++		return efx_siena_ptp_get_ts_config(efx, ifr);
  
- 	/* Initialise the interrupt moderation settings */
- 	efx->irq_mod_step_us = DIV_ROUND_UP(efx->timer_quantum_ns, 1000);
-@@ -366,7 +367,7 @@ static int efx_probe_all(struct efx_nic *efx)
- 			   " VFs may not function\n", rc);
- #endif
- 
--	rc = efx_probe_filters(efx);
-+	rc = efx_siena_probe_filters(efx);
- 	if (rc) {
- 		netif_err(efx, probe, efx->net_dev,
- 			  "failed to create filter tables\n");
-@@ -380,7 +381,7 @@ static int efx_probe_all(struct efx_nic *efx)
+ 	/* Convert phy_id from older PRTAD/DEVAD format */
+ 	if ((cmd == SIOCGMIIREG || cmd == SIOCSMIIREG) &&
+@@ -536,7 +536,7 @@ static int efx_net_open(struct net_device *net_dev)
+ 	efx_siena_start_all(efx);
+ 	if (efx->state == STATE_DISABLED || efx->reset_pending)
+ 		netif_device_detach(efx->net_dev);
+-	efx_selftest_async_start(efx);
++	efx_siena_selftest_async_start(efx);
  	return 0;
- 
-  fail5:
--	efx_remove_filters(efx);
-+	efx_siena_remove_filters(efx);
-  fail4:
- #ifdef CONFIG_SFC_SRIOV
- 	efx->type->vswitching_remove(efx);
-@@ -400,7 +401,7 @@ static void efx_remove_all(struct efx_nic *efx)
- 	rtnl_unlock();
- 
- 	efx_siena_remove_channels(efx);
--	efx_remove_filters(efx);
-+	efx_siena_remove_filters(efx);
- #ifdef CONFIG_SFC_SRIOV
- 	efx->type->vswitching_remove(efx);
- #endif
-@@ -602,7 +603,7 @@ static const struct net_device_ops efx_netdev_ops = {
- 	.ndo_get_phys_port_name	= efx_siena_get_phys_port_name,
- 	.ndo_setup_tc		= efx_siena_setup_tc,
- #ifdef CONFIG_RFS_ACCEL
--	.ndo_rx_flow_steer	= efx_filter_rfs,
-+	.ndo_rx_flow_steer	= efx_siena_filter_rfs,
- #endif
- 	.ndo_xdp_xmit		= efx_xdp_xmit,
- 	.ndo_bpf		= efx_xdp
-diff --git a/drivers/net/ethernet/sfc/siena/efx.h b/drivers/net/ethernet/sfc/siena/efx.h
-index a4f9e6e962b0..f91f3c94a275 100644
---- a/drivers/net/ethernet/sfc/siena/efx.h
-+++ b/drivers/net/ethernet/sfc/siena/efx.h
-@@ -44,7 +44,7 @@ static inline void efx_rx_flush_packet(struct efx_channel *channel)
-  * TSO skbs.
-  */
- #define EFX_RXQ_MIN_ENT		128U
--#define EFX_TXQ_MIN_ENT(efx)	(2 * efx_tx_max_skb_descs(efx))
-+#define EFX_TXQ_MIN_ENT(efx)	(2 * efx_siena_tx_max_skb_descs(efx))
- 
- /* All EF10 architecture NICs steal one bit of the DMAQ size for various
-  * other purposes when counting TxQ entries, so we halve the queue size.
-@@ -78,7 +78,7 @@ static inline bool efx_rss_enabled(struct efx_nic *efx)
-  *
-  * 2. If the existing filters have higher priority, return -%EPERM.
-  *
-- * 3. If !efx_filter_is_mc_recipient(@spec), or the NIC does not
-+ * 3. If !efx_siena_filter_is_mc_recipient(@spec), or the NIC does not
-  *    support delivery to multiple recipients, return -%EEXIST.
-  *
-  * This implies that filters for multiple multicast recipients must
-diff --git a/drivers/net/ethernet/sfc/siena/efx_channels.c b/drivers/net/ethernet/sfc/siena/efx_channels.c
-index 54120ce68081..aed656296dd5 100644
---- a/drivers/net/ethernet/sfc/siena/efx_channels.c
-+++ b/drivers/net/ethernet/sfc/siena/efx_channels.c
-@@ -138,7 +138,7 @@ static int efx_allocate_msix_channels(struct efx_nic *efx,
- 	int n_xdp_tx;
- 	int n_xdp_ev;
- 
--	if (efx_separate_tx_channels)
-+	if (efx_siena_separate_tx_channels)
- 		n_channels *= 2;
- 	n_channels += extra_channels;
- 
-@@ -220,7 +220,7 @@ static int efx_allocate_msix_channels(struct efx_nic *efx,
- 	/* Ignore XDP tx channels when creating rx channels. */
- 	n_channels -= efx->n_xdp_channels;
- 
--	if (efx_separate_tx_channels) {
-+	if (efx_siena_separate_tx_channels) {
- 		efx->n_tx_channels =
- 			min(max(n_channels / 2, 1U),
- 			    efx->max_tx_channels);
-@@ -321,7 +321,7 @@ int efx_siena_probe_interrupts(struct efx_nic *efx)
- 
- 	/* Assume legacy interrupts */
- 	if (efx->interrupt_mode == EFX_INT_MODE_LEGACY) {
--		efx->n_channels = 1 + (efx_separate_tx_channels ? 1 : 0);
-+		efx->n_channels = 1 + (efx_siena_separate_tx_channels ? 1 : 0);
- 		efx->n_rx_channels = 1;
- 		efx->n_tx_channels = 1;
- 		efx->n_xdp_channels = 0;
-@@ -521,7 +521,8 @@ static void efx_filter_rfs_expire(struct work_struct *data)
- 	channel = container_of(dwork, struct efx_channel, filter_work);
- 	time = jiffies - channel->rfs_last_expiry;
- 	quota = channel->rfs_filter_count * time / (30 * HZ);
--	if (quota >= 20 && __efx_filter_rfs_expire(channel, min(channel->rfs_filter_count, quota)))
-+	if (quota >= 20 && __efx_siena_filter_rfs_expire(channel,
-+					min(channel->rfs_filter_count, quota)))
- 		channel->rfs_last_expiry += time;
- 	/* Ensure we do more work eventually even if NAPI poll is not happening */
- 	schedule_delayed_work(dwork, 30 * HZ);
-@@ -558,7 +559,7 @@ static struct efx_channel *efx_alloc_channel(struct efx_nic *efx, int i)
- 
- 	rx_queue = &channel->rx_queue;
- 	rx_queue->efx = efx;
--	timer_setup(&rx_queue->slow_fill, efx_rx_slow_fill, 0);
-+	timer_setup(&rx_queue->slow_fill, efx_siena_rx_slow_fill, 0);
- 
- 	return channel;
- }
-@@ -631,7 +632,7 @@ struct efx_channel *efx_copy_channel(const struct efx_channel *old_channel)
- 	rx_queue = &channel->rx_queue;
- 	rx_queue->buffer = NULL;
- 	memset(&rx_queue->rxd, 0, sizeof(rx_queue->rxd));
--	timer_setup(&rx_queue->slow_fill, efx_rx_slow_fill, 0);
-+	timer_setup(&rx_queue->slow_fill, efx_siena_rx_slow_fill, 0);
- #ifdef CONFIG_RFS_ACCEL
- 	INIT_DELAYED_WORK(&channel->filter_work, efx_filter_rfs_expire);
- #endif
-@@ -657,13 +658,13 @@ static int efx_probe_channel(struct efx_channel *channel)
- 		goto fail;
- 
- 	efx_for_each_channel_tx_queue(tx_queue, channel) {
--		rc = efx_probe_tx_queue(tx_queue);
-+		rc = efx_siena_probe_tx_queue(tx_queue);
- 		if (rc)
- 			goto fail;
- 	}
- 
- 	efx_for_each_channel_rx_queue(rx_queue, channel) {
--		rc = efx_probe_rx_queue(rx_queue);
-+		rc = efx_siena_probe_rx_queue(rx_queue);
- 		if (rc)
- 			goto fail;
- 	}
-@@ -751,9 +752,9 @@ void efx_siena_remove_channel(struct efx_channel *channel)
- 		  "destroy chan %d\n", channel->channel);
- 
- 	efx_for_each_channel_rx_queue(rx_queue, channel)
--		efx_remove_rx_queue(rx_queue);
-+		efx_siena_remove_rx_queue(rx_queue);
- 	efx_for_each_channel_tx_queue(tx_queue, channel)
--		efx_remove_tx_queue(tx_queue);
-+		efx_siena_remove_tx_queue(tx_queue);
- 	efx_remove_eventq(channel);
- 	channel->type->post_remove(channel);
- }
-@@ -977,7 +978,7 @@ int efx_siena_set_channels(struct efx_nic *efx)
- 	int rc;
- 
- 	efx->tx_channel_offset =
--		efx_separate_tx_channels ?
-+		efx_siena_separate_tx_channels ?
- 		efx->n_channels - efx->n_tx_channels : 0;
- 
- 	if (efx->xdp_tx_queue_count) {
-@@ -1144,15 +1145,15 @@ void efx_siena_start_channels(struct efx_nic *efx)
- 
- 	efx_for_each_channel_rev(channel, efx) {
- 		efx_for_each_channel_tx_queue(tx_queue, channel) {
--			efx_init_tx_queue(tx_queue);
-+			efx_siena_init_tx_queue(tx_queue);
- 			atomic_inc(&efx->active_queues);
- 		}
- 
- 		efx_for_each_channel_rx_queue(rx_queue, channel) {
--			efx_init_rx_queue(rx_queue);
-+			efx_siena_init_rx_queue(rx_queue);
- 			atomic_inc(&efx->active_queues);
- 			efx_siena_stop_eventq(channel);
--			efx_fast_push_rx_descriptors(rx_queue, false);
-+			efx_siena_fast_push_rx_descriptors(rx_queue, false);
- 			efx_siena_start_eventq(channel);
- 		}
- 
-@@ -1198,9 +1199,9 @@ void efx_siena_stop_channels(struct efx_nic *efx)
- 
- 	efx_for_each_channel(channel, efx) {
- 		efx_for_each_channel_rx_queue(rx_queue, channel)
--			efx_fini_rx_queue(rx_queue);
-+			efx_siena_fini_rx_queue(rx_queue);
- 		efx_for_each_channel_tx_queue(tx_queue, channel)
--			efx_fini_tx_queue(tx_queue);
-+			efx_siena_fini_tx_queue(tx_queue);
- 	}
  }
  
-@@ -1242,7 +1243,7 @@ static int efx_process_channel(struct efx_channel *channel, int budget)
- 			efx_channel_get_rx_queue(channel);
- 
- 		efx_rx_flush_packet(channel);
--		efx_fast_push_rx_descriptors(rx_queue, true);
-+		efx_siena_fast_push_rx_descriptors(rx_queue, true);
- 	}
- 
- 	/* Update BQL */
 diff --git a/drivers/net/ethernet/sfc/siena/efx_common.c b/drivers/net/ethernet/sfc/siena/efx_common.c
-index fb6fb345cc56..f245d03c4caa 100644
+index f245d03c4caa..6b524775c929 100644
 --- a/drivers/net/ethernet/sfc/siena/efx_common.c
 +++ b/drivers/net/ethernet/sfc/siena/efx_common.c
-@@ -395,7 +395,7 @@ static void efx_start_datapath(struct efx_nic *efx)
- 		efx->rx_buffer_order = get_order(rx_buf_len);
- 	}
+@@ -73,8 +73,8 @@ static const char *const efx_reset_type_names[] = {
+ 	STRING_TABLE_LOOKUP(type, efx_reset_type)
  
--	efx_rx_config_page_split(efx);
-+	efx_siena_rx_config_page_split(efx);
- 	if (efx->rx_buffer_order)
- 		netif_dbg(efx, drv, efx->net_dev,
- 			  "RX buf len=%u; page order=%u batch=%u\n",
-@@ -428,7 +428,7 @@ static void efx_start_datapath(struct efx_nic *efx)
- 	 * the ring completely.  We wake it when half way back to
- 	 * empty.
- 	 */
--	efx->txq_stop_thresh = efx->txq_entries - efx_tx_max_skb_descs(efx);
-+	efx->txq_stop_thresh = efx->txq_entries - efx_siena_tx_max_skb_descs(efx);
- 	efx->txq_wake_thresh = efx->txq_stop_thresh / 2;
- 
+ /* Loopback mode names (see LOOPBACK_MODE()) */
+-const unsigned int efx_loopback_mode_max = LOOPBACK_MAX;
+-const char *const efx_loopback_mode_names[] = {
++const unsigned int efx_siena_loopback_mode_max = LOOPBACK_MAX;
++const char *const efx_siena_loopback_mode_names[] = {
+ 	[LOOPBACK_NONE]		= "NONE",
+ 	[LOOPBACK_DATA]		= "DATAPATH",
+ 	[LOOPBACK_GMAC]		= "GMAC",
+@@ -434,7 +434,7 @@ static void efx_start_datapath(struct efx_nic *efx)
  	/* Initialise the channels */
-diff --git a/drivers/net/ethernet/sfc/siena/ethtool_common.c b/drivers/net/ethernet/sfc/siena/ethtool_common.c
-index e177b58e0664..f54510cf4e72 100644
---- a/drivers/net/ethernet/sfc/siena/ethtool_common.c
-+++ b/drivers/net/ethernet/sfc/siena/ethtool_common.c
-@@ -824,7 +824,8 @@ int efx_ethtool_get_rxnfc(struct net_device *net_dev,
+ 	efx_siena_start_channels(efx);
  
- 		mutex_lock(&efx->rss_lock);
- 		if (info->flow_type & FLOW_RSS && info->rss_context) {
--			ctx = efx_find_rss_context_entry(efx, info->rss_context);
-+			ctx = efx_siena_find_rss_context_entry(efx,
-+							info->rss_context);
- 			if (!ctx) {
- 				rc = -ENOENT;
- 				goto out_unlock;
-@@ -1213,7 +1214,7 @@ int efx_ethtool_get_rxfh_context(struct net_device *net_dev, u32 *indir,
- 		return -EOPNOTSUPP;
+-	efx_ptp_start_datapath(efx);
++	efx_siena_ptp_start_datapath(efx);
  
- 	mutex_lock(&efx->rss_lock);
--	ctx = efx_find_rss_context_entry(efx, rss_context);
-+	ctx = efx_siena_find_rss_context_entry(efx, rss_context);
- 	if (!ctx) {
- 		rc = -ENOENT;
- 		goto out_unlock;
-@@ -1257,18 +1258,18 @@ int efx_ethtool_set_rxfh_context(struct net_device *net_dev,
- 			rc = -EINVAL;
- 			goto out_unlock;
- 		}
--		ctx = efx_alloc_rss_context_entry(efx);
-+		ctx = efx_siena_alloc_rss_context_entry(efx);
- 		if (!ctx) {
- 			rc = -ENOMEM;
- 			goto out_unlock;
- 		}
- 		ctx->context_id = EFX_MCDI_RSS_CONTEXT_INVALID;
- 		/* Initialise indir table and key to defaults */
--		efx_set_default_rx_indir_table(efx, ctx);
-+		efx_siena_set_default_rx_indir_table(efx, ctx);
- 		netdev_rss_key_fill(ctx->rx_hash_key, sizeof(ctx->rx_hash_key));
- 		allocated = true;
- 	} else {
--		ctx = efx_find_rss_context_entry(efx, *rss_context);
-+		ctx = efx_siena_find_rss_context_entry(efx, *rss_context);
- 		if (!ctx) {
- 			rc = -ENOENT;
- 			goto out_unlock;
-@@ -1279,7 +1280,7 @@ int efx_ethtool_set_rxfh_context(struct net_device *net_dev,
- 		/* delete this context */
- 		rc = efx->type->rx_push_rss_context_config(efx, ctx, NULL, NULL);
- 		if (!rc)
--			efx_free_rss_context_entry(ctx);
-+			efx_siena_free_rss_context_entry(ctx);
- 		goto out_unlock;
- 	}
+ 	if (netif_device_present(efx->net_dev))
+ 		netif_tx_wake_all_queues(efx->net_dev);
+@@ -445,7 +445,7 @@ static void efx_stop_datapath(struct efx_nic *efx)
+ 	EFX_ASSERT_RESET_SERIALISED(efx);
+ 	BUG_ON(efx->port_enabled);
  
-@@ -1290,7 +1291,7 @@ int efx_ethtool_set_rxfh_context(struct net_device *net_dev,
+-	efx_ptp_stop_datapath(efx);
++	efx_siena_ptp_stop_datapath(efx);
  
- 	rc = efx->type->rx_push_rss_context_config(efx, ctx, indir, key);
- 	if (rc && allocated)
--		efx_free_rss_context_entry(ctx);
-+		efx_siena_free_rss_context_entry(ctx);
- 	else
- 		*rss_context = ctx->user_id;
- out_unlock:
-diff --git a/drivers/net/ethernet/sfc/siena/farch.c b/drivers/net/ethernet/sfc/siena/farch.c
-index 6ee6ca192a44..4de36c6c28e1 100644
---- a/drivers/net/ethernet/sfc/siena/farch.c
-+++ b/drivers/net/ethernet/sfc/siena/farch.c
-@@ -1160,7 +1160,7 @@ static void efx_farch_handle_generated_event(struct efx_channel *channel,
- 		/* The queue must be empty, so we won't receive any rx
- 		 * events, so efx_process_channel() won't refill the
- 		 * queue. Refill it here */
--		efx_fast_push_rx_descriptors(rx_queue, true);
-+		efx_siena_fast_push_rx_descriptors(rx_queue, true);
- 	} else if (rx_queue && magic == EFX_CHANNEL_MAGIC_RX_DRAIN(rx_queue)) {
- 		efx_farch_handle_drain_event(channel);
- 	} else if (code == _EFX_CHANNEL_MAGIC_TX_DRAIN) {
-@@ -2925,13 +2925,14 @@ bool efx_farch_filter_rfs_expire_one(struct efx_nic *efx, u32 flow_id,
- 			 */
- 			arfs_id = 0;
- 		} else {
--			rule = efx_rps_hash_find(efx, &spec);
-+			rule = efx_siena_rps_hash_find(efx, &spec);
- 			if (!rule) {
- 				/* ARFS table doesn't know of this filter, remove it */
- 				force = true;
- 			} else {
- 				arfs_id = rule->arfs_id;
--				if (!efx_rps_check_rule(rule, index, &force))
-+				if (!efx_siena_rps_check_rule(rule, index,
-+							      &force))
- 					goto out_unlock;
- 			}
- 		}
-@@ -2939,7 +2940,7 @@ bool efx_farch_filter_rfs_expire_one(struct efx_nic *efx, u32 flow_id,
- 						 flow_id, arfs_id)) {
- 			if (rule)
- 				rule->filter_id = EFX_ARFS_FILTER_ID_REMOVING;
--			efx_rps_hash_del(efx, &spec);
-+			efx_siena_rps_hash_del(efx, &spec);
- 			efx_farch_filter_table_clear_entry(efx, table, index);
- 			ret = true;
- 		}
-diff --git a/drivers/net/ethernet/sfc/siena/rx.c b/drivers/net/ethernet/sfc/siena/rx.c
-index 099cb23e3250..47c09b93f7c4 100644
---- a/drivers/net/ethernet/sfc/siena/rx.c
-+++ b/drivers/net/ethernet/sfc/siena/rx.c
-@@ -157,7 +157,7 @@ void efx_siena_rx_packet(struct efx_rx_queue *rx_queue, unsigned int index,
- 	 */
- 	if (unlikely(rx_buf->flags & EFX_RX_PKT_DISCARD)) {
- 		efx_rx_flush_packet(channel);
--		efx_discard_rx_packet(channel, rx_buf, n_frags);
-+		efx_siena_discard_rx_packet(channel, rx_buf, n_frags);
- 		return;
- 	}
+ 	efx_siena_stop_channels(efx);
+ }
+@@ -514,7 +514,7 @@ static void efx_stop_port(struct efx_nic *efx)
+ 	netif_addr_unlock_bh(efx->net_dev);
  
-@@ -195,7 +195,7 @@ void efx_siena_rx_packet(struct efx_rx_queue *rx_queue, unsigned int index,
- 
- 	/* All fragments have been DMA-synced, so recycle pages. */
- 	rx_buf = efx_rx_buffer(rx_queue, index);
--	efx_recycle_rx_pages(channel, rx_buf, n_frags);
-+	efx_siena_recycle_rx_pages(channel, rx_buf, n_frags);
- 
- 	/* Pipeline receives so that we give time for packet headers to be
- 	 * prefetched into cache.
-@@ -217,7 +217,7 @@ static void efx_rx_deliver(struct efx_channel *channel, u8 *eh,
- 		struct efx_rx_queue *rx_queue;
- 
- 		rx_queue = efx_channel_get_rx_queue(channel);
--		efx_free_rx_buffers(rx_queue, rx_buf, n_frags);
-+		efx_siena_free_rx_buffers(rx_queue, rx_buf, n_frags);
- 		return;
- 	}
- 	skb_record_rx_queue(skb, channel->rx_queue.core_index);
-@@ -268,8 +268,8 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
- 
- 	if (unlikely(channel->rx_pkt_n_frags > 1)) {
- 		/* We can't do XDP on fragmented packets - drop. */
--		efx_free_rx_buffers(rx_queue, rx_buf,
--				    channel->rx_pkt_n_frags);
-+		efx_siena_free_rx_buffers(rx_queue, rx_buf,
-+					  channel->rx_pkt_n_frags);
- 		if (net_ratelimit())
- 			netif_err(efx, rx_err, efx->net_dev,
- 				  "XDP is not possible with multiple receive fragments (%d)\n",
-@@ -312,7 +312,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
- 		xdpf = xdp_convert_buff_to_frame(&xdp);
- 		err = efx_siena_xdp_tx_buffers(efx, 1, &xdpf, true);
- 		if (unlikely(err != 1)) {
--			efx_free_rx_buffers(rx_queue, rx_buf, 1);
-+			efx_siena_free_rx_buffers(rx_queue, rx_buf, 1);
- 			if (net_ratelimit())
- 				netif_err(efx, rx_err, efx->net_dev,
- 					  "XDP TX failed (%d)\n", err);
-@@ -326,7 +326,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
- 	case XDP_REDIRECT:
- 		err = xdp_do_redirect(efx->net_dev, &xdp, xdp_prog);
- 		if (unlikely(err)) {
--			efx_free_rx_buffers(rx_queue, rx_buf, 1);
-+			efx_siena_free_rx_buffers(rx_queue, rx_buf, 1);
- 			if (net_ratelimit())
- 				netif_err(efx, rx_err, efx->net_dev,
- 					  "XDP redirect failed (%d)\n", err);
-@@ -339,7 +339,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
- 
- 	default:
- 		bpf_warn_invalid_xdp_action(efx->net_dev, xdp_prog, xdp_act);
--		efx_free_rx_buffers(rx_queue, rx_buf, 1);
-+		efx_siena_free_rx_buffers(rx_queue, rx_buf, 1);
- 		channel->n_rx_xdp_bad_drops++;
- 		trace_xdp_exception(efx->net_dev, xdp_prog, xdp_act);
- 		break;
-@@ -348,7 +348,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
- 		trace_xdp_exception(efx->net_dev, xdp_prog, xdp_act);
- 		fallthrough;
- 	case XDP_DROP:
--		efx_free_rx_buffers(rx_queue, rx_buf, 1);
-+		efx_siena_free_rx_buffers(rx_queue, rx_buf, 1);
- 		channel->n_rx_xdp_drops++;
- 		break;
- 	}
-@@ -379,8 +379,8 @@ void __efx_siena_rx_packet(struct efx_channel *channel)
- 
- 		efx_loopback_rx_packet(efx, eh, rx_buf->len);
- 		rx_queue = efx_channel_get_rx_queue(channel);
--		efx_free_rx_buffers(rx_queue, rx_buf,
--				    channel->rx_pkt_n_frags);
-+		efx_siena_free_rx_buffers(rx_queue, rx_buf,
-+					  channel->rx_pkt_n_frags);
- 		goto out;
- 	}
- 
-diff --git a/drivers/net/ethernet/sfc/siena/rx_common.c b/drivers/net/ethernet/sfc/siena/rx_common.c
-index 9fb442da043c..4579f43484c3 100644
---- a/drivers/net/ethernet/sfc/siena/rx_common.c
-+++ b/drivers/net/ethernet/sfc/siena/rx_common.c
-@@ -30,6 +30,9 @@ MODULE_PARM_DESC(rx_refill_threshold,
-  */
- #define EFX_RXD_HEAD_ROOM (1 + EFX_RX_MAX_FRAGS)
- 
-+static void efx_unmap_rx_buffer(struct efx_nic *efx,
-+				struct efx_rx_buffer *rx_buf);
-+
- /* Check the RX page recycle ring for a page that can be reused. */
- static struct page *efx_reuse_page(struct efx_rx_queue *rx_queue)
- {
-@@ -103,9 +106,9 @@ static void efx_recycle_rx_page(struct efx_channel *channel,
+ 	cancel_delayed_work_sync(&efx->monitor_work);
+-	efx_selftest_async_cancel(efx);
++	efx_siena_selftest_async_cancel(efx);
+ 	cancel_work_sync(&efx->mac_work);
  }
  
- /* Recycle the pages that are used by buffers that have just been received. */
--void efx_recycle_rx_pages(struct efx_channel *channel,
--			  struct efx_rx_buffer *rx_buf,
--			  unsigned int n_frags)
-+void efx_siena_recycle_rx_pages(struct efx_channel *channel,
-+				struct efx_rx_buffer *rx_buf,
-+				unsigned int n_frags)
- {
- 	struct efx_rx_queue *rx_queue = efx_channel_get_rx_queue(channel);
+@@ -994,7 +994,7 @@ int efx_siena_init_struct(struct efx_nic *efx,
+ #endif
+ 	INIT_WORK(&efx->reset_work, efx_reset_work);
+ 	INIT_DELAYED_WORK(&efx->monitor_work, efx_monitor);
+-	efx_selftest_async_init(efx);
++	efx_siena_selftest_async_init(efx);
+ 	efx->pci_dev = pci_dev;
+ 	efx->msg_enable = debug;
+ 	efx->state = STATE_UNINIT;
+diff --git a/drivers/net/ethernet/sfc/siena/ethtool.c b/drivers/net/ethernet/sfc/siena/ethtool.c
+index 7aa621e97212..63388bec421d 100644
+--- a/drivers/net/ethernet/sfc/siena/ethtool.c
++++ b/drivers/net/ethernet/sfc/siena/ethtool.c
+@@ -235,7 +235,7 @@ static int efx_ethtool_get_ts_info(struct net_device *net_dev,
+ 				    SOF_TIMESTAMPING_SOFTWARE);
+ 	ts_info->phc_index = -1;
  
-@@ -118,15 +121,15 @@ void efx_recycle_rx_pages(struct efx_channel *channel,
- 	} while (--n_frags);
- }
- 
--void efx_discard_rx_packet(struct efx_channel *channel,
--			   struct efx_rx_buffer *rx_buf,
--			   unsigned int n_frags)
-+void efx_siena_discard_rx_packet(struct efx_channel *channel,
-+				 struct efx_rx_buffer *rx_buf,
-+				 unsigned int n_frags)
- {
- 	struct efx_rx_queue *rx_queue = efx_channel_get_rx_queue(channel);
- 
--	efx_recycle_rx_pages(channel, rx_buf, n_frags);
-+	efx_siena_recycle_rx_pages(channel, rx_buf, n_frags);
- 
--	efx_free_rx_buffers(rx_queue, rx_buf, n_frags);
-+	efx_siena_free_rx_buffers(rx_queue, rx_buf, n_frags);
- }
- 
- static void efx_init_rx_recycle_ring(struct efx_rx_queue *rx_queue)
-@@ -181,12 +184,12 @@ static void efx_fini_rx_buffer(struct efx_rx_queue *rx_queue,
- 	/* If this is the last buffer in a page, unmap and free it. */
- 	if (rx_buf->flags & EFX_RX_BUF_LAST_IN_PAGE) {
- 		efx_unmap_rx_buffer(rx_queue->efx, rx_buf);
--		efx_free_rx_buffers(rx_queue, rx_buf, 1);
-+		efx_siena_free_rx_buffers(rx_queue, rx_buf, 1);
- 	}
- 	rx_buf->page = NULL;
- }
- 
--int efx_probe_rx_queue(struct efx_rx_queue *rx_queue)
-+int efx_siena_probe_rx_queue(struct efx_rx_queue *rx_queue)
- {
- 	struct efx_nic *efx = rx_queue->efx;
- 	unsigned int entries;
-@@ -217,7 +220,7 @@ int efx_probe_rx_queue(struct efx_rx_queue *rx_queue)
- 	return rc;
- }
- 
--void efx_init_rx_queue(struct efx_rx_queue *rx_queue)
-+void efx_siena_init_rx_queue(struct efx_rx_queue *rx_queue)
- {
- 	unsigned int max_fill, trigger, max_trigger;
- 	struct efx_nic *efx = rx_queue->efx;
-@@ -272,7 +275,7 @@ void efx_init_rx_queue(struct efx_rx_queue *rx_queue)
- 	efx_nic_init_rx(rx_queue);
- }
- 
--void efx_fini_rx_queue(struct efx_rx_queue *rx_queue)
-+void efx_siena_fini_rx_queue(struct efx_rx_queue *rx_queue)
- {
- 	struct efx_rx_buffer *rx_buf;
- 	int i;
-@@ -301,7 +304,7 @@ void efx_fini_rx_queue(struct efx_rx_queue *rx_queue)
- 	rx_queue->xdp_rxq_info_valid = false;
- }
- 
--void efx_remove_rx_queue(struct efx_rx_queue *rx_queue)
-+void efx_siena_remove_rx_queue(struct efx_rx_queue *rx_queue)
- {
- 	netif_dbg(rx_queue->efx, drv, rx_queue->efx->net_dev,
- 		  "destroying RX queue %d\n", efx_rx_queue_index(rx_queue));
-@@ -315,8 +318,8 @@ void efx_remove_rx_queue(struct efx_rx_queue *rx_queue)
- /* Unmap a DMA-mapped page.  This function is only called for the final RX
-  * buffer in a page.
-  */
--void efx_unmap_rx_buffer(struct efx_nic *efx,
--			 struct efx_rx_buffer *rx_buf)
-+static void efx_unmap_rx_buffer(struct efx_nic *efx,
-+				struct efx_rx_buffer *rx_buf)
- {
- 	struct page *page = rx_buf->page;
- 
-@@ -330,9 +333,9 @@ void efx_unmap_rx_buffer(struct efx_nic *efx,
- 	}
- }
- 
--void efx_free_rx_buffers(struct efx_rx_queue *rx_queue,
--			 struct efx_rx_buffer *rx_buf,
--			 unsigned int num_bufs)
-+void efx_siena_free_rx_buffers(struct efx_rx_queue *rx_queue,
-+			       struct efx_rx_buffer *rx_buf,
-+			       unsigned int num_bufs)
- {
- 	do {
- 		if (rx_buf->page) {
-@@ -343,7 +346,7 @@ void efx_free_rx_buffers(struct efx_rx_queue *rx_queue,
- 	} while (--num_bufs);
- }
- 
--void efx_rx_slow_fill(struct timer_list *t)
-+void efx_siena_rx_slow_fill(struct timer_list *t)
- {
- 	struct efx_rx_queue *rx_queue = from_timer(rx_queue, t, slow_fill);
- 
-@@ -352,7 +355,7 @@ void efx_rx_slow_fill(struct timer_list *t)
- 	++rx_queue->slow_fill_count;
- }
- 
--void efx_schedule_slow_fill(struct efx_rx_queue *rx_queue)
-+static void efx_schedule_slow_fill(struct efx_rx_queue *rx_queue)
- {
- 	mod_timer(&rx_queue->slow_fill, jiffies + msecs_to_jiffies(10));
- }
-@@ -425,7 +428,7 @@ static int efx_init_rx_buffers(struct efx_rx_queue *rx_queue, bool atomic)
+-	efx_ptp_get_ts_info(efx, ts_info);
++	efx_siena_ptp_get_ts_info(efx, ts_info);
  	return 0;
  }
  
--void efx_rx_config_page_split(struct efx_nic *efx)
-+void efx_siena_rx_config_page_split(struct efx_nic *efx)
- {
- 	efx->rx_page_buf_step = ALIGN(efx->rx_dma_len + efx->rx_ip_align +
- 				      EFX_XDP_HEADROOM + EFX_XDP_TAILROOM,
-@@ -439,7 +442,7 @@ void efx_rx_config_page_split(struct efx_nic *efx)
- 					       efx->rx_bufs_per_page);
- }
+@@ -243,40 +243,40 @@ const struct ethtool_ops efx_siena_ethtool_ops = {
+ 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
+ 				     ETHTOOL_COALESCE_USECS_IRQ |
+ 				     ETHTOOL_COALESCE_USE_ADAPTIVE_RX,
+-	.get_drvinfo		= efx_ethtool_get_drvinfo,
++	.get_drvinfo		= efx_siena_ethtool_get_drvinfo,
+ 	.get_regs_len		= efx_ethtool_get_regs_len,
+ 	.get_regs		= efx_ethtool_get_regs,
+-	.get_msglevel		= efx_ethtool_get_msglevel,
+-	.set_msglevel		= efx_ethtool_set_msglevel,
++	.get_msglevel		= efx_siena_ethtool_get_msglevel,
++	.set_msglevel		= efx_siena_ethtool_set_msglevel,
+ 	.get_link		= ethtool_op_get_link,
+ 	.get_coalesce		= efx_ethtool_get_coalesce,
+ 	.set_coalesce		= efx_ethtool_set_coalesce,
+ 	.get_ringparam		= efx_ethtool_get_ringparam,
+ 	.set_ringparam		= efx_ethtool_set_ringparam,
+-	.get_pauseparam         = efx_ethtool_get_pauseparam,
+-	.set_pauseparam         = efx_ethtool_set_pauseparam,
+-	.get_sset_count		= efx_ethtool_get_sset_count,
+-	.self_test		= efx_ethtool_self_test,
+-	.get_strings		= efx_ethtool_get_strings,
++	.get_pauseparam         = efx_siena_ethtool_get_pauseparam,
++	.set_pauseparam         = efx_siena_ethtool_set_pauseparam,
++	.get_sset_count		= efx_siena_ethtool_get_sset_count,
++	.self_test		= efx_siena_ethtool_self_test,
++	.get_strings		= efx_siena_ethtool_get_strings,
+ 	.set_phys_id		= efx_ethtool_phys_id,
+-	.get_ethtool_stats	= efx_ethtool_get_stats,
++	.get_ethtool_stats	= efx_siena_ethtool_get_stats,
+ 	.get_wol                = efx_ethtool_get_wol,
+ 	.set_wol                = efx_ethtool_set_wol,
+-	.reset			= efx_ethtool_reset,
+-	.get_rxnfc		= efx_ethtool_get_rxnfc,
+-	.set_rxnfc		= efx_ethtool_set_rxnfc,
+-	.get_rxfh_indir_size	= efx_ethtool_get_rxfh_indir_size,
+-	.get_rxfh_key_size	= efx_ethtool_get_rxfh_key_size,
+-	.get_rxfh		= efx_ethtool_get_rxfh,
+-	.set_rxfh		= efx_ethtool_set_rxfh,
+-	.get_rxfh_context	= efx_ethtool_get_rxfh_context,
+-	.set_rxfh_context	= efx_ethtool_set_rxfh_context,
++	.reset			= efx_siena_ethtool_reset,
++	.get_rxnfc		= efx_siena_ethtool_get_rxnfc,
++	.set_rxnfc		= efx_siena_ethtool_set_rxnfc,
++	.get_rxfh_indir_size	= efx_siena_ethtool_get_rxfh_indir_size,
++	.get_rxfh_key_size	= efx_siena_ethtool_get_rxfh_key_size,
++	.get_rxfh		= efx_siena_ethtool_get_rxfh,
++	.set_rxfh		= efx_siena_ethtool_set_rxfh,
++	.get_rxfh_context	= efx_siena_ethtool_get_rxfh_context,
++	.set_rxfh_context	= efx_siena_ethtool_set_rxfh_context,
+ 	.get_ts_info		= efx_ethtool_get_ts_info,
+-	.get_module_info	= efx_ethtool_get_module_info,
+-	.get_module_eeprom	= efx_ethtool_get_module_eeprom,
+-	.get_link_ksettings	= efx_ethtool_get_link_ksettings,
+-	.set_link_ksettings	= efx_ethtool_set_link_ksettings,
++	.get_module_info	= efx_siena_ethtool_get_module_info,
++	.get_module_eeprom	= efx_siena_ethtool_get_module_eeprom,
++	.get_link_ksettings	= efx_siena_ethtool_get_link_ksettings,
++	.set_link_ksettings	= efx_siena_ethtool_set_link_ksettings,
+ 	.get_fec_stats		= efx_ethtool_get_fec_stats,
+-	.get_fecparam		= efx_ethtool_get_fecparam,
+-	.set_fecparam		= efx_ethtool_set_fecparam,
++	.get_fecparam		= efx_siena_ethtool_get_fecparam,
++	.set_fecparam		= efx_siena_ethtool_set_fecparam,
+ };
+diff --git a/drivers/net/ethernet/sfc/siena/ethtool_common.c b/drivers/net/ethernet/sfc/siena/ethtool_common.c
+index f54510cf4e72..91f750e4ede8 100644
+--- a/drivers/net/ethernet/sfc/siena/ethtool_common.c
++++ b/drivers/net/ethernet/sfc/siena/ethtool_common.c
+@@ -100,8 +100,8 @@ static const struct efx_sw_stat_desc efx_sw_stat_desc[] = {
  
--/* efx_fast_push_rx_descriptors - push new RX descriptors quickly
-+/* efx_siena_fast_push_rx_descriptors - push new RX descriptors quickly
-  * @rx_queue:		RX descriptor queue
-  *
-  * This will aim to fill the RX descriptor queue up to
-@@ -450,7 +453,8 @@ void efx_rx_config_page_split(struct efx_nic *efx)
-  * this means this function must run from the NAPI handler, or be called
-  * when NAPI is disabled.
-  */
--void efx_fast_push_rx_descriptors(struct efx_rx_queue *rx_queue, bool atomic)
-+void efx_siena_fast_push_rx_descriptors(struct efx_rx_queue *rx_queue,
-+					bool atomic)
- {
- 	struct efx_nic *efx = rx_queue->efx;
- 	unsigned int fill_level, batch_size;
-@@ -517,7 +521,7 @@ efx_siena_rx_packet_gro(struct efx_channel *channel,
- 		struct efx_rx_queue *rx_queue;
+ #define EFX_ETHTOOL_SW_STAT_COUNT ARRAY_SIZE(efx_sw_stat_desc)
  
- 		rx_queue = efx_channel_get_rx_queue(channel);
--		efx_free_rx_buffers(rx_queue, rx_buf, n_frags);
-+		efx_siena_free_rx_buffers(rx_queue, rx_buf, n_frags);
- 		return;
- 	}
- 
-@@ -556,7 +560,7 @@ efx_siena_rx_packet_gro(struct efx_channel *channel,
- /* RSS contexts.  We're using linked lists and crappy O(n) algorithms, because
-  * (a) this is an infrequent control-plane operation and (b) n is small (max 64)
-  */
--struct efx_rss_context *efx_alloc_rss_context_entry(struct efx_nic *efx)
-+struct efx_rss_context *efx_siena_alloc_rss_context_entry(struct efx_nic *efx)
- {
- 	struct list_head *head = &efx->rss_context.list;
- 	struct efx_rss_context *ctx, *new;
-@@ -589,7 +593,8 @@ struct efx_rss_context *efx_alloc_rss_context_entry(struct efx_nic *efx)
- 	return new;
- }
- 
--struct efx_rss_context *efx_find_rss_context_entry(struct efx_nic *efx, u32 id)
-+struct efx_rss_context *efx_siena_find_rss_context_entry(struct efx_nic *efx,
-+							 u32 id)
- {
- 	struct list_head *head = &efx->rss_context.list;
- 	struct efx_rss_context *ctx;
-@@ -602,14 +607,14 @@ struct efx_rss_context *efx_find_rss_context_entry(struct efx_nic *efx, u32 id)
- 	return NULL;
- }
- 
--void efx_free_rss_context_entry(struct efx_rss_context *ctx)
-+void efx_siena_free_rss_context_entry(struct efx_rss_context *ctx)
- {
- 	list_del(&ctx->list);
- 	kfree(ctx);
- }
- 
--void efx_set_default_rx_indir_table(struct efx_nic *efx,
--				    struct efx_rss_context *ctx)
-+void efx_siena_set_default_rx_indir_table(struct efx_nic *efx,
-+					  struct efx_rss_context *ctx)
- {
- 	size_t i;
- 
-@@ -619,7 +624,7 @@ void efx_set_default_rx_indir_table(struct efx_nic *efx,
- }
- 
- /**
-- * efx_filter_is_mc_recipient - test whether spec is a multicast recipient
-+ * efx_siena_filter_is_mc_recipient - test whether spec is a multicast recipient
-  * @spec: Specification to test
-  *
-  * Return: %true if the specification is a non-drop RX filter that
-@@ -627,7 +632,7 @@ void efx_set_default_rx_indir_table(struct efx_nic *efx,
-  * IPv4 or IPv6 address value in the respective multicast address
-  * range.  Otherwise %false.
-  */
--bool efx_filter_is_mc_recipient(const struct efx_filter_spec *spec)
-+bool efx_siena_filter_is_mc_recipient(const struct efx_filter_spec *spec)
- {
- 	if (!(spec->flags & EFX_FILTER_FLAG_RX) ||
- 	    spec->dmaq_id == EFX_FILTER_RX_DMAQ_ID_DROP)
-@@ -652,8 +657,8 @@ bool efx_filter_is_mc_recipient(const struct efx_filter_spec *spec)
- 	return false;
- }
- 
--bool efx_filter_spec_equal(const struct efx_filter_spec *left,
--			   const struct efx_filter_spec *right)
-+bool efx_siena_filter_spec_equal(const struct efx_filter_spec *left,
-+				 const struct efx_filter_spec *right)
- {
- 	if ((left->match_flags ^ right->match_flags) |
- 	    ((left->flags ^ right->flags) &
-@@ -665,7 +670,7 @@ bool efx_filter_spec_equal(const struct efx_filter_spec *left,
- 		      offsetof(struct efx_filter_spec, outer_vid)) == 0;
- }
- 
--u32 efx_filter_spec_hash(const struct efx_filter_spec *spec)
-+u32 efx_siena_filter_spec_hash(const struct efx_filter_spec *spec)
- {
- 	BUILD_BUG_ON(offsetof(struct efx_filter_spec, outer_vid) & 3);
- 	return jhash2((const u32 *)&spec->outer_vid,
-@@ -675,8 +680,8 @@ u32 efx_filter_spec_hash(const struct efx_filter_spec *spec)
- }
- 
- #ifdef CONFIG_RFS_ACCEL
--bool efx_rps_check_rule(struct efx_arfs_rule *rule, unsigned int filter_idx,
--			bool *force)
-+bool efx_siena_rps_check_rule(struct efx_arfs_rule *rule,
-+			      unsigned int filter_idx, bool *force)
- {
- 	if (rule->filter_id == EFX_ARFS_FILTER_ID_PENDING) {
- 		/* ARFS is currently updating this entry, leave it */
-@@ -692,7 +697,7 @@ bool efx_rps_check_rule(struct efx_arfs_rule *rule, unsigned int filter_idx,
- 	} else if (WARN_ON(rule->filter_id != filter_idx)) { /* can't happen */
- 		/* ARFS has moved on, so old filter is not needed.  Since we did
- 		 * not mark the rule with EFX_ARFS_FILTER_ID_REMOVING, it will
--		 * not be removed by efx_rps_hash_del() subsequently.
-+		 * not be removed by efx_siena_rps_hash_del() subsequently.
- 		 */
- 		*force = true;
- 		return true;
-@@ -705,7 +710,7 @@ static
- struct hlist_head *efx_rps_hash_bucket(struct efx_nic *efx,
- 				       const struct efx_filter_spec *spec)
- {
--	u32 hash = efx_filter_spec_hash(spec);
-+	u32 hash = efx_siena_filter_spec_hash(spec);
- 
- 	lockdep_assert_held(&efx->rps_hash_lock);
- 	if (!efx->rps_hash_table)
-@@ -713,7 +718,7 @@ struct hlist_head *efx_rps_hash_bucket(struct efx_nic *efx,
- 	return &efx->rps_hash_table[hash % EFX_ARFS_HASH_TABLE_SIZE];
- }
- 
--struct efx_arfs_rule *efx_rps_hash_find(struct efx_nic *efx,
-+struct efx_arfs_rule *efx_siena_rps_hash_find(struct efx_nic *efx,
- 					const struct efx_filter_spec *spec)
- {
- 	struct efx_arfs_rule *rule;
-@@ -725,15 +730,15 @@ struct efx_arfs_rule *efx_rps_hash_find(struct efx_nic *efx,
- 		return NULL;
- 	hlist_for_each(node, head) {
- 		rule = container_of(node, struct efx_arfs_rule, node);
--		if (efx_filter_spec_equal(spec, &rule->spec))
-+		if (efx_siena_filter_spec_equal(spec, &rule->spec))
- 			return rule;
- 	}
- 	return NULL;
- }
- 
--struct efx_arfs_rule *efx_rps_hash_add(struct efx_nic *efx,
--				       const struct efx_filter_spec *spec,
--				       bool *new)
-+static struct efx_arfs_rule *efx_rps_hash_add(struct efx_nic *efx,
-+					const struct efx_filter_spec *spec,
-+					bool *new)
- {
- 	struct efx_arfs_rule *rule;
- 	struct hlist_head *head;
-@@ -744,7 +749,7 @@ struct efx_arfs_rule *efx_rps_hash_add(struct efx_nic *efx,
- 		return NULL;
- 	hlist_for_each(node, head) {
- 		rule = container_of(node, struct efx_arfs_rule, node);
--		if (efx_filter_spec_equal(spec, &rule->spec)) {
-+		if (efx_siena_filter_spec_equal(spec, &rule->spec)) {
- 			*new = false;
- 			return rule;
- 		}
-@@ -758,7 +763,8 @@ struct efx_arfs_rule *efx_rps_hash_add(struct efx_nic *efx,
- 	return rule;
- }
- 
--void efx_rps_hash_del(struct efx_nic *efx, const struct efx_filter_spec *spec)
-+void efx_siena_rps_hash_del(struct efx_nic *efx,
-+			    const struct efx_filter_spec *spec)
- {
- 	struct efx_arfs_rule *rule;
- 	struct hlist_head *head;
-@@ -769,7 +775,7 @@ void efx_rps_hash_del(struct efx_nic *efx, const struct efx_filter_spec *spec)
- 		return;
- 	hlist_for_each(node, head) {
- 		rule = container_of(node, struct efx_arfs_rule, node);
--		if (efx_filter_spec_equal(spec, &rule->spec)) {
-+		if (efx_siena_filter_spec_equal(spec, &rule->spec)) {
- 			/* Someone already reused the entry.  We know that if
- 			 * this check doesn't fire (i.e. filter_id == REMOVING)
- 			 * then the REMOVING mark was put there by our caller,
-@@ -788,7 +794,7 @@ void efx_rps_hash_del(struct efx_nic *efx, const struct efx_filter_spec *spec)
- }
- #endif
- 
--int efx_probe_filters(struct efx_nic *efx)
-+int efx_siena_probe_filters(struct efx_nic *efx)
- {
- 	int rc;
- 
-@@ -835,7 +841,7 @@ int efx_probe_filters(struct efx_nic *efx)
- 	return rc;
- }
- 
--void efx_remove_filters(struct efx_nic *efx)
-+void efx_siena_remove_filters(struct efx_nic *efx)
- {
- #ifdef CONFIG_RFS_ACCEL
- 	struct efx_channel *channel;
-@@ -870,7 +876,7 @@ static void efx_filter_rfs_work(struct work_struct *data)
- 		rc %= efx->type->max_rx_ip_filters;
- 	if (efx->rps_hash_table) {
- 		spin_lock_bh(&efx->rps_hash_lock);
--		rule = efx_rps_hash_find(efx, &req->spec);
-+		rule = efx_siena_rps_hash_find(efx, &req->spec);
- 		/* The rule might have already gone, if someone else's request
- 		 * for the same spec was already worked and then expired before
- 		 * we got around to our work.  In that case we have nothing
-@@ -930,8 +936,9 @@ static void efx_filter_rfs_work(struct work_struct *data)
- 		/* We're overloading the NIC's filter tables, so let's do a
- 		 * chunk of extra expiry work.
- 		 */
--		__efx_filter_rfs_expire(channel, min(channel->rfs_filter_count,
--						     100u));
-+		__efx_siena_filter_rfs_expire(channel,
-+					      min(channel->rfs_filter_count,
-+						  100u));
- 	}
- 
- 	/* Release references */
-@@ -939,8 +946,8 @@ static void efx_filter_rfs_work(struct work_struct *data)
- 	dev_put(req->net_dev);
- }
- 
--int efx_filter_rfs(struct net_device *net_dev, const struct sk_buff *skb,
--		   u16 rxq_index, u32 flow_id)
-+int efx_siena_filter_rfs(struct net_device *net_dev, const struct sk_buff *skb,
-+			 u16 rxq_index, u32 flow_id)
+-void efx_ethtool_get_drvinfo(struct net_device *net_dev,
+-			     struct ethtool_drvinfo *info)
++void efx_siena_ethtool_get_drvinfo(struct net_device *net_dev,
++				   struct ethtool_drvinfo *info)
  {
  	struct efx_nic *efx = netdev_priv(net_dev);
- 	struct efx_async_filter_insertion *req;
-@@ -1041,7 +1048,8 @@ int efx_filter_rfs(struct net_device *net_dev, const struct sk_buff *skb,
- 	return rc;
+ 
+@@ -111,70 +111,22 @@ void efx_ethtool_get_drvinfo(struct net_device *net_dev,
+ 	strlcpy(info->bus_info, pci_name(efx->pci_dev), sizeof(info->bus_info));
  }
  
--bool __efx_filter_rfs_expire(struct efx_channel *channel, unsigned int quota)
-+bool __efx_siena_filter_rfs_expire(struct efx_channel *channel,
-+				   unsigned int quota)
+-u32 efx_ethtool_get_msglevel(struct net_device *net_dev)
++u32 efx_siena_ethtool_get_msglevel(struct net_device *net_dev)
  {
- 	bool (*expire_one)(struct efx_nic *efx, u32 flow_id, unsigned int index);
- 	struct efx_nic *efx = channel->efx;
-diff --git a/drivers/net/ethernet/sfc/siena/rx_common.h b/drivers/net/ethernet/sfc/siena/rx_common.h
-index 909d06a4fdc9..6b37f83ecb30 100644
---- a/drivers/net/ethernet/sfc/siena/rx_common.h
-+++ b/drivers/net/ethernet/sfc/siena/rx_common.h
-@@ -43,26 +43,19 @@ static inline u32 efx_rx_buf_hash(struct efx_nic *efx, const u8 *eh)
- #endif
+ 	struct efx_nic *efx = netdev_priv(net_dev);
+ 
+ 	return efx->msg_enable;
  }
  
--void efx_rx_slow_fill(struct timer_list *t);
--
--void efx_recycle_rx_pages(struct efx_channel *channel,
--			  struct efx_rx_buffer *rx_buf,
--			  unsigned int n_frags);
--void efx_discard_rx_packet(struct efx_channel *channel,
--			   struct efx_rx_buffer *rx_buf,
--			   unsigned int n_frags);
--
--int efx_probe_rx_queue(struct efx_rx_queue *rx_queue);
--void efx_init_rx_queue(struct efx_rx_queue *rx_queue);
--void efx_fini_rx_queue(struct efx_rx_queue *rx_queue);
--void efx_remove_rx_queue(struct efx_rx_queue *rx_queue);
--void efx_destroy_rx_queue(struct efx_rx_queue *rx_queue);
--
--void efx_init_rx_buffer(struct efx_rx_queue *rx_queue,
--			struct page *page,
--			unsigned int page_offset,
--			u16 flags);
--void efx_unmap_rx_buffer(struct efx_nic *efx, struct efx_rx_buffer *rx_buf);
-+void efx_siena_rx_slow_fill(struct timer_list *t);
-+
-+void efx_siena_recycle_rx_pages(struct efx_channel *channel,
-+				struct efx_rx_buffer *rx_buf,
-+				unsigned int n_frags);
-+void efx_siena_discard_rx_packet(struct efx_channel *channel,
-+				 struct efx_rx_buffer *rx_buf,
-+				 unsigned int n_frags);
-+
-+int efx_siena_probe_rx_queue(struct efx_rx_queue *rx_queue);
-+void efx_siena_init_rx_queue(struct efx_rx_queue *rx_queue);
-+void efx_siena_fini_rx_queue(struct efx_rx_queue *rx_queue);
-+void efx_siena_remove_rx_queue(struct efx_rx_queue *rx_queue);
+-void efx_ethtool_set_msglevel(struct net_device *net_dev, u32 msg_enable)
++void efx_siena_ethtool_set_msglevel(struct net_device *net_dev, u32 msg_enable)
+ {
+ 	struct efx_nic *efx = netdev_priv(net_dev);
  
- static inline void efx_sync_rx_buffer(struct efx_nic *efx,
- 				      struct efx_rx_buffer *rx_buf,
-@@ -72,46 +65,46 @@ static inline void efx_sync_rx_buffer(struct efx_nic *efx,
- 				DMA_FROM_DEVICE);
+ 	efx->msg_enable = msg_enable;
  }
  
--void efx_free_rx_buffers(struct efx_rx_queue *rx_queue,
--			 struct efx_rx_buffer *rx_buf,
--			 unsigned int num_bufs);
-+void efx_siena_free_rx_buffers(struct efx_rx_queue *rx_queue,
-+			       struct efx_rx_buffer *rx_buf,
-+			       unsigned int num_bufs);
- 
--void efx_schedule_slow_fill(struct efx_rx_queue *rx_queue);
--void efx_rx_config_page_split(struct efx_nic *efx);
--void efx_fast_push_rx_descriptors(struct efx_rx_queue *rx_queue, bool atomic);
-+void efx_siena_rx_config_page_split(struct efx_nic *efx);
-+void efx_siena_fast_push_rx_descriptors(struct efx_rx_queue *rx_queue,
-+					bool atomic);
- 
- void
- efx_siena_rx_packet_gro(struct efx_channel *channel,
- 			struct efx_rx_buffer *rx_buf,
- 			unsigned int n_frags, u8 *eh, __wsum csum);
- 
--struct efx_rss_context *efx_alloc_rss_context_entry(struct efx_nic *efx);
--struct efx_rss_context *efx_find_rss_context_entry(struct efx_nic *efx, u32 id);
--void efx_free_rss_context_entry(struct efx_rss_context *ctx);
--void efx_set_default_rx_indir_table(struct efx_nic *efx,
--				    struct efx_rss_context *ctx);
-+struct efx_rss_context *efx_siena_alloc_rss_context_entry(struct efx_nic *efx);
-+struct efx_rss_context *efx_siena_find_rss_context_entry(struct efx_nic *efx,
-+							 u32 id);
-+void efx_siena_free_rss_context_entry(struct efx_rss_context *ctx);
-+void efx_siena_set_default_rx_indir_table(struct efx_nic *efx,
-+					  struct efx_rss_context *ctx);
- 
--bool efx_filter_is_mc_recipient(const struct efx_filter_spec *spec);
--bool efx_filter_spec_equal(const struct efx_filter_spec *left,
--			   const struct efx_filter_spec *right);
--u32 efx_filter_spec_hash(const struct efx_filter_spec *spec);
-+bool efx_siena_filter_is_mc_recipient(const struct efx_filter_spec *spec);
-+bool efx_siena_filter_spec_equal(const struct efx_filter_spec *left,
-+				 const struct efx_filter_spec *right);
-+u32 efx_siena_filter_spec_hash(const struct efx_filter_spec *spec);
- 
- #ifdef CONFIG_RFS_ACCEL
--bool efx_rps_check_rule(struct efx_arfs_rule *rule, unsigned int filter_idx,
--			bool *force);
--struct efx_arfs_rule *efx_rps_hash_find(struct efx_nic *efx,
-+bool efx_siena_rps_check_rule(struct efx_arfs_rule *rule,
-+			      unsigned int filter_idx, bool *force);
-+struct efx_arfs_rule *efx_siena_rps_hash_find(struct efx_nic *efx,
- 					const struct efx_filter_spec *spec);
--struct efx_arfs_rule *efx_rps_hash_add(struct efx_nic *efx,
--				       const struct efx_filter_spec *spec,
--				       bool *new);
--void efx_rps_hash_del(struct efx_nic *efx, const struct efx_filter_spec *spec);
--
--int efx_filter_rfs(struct net_device *net_dev, const struct sk_buff *skb,
--		   u16 rxq_index, u32 flow_id);
--bool __efx_filter_rfs_expire(struct efx_channel *channel, unsigned int quota);
-+void efx_siena_rps_hash_del(struct efx_nic *efx,
-+			    const struct efx_filter_spec *spec);
-+
-+int efx_siena_filter_rfs(struct net_device *net_dev, const struct sk_buff *skb,
-+			 u16 rxq_index, u32 flow_id);
-+bool __efx_siena_filter_rfs_expire(struct efx_channel *channel,
-+				   unsigned int quota);
- #endif
- 
--int efx_probe_filters(struct efx_nic *efx);
--void efx_remove_filters(struct efx_nic *efx);
-+int efx_siena_probe_filters(struct efx_nic *efx);
-+void efx_siena_remove_filters(struct efx_nic *efx);
- 
- #endif
-diff --git a/drivers/net/ethernet/sfc/siena/tx.c b/drivers/net/ethernet/sfc/siena/tx.c
-index 118ec6f5f097..0677a0254d85 100644
---- a/drivers/net/ethernet/sfc/siena/tx.c
-+++ b/drivers/net/ethernet/sfc/siena/tx.c
-@@ -41,14 +41,6 @@ static inline u8 *efx_tx_get_copy_buffer(struct efx_tx_queue *tx_queue,
- 	return (u8 *)page_buf->addr + offset;
- }
- 
--u8 *efx_tx_get_copy_buffer_limited(struct efx_tx_queue *tx_queue,
--				   struct efx_tx_buffer *buffer, size_t len)
+-void efx_ethtool_self_test(struct net_device *net_dev,
+-			   struct ethtool_test *test, u64 *data)
 -{
--	if (len > EFX_TX_CB_SIZE)
--		return NULL;
--	return efx_tx_get_copy_buffer(tx_queue, buffer);
+-	struct efx_nic *efx = netdev_priv(net_dev);
+-	struct efx_self_tests *efx_tests;
+-	bool already_up;
+-	int rc = -ENOMEM;
+-
+-	efx_tests = kzalloc(sizeof(*efx_tests), GFP_KERNEL);
+-	if (!efx_tests)
+-		goto fail;
+-
+-	if (efx->state != STATE_READY) {
+-		rc = -EBUSY;
+-		goto out;
+-	}
+-
+-	netif_info(efx, drv, efx->net_dev, "starting %sline testing\n",
+-		   (test->flags & ETH_TEST_FL_OFFLINE) ? "off" : "on");
+-
+-	/* We need rx buffers and interrupts. */
+-	already_up = (efx->net_dev->flags & IFF_UP);
+-	if (!already_up) {
+-		rc = dev_open(efx->net_dev, NULL);
+-		if (rc) {
+-			netif_err(efx, drv, efx->net_dev,
+-				  "failed opening device.\n");
+-			goto out;
+-		}
+-	}
+-
+-	rc = efx_selftest(efx, efx_tests, test->flags);
+-
+-	if (!already_up)
+-		dev_close(efx->net_dev);
+-
+-	netif_info(efx, drv, efx->net_dev, "%s %sline self-tests\n",
+-		   rc == 0 ? "passed" : "failed",
+-		   (test->flags & ETH_TEST_FL_OFFLINE) ? "off" : "on");
+-
+-out:
+-	efx_ethtool_fill_self_tests(efx, efx_tests, NULL, data);
+-	kfree(efx_tests);
+-fail:
+-	if (rc)
+-		test->flags |= ETH_TEST_FL_FAILED;
 -}
 -
- static void efx_tx_maybe_stop_queue(struct efx_tx_queue *txq1)
+-void efx_ethtool_get_pauseparam(struct net_device *net_dev,
+-				struct ethtool_pauseparam *pause)
++void efx_siena_ethtool_get_pauseparam(struct net_device *net_dev,
++				      struct ethtool_pauseparam *pause)
  {
- 	/* We need to consider all queues that the net core sees as one */
-@@ -164,7 +156,7 @@ netdev_tx_t __efx_siena_enqueue_skb(struct efx_tx_queue *tx_queue,
- 	 * size limit.
- 	 */
- 	if (segments) {
--		rc = efx_tx_tso_fallback(tx_queue, skb);
-+		rc = efx_siena_tx_tso_fallback(tx_queue, skb);
- 		tx_queue->tso_fallbacks++;
- 		if (rc == 0)
- 			return 0;
-@@ -178,7 +170,7 @@ netdev_tx_t __efx_siena_enqueue_skb(struct efx_tx_queue *tx_queue,
- 	}
+ 	struct efx_nic *efx = netdev_priv(net_dev);
  
- 	/* Map for DMA and create descriptors if we haven't done so already. */
--	if (!data_mapped && (efx_tx_map_data(tx_queue, skb, segments)))
-+	if (!data_mapped && (efx_siena_tx_map_data(tx_queue, skb, segments)))
- 		goto err;
- 
- 	efx_tx_maybe_stop_queue(tx_queue);
-@@ -201,7 +193,7 @@ netdev_tx_t __efx_siena_enqueue_skb(struct efx_tx_queue *tx_queue,
- 
- 
- err:
--	efx_enqueue_unwind(tx_queue, old_insert_count);
-+	efx_siena_enqueue_unwind(tx_queue, old_insert_count);
- 	dev_kfree_skb_any(skb);
- 
- 	/* If we're not expecting another transmit and we had something to push
-@@ -285,7 +277,7 @@ int efx_siena_xdp_tx_buffers(struct efx_nic *efx, int n, struct xdp_frame **xdpf
- 			break;
- 
- 		/*  Create descriptor and set up for unmapping DMA. */
--		tx_buffer = efx_tx_map_chunk(tx_queue, dma_addr, len);
-+		tx_buffer = efx_siena_tx_map_chunk(tx_queue, dma_addr, len);
- 		tx_buffer->xdpf = xdpf;
- 		tx_buffer->flags = EFX_TX_BUF_XDP |
- 				   EFX_TX_BUF_MAP_SINGLE;
-diff --git a/drivers/net/ethernet/sfc/siena/tx.h b/drivers/net/ethernet/sfc/siena/tx.h
-index f2c4d2f89919..ee801950c909 100644
---- a/drivers/net/ethernet/sfc/siena/tx.h
-+++ b/drivers/net/ethernet/sfc/siena/tx.h
-@@ -11,13 +11,6 @@
- #include <linux/types.h>
- 
- /* Driver internal tx-path related declarations. */
--
--unsigned int efx_tx_limit_len(struct efx_tx_queue *tx_queue,
--			      dma_addr_t dma_addr, unsigned int len);
--
--u8 *efx_tx_get_copy_buffer_limited(struct efx_tx_queue *tx_queue,
--				   struct efx_tx_buffer *buffer, size_t len);
--
- /* What TXQ type will satisfy the checksum offloads required for this skb? */
- static inline unsigned int efx_tx_csum_type_skb(struct sk_buff *skb)
- {
-diff --git a/drivers/net/ethernet/sfc/siena/tx_common.c b/drivers/net/ethernet/sfc/siena/tx_common.c
-index 7945fe681e29..5bf833c1dc9f 100644
---- a/drivers/net/ethernet/sfc/siena/tx_common.c
-+++ b/drivers/net/ethernet/sfc/siena/tx_common.c
-@@ -19,7 +19,7 @@ static unsigned int efx_tx_cb_page_count(struct efx_tx_queue *tx_queue)
- 			    PAGE_SIZE >> EFX_TX_CB_ORDER);
+@@ -183,8 +135,8 @@ void efx_ethtool_get_pauseparam(struct net_device *net_dev,
+ 	pause->autoneg = !!(efx->wanted_fc & EFX_FC_AUTO);
  }
  
--int efx_probe_tx_queue(struct efx_tx_queue *tx_queue)
-+int efx_siena_probe_tx_queue(struct efx_tx_queue *tx_queue)
+-int efx_ethtool_set_pauseparam(struct net_device *net_dev,
+-			       struct ethtool_pauseparam *pause)
++int efx_siena_ethtool_set_pauseparam(struct net_device *net_dev,
++				     struct ethtool_pauseparam *pause)
  {
- 	struct efx_nic *efx = tx_queue->efx;
- 	unsigned int entries;
-@@ -64,7 +64,7 @@ int efx_probe_tx_queue(struct efx_tx_queue *tx_queue)
+ 	struct efx_nic *efx = netdev_priv(net_dev);
+ 	u8 wanted_fc, old_fc;
+@@ -281,7 +233,7 @@ static void efx_fill_test(unsigned int test_index, u8 *strings, u64 *data,
+ #define EFX_CHANNEL_NAME(_channel) "chan%d", _channel->channel
+ #define EFX_TX_QUEUE_NAME(_tx_queue) "txq%d", _tx_queue->label
+ #define EFX_LOOPBACK_NAME(_mode, _counter)			\
+-	"loopback.%s." _counter, STRING_TABLE_LOOKUP(_mode, efx_loopback_mode)
++	"loopback.%s." _counter, STRING_TABLE_LOOKUP(_mode, efx_siena_loopback_mode)
+ 
+ /**
+  * efx_fill_loopback_test - fill in a block of loopback self-test entries
+@@ -340,9 +292,9 @@ static int efx_fill_loopback_test(struct efx_nic *efx,
+  * The reason for merging these three functions is to make sure that
+  * they can never be inconsistent.
+  */
+-int efx_ethtool_fill_self_tests(struct efx_nic *efx,
+-				struct efx_self_tests *tests,
+-				u8 *strings, u64 *data)
++static int efx_ethtool_fill_self_tests(struct efx_nic *efx,
++				       struct efx_self_tests *tests,
++				       u8 *strings, u64 *data)
+ {
+ 	struct efx_channel *channel;
+ 	unsigned int n = 0, i;
+@@ -395,6 +347,54 @@ int efx_ethtool_fill_self_tests(struct efx_nic *efx,
+ 	return n;
+ }
+ 
++void efx_siena_ethtool_self_test(struct net_device *net_dev,
++				 struct ethtool_test *test, u64 *data)
++{
++	struct efx_nic *efx = netdev_priv(net_dev);
++	struct efx_self_tests *efx_tests;
++	bool already_up;
++	int rc = -ENOMEM;
++
++	efx_tests = kzalloc(sizeof(*efx_tests), GFP_KERNEL);
++	if (!efx_tests)
++		goto fail;
++
++	if (efx->state != STATE_READY) {
++		rc = -EBUSY;
++		goto out;
++	}
++
++	netif_info(efx, drv, efx->net_dev, "starting %sline testing\n",
++		   (test->flags & ETH_TEST_FL_OFFLINE) ? "off" : "on");
++
++	/* We need rx buffers and interrupts. */
++	already_up = (efx->net_dev->flags & IFF_UP);
++	if (!already_up) {
++		rc = dev_open(efx->net_dev, NULL);
++		if (rc) {
++			netif_err(efx, drv, efx->net_dev,
++				  "failed opening device.\n");
++			goto out;
++		}
++	}
++
++	rc = efx_siena_selftest(efx, efx_tests, test->flags);
++
++	if (!already_up)
++		dev_close(efx->net_dev);
++
++	netif_info(efx, drv, efx->net_dev, "%s %sline self-tests\n",
++		   rc == 0 ? "passed" : "failed",
++		   (test->flags & ETH_TEST_FL_OFFLINE) ? "off" : "on");
++
++out:
++	efx_ethtool_fill_self_tests(efx, efx_tests, NULL, data);
++	kfree(efx_tests);
++fail:
++	if (rc)
++		test->flags |= ETH_TEST_FL_FAILED;
++}
++
+ static size_t efx_describe_per_queue_stats(struct efx_nic *efx, u8 *strings)
+ {
+ 	size_t n_stats = 0;
+@@ -439,7 +439,7 @@ static size_t efx_describe_per_queue_stats(struct efx_nic *efx, u8 *strings)
+ 	return n_stats;
+ }
+ 
+-int efx_ethtool_get_sset_count(struct net_device *net_dev, int string_set)
++int efx_siena_ethtool_get_sset_count(struct net_device *net_dev, int string_set)
+ {
+ 	struct efx_nic *efx = netdev_priv(net_dev);
+ 
+@@ -448,7 +448,7 @@ int efx_ethtool_get_sset_count(struct net_device *net_dev, int string_set)
+ 		return efx->type->describe_stats(efx, NULL) +
+ 		       EFX_ETHTOOL_SW_STAT_COUNT +
+ 		       efx_describe_per_queue_stats(efx, NULL) +
+-		       efx_ptp_describe_stats(efx, NULL);
++		       efx_siena_ptp_describe_stats(efx, NULL);
+ 	case ETH_SS_TEST:
+ 		return efx_ethtool_fill_self_tests(efx, NULL, NULL, NULL);
+ 	default:
+@@ -456,8 +456,8 @@ int efx_ethtool_get_sset_count(struct net_device *net_dev, int string_set)
+ 	}
+ }
+ 
+-void efx_ethtool_get_strings(struct net_device *net_dev,
+-			     u32 string_set, u8 *strings)
++void efx_siena_ethtool_get_strings(struct net_device *net_dev,
++				   u32 string_set, u8 *strings)
+ {
+ 	struct efx_nic *efx = netdev_priv(net_dev);
+ 	int i;
+@@ -472,7 +472,7 @@ void efx_ethtool_get_strings(struct net_device *net_dev,
+ 		strings += EFX_ETHTOOL_SW_STAT_COUNT * ETH_GSTRING_LEN;
+ 		strings += (efx_describe_per_queue_stats(efx, strings) *
+ 			    ETH_GSTRING_LEN);
+-		efx_ptp_describe_stats(efx, strings);
++		efx_siena_ptp_describe_stats(efx, strings);
+ 		break;
+ 	case ETH_SS_TEST:
+ 		efx_ethtool_fill_self_tests(efx, NULL, strings, NULL);
+@@ -483,9 +483,9 @@ void efx_ethtool_get_strings(struct net_device *net_dev,
+ 	}
+ }
+ 
+-void efx_ethtool_get_stats(struct net_device *net_dev,
+-			   struct ethtool_stats *stats,
+-			   u64 *data)
++void efx_siena_ethtool_get_stats(struct net_device *net_dev,
++				 struct ethtool_stats *stats,
++				 u64 *data)
+ {
+ 	struct efx_nic *efx = netdev_priv(net_dev);
+ 	const struct efx_sw_stat_desc *stat;
+@@ -554,12 +554,12 @@ void efx_ethtool_get_stats(struct net_device *net_dev,
+ 		}
+ 	}
+ 
+-	efx_ptp_update_stats(efx, data);
++	efx_siena_ptp_update_stats(efx, data);
+ }
+ 
+ /* This must be called with rtnl_lock held. */
+-int efx_ethtool_get_link_ksettings(struct net_device *net_dev,
+-				   struct ethtool_link_ksettings *cmd)
++int efx_siena_ethtool_get_link_ksettings(struct net_device *net_dev,
++					 struct ethtool_link_ksettings *cmd)
+ {
+ 	struct efx_nic *efx = netdev_priv(net_dev);
+ 	struct efx_link_state *link_state = &efx->link_state;
+@@ -581,8 +581,9 @@ int efx_ethtool_get_link_ksettings(struct net_device *net_dev,
+ }
+ 
+ /* This must be called with rtnl_lock held. */
+-int efx_ethtool_set_link_ksettings(struct net_device *net_dev,
+-				   const struct ethtool_link_ksettings *cmd)
++int
++efx_siena_ethtool_set_link_ksettings(struct net_device *net_dev,
++				     const struct ethtool_link_ksettings *cmd)
+ {
+ 	struct efx_nic *efx = netdev_priv(net_dev);
+ 	int rc;
+@@ -601,8 +602,8 @@ int efx_ethtool_set_link_ksettings(struct net_device *net_dev,
  	return rc;
  }
  
--void efx_init_tx_queue(struct efx_tx_queue *tx_queue)
-+void efx_siena_init_tx_queue(struct efx_tx_queue *tx_queue)
+-int efx_ethtool_get_fecparam(struct net_device *net_dev,
+-			     struct ethtool_fecparam *fecparam)
++int efx_siena_ethtool_get_fecparam(struct net_device *net_dev,
++				   struct ethtool_fecparam *fecparam)
  {
- 	struct efx_nic *efx = tx_queue->efx;
- 
-@@ -119,7 +119,7 @@ void efx_fini_tx_queue(struct efx_tx_queue *tx_queue)
- 	netdev_tx_reset_queue(tx_queue->core_txq);
+ 	struct efx_nic *efx = netdev_priv(net_dev);
+ 	int rc;
+@@ -614,8 +615,8 @@ int efx_ethtool_get_fecparam(struct net_device *net_dev,
+ 	return rc;
  }
  
--void efx_remove_tx_queue(struct efx_tx_queue *tx_queue)
-+void efx_siena_remove_tx_queue(struct efx_tx_queue *tx_queue)
+-int efx_ethtool_set_fecparam(struct net_device *net_dev,
+-			     struct ethtool_fecparam *fecparam)
++int efx_siena_ethtool_set_fecparam(struct net_device *net_dev,
++				   struct ethtool_fecparam *fecparam)
  {
- 	int i;
- 
-@@ -143,10 +143,10 @@ void efx_remove_tx_queue(struct efx_tx_queue *tx_queue)
- 	tx_queue->channel->tx_queue_by_type[tx_queue->type] = NULL;
+ 	struct efx_nic *efx = netdev_priv(net_dev);
+ 	int rc;
+@@ -806,8 +807,8 @@ static int efx_ethtool_get_class_rule(struct efx_nic *efx,
+ 	return rc;
  }
  
--void efx_dequeue_buffer(struct efx_tx_queue *tx_queue,
--			struct efx_tx_buffer *buffer,
--			unsigned int *pkts_compl,
--			unsigned int *bytes_compl)
-+static void efx_dequeue_buffer(struct efx_tx_queue *tx_queue,
-+			       struct efx_tx_buffer *buffer,
-+			       unsigned int *pkts_compl,
-+			       unsigned int *bytes_compl)
+-int efx_ethtool_get_rxnfc(struct net_device *net_dev,
+-			  struct ethtool_rxnfc *info, u32 *rule_locs)
++int efx_siena_ethtool_get_rxnfc(struct net_device *net_dev,
++				struct ethtool_rxnfc *info, u32 *rule_locs)
  {
- 	if (buffer->unmap_len) {
- 		struct device *dma_dev = &tx_queue->efx->pci_dev->dev;
-@@ -191,6 +191,29 @@ void efx_dequeue_buffer(struct efx_tx_queue *tx_queue,
- 	buffer->flags = 0;
+ 	struct efx_nic *efx = netdev_priv(net_dev);
+ 	u32 rss_context = 0;
+@@ -1125,8 +1126,8 @@ static int efx_ethtool_set_class_rule(struct efx_nic *efx,
+ 	return 0;
  }
  
-+void efx_siena_fini_tx_queue(struct efx_tx_queue *tx_queue)
-+{
-+	struct efx_tx_buffer *buffer;
-+
-+	netif_dbg(tx_queue->efx, drv, tx_queue->efx->net_dev,
-+		  "shutting down TX queue %d\n", tx_queue->queue);
-+
-+	if (!tx_queue->buffer)
-+		return;
-+
-+	/* Free any buffers left in the ring */
-+	while (tx_queue->read_count != tx_queue->write_count) {
-+		unsigned int pkts_compl = 0, bytes_compl = 0;
-+
-+		buffer = &tx_queue->buffer[tx_queue->read_count & tx_queue->ptr_mask];
-+		efx_dequeue_buffer(tx_queue, buffer, &pkts_compl, &bytes_compl);
-+
-+		++tx_queue->read_count;
-+	}
-+	tx_queue->xmit_pending = false;
-+	netdev_tx_reset_queue(tx_queue->core_txq);
-+}
-+
- /* Remove packets from the TX queue
-  *
-  * This removes packets from the TX queue, up to and including the
-@@ -271,8 +294,8 @@ void efx_siena_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index)
- /* Remove buffers put into a tx_queue for the current packet.
-  * None of the buffers must have an skb attached.
-  */
--void efx_enqueue_unwind(struct efx_tx_queue *tx_queue,
--			unsigned int insert_count)
-+void efx_siena_enqueue_unwind(struct efx_tx_queue *tx_queue,
-+			      unsigned int insert_count)
+-int efx_ethtool_set_rxnfc(struct net_device *net_dev,
+-			  struct ethtool_rxnfc *info)
++int efx_siena_ethtool_set_rxnfc(struct net_device *net_dev,
++				struct ethtool_rxnfc *info)
  {
- 	struct efx_tx_buffer *buffer;
- 	unsigned int bytes_compl = 0;
-@@ -286,8 +309,8 @@ void efx_enqueue_unwind(struct efx_tx_queue *tx_queue,
+ 	struct efx_nic *efx = netdev_priv(net_dev);
+ 
+@@ -1147,7 +1148,7 @@ int efx_ethtool_set_rxnfc(struct net_device *net_dev,
  	}
  }
  
--struct efx_tx_buffer *efx_tx_map_chunk(struct efx_tx_queue *tx_queue,
--				       dma_addr_t dma_addr, size_t len)
-+struct efx_tx_buffer *efx_siena_tx_map_chunk(struct efx_tx_queue *tx_queue,
-+					     dma_addr_t dma_addr, size_t len)
+-u32 efx_ethtool_get_rxfh_indir_size(struct net_device *net_dev)
++u32 efx_siena_ethtool_get_rxfh_indir_size(struct net_device *net_dev)
  {
- 	const struct efx_nic_type *nic_type = tx_queue->efx->type;
- 	struct efx_tx_buffer *buffer;
-@@ -313,7 +336,7 @@ struct efx_tx_buffer *efx_tx_map_chunk(struct efx_tx_queue *tx_queue,
- 	return buffer;
+ 	struct efx_nic *efx = netdev_priv(net_dev);
+ 
+@@ -1156,15 +1157,15 @@ u32 efx_ethtool_get_rxfh_indir_size(struct net_device *net_dev)
+ 	return ARRAY_SIZE(efx->rss_context.rx_indir_table);
  }
  
--int efx_tx_tso_header_length(struct sk_buff *skb)
-+static int efx_tx_tso_header_length(struct sk_buff *skb)
+-u32 efx_ethtool_get_rxfh_key_size(struct net_device *net_dev)
++u32 efx_siena_ethtool_get_rxfh_key_size(struct net_device *net_dev)
  {
- 	size_t header_len;
+ 	struct efx_nic *efx = netdev_priv(net_dev);
  
-@@ -328,8 +351,8 @@ int efx_tx_tso_header_length(struct sk_buff *skb)
+ 	return efx->type->rx_hash_key_size;
  }
  
- /* Map all data from an SKB for DMA and create descriptors on the queue. */
--int efx_tx_map_data(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
--		    unsigned int segment_count)
-+int efx_siena_tx_map_data(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
-+			  unsigned int segment_count)
+-int efx_ethtool_get_rxfh(struct net_device *net_dev, u32 *indir, u8 *key,
+-			 u8 *hfunc)
++int efx_siena_ethtool_get_rxfh(struct net_device *net_dev, u32 *indir, u8 *key,
++			       u8 *hfunc)
+ {
+ 	struct efx_nic *efx = netdev_priv(net_dev);
+ 	int rc;
+@@ -1184,8 +1185,8 @@ int efx_ethtool_get_rxfh(struct net_device *net_dev, u32 *indir, u8 *key,
+ 	return 0;
+ }
+ 
+-int efx_ethtool_set_rxfh(struct net_device *net_dev, const u32 *indir,
+-			 const u8 *key, const u8 hfunc)
++int efx_siena_ethtool_set_rxfh(struct net_device *net_dev, const u32 *indir,
++			       const u8 *key, const u8 hfunc)
+ {
+ 	struct efx_nic *efx = netdev_priv(net_dev);
+ 
+@@ -1203,8 +1204,8 @@ int efx_ethtool_set_rxfh(struct net_device *net_dev, const u32 *indir,
+ 	return efx->type->rx_push_rss_config(efx, true, indir, key);
+ }
+ 
+-int efx_ethtool_get_rxfh_context(struct net_device *net_dev, u32 *indir,
+-				 u8 *key, u8 *hfunc, u32 rss_context)
++int efx_siena_ethtool_get_rxfh_context(struct net_device *net_dev, u32 *indir,
++				       u8 *key, u8 *hfunc, u32 rss_context)
+ {
+ 	struct efx_nic *efx = netdev_priv(net_dev);
+ 	struct efx_rss_context *ctx;
+@@ -1234,10 +1235,10 @@ int efx_ethtool_get_rxfh_context(struct net_device *net_dev, u32 *indir,
+ 	return rc;
+ }
+ 
+-int efx_ethtool_set_rxfh_context(struct net_device *net_dev,
+-				 const u32 *indir, const u8 *key,
+-				 const u8 hfunc, u32 *rss_context,
+-				 bool delete)
++int efx_siena_ethtool_set_rxfh_context(struct net_device *net_dev,
++				       const u32 *indir, const u8 *key,
++				       const u8 hfunc, u32 *rss_context,
++				       bool delete)
+ {
+ 	struct efx_nic *efx = netdev_priv(net_dev);
+ 	struct efx_rss_context *ctx;
+@@ -1299,7 +1300,7 @@ int efx_ethtool_set_rxfh_context(struct net_device *net_dev,
+ 	return rc;
+ }
+ 
+-int efx_ethtool_reset(struct net_device *net_dev, u32 *flags)
++int efx_siena_ethtool_reset(struct net_device *net_dev, u32 *flags)
+ {
+ 	struct efx_nic *efx = netdev_priv(net_dev);
+ 	int rc;
+@@ -1311,9 +1312,9 @@ int efx_ethtool_reset(struct net_device *net_dev, u32 *flags)
+ 	return efx_siena_reset(efx, rc);
+ }
+ 
+-int efx_ethtool_get_module_eeprom(struct net_device *net_dev,
+-				  struct ethtool_eeprom *ee,
+-				  u8 *data)
++int efx_siena_ethtool_get_module_eeprom(struct net_device *net_dev,
++					struct ethtool_eeprom *ee,
++					u8 *data)
+ {
+ 	struct efx_nic *efx = netdev_priv(net_dev);
+ 	int ret;
+@@ -1325,8 +1326,8 @@ int efx_ethtool_get_module_eeprom(struct net_device *net_dev,
+ 	return ret;
+ }
+ 
+-int efx_ethtool_get_module_info(struct net_device *net_dev,
+-				struct ethtool_modinfo *modinfo)
++int efx_siena_ethtool_get_module_info(struct net_device *net_dev,
++				      struct ethtool_modinfo *modinfo)
+ {
+ 	struct efx_nic *efx = netdev_priv(net_dev);
+ 	int ret;
+diff --git a/drivers/net/ethernet/sfc/siena/ethtool_common.h b/drivers/net/ethernet/sfc/siena/ethtool_common.h
+index 659491932101..04b375dc6800 100644
+--- a/drivers/net/ethernet/sfc/siena/ethtool_common.h
++++ b/drivers/net/ethernet/sfc/siena/ethtool_common.h
+@@ -11,53 +11,50 @@
+ #ifndef EFX_ETHTOOL_COMMON_H
+ #define EFX_ETHTOOL_COMMON_H
+ 
+-void efx_ethtool_get_drvinfo(struct net_device *net_dev,
+-			     struct ethtool_drvinfo *info);
+-u32 efx_ethtool_get_msglevel(struct net_device *net_dev);
+-void efx_ethtool_set_msglevel(struct net_device *net_dev, u32 msg_enable);
+-void efx_ethtool_self_test(struct net_device *net_dev,
+-			   struct ethtool_test *test, u64 *data);
+-void efx_ethtool_get_pauseparam(struct net_device *net_dev,
+-				struct ethtool_pauseparam *pause);
+-int efx_ethtool_set_pauseparam(struct net_device *net_dev,
+-			       struct ethtool_pauseparam *pause);
+-int efx_ethtool_fill_self_tests(struct efx_nic *efx,
+-				struct efx_self_tests *tests,
+-				u8 *strings, u64 *data);
+-int efx_ethtool_get_sset_count(struct net_device *net_dev, int string_set);
+-void efx_ethtool_get_strings(struct net_device *net_dev, u32 string_set,
+-			     u8 *strings);
+-void efx_ethtool_get_stats(struct net_device *net_dev,
+-			   struct ethtool_stats *stats __attribute__ ((unused)),
+-			   u64 *data);
+-int efx_ethtool_get_link_ksettings(struct net_device *net_dev,
+-				   struct ethtool_link_ksettings *out);
+-int efx_ethtool_set_link_ksettings(struct net_device *net_dev,
+-				   const struct ethtool_link_ksettings *settings);
+-int efx_ethtool_get_fecparam(struct net_device *net_dev,
+-			     struct ethtool_fecparam *fecparam);
+-int efx_ethtool_set_fecparam(struct net_device *net_dev,
+-			     struct ethtool_fecparam *fecparam);
+-int efx_ethtool_get_rxnfc(struct net_device *net_dev,
+-			  struct ethtool_rxnfc *info, u32 *rule_locs);
+-int efx_ethtool_set_rxnfc(struct net_device *net_dev,
+-			  struct ethtool_rxnfc *info);
+-u32 efx_ethtool_get_rxfh_indir_size(struct net_device *net_dev);
+-u32 efx_ethtool_get_rxfh_key_size(struct net_device *net_dev);
+-int efx_ethtool_get_rxfh(struct net_device *net_dev, u32 *indir, u8 *key,
+-			 u8 *hfunc);
+-int efx_ethtool_set_rxfh(struct net_device *net_dev,
+-			 const u32 *indir, const u8 *key, const u8 hfunc);
+-int efx_ethtool_get_rxfh_context(struct net_device *net_dev, u32 *indir,
+-				 u8 *key, u8 *hfunc, u32 rss_context);
+-int efx_ethtool_set_rxfh_context(struct net_device *net_dev,
+-				 const u32 *indir, const u8 *key,
+-				 const u8 hfunc, u32 *rss_context,
+-				 bool delete);
+-int efx_ethtool_reset(struct net_device *net_dev, u32 *flags);
+-int efx_ethtool_get_module_eeprom(struct net_device *net_dev,
+-				  struct ethtool_eeprom *ee,
+-				  u8 *data);
+-int efx_ethtool_get_module_info(struct net_device *net_dev,
+-				struct ethtool_modinfo *modinfo);
++void efx_siena_ethtool_get_drvinfo(struct net_device *net_dev,
++				   struct ethtool_drvinfo *info);
++u32 efx_siena_ethtool_get_msglevel(struct net_device *net_dev);
++void efx_siena_ethtool_set_msglevel(struct net_device *net_dev, u32 msg_enable);
++void efx_siena_ethtool_self_test(struct net_device *net_dev,
++				 struct ethtool_test *test, u64 *data);
++void efx_siena_ethtool_get_pauseparam(struct net_device *net_dev,
++				      struct ethtool_pauseparam *pause);
++int efx_siena_ethtool_set_pauseparam(struct net_device *net_dev,
++				     struct ethtool_pauseparam *pause);
++int efx_siena_ethtool_get_sset_count(struct net_device *net_dev, int string_set);
++void efx_siena_ethtool_get_strings(struct net_device *net_dev, u32 string_set,
++				   u8 *strings);
++void efx_siena_ethtool_get_stats(struct net_device *net_dev,
++				 struct ethtool_stats *stats __always_unused,
++				 u64 *data);
++int efx_siena_ethtool_get_link_ksettings(struct net_device *net_dev,
++					 struct ethtool_link_ksettings *out);
++int efx_siena_ethtool_set_link_ksettings(struct net_device *net_dev,
++				const struct ethtool_link_ksettings *settings);
++int efx_siena_ethtool_get_fecparam(struct net_device *net_dev,
++				   struct ethtool_fecparam *fecparam);
++int efx_siena_ethtool_set_fecparam(struct net_device *net_dev,
++				   struct ethtool_fecparam *fecparam);
++int efx_siena_ethtool_get_rxnfc(struct net_device *net_dev,
++				struct ethtool_rxnfc *info, u32 *rule_locs);
++int efx_siena_ethtool_set_rxnfc(struct net_device *net_dev,
++				struct ethtool_rxnfc *info);
++u32 efx_siena_ethtool_get_rxfh_indir_size(struct net_device *net_dev);
++u32 efx_siena_ethtool_get_rxfh_key_size(struct net_device *net_dev);
++int efx_siena_ethtool_get_rxfh(struct net_device *net_dev, u32 *indir, u8 *key,
++			       u8 *hfunc);
++int efx_siena_ethtool_set_rxfh(struct net_device *net_dev,
++			       const u32 *indir, const u8 *key, const u8 hfunc);
++int efx_siena_ethtool_get_rxfh_context(struct net_device *net_dev, u32 *indir,
++				       u8 *key, u8 *hfunc, u32 rss_context);
++int efx_siena_ethtool_set_rxfh_context(struct net_device *net_dev,
++				       const u32 *indir, const u8 *key,
++				       const u8 hfunc, u32 *rss_context,
++				       bool delete);
++int efx_siena_ethtool_reset(struct net_device *net_dev, u32 *flags);
++int efx_siena_ethtool_get_module_eeprom(struct net_device *net_dev,
++					struct ethtool_eeprom *ee,
++					u8 *data);
++int efx_siena_ethtool_get_module_info(struct net_device *net_dev,
++				      struct ethtool_modinfo *modinfo);
+ #endif
+diff --git a/drivers/net/ethernet/sfc/siena/mcdi.c b/drivers/net/ethernet/sfc/siena/mcdi.c
+index 7f8f0889bf8d..ff426b228cb2 100644
+--- a/drivers/net/ethernet/sfc/siena/mcdi.c
++++ b/drivers/net/ethernet/sfc/siena/mcdi.c
+@@ -1363,10 +1363,10 @@ void efx_mcdi_process_event(struct efx_channel *channel,
+ 	case MCDI_EVENT_CODE_PTP_RX:
+ 	case MCDI_EVENT_CODE_PTP_FAULT:
+ 	case MCDI_EVENT_CODE_PTP_PPS:
+-		efx_ptp_event(efx, event);
++		efx_siena_ptp_event(efx, event);
+ 		break;
+ 	case MCDI_EVENT_CODE_PTP_TIME:
+-		efx_time_sync_event(channel, event);
++		efx_siena_time_sync_event(channel, event);
+ 		break;
+ 	case MCDI_EVENT_CODE_TX_FLUSH:
+ 	case MCDI_EVENT_CODE_RX_FLUSH:
+diff --git a/drivers/net/ethernet/sfc/siena/net_driver.h b/drivers/net/ethernet/sfc/siena/net_driver.h
+index 3fe93f25a569..7e0659be4348 100644
+--- a/drivers/net/ethernet/sfc/siena/net_driver.h
++++ b/drivers/net/ethernet/sfc/siena/net_driver.h
+@@ -606,10 +606,10 @@ enum efx_led_mode {
+ #define STRING_TABLE_LOOKUP(val, member) \
+ 	((val) < member ## _max) ? member ## _names[val] : "(invalid)"
+ 
+-extern const char *const efx_loopback_mode_names[];
+-extern const unsigned int efx_loopback_mode_max;
++extern const char *const efx_siena_loopback_mode_names[];
++extern const unsigned int efx_siena_loopback_mode_max;
+ #define LOOPBACK_MODE(efx) \
+-	STRING_TABLE_LOOKUP((efx)->loopback_mode, efx_loopback_mode)
++	STRING_TABLE_LOOKUP((efx)->loopback_mode, efx_siena_loopback_mode)
+ 
+ enum efx_int_mode {
+ 	/* Be careful if altering to correct macro below */
+diff --git a/drivers/net/ethernet/sfc/siena/ptp.c b/drivers/net/ethernet/sfc/siena/ptp.c
+index daf23070d353..b67417063a80 100644
+--- a/drivers/net/ethernet/sfc/siena/ptp.c
++++ b/drivers/net/ethernet/sfc/siena/ptp.c
+@@ -355,7 +355,7 @@ static int efx_phc_settime(struct ptp_clock_info *ptp,
+ static int efx_phc_enable(struct ptp_clock_info *ptp,
+ 			  struct ptp_clock_request *request, int on);
+ 
+-bool efx_ptp_use_mac_tx_timestamps(struct efx_nic *efx)
++bool efx_siena_ptp_use_mac_tx_timestamps(struct efx_nic *efx)
+ {
+ 	return efx_has_cap(efx, TX_MAC_TIMESTAMPING);
+ }
+@@ -365,7 +365,7 @@ bool efx_ptp_use_mac_tx_timestamps(struct efx_nic *efx)
+  */
+ static bool efx_ptp_want_txqs(struct efx_channel *channel)
+ {
+-	return efx_ptp_use_mac_tx_timestamps(channel->efx);
++	return efx_siena_ptp_use_mac_tx_timestamps(channel->efx);
+ }
+ 
+ #define PTP_SW_STAT(ext_name, field_name)				\
+@@ -393,7 +393,7 @@ static const unsigned long efx_ptp_stat_mask[] = {
+ 	[0 ... BITS_TO_LONGS(PTP_STAT_COUNT) - 1] = ~0UL,
+ };
+ 
+-size_t efx_ptp_describe_stats(struct efx_nic *efx, u8 *strings)
++size_t efx_siena_ptp_describe_stats(struct efx_nic *efx, u8 *strings)
+ {
+ 	if (!efx->ptp_data)
+ 		return 0;
+@@ -402,7 +402,7 @@ size_t efx_ptp_describe_stats(struct efx_nic *efx, u8 *strings)
+ 				      efx_ptp_stat_mask, strings);
+ }
+ 
+-size_t efx_ptp_update_stats(struct efx_nic *efx, u64 *stats)
++size_t efx_siena_ptp_update_stats(struct efx_nic *efx, u64 *stats)
+ {
+ 	MCDI_DECLARE_BUF(inbuf, MC_CMD_PTP_IN_STATUS_LEN);
+ 	MCDI_DECLARE_BUF(outbuf, MC_CMD_PTP_OUT_STATUS_LEN);
+@@ -536,14 +536,14 @@ static ktime_t efx_ptp_s_qns_to_ktime_correction(u32 nic_major, u32 nic_minor,
+ 	return kt;
+ }
+ 
+-struct efx_channel *efx_ptp_channel(struct efx_nic *efx)
++struct efx_channel *efx_siena_ptp_channel(struct efx_nic *efx)
+ {
+ 	return efx->ptp_data ? efx->ptp_data->channel : NULL;
+ }
+ 
+ static u32 last_sync_timestamp_major(struct efx_nic *efx)
+ {
+-	struct efx_channel *channel = efx_ptp_channel(efx);
++	struct efx_channel *channel = efx_siena_ptp_channel(efx);
+ 	u32 major = 0;
+ 
+ 	if (channel)
+@@ -606,13 +606,13 @@ efx_ptp_mac_nic_to_ktime_correction(struct efx_nic *efx,
+ 	return kt;
+ }
+ 
+-ktime_t efx_ptp_nic_to_kernel_time(struct efx_tx_queue *tx_queue)
++ktime_t efx_siena_ptp_nic_to_kernel_time(struct efx_tx_queue *tx_queue)
  {
  	struct efx_nic *efx = tx_queue->efx;
- 	struct device *dma_dev = &efx->pci_dev->dev;
-@@ -359,7 +382,7 @@ int efx_tx_map_data(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
+ 	struct efx_ptp_data *ptp = efx->ptp_data;
+ 	ktime_t kt;
  
- 		if (header_len != len) {
- 			tx_queue->tso_long_headers++;
--			efx_tx_map_chunk(tx_queue, dma_addr, header_len);
-+			efx_siena_tx_map_chunk(tx_queue, dma_addr, header_len);
- 			len -= header_len;
- 			dma_addr += header_len;
- 		}
-@@ -370,7 +393,7 @@ int efx_tx_map_data(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
- 		struct efx_tx_buffer *buffer;
- 		skb_frag_t *fragment;
+-	if (efx_ptp_use_mac_tx_timestamps(efx))
++	if (efx_siena_ptp_use_mac_tx_timestamps(efx))
+ 		kt = efx_ptp_mac_nic_to_ktime_correction(efx, ptp,
+ 				tx_queue->completed_timestamp_major,
+ 				tx_queue->completed_timestamp_minor,
+@@ -1437,7 +1437,7 @@ static const struct ptp_clock_info efx_phc_clock_info = {
+ };
  
--		buffer = efx_tx_map_chunk(tx_queue, dma_addr, len);
-+		buffer = efx_siena_tx_map_chunk(tx_queue, dma_addr, len);
+ /* Initialise PTP state. */
+-int efx_ptp_probe(struct efx_nic *efx, struct efx_channel *channel)
++static int efx_ptp_probe(struct efx_nic *efx, struct efx_channel *channel)
+ {
+ 	struct efx_ptp_data *ptp;
+ 	int rc = 0;
+@@ -1464,7 +1464,7 @@ int efx_ptp_probe(struct efx_nic *efx, struct efx_channel *channel)
+ 		goto fail2;
+ 	}
  
- 		/* The final descriptor for a fragment is responsible for
- 		 * unmapping the whole fragment.
-@@ -402,7 +425,7 @@ int efx_tx_map_data(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
- 	} while (1);
+-	if (efx_ptp_use_mac_tx_timestamps(efx)) {
++	if (efx_siena_ptp_use_mac_tx_timestamps(efx)) {
+ 		ptp->xmit_skb = efx_ptp_xmit_skb_queue;
+ 		/* Request sync events on this channel. */
+ 		channel->sync_events_state = SYNC_EVENTS_QUIESCENT;
+@@ -1553,7 +1553,7 @@ static int efx_ptp_probe_channel(struct efx_channel *channel)
+ 	return 0;
  }
  
--unsigned int efx_tx_max_skb_descs(struct efx_nic *efx)
-+unsigned int efx_siena_tx_max_skb_descs(struct efx_nic *efx)
+-void efx_ptp_remove(struct efx_nic *efx)
++static void efx_ptp_remove(struct efx_nic *efx)
  {
- 	/* Header and payload descriptor for each output segment, plus
- 	 * one for every input fragment boundary within a segment
-@@ -430,7 +453,8 @@ unsigned int efx_tx_max_skb_descs(struct efx_nic *efx)
-  *
-  * Returns 0 on success, error code otherwise.
+ 	if (!efx->ptp_data)
+ 		return;
+@@ -1593,7 +1593,7 @@ static void efx_ptp_get_channel_name(struct efx_channel *channel,
+ /* Determine whether this packet should be processed by the PTP module
+  * or transmitted conventionally.
   */
--int efx_tx_tso_fallback(struct efx_tx_queue *tx_queue, struct sk_buff *skb)
-+int efx_siena_tx_tso_fallback(struct efx_tx_queue *tx_queue,
-+			      struct sk_buff *skb)
+-bool efx_ptp_is_ptp_tx(struct efx_nic *efx, struct sk_buff *skb)
++bool efx_siena_ptp_is_ptp_tx(struct efx_nic *efx, struct sk_buff *skb)
  {
- 	struct sk_buff *segments, *next;
- 
-diff --git a/drivers/net/ethernet/sfc/siena/tx_common.h b/drivers/net/ethernet/sfc/siena/tx_common.h
-index 602f5a052918..31ca52a25015 100644
---- a/drivers/net/ethernet/sfc/siena/tx_common.h
-+++ b/drivers/net/ethernet/sfc/siena/tx_common.h
-@@ -11,15 +11,10 @@
- #ifndef EFX_TX_COMMON_H
- #define EFX_TX_COMMON_H
- 
--int efx_probe_tx_queue(struct efx_tx_queue *tx_queue);
--void efx_init_tx_queue(struct efx_tx_queue *tx_queue);
--void efx_fini_tx_queue(struct efx_tx_queue *tx_queue);
--void efx_remove_tx_queue(struct efx_tx_queue *tx_queue);
--
--void efx_dequeue_buffer(struct efx_tx_queue *tx_queue,
--			struct efx_tx_buffer *buffer,
--			unsigned int *pkts_compl,
--			unsigned int *bytes_compl);
-+int efx_siena_probe_tx_queue(struct efx_tx_queue *tx_queue);
-+void efx_siena_init_tx_queue(struct efx_tx_queue *tx_queue);
-+void efx_siena_fini_tx_queue(struct efx_tx_queue *tx_queue);
-+void efx_siena_remove_tx_queue(struct efx_tx_queue *tx_queue);
- 
- static inline bool efx_tx_buffer_in_use(struct efx_tx_buffer *buffer)
+ 	return efx->ptp_data &&
+ 		efx->ptp_data->enabled &&
+@@ -1699,7 +1699,7 @@ static bool efx_ptp_rx(struct efx_channel *channel, struct sk_buff *skb)
+  * itself, through an MCDI call.  MCDI calls aren't permitted
+  * in the transmit path so defer the actual transmission to a suitable worker.
+  */
+-int efx_ptp_tx(struct efx_nic *efx, struct sk_buff *skb)
++int efx_siena_ptp_tx(struct efx_nic *efx, struct sk_buff *skb)
  {
-@@ -29,17 +24,16 @@ static inline bool efx_tx_buffer_in_use(struct efx_tx_buffer *buffer)
- void efx_siena_xmit_done_check_empty(struct efx_tx_queue *tx_queue);
- void efx_siena_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index);
+ 	struct efx_ptp_data *ptp = efx->ptp_data;
  
--void efx_enqueue_unwind(struct efx_tx_queue *tx_queue,
--			unsigned int insert_count);
-+void efx_siena_enqueue_unwind(struct efx_tx_queue *tx_queue,
-+			      unsigned int insert_count);
+@@ -1713,13 +1713,13 @@ int efx_ptp_tx(struct efx_nic *efx, struct sk_buff *skb)
+ 	return NETDEV_TX_OK;
+ }
  
--struct efx_tx_buffer *efx_tx_map_chunk(struct efx_tx_queue *tx_queue,
--				       dma_addr_t dma_addr, size_t len);
--int efx_tx_tso_header_length(struct sk_buff *skb);
--int efx_tx_map_data(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
--		    unsigned int segment_count);
-+struct efx_tx_buffer *efx_siena_tx_map_chunk(struct efx_tx_queue *tx_queue,
-+					     dma_addr_t dma_addr, size_t len);
-+int efx_siena_tx_map_data(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
-+			  unsigned int segment_count);
+-int efx_ptp_get_mode(struct efx_nic *efx)
++int efx_siena_ptp_get_mode(struct efx_nic *efx)
+ {
+ 	return efx->ptp_data->mode;
+ }
  
--unsigned int efx_tx_max_skb_descs(struct efx_nic *efx);
--int efx_tx_tso_fallback(struct efx_tx_queue *tx_queue, struct sk_buff *skb);
-+unsigned int efx_siena_tx_max_skb_descs(struct efx_nic *efx);
-+int efx_siena_tx_tso_fallback(struct efx_tx_queue *tx_queue, struct sk_buff *skb);
+-int efx_ptp_change_mode(struct efx_nic *efx, bool enable_wanted,
+-			unsigned int new_mode)
++int efx_siena_ptp_change_mode(struct efx_nic *efx, bool enable_wanted,
++			      unsigned int new_mode)
+ {
+ 	if ((enable_wanted != efx->ptp_data->enabled) ||
+ 	    (enable_wanted && (efx->ptp_data->mode != new_mode))) {
+@@ -1777,7 +1777,8 @@ static int efx_ptp_ts_init(struct efx_nic *efx, struct hwtstamp_config *init)
+ 	return 0;
+ }
  
--extern bool efx_separate_tx_channels;
-+extern bool efx_siena_separate_tx_channels;
+-void efx_ptp_get_ts_info(struct efx_nic *efx, struct ethtool_ts_info *ts_info)
++void efx_siena_ptp_get_ts_info(struct efx_nic *efx,
++			       struct ethtool_ts_info *ts_info)
+ {
+ 	struct efx_ptp_data *ptp = efx->ptp_data;
+ 	struct efx_nic *primary = efx->primary;
+@@ -1797,7 +1798,7 @@ void efx_ptp_get_ts_info(struct efx_nic *efx, struct ethtool_ts_info *ts_info)
+ 	ts_info->rx_filters = ptp->efx->type->hwtstamp_filters;
+ }
+ 
+-int efx_ptp_set_ts_config(struct efx_nic *efx, struct ifreq *ifr)
++int efx_siena_ptp_set_ts_config(struct efx_nic *efx, struct ifreq *ifr)
+ {
+ 	struct hwtstamp_config config;
+ 	int rc;
+@@ -1817,7 +1818,7 @@ int efx_ptp_set_ts_config(struct efx_nic *efx, struct ifreq *ifr)
+ 		? -EFAULT : 0;
+ }
+ 
+-int efx_ptp_get_ts_config(struct efx_nic *efx, struct ifreq *ifr)
++int efx_siena_ptp_get_ts_config(struct efx_nic *efx, struct ifreq *ifr)
+ {
+ 	if (!efx->ptp_data)
+ 		return -EOPNOTSUPP;
+@@ -1898,7 +1899,7 @@ static void ptp_event_pps(struct efx_nic *efx, struct efx_ptp_data *ptp)
+ 		queue_work(ptp->pps_workwq, &ptp->pps_work);
+ }
+ 
+-void efx_ptp_event(struct efx_nic *efx, efx_qword_t *ev)
++void efx_siena_ptp_event(struct efx_nic *efx, efx_qword_t *ev)
+ {
+ 	struct efx_ptp_data *ptp = efx->ptp_data;
+ 	int code = EFX_QWORD_FIELD(*ev, MCDI_EVENT_CODE);
+@@ -1949,7 +1950,7 @@ void efx_ptp_event(struct efx_nic *efx, efx_qword_t *ev)
+ 	}
+ }
+ 
+-void efx_time_sync_event(struct efx_channel *channel, efx_qword_t *ev)
++void efx_siena_time_sync_event(struct efx_channel *channel, efx_qword_t *ev)
+ {
+ 	struct efx_nic *efx = channel->efx;
+ 	struct efx_ptp_data *ptp = efx->ptp_data;
+@@ -1985,8 +1986,8 @@ static inline u32 efx_rx_buf_timestamp_minor(struct efx_nic *efx, const u8 *eh)
  #endif
+ }
+ 
+-void __efx_rx_skb_attach_timestamp(struct efx_channel *channel,
+-				   struct sk_buff *skb)
++void __efx_siena_rx_skb_attach_timestamp(struct efx_channel *channel,
++					 struct sk_buff *skb)
+ {
+ 	struct efx_nic *efx = channel->efx;
+ 	struct efx_ptp_data *ptp = efx->ptp_data;
+@@ -2171,7 +2172,7 @@ static const struct efx_channel_type efx_ptp_channel_type = {
+ 	.keep_eventq		= false,
+ };
+ 
+-void efx_ptp_defer_probe_with_channel(struct efx_nic *efx)
++void efx_siena_ptp_defer_probe_with_channel(struct efx_nic *efx)
+ {
+ 	/* Check whether PTP is implemented on this NIC.  The DISABLE
+ 	 * operation will succeed if and only if it is implemented.
+@@ -2181,7 +2182,7 @@ void efx_ptp_defer_probe_with_channel(struct efx_nic *efx)
+ 			&efx_ptp_channel_type;
+ }
+ 
+-void efx_ptp_start_datapath(struct efx_nic *efx)
++void efx_siena_ptp_start_datapath(struct efx_nic *efx)
+ {
+ 	if (efx_ptp_restart(efx))
+ 		netif_err(efx, drv, efx->net_dev, "Failed to restart PTP.\n");
+@@ -2190,7 +2191,7 @@ void efx_ptp_start_datapath(struct efx_nic *efx)
+ 		efx->type->ptp_set_ts_sync_events(efx, true, true);
+ }
+ 
+-void efx_ptp_stop_datapath(struct efx_nic *efx)
++void efx_siena_ptp_stop_datapath(struct efx_nic *efx)
+ {
+ 	/* temporarily disable timestamping */
+ 	if (efx->type->ptp_set_ts_sync_events)
+diff --git a/drivers/net/ethernet/sfc/siena/ptp.h b/drivers/net/ethernet/sfc/siena/ptp.h
+index 9855e8c9e544..4172f90e9f6f 100644
+--- a/drivers/net/ethernet/sfc/siena/ptp.h
++++ b/drivers/net/ethernet/sfc/siena/ptp.h
+@@ -13,33 +13,33 @@
+ #include "net_driver.h"
+ 
+ struct ethtool_ts_info;
+-int efx_ptp_probe(struct efx_nic *efx, struct efx_channel *channel);
+-void efx_ptp_defer_probe_with_channel(struct efx_nic *efx);
+-struct efx_channel *efx_ptp_channel(struct efx_nic *efx);
+-void efx_ptp_remove(struct efx_nic *efx);
+-int efx_ptp_set_ts_config(struct efx_nic *efx, struct ifreq *ifr);
+-int efx_ptp_get_ts_config(struct efx_nic *efx, struct ifreq *ifr);
+-void efx_ptp_get_ts_info(struct efx_nic *efx, struct ethtool_ts_info *ts_info);
+-bool efx_ptp_is_ptp_tx(struct efx_nic *efx, struct sk_buff *skb);
+-int efx_ptp_get_mode(struct efx_nic *efx);
+-int efx_ptp_change_mode(struct efx_nic *efx, bool enable_wanted,
+-			unsigned int new_mode);
+-int efx_ptp_tx(struct efx_nic *efx, struct sk_buff *skb);
+-void efx_ptp_event(struct efx_nic *efx, efx_qword_t *ev);
+-size_t efx_ptp_describe_stats(struct efx_nic *efx, u8 *strings);
+-size_t efx_ptp_update_stats(struct efx_nic *efx, u64 *stats);
+-void efx_time_sync_event(struct efx_channel *channel, efx_qword_t *ev);
+-void __efx_rx_skb_attach_timestamp(struct efx_channel *channel,
+-				   struct sk_buff *skb);
++void efx_siena_ptp_defer_probe_with_channel(struct efx_nic *efx);
++struct efx_channel *efx_siena_ptp_channel(struct efx_nic *efx);
++int efx_siena_ptp_set_ts_config(struct efx_nic *efx, struct ifreq *ifr);
++int efx_siena_ptp_get_ts_config(struct efx_nic *efx, struct ifreq *ifr);
++void efx_siena_ptp_get_ts_info(struct efx_nic *efx,
++			       struct ethtool_ts_info *ts_info);
++bool efx_siena_ptp_is_ptp_tx(struct efx_nic *efx, struct sk_buff *skb);
++int efx_siena_ptp_get_mode(struct efx_nic *efx);
++int efx_siena_ptp_change_mode(struct efx_nic *efx, bool enable_wanted,
++			      unsigned int new_mode);
++int efx_siena_ptp_tx(struct efx_nic *efx, struct sk_buff *skb);
++void efx_siena_ptp_event(struct efx_nic *efx, efx_qword_t *ev);
++size_t efx_siena_ptp_describe_stats(struct efx_nic *efx, u8 *strings);
++size_t efx_siena_ptp_update_stats(struct efx_nic *efx, u64 *stats);
++void efx_siena_time_sync_event(struct efx_channel *channel, efx_qword_t *ev);
++void __efx_siena_rx_skb_attach_timestamp(struct efx_channel *channel,
++					 struct sk_buff *skb);
+ static inline void efx_rx_skb_attach_timestamp(struct efx_channel *channel,
+ 					       struct sk_buff *skb)
+ {
+ 	if (channel->sync_events_state == SYNC_EVENTS_VALID)
+-		__efx_rx_skb_attach_timestamp(channel, skb);
++		__efx_siena_rx_skb_attach_timestamp(channel, skb);
+ }
+-void efx_ptp_start_datapath(struct efx_nic *efx);
+-void efx_ptp_stop_datapath(struct efx_nic *efx);
+-bool efx_ptp_use_mac_tx_timestamps(struct efx_nic *efx);
+-ktime_t efx_ptp_nic_to_kernel_time(struct efx_tx_queue *tx_queue);
++
++void efx_siena_ptp_start_datapath(struct efx_nic *efx);
++void efx_siena_ptp_stop_datapath(struct efx_nic *efx);
++bool efx_siena_ptp_use_mac_tx_timestamps(struct efx_nic *efx);
++ktime_t efx_siena_ptp_nic_to_kernel_time(struct efx_tx_queue *tx_queue);
+ 
+ #endif /* EFX_PTP_H */
+diff --git a/drivers/net/ethernet/sfc/siena/rx.c b/drivers/net/ethernet/sfc/siena/rx.c
+index 47c09b93f7c4..98d3c0743c0f 100644
+--- a/drivers/net/ethernet/sfc/siena/rx.c
++++ b/drivers/net/ethernet/sfc/siena/rx.c
+@@ -377,7 +377,7 @@ void __efx_siena_rx_packet(struct efx_channel *channel)
+ 	if (unlikely(efx->loopback_selftest)) {
+ 		struct efx_rx_queue *rx_queue;
+ 
+-		efx_loopback_rx_packet(efx, eh, rx_buf->len);
++		efx_siena_loopback_rx_packet(efx, eh, rx_buf->len);
+ 		rx_queue = efx_channel_get_rx_queue(channel);
+ 		efx_siena_free_rx_buffers(rx_queue, rx_buf,
+ 					  channel->rx_pkt_n_frags);
+diff --git a/drivers/net/ethernet/sfc/siena/selftest.c b/drivers/net/ethernet/sfc/siena/selftest.c
+index 7e24329bc005..83bd27df30d4 100644
+--- a/drivers/net/ethernet/sfc/siena/selftest.c
++++ b/drivers/net/ethernet/sfc/siena/selftest.c
+@@ -69,7 +69,7 @@ static const char *const efx_siena_interrupt_mode_names[] = {
+ 
+ /**
+  * struct efx_loopback_state - persistent state during a loopback selftest
+- * @flush:		Drop all packets in efx_loopback_rx_packet
++ * @flush:		Drop all packets in efx_siena_loopback_rx_packet
+  * @packet_count:	Number of packets being used in this test
+  * @skbs:		An array of skbs transmitted
+  * @offload_csum:	Checksums are being offloaded
+@@ -278,8 +278,8 @@ static int efx_test_phy(struct efx_nic *efx, struct efx_self_tests *tests,
+ /* Loopback test RX callback
+  * This is called for each received packet during loopback testing.
+  */
+-void efx_loopback_rx_packet(struct efx_nic *efx,
+-			    const char *buf_ptr, int pkt_len)
++void efx_siena_loopback_rx_packet(struct efx_nic *efx,
++				  const char *buf_ptr, int pkt_len)
+ {
+ 	struct efx_loopback_state *state = efx->loopback_selftest;
+ 	struct efx_loopback_payload *received;
+@@ -369,7 +369,7 @@ void efx_loopback_rx_packet(struct efx_nic *efx,
+ 	atomic_inc(&state->rx_bad);
+ }
+ 
+-/* Initialise an efx_selftest_state for a new iteration */
++/* Initialise an efx_siena_selftest_state for a new iteration */
+ static void efx_iterate_state(struct efx_nic *efx)
+ {
+ 	struct efx_loopback_state *state = efx->loopback_selftest;
+@@ -684,14 +684,14 @@ static int efx_test_loopbacks(struct efx_nic *efx, struct efx_self_tests *tests,
+  *
+  *************************************************************************/
+ 
+-int efx_selftest(struct efx_nic *efx, struct efx_self_tests *tests,
+-		 unsigned flags)
++int efx_siena_selftest(struct efx_nic *efx, struct efx_self_tests *tests,
++		       unsigned int flags)
+ {
+ 	enum efx_loopback_mode loopback_mode = efx->loopback_mode;
+ 	int phy_mode = efx->phy_mode;
+ 	int rc_test = 0, rc_reset, rc;
+ 
+-	efx_selftest_async_cancel(efx);
++	efx_siena_selftest_async_cancel(efx);
+ 
+ 	/* Online (i.e. non-disruptive) testing
+ 	 * This checks interrupt generation, event delivery and PHY presence. */
+@@ -767,7 +767,7 @@ int efx_selftest(struct efx_nic *efx, struct efx_self_tests *tests,
+ 	return rc_test;
+ }
+ 
+-void efx_selftest_async_start(struct efx_nic *efx)
++void efx_siena_selftest_async_start(struct efx_nic *efx)
+ {
+ 	struct efx_channel *channel;
+ 
+@@ -776,12 +776,12 @@ void efx_selftest_async_start(struct efx_nic *efx)
+ 	schedule_delayed_work(&efx->selftest_work, IRQ_TIMEOUT);
+ }
+ 
+-void efx_selftest_async_cancel(struct efx_nic *efx)
++void efx_siena_selftest_async_cancel(struct efx_nic *efx)
+ {
+ 	cancel_delayed_work_sync(&efx->selftest_work);
+ }
+ 
+-static void efx_selftest_async_work(struct work_struct *data)
++static void efx_siena_selftest_async_work(struct work_struct *data)
+ {
+ 	struct efx_nic *efx = container_of(data, struct efx_nic,
+ 					   selftest_work.work);
+@@ -801,7 +801,7 @@ static void efx_selftest_async_work(struct work_struct *data)
+ 	}
+ }
+ 
+-void efx_selftest_async_init(struct efx_nic *efx)
++void efx_siena_selftest_async_init(struct efx_nic *efx)
+ {
+-	INIT_DELAYED_WORK(&efx->selftest_work, efx_selftest_async_work);
++	INIT_DELAYED_WORK(&efx->selftest_work, efx_siena_selftest_async_work);
+ }
+diff --git a/drivers/net/ethernet/sfc/siena/selftest.h b/drivers/net/ethernet/sfc/siena/selftest.h
+index a23f085bf298..6af6e7fbfcee 100644
+--- a/drivers/net/ethernet/sfc/siena/selftest.h
++++ b/drivers/net/ethernet/sfc/siena/selftest.h
+@@ -41,12 +41,12 @@ struct efx_self_tests {
+ 	struct efx_loopback_self_tests loopback[LOOPBACK_TEST_MAX + 1];
+ };
+ 
+-void efx_loopback_rx_packet(struct efx_nic *efx, const char *buf_ptr,
+-			    int pkt_len);
+-int efx_selftest(struct efx_nic *efx, struct efx_self_tests *tests,
+-		 unsigned flags);
+-void efx_selftest_async_init(struct efx_nic *efx);
+-void efx_selftest_async_start(struct efx_nic *efx);
+-void efx_selftest_async_cancel(struct efx_nic *efx);
++void efx_siena_loopback_rx_packet(struct efx_nic *efx, const char *buf_ptr,
++				  int pkt_len);
++int efx_siena_selftest(struct efx_nic *efx, struct efx_self_tests *tests,
++		       unsigned int flags);
++void efx_siena_selftest_async_init(struct efx_nic *efx);
++void efx_siena_selftest_async_start(struct efx_nic *efx);
++void efx_siena_selftest_async_cancel(struct efx_nic *efx);
+ 
+ #endif /* EFX_SELFTEST_H */
+diff --git a/drivers/net/ethernet/sfc/siena/siena.c b/drivers/net/ethernet/sfc/siena/siena.c
+index 726dd4b72779..d70e481d0c73 100644
+--- a/drivers/net/ethernet/sfc/siena/siena.c
++++ b/drivers/net/ethernet/sfc/siena/siena.c
+@@ -143,27 +143,28 @@ static int siena_ptp_set_ts_config(struct efx_nic *efx,
+ 	switch (init->rx_filter) {
+ 	case HWTSTAMP_FILTER_NONE:
+ 		/* if TX timestamping is still requested then leave PTP on */
+-		return efx_ptp_change_mode(efx,
+-					   init->tx_type != HWTSTAMP_TX_OFF,
+-					   efx_ptp_get_mode(efx));
++		return efx_siena_ptp_change_mode(efx,
++					init->tx_type != HWTSTAMP_TX_OFF,
++					efx_siena_ptp_get_mode(efx));
+ 	case HWTSTAMP_FILTER_PTP_V1_L4_EVENT:
+ 	case HWTSTAMP_FILTER_PTP_V1_L4_SYNC:
+ 	case HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ:
+ 		init->rx_filter = HWTSTAMP_FILTER_PTP_V1_L4_EVENT;
+-		return efx_ptp_change_mode(efx, true, MC_CMD_PTP_MODE_V1);
++		return efx_siena_ptp_change_mode(efx, true, MC_CMD_PTP_MODE_V1);
+ 	case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
+ 	case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
+ 	case HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ:
+ 		init->rx_filter = HWTSTAMP_FILTER_PTP_V2_L4_EVENT;
+-		rc = efx_ptp_change_mode(efx, true,
+-					 MC_CMD_PTP_MODE_V2_ENHANCED);
++		rc = efx_siena_ptp_change_mode(efx, true,
++					       MC_CMD_PTP_MODE_V2_ENHANCED);
+ 		/* bug 33070 - old versions of the firmware do not support the
+ 		 * improved UUID filtering option. Similarly old versions of the
+ 		 * application do not expect it to be enabled. If the firmware
+ 		 * does not accept the enhanced mode, fall back to the standard
+ 		 * PTP v2 UUID filtering. */
+ 		if (rc != 0)
+-			rc = efx_ptp_change_mode(efx, true, MC_CMD_PTP_MODE_V2);
++			rc = efx_siena_ptp_change_mode(efx, true,
++						       MC_CMD_PTP_MODE_V2);
+ 		return rc;
+ 	default:
+ 		return -ERANGE;
+@@ -329,7 +330,7 @@ static int siena_probe_nic(struct efx_nic *efx)
+ #ifdef CONFIG_SFC_SRIOV
+ 	efx_siena_sriov_probe(efx);
+ #endif
+-	efx_ptp_defer_probe_with_channel(efx);
++	efx_siena_ptp_defer_probe_with_channel(efx);
+ 
+ 	return 0;
+ 
+diff --git a/drivers/net/ethernet/sfc/siena/tx.c b/drivers/net/ethernet/sfc/siena/tx.c
+index 0677a0254d85..ef238e9efa94 100644
+--- a/drivers/net/ethernet/sfc/siena/tx.c
++++ b/drivers/net/ethernet/sfc/siena/tx.c
+@@ -321,14 +321,14 @@ netdev_tx_t efx_siena_hard_start_xmit(struct sk_buff *skb,
+ 
+ 	/* PTP "event" packet */
+ 	if (unlikely(efx_xmit_with_hwtstamp(skb)) &&
+-	    ((efx_ptp_use_mac_tx_timestamps(efx) && efx->ptp_data) ||
+-	    unlikely(efx_ptp_is_ptp_tx(efx, skb)))) {
++	    ((efx_siena_ptp_use_mac_tx_timestamps(efx) && efx->ptp_data) ||
++	     unlikely(efx_siena_ptp_is_ptp_tx(efx, skb)))) {
+ 		/* There may be existing transmits on the channel that are
+ 		 * waiting for this packet to trigger the doorbell write.
+ 		 * We need to send the packets at this point.
+ 		 */
+ 		efx_tx_send_pending(efx_get_tx_channel(efx, index));
+-		return efx_ptp_tx(efx, skb);
++		return efx_siena_ptp_tx(efx, skb);
+ 	}
+ 
+ 	tx_queue = efx_get_tx_queue(efx, index, type);
+diff --git a/drivers/net/ethernet/sfc/siena/tx_common.c b/drivers/net/ethernet/sfc/siena/tx_common.c
+index 5bf833c1dc9f..c4c053ecaaf5 100644
+--- a/drivers/net/ethernet/sfc/siena/tx_common.c
++++ b/drivers/net/ethernet/sfc/siena/tx_common.c
+@@ -80,8 +80,8 @@ void efx_siena_init_tx_queue(struct efx_tx_queue *tx_queue)
+ 	tx_queue->old_read_count = 0;
+ 	tx_queue->empty_read_count = 0 | EFX_EMPTY_COUNT_VALID;
+ 	tx_queue->xmit_pending = false;
+-	tx_queue->timestamping = (efx_ptp_use_mac_tx_timestamps(efx) &&
+-				  tx_queue->channel == efx_ptp_channel(efx));
++	tx_queue->timestamping = (efx_siena_ptp_use_mac_tx_timestamps(efx) &&
++				  tx_queue->channel == efx_siena_ptp_channel(efx));
+ 	tx_queue->completed_timestamp_major = 0;
+ 	tx_queue->completed_timestamp_minor = 0;
+ 
+@@ -173,7 +173,7 @@ static void efx_dequeue_buffer(struct efx_tx_queue *tx_queue,
+ 			struct skb_shared_hwtstamps hwtstamp;
+ 
+ 			hwtstamp.hwtstamp =
+-				efx_ptp_nic_to_kernel_time(tx_queue);
++				efx_siena_ptp_nic_to_kernel_time(tx_queue);
+ 			skb_tstamp_tx(skb, &hwtstamp);
+ 
+ 			tx_queue->completed_timestamp_major = 0;
 
