@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AFC505131CE
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 12:58:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C94375131D5
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 12:58:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344950AbiD1LBK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 07:01:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44464 "EHLO
+        id S1345025AbiD1LBS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 07:01:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344954AbiD1LBA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 07:01:00 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C54D95A08;
-        Thu, 28 Apr 2022 03:57:43 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id n32-20020a05600c3ba000b00393ea7192faso2805540wms.2;
-        Thu, 28 Apr 2022 03:57:43 -0700 (PDT)
+        with ESMTP id S1344966AbiD1LBC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 07:01:02 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3196A95A3E;
+        Thu, 28 Apr 2022 03:57:45 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id i5so6196906wrc.13;
+        Thu, 28 Apr 2022 03:57:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=jDy/baqCrS7ciidt4u0hxQhcY5iVuejvnMqLkeL0Gp4=;
-        b=qJj/oEv/OB0rSmn1HTfjjWX7JmMm0LqkE6Ny+wD7ffBQC9IwmtfWkhybcuDNEKLSXH
-         1TMbuqCT83AoqUhe0LltembCNXjptESab1BWgXO0WjFJpyHinrhpFfsU0pf5GxnCzss7
-         /iS3bE5EkMLqPCWo5ovhnxxIu4v4QAW+fXwCxiIBBWBlOIYJaxW8thByM0Wrab3KC4lJ
-         tDxaDqVFn/gK4R+3UCX0j/0xuo26zp+gQtCONKguTflJCOt5OAYbqj9hUtdzfjP5AEnR
-         +qr/l1lg3MIMDaXE8lRF0C/CS2I1wUWxxpzlzrmLSlHBhkF9g5diiUeOciwhICsMKRO/
-         AKMA==
+        bh=ul+t6uTHofyRjOEGXVcu4PlOdgwxB5M3MPuVkOzIQ1Y=;
+        b=cZNzSUcmv+bYXCqMXlvHlmCao3TAKfZHR+cXCTOPk2meuPJBce0NtdnKSKUdN4ZWnm
+         09VNe1iMqfCkrXJJfWUPBIp56YBIezb6yGscB49qDR4JuMXc4hEK/154pW/Hrfkks5ad
+         6JrtsOHq9v1wuPZ7Z9Um8Ba1UWVyHD5EQ+Pru2lrrQDnKmw7SHpXMAN/gCJdVI1paVoM
+         4z8XZsAj1W7k3Ow+sF4mR6DOc4wLFPTKMU0oRXTmxCWYY4Id/5qjtYCNwPG4U10UPMJL
+         I9Lg3PaD85uWESe4Tu5HV4L92sFCIulFdOamKyhrf1fWInkMuY+wy+P52vlfatsd+XO+
+         6Vrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=jDy/baqCrS7ciidt4u0hxQhcY5iVuejvnMqLkeL0Gp4=;
-        b=23c5l4vL3Emz16QgrNQAPaBXA/gShOoeZ5X6x8XHX7LafE/B3eyOJdH0o4NcakfwR2
-         hka75KgkodibG83zAvhxwWwVrpZ1ZmkzGwHYihQnOQlGgDgzJ+K9Vc1v+g+Qfl6KJjR+
-         JQUtZrT/l7/F+fpptvZ40norkus+mWYEBd4N6uJ6VnBWVPKZObhDHTUkqL/myOaKbLpA
-         yn6kfZGMIncvWK3tD1WmQZmohQtzc0QsYDSnnJTISySCCBpiOSlrQ/RXz1q99yggN3My
-         joXz+0rUPw6lsHwUXrg0RJ5zSqaxg2hs+UzioOOMoX/6N53TdJUqjjSsAa4pliL60tXp
-         VWhQ==
-X-Gm-Message-State: AOAM533PBcuSfqejjue6+ygf711/BzcSEH5z1xRKki9A0OvoqGOQMO6e
-        6nAyvqhSoLNQAGSqNwNbo439O0q2vjc=
-X-Google-Smtp-Source: ABdhPJySLzTTk7rY4bqmlhchQeKjsmfizffgksjQ+iy9cZrJzsT/UfZSHp9F6f2o7/6C5lHxwdGRkA==
-X-Received: by 2002:a05:600c:3ba8:b0:393:ea84:965d with SMTP id n40-20020a05600c3ba800b00393ea84965dmr19975408wms.35.1651143461820;
-        Thu, 28 Apr 2022 03:57:41 -0700 (PDT)
+        bh=ul+t6uTHofyRjOEGXVcu4PlOdgwxB5M3MPuVkOzIQ1Y=;
+        b=2VkOY7wRbQqPHn8pQHIgsoPaUHMyaUrUbbGROQ/sjiJV2YMsZFJPLmTgtA1tfgnATQ
+         RwV2lKI6kMI4NwGKjzc5zdzV8vEi5eT4rmtOl40/mla8ltmJ4wxPYB4Bq/xMPPGgFdk2
+         oRgl6aCohi45kf21671u/WRmQcOJ1VF8t+miyMgOXd/TZzaj6z4VNt7seFHa8XA8b7/j
+         bJrIwkXmk3EbtsUkfVl8NFLxWMkCX2+tRSHKxRW2DHHidw3mtq2cuUzQjXRv1kX9Stee
+         EAzdyc6z9gXOw9lvQu+CwBU1Y6aGCFevfI4/EA+qmA/iRSGWiRwMHnLcG2So4UOFow2p
+         s12A==
+X-Gm-Message-State: AOAM530MX13ITWFunCgNKtNaD2YJ/WWnx77CzJJshXNDVmmCBIChycrJ
+        QVu+y3UE84SgFpKDjNFnHXA9jHKuXjA=
+X-Google-Smtp-Source: ABdhPJwck+eoUYcstYlxOr02IVXvb1NXBw5lVqFBRIXksd9+2gk9v8n1XSWqgBOB/56Rxty548l5Vg==
+X-Received: by 2002:a05:6000:114d:b0:20a:d608:5e54 with SMTP id d13-20020a056000114d00b0020ad6085e54mr19754957wrx.539.1651143463594;
+        Thu, 28 Apr 2022 03:57:43 -0700 (PDT)
 Received: from 127.0.0.1localhost (82-132-230-8.dab.02.net. [82.132.230.8])
-        by smtp.gmail.com with ESMTPSA id z11-20020a7bc14b000000b0039419dfbb39sm7547wmi.33.2022.04.28.03.57.40
+        by smtp.gmail.com with ESMTPSA id z11-20020a7bc14b000000b0039419dfbb39sm7547wmi.33.2022.04.28.03.57.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 03:57:41 -0700 (PDT)
+        Thu, 28 Apr 2022 03:57:43 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -54,12 +54,12 @@ Cc:     David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         linux-kernel@vger.kernel.org,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next 08/11] ipv6: partially inline fl6_update_dst()
-Date:   Thu, 28 Apr 2022 11:56:39 +0100
-Message-Id: <997b0b5bf91d23dc40e7002ab863ba2bd75a8ce9.1651071843.git.asml.silence@gmail.com>
+Subject: [PATCH net-next 08/10] ipv6: refactor opts push in __ip6_make_skb()
+Date:   Thu, 28 Apr 2022 11:56:40 +0100
+Message-Id: <3d72bc581954b5a9156661cf6957a72c5940a459.1651071506.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <cover.1651071843.git.asml.silence@gmail.com>
-References: <cover.1651071843.git.asml.silence@gmail.com>
+In-Reply-To: <cover.1651071506.git.asml.silence@gmail.com>
+References: <cover.1651071506.git.asml.silence@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -72,79 +72,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-fl6_update_dst() doesn't do anything when there are no opts passed.
-Inline the null checking part.
+Don't preload v6_cork->opt before we actually need it, it likely to be
+saved on the stack and read again for no good reason.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- include/net/ipv6.h | 15 ++++++++++++---
- net/ipv6/exthdrs.c | 15 ++++++---------
- 2 files changed, 18 insertions(+), 12 deletions(-)
+ net/ipv6/ip6_output.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-index 30a3447e34b4..b9848fcd6954 100644
---- a/include/net/ipv6.h
-+++ b/include/net/ipv6.h
-@@ -1094,9 +1094,18 @@ int ipv6_find_hdr(const struct sk_buff *skb, unsigned int *offset, int target,
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index 976554d0fdec..43a541bbcf5f 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1855,7 +1855,6 @@ struct sk_buff *__ip6_make_skb(struct sock *sk,
+ 	struct ipv6_pinfo *np = inet6_sk(sk);
+ 	struct net *net = sock_net(sk);
+ 	struct ipv6hdr *hdr;
+-	struct ipv6_txoptions *opt = v6_cork->opt;
+ 	struct rt6_info *rt = (struct rt6_info *)cork->base.dst;
+ 	struct flowi6 *fl6 = &cork->fl.u.ip6;
+ 	unsigned char proto = fl6->flowi6_proto;
+@@ -1884,10 +1883,14 @@ struct sk_buff *__ip6_make_skb(struct sock *sk,
+ 	__skb_pull(skb, skb_network_header_len(skb));
  
- int ipv6_find_tlv(const struct sk_buff *skb, int offset, int type);
- 
--struct in6_addr *fl6_update_dst(struct flowi6 *fl6,
--				const struct ipv6_txoptions *opt,
--				struct in6_addr *orig);
-+struct in6_addr *__fl6_update_dst(struct flowi6 *fl6,
-+				  const struct ipv6_txoptions *opt,
-+				  struct in6_addr *orig);
+ 	final_dst = &fl6->daddr;
+-	if (opt && opt->opt_flen)
+-		ipv6_push_frag_opts(skb, opt, &proto);
+-	if (opt && opt->opt_nflen)
+-		ipv6_push_nfrag_opts(skb, opt, &proto, &final_dst, &fl6->saddr);
++	if (v6_cork->opt) {
++		struct ipv6_txoptions *opt = v6_cork->opt;
 +
-+static inline struct in6_addr *fl6_update_dst(struct flowi6 *fl6,
-+					      const struct ipv6_txoptions *opt,
-+					      struct in6_addr *orig)
-+{
-+	if (!opt || !opt->srcrt)
-+		return NULL;
-+	return __fl6_update_dst(fl6, opt, orig);
-+}
++		if (opt->opt_flen)
++			ipv6_push_frag_opts(skb, opt, &proto);
++		if (opt->opt_nflen)
++			ipv6_push_nfrag_opts(skb, opt, &proto, &final_dst, &fl6->saddr);
++	}
  
- /*
-  *	socket options (ipv6_sockglue.c)
-diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
-index a8d961d3a477..d02c27d4f2c2 100644
---- a/net/ipv6/exthdrs.c
-+++ b/net/ipv6/exthdrs.c
-@@ -1367,8 +1367,8 @@ struct ipv6_txoptions *__ipv6_fixup_options(struct ipv6_txoptions *opt_space,
- EXPORT_SYMBOL_GPL(__ipv6_fixup_options);
- 
- /**
-- * fl6_update_dst - update flowi destination address with info given
-- *                  by srcrt option, if any.
-+ * __fl6_update_dst - update flowi destination address with info given
-+ *                    by srcrt option.
-  *
-  * @fl6: flowi6 for which daddr is to be updated
-  * @opt: struct ipv6_txoptions in which to look for srcrt opt
-@@ -1377,13 +1377,10 @@ EXPORT_SYMBOL_GPL(__ipv6_fixup_options);
-  * Returns NULL if no txoptions or no srcrt, otherwise returns orig
-  * and initial value of fl6->daddr set in orig
-  */
--struct in6_addr *fl6_update_dst(struct flowi6 *fl6,
--				const struct ipv6_txoptions *opt,
--				struct in6_addr *orig)
-+struct in6_addr *__fl6_update_dst(struct flowi6 *fl6,
-+				  const struct ipv6_txoptions *opt,
-+				  struct in6_addr *orig)
- {
--	if (!opt || !opt->srcrt)
--		return NULL;
--
- 	*orig = fl6->daddr;
- 
- 	switch (opt->srcrt->type) {
-@@ -1405,4 +1402,4 @@ struct in6_addr *fl6_update_dst(struct flowi6 *fl6,
- 
- 	return orig;
- }
--EXPORT_SYMBOL_GPL(fl6_update_dst);
-+EXPORT_SYMBOL_GPL(__fl6_update_dst);
+ 	skb_push(skb, sizeof(struct ipv6hdr));
+ 	skb_reset_network_header(skb);
 -- 
 2.36.0
 
