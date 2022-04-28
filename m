@@ -2,162 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 70210513EF0
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 01:14:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17C28513EF3
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 01:17:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241946AbiD1XQj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 19:16:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37450 "EHLO
+        id S1353224AbiD1XUa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 19:20:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229842AbiD1XQi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 19:16:38 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94EA4C0F
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 16:13:22 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id a11so5492401pff.1
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 16:13:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc:from
-         :subject:content-transfer-encoding;
-        bh=s+Bpp1VQWZiMXyDy3amNmtGG8toAf7BM9+lLPafbqKA=;
-        b=z/uRLf5j/5tkxgHV7NKiDMF3LyZxOhl+UfhBdOjYF4yld9GJrIXplV9bCfqxcqBBuj
-         BNlGePvnokNHZbPIvMcuJCuHGe/KBBIf+M1b6A0ulwcepjIL9XWNn9yw0J7I2fCABqFX
-         ocLCIBmxtL9yCg0M5qVcqrtGw0DJQkTu2mexdkSuQDv5NHEw3enlEOo+6yQCMkEx0+mI
-         Q+w/pwNmbmZJp4bPKyyN+nRkPuw0rTnsgvHreykGiya8EDILzPNNpgUMFdLey5B/TJ6E
-         YILvMOs5b2DNcc/BrQhTZAfFRujvI2agQnYxGfjb23KsIoSOxI2AcIkXhWocZmJwVT3D
-         cHeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:from:subject:content-transfer-encoding;
-        bh=s+Bpp1VQWZiMXyDy3amNmtGG8toAf7BM9+lLPafbqKA=;
-        b=0K5eFkRtamUGz8J2q6p9dLr7mm4c8ZD9Rc8NZZ+9UX7Qlf6/zoYDW2ZOjG85OSlX2f
-         DBuFooYfCeQbpJlCZD6rxmnGKj0R70L57KMYwXGAmzkQ+M2NHvawF4gmV4zp4tPAKSfO
-         uk5uz4jfH1H6ATjCJj+nlkk1p/V1/re5tvwLeR1A8xZ3KJW6FTY3ij+qEy0k2z+RIwZO
-         xqRxtzFbMvw0OzfDUdyAZMuFq1SxSk3Huz6jYSP3yYbGFBj07/72IrUxPeV3fg5m+ZWl
-         X1wb2tana1u4y554QS2eq8DzXSasYnChlDAP9hfc4oSQen6uQYUfqNPuIvJ/pCBBVvBu
-         kaOw==
-X-Gm-Message-State: AOAM530JV5O53OZLiaGO77pO12+zzQz0xAXIwADC3UhlAm7vN3ouf0Wg
-        mBRtV6gZ3ZQa7e3v9GbRb5l05JfZPNerWlGS
-X-Google-Smtp-Source: ABdhPJxoAAY1EkUh91vFkbZDCTGQwCxo232XPAWYkVBMS5tgNdtUNFSe/xba8Bt9IqWeBnyS6HRpWg==
-X-Received: by 2002:a62:bd14:0:b0:50d:4bec:ff78 with SMTP id a20-20020a62bd14000000b0050d4becff78mr19079950pff.71.1651187601728;
-        Thu, 28 Apr 2022 16:13:21 -0700 (PDT)
-Received: from [192.168.1.100] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id y3-20020a17090abd0300b001cd630f301fsm11675701pjr.36.2022.04.28.16.13.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Apr 2022 16:13:20 -0700 (PDT)
-Message-ID: <2975a359-2422-71dc-db6b-9e4f369cae77@kernel.dk>
-Date:   Thu, 28 Apr 2022 17:13:19 -0600
+        with ESMTP id S229842AbiD1XU3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 19:20:29 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A2840935;
+        Thu, 28 Apr 2022 16:17:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=810WVWqP/hZF1NMKzf5cATOlxW75bWI6UJtYB2eczzg=; b=4AQnes1B0vsSlqlcfMiO57RV7j
+        QvPbQxQQwd+ZompegfVs1Gr6w3fgp+yav0rRZq2aW03tK1pIUxmZfUjxX5UzP44Tq1VSajsjnrKRx
+        TIbb/ThR0jVVGBb0Uo/UfbNKtHXiemu2x6zBcYuCGpCBJU7x3NUEVzEOEDEgJeGOHScs=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nkDNn-000OKv-Bo; Fri, 29 Apr 2022 01:17:11 +0200
+Date:   Fri, 29 Apr 2022 01:17:11 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Nathan Rossi <nathan@nathanrossi.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH v2] net: dsa: mv88e6xxx: Single chip mode detection for
+ MV88E6*41
+Message-ID: <Ymsgd2We8m8G8Oab@lunn.ch>
+References: <20220427130928.540007-1-nathan@nathanrossi.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Content-Language: en-US
-To:     netdev <netdev@vger.kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-From:   Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH v2] tcp: pass back data left in socket after receive
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220427130928.540007-1-nathan@nathanrossi.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is currently done for CMSG_INQ, add an ability to do so via struct
-msghdr as well and have CMSG_INQ use that too. If the caller sets
-msghdr->msg_get_inq, then we'll pass back the hint in msghdr->msg_inq.
+On Wed, Apr 27, 2022 at 01:09:28PM +0000, Nathan Rossi wrote:
+> The mv88e6xxx driver expects switches that are configured in single chip
+> addressing mode to have the MDIO address configured as 0. This is due to
+> the switch ADDR pins representing the single chip addressing mode as 0.
+> However depending on the device (e.g. MV88E6*41) the switch does not
+> respond on address 0 or any other address below 16 (the first port
+> address) in single chip addressing mode. This allows for other devices
+> to be on the same shared MDIO bus despite the switch being in single
+> chip addressing mode.
+> 
+> When using a switch that works this way it is not possible to configure
+> switch driver as single chip addressing via device tree, along with
+> another MDIO device on the same bus with address 0, as both devices
+> would have the same address of 0 resulting in mdiobus_register_device
+> -EBUSY errors for one of the devices with address 0.
+> 
+> In order to support this configuration the switch node can have its MDIO
+> address configured as 16 (the first address that the device responds
+> to). During initialization the driver will treat this address similar to
+> how address 0 is, however because this address is also a valid
+> multi-chip address (in certain switch models, but not all) the driver
+> will configure the SMI in single chip addressing mode and attempt to
+> detect the switch model. If the device is configured in single chip
+> addressing mode this will succeed and the initialization process can
+> continue. If it fails to detect a valid model this is because the switch
+> model register is not a valid register when in multi-chip mode, it will
+> then fall back to the existing SMI initialization process using the MDIO
+> address as the multi-chip mode address.
+> 
+> This detection method is safe if the device is in either mode because
+> the single chip addressing mode read is a direct SMI/MDIO read operation
+> and has no side effects compared to the SMI writes required for the
+> multi-chip addressing mode.
+> 
+> In order to implement this change, the reset gpio configuration is moved
+> to occur before any SMI initialization. This ensures that the device has
+> the same/correct reset gpio state for both mv88e6xxx_smi_init calls.
+> 
+> Signed-off-by: Nathan Rossi <nathan@nathanrossi.com>
 
-Rearrange struct msghdr a bit so we can add this member while shrinking
-it at the same time. On a 64-bit build, it was 96 bytes before this
-change and 88 bytes afterwards.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
----
-
-v2: rebased on net-next, s/net/tcp in subject
-
- include/linux/socket.h |  6 +++++-
- net/ipv4/tcp.c         | 14 +++++++++-----
- 2 files changed, 14 insertions(+), 6 deletions(-)
-
-diff --git a/include/linux/socket.h b/include/linux/socket.h
-index 6f85f5d957ef..12085c9a8544 100644
---- a/include/linux/socket.h
-+++ b/include/linux/socket.h
-@@ -50,6 +50,9 @@ struct linger {
- struct msghdr {
- 	void		*msg_name;	/* ptr to socket address structure */
- 	int		msg_namelen;	/* size of socket address structure */
-+
-+	int		msg_inq;	/* output, data left in socket */
-+
- 	struct iov_iter	msg_iter;	/* data */
- 
- 	/*
-@@ -62,8 +65,9 @@ struct msghdr {
- 		void __user	*msg_control_user;
- 	};
- 	bool		msg_control_is_user : 1;
--	__kernel_size_t	msg_controllen;	/* ancillary data buffer length */
-+	bool		msg_get_inq : 1;/* return INQ after receive */
- 	unsigned int	msg_flags;	/* flags on received message */
-+	__kernel_size_t	msg_controllen;	/* ancillary data buffer length */
- 	struct kiocb	*msg_iocb;	/* ptr to iocb for async requests */
- };
- 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index db55af9eb37b..b6aa4df79429 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -2314,8 +2314,10 @@ static int tcp_recvmsg_locked(struct sock *sk, struct msghdr *msg, size_t len,
- 	if (sk->sk_state == TCP_LISTEN)
- 		goto out;
- 
--	if (tp->recvmsg_inq)
-+	if (tp->recvmsg_inq) {
- 		*cmsg_flags = TCP_CMSG_INQ;
-+		msg->msg_get_inq = 1;
-+	}
- 	timeo = sock_rcvtimeo(sk, flags & MSG_DONTWAIT);
- 
- 	/* Urgent data needs to be handled specially. */
-@@ -2537,7 +2539,7 @@ static int tcp_recvmsg_locked(struct sock *sk, struct msghdr *msg, size_t len,
- int tcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int flags,
- 		int *addr_len)
- {
--	int cmsg_flags = 0, ret, inq;
-+	int cmsg_flags = 0, ret;
- 	struct scm_timestamping_internal tss;
- 
- 	if (unlikely(flags & MSG_ERRQUEUE))
-@@ -2552,12 +2554,14 @@ int tcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int flags,
- 	ret = tcp_recvmsg_locked(sk, msg, len, flags, &tss, &cmsg_flags);
- 	release_sock(sk);
- 
--	if (cmsg_flags && ret >= 0) {
-+	if ((cmsg_flags || msg->msg_get_inq) && ret >= 0) {
- 		if (cmsg_flags & TCP_CMSG_TS)
- 			tcp_recv_timestamp(msg, sk, &tss);
-+		if (msg->msg_get_inq)
-+			msg->msg_inq = tcp_inq_hint(sk);
- 		if (cmsg_flags & TCP_CMSG_INQ) {
--			inq = tcp_inq_hint(sk);
--			put_cmsg(msg, SOL_TCP, TCP_CM_INQ, sizeof(inq), &inq);
-+			put_cmsg(msg, SOL_TCP, TCP_CM_INQ, sizeof(msg->msg_inq),
-+				 &msg->msg_inq);
- 		}
- 	}
- 	return ret;
--- 
-2.35.1
-
--- 
-Jens Axboe
-
+    Andrew
