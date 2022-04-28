@@ -2,120 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 82D7F512D7F
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 09:56:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21773512D81
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 09:56:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343571AbiD1H7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 03:59:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42000 "EHLO
+        id S1343568AbiD1H7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 03:59:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343552AbiD1H7H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 03:59:07 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 718E020BCE;
-        Thu, 28 Apr 2022 00:55:53 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id y76so7596046ybe.1;
-        Thu, 28 Apr 2022 00:55:53 -0700 (PDT)
+        with ESMTP id S245714AbiD1H7G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 03:59:06 -0400
+Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB122329AD
+        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 00:55:52 -0700 (PDT)
+Received: by mail-vs1-xe41.google.com with SMTP id t85so3891329vst.4
+        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 00:55:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=20Ih2IlUb6bJo8fqptV5Ls545wi0cHRNM9PIwsCTWig=;
-        b=HW2WjBML2b6D8ENGrcYgynP0ORmNMbLedyIT2JE4zm4/+D7h7E8R15S6tCKjCgxE5F
-         HPDClpLA5HDi8EXbKMl8wLKRkewvh4k8OALErPK2TSkqVGmV0S0R1UN750hYUKmrx1pY
-         Gg/BQCtVK3dRfXOuO+yrJQsRiiV8j6aYc8eEYeGRcPEc9u/auRQG9WQvOlR7RD4kOWOL
-         ml2awR1e2WiKRzk1ovs7MiviE0vjXZ8MbN/PqeA12PqQHrE7MynRZ7okyCzSQjKfKaUW
-         Qj0r98qcCEme3ScPAH2ofJyQ9rh+cwToO8BU/o9ERuHNc3HES3R/W8YpF6hoXuU+kA6R
-         h8dg==
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
+        bh=NLijoYwk7hqoA8TsUJbQbQCYzScrvalH7Lc8MykkZrA=;
+        b=U/6N0yeLOtBRMObmNKq7QXJJgcqyds4ooUiN/+GNnyyUQ0Bh7uOB1Vr9y1W1Kc5PYH
+         rv9QvMBI9XmkdLkvWw5mhFsdBoXNR5BR7GB0YhTwhVnhcusOBm46taodfuG1fj1g9iyw
+         5tTBa4+5KVbiXg3FLA9858e5qVG1mm/1wwb3Ryr649mZDhaPzjpco13LwPKsygG19KCH
+         zMrk9oZ1ULHjyMjbTLHSbztBNV/39aiN858JgFh3HRXercnX4a4c1SbuXDx3fRnGnieS
+         MxNuLNR3dXDzEbbuA3/inyqapQXnLrvvDaZESWLE2midxo+st8khBnoRnkwqQBAxfB0u
+         cfEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=20Ih2IlUb6bJo8fqptV5Ls545wi0cHRNM9PIwsCTWig=;
-        b=NhU5tWlX0+SNOFmTnmYZtw1VHcjO52o7C+eOXlOySzp797j0f2L65AezSwulSCCnHh
-         2+++wbs8csNpwbmhEGmcCIT97kuLBhbcr97qFsh/LldghKasBMV6TZsQxAsuXzEWEw2d
-         DZ2aSIclnGLKP7Yx3f5jw5GKfWUI8tCDUfi/r1V82iWspqMQWp3qpCzDA6NVLQrpLjMb
-         xDU/W6v988sNx/mbfr0uHrHCeTBjcoLXCRhvj9PQWCxdRCR/RPye4Q3onbGuF/pEvL+p
-         70FNXDFqtKVb/9/thlSvw+/NQIiKZBkJGNkQsBgq0KPL4dcs3w7HF3gRkCiWgbpmhiwp
-         ceyg==
-X-Gm-Message-State: AOAM5320ZGHtspQZhnjvGnDRUcJJzv1xkm0NvC4HsPemXQPbqwea9GGQ
-        QVUB8bE5PBqof0tT4KKWjY9BPU5ZhlrffjbuCBg=
-X-Google-Smtp-Source: ABdhPJw8pf7dHDJGDk4MLm1MPOPR7xtPtgmoUI+cAYaw4tMFKuYcyPOqVButzGZ1veH2KFcVReaJdxuPRSjv15oQplw=
-X-Received: by 2002:a25:9845:0:b0:628:99a6:55ed with SMTP id
- k5-20020a259845000000b0062899a655edmr29064779ybo.221.1651132552546; Thu, 28
- Apr 2022 00:55:52 -0700 (PDT)
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to;
+        bh=NLijoYwk7hqoA8TsUJbQbQCYzScrvalH7Lc8MykkZrA=;
+        b=pjqhHst5/hevG6zNIOw6hDE/yWTLMBAPezgD9TMOzM+yPa3Xhf1k9POVUIKj2WZ/FL
+         mPJjP+7o6Nz8csmnxlrqdQ7IXh3fbMXc1CByQZWJBtgypi8CA7C1E97aEbqlzpwZNSAc
+         Ks00/HshK9rvKobZCXfbggnbqcA92VJPFDkjK0XQDpfsA9VUJjjwcZpFneGbnutUxCb3
+         dLyzHtFfvF9D85Ddq+AlkxOd5EcW7xdcEBCjS1N1J8FATDkMVWOw6d5GsJ4r6gxQRC6f
+         Mz+MFKQtNMYmbsHs0hq5ozSOXZ0pAf9Ve6ViRDLBXnR+Fe3n8tAMPfLS6Z6HtXz7JHIl
+         OS8A==
+X-Gm-Message-State: AOAM531VfUriUT1OpRaZI7uJtQaBW0QqFGfZjj/mxnuDI+CJgWuq05EH
+        TCbYm/PSynU7896/2S2RrAznZwB92c4f41Hurg==
+X-Google-Smtp-Source: ABdhPJz5r1ZnqLfrnXBQAvUq5ZuMNcGKKyqJCVqTPapJKWl+FiSY9eF5hdlcgFEVaJ52K5HBsT0z0rec7Z1hGDEstiA=
+X-Received: by 2002:a67:f6ce:0:b0:32c:dcb9:3857 with SMTP id
+ v14-20020a67f6ce000000b0032cdcb93857mr5765079vso.57.1651132551786; Thu, 28
+ Apr 2022 00:55:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220424165309.241796-1-eyal.birger@gmail.com>
- <CAHsH6Gtpu-+79r2wrs1U=X=wMjVh2MfNxdgDtsL7yOfsKzKXDA@mail.gmail.com> <CAEf4BzZ3vDvLDQ+Wsj1z2=-exZO-t510JdWXA-1bao-shO4PJg@mail.gmail.com>
-In-Reply-To: <CAEf4BzZ3vDvLDQ+Wsj1z2=-exZO-t510JdWXA-1bao-shO4PJg@mail.gmail.com>
-From:   Eyal Birger <eyal.birger@gmail.com>
-Date:   Thu, 28 Apr 2022 10:55:41 +0300
-Message-ID: <CAHsH6GujcJP=NXXetUBcCC_qAHfXCzEbid64jRwTTgnjd7oUOw@mail.gmail.com>
-Subject: Re: [PATCH bpf] selftests/bpf: test setting tunnel key from lwt xmit
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, posk@google.com,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Reply-To: salkavar2@gmail.com
+Sender: mwibergcaitlin997@gmail.com
+Received: by 2002:a59:cde8:0:b0:2b1:df2c:6127 with HTTP; Thu, 28 Apr 2022
+ 00:55:51 -0700 (PDT)
+From:   "Mr.Sal kavar" <salkavar2@gmail.com>
+Date:   Thu, 28 Apr 2022 07:55:51 +0000
+X-Google-Sender-Auth: k4F3pA5Q6SrXCwMgUD7Tz4CpEP0
+Message-ID: <CAOw4te1=qdNoZqx72xCJe8oKSi9v5C+RvNBm70ArmhQ1uwur=Q@mail.gmail.com>
+Subject: Yours Faithful,
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=4.5 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO_END_DIGIT,LOTS_OF_MONEY,MILLION_HUNDRED,
+        MONEY_FRAUD_5,MONEY_FREEMAIL_REPTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,T_HK_NAME_FM_MR_MRS,T_MONEY_PERCENT,UNDISC_MONEY autolearn=no
         autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 10:41 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Sun, Apr 24, 2022 at 10:23 AM Eyal Birger <eyal.birger@gmail.com> wrote:
-> >
-> > On Sun, Apr 24, 2022 at 7:53 PM Eyal Birger <eyal.birger@gmail.com> wrote:
-> > >
-> > > This commit adds test_egress_md() tests which perform a similar flow as
-> > > test_egress() only that they use gre devices in collect_md mode and set
-> > > the tunnel key from lwt bpf xmit.
-> > >
-> > > VRF scenarios are not checked since it is currently not possible to set
-> > > the underlying device or vrf from bpf_set_tunnel_key().
-> > >
-> > > This introduces minor changes to the existing setup for consistency with
-> > > the new tests:
-> > >
-> > > - GRE key must exist as bpf_set_tunnel_key() explicitly sets the
-> > >   TUNNEL_KEY flag
-> > >
-> > > - Source address for GRE traffic is set to IPv*_5 instead of IPv*_1 since
-> > >   GRE traffic is sent via veth5 so its address is selected when using
-> > >   bpf_set_tunnel_key()
-> > >
-> > > Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
-> > > ---
-> > >  .../selftests/bpf/progs/test_lwt_ip_encap.c   | 51 ++++++++++-
-> > >  .../selftests/bpf/test_lwt_ip_encap.sh        | 85 ++++++++++++++++++-
-> > >  2 files changed, 128 insertions(+), 8 deletions(-)
-> > >
-> > > diff --git a/tools/testing/selftests/bpf/progs/test_lwt_ip_encap.c b/tools/testing/selftests/bpf/progs/test_lwt_ip_encap.c
-> > > index d6cb986e7533..39c6bd5402ae 100644
-> > > --- a/tools/testing/selftests/bpf/progs/test_lwt_ip_encap.c
-> > > +++ b/tools/testing/selftests/bpf/progs/test_lwt_ip_encap.c
-> >
-> > Thinking about this some more, I'm not sure if these tests fit better here
-> > or in test_tunnel.sh.
-> >
-> > If the latter is preferred, please drop this patch and I'll submit one for
-> > test_tunnel.sh.
->
-> general preference is to put test into test_progs as those are
-> regularly and extensively exercised, while test_tunnel.sh is not
+I assume you and your family are in good health. I am the foreign
+operations Manager
 
-Thanks. Will move the logic there then.
->
-> >
-> > Eyal.
+This being a wide world in which it can be difficult to make new
+acquaintances and because it is virtually impossible to know who is
+trustworthy and who can be believed, i have decided to repose
+confidence in you after much fasting and prayer. It is only because of
+this that I have decided to confide in you and to share with you this
+confidential business.
+
+overdue and unclaimed sum of $15.5m, (Fifteen Million Five Hundred
+Thousand Dollars Only) when the account holder suddenly passed on, he
+left no beneficiary who would be entitled to the receipt of this fund.
+For this reason, I have found it expedient to transfer this fund to a
+trustworthy individual with capacity to act as foreign business
+partner.
+
+You will take 45%  10% will be shared to Charity in both country and
+45% will be for me.
+
+Yours Faithful,
+Mr.Sal Kavar.
