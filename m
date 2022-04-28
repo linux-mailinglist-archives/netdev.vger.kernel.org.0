@@ -2,75 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0413E51377F
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 16:56:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFE835137A6
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 17:03:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346639AbiD1O7s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 10:59:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47872 "EHLO
+        id S1348721AbiD1PGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 11:06:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235844AbiD1O7p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 10:59:45 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D2534833E;
-        Thu, 28 Apr 2022 07:56:31 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id i27so10086194ejd.9;
-        Thu, 28 Apr 2022 07:56:31 -0700 (PDT)
+        with ESMTP id S1343735AbiD1PGy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 11:06:54 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DA24B3C71;
+        Thu, 28 Apr 2022 08:03:36 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id a14-20020a7bc1ce000000b00393fb52a386so4840740wmj.1;
+        Thu, 28 Apr 2022 08:03:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=fBTI3znE+LKO0LEFJRRStXlDP5pWKM2ojbhgO7lwTtU=;
-        b=qW+91MB6RdlwexC8ZyK+u+MprNrrSVVDvC+tZDVdDT0YoOFF6lTBrmk1+vm9Ufpfp5
-         fX2VVIjNdcS9IKhfuVl6z0L/MUFOYDE7lBztH8qEJERs93Vhjp5PIrppm+dXdOMbJIwv
-         riUB4arFqsBwqGuS+5qGPfySSU6YzmSuAtItaJn3BUcN+RAIYpBKK8hn6Vr3NAM4SjaN
-         5w/Y2LJ2KWhmgrNAYi++mZy3Qy7fNDBkr/pvzNF5M4bA9j3FP/UdK+PPyb17wn664Ugs
-         3Ta+VVjR7VcA+oRqSsIoX6Nk3NIjBUfy9jpExosKpCHEC9U+cLwdVVLKGX2Cn4sm9G7y
-         OT/g==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=J1yO6vfsXNk2QEX6CeOXZQScT3FcVVF3g4FzJ7/26KA=;
+        b=LhtRPZjdNnlkOaBmn5PG03oSc+a/3b0eB3ZqEIpkdUTI8nrHoFW4tSlo+xphR3yRqO
+         uhJMtefCFdH+EfoKxLu+NwSxpCvOllUmxvUgThgQRItwbABh9mFl91l5yQ2iMXxRXdj0
+         FIVjL05C7Nd/kcWZivsMR2XHz0qrnLL4i1P061f37UqSwk7iDuvhU4CbUhEJuzlTosBS
+         DD01z2ApD4xpQMjL/uZnSEJmKLNZ4mXqq/kfkAZAlVl7TS2iCXfzeTyrOIPL/bihFXyq
+         ltIsiKjCxU6GpvqtOFjX8dk2lr0tkvcKLZgYmcSu4kspt6GfzUYVWAITc9b7R2YDQ/TK
+         q/qw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=fBTI3znE+LKO0LEFJRRStXlDP5pWKM2ojbhgO7lwTtU=;
-        b=0VEDv9FRK0HLapD9PhRXREGQ/Yjc933uzNgaW2g47DOd4GpK2gdM45mw89jA4YfsZd
-         szpZbLku+Z0PY6z0qWTFTzxqWqVQGHtGzSykrYkG8DHT5inSC6k9pAWzPOxQYfboVTfy
-         oUg1aMTG1hzHxuKhmsARNnXyISQU4usBWBtkbYLL4NDbFd99LpkfYSEwU5/T+HLx88Hx
-         acYAPVfmh3N9VV3HW+Vh0rU0ACaSND8B8aEdO1oMfssuyjTEMSfhikEdYC87wWV6na1I
-         6BWFkJGtFxpaAbsZoa/3uuZZmMQWr5HwTu6zDwTxqLbEnhZQTQOIi3/aFFiXV1ZzOdUZ
-         8Y9Q==
-X-Gm-Message-State: AOAM5317gWq4fwysyPDquq+RMLtqwEvmFNZpyWQnI3kOO775XMjdXYpl
-        cY5Q3UpFKSeUwo1KYyAlhrEt2oHNWgG+4uBz
-X-Google-Smtp-Source: ABdhPJziVcXPSlOiG1m0iuUUjr7rCUxrFfYriXy2u1/9aAXQGkIKuPfbNzdR9637DJrunJNFuXNw0w==
-X-Received: by 2002:a17:907:8b09:b0:6f3:8fd6:d298 with SMTP id sz9-20020a1709078b0900b006f38fd6d298mr21747066ejc.234.1651157789604;
-        Thu, 28 Apr 2022 07:56:29 -0700 (PDT)
-Received: from anparri (host-79-49-65-106.retail.telecomitalia.it. [79.49.65.106])
-        by smtp.gmail.com with ESMTPSA id v10-20020a170906380a00b006a68610908asm76993ejc.24.2022.04.28.07.56.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 07:56:29 -0700 (PDT)
-Date:   Thu, 28 Apr 2022 16:56:22 +0200
-From:   Andrea Parri <parri.andrea@gmail.com>
-To:     Wei Liu <wei.liu@kernel.org>
-Cc:     KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-hyperv@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/5] hv_sock: Hardening changes
-Message-ID: <20220428145622.GA7934@anparri>
-References: <20220427131225.3785-1-parri.andrea@gmail.com>
- <20220428142202.tkiv4e2f4oukbfx3@liuwe-devbox-debian-v2>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=J1yO6vfsXNk2QEX6CeOXZQScT3FcVVF3g4FzJ7/26KA=;
+        b=vv4zWN9tloHd58mMO11MUsQ/y3qzg3/zpjLidJafnnOru7MsHY81apo76IDv7FhXNR
+         +dtrm11nQ/zn5x+bCdCc7Y0ZzTAoaF2T8cdl2IyJXCiFcW0AK8UyL5pfRMVzHEBusRHt
+         LhydT4Pr70maZoNV1NEZ3D4ArH8d6FLsG2PQbP/+bIsVJ4sX0aNg1yNcdX+V8J3x+rHt
+         M3XDrIZeNKzMehAZlhuBSBE91UOzAN4VRryrSD62xfuYsy7DrfQ6Y7NihWoYrd3hzJ/u
+         nM5sua6Vd9bVyQPmVtNuQ1eoMmO2A84750uxW7TBTii7JVVrgy85TDdur4ndDfIq9yRH
+         2vbg==
+X-Gm-Message-State: AOAM532FobzrFj9VGqvOItDp3TXJtwVFArPqCvMpCiRTYOSO0DGFeb2G
+        t5IM3O0c8kVi7bR65Wxdc00=
+X-Google-Smtp-Source: ABdhPJx9sazTAodFY/IGjny4Jl9CQ6mMn7WGsEf7+CwRiKDuw8zcLubxC/IvOM1Z2GfExZO+IMuJLw==
+X-Received: by 2002:a05:600c:3393:b0:394:160a:18aa with SMTP id o19-20020a05600c339300b00394160a18aamr2459044wmp.58.1651158214520;
+        Thu, 28 Apr 2022 08:03:34 -0700 (PDT)
+Received: from [192.168.8.198] ([85.255.235.145])
+        by smtp.gmail.com with ESMTPSA id l6-20020a1c2506000000b0038e6fe8e8d8sm216187wml.5.2022.04.28.08.03.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Apr 2022 08:03:34 -0700 (PDT)
+Message-ID: <6b975bf6-453a-6020-bdcb-33fd02d275c3@gmail.com>
+Date:   Thu, 28 Apr 2022 16:03:09 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220428142202.tkiv4e2f4oukbfx3@liuwe-devbox-debian-v2>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH net-next 00/11] UDP/IPv6 refactoring
+Content-Language: en-US
+To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-kernel@vger.kernel.org
+References: <cover.1651071843.git.asml.silence@gmail.com>
+ <353b5206205cc71d25998c9601a052dade081b94.camel@redhat.com>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <353b5206205cc71d25998c9601a052dade081b94.camel@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -79,13 +77,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> >   Drivers: hv: vmbus: Accept hv_sock offers in isolated guests
+On 4/28/22 15:04, Paolo Abeni wrote:
+> On Thu, 2022-04-28 at 11:56 +0100, Pavel Begunkov wrote:
+>> Refactor UDP/IPv6 and especially udpv6_sendmsg() paths. The end result looks
+>> cleaner than it was before and the series also removes a bunch of instructions
+>> and other overhead from the hot path positively affecting performance.
+>>
+>> It was a part of a larger series, there were some perf numbers for it, see
+>> https://lore.kernel.org/netdev/cover.1648981570.git.asml.silence@gmail.com/
+>>
+>> Pavel Begunkov (11):
+>>    ipv6: optimise ipcm6 cookie init
+>>    udp/ipv6: refactor udpv6_sendmsg udplite checks
+>>    udp/ipv6: move pending section of udpv6_sendmsg
+>>    udp/ipv6: prioritise the ip6 path over ip4 checks
+>>    udp/ipv6: optimise udpv6_sendmsg() daddr checks
+>>    udp/ipv6: optimise out daddr reassignment
+>>    udp/ipv6: clean up udpv6_sendmsg's saddr init
+>>    ipv6: partially inline fl6_update_dst()
+>>    ipv6: refactor opts push in __ip6_make_skb()
+>>    ipv6: improve opt-less __ip6_make_skb()
+>>    ipv6: clean up ip6_setup_cork
+>>
+>>   include/net/ipv6.h    |  24 +++----
+>>   net/ipv6/datagram.c   |   4 +-
+>>   net/ipv6/exthdrs.c    |  15 ++--
+>>   net/ipv6/ip6_output.c |  53 +++++++-------
+>>   net/ipv6/raw.c        |   8 +--
+>>   net/ipv6/udp.c        | 158 ++++++++++++++++++++----------------------
+>>   net/l2tp/l2tp_ip6.c   |   8 +--
+>>   7 files changed, 122 insertions(+), 148 deletions(-)
 > 
-> This patch does not apply cleanly to hyperv-next.
+> Just a general comment here: IMHO the above diffstat is quite
+> significant and some patches looks completely non trivial to me.
+> 
+> I think we need a quite significant performance gain to justify the
+> above, could you please share your performace data, comprising the
+> testing scenario?
 
-I've just resent the series for hyperv-next, cf.
+As mentioned I benchmarked it with a UDP/IPv6 max throughput kind of
+test and only as a part of a larger series [1]. It was "2090K vs
+2229K tx/s, +6.6%". Taking into account +3% from split out sock_wfree
+optimisations, half if not most of the rest should be accounted to this
+series, so a bit hand-wavingly +1-3%. Can spend some extra time
+retesting this particular series if strongly required...
 
-  https://lkml.kernel.org/r/20220428145107.7878-1-parri.andrea@gmail.com
+I was using [2], which is basically an io_uring copy of send paths of
+selftests/net/msg_zerocopy. Should be visible with other tools, this
+one just alleviates context switch / etc. overhead with io_uring.
 
-Thanks,
-  Andrea
+./send-zc -6 udp -D <address> -t <time> -s16 -z0
+
+It sends a number of 16 bytes UDP/ipv6 (non-zerocopy) send requests over
+io_uring, then waits for them and repeats. It was 8 (default) requests
+per iteration (i.e. syscall). I was using dummy netdev, so there is no
+actual receiver, but it quite correlates with my server setup with mlx
+cards, just takes more effort for me to test. And all with
+mitigations=off
+
+There might be some fatter targets to optimise, but udpv6_sendmsg()
+and functions around take a good chunk of cycles as well, though without
+particular hotspots. If we'd want some better justification than 1-3%,
+then need to add more work on top, adding even more to diffstat...
+vicious cycle.
+
+
+[1] https://lore.kernel.org/netdev/cover.1648981570.git.asml.silence@gmail.com/
+[2] https://github.com/isilence/liburing/blob/zc_v3/test/send-zc.c
+
+-- 
+Pavel Begunkov
