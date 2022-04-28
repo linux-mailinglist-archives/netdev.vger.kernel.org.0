@@ -2,147 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 54229512D96
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 09:59:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0709512D9C
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 10:01:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343681AbiD1ICT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 04:02:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50554 "EHLO
+        id S1343712AbiD1IDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 04:03:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343692AbiD1ICI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 04:02:08 -0400
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4437820BCE;
-        Thu, 28 Apr 2022 00:58:53 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id AF8451C0003;
-        Thu, 28 Apr 2022 07:58:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1651132731;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3wu9h3NKSKmvHgwXQf+X1OC4mECGCeu1/MQPJ6QY6SE=;
-        b=bijCSztHgJJMugFQFHiUQ8aYuRkjruUCYnmB0kgjbJAB1EEdR4wYJf/Y0mbA+kgCGF7JDE
-        I/iYOiYIB8edk+3JyFYwuGrJtngst0ToSfMzvrBg9TpRnxazbFPe24IHBcrHqGYbkKnwzJ
-        AmoRy/5ozhvOXJYSLEMTxBnTDuuhWqOnFEpFGe+CaZspKLXsYEOuRRSHA7ajdmvRI6UTIu
-        YnzzEjZsG8UwGxkKMTAxiAJciDyFnbE/CbyVMQe/a09ZEm0kffvG5ewYVmmPyKNOmpHxT5
-        1fERTsbKynD+H9DtSoJSXV5e0lcbuNApL0mADhbfu6iecEqiaOEAKoS7S4O0zQ==
-Date:   Thu, 28 Apr 2022 09:58:48 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>
-Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH wpan-next 08/11] net: mac802154: Add a warning in the
- hot path
-Message-ID: <20220428095848.34582df4@xps13>
-In-Reply-To: <CAB_54W7NWEYgmLfowvyXtKEsKhBaVrPzpkB1kasYpAst98mKNA@mail.gmail.com>
-References: <20220427164659.106447-1-miquel.raynal@bootlin.com>
-        <20220427164659.106447-9-miquel.raynal@bootlin.com>
-        <CAB_54W7NWEYgmLfowvyXtKEsKhBaVrPzpkB1kasYpAst98mKNA@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        with ESMTP id S1343711AbiD1IDa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 04:03:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D2C917E06
+        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 01:00:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 404C2B82B44
+        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 08:00:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EEC4FC385A9;
+        Thu, 28 Apr 2022 08:00:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651132814;
+        bh=IGdMXm9WUsu0G+gjUEFP0ILF6TdDqRvpv7lQ6gbq+Yo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=n1BQPIG5q4rI7TzA1f3EgiNKfflROX6DSrM/KSQ3yptOz9Fqk6sIAF/3Knkzb1nJn
+         wkH5ZpZCYyRX/4o/nF9DlmLmi1ewQNCEPwPSNKyLg2hL+cTR0JI26EYb5ASDN6GTxQ
+         lxlVZ2HpYokBx/ZSRXNGzRJSQnR8FvEm4r/grPcbBzoaz/j9+Q+s24fgTrnS9FQ7rH
+         jxx29JVfpNPX7YxI3VsquXSJMciP7/Jh1iigiVnpeG+RGr8ILYrMl5IMVZn+VZlnUw
+         n5q6TcJMyHGKNx3tNn2wQduzxY8IVrPfih+fxf+SkP4efk39aIZQtEYrWvU5kSNKvO
+         Bu5dAJc1wk0mA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D5CFEE85D90;
+        Thu, 28 Apr 2022 08:00:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v2 00/13]: Move Siena into a separate subdirectory
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165113281387.18320.11653436232989195004.git-patchwork-notify@kernel.org>
+Date:   Thu, 28 Apr 2022 08:00:13 +0000
+References: <165111298464.21042.9988060027860048966.stgit@palantir17.mph.net>
+In-Reply-To: <165111298464.21042.9988060027860048966.stgit@palantir17.mph.net>
+To:     Martin Habets <habetsm.xilinx@gmail.com>
+Cc:     kuba@kernel.org, pabeni@redhat.com, davem@davemloft.net,
+        netdev@vger.kernel.org, ecree.xilinx@gmail.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
+Hello:
 
-alex.aring@gmail.com wrote on Wed, 27 Apr 2022 14:01:25 -0400:
+This series was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-> Hi,
->=20
-> On Wed, Apr 27, 2022 at 12:47 PM Miquel Raynal
-> <miquel.raynal@bootlin.com> wrote:
-> >
-> > We should never start a transmission after the queue has been stopped.
-> >
-> > But because it might work we don't kill the function here but rather
-> > warn loudly the user that something is wrong.
-> >
-> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > ---
+On Thu, 28 Apr 2022 03:30:30 +0100 you wrote:
+> The Siena NICs (SFN5000 and SFN6000 series) went EOL in November 2021.
+> Most of these adapters have been remove from our test labs, and testing
+> has been reduced to a minimum.
+> 
+> This patch series creates a separate kernel module for the Siena architecture,
+> analogous to what was done for Falcon some years ago.
+> This reduces our maintenance for the sfc.ko module, and allows us to
+> enhance the EF10 and EF100 drivers without the risk of breaking Siena NICs.
+> 
+> [...]
 
-[...]
+Here is the summary with links:
+  - [net-next,v2,01/13] sfc: Disable Siena support
+    (no matching commit)
+  - [net-next,v2,02/13] sfc: Move Siena specific files
+    https://git.kernel.org/netdev/net-next/c/be5fd933f8c1
+  - [net-next,v2,03/13] sfc: Copy shared files needed for Siena (part 1)
+    https://git.kernel.org/netdev/net-next/c/be5fd933f8c1
+  - [net-next,v2,04/13] sfc: Copy shared files needed for Siena (part 2)
+    https://git.kernel.org/netdev/net-next/c/be5fd933f8c1
+  - [net-next,v2,05/13] sfc: Copy a subset of mcdi_pcol.h to siena
+    (no matching commit)
+  - [net-next,v2,06/13] sfc/siena: Remove build references to missing functionality
+    (no matching commit)
+  - [net-next,v2,07/13] sfc/siena: Rename functions in efx headers to avoid conflicts with sfc
+    (no matching commit)
+  - [net-next,v2,08/13] sfc/siena: Rename RX/TX functions to avoid conflicts with sfc
+    (no matching commit)
+  - [net-next,v2,09/13] sfc/siena: Rename peripheral functions to avoid conflicts with sfc
+    (no matching commit)
+  - [net-next,v2,10/13] sfc/siena: Rename functions in mcdi headers to avoid conflicts with sfc
+    (no matching commit)
+  - [net-next,v2,11/13] sfc/siena: Rename functions in nic_common.h to avoid conflicts with sfc
+    (no matching commit)
+  - [net-next,v2,12/13] sfc/siena: Inline functions in sriov.h to avoid conflicts with sfc
+    (no matching commit)
+  - [net-next,v2,13/13] sfc: Add a basic Siena module
+    (no matching commit)
 
-> > diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
-> > index a8a83f0167bf..021dddfea542 100644
-> > --- a/net/mac802154/tx.c
-> > +++ b/net/mac802154/tx.c
-> > @@ -124,6 +124,8 @@ bool ieee802154_queue_is_held(struct ieee802154_loc=
-al *local)
-> >  static netdev_tx_t
-> >  ieee802154_hot_tx(struct ieee802154_local *local, struct sk_buff *skb)
-> >  {
-> > +       WARN_ON_ONCE(ieee802154_queue_is_stopped(local));
-> > +
-> >         return ieee802154_tx(local, skb);
-> >  }
-> >
-> > diff --git a/net/mac802154/util.c b/net/mac802154/util.c
-> > index 847e0864b575..cfd17a7db532 100644
-> > --- a/net/mac802154/util.c
-> > +++ b/net/mac802154/util.c
-> > @@ -44,6 +44,24 @@ void ieee802154_stop_queue(struct ieee802154_local *=
-local)
-> >         rcu_read_unlock();
-> >  }
-> >
-> > +bool ieee802154_queue_is_stopped(struct ieee802154_local *local)
-> > +{
-> > +       struct ieee802154_sub_if_data *sdata;
-> > +       bool stopped =3D true;
-> > +
-> > +       rcu_read_lock();
-> > +       list_for_each_entry_rcu(sdata, &local->interfaces, list) {
-> > +               if (!sdata->dev)
-> > +                       continue;
-> > +
-> > +               if (!netif_queue_stopped(sdata->dev))
-> > +                       stopped =3D false;
-> > +       }
-> > +       rcu_read_unlock();
-> > +
-> > +       return stopped;
-> > +} =20
->=20
-> sorry this makes no sense, you using net core functionality to check
-> if a queue is stopped in a net core netif callback. Whereas the sense
-> here for checking if the queue is really stopped is when 802.15.4
-> thinks the queue is stopped vs net core netif callback running. It
-> means for MLME-ops there are points we want to make sure that net core
-> is not handling any xmit and we should check this point and not
-> introducing net core functionality checks.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-I think I've mixed two things, your remark makes complete sense. I
-should instead here just check a 802.15.4 internal variable.
 
-> btw: if it's hit your if branch the first time you can break?
-
-Yes, we could definitely improve a bit the logic to break earlier, but
-in the end these checks won't remain I believe.
-
-> I am not done with the review, this is just what I see now and we can
-> discuss that. Please be patient.
-
-Sure, thanks for the quick feedback anyway!
-
-hanks,
-Miqu=C3=A8l
