@@ -2,49 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B363F5128B1
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 03:21:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 394235128C5
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 03:27:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239962AbiD1BYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 21:24:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33578 "EHLO
+        id S240576AbiD1Bau (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 21:30:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230263AbiD1BYq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 21:24:46 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D46989CD2;
-        Wed, 27 Apr 2022 18:21:33 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        with ESMTP id S240368AbiD1Bap (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 21:30:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1E1872471;
+        Wed, 27 Apr 2022 18:27:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KpdB31JS9z4xL5;
-        Thu, 28 Apr 2022 11:21:31 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1651108892;
-        bh=/zUY0uZdm8DEHDsmmVYn7dXawhy4V1WT3I/K1KXfZIY=;
-        h=Date:From:To:Cc:Subject:From;
-        b=DNN1toqJW9mW6J2hYAKsPiZtIOY1WmmEdXbDZC+O2bAhjtaW1W/5QHerWctIIJAj3
-         y78kOYu7FHXcnQSRmNA6SlU8NKUCmtUB17y6lyoLYprHYAaS6Z+SfaUI8UizWvfT3C
-         q8QFc5pXK2IypbIk9OdpmtTDCvKbkWAYy8XSkTZUDXJPho889/UZmLquKVWRd5elaP
-         sD0v2w3jrjNKBViWmCl4J+fbmR4QJz+zwrYTnuojjsy+Jns5dKRt4gI/k/af04eDI0
-         BKM5cPY3yxYiBjII3yWcu9tyVcaDQR70leCbeL97DdyjS3G7rjHo/78cIIa7cclh7l
-         XXua+k5maS6JA==
-Date:   Thu, 28 Apr 2022 11:21:30 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20220428112130.1f689e5e@canb.auug.org.au>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5614961F4C;
+        Thu, 28 Apr 2022 01:27:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50B7AC385A7;
+        Thu, 28 Apr 2022 01:27:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651109251;
+        bh=5dLrCbyI9dL25gLCPU2lKXEykc++03SFd32wMmRhRMY=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=koKAxCKdTDd8Xos0qjF/PfaziMK1H7iXllHu4DOFfT+tReZ2slA19GSEMY1NlrAXx
+         VCl18ElprtpHwUe4m65SdEsv1lGqWR3skTPCIuYj/AcvueZmK3CfpzJW38Oe9aW1zU
+         niSCpJJrh/1kho5qWUQ0hxDz49tTwAxQmRAVgyHOutEFpbyFTQT+0/n0f2LPwPcn1R
+         +Dx77zrHy1TrRK6QnZ774j01Ivr9AWwFEgJu1KMLXjMZHmBX7IyZ29UEvIk2CTFpUy
+         L/bxWFE2CanErRZcRufMiQgOIsSO8CHUEukTRo4tKbwzfo1NiCLAjsYKkuz+oVQVEq
+         ZQkANYmzOu1Zg==
+Message-ID: <bde14dfc-d1ea-ca1f-5074-01e13eef3cab@kernel.org>
+Date:   Wed, 27 Apr 2022 19:27:26 -0600
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/.6XHw4e_seBL1aVx_pir32e";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS autolearn=ham
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.8.0
+Subject: Re: [PATCH net-next v3] net: SO_RCVMARK socket option for SO_MARK
+ with recvmsg()
+Content-Language: en-US
+To:     Erin MacNeil <lnx.erin@gmail.com>
+Cc:     Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Arnd Bergmann <arnd@arndb.de>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Robin van der Gracht <robin@protonic.nl>,
+        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
+        Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jeremy Kerr <jk@codeconstruct.com.au>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Pavel Tikhomirov <ptikhomirov@virtuozzo.com>,
+        Martynas Pumputis <m@lambda.lt>,
+        Akhmat Karakotov <hmukos@yandex-team.ru>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Wei Wang <weiwan@google.com>, Yangbo Lu <yangbo.lu@nxp.com>,
+        Florian Westphal <fw@strlen.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Richard Palethorpe <rpalethorpe@suse.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Richard Sanger <rsanger@wand.net.nz>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        sparclinux@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-can@vger.kernel.org, linux-wpan@vger.kernel.org,
+        linux-sctp@vger.kernel.org
+References: <202204270907.nUUrw3dS-lkp@intel.com>
+ <20220427200259.2564-1-lnx.erin@gmail.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20220427200259.2564-1-lnx.erin@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-9.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -52,53 +104,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/.6XHw4e_seBL1aVx_pir32e
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On 4/27/22 2:02 PM, Erin MacNeil wrote:
+> Adding a new socket option, SO_RCVMARK, to indicate that SO_MARK
+> should be included in the ancillary data returned by recvmsg().
+> 
+> Renamed the sock_recv_ts_and_drops() function to sock_recv_cmsgs().
+> 
+> Signed-off-by: Erin MacNeil <lnx.erin@gmail.com>
+> ---
 
-Hi all,
 
-Today's linux-next merge of the net-next tree got a conflict in:
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
-  drivers/net/wan/cosa.c
-
-between commit:
-
-  d48fea8401cf ("net: cosa: fix error check return value of register_chrdev=
-()")
-
-from the net tree and commit:
-
-  89fbca3307d4 ("net: wan: remove support for COSA and SRP synchronous seri=
-al boards")
-
-from the net-next tree.
-
-I fixed it up (I just deleted the file) and can carry the fix as
-necessary. This is now fixed as far as linux-next is concerned, but any
-non trivial conflicts should be mentioned to your upstream maintainer
-when your tree is submitted for merging.  You may also want to consider
-cooperating with the maintainer of the conflicting tree to minimise any
-particularly complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/.6XHw4e_seBL1aVx_pir32e
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJp7BoACgkQAVBC80lX
-0Gxctwf/Y3WJAv6fm9yWW+oAiXEaDTdcqNFePE5NVmvr3qRCveuYmykSHwCAaukG
-m8rYzHvO2/4/uoyE2iwtRLNVsbA7B+dNv/YS8xz+6OEOnf91KnPiC0M4q+ivZi+D
-C1DMKL30KV+337koN4+aMUyD+VEXxAwLmDqp3+wTigFNNtKh1fSJ2JM9o1Sd2Qtw
-9uGzxwoG68IS2im1R4vdXsV1H3UUuAp42MCg5ilQGxzStlNLe6ZTTvePOykh6nw+
-IWyWtsYLUw9a0Dc9hpR2tJw16rV8tnQtpmY0ead/C3K/iE6OEU3qDS5UVvV20olj
-bS9guF6BVayyNaPpes0vteAv4QiHCg==
-=X9ev
------END PGP SIGNATURE-----
-
---Sig_/.6XHw4e_seBL1aVx_pir32e--
