@@ -2,148 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B4D95135FF
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 16:02:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20A8C513632
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 16:04:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347887AbiD1OCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 10:02:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51190 "EHLO
+        id S240388AbiD1OFm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 10:05:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347910AbiD1OCS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 10:02:18 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B999B53C7;
-        Thu, 28 Apr 2022 06:59:00 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id m20so9717436ejj.10;
-        Thu, 28 Apr 2022 06:59:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=YHrgbwGuKsi0qBohJI6HWm6IXg77xQmft6cGgAr+KkM=;
-        b=D/HtnO6Aq48sBMFVHSTn0tBOvJAS5dJDgM08hwx7/5YbiCOLqMka9aC35l1YEEEBAc
-         AdvVf4YC6yaPDNKm0TndoQommkvI+axGOg+U8cq6/nHZvR1MiDjpVSmpOdqXgfaWG0Qm
-         mQV81m14BxeKQyjtoutd/0XL2F9Cx+j3506jw6aI/uRhWpyYkwqi1ldfxQRgfVkpmotx
-         TKQAIevVT84OeGwocHNI3aHsxz9E1ebWMMeshawlonpisRA0jfU/B6Zjjq+CdHcs6MEP
-         LbGtzqtRjoC+rbkP1S6i5xTfLRRbmxj6Gy90AROgTZYbDyuYllzU3jnvbTJBiqywjUg9
-         Maag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=YHrgbwGuKsi0qBohJI6HWm6IXg77xQmft6cGgAr+KkM=;
-        b=Au1HzMf9hwN1r28YshtG6TNlrRHYP5MfyxpT/GftBus+oPtiOK3tDwDuqQaOeBOmz0
-         kop9fx6RsD4b/9sNXkaH5fRQ6M6CjWxEepP6Es2MG/7VjldNCP55gKTigM7LPdDnbt0z
-         sX32aN1E5IPikceBzzT1Gn1MSx2cVV+e8BpcALdorQtm0Ap01BG9NdwRZy+Ljjje3y4j
-         4U4IR4M2C22iE5dJd+GpGN1Lnab+m8E0EBXmE2J7GrhxAMgXopBY1nFta6/ameGGWEGL
-         mkyeLgkFZjAU5DWJZSq0l0iB58bvtIsk54KG+PuRfIzrIT38DrgmmZDQr57lcxjgUyul
-         G16w==
-X-Gm-Message-State: AOAM532CKHTYlZ7m8lhMYGBv+M4Nz5DsXDbG27ar1V6cRpc68uhir2A8
-        DOpIL82jprxQuw27HkHxQepbqq2p3cs=
-X-Google-Smtp-Source: ABdhPJzqaDZwQbXPQRg01MR4TeZZwO5015Um2IKY51lgJLpQa73xeqWoAZyG4Eq8glJMto3TJeg7Ow==
-X-Received: by 2002:a17:907:160e:b0:6ef:ec95:f9e1 with SMTP id hb14-20020a170907160e00b006efec95f9e1mr32436049ejc.10.1651154339253;
-        Thu, 28 Apr 2022 06:58:59 -0700 (PDT)
-Received: from 127.0.0.1localhost ([85.255.235.145])
-        by smtp.gmail.com with ESMTPSA id t19-20020aa7d4d3000000b0042617ba63c2sm1652568edr.76.2022.04.28.06.58.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 06:58:58 -0700 (PDT)
-From:   Pavel Begunkov <asml.silence@gmail.com>
-To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-kernel@vger.kernel.org,
-        Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH v2 net-next 11/11] ipv6: clean up ip6_setup_cork
-Date:   Thu, 28 Apr 2022 14:58:06 +0100
-Message-Id: <683aab669ffa7db48416137c904a406a37e9a0c9.1651153920.git.asml.silence@gmail.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <cover.1651153920.git.asml.silence@gmail.com>
-References: <cover.1651153920.git.asml.silence@gmail.com>
+        with ESMTP id S1348198AbiD1ODx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 10:03:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A463EB82CB;
+        Thu, 28 Apr 2022 06:59:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B0A5B82D76;
+        Thu, 28 Apr 2022 13:59:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63345C385A0;
+        Thu, 28 Apr 2022 13:59:52 +0000 (UTC)
+Date:   Thu, 28 Apr 2022 09:59:51 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: Re: [RFC bpf-next 4/4] selftests/bpf: Add attach bench test
+Message-ID: <20220428095951.46eea612@gandalf.local.home>
+In-Reply-To: <20220428095803.66c17c32@gandalf.local.home>
+References: <20220407125224.310255-1-jolsa@kernel.org>
+        <20220407125224.310255-5-jolsa@kernel.org>
+        <CAEf4BzbE1n3Lie+tWTzN69RQUWgjxePorxRr9J8CuiQVUfy-kA@mail.gmail.com>
+        <20220412094923.0abe90955e5db486b7bca279@kernel.org>
+        <CAEf4BzaQRcZGMqq5wqHo3wSHZAAVvY6AhizDk_dV_GtnwHuxLQ@mail.gmail.com>
+        <20220416232103.c0b241c2ec7f2b3b985a2f99@kernel.org>
+        <20220428095803.66c17c32@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Do a bit of refactoring for ip6_setup_cork(). Cache a xfrm_dst_path()
-result to not call it twice, reshuffle ifs to not repeat some parts
-twice and so.
+On Thu, 28 Apr 2022 09:58:03 -0400
+Steven Rostedt <rostedt@goodmis.org> wrote:
 
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
----
- net/ipv6/ip6_output.c | 30 +++++++++++++-----------------
- 1 file changed, 13 insertions(+), 17 deletions(-)
+> I added the addresses it was mapping and found this:
+> 
+> ffffffffa828f680 T __bpf_tramp_exit
 
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 416d14299242..a17b26d5f34d 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1358,15 +1358,13 @@ static int ip6_setup_cork(struct sock *sk, struct inet_cork_full *cork,
- 	struct ipv6_pinfo *np = inet6_sk(sk);
- 	unsigned int mtu;
- 	struct ipv6_txoptions *nopt, *opt = ipc6->opt;
-+	struct dst_entry *xrfm_dst;
- 
- 	/* callers pass dst together with a reference, set it first so
- 	 * ip6_cork_release() can put it down even in case of an error.
- 	 */
- 	cork->base.dst = &rt->dst;
- 
--	/*
--	 * setup for corking
--	 */
- 	if (opt) {
- 		if (WARN_ON(v6_cork->opt))
- 			return -EINVAL;
-@@ -1399,28 +1397,26 @@ static int ip6_setup_cork(struct sock *sk, struct inet_cork_full *cork,
- 	}
- 	v6_cork->hop_limit = ipc6->hlimit;
- 	v6_cork->tclass = ipc6->tclass;
--	if (rt->dst.flags & DST_XFRM_TUNNEL)
--		mtu = np->pmtudisc >= IPV6_PMTUDISC_PROBE ?
--		      READ_ONCE(rt->dst.dev->mtu) : dst_mtu(&rt->dst);
-+
-+	xrfm_dst = xfrm_dst_path(&rt->dst);
-+	if (dst_allfrag(xrfm_dst))
-+		cork->base.flags |= IPCORK_ALLFRAG;
-+
-+	if (np->pmtudisc < IPV6_PMTUDISC_PROBE)
-+		mtu = dst_mtu(rt->dst.flags & DST_XFRM_TUNNEL ? &rt->dst : xrfm_dst);
- 	else
--		mtu = np->pmtudisc >= IPV6_PMTUDISC_PROBE ?
--			READ_ONCE(rt->dst.dev->mtu) : dst_mtu(xfrm_dst_path(&rt->dst));
--	if (np->frag_size < mtu) {
--		if (np->frag_size)
--			mtu = np->frag_size;
--	}
-+		mtu = READ_ONCE(rt->dst.dev->mtu);
-+
-+	if (np->frag_size < mtu && np->frag_size)
-+		mtu = np->frag_size;
-+
- 	cork->base.fragsize = mtu;
- 	cork->base.gso_size = ipc6->gso_size;
- 	cork->base.tx_flags = 0;
- 	cork->base.mark = ipc6->sockc.mark;
- 	sock_tx_timestamp(sk, ipc6->sockc.tsflags, &cork->base.tx_flags);
--
--	if (dst_allfrag(xfrm_dst_path(&rt->dst)))
--		cork->base.flags |= IPCORK_ALLFRAG;
- 	cork->base.length = 0;
--
- 	cork->base.transmit_time = ipc6->sockc.transmit_time;
--
- 	return 0;
- }
- 
--- 
-2.36.0
+cut and pasted the kallsyms not the avaliable filter functions, which had
+this:
 
+  __bpf_tramp_exit (ffffffffa828f780)
+
+-- Steve
