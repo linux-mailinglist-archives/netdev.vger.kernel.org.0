@@ -2,91 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 21773512D81
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 09:56:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54229512D96
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 09:59:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343568AbiD1H7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 03:59:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41952 "EHLO
+        id S1343681AbiD1ICT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 04:02:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245714AbiD1H7G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 03:59:06 -0400
-Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB122329AD
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 00:55:52 -0700 (PDT)
-Received: by mail-vs1-xe41.google.com with SMTP id t85so3891329vst.4
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 00:55:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
-        bh=NLijoYwk7hqoA8TsUJbQbQCYzScrvalH7Lc8MykkZrA=;
-        b=U/6N0yeLOtBRMObmNKq7QXJJgcqyds4ooUiN/+GNnyyUQ0Bh7uOB1Vr9y1W1Kc5PYH
-         rv9QvMBI9XmkdLkvWw5mhFsdBoXNR5BR7GB0YhTwhVnhcusOBm46taodfuG1fj1g9iyw
-         5tTBa4+5KVbiXg3FLA9858e5qVG1mm/1wwb3Ryr649mZDhaPzjpco13LwPKsygG19KCH
-         zMrk9oZ1ULHjyMjbTLHSbztBNV/39aiN858JgFh3HRXercnX4a4c1SbuXDx3fRnGnieS
-         MxNuLNR3dXDzEbbuA3/inyqapQXnLrvvDaZESWLE2midxo+st8khBnoRnkwqQBAxfB0u
-         cfEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to;
-        bh=NLijoYwk7hqoA8TsUJbQbQCYzScrvalH7Lc8MykkZrA=;
-        b=pjqhHst5/hevG6zNIOw6hDE/yWTLMBAPezgD9TMOzM+yPa3Xhf1k9POVUIKj2WZ/FL
-         mPJjP+7o6Nz8csmnxlrqdQ7IXh3fbMXc1CByQZWJBtgypi8CA7C1E97aEbqlzpwZNSAc
-         Ks00/HshK9rvKobZCXfbggnbqcA92VJPFDkjK0XQDpfsA9VUJjjwcZpFneGbnutUxCb3
-         dLyzHtFfvF9D85Ddq+AlkxOd5EcW7xdcEBCjS1N1J8FATDkMVWOw6d5GsJ4r6gxQRC6f
-         Mz+MFKQtNMYmbsHs0hq5ozSOXZ0pAf9Ve6ViRDLBXnR+Fe3n8tAMPfLS6Z6HtXz7JHIl
-         OS8A==
-X-Gm-Message-State: AOAM531VfUriUT1OpRaZI7uJtQaBW0QqFGfZjj/mxnuDI+CJgWuq05EH
-        TCbYm/PSynU7896/2S2RrAznZwB92c4f41Hurg==
-X-Google-Smtp-Source: ABdhPJz5r1ZnqLfrnXBQAvUq5ZuMNcGKKyqJCVqTPapJKWl+FiSY9eF5hdlcgFEVaJ52K5HBsT0z0rec7Z1hGDEstiA=
-X-Received: by 2002:a67:f6ce:0:b0:32c:dcb9:3857 with SMTP id
- v14-20020a67f6ce000000b0032cdcb93857mr5765079vso.57.1651132551786; Thu, 28
- Apr 2022 00:55:51 -0700 (PDT)
+        with ESMTP id S1343692AbiD1ICI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 04:02:08 -0400
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4437820BCE;
+        Thu, 28 Apr 2022 00:58:53 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id AF8451C0003;
+        Thu, 28 Apr 2022 07:58:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1651132731;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3wu9h3NKSKmvHgwXQf+X1OC4mECGCeu1/MQPJ6QY6SE=;
+        b=bijCSztHgJJMugFQFHiUQ8aYuRkjruUCYnmB0kgjbJAB1EEdR4wYJf/Y0mbA+kgCGF7JDE
+        I/iYOiYIB8edk+3JyFYwuGrJtngst0ToSfMzvrBg9TpRnxazbFPe24IHBcrHqGYbkKnwzJ
+        AmoRy/5ozhvOXJYSLEMTxBnTDuuhWqOnFEpFGe+CaZspKLXsYEOuRRSHA7ajdmvRI6UTIu
+        YnzzEjZsG8UwGxkKMTAxiAJciDyFnbE/CbyVMQe/a09ZEm0kffvG5ewYVmmPyKNOmpHxT5
+        1fERTsbKynD+H9DtSoJSXV5e0lcbuNApL0mADhbfu6iecEqiaOEAKoS7S4O0zQ==
+Date:   Thu, 28 Apr 2022 09:58:48 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <alex.aring@gmail.com>
+Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH wpan-next 08/11] net: mac802154: Add a warning in the
+ hot path
+Message-ID: <20220428095848.34582df4@xps13>
+In-Reply-To: <CAB_54W7NWEYgmLfowvyXtKEsKhBaVrPzpkB1kasYpAst98mKNA@mail.gmail.com>
+References: <20220427164659.106447-1-miquel.raynal@bootlin.com>
+        <20220427164659.106447-9-miquel.raynal@bootlin.com>
+        <CAB_54W7NWEYgmLfowvyXtKEsKhBaVrPzpkB1kasYpAst98mKNA@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Reply-To: salkavar2@gmail.com
-Sender: mwibergcaitlin997@gmail.com
-Received: by 2002:a59:cde8:0:b0:2b1:df2c:6127 with HTTP; Thu, 28 Apr 2022
- 00:55:51 -0700 (PDT)
-From:   "Mr.Sal kavar" <salkavar2@gmail.com>
-Date:   Thu, 28 Apr 2022 07:55:51 +0000
-X-Google-Sender-Auth: k4F3pA5Q6SrXCwMgUD7Tz4CpEP0
-Message-ID: <CAOw4te1=qdNoZqx72xCJe8oKSi9v5C+RvNBm70ArmhQ1uwur=Q@mail.gmail.com>
-Subject: Yours Faithful,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=4.5 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO_END_DIGIT,LOTS_OF_MONEY,MILLION_HUNDRED,
-        MONEY_FRAUD_5,MONEY_FREEMAIL_REPTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_HK_NAME_FM_MR_MRS,T_MONEY_PERCENT,UNDISC_MONEY autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Level: ****
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I assume you and your family are in good health. I am the foreign
-operations Manager
+Hi Alexander,
 
-This being a wide world in which it can be difficult to make new
-acquaintances and because it is virtually impossible to know who is
-trustworthy and who can be believed, i have decided to repose
-confidence in you after much fasting and prayer. It is only because of
-this that I have decided to confide in you and to share with you this
-confidential business.
+alex.aring@gmail.com wrote on Wed, 27 Apr 2022 14:01:25 -0400:
 
-overdue and unclaimed sum of $15.5m, (Fifteen Million Five Hundred
-Thousand Dollars Only) when the account holder suddenly passed on, he
-left no beneficiary who would be entitled to the receipt of this fund.
-For this reason, I have found it expedient to transfer this fund to a
-trustworthy individual with capacity to act as foreign business
-partner.
+> Hi,
+>=20
+> On Wed, Apr 27, 2022 at 12:47 PM Miquel Raynal
+> <miquel.raynal@bootlin.com> wrote:
+> >
+> > We should never start a transmission after the queue has been stopped.
+> >
+> > But because it might work we don't kill the function here but rather
+> > warn loudly the user that something is wrong.
+> >
+> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > ---
 
-You will take 45%  10% will be shared to Charity in both country and
-45% will be for me.
+[...]
 
-Yours Faithful,
-Mr.Sal Kavar.
+> > diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
+> > index a8a83f0167bf..021dddfea542 100644
+> > --- a/net/mac802154/tx.c
+> > +++ b/net/mac802154/tx.c
+> > @@ -124,6 +124,8 @@ bool ieee802154_queue_is_held(struct ieee802154_loc=
+al *local)
+> >  static netdev_tx_t
+> >  ieee802154_hot_tx(struct ieee802154_local *local, struct sk_buff *skb)
+> >  {
+> > +       WARN_ON_ONCE(ieee802154_queue_is_stopped(local));
+> > +
+> >         return ieee802154_tx(local, skb);
+> >  }
+> >
+> > diff --git a/net/mac802154/util.c b/net/mac802154/util.c
+> > index 847e0864b575..cfd17a7db532 100644
+> > --- a/net/mac802154/util.c
+> > +++ b/net/mac802154/util.c
+> > @@ -44,6 +44,24 @@ void ieee802154_stop_queue(struct ieee802154_local *=
+local)
+> >         rcu_read_unlock();
+> >  }
+> >
+> > +bool ieee802154_queue_is_stopped(struct ieee802154_local *local)
+> > +{
+> > +       struct ieee802154_sub_if_data *sdata;
+> > +       bool stopped =3D true;
+> > +
+> > +       rcu_read_lock();
+> > +       list_for_each_entry_rcu(sdata, &local->interfaces, list) {
+> > +               if (!sdata->dev)
+> > +                       continue;
+> > +
+> > +               if (!netif_queue_stopped(sdata->dev))
+> > +                       stopped =3D false;
+> > +       }
+> > +       rcu_read_unlock();
+> > +
+> > +       return stopped;
+> > +} =20
+>=20
+> sorry this makes no sense, you using net core functionality to check
+> if a queue is stopped in a net core netif callback. Whereas the sense
+> here for checking if the queue is really stopped is when 802.15.4
+> thinks the queue is stopped vs net core netif callback running. It
+> means for MLME-ops there are points we want to make sure that net core
+> is not handling any xmit and we should check this point and not
+> introducing net core functionality checks.
+
+I think I've mixed two things, your remark makes complete sense. I
+should instead here just check a 802.15.4 internal variable.
+
+> btw: if it's hit your if branch the first time you can break?
+
+Yes, we could definitely improve a bit the logic to break earlier, but
+in the end these checks won't remain I believe.
+
+> I am not done with the review, this is just what I see now and we can
+> discuss that. Please be patient.
+
+Sure, thanks for the quick feedback anyway!
+
+hanks,
+Miqu=C3=A8l
