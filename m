@@ -2,31 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 07533512985
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 04:31:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D04C51298A
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 04:32:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241430AbiD1Ce5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 22:34:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52738 "EHLO
+        id S241487AbiD1CfT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 22:35:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241406AbiD1Ce4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 22:34:56 -0400
+        with ESMTP id S241468AbiD1CfE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 22:35:04 -0400
 Received: from mint-fitpc2.mph.net (unknown [81.168.73.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5C1D5890B0
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 19:31:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5DCD08BE2C
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 19:31:46 -0700 (PDT)
 Received: from palantir17.mph.net (unknown [192.168.0.4])
-        by mint-fitpc2.mph.net (Postfix) with ESMTP id 0821732010B;
-        Thu, 28 Apr 2022 03:31:33 +0100 (BST)
+        by mint-fitpc2.mph.net (Postfix) with ESMTP id 79E4132029D;
+        Thu, 28 Apr 2022 03:31:45 +0100 (BST)
 Received: from localhost ([::1] helo=palantir17.mph.net)
         by palantir17.mph.net with esmtp (Exim 4.89)
         (envelope-from <habetsm.xilinx@gmail.com>)
-        id 1njtwK-0005Wc-PL; Thu, 28 Apr 2022 03:31:32 +0100
-Subject: [PATCH net-next v2 05/13] sfc: Copy a subset of mcdi_pcol.h to siena
+        id 1njtwX-0005Wq-6r; Thu, 28 Apr 2022 03:31:45 +0100
+Subject: [PATCH net-next v2 06/13] sfc/siena: Remove build references to
+ missing functionality
 From:   Martin Habets <habetsm.xilinx@gmail.com>
 To:     kuba@kernel.org, pabeni@redhat.com, davem@davemloft.net
 Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com
-Date:   Thu, 28 Apr 2022 03:31:32 +0100
-Message-ID: <165111309179.21042.12241735067866014201.stgit@palantir17.mph.net>
+Date:   Thu, 28 Apr 2022 03:31:45 +0100
+Message-ID: <165111310489.21042.13047404389360353610.stgit@palantir17.mph.net>
 In-Reply-To: <165111298464.21042.9988060027860048966.stgit@palantir17.mph.net>
 References: <165111298464.21042.9988060027860048966.stgit@palantir17.mph.net>
 User-Agent: StGit/0.17.1-dirty
@@ -35,8 +36,8 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=1.7 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
         FORGED_GMAIL_RCVD,FREEMAIL_FROM,KHOP_HELO_FCRDNS,MAY_BE_FORGED,
-        NML_ADSP_CUSTOM_MED,SPF_HELO_NONE,SPF_SOFTFAIL,UPPERCASE_50_75
-        autolearn=no autolearn_force=no version=3.4.6
+        NML_ADSP_CUSTOM_MED,SPF_HELO_NONE,SPF_SOFTFAIL autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -44,4916 +45,710 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For Siena we do not need new messages that were defined
-for the EF100 architecture. Several debug messages have
-also been removed.
+Functionality not supported or needed on Siena includes:
+- Anything for EF100
+- EF10 specifics such as register access, PIO and TSO offload.
+Also only bind to Siena NICs.
+
+Remove EF10 specifics from nic.h.
+The functions that start with efx_farch_ will be removed from sfc.ko
+with a subsequent patch.
+Add the efx_ prefix to siena_prepare_flush() to make it consistent
+with the other APIs.
 
 Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
 ---
- drivers/net/ethernet/sfc/siena/mcdi_pcol.h | 4764 ----------------------------
- 1 file changed, 4764 deletions(-)
- copy drivers/net/ethernet/sfc/{mcdi_pcol.h => siena/mcdi_pcol.h} (79%)
+ drivers/net/ethernet/sfc/siena/efx.c         |   28 ---
+ drivers/net/ethernet/sfc/siena/efx.h         |   15 --
+ drivers/net/ethernet/sfc/siena/nic.c         |    7 -
+ drivers/net/ethernet/sfc/siena/nic.h         |  190 ------------------------
+ drivers/net/ethernet/sfc/siena/nic_common.h  |    3 
+ drivers/net/ethernet/sfc/siena/ptp.c         |   11 -
+ drivers/net/ethernet/sfc/siena/siena.c       |    4 
+ drivers/net/ethernet/sfc/siena/siena_sriov.c |    2 
+ drivers/net/ethernet/sfc/siena/tx.c          |  209 +-------------------------
+ drivers/net/ethernet/sfc/siena/workarounds.h |    6 -
+ 10 files changed, 17 insertions(+), 458 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/mcdi_pcol.h b/drivers/net/ethernet/sfc/siena/mcdi_pcol.h
-similarity index 79%
-copy from drivers/net/ethernet/sfc/mcdi_pcol.h
-copy to drivers/net/ethernet/sfc/siena/mcdi_pcol.h
-index ff617b1b38d3..89a7fd47b057 100644
---- a/drivers/net/ethernet/sfc/mcdi_pcol.h
-+++ b/drivers/net/ethernet/sfc/siena/mcdi_pcol.h
-@@ -9514,221 +9514,6 @@
+diff --git a/drivers/net/ethernet/sfc/siena/efx.c b/drivers/net/ethernet/sfc/siena/efx.c
+index 5e7fe75cb1d4..f11e870b2eef 100644
+--- a/drivers/net/ethernet/sfc/siena/efx.c
++++ b/drivers/net/ethernet/sfc/siena/efx.c
+@@ -26,7 +26,6 @@
+ #include "efx.h"
+ #include "efx_common.h"
+ #include "efx_channels.h"
+-#include "ef100.h"
+ #include "rx_common.h"
+ #include "tx_common.h"
+ #include "nic.h"
+@@ -795,22 +794,10 @@ static void efx_unregister_netdev(struct efx_nic *efx)
  
+ /* PCI device ID table */
+ static const struct pci_device_id efx_pci_table[] = {
+-	{PCI_DEVICE(PCI_VENDOR_ID_SOLARFLARE, 0x0903),  /* SFC9120 PF */
+-	 .driver_data = (unsigned long) &efx_hunt_a0_nic_type},
+-	{PCI_DEVICE(PCI_VENDOR_ID_SOLARFLARE, 0x1903),  /* SFC9120 VF */
+-	 .driver_data = (unsigned long) &efx_hunt_a0_vf_nic_type},
+-	{PCI_DEVICE(PCI_VENDOR_ID_SOLARFLARE, 0x0923),  /* SFC9140 PF */
+-	 .driver_data = (unsigned long) &efx_hunt_a0_nic_type},
+-	{PCI_DEVICE(PCI_VENDOR_ID_SOLARFLARE, 0x1923),  /* SFC9140 VF */
+-	 .driver_data = (unsigned long) &efx_hunt_a0_vf_nic_type},
+-	{PCI_DEVICE(PCI_VENDOR_ID_SOLARFLARE, 0x0a03),  /* SFC9220 PF */
+-	 .driver_data = (unsigned long) &efx_hunt_a0_nic_type},
+-	{PCI_DEVICE(PCI_VENDOR_ID_SOLARFLARE, 0x1a03),  /* SFC9220 VF */
+-	 .driver_data = (unsigned long) &efx_hunt_a0_vf_nic_type},
+-	{PCI_DEVICE(PCI_VENDOR_ID_SOLARFLARE, 0x0b03),  /* SFC9250 PF */
+-	 .driver_data = (unsigned long) &efx_hunt_a0_nic_type},
+-	{PCI_DEVICE(PCI_VENDOR_ID_SOLARFLARE, 0x1b03),  /* SFC9250 VF */
+-	 .driver_data = (unsigned long) &efx_hunt_a0_vf_nic_type},
++	{PCI_DEVICE(PCI_VENDOR_ID_SOLARFLARE, 0x0803),	/* SFC9020 */
++	 .driver_data = (unsigned long)&siena_a0_nic_type},
++	{PCI_DEVICE(PCI_VENDOR_ID_SOLARFLARE, 0x0813),	/* SFL9021 */
++	 .driver_data = (unsigned long)&siena_a0_nic_type},
+ 	{0}			/* end of list */
+ };
  
- /***********************************/
--/* MC_CMD_PROXY_CMD
-- * Execute an arbitrary MCDI command on behalf of a different function, subject
-- * to security restrictions. The command to be proxied follows immediately
-- * afterward in the host buffer (or on the UART). This command supercedes
-- * MC_CMD_SET_FUNC, which remains available for Siena but now deprecated.
-- */
--#define MC_CMD_PROXY_CMD 0x5b
--#undef MC_CMD_0x5b_PRIVILEGE_CTG
--
--#define MC_CMD_0x5b_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_PROXY_CMD_IN msgrequest */
--#define    MC_CMD_PROXY_CMD_IN_LEN 4
--/* The handle of the target function. */
--#define       MC_CMD_PROXY_CMD_IN_TARGET_OFST 0
--#define       MC_CMD_PROXY_CMD_IN_TARGET_LEN 4
--#define        MC_CMD_PROXY_CMD_IN_TARGET_PF_OFST 0
--#define        MC_CMD_PROXY_CMD_IN_TARGET_PF_LBN 0
--#define        MC_CMD_PROXY_CMD_IN_TARGET_PF_WIDTH 16
--#define        MC_CMD_PROXY_CMD_IN_TARGET_VF_OFST 0
--#define        MC_CMD_PROXY_CMD_IN_TARGET_VF_LBN 16
--#define        MC_CMD_PROXY_CMD_IN_TARGET_VF_WIDTH 16
--#define          MC_CMD_PROXY_CMD_IN_VF_NULL 0xffff /* enum */
--
--/* MC_CMD_PROXY_CMD_OUT msgresponse */
--#define    MC_CMD_PROXY_CMD_OUT_LEN 0
--
--/* MC_PROXY_STATUS_BUFFER structuredef: Host memory status buffer used to
-- * manage proxied requests
-- */
--#define    MC_PROXY_STATUS_BUFFER_LEN 16
--/* Handle allocated by the firmware for this proxy transaction */
--#define       MC_PROXY_STATUS_BUFFER_HANDLE_OFST 0
--#define       MC_PROXY_STATUS_BUFFER_HANDLE_LEN 4
--/* enum: An invalid handle. */
--#define          MC_PROXY_STATUS_BUFFER_HANDLE_INVALID 0x0
--#define       MC_PROXY_STATUS_BUFFER_HANDLE_LBN 0
--#define       MC_PROXY_STATUS_BUFFER_HANDLE_WIDTH 32
--/* The requesting physical function number */
--#define       MC_PROXY_STATUS_BUFFER_PF_OFST 4
--#define       MC_PROXY_STATUS_BUFFER_PF_LEN 2
--#define       MC_PROXY_STATUS_BUFFER_PF_LBN 32
--#define       MC_PROXY_STATUS_BUFFER_PF_WIDTH 16
--/* The requesting virtual function number. Set to VF_NULL if the target is a
-- * PF.
-- */
--#define       MC_PROXY_STATUS_BUFFER_VF_OFST 6
--#define       MC_PROXY_STATUS_BUFFER_VF_LEN 2
--#define       MC_PROXY_STATUS_BUFFER_VF_LBN 48
--#define       MC_PROXY_STATUS_BUFFER_VF_WIDTH 16
--/* The target function RID. */
--#define       MC_PROXY_STATUS_BUFFER_RID_OFST 8
--#define       MC_PROXY_STATUS_BUFFER_RID_LEN 2
--#define       MC_PROXY_STATUS_BUFFER_RID_LBN 64
--#define       MC_PROXY_STATUS_BUFFER_RID_WIDTH 16
--/* The status of the proxy as described in MC_CMD_PROXY_COMPLETE. */
--#define       MC_PROXY_STATUS_BUFFER_STATUS_OFST 10
--#define       MC_PROXY_STATUS_BUFFER_STATUS_LEN 2
--#define       MC_PROXY_STATUS_BUFFER_STATUS_LBN 80
--#define       MC_PROXY_STATUS_BUFFER_STATUS_WIDTH 16
--/* If a request is authorized rather than carried out by the host, this is the
-- * elevated privilege mask granted to the requesting function.
-- */
--#define       MC_PROXY_STATUS_BUFFER_GRANTED_PRIVILEGES_OFST 12
--#define       MC_PROXY_STATUS_BUFFER_GRANTED_PRIVILEGES_LEN 4
--#define       MC_PROXY_STATUS_BUFFER_GRANTED_PRIVILEGES_LBN 96
--#define       MC_PROXY_STATUS_BUFFER_GRANTED_PRIVILEGES_WIDTH 32
--
--
--/***********************************/
--/* MC_CMD_PROXY_CONFIGURE
-- * Enable/disable authorization of MCDI requests from unprivileged functions by
-- * a designated admin function
-- */
--#define MC_CMD_PROXY_CONFIGURE 0x58
--#undef MC_CMD_0x58_PRIVILEGE_CTG
--
--#define MC_CMD_0x58_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_PROXY_CONFIGURE_IN msgrequest */
--#define    MC_CMD_PROXY_CONFIGURE_IN_LEN 108
--#define       MC_CMD_PROXY_CONFIGURE_IN_FLAGS_OFST 0
--#define       MC_CMD_PROXY_CONFIGURE_IN_FLAGS_LEN 4
--#define        MC_CMD_PROXY_CONFIGURE_IN_ENABLE_OFST 0
--#define        MC_CMD_PROXY_CONFIGURE_IN_ENABLE_LBN 0
--#define        MC_CMD_PROXY_CONFIGURE_IN_ENABLE_WIDTH 1
--/* Host provides a contiguous memory buffer that contains at least NUM_BLOCKS
-- * of blocks, each of the size REQUEST_BLOCK_SIZE.
-- */
--#define       MC_CMD_PROXY_CONFIGURE_IN_STATUS_BUFF_ADDR_OFST 4
--#define       MC_CMD_PROXY_CONFIGURE_IN_STATUS_BUFF_ADDR_LEN 8
--#define       MC_CMD_PROXY_CONFIGURE_IN_STATUS_BUFF_ADDR_LO_OFST 4
--#define       MC_CMD_PROXY_CONFIGURE_IN_STATUS_BUFF_ADDR_HI_OFST 8
--/* Must be a power of 2 */
--#define       MC_CMD_PROXY_CONFIGURE_IN_STATUS_BLOCK_SIZE_OFST 12
--#define       MC_CMD_PROXY_CONFIGURE_IN_STATUS_BLOCK_SIZE_LEN 4
--/* Host provides a contiguous memory buffer that contains at least NUM_BLOCKS
-- * of blocks, each of the size REPLY_BLOCK_SIZE.
-- */
--#define       MC_CMD_PROXY_CONFIGURE_IN_REQUEST_BUFF_ADDR_OFST 16
--#define       MC_CMD_PROXY_CONFIGURE_IN_REQUEST_BUFF_ADDR_LEN 8
--#define       MC_CMD_PROXY_CONFIGURE_IN_REQUEST_BUFF_ADDR_LO_OFST 16
--#define       MC_CMD_PROXY_CONFIGURE_IN_REQUEST_BUFF_ADDR_HI_OFST 20
--/* Must be a power of 2 */
--#define       MC_CMD_PROXY_CONFIGURE_IN_REQUEST_BLOCK_SIZE_OFST 24
--#define       MC_CMD_PROXY_CONFIGURE_IN_REQUEST_BLOCK_SIZE_LEN 4
--/* Host provides a contiguous memory buffer that contains at least NUM_BLOCKS
-- * of blocks, each of the size STATUS_BLOCK_SIZE. This buffer is only needed if
-- * host intends to complete proxied operations by using MC_CMD_PROXY_CMD.
-- */
--#define       MC_CMD_PROXY_CONFIGURE_IN_REPLY_BUFF_ADDR_OFST 28
--#define       MC_CMD_PROXY_CONFIGURE_IN_REPLY_BUFF_ADDR_LEN 8
--#define       MC_CMD_PROXY_CONFIGURE_IN_REPLY_BUFF_ADDR_LO_OFST 28
--#define       MC_CMD_PROXY_CONFIGURE_IN_REPLY_BUFF_ADDR_HI_OFST 32
--/* Must be a power of 2, or zero if this buffer is not provided */
--#define       MC_CMD_PROXY_CONFIGURE_IN_REPLY_BLOCK_SIZE_OFST 36
--#define       MC_CMD_PROXY_CONFIGURE_IN_REPLY_BLOCK_SIZE_LEN 4
--/* Applies to all three buffers */
--#define       MC_CMD_PROXY_CONFIGURE_IN_NUM_BLOCKS_OFST 40
--#define       MC_CMD_PROXY_CONFIGURE_IN_NUM_BLOCKS_LEN 4
--/* A bit mask defining which MCDI operations may be proxied */
--#define       MC_CMD_PROXY_CONFIGURE_IN_ALLOWED_MCDI_MASK_OFST 44
--#define       MC_CMD_PROXY_CONFIGURE_IN_ALLOWED_MCDI_MASK_LEN 64
--
--/* MC_CMD_PROXY_CONFIGURE_EXT_IN msgrequest */
--#define    MC_CMD_PROXY_CONFIGURE_EXT_IN_LEN 112
--#define       MC_CMD_PROXY_CONFIGURE_EXT_IN_FLAGS_OFST 0
--#define       MC_CMD_PROXY_CONFIGURE_EXT_IN_FLAGS_LEN 4
--#define        MC_CMD_PROXY_CONFIGURE_EXT_IN_ENABLE_OFST 0
--#define        MC_CMD_PROXY_CONFIGURE_EXT_IN_ENABLE_LBN 0
--#define        MC_CMD_PROXY_CONFIGURE_EXT_IN_ENABLE_WIDTH 1
--/* Host provides a contiguous memory buffer that contains at least NUM_BLOCKS
-- * of blocks, each of the size REQUEST_BLOCK_SIZE.
-- */
--#define       MC_CMD_PROXY_CONFIGURE_EXT_IN_STATUS_BUFF_ADDR_OFST 4
--#define       MC_CMD_PROXY_CONFIGURE_EXT_IN_STATUS_BUFF_ADDR_LEN 8
--#define       MC_CMD_PROXY_CONFIGURE_EXT_IN_STATUS_BUFF_ADDR_LO_OFST 4
--#define       MC_CMD_PROXY_CONFIGURE_EXT_IN_STATUS_BUFF_ADDR_HI_OFST 8
--/* Must be a power of 2 */
--#define       MC_CMD_PROXY_CONFIGURE_EXT_IN_STATUS_BLOCK_SIZE_OFST 12
--#define       MC_CMD_PROXY_CONFIGURE_EXT_IN_STATUS_BLOCK_SIZE_LEN 4
--/* Host provides a contiguous memory buffer that contains at least NUM_BLOCKS
-- * of blocks, each of the size REPLY_BLOCK_SIZE.
-- */
--#define       MC_CMD_PROXY_CONFIGURE_EXT_IN_REQUEST_BUFF_ADDR_OFST 16
--#define       MC_CMD_PROXY_CONFIGURE_EXT_IN_REQUEST_BUFF_ADDR_LEN 8
--#define       MC_CMD_PROXY_CONFIGURE_EXT_IN_REQUEST_BUFF_ADDR_LO_OFST 16
--#define       MC_CMD_PROXY_CONFIGURE_EXT_IN_REQUEST_BUFF_ADDR_HI_OFST 20
--/* Must be a power of 2 */
--#define       MC_CMD_PROXY_CONFIGURE_EXT_IN_REQUEST_BLOCK_SIZE_OFST 24
--#define       MC_CMD_PROXY_CONFIGURE_EXT_IN_REQUEST_BLOCK_SIZE_LEN 4
--/* Host provides a contiguous memory buffer that contains at least NUM_BLOCKS
-- * of blocks, each of the size STATUS_BLOCK_SIZE. This buffer is only needed if
-- * host intends to complete proxied operations by using MC_CMD_PROXY_CMD.
-- */
--#define       MC_CMD_PROXY_CONFIGURE_EXT_IN_REPLY_BUFF_ADDR_OFST 28
--#define       MC_CMD_PROXY_CONFIGURE_EXT_IN_REPLY_BUFF_ADDR_LEN 8
--#define       MC_CMD_PROXY_CONFIGURE_EXT_IN_REPLY_BUFF_ADDR_LO_OFST 28
--#define       MC_CMD_PROXY_CONFIGURE_EXT_IN_REPLY_BUFF_ADDR_HI_OFST 32
--/* Must be a power of 2, or zero if this buffer is not provided */
--#define       MC_CMD_PROXY_CONFIGURE_EXT_IN_REPLY_BLOCK_SIZE_OFST 36
--#define       MC_CMD_PROXY_CONFIGURE_EXT_IN_REPLY_BLOCK_SIZE_LEN 4
--/* Applies to all three buffers */
--#define       MC_CMD_PROXY_CONFIGURE_EXT_IN_NUM_BLOCKS_OFST 40
--#define       MC_CMD_PROXY_CONFIGURE_EXT_IN_NUM_BLOCKS_LEN 4
--/* A bit mask defining which MCDI operations may be proxied */
--#define       MC_CMD_PROXY_CONFIGURE_EXT_IN_ALLOWED_MCDI_MASK_OFST 44
--#define       MC_CMD_PROXY_CONFIGURE_EXT_IN_ALLOWED_MCDI_MASK_LEN 64
--#define       MC_CMD_PROXY_CONFIGURE_EXT_IN_RESERVED_OFST 108
--#define       MC_CMD_PROXY_CONFIGURE_EXT_IN_RESERVED_LEN 4
--
--/* MC_CMD_PROXY_CONFIGURE_OUT msgresponse */
--#define    MC_CMD_PROXY_CONFIGURE_OUT_LEN 0
--
--
--/***********************************/
--/* MC_CMD_PROXY_COMPLETE
-- * Tells FW that a requested proxy operation has either been completed (by
-- * using MC_CMD_PROXY_CMD) or authorized/declined. May only be sent by the
-- * function that enabled proxying/authorization (by using
-- * MC_CMD_PROXY_CONFIGURE).
-- */
--#define MC_CMD_PROXY_COMPLETE 0x5f
--#undef MC_CMD_0x5f_PRIVILEGE_CTG
--
--#define MC_CMD_0x5f_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_PROXY_COMPLETE_IN msgrequest */
--#define    MC_CMD_PROXY_COMPLETE_IN_LEN 12
--#define       MC_CMD_PROXY_COMPLETE_IN_BLOCK_INDEX_OFST 0
--#define       MC_CMD_PROXY_COMPLETE_IN_BLOCK_INDEX_LEN 4
--#define       MC_CMD_PROXY_COMPLETE_IN_STATUS_OFST 4
--#define       MC_CMD_PROXY_COMPLETE_IN_STATUS_LEN 4
--/* enum: The operation has been completed by using MC_CMD_PROXY_CMD, the reply
-- * is stored in the REPLY_BUFF.
-- */
--#define          MC_CMD_PROXY_COMPLETE_IN_COMPLETE 0x0
--/* enum: The operation has been authorized. The originating function may now
-- * try again.
-- */
--#define          MC_CMD_PROXY_COMPLETE_IN_AUTHORIZED 0x1
--/* enum: The operation has been declined. */
--#define          MC_CMD_PROXY_COMPLETE_IN_DECLINED 0x2
--/* enum: The authorization failed because the relevant application did not
-- * respond in time.
-- */
--#define          MC_CMD_PROXY_COMPLETE_IN_TIMEDOUT 0x3
--#define       MC_CMD_PROXY_COMPLETE_IN_HANDLE_OFST 8
--#define       MC_CMD_PROXY_COMPLETE_IN_HANDLE_LEN 4
--
--/* MC_CMD_PROXY_COMPLETE_OUT msgresponse */
--#define    MC_CMD_PROXY_COMPLETE_OUT_LEN 0
--
--
--/***********************************/
- /* MC_CMD_ALLOC_BUFTBL_CHUNK
-  * Allocate a set of buffer table entries using the specified owner ID. This
-  * operation allocates the required buffer table entries (and fails if it
-@@ -10706,136 +10491,6 @@
+@@ -1298,14 +1285,8 @@ static int __init efx_init_module(void)
+ 	if (rc < 0)
+ 		goto err_pci;
  
+-	rc = pci_register_driver(&ef100_pci_driver);
+-	if (rc < 0)
+-		goto err_pci_ef100;
+-
+ 	return 0;
  
- /***********************************/
--/* MC_CMD_PARSER_DISP_RW
-- * Direct read/write of parser-dispatcher state (DICPUs and LUE) for debugging.
-- * Please note that this interface is only of use to debug tools which have
-- * knowledge of firmware and hardware data structures; nothing here is intended
-- * for use by normal driver code. Note that although this command is in the
-- * Admin privilege group, in tamperproof adapters, only read operations are
-- * permitted.
+- err_pci_ef100:
+-	pci_unregister_driver(&efx_pci_driver);
+  err_pci:
+ 	efx_destroy_reset_workqueue();
+  err_reset:
+@@ -1318,7 +1299,6 @@ static void __exit efx_exit_module(void)
+ {
+ 	printk(KERN_INFO "Solarflare NET driver unloading\n");
+ 
+-	pci_unregister_driver(&ef100_pci_driver);
+ 	pci_unregister_driver(&efx_pci_driver);
+ 	efx_destroy_reset_workqueue();
+ 	unregister_netdevice_notifier(&efx_netdev_notifier);
+diff --git a/drivers/net/ethernet/sfc/siena/efx.h b/drivers/net/ethernet/sfc/siena/efx.h
+index c05a83da9e44..962c6b66eea7 100644
+--- a/drivers/net/ethernet/sfc/siena/efx.h
++++ b/drivers/net/ethernet/sfc/siena/efx.h
+@@ -10,8 +10,6 @@
+ 
+ #include <linux/indirect_call_wrapper.h>
+ #include "net_driver.h"
+-#include "ef100_rx.h"
+-#include "ef100_tx.h"
+ #include "filter.h"
+ 
+ int efx_net_open(struct net_device *net_dev);
+@@ -24,9 +22,8 @@ netdev_tx_t efx_hard_start_xmit(struct sk_buff *skb,
+ netdev_tx_t __efx_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb);
+ static inline netdev_tx_t efx_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb)
+ {
+-	return INDIRECT_CALL_2(tx_queue->efx->type->tx_enqueue,
+-			       ef100_enqueue_skb, __efx_enqueue_skb,
+-			       tx_queue, skb);
++	return INDIRECT_CALL_1(tx_queue->efx->type->tx_enqueue,
++			       __efx_enqueue_skb, tx_queue, skb);
+ }
+ void efx_xmit_done_single(struct efx_tx_queue *tx_queue);
+ int efx_setup_tc(struct net_device *net_dev, enum tc_setup_type type,
+@@ -40,16 +37,10 @@ void efx_rx_packet(struct efx_rx_queue *rx_queue, unsigned int index,
+ static inline void efx_rx_flush_packet(struct efx_channel *channel)
+ {
+ 	if (channel->rx_pkt_n_frags)
+-		INDIRECT_CALL_2(channel->efx->type->rx_packet,
+-				__ef100_rx_packet, __efx_rx_packet,
+-				channel);
++		__efx_rx_packet(channel);
+ }
+ static inline bool efx_rx_buf_hash_valid(struct efx_nic *efx, const u8 *prefix)
+ {
+-	if (efx->type->rx_buf_hash_valid)
+-		return INDIRECT_CALL_1(efx->type->rx_buf_hash_valid,
+-				       ef100_rx_buf_hash_valid,
+-				       prefix);
+ 	return true;
+ }
+ 
+diff --git a/drivers/net/ethernet/sfc/siena/nic.c b/drivers/net/ethernet/sfc/siena/nic.c
+index 22fbb0ae77fb..c59357178657 100644
+--- a/drivers/net/ethernet/sfc/siena/nic.c
++++ b/drivers/net/ethernet/sfc/siena/nic.c
+@@ -16,7 +16,6 @@
+ #include "bitfield.h"
+ #include "efx.h"
+ #include "nic.h"
+-#include "ef10_regs.h"
+ #include "farch_regs.h"
+ #include "io.h"
+ #include "workarounds.h"
+@@ -195,7 +194,6 @@ struct efx_nic_reg {
+ #define REGISTER_BB(name) REGISTER(name, F, B, B)
+ #define REGISTER_BZ(name) REGISTER(name, F, B, Z)
+ #define REGISTER_CZ(name) REGISTER(name, F, C, Z)
+-#define REGISTER_DZ(name) REGISTER(name, E, D, Z)
+ 
+ static const struct efx_nic_reg efx_nic_regs[] = {
+ 	REGISTER_AZ(ADR_REGION),
+@@ -302,9 +300,6 @@ static const struct efx_nic_reg efx_nic_regs[] = {
+ 	REGISTER_AB(XX_TXDRV_CTL),
+ 	/* XX_PRBS_CTL, XX_PRBS_CHK and XX_PRBS_ERR are not used */
+ 	/* XX_CORE_STAT is partly RC */
+-	REGISTER_DZ(BIU_HW_REV_ID),
+-	REGISTER_DZ(MC_DB_LWRD),
+-	REGISTER_DZ(MC_DB_HWRD),
+ };
+ 
+ struct efx_nic_reg_table {
+@@ -337,7 +332,6 @@ struct efx_nic_reg_table {
+ 				  FR_BZ_ ## name ## _STEP,		\
+ 				  FR_CZ_ ## name ## _ROWS)
+ #define REGISTER_TABLE_CZ(name) REGISTER_TABLE(name, F, C, Z)
+-#define REGISTER_TABLE_DZ(name) REGISTER_TABLE(name, E, D, Z)
+ 
+ static const struct efx_nic_reg_table efx_nic_reg_tables[] = {
+ 	/* DRIVER is not used */
+@@ -368,7 +362,6 @@ static const struct efx_nic_reg_table efx_nic_reg_tables[] = {
+ 	/* MSIX_PBA_TABLE is not mapped */
+ 	/* SRM_DBG is not mapped (and is redundant with BUF_FLL_TBL) */
+ 	REGISTER_TABLE_BZ(RX_FILTER_TBL0),
+-	REGISTER_TABLE_DZ(BIU_MC_SFT_STATUS),
+ };
+ 
+ size_t efx_nic_get_regs_len(struct efx_nic *efx)
+diff --git a/drivers/net/ethernet/sfc/siena/nic.h b/drivers/net/ethernet/sfc/siena/nic.h
+index 251868235ae4..935cb0ab5ec0 100644
+--- a/drivers/net/ethernet/sfc/siena/nic.h
++++ b/drivers/net/ethernet/sfc/siena/nic.h
+@@ -116,193 +116,7 @@ struct siena_nic_data {
+ #endif
+ };
+ 
+-enum {
+-	EF10_STAT_port_tx_bytes = GENERIC_STAT_COUNT,
+-	EF10_STAT_port_tx_packets,
+-	EF10_STAT_port_tx_pause,
+-	EF10_STAT_port_tx_control,
+-	EF10_STAT_port_tx_unicast,
+-	EF10_STAT_port_tx_multicast,
+-	EF10_STAT_port_tx_broadcast,
+-	EF10_STAT_port_tx_lt64,
+-	EF10_STAT_port_tx_64,
+-	EF10_STAT_port_tx_65_to_127,
+-	EF10_STAT_port_tx_128_to_255,
+-	EF10_STAT_port_tx_256_to_511,
+-	EF10_STAT_port_tx_512_to_1023,
+-	EF10_STAT_port_tx_1024_to_15xx,
+-	EF10_STAT_port_tx_15xx_to_jumbo,
+-	EF10_STAT_port_rx_bytes,
+-	EF10_STAT_port_rx_bytes_minus_good_bytes,
+-	EF10_STAT_port_rx_good_bytes,
+-	EF10_STAT_port_rx_bad_bytes,
+-	EF10_STAT_port_rx_packets,
+-	EF10_STAT_port_rx_good,
+-	EF10_STAT_port_rx_bad,
+-	EF10_STAT_port_rx_pause,
+-	EF10_STAT_port_rx_control,
+-	EF10_STAT_port_rx_unicast,
+-	EF10_STAT_port_rx_multicast,
+-	EF10_STAT_port_rx_broadcast,
+-	EF10_STAT_port_rx_lt64,
+-	EF10_STAT_port_rx_64,
+-	EF10_STAT_port_rx_65_to_127,
+-	EF10_STAT_port_rx_128_to_255,
+-	EF10_STAT_port_rx_256_to_511,
+-	EF10_STAT_port_rx_512_to_1023,
+-	EF10_STAT_port_rx_1024_to_15xx,
+-	EF10_STAT_port_rx_15xx_to_jumbo,
+-	EF10_STAT_port_rx_gtjumbo,
+-	EF10_STAT_port_rx_bad_gtjumbo,
+-	EF10_STAT_port_rx_overflow,
+-	EF10_STAT_port_rx_align_error,
+-	EF10_STAT_port_rx_length_error,
+-	EF10_STAT_port_rx_nodesc_drops,
+-	EF10_STAT_port_rx_pm_trunc_bb_overflow,
+-	EF10_STAT_port_rx_pm_discard_bb_overflow,
+-	EF10_STAT_port_rx_pm_trunc_vfifo_full,
+-	EF10_STAT_port_rx_pm_discard_vfifo_full,
+-	EF10_STAT_port_rx_pm_trunc_qbb,
+-	EF10_STAT_port_rx_pm_discard_qbb,
+-	EF10_STAT_port_rx_pm_discard_mapping,
+-	EF10_STAT_port_rx_dp_q_disabled_packets,
+-	EF10_STAT_port_rx_dp_di_dropped_packets,
+-	EF10_STAT_port_rx_dp_streaming_packets,
+-	EF10_STAT_port_rx_dp_hlb_fetch,
+-	EF10_STAT_port_rx_dp_hlb_wait,
+-	EF10_STAT_rx_unicast,
+-	EF10_STAT_rx_unicast_bytes,
+-	EF10_STAT_rx_multicast,
+-	EF10_STAT_rx_multicast_bytes,
+-	EF10_STAT_rx_broadcast,
+-	EF10_STAT_rx_broadcast_bytes,
+-	EF10_STAT_rx_bad,
+-	EF10_STAT_rx_bad_bytes,
+-	EF10_STAT_rx_overflow,
+-	EF10_STAT_tx_unicast,
+-	EF10_STAT_tx_unicast_bytes,
+-	EF10_STAT_tx_multicast,
+-	EF10_STAT_tx_multicast_bytes,
+-	EF10_STAT_tx_broadcast,
+-	EF10_STAT_tx_broadcast_bytes,
+-	EF10_STAT_tx_bad,
+-	EF10_STAT_tx_bad_bytes,
+-	EF10_STAT_tx_overflow,
+-	EF10_STAT_V1_COUNT,
+-	EF10_STAT_fec_uncorrected_errors = EF10_STAT_V1_COUNT,
+-	EF10_STAT_fec_corrected_errors,
+-	EF10_STAT_fec_corrected_symbols_lane0,
+-	EF10_STAT_fec_corrected_symbols_lane1,
+-	EF10_STAT_fec_corrected_symbols_lane2,
+-	EF10_STAT_fec_corrected_symbols_lane3,
+-	EF10_STAT_ctpio_vi_busy_fallback,
+-	EF10_STAT_ctpio_long_write_success,
+-	EF10_STAT_ctpio_missing_dbell_fail,
+-	EF10_STAT_ctpio_overflow_fail,
+-	EF10_STAT_ctpio_underflow_fail,
+-	EF10_STAT_ctpio_timeout_fail,
+-	EF10_STAT_ctpio_noncontig_wr_fail,
+-	EF10_STAT_ctpio_frm_clobber_fail,
+-	EF10_STAT_ctpio_invalid_wr_fail,
+-	EF10_STAT_ctpio_vi_clobber_fallback,
+-	EF10_STAT_ctpio_unqualified_fallback,
+-	EF10_STAT_ctpio_runt_fallback,
+-	EF10_STAT_ctpio_success,
+-	EF10_STAT_ctpio_fallback,
+-	EF10_STAT_ctpio_poison,
+-	EF10_STAT_ctpio_erase,
+-	EF10_STAT_COUNT
+-};
+-
+-/* Maximum number of TX PIO buffers we may allocate to a function.
+- * This matches the total number of buffers on each SFC9100-family
+- * controller.
 - */
--#define MC_CMD_PARSER_DISP_RW 0xe5
--#undef MC_CMD_0xe5_PRIVILEGE_CTG
+-#define EF10_TX_PIOBUF_COUNT 16
 -
--#define MC_CMD_0xe5_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_PARSER_DISP_RW_IN msgrequest */
--#define    MC_CMD_PARSER_DISP_RW_IN_LEN 32
--/* identifies the target of the operation */
--#define       MC_CMD_PARSER_DISP_RW_IN_TARGET_OFST 0
--#define       MC_CMD_PARSER_DISP_RW_IN_TARGET_LEN 4
--/* enum: RX dispatcher CPU */
--#define          MC_CMD_PARSER_DISP_RW_IN_RX_DICPU 0x0
--/* enum: TX dispatcher CPU */
--#define          MC_CMD_PARSER_DISP_RW_IN_TX_DICPU 0x1
--/* enum: Lookup engine (with original metadata format). Deprecated; used only
-- * by cmdclient as a fallback for very old Huntington firmware, and not
-- * supported in firmware beyond v6.4.0.1005. Use LUE_VERSIONED_METADATA
-- * instead.
+-/**
+- * struct efx_ef10_nic_data - EF10 architecture NIC state
+- * @mcdi_buf: DMA buffer for MCDI
+- * @warm_boot_count: Last seen MC warm boot count
+- * @vi_base: Absolute index of first VI in this function
+- * @n_allocated_vis: Number of VIs allocated to this function
+- * @n_piobufs: Number of PIO buffers allocated to this function
+- * @wc_membase: Base address of write-combining mapping of the memory BAR
+- * @pio_write_base: Base address for writing PIO buffers
+- * @pio_write_vi_base: Relative VI number for @pio_write_base
+- * @piobuf_handle: Handle of each PIO buffer allocated
+- * @piobuf_size: size of a single PIO buffer
+- * @must_restore_piobufs: Flag: PIO buffers have yet to be restored after MC
+- *	reboot
+- * @mc_stats: Scratch buffer for converting statistics to the kernel's format
+- * @stats: Hardware statistics
+- * @workaround_35388: Flag: firmware supports workaround for bug 35388
+- * @workaround_26807: Flag: firmware supports workaround for bug 26807
+- * @workaround_61265: Flag: firmware supports workaround for bug 61265
+- * @must_check_datapath_caps: Flag: @datapath_caps needs to be revalidated
+- *	after MC reboot
+- * @datapath_caps: Capabilities of datapath firmware (FLAGS1 field of
+- *	%MC_CMD_GET_CAPABILITIES response)
+- * @datapath_caps2: Further Capabilities of datapath firmware (FLAGS2 field of
+- * %MC_CMD_GET_CAPABILITIES response)
+- * @rx_dpcpu_fw_id: Firmware ID of the RxDPCPU
+- * @tx_dpcpu_fw_id: Firmware ID of the TxDPCPU
+- * @must_probe_vswitching: Flag: vswitching has yet to be setup after MC reboot
+- * @pf_index: The number for this PF, or the parent PF if this is a VF
+-#ifdef CONFIG_SFC_SRIOV
+- * @vf: Pointer to VF data structure
+-#endif
+- * @vport_mac: The MAC address on the vport, only for PFs; VFs will be zero
+- * @vlan_list: List of VLANs added over the interface. Serialised by vlan_lock.
+- * @vlan_lock: Lock to serialize access to vlan_list.
+- * @udp_tunnels: UDP tunnel port numbers and types.
+- * @udp_tunnels_dirty: flag indicating a reboot occurred while pushing
+- *	@udp_tunnels to hardware and thus the push must be re-done.
+- * @udp_tunnels_lock: Serialises writes to @udp_tunnels and @udp_tunnels_dirty.
 - */
--#define          MC_CMD_PARSER_DISP_RW_IN_LUE 0x2
--/* enum: Lookup engine (with requested metadata format) */
--#define          MC_CMD_PARSER_DISP_RW_IN_LUE_VERSIONED_METADATA 0x3
--/* enum: RX0 dispatcher CPU (alias for RX_DICPU; Medford has 2 RX DICPUs) */
--#define          MC_CMD_PARSER_DISP_RW_IN_RX0_DICPU 0x0
--/* enum: RX1 dispatcher CPU (only valid for Medford) */
--#define          MC_CMD_PARSER_DISP_RW_IN_RX1_DICPU 0x4
--/* enum: Miscellaneous other state (only valid for Medford) */
--#define          MC_CMD_PARSER_DISP_RW_IN_MISC_STATE 0x5
--/* identifies the type of operation requested */
--#define       MC_CMD_PARSER_DISP_RW_IN_OP_OFST 4
--#define       MC_CMD_PARSER_DISP_RW_IN_OP_LEN 4
--/* enum: Read a word of DICPU DMEM or a LUE entry */
--#define          MC_CMD_PARSER_DISP_RW_IN_READ 0x0
--/* enum: Write a word of DICPU DMEM or a LUE entry. Not permitted on
-- * tamperproof adapters.
+-struct efx_ef10_nic_data {
+-	struct efx_buffer mcdi_buf;
+-	u16 warm_boot_count;
+-	unsigned int vi_base;
+-	unsigned int n_allocated_vis;
+-	unsigned int n_piobufs;
+-	void __iomem *wc_membase, *pio_write_base;
+-	unsigned int pio_write_vi_base;
+-	unsigned int piobuf_handle[EF10_TX_PIOBUF_COUNT];
+-	u16 piobuf_size;
+-	bool must_restore_piobufs;
+-	__le64 *mc_stats;
+-	u64 stats[EF10_STAT_COUNT];
+-	bool workaround_35388;
+-	bool workaround_26807;
+-	bool workaround_61265;
+-	bool must_check_datapath_caps;
+-	u32 datapath_caps;
+-	u32 datapath_caps2;
+-	unsigned int rx_dpcpu_fw_id;
+-	unsigned int tx_dpcpu_fw_id;
+-	bool must_probe_vswitching;
+-	unsigned int pf_index;
+-	u8 port_id[ETH_ALEN];
+-#ifdef CONFIG_SFC_SRIOV
+-	unsigned int vf_index;
+-	struct ef10_vf *vf;
+-#endif
+-	u8 vport_mac[ETH_ALEN];
+-	struct list_head vlan_list;
+-	struct mutex vlan_lock;
+-	struct efx_udp_tunnel udp_tunnels[16];
+-	bool udp_tunnels_dirty;
+-	struct mutex udp_tunnels_lock;
+-	u64 licensed_features;
+-};
+-
+-/* TSOv2 */
+-int efx_ef10_tx_tso_desc(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
+-			 bool *data_mapped);
+-
+-extern const struct efx_nic_type efx_hunt_a0_nic_type;
+-extern const struct efx_nic_type efx_hunt_a0_vf_nic_type;
++extern const struct efx_nic_type siena_a0_nic_type;
+ 
+ int falcon_probe_board(struct efx_nic *efx, u16 revision_info);
+ 
+@@ -364,7 +178,7 @@ irqreturn_t efx_farch_legacy_interrupt(int irq, void *dev_id);
+ irqreturn_t efx_farch_fatal_interrupt(struct efx_nic *efx);
+ 
+ /* Global Resources */
+-void siena_prepare_flush(struct efx_nic *efx);
++void efx_siena_prepare_flush(struct efx_nic *efx);
+ int efx_farch_fini_dmaq(struct efx_nic *efx);
+ void efx_farch_finish_flr(struct efx_nic *efx);
+ void siena_finish_flush(struct efx_nic *efx);
+diff --git a/drivers/net/ethernet/sfc/siena/nic_common.h b/drivers/net/ethernet/sfc/siena/nic_common.h
+index 0cef35c0c559..47deeae0a034 100644
+--- a/drivers/net/ethernet/sfc/siena/nic_common.h
++++ b/drivers/net/ethernet/sfc/siena/nic_common.h
+@@ -75,9 +75,6 @@ static inline bool efx_nic_tx_is_empty(struct efx_tx_queue *tx_queue, unsigned i
+ 	return ((empty_read_count ^ write_count) & ~EFX_EMPTY_COUNT_VALID) == 0;
+ }
+ 
+-int efx_enqueue_skb_tso(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
+-			bool *data_mapped);
+-
+ /* Decide whether to push a TX descriptor to the NIC vs merely writing
+  * the doorbell.  This can reduce latency when we are adding a single
+  * descriptor to an empty queue, but is otherwise pointless.  Further,
+diff --git a/drivers/net/ethernet/sfc/siena/ptp.c b/drivers/net/ethernet/sfc/siena/ptp.c
+index f0ef515e2ade..daf23070d353 100644
+--- a/drivers/net/ethernet/sfc/siena/ptp.c
++++ b/drivers/net/ethernet/sfc/siena/ptp.c
+@@ -1790,17 +1790,6 @@ void efx_ptp_get_ts_info(struct efx_nic *efx, struct ethtool_ts_info *ts_info)
+ 	ts_info->so_timestamping |= (SOF_TIMESTAMPING_TX_HARDWARE |
+ 				     SOF_TIMESTAMPING_RX_HARDWARE |
+ 				     SOF_TIMESTAMPING_RAW_HARDWARE);
+-	/* Check licensed features.  If we don't have the license for TX
+-	 * timestamps, the NIC will not support them.
+-	 */
+-	if (efx_ptp_use_mac_tx_timestamps(efx)) {
+-		struct efx_ef10_nic_data *nic_data = efx->nic_data;
+-
+-		if (!(nic_data->licensed_features &
+-		      (1 << LICENSED_V3_FEATURES_TX_TIMESTAMPS_LBN)))
+-			ts_info->so_timestamping &=
+-				~SOF_TIMESTAMPING_TX_HARDWARE;
+-	}
+ 	if (primary && primary->ptp_data && primary->ptp_data->phc_clock)
+ 		ts_info->phc_index =
+ 			ptp_clock_index(primary->ptp_data->phc_clock);
+diff --git a/drivers/net/ethernet/sfc/siena/siena.c b/drivers/net/ethernet/sfc/siena/siena.c
+index ce3060e15b54..7cc6a2583d6c 100644
+--- a/drivers/net/ethernet/sfc/siena/siena.c
++++ b/drivers/net/ethernet/sfc/siena/siena.c
+@@ -56,7 +56,7 @@ static void siena_push_irq_moderation(struct efx_channel *channel)
+ 			       channel->channel);
+ }
+ 
+-void siena_prepare_flush(struct efx_nic *efx)
++void efx_siena_prepare_flush(struct efx_nic *efx)
+ {
+ 	if (efx->fc_disable++ == 0)
+ 		efx_mcdi_set_mac(efx);
+@@ -992,7 +992,7 @@ const struct efx_nic_type siena_a0_nic_type = {
+ 	.probe_port = efx_mcdi_port_probe,
+ 	.remove_port = efx_mcdi_port_remove,
+ 	.fini_dmaq = efx_farch_fini_dmaq,
+-	.prepare_flush = siena_prepare_flush,
++	.prepare_flush = efx_siena_prepare_flush,
+ 	.finish_flush = siena_finish_flush,
+ 	.prepare_flr = efx_port_dummy_op_void,
+ 	.finish_flr = efx_farch_finish_flr,
+diff --git a/drivers/net/ethernet/sfc/siena/siena_sriov.c b/drivers/net/ethernet/sfc/siena/siena_sriov.c
+index f12851a527d9..8b0fdeebc1a5 100644
+--- a/drivers/net/ethernet/sfc/siena/siena_sriov.c
++++ b/drivers/net/ethernet/sfc/siena/siena_sriov.c
+@@ -689,7 +689,7 @@ static int efx_vfdi_fini_all_queues(struct siena_vf *vf)
+ 		     MC_CMD_FLUSH_RX_QUEUES_IN_QID_OFST_MAXNUM);
+ 
+ 	rtnl_lock();
+-	siena_prepare_flush(efx);
++	efx_siena_prepare_flush(efx);
+ 	rtnl_unlock();
+ 
+ 	/* Flush all the initialized queues */
+diff --git a/drivers/net/ethernet/sfc/siena/tx.c b/drivers/net/ethernet/sfc/siena/tx.c
+index 138bca611341..9e68dc434832 100644
+--- a/drivers/net/ethernet/sfc/siena/tx.c
++++ b/drivers/net/ethernet/sfc/siena/tx.c
+@@ -22,14 +22,6 @@
+ #include "tx.h"
+ #include "tx_common.h"
+ #include "workarounds.h"
+-#include "ef10_regs.h"
+-
+-#ifdef EFX_USE_PIO
+-
+-#define EFX_PIOBUF_SIZE_DEF ALIGN(256, L1_CACHE_BYTES)
+-unsigned int efx_piobuf_size __read_mostly = EFX_PIOBUF_SIZE_DEF;
+-
+-#endif /* EFX_USE_PIO */
+ 
+ static inline u8 *efx_tx_get_copy_buffer(struct efx_tx_queue *tx_queue,
+ 					 struct efx_tx_buffer *buffer)
+@@ -123,173 +115,6 @@ static int efx_enqueue_skb_copy(struct efx_tx_queue *tx_queue,
+ 	return rc;
+ }
+ 
+-#ifdef EFX_USE_PIO
+-
+-struct efx_short_copy_buffer {
+-	int used;
+-	u8 buf[L1_CACHE_BYTES];
+-};
+-
+-/* Copy to PIO, respecting that writes to PIO buffers must be dword aligned.
+- * Advances piobuf pointer. Leaves additional data in the copy buffer.
 - */
--#define          MC_CMD_PARSER_DISP_RW_IN_WRITE 0x1
--/* enum: Read-modify-write a word of DICPU DMEM (not valid for LUE). Not
-- * permitted on tamperproof adapters.
+-static void efx_memcpy_toio_aligned(struct efx_nic *efx, u8 __iomem **piobuf,
+-				    u8 *data, int len,
+-				    struct efx_short_copy_buffer *copy_buf)
+-{
+-	int block_len = len & ~(sizeof(copy_buf->buf) - 1);
+-
+-	__iowrite64_copy(*piobuf, data, block_len >> 3);
+-	*piobuf += block_len;
+-	len -= block_len;
+-
+-	if (len) {
+-		data += block_len;
+-		BUG_ON(copy_buf->used);
+-		BUG_ON(len > sizeof(copy_buf->buf));
+-		memcpy(copy_buf->buf, data, len);
+-		copy_buf->used = len;
+-	}
+-}
+-
+-/* Copy to PIO, respecting dword alignment, popping data from copy buffer first.
+- * Advances piobuf pointer. Leaves additional data in the copy buffer.
 - */
--#define          MC_CMD_PARSER_DISP_RW_IN_RMW 0x2
--/* data memory address (DICPU targets) or LUE index (LUE targets) */
--#define       MC_CMD_PARSER_DISP_RW_IN_ADDRESS_OFST 8
--#define       MC_CMD_PARSER_DISP_RW_IN_ADDRESS_LEN 4
--/* selector (for MISC_STATE target) */
--#define       MC_CMD_PARSER_DISP_RW_IN_SELECTOR_OFST 8
--#define       MC_CMD_PARSER_DISP_RW_IN_SELECTOR_LEN 4
--/* enum: Port to datapath mapping */
--#define          MC_CMD_PARSER_DISP_RW_IN_PORT_DP_MAPPING 0x1
--/* value to write (for DMEM writes) */
--#define       MC_CMD_PARSER_DISP_RW_IN_DMEM_WRITE_VALUE_OFST 12
--#define       MC_CMD_PARSER_DISP_RW_IN_DMEM_WRITE_VALUE_LEN 4
--/* XOR value (for DMEM read-modify-writes: new = (old & mask) ^ value) */
--#define       MC_CMD_PARSER_DISP_RW_IN_DMEM_RMW_XOR_VALUE_OFST 12
--#define       MC_CMD_PARSER_DISP_RW_IN_DMEM_RMW_XOR_VALUE_LEN 4
--/* AND mask (for DMEM read-modify-writes: new = (old & mask) ^ value) */
--#define       MC_CMD_PARSER_DISP_RW_IN_DMEM_RMW_AND_MASK_OFST 16
--#define       MC_CMD_PARSER_DISP_RW_IN_DMEM_RMW_AND_MASK_LEN 4
--/* metadata format (for LUE reads using LUE_VERSIONED_METADATA) */
--#define       MC_CMD_PARSER_DISP_RW_IN_LUE_READ_METADATA_VERSION_OFST 12
--#define       MC_CMD_PARSER_DISP_RW_IN_LUE_READ_METADATA_VERSION_LEN 4
--/* value to write (for LUE writes) */
--#define       MC_CMD_PARSER_DISP_RW_IN_LUE_WRITE_VALUE_OFST 12
--#define       MC_CMD_PARSER_DISP_RW_IN_LUE_WRITE_VALUE_LEN 20
+-static void efx_memcpy_toio_aligned_cb(struct efx_nic *efx, u8 __iomem **piobuf,
+-				       u8 *data, int len,
+-				       struct efx_short_copy_buffer *copy_buf)
+-{
+-	if (copy_buf->used) {
+-		/* if the copy buffer is partially full, fill it up and write */
+-		int copy_to_buf =
+-			min_t(int, sizeof(copy_buf->buf) - copy_buf->used, len);
 -
--/* MC_CMD_PARSER_DISP_RW_OUT msgresponse */
--#define    MC_CMD_PARSER_DISP_RW_OUT_LEN 52
--/* value read (for DMEM reads) */
--#define       MC_CMD_PARSER_DISP_RW_OUT_DMEM_READ_VALUE_OFST 0
--#define       MC_CMD_PARSER_DISP_RW_OUT_DMEM_READ_VALUE_LEN 4
--/* value read (for LUE reads) */
--#define       MC_CMD_PARSER_DISP_RW_OUT_LUE_READ_VALUE_OFST 0
--#define       MC_CMD_PARSER_DISP_RW_OUT_LUE_READ_VALUE_LEN 20
--/* up to 8 32-bit words of additional soft state from the LUE manager (the
-- * exact content is firmware-dependent and intended only for debug use)
+-		memcpy(copy_buf->buf + copy_buf->used, data, copy_to_buf);
+-		copy_buf->used += copy_to_buf;
+-
+-		/* if we didn't fill it up then we're done for now */
+-		if (copy_buf->used < sizeof(copy_buf->buf))
+-			return;
+-
+-		__iowrite64_copy(*piobuf, copy_buf->buf,
+-				 sizeof(copy_buf->buf) >> 3);
+-		*piobuf += sizeof(copy_buf->buf);
+-		data += copy_to_buf;
+-		len -= copy_to_buf;
+-		copy_buf->used = 0;
+-	}
+-
+-	efx_memcpy_toio_aligned(efx, piobuf, data, len, copy_buf);
+-}
+-
+-static void efx_flush_copy_buffer(struct efx_nic *efx, u8 __iomem *piobuf,
+-				  struct efx_short_copy_buffer *copy_buf)
+-{
+-	/* if there's anything in it, write the whole buffer, including junk */
+-	if (copy_buf->used)
+-		__iowrite64_copy(piobuf, copy_buf->buf,
+-				 sizeof(copy_buf->buf) >> 3);
+-}
+-
+-/* Traverse skb structure and copy fragments in to PIO buffer.
+- * Advances piobuf pointer.
 - */
--#define       MC_CMD_PARSER_DISP_RW_OUT_LUE_MGR_STATE_OFST 20
--#define       MC_CMD_PARSER_DISP_RW_OUT_LUE_MGR_STATE_LEN 32
--/* datapath(s) used for each port (for MISC_STATE PORT_DP_MAPPING selector) */
--#define       MC_CMD_PARSER_DISP_RW_OUT_PORT_DP_MAPPING_OFST 0
--#define       MC_CMD_PARSER_DISP_RW_OUT_PORT_DP_MAPPING_LEN 4
--#define       MC_CMD_PARSER_DISP_RW_OUT_PORT_DP_MAPPING_NUM 4
--#define          MC_CMD_PARSER_DISP_RW_OUT_DP0 0x1 /* enum */
--#define          MC_CMD_PARSER_DISP_RW_OUT_DP1 0x2 /* enum */
+-static void efx_skb_copy_bits_to_pio(struct efx_nic *efx, struct sk_buff *skb,
+-				     u8 __iomem **piobuf,
+-				     struct efx_short_copy_buffer *copy_buf)
+-{
+-	int i;
 -
+-	efx_memcpy_toio_aligned(efx, piobuf, skb->data, skb_headlen(skb),
+-				copy_buf);
 -
--/***********************************/
--/* MC_CMD_GET_PF_COUNT
-- * Get number of PFs on the device.
+-	for (i = 0; i < skb_shinfo(skb)->nr_frags; ++i) {
+-		skb_frag_t *f = &skb_shinfo(skb)->frags[i];
+-		u8 *vaddr;
+-
+-		vaddr = kmap_atomic(skb_frag_page(f));
+-
+-		efx_memcpy_toio_aligned_cb(efx, piobuf, vaddr + skb_frag_off(f),
+-					   skb_frag_size(f), copy_buf);
+-		kunmap_atomic(vaddr);
+-	}
+-
+-	EFX_WARN_ON_ONCE_PARANOID(skb_shinfo(skb)->frag_list);
+-}
+-
+-static int efx_enqueue_skb_pio(struct efx_tx_queue *tx_queue,
+-			       struct sk_buff *skb)
+-{
+-	struct efx_tx_buffer *buffer =
+-		efx_tx_queue_get_insert_buffer(tx_queue);
+-	u8 __iomem *piobuf = tx_queue->piobuf;
+-
+-	/* Copy to PIO buffer. Ensure the writes are padded to the end
+-	 * of a cache line, as this is required for write-combining to be
+-	 * effective on at least x86.
+-	 */
+-
+-	if (skb_shinfo(skb)->nr_frags) {
+-		/* The size of the copy buffer will ensure all writes
+-		 * are the size of a cache line.
+-		 */
+-		struct efx_short_copy_buffer copy_buf;
+-
+-		copy_buf.used = 0;
+-
+-		efx_skb_copy_bits_to_pio(tx_queue->efx, skb,
+-					 &piobuf, &copy_buf);
+-		efx_flush_copy_buffer(tx_queue->efx, piobuf, &copy_buf);
+-	} else {
+-		/* Pad the write to the size of a cache line.
+-		 * We can do this because we know the skb_shared_info struct is
+-		 * after the source, and the destination buffer is big enough.
+-		 */
+-		BUILD_BUG_ON(L1_CACHE_BYTES >
+-			     SKB_DATA_ALIGN(sizeof(struct skb_shared_info)));
+-		__iowrite64_copy(tx_queue->piobuf, skb->data,
+-				 ALIGN(skb->len, L1_CACHE_BYTES) >> 3);
+-	}
+-
+-	buffer->skb = skb;
+-	buffer->flags = EFX_TX_BUF_SKB | EFX_TX_BUF_OPTION;
+-
+-	EFX_POPULATE_QWORD_5(buffer->option,
+-			     ESF_DZ_TX_DESC_IS_OPT, 1,
+-			     ESF_DZ_TX_OPTION_TYPE, ESE_DZ_TX_OPTION_DESC_PIO,
+-			     ESF_DZ_TX_PIO_CONT, 0,
+-			     ESF_DZ_TX_PIO_BYTE_CNT, skb->len,
+-			     ESF_DZ_TX_PIO_BUF_ADDR,
+-			     tx_queue->piobuf_offset);
+-	++tx_queue->insert_count;
+-	return 0;
+-}
+-
+-/* Decide whether we can use TX PIO, ie. write packet data directly into
+- * a buffer on the device.  This can reduce latency at the expense of
+- * throughput, so we only do this if both hardware and software TX rings
+- * are empty, including all queues for the channel.  This also ensures that
+- * only one packet at a time can be using the PIO buffer. If the xmit_more
+- * flag is set then we don't use this - there'll be another packet along
+- * shortly and we want to hold off the doorbell.
 - */
--#define MC_CMD_GET_PF_COUNT 0xb6
--#undef MC_CMD_0xb6_PRIVILEGE_CTG
+-static bool efx_tx_may_pio(struct efx_tx_queue *tx_queue)
+-{
+-	struct efx_channel *channel = tx_queue->channel;
 -
--#define MC_CMD_0xb6_PRIVILEGE_CTG SRIOV_CTG_GENERAL
+-	if (!tx_queue->piobuf)
+-		return false;
 -
--/* MC_CMD_GET_PF_COUNT_IN msgrequest */
--#define    MC_CMD_GET_PF_COUNT_IN_LEN 0
+-	EFX_WARN_ON_ONCE_PARANOID(!channel->efx->type->option_descriptors);
 -
--/* MC_CMD_GET_PF_COUNT_OUT msgresponse */
--#define    MC_CMD_GET_PF_COUNT_OUT_LEN 1
--/* Identifies the number of PFs on the device. */
--#define       MC_CMD_GET_PF_COUNT_OUT_PF_COUNT_OFST 0
--#define       MC_CMD_GET_PF_COUNT_OUT_PF_COUNT_LEN 1
+-	efx_for_each_channel_tx_queue(tx_queue, channel)
+-		if (!efx_nic_tx_is_empty(tx_queue, tx_queue->packet_write_count))
+-			return false;
 -
+-	return true;
+-}
+-#endif /* EFX_USE_PIO */
 -
--/***********************************/
--/* MC_CMD_SET_PF_COUNT
-- * Set number of PFs on the device.
-- */
--#define MC_CMD_SET_PF_COUNT 0xb7
--
--/* MC_CMD_SET_PF_COUNT_IN msgrequest */
--#define    MC_CMD_SET_PF_COUNT_IN_LEN 4
--/* New number of PFs on the device. */
--#define       MC_CMD_SET_PF_COUNT_IN_PF_COUNT_OFST 0
--#define       MC_CMD_SET_PF_COUNT_IN_PF_COUNT_LEN 4
--
--/* MC_CMD_SET_PF_COUNT_OUT msgresponse */
--#define    MC_CMD_SET_PF_COUNT_OUT_LEN 0
--
--
--/***********************************/
- /* MC_CMD_GET_PORT_ASSIGNMENT
-  * Get port assignment for current PCI function.
+ /* Send any pending traffic for a channel. xmit_more is shared across all
+  * queues for a channel, so we must check all of them.
   */
-@@ -11199,357 +10854,6 @@
+@@ -338,35 +163,11 @@ netdev_tx_t __efx_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb
+ 	 * size limit.
+ 	 */
+ 	if (segments) {
+-		switch (tx_queue->tso_version) {
+-		case 1:
+-			rc = efx_enqueue_skb_tso(tx_queue, skb, &data_mapped);
+-			break;
+-		case 2:
+-			rc = efx_ef10_tx_tso_desc(tx_queue, skb, &data_mapped);
+-			break;
+-		case 0: /* No TSO on this queue, SW fallback needed */
+-		default:
+-			rc = -EINVAL;
+-			break;
+-		}
+-		if (rc == -EINVAL) {
+-			rc = efx_tx_tso_fallback(tx_queue, skb);
+-			tx_queue->tso_fallbacks++;
+-			if (rc == 0)
+-				return 0;
+-		}
+-		if (rc)
+-			goto err;
+-#ifdef EFX_USE_PIO
+-	} else if (skb_len <= efx_piobuf_size && !xmit_more &&
+-		   efx_tx_may_pio(tx_queue)) {
+-		/* Use PIO for short packets with an empty queue. */
+-		if (efx_enqueue_skb_pio(tx_queue, skb))
+-			goto err;
+-		tx_queue->pio_packets++;
+-		data_mapped = true;
+-#endif
++		rc = efx_tx_tso_fallback(tx_queue, skb);
++		tx_queue->tso_fallbacks++;
++		if (rc == 0)
++			return 0;
++		goto err;
+ 	} else if (skb->data_len && skb_len <= EFX_TX_CB_SIZE) {
+ 		/* Pad short packets or coalesce short fragmented packets. */
+ 		if (efx_enqueue_skb_copy(tx_queue, skb))
+diff --git a/drivers/net/ethernet/sfc/siena/workarounds.h b/drivers/net/ethernet/sfc/siena/workarounds.h
+index 815be2d20c4b..42fb143a94ab 100644
+--- a/drivers/net/ethernet/sfc/siena/workarounds.h
++++ b/drivers/net/ethernet/sfc/siena/workarounds.h
+@@ -21,12 +21,6 @@
+ /* Legacy interrupt storm when interrupt fifo fills */
+ #define EFX_WORKAROUND_17213 EFX_WORKAROUND_SIENA
  
- 
- /***********************************/
--/* MC_CMD_GET_VI_TLP_PROCESSING
-- * Get TLP steering and ordering information for a VI.
-- */
--#define MC_CMD_GET_VI_TLP_PROCESSING 0xb0
--#undef MC_CMD_0xb0_PRIVILEGE_CTG
--
--#define MC_CMD_0xb0_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_GET_VI_TLP_PROCESSING_IN msgrequest */
--#define    MC_CMD_GET_VI_TLP_PROCESSING_IN_LEN 4
--/* VI number to get information for. */
--#define       MC_CMD_GET_VI_TLP_PROCESSING_IN_INSTANCE_OFST 0
--#define       MC_CMD_GET_VI_TLP_PROCESSING_IN_INSTANCE_LEN 4
--
--/* MC_CMD_GET_VI_TLP_PROCESSING_OUT msgresponse */
--#define    MC_CMD_GET_VI_TLP_PROCESSING_OUT_LEN 4
--/* Transaction processing steering hint 1 for use with the Rx Queue. */
--#define       MC_CMD_GET_VI_TLP_PROCESSING_OUT_TPH_TAG1_RX_OFST 0
--#define       MC_CMD_GET_VI_TLP_PROCESSING_OUT_TPH_TAG1_RX_LEN 1
--/* Transaction processing steering hint 2 for use with the Ev Queue. */
--#define       MC_CMD_GET_VI_TLP_PROCESSING_OUT_TPH_TAG2_EV_OFST 1
--#define       MC_CMD_GET_VI_TLP_PROCESSING_OUT_TPH_TAG2_EV_LEN 1
--/* Use Relaxed ordering model for TLPs on this VI. */
--#define       MC_CMD_GET_VI_TLP_PROCESSING_OUT_RELAXED_ORDERING_LBN 16
--#define       MC_CMD_GET_VI_TLP_PROCESSING_OUT_RELAXED_ORDERING_WIDTH 1
--/* Use ID based ordering for TLPs on this VI. */
--#define       MC_CMD_GET_VI_TLP_PROCESSING_OUT_ID_BASED_ORDERING_LBN 17
--#define       MC_CMD_GET_VI_TLP_PROCESSING_OUT_ID_BASED_ORDERING_WIDTH 1
--/* Set no snoop bit for TLPs on this VI. */
--#define       MC_CMD_GET_VI_TLP_PROCESSING_OUT_NO_SNOOP_LBN 18
--#define       MC_CMD_GET_VI_TLP_PROCESSING_OUT_NO_SNOOP_WIDTH 1
--/* Enable TPH for TLPs on this VI. */
--#define       MC_CMD_GET_VI_TLP_PROCESSING_OUT_TPH_ON_LBN 19
--#define       MC_CMD_GET_VI_TLP_PROCESSING_OUT_TPH_ON_WIDTH 1
--#define       MC_CMD_GET_VI_TLP_PROCESSING_OUT_DATA_OFST 0
--#define       MC_CMD_GET_VI_TLP_PROCESSING_OUT_DATA_LEN 4
--
--
--/***********************************/
--/* MC_CMD_SET_VI_TLP_PROCESSING
-- * Set TLP steering and ordering information for a VI.
-- */
--#define MC_CMD_SET_VI_TLP_PROCESSING 0xb1
--#undef MC_CMD_0xb1_PRIVILEGE_CTG
--
--#define MC_CMD_0xb1_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_SET_VI_TLP_PROCESSING_IN msgrequest */
--#define    MC_CMD_SET_VI_TLP_PROCESSING_IN_LEN 8
--/* VI number to set information for. */
--#define       MC_CMD_SET_VI_TLP_PROCESSING_IN_INSTANCE_OFST 0
--#define       MC_CMD_SET_VI_TLP_PROCESSING_IN_INSTANCE_LEN 4
--/* Transaction processing steering hint 1 for use with the Rx Queue. */
--#define       MC_CMD_SET_VI_TLP_PROCESSING_IN_TPH_TAG1_RX_OFST 4
--#define       MC_CMD_SET_VI_TLP_PROCESSING_IN_TPH_TAG1_RX_LEN 1
--/* Transaction processing steering hint 2 for use with the Ev Queue. */
--#define       MC_CMD_SET_VI_TLP_PROCESSING_IN_TPH_TAG2_EV_OFST 5
--#define       MC_CMD_SET_VI_TLP_PROCESSING_IN_TPH_TAG2_EV_LEN 1
--/* Use Relaxed ordering model for TLPs on this VI. */
--#define       MC_CMD_SET_VI_TLP_PROCESSING_IN_RELAXED_ORDERING_LBN 48
--#define       MC_CMD_SET_VI_TLP_PROCESSING_IN_RELAXED_ORDERING_WIDTH 1
--/* Use ID based ordering for TLPs on this VI. */
--#define       MC_CMD_SET_VI_TLP_PROCESSING_IN_ID_BASED_ORDERING_LBN 49
--#define       MC_CMD_SET_VI_TLP_PROCESSING_IN_ID_BASED_ORDERING_WIDTH 1
--/* Set the no snoop bit for TLPs on this VI. */
--#define       MC_CMD_SET_VI_TLP_PROCESSING_IN_NO_SNOOP_LBN 50
--#define       MC_CMD_SET_VI_TLP_PROCESSING_IN_NO_SNOOP_WIDTH 1
--/* Enable TPH for TLPs on this VI. */
--#define       MC_CMD_SET_VI_TLP_PROCESSING_IN_TPH_ON_LBN 51
--#define       MC_CMD_SET_VI_TLP_PROCESSING_IN_TPH_ON_WIDTH 1
--#define       MC_CMD_SET_VI_TLP_PROCESSING_IN_DATA_OFST 4
--#define       MC_CMD_SET_VI_TLP_PROCESSING_IN_DATA_LEN 4
--
--/* MC_CMD_SET_VI_TLP_PROCESSING_OUT msgresponse */
--#define    MC_CMD_SET_VI_TLP_PROCESSING_OUT_LEN 0
--
--
--/***********************************/
--/* MC_CMD_GET_TLP_PROCESSING_GLOBALS
-- * Get global PCIe steering and transaction processing configuration.
-- */
--#define MC_CMD_GET_TLP_PROCESSING_GLOBALS 0xbc
--#undef MC_CMD_0xbc_PRIVILEGE_CTG
--
--#define MC_CMD_0xbc_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_GET_TLP_PROCESSING_GLOBALS_IN msgrequest */
--#define    MC_CMD_GET_TLP_PROCESSING_GLOBALS_IN_LEN 4
--#define       MC_CMD_GET_TLP_PROCESSING_GLOBALS_IN_TLP_GLOBAL_CATEGORY_OFST 0
--#define       MC_CMD_GET_TLP_PROCESSING_GLOBALS_IN_TLP_GLOBAL_CATEGORY_LEN 4
--/* enum: MISC. */
--#define          MC_CMD_GET_TLP_PROCESSING_GLOBALS_IN_TLP_GLOBAL_CATEGORY_MISC 0x0
--/* enum: IDO. */
--#define          MC_CMD_GET_TLP_PROCESSING_GLOBALS_IN_TLP_GLOBAL_CATEGORY_IDO 0x1
--/* enum: RO. */
--#define          MC_CMD_GET_TLP_PROCESSING_GLOBALS_IN_TLP_GLOBAL_CATEGORY_RO 0x2
--/* enum: TPH Type. */
--#define          MC_CMD_GET_TLP_PROCESSING_GLOBALS_IN_TLP_GLOBAL_CATEGORY_TPH_TYPE 0x3
--
--/* MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT msgresponse */
--#define    MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_LEN 8
--#define       MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_GLOBAL_CATEGORY_OFST 0
--#define       MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_GLOBAL_CATEGORY_LEN 4
--/*            Enum values, see field(s): */
--/*               MC_CMD_GET_TLP_PROCESSING_GLOBALS_IN/TLP_GLOBAL_CATEGORY */
--/* Amalgamated TLP info word. */
--#define       MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_WORD_OFST 4
--#define       MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_WORD_LEN 4
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_MISC_WTAG_EN_OFST 4
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_MISC_WTAG_EN_LBN 0
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_MISC_WTAG_EN_WIDTH 1
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_MISC_SPARE_OFST 4
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_MISC_SPARE_LBN 1
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_MISC_SPARE_WIDTH 31
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_IDO_DL_EN_OFST 4
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_IDO_DL_EN_LBN 0
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_IDO_DL_EN_WIDTH 1
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_IDO_TX_EN_OFST 4
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_IDO_TX_EN_LBN 1
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_IDO_TX_EN_WIDTH 1
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_IDO_EV_EN_OFST 4
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_IDO_EV_EN_LBN 2
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_IDO_EV_EN_WIDTH 1
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_IDO_RX_EN_OFST 4
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_IDO_RX_EN_LBN 3
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_IDO_RX_EN_WIDTH 1
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_IDO_SPARE_OFST 4
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_IDO_SPARE_LBN 4
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_IDO_SPARE_WIDTH 28
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_RO_RXDMA_EN_OFST 4
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_RO_RXDMA_EN_LBN 0
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_RO_RXDMA_EN_WIDTH 1
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_RO_TXDMA_EN_OFST 4
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_RO_TXDMA_EN_LBN 1
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_RO_TXDMA_EN_WIDTH 1
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_RO_DL_EN_OFST 4
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_RO_DL_EN_LBN 2
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_RO_DL_EN_WIDTH 1
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_RO_SPARE_OFST 4
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_RO_SPARE_LBN 3
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_RO_SPARE_WIDTH 29
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_TPH_TYPE_MSIX_OFST 4
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_TPH_TYPE_MSIX_LBN 0
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_TPH_TYPE_MSIX_WIDTH 2
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_TPH_TYPE_DL_OFST 4
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_TPH_TYPE_DL_LBN 2
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_TPH_TYPE_DL_WIDTH 2
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_TPH_TYPE_TX_OFST 4
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_TPH_TYPE_TX_LBN 4
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_TPH_TYPE_TX_WIDTH 2
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_TPH_TYPE_EV_OFST 4
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_TPH_TYPE_EV_LBN 6
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_TPH_TYPE_EV_WIDTH 2
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_TPH_TYPE_RX_OFST 4
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_TPH_TYPE_RX_LBN 8
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_TPH_TYPE_RX_WIDTH 2
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_TLP_TYPE_SPARE_OFST 4
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_TLP_TYPE_SPARE_LBN 9
--#define        MC_CMD_GET_TLP_PROCESSING_GLOBALS_OUT_TLP_INFO_TLP_TYPE_SPARE_WIDTH 23
--
--
--/***********************************/
--/* MC_CMD_SET_TLP_PROCESSING_GLOBALS
-- * Set global PCIe steering and transaction processing configuration.
-- */
--#define MC_CMD_SET_TLP_PROCESSING_GLOBALS 0xbd
--#undef MC_CMD_0xbd_PRIVILEGE_CTG
--
--#define MC_CMD_0xbd_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN msgrequest */
--#define    MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_LEN 8
--#define       MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_GLOBAL_CATEGORY_OFST 0
--#define       MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_GLOBAL_CATEGORY_LEN 4
--/*            Enum values, see field(s): */
--/*               MC_CMD_GET_TLP_PROCESSING_GLOBALS/MC_CMD_GET_TLP_PROCESSING_GLOBALS_IN/TLP_GLOBAL_CATEGORY */
--/* Amalgamated TLP info word. */
--#define       MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_WORD_OFST 4
--#define       MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_WORD_LEN 4
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_MISC_WTAG_EN_OFST 4
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_MISC_WTAG_EN_LBN 0
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_MISC_WTAG_EN_WIDTH 1
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_IDO_DL_EN_OFST 4
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_IDO_DL_EN_LBN 0
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_IDO_DL_EN_WIDTH 1
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_IDO_TX_EN_OFST 4
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_IDO_TX_EN_LBN 1
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_IDO_TX_EN_WIDTH 1
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_IDO_EV_EN_OFST 4
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_IDO_EV_EN_LBN 2
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_IDO_EV_EN_WIDTH 1
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_IDO_RX_EN_OFST 4
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_IDO_RX_EN_LBN 3
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_IDO_RX_EN_WIDTH 1
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_RO_RXDMA_EN_OFST 4
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_RO_RXDMA_EN_LBN 0
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_RO_RXDMA_EN_WIDTH 1
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_RO_TXDMA_EN_OFST 4
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_RO_TXDMA_EN_LBN 1
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_RO_TXDMA_EN_WIDTH 1
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_RO_DL_EN_OFST 4
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_RO_DL_EN_LBN 2
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_RO_DL_EN_WIDTH 1
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_TPH_TYPE_MSIX_OFST 4
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_TPH_TYPE_MSIX_LBN 0
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_TPH_TYPE_MSIX_WIDTH 2
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_TPH_TYPE_DL_OFST 4
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_TPH_TYPE_DL_LBN 2
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_TPH_TYPE_DL_WIDTH 2
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_TPH_TYPE_TX_OFST 4
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_TPH_TYPE_TX_LBN 4
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_TPH_TYPE_TX_WIDTH 2
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_TPH_TYPE_EV_OFST 4
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_TPH_TYPE_EV_LBN 6
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_TPH_TYPE_EV_WIDTH 2
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_TPH_TYPE_RX_OFST 4
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_TPH_TYPE_RX_LBN 8
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_TPH_TYPE_RX_WIDTH 2
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_SPARE_OFST 4
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_SPARE_LBN 10
--#define        MC_CMD_SET_TLP_PROCESSING_GLOBALS_IN_TLP_INFO_SPARE_WIDTH 22
--
--/* MC_CMD_SET_TLP_PROCESSING_GLOBALS_OUT msgresponse */
--#define    MC_CMD_SET_TLP_PROCESSING_GLOBALS_OUT_LEN 0
--
--
--/***********************************/
--/* MC_CMD_SATELLITE_DOWNLOAD
-- * Download a new set of images to the satellite CPUs from the host.
-- */
--#define MC_CMD_SATELLITE_DOWNLOAD 0x91
--#undef MC_CMD_0x91_PRIVILEGE_CTG
--
--#define MC_CMD_0x91_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_SATELLITE_DOWNLOAD_IN msgrequest: The reset requirements for the CPUs
-- * are subtle, and so downloads must proceed in a number of phases.
-- *
-- * 1) PHASE_RESET with a target of TARGET_ALL and chunk ID/length of 0.
-- *
-- * 2) PHASE_IMEMS for each of the IMEM targets (target IDs 0-11). Each download
-- * may consist of multiple chunks. The final chunk (with CHUNK_ID_LAST) should
-- * be a checksum (a simple 32-bit sum) of the transferred data. An individual
-- * download may be aborted using CHUNK_ID_ABORT.
-- *
-- * 3) PHASE_VECTORS for each of the vector table targets (target IDs 12-15),
-- * similar to PHASE_IMEMS.
-- *
-- * 4) PHASE_READY with a target of TARGET_ALL and chunk ID/length of 0.
-- *
-- * After any error (a requested abort is not considered to be an error) the
-- * sequence must be restarted from PHASE_RESET.
-- */
--#define    MC_CMD_SATELLITE_DOWNLOAD_IN_LENMIN 20
--#define    MC_CMD_SATELLITE_DOWNLOAD_IN_LENMAX 252
--#define    MC_CMD_SATELLITE_DOWNLOAD_IN_LENMAX_MCDI2 1020
--#define    MC_CMD_SATELLITE_DOWNLOAD_IN_LEN(num) (16+4*(num))
--#define    MC_CMD_SATELLITE_DOWNLOAD_IN_CHUNK_DATA_NUM(len) (((len)-16)/4)
--/* Download phase. (Note: the IDLE phase is used internally and is never valid
-- * in a command from the host.)
-- */
--#define       MC_CMD_SATELLITE_DOWNLOAD_IN_PHASE_OFST 0
--#define       MC_CMD_SATELLITE_DOWNLOAD_IN_PHASE_LEN 4
--#define          MC_CMD_SATELLITE_DOWNLOAD_IN_PHASE_IDLE 0x0 /* enum */
--#define          MC_CMD_SATELLITE_DOWNLOAD_IN_PHASE_RESET 0x1 /* enum */
--#define          MC_CMD_SATELLITE_DOWNLOAD_IN_PHASE_IMEMS 0x2 /* enum */
--#define          MC_CMD_SATELLITE_DOWNLOAD_IN_PHASE_VECTORS 0x3 /* enum */
--#define          MC_CMD_SATELLITE_DOWNLOAD_IN_PHASE_READY 0x4 /* enum */
--/* Target for download. (These match the blob numbers defined in
-- * mc_flash_layout.h.)
-- */
--#define       MC_CMD_SATELLITE_DOWNLOAD_IN_TARGET_OFST 4
--#define       MC_CMD_SATELLITE_DOWNLOAD_IN_TARGET_LEN 4
--/* enum: Valid in phase 2 (PHASE_IMEMS) only */
--#define          MC_CMD_SATELLITE_DOWNLOAD_IN_TARGET_TXDI_TEXT 0x0
--/* enum: Valid in phase 2 (PHASE_IMEMS) only */
--#define          MC_CMD_SATELLITE_DOWNLOAD_IN_TARGET_RXDI_TEXT 0x1
--/* enum: Valid in phase 2 (PHASE_IMEMS) only */
--#define          MC_CMD_SATELLITE_DOWNLOAD_IN_TARGET_TXDP_TEXT 0x2
--/* enum: Valid in phase 2 (PHASE_IMEMS) only */
--#define          MC_CMD_SATELLITE_DOWNLOAD_IN_TARGET_RXDP_TEXT 0x3
--/* enum: Valid in phase 2 (PHASE_IMEMS) only */
--#define          MC_CMD_SATELLITE_DOWNLOAD_IN_TARGET_RXHRSL_HR_LUT 0x4
--/* enum: Valid in phase 2 (PHASE_IMEMS) only */
--#define          MC_CMD_SATELLITE_DOWNLOAD_IN_TARGET_RXHRSL_HR_LUT_CFG 0x5
--/* enum: Valid in phase 2 (PHASE_IMEMS) only */
--#define          MC_CMD_SATELLITE_DOWNLOAD_IN_TARGET_TXHRSL_HR_LUT 0x6
--/* enum: Valid in phase 2 (PHASE_IMEMS) only */
--#define          MC_CMD_SATELLITE_DOWNLOAD_IN_TARGET_TXHRSL_HR_LUT_CFG 0x7
--/* enum: Valid in phase 2 (PHASE_IMEMS) only */
--#define          MC_CMD_SATELLITE_DOWNLOAD_IN_TARGET_RXHRSL_HR_PGM 0x8
--/* enum: Valid in phase 2 (PHASE_IMEMS) only */
--#define          MC_CMD_SATELLITE_DOWNLOAD_IN_TARGET_RXHRSL_SL_PGM 0x9
--/* enum: Valid in phase 2 (PHASE_IMEMS) only */
--#define          MC_CMD_SATELLITE_DOWNLOAD_IN_TARGET_TXHRSL_HR_PGM 0xa
--/* enum: Valid in phase 2 (PHASE_IMEMS) only */
--#define          MC_CMD_SATELLITE_DOWNLOAD_IN_TARGET_TXHRSL_SL_PGM 0xb
--/* enum: Valid in phase 3 (PHASE_VECTORS) only */
--#define          MC_CMD_SATELLITE_DOWNLOAD_IN_TARGET_RXDI_VTBL0 0xc
--/* enum: Valid in phase 3 (PHASE_VECTORS) only */
--#define          MC_CMD_SATELLITE_DOWNLOAD_IN_TARGET_TXDI_VTBL0 0xd
--/* enum: Valid in phase 3 (PHASE_VECTORS) only */
--#define          MC_CMD_SATELLITE_DOWNLOAD_IN_TARGET_RXDI_VTBL1 0xe
--/* enum: Valid in phase 3 (PHASE_VECTORS) only */
--#define          MC_CMD_SATELLITE_DOWNLOAD_IN_TARGET_TXDI_VTBL1 0xf
--/* enum: Valid in phases 1 (PHASE_RESET) and 4 (PHASE_READY) only */
--#define          MC_CMD_SATELLITE_DOWNLOAD_IN_TARGET_ALL 0xffffffff
--/* Chunk ID, or CHUNK_ID_LAST or CHUNK_ID_ABORT */
--#define       MC_CMD_SATELLITE_DOWNLOAD_IN_CHUNK_ID_OFST 8
--#define       MC_CMD_SATELLITE_DOWNLOAD_IN_CHUNK_ID_LEN 4
--/* enum: Last chunk, containing checksum rather than data */
--#define          MC_CMD_SATELLITE_DOWNLOAD_IN_CHUNK_ID_LAST 0xffffffff
--/* enum: Abort download of this item */
--#define          MC_CMD_SATELLITE_DOWNLOAD_IN_CHUNK_ID_ABORT 0xfffffffe
--/* Length of this chunk in bytes */
--#define       MC_CMD_SATELLITE_DOWNLOAD_IN_CHUNK_LEN_OFST 12
--#define       MC_CMD_SATELLITE_DOWNLOAD_IN_CHUNK_LEN_LEN 4
--/* Data for this chunk */
--#define       MC_CMD_SATELLITE_DOWNLOAD_IN_CHUNK_DATA_OFST 16
--#define       MC_CMD_SATELLITE_DOWNLOAD_IN_CHUNK_DATA_LEN 4
--#define       MC_CMD_SATELLITE_DOWNLOAD_IN_CHUNK_DATA_MINNUM 1
--#define       MC_CMD_SATELLITE_DOWNLOAD_IN_CHUNK_DATA_MAXNUM 59
--#define       MC_CMD_SATELLITE_DOWNLOAD_IN_CHUNK_DATA_MAXNUM_MCDI2 251
--
--/* MC_CMD_SATELLITE_DOWNLOAD_OUT msgresponse */
--#define    MC_CMD_SATELLITE_DOWNLOAD_OUT_LEN 8
--/* Same as MC_CMD_ERR field, but included as 0 in success cases */
--#define       MC_CMD_SATELLITE_DOWNLOAD_OUT_RESULT_OFST 0
--#define       MC_CMD_SATELLITE_DOWNLOAD_OUT_RESULT_LEN 4
--/* Extra status information */
--#define       MC_CMD_SATELLITE_DOWNLOAD_OUT_INFO_OFST 4
--#define       MC_CMD_SATELLITE_DOWNLOAD_OUT_INFO_LEN 4
--/* enum: Code download OK, completed. */
--#define          MC_CMD_SATELLITE_DOWNLOAD_OUT_OK_COMPLETE 0x0
--/* enum: Code download aborted as requested. */
--#define          MC_CMD_SATELLITE_DOWNLOAD_OUT_OK_ABORTED 0x1
--/* enum: Code download OK so far, send next chunk. */
--#define          MC_CMD_SATELLITE_DOWNLOAD_OUT_OK_NEXT_CHUNK 0x2
--/* enum: Download phases out of sequence */
--#define          MC_CMD_SATELLITE_DOWNLOAD_OUT_ERR_BAD_PHASE 0x100
--/* enum: Bad target for this phase */
--#define          MC_CMD_SATELLITE_DOWNLOAD_OUT_ERR_BAD_TARGET 0x101
--/* enum: Chunk ID out of sequence */
--#define          MC_CMD_SATELLITE_DOWNLOAD_OUT_ERR_BAD_CHUNK_ID 0x200
--/* enum: Chunk length zero or too large */
--#define          MC_CMD_SATELLITE_DOWNLOAD_OUT_ERR_BAD_CHUNK_LEN 0x201
--/* enum: Checksum was incorrect */
--#define          MC_CMD_SATELLITE_DOWNLOAD_OUT_ERR_BAD_CHECKSUM 0x300
--
--
--/***********************************/
- /* MC_CMD_GET_CAPABILITIES
-  * Get device capabilities.
-  *
-@@ -15554,168 +14858,6 @@
- 
- 
- /***********************************/
--/* MC_CMD_TCM_BUCKET_ALLOC
-- * Allocate a pacer bucket (for qau rp or a snapper test)
-- */
--#define MC_CMD_TCM_BUCKET_ALLOC 0xb2
--#undef MC_CMD_0xb2_PRIVILEGE_CTG
--
--#define MC_CMD_0xb2_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_TCM_BUCKET_ALLOC_IN msgrequest */
--#define    MC_CMD_TCM_BUCKET_ALLOC_IN_LEN 0
--
--/* MC_CMD_TCM_BUCKET_ALLOC_OUT msgresponse */
--#define    MC_CMD_TCM_BUCKET_ALLOC_OUT_LEN 4
--/* the bucket id */
--#define       MC_CMD_TCM_BUCKET_ALLOC_OUT_BUCKET_OFST 0
--#define       MC_CMD_TCM_BUCKET_ALLOC_OUT_BUCKET_LEN 4
--
--
--/***********************************/
--/* MC_CMD_TCM_BUCKET_FREE
-- * Free a pacer bucket
-- */
--#define MC_CMD_TCM_BUCKET_FREE 0xb3
--#undef MC_CMD_0xb3_PRIVILEGE_CTG
--
--#define MC_CMD_0xb3_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_TCM_BUCKET_FREE_IN msgrequest */
--#define    MC_CMD_TCM_BUCKET_FREE_IN_LEN 4
--/* the bucket id */
--#define       MC_CMD_TCM_BUCKET_FREE_IN_BUCKET_OFST 0
--#define       MC_CMD_TCM_BUCKET_FREE_IN_BUCKET_LEN 4
--
--/* MC_CMD_TCM_BUCKET_FREE_OUT msgresponse */
--#define    MC_CMD_TCM_BUCKET_FREE_OUT_LEN 0
--
--
--/***********************************/
--/* MC_CMD_TCM_BUCKET_INIT
-- * Initialise pacer bucket with a given rate
-- */
--#define MC_CMD_TCM_BUCKET_INIT 0xb4
--#undef MC_CMD_0xb4_PRIVILEGE_CTG
--
--#define MC_CMD_0xb4_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_TCM_BUCKET_INIT_IN msgrequest */
--#define    MC_CMD_TCM_BUCKET_INIT_IN_LEN 8
--/* the bucket id */
--#define       MC_CMD_TCM_BUCKET_INIT_IN_BUCKET_OFST 0
--#define       MC_CMD_TCM_BUCKET_INIT_IN_BUCKET_LEN 4
--/* the rate in mbps */
--#define       MC_CMD_TCM_BUCKET_INIT_IN_RATE_OFST 4
--#define       MC_CMD_TCM_BUCKET_INIT_IN_RATE_LEN 4
--
--/* MC_CMD_TCM_BUCKET_INIT_EXT_IN msgrequest */
--#define    MC_CMD_TCM_BUCKET_INIT_EXT_IN_LEN 12
--/* the bucket id */
--#define       MC_CMD_TCM_BUCKET_INIT_EXT_IN_BUCKET_OFST 0
--#define       MC_CMD_TCM_BUCKET_INIT_EXT_IN_BUCKET_LEN 4
--/* the rate in mbps */
--#define       MC_CMD_TCM_BUCKET_INIT_EXT_IN_RATE_OFST 4
--#define       MC_CMD_TCM_BUCKET_INIT_EXT_IN_RATE_LEN 4
--/* the desired maximum fill level */
--#define       MC_CMD_TCM_BUCKET_INIT_EXT_IN_MAX_FILL_OFST 8
--#define       MC_CMD_TCM_BUCKET_INIT_EXT_IN_MAX_FILL_LEN 4
--
--/* MC_CMD_TCM_BUCKET_INIT_OUT msgresponse */
--#define    MC_CMD_TCM_BUCKET_INIT_OUT_LEN 0
--
--
--/***********************************/
--/* MC_CMD_TCM_TXQ_INIT
-- * Initialise txq in pacer with given options or set options
-- */
--#define MC_CMD_TCM_TXQ_INIT 0xb5
--#undef MC_CMD_0xb5_PRIVILEGE_CTG
--
--#define MC_CMD_0xb5_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_TCM_TXQ_INIT_IN msgrequest */
--#define    MC_CMD_TCM_TXQ_INIT_IN_LEN 28
--/* the txq id */
--#define       MC_CMD_TCM_TXQ_INIT_IN_QID_OFST 0
--#define       MC_CMD_TCM_TXQ_INIT_IN_QID_LEN 4
--/* the static priority associated with the txq */
--#define       MC_CMD_TCM_TXQ_INIT_IN_LABEL_OFST 4
--#define       MC_CMD_TCM_TXQ_INIT_IN_LABEL_LEN 4
--/* bitmask of the priority queues this txq is inserted into when inserted. */
--#define       MC_CMD_TCM_TXQ_INIT_IN_PQ_FLAGS_OFST 8
--#define       MC_CMD_TCM_TXQ_INIT_IN_PQ_FLAGS_LEN 4
--#define        MC_CMD_TCM_TXQ_INIT_IN_PQ_FLAG_GUARANTEED_OFST 8
--#define        MC_CMD_TCM_TXQ_INIT_IN_PQ_FLAG_GUARANTEED_LBN 0
--#define        MC_CMD_TCM_TXQ_INIT_IN_PQ_FLAG_GUARANTEED_WIDTH 1
--#define        MC_CMD_TCM_TXQ_INIT_IN_PQ_FLAG_NORMAL_OFST 8
--#define        MC_CMD_TCM_TXQ_INIT_IN_PQ_FLAG_NORMAL_LBN 1
--#define        MC_CMD_TCM_TXQ_INIT_IN_PQ_FLAG_NORMAL_WIDTH 1
--#define        MC_CMD_TCM_TXQ_INIT_IN_PQ_FLAG_LOW_OFST 8
--#define        MC_CMD_TCM_TXQ_INIT_IN_PQ_FLAG_LOW_LBN 2
--#define        MC_CMD_TCM_TXQ_INIT_IN_PQ_FLAG_LOW_WIDTH 1
--/* the reaction point (RP) bucket */
--#define       MC_CMD_TCM_TXQ_INIT_IN_RP_BKT_OFST 12
--#define       MC_CMD_TCM_TXQ_INIT_IN_RP_BKT_LEN 4
--/* an already reserved bucket (typically set to bucket associated with outer
-- * vswitch)
-- */
--#define       MC_CMD_TCM_TXQ_INIT_IN_MAX_BKT1_OFST 16
--#define       MC_CMD_TCM_TXQ_INIT_IN_MAX_BKT1_LEN 4
--/* an already reserved bucket (typically set to bucket associated with inner
-- * vswitch)
-- */
--#define       MC_CMD_TCM_TXQ_INIT_IN_MAX_BKT2_OFST 20
--#define       MC_CMD_TCM_TXQ_INIT_IN_MAX_BKT2_LEN 4
--/* the min bucket (typically for ETS/minimum bandwidth) */
--#define       MC_CMD_TCM_TXQ_INIT_IN_MIN_BKT_OFST 24
--#define       MC_CMD_TCM_TXQ_INIT_IN_MIN_BKT_LEN 4
--
--/* MC_CMD_TCM_TXQ_INIT_EXT_IN msgrequest */
--#define    MC_CMD_TCM_TXQ_INIT_EXT_IN_LEN 32
--/* the txq id */
--#define       MC_CMD_TCM_TXQ_INIT_EXT_IN_QID_OFST 0
--#define       MC_CMD_TCM_TXQ_INIT_EXT_IN_QID_LEN 4
--/* the static priority associated with the txq */
--#define       MC_CMD_TCM_TXQ_INIT_EXT_IN_LABEL_NORMAL_OFST 4
--#define       MC_CMD_TCM_TXQ_INIT_EXT_IN_LABEL_NORMAL_LEN 4
--/* bitmask of the priority queues this txq is inserted into when inserted. */
--#define       MC_CMD_TCM_TXQ_INIT_EXT_IN_PQ_FLAGS_OFST 8
--#define       MC_CMD_TCM_TXQ_INIT_EXT_IN_PQ_FLAGS_LEN 4
--#define        MC_CMD_TCM_TXQ_INIT_EXT_IN_PQ_FLAG_GUARANTEED_OFST 8
--#define        MC_CMD_TCM_TXQ_INIT_EXT_IN_PQ_FLAG_GUARANTEED_LBN 0
--#define        MC_CMD_TCM_TXQ_INIT_EXT_IN_PQ_FLAG_GUARANTEED_WIDTH 1
--#define        MC_CMD_TCM_TXQ_INIT_EXT_IN_PQ_FLAG_NORMAL_OFST 8
--#define        MC_CMD_TCM_TXQ_INIT_EXT_IN_PQ_FLAG_NORMAL_LBN 1
--#define        MC_CMD_TCM_TXQ_INIT_EXT_IN_PQ_FLAG_NORMAL_WIDTH 1
--#define        MC_CMD_TCM_TXQ_INIT_EXT_IN_PQ_FLAG_LOW_OFST 8
--#define        MC_CMD_TCM_TXQ_INIT_EXT_IN_PQ_FLAG_LOW_LBN 2
--#define        MC_CMD_TCM_TXQ_INIT_EXT_IN_PQ_FLAG_LOW_WIDTH 1
--/* the reaction point (RP) bucket */
--#define       MC_CMD_TCM_TXQ_INIT_EXT_IN_RP_BKT_OFST 12
--#define       MC_CMD_TCM_TXQ_INIT_EXT_IN_RP_BKT_LEN 4
--/* an already reserved bucket (typically set to bucket associated with outer
-- * vswitch)
-- */
--#define       MC_CMD_TCM_TXQ_INIT_EXT_IN_MAX_BKT1_OFST 16
--#define       MC_CMD_TCM_TXQ_INIT_EXT_IN_MAX_BKT1_LEN 4
--/* an already reserved bucket (typically set to bucket associated with inner
-- * vswitch)
-- */
--#define       MC_CMD_TCM_TXQ_INIT_EXT_IN_MAX_BKT2_OFST 20
--#define       MC_CMD_TCM_TXQ_INIT_EXT_IN_MAX_BKT2_LEN 4
--/* the min bucket (typically for ETS/minimum bandwidth) */
--#define       MC_CMD_TCM_TXQ_INIT_EXT_IN_MIN_BKT_OFST 24
--#define       MC_CMD_TCM_TXQ_INIT_EXT_IN_MIN_BKT_LEN 4
--/* the static priority associated with the txq */
--#define       MC_CMD_TCM_TXQ_INIT_EXT_IN_LABEL_GUARANTEED_OFST 28
--#define       MC_CMD_TCM_TXQ_INIT_EXT_IN_LABEL_GUARANTEED_LEN 4
--
--/* MC_CMD_TCM_TXQ_INIT_OUT msgresponse */
--#define    MC_CMD_TCM_TXQ_INIT_OUT_LEN 0
--
--
--/***********************************/
- /* MC_CMD_LINK_PIOBUF
-  * Link a push I/O buffer to a TxQ
-  */
-@@ -16608,158 +15750,6 @@
- 
- 
- /***********************************/
--/* MC_CMD_DOT1P_MAPPING_ALLOC
-- * Allocate a .1p mapping.
-- */
--#define MC_CMD_DOT1P_MAPPING_ALLOC 0xa4
--#undef MC_CMD_0xa4_PRIVILEGE_CTG
--
--#define MC_CMD_0xa4_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_DOT1P_MAPPING_ALLOC_IN msgrequest */
--#define    MC_CMD_DOT1P_MAPPING_ALLOC_IN_LEN 8
--/* The handle of the owning upstream port */
--#define       MC_CMD_DOT1P_MAPPING_ALLOC_IN_UPSTREAM_PORT_ID_OFST 0
--#define       MC_CMD_DOT1P_MAPPING_ALLOC_IN_UPSTREAM_PORT_ID_LEN 4
--/* Number of queues spanned by this mapping, in the range 1-64; valid fixed
-- * offsets in the mapping table will be in the range 0 to NUM_QUEUES-1, and
-- * referenced RSS contexts must span no more than this number.
-- */
--#define       MC_CMD_DOT1P_MAPPING_ALLOC_IN_NUM_QUEUES_OFST 4
--#define       MC_CMD_DOT1P_MAPPING_ALLOC_IN_NUM_QUEUES_LEN 4
--
--/* MC_CMD_DOT1P_MAPPING_ALLOC_OUT msgresponse */
--#define    MC_CMD_DOT1P_MAPPING_ALLOC_OUT_LEN 4
--/* The handle of the new .1p mapping. This should be considered opaque to the
-- * host, although a value of 0xFFFFFFFF is guaranteed never to be a valid
-- * handle.
-- */
--#define       MC_CMD_DOT1P_MAPPING_ALLOC_OUT_DOT1P_MAPPING_ID_OFST 0
--#define       MC_CMD_DOT1P_MAPPING_ALLOC_OUT_DOT1P_MAPPING_ID_LEN 4
--/* enum: guaranteed invalid .1p mapping handle value */
--#define          MC_CMD_DOT1P_MAPPING_ALLOC_OUT_DOT1P_MAPPING_ID_INVALID 0xffffffff
--
--
--/***********************************/
--/* MC_CMD_DOT1P_MAPPING_FREE
-- * Free a .1p mapping.
-- */
--#define MC_CMD_DOT1P_MAPPING_FREE 0xa5
--#undef MC_CMD_0xa5_PRIVILEGE_CTG
--
--#define MC_CMD_0xa5_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_DOT1P_MAPPING_FREE_IN msgrequest */
--#define    MC_CMD_DOT1P_MAPPING_FREE_IN_LEN 4
--/* The handle of the .1p mapping */
--#define       MC_CMD_DOT1P_MAPPING_FREE_IN_DOT1P_MAPPING_ID_OFST 0
--#define       MC_CMD_DOT1P_MAPPING_FREE_IN_DOT1P_MAPPING_ID_LEN 4
--
--/* MC_CMD_DOT1P_MAPPING_FREE_OUT msgresponse */
--#define    MC_CMD_DOT1P_MAPPING_FREE_OUT_LEN 0
--
--
--/***********************************/
--/* MC_CMD_DOT1P_MAPPING_SET_TABLE
-- * Set the mapping table for a .1p mapping.
-- */
--#define MC_CMD_DOT1P_MAPPING_SET_TABLE 0xa6
--#undef MC_CMD_0xa6_PRIVILEGE_CTG
--
--#define MC_CMD_0xa6_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_DOT1P_MAPPING_SET_TABLE_IN msgrequest */
--#define    MC_CMD_DOT1P_MAPPING_SET_TABLE_IN_LEN 36
--/* The handle of the .1p mapping */
--#define       MC_CMD_DOT1P_MAPPING_SET_TABLE_IN_DOT1P_MAPPING_ID_OFST 0
--#define       MC_CMD_DOT1P_MAPPING_SET_TABLE_IN_DOT1P_MAPPING_ID_LEN 4
--/* Per-priority mappings (1 32-bit word per entry - an offset or RSS context
-- * handle)
-- */
--#define       MC_CMD_DOT1P_MAPPING_SET_TABLE_IN_MAPPING_TABLE_OFST 4
--#define       MC_CMD_DOT1P_MAPPING_SET_TABLE_IN_MAPPING_TABLE_LEN 32
--
--/* MC_CMD_DOT1P_MAPPING_SET_TABLE_OUT msgresponse */
--#define    MC_CMD_DOT1P_MAPPING_SET_TABLE_OUT_LEN 0
--
--
--/***********************************/
--/* MC_CMD_DOT1P_MAPPING_GET_TABLE
-- * Get the mapping table for a .1p mapping.
-- */
--#define MC_CMD_DOT1P_MAPPING_GET_TABLE 0xa7
--#undef MC_CMD_0xa7_PRIVILEGE_CTG
--
--#define MC_CMD_0xa7_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_DOT1P_MAPPING_GET_TABLE_IN msgrequest */
--#define    MC_CMD_DOT1P_MAPPING_GET_TABLE_IN_LEN 4
--/* The handle of the .1p mapping */
--#define       MC_CMD_DOT1P_MAPPING_GET_TABLE_IN_DOT1P_MAPPING_ID_OFST 0
--#define       MC_CMD_DOT1P_MAPPING_GET_TABLE_IN_DOT1P_MAPPING_ID_LEN 4
--
--/* MC_CMD_DOT1P_MAPPING_GET_TABLE_OUT msgresponse */
--#define    MC_CMD_DOT1P_MAPPING_GET_TABLE_OUT_LEN 36
--/* Per-priority mappings (1 32-bit word per entry - an offset or RSS context
-- * handle)
-- */
--#define       MC_CMD_DOT1P_MAPPING_GET_TABLE_OUT_MAPPING_TABLE_OFST 4
--#define       MC_CMD_DOT1P_MAPPING_GET_TABLE_OUT_MAPPING_TABLE_LEN 32
--
--
--/***********************************/
--/* MC_CMD_GET_VECTOR_CFG
-- * Get Interrupt Vector config for this PF.
-- */
--#define MC_CMD_GET_VECTOR_CFG 0xbf
--#undef MC_CMD_0xbf_PRIVILEGE_CTG
--
--#define MC_CMD_0xbf_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_GET_VECTOR_CFG_IN msgrequest */
--#define    MC_CMD_GET_VECTOR_CFG_IN_LEN 0
--
--/* MC_CMD_GET_VECTOR_CFG_OUT msgresponse */
--#define    MC_CMD_GET_VECTOR_CFG_OUT_LEN 12
--/* Base absolute interrupt vector number. */
--#define       MC_CMD_GET_VECTOR_CFG_OUT_VEC_BASE_OFST 0
--#define       MC_CMD_GET_VECTOR_CFG_OUT_VEC_BASE_LEN 4
--/* Number of interrupt vectors allocate to this PF. */
--#define       MC_CMD_GET_VECTOR_CFG_OUT_VECS_PER_PF_OFST 4
--#define       MC_CMD_GET_VECTOR_CFG_OUT_VECS_PER_PF_LEN 4
--/* Number of interrupt vectors to allocate per VF. */
--#define       MC_CMD_GET_VECTOR_CFG_OUT_VECS_PER_VF_OFST 8
--#define       MC_CMD_GET_VECTOR_CFG_OUT_VECS_PER_VF_LEN 4
--
--
--/***********************************/
--/* MC_CMD_SET_VECTOR_CFG
-- * Set Interrupt Vector config for this PF.
-- */
--#define MC_CMD_SET_VECTOR_CFG 0xc0
--#undef MC_CMD_0xc0_PRIVILEGE_CTG
--
--#define MC_CMD_0xc0_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_SET_VECTOR_CFG_IN msgrequest */
--#define    MC_CMD_SET_VECTOR_CFG_IN_LEN 12
--/* Base absolute interrupt vector number, or MC_CMD_RESOURCE_INSTANCE_ANY to
-- * let the system find a suitable base.
-- */
--#define       MC_CMD_SET_VECTOR_CFG_IN_VEC_BASE_OFST 0
--#define       MC_CMD_SET_VECTOR_CFG_IN_VEC_BASE_LEN 4
--/* Number of interrupt vectors allocate to this PF. */
--#define       MC_CMD_SET_VECTOR_CFG_IN_VECS_PER_PF_OFST 4
--#define       MC_CMD_SET_VECTOR_CFG_IN_VECS_PER_PF_LEN 4
--/* Number of interrupt vectors to allocate per VF. */
--#define       MC_CMD_SET_VECTOR_CFG_IN_VECS_PER_VF_OFST 8
--#define       MC_CMD_SET_VECTOR_CFG_IN_VECS_PER_VF_LEN 4
--
--/* MC_CMD_SET_VECTOR_CFG_OUT msgresponse */
--#define    MC_CMD_SET_VECTOR_CFG_OUT_LEN 0
--
--
--/***********************************/
- /* MC_CMD_VPORT_ADD_MAC_ADDRESS
-  * Add a MAC address to a v-port
-  */
-@@ -16920,97 +15910,6 @@
- 
- 
- /***********************************/
--/* MC_CMD_DUMP_BUFTBL_ENTRIES
-- * Dump buffer table entries, mainly for command client debug use. Dumps
-- * absolute entries, and does not use chunk handles. All entries must be in
-- * range, and used for q page mapping, Although the latter restriction may be
-- * lifted in future.
-- */
--#define MC_CMD_DUMP_BUFTBL_ENTRIES 0xab
--#undef MC_CMD_0xab_PRIVILEGE_CTG
--
--#define MC_CMD_0xab_PRIVILEGE_CTG SRIOV_CTG_INSECURE
--
--/* MC_CMD_DUMP_BUFTBL_ENTRIES_IN msgrequest */
--#define    MC_CMD_DUMP_BUFTBL_ENTRIES_IN_LEN 8
--/* Index of the first buffer table entry. */
--#define       MC_CMD_DUMP_BUFTBL_ENTRIES_IN_FIRSTID_OFST 0
--#define       MC_CMD_DUMP_BUFTBL_ENTRIES_IN_FIRSTID_LEN 4
--/* Number of buffer table entries to dump. */
--#define       MC_CMD_DUMP_BUFTBL_ENTRIES_IN_NUMENTRIES_OFST 4
--#define       MC_CMD_DUMP_BUFTBL_ENTRIES_IN_NUMENTRIES_LEN 4
--
--/* MC_CMD_DUMP_BUFTBL_ENTRIES_OUT msgresponse */
--#define    MC_CMD_DUMP_BUFTBL_ENTRIES_OUT_LENMIN 12
--#define    MC_CMD_DUMP_BUFTBL_ENTRIES_OUT_LENMAX 252
--#define    MC_CMD_DUMP_BUFTBL_ENTRIES_OUT_LENMAX_MCDI2 1020
--#define    MC_CMD_DUMP_BUFTBL_ENTRIES_OUT_LEN(num) (0+12*(num))
--#define    MC_CMD_DUMP_BUFTBL_ENTRIES_OUT_ENTRY_NUM(len) (((len)-0)/12)
--/* Raw buffer table entries, layed out as BUFTBL_ENTRY. */
--#define       MC_CMD_DUMP_BUFTBL_ENTRIES_OUT_ENTRY_OFST 0
--#define       MC_CMD_DUMP_BUFTBL_ENTRIES_OUT_ENTRY_LEN 12
--#define       MC_CMD_DUMP_BUFTBL_ENTRIES_OUT_ENTRY_MINNUM 1
--#define       MC_CMD_DUMP_BUFTBL_ENTRIES_OUT_ENTRY_MAXNUM 21
--#define       MC_CMD_DUMP_BUFTBL_ENTRIES_OUT_ENTRY_MAXNUM_MCDI2 85
--
--
--/***********************************/
--/* MC_CMD_SET_RXDP_CONFIG
-- * Set global RXDP configuration settings
-- */
--#define MC_CMD_SET_RXDP_CONFIG 0xc1
--#undef MC_CMD_0xc1_PRIVILEGE_CTG
--
--#define MC_CMD_0xc1_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_SET_RXDP_CONFIG_IN msgrequest */
--#define    MC_CMD_SET_RXDP_CONFIG_IN_LEN 4
--#define       MC_CMD_SET_RXDP_CONFIG_IN_DATA_OFST 0
--#define       MC_CMD_SET_RXDP_CONFIG_IN_DATA_LEN 4
--#define        MC_CMD_SET_RXDP_CONFIG_IN_PAD_HOST_DMA_OFST 0
--#define        MC_CMD_SET_RXDP_CONFIG_IN_PAD_HOST_DMA_LBN 0
--#define        MC_CMD_SET_RXDP_CONFIG_IN_PAD_HOST_DMA_WIDTH 1
--#define        MC_CMD_SET_RXDP_CONFIG_IN_PAD_HOST_LEN_OFST 0
--#define        MC_CMD_SET_RXDP_CONFIG_IN_PAD_HOST_LEN_LBN 1
--#define        MC_CMD_SET_RXDP_CONFIG_IN_PAD_HOST_LEN_WIDTH 2
--/* enum: pad to 64 bytes */
--#define          MC_CMD_SET_RXDP_CONFIG_IN_PAD_HOST_64 0x0
--/* enum: pad to 128 bytes (Medford only) */
--#define          MC_CMD_SET_RXDP_CONFIG_IN_PAD_HOST_128 0x1
--/* enum: pad to 256 bytes (Medford only) */
--#define          MC_CMD_SET_RXDP_CONFIG_IN_PAD_HOST_256 0x2
--
--/* MC_CMD_SET_RXDP_CONFIG_OUT msgresponse */
--#define    MC_CMD_SET_RXDP_CONFIG_OUT_LEN 0
--
--
--/***********************************/
--/* MC_CMD_GET_RXDP_CONFIG
-- * Get global RXDP configuration settings
-- */
--#define MC_CMD_GET_RXDP_CONFIG 0xc2
--#undef MC_CMD_0xc2_PRIVILEGE_CTG
--
--#define MC_CMD_0xc2_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_GET_RXDP_CONFIG_IN msgrequest */
--#define    MC_CMD_GET_RXDP_CONFIG_IN_LEN 0
--
--/* MC_CMD_GET_RXDP_CONFIG_OUT msgresponse */
--#define    MC_CMD_GET_RXDP_CONFIG_OUT_LEN 4
--#define       MC_CMD_GET_RXDP_CONFIG_OUT_DATA_OFST 0
--#define       MC_CMD_GET_RXDP_CONFIG_OUT_DATA_LEN 4
--#define        MC_CMD_GET_RXDP_CONFIG_OUT_PAD_HOST_DMA_OFST 0
--#define        MC_CMD_GET_RXDP_CONFIG_OUT_PAD_HOST_DMA_LBN 0
--#define        MC_CMD_GET_RXDP_CONFIG_OUT_PAD_HOST_DMA_WIDTH 1
--#define        MC_CMD_GET_RXDP_CONFIG_OUT_PAD_HOST_LEN_OFST 0
--#define        MC_CMD_GET_RXDP_CONFIG_OUT_PAD_HOST_LEN_LBN 1
--#define        MC_CMD_GET_RXDP_CONFIG_OUT_PAD_HOST_LEN_WIDTH 2
--/*             Enum values, see field(s): */
--/*                MC_CMD_SET_RXDP_CONFIG/MC_CMD_SET_RXDP_CONFIG_IN/PAD_HOST_LEN */
--
--
--/***********************************/
- /* MC_CMD_GET_CLOCK
-  * Return the system and PDCPU clock frequencies.
-  */
-@@ -17033,210 +15932,6 @@
- 
- 
- /***********************************/
--/* MC_CMD_SET_CLOCK
-- * Control the system and DPCPU clock frequencies. Changes are lost reboot.
-- */
--#define MC_CMD_SET_CLOCK 0xad
--#undef MC_CMD_0xad_PRIVILEGE_CTG
--
--#define MC_CMD_0xad_PRIVILEGE_CTG SRIOV_CTG_INSECURE
--
--/* MC_CMD_SET_CLOCK_IN msgrequest */
--#define    MC_CMD_SET_CLOCK_IN_LEN 28
--/* Requested frequency in MHz for system clock domain */
--#define       MC_CMD_SET_CLOCK_IN_SYS_FREQ_OFST 0
--#define       MC_CMD_SET_CLOCK_IN_SYS_FREQ_LEN 4
--/* enum: Leave the system clock domain frequency unchanged */
--#define          MC_CMD_SET_CLOCK_IN_SYS_DOMAIN_DONT_CHANGE 0x0
--/* Requested frequency in MHz for inter-core clock domain */
--#define       MC_CMD_SET_CLOCK_IN_ICORE_FREQ_OFST 4
--#define       MC_CMD_SET_CLOCK_IN_ICORE_FREQ_LEN 4
--/* enum: Leave the inter-core clock domain frequency unchanged */
--#define          MC_CMD_SET_CLOCK_IN_ICORE_DOMAIN_DONT_CHANGE 0x0
--/* Requested frequency in MHz for DPCPU clock domain */
--#define       MC_CMD_SET_CLOCK_IN_DPCPU_FREQ_OFST 8
--#define       MC_CMD_SET_CLOCK_IN_DPCPU_FREQ_LEN 4
--/* enum: Leave the DPCPU clock domain frequency unchanged */
--#define          MC_CMD_SET_CLOCK_IN_DPCPU_DOMAIN_DONT_CHANGE 0x0
--/* Requested frequency in MHz for PCS clock domain */
--#define       MC_CMD_SET_CLOCK_IN_PCS_FREQ_OFST 12
--#define       MC_CMD_SET_CLOCK_IN_PCS_FREQ_LEN 4
--/* enum: Leave the PCS clock domain frequency unchanged */
--#define          MC_CMD_SET_CLOCK_IN_PCS_DOMAIN_DONT_CHANGE 0x0
--/* Requested frequency in MHz for MC clock domain */
--#define       MC_CMD_SET_CLOCK_IN_MC_FREQ_OFST 16
--#define       MC_CMD_SET_CLOCK_IN_MC_FREQ_LEN 4
--/* enum: Leave the MC clock domain frequency unchanged */
--#define          MC_CMD_SET_CLOCK_IN_MC_DOMAIN_DONT_CHANGE 0x0
--/* Requested frequency in MHz for rmon clock domain */
--#define       MC_CMD_SET_CLOCK_IN_RMON_FREQ_OFST 20
--#define       MC_CMD_SET_CLOCK_IN_RMON_FREQ_LEN 4
--/* enum: Leave the rmon clock domain frequency unchanged */
--#define          MC_CMD_SET_CLOCK_IN_RMON_DOMAIN_DONT_CHANGE 0x0
--/* Requested frequency in MHz for vswitch clock domain */
--#define       MC_CMD_SET_CLOCK_IN_VSWITCH_FREQ_OFST 24
--#define       MC_CMD_SET_CLOCK_IN_VSWITCH_FREQ_LEN 4
--/* enum: Leave the vswitch clock domain frequency unchanged */
--#define          MC_CMD_SET_CLOCK_IN_VSWITCH_DOMAIN_DONT_CHANGE 0x0
--
--/* MC_CMD_SET_CLOCK_OUT msgresponse */
--#define    MC_CMD_SET_CLOCK_OUT_LEN 28
--/* Resulting system frequency in MHz */
--#define       MC_CMD_SET_CLOCK_OUT_SYS_FREQ_OFST 0
--#define       MC_CMD_SET_CLOCK_OUT_SYS_FREQ_LEN 4
--/* enum: The system clock domain doesn't exist */
--#define          MC_CMD_SET_CLOCK_OUT_SYS_DOMAIN_UNSUPPORTED 0x0
--/* Resulting inter-core frequency in MHz */
--#define       MC_CMD_SET_CLOCK_OUT_ICORE_FREQ_OFST 4
--#define       MC_CMD_SET_CLOCK_OUT_ICORE_FREQ_LEN 4
--/* enum: The inter-core clock domain doesn't exist / isn't used */
--#define          MC_CMD_SET_CLOCK_OUT_ICORE_DOMAIN_UNSUPPORTED 0x0
--/* Resulting DPCPU frequency in MHz */
--#define       MC_CMD_SET_CLOCK_OUT_DPCPU_FREQ_OFST 8
--#define       MC_CMD_SET_CLOCK_OUT_DPCPU_FREQ_LEN 4
--/* enum: The dpcpu clock domain doesn't exist */
--#define          MC_CMD_SET_CLOCK_OUT_DPCPU_DOMAIN_UNSUPPORTED 0x0
--/* Resulting PCS frequency in MHz */
--#define       MC_CMD_SET_CLOCK_OUT_PCS_FREQ_OFST 12
--#define       MC_CMD_SET_CLOCK_OUT_PCS_FREQ_LEN 4
--/* enum: The PCS clock domain doesn't exist / isn't controlled */
--#define          MC_CMD_SET_CLOCK_OUT_PCS_DOMAIN_UNSUPPORTED 0x0
--/* Resulting MC frequency in MHz */
--#define       MC_CMD_SET_CLOCK_OUT_MC_FREQ_OFST 16
--#define       MC_CMD_SET_CLOCK_OUT_MC_FREQ_LEN 4
--/* enum: The MC clock domain doesn't exist / isn't controlled */
--#define          MC_CMD_SET_CLOCK_OUT_MC_DOMAIN_UNSUPPORTED 0x0
--/* Resulting rmon frequency in MHz */
--#define       MC_CMD_SET_CLOCK_OUT_RMON_FREQ_OFST 20
--#define       MC_CMD_SET_CLOCK_OUT_RMON_FREQ_LEN 4
--/* enum: The rmon clock domain doesn't exist / isn't controlled */
--#define          MC_CMD_SET_CLOCK_OUT_RMON_DOMAIN_UNSUPPORTED 0x0
--/* Resulting vswitch frequency in MHz */
--#define       MC_CMD_SET_CLOCK_OUT_VSWITCH_FREQ_OFST 24
--#define       MC_CMD_SET_CLOCK_OUT_VSWITCH_FREQ_LEN 4
--/* enum: The vswitch clock domain doesn't exist / isn't controlled */
--#define          MC_CMD_SET_CLOCK_OUT_VSWITCH_DOMAIN_UNSUPPORTED 0x0
--
--
--/***********************************/
--/* MC_CMD_DPCPU_RPC
-- * Send an arbitrary DPCPU message.
-- */
--#define MC_CMD_DPCPU_RPC 0xae
--#undef MC_CMD_0xae_PRIVILEGE_CTG
--
--#define MC_CMD_0xae_PRIVILEGE_CTG SRIOV_CTG_INSECURE
--
--/* MC_CMD_DPCPU_RPC_IN msgrequest */
--#define    MC_CMD_DPCPU_RPC_IN_LEN 36
--#define       MC_CMD_DPCPU_RPC_IN_CPU_OFST 0
--#define       MC_CMD_DPCPU_RPC_IN_CPU_LEN 4
--/* enum: RxDPCPU0 */
--#define          MC_CMD_DPCPU_RPC_IN_DPCPU_RX0 0x0
--/* enum: TxDPCPU0 */
--#define          MC_CMD_DPCPU_RPC_IN_DPCPU_TX0 0x1
--/* enum: TxDPCPU1 */
--#define          MC_CMD_DPCPU_RPC_IN_DPCPU_TX1 0x2
--/* enum: RxDPCPU1 (Medford only) */
--#define          MC_CMD_DPCPU_RPC_IN_DPCPU_RX1 0x3
--/* enum: RxDPCPU (will be for the calling function; for now, just an alias of
-- * DPCPU_RX0)
-- */
--#define          MC_CMD_DPCPU_RPC_IN_DPCPU_RX 0x80
--/* enum: TxDPCPU (will be for the calling function; for now, just an alias of
-- * DPCPU_TX0)
-- */
--#define          MC_CMD_DPCPU_RPC_IN_DPCPU_TX 0x81
--/* First 8 bits [39:32] of DATA are consumed by MC-DPCPU protocol and must be
-- * initialised to zero
-- */
--#define       MC_CMD_DPCPU_RPC_IN_DATA_OFST 4
--#define       MC_CMD_DPCPU_RPC_IN_DATA_LEN 32
--#define        MC_CMD_DPCPU_RPC_IN_HDR_CMD_CMDNUM_OFST 4
--#define        MC_CMD_DPCPU_RPC_IN_HDR_CMD_CMDNUM_LBN 8
--#define        MC_CMD_DPCPU_RPC_IN_HDR_CMD_CMDNUM_WIDTH 8
--#define          MC_CMD_DPCPU_RPC_IN_CMDNUM_TXDPCPU_READ 0x6 /* enum */
--#define          MC_CMD_DPCPU_RPC_IN_CMDNUM_TXDPCPU_WRITE 0x7 /* enum */
--#define          MC_CMD_DPCPU_RPC_IN_CMDNUM_TXDPCPU_SELF_TEST 0xc /* enum */
--#define          MC_CMD_DPCPU_RPC_IN_CMDNUM_TXDPCPU_CSR_ACCESS 0xe /* enum */
--#define          MC_CMD_DPCPU_RPC_IN_CMDNUM_RXDPCPU_READ 0x46 /* enum */
--#define          MC_CMD_DPCPU_RPC_IN_CMDNUM_RXDPCPU_WRITE 0x47 /* enum */
--#define          MC_CMD_DPCPU_RPC_IN_CMDNUM_RXDPCPU_SELF_TEST 0x4a /* enum */
--#define          MC_CMD_DPCPU_RPC_IN_CMDNUM_RXDPCPU_CSR_ACCESS 0x4c /* enum */
--#define          MC_CMD_DPCPU_RPC_IN_CMDNUM_RXDPCPU_SET_MC_REPLAY_CNTXT 0x4d /* enum */
--#define        MC_CMD_DPCPU_RPC_IN_HDR_CMD_REQ_OBJID_OFST 4
--#define        MC_CMD_DPCPU_RPC_IN_HDR_CMD_REQ_OBJID_LBN 16
--#define        MC_CMD_DPCPU_RPC_IN_HDR_CMD_REQ_OBJID_WIDTH 16
--#define        MC_CMD_DPCPU_RPC_IN_HDR_CMD_REQ_ADDR_OFST 4
--#define        MC_CMD_DPCPU_RPC_IN_HDR_CMD_REQ_ADDR_LBN 16
--#define        MC_CMD_DPCPU_RPC_IN_HDR_CMD_REQ_ADDR_WIDTH 16
--#define        MC_CMD_DPCPU_RPC_IN_HDR_CMD_REQ_COUNT_OFST 4
--#define        MC_CMD_DPCPU_RPC_IN_HDR_CMD_REQ_COUNT_LBN 48
--#define        MC_CMD_DPCPU_RPC_IN_HDR_CMD_REQ_COUNT_WIDTH 16
--#define        MC_CMD_DPCPU_RPC_IN_CSR_ACCESS_INFO_OFST 4
--#define        MC_CMD_DPCPU_RPC_IN_CSR_ACCESS_INFO_LBN 16
--#define        MC_CMD_DPCPU_RPC_IN_CSR_ACCESS_INFO_WIDTH 240
--#define        MC_CMD_DPCPU_RPC_IN_CSR_ACCESS_CMD_OFST 4
--#define        MC_CMD_DPCPU_RPC_IN_CSR_ACCESS_CMD_LBN 16
--#define        MC_CMD_DPCPU_RPC_IN_CSR_ACCESS_CMD_WIDTH 16
--#define          MC_CMD_DPCPU_RPC_IN_CSR_ACCESS_CMD_STOP_RETURN_RESULT 0x0 /* enum */
--#define          MC_CMD_DPCPU_RPC_IN_CSR_ACCESS_CMD_START_READ 0x1 /* enum */
--#define          MC_CMD_DPCPU_RPC_IN_CSR_ACCESS_CMD_START_WRITE 0x2 /* enum */
--#define          MC_CMD_DPCPU_RPC_IN_CSR_ACCESS_CMD_START_WRITE_READ 0x3 /* enum */
--#define          MC_CMD_DPCPU_RPC_IN_CSR_ACCESS_CMD_START_PIPELINED_READ 0x4 /* enum */
--#define        MC_CMD_DPCPU_RPC_IN_CSR_ACCESS_START_DELAY_OFST 4
--#define        MC_CMD_DPCPU_RPC_IN_CSR_ACCESS_START_DELAY_LBN 48
--#define        MC_CMD_DPCPU_RPC_IN_CSR_ACCESS_START_DELAY_WIDTH 16
--#define        MC_CMD_DPCPU_RPC_IN_CSR_ACCESS_RPT_COUNT_OFST 4
--#define        MC_CMD_DPCPU_RPC_IN_CSR_ACCESS_RPT_COUNT_LBN 64
--#define        MC_CMD_DPCPU_RPC_IN_CSR_ACCESS_RPT_COUNT_WIDTH 16
--#define        MC_CMD_DPCPU_RPC_IN_CSR_ACCESS_GAP_DELAY_OFST 4
--#define        MC_CMD_DPCPU_RPC_IN_CSR_ACCESS_GAP_DELAY_LBN 80
--#define        MC_CMD_DPCPU_RPC_IN_CSR_ACCESS_GAP_DELAY_WIDTH 16
--#define        MC_CMD_DPCPU_RPC_IN_MC_REPLAY_MODE_OFST 4
--#define        MC_CMD_DPCPU_RPC_IN_MC_REPLAY_MODE_LBN 16
--#define        MC_CMD_DPCPU_RPC_IN_MC_REPLAY_MODE_WIDTH 16
--#define          MC_CMD_DPCPU_RPC_IN_MC_REPLAY_MODE_CUT_THROUGH 0x1 /* enum */
--#define          MC_CMD_DPCPU_RPC_IN_MC_REPLAY_MODE_STORE_FORWARD 0x2 /* enum */
--#define          MC_CMD_DPCPU_RPC_IN_MC_REPLAY_MODE_STORE_FORWARD_FIRST 0x3 /* enum */
--#define        MC_CMD_DPCPU_RPC_IN_MC_REPLAY_CNTXT_OFST 4
--#define        MC_CMD_DPCPU_RPC_IN_MC_REPLAY_CNTXT_LBN 64
--#define        MC_CMD_DPCPU_RPC_IN_MC_REPLAY_CNTXT_WIDTH 16
--#define       MC_CMD_DPCPU_RPC_IN_WDATA_OFST 12
--#define       MC_CMD_DPCPU_RPC_IN_WDATA_LEN 24
--/* Register data to write. Only valid in write/write-read. */
--#define       MC_CMD_DPCPU_RPC_IN_CSR_ACCESS_DATA_OFST 16
--#define       MC_CMD_DPCPU_RPC_IN_CSR_ACCESS_DATA_LEN 4
--/* Register address. */
--#define       MC_CMD_DPCPU_RPC_IN_CSR_ACCESS_ADDRESS_OFST 20
--#define       MC_CMD_DPCPU_RPC_IN_CSR_ACCESS_ADDRESS_LEN 4
--
--/* MC_CMD_DPCPU_RPC_OUT msgresponse */
--#define    MC_CMD_DPCPU_RPC_OUT_LEN 36
--#define       MC_CMD_DPCPU_RPC_OUT_RC_OFST 0
--#define       MC_CMD_DPCPU_RPC_OUT_RC_LEN 4
--/* DATA */
--#define       MC_CMD_DPCPU_RPC_OUT_DATA_OFST 4
--#define       MC_CMD_DPCPU_RPC_OUT_DATA_LEN 32
--#define        MC_CMD_DPCPU_RPC_OUT_HDR_CMD_RESP_ERRCODE_OFST 4
--#define        MC_CMD_DPCPU_RPC_OUT_HDR_CMD_RESP_ERRCODE_LBN 32
--#define        MC_CMD_DPCPU_RPC_OUT_HDR_CMD_RESP_ERRCODE_WIDTH 16
--#define        MC_CMD_DPCPU_RPC_OUT_CSR_ACCESS_READ_COUNT_OFST 4
--#define        MC_CMD_DPCPU_RPC_OUT_CSR_ACCESS_READ_COUNT_LBN 48
--#define        MC_CMD_DPCPU_RPC_OUT_CSR_ACCESS_READ_COUNT_WIDTH 16
--#define       MC_CMD_DPCPU_RPC_OUT_RDATA_OFST 12
--#define       MC_CMD_DPCPU_RPC_OUT_RDATA_LEN 24
--#define       MC_CMD_DPCPU_RPC_OUT_CSR_ACCESS_READ_VAL_1_OFST 12
--#define       MC_CMD_DPCPU_RPC_OUT_CSR_ACCESS_READ_VAL_1_LEN 4
--#define       MC_CMD_DPCPU_RPC_OUT_CSR_ACCESS_READ_VAL_2_OFST 16
--#define       MC_CMD_DPCPU_RPC_OUT_CSR_ACCESS_READ_VAL_2_LEN 4
--#define       MC_CMD_DPCPU_RPC_OUT_CSR_ACCESS_READ_VAL_3_OFST 20
--#define       MC_CMD_DPCPU_RPC_OUT_CSR_ACCESS_READ_VAL_3_LEN 4
--#define       MC_CMD_DPCPU_RPC_OUT_CSR_ACCESS_READ_VAL_4_OFST 24
--#define       MC_CMD_DPCPU_RPC_OUT_CSR_ACCESS_READ_VAL_4_LEN 4
--
--
--/***********************************/
- /* MC_CMD_TRIGGER_INTERRUPT
-  * Trigger an interrupt by prodding the BIU.
-  */
-@@ -17277,186 +15972,6 @@
- 
- 
- /***********************************/
--/* MC_CMD_CAP_BLK_READ
-- * Read multiple 64bit words from capture block memory
-- */
--#define MC_CMD_CAP_BLK_READ 0xe7
--#undef MC_CMD_0xe7_PRIVILEGE_CTG
--
--#define MC_CMD_0xe7_PRIVILEGE_CTG SRIOV_CTG_INSECURE
--
--/* MC_CMD_CAP_BLK_READ_IN msgrequest */
--#define    MC_CMD_CAP_BLK_READ_IN_LEN 12
--#define       MC_CMD_CAP_BLK_READ_IN_CAP_REG_OFST 0
--#define       MC_CMD_CAP_BLK_READ_IN_CAP_REG_LEN 4
--#define       MC_CMD_CAP_BLK_READ_IN_ADDR_OFST 4
--#define       MC_CMD_CAP_BLK_READ_IN_ADDR_LEN 4
--#define       MC_CMD_CAP_BLK_READ_IN_COUNT_OFST 8
--#define       MC_CMD_CAP_BLK_READ_IN_COUNT_LEN 4
--
--/* MC_CMD_CAP_BLK_READ_OUT msgresponse */
--#define    MC_CMD_CAP_BLK_READ_OUT_LENMIN 8
--#define    MC_CMD_CAP_BLK_READ_OUT_LENMAX 248
--#define    MC_CMD_CAP_BLK_READ_OUT_LENMAX_MCDI2 1016
--#define    MC_CMD_CAP_BLK_READ_OUT_LEN(num) (0+8*(num))
--#define    MC_CMD_CAP_BLK_READ_OUT_BUFFER_NUM(len) (((len)-0)/8)
--#define       MC_CMD_CAP_BLK_READ_OUT_BUFFER_OFST 0
--#define       MC_CMD_CAP_BLK_READ_OUT_BUFFER_LEN 8
--#define       MC_CMD_CAP_BLK_READ_OUT_BUFFER_LO_OFST 0
--#define       MC_CMD_CAP_BLK_READ_OUT_BUFFER_HI_OFST 4
--#define       MC_CMD_CAP_BLK_READ_OUT_BUFFER_MINNUM 1
--#define       MC_CMD_CAP_BLK_READ_OUT_BUFFER_MAXNUM 31
--#define       MC_CMD_CAP_BLK_READ_OUT_BUFFER_MAXNUM_MCDI2 127
--
--
--/***********************************/
--/* MC_CMD_DUMP_DO
-- * Take a dump of the DUT state
-- */
--#define MC_CMD_DUMP_DO 0xe8
--#undef MC_CMD_0xe8_PRIVILEGE_CTG
--
--#define MC_CMD_0xe8_PRIVILEGE_CTG SRIOV_CTG_INSECURE
--
--/* MC_CMD_DUMP_DO_IN msgrequest */
--#define    MC_CMD_DUMP_DO_IN_LEN 52
--#define       MC_CMD_DUMP_DO_IN_PADDING_OFST 0
--#define       MC_CMD_DUMP_DO_IN_PADDING_LEN 4
--#define       MC_CMD_DUMP_DO_IN_DUMPSPEC_SRC_OFST 4
--#define       MC_CMD_DUMP_DO_IN_DUMPSPEC_SRC_LEN 4
--#define          MC_CMD_DUMP_DO_IN_DUMPSPEC_SRC_CUSTOM 0x0 /* enum */
--#define          MC_CMD_DUMP_DO_IN_DUMPSPEC_SRC_DEFAULT 0x1 /* enum */
--#define       MC_CMD_DUMP_DO_IN_DUMPSPEC_SRC_CUSTOM_TYPE_OFST 8
--#define       MC_CMD_DUMP_DO_IN_DUMPSPEC_SRC_CUSTOM_TYPE_LEN 4
--#define          MC_CMD_DUMP_DO_IN_DUMP_LOCATION_NVRAM 0x1 /* enum */
--#define          MC_CMD_DUMP_DO_IN_DUMP_LOCATION_HOST_MEMORY 0x2 /* enum */
--#define          MC_CMD_DUMP_DO_IN_DUMP_LOCATION_HOST_MEMORY_MLI 0x3 /* enum */
--#define          MC_CMD_DUMP_DO_IN_DUMP_LOCATION_UART 0x4 /* enum */
--#define       MC_CMD_DUMP_DO_IN_DUMPSPEC_SRC_CUSTOM_NVRAM_PARTITION_TYPE_ID_OFST 12
--#define       MC_CMD_DUMP_DO_IN_DUMPSPEC_SRC_CUSTOM_NVRAM_PARTITION_TYPE_ID_LEN 4
--#define       MC_CMD_DUMP_DO_IN_DUMPSPEC_SRC_CUSTOM_NVRAM_OFFSET_OFST 16
--#define       MC_CMD_DUMP_DO_IN_DUMPSPEC_SRC_CUSTOM_NVRAM_OFFSET_LEN 4
--#define       MC_CMD_DUMP_DO_IN_DUMPSPEC_SRC_CUSTOM_HOST_MEMORY_ADDR_LO_OFST 12
--#define       MC_CMD_DUMP_DO_IN_DUMPSPEC_SRC_CUSTOM_HOST_MEMORY_ADDR_LO_LEN 4
--#define       MC_CMD_DUMP_DO_IN_DUMPSPEC_SRC_CUSTOM_HOST_MEMORY_ADDR_HI_OFST 16
--#define       MC_CMD_DUMP_DO_IN_DUMPSPEC_SRC_CUSTOM_HOST_MEMORY_ADDR_HI_LEN 4
--#define       MC_CMD_DUMP_DO_IN_DUMPSPEC_SRC_CUSTOM_HOST_MEMORY_MLI_ROOT_ADDR_LO_OFST 12
--#define       MC_CMD_DUMP_DO_IN_DUMPSPEC_SRC_CUSTOM_HOST_MEMORY_MLI_ROOT_ADDR_LO_LEN 4
--#define          MC_CMD_DUMP_DO_IN_HOST_MEMORY_MLI_PAGE_SIZE 0x1000 /* enum */
--#define       MC_CMD_DUMP_DO_IN_DUMPSPEC_SRC_CUSTOM_HOST_MEMORY_MLI_ROOT_ADDR_HI_OFST 16
--#define       MC_CMD_DUMP_DO_IN_DUMPSPEC_SRC_CUSTOM_HOST_MEMORY_MLI_ROOT_ADDR_HI_LEN 4
--#define       MC_CMD_DUMP_DO_IN_DUMPSPEC_SRC_CUSTOM_HOST_MEMORY_MLI_DEPTH_OFST 20
--#define       MC_CMD_DUMP_DO_IN_DUMPSPEC_SRC_CUSTOM_HOST_MEMORY_MLI_DEPTH_LEN 4
--#define          MC_CMD_DUMP_DO_IN_HOST_MEMORY_MLI_MAX_DEPTH 0x2 /* enum */
--#define       MC_CMD_DUMP_DO_IN_DUMPSPEC_SRC_CUSTOM_UART_PORT_OFST 12
--#define       MC_CMD_DUMP_DO_IN_DUMPSPEC_SRC_CUSTOM_UART_PORT_LEN 4
--/* enum: The uart port this command was received over (if using a uart
-- * transport)
-- */
--#define          MC_CMD_DUMP_DO_IN_UART_PORT_SRC 0xff
--#define       MC_CMD_DUMP_DO_IN_DUMPSPEC_SRC_CUSTOM_SIZE_OFST 24
--#define       MC_CMD_DUMP_DO_IN_DUMPSPEC_SRC_CUSTOM_SIZE_LEN 4
--#define       MC_CMD_DUMP_DO_IN_DUMPFILE_DST_OFST 28
--#define       MC_CMD_DUMP_DO_IN_DUMPFILE_DST_LEN 4
--#define          MC_CMD_DUMP_DO_IN_DUMPFILE_DST_CUSTOM 0x0 /* enum */
--#define          MC_CMD_DUMP_DO_IN_DUMPFILE_DST_NVRAM_DUMP_PARTITION 0x1 /* enum */
--#define       MC_CMD_DUMP_DO_IN_DUMPFILE_DST_CUSTOM_TYPE_OFST 32
--#define       MC_CMD_DUMP_DO_IN_DUMPFILE_DST_CUSTOM_TYPE_LEN 4
--/*            Enum values, see field(s): */
--/*               MC_CMD_DUMP_DO_IN/DUMPSPEC_SRC_CUSTOM_TYPE */
--#define       MC_CMD_DUMP_DO_IN_DUMPFILE_DST_CUSTOM_NVRAM_PARTITION_TYPE_ID_OFST 36
--#define       MC_CMD_DUMP_DO_IN_DUMPFILE_DST_CUSTOM_NVRAM_PARTITION_TYPE_ID_LEN 4
--#define       MC_CMD_DUMP_DO_IN_DUMPFILE_DST_CUSTOM_NVRAM_OFFSET_OFST 40
--#define       MC_CMD_DUMP_DO_IN_DUMPFILE_DST_CUSTOM_NVRAM_OFFSET_LEN 4
--#define       MC_CMD_DUMP_DO_IN_DUMPFILE_DST_CUSTOM_HOST_MEMORY_ADDR_LO_OFST 36
--#define       MC_CMD_DUMP_DO_IN_DUMPFILE_DST_CUSTOM_HOST_MEMORY_ADDR_LO_LEN 4
--#define       MC_CMD_DUMP_DO_IN_DUMPFILE_DST_CUSTOM_HOST_MEMORY_ADDR_HI_OFST 40
--#define       MC_CMD_DUMP_DO_IN_DUMPFILE_DST_CUSTOM_HOST_MEMORY_ADDR_HI_LEN 4
--#define       MC_CMD_DUMP_DO_IN_DUMPFILE_DST_CUSTOM_HOST_MEMORY_MLI_ROOT_ADDR_LO_OFST 36
--#define       MC_CMD_DUMP_DO_IN_DUMPFILE_DST_CUSTOM_HOST_MEMORY_MLI_ROOT_ADDR_LO_LEN 4
--#define       MC_CMD_DUMP_DO_IN_DUMPFILE_DST_CUSTOM_HOST_MEMORY_MLI_ROOT_ADDR_HI_OFST 40
--#define       MC_CMD_DUMP_DO_IN_DUMPFILE_DST_CUSTOM_HOST_MEMORY_MLI_ROOT_ADDR_HI_LEN 4
--#define       MC_CMD_DUMP_DO_IN_DUMPFILE_DST_CUSTOM_HOST_MEMORY_MLI_DEPTH_OFST 44
--#define       MC_CMD_DUMP_DO_IN_DUMPFILE_DST_CUSTOM_HOST_MEMORY_MLI_DEPTH_LEN 4
--#define       MC_CMD_DUMP_DO_IN_DUMPFILE_DST_CUSTOM_UART_PORT_OFST 36
--#define       MC_CMD_DUMP_DO_IN_DUMPFILE_DST_CUSTOM_UART_PORT_LEN 4
--#define       MC_CMD_DUMP_DO_IN_DUMPFILE_DST_CUSTOM_SIZE_OFST 48
--#define       MC_CMD_DUMP_DO_IN_DUMPFILE_DST_CUSTOM_SIZE_LEN 4
--
--/* MC_CMD_DUMP_DO_OUT msgresponse */
--#define    MC_CMD_DUMP_DO_OUT_LEN 4
--#define       MC_CMD_DUMP_DO_OUT_DUMPFILE_SIZE_OFST 0
--#define       MC_CMD_DUMP_DO_OUT_DUMPFILE_SIZE_LEN 4
--
--
--/***********************************/
--/* MC_CMD_DUMP_CONFIGURE_UNSOLICITED
-- * Configure unsolicited dumps
-- */
--#define MC_CMD_DUMP_CONFIGURE_UNSOLICITED 0xe9
--#undef MC_CMD_0xe9_PRIVILEGE_CTG
--
--#define MC_CMD_0xe9_PRIVILEGE_CTG SRIOV_CTG_INSECURE
--
--/* MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN msgrequest */
--#define    MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_LEN 52
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_ENABLE_OFST 0
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_ENABLE_LEN 4
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPSPEC_SRC_OFST 4
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPSPEC_SRC_LEN 4
--/*            Enum values, see field(s): */
--/*               MC_CMD_DUMP_DO/MC_CMD_DUMP_DO_IN/DUMPSPEC_SRC */
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPSPEC_SRC_CUSTOM_TYPE_OFST 8
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPSPEC_SRC_CUSTOM_TYPE_LEN 4
--/*            Enum values, see field(s): */
--/*               MC_CMD_DUMP_DO/MC_CMD_DUMP_DO_IN/DUMPSPEC_SRC_CUSTOM_TYPE */
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPSPEC_SRC_CUSTOM_NVRAM_PARTITION_TYPE_ID_OFST 12
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPSPEC_SRC_CUSTOM_NVRAM_PARTITION_TYPE_ID_LEN 4
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPSPEC_SRC_CUSTOM_NVRAM_OFFSET_OFST 16
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPSPEC_SRC_CUSTOM_NVRAM_OFFSET_LEN 4
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPSPEC_SRC_CUSTOM_HOST_MEMORY_ADDR_LO_OFST 12
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPSPEC_SRC_CUSTOM_HOST_MEMORY_ADDR_LO_LEN 4
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPSPEC_SRC_CUSTOM_HOST_MEMORY_ADDR_HI_OFST 16
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPSPEC_SRC_CUSTOM_HOST_MEMORY_ADDR_HI_LEN 4
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPSPEC_SRC_CUSTOM_HOST_MEMORY_MLI_ROOT_ADDR_LO_OFST 12
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPSPEC_SRC_CUSTOM_HOST_MEMORY_MLI_ROOT_ADDR_LO_LEN 4
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPSPEC_SRC_CUSTOM_HOST_MEMORY_MLI_ROOT_ADDR_HI_OFST 16
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPSPEC_SRC_CUSTOM_HOST_MEMORY_MLI_ROOT_ADDR_HI_LEN 4
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPSPEC_SRC_CUSTOM_HOST_MEMORY_MLI_DEPTH_OFST 20
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPSPEC_SRC_CUSTOM_HOST_MEMORY_MLI_DEPTH_LEN 4
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPSPEC_SRC_CUSTOM_UART_PORT_OFST 12
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPSPEC_SRC_CUSTOM_UART_PORT_LEN 4
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPSPEC_SRC_CUSTOM_SIZE_OFST 24
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPSPEC_SRC_CUSTOM_SIZE_LEN 4
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPFILE_DST_OFST 28
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPFILE_DST_LEN 4
--/*            Enum values, see field(s): */
--/*               MC_CMD_DUMP_DO/MC_CMD_DUMP_DO_IN/DUMPFILE_DST */
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPFILE_DST_CUSTOM_TYPE_OFST 32
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPFILE_DST_CUSTOM_TYPE_LEN 4
--/*            Enum values, see field(s): */
--/*               MC_CMD_DUMP_DO/MC_CMD_DUMP_DO_IN/DUMPSPEC_SRC_CUSTOM_TYPE */
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPFILE_DST_CUSTOM_NVRAM_PARTITION_TYPE_ID_OFST 36
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPFILE_DST_CUSTOM_NVRAM_PARTITION_TYPE_ID_LEN 4
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPFILE_DST_CUSTOM_NVRAM_OFFSET_OFST 40
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPFILE_DST_CUSTOM_NVRAM_OFFSET_LEN 4
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPFILE_DST_CUSTOM_HOST_MEMORY_ADDR_LO_OFST 36
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPFILE_DST_CUSTOM_HOST_MEMORY_ADDR_LO_LEN 4
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPFILE_DST_CUSTOM_HOST_MEMORY_ADDR_HI_OFST 40
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPFILE_DST_CUSTOM_HOST_MEMORY_ADDR_HI_LEN 4
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPFILE_DST_CUSTOM_HOST_MEMORY_MLI_ROOT_ADDR_LO_OFST 36
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPFILE_DST_CUSTOM_HOST_MEMORY_MLI_ROOT_ADDR_LO_LEN 4
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPFILE_DST_CUSTOM_HOST_MEMORY_MLI_ROOT_ADDR_HI_OFST 40
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPFILE_DST_CUSTOM_HOST_MEMORY_MLI_ROOT_ADDR_HI_LEN 4
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPFILE_DST_CUSTOM_HOST_MEMORY_MLI_DEPTH_OFST 44
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPFILE_DST_CUSTOM_HOST_MEMORY_MLI_DEPTH_LEN 4
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPFILE_DST_CUSTOM_UART_PORT_OFST 36
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPFILE_DST_CUSTOM_UART_PORT_LEN 4
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPFILE_DST_CUSTOM_SIZE_OFST 48
--#define       MC_CMD_DUMP_CONFIGURE_UNSOLICITED_IN_DUMPFILE_DST_CUSTOM_SIZE_LEN 4
--
--
--/***********************************/
- /* MC_CMD_SET_PSU
-  * Adjusts power supply parameters. This is a warranty-voiding operation.
-  * Returns: ENOENT if the parameter or rail specified does not exist, EINVAL if
-@@ -17523,95 +16038,6 @@
- 
- 
- /***********************************/
--/* MC_CMD_UART_SEND_DATA
-- * Send checksummed[sic] block of data over the uart. Response is a placeholder
-- * should we wish to make this reliable; currently requests are fire-and-
-- * forget.
-- */
--#define MC_CMD_UART_SEND_DATA 0xee
--#undef MC_CMD_0xee_PRIVILEGE_CTG
--
--#define MC_CMD_0xee_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_UART_SEND_DATA_OUT msgrequest */
--#define    MC_CMD_UART_SEND_DATA_OUT_LENMIN 16
--#define    MC_CMD_UART_SEND_DATA_OUT_LENMAX 252
--#define    MC_CMD_UART_SEND_DATA_OUT_LENMAX_MCDI2 1020
--#define    MC_CMD_UART_SEND_DATA_OUT_LEN(num) (16+1*(num))
--#define    MC_CMD_UART_SEND_DATA_OUT_DATA_NUM(len) (((len)-16)/1)
--/* CRC32 over OFFSET, LENGTH, RESERVED, DATA */
--#define       MC_CMD_UART_SEND_DATA_OUT_CHECKSUM_OFST 0
--#define       MC_CMD_UART_SEND_DATA_OUT_CHECKSUM_LEN 4
--/* Offset at which to write the data */
--#define       MC_CMD_UART_SEND_DATA_OUT_OFFSET_OFST 4
--#define       MC_CMD_UART_SEND_DATA_OUT_OFFSET_LEN 4
--/* Length of data */
--#define       MC_CMD_UART_SEND_DATA_OUT_LENGTH_OFST 8
--#define       MC_CMD_UART_SEND_DATA_OUT_LENGTH_LEN 4
--/* Reserved for future use */
--#define       MC_CMD_UART_SEND_DATA_OUT_RESERVED_OFST 12
--#define       MC_CMD_UART_SEND_DATA_OUT_RESERVED_LEN 4
--#define       MC_CMD_UART_SEND_DATA_OUT_DATA_OFST 16
--#define       MC_CMD_UART_SEND_DATA_OUT_DATA_LEN 1
--#define       MC_CMD_UART_SEND_DATA_OUT_DATA_MINNUM 0
--#define       MC_CMD_UART_SEND_DATA_OUT_DATA_MAXNUM 236
--#define       MC_CMD_UART_SEND_DATA_OUT_DATA_MAXNUM_MCDI2 1004
--
--/* MC_CMD_UART_SEND_DATA_IN msgresponse */
--#define    MC_CMD_UART_SEND_DATA_IN_LEN 0
--
--
--/***********************************/
--/* MC_CMD_UART_RECV_DATA
-- * Request checksummed[sic] block of data over the uart. Only a placeholder,
-- * subject to change and not currently implemented.
-- */
--#define MC_CMD_UART_RECV_DATA 0xef
--#undef MC_CMD_0xef_PRIVILEGE_CTG
--
--#define MC_CMD_0xef_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_UART_RECV_DATA_OUT msgrequest */
--#define    MC_CMD_UART_RECV_DATA_OUT_LEN 16
--/* CRC32 over OFFSET, LENGTH, RESERVED */
--#define       MC_CMD_UART_RECV_DATA_OUT_CHECKSUM_OFST 0
--#define       MC_CMD_UART_RECV_DATA_OUT_CHECKSUM_LEN 4
--/* Offset from which to read the data */
--#define       MC_CMD_UART_RECV_DATA_OUT_OFFSET_OFST 4
--#define       MC_CMD_UART_RECV_DATA_OUT_OFFSET_LEN 4
--/* Length of data */
--#define       MC_CMD_UART_RECV_DATA_OUT_LENGTH_OFST 8
--#define       MC_CMD_UART_RECV_DATA_OUT_LENGTH_LEN 4
--/* Reserved for future use */
--#define       MC_CMD_UART_RECV_DATA_OUT_RESERVED_OFST 12
--#define       MC_CMD_UART_RECV_DATA_OUT_RESERVED_LEN 4
--
--/* MC_CMD_UART_RECV_DATA_IN msgresponse */
--#define    MC_CMD_UART_RECV_DATA_IN_LENMIN 16
--#define    MC_CMD_UART_RECV_DATA_IN_LENMAX 252
--#define    MC_CMD_UART_RECV_DATA_IN_LENMAX_MCDI2 1020
--#define    MC_CMD_UART_RECV_DATA_IN_LEN(num) (16+1*(num))
--#define    MC_CMD_UART_RECV_DATA_IN_DATA_NUM(len) (((len)-16)/1)
--/* CRC32 over RESERVED1, RESERVED2, RESERVED3, DATA */
--#define       MC_CMD_UART_RECV_DATA_IN_CHECKSUM_OFST 0
--#define       MC_CMD_UART_RECV_DATA_IN_CHECKSUM_LEN 4
--/* Offset at which to write the data */
--#define       MC_CMD_UART_RECV_DATA_IN_RESERVED1_OFST 4
--#define       MC_CMD_UART_RECV_DATA_IN_RESERVED1_LEN 4
--/* Length of data */
--#define       MC_CMD_UART_RECV_DATA_IN_RESERVED2_OFST 8
--#define       MC_CMD_UART_RECV_DATA_IN_RESERVED2_LEN 4
--/* Reserved for future use */
--#define       MC_CMD_UART_RECV_DATA_IN_RESERVED3_OFST 12
--#define       MC_CMD_UART_RECV_DATA_IN_RESERVED3_LEN 4
--#define       MC_CMD_UART_RECV_DATA_IN_DATA_OFST 16
--#define       MC_CMD_UART_RECV_DATA_IN_DATA_LEN 1
--#define       MC_CMD_UART_RECV_DATA_IN_DATA_MINNUM 0
--#define       MC_CMD_UART_RECV_DATA_IN_DATA_MAXNUM 236
--#define       MC_CMD_UART_RECV_DATA_IN_DATA_MAXNUM_MCDI2 1004
--
--
--/***********************************/
- /* MC_CMD_READ_FUSES
-  * Read data programmed into the device One-Time-Programmable (OTP) Fuses
-  */
-@@ -17647,818 +16073,6 @@
- 
- 
- /***********************************/
--/* MC_CMD_KR_TUNE
-- * Get or set KR Serdes RXEQ and TX Driver settings
-- */
--#define MC_CMD_KR_TUNE 0xf1
--#undef MC_CMD_0xf1_PRIVILEGE_CTG
--
--#define MC_CMD_0xf1_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_KR_TUNE_IN msgrequest */
--#define    MC_CMD_KR_TUNE_IN_LENMIN 4
--#define    MC_CMD_KR_TUNE_IN_LENMAX 252
--#define    MC_CMD_KR_TUNE_IN_LENMAX_MCDI2 1020
--#define    MC_CMD_KR_TUNE_IN_LEN(num) (4+4*(num))
--#define    MC_CMD_KR_TUNE_IN_KR_TUNE_ARGS_NUM(len) (((len)-4)/4)
--/* Requested operation */
--#define       MC_CMD_KR_TUNE_IN_KR_TUNE_OP_OFST 0
--#define       MC_CMD_KR_TUNE_IN_KR_TUNE_OP_LEN 1
--/* enum: Get current RXEQ settings */
--#define          MC_CMD_KR_TUNE_IN_RXEQ_GET 0x0
--/* enum: Override RXEQ settings */
--#define          MC_CMD_KR_TUNE_IN_RXEQ_SET 0x1
--/* enum: Get current TX Driver settings */
--#define          MC_CMD_KR_TUNE_IN_TXEQ_GET 0x2
--/* enum: Override TX Driver settings */
--#define          MC_CMD_KR_TUNE_IN_TXEQ_SET 0x3
--/* enum: Force KR Serdes reset / recalibration */
--#define          MC_CMD_KR_TUNE_IN_RECAL 0x4
--/* enum: Start KR Serdes Eye diagram plot on a given lane. Lane must have valid
-- * signal.
-- */
--#define          MC_CMD_KR_TUNE_IN_START_EYE_PLOT 0x5
--/* enum: Poll KR Serdes Eye diagram plot. Returns one row of BER data. The
-- * caller should call this command repeatedly after starting eye plot, until no
-- * more data is returned.
-- */
--#define          MC_CMD_KR_TUNE_IN_POLL_EYE_PLOT 0x6
--/* enum: Read Figure Of Merit (eye quality, higher is better). */
--#define          MC_CMD_KR_TUNE_IN_READ_FOM 0x7
--/* enum: Start/stop link training frames */
--#define          MC_CMD_KR_TUNE_IN_LINK_TRAIN_RUN 0x8
--/* enum: Issue KR link training command (control training coefficients) */
--#define          MC_CMD_KR_TUNE_IN_LINK_TRAIN_CMD 0x9
--/* Align the arguments to 32 bits */
--#define       MC_CMD_KR_TUNE_IN_KR_TUNE_RSVD_OFST 1
--#define       MC_CMD_KR_TUNE_IN_KR_TUNE_RSVD_LEN 3
--/* Arguments specific to the operation */
--#define       MC_CMD_KR_TUNE_IN_KR_TUNE_ARGS_OFST 4
--#define       MC_CMD_KR_TUNE_IN_KR_TUNE_ARGS_LEN 4
--#define       MC_CMD_KR_TUNE_IN_KR_TUNE_ARGS_MINNUM 0
--#define       MC_CMD_KR_TUNE_IN_KR_TUNE_ARGS_MAXNUM 62
--#define       MC_CMD_KR_TUNE_IN_KR_TUNE_ARGS_MAXNUM_MCDI2 254
--
--/* MC_CMD_KR_TUNE_OUT msgresponse */
--#define    MC_CMD_KR_TUNE_OUT_LEN 0
--
--/* MC_CMD_KR_TUNE_RXEQ_GET_IN msgrequest */
--#define    MC_CMD_KR_TUNE_RXEQ_GET_IN_LEN 4
--/* Requested operation */
--#define       MC_CMD_KR_TUNE_RXEQ_GET_IN_KR_TUNE_OP_OFST 0
--#define       MC_CMD_KR_TUNE_RXEQ_GET_IN_KR_TUNE_OP_LEN 1
--/* Align the arguments to 32 bits */
--#define       MC_CMD_KR_TUNE_RXEQ_GET_IN_KR_TUNE_RSVD_OFST 1
--#define       MC_CMD_KR_TUNE_RXEQ_GET_IN_KR_TUNE_RSVD_LEN 3
--
--/* MC_CMD_KR_TUNE_RXEQ_GET_OUT msgresponse */
--#define    MC_CMD_KR_TUNE_RXEQ_GET_OUT_LENMIN 4
--#define    MC_CMD_KR_TUNE_RXEQ_GET_OUT_LENMAX 252
--#define    MC_CMD_KR_TUNE_RXEQ_GET_OUT_LENMAX_MCDI2 1020
--#define    MC_CMD_KR_TUNE_RXEQ_GET_OUT_LEN(num) (0+4*(num))
--#define    MC_CMD_KR_TUNE_RXEQ_GET_OUT_PARAM_NUM(len) (((len)-0)/4)
--/* RXEQ Parameter */
--#define       MC_CMD_KR_TUNE_RXEQ_GET_OUT_PARAM_OFST 0
--#define       MC_CMD_KR_TUNE_RXEQ_GET_OUT_PARAM_LEN 4
--#define       MC_CMD_KR_TUNE_RXEQ_GET_OUT_PARAM_MINNUM 1
--#define       MC_CMD_KR_TUNE_RXEQ_GET_OUT_PARAM_MAXNUM 63
--#define       MC_CMD_KR_TUNE_RXEQ_GET_OUT_PARAM_MAXNUM_MCDI2 255
--#define        MC_CMD_KR_TUNE_RXEQ_GET_OUT_PARAM_ID_OFST 0
--#define        MC_CMD_KR_TUNE_RXEQ_GET_OUT_PARAM_ID_LBN 0
--#define        MC_CMD_KR_TUNE_RXEQ_GET_OUT_PARAM_ID_WIDTH 8
--/* enum: Attenuation (0-15, Huntington) */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_ATT 0x0
--/* enum: CTLE Boost (0-15, Huntington) */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_BOOST 0x1
--/* enum: Edge DFE Tap1 (Huntington - 0 - max negative, 64 - zero, 127 - max
-- * positive, Medford - 0-31)
-- */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_EDFE_TAP1 0x2
--/* enum: Edge DFE Tap2 (Huntington - 0 - max negative, 32 - zero, 63 - max
-- * positive, Medford - 0-31)
-- */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_EDFE_TAP2 0x3
--/* enum: Edge DFE Tap3 (Huntington - 0 - max negative, 32 - zero, 63 - max
-- * positive, Medford - 0-16)
-- */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_EDFE_TAP3 0x4
--/* enum: Edge DFE Tap4 (Huntington - 0 - max negative, 32 - zero, 63 - max
-- * positive, Medford - 0-16)
-- */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_EDFE_TAP4 0x5
--/* enum: Edge DFE Tap5 (Huntington - 0 - max negative, 32 - zero, 63 - max
-- * positive, Medford - 0-16)
-- */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_EDFE_TAP5 0x6
--/* enum: Edge DFE DLEV (0-128 for Medford) */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_EDFE_DLEV 0x7
--/* enum: Variable Gain Amplifier (0-15, Medford) */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_VGA 0x8
--/* enum: CTLE EQ Capacitor (0-15, Medford) */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_CTLE_EQC 0x9
--/* enum: CTLE EQ Resistor (0-7, Medford) */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_CTLE_EQRES 0xa
--/* enum: CTLE gain (0-31, Medford2) */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_CTLE_GAIN 0xb
--/* enum: CTLE pole (0-31, Medford2) */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_CTLE_POLE 0xc
--/* enum: CTLE peaking (0-31, Medford2) */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_CTLE_PEAK 0xd
--/* enum: DFE Tap1 - even path (Medford2 - 6 bit signed (-29 - +29)) */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_DFE_TAP1_EVEN 0xe
--/* enum: DFE Tap1 - odd path (Medford2 - 6 bit signed (-29 - +29)) */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_DFE_TAP1_ODD 0xf
--/* enum: DFE Tap2 (Medford2 - 6 bit signed (-20 - +20)) */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_DFE_TAP2 0x10
--/* enum: DFE Tap3 (Medford2 - 6 bit signed (-20 - +20)) */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_DFE_TAP3 0x11
--/* enum: DFE Tap4 (Medford2 - 6 bit signed (-20 - +20)) */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_DFE_TAP4 0x12
--/* enum: DFE Tap5 (Medford2 - 6 bit signed (-24 - +24)) */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_DFE_TAP5 0x13
--/* enum: DFE Tap6 (Medford2 - 6 bit signed (-24 - +24)) */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_DFE_TAP6 0x14
--/* enum: DFE Tap7 (Medford2 - 6 bit signed (-24 - +24)) */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_DFE_TAP7 0x15
--/* enum: DFE Tap8 (Medford2 - 6 bit signed (-24 - +24)) */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_DFE_TAP8 0x16
--/* enum: DFE Tap9 (Medford2 - 6 bit signed (-24 - +24)) */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_DFE_TAP9 0x17
--/* enum: DFE Tap10 (Medford2 - 6 bit signed (-24 - +24)) */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_DFE_TAP10 0x18
--/* enum: DFE Tap11 (Medford2 - 6 bit signed (-24 - +24)) */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_DFE_TAP11 0x19
--/* enum: DFE Tap12 (Medford2 - 6 bit signed (-24 - +24)) */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_DFE_TAP12 0x1a
--/* enum: I/Q clk offset (Medford2 - 4 bit signed (-5 - +5))) */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_IQ_OFF 0x1b
--/* enum: Negative h1 polarity data sampler offset calibration code, even path
-- * (Medford2 - 6 bit signed (-29 - +29)))
-- */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_H1N_OFF_EVEN 0x1c
--/* enum: Negative h1 polarity data sampler offset calibration code, odd path
-- * (Medford2 - 6 bit signed (-29 - +29)))
-- */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_H1N_OFF_ODD 0x1d
--/* enum: Positive h1 polarity data sampler offset calibration code, even path
-- * (Medford2 - 6 bit signed (-29 - +29)))
-- */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_H1P_OFF_EVEN 0x1e
--/* enum: Positive h1 polarity data sampler offset calibration code, odd path
-- * (Medford2 - 6 bit signed (-29 - +29)))
-- */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_H1P_OFF_ODD 0x1f
--/* enum: CDR calibration loop code (Medford2) */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_CDR_PVT 0x20
--/* enum: CDR integral loop code (Medford2) */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_CDR_INTEG 0x21
--/* enum: CTLE Boost stages - retimer lineside (Medford2 with DS250x retimer - 4
-- * stages, 2 bits per stage)
-- */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_BOOST_RT_LS 0x22
--/* enum: DFE Tap1 - retimer lineside (Medford2 with DS250x retimer (-31 - 31))
-- */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_DFE_TAP1_RT_LS 0x23
--/* enum: DFE Tap2 - retimer lineside (Medford2 with DS250x retimer (-15 - 15))
-- */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_DFE_TAP2_RT_LS 0x24
--/* enum: DFE Tap3 - retimer lineside (Medford2 with DS250x retimer (-15 - 15))
-- */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_DFE_TAP3_RT_LS 0x25
--/* enum: DFE Tap4 - retimer lineside (Medford2 with DS250x retimer (-15 - 15))
-- */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_DFE_TAP4_RT_LS 0x26
--/* enum: DFE Tap5 - retimer lineside (Medford2 with DS250x retimer (-15 - 15))
-- */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_DFE_TAP5_RT_LS 0x27
--/* enum: CTLE Boost stages - retimer hostside (Medford2 with DS250x retimer - 4
-- * stages, 2 bits per stage)
-- */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_BOOST_RT_HS 0x28
--/* enum: DFE Tap1 - retimer hostside (Medford2 with DS250x retimer (-31 - 31))
-- */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_DFE_TAP1_RT_HS 0x29
--/* enum: DFE Tap2 - retimer hostside (Medford2 with DS250x retimer (-15 - 15))
-- */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_DFE_TAP2_RT_HS 0x2a
--/* enum: DFE Tap3 - retimer hostside (Medford2 with DS250x retimer (-15 - 15))
-- */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_DFE_TAP3_RT_HS 0x2b
--/* enum: DFE Tap4 - retimer hostside (Medford2 with DS250x retimer (-15 - 15))
-- */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_DFE_TAP4_RT_HS 0x2c
--/* enum: DFE Tap5 - retimer hostside (Medford2 with DS250x retimer (-15 - 15))
-- */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_DFE_TAP5_RT_HS 0x2d
--#define        MC_CMD_KR_TUNE_RXEQ_GET_OUT_PARAM_LANE_OFST 0
--#define        MC_CMD_KR_TUNE_RXEQ_GET_OUT_PARAM_LANE_LBN 8
--#define        MC_CMD_KR_TUNE_RXEQ_GET_OUT_PARAM_LANE_WIDTH 3
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_LANE_0 0x0 /* enum */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_LANE_1 0x1 /* enum */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_LANE_2 0x2 /* enum */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_LANE_3 0x3 /* enum */
--#define          MC_CMD_KR_TUNE_RXEQ_GET_OUT_LANE_ALL 0x4 /* enum */
--#define        MC_CMD_KR_TUNE_RXEQ_GET_OUT_PARAM_AUTOCAL_OFST 0
--#define        MC_CMD_KR_TUNE_RXEQ_GET_OUT_PARAM_AUTOCAL_LBN 11
--#define        MC_CMD_KR_TUNE_RXEQ_GET_OUT_PARAM_AUTOCAL_WIDTH 1
--#define        MC_CMD_KR_TUNE_RXEQ_GET_OUT_RESERVED_OFST 0
--#define        MC_CMD_KR_TUNE_RXEQ_GET_OUT_RESERVED_LBN 12
--#define        MC_CMD_KR_TUNE_RXEQ_GET_OUT_RESERVED_WIDTH 4
--#define        MC_CMD_KR_TUNE_RXEQ_GET_OUT_PARAM_INITIAL_OFST 0
--#define        MC_CMD_KR_TUNE_RXEQ_GET_OUT_PARAM_INITIAL_LBN 16
--#define        MC_CMD_KR_TUNE_RXEQ_GET_OUT_PARAM_INITIAL_WIDTH 8
--#define        MC_CMD_KR_TUNE_RXEQ_GET_OUT_PARAM_CURRENT_OFST 0
--#define        MC_CMD_KR_TUNE_RXEQ_GET_OUT_PARAM_CURRENT_LBN 24
--#define        MC_CMD_KR_TUNE_RXEQ_GET_OUT_PARAM_CURRENT_WIDTH 8
--
--/* MC_CMD_KR_TUNE_RXEQ_SET_IN msgrequest */
--#define    MC_CMD_KR_TUNE_RXEQ_SET_IN_LENMIN 8
--#define    MC_CMD_KR_TUNE_RXEQ_SET_IN_LENMAX 252
--#define    MC_CMD_KR_TUNE_RXEQ_SET_IN_LENMAX_MCDI2 1020
--#define    MC_CMD_KR_TUNE_RXEQ_SET_IN_LEN(num) (4+4*(num))
--#define    MC_CMD_KR_TUNE_RXEQ_SET_IN_PARAM_NUM(len) (((len)-4)/4)
--/* Requested operation */
--#define       MC_CMD_KR_TUNE_RXEQ_SET_IN_KR_TUNE_OP_OFST 0
--#define       MC_CMD_KR_TUNE_RXEQ_SET_IN_KR_TUNE_OP_LEN 1
--/* Align the arguments to 32 bits */
--#define       MC_CMD_KR_TUNE_RXEQ_SET_IN_KR_TUNE_RSVD_OFST 1
--#define       MC_CMD_KR_TUNE_RXEQ_SET_IN_KR_TUNE_RSVD_LEN 3
--/* RXEQ Parameter */
--#define       MC_CMD_KR_TUNE_RXEQ_SET_IN_PARAM_OFST 4
--#define       MC_CMD_KR_TUNE_RXEQ_SET_IN_PARAM_LEN 4
--#define       MC_CMD_KR_TUNE_RXEQ_SET_IN_PARAM_MINNUM 1
--#define       MC_CMD_KR_TUNE_RXEQ_SET_IN_PARAM_MAXNUM 62
--#define       MC_CMD_KR_TUNE_RXEQ_SET_IN_PARAM_MAXNUM_MCDI2 254
--#define        MC_CMD_KR_TUNE_RXEQ_SET_IN_PARAM_ID_OFST 4
--#define        MC_CMD_KR_TUNE_RXEQ_SET_IN_PARAM_ID_LBN 0
--#define        MC_CMD_KR_TUNE_RXEQ_SET_IN_PARAM_ID_WIDTH 8
--/*             Enum values, see field(s): */
--/*                MC_CMD_KR_TUNE_RXEQ_GET_OUT/PARAM_ID */
--#define        MC_CMD_KR_TUNE_RXEQ_SET_IN_PARAM_LANE_OFST 4
--#define        MC_CMD_KR_TUNE_RXEQ_SET_IN_PARAM_LANE_LBN 8
--#define        MC_CMD_KR_TUNE_RXEQ_SET_IN_PARAM_LANE_WIDTH 3
--/*             Enum values, see field(s): */
--/*                MC_CMD_KR_TUNE_RXEQ_GET_OUT/PARAM_LANE */
--#define        MC_CMD_KR_TUNE_RXEQ_SET_IN_PARAM_AUTOCAL_OFST 4
--#define        MC_CMD_KR_TUNE_RXEQ_SET_IN_PARAM_AUTOCAL_LBN 11
--#define        MC_CMD_KR_TUNE_RXEQ_SET_IN_PARAM_AUTOCAL_WIDTH 1
--#define        MC_CMD_KR_TUNE_RXEQ_SET_IN_RESERVED_OFST 4
--#define        MC_CMD_KR_TUNE_RXEQ_SET_IN_RESERVED_LBN 12
--#define        MC_CMD_KR_TUNE_RXEQ_SET_IN_RESERVED_WIDTH 4
--#define        MC_CMD_KR_TUNE_RXEQ_SET_IN_PARAM_INITIAL_OFST 4
--#define        MC_CMD_KR_TUNE_RXEQ_SET_IN_PARAM_INITIAL_LBN 16
--#define        MC_CMD_KR_TUNE_RXEQ_SET_IN_PARAM_INITIAL_WIDTH 8
--#define        MC_CMD_KR_TUNE_RXEQ_SET_IN_RESERVED2_OFST 4
--#define        MC_CMD_KR_TUNE_RXEQ_SET_IN_RESERVED2_LBN 24
--#define        MC_CMD_KR_TUNE_RXEQ_SET_IN_RESERVED2_WIDTH 8
--
--/* MC_CMD_KR_TUNE_RXEQ_SET_OUT msgresponse */
--#define    MC_CMD_KR_TUNE_RXEQ_SET_OUT_LEN 0
--
--/* MC_CMD_KR_TUNE_TXEQ_GET_IN msgrequest */
--#define    MC_CMD_KR_TUNE_TXEQ_GET_IN_LEN 4
--/* Requested operation */
--#define       MC_CMD_KR_TUNE_TXEQ_GET_IN_KR_TUNE_OP_OFST 0
--#define       MC_CMD_KR_TUNE_TXEQ_GET_IN_KR_TUNE_OP_LEN 1
--/* Align the arguments to 32 bits */
--#define       MC_CMD_KR_TUNE_TXEQ_GET_IN_KR_TUNE_RSVD_OFST 1
--#define       MC_CMD_KR_TUNE_TXEQ_GET_IN_KR_TUNE_RSVD_LEN 3
--
--/* MC_CMD_KR_TUNE_TXEQ_GET_OUT msgresponse */
--#define    MC_CMD_KR_TUNE_TXEQ_GET_OUT_LENMIN 4
--#define    MC_CMD_KR_TUNE_TXEQ_GET_OUT_LENMAX 252
--#define    MC_CMD_KR_TUNE_TXEQ_GET_OUT_LENMAX_MCDI2 1020
--#define    MC_CMD_KR_TUNE_TXEQ_GET_OUT_LEN(num) (0+4*(num))
--#define    MC_CMD_KR_TUNE_TXEQ_GET_OUT_PARAM_NUM(len) (((len)-0)/4)
--/* TXEQ Parameter */
--#define       MC_CMD_KR_TUNE_TXEQ_GET_OUT_PARAM_OFST 0
--#define       MC_CMD_KR_TUNE_TXEQ_GET_OUT_PARAM_LEN 4
--#define       MC_CMD_KR_TUNE_TXEQ_GET_OUT_PARAM_MINNUM 1
--#define       MC_CMD_KR_TUNE_TXEQ_GET_OUT_PARAM_MAXNUM 63
--#define       MC_CMD_KR_TUNE_TXEQ_GET_OUT_PARAM_MAXNUM_MCDI2 255
--#define        MC_CMD_KR_TUNE_TXEQ_GET_OUT_PARAM_ID_OFST 0
--#define        MC_CMD_KR_TUNE_TXEQ_GET_OUT_PARAM_ID_LBN 0
--#define        MC_CMD_KR_TUNE_TXEQ_GET_OUT_PARAM_ID_WIDTH 8
--/* enum: TX Amplitude (Huntington, Medford, Medford2) */
--#define          MC_CMD_KR_TUNE_TXEQ_GET_OUT_TX_LEV 0x0
--/* enum: De-Emphasis Tap1 Magnitude (0-7) (Huntington) */
--#define          MC_CMD_KR_TUNE_TXEQ_GET_OUT_TX_MODE 0x1
--/* enum: De-Emphasis Tap1 Fine */
--#define          MC_CMD_KR_TUNE_TXEQ_GET_OUT_TX_DTLEV 0x2
--/* enum: De-Emphasis Tap2 Magnitude (0-6) (Huntington) */
--#define          MC_CMD_KR_TUNE_TXEQ_GET_OUT_TX_D2 0x3
--/* enum: De-Emphasis Tap2 Fine (Huntington) */
--#define          MC_CMD_KR_TUNE_TXEQ_GET_OUT_TX_D2TLEV 0x4
--/* enum: Pre-Emphasis Magnitude (Huntington) */
--#define          MC_CMD_KR_TUNE_TXEQ_GET_OUT_TX_E 0x5
--/* enum: Pre-Emphasis Fine (Huntington) */
--#define          MC_CMD_KR_TUNE_TXEQ_GET_OUT_TX_ETLEV 0x6
--/* enum: TX Slew Rate Coarse control (Huntington) */
--#define          MC_CMD_KR_TUNE_TXEQ_GET_OUT_TX_PREDRV_DLY 0x7
--/* enum: TX Slew Rate Fine control (Huntington) */
--#define          MC_CMD_KR_TUNE_TXEQ_GET_OUT_TX_SR_SET 0x8
--/* enum: TX Termination Impedance control (Huntington) */
--#define          MC_CMD_KR_TUNE_TXEQ_GET_OUT_TX_RT_SET 0x9
--/* enum: TX Amplitude Fine control (Medford) */
--#define          MC_CMD_KR_TUNE_TXEQ_GET_OUT_TX_LEV_FINE 0xa
--/* enum: Pre-cursor Tap (Medford, Medford2) */
--#define          MC_CMD_KR_TUNE_TXEQ_GET_OUT_TAP_ADV 0xb
--/* enum: Post-cursor Tap (Medford, Medford2) */
--#define          MC_CMD_KR_TUNE_TXEQ_GET_OUT_TAP_DLY 0xc
--/* enum: TX Amplitude (Retimer Lineside) */
--#define          MC_CMD_KR_TUNE_TXEQ_GET_OUT_TX_LEV_RT_LS 0xd
--/* enum: Pre-cursor Tap (Retimer Lineside) */
--#define          MC_CMD_KR_TUNE_TXEQ_GET_OUT_TAP_ADV_RT_LS 0xe
--/* enum: Post-cursor Tap (Retimer Lineside) */
--#define          MC_CMD_KR_TUNE_TXEQ_GET_OUT_TAP_DLY_RT_LS 0xf
--/* enum: TX Amplitude (Retimer Hostside) */
--#define          MC_CMD_KR_TUNE_TXEQ_GET_OUT_TX_LEV_RT_HS 0x10
--/* enum: Pre-cursor Tap (Retimer Hostside) */
--#define          MC_CMD_KR_TUNE_TXEQ_GET_OUT_TAP_ADV_RT_HS 0x11
--/* enum: Post-cursor Tap (Retimer Hostside) */
--#define          MC_CMD_KR_TUNE_TXEQ_GET_OUT_TAP_DLY_RT_HS 0x12
--#define        MC_CMD_KR_TUNE_TXEQ_GET_OUT_PARAM_LANE_OFST 0
--#define        MC_CMD_KR_TUNE_TXEQ_GET_OUT_PARAM_LANE_LBN 8
--#define        MC_CMD_KR_TUNE_TXEQ_GET_OUT_PARAM_LANE_WIDTH 3
--#define          MC_CMD_KR_TUNE_TXEQ_GET_OUT_LANE_0 0x0 /* enum */
--#define          MC_CMD_KR_TUNE_TXEQ_GET_OUT_LANE_1 0x1 /* enum */
--#define          MC_CMD_KR_TUNE_TXEQ_GET_OUT_LANE_2 0x2 /* enum */
--#define          MC_CMD_KR_TUNE_TXEQ_GET_OUT_LANE_3 0x3 /* enum */
--#define          MC_CMD_KR_TUNE_TXEQ_GET_OUT_LANE_ALL 0x4 /* enum */
--#define        MC_CMD_KR_TUNE_TXEQ_GET_OUT_RESERVED_OFST 0
--#define        MC_CMD_KR_TUNE_TXEQ_GET_OUT_RESERVED_LBN 11
--#define        MC_CMD_KR_TUNE_TXEQ_GET_OUT_RESERVED_WIDTH 5
--#define        MC_CMD_KR_TUNE_TXEQ_GET_OUT_PARAM_INITIAL_OFST 0
--#define        MC_CMD_KR_TUNE_TXEQ_GET_OUT_PARAM_INITIAL_LBN 16
--#define        MC_CMD_KR_TUNE_TXEQ_GET_OUT_PARAM_INITIAL_WIDTH 8
--#define        MC_CMD_KR_TUNE_TXEQ_GET_OUT_RESERVED2_OFST 0
--#define        MC_CMD_KR_TUNE_TXEQ_GET_OUT_RESERVED2_LBN 24
--#define        MC_CMD_KR_TUNE_TXEQ_GET_OUT_RESERVED2_WIDTH 8
--
--/* MC_CMD_KR_TUNE_TXEQ_SET_IN msgrequest */
--#define    MC_CMD_KR_TUNE_TXEQ_SET_IN_LENMIN 8
--#define    MC_CMD_KR_TUNE_TXEQ_SET_IN_LENMAX 252
--#define    MC_CMD_KR_TUNE_TXEQ_SET_IN_LENMAX_MCDI2 1020
--#define    MC_CMD_KR_TUNE_TXEQ_SET_IN_LEN(num) (4+4*(num))
--#define    MC_CMD_KR_TUNE_TXEQ_SET_IN_PARAM_NUM(len) (((len)-4)/4)
--/* Requested operation */
--#define       MC_CMD_KR_TUNE_TXEQ_SET_IN_KR_TUNE_OP_OFST 0
--#define       MC_CMD_KR_TUNE_TXEQ_SET_IN_KR_TUNE_OP_LEN 1
--/* Align the arguments to 32 bits */
--#define       MC_CMD_KR_TUNE_TXEQ_SET_IN_KR_TUNE_RSVD_OFST 1
--#define       MC_CMD_KR_TUNE_TXEQ_SET_IN_KR_TUNE_RSVD_LEN 3
--/* TXEQ Parameter */
--#define       MC_CMD_KR_TUNE_TXEQ_SET_IN_PARAM_OFST 4
--#define       MC_CMD_KR_TUNE_TXEQ_SET_IN_PARAM_LEN 4
--#define       MC_CMD_KR_TUNE_TXEQ_SET_IN_PARAM_MINNUM 1
--#define       MC_CMD_KR_TUNE_TXEQ_SET_IN_PARAM_MAXNUM 62
--#define       MC_CMD_KR_TUNE_TXEQ_SET_IN_PARAM_MAXNUM_MCDI2 254
--#define        MC_CMD_KR_TUNE_TXEQ_SET_IN_PARAM_ID_OFST 4
--#define        MC_CMD_KR_TUNE_TXEQ_SET_IN_PARAM_ID_LBN 0
--#define        MC_CMD_KR_TUNE_TXEQ_SET_IN_PARAM_ID_WIDTH 8
--/*             Enum values, see field(s): */
--/*                MC_CMD_KR_TUNE_TXEQ_GET_OUT/PARAM_ID */
--#define        MC_CMD_KR_TUNE_TXEQ_SET_IN_PARAM_LANE_OFST 4
--#define        MC_CMD_KR_TUNE_TXEQ_SET_IN_PARAM_LANE_LBN 8
--#define        MC_CMD_KR_TUNE_TXEQ_SET_IN_PARAM_LANE_WIDTH 3
--/*             Enum values, see field(s): */
--/*                MC_CMD_KR_TUNE_TXEQ_GET_OUT/PARAM_LANE */
--#define        MC_CMD_KR_TUNE_TXEQ_SET_IN_RESERVED_OFST 4
--#define        MC_CMD_KR_TUNE_TXEQ_SET_IN_RESERVED_LBN 11
--#define        MC_CMD_KR_TUNE_TXEQ_SET_IN_RESERVED_WIDTH 5
--#define        MC_CMD_KR_TUNE_TXEQ_SET_IN_PARAM_INITIAL_OFST 4
--#define        MC_CMD_KR_TUNE_TXEQ_SET_IN_PARAM_INITIAL_LBN 16
--#define        MC_CMD_KR_TUNE_TXEQ_SET_IN_PARAM_INITIAL_WIDTH 8
--#define        MC_CMD_KR_TUNE_TXEQ_SET_IN_RESERVED2_OFST 4
--#define        MC_CMD_KR_TUNE_TXEQ_SET_IN_RESERVED2_LBN 24
--#define        MC_CMD_KR_TUNE_TXEQ_SET_IN_RESERVED2_WIDTH 8
--
--/* MC_CMD_KR_TUNE_TXEQ_SET_OUT msgresponse */
--#define    MC_CMD_KR_TUNE_TXEQ_SET_OUT_LEN 0
--
--/* MC_CMD_KR_TUNE_RECAL_IN msgrequest */
--#define    MC_CMD_KR_TUNE_RECAL_IN_LEN 4
--/* Requested operation */
--#define       MC_CMD_KR_TUNE_RECAL_IN_KR_TUNE_OP_OFST 0
--#define       MC_CMD_KR_TUNE_RECAL_IN_KR_TUNE_OP_LEN 1
--/* Align the arguments to 32 bits */
--#define       MC_CMD_KR_TUNE_RECAL_IN_KR_TUNE_RSVD_OFST 1
--#define       MC_CMD_KR_TUNE_RECAL_IN_KR_TUNE_RSVD_LEN 3
--
--/* MC_CMD_KR_TUNE_RECAL_OUT msgresponse */
--#define    MC_CMD_KR_TUNE_RECAL_OUT_LEN 0
--
--/* MC_CMD_KR_TUNE_START_EYE_PLOT_IN msgrequest */
--#define    MC_CMD_KR_TUNE_START_EYE_PLOT_IN_LEN 8
--/* Requested operation */
--#define       MC_CMD_KR_TUNE_START_EYE_PLOT_IN_KR_TUNE_OP_OFST 0
--#define       MC_CMD_KR_TUNE_START_EYE_PLOT_IN_KR_TUNE_OP_LEN 1
--/* Align the arguments to 32 bits */
--#define       MC_CMD_KR_TUNE_START_EYE_PLOT_IN_KR_TUNE_RSVD_OFST 1
--#define       MC_CMD_KR_TUNE_START_EYE_PLOT_IN_KR_TUNE_RSVD_LEN 3
--/* Port-relative lane to scan eye on */
--#define       MC_CMD_KR_TUNE_START_EYE_PLOT_IN_LANE_OFST 4
--#define       MC_CMD_KR_TUNE_START_EYE_PLOT_IN_LANE_LEN 4
--
--/* MC_CMD_KR_TUNE_START_EYE_PLOT_V2_IN msgrequest */
--#define    MC_CMD_KR_TUNE_START_EYE_PLOT_V2_IN_LEN 12
--/* Requested operation */
--#define       MC_CMD_KR_TUNE_START_EYE_PLOT_V2_IN_KR_TUNE_OP_OFST 0
--#define       MC_CMD_KR_TUNE_START_EYE_PLOT_V2_IN_KR_TUNE_OP_LEN 1
--/* Align the arguments to 32 bits */
--#define       MC_CMD_KR_TUNE_START_EYE_PLOT_V2_IN_KR_TUNE_RSVD_OFST 1
--#define       MC_CMD_KR_TUNE_START_EYE_PLOT_V2_IN_KR_TUNE_RSVD_LEN 3
--#define       MC_CMD_KR_TUNE_START_EYE_PLOT_V2_IN_LANE_OFST 4
--#define       MC_CMD_KR_TUNE_START_EYE_PLOT_V2_IN_LANE_LEN 4
--#define        MC_CMD_KR_TUNE_START_EYE_PLOT_V2_IN_LANE_NUM_OFST 4
--#define        MC_CMD_KR_TUNE_START_EYE_PLOT_V2_IN_LANE_NUM_LBN 0
--#define        MC_CMD_KR_TUNE_START_EYE_PLOT_V2_IN_LANE_NUM_WIDTH 8
--#define        MC_CMD_KR_TUNE_START_EYE_PLOT_V2_IN_LANE_ABS_REL_OFST 4
--#define        MC_CMD_KR_TUNE_START_EYE_PLOT_V2_IN_LANE_ABS_REL_LBN 31
--#define        MC_CMD_KR_TUNE_START_EYE_PLOT_V2_IN_LANE_ABS_REL_WIDTH 1
--/* Scan duration / cycle count */
--#define       MC_CMD_KR_TUNE_START_EYE_PLOT_V2_IN_BER_OFST 8
--#define       MC_CMD_KR_TUNE_START_EYE_PLOT_V2_IN_BER_LEN 4
--
--/* MC_CMD_KR_TUNE_START_EYE_PLOT_OUT msgresponse */
--#define    MC_CMD_KR_TUNE_START_EYE_PLOT_OUT_LEN 0
--
--/* MC_CMD_KR_TUNE_POLL_EYE_PLOT_IN msgrequest */
--#define    MC_CMD_KR_TUNE_POLL_EYE_PLOT_IN_LEN 4
--/* Requested operation */
--#define       MC_CMD_KR_TUNE_POLL_EYE_PLOT_IN_KR_TUNE_OP_OFST 0
--#define       MC_CMD_KR_TUNE_POLL_EYE_PLOT_IN_KR_TUNE_OP_LEN 1
--/* Align the arguments to 32 bits */
--#define       MC_CMD_KR_TUNE_POLL_EYE_PLOT_IN_KR_TUNE_RSVD_OFST 1
--#define       MC_CMD_KR_TUNE_POLL_EYE_PLOT_IN_KR_TUNE_RSVD_LEN 3
--
--/* MC_CMD_KR_TUNE_POLL_EYE_PLOT_OUT msgresponse */
--#define    MC_CMD_KR_TUNE_POLL_EYE_PLOT_OUT_LENMIN 0
--#define    MC_CMD_KR_TUNE_POLL_EYE_PLOT_OUT_LENMAX 252
--#define    MC_CMD_KR_TUNE_POLL_EYE_PLOT_OUT_LENMAX_MCDI2 1020
--#define    MC_CMD_KR_TUNE_POLL_EYE_PLOT_OUT_LEN(num) (0+2*(num))
--#define    MC_CMD_KR_TUNE_POLL_EYE_PLOT_OUT_SAMPLES_NUM(len) (((len)-0)/2)
--#define       MC_CMD_KR_TUNE_POLL_EYE_PLOT_OUT_SAMPLES_OFST 0
--#define       MC_CMD_KR_TUNE_POLL_EYE_PLOT_OUT_SAMPLES_LEN 2
--#define       MC_CMD_KR_TUNE_POLL_EYE_PLOT_OUT_SAMPLES_MINNUM 0
--#define       MC_CMD_KR_TUNE_POLL_EYE_PLOT_OUT_SAMPLES_MAXNUM 126
--#define       MC_CMD_KR_TUNE_POLL_EYE_PLOT_OUT_SAMPLES_MAXNUM_MCDI2 510
--
--/* MC_CMD_KR_TUNE_READ_FOM_IN msgrequest */
--#define    MC_CMD_KR_TUNE_READ_FOM_IN_LEN 8
--/* Requested operation */
--#define       MC_CMD_KR_TUNE_READ_FOM_IN_KR_TUNE_OP_OFST 0
--#define       MC_CMD_KR_TUNE_READ_FOM_IN_KR_TUNE_OP_LEN 1
--/* Align the arguments to 32 bits */
--#define       MC_CMD_KR_TUNE_READ_FOM_IN_KR_TUNE_RSVD_OFST 1
--#define       MC_CMD_KR_TUNE_READ_FOM_IN_KR_TUNE_RSVD_LEN 3
--#define       MC_CMD_KR_TUNE_READ_FOM_IN_LANE_OFST 4
--#define       MC_CMD_KR_TUNE_READ_FOM_IN_LANE_LEN 4
--#define        MC_CMD_KR_TUNE_READ_FOM_IN_LANE_NUM_OFST 4
--#define        MC_CMD_KR_TUNE_READ_FOM_IN_LANE_NUM_LBN 0
--#define        MC_CMD_KR_TUNE_READ_FOM_IN_LANE_NUM_WIDTH 8
--#define        MC_CMD_KR_TUNE_READ_FOM_IN_LANE_ABS_REL_OFST 4
--#define        MC_CMD_KR_TUNE_READ_FOM_IN_LANE_ABS_REL_LBN 31
--#define        MC_CMD_KR_TUNE_READ_FOM_IN_LANE_ABS_REL_WIDTH 1
--
--/* MC_CMD_KR_TUNE_READ_FOM_OUT msgresponse */
--#define    MC_CMD_KR_TUNE_READ_FOM_OUT_LEN 4
--#define       MC_CMD_KR_TUNE_READ_FOM_OUT_FOM_OFST 0
--#define       MC_CMD_KR_TUNE_READ_FOM_OUT_FOM_LEN 4
--
--/* MC_CMD_KR_TUNE_LINK_TRAIN_RUN_IN msgrequest */
--#define    MC_CMD_KR_TUNE_LINK_TRAIN_RUN_IN_LEN 8
--/* Requested operation */
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_RUN_IN_KR_TUNE_OP_OFST 0
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_RUN_IN_KR_TUNE_OP_LEN 1
--/* Align the arguments to 32 bits */
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_RUN_IN_KR_TUNE_RSVD_OFST 1
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_RUN_IN_KR_TUNE_RSVD_LEN 3
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_RUN_IN_RUN_OFST 4
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_RUN_IN_RUN_LEN 4
--#define          MC_CMD_KR_TUNE_LINK_TRAIN_RUN_IN_STOP 0x0 /* enum */
--#define          MC_CMD_KR_TUNE_LINK_TRAIN_RUN_IN_START 0x1 /* enum */
--
--/* MC_CMD_KR_TUNE_LINK_TRAIN_CMD_IN msgrequest */
--#define    MC_CMD_KR_TUNE_LINK_TRAIN_CMD_IN_LEN 28
--/* Requested operation */
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_IN_KR_TUNE_OP_OFST 0
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_IN_KR_TUNE_OP_LEN 1
--/* Align the arguments to 32 bits */
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_IN_KR_TUNE_RSVD_OFST 1
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_IN_KR_TUNE_RSVD_LEN 3
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_IN_LANE_OFST 4
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_IN_LANE_LEN 4
--/* Set INITIALIZE state */
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_IN_INITIALIZE_OFST 8
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_IN_INITIALIZE_LEN 4
--/* Set PRESET state */
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_IN_PRESET_OFST 12
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_IN_PRESET_LEN 4
--/* C(-1) request */
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_IN_CM1_OFST 16
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_IN_CM1_LEN 4
--#define          MC_CMD_KR_TUNE_LINK_TRAIN_CMD_IN_REQ_HOLD 0x0 /* enum */
--#define          MC_CMD_KR_TUNE_LINK_TRAIN_CMD_IN_REQ_INCREMENT 0x1 /* enum */
--#define          MC_CMD_KR_TUNE_LINK_TRAIN_CMD_IN_REQ_DECREMENT 0x2 /* enum */
--/* C(0) request */
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_IN_C0_OFST 20
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_IN_C0_LEN 4
--/*            Enum values, see field(s): */
--/*               MC_CMD_KR_TUNE_LINK_TRAIN_CMD_IN/CM1 */
--/* C(+1) request */
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_IN_CP1_OFST 24
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_IN_CP1_LEN 4
--/*            Enum values, see field(s): */
--/*               MC_CMD_KR_TUNE_LINK_TRAIN_CMD_IN/CM1 */
--
--/* MC_CMD_KR_TUNE_LINK_TRAIN_CMD_OUT msgresponse */
--#define    MC_CMD_KR_TUNE_LINK_TRAIN_CMD_OUT_LEN 24
--/* C(-1) status */
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_OUT_CM1_STATUS_OFST 0
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_OUT_CM1_STATUS_LEN 4
--#define          MC_CMD_KR_TUNE_LINK_TRAIN_CMD_OUT_STATUS_NOT_UPDATED 0x0 /* enum */
--#define          MC_CMD_KR_TUNE_LINK_TRAIN_CMD_OUT_STATUS_UPDATED 0x1 /* enum */
--#define          MC_CMD_KR_TUNE_LINK_TRAIN_CMD_OUT_STATUS_MINIMUM 0x2 /* enum */
--#define          MC_CMD_KR_TUNE_LINK_TRAIN_CMD_OUT_STATUS_MAXIMUM 0x3 /* enum */
--/* C(0) status */
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_OUT_C0_STATUS_OFST 4
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_OUT_C0_STATUS_LEN 4
--/*            Enum values, see field(s): */
--/*               MC_CMD_KR_TUNE_LINK_TRAIN_CMD_IN/CM1 */
--/* C(+1) status */
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_OUT_CP1_STATUS_OFST 8
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_OUT_CP1_STATUS_LEN 4
--/*            Enum values, see field(s): */
--/*               MC_CMD_KR_TUNE_LINK_TRAIN_CMD_IN/CM1 */
--/* C(-1) value */
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_OUT_CM1_VALUE_OFST 12
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_OUT_CM1_VALUE_LEN 4
--/* C(0) value */
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_OUT_C0_VALUE_OFST 16
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_OUT_C0_VALUE_LEN 4
--/* C(+1) status */
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_OUT_CP1_VALUE_OFST 20
--#define       MC_CMD_KR_TUNE_LINK_TRAIN_CMD_OUT_CP1_VALUE_LEN 4
--
--
--/***********************************/
--/* MC_CMD_PCIE_TUNE
-- * Get or set PCIE Serdes RXEQ and TX Driver settings
-- */
--#define MC_CMD_PCIE_TUNE 0xf2
--#undef MC_CMD_0xf2_PRIVILEGE_CTG
--
--#define MC_CMD_0xf2_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_PCIE_TUNE_IN msgrequest */
--#define    MC_CMD_PCIE_TUNE_IN_LENMIN 4
--#define    MC_CMD_PCIE_TUNE_IN_LENMAX 252
--#define    MC_CMD_PCIE_TUNE_IN_LENMAX_MCDI2 1020
--#define    MC_CMD_PCIE_TUNE_IN_LEN(num) (4+4*(num))
--#define    MC_CMD_PCIE_TUNE_IN_PCIE_TUNE_ARGS_NUM(len) (((len)-4)/4)
--/* Requested operation */
--#define       MC_CMD_PCIE_TUNE_IN_PCIE_TUNE_OP_OFST 0
--#define       MC_CMD_PCIE_TUNE_IN_PCIE_TUNE_OP_LEN 1
--/* enum: Get current RXEQ settings */
--#define          MC_CMD_PCIE_TUNE_IN_RXEQ_GET 0x0
--/* enum: Override RXEQ settings */
--#define          MC_CMD_PCIE_TUNE_IN_RXEQ_SET 0x1
--/* enum: Get current TX Driver settings */
--#define          MC_CMD_PCIE_TUNE_IN_TXEQ_GET 0x2
--/* enum: Override TX Driver settings */
--#define          MC_CMD_PCIE_TUNE_IN_TXEQ_SET 0x3
--/* enum: Start PCIe Serdes Eye diagram plot on a given lane. */
--#define          MC_CMD_PCIE_TUNE_IN_START_EYE_PLOT 0x5
--/* enum: Poll PCIe Serdes Eye diagram plot. Returns one row of BER data. The
-- * caller should call this command repeatedly after starting eye plot, until no
-- * more data is returned.
-- */
--#define          MC_CMD_PCIE_TUNE_IN_POLL_EYE_PLOT 0x6
--/* enum: Enable the SERDES BIST and set it to generate a 200MHz square wave */
--#define          MC_CMD_PCIE_TUNE_IN_BIST_SQUARE_WAVE 0x7
--/* Align the arguments to 32 bits */
--#define       MC_CMD_PCIE_TUNE_IN_PCIE_TUNE_RSVD_OFST 1
--#define       MC_CMD_PCIE_TUNE_IN_PCIE_TUNE_RSVD_LEN 3
--/* Arguments specific to the operation */
--#define       MC_CMD_PCIE_TUNE_IN_PCIE_TUNE_ARGS_OFST 4
--#define       MC_CMD_PCIE_TUNE_IN_PCIE_TUNE_ARGS_LEN 4
--#define       MC_CMD_PCIE_TUNE_IN_PCIE_TUNE_ARGS_MINNUM 0
--#define       MC_CMD_PCIE_TUNE_IN_PCIE_TUNE_ARGS_MAXNUM 62
--#define       MC_CMD_PCIE_TUNE_IN_PCIE_TUNE_ARGS_MAXNUM_MCDI2 254
--
--/* MC_CMD_PCIE_TUNE_OUT msgresponse */
--#define    MC_CMD_PCIE_TUNE_OUT_LEN 0
--
--/* MC_CMD_PCIE_TUNE_RXEQ_GET_IN msgrequest */
--#define    MC_CMD_PCIE_TUNE_RXEQ_GET_IN_LEN 4
--/* Requested operation */
--#define       MC_CMD_PCIE_TUNE_RXEQ_GET_IN_PCIE_TUNE_OP_OFST 0
--#define       MC_CMD_PCIE_TUNE_RXEQ_GET_IN_PCIE_TUNE_OP_LEN 1
--/* Align the arguments to 32 bits */
--#define       MC_CMD_PCIE_TUNE_RXEQ_GET_IN_PCIE_TUNE_RSVD_OFST 1
--#define       MC_CMD_PCIE_TUNE_RXEQ_GET_IN_PCIE_TUNE_RSVD_LEN 3
--
--/* MC_CMD_PCIE_TUNE_RXEQ_GET_OUT msgresponse */
--#define    MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_LENMIN 4
--#define    MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_LENMAX 252
--#define    MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_LENMAX_MCDI2 1020
--#define    MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_LEN(num) (0+4*(num))
--#define    MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_PARAM_NUM(len) (((len)-0)/4)
--/* RXEQ Parameter */
--#define       MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_PARAM_OFST 0
--#define       MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_PARAM_LEN 4
--#define       MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_PARAM_MINNUM 1
--#define       MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_PARAM_MAXNUM 63
--#define       MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_PARAM_MAXNUM_MCDI2 255
--#define        MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_PARAM_ID_OFST 0
--#define        MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_PARAM_ID_LBN 0
--#define        MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_PARAM_ID_WIDTH 8
--/* enum: Attenuation (0-15) */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_ATT 0x0
--/* enum: CTLE Boost (0-15) */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_BOOST 0x1
--/* enum: DFE Tap1 (0 - max negative, 64 - zero, 127 - max positive) */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_DFE_TAP1 0x2
--/* enum: DFE Tap2 (0 - max negative, 32 - zero, 63 - max positive) */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_DFE_TAP2 0x3
--/* enum: DFE Tap3 (0 - max negative, 32 - zero, 63 - max positive) */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_DFE_TAP3 0x4
--/* enum: DFE Tap4 (0 - max negative, 32 - zero, 63 - max positive) */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_DFE_TAP4 0x5
--/* enum: DFE Tap5 (0 - max negative, 32 - zero, 63 - max positive) */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_DFE_TAP5 0x6
--/* enum: DFE DLev */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_DFE_DLEV 0x7
--/* enum: Figure of Merit */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_FOM 0x8
--/* enum: CTLE EQ Capacitor (HF Gain) */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_CTLE_EQC 0x9
--/* enum: CTLE EQ Resistor (DC Gain) */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_CTLE_EQRES 0xa
--#define        MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_PARAM_LANE_OFST 0
--#define        MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_PARAM_LANE_LBN 8
--#define        MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_PARAM_LANE_WIDTH 5
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_LANE_0 0x0 /* enum */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_LANE_1 0x1 /* enum */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_LANE_2 0x2 /* enum */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_LANE_3 0x3 /* enum */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_LANE_4 0x4 /* enum */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_LANE_5 0x5 /* enum */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_LANE_6 0x6 /* enum */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_LANE_7 0x7 /* enum */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_LANE_8 0x8 /* enum */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_LANE_9 0x9 /* enum */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_LANE_10 0xa /* enum */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_LANE_11 0xb /* enum */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_LANE_12 0xc /* enum */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_LANE_13 0xd /* enum */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_LANE_14 0xe /* enum */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_LANE_15 0xf /* enum */
--#define          MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_LANE_ALL 0x10 /* enum */
--#define        MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_PARAM_AUTOCAL_OFST 0
--#define        MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_PARAM_AUTOCAL_LBN 13
--#define        MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_PARAM_AUTOCAL_WIDTH 1
--#define        MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_RESERVED_OFST 0
--#define        MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_RESERVED_LBN 14
--#define        MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_RESERVED_WIDTH 10
--#define        MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_PARAM_CURRENT_OFST 0
--#define        MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_PARAM_CURRENT_LBN 24
--#define        MC_CMD_PCIE_TUNE_RXEQ_GET_OUT_PARAM_CURRENT_WIDTH 8
--
--/* MC_CMD_PCIE_TUNE_RXEQ_SET_IN msgrequest */
--#define    MC_CMD_PCIE_TUNE_RXEQ_SET_IN_LENMIN 8
--#define    MC_CMD_PCIE_TUNE_RXEQ_SET_IN_LENMAX 252
--#define    MC_CMD_PCIE_TUNE_RXEQ_SET_IN_LENMAX_MCDI2 1020
--#define    MC_CMD_PCIE_TUNE_RXEQ_SET_IN_LEN(num) (4+4*(num))
--#define    MC_CMD_PCIE_TUNE_RXEQ_SET_IN_PARAM_NUM(len) (((len)-4)/4)
--/* Requested operation */
--#define       MC_CMD_PCIE_TUNE_RXEQ_SET_IN_PCIE_TUNE_OP_OFST 0
--#define       MC_CMD_PCIE_TUNE_RXEQ_SET_IN_PCIE_TUNE_OP_LEN 1
--/* Align the arguments to 32 bits */
--#define       MC_CMD_PCIE_TUNE_RXEQ_SET_IN_PCIE_TUNE_RSVD_OFST 1
--#define       MC_CMD_PCIE_TUNE_RXEQ_SET_IN_PCIE_TUNE_RSVD_LEN 3
--/* RXEQ Parameter */
--#define       MC_CMD_PCIE_TUNE_RXEQ_SET_IN_PARAM_OFST 4
--#define       MC_CMD_PCIE_TUNE_RXEQ_SET_IN_PARAM_LEN 4
--#define       MC_CMD_PCIE_TUNE_RXEQ_SET_IN_PARAM_MINNUM 1
--#define       MC_CMD_PCIE_TUNE_RXEQ_SET_IN_PARAM_MAXNUM 62
--#define       MC_CMD_PCIE_TUNE_RXEQ_SET_IN_PARAM_MAXNUM_MCDI2 254
--#define        MC_CMD_PCIE_TUNE_RXEQ_SET_IN_PARAM_ID_OFST 4
--#define        MC_CMD_PCIE_TUNE_RXEQ_SET_IN_PARAM_ID_LBN 0
--#define        MC_CMD_PCIE_TUNE_RXEQ_SET_IN_PARAM_ID_WIDTH 8
--/*             Enum values, see field(s): */
--/*                MC_CMD_PCIE_TUNE_RXEQ_GET_OUT/PARAM_ID */
--#define        MC_CMD_PCIE_TUNE_RXEQ_SET_IN_PARAM_LANE_OFST 4
--#define        MC_CMD_PCIE_TUNE_RXEQ_SET_IN_PARAM_LANE_LBN 8
--#define        MC_CMD_PCIE_TUNE_RXEQ_SET_IN_PARAM_LANE_WIDTH 5
--/*             Enum values, see field(s): */
--/*                MC_CMD_PCIE_TUNE_RXEQ_GET_OUT/PARAM_LANE */
--#define        MC_CMD_PCIE_TUNE_RXEQ_SET_IN_PARAM_AUTOCAL_OFST 4
--#define        MC_CMD_PCIE_TUNE_RXEQ_SET_IN_PARAM_AUTOCAL_LBN 13
--#define        MC_CMD_PCIE_TUNE_RXEQ_SET_IN_PARAM_AUTOCAL_WIDTH 1
--#define        MC_CMD_PCIE_TUNE_RXEQ_SET_IN_RESERVED_OFST 4
--#define        MC_CMD_PCIE_TUNE_RXEQ_SET_IN_RESERVED_LBN 14
--#define        MC_CMD_PCIE_TUNE_RXEQ_SET_IN_RESERVED_WIDTH 2
--#define        MC_CMD_PCIE_TUNE_RXEQ_SET_IN_PARAM_INITIAL_OFST 4
--#define        MC_CMD_PCIE_TUNE_RXEQ_SET_IN_PARAM_INITIAL_LBN 16
--#define        MC_CMD_PCIE_TUNE_RXEQ_SET_IN_PARAM_INITIAL_WIDTH 8
--#define        MC_CMD_PCIE_TUNE_RXEQ_SET_IN_RESERVED2_OFST 4
--#define        MC_CMD_PCIE_TUNE_RXEQ_SET_IN_RESERVED2_LBN 24
--#define        MC_CMD_PCIE_TUNE_RXEQ_SET_IN_RESERVED2_WIDTH 8
--
--/* MC_CMD_PCIE_TUNE_RXEQ_SET_OUT msgresponse */
--#define    MC_CMD_PCIE_TUNE_RXEQ_SET_OUT_LEN 0
--
--/* MC_CMD_PCIE_TUNE_TXEQ_GET_IN msgrequest */
--#define    MC_CMD_PCIE_TUNE_TXEQ_GET_IN_LEN 4
--/* Requested operation */
--#define       MC_CMD_PCIE_TUNE_TXEQ_GET_IN_PCIE_TUNE_OP_OFST 0
--#define       MC_CMD_PCIE_TUNE_TXEQ_GET_IN_PCIE_TUNE_OP_LEN 1
--/* Align the arguments to 32 bits */
--#define       MC_CMD_PCIE_TUNE_TXEQ_GET_IN_PCIE_TUNE_RSVD_OFST 1
--#define       MC_CMD_PCIE_TUNE_TXEQ_GET_IN_PCIE_TUNE_RSVD_LEN 3
--
--/* MC_CMD_PCIE_TUNE_TXEQ_GET_OUT msgresponse */
--#define    MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_LENMIN 4
--#define    MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_LENMAX 252
--#define    MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_LENMAX_MCDI2 1020
--#define    MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_LEN(num) (0+4*(num))
--#define    MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_PARAM_NUM(len) (((len)-0)/4)
--/* RXEQ Parameter */
--#define       MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_PARAM_OFST 0
--#define       MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_PARAM_LEN 4
--#define       MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_PARAM_MINNUM 1
--#define       MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_PARAM_MAXNUM 63
--#define       MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_PARAM_MAXNUM_MCDI2 255
--#define        MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_PARAM_ID_OFST 0
--#define        MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_PARAM_ID_LBN 0
--#define        MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_PARAM_ID_WIDTH 8
--/* enum: TxMargin (PIPE) */
--#define          MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_TXMARGIN 0x0
--/* enum: TxSwing (PIPE) */
--#define          MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_TXSWING 0x1
--/* enum: De-emphasis coefficient C(-1) (PIPE) */
--#define          MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_CM1 0x2
--/* enum: De-emphasis coefficient C(0) (PIPE) */
--#define          MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_C0 0x3
--/* enum: De-emphasis coefficient C(+1) (PIPE) */
--#define          MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_CP1 0x4
--#define        MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_PARAM_LANE_OFST 0
--#define        MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_PARAM_LANE_LBN 8
--#define        MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_PARAM_LANE_WIDTH 4
--/*             Enum values, see field(s): */
--/*                MC_CMD_PCIE_TUNE_RXEQ_GET_OUT/PARAM_LANE */
--#define        MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_RESERVED_OFST 0
--#define        MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_RESERVED_LBN 12
--#define        MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_RESERVED_WIDTH 12
--#define        MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_PARAM_CURRENT_OFST 0
--#define        MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_PARAM_CURRENT_LBN 24
--#define        MC_CMD_PCIE_TUNE_TXEQ_GET_OUT_PARAM_CURRENT_WIDTH 8
--
--/* MC_CMD_PCIE_TUNE_START_EYE_PLOT_IN msgrequest */
--#define    MC_CMD_PCIE_TUNE_START_EYE_PLOT_IN_LEN 8
--/* Requested operation */
--#define       MC_CMD_PCIE_TUNE_START_EYE_PLOT_IN_PCIE_TUNE_OP_OFST 0
--#define       MC_CMD_PCIE_TUNE_START_EYE_PLOT_IN_PCIE_TUNE_OP_LEN 1
--/* Align the arguments to 32 bits */
--#define       MC_CMD_PCIE_TUNE_START_EYE_PLOT_IN_PCIE_TUNE_RSVD_OFST 1
--#define       MC_CMD_PCIE_TUNE_START_EYE_PLOT_IN_PCIE_TUNE_RSVD_LEN 3
--#define       MC_CMD_PCIE_TUNE_START_EYE_PLOT_IN_LANE_OFST 4
--#define       MC_CMD_PCIE_TUNE_START_EYE_PLOT_IN_LANE_LEN 4
--
--/* MC_CMD_PCIE_TUNE_START_EYE_PLOT_OUT msgresponse */
--#define    MC_CMD_PCIE_TUNE_START_EYE_PLOT_OUT_LEN 0
--
--/* MC_CMD_PCIE_TUNE_POLL_EYE_PLOT_IN msgrequest */
--#define    MC_CMD_PCIE_TUNE_POLL_EYE_PLOT_IN_LEN 4
--/* Requested operation */
--#define       MC_CMD_PCIE_TUNE_POLL_EYE_PLOT_IN_PCIE_TUNE_OP_OFST 0
--#define       MC_CMD_PCIE_TUNE_POLL_EYE_PLOT_IN_PCIE_TUNE_OP_LEN 1
--/* Align the arguments to 32 bits */
--#define       MC_CMD_PCIE_TUNE_POLL_EYE_PLOT_IN_PCIE_TUNE_RSVD_OFST 1
--#define       MC_CMD_PCIE_TUNE_POLL_EYE_PLOT_IN_PCIE_TUNE_RSVD_LEN 3
--
--/* MC_CMD_PCIE_TUNE_POLL_EYE_PLOT_OUT msgresponse */
--#define    MC_CMD_PCIE_TUNE_POLL_EYE_PLOT_OUT_LENMIN 0
--#define    MC_CMD_PCIE_TUNE_POLL_EYE_PLOT_OUT_LENMAX 252
--#define    MC_CMD_PCIE_TUNE_POLL_EYE_PLOT_OUT_LENMAX_MCDI2 1020
--#define    MC_CMD_PCIE_TUNE_POLL_EYE_PLOT_OUT_LEN(num) (0+2*(num))
--#define    MC_CMD_PCIE_TUNE_POLL_EYE_PLOT_OUT_SAMPLES_NUM(len) (((len)-0)/2)
--#define       MC_CMD_PCIE_TUNE_POLL_EYE_PLOT_OUT_SAMPLES_OFST 0
--#define       MC_CMD_PCIE_TUNE_POLL_EYE_PLOT_OUT_SAMPLES_LEN 2
--#define       MC_CMD_PCIE_TUNE_POLL_EYE_PLOT_OUT_SAMPLES_MINNUM 0
--#define       MC_CMD_PCIE_TUNE_POLL_EYE_PLOT_OUT_SAMPLES_MAXNUM 126
--#define       MC_CMD_PCIE_TUNE_POLL_EYE_PLOT_OUT_SAMPLES_MAXNUM_MCDI2 510
--
--/* MC_CMD_PCIE_TUNE_BIST_SQUARE_WAVE_IN msgrequest */
--#define    MC_CMD_PCIE_TUNE_BIST_SQUARE_WAVE_IN_LEN 0
--
--/* MC_CMD_PCIE_TUNE_BIST_SQUARE_WAVE_OUT msgrequest */
--#define    MC_CMD_PCIE_TUNE_BIST_SQUARE_WAVE_OUT_LEN 0
--
--
--/***********************************/
- /* MC_CMD_LICENSING
-  * Operations on the NVRAM_PARTITION_TYPE_LICENSE application license partition
-  * - not used for V3 licensing
-@@ -18618,23 +16232,6 @@
- 
- 
- /***********************************/
--/* MC_CMD_MC2MC_PROXY
-- * Execute an arbitrary MCDI command on the slave MC of a dual-core device.
-- * This will fail on a single-core system.
-- */
--#define MC_CMD_MC2MC_PROXY 0xf4
--#undef MC_CMD_0xf4_PRIVILEGE_CTG
--
--#define MC_CMD_0xf4_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_MC2MC_PROXY_IN msgrequest */
--#define    MC_CMD_MC2MC_PROXY_IN_LEN 0
--
--/* MC_CMD_MC2MC_PROXY_OUT msgresponse */
--#define    MC_CMD_MC2MC_PROXY_OUT_LEN 0
--
--
--/***********************************/
- /* MC_CMD_GET_LICENSED_APP_STATE
-  * Query the state of an individual licensed application. (Note that the actual
-  * state may be invalidated by the MC_CMD_LICENSING OP_UPDATE_LICENSE operation
-@@ -18960,91 +16557,6 @@
- 
- 
- /***********************************/
--/* MC_CMD_SET_PORT_SNIFF_CONFIG
-- * Configure RX port sniffing for the physical port associated with the calling
-- * function. Only a privileged function may change the port sniffing
-- * configuration. A copy of all traffic delivered to the host (non-promiscuous
-- * mode) or all traffic arriving at the port (promiscuous mode) may be
-- * delivered to a specific queue, or a set of queues with RSS.
-- */
--#define MC_CMD_SET_PORT_SNIFF_CONFIG 0xf7
--#undef MC_CMD_0xf7_PRIVILEGE_CTG
--
--#define MC_CMD_0xf7_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_SET_PORT_SNIFF_CONFIG_IN msgrequest */
--#define    MC_CMD_SET_PORT_SNIFF_CONFIG_IN_LEN 16
--/* configuration flags */
--#define       MC_CMD_SET_PORT_SNIFF_CONFIG_IN_FLAGS_OFST 0
--#define       MC_CMD_SET_PORT_SNIFF_CONFIG_IN_FLAGS_LEN 4
--#define        MC_CMD_SET_PORT_SNIFF_CONFIG_IN_ENABLE_OFST 0
--#define        MC_CMD_SET_PORT_SNIFF_CONFIG_IN_ENABLE_LBN 0
--#define        MC_CMD_SET_PORT_SNIFF_CONFIG_IN_ENABLE_WIDTH 1
--#define        MC_CMD_SET_PORT_SNIFF_CONFIG_IN_PROMISCUOUS_OFST 0
--#define        MC_CMD_SET_PORT_SNIFF_CONFIG_IN_PROMISCUOUS_LBN 1
--#define        MC_CMD_SET_PORT_SNIFF_CONFIG_IN_PROMISCUOUS_WIDTH 1
--/* receive queue handle (for RSS mode, this is the base queue) */
--#define       MC_CMD_SET_PORT_SNIFF_CONFIG_IN_RX_QUEUE_OFST 4
--#define       MC_CMD_SET_PORT_SNIFF_CONFIG_IN_RX_QUEUE_LEN 4
--/* receive mode */
--#define       MC_CMD_SET_PORT_SNIFF_CONFIG_IN_RX_MODE_OFST 8
--#define       MC_CMD_SET_PORT_SNIFF_CONFIG_IN_RX_MODE_LEN 4
--/* enum: receive to just the specified queue */
--#define          MC_CMD_SET_PORT_SNIFF_CONFIG_IN_RX_MODE_SIMPLE 0x0
--/* enum: receive to multiple queues using RSS context */
--#define          MC_CMD_SET_PORT_SNIFF_CONFIG_IN_RX_MODE_RSS 0x1
--/* RSS context (for RX_MODE_RSS) as returned by MC_CMD_RSS_CONTEXT_ALLOC. Note
-- * that these handles should be considered opaque to the host, although a value
-- * of 0xFFFFFFFF is guaranteed never to be a valid handle.
-- */
--#define       MC_CMD_SET_PORT_SNIFF_CONFIG_IN_RX_CONTEXT_OFST 12
--#define       MC_CMD_SET_PORT_SNIFF_CONFIG_IN_RX_CONTEXT_LEN 4
--
--/* MC_CMD_SET_PORT_SNIFF_CONFIG_OUT msgresponse */
--#define    MC_CMD_SET_PORT_SNIFF_CONFIG_OUT_LEN 0
--
--
--/***********************************/
--/* MC_CMD_GET_PORT_SNIFF_CONFIG
-- * Obtain the current RX port sniffing configuration for the physical port
-- * associated with the calling function. Only a privileged function may read
-- * the configuration.
-- */
--#define MC_CMD_GET_PORT_SNIFF_CONFIG 0xf8
--#undef MC_CMD_0xf8_PRIVILEGE_CTG
--
--#define MC_CMD_0xf8_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_GET_PORT_SNIFF_CONFIG_IN msgrequest */
--#define    MC_CMD_GET_PORT_SNIFF_CONFIG_IN_LEN 0
--
--/* MC_CMD_GET_PORT_SNIFF_CONFIG_OUT msgresponse */
--#define    MC_CMD_GET_PORT_SNIFF_CONFIG_OUT_LEN 16
--/* configuration flags */
--#define       MC_CMD_GET_PORT_SNIFF_CONFIG_OUT_FLAGS_OFST 0
--#define       MC_CMD_GET_PORT_SNIFF_CONFIG_OUT_FLAGS_LEN 4
--#define        MC_CMD_GET_PORT_SNIFF_CONFIG_OUT_ENABLE_OFST 0
--#define        MC_CMD_GET_PORT_SNIFF_CONFIG_OUT_ENABLE_LBN 0
--#define        MC_CMD_GET_PORT_SNIFF_CONFIG_OUT_ENABLE_WIDTH 1
--#define        MC_CMD_GET_PORT_SNIFF_CONFIG_OUT_PROMISCUOUS_OFST 0
--#define        MC_CMD_GET_PORT_SNIFF_CONFIG_OUT_PROMISCUOUS_LBN 1
--#define        MC_CMD_GET_PORT_SNIFF_CONFIG_OUT_PROMISCUOUS_WIDTH 1
--/* receiving queue handle (for RSS mode, this is the base queue) */
--#define       MC_CMD_GET_PORT_SNIFF_CONFIG_OUT_RX_QUEUE_OFST 4
--#define       MC_CMD_GET_PORT_SNIFF_CONFIG_OUT_RX_QUEUE_LEN 4
--/* receive mode */
--#define       MC_CMD_GET_PORT_SNIFF_CONFIG_OUT_RX_MODE_OFST 8
--#define       MC_CMD_GET_PORT_SNIFF_CONFIG_OUT_RX_MODE_LEN 4
--/* enum: receiving to just the specified queue */
--#define          MC_CMD_GET_PORT_SNIFF_CONFIG_OUT_RX_MODE_SIMPLE 0x0
--/* enum: receiving to multiple queues using RSS context */
--#define          MC_CMD_GET_PORT_SNIFF_CONFIG_OUT_RX_MODE_RSS 0x1
--/* RSS context (for RX_MODE_RSS) */
--#define       MC_CMD_GET_PORT_SNIFF_CONFIG_OUT_RX_CONTEXT_OFST 12
--#define       MC_CMD_GET_PORT_SNIFF_CONFIG_OUT_RX_CONTEXT_LEN 4
--
--
--/***********************************/
- /* MC_CMD_SET_PARSER_DISP_CONFIG
-  * Change configuration related to the parser-dispatcher subsystem.
-  */
-@@ -19128,158 +16640,6 @@
- 
- 
- /***********************************/
--/* MC_CMD_SET_TX_PORT_SNIFF_CONFIG
-- * Configure TX port sniffing for the physical port associated with the calling
-- * function. Only a privileged function may change the port sniffing
-- * configuration. A copy of all traffic transmitted through the port may be
-- * delivered to a specific queue, or a set of queues with RSS. Note that these
-- * packets are delivered with transmit timestamps in the packet prefix, not
-- * receive timestamps, so it is likely that the queue(s) will need to be
-- * dedicated as TX sniff receivers.
-- */
--#define MC_CMD_SET_TX_PORT_SNIFF_CONFIG 0xfb
--#undef MC_CMD_0xfb_PRIVILEGE_CTG
--
--#define MC_CMD_0xfb_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_SET_TX_PORT_SNIFF_CONFIG_IN msgrequest */
--#define    MC_CMD_SET_TX_PORT_SNIFF_CONFIG_IN_LEN 16
--/* configuration flags */
--#define       MC_CMD_SET_TX_PORT_SNIFF_CONFIG_IN_FLAGS_OFST 0
--#define       MC_CMD_SET_TX_PORT_SNIFF_CONFIG_IN_FLAGS_LEN 4
--#define        MC_CMD_SET_TX_PORT_SNIFF_CONFIG_IN_ENABLE_OFST 0
--#define        MC_CMD_SET_TX_PORT_SNIFF_CONFIG_IN_ENABLE_LBN 0
--#define        MC_CMD_SET_TX_PORT_SNIFF_CONFIG_IN_ENABLE_WIDTH 1
--/* receive queue handle (for RSS mode, this is the base queue) */
--#define       MC_CMD_SET_TX_PORT_SNIFF_CONFIG_IN_RX_QUEUE_OFST 4
--#define       MC_CMD_SET_TX_PORT_SNIFF_CONFIG_IN_RX_QUEUE_LEN 4
--/* receive mode */
--#define       MC_CMD_SET_TX_PORT_SNIFF_CONFIG_IN_RX_MODE_OFST 8
--#define       MC_CMD_SET_TX_PORT_SNIFF_CONFIG_IN_RX_MODE_LEN 4
--/* enum: receive to just the specified queue */
--#define          MC_CMD_SET_TX_PORT_SNIFF_CONFIG_IN_RX_MODE_SIMPLE 0x0
--/* enum: receive to multiple queues using RSS context */
--#define          MC_CMD_SET_TX_PORT_SNIFF_CONFIG_IN_RX_MODE_RSS 0x1
--/* RSS context (for RX_MODE_RSS) as returned by MC_CMD_RSS_CONTEXT_ALLOC. Note
-- * that these handles should be considered opaque to the host, although a value
-- * of 0xFFFFFFFF is guaranteed never to be a valid handle.
-- */
--#define       MC_CMD_SET_TX_PORT_SNIFF_CONFIG_IN_RX_CONTEXT_OFST 12
--#define       MC_CMD_SET_TX_PORT_SNIFF_CONFIG_IN_RX_CONTEXT_LEN 4
--
--/* MC_CMD_SET_TX_PORT_SNIFF_CONFIG_OUT msgresponse */
--#define    MC_CMD_SET_TX_PORT_SNIFF_CONFIG_OUT_LEN 0
--
--
--/***********************************/
--/* MC_CMD_GET_TX_PORT_SNIFF_CONFIG
-- * Obtain the current TX port sniffing configuration for the physical port
-- * associated with the calling function. Only a privileged function may read
-- * the configuration.
-- */
--#define MC_CMD_GET_TX_PORT_SNIFF_CONFIG 0xfc
--#undef MC_CMD_0xfc_PRIVILEGE_CTG
--
--#define MC_CMD_0xfc_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_GET_TX_PORT_SNIFF_CONFIG_IN msgrequest */
--#define    MC_CMD_GET_TX_PORT_SNIFF_CONFIG_IN_LEN 0
--
--/* MC_CMD_GET_TX_PORT_SNIFF_CONFIG_OUT msgresponse */
--#define    MC_CMD_GET_TX_PORT_SNIFF_CONFIG_OUT_LEN 16
--/* configuration flags */
--#define       MC_CMD_GET_TX_PORT_SNIFF_CONFIG_OUT_FLAGS_OFST 0
--#define       MC_CMD_GET_TX_PORT_SNIFF_CONFIG_OUT_FLAGS_LEN 4
--#define        MC_CMD_GET_TX_PORT_SNIFF_CONFIG_OUT_ENABLE_OFST 0
--#define        MC_CMD_GET_TX_PORT_SNIFF_CONFIG_OUT_ENABLE_LBN 0
--#define        MC_CMD_GET_TX_PORT_SNIFF_CONFIG_OUT_ENABLE_WIDTH 1
--/* receiving queue handle (for RSS mode, this is the base queue) */
--#define       MC_CMD_GET_TX_PORT_SNIFF_CONFIG_OUT_RX_QUEUE_OFST 4
--#define       MC_CMD_GET_TX_PORT_SNIFF_CONFIG_OUT_RX_QUEUE_LEN 4
--/* receive mode */
--#define       MC_CMD_GET_TX_PORT_SNIFF_CONFIG_OUT_RX_MODE_OFST 8
--#define       MC_CMD_GET_TX_PORT_SNIFF_CONFIG_OUT_RX_MODE_LEN 4
--/* enum: receiving to just the specified queue */
--#define          MC_CMD_GET_TX_PORT_SNIFF_CONFIG_OUT_RX_MODE_SIMPLE 0x0
--/* enum: receiving to multiple queues using RSS context */
--#define          MC_CMD_GET_TX_PORT_SNIFF_CONFIG_OUT_RX_MODE_RSS 0x1
--/* RSS context (for RX_MODE_RSS) */
--#define       MC_CMD_GET_TX_PORT_SNIFF_CONFIG_OUT_RX_CONTEXT_OFST 12
--#define       MC_CMD_GET_TX_PORT_SNIFF_CONFIG_OUT_RX_CONTEXT_LEN 4
--
--
--/***********************************/
--/* MC_CMD_RMON_STATS_RX_ERRORS
-- * Per queue rx error stats.
-- */
--#define MC_CMD_RMON_STATS_RX_ERRORS 0xfe
--#undef MC_CMD_0xfe_PRIVILEGE_CTG
--
--#define MC_CMD_0xfe_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_RMON_STATS_RX_ERRORS_IN msgrequest */
--#define    MC_CMD_RMON_STATS_RX_ERRORS_IN_LEN 8
--/* The rx queue to get stats for. */
--#define       MC_CMD_RMON_STATS_RX_ERRORS_IN_RX_QUEUE_OFST 0
--#define       MC_CMD_RMON_STATS_RX_ERRORS_IN_RX_QUEUE_LEN 4
--#define       MC_CMD_RMON_STATS_RX_ERRORS_IN_FLAGS_OFST 4
--#define       MC_CMD_RMON_STATS_RX_ERRORS_IN_FLAGS_LEN 4
--#define        MC_CMD_RMON_STATS_RX_ERRORS_IN_RST_OFST 4
--#define        MC_CMD_RMON_STATS_RX_ERRORS_IN_RST_LBN 0
--#define        MC_CMD_RMON_STATS_RX_ERRORS_IN_RST_WIDTH 1
--
--/* MC_CMD_RMON_STATS_RX_ERRORS_OUT msgresponse */
--#define    MC_CMD_RMON_STATS_RX_ERRORS_OUT_LEN 16
--#define       MC_CMD_RMON_STATS_RX_ERRORS_OUT_CRC_ERRORS_OFST 0
--#define       MC_CMD_RMON_STATS_RX_ERRORS_OUT_CRC_ERRORS_LEN 4
--#define       MC_CMD_RMON_STATS_RX_ERRORS_OUT_TRUNC_ERRORS_OFST 4
--#define       MC_CMD_RMON_STATS_RX_ERRORS_OUT_TRUNC_ERRORS_LEN 4
--#define       MC_CMD_RMON_STATS_RX_ERRORS_OUT_RX_NO_DESC_DROPS_OFST 8
--#define       MC_CMD_RMON_STATS_RX_ERRORS_OUT_RX_NO_DESC_DROPS_LEN 4
--#define       MC_CMD_RMON_STATS_RX_ERRORS_OUT_RX_ABORT_OFST 12
--#define       MC_CMD_RMON_STATS_RX_ERRORS_OUT_RX_ABORT_LEN 4
--
--
--/***********************************/
--/* MC_CMD_GET_PCIE_RESOURCE_INFO
-- * Find out about available PCIE resources
-- */
--#define MC_CMD_GET_PCIE_RESOURCE_INFO 0xfd
--#undef MC_CMD_0xfd_PRIVILEGE_CTG
--
--#define MC_CMD_0xfd_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_GET_PCIE_RESOURCE_INFO_IN msgrequest */
--#define    MC_CMD_GET_PCIE_RESOURCE_INFO_IN_LEN 0
--
--/* MC_CMD_GET_PCIE_RESOURCE_INFO_OUT msgresponse */
--#define    MC_CMD_GET_PCIE_RESOURCE_INFO_OUT_LEN 28
--/* The maximum number of PFs the device can expose */
--#define       MC_CMD_GET_PCIE_RESOURCE_INFO_OUT_MAX_PFS_OFST 0
--#define       MC_CMD_GET_PCIE_RESOURCE_INFO_OUT_MAX_PFS_LEN 4
--/* The maximum number of VFs the device can expose in total */
--#define       MC_CMD_GET_PCIE_RESOURCE_INFO_OUT_MAX_VFS_OFST 4
--#define       MC_CMD_GET_PCIE_RESOURCE_INFO_OUT_MAX_VFS_LEN 4
--/* The maximum number of MSI-X vectors the device can provide in total */
--#define       MC_CMD_GET_PCIE_RESOURCE_INFO_OUT_MAX_VECTORS_OFST 8
--#define       MC_CMD_GET_PCIE_RESOURCE_INFO_OUT_MAX_VECTORS_LEN 4
--/* the number of MSI-X vectors the device will allocate by default to each PF
-- */
--#define       MC_CMD_GET_PCIE_RESOURCE_INFO_OUT_DEFAULT_PF_VECTORS_OFST 12
--#define       MC_CMD_GET_PCIE_RESOURCE_INFO_OUT_DEFAULT_PF_VECTORS_LEN 4
--/* the number of MSI-X vectors the device will allocate by default to each VF
-- */
--#define       MC_CMD_GET_PCIE_RESOURCE_INFO_OUT_DEFAULT_VF_VECTORS_OFST 16
--#define       MC_CMD_GET_PCIE_RESOURCE_INFO_OUT_DEFAULT_VF_VECTORS_LEN 4
--/* the maximum number of MSI-X vectors the device can allocate to any one PF */
--#define       MC_CMD_GET_PCIE_RESOURCE_INFO_OUT_MAX_PF_VECTORS_OFST 20
--#define       MC_CMD_GET_PCIE_RESOURCE_INFO_OUT_MAX_PF_VECTORS_LEN 4
--/* the maximum number of MSI-X vectors the device can allocate to any one VF */
--#define       MC_CMD_GET_PCIE_RESOURCE_INFO_OUT_MAX_VF_VECTORS_OFST 24
--#define       MC_CMD_GET_PCIE_RESOURCE_INFO_OUT_MAX_VF_VECTORS_LEN 4
--
--
--/***********************************/
- /* MC_CMD_GET_PORT_MODES
-  * Find out about available port modes
-  */
-@@ -19360,35 +16720,6 @@
- 
- 
- /***********************************/
--/* MC_CMD_READ_ATB
-- * Sample voltages on the ATB
-- */
--#define MC_CMD_READ_ATB 0x100
--#undef MC_CMD_0x100_PRIVILEGE_CTG
--
--#define MC_CMD_0x100_PRIVILEGE_CTG SRIOV_CTG_INSECURE
--
--/* MC_CMD_READ_ATB_IN msgrequest */
--#define    MC_CMD_READ_ATB_IN_LEN 16
--#define       MC_CMD_READ_ATB_IN_SIGNAL_BUS_OFST 0
--#define       MC_CMD_READ_ATB_IN_SIGNAL_BUS_LEN 4
--#define          MC_CMD_READ_ATB_IN_BUS_CCOM 0x0 /* enum */
--#define          MC_CMD_READ_ATB_IN_BUS_CKR 0x1 /* enum */
--#define          MC_CMD_READ_ATB_IN_BUS_CPCIE 0x8 /* enum */
--#define       MC_CMD_READ_ATB_IN_SIGNAL_EN_BITNO_OFST 4
--#define       MC_CMD_READ_ATB_IN_SIGNAL_EN_BITNO_LEN 4
--#define       MC_CMD_READ_ATB_IN_SIGNAL_SEL_OFST 8
--#define       MC_CMD_READ_ATB_IN_SIGNAL_SEL_LEN 4
--#define       MC_CMD_READ_ATB_IN_SETTLING_TIME_US_OFST 12
--#define       MC_CMD_READ_ATB_IN_SETTLING_TIME_US_LEN 4
--
--/* MC_CMD_READ_ATB_OUT msgresponse */
--#define    MC_CMD_READ_ATB_OUT_LEN 4
--#define       MC_CMD_READ_ATB_OUT_SAMPLE_MV_OFST 0
--#define       MC_CMD_READ_ATB_OUT_SAMPLE_MV_LEN 4
--
--
--/***********************************/
- /* MC_CMD_GET_WORKAROUNDS
-  * Read the list of all implemented and all currently enabled workarounds. The
-  * enums here must correspond with those in MC_CMD_WORKAROUND.
-@@ -19541,29 +16872,6 @@
- 
- 
- /***********************************/
--/* MC_CMD_GET_SNAPSHOT_LENGTH
-- * Obtain the current range of allowable values for the SNAPSHOT_LENGTH
-- * parameter to MC_CMD_INIT_RXQ.
-- */
--#define MC_CMD_GET_SNAPSHOT_LENGTH 0x101
--#undef MC_CMD_0x101_PRIVILEGE_CTG
--
--#define MC_CMD_0x101_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_GET_SNAPSHOT_LENGTH_IN msgrequest */
--#define    MC_CMD_GET_SNAPSHOT_LENGTH_IN_LEN 0
--
--/* MC_CMD_GET_SNAPSHOT_LENGTH_OUT msgresponse */
--#define    MC_CMD_GET_SNAPSHOT_LENGTH_OUT_LEN 8
--/* Minimum acceptable snapshot length. */
--#define       MC_CMD_GET_SNAPSHOT_LENGTH_OUT_RX_SNAPLEN_MIN_OFST 0
--#define       MC_CMD_GET_SNAPSHOT_LENGTH_OUT_RX_SNAPLEN_MIN_LEN 4
--/* Maximum acceptable snapshot length. */
--#define       MC_CMD_GET_SNAPSHOT_LENGTH_OUT_RX_SNAPLEN_MAX_OFST 4
--#define       MC_CMD_GET_SNAPSHOT_LENGTH_OUT_RX_SNAPLEN_MAX_LEN 4
--
--
--/***********************************/
- /* MC_CMD_FUSE_DIAGS
-  * Additional fuse diagnostics
-  */
-@@ -19661,325 +16969,6 @@
- #define    MC_CMD_PRIVILEGE_MODIFY_OUT_LEN 0
- 
- 
--/***********************************/
--/* MC_CMD_XPM_READ_BYTES
-- * Read XPM memory
-- */
--#define MC_CMD_XPM_READ_BYTES 0x103
--#undef MC_CMD_0x103_PRIVILEGE_CTG
--
--#define MC_CMD_0x103_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_XPM_READ_BYTES_IN msgrequest */
--#define    MC_CMD_XPM_READ_BYTES_IN_LEN 8
--/* Start address (byte) */
--#define       MC_CMD_XPM_READ_BYTES_IN_ADDR_OFST 0
--#define       MC_CMD_XPM_READ_BYTES_IN_ADDR_LEN 4
--/* Count (bytes) */
--#define       MC_CMD_XPM_READ_BYTES_IN_COUNT_OFST 4
--#define       MC_CMD_XPM_READ_BYTES_IN_COUNT_LEN 4
--
--/* MC_CMD_XPM_READ_BYTES_OUT msgresponse */
--#define    MC_CMD_XPM_READ_BYTES_OUT_LENMIN 0
--#define    MC_CMD_XPM_READ_BYTES_OUT_LENMAX 252
--#define    MC_CMD_XPM_READ_BYTES_OUT_LENMAX_MCDI2 1020
--#define    MC_CMD_XPM_READ_BYTES_OUT_LEN(num) (0+1*(num))
--#define    MC_CMD_XPM_READ_BYTES_OUT_DATA_NUM(len) (((len)-0)/1)
--/* Data */
--#define       MC_CMD_XPM_READ_BYTES_OUT_DATA_OFST 0
--#define       MC_CMD_XPM_READ_BYTES_OUT_DATA_LEN 1
--#define       MC_CMD_XPM_READ_BYTES_OUT_DATA_MINNUM 0
--#define       MC_CMD_XPM_READ_BYTES_OUT_DATA_MAXNUM 252
--#define       MC_CMD_XPM_READ_BYTES_OUT_DATA_MAXNUM_MCDI2 1020
--
--
--/***********************************/
--/* MC_CMD_XPM_WRITE_BYTES
-- * Write XPM memory
-- */
--#define MC_CMD_XPM_WRITE_BYTES 0x104
--#undef MC_CMD_0x104_PRIVILEGE_CTG
--
--#define MC_CMD_0x104_PRIVILEGE_CTG SRIOV_CTG_INSECURE
--
--/* MC_CMD_XPM_WRITE_BYTES_IN msgrequest */
--#define    MC_CMD_XPM_WRITE_BYTES_IN_LENMIN 8
--#define    MC_CMD_XPM_WRITE_BYTES_IN_LENMAX 252
--#define    MC_CMD_XPM_WRITE_BYTES_IN_LENMAX_MCDI2 1020
--#define    MC_CMD_XPM_WRITE_BYTES_IN_LEN(num) (8+1*(num))
--#define    MC_CMD_XPM_WRITE_BYTES_IN_DATA_NUM(len) (((len)-8)/1)
--/* Start address (byte) */
--#define       MC_CMD_XPM_WRITE_BYTES_IN_ADDR_OFST 0
--#define       MC_CMD_XPM_WRITE_BYTES_IN_ADDR_LEN 4
--/* Count (bytes) */
--#define       MC_CMD_XPM_WRITE_BYTES_IN_COUNT_OFST 4
--#define       MC_CMD_XPM_WRITE_BYTES_IN_COUNT_LEN 4
--/* Data */
--#define       MC_CMD_XPM_WRITE_BYTES_IN_DATA_OFST 8
--#define       MC_CMD_XPM_WRITE_BYTES_IN_DATA_LEN 1
--#define       MC_CMD_XPM_WRITE_BYTES_IN_DATA_MINNUM 0
--#define       MC_CMD_XPM_WRITE_BYTES_IN_DATA_MAXNUM 244
--#define       MC_CMD_XPM_WRITE_BYTES_IN_DATA_MAXNUM_MCDI2 1012
--
--/* MC_CMD_XPM_WRITE_BYTES_OUT msgresponse */
--#define    MC_CMD_XPM_WRITE_BYTES_OUT_LEN 0
--
--
--/***********************************/
--/* MC_CMD_XPM_READ_SECTOR
-- * Read XPM sector
-- */
--#define MC_CMD_XPM_READ_SECTOR 0x105
--#undef MC_CMD_0x105_PRIVILEGE_CTG
--
--#define MC_CMD_0x105_PRIVILEGE_CTG SRIOV_CTG_INSECURE
--
--/* MC_CMD_XPM_READ_SECTOR_IN msgrequest */
--#define    MC_CMD_XPM_READ_SECTOR_IN_LEN 8
--/* Sector index */
--#define       MC_CMD_XPM_READ_SECTOR_IN_INDEX_OFST 0
--#define       MC_CMD_XPM_READ_SECTOR_IN_INDEX_LEN 4
--/* Sector size */
--#define       MC_CMD_XPM_READ_SECTOR_IN_SIZE_OFST 4
--#define       MC_CMD_XPM_READ_SECTOR_IN_SIZE_LEN 4
--
--/* MC_CMD_XPM_READ_SECTOR_OUT msgresponse */
--#define    MC_CMD_XPM_READ_SECTOR_OUT_LENMIN 4
--#define    MC_CMD_XPM_READ_SECTOR_OUT_LENMAX 36
--#define    MC_CMD_XPM_READ_SECTOR_OUT_LENMAX_MCDI2 36
--#define    MC_CMD_XPM_READ_SECTOR_OUT_LEN(num) (4+1*(num))
--#define    MC_CMD_XPM_READ_SECTOR_OUT_DATA_NUM(len) (((len)-4)/1)
--/* Sector type */
--#define       MC_CMD_XPM_READ_SECTOR_OUT_TYPE_OFST 0
--#define       MC_CMD_XPM_READ_SECTOR_OUT_TYPE_LEN 4
--#define          MC_CMD_XPM_READ_SECTOR_OUT_BLANK 0x0 /* enum */
--#define          MC_CMD_XPM_READ_SECTOR_OUT_CRYPTO_KEY_128 0x1 /* enum */
--#define          MC_CMD_XPM_READ_SECTOR_OUT_CRYPTO_KEY_256 0x2 /* enum */
--#define          MC_CMD_XPM_READ_SECTOR_OUT_CRYPTO_DATA 0x3 /* enum */
--#define          MC_CMD_XPM_READ_SECTOR_OUT_INVALID 0xff /* enum */
--/* Sector data */
--#define       MC_CMD_XPM_READ_SECTOR_OUT_DATA_OFST 4
--#define       MC_CMD_XPM_READ_SECTOR_OUT_DATA_LEN 1
--#define       MC_CMD_XPM_READ_SECTOR_OUT_DATA_MINNUM 0
--#define       MC_CMD_XPM_READ_SECTOR_OUT_DATA_MAXNUM 32
--#define       MC_CMD_XPM_READ_SECTOR_OUT_DATA_MAXNUM_MCDI2 32
--
--
--/***********************************/
--/* MC_CMD_XPM_WRITE_SECTOR
-- * Write XPM sector
-- */
--#define MC_CMD_XPM_WRITE_SECTOR 0x106
--#undef MC_CMD_0x106_PRIVILEGE_CTG
--
--#define MC_CMD_0x106_PRIVILEGE_CTG SRIOV_CTG_INSECURE
--
--/* MC_CMD_XPM_WRITE_SECTOR_IN msgrequest */
--#define    MC_CMD_XPM_WRITE_SECTOR_IN_LENMIN 12
--#define    MC_CMD_XPM_WRITE_SECTOR_IN_LENMAX 44
--#define    MC_CMD_XPM_WRITE_SECTOR_IN_LENMAX_MCDI2 44
--#define    MC_CMD_XPM_WRITE_SECTOR_IN_LEN(num) (12+1*(num))
--#define    MC_CMD_XPM_WRITE_SECTOR_IN_DATA_NUM(len) (((len)-12)/1)
--/* If writing fails due to an uncorrectable error, try up to RETRIES following
-- * sectors (or until no more space available). If 0, only one write attempt is
-- * made. Note that uncorrectable errors are unlikely, thanks to XPM self-repair
-- * mechanism.
-- */
--#define       MC_CMD_XPM_WRITE_SECTOR_IN_RETRIES_OFST 0
--#define       MC_CMD_XPM_WRITE_SECTOR_IN_RETRIES_LEN 1
--#define       MC_CMD_XPM_WRITE_SECTOR_IN_RESERVED_OFST 1
--#define       MC_CMD_XPM_WRITE_SECTOR_IN_RESERVED_LEN 3
--/* Sector type */
--#define       MC_CMD_XPM_WRITE_SECTOR_IN_TYPE_OFST 4
--#define       MC_CMD_XPM_WRITE_SECTOR_IN_TYPE_LEN 4
--/*            Enum values, see field(s): */
--/*               MC_CMD_XPM_READ_SECTOR/MC_CMD_XPM_READ_SECTOR_OUT/TYPE */
--/* Sector size */
--#define       MC_CMD_XPM_WRITE_SECTOR_IN_SIZE_OFST 8
--#define       MC_CMD_XPM_WRITE_SECTOR_IN_SIZE_LEN 4
--/* Sector data */
--#define       MC_CMD_XPM_WRITE_SECTOR_IN_DATA_OFST 12
--#define       MC_CMD_XPM_WRITE_SECTOR_IN_DATA_LEN 1
--#define       MC_CMD_XPM_WRITE_SECTOR_IN_DATA_MINNUM 0
--#define       MC_CMD_XPM_WRITE_SECTOR_IN_DATA_MAXNUM 32
--#define       MC_CMD_XPM_WRITE_SECTOR_IN_DATA_MAXNUM_MCDI2 32
--
--/* MC_CMD_XPM_WRITE_SECTOR_OUT msgresponse */
--#define    MC_CMD_XPM_WRITE_SECTOR_OUT_LEN 4
--/* New sector index */
--#define       MC_CMD_XPM_WRITE_SECTOR_OUT_INDEX_OFST 0
--#define       MC_CMD_XPM_WRITE_SECTOR_OUT_INDEX_LEN 4
--
--
--/***********************************/
--/* MC_CMD_XPM_INVALIDATE_SECTOR
-- * Invalidate XPM sector
-- */
--#define MC_CMD_XPM_INVALIDATE_SECTOR 0x107
--#undef MC_CMD_0x107_PRIVILEGE_CTG
--
--#define MC_CMD_0x107_PRIVILEGE_CTG SRIOV_CTG_INSECURE
--
--/* MC_CMD_XPM_INVALIDATE_SECTOR_IN msgrequest */
--#define    MC_CMD_XPM_INVALIDATE_SECTOR_IN_LEN 4
--/* Sector index */
--#define       MC_CMD_XPM_INVALIDATE_SECTOR_IN_INDEX_OFST 0
--#define       MC_CMD_XPM_INVALIDATE_SECTOR_IN_INDEX_LEN 4
--
--/* MC_CMD_XPM_INVALIDATE_SECTOR_OUT msgresponse */
--#define    MC_CMD_XPM_INVALIDATE_SECTOR_OUT_LEN 0
--
--
--/***********************************/
--/* MC_CMD_XPM_BLANK_CHECK
-- * Blank-check XPM memory and report bad locations
-- */
--#define MC_CMD_XPM_BLANK_CHECK 0x108
--#undef MC_CMD_0x108_PRIVILEGE_CTG
--
--#define MC_CMD_0x108_PRIVILEGE_CTG SRIOV_CTG_INSECURE
--
--/* MC_CMD_XPM_BLANK_CHECK_IN msgrequest */
--#define    MC_CMD_XPM_BLANK_CHECK_IN_LEN 8
--/* Start address (byte) */
--#define       MC_CMD_XPM_BLANK_CHECK_IN_ADDR_OFST 0
--#define       MC_CMD_XPM_BLANK_CHECK_IN_ADDR_LEN 4
--/* Count (bytes) */
--#define       MC_CMD_XPM_BLANK_CHECK_IN_COUNT_OFST 4
--#define       MC_CMD_XPM_BLANK_CHECK_IN_COUNT_LEN 4
--
--/* MC_CMD_XPM_BLANK_CHECK_OUT msgresponse */
--#define    MC_CMD_XPM_BLANK_CHECK_OUT_LENMIN 4
--#define    MC_CMD_XPM_BLANK_CHECK_OUT_LENMAX 252
--#define    MC_CMD_XPM_BLANK_CHECK_OUT_LENMAX_MCDI2 1020
--#define    MC_CMD_XPM_BLANK_CHECK_OUT_LEN(num) (4+2*(num))
--#define    MC_CMD_XPM_BLANK_CHECK_OUT_BAD_ADDR_NUM(len) (((len)-4)/2)
--/* Total number of bad (non-blank) locations */
--#define       MC_CMD_XPM_BLANK_CHECK_OUT_BAD_COUNT_OFST 0
--#define       MC_CMD_XPM_BLANK_CHECK_OUT_BAD_COUNT_LEN 4
--/* Addresses of bad locations (may be less than BAD_COUNT, if all cannot fit
-- * into MCDI response)
-- */
--#define       MC_CMD_XPM_BLANK_CHECK_OUT_BAD_ADDR_OFST 4
--#define       MC_CMD_XPM_BLANK_CHECK_OUT_BAD_ADDR_LEN 2
--#define       MC_CMD_XPM_BLANK_CHECK_OUT_BAD_ADDR_MINNUM 0
--#define       MC_CMD_XPM_BLANK_CHECK_OUT_BAD_ADDR_MAXNUM 124
--#define       MC_CMD_XPM_BLANK_CHECK_OUT_BAD_ADDR_MAXNUM_MCDI2 508
--
--
--/***********************************/
--/* MC_CMD_XPM_REPAIR
-- * Blank-check and repair XPM memory
-- */
--#define MC_CMD_XPM_REPAIR 0x109
--#undef MC_CMD_0x109_PRIVILEGE_CTG
--
--#define MC_CMD_0x109_PRIVILEGE_CTG SRIOV_CTG_INSECURE
--
--/* MC_CMD_XPM_REPAIR_IN msgrequest */
--#define    MC_CMD_XPM_REPAIR_IN_LEN 8
--/* Start address (byte) */
--#define       MC_CMD_XPM_REPAIR_IN_ADDR_OFST 0
--#define       MC_CMD_XPM_REPAIR_IN_ADDR_LEN 4
--/* Count (bytes) */
--#define       MC_CMD_XPM_REPAIR_IN_COUNT_OFST 4
--#define       MC_CMD_XPM_REPAIR_IN_COUNT_LEN 4
--
--/* MC_CMD_XPM_REPAIR_OUT msgresponse */
--#define    MC_CMD_XPM_REPAIR_OUT_LEN 0
--
--
--/***********************************/
--/* MC_CMD_XPM_DECODER_TEST
-- * Test XPM memory address decoders for gross manufacturing defects. Can only
-- * be performed on an unprogrammed part.
-- */
--#define MC_CMD_XPM_DECODER_TEST 0x10a
--#undef MC_CMD_0x10a_PRIVILEGE_CTG
--
--#define MC_CMD_0x10a_PRIVILEGE_CTG SRIOV_CTG_INSECURE
--
--/* MC_CMD_XPM_DECODER_TEST_IN msgrequest */
--#define    MC_CMD_XPM_DECODER_TEST_IN_LEN 0
--
--/* MC_CMD_XPM_DECODER_TEST_OUT msgresponse */
--#define    MC_CMD_XPM_DECODER_TEST_OUT_LEN 0
--
--
--/***********************************/
--/* MC_CMD_XPM_WRITE_TEST
-- * XPM memory write test. Test XPM write logic for gross manufacturing defects
-- * by writing to a dedicated test row. There are 16 locations in the test row
-- * and the test can only be performed on locations that have not been
-- * previously used (i.e. can be run at most 16 times). The test will pick the
-- * first available location to use, or fail with ENOSPC if none left.
-- */
--#define MC_CMD_XPM_WRITE_TEST 0x10b
--#undef MC_CMD_0x10b_PRIVILEGE_CTG
--
--#define MC_CMD_0x10b_PRIVILEGE_CTG SRIOV_CTG_INSECURE
--
--/* MC_CMD_XPM_WRITE_TEST_IN msgrequest */
--#define    MC_CMD_XPM_WRITE_TEST_IN_LEN 0
--
--/* MC_CMD_XPM_WRITE_TEST_OUT msgresponse */
--#define    MC_CMD_XPM_WRITE_TEST_OUT_LEN 0
--
--
--/***********************************/
--/* MC_CMD_EXEC_SIGNED
-- * Check the CMAC of the contents of IMEM and DMEM against the value supplied
-- * and if correct begin execution from the start of IMEM. The caller supplies a
-- * key ID, the length of IMEM and DMEM to validate and the expected CMAC. CMAC
-- * computation runs from the start of IMEM, and from the start of DMEM + 16k,
-- * to match flash booting. The command will respond with EINVAL if the CMAC
-- * does match, otherwise it will respond with success before it jumps to IMEM.
-- */
--#define MC_CMD_EXEC_SIGNED 0x10c
--#undef MC_CMD_0x10c_PRIVILEGE_CTG
--
--#define MC_CMD_0x10c_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_EXEC_SIGNED_IN msgrequest */
--#define    MC_CMD_EXEC_SIGNED_IN_LEN 28
--/* the length of code to include in the CMAC */
--#define       MC_CMD_EXEC_SIGNED_IN_CODELEN_OFST 0
--#define       MC_CMD_EXEC_SIGNED_IN_CODELEN_LEN 4
--/* the length of date to include in the CMAC */
--#define       MC_CMD_EXEC_SIGNED_IN_DATALEN_OFST 4
--#define       MC_CMD_EXEC_SIGNED_IN_DATALEN_LEN 4
--/* the XPM sector containing the key to use */
--#define       MC_CMD_EXEC_SIGNED_IN_KEYSECTOR_OFST 8
--#define       MC_CMD_EXEC_SIGNED_IN_KEYSECTOR_LEN 4
--/* the expected CMAC value */
--#define       MC_CMD_EXEC_SIGNED_IN_CMAC_OFST 12
--#define       MC_CMD_EXEC_SIGNED_IN_CMAC_LEN 16
--
--/* MC_CMD_EXEC_SIGNED_OUT msgresponse */
--#define    MC_CMD_EXEC_SIGNED_OUT_LEN 0
--
--
--/***********************************/
--/* MC_CMD_PREPARE_SIGNED
-- * Prepare to upload a signed image. This will scrub the specified length of
-- * the data region, which must be at least as large as the DATALEN supplied to
-- * MC_CMD_EXEC_SIGNED.
-- */
--#define MC_CMD_PREPARE_SIGNED 0x10d
--#undef MC_CMD_0x10d_PRIVILEGE_CTG
--
--#define MC_CMD_0x10d_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_PREPARE_SIGNED_IN msgrequest */
--#define    MC_CMD_PREPARE_SIGNED_IN_LEN 4
--/* the length of data area to clear */
--#define       MC_CMD_PREPARE_SIGNED_IN_DATALEN_OFST 0
--#define       MC_CMD_PREPARE_SIGNED_IN_DATALEN_LEN 4
--
--/* MC_CMD_PREPARE_SIGNED_OUT msgresponse */
--#define    MC_CMD_PREPARE_SIGNED_OUT_LEN 0
--
--
- /* TUNNEL_ENCAP_UDP_PORT_ENTRY structuredef */
- #define    TUNNEL_ENCAP_UDP_PORT_ENTRY_LEN 4
- /* UDP port (the standard ports are named below but any port may be used) */
-@@ -20050,842 +17039,6 @@
- 
- 
- /***********************************/
--/* MC_CMD_RX_BALANCING
-- * Configure a port upconverter to distribute the packets on both RX engines.
-- * Packets are distributed based on a table with the destination vFIFO. The
-- * index of the table is a hash of source and destination of IPV4 and VLAN
-- * priority.
-- */
--#define MC_CMD_RX_BALANCING 0x118
--#undef MC_CMD_0x118_PRIVILEGE_CTG
--
--#define MC_CMD_0x118_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_RX_BALANCING_IN msgrequest */
--#define    MC_CMD_RX_BALANCING_IN_LEN 16
--/* The RX port whose upconverter table will be modified */
--#define       MC_CMD_RX_BALANCING_IN_PORT_OFST 0
--#define       MC_CMD_RX_BALANCING_IN_PORT_LEN 4
--/* The VLAN priority associated to the table index and vFIFO */
--#define       MC_CMD_RX_BALANCING_IN_PRIORITY_OFST 4
--#define       MC_CMD_RX_BALANCING_IN_PRIORITY_LEN 4
--/* The resulting bit of SRC^DST for indexing the table */
--#define       MC_CMD_RX_BALANCING_IN_SRC_DST_OFST 8
--#define       MC_CMD_RX_BALANCING_IN_SRC_DST_LEN 4
--/* The RX engine to which the vFIFO in the table entry will point to */
--#define       MC_CMD_RX_BALANCING_IN_ENG_OFST 12
--#define       MC_CMD_RX_BALANCING_IN_ENG_LEN 4
--
--/* MC_CMD_RX_BALANCING_OUT msgresponse */
--#define    MC_CMD_RX_BALANCING_OUT_LEN 0
--
--
--/***********************************/
--/* MC_CMD_NVRAM_PRIVATE_APPEND
-- * Append a single TLV to the MC_USAGE_TLV partition. Returns MC_CMD_ERR_EEXIST
-- * if the tag is already present.
-- */
--#define MC_CMD_NVRAM_PRIVATE_APPEND 0x11c
--#undef MC_CMD_0x11c_PRIVILEGE_CTG
--
--#define MC_CMD_0x11c_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_NVRAM_PRIVATE_APPEND_IN msgrequest */
--#define    MC_CMD_NVRAM_PRIVATE_APPEND_IN_LENMIN 9
--#define    MC_CMD_NVRAM_PRIVATE_APPEND_IN_LENMAX 252
--#define    MC_CMD_NVRAM_PRIVATE_APPEND_IN_LENMAX_MCDI2 1020
--#define    MC_CMD_NVRAM_PRIVATE_APPEND_IN_LEN(num) (8+1*(num))
--#define    MC_CMD_NVRAM_PRIVATE_APPEND_IN_DATA_BUFFER_NUM(len) (((len)-8)/1)
--/* The tag to be appended */
--#define       MC_CMD_NVRAM_PRIVATE_APPEND_IN_TAG_OFST 0
--#define       MC_CMD_NVRAM_PRIVATE_APPEND_IN_TAG_LEN 4
--/* The length of the data */
--#define       MC_CMD_NVRAM_PRIVATE_APPEND_IN_LENGTH_OFST 4
--#define       MC_CMD_NVRAM_PRIVATE_APPEND_IN_LENGTH_LEN 4
--/* The data to be contained in the TLV structure */
--#define       MC_CMD_NVRAM_PRIVATE_APPEND_IN_DATA_BUFFER_OFST 8
--#define       MC_CMD_NVRAM_PRIVATE_APPEND_IN_DATA_BUFFER_LEN 1
--#define       MC_CMD_NVRAM_PRIVATE_APPEND_IN_DATA_BUFFER_MINNUM 1
--#define       MC_CMD_NVRAM_PRIVATE_APPEND_IN_DATA_BUFFER_MAXNUM 244
--#define       MC_CMD_NVRAM_PRIVATE_APPEND_IN_DATA_BUFFER_MAXNUM_MCDI2 1012
--
--/* MC_CMD_NVRAM_PRIVATE_APPEND_OUT msgresponse */
--#define    MC_CMD_NVRAM_PRIVATE_APPEND_OUT_LEN 0
--
--
--/***********************************/
--/* MC_CMD_XPM_VERIFY_CONTENTS
-- * Verify that the contents of the XPM memory is correct (Medford only). This
-- * is used during manufacture to check that the XPM memory has been programmed
-- * correctly at ATE.
-- */
--#define MC_CMD_XPM_VERIFY_CONTENTS 0x11b
--#undef MC_CMD_0x11b_PRIVILEGE_CTG
--
--#define MC_CMD_0x11b_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_XPM_VERIFY_CONTENTS_IN msgrequest */
--#define    MC_CMD_XPM_VERIFY_CONTENTS_IN_LEN 4
--/* Data type to be checked */
--#define       MC_CMD_XPM_VERIFY_CONTENTS_IN_DATA_TYPE_OFST 0
--#define       MC_CMD_XPM_VERIFY_CONTENTS_IN_DATA_TYPE_LEN 4
--
--/* MC_CMD_XPM_VERIFY_CONTENTS_OUT msgresponse */
--#define    MC_CMD_XPM_VERIFY_CONTENTS_OUT_LENMIN 12
--#define    MC_CMD_XPM_VERIFY_CONTENTS_OUT_LENMAX 252
--#define    MC_CMD_XPM_VERIFY_CONTENTS_OUT_LENMAX_MCDI2 1020
--#define    MC_CMD_XPM_VERIFY_CONTENTS_OUT_LEN(num) (12+1*(num))
--#define    MC_CMD_XPM_VERIFY_CONTENTS_OUT_SIGNATURE_NUM(len) (((len)-12)/1)
--/* Number of sectors found (test builds only) */
--#define       MC_CMD_XPM_VERIFY_CONTENTS_OUT_NUM_SECTORS_OFST 0
--#define       MC_CMD_XPM_VERIFY_CONTENTS_OUT_NUM_SECTORS_LEN 4
--/* Number of bytes found (test builds only) */
--#define       MC_CMD_XPM_VERIFY_CONTENTS_OUT_NUM_BYTES_OFST 4
--#define       MC_CMD_XPM_VERIFY_CONTENTS_OUT_NUM_BYTES_LEN 4
--/* Length of signature */
--#define       MC_CMD_XPM_VERIFY_CONTENTS_OUT_SIG_LENGTH_OFST 8
--#define       MC_CMD_XPM_VERIFY_CONTENTS_OUT_SIG_LENGTH_LEN 4
--/* Signature */
--#define       MC_CMD_XPM_VERIFY_CONTENTS_OUT_SIGNATURE_OFST 12
--#define       MC_CMD_XPM_VERIFY_CONTENTS_OUT_SIGNATURE_LEN 1
--#define       MC_CMD_XPM_VERIFY_CONTENTS_OUT_SIGNATURE_MINNUM 0
--#define       MC_CMD_XPM_VERIFY_CONTENTS_OUT_SIGNATURE_MAXNUM 240
--#define       MC_CMD_XPM_VERIFY_CONTENTS_OUT_SIGNATURE_MAXNUM_MCDI2 1008
--
--
--/***********************************/
--/* MC_CMD_SET_EVQ_TMR
-- * Update the timer load, timer reload and timer mode values for a given EVQ.
-- * The requested timer values (in TMR_LOAD_REQ_NS and TMR_RELOAD_REQ_NS) will
-- * be rounded up to the granularity supported by the hardware, then truncated
-- * to the range supported by the hardware. The resulting value after the
-- * rounding and truncation will be returned to the caller (in TMR_LOAD_ACT_NS
-- * and TMR_RELOAD_ACT_NS).
-- */
--#define MC_CMD_SET_EVQ_TMR 0x120
--#undef MC_CMD_0x120_PRIVILEGE_CTG
--
--#define MC_CMD_0x120_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_SET_EVQ_TMR_IN msgrequest */
--#define    MC_CMD_SET_EVQ_TMR_IN_LEN 16
--/* Function-relative queue instance */
--#define       MC_CMD_SET_EVQ_TMR_IN_INSTANCE_OFST 0
--#define       MC_CMD_SET_EVQ_TMR_IN_INSTANCE_LEN 4
--/* Requested value for timer load (in nanoseconds) */
--#define       MC_CMD_SET_EVQ_TMR_IN_TMR_LOAD_REQ_NS_OFST 4
--#define       MC_CMD_SET_EVQ_TMR_IN_TMR_LOAD_REQ_NS_LEN 4
--/* Requested value for timer reload (in nanoseconds) */
--#define       MC_CMD_SET_EVQ_TMR_IN_TMR_RELOAD_REQ_NS_OFST 8
--#define       MC_CMD_SET_EVQ_TMR_IN_TMR_RELOAD_REQ_NS_LEN 4
--/* Timer mode. Meanings as per EVQ_TMR_REG.TC_TIMER_VAL */
--#define       MC_CMD_SET_EVQ_TMR_IN_TMR_MODE_OFST 12
--#define       MC_CMD_SET_EVQ_TMR_IN_TMR_MODE_LEN 4
--#define          MC_CMD_SET_EVQ_TMR_IN_TIMER_MODE_DIS 0x0 /* enum */
--#define          MC_CMD_SET_EVQ_TMR_IN_TIMER_MODE_IMMED_START 0x1 /* enum */
--#define          MC_CMD_SET_EVQ_TMR_IN_TIMER_MODE_TRIG_START 0x2 /* enum */
--#define          MC_CMD_SET_EVQ_TMR_IN_TIMER_MODE_INT_HLDOFF 0x3 /* enum */
--
--/* MC_CMD_SET_EVQ_TMR_OUT msgresponse */
--#define    MC_CMD_SET_EVQ_TMR_OUT_LEN 8
--/* Actual value for timer load (in nanoseconds) */
--#define       MC_CMD_SET_EVQ_TMR_OUT_TMR_LOAD_ACT_NS_OFST 0
--#define       MC_CMD_SET_EVQ_TMR_OUT_TMR_LOAD_ACT_NS_LEN 4
--/* Actual value for timer reload (in nanoseconds) */
--#define       MC_CMD_SET_EVQ_TMR_OUT_TMR_RELOAD_ACT_NS_OFST 4
--#define       MC_CMD_SET_EVQ_TMR_OUT_TMR_RELOAD_ACT_NS_LEN 4
--
--
--/***********************************/
--/* MC_CMD_GET_EVQ_TMR_PROPERTIES
-- * Query properties about the event queue timers.
-- */
--#define MC_CMD_GET_EVQ_TMR_PROPERTIES 0x122
--#undef MC_CMD_0x122_PRIVILEGE_CTG
--
--#define MC_CMD_0x122_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_GET_EVQ_TMR_PROPERTIES_IN msgrequest */
--#define    MC_CMD_GET_EVQ_TMR_PROPERTIES_IN_LEN 0
--
--/* MC_CMD_GET_EVQ_TMR_PROPERTIES_OUT msgresponse */
--#define    MC_CMD_GET_EVQ_TMR_PROPERTIES_OUT_LEN 36
--/* Reserved for future use. */
--#define       MC_CMD_GET_EVQ_TMR_PROPERTIES_OUT_FLAGS_OFST 0
--#define       MC_CMD_GET_EVQ_TMR_PROPERTIES_OUT_FLAGS_LEN 4
--/* For timers updated via writes to EVQ_TMR_REG, this is the time interval (in
-- * nanoseconds) for each increment of the timer load/reload count. The
-- * requested duration of a timer is this value multiplied by the timer
-- * load/reload count.
-- */
--#define       MC_CMD_GET_EVQ_TMR_PROPERTIES_OUT_TMR_REG_NS_PER_COUNT_OFST 4
--#define       MC_CMD_GET_EVQ_TMR_PROPERTIES_OUT_TMR_REG_NS_PER_COUNT_LEN 4
--/* For timers updated via writes to EVQ_TMR_REG, this is the maximum value
-- * allowed for timer load/reload counts.
-- */
--#define       MC_CMD_GET_EVQ_TMR_PROPERTIES_OUT_TMR_REG_MAX_COUNT_OFST 8
--#define       MC_CMD_GET_EVQ_TMR_PROPERTIES_OUT_TMR_REG_MAX_COUNT_LEN 4
--/* For timers updated via writes to EVQ_TMR_REG, timer load/reload counts not a
-- * multiple of this step size will be rounded in an implementation defined
-- * manner.
-- */
--#define       MC_CMD_GET_EVQ_TMR_PROPERTIES_OUT_TMR_REG_STEP_OFST 12
--#define       MC_CMD_GET_EVQ_TMR_PROPERTIES_OUT_TMR_REG_STEP_LEN 4
--/* Maximum timer duration (in nanoseconds) for timers updated via MCDI. Only
-- * meaningful if MC_CMD_SET_EVQ_TMR is implemented.
-- */
--#define       MC_CMD_GET_EVQ_TMR_PROPERTIES_OUT_MCDI_TMR_MAX_NS_OFST 16
--#define       MC_CMD_GET_EVQ_TMR_PROPERTIES_OUT_MCDI_TMR_MAX_NS_LEN 4
--/* Timer durations requested via MCDI that are not a multiple of this step size
-- * will be rounded up. Only meaningful if MC_CMD_SET_EVQ_TMR is implemented.
-- */
--#define       MC_CMD_GET_EVQ_TMR_PROPERTIES_OUT_MCDI_TMR_STEP_NS_OFST 20
--#define       MC_CMD_GET_EVQ_TMR_PROPERTIES_OUT_MCDI_TMR_STEP_NS_LEN 4
--/* For timers updated using the bug35388 workaround, this is the time interval
-- * (in nanoseconds) for each increment of the timer load/reload count. The
-- * requested duration of a timer is this value multiplied by the timer
-- * load/reload count. This field is only meaningful if the bug35388 workaround
-- * is enabled.
-- */
--#define       MC_CMD_GET_EVQ_TMR_PROPERTIES_OUT_BUG35388_TMR_NS_PER_COUNT_OFST 24
--#define       MC_CMD_GET_EVQ_TMR_PROPERTIES_OUT_BUG35388_TMR_NS_PER_COUNT_LEN 4
--/* For timers updated using the bug35388 workaround, this is the maximum value
-- * allowed for timer load/reload counts. This field is only meaningful if the
-- * bug35388 workaround is enabled.
-- */
--#define       MC_CMD_GET_EVQ_TMR_PROPERTIES_OUT_BUG35388_TMR_MAX_COUNT_OFST 28
--#define       MC_CMD_GET_EVQ_TMR_PROPERTIES_OUT_BUG35388_TMR_MAX_COUNT_LEN 4
--/* For timers updated using the bug35388 workaround, timer load/reload counts
-- * not a multiple of this step size will be rounded in an implementation
-- * defined manner. This field is only meaningful if the bug35388 workaround is
-- * enabled.
-- */
--#define       MC_CMD_GET_EVQ_TMR_PROPERTIES_OUT_BUG35388_TMR_STEP_OFST 32
--#define       MC_CMD_GET_EVQ_TMR_PROPERTIES_OUT_BUG35388_TMR_STEP_LEN 4
--
--
--/***********************************/
--/* MC_CMD_ALLOCATE_TX_VFIFO_CP
-- * When we use the TX_vFIFO_ULL mode, we can allocate common pools using the
-- * non used switch buffers.
-- */
--#define MC_CMD_ALLOCATE_TX_VFIFO_CP 0x11d
--#undef MC_CMD_0x11d_PRIVILEGE_CTG
--
--#define MC_CMD_0x11d_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_ALLOCATE_TX_VFIFO_CP_IN msgrequest */
--#define    MC_CMD_ALLOCATE_TX_VFIFO_CP_IN_LEN 20
--/* Desired instance. Must be set to a specific instance, which is a function
-- * local queue index.
-- */
--#define       MC_CMD_ALLOCATE_TX_VFIFO_CP_IN_INSTANCE_OFST 0
--#define       MC_CMD_ALLOCATE_TX_VFIFO_CP_IN_INSTANCE_LEN 4
--/* Will the common pool be used as TX_vFIFO_ULL (1) */
--#define       MC_CMD_ALLOCATE_TX_VFIFO_CP_IN_MODE_OFST 4
--#define       MC_CMD_ALLOCATE_TX_VFIFO_CP_IN_MODE_LEN 4
--#define          MC_CMD_ALLOCATE_TX_VFIFO_CP_IN_ENABLED 0x1 /* enum */
--/* enum: Using this interface without TX_vFIFO_ULL is not supported for now */
--#define          MC_CMD_ALLOCATE_TX_VFIFO_CP_IN_DISABLED 0x0
--/* Number of buffers to reserve for the common pool */
--#define       MC_CMD_ALLOCATE_TX_VFIFO_CP_IN_SIZE_OFST 8
--#define       MC_CMD_ALLOCATE_TX_VFIFO_CP_IN_SIZE_LEN 4
--/* TX datapath to which the Common Pool is connected to. */
--#define       MC_CMD_ALLOCATE_TX_VFIFO_CP_IN_INGRESS_OFST 12
--#define       MC_CMD_ALLOCATE_TX_VFIFO_CP_IN_INGRESS_LEN 4
--/* enum: Extracts information from function */
--#define          MC_CMD_ALLOCATE_TX_VFIFO_CP_IN_USE_FUNCTION_VALUE -0x1
--/* Network port or RX Engine to which the common pool connects. */
--#define       MC_CMD_ALLOCATE_TX_VFIFO_CP_IN_EGRESS_OFST 16
--#define       MC_CMD_ALLOCATE_TX_VFIFO_CP_IN_EGRESS_LEN 4
--/* enum: Extracts information from function */
--/*               MC_CMD_ALLOCATE_TX_VFIFO_CP_IN_USE_FUNCTION_VALUE -0x1 */
--#define          MC_CMD_ALLOCATE_TX_VFIFO_CP_IN_PORT0 0x0 /* enum */
--#define          MC_CMD_ALLOCATE_TX_VFIFO_CP_IN_PORT1 0x1 /* enum */
--#define          MC_CMD_ALLOCATE_TX_VFIFO_CP_IN_PORT2 0x2 /* enum */
--#define          MC_CMD_ALLOCATE_TX_VFIFO_CP_IN_PORT3 0x3 /* enum */
--/* enum: To enable Switch loopback with Rx engine 0 */
--#define          MC_CMD_ALLOCATE_TX_VFIFO_CP_IN_RX_ENGINE0 0x4
--/* enum: To enable Switch loopback with Rx engine 1 */
--#define          MC_CMD_ALLOCATE_TX_VFIFO_CP_IN_RX_ENGINE1 0x5
--
--/* MC_CMD_ALLOCATE_TX_VFIFO_CP_OUT msgresponse */
--#define    MC_CMD_ALLOCATE_TX_VFIFO_CP_OUT_LEN 4
--/* ID of the common pool allocated */
--#define       MC_CMD_ALLOCATE_TX_VFIFO_CP_OUT_CP_ID_OFST 0
--#define       MC_CMD_ALLOCATE_TX_VFIFO_CP_OUT_CP_ID_LEN 4
--
--
--/***********************************/
--/* MC_CMD_ALLOCATE_TX_VFIFO_VFIFO
-- * When we use the TX_vFIFO_ULL mode, we can allocate vFIFOs using the
-- * previously allocated common pools.
-- */
--#define MC_CMD_ALLOCATE_TX_VFIFO_VFIFO 0x11e
--#undef MC_CMD_0x11e_PRIVILEGE_CTG
--
--#define MC_CMD_0x11e_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_IN msgrequest */
--#define    MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_IN_LEN 20
--/* Common pool previously allocated to which the new vFIFO will be associated
-- */
--#define       MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_IN_CP_OFST 0
--#define       MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_IN_CP_LEN 4
--/* Port or RX engine to associate the vFIFO egress */
--#define       MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_IN_EGRESS_OFST 4
--#define       MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_IN_EGRESS_LEN 4
--/* enum: Extracts information from common pool */
--#define          MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_IN_USE_CP_VALUE -0x1
--#define          MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_IN_PORT0 0x0 /* enum */
--#define          MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_IN_PORT1 0x1 /* enum */
--#define          MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_IN_PORT2 0x2 /* enum */
--#define          MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_IN_PORT3 0x3 /* enum */
--/* enum: To enable Switch loopback with Rx engine 0 */
--#define          MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_IN_RX_ENGINE0 0x4
--/* enum: To enable Switch loopback with Rx engine 1 */
--#define          MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_IN_RX_ENGINE1 0x5
--/* Minimum number of buffers that the pool must have */
--#define       MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_IN_SIZE_OFST 8
--#define       MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_IN_SIZE_LEN 4
--/* enum: Do not check the space available */
--#define          MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_IN_NO_MINIMUM 0x0
--/* Will the vFIFO be used as TX_vFIFO_ULL */
--#define       MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_IN_MODE_OFST 12
--#define       MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_IN_MODE_LEN 4
--/* Network priority of the vFIFO,if applicable */
--#define       MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_IN_PRIORITY_OFST 16
--#define       MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_IN_PRIORITY_LEN 4
--/* enum: Search for the lowest unused priority */
--#define          MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_IN_LOWEST_AVAILABLE -0x1
--
--/* MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_OUT msgresponse */
--#define    MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_OUT_LEN 8
--/* Short vFIFO ID */
--#define       MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_OUT_VID_OFST 0
--#define       MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_OUT_VID_LEN 4
--/* Network priority of the vFIFO */
--#define       MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_OUT_PRIORITY_OFST 4
--#define       MC_CMD_ALLOCATE_TX_VFIFO_VFIFO_OUT_PRIORITY_LEN 4
--
--
--/***********************************/
--/* MC_CMD_TEARDOWN_TX_VFIFO_VF
-- * This interface clears the configuration of the given vFIFO and leaves it
-- * ready to be re-used.
-- */
--#define MC_CMD_TEARDOWN_TX_VFIFO_VF 0x11f
--#undef MC_CMD_0x11f_PRIVILEGE_CTG
--
--#define MC_CMD_0x11f_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_TEARDOWN_TX_VFIFO_VF_IN msgrequest */
--#define    MC_CMD_TEARDOWN_TX_VFIFO_VF_IN_LEN 4
--/* Short vFIFO ID */
--#define       MC_CMD_TEARDOWN_TX_VFIFO_VF_IN_VFIFO_OFST 0
--#define       MC_CMD_TEARDOWN_TX_VFIFO_VF_IN_VFIFO_LEN 4
--
--/* MC_CMD_TEARDOWN_TX_VFIFO_VF_OUT msgresponse */
--#define    MC_CMD_TEARDOWN_TX_VFIFO_VF_OUT_LEN 0
--
--
--/***********************************/
--/* MC_CMD_DEALLOCATE_TX_VFIFO_CP
-- * This interface clears the configuration of the given common pool and leaves
-- * it ready to be re-used.
-- */
--#define MC_CMD_DEALLOCATE_TX_VFIFO_CP 0x121
--#undef MC_CMD_0x121_PRIVILEGE_CTG
--
--#define MC_CMD_0x121_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_DEALLOCATE_TX_VFIFO_CP_IN msgrequest */
--#define    MC_CMD_DEALLOCATE_TX_VFIFO_CP_IN_LEN 4
--/* Common pool ID given when pool allocated */
--#define       MC_CMD_DEALLOCATE_TX_VFIFO_CP_IN_POOL_ID_OFST 0
--#define       MC_CMD_DEALLOCATE_TX_VFIFO_CP_IN_POOL_ID_LEN 4
--
--/* MC_CMD_DEALLOCATE_TX_VFIFO_CP_OUT msgresponse */
--#define    MC_CMD_DEALLOCATE_TX_VFIFO_CP_OUT_LEN 0
--
--
--/***********************************/
--/* MC_CMD_SWITCH_GET_UNASSIGNED_BUFFERS
-- * This interface allows the host to find out how many common pool buffers are
-- * not yet assigned.
-- */
--#define MC_CMD_SWITCH_GET_UNASSIGNED_BUFFERS 0x124
--#undef MC_CMD_0x124_PRIVILEGE_CTG
--
--#define MC_CMD_0x124_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_SWITCH_GET_UNASSIGNED_BUFFERS_IN msgrequest */
--#define    MC_CMD_SWITCH_GET_UNASSIGNED_BUFFERS_IN_LEN 0
--
--/* MC_CMD_SWITCH_GET_UNASSIGNED_BUFFERS_OUT msgresponse */
--#define    MC_CMD_SWITCH_GET_UNASSIGNED_BUFFERS_OUT_LEN 8
--/* Available buffers for the ENG to NET vFIFOs. */
--#define       MC_CMD_SWITCH_GET_UNASSIGNED_BUFFERS_OUT_NET_OFST 0
--#define       MC_CMD_SWITCH_GET_UNASSIGNED_BUFFERS_OUT_NET_LEN 4
--/* Available buffers for the ENG to ENG and NET to ENG vFIFOs. */
--#define       MC_CMD_SWITCH_GET_UNASSIGNED_BUFFERS_OUT_ENG_OFST 4
--#define       MC_CMD_SWITCH_GET_UNASSIGNED_BUFFERS_OUT_ENG_LEN 4
--
--
--/***********************************/
--/* MC_CMD_SUC_VERSION
-- * Get the version of the SUC
-- */
--#define MC_CMD_SUC_VERSION 0x134
--#undef MC_CMD_0x134_PRIVILEGE_CTG
--
--#define MC_CMD_0x134_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_SUC_VERSION_IN msgrequest */
--#define    MC_CMD_SUC_VERSION_IN_LEN 0
--
--/* MC_CMD_SUC_VERSION_OUT msgresponse */
--#define    MC_CMD_SUC_VERSION_OUT_LEN 24
--/* The SUC firmware version as four numbers - a.b.c.d */
--#define       MC_CMD_SUC_VERSION_OUT_VERSION_OFST 0
--#define       MC_CMD_SUC_VERSION_OUT_VERSION_LEN 4
--#define       MC_CMD_SUC_VERSION_OUT_VERSION_NUM 4
--/* The date, in seconds since the Unix epoch, when the firmware image was
-- * built.
-- */
--#define       MC_CMD_SUC_VERSION_OUT_BUILD_DATE_OFST 16
--#define       MC_CMD_SUC_VERSION_OUT_BUILD_DATE_LEN 4
--/* The ID of the SUC chip. This is specific to the platform but typically
-- * indicates family, memory sizes etc. See SF-116728-SW for further details.
-- */
--#define       MC_CMD_SUC_VERSION_OUT_CHIP_ID_OFST 20
--#define       MC_CMD_SUC_VERSION_OUT_CHIP_ID_LEN 4
--
--/* MC_CMD_SUC_BOOT_VERSION_IN msgrequest: Get the version of the SUC boot
-- * loader.
-- */
--#define    MC_CMD_SUC_BOOT_VERSION_IN_LEN 4
--#define       MC_CMD_SUC_BOOT_VERSION_IN_MAGIC_OFST 0
--#define       MC_CMD_SUC_BOOT_VERSION_IN_MAGIC_LEN 4
--/* enum: Requests the SUC boot version. */
--#define          MC_CMD_SUC_VERSION_GET_BOOT_VERSION 0xb007700b
--
--/* MC_CMD_SUC_BOOT_VERSION_OUT msgresponse */
--#define    MC_CMD_SUC_BOOT_VERSION_OUT_LEN 4
--/* The SUC boot version */
--#define       MC_CMD_SUC_BOOT_VERSION_OUT_VERSION_OFST 0
--#define       MC_CMD_SUC_BOOT_VERSION_OUT_VERSION_LEN 4
--
--
--/***********************************/
--/* MC_CMD_GET_RX_PREFIX_ID
-- * This command is part of the mechanism for configuring the format of the RX
-- * packet prefix. It takes as input a bitmask of the fields the host would like
-- * to be in the prefix. If the hardware supports RX prefixes with that
-- * combination of fields, then this command returns a list of prefix-ids,
-- * opaque identifiers suitable for use in the RX_PREFIX_ID field of a
-- * MC_CMD_INIT_RXQ_V5_IN message. If the combination of fields is not
-- * supported, returns ENOTSUP. If the firmware can't create any new prefix-ids
-- * due to resource constraints, returns ENOSPC.
-- */
--#define MC_CMD_GET_RX_PREFIX_ID 0x13b
--#undef MC_CMD_0x13b_PRIVILEGE_CTG
--
--#define MC_CMD_0x13b_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_GET_RX_PREFIX_ID_IN msgrequest */
--#define    MC_CMD_GET_RX_PREFIX_ID_IN_LEN 8
--/* Field bitmask. */
--#define       MC_CMD_GET_RX_PREFIX_ID_IN_FIELDS_OFST 0
--#define       MC_CMD_GET_RX_PREFIX_ID_IN_FIELDS_LEN 8
--#define       MC_CMD_GET_RX_PREFIX_ID_IN_FIELDS_LO_OFST 0
--#define       MC_CMD_GET_RX_PREFIX_ID_IN_FIELDS_HI_OFST 4
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_LENGTH_OFST 0
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_LENGTH_LBN 0
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_LENGTH_WIDTH 1
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_RSS_HASH_VALID_OFST 0
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_RSS_HASH_VALID_LBN 1
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_RSS_HASH_VALID_WIDTH 1
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_USER_FLAG_OFST 0
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_USER_FLAG_LBN 2
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_USER_FLAG_WIDTH 1
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_CLASS_OFST 0
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_CLASS_LBN 3
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_CLASS_WIDTH 1
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_PARTIAL_TSTAMP_OFST 0
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_PARTIAL_TSTAMP_LBN 4
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_PARTIAL_TSTAMP_WIDTH 1
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_RSS_HASH_OFST 0
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_RSS_HASH_LBN 5
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_RSS_HASH_WIDTH 1
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_USER_MARK_OFST 0
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_USER_MARK_LBN 6
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_USER_MARK_WIDTH 1
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_INGRESS_VPORT_OFST 0
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_INGRESS_VPORT_LBN 7
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_INGRESS_VPORT_WIDTH 1
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_CSUM_FRAME_OFST 0
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_CSUM_FRAME_LBN 8
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_CSUM_FRAME_WIDTH 1
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_VLAN_STRIP_TCI_OFST 0
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_VLAN_STRIP_TCI_LBN 9
--#define        MC_CMD_GET_RX_PREFIX_ID_IN_VLAN_STRIP_TCI_WIDTH 1
--
--/* MC_CMD_GET_RX_PREFIX_ID_OUT msgresponse */
--#define    MC_CMD_GET_RX_PREFIX_ID_OUT_LENMIN 8
--#define    MC_CMD_GET_RX_PREFIX_ID_OUT_LENMAX 252
--#define    MC_CMD_GET_RX_PREFIX_ID_OUT_LENMAX_MCDI2 1020
--#define    MC_CMD_GET_RX_PREFIX_ID_OUT_LEN(num) (4+4*(num))
--#define    MC_CMD_GET_RX_PREFIX_ID_OUT_RX_PREFIX_ID_NUM(len) (((len)-4)/4)
--/* Number of prefix-ids returned */
--#define       MC_CMD_GET_RX_PREFIX_ID_OUT_NUM_RX_PREFIX_IDS_OFST 0
--#define       MC_CMD_GET_RX_PREFIX_ID_OUT_NUM_RX_PREFIX_IDS_LEN 4
--/* Opaque prefix identifiers which can be passed into MC_CMD_INIT_RXQ_V5 or
-- * MC_CMD_QUERY_PREFIX_ID
-- */
--#define       MC_CMD_GET_RX_PREFIX_ID_OUT_RX_PREFIX_ID_OFST 4
--#define       MC_CMD_GET_RX_PREFIX_ID_OUT_RX_PREFIX_ID_LEN 4
--#define       MC_CMD_GET_RX_PREFIX_ID_OUT_RX_PREFIX_ID_MINNUM 1
--#define       MC_CMD_GET_RX_PREFIX_ID_OUT_RX_PREFIX_ID_MAXNUM 62
--#define       MC_CMD_GET_RX_PREFIX_ID_OUT_RX_PREFIX_ID_MAXNUM_MCDI2 254
--
--/* RX_PREFIX_FIELD_INFO structuredef: Information about a single RX prefix
-- * field
-- */
--#define    RX_PREFIX_FIELD_INFO_LEN 4
--/* The offset of the field from the start of the prefix, in bits */
--#define       RX_PREFIX_FIELD_INFO_OFFSET_BITS_OFST 0
--#define       RX_PREFIX_FIELD_INFO_OFFSET_BITS_LEN 2
--#define       RX_PREFIX_FIELD_INFO_OFFSET_BITS_LBN 0
--#define       RX_PREFIX_FIELD_INFO_OFFSET_BITS_WIDTH 16
--/* The width of the field, in bits */
--#define       RX_PREFIX_FIELD_INFO_WIDTH_BITS_OFST 2
--#define       RX_PREFIX_FIELD_INFO_WIDTH_BITS_LEN 1
--#define       RX_PREFIX_FIELD_INFO_WIDTH_BITS_LBN 16
--#define       RX_PREFIX_FIELD_INFO_WIDTH_BITS_WIDTH 8
--/* The type of the field. These enum values are in the same order as the fields
-- * in the MC_CMD_GET_RX_PREFIX_ID_IN bitmask
-- */
--#define       RX_PREFIX_FIELD_INFO_TYPE_OFST 3
--#define       RX_PREFIX_FIELD_INFO_TYPE_LEN 1
--#define          RX_PREFIX_FIELD_INFO_LENGTH 0x0 /* enum */
--#define          RX_PREFIX_FIELD_INFO_RSS_HASH_VALID 0x1 /* enum */
--#define          RX_PREFIX_FIELD_INFO_USER_FLAG 0x2 /* enum */
--#define          RX_PREFIX_FIELD_INFO_CLASS 0x3 /* enum */
--#define          RX_PREFIX_FIELD_INFO_PARTIAL_TSTAMP 0x4 /* enum */
--#define          RX_PREFIX_FIELD_INFO_RSS_HASH 0x5 /* enum */
--#define          RX_PREFIX_FIELD_INFO_USER_MARK 0x6 /* enum */
--#define          RX_PREFIX_FIELD_INFO_INGRESS_VPORT 0x7 /* enum */
--#define          RX_PREFIX_FIELD_INFO_CSUM_FRAME 0x8 /* enum */
--#define          RX_PREFIX_FIELD_INFO_VLAN_STRIP_TCI 0x9 /* enum */
--#define       RX_PREFIX_FIELD_INFO_TYPE_LBN 24
--#define       RX_PREFIX_FIELD_INFO_TYPE_WIDTH 8
--
--/* RX_PREFIX_FIXED_RESPONSE structuredef: Information about an RX prefix in
-- * which every field has a fixed offset and width
-- */
--#define    RX_PREFIX_FIXED_RESPONSE_LENMIN 4
--#define    RX_PREFIX_FIXED_RESPONSE_LENMAX 252
--#define    RX_PREFIX_FIXED_RESPONSE_LENMAX_MCDI2 1020
--#define    RX_PREFIX_FIXED_RESPONSE_LEN(num) (4+4*(num))
--#define    RX_PREFIX_FIXED_RESPONSE_FIELDS_NUM(len) (((len)-4)/4)
--/* Length of the RX prefix in bytes */
--#define       RX_PREFIX_FIXED_RESPONSE_PREFIX_LENGTH_BYTES_OFST 0
--#define       RX_PREFIX_FIXED_RESPONSE_PREFIX_LENGTH_BYTES_LEN 1
--#define       RX_PREFIX_FIXED_RESPONSE_PREFIX_LENGTH_BYTES_LBN 0
--#define       RX_PREFIX_FIXED_RESPONSE_PREFIX_LENGTH_BYTES_WIDTH 8
--/* Number of fields present in the prefix */
--#define       RX_PREFIX_FIXED_RESPONSE_FIELD_COUNT_OFST 1
--#define       RX_PREFIX_FIXED_RESPONSE_FIELD_COUNT_LEN 1
--#define       RX_PREFIX_FIXED_RESPONSE_FIELD_COUNT_LBN 8
--#define       RX_PREFIX_FIXED_RESPONSE_FIELD_COUNT_WIDTH 8
--#define       RX_PREFIX_FIXED_RESPONSE_RESERVED_OFST 2
--#define       RX_PREFIX_FIXED_RESPONSE_RESERVED_LEN 2
--#define       RX_PREFIX_FIXED_RESPONSE_RESERVED_LBN 16
--#define       RX_PREFIX_FIXED_RESPONSE_RESERVED_WIDTH 16
--/* Array of RX_PREFIX_FIELD_INFO structures, of length FIELD_COUNT */
--#define       RX_PREFIX_FIXED_RESPONSE_FIELDS_OFST 4
--#define       RX_PREFIX_FIXED_RESPONSE_FIELDS_LEN 4
--#define       RX_PREFIX_FIXED_RESPONSE_FIELDS_MINNUM 0
--#define       RX_PREFIX_FIXED_RESPONSE_FIELDS_MAXNUM 62
--#define       RX_PREFIX_FIXED_RESPONSE_FIELDS_MAXNUM_MCDI2 254
--#define       RX_PREFIX_FIXED_RESPONSE_FIELDS_LBN 32
--#define       RX_PREFIX_FIXED_RESPONSE_FIELDS_WIDTH 32
--
--
--/***********************************/
--/* MC_CMD_QUERY_RX_PREFIX_ID
-- * This command takes an RX prefix id (obtained from MC_CMD_GET_RX_PREFIX_ID)
-- * and returns a description of the RX prefix of packets delievered to an RXQ
-- * created with that prefix id
-- */
--#define MC_CMD_QUERY_RX_PREFIX_ID 0x13c
--#undef MC_CMD_0x13c_PRIVILEGE_CTG
--
--#define MC_CMD_0x13c_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_QUERY_RX_PREFIX_ID_IN msgrequest */
--#define    MC_CMD_QUERY_RX_PREFIX_ID_IN_LEN 4
--/* Prefix id to query */
--#define       MC_CMD_QUERY_RX_PREFIX_ID_IN_RX_PREFIX_ID_OFST 0
--#define       MC_CMD_QUERY_RX_PREFIX_ID_IN_RX_PREFIX_ID_LEN 4
--
--/* MC_CMD_QUERY_RX_PREFIX_ID_OUT msgresponse */
--#define    MC_CMD_QUERY_RX_PREFIX_ID_OUT_LENMIN 4
--#define    MC_CMD_QUERY_RX_PREFIX_ID_OUT_LENMAX 252
--#define    MC_CMD_QUERY_RX_PREFIX_ID_OUT_LENMAX_MCDI2 1020
--#define    MC_CMD_QUERY_RX_PREFIX_ID_OUT_LEN(num) (4+1*(num))
--#define    MC_CMD_QUERY_RX_PREFIX_ID_OUT_RESPONSE_NUM(len) (((len)-4)/1)
--/* An enum describing the structure of this response. */
--#define       MC_CMD_QUERY_RX_PREFIX_ID_OUT_RESPONSE_TYPE_OFST 0
--#define       MC_CMD_QUERY_RX_PREFIX_ID_OUT_RESPONSE_TYPE_LEN 1
--/* enum: The response is of format RX_PREFIX_FIXED_RESPONSE */
--#define          MC_CMD_QUERY_RX_PREFIX_ID_OUT_RESPONSE_TYPE_FIXED 0x0
--#define       MC_CMD_QUERY_RX_PREFIX_ID_OUT_RESERVED_OFST 1
--#define       MC_CMD_QUERY_RX_PREFIX_ID_OUT_RESERVED_LEN 3
--/* The response. Its format is as defined by the RESPONSE_TYPE value */
--#define       MC_CMD_QUERY_RX_PREFIX_ID_OUT_RESPONSE_OFST 4
--#define       MC_CMD_QUERY_RX_PREFIX_ID_OUT_RESPONSE_LEN 1
--#define       MC_CMD_QUERY_RX_PREFIX_ID_OUT_RESPONSE_MINNUM 0
--#define       MC_CMD_QUERY_RX_PREFIX_ID_OUT_RESPONSE_MAXNUM 248
--#define       MC_CMD_QUERY_RX_PREFIX_ID_OUT_RESPONSE_MAXNUM_MCDI2 1016
--
--
--/***********************************/
--/* MC_CMD_BUNDLE
-- * A command to perform various bundle-related operations on insecure cards.
-- */
--#define MC_CMD_BUNDLE 0x13d
--#undef MC_CMD_0x13d_PRIVILEGE_CTG
--
--#define MC_CMD_0x13d_PRIVILEGE_CTG SRIOV_CTG_INSECURE
--
--/* MC_CMD_BUNDLE_IN msgrequest */
--#define    MC_CMD_BUNDLE_IN_LEN 4
--/* Sub-command code */
--#define       MC_CMD_BUNDLE_IN_OP_OFST 0
--#define       MC_CMD_BUNDLE_IN_OP_LEN 4
--/* enum: Get the current host access mode set on component partitions. */
--#define          MC_CMD_BUNDLE_IN_OP_COMPONENT_ACCESS_GET 0x0
--/* enum: Set the host access mode set on component partitions. */
--#define          MC_CMD_BUNDLE_IN_OP_COMPONENT_ACCESS_SET 0x1
--
--/* MC_CMD_BUNDLE_OP_COMPONENT_ACCESS_GET_IN msgrequest: Retrieve the current
-- * access mode on component partitions such as MC_FIRMWARE, SUC_FIRMWARE and
-- * EXPANSION_UEFI. This command only works on engineering (insecure) cards. On
-- * secure adapters, this command returns MC_CMD_ERR_EPERM.
-- */
--#define    MC_CMD_BUNDLE_OP_COMPONENT_ACCESS_GET_IN_LEN 4
--/* Sub-command code. Must be OP_COMPONENT_ACCESS_GET. */
--#define       MC_CMD_BUNDLE_OP_COMPONENT_ACCESS_GET_IN_OP_OFST 0
--#define       MC_CMD_BUNDLE_OP_COMPONENT_ACCESS_GET_IN_OP_LEN 4
--
--/* MC_CMD_BUNDLE_OP_COMPONENT_ACCESS_GET_OUT msgresponse: Returns the access
-- * control mode.
-- */
--#define    MC_CMD_BUNDLE_OP_COMPONENT_ACCESS_GET_OUT_LEN 4
--/* Access mode of component partitions. */
--#define       MC_CMD_BUNDLE_OP_COMPONENT_ACCESS_GET_OUT_ACCESS_MODE_OFST 0
--#define       MC_CMD_BUNDLE_OP_COMPONENT_ACCESS_GET_OUT_ACCESS_MODE_LEN 4
--/* enum: Component partitions are read-only from the host. */
--#define          MC_CMD_BUNDLE_COMPONENTS_READ_ONLY 0x0
--/* enum: Component partitions can read read-from written-to by the host. */
--#define          MC_CMD_BUNDLE_COMPONENTS_READ_WRITE 0x1
--
--/* MC_CMD_BUNDLE_OP_COMPONENT_ACCESS_SET_IN msgrequest: The component
-- * partitions such as MC_FIRMWARE, SUC_FIRMWARE, EXPANSION_UEFI are set as
-- * read-only on firmware built with bundle support. This command marks these
-- * partitions as read/writeable. The access status set by this command does not
-- * persist across MC reboots. This command only works on engineering (insecure)
-- * cards. On secure adapters, this command returns MC_CMD_ERR_EPERM.
-- */
--#define    MC_CMD_BUNDLE_OP_COMPONENT_ACCESS_SET_IN_LEN 8
--/* Sub-command code. Must be OP_COMPONENT_ACCESS_SET. */
--#define       MC_CMD_BUNDLE_OP_COMPONENT_ACCESS_SET_IN_OP_OFST 0
--#define       MC_CMD_BUNDLE_OP_COMPONENT_ACCESS_SET_IN_OP_LEN 4
--/* Access mode of component partitions. */
--#define       MC_CMD_BUNDLE_OP_COMPONENT_ACCESS_SET_IN_ACCESS_MODE_OFST 4
--#define       MC_CMD_BUNDLE_OP_COMPONENT_ACCESS_SET_IN_ACCESS_MODE_LEN 4
--/*            Enum values, see field(s): */
--/*               MC_CMD_BUNDLE_OP_COMPONENT_ACCESS_GET_OUT/ACCESS_MODE */
--
--/* MC_CMD_BUNDLE_OP_COMPONENT_ACCESS_SET_OUT msgresponse */
--#define    MC_CMD_BUNDLE_OP_COMPONENT_ACCESS_SET_OUT_LEN 0
--
--
--/***********************************/
--/* MC_CMD_GET_VPD
-- * Read all VPD starting from a given address
-- */
--#define MC_CMD_GET_VPD 0x165
--#undef MC_CMD_0x165_PRIVILEGE_CTG
--
--#define MC_CMD_0x165_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_GET_VPD_IN msgresponse */
--#define    MC_CMD_GET_VPD_IN_LEN 4
--/* VPD address to start from. In case VPD is longer than MCDI buffer
-- * (unlikely), user can make multiple calls with different starting addresses.
-- */
--#define       MC_CMD_GET_VPD_IN_ADDR_OFST 0
--#define       MC_CMD_GET_VPD_IN_ADDR_LEN 4
--
--/* MC_CMD_GET_VPD_OUT msgresponse */
--#define    MC_CMD_GET_VPD_OUT_LENMIN 0
--#define    MC_CMD_GET_VPD_OUT_LENMAX 252
--#define    MC_CMD_GET_VPD_OUT_LENMAX_MCDI2 1020
--#define    MC_CMD_GET_VPD_OUT_LEN(num) (0+1*(num))
--#define    MC_CMD_GET_VPD_OUT_DATA_NUM(len) (((len)-0)/1)
--/* VPD data returned. */
--#define       MC_CMD_GET_VPD_OUT_DATA_OFST 0
--#define       MC_CMD_GET_VPD_OUT_DATA_LEN 1
--#define       MC_CMD_GET_VPD_OUT_DATA_MINNUM 0
--#define       MC_CMD_GET_VPD_OUT_DATA_MAXNUM 252
--#define       MC_CMD_GET_VPD_OUT_DATA_MAXNUM_MCDI2 1020
--
--
--/***********************************/
--/* MC_CMD_GET_NCSI_INFO
-- * Provide information about the NC-SI stack
-- */
--#define MC_CMD_GET_NCSI_INFO 0x167
--#undef MC_CMD_0x167_PRIVILEGE_CTG
--
--#define MC_CMD_0x167_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_GET_NCSI_INFO_IN msgrequest */
--#define    MC_CMD_GET_NCSI_INFO_IN_LEN 8
--/* Operation to be performed */
--#define       MC_CMD_GET_NCSI_INFO_IN_OP_OFST 0
--#define       MC_CMD_GET_NCSI_INFO_IN_OP_LEN 4
--/* enum: Information on the link settings. */
--#define          MC_CMD_GET_NCSI_INFO_IN_OP_LINK 0x0
--/* enum: Statistics associated with the channel */
--#define          MC_CMD_GET_NCSI_INFO_IN_OP_STATISTICS 0x1
--/* The NC-SI channel on which the operation is to be performed */
--#define       MC_CMD_GET_NCSI_INFO_IN_CHANNEL_OFST 4
--#define       MC_CMD_GET_NCSI_INFO_IN_CHANNEL_LEN 4
--
--/* MC_CMD_GET_NCSI_INFO_LINK_OUT msgresponse */
--#define    MC_CMD_GET_NCSI_INFO_LINK_OUT_LEN 12
--/* Settings as received from BMC. */
--#define       MC_CMD_GET_NCSI_INFO_LINK_OUT_SETTINGS_OFST 0
--#define       MC_CMD_GET_NCSI_INFO_LINK_OUT_SETTINGS_LEN 4
--/* Advertised capabilities applied to channel. */
--#define       MC_CMD_GET_NCSI_INFO_LINK_OUT_ADV_CAP_OFST 4
--#define       MC_CMD_GET_NCSI_INFO_LINK_OUT_ADV_CAP_LEN 4
--/* General status */
--#define       MC_CMD_GET_NCSI_INFO_LINK_OUT_STATUS_OFST 8
--#define       MC_CMD_GET_NCSI_INFO_LINK_OUT_STATUS_LEN 4
--#define        MC_CMD_GET_NCSI_INFO_LINK_OUT_STATE_OFST 8
--#define        MC_CMD_GET_NCSI_INFO_LINK_OUT_STATE_LBN 0
--#define        MC_CMD_GET_NCSI_INFO_LINK_OUT_STATE_WIDTH 2
--#define        MC_CMD_GET_NCSI_INFO_LINK_OUT_ENABLE_OFST 8
--#define        MC_CMD_GET_NCSI_INFO_LINK_OUT_ENABLE_LBN 2
--#define        MC_CMD_GET_NCSI_INFO_LINK_OUT_ENABLE_WIDTH 1
--#define        MC_CMD_GET_NCSI_INFO_LINK_OUT_NETWORK_TX_OFST 8
--#define        MC_CMD_GET_NCSI_INFO_LINK_OUT_NETWORK_TX_LBN 3
--#define        MC_CMD_GET_NCSI_INFO_LINK_OUT_NETWORK_TX_WIDTH 1
--#define        MC_CMD_GET_NCSI_INFO_LINK_OUT_ATTACHED_OFST 8
--#define        MC_CMD_GET_NCSI_INFO_LINK_OUT_ATTACHED_LBN 4
--#define        MC_CMD_GET_NCSI_INFO_LINK_OUT_ATTACHED_WIDTH 1
--
--/* MC_CMD_GET_NCSI_INFO_STATISTICS_OUT msgresponse */
--#define    MC_CMD_GET_NCSI_INFO_STATISTICS_OUT_LEN 28
--/* The number of NC-SI commands received. */
--#define       MC_CMD_GET_NCSI_INFO_STATISTICS_OUT_NCSI_CMDS_RX_OFST 0
--#define       MC_CMD_GET_NCSI_INFO_STATISTICS_OUT_NCSI_CMDS_RX_LEN 4
--/* The number of NC-SI commands dropped. */
--#define       MC_CMD_GET_NCSI_INFO_STATISTICS_OUT_NCSI_PKTS_DROPPED_OFST 4
--#define       MC_CMD_GET_NCSI_INFO_STATISTICS_OUT_NCSI_PKTS_DROPPED_LEN 4
--/* The number of invalid NC-SI commands received. */
--#define       MC_CMD_GET_NCSI_INFO_STATISTICS_OUT_NCSI_CMD_TYPE_ERRS_OFST 8
--#define       MC_CMD_GET_NCSI_INFO_STATISTICS_OUT_NCSI_CMD_TYPE_ERRS_LEN 4
--/* The number of checksum errors seen. */
--#define       MC_CMD_GET_NCSI_INFO_STATISTICS_OUT_NCSI_CMD_CSUM_ERRS_OFST 12
--#define       MC_CMD_GET_NCSI_INFO_STATISTICS_OUT_NCSI_CMD_CSUM_ERRS_LEN 4
--/* The number of NC-SI requests received. */
--#define       MC_CMD_GET_NCSI_INFO_STATISTICS_OUT_NCSI_RX_PKTS_OFST 16
--#define       MC_CMD_GET_NCSI_INFO_STATISTICS_OUT_NCSI_RX_PKTS_LEN 4
--/* The number of NC-SI responses sent (includes AENs) */
--#define       MC_CMD_GET_NCSI_INFO_STATISTICS_OUT_NCSI_TX_PKTS_OFST 20
--#define       MC_CMD_GET_NCSI_INFO_STATISTICS_OUT_NCSI_TX_PKTS_LEN 4
--/* The number of NC-SI AENs sent */
--#define       MC_CMD_GET_NCSI_INFO_STATISTICS_OUT_AENS_SENT_OFST 24
--#define       MC_CMD_GET_NCSI_INFO_STATISTICS_OUT_AENS_SENT_LEN 4
--
--
--/* CLOCK_INFO structuredef: Information about a single hardware clock */
--#define    CLOCK_INFO_LEN 28
--/* Enumeration that uniquely identifies the clock */
--#define       CLOCK_INFO_CLOCK_ID_OFST 0
--#define       CLOCK_INFO_CLOCK_ID_LEN 2
--/* enum: The Riverhead CMC (card MC) */
--#define          CLOCK_INFO_CLOCK_CMC 0x0
--/* enum: The Riverhead NMC (network MC) */
--#define          CLOCK_INFO_CLOCK_NMC 0x1
--/* enum: The Riverhead SDNET slice main logic */
--#define          CLOCK_INFO_CLOCK_SDNET 0x2
--/* enum: The Riverhead SDNET LUT */
--#define          CLOCK_INFO_CLOCK_SDNET_LUT 0x3
--/* enum: The Riverhead SDNET control logic */
--#define          CLOCK_INFO_CLOCK_SDNET_CTRL 0x4
--/* enum: The Riverhead Streaming SubSystem */
--#define          CLOCK_INFO_CLOCK_SSS 0x5
--/* enum: The Riverhead network MAC and associated CSR registers */
--#define          CLOCK_INFO_CLOCK_MAC 0x6
--#define       CLOCK_INFO_CLOCK_ID_LBN 0
--#define       CLOCK_INFO_CLOCK_ID_WIDTH 16
--/* Assorted flags */
--#define       CLOCK_INFO_FLAGS_OFST 2
--#define       CLOCK_INFO_FLAGS_LEN 2
--#define        CLOCK_INFO_SETTABLE_OFST 2
--#define        CLOCK_INFO_SETTABLE_LBN 0
--#define        CLOCK_INFO_SETTABLE_WIDTH 1
--#define       CLOCK_INFO_FLAGS_LBN 16
--#define       CLOCK_INFO_FLAGS_WIDTH 16
--/* The frequency in HZ */
--#define       CLOCK_INFO_FREQUENCY_OFST 4
--#define       CLOCK_INFO_FREQUENCY_LEN 8
--#define       CLOCK_INFO_FREQUENCY_LO_OFST 4
--#define       CLOCK_INFO_FREQUENCY_HI_OFST 8
--#define       CLOCK_INFO_FREQUENCY_LBN 32
--#define       CLOCK_INFO_FREQUENCY_WIDTH 64
--/* Human-readable ASCII name for clock, with NUL termination */
--#define       CLOCK_INFO_NAME_OFST 12
--#define       CLOCK_INFO_NAME_LEN 1
--#define       CLOCK_INFO_NAME_NUM 16
--#define       CLOCK_INFO_NAME_LBN 96
--#define       CLOCK_INFO_NAME_WIDTH 8
--
--
--/***********************************/
--/* MC_CMD_GET_CLOCKS_INFO
-- * Get information about the device clocks
-- */
--#define MC_CMD_GET_CLOCKS_INFO 0x166
--#undef MC_CMD_0x166_PRIVILEGE_CTG
--
--#define MC_CMD_0x166_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_GET_CLOCKS_INFO_IN msgrequest */
--#define    MC_CMD_GET_CLOCKS_INFO_IN_LEN 0
--
--/* MC_CMD_GET_CLOCKS_INFO_OUT msgresponse */
--#define    MC_CMD_GET_CLOCKS_INFO_OUT_LENMIN 0
--#define    MC_CMD_GET_CLOCKS_INFO_OUT_LENMAX 252
--#define    MC_CMD_GET_CLOCKS_INFO_OUT_LENMAX_MCDI2 1008
--#define    MC_CMD_GET_CLOCKS_INFO_OUT_LEN(num) (0+28*(num))
--#define    MC_CMD_GET_CLOCKS_INFO_OUT_INFOS_NUM(len) (((len)-0)/28)
--/* An array of CLOCK_INFO structures. */
--#define       MC_CMD_GET_CLOCKS_INFO_OUT_INFOS_OFST 0
--#define       MC_CMD_GET_CLOCKS_INFO_OUT_INFOS_LEN 28
--#define       MC_CMD_GET_CLOCKS_INFO_OUT_INFOS_MINNUM 0
--#define       MC_CMD_GET_CLOCKS_INFO_OUT_INFOS_MAXNUM 9
--#define       MC_CMD_GET_CLOCKS_INFO_OUT_INFOS_MAXNUM_MCDI2 36
--
--
--/***********************************/
- /* MC_CMD_VNIC_ENCAP_RULE_ADD
-  * Add a rule for detecting encapsulations in the VNIC stage. Currently this only affects checksum validation in VNIC RX - on TX the send descriptor explicitly specifies encapsulation. These rules are per-VNIC, i.e. only apply to the current driver. If a rule matches, then the packet is considered to have the corresponding encapsulation type, and the inner packet is parsed. It is up to the driver to ensure that overlapping rules are not inserted. (If a packet would match multiple rules, a random one of them will be used.) A rule with the exact same match criteria may not be inserted twice (EALREADY). Only a limited number MATCH_FLAGS values are supported, use MC_CMD_GET_PARSER_DISP_INFO with OP OP_GET_SUPPORTED_VNIC_ENCAP_RULE_MATCHES to get a list of supported combinations. Each driver may only have a limited set of active rules - returns ENOSPC if the caller's table is full.
-  */
-@@ -21010,277 +17163,6 @@
- #define       FUNCTION_PERSONALITY_ID_LBN 0
- #define       FUNCTION_PERSONALITY_ID_WIDTH 32
- 
--
--/***********************************/
--/* MC_CMD_VIRTIO_GET_FEATURES
-- * Get a list of the virtio features supported by the device.
-- */
--#define MC_CMD_VIRTIO_GET_FEATURES 0x168
--#undef MC_CMD_0x168_PRIVILEGE_CTG
--
--#define MC_CMD_0x168_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_VIRTIO_GET_FEATURES_IN msgrequest */
--#define    MC_CMD_VIRTIO_GET_FEATURES_IN_LEN 4
--/* Type of device to get features for. Matches the device id as defined by the
-- * virtio spec.
-- */
--#define       MC_CMD_VIRTIO_GET_FEATURES_IN_DEVICE_ID_OFST 0
--#define       MC_CMD_VIRTIO_GET_FEATURES_IN_DEVICE_ID_LEN 4
--/* enum: Reserved. Do not use. */
--#define          MC_CMD_VIRTIO_GET_FEATURES_IN_RESERVED 0x0
--/* enum: Net device. */
--#define          MC_CMD_VIRTIO_GET_FEATURES_IN_NET 0x1
--/* enum: Block device. */
--#define          MC_CMD_VIRTIO_GET_FEATURES_IN_BLOCK 0x2
--
--/* MC_CMD_VIRTIO_GET_FEATURES_OUT msgresponse */
--#define    MC_CMD_VIRTIO_GET_FEATURES_OUT_LEN 8
--/* Features supported by the device. The result is a bitfield in the format of
-- * the feature bits of the specified device type as defined in the virtIO 1.1
-- * specification ( https://docs.oasis-
-- * open.org/virtio/virtio/v1.1/csprd01/virtio-v1.1-csprd01.pdf )
-- */
--#define       MC_CMD_VIRTIO_GET_FEATURES_OUT_FEATURES_OFST 0
--#define       MC_CMD_VIRTIO_GET_FEATURES_OUT_FEATURES_LEN 8
--#define       MC_CMD_VIRTIO_GET_FEATURES_OUT_FEATURES_LO_OFST 0
--#define       MC_CMD_VIRTIO_GET_FEATURES_OUT_FEATURES_HI_OFST 4
--
--
--/***********************************/
--/* MC_CMD_VIRTIO_TEST_FEATURES
-- * Query whether a given set of features is supported. Fails with ENOSUP if the
-- * driver requests a feature the device doesn't support. Fails with EINVAL if
-- * the driver fails to request a feature which the device requires.
-- */
--#define MC_CMD_VIRTIO_TEST_FEATURES 0x169
--#undef MC_CMD_0x169_PRIVILEGE_CTG
--
--#define MC_CMD_0x169_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_VIRTIO_TEST_FEATURES_IN msgrequest */
--#define    MC_CMD_VIRTIO_TEST_FEATURES_IN_LEN 16
--/* Type of device to test features for. Matches the device id as defined by the
-- * virtio spec.
-- */
--#define       MC_CMD_VIRTIO_TEST_FEATURES_IN_DEVICE_ID_OFST 0
--#define       MC_CMD_VIRTIO_TEST_FEATURES_IN_DEVICE_ID_LEN 4
--/*            Enum values, see field(s): */
--/*               MC_CMD_VIRTIO_GET_FEATURES/MC_CMD_VIRTIO_GET_FEATURES_IN/DEVICE_ID */
--#define       MC_CMD_VIRTIO_TEST_FEATURES_IN_RESERVED_OFST 4
--#define       MC_CMD_VIRTIO_TEST_FEATURES_IN_RESERVED_LEN 4
--/* Features requested. Same format as the returned value from
-- * MC_CMD_VIRTIO_GET_FEATURES.
-- */
--#define       MC_CMD_VIRTIO_TEST_FEATURES_IN_FEATURES_OFST 8
--#define       MC_CMD_VIRTIO_TEST_FEATURES_IN_FEATURES_LEN 8
--#define       MC_CMD_VIRTIO_TEST_FEATURES_IN_FEATURES_LO_OFST 8
--#define       MC_CMD_VIRTIO_TEST_FEATURES_IN_FEATURES_HI_OFST 12
--
--/* MC_CMD_VIRTIO_TEST_FEATURES_OUT msgresponse */
--#define    MC_CMD_VIRTIO_TEST_FEATURES_OUT_LEN 0
--
--
--/***********************************/
--/* MC_CMD_VIRTIO_INIT_QUEUE
-- * Create a virtio virtqueue. Fails with EALREADY if the queue already exists.
-- * Fails with ENOSUP if a feature is requested that isn't supported. Fails with
-- * EINVAL if a required feature isn't requested, or any other parameter is
-- * invalid.
-- */
--#define MC_CMD_VIRTIO_INIT_QUEUE 0x16a
--#undef MC_CMD_0x16a_PRIVILEGE_CTG
--
--#define MC_CMD_0x16a_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_VIRTIO_INIT_QUEUE_REQ msgrequest */
--#define    MC_CMD_VIRTIO_INIT_QUEUE_REQ_LEN 68
--/* Type of virtqueue to create. A network rxq and a txq can exist at the same
-- * time on a single VI.
-- */
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_QUEUE_TYPE_OFST 0
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_QUEUE_TYPE_LEN 1
--/* enum: A network device receive queue */
--#define          MC_CMD_VIRTIO_INIT_QUEUE_REQ_NET_RXQ 0x0
--/* enum: A network device transmit queue */
--#define          MC_CMD_VIRTIO_INIT_QUEUE_REQ_NET_TXQ 0x1
--/* enum: A block device request queue */
--#define          MC_CMD_VIRTIO_INIT_QUEUE_REQ_BLOCK 0x2
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_RESERVED_OFST 1
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_RESERVED_LEN 1
--/* If the calling function is a PF and this field is not VF_NULL, create the
-- * queue on the specified child VF instead of on the PF.
-- */
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_TARGET_VF_OFST 2
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_TARGET_VF_LEN 2
--/* enum: No VF, create queue on the PF. */
--#define          MC_CMD_VIRTIO_INIT_QUEUE_REQ_VF_NULL 0xffff
--/* Desired instance. This is the function-local index of the associated VI, not
-- * the virtqueue number as counted by the virtqueue spec.
-- */
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_INSTANCE_OFST 4
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_INSTANCE_LEN 4
--/* Queue size, in entries. Must be a power of two. */
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_SIZE_OFST 8
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_SIZE_LEN 4
--/* Flags */
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_FLAGS_OFST 12
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_FLAGS_LEN 4
--#define        MC_CMD_VIRTIO_INIT_QUEUE_REQ_USE_PASID_OFST 12
--#define        MC_CMD_VIRTIO_INIT_QUEUE_REQ_USE_PASID_LBN 0
--#define        MC_CMD_VIRTIO_INIT_QUEUE_REQ_USE_PASID_WIDTH 1
--/* Address of the descriptor table in the virtqueue. */
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_DESC_TBL_ADDR_OFST 16
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_DESC_TBL_ADDR_LEN 8
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_DESC_TBL_ADDR_LO_OFST 16
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_DESC_TBL_ADDR_HI_OFST 20
--/* Address of the available ring in the virtqueue. */
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_AVAIL_RING_ADDR_OFST 24
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_AVAIL_RING_ADDR_LEN 8
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_AVAIL_RING_ADDR_LO_OFST 24
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_AVAIL_RING_ADDR_HI_OFST 28
--/* Address of the used ring in the virtqueue. */
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_USED_RING_ADDR_OFST 32
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_USED_RING_ADDR_LEN 8
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_USED_RING_ADDR_LO_OFST 32
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_USED_RING_ADDR_HI_OFST 36
--/* PASID to use on PCIe transactions involving this queue. Ignored if the
-- * USE_PASID flag is not set.
-- */
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_PASID_OFST 40
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_PASID_LEN 4
--/* Which MSIX vector to use for this virtqueue, or NO_VECTOR if MSIX should not
-- * be used.
-- */
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_MSIX_VECTOR_OFST 44
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_MSIX_VECTOR_LEN 2
--/* enum: Do not enable interrupts for this virtqueue */
--#define          MC_CMD_VIRTIO_INIT_QUEUE_REQ_NO_VECTOR 0xffff
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_RESERVED2_OFST 46
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_RESERVED2_LEN 2
--/* Virtio features to apply to this queue. Same format as the in the virtio
-- * spec and in the return from MC_CMD_VIRTIO_GET_FEATURES. Must be a subset of
-- * the features returned from MC_CMD_VIRTIO_GET_FEATURES. Features are per-
-- * queue because with vDPA multiple queues on the same function can be passed
-- * through to different virtual hosts as independent devices.
-- */
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_FEATURES_OFST 48
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_FEATURES_LEN 8
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_FEATURES_LO_OFST 48
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_FEATURES_HI_OFST 52
--/*            Enum values, see field(s): */
--/*               MC_CMD_VIRTIO_GET_FEATURES/MC_CMD_VIRTIO_GET_FEATURES_OUT/FEATURES */
--/* The inital producer index for this queue's used ring. If this queue is being
-- * created to be migrated into, this should be the FINAL_PIDX value returned by
-- * MC_CMD_VIRTIO_FINI_QUEUE of the queue being migrated from. Otherwise, it
-- * should be zero.
-- */
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_INITIAL_PIDX_OFST 56
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_INITIAL_PIDX_LEN 4
--/* The inital consumer index for this queue's available ring. If this queue is
-- * being created to be migrated into, this should be the FINAL_CIDX value
-- * returned by MC_CMD_VIRTIO_FINI_QUEUE of the queue being migrated from.
-- * Otherwise, it should be zero.
-- */
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_INITIAL_CIDX_OFST 60
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_INITIAL_CIDX_LEN 4
--/* A MAE_MPORT_SELECTOR defining which mport this queue should be associated
-- * with. Use MAE_MPORT_SELECTOR_ASSIGNED to request the default mport for the
-- * function this queue is being created on.
-- */
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_MPORT_SELECTOR_OFST 64
--#define       MC_CMD_VIRTIO_INIT_QUEUE_REQ_MPORT_SELECTOR_LEN 4
--
--/* MC_CMD_VIRTIO_INIT_QUEUE_RESP msgresponse */
--#define    MC_CMD_VIRTIO_INIT_QUEUE_RESP_LEN 0
--
--
--/***********************************/
--/* MC_CMD_VIRTIO_FINI_QUEUE
-- * Destroy a virtio virtqueue
-- */
--#define MC_CMD_VIRTIO_FINI_QUEUE 0x16b
--#undef MC_CMD_0x16b_PRIVILEGE_CTG
--
--#define MC_CMD_0x16b_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_VIRTIO_FINI_QUEUE_REQ msgrequest */
--#define    MC_CMD_VIRTIO_FINI_QUEUE_REQ_LEN 8
--/* Type of virtqueue to destroy. */
--#define       MC_CMD_VIRTIO_FINI_QUEUE_REQ_QUEUE_TYPE_OFST 0
--#define       MC_CMD_VIRTIO_FINI_QUEUE_REQ_QUEUE_TYPE_LEN 1
--/*            Enum values, see field(s): */
--/*               MC_CMD_VIRTIO_INIT_QUEUE/MC_CMD_VIRTIO_INIT_QUEUE_REQ/QUEUE_TYPE */
--#define       MC_CMD_VIRTIO_FINI_QUEUE_REQ_RESERVED_OFST 1
--#define       MC_CMD_VIRTIO_FINI_QUEUE_REQ_RESERVED_LEN 1
--/* If the calling function is a PF and this field is not VF_NULL, destroy the
-- * queue on the specified child VF instead of on the PF.
-- */
--#define       MC_CMD_VIRTIO_FINI_QUEUE_REQ_TARGET_VF_OFST 2
--#define       MC_CMD_VIRTIO_FINI_QUEUE_REQ_TARGET_VF_LEN 2
--/* enum: No VF, destroy the queue on the PF. */
--#define          MC_CMD_VIRTIO_FINI_QUEUE_REQ_VF_NULL 0xffff
--/* Instance to destroy */
--#define       MC_CMD_VIRTIO_FINI_QUEUE_REQ_INSTANCE_OFST 4
--#define       MC_CMD_VIRTIO_FINI_QUEUE_REQ_INSTANCE_LEN 4
--
--/* MC_CMD_VIRTIO_FINI_QUEUE_RESP msgresponse */
--#define    MC_CMD_VIRTIO_FINI_QUEUE_RESP_LEN 8
--/* The producer index of the used ring when the queue was stopped. */
--#define       MC_CMD_VIRTIO_FINI_QUEUE_RESP_FINAL_PIDX_OFST 0
--#define       MC_CMD_VIRTIO_FINI_QUEUE_RESP_FINAL_PIDX_LEN 4
--/* The consumer index of the available ring when the queue was stopped. */
--#define       MC_CMD_VIRTIO_FINI_QUEUE_RESP_FINAL_CIDX_OFST 4
--#define       MC_CMD_VIRTIO_FINI_QUEUE_RESP_FINAL_CIDX_LEN 4
--
--
--/***********************************/
--/* MC_CMD_VIRTIO_GET_DOORBELL_OFFSET
-- * Get the offset in the BAR of the doorbells for a VI. Doesn't require the
-- * queue(s) to be allocated.
-- */
--#define MC_CMD_VIRTIO_GET_DOORBELL_OFFSET 0x16c
--#undef MC_CMD_0x16c_PRIVILEGE_CTG
--
--#define MC_CMD_0x16c_PRIVILEGE_CTG SRIOV_CTG_GENERAL
--
--/* MC_CMD_VIRTIO_GET_DOORBELL_OFFSET_REQ msgrequest */
--#define    MC_CMD_VIRTIO_GET_DOORBELL_OFFSET_REQ_LEN 8
--/* Type of device to get information for. Matches the device id as defined by
-- * the virtio spec.
-- */
--#define       MC_CMD_VIRTIO_GET_DOORBELL_OFFSET_REQ_DEVICE_ID_OFST 0
--#define       MC_CMD_VIRTIO_GET_DOORBELL_OFFSET_REQ_DEVICE_ID_LEN 1
--/*            Enum values, see field(s): */
--/*               MC_CMD_VIRTIO_GET_FEATURES/MC_CMD_VIRTIO_GET_FEATURES_IN/DEVICE_ID */
--#define       MC_CMD_VIRTIO_GET_DOORBELL_OFFSET_REQ_RESERVED_OFST 1
--#define       MC_CMD_VIRTIO_GET_DOORBELL_OFFSET_REQ_RESERVED_LEN 1
--/* If the calling function is a PF and this field is not VF_NULL, query the VI
-- * on the specified child VF instead of on the PF.
-- */
--#define       MC_CMD_VIRTIO_GET_DOORBELL_OFFSET_REQ_TARGET_VF_OFST 2
--#define       MC_CMD_VIRTIO_GET_DOORBELL_OFFSET_REQ_TARGET_VF_LEN 2
--/* enum: No VF, query the PF. */
--#define          MC_CMD_VIRTIO_GET_DOORBELL_OFFSET_REQ_VF_NULL 0xffff
--/* VI instance to query */
--#define       MC_CMD_VIRTIO_GET_DOORBELL_OFFSET_REQ_INSTANCE_OFST 4
--#define       MC_CMD_VIRTIO_GET_DOORBELL_OFFSET_REQ_INSTANCE_LEN 4
--
--/* MC_CMD_VIRTIO_GET_NET_DOORBELL_OFFSET_RESP msgresponse */
--#define    MC_CMD_VIRTIO_GET_NET_DOORBELL_OFFSET_RESP_LEN 8
--/* Offset of RX doorbell in BAR */
--#define       MC_CMD_VIRTIO_GET_NET_DOORBELL_OFFSET_RESP_RX_DBL_OFFSET_OFST 0
--#define       MC_CMD_VIRTIO_GET_NET_DOORBELL_OFFSET_RESP_RX_DBL_OFFSET_LEN 4
--/* Offset of TX doorbell in BAR */
--#define       MC_CMD_VIRTIO_GET_NET_DOORBELL_OFFSET_RESP_TX_DBL_OFFSET_OFST 4
--#define       MC_CMD_VIRTIO_GET_NET_DOORBELL_OFFSET_RESP_TX_DBL_OFFSET_LEN 4
--
--/* MC_CMD_VIRTIO_GET_BLOCK_DOORBELL_OFFSET_RESP msgresponse */
--#define    MC_CMD_VIRTIO_GET_BLOCK_DOORBELL_OFFSET_RESP_LEN 4
--/* Offset of request doorbell in BAR */
--#define       MC_CMD_VIRTIO_GET_BLOCK_DOORBELL_OFFSET_RESP_DBL_OFFSET_OFST 0
--#define       MC_CMD_VIRTIO_GET_BLOCK_DOORBELL_OFFSET_RESP_DBL_OFFSET_LEN 4
--
- /* PCIE_FUNCTION structuredef: Structure representing a PCIe function ID
-  * (interface/PF/VF tuple)
-  */
-@@ -21319,650 +17201,4 @@
- #define       PCIE_FUNCTION_INTF_LBN 32
- #define       PCIE_FUNCTION_INTF_WIDTH 32
- 
--
--/***********************************/
--/* MC_CMD_DESC_PROXY_FUNC_CREATE
-- * Descriptor proxy functions are abstract devices that forward all request
-- * submitted to the host PCIe function (descriptors submitted to Virtio or
-- * EF100 queues) to be handled on another function (most commonly on the
-- * embedded Application Processor), via EF100 descriptor proxy, memory-to-
-- * memory and descriptor-to-completion mechanisms. Primary user is Virtio-blk
-- * subsystem, see SF-122927-TC. This function allocates a new descriptor proxy
-- * function on the host and assigns a user-defined label. The actual function
-- * configuration is not persisted until the caller configures it with
-- * MC_CMD_DESC_PROXY_FUNC_CONFIG_SET_IN and commits with
-- * MC_CMD_DESC_PROXY_FUNC_COMMIT_IN.
-- */
--#define MC_CMD_DESC_PROXY_FUNC_CREATE 0x172
--#undef MC_CMD_0x172_PRIVILEGE_CTG
--
--#define MC_CMD_0x172_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_DESC_PROXY_FUNC_CREATE_IN msgrequest */
--#define    MC_CMD_DESC_PROXY_FUNC_CREATE_IN_LEN 52
--/* PCIe Function ID to allocate (as struct PCIE_FUNCTION). Set to
-- * {PF_ANY,VF_ANY,interface} for "any available function" Set to
-- * {PF_ANY,VF_NULL,interface} for "any available PF"
-- */
--#define       MC_CMD_DESC_PROXY_FUNC_CREATE_IN_FUNC_OFST 0
--#define       MC_CMD_DESC_PROXY_FUNC_CREATE_IN_FUNC_LEN 8
--#define       MC_CMD_DESC_PROXY_FUNC_CREATE_IN_FUNC_LO_OFST 0
--#define       MC_CMD_DESC_PROXY_FUNC_CREATE_IN_FUNC_HI_OFST 4
--/* The personality to set. The meanings of the personalities are defined in
-- * SF-120734-TC with more information in SF-122717-TC. At present, we only
-- * support proxying for VIRTIO_BLK
-- */
--#define       MC_CMD_DESC_PROXY_FUNC_CREATE_IN_PERSONALITY_OFST 8
--#define       MC_CMD_DESC_PROXY_FUNC_CREATE_IN_PERSONALITY_LEN 4
--/*            Enum values, see field(s): */
--/*               FUNCTION_PERSONALITY/ID */
--/* User-defined label (zero-terminated ASCII string) to uniquely identify the
-- * function
-- */
--#define       MC_CMD_DESC_PROXY_FUNC_CREATE_IN_LABEL_OFST 12
--#define       MC_CMD_DESC_PROXY_FUNC_CREATE_IN_LABEL_LEN 40
--
--/* MC_CMD_DESC_PROXY_FUNC_CREATE_OUT msgresponse */
--#define    MC_CMD_DESC_PROXY_FUNC_CREATE_OUT_LEN 12
--/* Handle to the descriptor proxy function */
--#define       MC_CMD_DESC_PROXY_FUNC_CREATE_OUT_HANDLE_OFST 0
--#define       MC_CMD_DESC_PROXY_FUNC_CREATE_OUT_HANDLE_LEN 4
--/* Allocated function ID (as struct PCIE_FUNCTION) */
--#define       MC_CMD_DESC_PROXY_FUNC_CREATE_OUT_FUNC_OFST 4
--#define       MC_CMD_DESC_PROXY_FUNC_CREATE_OUT_FUNC_LEN 8
--#define       MC_CMD_DESC_PROXY_FUNC_CREATE_OUT_FUNC_LO_OFST 4
--#define       MC_CMD_DESC_PROXY_FUNC_CREATE_OUT_FUNC_HI_OFST 8
--
--
--/***********************************/
--/* MC_CMD_DESC_PROXY_FUNC_DESTROY
-- * Remove an existing descriptor proxy function. Underlying function
-- * personality and configuration reverts back to factory default. Function
-- * configuration is committed immediately to specified store and any function
-- * ownership is released.
-- */
--#define MC_CMD_DESC_PROXY_FUNC_DESTROY 0x173
--#undef MC_CMD_0x173_PRIVILEGE_CTG
--
--#define MC_CMD_0x173_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_DESC_PROXY_FUNC_DESTROY_IN msgrequest */
--#define    MC_CMD_DESC_PROXY_FUNC_DESTROY_IN_LEN 44
--/* User-defined label (zero-terminated ASCII string) to uniquely identify the
-- * function
-- */
--#define       MC_CMD_DESC_PROXY_FUNC_DESTROY_IN_LABEL_OFST 0
--#define       MC_CMD_DESC_PROXY_FUNC_DESTROY_IN_LABEL_LEN 40
--/* Store from which to remove function configuration */
--#define       MC_CMD_DESC_PROXY_FUNC_DESTROY_IN_STORE_OFST 40
--#define       MC_CMD_DESC_PROXY_FUNC_DESTROY_IN_STORE_LEN 4
--/*            Enum values, see field(s): */
--/*               MC_CMD_DESC_PROXY_FUNC_COMMIT/MC_CMD_DESC_PROXY_FUNC_COMMIT_IN/STORE */
--
--/* MC_CMD_DESC_PROXY_FUNC_DESTROY_OUT msgresponse */
--#define    MC_CMD_DESC_PROXY_FUNC_DESTROY_OUT_LEN 0
--
--/* VIRTIO_BLK_CONFIG structuredef: Virtio block device configuration. See
-- * Virtio specification v1.1, Sections 5.2.3 and 6 for definition of feature
-- * bits. See Virtio specification v1.1, Section 5.2.4 (struct
-- * virtio_blk_config) for definition of remaining configuration fields
-- */
--#define    VIRTIO_BLK_CONFIG_LEN 68
--/* Virtio block device features to advertise, per Virtio 1.1, 5.2.3 and 6 */
--#define       VIRTIO_BLK_CONFIG_FEATURES_OFST 0
--#define       VIRTIO_BLK_CONFIG_FEATURES_LEN 8
--#define       VIRTIO_BLK_CONFIG_FEATURES_LO_OFST 0
--#define       VIRTIO_BLK_CONFIG_FEATURES_HI_OFST 4
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_BARRIER_OFST 0
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_BARRIER_LBN 0
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_BARRIER_WIDTH 1
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_SIZE_MAX_OFST 0
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_SIZE_MAX_LBN 1
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_SIZE_MAX_WIDTH 1
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_SEG_MAX_OFST 0
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_SEG_MAX_LBN 2
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_SEG_MAX_WIDTH 1
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_GEOMETRY_OFST 0
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_GEOMETRY_LBN 4
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_GEOMETRY_WIDTH 1
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_RO_OFST 0
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_RO_LBN 5
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_RO_WIDTH 1
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_BLK_SIZE_OFST 0
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_BLK_SIZE_LBN 6
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_BLK_SIZE_WIDTH 1
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_SCSI_OFST 0
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_SCSI_LBN 7
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_SCSI_WIDTH 1
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_FLUSH_OFST 0
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_FLUSH_LBN 9
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_FLUSH_WIDTH 1
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_TOPOLOGY_OFST 0
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_TOPOLOGY_LBN 10
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_TOPOLOGY_WIDTH 1
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_CONFIG_WCE_OFST 0
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_CONFIG_WCE_LBN 11
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_CONFIG_WCE_WIDTH 1
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_MQ_OFST 0
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_MQ_LBN 12
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_MQ_WIDTH 1
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_DISCARD_OFST 0
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_DISCARD_LBN 13
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_DISCARD_WIDTH 1
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_WRITE_ZEROES_OFST 0
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_WRITE_ZEROES_LBN 14
--#define        VIRTIO_BLK_CONFIG_VIRTIO_BLK_F_WRITE_ZEROES_WIDTH 1
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_RING_INDIRECT_DESC_OFST 0
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_RING_INDIRECT_DESC_LBN 28
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_RING_INDIRECT_DESC_WIDTH 1
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_RING_EVENT_IDX_OFST 0
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_RING_EVENT_IDX_LBN 29
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_RING_EVENT_IDX_WIDTH 1
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_VERSION_1_OFST 0
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_VERSION_1_LBN 32
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_VERSION_1_WIDTH 1
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_ACCESS_PLATFORM_OFST 0
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_ACCESS_PLATFORM_LBN 33
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_ACCESS_PLATFORM_WIDTH 1
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_RING_PACKED_OFST 0
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_RING_PACKED_LBN 34
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_RING_PACKED_WIDTH 1
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_IN_ORDER_OFST 0
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_IN_ORDER_LBN 35
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_IN_ORDER_WIDTH 1
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_ORDER_PLATFORM_OFST 0
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_ORDER_PLATFORM_LBN 36
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_ORDER_PLATFORM_WIDTH 1
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_SR_IOV_OFST 0
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_SR_IOV_LBN 37
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_SR_IOV_WIDTH 1
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_NOTIFICATION_DATA_OFST 0
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_NOTIFICATION_DATA_LBN 38
--#define        VIRTIO_BLK_CONFIG_VIRTIO_F_NOTIFICATION_DATA_WIDTH 1
--#define       VIRTIO_BLK_CONFIG_FEATURES_LBN 0
--#define       VIRTIO_BLK_CONFIG_FEATURES_WIDTH 64
--/* The capacity of the device (expressed in 512-byte sectors) */
--#define       VIRTIO_BLK_CONFIG_CAPACITY_OFST 8
--#define       VIRTIO_BLK_CONFIG_CAPACITY_LEN 8
--#define       VIRTIO_BLK_CONFIG_CAPACITY_LO_OFST 8
--#define       VIRTIO_BLK_CONFIG_CAPACITY_HI_OFST 12
--#define       VIRTIO_BLK_CONFIG_CAPACITY_LBN 64
--#define       VIRTIO_BLK_CONFIG_CAPACITY_WIDTH 64
--/* Maximum size of any single segment. Only valid when VIRTIO_BLK_F_SIZE_MAX is
-- * set.
-- */
--#define       VIRTIO_BLK_CONFIG_SIZE_MAX_OFST 16
--#define       VIRTIO_BLK_CONFIG_SIZE_MAX_LEN 4
--#define       VIRTIO_BLK_CONFIG_SIZE_MAX_LBN 128
--#define       VIRTIO_BLK_CONFIG_SIZE_MAX_WIDTH 32
--/* Maximum number of segments in a request. Only valid when
-- * VIRTIO_BLK_F_SEG_MAX is set.
-- */
--#define       VIRTIO_BLK_CONFIG_SEG_MAX_OFST 20
--#define       VIRTIO_BLK_CONFIG_SEG_MAX_LEN 4
--#define       VIRTIO_BLK_CONFIG_SEG_MAX_LBN 160
--#define       VIRTIO_BLK_CONFIG_SEG_MAX_WIDTH 32
--/* Disk-style geometry - cylinders. Only valid when VIRTIO_BLK_F_GEOMETRY is
-- * set.
-- */
--#define       VIRTIO_BLK_CONFIG_CYLINDERS_OFST 24
--#define       VIRTIO_BLK_CONFIG_CYLINDERS_LEN 2
--#define       VIRTIO_BLK_CONFIG_CYLINDERS_LBN 192
--#define       VIRTIO_BLK_CONFIG_CYLINDERS_WIDTH 16
--/* Disk-style geometry - heads. Only valid when VIRTIO_BLK_F_GEOMETRY is set.
-- */
--#define       VIRTIO_BLK_CONFIG_HEADS_OFST 26
--#define       VIRTIO_BLK_CONFIG_HEADS_LEN 1
--#define       VIRTIO_BLK_CONFIG_HEADS_LBN 208
--#define       VIRTIO_BLK_CONFIG_HEADS_WIDTH 8
--/* Disk-style geometry - sectors. Only valid when VIRTIO_BLK_F_GEOMETRY is set.
-- */
--#define       VIRTIO_BLK_CONFIG_SECTORS_OFST 27
--#define       VIRTIO_BLK_CONFIG_SECTORS_LEN 1
--#define       VIRTIO_BLK_CONFIG_SECTORS_LBN 216
--#define       VIRTIO_BLK_CONFIG_SECTORS_WIDTH 8
--/* Block size of disk. Only valid when VIRTIO_BLK_F_BLK_SIZE is set. */
--#define       VIRTIO_BLK_CONFIG_BLK_SIZE_OFST 28
--#define       VIRTIO_BLK_CONFIG_BLK_SIZE_LEN 4
--#define       VIRTIO_BLK_CONFIG_BLK_SIZE_LBN 224
--#define       VIRTIO_BLK_CONFIG_BLK_SIZE_WIDTH 32
--/* Block topology - number of logical blocks per physical block (log2). Only
-- * valid when VIRTIO_BLK_F_TOPOLOGY is set.
-- */
--#define       VIRTIO_BLK_CONFIG_PHYSICAL_BLOCK_EXP_OFST 32
--#define       VIRTIO_BLK_CONFIG_PHYSICAL_BLOCK_EXP_LEN 1
--#define       VIRTIO_BLK_CONFIG_PHYSICAL_BLOCK_EXP_LBN 256
--#define       VIRTIO_BLK_CONFIG_PHYSICAL_BLOCK_EXP_WIDTH 8
--/* Block topology - offset of first aligned logical block. Only valid when
-- * VIRTIO_BLK_F_TOPOLOGY is set.
-- */
--#define       VIRTIO_BLK_CONFIG_ALIGNMENT_OFFSET_OFST 33
--#define       VIRTIO_BLK_CONFIG_ALIGNMENT_OFFSET_LEN 1
--#define       VIRTIO_BLK_CONFIG_ALIGNMENT_OFFSET_LBN 264
--#define       VIRTIO_BLK_CONFIG_ALIGNMENT_OFFSET_WIDTH 8
--/* Block topology - suggested minimum I/O size in blocks. Only valid when
-- * VIRTIO_BLK_F_TOPOLOGY is set.
-- */
--#define       VIRTIO_BLK_CONFIG_MIN_IO_SIZE_OFST 34
--#define       VIRTIO_BLK_CONFIG_MIN_IO_SIZE_LEN 2
--#define       VIRTIO_BLK_CONFIG_MIN_IO_SIZE_LBN 272
--#define       VIRTIO_BLK_CONFIG_MIN_IO_SIZE_WIDTH 16
--/* Block topology - optimal (suggested maximum) I/O size in blocks. Only valid
-- * when VIRTIO_BLK_F_TOPOLOGY is set.
-- */
--#define       VIRTIO_BLK_CONFIG_OPT_IO_SIZE_OFST 36
--#define       VIRTIO_BLK_CONFIG_OPT_IO_SIZE_LEN 4
--#define       VIRTIO_BLK_CONFIG_OPT_IO_SIZE_LBN 288
--#define       VIRTIO_BLK_CONFIG_OPT_IO_SIZE_WIDTH 32
--/* Unused, set to zero. Note that virtio_blk_config.writeback is volatile and
-- * not carried in config data.
-- */
--#define       VIRTIO_BLK_CONFIG_UNUSED0_OFST 40
--#define       VIRTIO_BLK_CONFIG_UNUSED0_LEN 2
--#define       VIRTIO_BLK_CONFIG_UNUSED0_LBN 320
--#define       VIRTIO_BLK_CONFIG_UNUSED0_WIDTH 16
--/* Number of queues. Only valid if the VIRTIO_BLK_F_MQ feature is negotiated.
-- */
--#define       VIRTIO_BLK_CONFIG_NUM_QUEUES_OFST 42
--#define       VIRTIO_BLK_CONFIG_NUM_QUEUES_LEN 2
--#define       VIRTIO_BLK_CONFIG_NUM_QUEUES_LBN 336
--#define       VIRTIO_BLK_CONFIG_NUM_QUEUES_WIDTH 16
--/* Maximum discard sectors size, in 512-byte units. Only valid if
-- * VIRTIO_BLK_F_DISCARD is set.
-- */
--#define       VIRTIO_BLK_CONFIG_MAX_DISCARD_SECTORS_OFST 44
--#define       VIRTIO_BLK_CONFIG_MAX_DISCARD_SECTORS_LEN 4
--#define       VIRTIO_BLK_CONFIG_MAX_DISCARD_SECTORS_LBN 352
--#define       VIRTIO_BLK_CONFIG_MAX_DISCARD_SECTORS_WIDTH 32
--/* Maximum discard segment number. Only valid if VIRTIO_BLK_F_DISCARD is set.
-- */
--#define       VIRTIO_BLK_CONFIG_MAX_DISCARD_SEG_OFST 48
--#define       VIRTIO_BLK_CONFIG_MAX_DISCARD_SEG_LEN 4
--#define       VIRTIO_BLK_CONFIG_MAX_DISCARD_SEG_LBN 384
--#define       VIRTIO_BLK_CONFIG_MAX_DISCARD_SEG_WIDTH 32
--/* Discard sector alignment, in 512-byte units. Only valid if
-- * VIRTIO_BLK_F_DISCARD is set.
-- */
--#define       VIRTIO_BLK_CONFIG_DISCARD_SECTOR_ALIGNMENT_OFST 52
--#define       VIRTIO_BLK_CONFIG_DISCARD_SECTOR_ALIGNMENT_LEN 4
--#define       VIRTIO_BLK_CONFIG_DISCARD_SECTOR_ALIGNMENT_LBN 416
--#define       VIRTIO_BLK_CONFIG_DISCARD_SECTOR_ALIGNMENT_WIDTH 32
--/* Maximum write zeroes sectors size, in 512-byte units. Only valid if
-- * VIRTIO_BLK_F_WRITE_ZEROES is set.
-- */
--#define       VIRTIO_BLK_CONFIG_MAX_WRITE_ZEROES_SECTORS_OFST 56
--#define       VIRTIO_BLK_CONFIG_MAX_WRITE_ZEROES_SECTORS_LEN 4
--#define       VIRTIO_BLK_CONFIG_MAX_WRITE_ZEROES_SECTORS_LBN 448
--#define       VIRTIO_BLK_CONFIG_MAX_WRITE_ZEROES_SECTORS_WIDTH 32
--/* Maximum write zeroes segment number. Only valid if VIRTIO_BLK_F_WRITE_ZEROES
-- * is set.
-- */
--#define       VIRTIO_BLK_CONFIG_MAX_WRITE_ZEROES_SEG_OFST 60
--#define       VIRTIO_BLK_CONFIG_MAX_WRITE_ZEROES_SEG_LEN 4
--#define       VIRTIO_BLK_CONFIG_MAX_WRITE_ZEROES_SEG_LBN 480
--#define       VIRTIO_BLK_CONFIG_MAX_WRITE_ZEROES_SEG_WIDTH 32
--/* Write zeroes request can result in deallocating one or more sectors. Only
-- * valid if VIRTIO_BLK_F_WRITE_ZEROES is set.
-- */
--#define       VIRTIO_BLK_CONFIG_WRITE_ZEROES_MAY_UNMAP_OFST 64
--#define       VIRTIO_BLK_CONFIG_WRITE_ZEROES_MAY_UNMAP_LEN 1
--#define       VIRTIO_BLK_CONFIG_WRITE_ZEROES_MAY_UNMAP_LBN 512
--#define       VIRTIO_BLK_CONFIG_WRITE_ZEROES_MAY_UNMAP_WIDTH 8
--/* Unused, set to zero. */
--#define       VIRTIO_BLK_CONFIG_UNUSED1_OFST 65
--#define       VIRTIO_BLK_CONFIG_UNUSED1_LEN 3
--#define       VIRTIO_BLK_CONFIG_UNUSED1_LBN 520
--#define       VIRTIO_BLK_CONFIG_UNUSED1_WIDTH 24
--
--
--/***********************************/
--/* MC_CMD_DESC_PROXY_FUNC_CONFIG_SET
-- * Set configuration for an existing descriptor proxy function. Configuration
-- * data must match function personality. The actual function configuration is
-- * not persisted until the caller commits with MC_CMD_DESC_PROXY_FUNC_COMMIT_IN
-- */
--#define MC_CMD_DESC_PROXY_FUNC_CONFIG_SET 0x174
--#undef MC_CMD_0x174_PRIVILEGE_CTG
--
--#define MC_CMD_0x174_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_DESC_PROXY_FUNC_CONFIG_SET_IN msgrequest */
--#define    MC_CMD_DESC_PROXY_FUNC_CONFIG_SET_IN_LENMIN 20
--#define    MC_CMD_DESC_PROXY_FUNC_CONFIG_SET_IN_LENMAX 252
--#define    MC_CMD_DESC_PROXY_FUNC_CONFIG_SET_IN_LENMAX_MCDI2 1020
--#define    MC_CMD_DESC_PROXY_FUNC_CONFIG_SET_IN_LEN(num) (20+1*(num))
--#define    MC_CMD_DESC_PROXY_FUNC_CONFIG_SET_IN_CONFIG_NUM(len) (((len)-20)/1)
--/* Handle to descriptor proxy function (as returned by
-- * MC_CMD_DESC_PROXY_FUNC_OPEN)
-- */
--#define       MC_CMD_DESC_PROXY_FUNC_CONFIG_SET_IN_HANDLE_OFST 0
--#define       MC_CMD_DESC_PROXY_FUNC_CONFIG_SET_IN_HANDLE_LEN 4
--/* Reserved for future extension, set to zero. */
--#define       MC_CMD_DESC_PROXY_FUNC_CONFIG_SET_IN_RESERVED_OFST 4
--#define       MC_CMD_DESC_PROXY_FUNC_CONFIG_SET_IN_RESERVED_LEN 16
--/* Configuration data. Format of configuration data is determined implicitly
-- * from function personality referred to by HANDLE. Currently, only supported
-- * format is VIRTIO_BLK_CONFIG.
-- */
--#define       MC_CMD_DESC_PROXY_FUNC_CONFIG_SET_IN_CONFIG_OFST 20
--#define       MC_CMD_DESC_PROXY_FUNC_CONFIG_SET_IN_CONFIG_LEN 1
--#define       MC_CMD_DESC_PROXY_FUNC_CONFIG_SET_IN_CONFIG_MINNUM 0
--#define       MC_CMD_DESC_PROXY_FUNC_CONFIG_SET_IN_CONFIG_MAXNUM 232
--#define       MC_CMD_DESC_PROXY_FUNC_CONFIG_SET_IN_CONFIG_MAXNUM_MCDI2 1000
--
--/* MC_CMD_DESC_PROXY_FUNC_CONFIG_SET_OUT msgresponse */
--#define    MC_CMD_DESC_PROXY_FUNC_CONFIG_SET_OUT_LEN 0
--
--
--/***********************************/
--/* MC_CMD_DESC_PROXY_FUNC_COMMIT
-- * Commit function configuration to non-volatile or volatile store. Once
-- * configuration is applied to hardware (which may happen immediately or on
-- * next function/device reset) a DESC_PROXY_FUNC_CONFIG_SET MCDI event will be
-- * delivered to callers MCDI event queue.
-- */
--#define MC_CMD_DESC_PROXY_FUNC_COMMIT 0x175
--#undef MC_CMD_0x175_PRIVILEGE_CTG
--
--#define MC_CMD_0x175_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_DESC_PROXY_FUNC_COMMIT_IN msgrequest */
--#define    MC_CMD_DESC_PROXY_FUNC_COMMIT_IN_LEN 8
--/* Handle to descriptor proxy function (as returned by
-- * MC_CMD_DESC_PROXY_FUNC_OPEN)
-- */
--#define       MC_CMD_DESC_PROXY_FUNC_COMMIT_IN_HANDLE_OFST 0
--#define       MC_CMD_DESC_PROXY_FUNC_COMMIT_IN_HANDLE_LEN 4
--#define       MC_CMD_DESC_PROXY_FUNC_COMMIT_IN_STORE_OFST 4
--#define       MC_CMD_DESC_PROXY_FUNC_COMMIT_IN_STORE_LEN 4
--/* enum: Store into non-volatile (dynamic) config */
--#define          MC_CMD_DESC_PROXY_FUNC_COMMIT_IN_NON_VOLATILE 0x0
--/* enum: Store into volatile (ephemeral) config */
--#define          MC_CMD_DESC_PROXY_FUNC_COMMIT_IN_VOLATILE 0x1
--
--/* MC_CMD_DESC_PROXY_FUNC_COMMIT_OUT msgresponse */
--#define    MC_CMD_DESC_PROXY_FUNC_COMMIT_OUT_LEN 4
--/* Generation count to be delivered in an event once configuration becomes live
-- */
--#define       MC_CMD_DESC_PROXY_FUNC_COMMIT_OUT_CONFIG_GENERATION_OFST 0
--#define       MC_CMD_DESC_PROXY_FUNC_COMMIT_OUT_CONFIG_GENERATION_LEN 4
--
--
--/***********************************/
--/* MC_CMD_DESC_PROXY_FUNC_OPEN
-- * Retrieve a handle for an existing descriptor proxy function. Returns an
-- * integer handle, valid until function is deallocated, MC rebooted or power-
-- * cycle. Returns ENODEV if no function with given label exists.
-- */
--#define MC_CMD_DESC_PROXY_FUNC_OPEN 0x176
--#undef MC_CMD_0x176_PRIVILEGE_CTG
--
--#define MC_CMD_0x176_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_DESC_PROXY_FUNC_OPEN_IN msgrequest */
--#define    MC_CMD_DESC_PROXY_FUNC_OPEN_IN_LEN 40
--/* User-defined label (zero-terminated ASCII string) to uniquely identify the
-- * function
-- */
--#define       MC_CMD_DESC_PROXY_FUNC_OPEN_IN_LABEL_OFST 0
--#define       MC_CMD_DESC_PROXY_FUNC_OPEN_IN_LABEL_LEN 40
--
--/* MC_CMD_DESC_PROXY_FUNC_OPEN_OUT msgresponse */
--#define    MC_CMD_DESC_PROXY_FUNC_OPEN_OUT_LENMIN 40
--#define    MC_CMD_DESC_PROXY_FUNC_OPEN_OUT_LENMAX 252
--#define    MC_CMD_DESC_PROXY_FUNC_OPEN_OUT_LENMAX_MCDI2 1020
--#define    MC_CMD_DESC_PROXY_FUNC_OPEN_OUT_LEN(num) (40+1*(num))
--#define    MC_CMD_DESC_PROXY_FUNC_OPEN_OUT_CONFIG_NUM(len) (((len)-40)/1)
--/* Handle to the descriptor proxy function */
--#define       MC_CMD_DESC_PROXY_FUNC_OPEN_OUT_HANDLE_OFST 0
--#define       MC_CMD_DESC_PROXY_FUNC_OPEN_OUT_HANDLE_LEN 4
--/* PCIe Function ID (as struct PCIE_FUNCTION) */
--#define       MC_CMD_DESC_PROXY_FUNC_OPEN_OUT_FUNC_OFST 4
--#define       MC_CMD_DESC_PROXY_FUNC_OPEN_OUT_FUNC_LEN 8
--#define       MC_CMD_DESC_PROXY_FUNC_OPEN_OUT_FUNC_LO_OFST 4
--#define       MC_CMD_DESC_PROXY_FUNC_OPEN_OUT_FUNC_HI_OFST 8
--/* Function personality */
--#define       MC_CMD_DESC_PROXY_FUNC_OPEN_OUT_PERSONALITY_OFST 12
--#define       MC_CMD_DESC_PROXY_FUNC_OPEN_OUT_PERSONALITY_LEN 4
--/*            Enum values, see field(s): */
--/*               FUNCTION_PERSONALITY/ID */
--/* Function configuration state */
--#define       MC_CMD_DESC_PROXY_FUNC_OPEN_OUT_CONFIG_STATUS_OFST 16
--#define       MC_CMD_DESC_PROXY_FUNC_OPEN_OUT_CONFIG_STATUS_LEN 4
--/* enum: Function configuration is visible to the host (live) */
--#define          MC_CMD_DESC_PROXY_FUNC_OPEN_OUT_LIVE 0x0
--/* enum: Function configuration is pending reset */
--#define          MC_CMD_DESC_PROXY_FUNC_OPEN_OUT_PENDING 0x1
--/* Generation count to be delivered in an event once the configuration becomes
-- * live (if status is "pending")
-- */
--#define       MC_CMD_DESC_PROXY_FUNC_OPEN_OUT_CONFIG_GENERATION_OFST 20
--#define       MC_CMD_DESC_PROXY_FUNC_OPEN_OUT_CONFIG_GENERATION_LEN 4
--/* Reserved for future extension, set to zero. */
--#define       MC_CMD_DESC_PROXY_FUNC_OPEN_OUT_RESERVED_OFST 24
--#define       MC_CMD_DESC_PROXY_FUNC_OPEN_OUT_RESERVED_LEN 16
--/* Configuration data corresponding to function personality. Currently, only
-- * supported format is VIRTIO_BLK_CONFIG
-- */
--#define       MC_CMD_DESC_PROXY_FUNC_OPEN_OUT_CONFIG_OFST 40
--#define       MC_CMD_DESC_PROXY_FUNC_OPEN_OUT_CONFIG_LEN 1
--#define       MC_CMD_DESC_PROXY_FUNC_OPEN_OUT_CONFIG_MINNUM 0
--#define       MC_CMD_DESC_PROXY_FUNC_OPEN_OUT_CONFIG_MAXNUM 212
--#define       MC_CMD_DESC_PROXY_FUNC_OPEN_OUT_CONFIG_MAXNUM_MCDI2 980
--
--
--/***********************************/
--/* MC_CMD_DESC_PROXY_FUNC_CLOSE
-- * Releases a handle for an open descriptor proxy function. If proxying was
-- * enabled on the device, the caller is expected to gracefully stop it using
-- * MC_CMD_DESC_PROXY_FUNC_DISABLE prior to calling this function. Closing an
-- * active device without disabling proxying will result in forced close, which
-- * will put the device into a failed state and signal the host driver of the
-- * error (for virtio, DEVICE_NEEDS_RESET flag would be set on the host side)
-- */
--#define MC_CMD_DESC_PROXY_FUNC_CLOSE 0x1a1
--#undef MC_CMD_0x1a1_PRIVILEGE_CTG
--
--#define MC_CMD_0x1a1_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_DESC_PROXY_FUNC_CLOSE_IN msgrequest */
--#define    MC_CMD_DESC_PROXY_FUNC_CLOSE_IN_LEN 4
--/* Handle to the descriptor proxy function */
--#define       MC_CMD_DESC_PROXY_FUNC_CLOSE_IN_HANDLE_OFST 0
--#define       MC_CMD_DESC_PROXY_FUNC_CLOSE_IN_HANDLE_LEN 4
--
--/* MC_CMD_DESC_PROXY_FUNC_CLOSE_OUT msgresponse */
--#define    MC_CMD_DESC_PROXY_FUNC_CLOSE_OUT_LEN 0
--
--/* DESC_PROXY_FUNC_MAP structuredef */
--#define    DESC_PROXY_FUNC_MAP_LEN 52
--/* PCIe function ID (as struct PCIE_FUNCTION) */
--#define       DESC_PROXY_FUNC_MAP_FUNC_OFST 0
--#define       DESC_PROXY_FUNC_MAP_FUNC_LEN 8
--#define       DESC_PROXY_FUNC_MAP_FUNC_LO_OFST 0
--#define       DESC_PROXY_FUNC_MAP_FUNC_HI_OFST 4
--#define       DESC_PROXY_FUNC_MAP_FUNC_LBN 0
--#define       DESC_PROXY_FUNC_MAP_FUNC_WIDTH 64
--/* Function personality */
--#define       DESC_PROXY_FUNC_MAP_PERSONALITY_OFST 8
--#define       DESC_PROXY_FUNC_MAP_PERSONALITY_LEN 4
--/*            Enum values, see field(s): */
--/*               FUNCTION_PERSONALITY/ID */
--#define       DESC_PROXY_FUNC_MAP_PERSONALITY_LBN 64
--#define       DESC_PROXY_FUNC_MAP_PERSONALITY_WIDTH 32
--/* User-defined label (zero-terminated ASCII string) to uniquely identify the
-- * function
-- */
--#define       DESC_PROXY_FUNC_MAP_LABEL_OFST 12
--#define       DESC_PROXY_FUNC_MAP_LABEL_LEN 40
--#define       DESC_PROXY_FUNC_MAP_LABEL_LBN 96
--#define       DESC_PROXY_FUNC_MAP_LABEL_WIDTH 320
--
--
--/***********************************/
--/* MC_CMD_DESC_PROXY_FUNC_ENUM
-- * Enumerate existing descriptor proxy functions
-- */
--#define MC_CMD_DESC_PROXY_FUNC_ENUM 0x177
--#undef MC_CMD_0x177_PRIVILEGE_CTG
--
--#define MC_CMD_0x177_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_DESC_PROXY_FUNC_ENUM_IN msgrequest */
--#define    MC_CMD_DESC_PROXY_FUNC_ENUM_IN_LEN 4
--/* Starting index, set to 0 on first request. See
-- * MC_CMD_DESC_PROXY_FUNC_ENUM_OUT/FLAGS.
-- */
--#define       MC_CMD_DESC_PROXY_FUNC_ENUM_IN_START_IDX_OFST 0
--#define       MC_CMD_DESC_PROXY_FUNC_ENUM_IN_START_IDX_LEN 4
--
--/* MC_CMD_DESC_PROXY_FUNC_ENUM_OUT msgresponse */
--#define    MC_CMD_DESC_PROXY_FUNC_ENUM_OUT_LENMIN 4
--#define    MC_CMD_DESC_PROXY_FUNC_ENUM_OUT_LENMAX 212
--#define    MC_CMD_DESC_PROXY_FUNC_ENUM_OUT_LENMAX_MCDI2 992
--#define    MC_CMD_DESC_PROXY_FUNC_ENUM_OUT_LEN(num) (4+52*(num))
--#define    MC_CMD_DESC_PROXY_FUNC_ENUM_OUT_FUNC_MAP_NUM(len) (((len)-4)/52)
--#define       MC_CMD_DESC_PROXY_FUNC_ENUM_OUT_FLAGS_OFST 0
--#define       MC_CMD_DESC_PROXY_FUNC_ENUM_OUT_FLAGS_LEN 4
--#define        MC_CMD_DESC_PROXY_FUNC_ENUM_OUT_MORE_DATA_OFST 0
--#define        MC_CMD_DESC_PROXY_FUNC_ENUM_OUT_MORE_DATA_LBN 0
--#define        MC_CMD_DESC_PROXY_FUNC_ENUM_OUT_MORE_DATA_WIDTH 1
--/* Function map, as array of DESC_PROXY_FUNC_MAP */
--#define       MC_CMD_DESC_PROXY_FUNC_ENUM_OUT_FUNC_MAP_OFST 4
--#define       MC_CMD_DESC_PROXY_FUNC_ENUM_OUT_FUNC_MAP_LEN 52
--#define       MC_CMD_DESC_PROXY_FUNC_ENUM_OUT_FUNC_MAP_MINNUM 0
--#define       MC_CMD_DESC_PROXY_FUNC_ENUM_OUT_FUNC_MAP_MAXNUM 4
--#define       MC_CMD_DESC_PROXY_FUNC_ENUM_OUT_FUNC_MAP_MAXNUM_MCDI2 19
--
--
--/***********************************/
--/* MC_CMD_DESC_PROXY_FUNC_ENABLE
-- * Enable descriptor proxying for function into target event queue. Returns VI
-- * allocation info for the proxy source function, so that the caller can map
-- * absolute VI IDs from descriptor proxy events back to the originating
-- * function.
-- */
--#define MC_CMD_DESC_PROXY_FUNC_ENABLE 0x178
--#undef MC_CMD_0x178_PRIVILEGE_CTG
--
--#define MC_CMD_0x178_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_DESC_PROXY_FUNC_ENABLE_IN msgrequest */
--#define    MC_CMD_DESC_PROXY_FUNC_ENABLE_IN_LEN 8
--/* Handle to descriptor proxy function (as returned by
-- * MC_CMD_DESC_PROXY_FUNC_OPEN)
-- */
--#define       MC_CMD_DESC_PROXY_FUNC_ENABLE_IN_HANDLE_OFST 0
--#define       MC_CMD_DESC_PROXY_FUNC_ENABLE_IN_HANDLE_LEN 4
--/* Descriptor proxy sink queue (caller function relative). Must be extended
-- * width event queue
-- */
--#define       MC_CMD_DESC_PROXY_FUNC_ENABLE_IN_TARGET_EVQ_OFST 4
--#define       MC_CMD_DESC_PROXY_FUNC_ENABLE_IN_TARGET_EVQ_LEN 4
--
--/* MC_CMD_DESC_PROXY_FUNC_ENABLE_OUT msgresponse */
--#define    MC_CMD_DESC_PROXY_FUNC_ENABLE_OUT_LEN 8
--/* The number of VIs allocated on the function */
--#define       MC_CMD_DESC_PROXY_FUNC_ENABLE_OUT_VI_COUNT_OFST 0
--#define       MC_CMD_DESC_PROXY_FUNC_ENABLE_OUT_VI_COUNT_LEN 4
--/* The base absolute VI number allocated to the function. */
--#define       MC_CMD_DESC_PROXY_FUNC_ENABLE_OUT_VI_BASE_OFST 4
--#define       MC_CMD_DESC_PROXY_FUNC_ENABLE_OUT_VI_BASE_LEN 4
--
--
--/***********************************/
--/* MC_CMD_DESC_PROXY_FUNC_DISABLE
-- * Disable descriptor proxying for function
-- */
--#define MC_CMD_DESC_PROXY_FUNC_DISABLE 0x179
--#undef MC_CMD_0x179_PRIVILEGE_CTG
--
--#define MC_CMD_0x179_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_DESC_PROXY_FUNC_DISABLE_IN msgrequest */
--#define    MC_CMD_DESC_PROXY_FUNC_DISABLE_IN_LEN 4
--/* Handle to descriptor proxy function (as returned by
-- * MC_CMD_DESC_PROXY_FUNC_OPEN)
-- */
--#define       MC_CMD_DESC_PROXY_FUNC_DISABLE_IN_HANDLE_OFST 0
--#define       MC_CMD_DESC_PROXY_FUNC_DISABLE_IN_HANDLE_LEN 4
--
--/* MC_CMD_DESC_PROXY_FUNC_DISABLE_OUT msgresponse */
--#define    MC_CMD_DESC_PROXY_FUNC_DISABLE_OUT_LEN 0
--
--
--/***********************************/
--/* MC_CMD_GET_ADDR_SPC_ID
-- * Get Address space identifier for use in mem2mem descriptors for a given
-- * target. See SF-120734-TC for details on ADDR_SPC_IDs and mem2mem
-- * descriptors.
-- */
--#define MC_CMD_GET_ADDR_SPC_ID 0x1a0
--#undef MC_CMD_0x1a0_PRIVILEGE_CTG
--
--#define MC_CMD_0x1a0_PRIVILEGE_CTG SRIOV_CTG_ADMIN
--
--/* MC_CMD_GET_ADDR_SPC_ID_IN msgrequest */
--#define    MC_CMD_GET_ADDR_SPC_ID_IN_LEN 16
--/* Resource type to get ADDR_SPC_ID for */
--#define       MC_CMD_GET_ADDR_SPC_ID_IN_TYPE_OFST 0
--#define       MC_CMD_GET_ADDR_SPC_ID_IN_TYPE_LEN 4
--/* enum: Address space ID for host/AP memory DMA over the same interface this
-- * MCDI was called on
-- */
--#define          MC_CMD_GET_ADDR_SPC_ID_IN_SELF 0x0
--/* enum: Address space ID for host/AP memory DMA via PCI interface and function
-- * specified by FUNC
-- */
--#define          MC_CMD_GET_ADDR_SPC_ID_IN_PCI_FUNC 0x1
--/* enum: Address space ID for host/AP memory DMA via PCI interface and function
-- * specified by FUNC with PASID value specified by PASID
-- */
--#define          MC_CMD_GET_ADDR_SPC_ID_IN_PCI_FUNC_PASID 0x2
--/* enum: Address space ID for host/AP memory DMA via PCI interface and function
-- * specified by FUNC with PASID value of relative VI specified by VI
-- */
--#define          MC_CMD_GET_ADDR_SPC_ID_IN_REL_VI 0x3
--/* enum: Address space ID for host/AP memory DMA via PCI interface, function
-- * and PASID value of absolute VI specified by VI
-- */
--#define          MC_CMD_GET_ADDR_SPC_ID_IN_ABS_VI 0x4
--/* enum: Address space ID for host memory DMA via PCI interface and function of
-- * descriptor proxy function specified by HANDLE
-- */
--#define          MC_CMD_GET_ADDR_SPC_ID_IN_DESC_PROXY_HANDLE 0x5
--/* enum: Address space ID for DMA to/from MC memory */
--#define          MC_CMD_GET_ADDR_SPC_ID_IN_MC_MEM 0x6
--/* enum: Address space ID for DMA to/from other SmartNIC memory (on-chip, DDR)
-- */
--#define          MC_CMD_GET_ADDR_SPC_ID_IN_NIC_MEM 0x7
--/* PCIe Function ID (as struct PCIE_FUNCTION). Only valid if TYPE is PCI_FUNC,
-- * PCI_FUNC_PASID or REL_VI.
-- */
--#define       MC_CMD_GET_ADDR_SPC_ID_IN_FUNC_OFST 4
--#define       MC_CMD_GET_ADDR_SPC_ID_IN_FUNC_LEN 8
--#define       MC_CMD_GET_ADDR_SPC_ID_IN_FUNC_LO_OFST 4
--#define       MC_CMD_GET_ADDR_SPC_ID_IN_FUNC_HI_OFST 8
--/* PASID value. Only valid if TYPE is PCI_FUNC_PASID. */
--#define       MC_CMD_GET_ADDR_SPC_ID_IN_PASID_OFST 12
--#define       MC_CMD_GET_ADDR_SPC_ID_IN_PASID_LEN 4
--/* Relative or absolute VI number. Only valid if TYPE is REL_VI or ABS_VI */
--#define       MC_CMD_GET_ADDR_SPC_ID_IN_VI_OFST 12
--#define       MC_CMD_GET_ADDR_SPC_ID_IN_VI_LEN 4
--/* Descriptor proxy function handle. Only valid if TYPE is DESC_PROXY_HANDLE.
-- */
--#define       MC_CMD_GET_ADDR_SPC_ID_IN_HANDLE_OFST 4
--#define       MC_CMD_GET_ADDR_SPC_ID_IN_HANDLE_LEN 4
--
--/* MC_CMD_GET_ADDR_SPC_ID_OUT msgresponse */
--#define    MC_CMD_GET_ADDR_SPC_ID_OUT_LEN 8
--/* Address Space ID for the requested target. Only the lower 36 bits are valid
-- * in the current SmartNIC implementation.
-- */
--#define       MC_CMD_GET_ADDR_SPC_ID_OUT_ADDR_SPC_ID_OFST 0
--#define       MC_CMD_GET_ADDR_SPC_ID_OUT_ADDR_SPC_ID_LEN 8
--#define       MC_CMD_GET_ADDR_SPC_ID_OUT_ADDR_SPC_ID_LO_OFST 0
--#define       MC_CMD_GET_ADDR_SPC_ID_OUT_ADDR_SPC_ID_HI_OFST 4
--
--
- #endif /* MCDI_PCOL_H */
+-/* Lockup when writing event block registers at gen2/gen3 */
+-#define EFX_EF10_WORKAROUND_35388(efx)					\
+-	(((struct efx_ef10_nic_data *)efx->nic_data)->workaround_35388)
+-#define EFX_WORKAROUND_35388(efx)					\
+-	(efx_nic_rev(efx) == EFX_REV_HUNT_A0 && EFX_EF10_WORKAROUND_35388(efx))
+-
+ /* Moderation timer access must go through MCDI */
+ #define EFX_EF10_WORKAROUND_61265(efx)					\
+ 	(((struct efx_ef10_nic_data *)efx->nic_data)->workaround_61265)
 
