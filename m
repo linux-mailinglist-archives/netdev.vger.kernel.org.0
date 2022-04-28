@@ -2,108 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B0953512A49
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 06:04:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F3B2512A9D
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 06:37:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240042AbiD1EHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 00:07:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49044 "EHLO
+        id S242693AbiD1EkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 00:40:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231944AbiD1EH1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 00:07:27 -0400
-Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4FB8B986C2;
-        Wed, 27 Apr 2022 21:04:10 -0700 (PDT)
-Received: by ajax-webmail-mail-app4 (Coremail) ; Thu, 28 Apr 2022 12:03:45
- +0800 (GMT+08:00)
-X-Originating-IP: [10.190.64.199]
-Date:   Thu, 28 Apr 2022 12:03:45 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   duoming@zju.edu.cn
-To:     "Jakub Kicinski" <kuba@kernel.org>
-Cc:     krzysztof.kozlowski@linaro.org, pabeni@redhat.com,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        gregkh@linuxfoundation.org, alexander.deucher@amd.com,
-        akpm@linux-foundation.org, broonie@kernel.org,
-        netdev@vger.kernel.org, linma@zju.edu.cn
-Subject: Re: Re: [PATCH net v4] nfc: nfcmrvl: main: reorder destructive
- operations in nfcmrvl_nci_unregister_dev to avoid bugs
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <20220427174548.2ae53b84@kernel.org>
-References: <20220427011438.110582-1-duoming@zju.edu.cn>
- <20220427174548.2ae53b84@kernel.org>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S232726AbiD1EkT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 00:40:19 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3D122AE3D
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 21:37:04 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id w19so6471768lfu.11
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 21:37:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=openvz-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=LTNCTDXwD0m5fnU3nRCZyUZ2Z4+nGspg+RVsi3XsvCA=;
+        b=D9tvI1Yc8PHKlElRfTCfEiW/GgIxV8hjidcQv77IWEgZ2VsrSnRa1t4dk7eQ47p0IQ
+         zPzi4kCwsaFXzkKGmV6K96vHeHOHys/YFeiSaOosFjBpT/HDLwwKL69IoqZSwKCJ6LfZ
+         WXdAbqt0h0S57RV/0tyalW9ev1TiDIYbPlXhQe+v+joufiVTjHZ0nAUbqj/nx2T4+7g5
+         VMl5r6q+cprizf0qxT0Sw1ck/IJYekUH24djwznD86UB9XPRQ65+gg9INgUHap7lo5Dc
+         WlPq9FezKQH9gMBqRlbUDkTZ750ueKUcMLFwtp+LrG81EnQ+dHzI8Y8IDLykpLRvXOBA
+         jJlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=LTNCTDXwD0m5fnU3nRCZyUZ2Z4+nGspg+RVsi3XsvCA=;
+        b=5ez+cth0HBXGUn9L0+aDt5IWtk5qHH0ARCphfKXD8PKKZ6vS1nabnElguiWNR5Twg3
+         lhnG1SJhv5TkDDq+lhagVBKpkV+F90OMQKDfDu9Ql1zS/wLHRSZ9pr8Kg+c2/XeE2+tD
+         bjixZTADi9I/I6LdsegUghLY31jnvYNF1wKXPZbUED8oti+dsOU5E4JcL01sYNnuRXwp
+         20VdWZDF47FjuwlUy1pd+F7a6w7FU9ZWpMPhin8cNXLlgh7FLnpIH1SezYsf5viUlMmC
+         Qj7Q9ccxgign1b9NNf/zEm4zRKLRk8xqPlx/zvMEz0YSzZkK59eFlp4HEks35DA3J6+a
+         ywBg==
+X-Gm-Message-State: AOAM530hleOWkJLhioKeoaZsVe6BJQoSUA7WCKAiDm6fQz+C9vidyk2q
+        W5hZaKuyizJWJR/R5TUt2tVtkg==
+X-Google-Smtp-Source: ABdhPJxRiZBp004uWXWFXfySCv8ZU9C+OtgyMaNUKU7rICbEnlIXi+h4fn2r8j30BRSurlaG+vkMag==
+X-Received: by 2002:a05:6512:3194:b0:472:ed8:3905 with SMTP id i20-20020a056512319400b004720ed83905mr11571712lfe.439.1651120622998;
+        Wed, 27 Apr 2022 21:37:02 -0700 (PDT)
+Received: from [192.168.1.65] ([46.188.121.177])
+        by smtp.gmail.com with ESMTPSA id x30-20020a2e585e000000b0024f21b267a3sm645978ljd.53.2022.04.27.21.37.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Apr 2022 21:37:02 -0700 (PDT)
+Message-ID: <ec08a059-2a04-3e9c-cbad-a5af2d2744e0@openvz.org>
+Date:   Thu, 28 Apr 2022 07:37:00 +0300
 MIME-Version: 1.0
-Message-ID: <12cdcfe5.1d62.1806e56d31f.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cS_KCgBXX6ciEmpixLT0AQ--.64701W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAggOAVZdtZcUkAABsp
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH memcg v4] net: set proper memcg for net_init hooks
+ allocations
+Content-Language: en-US
+To:     Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     Shakeel Butt <shakeelb@google.com>,
+        =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>,
+        Vlastimil Babka <vbabka@suse.cz>, kernel@openvz.org,
+        Florian Westphal <fw@strlen.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Michal Hocko <mhocko@suse.com>,
+        Cgroups <cgroups@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+References: <YmdeCqi6wmgiSiWh@carbon>
+ <33085523-a8b9-1bf6-2726-f456f59015ef@openvz.org>
+ <CALvZod4oaj9MpBDVUp9KGmnqu4F3UxjXgOLkrkvmRfFjA7F1dw@mail.gmail.com>
+ <20220427122232.GA9823@blackbody.suse.cz>
+ <CALvZod7v0taU51TNRu=OM5iJ-bnm1ryu9shjs80PuE-SWobqFg@mail.gmail.com>
+ <6b18f82d-1950-b38e-f3f5-94f6c23f0edb@openvz.org> <YmnFUwhmqJwYGQ5j@carbon>
+From:   Vasily Averin <vvs@openvz.org>
+In-Reply-To: <YmnFUwhmqJwYGQ5j@carbon>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8sCgpPbiBXZWQsIDI3IEFwciAyMDIyIDE3OjQ1OjQ4IC0wNzAwIEpha3ViIEtpY2luc2tp
-IHdyb3RlOgoKPiA+IGRpZmYgLS1naXQgYS9uZXQvbmZjL2NvcmUuYyBiL25ldC9uZmMvY29yZS5j
-Cj4gPiBpbmRleCBkYzdhMjQwNGVmZC4uMWQ5MTMzNGVlODYgMTAwNjQ0Cj4gPiAtLS0gYS9uZXQv
-bmZjL2NvcmUuYwo+ID4gKysrIGIvbmV0L25mYy9jb3JlLmMKPiA+IEBAIC0yNSw2ICsyNSw4IEBA
-Cj4gPiAgI2RlZmluZSBORkNfQ0hFQ0tfUFJFU19GUkVRX01TCTIwMDAKPiA+ICAKPiA+ICBpbnQg
-bmZjX2Rldmxpc3RfZ2VuZXJhdGlvbjsKPiA+ICsvKiBuZmNfZG93bmxvYWQ6IHVzZWQgdG8ganVk
-Z2Ugd2hldGhlciBuZmMgZmlybXdhcmUgZG93bmxvYWQgY291bGQgc3RhcnQgKi8KPiA+ICtzdGF0
-aWMgYm9vbCBuZmNfZG93bmxvYWQ7Cj4gPiAgREVGSU5FX01VVEVYKG5mY19kZXZsaXN0X211dGV4
-KTsKPiA+ICAKPiA+ICAvKiBORkMgZGV2aWNlIElEIGJpdG1hcCAqLwo+ID4gQEAgLTM4LDcgKzQw
-LDcgQEAgaW50IG5mY19md19kb3dubG9hZChzdHJ1Y3QgbmZjX2RldiAqZGV2LCBjb25zdCBjaGFy
-ICpmaXJtd2FyZV9uYW1lKQo+ID4gIAo+ID4gIAlkZXZpY2VfbG9jaygmZGV2LT5kZXYpOwo+ID4g
-IAo+ID4gLQlpZiAoIWRldmljZV9pc19yZWdpc3RlcmVkKCZkZXYtPmRldikpIHsKPiA+ICsJaWYg
-KCFkZXZpY2VfaXNfcmVnaXN0ZXJlZCgmZGV2LT5kZXYpIHx8ICFuZmNfZG93bmxvYWQpIHsKPiA+
-ICAJCXJjID0gLUVOT0RFVjsKPiA+ICAJCWdvdG8gZXJyb3I7Cj4gPiAgCX0KPiA+IEBAIC0xMTM0
-LDYgKzExMzYsNyBAQCBpbnQgbmZjX3JlZ2lzdGVyX2RldmljZShzdHJ1Y3QgbmZjX2RldiAqZGV2
-KQo+ID4gIAkJCWRldi0+cmZraWxsID0gTlVMTDsKPiA+ICAJCX0KPiA+ICAJfQo+ID4gKwluZmNf
-ZG93bmxvYWQgPSB0cnVlOwo+ID4gIAlkZXZpY2VfdW5sb2NrKCZkZXYtPmRldik7Cj4gPiAgCj4g
-PiAgCXJjID0gbmZjX2dlbmxfZGV2aWNlX2FkZGVkKGRldik7Cj4gPiBAQCAtMTE2Niw2ICsxMTY5
-LDcgQEAgdm9pZCBuZmNfdW5yZWdpc3Rlcl9kZXZpY2Uoc3RydWN0IG5mY19kZXYgKmRldikKPiA+
-ICAJCXJma2lsbF91bnJlZ2lzdGVyKGRldi0+cmZraWxsKTsKPiA+ICAJCXJma2lsbF9kZXN0cm95
-KGRldi0+cmZraWxsKTsKPiA+ICAJfQo+ID4gKwluZmNfZG93bmxvYWQgPSBmYWxzZTsKPiA+ICAJ
-ZGV2aWNlX3VubG9jaygmZGV2LT5kZXYpOwo+ID4gIAo+ID4gIAlpZiAoZGV2LT5vcHMtPmNoZWNr
-X3ByZXNlbmNlKSB7Cj4gCj4gWW91IGNhbid0IHVzZSBhIHNpbmdsZSBnbG9iYWwgdmFyaWFibGUs
-IHRoZXJlIGNhbiBiZSBtYW55IGRldmljZXMgCj4gZWFjaCB3aXRoIHRoZWlyIG93biBsb2NrLgo+
-IAo+IFBhb2xvIHN1Z2dlc3RlZCBhZGRpbmcgYSBsb2NrLCBpZiBzcGluIGxvY2sgZG9lc24ndCBm
-aXQgdGhlIGJpbGwKPiB3aHkgbm90IGFkZCBhIG11dGV4PwoKV2UgY291bGQgbm90IHVzZSBtdXRl
-eCBlaXRoZXIsIGJlY2F1c2UgdGhlIHJlbGVhc2VfZmlybXdhcmUoKSBpcyBhbHNvIGNhbGxlZCBi
-eSBmd19kbmxkX3RpbWVvdXQoKQp3aGljaCBpcyBhIHRpbWVyIGhhbmRsZXIuIElmIHdlIHVzZSBt
-dXRleCBsb2NrIGluIGEgdGltZXIgaGFuZGxlciwgaXQgd2lsbCBjYXVzZSBzbGVlcCBpbiBhdG9t
-aWMgYnVnLgpUaGUgcHJvY2VzcyBpcyBzaG93biBiZWxvdzoKCm5mY21ydmxfZndfZG5sZF9zdGFy
-dAogLi4uICAgICAgICAgICAgICAKIG1vZF90aW1lciAKICh3YWl0IGEgdGltZSkgIAogZndfZG5s
-ZF90aW1lb3V0CiAgIGZ3X2RubGRfb3ZlciAKICAgIHJlbGVhc2VfZmlybXdhcmUgICAgICAgCgpJ
-IHdpbGwgY2hhbmdlIHRoZSBzaW5nbGUgZ2xvYmFsIHZhcmlhYmxlIHRvIGRldi0+ZGV2X3VwIGZs
-YWcsIHdoaWNoIGlzIHNob3duIGJlbG93OgoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmZjL25mY21y
-dmwvbWFpbi5jIGIvZHJpdmVycy9uZmMvbmZjbXJ2bC9tYWluLmMKaW5kZXggMmZjZjU0NTAxMmIu
-LjFhNTI4NGRlNDM0IDEwMDY0NAotLS0gYS9kcml2ZXJzL25mYy9uZmNtcnZsL21haW4uYworKysg
-Yi9kcml2ZXJzL25mYy9uZmNtcnZsL21haW4uYwpAQCAtMTgzLDYgKzE4Myw3IEBAIHZvaWQgbmZj
-bXJ2bF9uY2lfdW5yZWdpc3Rlcl9kZXYoc3RydWN0IG5mY21ydmxfcHJpdmF0ZSAqcHJpdikKIHsK
-ICAgICAgICBzdHJ1Y3QgbmNpX2RldiAqbmRldiA9IHByaXYtPm5kZXY7CgorICAgICAgIG5jaV91
-bnJlZ2lzdGVyX2RldmljZShuZGV2KTsKICAgICAgICBpZiAocHJpdi0+bmRldi0+bmZjX2Rldi0+
-ZndfZG93bmxvYWRfaW5fcHJvZ3Jlc3MpCiAgICAgICAgICAgICAgICBuZmNtcnZsX2Z3X2RubGRf
-YWJvcnQocHJpdik7CgpAQCAtMTkxLDcgKzE5Miw2IEBAIHZvaWQgbmZjbXJ2bF9uY2lfdW5yZWdp
-c3Rlcl9kZXYoc3RydWN0IG5mY21ydmxfcHJpdmF0ZSAqcHJpdikKICAgICAgICBpZiAoZ3Bpb19p
-c192YWxpZChwcml2LT5jb25maWcucmVzZXRfbl9pbykpCiAgICAgICAgICAgICAgICBncGlvX2Zy
-ZWUocHJpdi0+Y29uZmlnLnJlc2V0X25faW8pOwoKLSAgICAgICBuY2lfdW5yZWdpc3Rlcl9kZXZp
-Y2UobmRldik7CiAgICAgICAgbmNpX2ZyZWVfZGV2aWNlKG5kZXYpOwogICAgICAgIGtmcmVlKHBy
-aXYpOwogfQpkaWZmIC0tZ2l0IGEvbmV0L25mYy9jb3JlLmMgYi9uZXQvbmZjL2NvcmUuYwppbmRl
-eCBkYzdhMjQwNGVmZC4uMDlmNTRjNTk5ZmUgMTAwNjQ0Ci0tLSBhL25ldC9uZmMvY29yZS5jCisr
-KyBiL25ldC9uZmMvY29yZS5jCkBAIC0xMTY2LDYgKzExNjYsNyBAQCB2b2lkIG5mY191bnJlZ2lz
-dGVyX2RldmljZShzdHJ1Y3QgbmZjX2RldiAqZGV2KQogICAgICAgICAgICAgICAgcmZraWxsX3Vu
-cmVnaXN0ZXIoZGV2LT5yZmtpbGwpOwogICAgICAgICAgICAgICAgcmZraWxsX2Rlc3Ryb3koZGV2
-LT5yZmtpbGwpOwogICAgICAgIH0KKyAgICAgICBkZXYtPmRldl91cCA9IGZhbHNlOwogICAgICAg
-IGRldmljZV91bmxvY2soJmRldi0+ZGV2KTsKCiAgICAgICAgaWYgKGRldi0+b3BzLT5jaGVja19w
-cmVzZW5jZSkgewoKVGhlIGFib3ZlIHNvbHV0aW9uIGhhcyBiZWVuIHRlc3RlZCwgaXQgaXMgd2Vs
-bCBzeW5jaHJvbml6ZWQuCgpCZXN0IHJlZ2FyZHMsCkR1b21pbmcgWmhvdQ==
+On 4/28/22 01:36, Roman Gushchin wrote:
+> We can point root_mem_cgroup at a statically allocated structure
+> on both CONFIG_MEMCG and !CONFIG_MEMCG.
+> Does it sound reasonable or I'm missing some important points?
+
+I expect Embedded developers will be highly disagree.
+Pointer only should be acceptable for them.
+
+Thank you,
+	Vasily Averin
