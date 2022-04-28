@@ -2,43 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B5084513D81
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 23:24:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECF22513D7F
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 23:24:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352190AbiD1V1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 17:27:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59626 "EHLO
+        id S1352192AbiD1V1C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 17:27:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352099AbiD1V0z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 17:26:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26943B89A1
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 14:23:40 -0700 (PDT)
+        with ESMTP id S1352123AbiD1V07 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 17:26:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ECE9B53E4
+        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 14:23:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A8D4B61F49
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 21:23:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF52BC385B0;
-        Thu, 28 Apr 2022 21:23:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4EE5EB8303A
+        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 21:23:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45EEDC385AF;
+        Thu, 28 Apr 2022 21:23:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1651181019;
-        bh=o6rasBaGW/HsnBAQYPwFrGwmBDc7kj47pVcOYUVphmc=;
+        bh=UQ7T/ivpJnhp+Ti+c/WaKjLjgaMTqUGoKyi4mXYztSY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n6KFaJQw1oRYVmLc0Mdzci2eakFxis+0pImvAEZY0SrrAvKRIbhU0PFTnTKP12LCR
-         51drqNGSDNSjcsyhOUpSoCULkerYIxmq26zr5kBO+ZZC+778MJcRJuwN1OiWQKZcDk
-         K0wJ84a5UMlh5QDFxMfvjGJ2GJPJhqtEE4HohIgbg7/16VURIFPCf/MD043dA29OWr
-         4wE/rRMr9J4NI768aaLrqbc1lkQTvHV5SMMCizUP6TMgFd1d6AD0ij2k3MmeVy2lo7
-         5ADzaX8XXK1obbT1qNO2acFwi6uCKTNBvxX6xNB3GcHjqkNWgKMvHr5AIWhvHa97x6
-         0WF6SLXX7CGIg==
+        b=jrTO3LH8mMs3bzf4TeU1diWciyzykQ0EpEvf/UnGNbEZYOy1wZRrk+GtR6BK3poW3
+         Th9oLtBtGTV1YywY3id/Splg7RT/4nhYCquSuf7BR0CikzLqI/DA5q08/i0ffulgWW
+         M26rWEc6XK4Ozd0uEv3xq526IQpfNqCKi4BMp0hFLaF5Ms25vk4Vdz/Oh5lqOpGzIJ
+         y8lnUBycYbspYIFhqNA69T5UXfhS7qV3m3aZ8IJdNEWy8pDMsHZ34aR5WLaykxkAh/
+         PNDdabj2yi1V//YGczlSvoiu/Zwzu3W1gIQWrSt9Id8G4zilJGyQ9prGAFsyXnKVG+
+         8JZeaLTIWDnew==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net, pabeni@redhat.com
 Cc:     edumazet@google.com, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH net-next v2 04/15] eth: pch_gbe: remove a copy of the NAPI_POLL_WEIGHT define
-Date:   Thu, 28 Apr 2022 14:23:12 -0700
-Message-Id: <20220428212323.104417-5-kuba@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>, nbd@nbd.name,
+        john@phrozen.org, sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
+        matthias.bgg@gmail.com, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH net-next v2 05/15] eth: mtk_eth_soc: remove a copy of the NAPI_POLL_WEIGHT define
+Date:   Thu, 28 Apr 2022 14:23:13 -0700
+Message-Id: <20220428212323.104417-6-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220428212323.104417-1-kuba@kernel.org>
 References: <20220428212323.104417-1-kuba@kernel.org>
@@ -56,68 +58,48 @@ X-Mailing-List: netdev@vger.kernel.org
 Defining local versions of NAPI_POLL_WEIGHT with the same
 values in the drivers just makes refactoring harder.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+CC: nbd@nbd.name
+CC: john@phrozen.org
+CC: sean.wang@mediatek.com
+CC: Mark-MC.Lee@mediatek.com
+CC: matthias.bgg@gmail.com
+CC: linux-arm-kernel@lists.infradead.org
+CC: linux-mediatek@lists.infradead.org
+---
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 4 ++--
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h | 1 -
+ 2 files changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c b/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
-index 1dc40c537281..46da937ad27f 100644
---- a/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
-+++ b/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
-@@ -32,8 +32,6 @@
- #define PCI_DEVICE_ID_ROHM_ML7223_GBE		0x8013
- #define PCI_DEVICE_ID_ROHM_ML7831_GBE		0x8802
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index 18eebcaa6a76..31c5da5d6b72 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -3298,9 +3298,9 @@ static int mtk_probe(struct platform_device *pdev)
+ 	 */
+ 	init_dummy_netdev(&eth->dummy_dev);
+ 	netif_napi_add(&eth->dummy_dev, &eth->tx_napi, mtk_napi_tx,
+-		       MTK_NAPI_WEIGHT);
++		       NAPI_POLL_WEIGHT);
+ 	netif_napi_add(&eth->dummy_dev, &eth->rx_napi, mtk_napi_rx,
+-		       MTK_NAPI_WEIGHT);
++		       NAPI_POLL_WEIGHT);
  
--#define PCH_GBE_TX_WEIGHT         64
--#define PCH_GBE_RX_WEIGHT         64
- #define PCH_GBE_RX_BUFFER_WRITE   16
+ 	platform_set_drvdata(pdev, eth);
  
- /* Initialize the wake-on-LAN settings */
-@@ -1469,7 +1467,7 @@ pch_gbe_clean_tx(struct pch_gbe_adapter *adapter,
- 		   tx_desc->gbec_status, tx_desc->dma_status);
- 
- 	unused = PCH_GBE_DESC_UNUSED(tx_ring);
--	thresh = tx_ring->count - PCH_GBE_TX_WEIGHT;
-+	thresh = tx_ring->count - NAPI_POLL_WEIGHT;
- 	if ((tx_desc->gbec_status == DSC_INIT16) && (unused < thresh))
- 	{  /* current marked clean, tx queue filling up, do extra clean */
- 		int j, k;
-@@ -1482,13 +1480,13 @@ pch_gbe_clean_tx(struct pch_gbe_adapter *adapter,
- 
- 		/* current marked clean, scan for more that need cleaning. */
- 		k = i;
--		for (j = 0; j < PCH_GBE_TX_WEIGHT; j++)
-+		for (j = 0; j < NAPI_POLL_WEIGHT; j++)
- 		{
- 			tx_desc = PCH_GBE_TX_DESC(*tx_ring, k);
- 			if (tx_desc->gbec_status != DSC_INIT16) break; /*found*/
- 			if (++k >= tx_ring->count) k = 0;  /*increment, wrap*/
- 		}
--		if (j < PCH_GBE_TX_WEIGHT) {
-+		if (j < NAPI_POLL_WEIGHT) {
- 			netdev_dbg(adapter->netdev,
- 				   "clean_tx: unused=%d loops=%d found tx_desc[%x,%x:%x].gbec_status=%04x\n",
- 				   unused, j, i, k, tx_ring->next_to_use,
-@@ -1547,7 +1545,7 @@ pch_gbe_clean_tx(struct pch_gbe_adapter *adapter,
- 		tx_desc = PCH_GBE_TX_DESC(*tx_ring, i);
- 
- 		/* weight of a sort for tx, to avoid endless transmit cleanup */
--		if (cleaned_count++ == PCH_GBE_TX_WEIGHT) {
-+		if (cleaned_count++ == NAPI_POLL_WEIGHT) {
- 			cleaned = false;
- 			break;
- 		}
-@@ -2519,7 +2517,7 @@ static int pch_gbe_probe(struct pci_dev *pdev,
- 	netdev->netdev_ops = &pch_gbe_netdev_ops;
- 	netdev->watchdog_timeo = PCH_GBE_WATCHDOG_PERIOD;
- 	netif_napi_add(netdev, &adapter->napi,
--		       pch_gbe_napi_poll, PCH_GBE_RX_WEIGHT);
-+		       pch_gbe_napi_poll, NAPI_POLL_WEIGHT);
- 	netdev->hw_features = NETIF_F_RXCSUM |
- 		NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
- 	netdev->features = netdev->hw_features;
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+index c98c7ee42c6f..b04977fa84f6 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+@@ -24,7 +24,6 @@
+ #define MTK_MAX_RX_LENGTH_2K	2048
+ #define MTK_TX_DMA_BUF_LEN	0x3fff
+ #define MTK_DMA_SIZE		512
+-#define MTK_NAPI_WEIGHT		64
+ #define MTK_MAC_COUNT		2
+ #define MTK_RX_ETH_HLEN		(ETH_HLEN + ETH_FCS_LEN)
+ #define MTK_RX_HLEN		(NET_SKB_PAD + MTK_RX_ETH_HLEN + NET_IP_ALIGN)
 -- 
 2.34.1
 
