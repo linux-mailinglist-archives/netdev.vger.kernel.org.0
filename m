@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D8ACF5131F2
+	by mail.lfdr.de (Postfix) with ESMTP id 1A3125131F0
 	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 13:02:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345219AbiD1LDI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 07:03:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48868 "EHLO
+        id S1345324AbiD1LD1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 07:03:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345099AbiD1LCu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 07:02:50 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85ACE9F3A1;
-        Thu, 28 Apr 2022 03:59:01 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id m62so2713241wme.5;
-        Thu, 28 Apr 2022 03:59:01 -0700 (PDT)
+        with ESMTP id S240459AbiD1LDA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 07:03:00 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DF38985B4;
+        Thu, 28 Apr 2022 03:59:22 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id w4so6211399wrg.12;
+        Thu, 28 Apr 2022 03:59:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=l7MRQY3AOdXRAcNH/9Z4xyz/tFFAixxWrYfyB94jPJ4=;
-        b=bS/Df47ABvzpUrrBEZHO4AEMa9aD0mTGxqbkMhXx7MzhcRrQNxmOM+NvrEUKQnUDJi
-         O8ai2W8akt3urkgm46EjCtZ0iAjamuwA65XKJ3fHNis0P0FO5aX+Fx56EAgw2nqe05pq
-         ZLSPLTtReqTJ8Y2dYq98LP7tPooOOW204Spk1AW2cn9w5nA34lEO4o9MsqIWGUJWDvvf
-         +yreBpuYnbkPwwU9azXNuPXw9E/VPcWVJ/7Z8YjEsTuJ1j1XlDN/ea/mkVwJxxcfbPia
-         jqoTzthVPeVsO8SmXj/ksg3/wFT8yvtA83zYIVSbMpqz95V5P9dBskKiHErhN95AvCLv
-         Ixzg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nuJIqlIgdFQjWwRTfq2SfS/poVF6W3nofVJduFZhe30=;
+        b=hqyGK0806qOZl7W20YYwkJtRjjRW+S7DGK6HVn0GFIbyGkmTr2Bp2H9bTwQCsYYtTd
+         YuBRMZJrMM0ZrbewQl3Hyg/iWAbSK9PXVasIL949y5IfrCjZ34md9O6BQ9cTVEXBGmTK
+         oULBxHC7qTnHxXbfrsJ9gYg1m+qrg+M9QWrQY7s4pQgeY9DQPlEu+ZiwpI0vAFk0VN8d
+         8MuRgOF1tUzHCtv6y50/YaBJVgq3dOsSZR2YKGXNery+s8EFbk5LO7taM/zVzn+OHR+z
+         BziV5Tl4QECH3GvmC7D3EEElZihKQSgxWqFURZc5KF6zFM4Abz47R1qpE4QcPIs8zWr9
+         D2pw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=l7MRQY3AOdXRAcNH/9Z4xyz/tFFAixxWrYfyB94jPJ4=;
-        b=orCJX2fGqwO2XFoOuXht0MF1jphXHS3MMdxE72DMRb9HpkmoOCQpS+ueZfgV+taory
-         oH0mkKnTkH8jBE7QiTUma0qJtb3uERJp90ykVuVkYG9kUN1wEGpldUnNus2a/+9AWHIU
-         TQMzcewoHtev0lDIMidcMhTyCzUnawuiNCAJ/yqd8XmdK2xHxt8Myi/FLtnHBjMChPr5
-         txqKPg1/4nBA9AuL+ERgnWihSKjszOy9mKmmcalUTiO8TuUcFNBnpc0R4Y++DEOx3UAq
-         SiGip3ji0zAoTJCcg+re9B1A3VaxqWOyF045Sjm5IZY4bLyItxBzEyN8lliHQI0qEBHU
-         w25Q==
-X-Gm-Message-State: AOAM530MuFRbL2x19s0Y+Qw4FL/bZhdDf1h/ubT5SCb/PRDSD0O6+JbX
-        xJPyxC567H2jMySXAzdSV+mpNOb5I6A=
-X-Google-Smtp-Source: ABdhPJzh5xPJYIFuTf08eMtuhVLm3V7WRAIwzhlYMGI7mYBUFFcfnO3Wr7ivSW9Vmn9hCxCyyx1znQ==
-X-Received: by 2002:a05:600c:48a8:b0:393:ff87:faf0 with SMTP id j40-20020a05600c48a800b00393ff87faf0mr8094114wmp.88.1651143539844;
-        Thu, 28 Apr 2022 03:58:59 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nuJIqlIgdFQjWwRTfq2SfS/poVF6W3nofVJduFZhe30=;
+        b=gfChJwF79RqjKLWZoQiEVdPTLoJ5OR+Qx+wQoOns/yBcUc0hDZC97FaHRfCVTZI3vv
+         hpQn+UqFUuZyQ3mUgPIVaY1xi/zRXl2+1K2qgorN4KTAA5E0nNPM0rQJhsDVdSzpxyMc
+         RzRhNFptDlrYVA+47zB0znYcv/KpGRVkKd5jjqQj9FLE8FYBd+DBY+c8um2GpGQcs3CK
+         kKeO7I3kfPS6ZSMNmmXjR+NTFpp3D5nzcknnJGy46ng7k+7GN/u5++Tyq75s4awG/rOp
+         QopDGwei3qcmf9JqXvFm9hpUxo4D2GH9Ax+i+x4svaQIvVTvDpU86A5TCLnOYeHZ+P0u
+         HxKA==
+X-Gm-Message-State: AOAM530bBBjA8eIMaAnaM9sasM45mb4l9wgMiQI9TJXSJhZt0XQJIlq+
+        9/sQzifRWHYIjPPvCNFBQe/hx0xvDKA=
+X-Google-Smtp-Source: ABdhPJyqspCMzhzZudQJDBRnyAa0QXypXSzeKCv42o4uRbKrjglRx1gX4Ft3VlWzOLGhQgh+UuA9hA==
+X-Received: by 2002:a5d:588a:0:b0:204:1f46:cf08 with SMTP id n10-20020a5d588a000000b002041f46cf08mr26655407wrf.133.1651143561089;
+        Thu, 28 Apr 2022 03:59:21 -0700 (PDT)
 Received: from 127.0.0.1localhost (82-132-230-8.dab.02.net. [82.132.230.8])
-        by smtp.gmail.com with ESMTPSA id p4-20020a1c5444000000b00391ca5976c8sm4628139wmi.0.2022.04.28.03.58.58
+        by smtp.gmail.com with ESMTPSA id n10-20020a5d588a000000b002052e4aaf89sm16028895wrf.80.2022.04.28.03.59.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 03:58:59 -0700 (PDT)
+        Thu, 28 Apr 2022 03:59:20 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -54,12 +54,10 @@ Cc:     David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         linux-kernel@vger.kernel.org,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next 3/3] sock: optimise sock_def_write_space barriers
-Date:   Thu, 28 Apr 2022 11:58:19 +0100
-Message-Id: <654332b3765fa728e1e149523bf7fb59c563a186.1650891417.git.asml.silence@gmail.com>
+Subject: [PATCH net-next 0/5] generic net and ipv6 minor optimisations
+Date:   Thu, 28 Apr 2022 11:58:43 +0100
+Message-Id: <cover.1651141755.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.36.0
-In-Reply-To: <cover.1650891417.git.asml.silence@gmail.com>
-References: <cover.1650891417.git.asml.silence@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -72,69 +70,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now we have a separate path for sock_def_write_space() and can go one
-step further. When it's called from sock_wfree() we know that there is a
-preceding atomic for putting down ->sk_wmem_alloc. We can use it to
-replace to replace smb_mb() with a less expensive
-smp_mb__after_atomic(). It also removes an extra RCU read lock/unlock as
-a small bonus.
+1-3 inline simple functions that only reshuffle arguments possibly adding
+extra zero args, and call another function. It was benchmarked before with
+a bunch of extra patches, see for details
 
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
----
- net/core/sock.c | 26 +++++++++++++++++++++++++-
- 1 file changed, 25 insertions(+), 1 deletion(-)
+https://lore.kernel.org/netdev/cover.1648981570.git.asml.silence@gmail.com/
 
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 4ad4d6dd940e..85d0b04c7bc5 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -146,6 +146,7 @@
- static DEFINE_MUTEX(proto_list_mutex);
- static LIST_HEAD(proto_list);
- 
-+static void sock_def_write_space_wfree(struct sock *sk);
- static void sock_def_write_space(struct sock *sk);
- 
- /**
-@@ -2329,7 +2330,7 @@ void sock_wfree(struct sk_buff *skb)
- 		    sk->sk_write_space == sock_def_write_space) {
- 			rcu_read_lock();
- 			free = refcount_sub_and_test(len, &sk->sk_wmem_alloc);
--			sock_def_write_space(sk);
-+			sock_def_write_space_wfree(sk);
- 			rcu_read_unlock();
- 			if (unlikely(free))
- 				__sk_free(sk);
-@@ -3221,6 +3222,29 @@ static void sock_def_write_space(struct sock *sk)
- 	rcu_read_unlock();
- }
- 
-+/* An optimised version of sock_def_write_space(), should only be called
-+ * for SOCK_RCU_FREE sockets under RCU read section and after putting
-+ * ->sk_wmem_alloc.
-+ */
-+static void sock_def_write_space_wfree(struct sock *sk)
-+{
-+	/* Do not wake up a writer until he can make "significant"
-+	 * progress.  --DaveM
-+	 */
-+	if (sock_writeable(sk)) {
-+		struct socket_wq *wq = rcu_dereference(sk->sk_wq);
-+
-+		/* rely on refcount_sub from sock_wfree() */
-+		smp_mb__after_atomic();
-+		if (wq && waitqueue_active(&wq->wait))
-+			wake_up_interruptible_sync_poll(&wq->wait, EPOLLOUT |
-+						EPOLLWRNORM | EPOLLWRBAND);
-+
-+		/* Should agree with poll, otherwise some programs break */
-+		sk_wake_async(sk, SOCK_WAKE_SPACE, POLL_OUT);
-+	}
-+}
-+
- static void sock_def_destruct(struct sock *sk)
- {
- }
+It may increase the binary size, but it's the right thing to do and at least
+without modules it actually sheds some bytes for some standard-ish config.
+
+   text    data     bss     dec     hex filename
+9627200       0       0 9627200  92e640 ./arch/x86_64/boot/bzImage
+   text    data     bss     dec     hex filename
+9627104       0       0 9627104  92e5e0 ./arch/x86_64/boot/bzImage
+
+
+Pavel Begunkov (5):
+  net: inline sock_alloc_send_skb
+  net: inline skb_zerocopy_iter_dgram
+  net: inline dev_queue_xmit()
+  ipv6: help __ip6_finish_output() inlining
+  ipv6: refactor ip6_finish_output2()
+
+ include/linux/netdevice.h | 14 ++++++++++++--
+ include/linux/skbuff.h    | 36 ++++++++++++++++++++++--------------
+ include/net/sock.h        | 10 ++++++++--
+ net/core/datagram.c       |  2 --
+ net/core/datagram.h       | 15 ---------------
+ net/core/dev.c            | 15 ++-------------
+ net/core/skbuff.c         |  7 -------
+ net/core/sock.c           |  7 -------
+ net/ipv6/ip6_output.c     | 25 +++++++++++++------------
+ 9 files changed, 57 insertions(+), 74 deletions(-)
+ delete mode 100644 net/core/datagram.h
+
 -- 
 2.36.0
 
