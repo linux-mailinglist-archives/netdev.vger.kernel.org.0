@@ -2,48 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5664D512848
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 02:45:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4924051284F
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 02:52:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238053AbiD1AtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 20:49:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50880 "EHLO
+        id S238125AbiD1A4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 20:56:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231276AbiD1AtG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 20:49:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69E1E2E0BB;
-        Wed, 27 Apr 2022 17:45:53 -0700 (PDT)
+        with ESMTP id S231235AbiD1A4C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 20:56:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A04355F8DA;
+        Wed, 27 Apr 2022 17:52:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AB12EB8292A;
-        Thu, 28 Apr 2022 00:45:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2BC0C385A9;
-        Thu, 28 Apr 2022 00:45:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6BE21B8292A;
+        Thu, 28 Apr 2022 00:52:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2886C385AD;
+        Thu, 28 Apr 2022 00:52:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651106750;
-        bh=re40Afczn6J1X4TFhRwHoNvSCLaNmMLS9fa1aNRkctk=;
+        s=k20201202; t=1651107167;
+        bh=RntiTRc85eJLhPUewH4qjDve/WIYbOdE8I4/T+hgqN8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ldXmpVmf/o3JjPW4Tus8b9X8DiAiNQCrJ8xfKVnMlcRRlmpk6p/QqjiUkGT6kkrhT
-         vwkNmO3XZAMqFMbkqW8KoS75r+SZUp+6g/6Jq5Ua9EjEM9zjWQHxX9nNehZaYcqMUb
-         usDYDNbuhOUDB1hs8AMXJVChJzx3kaRvRxJdOzTMQKYZST4gU/VGJjcgdIY34/5uLt
-         2yUWI+BlNNEaA4rOfzKwDHGmhhvSE136bRphpUVmlHaWgV/kcabkCBiCWlyeOcmL3f
-         ny/zUQfw0WzRVXd75Y/xWF/t+pEakHbbrVW0GSvd4xIueWfN0vVgkWlwbCVse5COh6
-         8xxDYQ/EGd0Wg==
-Date:   Wed, 27 Apr 2022 17:45:48 -0700
+        b=pzUGQtV8izUYgoqpPEwQh/sZmA2JkvoN74k2FsWu58IEn2n+bpml6q+E8kBoM2UB9
+         wV6fL2HPaBwaSXYxVRdXXbwlaABYKKuamF8Rfz8EE2mQNXkgXRNuUHsNTvXF6Xa2I9
+         vOiyw+FKGMVwf7A8jbm5DQX3ONMmd46PbgVm4CWKCM4cAEN0Amxf8nXi5J4QvOAvnG
+         UN/3KlBSGB7Ddu3g7sifTPvolbMVu3zG+AWAhWuDVureucM8l+kixfWHAE+ZKtdPe1
+         I1XYiVmVvSEpu9Lwq+FXnX1WFsZ9Fmu2U1YCKZHNUoiYZSrOGkiTOThVPolEun4h+5
+         9OPnabiW2h3Vg==
+Date:   Wed, 27 Apr 2022 17:52:45 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Duoming Zhou <duoming@zju.edu.cn>
-Cc:     krzysztof.kozlowski@linaro.org, pabeni@redhat.com,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        gregkh@linuxfoundation.org, alexander.deucher@amd.com,
-        akpm@linux-foundation.org, broonie@kernel.org,
-        netdev@vger.kernel.org, linma@zju.edu.cn
-Subject: Re: [PATCH net v4] nfc: nfcmrvl: main: reorder destructive
- operations in nfcmrvl_nci_unregister_dev to avoid bugs
-Message-ID: <20220427174548.2ae53b84@kernel.org>
-In-Reply-To: <20220427011438.110582-1-duoming@zju.edu.cn>
-References: <20220427011438.110582-1-duoming@zju.edu.cn>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <grygorii.strashko@ti.com>, <davem@davemloft.net>
+Subject: Re: [PATCH -next] net: cpsw: add missing of_node_put() in
+ cpsw_probe_dt()
+Message-ID: <20220427175245.2311a74c@kernel.org>
+In-Reply-To: <20220426124757.373587-1-yangyingliang@huawei.com>
+References: <20220426124757.373587-1-yangyingliang@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -56,48 +53,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 27 Apr 2022 09:14:38 +0800 Duoming Zhou wrote:
-> diff --git a/net/nfc/core.c b/net/nfc/core.c
-> index dc7a2404efd..1d91334ee86 100644
-> --- a/net/nfc/core.c
-> +++ b/net/nfc/core.c
-> @@ -25,6 +25,8 @@
->  #define NFC_CHECK_PRES_FREQ_MS	2000
->  
->  int nfc_devlist_generation;
-> +/* nfc_download: used to judge whether nfc firmware download could start */
-> +static bool nfc_download;
->  DEFINE_MUTEX(nfc_devlist_mutex);
->  
->  /* NFC device ID bitmap */
-> @@ -38,7 +40,7 @@ int nfc_fw_download(struct nfc_dev *dev, const char *firmware_name)
->  
->  	device_lock(&dev->dev);
->  
-> -	if (!device_is_registered(&dev->dev)) {
-> +	if (!device_is_registered(&dev->dev) || !nfc_download) {
->  		rc = -ENODEV;
->  		goto error;
->  	}
-> @@ -1134,6 +1136,7 @@ int nfc_register_device(struct nfc_dev *dev)
->  			dev->rfkill = NULL;
->  		}
->  	}
-> +	nfc_download = true;
->  	device_unlock(&dev->dev);
->  
->  	rc = nfc_genl_device_added(dev);
-> @@ -1166,6 +1169,7 @@ void nfc_unregister_device(struct nfc_dev *dev)
->  		rfkill_unregister(dev->rfkill);
->  		rfkill_destroy(dev->rfkill);
->  	}
-> +	nfc_download = false;
->  	device_unlock(&dev->dev);
->  
->  	if (dev->ops->check_presence) {
+On Tue, 26 Apr 2022 20:47:57 +0800 Yang Yingliang wrote:
+> Subject: [PATCH -next] net: cpsw: add missing of_node_put() in cpsw_probe_dt()
 
-You can't use a single global variable, there can be many devices 
-each with their own lock.
+Why next? The commit under Fixes is in Linus's tree.
 
-Paolo suggested adding a lock, if spin lock doesn't fit the bill
-why not add a mutex?
+Please sort this out and repost.
+
+> If devm_kcalloc() fails, 'tmp_node' should be put in cpsw_probe_dt().
+> 
+> Fixes: ed3525eda4c4 ("net: ethernet: ti: introduce cpsw switchdev based driver part 1 - dual-emac")
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
