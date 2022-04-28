@@ -2,50 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B0709512D9C
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 10:01:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A846512DA2
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 10:01:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343712AbiD1IDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 04:03:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52578 "EHLO
+        id S1343704AbiD1IDi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 04:03:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343711AbiD1IDa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 04:03:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D2C917E06
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 01:00:16 -0700 (PDT)
+        with ESMTP id S1343710AbiD1ID3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 04:03:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A89EB140A0;
+        Thu, 28 Apr 2022 01:00:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 404C2B82B44
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 08:00:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EEC4FC385A9;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BCDC361F44;
+        Thu, 28 Apr 2022 08:00:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E8E82C385AF;
         Thu, 28 Apr 2022 08:00:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1651132814;
-        bh=IGdMXm9WUsu0G+gjUEFP0ILF6TdDqRvpv7lQ6gbq+Yo=;
+        bh=NhzxeaiPtX29P/RQ1EZRDWoQ85Ud+xmKkVGCgk4axRo=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=n1BQPIG5q4rI7TzA1f3EgiNKfflROX6DSrM/KSQ3yptOz9Fqk6sIAF/3Knkzb1nJn
-         wkH5ZpZCYyRX/4o/nF9DlmLmi1ewQNCEPwPSNKyLg2hL+cTR0JI26EYb5ASDN6GTxQ
-         lxlVZ2HpYokBx/ZSRXNGzRJSQnR8FvEm4r/grPcbBzoaz/j9+Q+s24fgTrnS9FQ7rH
-         jxx29JVfpNPX7YxI3VsquXSJMciP7/Jh1iigiVnpeG+RGr8ILYrMl5IMVZn+VZlnUw
-         n5q6TcJMyHGKNx3tNn2wQduzxY8IVrPfih+fxf+SkP4efk39aIZQtEYrWvU5kSNKvO
-         Bu5dAJc1wk0mA==
+        b=oWYnxOyhqwu9+DDI3nBKx2MYv9VAjqFHY9gZOLYQ7YbVsFEJJ2BlN+VLth0CqxAyY
+         D0RIbVuZISIqam72WMojOrEbtuuJdeLTxWIr43XBLUrTSMM2wU/0RzZackNVo+znSv
+         R6xYwOZN1ILqAXOmQIokF4HdL9m9mlh+R8axr5NmhzBn9QeibT6HhjaCGKK1akD++I
+         NBTcWhpdT+1XK/N7PyiRmtUfZa7W7KdR4uGcZqGvrhrpcSrRk59ctb4UQJCVcsumFV
+         19vY9gHiNU+PyLvznLounOc8CRMJIXkVSL5tZc5i52KP24cLttIjQg4U8PR/1U/Rq6
+         L4srSq1YfbLYg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D5CFEE85D90;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CC6A6F03848;
         Thu, 28 Apr 2022 08:00:13 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 00/13]: Move Siena into a separate subdirectory
+Subject: Re: [PATCH net-next v6 0/3] Add reset deassertion for Aspeed MDIO
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165113281387.18320.11653436232989195004.git-patchwork-notify@kernel.org>
+Message-Id: <165113281383.18320.4392733597031620759.git-patchwork-notify@kernel.org>
 Date:   Thu, 28 Apr 2022 08:00:13 +0000
-References: <165111298464.21042.9988060027860048966.stgit@palantir17.mph.net>
-In-Reply-To: <165111298464.21042.9988060027860048966.stgit@palantir17.mph.net>
-To:     Martin Habets <habetsm.xilinx@gmail.com>
-Cc:     kuba@kernel.org, pabeni@redhat.com, davem@davemloft.net,
-        netdev@vger.kernel.org, ecree.xilinx@gmail.com
+References: <20220427035501.17500-1-dylan_hung@aspeedtech.com>
+In-Reply-To: <20220427035501.17500-1-dylan_hung@aspeedtech.com>
+To:     Dylan Hung <dylan_hung@aspeedtech.com>
+Cc:     robh+dt@kernel.org, joel@jms.id.au, andrew@aj.id.au,
+        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        p.zabel@pengutronix.de, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, krzk+dt@kernel.org, BMC-SW@aspeedtech.com
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -60,45 +65,25 @@ Hello:
 This series was applied to netdev/net-next.git (master)
 by Paolo Abeni <pabeni@redhat.com>:
 
-On Thu, 28 Apr 2022 03:30:30 +0100 you wrote:
-> The Siena NICs (SFN5000 and SFN6000 series) went EOL in November 2021.
-> Most of these adapters have been remove from our test labs, and testing
-> has been reduced to a minimum.
+On Wed, 27 Apr 2022 11:54:58 +0800 you wrote:
+> Add missing reset deassertion for Aspeed MDIO bus controller. The reset
+> is asserted by the hardware when power-on so the driver only needs to
+> deassert it. To be able to work with the old DT blobs, the reset is
+> optional since it may be deasserted by the bootloader or the previous
+> kernel.
 > 
-> This patch series creates a separate kernel module for the Siena architecture,
-> analogous to what was done for Falcon some years ago.
-> This reduces our maintenance for the sfc.ko module, and allows us to
-> enhance the EF10 and EF100 drivers without the risk of breaking Siena NICs.
+> V6:
+> - fix merge conflict for net-next
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v2,01/13] sfc: Disable Siena support
-    (no matching commit)
-  - [net-next,v2,02/13] sfc: Move Siena specific files
-    https://git.kernel.org/netdev/net-next/c/be5fd933f8c1
-  - [net-next,v2,03/13] sfc: Copy shared files needed for Siena (part 1)
-    https://git.kernel.org/netdev/net-next/c/be5fd933f8c1
-  - [net-next,v2,04/13] sfc: Copy shared files needed for Siena (part 2)
-    https://git.kernel.org/netdev/net-next/c/be5fd933f8c1
-  - [net-next,v2,05/13] sfc: Copy a subset of mcdi_pcol.h to siena
-    (no matching commit)
-  - [net-next,v2,06/13] sfc/siena: Remove build references to missing functionality
-    (no matching commit)
-  - [net-next,v2,07/13] sfc/siena: Rename functions in efx headers to avoid conflicts with sfc
-    (no matching commit)
-  - [net-next,v2,08/13] sfc/siena: Rename RX/TX functions to avoid conflicts with sfc
-    (no matching commit)
-  - [net-next,v2,09/13] sfc/siena: Rename peripheral functions to avoid conflicts with sfc
-    (no matching commit)
-  - [net-next,v2,10/13] sfc/siena: Rename functions in mcdi headers to avoid conflicts with sfc
-    (no matching commit)
-  - [net-next,v2,11/13] sfc/siena: Rename functions in nic_common.h to avoid conflicts with sfc
-    (no matching commit)
-  - [net-next,v2,12/13] sfc/siena: Inline functions in sriov.h to avoid conflicts with sfc
-    (no matching commit)
-  - [net-next,v2,13/13] sfc: Add a basic Siena module
-    (no matching commit)
+  - [net-next,v6,1/3] dt-bindings: net: add reset property for aspeed, ast2600-mdio binding
+    https://git.kernel.org/netdev/net-next/c/65e42ad98e22
+  - [net-next,v6,2/3] net: mdio: add reset control for Aspeed MDIO
+    https://git.kernel.org/netdev/net-next/c/1585362250fe
+  - [net-next,v6,3/3] ARM: dts: aspeed: add reset properties into MDIO nodes
+    https://git.kernel.org/netdev/net-next/c/a8db203db05c
 
 You are awesome, thank you!
 -- 
