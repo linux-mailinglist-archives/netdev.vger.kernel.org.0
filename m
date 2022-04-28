@@ -2,132 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 154F6512C41
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 09:06:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6C1A512C5F
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 09:09:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233613AbiD1HJX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 03:09:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33634 "EHLO
+        id S244824AbiD1HLH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 03:11:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244792AbiD1HJT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 03:09:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4DFCC19C36
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 00:06:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651129564;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RX0IluUFjyFGJB9XgIGY/YNKpJD21MjW7iyGoQ/bciQ=;
-        b=MgCRQOR0bXRwCG/n9wB3V/1V5KF7AWuuzIMVPknPI4vVCSoQUbZH5PD17M/bicFwyCK9zd
-        U/c+O6emWUPdgwPJC0U7hmZdBHcKzCzJPpiiZKIqxmIpg0F+bxXZzlHF14bswCE95j41Bt
-        KWQsumSgUPpfKbM7Lxgo1yrCyjPR6xo=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-591-c8IPXo1ANpG3ysPI_LdoLA-1; Thu, 28 Apr 2022 03:06:03 -0400
-X-MC-Unique: c8IPXo1ANpG3ysPI_LdoLA-1
-Received: by mail-qt1-f199.google.com with SMTP id cf23-20020a05622a401700b002f35b28fd73so2735044qtb.12
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 00:06:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=RX0IluUFjyFGJB9XgIGY/YNKpJD21MjW7iyGoQ/bciQ=;
-        b=2vO4o0ztg+2yA2xjVFdaNXUWICQtZ/AJwCX3pYnmhTPA+1sSEVHgIbwcwsbLj8pc7H
-         nAwqwALzItQpg/lehr45j1pQ5z4FM1oL+WCuuVTOkQjGZIgT/kAVP+xl0SIEfsJ5o+18
-         /rXFe07kziaBkSgkbQOh1hMh10H8IbWziWd/VuTmHWH8qnnzCVCn7gVtTW0QVdjcdeTu
-         9dGILWVrswjC4YCmg1qSqTc1cH9quwIMrxnf3+63Rb/dlsernxDdBnwVUy4zUOQROHtV
-         ylso6kbLmYtBCi/xYjQb8P4sQEEgBjtYjHlkD05edNVSeHaOn3kbB+7nJKjdW1Oo8+5R
-         0J6Q==
-X-Gm-Message-State: AOAM532KmdoJNRd2aD6tAUTdQr3d4+LAvMSIXgM4JQ+ZpZxKPIDQi4cX
-        Ix31aW9cXqLoCQZJ5XWB/S8sRgWA6XqeoXZlyoLqMR1BkkwiG2PYUDbGK2EfQon7NLfL+M46t0P
-        X5/vqlLex/GWNVBuD
-X-Received: by 2002:ac8:5fcb:0:b0:2f3:4799:1649 with SMTP id k11-20020ac85fcb000000b002f347991649mr22339574qta.522.1651129562776;
-        Thu, 28 Apr 2022 00:06:02 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyU2oeLrstNHTLoVNiOiYqy8PCp5qFcyD0PvqMZ6dBrsfSJtI6yAgZINx2lBg+bbQaYrXCEkQ==
-X-Received: by 2002:ac8:5fcb:0:b0:2f3:4799:1649 with SMTP id k11-20020ac85fcb000000b002f347991649mr22339552qta.522.1651129562541;
-        Thu, 28 Apr 2022 00:06:02 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-117-160.dyn.eolo.it. [146.241.117.160])
-        by smtp.gmail.com with ESMTPSA id p13-20020a05622a048d00b002e1ce0c627csm11706888qtx.58.2022.04.28.00.05.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 00:06:02 -0700 (PDT)
-Message-ID: <530adc71b52e774c92c53d235701710dbc9866a9.camel@redhat.com>
-Subject: Re: [PATCH net 1/1] net: stmmac: disable Split Header (SPH) for
- Intel platforms
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Tan Tee Min <tee.min.tan@linux.intel.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Wong Vee Khee <vee.khee.wong@linux.intel.com>,
-        Ling Pei Lee <pei.lee.ling@intel.com>,
-        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Voon Wei Feng <weifeng.voon@intel.com>,
-        Song Yoong Siang <yoong.siang.song@intel.com>,
-        Ong@vger.kernel.org, Boon Leong <boon.leong.ong@intel.com>,
-        Tan Tee Min <tee.min.tan@intel.com>
-Date:   Thu, 28 Apr 2022 09:05:57 +0200
-In-Reply-To: <20220428015538.GC26326@linux.intel.com>
-References: <20220426074531.4115683-1-tee.min.tan@linux.intel.com>
-         <8735i0ndy7.fsf@kurt> <20220428015538.GC26326@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S233708AbiD1HLG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 03:11:06 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B74B7CB03;
+        Thu, 28 Apr 2022 00:07:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1651129672; x=1682665672;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=7IQZ0nOuAp1XafDeS7vtdno92cZi3MiHQLnW4BFWw8I=;
+  b=DxZJmbVGMuB+ygO9uq4iwz8sTnBacLwZW4cYVEJV7uo9lemUHOl7AsrK
+   JL7cBExdFijKIoxUCEwo/U8sgQYS8YYw43EHiFHRUMgu/H0liEqNkOqxE
+   oZyntkFw1caPBREsradLv0T6pPLQBQad8AckBAcUZjqXRWt1bZb4w43HO
+   m+UajhpIuK94bzhquoKKHlM8bupHXXQd8jrgWEs/7W+gzwAF82uS8hDyx
+   jf4hvdBKzRkCMA4vlGNen3i6y2OSnWnK9yvHJvD0BFsSAY87nEnBsfR/q
+   BV0IczjuWeUNRjeZbazZXNMYFs74XRdyb125MxGTaEc6aL2+QjnGRrU8f
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,295,1643698800"; 
+   d="scan'208";a="157093245"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Apr 2022 00:07:51 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 28 Apr 2022 00:07:51 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Thu, 28 Apr 2022 00:07:47 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, <UNGLinuxDriver@microchip.com>,
+        Woojung Huh <woojung.huh@microchip.com>
+Subject: [Patch net] net: dsa: ksz9477: port mirror sniffing limited to one port
+Date:   Thu, 28 Apr 2022 12:37:09 +0530
+Message-ID: <20220428070709.7094-1-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+This patch limits the sniffing to only one port during the mirror add.
+And during the mirror_del it checks for all the ports using the sniff,
+if and only if no other ports are referring, sniffing is disabled.
+The code is updated based on the review comments of LAN937x port mirror
+patch.
 
-On Thu, 2022-04-28 at 09:55 +0800, Tan Tee Min wrote:
-> On Tue, Apr 26, 2022 at 03:58:56PM +0200, Kurt Kanzenbach wrote:
-> > Hi,
-> > 
-> > On Tue Apr 26 2022, Tan Tee Min wrote:
-> > > Based on DesignWare Ethernet QoS datasheet, we are seeing the limitation
-> > > of Split Header (SPH) feature is not supported for Ipv4 fragmented packet.
-> > > This SPH limitation will cause ping failure when the packets size exceed
-> > > the MTU size. For example, the issue happens once the basic ping packet
-> > > size is larger than the configured MTU size and the data is lost inside
-> > > the fragmented packet, replaced by zeros/corrupted values, and leads to
-> > > ping fail.
-> > > 
-> > > So, disable the Split Header for Intel platforms.
-> > 
-> > Does this issue only apply on Intel platforms?
-> 
-> According to Synopsys IP support, they have confirmed the header-payload
-> splitting for IPv4 fragmented packets is not supported for the Synopsys
-> Ether IPs.
-> 
-> Intel platforms are integrating with GMAC EQoS IP which is impacted by the
-> limitation above, so we are changing the default SPH setting to disabled
-> for Intel Platforms only.
-> 
-> If anyone can confirm on their platform also having the same issues,
-> then we would change the SPH default to disable across the IPs.
+Link: https://patchwork.kernel.org/project/netdevbpf/patch/20210422094257.1641396-8-prasanna.vengateshan@microchip.com/
+Fixes: b987e98e50ab ("dsa: add DSA switch driver for Microchip KSZ9477")
+Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+---
+ drivers/net/dsa/microchip/ksz9477.c | 38 ++++++++++++++++++++++++++---
+ 1 file changed, 34 insertions(+), 4 deletions(-)
 
-Could you please provide a Fixes tag here? 
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index 48c90e4cda30..61dd0fa97748 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -896,14 +896,32 @@ static int ksz9477_port_mirror_add(struct dsa_switch *ds, int port,
+ 				   bool ingress, struct netlink_ext_ack *extack)
+ {
+ 	struct ksz_device *dev = ds->priv;
++	u8 data;
++	int p;
++
++	/* Limit to one sniffer port
++	 * Check if any of the port is already set for sniffing
++	 * If yes, instruct the user to remove the previous entry & exit
++	 */
++	for (p = 0; p < dev->port_cnt; p++) {
++		/* Skip the current sniffing port */
++		if (p == mirror->to_local_port)
++			continue;
++
++		ksz_pread8(dev, p, P_MIRROR_CTRL, &data);
++
++		if (data & PORT_MIRROR_SNIFFER) {
++			NL_SET_ERR_MSG_MOD(extack,
++					   "Sniffer port is already configured, delete existing rules & retry");
++			return -EBUSY;
++		}
++	}
+ 
+ 	if (ingress)
+ 		ksz_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_RX, true);
+ 	else
+ 		ksz_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_TX, true);
+ 
+-	ksz_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_SNIFFER, false);
+-
+ 	/* configure mirror port */
+ 	ksz_port_cfg(dev, mirror->to_local_port, P_MIRROR_CTRL,
+ 		     PORT_MIRROR_SNIFFER, true);
+@@ -917,16 +935,28 @@ static void ksz9477_port_mirror_del(struct dsa_switch *ds, int port,
+ 				    struct dsa_mall_mirror_tc_entry *mirror)
+ {
+ 	struct ksz_device *dev = ds->priv;
++	bool in_use = false;
+ 	u8 data;
++	int p;
+ 
+ 	if (mirror->ingress)
+ 		ksz_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_RX, false);
+ 	else
+ 		ksz_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_TX, false);
+ 
+-	ksz_pread8(dev, port, P_MIRROR_CTRL, &data);
+ 
+-	if (!(data & (PORT_MIRROR_RX | PORT_MIRROR_TX)))
++	/* Check if any of the port is still referring to sniffer port */
++	for (p = 0; p < dev->port_cnt; p++) {
++		ksz_pread8(dev, p, P_MIRROR_CTRL, &data);
++
++		if ((data & (PORT_MIRROR_RX | PORT_MIRROR_TX))) {
++			in_use = true;
++			break;
++		}
++	}
++
++	/* delete sniffing if there are no other mirroring rules */
++	if (!in_use)
+ 		ksz_port_cfg(dev, mirror->to_local_port, P_MIRROR_CTRL,
+ 			     PORT_MIRROR_SNIFFER, false);
+ }
 
-Thanks!
-
-Paolo
+base-commit: 50c6afabfd2ae91a4ff0e2feb14fe702b0688ec5
+-- 
+2.33.0
 
