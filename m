@@ -2,122 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E193B512E99
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 10:35:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE37D512E8A
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 10:33:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344390AbiD1IhK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 04:37:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51084 "EHLO
+        id S1344252AbiD1Igg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 04:36:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344393AbiD1IgY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 04:36:24 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD198A6E1E
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 01:29:18 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id s21so5679019wrb.8
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 01:29:18 -0700 (PDT)
+        with ESMTP id S1344178AbiD1IgF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 04:36:05 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 188E3A66DB;
+        Thu, 28 Apr 2022 01:29:13 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id q12so3391489pgj.13;
+        Thu, 28 Apr 2022 01:29:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=solid-run-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=cv/E5yoqyGyEevSFvF+VVXMqKZJxjfaitSIn3h7asHE=;
-        b=Ud5pD39oYgaUFAQLGBkT2HJp4aTmaENEKW16r9OrUV7vwTGXKn47MvaWrAttLZ67gO
-         UAnwlg/QwAvqzipv7oVS23w6lIq/OND6oXWsFV6QMKDwCQgwFgrcAoR1MzpeOf3vEbX2
-         WiPWwY0eSMLoU9S0SiVcUosW5Kk3O1geswYjpbjAPBfFiHgvRANe4MnSZ/r77yqJQl6y
-         vNILqyfr1KEb5uBFfVZHau8Ccn51RN68dLcYupHuMK9/Vbj3ddIBWmjOAJpV/P818x/j
-         Ur32stung8zQjRVuqg9b/gUV892P1jDYdLC27Y0knaWn4LThbARVw0EOCT8dmaAb+/ax
-         YSyA==
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fVM62GyHltSE0ionm6SdLetw0VDoqMgiKzSssxmigAY=;
+        b=QAg/+pe8G9Sc1mDs8zVzp2hV9mfGq78LAOAd66G/6sLc/MF0CQzJ+bcaT+w90Jh2Av
+         8HNDkJ3nqfhlCnkcwEmEpxoPBuZYl+bg4oAGMUv+lHlqdU5B+7U81PP648+Yp3LFWan2
+         P21d/yeqp3wWUW9qrIholko+vTlpsdc7JFWCIaMc+X3Xk+llOP1UjzKEB7ABeH5PVukb
+         zUycFoHjS6PqN+FO/soY2wkuuvzG/vccsNhDQpW4zC5sE+dNYAIVpYjZXDbv5gluvKxw
+         VOWM6/HpQ+dl+L0G7Al0ETAMQAnC35i/vMB48RkbhXVKP5rD+rw3fvMiNiO2hqNyyy0w
+         IY3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=cv/E5yoqyGyEevSFvF+VVXMqKZJxjfaitSIn3h7asHE=;
-        b=d+CsvqqxvVC/HjoPeXgLsbEwJ7ajYBQWZxidxbS01k65N4hN3VddvqOjjVnJdk3dVe
-         AYFAmjXxA+qqzuUhmb9PNiC/4qOPHU2Cg+3PssHDBq9SORHxOGD/jxYx2KhHge0IdALT
-         mhoZFmvz4oKP0WJfX8vzjJeCsx96gDdAdVWcgdci9UHWIF3EHwdMnwKQayH/7icmrhyq
-         iGnLi7d/Bw5vogIzlrgcc+Hk6UfhFrvKBqQwDoZyN84BzUZXx2nsQz05gOCyeq6unsK0
-         rDfaH8/8wBzD2nb2QxBiZEMwnBY4I2hGVo/aPfyL/C0D2oBYPg6rhj8C5jLdMoEe4FXB
-         dQ/g==
-X-Gm-Message-State: AOAM532J3ywvD75a7KkN5KLzGEzNe8qHnjdwrvoXMVikcX3exW4TrgNV
-        HALbMSQPkOCsXWRtKr7cROXh5/5izSwuucFlJ2GenQ==
-X-Google-Smtp-Source: ABdhPJzbgZMWhWLRgWIxZajhO9ys3c7vf613ZFoKudJ1MPht9j9JgFM7ezSoUHzHHPFZR3jxb5D1vw==
-X-Received: by 2002:adf:fc42:0:b0:20a:c45d:3767 with SMTP id e2-20020adffc42000000b0020ac45d3767mr25560165wrs.486.1651134557050;
-        Thu, 28 Apr 2022 01:29:17 -0700 (PDT)
-Received: from josua-work.lan (bzq-82-81-222-124.cablep.bezeqint.net. [82.81.222.124])
-        by smtp.gmail.com with ESMTPSA id bj3-20020a0560001e0300b0020af3d365f4sm1876249wrb.98.2022.04.28.01.29.15
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=fVM62GyHltSE0ionm6SdLetw0VDoqMgiKzSssxmigAY=;
+        b=icbFEHYnApDcsowDGYdsqXAMQnq8BjVuyYemrRD/XxNBnn2yaKr7Y2onIxBpoIgPPs
+         Knb9XFn94NaGF3fJQMruxvI5JnWg6Bw7yIzHwzt6wBTaxfz5/TpCos/B0AgJEwco4vlB
+         is113rpQqDP1a06EtZELkupPLDnyXlft11XjcaFV+LaJq3T/R8iMTuYff2lDoTaiew+e
+         uSgL4NRFXZDwofK+tJU/vWFtTwUjq0MUod1JcQ22dAKYl4kCNXuGEHiG4jFawhCg22iA
+         fMtf5IIA2GHaTf2g0gRZpIFYSBbHKN2Nl+nuWCqKQAIBimks2QLHQCVqS+J59rTGINgZ
+         j92A==
+X-Gm-Message-State: AOAM5318dWVu9gmi3Qfsu1xY/5n+Tbo9gL+damTgnR0n4ecOLeK6HcpI
+        Dq6mTsTRYKK3+Cqq4VNR4PM=
+X-Google-Smtp-Source: ABdhPJyTwDWftDHCcw6uVgNjozxu/y8Z4nCvbradyfoQcJDA2hYLwD/0AaZAp85aHF8Lo+WyhP0sgg==
+X-Received: by 2002:a63:42:0:b0:3a8:47f7:bf0d with SMTP id 63-20020a630042000000b003a847f7bf0dmr27515113pga.276.1651134552242;
+        Thu, 28 Apr 2022 01:29:12 -0700 (PDT)
+Received: from voyager.ozlabs.ibm.com (pa49-178-80-133.pa.nsw.optusnet.com.au. [49.178.80.133])
+        by smtp.gmail.com with ESMTPSA id i62-20020a639d41000000b003c14af50627sm1827176pgd.63.2022.04.28.01.29.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Apr 2022 01:29:16 -0700 (PDT)
-From:   Josua Mayer <josua@solid-run.com>
-To:     netdev@vger.kernel.org
-Cc:     alvaro.karsz@solid-run.com, Josua Mayer <josua@solid-run.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>
-Subject: [PATCH v3 3/3] ARM: dts: imx6qdl-sr-som: update phy configuration for som revision 1.9
-Date:   Thu, 28 Apr 2022 11:28:48 +0300
-Message-Id: <20220428082848.12191-4-josua@solid-run.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220428082848.12191-1-josua@solid-run.com>
-References: <20220419102709.26432-1-josua@solid-run.com>
- <20220428082848.12191-1-josua@solid-run.com>
+        Thu, 28 Apr 2022 01:29:11 -0700 (PDT)
+Sender: "joel.stan@gmail.com" <joel.stan@gmail.com>
+From:   Joel Stanley <joel@jms.id.au>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Dylan Hung <dylan_hung@aspeedtech.com>,
+        David Wilder <dwilder@us.ibm.com>
+Cc:     openbmc@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, David Wilder <wilder@us.ibm.com>
+Subject: [PATCH net] net: ftgmac100: Disable hardware checksum on AST2600
+Date:   Thu, 28 Apr 2022 17:58:58 +0930
+Message-Id: <20220428082858.545176-1-joel@jms.id.au>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since SoM revision 1.9 the PHY has been replaced with an ADIN1300,
-add an entry for it next to the original.
+The AST2600 when using the i210 NIC over NC-SI has been observed to
+produce incorrect checksum results with specific MTU values. This was
+first observed when sending data across a long distance set of networks.
 
-As Russell King pointed out, additional phy nodes cause warnings like:
-mdio_bus 2188000.ethernet-1: MDIO device at address 1 is missing
-To avoid this the new node has its status set to disabled. U-Boot will
-be modified to enable the appropriate phy node after probing.
+On a local network, the following test was performed using a 1MB file of
+random data.
 
-The existing ar8035 nodes have to stay enabled by default to avoid
-breaking existing systems when they update Linux only.
+On the receiver run this script:
 
-Co-developed-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
-Signed-off-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
-Signed-off-by: Josua Mayer <josua@solid-run.com>
+ #!/bin/bash
+ while [ 1 ]; do
+        # Zero the stats
+        nstat -r  > /dev/null
+        nc -l 9899 > test-file
+        # Check for checksum errors
+        TcpInCsumErrors=$(nstat | grep TcpInCsumErrors)
+        if [ -z "$TcpInCsumErrors" ]; then
+                echo No TcpInCsumErrors
+        else
+                echo TcpInCsumErrors = $TcpInCsumErrors
+        fi
+ done
+
+On an AST2600 system:
+
+ # nc <IP of  receiver host> 9899 < test-file
+
+The test was repeated with various MTU values:
+
+ # ip link set mtu 1410 dev eth0
+
+The observed results:
+
+ 1500 - good
+ 1434 - bad
+ 1400 - good
+ 1410 - bad
+ 1420 - good
+
+The test was repeated after disabling tx checksumming:
+
+ # ethtool -K eth0 tx-checksumming off
+
+And all MTU values tested resulted in transfers without error.
+
+An issue with the driver cannot be ruled out, however there has been no
+bug discovered so far.
+
+David has done the work to take the original bug report of slow data
+transfer between long distance connections and triaged it down to this
+test case.
+
+Fixes: 39bfab8844a0 ("net: ftgmac100: Add support for DT phy-handle property")
+Reported-by: David Wilder <wilder@us.ibm.com>
+Signed-off-by: Joel Stanley <joel@jms.id.au>
 ---
-V2 -> V3: new phy node status set disabled
-V1 -> V2: changed dts property name
+Net maintainers, if no one has a counter proposal I would like this
+merged as a fix. Please give Dylan from Aspeed a chance to reply before
+applying the patch.
 
- arch/arm/boot/dts/imx6qdl-sr-som.dtsi | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/net/ethernet/faraday/ftgmac100.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/arch/arm/boot/dts/imx6qdl-sr-som.dtsi b/arch/arm/boot/dts/imx6qdl-sr-som.dtsi
-index f86efd0ccc40..ce543e325cd3 100644
---- a/arch/arm/boot/dts/imx6qdl-sr-som.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-sr-som.dtsi
-@@ -83,6 +83,16 @@ ethernet-phy@4 {
- 			qca,clk-out-frequency = <125000000>;
- 			qca,smarteee-tw-us-1g = <24>;
- 		};
+diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
+index caf48023f8ea..5231818943c6 100644
+--- a/drivers/net/ethernet/faraday/ftgmac100.c
++++ b/drivers/net/ethernet/faraday/ftgmac100.c
+@@ -1928,6 +1928,11 @@ static int ftgmac100_probe(struct platform_device *pdev)
+ 	/* AST2400  doesn't have working HW checksum generation */
+ 	if (np && (of_device_is_compatible(np, "aspeed,ast2400-mac")))
+ 		netdev->hw_features &= ~NETIF_F_HW_CSUM;
 +
-+		/*
-+		 * ADIN1300 (som rev 1.9 or later) is always at address 1. It
-+		 * will be enabled automatically by U-Boot if detected.
-+		 */
-+		ethernet-phy@1 {
-+			reg = <1>;
-+			adi,phy-output-clock = "125mhz-free-running";
-+			status = "disabled";
-+		};
- 	};
- };
- 
++	/* AST2600 tx checksum with NCSI is broken */
++	if (priv->use_ncsi && of_device_is_compatible(np, "aspeed,ast2600-mac"))
++		netdev->hw_features &= ~NETIF_F_HW_CSUM;
++
+ 	if (np && of_get_property(np, "no-hw-checksum", NULL))
+ 		netdev->hw_features &= ~(NETIF_F_HW_CSUM | NETIF_F_RXCSUM);
+ 	netdev->features |= netdev->hw_features;
 -- 
-2.34.1
+2.35.1
 
