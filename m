@@ -2,106 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F145513346
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 14:00:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C57951337B
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 14:20:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345990AbiD1MDR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 08:03:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47148 "EHLO
+        id S1346136AbiD1MXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 08:23:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345840AbiD1MDQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 08:03:16 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B4F2AD127
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 05:00:02 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id t13so4077504pfg.2
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 05:00:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=Q9idrEhyfUAp/UZgkvDvxYkLGWOWGEut4dPRaSMF9NE=;
-        b=QHEJOoupenPnNEHMEEQXRwNJGR8CDyajSgj30tryiJeblwmjFLxryr9PxfkswxKHtk
-         wZilTkIhhUQKFWhX+ltNIuRJ/aVY9rDaObaWHuQOrc231gj960a0TzrKgUt82hsJeF6G
-         JTD9BQmYFLYCKuI2MAeE5ahF1zvnWuveo30VVym2enqBYkjbEm1pkRIkyOHhLddS6wMb
-         yfu+R9RyMMdNrbmU/MBHRg7HEDzsTA+Tkis9O3wa79UuJebvrtRX7Zgchhhd18BJingt
-         4w5PHnVkyW2Km4KtQVV73Pd6cjs7a3CMUPdKKN17dUHfVm83PG2q0+T5Pc5dfJEumZQV
-         2yEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=Q9idrEhyfUAp/UZgkvDvxYkLGWOWGEut4dPRaSMF9NE=;
-        b=XeqghexiDTrWugr+dEhPrVPKTNwR05RpNd8MyD8bz1aJPdMi68aZi48vLHhWpZMey/
-         eKJ+SxETJJjQHlr4BT0UZSCHsYtvMQ7UzqU/ZYbeOvPu3TWyKcl754g2acaMPsm1trGj
-         3hqQsNXMEWW4Rf7skXUSV77DER/uUIZdbzvjhLTytmhtwu/yPPo3B9LbWjNt3yWhK60d
-         LxHuZdwFciY0WG/UJv77EIdgtupB81CSWvNe/FxYKS5RavUbXv8WvYlB0qvwSeNYCcc4
-         nTjT0bNqlfZuB11WAR2Hr8TGEi6oEdZ4zZRQDlHFDI1h0jwMqkDWROiz2FRWx/l+h+z9
-         NHcQ==
-X-Gm-Message-State: AOAM5337SwDeqJOyrPZzH9qaX4OJ+quEL0CSWyJUhsSZpkeo4UHjBfX8
-        fRXlqNcggufT1KIgkNokCz0ATVhOsQdkDC8OK9o=
-X-Google-Smtp-Source: ABdhPJxj3TPLOXIZzh4S9H1RWddnxFzXNlzlUZ64vXiCKaXQN7ciYX31xViqlzMoMKTBlEaYhHDQQ/kj4iO30j2T3f0=
-X-Received: by 2002:a62:1611:0:b0:50a:41c5:e6fc with SMTP id
- 17-20020a621611000000b0050a41c5e6fcmr34945492pfw.35.1651147200528; Thu, 28
- Apr 2022 05:00:00 -0700 (PDT)
+        with ESMTP id S1346119AbiD1MXN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 08:23:13 -0400
+Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B06D9ADD62;
+        Thu, 28 Apr 2022 05:19:58 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout3.hostsharing.net (Postfix) with ESMTPS id 6E77A103201CF;
+        Thu, 28 Apr 2022 14:19:56 +0200 (CEST)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id 3547BA3DD6; Thu, 28 Apr 2022 14:19:56 +0200 (CEST)
+Date:   Thu, 28 Apr 2022 14:19:56 +0200
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Steve Glendinning <steve.glendinning@shawell.net>,
+        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, Andre Edich <andre.edich@microchip.com>,
+        Martyn Welch <martyn.welch@collabora.com>,
+        Gabriel Hojda <ghojda@yo2urs.ro>,
+        Christoph Fritz <chf.fritz@googlemail.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Philipp Rosenberger <p.rosenberger@kunbus.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH net-next 0/7] Polling be gone on LAN95xx
+Message-ID: <20220428121956.GA18418@wunner.de>
+References: <cover.1651037513.git.lukas@wunner.de>
+ <20220427123715.GC17577@pengutronix.de>
 MIME-Version: 1.0
-Received: by 2002:a17:522:8e14:b0:43f:4996:45bc with HTTP; Thu, 28 Apr 2022
- 04:59:59 -0700 (PDT)
-Reply-To: dimitryedik@gmail.com
-From:   Dimitry Edik <dmrdavidnikiema@gmail.com>
-Date:   Thu, 28 Apr 2022 04:59:59 -0700
-Message-ID: <CAM0vfEwL5CO+xu6jzgzPPVG-U_LRJzfXM+B1mk==Onm31dhyCQ@mail.gmail.com>
-Subject: Good day to you,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=7.9 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
-        LOTS_OF_MONEY,MONEY_FREEMAIL_REPTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_MONEY_PERCENT,UNDISC_FREEM,UNDISC_MONEY autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:442 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [dmrdavidnikiema[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        *  3.6 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-        *  0.3 MONEY_FREEMAIL_REPTO Lots of money from someone using free
-        *      email?
-        *  0.0 T_MONEY_PERCENT X% of a lot of money for you
-        *  2.3 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-X-Spam-Level: *******
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220427123715.GC17577@pengutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Good day to you,
+On Wed, Apr 27, 2022 at 02:37:15PM +0200, Oleksij Rempel wrote:
+> On Wed, Apr 27, 2022 at 07:48:00AM +0200, Lukas Wunner wrote:
+> > Do away with link status polling on LAN95XX USB Ethernet
+> > and rely on interrupts instead, thereby reducing bus traffic,
+> > CPU overhead and improving interface bringup latency.
+> > 
+> > The meat of the series is in patch [5/7].  The preceding and
+> > following patches are various cleanups to prepare for and
+> > adjust to interrupt-driven link state detection.
+> 
+> Tested-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> 
+> Tested on:
+> - LAN9514 (RPi2)
+> - LAN9512 (EVB)
+> - LAN9500 (EVB)
 
-My Name is Dimitry Edik from Russia A special assistance to my Russia
-boss who deals in oil import and export He was killed by the Ukraine
-soldiers at the border side. He supplied
-oil to the Philippines company and he was paid over 90 per cent of the
-transaction and the remaining 50 Million dollars have been paid into a
-Taiwan bank in the Philippines..i want a partner that will assist me
-with the claims. Is a (DEAL ) 40% for you and 60% for me
-I have all information for the claims.
-Kindly read and reply to me back is 100 per cent risk-free
+Thanks a lot for testing, this helps greatly.
 
-Yours Sincerely
-Dimitry Edik
+> On USB unplug i get some not usable kernel message, but it is not the
+> show stopper for me:
+> smsc95xx 1-1.4.1:1.0 eth1: Error updating MAC full duplex mode
+> smsc95xx 1-1.4.1:1.0 eth1: hardware isn't capable of remote wakeup
+
+Okay, I've amended patch [4/7] to silence the first of these messages
+if the error is caused by hot-removal.
+
+The second message isn't related to this series, I'll address that
+separately at a later point in time.
+
+Thanks,
+
+Lukas
