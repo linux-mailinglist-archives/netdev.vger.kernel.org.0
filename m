@@ -2,280 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B24CF51306D
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 11:57:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56BCC513003
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 11:48:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231181AbiD1KAG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 06:00:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33252 "EHLO
+        id S230006AbiD1JuI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 05:50:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234350AbiD1J7n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 05:59:43 -0400
+        with ESMTP id S1349195AbiD1Jop (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 05:44:45 -0400
 Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C260ADD51;
-        Thu, 28 Apr 2022 02:47:50 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KprP91b4JzfZwj;
-        Thu, 28 Apr 2022 17:46:53 +0800 (CST)
-Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A8A99180;
+        Thu, 28 Apr 2022 02:41:30 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KprFs3DYLzfb8W;
+        Thu, 28 Apr 2022 17:40:33 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 28 Apr 2022 17:47:48 +0800
-Received: from [10.67.109.184] (10.67.109.184) by
- dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 28 Apr 2022 17:47:48 +0800
-From:   Pu Lehui <pulehui@huawei.com>
-Subject: Re: [PATCH -next 1/2] bpf: Unify data extension operation of
- jited_ksyms and jited_linfo
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     bpf <bpf@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Luke Nelson <luke.r.nels@gmail.com>,
-        Xi Wang <xi.wang@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
-References: <20220426140924.3308472-1-pulehui@huawei.com>
- <20220426140924.3308472-2-pulehui@huawei.com>
- <CAEf4BzYvGaskrquK1hsKv6h7iz0NXWCNYn_zJEHvYUBYC=2UoA@mail.gmail.com>
-Message-ID: <f1777267-7904-e993-24f9-8071cd4b5bf7@huawei.com>
-Date:   Thu, 28 Apr 2022 17:47:48 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+ 15.1.2375.24; Thu, 28 Apr 2022 17:41:28 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 28 Apr
+ 2022 17:41:28 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>
+CC:     <dan.carpenter@oracle.com>, <andrew@lunn.ch>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+Subject: [PATCH] net: dsa: mt7530: add missing of_node_put() in mt7530_setup()
+Date:   Thu, 28 Apr 2022 17:53:17 +0800
+Message-ID: <20220428095317.538829-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <CAEf4BzYvGaskrquK1hsKv6h7iz0NXWCNYn_zJEHvYUBYC=2UoA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.109.184]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500019.china.huawei.com (7.185.36.180)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
 X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrii,
+Add of_node_put() if of_get_phy_mode() fails in mt7530_setup()
 
-On 2022/4/28 6:33, Andrii Nakryiko wrote:
-> On Tue, Apr 26, 2022 at 6:40 AM Pu Lehui <pulehui@huawei.com> wrote:
->>
->> We found that 32-bit environment can not print bpf line info due
->> to data inconsistency between jited_ksyms[0] and jited_linfo[0].
->>
->> For example:
->> jited_kyms[0] = 0xb800067c, jited_linfo[0] = 0xffffffffb800067c
->>
->> We know that both of them store bpf func address, but due to the
->> different data extension operations when extended to u64, they may
->> not be the same. We need to unify the data extension operations of
->> them.
->>
->> Signed-off-by: Pu Lehui <pulehui@huawei.com>
->> ---
->>   kernel/bpf/syscall.c                         |  5 ++++-
->>   tools/lib/bpf/bpf_prog_linfo.c               |  8 ++++----
->>   tools/testing/selftests/bpf/prog_tests/btf.c | 18 +++++++++---------
-> 
-> please split kernel changes, libbpf changes, and selftests/bpf changes
-> into separate patches
-Thanks for your review. Alright, I will split it next time.
+Fixes: 0c65b2b90d13 ("net: of_get_phy_mode: Change API to solve int/unit warnings")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/net/dsa/mt7530.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> 
->>   3 files changed, 17 insertions(+), 14 deletions(-)
->>
->> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
->> index e9621cfa09f2..4c417c806d92 100644
->> --- a/kernel/bpf/syscall.c
->> +++ b/kernel/bpf/syscall.c
->> @@ -3868,13 +3868,16 @@ static int bpf_prog_get_info_by_fd(struct file *file,
->>                  info.nr_jited_line_info = 0;
->>          if (info.nr_jited_line_info && ulen) {
->>                  if (bpf_dump_raw_ok(file->f_cred)) {
->> +                       unsigned long jited_linfo_addr;
->>                          __u64 __user *user_linfo;
->>                          u32 i;
->>
->>                          user_linfo = u64_to_user_ptr(info.jited_line_info);
->>                          ulen = min_t(u32, info.nr_jited_line_info, ulen);
->>                          for (i = 0; i < ulen; i++) {
->> -                               if (put_user((__u64)(long)prog->aux->jited_linfo[i],
->> +                               jited_linfo_addr = (unsigned long)
->> +                                       prog->aux->jited_linfo[i];
->> +                               if (put_user((__u64) jited_linfo_addr,
->>                                               &user_linfo[i]))
->>                                          return -EFAULT;
->>                          }
-Please let me to explain more detail, sorry if I'm wordy.
-The main reason that 32-bit env does not print bpf line info is here:
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 19f0035d4410..fe3cb26f4287 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -2229,6 +2229,7 @@ mt7530_setup(struct dsa_switch *ds)
+ 				ret = of_get_phy_mode(mac_np, &interface);
+ 				if (ret && ret != -ENODEV) {
+ 					of_node_put(mac_np);
++					of_node_put(phy_node);
+ 					return ret;
+ 				}
+ 				id = of_mdio_parse_addr(ds->dev, phy_node);
+-- 
+2.25.1
 
-kernel/bpf/syscall.c:
-bpf_prog_get_info_by_fd {
-	...
-	user_ksyms = u64_to_user_ptr(info.jited_ksyms);
-	ksym_addr = (unsigned long)prog->aux->func[i]->bpf_func;
-	if (put_user((u64) ksym_addr, &user_ksyms[i]))
-	...
-
-	user_linfo = u64_to_user_ptr(info.jited_line_info);
-	if (put_user((__u64)(long)prog->aux->jited_linfo[i],
-		     &user_linfo[i]))
-	...
-}
-
-In 32-bit env, ksym_addr and prog->aux->jited_linfo[0] both store the 
-32-bit address of bpf_func, but the first one is zero-extension to u64, 
-while the other is sign-extension to u64.
-For example:
-	prog->aux->func[0]->bpf_func = 0xb800067c
-	user_ksyms[0] = 0xb800067c, user_linfo[0] = 0xffffffffb800067c
-
-Both zero-extension and sign-extension are fine, but if operating 
-directly between them without casting in 32-bit env, there will have 
-some potential problems. Such as:
-
-tools/lib/bpf/bpf_prog_linfo.c:
-dissect_jited_func {
-	...
-	if (ksym_func[0] != *jited_linfo) //always missmatch in 32 env
-		goto errout;
-	...
-	if (ksym_func[f] == *jited_linfo) {
-	...
-	last_jited_linfo = *jited_linfo;
-	if (last_jited_linfo - ksym_func[f - 1] + 1 >
-	    ksym_len[f - 1])
-	...
-}
-
-We could cast them to 32-bit data type, but I think unify data extension 
-operation will be better.
-
->> diff --git a/tools/lib/bpf/bpf_prog_linfo.c b/tools/lib/bpf/bpf_prog_linfo.c
->> index 5c503096ef43..5cf41a563ef5 100644
->> --- a/tools/lib/bpf/bpf_prog_linfo.c
->> +++ b/tools/lib/bpf/bpf_prog_linfo.c
->> @@ -127,7 +127,7 @@ struct bpf_prog_linfo *bpf_prog_linfo__new(const struct bpf_prog_info *info)
->>          prog_linfo->raw_linfo = malloc(data_sz);
->>          if (!prog_linfo->raw_linfo)
->>                  goto err_free;
->> -       memcpy(prog_linfo->raw_linfo, (void *)(long)info->line_info, data_sz);
->> +       memcpy(prog_linfo->raw_linfo, (void *)(unsigned long)info->line_info, data_sz);
->>
->>          nr_jited_func = info->nr_jited_ksyms;
->>          if (!nr_jited_func ||
->> @@ -148,7 +148,7 @@ struct bpf_prog_linfo *bpf_prog_linfo__new(const struct bpf_prog_info *info)
->>          if (!prog_linfo->raw_jited_linfo)
->>                  goto err_free;
->>          memcpy(prog_linfo->raw_jited_linfo,
->> -              (void *)(long)info->jited_line_info, data_sz);
->> +              (void *)(unsigned long)info->jited_line_info, data_sz);
->>
->>          /* Number of jited_line_info per jited func */
->>          prog_linfo->nr_jited_linfo_per_func = malloc(nr_jited_func *
->> @@ -166,8 +166,8 @@ struct bpf_prog_linfo *bpf_prog_linfo__new(const struct bpf_prog_info *info)
->>                  goto err_free;
->>
->>          if (dissect_jited_func(prog_linfo,
->> -                              (__u64 *)(long)info->jited_ksyms,
->> -                              (__u32 *)(long)info->jited_func_lens))
->> +                              (__u64 *)(unsigned long)info->jited_ksyms,
->> +                              (__u32 *)(unsigned long)info->jited_func_lens))
-> 
-> so I'm trying to understand how this is changing anything for 32-bit
-> architecture and I must be missing something, sorry if I'm being
-> dense. The example you used below
-> 
-> jited_kyms[0] = 0xb800067c, jited_linfo[0] = 0xffffffffb800067c
-> 
-> Wouldn't (unsigned long)0xffffffffb800067c == (long)0xffffffffb800067c
-> == 0xb800067c ?
-If I understand correctly, info->jited_ksyms or info->jited_func_lens is 
-just a u64 address that point to the corresponding space. The bpf_func 
-address is stored in the item of info->jited_ksyms but not 
-info->jited_ksyms.
-
-And here, I may have misled you. Both (__u64 *)(long)info->jited_ksyms 
-and (__u64 *)(unsigned long)info->jited_ksyms are the same, I just want 
-to unify the style. I will remove them in v2.
-
-Please let me know if there is any problem with my understanding.
-
-Thanks,
-Lehui
-> 
-> isn't sizeof(long) == sizeof(void*) == 4?
-> 
-> It would be nice if you could elaborate a bit more on what problems
-> did you see in practice?
-> 
->>                  goto err_free;
->>
->>          return prog_linfo;
->> diff --git a/tools/testing/selftests/bpf/prog_tests/btf.c b/tools/testing/selftests/bpf/prog_tests/btf.c
->> index 84aae639ddb5..d9ba1ec1d5b3 100644
->> --- a/tools/testing/selftests/bpf/prog_tests/btf.c
->> +++ b/tools/testing/selftests/bpf/prog_tests/btf.c
->> @@ -6451,8 +6451,8 @@ static int test_get_linfo(const struct prog_info_raw_test *test,
->>                    info.nr_jited_line_info, jited_cnt,
->>                    info.line_info_rec_size, rec_size,
->>                    info.jited_line_info_rec_size, jited_rec_size,
->> -                 (void *)(long)info.line_info,
->> -                 (void *)(long)info.jited_line_info)) {
->> +                 (void *)(unsigned long)info.line_info,
->> +                 (void *)(unsigned long)info.jited_line_info)) {
->>                  err = -1;
->>                  goto done;
->>          }
->> @@ -6500,8 +6500,8 @@ static int test_get_linfo(const struct prog_info_raw_test *test,
->>          }
->>
->>          if (CHECK(jited_linfo[0] != jited_ksyms[0],
->> -                 "jited_linfo[0]:%lx != jited_ksyms[0]:%lx",
->> -                 (long)(jited_linfo[0]), (long)(jited_ksyms[0]))) {
->> +                 "jited_linfo[0]:%llx != jited_ksyms[0]:%llx",
->> +                 jited_linfo[0], jited_ksyms[0])) {
->>                  err = -1;
->>                  goto done;
->>          }
->> @@ -6519,16 +6519,16 @@ static int test_get_linfo(const struct prog_info_raw_test *test,
->>                  }
->>
->>                  if (CHECK(jited_linfo[i] <= jited_linfo[i - 1],
->> -                         "jited_linfo[%u]:%lx <= jited_linfo[%u]:%lx",
->> -                         i, (long)jited_linfo[i],
->> -                         i - 1, (long)(jited_linfo[i - 1]))) {
->> +                         "jited_linfo[%u]:%llx <= jited_linfo[%u]:%llx",
->> +                         i, jited_linfo[i],
->> +                         i - 1, (jited_linfo[i - 1]))) {
->>                          err = -1;
->>                          goto done;
->>                  }
->>
->>                  if (CHECK(jited_linfo[i] - cur_func_ksyms > cur_func_len,
->> -                         "jited_linfo[%u]:%lx - %lx > %u",
->> -                         i, (long)jited_linfo[i], (long)cur_func_ksyms,
->> +                         "jited_linfo[%u]:%llx - %llx > %u",
->> +                         i, jited_linfo[i], cur_func_ksyms,
->>                            cur_func_len)) {
->>                          err = -1;
->>                          goto done;
->> --
->> 2.25.1
->>
-> .
-> 
