@@ -2,103 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AE2C512F04
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 10:50:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A4D6512EFA
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 10:49:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344298AbiD1IxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 04:53:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58924 "EHLO
+        id S239529AbiD1Iwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 04:52:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344430AbiD1IxR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 04:53:17 -0400
-Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F25DE165BA;
-        Thu, 28 Apr 2022 01:50:01 -0700 (PDT)
-Received: by ajax-webmail-mail-app3 (Coremail) ; Thu, 28 Apr 2022 16:49:18
- +0800 (GMT+08:00)
-X-Originating-IP: [222.205.13.90]
-Date:   Thu, 28 Apr 2022 16:49:18 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   "Lin Ma" <linma@zju.edu.cn>
-To:     "Greg KH" <gregkh@linuxfoundation.org>
-Cc:     "Jakub Kicinski" <kuba@kernel.org>,
-        "Duoming Zhou" <duoming@zju.edu.cn>,
-        krzysztof.kozlowski@linaro.org, pabeni@redhat.com,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        alexander.deucher@amd.com, akpm@linux-foundation.org,
-        broonie@kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net v4] nfc: ... device_is_registered() is data
- race-able
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <YmpNZOaJ1+vWdccK@kroah.com>
-References: <20220427011438.110582-1-duoming@zju.edu.cn>
- <20220427174548.2ae53b84@kernel.org>
- <38929d91.237b.1806f05f467.Coremail.linma@zju.edu.cn>
- <YmpEZQ7EnOIWlsy8@kroah.com>
- <2d7c9164.2b1f.1806f2a8ed9.Coremail.linma@zju.edu.cn>
- <YmpNZOaJ1+vWdccK@kroah.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S238979AbiD1Iwm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 04:52:42 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCA3D6385;
+        Thu, 28 Apr 2022 01:49:28 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id bv19so8149268ejb.6;
+        Thu, 28 Apr 2022 01:49:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=gditj3pIK4QuzcqOW8qGUvUL1/lFL5DV7yQpng/n4Bg=;
+        b=SmZEqrKEzVcD/2dBQBE39Ir32WYWyyv0LiXdMOEk2y91yqcjv1JRy9jecPoHlk3Mse
+         /p7JZ8A3RIZwyXmD4gccsFRmWfxQc8OjeDRQk7WQi2I4CZpsjNphd1NMriagdl9lCklS
+         Sq3j6xpZ481R5ZdFCD7Kgs7+Suid8oKytyoWTmrM1Ul+2cMyqkE0MkJcSYwK46+tO3hz
+         yPQDT719L4Aotjyc4mV5MrNA37dM5Px1ffA2YqesVpleJS5B8B3m/BCgSNQNilyZFD4P
+         6qoLuxTMp2dYZUTQBtB08izby3FMSG/cS+YK8Mogr+1TIsh7pQWvo2YLf6NK4/NoLgHL
+         S1fA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=gditj3pIK4QuzcqOW8qGUvUL1/lFL5DV7yQpng/n4Bg=;
+        b=UrpUE2WFyOQlGSoLPGs004yynbdddnsZTSpmHVw9EPGRnZSfzx6fgycL/Ipg62GUew
+         QjWb6oZLsIHgjhn1VH+VeAScH4bs1rlYs3jnS+bdZ7dwpTgrh0ha/Sr9YcodsOan6hFr
+         1+RYumOk2wjd9xfLoiJjujNs2svV/ZCWEkkOzMzicl4166+x3TRKiyHS5FbpIgOuHiEc
+         tnB4vkFS3yAC6kYn6P/ej0Tf6vyhGkPzn4K1FfGMThkfaOBm+0jVHlttVYHJPorzahwx
+         xzsUi7YeKiPTjC1rH7MrQMjJiRBywhDcaS2YHEBtklyI4pk3zY7HhpTF8Kz8oXDfq/UR
+         lzlg==
+X-Gm-Message-State: AOAM530eDkXBs5QGoCItMdK4qSKkhfkL66coO2HTpK6z1Pc1xDhB7UWe
+        vmKTl9g2J3bDfxipkAoMNGbJiZYARSc=
+X-Google-Smtp-Source: ABdhPJwh7NCntuLtaQyH1pXzw5R201XZqA2FCHT/035nb8SkKfuoFK92gkdub5ES2IyVmhRVRRQrRA==
+X-Received: by 2002:a17:906:99c1:b0:6db:f0cf:e38c with SMTP id s1-20020a17090699c100b006dbf0cfe38cmr30591051ejn.692.1651135767166;
+        Thu, 28 Apr 2022 01:49:27 -0700 (PDT)
+Received: from [132.68.43.112] ([132.68.43.112])
+        by smtp.gmail.com with ESMTPSA id q17-20020a1709064cd100b006e78206fe2bsm8193855ejt.111.2022.04.28.01.49.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Apr 2022 01:49:26 -0700 (PDT)
+Message-ID: <068945db-f29e-8586-0487-bb5be68c7ba8@gmail.com>
+Date:   Thu, 28 Apr 2022 11:49:24 +0300
 MIME-Version: 1.0
-Message-ID: <15d09db2.2f76.1806f5c4187.Coremail.linma@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cC_KCgB3HwAOVWpi+aEtAw--.58701W
-X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/1tbiAwIOElNG3GhH9QABsP
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH RFC 4/5] net/tls: Add support for PF_TLSH (a TLS handshake
+ listener)
+Content-Language: en-US
+To:     Chuck Lever <chuck.lever@oracle.com>
+Cc:     ak@tempesta-tech.com, simo@redhat.com,
+        linux-fsdevel@vger.kernel.org, linux-cifs@vger.kernel.org,
+        linux-nfs@vger.kernel.org, linux-nvme@lists.infradead.org,
+        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+References: <165030051838.5073.8699008789153780301.stgit@oracle-102.nfsv4.dev>
+ <165030059051.5073.16723746870370826608.stgit@oracle-102.nfsv4.dev>
+From:   Boris Pismenny <borispismenny@gmail.com>
+In-Reply-To: <165030059051.5073.16723746870370826608.stgit@oracle-102.nfsv4.dev>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8gR3JlZywKCj4gCj4gSXQgc2hvdWxkbid0IGJlLCBpZiB5b3UgYXJlIHVzaW5nIGl0IHBy
-b3Blcmx5IDopCj4gCj4gWy4uLl0KPiAKPiBZZXMsIHlvdSBzaG91bGQgYWxtb3N0IG5ldmVyIHVz
-ZSB0aGF0IGNhbGwuICBTZWVtcyB0aGUgbmZjIHN1YnN5c3RlbSBpcwo+IHRoZSBtb3N0IGNvbW1v
-biB1c2VyIG9mIGl0IGZvciBzb21lIHJlYXNvbiA6KAoKQ29vbCwgYW5kIEkgYmVsaWV2ZSB0aGF0
-IHRoZSBjdXJyZW50IG5mYyBjb3JlIGNvZGUgZG9lcyBub3QgdXNlIGl0IHByb3Blcmx5LiA6KAoK
-PiAKPiBXaGF0IHN0YXRlIGFyZSB5b3UgdHJ5aW5nIHRvIHRyYWNrIGhlcmUgZXhhY3RseT8KPiAK
-CkZvcmdldCBhYm91dCB0aGUgZmlybXdhcmUgZG93bmxvYWRpbmcgcmFjZSB0aGF0IHJhaXNlZCBi
-eSBEdW9taW5nIGluIHRoaXMgY2hhbm5lbCwKYWxsIHRoZSBuZXRsaW5rIGhhbmRsZXIgY29kZSBp
-biBuZXQvbmZjL2NvcmUuYyBkZXBlbmRzIG9uIHRoZSBkZXZpY2VfaXNfcmVnaXN0ZXJlZAptYWNy
-by4KCk15IGlkZWEgaXMgdG8gaW50cm9kdWNlIGEgcGF0Y2ggbGlrZSBiZWxvdzoKCiBpbmNsdWRl
-L25ldC9uZmMvbmZjLmggfCAgMSArCiBuZXQvbmZjL2NvcmUuYyAgICAgICAgfCAyNiArKysrKysr
-KysrKysrKy0tLS0tLS0tLS0tLQogMiBmaWxlcyBjaGFuZ2VkLCAxNSBpbnNlcnRpb25zKCspLCAx
-MiBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9pbmNsdWRlL25ldC9uZmMvbmZjLmggYi9pbmNs
-dWRlL25ldC9uZmMvbmZjLmgKaW5kZXggNWRlZTU3NWZiZTg2Li5kODRlNTM4MDJiMDYgMTAwNjQ0
-Ci0tLSBhL2luY2x1ZGUvbmV0L25mYy9uZmMuaAorKysgYi9pbmNsdWRlL25ldC9uZmMvbmZjLmgK
-QEAgLTE2OCw2ICsxNjgsNyBAQCBzdHJ1Y3QgbmZjX2RldiB7CiAJaW50IHRhcmdldHNfZ2VuZXJh
-dGlvbjsKIAlzdHJ1Y3QgZGV2aWNlIGRldjsKIAlib29sIGRldl91cDsKKwlib29sIGRldl9yZWdp
-c3RlcjsKIAlib29sIGZ3X2Rvd25sb2FkX2luX3Byb2dyZXNzOwogCXU4IHJmX21vZGU7CiAJYm9v
-bCBwb2xsaW5nOwpkaWZmIC0tZ2l0IGEvbmV0L25mYy9jb3JlLmMgYi9uZXQvbmZjL2NvcmUuYwpp
-bmRleCBkYzdhMjQwNGVmZGYuLjIwOGU2YmIwODA0ZSAxMDA2NDQKLS0tIGEvbmV0L25mYy9jb3Jl
-LmMKKysrIGIvbmV0L25mYy9jb3JlLmMKQEAgLTM4LDcgKzM4LDcgQEAgaW50IG5mY19md19kb3du
-bG9hZChzdHJ1Y3QgbmZjX2RldiAqZGV2LCBjb25zdCBjaGFyICpmaXJtd2FyZV9uYW1lKQogCiAJ
-ZGV2aWNlX2xvY2soJmRldi0+ZGV2KTsKIAotCWlmICghZGV2aWNlX2lzX3JlZ2lzdGVyZWQoJmRl
-di0+ZGV2KSkgeworCWlmICghZGV2LT5kZXZfcmVnaXN0ZXIpIHsKIAkJcmMgPSAtRU5PREVWOwog
-CQlnb3RvIGVycm9yOwogCX0KQEAgLTk0LDcgKzk0LDcgQEAgaW50IG5mY19kZXZfdXAoc3RydWN0
-IG5mY19kZXYgKmRldikKIAogCWRldmljZV9sb2NrKCZkZXYtPmRldik7CiAKLQlpZiAoIWRldmlj
-ZV9pc19yZWdpc3RlcmVkKCZkZXYtPmRldikpIHsKKwlpZiAoIWRldi0+ZGV2X3JlZ2lzdGVyKSB7
-CiAJCXJjID0gLUVOT0RFVjsKIAkJZ290byBlcnJvcjsKIAl9CgpbLi4uXQoKQEAgLTExMzQsNiAr
-MTEzNCw3IEBAIGludCBuZmNfcmVnaXN0ZXJfZGV2aWNlKHN0cnVjdCBuZmNfZGV2ICpkZXYpCiAJ
-CQlkZXYtPnJma2lsbCA9IE5VTEw7CiAJCX0KIAl9CisJZGV2LT5kZXZfcmVnaXN0ZXIgPSB0cnVl
-OwogCWRldmljZV91bmxvY2soJmRldi0+ZGV2KTsKIAogCXJjID0gbmZjX2dlbmxfZGV2aWNlX2Fk
-ZGVkKGRldik7CkBAIC0xMTYyLDYgKzExNjMsNyBAQCB2b2lkIG5mY191bnJlZ2lzdGVyX2Rldmlj
-ZShzdHJ1Y3QgbmZjX2RldiAqZGV2KQogCQkJICJ3YXMgcmVtb3ZlZFxuIiwgZGV2X25hbWUoJmRl
-di0+ZGV2KSk7CiAKIAlkZXZpY2VfbG9jaygmZGV2LT5kZXYpOworCWRldi0+ZGV2X3JlZ2lzdGVy
-ID0gZmFsc2U7CiAJaWYgKGRldi0+cmZraWxsKSB7CiAJCXJma2lsbF91bnJlZ2lzdGVyKGRldi0+
-cmZraWxsKTsKIAkJcmZraWxsX2Rlc3Ryb3koZGV2LT5yZmtpbGwpOwotLSAKMi4zNS4xCgpUaGUg
-YWRkZWQgZGV2X3JlZ2lzdGVyIHZhcmlhYmxlIGNhbiBmdW5jdGlvbiBsaWtlIHRoZSBvcmlnaW5h
-bCBkZXZpY2VfaXNfcmVnaXN0ZXJlZCBhbmQgZG9lcyBub3QgcmFjZS1hYmxlCmJlY2F1c2Ugb2Yg
-dGhlIHByb3RlY3Rpb24gb2YgZGV2aWNlX2xvY2suCgpJIHRoaW5rIGFmdGVyIHN1Y2ggYSBwYXRj
-aCBpcyBhZG9wdGVkLCB0aGUgcmVvcmRlciB2ZXJzaW9uIG9mIHBhdGNoIGZyb20gRHVvbWluZyAK
-LT4gaHR0cHM6Ly9saXN0cy5vcGVud2FsbC5uZXQvbmV0ZGV2LzIwMjIvMDQvMjUvMTAKY2FuIGJl
-IHVzZWQgdG8gZml4IHRoZSBmaXJtd2FyZSBkb3dubG9hZGluZyBidWcuCgpEbyB5b3UgYWdyZWUg
-b24gdGhpcyBvciBzaG91bGQgd2UgdXNlIGFub3RoZXIgbWFjcm8gdGhhdCBpcyBzdWl0YWJsZSB0
-aGFuIGRldmljZV9pc19yZWdpc3RlcmVkPwoKPiB0aGFua3MsCj4gCj4gZ3JlZyBrLWgKClRoYW5r
-cwpMaW4K
+On 18/04/2022 19:49, Chuck Lever wrote:
+> In-kernel TLS consumers need a way to perform a TLS handshake. In
+> the absence of a handshake implementation in the kernel itself, a
+> mechanism to perform the handshake in user space, using an existing
+> TLS handshake library, is necessary.
+>
+> I've designed a way to pass a connected kernel socket endpoint to
+> user space using the traditional listen/accept mechanism. accept(2)
+> gives us a well-understood way to materialize a socket endpoint as a
+> normal file descriptor in a specific user space process. Like any
+> open socket descriptor, the accepted FD can then be passed to a
+> library such as openSSL to perform a TLS handshake.
+>
+> This prototype currently handles only initiating client-side TLS
+> handshakes. Server-side handshakes and key renegotiation are left
+> to do.
+>
+> Security Considerations
+> ~~~~~~~~ ~~~~~~~~~~~~~~
+>
+> This prototype is net-namespace aware.
+>
+> The kernel has no mechanism to attest that the listening user space
+> agent is trustworthy.
+>
+> Currently the prototype does not handle multiple listeners that
+> overlap -- multiple listeners in the same net namespace that have
+> overlapping bind addresses.
+>
+
+Thanks for posting this. As we discussed offline, I think this approach
+is more manageable compared to a full in-kernel TLS handshake. A while
+ago, I've hacked around TLS to implement the data-path for NVMe-TLS and
+the data-path is indeed very simple provided an infrastructure such as
+this one.
+
+Making this more generic is desirable, and this obviously requires
+supporting multiple listeners for multiple protocols (TLS, DTLS, QUIC,
+PSP, etc.), which suggests that it will reside somewhere outside of net/tls.
+Moreover, there is a need to support (TLS) control messages here too.
+These will occasionally require going back to the userspace daemon
+during kernel packet processing. A few examples are handling: TLS rekey,
+TLS close_notify, and TLS keepalives. I'm not saying that we need to
+support everything from day-1, but there needs to be a way to support these.
+
+A related kernel interface is the XFRM netlink where the kernel asks a
+userspace daemon to perform an IKE handshake for establishing IPsec SAs.
+This works well when the handshake runs on a different socket, perhaps
+that interface can be extended to do handshakes on a given socket that
+lives in the kernel without actually passing the fd to userespace. If we
+avoid instantiating a full socket fd in userspace, then the need for an
+accept(2) interface is reduced, right?
+
