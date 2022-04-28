@@ -2,25 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6309F5136B9
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 16:21:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBF025136BA
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 16:21:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236017AbiD1OY1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 10:24:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60324 "EHLO
+        id S1346751AbiD1OY3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 10:24:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232091AbiD1OY1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 10:24:27 -0400
+        with ESMTP id S232091AbiD1OY2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 10:24:28 -0400
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AD702B42D8;
-        Thu, 28 Apr 2022 07:21:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EDB95AFB22;
+        Thu, 28 Apr 2022 07:21:13 -0700 (PDT)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 0/3] Netfilter fixes for net
-Date:   Thu, 28 Apr 2022 16:21:06 +0200
-Message-Id: <20220428142109.38726-1-pablo@netfilter.org>
+Subject: [PATCH net 1/3] netfilter: nf_conntrack_tcp: re-init for syn packets only
+Date:   Thu, 28 Apr 2022 16:21:07 +0200
+Message-Id: <20220428142109.38726-2-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220428142109.38726-1-pablo@netfilter.org>
+References: <20220428142109.38726-1-pablo@netfilter.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
@@ -31,46 +33,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Florian Westphal <fw@strlen.de>
 
-This patchset contains Netfilter fixes for net:
+Jaco Kroon reported tcp problems that Eric Dumazet and Neal Cardwell
+pinpointed to nf_conntrack tcp_in_window() bug.
 
-1) Fix incorrect TCP connection tracking window reset for non-syn
-   packets, from Florian Westphal.
+tcp trace shows following sequence:
 
-2) Incorrect dependency on CONFIG_NFT_FLOW_OFFLOAD, from Volodymyr Mytnyk.
+I > R Flags [S], seq 3451342529, win 62580, options [.. tfo [|tcp]>
+R > I Flags [S.], seq 2699962254, ack 3451342530, win 65535, options [..]
+R > I Flags [P.], seq 1:89, ack 1, [..]
 
-3) Fix nft_socket from the output path, from Florian Westphal.
+Note 3rd ACK is from responder to initiator so following branch is taken:
+    } else if (((state->state == TCP_CONNTRACK_SYN_SENT
+               && dir == IP_CT_DIR_ORIGINAL)
+               || (state->state == TCP_CONNTRACK_SYN_RECV
+               && dir == IP_CT_DIR_REPLY))
+               && after(end, sender->td_end)) {
 
-Please, pull these changes from:
+... because state == TCP_CONNTRACK_SYN_RECV and dir is REPLY.
+This causes the scaling factor to be reset to 0: window scale option
+is only present in syn(ack) packets.  This in turn makes nf_conntrack
+mark valid packets as out-of-window.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git
+This was always broken, it exists even in original commit where
+window tracking was added to ip_conntrack (nf_conntrack predecessor)
+in 2.6.9-rc1 kernel.
 
-Thanks!
+Restrict to 'tcph->syn', just like the 3rd condtional added in
+commit 82b72cb94666 ("netfilter: conntrack: re-init state for retransmitted syn-ack").
 
-----------------------------------------------------------------
+Upon closer look, those conditionals/branches can be merged:
 
-The following changes since commit a1bde8c92d27d178a988bfd13d229c170b8135aa:
+Because earlier checks prevent syn-ack from showing up in
+original direction, the 'dir' checks in the conditional quoted above are
+redundant, remove them. Return early for pure syn retransmitted in reply
+direction (simultaneous open).
 
-  Merge branch '100GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net -queue (2022-04-27 10:58:39 +0100)
+Fixes: 9fb9cbb1082d ("[NETFILTER]: Add nf_conntrack subsystem.")
+Reported-by: Jaco Kroon <jaco@uls.co.za>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Acked-by: Jozsef Kadlecsik <kadlec@netfilter.org>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+ net/netfilter/nf_conntrack_proto_tcp.c | 21 ++++++---------------
+ 1 file changed, 6 insertions(+), 15 deletions(-)
 
-are available in the Git repository at:
+diff --git a/net/netfilter/nf_conntrack_proto_tcp.c b/net/netfilter/nf_conntrack_proto_tcp.c
+index 8ec55cd72572..204a5cdff5b1 100644
+--- a/net/netfilter/nf_conntrack_proto_tcp.c
++++ b/net/netfilter/nf_conntrack_proto_tcp.c
+@@ -556,24 +556,14 @@ static bool tcp_in_window(struct nf_conn *ct,
+ 			}
+ 
+ 		}
+-	} else if (((state->state == TCP_CONNTRACK_SYN_SENT
+-		     && dir == IP_CT_DIR_ORIGINAL)
+-		   || (state->state == TCP_CONNTRACK_SYN_RECV
+-		     && dir == IP_CT_DIR_REPLY))
+-		   && after(end, sender->td_end)) {
++	} else if (tcph->syn &&
++		   after(end, sender->td_end) &&
++		   (state->state == TCP_CONNTRACK_SYN_SENT ||
++		    state->state == TCP_CONNTRACK_SYN_RECV)) {
+ 		/*
+ 		 * RFC 793: "if a TCP is reinitialized ... then it need
+ 		 * not wait at all; it must only be sure to use sequence
+ 		 * numbers larger than those recently used."
+-		 */
+-		sender->td_end =
+-		sender->td_maxend = end;
+-		sender->td_maxwin = (win == 0 ? 1 : win);
+-
+-		tcp_options(skb, dataoff, tcph, sender);
+-	} else if (tcph->syn && dir == IP_CT_DIR_REPLY &&
+-		   state->state == TCP_CONNTRACK_SYN_SENT) {
+-		/* Retransmitted syn-ack, or syn (simultaneous open).
+ 		 *
+ 		 * Re-init state for this direction, just like for the first
+ 		 * syn(-ack) reply, it might differ in seq, ack or tcp options.
+@@ -581,7 +571,8 @@ static bool tcp_in_window(struct nf_conn *ct,
+ 		tcp_init_sender(sender, receiver,
+ 				skb, dataoff, tcph,
+ 				end, win);
+-		if (!tcph->ack)
++
++		if (dir == IP_CT_DIR_REPLY && !tcph->ack)
+ 			return true;
+ 	}
+ 
+-- 
+2.30.2
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git HEAD
-
-for you to fetch changes up to 743b83f15d4069ea57c3e40996bf4a1077e0cdc1:
-
-  netfilter: nft_socket: only do sk lookups when indev is available (2022-04-28 16:15:23 +0200)
-
-----------------------------------------------------------------
-Florian Westphal (2):
-      netfilter: nf_conntrack_tcp: re-init for syn packets only
-      netfilter: nft_socket: only do sk lookups when indev is available
-
-Volodymyr Mytnyk (1):
-      netfilter: conntrack: fix udp offload timeout sysctl
-
- net/netfilter/nf_conntrack_proto_tcp.c  | 21 ++++---------
- net/netfilter/nf_conntrack_standalone.c |  2 +-
- net/netfilter/nft_socket.c              | 52 ++++++++++++++++++++++++---------
- 3 files changed, 45 insertions(+), 30 deletions(-)
