@@ -2,70 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 49925512D36
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 09:41:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B642512D73
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 09:55:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245367AbiD1HpD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 03:45:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34362 "EHLO
+        id S238594AbiD1H62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 03:58:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232526AbiD1HpC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 03:45:02 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48040220CA;
-        Thu, 28 Apr 2022 00:41:47 -0700 (PDT)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KpnWX2KPyzCsNn;
-        Thu, 28 Apr 2022 15:37:12 +0800 (CST)
-Received: from [10.174.178.165] (10.174.178.165) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 28 Apr 2022 15:41:45 +0800
-Subject: Re: [PATCH bpf-next RESEND 0/2] bpf, docs: Fix typos in
- instruction-set.rst
-To:     Tiezhu Yang <yangtiezhu@loongson.cn>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>
-CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <1651131344-24528-1-git-send-email-yangtiezhu@loongson.cn>
-From:   "weiyongjun (A)" <weiyongjun1@huawei.com>
-Message-ID: <a3105210-757e-b2f7-51d0-9ca7bec7e0cb@huawei.com>
-Date:   Thu, 28 Apr 2022 15:41:45 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        with ESMTP id S234669AbiD1H60 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 03:58:26 -0400
+Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6E776DD;
+        Thu, 28 Apr 2022 00:55:11 -0700 (PDT)
+Received: by ajax-webmail-mail-app3 (Coremail) ; Thu, 28 Apr 2022 15:55:01
+ +0800 (GMT+08:00)
+X-Originating-IP: [222.205.13.90]
+Date:   Thu, 28 Apr 2022 15:55:01 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   "Lin Ma" <linma@zju.edu.cn>
+To:     "Greg KH" <gregkh@linuxfoundation.org>
+Cc:     "Jakub Kicinski" <kuba@kernel.org>,
+        "Duoming Zhou" <duoming@zju.edu.cn>,
+        krzysztof.kozlowski@linaro.org, pabeni@redhat.com,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        alexander.deucher@amd.com, akpm@linux-foundation.org,
+        broonie@kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net v4] nfc: ... device_is_registered() is data
+ race-able
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+In-Reply-To: <YmpEZQ7EnOIWlsy8@kroah.com>
+References: <20220427011438.110582-1-duoming@zju.edu.cn>
+ <20220427174548.2ae53b84@kernel.org>
+ <38929d91.237b.1806f05f467.Coremail.linma@zju.edu.cn>
+ <YmpEZQ7EnOIWlsy8@kroah.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-In-Reply-To: <1651131344-24528-1-git-send-email-yangtiezhu@loongson.cn>
-Content-Type: text/plain; charset="gbk"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.178.165]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Message-ID: <2d7c9164.2b1f.1806f2a8ed9.Coremail.linma@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: cC_KCgDnXmJVSGpi97osAw--.46956W
+X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/1tbiAwMOElNG3GhD8wABsM
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-ÔÚ 2022/4/28 15:35, Tiezhu Yang Ð´µÀ:
-> Forget to add [PATCH bpf-next] subject prefix,
-> sorry for that, just resend.
->
-> Tiezhu Yang (2):
->    bpf, docs: Remove duplicated word "instructions"
->    bpf, docs: BPF_FROM_BE exists as alias for BPF_TO_BE
->
->   Documentation/bpf/instruction-set.rst | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-
-
-Looks good to me
-
-
+SGVsbG8gR3JlZywKCgo+IAo+IFlvdSBzaG91bGQgbm90IGJlIG1ha2luZyB0aGVzZSB0eXBlcyBv
+ZiBjaGVja3Mgb3V0c2lkZSBvZiB0aGUgZHJpdmVyCj4gY29yZS4KPiAKPiA+IFRoaXMgaXMgYnkg
+bm8gbWVhbnMgbWF0Y2hpbmcgb3VyIGV4cGVjdGF0aW9ucyBhcyBvbmUgb2Ygb3VyIHByZXZpb3Vz
+IHBhdGNoIHJlbGllcyBvbiB0aGUgZGV2aWNlX2lzX3JlZ2lzdGVyZWQgY29kZS4KPiAKPiBQbGVh
+c2UgZG8gbm90IGRvIHRoYXQuCj4gCj4gPiAKPiA+IC0+IHRoZSBwYXRjaDogM2UzYjVkZmNkMTZh
+ICgiTkZDOiByZW9yZGVyIHRoZSBsb2dpYyBpbiBuZmNfe3VuLH1yZWdpc3Rlcl9kZXZpY2UiKQo+
+ID4gCj4gPC4uLj4KPiA+IAo+ID4gSW4gYW5vdGhlciB3b3JkLCB0aGUgZGV2aWNlX2RlbCAtPiBr
+b2JqZWN0X2RlbCAtPiBfX2tvYmplY3RfZGVsIGlzIG5vdCBwcm90ZWN0ZWQgYnkgdGhlIGRldmlj
+ZV9sb2NrLgo+IAo+IE5vciBzaG91bGQgaXQgYmUuCj4gCgpJIG1heSBoYXZlIG1pc3Rha2VubHkg
+cHJlc2VudGVkIG15IHBvaW50LiBJbiBmYWN0LCB0aGVyZSBpcyBub3RoaW5nIHdyb25nIHdpdGgg
+dGhlIGRldmljZSBjb3JlLCBub3RoaW5nIHRvIGRvIHdpdGggdGhlIGludGVybmFsIG9mIGRldmlj
+ZV9kZWwgYW5kIGRldmljZV9pc19yZWdpc3RlcmVkIGltcGxlbWVudGF0aW9uLiBBbmQsIG9mIGNv
+dXJzZSwgd2Ugd2lsbCBub3QgYWRkIGFueSBjb2RlIG9yIGRvIGFueSBtb2RpZmljYXRpb24gdG8g
+dGhlIGRldmljZS9kcml2ZXIgYmFzZSBjb2RlLgoKVGhlIHBvaW50IGlzIHRoZSBjb21iaW5hdGlv
+biBvZiBkZXZpY2VfaXNfcmVnaXN0ZXJlZCArIGRldmljZV9kZWwsIHdoaWNoIGlzIHVzZWQgaW4g
+TkZDIGNvcmUsIGlzIG5vdCBzYWZlLgoKVGhhdCBpcyB0byBzYXksIGV2ZW4gdGhlIGRldmljZV9p
+c19yZWdpc3RlcmVkIGNhbiByZXR1cm4gVHJ1ZSBldmVuIHRoZSBkZXZpY2VfZGVsIGlzIGV4ZWN1
+dGluZyBpbiBhbm90aGVyIHRocmVhZC4KCihCeSBkZWJ1Z2dpbmcgd2UgdGhpbmsgdGhpcyBpcyB0
+cnVlLCBjb3JyZWN0IG1lIGlmIGl0IGlzIG5vdCkKCkhlbmNlIHdlIHdhbnQgdG8gYWRkIGFkZGl0
+aW9uYWwgc3RhdGUgaW4gbmZjX2RldiBvYmplY3QgdG8gZml4IHRoYXQsIG5vdCBnb2luZyB0byBh
+ZGQgYW55IHN0YXRlIGluIGRldmljZS9kcml2ZXIgY29yZS4KCj4gPiBUaGlzIG1lYW5zIHRoZSBk
+ZXZpY2VfbG9jayArIGRldmljZV9pc19yZWdpc3RlcmVkIGlzIHN0aWxsIHByb25lIHRvIHRoZSBk
+YXRhIHJhY2UuIEFuZCB0aGlzIGlzIG5vdCBqdXN0IHRoZSBwcm9ibGVtIHdpdGggZmlybXdhcmUg
+ZG93bmxvYWRpbmcuIFRoZSBhbGwgcmVsZXZhbnQgbmV0bGluayB0YXNrcyB0aGF0IHVzZSB0aGUg
+ZGV2aWNlX2xvY2sgKyBkZXZpY2VfaXNfcmVnaXN0ZXJlZCBpcyBwb3NzaWJsZSB0byBiZSByYWNl
+ZC4KPiA+IAo+ID4gVG8gdGhpcyBlbmQsIHdlIHdpbGwgY29tZSBvdXQgd2l0aCB0d28gcGF0Y2hl
+cywgb25lIGZvciBmaXhpbmcgdGhpcyBkZXZpY2VfaXNfcmVnaXN0ZXJlZCBieSB1c2luZyBhbm90
+aGVyIHN0YXR1cyB2YXJpYWJsZSBpbnN0ZWFkLiBUaGUgb3RoZXIgaXMgdGhlIHBhdGNoIHRoYXQg
+cmVvcmRlcnMgdGhlIGNvZGUgaW4gbmNpX3VucmVnaXN0ZXJfZGV2aWNlLgo+IAo+IFdoeSBpcyB0
+aGlzIHNvbWVob3cgdW5pcXVlIHRvIHRoZXNlIGRldmljZXM/ICBXaHkgZG8gbm8gb3RoZXIgYnVz
+ZXMgaGF2ZQo+IHRoaXMgaXNzdWU/ICBBcmUgeW91IHNvbWVob3cgYWxsb3dpbmcgYSBjb2RlIHBh
+dGggdGhhdCBzaG91bGQgbm90IGJlCj4gaGFwcGVuaW5nPwo+IAo+IHRoYW5rcywKPiAKPiBncmVn
+IGstaAoKSW4gZmFjdCwgYnkgc2VhcmNoaW5nIHRoZSBkZXZpY2VfaXNfcmVnaXN0ZXJlZCgpIHVz
+ZSBjYXNlcywgSSBmb3VuZCB0aGF0IG1vc3Qgb2YgdGhlbSBhcmUgdXNlZCBpbiBkcmllciBjb2Rl
+IGluc3RlYWQgb2YgaW4gdGhlIG5ldHdvcmsgc3RhY2suIEkgaGF2ZSBubyBpZGVhIHdoZXRoZXIg
+b3Igbm90IHRoZXkgc3VmZmVyIGZyb20gc2ltaWxhciBwcm9ibGVtcyBhbmQgSSB3aWxsIGNoZWNr
+IHRoYXQgb3V0LgoKVGhhbmtzCkxpbg==
