@@ -2,80 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A0D95130BB
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 12:05:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9ABD45130C0
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 12:05:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234184AbiD1KH5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 06:07:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59002 "EHLO
+        id S234145AbiD1KHw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 06:07:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233451AbiD1KHG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 06:07:06 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B7F94433AE;
-        Thu, 28 Apr 2022 02:55:59 -0700 (PDT)
-Received: from linux.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9BxkNqqZGpiWHIBAA--.7516S5;
-        Thu, 28 Apr 2022 17:55:56 +0800 (CST)
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next v2 3/3] bpf, docs: Fix typo "respetively" to "respectively"
-Date:   Thu, 28 Apr 2022 17:55:54 +0800
-Message-Id: <1651139754-4838-4-git-send-email-yangtiezhu@loongson.cn>
-X-Mailer: git-send-email 2.1.0
-In-Reply-To: <1651139754-4838-1-git-send-email-yangtiezhu@loongson.cn>
-References: <1651139754-4838-1-git-send-email-yangtiezhu@loongson.cn>
-X-CM-TRANSID: AQAAf9BxkNqqZGpiWHIBAA--.7516S5
-X-Coremail-Antispam: 1UD129KBjvdXoWrtF4UCryftFy3Gw13tF48tFb_yoWxCFg_CF
-        17ta1rJayDCryrWw1UCF1fCFyxArWrur4UArnFyrWDAw1qqw4DAr98KryDArW5GrWxuwsx
-        CrZ7Xry3ArnrGjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbfkYjsxI4VW3JwAYFVCjjxCrM7AC8VAFwI0_Wr0E3s1l1xkIjI8I
-        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l82xGYIkIc2x26280x7
-        IE14v26r1rM28IrcIa0xkI8VCY1x0267AKxVW5JVCq3wA2ocxC64kIII0Yj41l84x0c7CE
-        w4AK67xGY2AK021l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6x
-        kF7I0E14v26F4j6r4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIE
-        c7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I
-        8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCF
-        s4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwCY02Avz4vE14v_GFWl42xK82IYc2Ij64
-        vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8G
-        jcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2I
-        x0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK
-        8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVW8JVWxJwCI42IY6I8E87Iv6xkF7I
-        0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjxUxiF4DUUUU
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S233682AbiD1KHI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 06:07:08 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52188443D0
+        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 02:56:50 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id l19so5994157ljb.7
+        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 02:56:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=H2YfWCG0balrUsjNebe6NPqLv9wl/pqUnfwIaMT7BYE=;
+        b=MfPWHHhES90+CjfQ0PZ/nko3nay72mftpMTPzNVLKFUFoUrTWXbYFCbReBjuTm+unZ
+         TFJkcoudCrSALeeC0HwRf2t5DWA/IPFkjIQ6bnfXCu0u3hJWU66Hr5JED7R6Y4nm2vIM
+         BgXzJLxvPEX7iZoIzcp/WOrzLOPNS2dbdyrJQhdCWLJFyShQ6KHuVQ5rKf2xAmm6XofS
+         t18h7Ui//ozos/vwcq+Ws327rhlpHhGL+6lWK98Ng67hjvRUVz8+RU2cpbUrCiMcjr+y
+         tYw1XTcVaZDbJmfYheHdYokp79rcLt6vcGVFWxQWeCWR5QEwM6JyzohfMriGRhucHuat
+         RNKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=H2YfWCG0balrUsjNebe6NPqLv9wl/pqUnfwIaMT7BYE=;
+        b=1HyqOHGkqDtFSINk2PGENRT/5BuEqlWBCaXe2zkDznCD4z050PYQMdnHtGQiQlFo9p
+         p6vrRJK/mQzHBEOmYkYQUexN+mc3JEjaVDLqHjisyUi56qhRK3CCyU+WCZlhipWMB0hR
+         KNFel+yWl6IPX885WaIGrsgGlg7jdHsyemKjiLeX2JhmrdKlL1yZ1pSB8GpHhnvgLoCp
+         jpXo8xdQ6eDX45Oma3EMXuA9WR9lGh04msqXt6BGBobNWZ2HXNt5z8z+L1L6v1ZzJrDu
+         nKpSaZynXGhVb04vZGLVycFfPK8QvuEFH5gsbgMX2Ytf1SbnlVN4/RnjVsstLrqKo7wj
+         bKEw==
+X-Gm-Message-State: AOAM530qiGa9NeM/jCPIGKTIbD3of5NRWjv0NkEu6chMh5dFYwgRzhAF
+        atNc6B6bp4389+Z1EAsM8ChEA7af20/Hq/T0HXI=
+X-Google-Smtp-Source: ABdhPJzRaLyD4JMa/+N63rLH1xZDnz2SG9ZqAhEpuh1lNahzg85c2CEn1Sf2KW4LNcA3tPEdaAAv3/EXPCGqjPt5evU=
+X-Received: by 2002:a05:651c:511:b0:24f:35da:3524 with SMTP id
+ o17-20020a05651c051100b0024f35da3524mr647770ljp.233.1651139808110; Thu, 28
+ Apr 2022 02:56:48 -0700 (PDT)
+MIME-Version: 1.0
+Sender: a22663085102@gmail.com
+Received: by 2002:a05:6520:180a:b0:1b9:dd8a:96ec with HTTP; Thu, 28 Apr 2022
+ 02:56:47 -0700 (PDT)
+From:   Lisa Williams <lw4666555@gmail.com>
+Date:   Thu, 28 Apr 2022 10:56:47 +0100
+X-Google-Sender-Auth: btDs5JfYv9FHhEx4n7Xg-6fL7PI
+Message-ID: <CAOCtwZ7DH2W0g+GbbyG6EzKu7wm_P7sPMVijiaod2L8koATRWg@mail.gmail.com>
+Subject: Hi Dear,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"respetively" should be "respectively".
-
-Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
----
- Documentation/bpf/instruction-set.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/Documentation/bpf/instruction-set.rst b/Documentation/bpf/instruction-set.rst
-index 00b0800..1de6a57 100644
---- a/Documentation/bpf/instruction-set.rst
-+++ b/Documentation/bpf/instruction-set.rst
-@@ -157,7 +157,7 @@ Examples:
-   dst_reg = htobe64(dst_reg)
- 
- ``BPF_FROM_LE`` and ``BPF_FROM_BE`` exist as aliases for ``BPF_TO_LE`` and
--``BPF_TO_BE`` respetively.
-+``BPF_TO_BE`` respectively.
- 
- 
- Jump instructions
 -- 
-2.1.0
+Hi Dear,
 
+My name is Lisa  Williams, I am from the United States of America, Its
+my pleasure to contact you for new and special friendship, I will be
+glad to see your reply for us to know each other better.
+
+Yours
+Lisa
