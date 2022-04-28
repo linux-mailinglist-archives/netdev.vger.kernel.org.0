@@ -2,75 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A3D825137E1
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 17:12:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10166513819
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 17:18:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348890AbiD1PP2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 11:15:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33130 "EHLO
+        id S1349048AbiD1PV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 11:21:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348662AbiD1PP1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 11:15:27 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EBEE58E43;
-        Thu, 28 Apr 2022 08:12:12 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id q23so7216109wra.1;
-        Thu, 28 Apr 2022 08:12:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=14cOKhrtV85brj7EJLBSPT810oxXMK2MopA8VY0TkAU=;
-        b=XNVeILtiAib62IlV9+ASi6ROQuq0V1RgDvo+BTgl9R2j8ImTJUBEta78pI220+qa4b
-         kfTRgL1nCSqumleFcevxLe64m+Lob5jOe9QjzZI1MFlAzH4Ei1j7I0bCsIiqQ6sVRG0M
-         rogLJDHRPIsqhsLLkEMJzf2k2u75j07hFWRYMsRp1S5kOvNmqieeHX6mTWL8WU3PoVi3
-         INqKmk0SQ/s6I68FufchVowKEEVQySIe4wSuUMpcAHQEeFJVC8zv9keKewaxYzaKOFU6
-         plrHq+f1TRZvNrkCJXlej4hBP4UfpTCQJKvvFRZqpWEPCkr26S/ZtHfhizdqsL41uw1b
-         REBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=14cOKhrtV85brj7EJLBSPT810oxXMK2MopA8VY0TkAU=;
-        b=TBkQQ41RHnYLukocPitx2JTYEKZ8kUGjJtlGsrU8hwlMuTTPy30qOWxumTNgdZ5lOr
-         tNm98/YL4Vs3mDPLwgScnT/pTUjJesBhKr1PntH8sSdj99Sm2bSERf+utQPzZjUUolaK
-         khSNmPqnw9z85EmgRHzwaQmjuQoNB6lMyij5mD2MqCJ827G3IIJ41Uwue61HNCXyLJ7W
-         PQamN0yp90K2RDtuQ0XZymzGuuAOqOmETV9y0iM7/qOeORBgJ8Pxx7IRjhU5E3G3GfQi
-         LpfyYeLa40UPd2leau9CIKaIkm0vj5eg+gBsdibz2hu257TK+cXdWzmMESxeRBcW7Qke
-         sTCw==
-X-Gm-Message-State: AOAM530HK8dlUkSlie41LjTUkalHE+QpXlV8D4VqZt/h/2o+tk9KAAGP
-        Yb2SAW67xTYaoIn9NhKcRlf5sYLYUhk=
-X-Google-Smtp-Source: ABdhPJx7BcDxW6K5fn1I5IvZtYhoPkhaODGuV2G8cTePkRYvKM5oW41UxIr1UJ6/aG3VNldx+MAtrA==
-X-Received: by 2002:a5d:680a:0:b0:20a:e5ed:9b5e with SMTP id w10-20020a5d680a000000b0020ae5ed9b5emr11073431wru.110.1651158730785;
-        Thu, 28 Apr 2022 08:12:10 -0700 (PDT)
-Received: from [192.168.8.198] ([85.255.235.145])
-        by smtp.gmail.com with ESMTPSA id z11-20020a7bc14b000000b0039419dfbb39sm506553wmi.33.2022.04.28.08.12.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Apr 2022 08:12:10 -0700 (PDT)
-Message-ID: <790ca4e6-e0c0-b454-6a50-f2e907523dd9@gmail.com>
-Date:   Thu, 28 Apr 2022 16:11:45 +0100
+        with ESMTP id S1349146AbiD1PVN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 11:21:13 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EC7BB36AA;
+        Thu, 28 Apr 2022 08:17:51 -0700 (PDT)
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nk5tl-0007Y6-IA; Thu, 28 Apr 2022 17:17:41 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nk5tl-000VU1-8h; Thu, 28 Apr 2022 17:17:41 +0200
+Subject: Re: [PATCH RESEND bpf-next] bpftool: Use sysfs vmlinux when dumping
+ BTF by ID
+To:     Larysa Zaremba <larysa.zaremba@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>
+References: <20220428111442.111805-1-larysa.zaremba@intel.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <b464eae7-2f4d-bb5e-f229-6c95dab774fb@iogearbox.net>
+Date:   Thu, 28 Apr 2022 17:17:40 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH net-next 02/11] udp/ipv6: refactor udpv6_sendmsg udplite
- checks
+In-Reply-To: <20220428111442.111805-1-larysa.zaremba@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-kernel@vger.kernel.org
-References: <cover.1651071843.git.asml.silence@gmail.com>
- <33dfdf2119c86e35062f783d405bedec2fde2b4c.1651071843.git.asml.silence@gmail.com>
- <229c169ccf8fdbf7fc826901982f1f15e86f3d17.camel@redhat.com>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <229c169ccf8fdbf7fc826901982f1f15e86f3d17.camel@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26526/Thu Apr 28 10:21:25 2022)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -79,22 +56,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/28/22 15:09, Paolo Abeni wrote:
-> On Thu, 2022-04-28 at 11:56 +0100, Pavel Begunkov wrote:
->> Don't save a IS_UDPLITE() result in advance but do when it's really
->> needed, so it doesn't store/load it from the stack. Same for resolving
->> the getfrag callback pointer.
+On 4/28/22 1:14 PM, Larysa Zaremba wrote:
+> Currently, dumping almost all BTFs specified by id requires
+> using the -B option to pass the base BTF. For most cases
+> the vmlinux BTF sysfs path should work.
 > 
-> It's quite unclear to me if this change brings really any performance
-> benefit. The end results will depend a lot on the optimization
-> performed by the compiler, and IMHO the code looks better before this
-> modifications.
+> This patch simplifies dumping by ID usage by attempting to
+> use vmlinux BTF from sysfs, if the first try of loading BTF by ID
+> fails with certain conditions.
+> 
+> Signed-off-by: Larysa Zaremba <larysa.zaremba@intel.com>
+> Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> ---
+>   tools/bpf/bpftool/btf.c | 35 ++++++++++++++++++++++++++---------
+>   1 file changed, 26 insertions(+), 9 deletions(-)
+> 
+> diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
+> index a2c665beda87..557f65e2de5c 100644
+> --- a/tools/bpf/bpftool/btf.c
+> +++ b/tools/bpf/bpftool/btf.c
+> @@ -459,6 +459,22 @@ static int dump_btf_c(const struct btf *btf,
+>   	return err;
+>   }
+>   
+> +static const char sysfs_vmlinux[] = "/sys/kernel/btf/vmlinux";
+> +
+> +static struct btf *get_vmlinux_btf_from_sysfs(void)
+> +{
+> +	struct btf *base;
+> +
+> +	base = btf__parse(sysfs_vmlinux, NULL);
+> +	if (libbpf_get_error(base)) {
+> +		p_err("failed to parse vmlinux BTF at '%s': %ld\n",
+> +		      sysfs_vmlinux, libbpf_get_error(base));
+> +		base = NULL;
+> +	}
 
-There is a lot of code and function calls between IS_UDPLITE() and
-use sites, because of alias analysis the compiler will be forced
-to call it early in the function and store something on stack.
-I don't believe it will be able to keep in a register. But it's
-not a problem to drop it
+Could we reuse libbpf's btf__load_vmlinux_btf() which probes well-known
+locations?
 
--- 
-Pavel Begunkov
+> +	return base;
+> +}
+> +
+>   static int do_dump(int argc, char **argv)
+>   {
+>   	struct btf *btf = NULL, *base = NULL;
+> @@ -536,18 +552,11 @@ static int do_dump(int argc, char **argv)
+>   		NEXT_ARG();
+>   	} else if (is_prefix(src, "file")) {
+>   		const char sysfs_prefix[] = "/sys/kernel/btf/";
+> -		const char sysfs_vmlinux[] = "/sys/kernel/btf/vmlinux";
+>   
+>   		if (!base_btf &&
+>   		    strncmp(*argv, sysfs_prefix, sizeof(sysfs_prefix) - 1) == 0 &&
+> -		    strcmp(*argv, sysfs_vmlinux) != 0) {
+> -			base = btf__parse(sysfs_vmlinux, NULL);
+> -			if (libbpf_get_error(base)) {
+> -				p_err("failed to parse vmlinux BTF at '%s': %ld\n",
+> -				      sysfs_vmlinux, libbpf_get_error(base));
+> -				base = NULL;
+> -			}
+> -		}
+> +		    strcmp(*argv, sysfs_vmlinux))
+> +			base = get_vmlinux_btf_from_sysfs();
+>   
+>   		btf = btf__parse_split(*argv, base ?: base_btf);
+>   		err = libbpf_get_error(btf);
+> @@ -593,6 +602,14 @@ static int do_dump(int argc, char **argv)
+>   	if (!btf) {
+>   		btf = btf__load_from_kernel_by_id_split(btf_id, base_btf);
+>   		err = libbpf_get_error(btf);
+> +		if (err == -EINVAL && !base_btf) {
+> +			btf__free(base);
+> +			base = get_vmlinux_btf_from_sysfs();
+> +			p_info("Warning: valid base BTF was not specified with -B option, falling back on standard base BTF (sysfs vmlinux)");
+> +			btf = btf__load_from_kernel_by_id_split(btf_id, base);
+> +			err = libbpf_get_error(btf);
+> +		}
+> +
+>   		if (err) {
+>   			p_err("get btf by id (%u): %s", btf_id, strerror(err));
+>   			goto done;
+> 
+
