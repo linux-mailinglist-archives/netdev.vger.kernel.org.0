@@ -2,73 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C8C2F5128DA
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 03:30:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADD035128FA
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 03:40:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238962AbiD1Bdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 21:33:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32908 "EHLO
+        id S240753AbiD1Bni (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 21:43:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232520AbiD1Bds (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 21:33:48 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C24771DA53;
-        Wed, 27 Apr 2022 18:30:35 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KpdKS4znvzGpPn;
-        Thu, 28 Apr 2022 09:27:56 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 28 Apr 2022 09:30:34 +0800
-Received: from [10.174.178.174] (10.174.178.174) by
- dggpemm500007.china.huawei.com (7.185.36.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 28 Apr 2022 09:30:33 +0800
-Subject: Re: [PATCH -next] net: cpsw: add missing of_node_put() in
- cpsw_probe_dt()
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <grygorii.strashko@ti.com>, <davem@davemloft.net>
-References: <20220426124757.373587-1-yangyingliang@huawei.com>
- <20220427175245.2311a74c@kernel.org>
-From:   Yang Yingliang <yangyingliang@huawei.com>
-Message-ID: <44de5ff6-90ec-8e5c-ef49-7b720aba5f99@huawei.com>
-Date:   Thu, 28 Apr 2022 09:30:32 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        with ESMTP id S229528AbiD1Bnh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 21:43:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 901AB2AE21;
+        Wed, 27 Apr 2022 18:40:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EC506B82B33;
+        Thu, 28 Apr 2022 01:40:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8A456C385AD;
+        Thu, 28 Apr 2022 01:40:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651110020;
+        bh=vqbWvgbz+j9aa9Q8rxnapDHy0No/QsvbZP4PNniZuBQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=KP0wtdF3ojY6nrIDpOUEz6KmBzTCLJthfkEzDsrkBGrin30og++nfNYcn1yCDWq2I
+         MWYmtWvBZhqY6wYPNDkQ3G/x29pz6qGiWqXXg38YIKjJnR3rd0Yl2eBFxykF9AEY3N
+         pMdgJ/D0TG3Y7gFqbWln4BjvOoz0/sCITp/Uiph4OANHde8q2GY+lZh59mADjH/7dh
+         Vs/u1w1R1hNIy9QPRX4tGEH3mES+H/EH1FzCC6ItBwSTF1VPIYz0BF2/du3A8yuGKx
+         Q9Q95Hni+X/1faJOXq7lTubRhYinrFpGyJuAEGkRcEasP9y3VWmAZNVKSweVDx+hmp
+         zn6omhyzx9AlA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 694E8E8DD67;
+        Thu, 28 Apr 2022 01:40:20 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20220427175245.2311a74c@kernel.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.174.178.174]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-6.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Patch net-next] net: dsa: ksz9477: move get_stats64 to ksz_common.c
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165111002042.8802.13473539294257415179.git-patchwork-notify@kernel.org>
+Date:   Thu, 28 Apr 2022 01:40:20 +0000
+References: <20220426091048.9311-1-arun.ramadoss@microchip.com>
+In-Reply-To: <20220426091048.9311-1-arun.ramadoss@microchip.com>
+To:     Arun Ramadoss <arun.ramadoss@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, kuba@kernel.org, davem@davemloft.net,
+        olteanv@gmail.com, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        andrew@lunn.ch, UNGLinuxDriver@microchip.com,
+        woojung.huh@microchip.com, o.rempel@pengutronix.de
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
-On 2022/4/28 8:52, Jakub Kicinski wrote:
-> On Tue, 26 Apr 2022 20:47:57 +0800 Yang Yingliang wrote:
->> Subject: [PATCH -next] net: cpsw: add missing of_node_put() in cpsw_probe_dt()
-> Why next? The commit under Fixes is in Linus's tree.
->
-> Please sort this out and repost.
-It supposed to net, I write a wrong title, I will resend it.
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Thanks,
-Yang
->
->> If devm_kcalloc() fails, 'tmp_node' should be put in cpsw_probe_dt().
->>
->> Fixes: ed3525eda4c4 ("net: ethernet: ti: introduce cpsw switchdev based driver part 1 - dual-emac")
->> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> .
+On Tue, 26 Apr 2022 14:40:48 +0530 you wrote:
+> The mib counters for the ksz9477 is same for the ksz9477 switch and
+> LAN937x switch. Hence moving it to ksz_common.c file in order to have it
+> generic function. The DSA hook get_stats64 now can call ksz_get_stats64.
+> 
+> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+> Reviewed-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next] net: dsa: ksz9477: move get_stats64 to ksz_common.c
+    https://git.kernel.org/netdev/net-next/c/c6101dd7ffb8
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
