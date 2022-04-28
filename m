@@ -2,131 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A4D6512EFA
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 10:49:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FFE4512F06
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 10:51:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239529AbiD1Iwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 04:52:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58450 "EHLO
+        id S1344628AbiD1Ixj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 04:53:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238979AbiD1Iwm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 04:52:42 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCA3D6385;
-        Thu, 28 Apr 2022 01:49:28 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id bv19so8149268ejb.6;
-        Thu, 28 Apr 2022 01:49:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=gditj3pIK4QuzcqOW8qGUvUL1/lFL5DV7yQpng/n4Bg=;
-        b=SmZEqrKEzVcD/2dBQBE39Ir32WYWyyv0LiXdMOEk2y91yqcjv1JRy9jecPoHlk3Mse
-         /p7JZ8A3RIZwyXmD4gccsFRmWfxQc8OjeDRQk7WQi2I4CZpsjNphd1NMriagdl9lCklS
-         Sq3j6xpZ481R5ZdFCD7Kgs7+Suid8oKytyoWTmrM1Ul+2cMyqkE0MkJcSYwK46+tO3hz
-         yPQDT719L4Aotjyc4mV5MrNA37dM5Px1ffA2YqesVpleJS5B8B3m/BCgSNQNilyZFD4P
-         6qoLuxTMp2dYZUTQBtB08izby3FMSG/cS+YK8Mogr+1TIsh7pQWvo2YLf6NK4/NoLgHL
-         S1fA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=gditj3pIK4QuzcqOW8qGUvUL1/lFL5DV7yQpng/n4Bg=;
-        b=UrpUE2WFyOQlGSoLPGs004yynbdddnsZTSpmHVw9EPGRnZSfzx6fgycL/Ipg62GUew
-         QjWb6oZLsIHgjhn1VH+VeAScH4bs1rlYs3jnS+bdZ7dwpTgrh0ha/Sr9YcodsOan6hFr
-         1+RYumOk2wjd9xfLoiJjujNs2svV/ZCWEkkOzMzicl4166+x3TRKiyHS5FbpIgOuHiEc
-         tnB4vkFS3yAC6kYn6P/ej0Tf6vyhGkPzn4K1FfGMThkfaOBm+0jVHlttVYHJPorzahwx
-         xzsUi7YeKiPTjC1rH7MrQMjJiRBywhDcaS2YHEBtklyI4pk3zY7HhpTF8Kz8oXDfq/UR
-         lzlg==
-X-Gm-Message-State: AOAM530eDkXBs5QGoCItMdK4qSKkhfkL66coO2HTpK6z1Pc1xDhB7UWe
-        vmKTl9g2J3bDfxipkAoMNGbJiZYARSc=
-X-Google-Smtp-Source: ABdhPJwh7NCntuLtaQyH1pXzw5R201XZqA2FCHT/035nb8SkKfuoFK92gkdub5ES2IyVmhRVRRQrRA==
-X-Received: by 2002:a17:906:99c1:b0:6db:f0cf:e38c with SMTP id s1-20020a17090699c100b006dbf0cfe38cmr30591051ejn.692.1651135767166;
-        Thu, 28 Apr 2022 01:49:27 -0700 (PDT)
-Received: from [132.68.43.112] ([132.68.43.112])
-        by smtp.gmail.com with ESMTPSA id q17-20020a1709064cd100b006e78206fe2bsm8193855ejt.111.2022.04.28.01.49.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Apr 2022 01:49:26 -0700 (PDT)
-Message-ID: <068945db-f29e-8586-0487-bb5be68c7ba8@gmail.com>
-Date:   Thu, 28 Apr 2022 11:49:24 +0300
+        with ESMTP id S1344430AbiD1Ixb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 04:53:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C9F5F56;
+        Thu, 28 Apr 2022 01:50:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 77AFF61FCF;
+        Thu, 28 Apr 2022 08:50:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A95FDC385BE;
+        Thu, 28 Apr 2022 08:50:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651135811;
+        bh=yJ3N75uEIR/gCanU0NC90G8JPSmkSdYcQ1tUtvj74pI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=DosSt2aNGB31lzMl08cJqXA8i+ur8IzPNOgDUFd1Xp5SWgZ6DByuGf6KpKi6mVvuT
+         YgYFg4nxy8bJ9O0E0dki+GeOjEokDwGk9zctBCrGFPnEKFTvnAcbFEpB3bCbCf0Y9s
+         wmhlUZqojoWPlOUHOASQbSPk8HbxkleiSiNmQlRg/RCCX8tgwqU8w6bHIa4yYyEkad
+         Gitv6AQ9T1F6JRzho/1K122ES5NUuWqjBJeLo3awM8x+osIFz5EkI8Bj4BXeRS7RvX
+         GvdGEkt02tx0AjeF1HYZ1TSJTemD8P3nbehbRNTSk6/ImDhhw9e0I0eJqqah6DF5h8
+         Crud0KK1yZLig==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9308EE8DD67;
+        Thu, 28 Apr 2022 08:50:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH RFC 4/5] net/tls: Add support for PF_TLSH (a TLS handshake
- listener)
-Content-Language: en-US
-To:     Chuck Lever <chuck.lever@oracle.com>
-Cc:     ak@tempesta-tech.com, simo@redhat.com,
-        linux-fsdevel@vger.kernel.org, linux-cifs@vger.kernel.org,
-        linux-nfs@vger.kernel.org, linux-nvme@lists.infradead.org,
-        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-References: <165030051838.5073.8699008789153780301.stgit@oracle-102.nfsv4.dev>
- <165030059051.5073.16723746870370826608.stgit@oracle-102.nfsv4.dev>
-From:   Boris Pismenny <borispismenny@gmail.com>
-In-Reply-To: <165030059051.5073.16723746870370826608.stgit@oracle-102.nfsv4.dev>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: pull request: bluetooth 2022-04-27
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165113581159.13774.5811953848563780188.git-patchwork-notify@kernel.org>
+Date:   Thu, 28 Apr 2022 08:50:11 +0000
+References: <20220427234031.1257281-1-luiz.dentz@gmail.com>
+In-Reply-To: <20220427234031.1257281-1-luiz.dentz@gmail.com>
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/04/2022 19:49, Chuck Lever wrote:
-> In-kernel TLS consumers need a way to perform a TLS handshake. In
-> the absence of a handshake implementation in the kernel itself, a
-> mechanism to perform the handshake in user space, using an existing
-> TLS handshake library, is necessary.
->
-> I've designed a way to pass a connected kernel socket endpoint to
-> user space using the traditional listen/accept mechanism. accept(2)
-> gives us a well-understood way to materialize a socket endpoint as a
-> normal file descriptor in a specific user space process. Like any
-> open socket descriptor, the accepted FD can then be passed to a
-> library such as openSSL to perform a TLS handshake.
->
-> This prototype currently handles only initiating client-side TLS
-> handshakes. Server-side handshakes and key renegotiation are left
-> to do.
->
-> Security Considerations
-> ~~~~~~~~ ~~~~~~~~~~~~~~
->
-> This prototype is net-namespace aware.
->
-> The kernel has no mechanism to attest that the listening user space
-> agent is trustworthy.
->
-> Currently the prototype does not handle multiple listeners that
-> overlap -- multiple listeners in the same net namespace that have
-> overlapping bind addresses.
->
+Hello:
 
-Thanks for posting this. As we discussed offline, I think this approach
-is more manageable compared to a full in-kernel TLS handshake. A while
-ago, I've hacked around TLS to implement the data-path for NVMe-TLS and
-the data-path is indeed very simple provided an infrastructure such as
-this one.
+This pull request was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-Making this more generic is desirable, and this obviously requires
-supporting multiple listeners for multiple protocols (TLS, DTLS, QUIC,
-PSP, etc.), which suggests that it will reside somewhere outside of net/tls.
-Moreover, there is a need to support (TLS) control messages here too.
-These will occasionally require going back to the userspace daemon
-during kernel packet processing. A few examples are handling: TLS rekey,
-TLS close_notify, and TLS keepalives. I'm not saying that we need to
-support everything from day-1, but there needs to be a way to support these.
+On Wed, 27 Apr 2022 16:40:31 -0700 you wrote:
+> The following changes since commit acb16b395c3f3d7502443e0c799c2b42df645642:
+> 
+>   virtio_net: fix wrong buf address calculation when using xdp (2022-04-26 13:24:44 +0200)
+> 
+> are available in the Git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth.git tags/for-net-2022-04-27
+> 
+> [...]
 
-A related kernel interface is the XFRM netlink where the kernel asks a
-userspace daemon to perform an IKE handshake for establishing IPsec SAs.
-This works well when the handshake runs on a different socket, perhaps
-that interface can be extended to do handshakes on a given socket that
-lives in the kernel without actually passing the fd to userespace. If we
-avoid instantiating a full socket fd in userspace, then the need for an
-accept(2) interface is reduced, right?
+Here is the summary with links:
+  - pull request: bluetooth 2022-04-27
+    https://git.kernel.org/netdev/net/c/febb2d2fa561
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
