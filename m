@@ -2,127 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 59ACA513242
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 13:17:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DBB0513247
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 13:17:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345472AbiD1LUA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 07:20:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46652 "EHLO
+        id S1345479AbiD1LVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 07:21:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345163AbiD1LT5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 07:19:57 -0400
-Received: from mail.tkos.co.il (mail.tkos.co.il [84.110.109.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6E1F506DD
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 04:16:34 -0700 (PDT)
-Received: from tarshish (unknown [10.0.8.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.tkos.co.il (Postfix) with ESMTPS id E1A5F4403E2;
-        Thu, 28 Apr 2022 14:15:44 +0300 (IDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tkos.co.il;
-        s=default; t=1651144545;
-        bh=bvpzDqNTeja94upg94fWt9+grPVCuInV23odRKhVTpU=;
-        h=References:From:To:Cc:Subject:Date:In-reply-to:From;
-        b=U7I8xgHQHV80NPtf6Ei4k0pGOdhCIKiz9it4TUkfAa27ar71H1su1ApYu1gRHr46V
-         gaohGKk+jd4JnjvGXtWPvs5QJn3Fh7G6DNU+ysjn4GSOrjwobIP3Gt567r5H9KX9R1
-         KMN0tZNZFMZGg6s08sdi0RHadIOyDE4S4AzZO5iIaGSCetUKSFL/tHWq42M0jm8gaZ
-         enzweovTqM7tTzO3JId0idPupIkaOSF8H8H12jPTonyQMZu/jOAUyo1SZ2Gp0UfpEn
-         SADWCKbN4+wiKJlMgCeBZ1W8Y8pba4MzxVKQ9vCFmmpe1evawVgFYs2KZ2D0+MqFdp
-         oTtg4z13Nng6Q==
-References: <2460cc37a4138d3cfb598349e78f0c5f3cfa59c7.1651071936.git.baruch@tkos.co.il>
- <CAPv3WKf5dnOrzkm6uaFYHkuZZ2ANrr3PMNrUhU5SV6TFAJE2Qw@mail.gmail.com>
-User-agent: mu4e 1.6.10; emacs 27.1
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH] net: mvpp2: add delay at the end of .mac_prepare
-Date:   Thu, 28 Apr 2022 13:59:55 +0300
-In-reply-to: <CAPv3WKf5dnOrzkm6uaFYHkuZZ2ANrr3PMNrUhU5SV6TFAJE2Qw@mail.gmail.com>
-Message-ID: <87levpzcds.fsf@tarshish>
+        with ESMTP id S230231AbiD1LVA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 07:21:00 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8016C5B3F8;
+        Thu, 28 Apr 2022 04:17:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651144666; x=1682680666;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=YSpDATXy/AEnQCqNpDDdMNwfxMpapZmzIYX8S6XiNuc=;
+  b=UNCEw+9uLr5Fn5MbiSDzlVu+rRI5AlBUArUaSc3XLcD79z9Vu0VA6EdT
+   XKy6vO8vqDM5NavO1+sawdmeTAZ4Ltc5POW1WXvyUH4Z8Zq7+yW9nQBq0
+   hOVsLuvqoAxrfzKdS8cPmbWY+Pm0WoGNSag89B0zSre+ykrBj+VQm77Uy
+   KXNI1KNZamSMaLbJgwkafRugh4O17n0hSQZU1MHDcQb7+xR1J3MXGG2PR
+   AHAiucQ5hWqwooEThuqV8ygn7skZqk9cvy1I5kkpew8zdhz0ee4VuXy6m
+   NusN34vx6l785y2/OyNiLhGcCK0Cun6mFX8jEDnRzIpZeaMx2XPAixr2k
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10330"; a="266069735"
+X-IronPort-AV: E=Sophos;i="5.90,295,1643702400"; 
+   d="scan'208";a="266069735"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 04:17:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,295,1643702400"; 
+   d="scan'208";a="682532655"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga004.jf.intel.com with ESMTP; 28 Apr 2022 04:17:43 -0700
+Received: from lincoln.igk.intel.com (lincoln.igk.intel.com [10.102.21.235])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 23SBHfQK002736;
+        Thu, 28 Apr 2022 12:17:42 +0100
+From:   Larysa Zaremba <larysa.zaremba@intel.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Larysa Zaremba <larysa.zaremba@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>
+Subject: [PATCH] bpftool: Use sysfs vmlinux when dumping BTF by ID
+Date:   Thu, 28 Apr 2022 13:08:40 +0200
+Message-Id: <20220428110839.111042-1-larysa.zaremba@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marcin,
+Currently, dumping almost all BTFs specified by id requires
+using the -B option to pass the base BTF. For most cases
+the vmlinux BTF sysfs path should work.
 
-On Thu, Apr 28 2022, Marcin Wojtas wrote:
-> =C5=9Br., 27 kwi 2022 o 17:05 Baruch Siach <baruch@tkos.co.il> napisa=C5=
-=82(a):
->>
->> From: Baruch Siach <baruch.siach@siklu.com>
->>
->> Without this delay PHY mode switch from XLG to SGMII fails in a weird
->> way. Rx side works. However, Tx appears to work as far as the MAC is
->> concerned, but packets don't show up on the wire.
->>
->> Tested with Marvell 10G 88X3310 PHY.
->>
->> Signed-off-by: Baruch Siach <baruch.siach@siklu.com>
->> ---
->>
->> Not sure this is the right fix. Let me know if you have any better
->> suggestion for me to test.
->>
->> The same issue and fix reproduce with both v5.18-rc4 and v5.10.110.
->> ---
->>  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 2 ++
->>  1 file changed, 2 insertions(+)
->>
->> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/n=
-et/ethernet/marvell/mvpp2/mvpp2_main.c
->>n index 1a835b48791b..8823efe396b1 100644
->> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
->> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
->> @@ -6432,6 +6432,8 @@ static int mvpp2_mac_prepare(struct phylink_config=
- *config, unsigned int mode,
->>                 }
->>         }
->>
->> +       mdelay(10);
->> +
->>         return 0;
->>  }
->
-> Thank you for the patch and debug effort, however at first glance it
-> seems that adding delay may be a work-around and cover an actual root
-> cause (maybe Russell will have more input here).
+This patch simplifies dumping by ID usage by attempting to
+use vmlinux BTF from sysfs, if the first try of loading BTF by ID
+fails with certain conditions.
 
-That's my suspicion as well.
+Signed-off-by: Larysa Zaremba <larysa.zaremba@intel.com>
+Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+---
+ tools/bpf/bpftool/btf.c | 35 ++++++++++++++++++++++++++---------
+ 1 file changed, 26 insertions(+), 9 deletions(-)
 
-> Can you share exact reproduction steps?
+diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
+index a2c665beda87..557f65e2de5c 100644
+--- a/tools/bpf/bpftool/btf.c
++++ b/tools/bpf/bpftool/btf.c
+@@ -459,6 +459,22 @@ static int dump_btf_c(const struct btf *btf,
+ 	return err;
+ }
+ 
++static const char sysfs_vmlinux[] = "/sys/kernel/btf/vmlinux";
++
++static struct btf *get_vmlinux_btf_from_sysfs(void)
++{
++	struct btf *base;
++
++	base = btf__parse(sysfs_vmlinux, NULL);
++	if (libbpf_get_error(base)) {
++		p_err("failed to parse vmlinux BTF at '%s': %ld\n",
++		      sysfs_vmlinux, libbpf_get_error(base));
++		base = NULL;
++	}
++
++	return base;
++}
++
+ static int do_dump(int argc, char **argv)
+ {
+ 	struct btf *btf = NULL, *base = NULL;
+@@ -536,18 +552,11 @@ static int do_dump(int argc, char **argv)
+ 		NEXT_ARG();
+ 	} else if (is_prefix(src, "file")) {
+ 		const char sysfs_prefix[] = "/sys/kernel/btf/";
+-		const char sysfs_vmlinux[] = "/sys/kernel/btf/vmlinux";
+ 
+ 		if (!base_btf &&
+ 		    strncmp(*argv, sysfs_prefix, sizeof(sysfs_prefix) - 1) == 0 &&
+-		    strcmp(*argv, sysfs_vmlinux) != 0) {
+-			base = btf__parse(sysfs_vmlinux, NULL);
+-			if (libbpf_get_error(base)) {
+-				p_err("failed to parse vmlinux BTF at '%s': %ld\n",
+-				      sysfs_vmlinux, libbpf_get_error(base));
+-				base = NULL;
+-			}
+-		}
++		    strcmp(*argv, sysfs_vmlinux))
++			base = get_vmlinux_btf_from_sysfs();
+ 
+ 		btf = btf__parse_split(*argv, base ?: base_btf);
+ 		err = libbpf_get_error(btf);
+@@ -593,6 +602,14 @@ static int do_dump(int argc, char **argv)
+ 	if (!btf) {
+ 		btf = btf__load_from_kernel_by_id_split(btf_id, base_btf);
+ 		err = libbpf_get_error(btf);
++		if (err == -EINVAL && !base_btf) {
++			btf__free(base);
++			base = get_vmlinux_btf_from_sysfs();
++			p_info("Warning: valid base BTF was not specified with -B option, falling back on standard base BTF (sysfs vmlinux)");
++			btf = btf__load_from_kernel_by_id_split(btf_id, base);
++			err = libbpf_get_error(btf);
++		}
++
+ 		if (err) {
+ 			p_err("get btf by id (%u): %s", btf_id, strerror(err));
+ 			goto done;
+-- 
+2.35.1
 
-I think I covered all relevant details. Is there anything you find
-missing?
-
-The hardware setup is very similar to the Macchiatobin Doubleshot. I can
-try to reproduce on that platform next week if it helps.
-
-The PHY MAC type (MV_V2_33X0_PORT_CTRL_MACTYPE_MASK) is set to
-MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER.
-
-I can add that DT phy-mode is set to "10gbase-kr" (equivalent to
-"10gbase-r" in this case). The port cp0_eth0 is connected to a 1G
-Ethernet switch. Kernel messages indicate that on interface up the MAC
-is first configured to XLG (10G), but after Ethernet (wire)
-auto-negotiation that MAC switches to SGMII. If I set DT phy-mode to
-"sgmii" the issue does not show. Same if I make a down/up cycle of the
-interface.
-
-Thanks for your review.
-
-baruch
-
---=20
-                                                     ~. .~   Tk Open Systems
-=3D}------------------------------------------------ooO--U--Ooo------------=
-{=3D
-   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
