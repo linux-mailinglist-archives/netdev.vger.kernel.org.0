@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3093951296F
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 04:20:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A22951296D
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 04:20:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241360AbiD1CXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Apr 2022 22:23:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49386 "EHLO
+        id S237776AbiD1CX2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Apr 2022 22:23:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233302AbiD1CXa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 22:23:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 958077305C
-        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 19:20:16 -0700 (PDT)
+        with ESMTP id S233302AbiD1CX1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Apr 2022 22:23:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D50671D87
+        for <netdev@vger.kernel.org>; Wed, 27 Apr 2022 19:20:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2F5FB82BA2
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E5DF60EA6
         for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 02:20:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6862AC385A7;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 62542C385AD;
         Thu, 28 Apr 2022 02:20:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1651112413;
-        bh=QJJQQZvZRUirACSkMdaF18iwGwe+wDkamqZ33bT//w8=;
+        bh=ww7HQG2Tn34K9m84UmJ6Jass8zBmCqamk6sw1AiuRQc=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=bbUlCu7sxED9k67YUD+vI1CeHVNDYyYfZs9COrHroVfHjjBwgUHqN/1RdiKt/QU62
-         mFPesOrSb2169DPNelESPHKUgCwgh0sDF99Dn2Hx81msk3ZL9+yWHiciIUpRQpz46m
-         X1+fVYKOMNIX0PmH7lMHtwmLwzKffgJhrtpXwfHHNIxTkA1yzdr1AlCMV+94RJM+TK
-         HeAV1Aqb+1DTQ/KpOZRKFulKc0elcen6/z0M54KGyTw4GbF1agc3iRcEeZNzkNi3l4
-         ehuLvI1sOxU0VYm7FB555/m6roywoKwwJ8bF5rvo0h3pFRVMXfQVRT7/FGZBTh93LN
-         9OsCXqxctiTHQ==
+        b=iwBnbYpNkUR4I/ixtl8R/ahj7q0dngqczg6lkXCoFOGMbOyS3eJsBajw4WcOp0xuj
+         kST5LVtIw+fr2FDciWUhckgRjkdqihdYWRXhdz2lIrpqTUvbTRQWY/592vdZ6nVnTP
+         nizfY7q5GOTL5QOazG3xL1kCjPXprJhDP6VeXeLfj4tn2AAczN5yD+Ag0lVngwNT5+
+         i7LvkGm6eRkInPytZ5dbDa76d4trWoNDUp9/hoJ1R28fa+lNF5wpu++DBQGCxLxKz0
+         wLL32JZMNpfyZSTxR/SJfIGgyifs5VloMZhwOq1yZi2fbhVs7zQM1ZrRgJ+miTR/65
+         uYxh4E6oLD3Dw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4B37BF03840;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 40F46E8DD67;
         Thu, 28 Apr 2022 02:20:13 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [patch iproute2-next v3] devlink: introduce -[he]x cmdline option to
- allow dumping numbers in hex format
+Subject: Re: [PATCH iproute2-next 00/11] ip stats: A new front-end for
+ RTM_GETSTATS / RTM_SETSTATS
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165111241330.28424.17590096957335466558.git-patchwork-notify@kernel.org>
+Message-Id: <165111241325.28424.6132629051800661870.git-patchwork-notify@kernel.org>
 Date:   Thu, 28 Apr 2022 02:20:13 +0000
-References: <20220425103627.1521070-1-jiri@resnulli.us>
-In-Reply-To: <20220425103627.1521070-1-jiri@resnulli.us>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, sthemmin@microsoft.com, dsahern@gmail.com,
-        snelson@pensando.io
+References: <cover.1650615982.git.petrm@nvidia.com>
+In-Reply-To: <cover.1650615982.git.petrm@nvidia.com>
+To:     Petr Machata <petrm@nvidia.com>
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
+        stephen@networkplumber.org, idosch@nvidia.com
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -58,23 +58,43 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to iproute2/iproute2-next.git (main)
+This series was applied to iproute2/iproute2-next.git (main)
 by David Ahern <dsahern@kernel.org>:
 
-On Mon, 25 Apr 2022 12:36:27 +0200 you wrote:
-> From: Jiri Pirko <jiri@nvidia.com>
+On Fri, 22 Apr 2022 10:30:49 +0200 you wrote:
+> A new rtnetlink message, RTM_SETSTATS, has been added recently in kernel
+> commit ca0a53dcec94 ("Merge branch 'net-hw-counters-for-soft-devices'").
 > 
-> For health reporter dumps it is quite convenient to have the numbers in
-> hexadecimal format. Introduce a command line option to allow user to
-> achieve that output.
-> 
-> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+> At the same time, RTM_GETSTATS has been around for a while. The users of
+> this API are spread in a couple different places: "ip link xstats" reads
+> stats from the IFLA_STATS_LINK_XSTATS and _XSTATS_SLAVE subgroups, "ip
+> link afstats" then reads IFLA_STATS_AF_SPEC.
 > 
 > [...]
 
 Here is the summary with links:
-  - [iproute2-next,v3] devlink: introduce -[he]x cmdline option to allow dumping numbers in hex format
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=38ae12d39632
+  - [iproute2-next,01/11] libnetlink: Add filtering to rtnl_statsdump_req_filter()
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=a463d6b19107
+  - [iproute2-next,02/11] ip: Publish functions for stats formatting
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=5520cf1603ba
+  - [iproute2-next,03/11] ip: Add a new family of commands, "stats"
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=54d82b0699a0
+  - [iproute2-next,04/11] ipstats: Add a "set" command
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=82f6444f83c7
+  - [iproute2-next,05/11] ipstats: Add a shell of "show" command
+    (no matching commit)
+  - [iproute2-next,06/11] ipstats: Add a group "link"
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=0517a2fd66ae
+  - [iproute2-next,07/11] ipstats: Add a group "offload", subgroup "cpu_hit"
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=af5e7955273e
+  - [iproute2-next,08/11] ipstats: Add offload subgroup "hw_stats_info"
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=179030fa6bc7
+  - [iproute2-next,09/11] ipstats: Add offload subgroup "l3_stats"
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=0f1fd40cc9e8
+  - [iproute2-next,10/11] ipmonitor: Add monitoring support for stats events
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=a05a27c07cbf
+  - [iproute2-next,11/11] man: Add man pages for the "stats" functions
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=b28eb051b321
 
 You are awesome, thank you!
 -- 
