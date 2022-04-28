@@ -2,253 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8667351395A
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 18:04:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51DFD513960
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 18:06:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349403AbiD1QH5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 12:07:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41250 "EHLO
+        id S232963AbiD1QJj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 12:09:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346708AbiD1QH4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 12:07:56 -0400
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D5F85BD09;
-        Thu, 28 Apr 2022 09:04:40 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 7C06520009;
-        Thu, 28 Apr 2022 16:04:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1651161879;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=lxFmNpqk2RReBdJAh1Riszy37bFtVX+4636PmJz4Myg=;
-        b=h/3sdb1kE5CMx8+o4AY5/CyWmoi9pwVXplDWTeKKwqzKCwNFmM9JNcMef/nzwG3DJLNBad
-        gV/lCpQHTpNG9Go8vRmDbcf7kHf155VRby8yONB5Nx2VH9bAnX6VrclRjuntidWcqs7U3V
-        pfGDisvEPq4AZrdCfXwouEPaPGGMjKjBcBjSyXBlLSUvHtNNDKVZVEi4fC2KsH7slYGcoW
-        KY/p3hptfMmzqgViL6QPIa6XebbxFrQgANRm2jFmPnH9ltRmHIPzkSPX4RtbLUlsRqjdMr
-        cwH6zFkyAa+3Lxt7CFpoLhoKVH6M6vUsYr9L/v78cOtcvFhCAxXL39zUOhQMHw==
-Date:   Thu, 28 Apr 2022 18:04:35 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Xue Liu <liuxuenetmail@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Harry Morris <harrymorris12@gmail.com>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH wpan-next v3 3/4] net: mac802154: Set durations
- automatically
-Message-ID: <20220428180435.2c3b7c34@xps13>
-In-Reply-To: <20220428175838.08bb7717@xps13>
-References: <20220201180629.93410-1-miquel.raynal@bootlin.com>
-        <20220201180629.93410-4-miquel.raynal@bootlin.com>
-        <20220428175838.08bb7717@xps13>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        with ESMTP id S236129AbiD1QIm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 12:08:42 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1CD81A39E;
+        Thu, 28 Apr 2022 09:05:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1651161924; x=1682697924;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=UjnLXYYeg+5fTiGw3McklBv3B5iZ0b4QZ4SrSxDPZ9Q=;
+  b=OdD59+rQAULdt0LzZPAGjGSSIku2UmYNR9xj2zFV1LY0VSmjAhrPbdto
+   QCjEL5M4LqeZ2FgUwqpU3n5UMluN6UYsT2LBBQx+FBcUp0RoCZ8FKT1c+
+   fo7NbsjZpSEepYaSMyTynQYE46hvj+XwqMCcGjTBLRFlFQmniwfu7P6xT
+   d/+FQXd5t0IXPgHe5SMPCPoIQ8dF1MLbY16YhQPnddlj8aDcMnkMaj501
+   hyjQlmW72hBmMDTz1YeVvfFDB1KR9/YvrpyakmU5uWzYAfvphMZ74TqOF
+   9wFJ+qr4VeQGcINt+zb/d2mTwJO5beKKMhdji8LBeYrK4UxeLpd6M0lMI
+   A==;
+X-IronPort-AV: E=Sophos;i="5.91,295,1647327600"; 
+   d="scan'208";a="157173260"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Apr 2022 09:05:23 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 28 Apr 2022 09:05:22 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17 via Frontend Transport; Thu, 28 Apr 2022 09:05:22 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=E6qIw30aV8xnqa2TlxIgavvX6zc6dr8yEx9d/8tWasIVdrHjUFJPLFZNQh8ZeueTmNbWTEDMINVky6/L6miEt3DU6AeVGmy6PC+W8547sGiarqLfeozdRSjpifvhqKR7KD56xndRaWa+47FkYNSHVO4uLuvwsoWkOBlg0XrXeKWJEtqD8ua7o1L/4VVchwURLvxm0EgVAcgLXY//++TqFojNzpo8h0xUEVpKuWimfcMyJtTUznzVItMPvlxCbdQ+8kIKXeCYEK33TtG3WicAYaHR/d6zKmuyaVVAKaOiWPXBMP72i5OxDMnzhLlbzDBZXbL5nSYCZ43/VWU/TNTkMQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=UjnLXYYeg+5fTiGw3McklBv3B5iZ0b4QZ4SrSxDPZ9Q=;
+ b=nWPkfsI621iAEBYKgcZDKPl2thieAsZDvzd88mM1JcIxIrcgAMSdHwA+KL4CVtkyJK42STIEkMmH1mhpNHXfhVajQNT9TLjCbMtB7w2tcQX997nbu8l8He99VqgKJdYWRm3SdUS2ww/2ucG27wi7E92EZYb5LX52PUvWSwNmMArxUVv/ex77p5kCx2z3AF/Q9YBvymxhgaFIx1rmGoFcVmDgxYXoK+ks+brqzJk7T6TJAy+bqEpR+bHFHLS7HpfmFcy/zOYODFYjIrW/WUFMdQea04p2hZQv8NpEGbUW8sA2v21crUwuZ8ZgNsZPBiJyr8WqGPg2uZafjcI0lRMONA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UjnLXYYeg+5fTiGw3McklBv3B5iZ0b4QZ4SrSxDPZ9Q=;
+ b=EMbLk8sBxKJXeS5Ai/C/joBxmpG7JT1EmVtfD7tbfahcMblg33XFOSlbTECiwfUou8cvkt+FFgvlofssYVwbOdBQA3xOdSrRTllPQRM4YB0gqrXLmj2pxybORbp7UB5nZGt1lUtl6m+BmzVjiFL8LmGk0ZjEOwOZ3MyYxJ06S/k=
+Received: from DM5PR11MB0076.namprd11.prod.outlook.com (2603:10b6:4:6b::28) by
+ SN6PR11MB3069.namprd11.prod.outlook.com (2603:10b6:805:d5::17) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5206.13; Thu, 28 Apr 2022 16:05:16 +0000
+Received: from DM5PR11MB0076.namprd11.prod.outlook.com
+ ([fe80::3113:cf18:bdbc:f551]) by DM5PR11MB0076.namprd11.prod.outlook.com
+ ([fe80::3113:cf18:bdbc:f551%3]) with mapi id 15.20.5186.021; Thu, 28 Apr 2022
+ 16:05:16 +0000
+From:   <Arun.Ramadoss@microchip.com>
+To:     <olteanv@gmail.com>
+CC:     <andrew@lunn.ch>, <linux-kernel@vger.kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>, <Woojung.Huh@microchip.com>,
+        <davem@davemloft.net>
+Subject: Re: [RFC patch net-next 3/3] net: dsa: ksz: moved ksz9477 port mirror
+ to ksz_common.c
+Thread-Topic: [RFC patch net-next 3/3] net: dsa: ksz: moved ksz9477 port
+ mirror to ksz_common.c
+Thread-Index: AQHYWlNaxCafaAnnVkiLtvq2xaWdqq0D+xIAgAF0RQCAAAOSgIAAC+0A
+Date:   Thu, 28 Apr 2022 16:05:15 +0000
+Message-ID: <7092c728df06e762aa659119c057b4ee308967d4.camel@microchip.com>
+References: <20220427162343.18092-1-arun.ramadoss@microchip.com>
+         <20220427162343.18092-4-arun.ramadoss@microchip.com>
+         <20220427165722.vwruo5q63stahkby@skbuf>
+         <a6760b49fae3df27d2b337f5212a3f967a015064.camel@microchip.com>
+         <20220428152233.tqzbdrqqgydilncw@skbuf>
+In-Reply-To: <20220428152233.tqzbdrqqgydilncw@skbuf>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 19090e00-5de5-4b34-808d-08da2930e282
+x-ms-traffictypediagnostic: SN6PR11MB3069:EE_
+x-microsoft-antispam-prvs: <SN6PR11MB30698D7EA49AFE367E6902E7EFFD9@SN6PR11MB3069.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: tBRhdI3nou9YZkejUEsW/QsQtxwtot8gHw+0sCKnOjV4PJt+3lHoZ/OgXhNy77tlBa3YVm++Ue5TeXdon3vtOvdlJtHOea7DxYmMJd9w5eVTPXIB8y/YT7uQ1DpHQtnUrPh4rP9/eTLIVEo0z5zG7AmJmiTmNS61Hiy/YPlXvRA+aWOT/njjlfMdRvqEAkpX2go1ug3LaomOm9TjV60txDOTnDanF6orzRMGOKPS4N0tgaG4ALRwyGA07ni0qMj7zbXFQvQXG4XjDw38vSWFK3HBBxUZ7Dsk4kU8IhFT/jQAKxJq+t5s+jc+ucbmkvYlMapy9zQ3FUYjOgnkhSUMatR0Rv7XT2JVBcbkKF5Ku9vmv8/hcH1tChB3FGIH0Vp4iJABfZkIEN3qTTRJFkdrCP5HWSr+xF07Vg87WMHNFnHHMvzCtyhiUrAfAK9vflymxcbQitY9mbIysagVW2TyMBd7fyU7eVPxX1B8DyQcnWlFO9TyGy0/DE4+cxkKdkcb/WmVCO242NriIUhVF2BrYKS5hJPch7loy5OCczN/NIgutQOkPBEPkSc7AXYepyTbZguupWIWHCmZg6cfwtTJVBzJI9aaJkPvJkFHLxGowm5iLHALVif01t95jcmnTTgA2mW9udnwsgIs7uN62lqvqS45Q/LG8Lf4DLV747J4ddbung+5N1Twc/LJKWR5YINmDAoZAMK1oXfA9dXuO5AWloSYxrJkmMKCnNNfQjAbSJI=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR11MB0076.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(2906002)(6512007)(6506007)(26005)(54906003)(5660300002)(71200400001)(6916009)(6486002)(316002)(91956017)(508600001)(8936002)(122000001)(86362001)(8676002)(2616005)(186003)(36756003)(76116006)(4326008)(83380400001)(55236004)(38100700002)(66946007)(38070700005)(64756008)(66556008)(66476007)(66446008)(99106002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?dEFoWHUrdTJ0dW5ZcFpIanBraFBjMVAzOHo3RjgxREM2SmdwSjE5cnNQUmdH?=
+ =?utf-8?B?OGNHdWJZRFFCVXJsUjlPU2lJVjB1dllYQ3hRTUJTc2RmYkV6cS9qOG9NdWlB?=
+ =?utf-8?B?UDlSUUZYdzNKbTBvVncxR3RySTZRbVZlOFlHbUJPZ3kyeGtQOUN1V0JYZlVr?=
+ =?utf-8?B?VWppeXBoUmZjSHRpSDlYUjU1Q0IvNTZyQ2hQUXZnU3FiRWxwUGZtWUt0c2RV?=
+ =?utf-8?B?OWp5ME15d3p2MHZSUWJydFV4VFZXRkJLRWF3TVVhaGJwZFZxcWdNWUMwdE5p?=
+ =?utf-8?B?aERlelo1cUtxbytvUFpFdTdlQXhSYU5QbUp1bUh1NzYyd2l2Y1F5TDN4aTJl?=
+ =?utf-8?B?N3kwa0ROaU9EUmpXMWFSNEI4eHVZOUxZOEdJTzN3SlpyNFBsV0Z3WG00VzAx?=
+ =?utf-8?B?dWh4V3hFQVpCWExTOC8rWTJMWkVKSXNCYWFKcEkzb2VxdVYxL2hHWDNWVnlu?=
+ =?utf-8?B?Z0R0MjI4L3QxM3QzWjV3Qm1RVG0xWU9JNHpBem9mcjI0OU1BUmpEUXhuUVlD?=
+ =?utf-8?B?NU1SV0lxZkdPWmVaSjY5SWhGVGdDbzh3bHRnKzhLY2RYcGxXQVV5ZllJVXRF?=
+ =?utf-8?B?RjF1UnJ3REFXU1Q3S2x0cjdIWUE4bnE2aCtzSXROblorS0dWeStYbUkrcHJa?=
+ =?utf-8?B?dEgzK2kyVCt6amRQUHhmUUxvYUxTZllIQVIrOGlVTWxKNFovWWtPeXlxQWo5?=
+ =?utf-8?B?MFNxUWhibkFjWndYZTFzVFZvandreGMvbUFQcS9uUmpGa2FMd2g5YlRsakFB?=
+ =?utf-8?B?VHBtWXRYQm02SlJ0Z0xpTVNDSjBmQndlWG1QYm1IUlE0aG1zY0NmTThVNmdW?=
+ =?utf-8?B?aDJrZy9CRVA1cXdqUnBIMUN1a1BnemF6U2xlcStmZXJXL2dKTlR6aXE1dWxB?=
+ =?utf-8?B?T0xWVmgzZnZ5VnhGM2Nqb1FudGVNTEZNUEtESWdtWUw5aUMzZmJjUmZIL3Nm?=
+ =?utf-8?B?NEh1alNjZGlkMUIwZldKMUU3QU5tSnJnVC9BMGd1ZDhMSGNjQ3lQTXdlZ1Jn?=
+ =?utf-8?B?V2JkdUhReGNEcXBmb2NMcVpwZk8zd2Y4N2wydWVoR1JtNWUwRGNFZzVXNkh2?=
+ =?utf-8?B?N29qQ3pOSjZ5R0ZpTldiUlZVdVR2NjRjcXVTME5Ga1J4MXgzdjFZbzd5NkNp?=
+ =?utf-8?B?T0RHbDV6cnBzdU1TOUlqZC9KdThWMzdMaFIzQ05BRHBWYmdRMCtTemU4SCs5?=
+ =?utf-8?B?akNuZVFWaVBCVkJnaWd0TXJWN3BvVnJpMGF3cGR2R3krSklxME1MZ2RNdUV1?=
+ =?utf-8?B?RDVXMnBnMk9xNEJuNTBBYWpzaGRUZHFkQVpBaCtyN3pGcEZiMkJxdUJ6T2xX?=
+ =?utf-8?B?bEcyUjc1dzFudG1MUXZ3ekkzY012QnEwajBWbEY2dWREdStwdEtWTGlFQTF1?=
+ =?utf-8?B?d2t2RkJCZ25yTUZQZTdmd2RyMlFkQVpwcklobVh0bWpNSWdCdndHeFYxTmdV?=
+ =?utf-8?B?Sks3L2pEalltejlTSUI1M0M0UWhhYVZLNFpld09yOW9mZ2Y1dU5uRERCdnhw?=
+ =?utf-8?B?Yk9oZVlHUkIrY20zbGRoWkp1WGxHMzZqaHNnM2xreWNsbmwxK2FpOVZOM01U?=
+ =?utf-8?B?YlYvcGd5aGVvWmVTY2g2MWhmcHRNeEtGa3VjYzg0OXZZMXIxTFRUcHl5b3hm?=
+ =?utf-8?B?cVg4d2duV2hYTFB5L0ZqSXNCSVdaZjlzVU5YcG9uS1lPcXlNVEEwZGhZVXZI?=
+ =?utf-8?B?VUlRV0RJc1pGNXBwMTJMbUFKWk1iZ1lIN2dFaEV4T3FBdm9xQzdCZkhWSVhp?=
+ =?utf-8?B?V0U1Y0JGQWJRUnFBeDBwZGhQc1AzUjRNMFh4VzN1aVFIcUdCWG81cWlWL0pu?=
+ =?utf-8?B?bWhkdllFeGxUVDYvdUhVK0NZYnBpemlkQmdVM0ZkbE1WNSs3RVMxR01ISGd0?=
+ =?utf-8?B?MlplTU45cXpJazhKVHJUc3M2ZUFyUWw1Y3pjVm9NR2JxNGFhVnh3SVVUakRh?=
+ =?utf-8?B?Y0o5V25MalN1SzF5OTVmRzgwT1FYQ1ZQdXQvV1NtVnJtVEJXd2g0UU9PL2xy?=
+ =?utf-8?B?VWVZOWNlTXlJWjROTXZZQW5jSEtHbS9WU1ovTzFaclBmRlhCUElNaWlFQWtN?=
+ =?utf-8?B?azFKbmFhYVZRVTlMSVBLQ3dYMXR0aEFOSnhGbEZQWVhZdFpqSDV4WURrdGV6?=
+ =?utf-8?B?aUdMVE9nYTJmbVR2WldjZVllZEFzZ252UDRiRlVmbFRMckU4UExqVGZLY0ll?=
+ =?utf-8?B?WkdmRDFzRGY4b0RwV2hCdmxaS0s0LzBsNjFReHgrdVlnQ09td1RQSk5ybnVY?=
+ =?utf-8?B?T1o4NXl5OXI0Tm5KcW9uOThCZmhkMlk3OFhiWG1pRzE4WCtxT1diUThQR2lj?=
+ =?utf-8?B?eUI0R1FyNGNFOUswNmtSMzlGQ0cvTHZBcCtvRHFxTGlpOVp5a0VSSyt3OUoy?=
+ =?utf-8?Q?HIYWJyhmG98qvSFKKNHcdjLrqaDP8jQb/89pW?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <3631B9980DF3144194FFFCDA17B5EDFE@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR11MB0076.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 19090e00-5de5-4b34-808d-08da2930e282
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Apr 2022 16:05:16.1406
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: GLb6BmCUnLnGsfiPdurYEuB0vPkdMrBJMkFAtTqXPudwx4j8A1X304QYj2KyAYXI8CT85H78F0iDnmva8FYVL2YUkUWKH2kTUuGQdLDjRoM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB3069
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-miquel.raynal@bootlin.com wrote on Thu, 28 Apr 2022 17:58:38 +0200:
-
-> Hi Stefan,
->=20
-> miquel.raynal@bootlin.com wrote on Tue,  1 Feb 2022 19:06:28 +0100:
->=20
-> > As depicted in the IEEE 802.15.4 specification, modulation/bands are
-> > tight to a number of page/channels so we can for most of them derive the
-> > durations automatically.
-> >=20
-> > The two locations that must call this new helper to set the variou
-> > symbol durations are:
-> > - when manually requesting a channel change though the netlink interface
-> > - at PHY creation, once the device driver has set the default
-> >   page/channel
-> >=20
-> > If an information is missing, the symbol duration is not touched, a
-> > debug message is eventually printed. This keeps the compatibility with
-> > the unconverted drivers for which it was too complicated for me to find
-> > their precise information. If they initially provided a symbol duration,
-> > it would be kept. If they don't, the symbol duration value is left
-> > untouched.
-> >=20
-> > Once the symbol duration derived, the lifs and sifs durations are
-> > updated as well.
-> >=20
-> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > ---
-> >  include/net/cfg802154.h |  2 ++
-> >  net/mac802154/cfg.c     |  1 +
-> >  net/mac802154/main.c    | 46 +++++++++++++++++++++++++++++++++++++++++
-> >  3 files changed, 49 insertions(+)
-> >=20
-> > diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
-> > index 8a4b6a50452f..49b4bcc24032 100644
-> > --- a/include/net/cfg802154.h
-> > +++ b/include/net/cfg802154.h
-> > @@ -405,4 +405,6 @@ static inline const char *wpan_phy_name(struct wpan=
-_phy *phy)
-> >  	return dev_name(&phy->dev);
-> >  }
-> > =20
-> > +void ieee802154_configure_durations(struct wpan_phy *phy);
-> > +
-> >  #endif /* __NET_CFG802154_H */
-> > diff --git a/net/mac802154/cfg.c b/net/mac802154/cfg.c
-> > index fbeebe3bc31d..1e4a9f74ed43 100644
-> > --- a/net/mac802154/cfg.c
-> > +++ b/net/mac802154/cfg.c
-> > @@ -118,6 +118,7 @@ ieee802154_set_channel(struct wpan_phy *wpan_phy, u=
-8 page, u8 channel)
-> >  	if (!ret) {
-> >  		wpan_phy->current_page =3D page;
-> >  		wpan_phy->current_channel =3D channel;
-> > +		ieee802154_configure_durations(wpan_phy);
-> >  	}
-> > =20
-> >  	return ret;
-> > diff --git a/net/mac802154/main.c b/net/mac802154/main.c
-> > index 53153367f9d0..5546ef86e231 100644
-> > --- a/net/mac802154/main.c
-> > +++ b/net/mac802154/main.c
-> > @@ -113,6 +113,50 @@ ieee802154_alloc_hw(size_t priv_data_len, const st=
-ruct ieee802154_ops *ops)
-> >  }
-> >  EXPORT_SYMBOL(ieee802154_alloc_hw);
-> > =20
-> > +void ieee802154_configure_durations(struct wpan_phy *phy)
-> > +{
-> > +	u32 duration =3D 0;
-> > +
-> > +	switch (phy->current_page) {
-> > +	case 0:
-> > +		if (BIT(phy->current_page) & 0x1) =20
->=20
-> I am very sorry to spot this only now but this is wrong.=20
->=20
-> all the conditions from here and below should be:
->=20
-> 		if (BIT(phy->current_channel & <mask>))
->=20
-> The masks look good, the durations as well, but the conditions are
-> wrong.
->=20
-> > +			/* 868 MHz BPSK 802.15.4-2003: 20 ksym/s */
-> > +			duration =3D 50 * NSEC_PER_USEC;
-> > +		else if (phy->current_page & 0x7FE) =20
->=20
-> Ditto
->=20
-> > +			/* 915 MHz BPSK	802.15.4-2003: 40 ksym/s */
-> > +			duration =3D 25 * NSEC_PER_USEC;
-> > +		else if (phy->current_page & 0x7FFF800) =20
->=20
-> Ditto
->=20
-> > +			/* 2400 MHz O-QPSK 802.15.4-2006: 62.5 ksym/s */
-> > +			duration =3D 16 * NSEC_PER_USEC;
-> > +		break;
-> > +	case 2:
-> > +		if (BIT(phy->current_page) & 0x1) =20
->=20
-> Ditto
->=20
-> > +			/* 868 MHz O-QPSK 802.15.4-2006: 25 ksym/s */
-> > +			duration =3D 40 * NSEC_PER_USEC;
-> > +		else if (phy->current_page & 0x7FE) =20
->=20
-> Ditto
->=20
-> > +			/* 915 MHz O-QPSK 802.15.4-2006: 62.5 ksym/s */
-> > +			duration =3D 16 * NSEC_PER_USEC;
-> > +		break;
-> > +	case 3:
-> > +		if (BIT(phy->current_page) & 0x3FFF) =20
->=20
-> Ditto
->=20
-> > +			/* 2.4 GHz CSS 802.15.4a-2007: 1/6 Msym/s */
-> > +			duration =3D 6 * NSEC_PER_USEC;
-> > +		break; =20
->=20
-> I see it's "only" in wpan-next (781830c800dd "net: mac802154: Set
-> durations automatically") and was not yet pulled in the net-next
-> tree so please let me know what you prefer: I can either provide a
-> proper patch to fit it (without upstream Fixes reference), or you can
-> just apply this diff below and push -f the branch. Let me know what you
-> prefer.
->=20
-> Again, sorry to only see this now.
->=20
-> Thanks,
-> Miqu=C3=A8l
->=20
-> commit 4122765e5f982ed8f0ccea5fd813ef4d53d20a90 (HEAD)
-> Author: Miquel Raynal <miquel.raynal@bootlin.com>
-> Date:   Thu Apr 28 17:57:59 2022 +0200
->=20
->     fixup! net: mac802154: Set durations automatically
-
-And I keep having it wrong. Here is the right fixup!...
-
-commit 676aa77f1c279a90f521c1c05757c702e1538472 (HEAD)
-Author: Miquel Raynal <miquel.raynal@bootlin.com>
-Date:   Thu Apr 28 17:57:59 2022 +0200
-
-    fixup! net: mac802154: Set durations automatically
-
-diff --git a/net/mac802154/main.c b/net/mac802154/main.c
-index 5546ef86e231..bd7bdb1219dd 100644
---- a/net/mac802154/main.c
-+++ b/net/mac802154/main.c
-@@ -119,26 +119,26 @@ void ieee802154_configure_durations(struct wpan_phy *=
-phy)
-=20
-        switch (phy->current_page) {
-        case 0:
--               if (BIT(phy->current_page) & 0x1)
-+               if (BIT(phy->current_channel) & 0x1)
-                        /* 868 MHz BPSK 802.15.4-2003: 20 ksym/s */
-                        duration =3D 50 * NSEC_PER_USEC;
--               else if (phy->current_page & 0x7FE)
-+               else if (BIT(phy->current_channel) & 0x7FE)
-                        /* 915 MHz BPSK 802.15.4-2003: 40 ksym/s */
-                        duration =3D 25 * NSEC_PER_USEC;
--               else if (phy->current_page & 0x7FFF800)
-+               else if (BIT(phy->current_channel) & 0x7FFF800)
-                        /* 2400 MHz O-QPSK 802.15.4-2006: 62.5 ksym/s */
-                        duration =3D 16 * NSEC_PER_USEC;
-                break;
-        case 2:
--               if (BIT(phy->current_page) & 0x1)
-+               if (BIT(phy->current_channel) & 0x1)
-                        /* 868 MHz O-QPSK 802.15.4-2006: 25 ksym/s */
-                        duration =3D 40 * NSEC_PER_USEC;
--               else if (phy->current_page & 0x7FE)
-+               else if (BIT(phy->current_channel) & 0x7FE)
-                        /* 915 MHz O-QPSK 802.15.4-2006: 62.5 ksym/s */
-                        duration =3D 16 * NSEC_PER_USEC;
-                break;
-        case 3:
--               if (BIT(phy->current_page) & 0x3FFF)
-+               if (BIT(phy->current_channel) & 0x3FFF)
-                        /* 2.4 GHz CSS 802.15.4a-2007: 1/6 Msym/s */
-                        duration =3D 6 * NSEC_PER_USEC;
-                break;
+T24gVGh1LCAyMDIyLTA0LTI4IGF0IDE4OjIyICswMzAwLCBWbGFkaW1pciBPbHRlYW4gd3JvdGU6
+DQo+IEVYVEVSTkFMIEVNQUlMOiBEbyBub3QgY2xpY2sgbGlua3Mgb3Igb3BlbiBhdHRhY2htZW50
+cyB1bmxlc3MgeW91DQo+IGtub3cgdGhlIGNvbnRlbnQgaXMgc2FmZQ0KPiANCj4gT24gVGh1LCBB
+cHIgMjgsIDIwMjIgYXQgMDM6MDk6NTBQTSArMDAwMCwgQXJ1bi5SYW1hZG9zc0BtaWNyb2NoaXAu
+Y29tDQo+ICB3cm90ZToNCj4gPiA+ID4gKyNkZWZpbmUNCj4gPiA+ID4gUF9NSVJST1JfQ1RSTCAg
+ICAgICAgICAgICAgICAgICAgICAgIFJFR19QT1JUX01SSV9NSVJST1JfQ1RSTA0KPiA+ID4gPiAr
+DQo+ID4gPiA+ICsjZGVmaW5lIFNfTUlSUk9SX0NUUkwgICAgICAgICAgICAgICAgICAgICAgICBS
+RUdfU1dfTVJJX0NUUkxfMA0KPiA+ID4gDQo+ID4gPiBTbWFsbCBjb21tZW50OiBpZiBQX01JUlJP
+Ul9DVFJMIGFuZCBTX01JUlJPUl9DVFJMIGFyZSBleHBlY3RlZCB0bw0KPiA+ID4gYmUNCj4gPiA+
+IGF0DQo+ID4gPiB0aGUgc2FtZSByZWdpc3RlciBvZmZzZXQgZm9yIGFsbCBzd2l0Y2ggZmFtaWxp
+ZXMsIHdoeSBpcyB0aGVyZSBhDQo+ID4gPiBtYWNybw0KPiA+ID4gYmVoaW5kIGEgbWFjcm8gZm9y
+IHRoZWlyIGFkZHJlc3Nlcz8NCj4gPiANCj4gPiBrc3o4Nzk1IGFuZCBrc3o5NDc3IGhhdmUgZGlm
+ZmVyZW50IGFkZHJlc3MvcmVnaXN0ZXIgZm9yIHRoZQ0KPiA+IE1pcnJvcl9jdHJsLiBUbyBtYWtl
+IGl0IGNvbW1vbiBmb3IgdGhlIGJvdGgsIFBfTUlSUk9SX0NUUkwgaXMNCj4gPiBkZWZpbmVkDQo+
+ID4gaW4ga3N6ODc5NV9yZWcuaCBhbmQga3N6OTQ3N19yZWcuaCBmaWxlLg0KPiA+IEkganVzdCBj
+YXJyaWVkIGZvcndhcmQgdG8ga3N6X3JlZy5oLg0KPiANCj4gU28gaWYgUF9NSVJST1JfQ1RSTCBo
+YXMgZGlmZmVyZW50IHZhbHVlcyBmb3Iga3N6OTQ3NyBhbmQga3N6ODc5NSwgaG93DQo+IGV4YWN0
+bHkgZG8geW91IHBsYW4gdG8gbWFzayB0aGF0IGRpZmZlcmVuY2UgYXdheSB0aHJvdWdoIHRoZSBD
+DQo+IHByZXByb2Nlc3Nvcg0KPiBhdCB0aGUgbGV2ZWwgb2Yga3N6X3JlZy5oIGluY2x1ZGVkIGJ5
+IGtzel9jb21tb24uYywgZGVwZW5kaW5nIG9uDQo+IHdoaWNoDQo+IHN3aXRjaCBkcml2ZXIgY2Fs
+bHMga3N6X3BvcnRfbWlycm9yX2FkZCgpPw0KPiANCj4gVGhpcyBjYW4ndCB3b3JrLCB5b3UgbmVl
+ZCB0byBwcm92aWRlIHRoZSBvZmZzZXQgb2YgUF9NSVJST1JfQ1RSTCBhcw0KPiBhcmd1bWVudCB0
+byB0aGUgY29tbW9uIGZ1bmN0aW9uLiBXaGF0IGFtIEkgbWlzc2luZz8NCkkgY29tcGFyZWQgdGhl
+IGtzejg3OTUgYW5kIGtzejk0NDcgbWlycm9yX2FkZC9kZWwgaW1wbGVtZW50YXRpb24sIHRoZXkN
+CmFyZSBkaWZmZXJlbnQuIEtzejk0Nzcgd3JpdGVzIFNfTUlSUk9SX0NUUkwgaW4gYWRkaXRpb24g
+dG8NClBfTUlSUk9MX0NUUkwuIEtTWjk0NzcgYW5kIExBTjkzN3ggaGF2ZSBzaW1pbGFyIHJlZ2lz
+dGVyIHNldCBidXQNCktTWjg3OTUgaGFzIG9ubHkgbGltaXRlZCByZWdpc3RlcnMvZnVuY3Rpb25h
+bGl0eS4NClNpbWlsYXIgdG8gcG9ydF9taXJyb3IsIGZldyBvdGhlciBmdW5jdGlvbmFsaXR5IGxp
+a2UgbWliIGNvdW50ZXIsIHZsYW4NCnJlZ2lzdGVycyBhcmUgc2FtZSBmb3IgYm90aCBLU1o5NDc3
+ICYgTEFOOTM3eC5CdXQga3N6ODc5NSBoYXMgZGlmZmVyZW50DQpzZXQgb2YgcmVnaXN0ZXIgaW1w
+bGVtZW50YXRpb24gZm9yIHRoYXQuDQpTbyBJIHRob3VnaHQgb2Ygbm90IHRvIGRpc3R1cmIgdGhl
+IGV4aXN0aW5nIGtzejg3OTUgaW1wbGVtZW50YXRpb24NCmV4Y2VwdCBmb3IgYW55IGNvbmZsaWN0
+cywganVzdCBtb3ZlIHRoZSBrc3o5NDc3IHRvIGtzel9jb21tb24sIGFuZCBjYWxsDQp0aGlzIGZv
+ciBLU1o5NDc3IGFuZCBMQU45Mzd4IGRzYSBob29rcy4NCg==
