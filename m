@@ -2,82 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E0B34513A07
-	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 18:40:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0E74513A0E
+	for <lists+netdev@lfdr.de>; Thu, 28 Apr 2022 18:41:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349939AbiD1Qn3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 12:43:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49624 "EHLO
+        id S1350208AbiD1Qo7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 12:44:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236388AbiD1Qn2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 12:43:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFE9BDEEB
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 09:40:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 945FD620CA
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 16:40:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EEE9CC385AE;
-        Thu, 28 Apr 2022 16:40:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651164012;
-        bh=7rqH5CspXrao7+mRMg8hUfVwxs32pmsGueGRsfLmdbg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Ji0JUueXvUZcKEJ+ZKdDj0/ukoRU+ma5sS7vB0LU7NT2VGy7zoHDSb6gpYyOXKOjo
-         R4C1942ilL3g8B9eaodtXZWglM1EvPs2EQHuPYP1mz//aI4HDOiSp6WPNIJFSTOhJ/
-         ewrSLPlnpb59FcggtS5+7Lp+VerIBJ6RlHi+h0weelZ03q/RiqfjHk6asIXdWe80oj
-         QewItLXj+SM/Qa3+ZDDxGPk5BLvj1leIBcW7KILFYTKFkabOn1VXXwFuycuGJQQlvw
-         7nGsoL4STvUf+eGGFf0dwFDMxqD7V6OfPGwgt7wmcRvys/IsY0WsGHC73tUe1Hw+3x
-         oZdch2L4m1hBw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D0C4EE85D90;
-        Thu, 28 Apr 2022 16:40:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S1349054AbiD1Qo7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 12:44:59 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 139157C7AB;
+        Thu, 28 Apr 2022 09:41:43 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id A571724000B;
+        Thu, 28 Apr 2022 16:41:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1651164102;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=wTH6ZEk/Y++FSk1qrFx/NjlNBR+hPifrLu8zie/kLiE=;
+        b=AVqOosPs4Dry4Bg/cBfEdCXTwbs0XJy/Bk28t7urXxLAXgKH1YmZC9PkFL5+h9qDiWaRQ5
+        /efDBNdqMD4qnCXnCxJNWEI1F4D4MDZ06zjzenhxUh4+vqion4neuuu7uH2pxD1ydpEHAT
+        w46Exax5a12n6oJsbTxjH++JuEZmHNsffL3us4eQ5bSps7wXk7kKbeYcm8McvadWVAOlY/
+        IdcASigH4Wp7DKBNwi/C76Sks0A2WvI8QI9AE+HnU/EDj6d9NMhVbGF4QOE0ixXOPChqBk
+        2lqhAGZ/Zbr2jdIpNq3u67VLT55dfZd+C4SGki74G6oklLNh5nAHceEy3HQMuw==
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH wpan-next] net: mac802154: Fix symbol durations
+Date:   Thu, 28 Apr 2022 18:41:40 +0200
+Message-Id: <20220428164140.251965-1-miquel.raynal@bootlin.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] MAINTAINERS: Update BNXT entry with firmware files
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165116401185.12114.11229479081459967799.git-patchwork-notify@kernel.org>
-Date:   Thu, 28 Apr 2022 16:40:11 +0000
-References: <20220427163606.126154-1-f.fainelli@gmail.com>
-In-Reply-To: <20220427163606.126154-1-f.fainelli@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, michael.chan@broadcom.com,
-        zajec5@gmail.com, andy@kernel.org
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+There are two major issues in the logic calculating the symbol durations
+based on the page/channel:
+- The page number is used in place of the channel value.
+- The BIT() macro is missing because we want to check the channel
+  value against a bitmask.
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Fix these two errors and apologize loudly for this mistake.
 
-On Wed, 27 Apr 2022 09:36:06 -0700 you wrote:
-> There appears to be a maintainer gap for BNXT TEE firmware files which
-> causes some patches to be missed. Update the entry for the BNXT Ethernet
-> controller with its companion firmware files.
-> 
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
-> Changes in v2:
-> 
-> [...]
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+---
+ net/mac802154/main.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-Here is the summary with links:
-  - [v2] MAINTAINERS: Update BNXT entry with firmware files
-    https://git.kernel.org/netdev/net/c/126858db81a5
-
-You are awesome, thank you!
+diff --git a/net/mac802154/main.c b/net/mac802154/main.c
+index 5546ef86e231..bd7bdb1219dd 100644
+--- a/net/mac802154/main.c
++++ b/net/mac802154/main.c
+@@ -119,26 +119,26 @@ void ieee802154_configure_durations(struct wpan_phy *phy)
+ 
+ 	switch (phy->current_page) {
+ 	case 0:
+-		if (BIT(phy->current_page) & 0x1)
++		if (BIT(phy->current_channel) & 0x1)
+ 			/* 868 MHz BPSK 802.15.4-2003: 20 ksym/s */
+ 			duration = 50 * NSEC_PER_USEC;
+-		else if (phy->current_page & 0x7FE)
++		else if (BIT(phy->current_channel) & 0x7FE)
+ 			/* 915 MHz BPSK	802.15.4-2003: 40 ksym/s */
+ 			duration = 25 * NSEC_PER_USEC;
+-		else if (phy->current_page & 0x7FFF800)
++		else if (BIT(phy->current_channel) & 0x7FFF800)
+ 			/* 2400 MHz O-QPSK 802.15.4-2006: 62.5 ksym/s */
+ 			duration = 16 * NSEC_PER_USEC;
+ 		break;
+ 	case 2:
+-		if (BIT(phy->current_page) & 0x1)
++		if (BIT(phy->current_channel) & 0x1)
+ 			/* 868 MHz O-QPSK 802.15.4-2006: 25 ksym/s */
+ 			duration = 40 * NSEC_PER_USEC;
+-		else if (phy->current_page & 0x7FE)
++		else if (BIT(phy->current_channel) & 0x7FE)
+ 			/* 915 MHz O-QPSK 802.15.4-2006: 62.5 ksym/s */
+ 			duration = 16 * NSEC_PER_USEC;
+ 		break;
+ 	case 3:
+-		if (BIT(phy->current_page) & 0x3FFF)
++		if (BIT(phy->current_channel) & 0x3FFF)
+ 			/* 2.4 GHz CSS 802.15.4a-2007: 1/6 Msym/s */
+ 			duration = 6 * NSEC_PER_USEC;
+ 		break;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.27.0
 
