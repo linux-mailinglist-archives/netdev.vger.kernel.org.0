@@ -2,96 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 17C28513EF3
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 01:17:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA02D513F00
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 01:23:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353224AbiD1XUa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 19:20:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47384 "EHLO
+        id S1353255AbiD1X0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 19:26:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229842AbiD1XU3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 19:20:29 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A2840935;
-        Thu, 28 Apr 2022 16:17:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=810WVWqP/hZF1NMKzf5cATOlxW75bWI6UJtYB2eczzg=; b=4AQnes1B0vsSlqlcfMiO57RV7j
-        QvPbQxQQwd+ZompegfVs1Gr6w3fgp+yav0rRZq2aW03tK1pIUxmZfUjxX5UzP44Tq1VSajsjnrKRx
-        TIbb/ThR0jVVGBb0Uo/UfbNKtHXiemu2x6zBcYuCGpCBJU7x3NUEVzEOEDEgJeGOHScs=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nkDNn-000OKv-Bo; Fri, 29 Apr 2022 01:17:11 +0200
-Date:   Fri, 29 Apr 2022 01:17:11 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Nathan Rossi <nathan@nathanrossi.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH v2] net: dsa: mv88e6xxx: Single chip mode detection for
- MV88E6*41
-Message-ID: <Ymsgd2We8m8G8Oab@lunn.ch>
-References: <20220427130928.540007-1-nathan@nathanrossi.com>
+        with ESMTP id S234016AbiD1X0U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 19:26:20 -0400
+Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 548F9BC86F
+        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 16:23:04 -0700 (PDT)
+Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-2ebf4b91212so69260857b3.8
+        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 16:23:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UsFCmC6YdhvNQMI+F0Kw4xdZkWuwKMT5oK6IglXZNb0=;
+        b=R9hJzDu+faRoowHhFvoAoCTRn19vAxgPqADrtmz6WPoNK2dk1tgZEncaW2Bn+Z29ZU
+         2kPdsj+k/RgVizDDf4mN7F6W6886OQGo0u/b6brVt9ugQ39x8V+tFFqP0qz+0Rv+T7zo
+         FXiFsFewlIgnK2mfchZpS4Ka4GjAwH+dEMofhGF17dpbx4iG4RQtQ6Yz/S6EyrLX3Zra
+         CGEXh1te4mvWmx6JjmnDURAC4qi6AjBCLs5gfEVnY5JzxPhq3BCDcSZdgGe8HQmjMAwu
+         ynhTWB778zQ66SBme2bE8AzZqJZ1B55fBS1HedxsqQr5sVJOS2tV2BtAw3Zqfylq9Iyk
+         V5uw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UsFCmC6YdhvNQMI+F0Kw4xdZkWuwKMT5oK6IglXZNb0=;
+        b=2YNbUzEZ7/vYeatmnaLSuO7UERrLA/dhC0C1BCOpskf3Ga20xyuP8V473CR5NS77mU
+         CwWJIzHkgROet+Fbq5jRvxcDpqga0ahhXM+vy+hHlMfxfryuGpAsBIPnfAVvLNXmkaLN
+         kJp96aHi/fw+J+lpOmK1uIo+MjpCWh1URu4g7Qb7co9xc9iIKRGSs2HLCuqYW4jtWVis
+         qARqyhDSjubSvGxQ/pY6+sVgIzn/9QhLtDvB8Ib7GQDsDSmsNqVa+s3hBe+l5TRo+dqp
+         sVYVVV9f72vF2WywnTBpIoy0HZZ0HKdKRpwYsaK5ZgUOdcToP/eCiAOF0hujDWbLp8Bz
+         FRHg==
+X-Gm-Message-State: AOAM530oeCdtGvU/6QwJPh1XgmB3A5OL896UC4YQqxmplhem+0xliUXN
+        28YcpiMsTYdgiFbSS6796abMVI1OheuC/1m13XXPwR2BAAYW3w==
+X-Google-Smtp-Source: ABdhPJxuMFrrRxtm64o9cEGDJ72h58aXfxeC34I3VhYBDMwCpQi0Ftc+9l4oOS9BHkoQHvPus8AEwmeOIi/8NUK9v14=
+X-Received: by 2002:a81:4f0c:0:b0:2f8:46f4:be90 with SMTP id
+ d12-20020a814f0c000000b002f846f4be90mr10541309ywb.332.1651188183295; Thu, 28
+ Apr 2022 16:23:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220427130928.540007-1-nathan@nathanrossi.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <2975a359-2422-71dc-db6b-9e4f369cae77@kernel.dk>
+In-Reply-To: <2975a359-2422-71dc-db6b-9e4f369cae77@kernel.dk>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 28 Apr 2022 16:22:52 -0700
+Message-ID: <CANn89i+RPsrGb1Xgs5GnpAwxgdjnZEASPW0BimTD7GxnFU2sVw@mail.gmail.com>
+Subject: Re: [PATCH v2] tcp: pass back data left in socket after receive
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     netdev <netdev@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 01:09:28PM +0000, Nathan Rossi wrote:
-> The mv88e6xxx driver expects switches that are configured in single chip
-> addressing mode to have the MDIO address configured as 0. This is due to
-> the switch ADDR pins representing the single chip addressing mode as 0.
-> However depending on the device (e.g. MV88E6*41) the switch does not
-> respond on address 0 or any other address below 16 (the first port
-> address) in single chip addressing mode. This allows for other devices
-> to be on the same shared MDIO bus despite the switch being in single
-> chip addressing mode.
-> 
-> When using a switch that works this way it is not possible to configure
-> switch driver as single chip addressing via device tree, along with
-> another MDIO device on the same bus with address 0, as both devices
-> would have the same address of 0 resulting in mdiobus_register_device
-> -EBUSY errors for one of the devices with address 0.
-> 
-> In order to support this configuration the switch node can have its MDIO
-> address configured as 16 (the first address that the device responds
-> to). During initialization the driver will treat this address similar to
-> how address 0 is, however because this address is also a valid
-> multi-chip address (in certain switch models, but not all) the driver
-> will configure the SMI in single chip addressing mode and attempt to
-> detect the switch model. If the device is configured in single chip
-> addressing mode this will succeed and the initialization process can
-> continue. If it fails to detect a valid model this is because the switch
-> model register is not a valid register when in multi-chip mode, it will
-> then fall back to the existing SMI initialization process using the MDIO
-> address as the multi-chip mode address.
-> 
-> This detection method is safe if the device is in either mode because
-> the single chip addressing mode read is a direct SMI/MDIO read operation
-> and has no side effects compared to the SMI writes required for the
-> multi-chip addressing mode.
-> 
-> In order to implement this change, the reset gpio configuration is moved
-> to occur before any SMI initialization. This ensures that the device has
-> the same/correct reset gpio state for both mv88e6xxx_smi_init calls.
-> 
-> Signed-off-by: Nathan Rossi <nathan@nathanrossi.com>
+On Thu, Apr 28, 2022 at 4:13 PM Jens Axboe <axboe@kernel.dk> wrote:
+>
+> This is currently done for CMSG_INQ, add an ability to do so via struct
+> msghdr as well and have CMSG_INQ use that too. If the caller sets
+> msghdr->msg_get_inq, then we'll pass back the hint in msghdr->msg_inq.
+>
+> Rearrange struct msghdr a bit so we can add this member while shrinking
+> it at the same time. On a 64-bit build, it was 96 bytes before this
+> change and 88 bytes afterwards.
+>
+> Signed-off-by: Jens Axboe <axboe@kernel.dk>
+> ---
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-    Andrew
+SGTM, thanks.
+
+Reviewed-by: Eric Dumazet <edumazet@google.com>
