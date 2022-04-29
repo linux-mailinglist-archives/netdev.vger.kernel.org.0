@@ -2,188 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA3155153FB
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 20:48:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21FE451543B
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 21:11:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380130AbiD2SvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 14:51:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54846 "EHLO
+        id S1380222AbiD2TOp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 15:14:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380011AbiD2SvU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 14:51:20 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D3B3B53D5;
-        Fri, 29 Apr 2022 11:48:00 -0700 (PDT)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23TIhYbi008240;
-        Fri, 29 Apr 2022 18:46:47 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=CmQcpniDwe+mXgnPI+CYX47gDa+lF4VP2K5Tb10PSgo=;
- b=bTNrOnkDXh09pnCHUKCfVTj5O7a2rMkLSO1DAFMikxnzlOk842BnVGNnlxjbavr8wxSm
- aOP4oPacZVwhk2+nACPTWiDhwPxyd0jlejF5h74fWWI1oIVsbhF16gpgLRcULgtREdDE
- ZVJN5BEU2k3dT7ownrQWfbB7t+hMkUYaYJeBX/g91k8XSQa3Vre/7LGhk8wcXzDf1kiv
- oQ2iUNVOdBVbKDS9SyEcnVmbm4ZhnqmtglnqQQ9AIucI/CNGWOo+s+8TbDE7Hi7pEpcO
- DHP4bZPnfDn7+LocgB0sqZLpX0rqcpBhSBx8Sg3u1bbgRievtyCZGncSkoY2WOU7WhmC jw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3frnhvg21h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Apr 2022 18:46:47 +0000
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23TIjCZm012916;
-        Fri, 29 Apr 2022 18:46:46 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3frnhvg20t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Apr 2022 18:46:45 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23TIcqwO026358;
-        Fri, 29 Apr 2022 18:46:43 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma02fra.de.ibm.com with ESMTP id 3fpuygbgfw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Apr 2022 18:46:43 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23TIkenH33554928
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 29 Apr 2022 18:46:40 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 153A4A4057;
-        Fri, 29 Apr 2022 18:46:40 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EA594A4053;
-        Fri, 29 Apr 2022 18:46:37 +0000 (GMT)
-Received: from osiris (unknown [9.145.187.229])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Fri, 29 Apr 2022 18:46:37 +0000 (GMT)
-Date:   Fri, 29 Apr 2022 20:46:36 +0200
-From:   Heiko Carstens <hca@linux.ibm.com>
-To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
-        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
-        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
-        xen-devel@lists.xenproject.org, x86@kernel.org,
-        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
-        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
-        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
-        corbet@lwn.net, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-Subject: Re: [PATCH 13/30] s390/consoles: Improve panic notifiers reliability
-Message-ID: <YmwyjMtT7QTZiHaa@osiris>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-14-gpiccoli@igalia.com>
+        with ESMTP id S1380224AbiD2TOm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 15:14:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C3BCD64C7
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 12:11:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9DCCB837BA
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 19:11:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07846C385A7;
+        Fri, 29 Apr 2022 19:11:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651259479;
+        bh=wrutMQpBUdGZWa1r0zxo5BWWgXiLwlwJeTMsSbSkltg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=POWCFUpgIDEvskeTBVdmXTt5e/MuXdyOKBDguXua5vDvMWrUq2k4a2gklR12wiCv1
+         tJuScutnTnCt0UnbAUABKGWoIDKDhPDbHv/CiegC7AvkKPapb0UmeGlM19iBaZ34sY
+         tEsKhqOXJ0Uo7WchcwLQ2uHTHSsocJ8P1+LrD1tgg9BpYGs7FX1VDGaIUXAkgzBU3x
+         Xm2y3meuhgK97dNVVrrDYBYuLOm3InmhMkcb2XqWfT2eUaN5av3qfHzL0hGE31a74E
+         l0R7L8cgxUoKQpF9w7GDk3EpTEklcymO4Vq+flEzn23JdoqYlYPYOfpXTpetAQ1KSH
+         ctSFnzW3DB9eA==
+Date:   Fri, 29 Apr 2022 12:11:17 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Maxim Mikityanskiy <maximmi@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Gal Pressman <gal@nvidia.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] tls: Add opt-in zerocopy mode of sendfile()
+Message-ID: <20220429121117.21bf7490@kernel.org>
+In-Reply-To: <d99c36fd-2bd3-acc6-6c37-7eb439b04949@nvidia.com>
+References: <20220427175048.225235-1-maximmi@nvidia.com>
+        <20220428151142.3f0ccd83@kernel.org>
+        <d99c36fd-2bd3-acc6-6c37-7eb439b04949@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220427224924.592546-14-gpiccoli@igalia.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: ot_aQO11mG-F1A04tqv6Sk5P4k7ltRIu
-X-Proofpoint-ORIG-GUID: vOdOmdbQUdbprpYu7qwc87i31NSF1LbM
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-29_09,2022-04-28_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 adultscore=0
- malwarescore=0 phishscore=0 mlxlogscore=368 impostorscore=0 clxscore=1011
- spamscore=0 lowpriorityscore=0 priorityscore=1501 mlxscore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2204290095
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 27, 2022 at 07:49:07PM -0300, Guilherme G. Piccoli wrote:
-> Currently many console drivers for s390 rely on panic/reboot notifiers
-> to invoke callbacks on these events. The panic() function disables local
-> IRQs, secondary CPUs and preemption, so callbacks invoked on panic are
-> effectively running in atomic context.
+On Fri, 29 Apr 2022 17:21:59 +0300 Maxim Mikityanskiy wrote:
+> On 2022-04-29 01:11, Jakub Kicinski wrote:
+> >> diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+> >> index b12f81a2b44c..715401b20c8b 100644
+> >> --- a/net/tls/tls_device.c
+> >> +++ b/net/tls/tls_device.c
+> >> @@ -411,10 +411,16 @@ static int tls_device_copy_data(void *addr, size_t bytes, struct iov_iter *i)
+> >>   	return 0;
+> >>   }
+> >>   
+> >> +union tls_iter_offset {
+> >> +	struct iov_iter *msg_iter;
+> >> +	int offset;
+> >> +};  
+> > 
+> > Is this sort of atrocity used elsewhere in the kernel?
+> > If you can't refactor the code you can pack args into
+> > a structure  
 > 
-> Happens that most of these console callbacks from s390 doesn't take the
-> proper care with regards to atomic context, like taking spinlocks that
-> might be taken in other function/CPU and hence will cause a lockup
-> situation.
-> 
-> The goal for this patch is to improve the notifiers reliability, acting
-> on 4 console drivers, as detailed below:
-> 
-> (1) con3215: changed a regular spinlock to the trylock alternative.
-> 
-> (2) con3270: also changed a regular spinlock to its trylock counterpart,
-> but here we also have another problem: raw3270_activate_view() takes a
-> different spinlock. So, we worked a helper to validate if this other lock
-> is safe to acquire, and if so, raw3270_activate_view() should be safe.
-> 
-> Notice though that there is a functional change here: it's now possible
-> to continue the notifier code [reaching con3270_wait_write() and
-> con3270_rebuild_update()] without executing raw3270_activate_view().
-> 
-> (3) sclp: a global lock is used heavily in the functions called from
-> the notifier, so we added a check here - if the lock is taken already,
-> we just bail-out, preventing the lockup.
-> 
-> (4) sclp_vt220: same as (3), a lock validation was added to prevent the
-> potential lockup problem.
-> 
-> Besides (1)-(4), we also removed useless void functions, adding the
-> code called from the notifier inside its own body, and changed the
-> priority of such notifiers to execute late, since they are "heavyweight"
-> for the panic environment, so we aim to reduce risks here.
-> Changed return values to NOTIFY_DONE as well, the standard one.
-> 
-> Cc: Alexander Gordeev <agordeev@linux.ibm.com>
-> Cc: Christian Borntraeger <borntraeger@linux.ibm.com>
-> Cc: Heiko Carstens <hca@linux.ibm.com>
-> Cc: Sven Schnelle <svens@linux.ibm.com>
-> Cc: Vasily Gorbik <gor@linux.ibm.com>
-> Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
-> ---
-> 
-> As a design choice, the option used here to verify a given spinlock is taken
-> was the function "spin_is_locked()" - but we noticed that it is not often used.
-> An alternative would to take the lock with a spin_trylock() and if it succeeds,
-> just release the spinlock and continue the code. But that seemed weird...
-> 
-> Also, we'd like to ask a good validation of case (2) potential functionality
-> change from the s390 console experts - far from expert here, and in our naive
-> code observation, that seems fine, but that analysis might be missing some
-> corner case.
-> 
-> Thanks in advance!
-> 
->  drivers/s390/char/con3215.c    | 36 +++++++++++++++--------------
->  drivers/s390/char/con3270.c    | 34 +++++++++++++++------------
->  drivers/s390/char/raw3270.c    | 18 +++++++++++++++
->  drivers/s390/char/raw3270.h    |  1 +
->  drivers/s390/char/sclp_con.c   | 28 +++++++++++++----------
->  drivers/s390/char/sclp_vt220.c | 42 +++++++++++++++++++---------------
->  6 files changed, 96 insertions(+), 63 deletions(-)
+> What's the point of packing arguments into a struct in this particular 
+> case? Depending on zc_page, I need either msg_iter or offset, and I'm 
+> reusing the same CPU register to pass either of them. The performance 
+> isn't affected, and the amount of memory used is the same. A struct 
+> won't allow to achieve this, it would force me to drag 8 extra bytes, 
+> but we already use all 6 registers used to pass parameters on x86_64.
 
-Code looks good, and everything still seems to work. I applied this
-internally for the time being, and if it passes testing, I'll schedule
-it for the next merge window.
+I know why you're doing this, but you're not writing assembly:
 
-Thanks!
++	rc = tls_push_data(sk, (union tls_iter_offset)&msg_iter, size,
+
++	return tls_push_data(sk, (union tls_iter_offset)&msg_iter, 0, flags,
+
+even if it's legal C (i.e. not UB) it looks awkward.
+
+> > but I've not seen people cast mutually exclusive
+> > arguments to a union type.  
+> 
+> It's the purpose of a union, to hold one of mutually exclusive values, 
+> isn't it?
+
+The union itself is not the problem.
+
+> > Is this "inspired" by some higher
+> > level language?  
+> 
+> It's unfortunately inspired by C and its freedom to allow 
+> microoptimizations/hacks. The hack here is that I use a pointer being 
+> NULL or not-NULL as an indicator what type the other argument has.
+> 
+> The closest alternative from high-level languages I can think of is 
+> enums with attached data from rust or swift. However, rust isn't smart 
+> enough to perform the optimization I described, so no, it's not inspired 
+> by it :)
+> 
+> Options that I see here:
+> 
+> 1. Union.
+> 
+> 2. Just pass both parameters and use one of them. Drawbacks: now we have 
+> 7 parameters, one will be passed through the stack, and it's datapath code.
+> 
+> 3. Pass `struct iov_iter *` and cast it to `int offset` when zc_page 
+> isn't NULL. As we are compiling with -fno-strict-aliasing, and int 
+> shouldn't be bigger than a pointer on all supported architectures, it's 
+> going to work, and we still have 6 parameters.
+> 
+> 4. Combine `int offset` and `int flags` into a single 64-bit parameter.
+> 
+> Which one do you prefer, or do you have anything better in mind?
+
+If you declare the union on the stack in the callers, and pass by value
+- is the compiler not going to be clever enough to still DDRT?
+
+> >>   static int tls_push_data(struct sock *sk,
+> >> -			 struct iov_iter *msg_iter,
+> >> +			 union tls_iter_offset iter_offset,
+> >>   			 size_t size, int flags,
+> >> -			 unsigned char record_type)
+> >> +			 unsigned char record_type,
+> >> +			 struct page *zc_page)
+> >>   {
+> >>   	struct tls_context *tls_ctx = tls_get_ctx(sk);
+> >>   	struct tls_prot_info *prot = &tls_ctx->prot_info;
+> >> @@ -480,15 +486,29 @@ static int tls_push_data(struct sock *sk,
+> >>   		}
+> >>   
+> >>   		record = ctx->open_record;
+> >> -		copy = min_t(size_t, size, (pfrag->size - pfrag->offset));
+> >> -		copy = min_t(size_t, copy, (max_open_record_len - record->len));
+> >> -
+> >> -		if (copy) {
+> >> -			rc = tls_device_copy_data(page_address(pfrag->page) +
+> >> -						  pfrag->offset, copy, msg_iter);
+> >> -			if (rc)
+> >> -				goto handle_error;
+> >> -			tls_append_frag(record, pfrag, copy);
+> >> +
+> >> +		if (!zc_page) {
+> >> +			copy = min_t(size_t, size, pfrag->size - pfrag->offset);
+> >> +			copy = min_t(size_t, copy, max_open_record_len - record->len);  
+> > 
+> > Nope, refactor this please. 95% sure you don't need 4 indentation
+> > levels here. Space left in record can be calculated before the if,
+> > then you can do
+> > 
+> > if (zc_page) {
+> > 	..
+> > } else if (copy) {
+> > 	..
+> > }  
+> 
+> It'll save one indentation level for the zc_page case, but not for the 
+> other:
+> 
+> copy = min_t(size_t, size, max_open_record_len - record->len);
+> if (zc_page && copy) {
+>      ...
+> } else {
+>      // I still have to do this in non-zc case:
+>      copy = min_t(size_t, copy, pfrag->size - pfrag->offset);
+
+Can pfrag->size - pfrag->offset really be 0 provided
+tls_do_allocation() did not return an error?
+
+>      if (copy) {
+>          // Same indentation level as in my patch.
+>          ...
+>      }
+> }
+> 
+> Is it good enough?
+
+> > We should allow setting the option for non-HW. It's an opt-in, the app
+> > has opted in, the fact that the kernel will not make use of the liberty
+> > to apply the optimization is not important, no?  
+> 
+> Yes, I agree that if the application opted in, it should work properly 
+> regardless of whether the optimization actually did turn on. However, 
+> the indication could be useful, for example, for diagnostic purposes, to 
+> show the user whether zerocopy mode was enabled, if someone is trying to 
+> debug some performance issue. If you insist, though, I can make 
+> setsockopt succeed and getsockopt return 1. What do you think?
+
+I'd say "whether the optimization is applicable" rather than "whether
+the optimization is turned on". User can check whether the connection
+is using SW or HW TLS if they want to make sure it's taken advantage of.
+
+Speaking of which, should we report the state of this knob via socket
+diag?
