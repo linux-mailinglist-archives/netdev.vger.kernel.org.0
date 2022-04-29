@@ -2,68 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63DD9514009
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 03:08:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C179E514022
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 03:15:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345010AbiD2BLd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 21:11:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50598 "EHLO
+        id S1353682AbiD2BSW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 21:18:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343714AbiD2BLc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 21:11:32 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B44B4BBB0;
-        Thu, 28 Apr 2022 18:08:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=am+pp1n2tR7U1f2aW4eLg9zcq/bG7wx/3AAqhSrs4UI=; b=U72M/kfhKhhGo/IL+Y5OjkRKA1
-        wkapVPbgcTecThgS/KDDY9bB+KPbjP7BSn1GStt7xJ0K/BLVAcptFzXZtJkT33YyqWsR1/ACKZGA5
-        bwmfrPSa5yECjrgSYsjXjenJwDslEaWPapNUCgJGYPA02GGIKEVfOaEmgHPEBmigGvps=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nkF7C-000P1c-F2; Fri, 29 Apr 2022 03:08:10 +0200
-Date:   Fri, 29 Apr 2022 03:08:10 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        michal.simek@xilinx.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        git@xilinx.com, Shravya Kumbham <shravya.kumbham@xilinx.com>
-Subject: Re: [PATCH 1/2] net: emaclite: Don't advertise 1000BASE-T and do
- auto negotiation
-Message-ID: <Yms6evfMxr1JZ2eZ@lunn.ch>
-References: <1651163278-12701-1-git-send-email-radhey.shyam.pandey@xilinx.com>
- <1651163278-12701-2-git-send-email-radhey.shyam.pandey@xilinx.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1651163278-12701-2-git-send-email-radhey.shyam.pandey@xilinx.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S1352786AbiD2BSR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 21:18:17 -0400
+Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E0EE0BCB41;
+        Thu, 28 Apr 2022 18:14:59 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [10.15.192.164])
+        by mail-app4 (Coremail) with SMTP id cS_KCgAnDkX6O2tidX4EAg--.28704S2;
+        Fri, 29 Apr 2022 09:14:46 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-kernel@vger.kernel.org, kuba@kernel.org,
+        krzysztof.kozlowski@linaro.org, gregkh@linuxfoundation.org
+Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        alexander.deucher@amd.com, akpm@linux-foundation.org,
+        broonie@kernel.org, netdev@vger.kernel.org, linma@zju.edu.cn,
+        Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH net v5 0/2] Replace improper checks and fix bugs in nfc subsystem
+Date:   Fri, 29 Apr 2022 09:14:31 +0800
+Message-Id: <cover.1651194245.git.duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: cS_KCgAnDkX6O2tidX4EAg--.28704S2
+X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
+        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUY-7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr1j
+        6rxdM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
+        0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
+        jxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr
+        1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxa
+        n2IY04v7MxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v1sIEY20_GFWkJr1UJwCFx2IqxV
+        CFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r10
+        6r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxV
+        WUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG
+        6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr
+        1UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHUDUUUUU=
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgIOAVZdtZdEXAA3sJ
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 09:57:57PM +0530, Radhey Shyam Pandey wrote:
-> From: Shravya Kumbham <shravya.kumbham@xilinx.com>
-> 
-> In xemaclite_open() function we are setting the max speed of
-> emaclite to 100Mb using phy_set_max_speed() function so,
-> there is no need to write the advertising registers to stop
-> giga-bit speed and the phy_start() function starts the
-> auto-negotiation so, there is no need to handle it separately
-> using advertising registers. Remove the phy_read and phy_write
-> of advertising registers in xemaclite_open() function.
-> 
-> Signed-off-by: Shravya Kumbham <shravya.kumbham@xilinx.com>
-> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+The first patch is used to replace improper checks in netlink related
+functions of nfc core, the second patch is used to fix bugs in
+nfcmrvl driver.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Duoming Zhou (2):
+  nfc: replace improper check device_is_registered() in netlink related
+    functions
+  nfc: nfcmrvl: main: reorder destructive operations in
+    nfcmrvl_nci_unregister_dev to avoid bugs
 
-    Andrew
+ drivers/nfc/nfcmrvl/main.c |  2 +-
+ include/net/nfc/nfc.h      |  1 +
+ net/nfc/core.c             | 26 ++++++++++++++------------
+ 3 files changed, 16 insertions(+), 13 deletions(-)
+
+-- 
+2.17.1
+
