@@ -2,104 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89DD6515040
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 18:04:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B18E6515033
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 18:04:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378795AbiD2QIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 12:08:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40208 "EHLO
+        id S1378762AbiD2QHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 12:07:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378476AbiD2QII (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 12:08:08 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8519D84ED1;
-        Fri, 29 Apr 2022 09:04:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=QQI5zmi1djYWNz2i53I6KuQGatDa49BWqjEk2Pav1i4=; b=dYOwdCYz8mfW6uRaErWUoCqmdx
-        5T0+vzZBt6UK85jUK/bYBffPO6pHVBukVXgw40Mng8+hfEFyxsYupbDv17vw0eY73RVtJNUJhZeIk
-        wjL2oPNMg0UJQkop2tznLUBtpwTgs2tJTFrh96RXyi3iI9oJ7Xg0HjOO5wFLxxatzCt/a1kjKIm+q
-        GG90XSMTUteF9uAfx+0HJjQF0T7y90PJaZRFs3aM6M51tA02d53awi4I7n5GpC6cVQif5RrGFpU1r
-        QhiVEfyVqroi50IPYPzYRbjvCqabrqPiHclqX4UZkfFE4tLq7njetpvB7ea+qAjYTdFscbWw6lpa8
-        5AxSRVRQ==;
-Received: from [179.113.53.197] (helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1nkT6a-0001BR-MS; Fri, 29 Apr 2022 18:04:28 +0200
-Message-ID: <7518924e-5bb4-e6e9-0e3e-3f5cb03bf946@igalia.com>
-Date:   Fri, 29 Apr 2022 13:04:01 -0300
+        with ESMTP id S1357050AbiD2QHb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 12:07:31 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEE8C64706
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 09:04:13 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id v10so6837481pgl.11
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 09:04:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=OKp/8s58T5r52NG1ZPS4ShIunC5oTSkas0OwO/QV3QY=;
+        b=gc0S5VaOWuMg+mQoMt8+ehSIm1pEI4SoVk0XfvG9tTC1fUfCnWKfbHVw90+BTTelvb
+         /7Nze3iG6ymGm2DB+tTapFvt9kO+4WQQQuZjx6BXIoLbDmBx/CnMlOPFOcWUQ33LE7Cl
+         F/wWiW0zkw/c/829vJEm8waqBaOSCCCjA87fvOmiEv5pLrFntft8+WDPp3aV3paC5NXu
+         /8L/soY1e7Iiq+fq5kNjtNOOKGWNxU18rEjP+Z9EGP1NP8U+X18mG162RCuegWLvrBsq
+         Z7MwfpYydY7Effvs7FllHZEE8ILVUolntESI4mS8zdH6eWNK7CkaSqpiyh6h+hQrOGPE
+         soqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=OKp/8s58T5r52NG1ZPS4ShIunC5oTSkas0OwO/QV3QY=;
+        b=7EjoRFiaqejujnodZgD2v+4N3iRurzB0lb9pUXEse9ZUCfBVNyXLKRS/UySVmy7i1d
+         DiWI6QBvYMKmp/Xcdqnjyhzm31E11tAiADv2CLqVtioA3N3GHztCzJvvE1PPsp5yMrog
+         JNR1JeoTlRJkFOFyHU3lFb1kARxa46L2B4zColQYOnSrsbKZREQsgb8nxcd8nmG40X18
+         E91zbf3DSWw5PABS3wHxoKFid4XBC+khyEWH8zsFdS2ULOZ1XTH4FMHDX7x6bMNQmMwW
+         +OWgUDJD8o7JKBXQe0Oabh9iTiiDq0H2Wj+jwQ0ze6Unul/y5kMT/dJp9a1xto6yanNT
+         e4Lw==
+X-Gm-Message-State: AOAM533J3wtveFCF6cNNk2tCkino8gACJZ3xpfvRrs754skP6uoRT447
+        gTLooAVqt1tkmEn5uTGLLGA=
+X-Google-Smtp-Source: ABdhPJw0x3XYO+sE5K9i773DyVJdhyJs0KuCp1PvpZWSvsSOBQL3N+zQoXpn/uy72g0bsDNAK1P5Hg==
+X-Received: by 2002:a63:81c6:0:b0:3ab:6167:74b5 with SMTP id t189-20020a6381c6000000b003ab616774b5mr50061pgd.527.1651248253261;
+        Fri, 29 Apr 2022 09:04:13 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id y12-20020a17090a784c00b001c6bdafc995sm8165063pjl.3.2022.04.29.09.04.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Apr 2022 09:04:12 -0700 (PDT)
+Message-ID: <2174c895-ad78-76af-a19e-728cb3808516@gmail.com>
+Date:   Fri, 29 Apr 2022 09:04:11 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 24/30] panic: Refactor the panic path
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] net: mdio: Fix ENOMEM return value in BCM6368 mux bus
+ controller
 Content-Language: en-US
-To:     Randy Dunlap <rdunlap@infradead.org>, akpm@linux-foundation.org,
-        bhe@redhat.com, pmladek@suse.com, kexec@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
-        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
-        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
-        xen-devel@lists.xenproject.org, x86@kernel.org,
-        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
-        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
-        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
-        corbet@lwn.net, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-25-gpiccoli@igalia.com>
- <4fe85e9c-4e96-e9d5-9fd8-f062bafcda4f@infradead.org>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <4fe85e9c-4e96-e9d5-9fd8-f062bafcda4f@infradead.org>
-Content-Type: text/plain; charset=UTF-8
+To:     Niels Dossche <dossche.niels@gmail.com>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, noltari@gmail.com
+References: <20220428211931.8130-1-dossche.niels@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220428211931.8130-1-dossche.niels@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27/04/2022 21:28, Randy Dunlap wrote:
+On 4/28/22 14:19, Niels Dossche wrote:
+> Error values inside the probe function must be < 0. The ENOMEM return
+> value has the wrong sign: it is positive instead of negative.
+> Add a minus sign.
 > 
-> 
-> On 4/27/22 15:49, Guilherme G. Piccoli wrote:
->> +	crash_kexec_post_notifiers
->> +			This was DEPRECATED - users should always prefer the
-> 
-> 			This is DEPRECATED - users should always prefer the
-> 
->> +			parameter "panic_notifiers_level" - check its entry
->> +			in this documentation for details on how it works.
->> +			Setting this parameter is exactly the same as setting
->> +			"panic_notifiers_level=4".
-> 
+> Fixes: e239756717b5 ("net: mdio: Add BCM6368 MDIO mux bus controller")
+> Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
 
-Thanks Randy, for your suggestion - but I confess I couldn't understand
-it properly. It's related to spaces/tabs, right? What you suggest me to
-change in this formatting? Just by looking the email I can't parse.
-
-Cheers,
-
-
-Guilherme
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
