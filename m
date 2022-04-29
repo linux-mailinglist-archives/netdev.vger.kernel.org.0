@@ -2,291 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81454514264
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 08:32:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED1805142D5
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 09:04:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351544AbiD2Gfp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 02:35:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53286 "EHLO
+        id S1351499AbiD2HGT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 03:06:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237453AbiD2Gfo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 02:35:44 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C67DAB9F13
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 23:32:26 -0700 (PDT)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651213944;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=QqgVeMPsWGnOQhz4oVzHwiyJ9rj1VsnTUxUpXZenVIo=;
-        b=x+u/QPxMPsgqKsCSm868DEzfFK0Dgatx6PICiPIj4IFdfxudYXDd10MhdEYE7NddLB5mmJ
-        6gX+Ssbw6GPUkXNK5jGRznEjkroGfha3r6+diChUvIFJTSMcxSifdD2/CdzAkVk09NVYP2
-        Ok7sbwoobe2Wti1amx/L4HytBQBHk/vXKg84q+YCwRqZvzZLfMFlJgATHwbO2js8uTITps
-        VWIZuQZSjTlvGEvmnoL7O2HoSOkk0fKMzNcoqnzZUPMb0ymM9CTL9R5r6ZtaAs7ibi+itC
-        2fA+mYi41h9WdxEIuXxovLSPhy4WybhQf1+rJ4fTDMkdsoFrF/DYVus6FCAaQA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651213944;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=QqgVeMPsWGnOQhz4oVzHwiyJ9rj1VsnTUxUpXZenVIo=;
-        b=eAe196161rh/TEwnXzWjhLbEWBAFSIRbJJtMgIDsoqfbDUXeJ/ytNydWBCDl9uoxftfkRS
-        YbWA4K3vxpL7D9DQ==
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Gerhard Engleder <gerhard@engleder-embedded.com>,
-        "Y . b . Lu" <yangbo.lu@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Yannick Vignon <yannick.vignon@nxp.com>,
-        Rui Sousa <rui.sousa@nxp.com>, Jiri Pirko <jiri@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [PATCH net-next] selftests: forwarding: add Per-Stream
- Filtering and Policing test for Ocelot
-In-Reply-To: <20220428204839.1720129-1-vladimir.oltean@nxp.com>
-References: <20220428204839.1720129-1-vladimir.oltean@nxp.com>
-Date:   Fri, 29 Apr 2022 08:32:22 +0200
-Message-ID: <87v8usiemh.fsf@kurt>
+        with ESMTP id S236404AbiD2HGP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 03:06:15 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2112.outbound.protection.outlook.com [40.107.220.112])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EA22B822F
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 00:02:58 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=k24a6E+C+oxvxhrMRKHFfa7A9CXjiuHInUF0hJ3uRMyguaAPYeJF9puJqjCLwDSX4v0bJMZBiDv+gPuFisBvkxrEgYu0RJEyg/bXfqNBsXBxCCCh2RBgR4XKWZjtnH783kJ0Li2DtZ4AVT0l105rXhoNXt5GSuGM08UnLK80098RwnxPViLL3e3V1/EhSQEfn356oz2YWASC7hTe9e9ePBrrszYP/LoBJZF023Ads8QdeFbTqBurLH5jCT/QKpoktWnSEVtuvqTelIDi/kTa9Lhdf+VIJIOsAtqI2OysDMK6BUQ2pE/xKAQE0AlbOi5dzo7UNERyOIK1BgE75+384Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9jFvEoPflLBmu2GHYFAWkOGZzlg0kjzQYiFouabpDkM=;
+ b=XOjytTwRrDIOtG1JFpofLMolW3npvMg+cezvbLKHwHIlmI6IzRcfVuF8PuHABW4q1yQFcAYxBV3FjbIucBmlumOw2C+VAxBAVeyv2b1UWlBlwVSw9EmLOhc8wlrUdPu446HEcF3V3/O73PwdNTriq3DE0VJnbcL4ZjaH21BHVJqVQzxNvoddry7hEzy/emnyZ20WHPiliIjYdpKhksSk37P59ehRtNBGwmgZmKoSNwFGsxxcrFY0rC+588zNP8qGM5lKWoWH18xcGcDc+0eYOML0CDmT7Kzr8b9YIRhDaWqV9cVqFoy5Fy8u/BA8tKbsZ1RC5rgXFmuQbpCP+7zwvw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9jFvEoPflLBmu2GHYFAWkOGZzlg0kjzQYiFouabpDkM=;
+ b=doEColXFBCypMK0tMp4qZ6CUx8GXjXOXsHwHVxLic8v3TZNEwo0a8xk4k+3/gR/Aco1wZ0jF3ri4QPh8xfIBy/FRizVDCoUkmezSbYWV7uBbZq6aNSPipco4fHHJ5FpZrHHWKqODO4GirX8nXHw5RaoK+Sl1pffUKGQ3ME/3reo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by BY5PR13MB3668.namprd13.prod.outlook.com (2603:10b6:a03:219::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.6; Fri, 29 Apr
+ 2022 07:02:57 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::8808:1c60:e9cb:1f94]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::8808:1c60:e9cb:1f94%3]) with mapi id 15.20.5227.006; Fri, 29 Apr 2022
+ 07:02:57 +0000
+Date:   Fri, 29 Apr 2022 09:02:51 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com, Yinjun Zhang <yinjun.zhang@corigine.com>
+Subject: Re: [PATCH net-next] nfp: flower: utilize the tuple iifidx in
+ offloading ct flows
+Message-ID: <YmuNm7e7RoTIwuov@corigine.com>
+References: <20220428105856.96944-1-simon.horman@corigine.com>
+ <20220428154646.7b9d85cf@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220428154646.7b9d85cf@kernel.org>
+X-ClientProxiedBy: AM0PR02CA0016.eurprd02.prod.outlook.com
+ (2603:10a6:208:3e::29) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 653646f4-c1d2-4578-c463-08da29ae49ee
+X-MS-TrafficTypeDiagnostic: BY5PR13MB3668:EE_
+X-Microsoft-Antispam-PRVS: <BY5PR13MB366839982CE3E51CD5E90308E8FC9@BY5PR13MB3668.namprd13.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: SYUg/FY0KQbjQqzvihwa2eokigFfty6u21bnRnfbqbc4jhjy/ziLEz7fO5CPuSaBQ19dBrxI4YLY/iL6FALKqSm8VcKzcibWTZG7b4oZdPJVh5MvwIiA9+JKysdsXrvAblEZ8b/qQ5WBYwqve9ZHukk/7oXItuZQcbNV0aXuoACMjQLF01J3B1Dp566Z7Gqf6FAaJUmxHZN6OI8MzJKKC0xbHkmyBeoFuELap6GTgjUpoUaL8DJux807swMvCkDHZupfYljo11kPD4os9ixNrbcbELYxvYILwl0yLPyu8kQC759Ut4h141ZR7YjkhOvtWoHHClMu598fM0Eb2aEGKDwHFFFcvmcTbKwGCBjWGM3HgG8tYmf2uV6ez43RClCyDFg/WyO7ukhVzNAW+0sQBXsNHwg7e0gL75POZkgSOT6HSONRoXQ7YSScWM6CqtslVdprBl/J4e5kGILd78+ZLDJ5B33HYkcRhJbeX3om/Fa7o1hwNVQfU+0g/0VvlVwemm+FjfK9ImbzznK+At50ubSJbL6pyEx02SGjmyBn0786DbTdBUIZBR9+Kc/dw5NN19VfR0ArrQBnqTngBn7Y5QZxO34iyzp/ooaf1Ije3cEp3CmbNvkWsohMTDf1pH4Hw3LZ3/JbN57xbDgc5KvEHw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(136003)(396003)(366004)(376002)(39830400003)(346002)(52116002)(6666004)(4744005)(44832011)(508600001)(86362001)(38100700002)(2906002)(6486002)(54906003)(186003)(6916009)(107886003)(2616005)(6512007)(316002)(8676002)(6506007)(4326008)(66946007)(66556008)(66476007)(36756003)(5660300002)(8936002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?iCtcUvJVpXj+hTT9zZiJwlHP3sZmHcc6eaDp4OtjuPbSx8LwkkVwQ9EtO4Po?=
+ =?us-ascii?Q?SkhNvQC2egsqJL4HIPwrjukedITRGOsaU/IzdG7R4Qzg69Nefe76MkKlloyd?=
+ =?us-ascii?Q?ZTz0M0oCGQKeZLyr5T5Xv1X5ujy1d3RPSbSQ7M0vK7z0rq/cky+3HwptbiAq?=
+ =?us-ascii?Q?BRGCAqAikAWYnMQiLMVfcd9jHNZWETxD80GR75EJ+Aonkj6YGGcq/exyVvb3?=
+ =?us-ascii?Q?akplUSDpZUAI+SjZXo0xGuFFDPy/EYlu4tBlUhmQ+8VXztzdM5IWBMLe5AzC?=
+ =?us-ascii?Q?RMH9QfvJh7fPvckcOyJtGd89M4n0Ri3wtiT8ww07rIbroH3C1VcONO0eSJoA?=
+ =?us-ascii?Q?KBmvTlAbi6rwHDz0T0eIls+tzmst/Bll9o+/eWXrF7B/JEFm9d0USpHpjNER?=
+ =?us-ascii?Q?pvbxA62ojsuA/eIJouG8WaA6fYvhmHXP/En6GQprH0clSWN+NcVeblIT0khb?=
+ =?us-ascii?Q?D+NUiQV/9kWJK992F9lUoYYmZ7mx0t0XF/xKy3rmpPanWCqShLc+AAdA2gKW?=
+ =?us-ascii?Q?bzY7508yGedQ6/7zg20OXFtzjUMf2t3hP4wVBrhrRQaTQsvDstXOlLQaR8/y?=
+ =?us-ascii?Q?tuf57NHywYEmR0lX3unzHdPezU59pTMGt31QfZeArJNAGyCS1WEJnddvCHff?=
+ =?us-ascii?Q?InQvkg/MqPABUV2JCEa1F3+0IU8qutXVyTSbEYxSfgNTM175lu2OyfqoWrBt?=
+ =?us-ascii?Q?q3+jgLpgI5h/CK8IGbtQJmfDrK+QnmWFcsmOnYoZSalxABV9mPGcFxtkJM1r?=
+ =?us-ascii?Q?Tpu70K6lMzc/R7mJSNLJmTs+eSugS0Z1zC8Z2Gnfnonrg/RXdt499BRHCtds?=
+ =?us-ascii?Q?U+SIiUVUv3vl34bKu5nfajJHPEknJvb00vy3/nqUycZL4eh1myqk/TXiPqRL?=
+ =?us-ascii?Q?bEzHGapBcClMsEmy5PhBIaXBqSW+bq3QtGzejjpvzk9UlId/VuDibxOOv2p1?=
+ =?us-ascii?Q?OmwCVnENTH9LO15HxtoCEzeBioo82P63S71w2RGd6uuo3lPh8RuqiqCr5nDi?=
+ =?us-ascii?Q?tlA7xXj/XVXKCshFFWv1kAHflhrmLz+OVqNtQjzGCf4/RgpDfCpY4RBC+YUp?=
+ =?us-ascii?Q?NZddInQRvYcGOIgDUdi3i49lQxGY9J5gqQSU2UeTECcyClNWtOCHpzSnxmdm?=
+ =?us-ascii?Q?NkwbMttRe7maMKYRuX7/jzxn9JQI43Ju0repHHSduUzZnAmm+Bc5PPa6mmTq?=
+ =?us-ascii?Q?awdqamzujbNiMwGtCmbw91bRttVavEREPMQ1eS6ex0bDXOOkLzG4KzFhy8Vw?=
+ =?us-ascii?Q?gDZrlPo4KDBmIKQM8KpD3lPBkjtFrsJyXan5+vQRtqomwK6OSdYQOB4QUb4t?=
+ =?us-ascii?Q?+rS5r2pEdXTPjcGti6gUgyGv3rhNLrlj++bRk/QCWBTc78RvZh5/tJGkOMp5?=
+ =?us-ascii?Q?5SEL/qXMExHz5OSCML7iC8qQl70A8FHPLp2HDyJJONk1i9ZuaGY2eqxy8YZu?=
+ =?us-ascii?Q?7yp9RoCGR/7FhMe36ROWZYjnpIxqVR7jUcKfIfjGQq3H6xwfVcsQZJ3emmTB?=
+ =?us-ascii?Q?yXre7/XQIg2kQRfyOaubV60KBk+UHszUmt8RgjsXtdmlTp4LEbLSi/wLDAgr?=
+ =?us-ascii?Q?O4uB/igCCh27OlbPIxT1rryr1PlahXXqMQKBD47/IcMk4sQiCcSToPaNZjon?=
+ =?us-ascii?Q?tj6dlcWq0Rb3FOoSq2mD3AJRSZd7Xgop+OWq1IRsrlAueq8T83YPKNthwRZ3?=
+ =?us-ascii?Q?CEGhJDYm6yYLMkjgF60ogRFP5bPKQsZWlINMBo1I9DgyJhPa3WphjTTXW3yP?=
+ =?us-ascii?Q?12ujBjz7Aa66zl5iwcbtT5yjw4dV9WewXxaJi6C4LDhMeAsAtYW3Z5sW8ZdQ?=
+X-MS-Exchange-AntiSpam-MessageData-1: j4OmUZFN78bnAd7Fqefti5Rl2u/Fbhm+fpU=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 653646f4-c1d2-4578-c463-08da29ae49ee
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Apr 2022 07:02:57.0135
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: I431xu8fgfD3pLyDe/e/LKWjuYDdF/bnqsENcPbL1u1s2eHiYuftxDP5z0WdDcVtqIaCcOTTbrd4KkwW39k8Q+xtljiPwylnKnnjy+Grpmo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR13MB3668
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
+On Thu, Apr 28, 2022 at 03:46:46PM -0700, Jakub Kicinski wrote:
+> On Thu, 28 Apr 2022 12:58:56 +0200 Simon Horman wrote:
+> > +static inline struct net_device *get_netdev_from_rule(struct flow_rule *rule)
+> 
+> No static inlines in C sources, please, there is only one caller 
+> so compiler will DDRT.
 
-Hi Vladimir,
-
-On Thu Apr 28 2022, Vladimir Oltean wrote:
-> The Felix VSC9959 switch in NXP LS1028A supports the tc-gate action
-> which enforced time-based access control per stream. A stream as seen by
-> this switch is identified by {MAC DA, VID}.
->
-> We use the standard forwarding selftest topology with 2 host interfaces
-> and 2 switch interfaces. The host ports must require timestamping non-IP
-> packets and supporting tc-etf offload, for isochron to work. The
-> isochron program monitors network sync status (ptp4l, phc2sys) and
-> deterministically transmits packets to the switch such that the tc-gate
-> action either (a) always accepts them based on its schedule, or
-> (b) always drops them.
->
-> I tried to keep as much of the logic that isn't specific to the NXP
-> LS1028A in a new tsn_lib.sh, for future reuse. This covers
-> synchronization using ptp4l and phc2sys, and isochron.
-
-For running this selftest `isochron` tool is required. That's neither
-packaged on Linux distributions or available in the kernel source. I
-guess, it has to be built from your Github account/repository?
-
->
-> The cycle-time chosen for this selftest isn't particularly impressive
-> (and the focus is the functionality of the switch), but I didn't really
-> know what to do better, considering that it will mostly be run during
-> debugging sessions, various kernel bloatware would be enabled, like
-> lockdep, KASAN, etc, and we certainly can't run any races with those on.
->
-> I tried to look through the kselftest framework for other real time
-> applications and didn't really find any, so I'm not sure how better to
-> prepare the environment in case we want to go for a lower cycle time.
-> At the moment, the only thing the selftest is ensuring is that dynamic
-> frequency scaling is disabled on the CPU that isochron runs on. It would
-> probably be useful to have a blacklist of kernel config options (checked
-> through zcat /proc/config.gz) and some cyclictest scripts to run
-> beforehand, but I saw none of those.
->
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-
-[snip]
-
-> diff --git a/tools/testing/selftests/net/forwarding/tsn_lib.sh b/tools/testing/selftests/net/forwarding/tsn_lib.sh
-> new file mode 100644
-> index 000000000000..efac5badd5a0
-> --- /dev/null
-> +++ b/tools/testing/selftests/net/forwarding/tsn_lib.sh
-> @@ -0,0 +1,219 @@
-> +#!/bin/bash
-> +# SPDX-License-Identifier: GPL-2.0
-> +# Copyright 2021-2022 NXP
-> +
-> +# Tunables
-> +UTC_TAI_OFFSET=37
-
-Why do you need the UTC to TAI offset? isochron could just use CLOCK_TAI
-as clockid for the task scheduling.
-
-> +ISOCHRON_CPU=1
-
-Seems reasonable to assume two cpus.
-
-> +
-> +# https://github.com/vladimiroltean/tsn-scripts
-> +# WARNING: isochron versions pre-1.0 are unstable,
-> +# always use the latest version
-> +require_command isochron
-> +require_command phc2sys
-> +require_command ptp4l
-> +
-> +phc2sys_start()
-> +{
-> +	local if_name=$1
-> +	local uds_address=$2
-> +	local extra_args=""
-> +
-> +	if ! [ -z "${uds_address}" ]; then
-> +		extra_args="${extra_args} -z ${uds_address}"
-> +	fi
-> +
-> +	phc2sys_log="$(mktemp)"
-> +
-> +	chrt -f 10 phc2sys -m \
-> +		-c ${if_name} \
-> +		-s CLOCK_REALTIME \
-> +		-O ${UTC_TAI_OFFSET} \
-> +		--step_threshold 0.00002 \
-> +		--first_step_threshold 0.00002 \
-> +		${extra_args} \
-> +		> "${phc2sys_log}" 2>&1 &
-> +	phc2sys_pid=$!
-> +
-> +	echo "phc2sys logs to ${phc2sys_log} and has pid ${phc2sys_pid}"
-> +
-> +	sleep 1
-> +}
-> +
-> +phc2sys_stop()
-> +{
-> +	{ kill ${phc2sys_pid} && wait ${phc2sys_pid}; } 2> /dev/null
-> +	rm "${phc2sys_log}" 2> /dev/null
-> +}
-> +
-> +ptp4l_start()
-> +{
-> +	local if_name=$1
-> +	local slave_only=$2
-> +	local uds_address=$3
-> +	local log="ptp4l_log_${if_name}"
-> +	local pid="ptp4l_pid_${if_name}"
-> +	local extra_args=""
-> +
-> +	if [ "${slave_only}" = true ]; then
-> +		extra_args="${extra_args} -s"
-> +	fi
-> +
-> +	# declare dynamic variables ptp4l_log_${if_name} and ptp4l_pid_${if_name}
-> +	# as global, so that they can be referenced later
-> +	declare -g "${log}=$(mktemp)"
-> +
-> +	chrt -f 10 ptp4l -m -2 -P \
-> +		-i ${if_name} \
-> +		--step_threshold 0.00002 \
-> +		--first_step_threshold 0.00002 \
-> +		--tx_timestamp_timeout 100 \
-> +		--uds_address="${uds_address}" \
-> +		${extra_args} \
-> +		> "${!log}" 2>&1 &
-> +	declare -g "${pid}=$!"
-> +
-> +	echo "ptp4l for interface ${if_name} logs to ${!log} and has pid ${!pid}"
-> +
-> +	sleep 1
-> +}
-> +
-> +ptp4l_stop()
-> +{
-> +	local if_name=$1
-> +	local log="ptp4l_log_${if_name}"
-> +	local pid="ptp4l_pid_${if_name}"
-> +
-> +	{ kill ${!pid} && wait ${!pid}; } 2> /dev/null
-> +	rm "${!log}" 2> /dev/null
-> +}
-> +
-> +cpufreq_max()
-> +{
-> +	local cpu=$1
-> +	local freq="cpu${cpu}_freq"
-> +	local governor="cpu${cpu}_governor"
-> +
-> +	# declare dynamic variables cpu${cpu}_freq and cpu${cpu}_governor as
-> +	# global, so they can be referenced later
-> +	declare -g "${freq}=$(cat /sys/bus/cpu/devices/cpu${cpu}/cpufreq/scaling_min_freq)"
-> +	declare -g "${governor}=$(cat /sys/bus/cpu/devices/cpu${cpu}/cpufreq/scaling_governor)"
-> +
-> +	cat /sys/bus/cpu/devices/cpu${cpu}/cpufreq/scaling_max_freq > \
-> +		/sys/bus/cpu/devices/cpu${cpu}/cpufreq/scaling_min_freq
-> +	echo -n "performance" > \
-> +		/sys/bus/cpu/devices/cpu${cpu}/cpufreq/scaling_governor
-> +}
-> +
-> +cpufreq_restore()
-> +{
-> +	local cpu=$1
-> +	local freq="cpu${cpu}_freq"
-> +	local governor="cpu${cpu}_governor"
-> +
-> +	echo "${!freq}" > /sys/bus/cpu/devices/cpu${cpu}/cpufreq/scaling_min_freq
-> +	echo -n "${!governor}" > \
-> +		/sys/bus/cpu/devices/cpu${cpu}/cpufreq/scaling_governor
-> +}
-> +
-> +isochron_recv_start()
-> +{
-> +	local if_name=$1
-> +	local uds=$2
-> +	local extra_args=$3
-> +
-> +	if ! [ -z "${uds}" ]; then
-> +		extra_args="--unix-domain-socket ${uds}"
-> +	fi
-> +
-> +	isochron rcv \
-> +		--interface ${if_name} \
-> +		--sched-priority 98 \
-> +		--sched-rr \
-
-Why SCHED_RR?
-
-Thanks,
-Kurt
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmJrhnYTHGt1cnRAbGlu
-dXRyb25peC5kZQAKCRDBk9HyqkZzgtlvD/9p9fEFfwY7QVD3y+dyDDr1lTSOVqD0
-D90PcCTL5SW1lfCDxBNAyFOhYAvuoS7C60DCvHcKLRDVS3W7Tv4wpIgCbsBBgqo3
-VDseDZU/PjiYLC1Xu7lufYr1KFoGe5KrcNQ82u2NZSXyb0K0SVVDjFehknJb/Wn+
-VAf59bx4XMnYa8wJXYgmcV+BzoeN6Q3A/hqaOCSeQh5WMiwri3QDULlwFOzO4MZO
-wzlUuR2DhoJQEgbx6dCHUEyAyayvPtBj9qmekU3b0+7vXrzy+XlfeL0XXVwl2tWc
-aasuWVr/OUim1GeoX8S0o9e+UV71o4N35sJOq7VVQO4QDEUi4PntVphWGR6fyGl3
-LDQgMVqWeNmMhN+rFry0qn3pXBEY0Tmo89B4ohLwvbZm+u96ku6rBs+rkLIdu3P5
-BAo6iQkGgLh8s/5ie+ifR6s9uOHoGp2w6qvTVeqR1XgrXY38TFp9jVihOZaVX+n5
-fYmLccNOWD7vsvPKYPzz/S8M9nxCXcRWGzFX0lWQ4F/T6j3RSqarMNjB+JNELdeW
-YtBXnJ/EMP3elDxsqgOFZbw+IN0VhNyavc94/JUN0sBeXTdT9SZiNNoLOipCpemE
-jjz7jWNkyCH/YrcSkRwzpSAsG6iXy/w+gempM9RnASDz6z8Cg6o1YF+RVJvQ5vCU
-2bGdv4lGPEf4TA==
-=B7NJ
------END PGP SIGNATURE-----
---=-=-=--
+Sorry about that, we'll fix that in v2.
