@@ -2,54 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F6D7514050
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 03:41:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9EA0514017
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 03:14:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354012AbiD2BoQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 21:44:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46866 "EHLO
+        id S1353503AbiD2BR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 21:17:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235461AbiD2BoP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 21:44:15 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0EF55FF14;
-        Thu, 28 Apr 2022 18:40:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0D715CE2F98;
-        Fri, 29 Apr 2022 01:40:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF7CBC385AC;
-        Fri, 29 Apr 2022 01:40:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651196456;
-        bh=Hz6ulH+o/XA3d/ohY6QMo3a7cl6ZEDIejB0K3veZ9gw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hbqr3sYCWquHPPIGT12Ir8IJ8M2rIRjkIx6bydazwbRTF3vsdVxWbwmYa17j93Y1T
-         CmPDfLH9/sDfXM56lx64FfPeN3m/SyTtFt+mBdpbqM9RpLRfUKY9JiEPiPJUQgKhe5
-         ili1hZR4k4Jg/LhXv3cRQZ+mnkM/L307Xkmuws0+bkoIKJD9JPiuJ5uCmPW0G/LgHs
-         xvD8NR0nSQsQf+KwKIfjHsO89fGbTNUkhpu5/B4Qs1xveASSPEqOjG6sd4w+0f7v+S
-         40LohYVRzYdxcPUfmec/UFYagUWtr32Qt/8I7TdWHZiGPlgW/XEijZHyWCaXzku6vH
-         La9YD2kGDcCWA==
-Date:   Thu, 28 Apr 2022 18:40:54 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jianqun Xu <jay.xu@rock-chips.com>
-Cc:     davem@davemloft.net, joabreu@synopsys.com, alexandre.torgue@st.com,
-        peppe.cavallaro@st.com, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org
-Subject: Re: [PATCH V2] ethernet: stmmac: support driver work for DTs
- without child queue node
-Message-ID: <20220428184054.3dd72784@kernel.org>
-In-Reply-To: <20220429004605.1010751-1-jay.xu@rock-chips.com>
-References: <20220428010927.526310-1-jay.xu@rock-chips.com>
-        <20220429004605.1010751-1-jay.xu@rock-chips.com>
+        with ESMTP id S1352695AbiD2BRZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 21:17:25 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8144BC875;
+        Thu, 28 Apr 2022 18:14:08 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KqDxy30SdzfbB2;
+        Fri, 29 Apr 2022 09:13:10 +0800 (CST)
+Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 29 Apr 2022 09:14:06 +0800
+Received: from k04.huawei.com (10.67.174.115) by
+ dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 29 Apr 2022 09:14:06 +0800
+From:   Pu Lehui <pulehui@huawei.com>
+To:     <bpf@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Pu Lehui <pulehui@huawei.com>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
+        Luke Nelson <luke.r.nels@gmail.com>,
+        Xi Wang <xi.wang@gmail.com>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+Subject: [PATCH bpf-next v2 0/2] Support riscv jit to provide
+Date:   Fri, 29 Apr 2022 09:42:38 +0800
+Message-ID: <20220429014240.3434866-1-pulehui@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.115]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500019.china.huawei.com (7.185.36.180)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,28 +60,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 29 Apr 2022 08:46:05 +0800 Jianqun Xu wrote:
-> The driver use the value of property 'snps,rx-queues-to-use' to loop
-> same numbers child nodes as queues, such as:
-> 
->     gmac {
->         rx-queues-config {
->             snps,rx-queues-to-use = <1>;
->             queue0 {
->                 // nothing need here.
-> 	    };
-> 	};
->     };
+patch 1 fix an issue that could not print bpf line info due
+to data inconsistency in 32-bit environment.
 
-I think you mean tx, not rx, given the code.
+patch 2 add support for riscv jit to provide bpf_line_info.
+Both RV32 and RV64 tests have been passed as like follow:
 
->  
->  		queue++;
->  	}
-> -	if (queue != plat->tx_queues_to_use) {
-> +	if (queue != plat->tx_queues_to_use && of_get_child_count(tx_node)) {
->  		ret = -EINVAL;
->  		dev_err(&pdev->dev, "Not all TX queues were configured\n");
->  		goto out;
+./test_progs -a btf
+#19 btf:OK
+Summary: 1/215 PASSED, 0 SKIPPED, 0 FAILED
 
-Also what about the init to defaults I asked about?
+v2:
+- Remove some trivial code
+
+v1: https://lore.kernel.org/bpf/20220426140924.3308472-1-pulehui@huawei.com
+
+Pu Lehui (2):
+  bpf: Unify data extension operation of jited_ksyms and jited_linfo
+  riscv, bpf: Support riscv jit to provide bpf_line_info
+
+ arch/riscv/net/bpf_jit.h      | 1 +
+ arch/riscv/net/bpf_jit_core.c | 7 ++++++-
+ kernel/bpf/syscall.c          | 5 ++++-
+ 3 files changed, 11 insertions(+), 2 deletions(-)
+
+-- 
+2.25.1
+
