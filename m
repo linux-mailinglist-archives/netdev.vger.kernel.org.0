@@ -2,143 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D9D68514CDB
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 16:28:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3F4F514CF4
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 16:31:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377309AbiD2Obp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 10:31:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58530 "EHLO
+        id S1377401AbiD2OeK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 10:34:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377303AbiD2Obl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 10:31:41 -0400
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14CCCA146B;
-        Fri, 29 Apr 2022 07:28:23 -0700 (PDT)
-Received: by mail-io1-xd2d.google.com with SMTP id e3so6178563ios.6;
-        Fri, 29 Apr 2022 07:28:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gWFctTI+mXIW9rm2Z4IJhom0SL/RWdmtfrY+iQvt6FA=;
-        b=jHKhliWrqbQoVow7fGCTJdPFqzggfhuWVKTRIWSPuWhXKVYJ80krZWklu04o9V6Fd8
-         hhMCQw2L7yT0oPHMhQhZGJDTcaYrTC2DlX+AVI95wE2hlgexONqHGa36puC0yxFPGgYG
-         3XsLK7W4um51+z3cc8onQkPOYbNJnyJVWe4HH4wV8lDs2iQIPoo5XXbtavGiGs48lqtE
-         u3gXFJG7HiktowaHujwN1V6hNye2rTR2ahOQfj7VTwJiJZ7BLTmdbxEuR6qVGGIOBnyN
-         vxou52POOf7DvdjaagR9BjD9nMgbNBP7zQtWwokfmrbdGAOTP3im69zSNzdhlOg5EynW
-         ZE+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gWFctTI+mXIW9rm2Z4IJhom0SL/RWdmtfrY+iQvt6FA=;
-        b=oklFnoFKIfymBuwM50GJWj25vqzPJS2QVbvsmZQpOs9fYf4NRM058GmzExPFXyHBza
-         Xmj9q13oy51J70GxYsZH6MFoPp6ztlbC0WHWBFLLogkZ9U7yf8kkY2D2w4wa15OkMb2V
-         Rf+V/AHtz4hJ+Meigl+NakNkhjC4FvRWDcV+vo7sfGdz0LX0aVnctKhZ3qOaz8eDocKk
-         wbtNa5X0x0r03265gwRt3g633H+8Jm3mfsaFfmdXhmwPZxk/7FS0ncYqDuasHgs3YZeP
-         knX+ajHVTJEXWMmYtULetaROi+TXQamhU1bbZnrWxoYXulh9xx3q9hNnjPUx8L/7FTNI
-         nX/w==
-X-Gm-Message-State: AOAM533Y7p7YQ9vstAyjS1nImK/8qBFba+khR8xlwSAKxhvueaQBWGtM
-        QrLu5u7aXZBpaMYgdY2aZPRCgka0Cr28vWkiZmPhSc7JcEI=
-X-Google-Smtp-Source: ABdhPJyyCIOvdRCtqPahekmTcRuVSJ2yQfDwIjwiwzZSYsa5H8jfW5J6Y97ndORmFNp37BD6XiDRj58+gRkvavDe6EY=
-X-Received: by 2002:a5e:8e42:0:b0:657:bc82:64e5 with SMTP id
- r2-20020a5e8e42000000b00657bc8264e5mr4118248ioo.112.1651242502506; Fri, 29
- Apr 2022 07:28:22 -0700 (PDT)
+        with ESMTP id S1377384AbiD2OeI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 10:34:08 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62A11656F
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 07:30:50 -0700 (PDT)
+Date:   Fri, 29 Apr 2022 16:30:47 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651242648;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SwUBbCpjXJfT8RoxTvwsoJRhpg/28jL4v2SM3uji8rA=;
+        b=mlAE4oqYipV11OZdLz0x+eKPQdO/7mR2QLboJKbmdgAqec9YqjvBRDTC2USrVL376wfQhM
+        i4XLfviPa/OwQlgIlRToRDhgt9TPfC8B0iSf2AsUeAY9N+H8hU/SSiOTq6lvPBj1cF5jg8
+        FG73wFpTyZPERT+R2TTSQM6IfHF4aAVQOEKJY5+hmT6FcfIMMM+Nu8mN7uszGl87nvdYiB
+        ECwM3DGw7N37u5xh2GTMDMRfC7oZISZUswND+MMoVcgUa7XmGgi0jEKki7C2YrgqR/mw5U
+        MH5May8oKRfMuTJQSkk/BSOzQ0HkOEMC+syl7s7bXDrAEaA16WPU2txanwcp9w==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651242648;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SwUBbCpjXJfT8RoxTvwsoJRhpg/28jL4v2SM3uji8rA=;
+        b=qz/ltQgpfGnes3DXEvbL4dBBVolSjR+2Zj8F9VeEpN8GBvwk+f6rSKiYjx+YxcPrzLSA+F
+        39AQ8HiayeZLm1Dg==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Kurt Kanzenbach <kurt@linutronix.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Gerhard Engleder <gerhard@engleder-embedded.com>,
+        "Y.B. Lu" <yangbo.lu@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Yannick Vignon <yannick.vignon@nxp.com>,
+        Rui Sousa <rui.sousa@nxp.com>, Jiri Pirko <jiri@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next] selftests: forwarding: add Per-Stream Filtering
+ and Policing test for Ocelot
+Message-ID: <Ymv2l6Un7QXjrXFy@linutronix.de>
+References: <20220428204839.1720129-1-vladimir.oltean@nxp.com>
+ <87v8usiemh.fsf@kurt>
+ <20220429093845.tyzwcwppsgbjbw2s@skbuf>
+ <87h76ci4ac.fsf@kurt>
+ <20220429110038.6jv76qeyjjxborez@skbuf>
 MIME-Version: 1.0
-References: <20220428201207.954552-1-jolsa@kernel.org>
-In-Reply-To: <20220428201207.954552-1-jolsa@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 29 Apr 2022 07:28:11 -0700
-Message-ID: <CAEf4BzYtXWvBWzmadhLGqwf8_e2sruK6999th6c=b=O0WLkHOA@mail.gmail.com>
-Subject: Re: [PATCHv4 bpf-next 0/5] bpf: Speed up symbol resolving in kprobe
- multi link
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220429110038.6jv76qeyjjxborez@skbuf>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 1:12 PM Jiri Olsa <jolsa@kernel.org> wrote:
->
-> hi,
-> sending additional fix for symbol resolving in kprobe multi link
-> requested by Alexei and Andrii [1].
->
-> This speeds up bpftrace kprobe attachment, when using pure symbols
-> (3344 symbols) to attach:
->
-> Before:
->
->   # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
->   ...
->   6.5681 +- 0.0225 seconds time elapsed  ( +-  0.34% )
->
-> After:
->
->   # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
->   ...
->   0.5661 +- 0.0275 seconds time elapsed  ( +-  4.85% )
->
-> v4 changes:
->   - fix compile issue [kernel test robot]
->   - added acks [Andrii]
->
-> v3 changes:
->   - renamed kallsyms_lookup_names to ftrace_lookup_symbols
->     and moved it to ftrace.c [Masami]
->   - added ack [Andrii]
->   - couple small test fixes [Andrii]
->
-> v2 changes (first version [2]):
->   - removed the 2 seconds check [Alexei]
->   - moving/forcing symbols sorting out of kallsyms_lookup_names function [Alexei]
->   - skipping one array allocation and copy_from_user [Andrii]
->   - several small fixes [Masami,Andrii]
->   - build fix [kernel test robot]
->
-> thanks,
-> jirka
->
->
-> [1] https://lore.kernel.org/bpf/CAEf4BzZtQaiUxQ-sm_hH2qKPRaqGHyOfEsW96DxtBHRaKLoL3Q@mail.gmail.com/
-> [2] https://lore.kernel.org/bpf/20220407125224.310255-1-jolsa@kernel.org/
-> ---
-> Jiri Olsa (5):
->       kallsyms: Fully export kallsyms_on_each_symbol function
->       ftrace: Add ftrace_lookup_symbols function
->       fprobe: Resolve symbols with ftrace_lookup_symbols
->       bpf: Resolve symbols with ftrace_lookup_symbols for kprobe multi link
->       selftests/bpf: Add attach bench test
->
+On 2022-04-29 11:00:39 [+0000], Vladimir Oltean wrote:
+> > I agree. Nevertheless, having a standardized tool for this kind latency
+> > testing would be nice. For instance, cyclictest is also not part of the
+> > kernel, but packaged for all major Linux distributions.
+> 
+> Right, the thing is that I'm giving myself the liberty to still make
+> backwards-incompatible changes to isochron until it reaches v1.0 (right
+> now it's at v0.7 + 14 patches, so v0.8 should be coming rather soon).
+> I don't really want to submit unstable software for inclusion in a
+> distro (plus I don't know what distros would be interested in TSN
+> testing, see above).
 
-Please check [0], it reports rcu_read_unlock() misuse
+Users of those distros, that need to test TSN, will be interested in
+having it packaged rather than having it to compile first. Just make it
+available, point to it in tests etc. and it should get packaged.
 
-  [0] https://github.com/kernel-patches/bpf/runs/6223167405?check_suite_focus=true
+> And isochron itself needs to become more stable by gathering more users,
+> being integrated in scripts such as selftests, catering to more varied
+> requirements.
+> So it's a bit of a chicken and egg situation.
+If it is completely experimental then it could be added to, say,
+Debian's experimental distribution so user's of unstable/sid can install
+it fairly easy but it won't become part of the upcoming stable release
+(the relevant freeze is currently set to 2023-02).
 
->  include/linux/ftrace.h                                     |   6 ++++++
->  include/linux/kallsyms.h                                   |   7 ++++++-
->  kernel/kallsyms.c                                          |   3 +--
->  kernel/trace/bpf_trace.c                                   | 112 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++----------------------------------------------
->  kernel/trace/fprobe.c                                      |  32 ++++++++++++--------------------
->  kernel/trace/ftrace.c                                      |  62 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
->  tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c | 133 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
->  tools/testing/selftests/bpf/progs/kprobe_multi_empty.c     |  12 ++++++++++++
->  8 files changed, 298 insertions(+), 69 deletions(-)
->  create mode 100644 tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
+Sebastian
