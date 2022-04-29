@@ -2,103 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 95B7A5141B9
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 07:25:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCB195141B4
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 07:25:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242142AbiD2FU7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 01:20:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59776 "EHLO
+        id S238232AbiD2F1x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 01:27:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231154AbiD2FU6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 01:20:58 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6081066FA8
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 22:17:39 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id p12so12110763lfs.5
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 22:17:39 -0700 (PDT)
+        with ESMTP id S237794AbiD2F1x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 01:27:53 -0400
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF4348567C;
+        Thu, 28 Apr 2022 22:24:35 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id f186so5148405qke.8;
+        Thu, 28 Apr 2022 22:24:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=openvz-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=s9wfiyI3JBIiISlABF9nzSzidRhd08PN5K7/7gRJUwU=;
-        b=zgh0lqmxqjAmYpfMJeInqwyar5RpKgn6nKPhjU0zE/mRkRAEOsvk01q11mzTkDptGi
-         TwBcOx3EARcSI0hAy15m/EW2/0NDVnNDO95agwC6gbWdQLW4BjUE7CMli5n1iR5y8wOa
-         g2LGTfB+wEs9BisfMzb6MrrgDQhrA5OanuAZ+TT5md3h2aag3jDAPyzctlDCCG97MKPQ
-         e06ZJtfPG7utnP0hWSxpaUVfENEu7U2BcFuBCJbGdkJRiMjrPXJVr2P3nK0MraYFi6sz
-         dmNYSv5MxKsD7AUI5Bf0T5Y0G9OWIbekQq8sNqNLeTRfjuqk1lZZeNVGgx24s+tILIfP
-         7Q2A==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=m/mHAyDFFPxLTzZUm97TawyOqrnU8/aqHX81y1GzXYQ=;
+        b=Pg0zNYviAG3236gyFoaUd5qRotRWUCA7tZVGNRlfZ4j3l591BPmkt+EOMciKhUPi7v
+         a0EozWE6jDmg7H2DzZVK/uee313oPd1oKQnge7V4SjwW98/khfjeB5X+ZOfzp4vdMg4C
+         wYz01Urxsr2/alHWaXXSGwpc9vhGqZImGEfXHWVepCxIF0sZQscauGHn9fQEQDyGOrAn
+         gjpBfEBcmiiBclQrkzH2iPnEV+EsmKm1r0bWXWnONI5ikokcZe/ksGTUBRFhVbGwIeb8
+         qeT4oJU1KeCMDfDl64Dx2PKxDyNjIoZZ/X0Emguj+BpcL9rO6EoqPa2SliefQdq1sBTP
+         VWSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=s9wfiyI3JBIiISlABF9nzSzidRhd08PN5K7/7gRJUwU=;
-        b=c7U4eN/ZAQIQhy1BAgGcZAtBnpTHZN+UqLY/ROun7ly1rHaQRw9LdQKdTyMhRt9c+t
-         MOb0F3QNp56lVVp30qJf5ID1Z+cjPoZsrz6iLTpvKPHfglzrjLBBNQyOn7Txx1AySb6Y
-         Ez2P9ACbqCmphouUj9dtPixnorCTFDwmojIMR7V/WcixiUH6b6jLSIccgM+nsn4YhRoO
-         RNPwrD0shErQ4ZlCd8Fw4gNiy0DpgHVa5HK6Yvwu19h4inNt0dZ4FO9aqtygxDUriBZW
-         pUybDvPjy+8rOL7H34ghpJCKSLjY5R0puyPeuRBIoL+uT+cByrXWh/X3BtP+pTs+lTZn
-         6KFg==
-X-Gm-Message-State: AOAM5316JhZ9TyEFEnf/TF9sqmDRmyDtnPjyc3PjqJlwY2QmXPf3N3sw
-        TSdxFcwi36UCiaPDOU6YYl2tig==
-X-Google-Smtp-Source: ABdhPJwelcg5eDVRHLImUr0uIk1M3llTR4bkoNPEBZ5hH7LEHpAFRJhhOG5cuBf+CacuskRyT5R8Qg==
-X-Received: by 2002:a05:6512:902:b0:46b:c03f:19e5 with SMTP id e2-20020a056512090200b0046bc03f19e5mr26524304lft.118.1651209457725;
-        Thu, 28 Apr 2022 22:17:37 -0700 (PDT)
-Received: from [192.168.43.196] ([185.174.128.251])
-        by smtp.gmail.com with ESMTPSA id y14-20020a19914e000000b00472085bfdf4sm141451lfj.133.2022.04.28.22.17.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Apr 2022 22:17:37 -0700 (PDT)
-Message-ID: <0b28d49b-605c-ac1a-df85-643164e69039@openvz.org>
-Date:   Fri, 29 Apr 2022 08:17:35 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: [PATCH net] net: enable memcg accounting for veth queues
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Roman Gushchin <roman.gushchin@linux.dev>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Shakeel Butt <shakeelb@google.com>, kernel@openvz.org,
-        linux-kernel@vger.kernel.org, Michal Hocko <mhocko@suse.com>,
-        cgroups@vger.kernel.org, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
+        bh=m/mHAyDFFPxLTzZUm97TawyOqrnU8/aqHX81y1GzXYQ=;
+        b=MPYSYSOs2/F8+zs7C1HksdcT/kgvCju5b+/52bfXrB1DAOjViIjcTM3O7TtqLM6KHQ
+         AAYgyh/F9Us9u6efXLffK8y/E000390n8XmtVGT5xYsswKEPTsemdLZxEXtnecRjJqPk
+         FHRYeNNnf4E0rP+35YFRMSsKyz2uUOqrcRN3khKPJQy1qybdRKyfm6Ozk2kOXTdJ5Qnc
+         PmdmDb7YmXXJZ1Ie3jZbDGdkSXpM/DNz0unwxpycegibAudkA4IJnSEcVEt7GaVBXdd4
+         hqwVeGGs4ARaq2VnYFCUbIqmBF6jPdVh/+PVR0uoE9q0Z6GSG51bqkplfD4j+l/mJXPa
+         IR6g==
+X-Gm-Message-State: AOAM533llYlLLX5b9PxYPlpx8JTU89IXqlbuZZNtKelt2R3XbRTPRuh5
+        x/FT5tBfvKJ20MCRs5RG3Q==
+X-Google-Smtp-Source: ABdhPJw/BxPr5Ltp0nnuo/eoYCI2UfEwuJRaNUfiYZOgPbx2cRRrg0a39FKWxCYmUhVXxmEEKWOhmQ==
+X-Received: by 2002:a37:8d43:0:b0:699:b613:be6 with SMTP id p64-20020a378d43000000b00699b6130be6mr21846929qkd.484.1651209874904;
+        Thu, 28 Apr 2022 22:24:34 -0700 (PDT)
+Received: from bytedance.attlocal.net (ec2-52-52-7-82.us-west-1.compute.amazonaws.com. [52.52.7.82])
+        by smtp.gmail.com with ESMTPSA id az14-20020a05620a170e00b0069fb6140d2fsm541384qkb.45.2022.04.28.22.24.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Apr 2022 22:24:34 -0700 (PDT)
+From:   Peilin Ye <yepeilin.cs@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-References: <1c338b99-8133-6126-2ff2-94a4d3f26451@openvz.org>
- <20220427095854.79554fab@kernel.org>
-From:   Vasily Averin <vvs@openvz.org>
-In-Reply-To: <20220427095854.79554fab@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Cc:     Peilin Ye <peilin.ye@bytedance.com>,
+        William Tu <u9012063@gmail.com>,
+        Cong Wang <cong.wang@bytedance.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Peilin Ye <yepeilin.cs@gmail.com>
+Subject: [PATCH v2 net-next 0/2] ip_gre, ip6_gre: Make [IP6]GRE[TAP] devices always NETIF_F_LLTX
+Date:   Thu, 28 Apr 2022 22:24:17 -0700
+Message-Id: <cover.1651207788.git.peilin.ye@bytedance.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-veth netdevice defines own rx queues and allocates array containing
-up to 4095 ~750-bytes-long 'struct veth_rq' elements. Such allocation
-is quite huge and should be accounted to memcg.
+From: Peilin Ye <peilin.ye@bytedance.com>
 
-Signed-off-by: Vasily Averin <vvs@openvz.org>
----
- drivers/net/veth.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+v1: https://lore.kernel.org/netdev/cover.1650580763.git.peilin.ye@bytedance.com/
 
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index d29fb9759cc9..bd67f458641a 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -1310,7 +1310,7 @@ static int veth_alloc_queues(struct net_device *dev)
- 	struct veth_priv *priv = netdev_priv(dev);
- 	int i;
- 
--	priv->rq = kcalloc(dev->num_rx_queues, sizeof(*priv->rq), GFP_KERNEL);
-+	priv->rq = kcalloc(dev->num_rx_queues, sizeof(*priv->rq), GFP_KERNEL_ACCOUNT);
- 	if (!priv->rq)
- 		return -ENOMEM;
- 
+change since v1:
+  - deleted "depends on patch..." in [1/2]'s commit message
+
+Hi all,
+
+This patchset depends on these fixes [1], which has been merged into
+net-next.  Since o_seqno is now atomic_t, we can always turn on
+NETIF_F_LLTX for [IP6]GRE[TAP] devices, since we no longer need the TX
+lock (&txq->_xmit_lock).
+
+We could probably do the same thing to [IP6]ERSPAN devices as well, but
+I'm not familiar with them yet.  For example, ERSPAN devices are
+initialized as |= GRE_FEATURES in erspan_tunnel_init(), but I don't see
+IP6ERSPAN devices being initialized as |= GRE6_FEATURES.  Where should we
+initialize IP6ERSPAN devices' ->features?  Please suggest if I'm missing
+something, thanks!
+
+[1] https://lore.kernel.org/netdev/cover.1650575919.git.peilin.ye@bytedance.com/
+
+Thanks,
+Peilin Ye (2):
+  ip_gre: Make GRE and GRETAP devices always NETIF_F_LLTX
+  ip6_gre: Make IP6GRE and IP6GRETAP devices always NETIF_F_LLTX
+
+ net/ipv4/ip_gre.c  | 50 ++++++++++++++++++++--------------------------
+ net/ipv6/ip6_gre.c | 34 ++++++++++++-------------------
+ 2 files changed, 35 insertions(+), 49 deletions(-)
+
 -- 
-2.31.1
+2.20.1
+
