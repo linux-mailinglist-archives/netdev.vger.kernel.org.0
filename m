@@ -2,61 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2565E513F8C
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 02:32:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE6BC513F8E
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 02:32:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351511AbiD2AfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 20:35:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36606 "EHLO
+        id S244779AbiD2AgJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 20:36:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234331AbiD2AfO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 20:35:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 288A6B9F02;
-        Thu, 28 Apr 2022 17:31:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AD912B83260;
-        Fri, 29 Apr 2022 00:31:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D298DC385A9;
-        Fri, 29 Apr 2022 00:31:53 +0000 (UTC)
-Date:   Thu, 28 Apr 2022 20:31:52 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: Re: [RFC bpf-next 4/4] selftests/bpf: Add attach bench test
-Message-ID: <20220428203152.41693bbe@gandalf.local.home>
-In-Reply-To: <20220428200945.5f6a5ba2@gandalf.local.home>
-References: <20220407125224.310255-1-jolsa@kernel.org>
-        <20220407125224.310255-5-jolsa@kernel.org>
-        <CAEf4BzbE1n3Lie+tWTzN69RQUWgjxePorxRr9J8CuiQVUfy-kA@mail.gmail.com>
-        <20220412094923.0abe90955e5db486b7bca279@kernel.org>
-        <CAEf4BzaQRcZGMqq5wqHo3wSHZAAVvY6AhizDk_dV_GtnwHuxLQ@mail.gmail.com>
-        <20220416232103.c0b241c2ec7f2b3b985a2f99@kernel.org>
-        <20220428095803.66c17c32@gandalf.local.home>
-        <CAADnVQKi+4oBt2C__qz7QoHqTtXYLUjaqwTNFoSE=up9c9k4cA@mail.gmail.com>
-        <20220428160519.04cc40c0@gandalf.local.home>
-        <CAEf4Bzbu3zuDcPj3ue8D6VCdMTw2PEREJBU42CbR1Pe=5qOrTQ@mail.gmail.com>
-        <20220428195303.6295e90b@gandalf.local.home>
-        <20220428200945.5f6a5ba2@gandalf.local.home>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S234331AbiD2AgJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 20:36:09 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53155B9F0B
+        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 17:32:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=B9MPe75G7faJ8/oqTbezVPDXUh5tDjsp7lHIHDt9KJU=; b=W/HggcopkR7ZlkM+upWZGpQWu8
+        5xEuIAmyUpxPqMrqsT3Sg8Nkg5hhqs+XUnMyiVgQUUSruW8/WLxxCI/QlfXL/PnEIXVZPOa5HMear
+        RbSH3zDyBkudp4BpY6CA5+JRBlKDu+L6wILetFmIlj8dCvmvU9x5QiSedXu/LHwIE27Y=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nkEYq-000Oo5-IQ; Fri, 29 Apr 2022 02:32:40 +0200
+Date:   Fri, 29 Apr 2022 02:32:40 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: phy: Deduplicate interrupt disablement on
+ PHY attach
+Message-ID: <YmsyKI5yIY055UqP@lunn.ch>
+References: <805ccdc606bd8898d59931bd4c7c68537ed6e550.1651040826.git.lukas@wunner.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <805ccdc606bd8898d59931bd4c7c68537ed6e550.1651040826.git.lukas@wunner.de>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -64,45 +50,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 28 Apr 2022 20:09:45 -0400
-Steven Rostedt <rostedt@goodmis.org> wrote:
-
-> OK, I think I see the issue you have. Because the functions shown in
-> available_filter_functions which uses the simple "%ps" to show the function
-> name:
+On Wed, Apr 27, 2022 at 08:30:51AM +0200, Lukas Wunner wrote:
+> phy_attach_direct() first calls phy_init_hw() (which restores interrupt
+> settings through ->config_intr()), then calls phy_disable_interrupts().
 > 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/kernel/trace/ftrace.c#n3692
+> So if phydev->interrupts was previously set to 1, interrupts are briefly
+> enabled, then disabled, which seems nonsensical.
 > 
-> And the code that does the actual matching uses kallsyms_lookup()
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/kernel/trace/ftrace.c#n4017
-> 
-> Which appears not to match the function for the address, you can't pass in
-> __bpf_tramp_exit because it wont match the symbol returned by
-> kallsyms_lookup.
+> If it was previously set to 0, interrupts are disabled twice, which is
+> equally nonsensical.
 
-Never mind, in testing this I had marked the weak function as notrace,
-which was the reason I couldn't add it to the set_ftrace_notrace.
+I agree this is non nonsensical.
 
-After removing the notrace, kallsyms_lookup() doesn't make a difference. It
-appears that kallsyms will include overridden weak functions into the size
-of the function before it. I tried:
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-	ret = kallsyms_lookup(rec->ip, &size, &offset, &modname, str);
-	if (!ret || offset > size) {
-		seq_printf(m, "no function at %lx", rec->ip);
-	} else {
-		seq_printf(m, "%s", str);
-		if (modname)
-			seq_printf(m, " [%s]", modname);
-	}
+However the git history is interesting:
 
-And it made no difference.
+commit 7d3ba9360c6dac7c077fbd6631e08f32ea2bcd53
+Author: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Date:   Wed Sep 9 14:43:14 2020 +0900
 
-> 
-> This does indeed look like a bug in %ps.
-> 
+    net: phy: call phy_disable_interrupts() in phy_attach_direct() instead
+    
+    Since the micrel phy driver calls phy_init_hw() as a workaround,
+    the commit 9886a4dbd2aa ("net: phy: call phy_disable_interrupts()
+    in phy_init_hw()") disables the interrupt unexpectedly. So,
+    call phy_disable_interrupts() in phy_attach_direct() instead.
+    Otherwise, the phy cannot link up after the ethernet cable was
+    disconnected.
+    
+    Note that other drivers (like at803x.c) also calls phy_init_hw().
+    So, perhaps, the driver caused a similar issue too.
+    
+This removes the call to phy_disable_interrupts() in phy_init_hw()
+because it breaks some micrel PHYs.
 
-Yes, this does appear to be a issue with kallsyms in general.
+And then:
 
--- Steve
+ommit 4c0d2e96ba055bd8911bb8287def4f8ebbad15b6
+Author: Heiner Kallweit <hkallweit1@gmail.com>
+Date:   Thu Feb 11 22:32:52 2021 +0100
+
+    net: phy: consider that suspend2ram may cut off PHY power
+    
+    Claudiu reported that on his system S2R cuts off power to the PHY and
+    after resuming certain PHY settings are lost. The PM folks confirmed
+    that cutting off power to selected components in S2R is a valid case.
+    Therefore resuming from S2R, same as from hibernation, has to assume
+    that the PHY has power-on defaults. As a consequence use the restore
+    callback also as resume callback.
+    In addition make sure that the interrupt configuration is restored.
+    Let's do this in phy_init_hw() and ensure that after this call
+    actual interrupt configuration is in sync with phydev->interrupts.
+    Currently, if interrupt was enabled before hibernation, we would
+    resume with interrupt disabled because that's the power-on default.
+    
+    This fix applies cleanly only after the commit marked as fixed.
+    
+    I don't have an affected system, therefore change is compile-tested
+    only.
+
+This puts the interrupt handling back into phy_init_hw()!
+
+So it seems like something might be broken here, but your patch should
+not make it worse.
+
+    Andrew
