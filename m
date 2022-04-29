@@ -2,71 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 164E95149DD
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 14:49:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 140135149F3
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 14:52:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359503AbiD2Mwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 08:52:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45824 "EHLO
+        id S1359535AbiD2Mz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 08:55:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359484AbiD2Mwd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 08:52:33 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A26CC9B7D;
-        Fri, 29 Apr 2022 05:49:15 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id i5so10632101wrc.13;
-        Fri, 29 Apr 2022 05:49:15 -0700 (PDT)
+        with ESMTP id S245070AbiD2Mz0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 08:55:26 -0400
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70548CA0E4;
+        Fri, 29 Apr 2022 05:52:07 -0700 (PDT)
+Received: by mail-yb1-xb36.google.com with SMTP id y2so14274412ybi.7;
+        Fri, 29 Apr 2022 05:52:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=m2VDhVRQPjsV1IPycPT/Y4TlTx8jaZtNzcIfdQQLUOE=;
-        b=ecACeX4mEA86JpS0EXqxZYgqpdd/LkB5YAIuA0ZlDvIGigqsSq6u1HE5Fkm2nj/4no
-         XTvJc5g4hQCzMLN3bJsYak/3ygV7SkqvcmGozAMysaaQj34gblO9wOzUSGOqLyVMxCgq
-         5U8GqBywfsp3IGvSDFHF/01j/6tEwuIdmQR/hx1zigTs9Xk9q8h7f1m8Ziq8Z+TYc0zP
-         S0le5HBcSYQI/59t/usSCR632rbPOBsY3eu8+iu2xiVmpUE8dn/ZyGq6gbJIInUCVMG/
-         gyhZJu9P1d9wi011YgbJEn3rUvLoIGwLNbdNeGgF1SgvtfrM1Vu6ZsHHnmqlIFstgVBn
-         vBwQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FZ/8JNTm7vpbFc2YOEAMd+Fo9SryLJ8pTwtRQk4/FOk=;
+        b=WpO4+NLt8Ukw2ZwcrHbAnQOpf98OVlUhSt5NXSdanwU6n/UsXzPSEXnAhaRaWv+umA
+         oNaoj/qqNLSY1rADzGLWH33peBDOWAbfw07ezxxVLrnvFkQ2VJ5sm05LM/1AB+12Ayfp
+         vwPoaUdjKMiHlXSnxykyEnD+dNeN69tef5GI2MYDqqbM45RC2sU7A5E+jHLaOD5MOV8S
+         cXdlSabecyTUnhGXGC51P+VKEBPjw+L7YB+JN1bbywbd1s2/ikRZV8PJnZAWGHcFKVIr
+         t9l+jgDRDnCXoB7q+rwC6kfur/qnMXQCxKXf6/mrUbNcpF2ov8+un6as/MfOks3OBGhw
+         GhSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=m2VDhVRQPjsV1IPycPT/Y4TlTx8jaZtNzcIfdQQLUOE=;
-        b=nsqcxkqFXC5YMKK15B/Ja+dqa7TqzuGiBCvVONuCsgdqV/rEO8kAcrrFyC5VmtjZPh
-         wYrvbD81ToA8Ph2+J3dEBbv2Uyepd4DGSUg6ugB9FrVwceUP5M0M9eE64T0rnOBD9N+K
-         tpDSsG5Ion5cw0zHfgPjHvGoVQfpTCjivB8E6VKfpIN1gxQ0glTFEyT72Mh2ARCkzXgM
-         tEX1JpP1QTP23Ng7mja3PKq792wsVa44SMzwIbg0oOM5MnInn1x0viBZ4TA0UaOgj1f6
-         zGmE8yIfZ9kVomzgDM8ZkPnZ/wzYqbBouR3utt90Qq4KNETPjmhOkh8xirhhMYSkb5Ka
-         g/sQ==
-X-Gm-Message-State: AOAM531683PryuqnFzRRJqE0FG++i7RUjlZd2TamKzmsCug6IEdd6sU9
-        UJyZSuFCbEPW+E4yLw62Bm4=
-X-Google-Smtp-Source: ABdhPJzV6OVD5id6uhYczjlC98kidiEApQj0yn/ZFy0FzVSsvGmB79Qh41p54L7i5YkxXtjSF9eTgQ==
-X-Received: by 2002:a05:6000:1d81:b0:207:b7f8:24ee with SMTP id bk1-20020a0560001d8100b00207b7f824eemr30228367wrb.260.1651236553660;
-        Fri, 29 Apr 2022 05:49:13 -0700 (PDT)
-Received: from alaa-emad ([197.57.200.226])
-        by smtp.gmail.com with ESMTPSA id e25-20020adfa459000000b0020c4ebaf526sm443463wra.78.2022.04.29.05.49.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 05:49:13 -0700 (PDT)
-From:   Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     outreachy@lists.linux.dev, roopa@nvidia.com, jdenham@redhat.com,
-        sbrivio@redhat.com, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
-        alexandre.belloni@bootlin.com, shshaikh@marvell.com,
-        manishc@marvell.com, razor@blackwall.org,
-        intel-wired-lan@lists.osuosl.org, linux-kernel@vger.kernel.org,
-        UNGLinuxDriver@microchip.com, GR-Linux-NIC-Dev@marvell.com,
-        bridge@lists.linux-foundation.org,
-        eng.alaamohamedsoliman.am@gmail.com
-Subject: [PATCH net-next v5 2/2] net: vxlan: Add extack support to vxlan_fdb_delete
-Date:   Fri, 29 Apr 2022 14:49:07 +0200
-Message-Id: <7abd2d1abb8abd3080356b8e031b1b100b80f1ed.1651236082.git.eng.alaamohamedsoliman.am@gmail.com>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <cover.1651236081.git.eng.alaamohamedsoliman.am@gmail.com>
-References: <cover.1651236081.git.eng.alaamohamedsoliman.am@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FZ/8JNTm7vpbFc2YOEAMd+Fo9SryLJ8pTwtRQk4/FOk=;
+        b=F7zKvD2bKgDprIwElUEKbXJq6BUWHV9Yi3ElB9E5Qv4tXt0e10yqA6aITlpiContiV
+         GBViNEvR/YjoIDGlbJLIyu1akcXAoBMl4skrs+d1QlXol37HEOWrxV61V2F0HnVf449T
+         j0Wi0Wi1JBWi/hMuEk/qZvbtjeMGSCwSnr6RUqEIMWIxkpgMl79MDD/P4u7TMU5xOML8
+         Pxt+UFbSASd7OEW+aw0MQOLXi5ONE/cdKb1J79nG99Js+Svl6Dre1fa5w5iOq5PHd/nc
+         n2lByNsBg3SLEjlyjsH0xPVUm0WzlUc2ynTAhq8Ql4xgg1e14v4c50bGAK3KSEI1o6Rs
+         7Wqg==
+X-Gm-Message-State: AOAM530VwUi2I6+P2Xwe8xyloW0R8O6H9/80YQSFWY53f6/tVf7D9pnN
+        wEsaLrzCk7Mz8IcxAAPOZ0pz7ZwypoO5jyJQ+mE=
+X-Google-Smtp-Source: ABdhPJzRNlEiq1/vYE5gH25u17jZRFLjz3wbD2iYLzU01FlXhl/FlC+A6HDjYY9XS8w8L6gcw/IvaA0gnNC3PgK0txQ=
+X-Received: by 2002:a25:600b:0:b0:648:ef9b:172d with SMTP id
+ u11-20020a25600b000000b00648ef9b172dmr9893719ybb.585.1651236726660; Fri, 29
+ Apr 2022 05:52:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220228233057.1140817-1-pgwipeout@gmail.com> <Yh1lboz7VDiuYuZV@shell.armlinux.org.uk>
+ <CAMdYzYrNvUUMom4W4uD9yf9LtFK1h5Xw+9GYc54hB5+iqVmJtw@mail.gmail.com>
+In-Reply-To: <CAMdYzYrNvUUMom4W4uD9yf9LtFK1h5Xw+9GYc54hB5+iqVmJtw@mail.gmail.com>
+From:   Peter Geis <pgwipeout@gmail.com>
+Date:   Fri, 29 Apr 2022 08:51:54 -0400
+Message-ID: <CAMdYzYrFuMw4aj_9L698ZhL7Xqy8=NeXhy9HDz4ug-v3=f4fpw@mail.gmail.com>
+Subject: Re: [PATCH v1] net: phy: fix motorcomm module automatic loading
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -77,135 +71,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds extack msg support to vxlan_fdb_delete and vxlan_fdb_parse.
-extack is used to propagate meaningful error msgs to the user of vxlan
-fdb netlink api
+On Mon, Feb 28, 2022 at 7:44 PM Peter Geis <pgwipeout@gmail.com> wrote:
+>
+> On Mon, Feb 28, 2022 at 7:14 PM Russell King (Oracle)
+> <linux@armlinux.org.uk> wrote:
+> >
+> > On Mon, Feb 28, 2022 at 06:30:57PM -0500, Peter Geis wrote:
+> > > The sentinel compatible entry whitespace causes automatic module loading
+> > > to fail with certain userspace utilities. Fix this by removing the
+> > > whitespace and sentinel comment, which is unnecessary.
+> >
+> > Umm. How does it fail?
+>
+> It simply does not auto load the module by device id match.
+> Manually loading the module after the fact works fine.
+>
+> >
+> > >  static const struct mdio_device_id __maybe_unused motorcomm_tbl[] = {
+> > >       { PHY_ID_MATCH_EXACT(PHY_ID_YT8511) },
+> > > -     { /* sentinal */ }
+> > > +     {}
+> >
+> > These two should be 100% identical in terms of the object code produced,
+> > and thus should have no bearing on the ability for the module to be
+> > loaded.
+> >
+> > Have you investigated the differences in the produced object code?
+>
+> Yes, you are correct, I just compared the produced files and they are identical.
+> This patch can get dropped then.
+> I'm curious now why it seemed to make a difference.
+>
+> I am not familiar enough with how the various userspace elements
+> decide to match the modules to determine exactly why this is failing.
+> It seems to be hit or miss if userspace decides to auto load this, for
+> instance Ubuntu 20.04 was happy to load my kernel module built with
+> the arm64 official toolchain, but Manjaro will not load their self
+> built kernel module.
+> I originally suspected it was due to the manufacturer id being all zeros.
+> Unless there's some weird compiler optimization that I'm not seeing in
+> my configuration.
+>
+> Any ideas would be appreciated.
+> Thanks!
 
-Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
----
-changes in V2:
-        - fix spelling vxlan_fdb_delete
-        - add missing braces
-        - edit error message
----
-changes in V3:
-        fix errors reported by checkpatch.pl
----
-changes in V4:
-        - fix errors reported by checkpatch.pl
-        - edit commit message.
----
-changes in V5:
-	- edit commit message
----
- drivers/net/vxlan/vxlan_core.c | 38 ++++++++++++++++++++++++----------
- 1 file changed, 27 insertions(+), 11 deletions(-)
+Good Morning,
 
-diff --git a/drivers/net/vxlan/vxlan_core.c b/drivers/net/vxlan/vxlan_core.c
-index ad0f2150cfdb..429ce2168971 100644
---- a/drivers/net/vxlan/vxlan_core.c
-+++ b/drivers/net/vxlan/vxlan_core.c
-@@ -1129,19 +1129,25 @@ static void vxlan_fdb_dst_destroy(struct vxlan_dev *vxlan, struct vxlan_fdb *f,
+After testing various configurations I found what is actually
+happening here. When libphy is built in but the phy drivers are
+modules and not available in the initrd, the generic phy driver binds
+here. This allows the phy to come up but it is not functional. It also
+prevents the module driver from binding when it becomes available.
+https://elixir.bootlin.com/linux/v5.18-rc4/source/drivers/net/phy/phy_device.c#L1383
 
- static int vxlan_fdb_parse(struct nlattr *tb[], struct vxlan_dev *vxlan,
- 			   union vxlan_addr *ip, __be16 *port, __be32 *src_vni,
--			   __be32 *vni, u32 *ifindex, u32 *nhid)
-+			   __be32 *vni, u32 *ifindex, u32 *nhid,
-+			   struct netlink_ext_ack *extack)
- {
- 	struct net *net = dev_net(vxlan->dev);
- 	int err;
+It seems there is an implicit dependency between phy_device and the
+device specific drivers that isn't realized in the configuration.
 
- 	if (tb[NDA_NH_ID] && (tb[NDA_DST] || tb[NDA_VNI] || tb[NDA_IFINDEX] ||
--	    tb[NDA_PORT]))
--		return -EINVAL;
-+	    tb[NDA_PORT])) {
-+			NL_SET_ERR_MSG(extack,
-+						  "DST, VNI, ifindex and port are mutually exclusive with NH_ID");
-+			return -EINVAL;
-+		}
+I can think of a few ways to fix this, but I think the simplest is to
+make the device specific drivers have a kconfig dependency on libphy
+(which builds phy_device). This means that the only time the device
+specific phy drivers can be modules is if libphy is as well, otherwise
+if libphy is built in, the device specific drivers would need to be as
+well. There are more elegant and complicated solutions I can think of
+here, such as breaking out the generic driver as a module or having a
+device-tree flag that annotates that we need a device specific driver.
 
- 	if (tb[NDA_DST]) {
- 		err = vxlan_nla_get_addr(ip, tb[NDA_DST]);
--		if (err)
-+		if (err) {
-+			NL_SET_ERR_MSG(extack, "Unsupported address family");
- 			return err;
-+		}
- 	} else {
- 		union vxlan_addr *remote = &vxlan->default_dst.remote_ip;
+This isn't realized with most of the common devices such as the
+Realtek driver because they have cross dependencies that ensure they
+are likely to be built in.
 
-@@ -1157,24 +1163,30 @@ static int vxlan_fdb_parse(struct nlattr *tb[], struct vxlan_dev *vxlan,
- 	}
+Very Respectfully,
+Peter Geis
 
- 	if (tb[NDA_PORT]) {
--		if (nla_len(tb[NDA_PORT]) != sizeof(__be16))
-+		if (nla_len(tb[NDA_PORT]) != sizeof(__be16)) {
-+			NL_SET_ERR_MSG(extack, "Invalid vxlan port");
- 			return -EINVAL;
-+		}
- 		*port = nla_get_be16(tb[NDA_PORT]);
- 	} else {
- 		*port = vxlan->cfg.dst_port;
- 	}
 
- 	if (tb[NDA_VNI]) {
--		if (nla_len(tb[NDA_VNI]) != sizeof(u32))
-+		if (nla_len(tb[NDA_VNI]) != sizeof(u32)) {
-+			NL_SET_ERR_MSG(extack, "Invalid vni");
- 			return -EINVAL;
-+		}
- 		*vni = cpu_to_be32(nla_get_u32(tb[NDA_VNI]));
- 	} else {
- 		*vni = vxlan->default_dst.remote_vni;
- 	}
-
- 	if (tb[NDA_SRC_VNI]) {
--		if (nla_len(tb[NDA_SRC_VNI]) != sizeof(u32))
-+		if (nla_len(tb[NDA_SRC_VNI]) != sizeof(u32)) {
-+			NL_SET_ERR_MSG(extack, "Invalid src vni");
- 			return -EINVAL;
-+		}
- 		*src_vni = cpu_to_be32(nla_get_u32(tb[NDA_SRC_VNI]));
- 	} else {
- 		*src_vni = vxlan->default_dst.remote_vni;
-@@ -1183,12 +1195,16 @@ static int vxlan_fdb_parse(struct nlattr *tb[], struct vxlan_dev *vxlan,
- 	if (tb[NDA_IFINDEX]) {
- 		struct net_device *tdev;
-
--		if (nla_len(tb[NDA_IFINDEX]) != sizeof(u32))
-+		if (nla_len(tb[NDA_IFINDEX]) != sizeof(u32)) {
-+			NL_SET_ERR_MSG(extack, "Invalid ifindex");
- 			return -EINVAL;
-+		}
- 		*ifindex = nla_get_u32(tb[NDA_IFINDEX]);
- 		tdev = __dev_get_by_index(net, *ifindex);
--		if (!tdev)
-+		if (!tdev) {
-+			NL_SET_ERR_MSG(extack, "Device not found");
- 			return -EADDRNOTAVAIL;
-+		}
- 	} else {
- 		*ifindex = 0;
- 	}
-@@ -1226,7 +1242,7 @@ static int vxlan_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
- 		return -EINVAL;
-
- 	err = vxlan_fdb_parse(tb, vxlan, &ip, &port, &src_vni, &vni, &ifindex,
--			      &nhid);
-+			      &nhid, extack);
- 	if (err)
- 		return err;
-
-@@ -1292,7 +1308,7 @@ static int vxlan_fdb_delete(struct ndmsg *ndm, struct nlattr *tb[],
- 	int err;
-
- 	err = vxlan_fdb_parse(tb, vxlan, &ip, &port, &src_vni, &vni, &ifindex,
--			      &nhid);
-+			      &nhid, extack);
- 	if (err)
- 		return err;
-
---
-2.36.0
-
+>
+> > If not, please do so, and describe what they were. Thanks.
+> >
+> > --
+> > RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> > FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
