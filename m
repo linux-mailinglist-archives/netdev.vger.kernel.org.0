@@ -2,166 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 004DE51460F
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 11:54:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 318DF514619
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 11:58:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357058AbiD2J5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 05:57:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44136 "EHLO
+        id S1357130AbiD2KAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 06:00:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345976AbiD2J5b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 05:57:31 -0400
-Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130057.outbound.protection.outlook.com [40.107.13.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 664973F319;
-        Fri, 29 Apr 2022 02:54:14 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eUBJs1fPk9DKXhXv4zjqcC8XF++EoptxQWxcF7LlrKGoGAg4aYJ/YrV29u/z43a7zE4x/uWa9vkEMnCpYNDhCOD0Y3kc2eUBwTi9rC+lhootpKikLGj5Gf1Kg8C7oUQ+GowKyWzV55n7y36KVjv3BeTCeZPhim4dXqhRApuQdFMbOnHs3z9+X4hMaOfLxxntdr8aG8VYaCSeBkJ/ZRpYjo6w3tL6YRCvwRjOgcb01FRZDarKbrsqIL4EylNru8EvHQ9FSaThyNBt0hB88i2G2z44sOck38spaBsZzVhylj8h1op57z+LSgU5EchSPB55uw2Vz14livnL5MTG6w1y1Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jdL+SIRl+htSjUrr5RLD+4UtXCDCUCraxX0TKpNkNi8=;
- b=HaXz/QD90Nb8yMtlfMothZe7JTt15iRM3EuLtrKdc+mJrHVWj3LJp8RY+ceIPhYPbgy8qAv5rkaupFjncZ/cFCH26VMs0Pfq27oIQEoaBBUDobScfjhRaH+SHk8Sfi4o4N2pHEIw6iYg9cnRhdwIl1FJ8mTtlM6xf1l+ldNXKmAGynP0bKFEcnQc4i1f5oQwLaPAaqCFQj7pZ9wzFcPbex1Sszd52BFQm3xkEXJF6Br6V9wi6mx+JM8jzyxrDCxxuqWuzuChbw/74We9EiatT67dsRhwcCbAzH/RteDq9iPM1wlo/g1VfD6ujuwEdC+lbtXpdScygShEdOeMSRuhsQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jdL+SIRl+htSjUrr5RLD+4UtXCDCUCraxX0TKpNkNi8=;
- b=kgWvfAJWF09MpCdNh/R+V8U6MmbrKylfpah0DNMh4bAoONLDCWvlqTdq+Un/jAs8P9RvlwMMBroEDf2xg+JUGRFWpYo+1WQFJu8NrzK+OO83RIQqUqDEM6DDxXaN0mJuKw222bIZoCWV+WSi4dn7PR58LBuhRjurJGKv+IMOlow=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by DB8PR04MB7019.eurprd04.prod.outlook.com (2603:10a6:10:12b::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.14; Fri, 29 Apr
- 2022 09:54:11 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::d94f:b885:c587:5cd4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::d94f:b885:c587:5cd4%6]) with mapi id 15.20.5206.014; Fri, 29 Apr 2022
- 09:54:11 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Sasha Levin <sashal@kernel.org>, stable <stable@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH stable 0/3] SOF_TIMESTAMPING_OPT_ID backport to 4.14 and
- 4.19
-Thread-Topic: [PATCH stable 0/3] SOF_TIMESTAMPING_OPT_ID backport to 4.14 and
- 4.19
-Thread-Index: AQHYSey/rjYFxWFs6ECKeXXw010xTqzmJwaAgCCOMACAABUWAA==
-Date:   Fri, 29 Apr 2022 09:54:11 +0000
-Message-ID: <20220429095410.iewnssn3gookhi2y@skbuf>
-References: <20220406192956.3291614-1-vladimir.oltean@nxp.com>
- <20220408152929.4zd2mclusdpazclv@skbuf> <YmukEb1gyBKXIDUP@kroah.com>
-In-Reply-To: <YmukEb1gyBKXIDUP@kroah.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 23864f70-b1d3-4415-c325-08da29c6363f
-x-ms-traffictypediagnostic: DB8PR04MB7019:EE_
-x-microsoft-antispam-prvs: <DB8PR04MB701977CCFFD78738EF4247A2E0FC9@DB8PR04MB7019.eurprd04.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: OqOr1JubJGv2RxgCs3ilT29P0716Og7Dlsq2n6r2t6mPAQkqPTQ/Ns8rQ6v3atEAXWTeanvYgb2qjD81WZXsOIRdRwdDb7nZXoLTWMKuE6Y+T0L1WMaKzRwmNTNjSKah9jz7xommof+bDvU2+PL30XZq7kvU3uj4HhPMkxjLjLPpNjXcwUfw0Dg4xCeuMSzNNyRcwOOHaRyZHyka1Is+PlXbjFueHy6Rld5bFoqMW5qAP1BmdDAhc2O6dFiaFa2DDoYm6stotwaZG2FhPOezegsgL5Bksp/W52mS8FvQNzy3R+M6D7dfnMnREnNQCcLN8gv/Trh1elBRqWNkMJp1qbFioImDthc039P7PMdJ1lYidLwrV17ubtjb098/olYQlNh0tqjgkgdKsUdw7eDed+dmVjChi57sdlq9cXUoXGvCowpniMGVdZGDL0HOfRXtL4Wr0dazhf4YR+3vWjbnXvfsC/T1aU+w0RnBMJw7BSWbO5PECiSXWs7ixXtCPQ9g2Qf5+VmF8uLQ5WZ70QpmAMy15GykPzBn9JOXCKHg0EU9SZOexZE9+yLfWR88vLjizlVPUgLRaiFSSuJ7ZbvQVebINEMb4jXkK0GP56cDDleZmJjW9GT0Y0GMooP5KhW/lNs+0CRXGeFx2O+vzafFHKcQ7V1+QQc5Zze3t6bJgAuFWbGdHinnn7XEgl7zwTFYEik8zNw86tJB8Z52Q/o37NKtS3NmE4g5fJIWOmyTJ82QyVRYkICZGqKWXFn7LqHE9L3wnJ5usM6191euScZRdGMdCW6qUgTmu9lUh2+jzayihRqCMN98CFRyY3ZWRUPK/0XnM3Nmarcy795RVKf0Lg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(5660300002)(8936002)(1076003)(966005)(6486002)(2906002)(44832011)(122000001)(7416002)(508600001)(38070700005)(83380400001)(38100700002)(66946007)(66476007)(66556008)(4326008)(8676002)(33716001)(316002)(66446008)(91956017)(64756008)(76116006)(186003)(6506007)(54906003)(6916009)(71200400001)(9686003)(6512007)(26005)(86362001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?i0zU2zYpAb+/CWEvcLk0SxBKbvxlPLFuTehTmCHcQFszvsCFD3pW8jbGVide?=
- =?us-ascii?Q?5TxvaAbAQ7b7gO3RPstILsm6UdF3Yta8jlOcZQK6qCOQ0BQlR0CT/r6MeD6W?=
- =?us-ascii?Q?MMNjkvBNq/avHmszsT6Jh36vCO0cOwFiwbknextAf3SWXpMVlZ41hJNq+tIn?=
- =?us-ascii?Q?UKFpALN75IEVU1zgG3TGxW62HJjgv0j1qXSN0Je1BGCsvOBEHms5GHzbr0CY?=
- =?us-ascii?Q?GFU0+ksC6drLxZi8YcASuOwWjKBZLKIYTFBZfzjNfyDvWOJnj4KpJ/loKRES?=
- =?us-ascii?Q?Oc+73YmBMNxnT1REiQzpzGfqCB8msvIrrPS4d04sOBiARqucrS8IgDw5SaMI?=
- =?us-ascii?Q?sQw6G0/JmHOxWbmZrkx7XwRoOJo4DYRXSZYUMLfO+GdABGsFYJw6PCqEY4gm?=
- =?us-ascii?Q?AZXX1Fr8KUUCRZkYVdR0bMV2eVxsp7GWIaelrEvG7Vy2MeYZ94sHKAHA5tJI?=
- =?us-ascii?Q?Z89Xf6E6wQfOoYQqBmaoUaTucHcY/tD/pXEekphxNnZtdWtRmtiV8irOoyVt?=
- =?us-ascii?Q?syv02uHJFjStdyVsgyJaahmrbSiXOFyQEPUKqrIiM+jM7WvWYK5QJSHe0xJa?=
- =?us-ascii?Q?NciZa8BRfQuHbMGtxS/TcbkcSrTtoUhv4JcpIXMzo/jKCe4J8wk5YsXAvxYt?=
- =?us-ascii?Q?hDQj4uEcPD+SgBkX5PYyWRN+txpX4ZWlWw9ASr+S0AH50SKmQEseYo1oIeKt?=
- =?us-ascii?Q?RXGRohoaK7DxScvCGb6rcIgtCmW5I7a6dDKhC60y8KoTE3gjxLJc+vkpr+Hs?=
- =?us-ascii?Q?L9f48WMPDwBHL0DcwNxkYhWt4LQRgY6jXii234EtQ/E5Ydy7VnhsF4b9KrrQ?=
- =?us-ascii?Q?fUw1aVYE/UtkLACVrV+4dh6L1eF/NCPSz8SGGklmsUlCsQ/ggVO81IMqnRHm?=
- =?us-ascii?Q?YfCXjDrL7zNS/8UBklsqrEzAdjovgm79xK4qYseE7QrEmM6JvycRIhQDwoIG?=
- =?us-ascii?Q?/kKq5p9JbiFmtNkSRZ8QFjoJ7LCwVLl3q2+Y+YZ9W7sqdvC37kC6BXxPGQ7j?=
- =?us-ascii?Q?oqNcvkJcih6bNmXXp0caCdL+nTcI1cRNOXpE/0xXCKAEmkARYIoRd/pT7w2X?=
- =?us-ascii?Q?iLyLE7ZoSzDYrbYgHJMCF9Mn52kFT1Qn4hrU2wnX2kkcYEzyDyMWwymtYgO7?=
- =?us-ascii?Q?5XEnwc5KeRX0QOsqYZaTeY5yGwy8Yr7tAbbTui6DFlXss1bv0HPjH+yobt3M?=
- =?us-ascii?Q?3DsvZPJVKUYz0m1iEShmZZltvky8pCCQm0xVx58D6YQ+RDCO9l1OZfWdoVA9?=
- =?us-ascii?Q?d5lDqHR5dM954RrAWCicHHJCsYZ/pDwrOXWJnscFvo6P6VVSDS8D0penLqrM?=
- =?us-ascii?Q?VlYUoVbc+ZBCnXRIWVwYCfmKZ6Kfb9m18r3JsfTW3+vp9PXP0j8hcpF9Z/QM?=
- =?us-ascii?Q?hFa6d5KJA3W2QW9o0w201KX8drRs4gsBN9kXWjAO3TLVOib+FfolwbKXDUIi?=
- =?us-ascii?Q?rT7wOiIKo9cFCeQ7EaTgdZwJK5HXCPUakZKYxI4+49EBqMD+mZPTGYzFgDT1?=
- =?us-ascii?Q?E74EFoPwBZQMFEczyfOHx7iHyHjJJzmgMEO+6AYzT3iJ1WpegbcyLemKd24d?=
- =?us-ascii?Q?5LGgS2AAeDgek62qZG5dOOcld+jzPUUaklN43cxeHfvDdrSeMOBEHKDvRDcK?=
- =?us-ascii?Q?l77Mpv/EEnyf/OKOTlhpj7YMCOJQReiPRVCpKBRmKDG389vfGWejHTb66frd?=
- =?us-ascii?Q?x0sIttIOqMUyncSCTaG+RMzN1t6vB845EqRDUa2vD7ZYxV/bQqjkRMton+ya?=
- =?us-ascii?Q?zVVskKd8h7hDAeSJJS8slZdR5npLlpc=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <A4F3E22A53D39048A02E610E9F45D379@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S235489AbiD2KAE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 06:00:04 -0400
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31D623F8B5
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 02:56:46 -0700 (PDT)
+Received: by mail-ej1-f49.google.com with SMTP id bv19so14428288ejb.6
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 02:56:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:date:in-reply-to
+         :references:user-agent:mime-version;
+        bh=lC2aQDO1jDrS95kLb2tVibcrroZGiiyDY0egjLaQEhE=;
+        b=2fX326V4gT7wC/I/ulqHmYuRjHFvLcA/ZwkP9IbQkoivC2RP25C9BFcd3x5zPZe6a9
+         ZGrwKUBJAym3q4cN6MReU0Z81RUVdQL/v9xQsEK0vREY2DZNCrDg2+9tejJQHLfv3+Fk
+         H4jIHpKH2Sz4TZlkPyeJlYwaWcoHrQJcDWyaCh4SdzhdOx/W8sVJIWjc+YQga73O8YDw
+         ckFEyCJRKcyRexmBve9/VzkR3cfpIIOBB6qyxhvc3sm3eXCdZ3dK2pbRa0oRK/y38ALc
+         DfMuL7oxF727PIIJin+6uxzJ+lOEeWXJ58Pl3GNAFknul4GD9s6/GhD0QkTs5x0Melfl
+         e1Cw==
+X-Gm-Message-State: AOAM531nkkdKkiZa7toU1AoxfKFb+yc9QyDFuwW2crJnIw9yg2UYknB7
+        36n7fKLTKTl+xRkNgczHRYQxTqNU8s0=
+X-Google-Smtp-Source: ABdhPJxMMH0h3MN+8YfG5XYIWASgaXbwwv6irQmsbVw5FOtNOHJYQ8bSAPN7+yJxp1IAIWN3sv8htg==
+X-Received: by 2002:a17:906:478b:b0:6db:8b6e:d5de with SMTP id cw11-20020a170906478b00b006db8b6ed5demr36380235ejc.161.1651226204490;
+        Fri, 29 Apr 2022 02:56:44 -0700 (PDT)
+Received: from localhost ([2a01:4b00:f41a:3600:360b:9754:2e3a:c344])
+        by smtp.gmail.com with ESMTPSA id h10-20020a1709070b0a00b006f3ef214daasm485085ejl.16.2022.04.29.02.56.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 02:56:43 -0700 (PDT)
+Message-ID: <fac8b95ce32c4b57e7ea00596cbf01aaf966c7ef.camel@debian.org>
+Subject: Re: Simplify ambient capability dropping in iproute2:ip tool.
+From:   Luca Boccassi <bluca@debian.org>
+To:     Tinkerer One <tinkerer@zappem.net>, netdev@vger.kernel.org
+Date:   Fri, 29 Apr 2022 10:56:38 +0100
+In-Reply-To: <CABCx3R0QbN2anNX5mO1iPGZNgS=wdWr+Rb=bYGwf24o6jxjnaQ@mail.gmail.com>
+References: <CABCx3R0QbN2anNX5mO1iPGZNgS=wdWr+Rb=bYGwf24o6jxjnaQ@mail.gmail.com>
+Content-Type: multipart/signed; micalg="pgp-sha512";
+        protocol="application/pgp-signature"; boundary="=-OBlkst5mfEnR4dm2FbSd"
+User-Agent: Evolution 3.38.3-1+plugin 
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 23864f70-b1d3-4415-c325-08da29c6363f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Apr 2022 09:54:11.6445
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 1zIFfmgL175oqLVcsWMyr+nCss4vPFhB1qpPELnD6f6mGMTIXYvxK3kNNsIBvIiRZz3x37/mOgHsBhNQ7+RTpw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB7019
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 10:38:42AM +0200, Greg Kroah-Hartman wrote:
-> On Fri, Apr 08, 2022 at 03:29:30PM +0000, Vladimir Oltean wrote:
-> > Hello Greg, Sasha,
-> >=20
-> > On Wed, Apr 06, 2022 at 10:29:53PM +0300, Vladimir Oltean wrote:
-> > > As discussed with Willem here:
-> > > https://lore.kernel.org/netdev/CA+FuTSdQ57O6RWj_Lenmu_Vd3NEX9xMzMYkB0=
-C3rKMzGgcPc6A@mail.gmail.com/T/
-> > >=20
-> > > the kernel silently doesn't act upon the SOF_TIMESTAMPING_OPT_ID sock=
-et
-> > > option in several cases on older kernels, yet user space has no way t=
-o
-> > > find out about this, practically resulting in broken functionality.
-> > >=20
-> > > This patch set backports the support towards linux-4.14.y and linux-4=
-.19.y,
-> > > which fixes the issue described above by simply making the kernel act
-> > > upon SOF_TIMESTAMPING_OPT_ID as expected.
-> > >=20
-> > > Testing was done with the most recent (not the vintage-correct one)
-> > > kselftest script at:
-> > > tools/testing/selftests/networking/timestamping/txtimestamp.sh
-> > > with the message "OK. All tests passed".
-> >=20
-> > Could you please pick up these backports for "stable"? Thanks.
->=20
-> Do you not already see these in a released kernel?  If not, please
-> resubmit what is missing as I think they are all there...
 
-They're there, thanks.
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?h=
-=3Dlinux-4.14.y&id=3Dadd668be8f5e53f4471a075edaa70a7cb85fd036
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?h=
-=3Dlinux-4.14.y&id=3Da96c57a72f477b42ab238fad3c2c1f8e8c091256
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?h=
-=3Dlinux-4.19.y&id=3Dcd7295d0bea3f56a3f024f1b22d50a0f3fc727f1=
+--=-OBlkst5mfEnR4dm2FbSd
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+On Thu, 2022-04-28 at 20:17 -0700, Tinkerer One wrote:
+> Hi,
+>=20
+> This is expanded from https://github.com/shemminger/iproute2/issues/62
+> which I'm told is not the way to report issues and offer fixes to
+> iproute2 etc.
+>=20
+> [I'm not subscribed to the netdev list, so please cc: me if you need more=
+ info.]
+>=20
+> The original change that added the drop_cap() code was:
+>=20
+> https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=
+=3Dba2fc55b99f8363c80ce36681bc1ec97690b66f5
+>=20
+> In an attempt to address some user feedback, the code was further
+> complicated by:
+>=20
+> https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=
+=3D9b13cc98f5952f62b825461727c8170d37a4037d
+>=20
+> Another user issue was asked about here (a couple days ago):
+>=20
+> https://stackoverflow.com/questions/72015197/allow-non-root-user-of-conta=
+iner-to-execute-binaries-that-need-capabilities
+>=20
+> I looked into what was going on and found that lib/utils.c contains
+> some complicated code that seems to be trying to prevent Ambient
+> capabilities from being inherited except in specific cases
+> (ip/ip.c:main() calls drop_cap() except in the ip vrf exec case.). The
+> code clears all capabilities in order to prevent Ambient capabilities
+> from being available. The following change achieves suppression of
+> Ambient capabilities much more precisely. It also permits ip to not
+> need to be setuid-root or executed under sudo since it can now be
+> optionally empowered by file capabilities:
+>=20
+> diff --git a/lib/utils.c b/lib/utils.c
+> index 53d31006..681e4aee 100644
+> --- a/lib/utils.c
+> +++ b/lib/utils.c
+> @@ -1555,25 +1555,10 @@ void drop_cap(void)
+> =C2=A0#ifdef HAVE_LIBCAP
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0/* don't harmstring root/=
+sudo */
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (getuid() !=3D 0 && ge=
+teuid() !=3D 0) {
+> -               cap_t capabilities;
+> -               cap_value_t net_admin =3D CAP_NET_ADMIN;
+> -               cap_flag_t inheritable =3D CAP_INHERITABLE;
+> -               cap_flag_value_t is_set;
+> -
+> -               capabilities =3D cap_get_proc();
+> -               if (!capabilities)
+> -                       exit(EXIT_FAILURE);
+> -               if (cap_get_flag(capabilities, net_admin, inheritable,
+> -                   &is_set) !=3D 0)
+> +               /* prevent any ambient capabilities from being inheritabl=
+e */
+> +               if (cap_reset_ambient() !=3D 0) {
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0exi=
+t(EXIT_FAILURE);
+> -               /* apps with ambient caps can fork and call ip */
+> -               if (is_set =3D=3D CAP_CLEAR) {
+> -                       if (cap_clear(capabilities) !=3D 0)
+> -                               exit(EXIT_FAILURE);
+> -                       if (cap_set_proc(capabilities) !=3D 0)
+> -                               exit(EXIT_FAILURE);
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0}
+> -               cap_free(capabilities);
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0}
+> =C2=A0#endif
+> =C2=A0}
+
+The current setup is necessary, as the commit message says:
+
+"Users have reported a regression due to ip now dropping capabilities
+unconditionally.
+zerotier-one VPN and VirtualBox use ambient capabilities in their
+binary and then fork out to ip to set routes and links, and this
+does not work anymore.
+
+As a workaround, do not drop caps if CAP_NET_ADMIN (the most common
+capability used by ip) is set with the INHERITABLE flag.
+Users that want ip vrf exec to work do not need to set INHERITABLE,
+which will then only set when the calling program had privileges to
+give itself the ambient capability."
+
+Besides, giving setuid to ip itself would be very dangerous, and should
+definitely not be supported. I am not aware of any distribution that
+does it. If there is any, it should be removed. Even for the vrf exec
+case, on Debian/Ubuntu I've set it up so that the caps are not
+configured by default, but require admin action at install time to
+enable, with a clear warning about the possible risks and tradeoffs.
+
+--=20
+Kind regards,
+Luca Boccassi
+
+--=-OBlkst5mfEnR4dm2FbSd
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEE6g0RLAGYhL9yp9G8SylmgFB4UWIFAmJrtlYACgkQSylmgFB4
+UWLFFQf+JygIN6vLqgUTha6Uozvywmp9UOizGSAq23rJnrAIKPQWa1kxzxOpnPjw
+FcUOKF8zfxiCzTc6K/5oYzjh8HNcaRtqGARC5u3T2uJNIf7GqAEMMhQqnCunYtez
+eRh+aAs8B+j0s6Iz3V/ClX4jMaQ+u3KXi08PujYS1scupE91VGIGTEFsZY4MLdAr
+LEY8RNpw4+QgR0F82ZS8fKkXIeQ2xEr+5Ed/EQkF4pJOPDZQoT2lOwnoK91u8wNx
+k8cBc0NgJEFz020cj4Plcxa3qn4bSeQXYvPX4swKHsEnj2REfpdFXM/4/6wGy/UR
+SVN/jtK82cRMMqK83fy0HWbtNf2yyg==
+=4dnq
+-----END PGP SIGNATURE-----
+
+--=-OBlkst5mfEnR4dm2FbSd--
