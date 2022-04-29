@@ -2,185 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B52AF514087
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 04:14:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B91C514102
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 05:48:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353703AbiD2CR3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 22:17:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46218 "EHLO
+        id S235640AbiD2DTE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 23:19:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235150AbiD2CR0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 22:17:26 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C146DC0D10;
-        Thu, 28 Apr 2022 19:14:09 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id 727FB1E80D76;
-        Fri, 29 Apr 2022 10:10:31 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id CcZscM8q0qGo; Fri, 29 Apr 2022 10:10:28 +0800 (CST)
-Received: from ubuntu.localdomain (unknown [101.228.155.226])
-        (Authenticated sender: yuzhe@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id 246A11E80D6E;
-        Fri, 29 Apr 2022 10:10:28 +0800 (CST)
-From:   Yu Zhe <yuzhe@nfschina.com>
-To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        liqiong@nfschina.com, hukun@nfschina.com,
-        Yu Zhe <yuzhe@nfschina.com>
-Subject: [PATCH] ipv4: remove unnecessary type castings
-Date:   Thu, 28 Apr 2022 19:14:04 -0700
-Message-Id: <20220429021404.1648570-1-yuzhe@nfschina.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S235472AbiD2DSs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 23:18:48 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C04622BDE;
+        Thu, 28 Apr 2022 20:15:29 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id m14-20020a17090a34ce00b001d5fe250e23so6143996pjf.3;
+        Thu, 28 Apr 2022 20:15:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=w4oIavX7ybBIKhipbmSb7D/VaFUzTRWKgHI15fCRjo8=;
+        b=O5QeWgujlX+we6uhRnxkXUrsCKJBY9CxWyUVVj70cg5tfVHqt5i9e4gHCGhUpE0KqN
+         6PRojHhRouAfFQVpGn6te1rUNhw11+oH4Itc1DfSoBPec8XuQR86l7FBzzMT8cibcO5F
+         lYTSEoMfISYWLRvMYhd8Nka3G6so4vEJ3X5HZ3b/a4xM2qVdFqcz9eVcV+W+h3kRJVz7
+         2t4B4ICJzkQJPwbaO/TxnwtACxhEt62nCmn4o2JvD0DpsaRgaGybkTpHW8W4sa+u+BJr
+         We2E9J5lBwHzzS/KoUInriJVFZCu1qDoSOarnL0tu+gCB5ajeIcarzW3bLJ0BcNSlB6P
+         QzTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=w4oIavX7ybBIKhipbmSb7D/VaFUzTRWKgHI15fCRjo8=;
+        b=tOnNUexhelKqrvtc5jMQ02Lc2BUpVm01j328WE31xUA6R8bQ4PBuH7A7Tm9YvUnDFX
+         hXcENBeTErRHR9u3R0SQsm9aSGuaqxwtjUqOYrErGreE8eIw0s5+tlOnEj7Y6aTMgM3q
+         18LY04fWO7HT1bHFhukxDN3pYM0GUyh+2gSweGKXHU5ijqljjb9Z4F9zF3Zg0AL6SdQV
+         CDhv6rfgTedq6+agDTe54ACfEfqoIXCZ5wy6TeUzuFESnNtbqkGMdeJB3TiJ1CMOZDJR
+         Au1fFcnMMylo0WgzRGwC9EkOhkT3NeS40PxdvS7Om318mbv+wklHqaTQqVw+1+PHwenB
+         aRaQ==
+X-Gm-Message-State: AOAM532pQkprB7us/C2zuKmkeo09j2Tlx99IWPRvK3LmA+gSONCaMpvX
+        KpWEKMEXYc5i6eOkcZXNBJAtOSrA0QpGOCtulCc=
+X-Google-Smtp-Source: ABdhPJxG/xaKCZURmF4dAlabbfKM+wIVNo1eURmLe/0QdioFyB0liCAJ8fbG1DZTQCB3JZxNGnl6D4y/kLLM5Lgmcxo=
+X-Received: by 2002:a17:902:b189:b0:14d:6f87:7c25 with SMTP id
+ s9-20020a170902b18900b0014d6f877c25mr36997314plr.31.1651202128854; Thu, 28
+ Apr 2022 20:15:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,RDNS_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+References: <20220428153833.278064-1-maximmi@nvidia.com> <20220428153833.278064-2-maximmi@nvidia.com>
+In-Reply-To: <20220428153833.278064-2-maximmi@nvidia.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 28 Apr 2022 20:15:17 -0700
+Message-ID: <CAADnVQLw4yz_N3xR59XbSGdCH3ckU-pPWZ93JugomGejfo5hTA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v7 1/6] bpf: Use ipv6_only_sock in bpf_tcp_gen_syncookie
+To:     Maxim Mikityanskiy <maximmi@nvidia.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-remove unnecessary void* type castings.
+On Thu, Apr 28, 2022 at 8:38 AM Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
+>
+> Instead of querying the sk_ipv6only field directly, use the dedicated
+> ipv6_only_sock helper.
+>
+> Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+> Acked-by: John Fastabend <john.fastabend@gmail.com>
+> Acked-by: Lorenz Bauer <lmb@cloudflare.com>
+> Acked-by: Petar Penkov <ppenkov@google.com>
+> ---
+>  net/core/filter.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 8847316ee20e..207a13db5c80 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -7099,7 +7099,7 @@ BPF_CALL_5(bpf_tcp_gen_syncookie, struct sock *, sk, void *, iph, u32, iph_len,
+>          */
+>         switch (((struct iphdr *)iph)->version) {
+>         case 4:
+> -               if (sk->sk_family == AF_INET6 && sk->sk_ipv6only)
+> +               if (sk->sk_family == AF_INET6 && ipv6_only_sock(sk))
+>                         return -EINVAL;
 
-Signed-off-by: Yu Zhe <yuzhe@nfschina.com>
----
- net/ipv4/fib_frontend.c  | 4 ++--
- net/ipv4/fib_rules.c     | 2 +-
- net/ipv4/fib_trie.c      | 2 +-
- net/ipv4/icmp.c          | 2 +-
- net/ipv4/igmp.c          | 4 ++--
- net/ipv4/inet_fragment.c | 2 +-
- net/ipv4/ipmr.c          | 2 +-
- net/ipv4/ping.c          | 2 +-
- 8 files changed, 10 insertions(+), 10 deletions(-)
+Please rebase patches before resending.
 
-diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
-index af8209f912ab..f361d3d56be2 100644
---- a/net/ipv4/fib_frontend.c
-+++ b/net/ipv4/fib_frontend.c
-@@ -1384,7 +1384,7 @@ static void nl_fib_input(struct sk_buff *skb)
- 		return;
- 	nlh = nlmsg_hdr(skb);
- 
--	frn = (struct fib_result_nl *) nlmsg_data(nlh);
-+	frn = nlmsg_data(nlh);
- 	nl_fib_lookup(net, frn);
- 
- 	portid = NETLINK_CB(skb).portid;      /* netlink portid */
-@@ -1425,7 +1425,7 @@ static void fib_disable_ip(struct net_device *dev, unsigned long event,
- 
- static int fib_inetaddr_event(struct notifier_block *this, unsigned long event, void *ptr)
- {
--	struct in_ifaddr *ifa = (struct in_ifaddr *)ptr;
-+	struct in_ifaddr *ifa = ptr;
- 	struct net_device *dev = ifa->ifa_dev->dev;
- 	struct net *net = dev_net(dev);
- 
-diff --git a/net/ipv4/fib_rules.c b/net/ipv4/fib_rules.c
-index 001fea394bde..513f475c6a53 100644
---- a/net/ipv4/fib_rules.c
-+++ b/net/ipv4/fib_rules.c
-@@ -145,7 +145,7 @@ INDIRECT_CALLABLE_SCOPE bool fib4_rule_suppress(struct fib_rule *rule,
- 						int flags,
- 						struct fib_lookup_arg *arg)
- {
--	struct fib_result *result = (struct fib_result *) arg->result;
-+	struct fib_result *result = arg->result;
- 	struct net_device *dev = NULL;
- 
- 	if (result->fi) {
-diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
-index fb0e49c36c2e..b8b016040b70 100644
---- a/net/ipv4/fib_trie.c
-+++ b/net/ipv4/fib_trie.c
-@@ -2625,7 +2625,7 @@ static void fib_table_print(struct seq_file *seq, struct fib_table *tb)
- 
- static int fib_triestat_seq_show(struct seq_file *seq, void *v)
- {
--	struct net *net = (struct net *)seq->private;
-+	struct net *net = seq->private;
- 	unsigned int h;
- 
- 	seq_printf(seq,
-diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index 72a375c7f417..7457eeb809f0 100644
---- a/net/ipv4/icmp.c
-+++ b/net/ipv4/icmp.c
-@@ -342,7 +342,7 @@ void icmp_out_count(struct net *net, unsigned char type)
- static int icmp_glue_bits(void *from, char *to, int offset, int len, int odd,
- 			  struct sk_buff *skb)
- {
--	struct icmp_bxm *icmp_param = (struct icmp_bxm *)from;
-+	struct icmp_bxm *icmp_param = from;
- 	__wsum csum;
- 
- 	csum = skb_copy_and_csum_bits(icmp_param->skb,
-diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
-index 2ad3c7b42d6d..1ba8ebc439f3 100644
---- a/net/ipv4/igmp.c
-+++ b/net/ipv4/igmp.c
-@@ -2836,7 +2836,7 @@ static int igmp_mc_seq_show(struct seq_file *seq, void *v)
- 		seq_puts(seq,
- 			 "Idx\tDevice    : Count Querier\tGroup    Users Timer\tReporter\n");
- 	else {
--		struct ip_mc_list *im = (struct ip_mc_list *)v;
-+		struct ip_mc_list *im = v;
- 		struct igmp_mc_iter_state *state = igmp_mc_seq_private(seq);
- 		char   *querier;
- 		long delta;
-@@ -2980,7 +2980,7 @@ static void igmp_mcf_seq_stop(struct seq_file *seq, void *v)
- 
- static int igmp_mcf_seq_show(struct seq_file *seq, void *v)
- {
--	struct ip_sf_list *psf = (struct ip_sf_list *)v;
-+	struct ip_sf_list *psf = v;
- 	struct igmp_mcf_iter_state *state = igmp_mcf_seq_private(seq);
- 
- 	if (v == SEQ_START_TOKEN) {
-diff --git a/net/ipv4/inet_fragment.c b/net/ipv4/inet_fragment.c
-index 63948f6aeca0..c9f9ac5013a7 100644
---- a/net/ipv4/inet_fragment.c
-+++ b/net/ipv4/inet_fragment.c
-@@ -510,7 +510,7 @@ EXPORT_SYMBOL(inet_frag_reasm_prepare);
- void inet_frag_reasm_finish(struct inet_frag_queue *q, struct sk_buff *head,
- 			    void *reasm_data, bool try_coalesce)
- {
--	struct sk_buff **nextp = (struct sk_buff **)reasm_data;
-+	struct sk_buff **nextp = reasm_data;
- 	struct rb_node *rbn;
- 	struct sk_buff *fp;
- 	int sum_truesize;
-diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
-index c860519d57ee..13e6329784fb 100644
---- a/net/ipv4/ipmr.c
-+++ b/net/ipv4/ipmr.c
-@@ -356,7 +356,7 @@ static inline int ipmr_hash_cmp(struct rhashtable_compare_arg *arg,
- 				const void *ptr)
- {
- 	const struct mfc_cache_cmp_arg *cmparg = arg->key;
--	struct mfc_cache *c = (struct mfc_cache *)ptr;
-+	const struct mfc_cache *c = ptr;
- 
- 	return cmparg->mfc_mcastgrp != c->mfc_mcastgrp ||
- 	       cmparg->mfc_origin != c->mfc_origin;
-diff --git a/net/ipv4/ping.c b/net/ipv4/ping.c
-index 3ee947557b88..db83577bd5ee 100644
---- a/net/ipv4/ping.c
-+++ b/net/ipv4/ping.c
-@@ -590,7 +590,7 @@ EXPORT_SYMBOL_GPL(ping_err);
- int ping_getfrag(void *from, char *to,
- 		 int offset, int fraglen, int odd, struct sk_buff *skb)
- {
--	struct pingfakehdr *pfh = (struct pingfakehdr *)from;
-+	struct pingfakehdr *pfh = from;
- 
- 	if (offset == 0) {
- 		fraglen -= sizeof(struct icmphdr);
--- 
-2.25.1
+Applying: bpf: Use ipv6_only_sock in bpf_tcp_gen_syncookie
+Using index info to reconstruct a base tree...
+M    net/core/filter.c
+Falling back to patching base and 3-way merge...
+Auto-merging net/core/filter.c
+No changes -- Patch already applied.
+Applying: bpf: Fix documentation of th_len in bpf_tcp_{gen,check}_syncookie
+Applying: bpf: Allow helpers to accept pointers with a fixed size
+Applying: bpf: Add helpers to issue and check SYN cookies in XDP
+error: sha1 information is lacking or useless (include/uapi/linux/bpf.h).
+error: could not build fake ancestor
+Patch failed at 0004 bpf: Add helpers to issue and check SYN cookies in XDP
 
+
+Also trim your cc. You keep sending to addresses that are bouncing
+(Lorenz's and Petar's).
+
+Remove their Ack-s too or fix them with correct emails.
