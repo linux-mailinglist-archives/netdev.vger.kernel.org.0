@@ -2,68 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CF11514E81
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 16:55:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 739CE514E86
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 16:56:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378042AbiD2O6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 10:58:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44954 "EHLO
+        id S1378066AbiD2O7m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 10:59:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378039AbiD2O6v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 10:58:51 -0400
-Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6152637BEA
-        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 07:55:33 -0700 (PDT)
-Received: by mail-qk1-x731.google.com with SMTP id j6so6078148qkp.9
-        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 07:55:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=l3s19TyCwicCVLzG4Xw5t+DqX5DZg1MXRL5pueawjIQ=;
-        b=mP6m0KFs/oXj+gW91EnuR9W10/jjdrLcZTHzzyBKPUSCPP474er+KpJXjOrGNaxMcN
-         HWqNFOshhJ2rkkmhmWb6Dprq2cKBeW+clqHfEHOPntIUZMe6TJHzrp0Uys5BHuDEHYfS
-         RNz2J7njC29ozEwYBdddDmLkot22pGsAb93wb8azAIT7wLCgbgsVSTgHNBx/dfH+WCDN
-         2h8wgnfNw3FGYMyfD37j3bLwyOu/CQsgbm7GemmtmepGwwJAY5ABo/CRl4DD/78CRmSJ
-         Q5g11BsN2yxtWBvgA9mFMiTV+Sthz4bZHNvCyFIvhVORAp3K30Ni/hZwBHt/uSw87TTd
-         Gc2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=l3s19TyCwicCVLzG4Xw5t+DqX5DZg1MXRL5pueawjIQ=;
-        b=AijIMtQ6CrUMrkFBZFmBZBBtKBBmYdyVyC7WYMMTW90PW7ONIDxi05BG1KhkbjsZ5H
-         RLPhc5b/tb7Bt7agjX5m4rfQ7j4AkAAyYSQ51ljYNeFseOkphdOFujxSa2McjWkMsOTD
-         zXJR7WQ/Ur5m0WKXlqGXVI1mEY4NYc6xllcA6DAlii1bRX9XWgFHKGg9PEGu3wWodWvm
-         WrIc7Te5wgHi04cOeXGJ0+nKqRSwiod6RNZk8F8qekfSh6365OlIHHv+XQ/n5r664hSN
-         7nF7zL9/VAN/v09sc10KASY7aFADRxzDkPqi6KKWHZAbJC73BMGuiRQirGDKXuKQbj+J
-         NH6A==
-X-Gm-Message-State: AOAM533F1ElZLY08TJNpPRIBoG6q7AaRlJUFXoekaEtwlfgLt1mqDV5o
-        VSVlKeDEEFM1nx/C9u7bB6WaK1FdSQpa/kJPpBnDiA==
-X-Google-Smtp-Source: ABdhPJzqAUD+zQYbROumJPRxTJ9dUX5wdev+GYt+TxIxQ5wLZh7eMGtC48ys/mv0SgeKu6DTv+0DpVsel1a7Ajb8b1w=
-X-Received: by 2002:a37:956:0:b0:69f:90a0:b1de with SMTP id
- 83-20020a370956000000b0069f90a0b1demr8075421qkj.259.1651244132049; Fri, 29
- Apr 2022 07:55:32 -0700 (PDT)
-MIME-Version: 1.0
-References: <1651228376-10737-1-git-send-email-yangpc@wangsu.com>
-In-Reply-To: <1651228376-10737-1-git-send-email-yangpc@wangsu.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Fri, 29 Apr 2022 10:55:16 -0400
-Message-ID: <CADVnQynZDunGWXp4Oe4gfbhBBqpB2HyoWs21Z6dh7CFwW-o0Fw@mail.gmail.com>
-Subject: Re: [PATCH net-next] tcp: use tcp_skb_sent_after() instead in RACK
-To:     Pengcheng Yang <yangpc@wangsu.com>
-Cc:     Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@kernel.org>,
-        Yuchung Cheng <ycheng@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        with ESMTP id S1378055AbiD2O7i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 10:59:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46AFFAF1F1;
+        Fri, 29 Apr 2022 07:56:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F1205B835DF;
+        Fri, 29 Apr 2022 14:56:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FAB9C385A7;
+        Fri, 29 Apr 2022 14:56:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651244176;
+        bh=55dPsFKyaJHm2X36nyJJ6CyaTJGEyAtYgXfkNvY8120=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nYb27mqCCvMQYHhGuOJj/ESE9vTGSFM+TWDg6GxTzLLlzjUAcKNQ4B7zCc8+g3ffM
+         q2SbAWlAnpje85wpNKgGQOJc9PB3o2WOLoJPeM7YaRgh3RmAHfTSOQ3Cra7lvB0x3O
+         doOHu9cyTZy2rMF9rvwNA/Wk5aYxXfZFFa1QWNE3uu4qxU7Tap20xm1wJZN29HKg4/
+         RfEG+xgerU6YkR7qZePkRPXZy9rDhLJ2AS2tQmM5j+h3JwxotqtCgJNUaiNmc3M7hP
+         V7LkhYvwWcUTysu6cUX+gZ+N+amu9Mc2eQAtO/l1p51cT2NaBB8R+I30XCSsNRL9kq
+         593RlzeNYOtCQ==
+Date:   Fri, 29 Apr 2022 23:56:11 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCHv4 bpf-next 2/5] ftrace: Add ftrace_lookup_symbols
+ function
+Message-Id: <20220429235611.4d14d87efc0b6189dadfe3b1@kernel.org>
+In-Reply-To: <20220428201207.954552-3-jolsa@kernel.org>
+References: <20220428201207.954552-1-jolsa@kernel.org>
+        <20220428201207.954552-3-jolsa@kernel.org>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-10.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,62 +63,151 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 6:33 AM Pengcheng Yang <yangpc@wangsu.com> wrote:
->
-> This patch doesn't change any functionality.
->
-> Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
-> Cc: Neal Cardwell <ncardwell@google.com>
+On Thu, 28 Apr 2022 22:12:04 +0200
+Jiri Olsa <jolsa@kernel.org> wrote:
+
+> Adding ftrace_lookup_symbols function that resolves array of symbols
+> with single pass over kallsyms.
+> 
+> The user provides array of string pointers with count and pointer to
+> allocated array for resolved values.
+> 
+>   int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt,
+>                             unsigned long *addrs)
+> 
+> It iterates all kallsyms symbols and tries to loop up each in provided
+> symbols array with bsearch. The symbols array needs to be sorted by
+> name for this reason.
+> 
+> We also check each symbol to pass ftrace_location, because this API
+> will be used for fprobe symbols resolving.
+
+This looks good to me.
+
+Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
+
+Thanks!
+
+> 
+> Suggested-by: Andrii Nakryiko <andrii@kernel.org>
+> Acked-by: Andrii Nakryiko <andrii@kernel.org>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > ---
->  net/ipv4/tcp_recovery.c | 15 +++++----------
->  1 file changed, 5 insertions(+), 10 deletions(-)
->
-> diff --git a/net/ipv4/tcp_recovery.c b/net/ipv4/tcp_recovery.c
-> index fd113f6..48f30e7 100644
-> --- a/net/ipv4/tcp_recovery.c
-> +++ b/net/ipv4/tcp_recovery.c
-> @@ -2,11 +2,6 @@
->  #include <linux/tcp.h>
->  #include <net/tcp.h>
->
-> -static bool tcp_rack_sent_after(u64 t1, u64 t2, u32 seq1, u32 seq2)
-> -{
-> -       return t1 > t2 || (t1 == t2 && after(seq1, seq2));
-> -}
-> -
->  static u32 tcp_rack_reo_wnd(const struct sock *sk)
->  {
->         struct tcp_sock *tp = tcp_sk(sk);
-> @@ -77,9 +72,9 @@ static void tcp_rack_detect_loss(struct sock *sk, u32 *reo_timeout)
->                     !(scb->sacked & TCPCB_SACKED_RETRANS))
->                         continue;
->
-> -               if (!tcp_rack_sent_after(tp->rack.mstamp,
-> -                                        tcp_skb_timestamp_us(skb),
-> -                                        tp->rack.end_seq, scb->end_seq))
-> +               if (!tcp_skb_sent_after(tp->rack.mstamp,
-> +                                       tcp_skb_timestamp_us(skb),
-> +                                       tp->rack.end_seq, scb->end_seq))
->                         break;
->
->                 /* A packet is lost if it has not been s/acked beyond
-> @@ -140,8 +135,8 @@ void tcp_rack_advance(struct tcp_sock *tp, u8 sacked, u32 end_seq,
->         }
->         tp->rack.advanced = 1;
->         tp->rack.rtt_us = rtt_us;
-> -       if (tcp_rack_sent_after(xmit_time, tp->rack.mstamp,
-> -                               end_seq, tp->rack.end_seq)) {
-> +       if (tcp_skb_sent_after(xmit_time, tp->rack.mstamp,
-> +                              end_seq, tp->rack.end_seq)) {
->                 tp->rack.mstamp = xmit_time;
->                 tp->rack.end_seq = end_seq;
->         }
-> --
+>  include/linux/ftrace.h |  6 ++++
+>  kernel/kallsyms.c      |  1 +
+>  kernel/trace/ftrace.c  | 62 ++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 69 insertions(+)
+> 
+> diff --git a/include/linux/ftrace.h b/include/linux/ftrace.h
+> index 4816b7e11047..820500430eae 100644
+> --- a/include/linux/ftrace.h
+> +++ b/include/linux/ftrace.h
+> @@ -303,6 +303,8 @@ int unregister_ftrace_function(struct ftrace_ops *ops);
+>  extern void ftrace_stub(unsigned long a0, unsigned long a1,
+>  			struct ftrace_ops *op, struct ftrace_regs *fregs);
+>  
+> +
+> +int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, unsigned long *addrs);
+>  #else /* !CONFIG_FUNCTION_TRACER */
+>  /*
+>   * (un)register_ftrace_function must be a macro since the ops parameter
+> @@ -313,6 +315,10 @@ extern void ftrace_stub(unsigned long a0, unsigned long a1,
+>  static inline void ftrace_kill(void) { }
+>  static inline void ftrace_free_init_mem(void) { }
+>  static inline void ftrace_free_mem(struct module *mod, void *start, void *end) { }
+> +static inline int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, unsigned long *addrs)
+> +{
+> +	return -EOPNOTSUPP;
+> +}
+>  #endif /* CONFIG_FUNCTION_TRACER */
+>  
+>  struct ftrace_func_entry {
+> diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
+> index fdfd308bebc4..fbdf8d3279ac 100644
+> --- a/kernel/kallsyms.c
+> +++ b/kernel/kallsyms.c
+> @@ -29,6 +29,7 @@
+>  #include <linux/compiler.h>
+>  #include <linux/module.h>
+>  #include <linux/kernel.h>
+> +#include <linux/bsearch.h>
+>  
+>  /*
+>   * These will be re-linked against their real values
+> diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+> index 4f1d2f5e7263..07d87c7a525d 100644
+> --- a/kernel/trace/ftrace.c
+> +++ b/kernel/trace/ftrace.c
+> @@ -7964,3 +7964,65 @@ ftrace_enable_sysctl(struct ctl_table *table, int write,
+>  	mutex_unlock(&ftrace_lock);
+>  	return ret;
+>  }
+> +
+> +static int symbols_cmp(const void *a, const void *b)
+> +{
+> +	const char **str_a = (const char **) a;
+> +	const char **str_b = (const char **) b;
+> +
+> +	return strcmp(*str_a, *str_b);
+> +}
+> +
+> +struct kallsyms_data {
+> +	unsigned long *addrs;
+> +	const char **syms;
+> +	size_t cnt;
+> +	size_t found;
+> +};
+> +
+> +static int kallsyms_callback(void *data, const char *name,
+> +			     struct module *mod, unsigned long addr)
+> +{
+> +	struct kallsyms_data *args = data;
+> +
+> +	if (!bsearch(&name, args->syms, args->cnt, sizeof(*args->syms), symbols_cmp))
+> +		return 0;
+> +
+> +	addr = ftrace_location(addr);
+> +	if (!addr)
+> +		return 0;
+> +
+> +	args->addrs[args->found++] = addr;
+> +	return args->found == args->cnt ? 1 : 0;
+> +}
+> +
+> +/**
+> + * ftrace_lookup_symbols - Lookup addresses for array of symbols
+> + *
+> + * @sorted_syms: array of symbols pointers symbols to resolve,
+> + * must be alphabetically sorted
+> + * @cnt: number of symbols/addresses in @syms/@addrs arrays
+> + * @addrs: array for storing resulting addresses
+> + *
+> + * This function looks up addresses for array of symbols provided in
+> + * @syms array (must be alphabetically sorted) and stores them in
+> + * @addrs array, which needs to be big enough to store at least @cnt
+> + * addresses.
+> + *
+> + * This function returns 0 if all provided symbols are found,
+> + * -ESRCH otherwise.
+> + */
+> +int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, unsigned long *addrs)
+> +{
+> +	struct kallsyms_data args;
+> +	int err;
+> +
+> +	args.addrs = addrs;
+> +	args.syms = sorted_syms;
+> +	args.cnt = cnt;
+> +	args.found = 0;
+> +	err = kallsyms_on_each_symbol(kallsyms_callback, &args);
+> +	if (err < 0)
+> +		return err;
+> +	return args.found == args.cnt ? 0 : -ESRCH;
+> +}
+> -- 
+> 2.35.1
+> 
 
-Thanks! The patch looks good to me, and passes all our team's packetdrill tests.
 
-Acked-by: Neal Cardwell <ncardwell@google.com>
-Tested-by: Neal Cardwell <ncardwell@google.com>
-
-thanks,
-neal
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
