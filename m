@@ -2,153 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4711651509C
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 18:18:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5E415150A8
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 18:21:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378977AbiD2QVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 12:21:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57304 "EHLO
+        id S1378602AbiD2QYJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 12:24:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378564AbiD2QVe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 12:21:34 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B984D8910
-        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 09:18:16 -0700 (PDT)
+        with ESMTP id S1379029AbiD2QYB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 12:24:01 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73C11CD64D
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 09:20:42 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id iq2-20020a17090afb4200b001d93cf33ae9so10937005pjb.5
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 09:20:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1651249096; x=1682785096;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=RJRrU7qQ5fgoTgBrlHAKGPCL4u0ZnrFtOq5RGqVJDeg=;
-  b=JRiQXFssCVPm/LkpYGNdj8eM5J1KwkhKCevuB+GSnmdAc2mXULMAl6IL
-   oGVxaYxHfM9YWus48dsQy6cBZUi44lfsP0aIWckWJe7o/KycxRWkKWBPM
-   H2rH0qZecESmwEhVpKY4CWFpkp2/WISDglZJZLT/J+StaVjNsClpgUxwd
-   E=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 29 Apr 2022 09:18:15 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 09:18:14 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 29 Apr 2022 09:18:14 -0700
-Received: from qian (10.80.80.8) by nalasex01a.na.qualcomm.com (10.47.209.196)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 29 Apr
- 2022 09:18:13 -0700
-Date:   Fri, 29 Apr 2022 12:18:10 -0400
-From:   Qian Cai <quic_qiancai@quicinc.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-CC:     "David S . Miller" <davem@davemloft.net>,
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0ltO31cGke0CV9Ig5Y/sghhWU7CLEY/ynW5EXlnzLcM=;
+        b=GsETNpB0po0QhAPBTPNvnruMjmEd7jyr8gYUhVUnPPt2KqS0m2K03lajmPkkFYXX6i
+         nKWPIdifv8h7hdp3E8hEqpQFQiv9hGPqLAjHh5ByukKw3Y8Asj5iBrmeYbQ8n6MF7dr7
+         uabUo9ejtoIPfd8EFLasysVSzx0NiTgZeytlLoMrUKweX7WhVbVmTRu1VNzhVJqglE/o
+         EKzux818xglrs/ukl3ckTq/Xg2J2AgMe7WrPUo0b7Cl9MuDKCMjtT+AXxg4kx6TNhthy
+         Dbmihi+yjFE/JpHoFgq4Q1kNl58cYKSwPUlNb+WayMsQZ8SiKf8f70SRPrkz/vBlvtEr
+         Qyiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0ltO31cGke0CV9Ig5Y/sghhWU7CLEY/ynW5EXlnzLcM=;
+        b=SfNLChP+xp99mjkkObI9ExxQVRro5alP81trbRvoxc2MX0zVpH1kv6yeSPk+kWpLpQ
+         IX9MjinsvOVIcmZMkEpBf4NZAMVOAcYLBlkZ3zpv1O/kcru3V+C03qAoRxbO7XM1U2ce
+         9VE8BQeD3nh5h8IlWhm1vnIMXjkLU42HVPte9HyM9kmQo5lr1ltWMU5Eg9/QCvZ1nV6y
+         40BZHcD/b5Rb4t2fcZ8NxdAPG3mm8VE54WNBJExvwjZxSvmiLLLi6dff5iuNvVY9DTLb
+         Mwjc2VQhnvXUg72pkplgB3zq98/XlSSlBtAQMiKtYGuAd8+cX6aj/9tdsk0umX6RKP8c
+         25Lw==
+X-Gm-Message-State: AOAM532ZIPlCjXVEzgHOUZfaD0KOVBlvtV/5V0Ac038CO+benjwwhJcJ
+        He4nye433kW0RM++nm+Ha91a+Y8RoWw=
+X-Google-Smtp-Source: ABdhPJyPqIdSdig8QwrViP8rXiuJBd2tVUTJPA5oSjzvTZcegwRdmV8NETYniinq01/myfECQUleeQ==
+X-Received: by 2002:a17:90b:3b4f:b0:1d2:7117:d758 with SMTP id ot15-20020a17090b3b4f00b001d27117d758mr4744517pjb.105.1651249242003;
+        Fri, 29 Apr 2022 09:20:42 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:a265:137a:7be3:938f])
+        by smtp.gmail.com with ESMTPSA id n1-20020a17090a670100b001d96bc27a57sm10974818pjj.54.2022.04.29.09.20.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 09:20:41 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH v2 net-next] net: generalize skb freeing deferral to
- per-cpu lists
-Message-ID: <20220429161810.GA175@qian>
-References: <20220422201237.416238-1-eric.dumazet@gmail.com>
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     David Ahern <dsahern@kernel.org>, netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Taehee Yoo <ap420073@gmail.com>
+Subject: [PATCH net] mld: respect RCU rules in ip6_mc_source() and ip6_mc_msfilter()
+Date:   Fri, 29 Apr 2022 09:20:36 -0700
+Message-Id: <20220429162036.2226133-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220422201237.416238-1-eric.dumazet@gmail.com>
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 01:12:37PM -0700, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> Logic added in commit f35f821935d8 ("tcp: defer skb freeing after socket
-> lock is released") helped bulk TCP flows to move the cost of skbs
-> frees outside of critical section where socket lock was held.
-> 
-> But for RPC traffic, or hosts with RFS enabled, the solution is far from
-> being ideal.
-> 
-> For RPC traffic, recvmsg() has to return to user space right after
-> skb payload has been consumed, meaning that BH handler has no chance
-> to pick the skb before recvmsg() thread. This issue is more visible
-> with BIG TCP, as more RPC fit one skb.
-> 
-> For RFS, even if BH handler picks the skbs, they are still picked
-> from the cpu on which user thread is running.
-> 
-> Ideally, it is better to free the skbs (and associated page frags)
-> on the cpu that originally allocated them.
-> 
-> This patch removes the per socket anchor (sk->defer_list) and
-> instead uses a per-cpu list, which will hold more skbs per round.
-> 
-> This new per-cpu list is drained at the end of net_action_rx(),
-> after incoming packets have been processed, to lower latencies.
-> 
-> In normal conditions, skbs are added to the per-cpu list with
-> no further action. In the (unlikely) cases where the cpu does not
-> run net_action_rx() handler fast enough, we use an IPI to raise
-> NET_RX_SOFTIRQ on the remote cpu.
-> 
-> Also, we do not bother draining the per-cpu list from dev_cpu_dead()
-> This is because skbs in this list have no requirement on how fast
-> they should be freed.
-> 
-> Note that we can add in the future a small per-cpu cache
-> if we see any contention on sd->defer_lock.
+From: Eric Dumazet <edumazet@google.com>
 
-Hmm, we started to see some memory leak reports from kmemleak that have
-been around for hours without being freed since yesterday's linux-next
-tree which included this commit. Any thoughts?
+Whenever RCU protected list replaces an object,
+the pointer to the new object needs to be updated
+_before_ the call to kfree_rcu() or call_rcu()
 
-unreferenced object 0xffff400610f55cc0 (size 216):
-  comm "git-remote-http", pid 781180, jiffies 4314091475 (age 4323.740s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 c0 7e 87 ff 3f ff ff 00 00 00 00 00 00 00 00  ..~..?..........
-  backtrace:
-     kmem_cache_alloc_node
-     __alloc_skb
-     __tcp_send_ack.part.0
-     tcp_send_ack
-     tcp_cleanup_rbuf
-     tcp_recvmsg_locked
-     tcp_recvmsg
-     inet_recvmsg
-     __sys_recvfrom
-     __arm64_sys_recvfrom
-     invoke_syscall
-     el0_svc_common.constprop.0
-     do_el0_svc
-     el0_svc
-     el0t_64_sync_handler
-     el0t_64_sync
-unreferenced object 0xffff4001e58f0c40 (size 216):
-  comm "git-remote-http", pid 781180, jiffies 4314091483 (age 4323.968s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 c0 7e 87 ff 3f ff ff 00 00 00 00 00 00 00 00  ..~..?..........
-  backtrace:
-     kmem_cache_alloc_node
-     __alloc_skb
-     __tcp_send_ack.part.0
-     tcp_send_ack
-     tcp_cleanup_rbuf
-     tcp_recvmsg_locked
-     tcp_recvmsg
-     inet_recvmsg
-     __sys_recvfrom
-     __arm64_sys_recvfrom
-     invoke_syscall
-     el0_svc_common.constprop.0
-     do_el0_svc
-     el0_svc
-     el0t_64_sync_handler
-     el0t_64_sync
+Also ip6_mc_msfilter() needs to update the pointer
+before releasing the mc_lock mutex.
+
+Note that linux-5.13 was supporting kfree_rcu(NULL, rcu),
+so this fix does not need the conditional test I was
+forced to use in the equivalent patch for IPv4.
+
+Fixes: 882ba1f73c06 ("mld: convert ipv6_mc_socklist->sflist to RCU")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Taehee Yoo <ap420073@gmail.com>
+---
+ net/ipv6/mcast.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/net/ipv6/mcast.c b/net/ipv6/mcast.c
+index 909f937befd71fce194517d44cb9a4c5e2876360..7f695c39d9a8c4410e619b88add23e39f2beabae 100644
+--- a/net/ipv6/mcast.c
++++ b/net/ipv6/mcast.c
+@@ -460,10 +460,10 @@ int ip6_mc_source(int add, int omode, struct sock *sk,
+ 				newpsl->sl_addr[i] = psl->sl_addr[i];
+ 			atomic_sub(struct_size(psl, sl_addr, psl->sl_max),
+ 				   &sk->sk_omem_alloc);
+-			kfree_rcu(psl, rcu);
+ 		}
++		rcu_assign_pointer(pmc->sflist, newpsl);
++		kfree_rcu(psl, rcu);
+ 		psl = newpsl;
+-		rcu_assign_pointer(pmc->sflist, psl);
+ 	}
+ 	rv = 1;	/* > 0 for insert logic below if sl_count is 0 */
+ 	for (i = 0; i < psl->sl_count; i++) {
+@@ -565,12 +565,12 @@ int ip6_mc_msfilter(struct sock *sk, struct group_filter *gsf,
+ 			       psl->sl_count, psl->sl_addr, 0);
+ 		atomic_sub(struct_size(psl, sl_addr, psl->sl_max),
+ 			   &sk->sk_omem_alloc);
+-		kfree_rcu(psl, rcu);
+ 	} else {
+ 		ip6_mc_del_src(idev, group, pmc->sfmode, 0, NULL, 0);
+ 	}
+-	mutex_unlock(&idev->mc_lock);
+ 	rcu_assign_pointer(pmc->sflist, newpsl);
++	mutex_unlock(&idev->mc_lock);
++	kfree_rcu(psl, rcu);
+ 	pmc->sfmode = gsf->gf_fmode;
+ 	err = 0;
+ done:
+-- 
+2.36.0.464.gb9c8b46e94-goog
+
