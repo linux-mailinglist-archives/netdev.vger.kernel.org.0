@@ -2,80 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AA67514E35
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 16:50:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4C89514E74
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 16:54:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377939AbiD2Owd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 10:52:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52960 "EHLO
+        id S1377994AbiD2O6G convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 29 Apr 2022 10:58:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377932AbiD2Ow3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 10:52:29 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CAABA8898;
-        Fri, 29 Apr 2022 07:49:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C3B4CCE32AB;
-        Fri, 29 Apr 2022 14:49:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B387C385A4;
-        Fri, 29 Apr 2022 14:49:07 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="M8F8RPlr"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1651243746;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5kY/+HKQBdEE0OK2pw/26od2YREsYrBdJoXKkFBM3wg=;
-        b=M8F8RPlrmla90D9ds6+HP7EXyc1/aZdxybcOycx50xrVs2vuyX2wehLYW4ple+XbG+Exaw
-        8t0nw/oR69S1R2jZa5oQyrJa3VyhOgLAMNJg/9TSImCKLz3pnQTC52LkoMA1FJ1+aaXAFe
-        RLUAAEM/8o3z3lprv+4qCcUtn/8jKTU=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 358250f3 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Fri, 29 Apr 2022 14:49:05 +0000 (UTC)
-Received: by mail-yb1-f172.google.com with SMTP id d12so14888949ybc.4;
-        Fri, 29 Apr 2022 07:49:05 -0700 (PDT)
-X-Gm-Message-State: AOAM530xo3Q8A9xkK3hDjMlpj6lZz04Yldnet8AFf5pxILdJLSzSks65
-        uQX0bGyds/96mQlALH+pvNdyICWne/191nRR86o=
-X-Google-Smtp-Source: ABdhPJyfEG/vnw/eTywo3qhWhBaxQxGzbo0e51Bq7f5mB+qsLSibc7sIgvNROq6WTrUNcOxp6TPY6YaQpbyjnqMxFrM=
-X-Received: by 2002:a5b:8c5:0:b0:648:d88b:3dd5 with SMTP id
- w5-20020a5b08c5000000b00648d88b3dd5mr12370317ybq.267.1651243744309; Fri, 29
- Apr 2022 07:49:04 -0700 (PDT)
+        with ESMTP id S1377984AbiD2O6F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 10:58:05 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8222CBE9C1
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 07:54:45 -0700 (PDT)
+Received: from mail-yw1-f178.google.com ([209.85.128.178]) by
+ mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MQuPJ-1nXROm3FoN-00O0gu for <netdev@vger.kernel.org>; Fri, 29 Apr 2022
+ 16:49:39 +0200
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2f863469afbso63684327b3.0
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 07:49:39 -0700 (PDT)
+X-Gm-Message-State: AOAM530DHK7AkLbjbLb1v3BNu5e/k4JC8GjkcXR0jwJ8sP/cYJYJypPw
+        hW/XON4nIt2DK9kouVGbGZyMTEdGXcXUIEC5XVY=
+X-Google-Smtp-Source: ABdhPJxgBxvE+oN60txD8ANadm+s/87Z28p7WWITHbxMwRgweXeBvfDMsRdHAhLEogMrfIuWNRUzkbwKnsSoR24LqRs=
+X-Received: by 2002:a0d:d804:0:b0:2f4:e47d:1c2c with SMTP id
+ a4-20020a0dd804000000b002f4e47d1c2cmr37961295ywe.320.1651243778408; Fri, 29
+ Apr 2022 07:49:38 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220428124001.7428-1-w@1wt.eu> <20220428124001.7428-4-w@1wt.eu>
-In-Reply-To: <20220428124001.7428-4-w@1wt.eu>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Fri, 29 Apr 2022 16:48:52 +0200
-X-Gmail-Original-Message-ID: <CAHmME9pYj85hCS0=37+XsaJSgNXoJ96N6TdiJ9TWBYTXQx0LAA@mail.gmail.com>
-Message-ID: <CAHmME9pYj85hCS0=37+XsaJSgNXoJ96N6TdiJ9TWBYTXQx0LAA@mail.gmail.com>
-Subject: Re: [PATCH v2 net 3/7] tcp: resalt the secret every 10 seconds
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Moshe Kol <moshe.kol@mail.huji.ac.il>,
-        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
-        Amit Klein <aksecurity@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>
+References: <84f25f73-1fab-fe43-70eb-45d25b614b4c@gmail.com>
+ <20220427125658.3127816-1-alexandr.lobakin@intel.com> <066fc320-dc04-11a4-476e-b0d11f3b17e6@gmail.com>
+In-Reply-To: <066fc320-dc04-11a4-476e-b0d11f3b17e6@gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Fri, 29 Apr 2022 16:49:22 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2tA8vkB-G-sQdvoiB8Pj08LRn_Vhf7qT-YdBJQwaGhaA@mail.gmail.com>
+Message-ID: <CAK8P3a2tA8vkB-G-sQdvoiB8Pj08LRn_Vhf7qT-YdBJQwaGhaA@mail.gmail.com>
+Subject: Re: Optimizing kernel compilation / alignments for network performance
+To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>, Felix Fietkau <nbd@nbd.name>,
+        "openwrt-devel@lists.openwrt.org" <openwrt-devel@lists.openwrt.org>,
+        Florian Fainelli <f.fainelli@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8BIT
+X-Provags-ID: V03:K1:MZW/Fox5wJoE/+FtF724xGO6UdtdFDf7rzszb/C9wCUDTu/VwwC
+ QwdiQdgAHAMKF6wTY3xlKyuo+I07B9r9BqOVMLqaSg9U/thu1796HP80e5wJYXWxKWNBH0e
+ JpeXWxmj7eOdiu5IanEpq5viHBSQplE4ywMRmq2uWqgqaVpc+ijlc6LH6PRi9nV2czPigJ7
+ ZCkPwW+vg37utb3r10mqg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:VKLrKaiJyzw=:fEm4Gi1yuoBdGd4KjB5c4r
+ jvLQK4vteVLBkuVICI9X+l3za13JwDgeG5bxi142aJHyx9jVCjZS2B+sxcPQTjHjRKwClpr0r
+ rd6ouS3RD1Q3tPLPMftuKJ4ui3zXjAQbsXbJaQUb2GjPAaju0vYOx+djQmmRNG8R1qepe179u
+ n4YXYWxRauoVv3mtu//qDPKA4PfY8jwswVkp0Lg2hpUXX3HegrHZJ6Yg/j7cCHMzeG/6fww9i
+ qg5I1q7Xbteb23IIIDXT3wjzdTYMK5xBIUBhDeCiijH+TebcukSiLa7jyVoi8VKrHIgUJu3mH
+ 1zzzRFMZvH2T2IcYM4xM6ud+XxcErrHsLmDiL1oqAM0D0NmQs2WeCGmzywL3Y196ICeHQyy4b
+ CC/7IIiZdDOmV+lp6qEAoJidAQVOzMRpuJt9k9oJI4vxrD2rqxHnmkpi6xK51zNR9Ey70b6Vp
+ Wk+OMCD83mekzO5ECt+cLl0cSy3mdQGuIwcAuLB3CoJy2b43fdJEV+oclFLVSa5JCoMp9CHoE
+ HOY4xVlz11HsfRlgu+v+z884Z1qd3/YGMa5pkSUYLNIS/84tjC3oXbimJdTJIwQccIjUf2B+4
+ 1QbPF7SYIEI9DS/IUzl5Icrr/9JA0vojSajHyYb2SRnG2ykAlGezYtur099VPEJ5vKt35ZLd5
+ ucx9RGgQo7yLFp9FDTRb6a69Z3q51GSmLkcC53M7QZHCrsYKcoaTLhS/4mHvSweAgwts=
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 2:40 PM Willy Tarreau <w@1wt.eu> wrote:
-> @@ -101,10 +103,12 @@ u64 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,
->                 struct in6_addr saddr;
->                 struct in6_addr daddr;
->                 __be16 dport;
-> +               unsigned int timeseed;
+On Wed, Apr 27, 2022 at 7:31 PM Rafał Miłecki <zajec5@gmail.com> wrote:
+> On 27.04.2022 14:56, Alexander Lobakin wrote:
 
-Also, does the struct packing (or lack thereof) lead to problems here?
-Uninitialized bytes might not make a stable hash.
+> Thank you Alexander, this appears to be helpful! I decided to ignore
+> CONFIG_DEBUG_FORCE_FUNCTION_ALIGN_64B for now and just adjust CFLAGS
+> manually.
+>
+>
+> 1. Without ce5013ff3bec and with -falign-functions=32
+> 387 Mb/s
+>
+> 2. Without ce5013ff3bec and with -falign-functions=64
+> 377 Mb/s
+>
+> 3. With ce5013ff3bec and with -falign-functions=32
+> 384 Mb/s
+>
+> 4. With ce5013ff3bec and with -falign-functions=64
+> 377 Mb/s
+>
+>
+> So it seems that:
+> 1. -falign-functions=32 = pretty stable high speed
+> 2. -falign-functions=64 = very stable slightly lower speed
+>
+>
+> I'm going to perform tests on more commits but if it stays so reliable
+> as above that will be a huge success for me.
+
+Note that the problem may not just be the alignment of a particular
+function, but also how different function map into your cache.
+The Cortex-A9 has a 4-way set-associative L1 cache of 16KB, 32KB or
+64KB, with a line size of 32 bytes. If you are unlucky and you get
+five different functions that are frequently called and are a multiple
+functions are exactly the wrong spacing that they need more than
+four ways, calling them in sequence would always evict the other
+ones. The same could of course happen if the problem is the D-cache
+or the L2.
+
+Can you try to get a profile using 'perf record' to see where most
+time is spent, in both the slowest and the fastest versions?
+If the instruction cache is the issue, you should see how the hottest
+addresses line up.
+
+        Arnd
