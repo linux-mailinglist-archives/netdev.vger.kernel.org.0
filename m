@@ -2,73 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC5375149B9
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 14:46:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 420FD5149D3
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 14:49:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359374AbiD2Mtc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 08:49:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39108 "EHLO
+        id S1359459AbiD2Mwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 08:52:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229671AbiD2Mta (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 08:49:30 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 256E59233F;
-        Fri, 29 Apr 2022 05:46:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=aRHhn40DzoM9Zivc1Yu4592Ged4ObaQxjXEhmGCOPfQ=; b=NCJkw2QvDPbR3jyHG3NIsEEFBy
-        6SVKaRx2o/cAk0cMzQRz+GjdWJOC6Uq9kukTcRIVSakfXOuu08y6Pn+yFwtPpc0ZUPE0l+aVJMlcQ
-        5OPOrOV9lFedeTtH3L/+J2C3PJdKiUIaH7gAtu6PcVKvwoaUtWTRKQPjs5pbs19M5wKc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nkQ0U-000TrR-4D; Fri, 29 Apr 2022 14:45:58 +0200
-Date:   Fri, 29 Apr 2022 14:45:58 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Walle <michael@walle.cc>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Philipp Zabel <p.zabel@pengutronix.de>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 0/2] net: lan966x: remove PHY reset support
-Message-ID: <YmveBgHG9KCwvySO@lunn.ch>
-References: <20220428114049.1456382-1-michael@walle.cc>
+        with ESMTP id S1359292AbiD2Mwc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 08:52:32 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C045C9B75;
+        Fri, 29 Apr 2022 05:49:12 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id x18so10710344wrc.0;
+        Fri, 29 Apr 2022 05:49:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6gx1I2LEKWcJc0uFAMan792S2TeZ8Y9b5WwgAcqsFho=;
+        b=eqsr3iRoOLraeHQfAN1F8lxbHhTSxdIjUQr8ExFzQAGCUmElefmB7guzyjC0kxl5je
+         HT0OIrgMVP7TYB+jH1by1xcLHdxR/iPH0RxBMg5q8hDehljaEk52mNtAkz7VAAAfq6uQ
+         U598+3czQfs9pI2uIeUeVm6xVsHA+ogUhmyhCFfyVDEr1zdRF7yHyA3ybZoPFqixxaT/
+         X/6mA+22S80hqy84zvJQgTv/OkAWwpJyHz4aD/4jYED4VSKNHVEP2I/N4UZ4TPedAj0+
+         bMQcG1Int7xYiYvMjssXccYPNgZwB9G02qDFer0iaKKzUSx93WZuxt9XIQVsQf2k38am
+         8hHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6gx1I2LEKWcJc0uFAMan792S2TeZ8Y9b5WwgAcqsFho=;
+        b=g2ZUMiRnKtjH6tpnXLB55RVW1enbglb9qsMIRcpUfBbjDjkC8oF+rZHlHUku864Z0x
+         K7DM3XtMnLuS3PJ+uffHJdHUqs+IFbxkoGtzez/+aIGsX2w91cTxDgJsac+uohUwn3+H
+         XXf5ORy8zDYnWCmSzhtrTPgQEPyTSpuUgtbK7Qgf31klmt4evUk0NPPiotvcvXjrbcM3
+         fqiDYbUadTlAdWvkqO5Yx7WOc0GmtgHK7viqtIRbCR5kPRhIpoSDzvOXL7ptN11hSMCm
+         D5oYKc+tD0t5krXdVT81tUsWSzvIAJX9Lb992fxSZqpuYvi8Si2fKNMikLTHAkwnbTrv
+         i2WQ==
+X-Gm-Message-State: AOAM530+4qfI+vypNXtoryLW1vZAVV9GTeM+Vy4+Rx13Mkxq3H99awr/
+        z8Qts5SXxdG5JUuLmyvLN/o=
+X-Google-Smtp-Source: ABdhPJxuNgz+00AZk2K+3MHKXW1rmmSUinMRc2h419aF6uzywdkwSk8Wwqe7afiMqRAzA0LmEjtA6A==
+X-Received: by 2002:a5d:498d:0:b0:20a:dc6b:35c9 with SMTP id r13-20020a5d498d000000b0020adc6b35c9mr19910335wrq.176.1651236550512;
+        Fri, 29 Apr 2022 05:49:10 -0700 (PDT)
+Received: from alaa-emad ([197.57.200.226])
+        by smtp.gmail.com with ESMTPSA id g18-20020a05600c4ed200b00393e810038esm2899835wmq.34.2022.04.29.05.49.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 05:49:10 -0700 (PDT)
+From:   Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     outreachy@lists.linux.dev, roopa@nvidia.com, jdenham@redhat.com,
+        sbrivio@redhat.com, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
+        alexandre.belloni@bootlin.com, shshaikh@marvell.com,
+        manishc@marvell.com, razor@blackwall.org,
+        intel-wired-lan@lists.osuosl.org, linux-kernel@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, GR-Linux-NIC-Dev@marvell.com,
+        bridge@lists.linux-foundation.org,
+        eng.alaamohamedsoliman.am@gmail.com
+Subject: [PATCH net-next v5 0/2] propagate extack to vxlan_fdb_delete
+Date:   Fri, 29 Apr 2022 14:49:05 +0200
+Message-Id: <cover.1651236081.git.eng.alaamohamedsoliman.am@gmail.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220428114049.1456382-1-michael@walle.cc>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 01:40:47PM +0200, Michael Walle wrote:
-> Remove the unneeded PHY reset node as well as the driver support for it.
-> 
-> This was already discussed [1] and I expect Microchip to Ack on this
-> removal. Since there is no user, no breakage is expected.
-> 
-> I'm not sure it this should go through net or net-next and if the patches
-> should have a Fixes: tag or not. In upstream linux there was never any user
-> of it, so there is no bug to be fixed. But OTOH if the schema fix isn't
-> backported, then there might be an older schema version still containing
-> the reset node. Thoughts?
+In order to propagate extack to vxlan_fdb_delete and vxlan_fdb_parse,
+add extack to .ndo_fdb_del and edit all fdb del handelers.
 
-Is the switch driver usable in the last LTS kernel? Somebody could
-build a product around 5.15, and i assume they will have issues?
+Alaa Mohamed (2):
+  rtnetlink: add extack support in fdb del handlers
+  net: vxlan: Add extack support to vxlan_fdb_delete
 
-That could be an argument for backporting.
+ drivers/net/ethernet/intel/ice/ice_main.c     |  2 +-
+ drivers/net/ethernet/mscc/ocelot_net.c        |  3 +-
+ .../net/ethernet/qlogic/qlcnic/qlcnic_main.c  |  3 +-
+ drivers/net/macvlan.c                         |  3 +-
+ drivers/net/vxlan/vxlan_core.c                | 41 +++++++++++++------
+ include/linux/netdevice.h                     |  2 +-
+ net/bridge/br_fdb.c                           |  3 +-
+ net/bridge/br_private.h                       |  3 +-
+ net/core/rtnetlink.c                          |  4 +-
+ 9 files changed, 43 insertions(+), 21 deletions(-)
 
-      Andrew
+-- 
+2.36.0
+
