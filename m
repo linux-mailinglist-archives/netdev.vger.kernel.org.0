@@ -2,128 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D62B514557
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 11:23:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7986551453E
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 11:21:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356486AbiD2J01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 05:26:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46666 "EHLO
+        id S1356429AbiD2JXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 05:23:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356517AbiD2J0O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 05:26:14 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19144C42DD
-        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 02:22:56 -0700 (PDT)
-Received: from kwepemi500002.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KqRjl364YzCsM5;
-        Fri, 29 Apr 2022 17:18:19 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi500002.china.huawei.com (7.221.188.171) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 29 Apr 2022 17:22:54 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 29 Apr 2022 17:22:53 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <mkubecek@suse.cz>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <lipeng321@huawei.com>,
-        <huangguangbin2@huawei.com>
-Subject: [PATCH ethtool-next v3 2/2] ethtool: add support to get/set tx push by ethtool -G/g
-Date:   Fri, 29 Apr 2022 17:17:04 +0800
-Message-ID: <20220429091704.21258-3-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220429091704.21258-1-huangguangbin2@huawei.com>
-References: <20220429091704.21258-1-huangguangbin2@huawei.com>
+        with ESMTP id S237484AbiD2JXG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 05:23:06 -0400
+Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4DB26C4038;
+        Fri, 29 Apr 2022 02:19:47 -0700 (PDT)
+Received: by ajax-webmail-mail-app4 (Coremail) ; Fri, 29 Apr 2022 17:18:36
+ +0800 (GMT+08:00)
+X-Originating-IP: [10.190.70.197]
+Date:   Fri, 29 Apr 2022 17:18:36 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   duoming@zju.edu.cn
+To:     "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, kuba@kernel.org,
+        gregkh@linuxfoundation.org, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, alexander.deucher@amd.com,
+        akpm@linux-foundation.org, broonie@kernel.org,
+        netdev@vger.kernel.org, linma@zju.edu.cn
+Subject: Re: Re: [PATCH net v5 1/2] nfc: replace improper check
+ device_is_registered() in netlink related functions
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+In-Reply-To: <aedb4e56-99c4-4f33-bb9c-e122fb87f45b@linaro.org>
+References: <cover.1651194245.git.duoming@zju.edu.cn>
+ <33a282a82c18f942f1f5f9ee0ffcb16c2c7b0ece.1651194245.git.duoming@zju.edu.cn>
+ <aedb4e56-99c4-4f33-bb9c-e122fb87f45b@linaro.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Message-ID: <372ba741.6a64.180749d7078.Coremail.duoming@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: cS_KCgBXX6dsrWticN8JAg--.1802W
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgoPAVZdtZdqKgADss
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jie Wang <wangjie125@huawei.com>
-
-Currently tx push is a standard feature for NICs such as Mellanox, HNS3.
-But there is no command to set or get this feature.
-
-So this patch adds support for "ethtool -G <dev> tx-push on|off" and
-"ethtool -g <dev>" to set/get tx push mode.
-
-Signed-off-by: Jie Wang <wangjie125@huawei.com>
----
- ethtool.8.in    | 4 ++++
- ethtool.c       | 1 +
- netlink/rings.c | 7 +++++++
- 3 files changed, 12 insertions(+)
-
-diff --git a/ethtool.8.in b/ethtool.8.in
-index 12940e1..a87f31f 100644
---- a/ethtool.8.in
-+++ b/ethtool.8.in
-@@ -199,6 +199,7 @@ ethtool \- query or control network driver and hardware settings
- .BN rx\-jumbo
- .BN tx
- .BN rx\-buf\-len
-+.BN tx\-push
- .HP
- .B ethtool \-i|\-\-driver
- .I devname
-@@ -573,6 +574,9 @@ Changes the number of ring entries for the Tx ring.
- .TP
- .BI rx\-buf\-len \ N
- Changes the size of a buffer in the Rx ring.
-+.TP
-+.BI tx\-push \ on|off
-+Specifies whether TX push should be enabled.
- .RE
- .TP
- .B \-i \-\-driver
-diff --git a/ethtool.c b/ethtool.c
-index 4f5c234..4d2a475 100644
---- a/ethtool.c
-+++ b/ethtool.c
-@@ -5733,6 +5733,7 @@ static const struct option args[] = {
- 			  "		[ rx-jumbo N ]\n"
- 			  "		[ tx N ]\n"
- 			  "             [ rx-buf-len N]\n"
-+			  "		[ tx-push on|off]\n"
- 	},
- 	{
- 		.opts	= "-k|--show-features|--show-offload",
-diff --git a/netlink/rings.c b/netlink/rings.c
-index 119178e..3718c10 100644
---- a/netlink/rings.c
-+++ b/netlink/rings.c
-@@ -47,6 +47,7 @@ int rings_reply_cb(const struct nlmsghdr *nlhdr, void *data)
- 	show_u32(tb[ETHTOOL_A_RINGS_RX_JUMBO], "RX Jumbo:\t");
- 	show_u32(tb[ETHTOOL_A_RINGS_TX], "TX:\t\t");
- 	show_u32(tb[ETHTOOL_A_RINGS_RX_BUF_LEN], "RX Buf Len:\t\t");
-+	show_bool("tx-push", "TX Push:\t%s\n", tb[ETHTOOL_A_RINGS_TX_PUSH]);
- 
- 	return MNL_CB_OK;
- }
-@@ -105,6 +106,12 @@ static const struct param_parser sring_params[] = {
- 		.handler        = nl_parse_direct_u32,
- 		.min_argc       = 1,
- 	},
-+	{
-+		.arg            = "tx-push",
-+		.type           = ETHTOOL_A_RINGS_TX_PUSH,
-+		.handler        = nl_parse_u8bool,
-+		.min_argc       = 1,
-+	},
- 	{}
- };
- 
--- 
-2.33.0
-
+SGVsbG8sCgpPbiBGcmksIDI5IEFwciAyMDIyIDA5OjE5OjM2ICswMjAwIEtyenlzenRvZiB3cm90
+ZToKCj4gPiBUaGUgZGV2aWNlX2lzX3JlZ2lzdGVyZWQoKSBpbiBuZmMgY29yZSBpcyB1c2VkIHRv
+IGNoZWNrIHdoZXRoZXIKPiA+IG5mYyBkZXZpY2UgaXMgcmVnaXN0ZXJlZCBpbiBuZXRsaW5rIHJl
+bGF0ZWQgZnVuY3Rpb25zIHN1Y2ggYXMKPiA+IG5mY19md19kb3dubG9hZCgpLCBuZmNfZGV2X3Vw
+KCkgYW5kIHNvIG9uLiBBbHRob3VnaCBkZXZpY2VfaXNfcmVnaXN0ZXJlZCgpCj4gPiBpcyBwcm90
+ZWN0ZWQgYnkgZGV2aWNlX2xvY2ssIHRoZXJlIGlzIHN0aWxsIGEgcmFjZSBjb25kaXRpb24gYmV0
+d2Vlbgo+ID4gZGV2aWNlX2RlbCgpIGFuZCBkZXZpY2VfaXNfcmVnaXN0ZXJlZCgpLiBUaGUgcm9v
+dCBjYXVzZSBpcyB0aGF0Cj4gPiBrb2JqZWN0X2RlbCgpIGluIGRldmljZV9kZWwoKSBpcyBub3Qg
+cHJvdGVjdGVkIGJ5IGRldmljZV9sb2NrLgo+ID4gCj4gPiAgICAoY2xlYW51cCB0YXNrKSAgICAg
+ICAgIHwgICAgIChuZXRsaW5rIHRhc2spCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgIHwK
+PiA+IG5mY191bnJlZ2lzdGVyX2RldmljZSAgICAgfCBuZmNfZndfZG93bmxvYWQKPiA+ICBkZXZp
+Y2VfZGVsICAgICAgICAgICAgICAgfCAgZGV2aWNlX2xvY2sKPiA+ICAgLi4uICAgICAgICAgICAg
+ICAgICAgICAgfCAgIGlmICghZGV2aWNlX2lzX3JlZ2lzdGVyZWQpLy8oMSkKPiA+ICAga29iamVj
+dF9kZWwvLygyKSAgICAgICAgfCAgIC4uLgo+ID4gIC4uLiAgICAgICAgICAgICAgICAgICAgICB8
+ICBkZXZpY2VfdW5sb2NrCj4gPiAKPiA+IFRoZSBkZXZpY2VfaXNfcmVnaXN0ZXJlZCgpIHJldHVy
+bnMgdGhlIHZhbHVlIG9mIHN0YXRlX2luX3N5c2ZzIGFuZAo+ID4gdGhlIHN0YXRlX2luX3N5c2Zz
+IGlzIHNldCB0byB6ZXJvIGluIGtvYmplY3RfZGVsKCkuIElmIHdlIHBhc3MgY2hlY2sgaW4KPiA+
+IHBvc2l0aW9uICgxKSwgdGhlbiBzZXQgemVybyBpbiBwb3NpdGlvbiAoMikuIEFzIGEgcmVzdWx0
+LCB0aGUgY2hlY2sKPiA+IGluIHBvc2l0aW9uICgxKSBpcyB1c2VsZXNzLgo+ID4gCj4gPiBUaGlz
+IHBhdGNoIHVzZXMgYm9vbCB2YXJpYWJsZSBpbnN0ZWFkIG9mIGRldmljZV9pc19yZWdpc3RlcmVk
+KCkgdG8ganVkZ2UKPiA+IHdoZXRoZXIgdGhlIG5mYyBkZXZpY2UgaXMgcmVnaXN0ZXJlZCwgd2hp
+Y2ggaXMgd2VsbCBzeW5jaHJvbml6ZWQuCj4gPiAKPiA+IEZpeGVzOiAzZTI1NmI4ZjhkZmEgKCJO
+RkM6IGFkZCBuZmMgc3Vic3lzdGVtIGNvcmUiKQo+ID4gU2lnbmVkLW9mZi1ieTogRHVvbWluZyBa
+aG91IDxkdW9taW5nQHpqdS5lZHUuY24+Cj4gPiAtLS0KPiA+IENoYW5nZXMgaW4gdjU6Cj4gPiAg
+IC0gUmVwbGFjZSBkZXZpY2VfaXNfcmVnaXN0ZXJlZCgpIHRvIGJvb2wgdmFyaWFibGUuCj4gPiAK
+PiA+ICBpbmNsdWRlL25ldC9uZmMvbmZjLmggfCAgMSArCj4gPiAgbmV0L25mYy9jb3JlLmMgICAg
+ICAgIHwgMjYgKysrKysrKysrKysrKystLS0tLS0tLS0tLS0KPiA+ICAyIGZpbGVzIGNoYW5nZWQs
+IDE1IGluc2VydGlvbnMoKyksIDEyIGRlbGV0aW9ucygtKQo+ID4gCj4gPiBkaWZmIC0tZ2l0IGEv
+aW5jbHVkZS9uZXQvbmZjL25mYy5oIGIvaW5jbHVkZS9uZXQvbmZjL25mYy5oCj4gPiBpbmRleCA1
+ZGVlNTc1ZmJlOC4uN2JiNGNjYjE4MzAgMTAwNjQ0Cj4gPiAtLS0gYS9pbmNsdWRlL25ldC9uZmMv
+bmZjLmgKPiA+ICsrKyBiL2luY2x1ZGUvbmV0L25mYy9uZmMuaAo+ID4gQEAgLTE2Nyw2ICsxNjcs
+NyBAQCBzdHJ1Y3QgbmZjX2RldiB7Cj4gPiAgCWludCBuX3RhcmdldHM7Cj4gPiAgCWludCB0YXJn
+ZXRzX2dlbmVyYXRpb247Cj4gPiAgCXN0cnVjdCBkZXZpY2UgZGV2Owo+ID4gKwlib29sIGRldl9y
+ZWdpc3RlcjsKPiA+ICAJYm9vbCBkZXZfdXA7Cj4gPiAgCWJvb2wgZndfZG93bmxvYWRfaW5fcHJv
+Z3Jlc3M7Cj4gPiAgCXU4IHJmX21vZGU7Cj4gPiBkaWZmIC0tZ2l0IGEvbmV0L25mYy9jb3JlLmMg
+Yi9uZXQvbmZjL2NvcmUuYwo+ID4gaW5kZXggZGM3YTI0MDRlZmQuLjUyMTQ3ZGEyMjg2IDEwMDY0
+NAo+ID4gLS0tIGEvbmV0L25mYy9jb3JlLmMKPiA+ICsrKyBiL25ldC9uZmMvY29yZS5jCj4gPiBA
+QCAtMzgsNyArMzgsNyBAQCBpbnQgbmZjX2Z3X2Rvd25sb2FkKHN0cnVjdCBuZmNfZGV2ICpkZXYs
+IGNvbnN0IGNoYXIgKmZpcm13YXJlX25hbWUpCj4gPiAgCj4gPiAgCWRldmljZV9sb2NrKCZkZXYt
+PmRldik7Cj4gPiAgCj4gPiAtCWlmICghZGV2aWNlX2lzX3JlZ2lzdGVyZWQoJmRldi0+ZGV2KSkg
+ewo+ID4gKwlpZiAoIWRldi0+ZGV2X3JlZ2lzdGVyKSB7Cj4gPiAgCQlyYyA9IC1FTk9ERVY7Cj4g
+PiAgCQlnb3RvIGVycm9yOwo+ID4gIAl9Cj4gPiBAQCAtOTQsNyArOTQsNyBAQCBpbnQgbmZjX2Rl
+dl91cChzdHJ1Y3QgbmZjX2RldiAqZGV2KQo+ID4gIAo+ID4gIAlkZXZpY2VfbG9jaygmZGV2LT5k
+ZXYpOwo+ID4gIAo+ID4gLQlpZiAoIWRldmljZV9pc19yZWdpc3RlcmVkKCZkZXYtPmRldikpIHsK
+PiA+ICsJaWYgKCFkZXYtPmRldl9yZWdpc3Rlcikgewo+ID4gIAkJcmMgPSAtRU5PREVWOwo+ID4g
+IAkJZ290byBlcnJvcjsKPiA+ICAJfQo+ID4gQEAgLTE0Miw3ICsxNDIsNyBAQCBpbnQgbmZjX2Rl
+dl9kb3duKHN0cnVjdCBuZmNfZGV2ICpkZXYpCj4gPiAgCj4gPiAgCWRldmljZV9sb2NrKCZkZXYt
+PmRldik7Cj4gPiAgCj4gPiAtCWlmICghZGV2aWNlX2lzX3JlZ2lzdGVyZWQoJmRldi0+ZGV2KSkg
+ewo+ID4gKwlpZiAoIWRldi0+ZGV2X3JlZ2lzdGVyKSB7Cj4gPiAgCQlyYyA9IC1FTk9ERVY7Cj4g
+PiAgCQlnb3RvIGVycm9yOwo+ID4gIAl9Cj4gPiBAQCAtMjA3LDcgKzIwNyw3IEBAIGludCBuZmNf
+c3RhcnRfcG9sbChzdHJ1Y3QgbmZjX2RldiAqZGV2LCB1MzIgaW1fcHJvdG9jb2xzLCB1MzIgdG1f
+cHJvdG9jb2xzKQo+ID4gIAo+ID4gIAlkZXZpY2VfbG9jaygmZGV2LT5kZXYpOwo+ID4gIAo+ID4g
+LQlpZiAoIWRldmljZV9pc19yZWdpc3RlcmVkKCZkZXYtPmRldikpIHsKPiA+ICsJaWYgKCFkZXYt
+PmRldl9yZWdpc3Rlcikgewo+ID4gIAkJcmMgPSAtRU5PREVWOwo+ID4gIAkJZ290byBlcnJvcjsK
+PiA+ICAJfQo+ID4gQEAgLTI0Niw3ICsyNDYsNyBAQCBpbnQgbmZjX3N0b3BfcG9sbChzdHJ1Y3Qg
+bmZjX2RldiAqZGV2KQo+ID4gIAo+ID4gIAlkZXZpY2VfbG9jaygmZGV2LT5kZXYpOwo+ID4gIAo+
+ID4gLQlpZiAoIWRldmljZV9pc19yZWdpc3RlcmVkKCZkZXYtPmRldikpIHsKPiA+ICsJaWYgKCFk
+ZXYtPmRldl9yZWdpc3Rlcikgewo+ID4gIAkJcmMgPSAtRU5PREVWOwo+ID4gIAkJZ290byBlcnJv
+cjsKPiA+ICAJfQo+ID4gQEAgLTI5MSw3ICsyOTEsNyBAQCBpbnQgbmZjX2RlcF9saW5rX3VwKHN0
+cnVjdCBuZmNfZGV2ICpkZXYsIGludCB0YXJnZXRfaW5kZXgsIHU4IGNvbW1fbW9kZSkKPiA+ICAK
+PiA+ICAJZGV2aWNlX2xvY2soJmRldi0+ZGV2KTsKPiA+ICAKPiA+IC0JaWYgKCFkZXZpY2VfaXNf
+cmVnaXN0ZXJlZCgmZGV2LT5kZXYpKSB7Cj4gPiArCWlmICghZGV2LT5kZXZfcmVnaXN0ZXIpIHsK
+PiA+ICAJCXJjID0gLUVOT0RFVjsKPiA+ICAJCWdvdG8gZXJyb3I7Cj4gPiAgCX0KPiA+IEBAIC0z
+MzUsNyArMzM1LDcgQEAgaW50IG5mY19kZXBfbGlua19kb3duKHN0cnVjdCBuZmNfZGV2ICpkZXYp
+Cj4gPiAgCj4gPiAgCWRldmljZV9sb2NrKCZkZXYtPmRldik7Cj4gPiAgCj4gPiAtCWlmICghZGV2
+aWNlX2lzX3JlZ2lzdGVyZWQoJmRldi0+ZGV2KSkgewo+ID4gKwlpZiAoIWRldi0+ZGV2X3JlZ2lz
+dGVyKSB7Cj4gPiAgCQlyYyA9IC1FTk9ERVY7Cj4gPiAgCQlnb3RvIGVycm9yOwo+ID4gIAl9Cj4g
+PiBAQCAtNDAxLDcgKzQwMSw3IEBAIGludCBuZmNfYWN0aXZhdGVfdGFyZ2V0KHN0cnVjdCBuZmNf
+ZGV2ICpkZXYsIHUzMiB0YXJnZXRfaWR4LCB1MzIgcHJvdG9jb2wpCj4gPiAgCj4gPiAgCWRldmlj
+ZV9sb2NrKCZkZXYtPmRldik7Cj4gPiAgCj4gPiAtCWlmICghZGV2aWNlX2lzX3JlZ2lzdGVyZWQo
+JmRldi0+ZGV2KSkgewo+ID4gKwlpZiAoIWRldi0+ZGV2X3JlZ2lzdGVyKSB7Cj4gPiAgCQlyYyA9
+IC1FTk9ERVY7Cj4gPiAgCQlnb3RvIGVycm9yOwo+ID4gIAl9Cj4gPiBAQCAtNDQ4LDcgKzQ0OCw3
+IEBAIGludCBuZmNfZGVhY3RpdmF0ZV90YXJnZXQoc3RydWN0IG5mY19kZXYgKmRldiwgdTMyIHRh
+cmdldF9pZHgsIHU4IG1vZGUpCj4gPiAgCj4gPiAgCWRldmljZV9sb2NrKCZkZXYtPmRldik7Cj4g
+PiAgCj4gPiAtCWlmICghZGV2aWNlX2lzX3JlZ2lzdGVyZWQoJmRldi0+ZGV2KSkgewo+ID4gKwlp
+ZiAoIWRldi0+ZGV2X3JlZ2lzdGVyKSB7Cj4gPiAgCQlyYyA9IC1FTk9ERVY7Cj4gPiAgCQlnb3Rv
+IGVycm9yOwo+ID4gIAl9Cj4gPiBAQCAtNDk1LDcgKzQ5NSw3IEBAIGludCBuZmNfZGF0YV9leGNo
+YW5nZShzdHJ1Y3QgbmZjX2RldiAqZGV2LCB1MzIgdGFyZ2V0X2lkeCwgc3RydWN0IHNrX2J1ZmYg
+KnNrYiwKPiA+ICAKPiA+ICAJZGV2aWNlX2xvY2soJmRldi0+ZGV2KTsKPiA+ICAKPiA+IC0JaWYg
+KCFkZXZpY2VfaXNfcmVnaXN0ZXJlZCgmZGV2LT5kZXYpKSB7Cj4gPiArCWlmICghZGV2LT5kZXZf
+cmVnaXN0ZXIpIHsKPiA+ICAJCXJjID0gLUVOT0RFVjsKPiA+ICAJCWtmcmVlX3NrYihza2IpOwo+
+ID4gIAkJZ290byBlcnJvcjsKPiA+IEBAIC01NTIsNyArNTUyLDcgQEAgaW50IG5mY19lbmFibGVf
+c2Uoc3RydWN0IG5mY19kZXYgKmRldiwgdTMyIHNlX2lkeCkKPiA+ICAKPiA+ICAJZGV2aWNlX2xv
+Y2soJmRldi0+ZGV2KTsKPiA+ICAKPiA+IC0JaWYgKCFkZXZpY2VfaXNfcmVnaXN0ZXJlZCgmZGV2
+LT5kZXYpKSB7Cj4gPiArCWlmICghZGV2LT5kZXZfcmVnaXN0ZXIpIHsKPiA+ICAJCXJjID0gLUVO
+T0RFVjsKPiA+ICAJCWdvdG8gZXJyb3I7Cj4gPiAgCX0KPiA+IEBAIC02MDEsNyArNjAxLDcgQEAg
+aW50IG5mY19kaXNhYmxlX3NlKHN0cnVjdCBuZmNfZGV2ICpkZXYsIHUzMiBzZV9pZHgpCj4gPiAg
+Cj4gPiAgCWRldmljZV9sb2NrKCZkZXYtPmRldik7Cj4gPiAgCj4gPiAtCWlmICghZGV2aWNlX2lz
+X3JlZ2lzdGVyZWQoJmRldi0+ZGV2KSkgewo+ID4gKwlpZiAoIWRldi0+ZGV2X3JlZ2lzdGVyKSB7
+Cj4gPiAgCQlyYyA9IC1FTk9ERVY7Cj4gPiAgCQlnb3RvIGVycm9yOwo+ID4gIAl9Cj4gPiBAQCAt
+MTEzNCw2ICsxMTM0LDcgQEAgaW50IG5mY19yZWdpc3Rlcl9kZXZpY2Uoc3RydWN0IG5mY19kZXYg
+KmRldikKPiA+ICAJCQlkZXYtPnJma2lsbCA9IE5VTEw7Cj4gPiAgCQl9Cj4gPiAgCX0KPiA+ICsJ
+ZGV2LT5kZXZfcmVnaXN0ZXIgPSB0cnVlOwo+ID4gIAlkZXZpY2VfdW5sb2NrKCZkZXYtPmRldik7
+Cj4gPiAgCj4gPiAgCXJjID0gbmZjX2dlbmxfZGV2aWNlX2FkZGVkKGRldik7Cj4gPiBAQCAtMTE2
+Niw2ICsxMTY3LDcgQEAgdm9pZCBuZmNfdW5yZWdpc3Rlcl9kZXZpY2Uoc3RydWN0IG5mY19kZXYg
+KmRldikKPiA+ICAJCXJma2lsbF91bnJlZ2lzdGVyKGRldi0+cmZraWxsKTsKPiA+ICAJCXJma2ls
+bF9kZXN0cm95KGRldi0+cmZraWxsKTsKPiA+ICAJfQo+ID4gKwlkZXYtPmRldl9yZWdpc3RlciA9
+IGZhbHNlOwo+IAo+IFdlIGFscmVhZHkgaGF2ZSBmbGFnIGZvciBpdCAtIGRldi0+c2h1dHRpbmdf
+ZG93bi4gQ3VycmVudGx5IGl0IGlzIHVzZWQKPiBvbmx5IGluIGlmIGRldmljZSBpbXBsZW1lbnRz
+IGNoZWNrX3ByZXNlbmNlIGJ1dCBJIHRoaW5rIGl0IGNhbiBiZSBlYXNpbHkKPiBtb3ZlZCB0byBj
+b21tb24gcGF0aC4KPiAKPiBIYXZpbmcgbXVsdGlwbGUgZmllbGRzIGZvciBzaW1pbGFyLCBidXQg
+c2xpZ2h0bHkgZGlmZmVyZW50IGNhc2VzLCBpcwo+IGdldHRpbmcgdXMgY2xvc2VyIGFuZCBjbG9z
+ZXIgdG8gc3BhZ2hldHRpIGNvZGUuCgpUaGFua3MgYSBsb3QgZm9yIHlvdXIgc3VnZ2VzdGlvbiwg
+SSB3aWxsIG1vdmUgZGV2LT5zaHV0dGluZ19kb3duIHRvCmNvbW1vbiBwYXRoLgoKQmVzdCByZWdh
+cmRzLApEdW9taW5nIFpob3UK
