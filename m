@@ -2,299 +2,320 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B60A514841
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 13:34:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 269B7514892
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 13:51:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358515AbiD2LiF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 07:38:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42700 "EHLO
+        id S1358729AbiD2Ly6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 07:54:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358492AbiD2LiE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 07:38:04 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 131A756C2D;
-        Fri, 29 Apr 2022 04:34:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651232086; x=1682768086;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=+cVgl0hg4+FfEa3fwzkyzeeufuAMXREixA82G/CSzOQ=;
-  b=l6mSaaVQl4kixASiS5B71nUyWmSnAIrrqF3nUeiHj5+3h7K5urvOSgV3
-   wLRkS9P7PxhqyyU8T06JA2JQVZXf2bWt1v1mpDF6zZ1AILIglFjPMyrVT
-   7n7vq/u/pR9sf6aLndkxMFJ2m8KGFnFVXrnI89q9i7BSo4EhxlbKQJijo
-   Pe2anHbpUO94CWpnF0BNA1LNhax+5S8Dy1SqQQVJZnls/KXQSXUA3ABeq
-   v0ZTk2INvzEdfBaTrTc64j2tHkfEwm9ZEMEYK0TlQ1Y3Y2jr9ngf9OvdF
-   iyezDYuDDgYx8lYI8oaBQ4fciim0WlefTHcDE7w5nwfg7DQH/InhhrXfT
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="291789356"
-X-IronPort-AV: E=Sophos;i="5.91,185,1647327600"; 
-   d="scan'208";a="291789356"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 04:34:45 -0700
-X-IronPort-AV: E=Sophos;i="5.91,185,1647327600"; 
-   d="scan'208";a="582077415"
-Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.58.231])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 04:34:36 -0700
-Message-ID: <e82c7ab0-605e-8795-58dd-dc182f80c6b3@intel.com>
-Date:   Fri, 29 Apr 2022 14:34:31 +0300
+        with ESMTP id S1358737AbiD2Ly5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 07:54:57 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38038C6F12
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 04:51:37 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id i5so10429498wrc.13
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 04:51:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=I2haHTMbUX8+YFDbq2xMC5mP1C3/hhfbqacX+dzMDFo=;
+        b=IJKkc07QuOGNpIXJvAlsIVV5+tlfRNQ+/j6OZj0yspxgcIASvshneTJ8u0CPSprXAE
+         RFhGJSbtwQ7sQ4Jge7fVUZOMD/4W5Lkxy98somIl6UdX12jbv7XE00iJwJUW4AO5a+VY
+         e7SHS/DQWbTS1oo7O7UosC+ElD4YP8aKOKqhZcastftLBs0TKJE+i9BHp0Aw5UJQlSRN
+         AMNkCTsxf9PS1VR0DG5YqWvz02G9s0e5MpuqgfLqQEuPdEexcKPqftVgEf2kombbdWPN
+         Lk3Vc/KOe94ZYtuppM8VAF0HF1gQzCkEUuLKNy3FW2bGTAI4jFkxyp42hXjIHnhdh+xm
+         j/kw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=I2haHTMbUX8+YFDbq2xMC5mP1C3/hhfbqacX+dzMDFo=;
+        b=4QuMvtEi7Pps6nnD4EsgOmQBK6tJCewDUcrFC8VZ3wsqgAN9EWAStqN3rChl5ENUiX
+         VkaqweNG3fpEkM4tpcfMZpOk2uCtU9iVTYDhAKzu46XapRiYq+MO/oQweFICCZFiaDwH
+         Esr4gMKIq1PMCBlSaP1/ZaXRqLe9wQQfXTI4kTV405fmFFAAuaV/ThVQidRA5QKvIqa1
+         g8L8aNVNG51t9UPn6xMWx4SbQcPiT+GDl93aDOGaQtptWIA1BGuXPVo7dLmqRmphWmCp
+         ybEDAVMYMkcDETsaPjyXBb86VDcw+o8yzJ9C5TKItjM2FbenjBCD1urL+pj1W3MLrzEp
+         3eTA==
+X-Gm-Message-State: AOAM531zzDpos06OvshnXL+euPs9z4GGdHiDQxizEfx1zNwb5sCsPD7Y
+        +GbtHBHb4v1v0P1dyHVNaCKswQ==
+X-Google-Smtp-Source: ABdhPJzkEYlhDkxLrxGg4MU6KVG4WPuPdKewY2UcOLjYkvPmHAQcqfznb20k1L4p0omm+zh+I1C0EQ==
+X-Received: by 2002:adf:fb82:0:b0:207:8b12:8d15 with SMTP id a2-20020adffb82000000b002078b128d15mr29966745wrr.1.1651233095585;
+        Fri, 29 Apr 2022 04:51:35 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id o11-20020a05600c4fcb00b00391447f7fd4sm2870102wmq.24.2022.04.29.04.51.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Apr 2022 04:51:34 -0700 (PDT)
+Date:   Fri, 29 Apr 2022 13:51:33 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Ido Schimmel <idosch@idosch.org>, Ido Schimmel <idosch@nvidia.com>,
+        netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
+        andrew@lunn.ch, mlxsw@nvidia.com
+Subject: Re: [PATCH net-next 00/11] mlxsw: extend line card model by devices
+ and info
+Message-ID: <YmvRRSFeRqufKbO/@nanopsycho>
+References: <20220425034431.3161260-1-idosch@nvidia.com>
+ <20220425090021.32e9a98f@kernel.org>
+ <Ymb5DQonnrnIBG3c@shredder>
+ <20220425125218.7caa473f@kernel.org>
+ <YmeXyzumj1oTSX+x@nanopsycho>
+ <20220426054130.7d997821@kernel.org>
+ <Ymf66h5dMNOLun8k@nanopsycho>
+ <20220426075133.53562a2e@kernel.org>
+ <YmjyRgYYRU/ZaF9X@nanopsycho>
+ <20220427071447.69ec3e6f@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.8.1
-Subject: Re: [PATCH v3 4/5] perf evlist: Respect all_cpus when setting
- user_requested_cpus
-Content-Language: en-US
-To:     Ian Rogers <irogers@google.com>
-Cc:     Stephane Eranian <eranian@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        John Garry <john.garry@huawei.com>,
-        Will Deacon <will@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        James Clark <james.clark@arm.com>,
-        German Gomez <german.gomez@arm.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Alexander Antonov <alexander.antonov@linux.intel.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-References: <20220408035616.1356953-1-irogers@google.com>
- <20220408035616.1356953-5-irogers@google.com>
- <c9205f19-52bf-43fe-b1ab-b599d5e2cc7a@intel.com>
- <CAP-5=fVNuQDW+yge897RjaWfE3cfQTD4ufFws6PS2k99Qe05Uw@mail.gmail.com>
-From:   Adrian Hunter <adrian.hunter@intel.com>
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
- Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-In-Reply-To: <CAP-5=fVNuQDW+yge897RjaWfE3cfQTD4ufFws6PS2k99Qe05Uw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-10.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220427071447.69ec3e6f@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28/04/22 23:49, Ian Rogers wrote:
-> On Thu, Apr 28, 2022 at 1:16 PM Adrian Hunter <adrian.hunter@intel.com <mailto:adrian.hunter@intel.com>> wrote:
-> 
->     On 8/04/22 06:56, Ian Rogers wrote:
->     > If all_cpus is calculated it represents the merge/union of all
->     > evsel cpu maps. By default user_requested_cpus is computed to be
->     > the online CPUs. For uncore events, it is often the case currently
->     > that all_cpus is a subset of user_requested_cpus. Metrics printed
->     > without aggregation and with metric-only, in print_no_aggr_metric,
->     > iterate over user_requested_cpus assuming every CPU has a metric to
->     > print. For each CPU the prefix is printed, but then if the
->     > evsel's cpus doesn't contain anything you get an empty line like
->     > the following on a 2 socket 36 core SkylakeX:
->     >
->     > ```
->     > $ perf stat -A -M DRAM_BW_Use -a --metric-only -I 1000
->     >      1.000453137 CPU0                       0.00
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137 CPU18                      0.00
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      1.000453137
->     >      2.003717143 CPU0                       0.00
->     > ...
->     > ```
->     >
->     > While it is possible to be lazier in printing the prefix and
->     > trailing newline, having user_requested_cpus not be a subset of
->     > all_cpus is preferential so that wasted work isn't done elsewhere
->     > user_requested_cpus is used. The change modifies user_requested_cpus
->     > to be the intersection of user specified CPUs, or default all online
->     > CPUs, with the CPUs computed through the merge of all evsel cpu maps.
->     >
->     > New behavior:
->     > ```
->     > $ perf stat -A -M DRAM_BW_Use -a --metric-only -I 1000
->     >      1.001086325 CPU0                       0.00
->     >      1.001086325 CPU18                      0.00
->     >      2.003671291 CPU0                       0.00
->     >      2.003671291 CPU18                      0.00
->     > ...
->     > ```
->     >
->     > Signed-off-by: Ian Rogers <irogers@google.com <mailto:irogers@google.com>>
->     > ---
->     >  tools/perf/util/evlist.c | 7 +++++++
->     >  1 file changed, 7 insertions(+)
->     >
->     > diff --git a/tools/perf/util/evlist.c b/tools/perf/util/evlist.c
->     > index 52ea004ba01e..196d57b905a0 100644
->     > --- a/tools/perf/util/evlist.c
->     > +++ b/tools/perf/util/evlist.c
->     > @@ -1036,6 +1036,13 @@ int evlist__create_maps(struct evlist *evlist, struct target *target)
->     >       if (!cpus)
->     >               goto out_delete_threads;
->     > 
->     > +     if (evlist->core.all_cpus) {
->     > +             struct perf_cpu_map *tmp;
->     > +
->     > +             tmp = perf_cpu_map__intersect(cpus, evlist->core.all_cpus);
-> 
->     Isn't an uncore PMU represented as being on CPU0 actually
->     collecting data that can be due to any CPU.
-> 
-> 
-> This is correct but the counter is only opened on CPU0 as the all_cpus cpu_map will only contain CPU0. Trying to dump the counter for say CPU1 will fail as there is no counter there. This is why the metric-only output isn't displaying anything above.
+Wed, Apr 27, 2022 at 04:14:47PM CEST, kuba@kernel.org wrote:
+>On Wed, 27 Apr 2022 09:35:34 +0200 Jiri Pirko wrote:
+>> >> The relationship-by-name sounds a bit fragile to me. The names of
+>> >> components are up to the individual drivers.  
+>> >
+>> >I asked you how the automation will operate. You must answer questions
+>> >if you want to have a discussion. Automation is the relevant part.  
+>> 
+>> Automation, not sure. It would probably just see type of gearbox and
+>> flash it. Not sure I understand the question, perhaps you could explain?
+>> Plus, the possibility is to auto-flash the GB from driver directly.
+>> 
+>> 
+>> >You're not designing an interface for SDK users but for end users.  
+>> 
+>> Sure, that is the aim of this API. Human end user. That is why I wanted
+>> the user to see the relationships between devlink dev, line cards and
+>> the gearboxes on them. If you want to limit the visibility, sure, just
+>> tell me how.
+>
+>Okay, we have completely different views on what the goals should be.
+>Perhaps that explains the differences in the design.
 
-That's not what happens for me:
-
-$ perf stat -A -M DRAM_BW_Use -a --metric-only -I 1000 -- sleep 1
-#           time CPU              DRAM_BW_Use 
-     1.001114691 CPU0                       0.00 
-     1.001114691 
-     1.001114691 
-     1.001114691 
-     1.001114691 
-     1.001114691 
-     1.001114691 
-     1.001114691 
-     1.001114691 
-     1.001114691 
-     1.001114691 
-     1.001114691 
-     1.001114691 
-     1.001114691 
-     1.001114691 
-     1.001114691 
-     1.001114691 
-     1.001114691 
-     1.001114691 
-     1.001114691 
-     1.001114691 
-     1.001114691 
-     1.001114691 
-     1.001114691 
-     1.001114691 
-     1.001114691 
-     1.001114691 
-     1.001114691 
-     1.002265387 CPU0                       0.00 
-     1.002265387 
-     1.002265387 
-     1.002265387 
-     1.002265387 
-     1.002265387 
-     1.002265387 
-     1.002265387 
-     1.002265387 
-     1.002265387 
-     1.002265387 
-     1.002265387 
-     1.002265387 
-     1.002265387 
-     1.002265387 
-     1.002265387 
-     1.002265387 
-     1.002265387 
-     1.002265387 
-     1.002265387 
-     1.002265387 
-     1.002265387 
-     1.002265387 
-     1.002265387 
-     1.002265387 
-     1.002265387 
-     1.002265387 
-     1.002265387 
-
-perf stat -A -M DRAM_BW_Use -a --metric-only -I 1000 -C 1 -- sleep 1
-#           time CPU              DRAM_BW_Use 
-     1.001100827 CPU1                       0.00 
-     1.002128527 CPU1                       0.00 
+I don't think so. I'm just a bit confused that you say "You're not designing
+an interface for SDK users but for *end users*" and now you say that
+primary is automation. Nevertheless, both are equally important and the
+iface should work for both or them, I believe.
 
 
->  
-> 
->     Or for an uncore PMU represented as being on CPU0-CPU4 on a
->     4 core 8 hyperthread processor, actually 1 PMU per core.
-> 
-> 
-> In this case I believe the CPU map will be CPU0, CPU2, CPU4, CPU6. To get the core counter for hyperthreads on CPU0 and CPU1 you read on CPU0, there is no counter on CPU1 and trying to read it will fail as the counters are indexed by a cpu map index into the all_cpus . Not long ago I cleaned up the cpu_map code as there was quite a bit of confusion over cpus and indexes which were both of type int.
->  
-> 
->     So I am not sure intersection makes sense.
-> 
->     Also it is not obvious what happens with hybrid CPUs or
->     per thread recording.
-> 
-> 
-> The majority of code is using all_cpus, and so is unchanged by this change.
+>
+>Of the three API levels (SDK, automation, human) I think automation
+>is the only one that's interesting to us in Linux. SDK interfaces are
+>necessarily too low level as they expose too much of internal details
+>to standardize. Humans are good with dealing with uncertainty and
+>diverse so there's no a good benchmark.
+>
+>The benchmark for automation is - can a machine use this API across
+>different vendors to reliably achieve its goals. For FW info/flashing
+>the goal is keeping the FW versions up to date. This is documented:
+>
+>https://www.kernel.org/doc/html/latest/networking/devlink/devlink-flash.html#firmware-version-management
+>
+>What would the pseudo code look like with "line cards" in the picture?
+>Apply RFC1925 truth 12.
 
-I am not sure what you mean.  Every tool uses this code.  It affects everything when using PMUs with their own cpus.
+Something like this:
 
- Code that is affected, when it say needs to use counters, needs to check that the user CPU was valid in all_cpus, and use the all_cpus index. The metric-only output could be fixed in the same way, ie don't display lines when the user_requested_cpu isn't in all_cpus. I prefered to solve the problem this way as it is inefficient  to be processing cpus where there can be no corresponding counters, etc. We may be setting something like affinity unnecessarily - although that doesn't currently happen as that code iterates over all_cpus. I also think it is confusing from its name when the variable all_cpus is for a cpu_map that contains fewer cpus than user_requested_cpus - albeit that was worse when user_requested_cpus was called just cpus.
-> 
-> It could be hybrid or intel-pt have different assumptions on these cpu_maps. I don't have access to a hybrid test system. For intel-pt it'd be great if there were a perf test. Given that most code is using all_cpus and was cleaned up as part of the cpu_map work, I believe the change to be correct.
+$lc_count = array_size(devlink-lc-info[$handle])
 
-Mainly what happens if you try to intersect all_cpus with dummy cpus?
+for ($lcnum = 0; $lcnum < $lc_count; lcnum++):
+    $dev_count = array_size(devlink-lc-info[$handle][$lcnum])
 
-> 
-> Thanks,
-> Ian
-> 
-> 
->     > +             perf_cpu_map__put(cpus);
->     > +             cpus = tmp;
->     > +     }
->     >       evlist->core.has_user_cpus = !!target->cpu_list && !target->hybrid;
->     > 
->     >       perf_evlist__set_maps(&evlist->core, cpus, threads);
-> 
+    for ($devnum = 0; $devnum < $dev_count; $devnum++):
+    
+        # Get unique HW design identifier (gearbox id)
+        $hw_id = devlink-lc-info[$handle][$lcnum][$devnum]['fw.psid']
 
+        # Find out which FW flash we want to use for this device
+        $want_flash_vers = some-db-backed.lookup($hw_id, 'flash')
+
+        # Update flash if necessary
+        if $want_flash_vers != devlink-lc-info[$handle][$lcnum][$devnum]['fw']:
+            $file = some-db-backed.download($hw_id, 'flash')
+            $component = devlink-lc[$handle][$lcnum][$devnum]['component']
+            devlink-dev-flash($handle, $component, $file)
+
+devlink-reload()
+
+Clear indexes, not squashed somewhere in middle of string.
+
+
+>
+>> >> There is no new command for that, only one nested attribute which
+>> >> carries the device list added to the existing command. They are no new
+>> >> objects, they are just few nested values.  
+>> >
+>> >DEVLINK_CMD_LINECARD_INFO_GET  
+>> 
+>> Okay, that is not only to expose devices. That is also to expose info
+>> about linecards, like HW revision, INI version etc. Where else to put
+>> it? I can perhaps embed it into devlink dev info, but I thought separate
+>> command would be more suitable. object cmd, object info cmd. It is
+>> more clear I believe.
+>
+>> >> If so, how does the user know if/when to flash it?
+>> >> If not, where would you list it if devices nest is not the correct place?  
+>> >
+>> >Let me mock up what I had in mind for you since it did not come thru 
+>> >in the explanation:
+>> >
+>> >$ devlink dev info show pci/0000:01:00.0
+>> >    versions:
+>> >        fixed:
+>> >          hw.revision 0
+>> >          lc2.hw.revision a
+>> >          lc8.hw.revision b
+>> >        running:
+>> >          ini.version 4
+>> >          lc2.gearbox 1.1.3
+>> >          lc8.gearbox 1.2.3  
+>> 
+>> Would be rather:
+>> 
+>>           lc2.gearbox0 1.1.3
+>>           lc2.gearbox1 1.2.4
+>
+>I thought you said your gearboxes all the the same FW? 
+>Theoretically, yes. Theoretically, I can also have nested "line cards".
+
+Well, yeah. I was under impresion that possibility of having multiple
+devices on the same LC is not close to 0. But I get your point.
+
+Let's try to figure out he iface as you want it:
+We will have devlink dev info extended to be able to provide info
+about the LC/gearbox. Let's work with same prefix "lcX." for all
+info related to line card X.
+
+First problem is, who is going to enforce this prefix. It is driver's
+responsibility to provide the string which is put out. The solution
+would be to have a helper similar to devlink_info_version_*_put()
+called devlink_info_lc_version_*_put() that would accept lc pointer and
+add the prefix. Does it make sense to you?
+
+We need 3 things:
+1) current version of gearbox FW 
+   That is easy, we have it - "versions"
+   (DEVLINK_ATTR_INFO_VERSION_* nested attrs). We can have multiple
+   nests that would carry the versions for individiual line cards.
+   Example:
+       versions:
+           fixed:
+             hw.revision 0
+             lc2.hw.revision a
+             lc8.hw.revision b
+           running:
+             ini.version 4
+             lc2.gearbox.fw.version 1.1.3
+             lc8.gearbox.fw.version 1.2.3
+2) HW id (as you have it in your pseudocode), it is PSID in case of
+   mlxsw. We already have PSID for ASIC:
+   ....
+   This should be also easy, as this is exposed as "fixed version" in a
+   same way as previous example.
+   Example:
+       versions:
+           fixed:
+             lc2.gearbox.fw.psid XXX
+             lc8.gearbox.fw.psid YYY
+3) Component name
+   This one is a bit tricky. It is not a version, so put it under
+   "versions" does not make much sense.
+   Also, there are more than one. Looking at how versions are done,
+   multiple nests of attr type DEVLINK_ATTR_INFO_VERSION_* are put to
+   the message. So we can introduce new attr DEVLINK_ATTR_INFO_FLASH_COMPONENT
+   and put one per linecard/gearbox.
+   Here arain we need some kind of helper to driver to call to put this
+   into msg: devlink_info_lc_flash_component_put()
+   Example:
+     pci/0000:01:00.0:
+       driver mlxsw_spectrum3
+       flash_components:
+         lc2.gearbox.fw
+         lc8.gearbox.fw
+
+    Then the flashing of the gearbox will be done by:
+    # devlink dev flash pci/0000:01:00.0 file mellanox/fw-AGB-rel-19_2010_1312-022-EVB.mfa2 component lc2.gearbox.fw
+
+    Maybe this would call for some sort of API between driver and devlink to
+    register individial components. devlink.c can then sanitize the
+    input value of the component according to the registered list.
+
+    Even withot that I think this would be valuable anyway to let the
+    user know what are the supported component names.
+
+What do you think? If you agree, I can jump into implementing this and
+you can feel free to revert this patchset.
+
+
+
+>
+>>           lc8.gearbox0 1.2.3
+>> 
+>> Okay, I see. So instead of having clear api with relationships and
+>> clear human+machine readability we have squahed indexes into strings.
+>> I fail to see the benefit, other than no-api-extension :/ On contrary.
+>
+>Show me the real life use for all the "clear api with relationships"
+>and I'll shut up.
+
+See the pseudo-code above.
+
+
+>
+>I would not take falling back to physical (HW) hierarchy for the API
+>design as a point of pride. Seems lazy if I'm completely honest.
+
+I got that. I spent a lot of time to find a good abstraction though.
+
+
+>Someone else's HW may have a different hierarchy, and you're just
+>forcing the automation engineer iterate over irrelevant structures
+>("devices").
+
+Well, "linecard device" could be anything on th LC, from gearbox to
+whatever. It should fit. But I get your point.
+
+
+>
+>My hunch is that automation will not want to deal with line cards
+>separately, and flash the entire devices in one go to a tested and
+>verified bundle blob provided by the vendor. If they do want to poke 
+>at line cards - the information is still there in what I described.
+>
+>> >$ devlink lc show pci/0000:01:00.0 lc 8
+>> >pci/0000:01:00.0:
+>> >  lc 8 state active type 16x100G
+>> >    supported_types:
+>> >      16x100G
+>> >    versions: 
+>> >      lc8.hw.revision (a) 
+>> >      lc8.gearbox (1.2.3)
+>> >
+>> >Where the data in the brackets is optionally fetched thru the existing
+>> >"dev info" API, but rendered together by the user space.  
+>> 
+>> Quite odd. I find it questionable to say at least to mix multiple
+>> command netlink outputs into one output.
+>
+>Really? So we're going to be designing kernel APIs so that each message
+>contains complete information and can't contain references now?
+
+Can you give me an exapmple of devlink or any other iproute2 app cmd
+that actually does something similar to this?
+
+
+
+>
+>> The processing of it would be a small nightmare considering the way
+>> how the netlink message processing works in iproute2 :/
