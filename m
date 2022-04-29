@@ -2,79 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66134514DBB
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 16:41:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A726514DD1
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 16:44:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377641AbiD2OpC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 10:45:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43926 "EHLO
+        id S1377491AbiD2OsE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 10:48:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378157AbiD2Oo2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 10:44:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C52395AEDE;
-        Fri, 29 Apr 2022 07:41:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B04D861A09;
-        Fri, 29 Apr 2022 14:41:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FBDCC385A7;
-        Fri, 29 Apr 2022 14:40:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651243260;
-        bh=zbW9iUV/RG0Ob9qAu90IBbElC2QsUzjzzLanYd3CW2M=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=sAWtZ+/ks6cyJgabSY5Jq8dYVXgNO022Tjz9BAzzocHhoo6lSN9DatoyKFxMY0CFy
-         940ZJUR6IM7zhrgsB8KjzwMTs0alKb5kHwA3/67r6bnt0Ceon93VN1dWKlQYUR4DTy
-         g7s5V47TBPbcnngPaF4bXMvoDkfI1ulc0j18spu16qR8hSnDGDlXUx1AcC1USmufNB
-         Tt/avoZjV2BmF9va7ZTWfHLXOLaif7cr0vu32M9ufiwFSwzr8NoLkBRL+NwIlPts4R
-         kSLxblpGiruzhzI3KwcMz98lGkqpsjvSUnbTTDlW3WqQq1eJXgAGPnr4J3A8Oeh7sC
-         F2zLO+tojc9Rw==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Niklas Schnelle <schnelle@linux.ibm.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S1377257AbiD2OsD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 10:48:03 -0400
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF59787212;
+        Fri, 29 Apr 2022 07:44:43 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 66EB240006;
+        Fri, 29 Apr 2022 14:44:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1651243482;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6VZp545cL1tkFy7Ufnki1RQqtXzhp7N0eLBFHK/NFwQ=;
+        b=Jn07hk8vRLFNfuylZda/8CXThhdBxH2nk8vdeQK3qdjSvA67vX8dTZVbEGnoBS3sCx9bFB
+        mLFGVf8Xd0EwSIzSMbTYcXzBb28FT+URogjj8ucrOt6c1+L1tziEzxlpqxSY5x6SFFE5kx
+        m6K25lC1yiSoZPeBI7LqnS22SYbwq2LOKTd3MyMr0no8VWxsNlqzBTyiVb2JIGwargLMPS
+        D9bnUcl0X7F8n4d7cvHLfU2QET85EtLw2g8QTk8MGhyqRsUUs/YGTU3csHlT5WFxx7PPzb
+        wyj2/5KGuWA2YuQvvmfD0ZXN331NP/bXmLcSBvgt9dxfmF8VbwnLZro3smfIOA==
+Date:   Fri, 29 Apr 2022 16:43:22 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Jouni Malinen <j@w1.fi>,
-        linux-wireless@vger.kernel.org (open list:NETWORKING DRIVERS (WIRELESS)),
-        netdev@vger.kernel.org (open list:NETWORKING DRIVERS)
-Subject: Re: [RFC v2 38/39] wireless: add HAS_IOPORT dependencies
-References: <20220429135108.2781579-1-schnelle@linux.ibm.com>
-        <20220429135108.2781579-70-schnelle@linux.ibm.com>
-Date:   Fri, 29 Apr 2022 17:40:53 +0300
-In-Reply-To: <20220429135108.2781579-70-schnelle@linux.ibm.com> (Niklas
-        Schnelle's message of "Fri, 29 Apr 2022 15:51:07 +0200")
-Message-ID: <87zgk4c5qi.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [net-next v2 04/12] net: pcs: add Renesas MII converter driver
+Message-ID: <20220429164322.3f5cedd2@fixe.home>
+In-Reply-To: <20220429143505.88208-5-clement.leger@bootlin.com>
+References: <20220429143505.88208-1-clement.leger@bootlin.com>
+        <20220429143505.88208-5-clement.leger@bootlin.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Niklas Schnelle <schnelle@linux.ibm.com> writes:
+Le Fri, 29 Apr 2022 16:34:57 +0200,
+Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com> a =C3=A9crit :
 
-> In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
-> not being declared. We thus need to add HAS_IOPORT as dependency for
-> those drivers using them.
->
-> Co-developed-by: Arnd Bergmann <arnd@kernel.org>
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> +
+> +static struct miic_port *phylink_pcs_to_miic_port(struct phylink_pcs *pc=
+s)
+> +{
+> +	return container_of(pcs, struct miic_port, pcs);
+> +}
+> +
+> +static void miic_reg_writel(struct miic *miic, int offset, u32 value)
+> +{
+> +	writel(value, miic->base + offset);
+> +
+> +	pr_err("Udpdating MIIC register %d with val %x\n", offset, value);
 
-I assume this will go via some other tree than wireless-next:
+Spurious error message.
 
-Acked-by: Kalle Valo <kvalo@kernel.org>
+> +
+> +static void miic_link_up(struct phylink_pcs *pcs, unsigned int mode,
+> +			 phy_interface_t interface, int speed, int duplex)
+> +{
+> +	struct miic_port *miic_port =3D phylink_pcs_to_miic_port(pcs);
+> +	struct miic *miic =3D miic_port->miic;
+> +	int port =3D miic_port->port;
+> +	u32 conv_speed =3D 0, val =3D 0;
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+Missing reverse christmas tree declaration.
+> +
+> +static void miic_dump_conf(struct device *dev,
+> +			   s8 conf[MIIC_MODCTRL_CONF_CONV_NUM])
+> +{
+> +	int i;
+> +	const char *conf_name;
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Ditto.
+
+
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
