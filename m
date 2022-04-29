@@ -2,189 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C79E514024
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 03:15:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE39851402B
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 03:17:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353826AbiD2BSZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 21:18:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39730 "EHLO
+        id S1353891AbiD2BVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 21:21:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345538AbiD2BSX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 21:18:23 -0400
-Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4632F5F5C;
-        Thu, 28 Apr 2022 18:15:05 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [10.15.192.164])
-        by mail-app4 (Coremail) with SMTP id cS_KCgAnDkX6O2tidX4EAg--.28704S4;
-        Fri, 29 Apr 2022 09:14:54 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-kernel@vger.kernel.org, kuba@kernel.org,
-        krzysztof.kozlowski@linaro.org, gregkh@linuxfoundation.org
-Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        alexander.deucher@amd.com, akpm@linux-foundation.org,
-        broonie@kernel.org, netdev@vger.kernel.org, linma@zju.edu.cn,
-        Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH net v5 2/2] nfc: nfcmrvl: main: reorder destructive operations in nfcmrvl_nci_unregister_dev to avoid bugs
-Date:   Fri, 29 Apr 2022 09:14:33 +0800
-Message-Id: <bb2769acc79f42d25d61ed8988c8d240c8585f33.1651194245.git.duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <cover.1651194245.git.duoming@zju.edu.cn>
-References: <cover.1651194245.git.duoming@zju.edu.cn>
-In-Reply-To: <cover.1651194245.git.duoming@zju.edu.cn>
-References: <cover.1651194245.git.duoming@zju.edu.cn>
-X-CM-TRANSID: cS_KCgAnDkX6O2tidX4EAg--.28704S4
-X-Coremail-Antispam: 1UD129KBjvJXoWxAFW5Xw43WrWUAw17ZFy7Wrg_yoWrZrWUpF
-        4FgFy5Cr1DKr4FqF45tF4qgFyruFZ3GFW5CryfJryfZws0yFWvyw1qyay5ZFnruryUJFWY
-        ka43A348GF4vyFJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvm1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJr0_GcWl84ACjcxK6I8E
-        87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c
-        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_
-        Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwI
-        xGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l42xK82IY
-        c2Ij64vIr41l42xK82IY6x8ErcxFaVAv8VW8uw4UJr1UMxC20s026xCaFVCjc4AY6r1j6r
-        4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF
-        67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2I
-        x0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2
-        z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnU
-        UI43ZEXa7VUbXdbUUUUUU==
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgIOAVZdtZdEXAA7sF
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S1353899AbiD2BU7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 21:20:59 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F148A27D7;
+        Thu, 28 Apr 2022 18:17:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=O9pUYhhH3JjB4bYekaDZNfAjeT/hCD3xZYJMBVY/T/M=; b=bftl6e4qZsIoErRIgXmGOj/NPT
+        0qG6PYkJlvp59JBGHrEngE0vsNggUacvelu46RvmaMfPdtR1MTEwywmIJ2gXQMTxceju31QP3C4yC
+        VwLSB1GsFhY5sg/GncOkUuHEsRwbaYsKxfQYOhl8VfP3KaeENbREJ1hg14TMA25bC93g=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nkFGK-000P75-Dh; Fri, 29 Apr 2022 03:17:36 +0200
+Date:   Fri, 29 Apr 2022 03:17:36 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        michal.simek@xilinx.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        git@xilinx.com, Shravya Kumbham <shravya.kumbham@xilinx.com>
+Subject: Re: [PATCH 2/2] net: emaclite: Add error handling for
+ of_address_to_resource()
+Message-ID: <Yms8sJzJe6Cl2x7J@lunn.ch>
+References: <1651163278-12701-1-git-send-email-radhey.shyam.pandey@xilinx.com>
+ <1651163278-12701-3-git-send-email-radhey.shyam.pandey@xilinx.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1651163278-12701-3-git-send-email-radhey.shyam.pandey@xilinx.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are destructive operations such as nfcmrvl_fw_dnld_abort and
-gpio_free in nfcmrvl_nci_unregister_dev. The resources such as firmware,
-gpio and so on could be destructed while the upper layer functions such as
-nfcmrvl_fw_dnld_start and nfcmrvl_nci_recv_frame is executing, which leads
-to double-free, use-after-free and null-ptr-deref bugs.
+On Thu, Apr 28, 2022 at 09:57:58PM +0530, Radhey Shyam Pandey wrote:
+> From: Shravya Kumbham <shravya.kumbham@xilinx.com>
+> 
+> check the return value of of_address_to_resource() and also add
+> missing of_node_put() for np and npp nodes.
+> 
+> Addresses-Coverity: Event check_return value.
+> Signed-off-by: Shravya Kumbham <shravya.kumbham@xilinx.com>
+> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+> ---
+>  drivers/net/ethernet/xilinx/xilinx_emaclite.c |   15 ++++++++++++---
+>  1 files changed, 12 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/xilinx/xilinx_emaclite.c b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
+> index f9cf86e..c281423 100644
+> --- a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
+> +++ b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
+> @@ -803,7 +803,7 @@ static int xemaclite_mdio_write(struct mii_bus *bus, int phy_id, int reg,
+>  static int xemaclite_mdio_setup(struct net_local *lp, struct device *dev)
+>  {
+>  	struct mii_bus *bus;
+> -	int rc;
+> +	int rc, ret;
+>  	struct resource res;
+>  	struct device_node *np = of_get_parent(lp->phy_node);
+>  	struct device_node *npp;
 
-There are three situations that could lead to double-free bugs.
+Reverse Chritmas tree is messed up here, but you could make it a bet
+less messed up by moving rc, ret further down.
 
-The first situation is shown below:
-
-   (Thread 1)                 |      (Thread 2)
-nfcmrvl_fw_dnld_start         |
- ...                          |  nfcmrvl_nci_unregister_dev
- release_firmware()           |   nfcmrvl_fw_dnld_abort
-  kfree(fw) //(1)             |    fw_dnld_over
-                              |     release_firmware
-  ...                         |      kfree(fw) //(2)
-                              |     ...
-
-The second situation is shown below:
-
-   (Thread 1)                 |      (Thread 2)
-nfcmrvl_fw_dnld_start         |
- ...                          |
- mod_timer                    |
- (wait a time)                |
- fw_dnld_timeout              |  nfcmrvl_nci_unregister_dev
-   fw_dnld_over               |   nfcmrvl_fw_dnld_abort
-    release_firmware          |    fw_dnld_over
-     kfree(fw) //(1)          |     release_firmware
-     ...                      |      kfree(fw) //(2)
-
-The third situation is shown below:
-
-       (Thread 1)               |       (Thread 2)
-nfcmrvl_nci_recv_frame          |
- if(..->fw_download_in_progress)|
-  nfcmrvl_fw_dnld_recv_frame    |
-   queue_work                   |
-                                |
-fw_dnld_rx_work                 | nfcmrvl_nci_unregister_dev
- fw_dnld_over                   |  nfcmrvl_fw_dnld_abort
-  release_firmware              |   fw_dnld_over
-   kfree(fw) //(1)              |    release_firmware
-                                |     kfree(fw) //(2)
-
-The firmware struct is deallocated in position (1) and deallocated
-in position (2) again.
-
-The crash trace triggered by POC is like below:
-
-[  122.640457] BUG: KASAN: double-free or invalid-free in fw_dnld_over+0x28/0xf0
-[  122.640457] Call Trace:
-[  122.640457]  <TASK>
-[  122.640457]  kfree+0xb0/0x330
-[  122.640457]  fw_dnld_over+0x28/0xf0
-[  122.640457]  nfcmrvl_nci_unregister_dev+0x61/0x70
-[  122.640457]  nci_uart_tty_close+0x87/0xd0
-[  122.640457]  tty_ldisc_kill+0x3e/0x80
-[  122.640457]  tty_ldisc_hangup+0x1b2/0x2c0
-[  122.640457]  __tty_hangup.part.0+0x316/0x520
-[  122.640457]  tty_release+0x200/0x670
-[  122.640457]  __fput+0x110/0x410
-[  122.640457]  task_work_run+0x86/0xd0
-[  122.640457]  exit_to_user_mode_prepare+0x1aa/0x1b0
-[  122.640457]  syscall_exit_to_user_mode+0x19/0x50
-[  122.640457]  do_syscall_64+0x48/0x90
-[  122.640457]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  122.640457] RIP: 0033:0x7f68433f6beb
-
-What's more, there are also use-after-free and null-ptr-deref bugs
-in nfcmrvl_fw_dnld_start. If we deallocate firmware struct, gpio or
-set null to the members of priv->fw_dnld in nfcmrvl_nci_unregister_dev,
-then, we dereference firmware, gpio or the members of priv->fw_dnld in
-nfcmrvl_fw_dnld_start, the UAF or NPD bugs will happen.
-
-This patch reorders destructive operations after nci_unregister_device
-and uses bool variable in nfc_dev to synchronize between cleanup routine
-and firmware download routine. The process is shown below.
-
-       (Thread 1)                 |       (Thread 2)
-nfcmrvl_nci_unregister_dev        |
-  nci_unregister_device           |
-    nfc_unregister_device         | nfc_fw_download
-      device_lock()               |
-      ...                         |
-      dev->dev_register = false;  |   ...
-      device_unlock()             |
-  ...                             |   device_lock()
-  (destructive operations)        |   if(!dev->dev_register)
-                                  |     goto error;
-                                  | error:
-                                  |   device_unlock()
-
-If the device is detaching, the download function will goto error.
-If the download function is executing, nci_unregister_device will
-wait until download function is finished.
-
-Fixes: 3194c6870158 ("NFC: nfcmrvl: add firmware download support")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
----
-Changes in v5:
-  - Use bool variable added in patch 1/2 to synchronize.
-
- drivers/nfc/nfcmrvl/main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/nfc/nfcmrvl/main.c b/drivers/nfc/nfcmrvl/main.c
-index 2fcf545012b..1a5284de434 100644
---- a/drivers/nfc/nfcmrvl/main.c
-+++ b/drivers/nfc/nfcmrvl/main.c
-@@ -183,6 +183,7 @@ void nfcmrvl_nci_unregister_dev(struct nfcmrvl_private *priv)
- {
- 	struct nci_dev *ndev = priv->ndev;
- 
-+	nci_unregister_device(ndev);
- 	if (priv->ndev->nfc_dev->fw_download_in_progress)
- 		nfcmrvl_fw_dnld_abort(priv);
- 
-@@ -191,7 +192,6 @@ void nfcmrvl_nci_unregister_dev(struct nfcmrvl_private *priv)
- 	if (gpio_is_valid(priv->config.reset_n_io))
- 		gpio_free(priv->config.reset_n_io);
- 
--	nci_unregister_device(ndev);
- 	nci_free_device(ndev);
- 	kfree(priv);
- }
--- 
-2.17.1
-
+     Andrew
