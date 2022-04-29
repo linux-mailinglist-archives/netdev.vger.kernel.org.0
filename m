@@ -2,91 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C45C51411B
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 05:50:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C073514126
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 06:01:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236682AbiD2Dxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 23:53:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55972 "EHLO
+        id S236619AbiD2EEb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 00:04:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235455AbiD2Dxr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 23:53:47 -0400
-X-Greylist: delayed 231 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 28 Apr 2022 20:50:26 PDT
-Received: from mg.sunplus.com (unknown [113.196.136.146])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 88C60B646B;
-        Thu, 28 Apr 2022 20:50:23 -0700 (PDT)
-X-MailGates: (compute_score:DELIVER,40,3)
-Received: from 172.17.9.202
-        by mg02.sunplus.com with MailGates ESMTP Server V5.0(12344:0:AUTH_RELAY)
-        (envelope-from <wells.lu@sunplus.com>); Fri, 29 Apr 2022 11:46:12 +0800 (CST)
-Received: from sphcmbx02.sunplus.com.tw (172.17.9.112) by
- sphcmbx01.sunplus.com.tw (172.17.9.202) with Microsoft SMTP Server (TLS) id
- 15.0.1497.26; Fri, 29 Apr 2022 11:46:06 +0800
-Received: from sphcmbx02.sunplus.com.tw ([fe80::fd3d:ad1a:de2a:18bd]) by
- sphcmbx02.sunplus.com.tw ([fe80::fd3d:ad1a:de2a:18bd%14]) with mapi id
- 15.00.1497.026; Fri, 29 Apr 2022 11:46:06 +0800
-From:   =?utf-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>
-To:     Francois Romieu <romieu@fr.zoreil.com>
-CC:     Wells Lu <wellslutw@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-        "roopa@nvidia.com" <roopa@nvidia.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "edumazet@google.com" <edumazet@google.com>
-Subject: RE: [PATCH net-next v9 2/2] net: ethernet: Add driver for Sunplus
- SP7021
-Thread-Topic: [PATCH net-next v9 2/2] net: ethernet: Add driver for Sunplus
- SP7021
-Thread-Index: AQHYWI+jS4JtiaXpFUyrVgs1l1MK560CSWcAgALotYCAACZzAIAA50mg
-Date:   Fri, 29 Apr 2022 03:46:06 +0000
-Message-ID: <c9f1c79f056c4982b6f425a3c3fdcfcd@sphcmbx02.sunplus.com.tw>
-References: <1650882640-7106-1-git-send-email-wellslutw@gmail.com>
- <1650882640-7106-3-git-send-email-wellslutw@gmail.com>
- <Ymh3si+MTg5i0Bnl@electric-eye.fr.zoreil.com>
- <ff2077684c4c45fca929a8f61447242b@sphcmbx02.sunplus.com.tw>
- <YmsIqDPjvZKbbKov@electric-eye.fr.zoreil.com>
-In-Reply-To: <YmsIqDPjvZKbbKov@electric-eye.fr.zoreil.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [172.25.108.39]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        with ESMTP id S230133AbiD2EEa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 00:04:30 -0400
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66C5060058
+        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 21:01:10 -0700 (PDT)
+Received: by mail-il1-f198.google.com with SMTP id h28-20020a056e021d9c00b002cc403e851aso2941542ila.12
+        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 21:01:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=6DGT19X0vrXDtGdrIDLwVedBzpBwpOHjc6R6Rv3oEpw=;
+        b=HLXbWpAyJwpll86sG9PRZUWRvzX8fyuqJkH+dEPDWltMz9NXm6rHMq11fgTi/zM3QR
+         7FFRheCatComp2junfKsyYs1uESvyp/Gd06PNFmPvRUlLiBsouKbXoUiixiUlsXN06yW
+         1n5oJRYFGfwO2JlXNIRLuf59pBn6ceSpj8J8JqjN9ld77pCcTsaee8VagFH2JVcv4t9U
+         lRiYfic5jv2BSE/05+ye3Y1l9bE8L3nkBnJrpjX4sQtQmm4mj8bbMJE7q79MbUzrDbrv
+         Ogg4JArOov0qnIvTtOMJ898QyiyudMyN0WE9KDtjteitvn900yRCaHWKmMMUy2TSOIKg
+         zyOw==
+X-Gm-Message-State: AOAM533VS6VYKnOJ1eBdl3MxnE6gYd1AyGWb5akxHAqAnN+S/mpTU+/8
+        o0iW91W2tU9skhpd0j589jlI0pFxzbbM782lWWhCAN4Uy4hR
+X-Google-Smtp-Source: ABdhPJxnzt/f4NwKVtddu8fYNy0LbJhuQBGSHknIm+BStrRmSmFktEUT1ErJAs4zpDQrVU+QCjGkfitNRCua+ojOzWc+L7JwwaBF
 MIME-Version: 1.0
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a92:cdab:0:b0:2cd:c27c:28c with SMTP id
+ g11-20020a92cdab000000b002cdc27c028cmr5575588ild.189.1651204869780; Thu, 28
+ Apr 2022 21:01:09 -0700 (PDT)
+Date:   Thu, 28 Apr 2022 21:01:09 -0700
+In-Reply-To: <20220428231731.3954-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b6fb5705ddc317ba@google.com>
+Subject: Re: [syzbot] KASAN: use-after-free Read in dst_destroy
+From:   syzbot <syzbot+736f4a4f98b21dba48f0@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgRnJhbmNvaXMsDQoNCg0KPiBbLi4uXQ0KPiA+IEkgd2lsbCBhZGQgZGlzYWJsZV9pcnEoKSBh
-bmQgZW5hYmxlX2lycSgpIGZvciBzcGwyc3dfcnhfcG9sbCgpIGFuZCBzcGwyc3dfdHhfcG9sbCgp
-DQo+IGFzIHNob3duIGJlbG93Og0KPiA+DQo+ID4gc3BsMnN3X3J4X3BvbGwoKToNCj4gPg0KPiA+
-IAl3bWIoKTsJLyogbWFrZSBzdXJlIHNldHRpbmdzIGFyZSBlZmZlY3RpdmUuICovDQo+ID4gCWRp
-c2FibGVfaXJxKGNvbW0tPmlycSk7DQo+ID4gCW1hc2sgPSByZWFkbChjb21tLT5sMnN3X3JlZ19i
-YXNlICsgTDJTV19TV19JTlRfTUFTS18wKTsNCj4gPiAJbWFzayAmPSB+TUFDX0lOVF9SWDsNCj4g
-PiAJd3JpdGVsKG1hc2ssIGNvbW0tPmwyc3dfcmVnX2Jhc2UgKyBMMlNXX1NXX0lOVF9NQVNLXzAp
-Ow0KPiA+IAllbmFibGVfaXJxKGNvbW0tPmlycSk7DQo+ID4NCj4gPiBzcGwyc3dfdHhfcG9sbCgp
-Og0KPiA+DQo+ID4gCXdtYigpOwkJCS8qIG1ha2Ugc3VyZSBzZXR0aW5ncyBhcmUgZWZmZWN0aXZl
-LiAqLw0KPiA+IAlkaXNhYmxlX2lycShjb21tLT5pcnEpOw0KPiA+IAltYXNrID0gcmVhZGwoY29t
-bS0+bDJzd19yZWdfYmFzZSArIEwyU1dfU1dfSU5UX01BU0tfMCk7DQo+ID4gCW1hc2sgJj0gfk1B
-Q19JTlRfVFg7DQo+ID4gCXdyaXRlbChtYXNrLCBjb21tLT5sMnN3X3JlZ19iYXNlICsgTDJTV19T
-V19JTlRfTUFTS18wKTsNCj4gPiAJZW5hYmxlX2lycShjb21tLT5pcnEpOw0KPiA+DQo+ID4NCj4g
-PiBJcyB0aGUgbW9kaWZpY2F0aW9uIG9rPw0KPiANCj4gZGlzYWJsZV9pcnEgcHJldmVudHMgZnV0
-dXJlIGlycSBwcm9jZXNzaW5nIGJ1dCBpdCBkb2VzIG5vdCBoZWxwIGFnYWluc3QgaXJxIGNvZGUg
-Y3VycmVudGx5DQo+IHJ1bm5pbmcgb24gYSBkaWZmZXJlbnQgY3B1Lg0KPiANCj4gWW91IG1heSB1
-c2UgcGxhaW4gc3Bpbl97bG9jayAvIHVubG9ja30gaW4gSVJRIGNvbnRleHQgYW5kIHNwaW5fe2xv
-cV9pcnFzYXZlIC8gaXJxX3Jlc3RvcmV9DQo+IGluIE5BUEkgY29udGV4dC4NCj4gDQo+IC0tDQo+
-IFVlaW1vcg0KDQpUaGFuayB5b3UgZm9yIHRlYWNoaW5nIG1lIGhvdyB0byBmaXggdGhlIGlzc3Vl
-Lg0KSSdsbCBhZGQgdGhlbSBuZXh0IHBhdGNoLg0KDQoNCkJlc3QgcmVnYXJkcywNCldlbGxzDQo=
+Hello,
+
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+
+Reported-and-tested-by: syzbot+736f4a4f98b21dba48f0@syzkaller.appspotmail.com
+
+Tested on:
+
+commit:         38d741cb Merge tag 'drm-fixes-2022-04-29' of git://ano..
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/ master
+kernel config:  https://syzkaller.appspot.com/x/.config?x=864dc6814306810
+dashboard link: https://syzkaller.appspot.com/bug?extid=736f4a4f98b21dba48f0
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=16c085aaf00000
+
+Note: testing is done by a robot and is best-effort only.
