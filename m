@@ -2,67 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C5E415150A8
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 18:21:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 863FF5150AD
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 18:22:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378602AbiD2QYJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 12:24:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60688 "EHLO
+        id S1379015AbiD2QZq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 12:25:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379029AbiD2QYB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 12:24:01 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73C11CD64D
-        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 09:20:42 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id iq2-20020a17090afb4200b001d93cf33ae9so10937005pjb.5
-        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 09:20:42 -0700 (PDT)
+        with ESMTP id S233809AbiD2QZp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 12:25:45 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0857D115C;
+        Fri, 29 Apr 2022 09:22:24 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id y14so7316209pfe.10;
+        Fri, 29 Apr 2022 09:22:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0ltO31cGke0CV9Ig5Y/sghhWU7CLEY/ynW5EXlnzLcM=;
-        b=GsETNpB0po0QhAPBTPNvnruMjmEd7jyr8gYUhVUnPPt2KqS0m2K03lajmPkkFYXX6i
-         nKWPIdifv8h7hdp3E8hEqpQFQiv9hGPqLAjHh5ByukKw3Y8Asj5iBrmeYbQ8n6MF7dr7
-         uabUo9ejtoIPfd8EFLasysVSzx0NiTgZeytlLoMrUKweX7WhVbVmTRu1VNzhVJqglE/o
-         EKzux818xglrs/ukl3ckTq/Xg2J2AgMe7WrPUo0b7Cl9MuDKCMjtT+AXxg4kx6TNhthy
-         Dbmihi+yjFE/JpHoFgq4Q1kNl58cYKSwPUlNb+WayMsQZ8SiKf8f70SRPrkz/vBlvtEr
-         Qyiw==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=XSTCE5w7yy68SjWNVsRpb2HvHJSUSz9+mARNoZLyTIk=;
+        b=kb2lbNEfSrq3tTDDVvzTWGuOQynzrkRx0M4SsbyOx4vGhPukRPzOQmeEFEFRCBPtbw
+         jRYUOA6gkBxvJNJ0wdMYEi5KeLjUqEnY+kQDjTuNOoCeoFb2LTzU3hjUCWAuHaJnUAM5
+         +laHoLS39VrFcVzE3X4qkG6KT2X+hfQeXkY+SRRCXPW3F+neYlQcg+I5XQvVeA6mk6pw
+         kO8bIMQetGLUL7VWVnUcN9H7woupG1O3SXRVZbLbidv+l3gQFmrkPgfFD5h0SxUdHznz
+         5s2n0G31vU0UO7Nz5ZIwE0selfJuLDPfEbkjZ8EBjpISm1DhvyyU9yCy+EFGIT1lzKjU
+         JOkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=0ltO31cGke0CV9Ig5Y/sghhWU7CLEY/ynW5EXlnzLcM=;
-        b=SfNLChP+xp99mjkkObI9ExxQVRro5alP81trbRvoxc2MX0zVpH1kv6yeSPk+kWpLpQ
-         IX9MjinsvOVIcmZMkEpBf4NZAMVOAcYLBlkZ3zpv1O/kcru3V+C03qAoRxbO7XM1U2ce
-         9VE8BQeD3nh5h8IlWhm1vnIMXjkLU42HVPte9HyM9kmQo5lr1ltWMU5Eg9/QCvZ1nV6y
-         40BZHcD/b5Rb4t2fcZ8NxdAPG3mm8VE54WNBJExvwjZxSvmiLLLi6dff5iuNvVY9DTLb
-         Mwjc2VQhnvXUg72pkplgB3zq98/XlSSlBtAQMiKtYGuAd8+cX6aj/9tdsk0umX6RKP8c
-         25Lw==
-X-Gm-Message-State: AOAM532ZIPlCjXVEzgHOUZfaD0KOVBlvtV/5V0Ac038CO+benjwwhJcJ
-        He4nye433kW0RM++nm+Ha91a+Y8RoWw=
-X-Google-Smtp-Source: ABdhPJyPqIdSdig8QwrViP8rXiuJBd2tVUTJPA5oSjzvTZcegwRdmV8NETYniinq01/myfECQUleeQ==
-X-Received: by 2002:a17:90b:3b4f:b0:1d2:7117:d758 with SMTP id ot15-20020a17090b3b4f00b001d27117d758mr4744517pjb.105.1651249242003;
-        Fri, 29 Apr 2022 09:20:42 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:a265:137a:7be3:938f])
-        by smtp.gmail.com with ESMTPSA id n1-20020a17090a670100b001d96bc27a57sm10974818pjj.54.2022.04.29.09.20.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 09:20:41 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     David Ahern <dsahern@kernel.org>, netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Taehee Yoo <ap420073@gmail.com>
-Subject: [PATCH net] mld: respect RCU rules in ip6_mc_source() and ip6_mc_msfilter()
-Date:   Fri, 29 Apr 2022 09:20:36 -0700
-Message-Id: <20220429162036.2226133-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
+        bh=XSTCE5w7yy68SjWNVsRpb2HvHJSUSz9+mARNoZLyTIk=;
+        b=LGF9v2QSurzm8Jatf7sQ+vACC2Cs9TDPWocM7arxah0uCHDZrMFp7OLFeK+RYL+5Gf
+         /IWJiOR4bWFo4rDaDHxgWEWNI7x+cljVVIqXQ1gMj3d4cMbQPY6FJh1AVqbNkeCJVoaW
+         Z+AbioHl5U3SB8mbAX2yf78/ShUVAyr8n1QDn62WtPOWxEmv0jhBt8JPjHZvK7HUjpUo
+         LQy4VevgDqtX+KPZOZdMh8XNEVdGaiA+RHsL2wdWPPs2txQmjvDpVsDqQdUKRZqwHOUI
+         MJE7FDdMu0lpd71vW4t/SNNL6ROy2toSqoEburH1VU8IwZqC2U3mmEXNlJjYiLYH35It
+         JpbQ==
+X-Gm-Message-State: AOAM531Bh0untWg5anysTvkhYkGTJdZsMNEDdhfFPJmaeQSNld9jyGK9
+        OkXzwDZZQRdCBN1PdCICjbc=
+X-Google-Smtp-Source: ABdhPJx294dO5ebgBnVWibhDdFXl85WArQeiLA5m9XKR2VzCmbwy/SZgK9FpWiGMTr2Eiub3lTVJDw==
+X-Received: by 2002:aa7:96c2:0:b0:50d:90da:f8f with SMTP id h2-20020aa796c2000000b0050d90da0f8fmr199495pfq.52.1651249344360;
+        Fri, 29 Apr 2022 09:22:24 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id y9-20020a17090a1f4900b001cd498dc153sm14109289pjy.3.2022.04.29.09.22.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Apr 2022 09:22:23 -0700 (PDT)
+Message-ID: <baec3c8d-72f1-b1b5-f472-ee73be1047d6@gmail.com>
+Date:   Fri, 29 Apr 2022 09:22:21 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [net-next v2 02/12] net: dsa: add Renesas RZ/N1 switch tag driver
+Content-Language: en-US
+To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?Q?Miqu=c3=a8l_Raynal?= <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
+References: <20220429143505.88208-1-clement.leger@bootlin.com>
+ <20220429143505.88208-3-clement.leger@bootlin.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220429143505.88208-3-clement.leger@bootlin.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -71,58 +93,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On 4/29/22 07:34, Clément Léger wrote:
+> The switch that is present on the Renesas RZ/N1 SoC uses a specific
+> VLAN value followed by 6 bytes which contains forwarding configuration.
+> 
+> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+> ---
 
-Whenever RCU protected list replaces an object,
-the pointer to the new object needs to be updated
-_before_ the call to kfree_rcu() or call_rcu()
+[snip]
 
-Also ip6_mc_msfilter() needs to update the pointer
-before releasing the mc_lock mutex.
+> +struct a5psw_tag {
+> +	__be16 ctrl_tag;
+> +	__be16 ctrl_data;
+> +	__be16 ctrl_data2_hi;
+> +	__be16 ctrl_data2_lo;
+> +} __packed;
 
-Note that linux-5.13 was supporting kfree_rcu(NULL, rcu),
-so this fix does not need the conditional test I was
-forced to use in the equivalent patch for IPv4.
+The structure should already be naturally aligned.
 
-Fixes: 882ba1f73c06 ("mld: convert ipv6_mc_socklist->sflist to RCU")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Taehee Yoo <ap420073@gmail.com>
----
- net/ipv6/mcast.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+> +
+> +static struct sk_buff *a5psw_tag_xmit(struct sk_buff *skb, struct net_device *dev)
+> +{
+> +	struct dsa_port *dp = dsa_slave_to_port(dev);
+> +	struct a5psw_tag *ptag;
+> +	u32 data2_val;
+> +
+> +	BUILD_BUG_ON(sizeof(*ptag) != A5PSW_TAG_LEN);
+> +
+> +	/* The Ethernet switch we are interfaced with needs packets to be at
+> +	 * least 64 bytes (including FCS) otherwise they will be discarded when
+> +	 * they enter the switch port logic. When tagging is enabled, we need
+> +	 * to make sure that packets are at least 68 bytes (including FCS and
+> +	 * tag).
 
-diff --git a/net/ipv6/mcast.c b/net/ipv6/mcast.c
-index 909f937befd71fce194517d44cb9a4c5e2876360..7f695c39d9a8c4410e619b88add23e39f2beabae 100644
---- a/net/ipv6/mcast.c
-+++ b/net/ipv6/mcast.c
-@@ -460,10 +460,10 @@ int ip6_mc_source(int add, int omode, struct sock *sk,
- 				newpsl->sl_addr[i] = psl->sl_addr[i];
- 			atomic_sub(struct_size(psl, sl_addr, psl->sl_max),
- 				   &sk->sk_omem_alloc);
--			kfree_rcu(psl, rcu);
- 		}
-+		rcu_assign_pointer(pmc->sflist, newpsl);
-+		kfree_rcu(psl, rcu);
- 		psl = newpsl;
--		rcu_assign_pointer(pmc->sflist, psl);
- 	}
- 	rv = 1;	/* > 0 for insert logic below if sl_count is 0 */
- 	for (i = 0; i < psl->sl_count; i++) {
-@@ -565,12 +565,12 @@ int ip6_mc_msfilter(struct sock *sk, struct group_filter *gsf,
- 			       psl->sl_count, psl->sl_addr, 0);
- 		atomic_sub(struct_size(psl, sl_addr, psl->sl_max),
- 			   &sk->sk_omem_alloc);
--		kfree_rcu(psl, rcu);
- 	} else {
- 		ip6_mc_del_src(idev, group, pmc->sfmode, 0, NULL, 0);
- 	}
--	mutex_unlock(&idev->mc_lock);
- 	rcu_assign_pointer(pmc->sflist, newpsl);
-+	mutex_unlock(&idev->mc_lock);
-+	kfree_rcu(psl, rcu);
- 	pmc->sfmode = gsf->gf_fmode;
- 	err = 0;
- done:
+Did you mean 70 bytes since your tag is 6, and not 4 bytes?
 -- 
-2.36.0.464.gb9c8b46e94-goog
-
+Florian
