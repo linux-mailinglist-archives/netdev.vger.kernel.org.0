@@ -2,118 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 197E9514D24
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 16:33:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09304514D46
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 16:37:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377447AbiD2Ogn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 10:36:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48080 "EHLO
+        id S1377526AbiD2Ojt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 10:39:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377428AbiD2Ogm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 10:36:42 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1758A76FC;
-        Fri, 29 Apr 2022 07:33:23 -0700 (PDT)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23TDsVF2030909;
-        Fri, 29 Apr 2022 14:33:11 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=+Pd3boeYYOqUdToIy6lpJJ2YBcwWkKSMUxL2UvbDusM=;
- b=DW8OrKWIYN0gznzlpUzPhlH9MI9rAz3ycRT/mpV7DmMGhcOAYAgSjQFlLjj/CStItUTo
- wiZVDIU7cTuL+EKXJYyoTj3X52JDYzAehmD2jrq3da/BR8zAEshGvP8cV9RIGX9aC4yV
- qJ6iafbRbKJpGabIBz6+ryHpW3+wMlJht8On8Xx0pupOB0MydyC3wwgmPSvAWJflAMa0
- pDJep9P98Zw0u41qziRZARt5YEGu1oy4sHEKN7IqVawZbPEb3nqdQDlSGhZH7fnGBELN
- RNpyMp51aAtg9MC9o+l00COi4F9VO8eprx+eUzTVVfCY7n9jvc/Wtj7T7b80j/qWrJT8 ag== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqtqvxpkk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Apr 2022 14:33:10 +0000
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 23TDsgjf032246;
-        Fri, 29 Apr 2022 14:33:10 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3fqtqvxpjp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Apr 2022 14:33:10 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23TEKro9032650;
-        Fri, 29 Apr 2022 14:33:08 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma04ams.nl.ibm.com with ESMTP id 3fm93918ha-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Apr 2022 14:33:08 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23TEX58n50069836
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 29 Apr 2022 14:33:05 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9BF0B11C04A;
-        Fri, 29 Apr 2022 14:33:05 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B6DB311C052;
-        Fri, 29 Apr 2022 14:33:04 +0000 (GMT)
-Received: from sig-9-145-61-57.uk.ibm.com (unknown [9.145.61.57])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 29 Apr 2022 14:33:04 +0000 (GMT)
-Message-ID: <1f45625f8648c112cf0ed28c6841ba32eda2fa70.camel@linux.ibm.com>
-Subject: Re: [PATCH 20/37] net: add HAS_IOPORT dependencies
-From:   Niklas Schnelle <schnelle@linux.ibm.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        "open list:CAN NETWORK DRIVERS" <linux-can@vger.kernel.org>,
-        "moderated list:INTEL ETHERNET DRIVERS" 
-        <intel-wired-lan@lists.osuosl.org>
-Date:   Fri, 29 Apr 2022 16:33:04 +0200
-In-Reply-To: <20220429135108.2781579-35-schnelle@linux.ibm.com>
-References: <20220429135108.2781579-1-schnelle@linux.ibm.com>
-         <20220429135108.2781579-35-schnelle@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
+        with ESMTP id S1377679AbiD2Oj0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 10:39:26 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AEBC27B33;
+        Fri, 29 Apr 2022 07:36:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ZdZBPtTkXvskvklO0DqGHW3vJ6Arb57ZyicMdsmwPPs=; b=Id0YxwZLmWV943xSSctc382COx
+        slYd+Mbgd8mluBGRTtubiqJcFH7Jw+KCfrIBUuJ6IBjkEi3jycQJ/GZIWCNzfYdJZGxOzIKlAq9i5
+        NGU7dMo+j6aXXuC9zPnllvKUmp4j7d1NBQPsBNjzH1goO9ZNvF9j+05V5SxGqrz8IpFC/ke6Hqou9
+        ZUhvlX5vvgSwWpU57PqA3cf0RcC09NkmKHiXH92FbdJDx27V/PJs6cBfrjjyUhrMtQCOhvF+z0Tsu
+        zF1ocWG4HwYZ0G6pmdbbbK4PGRnRNWBCGP+4DKIndhzsOY9kfvz7NjpBrTKt1RM1gSIvJ0Gc9QwYA
+        dmc3mStA==;
+Received: from [179.113.53.197] (helo=[192.168.1.60])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1nkRiK-0009WD-3O; Fri, 29 Apr 2022 16:35:20 +0200
+Message-ID: <4a7d9670-92f8-3e12-a619-aaa64adca093@igalia.com>
+Date:   Fri, 29 Apr 2022 11:34:51 -0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 12/30] parisc: Replace regular spinlock with spin_trylock
+ on panic path
+Content-Language: en-US
+To:     Helge Deller <deller@gmx.de>, akpm@linux-foundation.org,
+        bhe@redhat.com, pmladek@suse.com, kexec@lists.infradead.org
+Cc:     linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
+        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
+        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
+        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
+        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-13-gpiccoli@igalia.com>
+ <6a7c924a-54a9-c5ea-8a9d-3ea92987b436@gmx.de>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <6a7c924a-54a9-c5ea-8a9d-3ea92987b436@gmx.de>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: sQREHQ8qdLBo4StQb6LsgeEW29ZiI4KJ
-X-Proofpoint-ORIG-GUID: tFijnxu_0b1vHoqftZ68sNgykwqn057-
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-29_07,2022-04-28_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- bulkscore=0 spamscore=0 clxscore=1015 mlxscore=0 suspectscore=0
- mlxlogscore=613 phishscore=0 malwarescore=0 adultscore=0 impostorscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204290080
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2022-04-29 at 15:50 +0200, Niklas Schnelle wrote:
-> In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
-> not being declared. We thus need to add HAS_IOPORT as dependency for
-> those drivers using them.
+On 28/04/2022 13:55, Helge Deller wrote:
+> [...]
+> You may add:
+> Acked-by: Helge Deller <deller@gmx.de> # parisc
 > 
-> Co-developed-by: Arnd Bergmann <arnd@kernel.org>
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> ---
+> Helge
 
-Sorry everyone. I sent this as PATCH in error while preparing to sent
-the same series as RFC. Since e-mail has no remote delete and I lack a
-time machine let's just all pretend you only got the RFC.
+Thanks Helge, added!
+Cheers,
 
+
+Guilherme
+
+> 
+> 
+>> ---
+>>  arch/parisc/include/asm/pdc.h |  1 +
+>>  arch/parisc/kernel/firmware.c | 27 +++++++++++++++++++++++----
+>>  drivers/parisc/power.c        | 17 ++++++++++-------
+>>  3 files changed, 34 insertions(+), 11 deletions(-)
+>>
+>> diff --git a/arch/parisc/include/asm/pdc.h b/arch/parisc/include/asm/pdc.h
+>> index b643092d4b98..7a106008e258 100644
+>> --- a/arch/parisc/include/asm/pdc.h
+>> +++ b/arch/parisc/include/asm/pdc.h
+>> @@ -83,6 +83,7 @@ int pdc_do_firm_test_reset(unsigned long ftc_bitmap);
+>>  int pdc_do_reset(void);
+>>  int pdc_soft_power_info(unsigned long *power_reg);
+>>  int pdc_soft_power_button(int sw_control);
+>> +int pdc_soft_power_button_panic(int sw_control);
+>>  void pdc_io_reset(void);
+>>  void pdc_io_reset_devices(void);
+>>  int pdc_iodc_getc(void);
+>> diff --git a/arch/parisc/kernel/firmware.c b/arch/parisc/kernel/firmware.c
+>> index 6a7e315bcc2e..0e2f70b592f4 100644
+>> --- a/arch/parisc/kernel/firmware.c
+>> +++ b/arch/parisc/kernel/firmware.c
+>> @@ -1232,15 +1232,18 @@ int __init pdc_soft_power_info(unsigned long *power_reg)
+>>  }
+>>
+>>  /*
+>> - * pdc_soft_power_button - Control the soft power button behaviour
+>> - * @sw_control: 0 for hardware control, 1 for software control
+>> + * pdc_soft_power_button{_panic} - Control the soft power button behaviour
+>> + * @sw_control: 0 for hardware control, 1 for software control
+>>   *
+>>   *
+>>   * This PDC function places the soft power button under software or
+>>   * hardware control.
+>> - * Under software control the OS may control to when to allow to shut
+>> - * down the system. Under hardware control pressing the power button
+>> + * Under software control the OS may control to when to allow to shut
+>> + * down the system. Under hardware control pressing the power button
+>>   * powers off the system immediately.
+>> + *
+>> + * The _panic version relies in spin_trylock to prevent deadlock
+>> + * on panic path.
+>>   */
+>>  int pdc_soft_power_button(int sw_control)
+>>  {
+>> @@ -1254,6 +1257,22 @@ int pdc_soft_power_button(int sw_control)
+>>  	return retval;
+>>  }
+>>
+>> +int pdc_soft_power_button_panic(int sw_control)
+>> +{
+>> +	int retval;
+>> +	unsigned long flags;
+>> +
+>> +	if (!spin_trylock_irqsave(&pdc_lock, flags)) {
+>> +		pr_emerg("Couldn't enable soft power button\n");
+>> +		return -EBUSY; /* ignored by the panic notifier */
+>> +	}
+>> +
+>> +	retval = mem_pdc_call(PDC_SOFT_POWER, PDC_SOFT_POWER_ENABLE, __pa(pdc_result), sw_control);
+>> +	spin_unlock_irqrestore(&pdc_lock, flags);
+>> +
+>> +	return retval;
+>> +}
+>> +
+>>  /*
+>>   * pdc_io_reset - Hack to avoid overlapping range registers of Bridges devices.
+>>   * Primarily a problem on T600 (which parisc-linux doesn't support) but
+>> diff --git a/drivers/parisc/power.c b/drivers/parisc/power.c
+>> index 456776bd8ee6..8512884de2cf 100644
+>> --- a/drivers/parisc/power.c
+>> +++ b/drivers/parisc/power.c
+>> @@ -37,7 +37,6 @@
+>>  #include <linux/module.h>
+>>  #include <linux/init.h>
+>>  #include <linux/kernel.h>
+>> -#include <linux/notifier.h>
+>>  #include <linux/panic_notifier.h>
+>>  #include <linux/reboot.h>
+>>  #include <linux/sched/signal.h>
+>> @@ -175,16 +174,21 @@ static void powerfail_interrupt(int code, void *x)
+>>
+>>
+>>
+>> -/* parisc_panic_event() is called by the panic handler.
+>> - * As soon as a panic occurs, our tasklets above will not be
+>> - * executed any longer. This function then re-enables the
+>> - * soft-power switch and allows the user to switch off the system
+>> +/*
+>> + * parisc_panic_event() is called by the panic handler.
+>> + *
+>> + * As soon as a panic occurs, our tasklets above will not
+>> + * be executed any longer. This function then re-enables
+>> + * the soft-power switch and allows the user to switch off
+>> + * the system. We rely in pdc_soft_power_button_panic()
+>> + * since this version spin_trylocks (instead of regular
+>> + * spinlock), preventing deadlocks on panic path.
+>>   */
+>>  static int parisc_panic_event(struct notifier_block *this,
+>>  		unsigned long event, void *ptr)
+>>  {
+>>  	/* re-enable the soft-power switch */
+>> -	pdc_soft_power_button(0);
+>> +	pdc_soft_power_button_panic(0);
+>>  	return NOTIFY_DONE;
+>>  }
+>>
+>> @@ -193,7 +197,6 @@ static struct notifier_block parisc_panic_block = {
+>>  	.priority	= INT_MAX,
+>>  };
+>>
+>> -
+>>  static int __init power_init(void)
+>>  {
+>>  	unsigned long ret;
+> 
