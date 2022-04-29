@@ -2,45 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F9AE514A09
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 14:56:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4211D514A0E
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 14:56:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359596AbiD2M7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 08:59:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34188 "EHLO
+        id S1359616AbiD2M7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 08:59:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359604AbiD2M7i (ORCPT
+        with ESMTP id S1359606AbiD2M7i (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 08:59:38 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E48ADB0D37
-        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 05:56:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E8E2C9B74
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 05:56:20 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1nkQAU-0000A1-9w
+        id 1nkQAU-0000Ad-NY
         for netdev@vger.kernel.org; Fri, 29 Apr 2022 14:56:18 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 264C470F05
+        by bjornoya.blackshift.org (Postfix) with SMTP id 3267670F0B
         for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 12:56:14 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id C6ADA70EE3;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id D3B5670EE6;
         Fri, 29 Apr 2022 12:56:13 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 4a1e73c2;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id fde4f1a0;
         Fri, 29 Apr 2022 12:56:13 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Daniel Hellstrom <daniel@gaisler.com>,
-        stable@vger.kernel.org, Andreas Larsson <andreas@gaisler.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net 3/5] can: grcan: use ofdev->dev when allocating DMA memory
-Date:   Fri, 29 Apr 2022 14:56:10 +0200
-Message-Id: <20220429125612.1792561-4-mkl@pengutronix.de>
+        kernel@pengutronix.de, Andreas Larsson <andreas@gaisler.com>,
+        stable@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH net 4/5] can: grcan: grcan_probe(): fix broken system id check for errata workaround needs
+Date:   Fri, 29 Apr 2022 14:56:11 +0200
+Message-Id: <20220429125612.1792561-5-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220429125612.1792561-1-mkl@pengutronix.de>
 References: <20220429125612.1792561-1-mkl@pengutronix.de>
@@ -59,63 +58,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Daniel Hellstrom <daniel@gaisler.com>
+From: Andreas Larsson <andreas@gaisler.com>
 
-Use the device of the device tree node should be rather than the
-device of the struct net_device when allocating DMA buffers.
-
-The driver got away with it on sparc32 until commit 53b7670e5735
-("sparc: factor the dma coherent mapping into helper") after which the
-driver oopses.
+The systemid property was checked for in the wrong place of the device
+tree and compared to the wrong value.
 
 Fixes: 6cec9b07fe6a ("can: grcan: Add device driver for GRCAN and GRHCAN cores")
-Link: https://lore.kernel.org/all/20220429084656.29788-2-andreas@gaisler.com
+Link: https://lore.kernel.org/all/20220429084656.29788-3-andreas@gaisler.com
 Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Hellstrom <daniel@gaisler.com>
 Signed-off-by: Andreas Larsson <andreas@gaisler.com>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/grcan.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/can/grcan.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/can/grcan.c b/drivers/net/can/grcan.c
-index 1189057b5d68..f8860900575b 100644
+index f8860900575b..4ca3da56d3aa 100644
 --- a/drivers/net/can/grcan.c
 +++ b/drivers/net/can/grcan.c
-@@ -248,6 +248,7 @@ struct grcan_device_config {
- struct grcan_priv {
- 	struct can_priv can;	/* must be the first member */
- 	struct net_device *dev;
-+	struct device *ofdev_dev;
- 	struct napi_struct napi;
+@@ -241,7 +241,7 @@ struct grcan_device_config {
+ 		.rxsize		= GRCAN_DEFAULT_BUFFER_SIZE,	\
+ 		}
  
- 	struct grcan_registers __iomem *regs;	/* ioremap'ed registers */
-@@ -921,7 +922,7 @@ static void grcan_free_dma_buffers(struct net_device *dev)
- 	struct grcan_priv *priv = netdev_priv(dev);
- 	struct grcan_dma *dma = &priv->dma;
+-#define GRCAN_TXBUG_SAFE_GRLIB_VERSION	0x4100
++#define GRCAN_TXBUG_SAFE_GRLIB_VERSION	4100
+ #define GRLIB_VERSION_MASK		0xffff
  
--	dma_free_coherent(&dev->dev, dma->base_size, dma->base_buf,
-+	dma_free_coherent(priv->ofdev_dev, dma->base_size, dma->base_buf,
- 			  dma->base_handle);
- 	memset(dma, 0, sizeof(*dma));
- }
-@@ -946,7 +947,7 @@ static int grcan_allocate_dma_buffers(struct net_device *dev,
+ /* GRCAN private data structure */
+@@ -1643,6 +1643,7 @@ static int grcan_setup_netdev(struct platform_device *ofdev,
+ static int grcan_probe(struct platform_device *ofdev)
+ {
+ 	struct device_node *np = ofdev->dev.of_node;
++	struct device_node *sysid_parent;
+ 	u32 sysid, ambafreq;
+ 	int irq, err;
+ 	void __iomem *base;
+@@ -1651,10 +1652,15 @@ static int grcan_probe(struct platform_device *ofdev)
+ 	/* Compare GRLIB version number with the first that does not
+ 	 * have the tx bug (see start_xmit)
+ 	 */
+-	err = of_property_read_u32(np, "systemid", &sysid);
+-	if (!err && ((sysid & GRLIB_VERSION_MASK)
+-		     >= GRCAN_TXBUG_SAFE_GRLIB_VERSION))
+-		txbug = false;
++	sysid_parent = of_find_node_by_path("/ambapp0");
++	if (sysid_parent) {
++		of_node_get(sysid_parent);
++		err = of_property_read_u32(sysid_parent, "systemid", &sysid);
++		if (!err && ((sysid & GRLIB_VERSION_MASK) >=
++			     GRCAN_TXBUG_SAFE_GRLIB_VERSION))
++			txbug = false;
++		of_node_put(sysid_parent);
++	}
  
- 	/* Extra GRCAN_BUFFER_ALIGNMENT to allow for alignment */
- 	dma->base_size = lsize + ssize + GRCAN_BUFFER_ALIGNMENT;
--	dma->base_buf = dma_alloc_coherent(&dev->dev,
-+	dma->base_buf = dma_alloc_coherent(priv->ofdev_dev,
- 					   dma->base_size,
- 					   &dma->base_handle,
- 					   GFP_KERNEL);
-@@ -1589,6 +1590,7 @@ static int grcan_setup_netdev(struct platform_device *ofdev,
- 	memcpy(&priv->config, &grcan_module_config,
- 	       sizeof(struct grcan_device_config));
- 	priv->dev = dev;
-+	priv->ofdev_dev = &ofdev->dev;
- 	priv->regs = base;
- 	priv->can.bittiming_const = &grcan_bittiming_const;
- 	priv->can.do_set_bittiming = grcan_set_bittiming;
+ 	err = of_property_read_u32(np, "freq", &ambafreq);
+ 	if (err) {
 -- 
 2.35.1
 
