@@ -2,191 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 962595153EA
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 20:45:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 449E15153EB
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 20:45:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378784AbiD2Ssq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 14:48:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47890 "EHLO
+        id S1378653AbiD2StE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 14:49:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229490AbiD2Sso (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 14:48:44 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2068.outbound.protection.outlook.com [40.107.21.68])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 186A67EA17
-        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 11:45:25 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SZyJdO0K/REaO7j4eSxazRgwBJNMPY+cFqhHDqT9HOZ1mtl9SgcCV35bMYY4NhNX6lh5fwVvIsOgYtvStcUfrTSPFXh5A71psED0AG7WlSihuwU5OtNi7/8mcLFQSmX0h4c7YyX6fSSHxdmavnS4x3cl2yW9hM1tmvm7PmGHVQozYOZ+Ow1KjUhhvFvDxMnTQ/ig+619U2rHRNs2i6JLOC25zyvNQKwVxbggmoKvcaHtJuOjeJwDlaJO1/82BGvy2QLUJ0gBRZUs/gMbyMu7qag/UXR2CxtrL5/BGxVL9GSFWg4bHctCpT1DOprN2M/2/Gsn9q4svEuNpd/ulfbVrg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CXNM8eOha+GrIx+9y2trvL1xy3XGZ/wTDmYkI8Yn2ak=;
- b=F+mZPBdqv3112ZXMy+rFNCQcDJXeLsRuI66RpaGzyk+uBI49I9NsE5eZUqThXMmEeElsli9NCSsgiK0PuCaKab5PzaslZImpO3wPQwMH1YYdihgA5qlQJ6LW7aewVrwD+leFmj4j4KxrAaWLxslC1nOXPx6lknyXmjoSYitS3hZA2q/u8SOXBfVMZE9fWQfTP78tqCxnsYY9i7Y86wathahZ7leqnQqgbcteNEujdEXVyfLmrykLE5VbkeiwqOCtTLZ+BXJnrz9Vy1SBBSXwkHQ8M+LITmxiVrIJp+6tYWvp1JH9US3B1BOQGcbdYeMCB+kbcJIS3QzzOfDlwNWaFw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=variscite.com; dmarc=pass action=none
- header.from=variscite.com; dkim=pass header.d=variscite.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=variscite.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CXNM8eOha+GrIx+9y2trvL1xy3XGZ/wTDmYkI8Yn2ak=;
- b=TkxRrv+Wb25CnOL/zpHvtf7dbFFillgSYUJMP7+Z6l/8G3Cv3VhnEqWaD2GOKIZIipmmIxtiQVRejPP8UMTjUj+xMlE5XkgB/tNW2oWSXKMyd4h3krt9l0lT04Pqvf9v0FloiLhlO0wqBQJNnXsnk/W7oYk4Ov2QRp34ZmzI1muGG85dOyTXZfGIn2f04nnDyjJlEWXiRd5aboKlkBG1jUIH/N1CltiggO6M1E8E5TFr4rT/Lur58QiGIdfdr/JK6YrKzMzSqZGBDBVP17FJgNh/zOThO+IO4Iyzbc0LMuiHOjC1mcJd1ZSK+5tsz1cZ1d5aGgsuLIA5q9+0mnxruA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=variscite.com;
-Received: from AM8PR08MB5746.eurprd08.prod.outlook.com (2603:10a6:20b:1d8::20)
- by AS8PR08MB6632.eurprd08.prod.outlook.com (2603:10a6:20b:31c::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.13; Fri, 29 Apr
- 2022 18:45:23 +0000
-Received: from AM8PR08MB5746.eurprd08.prod.outlook.com
- ([fe80::9dfd:cf1c:a154:9a09]) by AM8PR08MB5746.eurprd08.prod.outlook.com
- ([fe80::9dfd:cf1c:a154:9a09%9]) with mapi id 15.20.5206.013; Fri, 29 Apr 2022
- 18:45:23 +0000
-From:   Nate Drude <nate.d@variscite.com>
-To:     netdev@vger.kernel.org
-Cc:     michael.hennerich@analog.com, eran.m@variscite.com,
-        Nate Drude <nate.d@variscite.com>
-Subject: [PATCH 2/2] net: phy: adin: add adi,clk_rcvr_125_en property
-Date:   Fri, 29 Apr 2022 13:44:32 -0500
-Message-Id: <20220429184432.962738-2-nate.d@variscite.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220429184432.962738-1-nate.d@variscite.com>
-References: <20220429184432.962738-1-nate.d@variscite.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: CH0PR04CA0049.namprd04.prod.outlook.com
- (2603:10b6:610:77::24) To AM8PR08MB5746.eurprd08.prod.outlook.com
- (2603:10a6:20b:1d8::20)
+        with ESMTP id S1380129AbiD2Ss7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 14:48:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 466538BE39
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 11:45:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F1129B8376E
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 18:45:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42B3BC385A7;
+        Fri, 29 Apr 2022 18:45:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651257937;
+        bh=UiD3BGhjm6mku8DGeApHhb8T8FV3LjuZcs5nJ2oVkFA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=VG3HPrdxy780JL4pQTzyd0M0vGA+5gpp9KV03x9FFYT/usGshy46Azy02e661SxIW
+         irq/Xe5gQWHf9tTWwMQm/TyvGfFz8+1018E87HbLBbqIvUutNtcmEvpjd/TkrjmNLN
+         1w7a+aWgoM4Fxw8grXhc63JpRov3Q1805Ws0MIEgSXDNGpMrFNL8qubYnQ8u41EahB
+         E5Lz6C7ieSJPT64EmJ0EcDHus8o+xMzHt46ghxouKrrqYq5sHjnwqVeLG3pPxzBuyx
+         9VRPjt6lE7WjsffnLpl4r2mIBy7K+rAip7I9OeLvqJqm6orh3+EtTRqB5uczWEX4ui
+         oCH4ayf8KaxEQ==
+Date:   Fri, 29 Apr 2022 11:45:35 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Ido Schimmel <idosch@idosch.org>, Ido Schimmel <idosch@nvidia.com>,
+        netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
+        andrew@lunn.ch, mlxsw@nvidia.com
+Subject: Re: [PATCH net-next 00/11] mlxsw: extend line card model by devices
+ and info
+Message-ID: <20220429114535.64794e94@kernel.org>
+In-Reply-To: <YmvRRSFeRqufKbO/@nanopsycho>
+References: <20220425034431.3161260-1-idosch@nvidia.com>
+        <20220425090021.32e9a98f@kernel.org>
+        <Ymb5DQonnrnIBG3c@shredder>
+        <20220425125218.7caa473f@kernel.org>
+        <YmeXyzumj1oTSX+x@nanopsycho>
+        <20220426054130.7d997821@kernel.org>
+        <Ymf66h5dMNOLun8k@nanopsycho>
+        <20220426075133.53562a2e@kernel.org>
+        <YmjyRgYYRU/ZaF9X@nanopsycho>
+        <20220427071447.69ec3e6f@kernel.org>
+        <YmvRRSFeRqufKbO/@nanopsycho>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 83da2b47-48a9-4aee-d4a2-08da2a106b12
-X-MS-TrafficTypeDiagnostic: AS8PR08MB6632:EE_
-X-Microsoft-Antispam-PRVS: <AS8PR08MB6632903850542D5EF7D5278B85FC9@AS8PR08MB6632.eurprd08.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 81jXNoZBXWBI+zlm3ZJqC67PQ3fuPGW2yi7W4ITZWqKQ/vuUHf0rTMXnhI4iIIgthTbHmnDjKnyicZXc0AZfbAYSsgQ6TFSjUvoOZ3i695nvW+bN3oql+tpDRe3DKXed3z3KZgBXhCtj2BrhqcTNeZtB9KSmGcYTX6qAlMSzCXUPEjJBTJtpI6WzNp4VhXF6eB3DyFHX+w6EDL8FO8woYvKCBXTZ1Etsz3KSgh1eJvEpVXmwpqGTq1TrT6AS4dkCm3/sjHFNLQ1Z3VWgUK4PUf09/M+n/rgeFKoc4ZkPimyfz2+DhoVZ5aDUSPHNTi7Cn5RKoKxbNvO3tcjnWruZMI4MCTOfhMrCR79CE+k++jPFdlrKD1YKDMLj5lnGeuDXujoHbl4wJ8RHhSVryE9i4PuEmhJsRSnbUFXhSahjZzXqEFuWQi2fAf9oyaN70Ib/YobhQbY3QN3LOGUQLdpyWFb6GhlPhRwH3SH1r7cj3d+bjoGhS3wCveVQdHb/tUuFQY/RdvzFGZJiAgUsnTALeQxgbvMFRJc22LvzKJkNq2k+DXeDxbWqCCRc2r8xNqAh+Sw57MBc4qBVGNl09HLCGTDav1stMNl9XZvyXGZwlO75HthsgBagjeDDVBVHh1eITahm8ZCJXFPX/iFD6A7M6uUzXNmeMygFPZO0X3dDNSCWy5FARJCSa4aT0f3eI+J6sjRDDzzsZrXVBdpJNGgovw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR08MB5746.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(376002)(136003)(39840400004)(346002)(396003)(86362001)(6486002)(508600001)(2616005)(107886003)(1076003)(26005)(6506007)(6512007)(38100700002)(38350700002)(6666004)(66946007)(66556008)(66476007)(316002)(2906002)(186003)(5660300002)(36756003)(8936002)(83380400001)(4326008)(6916009)(8676002)(52116002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6WMWxTq87pCVrAHSAXweIWmwIj/hpXDHc3ZwnZFz0V5u/3oQF8lBm4jWrGNQ?=
- =?us-ascii?Q?jYLs4zGaxgt4f7cLO/uPs9ZcW+CH3QB1V+ucUcH977DA1AAyAILzp1aBwkM7?=
- =?us-ascii?Q?7/e52/krMx8ObL9wf5LDSJjKPBtVsUNw/JS1Sm7iG7MMjIhZDyglPVgWwVlB?=
- =?us-ascii?Q?ufS2XGSkYihkhMmBqU5X866tMbIJThCIRV2vbzMr0uQfZjhCxp5v/R+0yDu6?=
- =?us-ascii?Q?LTO2sstErqQOS+cmG3W6IM9zrL0r7QLxsXiu2j6dShYwng9QSzoZoxUAq5BB?=
- =?us-ascii?Q?8KV094UZJzhIgZr76zToiHmpTq/3icon/Yfq8sNX0cIupLapRqJj72pumTRx?=
- =?us-ascii?Q?X8ebIDfM4Pn3rFcj8jnbf761maoFG5y9+iK1Zhxijc06pz2OIUp3F/v44euq?=
- =?us-ascii?Q?4AghEpeUAugdxj0Za6qbk0n4hqrl9jIu7+neSJw4rsxZt2KNeaJjoTFqbu9p?=
- =?us-ascii?Q?RoIn+945jfZ5Rj/2ykbnzuwqE2tsZr83jO8uobdzObhzs8BS7MS4eZPcWkvL?=
- =?us-ascii?Q?F3t+MN7exUn6xP2/8Gr1/iWlTUV7jE6U0QNB3sos0rFZq2LvuGnOe7GfN30x?=
- =?us-ascii?Q?gvYfjdgI7BMo7CsyeMAy+2MJLJl3JQ9X2BGNnujDC0eCx1GSHLtuGaqDH8Pc?=
- =?us-ascii?Q?yTEGQ8Aauq8Sv26nm5OVApmdjuM7pY+JkFBYOuxKLdOchmotD5vU8w5jFkys?=
- =?us-ascii?Q?HMiVdfu1lt09Rtq03HlRv9GX8VKcHGniKMQXbKtjhXWHmpl2iv2mnGw+ctsd?=
- =?us-ascii?Q?L3vWtsmhMTmHoGP/9cfkOATGns9fyGcVz7bjtfW+JZSq/BYJyDe09D5ajM//?=
- =?us-ascii?Q?zc+K0JWSwwxaSsXxLn+e7pvNpQZH0HrSB1BkvXfHxf8DIkKhDMPZYf4dlUVd?=
- =?us-ascii?Q?0MnaJ6GIUdnW4QujBttEsYM1lJm0DDHVBXu6urGU9dgs35sex7xsgIsQjuov?=
- =?us-ascii?Q?saO88Z5fmPtY9jT6bPWpNAq9l7Mdb0swy3IQ45RCzDud80X2Pht9vVDe0BaR?=
- =?us-ascii?Q?TCT6t/Z9SeRuKVPbHoOU3+50Hu8wi8vHdf7kqZyJpRpfz4bz7B/W6RVHLL40?=
- =?us-ascii?Q?zHADqqjyx79jJeyX+ukbNsJnv+I1TjE0Y2YRr9efQG1/PqvaXbh9kuMwW+gO?=
- =?us-ascii?Q?/hK1lCmzCh4Tv2jJ/9PX4e+6xr0OzycISyDQao2DacYmsfDnInQEy1lplmy5?=
- =?us-ascii?Q?FxrQH/pTXAVOT00y7tI21A4GFQV0TiFsjK2Tcma3YXWXzAOWhesQnndsLDn+?=
- =?us-ascii?Q?Wdfyzd7gqoFPhv7l1pEyexqTY0yspnVkCZ/g9Rtsdufuc8SzNJAXGoKwET5g?=
- =?us-ascii?Q?nM/Pw2iPggF+te7sckB+2QNYcvx/Kpr2wwCsEPnF1eLJgzpSfWm/ScW8DUSp?=
- =?us-ascii?Q?Lc5p47UrVREUr+T8eBUMWExVDJAom6s2zLcP1EPRszpaRZ3D0s/WH2qaTNxc?=
- =?us-ascii?Q?m1Ft012ahay4HPbzfe4OdjNkP04VoCVqRke9B+x648F7JZyUVk/Gs75dJscN?=
- =?us-ascii?Q?C7fMG4cI8fwdB6Po/Zc6q/jEGAqnC2A+m3mW5zWvViX/Eo84mLTAtFe6E0Kf?=
- =?us-ascii?Q?wAY2X9H2G05TqVvYHL3hy41ToDPoF5srdUbKXQ61A0IwuEbrO24K5yLleUGk?=
- =?us-ascii?Q?NjO1JNt+Gm+xd7t7KRaySBQa1d7XdDUqflZSSx/i+mGyN3Oh2yM1w3CKwddb?=
- =?us-ascii?Q?5SpDLy1EYSUcLKvEgrW2C1xU3/WZDQeL2LUR56lLrxC6iyM9UKl8nKNpbKOL?=
- =?us-ascii?Q?yfyVD+QrRw=3D=3D?=
-X-OriginatorOrg: variscite.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 83da2b47-48a9-4aee-d4a2-08da2a106b12
-X-MS-Exchange-CrossTenant-AuthSource: AM8PR08MB5746.eurprd08.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Apr 2022 18:45:23.1367
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 399ae6ac-38f4-4ef0-94a8-440b0ad581de
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oDU06pwyls9v+/pWeHP5DMJ8KQ3V9qhloYUsDHWNOppXwAaHJBTJfl/duvzpYA0QBREGjRhXb0sbkApARN+nCA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR08MB6632
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add device tree property to set GE_CLK_RCVR_125_EN (bit 5 of GE_CLK_CFG),
-causing the 125 MHz PHY recovered clock (or PLL clock) to be driven at
-the GP_CLK pin.
+On Fri, 29 Apr 2022 13:51:33 +0200 Jiri Pirko wrote:
+> >Of the three API levels (SDK, automation, human) I think automation
+> >is the only one that's interesting to us in Linux. SDK interfaces are
+> >necessarily too low level as they expose too much of internal details
+> >to standardize. Humans are good with dealing with uncertainty and
+> >diverse so there's no a good benchmark.
+> >
+> >The benchmark for automation is - can a machine use this API across
+> >different vendors to reliably achieve its goals. For FW info/flashing
+> >the goal is keeping the FW versions up to date. This is documented:
+> >
+> >https://www.kernel.org/doc/html/latest/networking/devlink/devlink-flash.html#firmware-version-management
+> >
+> >What would the pseudo code look like with "line cards" in the picture?
+> >Apply RFC1925 truth 12.  
+> 
+> Something like this:
+> 
+> $lc_count = array_size(devlink-lc-info[$handle])
+> 
+> for ($lcnum = 0; $lcnum < $lc_count; lcnum++):
+>     $dev_count = array_size(devlink-lc-info[$handle][$lcnum])
+> 
+>     for ($devnum = 0; $devnum < $dev_count; $devnum++):
 
-Signed-off-by: Nate Drude <nate.d@variscite.com>
----
- drivers/net/phy/adin.c | 29 +++++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+Here goes the iteration I complained about in my previous message.
+Tracking FW versions makes most sense at the level of a product (as 
+in the unit of HW one can purchase from the system vendor). That
+integrates well with system tracking HW in the fleet. Product in your
+case will be a line card or populated chassis, I believe.
 
-diff --git a/drivers/net/phy/adin.c b/drivers/net/phy/adin.c
-index 5ce6da62cc8e..600472341cef 100644
---- a/drivers/net/phy/adin.c
-+++ b/drivers/net/phy/adin.c
-@@ -14,6 +14,7 @@
- #include <linux/mii.h>
- #include <linux/phy.h>
- #include <linux/property.h>
-+#include <linux/of.h>
- 
- #define PHY_ID_ADIN1200				0x0283bc20
- #define PHY_ID_ADIN1300				0x0283bc30
-@@ -99,6 +100,9 @@
- #define ADIN1300_GE_SOFT_RESET_REG		0xff0c
- #define   ADIN1300_GE_SOFT_RESET		BIT(0)
- 
-+#define ADIN1300_GE_CLK_CFG			0xff1f
-+#define   ADIN1300_GE_CLK_RCVR_125_EN		BIT(5)
-+
- #define ADIN1300_GE_RGMII_CFG_REG		0xff23
- #define   ADIN1300_GE_RGMII_RX_MSK		GENMASK(8, 6)
- #define   ADIN1300_GE_RGMII_RX_SEL(x)		\
-@@ -407,6 +411,27 @@ static int adin_set_edpd(struct phy_device *phydev, u16 tx_interval)
- 			  val);
- }
- 
-+static int adin_set_clock_config(struct phy_device *phydev)
-+{
-+	struct device *dev = &phydev->mdio.dev;
-+	struct device_node *of_node = dev->of_node;
-+	int reg = 0;
-+
-+	if (of_property_read_bool(of_node, "adi,clk_rcvr_125_en")) {
-+		reg = phy_read_mmd(phydev, MDIO_MMD_VEND1, ADIN1300_GE_CLK_CFG);
-+
-+		reg |= ADIN1300_GE_CLK_RCVR_125_EN;
-+
-+		phydev_dbg(phydev, "%s: ADIN1300_GE_CLK_CFG = %x\n",
-+		           __func__, reg);
-+
-+		reg = phy_write_mmd(phydev, MDIO_MMD_VEND1,
-+			     ADIN1300_GE_CLK_CFG, reg);
-+	}
-+
-+	return reg;
-+}
-+
- static int adin_get_tunable(struct phy_device *phydev,
- 			    struct ethtool_tunable *tuna, void *data)
- {
-@@ -455,6 +480,10 @@ static int adin_config_init(struct phy_device *phydev)
- 	if (rc < 0)
- 		return rc;
- 
-+	rc = adin_set_clock_config(phydev);
-+	if (rc < 0)
-+		return rc;
-+
- 	phydev_dbg(phydev, "PHY is using mode '%s'\n",
- 		   phy_modes(phydev->interface));
- 
--- 
-2.25.1
+>         # Get unique HW design identifier (gearbox id)
+>         $hw_id = devlink-lc-info[$handle][$lcnum][$devnum]['fw.psid']
 
+1) you can't use 'fw.psid' in generic logic, it's a Melvidia's invention
+2) looking at your cover letter there's no fw.psid for the device
+   reported, the automation will not work, Q.E.D.
+
+>         # Find out which FW flash we want to use for this device
+>         $want_flash_vers = some-db-backed.lookup($hw_id, 'flash')
+> 
+>         # Update flash if necessary
+>         if $want_flash_vers != devlink-lc-info[$handle][$lcnum][$devnum]['fw']:
+>             $file = some-db-backed.download($hw_id, 'flash')
+>             $component = devlink-lc[$handle][$lcnum][$devnum]['component']
+>             devlink-dev-flash($handle, $component, $file)
+> 
+> devlink-reload()
+> 
+> Clear indexes, not squashed somewhere in middle of string.
+> 
+> >I thought you said your gearboxes all the the same FW? 
+> >Theoretically, yes. Theoretically, I can also have nested "line cards".  
+> 
+> Well, yeah. I was under impresion that possibility of having multiple
+> devices on the same LC is not close to 0. But I get your point.
+> 
+> Let's try to figure out he iface as you want it:
+> We will have devlink dev info extended to be able to provide info
+> about the LC/gearbox. Let's work with same prefix "lcX." for all
+> info related to line card X.
+> 
+> First problem is, who is going to enforce this prefix. It is driver's
+> responsibility to provide the string which is put out. The solution
+> would be to have a helper similar to devlink_info_version_*_put()
+> called devlink_info_lc_version_*_put() that would accept lc pointer and
+> add the prefix. Does it make sense to you?
+> 
+> We need 3 things:
+> 1) current version of gearbox FW 
+>    That is easy, we have it - "versions"
+>    (DEVLINK_ATTR_INFO_VERSION_* nested attrs). We can have multiple
+>    nests that would carry the versions for individiual line cards.
+>    Example:
+>        versions:
+>            fixed:
+>              hw.revision 0
+>              lc2.hw.revision a
+>              lc8.hw.revision b
+>            running:
+>              ini.version 4
+>              lc2.gearbox.fw.version 1.1.3
+>              lc8.gearbox.fw.version 1.2.3
+> 2) HW id (as you have it in your pseudocode), it is PSID in case of
+>    mlxsw. We already have PSID for ASIC:
+>    ....
+>    This should be also easy, as this is exposed as "fixed version" in a
+>    same way as previous example.
+>    Example:
+>        versions:
+>            fixed:
+>              lc2.gearbox.fw.psid XXX
+>              lc8.gearbox.fw.psid YYY
+> 3) Component name
+>    This one is a bit tricky. It is not a version, so put it under
+>    "versions" does not make much sense.
+>    Also, there are more than one. Looking at how versions are done,
+>    multiple nests of attr type DEVLINK_ATTR_INFO_VERSION_* are put to
+>    the message. So we can introduce new attr DEVLINK_ATTR_INFO_FLASH_COMPONENT
+>    and put one per linecard/gearbox.
+>    Here arain we need some kind of helper to driver to call to put this
+>    into msg: devlink_info_lc_flash_component_put()
+>    Example:
+>      pci/0000:01:00.0:
+>        driver mlxsw_spectrum3
+>        flash_components:
+>          lc2.gearbox.fw
+>          lc8.gearbox.fw
+> 
+>     Then the flashing of the gearbox will be done by:
+>     # devlink dev flash pci/0000:01:00.0 file mellanox/fw-AGB-rel-19_2010_1312-022-EVB.mfa2 component lc2.gearbox.fw
+
+The main question to me is whether users will want to flash the entire
+device, or update line cards individually.
+
+What's inside mellanox/fw-AGB-rel-19_2010_1312-022-EVB.mfa2? Doesn't
+sound like it's FW just for a single gearbox?
+
+> >Really? So we're going to be designing kernel APIs so that each message
+> >contains complete information and can't contain references now?  
+> 
+> Can you give me an exapmple of devlink or any other iproute2 app cmd
+> that actually does something similar to this?
+
+Off the top of my head - doesn't ip has some caches for name resolution
+etc.? Either way current code in iproute2.git is hardly written on the
+stone tablets.
