@@ -2,127 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F71B514C2C
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 16:03:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DCD5514C37
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 16:05:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376993AbiD2OHF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 10:07:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56080 "EHLO
+        id S1377128AbiD2OIP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 10:08:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377050AbiD2OGy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 10:06:54 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BC56941A8
-        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 06:55:20 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1651240465; h=from:from:reply-to:subject:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type; bh=KX94rVVeut3wHX2/VemxEKyeP6SfnePyS21Z4cm2+mI=;
-        b=FJJoweXu6GR2IIsls1eLnZCuudOIYEErttCgVFbXQqYvMMMMxdkBRjW5Nu6XfqXTYsb5xd
-        nUd8p6vMHI0sVcnAZe7U0DucAyxhp/CEIXABRSg4v1GQysRVewmNY/t2VMBSiCOC41eKJ0
-        tm5gSZJ00AoeFJzEbVtoDW6SaAsApXQFrq/lzbCmDospogG6dtiLhcxWNG34JWna2Wb2kX
-        +IDaNu9zLUEOoWl9fUJSSVjs1EDpeeHM2ABKPYwZw8Uz0kipsJFh614m/eq7eo2axG3/d+
-        lX9n2yf1TwUJsQ/Db1aefrSakkLM4OcH9QIie/CMfhIPN4/iZFQtMiEbJRLp+w==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1651240465; h=from:from:reply-to:subject:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type; bh=KX94rVVeut3wHX2/VemxEKyeP6SfnePyS21Z4cm2+mI=;
-        b=8qCnqiKn1uLTlVVXwBPRIw/9mN2rOUuMQCgT/8tW92IMAXwQi/Ulv5zRG6pOCr2qr0bAmE
-        lg2j+8jGhwSJ/HDQ==
-To:     Ondrej Mosnacek <omosnace@redhat.com>
-Cc:     Sunil Goutham <sgoutham@marvell.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: [PATCH] net: thunderx: Do not invoke pci_irq_vector() from
- interrupt context
-Subject: 
-Date:   Fri, 29 Apr 2022 15:54:24 +0200
-Message-ID: <87r15gngfj.ffs@tglx>
+        with ESMTP id S1376645AbiD2OIG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 10:08:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03397DAA07;
+        Fri, 29 Apr 2022 06:57:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D3EAD62370;
+        Fri, 29 Apr 2022 13:57:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78159C385A7;
+        Fri, 29 Apr 2022 13:56:56 +0000 (UTC)
+Date:   Fri, 29 Apr 2022 09:56:54 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
+        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
+        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
+        xen-devel@lists.xenproject.org, x86@kernel.org,
+        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
+        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
+        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
+        corbet@lwn.net, d.hatayama@jp.fujitsu.com,
+        dave.hansen@linux.intel.com, dyoung@redhat.com,
+        feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, senozhatsky@chromium.org,
+        stern@rowland.harvard.edu, tglx@linutronix.de, vgoyal@redhat.com,
+        vkuznets@redhat.com, will@kernel.org
+Subject: Re: [PATCH 17/30] tracing: Improve panic/die notifiers
+Message-ID: <20220429095654.26d00b79@gandalf.local.home>
+In-Reply-To: <832eecc5-9569-1d95-6ab8-f029b660dfcb@igalia.com>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+        <20220427224924.592546-18-gpiccoli@igalia.com>
+        <b8771b37-01f5-f50b-dbb3-9db4ee26e67e@gmail.com>
+        <20220429092351.10bca4dd@gandalf.local.home>
+        <832eecc5-9569-1d95-6ab8-f029b660dfcb@igalia.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-pci_irq_vector() can't be used in atomic context any longer. This conflicts
-with the usage of this function in nic_mbx_intr_handler().
+On Fri, 29 Apr 2022 10:46:35 -0300
+"Guilherme G. Piccoli" <gpiccoli@igalia.com> wrote:
 
-Cache the Linux interrupt numbers in struct nicpf and use that cache in the
-interrupt handler to select the mailbox.
+> Thanks Sergei and Steven, good idea! I thought about the switch change
+> you propose, but I confess I got a bit confused by the "fallthrough"
+> keyword - do I need to use it?
 
-Fixes: 495c66aca3da ("genirq/msi: Convert to new functions")
-Reported-by: Ondrej Mosnacek <omosnace@redhat.com>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Sunil Goutham <sgoutham@marvell.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: netdev@vger.kernel.org
-Cc: stable@vger.kernel.org
-Link: https://bugzilla.redhat.com/show_bug.cgi?id=2041772
----
- drivers/net/ethernet/cavium/thunder/nic_main.c |   16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+No. The fallthrough keyword is only needed when there's code between case
+labels. As it is very common to list multiple cases for the same code path.
+That is:
 
---- a/drivers/net/ethernet/cavium/thunder/nic_main.c
-+++ b/drivers/net/ethernet/cavium/thunder/nic_main.c
-@@ -59,7 +59,7 @@ struct nicpf {
- 
- 	/* MSI-X */
- 	u8			num_vec;
--	bool			irq_allocated[NIC_PF_MSIX_VECTORS];
-+	unsigned int		irq_allocated[NIC_PF_MSIX_VECTORS];
- 	char			irq_name[NIC_PF_MSIX_VECTORS][20];
- };
- 
-@@ -1150,7 +1150,7 @@ static irqreturn_t nic_mbx_intr_handler(
- 	u64 intr;
- 	u8  vf;
- 
--	if (irq == pci_irq_vector(nic->pdev, NIC_PF_INTR_ID_MBOX0))
-+	if (irq == nic->irq_allocated[NIC_PF_INTR_ID_MBOX0])
- 		mbx = 0;
- 	else
- 		mbx = 1;
-@@ -1176,14 +1176,14 @@ static void nic_free_all_interrupts(stru
- 
- 	for (irq = 0; irq < nic->num_vec; irq++) {
- 		if (nic->irq_allocated[irq])
--			free_irq(pci_irq_vector(nic->pdev, irq), nic);
--		nic->irq_allocated[irq] = false;
-+			free_irq(nic->irq_allocated[irq], nic);
-+		nic->irq_allocated[irq] = 0;
- 	}
- }
- 
- static int nic_register_interrupts(struct nicpf *nic)
- {
--	int i, ret;
-+	int i, ret, irq;
- 	nic->num_vec = pci_msix_vec_count(nic->pdev);
- 
- 	/* Enable MSI-X */
-@@ -1201,13 +1201,13 @@ static int nic_register_interrupts(struc
- 		sprintf(nic->irq_name[i],
- 			"NICPF Mbox%d", (i - NIC_PF_INTR_ID_MBOX0));
- 
--		ret = request_irq(pci_irq_vector(nic->pdev, i),
--				  nic_mbx_intr_handler, 0,
-+		irq = pci_irq_vector(nic->pdev, i);
-+		ret = request_irq(irq, nic_mbx_intr_handler, 0,
- 				  nic->irq_name[i], nic);
- 		if (ret)
- 			goto fail;
- 
--		nic->irq_allocated[i] = true;
-+		nic->irq_allocated[i] = irq;
- 	}
- 
- 	/* Enable mailbox interrupt */
+	case DIE_OOPS:
+ 	case PANIC_NOTIFIER:
+ 		do_dump = 1;
+ 		break;
+
+Does not need a fall through label, as there's no code between the DIE_OOPS
+and the PANIC_NOTIFIER. But if you had:
+
+	case DIE_OOPS:
+		x = true;
+ 	case PANIC_NOTIFIER:
+ 		do_dump = 1;
+ 		break;
+
+Then you do.
+
+-- Steve
