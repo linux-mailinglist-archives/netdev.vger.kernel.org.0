@@ -2,135 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A092051411A
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 05:48:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C45C51411B
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 05:50:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236582AbiD2DmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 23:42:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58136 "EHLO
+        id S236682AbiD2Dxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 23:53:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236224AbiD2DmS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 23:42:18 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFDEBA5E9A
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 20:39:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651203541; x=1682739541;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=hbI67oUZUKEUm3P+EJ8M8Uh3g2wNFyH+0FXYQT3fUko=;
-  b=a5obPdzK/1iAFvrsvnU+CSo8Fopjg2DDYWyB5y8VJaREhczXgisYkXbA
-   SFI/Wg+qT8koZ4g6TMwHSFZCYP0adHMTSQK939OwCKYPFj+TXKaR97qPZ
-   mPA50PGdoBYQVkd4zYEKgh2TFbOIAXVVrz+qEWlbnuwAOiV/res1nS7TR
-   Petc+XkIhbG1n+YJgdqCmuM3Y4N8BvywUoLrHRhAIxUpYJSQbGYkYTHP6
-   WzI5NSGDNcGXkdGivKVS63/eRiQRG20rm5CEW6Kw/STAbb5wTqMDM9tuc
-   fD20wsdPpKuOiffMOW/SLaHwQs8Jaro+OXZAvhdnbjSZIJ+r0T0Aj1gmi
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="291685473"
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="291685473"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 20:39:01 -0700
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="560073529"
-Received: from davideli-mobl.amr.corp.intel.com ([10.209.69.78])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 20:39:01 -0700
-Date:   Thu, 28 Apr 2022 20:39:01 -0700 (PDT)
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-cc:     netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        matthieu.baerts@tessares.net, mptcp@lists.linux.dev
-Subject: Re: [PATCH net-next 0/6] mptcp: Path manager mode selection
-In-Reply-To: <20220428185739.39cdbb33@kernel.org>
-Message-ID: <23ff3b49-2563-1874-fa35-3af55d3088e7@linux.intel.com>
-References: <20220427225002.231996-1-mathew.j.martineau@linux.intel.com> <20220428185739.39cdbb33@kernel.org>
+        with ESMTP id S235455AbiD2Dxr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 23:53:47 -0400
+X-Greylist: delayed 231 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 28 Apr 2022 20:50:26 PDT
+Received: from mg.sunplus.com (unknown [113.196.136.146])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 88C60B646B;
+        Thu, 28 Apr 2022 20:50:23 -0700 (PDT)
+X-MailGates: (compute_score:DELIVER,40,3)
+Received: from 172.17.9.202
+        by mg02.sunplus.com with MailGates ESMTP Server V5.0(12344:0:AUTH_RELAY)
+        (envelope-from <wells.lu@sunplus.com>); Fri, 29 Apr 2022 11:46:12 +0800 (CST)
+Received: from sphcmbx02.sunplus.com.tw (172.17.9.112) by
+ sphcmbx01.sunplus.com.tw (172.17.9.202) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.26; Fri, 29 Apr 2022 11:46:06 +0800
+Received: from sphcmbx02.sunplus.com.tw ([fe80::fd3d:ad1a:de2a:18bd]) by
+ sphcmbx02.sunplus.com.tw ([fe80::fd3d:ad1a:de2a:18bd%14]) with mapi id
+ 15.00.1497.026; Fri, 29 Apr 2022 11:46:06 +0800
+From:   =?utf-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>
+To:     Francois Romieu <romieu@fr.zoreil.com>
+CC:     Wells Lu <wellslutw@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+        "roopa@nvidia.com" <roopa@nvidia.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "edumazet@google.com" <edumazet@google.com>
+Subject: RE: [PATCH net-next v9 2/2] net: ethernet: Add driver for Sunplus
+ SP7021
+Thread-Topic: [PATCH net-next v9 2/2] net: ethernet: Add driver for Sunplus
+ SP7021
+Thread-Index: AQHYWI+jS4JtiaXpFUyrVgs1l1MK560CSWcAgALotYCAACZzAIAA50mg
+Date:   Fri, 29 Apr 2022 03:46:06 +0000
+Message-ID: <c9f1c79f056c4982b6f425a3c3fdcfcd@sphcmbx02.sunplus.com.tw>
+References: <1650882640-7106-1-git-send-email-wellslutw@gmail.com>
+ <1650882640-7106-3-git-send-email-wellslutw@gmail.com>
+ <Ymh3si+MTg5i0Bnl@electric-eye.fr.zoreil.com>
+ <ff2077684c4c45fca929a8f61447242b@sphcmbx02.sunplus.com.tw>
+ <YmsIqDPjvZKbbKov@electric-eye.fr.zoreil.com>
+In-Reply-To: <YmsIqDPjvZKbbKov@electric-eye.fr.zoreil.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [172.25.108.39]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed; charset=US-ASCII
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On Thu, 28 Apr 2022, Jakub Kicinski wrote:
-
-> On Wed, 27 Apr 2022 15:49:56 -0700 Mat Martineau wrote:
->> MPTCP already has an in-kernel path manager (PM) to add and remove TCP
->> subflows associated with a given MPTCP connection. This in-kernel PM has
->> been designed to handle typical server-side use cases, but is not very
->> flexible or configurable for client devices that may have more
->> complicated policies to implement.
->>
->> This patch series from the MPTCP tree is the first step toward adding a
->> generic-netlink-based API for MPTCP path management, which a privileged
->> userspace daemon will be able to use to control subflow
->> establishment. These patches add a per-namespace sysctl to select the
->> default PM type (in-kernel or userspace) for new MPTCP sockets. New
->> self-tests confirm expected behavior when userspace PM is selected but
->> there is no daemon available to handle existing MPTCP PM events.
->>
->> Subsequent patch series (already staged in the MPTCP tree) will add the
->> generic netlink path management API.
->
-> Could you link to those patches, maybe? Feels a little strange to add
-> this sysctl to switch to user space mode now, before we had a chance
-> to judg^W review the netlink interface.
->
-
-Hi Jakub -
-
-Sure, no problem. If you'd prefer a pull request for this feature as a 
-whole I could stage that.
-
-Here's a tag (note: do not merge this as-is, the committer ids and full 
-history aren't suitable) -> 
-https://github.com/multipath-tcp/mptcp_net-next/commits/netdev-review-userspace-path-manager
-
-The last 26 commits there cover the full userspace path manager kernel 
-code, with the first 6 of those being this series.
-
-Userspace path managers makes use of generic netlink MPTCP events that 
-have already been upstream for a while, and the full series adds four 
-netlink commands for userspace:
-
-* MPTCP_PM_CMD_ANNOUNCE: advertise an address that's available for 
-additional subflow connections.
-
-* MPTCP_PM_CMD_REMOVE: revoke an advertisement
-
-* MPTCP_PM_CMD_SUBFLOW_CREATE: initiate a new subflow on an existing MPTCP 
-connection
-
-* MPTCP_PM_CMD_SUBFLOW_DESTROY: close a subflow on an existing MPTCP 
-connection
-
-There's one commit for each command, each with an obvious title ("mptcp: 
-netlink: Add MPTCP_PM_CMD_<name>")
-
-
-> Does the pm_type switch not fit more neatly into the netlink interface
-> itself?
-
-We (on the MPTCP ML) did discuss that as a design option, and landed on 
-the sysctl.
-
-The stack can handle having no userspace PM daemon present since MPTCP 
-connections can still be initiated without the PM and operate in single 
-subflow mode at first. When the daemon starts up later it can manage the 
-existing sockets and start announcing addresses or adding subflows. We 
-wanted to avoid accidentally ending up with a mix of kernel-PM-managed and 
-userspace-PM-managed sockets depending on when the daemon loaded.
-
-Userspace PM daemons could depend on carrier policy or other complex 
-dependencies, so it made sense to allow setting the sysctl early and leave 
-more flexibility for launching the daemon later.
-
---
-Mat Martineau
-Intel
+SGkgRnJhbmNvaXMsDQoNCg0KPiBbLi4uXQ0KPiA+IEkgd2lsbCBhZGQgZGlzYWJsZV9pcnEoKSBh
+bmQgZW5hYmxlX2lycSgpIGZvciBzcGwyc3dfcnhfcG9sbCgpIGFuZCBzcGwyc3dfdHhfcG9sbCgp
+DQo+IGFzIHNob3duIGJlbG93Og0KPiA+DQo+ID4gc3BsMnN3X3J4X3BvbGwoKToNCj4gPg0KPiA+
+IAl3bWIoKTsJLyogbWFrZSBzdXJlIHNldHRpbmdzIGFyZSBlZmZlY3RpdmUuICovDQo+ID4gCWRp
+c2FibGVfaXJxKGNvbW0tPmlycSk7DQo+ID4gCW1hc2sgPSByZWFkbChjb21tLT5sMnN3X3JlZ19i
+YXNlICsgTDJTV19TV19JTlRfTUFTS18wKTsNCj4gPiAJbWFzayAmPSB+TUFDX0lOVF9SWDsNCj4g
+PiAJd3JpdGVsKG1hc2ssIGNvbW0tPmwyc3dfcmVnX2Jhc2UgKyBMMlNXX1NXX0lOVF9NQVNLXzAp
+Ow0KPiA+IAllbmFibGVfaXJxKGNvbW0tPmlycSk7DQo+ID4NCj4gPiBzcGwyc3dfdHhfcG9sbCgp
+Og0KPiA+DQo+ID4gCXdtYigpOwkJCS8qIG1ha2Ugc3VyZSBzZXR0aW5ncyBhcmUgZWZmZWN0aXZl
+LiAqLw0KPiA+IAlkaXNhYmxlX2lycShjb21tLT5pcnEpOw0KPiA+IAltYXNrID0gcmVhZGwoY29t
+bS0+bDJzd19yZWdfYmFzZSArIEwyU1dfU1dfSU5UX01BU0tfMCk7DQo+ID4gCW1hc2sgJj0gfk1B
+Q19JTlRfVFg7DQo+ID4gCXdyaXRlbChtYXNrLCBjb21tLT5sMnN3X3JlZ19iYXNlICsgTDJTV19T
+V19JTlRfTUFTS18wKTsNCj4gPiAJZW5hYmxlX2lycShjb21tLT5pcnEpOw0KPiA+DQo+ID4NCj4g
+PiBJcyB0aGUgbW9kaWZpY2F0aW9uIG9rPw0KPiANCj4gZGlzYWJsZV9pcnEgcHJldmVudHMgZnV0
+dXJlIGlycSBwcm9jZXNzaW5nIGJ1dCBpdCBkb2VzIG5vdCBoZWxwIGFnYWluc3QgaXJxIGNvZGUg
+Y3VycmVudGx5DQo+IHJ1bm5pbmcgb24gYSBkaWZmZXJlbnQgY3B1Lg0KPiANCj4gWW91IG1heSB1
+c2UgcGxhaW4gc3Bpbl97bG9jayAvIHVubG9ja30gaW4gSVJRIGNvbnRleHQgYW5kIHNwaW5fe2xv
+cV9pcnFzYXZlIC8gaXJxX3Jlc3RvcmV9DQo+IGluIE5BUEkgY29udGV4dC4NCj4gDQo+IC0tDQo+
+IFVlaW1vcg0KDQpUaGFuayB5b3UgZm9yIHRlYWNoaW5nIG1lIGhvdyB0byBmaXggdGhlIGlzc3Vl
+Lg0KSSdsbCBhZGQgdGhlbSBuZXh0IHBhdGNoLg0KDQoNCkJlc3QgcmVnYXJkcywNCldlbGxzDQo=
