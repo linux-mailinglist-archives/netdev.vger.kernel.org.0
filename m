@@ -2,55 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 80D1D515318
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 19:57:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B36BC515344
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 20:03:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379840AbiD2SAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 14:00:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56248 "EHLO
+        id S1378012AbiD2SHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 14:07:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379795AbiD2SAg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 14:00:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 246F4C12E2
-        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 10:57:18 -0700 (PDT)
+        with ESMTP id S243172AbiD2SHJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 14:07:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44A1D8BE26
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 11:03:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B67CF62307
-        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 17:57:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C60BAC385A7;
-        Fri, 29 Apr 2022 17:57:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01C8CB8376A
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 18:03:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F4DBC385A7;
+        Fri, 29 Apr 2022 18:03:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651255037;
-        bh=8YUeZ16Q0twPHNndMdVAm1ySeAwOTK3s4fspDMZeNVU=;
+        s=k20201202; t=1651255428;
+        bh=fG3PhQdwEV8ap91EThyFQ8ikM/vmOL4FgriTu6LVUpI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dEL9N/mftVB+qDiZLtvv26rYXbSPIA77jkKb9BHbjBbV+x6euxCqspmmMeOob9d0q
-         B2L7zuJ5czUicDp5LO3Yk/0Jej3kdi0CU9LgLlIBCKWu6xE3p5EIvB9tmaOxISbwnd
-         zrOm6bI3Me3+7OW61mmgGxXVwIT1hAxC8PLFLem73uxQUIFNpLWlLBrjVd+CK7Q/0T
-         TgNtE84lfTvWn88jIlDTSjvw4LgjPBLPGg5/Quc3yqqrsPJS4DZ+4FHjObq4c90RjF
-         QeRooDO2zuUjsVTnAM+IEGia6dhngzcvHfhN2PAUhKHDzR0egUxgmXASeJgObJ9Fp4
-         a2CWmb5M2Fabg==
-Date:   Fri, 29 Apr 2022 10:57:15 -0700
+        b=am4VfvIzY8E5vSZjaBR9Cl5TsLMj+KKxQAIl7RZJUI5aDlCi9djKjPwbrNM+Ga5R9
+         zzfJdAGFFgAUiYSy8PVD3C7Ij3lkZ3dYCvpqUV/VZ2V65yv5kg7XbzpI6MpS29EezS
+         pmXq110ZzjEebjJFAcX/l1LstG+v6Gq/rmzVc0WL3G7qmdKBvrO/9HUfY2x1VtzCSM
+         Vs89kL+A2aq6t+FroVGz4ekOr354aPUTaPM77v81dpIel8mMSz9iuDT9I0TApkPLdb
+         aEYKsT5X0AV92uDfjrc51Tns+IbclZiGdIfb+4mKw9q+RLbDT8d5pkGQbhIi+QHEBs
+         u5C+8MgWtKS5Q==
+Date:   Fri, 29 Apr 2022 11:03:47 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Maloszewski, Michal" <michal.maloszewski@intel.com>
-Cc:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
+To:     Bin Chen <bin.chen@corigine.com>
+Cc:     Simon Horman <simon.horman@corigine.com>,
+        David Miller <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>,
-        "Jankowski, Konrad0" <konrad0.jankowski@intel.com>
-Subject: Re: [PATCH net 1/2] iavf: Fix error when changing ring parameters
- on ice PF
-Message-ID: <20220429105715.6179fc9b@kernel.org>
-In-Reply-To: <BL1PR11MB54308512D3CB817F76DFBCF686FC9@BL1PR11MB5430.namprd11.prod.outlook.com>
-References: <20220420172624.931237-1-anthony.l.nguyen@intel.com>
-        <20220420172624.931237-2-anthony.l.nguyen@intel.com>
-        <20220422154752.1fab6496@kernel.org>
-        <BL1PR11MB5430A4AD0469C1C4BDCBB5C486FD9@BL1PR11MB5430.namprd11.prod.outlook.com>
-        <20220428112820.4f36b5e6@kernel.org>
-        <BL1PR11MB54308512D3CB817F76DFBCF686FC9@BL1PR11MB5430.namprd11.prod.outlook.com>
+        oss-drivers <oss-drivers@corigine.com>
+Subject: Re: [PATCH net-next] nfp: VF rate limit support
+Message-ID: <20220429110347.1d563c7b@kernel.org>
+In-Reply-To: <SA1PR13MB5491A2994E4170BA33CCB7CEECFC9@SA1PR13MB5491.namprd13.prod.outlook.com>
+References: <20220422131945.948311-1-simon.horman@corigine.com>
+        <20220425165321.1856ebb7@kernel.org>
+        <SA1PR13MB5491A2994E4170BA33CCB7CEECFC9@SA1PR13MB5491.namprd13.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -63,24 +56,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 29 Apr 2022 13:14:12 +0000 Maloszewski, Michal wrote:
-> >> When we have state which is running, it does not mean that we have 
-> >> queues configured on PF. So in order to configure queues on PF, the 
-> >> IAVF_FLAG_QUEUES has to be disabled. I use here EAGAIN, because as 
-> >> long as we are not configured with queues, it does not make any sense 
-> >> to trigger command and we are not sure when the configuration of 
-> >> queues will end - so that is why EAGAIN is used.  
-> >
-> >Let me rephrase the question. Does getting out of the state where error is
-> >reported require user to change something, or is it something that happens
-> >automatically behind the scenes (i.e. the state is transient).  
-> 
-> It is something that happens automatically behind the scenes. 
-> It takes some time and there is no guarantee that it will be finished.
+On Fri, 29 Apr 2022 08:54:53 +0000 Bin Chen wrote:
+> On Tue, 26 Apr 2022 7:53 AM, Jakub wrote:
+> > On Fri, 22 Apr 2022 15:19:45 +0200 Simon Horman wrote:  
+> > > +	if (max_tx_rate > 0 || min_tx_rate > 0) {
+> > > +		if (max_tx_rate > 0 && max_tx_rate < min_tx_rate) {
+> > > +			nfp_warn(app->cpp, "min-tx-rate exceeds max_tx_rate.\n");
+> > > +			return -EINVAL;
+> > > +		}  
+> > 
+> > This check should be moved to the core, I reckon.
+> >  
+> We agree with your suggestion, thanks. We plan to do this in two steps:
+> 1.The firmware that currently support this feature will reject the nonzero min_tx_rate configuration, so the check here will not step in.  We will remove the check from driver site and upstream the patch. 
+> 2.We will do more investigation jobs and add an appropriate check in the core.
+> What do you think?
 
-Then either wait for it to finish (wait queue or such) or if
-possible record the desired config and return success. Apply
-the new config when the reset is finished.
+Sorry, I meant the second part of the condition only, basically
+something like:
 
-It really seems like you're making users pay the price for poor
-design of the driver's internals.
