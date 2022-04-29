@@ -2,80 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 23F6B514055
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 03:41:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F6D7514050
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 03:41:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353993AbiD2Bnj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 21:43:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43710 "EHLO
+        id S1354012AbiD2BoQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 21:44:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353990AbiD2Bnd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 21:43:33 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B55EF2BB3A;
-        Thu, 28 Apr 2022 18:40:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Oe0OrgHnXO1atGl84DOheHPrpv5NgL2S7w3gvQvSD04=; b=Ez1bInSFT4ZvYvQAgFYLxFFajJ
-        YII/5/40WXf6X2HxQwj56dGWgbE0AfIWxpc0uX22wa5MufX3DkP7EjlbAo7R6FMEhRpboM4RE4NDe
-        nQCEWC/9ApbCAweG8Pp7Axz61MKl3MQNxPCJk7vpSM/DMf01MNJBeVpeuUVYgR++jaew=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nkFc5-000PG2-9v; Fri, 29 Apr 2022 03:40:05 +0200
-Date:   Fri, 29 Apr 2022 03:40:05 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Joel Stanley <joel@jms.id.au>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Dylan Hung <dylan_hung@aspeedtech.com>,
-        David Wilder <dwilder@us.ibm.com>,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        David Wilder <wilder@us.ibm.com>
-Subject: Re: [PATCH net] net: ftgmac100: Disable hardware checksum on AST2600
-Message-ID: <YmtB9QcMjOGL2lIa@lunn.ch>
-References: <20220428082858.545176-1-joel@jms.id.au>
- <Yms5JzcVMKDYpR5H@lunn.ch>
- <CACPK8Xeq8MLmRmYW=qo7+FDRG_bwaSTMQtrHhPCwGJ8-ZeFp=A@mail.gmail.com>
+        with ESMTP id S235461AbiD2BoP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 21:44:15 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0EF55FF14;
+        Thu, 28 Apr 2022 18:40:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0D715CE2F98;
+        Fri, 29 Apr 2022 01:40:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF7CBC385AC;
+        Fri, 29 Apr 2022 01:40:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651196456;
+        bh=Hz6ulH+o/XA3d/ohY6QMo3a7cl6ZEDIejB0K3veZ9gw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hbqr3sYCWquHPPIGT12Ir8IJ8M2rIRjkIx6bydazwbRTF3vsdVxWbwmYa17j93Y1T
+         CmPDfLH9/sDfXM56lx64FfPeN3m/SyTtFt+mBdpbqM9RpLRfUKY9JiEPiPJUQgKhe5
+         ili1hZR4k4Jg/LhXv3cRQZ+mnkM/L307Xkmuws0+bkoIKJD9JPiuJ5uCmPW0G/LgHs
+         xvD8NR0nSQsQf+KwKIfjHsO89fGbTNUkhpu5/B4Qs1xveASSPEqOjG6sd4w+0f7v+S
+         40LohYVRzYdxcPUfmec/UFYagUWtr32Qt/8I7TdWHZiGPlgW/XEijZHyWCaXzku6vH
+         La9YD2kGDcCWA==
+Date:   Thu, 28 Apr 2022 18:40:54 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jianqun Xu <jay.xu@rock-chips.com>
+Cc:     davem@davemloft.net, joabreu@synopsys.com, alexandre.torgue@st.com,
+        peppe.cavallaro@st.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-rockchip@lists.infradead.org
+Subject: Re: [PATCH V2] ethernet: stmmac: support driver work for DTs
+ without child queue node
+Message-ID: <20220428184054.3dd72784@kernel.org>
+In-Reply-To: <20220429004605.1010751-1-jay.xu@rock-chips.com>
+References: <20220428010927.526310-1-jay.xu@rock-chips.com>
+        <20220429004605.1010751-1-jay.xu@rock-chips.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACPK8Xeq8MLmRmYW=qo7+FDRG_bwaSTMQtrHhPCwGJ8-ZeFp=A@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 01:35:43AM +0000, Joel Stanley wrote:
-> On Fri, 29 Apr 2022 at 01:02, Andrew Lunn <andrew@lunn.ch> wrote:
-> >
-> > > Fixes: 39bfab8844a0 ("net: ftgmac100: Add support for DT phy-handle property")
-> > > Reported-by: David Wilder <wilder@us.ibm.com>
-> > > Signed-off-by: Joel Stanley <joel@jms.id.au>
-> > > ---
-> > > Net maintainers, if no one has a counter proposal I would like this
-> > > merged as a fix. Please give Dylan from Aspeed a chance to reply before
-> > > applying the patch.
-> >
-> > What has phy-handle got to do with this? You might want to add an
-> > explanation why you picked that as a Fixes: commit, if it is in fact
-> > correct.
+On Fri, 29 Apr 2022 08:46:05 +0800 Jianqun Xu wrote:
+> The driver use the value of property 'snps,rx-queues-to-use' to loop
+> same numbers child nodes as queues, such as:
 > 
-> If you have a look at that commit, you can see that was where ast2600
-> support was added to the driver.
+>     gmac {
+>         rx-queues-config {
+>             snps,rx-queues-to-use = <1>;
+>             queue0 {
+>                 // nothing need here.
+> 	    };
+> 	};
+>     };
 
-O.K, so please do add an explanation, because it is not obvious. I'm
-partially to blame, i should of asked for that patch to be split in
-two.
+I think you mean tx, not rx, given the code.
 
-     Andrew
+>  
+>  		queue++;
+>  	}
+> -	if (queue != plat->tx_queues_to_use) {
+> +	if (queue != plat->tx_queues_to_use && of_get_child_count(tx_node)) {
+>  		ret = -EINVAL;
+>  		dev_err(&pdev->dev, "Not all TX queues were configured\n");
+>  		goto out;
+
+Also what about the init to defaults I asked about?
