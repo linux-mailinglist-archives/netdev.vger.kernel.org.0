@@ -2,123 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10798514118
+	by mail.lfdr.de (Postfix) with ESMTP id A092051411A
 	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 05:48:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235818AbiD2DVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 23:21:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60920 "EHLO
+        id S236582AbiD2DmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 23:42:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235760AbiD2DVW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 23:21:22 -0400
-Received: from mail-vs1-xe34.google.com (mail-vs1-xe34.google.com [IPv6:2607:f8b0:4864:20::e34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 057F358383
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 20:18:03 -0700 (PDT)
-Received: by mail-vs1-xe34.google.com with SMTP id m62so5791056vsc.2
-        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 20:18:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=zappem-net.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=hP5zDKwX4YrMuIykWqdscTonYIj8M09Ub7CmGfBbQHI=;
-        b=vND5ZG87WxEZH0u5PXmZX4oJvykE3MuYGIS3UG0fd1oN6Z+s/TlGMHrov3ANrMUzwQ
-         78P+4flgFV7sBROZ69E9/7hAtkuX4AQnlQL1hTWxHn7nYRPMWJ15M3A0iBUdD7tz7fRN
-         lATti1e+Tm/B34qmATAIpgNMx76YTsLtPfzmDeiaBJqOQYnH3u0apnnARl/OkFJvu3Lr
-         z4Fn57tpUw2wpMtC9xCKa/Ln+eYJ0UT/Ph1P8yfl0UcKkx8Teispg1WTqTWPYt4EAhU3
-         oErPrTVvmeHnVpyXFVVp6lo1PpACKng0bb9iehCrLzlKvXTI2gDsOHJsRc7bu+F7ejHC
-         ZzRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=hP5zDKwX4YrMuIykWqdscTonYIj8M09Ub7CmGfBbQHI=;
-        b=UaAWCS6aIBYIFaklyIp7N5QUFuo5haMV29xhpL9jbNeBPgC+mq4EKNYJH0mFedayMR
-         nJsf6ZC5vYxJZMKah8v8FlYyyqhJ9j3H0Dm7ZBHv1lARggdBmzCq/vDzkIwXaAOckp9M
-         bNwDiuqG8TS6bjUwNf8PjAfkJk8f0it4SiJW/SVdoj0MKqRwjtH8sXf6pLkgpL55PpcD
-         /lKMyf1xAkktAQJfGcfE1OkkEJYMTlbDJOgWl2oNHlZiRajIj/cukHLIJM0IE7B94W5O
-         W0FBFEecqf2F+Fyzn3FZ1vIw+MrWKHrRNZw3j1ag7NDRfD8WMk/e0KlEW2+49KICkX2g
-         w2NA==
-X-Gm-Message-State: AOAM531nY4o8oojBViuSWJo6riXzA5isiIgljRcpY+JMiLuHfybHI39t
-        hC1PVVCXSiLgdg8c3pbyAFO8V5TJSlK2nFIPgo0PHA9wOOqkBA==
-X-Google-Smtp-Source: ABdhPJyoEFIuM+yTi35sShbgaR7I0sD3yA7RUWej8bTPcPKS/dKS6yQ25a9G1++hFPfVH2qxHQs3VemRIoRF9wvh8Po=
-X-Received: by 2002:a67:fd76:0:b0:32c:c03f:284 with SMTP id
- h22-20020a67fd76000000b0032cc03f0284mr8211907vsa.9.1651202282434; Thu, 28 Apr
- 2022 20:18:02 -0700 (PDT)
+        with ESMTP id S236224AbiD2DmS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 23:42:18 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFDEBA5E9A
+        for <netdev@vger.kernel.org>; Thu, 28 Apr 2022 20:39:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651203541; x=1682739541;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=hbI67oUZUKEUm3P+EJ8M8Uh3g2wNFyH+0FXYQT3fUko=;
+  b=a5obPdzK/1iAFvrsvnU+CSo8Fopjg2DDYWyB5y8VJaREhczXgisYkXbA
+   SFI/Wg+qT8koZ4g6TMwHSFZCYP0adHMTSQK939OwCKYPFj+TXKaR97qPZ
+   mPA50PGdoBYQVkd4zYEKgh2TFbOIAXVVrz+qEWlbnuwAOiV/res1nS7TR
+   Petc+XkIhbG1n+YJgdqCmuM3Y4N8BvywUoLrHRhAIxUpYJSQbGYkYTHP6
+   WzI5NSGDNcGXkdGivKVS63/eRiQRG20rm5CEW6Kw/STAbb5wTqMDM9tuc
+   fD20wsdPpKuOiffMOW/SLaHwQs8Jaro+OXZAvhdnbjSZIJ+r0T0Aj1gmi
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="291685473"
+X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
+   d="scan'208";a="291685473"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 20:39:01 -0700
+X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
+   d="scan'208";a="560073529"
+Received: from davideli-mobl.amr.corp.intel.com ([10.209.69.78])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2022 20:39:01 -0700
+Date:   Thu, 28 Apr 2022 20:39:01 -0700 (PDT)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+cc:     netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        matthieu.baerts@tessares.net, mptcp@lists.linux.dev
+Subject: Re: [PATCH net-next 0/6] mptcp: Path manager mode selection
+In-Reply-To: <20220428185739.39cdbb33@kernel.org>
+Message-ID: <23ff3b49-2563-1874-fa35-3af55d3088e7@linux.intel.com>
+References: <20220427225002.231996-1-mathew.j.martineau@linux.intel.com> <20220428185739.39cdbb33@kernel.org>
 MIME-Version: 1.0
-From:   Tinkerer One <tinkerer@zappem.net>
-Date:   Thu, 28 Apr 2022 20:17:51 -0700
-Message-ID: <CABCx3R0QbN2anNX5mO1iPGZNgS=wdWr+Rb=bYGwf24o6jxjnaQ@mail.gmail.com>
-Subject: Simplify ambient capability dropping in iproute2:ip tool.
-To:     netdev@vger.kernel.org
-Cc:     bluca@debian.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; format=flowed; charset=US-ASCII
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
 
-This is expanded from https://github.com/shemminger/iproute2/issues/62
-which I'm told is not the way to report issues and offer fixes to
-iproute2 etc.
+On Thu, 28 Apr 2022, Jakub Kicinski wrote:
 
-[I'm not subscribed to the netdev list, so please cc: me if you need more info.]
+> On Wed, 27 Apr 2022 15:49:56 -0700 Mat Martineau wrote:
+>> MPTCP already has an in-kernel path manager (PM) to add and remove TCP
+>> subflows associated with a given MPTCP connection. This in-kernel PM has
+>> been designed to handle typical server-side use cases, but is not very
+>> flexible or configurable for client devices that may have more
+>> complicated policies to implement.
+>>
+>> This patch series from the MPTCP tree is the first step toward adding a
+>> generic-netlink-based API for MPTCP path management, which a privileged
+>> userspace daemon will be able to use to control subflow
+>> establishment. These patches add a per-namespace sysctl to select the
+>> default PM type (in-kernel or userspace) for new MPTCP sockets. New
+>> self-tests confirm expected behavior when userspace PM is selected but
+>> there is no daemon available to handle existing MPTCP PM events.
+>>
+>> Subsequent patch series (already staged in the MPTCP tree) will add the
+>> generic netlink path management API.
+>
+> Could you link to those patches, maybe? Feels a little strange to add
+> this sysctl to switch to user space mode now, before we had a chance
+> to judg^W review the netlink interface.
+>
 
-The original change that added the drop_cap() code was:
+Hi Jakub -
 
-https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=ba2fc55b99f8363c80ce36681bc1ec97690b66f5
+Sure, no problem. If you'd prefer a pull request for this feature as a 
+whole I could stage that.
 
-In an attempt to address some user feedback, the code was further
-complicated by:
+Here's a tag (note: do not merge this as-is, the committer ids and full 
+history aren't suitable) -> 
+https://github.com/multipath-tcp/mptcp_net-next/commits/netdev-review-userspace-path-manager
 
-https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=9b13cc98f5952f62b825461727c8170d37a4037d
+The last 26 commits there cover the full userspace path manager kernel 
+code, with the first 6 of those being this series.
 
-Another user issue was asked about here (a couple days ago):
+Userspace path managers makes use of generic netlink MPTCP events that 
+have already been upstream for a while, and the full series adds four 
+netlink commands for userspace:
 
-https://stackoverflow.com/questions/72015197/allow-non-root-user-of-container-to-execute-binaries-that-need-capabilities
+* MPTCP_PM_CMD_ANNOUNCE: advertise an address that's available for 
+additional subflow connections.
 
-I looked into what was going on and found that lib/utils.c contains
-some complicated code that seems to be trying to prevent Ambient
-capabilities from being inherited except in specific cases
-(ip/ip.c:main() calls drop_cap() except in the ip vrf exec case.). The
-code clears all capabilities in order to prevent Ambient capabilities
-from being available. The following change achieves suppression of
-Ambient capabilities much more precisely. It also permits ip to not
-need to be setuid-root or executed under sudo since it can now be
-optionally empowered by file capabilities:
+* MPTCP_PM_CMD_REMOVE: revoke an advertisement
 
-diff --git a/lib/utils.c b/lib/utils.c
-index 53d31006..681e4aee 100644
---- a/lib/utils.c
-+++ b/lib/utils.c
-@@ -1555,25 +1555,10 @@ void drop_cap(void)
- #ifdef HAVE_LIBCAP
-        /* don't harmstring root/sudo */
-        if (getuid() != 0 && geteuid() != 0) {
--               cap_t capabilities;
--               cap_value_t net_admin = CAP_NET_ADMIN;
--               cap_flag_t inheritable = CAP_INHERITABLE;
--               cap_flag_value_t is_set;
--
--               capabilities = cap_get_proc();
--               if (!capabilities)
--                       exit(EXIT_FAILURE);
--               if (cap_get_flag(capabilities, net_admin, inheritable,
--                   &is_set) != 0)
-+               /* prevent any ambient capabilities from being inheritable */
-+               if (cap_reset_ambient() != 0) {
-                        exit(EXIT_FAILURE);
--               /* apps with ambient caps can fork and call ip */
--               if (is_set == CAP_CLEAR) {
--                       if (cap_clear(capabilities) != 0)
--                               exit(EXIT_FAILURE);
--                       if (cap_set_proc(capabilities) != 0)
--                               exit(EXIT_FAILURE);
-                }
--               cap_free(capabilities);
-        }
- #endif
- }
+* MPTCP_PM_CMD_SUBFLOW_CREATE: initiate a new subflow on an existing MPTCP 
+connection
+
+* MPTCP_PM_CMD_SUBFLOW_DESTROY: close a subflow on an existing MPTCP 
+connection
+
+There's one commit for each command, each with an obvious title ("mptcp: 
+netlink: Add MPTCP_PM_CMD_<name>")
+
+
+> Does the pm_type switch not fit more neatly into the netlink interface
+> itself?
+
+We (on the MPTCP ML) did discuss that as a design option, and landed on 
+the sysctl.
+
+The stack can handle having no userspace PM daemon present since MPTCP 
+connections can still be initiated without the PM and operate in single 
+subflow mode at first. When the daemon starts up later it can manage the 
+existing sockets and start announcing addresses or adding subflows. We 
+wanted to avoid accidentally ending up with a mix of kernel-PM-managed and 
+userspace-PM-managed sockets depending on when the daemon loaded.
+
+Userspace PM daemons could depend on carrier policy or other complex 
+dependencies, so it made sense to allow setting the sysctl early and leave 
+more flexibility for launching the daemon later.
+
+--
+Mat Martineau
+Intel
