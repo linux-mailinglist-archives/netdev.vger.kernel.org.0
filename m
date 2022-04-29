@@ -2,95 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 226275143FB
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 10:21:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 884A2514460
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 10:38:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355663AbiD2IXt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 04:23:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39396 "EHLO
+        id S1355829AbiD2ImE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 04:42:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355634AbiD2IXr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 04:23:47 -0400
-Received: from smtpservice.6wind.com (unknown [185.13.181.2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5D3086347;
-        Fri, 29 Apr 2022 01:20:29 -0700 (PDT)
-Received: from bretzel (bretzel.dev.6wind.com [10.17.1.57])
-        by smtpservice.6wind.com (Postfix) with ESMTPS id CD9BA603C8;
-        Fri, 29 Apr 2022 10:20:28 +0200 (CEST)
-Received: from dichtel by bretzel with local (Exim 4.92)
-        (envelope-from <dichtel@6wind.com>)
-        id 1nkLrY-0002gK-OO; Fri, 29 Apr 2022 10:20:28 +0200
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S235473AbiD2ImD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 04:42:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3746DC3E96;
+        Fri, 29 Apr 2022 01:38:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C663E6218F;
+        Fri, 29 Apr 2022 08:38:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FCA4C385A4;
+        Fri, 29 Apr 2022 08:38:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651221525;
+        bh=xNhnkNqOw++2z7Vmck3E5MYYlt3eyS8EsoL+hkP9rxs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=uk5qrD0ypQbkvPX0GQ3K4HbxZf4Pyom4W+xGxQwxqM7mA7yTZLh5C88jCKZiRbKKj
+         Jzx3dBsmP4aPUzM4bkjnJkutxBn/ecvbnvTTWTyFDBEkCaq4BzPNaovMj1EI8rRU4d
+         GkzayYLHZLsUllMDZV9QCDE6vgmJMrwFari6nkGQ=
+Date:   Fri, 29 Apr 2022 10:38:42 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Sasha Levin <sashal@kernel.org>, stable <stable@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        stable@vger.kernel.org
-Subject: [PATCH net v2] ping: fix address binding wrt vrf
-Date:   Fri, 29 Apr 2022 10:20:21 +0200
-Message-Id: <20220429082021.10294-1-nicolas.dichtel@6wind.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220429075659.9967-1-nicolas.dichtel@6wind.com>
-References: <20220429075659.9967-1-nicolas.dichtel@6wind.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH stable 0/3] SOF_TIMESTAMPING_OPT_ID backport to 4.14 and
+ 4.19
+Message-ID: <YmukEb1gyBKXIDUP@kroah.com>
+References: <20220406192956.3291614-1-vladimir.oltean@nxp.com>
+ <20220408152929.4zd2mclusdpazclv@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,RDNS_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220408152929.4zd2mclusdpazclv@skbuf>
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When ping_group_range is updated, 'ping' uses the DGRAM ICMP socket,
-instead of an IP raw socket. In this case, 'ping' is unable to bind its
-socket to a local address owned by a vrflite.
+On Fri, Apr 08, 2022 at 03:29:30PM +0000, Vladimir Oltean wrote:
+> Hello Greg, Sasha,
+> 
+> On Wed, Apr 06, 2022 at 10:29:53PM +0300, Vladimir Oltean wrote:
+> > As discussed with Willem here:
+> > https://lore.kernel.org/netdev/CA+FuTSdQ57O6RWj_Lenmu_Vd3NEX9xMzMYkB0C3rKMzGgcPc6A@mail.gmail.com/T/
+> > 
+> > the kernel silently doesn't act upon the SOF_TIMESTAMPING_OPT_ID socket
+> > option in several cases on older kernels, yet user space has no way to
+> > find out about this, practically resulting in broken functionality.
+> > 
+> > This patch set backports the support towards linux-4.14.y and linux-4.19.y,
+> > which fixes the issue described above by simply making the kernel act
+> > upon SOF_TIMESTAMPING_OPT_ID as expected.
+> > 
+> > Testing was done with the most recent (not the vintage-correct one)
+> > kselftest script at:
+> > tools/testing/selftests/networking/timestamping/txtimestamp.sh
+> > with the message "OK. All tests passed".
+> 
+> Could you please pick up these backports for "stable"? Thanks.
 
-Before the patch:
-$ sysctl -w net.ipv4.ping_group_range='0  2147483647'
-$ ip link add blue type vrf table 10
-$ ip link add foo type dummy
-$ ip link set foo master blue
-$ ip link set foo up
-$ ip addr add 192.168.1.1/24 dev foo
-$ ip vrf exec blue ping -c1 -I 192.168.1.1 192.168.1.2
-ping: bind: Cannot assign requested address
+Do you not already see these in a released kernel?  If not, please
+resubmit what is missing as I think they are all there...
 
-CC: stable@vger.kernel.org
-Fixes: 1b69c6d0ae90 ("net: Introduce L3 Master device abstraction")
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
----
+thanks,
 
-v1 -> v2:
- add the tag "Cc: stable@vger.kernel.org" for correct stable submission
-
- net/ipv4/ping.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/net/ipv4/ping.c b/net/ipv4/ping.c
-index 3ee947557b88..9ea326b50775 100644
---- a/net/ipv4/ping.c
-+++ b/net/ipv4/ping.c
-@@ -305,6 +305,7 @@ static int ping_check_bind_addr(struct sock *sk, struct inet_sock *isk,
- 	struct net *net = sock_net(sk);
- 	if (sk->sk_family == AF_INET) {
- 		struct sockaddr_in *addr = (struct sockaddr_in *) uaddr;
-+		u32 tb_id = RT_TABLE_LOCAL;
- 		int chk_addr_ret;
- 
- 		if (addr_len < sizeof(*addr))
-@@ -318,7 +319,8 @@ static int ping_check_bind_addr(struct sock *sk, struct inet_sock *isk,
- 		pr_debug("ping_check_bind_addr(sk=%p,addr=%pI4,port=%d)\n",
- 			 sk, &addr->sin_addr.s_addr, ntohs(addr->sin_port));
- 
--		chk_addr_ret = inet_addr_type(net, addr->sin_addr.s_addr);
-+		tb_id = l3mdev_fib_table_by_index(net, sk->sk_bound_dev_if) ? : tb_id;
-+		chk_addr_ret = inet_addr_type_table(net, addr->sin_addr.s_addr, tb_id);
- 
- 		if (!inet_addr_valid_or_nonlocal(net, inet_sk(sk),
- 					         addr->sin_addr.s_addr,
--- 
-2.33.0
-
+greg k-h
