@@ -2,180 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 318DF514619
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 11:58:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17976514669
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 12:15:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357130AbiD2KAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 06:00:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51850 "EHLO
+        id S1357290AbiD2KTF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 06:19:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235489AbiD2KAE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 06:00:04 -0400
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31D623F8B5
-        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 02:56:46 -0700 (PDT)
-Received: by mail-ej1-f49.google.com with SMTP id bv19so14428288ejb.6
-        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 02:56:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:date:in-reply-to
-         :references:user-agent:mime-version;
-        bh=lC2aQDO1jDrS95kLb2tVibcrroZGiiyDY0egjLaQEhE=;
-        b=2fX326V4gT7wC/I/ulqHmYuRjHFvLcA/ZwkP9IbQkoivC2RP25C9BFcd3x5zPZe6a9
-         ZGrwKUBJAym3q4cN6MReU0Z81RUVdQL/v9xQsEK0vREY2DZNCrDg2+9tejJQHLfv3+Fk
-         H4jIHpKH2Sz4TZlkPyeJlYwaWcoHrQJcDWyaCh4SdzhdOx/W8sVJIWjc+YQga73O8YDw
-         ckFEyCJRKcyRexmBve9/VzkR3cfpIIOBB6qyxhvc3sm3eXCdZ3dK2pbRa0oRK/y38ALc
-         DfMuL7oxF727PIIJin+6uxzJ+lOEeWXJ58Pl3GNAFknul4GD9s6/GhD0QkTs5x0Melfl
-         e1Cw==
-X-Gm-Message-State: AOAM531nkkdKkiZa7toU1AoxfKFb+yc9QyDFuwW2crJnIw9yg2UYknB7
-        36n7fKLTKTl+xRkNgczHRYQxTqNU8s0=
-X-Google-Smtp-Source: ABdhPJxMMH0h3MN+8YfG5XYIWASgaXbwwv6irQmsbVw5FOtNOHJYQ8bSAPN7+yJxp1IAIWN3sv8htg==
-X-Received: by 2002:a17:906:478b:b0:6db:8b6e:d5de with SMTP id cw11-20020a170906478b00b006db8b6ed5demr36380235ejc.161.1651226204490;
-        Fri, 29 Apr 2022 02:56:44 -0700 (PDT)
-Received: from localhost ([2a01:4b00:f41a:3600:360b:9754:2e3a:c344])
-        by smtp.gmail.com with ESMTPSA id h10-20020a1709070b0a00b006f3ef214daasm485085ejl.16.2022.04.29.02.56.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 02:56:43 -0700 (PDT)
-Message-ID: <fac8b95ce32c4b57e7ea00596cbf01aaf966c7ef.camel@debian.org>
-Subject: Re: Simplify ambient capability dropping in iproute2:ip tool.
-From:   Luca Boccassi <bluca@debian.org>
-To:     Tinkerer One <tinkerer@zappem.net>, netdev@vger.kernel.org
-Date:   Fri, 29 Apr 2022 10:56:38 +0100
-In-Reply-To: <CABCx3R0QbN2anNX5mO1iPGZNgS=wdWr+Rb=bYGwf24o6jxjnaQ@mail.gmail.com>
-References: <CABCx3R0QbN2anNX5mO1iPGZNgS=wdWr+Rb=bYGwf24o6jxjnaQ@mail.gmail.com>
-Content-Type: multipart/signed; micalg="pgp-sha512";
-        protocol="application/pgp-signature"; boundary="=-OBlkst5mfEnR4dm2FbSd"
-User-Agent: Evolution 3.38.3-1+plugin 
+        with ESMTP id S1357291AbiD2KTE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 06:19:04 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADD014BB93
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 03:15:43 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651227341;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=zVznKpzHajBTKBk7sBq2rEPxOXycGpl/maeVjIM3uWw=;
+        b=POF/WKIukCXntGnS40RxZEw5si9f+sEJgb3OK83kc9TbEfnkKCmoqffdicqKJavhuC27fc
+        O2ObZIyb8dhkWpgTaiM+eXDZ6B5HfF6606NiOHmxiTIdW12G/vnvZrPQ3XF8SvRT4mRiwp
+        E+80zr8C74j7GpTEuKbBxEHDf1+u/KeiR9nTHaUox20cbqtRWvOGT0RQtNQ0ED8Gfdtm4O
+        Umkg0fwYjlL5kEgDASSQat4xRN4kYOgczCekNyiHEkA3ZermvRJVgU+10xguBKjije+WoT
+        sVT2Z7kZij4oDvVJygKHE2II7PnaUkeZlhVTuoDgMt/uCPURHMCw6iZVPvgjfg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651227341;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=zVznKpzHajBTKBk7sBq2rEPxOXycGpl/maeVjIM3uWw=;
+        b=hmWMMrF2TBCbVTYu9eUAd717o0taIeqj9i5LAHgC7BYJMk1EcEAr7w9iM4v5l3zqHIdDtP
+        nzSHfjtowLgIrUDw==
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Gerhard Engleder <gerhard@engleder-embedded.com>,
+        "Y.B. Lu" <yangbo.lu@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Yannick Vignon <yannick.vignon@nxp.com>,
+        Rui Sousa <rui.sousa@nxp.com>, Jiri Pirko <jiri@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next] selftests: forwarding: add Per-Stream
+ Filtering and Policing test for Ocelot
+In-Reply-To: <20220429093845.tyzwcwppsgbjbw2s@skbuf>
+References: <20220428204839.1720129-1-vladimir.oltean@nxp.com>
+ <87v8usiemh.fsf@kurt> <20220429093845.tyzwcwppsgbjbw2s@skbuf>
+Date:   Fri, 29 Apr 2022 12:15:39 +0200
+Message-ID: <87h76ci4ac.fsf@kurt>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---=-OBlkst5mfEnR4dm2FbSd
-Content-Type: text/plain; charset="UTF-8"
+--=-=-=
+Content-Type: text/plain
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 2022-04-28 at 20:17 -0700, Tinkerer One wrote:
-> Hi,
->=20
-> This is expanded from https://github.com/shemminger/iproute2/issues/62
-> which I'm told is not the way to report issues and offer fixes to
-> iproute2 etc.
->=20
-> [I'm not subscribed to the netdev list, so please cc: me if you need more=
- info.]
->=20
-> The original change that added the drop_cap() code was:
->=20
-> https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=
-=3Dba2fc55b99f8363c80ce36681bc1ec97690b66f5
->=20
-> In an attempt to address some user feedback, the code was further
-> complicated by:
->=20
-> https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=
-=3D9b13cc98f5952f62b825461727c8170d37a4037d
->=20
-> Another user issue was asked about here (a couple days ago):
->=20
-> https://stackoverflow.com/questions/72015197/allow-non-root-user-of-conta=
-iner-to-execute-binaries-that-need-capabilities
->=20
-> I looked into what was going on and found that lib/utils.c contains
-> some complicated code that seems to be trying to prevent Ambient
-> capabilities from being inherited except in specific cases
-> (ip/ip.c:main() calls drop_cap() except in the ip vrf exec case.). The
-> code clears all capabilities in order to prevent Ambient capabilities
-> from being available. The following change achieves suppression of
-> Ambient capabilities much more precisely. It also permits ip to not
-> need to be setuid-root or executed under sudo since it can now be
-> optionally empowered by file capabilities:
->=20
-> diff --git a/lib/utils.c b/lib/utils.c
-> index 53d31006..681e4aee 100644
-> --- a/lib/utils.c
-> +++ b/lib/utils.c
-> @@ -1555,25 +1555,10 @@ void drop_cap(void)
-> =C2=A0#ifdef HAVE_LIBCAP
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0/* don't harmstring root/=
-sudo */
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (getuid() !=3D 0 && ge=
-teuid() !=3D 0) {
-> -               cap_t capabilities;
-> -               cap_value_t net_admin =3D CAP_NET_ADMIN;
-> -               cap_flag_t inheritable =3D CAP_INHERITABLE;
-> -               cap_flag_value_t is_set;
-> -
-> -               capabilities =3D cap_get_proc();
-> -               if (!capabilities)
-> -                       exit(EXIT_FAILURE);
-> -               if (cap_get_flag(capabilities, net_admin, inheritable,
-> -                   &is_set) !=3D 0)
-> +               /* prevent any ambient capabilities from being inheritabl=
-e */
-> +               if (cap_reset_ambient() !=3D 0) {
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0exi=
-t(EXIT_FAILURE);
-> -               /* apps with ambient caps can fork and call ip */
-> -               if (is_set =3D=3D CAP_CLEAR) {
-> -                       if (cap_clear(capabilities) !=3D 0)
-> -                               exit(EXIT_FAILURE);
-> -                       if (cap_set_proc(capabilities) !=3D 0)
-> -                               exit(EXIT_FAILURE);
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0}
-> -               cap_free(capabilities);
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0}
-> =C2=A0#endif
-> =C2=A0}
+On Fri Apr 29 2022, Vladimir Oltean wrote:
+> Hi Kurt,
+>
+> Thanks for reviewing.
+>
+> On Fri, Apr 29, 2022 at 08:32:22AM +0200, Kurt Kanzenbach wrote:
+>> Hi Vladimir,
+>>=20
+>> On Thu Apr 28 2022, Vladimir Oltean wrote:
+>> > The Felix VSC9959 switch in NXP LS1028A supports the tc-gate action
+>> > which enforced time-based access control per stream. A stream as seen =
+by
+>> > this switch is identified by {MAC DA, VID}.
+>> >
+>> > We use the standard forwarding selftest topology with 2 host interfaces
+>> > and 2 switch interfaces. The host ports must require timestamping non-=
+IP
+>> > packets and supporting tc-etf offload, for isochron to work. The
+>> > isochron program monitors network sync status (ptp4l, phc2sys) and
+>> > deterministically transmits packets to the switch such that the tc-gate
+>> > action either (a) always accepts them based on its schedule, or
+>> > (b) always drops them.
+>> >
+>> > I tried to keep as much of the logic that isn't specific to the NXP
+>> > LS1028A in a new tsn_lib.sh, for future reuse. This covers
+>> > synchronization using ptp4l and phc2sys, and isochron.
+>>=20
+>> For running this selftest `isochron` tool is required. That's neither
+>> packaged on Linux distributions or available in the kernel source. I
+>> guess, it has to be built from your Github account/repository?
+>
+> This is slightly inconvenient, yes. But for this selftest in particular,
+> a more specialized setup is required anyway, as it only runs on an NXP
+> LS1028A based board. So I guess it's only the smaller of several
+> inconveniences?
 
-The current setup is necessary, as the commit message says:
+The thing is, you already moved common parts to a library. So, future
+TSN selftests for other devices, switches, NIC(s) may come around and reuse
+isochron.
 
-"Users have reported a regression due to ip now dropping capabilities
-unconditionally.
-zerotier-one VPN and VirtualBox use ambient capabilities in their
-binary and then fork out to ip to set routes and links, and this
-does not work anymore.
+>
+> A few years ago when I decided to work on isochron, I searched for an
+> application for detailed network latency testing and I couldn't find
+> one. I don't think the situation has improved a lot since then.
 
-As a workaround, do not drop caps if CAP_NET_ADMIN (the most common
-capability used by ip) is set with the INHERITABLE flag.
-Users that want ip vrf exec to work do not need to set INHERITABLE,
-which will then only set when the calling program had privileges to
-give itself the ambient capability."
+It didn't :/.
 
-Besides, giving setuid to ip itself would be very dangerous, and should
-definitely not be supported. I am not aware of any distribution that
-does it. If there is any, it should be removed. Even for the vrf exec
-case, on Debian/Ubuntu I've set it up so that the caps are not
-configured by default, but require admin action at install time to
-enable, with a clear warning about the possible risks and tradeoffs.
+> If isochron is useful for a larger audience, I can look into what I
+> can do about distribution. It's license-compatible with the kernel,
+> but it's a large-ish program to just toss into
+> tools/testing/selftests/, plus I still commit rather frequently to it,
+> and I'd probably annoy the crap out of everyone if I move its
+> development to netdev@vger.kernel.org.
 
---=20
-Kind regards,
-Luca Boccassi
+I agree. Nevertheless, having a standardized tool for this kind latency
+testing would be nice. For instance, cyclictest is also not part of the
+kernel, but packaged for all major Linux distributions.
 
---=-OBlkst5mfEnR4dm2FbSd
+>> > +# Tunables
+>> > +UTC_TAI_OFFSET=3D37
+>>=20
+>> Why do you need the UTC to TAI offset? isochron could just use CLOCK_TAI
+>> as clockid for the task scheduling.
+>
+> isochron indeed works in CLOCK_TAI (this is done so that all timestamps
+> are chronologically ordered when everything is synchronized).
+>
+> However, not all the input it has to work with is in CLOCK_TAI. For
+> example, software PTP timestamps are collected by the kernel using
+> __net_timestamp() -> ktime_get_real(), and that is in CLOCK_REALTIME
+> domain. So user space converts the CLOCK_REALTIME timestamps to
+> CLOCK_TAI by factoring in the UTC-to-TAI offset.
+>
+> I am not in love with specifying this offset via a tunable script value
+> either. The isochron program has the ability to detect the kernel's TAI
+> offset and run with that, but sadly, phc2sys in non-automatic mode wants
+> the "-O" argument to be supplied externally. So regardless, I have to
+> come up with an offset to give to phc2sys which it will apply when
+> disciplining the PHC. So I figured why not just supply 37, the current
+> value.
+
+OK, makes sense. I just wondering whether there's a better solution to
+specifying that 37.
+
+>> > +	isochron rcv \
+>> > +		--interface ${if_name} \
+>> > +		--sched-priority 98 \
+>> > +		--sched-rr \
+>>=20
+>> Why SCHED_RR?
+>
+> Because it's not SCHED_OTHER? Why not SCHED_RR?
+
+I was more thinking of SCHED_FIFO. RR performs round robin with a fixed
+time slice (100ms). Is that what you want?
+
+Thanks,
+Kurt
+
+--=-=-=
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEE6g0RLAGYhL9yp9G8SylmgFB4UWIFAmJrtlYACgkQSylmgFB4
-UWLFFQf+JygIN6vLqgUTha6Uozvywmp9UOizGSAq23rJnrAIKPQWa1kxzxOpnPjw
-FcUOKF8zfxiCzTc6K/5oYzjh8HNcaRtqGARC5u3T2uJNIf7GqAEMMhQqnCunYtez
-eRh+aAs8B+j0s6Iz3V/ClX4jMaQ+u3KXi08PujYS1scupE91VGIGTEFsZY4MLdAr
-LEY8RNpw4+QgR0F82ZS8fKkXIeQ2xEr+5Ed/EQkF4pJOPDZQoT2lOwnoK91u8wNx
-k8cBc0NgJEFz020cj4Plcxa3qn4bSeQXYvPX4swKHsEnj2REfpdFXM/4/6wGy/UR
-SVN/jtK82cRMMqK83fy0HWbtNf2yyg==
-=4dnq
+iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmJrussTHGt1cnRAbGlu
+dXRyb25peC5kZQAKCRDBk9HyqkZzgs5+EACR1b0NIEK9B3RIzvWPc9xWYxYFgn44
+Q/TbU5i4gNqQbOZpaVxcGVPNb3y8x65lAUaKyHX5m3eU/Ulfba2zstpoZt2fakzB
+DgtoYtGvr2unsPHapeGQASw8+ULzqFSTHLNsOv8nEFPDhdUxNzsj2wQrD+LIXUyX
+Zfmwz9psc3nbqNEgpp+TOeqPSluMVjg/7QyCyqF38vB95GqMV0Bcg4O1cl4r1kyE
+hu/UNgejRf92fpBiGJQeqm40bpOtMQoB4HWf5FfQafRk/83HP47+i/Q5mQPpXMQg
+84BEcPr1+SgzOj6Gk+FFHML56OdPoQ5oK8alImJQfNK1eT/DGBCYJO4HW/AfX2K5
+1uy8IFb2fd/XZJeNTfOKPU9GqCgCdmZRDMoqUGzyOeegApZJz4hByh366zZcmQzp
+k3j03AdM0Ta/UVKs/v1ly7u9Kjd5RlHMAt534O/zN3ZwvPKLW8KQn9HmF2caeIXl
+wvwrMqK+j6gFRMKtKXzejbL4awh5w026vZM3nuy8XYoCKKxAcOIfCNjsjByztzdw
+O6Rtee7qIGS4ukpva5SugsxB1Da0RdzMPxxngmlUgKoEynr3gQnVZ1l9xl4fdN58
+Nw+I8luF22rc5rlDMfMRFMXVxqhafXh2Blw0xwmm+IKNdd5dXG6OfG14TyGNCiMz
+GuSAIj0BueWAfw==
+=+tbx
 -----END PGP SIGNATURE-----
-
---=-OBlkst5mfEnR4dm2FbSd--
+--=-=-=--
