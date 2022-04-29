@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B9EA0514017
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 03:14:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DCE551401A
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 03:14:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353503AbiD2BR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Apr 2022 21:17:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38400 "EHLO
+        id S1353636AbiD2BR3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Apr 2022 21:17:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352695AbiD2BRZ (ORCPT
+        with ESMTP id S1351100AbiD2BRZ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 28 Apr 2022 21:17:25 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8144BC875;
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4DF6BCB40;
         Thu, 28 Apr 2022 18:14:08 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KqDxy30SdzfbB2;
-        Fri, 29 Apr 2022 09:13:10 +0800 (CST)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KqDyf1fFXzhYlm;
+        Fri, 29 Apr 2022 09:13:46 +0800 (CST)
 Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 29 Apr 2022 09:14:06 +0800
+ 15.1.2375.24; Fri, 29 Apr 2022 09:14:07 +0800
 Received: from k04.huawei.com (10.67.174.115) by
  dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -41,10 +41,12 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         Paul Walmsley <paul.walmsley@sifive.com>,
         Palmer Dabbelt <palmer@dabbelt.com>,
         Albert Ou <aou@eecs.berkeley.edu>
-Subject: [PATCH bpf-next v2 0/2] Support riscv jit to provide
-Date:   Fri, 29 Apr 2022 09:42:38 +0800
-Message-ID: <20220429014240.3434866-1-pulehui@huawei.com>
+Subject: [PATCH bpf-next v2 1/2] bpf: Unify data extension operation of jited_ksyms and jited_linfo
+Date:   Fri, 29 Apr 2022 09:42:39 +0800
+Message-ID: <20220429014240.3434866-2-pulehui@huawei.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220429014240.3434866-1-pulehui@huawei.com>
+References: <20220429014240.3434866-1-pulehui@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -60,30 +62,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-patch 1 fix an issue that could not print bpf line info due
-to data inconsistency in 32-bit environment.
+We found that 32-bit environment can not print bpf line info due
+to data inconsistency between jited_ksyms[0] and jited_linfo[0].
 
-patch 2 add support for riscv jit to provide bpf_line_info.
-Both RV32 and RV64 tests have been passed as like follow:
+For example:
+jited_kyms[0] = 0xb800067c, jited_linfo[0] = 0xffffffffb800067c
 
-./test_progs -a btf
-#19 btf:OK
-Summary: 1/215 PASSED, 0 SKIPPED, 0 FAILED
+We know that both of them store bpf func address, but due to the
+different data extension operations when extended to u64, they may
+not be the same. We need to unify the data extension operations of
+them.
 
-v2:
-- Remove some trivial code
+Signed-off-by: Pu Lehui <pulehui@huawei.com>
+---
+ kernel/bpf/syscall.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-v1: https://lore.kernel.org/bpf/20220426140924.3308472-1-pulehui@huawei.com
-
-Pu Lehui (2):
-  bpf: Unify data extension operation of jited_ksyms and jited_linfo
-  riscv, bpf: Support riscv jit to provide bpf_line_info
-
- arch/riscv/net/bpf_jit.h      | 1 +
- arch/riscv/net/bpf_jit_core.c | 7 ++++++-
- kernel/bpf/syscall.c          | 5 ++++-
- 3 files changed, 11 insertions(+), 2 deletions(-)
-
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index e9e3e49c0eb7..18137ea5190d 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -3871,13 +3871,16 @@ static int bpf_prog_get_info_by_fd(struct file *file,
+ 		info.nr_jited_line_info = 0;
+ 	if (info.nr_jited_line_info && ulen) {
+ 		if (bpf_dump_raw_ok(file->f_cred)) {
++			unsigned long jited_linfo_addr;
+ 			__u64 __user *user_linfo;
+ 			u32 i;
+ 
+ 			user_linfo = u64_to_user_ptr(info.jited_line_info);
+ 			ulen = min_t(u32, info.nr_jited_line_info, ulen);
+ 			for (i = 0; i < ulen; i++) {
+-				if (put_user((__u64)(long)prog->aux->jited_linfo[i],
++				jited_linfo_addr = (unsigned long)
++					prog->aux->jited_linfo[i];
++				if (put_user((__u64) jited_linfo_addr,
+ 					     &user_linfo[i]))
+ 					return -EFAULT;
+ 			}
 -- 
 2.25.1
 
