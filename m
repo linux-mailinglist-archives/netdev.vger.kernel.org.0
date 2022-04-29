@@ -2,104 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A78C51549A
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 21:32:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBC625154B5
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 21:36:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380321AbiD2TgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 15:36:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52456 "EHLO
+        id S238892AbiD2Tjl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 15:39:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380314AbiD2Tf6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 15:35:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F26E5EBF5;
-        Fri, 29 Apr 2022 12:32:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A841D62456;
-        Fri, 29 Apr 2022 19:32:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DFD4C385A7;
-        Fri, 29 Apr 2022 19:32:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651260758;
-        bh=Ag7BpgOds0uINJVlgHiuuJlnALHlbLEYKL2UBUqEfOQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Jc9oQuMM8H3jgbPeBouKqVPN8LT1iPUrsBKYhZJrDIwvnZZl93bDI5L78OrAkQg0U
-         Z6ejTumSNetWN4LIhT3iDGapGiqqQTrEmdGjFQAlznNdo9wUAzBXecZIBQZIofFaLe
-         nCFjnzp5sCgVAGR6VwDQcfl2fY/ftPbtDUIllNUG/u1PuYtRmC6cnsJNtLVzAygOAO
-         zc8qoqogrPdB+2P8pUFelWTsFycai6sgONwLZ696HT1XjFqBwXQNpyxnovizDIWE58
-         4oBQv3tt6OZBSYiP9y7Dj0pu2dM7H64FLsHje8HM8LMUekv3uPg4JQNuw2TYKUAZwC
-         ik1eQpOiSuqoA==
-Date:   Fri, 29 Apr 2022 12:32:35 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [net-next v2 00/12] add support for Renesas RZ/N1 ethernet
- subsystem devices
-Message-ID: <20220429123235.3098ed12@kernel.org>
-In-Reply-To: <20220429143505.88208-1-clement.leger@bootlin.com>
-References: <20220429143505.88208-1-clement.leger@bootlin.com>
+        with ESMTP id S1380368AbiD2Tip (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 15:38:45 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D7E1403FE;
+        Fri, 29 Apr 2022 12:35:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=lwmIjCyQy1cvf/HfruQUsqg2HO2zLsQJj36FVBjRlMY=; b=FMeK+qaOrNt+CW3KPA3fG+Sm88
+        9dOTCLRIKwFZQHJ+4m/FuvGgtzWqdtsbg7jNNtnRqzh6mH5yhN/kcNgqlSXGFzr+Is403C8lKfeIe
+        GFE0d2xZtQSLJr4I8RU79yspLu2jmEMkBcLB9rf7ILb4vrthTaqCp6aHTQGFnReVgkS13mVrLfnHx
+        HX+CWHd9YGmcd+hSxhVaiC1N67Jxo0tAWbskOVNhQbgFNnliiB3BK9xH4rhhSehlShKQIEHmaxjCC
+        oWiRKIIVo1UNa1pRoT5oqrZz7cmRkXzPYEYIQdMbmHXt76jbfgPiC/AOizH1U1QXiwvnp20pJNRvp
+        Fw18KdiA==;
+Received: from [179.113.53.197] (helo=[192.168.1.60])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1nkWOO-000AEq-R6; Fri, 29 Apr 2022 21:35:05 +0200
+Message-ID: <5af45ed0-7b0a-5664-a9d3-c53ea001a35e@igalia.com>
+Date:   Fri, 29 Apr 2022 16:34:23 -0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 21/30] panic: Introduce the panic pre-reboot notifier list
+Content-Language: en-US
+To:     Max Filippov <jcmvbkbc@gmail.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, bhe@redhat.com,
+        Petr Mladek <pmladek@suse.com>, kexec@lists.infradead.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        bcm-kernel-feedback-list@broadcom.com,
+        linuxppc-dev@lists.ozlabs.org,
+        "open list:ALPHA PORT" <linux-alpha@vger.kernel.org>,
+        linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-mips@vger.kernel.org,
+        "open list:PARISC ARCHITECTURE" <linux-parisc@vger.kernel.org>,
+        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
+        "open list:TENSILICA XTENSA PORT (xtensa)" 
+        <linux-xtensa@linux-xtensa.org>, netdev <netdev@vger.kernel.org>,
+        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
+        "open list:SPARC + UltraSPAR..." <sparclinux@vger.kernel.org>,
+        xen-devel@lists.xenproject.org,
+        "maintainer:X86 ARCHITECTURE..." <x86@kernel.org>,
+        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
+        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Jonathan Corbet <corbet@lwn.net>, d.hatayama@jp.fujitsu.com,
+        Dave Hansen <dave.hansen@linux.intel.com>, dyoung@redhat.com,
+        feng.tang@intel.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de,
+        Kees Cook <keescook@chromium.org>,
+        Andrew Lutomirski <luto@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>, paulmck@kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        stern@rowland.harvard.edu, Thomas Gleixner <tglx@linutronix.de>,
+        vgoyal@redhat.com, vkuznets@redhat.com,
+        Will Deacon <will@kernel.org>, Alex Elder <elder@kernel.org>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Chris Zankel <chris@zankel.net>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Corey Minyard <minyard@acm.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Helge Deller <deller@gmx.de>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        James Morse <james.morse@arm.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Matt Turner <mattst88@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Paul Mackerras <paulus@samba.org>, Pavel Machek <pavel@ucw.cz>,
+        Richard Henderson <rth@twiddle.net>,
+        Richard Weinberger <richard@nod.at>,
+        Robert Richter <rric@kernel.org>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Vasily Gorbik <gor@linux.ibm.com>, Wei Liu <wei.liu@kernel.org>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-22-gpiccoli@igalia.com>
+ <CAMo8BfKzA+oy-Qun9-aO3xCr4Jy_rfdjYqMX=W9xONCSX8O51Q@mail.gmail.com>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <CAMo8BfKzA+oy-Qun9-aO3xCr4Jy_rfdjYqMX=W9xONCSX8O51Q@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 29 Apr 2022 16:34:53 +0200 Cl=C3=A9ment L=C3=A9ger wrote:
-> The Renesas RZ/N1 SoCs features an ethernet subsystem which contains
-> (most notably) a switch, two GMACs, and a MII converter [1]. This
-> series adds support for the switch and the MII converter.
->=20
-> The MII converter present on this SoC has been represented as a PCS
-> which sit between the MACs and the PHY. This PCS driver is probed from
-> the device-tree since it requires to be configured. Indeed the MII
-> converter also contains the registers that are handling the muxing of
-> ports (Switch, MAC, HSR, RTOS, etc) internally to the SoC.
->=20
-> The switch driver is based on DSA and exposes 4 ports + 1 CPU
-> management port. It include basic bridging support as well as FDB and
-> statistics support.
+On 29/04/2022 13:04, Max Filippov wrote:
+> [...]
+>>  arch/xtensa/platforms/iss/setup.c     |  4 ++--For xtensa:
+> 
+> For xtensa:
+> Acked-by: Max Filippov <jcmvbkbc@gmail.com>
+> 
 
-Build's not happy (W=3D1 C=3D1):
+Perfect, thanks Max!
+Cheers,
 
-drivers/net/dsa/rzn1_a5psw.c:574:29: warning: symbol 'a5psw_switch_ops' was=
- not declared. Should it be static?
-In file included from ../drivers/net/dsa/rzn1_a5psw.c:17:
-drivers/net/dsa/rzn1_a5psw.h:221:1: note: offset of packed bit-field =E2=80=
-=98port_mask=E2=80=99 has changed in GCC 4.4
-  221 | } __packed;
-      | ^
 
-drivers/net/dsa/rzn1_a5psw.h:200: warning: Function parameter or member 'hc=
-lk' not described in 'a5psw'
-drivers/net/dsa/rzn1_a5psw.h:200: warning: Function parameter or member 'cl=
-k' not described in 'a5psw'
-
-Not sure how many of these are added by you but I think 2 at least.
+Guilherme
