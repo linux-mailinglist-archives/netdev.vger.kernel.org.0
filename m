@@ -2,78 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 09304514D46
-	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 16:37:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16829514D64
+	for <lists+netdev@lfdr.de>; Fri, 29 Apr 2022 16:37:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377526AbiD2Ojt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 10:39:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56690 "EHLO
+        id S1377715AbiD2Ok3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 10:40:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377679AbiD2Oj0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 10:39:26 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AEBC27B33;
-        Fri, 29 Apr 2022 07:36:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ZdZBPtTkXvskvklO0DqGHW3vJ6Arb57ZyicMdsmwPPs=; b=Id0YxwZLmWV943xSSctc382COx
-        slYd+Mbgd8mluBGRTtubiqJcFH7Jw+KCfrIBUuJ6IBjkEi3jycQJ/GZIWCNzfYdJZGxOzIKlAq9i5
-        NGU7dMo+j6aXXuC9zPnllvKUmp4j7d1NBQPsBNjzH1goO9ZNvF9j+05V5SxGqrz8IpFC/ke6Hqou9
-        ZUhvlX5vvgSwWpU57PqA3cf0RcC09NkmKHiXH92FbdJDx27V/PJs6cBfrjjyUhrMtQCOhvF+z0Tsu
-        zF1ocWG4HwYZ0G6pmdbbbK4PGRnRNWBCGP+4DKIndhzsOY9kfvz7NjpBrTKt1RM1gSIvJ0Gc9QwYA
-        dmc3mStA==;
-Received: from [179.113.53.197] (helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1nkRiK-0009WD-3O; Fri, 29 Apr 2022 16:35:20 +0200
-Message-ID: <4a7d9670-92f8-3e12-a619-aaa64adca093@igalia.com>
-Date:   Fri, 29 Apr 2022 11:34:51 -0300
+        with ESMTP id S1377068AbiD2OkX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 10:40:23 -0400
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8FFC2D1F9;
+        Fri, 29 Apr 2022 07:36:30 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id DA02840003;
+        Fri, 29 Apr 2022 14:36:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1651242989;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=rdrIO5Cpy80shZiqedGYYSEkMZkAUMJXu/YOq1o1YN8=;
+        b=BQrNCH5P8SVjnV5mAgLW5iVKXlU28sGJBE40id3cUl9hEV2I/qYrca6W0DlSylnCDV/ea2
+        LJTis+p6aOmCPC2+hVN/8p/0srmKt+jLWdC/rDFhS1FoGNPlA2GE8tXtjNcEJO9HXwCCi/
+        EOk+n6TiUbas0suMsyjPZL8P4a1W9OkDyrdS6m0SVADD4IWg3dgWREf2Q6wszY8m63LPbO
+        z2TjVjKCTa+Z6yr5MJMnVm01BRYy9pvTdP0vu8cpShSzPhzQqkutleH/kZQzGSXuj/b3gW
+        wUc9l38QVS8sk2kCsc5LOQ+c/21C1torGs6hkIkmXva+4CSpTu/uqBZ5Ah2jew==
+From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?q?Miqu=C3=A8l=20Raynal?= <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
+Subject: [net-next v2 00/12] add support for Renesas RZ/N1 ethernet subsystem devices
+Date:   Fri, 29 Apr 2022 16:34:53 +0200
+Message-Id: <20220429143505.88208-1-clement.leger@bootlin.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 12/30] parisc: Replace regular spinlock with spin_trylock
- on panic path
-Content-Language: en-US
-To:     Helge Deller <deller@gmx.de>, akpm@linux-foundation.org,
-        bhe@redhat.com, pmladek@suse.com, kexec@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
-        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
-        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
-        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
-        halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
-        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
-        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-13-gpiccoli@igalia.com>
- <6a7c924a-54a9-c5ea-8a9d-3ea92987b436@gmx.de>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <6a7c924a-54a9-c5ea-8a9d-3ea92987b436@gmx.de>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
         SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,134 +68,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28/04/2022 13:55, Helge Deller wrote:
-> [...]
-> You may add:
-> Acked-by: Helge Deller <deller@gmx.de> # parisc
-> 
-> Helge
+The Renesas RZ/N1 SoCs features an ethernet subsystem which contains
+(most notably) a switch, two GMACs, and a MII converter [1]. This
+series adds support for the switch and the MII converter.
 
-Thanks Helge, added!
-Cheers,
+The MII converter present on this SoC has been represented as a PCS
+which sit between the MACs and the PHY. This PCS driver is probed from
+the device-tree since it requires to be configured. Indeed the MII
+converter also contains the registers that are handling the muxing of
+ports (Switch, MAC, HSR, RTOS, etc) internally to the SoC.
 
+The switch driver is based on DSA and exposes 4 ports + 1 CPU
+management port. It include basic bridging support as well as FDB and
+statistics support.
 
-Guilherme
+Link: [1] https://www.renesas.com/us/en/document/mah/rzn1d-group-rzn1s-group-rzn1l-group-users-manual-r-engine-and-ethernet-peripherals
 
-> 
-> 
->> ---
->>  arch/parisc/include/asm/pdc.h |  1 +
->>  arch/parisc/kernel/firmware.c | 27 +++++++++++++++++++++++----
->>  drivers/parisc/power.c        | 17 ++++++++++-------
->>  3 files changed, 34 insertions(+), 11 deletions(-)
->>
->> diff --git a/arch/parisc/include/asm/pdc.h b/arch/parisc/include/asm/pdc.h
->> index b643092d4b98..7a106008e258 100644
->> --- a/arch/parisc/include/asm/pdc.h
->> +++ b/arch/parisc/include/asm/pdc.h
->> @@ -83,6 +83,7 @@ int pdc_do_firm_test_reset(unsigned long ftc_bitmap);
->>  int pdc_do_reset(void);
->>  int pdc_soft_power_info(unsigned long *power_reg);
->>  int pdc_soft_power_button(int sw_control);
->> +int pdc_soft_power_button_panic(int sw_control);
->>  void pdc_io_reset(void);
->>  void pdc_io_reset_devices(void);
->>  int pdc_iodc_getc(void);
->> diff --git a/arch/parisc/kernel/firmware.c b/arch/parisc/kernel/firmware.c
->> index 6a7e315bcc2e..0e2f70b592f4 100644
->> --- a/arch/parisc/kernel/firmware.c
->> +++ b/arch/parisc/kernel/firmware.c
->> @@ -1232,15 +1232,18 @@ int __init pdc_soft_power_info(unsigned long *power_reg)
->>  }
->>
->>  /*
->> - * pdc_soft_power_button - Control the soft power button behaviour
->> - * @sw_control: 0 for hardware control, 1 for software control
->> + * pdc_soft_power_button{_panic} - Control the soft power button behaviour
->> + * @sw_control: 0 for hardware control, 1 for software control
->>   *
->>   *
->>   * This PDC function places the soft power button under software or
->>   * hardware control.
->> - * Under software control the OS may control to when to allow to shut
->> - * down the system. Under hardware control pressing the power button
->> + * Under software control the OS may control to when to allow to shut
->> + * down the system. Under hardware control pressing the power button
->>   * powers off the system immediately.
->> + *
->> + * The _panic version relies in spin_trylock to prevent deadlock
->> + * on panic path.
->>   */
->>  int pdc_soft_power_button(int sw_control)
->>  {
->> @@ -1254,6 +1257,22 @@ int pdc_soft_power_button(int sw_control)
->>  	return retval;
->>  }
->>
->> +int pdc_soft_power_button_panic(int sw_control)
->> +{
->> +	int retval;
->> +	unsigned long flags;
->> +
->> +	if (!spin_trylock_irqsave(&pdc_lock, flags)) {
->> +		pr_emerg("Couldn't enable soft power button\n");
->> +		return -EBUSY; /* ignored by the panic notifier */
->> +	}
->> +
->> +	retval = mem_pdc_call(PDC_SOFT_POWER, PDC_SOFT_POWER_ENABLE, __pa(pdc_result), sw_control);
->> +	spin_unlock_irqrestore(&pdc_lock, flags);
->> +
->> +	return retval;
->> +}
->> +
->>  /*
->>   * pdc_io_reset - Hack to avoid overlapping range registers of Bridges devices.
->>   * Primarily a problem on T600 (which parisc-linux doesn't support) but
->> diff --git a/drivers/parisc/power.c b/drivers/parisc/power.c
->> index 456776bd8ee6..8512884de2cf 100644
->> --- a/drivers/parisc/power.c
->> +++ b/drivers/parisc/power.c
->> @@ -37,7 +37,6 @@
->>  #include <linux/module.h>
->>  #include <linux/init.h>
->>  #include <linux/kernel.h>
->> -#include <linux/notifier.h>
->>  #include <linux/panic_notifier.h>
->>  #include <linux/reboot.h>
->>  #include <linux/sched/signal.h>
->> @@ -175,16 +174,21 @@ static void powerfail_interrupt(int code, void *x)
->>
->>
->>
->> -/* parisc_panic_event() is called by the panic handler.
->> - * As soon as a panic occurs, our tasklets above will not be
->> - * executed any longer. This function then re-enables the
->> - * soft-power switch and allows the user to switch off the system
->> +/*
->> + * parisc_panic_event() is called by the panic handler.
->> + *
->> + * As soon as a panic occurs, our tasklets above will not
->> + * be executed any longer. This function then re-enables
->> + * the soft-power switch and allows the user to switch off
->> + * the system. We rely in pdc_soft_power_button_panic()
->> + * since this version spin_trylocks (instead of regular
->> + * spinlock), preventing deadlocks on panic path.
->>   */
->>  static int parisc_panic_event(struct notifier_block *this,
->>  		unsigned long event, void *ptr)
->>  {
->>  	/* re-enable the soft-power switch */
->> -	pdc_soft_power_button(0);
->> +	pdc_soft_power_button_panic(0);
->>  	return NOTIFY_DONE;
->>  }
->>
->> @@ -193,7 +197,6 @@ static struct notifier_block parisc_panic_block = {
->>  	.priority	= INT_MAX,
->>  };
->>
->> -
->>  static int __init power_init(void)
->>  {
->>  	unsigned long ret;
-> 
+-----
+
+Changes in V2:
+- PCS:
+  - Fix Reverse Christmas tree declaration
+  - Removed stray newline
+  - Add PCS remove function and disable clocks in them
+  - Fix miic_validate function to return correct values
+  - Split PCS CONV_MODE definition
+  - Reordered phylink_pcs_ops in definition order
+  - Remove interface setting in miic_link_up
+  - Remove useless checks for invalid interface/speed and error prints
+  - Replace phylink_pcs_to_miic_port macro by a static function
+  - Add comment in miic_probe about platform_set_drvdata
+- Bindings:
+ - Fix wrong path for mdio.yaml $ref
+ - Fix yamllint errors
+- Tag driver:
+  - Squashed commit that added tag value with tag driver
+  - Add BUILD_BUG_ON for tag size
+  - Split control_data2 in 2 16bits values
+- Switch:
+  - Use .phylink_get_caps instead of .phylink_validate and fill
+    supported_interface correctly
+  - Use fixed size (ETH_GSTRING_LEN) string for stats and use memcpy
+  - Remove stats access locking since RTNL lock is used in upper layers
+  - Check for non C45 addresses in mdio_read/write and return
+    -EOPNOTSUPP
+  - Add get_eth_mac_stats, get_eth_mac_ctrl_stat, get_rmon_stats
+  - Fix a few indentation problems
+  - Remove reset callback from MDIO bus operation
+  - Add phy/mac/rmon stats
+- Add get_rmon_stat to dsa_ops
+
+Clément Léger (12):
+  net: dsa: add support for ethtool get_rmon_stats()
+  net: dsa: add Renesas RZ/N1 switch tag driver
+  dt-bindings: net: pcs: add bindings for Renesas RZ/N1 MII converter
+  net: pcs: add Renesas MII converter driver
+  dt-bindings: net: dsa: add bindings for Renesas RZ/N1 Advanced 5 port
+    switch
+  net: dsa: rzn1-a5psw: add Renesas RZ/N1 advanced 5 port switch driver
+  net: dsa: rzn1-a5psw: add statistics support
+  net: dsa: rzn1-a5psw: add FDB support
+  ARM: dts: r9a06g032: describe MII converter
+  ARM: dts: r9a06g032: describe GMAC2
+  ARM: dts: r9a06g032: describe switch
+  MAINTAINERS: add Renesas RZ/N1 switch related driver entry
+
+ .../bindings/net/dsa/renesas,rzn1-a5psw.yaml  |  132 +++
+ .../bindings/net/pcs/renesas,rzn1-miic.yaml   |  157 +++
+ MAINTAINERS                                   |   11 +
+ arch/arm/boot/dts/r9a06g032.dtsi              |   63 +
+ drivers/net/dsa/Kconfig                       |    9 +
+ drivers/net/dsa/Makefile                      |    1 +
+ drivers/net/dsa/rzn1_a5psw.c                  | 1055 +++++++++++++++++
+ drivers/net/dsa/rzn1_a5psw.h                  |  259 ++++
+ drivers/net/pcs/Kconfig                       |    7 +
+ drivers/net/pcs/Makefile                      |    1 +
+ drivers/net/pcs/pcs-rzn1-miic.c               |  508 ++++++++
+ include/dt-bindings/net/pcs-rzn1-miic.h       |   33 +
+ include/linux/pcs-rzn1-miic.h                 |   18 +
+ include/net/dsa.h                             |    5 +
+ net/dsa/Kconfig                               |    7 +
+ net/dsa/Makefile                              |    1 +
+ net/dsa/slave.c                               |   13 +
+ net/dsa/tag_rzn1_a5psw.c                      |  114 ++
+ 18 files changed, 2394 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
+ create mode 100644 Documentation/devicetree/bindings/net/pcs/renesas,rzn1-miic.yaml
+ create mode 100644 drivers/net/dsa/rzn1_a5psw.c
+ create mode 100644 drivers/net/dsa/rzn1_a5psw.h
+ create mode 100644 drivers/net/pcs/pcs-rzn1-miic.c
+ create mode 100644 include/dt-bindings/net/pcs-rzn1-miic.h
+ create mode 100644 include/linux/pcs-rzn1-miic.h
+ create mode 100644 net/dsa/tag_rzn1_a5psw.c
+
+-- 
+2.34.1
+
