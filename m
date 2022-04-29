@@ -2,43 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF00F51592E
+	by mail.lfdr.de (Postfix) with ESMTP id 763BC51592D
 	for <lists+netdev@lfdr.de>; Sat, 30 Apr 2022 01:55:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381810AbiD2X6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 19:58:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53496 "EHLO
+        id S1381785AbiD2X6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 19:58:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381688AbiD2X6o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 19:58:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B0C22C13B
-        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 16:55:25 -0700 (PDT)
+        with ESMTP id S1381721AbiD2X6n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 19:58:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BA7231531
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 16:55:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DABB9B837F2
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CE84623DA
         for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 23:55:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E100C385AE;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C06A8C385B2;
         Fri, 29 Apr 2022 23:55:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651276522;
-        bh=e/r6o2gwPkEhyF5kWovUegh4dL1Jp2DLqzg5rr8UeAg=;
+        s=k20201202; t=1651276523;
+        bh=j0PPydcYh4Ot30spy72dhf2uaQdErTfyJslyry130xE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RQLeoiiwAuJpmYDA/RIW9l8Bd/fUCEQJt30iCNcC86FSEZ40vOop+Y9OmIGlUxE1k
-         whvlbIodkzA4Fh9xCReG32cn+HENk1eVPNH5VPLkDsQuzz1tGg9+DDgRK8xdmzq7/G
-         wpodcCfe0K2p/O4C1AFXe6fvoMXEHQmT/sjESDAkqcRto6QaxjQtlMry8o0c+fSNIB
-         aUeAIlVNXkjrvXfR30BZ8bUg2Gm0P1XS22Wnkw7Fdhp0qF5qmJZ+gwJwwxw81Wee6X
-         kjL2yRY98l0T9z8WQd6AxR10su7Trlncc1ch0oZGIEr3+Ckw2ju0QvU6FLR4Y33jQm
-         0FMivm6S1Q37w==
+        b=Zw44pSvSG3qbC+KrmEXrcE6D0ilqJbN1LX33GhD0mIXyyIE83XmWnKamdycM8GxQW
+         +Dcpz4dqZsOqUAoo4O8tRLI5DOQ+soPlWAzVaHXF0rkROxjWYuUSl8pHz1p2jkRnC4
+         WlxG9bSY4wsuhBE59+V4BDnYVr8aN7GcZdjJsqr8yeNiM5oDVIANb1EL6UKBk5DK06
+         uzt8JrIUty9qaxfE1E2PaqHon6wmjcrvGrTPZNtPxiOZ+P1CLKnblIKJfCojXeVQcf
+         oxJYflKt63QIn6UAblyJssoLzGMCjtIx85NMI3xWw0MmStEelAQV30EM6r+mq96H/l
+         kdCUXkUtZYOZw==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, pabeni@redhat.com, edumazet@google.com,
-        petrm@nvidia.com, Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH net-next 1/3] rtnl: allocate more attr tables on the heap
-Date:   Fri, 29 Apr 2022 16:55:06 -0700
-Message-Id: <20220429235508.268349-2-kuba@kernel.org>
+        petrm@nvidia.com, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 2/3] rtnl: split __rtnl_newlink() into two functions
+Date:   Fri, 29 Apr 2022 16:55:07 -0700
+Message-Id: <20220429235508.268349-3-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220429235508.268349-1-kuba@kernel.org>
 References: <20220429235508.268349-1-kuba@kernel.org>
@@ -53,105 +52,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit a293974590cf ("rtnetlink: avoid frame size warning in rtnl_newlink()")
-moved to allocating the largest attribute array of rtnl_newlink()
-on the heap. Kalle reports the stack has grown above 1k again:
+__rtnl_newlink() is 250LoC, but has a few clear sections.
+Move the part which creates a new netdev to a separate
+function.
 
-  net/core/rtnetlink.c:3557:1: error: the frame size of 1104 bytes is larger than 1024 bytes [-Werror=frame-larger-than=]
+For ease of review code will be moved in the next change.
 
-Move more attrs to the heap, wrap them in a struct.
-Don't bother with linkinfo, it's referenced a lot and we take
-its size so it's awkward to move, plus it's small (6 elements).
-
-Reported-by: Kalle Valo <kvalo@kernel.org>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- net/core/rtnetlink.c | 30 ++++++++++++++++++------------
- 1 file changed, 18 insertions(+), 12 deletions(-)
+ net/core/rtnetlink.c | 23 ++++++++++++++++++++---
+ 1 file changed, 20 insertions(+), 3 deletions(-)
 
 diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 73f2cbc440c9..33919fd5c202 100644
+index 33919fd5c202..1deef11c6b4d 100644
 --- a/net/core/rtnetlink.c
 +++ b/net/core/rtnetlink.c
-@@ -3302,17 +3302,23 @@ static int rtnl_group_changelink(const struct sk_buff *skb,
+@@ -3302,6 +3302,11 @@ static int rtnl_group_changelink(const struct sk_buff *skb,
  	return 0;
  }
  
-+struct rtnl_newlink_tbs {
-+	struct nlattr *tb[IFLA_MAX + 1];
-+	struct nlattr *attr[RTNL_MAX_TYPE + 1];
-+	struct nlattr *slave_attr[RTNL_SLAVE_MAX_TYPE + 1];
-+};
++static int rtnl_newlink_create(struct sk_buff *skb, struct ifinfomsg *ifm,
++			       const struct rtnl_link_ops *ops,
++			       struct nlattr **tb, struct nlattr **data,
++			       struct netlink_ext_ack *extack);
 +
- static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
--			  struct nlattr **attr, struct netlink_ext_ack *extack)
-+			  struct rtnl_newlink_tbs *tbs,
-+			  struct netlink_ext_ack *extack)
+ struct rtnl_newlink_tbs {
+ 	struct nlattr *tb[IFLA_MAX + 1];
+ 	struct nlattr *attr[RTNL_MAX_TYPE + 1];
+@@ -3312,19 +3317,16 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 			  struct rtnl_newlink_tbs *tbs,
+ 			  struct netlink_ext_ack *extack)
  {
--	struct nlattr *slave_attr[RTNL_SLAVE_MAX_TYPE + 1];
- 	unsigned char name_assign_type = NET_NAME_USER;
+-	unsigned char name_assign_type = NET_NAME_USER;
  	struct nlattr *linkinfo[IFLA_INFO_MAX + 1];
-+	struct nlattr ** const tb = tbs->tb;
+ 	struct nlattr ** const tb = tbs->tb;
  	const struct rtnl_link_ops *m_ops;
  	struct net_device *master_dev;
  	struct net *net = sock_net(skb->sk);
  	const struct rtnl_link_ops *ops;
--	struct nlattr *tb[IFLA_MAX + 1];
- 	struct net *dest_net, *link_net;
+-	struct net *dest_net, *link_net;
  	struct nlattr **slave_data;
  	char kind[MODULE_NAME_LEN];
-@@ -3382,12 +3388,12 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 			return -EINVAL;
- 
- 		if (ops->maxtype && linkinfo[IFLA_INFO_DATA]) {
--			err = nla_parse_nested_deprecated(attr, ops->maxtype,
-+			err = nla_parse_nested_deprecated(tbs->attr, ops->maxtype,
- 							  linkinfo[IFLA_INFO_DATA],
- 							  ops->policy, extack);
- 			if (err < 0)
- 				return err;
--			data = attr;
-+			data = tbs->attr;
- 		}
- 		if (ops->validate) {
- 			err = ops->validate(tb, data, extack);
-@@ -3403,14 +3409,14 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 
- 		if (m_ops->slave_maxtype &&
- 		    linkinfo[IFLA_INFO_SLAVE_DATA]) {
--			err = nla_parse_nested_deprecated(slave_attr,
-+			err = nla_parse_nested_deprecated(tbs->slave_attr,
- 							  m_ops->slave_maxtype,
- 							  linkinfo[IFLA_INFO_SLAVE_DATA],
- 							  m_ops->slave_policy,
- 							  extack);
- 			if (err < 0)
- 				return err;
--			slave_data = slave_attr;
-+			slave_data = tbs->slave_attr;
- 		}
+ 	struct net_device *dev;
+ 	struct ifinfomsg *ifm;
+-	char ifname[IFNAMSIZ];
+ 	struct nlattr **data;
+ 	bool link_specified;
+ 	int err;
+@@ -3484,6 +3486,21 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 		return -EOPNOTSUPP;
  	}
  
-@@ -3559,15 +3565,15 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
- static int rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 			struct netlink_ext_ack *extack)
- {
--	struct nlattr **attr;
-+	struct rtnl_newlink_tbs *tbs;
- 	int ret;
- 
--	attr = kmalloc_array(RTNL_MAX_TYPE + 1, sizeof(*attr), GFP_KERNEL);
--	if (!attr)
-+	tbs = kmalloc(sizeof(*tbs), GFP_KERNEL);
-+	if (!tbs)
- 		return -ENOMEM;
- 
--	ret = __rtnl_newlink(skb, nlh, attr, extack);
--	kfree(attr);
-+	ret = __rtnl_newlink(skb, nlh, tbs, extack);
-+	kfree(tbs);
- 	return ret;
- }
++	return rtnl_newlink_create(skb, ifm, ops, tb, data, extack);
++}
++
++static int rtnl_newlink_create(struct sk_buff *skb, struct ifinfomsg *ifm,
++			       const struct rtnl_link_ops *ops,
++			       struct nlattr **tb, struct nlattr **data,
++			       struct netlink_ext_ack *extack)
++{
++	unsigned char name_assign_type = NET_NAME_USER;
++	struct net *net = sock_net(skb->sk);
++	struct net *dest_net, *link_net;
++	struct net_device *dev;
++	char ifname[IFNAMSIZ];
++	int err;
++
+ 	if (!ops->alloc && !ops->setup)
+ 		return -EOPNOTSUPP;
  
 -- 
 2.34.1
