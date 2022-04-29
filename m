@@ -2,46 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 98202515875
-	for <lists+netdev@lfdr.de>; Sat, 30 Apr 2022 00:33:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 013CF515879
+	for <lists+netdev@lfdr.de>; Sat, 30 Apr 2022 00:35:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381519AbiD2Wgs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 18:36:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49632 "EHLO
+        id S239831AbiD2Wiv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 18:38:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358539AbiD2Wgr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 18:36:47 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD6FBDCE22;
-        Fri, 29 Apr 2022 15:33:27 -0700 (PDT)
+        with ESMTP id S237836AbiD2Wis (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 18:38:48 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BA0168331;
+        Fri, 29 Apr 2022 15:35:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651271607; x=1682807607;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=A/N5qHDYE8Exw7zJH1sKYTNP5QPCkXQNf3u7DyoyKdg=;
-  b=EPSWs0xGTQwuHk73PAf4CBAsW2X3GoWkZeNtqBR1wK056kcf89lO2Stn
-   QYyXk3Q4QrMIlzw5MocWm/QEhPmpk7qcRM2RwDSui9UCK+/ykmcQOfi6C
-   senxX0HQaA0FpLBY0OnaGnHnMvi2oTiQ7SQZ5ip7ytfDkukJDP2Dr1D43
-   yaV1ukCEYpGHfqtu6f8cvj21j0kMw2AaDb//zQSstt1EUlm/pCbFaoAjm
-   kIREAtYf/ClZs2jph5EoItxvBe3nnZvIxpnK/t56FAI4y8J9Nz6jNCX3t
-   3FhE+zU9UvBygmWFJQP4YdfUijF3fTlSmEOjp2HKIy4+UElWharcTOzhz
+  t=1651271727; x=1682807727;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=7GIX14AiQKWP9CyC8uIIv8SPou3ILuL8utid5Axi1Ao=;
+  b=mcCZpZn4GH1oOauvStvv6q3MPm4G+ALS8mxv+4HNq5lK7qc0KWilDzk2
+   tmM3D58OQoejRmO7+Cw5aK4S4nJ8fFSN6YNk21JVHj26sKCMo4eRW4G6s
+   NzZYTGkd4VVsjRS+nfO6DwJPwreHr2pS5xA4OjEhHboZB8/n6tz3hh9ZV
+   1mxQgrrsm+YZQK8kaMeklE263Bj3cE/GmGtK2HYNbN68wp1kBPP4J3Qsj
+   llE/+yWwzTPHBMYtiNrzmLFBLBfbY6ISwHosnE3ZMi5DHp+26WNPYr6dA
+   mnyE+aMUUhvqyx5ZlwC0CwJT1xPtIp7XbKhEZowhfEsc9PT3T2S/DQy20
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10332"; a="247344649"
+X-IronPort-AV: E=McAfee;i="6400,9594,10332"; a="291962610"
 X-IronPort-AV: E=Sophos;i="5.91,186,1647327600"; 
-   d="scan'208";a="247344649"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 15:33:27 -0700
+   d="scan'208";a="291962610"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2022 15:35:27 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,186,1647327600"; 
-   d="scan'208";a="597556373"
+   d="scan'208";a="566341183"
 Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 29 Apr 2022 15:33:24 -0700
+  by fmsmga007.fm.intel.com with ESMTP; 29 Apr 2022 15:35:24 -0700
 Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1nkZAx-0006eB-BH;
-        Fri, 29 Apr 2022 22:33:23 +0000
-Date:   Sat, 30 Apr 2022 06:33:03 +0800
+        id 1nkZCt-0006eF-DV;
+        Fri, 29 Apr 2022 22:35:23 +0000
+Date:   Sat, 30 Apr 2022 06:34:28 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
 Cc:     kbuild-all@lists.01.org,
@@ -54,41 +53,47 @@ Cc:     kbuild-all@lists.01.org,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
         bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RFC PATCH linux-next] bpf: bpf_kptr_xchg_proto can be static
-Message-ID: <Ymxnn1ikQ3/B3xZd@5fdacab24e00>
-References: <202204300646.B29EmUql-lkp@intel.com>
+Subject: [linux-next:master 6297/7959] kernel/bpf/helpers.c:1389:29: sparse:
+ sparse: symbol 'bpf_kptr_xchg_proto' was not declared. Should it be static?
+Message-ID: <202204300646.B29EmUql-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202204300646.B29EmUql-lkp@intel.com>
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-kernel/bpf/helpers.c:1389:29: warning: symbol 'bpf_kptr_xchg_proto' was not declared. Should it be static?
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+head:   5469f0c06732a077c70a759a81f2a1f00b277694
+commit: c0a5a21c25f37c9fd7b36072f9968cdff1e4aa13 [6297/7959] bpf: Allow storing referenced kptr in map
+config: x86_64-randconfig-s022 (https://download.01.org/0day-ci/archive/20220430/202204300646.B29EmUql-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=c0a5a21c25f37c9fd7b36072f9968cdff1e4aa13
+        git remote add linux-next https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
+        git fetch --no-tags linux-next master
+        git checkout c0a5a21c25f37c9fd7b36072f9968cdff1e4aa13
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash kernel/bpf/
 
-Fixes: c0a5a21c25f3 ("bpf: Allow storing referenced kptr in map")
+If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: kernel test robot <lkp@intel.com>
----
- kernel/bpf/helpers.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
-index 3e709fed530612..62864d2c44e4a3 100644
---- a/kernel/bpf/helpers.c
-+++ b/kernel/bpf/helpers.c
-@@ -1386,7 +1386,7 @@ BPF_CALL_2(bpf_kptr_xchg, void *, map_value, void *, ptr)
-  */
- #define BPF_PTR_POISON ((void *)((0xeB9FUL << 2) + POISON_POINTER_DELTA))
- 
--const struct bpf_func_proto bpf_kptr_xchg_proto = {
-+static const struct bpf_func_proto bpf_kptr_xchg_proto = {
- 	.func         = bpf_kptr_xchg,
- 	.gpl_only     = false,
- 	.ret_type     = RET_PTR_TO_BTF_ID_OR_NULL,
+
+sparse warnings: (new ones prefixed by >>)
+>> kernel/bpf/helpers.c:1389:29: sparse: sparse: symbol 'bpf_kptr_xchg_proto' was not declared. Should it be static?
+
+Please review and possibly fold the followup patch.
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
