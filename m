@@ -2,55 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1490E515CF8
-	for <lists+netdev@lfdr.de>; Sat, 30 Apr 2022 14:40:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AC8A515CF6
+	for <lists+netdev@lfdr.de>; Sat, 30 Apr 2022 14:40:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239427AbiD3Mnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Apr 2022 08:43:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56988 "EHLO
+        id S236913AbiD3Mnh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Apr 2022 08:43:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238250AbiD3Mnh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Apr 2022 08:43:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7B02AE65;
-        Sat, 30 Apr 2022 05:40:15 -0700 (PDT)
+        with ESMTP id S236594AbiD3Mnf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Apr 2022 08:43:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F14D9102F;
+        Sat, 30 Apr 2022 05:40:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F02EDB82A2E;
+        by ams.source.kernel.org (Postfix) with ESMTPS id A7A8BB82A2F;
         Sat, 30 Apr 2022 12:40:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8B540C385B2;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4339DC385AE;
         Sat, 30 Apr 2022 12:40:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1651322411;
-        bh=njCu1m65rgEbSSl42vrsYLV37nwXG8vVV8ydc6/uDAM=;
+        bh=c1pCe6FL9VmirU33xIcaiAcKqp+v2nfmn51Eu2GxUk8=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=JwVJn04JhGl5yJc2D6ynBkz4iSkU5M67izN/N+IjywKnrYpDl3TH7YGv9UwClvkMd
-         E4NHdYyLFey3ddPMEmNb5J8gMyj0o8b7jch4bq+sy8QFxlZ9z/kRMQvvUr/0XueCVC
-         KGEenujeNDAq7ma2U36x0T08y8VYEntUTaOeTlq3CC9rz/BLQlwU4evYKBlUUh34xT
-         HekcE/sMkUyh/8UIR1Nh1A5LMY9IQJGlphUrKwK8ER2j0RicYcG3a3wrwck3j+zu/b
-         AD9/P37iPZE7/iYwXKZ5s2B/ISxvuIMoMWZc+P1ENZlgvDnyd1uABx2WDYnzm1/kqR
-         mPnyduTzmKSeg==
+        b=fIOaT4qvv7TpJdVmJ1ni9Aytmi3wppenvHSKVlVlTlRJTEIyurnKFgUO/ENH66Yu1
+         Tp+v7BzCx8D9KZUC1JQz9pjhSaaEb/0ANRy81uCeSXp6rG96YRjy1V2CWkUnWwjo+s
+         3sUgldaDjaNT2d1SbXR0ODJFyweOCwGvFQJysyMpVLWCgMK15PQEGhF7fFk6FqYoiq
+         fvdR0csIjomlMvb1pqF8QS6cjTkfDfE4YbAhGn4kEWFM//wMwbaABNLFkoMT7Ogr8D
+         XWusvoWw3F2KxzMfbQs47ixTFAWJKT73/LLI0ZJnlLW0nBOXW/jWUu3B5isfMiogng
+         h++hHvxKTWxMw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7622CF03841;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 29471F03841;
         Sat, 30 Apr 2022 12:40:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v1 net-next 0/1] net: ethernet: ocelot: remove num_stats
- initializer requirement
+Subject: Re: [PATCH v2] net: cpsw: add missing of_node_put() in cpsw_probe_dt()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165132241148.25919.3888627591098441730.git-patchwork-notify@kernel.org>
+Message-Id: <165132241116.25919.5899361907812594760.git-patchwork-notify@kernel.org>
 Date:   Sat, 30 Apr 2022 12:40:11 +0000
-References: <20220429213036.3482333-1-colin.foster@in-advantage.com>
-In-Reply-To: <20220429213036.3482333-1-colin.foster@in-advantage.com>
-To:     Colin Foster <colin.foster@in-advantage.com>
+References: <20220429015337.934328-1-yangyingliang@huawei.com>
+In-Reply-To: <20220429015337.934328-1-yangyingliang@huawei.com>
+To:     Yang Yingliang <yangyingliang@huawei.com>
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, kuba@kernel.org, edumazet@google.com,
-        davem@davemloft.net, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, andrew@lunn.ch,
-        UNGLinuxDriver@microchip.com, alexandre.belloni@bootlin.com,
-        claudiu.manoil@nxp.com, vladimir.oltean@nxp.com
+        grygorii.strashko@ti.com, davem@davemloft.net, kuba@kernel.org
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -62,25 +57,24 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
+This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 29 Apr 2022 14:30:35 -0700 you wrote:
-> The ocelot_stats_layout structure array is common with other chips,
-> specifically the VSC7512. It can only be controlled externally (SPI,
-> PCIe...)
+On Fri, 29 Apr 2022 09:53:37 +0800 you wrote:
+> 'tmp_node' need be put before returning from cpsw_probe_dt(),
+> so add missing of_node_put() in error path.
 > 
-> During the VSC7512 / Felix driver development, it was noticed that
-> this array can be shared with the Ocelot driver. As with other arrays
-> shared between the VSC7514 and VSC7512, it makes sense to define them in
-> drivers/net/ethernet/mscc/vsc7514_regs.c, while declaring them in
-> include/soc/mscc/vsc7514_regs.h
+> Fixes: ed3525eda4c4 ("net: ethernet: ti: introduce cpsw switchdev based driver part 1 - dual-emac")
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> ---
+> v2:
+>    add of_node_put() at label 'err_node_put'.
 > 
 > [...]
 
 Here is the summary with links:
-  - [v1,net-next,1/1] net: ethernet: ocelot: remove the need for num_stats initializer
-    https://git.kernel.org/netdev/net-next/c/2f187bfa6f35
+  - [v2] net: cpsw: add missing of_node_put() in cpsw_probe_dt()
+    https://git.kernel.org/netdev/net/c/95098d5ac255
 
 You are awesome, thank you!
 -- 
