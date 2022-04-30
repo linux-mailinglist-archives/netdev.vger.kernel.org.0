@@ -2,142 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 08428515D3E
-	for <lists+netdev@lfdr.de>; Sat, 30 Apr 2022 15:08:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50F4C515D55
+	for <lists+netdev@lfdr.de>; Sat, 30 Apr 2022 15:10:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237889AbiD3NLt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Apr 2022 09:11:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48674 "EHLO
+        id S1382693AbiD3NNj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Apr 2022 09:13:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235730AbiD3NLs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Apr 2022 09:11:48 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F168D8233A;
-        Sat, 30 Apr 2022 06:08:23 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id d15so9294064plh.2;
-        Sat, 30 Apr 2022 06:08:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fVPoTVfoA8tVVI1E9eXJGEOkSXxyXZyAXt5cTczWhMQ=;
-        b=EEdn93Uq8zk/Vsh4AHDf2M5jAH70LosPoCi0M5MUt5LvTWAbjmBwLOhdvYIiwF0WIZ
-         CSdS4sXStWZucVBMRseVkdMhG+b5OXYKKnOOaB7A/XvuRXjarAgij7XcxFWVoLU4PXZ3
-         Ii4SevsyujHyLEUKSx2juTOGjKg87oeNm7v2zqLfxehsu1HszeVBqvh/Jv+9qerpwjSu
-         ah+GoZdF6LGCrU/0mueSI9sBhz0cPWvHyjsnW5lGYIqR9yPBH/5DlqSmtd3psk6rY6/E
-         jVFF29+earsX0xkzgNPFDtJ87b2QczD1Jk/isXEM5aZlakF0Hlt0FbppdAPYImcmEyAF
-         OJxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fVPoTVfoA8tVVI1E9eXJGEOkSXxyXZyAXt5cTczWhMQ=;
-        b=2oGqOxzTh7mx6wnxc/HfrSU+DldPqr51MS7pbR3PcGSJD7t1QOM1yBxxUFBUvbUxbC
-         BIlcUsoY7MKMJUo3z5r5C40UAyhDc36gpneYZ/bP6tN3JlLj9k+ZSwOrcimCoujWwbf/
-         jhxzCQQ/hGlYoPGIe9R7DGc08gZDDKNAWT2oAbwOy7kDyIoDyJjw0NggfLTagRkI2BK6
-         qcFHKUNvyedozt1hxCNhjRLeUMLKrIoAcrrXlLp0WYfSiDp8UXXdECrfqQxzPo/cwzO+
-         yXOLWZq6GdJx5qS/SrOr6MLjB2Z+VM6mKWwwo5aV5rv6mu3VDFJBVeej9T1OaT4Hqxbc
-         BlcQ==
-X-Gm-Message-State: AOAM531VTlTeXl+TQfAB6PQ5K0gDp07pXwSrsYx2Y9hUgI3jVqOM5l4s
-        1/wv0kCM67jOF2J1L+5uGbr3/XufqwxU2nlS
-X-Google-Smtp-Source: ABdhPJxZWYjTQ6c048DPd3h3iff6QNAe7B6Q2RXDRf2ojuLf0yEsNm/6NptTczoJk2uRjmjLPWEqdQ==
-X-Received: by 2002:a17:90a:d58b:b0:1cd:65dc:6a62 with SMTP id v11-20020a17090ad58b00b001cd65dc6a62mr8896280pju.89.1651324103501;
-        Sat, 30 Apr 2022 06:08:23 -0700 (PDT)
-Received: from localhost.localdomain ([223.212.58.71])
-        by smtp.gmail.com with ESMTPSA id r14-20020a63e50e000000b003c14af5060esm8296261pgh.38.2022.04.30.06.08.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Apr 2022 06:08:22 -0700 (PDT)
-From:   Yuntao Wang <ytcoode@gmail.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yuntao Wang <ytcoode@gmail.com>
-Subject: [PATCH bpf-next] bpf: Fix potential array overflow in bpf_trampoline_get_progs()
-Date:   Sat, 30 Apr 2022 21:08:03 +0800
-Message-Id: <20220430130803.210624-1-ytcoode@gmail.com>
-X-Mailer: git-send-email 2.36.0
+        with ESMTP id S1380509AbiD3NNh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Apr 2022 09:13:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3360E12086;
+        Sat, 30 Apr 2022 06:10:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 28E7DB82B70;
+        Sat, 30 Apr 2022 13:10:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D0B25C385A7;
+        Sat, 30 Apr 2022 13:10:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651324210;
+        bh=Xx2UgnFkR/QPeDIHJlOOc/xs0nNUqnZFf9vqF2zUImY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Ufj/vsENd6XGNJdBFvFELoJhEVczhFPnjZGcSTbT0SnAzw1PIUTRFy7LkDT1Wx5LW
+         V6ELV0LN1E3rNut5+WOlHJeR+WZR6dE/fY89iw9XxlDXm67WXggtDfZwYbMnvka486
+         TYTPw/n09hDqLfRCrLRDAHM2g6Koxdjd6/1msbGG03v7obiHOjkRBd/kRiowAEFWnc
+         kVouwKvQwQOIFLfG3DH5CBugRzvZYRvyTBwKdjW5D98wYJF/tgEXYgZL9tHehAlmKG
+         8KUvAcEHHVC473oHwyevSnIdkHHlDyxbTRYRjVvPYUMZHJqO89/U8K9RmUQJVCX2uV
+         KbPkmaB0eSXgg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AD9A1F03841;
+        Sat, 30 Apr 2022 13:10:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net] rxrpc: Enable IPv6 checksums on transport socket
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165132421070.7001.755926570910238927.git-patchwork-notify@kernel.org>
+Date:   Sat, 30 Apr 2022 13:10:10 +0000
+References: <165126271697.1384698.4579591150130001289.stgit@warthog.procyon.org.uk>
+In-Reply-To: <165126271697.1384698.4579591150130001289.stgit@warthog.procyon.org.uk>
+To:     David Howells <dhowells@redhat.com>
+Cc:     netdev@vger.kernel.org, marc.dionne@auristor.com,
+        lucien.xin@gmail.com, vfedorenko@novek.ru, davem@davemloft.net,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The cnt value in the 'cnt >= BPF_MAX_TRAMP_PROGS' check does not
-include BPF_TRAMP_MODIFY_RETURN bpf programs, so the number of
-the attached BPF_TRAMP_MODIFY_RETURN bpf programs in a trampoline
-can exceed BPF_MAX_TRAMP_PROGS.
+Hello:
 
-When this happens, the assignment '*progs++ = aux->prog' in
-bpf_trampoline_get_progs() will cause progs array overflow as the
-progs field in the bpf_tramp_progs struct can only hold at most
-BPF_MAX_TRAMP_PROGS bpf programs.
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Fixes: 88fd9e5352fe ("bpf: Refactor trampoline update code")
-Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
----
- kernel/bpf/trampoline.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+On Fri, 29 Apr 2022 21:05:16 +0100 you wrote:
+> AF_RXRPC doesn't currently enable IPv6 UDP Tx checksums on the transport
+> socket it opens and the checksums in the packets it generates end up 0.
+> 
+> It probably should also enable IPv6 UDP Rx checksums and IPv4 UDP
+> checksums.  The latter only seem to be applied if the socket family is
+> AF_INET and don't seem to apply if it's AF_INET6.  IPv4 packets from an
+> IPv6 socket seem to have checksums anyway.
+> 
+> [...]
 
-diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
-index ada97751ae1b..5d8bfb5ef239 100644
---- a/kernel/bpf/trampoline.c
-+++ b/kernel/bpf/trampoline.c
-@@ -411,7 +411,7 @@ int bpf_trampoline_link_prog(struct bpf_prog *prog, struct bpf_trampoline *tr)
- {
- 	enum bpf_tramp_prog_type kind;
- 	int err = 0;
--	int cnt;
-+	int cnt = 0, i;
- 
- 	kind = bpf_attach_type_to_tramp(prog);
- 	mutex_lock(&tr->mutex);
-@@ -422,7 +422,10 @@ int bpf_trampoline_link_prog(struct bpf_prog *prog, struct bpf_trampoline *tr)
- 		err = -EBUSY;
- 		goto out;
- 	}
--	cnt = tr->progs_cnt[BPF_TRAMP_FENTRY] + tr->progs_cnt[BPF_TRAMP_FEXIT];
-+
-+	for (i = 0; i < BPF_TRAMP_MAX; i++)
-+		cnt += tr->progs_cnt[i];
-+
- 	if (kind == BPF_TRAMP_REPLACE) {
- 		/* Cannot attach extension if fentry/fexit are in use. */
- 		if (cnt) {
-@@ -500,16 +503,19 @@ struct bpf_trampoline *bpf_trampoline_get(u64 key,
- 
- void bpf_trampoline_put(struct bpf_trampoline *tr)
- {
-+	int i;
-+
- 	if (!tr)
- 		return;
- 	mutex_lock(&trampoline_mutex);
- 	if (!refcount_dec_and_test(&tr->refcnt))
- 		goto out;
- 	WARN_ON_ONCE(mutex_is_locked(&tr->mutex));
--	if (WARN_ON_ONCE(!hlist_empty(&tr->progs_hlist[BPF_TRAMP_FENTRY])))
--		goto out;
--	if (WARN_ON_ONCE(!hlist_empty(&tr->progs_hlist[BPF_TRAMP_FEXIT])))
--		goto out;
-+
-+	for (i = 0; i < BPF_TRAMP_MAX; i++)
-+		if (WARN_ON_ONCE(!hlist_empty(&tr->progs_hlist[i])))
-+			goto out;
-+
- 	/* This code will be executed even when the last bpf_tramp_image
- 	 * is alive. All progs are detached from the trampoline and the
- 	 * trampoline image is patched with jmp into epilogue to skip
+Here is the summary with links:
+  - [net] rxrpc: Enable IPv6 checksums on transport socket
+    https://git.kernel.org/netdev/net/c/39cb9faa5d46
+
+You are awesome, thank you!
 -- 
-2.36.0
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
