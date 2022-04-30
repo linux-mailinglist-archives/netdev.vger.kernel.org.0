@@ -2,216 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 115DC515A31
-	for <lists+netdev@lfdr.de>; Sat, 30 Apr 2022 05:40:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C790B515A78
+	for <lists+netdev@lfdr.de>; Sat, 30 Apr 2022 06:26:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382152AbiD3DoM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 23:44:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46990 "EHLO
+        id S236872AbiD3EaG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Apr 2022 00:30:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232757AbiD3DoK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 23:44:10 -0400
-Received: from mail-pj1-x1064.google.com (mail-pj1-x1064.google.com [IPv6:2607:f8b0:4864:20::1064])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 222CE606F9
-        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 20:40:48 -0700 (PDT)
-Received: by mail-pj1-x1064.google.com with SMTP id l11-20020a17090a49cb00b001d923a9ca99so8813669pjm.1
-        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 20:40:48 -0700 (PDT)
+        with ESMTP id S234630AbiD3EaF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Apr 2022 00:30:05 -0400
+Received: from mail-vs1-xe32.google.com (mail-vs1-xe32.google.com [IPv6:2607:f8b0:4864:20::e32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C41986C8
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 21:26:44 -0700 (PDT)
+Received: by mail-vs1-xe32.google.com with SMTP id m62so8686706vsc.2
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 21:26:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=zappem-net.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=l+7n9Htsl4dZnTSEtvFT6EWfjkE+SISVaWuljU97PP0=;
+        b=W6lf/Q1U3dFSEH+SUKDXdDdRXt0mtzHkxHYVDwgoXf36pLuGatyxmgQXrH3gwyzv4U
+         7V2uX+l58hVglhBlUBxqzQsU1mdo9QE4zFlvNuDpBDkesaDQ5lbmlZwIlnUArUX/lBw+
+         3am5d3nvWF8MDXOvYoUhls1kSArpe+D9FJUwon8PGucEAUaEVxYE2dkSb2NULi3wmAV7
+         bVi5MVG0ccAQBs3HY/tPbkPyemdz/HX+0S2Vq9Po6Oby30Hp3jkNv3ole8ef02aWiphn
+         EFik1vOpA1jfW0Ewna+xeECpXtIEgOj0sjGGM02Yrg0aP5iNUzlwVLEZWgUtzGQgdA7W
+         Q58A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:dkim-signature:from:to:cc:subject:date
-         :message-id:in-reply-to:references:content-transfer-encoding;
-        bh=u6hTtfz+hORBH7Ipz/k8t7/DLjFpKm6aGAHQesdLeHg=;
-        b=bm0Q0I1YgzJyxx+A9qIa/A0HRpFAPkvsEFGW3Kwb6rWY4rrf3iZ2NyfyjFh5hNDb7q
-         TDWQy6uEfNb2JWftskAiiUJDIPwspVhryyJxv3HgRtmfpYpNxhm2iKUSxv7rOAWV9Syd
-         MSORHjnP/WCaWrXXg36IzGm/HbZaKH6JjWwP7Gc6zpZs8tfpzMtINlJ9M/QZ0Z8QOAiB
-         0U+tTZi3iwc9i1Nnja6yU4CY+aKvDQXeBsz8Kma/HqsJsHs3idMj+JKoYPoNkOBo+evP
-         mlMS21vOW/X1mo5HDHsaCEv4Cy62GpnOErFLKehDB1sWpxV5DnChBOrMj9Tf+KZok5fS
-         gGpg==
-X-Gm-Message-State: AOAM533rEsEAZFn7KeK5XgYh5IamsyIaO0fHBeAf5YNsnk1O/DyAeIYx
-        aoKtTbt15IK+fsz1t2B/7aAlES8sRNoa1GjVs35dXbf6jUZE
-X-Google-Smtp-Source: ABdhPJytKIiWIdp8k5v0JT7u+iUDvUBPSbmXsFn+4ICUrV1uM0MPds6eSMBx0Vt+D7zdvvS2fgbwgEhI536X
-X-Received: by 2002:a17:902:70cb:b0:158:424e:a657 with SMTP id l11-20020a17090270cb00b00158424ea657mr2340918plt.6.1651290047667;
-        Fri, 29 Apr 2022 20:40:47 -0700 (PDT)
-Received: from smtp.aristanetworks.com (smtp.aristanetworks.com. [52.0.43.43])
-        by smtp-relay.gmail.com with ESMTPS id kx3-20020a17090b228300b001dc2bd0ee43sm18281pjb.10.2022.04.29.20.40.46
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 29 Apr 2022 20:40:47 -0700 (PDT)
-X-Relaying-Domain: arista.com
-Received: from chmeee (unknown [10.95.70.41])
-        by smtp.aristanetworks.com (Postfix) with ESMTPS id 7892030000A6;
-        Fri, 29 Apr 2022 20:40:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
-        s=Arista-A; t=1651290043;
-        bh=u6hTtfz+hORBH7Ipz/k8t7/DLjFpKm6aGAHQesdLeHg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AsLpz0UcwklCqHSBtn8EgTmsTeeB7fWgJHcjqS9/VoGz7SY6ip44EewZyAyhSUIrM
-         bn0ogHv9Nwr9FIlwQF1LlijmYLSqousG5w67WyAoQtTKkJ3k34lbozhnLhLX3aoo69
-         xQR2Z8PMztdpN1G5B0MTt1eIRokh3/gQ7QmD+LMuHEK7emCpgeXY/bTqyj3FPYH6O7
-         Eke3/+xtKznBEVttRPrnFic971BPd0mfMKVIjygXE5IXGGh4SfcO7aXOsDSVTKQlXP
-         BhWpOwmpsoerFTpjw7Nkla2mEVPzYMW5h1pzW6p5aC4GBDFd/89ofps8kOatvixIuV
-         PJ3TWpcTfDpww==
-Received: from kevmitch by chmeee with local (Exim 4.95)
-        (envelope-from <kevmitch@chmeee>)
-        id 1nkdyI-0005ZA-2r;
-        Fri, 29 Apr 2022 20:40:38 -0700
-From:   Kevin Mitchell <kevmitch@arista.com>
-Cc:     kevmitch@arista.com, gal@nvidia.com,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH nf-next v3] netfilter: conntrack: skip verification of zero UDP checksum
-Date:   Fri, 29 Apr 2022 20:40:27 -0700
-Message-Id: <20220430034027.21286-1-kevmitch@arista.com>
-In-Reply-To: <YmlVAXceuasAJjnN@salvia>
-References: <YmlVAXceuasAJjnN@salvia>
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=l+7n9Htsl4dZnTSEtvFT6EWfjkE+SISVaWuljU97PP0=;
+        b=5ghDj5m1VpIXQ4ss6jXNuqrSSblVzUgnTljEbjKDC7XKP5WZzzSFYziUX4UGniMWmY
+         z1IWL4QWzI8H73RN3WE/9cUKKUbgFwAX2EtQxeNQ1hCTQ3t1tFDVdHSURhsWH/Fy/zmJ
+         f3IU31Eo9laSMQHUkZCoFhEGkyeGMCe1ktNuXzs8Af6zDwilMgHvdwQjLdD43rVcTSK/
+         EJz05KdbCQA1C90eBQaemi4kFVy38n7G3SeboyluktwIVkZtk7tdfSV/GZd3vO0GIJgy
+         +vWLNN1RIdg5wyiGb+9rOo2dQ+p8OSDTMpYvtow/45TjaAk7UokZA3ZXMtK3JpfkkL8O
+         Bhnw==
+X-Gm-Message-State: AOAM5318eKNQnzbSdVwtMoQIq44fyJiH6vvteYhhtA6W0qZl6Yog46lo
+        sLY/o/eXHWE7YEcWZNDrEIgnDGvJd33oL+CoiOteqcQDrxuMlA==
+X-Google-Smtp-Source: ABdhPJxoPczWzXLluGfIllIQVBsOeYBglr1Zp+kD0Nz7jVx0NxdFLAsT4z8EpPyDu9JMjNUhmQaN+bjr04m2kEOlb0w=
+X-Received: by 2002:a67:fe17:0:b0:32c:e77e:c3b4 with SMTP id
+ l23-20020a67fe17000000b0032ce77ec3b4mr688426vsr.11.1651292803614; Fri, 29 Apr
+ 2022 21:26:43 -0700 (PDT)
+MIME-Version: 1.0
+References: <CABCx3R0QbN2anNX5mO1iPGZNgS=wdWr+Rb=bYGwf24o6jxjnaQ@mail.gmail.com>
+ <fac8b95ce32c4b57e7ea00596cbf01aaf966c7ef.camel@debian.org>
+In-Reply-To: <fac8b95ce32c4b57e7ea00596cbf01aaf966c7ef.camel@debian.org>
+From:   Tinkerer One <tinkerer@zappem.net>
+Date:   Fri, 29 Apr 2022 21:26:32 -0700
+Message-ID: <CABCx3R0qyFjt5KUUdJ+e_RPTyLUz264WXWxQ1ECZznq4Chb4LA@mail.gmail.com>
+Subject: Re: Simplify ambient capability dropping in iproute2:ip tool.
+To:     Luca Boccassi <bluca@debian.org>
+Cc:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The checksum is optional for UDP packets. However nf_reject would
-previously require a valid checksum to elicit a response such as
-ICMP_DEST_UNREACH.
+On Fri, Apr 29, 2022 at 2:56 AM Luca Boccassi <bluca@debian.org> wrote:
+>
+> On Thu, 2022-04-28 at 20:17 -0700, Tinkerer One wrote:
+> > Hi,
+> >
+> > This is expanded from https://github.com/shemminger/iproute2/issues/62
+> > which I'm told is not the way to report issues and offer fixes to
+> > iproute2 etc.
+> >
+> > [I'm not subscribed to the netdev list, so please cc: me if you need more info.]
+> >
+> > The original change that added the drop_cap() code was:
+> >
+> > https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=ba2fc55b99f8363c80ce36681bc1ec97690b66f5
+> >
+> > In an attempt to address some user feedback, the code was further
+> > complicated by:
+> >
+> > https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=9b13cc98f5952f62b825461727c8170d37a4037d
+> >
+> > Another user issue was asked about here (a couple days ago):
+> >
+> > https://stackoverflow.com/questions/72015197/allow-non-root-user-of-container-to-execute-binaries-that-need-capabilities
+> >
+> > I looked into what was going on and found that lib/utils.c contains
+> > some complicated code that seems to be trying to prevent Ambient
+> > capabilities from being inherited except in specific cases
+> > (ip/ip.c:main() calls drop_cap() except in the ip vrf exec case.). The
+> > code clears all capabilities in order to prevent Ambient capabilities
+> > from being available. The following change achieves suppression of
+> > Ambient capabilities much more precisely. It also permits ip to not
+> > need to be setuid-root or executed under sudo since it can now be
+> > optionally empowered by file capabilities:
+> >
+> > diff --git a/lib/utils.c b/lib/utils.c
+> > index 53d31006..681e4aee 100644
+> > --- a/lib/utils.c
+> > +++ b/lib/utils.c
+> > @@ -1555,25 +1555,10 @@ void drop_cap(void)
+> >  #ifdef HAVE_LIBCAP
+> >         /* don't harmstring root/sudo */
+> >         if (getuid() != 0 && geteuid() != 0) {
+> > -               cap_t capabilities;
+> > -               cap_value_t net_admin = CAP_NET_ADMIN;
+> > -               cap_flag_t inheritable = CAP_INHERITABLE;
+> > -               cap_flag_value_t is_set;
+> > -
+> > -               capabilities = cap_get_proc();
+> > -               if (!capabilities)
+> > -                       exit(EXIT_FAILURE);
+> > -               if (cap_get_flag(capabilities, net_admin, inheritable,
+> > -                   &is_set) != 0)
+> > +               /* prevent any ambient capabilities from being inheritable */
+> > +               if (cap_reset_ambient() != 0) {
+> >                         exit(EXIT_FAILURE);
+> > -               /* apps with ambient caps can fork and call ip */
+> > -               if (is_set == CAP_CLEAR) {
+> > -                       if (cap_clear(capabilities) != 0)
+> > -                               exit(EXIT_FAILURE);
+> > -                       if (cap_set_proc(capabilities) != 0)
+> > -                               exit(EXIT_FAILURE);
+> >                 }
+> > -               cap_free(capabilities);
+> >         }
+> >  #endif
+> >  }
+>
+> The current setup is necessary, as the commit message says:
+>
+> "Users have reported a regression due to ip now dropping capabilities
+> unconditionally.
+> zerotier-one VPN and VirtualBox use ambient capabilities in their
+> binary and then fork out to ip to set routes and links, and this
+> does not work anymore.
+>
+> As a workaround, do not drop caps if CAP_NET_ADMIN (the most common
+> capability used by ip) is set with the INHERITABLE flag.
+> Users that want ip vrf exec to work do not need to set INHERITABLE,
+> which will then only set when the calling program had privileges to
+> give itself the ambient capability."
 
-Add some logic to nf_reject_verify_csum to determine if a UDP packet has
-a zero checksum and should therefore not be verified.
+That doesn't explain why my simplification isn't an improvement.
 
-Signed-off-by: Kevin Mitchell <kevmitch@arista.com>
----
- include/net/netfilter/nf_reject.h   | 21 +++++++++++++++++----
- net/ipv4/netfilter/nf_reject_ipv4.c | 10 +++++++---
- net/ipv6/netfilter/nf_reject_ipv6.c |  4 ++--
- 3 files changed, 26 insertions(+), 9 deletions(-)
+As I see it, there are 4 different ways 'ip' can get invoked that
+could potentially relate to capabilities:
 
-diff --git a/include/net/netfilter/nf_reject.h b/include/net/netfilter/nf_reject.h
-index 9051c3a0c8e7..7c669792fb9c 100644
---- a/include/net/netfilter/nf_reject.h
-+++ b/include/net/netfilter/nf_reject.h
-@@ -5,12 +5,28 @@
- #include <linux/types.h>
- #include <uapi/linux/in.h>
- 
--static inline bool nf_reject_verify_csum(__u8 proto)
-+static inline bool nf_reject_verify_csum(struct sk_buff *skb, int dataoff,
-+					  __u8 proto)
- {
- 	/* Skip protocols that don't use 16-bit one's complement checksum
- 	 * of the entire payload.
- 	 */
- 	switch (proto) {
-+		/* Protocols with optional checksums. */
-+		case IPPROTO_UDP: {
-+			const struct udphdr *udp_hdr;
-+			struct udphdr _udp_hdr;
-+
-+			udp_hdr = skb_header_pointer(skb, dataoff,
-+						     sizeof(_udp_hdr),
-+						     &_udp_hdr);
-+			if (!udp_hdr || udp_hdr->check)
-+				return true;
-+
-+			return false;
-+		}
-+		case IPPROTO_GRE:
-+
- 		/* Protocols with other integrity checks. */
- 		case IPPROTO_AH:
- 		case IPPROTO_ESP:
-@@ -19,9 +35,6 @@ static inline bool nf_reject_verify_csum(__u8 proto)
- 		/* Protocols with partial checksums. */
- 		case IPPROTO_UDPLITE:
- 		case IPPROTO_DCCP:
--
--		/* Protocols with optional checksums. */
--		case IPPROTO_GRE:
- 			return false;
- 	}
- 	return true;
-diff --git a/net/ipv4/netfilter/nf_reject_ipv4.c b/net/ipv4/netfilter/nf_reject_ipv4.c
-index 4eed5afca392..6c46d4e8ab84 100644
---- a/net/ipv4/netfilter/nf_reject_ipv4.c
-+++ b/net/ipv4/netfilter/nf_reject_ipv4.c
-@@ -82,6 +82,7 @@ struct sk_buff *nf_reject_skb_v4_unreach(struct net *net,
- 	unsigned int len;
- 	__wsum csum;
- 	u8 proto;
-+	int dataoff;
- 
- 	if (!nf_reject_iphdr_validate(oldskb))
- 		return NULL;
-@@ -99,10 +100,11 @@ struct sk_buff *nf_reject_skb_v4_unreach(struct net *net,
- 	if (pskb_trim_rcsum(oldskb, ntohs(ip_hdr(oldskb)->tot_len)))
- 		return NULL;
- 
-+	dataoff = ip_hdrlen(oldskb);
- 	proto = ip_hdr(oldskb)->protocol;
- 
- 	if (!skb_csum_unnecessary(oldskb) &&
--	    nf_reject_verify_csum(proto) &&
-+	    nf_reject_verify_csum(oldskb, dataoff, proto) &&
- 	    nf_ip_checksum(oldskb, hook, ip_hdrlen(oldskb), proto))
- 		return NULL;
- 
-@@ -312,6 +314,7 @@ void nf_send_unreach(struct sk_buff *skb_in, int code, int hook)
- {
- 	struct iphdr *iph = ip_hdr(skb_in);
- 	u8 proto = iph->protocol;
-+	int dataoff = ip_hdrlen(skb_in);
- 
- 	if (iph->frag_off & htons(IP_OFFSET))
- 		return;
-@@ -320,12 +323,13 @@ void nf_send_unreach(struct sk_buff *skb_in, int code, int hook)
- 	    nf_reject_fill_skb_dst(skb_in) < 0)
- 		return;
- 
--	if (skb_csum_unnecessary(skb_in) || !nf_reject_verify_csum(proto)) {
-+	if (skb_csum_unnecessary(skb_in) ||
-+	    !nf_reject_verify_csum(skb_in, dataoff, proto)) {
- 		icmp_send(skb_in, ICMP_DEST_UNREACH, code, 0);
- 		return;
- 	}
- 
--	if (nf_ip_checksum(skb_in, hook, ip_hdrlen(skb_in), proto) == 0)
-+	if (nf_ip_checksum(skb_in, hook, dataoff, proto) == 0)
- 		icmp_send(skb_in, ICMP_DEST_UNREACH, code, 0);
- }
- EXPORT_SYMBOL_GPL(nf_send_unreach);
-diff --git a/net/ipv6/netfilter/nf_reject_ipv6.c b/net/ipv6/netfilter/nf_reject_ipv6.c
-index dffeaaaadcde..f61d4f18e1cf 100644
---- a/net/ipv6/netfilter/nf_reject_ipv6.c
-+++ b/net/ipv6/netfilter/nf_reject_ipv6.c
-@@ -31,7 +31,7 @@ static bool nf_reject_v6_csum_ok(struct sk_buff *skb, int hook)
- 	if (thoff < 0 || thoff >= skb->len || (fo & htons(~0x7)) != 0)
- 		return false;
- 
--	if (!nf_reject_verify_csum(proto))
-+	if (!nf_reject_verify_csum(skb, thoff, proto))
- 		return true;
- 
- 	return nf_ip6_checksum(skb, hook, thoff, proto) == 0;
-@@ -388,7 +388,7 @@ static bool reject6_csum_ok(struct sk_buff *skb, int hook)
- 	if (thoff < 0 || thoff >= skb->len || (fo & htons(~0x7)) != 0)
- 		return false;
- 
--	if (!nf_reject_verify_csum(proto))
-+	if (!nf_reject_verify_csum(skb, thoff, proto))
- 		return true;
- 
- 	return nf_ip6_checksum(skb, hook, thoff, proto) == 0;
--- 
-2.35.1
+- the uid != 0 && euid !=0 test means the code is perfectly happy to
+run via sudo or if the 'ip' program is setuid-root. The setuid-root
+way is the workaround used in the stackoverflow post I referenced. In
+this case, if you try it with sudo, or via setuid-root you'll find the
+'ip' program runs without any Inheritable process capabilities at all.
+I'm guessing this is why the code needs that if () { .. } protection
+to not "harmstring root/sudo".
 
+- the drop_cap() function isn't even called in the case of 'ip vrf
+exec' so in that one case ambient capabilities (or any other form of
+capability) are not dropped and ambient capabilities can be passed on
+to any invoked child.
+
+- should drop_cap() be called for a non-root user it can inherit
+capabilities in one of two ways: via the ambient setup referred to in
+that commit message (manually achievable by:
+
+    $ sudo capsh --user=`whoami` --inh=cap_net_admin --addamb=cap_net_admin --
+    $ ./ip ...
+    $ exit       # needed to escape capsh's ambient setup after the test
+
+), or if the 'ip' program is given a file-inheritable capabilities and
+the invoker of 'ip' has the corresponding process-inheritable
+capabilities (like this:
+
+    $ sudo setcap cap_net_admin=ie ./ip
+    $ sudo capsh --inh=cap_net_admin --user=`whoami` --
+    $ ./ip ...
+    $ exit      # needed to escape capsh's inheritable setup after the test
+
+).
+
+All three of the above are preserved by my simplification because
+cap_reset_ambient() doesn't drop permitted or effective capabilities
+from the running program, ip.
+
+The fourth case, the one the upstream code doesn't support (which was
+the case the stackoverflow poster cares about) is if the admin sets
+permitted+effective file capabilities on their copy of 'ip' (inside
+their docker container, or outside such a container for that matter).
+In this case, the 'ip' program when run doesn't have any inheritable
+capabilities, so in spite of the fact the 'ip' program starts running
+with permitted and effective process capabilities (directly obtained
+from those file capabilities) of CAP_NET_ADMIN, this particular code
+inside drop_cap() causes the program to drop all capabilities and not
+work.
+
+What the code I am attempting to simplify does is permits ip to be set
+via this fourth method with:
+
+    $ sudo setcap cap_net_admin=ep ip
+
+and it will then, just like the setuid-root case, run with permitted
+and effective capabilities - which are the "real capabilities" after
+all.
+
+Dropping ambient capabilities with the cap_reset_ambient() call,
+preserves the permitted and effective capabilities, but prevents any
+process exec'd by 'ip' itself from passing any non-root real
+capabilities on to such a child. I was thinking this was why that
+capability dropping code was there at all. However, using this
+simplification, "sudo setcap cap_net_admin=ep ip" can be used to make
+ip work.
+
+Is it really the intention that this fourth capability setup is not be
+supported?
+
+Thanks for helping me understand.
+
+>
+> Besides, giving setuid to ip itself would be very dangerous, and should
+> definitely not be supported. I am not aware of any distribution that
+> does it. If there is any, it should be removed. Even for the vrf exec
+> case, on Debian/Ubuntu I've set it up so that the caps are not
+> configured by default, but require admin action at install time to
+> enable, with a clear warning about the possible risks and tradeoffs.
+>
+> --
+> Kind regards,
+> Luca Boccassi
