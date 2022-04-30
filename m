@@ -2,124 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A9C54516029
-	for <lists+netdev@lfdr.de>; Sat, 30 Apr 2022 21:47:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 665B251604F
+	for <lists+netdev@lfdr.de>; Sat, 30 Apr 2022 22:19:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238997AbiD3Tui (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Apr 2022 15:50:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58608 "EHLO
+        id S244970AbiD3UW6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Apr 2022 16:22:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234918AbiD3Tuh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Apr 2022 15:50:37 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9252427FD6
-        for <netdev@vger.kernel.org>; Sat, 30 Apr 2022 12:47:11 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id g6so21244567ejw.1
-        for <netdev@vger.kernel.org>; Sat, 30 Apr 2022 12:47:11 -0700 (PDT)
+        with ESMTP id S237108AbiD3UW5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Apr 2022 16:22:57 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0754C8BF3F;
+        Sat, 30 Apr 2022 13:19:34 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id m20so21256129ejj.10;
+        Sat, 30 Apr 2022 13:19:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=E1U8XwMYV+pAx9BodI858uv/uWmiMqcenYxEexOaBL4=;
-        b=CgIB206puTlPCqUajW01jlAB1fWkG1ilGwEQmqvctQbMv+92gGW8Zq8n2DjGiCXQq1
-         HztIUgxYmzV3sh5ZECdAfenyKM3RD/8EWbMc3W7zW5ZbZeT5pu7MF8ePvh3zJ5hbTJus
-         XD6Qofb9k/X8VqTXF+R1UH4iC15niG7mnkfhEPXXtfzvY249eUyXc0IPWshVaW4k9ybP
-         T/yvcdXWJcXjkeXzafVJiH+5iS2hVH8bBv3oDMkhpipedc/nu5lYS+BoSf9Abga3Jeem
-         CIrVkahgiXyJGQYsI5/4AJMr/hk+pTvcFU2OoUkQtSV4UsologV87gk9Raa0ZeEwFsUF
-         DYmw==
+        h=message-id:date:mime-version:user-agent:content-language:to:cc
+         :references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=POF+6d8762FMOUGJIUlV1M6qmWu0Pr8vnEd2cruJn/Q=;
+        b=GguguRy2ohBkyOzRgJXUL5P1WS54HQv7SPDnAuU7MEYfgc73wwidWcB5/eCDb/o6qN
+         RK12GmeHg9/VmD61o9af2NbQ9uApw9HDDRPRLLjnHlku63WdF6wo5YZ3+nS8sUEbaKzp
+         gwbn0LuvD7IrUoboyREiqHJxwTvSFuyqDWFxDM1AL3PILyrtXXKPOUANo9R48aPRwnfD
+         LBnNNTm1vKERAJTVJJSxc4w1M5l/pom72Bzfb13uLsz/FA667wgnnI3N5RtPhuf6NTnk
+         hsb7Mqfbonu6IQri7w05qGQFVDZxszD+9MgW7ANf4flb1fSFYbIEWB4IjQsoL4O65c7p
+         Ov/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
          :content-transfer-encoding;
-        bh=E1U8XwMYV+pAx9BodI858uv/uWmiMqcenYxEexOaBL4=;
-        b=5ucEaPK2D31M/oTL8viR5Veb+4Pzm/I78unFgNuqNTJDyOJv/3uSIsGD79rP4lWzYy
-         WKMhX65j6Qkw+2htjIjwz5xcJF6nrEwT3Upie0WJeAL215JCYb6lSh1lX/Rz7eSHe1et
-         jjgCVzSSgY09vOCZ76H34ysuCOBB5Wk2TRpDjlSCXyYR8C/uJ3dXclAFTvJCM3OY2Z2j
-         GFq0qF/Q11vr4GNG7i10LTQIREwcKZJ1I4d2RtCeUkBP+IsEuyQmgkWZi+/lnLySR8as
-         2Tp03lf7757yBzgwY/f07oZgImK0+9qsAFPFdo3DnpOUrY2uaEoc5pkplGH9ait5pyEo
-         I2lA==
-X-Gm-Message-State: AOAM530gfMqb3gvshYalyRXb3nES+wADuc0QfA533NbdyBUBmEht4tfB
-        mgsegmdVGDBh1K5jx50QRqYveIauTTI=
-X-Google-Smtp-Source: ABdhPJwL9+5zE8RY9dYMRCkIgNULyOUNbYvJqLJaw9pPI61SFmh6W/Asu7gpFnrdj/2p9+3x5KTGnw==
-X-Received: by 2002:a17:907:6ea5:b0:6ef:f593:5cce with SMTP id sh37-20020a1709076ea500b006eff5935ccemr4826437ejc.182.1651348030138;
-        Sat, 30 Apr 2022 12:47:10 -0700 (PDT)
-Received: from nlaptop.localdomain (178-117-137-225.access.telenet.be. [178.117.137.225])
-        by smtp.gmail.com with ESMTPSA id hx18-20020a170906847200b006f3ef214e4dsm1924050ejc.179.2022.04.30.12.47.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Apr 2022 12:47:09 -0700 (PDT)
-From:   Niels Dossche <dossche.niels@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Sunil Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Jerin Jacob <jerinj@marvell.com>,
-        hariprasad <hkelam@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Harman Kalra <hkalra@marvell.com>,
-        Christina Jacob <cjacob@marvell.com>,
-        Niels Dossche <dossche.niels@gmail.com>
-Subject: [PATCH net] octeontx2-af: debugfs: fix error return of allocations
-Date:   Sat, 30 Apr 2022 21:46:56 +0200
-Message-Id: <20220430194656.44357-1-dossche.niels@gmail.com>
-X-Mailer: git-send-email 2.36.0
+        bh=POF+6d8762FMOUGJIUlV1M6qmWu0Pr8vnEd2cruJn/Q=;
+        b=nb22NC2y2/9Oy51Mi82ydRQQZrnwC4dUnJfW54m2oM63XEmjKNKwCRoBZB/sdOpI3k
+         w3NAzu/7TaNQ51SeqZ0aZrSlu4OvhBOQDdllyaIH5rbBionNhRcX1Ae+al6Ts2sD+sk7
+         leCjc5qHaF6KAMMLj45X0f16nhQJa38wtMhLej81K01Ng+Ejjeq5lVTyqwhw/G5pYAaN
+         zJhrIBp1vnRfLqUhjMQczAJDVdsWnhiW9/0wP6Xw/Hnx48fG595fmH/kKjBoJnZDxADE
+         6MppX3cTcRUJU+8AgQJTvyyeAx/YAtlzi3nUdA+l+YgxZ6JwJPCvweklR8vbQwojZNyc
+         4X4Q==
+X-Gm-Message-State: AOAM5306mKZCUQ2GJJLsqJ/Or+BPQndiN7xpUfRhtSP6VAIuWx8uDm1N
+        KjyMSQCJjV9KKippLV47cQg=
+X-Google-Smtp-Source: ABdhPJzvyvxchjnijiU3tXHOtd78aybClSnMqXpfP33YYcQnledJ3xLrAykgTzMo+dqTSywxOtIW9g==
+X-Received: by 2002:a17:907:1b10:b0:6e4:bac5:f080 with SMTP id mp16-20020a1709071b1000b006e4bac5f080mr5052303ejc.24.1651349972319;
+        Sat, 30 Apr 2022 13:19:32 -0700 (PDT)
+Received: from ?IPV6:2a01:c22:6f21:fd00:3167:a16c:5aa:91c3? (dynamic-2a01-0c22-6f21-fd00-3167-a16c-05aa-91c3.c22.pool.telefonica.de. [2a01:c22:6f21:fd00:3167:a16c:5aa:91c3])
+        by smtp.googlemail.com with ESMTPSA id hg8-20020a1709072cc800b006f3ef214db1sm1904785ejc.23.2022.04.30.13.19.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 30 Apr 2022 13:19:31 -0700 (PDT)
+Message-ID: <f68dfd23-ae83-e4d9-cb08-51a097bac06b@gmail.com>
+Date:   Sat, 30 Apr 2022 22:19:25 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Content-Language: en-US
+To:     Peter Geis <pgwipeout@gmail.com>, Andrew Lunn <andrew@lunn.ch>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220228233057.1140817-1-pgwipeout@gmail.com>
+ <Yh1lboz7VDiuYuZV@shell.armlinux.org.uk>
+ <CAMdYzYrNvUUMom4W4uD9yf9LtFK1h5Xw+9GYc54hB5+iqVmJtw@mail.gmail.com>
+ <CAMdYzYrFuMw4aj_9L698ZhL7Xqy8=NeXhy9HDz4ug-v3=f4fpw@mail.gmail.com>
+ <Ym1bWHNj0p6L9lY8@lunn.ch>
+ <CAMdYzYq41TndbJK-=ah31=vECisgRbPmtFYwOLQQ7yn4L=JVYw@mail.gmail.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH v1] net: phy: fix motorcomm module automatic loading
+In-Reply-To: <CAMdYzYq41TndbJK-=ah31=vECisgRbPmtFYwOLQQ7yn4L=JVYw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Current memory failure code in the debugfs returns -ENOSPC. This is
-normally used for indicating that there is no space left on the
-device and is not applicable for memory allocation failures.
-Replace this with -ENOMEM.
+On 30.04.2022 18:31, Peter Geis wrote:
+> On Sat, Apr 30, 2022 at 11:52 AM Andrew Lunn <andrew@lunn.ch> wrote:
+>>
+>>> Good Morning,
+>>>
+>>> After testing various configurations I found what is actually
+>>> happening here. When libphy is built in but the phy drivers are
+>>> modules and not available in the initrd, the generic phy driver binds
+>>> here. This allows the phy to come up but it is not functional.
+>>
+>> What MAC are you using?
+> 
+> Specifically Motorcomm, but I've discovered it can happen with any of
+> the phy drivers with the right kconfig.
+> 
+>>
+>> Why is you interface being brought up by the initramfs? Are you using
+>> NFS root from within the initramfs?
+> 
+> This was discovered with embedded programming. It's common to have a
+> small initramfs, or forgo an initramfs altogether. Another cause is a
+> mismatch in kernel config where phylib is built in because of a
+> dependency, but the rest of the phy drivers are modular.
+> The key is:
+> - phylib is built in
+> - ethernet driver is built in
+> - the phy driver is a module
+> - modules aren't available at probe time (for any reason).
+> 
+> In this case phylib assumes there is no driver, when the vast majority
+> of phys now have device specific drivers.It seems this is an unsafe
+> assumption as this means there is now an implicit dependency of the
+> device specific phy drivers and phylib. It just so happens to work
+> simply because both broadcom and realtek, some of the more common
+> phys, have explicit dependencies elsewhere that cause them to be built
+> in as well.
+> 
+Because you mention the realtek phy driver:
+Users reported similar issues like you if r8169 MAC driver is built-in
+(or r8169 module is in initramfs) but realtek phy driver is not.
+There's no direct code dependency between r8169 and realtek phy driver,
+therefore initramfs-creating tools sometimes missed to automatically
+include the phy driver in initramfs. To mitigate this r8169 has the following:
+MODULE_SOFTDEP("pre: realtek");
+This isn't strictly needed but some initramfs-creating tools consider
+such soft dependencies when checking what should be included in initramfs.
+If some other MAC is used with a Realtek PHY, then you may still see the
+described issue.
+As Andrew wrote: Eventually it's a userspace responsibility to ensure that
+all needed modules are included in initramfs.
 
-Fixes: 0daa55d033b0 ("octeontx2-af: cn10k: debugfs for dumping LMTST map table")
-Fixes: 23205e6d06d4 ("octeontx2-af: Dump current resource provisioning status")
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
----
-
-I found this issue using static analysis to find inconsistent error
-handling regarding kernel APIs. Found on v5.17.5.
-As I do not have the necessary hardware, I only managed to compile test
-this on x86_64. I wasn't too sure if it belongs in -net-next or -net,
-because while it could theoretically affect users and is a bug in
-principle, it probably doesn't do much harm.
-
- drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-index d1eddb769a41..2ad73b180276 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-@@ -248,7 +248,7 @@ static ssize_t rvu_dbg_lmtst_map_table_display(struct file *filp,
- 
- 	buf = kzalloc(buf_size, GFP_KERNEL);
- 	if (!buf)
--		return -ENOSPC;
-+		return -ENOMEM;
- 
- 	tbl_base = rvu_read64(rvu, BLKADDR_APR, APR_AF_LMT_MAP_BASE);
- 
-@@ -407,7 +407,7 @@ static ssize_t rvu_dbg_rsrc_attach_status(struct file *filp,
- 
- 	buf = kzalloc(buf_size, GFP_KERNEL);
- 	if (!buf)
--		return -ENOSPC;
-+		return -ENOMEM;
- 
- 	/* Get the maximum width of a column */
- 	lf_str_size = get_max_column_width(rvu);
--- 
-2.36.0
+>>>> What normally happens is that the kernel loads, maybe with the MAC
+>> driver and phylib loading, as part of the initramfs. The other modules
+>> in the initramfs allow the root filesystem to be found, mounted, and
+>> pivoted into it. The MAC driver is then brought up by the initscripts,
+>> which causes phylib to request the needed PHY driver modules, it loads
+>> and all is good.
+>>
+>> If you are using NFS root, then the load of the PHY driver happens
+>> earlier, inside the initramfs. If this is you situation, maybe the
+>> correct fix is to teach the initramfs tools to include the PHY drivers
+>> when NFS root is being used?
+>>
+>>      Andrew
 
