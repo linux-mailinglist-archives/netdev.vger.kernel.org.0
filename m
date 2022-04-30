@@ -2,105 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D01D8515DEA
-	for <lists+netdev@lfdr.de>; Sat, 30 Apr 2022 15:56:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AB13515DF8
+	for <lists+netdev@lfdr.de>; Sat, 30 Apr 2022 16:05:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240825AbiD3N7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Apr 2022 09:59:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47724 "EHLO
+        id S240408AbiD3OI7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Apr 2022 10:08:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237401AbiD3N7v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Apr 2022 09:59:51 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B05B92A27F
-        for <netdev@vger.kernel.org>; Sat, 30 Apr 2022 06:56:29 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id h1so9073550pfv.12
-        for <netdev@vger.kernel.org>; Sat, 30 Apr 2022 06:56:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WgufQaaLw4AGY3k9tFBTfBHY9WLWQiFUEx4BNaq+0YQ=;
-        b=Ph/lydrtzigd6xxDuN2bza1D0YA3FXowcmLJxM+sBEr1xwRrECW2Kuh4jJ3QJEf7zn
-         O0vHSThUNBDsFVoGOGtQj9HXpM6y8p8hbggTJzJW9j81cpR42xvCildKnN+gytwCkLOu
-         mmybZ5QuAYbYweVZaUmBXErqYoDq9wKTom4lt6oc8cWriBGIr2aO79rGJPgO5Hn6skjX
-         E+qtpkTnibxhs/71DChj5t9fDzM/WKEFgsNDeM/FZw8/UfxJXZ8ENyBv4d98ufpf+gEV
-         tzoOsPwf3sMevDgiHCKMkwrx4UMJXFwrFHYzu2a3eT8ejmwXoORZ1JOOg3TgXfGek3QU
-         1yTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WgufQaaLw4AGY3k9tFBTfBHY9WLWQiFUEx4BNaq+0YQ=;
-        b=PAg9A5z8xxJxmR0/oSzTkKSJHTKHJgtydpda87q2ueq5NxH+RIJJrGgsmuXEQIR2bn
-         tZ1WxLMZ/QHeGKFoHkK2M+3o7kkB5MBpdAaMjGO+6qTNUNuj0iAEUI+/uaf49VfRdpfW
-         Ghvjlu54bQhJCHmSFdrqFBGfmwty+G+WgrrIYgCKGIzgO+T6gdT0xGjYX42x77vuhtOT
-         GjE/vPjflwBrPcS3OMHirUmWJi08XvzC9Kvlo/K6MAeSqIYQYmnErF+iUVq7BBTujqq2
-         cH/F7Xr7mLmq1t9Y5CgeBwt6tKoZ/r+BgKEHQoHNKYfCXQfG+TO+VEWr3yJhBmkINVSb
-         BcQA==
-X-Gm-Message-State: AOAM532iyD1MVQ8KNhASwS4eyToZ/tXpOd0epquBUn9xFWt6aH/xgCWV
-        jAxDO6uJuFbmias1R/Z71sYL8A+108c7ow==
-X-Google-Smtp-Source: ABdhPJzADS3IpEslCNN93Vi0xpamqrmb9gtn2aRFV9JxjB4pHPYEesV6Oio9JNgCs/OlEASmBpVMHw==
-X-Received: by 2002:a63:1252:0:b0:39d:aa7a:c6e1 with SMTP id 18-20020a631252000000b0039daa7ac6e1mr3207747pgs.436.1651326989159;
-        Sat, 30 Apr 2022 06:56:29 -0700 (PDT)
-Received: from localhost.localdomain ([58.76.185.115])
-        by smtp.gmail.com with ESMTPSA id y5-20020a1709027c8500b0015e8d4eb2absm1496612pll.245.2022.04.30.06.56.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Apr 2022 06:56:28 -0700 (PDT)
-From:   Juhee Kang <claudiajkang@gmail.com>
-To:     ap420073@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [net-next PATCH] amt: Use BIT macros instead of open codes
-Date:   Sat, 30 Apr 2022 13:56:22 +0000
-Message-Id: <20220430135622.103683-1-claudiajkang@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S242337AbiD3OIw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Apr 2022 10:08:52 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16DE5338B8;
+        Sat, 30 Apr 2022 07:05:27 -0700 (PDT)
+Received: from wf0416.dip.tu-dresden.de ([141.76.181.160] helo=phil.localnet)
+        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <heiko@sntech.de>)
+        id 1nknid-0001W7-8u; Sat, 30 Apr 2022 16:05:07 +0200
+From:   Heiko Stuebner <heiko@sntech.de>
+To:     linux-mediatek@lists.infradead.org,
+        linux-rockchip@lists.infradead.org,
+        Frank Wunderlich <linux@fw-web.de>
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [RFC v2 4/4] arm64: dts: rockchip: Add mt7531 dsa node to BPI-R2-Pro board
+Date:   Sat, 30 Apr 2022 16:05:06 +0200
+Message-ID: <3557249.iIbC2pHGDl@phil>
+In-Reply-To: <20220430130347.15190-5-linux@fw-web.de>
+References: <20220430130347.15190-1-linux@fw-web.de> <20220430130347.15190-5-linux@fw-web.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_NONE,
+        T_SPF_HELO_TEMPERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace open code related to bit operation with BIT macros, which kernel
-provided. This patch provides no functional change.
+Am Samstag, 30. April 2022, 15:03:47 CEST schrieb Frank Wunderlich:
+> From: Frank Wunderlich <frank-w@public-files.de>
+> 
+> Add Device Tree node for mt7531 switch connected to gmac0.
+> 
+> Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+> ---
+> v2:
+> - drop status=disabled
+> ---
+>  .../boot/dts/rockchip/rk3568-bpi-r2-pro.dts   | 48 +++++++++++++++++++
+>  1 file changed, 48 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts b/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
+> index ed2f2bd9a016..f0ffbe818170 100644
+> --- a/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
+> +++ b/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
+> @@ -437,6 +437,54 @@ &i2c5 {
+>  	status = "disabled";
+>  };
+>  
+> +&mdio0 {
+> +	#address-cells = <1>;
+> +	#size-cells = <0>;
+> +
+> +	switch@0 {
+> +		compatible = "mediatek,mt7531";
+> +		reg = <0>;
+> +
+> +		ports {
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +
+> +			port@1 {
+> +				reg = <1>;
+> +				label = "lan0";
+> +			};
+> +
+> +			port@2 {
+> +				reg = <2>;
+> +				label = "lan1";
+> +			};
+> +
+> +			port@3 {
+> +				reg = <3>;
+> +				label = "lan2";
+> +			};
+> +
+> +			port@4 {
+> +				reg = <4>;
+> +				label = "lan3";
+> +			};
+> +
+> +			port@5 {
+> +				reg = <5>;
+> +				label = "cpu";
+> +				ethernet = <&gmac0>;
+> +				phy-mode = "rgmii";
+- phy-mode: String, the following values are acceptable for port labeled
+	"cpu":
+	If compatible mediatek,mt7530 or mediatek,mt7621 is set,
+	must be either "trgmii" or "rgmii"
+	If compatible mediatek,mt7531 is set,
+	must be either "sgmii", "1000base-x" or "2500base-x"
 
-Signed-off-by: Juhee Kang <claudiajkang@gmail.com>
----
- drivers/net/amt.c | 2 +-
- include/net/amt.h | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+So I guess the phy-mode needs to change?
 
-diff --git a/drivers/net/amt.c b/drivers/net/amt.c
-index 10455c9b9da0..76c1969a03f5 100644
---- a/drivers/net/amt.c
-+++ b/drivers/net/amt.c
-@@ -959,7 +959,7 @@ static void amt_req_work(struct work_struct *work)
- 	amt_update_gw_status(amt, AMT_STATUS_SENT_REQUEST, true);
- 	spin_lock_bh(&amt->lock);
- out:
--	exp = min_t(u32, (1 * (1 << amt->req_cnt)), AMT_MAX_REQ_TIMEOUT);
-+	exp = min_t(u32, (1 * BIT(amt->req_cnt)), AMT_MAX_REQ_TIMEOUT);
- 	mod_delayed_work(amt_wq, &amt->req_wq, msecs_to_jiffies(exp * 1000));
- 	spin_unlock_bh(&amt->lock);
- }
-diff --git a/include/net/amt.h b/include/net/amt.h
-index 7a4db8b903ee..d2fd76b0a424 100644
---- a/include/net/amt.h
-+++ b/include/net/amt.h
-@@ -354,7 +354,7 @@ struct amt_dev {
- #define AMT_MAX_GROUP		32
- #define AMT_MAX_SOURCE		128
- #define AMT_HSIZE_SHIFT		8
--#define AMT_HSIZE		(1 << AMT_HSIZE_SHIFT)
-+#define AMT_HSIZE		BIT(AMT_HSIZE_SHIFT)
- 
- #define AMT_DISCOVERY_TIMEOUT	5000
- #define AMT_INIT_REQ_TIMEOUT	1
--- 
-2.25.1
+
+Heiko
+
+> +
+> +				fixed-link {
+> +					speed = <1000>;
+> +					full-duplex;
+> +					pause;
+> +				};
+> +			};
+> +		};
+> +	};
+> +};
+> +
+>  &mdio1 {
+>  	rgmii_phy1: ethernet-phy@0 {
+>  		compatible = "ethernet-phy-ieee802.3-c22";
+> 
+
+
+
 
