@@ -2,118 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AA9C5159F2
-	for <lists+netdev@lfdr.de>; Sat, 30 Apr 2022 04:57:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 496575159FF
+	for <lists+netdev@lfdr.de>; Sat, 30 Apr 2022 05:09:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240457AbiD3DAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 23:00:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38014 "EHLO
+        id S240464AbiD3DLj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 23:11:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240426AbiD3DAt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 23:00:49 -0400
-Received: from smtp4.emailarray.com (smtp4.emailarray.com [65.39.216.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85349B25
-        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 19:57:29 -0700 (PDT)
-Received: (qmail 79380 invoked by uid 89); 30 Apr 2022 02:57:28 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTc0LjIxLjE0NC4yOQ==) (POLARISLOCAL)  
-  by smtp4.emailarray.com with SMTP; 30 Apr 2022 02:57:28 -0000
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com,
-        andrew@lunn.ch, hkallweit1@gmail.com, richardcochran@gmail.com,
-        lasse@timebeat.app
-Cc:     netdev@vger.kernel.org, kernel-team@fb.com
-Subject: [PATCH net-next v2 3/3] net: phy: broadcom: Hook up the PTP PHY functions
-Date:   Fri, 29 Apr 2022 19:57:23 -0700
-Message-Id: <20220430025723.1037573-4-jonathan.lemon@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220430025723.1037573-1-jonathan.lemon@gmail.com>
-References: <20220430025723.1037573-1-jonathan.lemon@gmail.com>
+        with ESMTP id S238217AbiD3DLh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 23:11:37 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D1F0193F6
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 20:08:16 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id bg9so7796475pgb.9
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 20:08:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=rkeES2OIvdNI+++7vcCsjkOqdIA5OgpHye4Y5dnS0TQ=;
+        b=U37Ij73DZbkmlfohZzCjCF79OJofs9nwNu8IEe07ZSR9z6x0b69r0JfmvAmP6hR0UB
+         0ShV1JzH8B6jRePfRi+0utmY4R6C4qCX6ioToU5cLjY5dUTVcx1oXUad54t5/EotdLgj
+         HNbG+JsMM4rD9qjXvmlWioXRKRolYpYqXaAGpA46dv9dWbmkHASwVVn/0E1NyxSJMdcH
+         hiLV3UBR+lMWx7lrljO6+YA2AQ46y+i/6pqWj4QYnbPlICPb+tME+bjvQjOETTDxqQiU
+         OQ6uTPQzgQmyHKlNYLjyPqRmS9zhZRvGZA9Fd66vjKMda0Yz6y3imQaRGXcOaLx4Uxr5
+         bYsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=rkeES2OIvdNI+++7vcCsjkOqdIA5OgpHye4Y5dnS0TQ=;
+        b=Lgyk/F+dvAc7rKh27rdGqY8UOWKe359FFhvALjGUBecOIXzjDr7fxAH5I/bVSmU5Nx
+         j5ncroqHE84QDBwzdL1NT931oVpmpfnO6ZlNVUBIr+gVH1+cBx00GPH/MOw8lztxLnSn
+         LjphyKFGSJSYQB/7RqccnAElUjcFGCKjFnpay5HAo0azgFj3f7Vit6w2Ovm/YU+Oq+ym
+         pvYb4UqDnEqj3T0DJIBHPoVPXe9pec1kl+fY7t8blN1kF/0cI/n4I54H2wfWxAZx5BqB
+         TpPfa4fs58DyhqlMIsHQ2kTNBcj7sKtTzmtdyqJ74fg3gsvBD3BvWj7T4JDGrQeXJP7u
+         WVQw==
+X-Gm-Message-State: AOAM530V52JT8mops+URzNaMhjd/Wyp8R3ryvUPjivSHFuxOvj8ZCRxY
+        q3cnD6iIgTIBPL/cfBn2UsTxRg==
+X-Google-Smtp-Source: ABdhPJwBF3D+FxRKosYiOQnIqkuXlbkmf3kDwkQSdgiyAIX9wO3jWUde0JZKiBB6sEz7BP1z9EaOjg==
+X-Received: by 2002:a05:6a00:140b:b0:4e1:2cbd:30ba with SMTP id l11-20020a056a00140b00b004e12cbd30bamr2078477pfu.46.1651288095956;
+        Fri, 29 Apr 2022 20:08:15 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id u7-20020a17090a3fc700b001d0ec9c93fesm11420143pjm.12.2022.04.29.20.08.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Apr 2022 20:08:15 -0700 (PDT)
+Message-ID: <38ae32bb-59e5-3e5e-6d22-245e757e428a@kernel.dk>
+Date:   Fri, 29 Apr 2022 21:08:14 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=0.5 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-        FORGED_GMAIL_RCVD,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,NML_ADSP_CUSTOM_MED,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY autolearn=no
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v3] tcp: pass back data left in socket after receive
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Neal Cardwell <ncardwell@google.com>
+References: <650c22ca-cffc-0255-9a05-2413a1e20826@kernel.dk>
+ <20220429191538.713da873@kernel.org>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <20220429191538.713da873@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add 'struct bcm_ptp_private' to bcm54xx_phy_priv which points to
-an optional PTP structure attached to the PHY.  This is allocated
-on probe, if PHY PTP support is configured, and if the PHY has a
-PTP supported by the driver.
+On 4/29/22 8:15 PM, Jakub Kicinski wrote:
+> On Thu, 28 Apr 2022 18:45:06 -0600 Jens Axboe wrote:
+>> This is currently done for CMSG_INQ, add an ability to do so via struct
+>> msghdr as well and have CMSG_INQ use that too. If the caller sets
+>> msghdr->msg_get_inq, then we'll pass back the hint in msghdr->msg_inq.
+>>
+>> Rearrange struct msghdr a bit so we can add this member while shrinking
+>> it at the same time. On a 64-bit build, it was 96 bytes before this
+>> change and 88 bytes afterwards.
+>>
+>> Reviewed-by: Eric Dumazet <edumazet@google.com>
+>> Signed-off-by: Jens Axboe <axboe@kernel.dk>
+> 
+> Commit f94fd25cb0aa ("tcp: pass back data left in socket after
+> receive") in net-next now, thanks!
 
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/phy/broadcom.c | 23 +++++++++++++++++++----
- 1 file changed, 19 insertions(+), 4 deletions(-)
+Great, thanks Jakub! I'll base on this for the io_uring change.
 
-diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
-index e36809aa6d30..a7722599b5f9 100644
---- a/drivers/net/phy/broadcom.c
-+++ b/drivers/net/phy/broadcom.c
-@@ -27,6 +27,11 @@ MODULE_DESCRIPTION("Broadcom PHY driver");
- MODULE_AUTHOR("Maciej W. Rozycki");
- MODULE_LICENSE("GPL");
- 
-+struct bcm54xx_phy_priv {
-+	u64	*stats;
-+	struct bcm_ptp_private *ptp;
-+};
-+
- static int bcm54xx_config_clock_delay(struct phy_device *phydev)
- {
- 	int rc, val;
-@@ -313,6 +318,14 @@ static void bcm54xx_adjust_rxrefclk(struct phy_device *phydev)
- 		bcm_phy_write_shadow(phydev, BCM54XX_SHD_APD, val);
- }
- 
-+static void bcm54xx_ptp_config_init(struct phy_device *phydev)
-+{
-+	struct bcm54xx_phy_priv *priv = phydev->priv;
-+
-+	if (priv->ptp)
-+		bcm_ptp_config_init(phydev);
-+}
-+
- static int bcm54xx_config_init(struct phy_device *phydev)
- {
- 	int reg, err, val;
-@@ -390,6 +403,8 @@ static int bcm54xx_config_init(struct phy_device *phydev)
- 		bcm_phy_write_exp(phydev, BCM_EXP_MULTICOLOR, val);
- 	}
- 
-+	bcm54xx_ptp_config_init(phydev);
-+
- 	return 0;
- }
- 
-@@ -741,10 +756,6 @@ static irqreturn_t brcm_fet_handle_interrupt(struct phy_device *phydev)
- 	return IRQ_HANDLED;
- }
- 
--struct bcm54xx_phy_priv {
--	u64	*stats;
--};
--
- static int bcm54xx_phy_probe(struct phy_device *phydev)
- {
- 	struct bcm54xx_phy_priv *priv;
-@@ -761,6 +772,10 @@ static int bcm54xx_phy_probe(struct phy_device *phydev)
- 	if (!priv->stats)
- 		return -ENOMEM;
- 
-+	priv->ptp = bcm_ptp_probe(phydev);
-+	if (IS_ERR(priv->ptp))
-+		return PTR_ERR(priv->ptp);
-+
- 	return 0;
- }
- 
 -- 
-2.31.1
+Jens Axboe
 
