@@ -2,85 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4A1A5159DE
-	for <lists+netdev@lfdr.de>; Sat, 30 Apr 2022 04:42:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DF2D5159E9
+	for <lists+netdev@lfdr.de>; Sat, 30 Apr 2022 04:48:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382088AbiD3Cpc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Apr 2022 22:45:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59160 "EHLO
+        id S1376634AbiD3CvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Apr 2022 22:51:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237621AbiD3Cpb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 22:45:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB288C7F5
-        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 19:42:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 640F3B8354D
-        for <netdev@vger.kernel.org>; Sat, 30 Apr 2022 02:42:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6283C385A7;
-        Sat, 30 Apr 2022 02:42:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651286529;
-        bh=GEuLQdxDHLodtyuSsN82uCzuz1jz4IzNQ4a/ZujIl5E=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=c4CCx/SC4a0ZUsEXd6+nowQ2gSlfdrx8jQSBlv628mf2jVg7E+pexIxhB+imR3zh2
-         kdvLnB7ZHqRJm9P+rQI9YdoXAhKl6NZMLHLQHYUTeQn3s3HTsSHZT6iiOJotjkeRaZ
-         jYSuxz8ap8jgKIBGkpEA2YAJb6xAbv3kuuUmIJOvowrxjIsWfxhMqpAUqxjWeaTDRM
-         LMKNbErRn4JR3uIIMnJWIEuYxS4UF/9SPahTAFuMwB4LMAmeOgRGw879hNegUPdxRX
-         BQpwWmqaF3rAj1nIbIr7z+AOZTW83l3GNGZAbS0bfkJvT2sIDm/ae3o6nxAdJnIpnO
-         Gx5jzVs4z/sCg==
-Date:   Fri, 29 Apr 2022 19:42:07 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Nambiar, Amritha" <amritha.nambiar@intel.com>
-Cc:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Mogilappagari, Sudheer" <sudheer.mogilappagari@intel.com>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
-        "Sreenivas, Bharathi" <bharathi.sreenivas@intel.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>
-Subject: Re: [PATCH net-next 01/11] ice: Add support for classid based queue
- selection
-Message-ID: <20220429194207.3f17bf96@kernel.org>
-In-Reply-To: <MWHPR11MB129308C755FAB7B4EA1F8DDCF1FF9@MWHPR11MB1293.namprd11.prod.outlook.com>
-References: <20220428172430.1004528-1-anthony.l.nguyen@intel.com>
-        <20220428172430.1004528-2-anthony.l.nguyen@intel.com>
-        <20220428160414.28990a0c@kernel.org>
-        <MWHPR11MB1293C17C30E689270E0C39AAF1FC9@MWHPR11MB1293.namprd11.prod.outlook.com>
-        <20220429171717.5b0b2a81@kernel.org>
-        <MWHPR11MB129308C755FAB7B4EA1F8DDCF1FF9@MWHPR11MB1293.namprd11.prod.outlook.com>
+        with ESMTP id S237621AbiD3CvW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Apr 2022 22:51:22 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4295D0815
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 19:48:01 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id m20so18496050ejj.10
+        for <netdev@vger.kernel.org>; Fri, 29 Apr 2022 19:48:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lXznhmzqeQVMniJSLymEHuowqPj6xKPsPEyEFNQbj9Y=;
+        b=Qb+BVOyqmoA6Bv3F+gBBFS+7D+DDb4R1vWzA/gFOFV534ZoemTMW8ZyEwUotW8gQOd
+         zd6RXee6ay+wIdgopluXFXOZrrKmeYxXWfLR/7ioJ1au1IEMzuSELH+i+EenSdFte9p7
+         99aL3wRwptH0ztwN4IB76g3K6zYTZ8t5XYTPuc2FJlKH/0IhtYjcQTmirOOQ8eEZ8qhP
+         xwi759U6EvXmGg3BBOT1Sj8T7Ocx0hGBfQjmHG0G0AvB0HnXMrcUQMNyItwaqPeZWVAg
+         6Kb7uewqmyCl0o3JhBBYGnkod6wG6cWd5XR2ZVJC01GwmRVx8zEhjlRc3d9KTP2vl1pG
+         cDgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lXznhmzqeQVMniJSLymEHuowqPj6xKPsPEyEFNQbj9Y=;
+        b=uWmj7HYB1zNx4tnG9Bp0D649LZhPyXhIJbxCuX6NqDZ57jptV/jnyG2g4eW99cC30l
+         V5bPmSRkcnJxJDPOC1VuUzX95gomM35Hy3cswLhA6d4lOc+taiXSZq8W07KDRwXhdvoe
+         myv4ZJFzAnwhjSCfJY6g8SmSyigVyJJ+CXHNxsmya4Isge3qcul4jZ98cdrSzKTgmYHA
+         Q2oiOsLo6G743AYykQpYL/WZ/kAjxtb/V+IHv1wAsVrxnDlIqLfmqxTw+P192tFtkbiE
+         ydNRTt3dQ43luLgWItbnKXxwmdoSo2V1yloVwLSCIWuINr2G7z/QsxWNOO9E5tfcO9gs
+         0E+Q==
+X-Gm-Message-State: AOAM533mym+vVOUJ2ShBT6Jjtlg5bA8rP+20eNTy0lilecUF7Cmn27NX
+        oQ+TICfW6jUiCJPeOagp9WBaHc0jejdny5HEo1rjSw==
+X-Google-Smtp-Source: ABdhPJwEnhqtml5gNZxI1dJC+qkckkIaDCxXjayBdFx9nvV578KNKmCSq+FicPFYi/T2Iu1WsasQkW2GGC6HNiajhG4=
+X-Received: by 2002:a17:907:3f8f:b0:6f3:d4a0:e80c with SMTP id
+ hr15-20020a1709073f8f00b006f3d4a0e80cmr1992931ejc.709.1651286879835; Fri, 29
+ Apr 2022 19:47:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20220430011523.3004693-1-eric.dumazet@gmail.com> <CADVnQynFW-6MQX2DYQ8SgZ3NLVc7yLZbDa9_+fKMv_tB5cPqsg@mail.gmail.com>
+In-Reply-To: <CADVnQynFW-6MQX2DYQ8SgZ3NLVc7yLZbDa9_+fKMv_tB5cPqsg@mail.gmail.com>
+From:   Soheil Hassas Yeganeh <soheil@google.com>
+Date:   Fri, 29 Apr 2022 22:47:23 -0400
+Message-ID: <CACSApvZqxfzzkHiMZ=r5+uZurPnF0Rty2zb8R9eh9Hyr-y7waQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] tcp: drop skb dst in tcp_rcv_established()
+To:     Neal Cardwell <ncardwell@google.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 30 Apr 2022 02:00:05 +0000 Nambiar, Amritha wrote:
-> IIUC, currently the action skbedit queue_mapping is for transmit queue selection,
-> and the bound checking is w.r.to dev->real_num_tx_queues. Also, based on my
-> discussion with Alex (https://www.spinics.net/lists/netdev/msg761581.html), it
-> looks like this currently applies at the qdisc enqueue stage and not at the
-> classifier level.
+On Fri, Apr 29, 2022 at 10:20 PM Neal Cardwell <ncardwell@google.com> wrote:
+>
+> On Fri, Apr 29, 2022 at 9:15 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> >
+> > From: Eric Dumazet <edumazet@google.com>
+> >
+> > In commit f84af32cbca7 ("net: ip_queue_rcv_skb() helper")
+> > I dropped the skb dst in tcp_data_queue().
+> >
+> > This only dealt with so-called TCP input slow path.
+> >
+> > When fast path is taken, tcp_rcv_established() calls
+> > tcp_queue_rcv() while skb still has a dst.
+> >
+> > This was mostly fine, because most dsts at this point
+> > are not refcounted (thanks to early demux)
+> >
+> > However, TCP packets sent over loopback have refcounted dst.
+> >
+> > Then commit 68822bdf76f1 ("net: generalize skb freeing
+> > deferral to per-cpu lists") came and had the effect
+> > of delaying skb freeing for an arbitrary time.
+> >
+> > If during this time the involved netns is dismantled, cleanup_net()
+> > frees the struct net with embedded net->ipv6.ip6_dst_ops.
+> >
+> > Then when eventually dst_destroy_rcu() is called,
+> > if (dst->ops->destroy) ... triggers an use-after-free.
+> >
+> > It is not clear if ip6_route_net_exit() lacks a rcu_barrier()
+> > as syzbot reported similar issues before the blamed commit.
+> >
+> > ( https://groups.google.com/g/syzkaller-bugs/c/CofzW4eeA9A/m/009WjumTAAAJ )
+> >
+> > Fixes: 68822bdf76f1 ("net: generalize skb freeing deferral to per-cpu lists")
+> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > ---
+> >  net/ipv4/tcp_input.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+> > index cc3de8dc57970c97316ad1591cac0ca5f1a24c47..97cfcd85f84e6f873c3e60c388e6c27628451a7d 100644
+> > --- a/net/ipv4/tcp_input.c
+> > +++ b/net/ipv4/tcp_input.c
+> > @@ -5928,6 +5928,7 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
+> >                         NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPHPHITS);
+> >
+> >                         /* Bulk data transfer: receiver */
+> > +                       skb_dst_drop(skb);
+> >                         __skb_pull(skb, tcp_header_len);
+> >                         eaten = tcp_queue_rcv(sk, skb, &fragstolen);
+> >
+> > --
+>
+> Nice catch. Thanks, Eric!
+>
+> Acked-by: Neal Cardwell <ncardwell@google.com>
+>
+> neal
 
-They both apply at enqueue stage, AFAIU. Setting classid on ingress
-does exactly nothing, no? :)
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
 
-Neither is perfect, at least skbedit seems more straightforward. 
-I suspect modern DC operator may have little familiarity with classful
-qdiscs and what classid is. Plus, again, you're assuming mqprio's
-interpretation like it's a TC-wide thing.
-
-skbedit OTOH is used with a clsact qdisc.
-
-Also it would be good if what we did had some applicability to SW. 
-Maybe extend skbedit with a way of calling skb_record_rx_queue()?
+Thank you for the fix!
