@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F4FE5160A7
-	for <lists+netdev@lfdr.de>; Sat, 30 Apr 2022 23:35:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4C505160B0
+	for <lists+netdev@lfdr.de>; Sat, 30 Apr 2022 23:57:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245440AbiD3VhN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Apr 2022 17:37:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54694 "EHLO
+        id S245645AbiD3WAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Apr 2022 18:00:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233148AbiD3VhM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Apr 2022 17:37:12 -0400
-Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140041.outbound.protection.outlook.com [40.107.14.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E60AE27154;
-        Sat, 30 Apr 2022 14:33:48 -0700 (PDT)
+        with ESMTP id S245553AbiD3WAS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Apr 2022 18:00:18 -0400
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2055.outbound.protection.outlook.com [40.107.104.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6476D527F6;
+        Sat, 30 Apr 2022 14:56:55 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ScBjTn8l/O3tRP7a+zio9OMMtzBPEV4u+jiNEVB+Kt47lH/PoEVrm4f2WUws0xPvQfOstlSXO7Tog0TE3RguUVTM7RKzPYlbUlQ8gRZ+I6JxsRDMTlcKY+0ANIuEge+q7Oy/BjHHBEnhY7qn0qkW0cVt4Vz/EKegy4CodYB9n25M9NodwcUaoVYH67s3lS8FfMSIfebLPU+tNOlfC7Z7KsqDKLdnOWE4oHx0OfAdZhIZYY49XttiXxiFAVo9E9xFng2+gTnnoV0U4kjY9JJzNZx8IqHqQ0eF1N6uJI3vXER+0VY71tjlIdFsmlN+pT+TJLcmGWfC5uWAt8tnENVuQg==
+ b=WOGBSYBNvfsOOG/r6FkWsoYjiWgRzl7MI1vssfckOZ0tPMpsuPzMq43PUjEfFFOlA2BAYZlBNId/YBoGQt009RO1XJZMLjWNkivyMnMZ/biExRgZsSg3wLYdD+UjeWxm49TG5Ui043g5mlN0+vr1xl4XSKa1hDw9J2PFGyxsQEsGf/1AJhSi3rd5s4coW2wSxUxdrIJZd/HGMOqj9Du2lff6tmsJfVVuUSq8js+cu/DXam7eDtUKfpWMHV55TFUOMEADyEDy0O0TTviO/X+g8hZiRPafnpUiCiPtuRJkcs5Bd+N/uYxPWnfDVIkb55CBRfVTRMeiWNqu5+m3J375dA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CO4V1rFWMiICdnrLMvuXpUuxwKd+uVbVHh8RhCdd6+Q=;
- b=Ft30QGLO3s6VyoFmHy5PyTlZybMFl040KdU1Zm4iArF5FjowDj/7FMZMyyIoIhGGUH0vIgM/dLMEi2ld1BTRPS8qXemoWkiWCUG34+fsFPpAlmyIRzcvN1bzTnqmE7E3cQQm/5dovsZ9ecX8/q+sU3+N6PQl3747xiP7uXSfGV7ZICNOyfo1G49nmpMta6eUgFhBkmIHScUN2XcZXhybEhrKQzzeJGkj4nmP1OEsaVM74leQwRzU0rymc7tLNeXvR9k7Y6ChdlYEpDCvK1c3A7aTNr70YqUW3qzFTDFuEihllwa5RUGbqBKE/jX+7RoL9JapOGCkHGhOrMlZHZ/mEw==
+ bh=AYe2g6hTgqn8PArETQ1vKhZSEn3LPnlsPNt8emul5DU=;
+ b=Y0HS4VFwqoyHuJkeVwHjV2t/PmqyOJVfvYkYjNOJvY3yqjGhImgDuB0aaOryzDbgZrqr/Hgv0fNfPFFwFTvg0zsmCrzUd4pMPZbAw/27u5TxIo1Ir0itQhjAyhEaRW8/hk6kXfhGYjN4JbOaRhmjX8HWSb2IwQmPqMIJKWRz0nhcUX6CgnEcPfOfONt3fpFBXBPJfN2cFQS4N5tAJKXIOCLfUlEOVkSWXY4agaaG6IsiOa1olaJjLrUdNTHt9ZME8b2YaJg0HRmwnGfhhwJPWXqFVeA0iPP4bnYOBdyUtM3Rl5gx/QLM2X1ZxX00CjGlDjMEwfTrUjhZvAd/xmJtdA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CO4V1rFWMiICdnrLMvuXpUuxwKd+uVbVHh8RhCdd6+Q=;
- b=edBA3TKI7BGUgFEIEcxHLUnwlvrqJEDwI9F+XXd2+A66eDcHV1eEUYjVegBd/Kubhk9hsNvQEI1mqpEOVPsOLnpkQzCR0AIOgulSsj4L+cdpw0JI94bmUp/fzhE2i20H/dXWKNLV/YWUFPOhZ+6v8fJnhBIOmgpYem5LByFToVM=
+ bh=AYe2g6hTgqn8PArETQ1vKhZSEn3LPnlsPNt8emul5DU=;
+ b=AqtXe+sW30SKNy36gQz+zZJTEGotCjFSRyAkYGB67J9qmMxVEqae5JinycXvqUjGFKJLIvC/wDD1R7wGIr9/S1gkULRCgarl7ml/bl3Gld2AFqjP4s3JVmNEqELS5yEh8+PcW9UJ5AatCKzu4OncYQOMQkqQta7jgYQzqB/rBr8=
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by DBBPR04MB6154.eurprd04.prod.outlook.com (2603:10a6:10:c8::14) with
+ by AM6PR04MB5430.eurprd04.prod.outlook.com (2603:10a6:20b:94::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.14; Sat, 30 Apr
- 2022 21:33:45 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.28; Sat, 30 Apr
+ 2022 21:56:52 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::d94f:b885:c587:5cd4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::d94f:b885:c587:5cd4%6]) with mapi id 15.20.5206.014; Sat, 30 Apr 2022
- 21:33:45 +0000
+ 21:56:52 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     Colin Foster <colin.foster@in-advantage.com>
 CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        aolo Abeni <pabeni@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -51,17 +51,17 @@ CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Claudiu Manoil <claudiu.manoil@nxp.com>
-Subject: Re: [PATCH v1 net-next 1/1] net: ethernet: ocelot: remove the need
- for num_stats initializer
-Thread-Topic: [PATCH v1 net-next 1/1] net: ethernet: ocelot: remove the need
- for num_stats initializer
-Thread-Index: AQHYXBBpaZvHdMSucUK2oh2cKAMiLK0IkiEAgAAqfYCAAD8wAA==
-Date:   Sat, 30 Apr 2022 21:33:45 +0000
-Message-ID: <20220430213344.ifiw2wjtxqd2dqbj@skbuf>
-References: <20220429213036.3482333-1-colin.foster@in-advantage.com>
- <20220429213036.3482333-2-colin.foster@in-advantage.com>
- <20220430151530.zaf7hyagln5jqjyi@skbuf> <20220430174735.GD3846867@euler>
-In-Reply-To: <20220430174735.GD3846867@euler>
+Subject: Re: [PATCH v1 net 2/2] net: mscc: ocelot: fix possible memory
+ conflict for vcap_props
+Thread-Topic: [PATCH v1 net 2/2] net: mscc: ocelot: fix possible memory
+ conflict for vcap_props
+Thread-Index: AQHYXCE0wfZ6v7cjxEOPYespSpyp0K0Ig9+AgAAyBwCAAEw8gA==
+Date:   Sat, 30 Apr 2022 21:56:52 +0000
+Message-ID: <20220430215651.4lk66lwnzslqtgtb@skbuf>
+References: <20220429233049.3726791-1-colin.foster@in-advantage.com>
+ <20220429233049.3726791-3-colin.foster@in-advantage.com>
+ <20220430142457.7l2towhbptdvrfje@skbuf> <20220430172400.GA3846867@euler>
+In-Reply-To: <20220430172400.GA3846867@euler>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -69,63 +69,63 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5918c7c6-072a-4d2f-ccd5-08da2af11b06
-x-ms-traffictypediagnostic: DBBPR04MB6154:EE_
-x-microsoft-antispam-prvs: <DBBPR04MB6154FC3C5ABFAA76A4FE4F55E0FF9@DBBPR04MB6154.eurprd04.prod.outlook.com>
+x-ms-office365-filtering-correlation-id: 6f54f7ae-4818-4df6-4433-08da2af455c2
+x-ms-traffictypediagnostic: AM6PR04MB5430:EE_
+x-microsoft-antispam-prvs: <AM6PR04MB543094014472C77A86020CB6E0FF9@AM6PR04MB5430.eurprd04.prod.outlook.com>
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: FnbyU3dkWR0gkJa/jpo/A75sWeIE0nU0Uu+31SVsQhIQpmQ/2uvuz/LCsp/1DkkjaE+x3/iha0SySsKaMRt30te0mQtta3DwRRGUmBt4NUPlquX6GSTnUAaOqX/sGuH/zzAEhAu1f6TKk8dEZNxrbTHYZHxr0UJKpWWOkBRoyutqoEa0IayzEDtQ6W4sZ1oiDB7ohT59VvpX5ageqTpfDTJAakHkbso1qVsc/GZUtW6GGSzfBZSOx3Bi3EiLriYFTbAhuE1jNiklEJx6ovNBZypt/ozLPdLrqllDE6MawldKct0vAM2NL0UwVC4jroi5vMTjwMools1/VpQ3+e/iiXOwbmVEaoL4JBc4XMITRGF0i0BcNruP0A/37lAZflveHubNCY2R1kxZacTdrC4a0bl7ywqgkQ1cNHyjoVe/tfe9tTOU7o9JjxNhvK++vtR/GjH3fdQ4K7DQByzU/NaSjpPoxSatTeAI0nRsDn92UT0yAvBzxJbIpoR5+LR7KL/DV+5Xx2Ema7j2Ue5eonh+GjRIKi0wbTX7iNlJKgsYifep5vakhpUmDbirCHEUJP4n6O160+IbIDYyuSFR6jGejJKxklt4lXQxU8ycP7RhKaSH0+SLXMgaNNtXYQTPyBnnS5b546zuZgZ9PWT4g8V6bf7AtAQ4UIAS+cUuWC3amCMO/wa9awdhpxBpuOinqUPd8z6BeIEQoKwaiuqq1R7hXw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(5660300002)(6486002)(8936002)(86362001)(2906002)(122000001)(44832011)(7416002)(508600001)(38070700005)(38100700002)(91956017)(66946007)(66476007)(66556008)(76116006)(4326008)(66446008)(33716001)(186003)(316002)(8676002)(64756008)(6506007)(6916009)(54906003)(9686003)(6512007)(26005)(71200400001)(1076003);DIR:OUT;SFP:1101;
+x-microsoft-antispam-message-info: X/npOr8kLyMC3C3NYqdwoUGn8VWE3cE188Ob+Vu3lfGMfq62PQ2wtKSQc5kCkT4v/ILVL/ii/qhh43V6b5zhTLG4c/AWkPvQK4hj7gjGS1EF4NEDG0iox7pBu6UOIPFpmCKZSP4B8Rv25+O1AI+DZYgdgELHK9EnhL4/DlJ0R8ySPJZISvxLaXzGoqZests7XOZImrbSnAhRxjtmmS6iw/X+jgRrodzpg7LvnJ8rpuTkgAVEB87AuqLl5P+5NkrfllgvfSb70zDK15DW3cBJslSuim/euYlDxlLdoO3BX4D2Eltmog0kPuBrZtVZQgWNQytv00BDxX/GgjOkVP0ZjCdKqYSWxD3fI8iz1qc93+Tj7H7k4CyIGa61SxtauX+MaloDLu4if0qJWizDTV85pcqpHFSSEF5ajlCYfbnbr8RQ0eiber/xW0AEX3PP3wWa0ADkGKaKUJCefHS9GQpk6lPCbAQaOeIRxqUjA1cEtO72YvGtpiKyTmsnIwrGda4Lwr4KkmLUdil1AYXLUUHpjYe4xXETGK9qFXled+Y5aZh1R6FfBacfbZUcOioydP4Ikeh/USt7qSVmlHWZCuqFe/cmu2XV0XJjSopZoim/Ih72yYntkdM5ap3HDPkIHLObP/Gu8Ja4Ih2VydEep09JDbc4Y5Hxm5gwcNF1g9Un1Y67eROf1wtlva5GYiZ11aETA8GcM7W7OVH9Lou79yMiE9pQqRXWMFYYsh5G2xtHvD39wMhPCDxH296lt3nHoCqhDSlpCYJNRZ7I+gZt+I+KNtCui9gEMIUpLrMkQT2AqY/IPei9u9kV/e0rW5jHYeF50Aa7dUKkf6IEULYvEd/PWQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(54906003)(6916009)(44832011)(6486002)(966005)(66446008)(5660300002)(7416002)(83380400001)(316002)(66476007)(91956017)(4326008)(8676002)(64756008)(76116006)(66946007)(33716001)(8936002)(71200400001)(86362001)(66556008)(6512007)(9686003)(38100700002)(1076003)(26005)(38070700005)(186003)(2906002)(508600001)(122000001)(6506007);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?aBvhmOkQ+UpEBHwBzxXgOzdKDdkscnq5GCuWY0LLdQOpaUwsYSYddQJq4GrC?=
- =?us-ascii?Q?jLF+hGa7LVfn34DMj+KoZNbWU8Xe2t2WsSndr/zdAw/6cqmpupY6+jcvPNhu?=
- =?us-ascii?Q?TTDXgVPUUZk/VSlljfE9xCJ7l1MFI4oMMvmcm6Bo2B+FfiFMPvVbF+kE9LK/?=
- =?us-ascii?Q?XWIUo7Ks0ZUiLLn6VENvktWOmYfsSrb8L69rW13ZgkHpvqdRUyXdsNEf9lhk?=
- =?us-ascii?Q?91prgLX5yjv9f5/kSCXw5eqNRFPdCWeBTjwfl4AE4sjEJYSxtgciOu3YZpwF?=
- =?us-ascii?Q?oajrjssbXoqUs0uKVNSnQpLlS2wxFV6XUyyvKaVKvT+SAYynsWjd701FoILp?=
- =?us-ascii?Q?2NyIzDISqyKntq23UZKTUWw1ZIFCOXTYZqWTnY9XnpW9nRUEuEVxiSVyp9Ep?=
- =?us-ascii?Q?r9oaEBpXlw7WpvgPBgY4qLoEVXNZVU5SCMWssOUN2/IihDORwdGUg8zN2l0r?=
- =?us-ascii?Q?tVQ711bG4iigmOmaPdAIqNbaafCmYRtL9tvNaYdxc3sovGqJ1N2Ipj2RnvEK?=
- =?us-ascii?Q?bQU+qrJPSaxkEexGE2u8G5TUN9pDo21d+08hv+tord+K/z+KwpjAyF0ZOTSr?=
- =?us-ascii?Q?wg22QmyI7jHGfJwQYFsId6QH4ih7l5ANZii03jaJn6/FVyHRIwHd4RTqWlTe?=
- =?us-ascii?Q?2w9BKDVT7iH0THdr/9dTj+nzfoaomUCUsiZ4qYPTfZt2C+KGhOS05xGOVV8t?=
- =?us-ascii?Q?690mDvrN7vB3yYxvUWYObc+nUi8/MfkeLRXM5gbVLgHxVGoV21hnW0dBRNGO?=
- =?us-ascii?Q?LHev2RVC9p1vK2PfM1AXYnFdDFy4YzhsYezA8oHFKV7+6VypKjNeC8QGreLW?=
- =?us-ascii?Q?p9YHU4rArVAEldIT0Tesin1bk2uW7EUZZmoctL9Jb2zw9oj6+6ObMiiQTh7I?=
- =?us-ascii?Q?40Z3oZAE2+OoYjTerTlSXK9gpT7xpPTYDn4qDMSk345Jrl3ty4WPhiv8CwNZ?=
- =?us-ascii?Q?H8yM6eQOSYD6bVMkKsax1zr8lDJunu/4WpbQAxPeWzhk4L4IqKAU6gaynjZN?=
- =?us-ascii?Q?6IfXQ6bbB+I1a0GSfoDSPsErrjF2Kwtz89nULfsMPNTlXTRPYZ+nwY/r1LKx?=
- =?us-ascii?Q?MV3RMXi2Bg5D7YQxf2sGEITv1noL0KctQ2kJ7z73QZTIgCSMb2Fb7DFkV2lW?=
- =?us-ascii?Q?pexSd9QRc0tqtZZFx1DLKPPdJPJyHUPa4ozMS4RXCysSKrftihpD99aay30X?=
- =?us-ascii?Q?311CRuIFIljbUxEH156rKmkJvh0+3vyx723iy10Omeln6MRLK4iLHEIi3FlI?=
- =?us-ascii?Q?b3iKOHU9mqrIC1cSzq6c2ddfxUCh7fl27RY1XIbtxNAlP5wlPRrBbYxAYQj7?=
- =?us-ascii?Q?+uJOGi2T4cCXwYmxohjHqXPj0qc9TpOCMZT36E5UX1KXqJV9hS3yqy6KX5h6?=
- =?us-ascii?Q?DxdtWEdQZ0mEI4dArxQd05cdvgQ1nSSD3o1fR3EoVTFGIAnBaH8WfpRqP2Qn?=
- =?us-ascii?Q?+5cwRB/MdrDYpkA0dzmb+vgLIGW1DN/J4QHEFyJdgVcOVy/j6zJOb5wWHq3w?=
- =?us-ascii?Q?bVunm1u/Tpn45Qi5fyIN3jTE+GW4qWUNUBOcWJCcSPNOoBZjYCmCrNswgvfD?=
- =?us-ascii?Q?W+LtiAbQ/qdxl3YenU9ZvIudG8TMhZWww5zsTqcuIlY+x06P+MlkzvE89XpQ?=
- =?us-ascii?Q?4S2T+TRhP0ATItKL/5BfrfTBQgWVWjmM/o7KocT7ucNFMNvraE7miqkxHxaD?=
- =?us-ascii?Q?WulEac/V7c9glN7Wsg3MJs5d8JXCVemMcaLQc3yEhKlH3a94DHGqf/tqyjub?=
- =?us-ascii?Q?NSAcrNTSLI1QcT4yN9quyxwvlu2MXeY=3D?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?u+CBF+77Imamp1SPmZftwNMPHI2XBM494jRJlV8d6hBBl6FRRZrZWDDocA32?=
+ =?us-ascii?Q?JR/WzoN9bsF3GoFz+UkRe/Nl/SjdCws2c6Agycc2MDDy/31yTX0khH6qGLYh?=
+ =?us-ascii?Q?w4dcbyQiSqfgBklz5tzEQ3KsI+qbscUeldbcT24Bn9Y+RiyWtfsuYXpruhzm?=
+ =?us-ascii?Q?15P/vmAR99mBLjZnJNVZ6nmr35vmji+tXtu129kz/Xis2F4XAN1NWN0/A9SI?=
+ =?us-ascii?Q?trTKL9ZLtyrWzppKatd9ZTzMvJZnxxwd27fgsoCLTg06Op8u66DxJT0Yc/Da?=
+ =?us-ascii?Q?SVxGpWlbUOn1gDA7c7K6aLcFz0+f0YgkOIkYyShGvuMD9DHY8f/goMDjQV2P?=
+ =?us-ascii?Q?keQOrL9ozXK6C2V/MEJGW8sUmW51/+mlU0iW0pKPanLZcKF1gwbaGJJalVJB?=
+ =?us-ascii?Q?dfWmgN5+14Do4NTDgcVEoHg9NKeFdCSQdJ1WQw83PRwyVwpQzFi+5QacgyfQ?=
+ =?us-ascii?Q?Ee9Eo9tBXDpZ2OuhOSOXT+WklDZoVOWJyii2oBzlKWY6GD+GLSn73w2TTWmO?=
+ =?us-ascii?Q?4tMCvE0pkPsMtZYdMk1zjBesD4SSmvoCVX9/fESIMVdygn56p8mBdYZ2T4ZC?=
+ =?us-ascii?Q?WOBla8ZSF7hVP2C6vm9tBCgHrBvcudpJEUPT/V1vUEtoLDROAfT55GaqdmUT?=
+ =?us-ascii?Q?9dCVPJQTN/S+Z1X43Ko8YfzEyMySqsboM+8FGXSZ8vGiWPDShr5fKQh34PtW?=
+ =?us-ascii?Q?1nEJsveHk9RDAmhasjh9xOkYjyqMBZ84c8wU/MMMGKEMIoOHqHrMXW6LpoBO?=
+ =?us-ascii?Q?nEtZK8HK8DPnuH0scnMkKgAeYhQ7nh3jZaFDC/e4RqqSYOSTtAqwNoz8XrLW?=
+ =?us-ascii?Q?9gthHc8NAf31spzFdLOomTBteQp5e0c57XrewK2O0gQyCm3hg85tIvGwmhr+?=
+ =?us-ascii?Q?9kScngnPiy8ZJ+FH4qrYjIajf6UujGIO6gTt6xDb342eRJavmCrr9yppRV6j?=
+ =?us-ascii?Q?v8zitECu0aKz3o9VllcWzjcD+1gcPxEwvYg+aeaIRxroMmVxju1nNc2T9SWH?=
+ =?us-ascii?Q?58gRLjs1e3b9GjCAWm8pzyHLXMcpxLT/xN6wZRgU9Gapr/kVigCN5e1b28Y0?=
+ =?us-ascii?Q?yS904NZQXZoVH2jimMy8yaDZzy6i8Y4t/po+ftx0K5BcbHBSjRyZQXIqR2lr?=
+ =?us-ascii?Q?f7GB5S4gSqS/SSOKY6hSmmCYJmLF8NpXHvTWWLXD4ye5IEZMJlOF26iiOTPy?=
+ =?us-ascii?Q?LvyP+dOgxArnMbr0rkIDNDy0odARNlXNTp2tTyZjOnjWXSwzJqg0H0EtW/SI?=
+ =?us-ascii?Q?pSLmP3dvHyvnGaCuIrHmLqf5wofpD9M4+uAM3xdwSQSNtyWopqNDoV67k4gP?=
+ =?us-ascii?Q?DGxjDsCUb+oT2+LIoR4zFd+zvxJ4dguNNgDKgQZAXQo5QnWShbqAB36DLliT?=
+ =?us-ascii?Q?ScqypJRQpTN1KrAClRG/3v+o+7hTe6Fdhi05IeyJ7W1wQT/C3xCYiGcMiuBG?=
+ =?us-ascii?Q?A8yBDWlYd/AJBngo5I31157OyInjH7m+kNCyC3UCAxbX0xsTwafoHoDGD+Ia?=
+ =?us-ascii?Q?4RgtqdyjoYZ8tAdD/+FvPB2aq/C0ehaDZBc/vY12NEv6+8pyajb7hnP7y/fE?=
+ =?us-ascii?Q?2t9jpW28FeiML31Tq1aVyxYB5yqkp6fhqQhU6veNK/AYdU+6DbrALqlhBoHT?=
+ =?us-ascii?Q?6AbUzs9QYU6M2fZaMi7IJ1HAN0gnIrqeHA89vyr+K93RcHYar9V1HomTZJMG?=
+ =?us-ascii?Q?it1d2u7cVDIQD1kYo0GCxhaM/fv7w0ijJHICvOKjSsFv7v73eetwBMiF4AkO?=
+ =?us-ascii?Q?LCg5fijfkB9Q7eK2X5cdMtZ+J6zLwLU=3D?=
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <921CB246049D6841B9597D3B23D963BE@eurprd04.prod.outlook.com>
+Content-ID: <58194CFABC336A42AA300C9C1EF5A9C6@eurprd04.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5918c7c6-072a-4d2f-ccd5-08da2af11b06
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Apr 2022 21:33:45.4949
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6f54f7ae-4818-4df6-4433-08da2af455c2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Apr 2022 21:56:52.5371
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: vFsI28kwtRjq6bSZrVCnF5wDRF3bxsZrul+bqWOlNWb91l4mFl3Fe9Jvq0nYhC7eHq+XdtKPWe0bgpmeD8bNzQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR04MB6154
+X-MS-Exchange-CrossTenant-userprincipalname: HEuAB/6qa+gV+uGFR79zCXTC8tSQHx7iM2R7uKBolI5sI/fE5AP+kDsYFCcYxWYWH+aLZw+eOrbh5S9t/yuBvg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB5430
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -133,65 +133,133 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 30, 2022 at 10:47:35AM -0700, Colin Foster wrote:
-> > >  struct ocelot_stat_layout {
-> > >  	u32 offset;
-> > > +	u32 flags;
-> >=20
-> > Was it really necessary to add an extra u32 to struct ocelot_stat_layou=
-t?
-> > Couldn't you check for the end of stats by looking at stat->name[0] and
-> > comparing against the null terminator, for an empty string?
+On Sat, Apr 30, 2022 at 10:24:00AM -0700, Colin Foster wrote:
+> Hi Vladimir,
 >=20
-> I considered this as well. I could either have explicitly added the
-> flags field, as I did, or implicitly looked for .name =3D=3D NULL (or
-> name[0] =3D=3D '\0' as you suggest).
-
-No, you cannot check for .name =3D=3D NULL. The "name" member of struct
-ocelot_stat_layout is most definitely not NULL, but has the value of the
-memory address of the first char from that array. Contrast this with
-"char *name", where a NULL comparison can indeed be made.
-
-> I figured it might be better to make this an explicit relationship by
-> way of flags - but I'm happy to change OCELOT_STAT_END and for_each_stat
-> to rely on .name if you prefer.
-
-I would have understood introducing a flag to mark the last element of
-an array as special (as opposed to introducing a dummy extra element).
-But even that calculation would have been wrong.
-
-Before:
-
-pahole -C ocelot_stat_layout drivers/net/ethernet/mscc/ocelot.o
-struct ocelot_stat_layout {
-        u32                        offset;               /*     0     4 */
-        char                       name[32];             /*     4    32 */
-
-        /* size: 36, cachelines: 1, members: 2 */
-        /* last cacheline: 36 bytes */
-};
-
-After:
-
-pahole -C ocelot_stat_layout drivers/net/ethernet/mscc/ocelot.o
-struct ocelot_stat_layout {
-        u32                        offset;               /*     0     4 */
-        u32                        flags;                /*     4     4 */
-        char                       name[32];             /*     8    32 */
-
-        /* size: 40, cachelines: 1, members: 3 */
-        /* last cacheline: 40 bytes */
-};
-
-For example, vsc9959_stats_layout has 92 elements (93 with the dummy one
-you've added now). The overhead of 4 bytes per element amounts to 368
-extra bytes. Whereas a single dummy element at the end would have
-amounted to just 36 extra bytes.
-
-With your approach, what we get is 372 extra bytes, so worst of both worlds=
+> On Sat, Apr 30, 2022 at 02:24:57PM +0000, Vladimir Oltean wrote:
+> > Hi Colin,
+> >=20
+> > On Fri, Apr 29, 2022 at 04:30:49PM -0700, Colin Foster wrote:
+> > > Each instance of an ocelot struct has the ocelot_vcap_props structure=
+ being
+> > > referenced. During initialization (ocelot_init), these vcap_props are
+> > > detected and the structure contents are modified.
+> > >=20
+> > > In the case of the standard ocelot driver, there will probably only b=
+e one
+> > > instance of struct ocelot, since it is part of the chip.
+> > >=20
+> > > For the Felix driver, there could be multiple instances of struct oce=
+lot.
+> > > In that scenario, the second time ocelot_init would get called, it wo=
+uld
+> > > corrupt what had been done in the first call because they both refere=
+nce
+> > > *ocelot->vcap. Both of these instances were assigned the same memory
+> > > location.
+> > >=20
+> > > Move this vcap_props memory to within struct ocelot, so that each ins=
+tance
+> > > can modify the structure to their heart's content without corrupting =
+other
+> > > instances.
+> > >=20
+> > > Fixes: 2096805497e2b ("net: mscc: ocelot: automatically detect VCAP
+> > > constants")
+> > >=20
+> > > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> > > ---
+> >=20
+> > To prove an issue, you must come with an example of two switches which
+> > share the same struct vcap_props, but contain different VCAP constants
+> > in the hardware registers. Otherwise, what you call "corruption" is jus=
+t
+> > "overwriting with the same values".
+> >=20
+> > I would say that by definition, if two such switches have different VCA=
+P
+> > constants, they have different vcap_props structures, and if they have
+> > the same vcap_props structure, they have the same VCAP constants.
+> >=20
+> > Therefore, even in a multi-switch environment, a second call to
+> > ocelot_vcap_detect_constants() would overwrite the vcap->entry_width,
+> > vcap->tg_width, vcap->sw_count, vcap->entry_count, vcap->action_count,
+> > vcap->action_width, vcap->counter_words, vcap->counter_width with the
+> > exact same values.
+> >=20
+> > I do not see the point in duplicating struct vcap_props per ocelot
+> > instance.
+> >=20
+> > I assume you are noticing some problems with VSC7512? What are they?
+>=20
+> I'm not seeing issues, no. I was looking to implement the shared
+> ocelot_vcap struct between the 7514 and (in-development 7512. In doing
+> so I came across this realization that these per-file structures could
+> be referenced multiple times, which was the point of this patch. If the
+> structure were simply a const configuration there would be no issue, but
+> since it is half const and half runtime populated it got more complicated=
 .
+>=20
+> (that is likely why I didn't make it shared initially... which feels
+> like ages ago at this point)
+>=20
+> Whether or not hardware exists that could be affected by this corner
+> case I don't know.
 
-> > >  	char name[ETH_GSTRING_LEN];
-> > >  };
-> > > =20
-> > > +#define OCELOT_STAT_END { .flags =3D OCELOT_STAT_FLAG_END }=
+VSC7512 documentation at the following link, VCAP constants are laid out
+in tables 72-74 starting with page 112:
+https://ww1.microchip.com/downloads/en/DeviceDoc/VMDS-10489.pdf
+
+VSC7514 documentation at the following link, VCAP constants are laid out
+in tables 71-73 starting with page 111:
+https://ww1.microchip.com/downloads/en/DeviceDoc/VMDS-10491.pdf
+
+As you can see, they are identical. Coincidence? I think not. After all,
+they are from the same generation and have the same port count.
+So even if the new vsc7512 driver reuses the vsc7514 structure for VCAP
+properties, and is instantiated in a system where a vsc7514 switch is
+also instantiated, I claim that nothing bad will happen. Are you
+claiming otherwise? What is that bad thing, exactly?
+
+>=20
+> > Note that since VSC7512 isn't currently supported by the kernel, even a
+> > theoretical corruption issue doesn't qualify as a bug, since there is n=
+o
+> > way to reproduce it. All the Microchip switches supported by the kernel
+> > are internal to an SoC, are single switches, and they have different
+> > vcap_props structures.
+>=20
+> I see. So I do have a misunderstanding in the process.
+>=20
+> I shouldn't have submitted this to net, because it isn't an actual "bug"
+> I observed. Instead it was a potential issue with existing code, and
+> could have affected certain hardware configurations. How should I have
+> sent this out? (RFC? net-next? separate conversation discussing the
+> validity?)
+
+I can't answer how you should have sent out this patch, since I don't
+yet understand what is gained by making the change.
+
+> Back to this patch in particular:
+>=20
+> You're saying there's no need to duplicate the vcap_props structure
+> array per ocelot instance. Understood. Would it be an improvement to
+> split up vcap into a const configuration section (one per hardware
+> layout) and a detected set? Or would you have any other suggestion?
+
+Maybe, although I assume the only reason why you're proposing that is
+that you want to then proceed and make the detected properties unique
+per switch, which again would increase the memory footprint of the
+driver for a reason I am not following.
+
+I suppose there's also the option of leaving code that isn't broken
+alone?
+
+> And, of course, I can drag this along with my 7512 patch set for now,
+
+Why?
+
+> or try to get this in now. This one feels like it is worth keeping
+> separate...
+>=20
+> And thanks as always for your feedback!=
