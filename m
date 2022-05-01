@@ -2,107 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F2F8A5167FB
-	for <lists+netdev@lfdr.de>; Sun,  1 May 2022 23:10:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F5FF516802
+	for <lists+netdev@lfdr.de>; Sun,  1 May 2022 23:28:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355009AbiEAVN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 May 2022 17:13:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46450 "EHLO
+        id S1355063AbiEAVcB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 May 2022 17:32:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354953AbiEAVN0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 May 2022 17:13:26 -0400
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02D30FD34;
-        Sun,  1 May 2022 14:09:59 -0700 (PDT)
-Content-Type: text/plain; charset=utf-8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1651439396;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WKDIQf5YU17uxh4rrGWr9X3eU/7EjCb3dKHQ+RI13NM=;
-        b=ErAYkoy8SGeqig6yJdiYyw7Ot9Lryj1rEO8aAlGEhY/qHTXfpBSqY8LsRp7fqFiv6FkmER
-        wff03KP5AxxltMOkRtZmEz9t9u7gmdBgFvOhjJ0ubJH80rA3q3H6f6bAfURXExHlsRS3vz
-        CEA3rbbu0cJncAwfrI4SHmiUjFU5DQ0=
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S235897AbiEAVb7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 May 2022 17:31:59 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B39CE2FFEE
+        for <netdev@vger.kernel.org>; Sun,  1 May 2022 14:28:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=FmDkTCrK0wY/pFNFGzgn5Ss7jQ+VQJzUiSOPa59qBMo=; b=o1BMvX4LOz4XjyIfFR1wGS+OxO
+        OlL+H2rJwcVdU9cGhube+RxwyFmJIzTph518ihRiIbhC/bFOoMb/QvHnyl5lr+4WDOt2ebvFffeMh
+        M6WMm84FKgzcWdqL4RViE/k76W7uHMJ3d4dDgJOtG9ZJg9Z2KPn8gyso1S1oui9WqPMA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nlH79-000pd1-J1; Sun, 01 May 2022 23:28:23 +0200
+Date:   Sun, 1 May 2022 23:28:23 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Mauro Rossi <issor.oruam@gmail.com>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        masahiroy@kernel.org, michal.lkml@markovi.net,
+        netdev@vger.kernel.org, kabel@kernel.org,
+        Chih-Wei Huang <cwhuang@android-x86.org>
+Subject: Re: FYI: net/phy/marvell10g: android kernel builing error due to
+ modpost error
+Message-ID: <Ym77d3x6w+lE96HC@lunn.ch>
+References: <CAEQFVGYURjcCA741koGF5aeRoymwh-h+_evP5cqAxE4U8UVnbA@mail.gmail.com>
+ <Yl04ttYN95VCXan4@shell.armlinux.org.uk>
+ <CAEQFVGZnyyCT7F-Jud-o+5OWzxDTgztbZT2Sm+ixtQ1yKOS2+g@mail.gmail.com>
+ <CAEQFVGYF_0KhkWEGWrMEZCKBEoEL71DgyAV3a6gCDAA=PNf+kA@mail.gmail.com>
 MIME-Version: 1.0
-Subject: Re: [PATCH memcg v4] net: set proper memcg for net_init hooks allocations
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-In-Reply-To: <78b556f9-e57b-325d-89ce-7a482ef4ea21@openvz.org>
-Date:   Sun, 1 May 2022 14:09:49 -0700
-Cc:     Shakeel Butt <shakeelb@google.com>,
-        =?utf-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>,
-        Vlastimil Babka <vbabka@suse.cz>, kernel@openvz.org,
-        Florian Westphal <fw@strlen.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Michal Hocko <mhocko@suse.com>,
-        Cgroups <cgroups@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Message-Id: <092476D2-C2C4-496C-A92C-EC0B331990ED@linux.dev>
-References: <78b556f9-e57b-325d-89ce-7a482ef4ea21@openvz.org>
-To:     Vasily Averin <vvs@openvz.org>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEQFVGYF_0KhkWEGWrMEZCKBEoEL71DgyAV3a6gCDAA=PNf+kA@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, May 01, 2022 at 08:51:17PM +0200, Mauro Rossi wrote:
+> On Tue, Apr 19, 2022 at 6:39 PM Mauro Rossi <issor.oruam@gmail.com> wrote:
+> >
+> > Hi Russell,
+> >
+> > On Mon, Apr 18, 2022 at 12:08 PM Russell King (Oracle)
+> > <linux@armlinux.org.uk> wrote:
+> > >
+> > > On Mon, Apr 18, 2022 at 11:22:12AM +0200, Mauro Rossi wrote:
+> > > > At the final stage of building  Linux 5.18-rc3 with the necessary AOSP
+> > > > changes, I am getting the following building error:
+> > > >
+> > > >   MODPOST modules-only.symvers
+> > > > ERROR: modpost: "__compiletime_assert_344"
+> > > > [drivers/net/phy/marvell10g.ko] undefined!
+> > > > make[2]: *** [/home/utente/r-x86_kernel/kernel/scripts/Makefile.modpost:134:
+> > > > modules-only.symvers] Error 1
+> > > > make[2]: *** Deleting file 'modules-only.symvers'
+> > > > make[1]: *** [/home/utente/r-x86_kernel/kernel/Makefile:1749: modules] Error 2
+> > > > make[1]: *** Waiting for unfinished jobs....
+> > > >
+> > > > It never happened before throughout all my previous android-x86 kernel
+> > > > rc cycle build tests, which spanned from linux version 5.10 to linux
+> > > > version 5.18rc
+> > >
+> > > As far as I'm aware, with mainline kernels, marvell10g builds fine.
+> >
+> > Thanks for response, I will also check that when
+> > https://android.googlesource.com/kernel/common-patches/ becomes
+> > available for kernel-5.18rc(s)
+> >
+> > > I'm not sure how to work back from "__compiletime_assert_344" to
+> > > where the problem could be. The "344" appears to be generated by
+> > > the __COUNTER__ macro - and I don't know how that macro works (debian
+> > > annoyingly don't package the GCC info docs, and the info files I have
+> > > are out of date.)
+> >
+> > Looking at the error printout, it seams indeed that modpost parsed
+> > modules-only.symvers file line-by-line
+> > and (my assumption, correct me if I may be wrong) encountered some
+> > 'undefined!' symbol at line 344 of  modules-only.symvers and pointed
+> > out that marvell10g.ko module is the one associated with the missing
+> > symbol
+> >
+> > I have tried to copy
+> > $OUT/target/product/x86_64/obj/kernel/modules-only.symvers to be able
+> > to inspect which symbol is listed at line 344,
+> > but even with "watch -n 0.1 cp ..." command I am not able to save the
+> > generated modules-only.symvers before it is deleted, therefore I am
+> > not able to inspect line 344
+> >
+> > Is there a way to have modpost modified for printing the symbol
+> > instead of the "indirection" of "__compiletime_assert_344" ?
+> >
+> > As other info, I had to cross compile using prebuilt clang 11.0.2
+> > (kernel version constraint) and set  LLVM_IAS=0 to disable the llvm
+> > integrated assembler to be able to build, but I don't think that
+> > should cause the missing symbol as I don't see any assembler code is
+> > needed to build marvell10g.ko module
+> >
+> > KR
+> > Mauro
+> 
+> Hello,
+> 
+> I am adding script/mod/modpost.c mantainers to consult them, as I am
+> not much familiar with the meaning of the error
+> 
+> I am building the kernel with Android Build System as part of our
+> iso_img target build, gcc based build has always been successful,
+> while llvm based build is not working and generates the following
+> error, which we are not able to interpret.
+> 
+> ERROR: modpost: "__compiletime_assert_344"
+> [drivers/net/phy/marvell10g.ko] undefined!
+> 
+> "__compiletime_assert_344" is obviously not a symbol
+> used/needed/exported by marvell10g.ko
 
-> On May 1, 2022, at 6:44 AM, Vasily Averin <vvs@openvz.org> wrote:
->=20
-> =EF=BB=BFOn 4/28/22 01:47, Shakeel Butt wrote:
->>> On Wed, Apr 27, 2022 at 3:43 PM Vasily Averin <vvs@openvz.org> wrote:
->>>=20
->>> On 4/27/22 18:06, Shakeel Butt wrote:
->>>> On Wed, Apr 27, 2022 at 5:22 AM Michal Koutn=C3=BD <mkoutny@suse.com> w=
-rote:
->>>>>=20
->>>>> On Tue, Apr 26, 2022 at 10:23:32PM -0700, Shakeel Butt <shakeelb@googl=
-e.com> wrote:
->>>>>> [...]
->>>>>>>=20
->>>>>>> +static inline struct mem_cgroup *get_mem_cgroup_from_obj(void *p)
->>>>>>> +{
->>>>>>> +       struct mem_cgroup *memcg;
->>>>>>> +
->>>>>>=20
->>>>>> Do we need memcg_kmem_enabled() check here or maybe
->>>>>> mem_cgroup_from_obj() should be doing memcg_kmem_enabled() instead of=
+My guess would be, this is a BUILD_BUG_ON() which is somehow not
+working correctly, but is working sufficiently to stop you using a
+broken kernel.
 
->>>>>> mem_cgroup_disabled() as we can have "cgroup.memory=3Dnokmem" boot
->>>>>> param.
->>>=20
->>> Shakeel, unfortunately I'm not ready to answer this question right now.
->>> I even did not noticed that memcg_kmem_enabled() and mem_cgroup_disabled=
-()
->>> have a different nature.
->>> If you have no objections I'm going to keep this place as is and investi=
-gate
->>> this question later.
->>>=20
->>=20
->> Patch is good as is. Just add the documentation to the functions in
->> the next version and you can keep the ACKs.
->=20
-> I noticed that the kernel already has a function get_mem_cgroup_from_objcg=
-(),
-> the name of which is very similar to my new function get_mem_cgroup_from_o=
-bj().
-> Maybe it's better to rename my function to get_mem_cgroup_from_ptr()?
+**
+ * compiletime_assert - break build and emit msg if condition is false
+ * @condition: a compile-time constant condition to check
+ * @msg:       a message to emit if condition is false
+ *
+ * In tradition of POSIX assert, this macro will break the build if the
+ * supplied condition is *false*, emitting the supplied error message if the
+ * compiler has support to do so.
+ */
+#define compiletime_assert(condition, msg) \
+	_compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
 
-I don=E2=80=99t think it=E2=80=99s a problem: objcg is a widely used abbrevi=
-ation and in my opinion is different enough from obj. I=E2=80=99d keep it fo=
-r the consistency with the mem_cgroup_from_obj().
+https://elixir.bootlin.com/linux/v5.18-rc4/source/include/linux/compiler_types.h#L332
 
-Thanks!=
+# define __compiletime_assert(condition, msg, prefix, suffix)		\
+	do {								\
+		/*							\
+		 * __noreturn is needed to give the compiler enough	\
+		 * information to avoid certain possibly-uninitialized	\
+		 * warnings (regardless of the build failing).		\
+		 */							\
+		__noreturn extern void prefix ## suffix(void)		\
+			__compiletime_error(msg);			\
+		if (!(condition))					\
+			prefix ## suffix();				\
+	} while (0)
+
+It appears the compiler you are using is not able to emit the supplied
+error message, but it is inserting a call to a function which does not
+exist.
+
+What you probably want to do is create the .lst file for marvell10g.c
+and look through the mixed C/Assembly code and find the BUILD_BUG_ON
+which is triggering the issue. It is probably somewhere in an include
+file, not marvell10g itself.
+
+The other possibility is that condition is too complex for your
+compiler, it cannot evaluate it at build time, allowing the optimizer
+to remove the code as impossible to reach. So the compiler has
+generated code to actually evaluate condition and so has the call to
+the function, which is never going to exist.
+
+The same method to debug this applies, generate the .lst file and take
+a look at it.
+
+	Andrew
