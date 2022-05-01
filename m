@@ -2,55 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13FD2516785
-	for <lists+netdev@lfdr.de>; Sun,  1 May 2022 21:40:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C33F516791
+	for <lists+netdev@lfdr.de>; Sun,  1 May 2022 21:46:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352937AbiEATnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 May 2022 15:43:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36640 "EHLO
+        id S1354210AbiEATtu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 May 2022 15:49:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237507AbiEATno (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 May 2022 15:43:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2C3F1126;
-        Sun,  1 May 2022 12:40:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S230346AbiEATtt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 May 2022 15:49:49 -0400
+Received: from proxima.lasnet.de (proxima.lasnet.de [78.47.171.185])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8CC719288;
+        Sun,  1 May 2022 12:46:22 -0700 (PDT)
+Received: from localhost.localdomain.datenfreihafen.local (p200300e9d73c42b1d8248fa9506c0d17.dip0.t-ipconnect.de [IPv6:2003:e9:d73c:42b1:d824:8fa9:506c:d17])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9B646B80EF2;
-        Sun,  1 May 2022 19:40:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2AC8FC385A9;
-        Sun,  1 May 2022 19:40:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651434013;
-        bh=Eaf475SVp08eFN0aQeF8QT7km8wrzXM1X7kUmOZNM5k=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=CLL+klXKc5DDOTrTKCpzUToUiU2w9trMLtHmUPs36LP/G+Oa1POeOeWtKxzjSLD9g
-         BlS6FEPJddpnNSce1YveNUKy0QeO2wKcMkP24+wIyj8AvXxdTFhfSP9nbdvhuNsAEZ
-         p+6f/bf7Kiw7u2Fhxo012qXaqIJPKSimBaPDckmaJf3DLopxM1VMqVxzNYcXHblbMa
-         bUjpr+5BespW/mdIgkNk+M/Hf9NIcrQqmG8PqB26qIAVVWl4f9prm1oJvV1YtTgztf
-         YnM3fBIer+UmcruZu+cjsRmO1E2OhdtL8BhyaQc0bFAN3opZJ67mSFAgv1+oo1+t1v
-         wtjVvXTPtAxqg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0CAC7E85D90;
-        Sun,  1 May 2022 19:40:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        (Authenticated sender: stefan@sostec.de)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id 2C31AC06B0;
+        Sun,  1 May 2022 21:46:20 +0200 (CEST)
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     linux-wpan@vger.kernel.org, alex.aring@gmail.com,
+        netdev@vger.kernel.org
+Subject: pull-request: ieee802154-next 2022-05-01
+Date:   Sun,  1 May 2022 21:46:14 +0200
+Message-Id: <20220501194614.1198325-1-stefan@datenfreihafen.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v7 0/7] net: phy: adin1100: Add initial support for ADIN1100
- industrial PHY
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165143401304.26026.480568891228725285.git-patchwork-notify@kernel.org>
-Date:   Sun, 01 May 2022 19:40:13 +0000
-References: <20220429153437.80087-1-alexandru.tachici@analog.com>
-In-Reply-To: <20220429153437.80087-1-alexandru.tachici@analog.com>
-To:     Alexandru Tachici <alexandru.tachici@analog.com>
-Cc:     andrew@lunn.ch, o.rempel@pengutronix.de, davem@davemloft.net,
-        devicetree@vger.kernel.org, hkallweit1@gmail.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, robh+dt@kernel.org
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -59,44 +40,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hello Dave, Jakub.
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+An update from ieee802154 for your *net-next* tree.
+For the merge conflict resolution please see below.
 
-On Fri, 29 Apr 2022 18:34:30 +0300 you wrote:
-> From: Alexandru Tachici <alexandru.tachici@analog.com>
-> 
-> The ADIN1100 is a low power single port 10BASE-T1L transceiver designed for
-> industrial Ethernet applications and is compliant with the IEEE 802.3cg
-> Ethernet standard for long reach 10 Mb/s Single Pair Ethernet.
-> 
-> The ADIN1100 uses Auto-Negotiation capability in accordance
-> with IEEE 802.3 Clause 98, providing a mechanism for
-> exchanging information between PHYs to allow link partners to
-> agree to a common mode of operation.
-> 
-> [...]
+Miquel Raynal landed two patch series bundled in this pull request.
 
-Here is the summary with links:
-  - [v7,1/7] ethtool: Add 10base-T1L link mode entry
-    https://git.kernel.org/netdev/net-next/c/3254e0b9eb56
-  - [v7,2/7] net: phy: Add 10-BaseT1L registers
-    https://git.kernel.org/netdev/net-next/c/909b4f2bf764
-  - [v7,3/7] net: phy: Add BaseT1 auto-negotiation registers
-    https://git.kernel.org/netdev/net-next/c/1b020e448e0f
-  - [v7,4/7] net: phy: Add 10BASE-T1L support in phy-c45
-    https://git.kernel.org/netdev/net-next/c/3da8ffd8545f
-  - [v7,5/7] net: phy: adin1100: Add initial support for ADIN1100 industrial PHY
-    https://git.kernel.org/netdev/net-next/c/7eaf9132996a
-  - [v7,6/7] net: phy: adin1100: Add SQI support
-    https://git.kernel.org/netdev/net-next/c/48f20f902119
-  - [v7,7/7] dt-bindings: net: phy: Add 10-baseT1L 2.4 Vpp
-    https://git.kernel.org/netdev/net-next/c/49714461b797
+The first series re-works the symbol duration handling to better
+accommodate the needs of the various phy layers in ieee802154.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+In the second series Miquel improves th errors handling from drivers
+up mac802154. THis streamlines the error handling throughout the
+ieee/mac802154 stack in preparation for sync TX to be introduced for
+MLME frames.
+
+When merging into the current net-next HEAD the following merge conflict
+resolution is needed:
+
+--- a/drivers/net/ieee802154/ca8210.c
++++ b/drivers/net/ieee802154/ca8210.c
+@@@ -2974,9 -2931,6 +2931,12 @@@ static void ca8210_hw_setup(struct ieee
+        ca8210_hw->phy->cca.mode = NL802154_CCA_ENERGY_CARRIER;
+        ca8210_hw->phy->cca.opt = NL802154_CCA_OPT_ENERGY_CARRIER_AND;
+        ca8210_hw->phy->cca_ed_level = -9800;
+ +      ca8210_hw->phy->symbol_duration = 16;
+ +      ca8210_hw->phy->lifs_period = 40 * ca8210_hw->phy->symbol_duration;
+ +      ca8210_hw->phy->sifs_period = 12 * ca8210_hw->phy->symbol_duration;
+        ca8210_hw->flags =
+                IEEE802154_HW_AFILT |
+                IEEE802154_HW_OMIT_CKSUM |
+
+regards
+Stefan Schmidt
 
 
+The following changes since commit 9557167bc63e3910c656a1628f2f52ab1cf6d541:
+
+  Merge tag 'ieee802154-for-davem-2022-02-10' of git://git.kernel.org/pub/scm/linux/kernel/git/sschmidt/wpan-next (2022-02-10 14:28:04 +0000)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/sschmidt/wpan-next.git tags/ieee802154-for-davem-2022-05-01
+
+for you to fetch changes up to 1229df4b313acf15d372caadcbbc62a430cd2697:
+
+  net: mac802154: Fix symbol durations (2022-04-30 20:29:47 +0200)
+
+----------------------------------------------------------------
+Miquel Raynal (15):
+      net: ieee802154: ca8210: Fix lifs/sifs periods
+      net: mac802154: Convert the symbol duration into nanoseconds
+      net: mac802154: Set durations automatically
+      net: ieee802154: Drop duration settings when the core does it already
+      net: ieee802154: Enhance/fix the names of the MLME return codes
+      net: ieee802154: Fill the list of MLME return codes
+      net: mac802154: Save a global error code on transmissions
+      net: mac802154: Create an offloaded transmission error helper
+      net: mac802154: Create an error helper for asynchronous offloading errors
+      net: ieee802154: at86rf230: Call _xmit_hw_error() when failing to offload frames
+      net: ieee802154: at86rf230: Forward Tx trac errors
+      net: ieee802154: atusb: Call _xmit_hw_error() upon transmission error
+      net: ieee802154: ca8210: Use core return codes instead of hardcoding them
+      net: ieee802154: ca8210: Call _xmit_error() when a transmission fails
+      net: mac802154: Fix symbol durations
+
+ drivers/net/ieee802154/Kconfig     |   7 --
+ drivers/net/ieee802154/at86rf230.c | 163 +++++---------------------------
+ drivers/net/ieee802154/atusb.c     |  37 +-------
+ drivers/net/ieee802154/ca8210.c    | 184 ++++++++++++++-----------------------
+ drivers/net/ieee802154/mcr20a.c    |   5 -
+ include/linux/ieee802154.h         |  81 ++++++++++++++--
+ include/net/cfg802154.h            |   6 +-
+ include/net/mac802154.h            |  19 ++++
+ net/mac802154/cfg.c                |   1 +
+ net/mac802154/ieee802154_i.h       |   2 +
+ net/mac802154/main.c               |  54 ++++++++++-
+ net/mac802154/util.c               |  22 ++++-
+ 12 files changed, 262 insertions(+), 319 deletions(-)
