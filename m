@@ -2,85 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FFE25163F7
-	for <lists+netdev@lfdr.de>; Sun,  1 May 2022 13:10:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73A60516401
+	for <lists+netdev@lfdr.de>; Sun,  1 May 2022 13:18:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344744AbiEALNl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 May 2022 07:13:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51024 "EHLO
+        id S1345540AbiEALWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 May 2022 07:22:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345406AbiEALNk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 May 2022 07:13:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FA47F4D
-        for <netdev@vger.kernel.org>; Sun,  1 May 2022 04:10:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1471CB80CF7
-        for <netdev@vger.kernel.org>; Sun,  1 May 2022 11:10:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A946CC385AF;
-        Sun,  1 May 2022 11:10:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651403411;
-        bh=eB5VoypmhY+lQ+zQfvKD//NZNhviuv0IlHAMSnIZ1GI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=b2uIe+TNxShLUHZ5jtMB7gF6QyFZ1P6kqGMXEwTzX7TR9JPk3vqot2LxfidF0khBf
-         rlKL/t4sDURs5BzVqogg6hYN6WMjkbxNkIf3xmm12K5pCnEmLVItEHj25jg5nTPV8T
-         hHch4PS1nbHkiJb6b8k7PmNPLXubfqxVVwaDgXeGW171etXZAWCfK3UIQ19zN69Z0D
-         0KfGCakRoacsPjvgHcs9k32v6lpbZb63Ug6NxSSc53d9ucHrzltKuO8kLP2YgFNtPW
-         DneV/Md/lnuB3dZ6ogHsiI+jdxYru37CX3eHc+toHNxdLdr3Pdi5U71L1P8mesY8oK
-         XNU+qKRdWLj4Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8A4A0F03841;
-        Sun,  1 May 2022 11:10:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S1345385AbiEALWJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 May 2022 07:22:09 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 491C35838B
+        for <netdev@vger.kernel.org>; Sun,  1 May 2022 04:18:44 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id g6so23204191ejw.1
+        for <netdev@vger.kernel.org>; Sun, 01 May 2022 04:18:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=engleder-embedded-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kmOXxqR2gjwWuxJMD9/mtb1euHJrYGAeoYRpFFuxo+Y=;
+        b=FuZeLccs88y6zYcnhF7fzr43MM8zJJKT4ItmgEaW3vDMLBHNrjCKWUwWI0rKWfK0cm
+         KuZX9luhziXQ4K+XYVqKNdvkbgsm3gbNMEu234D+WJz4a1ufv168r4y5+6sEGcdncjYW
+         1GNMh8eFo38g4L+fgP43oaoWkR+zlY1vg7g481351J8zs6VxEF3GuHethcD41U+D/DNA
+         /XwzG3FYlfq/gvXChBPS+STIkGCsjQ36Fh3GCeaXgGWElh5NCh/VDSBwBEY0krnj25KZ
+         2kXgZgurEaMWRiChg+erixm9oO+n932JgAfWA/n3TL+txzn+01cf38JmMgrkBWW4cOiC
+         KtIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kmOXxqR2gjwWuxJMD9/mtb1euHJrYGAeoYRpFFuxo+Y=;
+        b=jL/cbsEIU/xlPK/CI9h4T5HIm6IaMkpIW1r3G5EvBBSbRF7uMZy2UrNWxvIKs0np/Q
+         dZK94/iMCox9ZsPvaW4B8G0XuR87JFJVjd45J0Us3XB4avDRwooNxYvW3W19pvpYf6tb
+         xN0XqlkKNB6yqRwHW2rN095tjcZng4cirv6K/qySHxxNlXXaVphzYJJ6Ot+Hiy5WWjDz
+         6F2bNIjVTv7HDh4npLoqlQGQy/hGU3pGNaUnvXNf0uI7PKE7ZDtoH2WfHwziSj0t9cfp
+         H/VIzfq+86KpNstK6t4u4YjL7XWKf/4qEb51RUxcOmE/4SqOLiN+vXUSMOwIzzdwMeIa
+         6OXQ==
+X-Gm-Message-State: AOAM530nd+Ul40ceCi/bCMR+yB+jQjEMKLA3zYuY0sCjQx1EWPFYhXf6
+        eWB7b/ogfraUHhzq+WQ3hXLq+A==
+X-Google-Smtp-Source: ABdhPJys2SxHLa73MPknrtokfFDNDHUVhVXv62Q0NS9VNrs154RzgfBDZmSIkzQGoo05q24I/OAPAw==
+X-Received: by 2002:a17:906:3042:b0:6cd:20ed:7c5c with SMTP id d2-20020a170906304200b006cd20ed7c5cmr6977150ejd.241.1651403922837;
+        Sun, 01 May 2022 04:18:42 -0700 (PDT)
+Received: from hornet.engleder.at ([2001:871:23a:8366:6e3b:e5ff:fe2c:34c1])
+        by smtp.gmail.com with ESMTPSA id mm29-20020a170906cc5d00b006f3ef214dcesm2508630ejb.52.2022.05.01.04.18.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 01 May 2022 04:18:42 -0700 (PDT)
+From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+To:     richardcochran@gmail.com, vinicius.gomes@intel.com,
+        yangbo.lu@nxp.com, davem@davemloft.net, kuba@kernel.org
+Cc:     mlichvar@redhat.com, netdev@vger.kernel.org,
+        Gerhard Engleder <gerhard@engleder-embedded.com>
+Subject: [PATCH net-next v3 0/6] ptp: Support hardware clocks with additional free running cycle counter
+Date:   Sun,  1 May 2022 13:18:30 +0200
+Message-Id: <20220501111836.10910-1-gerhard@engleder-embedded.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: phy: marvell: update abilities and advertising
- when switching to SGMII
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165140341156.16654.10434931995474555191.git-patchwork-notify@kernel.org>
-Date:   Sun, 01 May 2022 11:10:11 +0000
-References: <20220427193928.2155805-1-robert.hancock@calian.com>
-In-Reply-To: <20220427193928.2155805-1-robert.hancock@calian.com>
-To:     Robert Hancock <robert.hancock@calian.com>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+ptp vclocks require a clock with free running time for the timecounter.
+Currently only a physical clock forced to free running is supported.
+If vclocks are used, then the physical clock cannot be synchronized
+anymore. The synchronized time is not available in hardware in this
+case. As a result, timed transmission with TAPRIO hardware support
+is not possible anymore.
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+If hardware would support a free running time additionally to the
+physical clock, then the physical clock does not need to be forced to
+free running. Thus, the physical clocks can still be synchronized while
+vclocks are in use.
 
-On Wed, 27 Apr 2022 13:39:28 -0600 you wrote:
-> With some SFP modules, such as Finisar FCLF8522P2BTL, the PHY hardware
-> strapping defaults to 1000BaseX mode, but the kernel prefers to set them
-> for SGMII mode. When this happens and the PHY is soft reset, the BMSR
-> status register is updated, but this happens after the kernel has already
-> read the PHY abilities during probing. This results in support not being
-> detected for, and the PHY not advertising support for, 10 and 100 Mbps
-> modes, preventing the link from working with a non-gigabit link partner.
-> 
-> [...]
+The physical clock could be used to synchronize the time domain of the
+TSN network and trigger TAPRIO. In parallel vclocks can be used to
+synchronize other time domains.
 
-Here is the summary with links:
-  - [net-next] net: phy: marvell: update abilities and advertising when switching to SGMII
-    https://git.kernel.org/netdev/net-next/c/0ed99ecc95b9
+One year ago I thought for two time domains within a TSN network also
+two physical clocks are required. This would lead to new kernel
+interfaces for asking for the second clock, ... . But actually for a
+time triggered system like TSN there can be only one time domain that
+controls the system itself. All other time domains belong to other
+layers, but not to the time triggered system itself. So other time
+domains can be based on a free running counter if similar mechanisms
+like 2 step synchroisation are used.
 
-You are awesome, thank you!
+Synchronisation was tested with two time domains between two directly
+connected hosts. Each host run two ptp4l instances, the first used the
+physical clock and the second used the virtual clock. I used my FPGA
+based network controller as network device. ptp4l was used in
+combination with the virtual clock support patches from Miroslav
+Lichvar.
+
+v3:
+- optimize ptp_convert_timestamp (Richard Cochran)
+- call dev_get_by_napi_id() only if needed (Richard Cochran)
+- use non-negated logical test (Richard Cochran)
+- add comment for skipped output (Richard Cochran)
+- add comment for SKBTX_HW_TSTAMP_USE_CYCLES masking (Richard Cochran)
+
+v2:
+- rename ptp_clock cycles to has_cycles (Richard Cochran)
+- call it free running cycle counter (Richard Cochran)
+- update struct skb_shared_hwtstamps kdoc (Richard Cochran)
+- optimize timestamp address/cookie processing path (Richard Cochran,
+  Vinicius Costa Gomes)
+
+v1:
+- complete rework based on suggestions (Richard Cochran)
+
+Gerhard Engleder (6):
+  ptp: Add cycles support for virtual clocks
+  ptp: Request cycles for TX timestamp
+  ptp: Pass hwtstamp to ptp_convert_timestamp()
+  ptp: Support late timestamp determination
+  ptp: Speed up vclock lookup
+  tsnep: Add free running cycle counter support
+
+ drivers/net/ethernet/engleder/tsnep_hw.h   |  9 ++-
+ drivers/net/ethernet/engleder/tsnep_main.c | 33 +++++++--
+ drivers/net/ethernet/engleder/tsnep_ptp.c  | 28 ++++++++
+ drivers/ptp/ptp_clock.c                    | 31 ++++++--
+ drivers/ptp/ptp_private.h                  | 11 +++
+ drivers/ptp/ptp_sysfs.c                    | 11 +--
+ drivers/ptp/ptp_vclock.c                   | 82 ++++++++++++++--------
+ include/linux/netdevice.h                  | 21 ++++++
+ include/linux/ptp_clock_kernel.h           | 38 ++++++++--
+ include/linux/skbuff.h                     | 21 +++++-
+ net/core/skbuff.c                          |  5 ++
+ net/socket.c                               | 53 +++++++++++---
+ 12 files changed, 281 insertions(+), 62 deletions(-)
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.20.1
 
