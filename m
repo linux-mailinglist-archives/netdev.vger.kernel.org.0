@@ -2,63 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 82E9651614D
-	for <lists+netdev@lfdr.de>; Sun,  1 May 2022 05:47:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 808ED516157
+	for <lists+netdev@lfdr.de>; Sun,  1 May 2022 05:56:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238578AbiEADft (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Apr 2022 23:35:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47556 "EHLO
+        id S239086AbiEAD7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Apr 2022 23:59:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229829AbiEADfs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Apr 2022 23:35:48 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12788252AE;
-        Sat, 30 Apr 2022 20:32:25 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id be20so13159561edb.12;
-        Sat, 30 Apr 2022 20:32:24 -0700 (PDT)
+        with ESMTP id S229829AbiEAD7e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Apr 2022 23:59:34 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B24263CFF5;
+        Sat, 30 Apr 2022 20:56:09 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id x23so4684262pff.9;
+        Sat, 30 Apr 2022 20:56:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OENTR2QOatT+0Z3dje0owqcIRPezkrqzSM60aXydfxI=;
-        b=KB+80xYYc4EsuavQ9ngvLp1pyKwe98vY8yxCm8igoFarABrU8CY1kMpUdr6Q/bqSaB
-         5atmXtmFtcAzVInIiSzs7gQBmM0PwzoALUoRRfFfBmdIbhn1bNQeqnRyLVQNOyMQ0K7s
-         KafBcFPpqSIgmNxYTsQz/QDBtvaEtBCnj657iCbPkV9vgBwjDAmpY2UbhS60ka4YI1rd
-         YaYUYZYI+0HJp+MsmAlg6PlUZdtffmoXWhceZc2W0OZ4nqITTUWzDqHco9m/PRZVC0Au
-         FU2DygUKJhmvJ40vnwuuxgIuXmon+h7jXsbACh+CEU8OftKR0M0fOEFovN2NFmVNEulj
-         xofA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8xUHRmTVDR1DjSk98YnskoOlve6Vu1EC5fiKCriOJkY=;
+        b=HsS1wGI7kJK8Tinb3WsBdfe1Up3XWhikgB78MaiiEdRodDXKeVEGmg83WbmznDCeAH
+         +8JjjI/AU5l21PLFeF7XOV2QQl/yQmXnNPAnuGDxorMl19xP/Thj2tkltjt/XZu7FZ7y
+         0hq5Db2EZis9ZbuFiqNGdDkE1dlLT9j7ELC+vTDZjxOvrmt99iaqX3/X/e6kHhIwqJjR
+         oHA2y3GYDADcNevYNIsLrhN3GetzoMMO94Aw67BqCeEbTMmkMsTMW2+LMP61IPKRWZkb
+         UNRUUhYaosmCNQ5q+FWjfiBU7inriNkBVqKRGumd8u/81VT3aScOw8xPPQ0OnzfYeHtB
+         Ao8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OENTR2QOatT+0Z3dje0owqcIRPezkrqzSM60aXydfxI=;
-        b=ACej9X2CGexC6/21olIGJfF7VEZs2/cl3IkONsxOhXMgXIKD+E+n2W12ZItSvYQ9Wq
-         F4G7esusrdsJ7sM9NQhh1LNOIWoydESrSUflxhjdbln/2Of85MF+XFMgLcDxaQirTwO8
-         6b1mrma7DAilBSD0915MtS1RpHn4wMv7Tw8UbD/j8ocWXCZGHI82xBN7pakuw9+eoEo7
-         gzVfUcBpenYkZEZXmKmCWXrxxXhtCtDMAWOAvnfMRIYqEgzWtHHPz9wBVt+eXQt2zTq9
-         VTnKb2QHUq0KPFh9ITiiblDx1l6wOYvqFgVqHcmgF8aqKTyI3ZaRm3IuaFbzyjW3NPrq
-         43lA==
-X-Gm-Message-State: AOAM533bh8arWRn/lTSQfkZ7DGACLxVquxE8v+jnG75n0OkkwYeJl9zY
-        z0vFcdaSKomL50jlmEvwo1tj32M1/GqcNdeoS0o=
-X-Google-Smtp-Source: ABdhPJx0EdDGCcEk4iZC4RMVGpTMfOiHtrOAyL3cTD5psyznMBBmlmOIhXOIP+loqArW8l0MA3ngZKUw2A5ND5bXrmc=
-X-Received: by 2002:a05:6402:1941:b0:413:2b80:b245 with SMTP id
- f1-20020a056402194100b004132b80b245mr7133241edz.252.1651375943585; Sat, 30
- Apr 2022 20:32:23 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220422070141.39397-1-xiangxia.m.yue@gmail.com>
- <20220422070141.39397-4-xiangxia.m.yue@gmail.com> <20220425125828.06cc0b51@kernel.org>
-In-Reply-To: <20220425125828.06cc0b51@kernel.org>
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Sun, 1 May 2022 11:31:47 +0800
-Message-ID: <CAMDZJNV69HeaBmy1uY7g7R=GKunoV3=bgNd5yfEMKUg_jMPuUg@mail.gmail.com>
-Subject: Re: [net-next v4 3/3] selftests/sysctl: add sysctl macro test
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8xUHRmTVDR1DjSk98YnskoOlve6Vu1EC5fiKCriOJkY=;
+        b=wpKXxTGvwdjwparWPitSgGNXAx9IyT259Tj2DvWzyQ1QqWesRhGDwF2UuCCVvJH3x/
+         m6qbxSm2rivEm3Pmto7yDi5AYdoLDzr6NYlkG5uLQ3m/hZAGqKGHHF5dIss60yrSnDQG
+         Zz5gMYoZ1WxumcevwHMaNbGdZA+MKdZHN8+z+vlG15gkmY6HJ9loDQeo12/oWOrTUtns
+         Z8kyyCzx7X08bUdZZKOyLiyQn8E7ryHPYpPpiSa/k0qiYz/LcnGpuynh7XW4XfMyqEbv
+         stuuU9vDpGZy2QJPfVPr93fBpeCEgdnuJ8B32E1SkXg7RKzubCzs3ffOuRwUPcSb2I7P
+         U6Xw==
+X-Gm-Message-State: AOAM532L+BSqu8Je8OQkqHBlzVnleWcUgnyQuExyRDv0yqts7g5QIu2a
+        fj7HnrEhtji2D2rqzskQlL6Df3Vjs0Lhzg==
+X-Google-Smtp-Source: ABdhPJxOX3jnJbkz8H0iRAgOZHCk/tOzYTLFg1C8TuiDthQ6IwRIYal8mBPVDIunZvBkX4VZBVZQfQ==
+X-Received: by 2002:aa7:8757:0:b0:50d:48a9:f021 with SMTP id g23-20020aa78757000000b0050d48a9f021mr5723346pfo.24.1651377368802;
+        Sat, 30 Apr 2022 20:56:08 -0700 (PDT)
+Received: from bogon.xiaojukeji.com ([111.201.149.168])
+        by smtp.gmail.com with ESMTPSA id q9-20020a654949000000b003c1d946af6csm1767863pgs.32.2022.04.30.20.56.03
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 30 Apr 2022 20:56:07 -0700 (PDT)
+From:   xiangxia.m.yue@gmail.com
+To:     linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
         Luis Chamberlain <mcgrof@kernel.org>,
         Kees Cook <keescook@chromium.org>,
         Iurii Zaikin <yzaikin@google.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         David Ahern <dsahern@kernel.org>,
@@ -72,9 +68,14 @@ Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Lorenz Bauer <lmb@cloudflare.com>,
         Akhmat Karakotov <hmukos@yandex-team.ru>
-Content-Type: text/plain; charset="UTF-8"
+Subject: [PATCH v5 0/3] use standard sysctl macro
+Date:   Sun,  1 May 2022 11:55:21 +0800
+Message-Id: <20220501035524.91205-1-xiangxia.m.yue@gmail.com>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,LOTS_OF_MONEY,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -83,66 +84,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 26, 2022 at 3:58 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Fri, 22 Apr 2022 15:01:41 +0800 xiangxia.m.yue@gmail.com wrote:
-> >  static int __init test_sysctl_init(void)
-> >  {
-> > +     test_data.match_int[0] = *(int *)SYSCTL_ZERO,
-> > +     test_data.match_int[1] = *(int *)SYSCTL_ONE,
-> > +     test_data.match_int[2] = *(int *)SYSCTL_TWO,
-> > +     test_data.match_int[3] = *(int *)SYSCTL_THREE,
-> > +     test_data.match_int[4] = *(int *)SYSCTL_FOUR,
-> > +     test_data.match_int[5] = *(int *)SYSCTL_ONE_HUNDRED,
-> > +     test_data.match_int[6] = *(int *)SYSCTL_TWO_HUNDRED,
-> > +     test_data.match_int[7] = *(int *)SYSCTL_ONE_THOUSAND,
-> > +     test_data.match_int[8] = *(int *)SYSCTL_THREE_THOUSAND,
-> > +     test_data.match_int[9] = *(int *)SYSCTL_INT_MAX,
-> > +     test_data.match_int[10] = *(int *)SYSCTL_MAXOLDUID,
-> > +     test_data.match_int[11] = *(int *)SYSCTL_NEG_ONE,
->
-> > +     local VALUES=(0 1 2 3 4 100 200 1000 3000 $INT_MAX 65535 -1)
->
-> How does this test work? Am I reading it right that it checks if this
-> bash array is in sync with the kernel code?
-This patch tries to avoid SYSCTL_XXX not mapping the values we hoped,
-when introducing the new SYSCTL_YYY.
-for example:
-SYSCTL_TWO, we hope it is 2, so we check it in userspace.
-> I'd be better if we were checking the values of the constants against
-> literals / defines.
-Hi Jakub, I think this patch checks the values of the constants
-against defines. But I should make the codes more readable
+From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
- static int __init test_sysctl_init(void)
- {
-+       int i;
-+
-+       struct {
-+               int defined;
-+               int wanted;
-+       } match_int[] = {
-+               {.defined = *(int *)SYSCTL_ZERO,        .wanted = 0},
-+               {.defined = *(int *)SYSCTL_ONE,         .wanted = 1},
-+               {.defined = *(int *)SYSCTL_TWO,         .wanted = 2},
-+               {.defined = *(int *)SYSCTL_THREE,       .wanted = 3},
-+               {.defined = *(int *)SYSCTL_FOUR,        .wanted = 4},
-+               {.defined = *(int *)SYSCTL_ONE_HUNDRED, .wanted = 100},
-+               {.defined = *(int *)SYSCTL_TWO_HUNDRED, .wanted = 200},
-+               {.defined = *(int *)SYSCTL_ONE_THOUSAND, .wanted = 1000},
-+               {.defined = *(int *)SYSCTL_THREE_THOUSAND, .wanted = 3000},
-+               {.defined = *(int *)SYSCTL_INT_MAX,     .wanted = INT_MAX},
-+               {.defined = *(int *)SYSCTL_MAXOLDUID,   .wanted = 65535},
-+               {.defined = *(int *)SYSCTL_NEG_ONE,     .wanted = -1},
-+       };
-+
-+       for (i = 0; i < ARRAY_SIZE(match_int); i++)
-+               if (match_int[i].defined != match_int[i].wanted)
-+                       match_int_ok = 0;
-+
+This patchset introduce sysctl macro or replace var
+with macro.
 
+Tonghao Zhang (3):
+  net: sysctl: use shared sysctl macro
+  net: sysctl: introduce sysctl SYSCTL_THREE
+  selftests/sysctl: add sysctl macro test
 
-
+ fs/proc/proc_sysctl.c                    |  2 +-
+ include/linux/sysctl.h                   |  9 ++++---
+ lib/test_sysctl.c                        | 32 ++++++++++++++++++++++++
+ net/core/sysctl_net_core.c               | 13 ++++------
+ net/ipv4/sysctl_net_ipv4.c               | 16 +++++-------
+ net/ipv6/sysctl_net_ipv6.c               |  6 ++---
+ net/netfilter/ipvs/ip_vs_ctl.c           |  4 +--
+ tools/testing/selftests/sysctl/sysctl.sh | 23 +++++++++++++++++
+ 8 files changed, 75 insertions(+), 30 deletions(-)
 
 --
-Best regards, Tonghao
+v5: refactor test codes. 
+v4: add selftests/sysctl patch
+v3: split patch to two.
+
+Cc: Luis Chamberlain <mcgrof@kernel.org>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Iurii Zaikin <yzaikin@google.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Cc: David Ahern <dsahern@kernel.org>
+Cc: Simon Horman <horms@verge.net.au>
+Cc: Julian Anastasov <ja@ssi.bg>
+Cc: Pablo Neira Ayuso <pablo@netfilter.org>
+Cc: Jozsef Kadlecsik <kadlec@netfilter.org>
+Cc: Florian Westphal <fw@strlen.de>
+Cc: Shuah Khan <shuah@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Lorenz Bauer <lmb@cloudflare.com>
+Cc: Akhmat Karakotov <hmukos@yandex-team.ru>
+--
+2.27.0
+
