@@ -2,127 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 31E7451651C
-	for <lists+netdev@lfdr.de>; Sun,  1 May 2022 18:14:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E962A516678
+	for <lists+netdev@lfdr.de>; Sun,  1 May 2022 19:00:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240870AbiEAQRn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 May 2022 12:17:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54428 "EHLO
+        id S1351020AbiEARDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 May 2022 13:03:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237946AbiEAQRl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 May 2022 12:17:41 -0400
-Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8653843ED8
-        for <netdev@vger.kernel.org>; Sun,  1 May 2022 09:14:15 -0700 (PDT)
-Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-2f7d621d1caso127287317b3.11
-        for <netdev@vger.kernel.org>; Sun, 01 May 2022 09:14:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZVK2j7cWxGkq18poKHDIybxzNjO5ViIx+9L61BYDkL8=;
-        b=ctHOLkDwhrs6iNhs9Cv7Nm+kyJjgrqeLiAZP2gPamPJPBY8xGWwKNRYV/V2NGKFOKZ
-         1JKtbzo4AzuYWRl2OwZtjvTGDYAoqWrqVJC2mO/2mN3lts2nTsVi58AZe03/uTvYWi6k
-         YgQ65dYSgaK1NQ4efL4UEoCHdGGDCVAz+oK8s7gJL2SWVMfc0uBYHY2gdo41uxZ5OIr/
-         87XMl996Gs2b3cp8239IVfq7kJnm7+a6i4ZiEp1aWWMxosY7oHYdU1qh/yJeWnpQxjMZ
-         S/QABuxN/PgUl2LznmI9sChtY+GpAssD8UI/e4PN3fzVUzcIyuMEqNk4GJpUvi1qR2Zt
-         zOlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZVK2j7cWxGkq18poKHDIybxzNjO5ViIx+9L61BYDkL8=;
-        b=qbeeZ8FBhhN5Wqzyn0aSv4pfLSOJdpNYxUe+d3c8S46YmLHeGMl19BHeUoQhDfgnl9
-         RApPy2ykD7tBZQszENeanqfD6xxt7NJzqNbO56PErw3bx/XObv8KJHugxdQ+bJXQ/QTk
-         CPCBVeqXfcuxzMoY9rsq4ZmcPABDO48VdB+HK07t7+X+GgEmQ1danqUdsWEq+lG8eFNJ
-         Jr/jr1JRnqLHU6a7EX508LGbA3DfrA/RWpq5B2jG4au/3y3faaZNTEi91Q72h54HiEgm
-         Vet41onIfjeUYHlnXmdmsDwCamrXydzlPow8A1iGUfGtVVDL3zX+v4KtcNJa/sqYYZIh
-         +AyQ==
-X-Gm-Message-State: AOAM530VEWROCs+QJFhy7JdsBCBhdzGUmIQuspmCqVMBEcjbEFONnb1m
-        BYaYBnX+sNgYCHmEsp5JHFQruGu8Tji/emboz901ug==
-X-Google-Smtp-Source: ABdhPJxzX0GLAnOuuJJExDWn8gQhOKKGEfPYzRDgP1cLNVfLdZLqPN822OdmQ+l0RaNllCTFEOpqlmf1qy4OnnMQo7k=
-X-Received: by 2002:a81:4f0c:0:b0:2f8:46f4:be90 with SMTP id
- d12-20020a814f0c000000b002f846f4be90mr8499069ywb.332.1651421654428; Sun, 01
- May 2022 09:14:14 -0700 (PDT)
+        with ESMTP id S240473AbiEARDl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 May 2022 13:03:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D7ADBC0;
+        Sun,  1 May 2022 10:00:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AFD68B80E91;
+        Sun,  1 May 2022 17:00:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5C73BC385AE;
+        Sun,  1 May 2022 17:00:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651424411;
+        bh=l1DrxRfrHZ3UoGV2MYuGEotCSiWiPeK59jKSCQKDDkE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=YZ5lp245eN7rbZhvRt8aFIdscFMfp8CtkiQDvkzcMO7s8nSihBad/iEhXxUd859Sz
+         LQ86Fj2fqNu5104BpnkMRXUr1hAzA/bMG0QbIivFdS3UQiy4+Abw7oVBPYETq7/ePE
+         fUFDfEt48PKUf+9tIAGi+ZeyGszP5/7t4R0/G9OLd+0w6APsA21vZ1VFEfjC3+bkVC
+         r5N0WNh74t1e3ssFIi1d3L4Bl8H8RfO+w8nBDsGdR1/QXApThR6N6teY9dsKNOT4tJ
+         +lMhJNsNyS0HKSAs3UVpMjYV94UEbHmay5Iop9nkEVoOSmwEXDQwqrkFiOZLbi8rGe
+         oM68jaJeGEKUQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3F8B2F03847;
+        Sun,  1 May 2022 17:00:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <00000000000045dc96059f4d7b02@google.com> <000000000000f75af905d3ba0716@google.com>
- <c389e47f-8f82-fd62-8c1d-d9481d2f71ff@I-love.SAKURA.ne.jp>
- <b0f99499-fb6a-b9ec-7bd3-f535f11a885d@I-love.SAKURA.ne.jp>
- <5f90c2b8-283e-6ca5-65f9-3ea96df00984@I-love.SAKURA.ne.jp> <f8ae5dcd-a5ed-2d8b-dd7a-08385e9c3675@I-love.SAKURA.ne.jp>
-In-Reply-To: <f8ae5dcd-a5ed-2d8b-dd7a-08385e9c3675@I-love.SAKURA.ne.jp>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Sun, 1 May 2022 09:14:02 -0700
-Message-ID: <CANn89iJukWcN9-fwk4HEH-StAjnTVJ34UiMsrN=mdRbwVpo8AA@mail.gmail.com>
-Subject: Re: [PATCH] net: rds: acquire refcount on TCP sockets
-To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc:     Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        syzbot <syzbot+694120e1002c117747ed@syzkaller.appspotmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        OFED mailing list <linux-rdma@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: dsa: b53: convert to phylink_pcs
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165142441125.26534.13651898801015170990.git-patchwork-notify@kernel.org>
+Date:   Sun, 01 May 2022 17:00:11 +0000
+References: <20220429164303.712695-1-f.fainelli@gmail.com>
+In-Reply-To: <20220429164303.712695-1-f.fainelli@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, rmk+kernel@armlinux.org.uk, andrew@lunn.ch,
+        vivien.didelot@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, linux@armlinux.org.uk,
+        linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 1, 2022 at 8:29 AM Tetsuo Handa
-<penguin-kernel@i-love.sakura.ne.jp> wrote:
->
-> syzbot is reporting use-after-free read in tcp_retransmit_timer() [1],
-> for TCP socket used by RDS is accessing sock_net() without acquiring a
-> refcount on net namespace. Since TCP's retransmission can happen after
-> a process which created net namespace terminated, we need to explicitly
-> acquire a refcount.
->
+Hello:
 
-Please add a Fixes: tag
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-> Link: https://syzkaller.appspot.com/bug?extid=694120e1002c117747ed [1]
-> Reported-by: syzbot <syzbot+694120e1002c117747ed@syzkaller.appspotmail.com>
-> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-> Tested-by: syzbot <syzbot+694120e1002c117747ed@syzkaller.appspotmail.com>
-> ---
->  net/rds/tcp.c | 9 +++++++++
->  1 file changed, 9 insertions(+)
->
-> diff --git a/net/rds/tcp.c b/net/rds/tcp.c
-> index 5327d130c4b5..8015d2695784 100644
-> --- a/net/rds/tcp.c
-> +++ b/net/rds/tcp.c
-> @@ -493,6 +493,15 @@ void rds_tcp_tune(struct socket *sock)
->         struct net *net = sock_net(sk);
->         struct rds_tcp_net *rtn = net_generic(net, rds_tcp_netid);
->
-> +       /* TCP timer functions might access net namespace even after
-> +        * a process which created this net namespace terminated.
-> +        */
+On Fri, 29 Apr 2022 09:43:03 -0700 you wrote:
+> From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+> 
+> Convert B53 to use phylink_pcs for the serdes rather than hooking it
+> into the MAC-layer callbacks.
+> 
+> Fixes: 81c1681cbb9f ("net: dsa: b53: mark as non-legacy")
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> 
+> [...]
 
-Please move this after the lock_sock(sk) [1], so that we are protected
-correctly ?
+Here is the summary with links:
+  - [net] net: dsa: b53: convert to phylink_pcs
+    https://git.kernel.org/netdev/net/c/79396934e289
 
-> +       if (!sk->sk_net_refcnt) {
-> +               sk->sk_net_refcnt = 1;
-> +               get_net_track(net, &sk->ns_tracker, GFP_KERNEL);
-> +               sock_inuse_add(net, 1);
-> +       }
-> +
->         tcp_sock_set_nodelay(sock->sk);
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
->         lock_sock(sk);
 
-[1] Here.
-
->         if (rtn->sndbuf_size > 0) {
-> --
-> 2.34.1
->
