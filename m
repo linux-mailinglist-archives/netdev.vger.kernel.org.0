@@ -2,87 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E962A516678
-	for <lists+netdev@lfdr.de>; Sun,  1 May 2022 19:00:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83D355166D3
+	for <lists+netdev@lfdr.de>; Sun,  1 May 2022 19:58:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351020AbiEARDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 May 2022 13:03:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53250 "EHLO
+        id S1353602AbiEASBz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 May 2022 14:01:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240473AbiEARDl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 May 2022 13:03:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D7ADBC0;
-        Sun,  1 May 2022 10:00:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AFD68B80E91;
-        Sun,  1 May 2022 17:00:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5C73BC385AE;
-        Sun,  1 May 2022 17:00:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651424411;
-        bh=l1DrxRfrHZ3UoGV2MYuGEotCSiWiPeK59jKSCQKDDkE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=YZ5lp245eN7rbZhvRt8aFIdscFMfp8CtkiQDvkzcMO7s8nSihBad/iEhXxUd859Sz
-         LQ86Fj2fqNu5104BpnkMRXUr1hAzA/bMG0QbIivFdS3UQiy4+Abw7oVBPYETq7/ePE
-         fUFDfEt48PKUf+9tIAGi+ZeyGszP5/7t4R0/G9OLd+0w6APsA21vZ1VFEfjC3+bkVC
-         r5N0WNh74t1e3ssFIi1d3L4Bl8H8RfO+w8nBDsGdR1/QXApThR6N6teY9dsKNOT4tJ
-         +lMhJNsNyS0HKSAs3UVpMjYV94UEbHmay5Iop9nkEVoOSmwEXDQwqrkFiOZLbi8rGe
-         oM68jaJeGEKUQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3F8B2F03847;
-        Sun,  1 May 2022 17:00:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S1350782AbiEASBx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 May 2022 14:01:53 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C582D1C92B;
+        Sun,  1 May 2022 10:58:27 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id q14so16098123ljc.12;
+        Sun, 01 May 2022 10:58:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PQ28r/sJ00cyxoRjyUaEhNXcL1dZ/UZxKIjBAZepudc=;
+        b=b/zoNI2l8mTLwKYqcCEplXa1OATYN2k/ReqCBkPTqIDDe2pSD081pfREF37Rj8CaQB
+         ppUCH7alsbl7FWFR/a+QLX/qhMSdxGGkpOqKWjrUJnIRP6zE1jgDq4pY2lueIYyF6r4m
+         AEh6KkEfI9pqSnbLgHT1zlDuatktqxYEYxx2vR0PocsdS8ShgFKqFn0lDkqwhBYj36o7
+         TkZan6/KTtR/803oCIb+mJwAbxAB8qn/eSw0kdZJ4ax8xQsxd6agaCZbnuCQ53V4V7If
+         OaMM4pNMOx3mPVQ78t6StxevGw1VIEhlEUkBTAaE0e+KVO2KzouS4TbyHQ1soHc6gef8
+         WNsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PQ28r/sJ00cyxoRjyUaEhNXcL1dZ/UZxKIjBAZepudc=;
+        b=1OAc5hcv55JGq21xkxvCHwp4q6gdPdRppx+tL6vsisXhjl5ngIoUwCzIj+RBDTjEnt
+         MsF4S+46EEfF4t03WJqZyLYEk9mj9qYTiIxNu4Rr5c0cbIv3xVDW9X4zekaU6Xh+qd1X
+         ODfKDh1+yX5rgH5GdjoXGe9GigesPqVeP8kKxsOPKLM+CxCHV1wcstBSuq6R0YIY8MXm
+         SWBePGy8M0112Ia6pYIGfcOWeM8Ve9sa145qJvTL9CJ1oJmLdAlMXHi2yGaYdBfzLk2s
+         zbRw6tnpHoNCjYY3Nsh/AzIPtQtisip5jMhkF3SYUjjLtXftJem75VH9rO5sI29SH6TD
+         liPg==
+X-Gm-Message-State: AOAM532g5DnA7JDXfC0SWtgpfVbFYVWw4agGWlw94jRNBYYBGsR3pAkj
+        3AiTCUReGIqRNzh1L2X4sV0t0z5uvK8=
+X-Google-Smtp-Source: ABdhPJy5w/6APyJiBx8XE6ovZCAKYSReF3Af83vYCYu6cC2wHdtkWCR4rO2oCroQRhro5k7BRa4AxQ==
+X-Received: by 2002:a2e:9c0c:0:b0:24e:e2e0:f61e with SMTP id s12-20020a2e9c0c000000b0024ee2e0f61emr6250687lji.75.1651427906037;
+        Sun, 01 May 2022 10:58:26 -0700 (PDT)
+Received: from rsa-laptop.internal.lan ([217.25.229.52])
+        by smtp.gmail.com with ESMTPSA id u20-20020ac243d4000000b0047255d21143sm494706lfl.114.2022.05.01.10.58.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 01 May 2022 10:58:25 -0700 (PDT)
+From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Oliver Neukum <oneukum@suse.com>
+Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net] usb: cdc-wdm: fix reading stuck on device close
+Date:   Sun,  1 May 2022 20:58:28 +0300
+Message-Id: <20220501175828.8185-1-ryazanov.s.a@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: dsa: b53: convert to phylink_pcs
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165142441125.26534.13651898801015170990.git-patchwork-notify@kernel.org>
-Date:   Sun, 01 May 2022 17:00:11 +0000
-References: <20220429164303.712695-1-f.fainelli@gmail.com>
-In-Reply-To: <20220429164303.712695-1-f.fainelli@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, rmk+kernel@armlinux.org.uk, andrew@lunn.ch,
-        vivien.didelot@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, linux@armlinux.org.uk,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+cdc-wdm tracks whether a response reading request is in-progress and
+blocks the next request from being sent until the previous request is
+completed. As soon as last user closes the cdc-wdm device file, the
+driver cancels any ongoing requests, resets the pending response
+counter, but leaves the response reading in-progress flag
+(WDM_RESPONDING) untouched.
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+So if the user closes the device file during the response receive
+request is being performed, no more data will be obtained from the
+modem. The request will be cancelled, effectively preventing the
+WDM_RESPONDING flag from being reseted. Keeping the flag set will
+prevent a new response receive request from being sent, permanently
+blocking the read path. The read path will staying blocked until the
+module will be reloaded or till the modem will be re-attached.
 
-On Fri, 29 Apr 2022 09:43:03 -0700 you wrote:
-> From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-> 
-> Convert B53 to use phylink_pcs for the serdes rather than hooking it
-> into the MAC-layer callbacks.
-> 
-> Fixes: 81c1681cbb9f ("net: dsa: b53: mark as non-legacy")
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> Tested-by: Florian Fainelli <f.fainelli@gmail.com>
-> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> 
-> [...]
+This stuck has been observed with a Huawei E3372 modem attached to an
+OpenWrt router and using the comgt utility to set up a network
+connection.
 
-Here is the summary with links:
-  - [net] net: dsa: b53: convert to phylink_pcs
-    https://git.kernel.org/netdev/net/c/79396934e289
+Fix this issue by clearing the WDM_RESPONDING flag on the device file
+close.
 
-You are awesome, thank you!
+Without this fix, the device reading stuck can be easily reproduced in a
+few connection establishing attempts. With this fix, a load test for
+modem connection re-establishing worked for several hours without any
+issues.
+
+Fixes: 922a5eadd5a3 ("usb: cdc-wdm: Fix race between autosuspend and
+reading from the device")
+Signed-off-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+---
+
+Technically, cdc-wdm belongs to the USB subsystem even though it serves
+WWAN devices. I think this fix should be applied (backported) to LTS
+versions too. So I targeted it to the 'net' tree, but send it to both
+lists to get a feedback. Greg, Jakub, what is the best tree for this
+fix?
+
+---
+ drivers/usb/class/cdc-wdm.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/usb/class/cdc-wdm.c b/drivers/usb/class/cdc-wdm.c
+index 7f2c83f299d3..eebe782380fb 100644
+--- a/drivers/usb/class/cdc-wdm.c
++++ b/drivers/usb/class/cdc-wdm.c
+@@ -774,6 +774,7 @@ static int wdm_release(struct inode *inode, struct file *file)
+ 			poison_urbs(desc);
+ 			spin_lock_irq(&desc->iuspin);
+ 			desc->resp_count = 0;
++			clear_bit(WDM_RESPONDING, &desc->flags);
+ 			spin_unlock_irq(&desc->iuspin);
+ 			desc->manage_power(desc->intf, 0);
+ 			unpoison_urbs(desc);
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.35.1
 
