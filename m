@@ -2,91 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C0BB516446
-	for <lists+netdev@lfdr.de>; Sun,  1 May 2022 13:51:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01DD6516448
+	for <lists+netdev@lfdr.de>; Sun,  1 May 2022 13:56:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346524AbiEALwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 May 2022 07:52:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36446 "EHLO
+        id S1346232AbiEAMAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 May 2022 08:00:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244686AbiEALwg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 May 2022 07:52:36 -0400
-Received: from mail.tkos.co.il (guitar.tkos.co.il [84.110.109.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC995AE6F
-        for <netdev@vger.kernel.org>; Sun,  1 May 2022 04:49:10 -0700 (PDT)
-Received: from tarshish (unknown [10.0.8.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.tkos.co.il (Postfix) with ESMTPS id 6668B440061;
-        Sun,  1 May 2022 14:48:18 +0300 (IDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tkos.co.il;
-        s=default; t=1651405698;
-        bh=A2ELzr4XaHx8zslYw+2miinclFK0UitL5t5085xk/PE=;
-        h=References:From:To:Cc:Subject:Date:In-reply-to:From;
-        b=QGK3E11vjiHcINxb+M+CDoH1Vh8m2Ocbo+xgUyvohooKgu4K1mf3UWY+zEznR+JfF
-         wEy9K8sZXyKBzcadDqlznN7NfC23MAWjhmeWgJn9/MowH78oAMUrGa/XcpRb2mpqBA
-         wJdUmrVq22jm0NKQPVB7ofdh+FWcemXkmvqT8/xg9RAniQLKaMI0xCemgJXQgZu7sP
-         0S7AnOTSFy4QT2QWd6kY3Y9HkTzvZZGo47jlnX14JCID554xHlmMyvsxdPccgIckEn
-         9Ec1PzHqG51ihv4jE/FqeAsAZLaLMlVDsDZy/d1pxLRG2SEIeJ4TFkckdlSbaRFT1N
-         hVDS33NtQhPxw==
-References: <2460cc37a4138d3cfb598349e78f0c5f3cfa59c7.1651071936.git.baruch@tkos.co.il>
- <CAPv3WKf5dnOrzkm6uaFYHkuZZ2ANrr3PMNrUhU5SV6TFAJE2Qw@mail.gmail.com>
- <87levpzcds.fsf@tarshish>
- <CAPv3WKc1eM4gyD_VG2M+ozzvLYrDAXiKGvK6Ej_ykRVf-Zf9Mw@mail.gmail.com>
- <87czh1yn4x.fsf@tarshish> <Ym5yp9Xt094ckexX@shell.armlinux.org.uk>
-User-agent: mu4e 1.6.10; emacs 27.1
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Marcin Wojtas <mw@semihalf.com>, netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH] net: mvpp2: add delay at the end of .mac_prepare
-Date:   Sun, 01 May 2022 14:45:57 +0300
-In-reply-to: <Ym5yp9Xt094ckexX@shell.armlinux.org.uk>
-Message-ID: <87v8upxykr.fsf@tarshish>
+        with ESMTP id S244686AbiEAMAE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 May 2022 08:00:04 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21DF73A5C2;
+        Sun,  1 May 2022 04:56:39 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1651406196;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UTkNrwweHZr+0aXzQk7nw4w8NBjBSLJQgZ0pO2XGpzc=;
+        b=gvlLfZYhgsMljlQRQO65MFQBVsjuXjnEjCJD6jDz5TWmxTfoivRnIX18KKBdt97MscMU3V
+        Ori378uR3EHO3GIYLJYwdpZPyMeq4xvNn1sK0tlhmiXayxSKLbHXsVYaf4OIDwPQ3KoRDS
+        7Wn32t/sK7wwXPd0NBveCmlsy9UyBFKFZCchnGJyYvftfXNfUX3a1oMMVjVLlKEk/1hS45
+        EwVRg0wKz8qT4YTb7sgddDqYrsHfwVvP43Gc4+nPj+f569tVJyjLeKWCakZNua5ELuIueE
+        oXRXx2OznAPPAmI4RbJ6sGF2Jxm2snAe3MCeLVQ2eL8NTnVZ3f6h1MZiYMvMHQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1651406196;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UTkNrwweHZr+0aXzQk7nw4w8NBjBSLJQgZ0pO2XGpzc=;
+        b=teo3yVW54PUDDp96KIyb2h9qsqEPeClR+fUAVXmKF7mcpzBWgzRP2qJ51mr2HMJGAkLZc7
+        Y/FhA6tBUGxw7pAQ==
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Gerhard Engleder <gerhard@engleder-embedded.com>,
+        "Y . b . Lu" <yangbo.lu@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Yannick Vignon <yannick.vignon@nxp.com>,
+        Rui Sousa <rui.sousa@nxp.com>, Jiri Pirko <jiri@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        linux-kselftest@vger.kernel.org, shuah@kernel.org
+Subject: Re: [PATCH v2 net-next] selftests: forwarding: add Per-Stream
+ Filtering and Policing test for Ocelot
+In-Reply-To: <20220501112953.3298973-1-vladimir.oltean@nxp.com>
+References: <20220501112953.3298973-1-vladimir.oltean@nxp.com>
+Date:   Sun, 01 May 2022 13:56:34 +0200
+Message-ID: <87o80h1n65.fsf@kurt>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Russell,
+--=-=-=
+Content-Type: text/plain
 
-On Sun, May 01 2022, Russell King (Oracle) wrote:
-> Please trim so I don't have to waste my vital limited power reading
-> paging through lots of unnecessary text. Thanks.
+On Sun May 01 2022, Vladimir Oltean wrote:
+> The Felix VSC9959 switch in NXP LS1028A supports the tc-gate action
+> which enforced time-based access control per stream. A stream as seen by
+> this switch is identified by {MAC DA, VID}.
 >
-> On Thu, Apr 28, 2022 at 11:03:08PM +0300, Baruch Siach wrote:
->> mv88x3310 f212a600.mdio-mii:02: Firmware version 0.3.10.0
->> 
->> This is a timing sensitive issue. Slight change in firmware code might
->> be significant.
+> We use the standard forwarding selftest topology with 2 host interfaces
+> and 2 switch interfaces. The host ports must require timestamping non-IP
+> packets and supporting tc-etf offload, for isochron to work. The
+> isochron program monitors network sync status (ptp4l, phc2sys) and
+> deterministically transmits packets to the switch such that the tc-gate
+> action either (a) always accepts them based on its schedule, or
+> (b) always drops them.
 >
-> That should be new enough to avoid the firmware problem - and it seems
-> that 0.3.10.0 works fine on the Macchiatobin DS.
+> I tried to keep as much of the logic that isn't specific to the NXP
+> LS1028A in a new tsn_lib.sh, for future reuse. This covers
+> synchronization using ptp4l and phc2sys, and isochron.
 >
->> One more detail that might be important is that the PHY firmware is
->> loaded at run-time using this patch (rebased):
->> 
->>   https://lore.kernel.org/all/13177f5abf60215fb9c5c4251e6f487e4d0d7ff0.1587967848.git.baruch@tkos.co.il/
+> The cycle-time chosen for this selftest isn't particularly impressive
+> (and the focus is the functionality of the switch), but I didn't really
+> know what to do better, considering that it will mostly be run during
+> debugging sessions, various kernel bloatware would be enabled, like
+> lockdep, KASAN, etc, and we certainly can't run any races with those on.
 >
-> Hmm, I wonder what difference that makes...
+> I tried to look through the kselftest framework for other real time
+> applications and didn't really find any, so I'm not sure how better to
+> prepare the environment in case we want to go for a lower cycle time.
+> At the moment, the only thing the selftest is ensuring is that dynamic
+> frequency scaling is disabled on the CPU that isochron runs on. It would
+> probably be useful to have a blacklist of kernel config options (checked
+> through zcat /proc/config.gz) and some cyclictest scripts to run
+> beforehand, but I saw none of those.
 >
-> Can you confirm the md5sum of your firmware please?
-> 95180414ba23f2c7c2fabd377fb4c1df ?
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Precisely:
+Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de>
 
-$ md5sum x3310fw_0_3_10_0_10860.hdr 
-95180414ba23f2c7c2fabd377fb4c1df  x3310fw_0_3_10_0_10860.hdr
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Thanks,
-baruch
+-----BEGIN PGP SIGNATURE-----
 
--- 
-                                                     ~. .~   Tk Open Systems
-=}------------------------------------------------ooO--U--Ooo------------{=
-   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
+iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmJudXITHGt1cnRAbGlu
+dXRyb25peC5kZQAKCRDBk9HyqkZzgkwHEACKsj21rjV2zkoqM5LfT7dcYIGZJ9wo
+6IcmJpDlRtm9ZfTkujal0g2W7ygbTUIGrpzcQg/BHeQ2LAp0AevXv8ynWoB8tY0w
+CZ56pcaLAWBsProG7qhm7qvHkrVV4cJhIv8MRNFBPTlOV9fXNXfhqbyfOsrthngE
+zbAWU79+yaNMsmI8+ahpgKfHQfSKIfDJacpyJrkLMHB/GM5xQKpflRVozXRso+nn
+jUNYsxqL+UvU58mQ1Ybco9gTaw3tFXaCmlUfwfV5kZTMXVzjU9JuZy2MEjdpNm6D
+4IkqvPc4kOVz4xvnSgD0sh6IEKXiQp/9l4zgekhqENyY4TCTrlMH/TTP0KJoJ8q/
+/P8Y7MNhk1NRS577EbuDR/Od+YDElpyKc2LLh2R3PmuQSUl48hxAstAuGbOOOcfC
+5osThCz3sdLyzNmmlsm2hHfUte/6Xy0VPzqw5if5xlx5Kypo7NbyAwJGdxJ5MVFy
+MO+cxLZX6G0IdLnriFpKQhdqu1jsFQ6vxwSB6gli7IYCr4qlRswqAEj+E7x9m/Ju
+truC8ft9V/CGBI77XgJCB8hFFiib02gMci7fDOhKxrSYipER5H4F3h0xKhDRT+Yz
+1V60QtTRvEd6+OkxGR8BkRb7QsAW1Eq5ITk7b/n2BL6npUmpOTd1+Z1ypJb9wSyO
+GlLUBT9/GGmsYA==
+=Jk4P
+-----END PGP SIGNATURE-----
+--=-=-=--
