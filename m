@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C4AC5162EB
-	for <lists+netdev@lfdr.de>; Sun,  1 May 2022 10:42:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8497516334
+	for <lists+netdev@lfdr.de>; Sun,  1 May 2022 10:52:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245612AbiEAIpr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 May 2022 04:45:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41564 "EHLO
+        id S233297AbiEAI4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 May 2022 04:56:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244504AbiEAIpp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 May 2022 04:45:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A84F4C42F
-        for <netdev@vger.kernel.org>; Sun,  1 May 2022 01:42:19 -0700 (PDT)
+        with ESMTP id S244843AbiEAI4B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 May 2022 04:56:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1CE811156
+        for <netdev@vger.kernel.org>; Sun,  1 May 2022 01:52:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 82BD5B80CF0
-        for <netdev@vger.kernel.org>; Sun,  1 May 2022 08:42:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2899C385AE;
-        Sun,  1 May 2022 08:42:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 37832B80CB7
+        for <netdev@vger.kernel.org>; Sun,  1 May 2022 08:52:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19C7DC385A9;
+        Sun,  1 May 2022 08:52:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651394536;
-        bh=DQDwVUUuu9g69QrS76fAJBvxfZ8jsyo4ZFYN9fZIw5Q=;
+        s=k20201202; t=1651395152;
+        bh=+weLeZFFPB90rdTPrNVWwCVdRg7UBegjwV9eens4kUo=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=eFgh9mpXUVfwGf00r+1P65qMvUJ0fl70ExN7alQLxQ9LVrEaJROZk47UTm38YXygV
-         xsuED11Qy7n5g9KBtCtjEm0X1SwRA0axRCAtI7MYrXobhCWXXdEaTAsA4nAbl5EdxH
-         hicVDtCccHh6PX7bbLxc5FvG1JkBzV8RWuPP5bZm+T58ejTgTTv2YFuIObqoyNEiwa
-         YzayzyXyMIAdagwTdSUJrQKsbNn1QvuWDZ87MY/klqLn3yGCKSOX/fnFjRwCYBf1rp
-         +2mgdTLfffQokv4n7p97FYNBIcMfl+fX3Mw2Cmi8C9OzJoYcdYhdWavszSLFjQh56x
-         xYK+iLm11EjNQ==
-Date:   Sun, 1 May 2022 11:42:11 +0300
+        b=R14x68MGv84Gi4CcqfU4KTNfJoArOdBG8uIP62eqOOOar2lrtQCvORHWy11N2SWSS
+         d/uOsV0B6Pru02imlypNiSXROyujbhZ0CF/nNWs7vAZtHnDYjKz4EjR2sY5MBFJmGB
+         8iSnJEUoJgA3BGDJsjSFCPmplblZRtUTrMW1sjgGosGjKqS6FKDjWz1VjWJQV5KZVU
+         LfWHX8uQhd2Wm7QJUyZbc3PZeEDKbp4tBRKv67zsL2RZ0j47rTAr6Ijb4/ZI/EGoib
+         F1v/aPy9t2toMNYb0L2O70dB8rRt+AK2hBK9dSs3MRYud/1i8g+4n7iit2CgeJJvuF
+         O7uqjMautOwCw==
+Date:   Sun, 1 May 2022 11:52:28 +0300
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Saeed Mahameed <saeedm@nvidia.com>
 Cc:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
@@ -39,16 +39,16 @@ Cc:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
         Jason Gunthorpe <jgg@nvidia.com>,
         linux-netdev <netdev@vger.kernel.org>,
         Raed Salem <raeds@nvidia.com>
-Subject: Re: [PATCH net-next v1 13/17] net/mlx5: Simplify IPsec capabilities
- logic
-Message-ID: <Ym5H42U94xSxf1QG@unreal>
+Subject: Re: [PATCH net-next v1 10/17] net/mlx5: Clean IPsec FS add/delete
+ rules
+Message-ID: <Ym5KTD6cHatGlVCm@unreal>
 References: <cover.1650363043.git.leonro@nvidia.com>
- <f47d197be948ce44772baf3276a1a855ad2f210a.1650363043.git.leonro@nvidia.com>
- <20220422224257.pa7p2uuo4qau5ezi@sx1>
+ <874f16edb960923bb25c83382d96cd4cb3732485.1650363043.git.leonro@nvidia.com>
+ <20220422222536.uxyyveytmmkwvwjv@sx1>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220422224257.pa7p2uuo4qau5ezi@sx1>
+In-Reply-To: <20220422222536.uxyyveytmmkwvwjv@sx1>
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -59,35 +59,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 22, 2022 at 03:42:57PM -0700, Saeed Mahameed wrote:
+On Fri, Apr 22, 2022 at 03:25:36PM -0700, Saeed Mahameed wrote:
 > On 19 Apr 13:13, Leon Romanovsky wrote:
 > > From: Leon Romanovsky <leonro@nvidia.com>
 > > 
-> > Reduce number of hard-coded IPsec capabilities by making sure
-> > that mlx5_ipsec_device_caps() sets only supported bits.
-> > 
-> > As part of this change, remove _accel_ notations from the names
-> > and prepare the code to IPsec full offload mode.
+> > Reuse existing struct to pass parameters instead of open code them.
 > > 
 > 
-> Can you explain why remove __accel__ notation ?
-> __accel__ notation and decoupling from other common netdev features is done
-> for modularity purpose, en_accel directories are separated so we can
-> implement complex/stateful accelerations while avoid contaminating/affecting
-> common data-path performance sensitives flows.
-> 
-> I think keeping __accel__ notations is a must here for the above reasons,
-> unless you have a more strong reason to remove it..
+> Why? what do you mean "open code them" ? they are not open coded, they are
+> primitive for a reason ! If we go with this reasoning, then let's pass
+> mlx5e_priv to all functions and just forget about modularity.
 
-Acceleration and hardware offloads are the same in their end result, but
-different in meaning and in their implementations.
+There is not much value in having modularity between files/layers in
+same block. These layers are not usable outside of that block (IPsec)
+and ipsec.c is tightly coupled with ipsec_fs.c anyway by ensuring that
+unsupported options are handled as early as possible.
 
-Accelerators are usually represented by specialized hardware that
-designed to perform specific tasks. In our case, CX devices provide
-hardware offload capabilities that extends general purpose NIC and
-not accelerations.
+The remove of existing artificial layering allows me to see useless
+fields (see patch #17) and remove code that can't be executed anyway.
 
-__accel__ is a wrong word here.
+Separation between blocks (mlx5e_priv) is good and right thing,
+separation inside blocks is not.
 
 Thanks
 
@@ -95,126 +87,192 @@ Thanks
 > > Reviewed-by: Raed Salem <raeds@nvidia.com>
 > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 > > ---
-> > .../mellanox/mlx5/core/en_accel/ipsec.c       | 16 ++------------
-> > .../mellanox/mlx5/core/en_accel/ipsec.h       |  9 +++-----
-> > .../mlx5/core/en_accel/ipsec_offload.c        | 22 +++++++++----------
-> > 3 files changed, 16 insertions(+), 31 deletions(-)
+> > .../mellanox/mlx5/core/en_accel/ipsec.c       | 10 +---
+> > .../mellanox/mlx5/core/en_accel/ipsec.h       |  7 +--
+> > .../mellanox/mlx5/core/en_accel/ipsec_fs.c    | 55 ++++++++++---------
+> > 3 files changed, 34 insertions(+), 38 deletions(-)
 > > 
 > > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-> > index Clean IPsec FS add/delete rules28729b1cc6e6..be7650d2cfd3 100644
+> > index 537311a74bfb..81c9831ad286 100644
 > > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
 > > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-> > @@ -215,7 +215,7 @@ static inline int mlx5e_xfrm_validate_state(struct xfrm_state *x)
-> > 		return -EINVAL;
-> > 	}
-> > 	if (x->props.flags & XFRM_STATE_ESN &&
-> > -	    !(mlx5_ipsec_device_caps(priv->mdev) & MLX5_ACCEL_IPSEC_CAP_ESN)) {
-> > +	    !(mlx5_ipsec_device_caps(priv->mdev) & MLX5_IPSEC_CAP_ESN)) {
-> > 		netdev_info(netdev, "Cannot offload ESN xfrm states\n");
-> > 		return -EINVAL;
-> > 	}
-> > @@ -262,11 +262,6 @@ static inline int mlx5e_xfrm_validate_state(struct xfrm_state *x)
-> > 		netdev_info(netdev, "Cannot offload xfrm states with geniv other than seqiv\n");
-> > 		return -EINVAL;
-> > 	}
-> > -	if (x->props.family == AF_INET6 &&
-> > -	    !(mlx5_ipsec_device_caps(priv->mdev) & MLX5_ACCEL_IPSEC_CAP_IPV6)) {
-> > -		netdev_info(netdev, "IPv6 xfrm state offload is not supported by this device\n");
-> > -		return -EINVAL;
-> > -	}
-> > 	return 0;
+> > @@ -313,9 +313,7 @@ static int mlx5e_xfrm_add_state(struct xfrm_state *x)
+> > 	if (err)
+> > 		goto err_xfrm;
+> > 
+> > -	err = mlx5e_accel_ipsec_fs_add_rule(priv, &sa_entry->attrs,
+> > -					    sa_entry->ipsec_obj_id,
+> > -					    &sa_entry->ipsec_rule);
+> > +	err = mlx5e_accel_ipsec_fs_add_rule(priv, sa_entry);
+> 
+> To add to my comment on the previous patch, in here the issue is more
+> severe as previously ipsec_fs.c was unaware of sa_entry object and used to
+> deal with pure fs related objects, you are peppering the code with sa_entry for
+> no reason, other than reducing function parameters from 4 to 2.
+> > 	if (err)
+> > 		goto err_hw_ctx;
+> > 
+> > @@ -333,8 +331,7 @@ static int mlx5e_xfrm_add_state(struct xfrm_state *x)
+> > 	goto out;
+> > 
+> > err_add_rule:
+> > -	mlx5e_accel_ipsec_fs_del_rule(priv, &sa_entry->attrs,
+> > -				      &sa_entry->ipsec_rule);
+> > +	mlx5e_accel_ipsec_fs_del_rule(priv, sa_entry);
+> > err_hw_ctx:
+> > 	mlx5_ipsec_free_sa_ctx(sa_entry);
+> > err_xfrm:
+> > @@ -357,8 +354,7 @@ static void mlx5e_xfrm_free_state(struct xfrm_state *x)
+> > 	struct mlx5e_priv *priv = netdev_priv(x->xso.dev);
+> > 
+> > 	cancel_work_sync(&sa_entry->modify_work.work);
+> > -	mlx5e_accel_ipsec_fs_del_rule(priv, &sa_entry->attrs,
+> > -				      &sa_entry->ipsec_rule);
+> > +	mlx5e_accel_ipsec_fs_del_rule(priv, sa_entry);
+> > 	mlx5_ipsec_free_sa_ctx(sa_entry);
+> > 	kfree(sa_entry);
 > > }
-> > 
-> > @@ -457,12 +452,6 @@ void mlx5e_ipsec_build_netdev(struct mlx5e_priv *priv)
-> > 	if (!mlx5_ipsec_device_caps(mdev))
-> > 		return;
-> > 
-> > -	if (!(mlx5_ipsec_device_caps(mdev) & MLX5_ACCEL_IPSEC_CAP_ESP) ||
-> > -	    !MLX5_CAP_ETH(mdev, swp)) {
-> > -		mlx5_core_dbg(mdev, "mlx5e: ESP and SWP offload not supported\n");
-> > -		return;
-> > -	}
-> > -
-> > 	mlx5_core_info(mdev, "mlx5e: IPSec ESP acceleration enabled\n");
-> > 	netdev->xfrmdev_ops = &mlx5e_ipsec_xfrmdev_ops;
-> > 	netdev->features |= NETIF_F_HW_ESP;
-> > @@ -476,8 +465,7 @@ void mlx5e_ipsec_build_netdev(struct mlx5e_priv *priv)
-> > 	netdev->features |= NETIF_F_HW_ESP_TX_CSUM;
-> > 	netdev->hw_enc_features |= NETIF_F_HW_ESP_TX_CSUM;
-> > 
-> > -	if (!(mlx5_ipsec_device_caps(mdev) & MLX5_ACCEL_IPSEC_CAP_LSO) ||
-> > -	    !MLX5_CAP_ETH(mdev, swp_lso)) {
-> > +	if (!MLX5_CAP_ETH(mdev, swp_lso)) {
-> > 		mlx5_core_dbg(mdev, "mlx5e: ESP LSO not supported\n");
-> > 		return;
-> > 	}
 > > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-> > index af1467cbb7c7..97c55620089d 100644
+> > index cdcb95f90623..af1467cbb7c7 100644
 > > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
 > > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-> > @@ -102,12 +102,9 @@ struct mlx5_accel_esp_xfrm_attrs {
-> > 	u8 is_ipv6;
-> > };
+> > @@ -176,12 +176,9 @@ struct xfrm_state *mlx5e_ipsec_sadb_rx_lookup(struct mlx5e_ipsec *dev,
+> > void mlx5e_accel_ipsec_fs_cleanup(struct mlx5e_ipsec *ipsec);
+> > int mlx5e_accel_ipsec_fs_init(struct mlx5e_ipsec *ipsec);
+> > int mlx5e_accel_ipsec_fs_add_rule(struct mlx5e_priv *priv,
+> > -				  struct mlx5_accel_esp_xfrm_attrs *attrs,
+> > -				  u32 ipsec_obj_id,
+> > -				  struct mlx5e_ipsec_rule *ipsec_rule);
+> > +				  struct mlx5e_ipsec_sa_entry *sa_entry);
+> > void mlx5e_accel_ipsec_fs_del_rule(struct mlx5e_priv *priv,
+> > -				   struct mlx5_accel_esp_xfrm_attrs *attrs,
+> > -				   struct mlx5e_ipsec_rule *ipsec_rule);
+> > +				   struct mlx5e_ipsec_sa_entry *sa_entry);
 > > 
-> > -enum mlx5_accel_ipsec_cap {
-> > -	MLX5_ACCEL_IPSEC_CAP_DEVICE		= 1 << 0,
-> > -	MLX5_ACCEL_IPSEC_CAP_ESP		= 1 << 1,
-> > -	MLX5_ACCEL_IPSEC_CAP_IPV6		= 1 << 2,
-> > -	MLX5_ACCEL_IPSEC_CAP_LSO		= 1 << 3,
-> > -	MLX5_ACCEL_IPSEC_CAP_ESN		= 1 << 4,
-> > +enum mlx5_ipsec_cap {
-> > +	MLX5_IPSEC_CAP_CRYPTO		= 1 << 0,
-> > +	MLX5_IPSEC_CAP_ESN		= 1 << 1,
-> > };
+> > int mlx5_ipsec_create_sa_ctx(struct mlx5e_ipsec_sa_entry *sa_entry);
+> > void mlx5_ipsec_free_sa_ctx(struct mlx5e_ipsec_sa_entry *sa_entry);
+> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
+> > index 96ab2e9d6f9a..342828351254 100644
+> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
+> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
+> > @@ -454,11 +454,12 @@ static void setup_fte_common(struct mlx5_accel_esp_xfrm_attrs *attrs,
+> > }
 > > 
-> > struct mlx5e_priv;
-> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-> > index 817747d5229e..b44bce3f4ef1 100644
-> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-> > @@ -7,7 +7,7 @@
-> > 
-> > u32 mlx5_ipsec_device_caps(struct mlx5_core_dev *mdev)
+> > static int rx_add_rule(struct mlx5e_priv *priv,
+> > -		       struct mlx5_accel_esp_xfrm_attrs *attrs,
+> > -		       u32 ipsec_obj_id,
+> > -		       struct mlx5e_ipsec_rule *ipsec_rule)
+> > +		       struct mlx5e_ipsec_sa_entry *sa_entry)
 > > {
-> > -	u32 caps;
-> > +	u32 caps = 0;
+> > 	u8 action[MLX5_UN_SZ_BYTES(set_add_copy_action_in_auto)] = {};
+> > +	struct mlx5e_ipsec_rule *ipsec_rule = &sa_entry->ipsec_rule;
+> > +	struct mlx5_accel_esp_xfrm_attrs *attrs = &sa_entry->attrs;
+> > +	u32 ipsec_obj_id = sa_entry->ipsec_obj_id;
+> > 	struct mlx5_modify_hdr *modify_hdr = NULL;
+> > 	struct mlx5e_accel_fs_esp_prot *fs_prot;
+> > 	struct mlx5_flow_destination dest = {};
+> > @@ -532,9 +533,7 @@ static int rx_add_rule(struct mlx5e_priv *priv,
+> > }
 > > 
-> > 	if (!MLX5_CAP_GEN(mdev, ipsec_offload))
-> > 		return 0;
-> > @@ -19,23 +19,23 @@ u32 mlx5_ipsec_device_caps(struct mlx5_core_dev *mdev)
-> > 	    MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_IPSEC))
-> > 		return 0;
+> > static int tx_add_rule(struct mlx5e_priv *priv,
+> > -		       struct mlx5_accel_esp_xfrm_attrs *attrs,
+> > -		       u32 ipsec_obj_id,
+> > -		       struct mlx5e_ipsec_rule *ipsec_rule)
+> > +		       struct mlx5e_ipsec_sa_entry *sa_entry)
+> > {
+> > 	struct mlx5_flow_act flow_act = {};
+> > 	struct mlx5_flow_handle *rule;
+> > @@ -551,7 +550,8 @@ static int tx_add_rule(struct mlx5e_priv *priv,
+> > 		goto out;
+> > 	}
 > > 
-> > -	if (!MLX5_CAP_IPSEC(mdev, ipsec_crypto_offload) ||
-> > -	    !MLX5_CAP_ETH(mdev, insert_trailer))
-> > -		return 0;
-> > -
-> > 	if (!MLX5_CAP_FLOWTABLE_NIC_TX(mdev, ipsec_encrypt) ||
-> > 	    !MLX5_CAP_FLOWTABLE_NIC_RX(mdev, ipsec_decrypt))
-> > 		return 0;
+> > -	setup_fte_common(attrs, ipsec_obj_id, spec, &flow_act);
+> > +	setup_fte_common(&sa_entry->attrs, sa_entry->ipsec_obj_id, spec,
+> > +			 &flow_act);
 > > 
-> > -	caps = MLX5_ACCEL_IPSEC_CAP_DEVICE | MLX5_ACCEL_IPSEC_CAP_IPV6 |
-> > -	       MLX5_ACCEL_IPSEC_CAP_LSO;
-> > +	if (!MLX5_CAP_IPSEC(mdev, ipsec_crypto_esp_aes_gcm_128_encrypt) ||
-> > +	    !MLX5_CAP_IPSEC(mdev, ipsec_crypto_esp_aes_gcm_128_decrypt))
-> > +		return 0;
+> > 	/* Add IPsec indicator in metadata_reg_a */
+> > 	spec->match_criteria_enable |= MLX5_MATCH_MISC_PARAMETERS_2;
+> > @@ -566,11 +566,11 @@ static int tx_add_rule(struct mlx5e_priv *priv,
+> > 	if (IS_ERR(rule)) {
+> > 		err = PTR_ERR(rule);
+> > 		netdev_err(priv->netdev, "fail to add ipsec rule attrs->action=0x%x, err=%d\n",
+> > -				attrs->action, err);
+> > +				sa_entry->attrs.action, err);
+> > 		goto out;
+> > 	}
 > > 
-> > -	if (MLX5_CAP_IPSEC(mdev, ipsec_crypto_esp_aes_gcm_128_encrypt) &&
-> > -	    MLX5_CAP_IPSEC(mdev, ipsec_crypto_esp_aes_gcm_128_decrypt))
-> > -		caps |= MLX5_ACCEL_IPSEC_CAP_ESP;
-> > +	if (MLX5_CAP_IPSEC(mdev, ipsec_crypto_offload) &&
-> > +	    MLX5_CAP_ETH(mdev, insert_trailer) && MLX5_CAP_ETH(mdev, swp))
-> > +		caps |= MLX5_IPSEC_CAP_CRYPTO;
+> > -	ipsec_rule->rule = rule;
+> > +	sa_entry->ipsec_rule.rule = rule;
+> > 
+> > out:
+> > 	kvfree(spec);
+> > @@ -580,21 +580,25 @@ static int tx_add_rule(struct mlx5e_priv *priv,
+> > }
+> > 
+> > static void rx_del_rule(struct mlx5e_priv *priv,
+> > -		struct mlx5_accel_esp_xfrm_attrs *attrs,
+> > -		struct mlx5e_ipsec_rule *ipsec_rule)
+> > +			struct mlx5e_ipsec_sa_entry *sa_entry)
+> > {
+> > +	struct mlx5e_ipsec_rule *ipsec_rule = &sa_entry->ipsec_rule;
 > > +
-> > +	if (!caps)
-> > +		return 0;
+> > 	mlx5_del_flow_rules(ipsec_rule->rule);
+> > 	ipsec_rule->rule = NULL;
 > > 
-> > 	if (MLX5_CAP_IPSEC(mdev, ipsec_esn))
-> > -		caps |= MLX5_ACCEL_IPSEC_CAP_ESN;
-> > +		caps |= MLX5_IPSEC_CAP_ESN;
+> > 	mlx5_modify_header_dealloc(priv->mdev, ipsec_rule->set_modify_hdr);
+> > 	ipsec_rule->set_modify_hdr = NULL;
 > > 
-> > 	/* We can accommodate up to 2^24 different IPsec objects
-> > 	 * because we use up to 24 bit in flow table metadata
+> > -	rx_ft_put(priv, attrs->is_ipv6 ? ACCEL_FS_ESP6 : ACCEL_FS_ESP4);
+> > +	rx_ft_put(priv,
+> > +		  sa_entry->attrs.is_ipv6 ? ACCEL_FS_ESP6 : ACCEL_FS_ESP4);
+> > }
+> > 
+> > static void tx_del_rule(struct mlx5e_priv *priv,
+> > -		struct mlx5e_ipsec_rule *ipsec_rule)
+> > +			struct mlx5e_ipsec_sa_entry *sa_entry)
+> > {
+> > +	struct mlx5e_ipsec_rule *ipsec_rule = &sa_entry->ipsec_rule;
+> > +
+> > 	mlx5_del_flow_rules(ipsec_rule->rule);
+> > 	ipsec_rule->rule = NULL;
+> > 
+> > @@ -602,24 +606,23 @@ static void tx_del_rule(struct mlx5e_priv *priv,
+> > }
+> > 
+> > int mlx5e_accel_ipsec_fs_add_rule(struct mlx5e_priv *priv,
+> > -				  struct mlx5_accel_esp_xfrm_attrs *attrs,
+> > -				  u32 ipsec_obj_id,
+> > -				  struct mlx5e_ipsec_rule *ipsec_rule)
+> > +				  struct mlx5e_ipsec_sa_entry *sa_entry)
+> > {
+> > -	if (attrs->action == MLX5_ACCEL_ESP_ACTION_DECRYPT)
+> > -		return rx_add_rule(priv, attrs, ipsec_obj_id, ipsec_rule);
+> > -	else
+> > -		return tx_add_rule(priv, attrs, ipsec_obj_id, ipsec_rule);
+> > +	if (sa_entry->attrs.action == MLX5_ACCEL_ESP_ACTION_ENCRYPT)
+> > +		return tx_add_rule(priv, sa_entry);
+> > +
+> > +	return rx_add_rule(priv, sa_entry);
+> > }
+> > 
+> > void mlx5e_accel_ipsec_fs_del_rule(struct mlx5e_priv *priv,
+> > -		struct mlx5_accel_esp_xfrm_attrs *attrs,
+> > -		struct mlx5e_ipsec_rule *ipsec_rule)
+> > +				   struct mlx5e_ipsec_sa_entry *sa_entry)
+> > {
+> > -	if (attrs->action == MLX5_ACCEL_ESP_ACTION_DECRYPT)
+> > -		rx_del_rule(priv, attrs, ipsec_rule);
+> > -	else
+> > -		tx_del_rule(priv, ipsec_rule);
+> > +	if (sa_entry->attrs.action == MLX5_ACCEL_ESP_ACTION_ENCRYPT) {
+> > +		tx_del_rule(priv, sa_entry);
+> > +		return;
+> > +	}
+> > +
+> > +	rx_del_rule(priv, sa_entry);
+> > }
+> > 
+> > void mlx5e_accel_ipsec_fs_cleanup(struct mlx5e_ipsec *ipsec)
 > > -- 
 > > 2.35.1
 > > 
