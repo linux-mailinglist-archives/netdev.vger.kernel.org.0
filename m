@@ -2,182 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F5FF516802
-	for <lists+netdev@lfdr.de>; Sun,  1 May 2022 23:28:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3471516896
+	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 00:10:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355063AbiEAVcB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 May 2022 17:32:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60826 "EHLO
+        id S1344728AbiEAWOG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 May 2022 18:14:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235897AbiEAVb7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 May 2022 17:31:59 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B39CE2FFEE
-        for <netdev@vger.kernel.org>; Sun,  1 May 2022 14:28:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=FmDkTCrK0wY/pFNFGzgn5Ss7jQ+VQJzUiSOPa59qBMo=; b=o1BMvX4LOz4XjyIfFR1wGS+OxO
-        OlL+H2rJwcVdU9cGhube+RxwyFmJIzTph518ihRiIbhC/bFOoMb/QvHnyl5lr+4WDOt2ebvFffeMh
-        M6WMm84FKgzcWdqL4RViE/k76W7uHMJ3d4dDgJOtG9ZJg9Z2KPn8gyso1S1oui9WqPMA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nlH79-000pd1-J1; Sun, 01 May 2022 23:28:23 +0200
-Date:   Sun, 1 May 2022 23:28:23 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Mauro Rossi <issor.oruam@gmail.com>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        masahiroy@kernel.org, michal.lkml@markovi.net,
-        netdev@vger.kernel.org, kabel@kernel.org,
-        Chih-Wei Huang <cwhuang@android-x86.org>
-Subject: Re: FYI: net/phy/marvell10g: android kernel builing error due to
- modpost error
-Message-ID: <Ym77d3x6w+lE96HC@lunn.ch>
-References: <CAEQFVGYURjcCA741koGF5aeRoymwh-h+_evP5cqAxE4U8UVnbA@mail.gmail.com>
- <Yl04ttYN95VCXan4@shell.armlinux.org.uk>
- <CAEQFVGZnyyCT7F-Jud-o+5OWzxDTgztbZT2Sm+ixtQ1yKOS2+g@mail.gmail.com>
- <CAEQFVGYF_0KhkWEGWrMEZCKBEoEL71DgyAV3a6gCDAA=PNf+kA@mail.gmail.com>
+        with ESMTP id S1378208AbiEAWNv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 May 2022 18:13:51 -0400
+Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 887692609
+        for <netdev@vger.kernel.org>; Sun,  1 May 2022 15:10:24 -0700 (PDT)
+Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-2f7ca2ce255so131827827b3.7
+        for <netdev@vger.kernel.org>; Sun, 01 May 2022 15:10:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8WXuaqzf5H6JbTMCrSNoDEe2cTNFwsekkVTcYWtQXX8=;
+        b=NIMD1MgHFUA8qDcBtlkRUl6QwAMsrYm2LFtmvl8/1tnPPHxRUpA1yQ5LUAYctdi06T
+         TOsD/Pv8VDI71Se+5p7Pej/mhD4qgf+k14w13KqKouOzghHkUgz02mr9ht1C5Q+AQUuh
+         0KviUgNPzfaZP4wqvtLikTYkYLlECRohNbsEu9h/EpakyyZgJrAzbiZa3kK32wRWZAP8
+         v8ZanNeCIK/+zl9E9gG5DRVG3Hrx7mW8dweXwuLE07vm1+xVHs5Z+8j39wJwgxAr3TB0
+         sIVDxA8IhVVZXSJeGhmsZmd4DHlgLnJXoULjO7WRPuijicppJaGPBhttKcLNbK4Ul/z4
+         EqFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8WXuaqzf5H6JbTMCrSNoDEe2cTNFwsekkVTcYWtQXX8=;
+        b=QmQEVkmxa4uJs5urgHzzyfzexIMjH+ImyxfJxnqmAlIB2/otZ66FXM8X2bSSevpP2E
+         n6T8UGIv6OzaNHKnvfdVUW4FWJw7nx8n546tLMC56kZ6HyOTM9agINNPDYaC0dYRJ2t4
+         KFhdTXmmYCiLI1uoCyswDVMuWoGUuZnB0DCxOW9N49EW6Xs29iRTe9ubIgZuf9g5KZvp
+         EC0AXdVxVIeMGpJNEHTpsDTPYa2R/Ig2EGto4PfItxSIzpt6gaHQW7elKlkgrrD/ER9Q
+         Jg+IVX468nKOlnlyGRTc+gn4KEm8smlNn//i+Nv+IBZxHSUQqrQQQ/Sn/UXdbnfEA8s8
+         r6Hw==
+X-Gm-Message-State: AOAM533Ju+AUu8IzV8mZuZSwFoB5ZekR/mhS849bIHBiGB2bbl+bJeOd
+        TM/t0Do0pEStxz7yu6SD08NFH0RmhMotqt78OAuYBA==
+X-Google-Smtp-Source: ABdhPJwVRMVN6PYWPNDrbRGkbqET+tO2dajvHrcjRYlUisQxn4zRaAT7N9xEe7+WAUzHysUVA7VWrMEEZM+qWd2jZ7k=
+X-Received: by 2002:a81:2154:0:b0:2f4:d79e:35dc with SMTP id
+ h81-20020a812154000000b002f4d79e35dcmr9302689ywh.126.1651443023815; Sun, 01
+ May 2022 15:10:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEQFVGYF_0KhkWEGWrMEZCKBEoEL71DgyAV3a6gCDAA=PNf+kA@mail.gmail.com>
+References: <20220427154111.529975-1-kuba@kernel.org> <20220427154111.529975-2-kuba@kernel.org>
+In-Reply-To: <20220427154111.529975-2-kuba@kernel.org>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Mon, 2 May 2022 00:10:12 +0200
+Message-ID: <CACRpkdYOrUkVCW6Bq2V0wkk+2AEP3tkw18m4ra83Gn29knxhYA@mail.gmail.com>
+Subject: Re: [PATCH net-next 01/14] eth: remove copies of the NAPI_POLL_WEIGHT define
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, pabeni@redhat.com, netdev@vger.kernel.org,
+        ulli.kroll@googlemail.com, mlindner@marvell.com,
+        stephen@networkplumber.org, nbd@nbd.name, john@phrozen.org,
+        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
+        matthias.bgg@gmail.com, grygorii.strashko@ti.com,
+        wei.liu@kernel.org, paul@xen.org,
+        prabhakar.mahadev-lad.rj@bp.renesas.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-omap@vger.kernel.org,
+        xen-devel@lists.xenproject.org
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 01, 2022 at 08:51:17PM +0200, Mauro Rossi wrote:
-> On Tue, Apr 19, 2022 at 6:39 PM Mauro Rossi <issor.oruam@gmail.com> wrote:
-> >
-> > Hi Russell,
-> >
-> > On Mon, Apr 18, 2022 at 12:08 PM Russell King (Oracle)
-> > <linux@armlinux.org.uk> wrote:
-> > >
-> > > On Mon, Apr 18, 2022 at 11:22:12AM +0200, Mauro Rossi wrote:
-> > > > At the final stage of building  Linux 5.18-rc3 with the necessary AOSP
-> > > > changes, I am getting the following building error:
-> > > >
-> > > >   MODPOST modules-only.symvers
-> > > > ERROR: modpost: "__compiletime_assert_344"
-> > > > [drivers/net/phy/marvell10g.ko] undefined!
-> > > > make[2]: *** [/home/utente/r-x86_kernel/kernel/scripts/Makefile.modpost:134:
-> > > > modules-only.symvers] Error 1
-> > > > make[2]: *** Deleting file 'modules-only.symvers'
-> > > > make[1]: *** [/home/utente/r-x86_kernel/kernel/Makefile:1749: modules] Error 2
-> > > > make[1]: *** Waiting for unfinished jobs....
-> > > >
-> > > > It never happened before throughout all my previous android-x86 kernel
-> > > > rc cycle build tests, which spanned from linux version 5.10 to linux
-> > > > version 5.18rc
-> > >
-> > > As far as I'm aware, with mainline kernels, marvell10g builds fine.
-> >
-> > Thanks for response, I will also check that when
-> > https://android.googlesource.com/kernel/common-patches/ becomes
-> > available for kernel-5.18rc(s)
-> >
-> > > I'm not sure how to work back from "__compiletime_assert_344" to
-> > > where the problem could be. The "344" appears to be generated by
-> > > the __COUNTER__ macro - and I don't know how that macro works (debian
-> > > annoyingly don't package the GCC info docs, and the info files I have
-> > > are out of date.)
-> >
-> > Looking at the error printout, it seams indeed that modpost parsed
-> > modules-only.symvers file line-by-line
-> > and (my assumption, correct me if I may be wrong) encountered some
-> > 'undefined!' symbol at line 344 of  modules-only.symvers and pointed
-> > out that marvell10g.ko module is the one associated with the missing
-> > symbol
-> >
-> > I have tried to copy
-> > $OUT/target/product/x86_64/obj/kernel/modules-only.symvers to be able
-> > to inspect which symbol is listed at line 344,
-> > but even with "watch -n 0.1 cp ..." command I am not able to save the
-> > generated modules-only.symvers before it is deleted, therefore I am
-> > not able to inspect line 344
-> >
-> > Is there a way to have modpost modified for printing the symbol
-> > instead of the "indirection" of "__compiletime_assert_344" ?
-> >
-> > As other info, I had to cross compile using prebuilt clang 11.0.2
-> > (kernel version constraint) and set  LLVM_IAS=0 to disable the llvm
-> > integrated assembler to be able to build, but I don't think that
-> > should cause the missing symbol as I don't see any assembler code is
-> > needed to build marvell10g.ko module
-> >
-> > KR
-> > Mauro
-> 
-> Hello,
-> 
-> I am adding script/mod/modpost.c mantainers to consult them, as I am
-> not much familiar with the meaning of the error
-> 
-> I am building the kernel with Android Build System as part of our
-> iso_img target build, gcc based build has always been successful,
-> while llvm based build is not working and generates the following
-> error, which we are not able to interpret.
-> 
-> ERROR: modpost: "__compiletime_assert_344"
-> [drivers/net/phy/marvell10g.ko] undefined!
-> 
-> "__compiletime_assert_344" is obviously not a symbol
-> used/needed/exported by marvell10g.ko
+On Wed, Apr 27, 2022 at 5:41 PM Jakub Kicinski <kuba@kernel.org> wrote:
 
-My guess would be, this is a BUILD_BUG_ON() which is somehow not
-working correctly, but is working sufficiently to stop you using a
-broken kernel.
+> Defining local versions of NAPI_POLL_WEIGHT with the same
+> values in the drivers just makes refactoring harder.
+>
+> Drop the special defines in a bunch of drivers where the
+> removal is relatively simple so grouping into one patch
+> does not impact reviewability.
+>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+> CC: ulli.kroll@googlemail.com
+> CC: linus.walleij@linaro.org
+> CC: mlindner@marvell.com
+> CC: stephen@networkplumber.org
+> CC: nbd@nbd.name
+> CC: john@phrozen.org
+> CC: sean.wang@mediatek.com
+> CC: Mark-MC.Lee@mediatek.com
+> CC: matthias.bgg@gmail.com
+> CC: grygorii.strashko@ti.com
+> CC: wei.liu@kernel.org
+> CC: paul@xen.org
+> CC: prabhakar.mahadev-lad.rj@bp.renesas.com
+> CC: linux-arm-kernel@lists.infradead.org
+> CC: linux-mediatek@lists.infradead.org
+> CC: linux-omap@vger.kernel.org
+> CC: xen-devel@lists.xenproject.org
 
-**
- * compiletime_assert - break build and emit msg if condition is false
- * @condition: a compile-time constant condition to check
- * @msg:       a message to emit if condition is false
- *
- * In tradition of POSIX assert, this macro will break the build if the
- * supplied condition is *false*, emitting the supplied error message if the
- * compiler has support to do so.
- */
-#define compiletime_assert(condition, msg) \
-	_compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+Looks good to me!
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-https://elixir.bootlin.com/linux/v5.18-rc4/source/include/linux/compiler_types.h#L332
-
-# define __compiletime_assert(condition, msg, prefix, suffix)		\
-	do {								\
-		/*							\
-		 * __noreturn is needed to give the compiler enough	\
-		 * information to avoid certain possibly-uninitialized	\
-		 * warnings (regardless of the build failing).		\
-		 */							\
-		__noreturn extern void prefix ## suffix(void)		\
-			__compiletime_error(msg);			\
-		if (!(condition))					\
-			prefix ## suffix();				\
-	} while (0)
-
-It appears the compiler you are using is not able to emit the supplied
-error message, but it is inserting a call to a function which does not
-exist.
-
-What you probably want to do is create the .lst file for marvell10g.c
-and look through the mixed C/Assembly code and find the BUILD_BUG_ON
-which is triggering the issue. It is probably somewhere in an include
-file, not marvell10g itself.
-
-The other possibility is that condition is too complex for your
-compiler, it cannot evaluate it at build time, allowing the optimizer
-to remove the code as impossible to reach. So the compiler has
-generated code to actually evaluate condition and so has the call to
-the function, which is never going to exist.
-
-The same method to debug this applies, generate the .lst file and take
-a look at it.
-
-	Andrew
+Yours,
+Linus Walleij
