@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D7309516152
-	for <lists+netdev@lfdr.de>; Sun,  1 May 2022 05:56:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB785516153
+	for <lists+netdev@lfdr.de>; Sun,  1 May 2022 05:56:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239471AbiEAD7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Apr 2022 23:59:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36406 "EHLO
+        id S239675AbiEAD7z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Apr 2022 23:59:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229829AbiEAD7q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Apr 2022 23:59:46 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F9DC3DA4C;
-        Sat, 30 Apr 2022 20:56:20 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id x23so4684440pff.9;
-        Sat, 30 Apr 2022 20:56:20 -0700 (PDT)
+        with ESMTP id S239646AbiEAD7w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Apr 2022 23:59:52 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B13064EDC8;
+        Sat, 30 Apr 2022 20:56:25 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id w17-20020a17090a529100b001db302efed6so8842852pjh.4;
+        Sat, 30 Apr 2022 20:56:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=YexJgFvpQcfqfZTZS8UGyxjxKNfSDCViBAnAI2GLdq4=;
-        b=ZcGI1Fgtu2kxLFYwNw6YdEhSw5RqVMSFBkvrsGx75b7ivx8u6TucXGja/o86zXtYVL
-         PP0FMqzDL6PQl7J+vVyBjaNjd7KE82rNV23+3/Vwn0bWFol2NfZaLg4BNQlQdo4fbC3p
-         qItbalYMfCwKpD0lByfXaEER1i5/cowzOp9Tt0vjFkm3PFjRow2zUCU6VQdpLn3ToL4d
-         zr/0qC6Z80GSBk5fj85mqgqgk1A0VRqDEbgy47MvQqA/ee4XV/z7v6NXWHM9sO/KZfl+
-         ZN9nJXX4Gkm4cIURo1CB3qswC4Fg1frBXe1tqEyYYhovRlgtlfmj9YQ6/JJlo2F2FwSW
-         O9aQ==
+        bh=nFKK9tbwZ4J1LvHBYQyFT4vsHGk5LucafrRS/Gv18zA=;
+        b=ktOboK1mXTskj8qTSetILJdzrAt3fBKxSpOym4txyAZilYWxeX0LRHga+1QpY/BIFM
+         7KXljDm4rPD8PUu0T6RVX2m8LdRYC1SypNNx0+mAPOekj9u7DqNuGxqJHYHLqa8fKbGg
+         +497gEpFYRo1UorbDUWq7FFYgl2pckvvmu5o59Gu3bmynM8Fa7C4LYjbLj02t6r3uFFN
+         nPGj+8LcaA74IAxdAb1b1Tg59tqoxZMc31uYdZ7wk81OktKKcAggGKSt8MNt0K7hq3Wt
+         hPcDxNneUr1nZtg+2l4gh2oNxyJ8iSdLVk59uC6smn1oXEbZIK7VMhD5+Ejf9bn1X6Wn
+         mjCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=YexJgFvpQcfqfZTZS8UGyxjxKNfSDCViBAnAI2GLdq4=;
-        b=PwLhLGPjCbhmCGU8jFX+H7zPV4Lb3PXIKARiwZ3c4MO9ZvkQfvB09HFOshuufgQo04
-         FEvyQJmPs1Uye/urgTaPk3FhqdBAWkd24DUz/fK0bypOY1IUaHoEvo1f0NNKp0+Arw9F
-         QVUqs2oTml4AbH3Tq8edtFnGYLJGDn7uApt8zCuvS45gk0BSmfGK0I2/MGv9rEUWEsZa
-         cFwDCdvThjPKhSowOqUbNG6u7sTB1sNs+Xvf6zC7wiRYh42LsbT678PZxCfyWjQlYgSa
-         qQt/HliFRfr8A7uhukFcJ/hN7dtqB7+Fne8lGvLZYya9fn+Q3M6x93FaXy7ToeEAlLSW
-         TF+A==
-X-Gm-Message-State: AOAM532p/rvOlMcQ3t2wyI31y+NwxtH4LdH17Qc6onffG+nYkJaDVAOZ
-        22FwyuYKuGUGurRb/wtUNIfAAGyM9QfLhA==
-X-Google-Smtp-Source: ABdhPJym9Ixf46gEWBdp+sJXAh1SqJZ420G7wDrEb8coCxMvE2SrhWELDmWLmufgYeequrJ0WsWrjw==
-X-Received: by 2002:a63:8549:0:b0:3ab:3197:3efc with SMTP id u70-20020a638549000000b003ab31973efcmr4946732pgd.137.1651377379371;
-        Sat, 30 Apr 2022 20:56:19 -0700 (PDT)
+        bh=nFKK9tbwZ4J1LvHBYQyFT4vsHGk5LucafrRS/Gv18zA=;
+        b=mwktS2TBoXsIHehGoM9L7JBXaOa7GJ/Hyw3APLQyv411zgmpQ8Gaetd+OmzP2Rp8h0
+         sBwzxkd0Yv4c7EcGf7qWFqT7xhO3D4I9fEzQM4Z9AzUI1ylFdBIt9GqL3b3RSrRiieQ4
+         vtYAH7FzizbdLY8U5GIaNUoE/HhSjfrzh+XHYkQ7GdlaiiuuW72PQrxm0N/VS7nfOkj0
+         mxQJvMd5FeVKodQh0pUidta6mxgE3SJr+EGLEI1ZnLTBChYc17Tn2Fg5jqBHSjIoAdB0
+         k8U2QnUaLE5t3s3MWNsnKksx7m/Um7GxZ+pPA2KI15OZGRMJzc42Ie/9y/zafOmkgkZW
+         PLrg==
+X-Gm-Message-State: AOAM531qymp0ET1B/iFDP19gA4sMRM2ggXXNcPnCPiaX1F2heFw4lQhB
+        +SCJJLyqUKlNG9ifQOo/0KF3giPyaRiQzA==
+X-Google-Smtp-Source: ABdhPJwHYKQ/ZlsEGXA6r5p6xTcoS10xAS/6qA8qeCPePdAImnjtQ9Sv5DA2y4zc51ufizRS4D1gbQ==
+X-Received: by 2002:a17:90a:730c:b0:1d9:3f5:9a00 with SMTP id m12-20020a17090a730c00b001d903f59a00mr6829993pjk.109.1651377384932;
+        Sat, 30 Apr 2022 20:56:24 -0700 (PDT)
 Received: from bogon.xiaojukeji.com ([111.201.149.168])
-        by smtp.gmail.com with ESMTPSA id q9-20020a654949000000b003c1d946af6csm1767863pgs.32.2022.04.30.20.56.14
+        by smtp.gmail.com with ESMTPSA id q9-20020a654949000000b003c1d946af6csm1767863pgs.32.2022.04.30.20.56.19
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 30 Apr 2022 20:56:18 -0700 (PDT)
+        Sat, 30 Apr 2022 20:56:24 -0700 (PDT)
 From:   xiangxia.m.yue@gmail.com
 To:     linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org
 Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
@@ -68,9 +68,9 @@ Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
         Lorenz Bauer <lmb@cloudflare.com>,
         Akhmat Karakotov <hmukos@yandex-team.ru>
-Subject: [PATCH v5 2/3] net: sysctl: introduce sysctl SYSCTL_THREE
-Date:   Sun,  1 May 2022 11:55:23 +0800
-Message-Id: <20220501035524.91205-3-xiangxia.m.yue@gmail.com>
+Subject: [PATCH v5 3/3] selftests/sysctl: add sysctl macro test
+Date:   Sun,  1 May 2022 11:55:24 +0800
+Message-Id: <20220501035524.91205-4-xiangxia.m.yue@gmail.com>
 X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 In-Reply-To: <20220501035524.91205-1-xiangxia.m.yue@gmail.com>
 References: <20220501035524.91205-1-xiangxia.m.yue@gmail.com>
@@ -87,26 +87,6 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-
-This patch introdues the SYSCTL_THREE.
-
-KUnit:
-[00:10:14] ================ sysctl_test (10 subtests) =================
-[00:10:14] [PASSED] sysctl_test_api_dointvec_null_tbl_data
-[00:10:14] [PASSED] sysctl_test_api_dointvec_table_maxlen_unset
-[00:10:14] [PASSED] sysctl_test_api_dointvec_table_len_is_zero
-[00:10:14] [PASSED] sysctl_test_api_dointvec_table_read_but_position_set
-[00:10:14] [PASSED] sysctl_test_dointvec_read_happy_single_positive
-[00:10:14] [PASSED] sysctl_test_dointvec_read_happy_single_negative
-[00:10:14] [PASSED] sysctl_test_dointvec_write_happy_single_positive
-[00:10:14] [PASSED] sysctl_test_dointvec_write_happy_single_negative
-[00:10:14] [PASSED] sysctl_test_api_dointvec_write_single_less_int_min
-[00:10:14] [PASSED] sysctl_test_api_dointvec_write_single_greater_int_max
-[00:10:14] =================== [PASSED] sysctl_test ===================
-
-./run_kselftest.sh -c sysctl
-...
-ok 1 selftests: sysctl: sysctl.sh
 
 Cc: Luis Chamberlain <mcgrof@kernel.org>
 Cc: Kees Cook <keescook@chromium.org>
@@ -129,139 +109,115 @@ Cc: Lorenz Bauer <lmb@cloudflare.com>
 Cc: Akhmat Karakotov <hmukos@yandex-team.ru>
 Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 ---
- fs/proc/proc_sysctl.c          | 2 +-
- include/linux/sysctl.h         | 9 +++++----
- net/core/sysctl_net_core.c     | 3 +--
- net/ipv4/sysctl_net_ipv4.c     | 3 +--
- net/ipv6/sysctl_net_ipv6.c     | 3 +--
- net/netfilter/ipvs/ip_vs_ctl.c | 4 +---
- 6 files changed, 10 insertions(+), 14 deletions(-)
+ lib/test_sysctl.c                        | 32 ++++++++++++++++++++++++
+ tools/testing/selftests/sysctl/sysctl.sh | 23 +++++++++++++++++
+ 2 files changed, 55 insertions(+)
 
-diff --git a/fs/proc/proc_sysctl.c b/fs/proc/proc_sysctl.c
-index 7d9cfc730bd4..5851c2a92c0d 100644
---- a/fs/proc/proc_sysctl.c
-+++ b/fs/proc/proc_sysctl.c
-@@ -26,7 +26,7 @@ static const struct file_operations proc_sys_dir_file_operations;
- static const struct inode_operations proc_sys_dir_operations;
+diff --git a/lib/test_sysctl.c b/lib/test_sysctl.c
+index a5a3d6c27e1f..9a564971f539 100644
+--- a/lib/test_sysctl.c
++++ b/lib/test_sysctl.c
+@@ -38,6 +38,7 @@
  
- /* shared constants to be used in various sysctls */
--const int sysctl_vals[] = { -1, 0, 1, 2, 4, 100, 200, 1000, 3000, INT_MAX, 65535 };
-+const int sysctl_vals[] = { 0, 1, 2, 3, 4, 100, 200, 1000, 3000, INT_MAX, 65535, -1 };
- EXPORT_SYMBOL(sysctl_vals);
+ static int i_zero;
+ static int i_one_hundred = 100;
++static int match_int_ok = 1;
  
- const unsigned long sysctl_long_vals[] = { 0, 1, LONG_MAX };
-diff --git a/include/linux/sysctl.h b/include/linux/sysctl.h
-index 6353d6db69b2..80263f7cdb77 100644
---- a/include/linux/sysctl.h
-+++ b/include/linux/sysctl.h
-@@ -38,10 +38,10 @@ struct ctl_table_header;
- struct ctl_dir;
- 
- /* Keep the same order as in fs/proc/proc_sysctl.c */
--#define SYSCTL_NEG_ONE			((void *)&sysctl_vals[0])
--#define SYSCTL_ZERO			((void *)&sysctl_vals[1])
--#define SYSCTL_ONE			((void *)&sysctl_vals[2])
--#define SYSCTL_TWO			((void *)&sysctl_vals[3])
-+#define SYSCTL_ZERO			((void *)&sysctl_vals[0])
-+#define SYSCTL_ONE			((void *)&sysctl_vals[1])
-+#define SYSCTL_TWO			((void *)&sysctl_vals[2])
-+#define SYSCTL_THREE			((void *)&sysctl_vals[3])
- #define SYSCTL_FOUR			((void *)&sysctl_vals[4])
- #define SYSCTL_ONE_HUNDRED		((void *)&sysctl_vals[5])
- #define SYSCTL_TWO_HUNDRED		((void *)&sysctl_vals[6])
-@@ -51,6 +51,7 @@ struct ctl_dir;
- 
- /* this is needed for the proc_dointvec_minmax for [fs_]overflow UID and GID */
- #define SYSCTL_MAXOLDUID		((void *)&sysctl_vals[10])
-+#define SYSCTL_NEG_ONE			((void *)&sysctl_vals[11])
- 
- extern const int sysctl_vals[];
- 
-diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
-index 3a0ce309ffcd..195ca5c28771 100644
---- a/net/core/sysctl_net_core.c
-+++ b/net/core/sysctl_net_core.c
-@@ -25,7 +25,6 @@
- 
- #include "dev.h"
- 
--static int three = 3;
- static int int_3600 = 3600;
- static int min_sndbuf = SOCK_MIN_SNDBUF;
- static int min_rcvbuf = SOCK_MIN_RCVBUF;
-@@ -553,7 +552,7 @@ static struct ctl_table net_core_table[] = {
+ struct test_sysctl_data {
+ 	int int_0001;
+@@ -95,6 +96,13 @@ static struct ctl_table test_table[] = {
  		.mode		= 0644,
- 		.proc_handler	= proc_dointvec_minmax,
- 		.extra1		= SYSCTL_ZERO,
--		.extra2		= &three,
-+		.extra2		= SYSCTL_THREE,
+ 		.proc_handler	= proc_dointvec,
  	},
++	{
++		.procname	= "match_int",
++		.data		= &match_int_ok,
++		.maxlen		= sizeof(match_int_ok),
++		.mode		= 0444,
++		.proc_handler	= proc_dointvec,
++	},
  	{
- 		.procname	= "high_order_alloc_disable",
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 9ff60a389cd0..cd448cdd3b38 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -20,7 +20,6 @@
- #include <net/protocol.h>
- #include <net/netevent.h>
+ 		.procname	= "boot_int",
+ 		.data		= &test_data.boot_int,
+@@ -132,6 +140,30 @@ static struct ctl_table_header *test_sysctl_header;
  
--static int three __maybe_unused = 3;
- static int tcp_retr1_max = 255;
- static int ip_local_port_range_min[] = { 1, 1 };
- static int ip_local_port_range_max[] = { 65535, 65535 };
-@@ -1056,7 +1055,7 @@ static struct ctl_table ipv4_net_table[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_fib_multipath_hash_policy,
- 		.extra1		= SYSCTL_ZERO,
--		.extra2		= &three,
-+		.extra2		= SYSCTL_THREE,
- 	},
- 	{
- 		.procname	= "fib_multipath_hash_fields",
-diff --git a/net/ipv6/sysctl_net_ipv6.c b/net/ipv6/sysctl_net_ipv6.c
-index 560c48d0ddb7..94a0a294c6a1 100644
---- a/net/ipv6/sysctl_net_ipv6.c
-+++ b/net/ipv6/sysctl_net_ipv6.c
-@@ -23,7 +23,6 @@
- #endif
- #include <linux/ioam6.h>
+ static int __init test_sysctl_init(void)
+ {
++	int i;
++
++	struct {
++		int defined;
++		int wanted;
++	} match_int[] = {
++		{.defined = *(int *)SYSCTL_ZERO,	.wanted = 0},
++		{.defined = *(int *)SYSCTL_ONE,		.wanted = 1},
++		{.defined = *(int *)SYSCTL_TWO,		.wanted = 2},
++		{.defined = *(int *)SYSCTL_THREE,	.wanted = 3},
++		{.defined = *(int *)SYSCTL_FOUR,	.wanted = 4},
++		{.defined = *(int *)SYSCTL_ONE_HUNDRED, .wanted = 100},
++		{.defined = *(int *)SYSCTL_TWO_HUNDRED,	.wanted = 200},
++		{.defined = *(int *)SYSCTL_ONE_THOUSAND, .wanted = 1000},
++		{.defined = *(int *)SYSCTL_THREE_THOUSAND, .wanted = 3000},
++		{.defined = *(int *)SYSCTL_INT_MAX,	.wanted = INT_MAX},
++		{.defined = *(int *)SYSCTL_MAXOLDUID,	.wanted = 65535},
++		{.defined = *(int *)SYSCTL_NEG_ONE,	.wanted = -1},
++	};
++
++	for (i = 0; i < ARRAY_SIZE(match_int); i++)
++		if (match_int[i].defined != match_int[i].wanted)
++			match_int_ok = 0;
++
+ 	test_data.bitmap_0001 = kzalloc(SYSCTL_TEST_BITMAP_SIZE/8, GFP_KERNEL);
+ 	if (!test_data.bitmap_0001)
+ 		return -ENOMEM;
+diff --git a/tools/testing/selftests/sysctl/sysctl.sh b/tools/testing/selftests/sysctl/sysctl.sh
+index 19515dcb7d04..f50778a3d744 100755
+--- a/tools/testing/selftests/sysctl/sysctl.sh
++++ b/tools/testing/selftests/sysctl/sysctl.sh
+@@ -40,6 +40,7 @@ ALL_TESTS="$ALL_TESTS 0004:1:1:uint_0001"
+ ALL_TESTS="$ALL_TESTS 0005:3:1:int_0003"
+ ALL_TESTS="$ALL_TESTS 0006:50:1:bitmap_0001"
+ ALL_TESTS="$ALL_TESTS 0007:1:1:boot_int"
++ALL_TESTS="$ALL_TESTS 0008:1:1:match_int"
  
--static int three = 3;
- static int flowlabel_reflect_max = 0x7;
- static int auto_flowlabels_max = IP6_AUTO_FLOW_LABEL_MAX;
- static u32 rt6_multipath_hash_fields_all_mask =
-@@ -171,7 +170,7 @@ static struct ctl_table ipv6_table_template[] = {
- 		.mode		= 0644,
- 		.proc_handler   = proc_rt6_multipath_hash_policy,
- 		.extra1		= SYSCTL_ZERO,
--		.extra2		= &three,
-+		.extra2		= SYSCTL_THREE,
- 	},
- 	{
- 		.procname	= "fib_multipath_hash_fields",
-diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
-index 7f645328b47f..efab2b06d373 100644
---- a/net/netfilter/ipvs/ip_vs_ctl.c
-+++ b/net/netfilter/ipvs/ip_vs_ctl.c
-@@ -1767,8 +1767,6 @@ static int ip_vs_zero_all(struct netns_ipvs *ipvs)
+ function allow_user_defaults()
+ {
+@@ -785,6 +786,27 @@ sysctl_test_0007()
+ 	return $ksft_skip
+ }
  
- #ifdef CONFIG_SYSCTL
++sysctl_test_0008()
++{
++	TARGET="${SYSCTL}/match_int"
++	if [ ! -f $TARGET ]; then
++		echo "Skipping test for $TARGET as it is not present ..."
++		return $ksft_skip
++	fi
++
++	echo -n "Testing if $TARGET is matched in kernel"
++	ORIG_VALUE=$(cat "${TARGET}")
++
++	if [ $ORIG_VALUE -ne 1 ]; then
++		echo "TEST FAILED"
++		rc=1
++		test_rc
++	fi
++
++	echo "ok"
++	return 0
++}
++
+ list_tests()
+ {
+ 	echo "Test ID list:"
+@@ -800,6 +822,7 @@ list_tests()
+ 	echo "0005 x $(get_test_count 0005) - tests proc_douintvec() array"
+ 	echo "0006 x $(get_test_count 0006) - tests proc_do_large_bitmap()"
+ 	echo "0007 x $(get_test_count 0007) - tests setting sysctl from kernel boot param"
++	echo "0008 x $(get_test_count 0008) - tests sysctl macro values match"
+ }
  
--static int three = 3;
--
- static int
- proc_do_defense_mode(struct ctl_table *table, int write,
- 		     void *buffer, size_t *lenp, loff_t *ppos)
-@@ -1977,7 +1975,7 @@ static struct ctl_table vs_vars[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec_minmax,
- 		.extra1		= SYSCTL_ZERO,
--		.extra2		= &three,
-+		.extra2		= SYSCTL_THREE,
- 	},
- 	{
- 		.procname	= "nat_icmp_send",
+ usage()
 -- 
 2.27.0
 
