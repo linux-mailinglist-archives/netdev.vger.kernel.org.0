@@ -2,200 +2,381 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C7EB551772B
-	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 21:09:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE525517776
+	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 21:31:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232094AbiEBTMq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 May 2022 15:12:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42162 "EHLO
+        id S1383663AbiEBTe0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 May 2022 15:34:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231817AbiEBTMn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 15:12:43 -0400
-Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2107.outbound.protection.outlook.com [40.107.114.107])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51BE9DE9A;
-        Mon,  2 May 2022 12:09:13 -0700 (PDT)
+        with ESMTP id S1380401AbiEBTeZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 15:34:25 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2066.outbound.protection.outlook.com [40.107.92.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC0A62CE
+        for <netdev@vger.kernel.org>; Mon,  2 May 2022 12:30:54 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dMzfi22gHcJm+vIwPCpRZwjkKHGgwZn2GEtQovImP/XTr9jAuCWRUeIXfF12n+JtX9mGCH0jC8JTKNwqkfjdBiolmfprV9j2TMSOvSot1d3DFaxI3gXzIcdGQo8Lq+0W95qFxb8OjToI2ftP3zK2TUFHKLa56P7jQ3WruFbao60BG/F3vMDRxG2vabELcQJV8SzhvlceCBUCw5pxcfXzZ0/jH3WTwfivwwf0LhmEzTfGoultd/vbz+OiOVvhFlf4rhz/jjj4gmVF7VJIZJZtvwjxe9h/ECaJPpUpaBOwoQ2jB15wrcWWEn2F0xkoW22Or2LHmNuuI15bvtl8KkIrSQ==
+ b=E+LWpYV5S7bEStFUUJgG8VGk7FupgPlVuaZZsuTKIVEXSKXh/L9jg2m97YI4U9qlpOD8J4/Oepw/1rzLUBfxW2gRjjNAii18+YrSJ4mhEjnxvQV6swxb9jO2diPgVxEQcWqNBdz35j8N8Msc737vAznbWUfTg3uYiU8nTI4CqC1ez5smKaPI1qSvmOpMiCQst4bxOXZRRx0mqGxrTECF/yYD8MtIBZW1B+clc1q96Aq8zMX6mQyJTT3Ugv3h1kvd5/k6L/A44l7kIMiT3I6wGnUqhUgA7DoLJAB0XRZBE+FwWMKEHPC/5QRpRRevUmRgFWF5RzRch952cKrH7Z68/g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mRnWBh+RPFONWFZTMYXeKUWOe4hFTfgmGy+nwq8DLiU=;
- b=EpuyEylfDsGlTlLreRXzZLbdIhlvedxo8hir3bgcMZEH719FdemnrVEissYmrRo7Cw73v/zBV9qIDZQ7wNJS3pLhOvyTjWCKmS2+gpZhUOEWVLjY0vW6yaJRr8tyN6W2HylO0tRXGWQmyp3gLfIUuu4qp7fkdymDPt9lnOp84/X0Pj0tmFtf04ruqX6vww11UzEAkIqF5lBKD2i3oYSJJpahaKrwiIKTB3eyB511hbExV6932sIe/OUmX0hpeCDQul/7bBdtDQX9IaExGg044JYIR5RrjLYKPZk5pYVsunislgO9LZIP/hM0NlEn/fOMrpGA8IRgtutZHCLYeQGvdw==
+ bh=AlxthkIQ8AMvawXNj9OmkoYCOyB8We4jU5BXpX73vKc=;
+ b=aexoFfUhRdF/gc+U/sKB92bGucywuOrMMCIldFiuq8UD2zjDvWfrURYjtvv6cYGghvgSwdi/cG2PgWvMUDCpnxSNtekHmOX4qfEm0hdXkIRfvuUaPHkezBNo+YYSxoNlp1fsxwzrzDblX4A6/CQQCzlD3UwjABoCeCSnLZ5P6EoynNB+McC09GI0nTTMagZX8mjl/3c4m/7spohwZzUSQGsuFtyxLOimlsYvkaelPLir1MUYb4UdepeEGhdSkKA1btNV6BxVt1m7kJy2KBHzADmzddxXBHb5HOLSYHTZMoNQwuWsFAkoFX6Scv5UacQKH2aDUJlLxbQH1enFC54gqw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
- s=selector1;
+ smtp.mailfrom=xilinx.com; dmarc=pass action=none header.from=xilinx.com;
+ dkim=pass header.d=xilinx.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mRnWBh+RPFONWFZTMYXeKUWOe4hFTfgmGy+nwq8DLiU=;
- b=io3NEP/Xz0eUrU0fQYqqWx9uOnSld5Y/G9q3LnM4M5JidPaV412rOuWani7bLbgWRhoLokgnK+Gj/nhP/fK1iVR5+PuCdtdrVyxi8IA8gVyM3xgqRPmkiM63FVscCBWz3Kjce25eUkG4qL01w1FZeKMPsBE8LYRojnxfIPEX9PI=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=renesas.com;
-Received: from OS3PR01MB6593.jpnprd01.prod.outlook.com (2603:1096:604:101::7)
- by TYCPR01MB9570.jpnprd01.prod.outlook.com (2603:1096:400:191::11) with
+ bh=AlxthkIQ8AMvawXNj9OmkoYCOyB8We4jU5BXpX73vKc=;
+ b=s/Jns7+A8P/58veNT+I7J1dqBIYq410AhJ0YeI6JUGfn8raJu298HqqflbQ3VMEs9TFJ480BtbVPBygVD517u5FFlbsuoQ9qXnORWSqAS8c7SZMDGBdDI/AfoAP328nSmES6mltdU4y+wb2bJzGRPpUVfh46Cwv/w7YUY/T7xXc=
+Received: from SA1PR02MB8560.namprd02.prod.outlook.com (2603:10b6:806:1fb::24)
+ by DM5PR02MB2681.namprd02.prod.outlook.com (2603:10b6:3:10b::8) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.13; Mon, 2 May
- 2022 19:09:11 +0000
-Received: from OS3PR01MB6593.jpnprd01.prod.outlook.com
- ([fe80::a07c:4b38:65f3:6663]) by OS3PR01MB6593.jpnprd01.prod.outlook.com
- ([fe80::a07c:4b38:65f3:6663%9]) with mapi id 15.20.5206.012; Mon, 2 May 2022
- 19:09:11 +0000
-From:   Min Li <min.li.xe@renesas.com>
-To:     richardcochran@gmail.com, lee.jones@linaro.org
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Min Li <min.li.xe@renesas.com>
-Subject: [PATCH net v3 2/2] ptp: ptp_clockmatrix: return -EBUSY if phase pull-in is in progress
-Date:   Mon,  2 May 2022 15:08:50 -0400
-Message-Id: <1651518530-25128-2-git-send-email-min.li.xe@renesas.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1651518530-25128-1-git-send-email-min.li.xe@renesas.com>
-References: <1651518530-25128-1-git-send-email-min.li.xe@renesas.com>
-Content-Type: text/plain
-X-ClientProxiedBy: YQBPR0101CA0306.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:c01:6d::28) To OS3PR01MB6593.jpnprd01.prod.outlook.com
- (2603:1096:604:101::7)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.17; Mon, 2 May
+ 2022 19:30:52 +0000
+Received: from SA1PR02MB8560.namprd02.prod.outlook.com
+ ([fe80::94f0:32be:367b:1798]) by SA1PR02MB8560.namprd02.prod.outlook.com
+ ([fe80::94f0:32be:367b:1798%6]) with mapi id 15.20.5186.028; Mon, 2 May 2022
+ 19:30:51 +0000
+From:   Radhey Shyam Pandey <radheys@xilinx.com>
+To:     Robert Hancock <robert.hancock@calian.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        Michal Simek <michals@xilinx.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Harini Katakam <harinik@xilinx.com>
+Subject: RE: [PATCH net-next] net: axienet: Use NAPI for TX completion path
+Thread-Topic: [PATCH net-next] net: axienet: Use NAPI for TX completion path
+Thread-Index: AQHYXBiXQ4HEYWr9E0iASNxJEYHZsa0LuqhA
+Date:   Mon, 2 May 2022 19:30:51 +0000
+Message-ID: <SA1PR02MB856018755A47967B5842A4C4C7C19@SA1PR02MB8560.namprd02.prod.outlook.com>
+References: <20220429222835.3641895-1-robert.hancock@calian.com>
+In-Reply-To: <20220429222835.3641895-1-robert.hancock@calian.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=xilinx.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 1b43538a-d3aa-4279-da19-08da2c7244b2
+x-ms-traffictypediagnostic: DM5PR02MB2681:EE_
+x-microsoft-antispam-prvs: <DM5PR02MB2681E4F7BC2AFCF8F5649145C7C19@DM5PR02MB2681.namprd02.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 7HJ4EqWK40gpQI3AquZ8EMwugLajnOUDoiEZNs8SNxIZdkgI9K2nO4W+wv9XBPW5EkKPxvEcQeWseN5rBCyLGqg/zvsj4VjjJ7cwcIk9bvHcCFKUgcZ94GD4BzSmBgClEgYrlY19QqdxImDDeoSOS31tvnEGutsQJL7lLPXGDQC3S44pABUicX+5mcDunZxQcRIUj9o042YEm6mHiX7COBsfZ8WSlM0DoeO+9Ze369yNIXQ1evUs034x1OYiLiyVb+34+ptlp8Nq6kCUnFtHJSvtlDB/EqIoB8hwtVSMPMGgNtXfgllyYfeJEx3Lsex6wjsc7lSN4vkarzzAntTC5aaaVKXw2uqMjM7Tts5f7oOj3dgTjvTok4gIaJ4gqd0YtgA1erwZfyi4qfTpA0O5Z7aOMiVGPq9LOoMjPPPX/ySyotdBCfGUCSBNa3eGDLtaDwh4X1FbSv14GqSLURjlKlzr1yqLOrtfx14w8hRVj2dwjYkcsdgW1ZYmVQpr1miEf5PUrh7wuNtimakWklxcbxx3NdKikmlz98pgjtRTR5j0Nq+0JpcfM5k0ejQeo8JGeJN5yQmc/DGJ4OXZ6yvjdBa47u9htvcewGpz9YewI1KjhELljyJ4Na+tFAyCuby5yfD28uvfpI6NjQ8tCPkVmNm2RNr1J+5j5vynOdaCJzzVIxuyHl+h0p6TtPvU5B+7iXNv2VqnFfhr9lHeYDVVBID/AA7LnzEKBZ5p17e6GvA=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR02MB8560.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(4326008)(8676002)(2906002)(64756008)(86362001)(66476007)(66446008)(66556008)(66946007)(52536014)(71200400001)(316002)(8936002)(33656002)(5660300002)(122000001)(38070700005)(38100700002)(76116006)(508600001)(54906003)(110136005)(83380400001)(186003)(6506007)(9686003)(107886003)(55016003)(53546011)(7696005)(375104004);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 2
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?CONZzYiT4KGMmEfpMwWHPqqIZYziB3pS4E0q4azraI5OD4VlMmPMi/06DCaV?=
+ =?us-ascii?Q?pzxx312/1St4plbluurvdBBst20GeRwPc9bDsw71KwPzCNthR3ZmFK2iMB9L?=
+ =?us-ascii?Q?A+pMTM8wQa8oWY/yBdYr7/ICzyGPoqSexSat+tKstau2T62pMoA55joP2vTH?=
+ =?us-ascii?Q?2LdYQkKvRom65C4+uT1Fm0Y8wUtZ5SpknetGSgqihDBP4gLGYHOVi3T31or9?=
+ =?us-ascii?Q?vIN0BGHTgso7+g8bf6+PR3U35/aCG1TyZSgrFvHujs7iFs80ivxo6AD6MmeN?=
+ =?us-ascii?Q?ZxVUe/DEOLtjwbcJ0CV0ldfuCzrBO/vIJPJlc0biPXKk/3hJmrHOh0fzkwLX?=
+ =?us-ascii?Q?InAeiWMUoXvOJ1oPGQ9gbDICNfodkvsiEoCkUYcobvysvrVc4sK4zFI8ej1e?=
+ =?us-ascii?Q?OxpkHf4w1mu4dcWxpxyps1Vsdz7YwE7G998r4fgOjm/7hagf141XDfFpdTBV?=
+ =?us-ascii?Q?3Zg99/ZrDVySnm9u9AHJBxh5+LH0NCqeY8HjLUSVB0gHTQCenkJ9y4Vfz8Is?=
+ =?us-ascii?Q?dZnX9ceiNciK2J4oFzSNWFLjWOV/97DJXWdhFpWmGc02bQi1HkwzmqiBresN?=
+ =?us-ascii?Q?zoU6Ci/APDPye4MljH+JN7ODLRqXsQjuY+QOb+pjIp83vVO7hztqKrg3/Qxs?=
+ =?us-ascii?Q?n5P2+NJh2ijnnL3L3TVwo0qD1J07VnjJmPcjNfBrBFpSa5fVl/6qTpFZ1aBv?=
+ =?us-ascii?Q?huC6QTzd8JBUje3ql9J9i/+a+sfWmytI+Rz6Ic6tPWs74VYtPC+kOD6CpG6G?=
+ =?us-ascii?Q?IHq8rKjSFH4eTY57zahp8eiI3dY6AO/AnBCGvP2x29b6WwCeRf4CashCbCQs?=
+ =?us-ascii?Q?D7pV1UWEXb9NiTO8ucK4Fkg/Xe0L9AtGMFqSDPYoDKj/LA6odUV2hYClLjQB?=
+ =?us-ascii?Q?Go8CT28V24j++VE7xGOxika1afU118N+obMqFDHkyQrbKMs049O9gui0pnhl?=
+ =?us-ascii?Q?bSoUmKyx4/hGSpKedQJArh+WxtWhgj01IOuGQxJpWzU4NffMb0zPmsJDq9+C?=
+ =?us-ascii?Q?tyIecOLCGmgxqeW0Gbic83BPHbm/6sapgEZ2QF2CtktHBZkAPT2tz+nWOVk5?=
+ =?us-ascii?Q?Ltjt26mOEBFf/6P9yn/0CNP7FvO3GPmppPpLXfaO5bV6ReDWXkNmshFFGG3k?=
+ =?us-ascii?Q?n8ICpdbw1Yb5n/W5C/Kiwf5hzM97+spXVvx81rDprpUkzCeAdPjsx5XsHbN+?=
+ =?us-ascii?Q?JPf4kU9cJttb8bOlj6JX5TbjjLMQVyhSshhG04N9o+tCsQtlg5kGnSi5K9Wx?=
+ =?us-ascii?Q?HhM5PxTyehjUiRvQA25y3tE6u7ykQpLbaVhxkJ8z04AB7S3m91MJ0hprsR3X?=
+ =?us-ascii?Q?+CKL4RP4iI/EehM2BfEnBFv2IC6qC24+HOmZq48q6yXLlIGiIAuj20CTAsnN?=
+ =?us-ascii?Q?yTVm/KhmwAeMclUwt0FDKcXavnQhiGQp+MvZik5u9/QDUcepHumFSo9Tq8Tr?=
+ =?us-ascii?Q?O/DAPqCMny1GDk9ngrIHYxDNoBgfz9WPoEMjVzG7ONk7tp9Q0Ouk5zIatjE5?=
+ =?us-ascii?Q?oUHyM7IhRK1AnT6L6r809KJTZEChnJf5mYUG57l9kIEu+yTvSxNe6AzyTD6u?=
+ =?us-ascii?Q?hKLfCcDRvUzErAXHIXNxuyycpad7vrdMjm1NYUbZkaep5CZ6PBK3wd2+A3GR?=
+ =?us-ascii?Q?LDJs/RO2zEzril8pzxHvPJ3XMqli0MAFHCxh7Wls6QYBZRsnXqrjbhT+2cYg?=
+ =?us-ascii?Q?mEX+mEEX5+0JWXlP01LnFcICmdjuENJTFd7i32TQi8ZkinJ8cwI/qEnHrTjl?=
+ =?us-ascii?Q?j295CszGnrIrV9b+jFO+O9A335ziEhOJhkSSx0U4gpSIM/plQnpVDFHR+p+D?=
+x-ms-exchange-antispam-messagedata-1: Rs8vSIJZQG3c0g==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 616d6c87-31f8-4866-444f-08da2c6f3d88
-X-MS-TrafficTypeDiagnostic: TYCPR01MB9570:EE_
-X-Microsoft-Antispam-PRVS: <TYCPR01MB9570E365627FE3CD28C2C0DDBAC19@TYCPR01MB9570.jpnprd01.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 64wRGYfXDw+kzQjiz7s39RPUtS84DpOZbSm/ohDZAisl5yuPNhI2WpswrCLBGOb82tZdmhBLfTX/5ZvoWbR57nVHwXFricFpSK8aInIdciMS8tbuWQS9ru9cg64egXT3D1UPMiPYxlV+SNWdhVRGfb9dWApM8Yvbl9fL2u2RRV/8nIEH7r453taR1S0TlE8X5xqJDhmbCSuDWm5vzxXDM8cbB4jJ9SZwG92HPBrnxgk/pXBFJvv7ZswJP+8nJ55TjswR4mNC1YI0Ee7oF+aPpGxzQ1HaM6IqguopF3mjDo0Dj/PIE5AUNPfuQTXlMF7eot348E8/r4+SE8NyPYqHMarwZSDql97dHmvXt7i6xiFcbYzNJSHwUbtUI3CDR3FajwauaBost5JpjqatwhxyR+J1wnCpUo4gGj0jjkSrCppTviB3bGuT3S28IE+CU+e7OfmMLXyC/m7dJIF5L7Z8eBNAOIRRuMtO08s9FYwuBxPnWU4Mo+83IUoU035farOugZLPGXy6Zj6DZbm/RRXAHVwLtiaUQesgxLAmTsir1cHFjZdMfrujWVMszZVAxsKnaolfzhM/tqYzcNYL1+Wsdzm/TX+gLsfpJAOhlTFoaGBTENpmHuyJbQ6CeKSHHF/pElEu7zFLzVLQPGpl43jKndY/2q+eRK6mwjLbLVu7vcJSJKEG1ed6ud82mVuPmuIvrQxewRxwQCQ4y6s0/aVeTw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS3PR01MB6593.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(4326008)(66476007)(508600001)(8676002)(66556008)(83380400001)(2616005)(8936002)(6486002)(66946007)(86362001)(36756003)(2906002)(316002)(52116002)(6506007)(6666004)(38350700002)(6512007)(38100700002)(26005)(5660300002)(107886003)(186003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?kL95XJfq3L2RcKHyPql3wwFDAxuzB3hZ/e6pPTOpMg5MWuyQwyPXdzvwIjo+?=
- =?us-ascii?Q?XGqwMercyIzZHdv9ZnLa08Kc+I5ALpTNx7sHLAnxK8GanhSqIB3qsThewqIE?=
- =?us-ascii?Q?Mk0STDbxgHiWWrb/rWjQLvwHjk7e/zWYr5/10ahq89Rr43REQfyV2FNreqTp?=
- =?us-ascii?Q?7+04ZELsP2EzKdv7pHjDuAOS7QnatEsqTSv74JVHoOFkczEImzfo8lTeVSrF?=
- =?us-ascii?Q?8WduYV+TtbgRE4AAYmYnSwH86maTEZpy4rMDz59I5oQNKLfBI3Z8b0SmB2LG?=
- =?us-ascii?Q?KNLxENyxhkg/sQLPYNbyvR+RY9mliph0LQOaC4lrpcFdrX6ZeSu5CZA6S0pF?=
- =?us-ascii?Q?WHLRmcRVxLCk6hwC7W1Wcg5gIPgrG5FbDz4mBfFOy/QeHHRSeNQZrnPxQ1I4?=
- =?us-ascii?Q?sIJV3jUa8g8PQzdZNhi3RveIDLKmkm7fOEOW2DCFmmC0mqbbaBFCc9nhzUS1?=
- =?us-ascii?Q?kc5rGje2m5x8Udhp7j2fiBLN4HMeKUWGhv8FMaQ3FAkAI/KBzcWknV8xCQKt?=
- =?us-ascii?Q?epLvZituuMTUqQDJPoNGQIgPF8lu+wS8fcbblSBR0R/sy++lAbkpVy6KehaC?=
- =?us-ascii?Q?5mPmkTmpqDivLm/CWOq/yYeDCnr94rny5okeRUZTEvu+8/FwM5Hgb4AI6UBV?=
- =?us-ascii?Q?aqYx/BMWq8YsVz+DghNGAgXCIvc5gPBHGYu+xwpKo7s/wibDMdiZb49ai7KF?=
- =?us-ascii?Q?E9xUeLn7bx6H/MLkUqIH+D44OLPuzgwutk4VpsN++IMLxr/alFl7qfwwDCCh?=
- =?us-ascii?Q?qcrMFGAnuwYY3cPHS62b/6cZcU/7TfySFMKFstMAEPxJaVzPvCpiTDLIK0AB?=
- =?us-ascii?Q?FtSF/YsgwQxmLV5CmGcbcPIF+lHD/XdshvgNvCg56MOJn3I4VHhUiufPZXpW?=
- =?us-ascii?Q?GQ/yGNcVEujVlCVHtSTDCNmOmANn1MhNuYuQ9J9POFKa1qpuGAxSULMq0MI+?=
- =?us-ascii?Q?lie+Pf7JnBqh2kiRIWCLFxUn4xfpG1awYaPxMcgimD86JK+14P6hcTR+ubJr?=
- =?us-ascii?Q?JLLgRJn4ME9LXO+ZKC0JJwWpwErcWXiyofukePmQdESyOVmkzSBYAHub+rgs?=
- =?us-ascii?Q?zOW6DKq+T83bnkT6O1oHNcX3q7/7EnWKumSTaZhOBQl5wushIScsCM1PO5rw?=
- =?us-ascii?Q?Ys05LCXrr5kLVii5ujDRx68S5MsntgVwijVTlWdWO7dcGCxfhSRRyzAS45KW?=
- =?us-ascii?Q?gFQEHWA4tQjHEfmqEBdIpgsYe39Yoi4t8DwtWlTS+vd5lsc4GILoFxFh9RBn?=
- =?us-ascii?Q?j5O+m4iZ8A50Yv8ehBZFiTRdVAZbiEA5r/0B/IGdJtcjZnpTYLJZidh3L/pL?=
- =?us-ascii?Q?Lxkcuyli3d1atH9WBUNJIZ42dYaQz/HkDjAlv9TsjBy/kS0n9IxwzqehSlDx?=
- =?us-ascii?Q?kvgj4rp1desj3ep77/HQC7Ug99UFUaxJXTZICiCmyjBdM8hf0nonvDqBhB2J?=
- =?us-ascii?Q?88Gik3mZ7XlBT3dhJEyKaPavaFxB5fcClETs9MDETnacUDJoenbXS1+PZZjx?=
- =?us-ascii?Q?vBvNx8AnWs3FXovGuarclZsRZl6Ksn5Sj1JFHDWwQZFX6VW+cLkc0BOeG31O?=
- =?us-ascii?Q?HZxoKfT9usKWTAav1EfaXXH3tP2jElbzs+0c5VuXUBxoprW0v4IEHUwofA6U?=
- =?us-ascii?Q?KDYjTxPil+qhWMM65OQNVGgV38x+rRYHShx2FgI9iSouaHiuxHY3xugAMT8U?=
- =?us-ascii?Q?m66ksiIlgocH3d8gW57DuzgcvKFl/u0uXoFFk4ST2fEANC48gx5isStVMxC2?=
- =?us-ascii?Q?xPuLtjfn2bn0K3t0qM5Sne0n88mi4bk=3D?=
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 616d6c87-31f8-4866-444f-08da2c6f3d88
-X-MS-Exchange-CrossTenant-AuthSource: OS3PR01MB6593.jpnprd01.prod.outlook.com
+X-OriginatorOrg: xilinx.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2022 19:09:11.4022
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR02MB8560.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1b43538a-d3aa-4279-da19-08da2c7244b2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 May 2022 19:30:51.6343
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FtVpa5fJRx0PAW3H6eC27YdVFhe7LQndER0Rrfso8ZQ1JT+z2J/weWvYr30Ke8Qry6grE7ANVOxsI0zh0TKoUw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCPR01MB9570
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: sHqBQauuWUhTfSvTWQRcMR4EKZD0hKj4pwsDwccmMsFG+7qkSf9LGV/JEduzk0b1rUNjYzgps6WDF1WmGY0kaQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR02MB2681
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Also removes PEROUT_ENABLE_OUTPUT_MASK
+> -----Original Message-----
+> From: Robert Hancock <robert.hancock@calian.com>
+> Sent: Saturday, April 30, 2022 3:59 AM
+> To: netdev@vger.kernel.org
+> Cc: Radhey Shyam Pandey <radheys@xilinx.com>; davem@davemloft.net;
+> edumazet@google.com; kuba@kernel.org; pabeni@redhat.com; Michal Simek
+> <michals@xilinx.com>; linux-arm-kernel@lists.infradead.org; Robert Hancoc=
+k
+> <robert.hancock@calian.com>
+> Subject: [PATCH net-next] net: axienet: Use NAPI for TX completion path
+>=20
+> This driver was using the TX IRQ handler to perform all TX completion
+> tasks. Under heavy TX network load, this can cause significant irqs-off
+> latencies (found to be in the hundreds of microseconds using ftrace).
+> This can cause other issues, such as overrunning serial UART FIFOs when
+> using high baud rates with limited UART FIFO sizes.
+>=20
+> Switch to using the NAPI poll handler to perform the TX completion work
+> to get this out of hard IRQ context and avoid the IRQ latency impact.
 
-Signed-off-by: Min Li <min.li.xe@renesas.com>
-Acked-by: Richard Cochran <richardcochran@gmail.com>
----
- drivers/ptp/ptp_clockmatrix.c | 32 ++------------------------------
- drivers/ptp/ptp_clockmatrix.h |  2 --
- 2 files changed, 2 insertions(+), 32 deletions(-)
+Thanks for the patch. I assume for simulating heavy network load we
+are using netperf/iperf. Do we have some details on the benchmark
+before and after adding TX NAPI? I want to see the impact on
+throughput.
 
-diff --git a/drivers/ptp/ptp_clockmatrix.c b/drivers/ptp/ptp_clockmatrix.c
-index d8c7e80..201e5a9 100644
---- a/drivers/ptp/ptp_clockmatrix.c
-+++ b/drivers/ptp/ptp_clockmatrix.c
-@@ -1363,43 +1363,15 @@ static int idtcm_output_enable(struct idtcm_channel *channel,
- 	return idtcm_write(idtcm, (u16)base, OUT_CTRL_1, &val, sizeof(val));
- }
- 
--static int idtcm_output_mask_enable(struct idtcm_channel *channel,
--				    bool enable)
--{
--	u16 mask;
--	int err;
--	u8 outn;
--
--	mask = channel->output_mask;
--	outn = 0;
--
--	while (mask) {
--		if (mask & 0x1) {
--			err = idtcm_output_enable(channel, enable, outn);
--			if (err)
--				return err;
--		}
--
--		mask >>= 0x1;
--		outn++;
--	}
--
--	return 0;
--}
--
- static int idtcm_perout_enable(struct idtcm_channel *channel,
- 			       struct ptp_perout_request *perout,
- 			       bool enable)
- {
- 	struct idtcm *idtcm = channel->idtcm;
--	unsigned int flags = perout->flags;
- 	struct timespec64 ts = {0, 0};
- 	int err;
- 
--	if (flags == PEROUT_ENABLE_OUTPUT_MASK)
--		err = idtcm_output_mask_enable(channel, enable);
--	else
--		err = idtcm_output_enable(channel, enable, perout->index);
-+	err = idtcm_output_enable(channel, enable, perout->index);
- 
- 	if (err) {
- 		dev_err(idtcm->dev, "Unable to set output enable");
-@@ -1903,7 +1875,7 @@ static int idtcm_adjtime(struct ptp_clock_info *ptp, s64 delta)
- 	int err;
- 
- 	if (channel->phase_pull_in == true)
--		return 0;
-+		return -EBUSY;
- 
- 	mutex_lock(idtcm->lock);
- 
-diff --git a/drivers/ptp/ptp_clockmatrix.h b/drivers/ptp/ptp_clockmatrix.h
-index 4379650..bf1e49409 100644
---- a/drivers/ptp/ptp_clockmatrix.h
-+++ b/drivers/ptp/ptp_clockmatrix.h
-@@ -54,8 +54,6 @@
- #define LOCK_TIMEOUT_MS			(2000)
- #define LOCK_POLL_INTERVAL_MS		(10)
- 
--#define PEROUT_ENABLE_OUTPUT_MASK	(0xdeadbeef)
--
- #define IDTCM_MAX_WRITE_COUNT		(512)
- 
- #define PHASE_PULL_IN_MAX_PPB		(144000)
--- 
-2.7.4
+>=20
+> Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+> ---
+>  drivers/net/ethernet/xilinx/xilinx_axienet.h  |  2 +
+>  .../net/ethernet/xilinx/xilinx_axienet_main.c | 56 ++++++++++++-------
+>  2 files changed, 37 insertions(+), 21 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet.h
+> b/drivers/net/ethernet/xilinx/xilinx_axienet.h
+> index d5c1e5c4a508..6e58d034fe90 100644
+> --- a/drivers/net/ethernet/xilinx/xilinx_axienet.h
+> +++ b/drivers/net/ethernet/xilinx/xilinx_axienet.h
+> @@ -397,6 +397,7 @@ struct axidma_bd {
+>   * @regs:	Base address for the axienet_local device address space
+>   * @dma_regs:	Base address for the axidma device address space
+>   * @rx_dma_cr:  Nominal content of RX DMA control register
+> + * @tx_dma_cr:  Nominal content of TX DMA control register
+>   * @dma_err_task: Work structure to process Axi DMA errors
+>   * @tx_irq:	Axidma TX IRQ number
+>   * @rx_irq:	Axidma RX IRQ number
+> @@ -454,6 +455,7 @@ struct axienet_local {
+>  	void __iomem *dma_regs;
+>=20
+>  	u32 rx_dma_cr;
+> +	u32 tx_dma_cr;
+>=20
+>  	struct work_struct dma_err_task;
+>=20
+> diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+> b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+> index d6fc3f7acdf0..a52e616275e4 100644
+> --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+> +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+> @@ -254,8 +254,6 @@ static u32 axienet_usec_to_timer(struct axienet_local
+> *lp, u32 coalesce_usec)
+>   */
+>  static void axienet_dma_start(struct axienet_local *lp)
+>  {
+> -	u32 tx_cr;
+> -
+>  	/* Start updating the Rx channel control register */
+>  	lp->rx_dma_cr =3D (lp->coalesce_count_rx <<
+> XAXIDMA_COALESCE_SHIFT) |
+>  			XAXIDMA_IRQ_IOC_MASK |
+> XAXIDMA_IRQ_ERROR_MASK;
+> @@ -269,16 +267,16 @@ static void axienet_dma_start(struct axienet_local
+> *lp)
+>  	axienet_dma_out32(lp, XAXIDMA_RX_CR_OFFSET, lp->rx_dma_cr);
+>=20
+>  	/* Start updating the Tx channel control register */
+> -	tx_cr =3D (lp->coalesce_count_tx << XAXIDMA_COALESCE_SHIFT) |
+> -		XAXIDMA_IRQ_IOC_MASK | XAXIDMA_IRQ_ERROR_MASK;
+> +	lp->tx_dma_cr =3D (lp->coalesce_count_tx <<
+> XAXIDMA_COALESCE_SHIFT) |
+> +			XAXIDMA_IRQ_IOC_MASK |
+> XAXIDMA_IRQ_ERROR_MASK;
+>  	/* Only set interrupt delay timer if not generating an interrupt on
+>  	 * the first TX packet. Otherwise leave at 0 to disable delay interrupt=
+.
+>  	 */
+>  	if (lp->coalesce_count_tx > 1)
+> -		tx_cr |=3D (axienet_usec_to_timer(lp, lp->coalesce_usec_tx)
+> -				<< XAXIDMA_DELAY_SHIFT) |
+> -			 XAXIDMA_IRQ_DELAY_MASK;
+> -	axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET, tx_cr);
+> +		lp->tx_dma_cr |=3D (axienet_usec_to_timer(lp, lp-
+> >coalesce_usec_tx)
+> +					<< XAXIDMA_DELAY_SHIFT) |
+> +				 XAXIDMA_IRQ_DELAY_MASK;
+> +	axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET, lp->tx_dma_cr);
+>=20
+>  	/* Populate the tail pointer and bring the Rx Axi DMA engine out of
+>  	 * halted state. This will make the Rx side ready for reception.
+> @@ -294,8 +292,8 @@ static void axienet_dma_start(struct axienet_local *l=
+p)
+>  	 * tail pointer register that the Tx channel will start transmitting.
+>  	 */
+>  	axienet_dma_out_addr(lp, XAXIDMA_TX_CDESC_OFFSET, lp-
+> >tx_bd_p);
+> -	tx_cr |=3D XAXIDMA_CR_RUNSTOP_MASK;
+> -	axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET, tx_cr);
+> +	lp->tx_dma_cr |=3D XAXIDMA_CR_RUNSTOP_MASK;
+> +	axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET, lp->tx_dma_cr);
+>  }
+>=20
+>  /**
+> @@ -671,13 +669,14 @@ static int axienet_device_reset(struct net_device
+> *ndev)
+>   * @nr_bds:	Number of descriptors to clean up, can be -1 if unknown.
+>   * @sizep:	Pointer to a u32 filled with the total sum of all bytes
+>   * 		in all cleaned-up descriptors. Ignored if NULL.
+> + * @budget:	NAPI budget (use 0 when not called from NAPI poll)
+>   *
+>   * Would either be called after a successful transmit operation, or afte=
+r
+>   * there was an error when setting up the chain.
+>   * Returns the number of descriptors handled.
+>   */
+>  static int axienet_free_tx_chain(struct net_device *ndev, u32 first_bd,
+> -				 int nr_bds, u32 *sizep)
+> +				 int nr_bds, u32 *sizep, int budget)
+>  {
+>  	struct axienet_local *lp =3D netdev_priv(ndev);
+>  	struct axidma_bd *cur_p;
+> @@ -707,7 +706,7 @@ static int axienet_free_tx_chain(struct net_device
+> *ndev, u32 first_bd,
+>  				 DMA_TO_DEVICE);
+>=20
+>  		if (cur_p->skb && (status &
+> XAXIDMA_BD_STS_COMPLETE_MASK))
+> -			dev_consume_skb_irq(cur_p->skb);
+> +			napi_consume_skb(cur_p->skb, budget);
+>=20
+>  		cur_p->app0 =3D 0;
+>  		cur_p->app1 =3D 0;
+> @@ -756,20 +755,24 @@ static inline int axienet_check_tx_bd_space(struct
+> axienet_local *lp,
+>   * axienet_start_xmit_done - Invoked once a transmit is completed by the
+>   * Axi DMA Tx channel.
+>   * @ndev:	Pointer to the net_device structure
+> + * @budget:	NAPI budget
+>   *
+> - * This function is invoked from the Axi DMA Tx isr to notify the comple=
+tion
+> + * This function is invoked from the NAPI processing to notify the compl=
+etion
+>   * of transmit operation. It clears fields in the corresponding Tx BDs a=
+nd
+>   * unmaps the corresponding buffer so that CPU can regain ownership of t=
+he
+>   * buffer. It finally invokes "netif_wake_queue" to restart transmission=
+ if
+>   * required.
+>   */
+> -static void axienet_start_xmit_done(struct net_device *ndev)
+> +static void axienet_start_xmit_done(struct net_device *ndev, int budget)
+>  {
+>  	struct axienet_local *lp =3D netdev_priv(ndev);
+>  	u32 packets =3D 0;
+>  	u32 size =3D 0;
+>=20
+> -	packets =3D axienet_free_tx_chain(ndev, lp->tx_bd_ci, -1, &size);
+> +	packets =3D axienet_free_tx_chain(ndev, lp->tx_bd_ci, -1, &size, budget=
+);
+> +
+> +	if (!packets)
+> +		return;
+>=20
+>  	lp->tx_bd_ci +=3D packets;
+>  	if (lp->tx_bd_ci >=3D lp->tx_bd_num)
+> @@ -865,7 +868,7 @@ axienet_start_xmit(struct sk_buff *skb, struct
+> net_device *ndev)
+>  				netdev_err(ndev, "TX DMA mapping error\n");
+>  			ndev->stats.tx_dropped++;
+>  			axienet_free_tx_chain(ndev, orig_tail_ptr, ii + 1,
+> -					      NULL);
+> +					      NULL, 0);
+>  			lp->tx_bd_tail =3D orig_tail_ptr;
+>=20
+>  			return NETDEV_TX_OK;
+> @@ -899,9 +902,9 @@ axienet_start_xmit(struct sk_buff *skb, struct
+> net_device *ndev)
+>  }
+>=20
+>  /**
+> - * axienet_poll - Triggered by RX ISR to complete the received BD proces=
+sing.
+> + * axienet_poll - Triggered by RX/TX ISR to complete the BD processing.
+>   * @napi:	Pointer to NAPI structure.
+> - * @budget:	Max number of packets to process.
+> + * @budget:	Max number of RX packets to process.
+>   *
+>   * Return: Number of RX packets processed.
+>   */
+> @@ -916,6 +919,8 @@ static int axienet_poll(struct napi_struct *napi, int
+> budget)
+>  	struct sk_buff *skb, *new_skb;
+>  	struct axienet_local *lp =3D container_of(napi, struct axienet_local,
+> napi);
+>=20
+> +	axienet_start_xmit_done(lp->ndev, budget);
+> +
+>  	cur_p =3D &lp->rx_bd_v[lp->rx_bd_ci];
+>=20
+>  	while (packets < budget && (cur_p->status &
+> XAXIDMA_BD_STS_COMPLETE_MASK)) {
+> @@ -1001,11 +1006,12 @@ static int axienet_poll(struct napi_struct *napi,=
+ int
+> budget)
+>  		axienet_dma_out_addr(lp, XAXIDMA_RX_TDESC_OFFSET,
+> tail_p);
+>=20
+>  	if (packets < budget && napi_complete_done(napi, packets)) {
+> -		/* Re-enable RX completion interrupts. This should
+> -		 * cause an immediate interrupt if any RX packets are
+> +		/* Re-enable RX/TX completion interrupts. This should
+> +		 * cause an immediate interrupt if any RX/TX packets are
+>  		 * already pending.
+>  		 */
+>  		axienet_dma_out32(lp, XAXIDMA_RX_CR_OFFSET, lp-
+> >rx_dma_cr);
+> +		axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET, lp-
+> >tx_dma_cr);
+>  	}
+>  	return packets;
+>  }
+> @@ -1040,7 +1046,15 @@ static irqreturn_t axienet_tx_irq(int irq, void
+> *_ndev)
+>  			   (lp->tx_bd_v[lp->tx_bd_ci]).phys);
+>  		schedule_work(&lp->dma_err_task);
+>  	} else {
+> -		axienet_start_xmit_done(lp->ndev);
+> +		/* Disable further TX completion interrupts and schedule
+> +		 * NAPI to handle the completions.
+> +		 */
+> +		u32 cr =3D lp->tx_dma_cr;
+> +
+> +		cr &=3D ~(XAXIDMA_IRQ_IOC_MASK |
+> XAXIDMA_IRQ_DELAY_MASK);
+> +		axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET, cr);
+> +
+> +		napi_schedule(&lp->napi);
+>  	}
+>=20
+>  	return IRQ_HANDLED;
+> --
+> 2.31.1
 
