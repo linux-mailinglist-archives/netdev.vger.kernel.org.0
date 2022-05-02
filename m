@@ -2,216 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 149E65168FB
-	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 02:10:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D588516907
+	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 02:21:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378463AbiEBAOK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 May 2022 20:14:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41798 "EHLO
+        id S1356170AbiEBAZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 May 2022 20:25:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiEBAOG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 May 2022 20:14:06 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65F45DE9D
-        for <netdev@vger.kernel.org>; Sun,  1 May 2022 17:10:36 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id q14so16668116ljc.12
-        for <netdev@vger.kernel.org>; Sun, 01 May 2022 17:10:36 -0700 (PDT)
+        with ESMTP id S233796AbiEBAZA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 May 2022 20:25:00 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C37CA1903A;
+        Sun,  1 May 2022 17:21:31 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id b18so3962095lfv.9;
+        Sun, 01 May 2022 17:21:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=openvz-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :references:content-language:in-reply-to:content-transfer-encoding;
-        bh=hd0y1OR/b4IeCBpDcty8eQdPQFVx3QSyhq2QmkPNM2U=;
-        b=69H2sZp3OJ0LOKrRShXopodHHx0OU2Q0oQ9nk2IPizjQ/AESBps1VdJ5Oq3dfBorHr
-         0Jpr+Ii0XIGAC9b027CE9SenODK76DnAoIWWvlqEW49Gu+29PZg2IyeJlFBM/wh5nMS5
-         yXq0RGQ8lNdwBpZIn0z/YqxF4Irp+B7lqzBA+PLV0/1eB6yiziFT4L+VbngWvp7+pT9j
-         i5zbmCEXZ3SaVNtPgvOS97VSGcHt1obphxpMqauFcLOizuZT94JuFThr6wCUy4EfD65Z
-         2sgiTD7dDr5lf7+AyxpsELyBBnmxFl4tKJ8AlhaZ0bV6G0MyHZoodMaXa13o7wi3NjNn
-         rbtg==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NrbRTlOjLJ7GKE+mKA7USRHI7yNIBxpaIMJafNoKoEc=;
+        b=LPPaKRHXJQuiNFVBvyDkapH+2DvmN65TAUABFK+zdgWVt9uJyTu/kBOMPuR522bxu0
+         9/5Zzk6XOvdKWeCA1EQoo+lnlTM1RLPFv9Lhd3yYUj4lly2jZeHnlNU3Pxplq5K541Rx
+         AJOfiOWhsHnSr3S51mwAMMDca6s65mC0eUMr45IzD7k0mVjqd8PPCHiyFiMWSlzjla+p
+         DXKxKgmAe6Sd/1bBY8okB0h5GM+Td6edkAlV8FH11plxqZRAkry3dzN05/THWiDptABM
+         NaxEqoLspwK9VqnrlVF1JY0vORP++UUIWzihvD2QWo/4D4RGemfhx1SYRTh/Lq7WgstA
+         ikmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:references:content-language:in-reply-to
-         :content-transfer-encoding;
-        bh=hd0y1OR/b4IeCBpDcty8eQdPQFVx3QSyhq2QmkPNM2U=;
-        b=qLXRBaaeCEInRTB2URGZU8wcGvp8j6u41sRpx4pNHOTqtIg6N1l+v61NRg6IHH7Dxb
-         HRWcNCkDmf5gmmuukYiGZ6nuoZnX0ExNkGrmNVhpkd9k0JB+RAX6LOMrvsaDGehwjivS
-         KsVI1OW6CaypPpT+6eHDSVRk30GHTqs1G6MVaProqFMh9uuCNUeLFTdkP33lrUNJERn9
-         j6JWQ8y935iFMpHn1fZWVf7bLexjI7MdaZZizetrdQ2ccY6s2c+Bk/2rCJEEu4Q9PN1C
-         DlrcNjp3b+XDnUFaXNqakdtCBq5BQdgJIWz+iJjtUvUUuyajr5VaJISLZEkdWsyI6JAy
-         Q4Cg==
-X-Gm-Message-State: AOAM533pyxKMc72/yeuNoKs4XGik7WciJbsOEnDfQuZtrYg01vy3XasH
-        OP196a1FdhWwvOAVV7UmGaqQ7hRwie2cZA==
-X-Google-Smtp-Source: ABdhPJyz51F6s5TmukXjz8wMZrd2FYEXvb+rgt8PgukAcQ8O50QW9Uc9Pvf8CjBk2FqnN6M0JowK3w==
-X-Received: by 2002:a05:651c:505:b0:24f:5248:3018 with SMTP id o5-20020a05651c050500b0024f52483018mr3429236ljp.45.1651450234628;
-        Sun, 01 May 2022 17:10:34 -0700 (PDT)
-Received: from [192.168.1.65] ([46.188.121.177])
-        by smtp.gmail.com with ESMTPSA id c5-20020ac25305000000b0047255d211d1sm561008lfh.256.2022.05.01.17.10.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 01 May 2022 17:10:34 -0700 (PDT)
-Message-ID: <0ccfe7a4-c178-0b66-d481-2326c85a8ffb@openvz.org>
-Date:   Mon, 2 May 2022 03:10:32 +0300
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NrbRTlOjLJ7GKE+mKA7USRHI7yNIBxpaIMJafNoKoEc=;
+        b=eEGioVk11jUGwPdLDWFLfuV1/4UeDwjSMntBPnilA22SJ/zfoiXaR6xJhCVSpa3m7N
+         l1W+C7CrRQZFADEPf82KJJlaaHod1Q5rbLtFqQkSUevwZQfeNPKNbyesN0w6rXqspvGQ
+         pu9w3/wqHyw3mXTBa6Jzs0OgXk+COypRk/Tzw4h9tIaKOVF/Fb3to5iqNazBDc4RTO1W
+         BRPxJQtpVZUeaTdR51rDunBeMJMMv73RH7Qr7U2b6iUx/LOF3KgeBu732Qr4F7bcFq3T
+         6j0kmftq281VoBFGpTVHGXi5ryAqdt5KEL5v/fAfsg+NNRR9ky8cfCAbGigpqoW48itq
+         xN+g==
+X-Gm-Message-State: AOAM532BQb2hFBVcYw4UJslI9BwVMUycS/XvzKe7iNO6RfvICrgCk1Us
+        wKU12Dj2MuM/rfIFK3M7l+BSe3W+M6sGYOR8+bA=
+X-Google-Smtp-Source: ABdhPJzIFYvSoctCNdM7BZX2G69G9d8fO3EbygFv47/qloPeaEWMWd+AlyDnCjPqH1bsSDzLv0uIKy+ewlB5WYXxAT8=
+X-Received: by 2002:a05:6512:1599:b0:473:6c22:fa68 with SMTP id
+ bp25-20020a056512159900b004736c22fa68mr2533892lfb.656.1651450890017; Sun, 01
+ May 2022 17:21:30 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-From:   Vasily Averin <vvs@openvz.org>
-Subject: [PATCH memcg v5] net: set proper memcg for net_init hooks allocations
-To:     Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>
-Cc:     kernel@openvz.org, Florian Westphal <fw@strlen.de>,
-        linux-kernel@vger.kernel.org, Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@suse.com>, cgroups@vger.kernel.org,
-        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+References: <20220427164659.106447-1-miquel.raynal@bootlin.com>
+ <20220427164659.106447-9-miquel.raynal@bootlin.com> <CAB_54W7NWEYgmLfowvyXtKEsKhBaVrPzpkB1kasYpAst98mKNA@mail.gmail.com>
+ <20220428095848.34582df4@xps13>
+In-Reply-To: <20220428095848.34582df4@xps13>
+From:   Alexander Aring <alex.aring@gmail.com>
+Date:   Sun, 1 May 2022 20:21:18 -0400
+Message-ID: <CAB_54W6nrNaXouN2LkEtzSpYNSmXT+WUbr4Y9rETyATznAbkEg@mail.gmail.com>
+Subject: Re: [PATCH wpan-next 08/11] net: mac802154: Add a warning in the hot path
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-References: <CALvZod5HugCO2G3+Av3pXC6s2sy0zKW_HRaRyhOO9GOOWV1SsQ@mail.gmail.com>
-Content-Language: en-US
-In-Reply-To: <CALvZod5HugCO2G3+Av3pXC6s2sy0zKW_HRaRyhOO9GOOWV1SsQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-__register_pernet_operations() executes init hook of registered
-pernet_operation structure in all existing net namespaces.
+Hi,
 
-Typically, these hooks are called by a process associated with
-the specified net namespace, and all __GFP_ACCOUNT marked
-allocation are accounted for corresponding container/memcg.
+On Thu, Apr 28, 2022 at 3:58 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+>
+> Hi Alexander,
+>
+> alex.aring@gmail.com wrote on Wed, 27 Apr 2022 14:01:25 -0400:
+>
+> > Hi,
+> >
+> > On Wed, Apr 27, 2022 at 12:47 PM Miquel Raynal
+> > <miquel.raynal@bootlin.com> wrote:
+> > >
+> > > We should never start a transmission after the queue has been stopped.
+> > >
+> > > But because it might work we don't kill the function here but rather
+> > > warn loudly the user that something is wrong.
+> > >
+> > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > > ---
+>
+> [...]
+>
+> > > diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
+> > > index a8a83f0167bf..021dddfea542 100644
+> > > --- a/net/mac802154/tx.c
+> > > +++ b/net/mac802154/tx.c
+> > > @@ -124,6 +124,8 @@ bool ieee802154_queue_is_held(struct ieee802154_local *local)
+> > >  static netdev_tx_t
+> > >  ieee802154_hot_tx(struct ieee802154_local *local, struct sk_buff *skb)
+> > >  {
+> > > +       WARN_ON_ONCE(ieee802154_queue_is_stopped(local));
+> > > +
+> > >         return ieee802154_tx(local, skb);
+> > >  }
+> > >
+> > > diff --git a/net/mac802154/util.c b/net/mac802154/util.c
+> > > index 847e0864b575..cfd17a7db532 100644
+> > > --- a/net/mac802154/util.c
+> > > +++ b/net/mac802154/util.c
+> > > @@ -44,6 +44,24 @@ void ieee802154_stop_queue(struct ieee802154_local *local)
+> > >         rcu_read_unlock();
+> > >  }
+> > >
+> > > +bool ieee802154_queue_is_stopped(struct ieee802154_local *local)
+> > > +{
+> > > +       struct ieee802154_sub_if_data *sdata;
+> > > +       bool stopped = true;
+> > > +
+> > > +       rcu_read_lock();
+> > > +       list_for_each_entry_rcu(sdata, &local->interfaces, list) {
+> > > +               if (!sdata->dev)
+> > > +                       continue;
+> > > +
+> > > +               if (!netif_queue_stopped(sdata->dev))
+> > > +                       stopped = false;
+> > > +       }
+> > > +       rcu_read_unlock();
+> > > +
+> > > +       return stopped;
+> > > +}
+> >
+> > sorry this makes no sense, you using net core functionality to check
+> > if a queue is stopped in a net core netif callback. Whereas the sense
+> > here for checking if the queue is really stopped is when 802.15.4
+> > thinks the queue is stopped vs net core netif callback running. It
+> > means for MLME-ops there are points we want to make sure that net core
+> > is not handling any xmit and we should check this point and not
+> > introducing net core functionality checks.
+>
+> I think I've mixed two things, your remark makes complete sense. I
+> should instead here just check a 802.15.4 internal variable.
+>
 
-However __register_pernet_operations() calls the hooks in the same
-context, and as a result all marked allocations are accounted
-to one memcg for all processed net namespaces.
+I am thinking about this patch series... and I think it still has bugs
+or at least it's easy to have bugs when the context is not right
+prepared to call a synchronized transmission. We leave here the netdev
+state machine world for transmit vs e.g. start/stop netif callback...
+We have a warning here if there is a core netif xmit callback running
+when 802.15.4 thinks it shouldn't (because we take control of it) but
+I also think about a kind of the other way around. A warning if
+802.15.4 transmits something but the netdev core logic "thinks" it
+shouldn't.
 
-This patch adjusts active memcg for each net namespace and helps
-to account memory allocated inside ops_init() into the proper memcg.
+That requires some checks (probably from netcore functionality) to
+check if we call a 802.15.4 sync xmit but netif core already called
+stop() callback. The last stop() callback - means the driver_ops
+stop() callback was called, we have some "open_count" counter there
+which MUST be incremented before doing any looping of one or several
+sync transmissions. All I can say is if we call xmit() but the driver
+is in stop() state... it will break things.
 
-Signed-off-by: Vasily Averin <vvs@openvz.org>
-Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
-Acked-by: Shakeel Butt <shakeelb@google.com>
+My concern is also here that e.g. calling netif down or device
+suspend() are only two examples I have in my mind right now. I don't
+know all cases which can occur, that's why we should introduce another
+WARN_ON_ONCE() for the case that 802.15.4 transmits something but we
+are in a state where we can't transmit something according to netif
+state (driver ops called stop()).
 
----
-v5: documented get_mem_cgroup_from_obj() and for mem_cgroup_or_root()
-    functions, asked by Shakeel.
+Can you add such a check as well? And please keep in mind to increment
+the open count when implementing MLME-ops (or at least handle it
+somehow), otherwise I guess it's easy to hit the warning. If another
+user reports warnings and tells us what they did we might know more
+other "cases" to fix.
 
-v4: get_mem_cgroup_from_kmem() renamed to get_mem_cgroup_from_obj(),
-    get_net_memcg() renamed to mem_cgroup_or_root(), suggested by Roman.
+There should maybe be an option in hwsim to delay a transmission
+completion and such cases can be tested...
 
-v3: put_net_memcg() replaced by an alreay existing mem_cgroup_put()
-    It checks memcg before accessing it, this is required for
-    __register_pernet_operations() called before memcg initialization.
-    Additionally fixed leading whitespaces in non-memcg_kmem version
-    of mem_cgroup_from_obj().
-
-v2: introduced get/put_net_memcg(),
-    new functions are moved under CONFIG_MEMCG_KMEM
-    to fix compilation issues reported by Intel's kernel test robot
-
-v1: introduced get_mem_cgroup_from_kmem(), which takes the refcount
-    for the found memcg, suggested by Shakeel
----
- include/linux/memcontrol.h | 47 +++++++++++++++++++++++++++++++++++++-
- net/core/net_namespace.c   |  7 ++++++
- 2 files changed, 53 insertions(+), 1 deletion(-)
-
-diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index 0abbd685703b..6405f9b8f5a8 100644
---- a/include/linux/memcontrol.h
-+++ b/include/linux/memcontrol.h
-@@ -1714,6 +1714,42 @@ static inline int memcg_cache_id(struct mem_cgroup *memcg)
- 
- struct mem_cgroup *mem_cgroup_from_obj(void *p);
- 
-+/**
-+ * get_mem_cgroup_from_obj - get a memcg associated with passed kernel object.
-+ * @p: pointer to object from which memcg should be extracted. It can be NULL.
-+ *
-+ * Retrieves the memory group into which the memory of the pointed kernel
-+ * object is accounted. If memcg is found, its reference is taken.
-+ * If a passed kernel object is uncharged, or if proper memcg cannot be found,
-+ * as well as if mem_cgroup is disabled, NULL is returned.
-+ *
-+ * Return: valid memcg pointer with taken reference or NULL.
-+ */
-+static inline struct mem_cgroup *get_mem_cgroup_from_obj(void *p)
-+{
-+	struct mem_cgroup *memcg;
-+
-+	rcu_read_lock();
-+	do {
-+		memcg = mem_cgroup_from_obj(p);
-+	} while (memcg && !css_tryget(&memcg->css));
-+	rcu_read_unlock();
-+	return memcg;
-+}
-+
-+/**
-+ * mem_cgroup_or_root - always returns a pointer to a valid memory cgroup.
-+ * @memcg: pointer to a valid memory cgroup or NULL.
-+ *
-+ * If passed argument is not NULL, returns it without any additional checks
-+ * and changes. Otherwise, root_mem_cgroup is returned.
-+ *
-+ * NOTE: root_mem_cgroup can be NULL during early boot.
-+ */
-+static inline struct mem_cgroup *mem_cgroup_or_root(struct mem_cgroup *memcg)
-+{
-+	return memcg ? memcg : root_mem_cgroup;
-+}
- #else
- static inline bool mem_cgroup_kmem_disabled(void)
- {
-@@ -1763,9 +1799,18 @@ static inline void memcg_put_cache_ids(void)
- 
- static inline struct mem_cgroup *mem_cgroup_from_obj(void *p)
- {
--       return NULL;
-+	return NULL;
- }
- 
-+static inline struct mem_cgroup *get_mem_cgroup_from_obj(void *p)
-+{
-+	return NULL;
-+}
-+
-+static inline struct mem_cgroup *mem_cgroup_or_root(struct mem_cgroup *memcg)
-+{
-+	return NULL;
-+}
- #endif /* CONFIG_MEMCG_KMEM */
- 
- #endif /* _LINUX_MEMCONTROL_H */
-diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
-index a5b5bb99c644..240f3db77dec 100644
---- a/net/core/net_namespace.c
-+++ b/net/core/net_namespace.c
-@@ -26,6 +26,7 @@
- #include <net/net_namespace.h>
- #include <net/netns/generic.h>
- 
-+#include <linux/sched/mm.h>
- /*
-  *	Our network namespace constructor/destructor lists
-  */
-@@ -1147,7 +1148,13 @@ static int __register_pernet_operations(struct list_head *list,
- 		 * setup_net() and cleanup_net() are not possible.
- 		 */
- 		for_each_net(net) {
-+			struct mem_cgroup *old, *memcg;
-+
-+			memcg = mem_cgroup_or_root(get_mem_cgroup_from_obj(net));
-+			old = set_active_memcg(memcg);
- 			error = ops_init(ops, net);
-+			set_active_memcg(old);
-+			mem_cgroup_put(memcg);
- 			if (error)
- 				goto out_undo;
- 			list_add_tail(&net->exit_list, &net_exit_list);
--- 
-2.31.1
-
+- Alex
