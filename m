@@ -2,51 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 95ADD5173FA
-	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 18:14:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F0B851742A
+	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 18:21:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383294AbiEBQQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 May 2022 12:16:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58748 "EHLO
+        id S241566AbiEBQZI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 May 2022 12:25:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346095AbiEBQQn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 12:16:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A232BC93
-        for <netdev@vger.kernel.org>; Mon,  2 May 2022 09:13:14 -0700 (PDT)
+        with ESMTP id S234189AbiEBQZH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 12:25:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F1C6764C
+        for <netdev@vger.kernel.org>; Mon,  2 May 2022 09:21:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D802B612B2
-        for <netdev@vger.kernel.org>; Mon,  2 May 2022 16:13:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9789C385B0;
-        Mon,  2 May 2022 16:13:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C3797B81898
+        for <netdev@vger.kernel.org>; Mon,  2 May 2022 16:21:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5767DC385A4;
+        Mon,  2 May 2022 16:21:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651507993;
-        bh=s67MTpM3PYGg6ltmkONqjZbqPNKoz4HiuhXReKmm17Y=;
+        s=k20201202; t=1651508495;
+        bh=U6GDTXbuqBebJbd+lkj2uWiA1dIME9lLyxhLrBtzwGY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=m+KuBwcAFuLFr5n3D5MaDUwrXXHTRfPL3/rIncezE/QvSHudqMok7lf7pFNOUrFoC
-         vELt7NQSKRJxNIPADRjh9Imc5VAhv6IOzgDEQOPz+OUtPhiVmvuFECQu8ikgIk/AGV
-         9s0tJgXPJgp2ZU5/U4orJZj8NVrcY11lacbAeTvvba0cguBy4NgkC2PY5rHbDHcQmp
-         pS65a2XfFcAgbmfDI6x8u9UuLIcy2SS2MrsCLmDbRCwurewolOPhiEJ6SN0a3L/+s6
-         n4pS9pLBngPy3C5BJy59Pd7KYrMFz/8jNgcwVOverr0OEATwxBcYdCGC0vQrhvfyYf
-         BRpYFo5KDXMlg==
-Date:   Mon, 2 May 2022 09:13:11 -0700
+        b=OphhGjEah5uEwvvaXbruhD8EgAtW1znMEO+NQlkV8WAU9wUytGjKlbpB/di3avDm6
+         CwJdCbAeCpET2Qec10pQucPShaVx4RcRh46WzPU6W6asS7XwbLy962Kr3AZCOVdAuq
+         1vtMZZaf2DNfWTyJvGr61zjv1OSrQdxElXli28eBSsN17U4Q5ZfWpxtu6pWjrRlwkz
+         7Tlnn2Fq16fX7kZeaDwkcsrntFPoIw/YqeLyWB4Fzz20rTrnJQ8IkwMNJDapcgTKq0
+         kkzZZVSSq1aEmX+EIDeDBXKddJ56jEIpaYWp2WGc+AndpsJcMhzmpWn6wRrVJEnGpc
+         F9v2JkUTZPPzA==
+Date:   Mon, 2 May 2022 09:21:34 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Eric Dumazet <edumazet@google.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Subject: Re: [Patch bpf-next v1 1/4] tcp: introduce tcp_read_skb()
-Message-ID: <20220502091311.2cbc2c32@kernel.org>
-In-Reply-To: <CAM_iQpX0Ej+dCCum8mpVM+dYmi=dxmDa+OhnVEQhoB9av_yGDQ@mail.gmail.com>
-References: <20220410161042.183540-1-xiyou.wangcong@gmail.com>
-        <20220410161042.183540-2-xiyou.wangcong@gmail.com>
-        <20220425120724.32af0cc3@kernel.org>
-        <CAM_iQpX0Ej+dCCum8mpVM+dYmi=dxmDa+OhnVEQhoB9av_yGDQ@mail.gmail.com>
+To:     Eli Cohen <elic@nvidia.com>
+Cc:     virtualization <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: utilizing multi queues of a net device
+Message-ID: <20220502092134.160f43b3@kernel.org>
+In-Reply-To: <DM8PR12MB5400B7E41EB88FF4C9E0F87AABC19@DM8PR12MB5400.namprd12.prod.outlook.com>
+References: <DM8PR12MB5400B7E41EB88FF4C9E0F87AABC19@DM8PR12MB5400.namprd12.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -60,20 +53,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 30 Apr 2022 10:22:33 -0700 Cong Wang wrote:
-> > I started prototyping a similar patch for TLS a while back but I have
-> > two functions - one to get the skb and another to consume it. I thought
-> > that's better for TLS, otherwise skbs stuck in the middle layer are not
-> > counted towards the rbuf. Any thoughts on structuring the API that way?
-> > I guess we can refactor that later, since TLS TCP-only we don't need
-> > proto_ops plumbing there.  
+On Mon, 2 May 2022 04:29:09 +0000 Eli Cohen wrote:
+> Hi all,
 > 
-> Do you have a pointer to the source code? I am not sure how TLS uses
-> ->read_sock() (or which interface is relevant).  
+> I am experimenting with virtio net device running on a host. The net device has
+> multiple queues and I am trying to measure the throughput while utilizing all
+> the queues simultaneously. I am running iperf3 like this:
+> 
+> taskset 0x1 iperf3 -c 7.7.7.24 -p 20000 & \
+> taskset 0x2 iperf3 -c 7.7.7.24 -p 20001 & \
+> ...
+> taskset 0x80 iperf3 -c 7.7.7.24 -p 20007
+> 
+> Server instances with matching ports exist.
+> 
+> I was expecting traffic to be distributed over the available send queues but
+> the vast majority goes to a single queue. I do see a few packets going to other
+> queues.
+> 
+> Here's what tc qdisc shows:
+> 
+> tc qdisc show dev eth1
+> qdisc mq 0: root
+> qdisc fq_codel 0: parent :8 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: parent :7 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: parent :6 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: parent :5 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: parent :4 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: parent :3 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: parent :2 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: parent :1 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> 
+> Any idea?
 
-Nothing useful, I started hacking on removing strparser but then got
-distracted with functional optimizations. TLS calls ->read_sock() thru
-strparser.
-
-With a little bit of code duplication TLS should be able to avoid 
-the strparser's heavy machinery and cloning each skb.
+Make sure XPS is configured correctly. Looks like virtio_net cooked 
+a less-than-prevalent-for-networking way of distributing CPUs.
