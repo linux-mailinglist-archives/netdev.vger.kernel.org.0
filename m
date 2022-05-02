@@ -2,58 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F3445171BC
-	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 16:38:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9BCA5171C1
+	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 16:39:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238065AbiEBOmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 May 2022 10:42:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48296 "EHLO
+        id S238276AbiEBOnG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 May 2022 10:43:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238024AbiEBOmI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 10:42:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A9A410BD;
-        Mon,  2 May 2022 07:38:35 -0700 (PDT)
+        with ESMTP id S238287AbiEBOnG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 10:43:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A88A120BA
+        for <netdev@vger.kernel.org>; Mon,  2 May 2022 07:39:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9808160FAD;
-        Mon,  2 May 2022 14:38:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AAF0C385AC;
-        Mon,  2 May 2022 14:38:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E681DB80EFA
+        for <netdev@vger.kernel.org>; Mon,  2 May 2022 14:39:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AC03C385AC;
+        Mon,  2 May 2022 14:39:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651502314;
-        bh=5xmYs16DqQgvQQ7n8Eayk+zOE2UfeGbZ788MYHG/7C0=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=IwFi0V7jBWekNpU1Soz8LkJsUFRzMgEoIqJaHkIc3S8nt49GInIlirO6RrYn9pRGx
-         wkXv32V1UOIlev3yzM9vqY3UmUhU/MnOEHVRslt0gDj8Sgz+Hml8/uV0mUfDo8yMlQ
-         W5A6TbYsElP40EEPUbGbaCTUdrti70OqGustplloPw8QEMpuVsNl1LBJorO3vnpl/+
-         9nJjF09qS2CFYPhDITC1IH54GLNgvN61MUfsX81TD8YWgKuVun9/hFIU2BQcfDvTj+
-         jCDtFr3JZQZRlot/nNbBNJYIU+5AsX38ntxfWk7vCugJZnyS1ynU7grlN0NirkVsi2
-         DmOYkCWreUluw==
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1651502374;
+        bh=6znODqSBb42svrOk3wcAvBAIp7jlhv+dO8Y+YtBP1Wk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KMKJNiTazZvEDdnfeppfR+lwyga86viufVb/BogqIXzM29SIhkfPbX5LY+8xBHTA3
+         bPyBnb+DzRxQZFYr8fzQCgX9wbgEQ7YuP+BgxyVVPQnWaod/JAsa54DIONIOtaHAK/
+         DN29eWuSCMxJcaPp+W+4+kkhw/X32r65BrOxm8Iv1c1XNTSUD34OyvI9cBprf/ab2O
+         6Ug6X9W8WL/zmETa86CGZ0oIGVIgLak0oQfPtG10IFoWOUAJBrKKUe8UPOWzTkmn6C
+         8RFHMCRQJ08WtQElr69I1hQGluyZ64HvQbcc/2LQ2XlwKr9gIMxGUIdB89k4fOBg0H
+         SBASfY264+yqw==
+Date:   Mon, 2 May 2022 07:39:33 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Ido Schimmel <idosch@idosch.org>, Ido Schimmel <idosch@nvidia.com>,
+        netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
+        andrew@lunn.ch, mlxsw@nvidia.com
+Subject: Re: [PATCH net-next 00/11] mlxsw: extend line card model by devices
+ and info
+Message-ID: <20220502073933.5699595c@kernel.org>
+In-Reply-To: <YmzW12YL15hAFZRV@nanopsycho>
+References: <YmeXyzumj1oTSX+x@nanopsycho>
+        <20220426054130.7d997821@kernel.org>
+        <Ymf66h5dMNOLun8k@nanopsycho>
+        <20220426075133.53562a2e@kernel.org>
+        <YmjyRgYYRU/ZaF9X@nanopsycho>
+        <20220427071447.69ec3e6f@kernel.org>
+        <YmvRRSFeRqufKbO/@nanopsycho>
+        <20220429114535.64794e94@kernel.org>
+        <Ymw8jBoK3Vx8A/uq@nanopsycho>
+        <20220429153845.5d833979@kernel.org>
+        <YmzW12YL15hAFZRV@nanopsycho>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] [v3] plfxlc: fix le16_to_cpu warning for beacon_interval
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <CWLP265MB3217FDFE8E945E52492B002FE0FC9@CWLP265MB3217.GBRP265.PROD.OUTLOOK.COM>
-References: <CWLP265MB3217FDFE8E945E52492B002FE0FC9@CWLP265MB3217.GBRP265.PROD.OUTLOOK.COM>
-To:     Srinivasan Raju <srini.raju@purelifi.com>
-Cc:     unlisted-recipients:; (no To-header on input)
-        "David S. Miller" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "open list:NETWORKING DRIVERS (WIRELESS)" 
-        <linux-wireless@vger.kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Illegal-Object: Syntax error in Cc: address found on vger.kernel.org:
-        Cc:     unlisted-recipients:; (no To-header on input)"David S. Miller" <davem@davemloft.net>
-                                                                     ^-missing end of address
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <165150230926.32510.3611898103134896335.kvalo@kernel.org>
-Date:   Mon,  2 May 2022 14:38:31 +0000 (UTC)
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -64,32 +66,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Srinivasan Raju <srini.raju@purelifi.com> wrote:
+On Sat, 30 Apr 2022 08:27:35 +0200 Jiri Pirko wrote:
+> Now I just want to use this component name to target individual line
+> cards. I see it is a nice fit. Don't you think?
 
-> Fix the following sparse warnings:
-> drivers/net/wireless/purelifi/plfxlc/chip.c:36:31: sparse: expected unsigned short [usertype] beacon_interval
-> drivers/net/wireless/purelifi/plfxlc/chip.c:36:31: sparse: got restricted __le16 [usertype]
+Still on the fence.
+
+> I see that the manpage is mentioning "the component names from devlink dev info"
+> which is not actually implemented, but exactly what I proposed.
+
+How do you tie the line card to the component name? lc8_dev0 from 
+the flashing example is not present in the lc info output.
+
+> >Please answer questions. I already complained about this once in 
+> >this thread.  
 > 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Srinivasan Raju <srini.raju@purelifi.com>
+> Sorry, I missed this one. The file IS a FW just for a SINGLE gearbox.
 
-Failed to apply, please rebase on top of wireless-next. And also I
-strongly recommend to use git send-email for avoiding any formatting
-problems.
-
-error: patch failed: drivers/net/wireless/purelifi/plfxlc/chip.c:29
-error: drivers/net/wireless/purelifi/plfxlc/chip.c: patch does not apply
-error: Did you hand edit your patch?
-It does not apply to blobs recorded in its index.
-hint: Use 'git am --show-current-patch=diff' to see the failed patch
-Applying: plfxlc: fix le16_to_cpu warning for beacon_interval
-Using index info to reconstruct a base tree...
-Patch failed at 0001 plfxlc: fix le16_to_cpu warning for beacon_interval
-
-Patch set to Changes Requested.
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/CWLP265MB3217FDFE8E945E52492B002FE0FC9@CWLP265MB3217.GBRP265.PROD.OUTLOOK.COM/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+I see.
