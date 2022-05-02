@@ -2,124 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D8A85168EA
-	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 01:48:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 149E65168FB
+	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 02:10:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356108AbiEAXvl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 May 2022 19:51:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48960 "EHLO
+        id S1378463AbiEBAOK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 May 2022 20:14:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiEAXvk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 May 2022 19:51:40 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38FB52BB24
-        for <netdev@vger.kernel.org>; Sun,  1 May 2022 16:48:13 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id b19so17615472wrh.11
-        for <netdev@vger.kernel.org>; Sun, 01 May 2022 16:48:13 -0700 (PDT)
+        with ESMTP id S229449AbiEBAOG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 May 2022 20:14:06 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65F45DE9D
+        for <netdev@vger.kernel.org>; Sun,  1 May 2022 17:10:36 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id q14so16668116ljc.12
+        for <netdev@vger.kernel.org>; Sun, 01 May 2022 17:10:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=rrdjG6c/2FeXm3rYw+FcEDfupq6ewXDDBRc/WzcU8PU=;
-        b=mZ/t7KD3LYNHaw9pbmciwq43b83OmSkNKn/ijHyHJAkutVuLK6BlqidoGdyicpWGxk
-         l+qKGHjFnSKEZTTLifIm8+qxRGtQGfSR+fgspKX3DgmZ5dlPhkm3pIL5YVunCr8+ltms
-         4eaEV8V9IE3jFC7+TQ4/HSXmY0j+PKeAH2iGXXNjeNa75UmSuL0zL6wRDjp1SrR6lXjR
-         8KmVzX6gHUZJi4FLMsgBTlNF2yoHZukhmJ4zpq0wxqq6PpjvV7Z4iJlC11NOdwvMt5A3
-         3z+NhBZvWRlsCN8UuG3h56Nw5bD99hfmNSeoENLhSAcwtIb6cfTBLdHzd1UETMl2dOUu
-         KPtA==
+        d=openvz-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:from:subject:to:cc
+         :references:content-language:in-reply-to:content-transfer-encoding;
+        bh=hd0y1OR/b4IeCBpDcty8eQdPQFVx3QSyhq2QmkPNM2U=;
+        b=69H2sZp3OJ0LOKrRShXopodHHx0OU2Q0oQ9nk2IPizjQ/AESBps1VdJ5Oq3dfBorHr
+         0Jpr+Ii0XIGAC9b027CE9SenODK76DnAoIWWvlqEW49Gu+29PZg2IyeJlFBM/wh5nMS5
+         yXq0RGQ8lNdwBpZIn0z/YqxF4Irp+B7lqzBA+PLV0/1eB6yiziFT4L+VbngWvp7+pT9j
+         i5zbmCEXZ3SaVNtPgvOS97VSGcHt1obphxpMqauFcLOizuZT94JuFThr6wCUy4EfD65Z
+         2sgiTD7dDr5lf7+AyxpsELyBBnmxFl4tKJ8AlhaZ0bV6G0MyHZoodMaXa13o7wi3NjNn
+         rbtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=rrdjG6c/2FeXm3rYw+FcEDfupq6ewXDDBRc/WzcU8PU=;
-        b=lMvyljfyKJD5BWQrJfrtRuQEBVBm2Owsws+/GMnG8e/b1G6tUdwWcU0AJugt36askH
-         VhU+MAMXabAd7IOgTI1AmN7PalJ6y5/vt/bwlUvFnepVSzqt8I2/q9MiNsj+592jXFQJ
-         wyapI/dbqT8Vx0n0vuiY5/mKZlMtSUgPtpiWFF7S9BCaqVy8i36begtGCPO91Be6mypD
-         y8EGxBsoadbFkkE2m/KFepkjOzgNLr90T0ynvK1XD0LC4oi5Pefh0bg4+y+XbG0qES5o
-         U2mQjIExl9AmsSAO0Jtwu6IaujZS9ED5RL6snM1Us7vE3oRJaGBGfqU5BxX4zr8aeyMC
-         KInA==
-X-Gm-Message-State: AOAM530AeI11INWKod6MsO7EyaeWjlOtfX1EiNyodrP+PxRWUxgDWW5Q
-        RNANz9kH8ZphWBq8UJWC3jpLLkdBYzQY5AGWq3o=
-X-Google-Smtp-Source: ABdhPJy33HNvgtzhzFx2F44plBVBahUHmQqf7nrGM7hTFZHKxwpWGxE6zhG7QldcAJM2qOmIXjcmwb3D0kAgvwDqSZU=
-X-Received: by 2002:a5d:6d0d:0:b0:20c:530c:1683 with SMTP id
- e13-20020a5d6d0d000000b0020c530c1683mr7032447wrq.109.1651448891754; Sun, 01
- May 2022 16:48:11 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
+         :subject:to:cc:references:content-language:in-reply-to
+         :content-transfer-encoding;
+        bh=hd0y1OR/b4IeCBpDcty8eQdPQFVx3QSyhq2QmkPNM2U=;
+        b=qLXRBaaeCEInRTB2URGZU8wcGvp8j6u41sRpx4pNHOTqtIg6N1l+v61NRg6IHH7Dxb
+         HRWcNCkDmf5gmmuukYiGZ6nuoZnX0ExNkGrmNVhpkd9k0JB+RAX6LOMrvsaDGehwjivS
+         KsVI1OW6CaypPpT+6eHDSVRk30GHTqs1G6MVaProqFMh9uuCNUeLFTdkP33lrUNJERn9
+         j6JWQ8y935iFMpHn1fZWVf7bLexjI7MdaZZizetrdQ2ccY6s2c+Bk/2rCJEEu4Q9PN1C
+         DlrcNjp3b+XDnUFaXNqakdtCBq5BQdgJIWz+iJjtUvUUuyajr5VaJISLZEkdWsyI6JAy
+         Q4Cg==
+X-Gm-Message-State: AOAM533pyxKMc72/yeuNoKs4XGik7WciJbsOEnDfQuZtrYg01vy3XasH
+        OP196a1FdhWwvOAVV7UmGaqQ7hRwie2cZA==
+X-Google-Smtp-Source: ABdhPJyz51F6s5TmukXjz8wMZrd2FYEXvb+rgt8PgukAcQ8O50QW9Uc9Pvf8CjBk2FqnN6M0JowK3w==
+X-Received: by 2002:a05:651c:505:b0:24f:5248:3018 with SMTP id o5-20020a05651c050500b0024f52483018mr3429236ljp.45.1651450234628;
+        Sun, 01 May 2022 17:10:34 -0700 (PDT)
+Received: from [192.168.1.65] ([46.188.121.177])
+        by smtp.gmail.com with ESMTPSA id c5-20020ac25305000000b0047255d211d1sm561008lfh.256.2022.05.01.17.10.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 01 May 2022 17:10:34 -0700 (PDT)
+Message-ID: <0ccfe7a4-c178-0b66-d481-2326c85a8ffb@openvz.org>
+Date:   Mon, 2 May 2022 03:10:32 +0300
 MIME-Version: 1.0
-Sender: azziz.salim00@gmail.com
-Received: by 2002:adf:f646:0:0:0:0:0 with HTTP; Sun, 1 May 2022 16:48:11 -0700 (PDT)
-From:   "Mr. Jimmy Moore" <jimmymoore265@gmail.com>
-Date:   Mon, 2 May 2022 00:48:11 +0100
-X-Google-Sender-Auth: sNPF-4sm8BBDvLzQ-3NggCbNkic
-Message-ID: <CAOhmN-FZbgYEg-0dSmSOQVs7f8gW=8zoEktGkpcAJxOaKKaTvg@mail.gmail.com>
-Subject: YOUR COVID-19 COMPENSATION
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=6.2 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLY,LOTS_OF_MONEY,LOTTO_DEPT,MILLION_USD,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,SUBJ_ALL_CAPS,
-        T_HK_NAME_FM_MR_MRS,T_SCC_BODY_TEXT_LINE,UNDISC_MONEY autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:443 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [azziz.salim00[at]gmail.com]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [azziz.salim00[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.5 SUBJ_ALL_CAPS Subject is all capitals
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.0 MILLION_USD BODY: Talks about millions of dollars
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  0.0 T_HK_NAME_FM_MR_MRS No description available.
-        *  1.0 FREEMAIL_REPLY From and body contain different freemails
-        *  2.0 LOTTO_DEPT Claims Department
-        *  1.8 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-X-Spam-Level: ******
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+From:   Vasily Averin <vvs@openvz.org>
+Subject: [PATCH memcg v5] net: set proper memcg for net_init hooks allocations
+To:     Roman Gushchin <roman.gushchin@linux.dev>,
+        Shakeel Butt <shakeelb@google.com>
+Cc:     kernel@openvz.org, Florian Westphal <fw@strlen.de>,
+        linux-kernel@vger.kernel.org, Vlastimil Babka <vbabka@suse.cz>,
+        Michal Hocko <mhocko@suse.com>, cgroups@vger.kernel.org,
+        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+References: <CALvZod5HugCO2G3+Av3pXC6s2sy0zKW_HRaRyhOO9GOOWV1SsQ@mail.gmail.com>
+Content-Language: en-US
+In-Reply-To: <CALvZod5HugCO2G3+Av3pXC6s2sy0zKW_HRaRyhOO9GOOWV1SsQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-UNITED NATIONS COVID-19 OVERDUE COMPENSATION UNIT.
-REFERENCE PAYMENT CODE: 8525595
-BAILOUT AMOUNT:$10.5 MILLION USD
-ADDRESS: NEW YORK, NY 10017, UNITED STATES
+__register_pernet_operations() executes init hook of registered
+pernet_operation structure in all existing net namespaces.
 
-Dear award recipient, Covid-19 Compensation funds.
+Typically, these hooks are called by a process associated with
+the specified net namespace, and all __GFP_ACCOUNT marked
+allocation are accounted for corresponding container/memcg.
 
-You are receiving this correspondence because we have finally reached
-a consensus with UN, IRS and IMF that your total fund worth $10.5
-Million Dollars of Covid-19 Compensation payment shall be delivered to
-your nominated mode of receipt, and you are expected to pay the sum of
-$12,000 for levies owed to authorities after receiving your funds.
+However __register_pernet_operations() calls the hooks in the same
+context, and as a result all marked allocations are accounted
+to one memcg for all processed net namespaces.
 
-You have a grace period of 2 weeks to pay the $12,000 levy after you
-have receive your Covid-19 Compensation total sum of $10.5 Million. We
-shall proceed with the payment of your bailout grant only if you agree
-to the terms and conditions stated.
+This patch adjusts active memcg for each net namespace and helps
+to account memory allocated inside ops_init() into the proper memcg.
 
-Contact Dr. Mustafa Ali for more information by email at:(
-mustafaliali180@gmail.com ) Your consent in this regard would be
-highly appreciated.
+Signed-off-by: Vasily Averin <vvs@openvz.org>
+Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
+Acked-by: Shakeel Butt <shakeelb@google.com>
 
-Best Regards,
-Mr. Jimmy Moore.
-Undersecretary General United Nations
-Office of Internal Oversight-UNIOS
-UN making the world a better place
-http://www.un.org/sg/
+---
+v5: documented get_mem_cgroup_from_obj() and for mem_cgroup_or_root()
+    functions, asked by Shakeel.
+
+v4: get_mem_cgroup_from_kmem() renamed to get_mem_cgroup_from_obj(),
+    get_net_memcg() renamed to mem_cgroup_or_root(), suggested by Roman.
+
+v3: put_net_memcg() replaced by an alreay existing mem_cgroup_put()
+    It checks memcg before accessing it, this is required for
+    __register_pernet_operations() called before memcg initialization.
+    Additionally fixed leading whitespaces in non-memcg_kmem version
+    of mem_cgroup_from_obj().
+
+v2: introduced get/put_net_memcg(),
+    new functions are moved under CONFIG_MEMCG_KMEM
+    to fix compilation issues reported by Intel's kernel test robot
+
+v1: introduced get_mem_cgroup_from_kmem(), which takes the refcount
+    for the found memcg, suggested by Shakeel
+---
+ include/linux/memcontrol.h | 47 +++++++++++++++++++++++++++++++++++++-
+ net/core/net_namespace.c   |  7 ++++++
+ 2 files changed, 53 insertions(+), 1 deletion(-)
+
+diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+index 0abbd685703b..6405f9b8f5a8 100644
+--- a/include/linux/memcontrol.h
++++ b/include/linux/memcontrol.h
+@@ -1714,6 +1714,42 @@ static inline int memcg_cache_id(struct mem_cgroup *memcg)
+ 
+ struct mem_cgroup *mem_cgroup_from_obj(void *p);
+ 
++/**
++ * get_mem_cgroup_from_obj - get a memcg associated with passed kernel object.
++ * @p: pointer to object from which memcg should be extracted. It can be NULL.
++ *
++ * Retrieves the memory group into which the memory of the pointed kernel
++ * object is accounted. If memcg is found, its reference is taken.
++ * If a passed kernel object is uncharged, or if proper memcg cannot be found,
++ * as well as if mem_cgroup is disabled, NULL is returned.
++ *
++ * Return: valid memcg pointer with taken reference or NULL.
++ */
++static inline struct mem_cgroup *get_mem_cgroup_from_obj(void *p)
++{
++	struct mem_cgroup *memcg;
++
++	rcu_read_lock();
++	do {
++		memcg = mem_cgroup_from_obj(p);
++	} while (memcg && !css_tryget(&memcg->css));
++	rcu_read_unlock();
++	return memcg;
++}
++
++/**
++ * mem_cgroup_or_root - always returns a pointer to a valid memory cgroup.
++ * @memcg: pointer to a valid memory cgroup or NULL.
++ *
++ * If passed argument is not NULL, returns it without any additional checks
++ * and changes. Otherwise, root_mem_cgroup is returned.
++ *
++ * NOTE: root_mem_cgroup can be NULL during early boot.
++ */
++static inline struct mem_cgroup *mem_cgroup_or_root(struct mem_cgroup *memcg)
++{
++	return memcg ? memcg : root_mem_cgroup;
++}
+ #else
+ static inline bool mem_cgroup_kmem_disabled(void)
+ {
+@@ -1763,9 +1799,18 @@ static inline void memcg_put_cache_ids(void)
+ 
+ static inline struct mem_cgroup *mem_cgroup_from_obj(void *p)
+ {
+-       return NULL;
++	return NULL;
+ }
+ 
++static inline struct mem_cgroup *get_mem_cgroup_from_obj(void *p)
++{
++	return NULL;
++}
++
++static inline struct mem_cgroup *mem_cgroup_or_root(struct mem_cgroup *memcg)
++{
++	return NULL;
++}
+ #endif /* CONFIG_MEMCG_KMEM */
+ 
+ #endif /* _LINUX_MEMCONTROL_H */
+diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
+index a5b5bb99c644..240f3db77dec 100644
+--- a/net/core/net_namespace.c
++++ b/net/core/net_namespace.c
+@@ -26,6 +26,7 @@
+ #include <net/net_namespace.h>
+ #include <net/netns/generic.h>
+ 
++#include <linux/sched/mm.h>
+ /*
+  *	Our network namespace constructor/destructor lists
+  */
+@@ -1147,7 +1148,13 @@ static int __register_pernet_operations(struct list_head *list,
+ 		 * setup_net() and cleanup_net() are not possible.
+ 		 */
+ 		for_each_net(net) {
++			struct mem_cgroup *old, *memcg;
++
++			memcg = mem_cgroup_or_root(get_mem_cgroup_from_obj(net));
++			old = set_active_memcg(memcg);
+ 			error = ops_init(ops, net);
++			set_active_memcg(old);
++			mem_cgroup_put(memcg);
+ 			if (error)
+ 				goto out_undo;
+ 			list_add_tail(&net->exit_list, &net_exit_list);
+-- 
+2.31.1
+
