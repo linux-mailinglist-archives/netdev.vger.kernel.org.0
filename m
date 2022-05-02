@@ -2,117 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5865C51691B
-	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 03:16:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC645516929
+	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 03:41:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356392AbiEBBTQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 1 May 2022 21:19:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50074 "EHLO
+        id S1356271AbiEBBoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 1 May 2022 21:44:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231254AbiEBBTO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 1 May 2022 21:19:14 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3219911A25;
-        Sun,  1 May 2022 18:15:45 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Ks4sS4QPmz4xdK;
-        Mon,  2 May 2022 11:15:39 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1651454141;
-        bh=Jk7AExWT9OpK1U0dF6pKqW8jWAbfXyujcmahNjOhKxk=;
-        h=Date:From:To:Cc:Subject:From;
-        b=gttuS7JDBltC7uIehF4yyOjE/3mApywujCd66Wp5IzzfvUOZDdMCHkqRRCWQnAFJs
-         5sWp93yniP2sU9DewQhV3PVX8qAhc6+7/n0qKHaX7kbrGCltYkoD70BlFWeRGviB8y
-         6PDltBpWQ+0X9zsA9xPePcZWBFeB6EHQt6orykHMMppouZkFzMrCbnwkRSSB+XbACo
-         vhqoXr++nqqI1K6lPKveI25wFl2CPaS52JGX0sxZZetLy0wtsivCZxBP/+8fu0+Ykf
-         1H+RCLWe6s93O7TixDkHj+rk5X9Q1aRqEl1B88IAtWGVwfq0ZWIzFr6J4bLE5uQ1fX
-         Vr/ghQhU2DaiQ==
-Date:   Mon, 2 May 2022 11:15:39 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Hangbin Liu <liuhangbin@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Joachim Wiberg <troglobit@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20220502111539.0b7e4621@canb.auug.org.au>
+        with ESMTP id S233379AbiEBBoU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 1 May 2022 21:44:20 -0400
+Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E178C25C5
+        for <netdev@vger.kernel.org>; Sun,  1 May 2022 18:40:53 -0700 (PDT)
+Received: from fsav111.sakura.ne.jp (fsav111.sakura.ne.jp [27.133.134.238])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 2421eQH1029023;
+        Mon, 2 May 2022 10:40:26 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav111.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav111.sakura.ne.jp);
+ Mon, 02 May 2022 10:40:26 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav111.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 2421eNB9028874
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Mon, 2 May 2022 10:40:25 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Message-ID: <a5fb1fc4-2284-3359-f6a0-e4e390239d7b@I-love.SAKURA.ne.jp>
+Date:   Mon, 2 May 2022 10:40:18 +0900
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/WYaI_2j9ow=s5DrQWb3PW8e";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: [PATCH v2] net: rds: acquire refcount on TCP sockets
+Content-Language: en-US
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        syzbot <syzbot+694120e1002c117747ed@syzkaller.appspotmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        OFED mailing list <linux-rdma@vger.kernel.org>
+References: <00000000000045dc96059f4d7b02@google.com>
+ <000000000000f75af905d3ba0716@google.com>
+ <c389e47f-8f82-fd62-8c1d-d9481d2f71ff@I-love.SAKURA.ne.jp>
+ <b0f99499-fb6a-b9ec-7bd3-f535f11a885d@I-love.SAKURA.ne.jp>
+ <5f90c2b8-283e-6ca5-65f9-3ea96df00984@I-love.SAKURA.ne.jp>
+ <f8ae5dcd-a5ed-2d8b-dd7a-08385e9c3675@I-love.SAKURA.ne.jp>
+ <CANn89iJukWcN9-fwk4HEH-StAjnTVJ34UiMsrN=mdRbwVpo8AA@mail.gmail.com>
+From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+In-Reply-To: <CANn89iJukWcN9-fwk4HEH-StAjnTVJ34UiMsrN=mdRbwVpo8AA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/WYaI_2j9ow=s5DrQWb3PW8e
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+syzbot is reporting use-after-free read in tcp_retransmit_timer() [1],
+for TCP socket used by RDS is accessing sock_net() without acquiring a
+refcount on net namespace. Since TCP's retransmission can happen after
+a process which created net namespace terminated, we need to explicitly
+acquire a refcount.
 
-Hi all,
+Link: https://syzkaller.appspot.com/bug?extid=694120e1002c117747ed [1]
+Reported-by: syzbot <syzbot+694120e1002c117747ed@syzkaller.appspotmail.com>
+Fixes: 26abe14379f8e2fa ("net: Modify sk_alloc to not reference count the netns of kernel sockets.")
+Fixes: 8a68173691f03661 ("net: sk_clone_lock() should only do get_net() if the parent is not a kernel socket")
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Tested-by: syzbot <syzbot+694120e1002c117747ed@syzkaller.appspotmail.com>
+---
+Changes in v2:
+  Add Fixes: tag.
+  Move to inside lock_sock() section.
 
-Today's linux-next merge of the net-next tree got a conflict in:
+I chose 26abe14379f8e2fa and 8a68173691f03661 which went to 4.2 for Fixes: tag,
+for refcount was implicitly taken when 70041088e3b97662 ("RDS: Add TCP transport
+to RDS") was added to 2.6.32.
 
-  tools/testing/selftests/net/forwarding/Makefile
+ net/rds/tcp.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-between commit:
+diff --git a/net/rds/tcp.c b/net/rds/tcp.c
+index 5327d130c4b5..2f638f8b7b1e 100644
+--- a/net/rds/tcp.c
++++ b/net/rds/tcp.c
+@@ -495,6 +495,14 @@ void rds_tcp_tune(struct socket *sock)
+ 
+ 	tcp_sock_set_nodelay(sock->sk);
+ 	lock_sock(sk);
++	/* TCP timer functions might access net namespace even after
++	 * a process which created this net namespace terminated.
++	 */
++	if (!sk->sk_net_refcnt) {
++		sk->sk_net_refcnt = 1;
++		get_net_track(net, &sk->ns_tracker, GFP_KERNEL);
++		sock_inuse_add(net, 1);
++	}
+ 	if (rtn->sndbuf_size > 0) {
+ 		sk->sk_sndbuf = rtn->sndbuf_size;
+ 		sk->sk_userlocks |= SOCK_SNDBUF_LOCK;
+-- 
+2.34.1
 
-  f62c5acc800e ("selftests/net/forwarding: add missing tests to Makefile")
 
-from the net tree and commit:
-
-  50fe062c806e ("selftests: forwarding: new test, verify host mdb entries")
-
-from the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc tools/testing/selftests/net/forwarding/Makefile
-index c87e674b61b1,ae80c2aef577..000000000000
---- a/tools/testing/selftests/net/forwarding/Makefile
-+++ b/tools/testing/selftests/net/forwarding/Makefile
-@@@ -2,7 -2,7 +2,8 @@@
- =20
-  TEST_PROGS =3D bridge_igmp.sh \
-  	bridge_locked_port.sh \
-+ 	bridge_mdb.sh \
- +	bridge_mld.sh \
-  	bridge_port_isolation.sh \
-  	bridge_sticky_fdb.sh \
-  	bridge_vlan_aware.sh \
-
---Sig_/WYaI_2j9ow=s5DrQWb3PW8e
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJvMLsACgkQAVBC80lX
-0Gy2Zwf+PfEcGvSUt8bqUHECfKbdzaRDWbpkHLpB0FWKiQxnW8dW/gQV/f4eVluh
-sKEBu4ZCogom7qFMnKahaIwGn3pvsnx9JZ8pHGBi3lyLKDvM15RdspPH0n7yNI8S
-PftiIJM6S/8LV6O/6fB1sUaU4Am/+7xRha/FgdPVZ2mDi2xPGKhfiisoTnsWvggu
-blsRl7eBh7AYk+utRVjYFqbqp1Nqv8fzVnbVl1b8JW8nOqOcVK7v8hkfaY2w/jSA
-tDkt+kUZgyf8S/wkGf/UFbkV1W00cGEhqw3hiPsrygDVP1OAGvGHgfgRriLTFasV
-FyODnI2T3UpMfdEVlNwaaidRtIXESQ==
-=35uy
------END PGP SIGNATURE-----
-
---Sig_/WYaI_2j9ow=s5DrQWb3PW8e--
