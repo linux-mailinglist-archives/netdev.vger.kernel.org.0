@@ -2,89 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13674517A05
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 00:33:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAB97517A03
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 00:32:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229462AbiEBWgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 May 2022 18:36:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36138 "EHLO
+        id S1347950AbiEBWgY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 May 2022 18:36:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356883AbiEBWgi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 18:36:38 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FA3A101CB;
-        Mon,  2 May 2022 15:33:03 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id l11-20020a17090a49cb00b001d923a9ca99so562951pjm.1;
-        Mon, 02 May 2022 15:33:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0RN7iPKfXiI0ODvO6fiRKvCIYJ/S4B8bkSMPoiaNiTU=;
-        b=ek6vYhim/PWLQ2hXUsh6x4WaScNf16eAWZ8nzuBUJvCPfbcnXZrn8isQmhj2r9DziJ
-         UT4QJibAAfUZI6QsIZZPFy8gV9sJXhucXcrlv2z/TwuRAQZOkX2zgLgJoolXftmnhUrG
-         CsGB78AnbDdcbs+vrL+jBZF9+VTzeqBH1rFqEA1iViyInnNu7MrvDC2X3eo7Z11lJpSB
-         VqnO2SUVuUcxxYce+L4EVUuQTKYVj+6bTVHgNsGpSVQGfsipbTzIWMfsfRaZXAaev+rV
-         jjbvgmFB0H+ISw1dvnKV7wF9SJ2hdN+OHNXlGt87ABJDfDQ92BnH1zgVtI1S5q62WAEA
-         if+Q==
+        with ESMTP id S229462AbiEBWgX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 18:36:23 -0400
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B751DA1B2;
+        Mon,  2 May 2022 15:32:53 -0700 (PDT)
+Received: by mail-ot1-f48.google.com with SMTP id m6-20020a05683023a600b0060612720715so3401252ots.10;
+        Mon, 02 May 2022 15:32:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0RN7iPKfXiI0ODvO6fiRKvCIYJ/S4B8bkSMPoiaNiTU=;
-        b=njb04eqza5nsiMNrnxYfU5Roortf/50/+HDsd2M5s6BJz0+NZJS4kLMznV+HNseSTr
-         2qlkwlJUeGayAfwxgw/5Jyy6+QNCva5jICR3yAiAqyZl/pEWCC/OG/fPbLlK/UF+vC0X
-         rRi0FNAHzJzDx2CL/g144TfaH2Y4KFFaJa1o9PCWcVcwigMe7ttBVh5m/wMRYzX93d86
-         Fqxc6pYiMriy9Zkm1b6cynqC1KMs96dbiPNcnwgVlBwDrFrqQg9bwGkxT1eVD68YwBIF
-         qxB5gGe9O1seQjER6gKsrkZd4dRzyfBYrn5j84ZH31Zd0A4xsDUVAH5/t/4pmvKlMdN3
-         BUSg==
-X-Gm-Message-State: AOAM531GL2EVVR1gTuv3gEbMyELD8EVRtW49GbJX/xsWO6FkqFrxVUZg
-        MSrW6LuyX+HbsH3TfSCgs/NaM7gdIS0SsR3Sj/E=
-X-Google-Smtp-Source: ABdhPJy6XehrLW6wVnUG9BbFa9uuiZkoB7Bnzi3oTcFmeZf1t/7Gt2CgNdE0jYMhNK5AXysIWlNFNMjSnYWkQWjyeHw=
-X-Received: by 2002:a17:903:2d0:b0:14d:8a8d:cb1 with SMTP id
- s16-20020a17090302d000b0014d8a8d0cb1mr13872488plk.50.1651530782937; Mon, 02
- May 2022 15:33:02 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220430124803.1165005-1-mnhagan88@gmail.com> <YnAlBvWyyJ9oDcpz@lunn.ch>
-In-Reply-To: <YnAlBvWyyJ9oDcpz@lunn.ch>
-From:   Matthew Hagan <mnhagan88@gmail.com>
-Date:   Mon, 2 May 2022 23:32:51 +0100
-Message-ID: <CAL3BVdq-OkoJM8LEXvJLW8HS3n8-VH3KrM-A8CbjUm9SC3r3vw@mail.gmail.com>
-Subject: Re: [PATCH] net: sfp: Add tx-fault quirk for Huawei MA5671A SFP ONT
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=XSA9YndvfNYBh4vCbeUSx3HnFvZdR1DxFJAhwqu75m0=;
+        b=4V35YE40lhHsC1lwUNaepjeKvVK0FuDe99SWnjWuL/NCISd4SQv8UdrHiZppXuf+Yr
+         733OLuuHny8xHNhmZ32PskCTqnfCnT8qIUSHbS4Jh/aSu4E/scj7q+geeWUl9QkEvGLN
+         WSTgKKGKzAwNpP9XnPCJtrcB4ol7frodJeAiwUCfF+26B5SWYkkJfntsvND1rZ9NSmxY
+         t1ZM9UqOWZEn3ZvA8N+EFwHQ9aqkjd7JdUHXtJ0+Eoxuiszt0MUiiU1b+c2epEhBq9u5
+         ckSGMd7R/pRAB7vaHAE0wWUUjFvAfYJYEC9WNylH2+kDrWw+z7NG/mfLDSVz/50xtBqE
+         KA+w==
+X-Gm-Message-State: AOAM531OT+eXBfkve1uLcqRKYPlh75oQSNvmtvo1VP6ThFzfHxRu3Le0
+        mMRU9zVM+a3ffXe9ypMdy+bl6FJMkQ==
+X-Google-Smtp-Source: ABdhPJzF2BhR/JXe6VIWEotbfWv8kVNDq/XceNLCdYXdx8vxLRKHHvOxpjQARdjMPuAAOHHRfZ0lZg==
+X-Received: by 2002:a05:6830:1d92:b0:606:a1e:946a with SMTP id y18-20020a0568301d9200b006060a1e946amr4185338oti.294.1651530773029;
+        Mon, 02 May 2022 15:32:53 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id n10-20020a9d6f0a000000b0060603221264sm3377485otq.52.2022.05.02.15.32.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 May 2022 15:32:52 -0700 (PDT)
+Received: (nullmailer pid 1916692 invoked by uid 1000);
+        Mon, 02 May 2022 22:32:51 -0000
+Date:   Mon, 2 May 2022 17:32:51 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Nathan Rossi <nathan@nathanrossi.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Subject: Re: [PATCH 1/2] dt-bindings: net: dsa: marvell: Add
+ single-chip-address property
+Message-ID: <YnBcE96wbQxZguw2@robh.at.kernel.org>
+References: <20220423131427.237160-1-nathan@nathanrossi.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220423131427.237160-1-nathan@nathanrossi.com>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2 May 2022 at 19:37, Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > +     if (!memcmp(id.base.vendor_name, "HUAWEI          ", 16) &&
-> > +         !memcmp(id.base.vendor_pn, "MA5671A         ", 16))
-> > +             sfp->tx_fault_ignore = true;
-> > +     else
-> > +             sfp->tx_fault_ignore = false;
-> > +
-> > +     return 0;
-> > +
-> >       return 0;
->
-> Why do we need two return 0; Probably a merged conflict gone wrong.
->
-Apologies for the oversight. Will submit a v2 shortly.
->     Andrew
+On Sat, Apr 23, 2022 at 01:14:27PM +0000, Nathan Rossi wrote:
+> Some Marvell DSA devices can be accessed in a single chip addressing
+> mode. This is currently configured by setting the address of the switch
+> to 0. However switches in this configuration do not respond to address
+> 0, only responding to higher addresses (fixed addressed based on the
+> switch model) for the individual ports/etc. This is a feature to allow
+> for other phys to exist on the same mdio bus.
+> 
+> This change defines a 'single-chip-address' property in order to
+> explicitly define that the chip is accessed in this mode. This allows
+> for a switch to have an address defined other than 0, so that address
+> 0 can be used for another mdio device.
+> 
+> Signed-off-by: Nathan Rossi <nathan@nathanrossi.com>
+> ---
+>  Documentation/devicetree/bindings/net/dsa/marvell.txt | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/dsa/marvell.txt b/Documentation/devicetree/bindings/net/dsa/marvell.txt
+> index 2363b41241..5c7304274c 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/marvell.txt
+> +++ b/Documentation/devicetree/bindings/net/dsa/marvell.txt
+> @@ -46,6 +46,8 @@ Optional properties:
+>  - mdio?		: Container of PHYs and devices on the external MDIO
+>  			  bus. The node must contains a compatible string of
+>  			  "marvell,mv88e6xxx-mdio-external"
+> +- single-chip-address	: Device is configured to use single chip addressing
+> +			  mode.
 
-Matthew
+Doesn't sound like a common feature, it needs a vendor prefix.
+
+Some of the commit message explanation of what 'single chip addressing' 
+is is needed here.
+
+Rob
