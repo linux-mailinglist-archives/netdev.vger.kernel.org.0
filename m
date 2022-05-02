@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A74F7517678
-	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 20:24:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE30851767E
+	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 20:24:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386850AbiEBS1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 May 2022 14:27:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43386 "EHLO
+        id S1386856AbiEBS1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 May 2022 14:27:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238642AbiEBS1a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 14:27:30 -0400
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D283265A1;
-        Mon,  2 May 2022 11:24:00 -0700 (PDT)
-Received: by mail-oi1-x234.google.com with SMTP id l16so8759992oil.6;
-        Mon, 02 May 2022 11:24:00 -0700 (PDT)
+        with ESMTP id S238642AbiEBS1c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 14:27:32 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ED6D7671;
+        Mon,  2 May 2022 11:24:02 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id l16so8760038oil.6;
+        Mon, 02 May 2022 11:24:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ZlOdm9LHJdhe6OTRhmGuzd9PvHg3DuoSVReEww5/lns=;
-        b=alzeGk9t1f7cbHxfcRY/eiJMiNeVN9h3SS6Snzk9LTcXO/1Jm6eua2YoAM0s4Xbn2V
-         eKul+c9q+2PxVOwVhklq6nvus43lu5LF8S6yMA3dODXeedWAfvPD21v4AkYXQJDsA6KH
-         kle02NTRbK8h1WJbI5+ssNa2yn6D3TH8JBytc4AG+3FzO4clc17vvoDK84Z4KFDaLS+E
-         4BzTCqdFwVFEGuRshzXBkRxCA1hC2mIHNdF/gxMYLJDjbgZeNYbD4xV83c5yEyhNyXEQ
-         XfcKi7Oq9xsd/olFxT+ZBYu9L8i+foitIrkWQugevJFdv6QlPQX6hnRjfwMfGj57Py7u
-         QCrg==
+        bh=rYmnUga3LNpruXv7GAgs6qY9u0qs4qlG/Du9CDwJ6FY=;
+        b=lNOgAMlJ2q4tfBiPumM6ZSCZKo4pTAE3tgRiyPwdw9bwwWWFaFqsqJEJrQowQgvRO6
+         UEQ0w22HTKcnSwOwgGphAGe+G1Tff9S3bURXNh/hh1Ta4syGfkr8uKK9Srl5rowtI58y
+         wzmfVIvf1Nv8OeQrYa2TZaHVeHAMcvuh531qEIyC4uVEE+Agx0qG9JzvpAteYzKfaG8Z
+         xk5xxaIKA2Bcmuw69dMbulk2lWZiqV5kXNFncnoFr4twWDx46qLlquRZRrN3HqmUXFAT
+         FjTOOSobFbZhR7if2iUm4gO7SStOOUN4o3vxK4GljFbvGRMYGU/moSR6jqj5OCis8M8B
+         zv4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ZlOdm9LHJdhe6OTRhmGuzd9PvHg3DuoSVReEww5/lns=;
-        b=ule8e5uFlURQ0fvoDJVk/F5uQCc8H8Ezd5d0ppbpUl2/wl+NmnPgXRi4IM9MTziuQz
-         4Qkc9PKQuHMtrH4lH5PNJVcxrt/Z6A3BhY3aTs5dJmjbi0RkED/gzKx4syttdNakMUvV
-         reW+d/SgcssQB4MRqBo3mQEuK7XK0+IwYLbukF361cZXy9uzEPxpRlQemPrRX2ILwFzv
-         J9mziPXJgrUxng/semySedh4nOIVSLgNfVXf1wbmfXjy85VS4xRI3aXMwSiCGx/8R3pK
-         D6l4ZbtoGxZALS1xIDDLlr7Js+umiOLLgyE7t1YV+20wssE28mB7uogZAvgs1mM3mj6v
-         ag8A==
-X-Gm-Message-State: AOAM533KBtO5SfuaaCpOvbHk8YawsNh2eLQkrNXiuAMm05F+UKONMozs
-        xK0TLJVk0X1EeWyvg7LlBfyVgB8Zo1Q=
-X-Google-Smtp-Source: ABdhPJztpTRBUBqzvrVjPvL4D3egtwLF+C9i5eL3SvEE7XnsHcCNmjk4NX9ch3GtoHsgAJn7k+RewA==
-X-Received: by 2002:a54:4f12:0:b0:325:e:49ff with SMTP id e18-20020a544f12000000b00325000e49ffmr208848oiy.261.1651515840068;
-        Mon, 02 May 2022 11:24:00 -0700 (PDT)
+        bh=rYmnUga3LNpruXv7GAgs6qY9u0qs4qlG/Du9CDwJ6FY=;
+        b=kPiiORyv7rezo6faMk+YW0A+wuFmtX3SR9Fq/HOXbsYiEsVM68nXJFLx0DsYFn6SDi
+         P/q/mRPJwVdcsNhU/9miVr6X/1ATq89yZ4kREwixgNrWDWnlyvSrqUy0qvw6tN7dS8Bb
+         DKWj6zulhJKdP2ifXvemAO+HnW8/KjKbkrRVSJua6pwyOlJ5oF2gWy6Dkh5YlRandETm
+         WXTtG0k28p/oTDBS3CcK4rKBsC47JqSGFJNf1PeZtqDD04XvoAppdikKpkgphZ/QR+sv
+         uyCOgFzM69Cjiy+PmCv1Jpcni/hhC/AfDxDBvMvyUxKGsvR5ELh9qgZERpPFpM03tRrc
+         jo1Q==
+X-Gm-Message-State: AOAM531dTkF9QLaSAA6jOGlsZ2gjLJL+WsTmKXDVyfOFPyF5Wbyj5AqZ
+        XbqYn5pzNXE8lmEP0EYKqM7TsJWLnI4=
+X-Google-Smtp-Source: ABdhPJzehGvBvG/1onHEizWSIRJsBIuoOWwbFfnn2uwDUVwZJTeE5EC2NMas7Xqzuf1BuGiEU3/+bQ==
+X-Received: by 2002:a05:6808:198b:b0:325:fe41:d455 with SMTP id bj11-20020a056808198b00b00325fe41d455mr215956oib.9.1651515841282;
+        Mon, 02 May 2022 11:24:01 -0700 (PDT)
 Received: from pop-os.attlocal.net ([2600:1700:65a0:ab60:7340:5d9f:8575:d25d])
-        by smtp.gmail.com with ESMTPSA id t13-20020a05683014cd00b0060603221245sm3129915otq.21.2022.05.02.11.23.59
+        by smtp.gmail.com with ESMTPSA id t13-20020a05683014cd00b0060603221245sm3129915otq.21.2022.05.02.11.24.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 11:23:59 -0700 (PDT)
+        Mon, 02 May 2022 11:24:00 -0700 (PDT)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
@@ -54,9 +54,9 @@ Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
         John Fastabend <john.fastabend@gmail.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jakub Sitnicki <jakub@cloudflare.com>
-Subject: [Patch bpf-next v2 1/4] tcp: introduce tcp_read_skb()
-Date:   Mon,  2 May 2022 11:23:42 -0700
-Message-Id: <20220502182345.306970-2-xiyou.wangcong@gmail.com>
+Subject: [Patch bpf-next v2 2/4] net: introduce a new proto_ops ->read_skb()
+Date:   Mon,  2 May 2022 11:23:43 -0700
+Message-Id: <20220502182345.306970-3-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220502182345.306970-1-xiyou.wangcong@gmail.com>
 References: <20220502182345.306970-1-xiyou.wangcong@gmail.com>
@@ -74,13 +74,15 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Cong Wang <cong.wang@bytedance.com>
 
-This patch inroduces tcp_read_skb() based on tcp_read_sock(),
-a preparation for the next patch which actually introduces
-a new sock ops.
+Currently both splice() and sockmap use ->read_sock() to
+read skb from receive queue, but for sockmap we only read
+one entire skb at a time, so ->read_sock() is too conservative
+to use. Introduce a new proto_ops ->read_skb() which supports
+this sematic, with this we can finally pass the ownership of
+skb to recv actors.
 
-TCP is special here, because it has tcp_read_sock() which is
-mainly used by splice(). tcp_read_sock() supports partial read
-and arbitrary offset, neither of them is needed for sockmap.
+For non-TCP protocols, all ->read_sock() can be simply
+converted to ->read_skb().
 
 Cc: Eric Dumazet <edumazet@google.com>
 Cc: John Fastabend <john.fastabend@gmail.com>
@@ -88,159 +90,310 @@ Cc: Daniel Borkmann <daniel@iogearbox.net>
 Cc: Jakub Sitnicki <jakub@cloudflare.com>
 Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 ---
- include/net/tcp.h |  2 ++
- net/ipv4/tcp.c    | 63 +++++++++++++++++++++++++++++++++++++++++------
- 2 files changed, 57 insertions(+), 8 deletions(-)
+ include/linux/net.h |  4 ++++
+ include/net/tcp.h   |  3 +--
+ include/net/udp.h   |  3 +--
+ net/core/skmsg.c    | 20 +++++---------------
+ net/ipv4/af_inet.c  |  3 ++-
+ net/ipv4/tcp.c      |  9 +++------
+ net/ipv4/udp.c      | 10 ++++------
+ net/ipv6/af_inet6.c |  3 ++-
+ net/unix/af_unix.c  | 23 +++++++++--------------
+ 9 files changed, 31 insertions(+), 47 deletions(-)
 
+diff --git a/include/linux/net.h b/include/linux/net.h
+index 12093f4db50c..a03485e8cbb2 100644
+--- a/include/linux/net.h
++++ b/include/linux/net.h
+@@ -152,6 +152,8 @@ struct module;
+ struct sk_buff;
+ typedef int (*sk_read_actor_t)(read_descriptor_t *, struct sk_buff *,
+ 			       unsigned int, size_t);
++typedef int (*skb_read_actor_t)(struct sock *, struct sk_buff *);
++
+ 
+ struct proto_ops {
+ 	int		family;
+@@ -214,6 +216,8 @@ struct proto_ops {
+ 	 */
+ 	int		(*read_sock)(struct sock *sk, read_descriptor_t *desc,
+ 				     sk_read_actor_t recv_actor);
++	/* This is different from read_sock(), it reads an entire skb at a time. */
++	int		(*read_skb)(struct sock *sk, skb_read_actor_t recv_actor);
+ 	int		(*sendpage_locked)(struct sock *sk, struct page *page,
+ 					   int offset, size_t size, int flags);
+ 	int		(*sendmsg_locked)(struct sock *sk, struct msghdr *msg,
 diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 94a52ad1101c..ab7516e5cc56 100644
+index ab7516e5cc56..9f4fe3b80e30 100644
 --- a/include/net/tcp.h
 +++ b/include/net/tcp.h
-@@ -667,6 +667,8 @@ void tcp_get_info(struct sock *, struct tcp_info *);
+@@ -667,8 +667,7 @@ void tcp_get_info(struct sock *, struct tcp_info *);
  /* Read 'sendfile()'-style from a TCP socket */
  int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
  		  sk_read_actor_t recv_actor);
-+int tcp_read_skb(struct sock *sk, read_descriptor_t *desc,
-+		 sk_read_actor_t recv_actor);
+-int tcp_read_skb(struct sock *sk, read_descriptor_t *desc,
+-		 sk_read_actor_t recv_actor);
++int tcp_read_skb(struct sock *sk, skb_read_actor_t recv_actor);
  
  void tcp_initialize_rcv_mss(struct sock *sk);
  
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index db55af9eb37b..8d48126e3694 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1600,7 +1600,7 @@ static void tcp_eat_recv_skb(struct sock *sk, struct sk_buff *skb)
- 	__kfree_skb(skb);
+diff --git a/include/net/udp.h b/include/net/udp.h
+index b83a00330566..47a0e3359771 100644
+--- a/include/net/udp.h
++++ b/include/net/udp.h
+@@ -305,8 +305,7 @@ struct sock *__udp6_lib_lookup(struct net *net,
+ 			       struct sk_buff *skb);
+ struct sock *udp6_lib_lookup_skb(const struct sk_buff *skb,
+ 				 __be16 sport, __be16 dport);
+-int udp_read_sock(struct sock *sk, read_descriptor_t *desc,
+-		  sk_read_actor_t recv_actor);
++int udp_read_skb(struct sock *sk, skb_read_actor_t recv_actor);
+ 
+ /* UDP uses skb->dev_scratch to cache as much information as possible and avoid
+  * possibly multiple cache miss on dequeue()
+diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+index 22b983ade0e7..50405e3eda88 100644
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -1159,21 +1159,17 @@ static void sk_psock_done_strp(struct sk_psock *psock)
+ }
+ #endif /* CONFIG_BPF_STREAM_PARSER */
+ 
+-static int sk_psock_verdict_recv(read_descriptor_t *desc, struct sk_buff *skb,
+-				 unsigned int offset, size_t orig_len)
++static int sk_psock_verdict_recv(struct sock *sk, struct sk_buff *skb)
+ {
+-	struct sock *sk = (struct sock *)desc->arg.data;
+ 	struct sk_psock *psock;
+ 	struct bpf_prog *prog;
+ 	int ret = __SK_DROP;
+-	int len = orig_len;
++	int len = skb->len;
+ 
+ 	/* clone here so sk_eat_skb() in tcp_read_sock does not drop our data */
+ 	skb = skb_clone(skb, GFP_ATOMIC);
+-	if (!skb) {
+-		desc->error = -ENOMEM;
++	if (!skb)
+ 		return 0;
+-	}
+ 
+ 	rcu_read_lock();
+ 	psock = sk_psock(sk);
+@@ -1203,16 +1199,10 @@ static int sk_psock_verdict_recv(read_descriptor_t *desc, struct sk_buff *skb,
+ static void sk_psock_verdict_data_ready(struct sock *sk)
+ {
+ 	struct socket *sock = sk->sk_socket;
+-	read_descriptor_t desc;
+ 
+-	if (unlikely(!sock || !sock->ops || !sock->ops->read_sock))
++	if (unlikely(!sock || !sock->ops || !sock->ops->read_skb))
+ 		return;
+-
+-	desc.arg.data = sk;
+-	desc.error = 0;
+-	desc.count = 1;
+-
+-	sock->ops->read_sock(sk, &desc, sk_psock_verdict_recv);
++	sock->ops->read_skb(sk, sk_psock_verdict_recv);
  }
  
--static struct sk_buff *tcp_recv_skb(struct sock *sk, u32 seq, u32 *off)
-+static struct sk_buff *tcp_recv_skb(struct sock *sk, u32 seq, u32 *off, bool unlink)
- {
- 	struct sk_buff *skb;
- 	u32 offset;
-@@ -1613,6 +1613,8 @@ static struct sk_buff *tcp_recv_skb(struct sock *sk, u32 seq, u32 *off)
- 		}
- 		if (offset < skb->len || (TCP_SKB_CB(skb)->tcp_flags & TCPHDR_FIN)) {
- 			*off = offset;
-+			if (unlink)
-+				__skb_unlink(skb, &sk->sk_receive_queue);
- 			return skb;
- 		}
- 		/* This looks weird, but this can happen if TCP collapsing
-@@ -1646,7 +1648,7 @@ int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
- 
- 	if (sk->sk_state == TCP_LISTEN)
- 		return -ENOTCONN;
--	while ((skb = tcp_recv_skb(sk, seq, &offset)) != NULL) {
-+	while ((skb = tcp_recv_skb(sk, seq, &offset, false)) != NULL) {
- 		if (offset < skb->len) {
- 			int used;
- 			size_t len;
-@@ -1677,7 +1679,7 @@ int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
- 			 * getting here: tcp_collapse might have deleted it
- 			 * while aggregating skbs from the socket queue.
- 			 */
--			skb = tcp_recv_skb(sk, seq - 1, &offset);
-+			skb = tcp_recv_skb(sk, seq - 1, &offset, false);
- 			if (!skb)
- 				break;
- 			/* TCP coalescing might have appended data to the skb.
-@@ -1702,13 +1704,58 @@ int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
- 
- 	/* Clean up data we have read: This will do ACK frames. */
- 	if (copied > 0) {
--		tcp_recv_skb(sk, seq, &offset);
-+		tcp_recv_skb(sk, seq, &offset, false);
- 		tcp_cleanup_rbuf(sk, copied);
- 	}
- 	return copied;
+ void sk_psock_start_verdict(struct sock *sk, struct sk_psock *psock)
+diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+index 93da9f783bec..f615263855d0 100644
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -1040,6 +1040,7 @@ const struct proto_ops inet_stream_ops = {
+ 	.sendpage	   = inet_sendpage,
+ 	.splice_read	   = tcp_splice_read,
+ 	.read_sock	   = tcp_read_sock,
++	.read_skb	   = tcp_read_skb,
+ 	.sendmsg_locked    = tcp_sendmsg_locked,
+ 	.sendpage_locked   = tcp_sendpage_locked,
+ 	.peek_len	   = tcp_peek_len,
+@@ -1067,7 +1068,7 @@ const struct proto_ops inet_dgram_ops = {
+ 	.setsockopt	   = sock_common_setsockopt,
+ 	.getsockopt	   = sock_common_getsockopt,
+ 	.sendmsg	   = inet_sendmsg,
+-	.read_sock	   = udp_read_sock,
++	.read_skb	   = udp_read_skb,
+ 	.recvmsg	   = inet_recvmsg,
+ 	.mmap		   = sock_no_mmap,
+ 	.sendpage	   = inet_sendpage,
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 8d48126e3694..d62490d10fd8 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -1711,8 +1711,7 @@ int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
  }
  EXPORT_SYMBOL(tcp_read_sock);
  
-+int tcp_read_skb(struct sock *sk, read_descriptor_t *desc,
-+		 sk_read_actor_t recv_actor)
-+{
-+	struct tcp_sock *tp = tcp_sk(sk);
-+	u32 seq = tp->copied_seq;
-+	struct sk_buff *skb;
-+	int copied = 0;
-+	u32 offset;
-+
-+	if (sk->sk_state == TCP_LISTEN)
-+		return -ENOTCONN;
-+
-+	while ((skb = tcp_recv_skb(sk, seq, &offset, true)) != NULL) {
-+		int used = recv_actor(desc, skb, 0, skb->len);
-+
-+		if (used <= 0) {
-+			if (!copied)
-+				copied = used;
-+			break;
-+		}
-+		seq += used;
-+		copied += used;
-+
-+		if (TCP_SKB_CB(skb)->tcp_flags & TCPHDR_FIN) {
-+			kfree_skb(skb);
-+			++seq;
-+			break;
-+		}
-+		kfree_skb(skb);
-+		if (!desc->count)
-+			break;
-+		WRITE_ONCE(tp->copied_seq, seq);
-+	}
-+	WRITE_ONCE(tp->copied_seq, seq);
-+
-+	tcp_rcv_space_adjust(sk);
-+
-+	/* Clean up data we have read: This will do ACK frames. */
-+	if (copied > 0)
-+		tcp_cleanup_rbuf(sk, copied);
-+
-+	return copied;
-+}
-+EXPORT_SYMBOL(tcp_read_skb);
-+
- int tcp_peek_len(struct socket *sock)
+-int tcp_read_skb(struct sock *sk, read_descriptor_t *desc,
+-		 sk_read_actor_t recv_actor)
++int tcp_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
  {
- 	return tcp_inq(sock->sk);
-@@ -1890,7 +1937,7 @@ static int receive_fallback_to_copy(struct sock *sk,
- 		struct sk_buff *skb;
- 		u32 offset;
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	u32 seq = tp->copied_seq;
+@@ -1724,7 +1723,7 @@ int tcp_read_skb(struct sock *sk, read_descriptor_t *desc,
+ 		return -ENOTCONN;
  
--		skb = tcp_recv_skb(sk, tcp_sk(sk)->copied_seq, &offset);
-+		skb = tcp_recv_skb(sk, tcp_sk(sk)->copied_seq, &offset, false);
- 		if (skb)
- 			tcp_zerocopy_set_hint_for_skb(sk, zc, skb, offset);
+ 	while ((skb = tcp_recv_skb(sk, seq, &offset, true)) != NULL) {
+-		int used = recv_actor(desc, skb, 0, skb->len);
++		int used = recv_actor(sk, skb);
+ 
+ 		if (used <= 0) {
+ 			if (!copied)
+@@ -1740,9 +1739,7 @@ int tcp_read_skb(struct sock *sk, read_descriptor_t *desc,
+ 			break;
+ 		}
+ 		kfree_skb(skb);
+-		if (!desc->count)
+-			break;
+-		WRITE_ONCE(tp->copied_seq, seq);
++		break;
  	}
-@@ -1937,7 +1984,7 @@ static int tcp_zc_handle_leftover(struct tcp_zerocopy_receive *zc,
- 	if (skb) {
- 		offset = *seq - TCP_SKB_CB(skb)->seq;
- 	} else {
--		skb = tcp_recv_skb(sk, *seq, &offset);
-+		skb = tcp_recv_skb(sk, *seq, &offset, false);
- 		if (TCP_SKB_CB(skb)->has_rxtstamp) {
- 			tcp_update_recv_tstamps(skb, tss);
- 			zc->msg_flags |= TCP_CMSG_TS;
-@@ -2130,7 +2177,7 @@ static int tcp_zerocopy_receive(struct sock *sk,
- 				skb = skb->next;
- 				offset = seq - TCP_SKB_CB(skb)->seq;
- 			} else {
--				skb = tcp_recv_skb(sk, seq, &offset);
-+				skb = tcp_recv_skb(sk, seq, &offset, false);
- 			}
+ 	WRITE_ONCE(tp->copied_seq, seq);
  
- 			if (TCP_SKB_CB(skb)->has_rxtstamp) {
-@@ -2186,7 +2233,7 @@ static int tcp_zerocopy_receive(struct sock *sk,
- 		tcp_rcv_space_adjust(sk);
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index aa8545ca6964..b8cfa0c3de59 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -1795,8 +1795,7 @@ struct sk_buff *__skb_recv_udp(struct sock *sk, unsigned int flags,
+ }
+ EXPORT_SYMBOL(__skb_recv_udp);
  
- 		/* Clean up data we have read: This will do ACK frames. */
--		tcp_recv_skb(sk, seq, &offset);
-+		tcp_recv_skb(sk, seq, &offset, false);
- 		tcp_cleanup_rbuf(sk, length + copylen);
- 		ret = 0;
- 		if (length == zc->length)
+-int udp_read_sock(struct sock *sk, read_descriptor_t *desc,
+-		  sk_read_actor_t recv_actor)
++int udp_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
+ {
+ 	int copied = 0;
+ 
+@@ -1818,7 +1817,7 @@ int udp_read_sock(struct sock *sk, read_descriptor_t *desc,
+ 			continue;
+ 		}
+ 
+-		used = recv_actor(desc, skb, 0, skb->len);
++		used = recv_actor(sk, skb);
+ 		if (used <= 0) {
+ 			if (!copied)
+ 				copied = used;
+@@ -1829,13 +1828,12 @@ int udp_read_sock(struct sock *sk, read_descriptor_t *desc,
+ 		}
+ 
+ 		kfree_skb(skb);
+-		if (!desc->count)
+-			break;
++		break;
+ 	}
+ 
+ 	return copied;
+ }
+-EXPORT_SYMBOL(udp_read_sock);
++EXPORT_SYMBOL(udp_read_skb);
+ 
+ /*
+  * 	This should be easy, if there is something there we
+diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
+index 70564ddccc46..1aea5ef9bdea 100644
+--- a/net/ipv6/af_inet6.c
++++ b/net/ipv6/af_inet6.c
+@@ -701,6 +701,7 @@ const struct proto_ops inet6_stream_ops = {
+ 	.sendpage_locked   = tcp_sendpage_locked,
+ 	.splice_read	   = tcp_splice_read,
+ 	.read_sock	   = tcp_read_sock,
++	.read_skb	   = tcp_read_skb,
+ 	.peek_len	   = tcp_peek_len,
+ #ifdef CONFIG_COMPAT
+ 	.compat_ioctl	   = inet6_compat_ioctl,
+@@ -726,7 +727,7 @@ const struct proto_ops inet6_dgram_ops = {
+ 	.getsockopt	   = sock_common_getsockopt,	/* ok		*/
+ 	.sendmsg	   = inet6_sendmsg,		/* retpoline's sake */
+ 	.recvmsg	   = inet6_recvmsg,		/* retpoline's sake */
+-	.read_sock	   = udp_read_sock,
++	.read_skb	   = udp_read_skb,
+ 	.mmap		   = sock_no_mmap,
+ 	.sendpage	   = sock_no_sendpage,
+ 	.set_peek_off	   = sk_set_peek_off,
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index e1dd9e9c8452..71deefaaf373 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -741,10 +741,8 @@ static ssize_t unix_stream_splice_read(struct socket *,  loff_t *ppos,
+ 				       unsigned int flags);
+ static int unix_dgram_sendmsg(struct socket *, struct msghdr *, size_t);
+ static int unix_dgram_recvmsg(struct socket *, struct msghdr *, size_t, int);
+-static int unix_read_sock(struct sock *sk, read_descriptor_t *desc,
+-			  sk_read_actor_t recv_actor);
+-static int unix_stream_read_sock(struct sock *sk, read_descriptor_t *desc,
+-				 sk_read_actor_t recv_actor);
++static int unix_read_skb(struct sock *sk, skb_read_actor_t recv_actor);
++static int unix_stream_read_skb(struct sock *sk, skb_read_actor_t recv_actor);
+ static int unix_dgram_connect(struct socket *, struct sockaddr *,
+ 			      int, int);
+ static int unix_seqpacket_sendmsg(struct socket *, struct msghdr *, size_t);
+@@ -798,7 +796,7 @@ static const struct proto_ops unix_stream_ops = {
+ 	.shutdown =	unix_shutdown,
+ 	.sendmsg =	unix_stream_sendmsg,
+ 	.recvmsg =	unix_stream_recvmsg,
+-	.read_sock =	unix_stream_read_sock,
++	.read_skb =	unix_stream_read_skb,
+ 	.mmap =		sock_no_mmap,
+ 	.sendpage =	unix_stream_sendpage,
+ 	.splice_read =	unix_stream_splice_read,
+@@ -823,7 +821,7 @@ static const struct proto_ops unix_dgram_ops = {
+ 	.listen =	sock_no_listen,
+ 	.shutdown =	unix_shutdown,
+ 	.sendmsg =	unix_dgram_sendmsg,
+-	.read_sock =	unix_read_sock,
++	.read_skb =	unix_read_skb,
+ 	.recvmsg =	unix_dgram_recvmsg,
+ 	.mmap =		sock_no_mmap,
+ 	.sendpage =	sock_no_sendpage,
+@@ -2489,8 +2487,7 @@ static int unix_dgram_recvmsg(struct socket *sock, struct msghdr *msg, size_t si
+ 	return __unix_dgram_recvmsg(sk, msg, size, flags);
+ }
+ 
+-static int unix_read_sock(struct sock *sk, read_descriptor_t *desc,
+-			  sk_read_actor_t recv_actor)
++static int unix_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
+ {
+ 	int copied = 0;
+ 
+@@ -2505,7 +2502,7 @@ static int unix_read_sock(struct sock *sk, read_descriptor_t *desc,
+ 		if (!skb)
+ 			return err;
+ 
+-		used = recv_actor(desc, skb, 0, skb->len);
++		used = recv_actor(sk, skb);
+ 		if (used <= 0) {
+ 			if (!copied)
+ 				copied = used;
+@@ -2516,8 +2513,7 @@ static int unix_read_sock(struct sock *sk, read_descriptor_t *desc,
+ 		}
+ 
+ 		kfree_skb(skb);
+-		if (!desc->count)
+-			break;
++		break;
+ 	}
+ 
+ 	return copied;
+@@ -2652,13 +2648,12 @@ static struct sk_buff *manage_oob(struct sk_buff *skb, struct sock *sk,
+ }
+ #endif
+ 
+-static int unix_stream_read_sock(struct sock *sk, read_descriptor_t *desc,
+-				 sk_read_actor_t recv_actor)
++static int unix_stream_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
+ {
+ 	if (unlikely(sk->sk_state != TCP_ESTABLISHED))
+ 		return -ENOTCONN;
+ 
+-	return unix_read_sock(sk, desc, recv_actor);
++	return unix_read_skb(sk, recv_actor);
+ }
+ 
+ static int unix_stream_read_generic(struct unix_stream_read_state *state,
 -- 
 2.32.0
 
