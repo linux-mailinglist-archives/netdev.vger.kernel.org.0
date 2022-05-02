@@ -2,191 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B561516B4C
-	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 09:33:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FCE7516B38
+	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 09:26:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358397AbiEBHgt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 May 2022 03:36:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33804 "EHLO
+        id S1358709AbiEBH3a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 May 2022 03:29:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358356AbiEBHgs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 03:36:48 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8F1B1167
-        for <netdev@vger.kernel.org>; Mon,  2 May 2022 00:33:19 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nlQYD-0000Ba-Kj; Mon, 02 May 2022 09:32:57 +0200
-Received: from pengutronix.de (2a03-f580-87bc-d400-dbb7-8e81-d7fe-7589.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:dbb7:8e81:d7fe:7589])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 2C3F472DCA;
-        Mon,  2 May 2022 07:21:52 +0000 (UTC)
-Date:   Mon, 2 May 2022 09:21:51 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>
-Cc:     linux-can@vger.kernel.org,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Marin Jerabek <martin.jerabek01@gmail.com>,
-        Ondrej Ille <ondrej.ille@gmail.com>,
-        Jiri Novak <jnovak@fel.cvut.cz>,
-        Jaroslav Beran <jara.beran@gmail.com>,
-        Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>,
-        Carsten Emde <c.emde@osadl.org>,
-        Drew Fustini <pdp7pdp7@gmail.com>,
-        Matej Vasilevski <matej.vasilevski@gmail.com>,
-        Andrew Dennison <andrew.dennison@motec.com.au>
-Subject: Re: [PATCH v1 0/4] can: ctucanfd: clenup acoording to the actual
- rules and documentation linking
-Message-ID: <20220502072151.j6nx5kddqxeyfy3h@pengutronix.de>
-References: <cover.1650816929.git.pisa@cmp.felk.cvut.cz>
- <20220428072239.kfgtu2bfcud6tetc@pengutronix.de>
- <202204292331.28980.pisa@cmp.felk.cvut.cz>
+        with ESMTP id S1358666AbiEBH32 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 03:29:28 -0400
+Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EEA0B186C9;
+        Mon,  2 May 2022 00:25:58 -0700 (PDT)
+Received: by ajax-webmail-mail-app4 (Coremail) ; Mon, 2 May 2022 15:25:14
+ +0800 (GMT+08:00)
+X-Originating-IP: [10.190.66.80]
+Date:   Mon, 2 May 2022 15:25:14 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   duoming@zju.edu.cn
+To:     "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, kuba@kernel.org,
+        gregkh@linuxfoundation.org, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, alexander.deucher@amd.com,
+        akpm@linux-foundation.org, broonie@kernel.org,
+        netdev@vger.kernel.org, linma@zju.edu.cn
+Subject: Re: Re: [PATCH net v5 2/2] nfc: nfcmrvl: main: reorder destructive
+ operations in nfcmrvl_nci_unregister_dev to avoid bugs
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+In-Reply-To: <405e3948-7fb2-01de-4c01-29775a21218c@linaro.org>
+References: <cover.1651194245.git.duoming@zju.edu.cn>
+ <bb2769acc79f42d25d61ed8988c8d240c8585f33.1651194245.git.duoming@zju.edu.cn>
+ <8656d527-94ab-228f-66f1-06e5d533e16a@linaro.org>
+ <73fe1723.69fe.1807498ab4d.Coremail.duoming@zju.edu.cn>
+ <405e3948-7fb2-01de-4c01-29775a21218c@linaro.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="5ismfath4mcya56n"
-Content-Disposition: inline
-In-Reply-To: <202204292331.28980.pisa@cmp.felk.cvut.cz>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Message-ID: <614ae365.b499.18083a8bb17.Coremail.duoming@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: cS_KCgCHj6dah29i5GA0Ag--.5296W
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgESAVZdtZfSggAAsp
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+CgoKPiAtLS0tLeWOn+Wni+mCruS7ti0tLS0tCj4g5Y+R5Lu25Lq6OiAiS3J6eXN6dG9mIEtvemxv
+d3NraSIgPGtyenlzenRvZi5rb3psb3dza2lAbGluYXJvLm9yZz4KPiDlj5HpgIHml7bpl7Q6IDIw
+MjItMDUtMDIgMTQ6MzQ6MDcgKOaYn+acn+S4gCkKPiDmlLbku7bkuro6IGR1b21pbmdAemp1LmVk
+dS5jbgo+IOaKhOmAgTogbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZywga3ViYUBrZXJuZWwu
+b3JnLCBncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZywgZGF2ZW1AZGF2ZW1sb2Z0Lm5ldCwgZWR1
+bWF6ZXRAZ29vZ2xlLmNvbSwgcGFiZW5pQHJlZGhhdC5jb20sIGFsZXhhbmRlci5kZXVjaGVyQGFt
+ZC5jb20sIGFrcG1AbGludXgtZm91bmRhdGlvbi5vcmcsIGJyb29uaWVAa2VybmVsLm9yZywgbmV0
+ZGV2QHZnZXIua2VybmVsLm9yZywgbGlubWFAemp1LmVkdS5jbgo+IOS4u+mimDogUmU6IFtQQVRD
+SCBuZXQgdjUgMi8yXSBuZmM6IG5mY21ydmw6IG1haW46IHJlb3JkZXIgZGVzdHJ1Y3RpdmUgb3Bl
+cmF0aW9ucyBpbiBuZmNtcnZsX25jaV91bnJlZ2lzdGVyX2RldiB0byBhdm9pZCBidWdzCj4gCj4g
+T24gMjkvMDQvMjAyMiAxMToxMywgZHVvbWluZ0B6anUuZWR1LmNuIHdyb3RlOgo+ID4gSGVsbG8s
+Cj4gPiAKPiA+IE9uIEZyaSwgMjkgQXByIDIwMjIgMDk6Mjc6NDggKzAyMDAgS3J6eXN6dG9mIHdy
+b3RlOgo+ID4gCj4gPj4+IFRoZXJlIGFyZSBkZXN0cnVjdGl2ZSBvcGVyYXRpb25zIHN1Y2ggYXMg
+bmZjbXJ2bF9md19kbmxkX2Fib3J0IGFuZAo+ID4+PiBncGlvX2ZyZWUgaW4gbmZjbXJ2bF9uY2lf
+dW5yZWdpc3Rlcl9kZXYuIFRoZSByZXNvdXJjZXMgc3VjaCBhcyBmaXJtd2FyZSwKPiA+Pj4gZ3Bp
+byBhbmQgc28gb24gY291bGQgYmUgZGVzdHJ1Y3RlZCB3aGlsZSB0aGUgdXBwZXIgbGF5ZXIgZnVu
+Y3Rpb25zIHN1Y2ggYXMKPiA+Pj4gbmZjbXJ2bF9md19kbmxkX3N0YXJ0IGFuZCBuZmNtcnZsX25j
+aV9yZWN2X2ZyYW1lIGlzIGV4ZWN1dGluZywgd2hpY2ggbGVhZHMKPiA+Pj4gdG8gZG91YmxlLWZy
+ZWUsIHVzZS1hZnRlci1mcmVlIGFuZCBudWxsLXB0ci1kZXJlZiBidWdzLgo+ID4+Pgo+ID4+PiBU
+aGVyZSBhcmUgdGhyZWUgc2l0dWF0aW9ucyB0aGF0IGNvdWxkIGxlYWQgdG8gZG91YmxlLWZyZWUg
+YnVncy4KPiA+Pj4KPiA+Pj4gVGhlIGZpcnN0IHNpdHVhdGlvbiBpcyBzaG93biBiZWxvdzoKPiA+
+Pj4KPiA+Pj4gICAgKFRocmVhZCAxKSAgICAgICAgICAgICAgICAgfCAgICAgIChUaHJlYWQgMikK
+PiA+Pj4gbmZjbXJ2bF9md19kbmxkX3N0YXJ0ICAgICAgICAgfAo+ID4+PiAgLi4uICAgICAgICAg
+ICAgICAgICAgICAgICAgICB8ICBuZmNtcnZsX25jaV91bnJlZ2lzdGVyX2Rldgo+ID4+PiAgcmVs
+ZWFzZV9maXJtd2FyZSgpICAgICAgICAgICB8ICAgbmZjbXJ2bF9md19kbmxkX2Fib3J0Cj4gPj4+
+ICAga2ZyZWUoZncpIC8vKDEpICAgICAgICAgICAgIHwgICAgZndfZG5sZF9vdmVyCj4gPj4+ICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAgIHJlbGVhc2VfZmlybXdhcmUKPiA+Pj4g
+ICAuLi4gICAgICAgICAgICAgICAgICAgICAgICAgfCAgICAgIGtmcmVlKGZ3KSAvLygyKQo+ID4+
+PiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgICAuLi4KPiA+Pj4KPiA+Pj4gVGhl
+IHNlY29uZCBzaXR1YXRpb24gaXMgc2hvd24gYmVsb3c6Cj4gPj4+Cj4gPj4+ICAgIChUaHJlYWQg
+MSkgICAgICAgICAgICAgICAgIHwgICAgICAoVGhyZWFkIDIpCj4gPj4+IG5mY21ydmxfZndfZG5s
+ZF9zdGFydCAgICAgICAgIHwKPiA+Pj4gIC4uLiAgICAgICAgICAgICAgICAgICAgICAgICAgfAo+
+ID4+PiAgbW9kX3RpbWVyICAgICAgICAgICAgICAgICAgICB8Cj4gPj4+ICAod2FpdCBhIHRpbWUp
+ICAgICAgICAgICAgICAgIHwKPiA+Pj4gIGZ3X2RubGRfdGltZW91dCAgICAgICAgICAgICAgfCAg
+bmZjbXJ2bF9uY2lfdW5yZWdpc3Rlcl9kZXYKPiA+Pj4gICAgZndfZG5sZF9vdmVyICAgICAgICAg
+ICAgICAgfCAgIG5mY21ydmxfZndfZG5sZF9hYm9ydAo+ID4+PiAgICAgcmVsZWFzZV9maXJtd2Fy
+ZSAgICAgICAgICB8ICAgIGZ3X2RubGRfb3Zlcgo+ID4+PiAgICAgIGtmcmVlKGZ3KSAvLygxKSAg
+ICAgICAgICB8ICAgICByZWxlYXNlX2Zpcm13YXJlCj4gPj4+ICAgICAgLi4uICAgICAgICAgICAg
+ICAgICAgICAgIHwgICAgICBrZnJlZShmdykgLy8oMikKPiA+Pgo+ID4+IEhvdyBleGFjdGx5IHRo
+ZSBjYXNlIGhlcmUgaXMgYmVpbmcgcHJldmVudGVkPwo+ID4+Cj4gPj4gSWYgbmZjbXJ2bF9uY2lf
+dW5yZWdpc3Rlcl9kZXYoKSBoYXBwZW5zIHNsaWdodGx5IGVhcmxpZXIsIGJlZm9yZQo+ID4+IGZ3
+X2RubGRfdGltZW91dCgpIG9uIHRoZSBsZWZ0IHNpZGUgKFQxKSwgdGhlIFQxIHdpbGwgc3RpbGwg
+aGl0IGl0LCB3b24ndCBpdD8KPiA+IAo+ID4gSSB0aGluayBpdCBjb3VsZCBiZSBwcmV2ZW50ZWQu
+IFdlIHVzZSBuY2lfdW5yZWdpc3Rlcl9kZXZpY2UoKSB0byBzeW5jaHJvbml6ZSwgaWYgdGhlCj4g
+PiBmaXJtd2FyZSBkb3dubG9hZCByb3V0aW5lIGlzIHJ1bm5pbmcsIHRoZSBjbGVhbnVwIHJvdXRp
+bmUgd2lsbCB3YWl0IGl0IHRvIGZpbmlzaC4gCj4gPiBUaGUgZmxhZyAiZndfZG93bmxvYWRfaW5f
+cHJvZ3Jlc3MiIHdpbGwgYmUgc2V0IHRvIGZhbHNlLCBpZiB0aGUgdGhlIGZpcm13YXJlIGRvd25s
+b2FkCj4gPiByb3V0aW5lIGlzIGZpbmlzaGVkLiAKPiAKPiBmd19kb3dubG9hZF9pbl9wcm9ncmVz
+cyBpcyBub3Qgc3luY2hyb25pemVkIGluCj4gbmZjbXJ2bF9uY2lfdW5yZWdpc3Rlcl9kZXYoKSwg
+c28gZXZlbiBpZiBmd19kbmxkX3RpbWVvdXQoKSBzZXQgaXQgdG8KPiB0cnVlLCB0aGUgbmZjbXJ2
+bF9uY2lfdW5yZWdpc3Rlcl9kZXYoKSBoYXBwZW5pbmcgY29uY3VycmVudGx5IHdpbGwgbm90Cj4g
+c2VlIHVwZGF0ZWQgZndfZG93bmxvYWRfaW5fcHJvZ3Jlc3MuCgpUaGUgZndfZG93bmxvYWRfaW5f
+cHJvZ3Jlc3MgaXMgc2V0IHRvIGZhbHNlIGluIG5mY19md19kb3dubG9hZCgpLiBUaGUgbmZjX2Z3
+X2Rvd25sb2FkKCkgaXMKc3luY2hyb25pemVkIHdpdGggbmZjX3VucmVnaXN0ZXJfZGV2aWNlKCku
+IElmIG5mY19md19kb3dubG9hZCgpIGlzIHJ1bm5pbmcsIG5mY191bnJlZ2lzdGVyX2RldmljZSgp
+CndpbGwgd2FpdCBuZmNfZndfZG93bmxvYWQoKSB0byBmaW5pc2guIFNvIHRoZSBuZmNtcnZsX25j
+aV91bnJlZ2lzdGVyX2RldigpIGNvdWxkIHNlZSB0aGUgdXBkYXRlZApmd19kb3dubG9hZF9pbl9w
+cm9ncmVzcy4gVGhlIHByb2Nlc3MgaXMgc2hvd24gYmVsb3c6CgogICAgICAgIChUaHJlYWQgMSkg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAgICAgKFRocmVhZCAy
+KQogbmZjbXJ2bF9uY2lfdW5yZWdpc3Rlcl9kZXYgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgIHwgbmZjX2Z3X2Rvd25sb2FkCiAgIG5jaV91bnJlZ2lzdGVyX2RldmljZSAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgfCAgLi4uCiAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgZGV2aWNlX2xvY2soKQogICAgIC4u
+LiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgIGRl
+di0+ZndfZG93bmxvYWRfaW5fcHJvZ3Jlc3MgPSBmYWxzZTsgLy8oMSkKICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICBkZXZpY2VfdW5s
+b2NrKCkKICAgICBuZmNfdW5yZWdpc3Rlcl9kZXZpY2UgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICB8IAogICBpZiAocHJpdi0+bmRldi0+bmZjX2Rldi0+ZndfZG93bmxvYWRfaW5fcHJv
+Z3Jlc3MpIC8vKDIpIHwgCiAgICAgbmZjbXJ2bF9md19kbmxkX2Fib3J0KHByaXYpOyAvL25vdCBl
+eGVjdXRlICAgICAgICAgICAgfCAgIAoKV2Ugc2V0IGZ3X2Rvd25sb2FkX2luX3Byb2dyZXNzIHRv
+IGZhbHNlIGluIHBvc2l0aW9uICgxKSBhbmQgdGhlIGNoZWNrIGluIHBvc2l0aW9uICgyKSB3aWxs
+IGZhaWwsCnRoZSBuZmNtcnZsX2Z3X2RubGRfYWJvcnQoKSBpbiBuZmNtcnZsX25jaV91bnJlZ2lz
+dGVyX2RldigpIHdpbGwgbm90IGV4ZWN1dGUuIFNvIHRoZSBkb3VibGUtZnJlZQpidWdzIGNvdWxk
+IGJlIHByZXZlbnRlZC4KCj4gPiBBbHRob3VnaCB0aGUgdGltZXIgaGFuZGxlciBmd19kbmxkX3Rp
+bWVvdXQoKSBjb3VsZCBiZSBydW5uaW5nLCBuZmNtcnZsX25jaV91bnJlZ2lzdGVyX2RldigpCj4g
+PiB3aWxsIGNoZWNrIHRoZSBmbGFnICJmd19kb3dubG9hZF9pbl9wcm9ncmVzcyIgd2hpY2ggaXMg
+YWxyZWFkeSBzZXQgdG8gZmFsc2UgYW5kIG5mY21ydmxfZndfZG5sZF9hYm9ydCgpCj4gPiBpbiBu
+ZmNtcnZsX25jaV91bnJlZ2lzdGVyX2RldigpIHdpbGwgbm90IGV4ZWN1dGUuCj4gCj4gSSBhbSBz
+b3JyeSwgYnV0IHlvdSBjYW5ub3QgbW92ZSBjb2RlIGFyb3VuZCBob3BpbmcgaXQgd2lsbCBieSBp
+dHNlbGYKPiBzb2x2ZSBzeW5jaHJvbml6YXRpb24gaXNzdWVzLgoKSSB0aGluayB0aGlzIHNvbHV0
+aW9uIHNvdmUgc3luY2hyb25pemF0aW9uIGlzc3Vlcy4gSWYgeW91IHN0aWxsIGhhdmUgYW55IHF1
+ZXN0aW9ucyB3ZWxjb21lIHRvIGFzayBtZS4KCkJlc3QgcmVnYXJkcywKRHVvbWluZyBaaG91Cg==
 
---5ismfath4mcya56n
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On 29.04.2022 23:31:28, Pavel Pisa wrote:
-> > Split into separate patches and applied.
->=20
-> Excuse me for late reply and thanks much for split to preferred
-> form. Matej Vasilevski has tested updated linux-can-next testing
-> on Xilinx Zynq 7000 based MZ_APO board and used it with his
-> patches to do proceed next round of testing of Jan Charvat's NuttX
-> TWAI (CAN) driver on ESP32C3. We plan that CTU CAN FD timestamping
-> will be send for RFC/discussion soon.
-
-Sounds good!
-
-> I would like to thank to Andrew Dennison who implemented, tested
-> and shares integration with LiteX and RISC-V
->=20
->   https://github.com/litex-hub/linux-on-litex-vexriscv
->=20
-> He uses development version of the CTU CAN FD IP core with configurable
-> number of Tx buffers (2 to 8) for which will be required
-> automatic setup logic in the driver.
->=20
-> I need to discuss with Ondrej Ille actual state and his plans.
-> But basically ntxbufs in the ctucan_probe_common() has to be assigned
-> from TXTB_INFO TXT_BUFFER_COUNT field. For older core version
-> the TXT_BUFFER_COUNT field bits should be equal to zero so when
-> value is zero, the original version with fixed 4 buffers will
-> be recognized.
-
-Makes sense
-
-> When value is configurable then for (uncommon) number
-> of buffers which is not power of two, there will be likely
-> a problem with way how buffers queue is implemented
->=20
->   txtb_id =3D priv->txb_head % priv->ntxbufs;
->   ...
->   priv->txb_head++;
->   ...
->   priv->txb_tail++;
->=20
-> When I have provided example for this type of queue many years
-> ago I have probably shown example with power of 2 masking,
-> but modulo by arbitrary number does not work with sequence
-> overflow. Which means to add there two "if"s unfortunately
->=20
->   if (++priv->txb_tail =3D=3D 2 * priv->ntxbufs)
->       priv->txb_tail =3D 0;
-
-There's another way to implement this, here for ring->obj_num being
-power of 2:
-
-| static inline u8 mcp251xfd_get_tx_head(const struct mcp251xfd_tx_ring *ri=
-ng)
-| {
-| 	return ring->head & (ring->obj_num - 1);
-| }
-|=20
-| static inline u8 mcp251xfd_get_tx_tail(const struct mcp251xfd_tx_ring *ri=
-ng)
-| {
-| 	return ring->tail & (ring->obj_num - 1);
-| }
-|=20
-| static inline u8 mcp251xfd_get_tx_free(const struct mcp251xfd_tx_ring *ri=
-ng)
-| {
-| 	return ring->obj_num - (ring->head - ring->tail);
-| }
-
-If you want to allow not power of 2 ring->obj_num, use "% ring->obj_num"
-instead of "& (ring->obj_num - 1)".
-
-I'm not sure of there is a real world benefit (only gut feeling, should
-be measured) of using more than 4, but less than 8 TX buffers.
-
-You can make use of more TX buffers, if you implement (fully hardware
-based) TX IRQ coalescing (=3D=3D handle more than one TX complete interrupt
-at a time) like in the mcp251xfd driver, or BQL support (=3D=3D send more
-than one TX CAN frame at a time). I've played a bit with BQL support on
-the mcp251xfd driver (which is attached by SPI), but with mixed results.
-Probably an issue with proper configuration.
-
-> We need 2 * priv->ntxbufs range to distinguish empty and full queue...
-> But modulo is not nice either so I probably come with some other
-> solution in a longer term. In the long term, I want to implement
-> virtual queues to allow multiqueue to use dynamic Tx priority
-> of up to 8 the buffers...
-
-ACK, multiqueue TX support would be nice for things like the Earliest TX
-Time First scheduler (ETF). 1 TX queue for ETF, the other for bulk
-messages.
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---5ismfath4mcya56n
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmJvho0ACgkQrX5LkNig
-010Hkwf6A8bgCG87/ZYn+IPQ9zbcdC9eFU7Wh4zwRZp4t9GdlRsGQuXgoedNNEqZ
-J4VIqclzempUmrpRQ6vYNuRH4odK4req4/SinmQmDA7G6hZfTcb6L9cXxXeSYm1E
-mKtGPQxv3TgpwCSqkPv3vKUIX79oX7lfBpvh6nT65VTS0JKETBDWdhibAFDCnxUx
-0xAvmJGW0NPq6cORN1ocid3aktt4WF7NNTkTbnAOWhqtFI9u6Am3S/A32i4EjhEZ
-/TU0/IVS8HxXQZ7pGT4rqbsWDDXucJzuFWUUtGKyxDw8oZUswBcqeFNnH+Y3as7n
-ROqn9YnlYjpWvuISuJvyuuvq2EoKCA==
-=qNE2
------END PGP SIGNATURE-----
-
---5ismfath4mcya56n--
