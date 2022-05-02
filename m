@@ -2,69 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C31C5174A6
-	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 18:38:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8849E517508
+	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 18:51:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343626AbiEBQmM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 May 2022 12:42:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51628 "EHLO
+        id S1386418AbiEBQzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 May 2022 12:55:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386334AbiEBQly (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 12:41:54 -0400
-X-Greylist: delayed 487 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 02 May 2022 09:38:21 PDT
-Received: from plutone.assyoma.it (unknown [212.237.56.195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDE20B1F6
-        for <netdev@vger.kernel.org>; Mon,  2 May 2022 09:38:21 -0700 (PDT)
-Received: from webmail.assyoma.it (localhost [IPv6:::1])
-        by plutone.assyoma.it (Postfix) with ESMTPA id 052FE1026164
-        for <netdev@vger.kernel.org>; Mon,  2 May 2022 18:30:11 +0200 (CEST)
+        with ESMTP id S1386483AbiEBQzL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 12:55:11 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70EC8636D;
+        Mon,  2 May 2022 09:51:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651510302; x=1683046302;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Uap22b8vBrOF9cROfSAfWdTRU5KnLLaZWaIvbRRuYbk=;
+  b=PbBb2f9v+0IZmzOt47MqifhgrTNv/nH0QLKH1XFz3JlomtejoI0JXIES
+   v/Spb8ymVg3H1Wnx1t+ktNFFOj+uC6IjD4XRsS6WC9MfOQCLl4KTdzfZW
+   Izn0+6OIaYlU1wKsqyz2yrGjPKYzXOurIkJm7Ao8JLPvy+oEl5nTKgXHE
+   QHWo/HdzpCmsKgUE+PiVs67LnVrBMa7ZHRtoFR059uinz6blD88vXQlO7
+   gTwxKjX7J9qRMIcV8dJpl7jtjWnHsKKqGQGBms27t3rPHRPk+HTLy5sVJ
+   ohxis9WOX4982HCn+gCHtxhUSQRyr+2V5/j7ovdbaP9agxVdbGfBkto/r
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="267415944"
+X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
+   d="scan'208";a="267415944"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 09:51:41 -0700
+X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
+   d="scan'208";a="887122788"
+Received: from rmarti10-mobl2.amr.corp.intel.com (HELO [10.212.197.139]) ([10.212.197.139])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 09:51:40 -0700
+Message-ID: <20a16430-f68c-3df4-1592-e7dad5ec9d53@linux.intel.com>
+Date:   Mon, 2 May 2022 09:51:34 -0700
 MIME-Version: 1.0
-Date:   Mon, 02 May 2022 18:30:10 +0200
-From:   Gionatan Danti <g.danti@assyoma.it>
-To:     netdev@vger.kernel.org
-Subject: Force mavtap interfaces up
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <116c870676ecab331ec3c76aaec7bf0f@assyoma.it>
-X-Sender: g.danti@assyoma.it
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=1.8 required=5.0 tests=BAYES_50,RDNS_DYNAMIC,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH net-next v6 08/13] net: wwan: t7xx: Add data path
+ interface
+Content-Language: en-US
+To:     Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        M Chetan Kumar <m.chetan.kumar@intel.com>,
+        chandrashekar.devegowda@intel.com,
+        Intel Corporation <linuxwwan@intel.com>,
+        chiranjeevi.rapolu@linux.intel.com,
+        =?UTF-8?B?SGFpanVuIExpdSAo5YiY5rW35YabKQ==?= 
+        <haijun.liu@mediatek.com>, amir.hanania@intel.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        dinesh.sharma@intel.com, eliot.lee@intel.com,
+        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
+        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
+        sreehari.kancharla@intel.com, madhusmita.sahu@intel.com
+References: <20220407223629.21487-1-ricardo.martinez@linux.intel.com>
+ <20220407223629.21487-9-ricardo.martinez@linux.intel.com>
+ <CAHNKnsTr3aq1sgHnZQFL7-0uHMp3Wt4PMhVgTMSAiiXT=8p35A@mail.gmail.com>
+ <d829315b-79ca-ff88-c76-e352d8fb5b5b@linux.intel.com>
+ <CAHNKnsRMp9kbVLuYCe_-7BUeptmssqAN0fXJtNQ+j-ZmVEiwiw@mail.gmail.com>
+From:   "Martinez, Ricardo" <ricardo.martinez@linux.intel.com>
+In-Reply-To: <CAHNKnsRMp9kbVLuYCe_-7BUeptmssqAN0fXJtNQ+j-ZmVEiwiw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
-X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear list,
-I would like to ask if, and how, it is possible to force a macvtap 
-interface up even when the underlying physical device has no link 
-(reporting NO-CARRIER).
 
- From my understanding, I can do that via something as "ip link set 
-macvtap0 protodown off". And it works, indeed. However, if the 
-underlying physical device is plugged & unplugged again, the macvtap0 
-interface goes down with it; to restore it, I need to re-run the above 
-"protodown off" command.
+On 4/26/2022 1:00 AM, Sergey Ryazanov wrote:
+> On Tue, Apr 26, 2022 at 10:30 AM Ilpo Järvinen
+> <ilpo.jarvinen@linux.intel.com> wrote:
+>> On Tue, 26 Apr 2022, Sergey Ryazanov wrote:
+>>> On Fri, Apr 8, 2022 at 1:37 AM Ricardo Martinez
+>>> <ricardo.martinez@linux.intel.com> wrote:
+>>>> Data Path Modem AP Interface (DPMAIF) HIF layer provides methods
+>>>> for initialization, ISR, control and event handling of TX/RX flows.
+>>>>
+>>>> DPMAIF TX
+>>>> Exposes the 'dmpaif_tx_send_skb' function which can be used by the
+>>>> network device to transmit packets.
+>>>> The uplink data management uses a Descriptor Ring Buffer (DRB).
+>>>> First DRB entry is a message type that will be followed by 1 or more
+>>>> normal DRB entries. Message type DRB will hold the skb information
+>>>> and each normal DRB entry holds a pointer to the skb payload.
+>>>>
+>>>> DPMAIF RX
+>>>> The downlink buffer management uses Buffer Address Table (BAT) and
+>>>> Packet Information Table (PIT) rings.
+>>>> The BAT ring holds the address of skb data buffer for the HW to use,
+>>>> while the PIT contains metadata about a whole network packet including
+>>>> a reference to the BAT entry holding the data buffer address.
+>>>> The driver reads the PIT and BAT entries written by the modem, when
+>>>> reaching a threshold, the driver will reload the PIT and BAT rings.
+>>>>
+>>>> Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
+>>>> Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
+>>>> Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+>>>> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+>>>>
+>>>>  From a WWAN framework perspective:
+>>>> Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
+>>> Reviewed-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+>>>
+>>> and a small question below.
+>>>
+>>>> diff --git a/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c b/drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c
+>>>> ...
+>>>> +static bool t7xx_alloc_and_map_skb_info(const struct dpmaif_ctrl *dpmaif_ctrl,
+>>>> +                                       const unsigned int size, struct dpmaif_bat_skb *cur_skb)
+>>>> +{
+>>>> +       dma_addr_t data_bus_addr;
+>>>> +       struct sk_buff *skb;
+>>>> +       size_t data_len;
+>>>> +
+>>>> +       skb = __dev_alloc_skb(size, GFP_KERNEL);
+>>>> +       if (!skb)
+>>>> +               return false;
+>>>> +
+>>>> +       data_len = skb_end_pointer(skb) - skb->data;
+>>> Earlier you use a nice t7xx_skb_data_area_size() function here, but
+>>> now you opencode it. Is it a consequence of t7xx_common.h removing?
+>>>
+>>> I would even encourage you to make this function common and place it
+>>> into include/linux/skbuff.h with a dedicated patch and call it
+>>> something like skb_data_size(). Surprisingly, there is no such helper
+>>> function in the kernel, and several other drivers will benefit from
+>>> it:
+>> I agree other than the name. IMHO, skb_data_size sounds too much "data
+>> size" which it exactly isn't but just how large the memory area is (we
+>> already have "datalen" anyway and on language level, those two don't sound
+>> different at all). The memory area allocated may or may not have actual
+>> data in it, I suggested adding "area" into it.
+> I agree, using the "area" word in the helper name gives more clue
+> about its purpose, thanks.
+>
+Sounds good. I'll add a patch to introduce skb_data_area_size(),
+I'm not planning to update other drivers to use it, at least in this series.
+Please let me know if you think otherwise.
 
-Does a method exists to always force one or more macvtap interfaces up, 
-regardless the physical link status?
-
-Full disclosure: I am trying to use macvtap rather than plain bridge for 
-a KVM host and I stumbled across the behavior described above. If the 
-physical interface is disconnected, the guests lose connection with each 
-other. With a classical bridge setup, disconnecting the physical 
-interface only interrupt communication with outer guest/hosts (but 
-internal traffic is preserved).
-
-Regards.
-
--- 
-Danti Gionatan
-Supporto Tecnico
-Assyoma S.r.l. - www.assyoma.it
-email: g.danti@assyoma.it - info@assyoma.it
-GPG public key ID: FF5F32A8
