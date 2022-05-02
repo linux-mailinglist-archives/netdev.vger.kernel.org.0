@@ -2,67 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F83351737A
-	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 18:02:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E525517377
+	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 18:02:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382073AbiEBQEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 May 2022 12:04:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42900 "EHLO
+        id S1386181AbiEBQFH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 May 2022 12:05:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386150AbiEBQEf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 12:04:35 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77A7FBCBA;
-        Mon,  2 May 2022 09:00:55 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id a1so17137924edt.3;
-        Mon, 02 May 2022 09:00:55 -0700 (PDT)
+        with ESMTP id S1386090AbiEBQEq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 12:04:46 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9995BF54;
+        Mon,  2 May 2022 09:00:57 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id m20so28560189ejj.10;
+        Mon, 02 May 2022 09:00:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=googlemail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=N3AME3IcPE8G01jSuTBFGfb2u7+rTRdyuYIo50HVTEg=;
-        b=BgtDFtCxqx/FN6/+BjsXXaKHaLn+ihBUfE5b+bIVc+wk821dSW3bFKNEVB7Q6ypQ5v
-         D242HfeafW05VEfKAo9l+Ijc5DyyfjEsZOarGM/2zSvIJB9EruKM/plp38cwhHcgJ0WO
-         k9SZWJE4wn6AuFK92SkXbDNi9OHtz4DKDcqmNzU8tSM94UgbJiGsn3nBFCvw/Sdu/DBS
-         Snr1GOkFl5FtN8t04fe/O5sF6tUC/9+e2/2QX/LXzWuoP0rHnDAysSAydmaNv1wVFTOu
-         WFwhuJUvHxBSlT0VgQRxRjE41n/xVjw1/LuuvYsnXON3Kh7iGQmvA2RtV6UbVM003aYX
-         7EAg==
+        bh=KuyoIlIApfDNylQxsxLqOG93Y5qx/DVrf9MJXzcFL/U=;
+        b=R5Iy5psjxqH2GgT/e1iENDAc3xqCefkZjoaoEk5r8+zg/n+AIDN7kFsruknjg8dNd7
+         0YD9y9lJrAxCQSg13mYoQiLlXNH5kydADxDPCa6b1TzxfQejVlmocpZ1LXy0xheAgDdt
+         h/6ssW5w7KoqOCo3GN7WQL1p6NgsHNvjC0jH7gEJnt3M7e8OLaONhh7ygsoC90kkj4St
+         nonuabwm8EqCyk3PPsYPl4m4eRcK/fXJrCA6SQjRDR9U+1GFEvbk3/YvRwQXQ1trZa0b
+         UBo0LaBxRkD4HqkJv3WODq1k0docbQy8SA712vY30qc+8faOA5UkaCQJQot7SL8uouNh
+         lksg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=N3AME3IcPE8G01jSuTBFGfb2u7+rTRdyuYIo50HVTEg=;
-        b=4ult8OEWfth1odpgUsNNDZynmlQSqtqtQhykxI59gre/g03/qFd+3whHFC4v4qWypP
-         nmKZwaDQ/WnDmHuInKWuRQaAM46t2RvIfoKeF53TJocYhLP6jJGV2UTlDx4WwvbR0bvL
-         6UrP+5Y3mp8IXDqyKKF2l9Ca3Uk154A6D/+8FOqKEkOYhY+jZQlN06cgUZd9kdkhr6Nf
-         GilsU/Sn9VufZP9wgoOQvzarkyRAJcPY2tCS8bGnlaFWsOad4wAm0HYwtjw3/UuTwBmV
-         QqD6YcCcA+RJw35N10ZiSMlH5q5u1FVaBQluDv/CSZ4P9H7kc9dJ8+8In6LfKo58WLrt
-         RDHg==
-X-Gm-Message-State: AOAM530TMGUNqLcUePAPGA03Nc6dWpSVeZ2CWzjUKUEn10NxMX8Fa5V8
-        CTkZZyaKDbAKrooyr/mh0CrN7CSeopmV1w==
-X-Google-Smtp-Source: ABdhPJznJdmRHvGijkQSObAClombdDNVzKY2UjTJqgKqhfMTLfZKvR9cH4mQxnXdWmlxHCAxcsSCLA==
-X-Received: by 2002:a05:6402:10d5:b0:408:f881:f0f3 with SMTP id p21-20020a05640210d500b00408f881f0f3mr13971727edu.112.1651507253898;
-        Mon, 02 May 2022 09:00:53 -0700 (PDT)
+        bh=KuyoIlIApfDNylQxsxLqOG93Y5qx/DVrf9MJXzcFL/U=;
+        b=b3maeRGmrki4RIhvUFL0aiQa+lNVQWCvC1GqOiDn5CLIizZwwm9HN/dCVN4bfalFgx
+         cWEFpx3rnXWkLdToPEpRxJX85kfUFW68eU9slQXOkzqHcldBTnrjSvVcwG5Usx1nhplU
+         fcq+oowODSloTZR4bJ5A63XrV0UGxKdXzzyhlXI3ZM/PfQqjQjW1xwt6QyuZBhI4xcVZ
+         MKDnF+sH8A/16PS6I7x6X/ggpTIa+CqU3BEZ3cy4DrE26Gj4C6q2ffHsFbKBJnuQWe2L
+         JqPsTDRYGUFqXpHXbnJZxEBpXdIiL0FXnLgtv7Hc7Ge/hezkcNr5WLRwpdDleB85GeEv
+         JDhw==
+X-Gm-Message-State: AOAM530hSXtS6G4k4QbLEc0zRrPzcFHGpS7CCTbGf8t1az5dkHX+H6h2
+        yTEAEvsVEhPMrdndjYt2o9vo6y/35QfYeA==
+X-Google-Smtp-Source: ABdhPJzGK2405DY2mEONZyM9fQQIz5NdAobznRL20qUOJnFfJuhFvLS8SItKXwNNyb8umG6nNMCSng==
+X-Received: by 2002:a17:906:9b87:b0:6f3:a51e:80c9 with SMTP id dd7-20020a1709069b8700b006f3a51e80c9mr12127785ejc.362.1651507256303;
+        Mon, 02 May 2022 09:00:56 -0700 (PDT)
 Received: from debianHome.localdomain (dynamic-077-001-135-067.77.1.pool.telefonica.de. [77.1.135.67])
-        by smtp.gmail.com with ESMTPSA id h18-20020a1709070b1200b006f3ef214dd3sm3689996ejl.57.2022.05.02.09.00.53
+        by smtp.gmail.com with ESMTPSA id h18-20020a1709070b1200b006f3ef214dd3sm3689996ejl.57.2022.05.02.09.00.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 09:00:53 -0700 (PDT)
+        Mon, 02 May 2022 09:00:55 -0700 (PDT)
 From:   =?UTF-8?q?Christian=20G=C3=B6ttsche?= <cgzones@googlemail.com>
 To:     selinux@vger.kernel.org
 Cc:     Serge Hallyn <serge@hallyn.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Alexander Aring <aahringo@redhat.com>,
+        Ziyang Xuan <william.xuanziyang@huawei.com>,
+        Eric Dumazet <edumazet@google.com>,
         linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH v2 7/8] kernel/bpf: use new capable_or functionality
-Date:   Mon,  2 May 2022 18:00:28 +0200
-Message-Id: <20220502160030.131168-6-cgzones@googlemail.com>
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH v2 8/8] net: use new capable_or functionality
+Date:   Mon,  2 May 2022 18:00:29 +0200
+Message-Id: <20220502160030.131168-7-cgzones@googlemail.com>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220502160030.131168-1-cgzones@googlemail.com>
 References: <20220217145003.78982-2-cgzones@googlemail.com>
@@ -83,24 +82,40 @@ X-Mailing-List: netdev@vger.kernel.org
 Use the new added capable_or function in appropriate cases, where a task
 is required to have any of two capabilities.
 
+Reorder CAP_SYS_ADMIN last.
+
 Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
 ---
- kernel/bpf/syscall.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/caif/caif_socket.c | 2 +-
+ net/unix/scm.c         | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index cdaa1152436a..95a2cf3e78c9 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -2249,7 +2249,7 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr)
- 	    !bpf_capable())
- 		return -EPERM;
+diff --git a/net/caif/caif_socket.c b/net/caif/caif_socket.c
+index 2b8892d502f7..60498148126c 100644
+--- a/net/caif/caif_socket.c
++++ b/net/caif/caif_socket.c
+@@ -1036,7 +1036,7 @@ static int caif_create(struct net *net, struct socket *sock, int protocol,
+ 		.usersize = sizeof_field(struct caifsock, conn_req.param)
+ 	};
  
--	if (is_net_admin_prog_type(type) && !capable(CAP_NET_ADMIN) && !capable(CAP_SYS_ADMIN))
-+	if (is_net_admin_prog_type(type) && !capable_or(CAP_NET_ADMIN, CAP_SYS_ADMIN))
+-	if (!capable(CAP_SYS_ADMIN) && !capable(CAP_NET_ADMIN))
++	if (!capable_or(CAP_NET_ADMIN, CAP_SYS_ADMIN))
  		return -EPERM;
- 	if (is_perfmon_prog_type(type) && !perfmon_capable())
- 		return -EPERM;
+ 	/*
+ 	 * The sock->type specifies the socket type to use.
+diff --git a/net/unix/scm.c b/net/unix/scm.c
+index aa27a02478dc..821be80e6c85 100644
+--- a/net/unix/scm.c
++++ b/net/unix/scm.c
+@@ -99,7 +99,7 @@ static inline bool too_many_unix_fds(struct task_struct *p)
+ 	struct user_struct *user = current_user();
+ 
+ 	if (unlikely(user->unix_inflight > task_rlimit(p, RLIMIT_NOFILE)))
+-		return !capable(CAP_SYS_RESOURCE) && !capable(CAP_SYS_ADMIN);
++		return !capable_or(CAP_SYS_RESOURCE, CAP_SYS_ADMIN);
+ 	return false;
+ }
+ 
 -- 
 2.36.0
 
