@@ -2,68 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18027517654
-	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 20:10:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10EAA517673
+	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 20:21:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386712AbiEBSOD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 May 2022 14:14:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35146 "EHLO
+        id S1386822AbiEBSYr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 May 2022 14:24:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352269AbiEBSNu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 14:13:50 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FC74DDC;
-        Mon,  2 May 2022 11:10:20 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id g20so17484399edw.6;
-        Mon, 02 May 2022 11:10:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cddP/Z13UXKTkYF9w5rF9NXnRnnOzjoeOmrL0f6HI08=;
-        b=F4Ji6+339Da2kNbJt5KKB7iw7+2g8p0PdFRFplhegL4px6LEkwgymj9L/pFn3CKBMV
-         M+iTz/GM3qvVMi2QegU8yveV2OOFZmAxCvrCM4nLweuQEEpJ4fxxBuwW0XcnPU3rjJ9v
-         fcCIx4zoHjmKrJCBrSvCJw8DNNIJoMWbJlEjobxiZpJEGTuUESzb+Vpc9FAb8FFSQ79e
-         TaNbZ9/pe0G86boa4lsXTrbTzX9iP/riBvjaCj5pi1N75VT11wl30atdIppi2ABltn2c
-         +eMnaENwkKjFugo19M5yBot9eE3DFetuaurpWhQZ0JdK6VTc9D9pkL2NlLAeoooATGgA
-         MZzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cddP/Z13UXKTkYF9w5rF9NXnRnnOzjoeOmrL0f6HI08=;
-        b=fQUEWfbe6OynlSN9aGgkfIqMhpg+UZnyo9ssnYCk/VXKmXt4nWwesw34A4jQhrcsDS
-         ce3JZMQwwldktFrNP77gshpsEYJT684nzAXuGYJpZiYF6QCynYDd6tG4u9vcVRTCKLkI
-         I1xF5VzP7EylIKmjADWBI+4RZGEifk0aVzdNNSJnyFZrx4A90uKRQJ3kdjRR1Cu18/Fo
-         KpG8Y1ACH2mooQvQifgb6x10KLhQ1GD9x4kfF5Ap8sbrC0reG8sP0ehlT/yE0S7LvA07
-         iHMH9FCWTyL5UGsF/VEt2GSpKx+SEV28PXFx+L7DKAR+OCLb4ZCkTb5lDEImHAzruo3H
-         UugA==
-X-Gm-Message-State: AOAM533GA0coyLo8T5QORr0gNK4uClSc3ic5abZf92rcXOUmffiaUPaj
-        owWnXl2YQP7JyKW7AXMufvDRjnso+Y5KrV0Syzw=
-X-Google-Smtp-Source: ABdhPJyAa/9HmMmjO94kXjbkmG4pWu+zNT9xHmyWE/CXwDtYN0lWRAO9cZuAqtNG8XIU0X0BXKICydnJAYvu0uflUi8=
-X-Received: by 2002:a05:6402:484:b0:415:d931:cb2f with SMTP id
- k4-20020a056402048400b00415d931cb2fmr14666889edv.287.1651515019042; Mon, 02
- May 2022 11:10:19 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220418035110.GA937332@jaehee-ThinkPad-X1-Extreme> <87y200nf0a.fsf@kernel.org>
-In-Reply-To: <87y200nf0a.fsf@kernel.org>
-From:   Jaehee <jhpark1013@gmail.com>
-Date:   Mon, 2 May 2022 14:10:07 -0400
-Message-ID: <CAA1TwFCOEEwnayexnJin8T=Fc2HEgHC9jyfj5HxfiWybjUi9GA@mail.gmail.com>
-Subject: Re: [PATCH] wfx: use container_of() to get vif
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     =?UTF-8?B?SsOpcsO0bWUgUG91aWxsZXI=?= <jerome.pouiller@silabs.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S238642AbiEBSYq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 14:24:46 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A340A65A1
+        for <netdev@vger.kernel.org>; Mon,  2 May 2022 11:21:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=erYGb63ZCu5CmvEC/xF+eVwLkOUEqtkM+RbcC2Zv7C0=; b=vxanIRSNkrfklf0jgUeLwwXbqg
+        mRsS3xkreGRhiEd+c7S/hWODg9+2uqxlq5diN2C6UkiATFq+9F6aYox+JmxszLq8oBnl+dveFMMaD
+        gmsS8IyS+3i549Mv0/nHO0oj6CYGyGNAptrLL6uTTJbi1hLLfMQRgINYNj8MczbttCMo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nlafW-000wBL-M4; Mon, 02 May 2022 20:21:10 +0200
+Date:   Mon, 2 May 2022 20:21:10 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Francesco Dolcini <francesco.dolcini@toradex.com>
+Cc:     netdev@vger.kernel.org, Andy Duan <fugang.duan@nxp.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        Outreachy Linux Kernel <outreachy@lists.linux.dev>,
-        Stefano Brivio <sbrivio@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        "David S. Miller" <davem@davemloft.net>,
+        Fabio Estevam <festevam@gmail.com>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Chris Healy <cphealy@gmail.com>
+Subject: Re: FEC MDIO read timeout on linkup
+Message-ID: <YnAhFse2h0vN1FCM@lunn.ch>
+References: <20220422152612.GA510015@francesco-nb.int.toradex.com>
+ <20220502170527.GA137942@francesco-nb.int.toradex.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220502170527.GA137942@francesco-nb.int.toradex.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,97 +55,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 7:58 AM Kalle Valo <kvalo@kernel.org> wrote:
->
-> Jaehee Park <jhpark1013@gmail.com> writes:
->
-> > Currently, upon virtual interface creation, wfx_add_interface() stores
-> > a reference to the corresponding struct ieee80211_vif in private data,
-> > for later usage. This is not needed when using the container_of
-> > construct. This construct already has all the info it needs to retrieve
-> > the reference to the corresponding struct from the offset that is
-> > already available, inherent in container_of(), between its type and
-> > member inputs (struct ieee80211_vif and drv_priv, respectively).
-> > Remove vif (which was previously storing the reference to the struct
-> > ieee80211_vif) from the struct wfx_vif, define a function
-> > wvif_to_vif(wvif) for container_of(), and replace all wvif->vif with
-> > the newly defined container_of construct.
-> >
-> > Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
->
-> [...]
->
-> > +static inline struct ieee80211_vif *wvif_to_vif(struct wfx_vif *wvif)
-> > +{
-> > +     return container_of((void *)wvif, struct ieee80211_vif, drv_priv);
-> > +}
->
-> Why the void pointer cast? Avoid casts as much possible.
->
+> Could it be that the issue is writing the MSCR in fec_restart(),
+> `writel(fep->phy_speed, fep->hwp + FEC_MII_SPEED)`?
+> 
+> I do see the issue on link up/down event, when this function is actually
+> called.
+> 
+> >From what I can understand from the previous history:
+> 
+>   1e6114f51f9d (net: fec: fix MDIO probing for some FEC hardware blocks, 2020-10-28) 
+>   f166f890c8f0 (net: ethernet: fec: Replace interrupt driven MDIO with polled IO, 2020-05-02)
+> 
+> writing to this register could trigger a FEC_ENET_MII interrupt actually
+> creating a race condition with fec_enet_mdio_read() that is called on
+> link change also.
 
-Hi Kalle,
+You should read the discussion from when this code was added.
 
-Sorry for the delay in getting back to you about why the void pointer
-cast was used.
+Are you planning on adding:
 
-In essence, I'm taking private data with a driver-specific pointer
-and that needs to be resolved back to a generic pointer.
+       if (fep->quirks & FEC_QUIRK_CLEAR_SETUP_MII) {
+                /* Clear MMFR to avoid to generate MII event by writing MSCR.
+                 * MII event generation condition:
+                 * - writing MSCR:
+                 *      - mmfr[31:0]_not_zero & mscr[7:0]_is_zero &
+                 *        mscr_reg_data_in[7:0] != 0
+                 * - writing MMFR:
+                 *      - mscr[7:0]_not_zero
+                 */
+                writel(0, fep->hwp + FEC_MII_DATA);
+        }
 
-The private data (drv_priv) is declared as a generic u8 array in struct
-ieee80211_vif, but wvif is a more specific type.
+To other locations which change FEC_MII_SPEED?
 
-I wanted to also point to existing, reasonable examples such as:
-static void iwl_mvm_tcm_uapsd_nonagg_detected_wk(struct work_struct *wk)
-{
-        struct iwl_mvm *mvm;
-        struct iwl_mvm_vif *mvmvif;
-        struct ieee80211_vif *vif;
-
-        mvmvif = container_of(wk, struct iwl_mvm_vif,
-                              uapsd_nonagg_detected_wk.work);
-        vif = container_of((void *)mvmvif, struct ieee80211_vif, drv_priv);
-
-in drivers/net/wireless$ less intel/iwlwifi/mvm/utils.c, which does the
-same thing.
-
-There are fifteen of them throughout:
-wireless-next/drivers/net/wireless$ grep -rn "container_of(.* ieee80211_vif"
-intel/iwlwifi/mvm/utils.c:794:  vif = container_of((void *)mvmvif,
-struct ieee80211_vif, drv_priv);
-intel/iwlwifi/mvm/mac80211.c:1347:      vif = container_of((void
-*)mvmvif, struct ieee80211_vif, drv_priv);
-mediatek/mt76/mt76x02_mmio.c:415:               vif =
-container_of(priv, struct ieee80211_vif, drv_priv);
-mediatek/mt76/mt7615/mac.c:275: vif = container_of((void *)msta->vif,
-struct ieee80211_vif, drv_priv);
-mediatek/mt76/mt7915/mac.c:416: vif = container_of((void *)msta->vif,
-struct ieee80211_vif, drv_priv);
-mediatek/mt76/mt7915/mac.c:2327:                vif =
-container_of((void *)msta->vif, struct ieee80211_vif, drv_priv);
-mediatek/mt76/mt7915/debugfs.c:1026:    vif = container_of((void
-*)msta->vif, struct ieee80211_vif, drv_priv);
-mediatek/mt76/mt7921/mac.c:425: vif = container_of((void *)msta->vif,
-struct ieee80211_vif, drv_priv);
-ti/wlcore/wlcore_i.h:502:       return container_of((void *)wlvif,
-struct ieee80211_vif, drv_priv);
-realtek/rtl818x/rtl8187/dev.c:1068:             container_of((void
-*)vif_priv, struct ieee80211_vif, drv_priv);
-realtek/rtl818x/rtl8180/dev.c:1293:             container_of((void
-*)vif_priv, struct ieee80211_vif, drv_priv);
-realtek/rtw88/main.h:2075:      return container_of(p, struct
-ieee80211_vif, drv_priv);
-realtek/rtw89/core.h:3440:      return container_of(p, struct
-ieee80211_vif, drv_priv);
-ath/carl9170/carl9170.h:641:    return container_of((void *)priv,
-struct ieee80211_vif, drv_priv);
-ath/wcn36xx/wcn36xx.h:329:      return container_of((void *) vif_priv,
-struct ieee80211_vif, drv_priv);
-
-Thanks,
-Jaehee
-
-
-> --
-> https://patchwork.kernel.org/project/linux-wireless/list/
->
-> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+   Andrew
