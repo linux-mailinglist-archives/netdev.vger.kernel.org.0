@@ -2,169 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A107516F92
-	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 14:28:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 566A9516FB3
+	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 14:41:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384901AbiEBMb1 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 2 May 2022 08:31:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57400 "EHLO
+        id S1384884AbiEBMpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 May 2022 08:45:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233328AbiEBMbZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 08:31:25 -0400
-Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DB11DF77;
-        Mon,  2 May 2022 05:27:52 -0700 (PDT)
-Received: by mail-qk1-f174.google.com with SMTP id w3so3384071qkb.3;
-        Mon, 02 May 2022 05:27:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=OZOhIRLHadZelGhWCCz2d6EAN6hg5trw+/CH6vCu8dY=;
-        b=O75okN2XOoH0w5bHMCV0S0BbJnMMD2FIgHB4hf/HPYNFVEqs13qIZMjBEY0QDd16q0
-         QiyCugag+c0aIgRMxI5NiVXHr0N/1kVdLCrJcpW07hnm378AN+4bsUi/nRK5PvchIMO2
-         nP3meCz5Pf5T9EoUUr+u/0q/y/VUDt51/NnDpucJaoKblEFhKe0bIonfOvYlde+46N2Y
-         8BFK64M2p4ucYNvs4vqjFiZw/j8gx9/gS5yk9NVr7Z6ln6pZWMhyH/Cv5RsvMo6mBUVY
-         cjcaPHVUzry2mY1sbPU53DS9PTeL7foRfjUYFh8qsgR+ab1S2uj6Chvq1tc5ugAvG/42
-         Cyzg==
-X-Gm-Message-State: AOAM532eckHJvEiapK0E83mnxfAinWt6nz3i/gMmJudkAvzhGTcX0b+B
-        /8Pt8+PyNRXQEhTOh7SsJkqDxMReVCEF6A==
-X-Google-Smtp-Source: ABdhPJzMgVLS5luW/l+97mtR1yUsk+k8p9J4QpOQj3bJoW6C42jmQEDhcCX7wZpNDv+PC7W2yKJMVA==
-X-Received: by 2002:a05:620a:288c:b0:699:bbc6:9e54 with SMTP id j12-20020a05620a288c00b00699bbc69e54mr8359480qkp.226.1651494471216;
-        Mon, 02 May 2022 05:27:51 -0700 (PDT)
-Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com. [209.85.128.182])
-        by smtp.gmail.com with ESMTPSA id g23-20020ac84817000000b002f39b99f693sm4005911qtq.45.2022.05.02.05.27.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 May 2022 05:27:50 -0700 (PDT)
-Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-2f16645872fso145572887b3.4;
-        Mon, 02 May 2022 05:27:50 -0700 (PDT)
-X-Received: by 2002:a81:913:0:b0:2f7:c833:f304 with SMTP id
- 19-20020a810913000000b002f7c833f304mr11185923ywj.283.1651494470388; Mon, 02
- May 2022 05:27:50 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220429143505.88208-1-clement.leger@bootlin.com>
- <20220429123235.3098ed12@kernel.org> <20220502085103.19b4f47b@fixe.home>
-In-Reply-To: <20220502085103.19b4f47b@fixe.home>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 2 May 2022 14:27:38 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVKY7=CjfazEjNw-5vGP0_eQFX=K1H7DOSWajo2u-dkAQ@mail.gmail.com>
-Message-ID: <CAMuHMdVKY7=CjfazEjNw-5vGP0_eQFX=K1H7DOSWajo2u-dkAQ@mail.gmail.com>
-Subject: Re: [net-next v2 00/12] add support for Renesas RZ/N1 ethernet
- subsystem devices
-To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S1379648AbiEBMpL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 08:45:11 -0400
+X-Greylist: delayed 171 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 02 May 2022 05:41:42 PDT
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D61B13E19;
+        Mon,  2 May 2022 05:41:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1651495114;
+    s=strato-dkim-0002; d=goldelico.com;
+    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
+    bh=Z49oEEdIYwZXRaAbptW7GvAdjNwZrbaxQ4jJIY0qqw8=;
+    b=IpNRoEtObH2IrY+dl9kVj6NFIGtXjC1fJSKUiU4sHorbFUxYj+dPPELsbbraW9IQpI
+    fOl+m3E+CIhtq4EX33clVFgTt9SFk4ErI0txAE/5tM2DGEhzCHtojOMYgL//rXJVEaBm
+    Wrffm8UUgDd6kLDw6MMWA76pGTjpyj1LIXL2sJECZNs7zwnrv1gAvieZt1gn9Cko258i
+    qVjmbq0ixiMkjsv0CvoHoq6OVwuVMJQSRMMgjiLHLWz98rwQNpQD/DpJBHpyYmxqxtn3
+    KtFDLww8/mE1SPL1z8fgXEcvhWfecibi5/DB+arcsZhIUQAoiQOh+m1BCUebWrim5Z79
+    s03w==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1KHeBQyh+ITDDFqZQ=="
+X-RZG-CLASS-ID: mo00
+Received: from iMac.fritz.box
+    by smtp.strato.de (RZmta 47.42.2 DYNA|AUTH)
+    with ESMTPSA id k708cfy42CcXVKe
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Mon, 2 May 2022 14:38:33 +0200 (CEST)
+From:   "H. Nikolaus Schaller" <hns@goldelico.com>
+To:     arnd@arndb.de, tony@atomide.com, Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?Q?Miqu=C3=A8l_Raynal?= <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+        "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, letux-kernel@openphoenux.org,
+        kernel@pyra-handheld.com, linux-omap@vger.kernel.org
+Subject: [PATCH] wl1251: dynamically allocate memory used for DMA
+Date:   Mon,  2 May 2022 14:38:32 +0200
+Message-Id: <1676021ae8b6d7aada0b1806fed99b1b8359bdc4.1651495112.git.hns@goldelico.com>
+X-Mailer: git-send-email 2.33.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Clément,
+With introduction of vmap'ed stacks, stack parameters can no
+longer be used for DMA and now leads to kernel panic.
 
-On Mon, May 2, 2022 at 8:52 AM Clément Léger <clement.leger@bootlin.com> wrote:
-> Le Fri, 29 Apr 2022 12:32:35 -0700,
-> Jakub Kicinski <kuba@kernel.org> a écrit :
->
-> > On Fri, 29 Apr 2022 16:34:53 +0200 Clément Léger wrote:
-> > > The Renesas RZ/N1 SoCs features an ethernet subsystem which contains
-> > > (most notably) a switch, two GMACs, and a MII converter [1]. This
-> > > series adds support for the switch and the MII converter.
-> > >
-> > > The MII converter present on this SoC has been represented as a PCS
-> > > which sit between the MACs and the PHY. This PCS driver is probed from
-> > > the device-tree since it requires to be configured. Indeed the MII
-> > > converter also contains the registers that are handling the muxing of
-> > > ports (Switch, MAC, HSR, RTOS, etc) internally to the SoC.
-> > >
-> > > The switch driver is based on DSA and exposes 4 ports + 1 CPU
-> > > management port. It include basic bridging support as well as FDB and
-> > > statistics support.
-> >
-> > Build's not happy (W=1 C=1):
-> >
-> > drivers/net/dsa/rzn1_a5psw.c:574:29: warning: symbol 'a5psw_switch_ops' was not declared. Should it be static?
-> > In file included from ../drivers/net/dsa/rzn1_a5psw.c:17:
-> > drivers/net/dsa/rzn1_a5psw.h:221:1: note: offset of packed bit-field ‘port_mask’ has changed in GCC 4.4
-> >   221 | } __packed;
-> >       | ^
-> >
->
-> Hi Jakub, I only had this one (due to the lack of W=1 C=1 I guess) which
-> I thought (wrongly) that it was due to my GCC version:
->
->   CC      net/dsa/switch.o
->   CC      net/dsa/tag_8021q.o
-> In file included from ../drivers/net/dsa/rzn1_a5psw.c:17:
-> ../drivers/net/dsa/rzn1_a5psw.h:221:1: note: offset of packed bit-field
->   ‘port_mask’ has changed in GCC 4.4 221 | } __packed;
->       | ^
->   CC      kernel/module.o
->   CC      drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.o
->   CC      drivers/net/ethernet/stmicro/stmmac/dwmac100_core.o
->
-> I'll fix the other errors which are more trivial, however, I did not
-> found a way to fix the packed bit-field warning.
+It happens at several places for the wl1251 (e.g. when
+accessed through SDIO) making it unuseable on e.g. the
+OpenPandora.
 
-The "port_mask" field is split across 2 u8s.
-What about using u16 instead, and adding explicit padding while
-at it? The below gets rid of the warning, while the generated code
-is the same.
+We solve this by allocating temporary buffers or use wl1251_read32().
 
---- a/drivers/net/dsa/rzn1_a5psw.h
-+++ b/drivers/net/dsa/rzn1_a5psw.h
-@@ -169,10 +169,11 @@
+Tested on v5.18-rc5 with OpenPandora.
 
- struct fdb_entry {
-        u8 mac[ETH_ALEN];
--       u8 valid:1;
--       u8 is_static:1;
--       u8 prio:3;
--       u8 port_mask:5;
-+       u16 valid:1;
-+       u16 is_static:1;
-+       u16 prio:3;
-+       u16 port_mask:5;
-+       u16 reserved:6;
- } __packed;
+Fixes: a1c510d0adc6 ("ARM: implement support for vmap'ed stacks")
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+---
+ drivers/net/wireless/ti/wl1251/event.c | 22 ++++++++++++++--------
+ drivers/net/wireless/ti/wl1251/io.c    | 20 ++++++++++++++------
+ drivers/net/wireless/ti/wl1251/tx.c    | 15 +++++++++++----
+ 3 files changed, 39 insertions(+), 18 deletions(-)
 
- union lk_data {
+diff --git a/drivers/net/wireless/ti/wl1251/event.c b/drivers/net/wireless/ti/wl1251/event.c
+index e6d426edab56b..e945aafd88ee5 100644
+--- a/drivers/net/wireless/ti/wl1251/event.c
++++ b/drivers/net/wireless/ti/wl1251/event.c
+@@ -169,11 +169,9 @@ int wl1251_event_wait(struct wl1251 *wl, u32 mask, int timeout_ms)
+ 		msleep(1);
+ 
+ 		/* read from both event fields */
+-		wl1251_mem_read(wl, wl->mbox_ptr[0], &events_vector,
+-				sizeof(events_vector));
++		events_vector = wl1251_mem_read32(wl, wl->mbox_ptr[0]);
+ 		event = events_vector & mask;
+-		wl1251_mem_read(wl, wl->mbox_ptr[1], &events_vector,
+-				sizeof(events_vector));
++		events_vector = wl1251_mem_read32(wl, wl->mbox_ptr[1]);
+ 		event |= events_vector & mask;
+ 	} while (!event);
+ 
+@@ -202,7 +200,7 @@ void wl1251_event_mbox_config(struct wl1251 *wl)
+ 
+ int wl1251_event_handle(struct wl1251 *wl, u8 mbox_num)
+ {
+-	struct event_mailbox mbox;
++	struct event_mailbox *mbox;
+ 	int ret;
+ 
+ 	wl1251_debug(DEBUG_EVENT, "EVENT on mbox %d", mbox_num);
+@@ -210,12 +208,20 @@ int wl1251_event_handle(struct wl1251 *wl, u8 mbox_num)
+ 	if (mbox_num > 1)
+ 		return -EINVAL;
+ 
++	mbox = kmalloc(sizeof(*mbox), GFP_KERNEL);
++	if (!mbox) {
++		wl1251_error("can not allocate mbox buffer");
++		return -ENOMEM;
++	}
++
+ 	/* first we read the mbox descriptor */
+-	wl1251_mem_read(wl, wl->mbox_ptr[mbox_num], &mbox,
+-			    sizeof(struct event_mailbox));
++	wl1251_mem_read(wl, wl->mbox_ptr[mbox_num], mbox,
++			sizeof(*mbox));
+ 
+ 	/* process the descriptor */
+-	ret = wl1251_event_process(wl, &mbox);
++	ret = wl1251_event_process(wl, mbox);
++	kfree(mbox);
++
+ 	if (ret < 0)
+ 		return ret;
+ 
+diff --git a/drivers/net/wireless/ti/wl1251/io.c b/drivers/net/wireless/ti/wl1251/io.c
+index 5ebe7958ed5c7..e8d567af74b4b 100644
+--- a/drivers/net/wireless/ti/wl1251/io.c
++++ b/drivers/net/wireless/ti/wl1251/io.c
+@@ -121,7 +121,13 @@ void wl1251_set_partition(struct wl1251 *wl,
+ 			  u32 mem_start, u32 mem_size,
+ 			  u32 reg_start, u32 reg_size)
+ {
+-	struct wl1251_partition partition[2];
++	struct wl1251_partition_set *partition;
++
++	partition = kmalloc(sizeof(*partition), GFP_KERNEL);
++	if (!partition) {
++		wl1251_error("can not allocate partition buffer");
++		return;
++	}
+ 
+ 	wl1251_debug(DEBUG_SPI, "mem_start %08X mem_size %08X",
+ 		     mem_start, mem_size);
+@@ -164,10 +170,10 @@ void wl1251_set_partition(struct wl1251 *wl,
+ 			     reg_start, reg_size);
+ 	}
+ 
+-	partition[0].start = mem_start;
+-	partition[0].size  = mem_size;
+-	partition[1].start = reg_start;
+-	partition[1].size  = reg_size;
++	partition->mem.start = mem_start;
++	partition->mem.size  = mem_size;
++	partition->reg.start = reg_start;
++	partition->reg.size  = reg_size;
+ 
+ 	wl->physical_mem_addr = mem_start;
+ 	wl->physical_reg_addr = reg_start;
+@@ -176,5 +182,7 @@ void wl1251_set_partition(struct wl1251 *wl,
+ 	wl->virtual_reg_addr = mem_size;
+ 
+ 	wl->if_ops->write(wl, HW_ACCESS_PART0_SIZE_ADDR, partition,
+-		sizeof(partition));
++		sizeof(*partition));
++
++	kfree(partition);
+ }
+diff --git a/drivers/net/wireless/ti/wl1251/tx.c b/drivers/net/wireless/ti/wl1251/tx.c
+index 98cd39619d579..e9dc3c72bb110 100644
+--- a/drivers/net/wireless/ti/wl1251/tx.c
++++ b/drivers/net/wireless/ti/wl1251/tx.c
+@@ -443,19 +443,25 @@ static void wl1251_tx_packet_cb(struct wl1251 *wl,
+ void wl1251_tx_complete(struct wl1251 *wl)
+ {
+ 	int i, result_index, num_complete = 0, queue_len;
+-	struct tx_result result[FW_TX_CMPLT_BLOCK_SIZE], *result_ptr;
++	struct tx_result *result, *result_ptr;
+ 	unsigned long flags;
+ 
+ 	if (unlikely(wl->state != WL1251_STATE_ON))
+ 		return;
+ 
++	result = kmalloc_array(FW_TX_CMPLT_BLOCK_SIZE, sizeof(*result), GFP_KERNEL);
++	if (!result) {
++		wl1251_error("can not allocate result buffer");
++		return;
++	}
++
+ 	/* First we read the result */
+-	wl1251_mem_read(wl, wl->data_path->tx_complete_addr,
+-			    result, sizeof(result));
++	wl1251_mem_read(wl, wl->data_path->tx_complete_addr, result,
++			FW_TX_CMPLT_BLOCK_SIZE * sizeof(*result));
+ 
+ 	result_index = wl->next_tx_complete;
+ 
+-	for (i = 0; i < ARRAY_SIZE(result); i++) {
++	for (i = 0; i < FW_TX_CMPLT_BLOCK_SIZE; i++) {
+ 		result_ptr = &result[result_index];
+ 
+ 		if (result_ptr->done_1 == 1 &&
+@@ -538,6 +544,7 @@ void wl1251_tx_complete(struct wl1251 *wl)
+ 
+ 	}
+ 
++	kfree(result);
+ 	wl->next_tx_complete = result_index;
+ }
+ 
+-- 
+2.33.0
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
