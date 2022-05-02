@@ -2,111 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C769516AEF
-	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 08:43:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEF69516AFF
+	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 08:52:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383490AbiEBGqo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 May 2022 02:46:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55276 "EHLO
+        id S1353816AbiEBGz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 May 2022 02:55:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343598AbiEBGqn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 02:46:43 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 864202CE1D;
-        Sun,  1 May 2022 23:43:12 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id x23so6319744pff.9;
-        Sun, 01 May 2022 23:43:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=iAuUa0BGKm3Umq1FBvXS7xo05qV6QmFyZ/a1PtsOX5E=;
-        b=P+qxbf4Lv1EeTjOjULUDyzWnjjnjEl3cIx5tdseFK+GRpnp0zV6XDF8vlDr4Ja4iXx
-         u9qrpIGpr7qdbZHwZlBFg4P0udLosxtDbk0LgGOtAmAjYAlOc8nvcybd3+hve19ZdhDu
-         oPlLwBWiP6KIvd7rp5p6S2oWYS/GrRAYqaIJDLL8JW42LeChQFvENah0cuIJIX8/NQDZ
-         q1G1O6xJ5IEIDrPK8DDotFvvDswPofCe92W6NZGMLQ7LNhZHnxx5aNkB9hG0m2RBl7ot
-         C2KIjK3DtCgJmbENPMSXmwrYpQu313cs+I0uc6KISVuarAN10eMIe66loQy4n9NNG4n3
-         pooQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=iAuUa0BGKm3Umq1FBvXS7xo05qV6QmFyZ/a1PtsOX5E=;
-        b=4cfpxpDCYoxeNWaTvf8JLImmiz2A62NHNdg4ScYke8jYQWeA1mcAzCcpY6EL0MOJik
-         wPY8XlUEGst+/YGDJiCZ/WbCbbOH5FD9HcbSEnKKiLT6gwLlT7IN9gIXRX0R5xPVGctP
-         XeXRUGShEMPzRQE3yE7idrZIk0MpJhwFqoqfKH7r6rvxlPcu8F3ahXrIdVmHBpn2d/0J
-         WlStRJftBrF2F8vo2QhUIBW4wunSRH5ImhF43yI3MdRsU+3jv4mhvr17X7SLSSy1JlKP
-         vPpq+Nek8K71Q6npZaqSxLP/J239+kK3+iDvPflOY4+CK4YarZinDVuZpPVkAvOcIsSH
-         TwtA==
-X-Gm-Message-State: AOAM533d1XiyN/SAwCNDO8+8g+s8HyT5hPYJmicQEO2uOedIlY1tgPax
-        gpi7mAdGjYXnMRb2/0TM+DsHqRoGGmylgs1v7aMTwVCigng=
-X-Google-Smtp-Source: ABdhPJxb5VYu7eov/l6wnOftz0i68FF37AZ58mVmsnou3EO+HGkwtWZqq1kKfFpx+aHz3h/nSDzLjRUdwY5FEmLR0To=
-X-Received: by 2002:a63:e849:0:b0:3c1:cf88:7b17 with SMTP id
- a9-20020a63e849000000b003c1cf887b17mr8186947pgk.590.1651473792044; Sun, 01
- May 2022 23:43:12 -0700 (PDT)
+        with ESMTP id S244222AbiEBGzy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 02:55:54 -0400
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA35935270;
+        Sun,  1 May 2022 23:52:24 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 5498140003;
+        Mon,  2 May 2022 06:52:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1651474342;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CRnuH9NmDN7PIjjb0xMDNRrIFcSL+3W+2vUxFvjNLKo=;
+        b=GHdJ3TT4SITL2nwOkmdIRURaN/xuQC5jufmrAZumYAEe4lZtwnW6aQXQN/YT10EFNdhjP2
+        iOU/QR9OcQwgUPcY2J9vtH/Ck6X24V8L9szzdgkGqYuE7WTORx81kA2addlo1LG7/gFK6b
+        5v0h05tFajTYdl+oUq0lermRU+f96HuaN90dD2Z5cGHp8lWWfbkHbE4/C1Ecnqscb9Q/wz
+        MqxwSSUaWbWnqE1zw3isHiX3CkZXDMSVyqXCcKwvpHd0XM70yegrcq7vYFrxrVl7Epq/rZ
+        u1VSqNFGOmK/liT99vSNmD7zsaz6Muly8EeV3fBvIKtzAVkGAeB2UP+57ZN2Kg==
+Date:   Mon, 2 May 2022 08:51:03 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [net-next v2 00/12] add support for Renesas RZ/N1 ethernet
+ subsystem devices
+Message-ID: <20220502085103.19b4f47b@fixe.home>
+In-Reply-To: <20220429123235.3098ed12@kernel.org>
+References: <20220429143505.88208-1-clement.leger@bootlin.com>
+        <20220429123235.3098ed12@kernel.org>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-From:   Forest Crossman <cyrozap@gmail.com>
-Date:   Mon, 2 May 2022 01:43:00 -0500
-Message-ID: <CAO3ALPzKEStzf5-mgSLJ_jsCSbRq_2JzZ6de2rXuETV5RC-V8w@mail.gmail.com>
-Subject: Realtek RTL8156 devices defaulting to CDC-NCM instead of vendor mode,
- resulting in reduced performance
-To:     hayeswang@realtek.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, all,
+Le Fri, 29 Apr 2022 12:32:35 -0700,
+Jakub Kicinski <kuba@kernel.org> a =C3=A9crit :
 
-I recently purchased a pair of USB to 2.5G Ethernet dongles based on
-the RTL8156, and have so far been very happy with them, but only after
-adding some udev rules[0] to to take advantage of the r8152 driver by
-switching the devices from their default CDC-NCM mode to the vendor
-mode. I was prompted to use those rules to switch the driver because
-one of the adapters (based on the RTL8156A) would get very hot, up to
-120 F (49 C) even while idle, and the round-trip latency directly
-between the pair of adapters was about 3 ms, and I couldn't help but
-wonder if maybe the vendor mode might be more efficient.
+> On Fri, 29 Apr 2022 16:34:53 +0200 Cl=C3=A9ment L=C3=A9ger wrote:
+> > The Renesas RZ/N1 SoCs features an ethernet subsystem which contains
+> > (most notably) a switch, two GMACs, and a MII converter [1]. This
+> > series adds support for the switch and the MII converter.
+> >=20
+> > The MII converter present on this SoC has been represented as a PCS
+> > which sit between the MACs and the PHY. This PCS driver is probed from
+> > the device-tree since it requires to be configured. Indeed the MII
+> > converter also contains the registers that are handling the muxing of
+> > ports (Switch, MAC, HSR, RTOS, etc) internally to the SoC.
+> >=20
+> > The switch driver is based on DSA and exposes 4 ports + 1 CPU
+> > management port. It include basic bridging support as well as FDB and
+> > statistics support. =20
+>=20
+> Build's not happy (W=3D1 C=3D1):
+>=20
+> drivers/net/dsa/rzn1_a5psw.c:574:29: warning: symbol 'a5psw_switch_ops' w=
+as not declared. Should it be static?
+> In file included from ../drivers/net/dsa/rzn1_a5psw.c:17:
+> drivers/net/dsa/rzn1_a5psw.h:221:1: note: offset of packed bit-field =E2=
+=80=98port_mask=E2=80=99 has changed in GCC 4.4
+>   221 | } __packed;
+>       | ^
+>=20
 
-After performing some tests of latency and power consumption, testing
-first with both adapters in NCM mode and then again with both in
-vendor mode, I proved my hunch correct. I discovered that, in a
-disconnected state, the RTL8156A adapter used about half as much power
-(0.64 W -> 0.30 W) while the RTL8156B adapter saw a 21% reduction in
-power (0.34 W -> 0.27 W). Similarly, in a connected-but-idle state the
-RTL8156A again saw about a 55% savings in power consumption (2.17 W ->
-0.97 W) and a 40% savings in the RTL8156B adapter (0.94 W -> 0.56 W).
-It was only under full load that the fewest power savings were seen,
-with a reduction of only 15% in the RTL8156A (2.23 W -> 1.90 W) and no
-savings for the RTL8156B (0.96 W). Similarly, round-trip latency while
-idle went from 3 ms to 0.6 ms. I also tested under load and saw much
-larger latency savings and reduced packet loss, but forgot to write
-down the numbers (I can run the tests again if someone really wants me
-too). Also, jumbo frames drastically reduced performance under NCM
-mode, while vendor mode handled it like a champ (again, I forgot to
-write down the numbers but can test again if asked).
+Hi Jakub, I only had this one (due to the lack of W=3D1 C=3D1 I guess) which
+I thought (wrongly) that it was due to my GCC version:
 
-So, with all the benefits I've seen from using these adapters in their
-vendor mode, is there still a reason to let the kernel prefer their
-NCM mode? It'd be nice to be able to get the maximum performance from
-these adapters on any Linux system I plug them into, without having to
-install a udev rule on every one of those systems.
+  CC      net/dsa/switch.o
+  CC      net/dsa/tag_8021q.o
+In file included from ../drivers/net/dsa/rzn1_a5psw.c:17:
+../drivers/net/dsa/rzn1_a5psw.h:221:1: note: offset of packed bit-field
+  =E2=80=98port_mask=E2=80=99 has changed in GCC 4.4 221 | } __packed;
+      | ^
+  CC      kernel/module.o
+  CC      drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.o
+  CC      drivers/net/ethernet/stmicro/stmmac/dwmac100_core.o
 
-If anyone would like to try replicating the results I listed here, or
-to perform new tests, the specific RTL8156A adapter I used is the
-Ugreen CM275[1] and the RTL8156B adapter is the Inateck ET1001[2].
+I'll fix the other errors which are more trivial, however, I did not
+found a way to fix the packed bit-field warning.
+
+Thanks
+
+> drivers/net/dsa/rzn1_a5psw.h:200: warning: Function parameter or member '=
+hclk' not described in 'a5psw'
+> drivers/net/dsa/rzn1_a5psw.h:200: warning: Function parameter or member '=
+clk' not described in 'a5psw'
+>=20
+> Not sure how many of these are added by you but I think 2 at least.
 
 
-Curious to hear your thoughts on this,
 
-Forest
-
-
-[0]: https://github.com/bb-qq/r8152/blob/160fb96d2319cdf64ae7597e8739972934ac83b2/50-usb-realtek-net.rules
-[1]: https://www.amazon.com/gp/product/B081TY1WQX/
-[2]: https://www.amazon.com/gp/product/B08VN3DGK6/
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
