@@ -2,170 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33208516F3B
-	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 14:05:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92721516F66
+	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 14:16:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384892AbiEBMJM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 May 2022 08:09:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58410 "EHLO
+        id S1384959AbiEBMT0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 May 2022 08:19:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233481AbiEBMIl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 08:08:41 -0400
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9F751400E
-        for <netdev@vger.kernel.org>; Mon,  2 May 2022 05:05:09 -0700 (PDT)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-2f7d621d1caso144714027b3.11
-        for <netdev@vger.kernel.org>; Mon, 02 May 2022 05:05:09 -0700 (PDT)
+        with ESMTP id S1384943AbiEBMTZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 08:19:25 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C3EB1209A
+        for <netdev@vger.kernel.org>; Mon,  2 May 2022 05:15:55 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id p10so24897571lfa.12
+        for <netdev@vger.kernel.org>; Mon, 02 May 2022 05:15:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=h3tCKH7ebkKPQvrWw7j6hFFjOOim/c0BmjpoSMuBdrQ=;
-        b=CNJZDsF19g7FivqUW2Z1eJq8XN5EV2igI4ab6j9NUAqteLblakIst+IpEeHS/Pv+EL
-         7g40JlM0BF7AEQnCwqm4RUo0/63RBy/xP2b9pKPTF3H8BNB9fJ5h4AADMMjvh0ZrTnV6
-         +7vMPLJTpI6Un9uNKqGUR/G4FhisOA1vCjDw35emsEReezFS5JJAFg0bp+s+XvJaRbUs
-         QHHSfjMW7xNMywwbEgMVEWk24wbe9bYNLsfWcLnDFHHuxR1M2AvZ+C2PvL+Mq5PAhKs9
-         nWZyYPBBLtnJ/R0+l5PNhYKlxdlbC4UqonVhi3/jp2LFYLvbiydBN1ZkYi4KbacB4NFy
-         4YLQ==
+        d=openvz-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:from:subject:to:cc
+         :references:content-language:in-reply-to:content-transfer-encoding;
+        bh=zF2cE9+P0Hg5X3nSpzQOTg1K/5ZJ3rPndlEIKRoSDaE=;
+        b=8UEmygGrLhp+zPnr4D7bOp+vs7LlPYg2S3/xyDed0anZr1IHNhAVGPvTPtlJ5Wdbvi
+         TheDYWElLLlOPoDL+7H+GvXvpMcijUFW7qUV0Yy+5aMthqi8pIFazE9oCTPg/oMSTsCL
+         lWDaTSJvvkhowIn/T/vwRgME6AMoK+sMNXK2/OQdHuadCFH3O5vEGCsvpf/RY8d9x2xZ
+         3PjDmNeVwkFWS7cekO5vYkoyPerJaJq/CEDaWGy3ugmjhrWChzYLn8dzSNES5wosXznv
+         i+w1jVJK58S7J2xJhZTEXYnH4xVzDT7jRW8n+gEsPQ+5ZPZtHlI+SQQF4q26TRHMQXqF
+         Y43w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=h3tCKH7ebkKPQvrWw7j6hFFjOOim/c0BmjpoSMuBdrQ=;
-        b=PYlxLquqhnpEMPMIm5u3lkT80mXwMCYriFFMuuxBlh5Tqn6qL9/KvHGqYwqX/FdOvU
-         DQOMjj4yML8nz51Ugcin9TYYMRABQjSbtktTTH8yKCheRujQtrXV9YU2l5oFnj7+9Soj
-         Wuveq0N0/aOUMegOQzzlwIh1i0z2w+or1jM554XHIMcBxV772AQ2kXr83Km6mhUxLBsx
-         SS3gM9/5nXbjTtH7Zp5BCjwO9RvIwXFlsySzNoAvIN+J2x/z068xZvgkML3RY7n4trC1
-         ny+0JzrTTAPkNJGisgI3CHGeerdZ/YT+4ZumBsMPohXRTM9pRIN4XWxvTfAdBvYDuwtW
-         4erg==
-X-Gm-Message-State: AOAM532TJffzzhho5MO2SuW0ToX1v9nXyU32AOlcJ2sM8hTzZDsK4uUm
-        /qWvh1vS9XytNvVEnImfvrzNaJCigcQSiYw7OQbSDQ==
-X-Google-Smtp-Source: ABdhPJy+md5hEGolmEI3F2msfSAnd2QAPV6G68T06cTpxGxu+bBbbObkukwSus5TTSIkxDs9lTrJPGOrLWkRlCsL6pM=
-X-Received: by 2002:a81:478b:0:b0:2ea:da8c:5c21 with SMTP id
- u133-20020a81478b000000b002eada8c5c21mr11112137ywa.189.1651493108690; Mon, 02
- May 2022 05:05:08 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
+         :subject:to:cc:references:content-language:in-reply-to
+         :content-transfer-encoding;
+        bh=zF2cE9+P0Hg5X3nSpzQOTg1K/5ZJ3rPndlEIKRoSDaE=;
+        b=KiThNCKyHSuPiwowrV0Ob7WlvwT/nbjwkjZv9wPoXxRog9LtOlvZBty91VZoIvpFU0
+         hRcAuflHyHCkW8asvSZU8X6xKtjpz8bwZMyTojn04DmVELuUySmIkwzBBMmPmrjgYR5U
+         tOGWoYY0vnH5cIFOQtYL1LomaLlIx25XvsfD6M10ehOnvXGj0R8JCSZYd4Gszrff4Qq9
+         NCx9UZx5Stq9b9f6SJFQBuL1qEEQWI8OiZNYgnFy8DjvcvtriNJyppxD+HihplgLIDr4
+         e4F7E+6KNPe5VdyApm5+Ho8KG6FlV1l/87r719lEWF78tWBu23A6Ezj08h5W3mtjqgLq
+         RjyQ==
+X-Gm-Message-State: AOAM532te1yr1MsSwCd1mJCHbCwXtqSAeGXYx8XQTQQuUit7iXjvxTy+
+        8y/JKwn6zZKkF36x0n7JyZbEGA==
+X-Google-Smtp-Source: ABdhPJwkDTEskzw4tw9Vq22RaRk6KjYv0enSGIlQ810JvdVySd9J8zis8/RvtsOJPDji2cp8jppRUA==
+X-Received: by 2002:a05:6512:b18:b0:44a:9a1f:dcf6 with SMTP id w24-20020a0565120b1800b0044a9a1fdcf6mr8517690lfu.4.1651493753494;
+        Mon, 02 May 2022 05:15:53 -0700 (PDT)
+Received: from [192.168.1.65] ([46.188.121.177])
+        by smtp.gmail.com with ESMTPSA id 7-20020a05651c128700b0024f3d1daebcsm1003262ljc.68.2022.05.02.05.15.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 02 May 2022 05:15:53 -0700 (PDT)
+Message-ID: <354a0a5f-9ec3-a25c-3215-304eab2157bc@openvz.org>
+Date:   Mon, 2 May 2022 15:15:51 +0300
 MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Mon, 2 May 2022 17:34:56 +0530
-Message-ID: <CA+G9fYs2YeyM-v-zea0D7nDk4m+=iCgYgt4pfMVUL-LmXkdHMA@mail.gmail.com>
-Subject: selftests: net: pmtu.sh: BUG: unable to handle page fault for
- address: 2509c000
-To:     open list <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, Netdev <netdev@vger.kernel.org>
-Cc:     Shuah Khan <shuah@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Guillaume Nault <gnault@redhat.com>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+From:   Vasily Averin <vvs@openvz.org>
+Subject: [PATCH memcg v2] memcg: accounting for objects allocated for new
+ netdevice
+To:     Shakeel Butt <shakeelb@google.com>
+Cc:     kernel@openvz.org, Florian Westphal <fw@strlen.de>,
+        linux-kernel@vger.kernel.org,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Michal Hocko <mhocko@suse.com>, cgroups@vger.kernel.org,
+        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Anders Roxell <anders.roxell@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Iurii Zaikin <yzaikin@google.com>,
+        linux-fsdevel@vger.kernel.org
+References: <53613f02-75f2-0546-d84c-a5ed989327b6@openvz.org>
+Content-Language: en-US
+In-Reply-To: <53613f02-75f2-0546-d84c-a5ed989327b6@openvz.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Following kernel BUG noticed on qemu_i386 while testing
-selftests: net: pmtu.sh  with kselftest merge config build image [1] & [2]
-and after this BUG test hung.
+Creating a new netdevice allocates at least ~50Kb of memory for various
+kernel objects, but only ~5Kb of them are accounted to memcg. As a result,
+creating an unlimited number of netdevice inside a memcg-limited container
+does not fall within memcg restrictions, consumes a significant part
+of the host's memory, can cause global OOM and lead to random kills of
+host processes.
 
-metadata:
-  git_ref: master
-  git_repo: https://gitlab.com/Linaro/lkft/mirrors/torvalds/linux-mainline
-  git_sha: 672c0c5173427e6b3e2a9bbb7be51ceeec78093a
-  git_describe: v5.18-rc5
-  kernel_version: 5.18.0-rc5
-  kernel-config: https://builds.tuxbuild.com/28a2wrzQ62tLypUV7bgCOXEGKig/config
-  build-url: https://gitlab.com/Linaro/lkft/mirrors/torvalds/linux-mainline/-/pipelines/528952197
-  artifact-location: https://builds.tuxbuild.com/28a2wrzQ62tLypUV7bgCOXEGKig
-  toolchain: gcc-11
+The main consumers of non-accounted memory are:
+ ~10Kb   80+ kernfs nodes
+ ~6Kb    ipv6_add_dev() allocations
+  6Kb    __register_sysctl_table() allocations
+  4Kb    neigh_sysctl_register() allocations
+  4Kb    __devinet_sysctl_register() allocations
+  4Kb    __addrconf_sysctl_register() allocations
 
+Accounting of these objects allows to increase the share of memcg-related
+memory up to 60-70% (~38Kb accounted vs ~54Kb total for dummy netdevice
+on typical VM with default Fedora 35 kernel) and this should be enough
+to somehow protect the host from misuse inside container.
 
-Test log:
----------
-# selftests: net: pmtu.sh
-[  468.730000] ip (15022) used greatest stack depth: 4232 bytes left
+Other related objects are quite small and may not be taken into account
+to minimize the expected performance degradation.
 
-<trim>
+It should be separately mentonied ~300 bytes of percpu allocation
+of struct ipstats_mib in snmp6_alloc_dev(), on huge multi-cpu nodes
+it can become the main consumer of memory.
 
-# TEST: ipv6: cleanup of cached exceptions                            [ OK ]
-[  587.633640] IPv6: ADDRCONF(NETDEV_CHANGE): veth_A-R1: link becomes ready
-[  587.695867] IPv6: ADDRCONF(NETDEV_CHANGE): veth_A-R2: link becomes ready
-[  587.758384] IPv6: ADDRCONF(NETDEV_CHANGE): veth_B-R1: link becomes ready
-[  587.821528] IPv6: ADDRCONF(NETDEV_CHANGE): veth_B-R2: link becomes ready
-# TEST: ipv6: cleanup of cached exceptions - nexthop objects          [ OK ]
-[  591.442819] BUG: unable to handle page fault for address: 2509c000
-[  591.444468] #PF: supervisor read access in kernel mode
-[  591.445810] #PF: error_code(0x0000) - not-present page
-[  591.447175] *pde = 00000000
-[  591.448121] Oops: 0000 [#1] PREEMPT SMP
-[  591.449350] CPU: 3 PID: 0 Comm: swapper/3 Not tainted 5.18.0-rc5 #1
-[  591.451373] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
-BIOS 1.12.0-1 04/01/2014
-[  591.453404] EIP: percpu_counter_add_batch+0x2e/0xe0
-[  591.454134] Code: ec 20 89 5d f4 89 c3 b8 01 00 00 00 89 75 f8 89
-7d fc 89 55 ec 89 4d f0 e8 3f f0 a3 ff b8 5f c4 c7 cf e8 e5 43 bd 00
-8b 4b 34 <64> 8b 39 89 7d e0 89 fe 8b 45 08 c1 ff 1f 03 75 ec 13 7d f0
-89 45
-[  591.456840] EAX: 00000003 EBX: c60fd540 ECX: 00000000 EDX: cfc7c45f
-[  591.457755] ESI: 00000000 EDI: c11a92c0 EBP: c1251f40 ESP: c1251f20
-[  591.458686] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAGS: 00210202
-[  591.459688] CR0: 80050033 CR2: 2509c000 CR3: 05401000 CR4: 003506d0
-[  591.460628] Call Trace:
-[  591.461009]  <SOFTIRQ>
-[  591.461366]  dst_destroy+0xac/0xe0
-[  591.461879]  dst_destroy_rcu+0x10/0x20
-[  591.462438]  rcu_core+0x354/0xa50
-[  591.462942]  ? rcu_core+0x2fd/0xa50
-[  591.463462]  rcu_core_si+0xd/0x10
-[  591.463962]  __do_softirq+0x14f/0x4ae
-[  591.464509]  ? __entry_text_end+0x8/0x8
-[  591.465108]  call_on_stack+0x4c/0x60
-[  591.465637]  </SOFTIRQ>
-[  591.466010]  ? __irq_exit_rcu+0xca/0x130
-[  591.466588]  ? irq_exit_rcu+0xd/0x20
-[  591.467132]  ? sysvec_apic_timer_interrupt+0x36/0x50
-[  591.467868]  ? handle_exception+0x133/0x133
-[  591.468481]  ? __sched_text_end+0x2/0x2
-[  591.469079]  ? sysvec_call_function_single+0x50/0x50
-[  591.469804]  ? default_idle+0x13/0x20
-[  591.470346]  ? sysvec_call_function_single+0x50/0x50
-[  591.471068]  ? default_idle+0x13/0x20
-[  591.471605]  ? arch_cpu_idle+0x12/0x20
-[  591.472164]  ? default_idle_call+0x52/0xa0
-[  591.472788]  ? do_idle+0x20a/0x270
-[  591.473289]  ? cpu_startup_entry+0x20/0x30
-[  591.473890]  ? cpu_startup_entry+0x25/0x30
-[  591.474489]  ? start_secondary+0x10f/0x140
-[  591.475098]  ? startup_32_smp+0x161/0x164
-[  591.475687] Modules linked in: sit xt_policy iptable_filter
-ip_tables x_tables veth fuse [last unloaded: test_blackhole_dev]
-[  591.477321] CR2: 000000002509c000
-[  591.477818] ---[ end trace 0000000000000000 ]---
-[  591.478500] EIP: percpu_counter_add_batch+0x2e/0xe0
-[  591.479218] Code: ec 20 89 5d f4 89 c3 b8 01 00 00 00 89 75 f8 89
-7d fc 89 55 ec 89 4d f0 e8 3f f0 a3 ff b8 5f c4 c7 cf e8 e5 43 bd 00
-8b 4b 34 <64> 8b 39 89 7d e0 89 fe 8b 45 08 c1 ff 1f 03 75 ec 13 7d f0
-89 45
-[  591.481915] EAX: 00000003 EBX: c60fd540 ECX: 00000000 EDX: cfc7c45f
-[  591.482829] ESI: 00000000 EDI: c11a92c0 EBP: c1251f40 ESP: c1251f20
-[  591.483739] DS: 007b ES: 007b FS: 00d8 GS: 0000 SS: 0068 EFLAGS: 00210202
-[  591.484744] CR0: 80050033 CR2: 2509c000 CR3: 05401000 CR4: 003506d0
-[  591.485656] Kernel panic - not syncing: Fatal exception in interrupt
-[  591.486680] Kernel Offset: disabled
-[  591.487215] ---[ end Kernel panic - not syncing: Fatal exception in
-interrupt ]---
+This patch does not enables kernfs accounting as it affects
+other parts of the kernel and should be discussed separately.
+However, even without kernfs, this patch significantly improves the
+current situation and allows to take into account more than half
+of all netdevice allocations.
 
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+Signed-off-by: Vasily Averin <vvs@openvz.org>
+---
+v2: 1) kernfs accounting moved into separate patch, suggested by
+    Shakeel and mkoutny@.
+    2) in ipv6_add_dev() changed original "sizeof(struct inet6_dev)"
+    to "sizeof(*ndev)", according to checkpath.pl recommendation:
+      CHECK: Prefer kzalloc(sizeof(*ndev)...) over kzalloc(sizeof
+        (struct inet6_dev)...)
+---
+ fs/proc/proc_sysctl.c | 2 +-
+ net/core/neighbour.c  | 2 +-
+ net/ipv4/devinet.c    | 2 +-
+ net/ipv6/addrconf.c   | 8 ++++----
+ 4 files changed, 7 insertions(+), 7 deletions(-)
 
---
-Linaro LKFT
-https://lkft.linaro.org
+diff --git a/fs/proc/proc_sysctl.c b/fs/proc/proc_sysctl.c
+index 7d9cfc730bd4..df4604fea4f8 100644
+--- a/fs/proc/proc_sysctl.c
++++ b/fs/proc/proc_sysctl.c
+@@ -1333,7 +1333,7 @@ struct ctl_table_header *__register_sysctl_table(
+ 		nr_entries++;
+ 
+ 	header = kzalloc(sizeof(struct ctl_table_header) +
+-			 sizeof(struct ctl_node)*nr_entries, GFP_KERNEL);
++			 sizeof(struct ctl_node)*nr_entries, GFP_KERNEL_ACCOUNT);
+ 	if (!header)
+ 		return NULL;
+ 
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index ec0bf737b076..3dcda2a54f86 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -3728,7 +3728,7 @@ int neigh_sysctl_register(struct net_device *dev, struct neigh_parms *p,
+ 	char neigh_path[ sizeof("net//neigh/") + IFNAMSIZ + IFNAMSIZ ];
+ 	char *p_name;
+ 
+-	t = kmemdup(&neigh_sysctl_template, sizeof(*t), GFP_KERNEL);
++	t = kmemdup(&neigh_sysctl_template, sizeof(*t), GFP_KERNEL_ACCOUNT);
+ 	if (!t)
+ 		goto err;
+ 
+diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
+index fba2bffd65f7..47523fe5b891 100644
+--- a/net/ipv4/devinet.c
++++ b/net/ipv4/devinet.c
+@@ -2566,7 +2566,7 @@ static int __devinet_sysctl_register(struct net *net, char *dev_name,
+ 	struct devinet_sysctl_table *t;
+ 	char path[sizeof("net/ipv4/conf/") + IFNAMSIZ];
+ 
+-	t = kmemdup(&devinet_sysctl, sizeof(*t), GFP_KERNEL);
++	t = kmemdup(&devinet_sysctl, sizeof(*t), GFP_KERNEL_ACCOUNT);
+ 	if (!t)
+ 		goto out;
+ 
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index f908e2fd30b2..290e5e671774 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -342,7 +342,7 @@ static int snmp6_alloc_dev(struct inet6_dev *idev)
+ {
+ 	int i;
+ 
+-	idev->stats.ipv6 = alloc_percpu(struct ipstats_mib);
++	idev->stats.ipv6 = alloc_percpu_gfp(struct ipstats_mib, GFP_KERNEL_ACCOUNT);
+ 	if (!idev->stats.ipv6)
+ 		goto err_ip;
+ 
+@@ -358,7 +358,7 @@ static int snmp6_alloc_dev(struct inet6_dev *idev)
+ 	if (!idev->stats.icmpv6dev)
+ 		goto err_icmp;
+ 	idev->stats.icmpv6msgdev = kzalloc(sizeof(struct icmpv6msg_mib_device),
+-					   GFP_KERNEL);
++					   GFP_KERNEL_ACCOUNT);
+ 	if (!idev->stats.icmpv6msgdev)
+ 		goto err_icmpmsg;
+ 
+@@ -382,7 +382,7 @@ static struct inet6_dev *ipv6_add_dev(struct net_device *dev)
+ 	if (dev->mtu < IPV6_MIN_MTU)
+ 		return ERR_PTR(-EINVAL);
+ 
+-	ndev = kzalloc(sizeof(struct inet6_dev), GFP_KERNEL);
++	ndev = kzalloc(sizeof(*ndev), GFP_KERNEL_ACCOUNT);
+ 	if (!ndev)
+ 		return ERR_PTR(err);
+ 
+@@ -7029,7 +7029,7 @@ static int __addrconf_sysctl_register(struct net *net, char *dev_name,
+ 	struct ctl_table *table;
+ 	char path[sizeof("net/ipv6/conf/") + IFNAMSIZ];
+ 
+-	table = kmemdup(addrconf_sysctl, sizeof(addrconf_sysctl), GFP_KERNEL);
++	table = kmemdup(addrconf_sysctl, sizeof(addrconf_sysctl), GFP_KERNEL_ACCOUNT);
+ 	if (!table)
+ 		goto out;
+ 
+-- 
+2.31.1
 
-[1] https://lkft.validation.linaro.org/scheduler/job/4976107#L4726
-[2] https://qa-reports.linaro.org/lkft/linux-mainline-master/build/v5.18-rc5/testrun/9320607/suite/linux-log-parser/test/check-kernel-bug-4976107/log
