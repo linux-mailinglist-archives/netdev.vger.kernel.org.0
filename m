@@ -2,130 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 91BA0517A07
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 00:33:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A7DE517A6F
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 01:07:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352170AbiEBWgz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 May 2022 18:36:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36542 "EHLO
+        id S230139AbiEBXKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 May 2022 19:10:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345562AbiEBWgy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 18:36:54 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78271101C5;
-        Mon,  2 May 2022 15:33:21 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id k2so21194062wrd.5;
-        Mon, 02 May 2022 15:33:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NCEj5GMAzzn+PrpVx+OQFAucjbV/+hpyT4Q10dBlXEU=;
-        b=LWsRTqbs1XNCflqZ21mUl3rc0f8DxhKJqSu+tqf6Vz72OyAwDqIwup6swLoyMW1tw6
-         PRUP5y82v9AKO7H+ZY7qYabv0VWd9XTIrlqf1CFKZv5rUvPTPFPaOBPd6oAvTTmleyQ1
-         mpO0pXHfgkv7W7oKa1fRe7waTVbVAHxv6RMluypQyHEzV463uIuqn6KXZhiiE4Pc+mIG
-         kzFZ0TCz4waoQQAKwvBuJ8kW0QkFwLYs4vGtCgy2cwxfhlPqXnOPTaAULc7DHOeEL4Vz
-         fOIxgupb1io7kfcJzkTQVC7BWUabG3kduYhwLTkbmSuYvJ0LmriTF50NKwo9na1aXg/m
-         bCIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NCEj5GMAzzn+PrpVx+OQFAucjbV/+hpyT4Q10dBlXEU=;
-        b=7n0CHecF6ngTBCaVt/ibVPV6HTA0F+YhaQjo8BXfuKAY/oEs623K8txtGe/zK/uJsM
-         d5FXFi8ci5++NFXk/zKEx4pKImbC5MbkiiWYWxZJT94GLt/LXuGQO1oVjUrUEL6dp9Oz
-         56CocnxN87t4hILLpQvM4w0MoKa+gueBdU7Jpp1j8e5LIOYGNCzycYl/LPQdjM1qVGrD
-         4TL3mZ9cFiBZ4/TU2X8ogroOSqicwDy84GS+S7ZF/VBBOtKEkt2VFSOmnk1b1Zz6VEBC
-         NFePfoh+FN+v8BPZybbjPfk5MnqDzBes8BlnoXvNHC86gtloBJN8Px4kjqgf2NyibgGr
-         7XYA==
-X-Gm-Message-State: AOAM530XU/QQ5SUTuHo1OJeGvtrpIUxY4/PuM41sWxhDXiMwYUlca1bK
-        2qqCfYd6coBCqNnLRTbIYB0=
-X-Google-Smtp-Source: ABdhPJy7HO/WgOLZBexxRyUdlQ7CvaTY0gtiJk/WABDxjWcGGOi7Qrf25z9a19KkEFFZ2jqk4OJhOw==
-X-Received: by 2002:adf:d1ec:0:b0:20c:61ef:93b6 with SMTP id g12-20020adfd1ec000000b0020c61ef93b6mr5704971wrd.694.1651530799883;
-        Mon, 02 May 2022 15:33:19 -0700 (PDT)
-Received: from localhost.localdomain ([2603:c020:c001:7eff:ffff:ffff:ffff:ff00])
-        by smtp.googlemail.com with ESMTPSA id bh19-20020a05600c3d1300b003942a244f45sm346682wmb.30.2022.05.02.15.33.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 15:33:19 -0700 (PDT)
-From:   Matthew Hagan <mnhagan88@gmail.com>
-Cc:     Matthew Hagan <mnhagan88@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        with ESMTP id S229556AbiEBXKq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 19:10:46 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9E122ED65;
+        Mon,  2 May 2022 16:07:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C83B0CE1C5A;
+        Mon,  2 May 2022 23:07:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5D66C385AC;
+        Mon,  2 May 2022 23:07:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651532832;
+        bh=/4/hi9vNaDgvtczEHBpbQY6P8/Xh9fnOLxV6F6kQcfc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=h9lRtZB7kFGMP0rRl9XrlMSelc3fH/Jv2Q/JOv9e+r54tKtjqTRk1FdO8H0FenauZ
+         L1v7Rtgw/mbkzuU1FYBMcrNus6fcxgOVDRh89ID3Dxecn9pA4shzypnnb2negH6ZD8
+         FefkI/np6URrEOU55GYfA2/HL2wojL1fwhSXPiwGHzlOZZUnijVQe2HmKYyeYeObS9
+         sMhBqEKe3ZltoOWt4wiS+tyCoxoyfzmzuX5WuBtCWTwwpytAU9xVYc3eMJXWBRGBlO
+         dU++Kwt2WA6CO/0xnT5er/9SJlSeIuaMglKBErJ7Ugz0w8vtTEglmTQHUPDOzv1nCy
+         E3Bsz9pTSbxcw==
+Date:   Mon, 2 May 2022 16:07:10 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>
+Cc:     netdev@vger.kernel.org, Stefan Hajnoczi <stefanha@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] net: sfp: Add tx-fault workaround for Huawei MA5671A SFP ONT
-Date:   Mon,  2 May 2022 23:33:15 +0100
-Message-Id: <20220502223315.1973376-1-mnhagan88@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        Paolo Abeni <pabeni@redhat.com>,
+        Vilas R K <vilas.r.k@intel.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 0/2] vsock/virtio: add support for device
+ suspend/resume
+Message-ID: <20220502160710.68381a27@kernel.org>
+In-Reply-To: <20220502180554-mutt-send-email-mst@kernel.org>
+References: <20220428132241.152679-1-sgarzare@redhat.com>
+        <20220502180554-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As noted elsewhere, various GPON SFP modules exhibit non-standard
-TX-fault behaviour. In the tested case, the Huawei MA5671A, when used
-in combination with a Marvell mv88e6085 switch, was found to
-persistently assert TX-fault, resulting in the module being disabled.
+On Mon, 2 May 2022 18:20:51 -0400 Michael S. Tsirkin wrote:
+> On Thu, Apr 28, 2022 at 03:22:39PM +0200, Stefano Garzarella wrote:
+> > Vilas reported that virtio-vsock no longer worked properly after
+> > suspend/resume (echo mem >/sys/power/state).
+> > It was impossible to connect to the host and vice versa.
+> > 
+> > Indeed, the support has never been implemented.
+> > 
+> > This series implement .freeze and .restore callbacks of struct virtio_driver
+> > to support device suspend/resume.
+> > 
+> > The first patch factors our the code to initialize and delete VQs.
+> > The second patch uses that code to support device suspend/resume.
+> > 
+> > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>  
+> 
+> 
+> Acked-by: Michael S. Tsirkin <mst@redhat.com>
 
-This patch adds a quirk to ignore the SFP_F_TX_FAULT state, allowing the
-module to function.
-
-Change from v1: removal of erroneous return statment (Andrew Lunn)
-
-Signed-off-by: Matthew Hagan <mnhagan88@gmail.com>
----
- drivers/net/phy/sfp.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 4dfb79807823..9a5d5a10560f 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -250,6 +250,7 @@ struct sfp {
- 	struct sfp_eeprom_id id;
- 	unsigned int module_power_mW;
- 	unsigned int module_t_start_up;
-+	bool tx_fault_ignore;
- 
- #if IS_ENABLED(CONFIG_HWMON)
- 	struct sfp_diag diag;
-@@ -1956,6 +1957,12 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
- 	else
- 		sfp->module_t_start_up = T_START_UP;
- 
-+	if (!memcmp(id.base.vendor_name, "HUAWEI          ", 16) &&
-+	    !memcmp(id.base.vendor_pn, "MA5671A         ", 16))
-+		sfp->tx_fault_ignore = true;
-+	else
-+		sfp->tx_fault_ignore = false;
-+
- 	return 0;
- }
- 
-@@ -2409,7 +2416,10 @@ static void sfp_check_state(struct sfp *sfp)
- 	mutex_lock(&sfp->st_mutex);
- 	state = sfp_get_state(sfp);
- 	changed = state ^ sfp->state;
--	changed &= SFP_F_PRESENT | SFP_F_LOS | SFP_F_TX_FAULT;
-+	if (sfp->tx_fault_ignore)
-+		changed &= SFP_F_PRESENT | SFP_F_LOS;
-+	else
-+		changed &= SFP_F_PRESENT | SFP_F_LOS | SFP_F_TX_FAULT;
- 
- 	for (i = 0; i < GPIO_MAX; i++)
- 		if (changed & BIT(i))
--- 
-2.27.0
-
+Commit 0530a683fc85 ("Merge branch
+'vsock-virtio-add-support-for-device-suspend-resume'") in net-next, now.
+Thank you!
