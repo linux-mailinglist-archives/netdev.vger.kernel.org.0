@@ -2,193 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C5F3517695
-	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 20:34:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1ED0517698
+	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 20:35:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386897AbiEBShl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 May 2022 14:37:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49906 "EHLO
+        id S230421AbiEBSi0 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 2 May 2022 14:38:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230421AbiEBShj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 14:37:39 -0400
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 909D2636B;
-        Mon,  2 May 2022 11:34:09 -0700 (PDT)
-Received: by mail-qt1-x82e.google.com with SMTP id t11so11725577qto.11;
-        Mon, 02 May 2022 11:34:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=4pWl4qpJf3TJEYYU3tzVCW+qGQ3DSAzsFResAB6bdFY=;
-        b=hljZ054dngOMdWddIV70DVGtwCcA0eE7eauXelWgVRkyjbo8qvg1QfZ0ACZak4cSXb
-         mhLtdisGjhZL4DupQ8BV4OopRmeGYqUa8AKYsYC1WvsK4R/RG79bN518MEH6dDL9X3eN
-         9x3dDg2IjHmp2ddAhKE4irB+CjeQz6ToDkv2IIIOzMj0epQ4jF97HgdKxPYzMpxJ5J+N
-         Ku/GLJvpiK3+1S7rOJgg52MTk3AHV5B0Pryexo1v6IxHo+rJN/UVnAqENm5tr+XwupKc
-         IrT+7L4qhDqTCkw8sVJ4PxSr09gEt2tMC0o5BEZThyilstGQv7wa0dc2NlBtWYPBokmN
-         3x6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4pWl4qpJf3TJEYYU3tzVCW+qGQ3DSAzsFResAB6bdFY=;
-        b=4UXnJDERFRdOZXRvRxd26kx7u2wK5sjHLRCa33WsI0kRaEm042PCfw7eaLzR+lRqcD
-         yiyEMEIyNbsA8IYkSQEsqiT66nj0kxYusGKBnIKz83TWOS/1ZBvo+J1XygFtO+BUVd4g
-         XLj9bGd4Ozk+sUdoUC0ZJGMtX4xWAbHnpiAvoFWKuaYQJL0cRQHI2WGXMObLcMsaNs9m
-         +19ci8L8xHeBtfq+Cc55BFc84r0i3vWzMuXC1riop2kj7ze23l1aP9K0ypC1it+eQRlj
-         XaR8SGDS+fDuI0dZ/K2es8DncTU7lyl73Q9IU9S3DHMzhqbLbFqET57PXO3o5zA+ZHVF
-         IQjA==
-X-Gm-Message-State: AOAM5302a6KCEwp/28m9NCWUvwNaHYNxcvvUUfslfxpLkR6sVp2+KlJ1
-        fJXTukuVHpQjQMAzpoRnQHk=
-X-Google-Smtp-Source: ABdhPJxEHbQthHynKn6InPI8iEFvDKDeokgE1dGsJguX910oVK6dcW4hmvOXKaRtlN+Uk5JTgcWtoA==
-X-Received: by 2002:a05:622a:1352:b0:2f3:9afb:5ab8 with SMTP id w18-20020a05622a135200b002f39afb5ab8mr11572008qtk.451.1651516448617;
-        Mon, 02 May 2022 11:34:08 -0700 (PDT)
-Received: from jaehee-ThinkPad-X1-Extreme ([4.34.18.218])
-        by smtp.gmail.com with ESMTPSA id bj33-20020a05620a192100b0069fc13ce1dcsm4688245qkb.13.2022.05.02.11.34.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 11:34:07 -0700 (PDT)
-Date:   Mon, 2 May 2022 14:34:03 -0400
-From:   Jaehee Park <jhpark1013@gmail.com>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     =?iso-8859-1?B?Suly9G1l?= Pouiller <jerome.pouiller@silabs.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S1382231AbiEBSiU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 14:38:20 -0400
+Received: from de-smtp-delivery-213.mimecast.com (de-smtp-delivery-213.mimecast.com [194.104.111.213])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 15146637F
+        for <netdev@vger.kernel.org>; Mon,  2 May 2022 11:34:50 -0700 (PDT)
+Received: from CHE01-ZR0-obe.outbound.protection.outlook.com
+ (mail-zr0che01lp2104.outbound.protection.outlook.com [104.47.22.104]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ de-mta-16-icAljOv2PAORPmBJ1qMVWg-1; Mon, 02 May 2022 20:34:45 +0200
+X-MC-Unique: icAljOv2PAORPmBJ1qMVWg-1
+Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:2e::8) by
+ GV0P278MB0178.CHEP278.PROD.OUTLOOK.COM (2603:10a6:710:34::12) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5206.24; Mon, 2 May 2022 18:34:44 +0000
+Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::f465:3051:c795:3c2]) by ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::f465:3051:c795:3c2%9]) with mapi id 15.20.5206.014; Mon, 2 May 2022
+ 18:34:44 +0000
+Date:   Mon, 2 May 2022 20:34:43 +0200
+From:   Francesco Dolcini <francesco.dolcini@toradex.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Francesco Dolcini <francesco.dolcini@toradex.com>,
+        netdev@vger.kernel.org, Andy Duan <fugang.duan@nxp.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        Outreachy Linux Kernel <outreachy@lists.linux.dev>,
-        Stefano Brivio <sbrivio@redhat.com>
-Subject: Re: [PATCH] wfx: use container_of() to get vif
-Message-ID: <20220502183403.GA812540@jaehee-ThinkPad-X1-Extreme>
-References: <20220418035110.GA937332@jaehee-ThinkPad-X1-Extreme>
- <87y200nf0a.fsf@kernel.org>
- <CAA1TwFCOEEwnayexnJin8T=Fc2HEgHC9jyfj5HxfiWybjUi9GA@mail.gmail.com>
+        "David S. Miller" <davem@davemloft.net>,
+        Fabio Estevam <festevam@gmail.com>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Chris Healy <cphealy@gmail.com>
+Subject: Re: FEC MDIO read timeout on linkup
+Message-ID: <20220502183443.GB400423@francesco-nb.int.toradex.com>
+References: <20220422152612.GA510015@francesco-nb.int.toradex.com>
+ <20220502170527.GA137942@francesco-nb.int.toradex.com>
+ <YnAh9Q1lwz6Wu9R8@lunn.ch>
+In-Reply-To: <YnAh9Q1lwz6Wu9R8@lunn.ch>
+X-ClientProxiedBy: MR2P264CA0058.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:500:31::22) To ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:2e::8)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 234525c3-b8ee-4493-e553-08da2c6a6dd8
+X-MS-TrafficTypeDiagnostic: GV0P278MB0178:EE_
+X-Microsoft-Antispam-PRVS: <GV0P278MB0178E700102BAD1972A211E1E2C19@GV0P278MB0178.CHEP278.PROD.OUTLOOK.COM>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0
+X-Microsoft-Antispam-Message-Info: tKwmTLbenvvDiRX2XojsPVqog8ftfxza4cVhNGBITUZx99Z/mVV8wPbN+7V9qnehmU+7lh0YkiGfMsUGGr4pqNpazHDuuN1O6z5PARUYbjKFFrX5MUg7JyUMHaYqz46LMXsMjFKD7Fj2IKnwLuub1L8A3QFJZQdbTIU+TjN5XUbXASgcrwUiWn2B2/HZaO9vMnzN4nKHQCsEk19G/hHYzR2oOrXmGdWovPxD29rzlPs0vDQLGJl/bafv26QZSqdiF1VspwsicbZV+cRQ2Ya7Giv+SfaiIoCruqz5nGpeHQLC96ycwiNJ2scLxXUAkrGvB7Bm9epsWriLEFDrPI5P0dHsa2EfR5IqXKSa2jpuvqHrrwddDQ2+JVf5v/vLA+WoV25VoGltpQavirEVkpWGnR3MDI7k8FEhXTMXtaQTVTgEVtLYuS76Zbiwg+D7rYGB3moYcmAW0g91+9NTbDELkH0wI4XdHTqhcuujEzWaqXtz8gnzD1RwjUpUsEhbLo3ubZYR4U7qH+x20yHKjQVblPINfO5TYWWzuv6m6LOeGM97VKe138TPDOODuaE60oN+w4ZkBgJRze4kRvLYmcBJXXonSmmZq4XP+g8Drmidxwx0O2PSCpC/75kHXZz02s+mCSK2VtGuA1FUxpPKauQllYcktdymJ3+EK1f0InkkUNl9VdKMG2KBPrdYfDOTDNzHCygCunQhF1EJ6qq9tko5Pw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6512007)(6506007)(2906002)(86362001)(26005)(508600001)(38100700002)(38350700002)(6486002)(8936002)(52116002)(44832011)(5660300002)(8676002)(7416002)(4326008)(66556008)(66476007)(66946007)(33656002)(1076003)(316002)(186003)(54906003)(6916009);DIR:OUT;SFP:1102
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Sak4GDeMWeIln6jct89wK7ztACg/dCSSJ+AtlZy56jHyFI8T9nULEw3r2jav?=
+ =?us-ascii?Q?AQCoHEup7uvU3+PFqyGey9C5+B2uP+iaxOv1FJAoqvhyZdvQvE9k4qrytFBN?=
+ =?us-ascii?Q?xi8UvYxb5L2YWsVGivdE7gf0VrDQ+n5B11QmJxQ0WkdquaBzGnvnH9xGlmBV?=
+ =?us-ascii?Q?I7F+1sP717vPIXMRCs9AadTs9rb8/KqyvQdjKYsGgHAPPrnCuAoMFQakX2zg?=
+ =?us-ascii?Q?WDnycaabRDi9AoPCb1erTtq3eluSKtdrlZhtw+CiNIurnI1zjDMBrQhYT03k?=
+ =?us-ascii?Q?kwZU2ILr4x4715y7pEgKd2cfhLNUgtrSg86Ml2/XIVnczTyMyKxaAJOaijo2?=
+ =?us-ascii?Q?cyQZaXwdaKsEn0ueuOPRsB8IO91YNy2I9SoS4kuYN4YYPMCG2lJWZiq1grae?=
+ =?us-ascii?Q?aQ2WaSAzL31pIPEANg+CEfgtpQBtVgc7l0WgtJ9QcIrOKDr8tv/YdXYlTs0q?=
+ =?us-ascii?Q?0Aa3K9uZSpaL1chaG7ZpIF07edEHuVQ0mO40iD4f2K9DIBaMuOFQfhHw/s4Z?=
+ =?us-ascii?Q?eD+9Sb7v81N1maNxAgNr8T0dKESRsqMeQ5ftoseokB9UpQTQqVCTXTxb/8ip?=
+ =?us-ascii?Q?u3XOKPo3b+cMEFQkK5vtzpe8lEN7oSzgoekSOgygswOlgesvO7o60YGWOJg4?=
+ =?us-ascii?Q?RGX/JVahZzOZklRCPpfVItmySyZB9LgxrMWXxe8YievmUTiSKuJsj83A9dbi?=
+ =?us-ascii?Q?AZUZQ1AVAVetqcNMfJWU5lGmg9gWZXV6k2uet4tDuRzZUgrD39fmxz0M5rEJ?=
+ =?us-ascii?Q?iOES1MMQ/RlTDK4SGlVLHYv4iMfVog54xQGh8udqIOhb01BK73lzyKnkycAO?=
+ =?us-ascii?Q?607Umy+bQvAhLyVjAGZeP6wRvILBDC8iKCVnFUJjxytX+qG7yTqlalQZ4uSz?=
+ =?us-ascii?Q?2DrsU0RLuHRhDjYWRxwRoL5PfN3NNosHMAMAz7+W5/oKL7CpOdeWsyX+Zebb?=
+ =?us-ascii?Q?+CTw8+o84Bb1Olv8LnofWxNHOXdvOCJKB8hXrckReteWQ7W6mO2B1IxfO/K3?=
+ =?us-ascii?Q?JtnBUIHT2ZedcIYJsjQkgZvpWXVkWyzdWfZRzIzKLnP4O66y0vr5Hvsf2nRv?=
+ =?us-ascii?Q?GvK8jxiK8L+LhrlijXA9tpMMExCXkN+O3IwCiwf6fvs3d1CNI91c7ZBOS+9H?=
+ =?us-ascii?Q?8PLx5JjjtZAiJmLzXv4wg0SbeLV2UTpEI+UjL8nCZEBwShC81E3KGgJ2iLMz?=
+ =?us-ascii?Q?/vPh3fka4FFxYDf97c136BTkmJIUGNfOd0c6EtzJ6tyVrK/Pnq+y7mt6ZBFP?=
+ =?us-ascii?Q?TujIPbOrvzDZh9pzINccJe4lZ/b94GuHxBZfLIP2+oWPLjYsajvd+6kMz7iI?=
+ =?us-ascii?Q?6GYJNPQCwkYx9ss9nJWoLdgh54U34YPmmJbHxdzFgw69MOV3Kq4AG/UKZf1S?=
+ =?us-ascii?Q?3YgHleAv4VJhH6g1RmPbEo3Ta3bcngVvSMGlfLanB/6DOAY4x3gLFHH42LGw?=
+ =?us-ascii?Q?f+88bLWB5qRtB5x6bv4QS/4ZMSrkeHXksGwLS3GeSosoYIBSiaFjtiY/MS4a?=
+ =?us-ascii?Q?GU/gUk9OTBfrWkcE78mdKn7as6Xz0n41mv0AWtNWYcGjbHkoR5CNMjK4CSww?=
+ =?us-ascii?Q?eU6G1K/NyP3EzvuW6NITZCOo5LIH4Sl881Kb9GibvYI1zc//Ml3RA1yEUDH3?=
+ =?us-ascii?Q?5UwZZJ4gbYmHyBl5tZ50J3hacjgq3CSLyAw7Agzjq8ZmscCRy5JavINSAMkl?=
+ =?us-ascii?Q?BlMHc0uSz2qnaWrzFphBeUwLcuodz6OCxgPwFKgBM9KgNuvmsivyyJjwIESK?=
+ =?us-ascii?Q?BlzC2LH/gS+W2mQRLe/gQY/KajCAW+o=3D?=
+X-OriginatorOrg: toradex.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 234525c3-b8ee-4493-e553-08da2c6a6dd8
+X-MS-Exchange-CrossTenant-AuthSource: ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2022 18:34:44.8370
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: aHKh9ca0DQCoeA6O+o0dLw5YaoxVwpMYH2zBltnwxYW5GYbQTyJG3NnhYDrAqxYqb4Q80ZFavbYPfqg/6IbzyXzqyrJfXHh1M5F2hJoTPrM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV0P278MB0178
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CDE13A77 smtp.mailfrom=francesco.dolcini@toradex.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: toradex.com
+Content-Type: text/plain; charset=WINDOWS-1252
 Content-Disposition: inline
-In-Reply-To: <CAA1TwFCOEEwnayexnJin8T=Fc2HEgHC9jyfj5HxfiWybjUi9GA@mail.gmail.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 02, 2022 at 02:10:07PM -0400, Jaehee wrote:
-> On Wed, Apr 20, 2022 at 7:58 AM Kalle Valo <kvalo@kernel.org> wrote:
-> >
-> > Jaehee Park <jhpark1013@gmail.com> writes:
-> >
-> > > Currently, upon virtual interface creation, wfx_add_interface() stores
-> > > a reference to the corresponding struct ieee80211_vif in private data,
-> > > for later usage. This is not needed when using the container_of
-> > > construct. This construct already has all the info it needs to retrieve
-> > > the reference to the corresponding struct from the offset that is
-> > > already available, inherent in container_of(), between its type and
-> > > member inputs (struct ieee80211_vif and drv_priv, respectively).
-> > > Remove vif (which was previously storing the reference to the struct
-> > > ieee80211_vif) from the struct wfx_vif, define a function
-> > > wvif_to_vif(wvif) for container_of(), and replace all wvif->vif with
-> > > the newly defined container_of construct.
-> > >
-> > > Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
-> >
-> > [...]
-> >
-> > > +static inline struct ieee80211_vif *wvif_to_vif(struct wfx_vif *wvif)
-> > > +{
-> > > +     return container_of((void *)wvif, struct ieee80211_vif, drv_priv);
-> > > +}
-> >
-> > Why the void pointer cast? Avoid casts as much possible.
-> >
+On Mon, May 02, 2022 at 08:24:53PM +0200, Andrew Lunn wrote:
+> > writing to this register could trigger a FEC_ENET_MII interrupt actually
+> > creating a race condition with fec_enet_mdio_read() that is called on
+> > link change also.
 > 
-> Hi Kalle,
+> Another point to consider:
 > 
-> Sorry for the delay in getting back to you about why the void pointer
-> cast was used.
-> 
-> In essence, I'm taking private data with a driver-specific pointer
-> and that needs to be resolved back to a generic pointer.
-> 
-> The private data (drv_priv) is declared as a generic u8 array in struct
-> ieee80211_vif, but wvif is a more specific type.
-> 
-> I wanted to also point to existing, reasonable examples such as:
-> static void iwl_mvm_tcm_uapsd_nonagg_detected_wk(struct work_struct *wk)
+> static int fec_enet_mdio_wait(struct fec_enet_private *fep)
 > {
->         struct iwl_mvm *mvm;
->         struct iwl_mvm_vif *mvmvif;
->         struct ieee80211_vif *vif;
+>         uint ievent;
+>         int ret;
 > 
->         mvmvif = container_of(wk, struct iwl_mvm_vif,
->                               uapsd_nonagg_detected_wk.work);
->         vif = container_of((void *)mvmvif, struct ieee80211_vif, drv_priv);
+>         ret = readl_poll_timeout_atomic(fep->hwp + FEC_IEVENT, ievent,
+>                                         ievent & FEC_ENET_MII, 2, 30000);
 > 
-> in drivers/net/wireless$ less intel/iwlwifi/mvm/utils.c, which does the
-> same thing.
+>         if (!ret)
+>                 writel(FEC_ENET_MII, fep->hwp + FEC_IEVENT);
 > 
-> There are fifteen of them throughout:
-> wireless-next/drivers/net/wireless$ grep -rn "container_of(.* ieee80211_vif"
-> intel/iwlwifi/mvm/utils.c:794:  vif = container_of((void *)mvmvif,
-> struct ieee80211_vif, drv_priv);
-> intel/iwlwifi/mvm/mac80211.c:1347:      vif = container_of((void
-> *)mvmvif, struct ieee80211_vif, drv_priv);
-> mediatek/mt76/mt76x02_mmio.c:415:               vif =
-> container_of(priv, struct ieee80211_vif, drv_priv);
-> mediatek/mt76/mt7615/mac.c:275: vif = container_of((void *)msta->vif,
-> struct ieee80211_vif, drv_priv);
-> mediatek/mt76/mt7915/mac.c:416: vif = container_of((void *)msta->vif,
-> struct ieee80211_vif, drv_priv);
-> mediatek/mt76/mt7915/mac.c:2327:                vif =
-> container_of((void *)msta->vif, struct ieee80211_vif, drv_priv);
-> mediatek/mt76/mt7915/debugfs.c:1026:    vif = container_of((void
-> *)msta->vif, struct ieee80211_vif, drv_priv);
-> mediatek/mt76/mt7921/mac.c:425: vif = container_of((void *)msta->vif,
-> struct ieee80211_vif, drv_priv);
-> ti/wlcore/wlcore_i.h:502:       return container_of((void *)wlvif,
-> struct ieee80211_vif, drv_priv);
-> realtek/rtl818x/rtl8187/dev.c:1068:             container_of((void
-> *)vif_priv, struct ieee80211_vif, drv_priv);
-> realtek/rtl818x/rtl8180/dev.c:1293:             container_of((void
-> *)vif_priv, struct ieee80211_vif, drv_priv);
-> realtek/rtw88/main.h:2075:      return container_of(p, struct
-> ieee80211_vif, drv_priv);
-> realtek/rtw89/core.h:3440:      return container_of(p, struct
-> ieee80211_vif, drv_priv);
-> ath/carl9170/carl9170.h:641:    return container_of((void *)priv,
-> struct ieee80211_vif, drv_priv);
-> ath/wcn36xx/wcn36xx.h:329:      return container_of((void *) vif_priv,
-> struct ieee80211_vif, drv_priv);
+>         return ret;
+> }
 > 
+> An unexpected interrupt will make this exit too early, and the read
+> will get invalid data. An unexpected interrupt would not cause a
+> timeout here, which is what you are reporting.
 
-Sorry -- here's the last portion of the email without wrapping.
+yes, I had the exact same thought. Could it be that this creates some
+kind of misalignments between the MDIO data and the related FEC
+interrupt with the first early exist not triggering any error and the
+second one triggering an infinite wait?
 
-wireless-next/drivers/net/wireless$ grep -rn "container_of(.* ieee80211_vif"
-intel/iwlwifi/mvm/utils.c:794:  vif = container_of((void *)mvmvif, struct ieee80211_vif, drv_priv);
-intel/iwlwifi/mvm/mac80211.c:1347:      vif = container_of((void *)mvmvif, struct ieee80211_vif, drv_priv);
-mediatek/mt76/mt76x02_mmio.c:415:               vif = container_of(priv, struct ieee80211_vif, drv_priv);
-mediatek/mt76/mt7615/mac.c:275: vif = container_of((void *)msta->vif, struct ieee80211_vif, drv_priv);
-mediatek/mt76/mt7915/mac.c:416: vif = container_of((void *)msta->vif, struct ieee80211_vif, drv_priv);
-mediatek/mt76/mt7915/mac.c:2327:                vif = container_of((void *)msta->vif, struct ieee80211_vif, drv_priv);
-mediatek/mt76/mt7915/debugfs.c:1026:    vif = container_of((void *)msta->vif, struct ieee80211_vif, drv_priv);
-mediatek/mt76/mt7921/mac.c:425: vif = container_of((void *)msta->vif, struct ieee80211_vif, drv_priv);
-ti/wlcore/wlcore_i.h:502:       return container_of((void *)wlvif, struct ieee80211_vif, drv_priv);
-realtek/rtl818x/rtl8187/dev.c:1068:             container_of((void *)vif_priv, struct ieee80211_vif, drv_priv);
-realtek/rtl818x/rtl8180/dev.c:1293:             container_of((void *)vif_priv, struct ieee80211_vif, drv_priv);
-realtek/rtw88/main.h:2075:      return container_of(p, struct ieee80211_vif, drv_priv);
-realtek/rtw89/core.h:3440:      return container_of(p, struct ieee80211_vif, drv_priv);
-ath/carl9170/carl9170.h:641:    return container_of((void *)priv, struct ieee80211_vif, drv_priv);
-ath/wcn36xx/wcn36xx.h:329:      return container_of((void *) vif_priv, struct ieee80211_vif, drv_priv);
+I guess I need to sleep on this, in the meantime I have a test running
+with the change I described running since a couple of hours.
 
-> Thanks,
-> Jaehee
-> 
-> 
-> > --
-> > https://patchwork.kernel.org/project/linux-wireless/list/
-> >
-> > https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Francesco
+
