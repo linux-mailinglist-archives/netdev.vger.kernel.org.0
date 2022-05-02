@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F73851739D
-	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 18:03:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32A7D5173A2
+	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 18:03:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386191AbiEBQGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 May 2022 12:06:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43188 "EHLO
+        id S1386091AbiEBQGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 May 2022 12:06:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386198AbiEBQFc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 12:05:32 -0400
+        with ESMTP id S1386144AbiEBQGH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 12:06:07 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41A6C13EB2;
-        Mon,  2 May 2022 09:01:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A66BBC3D;
+        Mon,  2 May 2022 09:01:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1651507292; x=1683043292;
+  t=1651507314; x=1683043314;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=qquxezKDE+RZgJ67OQjLPrBiCCh3jgvVWGsD0mP2TdI=;
-  b=w4wqx5WB8m/YfQHjymVR8lGtTPKwtSAc2DGWXCaJmXMzcOAuDwxInlHY
-   83a8ftR2s4wPvLe9cUER040rmOy7rk7kWatchiDADpjvzmz5LcUy4h14C
-   Rjci1f+Gu6W4Tbkbqgy7bnlXtxvbmoxD+HXeAtBdAkMxsIUGxzaYAVKeg
-   oCJeu64eN+W5XAAm4ohe0FIMLcVmW3LsO4FP1unFBZmmAhSmjr3QB4r0f
-   VAhKsZ9eL8HqqmVN+UEliGaHr/H6ETTxdwAN/20Uge8zrqNSX6LAoQ2LA
-   RcVlgjTb0BMKy4bYGx54alAnQ+4NSewGCbM1pppRj4VbiTReAKCAs+w8o
-   Q==;
+  bh=rLmGeHdUzqQiNUvfLahrdXwaapKU32rREMUf/oyYsBo=;
+  b=jyY9FON/lZSxFaJFS9IrTa6OQkx5i4QJVJDjKFslGUZQ89UWI3MIE3oP
+   n/YdvvwNoyZZn6ql21uOPh1Na7txr+CTHaDc6oOhhe+r8s0ugDxUhOWQu
+   THCus6byYtcyXcA2nNdqaNyLl56Y2HQ2IySP9LImJjgwB9c4GO6WXp47C
+   41JP4OJGiTQ8rrWqv0fTTGMkZr3BWaovbGUwCvXCygQdKrh5aEFe5YTx3
+   UDjbPzerUf+Cr3foFydUV32lASr+9Zwype1Eb9fimbq7JF2qygoqBzWQh
+   ENyIgmo93k/rdZBTz1CEwd5g0aC6Po7jxziNP8y9KOn04RvvjLir0gfL0
+   w==;
 X-IronPort-AV: E=Sophos;i="5.91,192,1647327600"; 
-   d="scan'208";a="94280644"
+   d="scan'208";a="157530130"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 May 2022 09:01:30 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 May 2022 09:01:53 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 2 May 2022 09:01:30 -0700
+ 15.1.2375.17; Mon, 2 May 2022 09:01:52 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 2 May 2022 09:01:12 -0700
+ 15.1.2375.17 via Frontend Transport; Mon, 2 May 2022 09:01:34 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>
@@ -60,9 +60,9 @@ CC:     KP Singh <kpsingh@kernel.org>,
         "Vivien Didelot" <vivien.didelot@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>, <UNGLinuxDriver@microchip.com>,
         Woojung Huh <woojung.huh@microchip.com>
-Subject: [Patch net-next v12 06/13] net: dsa: microchip: add support for phy read and write
-Date:   Mon, 2 May 2022 21:28:41 +0530
-Message-ID: <20220502155848.30493-7-arun.ramadoss@microchip.com>
+Subject: [Patch net-next v12 07/13] net: dsa: microchip: add LAN937x SPI driver
+Date:   Mon, 2 May 2022 21:28:42 +0530
+Message-ID: <20220502155848.30493-8-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220502155848.30493-1-arun.ramadoss@microchip.com>
 References: <20220502155848.30493-1-arun.ramadoss@microchip.com>
@@ -79,307 +79,267 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch add support for the writing and reading of the phy registers.
-LAN937x uses the Vphy indirect addressing method for accessing the phys.
-And mdio bus is registered in this patch, mdio read and write inturn
-uses the vphy.
+This patch add the SPI driver for the LAN937x switches. It uses the
+lan937x_main.c and lan937x_dev.c functions.
 
-Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 ---
- drivers/net/dsa/microchip/lan937x_dev.c  | 198 ++++++++++++++++++++++-
- drivers/net/dsa/microchip/lan937x_dev.h  |   4 +
- drivers/net/dsa/microchip/lan937x_main.c |  23 +++
- 3 files changed, 223 insertions(+), 2 deletions(-)
+ drivers/net/dsa/microchip/Makefile      |   1 +
+ drivers/net/dsa/microchip/lan937x_spi.c | 236 ++++++++++++++++++++++++
+ 2 files changed, 237 insertions(+)
+ create mode 100644 drivers/net/dsa/microchip/lan937x_spi.c
 
-diff --git a/drivers/net/dsa/microchip/lan937x_dev.c b/drivers/net/dsa/microchip/lan937x_dev.c
-index c6bd8fac735d..f430a8711775 100644
---- a/drivers/net/dsa/microchip/lan937x_dev.c
-+++ b/drivers/net/dsa/microchip/lan937x_dev.c
-@@ -121,6 +121,36 @@ static void lan937x_switch_exit(struct ksz_device *dev)
- 	lan937x_reset_switch(dev);
- }
- 
-+static int lan937x_enable_spi_indirect_access(struct ksz_device *dev)
+diff --git a/drivers/net/dsa/microchip/Makefile b/drivers/net/dsa/microchip/Makefile
+index d32ff38dc240..28d8eb62a795 100644
+--- a/drivers/net/dsa/microchip/Makefile
++++ b/drivers/net/dsa/microchip/Makefile
+@@ -10,3 +10,4 @@ obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ8863_SMI)	+= ksz8863_smi.o
+ obj-$(CONFIG_NET_DSA_MICROCHIP_LAN937X)		+= lan937x.o
+ lan937x-objs := lan937x_dev.o
+ lan937x-objs += lan937x_main.o
++lan937x-objs += lan937x_spi.o
+diff --git a/drivers/net/dsa/microchip/lan937x_spi.c b/drivers/net/dsa/microchip/lan937x_spi.c
+new file mode 100644
+index 000000000000..a50dfcf27aff
+--- /dev/null
++++ b/drivers/net/dsa/microchip/lan937x_spi.c
+@@ -0,0 +1,236 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Microchip LAN937X switch driver register access through SPI
++ * Copyright (C) 2019-2021 Microchip Technology Inc.
++ */
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/regmap.h>
++#include <linux/spi/spi.h>
++#include <linux/of_device.h>
++
++#include "ksz_common.h"
++
++#define SPI_ADDR_SHIFT 24
++#define SPI_ADDR_ALIGN 3
++#define SPI_TURNAROUND_SHIFT 5
++
++KSZ_REGMAP_TABLE(lan937x, 32, SPI_ADDR_SHIFT, SPI_TURNAROUND_SHIFT,
++		 SPI_ADDR_ALIGN);
++
++struct lan937x_chip_data {
++	u32 chip_id;
++	const char *dev_name;
++	int num_vlans;
++	int num_alus;
++	int num_statics;
++	int cpu_ports;
++	int port_cnt;
++};
++
++static const struct of_device_id lan937x_dt_ids[];
++
++static const struct lan937x_chip_data lan937x_switch_chips[] = {
++	{
++		.chip_id = 0x00937010,
++		.dev_name = "LAN9370",
++		.num_vlans = 4096,
++		.num_alus = 1024,
++		.num_statics = 256,
++		/* can be configured as cpu port */
++		.cpu_ports = 0x10,
++		/* total port count */
++		.port_cnt = 5,
++	},
++	{
++		.chip_id = 0x00937110,
++		.dev_name = "LAN9371",
++		.num_vlans = 4096,
++		.num_alus = 1024,
++		.num_statics = 256,
++		/* can be configured as cpu port */
++		.cpu_ports = 0x30,
++		/* total port count */
++		.port_cnt = 6,
++	},
++	{
++		.chip_id = 0x00937210,
++		.dev_name = "LAN9372",
++		.num_vlans = 4096,
++		.num_alus = 1024,
++		.num_statics = 256,
++		/* can be configured as cpu port */
++		.cpu_ports = 0x30,
++		/* total port count */
++		.port_cnt = 8,
++	},
++	{
++		.chip_id = 0x00937310,
++		.dev_name = "LAN9373",
++		.num_vlans = 4096,
++		.num_alus = 1024,
++		.num_statics = 256,
++		/* can be configured as cpu port */
++		.cpu_ports = 0x38,
++		/* total port count */
++		.port_cnt = 5,
++	},
++	{
++		.chip_id = 0x00937410,
++		.dev_name = "LAN9374",
++		.num_vlans = 4096,
++		.num_alus = 1024,
++		.num_statics = 256,
++		/* can be configured as cpu port */
++		.cpu_ports = 0x30,
++		/* total port count */
++		.port_cnt = 8,
++	},
++};
++
++static int lan937x_spi_probe(struct spi_device *spi)
 +{
-+	u16 data16;
-+	u8 data8;
-+	int ret;
++	struct regmap_config rc;
++	struct ksz_device *dev;
++	int i, ret;
 +
-+	ret = ksz_read8(dev, REG_GLOBAL_CTRL_0, &data8);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* Check if PHY register is blocked */
-+	if (data8 & SW_PHY_REG_BLOCK) {
-+		/* Enable Phy access through SPI */
-+		data8 &= ~SW_PHY_REG_BLOCK;
-+
-+		ret = ksz_write8(dev, REG_GLOBAL_CTRL_0, data8);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	ret = ksz_read16(dev, REG_VPHY_SPECIAL_CTRL__2, &data16);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* Allow SPI access */
-+	data16 |= VPHY_SPI_INDIRECT_ENABLE;
-+
-+	return ksz_write16(dev, REG_VPHY_SPECIAL_CTRL__2, data16);
-+}
-+
- static u32 lan937x_get_port_addr(int port, int offset)
- {
- 	return PORT_CTRL_ADDR(port, offset);
-@@ -171,6 +201,88 @@ bool lan937x_is_internal_base_t1_phy_port(struct ksz_device *dev, int port)
- 	return false;
- }
- 
-+static int lan937x_vphy_ind_addr_wr(struct ksz_device *dev, int addr, int reg)
-+{
-+	u16 temp, addr_base;
-+
-+	if (lan937x_is_internal_base_tx_phy_port(dev, addr))
-+		addr_base = REG_PORT_TX_PHY_CTRL_BASE;
-+	else
-+		addr_base = REG_PORT_T1_PHY_CTRL_BASE;
-+
-+	/* get register address based on the logical port */
-+	temp = PORT_CTRL_ADDR(addr, (addr_base + (reg << 2)));
-+
-+	return ksz_write16(dev, REG_VPHY_IND_ADDR__2, temp);
-+}
-+
-+int lan937x_internal_phy_write(struct ksz_device *dev, int addr, int reg,
-+			       u16 val)
-+{
-+	unsigned int value;
-+	int ret;
-+
-+	/* Check for internal phy port */
-+	if (!lan937x_is_internal_phy_port(dev, addr))
-+		return -EOPNOTSUPP;
-+
-+	ret = lan937x_vphy_ind_addr_wr(dev, addr, reg);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* Write the data to be written to the VPHY reg */
-+	ret = ksz_write16(dev, REG_VPHY_IND_DATA__2, val);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* Write the Write En and Busy bit */
-+	ret = ksz_write16(dev, REG_VPHY_IND_CTRL__2,
-+			  (VPHY_IND_WRITE | VPHY_IND_BUSY));
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = regmap_read_poll_timeout(dev->regmap[1], REG_VPHY_IND_CTRL__2,
-+				       value, !(value & VPHY_IND_BUSY), 10,
-+				       1000);
-+	if (ret < 0) {
-+		dev_err(dev->dev, "Failed to write phy register\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+int lan937x_internal_phy_read(struct ksz_device *dev, int addr, int reg,
-+			      u16 *val)
-+{
-+	unsigned int value;
-+	int ret;
-+
-+	/* Check for internal phy port, return 0xffff for non-existent phy */
-+	if (!lan937x_is_internal_phy_port(dev, addr))
-+		return 0xffff;
-+
-+	ret = lan937x_vphy_ind_addr_wr(dev, addr, reg);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* Write Read and Busy bit to start the transaction */
-+	ret = ksz_write16(dev, REG_VPHY_IND_CTRL__2, VPHY_IND_BUSY);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = regmap_read_poll_timeout(dev->regmap[1], REG_VPHY_IND_CTRL__2,
-+				       value, !(value & VPHY_IND_BUSY), 10,
-+				       1000);
-+	if (ret < 0) {
-+		dev_err(dev->dev, "Failed to read phy register\n");
-+		return ret;
-+	}
-+
-+	/* Read the VPHY register which has the PHY data */
-+	return ksz_read16(dev, REG_VPHY_IND_DATA__2, val);
-+}
-+
- void lan937x_port_setup(struct ksz_device *dev, int port, bool cpu_port)
- {
- 	struct dsa_switch *ds = dev->ds;
-@@ -205,6 +317,73 @@ void lan937x_port_setup(struct ksz_device *dev, int port, bool cpu_port)
- 	lan937x_cfg_port_member(dev, port, member);
- }
- 
-+static int lan937x_sw_mdio_read(struct mii_bus *bus, int addr, int regnum)
-+{
-+	struct ksz_device *dev = bus->priv;
-+	u16 val;
-+	int ret;
-+
-+	if (regnum & MII_ADDR_C45)
-+		return -EOPNOTSUPP;
-+
-+	ret = lan937x_internal_phy_read(dev, addr, regnum, &val);
-+	if (ret < 0)
-+		return ret;
-+
-+	return val;
-+}
-+
-+static int lan937x_sw_mdio_write(struct mii_bus *bus, int addr, int regnum,
-+				 u16 val)
-+{
-+	struct ksz_device *dev = bus->priv;
-+
-+	if (regnum & MII_ADDR_C45)
-+		return -EOPNOTSUPP;
-+
-+	return lan937x_internal_phy_write(dev, addr, regnum, val);
-+}
-+
-+static int lan937x_mdio_register(struct ksz_device *dev)
-+{
-+	struct dsa_switch *ds = dev->ds;
-+	struct device_node *mdio_np;
-+	struct mii_bus *bus;
-+	int ret;
-+
-+	mdio_np = of_get_child_by_name(dev->dev->of_node, "mdio");
-+	if (!mdio_np) {
-+		dev_err(ds->dev, "no MDIO bus node\n");
-+		return -ENODEV;
-+	}
-+
-+	bus = devm_mdiobus_alloc(ds->dev);
-+	if (!bus) {
-+		of_node_put(mdio_np);
++	dev = ksz_switch_alloc(&spi->dev, spi);
++	if (!dev)
 +		return -ENOMEM;
++
++	for (i = 0; i < ARRAY_SIZE(lan937x_regmap_config); i++) {
++		rc = lan937x_regmap_config[i];
++		rc.lock_arg = &dev->regmap_mutex;
++		dev->regmap[i] = devm_regmap_init_spi(spi, &rc);
++
++		if (IS_ERR(dev->regmap[i])) {
++			ret = PTR_ERR(dev->regmap[i]);
++			dev_err(&spi->dev,
++				"Failed to initialize regmap%i: %d\n",
++				lan937x_regmap_config[i].val_bits, ret);
++			return ret;
++		}
 +	}
 +
-+	bus->priv = dev;
-+	bus->read = lan937x_sw_mdio_read;
-+	bus->write = lan937x_sw_mdio_write;
-+	bus->name = "lan937x slave smi";
-+	snprintf(bus->id, MII_BUS_ID_SIZE, "SMI-%d", ds->index);
-+	bus->parent = ds->dev;
-+	bus->phy_mask = ~ds->phys_mii_mask;
++	if (spi->dev.platform_data)
++		dev->pdata = spi->dev.platform_data;
 +
-+	ds->slave_mii_bus = bus;
-+
-+	ret = devm_of_mdiobus_register(ds->dev, bus, mdio_np);
-+	if (ret) {
-+		dev_err(ds->dev, "unable to register MDIO bus %s\n",
-+			bus->id);
-+	}
-+
-+	of_node_put(mdio_np);
-+
-+	return ret;
-+}
-+
- static int lan937x_switch_init(struct ksz_device *dev)
- {
- 	int ret;
-@@ -234,10 +413,25 @@ static int lan937x_init(struct ksz_device *dev)
- 	int ret;
- 
- 	ret = lan937x_switch_init(dev);
--	if (ret < 0)
-+	if (ret < 0) {
- 		dev_err(dev->dev, "failed to initialize the switch");
++	ret = lan937x_switch_register(dev);
++	/* Main DSA driver may not be started yet. */
++	if (ret)
 +		return ret;
-+	}
- 
--	return ret;
-+	/* enable Indirect Access from SPI to the VPHY registers */
-+	ret = lan937x_enable_spi_indirect_access(dev);
-+	if (ret < 0) {
-+		dev_err(dev->dev, "failed to enable spi indirect access");
-+		return ret;
-+	}
 +
-+	ret = lan937x_mdio_register(dev);
-+	if (ret < 0) {
-+		dev_err(dev->dev, "failed to register the mdio");
-+		return ret;
-+	}
++	spi_set_drvdata(spi, dev);
 +
 +	return 0;
- }
- 
- const struct ksz_dev_ops lan937x_dev_ops = {
-diff --git a/drivers/net/dsa/microchip/lan937x_dev.h b/drivers/net/dsa/microchip/lan937x_dev.h
-index 21f4aade0199..4e6d6f41e138 100644
---- a/drivers/net/dsa/microchip/lan937x_dev.h
-+++ b/drivers/net/dsa/microchip/lan937x_dev.h
-@@ -21,6 +21,10 @@ int lan937x_pwrite16(struct ksz_device *dev, int port,
- 		     int offset, u16 data);
- int lan937x_pwrite32(struct ksz_device *dev, int port,
- 		     int offset, u32 data);
-+int lan937x_internal_phy_write(struct ksz_device *dev, int addr,
-+			       int reg, u16 val);
-+int lan937x_internal_phy_read(struct ksz_device *dev, int addr,
-+			      int reg, u16 *val);
- bool lan937x_is_internal_phy_port(struct ksz_device *dev, int port);
- bool lan937x_is_internal_base_tx_phy_port(struct ksz_device *dev, int port);
- bool lan937x_is_internal_base_t1_phy_port(struct ksz_device *dev, int port);
-diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
-index 154d7a0f08ac..88ca91f59a6f 100644
---- a/drivers/net/dsa/microchip/lan937x_main.c
-+++ b/drivers/net/dsa/microchip/lan937x_main.c
-@@ -23,6 +23,27 @@ static enum dsa_tag_protocol lan937x_get_tag_protocol(struct dsa_switch *ds,
- 	return DSA_TAG_PROTO_LAN937X_VALUE;
- }
- 
-+static int lan937x_phy_read16(struct dsa_switch *ds, int addr, int reg)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	u16 val;
-+	int ret;
-+
-+	ret = lan937x_internal_phy_read(dev, addr, reg, &val);
-+	if (ret < 0)
-+		return ret;
-+
-+	return val;
 +}
 +
-+static int lan937x_phy_write16(struct dsa_switch *ds, int addr, int reg,
-+			       u16 val)
++int lan937x_check_device_id(struct ksz_device *dev)
 +{
-+	struct ksz_device *dev = ds->priv;
++	const struct lan937x_chip_data *dt_chip_data;
++	const struct of_device_id *match;
++	int i;
 +
-+	return lan937x_internal_phy_write(dev, addr, reg, val);
++	dt_chip_data = of_device_get_match_data(dev->dev);
++
++	if (!dt_chip_data)
++		return -EINVAL;
++
++	for (match = lan937x_dt_ids; match->compatible[0]; match++) {
++		const struct lan937x_chip_data *chip_data = match->data;
++
++		/* Check for chip id */
++		if (chip_data->chip_id != dev->chip_id)
++			continue;
++
++		/* Check for Device Tree and Chip ID */
++		if (dt_chip_data->chip_id != dev->chip_id) {
++			dev_err(dev->dev,
++				"Device tree specifies chip %s but found %s, please fix it!\n",
++				dt_chip_data->dev_name, chip_data->dev_name);
++			return -ENODEV;
++		}
++
++		break;
++	}
++
++	for (i = 0; i < ARRAY_SIZE(lan937x_switch_chips); i++) {
++		const struct lan937x_chip_data *chip = &lan937x_switch_chips[i];
++
++		if (dev->chip_id == chip->chip_id) {
++			dev->name = chip->dev_name;
++			dev->num_vlans = chip->num_vlans;
++			dev->num_alus = chip->num_alus;
++			dev->num_statics = chip->num_statics;
++			dev->port_cnt = chip->port_cnt;
++			dev->cpu_ports = chip->cpu_ports;
++			break;
++		}
++	}
++
++	/* no switch found */
++	if (!dev->port_cnt)
++		return -ENODEV;
++
++	return 0;
++}
++EXPORT_SYMBOL(lan937x_check_device_id);
++
++static void lan937x_spi_remove(struct spi_device *spi)
++{
++	struct ksz_device *dev = spi_get_drvdata(spi);
++
++	if (dev)
++		ksz_switch_remove(dev);
++
++	spi_set_drvdata(spi, NULL);
 +}
 +
- static void lan937x_port_stp_state_set(struct dsa_switch *ds, int port,
- 				       u8 state)
- {
-@@ -199,6 +220,8 @@ static int lan937x_setup(struct dsa_switch *ds)
- const struct dsa_switch_ops lan937x_switch_ops = {
- 	.get_tag_protocol = lan937x_get_tag_protocol,
- 	.setup = lan937x_setup,
-+	.phy_read = lan937x_phy_read16,
-+	.phy_write = lan937x_phy_write16,
- 	.port_enable = ksz_enable_port,
- 	.port_bridge_join = ksz_port_bridge_join,
- 	.port_bridge_leave = ksz_port_bridge_leave,
++static void lan937x_spi_shutdown(struct spi_device *spi)
++{
++	struct ksz_device *dev = spi_get_drvdata(spi);
++
++	if (dev)
++		dsa_switch_shutdown(dev->ds);
++
++	spi_set_drvdata(spi, NULL);
++}
++
++static const struct of_device_id lan937x_dt_ids[] = {
++	{ .compatible = "microchip,lan9370", .data = &lan937x_switch_chips[0] },
++	{ .compatible = "microchip,lan9371", .data = &lan937x_switch_chips[1] },
++	{ .compatible = "microchip,lan9372", .data = &lan937x_switch_chips[2] },
++	{ .compatible = "microchip,lan9373", .data = &lan937x_switch_chips[3] },
++	{ .compatible = "microchip,lan9374", .data = &lan937x_switch_chips[4] },
++	{},
++};
++MODULE_DEVICE_TABLE(of, lan937x_dt_ids);
++
++static const struct spi_device_id lan937x_spi_ids[] = {
++	{ .name = "lan9370" },
++	{ .name = "lan9371" },
++	{ .name = "lan9372" },
++	{ .name = "lan9373" },
++	{ .name = "lan9374" },
++	{},
++};
++MODULE_DEVICE_TABLE(spi, lan937x_spi_ids);
++
++static struct spi_driver lan937x_spi_driver = {
++	.driver = {
++		.name	= "lan937x-switch",
++		.owner	= THIS_MODULE,
++		.of_match_table = of_match_ptr(lan937x_dt_ids),
++	},
++	.probe	= lan937x_spi_probe,
++	.remove	= lan937x_spi_remove,
++	.shutdown = lan937x_spi_shutdown,
++	.id_table = lan937x_spi_ids,
++};
++
++module_spi_driver(lan937x_spi_driver);
++
++MODULE_ALIAS("spi:lan937x");
++
++MODULE_AUTHOR("Prasanna Vengateshan Varadharajan <Prasanna.Vengateshan@microchip.com>");
++MODULE_DESCRIPTION("Microchip LAN937x Series Switch SPI access Driver");
++MODULE_LICENSE("GPL");
 -- 
 2.33.0
 
