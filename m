@@ -2,140 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FCE7516B38
-	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 09:26:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CD47516B3F
+	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 09:28:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358709AbiEBH3a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 May 2022 03:29:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39398 "EHLO
+        id S1383555AbiEBHba (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 May 2022 03:31:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358666AbiEBH32 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 03:29:28 -0400
-Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EEA0B186C9;
-        Mon,  2 May 2022 00:25:58 -0700 (PDT)
-Received: by ajax-webmail-mail-app4 (Coremail) ; Mon, 2 May 2022 15:25:14
- +0800 (GMT+08:00)
-X-Originating-IP: [10.190.66.80]
-Date:   Mon, 2 May 2022 15:25:14 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   duoming@zju.edu.cn
-To:     "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, kuba@kernel.org,
-        gregkh@linuxfoundation.org, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, alexander.deucher@amd.com,
-        akpm@linux-foundation.org, broonie@kernel.org,
-        netdev@vger.kernel.org, linma@zju.edu.cn
-Subject: Re: Re: [PATCH net v5 2/2] nfc: nfcmrvl: main: reorder destructive
- operations in nfcmrvl_nci_unregister_dev to avoid bugs
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <405e3948-7fb2-01de-4c01-29775a21218c@linaro.org>
-References: <cover.1651194245.git.duoming@zju.edu.cn>
- <bb2769acc79f42d25d61ed8988c8d240c8585f33.1651194245.git.duoming@zju.edu.cn>
- <8656d527-94ab-228f-66f1-06e5d533e16a@linaro.org>
- <73fe1723.69fe.1807498ab4d.Coremail.duoming@zju.edu.cn>
- <405e3948-7fb2-01de-4c01-29775a21218c@linaro.org>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S1354685AbiEBHb2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 03:31:28 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2067.outbound.protection.outlook.com [40.107.244.67])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5075B186D2;
+        Mon,  2 May 2022 00:27:57 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nc8Kd2BRsXgVCrAeTGFmBoQGGR0yDbrXJbKo7aVJXWA175vbxJFRFBGIU1bLH+7mFNgTNg1Bgls27sN+Prft8l1OP0cTjQty0JJfHOaJI/9DTzLFjsZlyufbemTGSCzK2BNpjmCC/C40MWpKw5EyxWyaEm7Yiqpe3lzpDkqst0s2nFHMepU18MAtrlt0rpvVQ5Zb3DjFbW0EBlA0FpKTH5YScPt0t19Nk954BlMlKCKVv00lQ6MULSnyRpknpRsH7OWi3muugLuPm3PfDOqy3BT9FeY1w4xWRkiLhWcZKg/LeTyeg7oZKKVVihYC9AE72R1S+rp3fkY8E61vj5P5Cg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=PJ60S8E4WpeUTKcOkDc4fDZAfrS32L2n15ddPy1Lypo=;
+ b=hCnWrRO4Dh7DRzfiAO4ZaKGO/cfVPwgdnfU3BqsuZ8wIKsyqmLVPy9lfVnEdm6L21YSfZY9MQIjP8ooJ7z2CLtGMmRaFjYj37gtYNddW54NWSqkIV4Ze9pv++X2Oj+lBOEUbWFv02+e+/BdPmUeTmfHsOFG5x4V0rAtqD2V5i73VkZ5YpscTLwMbTimUWgVjFsHrCSWzyd6jql2+oPcuvGpIy7MSBi+XFK0BwGrF9GFZOSzclqqLwgQspZGNHAjKxqDQfWNYfve6/sZehWTOlhcfn9OsCctK7howj+jV0jldtMFRUSt+/g9u0b5KcMcCfsIrFwZN0ev6VwRLvPgABw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=davemloft.net smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PJ60S8E4WpeUTKcOkDc4fDZAfrS32L2n15ddPy1Lypo=;
+ b=cFZv3JzVntA43ZJBDXFZweLq/NVFu3FbztuyW7ymF4Jd8ccjAUdWuLwu8cPVUA6de8ll2iqF2ONDHjeSUCFu7sTPhO7Q3pjtHWD1DSafOGozBmXViVZ7DdQME1URLrR44sKa3wzKrPUjYh5Fs/V7l2xgpL8RnHF23RV7XOWEatU=
+Received: from BN1PR14CA0005.namprd14.prod.outlook.com (2603:10b6:408:e3::10)
+ by DM6PR02MB7034.namprd02.prod.outlook.com (2603:10b6:5:257::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.24; Mon, 2 May
+ 2022 07:27:55 +0000
+Received: from BN1NAM02FT058.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:408:e3:cafe::96) by BN1PR14CA0005.outlook.office365.com
+ (2603:10b6:408:e3::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.14 via Frontend
+ Transport; Mon, 2 May 2022 07:27:55 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ BN1NAM02FT058.mail.protection.outlook.com (10.13.2.166) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5206.12 via Frontend Transport; Mon, 2 May 2022 07:27:54 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Mon, 2 May 2022 00:27:53 -0700
+Received: from smtp.xilinx.com (172.19.127.95) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Mon, 2 May 2022 00:27:53 -0700
+Envelope-to: git@xilinx.com,
+ davem@davemloft.net,
+ kuba@kernel.org,
+ andrew@lunn.ch,
+ pabeni@redhat.com,
+ linux-kernel@vger.kernel.org,
+ netdev@vger.kernel.org
+Received: from [172.23.64.6] (port=56283 helo=xhdvnc106.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <radhey.shyam.pandey@xilinx.com>)
+        id 1nlQTJ-000DbR-8q; Mon, 02 May 2022 00:27:53 -0700
+Received: by xhdvnc106.xilinx.com (Postfix, from userid 13245)
+        id 7F54E60FFA; Mon,  2 May 2022 12:57:52 +0530 (IST)
+From:   Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <michal.simek@xilinx.com>, <andrew@lunn.ch>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <git@xilinx.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Subject: [PATCH net v3 0/2] emaclite: improve error handling and minor cleanup
+Date:   Mon, 2 May 2022 12:57:48 +0530
+Message-ID: <1651476470-23904-1-git-send-email-radhey.shyam.pandey@xilinx.com>
+X-Mailer: git-send-email 2.1.1
 MIME-Version: 1.0
-Message-ID: <614ae365.b499.18083a8bb17.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cS_KCgCHj6dah29i5GA0Ag--.5296W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgESAVZdtZfSggAAsp
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c277bfd8-8ea2-4fcd-27b4-08da2c0d4637
+X-MS-TrafficTypeDiagnostic: DM6PR02MB7034:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR02MB70341F68ABC4F4174124BD21C7C19@DM6PR02MB7034.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Ti3eSz5zPoqFqxilaliF0V3Gtz4qojtjiyhqXvnBDtSiZ4qrRT8BqbSPpXJPfPVv4xMmDgIoTBYmiAb848e5fhSmPeFmd8YmKH/u2g35+e9kk0AelSn7/Vrxmer7Ju9PF7qyywYfh0vv208PdeTBY/s4I1pi6fJ4RWrNYjSEmNker5qxBp7R8gUn07wKua7AtIJg+k0axRgKftcobvj08E/H+JnQEnLp9TsNXEk0+PQTPIPOC/snx6Lg2dfHipVrUQMmwpDhrLd2rvNczEXsZIlQB8eKksWVeHz3egBwBHJyr8xNCdyF0MXRri0D2lICpNAw85yQ0Jp8cBWsOErmoZxHV6Dl6LWhOZ7qHucKotmpzmDLOpDDt/yjoFfR1N11MWDu4e8IDFLg0g/V2+v+hlajVubvzTpoW/UpwmsA+dq0Aw0WdEO7Ey96Prq9oZFyE9DRAYoVXD7NMur5uYYhhJWBCQfGFN8psosYv2eYo0WtTAYQVyuJEU0lyrkTk12887wIjMdCXr4ldLSixrKbZ5+jaa/j/Z8s2t2qNX9uEyzq7bgaEJC2y7mzjTuBnfToZ6Z+uItLJNaY44gp21TWTrN4Scbh6kSy5Mbld+fCqDQRp+77jGq0nVFrf+4qfks3BZ3dNynsoygWc4wy2CCdpnLN3gZ5xhpUWhNoRCF5ICle/+slTn0n63Y/RmZqbTh5X7XqxLZhY1g3PCu3JPQekw==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(6266002)(8676002)(336012)(36860700001)(186003)(426003)(4326008)(70206006)(70586007)(8936002)(47076005)(26005)(82310400005)(107886003)(5660300002)(40460700003)(4744005)(7636003)(2906002)(356005)(83380400001)(110136005)(6666004)(36756003)(42186006)(508600001)(54906003)(316002)(2616005)(102446001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2022 07:27:54.9157
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: c277bfd8-8ea2-4fcd-27b4-08da2c0d4637
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN1NAM02FT058.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR02MB7034
+X-Spam-Status: No, score=1.1 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
+        DKIM_SIGNED,DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CgoKPiAtLS0tLeWOn+Wni+mCruS7ti0tLS0tCj4g5Y+R5Lu25Lq6OiAiS3J6eXN6dG9mIEtvemxv
-d3NraSIgPGtyenlzenRvZi5rb3psb3dza2lAbGluYXJvLm9yZz4KPiDlj5HpgIHml7bpl7Q6IDIw
-MjItMDUtMDIgMTQ6MzQ6MDcgKOaYn+acn+S4gCkKPiDmlLbku7bkuro6IGR1b21pbmdAemp1LmVk
-dS5jbgo+IOaKhOmAgTogbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZywga3ViYUBrZXJuZWwu
-b3JnLCBncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZywgZGF2ZW1AZGF2ZW1sb2Z0Lm5ldCwgZWR1
-bWF6ZXRAZ29vZ2xlLmNvbSwgcGFiZW5pQHJlZGhhdC5jb20sIGFsZXhhbmRlci5kZXVjaGVyQGFt
-ZC5jb20sIGFrcG1AbGludXgtZm91bmRhdGlvbi5vcmcsIGJyb29uaWVAa2VybmVsLm9yZywgbmV0
-ZGV2QHZnZXIua2VybmVsLm9yZywgbGlubWFAemp1LmVkdS5jbgo+IOS4u+mimDogUmU6IFtQQVRD
-SCBuZXQgdjUgMi8yXSBuZmM6IG5mY21ydmw6IG1haW46IHJlb3JkZXIgZGVzdHJ1Y3RpdmUgb3Bl
-cmF0aW9ucyBpbiBuZmNtcnZsX25jaV91bnJlZ2lzdGVyX2RldiB0byBhdm9pZCBidWdzCj4gCj4g
-T24gMjkvMDQvMjAyMiAxMToxMywgZHVvbWluZ0B6anUuZWR1LmNuIHdyb3RlOgo+ID4gSGVsbG8s
-Cj4gPiAKPiA+IE9uIEZyaSwgMjkgQXByIDIwMjIgMDk6Mjc6NDggKzAyMDAgS3J6eXN6dG9mIHdy
-b3RlOgo+ID4gCj4gPj4+IFRoZXJlIGFyZSBkZXN0cnVjdGl2ZSBvcGVyYXRpb25zIHN1Y2ggYXMg
-bmZjbXJ2bF9md19kbmxkX2Fib3J0IGFuZAo+ID4+PiBncGlvX2ZyZWUgaW4gbmZjbXJ2bF9uY2lf
-dW5yZWdpc3Rlcl9kZXYuIFRoZSByZXNvdXJjZXMgc3VjaCBhcyBmaXJtd2FyZSwKPiA+Pj4gZ3Bp
-byBhbmQgc28gb24gY291bGQgYmUgZGVzdHJ1Y3RlZCB3aGlsZSB0aGUgdXBwZXIgbGF5ZXIgZnVu
-Y3Rpb25zIHN1Y2ggYXMKPiA+Pj4gbmZjbXJ2bF9md19kbmxkX3N0YXJ0IGFuZCBuZmNtcnZsX25j
-aV9yZWN2X2ZyYW1lIGlzIGV4ZWN1dGluZywgd2hpY2ggbGVhZHMKPiA+Pj4gdG8gZG91YmxlLWZy
-ZWUsIHVzZS1hZnRlci1mcmVlIGFuZCBudWxsLXB0ci1kZXJlZiBidWdzLgo+ID4+Pgo+ID4+PiBU
-aGVyZSBhcmUgdGhyZWUgc2l0dWF0aW9ucyB0aGF0IGNvdWxkIGxlYWQgdG8gZG91YmxlLWZyZWUg
-YnVncy4KPiA+Pj4KPiA+Pj4gVGhlIGZpcnN0IHNpdHVhdGlvbiBpcyBzaG93biBiZWxvdzoKPiA+
-Pj4KPiA+Pj4gICAgKFRocmVhZCAxKSAgICAgICAgICAgICAgICAgfCAgICAgIChUaHJlYWQgMikK
-PiA+Pj4gbmZjbXJ2bF9md19kbmxkX3N0YXJ0ICAgICAgICAgfAo+ID4+PiAgLi4uICAgICAgICAg
-ICAgICAgICAgICAgICAgICB8ICBuZmNtcnZsX25jaV91bnJlZ2lzdGVyX2Rldgo+ID4+PiAgcmVs
-ZWFzZV9maXJtd2FyZSgpICAgICAgICAgICB8ICAgbmZjbXJ2bF9md19kbmxkX2Fib3J0Cj4gPj4+
-ICAga2ZyZWUoZncpIC8vKDEpICAgICAgICAgICAgIHwgICAgZndfZG5sZF9vdmVyCj4gPj4+ICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAgIHJlbGVhc2VfZmlybXdhcmUKPiA+Pj4g
-ICAuLi4gICAgICAgICAgICAgICAgICAgICAgICAgfCAgICAgIGtmcmVlKGZ3KSAvLygyKQo+ID4+
-PiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgICAuLi4KPiA+Pj4KPiA+Pj4gVGhl
-IHNlY29uZCBzaXR1YXRpb24gaXMgc2hvd24gYmVsb3c6Cj4gPj4+Cj4gPj4+ICAgIChUaHJlYWQg
-MSkgICAgICAgICAgICAgICAgIHwgICAgICAoVGhyZWFkIDIpCj4gPj4+IG5mY21ydmxfZndfZG5s
-ZF9zdGFydCAgICAgICAgIHwKPiA+Pj4gIC4uLiAgICAgICAgICAgICAgICAgICAgICAgICAgfAo+
-ID4+PiAgbW9kX3RpbWVyICAgICAgICAgICAgICAgICAgICB8Cj4gPj4+ICAod2FpdCBhIHRpbWUp
-ICAgICAgICAgICAgICAgIHwKPiA+Pj4gIGZ3X2RubGRfdGltZW91dCAgICAgICAgICAgICAgfCAg
-bmZjbXJ2bF9uY2lfdW5yZWdpc3Rlcl9kZXYKPiA+Pj4gICAgZndfZG5sZF9vdmVyICAgICAgICAg
-ICAgICAgfCAgIG5mY21ydmxfZndfZG5sZF9hYm9ydAo+ID4+PiAgICAgcmVsZWFzZV9maXJtd2Fy
-ZSAgICAgICAgICB8ICAgIGZ3X2RubGRfb3Zlcgo+ID4+PiAgICAgIGtmcmVlKGZ3KSAvLygxKSAg
-ICAgICAgICB8ICAgICByZWxlYXNlX2Zpcm13YXJlCj4gPj4+ICAgICAgLi4uICAgICAgICAgICAg
-ICAgICAgICAgIHwgICAgICBrZnJlZShmdykgLy8oMikKPiA+Pgo+ID4+IEhvdyBleGFjdGx5IHRo
-ZSBjYXNlIGhlcmUgaXMgYmVpbmcgcHJldmVudGVkPwo+ID4+Cj4gPj4gSWYgbmZjbXJ2bF9uY2lf
-dW5yZWdpc3Rlcl9kZXYoKSBoYXBwZW5zIHNsaWdodGx5IGVhcmxpZXIsIGJlZm9yZQo+ID4+IGZ3
-X2RubGRfdGltZW91dCgpIG9uIHRoZSBsZWZ0IHNpZGUgKFQxKSwgdGhlIFQxIHdpbGwgc3RpbGwg
-aGl0IGl0LCB3b24ndCBpdD8KPiA+IAo+ID4gSSB0aGluayBpdCBjb3VsZCBiZSBwcmV2ZW50ZWQu
-IFdlIHVzZSBuY2lfdW5yZWdpc3Rlcl9kZXZpY2UoKSB0byBzeW5jaHJvbml6ZSwgaWYgdGhlCj4g
-PiBmaXJtd2FyZSBkb3dubG9hZCByb3V0aW5lIGlzIHJ1bm5pbmcsIHRoZSBjbGVhbnVwIHJvdXRp
-bmUgd2lsbCB3YWl0IGl0IHRvIGZpbmlzaC4gCj4gPiBUaGUgZmxhZyAiZndfZG93bmxvYWRfaW5f
-cHJvZ3Jlc3MiIHdpbGwgYmUgc2V0IHRvIGZhbHNlLCBpZiB0aGUgdGhlIGZpcm13YXJlIGRvd25s
-b2FkCj4gPiByb3V0aW5lIGlzIGZpbmlzaGVkLiAKPiAKPiBmd19kb3dubG9hZF9pbl9wcm9ncmVz
-cyBpcyBub3Qgc3luY2hyb25pemVkIGluCj4gbmZjbXJ2bF9uY2lfdW5yZWdpc3Rlcl9kZXYoKSwg
-c28gZXZlbiBpZiBmd19kbmxkX3RpbWVvdXQoKSBzZXQgaXQgdG8KPiB0cnVlLCB0aGUgbmZjbXJ2
-bF9uY2lfdW5yZWdpc3Rlcl9kZXYoKSBoYXBwZW5pbmcgY29uY3VycmVudGx5IHdpbGwgbm90Cj4g
-c2VlIHVwZGF0ZWQgZndfZG93bmxvYWRfaW5fcHJvZ3Jlc3MuCgpUaGUgZndfZG93bmxvYWRfaW5f
-cHJvZ3Jlc3MgaXMgc2V0IHRvIGZhbHNlIGluIG5mY19md19kb3dubG9hZCgpLiBUaGUgbmZjX2Z3
-X2Rvd25sb2FkKCkgaXMKc3luY2hyb25pemVkIHdpdGggbmZjX3VucmVnaXN0ZXJfZGV2aWNlKCku
-IElmIG5mY19md19kb3dubG9hZCgpIGlzIHJ1bm5pbmcsIG5mY191bnJlZ2lzdGVyX2RldmljZSgp
-CndpbGwgd2FpdCBuZmNfZndfZG93bmxvYWQoKSB0byBmaW5pc2guIFNvIHRoZSBuZmNtcnZsX25j
-aV91bnJlZ2lzdGVyX2RldigpIGNvdWxkIHNlZSB0aGUgdXBkYXRlZApmd19kb3dubG9hZF9pbl9w
-cm9ncmVzcy4gVGhlIHByb2Nlc3MgaXMgc2hvd24gYmVsb3c6CgogICAgICAgIChUaHJlYWQgMSkg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAgICAgKFRocmVhZCAy
-KQogbmZjbXJ2bF9uY2lfdW5yZWdpc3Rlcl9kZXYgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgIHwgbmZjX2Z3X2Rvd25sb2FkCiAgIG5jaV91bnJlZ2lzdGVyX2RldmljZSAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgfCAgLi4uCiAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgZGV2aWNlX2xvY2soKQogICAgIC4u
-LiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgIGRl
-di0+ZndfZG93bmxvYWRfaW5fcHJvZ3Jlc3MgPSBmYWxzZTsgLy8oMSkKICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICBkZXZpY2VfdW5s
-b2NrKCkKICAgICBuZmNfdW5yZWdpc3Rlcl9kZXZpY2UgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICB8IAogICBpZiAocHJpdi0+bmRldi0+bmZjX2Rldi0+ZndfZG93bmxvYWRfaW5fcHJv
-Z3Jlc3MpIC8vKDIpIHwgCiAgICAgbmZjbXJ2bF9md19kbmxkX2Fib3J0KHByaXYpOyAvL25vdCBl
-eGVjdXRlICAgICAgICAgICAgfCAgIAoKV2Ugc2V0IGZ3X2Rvd25sb2FkX2luX3Byb2dyZXNzIHRv
-IGZhbHNlIGluIHBvc2l0aW9uICgxKSBhbmQgdGhlIGNoZWNrIGluIHBvc2l0aW9uICgyKSB3aWxs
-IGZhaWwsCnRoZSBuZmNtcnZsX2Z3X2RubGRfYWJvcnQoKSBpbiBuZmNtcnZsX25jaV91bnJlZ2lz
-dGVyX2RldigpIHdpbGwgbm90IGV4ZWN1dGUuIFNvIHRoZSBkb3VibGUtZnJlZQpidWdzIGNvdWxk
-IGJlIHByZXZlbnRlZC4KCj4gPiBBbHRob3VnaCB0aGUgdGltZXIgaGFuZGxlciBmd19kbmxkX3Rp
-bWVvdXQoKSBjb3VsZCBiZSBydW5uaW5nLCBuZmNtcnZsX25jaV91bnJlZ2lzdGVyX2RldigpCj4g
-PiB3aWxsIGNoZWNrIHRoZSBmbGFnICJmd19kb3dubG9hZF9pbl9wcm9ncmVzcyIgd2hpY2ggaXMg
-YWxyZWFkeSBzZXQgdG8gZmFsc2UgYW5kIG5mY21ydmxfZndfZG5sZF9hYm9ydCgpCj4gPiBpbiBu
-ZmNtcnZsX25jaV91bnJlZ2lzdGVyX2RldigpIHdpbGwgbm90IGV4ZWN1dGUuCj4gCj4gSSBhbSBz
-b3JyeSwgYnV0IHlvdSBjYW5ub3QgbW92ZSBjb2RlIGFyb3VuZCBob3BpbmcgaXQgd2lsbCBieSBp
-dHNlbGYKPiBzb2x2ZSBzeW5jaHJvbml6YXRpb24gaXNzdWVzLgoKSSB0aGluayB0aGlzIHNvbHV0
-aW9uIHNvdmUgc3luY2hyb25pemF0aW9uIGlzc3Vlcy4gSWYgeW91IHN0aWxsIGhhdmUgYW55IHF1
-ZXN0aW9ucyB3ZWxjb21lIHRvIGFzayBtZS4KCkJlc3QgcmVnYXJkcywKRHVvbWluZyBaaG91Cg==
+This patchset does error handling for of_address_to_resource() and also
+removes "Don't advertise 1000BASE-T" and auto negotiation.
+
+Changes for v3:
+- Resolve git apply conflicts for 2/2 patch.
+
+Changes for v2:
+- Added Andrew's reviewed by tag in 1/2 patch.
+- Move ret to down to align with reverse xmas tree style in 2/2 patch.
+- Also add fixes tag in 2/2 patch.
+- Specify tree name in subject prefix.
+
+
+
+Shravya Kumbham (2):
+  net: emaclite: Don't advertise 1000BASE-T and do auto negotiation
+  net: emaclite: Add error handling for of_address_to_resource()
+
+ drivers/net/ethernet/xilinx/xilinx_emaclite.c | 30 +++++++++++----------------
+ 1 file changed, 12 insertions(+), 18 deletions(-)
+
+-- 
+2.7.4
 
