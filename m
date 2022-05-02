@@ -2,52 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A9F751790A
-	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 23:20:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D29C2517924
+	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 23:31:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387624AbiEBVXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 May 2022 17:23:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56384 "EHLO
+        id S1387668AbiEBVee (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 May 2022 17:34:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387603AbiEBVXn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 17:23:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E808A1AE;
-        Mon,  2 May 2022 14:20:13 -0700 (PDT)
+        with ESMTP id S239512AbiEBVed (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 17:34:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7D82E09E
+        for <netdev@vger.kernel.org>; Mon,  2 May 2022 14:31:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A2BF7B819F6;
-        Mon,  2 May 2022 21:20:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 57EB0C385A4;
-        Mon,  2 May 2022 21:20:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B27C60FE2
+        for <netdev@vger.kernel.org>; Mon,  2 May 2022 21:31:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 731EDC385A4;
+        Mon,  2 May 2022 21:31:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651526411;
-        bh=uLcybJcnNqI+j6jIrxeeIUMhxnhYzGU+2Dt86UpKrzM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=sj6W1PWf9Gt4mLhi3rCR8bKAXR2IvFbcXIHi4Z/WRFxS29M5gfLrLQ2H8Gb9cZpSo
-         vfbyETCmuzWQ9XOwl11yAG2LfkzSfRyZvXwl+wg2QwQcTQRMvXbqTjfo9LCeMYIzxf
-         Nt1P8iQ8w6hmk9HPueO1fCQ3fB7clX8fH6CMkq73rglut7fI/iYx5RynoUXfhHacyp
-         D/7vKqg1r+gk+TBnGXJBFCrlzXL3wFyapHNBMXI5zFUaVfkBNfMGDNCUo7BgWUzlaz
-         eZBGmF4EmUiqXFALNgEBkar85bhxxgWYsAS7RDEKF6+z4rTHMWzHfHT+w0nFyIBrUS
-         FbL5hbVAzN+Xw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3D4EAE6D402;
-        Mon,  2 May 2022 21:20:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1651527063;
+        bh=469Q9DNaEIPYIXOr+FOOByQ9W9OuBg7RzK/8YlJ5Ycw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=h1OshzAC3BKIPMcF52nOEqxZCYn0us4odyiQrCrEIFkOBEPDWkHUiB3XB+BCEl/AJ
+         ckWccs+4sfH70y08rRlLWVBrR+bnTZac5y+uQKgajr74T6tvTrSF8pgXnrl3TwWPdQ
+         di9PysVQX+bVg+Y3S9gJx0pnWd4i2Q2ImiH4Z4Tctw/gfc3yL2Q2Fh9tGX4RFg9wzm
+         rNv5Yj1dS3zzuROVvX3iDNLNr6dgScPRJBD98Cw8vl1JX9cRwbOWojh2KFj2Lq2AQ+
+         Vpq5kEz+ZCGd8gypfS9LvaRVlgJNzbAUcwz8T0NzoOEBrwetFln+8EBnfWzI/8/vJL
+         KH2sctDtU1dSQ==
+Date:   Mon, 2 May 2022 14:31:01 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Niels Dossche <dossche.niels@gmail.com>
+Cc:     netdev@vger.kernel.org, Sunil Goutham <sgoutham@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Jerin Jacob <jerinj@marvell.com>,
+        hariprasad <hkelam@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Harman Kalra <hkalra@marvell.com>,
+        Christina Jacob <cjacob@marvell.com>
+Subject: Re: [PATCH net] octeontx2-af: debugfs: fix error return of
+ allocations
+Message-ID: <20220502143101.3aa37dac@kernel.org>
+In-Reply-To: <20220430194656.44357-1-dossche.niels@gmail.com>
+References: <20220430194656.44357-1-dossche.niels@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v1 net-next 0/2] ocelot stats improvement
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165152641124.9389.11966311067254454723.git-patchwork-notify@kernel.org>
-Date:   Mon, 02 May 2022 21:20:11 +0000
-References: <20220430232327.4091825-1-colin.foster@in-advantage.com>
-In-Reply-To: <20220430232327.4091825-1-colin.foster@in-advantage.com>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, UNGLinuxDriver@microchip.com,
-        alexandre.belloni@bootlin.com, claudiu.manoil@nxp.com,
-        vladimir.oltean@nxp.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -58,32 +63,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Sat, 30 Apr 2022 21:46:56 +0200 Niels Dossche wrote:
+> @@ -407,7 +407,7 @@ static ssize_t rvu_dbg_rsrc_attach_status(struct file *filp,
+>  
+>  	buf = kzalloc(buf_size, GFP_KERNEL);
+>  	if (!buf)
+> -		return -ENOSPC;
+> +		return -ENOMEM;
+>  
+>  	/* Get the maximum width of a column */
+>  	lf_str_size = get_max_column_width(rvu);
 
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Sat, 30 Apr 2022 16:23:25 -0700 you wrote:
-> A couple of pick-ups after f187bfa6f35 ("net: ethernet: ocelot: remove
-> the need for num_stats initializer") - one addresses a warning
-> patchwork flagged about operator precedence when using macro arguments.
-> The other is a reduction of unnecessary memory allocation.
-> 
-> Colin Foster (2):
->   net: mscc: ocelot: remove unnecessary variable
->   net: mscc: ocelot: add missed parentheses around macro argument
-> 
-> [...]
-
-Here is the summary with links:
-  - [v1,net-next,1/2] net: mscc: ocelot: remove unnecessary variable
-    https://git.kernel.org/netdev/net-next/c/05e4ed1ce585
-  - [v1,net-next,2/2] net: mscc: ocelot: add missed parentheses around macro argument
-    https://git.kernel.org/netdev/net-next/c/8c5b07da9bc8
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Looks intentional, other allocation failures in this file use ENOMEM.
+Still probably worth cleaning up, applied to net-next.
