@@ -2,82 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A95945178D9
-	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 23:10:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B46505178E0
+	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 23:12:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235806AbiEBVNr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 May 2022 17:13:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51360 "EHLO
+        id S1387571AbiEBVQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 May 2022 17:16:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233954AbiEBVNp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 17:13:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DA1ECF3;
-        Mon,  2 May 2022 14:10:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B90D610A2;
-        Mon,  2 May 2022 21:10:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C0485C385AF;
-        Mon,  2 May 2022 21:10:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651525813;
-        bh=aZRclJB3S+w41OpLeywT0IH3DkszK0qCj7mVr/7Kw9Q=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=DCkal/JGdf5/2oNOS9TmQXdh/ZWEwWCcR7Bqww7fCyKxeKO9qdWmghyPPSwZwC/Me
-         zXeLfs/3iegdIkEy0MkCuTHQnSI72d+ajNyawLvNP99Php2FI9N+7nnakQvZKjK/Xp
-         8wC9nuxkNHygdCxAfVM9Dc+6TbrRWJoR/yU+7tKqwH1O9NW4kX8TeUCO2UOjGcdCv4
-         dhKzcap5UzPpA4feCux2t8jtjS2XGhignNCGf0rTOcBfRCkmyKtvojKaNo0Q6hu7OM
-         OH0eLjFbNmuicGTXJf3Rtpqt85OGmtI1bDW5JFOUU+dLIyA/UnSe9CvokYO0kDPDYr
-         9YN29cnEg+dSg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A1E25E8DBDA;
-        Mon,  2 May 2022 21:10:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S234807AbiEBVQK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 17:16:10 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D7612193;
+        Mon,  2 May 2022 14:12:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651525960; x=1683061960;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=PvDGCGLLuYuPDJStpkzYAsiPIWAWemnXH5cKtMSAIJ8=;
+  b=aTsLKOp0yhASlxAUDq+bMgYI9X0xvf6fqWccZ5wxbMjogxQaKyECEGaS
+   1G1MTaCSkPVHJHHKIM+Uc0C4LIjg6W0qbEiCJNEUkx3ecxVgl/Q7I+yVn
+   FjVbEtuPPigXd8xDWhDwn2svqX/p8WENvBSoMDchThyf+vOEIOr/vJDJ2
+   R8+uq+pFMwm/AWgcVd1XILOGLO84BGitilZlpUHlYnjdWN2Ty2DnnIlg/
+   A5TAh/gtLwov9FGbYuWYH8mhPqWYHK79Xlq6N46vJPmzQ4KmBOAXvrey/
+   GyhWivrgbSqD84h+b4hSWav9M1iYxv9WZyxD1bP3CmeNLFWTOv8h7UtbW
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="247878457"
+X-IronPort-AV: E=Sophos;i="5.91,193,1647327600"; 
+   d="scan'208";a="247878457"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 14:12:40 -0700
+X-IronPort-AV: E=Sophos;i="5.91,193,1647327600"; 
+   d="scan'208";a="810393786"
+Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.212.141.55])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 14:12:40 -0700
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, mptcp@lists.linux.dev
+Subject: [PATCH bpf-next v3 0/8] bpf: mptcp: Support for mptcp_sock and is_mptcp
+Date:   Mon,  2 May 2022 14:12:26 -0700
+Message-Id: <20220502211235.142250-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: ieee802154-next 2022-05-01
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165152581365.3052.12540257995357978934.git-patchwork-notify@kernel.org>
-Date:   Mon, 02 May 2022 21:10:13 +0000
-References: <20220501194614.1198325-1-stefan@datenfreihafen.org>
-In-Reply-To: <20220501194614.1198325-1-stefan@datenfreihafen.org>
-To:     Stefan Schmidt <stefan@datenfreihafen.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-wpan@vger.kernel.org,
-        alex.aring@gmail.com, netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+This patch set adds BPF access to the is_mptcp flag in tcp_sock and
+access to mptcp_sock structures, along with associated self tests. You
+may recognize some of the code from earlier
+(https://lore.kernel.org/bpf/20200918121046.190240-6-nicolas.rybowski@tessares.net/)
+but it has been reworked quite a bit.
 
-This pull request was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
 
-On Sun,  1 May 2022 21:46:14 +0200 you wrote:
-> Hello Dave, Jakub.
-> 
-> An update from ieee802154 for your *net-next* tree.
-> For the merge conflict resolution please see below.
-> 
-> Miquel Raynal landed two patch series bundled in this pull request.
-> 
-> [...]
+v1 -> v2: Emit BTF type, add func_id checks in verifier.c and bpf_trace.c,
+remove build check for CONFIG_BPF_JIT, add selftest check for CONFIG_MPTCP,
+and add a patch to include CONFIG_IKCONFIG/CONFIG_IKCONFIG_PROC for the
+BPF self tests.
 
-Here is the summary with links:
-  - pull-request: ieee802154-next 2022-05-01
-    https://git.kernel.org/netdev/net-next/c/c5f50500a027
+v2 -> v3: Access sysctl through the filesystem to work around CI use of
+the more limited busybox sysctl command.
 
-You are awesome, thank you!
+
+Geliang Tang (6):
+  bpf: add bpf_skc_to_mptcp_sock_proto
+  selftests: bpf: Enable CONFIG_IKCONFIG_PROC in config
+  selftests: bpf: test bpf_skc_to_mptcp_sock
+  selftests: bpf: verify token of struct mptcp_sock
+  selftests: bpf: verify ca_name of struct mptcp_sock
+  selftests: bpf: verify first of struct mptcp_sock
+
+Nicolas Rybowski (2):
+  bpf: expose is_mptcp flag to bpf_tcp_sock
+  selftests: bpf: add MPTCP test base
+
+ MAINTAINERS                                   |   2 +
+ include/linux/bpf.h                           |   1 +
+ include/linux/btf_ids.h                       |   3 +-
+ include/net/mptcp.h                           |   6 +
+ include/uapi/linux/bpf.h                      |   8 +
+ kernel/bpf/verifier.c                         |   1 +
+ kernel/trace/bpf_trace.c                      |   2 +
+ net/core/filter.c                             |  27 +-
+ net/mptcp/Makefile                            |   2 +
+ net/mptcp/bpf.c                               |  22 ++
+ scripts/bpf_doc.py                            |   2 +
+ tools/include/uapi/linux/bpf.h                |   8 +
+ .../testing/selftests/bpf/bpf_mptcp_helpers.h |  17 ++
+ tools/testing/selftests/bpf/bpf_tcp_helpers.h |   4 +
+ tools/testing/selftests/bpf/config            |   3 +
+ tools/testing/selftests/bpf/network_helpers.c |  43 ++-
+ tools/testing/selftests/bpf/network_helpers.h |   4 +
+ .../testing/selftests/bpf/prog_tests/mptcp.c  | 272 ++++++++++++++++++
+ .../testing/selftests/bpf/progs/mptcp_sock.c  |  80 ++++++
+ 19 files changed, 497 insertions(+), 10 deletions(-)
+ create mode 100644 net/mptcp/bpf.c
+ create mode 100644 tools/testing/selftests/bpf/bpf_mptcp_helpers.h
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/mptcp.c
+ create mode 100644 tools/testing/selftests/bpf/progs/mptcp_sock.c
+
+
+base-commit: 20b87e7c29dffcfa3f96f2e99daec84fd46cabdb
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.36.0
 
