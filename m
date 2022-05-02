@@ -2,157 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE3A0516D63
-	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 11:30:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACD27516D9A
+	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 11:41:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384223AbiEBJeP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 May 2022 05:34:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47892 "EHLO
+        id S1384321AbiEBJoa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 May 2022 05:44:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384210AbiEBJdu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 05:33:50 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B97E66407;
-        Mon,  2 May 2022 02:30:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651483821; x=1683019821;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=X7nItg/45B61e7lcH2I/dWfXopbW3TmFEE8UJqW3kFA=;
-  b=dSBIOQig8hw96zlNU9aP977iT35EfH1wzx147aFTcwtVX0eutBhGDrwO
-   obyX0qGTav1V5zINXS9HNH3jpxIG/QZq5Qkbhapetq7DWPmN+qKRuXxiY
-   GFJcg97Q1P1aKwVYO/8a51RaHPFUQqgMknrWXQb98IlvAh9Rn+MNJ1Vgn
-   LXsq8EcLd52/e28Vys3KY8e3Z3hpZU8LqtosKgONJ4pYdkcyg3HQhKAr3
-   xU6bB3AhnW/0sWIviEVeTIxXHR0/XOW19MnzIVjabQxylMKifh2iiKrGQ
-   5MWqeIbfiHlL5V00yNSRyd5Px9A1DXOroL+bvPs/2jJeXDtEaAOrusgFc
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10334"; a="266746734"
-X-IronPort-AV: E=Sophos;i="5.91,190,1647327600"; 
-   d="scan'208";a="266746734"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 02:30:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,190,1647327600"; 
-   d="scan'208";a="546075029"
-Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
-  by orsmga002.jf.intel.com with ESMTP; 02 May 2022 02:30:21 -0700
-Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
- ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Mon, 2 May 2022 02:30:20 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Mon, 2 May 2022 02:30:20 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.169)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Mon, 2 May 2022 02:29:58 -0700
+        with ESMTP id S1384427AbiEBJoE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 05:44:04 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2062.outbound.protection.outlook.com [40.107.244.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B39ADBF67
+        for <netdev@vger.kernel.org>; Mon,  2 May 2022 02:40:35 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ihtI0YlABm0lfQqGYjOLiLZ61oDcrRlg3wUNIJ6XYWFzmMIALc9ZT46wu4dOz1EMQYmVNxhrSt4CfOZ/E4g1IlpyVbxzyKjBHJpTFe/SupD8zphwbGcKB/xcBL0APzTHImPG/us9cb+pIZ0AsZZpnMPUMCp4I96AEixdaUZpK+XhsmvM7EFUltWlGn8JwjdVYjzl3bt4/xrEt88NTuAVCbbrEb4sFfyPCENTM4PoCxEPJm/tf3MB/P0R/OC5xT1MGghGCa2CbqJYScl6YHEBdeVtCXPjifAbUnr9iG5Ya4BcBFEN6KXo/pRor0mx61Gvjler12WN25sazbtDmTjF3g==
+ b=hgYpdqfPzpNUK+7R9NY2iVBsZSQJ2zALjRCVyPiCdGE97dSqaFADC3pOuZCupxsqfUb8+RB+lgxQniTXYpmyV1nbUdY6ezAPuc6dbHcfC0czrCZvjoxsMDH+W/crFdZVNEzuZefM+FJLsK8gMXZA86NTRIEuCF/lLhrtr6iG0bgL6vVQ7c4hNVZdsJvOOd/rs0Dtd4P4px5/I6ulL74ZxJCqSLAh4TKlJci8KARwl+gK+Or0JutV3kImf9k74pCYi/szspwA7hKcGDxHWgA36JKog9ZXPgSEt9PVG+KZXBTv7fbJtMIIXXL8ohFJQHzCrUmmTu7CzhNBh1VVNafA8Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4UI4Ap2wY0xj8Vr+qse8RqMdnz6BF84cvTorrVlvYBQ=;
- b=OpdIZcsoA6sk4jS0pTpdGvHsjBOuTbgZBNRfA1fPf9sEUBmppcv9zx44wMHnHfTEd0qgTzrZ7SBNXe3FkaZAb+gUyNJJB20PYhmIUsWUrD1dOi9oj3wcRw/WkKlBN6mGusrda9Qpe4PfnAPlUDteJT2oYQ91BG/qxlNfeZFVKY85GI4UcpbLZiv/IXTl2J2RXO+i9Zr3QKb/mSfIj+ZrzgdF7MPC/oRPJzgEhZak8DdImvJ/bRotPgWpJObeqTrt5tLnVDLw30CtY5db5m3AlgrYsd59iui3MPmDRos3ZaR4M0MOMQdT340WT9JIwkWXvvey1lJFU0UcaKHBrd/xlQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BYAPR11MB3367.namprd11.prod.outlook.com (2603:10b6:a03:79::29)
- by BN6PR11MB1746.namprd11.prod.outlook.com (2603:10b6:404:fb::20) with
+ bh=h+h4wfNrBzkt/R9+doAwZ6UUFv6+TDEdRzYLpceQbLE=;
+ b=JRz+sApn9B8tO+peMBmrHyYeW8UGX8BiEVTSz1X1iAcxfNTnlZUJfHC4DWLuKARtJfvikhWEvX16B2C4Ah8s+zpsybj91zs9yloHZnzwHY3M4WE70Q18OmWChlHpda6xTq4C/ocCMb1PbXM8826YjUj+Np8HIS6owY2g1hMfBRq+CdFPLPGlQFuV5F2za2CpufRGYcxZx+2+tqP47Sb2PuClQAyCxItedPO9jX+CohhAitNbK1vlk1xqucpgarsIFJI0Gqnb6SzG+ei4HEq0f1zL+lh6eMrJmL94OjfaN8scI5QNTSzX/a9sTVx2oUqX1twTIXgkED/P7zt2GWxVNQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.236) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=h+h4wfNrBzkt/R9+doAwZ6UUFv6+TDEdRzYLpceQbLE=;
+ b=V5RNvIrt4W1hAyhzyJKUksoafa7/JN67g9x/U3A1fCtJlM3l1wXmQLcSd/yBIYkGht6xdeWhRPcMrqMldv9dUh9paguFxBJETid7Is01LTF4+9e3HMxtnLbQjb1DLms4JD8Hd04nHS7nqEVwqwhB9CqUxZpCOJTLVPVTOxezSuR5GV3yyQT1y0d5YCW/vGVsO9jVgjOqAaOtbLzJ6mA+aS+MOpUDrGBDTv6F/OSLS/dIqodXtvh3zYRTy2nYE3I1C9qR+4zu2ROGsZCd76S15DYzho8n9fMpZ1QbHNgqNKZIg1vviIGXFLrBNnKOKqitk5So6UkBcev4bKNeT5y3Tw==
+Received: from DM6PR02CA0053.namprd02.prod.outlook.com (2603:10b6:5:177::30)
+ by DM5PR12MB1289.namprd12.prod.outlook.com (2603:10b6:3:79::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Mon, 2 May
- 2022 09:29:56 +0000
-Received: from BYAPR11MB3367.namprd11.prod.outlook.com
- ([fe80::829:3da:fb91:c8e7]) by BYAPR11MB3367.namprd11.prod.outlook.com
- ([fe80::829:3da:fb91:c8e7%6]) with mapi id 15.20.5206.024; Mon, 2 May 2022
- 09:29:56 +0000
-From:   "G, GurucharanX" <gurucharanx.g@intel.com>
-To:     "Weiny, Ira" <ira.weiny@intel.com>,
-        Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-CC:     "outreachy@lists.linux.dev" <outreachy@lists.linux.dev>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: RE: [Intel-wired-lan] [PATCH v5] igb: Convert kmap() to
- kmap_local_page()
-Thread-Topic: [Intel-wired-lan] [PATCH v5] igb: Convert kmap() to
- kmap_local_page()
-Thread-Index: AQHYVEdQ+T0ZohAO50qTE3iliBi8Jaz6p6WAgBC+BhA=
-Date:   Mon, 2 May 2022 09:29:56 +0000
-Message-ID: <BYAPR11MB3367A2BBE81A95AAEF6D0498FCC19@BYAPR11MB3367.namprd11.prod.outlook.com>
-References: <20220419234313.10324-1-eng.alaamohamedsoliman.am@gmail.com>
- <YmGZFfcY/Yz6Iv1Y@iweiny-desk3>
-In-Reply-To: <YmGZFfcY/Yz6Iv1Y@iweiny-desk3>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9674d0f4-0b65-4918-6ed8-08da2c1e522e
-x-ms-traffictypediagnostic: BN6PR11MB1746:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-microsoft-antispam-prvs: <BN6PR11MB1746D1E3434FB052A502224AFCC19@BN6PR11MB1746.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: fRBpOm2qpFgmMy/DItZExJQiPnwDoNFaEJ9DK25DurcKveo+l1V0RpH28wTabwk/Xt3pEgIHeVPEX8z8LQUqqcQRBj1mk9HO65FBwmWM5FXE6MXfPp9Hd8xwF6ibN85AlkcRWTBvoW5O+kd7Z+Nz9Fxoj2uxzXp/m4jhKIC/xK5+YJiwG5lJDHFpechVQ2azRNorXRs063TD506JQjZ/HarH2gqBNXNQiWjWEROyTB01krjAqVLOhdgRGAr9wG76GUAaFPV9IFjVxwouEFGyE4ZDy0HUuTAmxGcYbHDxSBYUWIO6u0gBeB5dZT6FRrZIgpV7RsNfKycmVM1mpiOR888WQzXPr6rGpjN/jtiGT2j5nTYJGXg8mUV+9oIXSpeWOHUkVJ5HATwLBlpSd+xTabMwQzdpseJl2HvisRZygKpBDN/plUCGP806/xSvMGYZIdiO/+xXEmXQ2YXozJYtPWCChZTNbYxRbWT5a9KUxnJIq+Tpq8d/Y9ubgyiZDcO8wuPLaqBkrXz6AAdW68pTw/xU0jSyLg5SpoyheU6hxk8SmSqCrMLLe0XXXH1edf6EWj8KIl3gKmhHrf18lc/hyxrZKeiHdh5HRFt/IEEDjOiO6zgG0uE/BZDwNxGcjh+kd8n+f1kwHs0y0fztENEwFa4kCz8E5BRxUiJY1qHLx3B2ybqGJqax5pjQ3uGUCOuucKigtmvB6cdZRAGs60X0kQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3367.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(110136005)(33656002)(54906003)(186003)(122000001)(55016003)(2906002)(5660300002)(83380400001)(8936002)(52536014)(8676002)(76116006)(66946007)(4326008)(86362001)(66556008)(66476007)(64756008)(316002)(66446008)(82960400001)(26005)(38070700005)(71200400001)(6506007)(38100700002)(508600001)(53546011)(7696005)(9686003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Z9uGFTl7+vZg2TjAtEmuv9XWsF4UtSFKCAjUUl0iwwm1tUfxfKuYOdImpS+F?=
- =?us-ascii?Q?Z4QIVQzQRQFIm9+IBum7ev321izSqX4y3D6PwXruEN2vJvCGQho7mlTJbwEX?=
- =?us-ascii?Q?BWEMY182X0ps9U2sARUJUcmNiTMCHfeJgyJ5mJs6Hr1hMwPwgFnJdvQSYju9?=
- =?us-ascii?Q?rEPg8gWB1jiVubdc8JNk83S0Rw9InDNWHYXfVZ79TbLds7MB3N6+vLPSNiyZ?=
- =?us-ascii?Q?gbmRaU17V32gmVsOz8tlLbQV+7rHiP+z8FKSDwsa+vniOsiVEXI4IDwTTijI?=
- =?us-ascii?Q?bWBNcP6sVlrvY1tQrcjruXYo167/6QYxubsCVD4xMgueW9uAQeQGIYdNfpSs?=
- =?us-ascii?Q?xGz+oxGjz+1psL9tau0BVsnuLLezZvGYN4tzLyvTLTDdkNV8pXwfTUaBVOjT?=
- =?us-ascii?Q?zVzhf+hUYmN4F7Kr0BJTMTCm5GcmFleLDavcGNkZdiFU9++qwGPymTPZHW69?=
- =?us-ascii?Q?Iw0A6X/F2mNk4bfCIn1rg30JnsSsUxYg10U09ChDmU7qSV5heHPAtCpOlgtu?=
- =?us-ascii?Q?iMMqVNJNJXnAjg5ratQ+PCZ0sjbS/CKLXDRfJsIrUpbDzi2YJFeCEM8yg9sA?=
- =?us-ascii?Q?J3XAS7AZQ0hYB9fLPrFiBBmoa1QbhktYkW9U5X3E84skhdz3Rph5n5GUahXi?=
- =?us-ascii?Q?IIkvOmuab9XswFeJQLGp1jX4dtHeyQmRfHHwCsicU1CT0gOul/Lw458d/GWZ?=
- =?us-ascii?Q?iSDDcH2KvwaoKBN4hS3fAGSXATCEfpX7YgZzEu6t8JX8Q/GIpTAho7t9QIvw?=
- =?us-ascii?Q?+Aa48Ivvd9gJ5T9egjcJoyze3x8p0YpfIszDC1Max1hQQwe/b6SCQufhiw2z?=
- =?us-ascii?Q?+E5Io3a/e0g7lFtnbyS2ssBjNr5TCmB4pr1jCNyDXDDgFovrC62Qh49fXfs2?=
- =?us-ascii?Q?R5V1wckea2wtOXXJRjs0WPO3yrN6xouMa89++1X7lv6mvzsxOREavChf82LR?=
- =?us-ascii?Q?XK+i57LePRmRzzt+ptgPZD2N2Rtgf+4zQ8WPKZiClizG4VYAlSwRM0XZbEfo?=
- =?us-ascii?Q?tOa3NepHDaYxWsrEaGChiYLtCvynCW+utLif9eyRwnd3l8mmkhgCQ4FAqoVD?=
- =?us-ascii?Q?aEL9kEya6/DULXE1zTwjLzanKkcnwmR7lFWT/BFZWk9R2IYH0O8FSJMNUmZy?=
- =?us-ascii?Q?yRkIpEKrpQemFKgYt5SRdsEds7Kgfyc/l4t38O3SWL8TP2Qik3Zt2OjxbQYd?=
- =?us-ascii?Q?XF2PWH3t3dzA6w+x/Zwyf6AgSIoL0X8fx6DS7nXixk5Pcf/1bFSVxKrf2rUn?=
- =?us-ascii?Q?t8Qd0tjiK3x+17wOPlrttfH2PibQRWf5sG2RSqRdMW+4B8eEHX8vFGNSvfka?=
- =?us-ascii?Q?ruCpZzZx2TFnx9UEDnQezSHyr/wLmDQkGXtxSFhyrjZU6JWvrHixcaEbz/cu?=
- =?us-ascii?Q?NEIEkVroihkvq88xBubBJi/wcFnlVlB1lBkDIrO2Q4lMPGG/kwUsnrK8ZDfO?=
- =?us-ascii?Q?yqt9jGvaPvIiljb0/DDCiDFXBlpR+/t8bF1PKdE6wunvvHsVtZOqm1pzb0+C?=
- =?us-ascii?Q?RBuIxtSPsScnlO0oC3DvfynzpylizmJYMs6IAWmESOvfvhgQ4Pr4F1twkoVT?=
- =?us-ascii?Q?/DsaCdApg+J/iPye3sMVoO9r4FiVjY2PySNYPcba2t56RpvoQxVCXl1S+zZT?=
- =?us-ascii?Q?o/Eq7IkvtVHEvqkrVjNF2KVpZlFcO+fP/uioIuwgQTEcZ58L5VrPWYdpywsW?=
- =?us-ascii?Q?0hKkzJuqjMJink5SXoBgSUGFNE5+k7LIam1HPbYRop161ajpl5+RdD80wT7A?=
- =?us-ascii?Q?+tDRlHcBgw=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ 2022 09:40:33 +0000
+Received: from DM6NAM11FT014.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:177:cafe::2) by DM6PR02CA0053.outlook.office365.com
+ (2603:10b6:5:177::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14 via Frontend
+ Transport; Mon, 2 May 2022 09:40:33 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.236) by
+ DM6NAM11FT014.mail.protection.outlook.com (10.13.173.132) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5206.12 via Frontend Transport; Mon, 2 May 2022 09:40:33 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL109.nvidia.com
+ (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Mon, 2 May
+ 2022 09:40:33 +0000
+Received: from yaviefel (10.126.230.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 2 May 2022
+ 02:40:31 -0700
+References: <cover.1650615982.git.petrm@nvidia.com>
+ <c361fce0960093e31aabbc0b45bb0c870896339e.1650615982.git.petrm@nvidia.com>
+ <Ym6ek66a6kMH3ZEu@shredder>
+User-agent: mu4e 1.6.6; emacs 27.2
+From:   Petr Machata <petrm@nvidia.com>
+To:     Ido Schimmel <idosch@idosch.org>
+CC:     Petr Machata <petrm@nvidia.com>, <netdev@vger.kernel.org>,
+        David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        "Ido Schimmel" <idosch@nvidia.com>
+Subject: Re: [PATCH iproute2-next 06/11] ipstats: Add a group "link"
+Date:   Mon, 2 May 2022 11:37:32 +0200
+In-Reply-To: <Ym6ek66a6kMH3ZEu@shredder>
+Message-ID: <875ymop90z.fsf@nvidia.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3367.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9674d0f4-0b65-4918-6ed8-08da2c1e522e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 May 2022 09:29:56.5137
+Content-Type: text/plain
+X-Originating-IP: [10.126.230.35]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 698946fd-268d-4101-7f11-08da2c1fce0f
+X-MS-TrafficTypeDiagnostic: DM5PR12MB1289:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR12MB128949ACE3807F8773975F67D6C19@DM5PR12MB1289.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: CalVYuCsFlIWQ4fTgyAn+JcQFiTeyL8WBcLqOL+3rupo00M9C5iMLXYpie86IWbjN4HnzWHXEFluIQzq+EyovC9qUYrDA0Uf7SGYDTjHMGNaObkMv3JqQyi+CqCeRrmEcO8nawHq9Z1zjaF5+XHYWPsp0GQT9SKpoCverbHxa6aRUwG+YMLXDZkkGEDPZVQR3ZgIxKz/GCSzJHFxrsVGlHoOhrfiDI+p2a0IpP/2qC6muUEOpaxSiTsbKV3WKCf38x8U/XOTp5ci/MMTeUGemFqkwOJRzIoFFU9Yx6R0cMFXm5l/kZoqkd6q1hk+Yk4mJkchrv2562mCpn9wjL2h/ogZTiZpdTh5I/qGgdVOlIQZ2T2cG+qxq/gkEcuqntbjSMxowZIVkIqkfB2bKLkqoLBxyjpqfIq8H8OIudF9GdDtHrLbD5D0oH+bAp4AhsvB+WVSrtK4UcncBB/KmVH5T/znZ9BesluT5Qe0IyiEBkoZOhtruoaRqqLHOD8RStws8juZVPEe+kNKJIvlWyUkR0Ro84NnP9Xlr5Z/rnjxL2P6FJkHjbMiUuzjdK+f82mUcTpWJO5Z09Mhhwv8AokIgOtz/DDvLFCafkhL+/U8CZyJE0z0vpnHH79+VXr7JnSwUw9ce1/zwGiXy9Amc2FsgJjbZiT1BFT/GWhIJCy4FzEPM+FM6Bs9eBfAFRDGNn87wPX+JaskErPFOgKJBbnWLoXYI2XCnhqUVJzFExGVjtZ1zIhycWiL+8inOL+rt+CXsMaX7mGin36WvG9yNkPUH4o4y92DnaNmZ6WajxGk/q5h8IBY84kvVaQgji8zE1fWdytsgmKEFzVfzQs4cLs66w==
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(4326008)(8676002)(47076005)(2906002)(86362001)(70586007)(36756003)(70206006)(82310400005)(8936002)(316002)(356005)(81166007)(6916009)(40460700003)(5660300002)(26005)(426003)(36860700001)(508600001)(966005)(2616005)(54906003)(336012)(16526019)(186003)(107886003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2022 09:40:33.7826
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 9RQB3CrIRsAlkIqmnxr97TCa58okxHF6Ivw/pJCAEfs6DdxghOS0Lk2yHBg3Bm2Yp/dQocAiVXKW2AmiggtwWQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB1746
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-Network-Message-Id: 698946fd-268d-4101-7f11-08da2c1fce0f
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT014.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1289
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -160,46 +107,41 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+Ido Schimmel <idosch@idosch.org> writes:
 
-> -----Original Message-----
-> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
-> Ira Weiny
-> Sent: Thursday, April 21, 2022 11:19 PM
-> To: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-> Cc: outreachy@lists.linux.dev; intel-wired-lan@lists.osuosl.org; linux-
-> kernel@vger.kernel.org; netdev@vger.kernel.org; kuba@kernel.org;
-> pabeni@redhat.com; davem@davemloft.net
-> Subject: Re: [Intel-wired-lan] [PATCH v5] igb: Convert kmap() to
-> kmap_local_page()
->=20
-> On Wed, Apr 20, 2022 at 01:43:13AM +0200, Alaa Mohamed wrote:
-> > kmap() is being deprecated and these usages are all local to the
-> > thread so there is no reason kmap_local_page() can't be used.
-> >
-> > Replace kmap() calls with kmap_local_page().
-> >
-> > Signed-off-by: Alaa Mohamed
-> <eng.alaamohamedsoliman.am@gmail.com>
->=20
-> Reviewed-by: Ira Weiny <ira.weiny@intel.com>
->=20
-> > ---
-> > changes in V2:
-> > 	fix kunmap_local path value to take address of the mapped page.
-> > ---
-> > changes in V3:
-> > 	edit commit message to be clearer
-> > ---
-> > changes in V4:
-> > 	edit the commit message
-> > ---
-> > changes in V5:
-> > 	-edit commit subject
-> > 	-edit commit message
-> > ---
-> >  drivers/net/ethernet/intel/igb/igb_ethtool.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> >
+> When I tested this on 5.15 / 5.16 everything was fine, but now I get:
+>
+> $ ip stats show dev lo group link
+> 1: lo: group link
+> Error: attribute payload too short
+>
+> Payload on 5.16:
+>
+> recvmsg(3, {msg_name={sa_family=AF_NETLINK, nl_pid=0, nl_groups=00000000}, msg_namelen=12, msg_iov=[{iov_base=[{nlmsg_len=224, nlmsg_type=RTM_NEWSTATS, nlmsg_flags=0, nlmsg_seq=1651407379, nlmsg_pid=330213}, {family=AF_UNSPEC, ifindex=if_nametoindex("lo"), filter_mask=1<<IFLA_STATS_UNSPEC}, [{nla_len=196, nla_type=IFLA_STATS_LINK_64}, {rx_packets=321113, tx_packets=321113, rx_bytes=322735996, tx_bytes=322735996, rx_errors=0, tx_errors=0, rx_dropped=0, tx_dropped=0, multicast=0, collisions=0, rx_length_errors=0, rx_over_errors=0, rx_crc_errors=0, rx_frame_errors=0, rx_fifo_errors=0, rx_missed_errors=0, tx_aborted_errors=0, tx_carrier_errors=0, tx_fifo_errors=0, tx_heartbeat_errors=0, tx_window_errors=0, rx_compressed=0, tx_compressed=0, rx_nohandler=0}]], iov_len=32768}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, 0) = 224
+> 1: lo: group link
+> Error: attribute payload too short+++ exited with 22 +++
+>
+> Payload on net-next:
+>
+> recvmsg(3, {msg_name={sa_family=AF_NETLINK, nl_pid=0, nl_groups=00000000}, msg_namelen=12, msg_iov=[{iov_base=[{nlmsg_len=232, nlmsg_type=RTM_NEWSTATS, nlmsg_flags=0, nlmsg_seq=1651407411, nlmsg_pid=198}, {family=AF_UNSPEC, ifindex=if_nametoindex("lo"), filter_mask=1<<IFLA_STATS_UNSPEC}, [{nla_len=204, nla_type=IFLA_STATS_LINK_64}, {rx_packets=0, tx_packets=0, rx_bytes=0, tx_bytes=0, rx_errors=0, tx_errors=0, rx_dropped=0, tx_dropped=0, multicast=0, collisions=0, rx_length_errors=0, rx_over_errors=0, rx_crc_errors=0, rx_frame_errors=0, rx_fifo_errors=0, rx_missed_errors=0, tx_aborted_errors=0, tx_carrier_errors=0, tx_fifo_errors=0, tx_heartbeat_errors=0, tx_window_errors=0, rx_compressed=0, tx_compressed=0, rx_nohandler=0}]], iov_len=32768}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, 0) = 232
+> 1: lo: group link
+>     RX:  bytes packets errors dropped  missed   mcast           
+>              0       0      0       0       0       0 
+>     TX:  bytes packets errors dropped carrier collsns           
+>              0       0      0       0       0       0 
+> +++ exited with 0 +++
+>
+> Note the difference in size of IFLA_STATS_LINK_64 which carries struct
+> rtnl_link_stats64: 196 bytes vs. 204 bytes
+>
+> The 8 byte difference is most likely from the addition of
+> rx_otherhost_dropped at the end:
+>
+> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=794c24e9921f32ded4422833a990ccf11dc3c00e
+>
+> I guess it worked for me because I didn't have this member in my copy of
+> the uAPI file, but it's now in iproute2-next:
+>
+> https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=bba95837524d09ee2f0efdf6350b83a985f4b2f8
 
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Int=
-el)
+Thanks, I'll send a fix.
