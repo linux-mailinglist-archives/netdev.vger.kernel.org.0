@@ -2,48 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BBDD5178A1
-	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 22:53:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70DD751789F
+	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 22:53:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387526AbiEBU4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 May 2022 16:56:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43236 "EHLO
+        id S1387529AbiEBU4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 May 2022 16:56:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387507AbiEBU4O (ORCPT
+        with ESMTP id S1387453AbiEBU4O (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 16:56:14 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46B5E6586
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A545658B
         for <netdev@vger.kernel.org>; Mon,  2 May 2022 13:52:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1651524765; x=1683060765;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=StQnr+iQV4akj6hXPJMGV6Aj3OnOzSts05MrHXp935A=;
-  b=Cm5tJQRDD6qplLHBQaNVvd4VXWFQWpzQq1Ax+PxwKaO2KkwaD29KRayD
-   fNmSagSBQxC9QhVu1PgwFXrHB1w3EO1EhobocUegv+jSFYqDFMSsOwvfh
-   /voHcqHl0gtgmszEOV9Oym+5u0dFk4pc6Agby7SNovMJ12TN2jifEVVsP
-   DFvkdiS9k181IB6CdHMiy7XrJYsDXA5xh351Et03WisjqqiInHvNNGjab
-   aydzUdSxh3GscZ0+4LuV9l8/LHFykH4Jj0miyR0yF5JST0oYDW7NxsSOd
-   IztH7tXqMPMyRviJ6NhieB5wiglyxqOhDITFO7qCQroHKkVZBzHyb5VHS
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="353761112"
+  bh=g98A4rA20yFt0BaxgDASs6GlXnYlxTSYaWEzwtMEDEk=;
+  b=LR5bSFbtdOIP34untzRzwuHRKwPsSDzAiguOuCEjCudcDLoxKFQpffe0
+   F4egxvGXkqtf9ErWBxeynFJVje9gOSFqGhal0WxBjOlsaIXeihgLgEZDx
+   d5Xo6PE9mPlZhhYJob9bEox0kTePqZjGePIf5krVUWrDvbCIJX9v3r3gH
+   mf9e71mX9eIIho+T4PSnJA6FWh5CXrb4iEbXutXzon5v3az2/h+n3MIFN
+   I4c8ykOGkMsJOvc5fIKQVRyvjFsUhbDgpRhQmmsmHuq9jx4MX/RZjfWES
+   HmIjPCSW67mwz29ic8S+oeO+k/7t204yKWQTLqFgirt4Z5O+SGeUn2NsC
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="353761113"
 X-IronPort-AV: E=Sophos;i="5.91,193,1647327600"; 
-   d="scan'208";a="353761112"
+   d="scan'208";a="353761113"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 13:52:43 -0700
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 13:52:44 -0700
 X-IronPort-AV: E=Sophos;i="5.91,193,1647327600"; 
-   d="scan'208";a="733619569"
+   d="scan'208";a="733619574"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.212.141.55])
   by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 13:52:43 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        matthieu.baerts@tessares.net, mptcp@lists.linux.dev
-Subject: [PATCH net-next 2/7] selftests: mptcp: ADD_ADDR echo test with missing userspace daemon
-Date:   Mon,  2 May 2022 13:52:32 -0700
-Message-Id: <20220502205237.129297-3-mathew.j.martineau@linux.intel.com>
+Cc:     Kishen Maloor <kishen.maloor@intel.com>, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 3/7] mptcp: store remote id from MP_JOIN SYN/ACK in local ctx
+Date:   Mon,  2 May 2022 13:52:33 -0700
+Message-Id: <20220502205237.129297-4-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220502205237.129297-1-mathew.j.martineau@linux.intel.com>
 References: <20220502205237.129297-1-mathew.j.martineau@linux.intel.com>
@@ -59,40 +60,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Check userspace PM behavior to ensure ADD_ADDR echoes are only sent when
-there is an active userspace daemon. If the daemon is restarting or
-hasn't loaded yet, the missing echo will cause the peer to retransmit
-the ADD_ADDR - and hopefully the daemon will be ready to receive it at
-that later time.
+From: Kishen Maloor <kishen.maloor@intel.com>
 
-Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+This change reads the addr id assigned to the remote endpoint
+of a subflow from the MP_JOIN SYN/ACK message and stores it
+in the related subflow context. The remote id was not being
+captured prior to this change, and will now provide a consistent
+view of remote endpoints and their ids as seen through netlink
+events.
+
+Acked-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Kishen Maloor <kishen.maloor@intel.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- tools/testing/selftests/net/mptcp/mptcp_join.sh | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ net/mptcp/subflow.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-index b27854f976f7..d1de1e7702fb 100755
---- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
-+++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-@@ -2719,6 +2719,17 @@ userspace_tests()
- 		chk_add_nr 0 0
- 	fi
- 
-+	# userspace pm type does not echo add_addr without daemon
-+	if reset "userspace pm no echo w/o daemon"; then
-+		set_userspace_pm $ns2
-+		pm_nl_set_limits $ns1 0 2
-+		pm_nl_set_limits $ns2 0 2
-+		pm_nl_add_endpoint $ns1 10.0.2.1 flags signal
-+		run_tests $ns1 $ns2 10.0.1.1
-+		chk_join_nr 0 0 0
-+		chk_add_nr 1 0
-+	fi
-+
- 	# userspace pm type rejects join
- 	if reset "userspace pm type rejects join"; then
- 		set_userspace_pm $ns1
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index 9567231a4bfa..a0e7af33fb26 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -443,6 +443,7 @@ static void subflow_finish_connect(struct sock *sk, const struct sk_buff *skb)
+ 		subflow->backup = mp_opt.backup;
+ 		subflow->thmac = mp_opt.thmac;
+ 		subflow->remote_nonce = mp_opt.nonce;
++		subflow->remote_id = mp_opt.join_id;
+ 		pr_debug("subflow=%p, thmac=%llu, remote_nonce=%u backup=%d",
+ 			 subflow, subflow->thmac, subflow->remote_nonce,
+ 			 subflow->backup);
 -- 
 2.36.0
 
