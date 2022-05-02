@@ -2,74 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 77FDF516A9F
-	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 08:03:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91F94516AC8
+	for <lists+netdev@lfdr.de>; Mon,  2 May 2022 08:11:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231432AbiEBGGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 May 2022 02:06:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40648 "EHLO
+        id S1349750AbiEBGPR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 May 2022 02:15:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383411AbiEBGGX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 02:06:23 -0400
-Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6473747ADE
-        for <netdev@vger.kernel.org>; Sun,  1 May 2022 23:02:55 -0700 (PDT)
-Received: by mail-ot1-x334.google.com with SMTP id y14-20020a9d460e000000b00605ee347da1so6599799ote.8
-        for <netdev@vger.kernel.org>; Sun, 01 May 2022 23:02:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=K4EH4yTl2Li4cRUJ9RCe0Gd6AqFtxwTiHPJAGBrJGWI=;
-        b=J1TZy1PnFQjfIpJet4PEYddPCcpvkmRwfvqYp1PmgMBpy4y07ESx1OXpn0ce8kPdUE
-         AvD6QsGn135O7Pb0njRDl+Tbp7r5vPvuNCJYpXHzbuw4nzfhwfheVcCoIeFGr1jWOr1u
-         EJNiPjGPSxAV8TsSNQH9sMCNJ/ASv5l6zf1zNODUwlAekmMhjnhzWQJPRsCkgrRUFWLu
-         yCMmBlg2pNWRI93ZU2S7Q53+B1EPwl8lVp4rWd4655y1YBZ4cf6RkGFqEWqhZPpWexEX
-         yMqN6Ts8nN0AVWeGxtiglaakT7ZDA3GzR9hWrYxs/EQhC9UsvGQATKDPbXLB0rwZ1niu
-         lALQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=K4EH4yTl2Li4cRUJ9RCe0Gd6AqFtxwTiHPJAGBrJGWI=;
-        b=8ET48n/SQXSVxK97NyyHCeAM69caoy8ajmazJYiTUCtBohnPySok2bNuAjKVUU8CEi
-         j6St2iaYfXudjJzt5SZR5h8mx9Iko/l74lwXW2UBDq1IH1pifQNb7G0xE2iMMKIDS5DZ
-         pgHfUfzZuEU/2VpaeP+TYmjGMFzJOSua4ecEBVYFwBR6apH+Opf+3bxUJJ2IWqa7TTt+
-         oLy6seCf4TD+e7Q1nGYKeS81blEsIFPdDr10JUvXvEmp0Eb95h4OVMRCvIVpS8vQO1ya
-         7Trt2obXl+/xB++Cyfm8/2slBFmJWkk2Uf+U8t7b8kTx3gboboCTnMQQd9coajqmxYh/
-         07+g==
-X-Gm-Message-State: AOAM5311Pd9I8gu0xikawkfuAM99xzPhMwy6F7yk9fPJMQ7gYbuUealP
-        zTE5NW4ZApi3d6JxIivUmf280Mcks/sXyJxwDBg=
-X-Google-Smtp-Source: ABdhPJzi33tYcmPShB2t9QRKAiDrfXXO8uDzwd6aKjqIZVfKw57yoTIvTIhtoIrsnyhpBtIbCzeo4q2qgaAJJH5oFx0=
-X-Received: by 2002:a9d:58c3:0:b0:5e6:d8f7:c18c with SMTP id
- s3-20020a9d58c3000000b005e6d8f7c18cmr3694034oth.364.1651471374752; Sun, 01
- May 2022 23:02:54 -0700 (PDT)
+        with ESMTP id S234943AbiEBGPQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 02:15:16 -0400
+Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B43186E1;
+        Sun,  1 May 2022 23:11:47 -0700 (PDT)
+Received: from fsav120.sakura.ne.jp (fsav120.sakura.ne.jp [27.133.134.247])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 2426AuKX097578;
+        Mon, 2 May 2022 15:10:56 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav120.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav120.sakura.ne.jp);
+ Mon, 02 May 2022 15:10:56 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav120.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 2426At4s097573
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Mon, 2 May 2022 15:10:55 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Message-ID: <5fd22dda-01d6-cfae-3458-cb3fa23eb84d@I-love.SAKURA.ne.jp>
+Date:   Mon, 2 May 2022 15:10:50 +0900
 MIME-Version: 1.0
-Sender: gilgracelove@gmail.com
-Received: by 2002:a05:6830:3103:0:0:0:0 with HTTP; Sun, 1 May 2022 23:02:54
- -0700 (PDT)
-From:   Tete Duago <teteduago@gmail.com>
-Date:   Sun, 1 May 2022 23:02:54 -0700
-X-Google-Sender-Auth: KC-BAHvBSazlNnj4xkg1FBDSDp4
-Message-ID: <CAP52+OSHp2H1RLrfMtZUsKdjzvYSmx0Nnaeit8=n0jA78drq8w@mail.gmail.com>
-Subject: w
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=4.1 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,HK_SCAM,
-        LOTS_OF_MONEY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNDISC_MONEY autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Level: ****
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v3 1/2] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
+Content-Language: en-US
+To:     Pavel Skripkin <paskripkin@gmail.com>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@toke.dk>,
+        ath9k-devel@qca.qualcomm.com, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, linville@tuxdriver.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+03110230a11411024147@syzkaller.appspotmail.com,
+        syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
+References: <80962aae265995d1cdb724f5362c556d494c7566.1644265120.git.paskripkin@gmail.com>
+ <87h799a007.fsf@toke.dk> <6f0615da-aa0b-df8e-589c-f5caf09d3449@gmail.com>
+From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+In-Reply-To: <6f0615da-aa0b-df8e-589c-f5caf09d3449@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello please contact me for more information on the transfer of
-($8.6M) left by my late client. I want to present you as a business
-partner and next of kin of the fund. I will give you the details of
-this transaction as soon as I hear from you.
+On 2022/02/09 0:48, Pavel Skripkin wrote:
+>> ath9k_htc_suspend()
+>> ath9k_htc_resume()
+>> ath9k_hif_usb_disconnect()
+>>
+>> What guarantees that none of these will be called midway through
+>> ath9k_htc_probe_device() (which would lead to a NULL deref after this
+>> change)?
+>>
+> 
+> IIUC, situation you are talking about may happen even without my change.
+> I was thinking, that ath9k_htc_probe_device() is the real ->probe() function, but things look a bit more tricky.
+> 
+> 
+> So, the ->probe() function may be completed before ath9k_htc_probe_device()
+> is called, because it's called from fw loader callback function.
 
-Best Regards,
-Tete Duago.
+Yes, ath9k_hif_usb_probe() may return before complete_all(&hif_dev->fw_done)
+is called by ath9k_hif_usb_firmware_cb() or ath9k_hif_usb_firmware_fail().
+
+> If ->probe() is completed, than we can call ->suspend(), ->resume() and
+> others usb callbacks, right?
+
+Yes, but ath9k_hif_usb_disconnect() and ath9k_hif_usb_suspend() are calling
+wait_for_completion(&hif_dev->fw_done) before checking HIF_USB_READY flag.
+hif_dev->fw_done serves for serialization.
+
+> And we can meet NULL defer even if we leave drv_priv = priv initialization
+> on it's place.
+
+I didn't catch the location. As long as "htc_handle->drv_priv = priv;" is done
+before complete_all(&hif_dev->fw_done) is done, is something wrong?
+
+> 
+> Please, correct me if I am wrong somewhere :)
