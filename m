@@ -2,138 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 52E58519078
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 23:51:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79CAE5190B8
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 23:51:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243066AbiECVq5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 17:46:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57756 "EHLO
+        id S242204AbiECVsF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 17:48:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230079AbiECVq5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 17:46:57 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 488AB2B1B8
-        for <netdev@vger.kernel.org>; Tue,  3 May 2022 14:43:23 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id e2so25014062wrh.7
-        for <netdev@vger.kernel.org>; Tue, 03 May 2022 14:43:23 -0700 (PDT)
+        with ESMTP id S238169AbiECVsE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 17:48:04 -0400
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE03E2DD49
+        for <netdev@vger.kernel.org>; Tue,  3 May 2022 14:44:30 -0700 (PDT)
+Received: by mail-qk1-x72a.google.com with SMTP id a22so11736484qkl.5
+        for <netdev@vger.kernel.org>; Tue, 03 May 2022 14:44:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=message-id:date:mime-version:user-agent:reply-to:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=uy5Fap5RR/WBKFIkuBoAooqirYv43B4rsOc7Wy6ONxo=;
-        b=FwhHFbHH7CeB5CqxLA3bblkThOeyd9b+Oz4OxpRzpnCL36rp2yVff4gUv430blZdUK
-         meKx7UGEq7F/638J9PUYfGYXbYvbj4REBXX4saK+ZcBWeeK/M4hXn90YFaFYQZhxNBb+
-         M7DBtMBl58ibxtSUC/zIaX8ZYfJ4XSqzJd0lQRHENpLF3juW14+FNI2WTKe59abH8x2E
-         0DeukS7xuJky3hhRI28yA4prP3u+Ud6QgoN8eiKAGXbwLSxkhGcWH7pHcYbgZwQ4ntnS
-         3TpHgl09zPwA6gOOi4fKiqSDyWudB91MnM9PNME8r4NUvJKyJ7qeIaejS1H1oyf7uEgi
-         Djjw==
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ggM6Tr17bza2NldnnZ+b75hkn7TB+UqlGcKv2f0eQfM=;
+        b=i9dIr15VbbnLcQiaqCqcrTuBIStlh0xsWDP3RqI+hrNmCgfMxL5BOgkBj/LfqfAoCl
+         Qh4McT/tWOM+7MIUmga0Sjxx5QBsc3IU5LUKj2PALbvnbaTab/Se8Ibovg9Tjw/1P+qJ
+         itpckWffDpx59OCAa0Z8t7lUECYpdY56COEXytyfgAoC5S5k6hc0187gdsrqml0zY6v5
+         eHHIvjxQSU9sTwZ5F/wyjoJgfAeaJ7ee2yYVNwpGEOjVRDr1OHgEGFqCRketq0g6uuzd
+         3aMAHfGc4ZXAkVB90jSiFrgo2lvLhfhVsh0EdVfHHulqcrjIj863L2X5oFNHBrrWb97P
+         wZOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:reply-to
-         :subject:content-language:to:cc:references:from:organization
-         :in-reply-to:content-transfer-encoding;
-        bh=uy5Fap5RR/WBKFIkuBoAooqirYv43B4rsOc7Wy6ONxo=;
-        b=JfmYmiKa2zRUG3gN9w+z1kEYW0AI9vwm2fuXNG6ONaHT4YPH0il7iXwBeVPH1/JH0B
-         CADwlP4fe5HJHePnXC5kWhL+9I/14EL8/6btGrTQTobtdCNlSa8LKRAHeTWl86qj6ph0
-         PkF09FHlmJTy/HDtOZ2Lm4uJ5gzSeKhBvmGkPOhDdmTtcTL17c1ZP7wnXrXtet1m3ETm
-         4/7irXmbHNvDXXDARCzso2Xgi3OZ82+AzalWKGtxU0V9vNu59v6rgWF2mgK/ibkpptwK
-         jahkzlnibjpP09GDNQNOqCU3RgwNe7vxKRziLaD/vLlL3pPn/ZDhKxcYMo1nb96LMQPS
-         +guw==
-X-Gm-Message-State: AOAM532tPl6kpknEC4+JQXeF6GFgL5uHJEJkDy1Z0S7KdFyDa52j2keT
-        aTE21W3+z/8umgwEkGH9S/hdvw==
-X-Google-Smtp-Source: ABdhPJw5h1HjZ97You/3QSKl8KV/2f6gAxaDhOWZXi3Gr/syDFy2JPR69V8btFcDNn1ftkWX9ox9yg==
-X-Received: by 2002:adf:f8cf:0:b0:20a:dfae:aadd with SMTP id f15-20020adff8cf000000b0020adfaeaaddmr14323214wrq.429.1651614201673;
-        Tue, 03 May 2022 14:43:21 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:b41:c160:6419:6a6e:706d:bb0d? ([2a01:e0a:b41:c160:6419:6a6e:706d:bb0d])
-        by smtp.gmail.com with ESMTPSA id f11-20020adfc98b000000b0020c5253d910sm10972495wrh.92.2022.05.03.14.43.20
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ggM6Tr17bza2NldnnZ+b75hkn7TB+UqlGcKv2f0eQfM=;
+        b=U9o5AJ4XZ0SGgtmuXPyVet3wjMPJxdrGM/tLDi+QLDrNgGjUZXvKAfVHGXHbSVmoqD
+         gxCkCO1YpHKTQbwCDSxLwUXTw5FcD8eWQoFgoiZMkgEbRpivBzlVZy7ODsrlgdZ1sVa4
+         /ZqpdNYTCA7SX8IYJVFkB4LXxV+7bEWdbVQBTyc/Y2+VCr5DzDUCPAjwqvcWPGppMhoH
+         9n7K0IDvWZ5B/SBks546Iq6nkaSDAg1qoQy/IDj1qiZSONnWTNw3xyTzAJzlAUIW6Qj+
+         UKKpJZqsyx4PyYigLJHBpQMxer/JVFlgkuvANjUyuWyMIaO3+/RYBAv5hrEuO7x4tHTR
+         Gtkg==
+X-Gm-Message-State: AOAM531X3CcBY+BkL41W8NJkxEvACKGX3XbZ/Jjp7RF1jSAIgy2vphdC
+        wOAouN8xX0i6El9KOA/xMs/T3Q==
+X-Google-Smtp-Source: ABdhPJyzrQYwg5JlR6N7u6Q3xhZsMO9/NIkhfl4wFxDpZPB9lhU1Elp9kc25Wegt7pNGR3UVY4JMFA==
+X-Received: by 2002:a05:620a:294d:b0:69f:d37e:dca5 with SMTP id n13-20020a05620a294d00b0069fd37edca5mr9899323qkp.321.1651614269949;
+        Tue, 03 May 2022 14:44:29 -0700 (PDT)
+Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-27-184-148-44-6.dsl.bell.ca. [184.148.44.6])
+        by smtp.googlemail.com with ESMTPSA id 18-20020a370a12000000b0069fc13ce1f7sm6705584qkk.40.2022.05.03.14.44.28
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 May 2022 14:43:20 -0700 (PDT)
-Message-ID: <86fce02b-7485-ebfa-b4ba-da9ebf7a11b7@6wind.com>
-Date:   Tue, 3 May 2022 23:43:20 +0200
+        Tue, 03 May 2022 14:44:29 -0700 (PDT)
+Message-ID: <e4488ef0-82f7-a5b0-4537-ef5b3dfb503b@mojatatu.com>
+Date:   Tue, 3 May 2022 17:44:28 -0400
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH net v2] ping: fix address binding wrt vrf
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net-next 01/11] ice: Add support for classid based queue
+ selection
 Content-Language: en-US
-To:     David Ahern <dsahern@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     netdev@vger.kernel.org, stable@vger.kernel.org
-References: <20220429075659.9967-1-nicolas.dichtel@6wind.com>
- <20220429082021.10294-1-nicolas.dichtel@6wind.com>
- <1238b102-f491-a917-3708-0df344015a5b@kernel.org>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-In-Reply-To: <1238b102-f491-a917-3708-0df344015a5b@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "Nambiar, Amritha" <amritha.nambiar@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Mogilappagari, Sudheer" <sudheer.mogilappagari@intel.com>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
+        "Sreenivas, Bharathi" <bharathi.sreenivas@intel.com>
+References: <20220428172430.1004528-1-anthony.l.nguyen@intel.com>
+ <20220428172430.1004528-2-anthony.l.nguyen@intel.com>
+ <20220428160414.28990a0c@kernel.org>
+ <MWHPR11MB1293C17C30E689270E0C39AAF1FC9@MWHPR11MB1293.namprd11.prod.outlook.com>
+ <20220429171717.5b0b2a81@kernel.org>
+ <MWHPR11MB129308C755FAB7B4EA1F8DDCF1FF9@MWHPR11MB1293.namprd11.prod.outlook.com>
+ <20220429194207.3f17bf96@kernel.org>
+ <d3935370-b12c-e9db-1e59-52c8cceacf9a@mojatatu.com>
+ <20220503084732.363b89cc@kernel.org>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+In-Reply-To: <20220503084732.363b89cc@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 29/04/2022 à 16:31, David Ahern a écrit :
-> On 4/29/22 2:20 AM, Nicolas Dichtel wrote:
->> When ping_group_range is updated, 'ping' uses the DGRAM ICMP socket,
->> instead of an IP raw socket. In this case, 'ping' is unable to bind its
->> socket to a local address owned by a vrflite.
+On 2022-05-03 11:47, Jakub Kicinski wrote:
+> On Tue, 3 May 2022 06:32:01 -0400 Jamal Hadi Salim wrote:
+>> I am on the fence of "six of one, half a dozen of the other" ;->
 >>
->> Before the patch:
->> $ sysctl -w net.ipv4.ping_group_range='0  2147483647'
->> $ ip link add blue type vrf table 10
->> $ ip link add foo type dummy
->> $ ip link set foo master blue
->> $ ip link set foo up
->> $ ip addr add 192.168.1.1/24 dev foo
->> $ ip vrf exec blue ping -c1 -I 192.168.1.1 192.168.1.2
->> ping: bind: Cannot assign requested address
+>> TC classids have *always been used to identify queues* (or hierarchy of
+>> but always leading to a single queue). Essentially a classid identity
+>> is equivalent to a built-in action which says which queue to pick.
+>> The data structure is very much engrained in the tc psyche.
 >>
->> CC: stable@vger.kernel.org
->> Fixes: 1b69c6d0ae90 ("net: Introduce L3 Master device abstraction")
->> Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
->> ---
+>> When TX side HW queues(IIRC, mqprio) showed up there was ambiguity to
+>> distinguish between a s/w queue vs a h/w queue hence queue_mapping
+>> which allows us to override the *HW TX queue* selection - or at least
+>> that was the intended goal.
+>> Note: There are other ways to tell the h/w what queues to use on TX
+>> (eg skb->priority) i.e there's no monopoly by queue_mapping.
 >>
->> v1 -> v2:
->>  add the tag "Cc: stable@vger.kernel.org" for correct stable submission
->>
->>  net/ipv4/ping.c | 4 +++-
->>  1 file changed, 3 insertions(+), 1 deletion(-)
->>
+>> Given lack of s/w queues on RX (hence lack of ambiguity) it seemed
+>> natural that the classid could be used to describe the RX queue
+>> identity for offload, it's just there.
+>> I thought it was brilliant when Amritha first posted.
 > 
-> please add a test case to fcnal-test.sh. Does ipv6 work ok?
-Indeed, ipv6 is missing.
+> Is it just me or is TC generally considered highly confusing?
 
-I will add some test cases.
-Modifying the sysctl before the vrf tests produce a lot of failures:
+Hopefully we can discuss what is confusing (otherwise this becomes the
+internet troll discussion of "tc sucks").
+The fact that folks find ways to use s/w in an unintended ways is
+not unique to tc. The architecture is clean.
 
-With VRF
+> IMO using a qdisc cls construct in clsact is only going to add
+> to that.
+> 
+> Assigning classid can still be meaningful on ingress in case
+> of a switch where there are actual qdiscs offloaded.
+> 
+>> I think we should pick the simpler of "half-dozen or six".
+>> The posted patch seems driver-only change i.e no core code
+>> changes required (which other vendors could follow).
+>> But i am not sure if that defines "simpler".
+> 
+> No core changes is not an argument we should take seriously upstream.
+>
 
-SYSCTL: net.ipv4.raw_l3mdev_accept=1
+I am afraid, that sounds like a blanket statement though.
+It should be taken seriously if it helps maintainability
+but like i said i wasnt sure having not seen the alternative.
 
-SYSCTL: net.ipv4.ping_group_range=0 2147483647
+>> BTW:
+>> Didnt follow the skb_record_rx_queue() thought - isnt that
+>> always set by the driver based on which h/w queue the packet
+>> arrived at? Whereas the semantics of this is to tell the h/w
+>> what queue to use.
+> 
+> Overriding the queue mapping in the SW could still be useful
+> if TC wants to override the actual queue ID assigned by the NIC.
+> 
+> This way whether the action gets offloaded or not the resulting
+> skb will have the same metadata (in case of offload because it
+> came on the right queue and the driver set the mapping, in case
+> of sw because we overwrote the mapping).
 
-TEST: ping out, VRF bind - ns-B IP                                        [ OK ]
-TEST: ping out, device bind - ns-B IP                                     [FAIL]
-TEST: ping out, vrf device + dev address bind - ns-B IP                   [FAIL]
-TEST: ping out, vrf device + dev address bind - ns-B IP                   [FAIL]
-TEST: ping out, vrf device + vrf address bind - ns-B IP                   [FAIL]
-TEST: ping out, VRF bind - ns-B loopback IP                               [ OK ]
-TEST: ping out, device bind - ns-B loopback IP                            [FAIL]
-TEST: ping out, vrf device + dev address bind - ns-B loopback IP          [FAIL]
-TEST: ping out, vrf device + dev address bind - ns-B loopback IP          [FAIL]
-TEST: ping out, vrf device + vrf address bind - ns-B loopback IP          [FAIL]
+IIUC, you are suggesting that using the same semantics for ingress and
+egress is more intuitive - and that is a fair arguement.
+Hope you understand my view when I said it was half a dozen or six
+given we have multiple approaches today on egress that signal the
+hardware what queue to use (and classid's intent is/was to
+select a queue).
 
-
-Regards,
-Nicolas
-
-
+cheers,
+jamal
