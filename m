@@ -2,234 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 997E9518D72
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 21:49:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B9EB518E70
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 22:12:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234917AbiECTxW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 15:53:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47122 "EHLO
+        id S242507AbiECUP6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 16:15:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232984AbiECTxU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 15:53:20 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 399BE3F88A;
-        Tue,  3 May 2022 12:49:46 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id AFC11210E4;
-        Tue,  3 May 2022 19:49:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1651607384; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9BjCsNyhWrFhajIPGqZcKtHERzRUauTrhIQt2R+1HS0=;
-        b=x74SWPj5lGZTVIeu5kHB7KOvBdLAMWOJ9MzTKPcraNvyAgog5Z4WGg6GX2drGe+BCv8FCO
-        1vJblvVsNI/sDjjECCl01lTBxW3uwzzDfnQYKxZ7BzvgWK8CsGqrqqVmfNMc3J8ugXBmRs
-        GKWEFHHOL78Muie3Rrq8KNenw+NBCE8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1651607384;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9BjCsNyhWrFhajIPGqZcKtHERzRUauTrhIQt2R+1HS0=;
-        b=aPs7YCK6PUz6/Zd1NZ4LV3QGTAKxYUSIaKi2rjAj7hT/4dOGfcpUqRxyjuCMzXpdKKirxI
-        u/pqrktMmBqyrzAQ==
-Received: from quack3.suse.cz (unknown [10.100.224.230])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id B656D2C145;
-        Tue,  3 May 2022 19:49:43 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id 57731A0629; Tue,  3 May 2022 21:49:43 +0200 (CEST)
-Date:   Tue, 3 May 2022 21:49:43 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     Guowei Du <duguoweisz@gmail.com>
-Cc:     jack@suse.cz, amir73il@gmail.com, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, viro@zeniv.linux.org.uk,
-        jmorris@namei.org, serge@hallyn.com, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, linux-security-module@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, paul@paul-moore.com,
-        stephen.smalley.work@gmail.com, eparis@parisplace.org,
-        keescook@chromium.org, anton@enomsg.org, ccross@android.com,
-        tony.luck@intel.com, selinux@vger.kernel.org,
-        duguowei <duguowei@xiaomi.com>
-Subject: Re: [PATCH] fsnotify: add generic perm check for unlink/rmdir
-Message-ID: <20220503194943.6bcmsxjvinfjrqxa@quack3.lan>
-References: <20220503183750.1977-1-duguoweisz@gmail.com>
+        with ESMTP id S242518AbiECUPn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 16:15:43 -0400
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D432A40E6F
+        for <netdev@vger.kernel.org>; Tue,  3 May 2022 13:10:55 -0700 (PDT)
+Received: by mail-qt1-x82d.google.com with SMTP id hf18so14439434qtb.0
+        for <netdev@vger.kernel.org>; Tue, 03 May 2022 13:10:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=1mYaYvNIZ0izntpEDGvK45tZbegQEZj2gmMuTxCoewk=;
+        b=dQUYLaGTGISBy7cFpa7kWZE6Ny/DEkMsQ//YDsZwPOOJV3biQw1n4rzLV7fm9HTEtM
+         ovXdFMjtFQ/EbltnsjGwZLUGjC+3iCB+DIFCybR/eRW5zeHRDNkD1aZMSf2ZYtTBt6tT
+         ZmGvusCT7gawthGe6yRVljR9PErOaspEwqN21BVHokyevAoOMfktAGPbpKi2lgQrNUqz
+         DUHuZOncIpiY3Lh1G5rtALpdNtq24vSSFrmj5h1pfEA1UYG/wd12KtaO4nIqQGLTeC8q
+         9ixR5IQqN5En+4SvX+2BFv/5SWu/IJC7+TMaOhkPQZPQDwCN0BW4sTGPSsrv/7+jNFPL
+         emuA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=1mYaYvNIZ0izntpEDGvK45tZbegQEZj2gmMuTxCoewk=;
+        b=WfMLdAS2SQn1JEaOUmhSaYp4mCXAlQuzbiVh/0KkTvuHZXzvaJyKK3uLQofSeg5nHx
+         lSAtjmzb5sMzovOeKq1OBN5p9B5ncArbrAemv68SeT+Ws+zNX4Qu7KgQyaB611Cw83FH
+         1XvInt5p5Pi2CA/srT+TqW0OaIgxUnPidN1kGyrX+tvJGZUDHVs0P2nC4hucTsjjNlIh
+         LdplGOltk+CIAHJa4pQ+fHC+sPLnMmJuStrMG2VHzVV9mnz4dOkPusu67P5ZJ/h5Tqid
+         mJyRGUMzfHovYNuKKf+N0Pb6VVj9HO0nrERMxEH/Zb7RpMslA1L7va9kSq7pVtcbo0Ro
+         NA8A==
+X-Gm-Message-State: AOAM531Q54SUS++dQQ7tj3UykuOIR3a5HiDpKSjxxJ8caDZkJcSKB2lS
+        b1lNzF9ipI7AQGcxCPBonVw99Q==
+X-Google-Smtp-Source: ABdhPJx6Bjf0PUVExGoUd/qBL/jgYVBd0AC6HZYxvYLrvcPnQekuplY1nsKhzsJfDa2bsqGe1clxIw==
+X-Received: by 2002:a05:622a:201:b0:2f3:a9a1:17dd with SMTP id b1-20020a05622a020100b002f3a9a117ddmr7775332qtx.226.1651608654398;
+        Tue, 03 May 2022 13:10:54 -0700 (PDT)
+Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-27-184-148-44-6.dsl.bell.ca. [184.148.44.6])
+        by smtp.googlemail.com with ESMTPSA id n68-20020a37a447000000b0069fc13ce1edsm6629285qke.30.2022.05.03.13.10.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 13:10:53 -0700 (PDT)
+Message-ID: <7e4682da-6ed6-17cf-8e5a-dff7925aef1d@mojatatu.com>
+Date:   Tue, 3 May 2022 16:10:52 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220503183750.1977-1-duguoweisz@gmail.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net] net/sched: act_pedit: really ensure the skb is
+ writable
+Content-Language: en-US
+To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>, Jiri Pirko <jiri@resnulli.us>
+References: <6c1230ee0f348230a833f92063ff2f5fbae58b94.1651584976.git.pabeni@redhat.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+In-Reply-To: <6c1230ee0f348230a833f92063ff2f5fbae58b94.1651584976.git.pabeni@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed 04-05-22 02:37:50, Guowei Du wrote:
-> From: duguowei <duguowei@xiaomi.com>
+What was the tc pedit command that triggered this?
+Can we add it to tdc tests?
+
+cheers,
+jamal
+
+On 2022-05-03 10:05, Paolo Abeni wrote:
+> Currently pedit tries to ensure that the accessed skb offset
+> is writeble via skb_unclone(). The action potentially allows
+> touching any skb bytes, so it may end-up modifying shared data.
 > 
-> For now, there have been open/access/open_exec perms for file operation,
-> so we add new perms check with unlink/rmdir syscall. if one app deletes
-> any file/dir within pubic area, fsnotify can sends fsnotify_event to
-> listener to deny that, even if the app have right dac/mac permissions.
+> The above causes some sporadic MPTCP self-test failures.
 > 
-> Signed-off-by: duguowei <duguowei@xiaomi.com>
-
-Before we go into technical details of implementation can you tell me more
-details about the usecase? Why do you need to check specifically for unlink
-/ delete?
-
-Also on the design side of things: Do you realize these permission events
-will not be usable together with other permission events like
-FAN_OPEN_PERM? Because these require notification group returning file
-descriptors while your events will return file handles... I guess we should
-somehow fix that.
-
-
-								Honza
+> Address the issue keeping track of a rough over-estimate highest skb
+> offset accessed by the action and ensure such offset is really
+> writable.
+> 
+> Note that this may cause performance regressions in some scenario,
+> but hopefully pedit is not critical path.
+> 
+> Fixes: db2c24175d14 ("act_pedit: access skb->data safely")
+> Acked-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+> Tested-by: Geliang Tang <geliang.tang@suse.com>
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 > ---
->  fs/notify/fsnotify.c             |  2 +-
->  include/linux/fs.h               |  2 ++
->  include/linux/fsnotify.h         | 16 ++++++++++++++++
->  include/linux/fsnotify_backend.h |  6 +++++-
->  security/security.c              | 12 ++++++++++--
->  security/selinux/hooks.c         |  4 ++++
->  6 files changed, 38 insertions(+), 4 deletions(-)
+> Note: AFAICS the issue is present since 1da177e4c3f4
+> ("Linux-2.6.12-rc2"), but before the "Fixes" commit this change
+> is irrelevant, because accessing any data out of the skb head
+> will cause an oops.
+> ---
+>   include/net/tc_act/tc_pedit.h |  1 +
+>   net/sched/act_pedit.c         | 23 +++++++++++++++++++++--
+>   2 files changed, 22 insertions(+), 2 deletions(-)
 > 
-> diff --git a/fs/notify/fsnotify.c b/fs/notify/fsnotify.c
-> index 70a8516b78bc..9c03a5f84be0 100644
-> --- a/fs/notify/fsnotify.c
-> +++ b/fs/notify/fsnotify.c
-> @@ -581,7 +581,7 @@ static __init int fsnotify_init(void)
->  {
->  	int ret;
->  
-> -	BUILD_BUG_ON(HWEIGHT32(ALL_FSNOTIFY_BITS) != 25);
-> +	BUILD_BUG_ON(HWEIGHT32(ALL_FSNOTIFY_BITS) != 27);
->  
->  	ret = init_srcu_struct(&fsnotify_mark_srcu);
->  	if (ret)
-> diff --git a/include/linux/fs.h b/include/linux/fs.h
-> index bbde95387a23..9c661584db7d 100644
-> --- a/include/linux/fs.h
-> +++ b/include/linux/fs.h
-> @@ -100,6 +100,8 @@ typedef int (dio_iodone_t)(struct kiocb *iocb, loff_t offset,
->  #define MAY_CHDIR		0x00000040
->  /* called from RCU mode, don't block */
->  #define MAY_NOT_BLOCK		0x00000080
-> +#define MAY_UNLINK		0x00000100
-> +#define MAY_RMDIR		0x00000200
->  
->  /*
->   * flags in file.f_mode.  Note that FMODE_READ and FMODE_WRITE must correspond
-> diff --git a/include/linux/fsnotify.h b/include/linux/fsnotify.h
-> index bb8467cd11ae..68f5d4aaf1ae 100644
-> --- a/include/linux/fsnotify.h
-> +++ b/include/linux/fsnotify.h
-> @@ -80,6 +80,22 @@ static inline int fsnotify_parent(struct dentry *dentry, __u32 mask,
->  	return fsnotify(mask, data, data_type, NULL, NULL, inode, 0);
->  }
->  
-> +static inline int fsnotify_path_perm(struct path *path, struct dentry *dentry, __u32 mask)
-> +{
-> +	__u32 fsnotify_mask = 0;
+> diff --git a/include/net/tc_act/tc_pedit.h b/include/net/tc_act/tc_pedit.h
+> index 748cf87a4d7e..3e02709a1df6 100644
+> --- a/include/net/tc_act/tc_pedit.h
+> +++ b/include/net/tc_act/tc_pedit.h
+> @@ -14,6 +14,7 @@ struct tcf_pedit {
+>   	struct tc_action	common;
+>   	unsigned char		tcfp_nkeys;
+>   	unsigned char		tcfp_flags;
+> +	u32			tcfp_off_max_hint;
+>   	struct tc_pedit_key	*tcfp_keys;
+>   	struct tcf_pedit_key_ex	*tcfp_keys_ex;
+>   };
+> diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
+> index 31fcd279c177..a8ab6c3f1ea2 100644
+> --- a/net/sched/act_pedit.c
+> +++ b/net/sched/act_pedit.c
+> @@ -149,7 +149,7 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
+>   	struct nlattr *pattr;
+>   	struct tcf_pedit *p;
+>   	int ret = 0, err;
+> -	int ksize;
+> +	int i, ksize;
+>   	u32 index;
+>   
+>   	if (!nla) {
+> @@ -228,6 +228,20 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
+>   		p->tcfp_nkeys = parm->nkeys;
+>   	}
+>   	memcpy(p->tcfp_keys, parm->keys, ksize);
+> +	p->tcfp_off_max_hint = 0;
+> +	for (i = 0; i < p->tcfp_nkeys; ++i) {
+> +		u32 cur = p->tcfp_keys[i].off;
 > +
-> +	if (!(mask & (MAY_UNLINK | MAY_RMDIR)))
-> +		return 0;
-> +
-> +	if (mask & MAY_UNLINK)
-> +		fsnotify_mask |= FS_UNLINK_PERM;
-> +
-> +	if (mask & MAY_RMDIR)
-> +		fsnotify_mask |= FS_RMDIR_PERM;
-> +
-> +	return fsnotify_parent(dentry, fsnotify_mask, path, FSNOTIFY_EVENT_PATH);
-> +}
-> +
->  /*
->   * Simple wrappers to consolidate calls to fsnotify_parent() when an event
->   * is on a file/dentry.
-> diff --git a/include/linux/fsnotify_backend.h b/include/linux/fsnotify_backend.h
-> index 0805b74cae44..0e2e240e8234 100644
-> --- a/include/linux/fsnotify_backend.h
-> +++ b/include/linux/fsnotify_backend.h
-> @@ -54,6 +54,8 @@
->  #define FS_OPEN_PERM		0x00010000	/* open event in an permission hook */
->  #define FS_ACCESS_PERM		0x00020000	/* access event in a permissions hook */
->  #define FS_OPEN_EXEC_PERM	0x00040000	/* open/exec event in a permission hook */
-> +#define FS_UNLINK_PERM		0x00080000	/* unlink event in a permission hook */
-> +#define FS_RMDIR_PERM		0x00100000	/* rmdir event in a permission hook */
->  
->  #define FS_EXCL_UNLINK		0x04000000	/* do not send events if object is unlinked */
->  /*
-> @@ -79,7 +81,9 @@
->  #define ALL_FSNOTIFY_DIRENT_EVENTS (FS_CREATE | FS_DELETE | FS_MOVE | FS_RENAME)
->  
->  #define ALL_FSNOTIFY_PERM_EVENTS (FS_OPEN_PERM | FS_ACCESS_PERM | \
-> -				  FS_OPEN_EXEC_PERM)
-> +				  FS_OPEN_EXEC_PERM | \
-> +				  FS_UNLINK_PERM | \
-> +				  FS_RMDIR_PERM)
->  
->  /*
->   * This is a list of all events that may get sent to a parent that is watching
-> diff --git a/security/security.c b/security/security.c
-> index b7cf5cbfdc67..8efc00ec02ed 100644
-> --- a/security/security.c
-> +++ b/security/security.c
-> @@ -1160,16 +1160,24 @@ EXPORT_SYMBOL(security_path_mkdir);
->  
->  int security_path_rmdir(const struct path *dir, struct dentry *dentry)
->  {
-> +	int ret;
->  	if (unlikely(IS_PRIVATE(d_backing_inode(dir->dentry))))
->  		return 0;
-> -	return call_int_hook(path_rmdir, 0, dir, dentry);
-> +	ret = call_int_hook(path_rmdir, 0, dir, dentry);
-> +	if (ret)
-> +		return ret;
-> +	return fsnotify_path_perm(dir, dentry, MAY_RMDIR);
->  }
->  
->  int security_path_unlink(const struct path *dir, struct dentry *dentry)
->  {
-> +	int ret;
->  	if (unlikely(IS_PRIVATE(d_backing_inode(dir->dentry))))
->  		return 0;
-> -	return call_int_hook(path_unlink, 0, dir, dentry);
-> +	ret = call_int_hook(path_unlink, 0, dir, dentry);
-> +	if (ret)
-> +		return ret;
-> +	return fsnotify_path_perm(dir, dentry, MAY_UNLINK);
->  }
->  EXPORT_SYMBOL(security_path_unlink);
->  
-> diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-> index e9e959343de9..f0780f0eb903 100644
-> --- a/security/selinux/hooks.c
-> +++ b/security/selinux/hooks.c
-> @@ -1801,8 +1801,12 @@ static int may_create(struct inode *dir,
->  }
->  
->  #define MAY_LINK	0
-> +#ifndef MAY_UNLINK
->  #define MAY_UNLINK	1
-> +#endif
-> +#ifndef MAY_RMDIR
->  #define MAY_RMDIR	2
-> +#endif
->  
->  /* Check whether a task can link, unlink, or rmdir a file/directory. */
->  static int may_link(struct inode *dir,
-> -- 
-> 2.17.1
-> 
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+> +		/* The AT option can read a single byte, we can bound the actual
+> +		 * value with uchar max. Each key touches 4 bytes starting from
+> +		 * the computed offset
+> +		 */
+> +		if (p->tcfp_keys[i].offmask) {
+> +			cur += 255 >> p->tcfp_keys[i].shift;
+> +			cur = max(p->tcfp_keys[i].at, cur);
+> +		}
+> +		p->tcfp_off_max_hint = max(p->tcfp_off_max_hint, cur + 4);
+> +	}
+>   
+>   	p->tcfp_flags = parm->flags;
+>   	goto_ch = tcf_action_set_ctrlact(*a, parm->action, goto_ch);
+> @@ -308,9 +322,14 @@ static int tcf_pedit_act(struct sk_buff *skb, const struct tc_action *a,
+>   			 struct tcf_result *res)
+>   {
+>   	struct tcf_pedit *p = to_pedit(a);
+> +	u32 max_offset;
+>   	int i;
+>   
+> -	if (skb_unclone(skb, GFP_ATOMIC))
+> +	max_offset = (skb_transport_header_was_set(skb) ?
+> +		      skb_transport_offset(skb) :
+> +		      skb_network_offset(skb)) +
+> +		     p->tcfp_off_max_hint;
+> +	if (skb_ensure_writable(skb, min(skb->len, max_offset)))
+>   		return p->tcf_action;
+>   
+>   	spin_lock(&p->tcf_lock);
+
