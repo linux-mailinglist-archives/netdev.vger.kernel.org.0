@@ -2,262 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EEA03517B20
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 02:03:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE9D4517B7C
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 03:10:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229544AbiECAG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 May 2022 20:06:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50066 "EHLO
+        id S229718AbiECBMR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 May 2022 21:12:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229905AbiECAFv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 20:05:51 -0400
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7119C340CD
-        for <netdev@vger.kernel.org>; Mon,  2 May 2022 17:02:20 -0700 (PDT)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-2ef5380669cso164880617b3.9
-        for <netdev@vger.kernel.org>; Mon, 02 May 2022 17:02:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zmqp+Ft/zwvr/6XNHzx2dgjoZyo15357vIqJ54QbeHA=;
-        b=FZ+KcB9iEqqwL90YKZUo772ZoUj9XXSAm9P4FOwDoJXmA8uAPjiE8Rc/DEq5/8k3O9
-         iXXELsU5iHCsDLVmv/3Q6qjNsJlqgd1TfkwMOqJO3XmU2haOnU5OY+VgVNP6QQIh7hDD
-         3c9W+gbBshGo6H7JdXQ3Ny1CIIok1+LSaaSI9nYlhn6vst8wz3hy+fdN+NQmjlW9xCfy
-         5xW8i8DhoqfI7eJ2q7A1t3kvSfi8ajiAIus38733zzyeZ+XpKNUeADHT7xnp39WiOthN
-         WmIldhDEnEnHmKSkltBNutYuBK+6VKGAobwzurm13k76EFfccSDzep8MWJfClveNtFPl
-         YStg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zmqp+Ft/zwvr/6XNHzx2dgjoZyo15357vIqJ54QbeHA=;
-        b=PrgLHB3l6PefQcy4d3fk0XR31rufegDr1muRMsgVDXev6K5z09kzghQqUkdYggv8rf
-         /RTpVx9M1PAwNPAOthk9MggP7I6vmtulUk4ym6rJd3urBf0CE2aAb2R0RE9ovmSMgYeV
-         FEbYgtPy0x6YsdbzIOxUeokmT3kQJoJinmbOIvssQCauJYbM9pMIbG4LEJuUjFYOoskx
-         RSURhcVOnzspPrGWzejqOWFRnVd58R0dZstHpiWzLPGUczZeJNS98nyK4E5vbyCys0NF
-         ycS11gkShlKIHZqUIyQpow8b3BxXl66sdGoiq174QJ9BUrTAjV8pwJdbjJ2LP/z75Oth
-         EGmA==
-X-Gm-Message-State: AOAM532t5tEFJttNbebetBYjRd5AvjxAOw+4MPTlNxQ4u/2+0h7FkrSr
-        ftUqEOZl0JRhVJygl6G5X4vQPHHVeE3OQ8ivyogWjg==
-X-Google-Smtp-Source: ABdhPJyRo7mWvjoH/vNqWXpdMy1k84mIgj6ZGRiuT5JyS+SJPkkLuo7YBmZ4s8l8oj5KMTVw1+1Vp6nJTwYlrkdsspo=
-X-Received: by 2002:a81:4f0c:0:b0:2f8:46f4:be90 with SMTP id
- d12-20020a814f0c000000b002f846f4be90mr13772455ywb.332.1651536139152; Mon, 02
- May 2022 17:02:19 -0700 (PDT)
+        with ESMTP id S229468AbiECBMQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 21:12:16 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBECE3FBED;
+        Mon,  2 May 2022 18:08:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651540118; x=1683076118;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=6ZBQctrOgzlo3cDq8N9MwImcczojCflEqGAQc6vx+TM=;
+  b=msZnnut5TBJUGPnTOxaTmI3w/NUqZMVs0C25h/aIYCrMK7Dn+J4gem8z
+   o6ok3qw9FQF6qC0cBcnLTNe94CqKrUEC9J/umQvd7v+Fcq1X7e3bH/JLo
+   jCXkH/xaucHi9zexONo7jzhdjW4lJuBzPhtH51eD1K1g5H9VryizrX/S3
+   zpA7xOZPEHa3P/+LqG2ZyIKio09Uz6MFjTWqhM9C54VLYTHz0Yzxpqjje
+   S3X796aKEgyoBTcJYkaK5iPWX4T8LkwPcYm6i/WZRpGDbD4WpxpEBBXtk
+   ViHbUH19ydHX9uOdKP1LPeCwViBUBTnrnluQFgGV3eGbF8aSj5OyeMow1
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10335"; a="327909356"
+X-IronPort-AV: E=Sophos;i="5.91,193,1647327600"; 
+   d="scan'208";a="327909356"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2022 17:31:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,193,1647327600"; 
+   d="scan'208";a="536117510"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orsmga006.jf.intel.com with ESMTP; 02 May 2022 17:31:30 -0700
+Received: from fmsmsx606.amr.corp.intel.com (10.18.126.86) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Mon, 2 May 2022 17:31:30 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Mon, 2 May 2022 17:31:30 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.169)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Mon, 2 May 2022 17:31:29 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JVa8nUfN68lgmbriVHBuVZcQ/Ci5sRUtMWbvlQIIzVJos5nQjEGl6z2Ck94Y4kRgI7FmEvt/cXyrRYtSoPAmjOWt04w+cMnOumY6V1QV4egSGkDVkl3y+iwZGik3WGuRdsd773zf7e8gHeTNe6leL/3Z835fpqo0ghEmtt7gJ7uMofhGlAkQ5JA1L+SxA2AZhc595RPZfE4eueatPUYbvqvj+az+egizL1RHQL5k+xE+D0zLLAlSdROk2AsM99vmAeFAq5cdWeX/ebfBoyj23v0sbH2XJNDRGWykLGWRl8XDvIuxyWcKxMo1tIaL7HvgUdn+vwmI4/oFloYE5b26jg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=D2bZMLDaJHTF1YQc1mTbdUuwHeLttHMG8eyhE8kYnT4=;
+ b=Vn7VbEhbWIassNm67sb8DRxseVWGpmy8I/2I6bpjJqHS3rJz7L3V0Bre82X0+JGGLNGQJa/gG4s3YpBkvDwHcHAAYhfxZJr1pYcU6EL06QP1hodxLg8ygoGTBMkPmw9B5j4C1u/M8t29/Wqtq4Gf6JEyna8fDUB/NyxOcUijGGIYB3zp9YNnPKpMO4Z/XS88qXkz7pKFo5GgSPO2POwVE+N1K6ofcGQQ5iPa8C/hnXU5jQPFOniGFU8jUOpqc1UAMDh2EW/xBIGMWHO250bGJoYEe2j5U2eA+i9X1Lu2z0s5r78rb81IZAMorGWQXBR3e6xVieLxmgnWUksXuGV54A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BYAPR11MB3397.namprd11.prod.outlook.com (2603:10b6:a03:1b::29)
+ by MWHPR11MB1262.namprd11.prod.outlook.com (2603:10b6:300:29::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.15; Tue, 3 May
+ 2022 00:31:28 +0000
+Received: from BYAPR11MB3397.namprd11.prod.outlook.com
+ ([fe80::58eb:25f0:cb84:a8da]) by BYAPR11MB3397.namprd11.prod.outlook.com
+ ([fe80::58eb:25f0:cb84:a8da%5]) with mapi id 15.20.5186.028; Tue, 3 May 2022
+ 00:31:28 +0000
+From:   "Raj, Victor" <victor.raj@intel.com>
+To:     "G, GurucharanX" <gurucharanx.g@intel.com>,
+        "Keller, Jacob E" <jacob.e.keller@intel.com>,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: RE: [PATCH] ice: ice_sched: fix an incorrect NULL check on list
+ iterator
+Thread-Topic: [PATCH] ice: ice_sched: fix an incorrect NULL check on list
+ iterator
+Thread-Index: AQHYQaYNl8IK5yEFGUm2RVp4aZPsQqzVF96AgDZe+gCAAQZQ4A==
+Date:   Tue, 3 May 2022 00:31:28 +0000
+Message-ID: <BYAPR11MB339776DBFFC7F86EC7F4DD708DC09@BYAPR11MB3397.namprd11.prod.outlook.com>
+References: <20220327064344.7573-1-xiam0nd.tong@gmail.com>
+ <CO1PR11MB5089C7298CC46861FF41D3E3D61D9@CO1PR11MB5089.namprd11.prod.outlook.com>
+ <BYAPR11MB336781C93921216983F8BE3CFCC19@BYAPR11MB3367.namprd11.prod.outlook.com>
+In-Reply-To: <BYAPR11MB336781C93921216983F8BE3CFCC19@BYAPR11MB3367.namprd11.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.6.401.20
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 4c6e0b25-6144-48a7-4d29-08da2c9c437b
+x-ms-traffictypediagnostic: MWHPR11MB1262:EE_
+x-microsoft-antispam-prvs: <MWHPR11MB1262D9B07A89B75263FC55EA8DC09@MWHPR11MB1262.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: BnOuyHq55cF2bg8ZpdDtgFAkT24D8j6EvWukDhV+4pyQBu7ulNeuGPtkZoZefXoYl0YkRM8coLv2M7RkIgfC4syxmUoYHGLudv193Slhon94vqcT9M6RXleGyatmSwVpAtzInU+A5J1pTFSjRIWX04RI/LkrfQiiwnWF6ebHMSb1IMnJgPEdfAgve3/cvyvoQ3OEsw1DH8rDdpdl78OGmkhHCfhtall8eDJ9iGqEH7z8aK2NzZm97D8g/pJ4YTyzSksvp3gy7rZmso/+3G8Ff1BaU/N6eZ/nGiuq5QrCoaCq4dxUON5De/Xhsn/4AN3Movzep5CE6jehwWJwNru73MjB7mo+bav3aQBGVknXw46XBp5Rqrg6CoXBCBXsJvh82WGPpw6+EWgvsLsmdt/E0LGolGZyoLiedVdy4MGxxpC1yvS488bD6pYcEyHkQPEeg5EUpNmSnQp1RAInIUyDsaAJNPVMleHFqzfYVeLNMh+gRkaLjrCG5+V5YpTkR5r7ceKYOIXr27jtOd71Y2ZniELt9LbmtRqvjm55swJZyAygSO+IVmRtNFWuS5pLFP3GA7Ygo/6e+0++4Lf+PS56BAMt8KlguM9OhkpwC0wVOZpoCW2IIMsN+a4Dtuh8zQPc+jvmUMCREYYd1dSBNhq8Z5FW02OVTtfwjcBb8Xlj8ggXjRwzX52eFV28MPubUMa39b0aKeEhnqq/YuA3nrDjFA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3397.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(83380400001)(186003)(2906002)(53546011)(26005)(52536014)(122000001)(82960400001)(8936002)(5660300002)(7696005)(9686003)(6506007)(64756008)(66946007)(66446008)(66476007)(508600001)(110136005)(4326008)(33656002)(66556008)(86362001)(8676002)(76116006)(316002)(6636002)(71200400001)(54906003)(38100700002)(38070700005)(55016003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Pn0KjDA9Lmc12VudMmYyih6Ux/NWwdDdB/v58YtAo/6FbV/5eK0Bl4dJCFWQ?=
+ =?us-ascii?Q?jH/BHBaUdkP49hrM6DIitgJ8uiVz3nlGzl2gQLoOWdB/fpCQyq2+luorIRte?=
+ =?us-ascii?Q?dwakm3P8kv1VmZaxIuXLMJVtH+bikA5zF9QiK5R1VARAkG1xL/mB/XyMn8S3?=
+ =?us-ascii?Q?G+UEUABS7Bn3jBaT/pJ076QPHyH99geQd87OuiQdU5FU4Q0ABZpyf9+iAGCt?=
+ =?us-ascii?Q?HaIS4ul4qzxD4FZKpi5VvN0XervjLqHr2ZStECSrdO9zBR2oFshBpiP2OTLe?=
+ =?us-ascii?Q?lLMnfiqmtydDVVBv1rV6aOmAt4nIirkmrz/HQSYZtS07i09RoQWfVbf4vif3?=
+ =?us-ascii?Q?lQc/dEh6kBTguKqJPrB3mSRJrfZF0vd9E3hoxebFJW7d0JZkCdCoefkPmTJN?=
+ =?us-ascii?Q?QvU0xnFRNX69y8SABgj02K2HObkzfAYI9N5I1C6pQsI0FCCx82SpRvwS/ghX?=
+ =?us-ascii?Q?9a+80xmSbiNGSCFdNUVpAyOmtQgjSoKY2kN/iWSUuV4gzciuUZtXOArVB8Oj?=
+ =?us-ascii?Q?9MeqiI8FRUuEtDEWEWqtpwYiMwXYCsqWBFbOe4MdQU6WTbGw78wz/5VayuUz?=
+ =?us-ascii?Q?b8YTT/Q32ThXmHNHTknyoueyEKLD03rqBXff7xgago7Kr5rFlD5WNvEc8QI6?=
+ =?us-ascii?Q?yPG0OVOgVVnVGcecMGBc2+o71kg9TnfnNZIeCwvUuyQ8RjhrLTIm7nhXCnNv?=
+ =?us-ascii?Q?01K/J8MFgvZd64h0w5xEfH+mgErA1HpaKzSEiY1uNxCKReBg9O4gFhx2ClAv?=
+ =?us-ascii?Q?XezkRsq+LZ43rJMq9aASeXHV1GBKXp6cj458K/Jy9mwLlAXKBdRp1FRkRY0t?=
+ =?us-ascii?Q?w1f8qq8AQK20/UhTB4Zi64C82b9Y9vdZWl1C92PF7iKAxGt+jgoHJfbVu6JS?=
+ =?us-ascii?Q?/a359LtSTqtw62BFiJqW6reWE0wG+sGuK+CD32sykQIndbJqtUTHfWFXrX7J?=
+ =?us-ascii?Q?fg27RX8mKaq/0fDkzNwCMyMqlIfTP3CnsAgoIYePkK4SwpW3l/Y8FUEXAtYe?=
+ =?us-ascii?Q?zPqKuk/xll+6H2UzFndOYbFQP2IKfjGe/y5+GqOPPiynm8GExHL5MsUjlCe9?=
+ =?us-ascii?Q?OPKnMY+bDA6+DNpsjORKuVVD4+1UKXiUVE2DFci4szq6xy/vFon9Ou+Bz4hI?=
+ =?us-ascii?Q?IDCodTPA174kz5Z5InBg9P6YFni6nUPFx8hcyNpeAtQlhVLMpmNbFFSwcqaL?=
+ =?us-ascii?Q?ra3+HV1DyMNKcqxE3zCQclUnAimYE+m1eWMDu2GTNjKsQamKg5ArPZ95CQ0L?=
+ =?us-ascii?Q?5mZwDYX9V7nfQuTDvJiRY7DER+1IvXNF5Elube3lsIQaz6RaEcP0xiZRBH5x?=
+ =?us-ascii?Q?KEH/edgPzJN+KLZ5N82C2LiZkkQICBzzNqVpW9jPgXRigfP80JLKwKnipKyp?=
+ =?us-ascii?Q?x/JCS1A/VdYi+23dZhF1B8uuBTvZjhePPJO8GwZHOCK1N9KwD83VlYbxxNmG?=
+ =?us-ascii?Q?5OrIqGrHK7ff1n/4UpXWdEsX/9bjEcgY1FCeqs4CtBwBGTXhBLpAUXPMAQVo?=
+ =?us-ascii?Q?UXqFzoNaHiP1VeH5zJyYYRFb1X0CUGDqQu/CcbLHTgsAQ5R1pkNgLb+t0rxy?=
+ =?us-ascii?Q?n19cdL/mPGCS/FdxRZb1YO2HPrNz4AphWLmfTp3xU1p+BNpN1oeHEKx3isCe?=
+ =?us-ascii?Q?N/tKY9TbwVuxy5Vj1kWChd0nYTp9thx887Vynveow90Gon5fkPDX3iK3tKIC?=
+ =?us-ascii?Q?PomkgUPEypvXlGXJiAOL3FHNIsq5xDmuoe4ai4ahK/r5ODErJPe5sXEtIHbq?=
+ =?us-ascii?Q?9qGE96NHug=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20220502182345.306970-1-xiyou.wangcong@gmail.com> <20220502182345.306970-2-xiyou.wangcong@gmail.com>
-In-Reply-To: <20220502182345.306970-2-xiyou.wangcong@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 2 May 2022 17:02:07 -0700
-Message-ID: <CANn89i+fXaDBptNMYjUqKhAuZrRX7+0v7sv5DZqK4seLCzBO3A@mail.gmail.com>
-Subject: Re: [Patch bpf-next v2 1/4] tcp: introduce tcp_read_skb()
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3397.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4c6e0b25-6144-48a7-4d29-08da2c9c437b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 May 2022 00:31:28.4864
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: d69knugLDRlJFmGO8h5L0R4G2XSlnG7rVIgNUjSIfgHP4VvVqNH85nVPG1KZEcWDCSVGSQO+NB3usOnjr1KLcQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1262
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 2, 2022 at 11:24 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+If the control comes down to the loop then surely the VSI is already part o=
+f an aggregator (old). The aggregator vsi list should have that VSI informa=
+tion. My understanding is that if control comes here then you always find a=
+ valid entry and matching handle here. If that doesn't happen then we need =
+to debug. The fix is kind of masking this problem.
+
+-Victor
+
+
+
+-----Original Message-----
+From: G, GurucharanX <gurucharanx.g@intel.com>=20
+Sent: Monday, May 2, 2022 1:18 AM
+To: Keller, Jacob E <jacob.e.keller@intel.com>; Xiaomeng Tong <xiam0nd.tong=
+@gmail.com>; Brandeburg, Jesse <jesse.brandeburg@intel.com>
+Cc: netdev@vger.kernel.org; Raj, Victor <victor.raj@intel.com>; stable@vger=
+.kernel.org; linux-kernel@vger.kernel.org; intel-wired-lan@lists.osuosl.org=
+; kuba@kernel.org; pabeni@redhat.com; davem@davemloft.net
+Subject: RE: [PATCH] ice: ice_sched: fix an incorrect NULL check on list it=
+erator
+
+
+
+-----Original Message-----
+> From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+> Sent: Saturday, March 26, 2022 11:44 PM
+> To: Brandeburg, Jesse <jesse.brandeburg@intel.com>
+> Cc: Nguyen, Anthony L <anthony.l.nguyen@intel.com>;=20
+> davem@davemloft.net; kuba@kernel.org; pabeni@redhat.com; Raj, Victor=20
+> <victor.raj@intel.com>; intel- wired-lan@lists.osuosl.org;=20
+> netdev@vger.kernel.org; linux- kernel@vger.kernel.org; Xiaomeng Tong=20
+> <xiam0nd.tong@gmail.com>; stable@vger.kernel.org
+> Subject: [PATCH] ice: ice_sched: fix an incorrect NULL check on list=20
+> iterator
 >
-> From: Cong Wang <cong.wang@bytedance.com>
+> The bugs are here:
+> 	if (old_agg_vsi_info)
+> 	if (old_agg_vsi_info && !old_agg_vsi_info->tc_bitmap[0]) {
 >
-> This patch inroduces tcp_read_skb() based on tcp_read_sock(),
-> a preparation for the next patch which actually introduces
-> a new sock ops.
+> The list iterator value 'old_agg_vsi_info' will *always* be set and=20
+> non-NULL by list_for_each_entry_safe(), so it is incorrect to assume=20
+> that the iterator value will be NULL if the list is empty or no=20
+> element found (in this case, the check 'if (old_agg_vsi_info)' will=20
+> always be true unexpectly).
 >
-> TCP is special here, because it has tcp_read_sock() which is
-> mainly used by splice(). tcp_read_sock() supports partial read
-> and arbitrary offset, neither of them is needed for sockmap.
+> To fix the bug, use a new variable 'iter' as the list iterator, while=20
+> use the original variable 'old_agg_vsi_info' as a dedicated pointer to=20
+> point to the found element.
 >
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+
+Yep. This looks correct to me.
+
+> Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+>=20
+> Thanks,
+> Jake
+
+> Cc: stable@vger.kernel.org
+> Fixes: 37c592062b16d ("ice: remove the VSI info from previous agg")
+> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 > ---
->  include/net/tcp.h |  2 ++
->  net/ipv4/tcp.c    | 63 +++++++++++++++++++++++++++++++++++++++++------
->  2 files changed, 57 insertions(+), 8 deletions(-)
+>  drivers/net/ethernet/intel/ice/ice_sched.c | 7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
 >
-> diff --git a/include/net/tcp.h b/include/net/tcp.h
-> index 94a52ad1101c..ab7516e5cc56 100644
-> --- a/include/net/tcp.h
-> +++ b/include/net/tcp.h
-> @@ -667,6 +667,8 @@ void tcp_get_info(struct sock *, struct tcp_info *);
->  /* Read 'sendfile()'-style from a TCP socket */
->  int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
->                   sk_read_actor_t recv_actor);
-> +int tcp_read_skb(struct sock *sk, read_descriptor_t *desc,
-> +                sk_read_actor_t recv_actor);
->
->  void tcp_initialize_rcv_mss(struct sock *sk);
->
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index db55af9eb37b..8d48126e3694 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -1600,7 +1600,7 @@ static void tcp_eat_recv_skb(struct sock *sk, struct sk_buff *skb)
->         __kfree_skb(skb);
->  }
->
-> -static struct sk_buff *tcp_recv_skb(struct sock *sk, u32 seq, u32 *off)
-> +static struct sk_buff *tcp_recv_skb(struct sock *sk, u32 seq, u32 *off, bool unlink)
->  {
->         struct sk_buff *skb;
->         u32 offset;
-> @@ -1613,6 +1613,8 @@ static struct sk_buff *tcp_recv_skb(struct sock *sk, u32 seq, u32 *off)
->                 }
->                 if (offset < skb->len || (TCP_SKB_CB(skb)->tcp_flags & TCPHDR_FIN)) {
->                         *off = offset;
-> +                       if (unlink)
-> +                               __skb_unlink(skb, &sk->sk_receive_queue);
 
-Why adding this @unlink parameter ?
-This makes your patch more invasive than needed.
-Can not this unlink happen from your new helper instead ? See [3] later.
-
->                         return skb;
->                 }
->                 /* This looks weird, but this can happen if TCP collapsing
-> @@ -1646,7 +1648,7 @@ int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
->
->         if (sk->sk_state == TCP_LISTEN)
->                 return -ENOTCONN;
-> -       while ((skb = tcp_recv_skb(sk, seq, &offset)) != NULL) {
-> +       while ((skb = tcp_recv_skb(sk, seq, &offset, false)) != NULL) {
->                 if (offset < skb->len) {
->                         int used;
->                         size_t len;
-> @@ -1677,7 +1679,7 @@ int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
->                          * getting here: tcp_collapse might have deleted it
->                          * while aggregating skbs from the socket queue.
->                          */
-> -                       skb = tcp_recv_skb(sk, seq - 1, &offset);
-> +                       skb = tcp_recv_skb(sk, seq - 1, &offset, false);
->                         if (!skb)
->                                 break;
->                         /* TCP coalescing might have appended data to the skb.
-> @@ -1702,13 +1704,58 @@ int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
->
->         /* Clean up data we have read: This will do ACK frames. */
->         if (copied > 0) {
-> -               tcp_recv_skb(sk, seq, &offset);
-> +               tcp_recv_skb(sk, seq, &offset, false);
->                 tcp_cleanup_rbuf(sk, copied);
->         }
->         return copied;
->  }
->  EXPORT_SYMBOL(tcp_read_sock);
->
-> +int tcp_read_skb(struct sock *sk, read_descriptor_t *desc,
-> +                sk_read_actor_t recv_actor)
-> +{
-> +       struct tcp_sock *tp = tcp_sk(sk);
-> +       u32 seq = tp->copied_seq;
-> +       struct sk_buff *skb;
-> +       int copied = 0;
-> +       u32 offset;
-> +
-> +       if (sk->sk_state == TCP_LISTEN)
-> +               return -ENOTCONN;
-> +
-> +       while ((skb = tcp_recv_skb(sk, seq, &offset, true)) != NULL) {
-
-[3]
-            The unlink from sk->sk_receive_queue could happen here.
-
-> +               int used = recv_actor(desc, skb, 0, skb->len);
-> +
-> +               if (used <= 0) {
-> +                       if (!copied)
-> +                               copied = used;
-> +                       break;
-> +               }
-> +               seq += used;
-> +               copied += used;
-> +
-> +               if (TCP_SKB_CB(skb)->tcp_flags & TCPHDR_FIN) {
-> +                       kfree_skb(skb);
-
-[1]
-
-The two kfree_skb() ([1] & [2]) should be a consume_skb() ?
-
-> +                       ++seq;
-> +                       break;
-> +               }
-> +               kfree_skb(skb);
-
-[2]
-
-
-> +               if (!desc->count)
-> +                       break;
-> +               WRITE_ONCE(tp->copied_seq, seq);
-> +       }
-> +       WRITE_ONCE(tp->copied_seq, seq);
-> +
-> +       tcp_rcv_space_adjust(sk);
-> +
-> +       /* Clean up data we have read: This will do ACK frames. */
-> +       if (copied > 0)
-> +               tcp_cleanup_rbuf(sk, copied);
-> +
-> +       return copied;
-> +}
-> +EXPORT_SYMBOL(tcp_read_skb);
-> +
->  int tcp_peek_len(struct socket *sock)
->  {
->         return tcp_inq(sock->sk);
-> @@ -1890,7 +1937,7 @@ static int receive_fallback_to_copy(struct sock *sk,
->                 struct sk_buff *skb;
->                 u32 offset;
->
-> -               skb = tcp_recv_skb(sk, tcp_sk(sk)->copied_seq, &offset);
-> +               skb = tcp_recv_skb(sk, tcp_sk(sk)->copied_seq, &offset, false);
->                 if (skb)
->                         tcp_zerocopy_set_hint_for_skb(sk, zc, skb, offset);
->         }
-> @@ -1937,7 +1984,7 @@ static int tcp_zc_handle_leftover(struct tcp_zerocopy_receive *zc,
->         if (skb) {
->                 offset = *seq - TCP_SKB_CB(skb)->seq;
->         } else {
-> -               skb = tcp_recv_skb(sk, *seq, &offset);
-> +               skb = tcp_recv_skb(sk, *seq, &offset, false);
->                 if (TCP_SKB_CB(skb)->has_rxtstamp) {
->                         tcp_update_recv_tstamps(skb, tss);
->                         zc->msg_flags |= TCP_CMSG_TS;
-> @@ -2130,7 +2177,7 @@ static int tcp_zerocopy_receive(struct sock *sk,
->                                 skb = skb->next;
->                                 offset = seq - TCP_SKB_CB(skb)->seq;
->                         } else {
-> -                               skb = tcp_recv_skb(sk, seq, &offset);
-> +                               skb = tcp_recv_skb(sk, seq, &offset, false);
->                         }
->
->                         if (TCP_SKB_CB(skb)->has_rxtstamp) {
-> @@ -2186,7 +2233,7 @@ static int tcp_zerocopy_receive(struct sock *sk,
->                 tcp_rcv_space_adjust(sk);
->
->                 /* Clean up data we have read: This will do ACK frames. */
-> -               tcp_recv_skb(sk, seq, &offset);
-> +               tcp_recv_skb(sk, seq, &offset, false);
->                 tcp_cleanup_rbuf(sk, length + copylen);
->                 ret = 0;
->                 if (length == zc->length)
-> --
-> 2.32.0
->
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Int=
+el)
