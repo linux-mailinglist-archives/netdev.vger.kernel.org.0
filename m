@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 27700517B95
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 03:14:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 121F5517B89
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 03:14:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230075AbiECBRQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 May 2022 21:17:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45532 "EHLO
+        id S230002AbiECBRX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 May 2022 21:17:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230002AbiECBRE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 21:17:04 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C6C750473
-        for <netdev@vger.kernel.org>; Mon,  2 May 2022 18:13:31 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id j8so13784561pll.11
-        for <netdev@vger.kernel.org>; Mon, 02 May 2022 18:13:31 -0700 (PDT)
+        with ESMTP id S229873AbiECBRF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 21:17:05 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EBF4506C7
+        for <netdev@vger.kernel.org>; Mon,  2 May 2022 18:13:32 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id n18so13812285plg.5
+        for <netdev@vger.kernel.org>; Mon, 02 May 2022 18:13:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=iAX+z7Fsw/QyOlQK4J1/wswlMzMJSOKCKmYsxclry74=;
-        b=Ux4ORijnL5rh94TsCGEF//Jfplbg/SqBTNFkPthdGBLlHZ0Xgy16+mm/W7XvFGIZvm
-         e1BpniX+gmntMOpUCD9NXHxt1c4lHqK1KxIqzXv+g9//aPdEZywMxCw+1me0urLkfnze
-         GDjXFgjzqsV5b3Tc4vlgNFpgS75SfGPJO3KTk=
+        bh=JV8HZH/RPwztFz8GsBRUtlTHu110VIJsgQCQJI8UpIw=;
+        b=JiFCRWn3cJ1sB06VBquVzKwcJgxuUxYydgI33z61EK2iojfj1sRxDN/WzkLFGtHeRn
+         wzLfsYA1/6A/gxTcKaxdwCrfBd/nkyy+kUc+wQW27WzB16ASxJ5/M5FEb5+JNpFy4uZM
+         d667zxjrMJ+Y1UfpLPZ5xD02M+WHtn+NeRoNA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=iAX+z7Fsw/QyOlQK4J1/wswlMzMJSOKCKmYsxclry74=;
-        b=ndGzjvEyIXke7i6ZSZ6XFQ9yABvzatHifwUpcbcASi1Dv5i8anYgQK8lkWMTr5yG8c
-         ZJ5wB2d92dzy+qMbXWlNPPn/O79IeZ9fZlXVeEhhZ5r+1w9rc3u6morlBl7h3WncGOXq
-         BGfpkIeUDmeNjkC/6YV80jsqANMZ90Y0gy9w6EMwk3QhPjiISY4OAjUAyxHI4MSYIlA1
-         BmeVN6Ts9EQ1xrNXibBfZMzt0LnV+5UtqS356+M1H0uryykUfyJHd+9hdhxFZiyFL6qH
-         2gBR+vUcOzzFwr/oX/fshnNAnTgIf23cWbmaLzHWVJHiYkJ91XgVKtLqwQqiYItyENII
-         kBjA==
-X-Gm-Message-State: AOAM530GH5PLa7bf3Ks7sKqrOVptu+jFFc3OxTcpVfhg4s3XUXnq4OHX
-        41VTR78sqfdwemnec0X8UaE70g==
-X-Google-Smtp-Source: ABdhPJxwoymwwnqw3R/ytk4Xr/LOkIcjM35pDDOisj5juemTlNgUrsrj/v1QNTSoY9XXtmDn1w3ydw==
-X-Received: by 2002:a17:902:9b92:b0:158:9b65:a78 with SMTP id y18-20020a1709029b9200b001589b650a78mr14670205plp.53.1651540410370;
-        Mon, 02 May 2022 18:13:30 -0700 (PDT)
+        bh=JV8HZH/RPwztFz8GsBRUtlTHu110VIJsgQCQJI8UpIw=;
+        b=DopX5da53YkkddrzrNmqJadctifwtbOLuSciXBeZKKLBHoqc9PtUpiQm4mGwvhWOx5
+         KMpXsHOCwLuxjL6Mk3zJCaagtYRWONL69uIJrECAo6qlGiqnTGkoHHY2lywTIQZwlKdV
+         AnggR30K7ySaVwUNACqI3+5EMev1irHZtezD0mbDcU3iuAOHwmtvjo9ziBn6hldjSewu
+         HGjMnimRucPBBd8vKMGNZLrNe1GvoODE05+IhRedhbG2PkwyE1RVH7ULwioDmIJ2630f
+         J2CffBumTFDRgzk0o+bujN6Mk4P5Z5OUGEMyc5lMgVFKNYQAln8LiYXn9K31J5d/UZL5
+         ACJQ==
+X-Gm-Message-State: AOAM531qji5pt2RZGaKgXJwIY9VNzYsRC4ZvU3q38rOS6x68qdOTVsWd
+        haQ7bnV/W04PtVyIs6JPGWbFTw==
+X-Google-Smtp-Source: ABdhPJyCh0KNFy/iizL+WV+y0HyJ6FCZyGMJ4aVWrx/GX5KNSc3upch7rXvBwJbdVYJ70GUYOa84uQ==
+X-Received: by 2002:a17:903:2306:b0:15e:b7be:dafd with SMTP id d6-20020a170903230600b0015eb7bedafdmr456797plh.29.1651540411519;
+        Mon, 02 May 2022 18:13:31 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id k23-20020a170902ba9700b0015e8d4eb1fesm5272169pls.72.2022.05.02.18.13.29
+        by smtp.gmail.com with ESMTPSA id k23-20020a170902ba9700b0015e8d4eb1fesm5272169pls.72.2022.05.02.18.13.30
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 02 May 2022 18:13:29 -0700 (PDT)
+        Mon, 02 May 2022 18:13:31 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net 2/3] bnxt_en: Initiallize bp->ptp_lock first before using it
-Date:   Mon,  2 May 2022 21:13:11 -0400
-Message-Id: <1651540392-2260-3-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net 3/3] bnxt_en: Fix unnecessary dropping of RX packets
+Date:   Mon,  2 May 2022 21:13:12 -0400
+Message-Id: <1651540392-2260-4-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1651540392-2260-1-git-send-email-michael.chan@broadcom.com>
 References: <1651540392-2260-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000086a42805de113732"
+        boundary="000000000000986e1c05de11379d"
 X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -65,62 +65,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000086a42805de113732
+--000000000000986e1c05de11379d
 
-bnxt_ptp_init() calls bnxt_ptp_init_rtc() which will acquire the ptp_lock
-spinlock.  The spinlock is not initialized until later.  Move the
-bnxt_ptp_init_rtc() call after the spinlock is initialized.
+In bnxt_poll_p5(), we first check cpr->has_more_work.  If it is true,
+we are in NAPI polling mode and we will call __bnxt_poll_cqs() to
+continue polling.  It is possible to exhanust the budget again when
+__bnxt_poll_cqs() returns.
 
-Fixes: 24ac1ecd5240 ("bnxt_en: Add driver support to use Real Time Counter for PTP")
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Reviewed-by: Saravanan Vajravel <saravanan.vajravel@broadcom.com>
+We then enter the main while loop to check for new entries in the NQ.
+If we had previously exhausted the NAPI budget, we may call
+__bnxt_poll_work() to process an RX entry with zero budget.  This will
+cause packets to be dropped unnecessarily, thinking that we are in the
+netpoll path.  Fix it by breaking out of the while loop if we need
+to process an RX NQ entry with no budget left.  We will then exit
+NAPI and stay in polling mode.
+
+Fixes: 389a877a3b20 ("bnxt_en: Process the NQ under NAPI continuous polling.")
 Reviewed-by: Andy Gospodarek <andrew.gospodarek@broadcom.com>
-Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
-Reviewed-by: Damodharam Ammepalli <damodharam.ammepalli@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-index 9c2ad5e67a5d..00f2f80c0073 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-@@ -846,13 +846,6 @@ int bnxt_ptp_init(struct bnxt *bp, bool phc_cfg)
- 	if (rc)
- 		return rc;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 2818cfef42f8..1d69fe0737a1 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -2707,6 +2707,10 @@ static int bnxt_poll_p5(struct napi_struct *napi, int budget)
+ 			u32 idx = le32_to_cpu(nqcmp->cq_handle_low);
+ 			struct bnxt_cp_ring_info *cpr2;
  
--	if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC) {
--		bnxt_ptp_timecounter_init(bp, false);
--		rc = bnxt_ptp_init_rtc(bp, phc_cfg);
--		if (rc)
--			goto out;
--	}
--
- 	if (ptp->ptp_clock && bnxt_pps_config_ok(bp))
- 		return 0;
- 
-@@ -861,8 +854,14 @@ int bnxt_ptp_init(struct bnxt *bp, bool phc_cfg)
- 	atomic_set(&ptp->tx_avail, BNXT_MAX_TX_TS);
- 	spin_lock_init(&ptp->ptp_lock);
- 
--	if (!(bp->fw_cap & BNXT_FW_CAP_PTP_RTC))
-+	if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC) {
-+		bnxt_ptp_timecounter_init(bp, false);
-+		rc = bnxt_ptp_init_rtc(bp, phc_cfg);
-+		if (rc)
-+			goto out;
-+	} else {
- 		bnxt_ptp_timecounter_init(bp, true);
-+	}
- 
- 	ptp->ptp_info = bnxt_ptp_caps;
- 	if ((bp->fw_cap & BNXT_FW_CAP_PTP_PPS)) {
++			/* No more budget for RX work */
++			if (budget && work_done >= budget && idx == BNXT_RX_HDL)
++				break;
++
+ 			cpr2 = cpr->cp_ring_arr[idx];
+ 			work_done += __bnxt_poll_work(bp, cpr2,
+ 						      budget - work_done);
 -- 
 2.18.1
 
 
---00000000000086a42805de113732
+--000000000000986e1c05de11379d
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -191,13 +177,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIFrK0bYtbdsyCleg5n1cysdA21c7fusi
-QTupfMJNyTEIMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDUw
-MzAxMTMzMFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIMfJQhCPqF3OMp3x8feRmdDsR1/X9ub4
+xq2MIFTzmBzRMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDUw
+MzAxMTMzMlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQCNGzt5n5S9+a64qapn5ONuCZhWGcX9Je/jjAZPfqjdB6hMutQu
-LFLzmPbqaPXgvNm7E0Ipm+eHm+4tlHtduXw2MXNae+jRtRIKUh5STQjSPpIn7BNJ5rGRIkhPeoyR
-cFacsHf3mf+nYrwD3SNU87B2cVSUyoAsSnpGsjWGeBYyYHHVff4F/5wvEt90DImUjagcqi91rS6P
-Wj1aLUSXPW+wUlOZcqgPWyQVc4ArV8nqGpWbb0DwBPox9yctbdQhgovR50EF0vrNoXqqJlOqoqWM
-NLV7iGRsh8Yi6aaF0oqAfqpMI+pR6GNeLnPgpU4cuQ9TUg9LqPnEf15e16DGkFGq
---00000000000086a42805de113732--
+ATANBgkqhkiG9w0BAQEFAASCAQBUFE/BSngVhsxmkFeK1bQB2yvxlJIlh/f58Up5WTWb+oQJJE8s
+fcHopdgoBwLsfXnqUUIi00aJsXzxOINPJkvAmGuu3TcsaQnhPuqulp7OyGQQrtjAiOLjshUSLn9o
+gT3my3RVEwyWlotmefvQZWbJ9N8XiewNRxn3zBMJrFoJtQM/J8SW0kPf+F0ZOUq4zKbpIuhUb9n3
+7mhgerDMY0mriRPWj8tfGRVmOirNQUWDfrFbaF5x2HI1k4kc7jeRX1ZLzNpWJTfxUhtwzAu5Agjp
+2H+a+3OJv3XXfjiYtsP84uQZuobW1H96BTpbVBGG2P8StPeCRnPbpVzu7WK11iJA
+--000000000000986e1c05de11379d--
