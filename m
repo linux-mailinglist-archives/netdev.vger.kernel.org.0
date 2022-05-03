@@ -2,512 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F422E5183EC
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 14:06:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A9055183EE
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 14:08:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235077AbiECMJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 08:09:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54188 "EHLO
+        id S235095AbiECML4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 08:11:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235108AbiECMIx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 08:08:53 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93D951836D
-        for <netdev@vger.kernel.org>; Tue,  3 May 2022 05:05:17 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id j6so32983348ejc.13
-        for <netdev@vger.kernel.org>; Tue, 03 May 2022 05:05:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=LoTzOhcLLyaeikFNfu1k4ItSA3teX///n/LvWB6h734=;
-        b=nIm1iLvs6ZeMffAmJ2tUSrNMMNftyUwBjvAXvb1QKQWdXJhbRb0zvvHcHat7wSc4mK
-         vY2J25Z1K4QQpTadmYr6qw2wCv9a5bHi084tPaKhAbWlO9CSCvmux7p96sCJaxj1HdtU
-         Udiu5cZ5/XuaGLYHoV1WHZY25dEOPlmCUperX4xLmF6gDqc6meZGLnbADXf7NZCXeCgU
-         KpZn3BrxPWXDN7JgzegX0OqMIZ3mmzxZF6+u90964yaPBKnyCIhWBfsO1UDCPkX0P+Os
-         NNxrjq7LLxn4rZnQ4bMrItMQCTLp/KY05m6kay+7z8fDMFmPnOpcRnyM63kZVVHA3E0r
-         5Cug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=LoTzOhcLLyaeikFNfu1k4ItSA3teX///n/LvWB6h734=;
-        b=SvAI9JV/NizBCwkWEh4mxitH3v7C1QNouW2xnehWYuJDzGCpYhaiCWWOF4pjmL72n1
-         Rbd8LAdQD3q/Vz0ZWJk0zkxWWFK7iC8ZEZA76i5W/7p0G6S711hgC+fAk+Pv4kS5n8tT
-         WNyLEH28tievcEQQP4ffVTHLNfXgtbJWqJjhk4IJdYh5QeIMEmBlg4K8xSVfY1emiVA+
-         b4+7h8KchHK3A4nq6N0vgXW5GQCLImEm1xQs+2Iw8Z3G9uBVNwSs7s4R8GUcroR8KSHy
-         AZ/6bUBMTxDMIRbfnmUKhcmYkClJBNl1xuujvwATBAgPsXK3IGu+BmfAyIG47BEoQEFr
-         L5Vg==
-X-Gm-Message-State: AOAM533L7+07XOdpcPcM4gNqX53ekqiu0vDA7wMVT8TDCDbRZwqr7na7
-        Eupxgdr0LCjJRqmzy4Ip0FW9oA==
-X-Google-Smtp-Source: ABdhPJz4dqaOJ7tVlEDf2hHKffoFY/nbMWJIMF4bj24bO9sm7O2wot/9H3IMtuUAx+lUxyvzGdnsEQ==
-X-Received: by 2002:a17:907:3da2:b0:6f4:78d8:7c23 with SMTP id he34-20020a1709073da200b006f478d87c23mr4569586ejc.233.1651579515831;
-        Tue, 03 May 2022 05:05:15 -0700 (PDT)
-Received: from [192.168.0.202] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id gx21-20020a1709068a5500b006f3ef214dabsm4531141ejc.17.2022.05.03.05.05.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 May 2022 05:05:15 -0700 (PDT)
-Message-ID: <d29637f8-87ff-b5f0-9604-89b51a2ba7c1@linaro.org>
-Date:   Tue, 3 May 2022 14:05:14 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC v1] dt-bindings: net: dsa: convert binding for mediatek
- switches
-Content-Language: en-US
-To:     Frank Wunderlich <linux@fw-web.de>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        with ESMTP id S234572AbiECMLz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 08:11:55 -0400
+Received: from EUR03-VE1-obe.outbound.protection.outlook.com (mail-eopbgr50073.outbound.protection.outlook.com [40.107.5.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DFF237A1A
+        for <netdev@vger.kernel.org>; Tue,  3 May 2022 05:08:23 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Mzqa8hUQaiD4Buwtds/cpKlmb4BZQhuNeSGUw2KofzgGsf5rMYdC9wrCB17dff0J2EbgCGK1zSE2unvRXyl5aCwWuDil1PAi45QKFQby/yMbQFJFOQoBWc1pnh+3C2shRHAWcWS79/u3n9cUpIsw158xg+qSxAD8Fm+XtX40JbukrdKpFTaIkFQPD00JVdFTqTJ+AwTDGH0FHBy2hwebcAvB10Ypm33YrB4xSqB7oM5SvwE+/TPu1KtYJqUf6a7Nl/+VErZXYWa5aMf7puQEHFxKvhLrXuKwVTbMp9zmavphTUXQ5aDAE2I5mSQRQSBtKEvrDggMFIaLXLnf5G6r8w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zdxovuTBTbO0dpP87isQh6YF3f2JblEar9UuGdtYpek=;
+ b=Dwt69e2xyBQAn2wfkeFLcNl2OUACrVmA4It4THvjC3vV2AgxBncc/Hzph3AC7pBtyUFENVYCZHYOe/RaU6qrVWBgGTUcPy3YlDkGnLoFr3f1gh06hwSmhlMORmiQBaaHWxAij25e/HMZwhNfzbzlWIRo1qRLAASO0dp/+KnxY0ZYRDPx8IvalTrGQ7vWXj57JXbG6Du09mQbg9qfMw9Rr+1p0nEdZwuYfxon6HPsyvxeUOqr/+y9a+uNp/+eCbzo5+7/hnJFAWCJ5X1IMaFsXt/0aH130SYMq6Z9HvNoEAKyoCBgD1pNFxF3bLZqqUDrTQUgWo1Rkk2lhUzcDQd+MA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zdxovuTBTbO0dpP87isQh6YF3f2JblEar9UuGdtYpek=;
+ b=VjxtFrwER0+plvx7dDori2+8NXPkDmzZWf82jh/NtxTvkIpSU4mPAPvGzOeQWINYJQRG6cPuq3Tv3lrRTWBYfJx0S2Qov3iXuR8ks7CAkNzIWydZ++4NQTXFzLzmwuBoJfIhgQQplK2JxkdNGjfDOF+dq5aruyDWU5n0geHmgw4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM0PR04MB5121.eurprd04.prod.outlook.com (2603:10a6:208:c1::16)
+ by DB6PR0402MB2743.eurprd04.prod.outlook.com (2603:10a6:4:95::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.14; Tue, 3 May
+ 2022 12:08:21 +0000
+Received: from AM0PR04MB5121.eurprd04.prod.outlook.com
+ ([fe80::d42:c23c:780e:78eb]) by AM0PR04MB5121.eurprd04.prod.outlook.com
+ ([fe80::d42:c23c:780e:78eb%4]) with mapi id 15.20.5206.024; Tue, 3 May 2022
+ 12:08:21 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Cc:     Frank Wunderlich <frank-w@public-files.de>
-References: <20220502153238.85090-1-linux@fw-web.de>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220502153238.85090-1-linux@fw-web.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Colin Foster <colin.foster@in-advantage.com>
+Subject: [PATCH net-next 0/3] Add DSA support for tc_actions selftest
+Date:   Tue,  3 May 2022 15:08:01 +0300
+Message-Id: <20220503120804.840463-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: VI1P195CA0080.EURP195.PROD.OUTLOOK.COM
+ (2603:10a6:802:59::33) To AM0PR04MB5121.eurprd04.prod.outlook.com
+ (2603:10a6:208:c1::16)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 790d69d1-06ba-48aa-a401-08da2cfd9d97
+X-MS-TrafficTypeDiagnostic: DB6PR0402MB2743:EE_
+X-Microsoft-Antispam-PRVS: <DB6PR0402MB2743A9CB4E5FD0656FEB58F7E0C09@DB6PR0402MB2743.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: tIoJrSRTT3CrCTa8aZYpgZWprf+Ni51n9GODVd0vQ7P1X3ZSQbK3Clb6yK8cSZrDDU71itHTgiQZu65Dvsqx9tRtXYKP+y3bMVhAGZpAuVG2lQjfuoPKeiT0QoTBvqR8DcbqTOF7FTqtjjzaYfwSXGp3KWqLh4EI+SE8g/xQW/TsOnjT+pAX3SPsS3E1JdJzZlXn9ZCB3hCrxqgL9mTrA30fpmYiHfvj26YzNNfY6OJqW5ivQ0RMmiUMCwJ59mwvYIcBVrR+UqRaIAIqjby4HlIwE+LKOyqIAF3TIomyU7aaUUlcwEqysAnzay5XgfdRcuYNEG34SmHxYsJ/+N/9dVyNAQ8LPq3Mwc+LWZ4FBodSVNp8vH2VhsrgRH1kR0jjMQ5HjiJHlhowPYB6vZYVn+0bFEomFpPG/MQu+Bsn7DvKOLoBP4BPQgCvR1nrKNCCQhaLkZyGW2PxM7HmAbceAlPbwETVj0xo/0pL/YrPhnbE1FCosgNFEYtyoi36gSs8hIb/F8DqbBtW9bEkCsrE3IshywzF6GiGFDYxGB8sQhWhNss+M2sFgRjuiyxTNn6SQtheCHj7xskqLyM68jPH+Zrx85S9Iz3Eece63Xs7pJfZZO73kWQC1GURHTOZLn9Ckfm+d79DtabLj2YBHXVKiywNBTb0bNeyJHqW5A8eHW6NOQdCM7SbYS25Ga6RRktfiCDNdeTG9p7PXY+mfupe5w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5121.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6666004)(4326008)(36756003)(52116002)(6506007)(66476007)(8676002)(66946007)(66556008)(2906002)(83380400001)(186003)(1076003)(4744005)(6512007)(26005)(2616005)(44832011)(86362001)(316002)(38350700002)(38100700002)(8936002)(54906003)(7416002)(6486002)(508600001)(6916009)(5660300002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ZRoSJxY2i0Srn5nzODvhehCUgIpbTuzvXHfEX/KvobXT8NxWWa8G+rw8dXLR?=
+ =?us-ascii?Q?JKZg27eQyJpZLz+ha5QALMSflFff81PmVxMXDFWZ9F5YvrAt4X5ZlASy/gfR?=
+ =?us-ascii?Q?h6yQdnDrK578LDWxJO6osIlJ7v8CPPA+u3kQrqpMFc1XwCNrNhJPjLoRs3U9?=
+ =?us-ascii?Q?/P5i41PkqJaqRyLYoYLEV7daLBzo0ANFHiIB3BRemXvKY4VzB1cU8Hh9byDa?=
+ =?us-ascii?Q?Jko9kDD3A7dD8b6Dmg+faVQ0psdoLSP3hbywLsdI5R4FzPlBv+IGXWspZ1xg?=
+ =?us-ascii?Q?qQMp7C58GVnoOBBeAWaIQ+ervAC5jB5jXFi1DYxS/K1H39seZU/5q0+t5znE?=
+ =?us-ascii?Q?UrxAR6uv2GGKQ+GHq40Ye7OVJZxtK5ydGYJFbIt3vQ0nM9k606qw0wNXJIoR?=
+ =?us-ascii?Q?o3yYzU3HVCMkkgvVGf7UOzCI7nxNDsCJErWb8Mj4qZxZ408cazYzdWVX6xQp?=
+ =?us-ascii?Q?Ci9QfYW5VrSQxANG4AsCeuqTZTeYMEI3X7xBZtmEB0lC6Aia3AeCitW5jRqc?=
+ =?us-ascii?Q?I6drAyplyTOrfMraRruFoh3C5wLe6H3ZoCxvpWJbYApeDa3NPW1zI6mb8gKf?=
+ =?us-ascii?Q?KW2PmFWkFGD3JDl+gFOjfu3QgCj3amoVwk3HsqxUpyCSm5wJKtg+Fv1/2oLi?=
+ =?us-ascii?Q?LQnWDgKSwo9Vc30fm+uZSM3IVgUKpEONF+AKxZ29BUSgJhE2842qnpLSTcCW?=
+ =?us-ascii?Q?LyopZZgTeevkomnGbxTLhOhn5MVQnWn5FS8kbThlgzJMiVCy8PyaG5rFAeqA?=
+ =?us-ascii?Q?Wf1KaOrbwAC8s9rKSpq0NHLTpQJYxs+Vx6+z/CwJEo+sk/PR7akvvaQYB4RF?=
+ =?us-ascii?Q?RV3qc3MpJqo/DVB9LxKMgo5Uw0zgtePOhSbrUd00Z+VjD5y8v6I248nWNL/b?=
+ =?us-ascii?Q?k+xpPcOmulDEZwcG90/UfrLwoCuPEXnxfgR+pQDIIsZKmmlMwlwY8RY0W6+k?=
+ =?us-ascii?Q?9xqDyQD8nYmSSx/3uTsmPmlT6z+AblAMUOnh2zeuPaEKYqkuiS4u0PPBomie?=
+ =?us-ascii?Q?9axa1GI8N/wOQ1MJhIr7Qv4dGCNWt6+wtF1KFowx3YjcgsnXINY/kvtbipHO?=
+ =?us-ascii?Q?4Mu6xpe7RW70vmUCUgCB3mZZ3NxVzjlU3W0wQkFN2B2CDRVt5u85bD64dPjQ?=
+ =?us-ascii?Q?8tiD2u2RK1zfgGDTiwb6G2p2n3q8ykGkxDHFtlHPZbXfrDsI/Q+JIV5sg11x?=
+ =?us-ascii?Q?nQmqpoBfDtDNiGWq6JKS4/lTaqKu0wz0lFLeCNz9z9b54E4p2w2tuwAYRX/7?=
+ =?us-ascii?Q?frzpfiWXG2bnxluQkxvbgbONNTooaKE7rdhOns078RFUB44cy7PHeTQmPhZD?=
+ =?us-ascii?Q?j5dPyUkIqQ1JJiqLdEzL5blgoSfCKAm+hXJ4E8HA1A+3epR5Y7C8uOgs4Qe1?=
+ =?us-ascii?Q?1fPMctA8z97Knh0WjAiv3WFpJYd7ifpVAf76C0MB0KBbHigR2yHwR7URT1KP?=
+ =?us-ascii?Q?CVdva3on7/lDNr9IIbT4fJBTLhqhnta5EZYGhjjjLQ5QcDIVvrK2Ehv0S7M2?=
+ =?us-ascii?Q?vi4aYUZ3M9cjTigfE5Y4TlZdXh1ap8tl1bIBBgkgLzkplbmk7a0bo3ebkMys?=
+ =?us-ascii?Q?xCqfE0x3NgFSawysdxi0+iogkp9Gbx7KAmKBdCIg7F35GA9bv5sNLWazCrpj?=
+ =?us-ascii?Q?pI7PZNKINBPm16ZG8IgbFhwXUNwyeMR466hKu9fSkdmJxyI/QlUcHkCqodsg?=
+ =?us-ascii?Q?Z7l2ZLBEQ1LTohSJuix5Rz0xYrV1M3d+PwJzjAiqPt91ngSAKH+La/ADFt78?=
+ =?us-ascii?Q?/85syic1LDcTm3xH8cRy5bBxK1HmjwU=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 790d69d1-06ba-48aa-a401-08da2cfd9d97
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5121.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 May 2022 12:08:21.0686
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: lkdMZap2Ob7XKb6b6PKeZSQLgRY9bIE+mGC9hsl8UsAveF8X2orIErYTiVzFTOAZquZLMPZi3h96VdaioY7S9Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0402MB2743
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02/05/2022 17:32, Frank Wunderlich wrote:
-> From: Frank Wunderlich <frank-w@public-files.de>
-> 
-> Convert txt binding to yaml binding for Mediatek switches.
-> 
-> Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
-> ---
->  .../devicetree/bindings/net/dsa/mediatek.yaml | 435 ++++++++++++++++++
->  .../devicetree/bindings/net/dsa/mt7530.txt    | 327 -------------
->  2 files changed, 435 insertions(+), 327 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/net/dsa/mediatek.yaml
->  delete mode 100644 Documentation/devicetree/bindings/net/dsa/mt7530.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek.yaml
-> new file mode 100644
-> index 000000000000..c1724809d34e
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek.yaml
+This change set makes the tc_actions.sh selftest run successfully on at
+least NXP LS1028A, which includes the felix/ocelot DSA driver.
 
-Specific name please, so previous (with vendor prefix) was better:
-mediatek,mt7530.yaml
+Vladimir Oltean (3):
+  net: mscc: ocelot: offload tc action "ok" using an empty action vector
+  selftests: forwarding: tc_actions: allow mirred egress test to run on
+    non-offloaded h2
+  selftests: net: dsa: symlink the tc_actions.sh test
 
-> @@ -0,0 +1,435 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+ drivers/net/ethernet/mscc/ocelot_flower.c        | 16 ++++++++++++++++
+ .../selftests/drivers/net/dsa/tc_actions.sh      |  1 +
+ .../selftests/net/forwarding/tc_actions.sh       |  2 +-
+ 3 files changed, 18 insertions(+), 1 deletion(-)
+ create mode 120000 tools/testing/selftests/drivers/net/dsa/tc_actions.sh
 
-You should CC previous contributors and get their acks on this. You
-copied here a lot of description.
+-- 
+2.25.1
 
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/dsa/mediatek.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Mediatek MT7530 Ethernet switch
-> +
-> +maintainers:
-> +  - Sean Wang <sean.wang@mediatek.com>
-> +  - Landen Chao <Landen.Chao@mediatek.com>
-> +  - DENG Qingfang <dqfext@gmail.com>
-> +
-> +description: |
-> +  Port 5 of mt7530 and mt7621 switch is muxed between:
-> +  1. GMAC5: GMAC5 can interface with another external MAC or PHY.
-> +  2. PHY of port 0 or port 4: PHY interfaces with an external MAC like 2nd GMAC
-> +     of the SOC. Used in many setups where port 0/4 becomes the WAN port.
-> +     Note: On a MT7621 SOC with integrated switch: 2nd GMAC can only connected to
-> +       GMAC5 when the gpios for RGMII2 (GPIO 22-33) are not used and not
-> +       connected to external component!
-> +
-> +  Port 5 modes/configurations:
-> +  1. Port 5 is disabled and isolated: An external phy can interface to the 2nd
-> +     GMAC of the SOC.
-> +     In the case of a build-in MT7530 switch, port 5 shares the RGMII bus with 2nd
-> +     GMAC and an optional external phy. Mind the GPIO/pinctl settings of the SOC!
-> +  2. Port 5 is muxed to PHY of port 0/4: Port 0/4 interfaces with 2nd GMAC.
-> +     It is a simple MAC to PHY interface, port 5 needs to be setup for xMII mode
-> +     and RGMII delay.
-> +  3. Port 5 is muxed to GMAC5 and can interface to an external phy.
-> +     Port 5 becomes an extra switch port.
-> +     Only works on platform where external phy TX<->RX lines are swapped.
-> +     Like in the Ubiquiti ER-X-SFP.
-> +  4. Port 5 is muxed to GMAC5 and interfaces with the 2nd GAMC as 2nd CPU port.
-> +     Currently a 2nd CPU port is not supported by DSA code.
-> +
-> +  Depending on how the external PHY is wired:
-> +  1. normal: The PHY can only connect to 2nd GMAC but not to the switch
-> +  2. swapped: RGMII TX, RX are swapped; external phy interface with the switch as
-> +     a ethernet port. But can't interface to the 2nd GMAC.
-> +
-> +    Based on the DT the port 5 mode is configured.
-> +
-> +  Driver tries to lookup the phy-handle of the 2nd GMAC of the master device.
-> +  When phy-handle matches PHY of port 0 or 4 then port 5 set-up as mode 2.
-> +  phy-mode must be set, see also example 2 below!
-> +  * mt7621: phy-mode = "rgmii-txid";
-> +  * mt7623: phy-mode = "rgmii";
-> +
-> +  CPU-Ports need a phy-mode property:
-> +    Allowed values on mt7530 and mt7621:
-> +      - "rgmii"
-> +      - "trgmii"
-> +    On mt7531:
-> +      - "1000base-x"
-> +      - "2500base-x"
-> +      - "sgmii"
-> +
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - mediatek,mt7530
-> +      - mediatek,mt7531
-> +      - mediatek,mt7621
-> +
-> +  "#address-cells":
-> +    const: 1
-> +
-> +  "#size-cells":
-> +    const: 0
-> +
-> +  core-supply:
-> +    description: |
-> +      Phandle to the regulator node necessary for the core power.
-> +
-> +  "#gpio-cells":
-> +    description: |
-> +      Must be 2 if gpio-controller is defined.
-> +    const: 2
-> +
-> +  gpio-controller:
-> +    type: boolean
-> +    description: |
-> +      Boolean; if defined, MT7530's LED controller will run on
-
-No need to repeat Boolean.
-
-> +      GPIO mode.
-> +
-> +  "#interrupt-cells":
-> +    const: 1
-> +
-> +  interrupt-controller:
-> +    type: boolean
-> +    description: |
-> +      Boolean; Enables the internal interrupt controller.
-
-Skip description.
-
-> +
-> +  interrupts:
-> +    description: |
-> +      Parent interrupt for the interrupt controller.
-
-Skip description.
-
-> +    maxItems: 1
-> +
-> +  io-supply:
-> +    description: |
-> +      Phandle to the regulator node necessary for the I/O power.
-> +      See Documentation/devicetree/bindings/regulator/mt6323-regulator.txt
-> +      for details for the regulator setup on these boards.
-> +
-> +  mediatek,mcm:
-> +    type: boolean
-> +    description: |
-> +      Boolean; 
-
-No need to repeat Boolean.
-
-> if defined, indicates that either MT7530 is the part
-> +      on multi-chip module belong to MT7623A has or the remotely standalone
-> +      chip as the function MT7623N reference board provided for.
-> +
-> +  reset-gpios:
-> +    description: |
-> +      Should be a gpio specifier for a reset line.
-> +    maxItems: 1
-> +
-> +  reset-names:
-> +    description: |
-> +      Should be set to "mcm".
-> +    const: mcm
-> +
-> +  resets:
-> +    description: |
-> +      Phandle pointing to the system reset controller with
-> +      line index for the ethsys.
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-
-What about address/size cells?
-
-> +
-> +allOf:
-> +  - $ref: "dsa.yaml#"
-> +  - if:
-> +      required:
-> +        - mediatek,mcm
-
-Original bindings had this reversed.
-
-> +    then:
-> +      required:
-> +        - resets
-> +        - reset-names
-> +    else:
-> +      required:
-> +        - reset-gpios
-> +
-> +  - if:
-> +      required:
-> +        - interrupt-controller
-> +    then:
-> +      required:
-> +        - "#interrupt-cells"
-
-This should come from dt schema already...
-
-> +        - interrupts
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          items:
-> +            - const: mediatek,mt7530
-> +    then:
-> +      required:
-> +        - core-supply
-> +        - io-supply
-> +
-> +
-> +patternProperties:
-> +  "^ports$":
-
-It''s not a pattern, so put it under properties, like regular property.
-
-> +    type: object
-> +
-> +    patternProperties:
-> +      "^port@[0-9]+$":
-> +        type: object
-> +        description: Ethernet switch ports
-> +
-> +        $ref: dsa-port.yaml#
-
-This should go to allOf below.
-
-> +
-> +        properties:
-> +          reg:
-> +            description: |
-> +              Port address described must be 6 for CPU port and from 0 to 5 for user ports.
-> +
-> +        unevaluatedProperties: false
-> +
-> +        allOf:
-> +          - if:
-> +              properties:
-> +                label:
-> +                  items:
-> +                    - const: cpu
-> +            then:
-> +              required:
-> +                - reg
-> +                - phy-mode
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    mdio0 {
-
-Just mdio
-
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +        switch@0 {
-> +            compatible = "mediatek,mt7530";
-> +            #address-cells = <1>;
-> +            #size-cells = <0>;
-> +            reg = <0>;
-> +
-> +            core-supply = <&mt6323_vpa_reg>;
-> +            io-supply = <&mt6323_vemc3v3_reg>;
-> +            reset-gpios = <&pio 33 0>;
-
-Use GPIO flag define/constant.
-
-> +
-> +            ports {
-> +                #address-cells = <1>;
-> +                #size-cells = <0>;
-> +                port@0 {
-> +                    reg = <0>;
-> +                    label = "lan0";
-> +                };
-> +
-> +                port@1 {
-> +                    reg = <1>;
-> +                    label = "lan1";
-> +                };
-> +
-> +                port@2 {
-> +                    reg = <2>;
-> +                    label = "lan2";
-> +                };
-> +
-> +                port@3 {
-> +                    reg = <3>;
-> +                    label = "lan3";
-> +                };
-> +
-> +                port@4 {
-> +                    reg = <4>;
-> +                    label = "wan";
-> +                };
-> +
-> +                port@6 {
-> +                    reg = <6>;
-> +                    label = "cpu";
-> +                    ethernet = <&gmac0>;
-> +                    phy-mode = "trgmii";
-> +                    fixed-link {
-> +                        speed = <1000>;
-> +                        full-duplex;
-> +                    };
-> +                };
-> +            };
-> +        };
-> +    };
-> +
-> +  - |
-> +    //Example 2: MT7621: Port 4 is WAN port: 2nd GMAC -> Port 5 -> PHY port 4.
-> +
-> +    eth {
-
-s/eth/ethernet/
-
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +        gmac0: mac@0 {
-> +            compatible = "mediatek,eth-mac";
-> +            reg = <0>;
-> +            phy-mode = "rgmii";
-> +
-> +            fixed-link {
-> +                speed = <1000>;
-> +                full-duplex;
-> +                pause;
-> +            };
-> +        };
-> +
-> +        gmac1: mac@1 {
-> +            compatible = "mediatek,eth-mac";
-> +            reg = <1>;
-> +            phy-mode = "rgmii-txid";
-> +            phy-handle = <&phy4>;
-> +        };
-> +
-> +        mdio: mdio-bus {
-> +            #address-cells = <1>;
-> +            #size-cells = <0>;
-> +
-> +            /* Internal phy */
-> +            phy4: ethernet-phy@4 {
-> +                reg = <4>;
-> +            };
-> +
-> +            mt7530: switch@1f {
-> +                compatible = "mediatek,mt7621";
-> +                #address-cells = <1>;
-> +                #size-cells = <0>;
-> +                reg = <0x1f>;
-> +                mediatek,mcm;
-> +
-> +                resets = <&rstctrl 2>;
-> +                reset-names = "mcm";
-> +
-> +                ports {
-> +                    #address-cells = <1>;
-> +                    #size-cells = <0>;
-> +
-> +                    port@0 {
-> +                        reg = <0>;
-> +                        label = "lan0";
-> +                    };
-> +
-> +                    port@1 {
-> +                        reg = <1>;
-> +                        label = "lan1";
-> +                    };
-> +
-> +                    port@2 {
-> +                        reg = <2>;
-> +                        label = "lan2";
-> +                    };
-> +
-> +                    port@3 {
-> +                        reg = <3>;
-> +                        label = "lan3";
-> +                    };
-> +
-> +        /* Commented out. Port 4 is handled by 2nd GMAC.
-> +                    port@4 {
-> +                        reg = <4>;
-> +                        label = "lan4";
-> +                    };
-> +        */
-
-Messed up indentation
-> +
-> +                    port@6 {
-> +                        reg = <6>;
-> +                        label = "cpu";
-> +                        ethernet = <&gmac0>;
-> +                        phy-mode = "rgmii";
-> +
-> +                        fixed-link {
-> +                            speed = <1000>;
-> +                            full-duplex;
-> +                            pause;
-> +                        };
-> +                    };
-> +                };
-> +            };
-> +        };
-> +    };
-> +
-> +  - |
-> +    //Example 3: MT7621: Port 5 is connected to external PHY: Port 5 -> external PHY.
-> +
-> +    eth {
-
-Also ethernet?
-
-
-
-Best regards,
-Krzysztof
