@@ -2,233 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C46AD518CB3
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 20:58:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6818A518CD4
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 21:04:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241462AbiECTCN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 15:02:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56388 "EHLO
+        id S239747AbiECTH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 15:07:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234645AbiECTCL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 15:02:11 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CF6B26541;
-        Tue,  3 May 2022 11:58:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Q8xZuwWHbM5RtbVLpI5p8QHhyHnoykAXVMFnszZxrdg=; b=TqkdHc+398urJjW6/hR3lSmD91
-        Fo7i3n3SNwuNElwVYi/w+KnbhS8+u2vWgV1cIJIjZ8jCkAcSLSvlso5lciPOVsZuwZ60o4GZ0Sqjx
-        22Y1fjpJoK/chqdm1vTsGuRJJqpC4q32E8Os80o8bAzvpNnZtKFYUr9IxCs7Y3+qiYY9v7R2c2HHE
-        u9NeehqoIhEiDWWb10yrMKqoHSbKirkdSM2MnGXbLFUWfXxGVmNdvtyoWTdWi0kALfB+UzyKpCQXc
-        XjY+PUaHj85B5+JbHxedajI8IojA4qagg32dYWLI8h4fZxyG6QPV3ENEKaWRgNkAk597bSNzvAt8G
-        d2ESiTmQ==;
-Received: from [179.113.53.197] (helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1nlxio-0001n9-LT; Tue, 03 May 2022 20:58:06 +0200
-Message-ID: <92dee5a0-f04e-f352-1e22-f990818ca06a@igalia.com>
-Date:   Tue, 3 May 2022 15:57:32 -0300
+        with ESMTP id S232372AbiECTHz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 15:07:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBC233B3F8;
+        Tue,  3 May 2022 12:04:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A3420B81D9D;
+        Tue,  3 May 2022 19:04:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A07BC385A9;
+        Tue,  3 May 2022 19:04:17 +0000 (UTC)
+Date:   Tue, 3 May 2022 15:04:10 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org
+Subject: : [PATCH] ftrace/x86: Add FTRACE_MCOUNT_MAX_OFFSET to avoid adding
+ weak functions
+Message-ID: <20220503150410.2d9e88aa@rorschach.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 16/30] drivers/hv/vmbus, video/hyperv_fb: Untangle and
- refactor Hyper-V panic notifiers
-Content-Language: en-US
-To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "bhe@redhat.com" <bhe@redhat.com>,
-        "pmladek@suse.com" <pmladek@suse.com>,
-        "kexec@lists.infradead.org" <kexec@lists.infradead.org>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "bcm-kernel-feedback-list@broadcom.com" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "linux-remoteproc@vger.kernel.org" <linux-remoteproc@vger.kernel.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
-        "linux-um@lists.infradead.org" <linux-um@lists.infradead.org>,
-        "linux-xtensa@linux-xtensa.org" <linux-xtensa@linux-xtensa.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "openipmi-developer@lists.sourceforge.net" 
-        <openipmi-developer@lists.sourceforge.net>,
-        "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "kernel-dev@igalia.com" <kernel-dev@igalia.com>,
-        "kernel@gpiccoli.net" <kernel@gpiccoli.net>,
-        "halves@canonical.com" <halves@canonical.com>,
-        "fabiomirmar@gmail.com" <fabiomirmar@gmail.com>,
-        "alejandro.j.jimenez@oracle.com" <alejandro.j.jimenez@oracle.com>,
-        "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>,
-        "arnd@arndb.de" <arnd@arndb.de>, "bp@alien8.de" <bp@alien8.de>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "d.hatayama@jp.fujitsu.com" <d.hatayama@jp.fujitsu.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "dyoung@redhat.com" <dyoung@redhat.com>,
-        "feng.tang@intel.com" <feng.tang@intel.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "hidehiro.kawai.ez@hitachi.com" <hidehiro.kawai.ez@hitachi.com>,
-        "jgross@suse.com" <jgross@suse.com>,
-        "john.ogness@linutronix.de" <john.ogness@linutronix.de>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "mhiramat@kernel.org" <mhiramat@kernel.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "paulmck@kernel.org" <paulmck@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "senozhatsky@chromium.org" <senozhatsky@chromium.org>,
-        "stern@rowland.harvard.edu" <stern@rowland.harvard.edu>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "vgoyal@redhat.com" <vgoyal@redhat.com>,
-        vkuznets <vkuznets@redhat.com>,
-        "will@kernel.org" <will@kernel.org>,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-17-gpiccoli@igalia.com>
- <PH0PR21MB30250C9246FFF36AFB1DFDECD7FC9@PH0PR21MB3025.namprd21.prod.outlook.com>
- <2787b476-6366-1c83-db80-0393da417497@igalia.com>
- <PH0PR21MB3025A46643EEDA6B14AC1ECED7C09@PH0PR21MB3025.namprd21.prod.outlook.com>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <PH0PR21MB3025A46643EEDA6B14AC1ECED7C09@PH0PR21MB3025.namprd21.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03/05/2022 15:13, Michael Kelley (LINUX) wrote:
-> [...]
->> (a) We could forget about this change, and always do the clean-up here,
->> not relying in machine_crash_shutdown().
->> Pro: really simple, behaves the same as it is doing currently.
->> Con: less elegant/concise, doesn't allow arm64 customization.
->>
->> (b) Add a way to allow ARM64 customization of shutdown crash handler.
->> Pro: matches x86, more customizable, improves arm64 arch code.
->> Con: A tad more complex.
->>
->> Also, a question that came-up: if ARM64 has no way of calling special
->> crash shutdown handler, how can you execute hv_stimer_cleanup() and
->> hv_synic_disable_regs() there? Or are they not required in ARM64?
->>
-> 
-> My suggestion is to do (a) for now.  I suspect (b) could be a more
-> extended discussion and I wouldn't want your patch set to get held
-> up on that discussion.  I don't know what the sense of the ARM64
-> maintainers would be toward (b).  They have tried to avoid picking
-> up code warts like have accumulated on the x86/x64 side over the
-> years, and I agree with that effort.  But as more and varied
-> hypervisors become available for ARM64, it seems like a framework
-> for supporting a custom shutdown handler may become necessary.
-> But that could take a little time.
-> 
-> You are right about hv_stimer_cleanup() and hv_synic_disable_regs().
-> We are not running these when a panic occurs on ARM64, and we
-> should be, though the risk is small.   We will pursue (b) and add
-> these additional cleanups as part of that.  But again, I would suggest
-> doing (a) for now, and we will switch back to your solution once
-> (b) is in place.
-> 
+From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-Thanks again Michael, I'll stick with (a) for now. I'll check with ARM64
-community about that, and I might even try to implement something in
-parallel (if you are not already working on that - lemme know please),
-so we don't get stuck here. As you said, I feel that this is more and
-more relevant as the number of panic/crash/kexec scenarios tend to
-increase in ARM64.
+If an unused weak function was traced, it's call to fentry will still
+exist, which gets added into the __mcount_loc table. Ftrace will use
+kallsyms to retrieve the name for each location in __mcount_loc to display
+it in the available_filter_functions and used to enable functions via the
+name matching in set_ftrace_filter/notrace. Enabling these functions do
+nothing but enable an unused call to ftrace_caller. If a traced weak
+function is overridden, the symbol of the function would be used for it,
+which will either created duplicate names, or if the previous function was
+not traced, it would be incorrectly listed in available_filter_functions
+as a function that can be traced.
 
+This became an issue with BPF[1] as there are tooling that enables the
+direct callers via ftrace but then checks to see if the functions were
+actually enabled. The case of one function that was marked notrace, but
+was followed by an unused weak function that was traced. The unused
+function's call to fentry was added to the __mcount_loc section, and
+kallsyms retrieved the untraced function's symbol as the weak function was
+overridden. Since the untraced function would not get traced, the BPF
+check would detect this and fail.
 
->> [...]
->> Some ideas of what we can do here:
->>
->> I) we could change the framebuffer notifier to rely on trylocks, instead
->> of risking a lockup scenario, and with that, we can execute it before
->> the vmbus disconnect in the hypervisor list;
-> 
-> I think we have to do this approach for now.
-> 
->>
->> II) we ignore the hypervisor notifier in case of kdump _by default_, and
->> if the users don't want that, they can always set the panic notifier
->> level to 4 and run all notifiers prior to kdump; would that be terrible
->> you think? Kdump users might don't care about the framebuffer...
->>
->> III) we go with approach (b) above and refactor arm64 code to allow the
->> custom crash handler on kdump time, then [with point (I) above] the
->> logic proposed in this series is still valid - seems more and more the
->> most correct/complete solution.
-> 
-> But even when/if we get approach (b) implemented, having the
-> framebuffer notifier on the pre_reboot list is still too late with the
-> default of panic_notifier_level = 2.  The kdump path will reset the
-> VMbus connection and then the framebuffer notifier won't work.
-> 
+The real fix would be to fix kallsyms to not show address of weak
+functions as the function before it. But that would require adding code in
+the build to add function size to kallsyms so that it can know when the
+function ends instead of just using the start of the next known symbol.
 
-OK, perfect! I'll work something along these lines in V2, allowing the
-FB notifier to always run in the hypervisor list before the vmbus unload
-mechanism.
+In the mean time, this is a work around. Add a FTRACE_MCOUNT_MAX_OFFSET
+macro that if defined, ftrace will ignore any function that has its call
+to fentry/mcount that has an offset from the symbol that is greater than
+FTRACE_MCOUNT_MAX_OFFSET.
 
+If CONFIG_HAVE_FENTRY is defined for x86, define FTRACE_MCOUNT_MAX_OFFSET
+to zero, which will have ftrace ignore all locations that are not at the
+start of the function.
 
->> [...]
->>>> +static int hv_panic_vmbus_unload(struct notifier_block *nb, unsigned long val,
->>>>  			      void *args)
->>>> +{
->>>> +	if (!kexec_crash_loaded())
->>>
->>> I'm not clear on the purpose of this condition.  I think it means
->>> we will skip the vmbus_initiate_unload() if a panic occurs in the
->>> kdump kernel.  Is there a reason a panic in the kdump kernel
->>> should be treated differently?  Or am I misunderstanding?
->>
->> This is really related with the point discussed in the top of this
->> response - I assumed both ARM64/x86_64 would behave the same and
->> disconnect the vmbus through the custom crash handler when kdump is set,
->> so worth skipping it here in the notifier. But that's not true for ARM64
->> as you pointed, so this guard against kexec is really part of the
->> decision/discussion on what to do with ARM64 heh
-> 
-> But note that vmbus_initiate_unload() already has a guard built-in.
-> If the intent of this test is just as a guard against running twice,
-> then it isn't needed.
+[1] https://lore.kernel.org/all/20220412094923.0abe90955e5db486b7bca279@kernel.org/
 
-Since we're going to avoid relying in the custom crash_shutdown(), due
-to the lack of ARM64 support for now, this check will be removed in V2.
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+---
+ arch/x86/include/asm/ftrace.h |  5 ++++
+ kernel/trace/ftrace.c         | 50 +++++++++++++++++++++++++++++++++--
+ 2 files changed, 53 insertions(+), 2 deletions(-)
 
-Its purpose was to skip the notifier *proactively* in case kexec is set,
-given that...once kexec happens, the custom crash_shutdown() would run
-the same function (wrong assumption for ARM64, my bad).
+diff --git a/arch/x86/include/asm/ftrace.h b/arch/x86/include/asm/ftrace.h
+index 024d9797646e..70c88d49bf45 100644
+--- a/arch/x86/include/asm/ftrace.h
++++ b/arch/x86/include/asm/ftrace.h
+@@ -9,6 +9,11 @@
+ # define MCOUNT_ADDR		((unsigned long)(__fentry__))
+ #define MCOUNT_INSN_SIZE	5 /* sizeof mcount call */
+ 
++/* Ignore unused weak functions which will have non zero offsets */
++#ifdef CONFIG_HAVE_FENTRY
++# define FTRACE_MCOUNT_MAX_OFFSET	0
++#endif
++
+ #ifdef CONFIG_DYNAMIC_FTRACE
+ #define ARCH_SUPPORTS_FTRACE_OPS 1
+ #endif
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index 5c465e70d146..3529c44ab9db 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -3665,6 +3665,31 @@ static void add_trampoline_func(struct seq_file *m, struct ftrace_ops *ops,
+ 		seq_printf(m, " ->%pS", ptr);
+ }
+ 
++#ifdef FTRACE_MCOUNT_MAX_OFFSET
++static int print_rec(struct seq_file *m, unsigned long ip)
++{
++	unsigned long offset;
++	char str[KSYM_SYMBOL_LEN];
++	char *modname;
++	int ret;
++
++	ret = kallsyms_lookup(ip, NULL, &offset, &modname, str);
++	if (!ret || offset > FTRACE_MCOUNT_MAX_OFFSET)
++		return -1;
++
++	seq_puts(m, str);
++	if (modname)
++		seq_printf(m, " [%s]", modname);
++	return 0;
++}
++#else
++static int print_rec(struct seq_file *m, unsigned long ip)
++{
++	seq_printf(m, "%ps", (void *)ip);
++	return 0;
++}
++#endif
++
+ static int t_show(struct seq_file *m, void *v)
+ {
+ 	struct ftrace_iterator *iter = m->private;
+@@ -3689,7 +3714,9 @@ static int t_show(struct seq_file *m, void *v)
+ 	if (!rec)
+ 		return 0;
+ 
+-	seq_printf(m, "%ps", (void *)rec->ip);
++	if (print_rec(m, rec->ip))
++		return 0;
++
+ 	if (iter->flags & FTRACE_ITER_ENABLED) {
+ 		struct ftrace_ops *ops;
+ 
+@@ -4007,6 +4034,24 @@ add_rec_by_index(struct ftrace_hash *hash, struct ftrace_glob *func_g,
+ 	return 0;
+ }
+ 
++#ifdef FTRACE_MCOUNT_MAX_OFFSET
++static int lookup_ip(unsigned long ip, char **modname, char *str)
++{
++	unsigned long offset;
++
++	kallsyms_lookup(ip, NULL, &offset, modname, str);
++	if (offset > FTRACE_MCOUNT_MAX_OFFSET)
++		return -1;
++	return 0;
++}
++#else
++static int lookup_ip(unsigned long ip, char **modname, char *str)
++{
++	kallsyms_lookup(ip, NULL, NULL, modname, str);
++	return 0;
++}
++#endif
++
+ static int
+ ftrace_match_record(struct dyn_ftrace *rec, struct ftrace_glob *func_g,
+ 		struct ftrace_glob *mod_g, int exclude_mod)
+@@ -4014,7 +4059,8 @@ ftrace_match_record(struct dyn_ftrace *rec, struct ftrace_glob *func_g,
+ 	char str[KSYM_SYMBOL_LEN];
+ 	char *modname;
+ 
+-	kallsyms_lookup(rec->ip, NULL, NULL, &modname, str);
++	if (lookup_ip(rec->ip, &modname, str))
++		return 0;
+ 
+ 	if (mod_g) {
+ 		int mod_matches = (modname) ? ftrace_match(modname, mod_g) : 0;
+-- 
+2.35.1
 
-Postponing that slightly would maybe gain us some time while the
-hypervisor finish its work, so we'd delay less in the vmbus unload path
-- that was the rationale behind this check.
-
-
-Cheers!
