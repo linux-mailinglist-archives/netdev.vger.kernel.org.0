@@ -2,190 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43899517F04
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 09:36:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2AE4517EEA
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 09:30:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232359AbiECHim (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 03:38:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50678 "EHLO
+        id S232296AbiECHdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 03:33:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231830AbiECHim (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 03:38:42 -0400
-X-Greylist: delayed 455 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 03 May 2022 00:35:09 PDT
-Received: from mx-8.mail.web4u.cz (smtp7.web4u.cz [81.91.87.87])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28EF737A1E;
-        Tue,  3 May 2022 00:35:09 -0700 (PDT)
-Received: from mx-8.mail.web4u.cz (localhost [127.0.0.1])
-        by mx-8.mail.web4u.cz (Postfix) with ESMTP id B6BA32014EF;
-        Tue,  3 May 2022 09:27:29 +0200 (CEST)
-Received: from baree.pikron.com (unknown [94.112.11.73])
-        (Authenticated sender: ppisa@pikron.com)
-        by mx-8.mail.web4u.cz (Postfix) with ESMTPA id 59E03201258;
-        Tue,  3 May 2022 09:27:29 +0200 (CEST)
-From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
-To:     "Marc Kleine-Budde" <mkl@pengutronix.de>
-Subject: Re: [PATCH v1 0/4] can: ctucanfd: clenup acoording to the actual rules and documentation linking
-Date:   Tue, 3 May 2022 09:27:15 +0200
-User-Agent: KMail/1.9.10
-Cc:     Andrew Dennison <andrew.dennison@motec.com.au>,
-        linux-can@vger.kernel.org,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Marin Jerabek <martin.jerabek01@gmail.com>,
-        Ondrej Ille <ondrej.ille@gmail.com>,
-        Jiri Novak <jnovak@fel.cvut.cz>,
-        Jaroslav Beran <jara.beran@gmail.com>,
-        Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>,
-        Carsten Emde <c.emde@osadl.org>,
-        Drew Fustini <pdp7pdp7@gmail.com>,
-        Matej Vasilevski <matej.vasilevski@gmail.com>
-References: <cover.1650816929.git.pisa@cmp.felk.cvut.cz> <CAHQrW0_bxDyTf7pNHgXwcO=-0YRWtsxscOSWWU4fDmNYo8d-9Q@mail.gmail.com> <20220503064626.lcc7nl3rze5txive@pengutronix.de>
-In-Reply-To: <20220503064626.lcc7nl3rze5txive@pengutronix.de>
-X-KMail-QuotePrefix: > 
+        with ESMTP id S231761AbiECHdl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 03:33:41 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E43BB366AA;
+        Tue,  3 May 2022 00:30:09 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id j70so2507887pge.1;
+        Tue, 03 May 2022 00:30:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dCHiolDCrvWhPfPBdVy2NNQvhf7col2O52oDSi5J+HM=;
+        b=fKRXoiUdX9bK33lZYxOHszpqI/ifjAxGXDUQCEfq1txgEZoluJLwoJHvCpm8ZaHbcS
+         3qJWLICh6fa3rkczaJk2oP+XIw1F4OFjCmuxbrffL0ENJ19SZOfqdYN6jJYTtbVmErNI
+         gvSCarY+CMwXehYEkmxc8u5OqThFIhDDH/W7w9/ihUmYshT9E+3YoKIqMJ8j7b8HusRJ
+         GqS/od1HUgCN8iJ34srdfgwC8Im6zFOxYJjy1Y3fZg0Wz48wHsmLb4VWGyvnZyHgilIq
+         SfWh7I2BvxIFKk8MQNwIK/mCmQ325GTxEHIvE7iaeDQ00i6e4w+3eTE6Nq3A00npsrrV
+         3k6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dCHiolDCrvWhPfPBdVy2NNQvhf7col2O52oDSi5J+HM=;
+        b=o0NjS7jsDHUHvZLJi8zdD57o75uzrqwigXJoKUP5RwC/LvFH+/cP3G2ZEqf66dQAu2
+         D0AsHgyzjaRFzF8M0eofFD+h82ODxr/mAs0zp0/6+hZZ3aWlbUMZP8/MXnj0gzsqjEaK
+         GmBENXeYeCkAcdmxOq8HZv0sSIylRFqQbp4gSy67II5+YaunohQPsC46PDJPvo9xLV4k
+         6vHxJ1EyzL8Sh5Rw2PpSGWESYuzvMWurnYCskonyccifLf8Nu0IojYef8/oEA/wojcCn
+         vuVvFls+X2e4Xd+IR2d1yp8WzWRSvhrDRdN5M6HBRinxCkH4iDVs1HvziQlLG6eC7Ts4
+         bLsQ==
+X-Gm-Message-State: AOAM530KyCk+gJ0zpomZIEcZI/7oaH6LN5w+QWLCxWckmgbqLaNOsmQs
+        j8QqzJdGMWMLUzef91qi43XUAzfgBQQ=
+X-Google-Smtp-Source: ABdhPJwz5BQ/RPAjdHYborqmdtvWEmLaDh9m+p+WNhFXGG3ctA5E8bP7vcxppfNxbO/OHe7xC0b/xQ==
+X-Received: by 2002:a05:6a00:16c7:b0:4f7:e497:69b8 with SMTP id l7-20020a056a0016c700b004f7e49769b8mr14716676pfc.6.1651563009017;
+        Tue, 03 May 2022 00:30:09 -0700 (PDT)
+Received: from debian.me (subs32-116-206-28-55.three.co.id. [116.206.28.55])
+        by smtp.gmail.com with ESMTPSA id i4-20020a170902e48400b0015e8d4eb1edsm5733929ple.55.2022.05.03.00.30.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 May 2022 00:30:08 -0700 (PDT)
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     linux-doc@vger.kernel.org
+Cc:     Bagas Sanjaya <bagasdotme@gmail.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Dave Jones <davej@redhat.com>,
+        Randy Dunlap <randy.dunlap@oracle.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] net/core: Remove comment quote for __dev_queue_xmit()
+Date:   Tue,  3 May 2022 14:29:49 +0700
+Message-Id: <20220503072949.27336-1-bagasdotme@gmail.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <202205030927.15558.pisa@cmp.felk.cvut.cz>
-X-W4U-Auth: 3f689dcfd3550b7b0bcf9e525c23dbe5a6645c9e
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Marc and Andrew,
+When merging net-next for linux-next tree, Stephen Rothwell reported
+htmldocs warning:
 
-On Tuesday 03 of May 2022 08:46:26 Marc Kleine-Budde wrote:
-> On 03.05.2022 16:32:32, Andrew Dennison wrote:
-> > > > When value is configurable then for (uncommon) number
-> > > > of buffers which is not power of two, there will be likely
-> > > > a problem with way how buffers queue is implemented
-> >
-> > Only power of 2 makes sense to me: I didn't consider those corner
-> > cases but the driver could just round down to the next power of 2 and
-> > warn about a misconfiguration of the IP core.
->
-> +1
+Documentation/networking/kapi:92: net/core/dev.c:4101: WARNING: Missing matching underline for section title overline.
 
-Then (n-1) mask be used instead of modulo which is what I used for these
-kind of queues.
+-----------------------------------------------------------------------------------
+     I notice this method can also return errors from the queue disciplines,
+     including NET_XMIT_DROP, which is a positive value.  So, errors can also
 
-https://sourceforge.net/p/ulan/ulut/ci/master/tree/ulut/ul_dqfifo.h
+The warning is due to comment quote by BLG, which is separated by a dash
+line above. While it is fine in the docbook days, current documentation
+framework (Sphinx + kernel-doc) complains about it, so the documentation
+for __dev_queue_xmit() is not generated.
 
-> > I added the dynamic detection because the IP core default had changed
-> > to 2 TX buffers and this broke some hard coded assumptions in the
-> > driver in a rather obscure way that had me debugging for a bit...
->
-> The mainline driver uses a hard coded default of 4 still... Can you
-> provide that patch soonish?
+The commit containing the quote is actually d29f749e252bcd ("net: Fix
+build failure with 'make mandocs'."), which interacts with commit
+c526fd8f9f4f21 ("net: inline dev_queue_xmit()") that Stephen reported.
 
-We discuss with Ondrej Ille final location of the bits with queue
-length information etc... The version 3.0 of the core is in development
-still. So I do not like to introduce something which would break
-compatability with future revisions. Yes, we can check for version
-reported by IP core but when it is possible I would not introduce
-such logic... So if it gets to 5.19 it would be great but if we should
-risk incompatible changes or too cluttered logic then it will be
-5.20 material. Other option is to add Kconfig option to specify
-maximal number of TX buffers used by the driver for now.
+Fix the warning by removing the quote and adjust the method
+documentation accordingly.
 
-> > > You can make use of more TX buffers, if you implement (fully
-> > > hardware based) TX IRQ coalescing (== handle more than one TX
-> > > complete interrupt at a time) like in the mcp251xfd driver, or BQL
-> > > support (== send more than one TX CAN frame at a time). I've played
-> > > a bit with BQL support on the mcp251xfd driver (which is attached by
-> > > SPI), but with mixed results. Probably an issue with proper
-> > > configuration.
-> >
-> > Reducing CAN IRQ load would be good.
->
-> IRQ coalescing comes at the price of increased latency, but if you have
-> a timeout in hardware you can configure the latencies precisely.
+Fixes: d29f749e252bcd ("net: Fix build failure with 'make mandocs'.")
+Link: https://lore.kernel.org/linux-next/20220503073420.6d3f135d@canb.auug.org.au/
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Cc: Dave Jones <davej@redhat.com>
+Cc: Randy Dunlap <randy.dunlap@oracle.com>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Pavel Begunkov <asml.silence@gmail.com>
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+---
+ net/core/dev.c | 19 +++++++------------
+ 1 file changed, 7 insertions(+), 12 deletions(-)
 
-HW coalescing not considered yet. Generally my intention for CAN use
-is usually robotic and motion control and there is CAN and even CAN FD
-on edge with its latencies already and SocketCAN layer adds yet
-another level due common tasklets and threads with other often
-dense and complex protocols on ETHERNET so to lover CPU load
-by IRQ coalescing is not my priority. We have done latencies
-evaluation of SocketCAN, LinCAN and RTEMS years ago on Oliver Hartkopp's
-requests on standard and fully-preemptive kernels on more targets
-(x86, PowerPC, ...) and I hope that we revive CAN Bench project
-on Xilinx Zynq based MZ_APO again, see Martin Jerabek's theses FPGA
-Based CAN Bus Channels Mutual Latency Tester and Evaluation, 2016
+diff --git a/net/core/dev.c b/net/core/dev.c
+index d127164771f222..b5273f820ca840 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4098,18 +4098,13 @@ struct netdev_queue *netdev_core_pick_tx(struct net_device *dev,
+  *	guarantee the frame will be transmitted as it may be dropped due
+  *	to congestion or traffic shaping.
+  *
+- * -----------------------------------------------------------------------------------
+- *      I notice this method can also return errors from the queue disciplines,
+- *      including NET_XMIT_DROP, which is a positive value.  So, errors can also
+- *      be positive.
+- *
+- *      Regardless of the return value, the skb is consumed, so it is currently
+- *      difficult to retry a send to this method.  (You can bump the ref count
+- *      before sending to hold a reference for retry if you are careful.)
+- *
+- *      When calling this method, interrupts MUST be enabled.  This is because
+- *      the BH enable code must have IRQs enabled so that it will not deadlock.
+- *          --BLG
++ *	This method can also return positive errno code from the queue
++ *	disciplines (including NET_XMIT_DROP).
++ *
++ *	Note that regardless of the return value, the skb is consumed
++ *	anyway, so it is currently difficult to retry sending to this
++ *	method.
++ *
+  */
+ int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+ {
 
-https://gitlab.fel.cvut.cz/canbus/zynq/zynq-can-sja1000-top/wikis/uploads/56b4d27d8f81ae390fc98bdce803398f/F3-BP-2016-Jerabek-Martin-Jerabek-thesis-2016.pdf
+base-commit: 0530a683fc858aa641d88ad83315ea53c27bce10
+-- 
+An old man doll... just what I always wanted! - Clara
 
-It is actual work of Matej Vasilevski. So I hope to have again more
-insight into latencies on CAN. By the way, I plan to speak with
-Carsten Emde on Embedded World if these is interrest to add
-continuous HW timestamping based CAN latencies testing into OSADL
-QA Farm
-
-https://www.osadl.org/OSADL-QA-Farm-Real-time.linux-real-time.0.html
-
-Other option is to setup system and run it locally at CTU
-as we run complete CI on CTU CAN FD.
-
-> > > > We need 2 * priv->ntxbufs range to distinguish empty and full
-> > > > queue... But modulo is not nice either so I probably come with
-> > > > some other solution in a longer term. In the long term, I want to
-> > > > implement virtual queues to allow multiqueue to use dynamic Tx
-> > > > priority of up to 8 the buffers...
-> > >
-> > > ACK, multiqueue TX support would be nice for things like the
-> > > Earliest TX Time First scheduler (ETF). 1 TX queue for ETF, the
-> > > other for bulk messages.
-> >
-> > Would be nice, I have multi-queue in the CAN layer I wrote for a
-> > little RTOS (predates socketcan) and have used for a while.
->
-> Out of interest:
-> What are the use cases? How did you decide which queue to use?
-
-For example for CAN open there should be at least three queues
-to prevent CAN Tx priority inversion. one for NMT (network
-management), one for PDO (process data objects) and least priority
-for SDO (service data objects). That such applications works
-somehow with single queue is only matter of luck and low
-level of the link bandwidth utilization.
-
-We have done research how to use Linux networking infrastructure
-to route application send CAN messages into multiple queues
-according to the CAN ID priorities. There are some results in mainline
-from that work
-
-Rostislav Lisovy 2014: can: Propagate SO_PRIORITY of raw sockets to skbs
-Rostislav Lisovy 2012: net: em_canid: Ematch rule to match CAN frames 
-according to their identifiers
-
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/net/sched/em_canid.c
-
-So some enhancements and testing in this direction belongs
-between my long horizon goals. But low priority now because
-my company and even studnets at university are paid from
-other projects (silicon-heaven, ESA, Bluetooth-monitoring,
-NuttX etc.) so Linux CAN is hobby only at this moment.
-But others have contracts for CTU CAN FD, Skoda Auto
-testers etc. there...
-
-Best wishes,
-
-                Pavel Pisa
-    phone:      +420 603531357
-    e-mail:     pisa@cmp.felk.cvut.cz
-    Department of Control Engineering FEE CVUT
-    Karlovo namesti 13, 121 35, Prague 2
-    university: http://control.fel.cvut.cz/
-    personal:   http://cmp.felk.cvut.cz/~pisa
-    projects:   https://www.openhub.net/accounts/ppisa
-    CAN related:http://canbus.pages.fel.cvut.cz/
-    Open Technologies Research Education and Exchange Services
-    https://gitlab.fel.cvut.cz/otrees/org/-/wikis/home
