@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FDAC518D1B
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 21:23:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49EC0518D23
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 21:24:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239149AbiECT0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 15:26:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53172 "EHLO
+        id S241884AbiECT1e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 15:27:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230079AbiECT03 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 15:26:29 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B735A2A70C;
-        Tue,  3 May 2022 12:22:56 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id bo5so15526785pfb.4;
-        Tue, 03 May 2022 12:22:56 -0700 (PDT)
+        with ESMTP id S239819AbiECT1d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 15:27:33 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 823162C641;
+        Tue,  3 May 2022 12:24:00 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id cq17-20020a17090af99100b001dc0386cd8fso2821565pjb.5;
+        Tue, 03 May 2022 12:24:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=xD1u/BOCFh8co86RcbO90R+LMkeSGzDA0te4TNIgVnc=;
-        b=Xjgo9vAzqDLWsngCdL0oCPVql0nzfcFk2SSIdmCMLATXOmaVeQCZCN4DKeH+lAkf1O
-         ApoLQh6yYF+KlknXXk37SgF0IUCmZUXeoUI4jYNzkiy2d6Um5/ekhyJyplicT2ljmqZ/
-         sDicOfaZ0aySEg1OqXZgc2OIJKNjXpNVhm5c5qiUM6FJof8+CXCbebW4FwQF+CfitRbU
-         a9cL31d6/w6Ur+DQGMXL6D1Ital7QMrqNugGS6rI7G2+J5B9+QBgGVpIOTwuv4cKyk2h
-         cLIo0NWC9ZKPAxX8bLfbUvCziVLFxu+Fne0dL1V0Neq5CmSyK4UCZPKF3I6v+cw0OUMK
-         Y3Sg==
+        bh=waJvQWBR1alX6Q1gmx++PicUkAKKCsRDo2BEpHmI3CM=;
+        b=KNRkHglMvsUHD2w2hXTXkhCyHJFhz5D5H1odFL0c7kdonoPYNm1FhaVcmZ7rH7+T9U
+         7lrE5OcJycDJ4ZIJ03uyjCPci/1sV952aRy1QpYwSp48um8p5teG4Q/54Gc3Kl4Z05DX
+         k+77Lj7AuO4cI7BFhvD9VnuK2kT2hfDA0lBRB++cnaupgbAQU3kcWCxDyGffU6BZtPs5
+         CLN/7K1wlrZNOAyI3XmVBLaFpfIApDUp50W9QS77df61jR/Uf+GqJRTmaHz2nObIfswF
+         Uzv9OxuiVfJ9lU5NouzMa+ZpxmwnSW/Inp9MTRXrI+OOdIuNkk5ebjPGI9KXk14bmSpa
+         fpgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=xD1u/BOCFh8co86RcbO90R+LMkeSGzDA0te4TNIgVnc=;
-        b=PQrWRuWzeR0stHqqDCuFBeYXbaBetXPK0uinG/Narm7iWeRkAoBwBFxv1PIogp4+gP
-         IfQBgID6xP0hubm45+LS9P4c3WjSpzsaPetLYC1NTSapZLic8HxRUtPIum6QQIyxEh0T
-         HJKxk9d/bXkemAOyroDd2P+e0jtt1yIa/JEKnQrolirO1XD3cmEIDmp9HmEALpkOazsV
-         LzeRMeYqFOXI5pRVMmxszlhZUFK09T1OK7XlGK+SYA4v1/TLwy8X8V5wrAIMQZy6u4yo
-         OkH/wsZG0/fCU6ch54R0n259YnEcKyhKqMjXUyvstKvaK7M/6CXA6lUJ9mrE8VPuNigt
-         Rieg==
-X-Gm-Message-State: AOAM532/ojmi2HZJZKibPGwbphM0LXSPvLZ3Ia1MWlHS4WufjFmSWjZp
-        04SoosgjHfzfQR3dmM3TfYA=
-X-Google-Smtp-Source: ABdhPJzXllvznstYNI0LiRA+WwuQ8GZ9pEl9wM4hLsuhz6R8TZtqrGsqGrG38Q5PF1RNS6nebgUrtg==
-X-Received: by 2002:a63:6987:0:b0:3aa:eec1:1587 with SMTP id e129-20020a636987000000b003aaeec11587mr14868503pgc.144.1651605776227;
-        Tue, 03 May 2022 12:22:56 -0700 (PDT)
+        bh=waJvQWBR1alX6Q1gmx++PicUkAKKCsRDo2BEpHmI3CM=;
+        b=0uTF+GOjc5OEQppdF01/JaD5W09hA+mK9dbUVslnUj4w4EaGqDW/bcVUqLxJoZYUsA
+         B5ENInCRr1vRVeJZkOAv7nx/NJsCc7VGmrLvRDCoG1k6a81ZoJGIBAksc+iuXrrJnswg
+         kupa9F8BzyT5xPjEVqjz8BiJYcisG8PEcalKZyCH6BSmane5s1MRIlhrfU8Ougo5PJVL
+         QkFnT/5dtdApEWRvMmsmOyoggA84oQpkHZzL/f0lYa0JqyS4aWZdnGDVEGjnMcfggUQL
+         AA16u+ANbOWJU2/6tOWY6XQhurEZD3aUIgdT2zHjDz/q+XjA+RWtNwfdC/GQrKwzNU0d
+         XsQg==
+X-Gm-Message-State: AOAM530L9Jg8qxQjF+lZPdhADJwXiZe3ib9/YcBV8CKS0WNlJ9u8sgF2
+        mlqIukqaIJ1/r5cWS5uuErY=
+X-Google-Smtp-Source: ABdhPJw6m4614+CLkWNykf0AiBv5TZxYQnG9Nsilb13UOqvfRmRH/FGUJeBPA4caMLsQgMLt2X8jZA==
+X-Received: by 2002:a17:902:7009:b0:158:3bcf:b774 with SMTP id y9-20020a170902700900b001583bcfb774mr17816605plk.103.1651605839945;
+        Tue, 03 May 2022 12:23:59 -0700 (PDT)
 Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id s19-20020aa78d53000000b0050dc76281d0sm6831662pfe.170.2022.05.03.12.22.52
+        by smtp.googlemail.com with ESMTPSA id h19-20020a170902f2d300b0015e8d4eb243sm6634006plc.141.2022.05.03.12.23.57
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 May 2022 12:22:55 -0700 (PDT)
-Message-ID: <ed9bf7db-4437-f24e-6e57-18df4f485c37@gmail.com>
-Date:   Tue, 3 May 2022 12:22:51 -0700
+        Tue, 03 May 2022 12:23:59 -0700 (PDT)
+Message-ID: <d9156159-8320-4242-13bf-b1e7f5bbabdd@gmail.com>
+Date:   Tue, 3 May 2022 12:23:56 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [Patch net-next v12 01/13] dt-bindings: net: make
- internal-delay-ps based on phy-mode
+Subject: Re: [Patch net-next v12 02/13] dt-bindings: net: dsa: dt bindings for
+ microchip lan937x
 Content-Language: en-US
 To:     Arun Ramadoss <arun.ramadoss@microchip.com>, bpf@vger.kernel.org,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
@@ -76,11 +76,12 @@ Cc:     KP Singh <kpsingh@kernel.org>,
         Vladimir Oltean <olteanv@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
-        Woojung Huh <woojung.huh@microchip.com>
+        Woojung Huh <woojung.huh@microchip.com>,
+        Rob Herring <robh@kernel.org>
 References: <20220502155848.30493-1-arun.ramadoss@microchip.com>
- <20220502155848.30493-2-arun.ramadoss@microchip.com>
+ <20220502155848.30493-3-arun.ramadoss@microchip.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220502155848.30493-2-arun.ramadoss@microchip.com>
+In-Reply-To: <20220502155848.30493-3-arun.ramadoss@microchip.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -96,17 +97,19 @@ X-Mailing-List: netdev@vger.kernel.org
 On 5/2/22 08:58, Arun Ramadoss wrote:
 > From: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
 > 
-> *-internal-delay-ps properties would be applicable only for RGMII interface
-> modes.
+> Documentation in .yaml format and updates to the MAINTAINERS
+> Also 'make dt_binding_check' is passed.
 > 
-> It is changed as per the request,
-> https://lore.kernel.org/netdev/d8e5f6a8-a7e1-dabd-f4b4-ea8ea21d0a1d@gmail.com/
+> RGMII internal delay values for the mac is retrieved from
+> rx-internal-delay-ps & tx-internal-delay-ps as per the feedback from
+> v3 patch series.
+> https://lore.kernel.org/netdev/20210802121550.gqgbipqdvp5x76ii@skbuf/
 > 
-> Ran dt_binding_check to confirm nothing is broken.
+> It supports only the delay value of 0ns and 2ns.
 > 
 > Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
 > Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> Reviewed-by: Rob Herring <robh@kernel.org>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
