@@ -2,140 +2,625 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 85CFE518656
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 16:16:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F0EC51863E
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 16:12:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236875AbiECOTd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 10:19:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41512 "EHLO
+        id S236765AbiECOQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 10:16:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236884AbiECOTc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 10:19:32 -0400
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90A8924596
-        for <netdev@vger.kernel.org>; Tue,  3 May 2022 07:15:59 -0700 (PDT)
-Received: from fsav315.sakura.ne.jp (fsav315.sakura.ne.jp [153.120.85.146])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 243E874T083479;
-        Tue, 3 May 2022 23:08:07 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav315.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav315.sakura.ne.jp);
- Tue, 03 May 2022 23:08:07 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav315.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 243E87Pm083474
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Tue, 3 May 2022 23:08:07 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <7be0b6ae-08c8-59a6-7cc2-3caee827a7e6@I-love.SAKURA.ne.jp>
-Date:   Tue, 3 May 2022 23:08:02 +0900
+        with ESMTP id S236013AbiECOQQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 10:16:16 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F47D13F65;
+        Tue,  3 May 2022 07:12:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1651587032;
+        bh=jBf0jkgXes2Bgvz1mr0yTofTeW0CJcZ+iijJU1rFRkA=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=hw2PQaLw/ZvT//biTMBcCkn13OhYbNvQ6wTYb3SbSJJRw8o0lHAJTvzKLI13U7jP2
+         5cxIpubl5IGIN6RfPuKJJt+OuM8JzFYg+fjKkkeGA0eFy9S3Ounb6LS/J1KTTFn+bd
+         VkAIW6VriU18sIlhnomWKFGMGYuMEb/SzN6nHc8k=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [80.245.79.168] ([80.245.79.168]) by web-mail.gmx.net
+ (3c-app-gmx-bap25.server.lan [172.19.172.95]) (via HTTP); Tue, 3 May 2022
+ 16:10:32 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2] net: rds: acquire refcount on TCP sockets
-Content-Language: en-US
-To:     Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>
-Cc:     Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+Message-ID: <trinity-cda3b94f-8556-4b83-bc34-d2c215f93bcd-1651587032669@3c-app-gmx-bap25>
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Greg Ungerer <gerg@kernel.org>,
+        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+Cc:     Frank Wunderlich <linux@fw-web.de>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        syzbot <syzbot+694120e1002c117747ed@syzkaller.appspotmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        OFED mailing list <linux-rdma@vger.kernel.org>
-References: <00000000000045dc96059f4d7b02@google.com>
- <000000000000f75af905d3ba0716@google.com>
- <c389e47f-8f82-fd62-8c1d-d9481d2f71ff@I-love.SAKURA.ne.jp>
- <b0f99499-fb6a-b9ec-7bd3-f535f11a885d@I-love.SAKURA.ne.jp>
- <5f90c2b8-283e-6ca5-65f9-3ea96df00984@I-love.SAKURA.ne.jp>
- <f8ae5dcd-a5ed-2d8b-dd7a-08385e9c3675@I-love.SAKURA.ne.jp>
- <CANn89iJukWcN9-fwk4HEH-StAjnTVJ34UiMsrN=mdRbwVpo8AA@mail.gmail.com>
- <a5fb1fc4-2284-3359-f6a0-e4e390239d7b@I-love.SAKURA.ne.jp>
- <3b6bc24c8cd3f896dcd480ff75715a2bf9b2db06.camel@redhat.com>
- <CANn89iK5WmzyPNyUzuoDyDZQWpbBaffEXxEvmOhz5wJ+9facFg@mail.gmail.com>
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <CANn89iK5WmzyPNyUzuoDyDZQWpbBaffEXxEvmOhz5wJ+9facFg@mail.gmail.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Aw: Re: [RFC v1] dt-bindings: net: dsa: convert binding for
+ mediatek switches
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Date:   Tue, 3 May 2022 16:10:32 +0200
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <d29637f8-87ff-b5f0-9604-89b51a2ba7c1@linaro.org>
+References: <20220502153238.85090-1-linux@fw-web.de>
+ <d29637f8-87ff-b5f0-9604-89b51a2ba7c1@linaro.org>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:O5oBof9XGL3SxmQsXmJowuqSpbkg8qCPhR75Rqj8d7AWC0TscwGJa0vS4RQCp8q3HxeFt
+ 66exxqD6usZY2JU0sPJpokt5fCdbgHA8DIKLGjCQnD07s1XPN5wm51EFS4FBZyEa13y1ksjpJPz7
+ X0luNj1XJO/2ff6Ic3TAnikuk13kEO0jAEY6lCQu0ur5TmVDk1XcjdynDsbBb6arWo0FpFCgX74v
+ VdB6M09uzDjabMUnZlaYV4FnjRoxdXS1HoEA5pOoG94xpfgL5UJgjkip7NPt8PhHGTxM0Sx4LTve
+ SI=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:WhcYUwKPK54=:mjGQ2JYTdacnqf++cuEFfa
+ aUu8RvnvGlhBUgCnvPyEBLTlZFA2TAyTtknQyLbFIr6JfDAimT1vFl/1YjFsh4S+/GHOEjypp
+ QG8HkYsZYmsXHwsGopwb2MrzuJgODuyfbK2YaT1WyY5hU+/yUsirtpFpj7dB7waTtPQ95GzT5
+ goTDIRjYAm7/xjShlJLaz2o+V0BVAZqVnGwCechdeXAWfLm8PEF4dB5prr4tXOsSE4DjtPlYH
+ OH/ul3FdGijAXiRe6wZXF4SAldnxySwWo0ulC6zUDPdCyyRS0P4v7DCAaBOYGDxb2HU/JFsAf
+ 8CJP3vGJ/UYEGFYXGhGvUgyMj9f5Kb8380mYNpR/vp83aaXOgWT8BS85Lo6aYf1IhBnwQls82
+ FltGU1+eeSsu1OHPiQnjLoe0xICgS3HEPVpTPh1K6B2zjcvgi0UgKVVMYSiXnl1QY1ltr1p0B
+ tEhWYnsMymSBxSXnUpyU7C9MJd59JdkgrY5gs6FbxCf6GgYfJl/LCfscxD0F9DxiwR6g2MhRh
+ GbLP7+c0s1vDGIwloZCrgMxIdZwvfs0/u/UQ9OSWZx0oWbVYPtQVdPJiHzQejUE/oQ5RJR8vH
+ jaES1RmAW2LRlCx7vuWHhsmfZ2UBIjPr/NcHnoXNce+fjP7bqPg6m906fYkFyZa7nucFvf3md
+ Jv1xZ8GrR2N1CRBWXXEYIFAEpxlbW3Qq4Ot0FdtZ0pfq8jgJc5UbwDrfsC3XdjQXvm3OR1Oej
+ axa4xi2A3mUV2cXG41kEnw7fM9slU256BNQ/Bx3UShyX5MyR5ioKxdQgJRn5St43Qd57q0n/o
+ PC6turt
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/05/03 22:45, Eric Dumazet wrote:
->> This looks equivalent to the fix presented here:
->>
->> https://lore.kernel.org/all/CANn89i+484ffqb93aQm1N-tjxxvb3WDKX0EbD7318RwRgsatjw@mail.gmail.com/
+Hi,
 
-I retested the fix above using
+thank you for first review.
 
-unshare -n sh -c '
-ip link set lo up
-iptables -A OUTPUT -p tcp --sport 16385 --tcp-flags SYN NONE -m state --state ESTABLISHED,RELATED -j DROP
-ip6tables -A OUTPUT -p tcp --sport 16385 --tcp-flags SYN NONE -m state --state ESTABLISHED,RELATED -j DROP
-telnet 127.0.0.1 16385
-dmesg -c
-netstat -tanpe' < /dev/null
+> Gesendet: Dienstag, 03. Mai 2022 um 14:05 Uhr
+> Von: "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>
+> Betreff: Re: [RFC v1] dt-bindings: net: dsa: convert binding for mediate=
+k switches
+>
+> On 02/05/2022 17:32, Frank Wunderlich wrote:
+> > From: Frank Wunderlich <frank-w@public-files.de>
+> >
+> > Convert txt binding to yaml binding for Mediatek switches.
+> >
+> > Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+> > ---
+> >  .../devicetree/bindings/net/dsa/mediatek.yaml | 435 +++++++++++++++++=
++
+> >  .../devicetree/bindings/net/dsa/mt7530.txt    | 327 -------------
+> >  2 files changed, 435 insertions(+), 327 deletions(-)
+> >  create mode 100644 Documentation/devicetree/bindings/net/dsa/mediatek=
+.yaml
+> >  delete mode 100644 Documentation/devicetree/bindings/net/dsa/mt7530.t=
+xt
+> >
+> > diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek.yaml b=
+/Documentation/devicetree/bindings/net/dsa/mediatek.yaml
+> > new file mode 100644
+> > index 000000000000..c1724809d34e
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/net/dsa/mediatek.yaml
+>
+> Specific name please, so previous (with vendor prefix) was better:
+> mediatek,mt7530.yaml
 
-as a test case, but it seems racy; sometimes timer function is called again and crashes.
+ok, named it mediatek only because mt7530 is only one possible chip and dr=
+iver handles 3 different "variants".
 
-[  426.086565][    C2] general protection fault, probably for non-canonical address 0x6b6af3ebcc3b6bc3: 0000 [#1] PREEMPT SMP KASAN
-[  426.096339][    C2] CPU: 2 PID: 0 Comm: swapper/2 Not tainted 5.18.0-rc5-dirty #807
-[  426.103769][    C2] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
-[  426.111851][    C2] RIP: 0010:__tcp_transmit_skb+0xe72/0x1b80
-[  426.117512][    C2] Code: e8 b3 ea dc fd 48 8d 7d 30 45 0f b7 77 30 e8 95 ec dc fd 48 8b 5d 30 48 8d bb b8 02 00 00 e8 85 ec dc fd 48 8b 83 b8 02 00 00 <65> 4c 01 70 58 e9 67 fd ff ff e8 ef 56 ac fd 48 8d bd d0 09 00 00
-[  426.124692][    C2] RSP: 0018:ffff888060d09ac8 EFLAGS: 00010246
-[  426.126845][    C2] RAX: 6b6b6b6b6b6b6b6b RBX: ffff8880145c8000 RCX: ffffffff838cc28b
-[  426.129616][    C2] RDX: dffffc0000000000 RSI: 0000000000000001 RDI: ffff8880145c82b8
-[  426.132374][    C2] RBP: ffff8880129f8000 R08: 0000000000000000 R09: 0000000000000007
-[  426.135077][    C2] R10: ffffffff838cbfd4 R11: 0000000000000001 R12: ffff8880129f8760
-[  426.137793][    C2] R13: ffff88800f6e0118 R14: 0000000000000001 R15: ffff88800f6e00e8
-[  426.140489][    C2] FS:  0000000000000000(0000) GS:ffff888060d00000(0000) knlGS:0000000000000000
-[  426.143525][    C2] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  426.145792][    C2] CR2: 000055b5bb0adabc CR3: 000000000e003000 CR4: 00000000000506e0
-[  426.148509][    C2] Call Trace:
-[  426.149442][    C2]  <IRQ>
-[  426.150183][    C2]  ? __tcp_select_window+0x710/0x710
-[  426.151457][    C2]  ? __sanitizer_cov_trace_cmp4+0x1c/0x70
-[  426.153007][    C2]  ? tcp_current_mss+0x165/0x280
-[  426.154245][    C2]  ? tcp_trim_head+0x300/0x300
-[  426.155396][    C2]  ? find_held_lock+0x85/0xa0
-[  426.156734][    C2]  ? mark_held_locks+0x65/0x90
-[  426.157967][    C2]  tcp_write_wakeup+0x2e2/0x340
-[  426.159149][    C2]  tcp_send_probe0+0x2a/0x2c0
-[  426.160368][    C2]  tcp_write_timer_handler+0x5cb/0x670
-[  426.161740][    C2]  tcp_write_timer+0x86/0x250
-[  426.162896][    C2]  ? tcp_write_timer_handler+0x670/0x670
-[  426.164285][    C2]  call_timer_fn+0x15d/0x5f0
-[  426.165481][    C2]  ? add_timer_on+0x2e0/0x2e0
-[  426.166667][    C2]  ? lock_downgrade+0x3c0/0x3c0
-[  426.167921][    C2]  ? mark_held_locks+0x24/0x90
-[  426.169263][    C2]  ? _raw_spin_unlock_irq+0x1f/0x40
-[  426.170564][    C2]  ? tcp_write_timer_handler+0x670/0x670
-[  426.171920][    C2]  __run_timers.part.0+0x523/0x740
-[  426.173181][    C2]  ? call_timer_fn+0x5f0/0x5f0
-[  426.174321][    C2]  ? pvclock_clocksource_read+0xdc/0x1a0
-[  426.175655][    C2]  run_timer_softirq+0x66/0xe0
-[  426.176825][    C2]  __do_softirq+0x1c2/0x670
-[  426.177944][    C2]  __irq_exit_rcu+0xf8/0x140
-[  426.179120][    C2]  irq_exit_rcu+0x5/0x20
-[  426.180150][    C2]  sysvec_apic_timer_interrupt+0x8e/0xc0
-[  426.181486][    C2]  </IRQ>
-[  426.182180][    C2]  <TASK>
-[  426.182845][    C2]  asm_sysvec_apic_timer_interrupt+0x12/0x20
+> > @@ -0,0 +1,435 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>
+> You should CC previous contributors and get their acks on this. You
+> copied here a lot of description.
 
-> 
-> I think this is still needed for layers (NFS ?) that dismantle their
-> TCP sockets whenever a netns
-> is dismantled. But RDS case was different, only the listener is a kernel socket.
+added 3 Persons that made commits to txt before to let them know about thi=
+s change
 
-We can't apply the fix above.
+and yes, i tried to define at least the phy-mode requirement as yaml-depen=
+cy, but failed because i cannot match
+compatible in subnode.
 
-I think that the fundamental problem is that we use net->ns.count for both
-"avoiding use-after-free" purpose and "allowing dismantle from user event" purpose.
-Why not to use separated counters?
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/net/dsa/mediatek.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Mediatek MT7530 Ethernet switch
+> > +
+> > +maintainers:
+> > +  - Sean Wang <sean.wang@mediatek.com>
+> > +  - Landen Chao <Landen.Chao@mediatek.com>
+> > +  - DENG Qingfang <dqfext@gmail.com>
+> > +
+> > +description: |
+> > +  Port 5 of mt7530 and mt7621 switch is muxed between:
+> > +  1. GMAC5: GMAC5 can interface with another external MAC or PHY.
+> > +  2. PHY of port 0 or port 4: PHY interfaces with an external MAC lik=
+e 2nd GMAC
+> > +     of the SOC. Used in many setups where port 0/4 becomes the WAN p=
+ort.
+> > +     Note: On a MT7621 SOC with integrated switch: 2nd GMAC can only =
+connected to
+> > +       GMAC5 when the gpios for RGMII2 (GPIO 22-33) are not used and =
+not
+> > +       connected to external component!
+> > +
+> > +  Port 5 modes/configurations:
+> > +  1. Port 5 is disabled and isolated: An external phy can interface t=
+o the 2nd
+> > +     GMAC of the SOC.
+> > +     In the case of a build-in MT7530 switch, port 5 shares the RGMII=
+ bus with 2nd
+> > +     GMAC and an optional external phy. Mind the GPIO/pinctl settings=
+ of the SOC!
+> > +  2. Port 5 is muxed to PHY of port 0/4: Port 0/4 interfaces with 2nd=
+ GMAC.
+> > +     It is a simple MAC to PHY interface, port 5 needs to be setup fo=
+r xMII mode
+> > +     and RGMII delay.
+> > +  3. Port 5 is muxed to GMAC5 and can interface to an external phy.
+> > +     Port 5 becomes an extra switch port.
+> > +     Only works on platform where external phy TX<->RX lines are swap=
+ped.
+> > +     Like in the Ubiquiti ER-X-SFP.
+> > +  4. Port 5 is muxed to GMAC5 and interfaces with the 2nd GAMC as 2nd=
+ CPU port.
+> > +     Currently a 2nd CPU port is not supported by DSA code.
+> > +
+> > +  Depending on how the external PHY is wired:
+> > +  1. normal: The PHY can only connect to 2nd GMAC but not to the swit=
+ch
+> > +  2. swapped: RGMII TX, RX are swapped; external phy interface with t=
+he switch as
+> > +     a ethernet port. But can't interface to the 2nd GMAC.
+> > +
+> > +    Based on the DT the port 5 mode is configured.
+> > +
+> > +  Driver tries to lookup the phy-handle of the 2nd GMAC of the master=
+ device.
+> > +  When phy-handle matches PHY of port 0 or 4 then port 5 set-up as mo=
+de 2.
+> > +  phy-mode must be set, see also example 2 below!
+> > +  * mt7621: phy-mode =3D "rgmii-txid";
+> > +  * mt7623: phy-mode =3D "rgmii";
+> > +
+> > +  CPU-Ports need a phy-mode property:
+> > +    Allowed values on mt7530 and mt7621:
+> > +      - "rgmii"
+> > +      - "trgmii"
+> > +    On mt7531:
+> > +      - "1000base-x"
+> > +      - "2500base-x"
+> > +      - "sgmii"
+> > +
+> > +
+> > +properties:
+> > +  compatible:
+> > +    enum:
+> > +      - mediatek,mt7530
+> > +      - mediatek,mt7531
+> > +      - mediatek,mt7621
+> > +
+> > +  "#address-cells":
+> > +    const: 1
+> > +
+> > +  "#size-cells":
+> > +    const: 0
+> > +
+> > +  core-supply:
+> > +    description: |
+> > +      Phandle to the regulator node necessary for the core power.
+> > +
+> > +  "#gpio-cells":
+> > +    description: |
+> > +      Must be 2 if gpio-controller is defined.
+> > +    const: 2
+> > +
+> > +  gpio-controller:
+> > +    type: boolean
+> > +    description: |
+> > +      Boolean; if defined, MT7530's LED controller will run on
+>
+> No need to repeat Boolean.
 
+ok, will change
+
+> > +      GPIO mode.
+> > +
+> > +  "#interrupt-cells":
+> > +    const: 1
+> > +
+> > +  interrupt-controller:
+> > +    type: boolean
+> > +    description: |
+> > +      Boolean; Enables the internal interrupt controller.
+>
+> Skip description.
+
+ok
+
+> > +
+> > +  interrupts:
+> > +    description: |
+> > +      Parent interrupt for the interrupt controller.
+>
+> Skip description.
+ok
+
+> > +    maxItems: 1
+> > +
+> > +  io-supply:
+> > +    description: |
+> > +      Phandle to the regulator node necessary for the I/O power.
+> > +      See Documentation/devicetree/bindings/regulator/mt6323-regulato=
+r.txt
+> > +      for details for the regulator setup on these boards.
+> > +
+> > +  mediatek,mcm:
+> > +    type: boolean
+> > +    description: |
+> > +      Boolean;
+>
+> No need to repeat Boolean.
+
+ack
+
+> > if defined, indicates that either MT7530 is the part
+> > +      on multi-chip module belong to MT7623A has or the remotely stan=
+dalone
+> > +      chip as the function MT7623N reference board provided for.
+> > +
+> > +  reset-gpios:
+> > +    description: |
+> > +      Should be a gpio specifier for a reset line.
+> > +    maxItems: 1
+> > +
+> > +  reset-names:
+> > +    description: |
+> > +      Should be set to "mcm".
+> > +    const: mcm
+> > +
+> > +  resets:
+> > +    description: |
+> > +      Phandle pointing to the system reset controller with
+> > +      line index for the ethsys.
+> > +    maxItems: 1
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+>
+> What about address/size cells?
+
+you're right even if they are const to a value they need to be set
+
+> > +
+> > +allOf:
+> > +  - $ref: "dsa.yaml#"
+> > +  - if:
+> > +      required:
+> > +        - mediatek,mcm
+>
+> Original bindings had this reversed.
+
+i know, but i think it is better readable and i will drop the else-part la=
+ter.
+Driver supports optional reset ("mediatek,mcm" unset and without reset-gpi=
+os)
+as this is needed if there is a shared reset-line for gmac and switch like=
+ on R2 Pro.
+
+i left this as separate commit to be posted later to have a nearly 1:1 con=
+version here.
+
+> > +    then:
+> > +      required:
+> > +        - resets
+> > +        - reset-names
+> > +    else:
+> > +      required:
+> > +        - reset-gpios
+> > +
+> > +  - if:
+> > +      required:
+> > +        - interrupt-controller
+> > +    then:
+> > +      required:
+> > +        - "#interrupt-cells"
+>
+> This should come from dt schema already...
+
+so i should drop (complete block for interrupt controller)?
+
+> > +        - interrupts
+> > +
+> > +  - if:
+> > +      properties:
+> > +        compatible:
+> > +          items:
+> > +            - const: mediatek,mt7530
+> > +    then:
+> > +      required:
+> > +        - core-supply
+> > +        - io-supply
+> > +
+> > +
+> > +patternProperties:
+> > +  "^ports$":
+>
+> It''s not a pattern, so put it under properties, like regular property.
+
+can i then make the subnodes match? so the full block will move above requ=
+ired between "mediatek,mcm" and "reset-gpios"
+
+  ports:
+    type: object
+
+    patternProperties:
+      "^port@[0-9]+$":
+        type: object
+        description: Ethernet switch ports
+
+        properties:
+          reg:
+            description: |
+              Port address described must be 5 or 6 for CPU port and from =
+0 to 5 for user ports.
+
+        unevaluatedProperties: false
+
+        allOf:
+          - $ref: dsa-port.yaml#
+          - if:
+....
+
+basicly this "ports"-property should be required too, right?
+
+
+> > +    type: object
+> > +
+> > +    patternProperties:
+> > +      "^port@[0-9]+$":
+> > +        type: object
+> > +        description: Ethernet switch ports
+> > +
+> > +        $ref: dsa-port.yaml#
+>
+> This should go to allOf below.
+
+see above
+
+> > +
+> > +        properties:
+> > +          reg:
+> > +            description: |
+> > +              Port address described must be 6 for CPU port and from =
+0 to 5 for user ports.
+> > +
+> > +        unevaluatedProperties: false
+> > +
+> > +        allOf:
+> > +          - if:
+> > +              properties:
+> > +                label:
+> > +                  items:
+> > +                    - const: cpu
+> > +            then:
+> > +              required:
+> > +                - reg
+> > +                - phy-mode
+> > +
+> > +unevaluatedProperties: false
+> > +
+> > +examples:
+> > +  - |
+> > +    mdio0 {
+>
+> Just mdio
+
+ok
+
+> > +        #address-cells =3D <1>;
+> > +        #size-cells =3D <0>;
+> > +        switch@0 {
+> > +            compatible =3D "mediatek,mt7530";
+> > +            #address-cells =3D <1>;
+> > +            #size-cells =3D <0>;
+> > +            reg =3D <0>;
+> > +
+> > +            core-supply =3D <&mt6323_vpa_reg>;
+> > +            io-supply =3D <&mt6323_vemc3v3_reg>;
+> > +            reset-gpios =3D <&pio 33 0>;
+>
+> Use GPIO flag define/constant.
+
+this example seems to be taken from bpi-r2 (i had taken it from the txt). =
+In dts for this board there are no
+constants too.
+
+i guess
+include/dt-bindings/gpio/gpio.h:14:#define GPIO_ACTIVE_HIGH 0
+
+for 33 there seem no constant..all other references to pio node are with n=
+umbers too and there seem no binding
+header defining the gpio pins (only functions in include/dt-bindings/pinct=
+rl/mt7623-pinfunc.h)
+
+> > +
+> > +            ports {
+> > +                #address-cells =3D <1>;
+> > +                #size-cells =3D <0>;
+> > +                port@0 {
+> > +                    reg =3D <0>;
+> > +                    label =3D "lan0";
+> > +                };
+> > +
+> > +                port@1 {
+> > +                    reg =3D <1>;
+> > +                    label =3D "lan1";
+> > +                };
+> > +
+> > +                port@2 {
+> > +                    reg =3D <2>;
+> > +                    label =3D "lan2";
+> > +                };
+> > +
+> > +                port@3 {
+> > +                    reg =3D <3>;
+> > +                    label =3D "lan3";
+> > +                };
+> > +
+> > +                port@4 {
+> > +                    reg =3D <4>;
+> > +                    label =3D "wan";
+> > +                };
+> > +
+> > +                port@6 {
+> > +                    reg =3D <6>;
+> > +                    label =3D "cpu";
+> > +                    ethernet =3D <&gmac0>;
+> > +                    phy-mode =3D "trgmii";
+> > +                    fixed-link {
+> > +                        speed =3D <1000>;
+> > +                        full-duplex;
+> > +                    };
+> > +                };
+> > +            };
+> > +        };
+> > +    };
+> > +
+> > +  - |
+> > +    //Example 2: MT7621: Port 4 is WAN port: 2nd GMAC -> Port 5 -> PH=
+Y port 4.
+> > +
+> > +    eth {
+>
+> s/eth/ethernet/
+
+ok
+
+> > +        #address-cells =3D <1>;
+> > +        #size-cells =3D <0>;
+> > +        gmac0: mac@0 {
+> > +            compatible =3D "mediatek,eth-mac";
+> > +            reg =3D <0>;
+> > +            phy-mode =3D "rgmii";
+> > +
+> > +            fixed-link {
+> > +                speed =3D <1000>;
+> > +                full-duplex;
+> > +                pause;
+> > +            };
+> > +        };
+> > +
+> > +        gmac1: mac@1 {
+> > +            compatible =3D "mediatek,eth-mac";
+> > +            reg =3D <1>;
+> > +            phy-mode =3D "rgmii-txid";
+> > +            phy-handle =3D <&phy4>;
+> > +        };
+> > +
+> > +        mdio: mdio-bus {
+> > +            #address-cells =3D <1>;
+> > +            #size-cells =3D <0>;
+> > +
+> > +            /* Internal phy */
+> > +            phy4: ethernet-phy@4 {
+> > +                reg =3D <4>;
+> > +            };
+> > +
+> > +            mt7530: switch@1f {
+> > +                compatible =3D "mediatek,mt7621";
+> > +                #address-cells =3D <1>;
+> > +                #size-cells =3D <0>;
+> > +                reg =3D <0x1f>;
+> > +                mediatek,mcm;
+> > +
+> > +                resets =3D <&rstctrl 2>;
+> > +                reset-names =3D "mcm";
+> > +
+> > +                ports {
+> > +                    #address-cells =3D <1>;
+> > +                    #size-cells =3D <0>;
+> > +
+> > +                    port@0 {
+> > +                        reg =3D <0>;
+> > +                        label =3D "lan0";
+> > +                    };
+> > +
+> > +                    port@1 {
+> > +                        reg =3D <1>;
+> > +                        label =3D "lan1";
+> > +                    };
+> > +
+> > +                    port@2 {
+> > +                        reg =3D <2>;
+> > +                        label =3D "lan2";
+> > +                    };
+> > +
+> > +                    port@3 {
+> > +                        reg =3D <3>;
+> > +                        label =3D "lan3";
+> > +                    };
+> > +
+> > +        /* Commented out. Port 4 is handled by 2nd GMAC.
+> > +                    port@4 {
+> > +                        reg =3D <4>;
+> > +                        label =3D "lan4";
+> > +                    };
+> > +        */
+>
+> Messed up indentation
+
+will fix it
+
+> > +
+> > +                    port@6 {
+> > +                        reg =3D <6>;
+> > +                        label =3D "cpu";
+> > +                        ethernet =3D <&gmac0>;
+> > +                        phy-mode =3D "rgmii";
+> > +
+> > +                        fixed-link {
+> > +                            speed =3D <1000>;
+> > +                            full-duplex;
+> > +                            pause;
+> > +                        };
+> > +                    };
+> > +                };
+> > +            };
+> > +        };
+> > +    };
+> > +
+> > +  - |
+> > +    //Example 3: MT7621: Port 5 is connected to external PHY: Port 5 =
+-> external PHY.
+> > +
+> > +    eth {
+>
+> Also ethernet?
+
+will do
+
+> Best regards,
+> Krzysztof
+
+regards Frank
