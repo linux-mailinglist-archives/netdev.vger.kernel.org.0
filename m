@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D07D15188B7
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 17:36:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FD855188BA
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 17:36:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238625AbiECPkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 11:40:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53522 "EHLO
+        id S233613AbiECPkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 11:40:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238616AbiECPkC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 11:40:02 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37F3D2F383;
-        Tue,  3 May 2022 08:36:29 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id ba17so235126edb.5;
-        Tue, 03 May 2022 08:36:29 -0700 (PDT)
+        with ESMTP id S238631AbiECPkE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 11:40:04 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D385F2F003;
+        Tue,  3 May 2022 08:36:31 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id i19so34135774eja.11;
+        Tue, 03 May 2022 08:36:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6jGlMaGnRuy7SzW1gLK1rbP4ej3ug9RnCTQFRGlHRyo=;
-        b=k1cvzlWbzJU8ceSBKJcWDzW0Rt1lFQMFQKVuSCBM3rRWHrMhjM93dBr7Kq5lU0DvTl
-         gbTjaLTtl4VmPNk5Z5JWAqcRuDz2iknBnFZTG9u4VGtucmjmowjC4Hvremce1a80qEax
-         kD0NsQpDJ7Hv2kHfmJm4OTzKnwb3OSFR+GgGRkNUr6ZEB4KEuTs5uV7fJlymK3iKlS1u
-         BR/5m8Gd4J4TgxIgY3r3tN4HmF610knePaGAp1XcMLakR2v0olaRFFjyl5a3aY1J0HAc
-         dOGmtIpRnS8Ta+37qxbPbRatYSSBCdX8549G4WzJhj81Y9A9N6G/yjEaXHXoaw3P5JqU
-         ZHvA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=fyfBTzh+nFyMbqlorBpW+/oFJj2msf8ut26TogSSvvM=;
+        b=pyhVKH4+3uZ6d9PttQPabTkfKS4X+4dWF25oJfqzuF0UBWLi0Qh3PD311mse3/+kJT
+         MCIynAmMpEf7lKJfA264W06se7hD8mlEht1GJrvBiLo/4remn4u23N/Oy2GX0TV3mwLw
+         cXAvk4U8DSo9EXYZS/5j4li449394sKNYq7599SJWuvpeCI5SHbQCVfc1/gUC4PLKZ68
+         VsOcDsoJplveU10eAHGclfyJaTAfmIuNzURqgCUGWUj/1Gfbpx345BZR36v9M2bzXvYJ
+         tKSkDEBNFKTHL/KnvYwNDaiYG9m2ascw2Mzt0eWxChGPW2tlniVnpaEVOIFDxfspyWxZ
+         1OyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6jGlMaGnRuy7SzW1gLK1rbP4ej3ug9RnCTQFRGlHRyo=;
-        b=f4fx6Q1U1qaN8ykrzpO7NtgnlMRvsfYSvgVU/+pgMrdrh0pbkf6DqtLFZH8yIeO6Rl
-         DXufUBgBnte8CyCLdCvk6KskljDGK4KocKaadE99b8MNDANFoIAdqJi3DqiFBlTXBkBW
-         +XCFe+NhP+a3cKP9cakZfjwEihAIIhjlTcKbWEzVnt4yLar1ubTb2HlPQMG2thNwFiD0
-         2gTeJetM79vGUE8Avd/mqEtASyNROOCd6t1RkHuNdNYjY0iZ5lD4IDEXoBfXFLTuEBvI
-         5/OocEDNDDhBA6iR3NpJ86HlU9fmg7Funjsf9Lmbl0gTIqGi03g5/3guGK3DOSVs1IHu
-         gg+Q==
-X-Gm-Message-State: AOAM530vmBbCwOrqdpdn4S7kGYTAjetzjgdEay2PbiwmVdeL3ihNPHMV
-        vS0Q/zYTgHvKpOC8hNXnehA=
-X-Google-Smtp-Source: ABdhPJyTFc/zQzQ81G0V89Dfk2X3An9GVbXM/816WyBRdOjFt/CNHHrblwAty6XZ+6wMwEmWC2eJeA==
-X-Received: by 2002:a05:6402:458:b0:418:78a4:ac3f with SMTP id p24-20020a056402045800b0041878a4ac3fmr18245732edw.196.1651592187493;
-        Tue, 03 May 2022 08:36:27 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=fyfBTzh+nFyMbqlorBpW+/oFJj2msf8ut26TogSSvvM=;
+        b=AgA/lkb2y35fPgdkBxIETP4ffE/rsc468rHgTy6pV/hiCOO+6mFq1BP2TSbri/0IUD
+         sa3hk+1nwEqhyPuZSEhvpzrXEUgu2T6MgiBlKCdSnKwiO/ThJxTqky5LV1vJ7Gs+F705
+         lzlysFimiLhLO0Vid/gJwVAB2Ium14LaCmG5en1H4HKhtWzKSJnI9HWeaR5CFpXe4xIP
+         bsk4JnXlKW3ArsTGigoSLgPo0MAUujXiFMpZTqh/0F6yox4lE5J9gealb5TMgO4o5FL4
+         4YYQzNpU9afaH0gQApt/qpwgg0ij4NWYHm5XNfHp7FhCbLNIg1nlwaKYIDB4S7y6LvxC
+         QMjQ==
+X-Gm-Message-State: AOAM531iHkWnVtE3x56y28AqJtH91xdaBvftzfZQugKuBZNPUgyLgxAz
+        sALjpDm0dLby03jifnxBZwU=
+X-Google-Smtp-Source: ABdhPJyAwf9o8XkpMsr1BZVKZJk9YsDNXz5DWxkF2Si8Xaj+V6Au0RL65+l7FDCQ9n9Y6rTD8QEvJg==
+X-Received: by 2002:a17:906:d552:b0:6f2:408c:e0bf with SMTP id cr18-20020a170906d55200b006f2408ce0bfmr16004655ejc.143.1651592190360;
+        Tue, 03 May 2022 08:36:30 -0700 (PDT)
 Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id yl1-20020a17090693e100b006f3ef214dd1sm4693395ejb.55.2022.05.03.08.36.26
+        by smtp.gmail.com with ESMTPSA id yl1-20020a17090693e100b006f3ef214dd1sm4693395ejb.55.2022.05.03.08.36.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 08:36:27 -0700 (PDT)
+        Tue, 03 May 2022 08:36:30 -0700 (PDT)
 From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
@@ -62,10 +62,12 @@ Cc:     Pavel Machek <pavel@ucw.cz>,
         linux-kernel@vger.kernel.org,
         bcm-kernel-feedback-list@broadcom.com,
         =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
-Subject: [PATCH 1/4] dt-bindings: net: add bitfield defines for Ethernet speeds
-Date:   Tue,  3 May 2022 17:36:10 +0200
-Message-Id: <20220503153613.15320-1-zajec5@gmail.com>
+Subject: [PATCH 2/4] dt-bindings: net: allow Ethernet devices as LED triggers
+Date:   Tue,  3 May 2022 17:36:11 +0200
+Message-Id: <20220503153613.15320-2-zajec5@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220503153613.15320-1-zajec5@gmail.com>
+References: <20220503153613.15320-1-zajec5@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -81,48 +83,28 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Rafał Miłecki <rafal@milecki.pl>
 
-This allows specifying multiple Ethernet speeds in a single DT uint32
-value.
+This allows specifying Ethernet interfaces and switch ports as triggers
+for LEDs activity.
 
 Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
 ---
- include/dt-bindings/net/eth.h | 27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
- create mode 100644 include/dt-bindings/net/eth.h
+ Documentation/devicetree/bindings/net/ethernet-controller.yaml | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/include/dt-bindings/net/eth.h b/include/dt-bindings/net/eth.h
-new file mode 100644
-index 000000000000..89caff09179b
---- /dev/null
-+++ b/include/dt-bindings/net/eth.h
-@@ -0,0 +1,27 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Device Tree constants for the Ethernet
-+ */
+diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+index 817794e56227..ec4679e23939 100644
+--- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
++++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+@@ -226,6 +226,9 @@ properties:
+           required:
+             - speed
+ 
++allOf:
++  - $ref: /schemas/leds/trigger-source.yaml
 +
-+#ifndef _DT_BINDINGS_ETH_H
-+#define _DT_BINDINGS_ETH_H
-+
-+#define SPEED_UNSPEC		0
-+#define SPEED_10		(1 << 0)
-+#define SPEED_100		(1 << 1)
-+#define SPEED_1000		(1 << 2)
-+#define SPEED_2000		(1 << 3)
-+#define SPEED_2500		(1 << 4)
-+#define SPEED_5000		(1 << 5)
-+#define SPEED_10000		(1 << 6)
-+#define SPEED_14000		(1 << 7)
-+#define SPEED_20000		(1 << 8)
-+#define SPEED_25000		(1 << 9)
-+#define SPEED_40000		(1 << 10)
-+#define SPEED_50000		(1 << 11)
-+#define SPEED_56000		(1 << 12)
-+#define SPEED_100000		(1 << 13)
-+#define SPEED_200000		(1 << 14)
-+#define SPEED_400000		(1 << 15)
-+
-+#endif
+ additionalProperties: true
+ 
+ ...
 -- 
 2.34.1
 
