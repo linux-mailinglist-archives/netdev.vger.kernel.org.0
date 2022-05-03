@@ -2,69 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 80C3F518C27
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 20:21:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7405518C78
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 20:34:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241288AbiECSZ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 14:25:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44224 "EHLO
+        id S241564AbiECSi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 14:38:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241234AbiECSZ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 14:25:26 -0400
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50AFA3EF1B;
-        Tue,  3 May 2022 11:21:52 -0700 (PDT)
-Received: by mail-qt1-x82d.google.com with SMTP id hh4so14175793qtb.10;
-        Tue, 03 May 2022 11:21:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:subject:message-id:mime-version:content-disposition;
-        bh=A89bvHB9/skk71qzGzTfssrjF18Iiz/7j6n3+qkIBy8=;
-        b=iU+3Zhhd/DrAcxiHzEY43mr4ru/G+LZtwZwhjSKkifli96ucX9lTtI5zTADMC9FObB
-         U1X/iJJTgBNA3fLlTlF/Rnfn/h95T9IamuSivAIKAZSYCz0cHNNyp7gXOPg8bq9DaALY
-         5KSHepbeaWP3EnQm4XJBf2nmabZsA7u+5uYhGZc/xJSh8Z33UOoz8KQKcn54wcVbHj1F
-         czahJGUmn0EMLWAkbPVNvp683k+52XCI4NC2retrM0LB0s3aXfVCgmj2t308d42/aXzT
-         4tN3UHTZqhnNIOnslAoigaw1RQI/okjnUQxVNB8vQJr/Qn9ifPiXohXvkqjnheiSc8R0
-         qSjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition;
-        bh=A89bvHB9/skk71qzGzTfssrjF18Iiz/7j6n3+qkIBy8=;
-        b=gHs81Qcx2wsvOvKDj20YH3OH1jNNp/hN/rIvhXJ9JhNXKz6fRnk7DZI6sHTwuUqMtp
-         cCIFRFA6PDgqISnecWPL1pWvBOW80r78hMWe72IqO/hH7FpaP30HQfa+k/2MYbJ0NmCn
-         y+OjkPZlcsWDS+ec38gZgHBrJlqApn8dRxxAqNnGvYtjiavqiIVr63UstE1I8hapEyhV
-         GiFpLAD/0T5qRmnfwTV7DY73/0HIj2tQzhBw045eVvQ0pBxfgEVYKOaJAuse3dd4uz8f
-         3kzcy2M4nyMELakWqUh0v5vseRPcLG7hSq3GtywZqj0as+XzHPYJXDkkQeHUyjA+xb0f
-         xJ+A==
-X-Gm-Message-State: AOAM532h9CJQMkS6m3EJ90JcHP66MxUeOENoSqqeCi9DDP1o48ccrrBy
-        nwjYTrPWKHt/Vn3jPjYoQy4=
-X-Google-Smtp-Source: ABdhPJzx6kc4UQEFMO5pSI4M/TK1mqo0S11x3lgerW4bJUKLmXQcu/ZgSHxqOhqOozBG7MJfZGJe2Q==
-X-Received: by 2002:ac8:7d01:0:b0:2f3:a7b1:586f with SMTP id g1-20020ac87d01000000b002f3a7b1586fmr8072489qtb.23.1651602111278;
-        Tue, 03 May 2022 11:21:51 -0700 (PDT)
-Received: from jaehee-ThinkPad-X1-Extreme ([4.34.18.218])
-        by smtp.gmail.com with ESMTPSA id z13-20020ac875cd000000b002f39b99f6a1sm6155166qtq.59.2022.05.03.11.21.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 11:21:50 -0700 (PDT)
-Date:   Tue, 3 May 2022 14:21:46 -0400
-From:   Jaehee Park <jhpark1013@gmail.com>
-To:     =?iso-8859-1?B?Suly9G1l?= Pouiller <jerome.pouiller@silabs.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        outreachy@lists.linux.dev, Jaehee Park <jhpark1013@gmail.com>,
-        Stefano Brivio <sbrivio@redhat.com>
-Subject: [PATCH v5] wfx: use container_of() to get vif
-Message-ID: <20220503182146.GA886740@jaehee-ThinkPad-X1-Extreme>
+        with ESMTP id S241550AbiECSi1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 14:38:27 -0400
+Received: from mx0d-0054df01.pphosted.com (mx0d-0054df01.pphosted.com [67.231.150.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 043181EAC4
+        for <netdev@vger.kernel.org>; Tue,  3 May 2022 11:34:53 -0700 (PDT)
+Received: from pps.filterd (m0209000.ppops.net [127.0.0.1])
+        by mx0c-0054df01.pphosted.com (8.17.1.5/8.16.1.2) with ESMTP id 243BNMfN031545;
+        Tue, 3 May 2022 14:34:15 -0400
+Received: from can01-yt3-obe.outbound.protection.outlook.com (mail-yt3can01lp2170.outbound.protection.outlook.com [104.47.75.170])
+        by mx0c-0054df01.pphosted.com (PPS) with ESMTPS id 3fs2121mue-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 03 May 2022 14:34:15 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=S7i3Z6Vu7d5tXU8UvQOjz/rYdK+aNnhvRZDBYAzKl8gGD7tsxB41ahUmS/je8c8h888yiY4pmre7BJ0E+wh7rYW30HqYkhjLDRuM0CrUE1U1FH79p7kJNhtz4xhKYrYiGPz1C0RaU9uUaoO1FsvjCzcht5FQGC4yzH33XfccpM0KCnX4Ew0nSQjdxr+fcL5HUPU15KDzQvMZ489mZd85kenuHhtXIfrtoSKnFHCbjiyK83wePGTL//1QJjpFAz4fdQhqk24Hp0O8vUlCltdwhkmEnA1/ebfm7zcN0BBB9ux5W6auN9MFtlnyDM3v8TLbyT7ybLyo52x5FSjvxhJmsw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=vDYhwdeRsRpwZ5G3iJ7Nhg+RA6oB1SbzREVIzfzjDtw=;
+ b=OfGq5lricuitbFY2XPbA3AYZdbyhIvGNgzCGFaDqYidm1zMfVZM+zlGPuR+c+e9Foho6+MBUWKCh2Wqf8mWQ+vYKiCS+Lh3YcX6tSlLuxde/n1uKcEMgZZ4iiISSjTNxkdef16zLRBTKD56DPEVhdsniipilGJJLn0mJyqEwJ1LKBdcMCtvv1vjWHDC31TfPOrN4wsqmJpSoQW2hlcbRcxs+UJx0YzK1YQF0OoBjYKicHUwmhb8UPzRq26AtgMxhfZ+oNgk+dxlCzRh82peYbV9j5tkRXcWKtCLo/qwj4aZ6fem4GtxVc/IA21TzTVbeV+9uAbP7UCAz8ozQPKQN+w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=calian.com; dmarc=pass action=none header.from=calian.com;
+ dkim=pass header.d=calian.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=calian.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vDYhwdeRsRpwZ5G3iJ7Nhg+RA6oB1SbzREVIzfzjDtw=;
+ b=fxCbwmDAqncEBPEOog6Z4seqceCs63umRnkZYGDR23OHOhQqz0Sij7lrFRH0FFSi5E/yj3P6lHYzmUi8nwYQN8L+JMwP/52VXu7CzsZDgXgyou7hukfoGdA73JM2uktCz2RAMeby3JvAK+ItAAzP0TyAAtINNL+J9XeGJEeCWXo=
+Received: from YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:66::9)
+ by YQBPR0101MB9488.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:c01:63::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.13; Tue, 3 May
+ 2022 18:34:13 +0000
+Received: from YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM
+ ([fe80::4dea:7f7d:cc9a:1c83]) by YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM
+ ([fe80::4dea:7f7d:cc9a:1c83%2]) with mapi id 15.20.5206.014; Tue, 3 May 2022
+ 18:34:13 +0000
+From:   Robert Hancock <robert.hancock@calian.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>
+CC:     "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "claudiu.beznea@microchip.com" <claudiu.beznea@microchip.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "tomas.melin@vaisala.com" <tomas.melin@vaisala.com>
+Subject: Re: [PATCH net-next 2/2] net: macb: use NAPI for TX completion path
+Thread-Topic: [PATCH net-next 2/2] net: macb: use NAPI for TX completion path
+Thread-Index: AQHYXBjqW86HPeAHQEWJTK5E4QbDLq0HhAYAgAVBAYCAALuLAA==
+Date:   Tue, 3 May 2022 18:34:13 +0000
+Message-ID: <40d30157cafc1fde60027e5f8cfcbdfb08a63a33.camel@calian.com>
+References: <20220429223122.3642255-1-robert.hancock@calian.com>
+         <20220429223122.3642255-3-robert.hancock@calian.com>
+         <555eee6a7f6661b12de7bd5373e7835a0dc43b65.camel@calian.com>
+         <0497ce2acd2a1b1745962fe266c56f547af1189d.camel@redhat.com>
+In-Reply-To: <0497ce2acd2a1b1745962fe266c56f547af1189d.camel@redhat.com>
+Accept-Language: en-CA, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: df87a8db-8770-4235-cbad-08da2d338574
+x-ms-traffictypediagnostic: YQBPR0101MB9488:EE_
+x-microsoft-antispam-prvs: <YQBPR0101MB9488AE354F0FD6D3B79F758EECC09@YQBPR0101MB9488.CANPRD01.PROD.OUTLOOK.COM>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: TLSAYl+S63mIkurPfkeCj0HgIZVQjpiqRHIeAXa27Hc4sT2LcZ1C7Lu8BOzurvWBh60NYEVvOH7iBKMdzZLCvb5BdBkQXg/6qPidQ6p/bSDeFPQNRF9WBXQR0tGDnE93gCU3+QAMMz9ZA7V2G8gCm0R8m7267aE1OaSSChK4Xv0eM9E4SBo8bz5uWpmFuYv3hiWeNWqNaA2XtkfwfNuWL2C3X2Yryb1RmwSr3KSxymsal/48oki4LNIZw44m5OLmrkjnNLbW+k7dMkiMwk5VGnpIfA6mDxVHO6B2lKmJXbCHYpK/FTUqMFShD975T7cAoWLvKdMcGd/N8dZIF57drf8m+Z0IYmHJCMuiXQpWfP7khrO+o5gOBrhoHwtW9ll0RCjaSY3tNerlFSEC1j+4NiPIJU01JrlkYvBD7yDhGmHxpm+1TzfoJsMTPwY7e9/Ocakr6hb84mUExv36vC9wAXhHMNa+wOKi5E7J2oB+7uQ+jHHTVURIiDr6XiLDMTcnZNVMk7G7mHKjjlNQAxe7VYsR11v9A4Ky5u0pku0p4+8/T0PUV/qfAK+xbp9jeFJl18D+iYXUbnnsByWVE6Za8JsZ/akEZM2qZwiGLODRlbBRfylu0K3/ngY9aITKO6P5b/muwUK/4kF9xWZRa7OsiIiPZ4+0/Rim+2+UyhWJxlwNZCUubMUvYxjY0v5OnkbzU7bL75Uid3drbSJuvsUsEtxiladkwqG04IvZVpYxH6g=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(5660300002)(66946007)(4326008)(66556008)(66476007)(64756008)(66446008)(8936002)(44832011)(76116006)(8676002)(316002)(6506007)(38100700002)(54906003)(38070700005)(2906002)(6486002)(110136005)(26005)(122000001)(6512007)(2616005)(83380400001)(36756003)(186003)(71200400001)(86362001)(508600001)(99106002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?K25WOVkwUmJDU3pvRkdFbFA0R1VxV3ZyTktvNHQ4cW1UM1JlZEQxYkkxenlF?=
+ =?utf-8?B?eDN6T0tJZ0p6ZFI5RWczdmp5QlpqNlJZZlkvZjgxK3F3b0pZR0JEby9INFQx?=
+ =?utf-8?B?aTdGQmc1NmZITnZqWXRrZmRDMS84KzI3dzJzU2gxbE5BZnVsK3JGcGg5VlhU?=
+ =?utf-8?B?TjN5dGNVRGJRU1k3M01iVURaS3ozc2cwTFc1RTlwMnFOQXhHM0x2eHU3aUZL?=
+ =?utf-8?B?bUFZTHRUcVVOeGd0a04rTDdPUG5BUU8zclFQcFlWM3ZXQ1dvVUYxS0tTSzk2?=
+ =?utf-8?B?VHY4eTlpWThvYmJrN3pVSkxiMXdPak9CRUNFUkIvTXRsVk9yRHBIazY0Q2Y4?=
+ =?utf-8?B?aENnSHZ5K0VEa1k5OENaV3pMa0pkcm1wVzdyaDFHVzRzSVVXd1R3WmtRLzUw?=
+ =?utf-8?B?RmFLdk9XWWhYMG5QYXExM083Z2JZOGprdFpYS3kwUEdEaGxPeFNnSU5lUzBx?=
+ =?utf-8?B?WW5HdWRxL2pXZDJRVUhKUGh3bUtsSDVoMUlTczQzMnYzQjAzT0Uzb0VobU94?=
+ =?utf-8?B?d25TNnVRSGxNaGlUbHNFNHNBV3A3eUxJODA1N0dCZmNTU0NqcG43eXB3bmdz?=
+ =?utf-8?B?TUZUY3U4RHVVREJpU2VDUjdRL3VTTStxQjFOYVcxTVZOejVTN1dkNGNhUlVt?=
+ =?utf-8?B?eTNGcGJ6QVdxU0JwOFB1RWJXeVRyVE03enlQS1dLTnVuQnRYdWhKY1djOXJv?=
+ =?utf-8?B?N0hBQ25XVTlXcm5jQTE0bGptMVNjQm1VelBMNURSallBM3VwaytPSHVkV3FU?=
+ =?utf-8?B?NWRVVDNCS0E3S0s1ODdhRTBhOE5KdXc0TE83WGVaQzhSYjJueDd1Q1AzY2x6?=
+ =?utf-8?B?eGtwM3FtTGxCMXd4QWhqb3VrUnJGNUxrWUdOc0hJQm9WMGNxNlpoY1Z6clhl?=
+ =?utf-8?B?cEVvWmZ0TG1qbUdaTTN3TG0xS0VnMjd3RUZ2VnNibDBhN2poZGxoN3Zhczhj?=
+ =?utf-8?B?aE9mTzhTakJ5WnlTOUcxeTF2K051aWV2a200VExlU0lxSDNDQnZva015THRO?=
+ =?utf-8?B?SDQ1NmVlTDJoaXZIb1dqT1hkUGw2UnhLeTVLR3I4TEhxb2I0RGdPbVlNTjY2?=
+ =?utf-8?B?cFhEaklFY0RjVlNQNmlSY0c3bXIyWXBNSWpxTXEybEtCZlBqUWZ1djJuR29T?=
+ =?utf-8?B?ekNOWHZXQnNjUE9qOUV4YkMvT0dLLzNqZWlsc2VXaG8rclNpdU9NaCtKRU53?=
+ =?utf-8?B?SHZRL1dhdERTTUJnODAvMDJhRGE0STArNk1wYkFMaktUU0xkd1lJM3kxK3k0?=
+ =?utf-8?B?WTlGWTM0c3Jqc2JtcG93amFHT1ZPTkZYUHcrR1o5SVF2L1pvVGxRYlFqMDNO?=
+ =?utf-8?B?eEVURDJsOWdWdTc4c2F6Mlg3V3MzRDZySXF2c0poaGVJSGFXSkE1bFpxZmIz?=
+ =?utf-8?B?N3BBenpWSWlBL1gxNVN0SEphRWdBZVhDMVdSN05oclFOU2dObnZtczZ3MkRP?=
+ =?utf-8?B?NW9OVXpBN1hiejJWYmlzUHVzOStnWGtwWmNLT0hjMFZuRUxmSFRDT0dNU21u?=
+ =?utf-8?B?L280RjBzRnA2YXY3VEJhMHZsK0ZINmZUUWxBZWw2dDBFbnNKWGtaWWllSElv?=
+ =?utf-8?B?Y3lwVGVwbkJUVU9jMHZkQmY3SWNvWTk5aGRJM0hOQjMvK2o4TE5TYjhpVFJU?=
+ =?utf-8?B?SnhBc1lGWGMrYmxVcDI5K0h1VkQwZFp2SkdkUVhxRmJMSDBXcGU0amdITVpP?=
+ =?utf-8?B?NkhDSGk1V2YwQU5zODlhVEM1Tkd2VmNMVWN2ZlB2YWhBaElnbURIMmpvRFVD?=
+ =?utf-8?B?L1cxS05NVWZpdlVMeDAxTytOSm52R3Zqd1lNb1BTR2dQdE80Qk8ySUQxRDdm?=
+ =?utf-8?B?THFEK0tIUjB6TW9nZHZpMU9OSmJ3Q3lQWGc5TjF0NndNYndSYjhoaTU0UDFD?=
+ =?utf-8?B?UkJrY0tGT1hjc213TTgxaGE3VnFYamgxQmozdmtVc3k5MERncVB0RUViVGNk?=
+ =?utf-8?B?M1BDaU5WMlhwKzJkdSs4N2kwTHdORXhaMzJDVnlDc25lSmVzOVJTRFBpWHdZ?=
+ =?utf-8?B?K1Vxa20rb3gvNlNKNk1zdmkwZVAzRmNwa0xXUUd1aTNHMUU2emhHV3VleXk1?=
+ =?utf-8?B?OHFvWUFVU0p6RGhFRFBsc0ZnazNoM3BkZldLTGhBVEZkVjRaZlZkeDB5RFZa?=
+ =?utf-8?B?NS82VW51eml1Z0IvV2t1eVNUTVFLcmpac25OWkFTeERCVHdxSUpFVjdTT0pI?=
+ =?utf-8?B?aDNvQzJnbVk1d0hqNVoxdTN0M2tzeFcxMkVzNzI4U3JzMFlkdHY3aENkSzVj?=
+ =?utf-8?B?QmtBbUJWMlN2cFhlcDZ6R1pFUlA5MEdESDB1QTdMd0NBdnpSNS9zNkdpUnU2?=
+ =?utf-8?B?aHZBZVNLVkxpdW1HbElZZlFZSDFCZjF3MXRsWk5kZ2F4ZXhqM3A0Y1ZtNEN1?=
+ =?utf-8?Q?XfgyDt51Fy45ppvlejs1hONgHU7KqAx66U6WN?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <5C3C2D0ADC0C164BA804F29472FF8537@CANPRD01.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+X-OriginatorOrg: calian.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: df87a8db-8770-4235-cbad-08da2d338574
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 May 2022 18:34:13.1640
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 23b57807-562f-49ad-92c4-3bb0f07a1fdf
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: moo2jdsjVGsZOxkaViO/6PWXf/ZNbTWsNFweoXN/52m695ejLyQcPQ+CIoNpoBrqKnegw1lc1Nj7Q2Sd2R2ryL/MquXRqh9YccXaAvb/+eo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: YQBPR0101MB9488
+X-Proofpoint-ORIG-GUID: EZmwnrahYpUazZ1ZqfrtQ3RcOB7qLX1r
+X-Proofpoint-GUID: EZmwnrahYpUazZ1ZqfrtQ3RcOB7qLX1r
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-03_08,2022-05-02_03,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 suspectscore=0
+ bulkscore=0 spamscore=0 phishscore=0 lowpriorityscore=0 adultscore=0
+ mlxscore=0 priorityscore=1501 mlxlogscore=865 malwarescore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205030116
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,424 +153,159 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, upon virtual interface creation, wfx_add_interface() stores
-a reference to the corresponding struct ieee80211_vif in private data,
-for later usage. This is not needed when using the container_of
-construct. This construct already has all the info it needs to retrieve
-the reference to the corresponding struct from the offset that is
-already available, inherent in container_of(), between its type and
-member inputs (struct ieee80211_vif and drv_priv, respectively).
-Remove vif (which was previously storing the reference to the struct
-ieee80211_vif) from the struct wfx_vif, define a function
-wvif_to_vif(wvif) for container_of(), and replace all wvif->vif with
-the newly defined container_of construct.
-
-Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
----
-v2
-- Sequenced the wfx.h file (with the new defines) to show up first on 
-the diff, which makes the ordering of the diff more logical.
- 
-v3
-- Made edits to the commit message.
-- Shortened the macro name from wvif_to_vif to to_vif.
-- For functions that had more than one instance of vif, defined one
-reference vif at the beginning of the function and used that instead.
-- Broke the if-statements that ran long into two lines.
-
-v4
-- Changed macro into function and named it back to wvif_to_vif
-- Fit all lines in patch to 80 columns
-- Decared a reference to vif at the beginning of all the functions
-where it's being used
-
-v5
-- Placed longest declarations first 
-
-
- drivers/net/wireless/silabs/wfx/wfx.h     |  6 +-
- drivers/net/wireless/silabs/wfx/data_rx.c |  5 +-
- drivers/net/wireless/silabs/wfx/data_tx.c |  3 +-
- drivers/net/wireless/silabs/wfx/key.c     |  4 +-
- drivers/net/wireless/silabs/wfx/queue.c   |  3 +-
- drivers/net/wireless/silabs/wfx/scan.c    | 11 ++--
- drivers/net/wireless/silabs/wfx/sta.c     | 71 ++++++++++++++---------
- 7 files changed, 65 insertions(+), 38 deletions(-)
-
-diff --git a/drivers/net/wireless/silabs/wfx/wfx.h b/drivers/net/wireless/silabs/wfx/wfx.h
-index 6594cc647c2f..718693a4273d 100644
---- a/drivers/net/wireless/silabs/wfx/wfx.h
-+++ b/drivers/net/wireless/silabs/wfx/wfx.h
-@@ -61,7 +61,6 @@ struct wfx_dev {
- 
- struct wfx_vif {
- 	struct wfx_dev             *wdev;
--	struct ieee80211_vif       *vif;
- 	struct ieee80211_channel   *channel;
- 	int                        id;
- 
-@@ -91,6 +90,11 @@ struct wfx_vif {
- 	struct completion          set_pm_mode_complete;
- };
- 
-+static inline struct ieee80211_vif *wvif_to_vif(struct wfx_vif *wvif)
-+{
-+	return container_of((void *)wvif, struct ieee80211_vif, drv_priv);
-+}
-+
- static inline struct wfx_vif *wdev_to_wvif(struct wfx_dev *wdev, int vif_id)
- {
- 	if (vif_id >= ARRAY_SIZE(wdev->vif)) {
-diff --git a/drivers/net/wireless/silabs/wfx/data_rx.c b/drivers/net/wireless/silabs/wfx/data_rx.c
-index a4b5ffe158e4..e099a9e65bae 100644
---- a/drivers/net/wireless/silabs/wfx/data_rx.c
-+++ b/drivers/net/wireless/silabs/wfx/data_rx.c
-@@ -15,6 +15,7 @@
- 
- static void wfx_rx_handle_ba(struct wfx_vif *wvif, struct ieee80211_mgmt *mgmt)
- {
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
- 	int params, tid;
- 
- 	if (wfx_api_older_than(wvif->wdev, 3, 6))
-@@ -24,12 +25,12 @@ static void wfx_rx_handle_ba(struct wfx_vif *wvif, struct ieee80211_mgmt *mgmt)
- 	case WLAN_ACTION_ADDBA_REQ:
- 		params = le16_to_cpu(mgmt->u.action.u.addba_req.capab);
- 		tid = (params & IEEE80211_ADDBA_PARAM_TID_MASK) >> 2;
--		ieee80211_start_rx_ba_session_offl(wvif->vif, mgmt->sa, tid);
-+		ieee80211_start_rx_ba_session_offl(vif, mgmt->sa, tid);
- 		break;
- 	case WLAN_ACTION_DELBA:
- 		params = le16_to_cpu(mgmt->u.action.u.delba.params);
- 		tid = (params &  IEEE80211_DELBA_PARAM_TID_MASK) >> 12;
--		ieee80211_stop_rx_ba_session_offl(wvif->vif, mgmt->sa, tid);
-+		ieee80211_stop_rx_ba_session_offl(vif, mgmt->sa, tid);
- 		break;
- 	}
- }
-diff --git a/drivers/net/wireless/silabs/wfx/data_tx.c b/drivers/net/wireless/silabs/wfx/data_tx.c
-index e07381b2ff4d..6a5e52a96d18 100644
---- a/drivers/net/wireless/silabs/wfx/data_tx.c
-+++ b/drivers/net/wireless/silabs/wfx/data_tx.c
-@@ -212,11 +212,12 @@ static u8 wfx_tx_get_link_id(struct wfx_vif *wvif, struct ieee80211_sta *sta,
- 			     struct ieee80211_hdr *hdr)
- {
- 	struct wfx_sta_priv *sta_priv = sta ? (struct wfx_sta_priv *)&sta->drv_priv : NULL;
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
- 	const u8 *da = ieee80211_get_DA(hdr);
- 
- 	if (sta_priv && sta_priv->link_id)
- 		return sta_priv->link_id;
--	if (wvif->vif->type != NL80211_IFTYPE_AP)
-+	if (vif->type != NL80211_IFTYPE_AP)
- 		return 0;
- 	if (is_multicast_ether_addr(da))
- 		return 0;
-diff --git a/drivers/net/wireless/silabs/wfx/key.c b/drivers/net/wireless/silabs/wfx/key.c
-index 8f23e8d42bd4..196d64ef68f3 100644
---- a/drivers/net/wireless/silabs/wfx/key.c
-+++ b/drivers/net/wireless/silabs/wfx/key.c
-@@ -156,6 +156,7 @@ static int wfx_add_key(struct wfx_vif *wvif, struct ieee80211_sta *sta,
- 	struct wfx_dev *wdev = wvif->wdev;
- 	int idx = wfx_alloc_key(wvif->wdev);
- 	bool pairwise = key->flags & IEEE80211_KEY_FLAG_PAIRWISE;
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
- 
- 	WARN(key->flags & IEEE80211_KEY_FLAG_PAIRWISE && !sta, "inconsistent data");
- 	ieee80211_get_key_rx_seq(key, 0, &seq);
-@@ -174,7 +175,7 @@ static int wfx_add_key(struct wfx_vif *wvif, struct ieee80211_sta *sta,
- 			k.type = fill_tkip_pair(&k.key.tkip_pairwise_key, key, sta->addr);
- 		else
- 			k.type = fill_tkip_group(&k.key.tkip_group_key, key, &seq,
--						 wvif->vif->type);
-+						 vif->type);
- 	} else if (key->cipher == WLAN_CIPHER_SUITE_CCMP) {
- 		if (pairwise)
- 			k.type = fill_ccmp_pair(&k.key.aes_pairwise_key, key, sta->addr);
-@@ -224,4 +225,3 @@ int wfx_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd, struct ieee80211_
- 	mutex_unlock(&wvif->wdev->conf_mutex);
- 	return ret;
- }
--
-diff --git a/drivers/net/wireless/silabs/wfx/queue.c b/drivers/net/wireless/silabs/wfx/queue.c
-index 729825230db2..37f492e5d3be 100644
---- a/drivers/net/wireless/silabs/wfx/queue.c
-+++ b/drivers/net/wireless/silabs/wfx/queue.c
-@@ -205,9 +205,10 @@ unsigned int wfx_pending_get_pkt_us_delay(struct wfx_dev *wdev, struct sk_buff *
- 
- bool wfx_tx_queues_has_cab(struct wfx_vif *wvif)
- {
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
- 	int i;
- 
--	if (wvif->vif->type != NL80211_IFTYPE_AP)
-+	if (vif->type != NL80211_IFTYPE_AP)
- 		return false;
- 	for (i = 0; i < IEEE80211_NUM_ACS; ++i)
- 		/* Note: since only AP can have mcast frames in queue and only one vif can be AP,
-diff --git a/drivers/net/wireless/silabs/wfx/scan.c b/drivers/net/wireless/silabs/wfx/scan.c
-index 7f34f0d322f9..16f619ed22e0 100644
---- a/drivers/net/wireless/silabs/wfx/scan.c
-+++ b/drivers/net/wireless/silabs/wfx/scan.c
-@@ -23,9 +23,11 @@ static void wfx_ieee80211_scan_completed_compat(struct ieee80211_hw *hw, bool ab
- 
- static int update_probe_tmpl(struct wfx_vif *wvif, struct cfg80211_scan_request *req)
- {
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
- 	struct sk_buff *skb;
- 
--	skb = ieee80211_probereq_get(wvif->wdev->hw, wvif->vif->addr, NULL, 0, req->ie_len);
-+	skb = ieee80211_probereq_get(wvif->wdev->hw, vif->addr, NULL, 0,
-+				     req->ie_len);
- 	if (!skb)
- 		return -ENOMEM;
- 
-@@ -37,8 +39,9 @@ static int update_probe_tmpl(struct wfx_vif *wvif, struct cfg80211_scan_request
- 
- static int send_scan_req(struct wfx_vif *wvif, struct cfg80211_scan_request *req, int start_idx)
- {
--	int i, ret;
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
- 	struct ieee80211_channel *ch_start, *ch_cur;
-+	int i, ret;
- 
- 	for (i = start_idx; i < req->n_channels; i++) {
- 		ch_start = req->channels[start_idx];
-@@ -75,8 +78,8 @@ static int send_scan_req(struct wfx_vif *wvif, struct cfg80211_scan_request *req
- 	} else {
- 		ret = wvif->scan_nb_chan_done;
- 	}
--	if (req->channels[start_idx]->max_power != wvif->vif->bss_conf.txpower)
--		wfx_hif_set_output_power(wvif, wvif->vif->bss_conf.txpower);
-+	if (req->channels[start_idx]->max_power != vif->bss_conf.txpower)
-+		wfx_hif_set_output_power(wvif, vif->bss_conf.txpower);
- 	wfx_tx_unlock(wvif->wdev);
- 	return ret;
- }
-diff --git a/drivers/net/wireless/silabs/wfx/sta.c b/drivers/net/wireless/silabs/wfx/sta.c
-index 3297d73c327a..040d1f9fb03a 100644
---- a/drivers/net/wireless/silabs/wfx/sta.c
-+++ b/drivers/net/wireless/silabs/wfx/sta.c
-@@ -101,6 +101,7 @@ void wfx_configure_filter(struct ieee80211_hw *hw, unsigned int changed_flags,
- 	struct wfx_vif *wvif = NULL;
- 	struct wfx_dev *wdev = hw->priv;
- 	bool filter_bssid, filter_prbreq, filter_beacon;
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
- 
- 	/* Notes:
- 	 *   - Probe responses (FIF_BCN_PRBRESP_PROMISC) are never filtered
-@@ -132,7 +133,7 @@ void wfx_configure_filter(struct ieee80211_hw *hw, unsigned int changed_flags,
- 			filter_bssid = true;
- 
- 		/* In AP mode, chip can reply to probe request itself */
--		if (*total_flags & FIF_PROBE_REQ && wvif->vif->type == NL80211_IFTYPE_AP) {
-+		if (*total_flags & FIF_PROBE_REQ && vif->type == NL80211_IFTYPE_AP) {
- 			dev_dbg(wdev->dev, "do not forward probe request in AP mode\n");
- 			*total_flags &= ~FIF_PROBE_REQ;
- 		}
-@@ -152,19 +153,28 @@ static int wfx_get_ps_timeout(struct wfx_vif *wvif, bool *enable_ps)
- {
- 	struct ieee80211_channel *chan0 = NULL, *chan1 = NULL;
- 	struct ieee80211_conf *conf = &wvif->wdev->hw->conf;
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
- 
--	WARN(!wvif->vif->bss_conf.assoc && enable_ps,
-+	WARN(!vif->bss_conf.assoc && enable_ps,
- 	     "enable_ps is reliable only if associated");
--	if (wdev_to_wvif(wvif->wdev, 0))
--		chan0 = wdev_to_wvif(wvif->wdev, 0)->vif->bss_conf.chandef.chan;
--	if (wdev_to_wvif(wvif->wdev, 1))
--		chan1 = wdev_to_wvif(wvif->wdev, 1)->vif->bss_conf.chandef.chan;
--	if (chan0 && chan1 && wvif->vif->type != NL80211_IFTYPE_AP) {
-+	if (wdev_to_wvif(wvif->wdev, 0)) {
-+		struct wfx_vif *wvif_ch0 = wdev_to_wvif(wvif->wdev, 0);
-+		struct ieee80211_vif *vif_ch0 = wvif_to_vif(wvif_ch0);
-+
-+		chan0 = vif_ch0->bss_conf.chandef.chan;
-+	}
-+	if (wdev_to_wvif(wvif->wdev, 1)) {
-+		struct wfx_vif *wvif_ch1 = wdev_to_wvif(wvif->wdev, 1);
-+		struct ieee80211_vif *vif_ch1 = wvif_to_vif(wvif_ch1);
-+
-+		chan1 = vif_ch1->bss_conf.chandef.chan;
-+	}
-+	if (chan0 && chan1 && vif->type != NL80211_IFTYPE_AP) {
- 		if (chan0->hw_value == chan1->hw_value) {
- 			/* It is useless to enable PS if channels are the same. */
- 			if (enable_ps)
- 				*enable_ps = false;
--			if (wvif->vif->bss_conf.assoc && wvif->vif->bss_conf.ps)
-+			if (vif->bss_conf.assoc && vif->bss_conf.ps)
- 				dev_info(wvif->wdev->dev, "ignoring requested PS mode");
- 			return -1;
- 		}
-@@ -177,8 +187,8 @@ static int wfx_get_ps_timeout(struct wfx_vif *wvif, bool *enable_ps)
- 			return 30;
- 	}
- 	if (enable_ps)
--		*enable_ps = wvif->vif->bss_conf.ps;
--	if (wvif->vif->bss_conf.assoc && wvif->vif->bss_conf.ps)
-+		*enable_ps = vif->bss_conf.ps;
-+	if (vif->bss_conf.assoc && vif->bss_conf.ps)
- 		return conf->dynamic_ps_timeout;
- 	else
- 		return -1;
-@@ -186,10 +196,11 @@ static int wfx_get_ps_timeout(struct wfx_vif *wvif, bool *enable_ps)
- 
- int wfx_update_pm(struct wfx_vif *wvif)
- {
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
- 	int ps_timeout;
- 	bool ps;
- 
--	if (!wvif->vif->bss_conf.assoc)
-+	if (!vif->bss_conf.assoc)
- 		return 0;
- 	ps_timeout = wfx_get_ps_timeout(wvif, &ps);
- 	if (!ps)
-@@ -215,7 +226,8 @@ int wfx_conf_tx(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
- 	mutex_lock(&wdev->conf_mutex);
- 	assign_bit(queue, &wvif->uapsd_mask, params->uapsd);
- 	wfx_hif_set_edca_queue_params(wvif, queue, params);
--	if (wvif->vif->type == NL80211_IFTYPE_STATION && old_uapsd != wvif->uapsd_mask) {
-+	if (vif->type == NL80211_IFTYPE_STATION &&
-+	    old_uapsd != wvif->uapsd_mask) {
- 		wfx_hif_set_uapsd_info(wvif, wvif->uapsd_mask);
- 		wfx_update_pm(wvif);
- 	}
-@@ -238,24 +250,26 @@ void wfx_event_report_rssi(struct wfx_vif *wvif, u8 raw_rcpi_rssi)
- 	/* RSSI: signed Q8.0, RCPI: unsigned Q7.1
- 	 * RSSI = RCPI / 2 - 110
- 	 */
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
- 	int rcpi_rssi;
- 	int cqm_evt;
- 
- 	rcpi_rssi = raw_rcpi_rssi / 2 - 110;
--	if (rcpi_rssi <= wvif->vif->bss_conf.cqm_rssi_thold)
-+	if (rcpi_rssi <= vif->bss_conf.cqm_rssi_thold)
- 		cqm_evt = NL80211_CQM_RSSI_THRESHOLD_EVENT_LOW;
- 	else
- 		cqm_evt = NL80211_CQM_RSSI_THRESHOLD_EVENT_HIGH;
--	ieee80211_cqm_rssi_notify(wvif->vif, cqm_evt, rcpi_rssi, GFP_KERNEL);
-+	ieee80211_cqm_rssi_notify(vif, cqm_evt, rcpi_rssi, GFP_KERNEL);
- }
- 
- static void wfx_beacon_loss_work(struct work_struct *work)
- {
- 	struct wfx_vif *wvif = container_of(to_delayed_work(work), struct wfx_vif,
- 					    beacon_loss_work);
--	struct ieee80211_bss_conf *bss_conf = &wvif->vif->bss_conf;
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
-+	struct ieee80211_bss_conf *bss_conf = &vif->bss_conf;
- 
--	ieee80211_beacon_loss(wvif->vif);
-+	ieee80211_beacon_loss(vif);
- 	schedule_delayed_work(to_delayed_work(work), msecs_to_jiffies(bss_conf->beacon_int));
- }
- 
-@@ -321,15 +335,16 @@ int wfx_sta_remove(struct ieee80211_hw *hw, struct ieee80211_vif *vif, struct ie
- 
- static int wfx_upload_ap_templates(struct wfx_vif *wvif)
- {
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
- 	struct sk_buff *skb;
- 
--	skb = ieee80211_beacon_get(wvif->wdev->hw, wvif->vif);
-+	skb = ieee80211_beacon_get(wvif->wdev->hw, vif);
- 	if (!skb)
- 		return -ENOMEM;
- 	wfx_hif_set_template_frame(wvif, skb, HIF_TMPLT_BCN, API_RATE_INDEX_B_1MBPS);
- 	dev_kfree_skb(skb);
- 
--	skb = ieee80211_proberesp_get(wvif->wdev->hw, wvif->vif);
-+	skb = ieee80211_proberesp_get(wvif->wdev->hw, vif);
- 	if (!skb)
- 		return -ENOMEM;
- 	wfx_hif_set_template_frame(wvif, skb, HIF_TMPLT_PRBRES, API_RATE_INDEX_B_1MBPS);
-@@ -339,7 +354,8 @@ static int wfx_upload_ap_templates(struct wfx_vif *wvif)
- 
- static void wfx_set_mfp_ap(struct wfx_vif *wvif)
- {
--	struct sk_buff *skb = ieee80211_beacon_get(wvif->wdev->hw, wvif->vif);
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
-+	struct sk_buff *skb = ieee80211_beacon_get(wvif->wdev->hw, vif);
- 	const int ieoffset = offsetof(struct ieee80211_mgmt, u.beacon.variable);
- 	const u16 *ptr = (u16 *)cfg80211_find_ie(WLAN_EID_RSN, skb->data + ieoffset,
- 						 skb->len - ieoffset);
-@@ -388,12 +404,13 @@ void wfx_stop_ap(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
- 
- static void wfx_join(struct wfx_vif *wvif)
- {
--	int ret;
--	struct ieee80211_bss_conf *conf = &wvif->vif->bss_conf;
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
-+	struct ieee80211_bss_conf *conf = &vif->bss_conf;
- 	struct cfg80211_bss *bss = NULL;
- 	u8 ssid[IEEE80211_MAX_SSID_LEN];
- 	const u8 *ssidie = NULL;
- 	int ssidlen = 0;
-+	int ret;
- 
- 	wfx_tx_lock_flush(wvif->wdev);
- 
-@@ -420,7 +437,7 @@ static void wfx_join(struct wfx_vif *wvif)
- 	wvif->join_in_progress = true;
- 	ret = wfx_hif_join(wvif, conf, wvif->channel, ssid, ssidlen);
- 	if (ret) {
--		ieee80211_connection_loss(wvif->vif);
-+		ieee80211_connection_loss(vif);
- 		wfx_reset(wvif);
- 	} else {
- 		/* Due to beacon filtering it is possible that the AP's beacon is not known for the
-@@ -434,13 +451,14 @@ static void wfx_join(struct wfx_vif *wvif)
- 
- static void wfx_join_finalize(struct wfx_vif *wvif, struct ieee80211_bss_conf *info)
- {
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
- 	struct ieee80211_sta *sta = NULL;
- 	int ampdu_density = 0;
- 	bool greenfield = false;
- 
- 	rcu_read_lock(); /* protect sta */
- 	if (info->bssid && !info->ibss_joined)
--		sta = ieee80211_find_sta(wvif->vif, info->bssid);
-+		sta = ieee80211_find_sta(vif, info->bssid);
- 	if (sta && sta->deflink.ht_cap.ht_supported)
- 		ampdu_density = sta->deflink.ht_cap.ampdu_density;
- 	if (sta && sta->deflink.ht_cap.ht_supported &&
-@@ -561,11 +579,13 @@ void wfx_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
- 
- static int wfx_update_tim(struct wfx_vif *wvif)
- {
-+	struct ieee80211_vif *vif = wvif_to_vif(wvif);
- 	struct sk_buff *skb;
- 	u16 tim_offset, tim_length;
- 	u8 *tim_ptr;
- 
--	skb = ieee80211_beacon_get_tim(wvif->wdev->hw, wvif->vif, &tim_offset, &tim_length);
-+	skb = ieee80211_beacon_get_tim(wvif->wdev->hw, vif, &tim_offset,
-+				       &tim_length);
- 	if (!skb)
- 		return -ENOENT;
- 	tim_ptr = skb->data + tim_offset;
-@@ -707,8 +727,6 @@ int wfx_add_interface(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
- 		return -EOPNOTSUPP;
- 	}
- 
--	/* FIXME: prefer use of container_of() to get vif */
--	wvif->vif = vif;
- 	wvif->wdev = wdev;
- 
- 	wvif->link_id_map = 1; /* link-id 0 is reserved for multicast */
-@@ -767,7 +785,6 @@ void wfx_remove_interface(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
- 
- 	cancel_delayed_work_sync(&wvif->beacon_loss_work);
- 	wdev->vif[wvif->id] = NULL;
--	wvif->vif = NULL;
- 
- 	mutex_unlock(&wdev->conf_mutex);
- 
--- 
-2.25.1
-
+T24gVHVlLCAyMDIyLTA1LTAzIGF0IDA5OjIyICswMjAwLCBQYW9sbyBBYmVuaSB3cm90ZToNCj4g
+T24gRnJpLCAyMDIyLTA0LTI5IGF0IDIzOjA5ICswMDAwLCBSb2JlcnQgSGFuY29jayB3cm90ZToN
+Cj4gPiBPbiBGcmksIDIwMjItMDQtMjkgYXQgMTY6MzEgLTA2MDAsIFJvYmVydCBIYW5jb2NrIHdy
+b3RlOg0KPiA+ID4gVGhpcyBkcml2ZXIgd2FzIHVzaW5nIHRoZSBUWCBJUlEgaGFuZGxlciB0byBw
+ZXJmb3JtIGFsbCBUWCBjb21wbGV0aW9uDQo+ID4gPiB0YXNrcy4gVW5kZXIgaGVhdnkgVFggbmV0
+d29yayBsb2FkLCB0aGlzIGNhbiBjYXVzZSBzaWduaWZpY2FudCBpcnFzLW9mZg0KPiA+ID4gbGF0
+ZW5jaWVzIChmb3VuZCB0byBiZSBpbiB0aGUgaHVuZHJlZHMgb2YgbWljcm9zZWNvbmRzIHVzaW5n
+IGZ0cmFjZSkuDQo+ID4gPiBUaGlzIGNhbiBjYXVzZSBvdGhlciBpc3N1ZXMsIHN1Y2ggYXMgb3Zl
+cnJ1bm5pbmcgc2VyaWFsIFVBUlQgRklGT3Mgd2hlbg0KPiA+ID4gdXNpbmcgaGlnaCBiYXVkIHJh
+dGVzIHdpdGggbGltaXRlZCBVQVJUIEZJRk8gc2l6ZXMuDQo+ID4gPiANCj4gPiA+IFN3aXRjaCB0
+byB1c2luZyB0aGUgTkFQSSBwb2xsIGhhbmRsZXIgdG8gcGVyZm9ybSB0aGUgVFggY29tcGxldGlv
+biB3b3JrDQo+ID4gPiB0byBnZXQgdGhpcyBvdXQgb2YgaGFyZCBJUlEgY29udGV4dCBhbmQgYXZv
+aWQgdGhlIElSUSBsYXRlbmN5IGltcGFjdC4NCj4gPiA+IA0KPiA+ID4gVGhlIFRYIFVzZWQgQml0
+IFJlYWQgaW50ZXJydXB0IChUWFVCUikgaGFuZGxpbmcgYWxzbyBuZWVkcyB0byBiZSBtb3ZlZA0K
+PiA+ID4gaW50byB0aGUgTkFQSSBwb2xsIGhhbmRsZXIgdG8gbWFpbnRhaW4gdGhlIHByb3BlciBv
+cmRlciBvZiBvcGVyYXRpb25zLiBBDQo+ID4gPiBmbGFnIGlzIHVzZWQgdG8gbm90aWZ5IHRoZSBw
+b2xsIGhhbmRsZXIgdGhhdCBhIFVCUiBjb25kaXRpb24gbmVlZHMgdG8gYmUNCj4gPiA+IGhhbmRs
+ZWQuIFRoZSBtYWNiX3R4X3Jlc3RhcnQgaGFuZGxlciBoYXMgaGFkIHNvbWUgbG9ja2luZyBhZGRl
+ZCBmb3INCj4gPiA+IGdsb2JhbA0KPiA+ID4gcmVnaXN0ZXIgYWNjZXNzLCBzaW5jZSB0aGlzIGNv
+dWxkIG5vdyBwb3RlbnRpYWxseSBoYXBwZW4gY29uY3VycmVudGx5IG9uDQo+ID4gPiBkaWZmZXJl
+bnQgcXVldWVzLg0KPiA+ID4gDQo+ID4gPiBTaWduZWQtb2ZmLWJ5OiBSb2JlcnQgSGFuY29jayA8
+cm9iZXJ0LmhhbmNvY2tAY2FsaWFuLmNvbT4NCj4gPiA+IC0tLQ0KPiA+ID4gIGRyaXZlcnMvbmV0
+L2V0aGVybmV0L2NhZGVuY2UvbWFjYi5oICAgICAgfCAgIDEgKw0KPiA+ID4gIGRyaXZlcnMvbmV0
+L2V0aGVybmV0L2NhZGVuY2UvbWFjYl9tYWluLmMgfCAxMzggKysrKysrKysrKysrKy0tLS0tLS0t
+LS0NCj4gPiA+ICAyIGZpbGVzIGNoYW5nZWQsIDgwIGluc2VydGlvbnMoKyksIDU5IGRlbGV0aW9u
+cygtKQ0KPiA+ID4gDQo+ID4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvY2Fk
+ZW5jZS9tYWNiLmgNCj4gPiA+IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvY2FkZW5jZS9tYWNiLmgN
+Cj4gPiA+IGluZGV4IGYwYTdkODM5NmE0YS4uNTM1NWNlZjk1YTliIDEwMDY0NA0KPiA+ID4gLS0t
+IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvY2FkZW5jZS9tYWNiLmgNCj4gPiA+ICsrKyBiL2RyaXZl
+cnMvbmV0L2V0aGVybmV0L2NhZGVuY2UvbWFjYi5oDQo+ID4gPiBAQCAtMTIwOSw2ICsxMjA5LDcg
+QEAgc3RydWN0IG1hY2JfcXVldWUgew0KPiA+ID4gIAlzdHJ1Y3QgbWFjYl90eF9za2IJKnR4X3Nr
+YjsNCj4gPiA+ICAJZG1hX2FkZHJfdAkJdHhfcmluZ19kbWE7DQo+ID4gPiAgCXN0cnVjdCB3b3Jr
+X3N0cnVjdAl0eF9lcnJvcl90YXNrOw0KPiA+ID4gKwlib29sCQkJdHh1YnJfcGVuZGluZzsNCj4g
+PiA+ICANCj4gPiA+ICAJZG1hX2FkZHJfdAkJcnhfcmluZ19kbWE7DQo+ID4gPiAgCWRtYV9hZGRy
+X3QJCXJ4X2J1ZmZlcnNfZG1hOw0KPiA+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVy
+bmV0L2NhZGVuY2UvbWFjYl9tYWluLmMNCj4gPiA+IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvY2Fk
+ZW5jZS9tYWNiX21haW4uYw0KPiA+ID4gaW5kZXggMTYwZGM1YWQ4NGFlLi4xY2I4YWZiOGVmMGQg
+MTAwNjQ0DQo+ID4gPiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9jYWRlbmNlL21hY2JfbWFp
+bi5jDQo+ID4gPiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9jYWRlbmNlL21hY2JfbWFpbi5j
+DQo+ID4gPiBAQCAtOTU5LDcgKzk1OSw3IEBAIHN0YXRpYyBpbnQgbWFjYl9oYWx0X3R4KHN0cnVj
+dCBtYWNiICpicCkNCj4gPiA+ICAJcmV0dXJuIC1FVElNRURPVVQ7DQo+ID4gPiAgfQ0KPiA+ID4g
+IA0KPiA+ID4gLXN0YXRpYyB2b2lkIG1hY2JfdHhfdW5tYXAoc3RydWN0IG1hY2IgKmJwLCBzdHJ1
+Y3QgbWFjYl90eF9za2IgKnR4X3NrYikNCj4gPiA+ICtzdGF0aWMgdm9pZCBtYWNiX3R4X3VubWFw
+KHN0cnVjdCBtYWNiICpicCwgc3RydWN0IG1hY2JfdHhfc2tiICp0eF9za2IsDQo+ID4gPiBpbnQN
+Cj4gPiA+IGJ1ZGdldCkNCj4gPiA+ICB7DQo+ID4gPiAgCWlmICh0eF9za2ItPm1hcHBpbmcpIHsN
+Cj4gPiA+ICAJCWlmICh0eF9za2ItPm1hcHBlZF9hc19wYWdlKQ0KPiA+ID4gQEAgLTk3Miw3ICs5
+NzIsNyBAQCBzdGF0aWMgdm9pZCBtYWNiX3R4X3VubWFwKHN0cnVjdCBtYWNiICpicCwgc3RydWN0
+DQo+ID4gPiBtYWNiX3R4X3NrYiAqdHhfc2tiKQ0KPiA+ID4gIAl9DQo+ID4gPiAgDQo+ID4gPiAg
+CWlmICh0eF9za2ItPnNrYikgew0KPiA+ID4gLQkJZGV2X2tmcmVlX3NrYl9hbnkodHhfc2tiLT5z
+a2IpOw0KPiA+ID4gKwkJbmFwaV9jb25zdW1lX3NrYih0eF9za2ItPnNrYiwgYnVkZ2V0KTsNCj4g
+PiA+ICAJCXR4X3NrYi0+c2tiID0gTlVMTDsNCj4gPiA+ICAJfQ0KPiA+ID4gIH0NCj4gPiA+IEBA
+IC0xMDI1LDEyICsxMDI1LDEzIEBAIHN0YXRpYyB2b2lkIG1hY2JfdHhfZXJyb3JfdGFzayhzdHJ1
+Y3Qgd29ya19zdHJ1Y3QNCj4gPiA+ICp3b3JrKQ0KPiA+ID4gIAkJICAgICh1bnNpZ25lZCBpbnQp
+KHF1ZXVlIC0gYnAtPnF1ZXVlcyksDQo+ID4gPiAgCQkgICAgcXVldWUtPnR4X3RhaWwsIHF1ZXVl
+LT50eF9oZWFkKTsNCj4gPiA+ICANCj4gPiA+IC0JLyogUHJldmVudCB0aGUgcXVldWUgSVJRIGhh
+bmRsZXJzIGZyb20gcnVubmluZzogZWFjaCBvZiB0aGVtIG1heSBjYWxsDQo+ID4gPiAtCSAqIG1h
+Y2JfdHhfaW50ZXJydXB0KCksIHdoaWNoIGluIHR1cm4gbWF5IGNhbGwgbmV0aWZfd2FrZV9zdWJx
+dWV1ZSgpLg0KPiA+ID4gKwkvKiBQcmV2ZW50IHRoZSBxdWV1ZSBOQVBJIHBvbGwgZnJvbSBydW5u
+aW5nLCBhcyBpdCBjYWxscw0KPiA+ID4gKwkgKiBtYWNiX3R4X2NvbXBsZXRlKCksIHdoaWNoIGlu
+IHR1cm4gbWF5IGNhbGwgbmV0aWZfd2FrZV9zdWJxdWV1ZSgpLg0KPiA+ID4gIAkgKiBBcyBleHBs
+YWluZWQgYmVsb3csIHdlIGhhdmUgdG8gaGFsdCB0aGUgdHJhbnNtaXNzaW9uIGJlZm9yZSB1cGRh
+dGluZw0KPiA+ID4gIAkgKiBUQlFQIHJlZ2lzdGVycyBzbyB3ZSBjYWxsIG5ldGlmX3R4X3N0b3Bf
+YWxsX3F1ZXVlcygpIHRvIG5vdGlmeSB0aGUNCj4gPiA+ICAJICogbmV0d29yayBlbmdpbmUgYWJv
+dXQgdGhlIG1hY2IvZ2VtIGJlaW5nIGhhbHRlZC4NCj4gPiA+ICAJICovDQo+ID4gPiArCW5hcGlf
+ZGlzYWJsZSgmcXVldWUtPm5hcGkpOw0KPiA+ID4gIAlzcGluX2xvY2tfaXJxc2F2ZSgmYnAtPmxv
+Y2ssIGZsYWdzKTsNCj4gPiA+ICANCj4gPiA+ICAJLyogTWFrZSBzdXJlIG5vYm9keSBpcyB0cnlp
+bmcgdG8gcXVldWUgdXAgbmV3IHBhY2tldHMgKi8NCj4gPiA+IEBAIC0xMDU4LDcgKzEwNTksNyBA
+QCBzdGF0aWMgdm9pZCBtYWNiX3R4X2Vycm9yX3Rhc2soc3RydWN0IHdvcmtfc3RydWN0DQo+ID4g
+PiAqd29yaykNCj4gPiA+ICAJCWlmIChjdHJsICYgTUFDQl9CSVQoVFhfVVNFRCkpIHsNCj4gPiA+
+ICAJCQkvKiBza2IgaXMgc2V0IGZvciB0aGUgbGFzdCBidWZmZXIgb2YgdGhlIGZyYW1lICovDQo+
+ID4gPiAgCQkJd2hpbGUgKCFza2IpIHsNCj4gPiA+IC0JCQkJbWFjYl90eF91bm1hcChicCwgdHhf
+c2tiKTsNCj4gPiA+ICsJCQkJbWFjYl90eF91bm1hcChicCwgdHhfc2tiLCAwKTsNCj4gPiA+ICAJ
+CQkJdGFpbCsrOw0KPiA+ID4gIAkJCQl0eF9za2IgPSBtYWNiX3R4X3NrYihxdWV1ZSwgdGFpbCk7
+DQo+ID4gPiAgCQkJCXNrYiA9IHR4X3NrYi0+c2tiOw0KPiA+ID4gQEAgLTEwODgsNyArMTA4OSw3
+IEBAIHN0YXRpYyB2b2lkIG1hY2JfdHhfZXJyb3JfdGFzayhzdHJ1Y3Qgd29ya19zdHJ1Y3QNCj4g
+PiA+ICp3b3JrKQ0KPiA+ID4gIAkJCWRlc2MtPmN0cmwgPSBjdHJsIHwgTUFDQl9CSVQoVFhfVVNF
+RCk7DQo+ID4gPiAgCQl9DQo+ID4gPiAgDQo+ID4gPiAtCQltYWNiX3R4X3VubWFwKGJwLCB0eF9z
+a2IpOw0KPiA+ID4gKwkJbWFjYl90eF91bm1hcChicCwgdHhfc2tiLCAwKTsNCj4gPiA+ICAJfQ0K
+PiA+ID4gIA0KPiA+ID4gIAkvKiBTZXQgZW5kIG9mIFRYIHF1ZXVlICovDQo+ID4gPiBAQCAtMTEx
+OCwyNSArMTExOSwyOCBAQCBzdGF0aWMgdm9pZCBtYWNiX3R4X2Vycm9yX3Rhc2soc3RydWN0IHdv
+cmtfc3RydWN0DQo+ID4gPiAqd29yaykNCj4gPiA+ICAJbWFjYl93cml0ZWwoYnAsIE5DUiwgbWFj
+Yl9yZWFkbChicCwgTkNSKSB8IE1BQ0JfQklUKFRTVEFSVCkpOw0KPiA+ID4gIA0KPiA+ID4gIAlz
+cGluX3VubG9ja19pcnFyZXN0b3JlKCZicC0+bG9jaywgZmxhZ3MpOw0KPiA+ID4gKwluYXBpX2Vu
+YWJsZSgmcXVldWUtPm5hcGkpOw0KPiA+ID4gIH0NCj4gPiA+ICANCj4gPiA+IC1zdGF0aWMgdm9p
+ZCBtYWNiX3R4X2ludGVycnVwdChzdHJ1Y3QgbWFjYl9xdWV1ZSAqcXVldWUpDQo+ID4gPiArc3Rh
+dGljIGJvb2wgbWFjYl90eF9jb21wbGV0ZV9wZW5kaW5nKHN0cnVjdCBtYWNiX3F1ZXVlICpxdWV1
+ZSkNCj4gPiA+ICt7DQo+ID4gPiArCWlmIChxdWV1ZS0+dHhfaGVhZCAhPSBxdWV1ZS0+dHhfdGFp
+bCkgew0KPiA+ID4gKwkJLyogTWFrZSBodyBkZXNjcmlwdG9yIHVwZGF0ZXMgdmlzaWJsZSB0byBD
+UFUgKi8NCj4gPiA+ICsJCXJtYigpOw0KPiA+ID4gKw0KPiA+ID4gKwkJaWYgKG1hY2JfdHhfZGVz
+YyhxdWV1ZSwgcXVldWUtPnR4X3RhaWwpLT5jdHJsICYNCj4gPiA+IE1BQ0JfQklUKFRYX1VTRUQp
+KQ0KPiA+ID4gKwkJCXJldHVybiB0cnVlOw0KPiA+ID4gKwl9DQo+ID4gPiArCXJldHVybiBmYWxz
+ZTsNCj4gPiA+ICt9DQo+ID4gPiArDQo+ID4gPiArc3RhdGljIHZvaWQgbWFjYl90eF9jb21wbGV0
+ZShzdHJ1Y3QgbWFjYl9xdWV1ZSAqcXVldWUsIGludCBidWRnZXQpDQo+ID4gPiAgew0KPiA+ID4g
+IAl1bnNpZ25lZCBpbnQgdGFpbDsNCj4gPiA+ICAJdW5zaWduZWQgaW50IGhlYWQ7DQo+ID4gPiAt
+CXUzMiBzdGF0dXM7DQo+ID4gPiAgCXN0cnVjdCBtYWNiICpicCA9IHF1ZXVlLT5icDsNCj4gPiA+
+ICAJdTE2IHF1ZXVlX2luZGV4ID0gcXVldWUgLSBicC0+cXVldWVzOw0KPiA+ID4gIA0KPiA+ID4g
+LQlzdGF0dXMgPSBtYWNiX3JlYWRsKGJwLCBUU1IpOw0KPiA+ID4gLQltYWNiX3dyaXRlbChicCwg
+VFNSLCBzdGF0dXMpOw0KPiA+ID4gLQ0KPiA+ID4gLQlpZiAoYnAtPmNhcHMgJiBNQUNCX0NBUFNf
+SVNSX0NMRUFSX09OX1dSSVRFKQ0KPiA+ID4gLQkJcXVldWVfd3JpdGVsKHF1ZXVlLCBJU1IsIE1B
+Q0JfQklUKFRDT01QKSk7DQo+ID4gPiAtDQo+ID4gPiAtCW5ldGRldl92ZGJnKGJwLT5kZXYsICJt
+YWNiX3R4X2ludGVycnVwdCBzdGF0dXMgPSAweCUwM2x4XG4iLA0KPiA+ID4gLQkJICAgICh1bnNp
+Z25lZCBsb25nKXN0YXR1cyk7DQo+ID4gPiAtDQo+ID4gPiAgCWhlYWQgPSBxdWV1ZS0+dHhfaGVh
+ZDsNCj4gPiA+ICAJZm9yICh0YWlsID0gcXVldWUtPnR4X3RhaWw7IHRhaWwgIT0gaGVhZDsgdGFp
+bCsrKSB7DQo+ID4gPiAgCQlzdHJ1Y3QgbWFjYl90eF9za2IJKnR4X3NrYjsNCj4gPiA+IEBAIC0x
+MTgyLDcgKzExODYsNyBAQCBzdGF0aWMgdm9pZCBtYWNiX3R4X2ludGVycnVwdChzdHJ1Y3QgbWFj
+Yl9xdWV1ZQ0KPiA+ID4gKnF1ZXVlKQ0KPiA+ID4gIAkJCX0NCj4gPiA+ICANCj4gPiA+ICAJCQkv
+KiBOb3cgd2UgY2FuIHNhZmVseSByZWxlYXNlIHJlc291cmNlcyAqLw0KPiA+ID4gLQkJCW1hY2Jf
+dHhfdW5tYXAoYnAsIHR4X3NrYik7DQo+ID4gPiArCQkJbWFjYl90eF91bm1hcChicCwgdHhfc2ti
+LCBidWRnZXQpOw0KPiA+ID4gIA0KPiA+ID4gIAkJCS8qIHNrYiBpcyBzZXQgb25seSBmb3IgdGhl
+IGxhc3QgYnVmZmVyIG9mIHRoZSBmcmFtZS4NCj4gPiA+ICAJCQkgKiBXQVJOSU5HOiBhdCB0aGlz
+IHBvaW50IHNrYiBoYXMgYmVlbiBmcmVlZCBieQ0KPiA+ID4gQEAgLTE1NjksMjMgKzE1NzMsNTUg
+QEAgc3RhdGljIGJvb2wgbWFjYl9yeF9wZW5kaW5nKHN0cnVjdCBtYWNiX3F1ZXVlDQo+ID4gPiAq
+cXVldWUpDQo+ID4gPiAgCXJldHVybiAoZGVzYy0+YWRkciAmIE1BQ0JfQklUKFJYX1VTRUQpKSAh
+PSAwOw0KPiA+ID4gIH0NCj4gPiA+ICANCj4gPiA+ICtzdGF0aWMgdm9pZCBtYWNiX3R4X3Jlc3Rh
+cnQoc3RydWN0IG1hY2JfcXVldWUgKnF1ZXVlKQ0KPiA+ID4gK3sNCj4gPiA+ICsJdW5zaWduZWQg
+aW50IGhlYWQgPSBxdWV1ZS0+dHhfaGVhZDsNCj4gPiA+ICsJdW5zaWduZWQgaW50IHRhaWwgPSBx
+dWV1ZS0+dHhfdGFpbDsNCj4gPiA+ICsJc3RydWN0IG1hY2IgKmJwID0gcXVldWUtPmJwOw0KPiA+
+ID4gKwl1bnNpZ25lZCBpbnQgaGVhZF9pZHgsIHRicXA7DQo+ID4gPiArDQo+ID4gPiArCWlmICho
+ZWFkID09IHRhaWwpDQo+ID4gPiArCQlyZXR1cm47DQo+ID4gPiArDQo+ID4gPiArCXRicXAgPSBx
+dWV1ZV9yZWFkbChxdWV1ZSwgVEJRUCkgLyBtYWNiX2RtYV9kZXNjX2dldF9zaXplKGJwKTsNCj4g
+PiA+ICsJdGJxcCA9IG1hY2JfYWRqX2RtYV9kZXNjX2lkeChicCwgbWFjYl90eF9yaW5nX3dyYXAo
+YnAsIHRicXApKTsNCj4gPiA+ICsJaGVhZF9pZHggPSBtYWNiX2Fkal9kbWFfZGVzY19pZHgoYnAs
+IG1hY2JfdHhfcmluZ193cmFwKGJwLCBoZWFkKSk7DQo+ID4gPiArDQo+ID4gPiArCWlmICh0YnFw
+ID09IGhlYWRfaWR4KQ0KPiA+ID4gKwkJcmV0dXJuOw0KPiA+ID4gKw0KPiA+ID4gKwlzcGluX2xv
+Y2tfaXJxKCZicC0+bG9jayk7DQo+ID4gPiArCW1hY2Jfd3JpdGVsKGJwLCBOQ1IsIG1hY2JfcmVh
+ZGwoYnAsIE5DUikgfCBNQUNCX0JJVChUU1RBUlQpKTsNCj4gPiA+ICsJc3Bpbl91bmxvY2tfaXJx
+KCZicC0+bG9jayk7DQo+ID4gPiArfQ0KPiA+ID4gKw0KPiA+ID4gIHN0YXRpYyBpbnQgbWFjYl9w
+b2xsKHN0cnVjdCBuYXBpX3N0cnVjdCAqbmFwaSwgaW50IGJ1ZGdldCkNCj4gPiA+ICB7DQo+ID4g
+PiAgCXN0cnVjdCBtYWNiX3F1ZXVlICpxdWV1ZSA9IGNvbnRhaW5lcl9vZihuYXBpLCBzdHJ1Y3Qg
+bWFjYl9xdWV1ZSwgbmFwaSk7DQo+ID4gPiAgCXN0cnVjdCBtYWNiICpicCA9IHF1ZXVlLT5icDsN
+Cj4gPiA+ICAJaW50IHdvcmtfZG9uZTsNCj4gPiA+ICANCj4gPiA+ICsJbWFjYl90eF9jb21wbGV0
+ZShxdWV1ZSwgYnVkZ2V0KTsNCj4gPiA+ICsNCj4gPiA+ICsJcm1iKCk7IC8vIGVuc3VyZSB0eHVi
+cl9wZW5kaW5nIGlzIHVwIHRvIGRhdGUNCj4gPiA+ICsJaWYgKHF1ZXVlLT50eHVicl9wZW5kaW5n
+KSB7DQo+ID4gPiArCQlxdWV1ZS0+dHh1YnJfcGVuZGluZyA9IGZhbHNlOw0KPiA+ID4gKwkJbmV0
+ZGV2X3ZkYmcoYnAtPmRldiwgInBvbGw6IHR4IHJlc3RhcnRcbiIpOw0KPiA+ID4gKwkJbWFjYl90
+eF9yZXN0YXJ0KHF1ZXVlKTsNCj4gPiA+ICsJfQ0KPiA+ID4gKw0KPiA+IA0KPiA+IFRoaW5raW5n
+IGFib3V0IHRoaXMgYSBiaXQgbW9yZSwgSSB3b25kZXIgaWYgd2UgY291bGQganVzdCBkbyB0aGlz
+DQo+ID4gdHhfcmVzdGFydA0KPiA+IGNhbGwgdW5jb25kaXRpb25hbGx5IGhlcmU/IFRoZW4gd2Ug
+d291bGRuJ3QgbmVlZCB0aGlzIHR4dWJyX3BlbmRpbmcgZmxhZyBhdA0KPiA+IGFsbC4gQ0Npbmcg
+VG9tYXMgTWVsaW4gd2hvIHdvcmtlZCBvbiB0aGlzIHR4X3Jlc3RhcnQgY29kZSByZWNlbnRseS4N
+Cj4gDQo+IExvb2tpbmcgb25seSBhdCB0aGUgY29kZSwgYW5kIGxhY2tpbmcgdGhlIE5JQyBzcGVj
+cywgdGhlIHR3bw0KPiBhbHRlcm5hdGl2ZSBsb29rIGZ1bmN0aW9uYWxseSBlcXVpdmFsZW50Lg0K
+PiANCj4gUGVyZm9ybWFuY2Ugd2lzZSBpdCBjb3VsZCBtYXR0ZXIuIEl0IGRlcGVuZHMgb24gdGhl
+IHJlbGF0aXZlIGNvc3Qgb2YNCj4gSVNSK21lbW9yeSBiYXJyaWVycyB2cyByZXN0YXJ0aW5nIFRY
+ICAtIHJlbW92aW5nIHR4dWJyX3BlbmRpbmcgeW91IHdpbGwNCj4gdHJhZGUgdGhlIGZvcm1lciBm
+b3IgdGhlIGxhdHRlci4NCj4gDQo+IEkgZ3Vlc3MgdGhlIGVhc2llciB3YXkgdG8gY2hlY2sgaXMg
+ZG9pbmcgcGVyZm9ybWFuY2UgY29tcGFyaXNvbnMgd2l0aA0KPiB0aGUgMiBvcHRpb25zLiBJIGhv
+cGUgeW91IGhhdmUgdGhlIHJlbGV2YW50IEgvVyBoYW5keSA7KQ0KDQpJJ3ZlIGRvbmUgc29tZSBi
+ZW5jaG1hcmtzIHdpdGggdGhpcyB1bmRlciBhIG1vZGVyYXRlIFRYIGxvYWQgKGFib3V0IDYwMCBN
+YnBzKQ0Kb24gdGhlIFhpbGlueCBaeW5xTVAgcGxhdGZvcm0uIEl0IGxvb2tzIGxpa2UgdGhlIHNv
+ZnRpcnEgQ1BVIHVzYWdlIGlzIGEgZmV3DQpwZXJjZW50IGhpZ2hlciB3aGVuIGRvaW5nIGFuIHVu
+Y29uZGl0aW9uYWwgVFggcmVzdGFydCAoYXJvdW5kIDUyJSB2cy4gNDgtNTAlDQp3aXRoIHRoZSBj
+b2RlIGFzIHN1Ym1pdHRlZCkuIFNvIGl0J3Mgbm90IGVhcnRoIHNoYXR0ZXJpbmcgb3IgaGlnaGx5
+IGNvbmNsdXNpdmUNCmVpdGhlciB3YXksIGJ1dCBpdCBzZWVtcyB0aGUgd2F5IEkgaGFkIGl0IGlz
+IGxpa2VseSBtb3JlIGVmZmljaWVudC4NCg0KPiANCj4gVGhhbmtzLA0KPiANCj4gUGFvbG8NCj4g
+DQo=
