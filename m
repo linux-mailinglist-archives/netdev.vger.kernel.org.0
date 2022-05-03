@@ -2,169 +2,454 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C9E3518BE1
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 20:07:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB09B518BE5
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 20:07:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240985AbiECSKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 14:10:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60200 "EHLO
+        id S240953AbiECSK4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 14:10:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237696AbiECSKf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 14:10:35 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F76329AE;
-        Tue,  3 May 2022 11:07:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=WYW7A1AoQOryf4HZjlafyZKPnHAKwmZXZQ0bWMyg1OM=; b=IJk7PjWXbuJYxjyJajFcqu+Mif
-        2fd51zOcNQRJjfhVuzSoQO9mBBwmDdVBHLRqON1BGirC1Vk8+AoSYO3LiHwD+UN1A9emX95LT9quF
-        x9JKLy4HImLNSn0mqdv7zEp5uPj6Lvn09d1aUkR/Hf14MsP+c2ZYwmIAyLwNg0VIkqGkELR5aYgVO
-        0xdNy0LqxmoLJzxFqk/oO1+b/WdJOIRWXo4fLVInmE2Yo6XsUwQPE4Yo6Y1hA1Cl8oTHfkCacBbdC
-        IAv1LZ4HQl0+X38MUmMlSpApf42pMuXeETEON4eFrPMp1+0PSjab3dBLEc1woBTNMiXT6t4Yfmen7
-        fHSrzQsQ==;
-Received: from [179.113.53.197] (helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1nlwvB-000AFb-By; Tue, 03 May 2022 20:06:49 +0200
-Message-ID: <12b5a753-c0f1-9da5-f269-483384752837@igalia.com>
-Date:   Tue, 3 May 2022 15:06:15 -0300
+        with ESMTP id S238979AbiECSKz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 14:10:55 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 222293EAA8
+        for <netdev@vger.kernel.org>; Tue,  3 May 2022 11:07:22 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id f4so19857392iov.2
+        for <netdev@vger.kernel.org>; Tue, 03 May 2022 11:07:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=mOzLpToeNi7cqdxC84EYcmPTEFP0phVGBwbe66P0P1U=;
+        b=dnkDAWnTkeTj61Zet+oK6f7ii3U29sPVoBa36qZn/k4Z7cGL0eMVzu6Dg9jmKT87FC
+         0YQxOe3ZEy7XVvtzMKmGQP4KTHmTX4yhcWh+nZNzJ5Od8CqCWt2acfk0K9jexvJl5P+g
+         1PYiCdrAHAlsEReKwAqQ1Jx2rCZ8IddDVizM4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=mOzLpToeNi7cqdxC84EYcmPTEFP0phVGBwbe66P0P1U=;
+        b=6CdQHUnsW6lnE+e6TfKmx5fyHAaQ0ifkrkfyTWxigbudiVaMAh+k3+GZGHOWualtKu
+         lWVyk+RdBwDbPzcye9RCWhhyQa8a1YwQIGkTMhS9S+Got47zK65Cqt0o2hiBgKjokD+g
+         cBVJXNezmc4F7191KnzGquHK2iu4NTn/+bmZBeRuojTS2RxZOKrwp9LyPbxMFU14ONBm
+         CcbWE7Dy8z3mxpi4fAC2aLoCN8UEWmxE9y442wavNB8bCpzeH4h+40Om0Y9q6wF7+qJP
+         PhTfl2/DgW/7ceoSGa8vCfY5ZFIULmp8iA154sW64Hmpm9er/ddSJiu4BfIHekAd3tUy
+         P6Vw==
+X-Gm-Message-State: AOAM531b1pLgykPZMPZu6dNMuXGs1Sht8uyqmVQJ7DCVw8+BR/gMI57G
+        N4a3xAt+9FmxuBs5pt5U5lHdeLykcEYWx7IQCRuO/A==
+X-Google-Smtp-Source: ABdhPJwmWS43f0+ZLjBVLvJJ7JA2ji+c8pVpOGkCgk3WxF80dOMQ3tlGLYOdqgNN/el3xCA6oZ5gBBBEY2v/N/b/9yk=
+X-Received: by 2002:a05:6638:250b:b0:32b:6adc:d9a with SMTP id
+ v11-20020a056638250b00b0032b6adc0d9amr4596159jat.31.1651601239878; Tue, 03
+ May 2022 11:07:19 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 24/30] panic: Refactor the panic path
-Content-Language: en-US
-To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "bhe@redhat.com" <bhe@redhat.com>,
-        "pmladek@suse.com" <pmladek@suse.com>,
-        "kexec@lists.infradead.org" <kexec@lists.infradead.org>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "bcm-kernel-feedback-list@broadcom.com" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>,
-        "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "linux-remoteproc@vger.kernel.org" <linux-remoteproc@vger.kernel.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
-        "linux-um@lists.infradead.org" <linux-um@lists.infradead.org>,
-        "linux-xtensa@linux-xtensa.org" <linux-xtensa@linux-xtensa.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "openipmi-developer@lists.sourceforge.net" 
-        <openipmi-developer@lists.sourceforge.net>,
-        "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "kernel-dev@igalia.com" <kernel-dev@igalia.com>,
-        "kernel@gpiccoli.net" <kernel@gpiccoli.net>,
-        "halves@canonical.com" <halves@canonical.com>,
-        "fabiomirmar@gmail.com" <fabiomirmar@gmail.com>,
-        "alejandro.j.jimenez@oracle.com" <alejandro.j.jimenez@oracle.com>,
-        "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>,
-        "arnd@arndb.de" <arnd@arndb.de>, "bp@alien8.de" <bp@alien8.de>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "d.hatayama@jp.fujitsu.com" <d.hatayama@jp.fujitsu.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "dyoung@redhat.com" <dyoung@redhat.com>,
-        "feng.tang@intel.com" <feng.tang@intel.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "hidehiro.kawai.ez@hitachi.com" <hidehiro.kawai.ez@hitachi.com>,
-        "jgross@suse.com" <jgross@suse.com>,
-        "john.ogness@linutronix.de" <john.ogness@linutronix.de>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "mhiramat@kernel.org" <mhiramat@kernel.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "paulmck@kernel.org" <paulmck@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "senozhatsky@chromium.org" <senozhatsky@chromium.org>,
-        "stern@rowland.harvard.edu" <stern@rowland.harvard.edu>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "vgoyal@redhat.com" <vgoyal@redhat.com>,
-        vkuznets <vkuznets@redhat.com>,
-        "will@kernel.org" <will@kernel.org>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-25-gpiccoli@igalia.com>
- <PH0PR21MB30252C55EB4F97F3D78021BDD7FC9@PH0PR21MB3025.namprd21.prod.outlook.com>
- <50178dfb-8e94-f35f-09c3-22fe197550ef@igalia.com>
- <PH0PR21MB302570C9407F80AAD09E209ED7C09@PH0PR21MB3025.namprd21.prod.outlook.com>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <PH0PR21MB302570C9407F80AAD09E209ED7C09@PH0PR21MB3025.namprd21.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220418231746.2464800-1-grundler@chromium.org>
+ <CANEJEGtaFCRhVBaVtHrQiJvwsuBk3f_4RNTg87CWERHt+453KA@mail.gmail.com>
+ <23cbe4be-7ced-62da-8fdb-366b726fe10f@marvell.com> <CANEJEGtVFE8awJz3j9j7T2BseJ5qMd_7er7WbdPQNgrdz9F5dg@mail.gmail.com>
+ <BY3PR18MB4578949E822F4787E95A126CB4C09@BY3PR18MB4578.namprd18.prod.outlook.com>
+In-Reply-To: <BY3PR18MB4578949E822F4787E95A126CB4C09@BY3PR18MB4578.namprd18.prod.outlook.com>
+From:   Grant Grundler <grundler@chromium.org>
+Date:   Tue, 3 May 2022 11:07:08 -0700
+Message-ID: <CANEJEGvsfnry=tFOyx+cTRHJyTo2-TNOe1u4AWV+J=amrFyZpw@mail.gmail.com>
+Subject: Re: [EXT] Re: [PATCH 0/5] net: atlantic: more fuzzing fixes
+To:     Dmitrii Bezrukov <dbezrukov@marvell.com>
+Cc:     Grant Grundler <grundler@chromium.org>,
+        Igor Russkikh <irusskikh@marvell.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Aashay Shringarpure <aashay@google.com>,
+        Yi Chou <yich@google.com>,
+        Shervin Oloumi <enlightened@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03/05/2022 14:31, Michael Kelley (LINUX) wrote:
-> [...]
-> 
-> To me, it's a weak correlation between having a kmsg dumper, and
-> wanting or not wanting the info level output to come before kdump.
-> Hyper-V is one of only a few places that register a kmsg dumper, so most
-> Linux instances outside of Hyper-V guest (and PowerPC systems?) will have
-> the info level output after kdump.  It seems like anyone who cared strongly
-> about the info level output would set the panic_notifier_level to 1 or to 3
-> so that the result is more deterministic.  But that's just my opinion, and
-> it's probably an opinion that is not as well informed on the topic as some
-> others in the discussion. So keeping things as in your patch set is not a
-> show-stopper for me.
-> 
-> However, I would request a clarification in the documentation.   The
-> panic_notifier_level affects not only the hypervisor, informational,
-> and pre_reboot lists, but it also affects panic_print_sys_info() and
-> kmsg_dump().  Specifically, at level 1, panic_print_sys_info() and
-> kmsg_dump() will not be run before kdump.  At level 3, they will
-> always be run before kdump.  Your documentation above mentions
-> "informational lists" (plural), which I take to vaguely include
-> kmsg_dump() and panic_print_sys_info(), but being explicit about
-> the effect would be better.
-> 
-> Michael
+Hi Dmitrii!
 
-Thanks again Michael, to express your points and concerns - great idea
-of documentation improvement here, I'll do that for V2, for sure.
+On Tue, May 3, 2022 at 4:15 AM Dmitrii Bezrukov <dbezrukov@marvell.com> wro=
+te:
+>
+> Hi Grants,
+>
+> >[1/5] net: atlantic: limit buff_ring index value
+>
+> >diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+> >b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+> >index d875ce3ec759..e72b9d86f6ad 100644
+> >--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+> >+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+> >@@ -981,7 +981,9 @@  int hw_atl_b0_hw_ring_rx_receive(struct aq_hw_s
+> >*self, struct aq_ring_s *ring)
+> >
+> >                       if (buff->is_lro) {
+> >                               /* LRO */
+> >-                              buff->next =3D rxd_wb->next_desc_ptr;
+> >+                              buff->next =3D
+> >+                                      (rxd_wb->next_desc_ptr < ring->si=
+ze) ?
+> >+                                      rxd_wb->next_desc_ptr : 0U;
+> >                               ++ring->stats.rx.lro_packets;
+> >                       } else {
+> >                               /* jumbo */
+>
+> I don=E2=80=99t find this way correct. At least in this functions there i=
+s no access to buffers by this index "next".
 
-The idea of "defaulting" to skip the info list on kdump (if no
-kmsg_dump() is set) is again a mechanism that aims at accommodating all
-users and concerns of antagonistic goals, kdump vs notifier lists.
+Did I misunderstand what this code (line 378) is doing in aq_ring.c?
+342 #define AQ_SKB_ALIGN SKB_DATA_ALIGN(sizeof(struct skb_shared_info))
+343 int aq_ring_rx_clean(struct aq_ring_s *self,
+344                      struct napi_struct *napi,
+345                      int *work_done,
+346                      int budget)
+347 {
+...
+371                                 if (buff_->next >=3D self->size) {
+372                                         err =3D -EIO;
+373                                         goto err_exit;
+374                                 }
+375
+376                                 frag_cnt++;
+377                                 next_ =3D buff_->next,
+378                                 buff_ =3D &self->buff_ring[next_];
 
-Before this patch set, by default no notifier executed before kdump. So,
-the "pendulum"  was strongly on kdump side, and clearly this was a
-sub-optimal decision - proof of that is that both Hyper-V / PowerPC code
-forcibly set the "crash_kexec_post_notifiers". The goal here is to have
-a more lightweight list that by default runs before kdump, a secondary
-list that only runs before kdump if there's usage for that (either user
-sets that or kmsg_dumper set is considered a valid user), and the
-remaining notifiers run by default only after kdump, all of that very
-customizable through the levels idea.
+My change is redundant with Lines 371-374 - they essentially do the
+same thing and were added on
+2021-12-26 by 5f50153288452 (Zekun Shen)
 
-Now, one thing we could do to improve consistency for the hyper-v case:
-having a kmsg_dump_once() helper, and *for Hyper-V only*, call it on the
-hypervisor list, within the info notifier (that would be moved to
-hypervisor list, ofc).
-Let's wait for more feedback on that, just throwing some ideas in order
-we can have everyone happy with the end-result!
+The original fuzzing work was done on chromeos-v5.4 kernel and didn't
+include this change. I'll backport 5f50153288452t to chromeos-v5.4 and
+drop my proposed change.
 
-Cheers,
+> Following this fix, if it happens then during assembling of LRO session i=
+t could be that this buffer (you suggesting to use buffer with index 0) bec=
+omes a part of current LRO session and will be also processed as a single p=
+acket or as a part of other LRO huge packet.
+> To be honest there are lot of possibilities depends on current values of =
+head and tail which may cause either memory leak or double free or somethin=
+g else.
+
+*nod*
+
+> There is a code which calls this function aq_ring.c: aq_ring_rx_clean.
+
+Exactly.
+
+> From my POV it's better to check that indexes don't point to outside of r=
+ing in code which collects LRO session.
+
+Sounds good to me. I don't have a preference. I'm ok with
+dropping/ignoring [1/5] patch.
+
+> There is expectation that "next" is in range "cleaned" descriptors, which=
+ means that HW put data there wrote descriptor and buffers are ready to be =
+process by assembling code.
+> So in case if "next" points to something outside of ring then guess it wo=
+uld be better just to stop collecting these buffers to one huge packet and =
+treat this LRO session as completed.
+> Then rest of buffers (which should be it that chain) will be collected ag=
+ain without beginning and just dropped by stack later.
+
+That makes sense to me. And apologies for not noticing Zekun Shen's
+2021-12-26 change earlier. I've been working on this off and on for
+several months.
+
+> > [4/5] net: atlantic: add check for MAX_SKB_FRAGS
+> >
+> >diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
+> >b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
+> >index bc1952131799..8201ce7adb77 100644
+> >--- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
+> >+++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
+> >@@ -363,6 +363,7 @@  int aq_ring_rx_clean(struct aq_ring_s *self,
+> >                       continue;
+> >
+> >               if (!buff->is_eop) {
+> >+                      unsigned int frag_cnt =3D 0U;
+> >                       buff_ =3D buff;
+> >                       do {
+> >                               bool is_rsc_completed =3D true;
+> >@@ -371,6 +372,8 @@  int aq_ring_rx_clean(struct aq_ring_s *self,
+> >                                       err =3D -EIO;
+> >                                       goto err_exit;
+> >                               }
+> >+
+> >+                              frag_cnt++;
+> >                               next_ =3D buff_->next,
+> >                               buff_ =3D &self->buff_ring[next_];
+> >                               is_rsc_completed =3D
+> >@@ -378,7 +381,8 @@  int aq_ring_rx_clean(struct aq_ring_s *self,
+> >                                                           next_,
+> >                                                           self->hw_head=
+);
+> >
+> >-                              if (unlikely(!is_rsc_completed)) {
+> >+                              if (unlikely(!is_rsc_completed) ||
+> >+                                  frag_cnt > MAX_SKB_FRAGS) {
+> >                                       err =3D 0;
+> >                                       goto err_exit;
+> >                               }
+>
+> Number of fragments are limited by HW configuration: hw_atl_b0_internal.h=
+: #define HW_ATL_B0_LRO_RXD_MAX 16U.
+
+Should this loop be checking against HW_ATL_B0_LRO_RXD_MAX instead?
+
+> Let's imagine if it happens: driver stucks at this point it will wait for=
+ session completion and session will not be completed due to too much fragm=
+ents.
+> Guess in case if number of buffers exceeds this limit then it is required=
+ to close session and continue (submit packet to stack and finalize clearin=
+g if processed descriptors/buffers).
+
+Sorry, I'm not understanding your conclusion. Is the "goto err_exit"
+in this case doing what you described?
+Does this patch have the right idea (even if it should test against a
+different constant)?
+
+My main concern is the CPU gets stuck in this loop for a very long
+(infinite?) time.
+
+>
+> > [5/5] net: atlantic: verify hw_head_ is reasonable diff --git
+> >a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+> >b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+> >index e72b9d86f6ad..9b6b93bb3e86 100644
+> >--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+> >+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+> >@@ -889,6 +889,27 @@  int hw_atl_b0_hw_ring_tx_head_update(struct aq_hw_=
+s *self,
+> >               err =3D -ENXIO;
+> >               goto err_exit;
+> >       }
+> >+
+> >+      /* Validate that the new hw_head_ is reasonable. */
+> >+      if (hw_head_ >=3D ring->size) {
+> >+              err =3D -ENXIO;
+> >+              goto err_exit;
+> >+      }
+> >+
+> >+      if (ring->sw_head >=3D ring->sw_tail) {
+> >+              /* Head index hasn't wrapped around to below tail index. =
+*/
+> >+              if (hw_head_ < ring->sw_head && hw_head_ >=3D ring->sw_ta=
+il) {
+> >+                      err =3D -ENXIO;
+> >+                      goto err_exit;
+> >+              }
+> >+      } else {
+> >+              /* Head index has wrapped around and is below tail index.=
+ */
+> >+              if (hw_head_ < ring->sw_head || hw_head_ >=3D ring->sw_ta=
+il) {
+> >+                      err =3D -ENXIO;
+> >+                      goto err_exit;
+> >+              }
+> >+      }
+> >+
+> >       ring->hw_head =3D hw_head_;
+> >       err =3D aq_hw_err_from_flags(self);
+>
+> Simple example. One packet with one buffer was sent. Sw_tail =3D 1, sw_he=
+ad=3D0. From interrupt this function is called and hw_head_ is 1.
+> Code will follow "else" branch of second "if" that you add and condition =
+"if (hw_head_ < ring->sw_head || hw_head_ >=3D ring->sw_tail) {" will be tr=
+ue which seems to be not expected.
+
+Correct - I've got this wrong (head/tail swapped). Even if I had it
+right, As Igor observed, debatable if it's necessary. Please
+drop/ignore this patch as well. Aashay and I need to discuss this
+more.
+
+thank you again!
+
+cheers,
+grant
 
 
-Guilherme
+>
+> Best regards,
+> Dmitrii Bezrukov
+>
+> -----Original Message-----
+> From: Grant Grundler <grundler@chromium.org>
+> Sent: Tuesday, April 26, 2022 7:21 PM
+> To: Igor Russkikh <irusskikh@marvell.com>
+> Cc: Grant Grundler <grundler@chromium.org>; Dmitrii Bezrukov <dbezrukov@m=
+arvell.com>; Jakub Kicinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.c=
+om>; netdev <netdev@vger.kernel.org>; David S . Miller <davem@davemloft.net=
+>; LKML <linux-kernel@vger.kernel.org>; Aashay Shringarpure <aashay@google.=
+com>; Yi Chou <yich@google.com>; Shervin Oloumi <enlightened@google.com>
+> Subject: Re: [EXT] Re: [PATCH 0/5] net: atlantic: more fuzzing fixes
+>
+> [reply-all again since I forgot to tell gmail to post this as "plain text=
+"...grrh... so much for AI figuring this stuff out.]
+>
+>
+> On Tue, Apr 26, 2022 at 9:00 AM Igor Russkikh <irusskikh@marvell.com> wro=
+te:
+> >
+> > Hi Grant,
+> >
+> > Sorry for the delay, I was on vacation.
+> > Thanks for working on this.
+>
+> Hi Igor!
+> Very welcome! And yes, I was starting to wonder... but I'm now glad that =
+you didn't review them before you got back. These patches are no reason to =
+ruin a perfectly good vacation. :)
+>
+> > I'm adding here Dmitrii, to help me review the patches.
+> > Dmitrii, here is a full series:
+> >
+> > https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__patchwork.kernel=
+.
+> > org_project_netdevbpf_cover_20220418231746.2464800-2D1-2Dgrundler-40ch
+> > romium.org_&d=3DDwIFaQ&c=3DnKjWec2b6R0mOyPaz7xtfQ&r=3DAliKLBUTg9lFc5sIM=
+TzJt8
+> > MdPiAgKbsC8IpLIHmdX9w&m=3D1LeNSCJMgZ7UkGBm56FcvL_Oza8VOX45LEtQf31qPE2KL=
+Q
+> > cr5Q36aMIUR2DzLhi7&s=3DfVFxLPRO8K2DYFpGUOggf38nbDFaHKg8aATsjB1TuB0&e=3D
+> >
+> > Grant, I've reviewed and also quite OK with patches 1-4.
+>
+> Excellent! \o/
+>
+>
+> > For patch 5 - why do you think we need these extra comparisons with sof=
+tware head/tail?
+>
+> The ChromeOS security team (CC'd) believes the driver needs to verify "ex=
+pected behavior". In other words, the driver expects the device to provide =
+new values of tail index which are between [tail,head) ("available to fill"=
+).
+>
+> Your question makes me chuckle because I asked exactly the same question.=
+ :D Everyone agrees it is a minimum requirement to verify the index was "in=
+ bounds". And I agree it's prudent to verify the device is "well behaved" w=
+here we can. I haven't looked at the code enough to know what could go wron=
+g if, for example, the tail index is decremented instead of incremented or =
+a "next fragment" index falls in the "available to fill" range.
+>
+> However, I didn't run the fuzzer and, for now, I'm taking the ChromeOS se=
+curity team's word that this check is needed. If you (or Dmitrii) feel stro=
+ngly the driver can handle malicious or firmware bugs in other ways, I'm no=
+t offended if you decline this patch. However, I would be curious what thos=
+e other mechanisms are.
+>
+> > From what I see in logic, only the size limiting check is enough there.=
+.
+> >
+> > Other extra checks are tricky and non intuitive..
+>
+> Yes, somewhat tricky in the code but conceptually simple: For the RX buff=
+er ring, IIUC, [head,tail) is "CPU to process" and [tail, head) is "availab=
+le to fill". New tail values should always be in the latter range.
+>
+> The trickiness comes in because this is a ring buffer and [tail, head) it=
+ is equally likely that head =3D< tail  or head > tail numerically.
+>
+> If you like, feel free to add comments explaining the ring behavior or as=
+k me to add such a comment (and repost #5). I'm a big fan of documenting no=
+n-intuitive things in the code. That way the next person to look at the cod=
+e can verify the code and the IO device do what the comment claims.
+>
+> On the RX buffer ring, I'm also wondering if there is a race condition su=
+ch that the driver uses stale values of the tail pointer when walking the R=
+X fragment lists and validating index values. Aashay assures me this race c=
+ondition is not possible and I am convinced this is true for the TX buffer =
+ring where the driver is the "producer"
+> (tells the device what is in the TX ring). I still have to review the RX =
+buffer handling code more and will continue the conversation with him until=
+ we agree.
+>
+> cheers,
+> grant
+>
+> >
+> > Regards,
+> >   Igor
+> >
+> > On 4/21/2022 9:53 PM, Grant Grundler wrote:
+> > > External Email
+> > >
+> > > --------------------------------------------------------------------
+> > > --
+> > > Igor,
+> > > Will you have a chance to comment on this in the near future?
+> > > Should someone else review/integrate these patches?
+> > >
+> > > I'm asking since I've seen no comments in the past three days.
+> > >
+> > > cheers,
+> > > grant
+> > >
+> > >
+> > > On Mon, Apr 18, 2022 at 4:17 PM Grant Grundler
+> > > <grundler@chromium.org>
+> > > wrote:
+> > >>
+> > >> The Chrome OS fuzzing team posted a "Fuzzing" report for atlantic
+> > >> driver in Q4 2021 using Chrome OS v5.4 kernel and "Cable Matters
+> > >> Thunderbolt 3 to 10 Gb Ethernet" (b0 version):
+> > >>
+> > >> https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__docs.google.c=
+o
+> > >> m_document_d_e_2PACX-2D1vT4oCGNhhy-5FAuUqpu6NGnW0N9HF-5Fjxf2kS7raOp
+> > >> OlNRqJNiTHAtjiHRthXYSeXIRTgfeVvsEt0qK9qK_pub&d=3DDwIBaQ&c=3DnKjWec2b=
+6R0
+> > >> mOyPaz7xtfQ&r=3D3kUjVPjrPMvlbd3rzgP63W0eewvCq4D-kzQRqaXHOqU&m=3DQoxR=
+8Wo
+> > >> QQ-hpWu_tThQydP3-6zkRWACvRmj_7aY1qo2FG6DdPdI86vAYrfKQFMHX&s=3D620jqe=
+S
+> > >> vQrGg6aotI35cWwQpjaL94s7TFeFh2cYSyvA&e=3D
+> > >>
+> > >> It essentially describes four problems:
+> > >> 1) validate rxd_wb->next_desc_ptr before populating buff->next
+> > >> 2) "frag[0] not initialized" case in aq_ring_rx_clean()
+> > >> 3) limit iterations handling fragments in aq_ring_rx_clean()
+> > >> 4) validate hw_head_ in hw_atl_b0_hw_ring_tx_head_update()
+> > >>
+> > >> I've added one "clean up" contribution:
+> > >>     "net: atlantic: reduce scope of is_rsc_complete"
+> > >>
+> > >> I tested the "original" patches using chromeos-v5.4 kernel branch:
+> > >>
+> > >> https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__chromium-2Dre=
+v
+> > >> iew.googlesource.com_q_hashtag-3Apcinet-2Datlantic-2D2022q1-2B-28st
+> > >> atus-3Aopen-2520OR-2520status-3Amerged-29&d=3DDwIBaQ&c=3DnKjWec2b6R0=
+mOy
+> > >> Paz7xtfQ&r=3D3kUjVPjrPMvlbd3rzgP63W0eewvCq4D-kzQRqaXHOqU&m=3DQoxR8Wo=
+QQ-
+> > >> hpWu_tThQydP3-6zkRWACvRmj_7aY1qo2FG6DdPdI86vAYrfKQFMHX&s=3D1a1YwJqrY=
+-
+> > >> be2oDgGAG5oOyZDnqIok_2p5G-N8djo2I&e=3D
+> > >>
+> > >> The fuzzing team will retest using the chromeos-v5.4 patches and
+> > >> the b0 HW.
+> > >>
+> > >> I've forward ported those patches to 5.18-rc2 and compiled them but
+> > >> am currently unable to test them on 5.18-rc2 kernel (logistics probl=
+ems).
+> > >>
+> > >> I'm confident in all but the last patch:
+> > >>    "net: atlantic: verify hw_head_ is reasonable"
+> > >>
+> > >> Please verify I'm not confusing how ring->sw_head and ring->sw_tail
+> > >> are used in hw_atl_b0_hw_ring_tx_head_update().
+> > >>
+> > >> Credit largely goes to Chrome OS Fuzzing team members:
+> > >>     Aashay Shringarpure, Yi Chou, Shervin Oloumi
+> > >>
+> > >> cheers,
+> > >> grant
