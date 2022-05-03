@@ -2,59 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4926B517B8F
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 03:14:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27700517B95
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 03:14:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230015AbiECBRF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 May 2022 21:17:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45338 "EHLO
+        id S230075AbiECBRQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 2 May 2022 21:17:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229966AbiECBRB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 21:17:01 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5BEB46B07
-        for <netdev@vger.kernel.org>; Mon,  2 May 2022 18:13:29 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id d15so13820500plh.2
-        for <netdev@vger.kernel.org>; Mon, 02 May 2022 18:13:29 -0700 (PDT)
+        with ESMTP id S230002AbiECBRE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 2 May 2022 21:17:04 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C6C750473
+        for <netdev@vger.kernel.org>; Mon,  2 May 2022 18:13:31 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id j8so13784561pll.11
+        for <netdev@vger.kernel.org>; Mon, 02 May 2022 18:13:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=CalPoUtN9smAF07Uzze+T4CtQMp/sb3wvgmZLzif5pM=;
-        b=fsxja45VUBKFjPx+BM9HaAzJQxHK8/E9yNFX/yyyzjktgBeXynTbEn4nO8fh9urBPe
-         +EFQVwQOwQR429lftxQdrZVle/tLI3NTwkWAfBF/VPUiLE7smqQbXPyQwM1oY1UVUppg
-         H+wjrKlEXiL9TLAQ3IOWX/FImTLIBe9JZr9uM=
+        bh=iAX+z7Fsw/QyOlQK4J1/wswlMzMJSOKCKmYsxclry74=;
+        b=Ux4ORijnL5rh94TsCGEF//Jfplbg/SqBTNFkPthdGBLlHZ0Xgy16+mm/W7XvFGIZvm
+         e1BpniX+gmntMOpUCD9NXHxt1c4lHqK1KxIqzXv+g9//aPdEZywMxCw+1me0urLkfnze
+         GDjXFgjzqsV5b3Tc4vlgNFpgS75SfGPJO3KTk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=CalPoUtN9smAF07Uzze+T4CtQMp/sb3wvgmZLzif5pM=;
-        b=UBRIyLM3znx1hy8zta0CxiwZ0ybvZVyzxDJmOwi2pMb2HK3FVgrT+wR6O+CTsNeRZW
-         jA4OAafHDhypmOXnzBBhdWBwMQR1jPthkc2x7xn94AglAcMfPHBWfQIblzDAe/+yLyjj
-         7hn41lde0KUKgQGyr1biIys0yAtwf2nLHsYJdbGW557z0D4pb6l1rg6fNIFukqgDMx+6
-         UfbfoTCUIGNJUhU8vB2CExAeR1XFkhYvqVjmss5cVqPWuHEIpzWHl77AVOXw6Z2Wzcdq
-         kwvUl9WbUtUDyoeRhZCm+44tDVqmZbzAtb0NcCKNwYKQccAMNrGaM9YGAK57dV7mhV/I
-         C0Tw==
-X-Gm-Message-State: AOAM531QEC3u3dXhiCA1tRk7p+xfQXg8MTCVWNtepJ+5e5mBegEV6pGG
-        0OlDrfeQwZ8thkGoj2rDUI3plg==
-X-Google-Smtp-Source: ABdhPJxQN7OUJJQT5iE7ZTz/MF3p++Im+jFIZH1fRz24zddA94RNnaiXSOzvlm7yPYwiHvQsfDB33g==
-X-Received: by 2002:a17:902:e891:b0:15e:9c42:af2f with SMTP id w17-20020a170902e89100b0015e9c42af2fmr9682636plg.71.1651540409212;
-        Mon, 02 May 2022 18:13:29 -0700 (PDT)
+        bh=iAX+z7Fsw/QyOlQK4J1/wswlMzMJSOKCKmYsxclry74=;
+        b=ndGzjvEyIXke7i6ZSZ6XFQ9yABvzatHifwUpcbcASi1Dv5i8anYgQK8lkWMTr5yG8c
+         ZJ5wB2d92dzy+qMbXWlNPPn/O79IeZ9fZlXVeEhhZ5r+1w9rc3u6morlBl7h3WncGOXq
+         BGfpkIeUDmeNjkC/6YV80jsqANMZ90Y0gy9w6EMwk3QhPjiISY4OAjUAyxHI4MSYIlA1
+         BmeVN6Ts9EQ1xrNXibBfZMzt0LnV+5UtqS356+M1H0uryykUfyJHd+9hdhxFZiyFL6qH
+         2gBR+vUcOzzFwr/oX/fshnNAnTgIf23cWbmaLzHWVJHiYkJ91XgVKtLqwQqiYItyENII
+         kBjA==
+X-Gm-Message-State: AOAM530GH5PLa7bf3Ks7sKqrOVptu+jFFc3OxTcpVfhg4s3XUXnq4OHX
+        41VTR78sqfdwemnec0X8UaE70g==
+X-Google-Smtp-Source: ABdhPJxwoymwwnqw3R/ytk4Xr/LOkIcjM35pDDOisj5juemTlNgUrsrj/v1QNTSoY9XXtmDn1w3ydw==
+X-Received: by 2002:a17:902:9b92:b0:158:9b65:a78 with SMTP id y18-20020a1709029b9200b001589b650a78mr14670205plp.53.1651540410370;
+        Mon, 02 May 2022 18:13:30 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id k23-20020a170902ba9700b0015e8d4eb1fesm5272169pls.72.2022.05.02.18.13.28
+        by smtp.gmail.com with ESMTPSA id k23-20020a170902ba9700b0015e8d4eb1fesm5272169pls.72.2022.05.02.18.13.29
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 02 May 2022 18:13:28 -0700 (PDT)
+        Mon, 02 May 2022 18:13:29 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
-        Somnath Kotur <somnath.kotur@broadcom.com>
-Subject: [PATCH net 1/3] bnxt_en: Fix possible bnxt_open() failure caused by wrong RFS flag
-Date:   Mon,  2 May 2022 21:13:10 -0400
-Message-Id: <1651540392-2260-2-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
+Subject: [PATCH net 2/3] bnxt_en: Initiallize bp->ptp_lock first before using it
+Date:   Mon,  2 May 2022 21:13:11 -0400
+Message-Id: <1651540392-2260-3-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1651540392-2260-1-git-send-email-michael.chan@broadcom.com>
 References: <1651540392-2260-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000073f21105de11374e"
+        boundary="00000000000086a42805de113732"
 X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -66,82 +65,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000073f21105de11374e
+--00000000000086a42805de113732
 
-From: Somnath Kotur <somnath.kotur@broadcom.com>
+bnxt_ptp_init() calls bnxt_ptp_init_rtc() which will acquire the ptp_lock
+spinlock.  The spinlock is not initialized until later.  Move the
+bnxt_ptp_init_rtc() call after the spinlock is initialized.
 
-bnxt_open() can fail in this code path, especially on a VF when
-it fails to reserve default rings:
-
-bnxt_open()
-  __bnxt_open_nic()
-    bnxt_clear_int_mode()
-    bnxt_init_dflt_ring_mode()
-
-RX rings would be set to 0 when we hit this error path.
-
-It is possible for a subsequent bnxt_open() call to potentially succeed
-with a code path like this:
-
-bnxt_open()
-  bnxt_hwrm_if_change()
-    bnxt_fw_init_one()
-      bnxt_fw_init_one_p3()
-        bnxt_set_dflt_rfs()
-          bnxt_rfs_capable()
-            bnxt_hwrm_reserve_rings()
-
-On older chips, RFS is capable if we can reserve the number of vnics that
-is equal to RX rings + 1.  But since RX rings is still set to 0 in this
-code path, we may mistakenly think that RFS is supported for 0 RX rings.
-
-Later, when the default RX rings are reserved and we try to enable
-RFS, it would fail and cause bnxt_open() to fail unnecessarily.
-
-We fix this in 2 places.  bnxt_rfs_capable() will always return false if
-RX rings is not yet set.  bnxt_init_dflt_ring_mode() will call
-bnxt_set_dflt_rfs() which will always clear the RFS flags if RFS is not
-supported.
-
-Fixes: 20d7d1c5c9b1 ("bnxt_en: reliably allocate IRQ table on reset to avoid crash")
-Signed-off-by: Somnath Kotur <somnath.kotur@broadcom.com>
+Fixes: 24ac1ecd5240 ("bnxt_en: Add driver support to use Real Time Counter for PTP")
+Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Reviewed-by: Saravanan Vajravel <saravanan.vajravel@broadcom.com>
+Reviewed-by: Andy Gospodarek <andrew.gospodarek@broadcom.com>
+Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
+Reviewed-by: Damodharam Ammepalli <damodharam.ammepalli@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 874fad0a5cf8..2818cfef42f8 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -10983,7 +10983,7 @@ static bool bnxt_rfs_capable(struct bnxt *bp)
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+index 9c2ad5e67a5d..00f2f80c0073 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+@@ -846,13 +846,6 @@ int bnxt_ptp_init(struct bnxt *bp, bool phc_cfg)
+ 	if (rc)
+ 		return rc;
  
- 	if (bp->flags & BNXT_FLAG_CHIP_P5)
- 		return bnxt_rfs_supported(bp);
--	if (!(bp->flags & BNXT_FLAG_MSIX_CAP) || !bnxt_can_reserve_rings(bp))
-+	if (!(bp->flags & BNXT_FLAG_MSIX_CAP) || !bnxt_can_reserve_rings(bp) || !bp->rx_nr_rings)
- 		return false;
- 
- 	vnics = 1 + bp->rx_nr_rings;
-@@ -13234,10 +13234,9 @@ static int bnxt_init_dflt_ring_mode(struct bnxt *bp)
- 		goto init_dflt_ring_err;
- 
- 	bp->tx_nr_rings_per_tc = bp->tx_nr_rings;
--	if (bnxt_rfs_supported(bp) && bnxt_rfs_capable(bp)) {
--		bp->flags |= BNXT_FLAG_RFS;
--		bp->dev->features |= NETIF_F_NTUPLE;
+-	if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC) {
+-		bnxt_ptp_timecounter_init(bp, false);
+-		rc = bnxt_ptp_init_rtc(bp, phc_cfg);
+-		if (rc)
+-			goto out;
 -	}
-+
-+	bnxt_set_dflt_rfs(bp);
-+
- init_dflt_ring_err:
- 	bnxt_ulp_irq_restart(bp, rc);
- 	return rc;
+-
+ 	if (ptp->ptp_clock && bnxt_pps_config_ok(bp))
+ 		return 0;
+ 
+@@ -861,8 +854,14 @@ int bnxt_ptp_init(struct bnxt *bp, bool phc_cfg)
+ 	atomic_set(&ptp->tx_avail, BNXT_MAX_TX_TS);
+ 	spin_lock_init(&ptp->ptp_lock);
+ 
+-	if (!(bp->fw_cap & BNXT_FW_CAP_PTP_RTC))
++	if (bp->fw_cap & BNXT_FW_CAP_PTP_RTC) {
++		bnxt_ptp_timecounter_init(bp, false);
++		rc = bnxt_ptp_init_rtc(bp, phc_cfg);
++		if (rc)
++			goto out;
++	} else {
+ 		bnxt_ptp_timecounter_init(bp, true);
++	}
+ 
+ 	ptp->ptp_info = bnxt_ptp_caps;
+ 	if ((bp->fw_cap & BNXT_FW_CAP_PTP_PPS)) {
 -- 
 2.18.1
 
 
---00000000000073f21105de11374e
+--00000000000086a42805de113732
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -212,13 +191,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIJxFN61TRALwF7mavg68hWpcDQkeyYEh
-0HYniXRfQu9VMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDUw
-MzAxMTMyOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIFrK0bYtbdsyCleg5n1cysdA21c7fusi
+QTupfMJNyTEIMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDUw
+MzAxMTMzMFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAuWBW5IXTw73DYhSSNf/lxbYA4noV0EMZACoa/FlsJxNcKaSzk
-KoDyL2sw0ppxyMGk58laLPXT9hw0TCZ6oOIrPMu9SVlVuA7phrRpyUdSqp9Oxjl6sSWv3MpGZ61g
-bYLcljnAANy/udd1UQ7hdDDfMVVCpUspklKGa4bmbpvcBxG/YXLhiP5FfmtOQj/2KEqndwezeRpY
-osax9flcrZ+pFsiTvI6i/1c4TTQGaUTzm80UCH1nft4j50RROAF836OtSvxubWtOqXrwPrbY2nIB
-iFd+bopUwSlCBtwfCKUMG3X+aV+67feSiftmoT1EsL9djNK2qpGBrI6KkuHJYc/o
---00000000000073f21105de11374e--
+ATANBgkqhkiG9w0BAQEFAASCAQCNGzt5n5S9+a64qapn5ONuCZhWGcX9Je/jjAZPfqjdB6hMutQu
+LFLzmPbqaPXgvNm7E0Ipm+eHm+4tlHtduXw2MXNae+jRtRIKUh5STQjSPpIn7BNJ5rGRIkhPeoyR
+cFacsHf3mf+nYrwD3SNU87B2cVSUyoAsSnpGsjWGeBYyYHHVff4F/5wvEt90DImUjagcqi91rS6P
+Wj1aLUSXPW+wUlOZcqgPWyQVc4ArV8nqGpWbb0DwBPox9yctbdQhgovR50EF0vrNoXqqJlOqoqWM
+NLV7iGRsh8Yi6aaF0oqAfqpMI+pR6GNeLnPgpU4cuQ9TUg9LqPnEf15e16DGkFGq
+--00000000000086a42805de113732--
