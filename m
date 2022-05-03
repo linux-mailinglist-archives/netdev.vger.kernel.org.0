@@ -2,199 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6818A518CD4
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 21:04:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CB7F518CF1
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 21:13:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239747AbiECTH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 15:07:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36972 "EHLO
+        id S241796AbiECTQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 15:16:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232372AbiECTHz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 15:07:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBC233B3F8;
-        Tue,  3 May 2022 12:04:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A3420B81D9D;
-        Tue,  3 May 2022 19:04:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A07BC385A9;
-        Tue,  3 May 2022 19:04:17 +0000 (UTC)
-Date:   Tue, 3 May 2022 15:04:10 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org
-Subject: : [PATCH] ftrace/x86: Add FTRACE_MCOUNT_MAX_OFFSET to avoid adding
- weak functions
-Message-ID: <20220503150410.2d9e88aa@rorschach.local.home>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S232835AbiECTQe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 15:16:34 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 028553F8A9;
+        Tue,  3 May 2022 12:13:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=YwqRVzAP9ZbrZ5VBMcTGFQUJhCIOHa56e0xcGxSMZUc=; b=g6wHrcBwrz2KwYvXjjVtORBiHn
+        IYMsR5GaRD/VR0xedfaxvBvF7rTbYR/J22t3j5lb3f06u/Fc1RouLR18wpSiKcYUFYo1Es0dUnLOJ
+        KS0gcPiTX1Gp43QoEXeB9qey3fro+JGWKqZb1HOFCCA1BT9LzygpBsI5rkGlNutynR2bG5HAOwC/E
+        tPyLP92RA6GDIRm0QuhAm+c5aBu4j0UaKxwKd9I7j0kUsDE4qHndJxIdGDBq1RIB7dNA6suRfXZwh
+        e21o4FfMtSVNbUCh0WQI73Gd4fdNm7+rXf7RsUeEiM3OYwwmkesCvbsvfiNKmEoMOIdut9FTHQRzP
+        TtMjBb/w==;
+Received: from [179.113.53.197] (helo=[192.168.1.60])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1nlxwt-0003VB-Uo; Tue, 03 May 2022 21:12:40 +0200
+Message-ID: <adcf6d0e-c37c-6ede-479e-29959d03d8c0@igalia.com>
+Date:   Tue, 3 May 2022 16:12:09 -0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 04/30] firmware: google: Convert regular spinlock into
+ trylock on panic path
+Content-Language: en-US
+To:     Evan Green <evgreen@chromium.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, bhe@redhat.com,
+        pmladek@suse.com, kexec@lists.infradead.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        bcm-kernel-feedback-list@broadcom.com,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, Linux PM <linux-pm@vger.kernel.org>,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
+        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
+        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Jonathan Corbet <corbet@lwn.net>, d.hatayama@jp.fujitsu.com,
+        dave.hansen@linux.intel.com, dyoung@redhat.com,
+        feng.tang@intel.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de,
+        Kees Cook <keescook@chromium.org>, luto@kernel.org,
+        mhiramat@kernel.org, mingo@redhat.com, paulmck@kernel.org,
+        peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, Alan Stern <stern@rowland.harvard.edu>,
+        Thomas Gleixner <tglx@linutronix.de>, vgoyal@redhat.com,
+        vkuznets@redhat.com, Will Deacon <will@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        David Gow <davidgow@google.com>,
+        Julius Werner <jwerner@chromium.org>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-5-gpiccoli@igalia.com>
+ <CAE=gft5Pq25L4KFoPWbftkPF-JN1ex2yws77mMJ4GQnn9W0L2g@mail.gmail.com>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <CAE=gft5Pq25L4KFoPWbftkPF-JN1ex2yws77mMJ4GQnn9W0L2g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
+On 03/05/2022 15:03, Evan Green wrote:
+> [...]
+> gsmi_shutdown_reason() is a common function called in other scenarios
+> as well, like reboot and thermal trip, where it may still make sense
+> to wait to acquire a spinlock. Maybe we should add a parameter to
+> gsmi_shutdown_reason() so that you can get your change on panic, but
+> we don't convert other callbacks into try-fail scenarios causing us to
+> miss logs.
+> 
 
-If an unused weak function was traced, it's call to fentry will still
-exist, which gets added into the __mcount_loc table. Ftrace will use
-kallsyms to retrieve the name for each location in __mcount_loc to display
-it in the available_filter_functions and used to enable functions via the
-name matching in set_ftrace_filter/notrace. Enabling these functions do
-nothing but enable an unused call to ftrace_caller. If a traced weak
-function is overridden, the symbol of the function would be used for it,
-which will either created duplicate names, or if the previous function was
-not traced, it would be incorrectly listed in available_filter_functions
-as a function that can be traced.
+Hi Evan, thanks for your feedback, much appreciated!
+What I've done in other cases like this was to have a helper checking
+the spinlock in the panic notifier - if we can acquire that, go ahead
+but if not, bail out. For a proper example of an implementation, check
+patch 13 of the series:
+https://lore.kernel.org/lkml/20220427224924.592546-14-gpiccoli@igalia.com/ .
 
-This became an issue with BPF[1] as there are tooling that enables the
-direct callers via ftrace but then checks to see if the functions were
-actually enabled. The case of one function that was marked notrace, but
-was followed by an unused weak function that was traced. The unused
-function's call to fentry was added to the __mcount_loc section, and
-kallsyms retrieved the untraced function's symbol as the weak function was
-overridden. Since the untraced function would not get traced, the BPF
-check would detect this and fail.
+Do you agree with that, or prefer really a parameter in
+gsmi_shutdown_reason() ? I'll follow your choice =)
 
-The real fix would be to fix kallsyms to not show address of weak
-functions as the function before it. But that would require adding code in
-the build to add function size to kallsyms so that it can know when the
-function ends instead of just using the start of the next known symbol.
 
-In the mean time, this is a work around. Add a FTRACE_MCOUNT_MAX_OFFSET
-macro that if defined, ftrace will ignore any function that has its call
-to fentry/mcount that has an offset from the symbol that is greater than
-FTRACE_MCOUNT_MAX_OFFSET.
+> Though thinking more about it, is this really a Good Change (TM)? The
+> spinlock itself already disables interrupts, meaning the only case
+> where this change makes a difference is if the panic happens from
+> within the function that grabbed the spinlock (in which case the
+> callback is also likely to panic), or in an NMI that panics within
+> that window. The downside of this change is that if one core was
+> politely working through an event with the lock held, and another core
+> panics, we now might lose the panic log, even though it probably would
+> have gone through fine assuming the other core has a chance to
+> continue.
 
-If CONFIG_HAVE_FENTRY is defined for x86, define FTRACE_MCOUNT_MAX_OFFSET
-to zero, which will have ftrace ignore all locations that are not at the
-start of the function.
+My feeling is that this is a good change, indeed - a lot of places are
+getting changed like this, in this series.
 
-[1] https://lore.kernel.org/all/20220412094923.0abe90955e5db486b7bca279@kernel.org/
+Reasoning: the problem with your example is that, by default, secondary
+CPUs are disabled in the panic path, through an IPI mechanism. IPIs take
+precedence and interrupt the work in these CPUs, effectively
+interrupting the "polite work" with the lock held heh
 
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
----
- arch/x86/include/asm/ftrace.h |  5 ++++
- kernel/trace/ftrace.c         | 50 +++++++++++++++++++++++++++++++++--
- 2 files changed, 53 insertions(+), 2 deletions(-)
+Then, such CPU is put to sleep and we finally reach the panic notifier
+hereby discussed, in the main CPU. If the other CPU was shut-off *with
+the lock held*, it's never finishing such work, so the lock is never to
+be released. Conclusion: the spinlock can't be acquired, hence we broke
+the machine (which is already broken, given it's panic) in the path of
+this notifier.
+This should be really rare, but..possible. So I think we should protect
+against this scenario.
 
-diff --git a/arch/x86/include/asm/ftrace.h b/arch/x86/include/asm/ftrace.h
-index 024d9797646e..70c88d49bf45 100644
---- a/arch/x86/include/asm/ftrace.h
-+++ b/arch/x86/include/asm/ftrace.h
-@@ -9,6 +9,11 @@
- # define MCOUNT_ADDR		((unsigned long)(__fentry__))
- #define MCOUNT_INSN_SIZE	5 /* sizeof mcount call */
- 
-+/* Ignore unused weak functions which will have non zero offsets */
-+#ifdef CONFIG_HAVE_FENTRY
-+# define FTRACE_MCOUNT_MAX_OFFSET	0
-+#endif
-+
- #ifdef CONFIG_DYNAMIC_FTRACE
- #define ARCH_SUPPORTS_FTRACE_OPS 1
- #endif
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index 5c465e70d146..3529c44ab9db 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -3665,6 +3665,31 @@ static void add_trampoline_func(struct seq_file *m, struct ftrace_ops *ops,
- 		seq_printf(m, " ->%pS", ptr);
- }
- 
-+#ifdef FTRACE_MCOUNT_MAX_OFFSET
-+static int print_rec(struct seq_file *m, unsigned long ip)
-+{
-+	unsigned long offset;
-+	char str[KSYM_SYMBOL_LEN];
-+	char *modname;
-+	int ret;
-+
-+	ret = kallsyms_lookup(ip, NULL, &offset, &modname, str);
-+	if (!ret || offset > FTRACE_MCOUNT_MAX_OFFSET)
-+		return -1;
-+
-+	seq_puts(m, str);
-+	if (modname)
-+		seq_printf(m, " [%s]", modname);
-+	return 0;
-+}
-+#else
-+static int print_rec(struct seq_file *m, unsigned long ip)
-+{
-+	seq_printf(m, "%ps", (void *)ip);
-+	return 0;
-+}
-+#endif
-+
- static int t_show(struct seq_file *m, void *v)
- {
- 	struct ftrace_iterator *iter = m->private;
-@@ -3689,7 +3714,9 @@ static int t_show(struct seq_file *m, void *v)
- 	if (!rec)
- 		return 0;
- 
--	seq_printf(m, "%ps", (void *)rec->ip);
-+	if (print_rec(m, rec->ip))
-+		return 0;
-+
- 	if (iter->flags & FTRACE_ITER_ENABLED) {
- 		struct ftrace_ops *ops;
- 
-@@ -4007,6 +4034,24 @@ add_rec_by_index(struct ftrace_hash *hash, struct ftrace_glob *func_g,
- 	return 0;
- }
- 
-+#ifdef FTRACE_MCOUNT_MAX_OFFSET
-+static int lookup_ip(unsigned long ip, char **modname, char *str)
-+{
-+	unsigned long offset;
-+
-+	kallsyms_lookup(ip, NULL, &offset, modname, str);
-+	if (offset > FTRACE_MCOUNT_MAX_OFFSET)
-+		return -1;
-+	return 0;
-+}
-+#else
-+static int lookup_ip(unsigned long ip, char **modname, char *str)
-+{
-+	kallsyms_lookup(ip, NULL, NULL, modname, str);
-+	return 0;
-+}
-+#endif
-+
- static int
- ftrace_match_record(struct dyn_ftrace *rec, struct ftrace_glob *func_g,
- 		struct ftrace_glob *mod_g, int exclude_mod)
-@@ -4014,7 +4059,8 @@ ftrace_match_record(struct dyn_ftrace *rec, struct ftrace_glob *func_g,
- 	char str[KSYM_SYMBOL_LEN];
- 	char *modname;
- 
--	kallsyms_lookup(rec->ip, NULL, NULL, &modname, str);
-+	if (lookup_ip(rec->ip, &modname, str))
-+		return 0;
- 
- 	if (mod_g) {
- 		int mod_matches = (modname) ? ftrace_match(modname, mod_g) : 0;
--- 
-2.35.1
+We can grab others' feedback if you prefer, and of course you have the
+rights to refuse this change in the gsmi code, but from my
+point-of-view, I don't see any advantage in just assume the risk,
+specially since the change is very very simple.
 
+Cheers,
+
+
+Guilherme
