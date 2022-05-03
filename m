@@ -2,689 +2,326 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BBDC2518AE0
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 19:15:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C3EE518B25
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 19:32:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240199AbiECRTO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 13:19:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34772 "EHLO
+        id S240438AbiECRff (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 13:35:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240203AbiECRTC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 13:19:02 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2089.outbound.protection.outlook.com [40.107.92.89])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1AA01D0CA;
-        Tue,  3 May 2022 10:15:27 -0700 (PDT)
+        with ESMTP id S240403AbiECRfc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 13:35:32 -0400
+Received: from na01-obe.outbound.protection.outlook.com (mail-centralusazon11021023.outbound.protection.outlook.com [52.101.62.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36F3E1CB3E;
+        Tue,  3 May 2022 10:31:59 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kJ5hEBpW6VDrbu7tTykuuPxDDTeZHbj3i+K0TW2rQUpZAz4SKR3GoV8KRyndDnjpMRvmEIL725I5iYc23i5CfKI4Y6xO/9E4DIT3Jc3EAJCQ4r4O+tsivUdOiouZXEnj/DncUPthfiFLJm1A2wS5qI3cGiRdaw31IL6ho2z8OWXMQWQ0ghPb3UCjxeWDlM7dNR2qJm+H9AHQ22UJ6oqYecCOKYNHduNWU36S6yU9+AWJ4/O28m9w29m1vOSzukPG7f5TWIjC0B9/oCcMUr1x+M1DTOnYqXBfp0vwq0J8dIItxrl6tuL54h/0eRa94+wp5w1Per736R6WmdX7i63laA==
+ b=Jt/KOtRUgIAyksyYK8VnD6ZnzZ/NliFwcadXLsWhztfCamTq3QwkwpGwyMwiutvnUnN9P++1gDsLEiw6Ffs4JzYwWGjG1s32LGaj++fC09TISIbhTPJ22JvpH1sDoC1t8TEEevav+mZukOSpAc/O8A9zMznA1StSx+n+fiDRjrtWV3GTpPnM9y6fYUY9TLjiFeJdopLkIP13Hd3e75u1mME7ICYLLotdeJxv7FFo9dCplpw84PrBxCkN8oMYpv+9SKWUo7v1vDi+yPwDJ8RozZ6cej5bW0lGLjxGVSQUz4zO2RXSdgzKKqzurjdwrIitXCjuYEki2FjSzkfT1QwwKQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=baoufdycZjnO5ZORAsyCW8X+tkTL94aCXZg6oTuLeo0=;
- b=XfcBirnRbmnSix0jIMk0OpTKep1mW0lpwar9snUffszMnENIraibXCh2nD5fN9BTD96fD4sIDZ+ghXpAv2Ui+ko0ffWqsi8vbR5tEct8gNdGeIoYW5pdpqEi+LNvkV8G8hpC3HvUA9/g5VioU6gtBmwBSO1rUoRx/Ir8pSUbCJ+EVfAIp3jjyP1xKSnUIbtRofdZZN4pUPc5z+eRijxRldz84IMqaUgPJs9FdqMOUIOCIsTWAcxbKc8LEPCknetVW9Dc8vg6zDZV1PUYIkOG0PEMWDuEq/ZGxWRaL+vOBgb5IEWxjIQTOv9JM/Ge6ooDeF82g62CfiA7AKAjGAr2WQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
- (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
- (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ bh=EOJL1aNKBYeOe+uczwmHwdViQyc7IwMUkuukaeURBOs=;
+ b=S7HWX64rCgnA9mLOc2eDXyDjV6iC0ehqY8SNFj/n7g9tX/kIZbHomLEI9FL1MH56jcIPtcTLOcqfxQMnuO6iEK3JH7YjdxMdQA+HfoV3LG9zl2jalk2jxwFSWVvdJKaYxR965/HLYUfTNH9sMSpM9KkV6n9THwWb2UXseqq1mVCCB9/2/pYGTGYa0m4B6mGZ8ABVNHH0efDrQpFCtgvcmpBYAxTdOM5BWACtw4nDbSbKbDaQPVrS4f/tC0fAe4egALomaphJqT00udxastUBLuxGhAmPgXopd/cBVnO3YucxlRcHy76OdoyO+bUJQCABjNA8UWZ8RaZuV9puIkhUjw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=baoufdycZjnO5ZORAsyCW8X+tkTL94aCXZg6oTuLeo0=;
- b=V2C95BxpL0Dp2C2bkkrGDmY0aT66RFcYyoRC45AnIs3w5jkRCIL4hSAN20cbOa12P+cB0x1a+0mR/U5I6vDOuodaFEcCe4VlQ6K88Jr8y43uMTbgYq6qBaRAvskw1wiWu+M0YfAgKIWRzU1k1R1NJrDr+D8WWBzcxGoiM4v7Wq/6Or9rjGC5rWNoPxmxjE5b0HkiDquQji8P3OVBHcNLXfoDmju6QrGitqCbLucIwNu4tCYMtCOlC+hLN9AL+i7wz+zzMaELLDsG8KVHvsksaLoB8+n96M1CPfYre2LgoQczo51MLP/jI54Q/mTDdm6jpN4WcumuivnRSRKJOgeyJg==
-Received: from BN0PR04CA0006.namprd04.prod.outlook.com (2603:10b6:408:ee::11)
- by DM6PR12MB4433.namprd12.prod.outlook.com (2603:10b6:5:2a1::20) with
+ bh=EOJL1aNKBYeOe+uczwmHwdViQyc7IwMUkuukaeURBOs=;
+ b=iMwLKZ9LBUYKCD7s3OHUGAzQf1eKepDONOGF5h+ECdpSlLnCRD1k8RU9oxx0Yd92mvK8EkErUnr1aFcwYQE1hWsNHP5RV8IZwkrqNwqDR6/GJsTT94uz47EnDd3I5q+sCx4HSe8qnHdaKJZ/stF6cJ7V1IuK4VGpUqTTX4YDSgg=
+Received: from PH0PR21MB3025.namprd21.prod.outlook.com (2603:10b6:510:d2::21)
+ by MWHPR21MB0191.namprd21.prod.outlook.com (2603:10b6:300:79::9) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.13; Tue, 3 May
- 2022 17:15:25 +0000
-Received: from BN8NAM11FT012.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:ee:cafe::eb) by BN0PR04CA0006.outlook.office365.com
- (2603:10b6:408:ee::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.24 via Frontend
- Transport; Tue, 3 May 2022 17:15:25 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.235) by
- BN8NAM11FT012.mail.protection.outlook.com (10.13.177.55) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5206.12 via Frontend Transport; Tue, 3 May 2022 17:15:25 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by DRHQMAIL107.nvidia.com
- (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Tue, 3 May
- 2022 17:15:24 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 3 May 2022
- 10:15:23 -0700
-Received: from vdi.nvidia.com (10.127.8.12) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server id 15.2.986.22 via Frontend Transport; Tue, 3 May
- 2022 10:15:17 -0700
-From:   Maxim Mikityanskiy <maximmi@nvidia.com>
-To:     <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, <netdev@vger.kernel.org>
-CC:     Tariq Toukan <tariqt@nvidia.com>, Martin KaFai Lau <kafai@fb.com>,
-        "Song Liu" <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "David Ahern" <dsahern@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        "Jesper Dangaard Brouer" <hawk@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        "Nick Desaulniers" <ndesaulniers@google.com>,
-        Joe Stringer <joe@cilium.io>,
-        "Florent Revest" <revest@chromium.org>,
-        <linux-kselftest@vger.kernel.org>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        "Kumar Kartikeya Dwivedi" <memxor@gmail.com>,
-        Florian Westphal <fw@strlen.de>, <pabeni@redhat.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: [PATCH bpf-next v9 5/5] bpf: Allow the new syncookie helpers to work with SKBs
-Date:   Tue, 3 May 2022 20:14:37 +0300
-Message-ID: <20220503171437.666326-6-maximmi@nvidia.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220503171437.666326-1-maximmi@nvidia.com>
-References: <20220503171437.666326-1-maximmi@nvidia.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.6; Tue, 3 May
+ 2022 17:31:43 +0000
+Received: from PH0PR21MB3025.namprd21.prod.outlook.com
+ ([fe80::dd77:2d4d:329e:87df]) by PH0PR21MB3025.namprd21.prod.outlook.com
+ ([fe80::dd77:2d4d:329e:87df%5]) with mapi id 15.20.5250.006; Tue, 3 May 2022
+ 17:31:43 +0000
+From:   "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "bhe@redhat.com" <bhe@redhat.com>,
+        "pmladek@suse.com" <pmladek@suse.com>,
+        "kexec@lists.infradead.org" <kexec@lists.infradead.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "bcm-kernel-feedback-list@broadcom.com" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>,
+        "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "linux-remoteproc@vger.kernel.org" <linux-remoteproc@vger.kernel.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+        "linux-um@lists.infradead.org" <linux-um@lists.infradead.org>,
+        "linux-xtensa@linux-xtensa.org" <linux-xtensa@linux-xtensa.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "openipmi-developer@lists.sourceforge.net" 
+        <openipmi-developer@lists.sourceforge.net>,
+        "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "kernel-dev@igalia.com" <kernel-dev@igalia.com>,
+        "kernel@gpiccoli.net" <kernel@gpiccoli.net>,
+        "halves@canonical.com" <halves@canonical.com>,
+        "fabiomirmar@gmail.com" <fabiomirmar@gmail.com>,
+        "alejandro.j.jimenez@oracle.com" <alejandro.j.jimenez@oracle.com>,
+        "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>,
+        "arnd@arndb.de" <arnd@arndb.de>, "bp@alien8.de" <bp@alien8.de>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "d.hatayama@jp.fujitsu.com" <d.hatayama@jp.fujitsu.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "dyoung@redhat.com" <dyoung@redhat.com>,
+        "feng.tang@intel.com" <feng.tang@intel.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "hidehiro.kawai.ez@hitachi.com" <hidehiro.kawai.ez@hitachi.com>,
+        "jgross@suse.com" <jgross@suse.com>,
+        "john.ogness@linutronix.de" <john.ogness@linutronix.de>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "mhiramat@kernel.org" <mhiramat@kernel.org>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "paulmck@kernel.org" <paulmck@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "senozhatsky@chromium.org" <senozhatsky@chromium.org>,
+        "stern@rowland.harvard.edu" <stern@rowland.harvard.edu>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "vgoyal@redhat.com" <vgoyal@redhat.com>,
+        vkuznets <vkuznets@redhat.com>,
+        "will@kernel.org" <will@kernel.org>
+Subject: RE: [PATCH 24/30] panic: Refactor the panic path
+Thread-Topic: [PATCH 24/30] panic: Refactor the panic path
+Thread-Index: AQHYWooewzaZJbWMbkqYc1HZNUkdQa0HKRAQgAAz7QCABhB0MA==
+Date:   Tue, 3 May 2022 17:31:43 +0000
+Message-ID: <PH0PR21MB302570C9407F80AAD09E209ED7C09@PH0PR21MB3025.namprd21.prod.outlook.com>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-25-gpiccoli@igalia.com>
+ <PH0PR21MB30252C55EB4F97F3D78021BDD7FC9@PH0PR21MB3025.namprd21.prod.outlook.com>
+ <50178dfb-8e94-f35f-09c3-22fe197550ef@igalia.com>
+In-Reply-To: <50178dfb-8e94-f35f-09c3-22fe197550ef@igalia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=8353cb62-2ed7-400a-b7eb-a0eb08ff48b4;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-05-03T17:14:35Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c02534b1-161e-4271-51ad-08da2d2aca6d
+x-ms-traffictypediagnostic: MWHPR21MB0191:EE_
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-microsoft-antispam-prvs: <MWHPR21MB01911FB5FF350E4B06750FD0D7C09@MWHPR21MB0191.namprd21.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: d+Vj8BD2ptagF97e+OKWd6KIi9dJnQ7gaUDc6wlNZqB6d87vNQwAg9gTTz7gmEe5peNSxQquSkNJzQZbbI/RlISFgBlQoQpdhadxVIaq7nDryyXKXewxJ0vEK70rT16ZqNlNHh03BpEBnX+MiIth//WHnfeBrwZmsv0wDp5R3AQsTrWJaSMiwJUOUWRAJ4NNbdjAtd6NDcqyYBbe/F2sAryTMSyjGpc4aonCjZ4cV15U71QaHrIwDBpm9Ott4b/b9qtwd1Umqb+3ozGfrT9PkBMRsd3ruDpgUupJRy0jUOCMhPng7xTHxD5JfAgZjtHX9KAOIfg/a4LVLYLDxSzDOj0bVriAYEXmhf3mtG/3z/Ov87p4l4gyWHPi3JZPxGGlFR/SgW76EoWXJHfAJtuldYHbL9T4rhbaORwQLgLnzmqfYlau6+M/dYNT8y/uw3q3K6oZ6wuFLStOV7xMc3LAlTPyYJYxe8F0WsMoFQutNHnbjeH5rRpCrzTR2byFdYk4tRWkm1W2B7lovCjTOPhfiNyLfasP6HjbeopVJGp91XcI8s8jb7bFMITNKq0NhyelZQt8vkTqhEUT0hpbvLrqX/4zxvGqf7KS+O5k9BlNztUgNOk4AEnflbZjadvWOVpCU6KgEsLHWGGqJTczV5btT+4ftNTK4/5RNcc5r8t81x3Qng82ku6C6Sy2px6abE7hE+MJFVQt3wDG7R39G1tnCbrKEwajs+OkqxRln1S9lmH2pp5HwuLL5xpibnmFTPHDx410FyVKd08iauOHoDTrAWdkY/rGrhSinmO9G7HzK/JuxyBxSsA50phwfKS7qvGXabAWJbIIe81HboIaEq2IyXifJPQJp+rKDJXr+pJU+kmIR57hSHvkeiJudnDxrp8n
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR21MB3025.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(451199009)(71200400001)(10290500003)(82950400001)(5660300002)(7406005)(7366002)(122000001)(8676002)(8936002)(83380400001)(53546011)(7416002)(7696005)(508600001)(86362001)(6506007)(64756008)(38070700005)(38100700002)(52536014)(9686003)(186003)(26005)(66476007)(66446008)(66946007)(76116006)(66556008)(82960400001)(54906003)(110136005)(966005)(316002)(4326008)(8990500004)(2906002)(55016003)(33656002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?/JpsvICJW831GtJhoHUV7R5VNJCByy4wAGc71QhpgpZ9H5twFSHjEwLRUjNq?=
+ =?us-ascii?Q?+xcjP/YzIJDPmEBkCiHEwmnaevTU0pHzAC/ToQf+XxP9Pq/V6V/4zX1GbtCC?=
+ =?us-ascii?Q?6TfuHBuuBf+9ejbz00o1x7xRKy5CUtBmEvw+0X5/cQSU/lR6323jos9/PanL?=
+ =?us-ascii?Q?wXSQfD6SMNaQHS0AB5Ww12hs+qWMOFKkpyXTSvfTfP8xd/65gZ5GX5qeH3ZV?=
+ =?us-ascii?Q?rk0XFNSTh0qp1DUHgrYLDStU+U5kweGv+JzhMITo15+lB9pZO6tKK5u1+yIv?=
+ =?us-ascii?Q?S4Xc3FVp/A2a7E9dcITnFLqGq8Di8UadZMR9ty8GUfGmqGizf2j2+zN6Qlzq?=
+ =?us-ascii?Q?W9G42fDKK65EIbamjxiBd7kwvsgKpWjadf0mTRG5wd6RhvSnjRfUC5DWAVD5?=
+ =?us-ascii?Q?MU43loH4ELMFnUomwAGDwpb7Jfq72+KlTxdLXSlfvyrd8qfZhVbosi5rq778?=
+ =?us-ascii?Q?OsgybK0DVpMIm4u97jRl8TRFD0Kumg8jUSvxHQuMK9IhffuYGS7J9Tj2fF2L?=
+ =?us-ascii?Q?r+wWJ+bpmnK5isJwURS9DQA7ZKjeauso0WcwJatwsHZY3tW07ezQw3LdF3eC?=
+ =?us-ascii?Q?BPQIpQ6Gv1hgqaMvEOFvz5j6jFIRH9bIafnMpeUmwQl+IsmP/e+s+Kd0pIA8?=
+ =?us-ascii?Q?CIiIqq7GIvYQqYCaH4Kai4JM2R6PQ+UBr3bT7802u8YJSEfQhlKqznchSm1L?=
+ =?us-ascii?Q?sFnvGGX1BvEzcBWZ3oNjA72XewKggji1hhR1Up+TJlOngapGMliMmVKtyRpR?=
+ =?us-ascii?Q?An0XeQ+OjtTeo13bQmj3o132J/r6YJrJZCI+V/lxQ6TabhCmPKsgkx6KEQFy?=
+ =?us-ascii?Q?EZWA9YNVksZkcqfHPRmKtvhtt2t4VXJSlooO/gsEDGU5UK5xWoD1C7xNOfr5?=
+ =?us-ascii?Q?3HfkPGhe+KL3/FSEczi29DIyhslBql9QRZkeyGBED6xWcoHeWQICeopseWe5?=
+ =?us-ascii?Q?rA8Wyj2STMJj1XZPMf2Ig4T4uCLE53Jc87GKJPrWk6guBYcZNQTUlsP3RRi/?=
+ =?us-ascii?Q?eOj1pnly+b3D0souCKgk9bVVlIewyhQFC3rDkdNqeEG0iyC/c1NIFpQ7BTsM?=
+ =?us-ascii?Q?hQT3d/1an0zHG5geRp6eUSgzazxJdw9FWfdwnXJUKyvfQvNvOAaERsNw0wWC?=
+ =?us-ascii?Q?zzbU8jX3dNYLUKrrOH0NV12CHX4jYkTVYJmbKnkX28nQt/c7qhnxyRVWxt4U?=
+ =?us-ascii?Q?u/pUED5lDnxYr0//LOtOOggezR1tW5+2vlOst3LzoPjmy4cuZHMrmgqV62jX?=
+ =?us-ascii?Q?BsTaKSRtmBDE4jLeImBYd42cPgdVttbyKVo3SSX+u+qV7FBwHvuSK4mGTMT9?=
+ =?us-ascii?Q?zj2OyZyV0iIcCMnAv5bRh9jZYYdeuQlOMcJi0Pn8A3/QGdmQwclZu0/BD9kV?=
+ =?us-ascii?Q?/tpGTxTS8CYjFK9L6GpSBkcjBAzbZd9DdPM2tD4KDdhhv9FOvl9K893/rqJT?=
+ =?us-ascii?Q?EcvMYmZsYOFNp939/EQ02tRp5Tk4RTZDzUZOytVvYLm9Etqrtk0we6fyWqZW?=
+ =?us-ascii?Q?7h2jGVdTyiXaZJo3zpc2u2E8R/4sxXQWFdY/7hAQ6pZiB/jfXGIsWWCT/h2j?=
+ =?us-ascii?Q?seEitHQyk3PZuYC26Tt+Aep09FET5ZeUVkFhE2lDKvZGqW2p2FuH0IsbWnHJ?=
+ =?us-ascii?Q?APq546lgGacp3dNPPra6++6k5Ze+ibilIXYr2871lf75Po05kxywWn2YS7tE?=
+ =?us-ascii?Q?7ihfERru7bbVvMU0KOB53AE4IzmeefbD40voYwTcNdMO7hDuylseW+MXFABQ?=
+ =?us-ascii?Q?3Alqkuy65DPhYQjdaZpxE27nYeShtF4=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 07d618f3-5284-4571-b5d7-08da2d28837a
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4433:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB44335B5AEFDCB7F0821B279DDCC09@DM6PR12MB4433.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: x31qicWcAGj8gh66T+kzkhkbIhgD/eSe15ZGxSFPdO9lBwBZN3lKZjrI26gHmj82pdwyA6A1ynWEg39kXElJRDXbFkaNNHOd1iPJ5N5MXA5iloKsoBAlYiMZswju/u93kPHDYYzG3aRz9onqZEbteiQIouOSd/JljQ3l+ncOy0cWvzagpKYKx3Uygo7nB3DeLrnkCGRm3509mYthXsEtujRrHOMjbOTPHCcCaVAjRugIiPnrXIzGyPPvnkQY341/ImhnGO6uJXJUsugDnwTZI3Kqm99xdczeWsn9MTS6I5o33iQ8mum2Or1A6pzX//v2aBik77wrOWY4FtZAJv2E5Uar3f/9wb8i2fEp80Z8mSBy3Q3DdYggecu+xxBO+JEpTXtJh/ZJvqnu5rtuJZHQsdYHTpTr8dgShy2saJtEoFiPKHN9k181fuC+8/ede8z57GbB0vY+jdKqD9hXF7ULbpODf1nX4r8hzQyKsv1Y21zz/LNjdbHG4SmWzc449mwAUWMua2uFpTQCg+Q8n1c2fnyDiGN4rCBPyu09H1HEVgMrnLycYMK5hEf/IZ16u74I1y7cTU2vOROaUB9aOle/5BAxfdbcKymhMlLaXSr/VH/ewmInNwmZUHLMQFAGYGXrhpBAO2rB0eQgDbugo33WjjbhQsPnHg9nSkD2ZZayLXyu0wegYX/DHu8lI4rnUm6GAY0wyltUaJYPuS/W6eLh7Q==
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(54906003)(186003)(356005)(110136005)(36756003)(81166007)(107886003)(336012)(4326008)(47076005)(426003)(82310400005)(1076003)(26005)(2616005)(86362001)(316002)(70206006)(70586007)(8676002)(30864003)(36860700001)(7696005)(2906002)(83380400001)(7416002)(8936002)(6666004)(5660300002)(508600001)(40460700003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 May 2022 17:15:25.1645
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR21MB3025.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c02534b1-161e-4271-51ad-08da2d2aca6d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 May 2022 17:31:43.3884
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 07d618f3-5284-4571-b5d7-08da2d28837a
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT012.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4433
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: uCZvqjHqBSnDDITyIgv33IArtj67sulx9219DtqDuXN15ic3u3zIh/wV/287GSYh6ohZ68LzN/uqJT/ZRhTo5qXHXhMXRCpanWwblZGK3w4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR21MB0191
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commits allows the new BPF helpers to work in SKB context (in TC
-BPF programs): bpf_tcp_raw_{gen,check}_syncookie_ipv{4,6}.
+From: Guilherme G. Piccoli <gpiccoli@igalia.com> Sent: Friday, April 29, 20=
+22 1:38 PM
+>=20
+> On 29/04/2022 14:53, Michael Kelley (LINUX) wrote:
+> > From: Guilherme G. Piccoli <gpiccoli@igalia.com> Sent: Wednesday, April=
+ 27, 2022
+> 3:49 PM
+> >> [...]
+> >> +	panic_notifiers_level=3D
+> >> +			[KNL] Set the panic notifiers execution order.
+> >> +			Format: <unsigned int>
+> >> +			We currently have 4 lists of panic notifiers; based
+> >> +			on the functionality and risk (for panic success) the
+> >> +			callbacks are added in a given list. The lists are:
+> >> +			- hypervisor/FW notification list (low risk);
+> >> +			- informational list (low/medium risk);
+> >> +			- pre_reboot list (higher risk);
+> >> +			- post_reboot list (only run late in panic and after
+> >> +			kdump, not configurable for now).
+> >> +			This parameter defines the ordering of the first 3
+> >> +			lists with regards to kdump; the levels determine
+> >> +			which set of notifiers execute before kdump. The
+> >> +			accepted levels are:
+> >> +			0: kdump is the first thing to run, NO list is
+> >> +			executed before kdump.
+> >> +			1: only the hypervisor list is executed before kdump.
+> >> +			2 (default level): the hypervisor list and (*if*
+> >> +			there's any kmsg_dumper defined) the informational
+> >> +			list are executed before kdump.
+> >> +			3: both the hypervisor and the informational lists
+> >> +			(always) execute before kdump.
+> >
+> > I'm not clear on why level 2 exists.  What is the scenario where
+> > execution of the info list before kdump should be conditional on the
+> > existence of a kmsg_dumper?   Maybe the scenario is described
+> > somewhere in the patch set and I just missed it.
+> >
+>=20
+> Hi Michael, thanks for your review/consideration. So, this idea started
+> kind of some time ago. It all started with a need of exposing more
+> information on kernel log *before* kdump and *before* pstore -
+> specifically, we're talking about panic_print. But this cause some
+> reactions, Baoquan was very concerned with that [0]. Soon after, I've
+> proposed a panic notifiers filter (orthogonal) approach, to which Petr
+> suggested instead doing a major refactor [1] - it finally is alive in
+> the form of this series.
+>=20
+> The theory behind the level 2 is to allow a scenario of kdump with the
+> minimum amount of notifiers - what is the point in printing more
+> information if the user doesn't care, since it's going to kdump? Now, if
+> there is a kmsg dumper, it means that there is likely some interest in
+> collecting information, and that might as well be required before the
+> potential kdump (which is my case, hence the proposal on [0]).
+>=20
+> Instead of forcing one of the two behaviors (level 1 or level 3), we
+> have a middle-term/compromise: if there's interest in collecting such
+> data (in the form of a kmsg dumper), we then execute the informational
+> notifiers before kdump. If not, why to increase (even slightly) the risk
+> for kdump?
+>=20
+> I'm OK in removing the level 2 if people prefer, but I don't feel it's a
+> burden, quite opposite - seems a good way to accommodate the somewhat
+> antagonistic ideas (jump to kdump ASAP vs collecting more info in the
+> panicked kernel log).
+>=20
+> [0] https://lore.kernel.org/lkml/20220126052246.GC2086@MiWiFi-R3L-srv/
+>=20
+> [1] https://lore.kernel.org/lkml/YfPxvzSzDLjO5ldp@alley/
+>=20
 
-The sample application and selftest are updated to support the TC mode.
-It's not the recommended mode of operation, because the SKB is already
-created at this point, and it's unlikely that the BPF program will
-provide any substantional speedup compared to regular SYN cookies or
-synproxy.
+To me, it's a weak correlation between having a kmsg dumper, and
+wanting or not wanting the info level output to come before kdump.
+Hyper-V is one of only a few places that register a kmsg dumper, so most
+Linux instances outside of Hyper-V guest (and PowerPC systems?) will have
+the info level output after kdump.  It seems like anyone who cared strongly
+about the info level output would set the panic_notifier_level to 1 or to 3
+so that the result is more deterministic.  But that's just my opinion, and
+it's probably an opinion that is not as well informed on the topic as some
+others in the discussion. So keeping things as in your patch set is not a
+show-stopper for me.
 
-Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
----
- net/core/filter.c                             |  10 ++
- .../selftests/bpf/prog_tests/xdp_synproxy.c   |  53 +++++--
- .../selftests/bpf/progs/xdp_synproxy_kern.c   | 141 +++++++++++++-----
- tools/testing/selftests/bpf/xdp_synproxy.c    |  94 +++++++++---
- 4 files changed, 230 insertions(+), 68 deletions(-)
+However, I would request a clarification in the documentation.   The
+panic_notifier_level affects not only the hypervisor, informational,
+and pre_reboot lists, but it also affects panic_print_sys_info() and
+kmsg_dump().  Specifically, at level 1, panic_print_sys_info() and
+kmsg_dump() will not be run before kdump.  At level 3, they will
+always be run before kdump.  Your documentation above mentions
+"informational lists" (plural), which I take to vaguely include
+kmsg_dump() and panic_print_sys_info(), but being explicit about
+the effect would be better.
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 7efeee6c7624..f8fe9aea545f 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -7905,6 +7905,16 @@ tc_cls_act_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 		return &bpf_sk_assign_proto;
- 	case BPF_FUNC_skb_set_tstamp:
- 		return &bpf_skb_set_tstamp_proto;
-+#ifdef CONFIG_SYN_COOKIES
-+	case BPF_FUNC_tcp_raw_gen_syncookie_ipv4:
-+		return &bpf_tcp_raw_gen_syncookie_ipv4_proto;
-+	case BPF_FUNC_tcp_raw_gen_syncookie_ipv6:
-+		return &bpf_tcp_raw_gen_syncookie_ipv6_proto;
-+	case BPF_FUNC_tcp_raw_check_syncookie_ipv4:
-+		return &bpf_tcp_raw_check_syncookie_ipv4_proto;
-+	case BPF_FUNC_tcp_raw_check_syncookie_ipv6:
-+		return &bpf_tcp_raw_check_syncookie_ipv6_proto;
-+#endif
- #endif
- 	default:
- 		return bpf_sk_base_func_proto(func_id);
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_synproxy.c b/tools/testing/selftests/bpf/prog_tests/xdp_synproxy.c
-index e08b28e25047..09320967d865 100644
---- a/tools/testing/selftests/bpf/prog_tests/xdp_synproxy.c
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_synproxy.c
-@@ -1,4 +1,5 @@
- // SPDX-License-Identifier: GPL-2.0
-+#define _GNU_SOURCE
- #include <test_progs.h>
- #include <network_helpers.h>
- 
-@@ -7,9 +8,11 @@
- 		goto out; \
- })
- 
--#define SYS_OUT(cmd) ({ \
--	FILE *f = popen((cmd), "r"); \
--	if (!ASSERT_OK_PTR(f, (cmd))) \
-+#define SYS_OUT(cmd, ...) ({ \
-+	char buf[1024]; \
-+	snprintf(buf, sizeof(buf), (cmd), ##__VA_ARGS__); \
-+	FILE *f = popen(buf, "r"); \
-+	if (!ASSERT_OK_PTR(f, buf)) \
- 		goto out; \
- 	f; \
- })
-@@ -21,9 +24,10 @@ static bool expect_str(char *buf, size_t size, const char *str)
- 	return !memcmp(buf, str, size);
- }
- 
--void test_xdp_synproxy(void)
-+static void test_synproxy(bool xdp)
- {
- 	int server_fd = -1, client_fd = -1, accept_fd = -1;
-+	char *prog_id, *prog_id_end;
- 	struct nstoken *ns = NULL;
- 	FILE *ctrl_file = NULL;
- 	char buf[1024];
-@@ -39,8 +43,9 @@ void test_xdp_synproxy(void)
- 	// When checksum offload is enabled, the XDP program sees wrong
- 	// checksums and drops packets.
- 	SYS("ethtool -K tmp0 tx off");
--	// Workaround required for veth.
--	SYS("ip link set tmp0 xdp object xdp_dummy.o section xdp 2> /dev/null");
-+	if (xdp)
-+		// Workaround required for veth.
-+		SYS("ip link set tmp0 xdp object xdp_dummy.o section xdp 2> /dev/null");
- 
- 	ns = open_netns("synproxy");
- 	if (!ASSERT_OK_PTR(ns, "setns"))
-@@ -60,14 +65,34 @@ void test_xdp_synproxy(void)
- 	SYS("iptables -t filter -A INPUT \
- 	    -i tmp1 -m state --state INVALID -j DROP");
- 
--	ctrl_file = SYS_OUT("./xdp_synproxy --iface tmp1 --ports 8080 --single \
--			    --mss4 1460 --mss6 1440 --wscale 7 --ttl 64");
-+	ctrl_file = SYS_OUT("./xdp_synproxy --iface tmp1 --ports 8080 \
-+			    --single --mss4 1460 --mss6 1440 \
-+			    --wscale 7 --ttl 64%s", xdp ? "" : " --tc");
- 	size = fread(buf, 1, sizeof(buf), ctrl_file);
- 	pclose(ctrl_file);
- 	if (!ASSERT_TRUE(expect_str(buf, size, "Total SYNACKs generated: 0\n"),
- 			 "initial SYNACKs"))
- 		goto out;
- 
-+	if (!xdp) {
-+		ctrl_file = SYS_OUT("tc filter show dev tmp1 ingress");
-+		size = fread(buf, 1, sizeof(buf), ctrl_file);
-+		pclose(ctrl_file);
-+		prog_id = memmem(buf, size, " id ", 4);
-+		if (!ASSERT_OK_PTR(prog_id, "find prog id"))
-+			goto out;
-+		prog_id += 4;
-+		if (!ASSERT_LT(prog_id, buf + size, "find prog id begin"))
-+			goto out;
-+		prog_id_end = prog_id;
-+		while (prog_id_end < buf + size && *prog_id_end >= '0' &&
-+		       *prog_id_end <= '9')
-+			prog_id_end++;
-+		if (!ASSERT_LT(prog_id_end, buf + size, "find prog id end"))
-+			goto out;
-+		*prog_id_end = '\0';
-+	}
-+
- 	server_fd = start_server(AF_INET, SOCK_STREAM, "198.18.0.2", 8080, 0);
- 	if (!ASSERT_GE(server_fd, 0, "start_server"))
- 		goto out;
-@@ -87,7 +112,11 @@ void test_xdp_synproxy(void)
- 	if (!ASSERT_OK_PTR(ns, "setns"))
- 		goto out;
- 
--	ctrl_file = SYS_OUT("./xdp_synproxy --iface tmp1 --single");
-+	if (xdp)
-+		ctrl_file = SYS_OUT("./xdp_synproxy --iface tmp1 --single");
-+	else
-+		ctrl_file = SYS_OUT("./xdp_synproxy --prog %s --single",
-+				    prog_id);
- 	size = fread(buf, 1, sizeof(buf), ctrl_file);
- 	pclose(ctrl_file);
- 	if (!ASSERT_TRUE(expect_str(buf, size, "Total SYNACKs generated: 1\n"),
-@@ -107,3 +136,9 @@ void test_xdp_synproxy(void)
- 	system("ip link del tmp0");
- 	system("ip netns del synproxy");
- }
-+
-+void test_xdp_synproxy(void)
-+{
-+	test_synproxy(true);
-+	test_synproxy(false);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/xdp_synproxy_kern.c b/tools/testing/selftests/bpf/progs/xdp_synproxy_kern.c
-index 9ae85b189072..f70b5f776dcf 100644
---- a/tools/testing/selftests/bpf/progs/xdp_synproxy_kern.c
-+++ b/tools/testing/selftests/bpf/progs/xdp_synproxy_kern.c
-@@ -7,6 +7,9 @@
- #include <bpf/bpf_endian.h>
- #include <asm/errno.h>
- 
-+#define TC_ACT_OK 0
-+#define TC_ACT_SHOT 2
-+
- #define NSEC_PER_SEC 1000000000L
- 
- #define ETH_ALEN 6
-@@ -80,6 +83,12 @@ extern struct nf_conn *bpf_xdp_ct_lookup(struct xdp_md *xdp_ctx,
- 					 struct bpf_ct_opts *opts,
- 					 __u32 len_opts) __ksym;
- 
-+extern struct nf_conn *bpf_skb_ct_lookup(struct __sk_buff *skb_ctx,
-+					 struct bpf_sock_tuple *bpf_tuple,
-+					 u32 len_tuple,
-+					 struct bpf_ct_opts *opts,
-+					 u32 len_opts) __ksym;
-+
- extern void bpf_ct_release(struct nf_conn *ct) __ksym;
- 
- static __always_inline void swap_eth_addr(__u8 *a, __u8 *b)
-@@ -380,7 +389,7 @@ static __always_inline int tcp_dissect(void *data, void *data_end,
- 	return XDP_TX;
- }
- 
--static __always_inline int tcp_lookup(struct xdp_md *ctx, struct header_pointers *hdr)
-+static __always_inline int tcp_lookup(void *ctx, struct header_pointers *hdr, bool xdp)
- {
- 	struct bpf_ct_opts ct_lookup_opts = {
- 		.netns_id = BPF_F_CURRENT_NETNS,
-@@ -410,7 +419,10 @@ static __always_inline int tcp_lookup(struct xdp_md *ctx, struct header_pointers
- 		// The verifier can't track that either ipv4 or ipv6 is not NULL.
- 		return XDP_ABORTED;
- 	}
--	ct = bpf_xdp_ct_lookup(ctx, &tup, tup_size, &ct_lookup_opts, sizeof(ct_lookup_opts));
-+	if (xdp)
-+		ct = bpf_xdp_ct_lookup(ctx, &tup, tup_size, &ct_lookup_opts, sizeof(ct_lookup_opts));
-+	else
-+		ct = bpf_skb_ct_lookup(ctx, &tup, tup_size, &ct_lookup_opts, sizeof(ct_lookup_opts));
- 	if (ct) {
- 		unsigned long status = ct->status;
- 
-@@ -523,8 +535,9 @@ static __always_inline void tcpv6_gen_synack(struct header_pointers *hdr,
- }
- 
- static __always_inline int syncookie_handle_syn(struct header_pointers *hdr,
--						struct xdp_md *ctx,
--						void *data, void *data_end)
-+						void *ctx,
-+						void *data, void *data_end,
-+						bool xdp)
- {
- 	__u32 old_pkt_size, new_pkt_size;
- 	// Unlike clang 10, clang 11 and 12 generate code that doesn't pass the
-@@ -656,8 +669,13 @@ static __always_inline int syncookie_handle_syn(struct header_pointers *hdr,
- 	// Set the new packet size.
- 	old_pkt_size = data_end - data;
- 	new_pkt_size = sizeof(*hdr->eth) + ip_len + hdr->tcp->doff * 4;
--	if (bpf_xdp_adjust_tail(ctx, new_pkt_size - old_pkt_size))
--		return XDP_ABORTED;
-+	if (xdp) {
-+		if (bpf_xdp_adjust_tail(ctx, new_pkt_size - old_pkt_size))
-+			return XDP_ABORTED;
-+	} else {
-+		if (bpf_skb_change_tail(ctx, new_pkt_size, 0))
-+			return XDP_ABORTED;
-+	}
- 
- 	values_inc_synacks();
- 
-@@ -683,68 +701,119 @@ static __always_inline int syncookie_handle_ack(struct header_pointers *hdr)
- 	return XDP_PASS;
- }
- 
--SEC("xdp")
--int syncookie_xdp(struct xdp_md *ctx)
-+static __always_inline int syncookie_part1(void *ctx, void *data, void *data_end,
-+					   struct header_pointers *hdr, bool xdp)
- {
--	void *data_end = (void *)(long)ctx->data_end;
--	void *data = (void *)(long)ctx->data;
--	struct header_pointers hdr;
--	__s64 value;
--	int ret;
--
- 	struct bpf_ct_opts ct_lookup_opts = {
- 		.netns_id = BPF_F_CURRENT_NETNS,
- 		.l4proto = IPPROTO_TCP,
- 	};
-+	int ret;
- 
--	ret = tcp_dissect(data, data_end, &hdr);
-+	ret = tcp_dissect(data, data_end, hdr);
- 	if (ret != XDP_TX)
- 		return ret;
- 
--	ret = tcp_lookup(ctx, &hdr);
-+	ret = tcp_lookup(ctx, hdr, xdp);
- 	if (ret != XDP_TX)
- 		return ret;
- 
- 	// Packet is TCP and doesn't belong to an established connection.
- 
--	if ((hdr.tcp->syn ^ hdr.tcp->ack) != 1)
-+	if ((hdr->tcp->syn ^ hdr->tcp->ack) != 1)
- 		return XDP_DROP;
- 
--	// Grow the TCP header to TCP_MAXLEN to be able to pass any hdr.tcp_len
-+	// Grow the TCP header to TCP_MAXLEN to be able to pass any hdr->tcp_len
- 	// to bpf_tcp_raw_gen_syncookie_ipv{4,6} and pass the verifier.
--	if (bpf_xdp_adjust_tail(ctx, TCP_MAXLEN - hdr.tcp_len))
--		return XDP_ABORTED;
-+	if (xdp) {
-+		if (bpf_xdp_adjust_tail(ctx, TCP_MAXLEN - hdr->tcp_len))
-+			return XDP_ABORTED;
-+	} else {
-+		// Without volatile the verifier throws this error:
-+		// R9 32-bit pointer arithmetic prohibited
-+		volatile u64 old_len = data_end - data;
- 
--	data_end = (void *)(long)ctx->data_end;
--	data = (void *)(long)ctx->data;
-+		if (bpf_skb_change_tail(ctx, old_len + TCP_MAXLEN - hdr->tcp_len, 0))
-+			return XDP_ABORTED;
-+	}
-+
-+	return XDP_TX;
-+}
- 
--	if (hdr.ipv4) {
--		hdr.eth = data;
--		hdr.ipv4 = (void *)hdr.eth + sizeof(*hdr.eth);
-+static __always_inline int syncookie_part2(void *ctx, void *data, void *data_end,
-+					   struct header_pointers *hdr, bool xdp)
-+{
-+	if (hdr->ipv4) {
-+		hdr->eth = data;
-+		hdr->ipv4 = (void *)hdr->eth + sizeof(*hdr->eth);
- 		// IPV4_MAXLEN is needed when calculating checksum.
- 		// At least sizeof(struct iphdr) is needed here to access ihl.
--		if ((void *)hdr.ipv4 + IPV4_MAXLEN > data_end)
-+		if ((void *)hdr->ipv4 + IPV4_MAXLEN > data_end)
- 			return XDP_ABORTED;
--		hdr.tcp = (void *)hdr.ipv4 + hdr.ipv4->ihl * 4;
--	} else if (hdr.ipv6) {
--		hdr.eth = data;
--		hdr.ipv6 = (void *)hdr.eth + sizeof(*hdr.eth);
--		hdr.tcp = (void *)hdr.ipv6 + sizeof(*hdr.ipv6);
-+		hdr->tcp = (void *)hdr->ipv4 + hdr->ipv4->ihl * 4;
-+	} else if (hdr->ipv6) {
-+		hdr->eth = data;
-+		hdr->ipv6 = (void *)hdr->eth + sizeof(*hdr->eth);
-+		hdr->tcp = (void *)hdr->ipv6 + sizeof(*hdr->ipv6);
- 	} else {
- 		return XDP_ABORTED;
- 	}
- 
--	if ((void *)hdr.tcp + TCP_MAXLEN > data_end)
-+	if ((void *)hdr->tcp + TCP_MAXLEN > data_end)
- 		return XDP_ABORTED;
- 
- 	// We run out of registers, tcp_len gets spilled to the stack, and the
- 	// verifier forgets its min and max values checked above in tcp_dissect.
--	hdr.tcp_len = hdr.tcp->doff * 4;
--	if (hdr.tcp_len < sizeof(*hdr.tcp))
-+	hdr->tcp_len = hdr->tcp->doff * 4;
-+	if (hdr->tcp_len < sizeof(*hdr->tcp))
- 		return XDP_ABORTED;
- 
--	return hdr.tcp->syn ? syncookie_handle_syn(&hdr, ctx, data, data_end) :
--			      syncookie_handle_ack(&hdr);
-+	return hdr->tcp->syn ? syncookie_handle_syn(hdr, ctx, data, data_end, xdp) :
-+			       syncookie_handle_ack(hdr);
-+}
-+
-+SEC("xdp")
-+int syncookie_xdp(struct xdp_md *ctx)
-+{
-+	void *data_end = (void *)(long)ctx->data_end;
-+	void *data = (void *)(long)ctx->data;
-+	struct header_pointers hdr;
-+	int ret;
-+
-+	ret = syncookie_part1(ctx, data, data_end, &hdr, true);
-+	if (ret != XDP_TX)
-+		return ret;
-+
-+	data_end = (void *)(long)ctx->data_end;
-+	data = (void *)(long)ctx->data;
-+
-+	return syncookie_part2(ctx, data, data_end, &hdr, true);
-+}
-+
-+SEC("tc")
-+int syncookie_tc(struct __sk_buff *skb)
-+{
-+	void *data_end = (void *)(long)skb->data_end;
-+	void *data = (void *)(long)skb->data;
-+	struct header_pointers hdr;
-+	int ret;
-+
-+	ret = syncookie_part1(skb, data, data_end, &hdr, false);
-+	if (ret != XDP_TX)
-+		return ret == XDP_PASS ? TC_ACT_OK : TC_ACT_SHOT;
-+
-+	data_end = (void *)(long)skb->data_end;
-+	data = (void *)(long)skb->data;
-+
-+	ret = syncookie_part2(skb, data, data_end, &hdr, false);
-+	switch (ret) {
-+	case XDP_PASS:
-+		return TC_ACT_OK;
-+	case XDP_TX:
-+		return bpf_redirect(skb->ifindex, 0);
-+	default:
-+		return TC_ACT_SHOT;
-+	}
- }
- 
- char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/xdp_synproxy.c b/tools/testing/selftests/bpf/xdp_synproxy.c
-index 2b9585f2bc00..6b37e95c38ee 100644
---- a/tools/testing/selftests/bpf/xdp_synproxy.c
-+++ b/tools/testing/selftests/bpf/xdp_synproxy.c
-@@ -18,6 +18,7 @@
- 
- static unsigned int ifindex;
- static __u32 attached_prog_id;
-+static bool attached_tc;
- 
- static void noreturn cleanup(int sig)
- {
-@@ -28,6 +29,20 @@ static void noreturn cleanup(int sig)
- 	if (attached_prog_id == 0)
- 		exit(0);
- 
-+	if (attached_tc) {
-+		DECLARE_LIBBPF_OPTS(bpf_tc_hook, hook,
-+				    .ifindex = ifindex,
-+				    .attach_point = BPF_TC_INGRESS);
-+
-+		err = bpf_tc_hook_destroy(&hook);
-+		if (err < 0) {
-+			fprintf(stderr, "Error: bpf_tc_hook_destroy: %s\n", strerror(-err));
-+			fprintf(stderr, "Failed to destroy the TC hook\n");
-+			exit(1);
-+		}
-+		exit(0);
-+	}
-+
- 	prog_fd = bpf_prog_get_fd_by_id(attached_prog_id);
- 	if (prog_fd < 0) {
- 		fprintf(stderr, "Error: bpf_prog_get_fd_by_id: %s\n", strerror(-prog_fd));
-@@ -55,7 +70,7 @@ static void noreturn cleanup(int sig)
- 
- static noreturn void usage(const char *progname)
- {
--	fprintf(stderr, "Usage: %s [--iface <iface>|--prog <prog_id>] [--mss4 <mss ipv4> --mss6 <mss ipv6> --wscale <wscale> --ttl <ttl>] [--ports <port1>,<port2>,...] [--single]\n",
-+	fprintf(stderr, "Usage: %s [--iface <iface>|--prog <prog_id>] [--mss4 <mss ipv4> --mss6 <mss ipv6> --wscale <wscale> --ttl <ttl>] [--ports <port1>,<port2>,...] [--single] [--tc]\n",
- 		progname);
- 	exit(1);
- }
-@@ -74,7 +89,7 @@ static unsigned long parse_arg_ul(const char *progname, const char *arg, unsigne
- }
- 
- static void parse_options(int argc, char *argv[], unsigned int *ifindex, __u32 *prog_id,
--			  __u64 *tcpipopts, char **ports, bool *single)
-+			  __u64 *tcpipopts, char **ports, bool *single, bool *tc)
- {
- 	static struct option long_options[] = {
- 		{ "help", no_argument, NULL, 'h' },
-@@ -86,6 +101,7 @@ static void parse_options(int argc, char *argv[], unsigned int *ifindex, __u32 *
- 		{ "ttl", required_argument, NULL, 't' },
- 		{ "ports", required_argument, NULL, 'p' },
- 		{ "single", no_argument, NULL, 's' },
-+		{ "tc", no_argument, NULL, 'c' },
- 		{ NULL, 0, NULL, 0 },
- 	};
- 	unsigned long mss4, mss6, wscale, ttl;
-@@ -143,6 +159,9 @@ static void parse_options(int argc, char *argv[], unsigned int *ifindex, __u32 *
- 		case 's':
- 			*single = true;
- 			break;
-+		case 'c':
-+			*tc = true;
-+			break;
- 		default:
- 			usage(argv[0]);
- 		}
-@@ -164,7 +183,7 @@ static void parse_options(int argc, char *argv[], unsigned int *ifindex, __u32 *
- 		usage(argv[0]);
- }
- 
--static int syncookie_attach(const char *argv0, unsigned int ifindex)
-+static int syncookie_attach(const char *argv0, unsigned int ifindex, bool tc)
- {
- 	struct bpf_prog_info info = {};
- 	__u32 info_len = sizeof(info);
-@@ -188,9 +207,9 @@ static int syncookie_attach(const char *argv0, unsigned int ifindex)
- 		return err;
- 	}
- 
--	prog = bpf_object__find_program_by_name(obj, "syncookie_xdp");
-+	prog = bpf_object__find_program_by_name(obj, tc ? "syncookie_tc" : "syncookie_xdp");
- 	if (!prog) {
--		fprintf(stderr, "Error: bpf_object__find_program_by_name: program syncookie_xdp was not found\n");
-+		fprintf(stderr, "Error: bpf_object__find_program_by_name: program was not found\n");
- 		return -ENOENT;
- 	}
- 
-@@ -201,21 +220,50 @@ static int syncookie_attach(const char *argv0, unsigned int ifindex)
- 		fprintf(stderr, "Error: bpf_obj_get_info_by_fd: %s\n", strerror(-err));
- 		goto out;
- 	}
-+	attached_tc = tc;
- 	attached_prog_id = info.id;
- 	signal(SIGINT, cleanup);
- 	signal(SIGTERM, cleanup);
--	err = bpf_xdp_attach(ifindex, prog_fd, XDP_FLAGS_UPDATE_IF_NOEXIST, NULL);
--	if (err < 0) {
--		fprintf(stderr, "Error: bpf_set_link_xdp_fd: %s\n", strerror(-err));
--		signal(SIGINT, SIG_DFL);
--		signal(SIGTERM, SIG_DFL);
--		attached_prog_id = 0;
--		goto out;
-+	if (tc) {
-+		DECLARE_LIBBPF_OPTS(bpf_tc_hook, hook,
-+				    .ifindex = ifindex,
-+				    .attach_point = BPF_TC_INGRESS);
-+		DECLARE_LIBBPF_OPTS(bpf_tc_opts, opts,
-+				    .handle = 1,
-+				    .priority = 1,
-+				    .prog_fd = prog_fd);
-+
-+		err = bpf_tc_hook_create(&hook);
-+		if (err < 0) {
-+			fprintf(stderr, "Error: bpf_tc_hook_create: %s\n",
-+				strerror(-err));
-+			goto fail;
-+		}
-+		err = bpf_tc_attach(&hook, &opts);
-+		if (err < 0) {
-+			fprintf(stderr, "Error: bpf_tc_attach: %s\n",
-+				strerror(-err));
-+			goto fail;
-+		}
-+
-+	} else {
-+		err = bpf_xdp_attach(ifindex, prog_fd,
-+				     XDP_FLAGS_UPDATE_IF_NOEXIST, NULL);
-+		if (err < 0) {
-+			fprintf(stderr, "Error: bpf_set_link_xdp_fd: %s\n",
-+				strerror(-err));
-+			goto fail;
-+		}
- 	}
- 	err = 0;
- out:
- 	bpf_object__close(obj);
- 	return err;
-+fail:
-+	signal(SIGINT, SIG_DFL);
-+	signal(SIGTERM, SIG_DFL);
-+	attached_prog_id = 0;
-+	goto out;
- }
- 
- static int syncookie_open_bpf_maps(__u32 prog_id, int *values_map_fd, int *ports_map_fd)
-@@ -248,11 +296,6 @@ static int syncookie_open_bpf_maps(__u32 prog_id, int *values_map_fd, int *ports
- 		goto out;
- 	}
- 
--	if (prog_info.type != BPF_PROG_TYPE_XDP) {
--		fprintf(stderr, "Error: BPF prog type is not BPF_PROG_TYPE_XDP\n");
--		err = -ENOENT;
--		goto out;
--	}
- 	if (prog_info.nr_map_ids < 2) {
- 		fprintf(stderr, "Error: Found %u BPF maps, expected at least 2\n",
- 			prog_info.nr_map_ids);
-@@ -319,17 +362,22 @@ int main(int argc, char *argv[])
- 	char *ports;
- 	bool single;
- 	int err = 0;
-+	bool tc;
- 
--	parse_options(argc, argv, &ifindex, &prog_id, &tcpipopts, &ports, &single);
-+	parse_options(argc, argv, &ifindex, &prog_id, &tcpipopts, &ports,
-+		      &single, &tc);
- 
- 	if (prog_id == 0) {
--		err = bpf_xdp_query_id(ifindex, 0, &prog_id);
--		if (err < 0) {
--			fprintf(stderr, "Error: bpf_get_link_xdp_id: %s\n", strerror(-err));
--			goto out;
-+		if (!tc) {
-+			err = bpf_xdp_query_id(ifindex, 0, &prog_id);
-+			if (err < 0) {
-+				fprintf(stderr, "Error: bpf_get_link_xdp_id: %s\n",
-+					strerror(-err));
-+				goto out;
-+			}
- 		}
- 		if (prog_id == 0) {
--			err = syncookie_attach(argv[0], ifindex);
-+			err = syncookie_attach(argv[0], ifindex, tc);
- 			if (err < 0)
- 				goto out;
- 			prog_id = attached_prog_id;
--- 
-2.30.2
+Michael
 
+>=20
+> >[...]
+> >> +	 * Based on the level configured (smaller than 4), we clear the
+> >> +	 * proper bits in "panic_notifiers_bits". Notice that this bitfield
+> >> +	 * is initialized with all notifiers set.
+> >> +	 */
+> >> +	switch (panic_notifiers_level) {
+> >> +	case 3:
+> >> +		clear_bit(PN_PRE_REBOOT_BIT, &panic_notifiers_bits);
+> >> +		break;
+> >> +	case 2:
+> >> +		clear_bit(PN_PRE_REBOOT_BIT, &panic_notifiers_bits);
+> >> +
+> >> +		if (!kmsg_has_dumpers())
+> >> +			clear_bit(PN_INFO_BIT, &panic_notifiers_bits);
+> >> +		break;
+> >> +	case 1:
+> >> +		clear_bit(PN_PRE_REBOOT_BIT, &panic_notifiers_bits);
+> >> +		clear_bit(PN_INFO_BIT, &panic_notifiers_bits);
+> >> +		break;
+> >> +	case 0:
+> >> +		clear_bit(PN_PRE_REBOOT_BIT, &panic_notifiers_bits);
+> >> +		clear_bit(PN_INFO_BIT, &panic_notifiers_bits);
+> >> +		clear_bit(PN_HYPERVISOR_BIT, &panic_notifiers_bits);
+> >> +		break;
+> >> +	}
+> >
+> > I think the above switch statement could be done as follows:
+> >
+> > if (panic_notifiers_level <=3D 3)
+> > 	clear_bit(PN_PRE_REBOOT_BIT, &panic_notifiers_bits);
+> > if (panic_notifiers_level <=3D 2)
+> > 	if (!kmsg_has_dumpers())
+> > 		clear_bit(PN_INFO_BIT, &panic_notifiers_bits);
+> > if (panic_notifiers_level <=3D1)
+> > 	clear_bit(PN_INFO_BIT, &panic_notifiers_bits);
+> > if (panic_notifiers_level =3D=3D 0)
+> > 	clear_bit(PN_HYPERVISOR_BIT, &panic_notifiers_bits);
+> >
+> > That's about half the lines of code.  It's somewhat a matter of style,
+> > so treat this as just a suggestion to consider.  I just end up looking
+> > for a better solution when I see the same line of code repeated
+> > 3 or 4 times!
+> >
+>=20
+> It's a good idea - I liked your code. The switch seems more
+> natural/explicit for me, even duplicating some lines, but in case more
+> people prefer your way, I can definitely change the code - thanks for
+> the suggestion.
+> Cheers,
+>=20
+>=20
+> Guilherme
