@@ -2,55 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D8F45186DE
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 16:38:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E13E65186A3
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 16:27:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237159AbiECOlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 10:41:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36262 "EHLO
+        id S237066AbiECOa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 10:30:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236366AbiECOl3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 10:41:29 -0400
-X-Greylist: delayed 657 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 03 May 2022 07:37:57 PDT
-Received: from radex-web.radex.nl (smtp.radex.nl [178.250.146.7])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3C99B3467F;
-        Tue,  3 May 2022 07:37:57 -0700 (PDT)
-Received: from [192.168.1.35] (cust-178-250-146-69.breedbanddelft.nl [178.250.146.69])
-        by radex-web.radex.nl (Postfix) with ESMTPS id AB2AA24071;
-        Tue,  3 May 2022 16:26:58 +0200 (CEST)
-Message-ID: <2a436486-a54d-a9b3-d839-232a38653af3@gmail.com>
-Date:   Tue, 3 May 2022 16:26:58 +0200
+        with ESMTP id S237037AbiECOay (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 10:30:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99A5B31910;
+        Tue,  3 May 2022 07:27:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 37F2F61642;
+        Tue,  3 May 2022 14:27:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83BB8C385AF;
+        Tue,  3 May 2022 14:27:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1651588041;
+        bh=U+dMHz9mvZ+8O5RCxWHI4ioZs1g/R3YqAm9YLjXH3ro=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mTXUNdmNQF+WbQNc3W/k1ZcRihhHAhTSm7iTwc50NKSMC26QDAGtnHgmPnlwXMMWj
+         XEbBNsePgD8bnHbEsWxAubNb5jcmiTCWrFfEsmpsnZVki+YRAKjE794FoiBQj5XiwM
+         wUyMH1tPCJqfSa7udZg/xk87sWL3sXQC+zQ2Ip+c=
+Date:   Tue, 3 May 2022 16:27:20 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Cc:     stable@vger.kernel.org, netdev@vger.kernel.org, kuba@kernel.org,
+        davem@davemloft.net, jiri@resnulli.us, xiyou.wangcong@gmail.com,
+        jhs@mojatatu.com, vladbu@mellanox.com
+Subject: Re: [PATCH 4.9.y] net: sched: prevent UAF on tc_ctl_tfilter when
+ temporarily dropping rtnl_lock
+Message-ID: <YnE7yBTTsJ/9JSjm@kroah.com>
+References: <20220502204924.3456590-1-cascardo@canonical.com>
+ <YnEy2726cz98I6YC@kroah.com>
+ <YnE7AbD1eYTBBVeE@quatroqueijos>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH net-next 0/7] Polling be gone on LAN95xx
-Content-Language: en-US
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     Steve Glendinning <steve.glendinning@shawell.net>,
-        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, Andre Edich <andre.edich@microchip.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Martyn Welch <martyn.welch@collabora.com>,
-        Gabriel Hojda <ghojda@yo2urs.ro>,
-        Christoph Fritz <chf.fritz@googlemail.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>
-References: <cover.1651037513.git.lukas@wunner.de>
- <a9fcc952-a55f-1eae-c584-d58644bae00d@gmail.com>
- <20220503082612.GA21515@wunner.de>
-From:   Ferry Toth <fntoth@gmail.com>
-In-Reply-To: <20220503082612.GA21515@wunner.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-        FORGED_GMAIL_RCVD,FREEMAIL_FROM,NICE_REPLY_A,NML_ADSP_CUSTOM_MED,
-        SPF_HELO_NONE,SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE autolearn=no
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YnE7AbD1eYTBBVeE@quatroqueijos>
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,38 +54,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi
+On Tue, May 03, 2022 at 11:24:01AM -0300, Thadeu Lima de Souza Cascardo wrote:
+> On Tue, May 03, 2022 at 03:49:15PM +0200, Greg KH wrote:
+> > On Mon, May 02, 2022 at 05:49:24PM -0300, Thadeu Lima de Souza Cascardo wrote:
+> > > When dropping the rtnl_lock for looking up for a module, the device may be
+> > > removed, releasing the qdisc and class memory. Right after trying to load
+> > > the module, cl_ops->put is called, leading to a potential use-after-free.
+> > > 
+> > > Though commit e368fdb61d8e ("net: sched: use Qdisc rcu API instead of
+> > > relying on rtnl lock") fixes this, it involves a lot of refactoring of the
+> > > net/sched/ code, complicating its backport.
+> > 
+> > What about 4.14.y?  We can not take a commit for 4.9.y with it also
+> > being broken in 4.14.y, and yet fixed in 4.19.y, right?  Anyone who
+> > updates from 4.9 to 4.14 will have a regression.
+> > 
+> > thanks,
+> > 
+> > greg k-h
+> 
+> 4.14.y does not call cl_ops->put (the get/put and class refcount has been done
+> with on 4.14.y). However, on the error path after the lock has been dropped,
+> tcf_chain_put is called. But it does not touch the qdisc, but only the chain
+> and block objects, which cannot be released on a race condition, as far as I
+> was able to investigate.
 
-On 03-05-2022 10:26, Lukas Wunner wrote:
-> On Mon, May 02, 2022 at 10:33:06PM +0200, Ferry Toth wrote:
->> Op 27-04-2022 om 07:48 schreef Lukas Wunner:
->>> Do away with link status polling on LAN95XX USB Ethernet
->>> and rely on interrupts instead, thereby reducing bus traffic,
->>> CPU overhead and improving interface bringup latency.
->> Tested-by: Ferry Toth <fntoth@gmail.com> (Intel Edison-Arduino)
-> Thank you!
->
->> While testing I noted another problem. I have "DMA-API: debugging enabled by
->> kernel config" and this (I guess) shows me before and after the patches:
->>
->> ------------[ cut here ]------------
->> DMA-API: xhci-hcd xhci-hcd.1.auto: cacheline tracking EEXIST, overlapping
->> mappings aren't supported
-> That is under investigation here:
-> https://bugzilla.kernel.org/show_bug.cgi?id=215740
->
-> It's apparently a long-standing bug in the USB core which was exposed
-> by a new WARN() check introduced in 5.14.
+So what changed between 4.9 and 4.14 that requires this out-of-tree
+change to 4.9 for the issue?  Shouldn't we backport that change instead
+of this custom one?
 
-I'm not sure this is correct. The issue happens for me only when 
-connecting the SMSC9414.
+thanks,
 
-Other usb devices I have (memory sticks, wifi, bluetooth) do not trigger 
-this.
-
-I think we need to consider it might be a valid warning. It seems to be 
-originating from the same "Workqueue: usb_hub_wq hub_event" though.
-
-> Thanks,
->
-> Lukas
+greg k-h
