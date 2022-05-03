@@ -2,143 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A2AE4517EEA
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 09:30:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D852517F8E
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 10:14:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232296AbiECHdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 03:33:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46598 "EHLO
+        id S232592AbiECIR3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 04:17:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231761AbiECHdl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 03:33:41 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E43BB366AA;
-        Tue,  3 May 2022 00:30:09 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id j70so2507887pge.1;
-        Tue, 03 May 2022 00:30:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dCHiolDCrvWhPfPBdVy2NNQvhf7col2O52oDSi5J+HM=;
-        b=fKRXoiUdX9bK33lZYxOHszpqI/ifjAxGXDUQCEfq1txgEZoluJLwoJHvCpm8ZaHbcS
-         3qJWLICh6fa3rkczaJk2oP+XIw1F4OFjCmuxbrffL0ENJ19SZOfqdYN6jJYTtbVmErNI
-         gvSCarY+CMwXehYEkmxc8u5OqThFIhDDH/W7w9/ihUmYshT9E+3YoKIqMJ8j7b8HusRJ
-         GqS/od1HUgCN8iJ34srdfgwC8Im6zFOxYJjy1Y3fZg0Wz48wHsmLb4VWGyvnZyHgilIq
-         SfWh7I2BvxIFKk8MQNwIK/mCmQ325GTxEHIvE7iaeDQ00i6e4w+3eTE6Nq3A00npsrrV
-         3k6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dCHiolDCrvWhPfPBdVy2NNQvhf7col2O52oDSi5J+HM=;
-        b=o0NjS7jsDHUHvZLJi8zdD57o75uzrqwigXJoKUP5RwC/LvFH+/cP3G2ZEqf66dQAu2
-         D0AsHgyzjaRFzF8M0eofFD+h82ODxr/mAs0zp0/6+hZZ3aWlbUMZP8/MXnj0gzsqjEaK
-         GmBENXeYeCkAcdmxOq8HZv0sSIylRFqQbp4gSy67II5+YaunohQPsC46PDJPvo9xLV4k
-         6vHxJ1EyzL8Sh5Rw2PpSGWESYuzvMWurnYCskonyccifLf8Nu0IojYef8/oEA/wojcCn
-         vuVvFls+X2e4Xd+IR2d1yp8WzWRSvhrDRdN5M6HBRinxCkH4iDVs1HvziQlLG6eC7Ts4
-         bLsQ==
-X-Gm-Message-State: AOAM530KyCk+gJ0zpomZIEcZI/7oaH6LN5w+QWLCxWckmgbqLaNOsmQs
-        j8QqzJdGMWMLUzef91qi43XUAzfgBQQ=
-X-Google-Smtp-Source: ABdhPJwz5BQ/RPAjdHYborqmdtvWEmLaDh9m+p+WNhFXGG3ctA5E8bP7vcxppfNxbO/OHe7xC0b/xQ==
-X-Received: by 2002:a05:6a00:16c7:b0:4f7:e497:69b8 with SMTP id l7-20020a056a0016c700b004f7e49769b8mr14716676pfc.6.1651563009017;
-        Tue, 03 May 2022 00:30:09 -0700 (PDT)
-Received: from debian.me (subs32-116-206-28-55.three.co.id. [116.206.28.55])
-        by smtp.gmail.com with ESMTPSA id i4-20020a170902e48400b0015e8d4eb1edsm5733929ple.55.2022.05.03.00.30.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 00:30:08 -0700 (PDT)
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     linux-doc@vger.kernel.org
-Cc:     Bagas Sanjaya <bagasdotme@gmail.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Dave Jones <davej@redhat.com>,
-        Randy Dunlap <randy.dunlap@oracle.com>,
+        with ESMTP id S232027AbiECIR1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 04:17:27 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 876492127F
+        for <netdev@vger.kernel.org>; Tue,  3 May 2022 01:13:56 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nlnf9-0002aG-UZ; Tue, 03 May 2022 10:13:39 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 2FA9E749ED;
+        Tue,  3 May 2022 08:13:36 +0000 (UTC)
+Date:   Tue, 3 May 2022 10:13:35 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Wolfgang Grandegger <wg@grandegger.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] net/core: Remove comment quote for __dev_queue_xmit()
-Date:   Tue,  3 May 2022 14:29:49 +0700
-Message-Id: <20220503072949.27336-1-bagasdotme@gmail.com>
-X-Mailer: git-send-email 2.36.0
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+        linux-can@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Subject: Re: [PATCH 0/2] dt-bindings: can: renesas,rcar-canfd: Make
+ interrupt-names required
+Message-ID: <20220503081335.opely3c2gmhrfqic@pengutronix.de>
+References: <cover.1651512451.git.geert+renesas@glider.be>
+ <20220502182635.2ntwjifykmyzbjgx@pengutronix.de>
+ <CAMuHMdU2RfBUO7SVJ8N2dUVqzvgptLX61UJY5Wdiyobj=rQgJw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="uxlmfeeoboac3pfs"
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdU2RfBUO7SVJ8N2dUVqzvgptLX61UJY5Wdiyobj=rQgJw@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When merging net-next for linux-next tree, Stephen Rothwell reported
-htmldocs warning:
 
-Documentation/networking/kapi:92: net/core/dev.c:4101: WARNING: Missing matching underline for section title overline.
+--uxlmfeeoboac3pfs
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
------------------------------------------------------------------------------------
-     I notice this method can also return errors from the queue disciplines,
-     including NET_XMIT_DROP, which is a positive value.  So, errors can also
+On 03.05.2022 09:25:45, Geert Uytterhoeven wrote:
+> Hi Marc,
+>=20
+> On Mon, May 2, 2022 at 8:27 PM Marc Kleine-Budde <mkl@pengutronix.de> wro=
+te:
+> > On 02.05.2022 19:33:51, Geert Uytterhoeven wrote:
+> > > The Renesas R-Car CAN FD Controller always uses two or more interrupt=
+s.
+> > > Hence it makes sense to make the interrupt-names property a required
+> > > property, to make it easier to identify the individual interrupts, and
+> > > validate the mapping.
+> > >
+> > >   - The first patch updates the various R-Car Gen3 and RZ/G2 DTS files
+> > >     to add interrupt-names properties, and is intended for the
+> > >     renesas-devel tree,
+> > >   - The second patch updates the CAN-FD DT bindings to mark the
+> > >     interrupt-names property required, and is intended for the DT or =
+net
+> > >     tree.
+> > >
+> > > Thanks!
+> >
+> > LGTM. Who takes this series?
+>=20
+> I'll take the first patch.
+>=20
+> The second patch is up to you and the DT maintainers.
 
-The warning is due to comment quote by BLG, which is separated by a dash
-line above. While it is fine in the docbook days, current documentation
-framework (Sphinx + kernel-doc) complains about it, so the documentation
-for __dev_queue_xmit() is not generated.
+Sounds good.
 
-The commit containing the quote is actually d29f749e252bcd ("net: Fix
-build failure with 'make mandocs'."), which interacts with commit
-c526fd8f9f4f21 ("net: inline dev_queue_xmit()") that Stephen reported.
+regards,
+Marc
 
-Fix the warning by removing the quote and adjust the method
-documentation accordingly.
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-Fixes: d29f749e252bcd ("net: Fix build failure with 'make mandocs'.")
-Link: https://lore.kernel.org/linux-next/20220503073420.6d3f135d@canb.auug.org.au/
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Cc: Dave Jones <davej@redhat.com>
-Cc: Randy Dunlap <randy.dunlap@oracle.com>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Pavel Begunkov <asml.silence@gmail.com>
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
----
- net/core/dev.c | 19 +++++++------------
- 1 file changed, 7 insertions(+), 12 deletions(-)
+--uxlmfeeoboac3pfs
+Content-Type: application/pgp-signature; name="signature.asc"
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index d127164771f222..b5273f820ca840 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4098,18 +4098,13 @@ struct netdev_queue *netdev_core_pick_tx(struct net_device *dev,
-  *	guarantee the frame will be transmitted as it may be dropped due
-  *	to congestion or traffic shaping.
-  *
-- * -----------------------------------------------------------------------------------
-- *      I notice this method can also return errors from the queue disciplines,
-- *      including NET_XMIT_DROP, which is a positive value.  So, errors can also
-- *      be positive.
-- *
-- *      Regardless of the return value, the skb is consumed, so it is currently
-- *      difficult to retry a send to this method.  (You can bump the ref count
-- *      before sending to hold a reference for retry if you are careful.)
-- *
-- *      When calling this method, interrupts MUST be enabled.  This is because
-- *      the BH enable code must have IRQs enabled so that it will not deadlock.
-- *          --BLG
-+ *	This method can also return positive errno code from the queue
-+ *	disciplines (including NET_XMIT_DROP).
-+ *
-+ *	Note that regardless of the return value, the skb is consumed
-+ *	anyway, so it is currently difficult to retry sending to this
-+ *	method.
-+ *
-  */
- int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
- {
+-----BEGIN PGP SIGNATURE-----
 
-base-commit: 0530a683fc858aa641d88ad83315ea53c27bce10
--- 
-An old man doll... just what I always wanted! - Clara
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmJw5CwACgkQrX5LkNig
+012WTAgAqcQ9+pnG2CPLJp4EWZyVr5g4FuCaaukAX99H+VHhFatrxEtj7dkLq9CN
+OGoyx/blkxfzxO6HlpKWD7qs4jgAUG5JuZDxinEhoYDUU7fvMFmyvGZI2ZXoKx2Q
+UvdygIyw4173BTjp72xIQGMM9S2rhbbSo2+aLl+EkgO4TnSWzJWvFbv7fLOa+lGz
+kUctfHsFxAeoW5gNzPKk3YRg8hyLx69EHyjrSeBst84d8vZW3Cenw03YuWx65DoC
+cyK3usWCPtkVBTGzmKiYOlGYBvWYh3h2bQpkVkmLU5F+3cLqraxh3rrpB0XjSsg7
+PzFmWzzK2JdejS5KrAbXxyZfl00EGg==
+=70Nk
+-----END PGP SIGNATURE-----
 
+--uxlmfeeoboac3pfs--
