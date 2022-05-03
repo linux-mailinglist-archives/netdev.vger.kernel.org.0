@@ -2,105 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B15EC519000
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 23:22:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CA11518FF2
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 23:22:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240664AbiECVUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 17:20:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33168 "EHLO
+        id S242808AbiECVVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 17:21:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229689AbiECVUw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 17:20:52 -0400
-Received: from mail-40134.protonmail.ch (mail-40134.protonmail.ch [185.70.40.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0365640915
-        for <netdev@vger.kernel.org>; Tue,  3 May 2022 14:17:18 -0700 (PDT)
-Date:   Tue, 03 May 2022 21:17:12 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
-        s=protonmail2; t=1651612636;
-        bh=/0vA9ZHk4nsZ0nCXCjLXR4yS03kjJuP+2lBwjcWkdXE=;
-        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
-         References:Feedback-ID:From:To:Cc:Date:Subject:Reply-To:
-         Feedback-ID:Message-ID;
-        b=aJ1ZgPcJ65nOsqK7ExE22Smle/lqrYGbDdj6OPcm39fYQWRKkRMQR+GP5Eh3dn0ml
-         CN0YoHydSjz6UTrdfC/8UYeH1ImXW6HU6vI1EvXdhGnMX/47c4d0uOw+zEwVHd7orf
-         h7d6LByhwtn1cqScJGYsp3sn3NCIxp2MuQmo91KqbY3q4NGfFBHED5deH0YqeAA/Y4
-         96B2+13mb9I4Hdh9gpzK7RQbFAE7O4K+2tQzwIXtrTVz2h9ZBuSW38zEALj5aB3JvG
-         EUifxFReuyQuYuPlaJkukVq5MjzSuotz5ZPZduw+ClRF33CdmhNVifSN1AughSGNsP
-         nIkJFvhNd+ASQ==
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Song Liu <songliubraving@fb.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: Re: [PATCH v2 bpf 00/11] bpf: random unpopular userspace fixes (32 bit et al)
-Message-ID: <20220503211001.160060-1-alobakin@pm.me>
-In-Reply-To: <CAADnVQJJiBO5T3dvYaifhu3crmce7CH9b5ioc1u4=Y25SUxVRA@mail.gmail.com>
-References: <20220421003152.339542-1-alobakin@pm.me> <CAADnVQJJiBO5T3dvYaifhu3crmce7CH9b5ioc1u4=Y25SUxVRA@mail.gmail.com>
-Feedback-ID: 22809121:user:proton
+        with ESMTP id S242775AbiECVVf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 17:21:35 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E84F40A37
+        for <netdev@vger.kernel.org>; Tue,  3 May 2022 14:17:54 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id r11so10404232ybg.6
+        for <netdev@vger.kernel.org>; Tue, 03 May 2022 14:17:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JJYf1HdtGbA9A9BBtbzwA8c5hbVd5d/CHGwQN7JwJ7U=;
+        b=sR57+94S8K2MSBxIbfdVC2p1Sv5Z9xP0F60MBr2TtfFdVbe5aMktduW8o4oLoKUN7N
+         xyko9XOV6IEoiuIXU2CcOmq8e5QM3C0m+WrlBv4DwwDJ3w0sa7eNEHSwnxV6upXlC5Ga
+         5j+5Ls4BlLdjacOWYg2YcOM/xcYChlNvdOU+ZEFseusk9RWFvHHRad0/5oLcJScm2n+d
+         USV+gPMGOwb/GB9CY3LpNXZ8Ns7Z3sUdJ0/5EmhjLe/6ue7fD73O/L5Ms8lqiNTKDgWK
+         fZaC7dmfLlez40DJLF0QzWO/WuX1+AweXnMf9UyolcAAhJJxuO2B/yb7nftvYiYOlYz1
+         04Eg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JJYf1HdtGbA9A9BBtbzwA8c5hbVd5d/CHGwQN7JwJ7U=;
+        b=TQ3DTnHm5dSRqqHzMw4jhzBFpwKG4mZuhQiwBthgpfYcNiEnbZEn2su1GJo0a08a/6
+         35oDAPBMbSltOf+19AIp8DZYk2TPoQn9w2k2atmU/VyESXRG9ssa5OEOHLm0Mccc+Ss1
+         u+9mRz+ClpM3dHI6me76tUEntNKHMBVEnHoMzmQ81a5Wgru93TilMA0uX/6Uc23FNQWF
+         0l3DO9MecHsVqhvB9zIDsSfa3lx87nMbaMQljK4W0PndUVBB/IfrY/xa0iJQuiJalr16
+         UEoj5PbaeKe1FmYtgLEChP357Sef9uCmYrvo4lTTmrQOtPYfGYPDOcVMq9lxPPkn3qdA
+         f5LQ==
+X-Gm-Message-State: AOAM531Sn9kCmCJoBjI0j5Zv77MOB508D0UB3d3CStjbxpDYywV81GMf
+        zMgSF8Vf26+zVthf4GEN6kyN1S+SGaK22KnWeuFw0PaQXd3X2E7k
+X-Google-Smtp-Source: ABdhPJylOl26DLDExxtzn768hdr7IU/TnhArLsFIfmrQkxdHHXER15nBfzJzN7nmMPEqp/ZCVdxtFKYj9EUWWm8xss4=
+X-Received: by 2002:a25:ba50:0:b0:649:b5b2:6fca with SMTP id
+ z16-20020a25ba50000000b00649b5b26fcamr6272154ybj.55.1651612673190; Tue, 03
+ May 2022 14:17:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <a5fb1fc4-2284-3359-f6a0-e4e390239d7b@I-love.SAKURA.ne.jp> <165157801106.17866.6764782659491020080.git-patchwork-notify@kernel.org>
+In-Reply-To: <165157801106.17866.6764782659491020080.git-patchwork-notify@kernel.org>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 3 May 2022 14:17:42 -0700
+Message-ID: <CANn89iLHihonbBUQWkd0mjJPUuYBLMVoLCsRswtXmGjU3NKL5w@mail.gmail.com>
+Subject: Re: [PATCH v2] net: rds: acquire refcount on TCP sockets
+To:     patchwork-bot+netdevbpf@kernel.org
+Cc:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        syzbot <syzbot+694120e1002c117747ed@syzkaller.appspotmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        linux-rdma <linux-rdma@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date: Wed, 20 Apr 2022 17:40:34 -0700
-
-> On Wed, Apr 20, 2022 at 5:38 PM Alexander Lobakin <alobakin@pm.me> wrote:
+On Tue, May 3, 2022 at 4:40 AM <patchwork-bot+netdevbpf@kernel.org> wrote:
 >
-> Again?
+> Hello:
 >
-> -----BEGIN PGP MESSAGE-----
-> Version: ProtonMail
+> This patch was applied to netdev/net.git (master)
+> by Paolo Abeni <pabeni@redhat.com>:
 >
-> wcFMA165ASBBe6s8AQ/8C9y4TqXgASA5xBT7UIf2GyTQRjKWcy/6kT1dkjkF
-> FldAOhehhgLYjLJzNAIkecOQfz/XNapW3GdrQDq11pq9Bzs1SJJekGXlHVIW
-
-ProtonMail support:
-
-"
-The reason that some of the recipients are receiving PGP-encrypted
-emails is that kernel.org is providing public keys for those
-recipients (ast@kernel.org and toke@kernel.org specifically) via WKD
-(Web Key Directory), and our API automatically encrypts messages
-when a key is served over WKD.
-
-Unfortunately, there is currently no way to disable encryption for
-recipients that server keys over WKD but the recipients should be
-able to decrypt the messages using the secret keys that correspond
-to their public keys provided by kernel.org.
-This is applicable both to messages sent via the ProtonMail web app,
-and messages sent via Bridge app.
-
-We have forwarded your feedback to the appropriate teams, and we
-will see if we can implement a disable encryption option for these
-cases. Unfortunately, we cannot speculate when we might implement
-such an option.
-"
-
-Weeeeeird, it wasn't like that a year ago.
-Anyway, since it's address specific and for now I observed this only
-for ast@ and toke@, can I maybe send the series adding your Gmail
-account rather that korg one? Alternatively, I can send it from my
-Intel address if you prefer (thankfully, it doesn't encrypt anything
-without asking), I just didn't want to mix personal stuff with corp.
-
+> On Mon, 2 May 2022 10:40:18 +0900 you wrote:
+> > syzbot is reporting use-after-free read in tcp_retransmit_timer() [1],
+> > for TCP socket used by RDS is accessing sock_net() without acquiring a
+> > refcount on net namespace. Since TCP's retransmission can happen after
+> > a process which created net namespace terminated, we need to explicitly
+> > acquire a refcount.
+> >
+> > Link: https://syzkaller.appspot.com/bug?extid=694120e1002c117747ed [1]
+> > Reported-by: syzbot <syzbot+694120e1002c117747ed@syzkaller.appspotmail.com>
+> > Fixes: 26abe14379f8e2fa ("net: Modify sk_alloc to not reference count the netns of kernel sockets.")
+> > Fixes: 8a68173691f03661 ("net: sk_clone_lock() should only do get_net() if the parent is not a kernel socket")
+> > Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+> > Tested-by: syzbot <syzbot+694120e1002c117747ed@syzkaller.appspotmail.com>
+> >
+> > [...]
 >
-> Sorry I'm tossing the series out of patchwork.
+> Here is the summary with links:
+>   - [v2] net: rds: acquire refcount on TCP sockets
+>     https://git.kernel.org/netdev/net/c/3a58f13a881e
+>
+> You are awesome, thank you!
+> --
+> Deet-doot-dot, I am a bot.
+> https://korg.docs.kernel.org/patchwork/pwbot.html
+>
+>
 
-Thanks,
-Al
+I think we merged this patch too soon.
 
+My question is : What prevents rds_tcp_conn_path_connect(), and thus
+rds_tcp_tune() to be called
+after the netns refcount already reached 0 ?
+
+I guess we can wait for next syzbot report, but I think that get_net()
+should be replaced
+by maybe_get_net()
