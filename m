@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EDE495183F1
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 14:08:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0171C51840E
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 14:14:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235099AbiECMMG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 08:12:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56516 "EHLO
+        id S235137AbiECMST (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 08:18:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234572AbiECML6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 08:11:58 -0400
-Received: from EUR03-VE1-obe.outbound.protection.outlook.com (mail-eopbgr50073.outbound.protection.outlook.com [40.107.5.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6158237A36
-        for <netdev@vger.kernel.org>; Tue,  3 May 2022 05:08:26 -0700 (PDT)
+        with ESMTP id S234572AbiECMSS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 08:18:18 -0400
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70079.outbound.protection.outlook.com [40.107.7.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5936332EED
+        for <netdev@vger.kernel.org>; Tue,  3 May 2022 05:14:46 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VVkC7AAi/szeF4UY6Zv2/0JUl16dwicWwjWeBZszozi9kj/RwzmDKTy+9x+mSJH3BDP9dGVVVbKTp5BHEEWX3UhlLRU9H0j3rgIBkJOkj2rZLIdiEdsp4iRhfaUgAKeyyU6ybuZidVM7EF1fWTbK+e0vJ5dO8CDKhnjJxdShETwn0LKuou7EigA2xUWT4tWhCy4yYFxknkz3qiq4NG0w7wkB5og30hZHTLbIMfIfPYkfpCcBVHVsOF4JCcankqk7Ya387fwP7WcNT/kLwFszM5W47ipJ0+PvW45cuY5BDMybhc1Pj+4wJX1m4GW0Kf0tUdkzTlTK8MbYSHRT5Zf41Q==
+ b=dHlcdK6FagvFbRf80MU9FVhKyl8m3xhOfzKoK27DdYnPpCMxMbzvrIi6dYnq5w94/wjXZcI66yQ0ZXuWwe/7r8gw8Mhtcq0xCAMcJNGOzaNpzYmKOVAYqMLdPDDENbg3SPliAm55m9TP0keiCvN/TTzK6zx1vEwTx5TPfmlmeqlXa5HCi+1bEo2jMEhBcc4hgGJJFLMNT3oB3Vw12HTi8j8iI1H8Zin3B9yEeLyQZLyJgouQ97Wlng0D2M246oWDPXkDTXbM/a8ZuGuf+LkFp01g3rG6lp4El/zhwQniGTLlHUslBUYRuoGJbV4aVcHFRWUUTK4Btt9+SpOFd9p9Aw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iyeUlvmRlwN/Mt0EHsuNHsvjBzBvHIZYbGuH8RuyErI=;
- b=AIUvynfnRx2C0fgQWesh92yLm40Peq2GKGd/WZCkIsKZncp61xXgq2RhZVFZpXvY5aVlRIfL+qQZ6wOdEzlvfUJbCbUzjob8n/3Ju63mz0/hi1aFwzBATDSzql82TIhawmhMb7/NTNqhJ32nKAKgTs7tknPkpg/wZq51EIPXCY9C0bbZ4G/0/seibEmHLzHG902AOKoxWl4Vl6oPMKPeGoSTYtv0V3wtGTyrC/KIWfCmUQ8jS4xlVeZQerOK35gA+U/KKxJaV+3cV7JSHU+otnCH8F8gsC4AKXU7/1CtLD170uTHb9tLvh6SX89+0exJeE0/EOCUCy+qU0JQRChrXg==
+ bh=v0t21sZ5f9w4dTHhmCqHKrtP/ZwfJQJpSINlDM1+cVo=;
+ b=VvcRfamKyCQscmIqa6IPgZ0XHnILcV18HGudbXHmRUJCk4xXrbW6IWO6uz63LZMctGDizxmMbVcDYWCdrI2HKqMCr0OdACnJrbtRQUg++b6VCOAWlgMDEV6k49COCE+UlbzD4z0INTJBO+gyesbzjrjOCsRr8kjXQT4VjCSsa0vuYVen/M41hn7hm+h8i/chUuyvE4CtRhFZS+JOUIRLFQY/Bl3480yq0Nbob+9/ZdtOSaXln43tgRS6oCQPQ1YbdAEcqJxce/fQohFiSdIml7BnNraoqjybA8PzhxbKizpec9ETKO5LhjpYEAhNipg2ZR+YgeGuskJYPv9bHfC4/Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iyeUlvmRlwN/Mt0EHsuNHsvjBzBvHIZYbGuH8RuyErI=;
- b=s8BDQWOa7QAVBzEVeyrc1NOVwEnCa1nskzB/aEdTUNhpZCfUdVUaqGxsSK0Y5HaNAWi+N2heUfuxGHdbsQ3CYdGxqNx57PRGmuNx+lJ5ljGe3/2JzSpZR5aNilHdQ4+wTpaSClTN3Tqk+d4/0SQ0ZGls17FGsCl5cmSDkM3Fkgg=
+ bh=v0t21sZ5f9w4dTHhmCqHKrtP/ZwfJQJpSINlDM1+cVo=;
+ b=NyNG7ifKHdslL3MHct/t0H3LvIWxm9iEQvfDTZE1GCwWeJI4Hc9XQbqU52zriVd+9PrmdO400JLGreMXIu3/sDJO/9YrpOLDqOghq4fDPBEPw4rYSCqx5Oyg1K2fgZPk9hlml4ZmE7KdwLkqhBZczHeQm/H0rV91tBhC2bAvmXU=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from AM0PR04MB5121.eurprd04.prod.outlook.com (2603:10a6:208:c1::16)
- by DB6PR0402MB2743.eurprd04.prod.outlook.com (2603:10a6:4:95::8) with
+ by HE1PR0401MB2585.eurprd04.prod.outlook.com (2603:10a6:3:87::12) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.14; Tue, 3 May
- 2022 12:08:25 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.24; Tue, 3 May
+ 2022 12:14:42 +0000
 Received: from AM0PR04MB5121.eurprd04.prod.outlook.com
  ([fe80::d42:c23c:780e:78eb]) by AM0PR04MB5121.eurprd04.prod.outlook.com
  ([fe80::d42:c23c:780e:78eb%4]) with mapi id 15.20.5206.024; Tue, 3 May 2022
- 12:08:25 +0000
+ 12:14:42 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -53,70 +53,69 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         UNGLinuxDriver@microchip.com,
         Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Colin Foster <colin.foster@in-advantage.com>
-Subject: [PATCH net-next 3/3] selftests: net: dsa: symlink the tc_actions.sh test
-Date:   Tue,  3 May 2022 15:08:04 +0300
-Message-Id: <20220503120804.840463-4-vladimir.oltean@nxp.com>
+        Colin Foster <colin.foster@in-advantage.com>,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net] selftests: ocelot: tc_flower_chains: specify conform-exceed action for policer
+Date:   Tue,  3 May 2022 15:14:28 +0300
+Message-Id: <20220503121428.842906-1-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220503120804.840463-1-vladimir.oltean@nxp.com>
-References: <20220503120804.840463-1-vladimir.oltean@nxp.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: VI1P195CA0080.EURP195.PROD.OUTLOOK.COM
- (2603:10a6:802:59::33) To AM0PR04MB5121.eurprd04.prod.outlook.com
+X-ClientProxiedBy: VI1PR0202CA0032.eurprd02.prod.outlook.com
+ (2603:10a6:803:14::45) To AM0PR04MB5121.eurprd04.prod.outlook.com
  (2603:10a6:208:c1::16)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 29bb4cc9-3e76-4b3e-4cf8-08da2cfda03a
-X-MS-TrafficTypeDiagnostic: DB6PR0402MB2743:EE_
-X-Microsoft-Antispam-PRVS: <DB6PR0402MB274304F915F98A8CF3DD7DD5E0C09@DB6PR0402MB2743.eurprd04.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: cbb5d95f-1c31-4c0f-c843-08da2cfe80d0
+X-MS-TrafficTypeDiagnostic: HE1PR0401MB2585:EE_
+X-Microsoft-Antispam-PRVS: <HE1PR0401MB25851205D99DA06A1284AA60E0C09@HE1PR0401MB2585.eurprd04.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gwX+2DhjDmZt2u9yv56m7fhbiMAflP38gAAgdy1ou0y/eTSj9XMOob6Pfoc+sfigO2ooHFHK/8gNq6+KQvpgkfbI6M2cXgPrqrZPvyaQ0NgfrzVZbHq6YiqCz2QZ3vWkVTIgN7Oj85+rE6l7tSk05H/CGeYDHpW6HxvjcyJnEpNE1F4IFndpbp7IO96grylrRiXgRNvGUJqM1sfogoxCumgUpVnpcfn7bgNpjrM25VWvi2FFqRtSZ7/hzhiqsShQ70x/8CHS6yuWCyuDuVC+ngV5gkSN/WnW6JdPQepHQL5lz/xGX4ayMLoBpykIoNaaTqllSkupKTrcmgEZZZP8JLv7ipFj3A1k5R5tSAz9Vq2+1Bs5vq6PX68nzeqHiXZ5iOufamyl+0WQ21b0m31iVm4Ei4jmtX1ycBidZlqLad9f6WCemz7+afUc5FMnRIJ4L1QzrAGP6Jvpb75IBdErbCYh5lEKz4nz8BZ2LMYfqynTWLR73PlQ3YcdhvMzhr79N7xxz7xgnijCsPXnyhtJY4y0baYIofmwlpCt8oQDBUwEdSjjukwcA+pQv0lYFte2j9HtAdw0jfxt46NwW3o4YxxNdAxHdcu/8Zjyw9oNvcsBRY52SvOFHcJt+nb8lhLMYmmDhgwmHupK6uYNi23VsznPFzqKV8hRx+1BMAHxm4Hdf/w3Zdf4JTfJfv5+mL7Te4IppCIbLsf6BCin44dwlg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5121.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6666004)(4326008)(36756003)(52116002)(6506007)(66476007)(8676002)(66946007)(66556008)(2906002)(83380400001)(186003)(1076003)(6512007)(26005)(2616005)(44832011)(86362001)(316002)(38350700002)(38100700002)(8936002)(54906003)(7416002)(6486002)(508600001)(6916009)(5660300002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 9sw5y+WuuySgb91g1V0nczcJp/NZPFzwFlzX6KlJ+9qDjAAg2fPDv4+bPyJ5kPFO74MrJCzpl0+i1O5dSfbGHZXEpaCTcrmd+OyYtlRjrqEpwiizW2qdawoqUGoJRMIPbJ7gdKSuTcCKjTKhVZbn3O+HJ/reWNx4CjYiufZPhiRrrCNFR1rgorgYt587SeB/FqG0R6mp6NOQr32CyNTXrcs76LmY6CvMQ1rQVDqF3mL7wg7NE7lWIRudu8RKxbd81JIRzOerCvFtLwmcmH1eTHS8kssNRLbskJlKq23igCLPZBvjwlULDJ9unVgq22FKerFFh9m38A2wE7HmKWCSTdG9VunkcY3TbqACtIPH5MGA1AO26Sv4920dsD1NOF766JMsEd/UDYzmPzimC6B5jtv0LgomgeE80cMseMjUiMJ6vKBKEhZxzAPo/P0s11hNqYxPINkPMUC5ZbjH6qmnoIENSPnnfjBJul7QAk0JTOXCz1Y7q0bopRyXwfBfZ9BsimdZ3QesEH4fKQ2f2h/ZcOye86Y0BTqqUvqgGQLPU6o5QNBNnt6XkIcZ4k0kxd1ARBH/a+EpoSpGAMdoAAlkx6Yv+SofE1JrlaH2uOs+ArVACnesAH5Y/XiMruUf8wv5clsvSCYuftZK8cp0/Ov4XpRz+RCvIrOaOAPUxzSrlgDagjB8ARJzI7MzMO44jRy9AlIZZtx9nBc0SWeS9yQUZ/CIO2kwIF19Mv72m/oAIDWryVwvkYLdPf5FmcZadXZkrqIe/l6Obrgg5p/eJHY1phJ/Q3zRHfsBLeteCvID/+E=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5121.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2616005)(36756003)(186003)(83380400001)(1076003)(6512007)(6916009)(508600001)(26005)(2906002)(44832011)(316002)(7416002)(54906003)(52116002)(5660300002)(6506007)(66476007)(8676002)(66946007)(66556008)(6666004)(38100700002)(38350700002)(8936002)(86362001)(966005)(6486002)(4326008);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?36en1AHxi9PqqIj3+hMA0OhKd0pEeyOONrgxU8xHm8WDMj/DW72hEBIWMwY7?=
- =?us-ascii?Q?5o/kkktRKAS/iycwDPrKe9dUiTl5hZJy+L5W4UBBXadeZuCYd5rIYb+5bU32?=
- =?us-ascii?Q?evSQgbA3mRIhBR1vWi43KzXuHUOkvH0k/csyZXI0xtjBc6SjhJ6zmHNLZfn9?=
- =?us-ascii?Q?RQpvgVSSyV6Dsj3kOBO09VGsYZ385hkYZoOVQUGir23GQbnb5/GAHPqlvlAd?=
- =?us-ascii?Q?n1rPb+KpCtIV+IEn+LePzBs4SaqIhGW0Kboq5Exkke5i1rR76gkiWyRi/TYn?=
- =?us-ascii?Q?d8qvO7SNFpWBgYRtnrgeczIlXmwiksCR06W/GRL81MD3ec9aQqJ2qvVMj9dh?=
- =?us-ascii?Q?HOSGsHXPGvg9a/409MQv04sL2snepk4gfEgVwQaOrBl6+NHgmSZjZVYvJN+1?=
- =?us-ascii?Q?yWk7wpH9DXcEEJd6nRyBu0YVpmHeMH4JSPy07MFQkkV6Hzxwgzuw0DW1CaP8?=
- =?us-ascii?Q?4IFAGy099/ZfKXxzasHP1IntwJplD3NNTtWlGNoIEyxpdIIPRk7Y1on9XLhU?=
- =?us-ascii?Q?xsj7RM05AkqHows4O3HugbW09Avn2JJFW5xjDdJrZPifod35clIQdeWCkQmg?=
- =?us-ascii?Q?OX1hjQcyo1bqALqxprGDnBAgIbkSywXsasOt3DIaktvA6rifrpCcx3HG4zx7?=
- =?us-ascii?Q?0EQZD9wuUUYPrj4pFzN1P6dava8+ZJu2B0AwGPFoXDewi6OhcyP1d/syaUxf?=
- =?us-ascii?Q?hYfzLSZpVa6dgRpm3Xmgc3KaV65hv6l/skRfFo31LqySodjG0/VOi+JRU0PP?=
- =?us-ascii?Q?+E8uJ6JdMQDEF8qKEMs2YNn4Nybun8FtuwTv5GTFyZzpMsxXjK9YWZ5KCMY6?=
- =?us-ascii?Q?8F3u1hP3g49cx65Pq9KO0IoclgFPFoTFBvQduZiD9vNURJD0WxZmXuBB13RA?=
- =?us-ascii?Q?yE6vSfnqU+qZgt8bUJoOadLCGnxddiPzm3ZW3eSrwCMpVC+lYz+I4Xngtojb?=
- =?us-ascii?Q?SPaeAJlUN+KTvvUo+cuoU4bo6ePpnWbsoYtEyNKVNuX+RVbIKOOv8z67b8tQ?=
- =?us-ascii?Q?JxsHlNivq4GBDljjmG3NeukBNDIntR9bminmHFIbnoVXvLMWo4j0QK7Z2j3G?=
- =?us-ascii?Q?ZMN+ilbPqqLhUPvktRNLzFzgax+S9O7WH+XIbiCO1UtUMdKGhmp+8C0MFY7L?=
- =?us-ascii?Q?RnWUtiHUIhhvLYgmk0XnSAEzsKzK7fT58IbF4RwlQB1s+CWT+K/jg7SPhK6W?=
- =?us-ascii?Q?DyYGNfxIVmIt6nKgq95/01bqFcG9H2jULrVHfZFAkSF/Uu3FcAaCa8tccv0Z?=
- =?us-ascii?Q?gOVANtKQffT3zjONX5Jj4XYzS2ViFJoM3YDqJV0BY8/ny1uWEwmvCgpboDV0?=
- =?us-ascii?Q?f/ZyUW51tIcnvLqmLUAwvA7X1gsfU74ND8vRb61VHuJ2jt1LNXOMpPLfPy1p?=
- =?us-ascii?Q?EAgP5FsjMvt4vL7O+dsbr9kAgKTFgEYRJeumRYWPAbSSuzJa9Wxkw2UYehFC?=
- =?us-ascii?Q?xTNSaLDHTOP22P0akMXeSEFEGDR6Atei0JCJtwG7U7/yd2PL7hqpzy0Sv1ll?=
- =?us-ascii?Q?/ILmEA5kvxRG3abtbHkZCQQL3e1QVBEwHbhkRaGnTS/zw3vlTxzCRcQjj6eO?=
- =?us-ascii?Q?Sii64Pu4Ruri4fXUIpdy5PHh/QuHMDwnjcr8aKFzo6PTFqpHo1dIfyoPtWlO?=
- =?us-ascii?Q?VSlVVLP4NrFE+fv5X2tCskKFFNyr/ok7PxSnSlzZ6s/bhWDCPSeHfg2Tqa8L?=
- =?us-ascii?Q?szsKyB+5cQqQ+gzOhMGV9PLlP7EUPjzh69p+ucYHReQclmxFuYBHXF4vEWpr?=
- =?us-ascii?Q?qLvKWKqlXDOle2Pw5JvHokVwLj6G9cU=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?DbPWDPXbSwji1kl3CrgyEKtOlEtN9kf9v7bvQHRsPmeBFKKr07mZjPIgZcQv?=
+ =?us-ascii?Q?TNbHob2De68BiyYRAHNY9bE4KaIJnYa24ZInGYUh5Mq1VydbJJxnKkRh351M?=
+ =?us-ascii?Q?yTBRAqYTCALxGOlP/LI6dRJRQnDrkZ+Y0n5oeBcQLvgnOOJEXOJVu1cQ0Nbx?=
+ =?us-ascii?Q?Xp0IY2D2MGYc0I0OBYyR5JgEa8kLkixeR5sp1fA+E6iMp5UBN6FncAaGwvl0?=
+ =?us-ascii?Q?YKKMLLwoEX+eJBRgmxpIsEcylFq+2iEbKjhcjnFvWj5Er2b7k5IMkTF7HOaj?=
+ =?us-ascii?Q?sjETgZ6y33AZItp4wRlnhSK8EU6ViFUJBeA/PpvNwnvt3pyGtEjNtv6Lr9Fu?=
+ =?us-ascii?Q?TnctffI+QOjsPWjwhUDmrs32zCWlatAqw/bzkTvhBqJjyJ0xYNolTEOGpOQ8?=
+ =?us-ascii?Q?RF//3N0fftizJsz4oSQexc9o6CoHW88IxKkXUcPotSs3+A33eCLzr8TNCBRZ?=
+ =?us-ascii?Q?TNfui4r3W10cuIAWLMU97p1uQhUbg/7Ltz7RoreSvXSA4k/m/usRQLWntL0B?=
+ =?us-ascii?Q?ASlcZQOrNdaEmGx3gU2v7DKUgXnuwM6meVT0wAIStwguS+Wit8CBTkfrvoQF?=
+ =?us-ascii?Q?FBdh5iTcIH8IcO2LcyKHv2alhB2+kWPdJFD4cG3YUhzbnnJ51cDqC8dGFVwC?=
+ =?us-ascii?Q?Zp4W90xO2KQ+AH1MQDTSZy6ngbQidzFUL2zhg5/Iyh8wgmcfOJlmULJ9b+iL?=
+ =?us-ascii?Q?2giImWsuTkqODDJm3jWU3J9acEUBcmkGJuz3lYZkzE+epIRNVf7EhomLmRHn?=
+ =?us-ascii?Q?JA9DTURTsUdDBDif2HOSUtxZO5SwR1SweonXzEU//dakvUZsHvhYdPhsmQnz?=
+ =?us-ascii?Q?DjNhmNP/19DiIl7zAobfPI6q0H7sRLrnbvZgTBPTBPtZmRnI1QvypnHyaM/0?=
+ =?us-ascii?Q?gzcOFT8pVFHGYbfGlEoEWYjMmHUi41Ut47Sx5cPeIABnJUZ4zeAbuV3+EfFy?=
+ =?us-ascii?Q?yPU5TRpEX8T4C+3gRJJufDehhef8FCB1vl65Em5Ozc6dhuqfmJyx5CiEdLMd?=
+ =?us-ascii?Q?/SGy0a5jDvv7z6SRuaBNdMnaq9rWNc7u9juMp1ZIzn7WWXfPSyWPTZ+0WIWY?=
+ =?us-ascii?Q?TG0qK6kA3uDJ7RqSUBY54BiIYLWSTsfepnnHupD7Nyk+p1hG64ZETQF3Q81+?=
+ =?us-ascii?Q?jhHAcWPQWq/I99Qgf/ZgD2ecqW6KG00SPhJ7vQtbv9XEGCi7b7eV+4lIUgYe?=
+ =?us-ascii?Q?yItqe4bEr1PyQvP9nw4ZUeauZM2eNk1Q3Vl4soCq6QLsXwJrD3Aq6hI4XU7Q?=
+ =?us-ascii?Q?XFmCm2verP/piFzm/9TszYPdkAoc5lliFzxYQ/4Y9QAbfvO7wvDRUUQWqpZ7?=
+ =?us-ascii?Q?LkaruheIUnJMVPWU81YoPZIZkc66AKzzdZEV/M5uocd6FeeZmuTVyBte8xLd?=
+ =?us-ascii?Q?jgPPuSy0edGi9WVH3IxMHjX2rdiihzqkcyymFXsIx0MHJtBQlVskhu+J2MnP?=
+ =?us-ascii?Q?y9Nsf8ahMfP8GSoxocwcb3o4yWVXdjua5wTIYIOLVhjHTf/tiK5MWyN+d8PM?=
+ =?us-ascii?Q?mMG0HS1SKTISeYllxNedg+Or490MxSpdqyOfyv8AIywL+2QgfFGDN7/0vm4o?=
+ =?us-ascii?Q?AkPv4bQLeTpvJfZzW0HnFjssAPvwgg9blU0LbqE4i6Z4byPIXHKzSAb5lFUE?=
+ =?us-ascii?Q?oHSYcM/u2l/a034BdwliN0bw86f8XEa0bD0lyktQbvfxrQvFMSOY0hyG1K3U?=
+ =?us-ascii?Q?k+fEf6WHPNZZ97NuHvobdingLs5n2v04MM3wicPKJEZgMK8wLBIODrTK+i29?=
+ =?us-ascii?Q?48m2rXoCRy5CusvtBnB3q8tgrqJz4h4=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 29bb4cc9-3e76-4b3e-4cf8-08da2cfda03a
+X-MS-Exchange-CrossTenant-Network-Message-Id: cbb5d95f-1c31-4c0f-c843-08da2cfe80d0
 X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5121.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 May 2022 12:08:25.5057
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 May 2022 12:14:42.2703
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: dxQcUK+5Z/WzM5Abn6kAUikfNyxNriOIhRFzrDoghHFsRteK+C28B10u0oG0tCl9v0OAKlh3idlSSIP81ECHzA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0402MB2743
+X-MS-Exchange-CrossTenant-UserPrincipalName: 22dsh4rfDcVg1nsAiH8Ic9wpYepGXrGMmV6qrzo4zgjfxtiEj/oSmUkpiB7BZT8gnrP9Mo0XJ47/ErCES+8RPw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0401MB2585
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -127,37 +126,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This has been validated on the Ocelot/Felix switch family (NXP LS1028A)
-and should be relevant to any switch driver that offloads the tc-flower
-and/or tc-matchall actions trap, drop, accept, mirred, for which DSA has
-operations.
+As discussed here with Ido Schimmel:
+https://patchwork.kernel.org/project/netdevbpf/patch/20220224102908.5255-2-jianbol@nvidia.com/
 
-TEST: gact drop and ok (skip_hw)                                    [ OK ]
-TEST: mirred egress flower redirect (skip_hw)                       [ OK ]
-TEST: mirred egress flower mirror (skip_hw)                         [ OK ]
-TEST: mirred egress matchall mirror (skip_hw)                       [ OK ]
-TEST: mirred_egress_to_ingress (skip_hw)                            [ OK ]
-TEST: gact drop and ok (skip_sw)                                    [ OK ]
-TEST: mirred egress flower redirect (skip_sw)                       [ OK ]
-TEST: mirred egress flower mirror (skip_sw)                         [ OK ]
-TEST: mirred egress matchall mirror (skip_sw)                       [ OK ]
-TEST: trap (skip_sw)                                                [ OK ]
-TEST: mirred_egress_to_ingress (skip_sw)                            [ OK ]
+the default conform-exceed action is "reclassify", for a reason we don't
+really understand.
 
+The point is that hardware can't offload that police action, so not
+specifying "conform-exceed" was always wrong, even though the command
+used to work in hardware (but not in software) until the kernel started
+adding validation for it.
+
+Fix the command used by the selftest by making the policer drop on
+exceed, and pass the packet to the next action (goto) on conform.
+
+Fixes: 8cd6b020b644 ("selftests: ocelot: add some example VCAP IS1, IS2 and ES0 tc offloads")
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- tools/testing/selftests/drivers/net/dsa/tc_actions.sh | 1 +
- 1 file changed, 1 insertion(+)
- create mode 120000 tools/testing/selftests/drivers/net/dsa/tc_actions.sh
+ tools/testing/selftests/drivers/net/ocelot/tc_flower_chains.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/drivers/net/dsa/tc_actions.sh b/tools/testing/selftests/drivers/net/dsa/tc_actions.sh
-new file mode 120000
-index 000000000000..306213d9430e
---- /dev/null
-+++ b/tools/testing/selftests/drivers/net/dsa/tc_actions.sh
-@@ -0,0 +1 @@
-+../../../net/forwarding/tc_actions.sh
-\ No newline at end of file
+diff --git a/tools/testing/selftests/drivers/net/ocelot/tc_flower_chains.sh b/tools/testing/selftests/drivers/net/ocelot/tc_flower_chains.sh
+index 7e684e27a682..4401a654c2c0 100755
+--- a/tools/testing/selftests/drivers/net/ocelot/tc_flower_chains.sh
++++ b/tools/testing/selftests/drivers/net/ocelot/tc_flower_chains.sh
+@@ -190,7 +190,7 @@ setup_prepare()
+ 
+ 	tc filter add dev $eth0 ingress chain $(IS2 0 0) pref 1 \
+ 		protocol ipv4 flower skip_sw ip_proto udp dst_port 5201 \
+-		action police rate 50mbit burst 64k \
++		action police rate 50mbit burst 64k conform-exceed drop/pipe \
+ 		action goto chain $(IS2 1 0)
+ }
+ 
 -- 
 2.25.1
 
