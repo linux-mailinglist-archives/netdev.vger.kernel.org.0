@@ -2,111 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 797B751837D
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 13:49:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A650A518382
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 13:50:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234279AbiECLwk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 07:52:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57834 "EHLO
+        id S234912AbiECLyY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 07:54:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234879AbiECLwg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 07:52:36 -0400
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 465D335A92
-        for <netdev@vger.kernel.org>; Tue,  3 May 2022 04:49:04 -0700 (PDT)
-Received: by mail-oi1-x231.google.com with SMTP id y63so17896413oia.7
-        for <netdev@vger.kernel.org>; Tue, 03 May 2022 04:49:04 -0700 (PDT)
+        with ESMTP id S234878AbiECLyX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 07:54:23 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C9F511A39
+        for <netdev@vger.kernel.org>; Tue,  3 May 2022 04:50:51 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id y3so32871142ejo.12
+        for <netdev@vger.kernel.org>; Tue, 03 May 2022 04:50:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=bSXV9PrUUGhVycOu/J4fBj5chKdIrO0Ql5olYi0vSd8=;
-        b=EhLk4QD8o470moC0OQtXUJEkeGOuhJP7m3BdSFzrKvpKeHc++CQ5VcBNB8p+t/+ULb
-         mUs0X7+NoyUX71r4F4Q6AqvPde/whddEC8nQgV7/xuf543eAWAourHoKkPFOJIVkJ7f5
-         y5S8nlT5aC3a9dDgieTz47gxlMOYr7Fq+aor/UlSZpj5j4euCtAGzUU6xKKogQ7B2GID
-         bCDIgFY52vnw19sjxzyI8JFWMW3iwMEo4+N/DPmGXgTUmP0vrhPGU2Yb7CNN3YJ0BJxk
-         v0UUrXC5KaM/A6D9gMwaP6XrN3FgYA8EFuKmgSEuQVmzC+EFHcPsMnGdc4JYv7c99/Go
-         txgQ==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Ih/ckUFePSBmNKQ4wfEcW+kXTymZe6omnd8bqMwTzbU=;
+        b=vQbGs7HqPX5hkBXZ4kaKvK86yhyrxaELC2ypOHgX6amLyWX0ZLDnJtKQOvoYDx87Ie
+         7X40eoIVECsILJvqYVoE4sYCx1+2MwtuxnS+3mv7xeNB+t0Bg6dtYskrmsu80APQC3Vl
+         PESqXFi88lcUGXoRYM626Gk9VYLtcRx4gndsajUNtemFNk4Im2ea1PgdneRcGMTfDZFi
+         rFuc04P39bsDEkloscYj/8qnwLVz/YQQ/6LJNcTKMyWfVnQI2fWqHmCdbbWINbK6PPd1
+         SQJltIxDybOAlsEP7O16MQe0t81me/KJSRu2PWtEnXHisWoDOr3DVdrOIFsDG15yvUv6
+         xvvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=bSXV9PrUUGhVycOu/J4fBj5chKdIrO0Ql5olYi0vSd8=;
-        b=QUOXAaoNX5pHafe5xb9DrXSJ0C1HPp+y6PSmr7boDAkT7JBzJD9Xhr5WE8uDbzuL9c
-         yFLAmKB5xnhlPwYjxQ07sO3bdq9fCnnJ5gj/ct7/cIkvlnRyyi+hdZO2IlUOAE0R2Kuh
-         PFXuMrvv1bGUex1BREObzuZUALNtAJK8BadAnhKHygkI3YvTHvXUcDSAIWJA+jdySGdn
-         ncjbeT1AouiU+6iWTasByULoTYzWSPK47iLTt/lFBEbFiG6jxnUwXoZbNyKlgvNyHXxT
-         cYSWXr32TTChwyZKdjiZuf1XjcQhEpx/X/Z0nprt/I/lMSqGp7DyhJb0Mx2r0ZNzas0a
-         kYDg==
-X-Gm-Message-State: AOAM531u8/NkqmkP95HXzu5mzIhUwX3UZjrld80FPjJailfhF3yeECFQ
-        4M82I0UhtP5bnZ8OuxYjqBWusmsLGyCXqXyWrJdvCQ==
-X-Google-Smtp-Source: ABdhPJwyBTRJk8+J4ioWmZvVzAmOxgN9NvzBheRx+KThLSEpiOI0+072NTxNv0o0eTMZHbWGo3hi4tpUZTNUUEX+OPQ=
-X-Received: by 2002:a05:6808:f0f:b0:326:29af:dd2d with SMTP id
- m15-20020a0568080f0f00b0032629afdd2dmr1587521oiw.211.1651578543310; Tue, 03
- May 2022 04:49:03 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Ih/ckUFePSBmNKQ4wfEcW+kXTymZe6omnd8bqMwTzbU=;
+        b=OyTkAG7L3QdhF9G5j3BU1DleyGEySVA+9vL04SsU4lPSeIKRN/R2eRqypO57+V1nTR
+         JLMreAgoKaLIQob5GgHJyO04TqSc+ZMvlEFWE9h1XEVjvmgdOTKMNxM6cnWv6+ebCV+P
+         rQfNx3sA9HQ+LUIQ5bHI4Ao6wEdG9LfxiWqBIWa8qYlmJgmir1xHr0iKO3IGv7waP//d
+         NnS4ca0YD4Qxz87HJTfyryELxHF0zU4oCgLD5HoYoPwDeBRN/3jHp9uXTVUwAoroXJ34
+         2tT/cRAR+SCrPjqHfZIVH4z6S3gyE5U5Nn1ptEtysn1AV1ezIM9jB7F0WappiyCu4pQ7
+         MAqg==
+X-Gm-Message-State: AOAM530k/sTVr1rI9YQA9nCUGeoSYQEN08TTbgwCcjqUJAB2ulmiV0Ls
+        hXw5nYLlK5FUv22q6eB2VoHw0A==
+X-Google-Smtp-Source: ABdhPJyQprW8f+96QHNflfHyUeqhDWbA2+9ZzCHMvoFFwihhF1wvvspxofZ7KeFe9xZmsxL78jZC9Q==
+X-Received: by 2002:a17:906:a454:b0:6f3:98ab:473d with SMTP id cb20-20020a170906a45400b006f398ab473dmr15032220ejb.423.1651578650206;
+        Tue, 03 May 2022 04:50:50 -0700 (PDT)
+Received: from [192.168.0.202] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id u21-20020aa7d0d5000000b0042617ba63aasm7794131edo.52.2022.05.03.04.50.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 04:50:49 -0700 (PDT)
+Message-ID: <5d3bccb5-2b0e-9054-3302-d6962da0fee4@linaro.org>
+Date:   Tue, 3 May 2022 13:50:48 +0200
 MIME-Version: 1.0
-References: <000000000000264b2a05d44bca80@google.com> <00000000000070561105dbd91673@google.com>
-In-Reply-To: <00000000000070561105dbd91673@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Tue, 3 May 2022 13:48:52 +0200
-Message-ID: <CACT4Y+aV-3dT7QDSs1a+yuJ_AZHJZQYDEK4fKwC-ZjsP+65LJg@mail.gmail.com>
-Subject: Re: [syzbot] WARNING in cpuset_write_resmask
-To:     syzbot <syzbot+568dc81cd20b72d4a49f@syzkaller.appspotmail.com>
-Cc:     cgroups@vger.kernel.org, changbin.du@intel.com,
-        christian.brauner@ubuntu.com, davem@davemloft.net,
-        edumazet@google.com, hannes@cmpxchg.org, hkallweit1@gmail.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        lizefan.x@bytedance.com, longman@redhat.com, mkoutny@suse.com,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        tj@kernel.org, yajun.deng@linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-15.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/2] dt-bindings: net: adin: document adi,clk_rcvr_125_en
+ property
+Content-Language: en-US
+To:     Paolo Abeni <pabeni@redhat.com>, Nate Drude <nate.d@variscite.com>,
+        netdev@vger.kernel.org
+Cc:     michael.hennerich@analog.com, eran.m@variscite.com,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org
+References: <20220429184432.962738-1-nate.d@variscite.com>
+ <a11501d365b3ee401116e0f77c16f6c2f63ef69b.camel@redhat.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <a11501d365b3ee401116e0f77c16f6c2f63ef69b.camel@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 4 Apr 2022 at 21:25, syzbot
-<syzbot+568dc81cd20b72d4a49f@syzkaller.appspotmail.com> wrote:
->
-> syzbot suspects this issue was fixed by commit:
->
-> commit d068eebbd4822b6c14a7ea375dfe53ca5c69c776
-> Author: Michal Koutn=C3=BD <mkoutny@suse.com>
-> Date:   Fri Dec 17 15:48:54 2021 +0000
->
->     cgroup/cpuset: Make child cpusets restrict parents on v1 hierarchy
->
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=3D142f17f770=
-0000
-> start commit:   e5313968c41b Merge branch 'Split bpf_sk_lookup remote_por=
-t..
-> git tree:       bpf-next
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=3Dc40b67275bfe2=
-a58
-> dashboard link: https://syzkaller.appspot.com/bug?extid=3D568dc81cd20b72d=
-4a49f
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=3D13bb97ce700=
-000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=3D12062c8e70000=
-0
->
-> If the result looks correct, please mark the issue as fixed by replying w=
-ith:
->
-> #syz fix: cgroup/cpuset: Make child cpusets restrict parents on v1 hierar=
-chy
->
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisect=
-ion
+On 02/05/2022 11:03, Paolo Abeni wrote:
+> Hello,
+> 
+> On Fri, 2022-04-29 at 13:44 -0500, Nate Drude wrote:
+>> Document device tree property to set GE_CLK_RCVR_125_EN (bit 5 of GE_CLK_CFG),
+>> causing the 125 MHz PHY recovered clock (or PLL clock) to be driven at
+>> the GP_CLK pin.
+>>
+>> Signed-off-by: Nate Drude <nate.d@variscite.com>
+>> ---
+>>  Documentation/devicetree/bindings/net/adi,adin.yaml | 5 +++++
+>>  1 file changed, 5 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/net/adi,adin.yaml b/Documentation/devicetree/bindings/net/adi,adin.yaml
+>> index 1129f2b58e98..5fdbbd5aff82 100644
+>> --- a/Documentation/devicetree/bindings/net/adi,adin.yaml
+>> +++ b/Documentation/devicetree/bindings/net/adi,adin.yaml
+>> @@ -36,6 +36,11 @@ properties:
+>>      enum: [ 4, 8, 12, 16, 20, 24 ]
+>>      default: 8
+>>  
+>> +  adi,clk_rcvr_125_en:
 
-Based on commit subject looks reasonable:
+No underscores in node names
 
-#syz fix: cgroup/cpuset: Make child cpusets restrict parents on v1 hierarch=
-y
+>> +    description: |
+>> +      Set GE_CLK_RCVR_125_EN (bit 5 of GE_CLK_CFG), causing the 125 MHz
+>> +      PHY recovered clock (or PLL clock) to be driven at the GP_CLK pin.
+
+You are describing programming model but you should describe rather
+hardware feature instead. This should be reflected in property name and
+description. Focus on hardware and describe it.
+
+>> +
+>>  unevaluatedProperties: false
+>>  
+>>  examples:
+> 
+> The recipients list does not contain a few required ones, adding for
+> awareness Rob, Krzysztof and the devicetree ML. If a new version should
+> be required, please include them.
+
+Thanks!
+
+Nate,
+Just please use scripts/get_maintainers.pl and all problems with
+addressing are gone...
+
+
+Best regards,
+Krzysztof
