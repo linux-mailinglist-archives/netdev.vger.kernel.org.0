@@ -2,69 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B9EB518E70
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 22:12:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B15EC519000
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 23:22:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242507AbiECUP6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 16:15:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54114 "EHLO
+        id S240664AbiECVUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 17:20:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242518AbiECUPn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 16:15:43 -0400
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D432A40E6F
-        for <netdev@vger.kernel.org>; Tue,  3 May 2022 13:10:55 -0700 (PDT)
-Received: by mail-qt1-x82d.google.com with SMTP id hf18so14439434qtb.0
-        for <netdev@vger.kernel.org>; Tue, 03 May 2022 13:10:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=1mYaYvNIZ0izntpEDGvK45tZbegQEZj2gmMuTxCoewk=;
-        b=dQUYLaGTGISBy7cFpa7kWZE6Ny/DEkMsQ//YDsZwPOOJV3biQw1n4rzLV7fm9HTEtM
-         ovXdFMjtFQ/EbltnsjGwZLUGjC+3iCB+DIFCybR/eRW5zeHRDNkD1aZMSf2ZYtTBt6tT
-         ZmGvusCT7gawthGe6yRVljR9PErOaspEwqN21BVHokyevAoOMfktAGPbpKi2lgQrNUqz
-         DUHuZOncIpiY3Lh1G5rtALpdNtq24vSSFrmj5h1pfEA1UYG/wd12KtaO4nIqQGLTeC8q
-         9ixR5IQqN5En+4SvX+2BFv/5SWu/IJC7+TMaOhkPQZPQDwCN0BW4sTGPSsrv/7+jNFPL
-         emuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=1mYaYvNIZ0izntpEDGvK45tZbegQEZj2gmMuTxCoewk=;
-        b=WfMLdAS2SQn1JEaOUmhSaYp4mCXAlQuzbiVh/0KkTvuHZXzvaJyKK3uLQofSeg5nHx
-         lSAtjmzb5sMzovOeKq1OBN5p9B5ncArbrAemv68SeT+Ws+zNX4Qu7KgQyaB611Cw83FH
-         1XvInt5p5Pi2CA/srT+TqW0OaIgxUnPidN1kGyrX+tvJGZUDHVs0P2nC4hucTsjjNlIh
-         LdplGOltk+CIAHJa4pQ+fHC+sPLnMmJuStrMG2VHzVV9mnz4dOkPusu67P5ZJ/h5Tqid
-         mJyRGUMzfHovYNuKKf+N0Pb6VVj9HO0nrERMxEH/Zb7RpMslA1L7va9kSq7pVtcbo0Ro
-         NA8A==
-X-Gm-Message-State: AOAM531Q54SUS++dQQ7tj3UykuOIR3a5HiDpKSjxxJ8caDZkJcSKB2lS
-        b1lNzF9ipI7AQGcxCPBonVw99Q==
-X-Google-Smtp-Source: ABdhPJx6Bjf0PUVExGoUd/qBL/jgYVBd0AC6HZYxvYLrvcPnQekuplY1nsKhzsJfDa2bsqGe1clxIw==
-X-Received: by 2002:a05:622a:201:b0:2f3:a9a1:17dd with SMTP id b1-20020a05622a020100b002f3a9a117ddmr7775332qtx.226.1651608654398;
-        Tue, 03 May 2022 13:10:54 -0700 (PDT)
-Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-27-184-148-44-6.dsl.bell.ca. [184.148.44.6])
-        by smtp.googlemail.com with ESMTPSA id n68-20020a37a447000000b0069fc13ce1edsm6629285qke.30.2022.05.03.13.10.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 May 2022 13:10:53 -0700 (PDT)
-Message-ID: <7e4682da-6ed6-17cf-8e5a-dff7925aef1d@mojatatu.com>
-Date:   Tue, 3 May 2022 16:10:52 -0400
+        with ESMTP id S229689AbiECVUw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 17:20:52 -0400
+Received: from mail-40134.protonmail.ch (mail-40134.protonmail.ch [185.70.40.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0365640915
+        for <netdev@vger.kernel.org>; Tue,  3 May 2022 14:17:18 -0700 (PDT)
+Date:   Tue, 03 May 2022 21:17:12 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
+        s=protonmail2; t=1651612636;
+        bh=/0vA9ZHk4nsZ0nCXCjLXR4yS03kjJuP+2lBwjcWkdXE=;
+        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
+         References:Feedback-ID:From:To:Cc:Date:Subject:Reply-To:
+         Feedback-ID:Message-ID;
+        b=aJ1ZgPcJ65nOsqK7ExE22Smle/lqrYGbDdj6OPcm39fYQWRKkRMQR+GP5Eh3dn0ml
+         CN0YoHydSjz6UTrdfC/8UYeH1ImXW6HU6vI1EvXdhGnMX/47c4d0uOw+zEwVHd7orf
+         h7d6LByhwtn1cqScJGYsp3sn3NCIxp2MuQmo91KqbY3q4NGfFBHED5deH0YqeAA/Y4
+         96B2+13mb9I4Hdh9gpzK7RQbFAE7O4K+2tQzwIXtrTVz2h9ZBuSW38zEALj5aB3JvG
+         EUifxFReuyQuYuPlaJkukVq5MjzSuotz5ZPZduw+ClRF33CdmhNVifSN1AughSGNsP
+         nIkJFvhNd+ASQ==
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Song Liu <songliubraving@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: Re: [PATCH v2 bpf 00/11] bpf: random unpopular userspace fixes (32 bit et al)
+Message-ID: <20220503211001.160060-1-alobakin@pm.me>
+In-Reply-To: <CAADnVQJJiBO5T3dvYaifhu3crmce7CH9b5ioc1u4=Y25SUxVRA@mail.gmail.com>
+References: <20220421003152.339542-1-alobakin@pm.me> <CAADnVQJJiBO5T3dvYaifhu3crmce7CH9b5ioc1u4=Y25SUxVRA@mail.gmail.com>
+Feedback-ID: 22809121:user:proton
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH net] net/sched: act_pedit: really ensure the skb is
- writable
-Content-Language: en-US
-To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>, Jiri Pirko <jiri@resnulli.us>
-References: <6c1230ee0f348230a833f92063ff2f5fbae58b94.1651584976.git.pabeni@redhat.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-In-Reply-To: <6c1230ee0f348230a833f92063ff2f5fbae58b94.1651584976.git.pabeni@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,100 +56,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-What was the tc pedit command that triggered this?
-Can we add it to tdc tests?
+From: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date: Wed, 20 Apr 2022 17:40:34 -0700
 
-cheers,
-jamal
+> On Wed, Apr 20, 2022 at 5:38 PM Alexander Lobakin <alobakin@pm.me> wrote:
+>
+> Again?
+>
+> -----BEGIN PGP MESSAGE-----
+> Version: ProtonMail
+>
+> wcFMA165ASBBe6s8AQ/8C9y4TqXgASA5xBT7UIf2GyTQRjKWcy/6kT1dkjkF
+> FldAOhehhgLYjLJzNAIkecOQfz/XNapW3GdrQDq11pq9Bzs1SJJekGXlHVIW
 
-On 2022-05-03 10:05, Paolo Abeni wrote:
-> Currently pedit tries to ensure that the accessed skb offset
-> is writeble via skb_unclone(). The action potentially allows
-> touching any skb bytes, so it may end-up modifying shared data.
-> 
-> The above causes some sporadic MPTCP self-test failures.
-> 
-> Address the issue keeping track of a rough over-estimate highest skb
-> offset accessed by the action and ensure such offset is really
-> writable.
-> 
-> Note that this may cause performance regressions in some scenario,
-> but hopefully pedit is not critical path.
-> 
-> Fixes: db2c24175d14 ("act_pedit: access skb->data safely")
-> Acked-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-> Tested-by: Geliang Tang <geliang.tang@suse.com>
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> ---
-> Note: AFAICS the issue is present since 1da177e4c3f4
-> ("Linux-2.6.12-rc2"), but before the "Fixes" commit this change
-> is irrelevant, because accessing any data out of the skb head
-> will cause an oops.
-> ---
->   include/net/tc_act/tc_pedit.h |  1 +
->   net/sched/act_pedit.c         | 23 +++++++++++++++++++++--
->   2 files changed, 22 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/net/tc_act/tc_pedit.h b/include/net/tc_act/tc_pedit.h
-> index 748cf87a4d7e..3e02709a1df6 100644
-> --- a/include/net/tc_act/tc_pedit.h
-> +++ b/include/net/tc_act/tc_pedit.h
-> @@ -14,6 +14,7 @@ struct tcf_pedit {
->   	struct tc_action	common;
->   	unsigned char		tcfp_nkeys;
->   	unsigned char		tcfp_flags;
-> +	u32			tcfp_off_max_hint;
->   	struct tc_pedit_key	*tcfp_keys;
->   	struct tcf_pedit_key_ex	*tcfp_keys_ex;
->   };
-> diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
-> index 31fcd279c177..a8ab6c3f1ea2 100644
-> --- a/net/sched/act_pedit.c
-> +++ b/net/sched/act_pedit.c
-> @@ -149,7 +149,7 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
->   	struct nlattr *pattr;
->   	struct tcf_pedit *p;
->   	int ret = 0, err;
-> -	int ksize;
-> +	int i, ksize;
->   	u32 index;
->   
->   	if (!nla) {
-> @@ -228,6 +228,20 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
->   		p->tcfp_nkeys = parm->nkeys;
->   	}
->   	memcpy(p->tcfp_keys, parm->keys, ksize);
-> +	p->tcfp_off_max_hint = 0;
-> +	for (i = 0; i < p->tcfp_nkeys; ++i) {
-> +		u32 cur = p->tcfp_keys[i].off;
-> +
-> +		/* The AT option can read a single byte, we can bound the actual
-> +		 * value with uchar max. Each key touches 4 bytes starting from
-> +		 * the computed offset
-> +		 */
-> +		if (p->tcfp_keys[i].offmask) {
-> +			cur += 255 >> p->tcfp_keys[i].shift;
-> +			cur = max(p->tcfp_keys[i].at, cur);
-> +		}
-> +		p->tcfp_off_max_hint = max(p->tcfp_off_max_hint, cur + 4);
-> +	}
->   
->   	p->tcfp_flags = parm->flags;
->   	goto_ch = tcf_action_set_ctrlact(*a, parm->action, goto_ch);
-> @@ -308,9 +322,14 @@ static int tcf_pedit_act(struct sk_buff *skb, const struct tc_action *a,
->   			 struct tcf_result *res)
->   {
->   	struct tcf_pedit *p = to_pedit(a);
-> +	u32 max_offset;
->   	int i;
->   
-> -	if (skb_unclone(skb, GFP_ATOMIC))
-> +	max_offset = (skb_transport_header_was_set(skb) ?
-> +		      skb_transport_offset(skb) :
-> +		      skb_network_offset(skb)) +
-> +		     p->tcfp_off_max_hint;
-> +	if (skb_ensure_writable(skb, min(skb->len, max_offset)))
->   		return p->tcf_action;
->   
->   	spin_lock(&p->tcf_lock);
+ProtonMail support:
+
+"
+The reason that some of the recipients are receiving PGP-encrypted
+emails is that kernel.org is providing public keys for those
+recipients (ast@kernel.org and toke@kernel.org specifically) via WKD
+(Web Key Directory), and our API automatically encrypts messages
+when a key is served over WKD.
+
+Unfortunately, there is currently no way to disable encryption for
+recipients that server keys over WKD but the recipients should be
+able to decrypt the messages using the secret keys that correspond
+to their public keys provided by kernel.org.
+This is applicable both to messages sent via the ProtonMail web app,
+and messages sent via Bridge app.
+
+We have forwarded your feedback to the appropriate teams, and we
+will see if we can implement a disable encryption option for these
+cases. Unfortunately, we cannot speculate when we might implement
+such an option.
+"
+
+Weeeeeird, it wasn't like that a year ago.
+Anyway, since it's address specific and for now I observed this only
+for ast@ and toke@, can I maybe send the series adding your Gmail
+account rather that korg one? Alternatively, I can send it from my
+Intel address if you prefer (thankfully, it doesn't encrypt anything
+without asking), I just didn't want to mix personal stuff with corp.
+
+>
+> Sorry I'm tossing the series out of patchwork.
+
+Thanks,
+Al
 
