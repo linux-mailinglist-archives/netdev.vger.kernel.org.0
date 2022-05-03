@@ -2,145 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 08C1A51834F
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 13:33:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C889051836F
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 13:44:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234711AbiECLhZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 07:37:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43356 "EHLO
+        id S234846AbiECLr4 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 3 May 2022 07:47:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230514AbiECLhS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 07:37:18 -0400
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBC191F63A
-        for <netdev@vger.kernel.org>; Tue,  3 May 2022 04:33:46 -0700 (PDT)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-2ef5380669cso176123817b3.9
-        for <netdev@vger.kernel.org>; Tue, 03 May 2022 04:33:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=cU55pjdD4r0nBMyteMyWhE7PaNwLmw8ghUxQGJMW0Fs=;
-        b=ZWxqr8xxsr8+/+K1DcT4BWQ5jqfOAHlWmQByHsbtcZabCcfRhGctujKbnPFDtrCHad
-         QOlERcQotITw6/RVh7y7IMg29xHOPcynYydEMSTDLfGIqEr8mXMBBRA+qClBWMmv3krm
-         u5EuqrTb+yuYlGXtNDLRt/puv1v5guScm7Ih8aTw0RfjWFto9UenpNW+cANTCFXQJv55
-         egk1Jxm0k09pBtAS4h0u2t+Dw2FZlGGZmSjvRlLhWj0b+E+u6T1SMD1XGMeC0jlBrUWX
-         uAghnfEAWbyicQ57iw/+2EY2VlGgaM2v8eC+CfzyDKCDJ8GMh/MdL2gdkrjzeCQ0VIz1
-         3SEQ==
+        with ESMTP id S234783AbiECLrz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 07:47:55 -0400
+Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D64D31F617;
+        Tue,  3 May 2022 04:44:22 -0700 (PDT)
+Received: by mail-ot1-f50.google.com with SMTP id k25-20020a056830169900b00605f215e55dso8123617otr.13;
+        Tue, 03 May 2022 04:44:22 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=cU55pjdD4r0nBMyteMyWhE7PaNwLmw8ghUxQGJMW0Fs=;
-        b=ob2uAiM9/sAO1YMHR3m/9xFnNx9JRMAabJI97BpfKTsIxlN5R0rewicJAH83Y3rcGD
-         IePEXFnEvs9dx9wTs/nULqKiYbq4wzrupDz+PFFTIfFutkW0NaE66NVC2vic6kXjiHPc
-         29kue1+aHJJTP9VeXLjMtqwzzZ2UpJM1aOQEyEsBP/xDj+cwjWYhlHZz2XNa0UldlDfI
-         f39f04j7W7YWRk3Fe+B8Y8CMmp4oZCF/VdSIDuWalrZQehtbTvQuiGtmOvcdv2cVyUtz
-         V/vlxNdxvPbbtViLWnH2cNM/vsGWkeXl+lN2cbx27E7PU2feZJAse1con/E4EENJLxGO
-         74EQ==
-X-Gm-Message-State: AOAM530Z6uBDWuS0cPvQQImkFJScBcnkf4iUi/qcbKmge+E6HCPsDpCT
-        lQrscdLbdX7J+p0M6xwjn617Dv5uaoJvXcDHEhc=
-X-Google-Smtp-Source: ABdhPJyBw5sHnBRqaWNlJyR1gE6YQr3fx0atFpjxEN79fsb3Knvifnrey/OvQbV1hl1+OigMUXglisolXd1fqBi2KNM=
-X-Received: by 2002:a81:1914:0:b0:2f5:ec26:1b99 with SMTP id
- 20-20020a811914000000b002f5ec261b99mr15369813ywz.252.1651577626029; Tue, 03
- May 2022 04:33:46 -0700 (PDT)
+        bh=cU3Z6ykdejESNcgy+emYbv3uxVtClhcVte+gZSY0vNY=;
+        b=q+mrMdmWF1qiQScO3xKSXJKVWB0Zh+Cm1A4P7nHU3esX5tKqr1wZqn073cdHQepmfu
+         lb1HvQMe8ZrekrcLcWIuYzTpJhwSHN+cO7dJCDKGnIl/JwuM9507zYyWTzEHyziii/4A
+         HsUPCoD3s+5EyAUrKszKV2h5C/XIiqnLwwNUNnIX5wQtbJ7VtBg+yrL9Mn0eVLi2v4us
+         5BAAoBo75ZmrHHlO2hf80LpbUi99cd+xUftIMkdrqxTuetrKxgXnAAs5CCvNCXAX2vD4
+         l8vnFa76pE3/Y+ztRy0G8xG4zPXqwPj5yFV1eY4Guw6MSjAbMeFaVoW3WOjQqBNr5d0K
+         kVFA==
+X-Gm-Message-State: AOAM532IUQWCYvQrudP38wClQ9Wbpz/aromsLlMhpH6WY0rxQ+2ijKDx
+        8+HwvMJX72DuB9dR7JM1gl6CsTXoPV0GzQ==
+X-Google-Smtp-Source: ABdhPJx9f5FEJqVlsJPj0zsNWKMHxl/aKPrh3i9MhHT6FFHZdudw6RbpQv4Hzan15Xafq4SD0Xy6dw==
+X-Received: by 2002:a9d:34b:0:b0:605:f0f1:e28e with SMTP id 69-20020a9d034b000000b00605f0f1e28emr5558412otv.304.1651578262024;
+        Tue, 03 May 2022 04:44:22 -0700 (PDT)
+Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com. [209.85.210.54])
+        by smtp.gmail.com with ESMTPSA id bl23-20020a056808309700b00325f4f40f9esm2033390oib.22.2022.05.03.04.44.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 04:44:21 -0700 (PDT)
+Received: by mail-ot1-f54.google.com with SMTP id z5-20020a9d62c5000000b00606041d11f1so5659639otk.2;
+        Tue, 03 May 2022 04:44:21 -0700 (PDT)
+X-Received: by 2002:a25:6157:0:b0:645:8d0e:f782 with SMTP id
+ v84-20020a256157000000b006458d0ef782mr14366337ybb.36.1651577879447; Tue, 03
+ May 2022 04:37:59 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220430135622.103683-1-claudiajkang@gmail.com>
- <4320a4cb3e826335db51a6fac49053dbd386f119.camel@redhat.com>
- <56e0b30632826dda7db247bd5b6e4bb28245eaa7.camel@perches.com> <83d7f24b-660e-1090-beef-f42fc29fe8aa@gmail.com>
-In-Reply-To: <83d7f24b-660e-1090-beef-f42fc29fe8aa@gmail.com>
-From:   Juhee Kang <claudiajkang@gmail.com>
-Date:   Tue, 3 May 2022 20:33:11 +0900
-Message-ID: <CAK+SQuS5vFK4MDP2ntGe4jzorLM1EgG0q-unbT+r=Y8gpV12qQ@mail.gmail.com>
-Subject: Re: [net-next PATCH] amt: Use BIT macros instead of open codes
-To:     Taehee Yoo <ap420073@gmail.com>
-Cc:     Joe Perches <joe@perches.com>, Paolo Abeni <pabeni@redhat.com>,
-        davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
-        Networking <netdev@vger.kernel.org>
+References: <cover.1647904780.git.pisa@cmp.felk.cvut.cz> <4d5c53499bafe7717815f948801bd5aedaa05c12.1647904780.git.pisa@cmp.felk.cvut.cz>
+In-Reply-To: <4d5c53499bafe7717815f948801bd5aedaa05c12.1647904780.git.pisa@cmp.felk.cvut.cz>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 3 May 2022 13:37:46 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXY_sHw4W8_y+r1LMhGM+CF7RQtRFQzEC8wYKYSR98Daw@mail.gmail.com>
+Message-ID: <CAMuHMdXY_sHw4W8_y+r1LMhGM+CF7RQtRFQzEC8wYKYSR98Daw@mail.gmail.com>
+Subject: Re: [PATCH v8 5/7] can: ctucanfd: CTU CAN FD open-source IP core -
+ platform/SoC support.
+To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>
+Cc:     linux-can@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        David Miller <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Carsten Emde <c.emde@osadl.org>, armbru@redhat.com,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Marin Jerabek <martin.jerabek01@gmail.com>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        Jiri Novak <jnovak@fel.cvut.cz>,
+        Jaroslav Beran <jara.beran@gmail.com>,
+        Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>,
+        Drew Fustini <pdp7pdp7@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Paolo and Joe,
+Hi Pavel,
 
-Thanks for the reviews!
-
-
-On Tue, May 3, 2022 at 6:28 PM Taehee Yoo <ap420073@gmail.com> wrote:
+On Tue, Mar 22, 2022 at 1:06 AM Pavel Pisa <pisa@cmp.felk.cvut.cz> wrote:
+> Platform bus adaptation for CTU CAN FD open-source IP core.
 >
-> 2022. 5. 3. =EC=98=A4=EC=A0=84 2:19=EC=97=90 Joe Perches =EC=9D=B4(=EA=B0=
-=80) =EC=93=B4 =EA=B8=80:
->  > On Mon, 2022-05-02 at 12:11 +0200, Paolo Abeni wrote:
+> The core has been tested together with OpenCores SJA1000
+> modified to be CAN FD frames tolerant on MicroZed Zynq based
+> MZ_APO education kits designed by Petr Porazil from PiKRON.com
+> company. FPGA design
 >
-> Hi Paolo and Joe,
-> Thanks a lot for the reviews!
+>   https://gitlab.fel.cvut.cz/canbus/zynq/zynq-can-sja1000-top.
 >
->  >> On Sat, 2022-04-30 at 13:56 +0000, Juhee Kang wrote:
->  >>> Replace open code related to bit operation with BIT macros, which
-> kernel
->  >>> provided. This patch provides no functional change.
->  > []
->  >>> diff --git a/drivers/net/amt.c b/drivers/net/amt.c
->  > []
->  >>> @@ -959,7 +959,7 @@ static void amt_req_work(struct work_struct *wor=
-k)
->  >>>    amt_update_gw_status(amt, AMT_STATUS_SENT_REQUEST, true);
->  >>>    spin_lock_bh(&amt->lock);
->  >>>   out:
->  >>> -  exp =3D min_t(u32, (1 * (1 << amt->req_cnt)), AMT_MAX_REQ_TIMEOUT=
-);
->  >>> +  exp =3D min_t(u32, (1 * BIT(amt->req_cnt)), AMT_MAX_REQ_TIMEOUT);
->  >>>    mod_delayed_work(amt_wq, &amt->req_wq, msecs_to_jiffies(exp *
-> 1000));
->  >>>    spin_unlock_bh(&amt->lock);
->  >>>   }
->  >>> diff --git a/include/net/amt.h b/include/net/amt.h
->  > []
->  >>> @@ -354,7 +354,7 @@ struct amt_dev {
->  >>>   #define AMT_MAX_GROUP            32
->  >>>   #define AMT_MAX_SOURCE           128
->  >>>   #define AMT_HSIZE_SHIFT          8
->  >>> -#define AMT_HSIZE         (1 << AMT_HSIZE_SHIFT)
->  >>> +#define AMT_HSIZE         BIT(AMT_HSIZE_SHIFT)
->  >>>
->  >>>   #define AMT_DISCOVERY_TIMEOUT    5000
->  >>>   #define AMT_INIT_REQ_TIMEOUT     1
->  >>
->  >> Even if the 2 replaced statements use shift operations, they do not
->  >> look like bit manipulation: the first one is an exponential timeout,
->  >> the 2nd one is an (hash) size. I think using the BIT() macro here wil=
-l
->  >> be confusing.
->  >
->  > I agree.
->  >
->  > I also believe one of the uses of amt->req_cnt is error prone.
->  >
->  >      drivers/net/amt.c:946:  if (amt->req_cnt++ > AMT_MAX_REQ_COUNT) {
->  >
->  > Combining a test and post increment is not a great style IMO.
->  > Is this really the intended behavior?
+> The kit description at the Computer Architectures course pages
 >
-> I agree that it would be better to avoid that style.
-> I will send a patch for that after some bugfix.
+>   https://cw.fel.cvut.cz/wiki/courses/b35apo/documentation/mz_apo/start .
 >
-> Thanks a lot,
-> Taehee Yoo
+> Kit carrier board and mechanics design source files
 >
->  >
->  >
+>   https://gitlab.com/pikron/projects/mz_apo/microzed_apo
+>
+> The work is documented in Martin Jeřábek's diploma theses
+> Open-source and Open-hardware CAN FD Protocol Support
+>
+>   https://dspace.cvut.cz/handle/10467/80366
+> .
+>
+> Signed-off-by: Pavel Pisa <pisa@cmp.felk.cvut.cz>
+> Signed-off-by: Martin Jerabek <martin.jerabek01@gmail.com>
+> Signed-off-by: Ondrej Ille <ondrej.ille@gmail.com>
 
+Thanks for your patch, which is now commit e8f0c23a2415fa8f ("can:
+ctucanfd: CTU CAN FD open-source IP core - platform/SoC support.") in
+linux-can-next/master.
 
+> --- /dev/null
+> +++ b/drivers/net/can/ctucanfd/ctucanfd_platform.c
 
---=20
+> +/* Match table for OF platform binding */
+> +static const struct of_device_id ctucan_of_match[] = {
+> +       { .compatible = "ctu,ctucanfd-2", },
 
-Best regards,
-Juhee Kang
+Do you need to match on the above compatible value?
+The driver seems to treat the hardware the same, and the DT
+bindings state the compatible value below should always be present.
+
+> +       { .compatible = "ctu,ctucanfd", },
+> +       { /* end of list */ },
+> +};
+> +MODULE_DEVICE_TABLE(of, ctucan_of_match);
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
