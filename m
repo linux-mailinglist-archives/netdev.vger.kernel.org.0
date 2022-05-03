@@ -2,110 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 70C1B517EDA
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 09:26:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43899517F04
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 09:36:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231664AbiECH3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 03:29:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44594 "EHLO
+        id S232359AbiECHim (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 03:38:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232467AbiECH3c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 03:29:32 -0400
-Received: from mail-qv1-f52.google.com (mail-qv1-f52.google.com [209.85.219.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA7C23632E;
-        Tue,  3 May 2022 00:26:00 -0700 (PDT)
-Received: by mail-qv1-f52.google.com with SMTP id kk28so3785946qvb.3;
-        Tue, 03 May 2022 00:26:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YD6pDX7MFiRlZPMrxCGiAGzBVQ9fcEPaJDRhBoAH8Fc=;
-        b=pEkuhgof2k32QKTeaSAifwjGDQ3vYUtsjULG5eJ0nkg/dUGyOR/GObS3sRuHANd8kg
-         mtFHqiSdYnrthcwIWgFtjU3kfRrPEpQri2wPaZtjdEpEvNd0O78nHE/tn15lvUSzJJrg
-         0xdR9CaeosEmgfjH3dFeD/QVvOdkHIk91vrYwQMWgbVdFE3tugQNTzNoK7BXF7TFG7mx
-         u/NDRO0l3fV7XWM3pb1mEdaCpjaUUbBcMlDf7SyP18grWkmHT54RV7YlmnAk5Mzo7x/6
-         3NqIWsYSk7jOe+thy1stgv/3oo28tnxEHxaWPL2xtw/qiifB3ZYRTENHPAhJK0KSyLaM
-         kj+A==
-X-Gm-Message-State: AOAM533F8o7CR0pxJzkSdZhBUwPMg2ZBk9/k6U4esY28obvM2KtCxu51
-        YSazU4I8E4Sw/T9etOSYiEzMXb3DkUBELg==
-X-Google-Smtp-Source: ABdhPJzHz/1e6pmqFoxFOzhmK5czzvn6gCa51ixXmfxBjpqonZ17LbaghbbVcbe0exXafb+pDtBQNw==
-X-Received: by 2002:a05:6214:f6f:b0:45a:8bcf:8274 with SMTP id iy15-20020a0562140f6f00b0045a8bcf8274mr6915729qvb.14.1651562759726;
-        Tue, 03 May 2022 00:25:59 -0700 (PDT)
-Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com. [209.85.219.179])
-        by smtp.gmail.com with ESMTPSA id v185-20020a372fc2000000b0069fc13ce252sm5663840qkh.131.2022.05.03.00.25.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 May 2022 00:25:58 -0700 (PDT)
-Received: by mail-yb1-f179.google.com with SMTP id w187so29739158ybe.2;
-        Tue, 03 May 2022 00:25:57 -0700 (PDT)
-X-Received: by 2002:a05:6902:352:b0:63e:94c:883c with SMTP id
- e18-20020a056902035200b0063e094c883cmr12355814ybs.365.1651562757393; Tue, 03
- May 2022 00:25:57 -0700 (PDT)
-MIME-Version: 1.0
-References: <cover.1651512451.git.geert+renesas@glider.be> <20220502182635.2ntwjifykmyzbjgx@pengutronix.de>
-In-Reply-To: <20220502182635.2ntwjifykmyzbjgx@pengutronix.de>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 3 May 2022 09:25:45 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdU2RfBUO7SVJ8N2dUVqzvgptLX61UJY5Wdiyobj=rQgJw@mail.gmail.com>
-Message-ID: <CAMuHMdU2RfBUO7SVJ8N2dUVqzvgptLX61UJY5Wdiyobj=rQgJw@mail.gmail.com>
-Subject: Re: [PATCH 0/2] dt-bindings: can: renesas,rcar-canfd: Make
- interrupt-names required
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        with ESMTP id S231830AbiECHim (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 03:38:42 -0400
+X-Greylist: delayed 455 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 03 May 2022 00:35:09 PDT
+Received: from mx-8.mail.web4u.cz (smtp7.web4u.cz [81.91.87.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28EF737A1E;
+        Tue,  3 May 2022 00:35:09 -0700 (PDT)
+Received: from mx-8.mail.web4u.cz (localhost [127.0.0.1])
+        by mx-8.mail.web4u.cz (Postfix) with ESMTP id B6BA32014EF;
+        Tue,  3 May 2022 09:27:29 +0200 (CEST)
+Received: from baree.pikron.com (unknown [94.112.11.73])
+        (Authenticated sender: ppisa@pikron.com)
+        by mx-8.mail.web4u.cz (Postfix) with ESMTPA id 59E03201258;
+        Tue,  3 May 2022 09:27:29 +0200 (CEST)
+From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
+To:     "Marc Kleine-Budde" <mkl@pengutronix.de>
+Subject: Re: [PATCH v1 0/4] can: ctucanfd: clenup acoording to the actual rules and documentation linking
+Date:   Tue, 3 May 2022 09:27:15 +0200
+User-Agent: KMail/1.9.10
+Cc:     Andrew Dennison <andrew.dennison@motec.com.au>,
+        linux-can@vger.kernel.org,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
         Wolfgang Grandegger <wg@grandegger.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-        linux-can@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Marin Jerabek <martin.jerabek01@gmail.com>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        Jiri Novak <jnovak@fel.cvut.cz>,
+        Jaroslav Beran <jara.beran@gmail.com>,
+        Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>,
+        Carsten Emde <c.emde@osadl.org>,
+        Drew Fustini <pdp7pdp7@gmail.com>,
+        Matej Vasilevski <matej.vasilevski@gmail.com>
+References: <cover.1650816929.git.pisa@cmp.felk.cvut.cz> <CAHQrW0_bxDyTf7pNHgXwcO=-0YRWtsxscOSWWU4fDmNYo8d-9Q@mail.gmail.com> <20220503064626.lcc7nl3rze5txive@pengutronix.de>
+In-Reply-To: <20220503064626.lcc7nl3rze5txive@pengutronix.de>
+X-KMail-QuotePrefix: > 
+MIME-Version: 1.0
+Content-Type: Text/Plain;
+  charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <202205030927.15558.pisa@cmp.felk.cvut.cz>
+X-W4U-Auth: 3f689dcfd3550b7b0bcf9e525c23dbe5a6645c9e
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc,
+Hello Marc and Andrew,
 
-On Mon, May 2, 2022 at 8:27 PM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> On 02.05.2022 19:33:51, Geert Uytterhoeven wrote:
-> > The Renesas R-Car CAN FD Controller always uses two or more interrupts.
-> > Hence it makes sense to make the interrupt-names property a required
-> > property, to make it easier to identify the individual interrupts, and
-> > validate the mapping.
+On Tuesday 03 of May 2022 08:46:26 Marc Kleine-Budde wrote:
+> On 03.05.2022 16:32:32, Andrew Dennison wrote:
+> > > > When value is configurable then for (uncommon) number
+> > > > of buffers which is not power of two, there will be likely
+> > > > a problem with way how buffers queue is implemented
 > >
-> >   - The first patch updates the various R-Car Gen3 and RZ/G2 DTS files
-> >     to add interrupt-names properties, and is intended for the
-> >     renesas-devel tree,
-> >   - The second patch updates the CAN-FD DT bindings to mark the
-> >     interrupt-names property required, and is intended for the DT or net
-> >     tree.
-> >
-> > Thanks!
+> > Only power of 2 makes sense to me: I didn't consider those corner
+> > cases but the driver could just round down to the next power of 2 and
+> > warn about a misconfiguration of the IP core.
 >
-> LGTM. Who takes this series?
+> +1
 
-I'll take the first patch.
+Then (n-1) mask be used instead of modulo which is what I used for these
+kind of queues.
 
-The second patch is up to you and the DT maintainers.
+https://sourceforge.net/p/ulan/ulut/ci/master/tree/ulut/ul_dqfifo.h
 
-Gr{oetje,eeting}s,
+> > I added the dynamic detection because the IP core default had changed
+> > to 2 TX buffers and this broke some hard coded assumptions in the
+> > driver in a rather obscure way that had me debugging for a bit...
+>
+> The mainline driver uses a hard coded default of 4 still... Can you
+> provide that patch soonish?
 
-                        Geert
+We discuss with Ondrej Ille final location of the bits with queue
+length information etc... The version 3.0 of the core is in development
+still. So I do not like to introduce something which would break
+compatability with future revisions. Yes, we can check for version
+reported by IP core but when it is possible I would not introduce
+such logic... So if it gets to 5.19 it would be great but if we should
+risk incompatible changes or too cluttered logic then it will be
+5.20 material. Other option is to add Kconfig option to specify
+maximal number of TX buffers used by the driver for now.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> > > You can make use of more TX buffers, if you implement (fully
+> > > hardware based) TX IRQ coalescing (== handle more than one TX
+> > > complete interrupt at a time) like in the mcp251xfd driver, or BQL
+> > > support (== send more than one TX CAN frame at a time). I've played
+> > > a bit with BQL support on the mcp251xfd driver (which is attached by
+> > > SPI), but with mixed results. Probably an issue with proper
+> > > configuration.
+> >
+> > Reducing CAN IRQ load would be good.
+>
+> IRQ coalescing comes at the price of increased latency, but if you have
+> a timeout in hardware you can configure the latencies precisely.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+HW coalescing not considered yet. Generally my intention for CAN use
+is usually robotic and motion control and there is CAN and even CAN FD
+on edge with its latencies already and SocketCAN layer adds yet
+another level due common tasklets and threads with other often
+dense and complex protocols on ETHERNET so to lover CPU load
+by IRQ coalescing is not my priority. We have done latencies
+evaluation of SocketCAN, LinCAN and RTEMS years ago on Oliver Hartkopp's
+requests on standard and fully-preemptive kernels on more targets
+(x86, PowerPC, ...) and I hope that we revive CAN Bench project
+on Xilinx Zynq based MZ_APO again, see Martin Jerabek's theses FPGA
+Based CAN Bus Channels Mutual Latency Tester and Evaluation, 2016
+
+https://gitlab.fel.cvut.cz/canbus/zynq/zynq-can-sja1000-top/wikis/uploads/56b4d27d8f81ae390fc98bdce803398f/F3-BP-2016-Jerabek-Martin-Jerabek-thesis-2016.pdf
+
+It is actual work of Matej Vasilevski. So I hope to have again more
+insight into latencies on CAN. By the way, I plan to speak with
+Carsten Emde on Embedded World if these is interrest to add
+continuous HW timestamping based CAN latencies testing into OSADL
+QA Farm
+
+https://www.osadl.org/OSADL-QA-Farm-Real-time.linux-real-time.0.html
+
+Other option is to setup system and run it locally at CTU
+as we run complete CI on CTU CAN FD.
+
+> > > > We need 2 * priv->ntxbufs range to distinguish empty and full
+> > > > queue... But modulo is not nice either so I probably come with
+> > > > some other solution in a longer term. In the long term, I want to
+> > > > implement virtual queues to allow multiqueue to use dynamic Tx
+> > > > priority of up to 8 the buffers...
+> > >
+> > > ACK, multiqueue TX support would be nice for things like the
+> > > Earliest TX Time First scheduler (ETF). 1 TX queue for ETF, the
+> > > other for bulk messages.
+> >
+> > Would be nice, I have multi-queue in the CAN layer I wrote for a
+> > little RTOS (predates socketcan) and have used for a while.
+>
+> Out of interest:
+> What are the use cases? How did you decide which queue to use?
+
+For example for CAN open there should be at least three queues
+to prevent CAN Tx priority inversion. one for NMT (network
+management), one for PDO (process data objects) and least priority
+for SDO (service data objects). That such applications works
+somehow with single queue is only matter of luck and low
+level of the link bandwidth utilization.
+
+We have done research how to use Linux networking infrastructure
+to route application send CAN messages into multiple queues
+according to the CAN ID priorities. There are some results in mainline
+from that work
+
+Rostislav Lisovy 2014: can: Propagate SO_PRIORITY of raw sockets to skbs
+Rostislav Lisovy 2012: net: em_canid: Ematch rule to match CAN frames 
+according to their identifiers
+
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/net/sched/em_canid.c
+
+So some enhancements and testing in this direction belongs
+between my long horizon goals. But low priority now because
+my company and even studnets at university are paid from
+other projects (silicon-heaven, ESA, Bluetooth-monitoring,
+NuttX etc.) so Linux CAN is hobby only at this moment.
+But others have contracts for CTU CAN FD, Skoda Auto
+testers etc. there...
+
+Best wishes,
+
+                Pavel Pisa
+    phone:      +420 603531357
+    e-mail:     pisa@cmp.felk.cvut.cz
+    Department of Control Engineering FEE CVUT
+    Karlovo namesti 13, 121 35, Prague 2
+    university: http://control.fel.cvut.cz/
+    personal:   http://cmp.felk.cvut.cz/~pisa
+    projects:   https://www.openhub.net/accounts/ppisa
+    CAN related:http://canbus.pages.fel.cvut.cz/
+    Open Technologies Research Education and Exchange Services
+    https://gitlab.fel.cvut.cz/otrees/org/-/wikis/home
