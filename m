@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A8328518486
+	by mail.lfdr.de (Postfix) with ESMTP id 5E04B518485
 	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 14:44:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235510AbiECMrY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 08:47:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56046 "EHLO
+        id S233245AbiECMr2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 08:47:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233245AbiECMrW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 08:47:22 -0400
+        with ESMTP id S235508AbiECMrX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 08:47:23 -0400
 Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2072.outbound.protection.outlook.com [40.107.21.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66CC221E1E
-        for <netdev@vger.kernel.org>; Tue,  3 May 2022 05:43:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2758E1F630
+        for <netdev@vger.kernel.org>; Tue,  3 May 2022 05:43:51 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Z4zfMfOrXcFaP9Bk3x9iMeHGuhlPQm1PoQj0kTUExlFSY1pATV6+J0LxfbaFBFQJn6kX/m10LrOAYqOl6c5nioGaCUp4o4eGOzTrh0x7pdXdBRefYzeruzy4FGiThfxfvnion4WFH4VdTSR481ozjt5GZtOuLW2tstk9S3o4M/Ej9V/rC8roH5nnt3ePGGqdMVuQWyJ/0OKTY31yeKD1gqvqTBn1s+j+9p3K1gbCz6J4GFO0o4EycSnw2D9OiIsYi/eWmw2A3p+R2ixjZytgt/8Y/j+JYjG5JNFYJHUjaQujr0mg9aXuhBtJPulWNMpm4JcL3hNfOGAZwv6UWM6ubg==
+ b=Zp/gsGVwQqdEAOkPEIJyNhukTDMnlvjEqEUKdtq3el9IxsY2cvaGsD57XgkWhVQ3UdnZqmCEHFMNg26Hr0sQs95JFuUgxMvJyIGgsxCc+r65mbuHFci4zAi0dy3ietP9OPIQcnVdgiK8vqWKh8tQ6m81Txc+6TisiXC9n7XNUt1tERzmIoa9r2W/O9CE//FDxwrQAnsWvea+m025nXQ5SmY6BW6ix/1jN2wSrrqVXeOHZ0WpfmKrGWRAPr7XovXZJ44Q/Hgxo1+FszHTxxh3EjHah+pJtVXBIgLLd9NtssdO8A79TdQFU15rc1y3E8DtRVt7+CPnNaeCGwvZqDQEng==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Qcv0tWphdXxcIc7RyCQtm6j1EaPfTioiYZg0WwIfCZU=;
- b=anfOZhOdrIVSC9MmatGICOTnrYOtVkJomynKjvI5lD393i/f6qUQV4kz4fpqSRk9UgJTYiUO49ef+pxinrz3nxBqV2wgtpCEwBkKFBNy3k4uDGL5hwzDSLle2z8+f9UYHXR3xQ3drzQS1sOjdQRPJEyb9TZGdON46YZU/rnQkrCGtu1i1JhOoGZSJYtsX/oNnjp6Z8qqe8KZIOL92b0bgQcf6esGJpeaU53nlDZJY9KELxt4cUYgVBsyAKT5cuxjqUWs00adW1fyAzkE/HZB9vPp1BCNNbPb8lGIqTxyIBUJFg6Owpiwna6enaRHnok55wJ/nSz6c9rv+5Sv72wfbg==
+ bh=y8pIWOhYAhpdQ/Ookp5T7dL2jlwYRaZmQNEwHOgXK2E=;
+ b=nazRb3cSBmgiTbMrLkJv3oLIyowso7Df4H3LieRUEQO+SJKxi2000lW7T5k0S9gwL5hp/jvsOS+CJWKXvFBB/cNbd8/fcfB4Vf1RpidC6GLdCPlNlPeAjZbLW57/yeXY032DIb5xCmroyPHp2/BpkUMyAESK1baTtQgFRTAOcjHd+LCorC7mse6DFJkIDJ1J/vEEb+Ru/PjYmFHMe6i19HwttaLPy+8fIKWa4hNwZxOeC8mIjQjZYBuxnLtVXsULA56W+3r5bGrmCDo/ZPfo6sAsSrHI198j0UrDvzBCMuiV/dTjDgk2HHLMHEfAvOP7Ks/6SE5F8Tmw9NgWR/vx0w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Qcv0tWphdXxcIc7RyCQtm6j1EaPfTioiYZg0WwIfCZU=;
- b=eUIfb20bFatDqGEEDQ3I7aDhj8wIR7S97/nHWnAzlMTsIW1uusD8heFNnWiv6F+xjV547UznRQHwJDuJ09qaEU8C+IXjgu6UZUD7BYtEiU5mV8q70POc/nexs31aUkf98lcJb5awqzKLsRdICCdp5Ward939/YszO6P7dSANNuM=
+ bh=y8pIWOhYAhpdQ/Ookp5T7dL2jlwYRaZmQNEwHOgXK2E=;
+ b=bTi0waYOSPIQ8YaaNKMz2q8PfZ8Xg0YaAXVbFyLsJb+e1EjdyOP6IMiqTKoGyPHNqKxKw/MqdrI8/1PQrFIVWiFv49d3vV3BoRdn0WTirx00ZZYzgV4hqHVfQrh3ZcrnDauOsahMQRuJkng70hrw2ir7dRKTgLNGUYU/V+RDr3Y=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from AM0PR04MB5121.eurprd04.prod.outlook.com (2603:10a6:208:c1::16)
  by DBBPR04MB7675.eurprd04.prod.outlook.com (2603:10a6:10:207::8) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.24; Tue, 3 May
- 2022 12:43:46 +0000
+ 2022 12:43:48 +0000
 Received: from AM0PR04MB5121.eurprd04.prod.outlook.com
  ([fe80::d42:c23c:780e:78eb]) by AM0PR04MB5121.eurprd04.prod.outlook.com
  ([fe80::d42:c23c:780e:78eb%4]) with mapi id 15.20.5206.024; Tue, 3 May 2022
- 12:43:46 +0000
+ 12:43:48 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -54,9 +54,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         UNGLinuxDriver@microchip.com,
         Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
         Colin Foster <colin.foster@in-advantage.com>
-Subject: [PATCH net-next 1/3] selftests: ocelot: tc_flower_chains: streamline test output
-Date:   Tue,  3 May 2022 15:43:30 +0300
-Message-Id: <20220503124332.857499-2-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 2/3] selftests: ocelot: tc_flower_chains: use conventional interface names
+Date:   Tue,  3 May 2022 15:43:31 +0300
+Message-Id: <20220503124332.857499-3-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220503124332.857499-1-vladimir.oltean@nxp.com>
 References: <20220503124332.857499-1-vladimir.oltean@nxp.com>
@@ -67,55 +67,55 @@ X-ClientProxiedBy: VI1P190CA0036.EURP190.PROD.OUTLOOK.COM
  (2603:10a6:208:c1::16)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: dd545e2f-5e16-416f-53db-08da2d02909d
+X-MS-Office365-Filtering-Correlation-Id: fafcacda-782a-451f-6bc6-08da2d02917d
 X-MS-TrafficTypeDiagnostic: DBBPR04MB7675:EE_
-X-Microsoft-Antispam-PRVS: <DBBPR04MB767511CE2D19128F5FF0C5DBE0C09@DBBPR04MB7675.eurprd04.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <DBBPR04MB7675364A10F0F7936B647EF1E0C09@DBBPR04MB7675.eurprd04.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Fy90vwpWBoEuJL0O5FBnMJnlsQ8iKKw7yS2O7yZXTpO2TQhbmpCytgGoJQGf3pIBDWbd2EZb/xWpKIlVlaZfRhc3X3XZEoag1K0ccO9qKm2xFS+P6wxgum1RynvZw8UrJdI2vdhgBd4X0Oa3NqXMKu+kAvVHpDo8tpQHjyp7OLKoHuAOwecWWEw4oSnuS64dI0wkgQfPz/nyjWzwK4Ne6+r71x0GmKhdF+7F9Ed3c/ppRzF7n2lnLf77H0xUmqWL48hm1/vyPyb4fHIzYnkPay9zZtbTSjXNhS+koy+U8hugice/TbasSQgN6XLmYYfGOJOxe7xyxN52sc1u6qBuTKapAnwCBzrsLhnSvc5C59NKtgHLC0TfFOWoon8OXg1s2ioDMVncuiTyL7lyc5f34+ioas8IEFSZ+l4v3/fnfLy+tTn6win49v5gqS+ic38+fzqmkyZiKbHGGsf5nQjgAEKe1UjGIbSm+6vE/qBEp6oX/sZ3kFSQoWfxwJ0jLc+keHbSSy8e3LrF28E+f4wvetIjfAHmKCFo9HL+nrCQua3SG4N/3tsziAe02QLh4fPgyixtN6pdASMD8YgdOfyDs3fgFFqX+zBpx3qp2K54knVqSmwQ/Y2ljB8PtyZlAxf+Wlq5wQRGyhWd6zaQUcNyZE+GQzdZibmeJN4mQ6lsXDv13pswDOu30x2WMdZd6+qs/3f1wVSpYrcPRtJru6gdSg==
+X-Microsoft-Antispam-Message-Info: 9BGNVPGfL8WWzK+lbZYZk8C+znX83PfaBQZQzFfsdUWTJK92TlHwdxQMr5OdZ1Z7wn1lZsFsCn+CCKSEF8hD98gL7CzkcNCCdlf9xEayyjE53+bVqF0kbmnLb1zZ+JcN4E1kxfL4Q09R6wo9QIlRNG/YJwy1Bp4ikA6p4f7K5IafvtjdVcAAtSYWPFmSpUGUP2gkcClv/gE5uu5zVLDgQ184dYFLPly+PlcbgyyoS7QFv0O3KuWtDP0WaF58URKILls9zsXelhLnCuBLcZx/IVoQkZ9q4fTMJ0OvNTstxOr/3WC6nTmgerJvgDgJB62nJAWaZjh0o9TZO3BBdLpfnRHvQIYSt+wS+CszREySdtlL+maJG8bkrb4ZbUvlw41z91zdvbGE0gYFP7otTe2GPwPIfQrFFYzOaQTFwOWbmsEF98DcPmSc2+kWQrn40oCQfBK/OjVxYsMf5nzqV4ey+lLOW2lf2zWYtfNwuqgGsVbFYdPBdXyGa6YpmCI2xUSXwXOeisAfvzKD3l6qLhPgjKwwKtQR+fFPCdO8eWPPQGFkz/A0wwfhtWFN2KUA4DNi8mCs/FOVczyQu6mENoyur3D+RnbdOpw/6kQDPFbC8KJ+dpHiP8ylwIedIBvRZ4HJy3EThmGrKFOCtuZ4/prGfXMHD03GURUYLJBsaJ+fo52WifuMR2955iBoMTy3p8XgylYpGAjg4NQGAgfHzGr3L5fBEmTUsSwf4yCU85xJmkU2L+GLAIvq3AvXUI5CrzRH3pQ8Cazud1Y9Ny0bruksGspbQRcHvrZw2NyapnpLGG8=
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5121.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38350700002)(38100700002)(52116002)(83380400001)(6506007)(5660300002)(26005)(6512007)(316002)(86362001)(7416002)(186003)(44832011)(2616005)(36756003)(8936002)(1076003)(4326008)(6666004)(8676002)(6916009)(54906003)(66556008)(66476007)(2906002)(508600001)(66946007)(6486002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?wI1b1CcoMLSPR/oewVtZ1nogZOfLpESACrssgoo5lnXVdrY5vH0HOBZv6u9z?=
- =?us-ascii?Q?2tLh0Hua/VexFL9DIweVTe9ZwHhFDndL91jL1u1Wp86OZg2R4J3ALtfSL2B+?=
- =?us-ascii?Q?K2oZe7/mafJg80ow56X75mA4Yq5DtlwSoHCGha0/5HNBpG5HA627CL0+Tif+?=
- =?us-ascii?Q?7U13H3QWqkJ/QOwV6sD5hg74Ae2X2oUgDiGtqSHL9Wy9rCj8oYr4dG7oMIpW?=
- =?us-ascii?Q?ouJWgVCWYHeOBobtQsKA6rwTCaOXjsgX/GsJyna/raGKtCAVykGTZ8D8u0sX?=
- =?us-ascii?Q?g3UyHNpyUVHz2CARrTGYZs6rECHzQsSOIJpiOg3KN0FiMq3b6z1xMIMfMAKF?=
- =?us-ascii?Q?xwq74kAquGTJfuSmIjpvIr6JVp/rFa4uwKWKS8emZc2m17zKmQUYiCueJGi7?=
- =?us-ascii?Q?lTm+6yXaw7fHuoAxpMcwpFIQ1xwpvauA0TpiixYWaEVCApAD6CJkoQy1XeUz?=
- =?us-ascii?Q?00EIMpYbYgmh386pUmNbkGo+ONrtuBDoWV3aBnNssC9rpvOJTmDZHEFITeAK?=
- =?us-ascii?Q?1JzA1jSiCpCL2Auh6wYJiaC5HH3lh/NOcBbJUZ2BdJe41iLWhxdzXIjdLI3i?=
- =?us-ascii?Q?270t2M1U7v0fgiHR8B99iMEiXciK/lV6wmRxkJuHO29pwAFiP1AIGS0dvwpR?=
- =?us-ascii?Q?BNV4coTtH4PShY6AAzVFY6TzTrS2hRWGAdX9PPbh1QUV4b08fHy6e98TdkBR?=
- =?us-ascii?Q?kXAfpcGG858UJzHPBHuU8v+9A0HHd0oWLkXd9llELVjLBW9LjkdxbsMkH8cm?=
- =?us-ascii?Q?zbAaHkoc3g1iKoBC1Fyel6Rv+Tvi14G+bBTf/jw+BmqmBgwpygLy/drN+DGM?=
- =?us-ascii?Q?t9Vw5iyuUk94STbpc3Nwu8ZoVDs/In3upZgbQMnbcfkpykshj50wrM9x8p6M?=
- =?us-ascii?Q?B4XYDBn0ssPom5V2QvGB5W+coFylNIhvvsxlepFURfJdK170rJfYmC7EVASU?=
- =?us-ascii?Q?08pdFj1Cgj92mlWZYrye6qb+V3RRy7n7A9Z4owIqmrMWDO5ZFBSDQnq1UKmB?=
- =?us-ascii?Q?Wkh8cpocs/ph7kauCT2Om0EQw+Ql/41gq5b/BJ6D3ZyH5a0RuZOfEx4phJ+l?=
- =?us-ascii?Q?KoNpI7crCtzvPtg0dHpc46WOeLaaW/I8RKvEXb0jtcnnXGtyLBMH9mC7GoxG?=
- =?us-ascii?Q?Ji41sGq8+x0STzyUAwvzTQMXQH6dpss6cqxl59YPEwzI1RKIljyo36mZZETj?=
- =?us-ascii?Q?VoB1DiVa4C8QBU676jxQfEgc5zTBU8VQW3LezXj16IFkeC4+STyF3MoN/E9H?=
- =?us-ascii?Q?azonJ4QXMTogVjzgHgmYGjzWcHVM8qxg3Q8AX1dAGpRAUBVimXgIEVXoEObv?=
- =?us-ascii?Q?Bgdupq26oG6jJ4I+U6mpmu1IxfM1MVX3Fm3CZ5mDJ6BbsAPc7pJWpIGVR9pQ?=
- =?us-ascii?Q?8BdnjlB4ufHE43q2vPVPM0vNFtGaqcvsUC1B030HBHw8JQtsu5mtuCo9+R+h?=
- =?us-ascii?Q?vo1IQr9pPwCpgwU0kvCVFIz39V+5pkBFkqrYBsxwodYQ4/XKpcUekJHbLq9P?=
- =?us-ascii?Q?oPuzUyzMkEmW4sUG8CQ2xSm1ffkTn55KJXRkNeqt7EdZgVeuBvWoJPrFrO1r?=
- =?us-ascii?Q?XAvWVAOXcdCZ9xsgXfIbemZIWL2VviGM+zlGcCy+toijsjD7vB81S6o/PVcJ?=
- =?us-ascii?Q?FJ2H8NOJCoWSQoL4INdmsu050ndrCy8BEECQeGvGug4Ou1MgZRTWK3/DERIC?=
- =?us-ascii?Q?ghUMThD1zjl7BxbPW/k+x0TG0CaWPvZ1RmADGvO4af6xsRAKZt7abEeam8PD?=
- =?us-ascii?Q?uHMTYTZy4aSEahMK3pUxNc/DyZYSknY=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4Y5guWMJx1N/ZU6iMof94p1uQn1s/jJZ2zJt+kGDshs/HvsEBCEz7VLZZyc4?=
+ =?us-ascii?Q?3x8t75X+OkAh9QjZT+XlvkWeyH7hr7VntH3g1hlRmElwIlCjOtfZubwwINZw?=
+ =?us-ascii?Q?NAEok8HR/Y6yLr0oKpO1oyDw7WFiT+yw2bvd9cr8ZeB568bWfwgKrSO9jDLt?=
+ =?us-ascii?Q?zjFoySnk128dB/MpO3mlqs4vKYkO+mpA5Oh6odV7w68tpRfvm2Ma6zY189aO?=
+ =?us-ascii?Q?QUJ28lAijccvmCPRwp+3joWAvxh99CJBwMDQuo15rwysoO/G+CTysd1RwZtP?=
+ =?us-ascii?Q?XoMlXr2B+IYapVHXtym2vICblYhHyVj788KA1ik0sh+t0CWYPFMfIf0ngqQv?=
+ =?us-ascii?Q?405GG5Q2EGVebHKr6u4exfyGIFhfck6/oZkBKRIVBfMW3CwYqTbuzDs6N6Ip?=
+ =?us-ascii?Q?k59qhFbm8gqO1mi0g4iVTTAcHmQEQ0vLRcd5mtatxO6JOtY0CIoZt5c0x0Q+?=
+ =?us-ascii?Q?dImSFWS08RzlkTuhCD5y/WQZVIZoPvnlkpTLYMvz3rjDbWuppNAQ4CcrCDQe?=
+ =?us-ascii?Q?n9b36uV12VjeY4kXNyrMlomx8XOczdiBIvVLv5tRDI67fMRwLRvEpTY/29+b?=
+ =?us-ascii?Q?W78XwlIqbvAhZEpoUn+PSRaEVVISEYzSkDZP3Dwm1ZsamFmxlv6J5QkQFE/y?=
+ =?us-ascii?Q?DBDwyAewsAvX1WrbObeCL+j04rRoBzkikTIJiExA8LFUE02lrOJLvumPojTg?=
+ =?us-ascii?Q?Ke53NR++DA+Q5I70TiOlrL7vhcSepO5wbcLSiSnkmzKvLXiyjD50IIoaHnU5?=
+ =?us-ascii?Q?f4tDZ5Fafjq1q/9cP5Rlv/GBRYRR8sq1oiwrnkfKWCxcloBDmYvjq/zH5mKR?=
+ =?us-ascii?Q?vaJ1NWrGW6mxb4qC6icO8aKN5wgH2JlncRleLOjlSSBqfxNN9j6BObruTqwl?=
+ =?us-ascii?Q?79/0CuF8MfP79rIUc+e9v+tZjs4GfOlIP/yf8RtkroQfHw8IxIeEKHGex/ty?=
+ =?us-ascii?Q?PoWiv6iulJ1a7m01WJNF8Aprw83ZbjVIzKb4Pm0c6ilm48s++E3qfPo5c02J?=
+ =?us-ascii?Q?q7PK1VM3Do0oBaQX6wBdmszTXuRh4uD/fuVGjWXONcRH4qveJ+46JXJvpSzq?=
+ =?us-ascii?Q?pfJG/oUdSebNDnGHY4tXrFvvKGpEq7wsgjv2Q518pbk3fDPQ7pnRNaUEswXa?=
+ =?us-ascii?Q?8kYPXmVaLl5CYVoKEpIRxHRpAWJpxwMEPEKQq8Moa5WLmpcAtiI0D3R5VyAX?=
+ =?us-ascii?Q?Cd7e024ZWgTwyOLdI3ma3OjcPFvhLqncpBq2WphUuQo5Jw0jR2d3hZgUeVYv?=
+ =?us-ascii?Q?CWNZ9bpNtzl9EV0Pp4DoEtwrh5FIxO5JEJg+Gce0geKw6jn12yXzzAKtzmdC?=
+ =?us-ascii?Q?yLrDzVmJjur/pyoIoL5+NzSe/8vHC4CNExJ0SgFhRj9xvV/Yz27BFgh6oPQ1?=
+ =?us-ascii?Q?X97u26mEwbi5wBba9fLy6AvefvXvTjXQuUxaL8UZnOWTN2+tvULyMJnscBl0?=
+ =?us-ascii?Q?e4KFgQyCEaimBg6Ml9OTYgX4vQYHjbCe3ok+4hOdf0VqFj9LGMDtuqZg8j6r?=
+ =?us-ascii?Q?/XK3yDdf5bsGBsu5HPWuKqBNiMYEIZCFRJOt4vA9x1SVa+n5pgYpsDv09Xey?=
+ =?us-ascii?Q?P/efLkIQefbJxqzPY5vjN3gkzkpJvIGqIr0ONfMY00XlnJJiqylMnyZy/nSW?=
+ =?us-ascii?Q?G0XsIZHKDTUM71Zxv0OaNyLzBNrSsKMa2jLx7gy03puvWkn5eDWLSqC+bOf0?=
+ =?us-ascii?Q?5tzT28qt/HcvVzhA8VnckTOZgfluABHSCBDZ8p72OYJoKVRG4c232AoAGrqa?=
+ =?us-ascii?Q?DzRg98SB//ukXDoaIszd/roXA4akDPQ=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dd545e2f-5e16-416f-53db-08da2d02909d
+X-MS-Exchange-CrossTenant-Network-Message-Id: fafcacda-782a-451f-6bc6-08da2d02917d
 X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5121.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 May 2022 12:43:46.7948
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 May 2022 12:43:48.2321
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Lq3yP2G5UxHwPARaw1XQn2D0JVGT4kPy66RaJdcOyDJakLVUirUlhHyJ1YPZAk5oBV35S6/mZZ65MD7wcc0Nsg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: lU4EWUCK1epqye8c/g19Kb0iiRUatiJFACilMU4BUa4XLYAhzoBFMYEp4xkxIgKeYgdPVJ6RpqjnezuK5Defcw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR04MB7675
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -127,166 +127,288 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bring this driver-specific selftest output in line with the other
-selftests.
+This is a robotic rename as follows:
 
-Before:
+eth0 -> swp2
+eth1 -> swp1
+eth2 -> h1
+eth3 -> h2
 
-Testing VLAN pop..                      OK
-Testing VLAN push..                     OK
-Testing ingress VLAN modification..             OK
-Testing egress VLAN modification..              OK
-Testing frame prioritization..          OK
-
-After:
-
-TEST: VLAN pop                                                      [ OK ]
-TEST: VLAN push                                                     [ OK ]
-TEST: Ingress VLAN modification                                     [ OK ]
-TEST: Egress VLAN modification                                      [ OK ]
-TEST: Frame prioritization                                          [ OK ]
+This brings the selftest more in line with the other forwarding
+selftests, where h1 is connected to swp1, and h2 to swp2.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- .../drivers/net/ocelot/tc_flower_chains.sh    | 52 +++++++++----------
- 1 file changed, 24 insertions(+), 28 deletions(-)
+ .../drivers/net/ocelot/tc_flower_chains.sh    | 134 +++++++++---------
+ 1 file changed, 67 insertions(+), 67 deletions(-)
 
 diff --git a/tools/testing/selftests/drivers/net/ocelot/tc_flower_chains.sh b/tools/testing/selftests/drivers/net/ocelot/tc_flower_chains.sh
-index 4401a654c2c0..a27f24a6aa07 100755
+index a27f24a6aa07..e67a722b2013 100755
 --- a/tools/testing/selftests/drivers/net/ocelot/tc_flower_chains.sh
 +++ b/tools/testing/selftests/drivers/net/ocelot/tc_flower_chains.sh
-@@ -204,7 +204,7 @@ cleanup()
+@@ -15,7 +15,7 @@ require_command tcpdump
+ #   |       DUT ports         Generator ports     |
+ #   | +--------+ +--------+ +--------+ +--------+ |
+ #   | |        | |        | |        | |        | |
+-#   | |  eth0  | |  eth1  | |  eth2  | |  eth3  | |
++#   | |  swp2  | |  swp1  | |   h1   | |    h2  | |
+ #   | |        | |        | |        | |        | |
+ #   +-+--------+-+--------+-+--------+-+--------+-+
+ #          |         |           |          |
+@@ -24,15 +24,15 @@ require_command tcpdump
+ #          |                                |
+ #          +--------------------------------+
  
- test_vlan_pop()
+-eth0=${NETIFS[p1]}
+-eth1=${NETIFS[p2]}
+-eth2=${NETIFS[p3]}
+-eth3=${NETIFS[p4]}
++swp2=${NETIFS[p1]}
++swp1=${NETIFS[p2]}
++h1=${NETIFS[p3]}
++h2=${NETIFS[p4]}
+ 
+-eth0_mac="de:ad:be:ef:00:00"
+-eth1_mac="de:ad:be:ef:00:01"
+-eth2_mac="de:ad:be:ef:00:02"
+-eth3_mac="de:ad:be:ef:00:03"
++swp2_mac="de:ad:be:ef:00:00"
++swp1_mac="de:ad:be:ef:00:01"
++h1_mac="de:ad:be:ef:00:02"
++h2_mac="de:ad:be:ef:00:03"
+ 
+ # Helpers to map a VCAP IS1 and VCAP IS2 lookup and policy to a chain number
+ # used by the kernel driver. The numbers are:
+@@ -156,39 +156,39 @@ create_tcam_skeleton()
+ 
+ setup_prepare()
  {
--	printf "Testing VLAN pop..			"
-+	RET=0
+-	ip link set $eth0 up
+-	ip link set $eth1 up
+-	ip link set $eth2 up
+-	ip link set $eth3 up
++	ip link set $swp2 up
++	ip link set $swp1 up
++	ip link set $h1 up
++	ip link set $h2 up
  
- 	tcpdump_start $eth2
+-	create_tcam_skeleton $eth0
++	create_tcam_skeleton $swp2
  
-@@ -217,18 +217,17 @@ test_vlan_pop()
+ 	ip link add br0 type bridge
+-	ip link set $eth0 master br0
+-	ip link set $eth1 master br0
++	ip link set $swp2 master br0
++	ip link set $swp1 master br0
+ 	ip link set br0 up
  
- 	tcpdump_stop $eth2
+-	ip link add link $eth3 name $eth3.100 type vlan id 100
+-	ip link set $eth3.100 up
++	ip link add link $h2 name $h2.100 type vlan id 100
++	ip link set $h2.100 up
  
--	if tcpdump_show $eth2 | grep -q "$eth3_mac > $eth2_mac, ethertype IPv4"; then
--		echo "OK"
--	else
--		echo "FAIL"
--	fi
-+	tcpdump_show $eth2 | grep -q "$eth3_mac > $eth2_mac, ethertype IPv4"
-+	check_err "$?" "untagged reception"
+-	ip link add link $eth3 name $eth3.200 type vlan id 200
+-	ip link set $eth3.200 up
++	ip link add link $h2 name $h2.200 type vlan id 200
++	ip link set $h2.200 up
  
- 	tcpdump_cleanup $eth2
-+
-+	log_test "VLAN pop"
+-	tc filter add dev $eth0 ingress chain $(IS1 1) pref 1 \
++	tc filter add dev $swp2 ingress chain $(IS1 1) pref 1 \
+ 		protocol 802.1Q flower skip_sw vlan_id 100 \
+ 		action vlan pop \
+ 		action goto chain $(IS1 2)
+ 
+-	tc filter add dev $eth0 egress chain $(ES0) pref 1 \
+-		flower skip_sw indev $eth1 \
++	tc filter add dev $swp2 egress chain $(ES0) pref 1 \
++		flower skip_sw indev $swp1 \
+ 		action vlan push protocol 802.1Q id 100
+ 
+-	tc filter add dev $eth0 ingress chain $(IS1 0) pref 2 \
++	tc filter add dev $swp2 ingress chain $(IS1 0) pref 2 \
+ 		protocol ipv4 flower skip_sw src_ip 10.1.1.2 \
+ 		action skbedit priority 7 \
+ 		action goto chain $(IS1 1)
+ 
+-	tc filter add dev $eth0 ingress chain $(IS2 0 0) pref 1 \
++	tc filter add dev $swp2 ingress chain $(IS2 0 0) pref 1 \
+ 		protocol ipv4 flower skip_sw ip_proto udp dst_port 5201 \
+ 		action police rate 50mbit burst 64k conform-exceed drop/pipe \
+ 		action goto chain $(IS2 1 0)
+@@ -196,9 +196,9 @@ setup_prepare()
+ 
+ cleanup()
+ {
+-	ip link del $eth3.200
+-	ip link del $eth3.100
+-	tc qdisc del dev $eth0 clsact
++	ip link del $h2.200
++	ip link del $h2.100
++	tc qdisc del dev $swp2 clsact
+ 	ip link del br0
  }
  
- test_vlan_push()
+@@ -206,21 +206,21 @@ test_vlan_pop()
  {
--	printf "Testing VLAN push..			"
-+	RET=0
+ 	RET=0
  
- 	tcpdump_start $eth3.100
+-	tcpdump_start $eth2
++	tcpdump_start $h1
  
-@@ -238,18 +237,17 @@ test_vlan_push()
+ 	# Work around Mausezahn VLAN builder bug
+ 	# (https://github.com/netsniff-ng/netsniff-ng/issues/225) by using
+ 	# an 8021q upper
+-	$MZ $eth3.100 -q -c 1 -p 64 -a $eth3_mac -b $eth2_mac -t ip
++	$MZ $h2.100 -q -c 1 -p 64 -a $h2_mac -b $h1_mac -t ip
  
- 	tcpdump_stop $eth3.100
+ 	sleep 1
  
--	if tcpdump_show $eth3.100 | grep -q "$eth2_mac > $eth3_mac"; then
--		echo "OK"
--	else
--		echo "FAIL"
--	fi
-+	tcpdump_show $eth3.100 | grep -q "$eth2_mac > $eth3_mac"
-+	check_err "$?" "tagged reception"
+-	tcpdump_stop $eth2
++	tcpdump_stop $h1
  
- 	tcpdump_cleanup $eth3.100
-+
-+	log_test "VLAN push"
+-	tcpdump_show $eth2 | grep -q "$eth3_mac > $eth2_mac, ethertype IPv4"
++	tcpdump_show $h1 | grep -q "$h2_mac > $h1_mac, ethertype IPv4"
+ 	check_err "$?" "untagged reception"
+ 
+-	tcpdump_cleanup $eth2
++	tcpdump_cleanup $h1
+ 
+ 	log_test "VLAN pop"
  }
- 
- test_vlan_ingress_modify()
+@@ -229,18 +229,18 @@ test_vlan_push()
  {
--	printf "Testing ingress VLAN modification..		"
-+	RET=0
+ 	RET=0
+ 
+-	tcpdump_start $eth3.100
++	tcpdump_start $h2.100
+ 
+-	$MZ $eth2 -q -c 1 -p 64 -a $eth2_mac -b $eth3_mac -t ip
++	$MZ $h1 -q -c 1 -p 64 -a $h1_mac -b $h2_mac -t ip
+ 
+ 	sleep 1
+ 
+-	tcpdump_stop $eth3.100
++	tcpdump_stop $h2.100
+ 
+-	tcpdump_show $eth3.100 | grep -q "$eth2_mac > $eth3_mac"
++	tcpdump_show $h2.100 | grep -q "$h1_mac > $h2_mac"
+ 	check_err "$?" "tagged reception"
+ 
+-	tcpdump_cleanup $eth3.100
++	tcpdump_cleanup $h2.100
+ 
+ 	log_test "VLAN push"
+ }
+@@ -250,33 +250,33 @@ test_vlan_ingress_modify()
+ 	RET=0
  
  	ip link set br0 type bridge vlan_filtering 1
- 	bridge vlan add dev $eth0 vid 200
-@@ -269,11 +267,8 @@ test_vlan_ingress_modify()
+-	bridge vlan add dev $eth0 vid 200
+-	bridge vlan add dev $eth0 vid 300
+-	bridge vlan add dev $eth1 vid 300
++	bridge vlan add dev $swp2 vid 200
++	bridge vlan add dev $swp2 vid 300
++	bridge vlan add dev $swp1 vid 300
  
- 	tcpdump_stop $eth2
+-	tc filter add dev $eth0 ingress chain $(IS1 2) pref 3 \
++	tc filter add dev $swp2 ingress chain $(IS1 2) pref 3 \
+ 		protocol 802.1Q flower skip_sw vlan_id 200 \
+ 		action vlan modify id 300 \
+ 		action goto chain $(IS2 0 0)
  
--	if tcpdump_show $eth2 | grep -q "$eth3_mac > $eth2_mac, .* vlan 300"; then
--		echo "OK"
--	else
--		echo "FAIL"
--	fi
-+	tcpdump_show $eth2 | grep -q "$eth3_mac > $eth2_mac, .* vlan 300"
-+	check_err "$?" "tagged reception"
+-	tcpdump_start $eth2
++	tcpdump_start $h1
  
- 	tcpdump_cleanup $eth2
+-	$MZ $eth3.200 -q -c 1 -p 64 -a $eth3_mac -b $eth2_mac -t ip
++	$MZ $h2.200 -q -c 1 -p 64 -a $h2_mac -b $h1_mac -t ip
  
-@@ -283,11 +278,13 @@ test_vlan_ingress_modify()
- 	bridge vlan del dev $eth0 vid 300
- 	bridge vlan del dev $eth1 vid 300
+ 	sleep 1
+ 
+-	tcpdump_stop $eth2
++	tcpdump_stop $h1
+ 
+-	tcpdump_show $eth2 | grep -q "$eth3_mac > $eth2_mac, .* vlan 300"
++	tcpdump_show $h1 | grep -q "$h2_mac > $h1_mac, .* vlan 300"
+ 	check_err "$?" "tagged reception"
+ 
+-	tcpdump_cleanup $eth2
++	tcpdump_cleanup $h1
+ 
+-	tc filter del dev $eth0 ingress chain $(IS1 2) pref 3
++	tc filter del dev $swp2 ingress chain $(IS1 2) pref 3
+ 
+-	bridge vlan del dev $eth0 vid 200
+-	bridge vlan del dev $eth0 vid 300
+-	bridge vlan del dev $eth1 vid 300
++	bridge vlan del dev $swp2 vid 200
++	bridge vlan del dev $swp2 vid 300
++	bridge vlan del dev $swp1 vid 300
  	ip link set br0 type bridge vlan_filtering 0
-+
-+	log_test "Ingress VLAN modification"
- }
  
- test_vlan_egress_modify()
+ 	log_test "Ingress VLAN modification"
+@@ -286,34 +286,34 @@ test_vlan_egress_modify()
  {
--	printf "Testing egress VLAN modification..		"
-+	RET=0
+ 	RET=0
  
- 	tc qdisc add dev $eth1 clsact
+-	tc qdisc add dev $eth1 clsact
++	tc qdisc add dev $swp1 clsact
  
-@@ -307,11 +304,8 @@ test_vlan_egress_modify()
+ 	ip link set br0 type bridge vlan_filtering 1
+-	bridge vlan add dev $eth0 vid 200
+-	bridge vlan add dev $eth1 vid 200
++	bridge vlan add dev $swp2 vid 200
++	bridge vlan add dev $swp1 vid 200
  
- 	tcpdump_stop $eth2
+-	tc filter add dev $eth1 egress chain $(ES0) pref 3 \
++	tc filter add dev $swp1 egress chain $(ES0) pref 3 \
+ 		protocol 802.1Q flower skip_sw vlan_id 200 vlan_prio 0 \
+ 		action vlan modify id 300 priority 7
  
--	if tcpdump_show $eth2 | grep -q "$eth3_mac > $eth2_mac, .* vlan 300"; then
--		echo "OK"
--	else
--		echo "FAIL"
--	fi
-+	tcpdump_show $eth2 | grep -q "$eth3_mac > $eth2_mac, .* vlan 300"
-+	check_err "$?" "tagged reception"
+-	tcpdump_start $eth2
++	tcpdump_start $h1
  
- 	tcpdump_cleanup $eth2
+-	$MZ $eth3.200 -q -c 1 -p 64 -a $eth3_mac -b $eth2_mac -t ip
++	$MZ $h2.200 -q -c 1 -p 64 -a $h2_mac -b $h1_mac -t ip
  
-@@ -321,14 +315,14 @@ test_vlan_egress_modify()
- 	bridge vlan del dev $eth0 vid 200
- 	bridge vlan del dev $eth1 vid 200
+ 	sleep 1
+ 
+-	tcpdump_stop $eth2
++	tcpdump_stop $h1
+ 
+-	tcpdump_show $eth2 | grep -q "$eth3_mac > $eth2_mac, .* vlan 300"
++	tcpdump_show $h1 | grep -q "$h2_mac > $h1_mac, .* vlan 300"
+ 	check_err "$?" "tagged reception"
+ 
+-	tcpdump_cleanup $eth2
++	tcpdump_cleanup $h1
+ 
+-	tc filter del dev $eth1 egress chain $(ES0) pref 3
+-	tc qdisc del dev $eth1 clsact
++	tc filter del dev $swp1 egress chain $(ES0) pref 3
++	tc qdisc del dev $swp1 clsact
+ 
+-	bridge vlan del dev $eth0 vid 200
+-	bridge vlan del dev $eth1 vid 200
++	bridge vlan del dev $swp2 vid 200
++	bridge vlan del dev $swp1 vid 200
  	ip link set br0 type bridge vlan_filtering 0
-+
-+	log_test "Egress VLAN modification"
- }
  
- test_skbedit_priority()
+ 	log_test "Egress VLAN modification"
+@@ -323,11 +323,11 @@ test_skbedit_priority()
  {
  	local num_pkts=100
  
--	printf "Testing frame prioritization..		"
--
- 	before=$(ethtool_stats_get $eth0 'rx_green_prio_7')
+-	before=$(ethtool_stats_get $eth0 'rx_green_prio_7')
++	before=$(ethtool_stats_get $swp2 'rx_green_prio_7')
  
- 	$MZ $eth3 -q -c $num_pkts -p 64 -a $eth3_mac -b $eth2_mac -t ip -A 10.1.1.2
-@@ -336,10 +330,12 @@ test_skbedit_priority()
- 	after=$(ethtool_stats_get $eth0 'rx_green_prio_7')
+-	$MZ $eth3 -q -c $num_pkts -p 64 -a $eth3_mac -b $eth2_mac -t ip -A 10.1.1.2
++	$MZ $h2 -q -c $num_pkts -p 64 -a $h2_mac -b $h1_mac -t ip -A 10.1.1.2
+ 
+-	after=$(ethtool_stats_get $eth0 'rx_green_prio_7')
++	after=$(ethtool_stats_get $swp2 'rx_green_prio_7')
  
  	if [ $((after - before)) = $num_pkts ]; then
--		echo "OK"
-+		RET=0
- 	else
--		echo "FAIL"
-+		RET=1
- 	fi
-+
-+	log_test "Frame prioritization"
- }
- 
- trap cleanup EXIT
+ 		RET=0
 -- 
 2.25.1
 
