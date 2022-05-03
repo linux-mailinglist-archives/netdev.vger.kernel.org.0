@@ -2,117 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CA11518FF2
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 23:22:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52E58519078
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 23:51:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242808AbiECVVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 17:21:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34074 "EHLO
+        id S243066AbiECVq5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 17:46:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242775AbiECVVf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 17:21:35 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E84F40A37
-        for <netdev@vger.kernel.org>; Tue,  3 May 2022 14:17:54 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id r11so10404232ybg.6
-        for <netdev@vger.kernel.org>; Tue, 03 May 2022 14:17:54 -0700 (PDT)
+        with ESMTP id S230079AbiECVq5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 17:46:57 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 488AB2B1B8
+        for <netdev@vger.kernel.org>; Tue,  3 May 2022 14:43:23 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id e2so25014062wrh.7
+        for <netdev@vger.kernel.org>; Tue, 03 May 2022 14:43:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JJYf1HdtGbA9A9BBtbzwA8c5hbVd5d/CHGwQN7JwJ7U=;
-        b=sR57+94S8K2MSBxIbfdVC2p1Sv5Z9xP0F60MBr2TtfFdVbe5aMktduW8o4oLoKUN7N
-         xyko9XOV6IEoiuIXU2CcOmq8e5QM3C0m+WrlBv4DwwDJ3w0sa7eNEHSwnxV6upXlC5Ga
-         5j+5Ls4BlLdjacOWYg2YcOM/xcYChlNvdOU+ZEFseusk9RWFvHHRad0/5oLcJScm2n+d
-         USV+gPMGOwb/GB9CY3LpNXZ8Ns7Z3sUdJ0/5EmhjLe/6ue7fD73O/L5Ms8lqiNTKDgWK
-         fZaC7dmfLlez40DJLF0QzWO/WuX1+AweXnMf9UyolcAAhJJxuO2B/yb7nftvYiYOlYz1
-         04Eg==
+        d=6wind.com; s=google;
+        h=message-id:date:mime-version:user-agent:reply-to:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=uy5Fap5RR/WBKFIkuBoAooqirYv43B4rsOc7Wy6ONxo=;
+        b=FwhHFbHH7CeB5CqxLA3bblkThOeyd9b+Oz4OxpRzpnCL36rp2yVff4gUv430blZdUK
+         meKx7UGEq7F/638J9PUYfGYXbYvbj4REBXX4saK+ZcBWeeK/M4hXn90YFaFYQZhxNBb+
+         M7DBtMBl58ibxtSUC/zIaX8ZYfJ4XSqzJd0lQRHENpLF3juW14+FNI2WTKe59abH8x2E
+         0DeukS7xuJky3hhRI28yA4prP3u+Ud6QgoN8eiKAGXbwLSxkhGcWH7pHcYbgZwQ4ntnS
+         3TpHgl09zPwA6gOOi4fKiqSDyWudB91MnM9PNME8r4NUvJKyJ7qeIaejS1H1oyf7uEgi
+         Djjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JJYf1HdtGbA9A9BBtbzwA8c5hbVd5d/CHGwQN7JwJ7U=;
-        b=TQ3DTnHm5dSRqqHzMw4jhzBFpwKG4mZuhQiwBthgpfYcNiEnbZEn2su1GJo0a08a/6
-         35oDAPBMbSltOf+19AIp8DZYk2TPoQn9w2k2atmU/VyESXRG9ssa5OEOHLm0Mccc+Ss1
-         u+9mRz+ClpM3dHI6me76tUEntNKHMBVEnHoMzmQ81a5Wgru93TilMA0uX/6Uc23FNQWF
-         0l3DO9MecHsVqhvB9zIDsSfa3lx87nMbaMQljK4W0PndUVBB/IfrY/xa0iJQuiJalr16
-         UEoj5PbaeKe1FmYtgLEChP357Sef9uCmYrvo4lTTmrQOtPYfGYPDOcVMq9lxPPkn3qdA
-         f5LQ==
-X-Gm-Message-State: AOAM531Sn9kCmCJoBjI0j5Zv77MOB508D0UB3d3CStjbxpDYywV81GMf
-        zMgSF8Vf26+zVthf4GEN6kyN1S+SGaK22KnWeuFw0PaQXd3X2E7k
-X-Google-Smtp-Source: ABdhPJylOl26DLDExxtzn768hdr7IU/TnhArLsFIfmrQkxdHHXER15nBfzJzN7nmMPEqp/ZCVdxtFKYj9EUWWm8xss4=
-X-Received: by 2002:a25:ba50:0:b0:649:b5b2:6fca with SMTP id
- z16-20020a25ba50000000b00649b5b26fcamr6272154ybj.55.1651612673190; Tue, 03
- May 2022 14:17:53 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:reply-to
+         :subject:content-language:to:cc:references:from:organization
+         :in-reply-to:content-transfer-encoding;
+        bh=uy5Fap5RR/WBKFIkuBoAooqirYv43B4rsOc7Wy6ONxo=;
+        b=JfmYmiKa2zRUG3gN9w+z1kEYW0AI9vwm2fuXNG6ONaHT4YPH0il7iXwBeVPH1/JH0B
+         CADwlP4fe5HJHePnXC5kWhL+9I/14EL8/6btGrTQTobtdCNlSa8LKRAHeTWl86qj6ph0
+         PkF09FHlmJTy/HDtOZ2Lm4uJ5gzSeKhBvmGkPOhDdmTtcTL17c1ZP7wnXrXtet1m3ETm
+         4/7irXmbHNvDXXDARCzso2Xgi3OZ82+AzalWKGtxU0V9vNu59v6rgWF2mgK/ibkpptwK
+         jahkzlnibjpP09GDNQNOqCU3RgwNe7vxKRziLaD/vLlL3pPn/ZDhKxcYMo1nb96LMQPS
+         +guw==
+X-Gm-Message-State: AOAM532tPl6kpknEC4+JQXeF6GFgL5uHJEJkDy1Z0S7KdFyDa52j2keT
+        aTE21W3+z/8umgwEkGH9S/hdvw==
+X-Google-Smtp-Source: ABdhPJw5h1HjZ97You/3QSKl8KV/2f6gAxaDhOWZXi3Gr/syDFy2JPR69V8btFcDNn1ftkWX9ox9yg==
+X-Received: by 2002:adf:f8cf:0:b0:20a:dfae:aadd with SMTP id f15-20020adff8cf000000b0020adfaeaaddmr14323214wrq.429.1651614201673;
+        Tue, 03 May 2022 14:43:21 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:b41:c160:6419:6a6e:706d:bb0d? ([2a01:e0a:b41:c160:6419:6a6e:706d:bb0d])
+        by smtp.gmail.com with ESMTPSA id f11-20020adfc98b000000b0020c5253d910sm10972495wrh.92.2022.05.03.14.43.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 14:43:20 -0700 (PDT)
+Message-ID: <86fce02b-7485-ebfa-b4ba-da9ebf7a11b7@6wind.com>
+Date:   Tue, 3 May 2022 23:43:20 +0200
 MIME-Version: 1.0
-References: <a5fb1fc4-2284-3359-f6a0-e4e390239d7b@I-love.SAKURA.ne.jp> <165157801106.17866.6764782659491020080.git-patchwork-notify@kernel.org>
-In-Reply-To: <165157801106.17866.6764782659491020080.git-patchwork-notify@kernel.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 3 May 2022 14:17:42 -0700
-Message-ID: <CANn89iLHihonbBUQWkd0mjJPUuYBLMVoLCsRswtXmGjU3NKL5w@mail.gmail.com>
-Subject: Re: [PATCH v2] net: rds: acquire refcount on TCP sockets
-To:     patchwork-bot+netdevbpf@kernel.org
-Cc:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH net v2] ping: fix address binding wrt vrf
+Content-Language: en-US
+To:     David Ahern <dsahern@kernel.org>,
         David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        syzbot <syzbot+694120e1002c117747ed@syzkaller.appspotmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        linux-rdma <linux-rdma@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        Eric Dumazet <edumazet@google.com>
+Cc:     netdev@vger.kernel.org, stable@vger.kernel.org
+References: <20220429075659.9967-1-nicolas.dichtel@6wind.com>
+ <20220429082021.10294-1-nicolas.dichtel@6wind.com>
+ <1238b102-f491-a917-3708-0df344015a5b@kernel.org>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+In-Reply-To: <1238b102-f491-a917-3708-0df344015a5b@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 3, 2022 at 4:40 AM <patchwork-bot+netdevbpf@kernel.org> wrote:
->
-> Hello:
->
-> This patch was applied to netdev/net.git (master)
-> by Paolo Abeni <pabeni@redhat.com>:
->
-> On Mon, 2 May 2022 10:40:18 +0900 you wrote:
-> > syzbot is reporting use-after-free read in tcp_retransmit_timer() [1],
-> > for TCP socket used by RDS is accessing sock_net() without acquiring a
-> > refcount on net namespace. Since TCP's retransmission can happen after
-> > a process which created net namespace terminated, we need to explicitly
-> > acquire a refcount.
-> >
-> > Link: https://syzkaller.appspot.com/bug?extid=694120e1002c117747ed [1]
-> > Reported-by: syzbot <syzbot+694120e1002c117747ed@syzkaller.appspotmail.com>
-> > Fixes: 26abe14379f8e2fa ("net: Modify sk_alloc to not reference count the netns of kernel sockets.")
-> > Fixes: 8a68173691f03661 ("net: sk_clone_lock() should only do get_net() if the parent is not a kernel socket")
-> > Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-> > Tested-by: syzbot <syzbot+694120e1002c117747ed@syzkaller.appspotmail.com>
-> >
-> > [...]
->
-> Here is the summary with links:
->   - [v2] net: rds: acquire refcount on TCP sockets
->     https://git.kernel.org/netdev/net/c/3a58f13a881e
->
-> You are awesome, thank you!
-> --
-> Deet-doot-dot, I am a bot.
-> https://korg.docs.kernel.org/patchwork/pwbot.html
->
->
+Le 29/04/2022 à 16:31, David Ahern a écrit :
+> On 4/29/22 2:20 AM, Nicolas Dichtel wrote:
+>> When ping_group_range is updated, 'ping' uses the DGRAM ICMP socket,
+>> instead of an IP raw socket. In this case, 'ping' is unable to bind its
+>> socket to a local address owned by a vrflite.
+>>
+>> Before the patch:
+>> $ sysctl -w net.ipv4.ping_group_range='0  2147483647'
+>> $ ip link add blue type vrf table 10
+>> $ ip link add foo type dummy
+>> $ ip link set foo master blue
+>> $ ip link set foo up
+>> $ ip addr add 192.168.1.1/24 dev foo
+>> $ ip vrf exec blue ping -c1 -I 192.168.1.1 192.168.1.2
+>> ping: bind: Cannot assign requested address
+>>
+>> CC: stable@vger.kernel.org
+>> Fixes: 1b69c6d0ae90 ("net: Introduce L3 Master device abstraction")
+>> Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+>> ---
+>>
+>> v1 -> v2:
+>>  add the tag "Cc: stable@vger.kernel.org" for correct stable submission
+>>
+>>  net/ipv4/ping.c | 4 +++-
+>>  1 file changed, 3 insertions(+), 1 deletion(-)
+>>
+> 
+> please add a test case to fcnal-test.sh. Does ipv6 work ok?
+Indeed, ipv6 is missing.
 
-I think we merged this patch too soon.
+I will add some test cases.
+Modifying the sysctl before the vrf tests produce a lot of failures:
 
-My question is : What prevents rds_tcp_conn_path_connect(), and thus
-rds_tcp_tune() to be called
-after the netns refcount already reached 0 ?
+With VRF
 
-I guess we can wait for next syzbot report, but I think that get_net()
-should be replaced
-by maybe_get_net()
+SYSCTL: net.ipv4.raw_l3mdev_accept=1
+
+SYSCTL: net.ipv4.ping_group_range=0 2147483647
+
+TEST: ping out, VRF bind - ns-B IP                                        [ OK ]
+TEST: ping out, device bind - ns-B IP                                     [FAIL]
+TEST: ping out, vrf device + dev address bind - ns-B IP                   [FAIL]
+TEST: ping out, vrf device + dev address bind - ns-B IP                   [FAIL]
+TEST: ping out, vrf device + vrf address bind - ns-B IP                   [FAIL]
+TEST: ping out, VRF bind - ns-B loopback IP                               [ OK ]
+TEST: ping out, device bind - ns-B loopback IP                            [FAIL]
+TEST: ping out, vrf device + dev address bind - ns-B loopback IP          [FAIL]
+TEST: ping out, vrf device + dev address bind - ns-B loopback IP          [FAIL]
+TEST: ping out, vrf device + vrf address bind - ns-B loopback IP          [FAIL]
+
+
+Regards,
+Nicolas
+
+
