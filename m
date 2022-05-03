@@ -2,140 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F01F1518263
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 12:32:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B43225182F9
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 13:00:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233997AbiECKfi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 06:35:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52358 "EHLO
+        id S233736AbiECLDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 07:03:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232986AbiECKfg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 06:35:36 -0400
-Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C98DF1FA67
-        for <netdev@vger.kernel.org>; Tue,  3 May 2022 03:32:04 -0700 (PDT)
-Received: by mail-qk1-x732.google.com with SMTP id w3so5407730qkb.3
-        for <netdev@vger.kernel.org>; Tue, 03 May 2022 03:32:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=KvIqS3VrNxII9itwuWe5KiVa3YBLtLiVQQrHINB8FAw=;
-        b=nlbFngc3POrli51uooWb5RVp4s+tKKXsEGXGiEbfIw4xZS23Xik1FLPzFcPcRMuCQY
-         DCCdsxz8zI+ywuwgT4U2OksMo/aB9iXiXntotSlCnm35NNIBIbpJbydmWPwDMl5AtyoI
-         guH0cECfh8cJJEpWFHzjj1IWDGGo8z5pOUwkLR6RkDE1aXda0qpVJbruXrzlCutgXSU+
-         Zk+UGTOGX8Qo2JwTdpAPsMfFDkblO0vbh1hFj6uN53BxX6/zRdLmDaAEQ4tZjewCVLpg
-         3yr75F0f2242JHFndTBqm13w1UPvoT/p+ZFhrjic1fWMgEBWttb3VdD6FDoUvbLSGy5o
-         8rew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=KvIqS3VrNxII9itwuWe5KiVa3YBLtLiVQQrHINB8FAw=;
-        b=CmNVUGN2k4GQdjg4PLqUPFIawBCxBuZjkkwoBbBPN+Wh6uLL2mnxSKy6nQUqbnDdqX
-         oflLT6zvn/pl/qbtgNoUVx9b4jErU12ItNn3OcwSRcVpTqSEfnKbO/wgh4xO5BFVjL2S
-         C2wLS4hEJN1nVbDyTXUKsyp5h0AHzNDv7aUXPjsiwFpxQ1hwSnZqeo13FjHM3FT8lYmP
-         EzpgiU71lEhQEGf+o5nx2qbjWNGVUD61ZPn8Uw7tpuRi6ApELev35hgybWePGmV5q+Oj
-         Ad6ykU729yW5ny62+bHOSECNEbxm4sqbv6INWiuPLdwWiq2tcm6r2RudtXMdVHEScBZX
-         jwBA==
-X-Gm-Message-State: AOAM530RRLSCZPb9Q6gkGpyx1YqGwMK9nK9QA/ZfPw5h0D4kO4YfUakX
-        r9XnI4+RafdrzKbl3at9ZemNUw==
-X-Google-Smtp-Source: ABdhPJydi9iWK0MOwuaSkIPIK3BCXexPrP7k4AStfd0BGiqSDGZ09+ya5M8NEdp5jy3aVyFNqqcKGQ==
-X-Received: by 2002:a05:620a:1087:b0:6a0:151:658 with SMTP id g7-20020a05620a108700b006a001510658mr1626585qkk.108.1651573923858;
-        Tue, 03 May 2022 03:32:03 -0700 (PDT)
-Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-27-184-148-44-6.dsl.bell.ca. [184.148.44.6])
-        by smtp.googlemail.com with ESMTPSA id w17-20020a05620a095100b0069fcf0da629sm4378323qkw.134.2022.05.03.03.32.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 May 2022 03:32:02 -0700 (PDT)
-Message-ID: <d3935370-b12c-e9db-1e59-52c8cceacf9a@mojatatu.com>
-Date:   Tue, 3 May 2022 06:32:01 -0400
+        with ESMTP id S234535AbiECLDt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 07:03:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57CF07669
+        for <netdev@vger.kernel.org>; Tue,  3 May 2022 04:00:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 13A23B81D6F
+        for <netdev@vger.kernel.org>; Tue,  3 May 2022 11:00:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id BFD94C385B0;
+        Tue,  3 May 2022 11:00:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651575614;
+        bh=x0V45TTqs6WBaazCJrk5aCona7cuSdCkU5F6jKBZV1E=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=EDcAC4jF9Ofy8nqe59WGVIIogyicuVSnqO7jIE6H6diL5yioOXboBF5oytmy764Ds
+         NFRptx5LSz0FtnPHe5oX4d98OSh+LHWY0uRDAag9EA9OtC2fjw0hjRGJ2BhXed2upw
+         ZmLWdLFBs5HV9gEwuw1OPVQ6JLpHwYRYQm4nIug/UpXsCa2YH0b/eo5YIsCPysI3yL
+         D9OMVey2WiDgMtUnCuSTCheWhIBhRE9r7ZnajFxbdH+Gk/550q307j1Gzb2CT8DRgL
+         9yelUl6/nzHAepUUfP72LA3UkIspdQioiFCmGOteqE0eMseh27KZ+2PvbS8KhFVMU2
+         2mzgNVB8XCB0w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9FDEBE7399D;
+        Tue,  3 May 2022 11:00:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH net-next 01/11] ice: Add support for classid based queue
- selection
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "Nambiar, Amritha" <amritha.nambiar@intel.com>
-Cc:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Mogilappagari, Sudheer" <sudheer.mogilappagari@intel.com>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
-        "Sreenivas, Bharathi" <bharathi.sreenivas@intel.com>
-References: <20220428172430.1004528-1-anthony.l.nguyen@intel.com>
- <20220428172430.1004528-2-anthony.l.nguyen@intel.com>
- <20220428160414.28990a0c@kernel.org>
- <MWHPR11MB1293C17C30E689270E0C39AAF1FC9@MWHPR11MB1293.namprd11.prod.outlook.com>
- <20220429171717.5b0b2a81@kernel.org>
- <MWHPR11MB129308C755FAB7B4EA1F8DDCF1FF9@MWHPR11MB1293.namprd11.prod.outlook.com>
- <20220429194207.3f17bf96@kernel.org>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-In-Reply-To: <20220429194207.3f17bf96@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [net-next 01/15] net/mlx5: use kvfree() for kvzalloc() in
+ mlx5_ct_fs_smfs_matcher_create
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165157561465.31189.9149425992214306719.git-patchwork-notify@kernel.org>
+Date:   Tue, 03 May 2022 11:00:14 +0000
+References: <20220503044209.622171-2-saeedm@nvidia.com>
+In-Reply-To: <20220503044209.622171-2-saeedm@nvidia.com>
+To:     Saeed Mahameed <saeedm@nvidia.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, william.xuanziyang@huawei.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-04-29 22:42, Jakub Kicinski wrote:
-> On Sat, 30 Apr 2022 02:00:05 +0000 Nambiar, Amritha wrote:
->> IIUC, currently the action skbedit queue_mapping is for transmit queue selection,
->> and the bound checking is w.r.to dev->real_num_tx_queues. Also, based on my
->> discussion with Alex (https://www.spinics.net/lists/netdev/msg761581.html), it
->> looks like this currently applies at the qdisc enqueue stage and not at the
->> classifier level.
+Hello:
+
+This series was applied to netdev/net-next.git (master)
+by Saeed Mahameed <saeedm@nvidia.com>:
+
+On Mon,  2 May 2022 21:41:55 -0700 you wrote:
+> From: Ziyang Xuan <william.xuanziyang@huawei.com>
 > 
-> They both apply at enqueue stage, AFAIU. Setting classid on ingress
-> does exactly nothing, no? :)
+> The memory of spec is allocated with kvzalloc(), the corresponding
+> release function should not be kfree(), use kvfree() instead.
 > 
-> Neither is perfect, at least skbedit seems more straightforward.
-> I suspect modern DC operator may have little familiarity with classful
-> qdiscs and what classid is. Plus, again, you're assuming mqprio's
-> interpretation like it's a TC-wide thing.
+> Generated by: scripts/coccinelle/api/kfree_mismatch.cocci
 > 
-> skbedit OTOH is used with a clsact qdisc.
-> 
-> Also it would be good if what we did had some applicability to SW.
-> Maybe extend skbedit with a way of calling skb_record_rx_queue()?
+> [...]
 
-I am on the fence of "six of one, half a dozen of the other" ;->
+Here is the summary with links:
+  - [net-next,01/15] net/mlx5: use kvfree() for kvzalloc() in mlx5_ct_fs_smfs_matcher_create
+    https://git.kernel.org/netdev/net-next/c/c389362096be
+  - [net-next,02/15] net/mlx5: Remove useless kfree
+    https://git.kernel.org/netdev/net-next/c/7134c602812a
+  - [net-next,03/15] net/mlx5: Delete redundant default assignment of runtime devlink params
+    https://git.kernel.org/netdev/net-next/c/b5235a9979f9
+  - [net-next,04/15] net/mlx5: Print initializing field in case of timeout
+    https://git.kernel.org/netdev/net-next/c/cdfc6ffbfb39
+  - [net-next,05/15] net/mlx5e: Drop error CQE handling from the XSK RX handler
+    https://git.kernel.org/netdev/net-next/c/84a137f051a5
+  - [net-next,06/15] net/mlx5e: Remove unused mlx5e_dcbnl_build_rep_netdev function
+    https://git.kernel.org/netdev/net-next/c/a90889b4e8bd
+  - [net-next,07/15] net/mlx5e: TC, set proper dest type
+    https://git.kernel.org/netdev/net-next/c/c70c3336a63e
+  - [net-next,08/15] net/mlx5: fs, split software and IFC flow destination definitions
+    https://git.kernel.org/netdev/net-next/c/d639af621600
+  - [net-next,09/15] net/mlx5: fs, refactor software deletion rule
+    https://git.kernel.org/netdev/net-next/c/d49d63075e0f
+  - [net-next,10/15] net/mlx5: fs, jump to exit point and don't fall through
+    https://git.kernel.org/netdev/net-next/c/c3ae3a9cfe2f
+  - [net-next,11/15] net/mlx5: fs, add unused destination type
+    https://git.kernel.org/netdev/net-next/c/6510bc0d7cb4
+  - [net-next,12/15] net/mlx5: fs, do proper bookkeeping for forward destinations
+    https://git.kernel.org/netdev/net-next/c/a30c8b9025db
+  - [net-next,13/15] net/mlx5: fs, delete the FTE when there are no rules attached to it
+    https://git.kernel.org/netdev/net-next/c/7b0c63385976
+  - [net-next,14/15] net/mlx5: fs, call the deletion function of the node
+    https://git.kernel.org/netdev/net-next/c/72191a4cd525
+  - [net-next,15/15] net/mlx5: fs, an FTE should have no dests when deleted
+    https://git.kernel.org/netdev/net-next/c/3a09fae035c8
 
-TC classids have *always been used to identify queues* (or hierarchy of
-but always leading to a single queue). Essentially a classid identity
-is equivalent to a built-in action which says which queue to pick.
-The data structure is very much engrained in the tc psyche.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-When TX side HW queues(IIRC, mqprio) showed up there was ambiguity to
-distinguish between a s/w queue vs a h/w queue hence queue_mapping
-which allows us to override the *HW TX queue* selection - or at least
-that was the intended goal.
-Note: There are other ways to tell the h/w what queues to use on TX
-(eg skb->priority) i.e there's no monopoly by queue_mapping.
 
-Given lack of s/w queues on RX (hence lack of ambiguity) it seemed
-natural that the classid could be used to describe the RX queue
-identity for offload, it's just there.
-I thought it was brilliant when Amritha first posted.
-
-I think we should pick the simpler of "half-dozen or six".
-The posted patch seems driver-only change i.e no core code
-changes required (which other vendors could follow).
-But i am not sure if that defines "simpler".
-
-BTW:
-Didnt follow the skb_record_rx_queue() thought - isnt that
-always set by the driver based on which h/w queue the packet
-arrived at? Whereas the semantics of this is to tell the h/w
-what queue to use.
-
-cheers,
-jamal
