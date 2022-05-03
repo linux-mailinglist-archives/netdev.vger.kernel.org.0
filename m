@@ -2,54 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 453ED51874B
-	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 16:54:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85CFE518656
+	for <lists+netdev@lfdr.de>; Tue,  3 May 2022 16:16:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237454AbiECO5q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 10:57:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51434 "EHLO
+        id S236875AbiECOTd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 10:19:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229767AbiECO5p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 10:57:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 885F1393C5
-        for <netdev@vger.kernel.org>; Tue,  3 May 2022 07:54:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651589651;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=x1svvlDop5tNfxKYFDNTIKhuFA7ZCFrwTeW4unuCZPA=;
-        b=V06l6FywtLwPojJjzBf11LKkH4EAX3XDug9hMQoI74zdMqOqhyCTi5SFRCI5yoNx05tOpG
-        p505aPCLqdDO1V1065O+FKqjGkYx7EvQE13TjMtTsiRYCQB3fywZYC6wvnP4d0M3sRRAAz
-        4ybTOiznF2snGavKK90BiwVsoQpI/Sc=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-331-Ph0CfEF6N7uKPcqVhX_G2A-1; Tue, 03 May 2022 10:53:13 -0400
-X-MC-Unique: Ph0CfEF6N7uKPcqVhX_G2A-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EB4961D8C13B;
-        Tue,  3 May 2022 14:05:55 +0000 (UTC)
-Received: from gerbillo.redhat.com (unknown [10.39.193.90])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E2BF5432705;
-        Tue,  3 May 2022 14:05:54 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Subject: [PATCH net] net/sched: act_pedit: really ensure the skb is writable
-Date:   Tue,  3 May 2022 16:05:42 +0200
-Message-Id: <6c1230ee0f348230a833f92063ff2f5fbae58b94.1651584976.git.pabeni@redhat.com>
+        with ESMTP id S236884AbiECOTc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 10:19:32 -0400
+Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90A8924596
+        for <netdev@vger.kernel.org>; Tue,  3 May 2022 07:15:59 -0700 (PDT)
+Received: from fsav315.sakura.ne.jp (fsav315.sakura.ne.jp [153.120.85.146])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 243E874T083479;
+        Tue, 3 May 2022 23:08:07 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav315.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav315.sakura.ne.jp);
+ Tue, 03 May 2022 23:08:07 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav315.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 243E87Pm083474
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Tue, 3 May 2022 23:08:07 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Message-ID: <7be0b6ae-08c8-59a6-7cc2-3caee827a7e6@I-love.SAKURA.ne.jp>
+Date:   Tue, 3 May 2022 23:08:02 +0900
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2] net: rds: acquire refcount on TCP sockets
+Content-Language: en-US
+To:     Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>
+Cc:     Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        syzbot <syzbot+694120e1002c117747ed@syzkaller.appspotmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        OFED mailing list <linux-rdma@vger.kernel.org>
+References: <00000000000045dc96059f4d7b02@google.com>
+ <000000000000f75af905d3ba0716@google.com>
+ <c389e47f-8f82-fd62-8c1d-d9481d2f71ff@I-love.SAKURA.ne.jp>
+ <b0f99499-fb6a-b9ec-7bd3-f535f11a885d@I-love.SAKURA.ne.jp>
+ <5f90c2b8-283e-6ca5-65f9-3ea96df00984@I-love.SAKURA.ne.jp>
+ <f8ae5dcd-a5ed-2d8b-dd7a-08385e9c3675@I-love.SAKURA.ne.jp>
+ <CANn89iJukWcN9-fwk4HEH-StAjnTVJ34UiMsrN=mdRbwVpo8AA@mail.gmail.com>
+ <a5fb1fc4-2284-3359-f6a0-e4e390239d7b@I-love.SAKURA.ne.jp>
+ <3b6bc24c8cd3f896dcd480ff75715a2bf9b2db06.camel@redhat.com>
+ <CANn89iK5WmzyPNyUzuoDyDZQWpbBaffEXxEvmOhz5wJ+9facFg@mail.gmail.com>
+From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+In-Reply-To: <CANn89iK5WmzyPNyUzuoDyDZQWpbBaffEXxEvmOhz5wJ+9facFg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,95 +66,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently pedit tries to ensure that the accessed skb offset
-is writeble via skb_unclone(). The action potentially allows
-touching any skb bytes, so it may end-up modifying shared data.
+On 2022/05/03 22:45, Eric Dumazet wrote:
+>> This looks equivalent to the fix presented here:
+>>
+>> https://lore.kernel.org/all/CANn89i+484ffqb93aQm1N-tjxxvb3WDKX0EbD7318RwRgsatjw@mail.gmail.com/
 
-The above causes some sporadic MPTCP self-test failures.
+I retested the fix above using
 
-Address the issue keeping track of a rough over-estimate highest skb
-offset accessed by the action and ensure such offset is really
-writable.
+unshare -n sh -c '
+ip link set lo up
+iptables -A OUTPUT -p tcp --sport 16385 --tcp-flags SYN NONE -m state --state ESTABLISHED,RELATED -j DROP
+ip6tables -A OUTPUT -p tcp --sport 16385 --tcp-flags SYN NONE -m state --state ESTABLISHED,RELATED -j DROP
+telnet 127.0.0.1 16385
+dmesg -c
+netstat -tanpe' < /dev/null
 
-Note that this may cause performance regressions in some scenario,
-but hopefully pedit is not critical path.
+as a test case, but it seems racy; sometimes timer function is called again and crashes.
 
-Fixes: db2c24175d14 ("act_pedit: access skb->data safely")
-Acked-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Tested-by: Geliang Tang <geliang.tang@suse.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
-Note: AFAICS the issue is present since 1da177e4c3f4
-("Linux-2.6.12-rc2"), but before the "Fixes" commit this change
-is irrelevant, because accessing any data out of the skb head
-will cause an oops.
----
- include/net/tc_act/tc_pedit.h |  1 +
- net/sched/act_pedit.c         | 23 +++++++++++++++++++++--
- 2 files changed, 22 insertions(+), 2 deletions(-)
+[  426.086565][    C2] general protection fault, probably for non-canonical address 0x6b6af3ebcc3b6bc3: 0000 [#1] PREEMPT SMP KASAN
+[  426.096339][    C2] CPU: 2 PID: 0 Comm: swapper/2 Not tainted 5.18.0-rc5-dirty #807
+[  426.103769][    C2] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[  426.111851][    C2] RIP: 0010:__tcp_transmit_skb+0xe72/0x1b80
+[  426.117512][    C2] Code: e8 b3 ea dc fd 48 8d 7d 30 45 0f b7 77 30 e8 95 ec dc fd 48 8b 5d 30 48 8d bb b8 02 00 00 e8 85 ec dc fd 48 8b 83 b8 02 00 00 <65> 4c 01 70 58 e9 67 fd ff ff e8 ef 56 ac fd 48 8d bd d0 09 00 00
+[  426.124692][    C2] RSP: 0018:ffff888060d09ac8 EFLAGS: 00010246
+[  426.126845][    C2] RAX: 6b6b6b6b6b6b6b6b RBX: ffff8880145c8000 RCX: ffffffff838cc28b
+[  426.129616][    C2] RDX: dffffc0000000000 RSI: 0000000000000001 RDI: ffff8880145c82b8
+[  426.132374][    C2] RBP: ffff8880129f8000 R08: 0000000000000000 R09: 0000000000000007
+[  426.135077][    C2] R10: ffffffff838cbfd4 R11: 0000000000000001 R12: ffff8880129f8760
+[  426.137793][    C2] R13: ffff88800f6e0118 R14: 0000000000000001 R15: ffff88800f6e00e8
+[  426.140489][    C2] FS:  0000000000000000(0000) GS:ffff888060d00000(0000) knlGS:0000000000000000
+[  426.143525][    C2] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  426.145792][    C2] CR2: 000055b5bb0adabc CR3: 000000000e003000 CR4: 00000000000506e0
+[  426.148509][    C2] Call Trace:
+[  426.149442][    C2]  <IRQ>
+[  426.150183][    C2]  ? __tcp_select_window+0x710/0x710
+[  426.151457][    C2]  ? __sanitizer_cov_trace_cmp4+0x1c/0x70
+[  426.153007][    C2]  ? tcp_current_mss+0x165/0x280
+[  426.154245][    C2]  ? tcp_trim_head+0x300/0x300
+[  426.155396][    C2]  ? find_held_lock+0x85/0xa0
+[  426.156734][    C2]  ? mark_held_locks+0x65/0x90
+[  426.157967][    C2]  tcp_write_wakeup+0x2e2/0x340
+[  426.159149][    C2]  tcp_send_probe0+0x2a/0x2c0
+[  426.160368][    C2]  tcp_write_timer_handler+0x5cb/0x670
+[  426.161740][    C2]  tcp_write_timer+0x86/0x250
+[  426.162896][    C2]  ? tcp_write_timer_handler+0x670/0x670
+[  426.164285][    C2]  call_timer_fn+0x15d/0x5f0
+[  426.165481][    C2]  ? add_timer_on+0x2e0/0x2e0
+[  426.166667][    C2]  ? lock_downgrade+0x3c0/0x3c0
+[  426.167921][    C2]  ? mark_held_locks+0x24/0x90
+[  426.169263][    C2]  ? _raw_spin_unlock_irq+0x1f/0x40
+[  426.170564][    C2]  ? tcp_write_timer_handler+0x670/0x670
+[  426.171920][    C2]  __run_timers.part.0+0x523/0x740
+[  426.173181][    C2]  ? call_timer_fn+0x5f0/0x5f0
+[  426.174321][    C2]  ? pvclock_clocksource_read+0xdc/0x1a0
+[  426.175655][    C2]  run_timer_softirq+0x66/0xe0
+[  426.176825][    C2]  __do_softirq+0x1c2/0x670
+[  426.177944][    C2]  __irq_exit_rcu+0xf8/0x140
+[  426.179120][    C2]  irq_exit_rcu+0x5/0x20
+[  426.180150][    C2]  sysvec_apic_timer_interrupt+0x8e/0xc0
+[  426.181486][    C2]  </IRQ>
+[  426.182180][    C2]  <TASK>
+[  426.182845][    C2]  asm_sysvec_apic_timer_interrupt+0x12/0x20
 
-diff --git a/include/net/tc_act/tc_pedit.h b/include/net/tc_act/tc_pedit.h
-index 748cf87a4d7e..3e02709a1df6 100644
---- a/include/net/tc_act/tc_pedit.h
-+++ b/include/net/tc_act/tc_pedit.h
-@@ -14,6 +14,7 @@ struct tcf_pedit {
- 	struct tc_action	common;
- 	unsigned char		tcfp_nkeys;
- 	unsigned char		tcfp_flags;
-+	u32			tcfp_off_max_hint;
- 	struct tc_pedit_key	*tcfp_keys;
- 	struct tcf_pedit_key_ex	*tcfp_keys_ex;
- };
-diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
-index 31fcd279c177..a8ab6c3f1ea2 100644
---- a/net/sched/act_pedit.c
-+++ b/net/sched/act_pedit.c
-@@ -149,7 +149,7 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
- 	struct nlattr *pattr;
- 	struct tcf_pedit *p;
- 	int ret = 0, err;
--	int ksize;
-+	int i, ksize;
- 	u32 index;
- 
- 	if (!nla) {
-@@ -228,6 +228,20 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
- 		p->tcfp_nkeys = parm->nkeys;
- 	}
- 	memcpy(p->tcfp_keys, parm->keys, ksize);
-+	p->tcfp_off_max_hint = 0;
-+	for (i = 0; i < p->tcfp_nkeys; ++i) {
-+		u32 cur = p->tcfp_keys[i].off;
-+
-+		/* The AT option can read a single byte, we can bound the actual
-+		 * value with uchar max. Each key touches 4 bytes starting from
-+		 * the computed offset
-+		 */
-+		if (p->tcfp_keys[i].offmask) {
-+			cur += 255 >> p->tcfp_keys[i].shift;
-+			cur = max(p->tcfp_keys[i].at, cur);
-+		}
-+		p->tcfp_off_max_hint = max(p->tcfp_off_max_hint, cur + 4);
-+	}
- 
- 	p->tcfp_flags = parm->flags;
- 	goto_ch = tcf_action_set_ctrlact(*a, parm->action, goto_ch);
-@@ -308,9 +322,14 @@ static int tcf_pedit_act(struct sk_buff *skb, const struct tc_action *a,
- 			 struct tcf_result *res)
- {
- 	struct tcf_pedit *p = to_pedit(a);
-+	u32 max_offset;
- 	int i;
- 
--	if (skb_unclone(skb, GFP_ATOMIC))
-+	max_offset = (skb_transport_header_was_set(skb) ?
-+		      skb_transport_offset(skb) :
-+		      skb_network_offset(skb)) +
-+		     p->tcfp_off_max_hint;
-+	if (skb_ensure_writable(skb, min(skb->len, max_offset)))
- 		return p->tcf_action;
- 
- 	spin_lock(&p->tcf_lock);
--- 
-2.35.1
+> 
+> I think this is still needed for layers (NFS ?) that dismantle their
+> TCP sockets whenever a netns
+> is dismantled. But RDS case was different, only the listener is a kernel socket.
+
+We can't apply the fix above.
+
+I think that the fundamental problem is that we use net->ns.count for both
+"avoiding use-after-free" purpose and "allowing dismantle from user event" purpose.
+Why not to use separated counters?
 
