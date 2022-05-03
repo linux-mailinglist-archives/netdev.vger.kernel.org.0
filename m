@@ -2,86 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 48DD4519156
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 00:28:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C88FA519166
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 00:28:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243605AbiECWZE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 18:25:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38422 "EHLO
+        id S243632AbiECWZ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 18:25:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235378AbiECWZD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 18:25:03 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94D533207E;
-        Tue,  3 May 2022 15:21:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=cyYPUnPEmzGTg5m1FeQ2xC54M04KV7p5IxplEiahWqM=; b=IhIlZO6ZUXqG6AZbBTPEGYDyk3
-        B4ta5OC9hjKkypfMnKPthg1AOMDmpru3f67eLB2m8gs8lCKxgnEEnOmL0ZGahSrcYGKHxOuPuTT/q
-        kHjeiIg8RCMq3dMePbENC+CVw0GTiMjKwbWSmi0MLPKc9sA1zQqOQwHDkCUdD3qxQnzU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nm0tX-0016zF-3O; Wed, 04 May 2022 00:21:23 +0200
-Date:   Wed, 4 May 2022 00:21:23 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
-        Andre Edich <andre.edich@microchip.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Martyn Welch <martyn.welch@collabora.com>,
-        Gabriel Hojda <ghojda@yo2urs.ro>,
-        Christoph Fritz <chf.fritz@googlemail.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Ferry Toth <fntoth@gmail.com>
-Subject: Re: [PATCH net-next v2 3/7] usbnet: smsc95xx: Don't reset PHY behind
- PHY driver's back
-Message-ID: <YnGq401sOeC0zwt6@lunn.ch>
-References: <cover.1651574194.git.lukas@wunner.de>
- <f78b5f725fe75265f884ef0b35389fd45cd81471.1651574194.git.lukas@wunner.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f78b5f725fe75265f884ef0b35389fd45cd81471.1651574194.git.lukas@wunner.de>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S243612AbiECWZ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 18:25:28 -0400
+Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8A0040A11;
+        Tue,  3 May 2022 15:21:54 -0700 (PDT)
+Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-ed9a75c453so8059592fac.11;
+        Tue, 03 May 2022 15:21:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=ZMswsRgrr4czkPyiix2hW0UdLC5GFg9ChlTcl/aPVqU=;
+        b=SFtaZ5pzie94h/ZfDNUkstZc1Z2YZk0VVsvQhYKbtAE7IgElRzRvpAia7e2MUEmrNj
+         V5y5cbsSyB7XUSix6nXh+SsbRko7Kcc6t50Zc/cmxg8qmYt0cPrfcMBMR1QJUPY+flV/
+         lp/Bl0skmcndWpjqbsCELYj5pvlCS7or6NkILbLcGf6/yISIIvKBgZBP21Nwzxgii70A
+         C7hyar+n/VdKfTn4ewgd68Iw4ef/ajrGAZC3W8OQnwGRtjPRrr9t8Dh1/77alktq0ViP
+         A83yGBL87Hpm/4mfxmlu2StvY/34iu5ZMajR9fqmvREB3i9/lq/dqiK1aHygY4Y6ruyY
+         6O9Q==
+X-Gm-Message-State: AOAM5302ESmefcJQhcxy0TTaJHoWujSGMVqH6Y3eMhp0EwXOZJ4Svj0m
+        KWAPP6Otw+aD3klzUhX/j5Kc+1b36g==
+X-Google-Smtp-Source: ABdhPJzUvGB897gw3KLizpqR/iiVh0AJ0DdpO0bZX5lsEQV+PSslsUA9UPO5GCcLtWc4xs2G6+i+ug==
+X-Received: by 2002:a05:6870:6301:b0:e9:17b2:2e12 with SMTP id s1-20020a056870630100b000e917b22e12mr2655540oao.96.1651616513982;
+        Tue, 03 May 2022 15:21:53 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id 23-20020a4ae1b7000000b0035eb4e5a6d8sm5456884ooy.46.2022.05.03.15.21.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 May 2022 15:21:53 -0700 (PDT)
+Received: (nullmailer pid 139790 invoked by uid 1000);
+        Tue, 03 May 2022 22:21:51 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-leds@vger.kernel.org, John Crispin <john@phrozen.org>,
+        devicetree@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        "David S. Miller" <davem@davemloft.net>
+In-Reply-To: <20220503151633.18760-12-ansuelsmth@gmail.com>
+References: <20220503151633.18760-1-ansuelsmth@gmail.com> <20220503151633.18760-12-ansuelsmth@gmail.com>
+Subject: Re: [RFC PATCH v6 11/11] dt-bindings: net: dsa: qca8k: add LEDs definition example
+Date:   Tue, 03 May 2022 17:21:51 -0500
+Message-Id: <1651616511.165627.139789.nullmailer@robh.at.kernel.org>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 03, 2022 at 03:15:03PM +0200, Lukas Wunner wrote:
-> smsc95xx_reset() resets the PHY behind the PHY driver's back, which
-> seems like a bad idea generally.  Remove that portion of the function.
+On Tue, 03 May 2022 17:16:33 +0200, Ansuel Smith wrote:
+> Add LEDs definition example for qca8k using the offload trigger as the
+> default trigger and add all the supported offload triggers by the
+> switch.
 > 
-> We're about to use PHY interrupts instead of polling to detect link
-> changes on SMSC LAN95xx chips.  Because smsc95xx_reset() is called from
-> usbnet_open(), PHY interrupt settings are lost whenever the net_device
-> is brought up.
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
+>  .../devicetree/bindings/net/dsa/qca8k.yaml    | 20 +++++++++++++++++++
+>  1 file changed, 20 insertions(+)
 > 
-> There are two other callers of smsc95xx_reset(), namely smsc95xx_bind()
-> and smsc95xx_reset_resume(), and both may indeed benefit from a PHY
-> reset.  However they already perform one through their calls to
-> phy_connect_direct() and phy_init_hw().
-> 
-> Tested-by: Oleksij Rempel <o.rempel@pengutronix.de> # LAN9514/9512/9500
-> Tested-by: Ferry Toth <fntoth@gmail.com> # LAN9514
-> Signed-off-by: Lukas Wunner <lukas@wunner.de>
-> Cc: Martyn Welch <martyn.welch@collabora.com>
-> Cc: Gabriel Hojda <ghojda@yo2urs.ro>
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-    Andrew
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+Error: Documentation/devicetree/bindings/net/dsa/qca8k.example.dts:209.42-43 syntax error
+FATAL ERROR: Unable to parse input tree
+make[1]: *** [scripts/Makefile.lib:364: Documentation/devicetree/bindings/net/dsa/qca8k.example.dtb] Error 1
+make[1]: *** Waiting for unfinished jobs....
+make: *** [Makefile:1401: dt_binding_check] Error 2
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
