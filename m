@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1944E51B232
+	by mail.lfdr.de (Postfix) with ESMTP id A81DB51B234
 	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 00:44:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234011AbiEDWri (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 18:47:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34590 "EHLO
+        id S239831AbiEDWrk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 18:47:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232225AbiEDWrh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 18:47:37 -0400
-Received: from smtp2.emailarray.com (smtp.emailarray.com [69.28.212.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9196B48892
-        for <netdev@vger.kernel.org>; Wed,  4 May 2022 15:44:00 -0700 (PDT)
-Received: (qmail 26583 invoked by uid 89); 4 May 2022 22:43:59 -0000
+        with ESMTP id S234628AbiEDWrj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 18:47:39 -0400
+Received: from smtp1.emailarray.com (smtp1.emailarray.com [65.39.216.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34AF748892
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 15:44:01 -0700 (PDT)
+Received: (qmail 25940 invoked by uid 89); 4 May 2022 22:44:00 -0000
 Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTc0LjIxLjE0NC4yOQ==) (POLARISLOCAL)  
-  by smtp2.emailarray.com with SMTP; 4 May 2022 22:43:59 -0000
+  by smtp1.emailarray.com with SMTP; 4 May 2022 22:44:00 -0000
 From:   Jonathan Lemon <jonathan.lemon@gmail.com>
 To:     f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com,
         andrew@lunn.ch, hkallweit1@gmail.com, richardcochran@gmail.com,
         lasse@timebeat.app
 Cc:     netdev@vger.kernel.org, kernel-team@fb.com
-Subject: [PATCH net-next v3 1/3] net: phy: broadcom: Add Broadcom PTP hooks to bcm-phy-lib
-Date:   Wed,  4 May 2022 15:43:54 -0700
-Message-Id: <20220504224356.1128644-2-jonathan.lemon@gmail.com>
+Subject: [PATCH net-next v3 2/3] net: phy: broadcom: Hook up the PTP PHY functions
+Date:   Wed,  4 May 2022 15:43:55 -0700
+Message-Id: <20220504224356.1128644-3-jonathan.lemon@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220504224356.1128644-1-jonathan.lemon@gmail.com>
 References: <20220504224356.1128644-1-jonathan.lemon@gmail.com>
@@ -41,38 +41,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the public bcm_ptp_probe() and bcm_ptp_config_init() functions
-to the bcm-phy library.  The PTP functions are contained in a separate
-file for clarity, and also to simplify the PTP clock dependencies.
+Add 'struct bcm_ptp_private' to bcm54xx_phy_priv which points to
+an optional PTP structure attached to the PHY.  This is allocated
+on probe, if PHY PTP support is configured, and if the PHY has a
+PTP supported by the driver.
 
 Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- drivers/net/phy/bcm-phy-lib.h | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/net/phy/broadcom.c | 23 +++++++++++++++++++----
+ 1 file changed, 19 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/phy/bcm-phy-lib.h b/drivers/net/phy/bcm-phy-lib.h
-index c3842f87c33b..c2cc3c2766a1 100644
---- a/drivers/net/phy/bcm-phy-lib.h
-+++ b/drivers/net/phy/bcm-phy-lib.h
-@@ -87,4 +87,18 @@ int bcm_phy_cable_test_start_rdb(struct phy_device *phydev);
- int bcm_phy_cable_test_start(struct phy_device *phydev);
- int bcm_phy_cable_test_get_status(struct phy_device *phydev, bool *finished);
+diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
+index e36809aa6d30..a7722599b5f9 100644
+--- a/drivers/net/phy/broadcom.c
++++ b/drivers/net/phy/broadcom.c
+@@ -27,6 +27,11 @@ MODULE_DESCRIPTION("Broadcom PHY driver");
+ MODULE_AUTHOR("Maciej W. Rozycki");
+ MODULE_LICENSE("GPL");
  
-+#if IS_ENABLED(CONFIG_BCM_NET_PHYPTP)
-+struct bcm_ptp_private *bcm_ptp_probe(struct phy_device *phydev);
-+void bcm_ptp_config_init(struct phy_device *phydev);
-+#else
-+static inline struct bcm_ptp_private *bcm_ptp_probe(struct phy_device *phydev)
++struct bcm54xx_phy_priv {
++	u64	*stats;
++	struct bcm_ptp_private *ptp;
++};
++
+ static int bcm54xx_config_clock_delay(struct phy_device *phydev)
+ {
+ 	int rc, val;
+@@ -313,6 +318,14 @@ static void bcm54xx_adjust_rxrefclk(struct phy_device *phydev)
+ 		bcm_phy_write_shadow(phydev, BCM54XX_SHD_APD, val);
+ }
+ 
++static void bcm54xx_ptp_config_init(struct phy_device *phydev)
 +{
-+	return NULL;
++	struct bcm54xx_phy_priv *priv = phydev->priv;
++
++	if (priv->ptp)
++		bcm_ptp_config_init(phydev);
 +}
 +
-+static inline void bcm_ptp_config_init(struct phy_device *phydev)
-+{
-+}
-+#endif
+ static int bcm54xx_config_init(struct phy_device *phydev)
+ {
+ 	int reg, err, val;
+@@ -390,6 +403,8 @@ static int bcm54xx_config_init(struct phy_device *phydev)
+ 		bcm_phy_write_exp(phydev, BCM_EXP_MULTICOLOR, val);
+ 	}
+ 
++	bcm54xx_ptp_config_init(phydev);
 +
- #endif /* _LINUX_BCM_PHY_LIB_H */
+ 	return 0;
+ }
+ 
+@@ -741,10 +756,6 @@ static irqreturn_t brcm_fet_handle_interrupt(struct phy_device *phydev)
+ 	return IRQ_HANDLED;
+ }
+ 
+-struct bcm54xx_phy_priv {
+-	u64	*stats;
+-};
+-
+ static int bcm54xx_phy_probe(struct phy_device *phydev)
+ {
+ 	struct bcm54xx_phy_priv *priv;
+@@ -761,6 +772,10 @@ static int bcm54xx_phy_probe(struct phy_device *phydev)
+ 	if (!priv->stats)
+ 		return -ENOMEM;
+ 
++	priv->ptp = bcm_ptp_probe(phydev);
++	if (IS_ERR(priv->ptp))
++		return PTR_ERR(priv->ptp);
++
+ 	return 0;
+ }
+ 
 -- 
 2.31.1
 
