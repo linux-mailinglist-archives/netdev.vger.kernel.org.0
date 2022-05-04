@@ -2,79 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A1AD9519765
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 08:32:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07C4F51976D
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 08:34:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344946AbiEDGf6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 02:35:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60306 "EHLO
+        id S1344991AbiEDGiD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 02:38:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238168AbiEDGfx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 02:35:53 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F16E114F
-        for <netdev@vger.kernel.org>; Tue,  3 May 2022 23:32:18 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id y3so961592ejo.12
-        for <netdev@vger.kernel.org>; Tue, 03 May 2022 23:32:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=XiGtsn5suJGp364Ut5ARLksbX95MjHeSBk/Ld3aNPvM=;
-        b=tgffE7DIQMbb0Lm82+pVSeeJDjnRZQiPHkxCmhzxOR+i93hkbALu7B+mBcaM7FNY9+
-         5jZYsxbrbSy1LY11HB98ZCkTjxjiHIKIvrTgeZWBs85xODTMNuIMbxradK8zOU7wX6+u
-         MKxdFM/vQ1A4iqRYdDNKB4rKPP16P1mB4SuaCEF2+JipWRTgVRQ6QmATVgIEI2z7X8Xh
-         uwIGbI5/3srkJ3g8t3b3OdDDKHBJBpDQhwTMqgRlffs0Vj6WXuV4L0rTC69t38YlnMZN
-         e17xn4B/858ebq5OX4XduQbGMSr095tRzNxKbOMkEt/6eFqxDl88dG8xnnyoSgHgP+eF
-         vFXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=XiGtsn5suJGp364Ut5ARLksbX95MjHeSBk/Ld3aNPvM=;
-        b=6bVnpphugCiUGR6s3CO650tb+jxQkCWgqv5DFW94bPuTmXEM0FMqTBCJsmVpl3KzfL
-         1JSwQdG/EIP89Sc7bpKDJ57poDwxpeFpZJNi0h/g6EVUB//UpaYn+OLBWpoocOWmJr8s
-         dQYgaLfIhzL4WV6WznURYOfdD5ze2hKuAu44Zt+QdiEfvNJ4idNmpO4MkcVrxcJY6aUq
-         gNoHOU7BT0/W1LCioeh8GicENahCR6UkkWEgCMgUWhkm+fKfzHCJPJ9P0dN5mzQQc+BP
-         ECEVbWMHsxnKJwaI7eMBSuHUILmkCF1Vr8h7gGI0vjhD/PP+qDWgPsEzbnxWNGZUb0aK
-         oG+Q==
-X-Gm-Message-State: AOAM530sAIX8hhEG24hWZXTfTSt8lyuPD7KS/5+y6oQMcsiYoapFpK1r
-        gBR710T0Z+PuydPHnM08sXzdmA==
-X-Google-Smtp-Source: ABdhPJwP8WWwFvistMPkC2qQxLH44OtID/e9i7s30DIwMGwHZdjsM2Yw6IgfCNrJANUuHATr5IWMVg==
-X-Received: by 2002:a17:907:3e94:b0:6f4:64ad:1e2 with SMTP id hs20-20020a1709073e9400b006f464ad01e2mr10149463ejc.464.1651645936611;
-        Tue, 03 May 2022 23:32:16 -0700 (PDT)
-Received: from [192.168.0.207] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id h20-20020a1709070b1400b006f3ef214db8sm5270851ejl.30.2022.05.03.23.32.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 May 2022 23:32:16 -0700 (PDT)
-Message-ID: <6aeef03a-eabb-e6d8-c100-9a74f3506f79@linaro.org>
-Date:   Wed, 4 May 2022 08:32:15 +0200
+        with ESMTP id S1344979AbiEDGiC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 02:38:02 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06FC010FF7
+        for <netdev@vger.kernel.org>; Tue,  3 May 2022 23:34:28 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nm8aO-0007Ou-Jp; Wed, 04 May 2022 08:34:08 +0200
+Received: from pengutronix.de (unknown [IPv6:2a00:20:7058:1382:cdf5:b54c:dde5:a5a5])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 9022575640;
+        Wed,  4 May 2022 06:34:03 +0000 (UTC)
+Date:   Wed, 4 May 2022 08:34:02 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-can@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        David Miller <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Carsten Emde <c.emde@osadl.org>, armbru@redhat.com,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Marin Jerabek <martin.jerabek01@gmail.com>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        Jiri Novak <jnovak@fel.cvut.cz>,
+        Jaroslav Beran <jara.beran@gmail.com>,
+        Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>,
+        Drew Fustini <pdp7pdp7@gmail.com>
+Subject: Re: [PATCH v8 5/7] can: ctucanfd: CTU CAN FD open-source IP core -
+ platform/SoC support.
+Message-ID: <20220504063402.deowqy5lnmgg2mfy@pengutronix.de>
+References: <cover.1647904780.git.pisa@cmp.felk.cvut.cz>
+ <4d5c53499bafe7717815f948801bd5aedaa05c12.1647904780.git.pisa@cmp.felk.cvut.cz>
+ <CAMuHMdXY_sHw4W8_y+r1LMhGM+CF7RQtRFQzEC8wYKYSR98Daw@mail.gmail.com>
+ <202205031707.21405.pisa@cmp.felk.cvut.cz>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH net v5 2/2] nfc: nfcmrvl: main: reorder destructive
- operations in nfcmrvl_nci_unregister_dev to avoid bugs
-Content-Language: en-US
-To:     duoming@zju.edu.cn
-Cc:     linux-kernel@vger.kernel.org, kuba@kernel.org,
-        gregkh@linuxfoundation.org, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, alexander.deucher@amd.com,
-        akpm@linux-foundation.org, broonie@kernel.org,
-        netdev@vger.kernel.org, linma@zju.edu.cn
-References: <cover.1651194245.git.duoming@zju.edu.cn>
- <bb2769acc79f42d25d61ed8988c8d240c8585f33.1651194245.git.duoming@zju.edu.cn>
- <8656d527-94ab-228f-66f1-06e5d533e16a@linaro.org>
- <73fe1723.69fe.1807498ab4d.Coremail.duoming@zju.edu.cn>
- <405e3948-7fb2-01de-4c01-29775a21218c@linaro.org>
- <614ae365.b499.18083a8bb17.Coremail.duoming@zju.edu.cn>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <614ae365.b499.18083a8bb17.Coremail.duoming@zju.edu.cn>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="mnhfuo3af4c2bg3a"
+Content-Disposition: inline
+In-Reply-To: <202205031707.21405.pisa@cmp.felk.cvut.cz>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,127 +72,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02/05/2022 09:25, duoming@zju.edu.cn wrote:
-> 
-> 
-> 
->> -----原始邮件-----
->> 发件人: "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>
->> 发送时间: 2022-05-02 14:34:07 (星期一)
->> 收件人: duoming@zju.edu.cn
->> 抄送: linux-kernel@vger.kernel.org, kuba@kernel.org, gregkh@linuxfoundation.org, davem@davemloft.net, edumazet@google.com, pabeni@redhat.com, alexander.deucher@amd.com, akpm@linux-foundation.org, broonie@kernel.org, netdev@vger.kernel.org, linma@zju.edu.cn
->> 主题: Re: [PATCH net v5 2/2] nfc: nfcmrvl: main: reorder destructive operations in nfcmrvl_nci_unregister_dev to avoid bugs
->>
->> On 29/04/2022 11:13, duoming@zju.edu.cn wrote:
->>> Hello,
->>>
->>> On Fri, 29 Apr 2022 09:27:48 +0200 Krzysztof wrote:
->>>
->>>>> There are destructive operations such as nfcmrvl_fw_dnld_abort and
->>>>> gpio_free in nfcmrvl_nci_unregister_dev. The resources such as firmware,
->>>>> gpio and so on could be destructed while the upper layer functions such as
->>>>> nfcmrvl_fw_dnld_start and nfcmrvl_nci_recv_frame is executing, which leads
->>>>> to double-free, use-after-free and null-ptr-deref bugs.
->>>>>
->>>>> There are three situations that could lead to double-free bugs.
->>>>>
->>>>> The first situation is shown below:
->>>>>
->>>>>    (Thread 1)                 |      (Thread 2)
->>>>> nfcmrvl_fw_dnld_start         |
->>>>>  ...                          |  nfcmrvl_nci_unregister_dev
->>>>>  release_firmware()           |   nfcmrvl_fw_dnld_abort
->>>>>   kfree(fw) //(1)             |    fw_dnld_over
->>>>>                               |     release_firmware
->>>>>   ...                         |      kfree(fw) //(2)
->>>>>                               |     ...
->>>>>
->>>>> The second situation is shown below:
->>>>>
->>>>>    (Thread 1)                 |      (Thread 2)
->>>>> nfcmrvl_fw_dnld_start         |
->>>>>  ...                          |
->>>>>  mod_timer                    |
->>>>>  (wait a time)                |
->>>>>  fw_dnld_timeout              |  nfcmrvl_nci_unregister_dev
->>>>>    fw_dnld_over               |   nfcmrvl_fw_dnld_abort
->>>>>     release_firmware          |    fw_dnld_over
->>>>>      kfree(fw) //(1)          |     release_firmware
->>>>>      ...                      |      kfree(fw) //(2)
->>>>
->>>> How exactly the case here is being prevented?
->>>>
->>>> If nfcmrvl_nci_unregister_dev() happens slightly earlier, before
->>>> fw_dnld_timeout() on the left side (T1), the T1 will still hit it, won't it?
->>>
->>> I think it could be prevented. We use nci_unregister_device() to synchronize, if the
->>> firmware download routine is running, the cleanup routine will wait it to finish. 
->>> The flag "fw_download_in_progress" will be set to false, if the the firmware download
->>> routine is finished. 
->>
->> fw_download_in_progress is not synchronized in
->> nfcmrvl_nci_unregister_dev(), so even if fw_dnld_timeout() set it to
->> true, the nfcmrvl_nci_unregister_dev() happening concurrently will not
->> see updated fw_download_in_progress.
-> 
-> The fw_download_in_progress is set to false in nfc_fw_download(). The nfc_fw_download() is
-> synchronized with nfc_unregister_device().
 
-No, it is not. There is no synchronization primitive in
-nfc_unregister_device(), at least explicitly.
+--mnhfuo3af4c2bg3a
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> If nfc_fw_download() is running, nfc_unregister_device()
-> will wait nfc_fw_download() to finish. So the nfcmrvl_nci_unregister_dev() could see the updated
-> fw_download_in_progress. The process is shown below:
-> 
->         (Thread 1)                                         |       (Thread 2)
->  nfcmrvl_nci_unregister_dev                                | nfc_fw_download
->    nci_unregister_device                                   |  ...
->                                                            |  device_lock()
->      ...                                                   |  dev->fw_download_in_progress = false; //(1)
->                                                            |  device_unlock()
->      nfc_unregister_device                                 | 
->    if (priv->ndev->nfc_dev->fw_download_in_progress) //(2) | 
->      nfcmrvl_fw_dnld_abort(priv); //not execute            |   
-> 
-> We set fw_download_in_progress to false in position (1) and the check in position (2) will fail,
-> the nfcmrvl_fw_dnld_abort() in nfcmrvl_nci_unregister_dev() will not execute. So the double-free
-> bugs could be prevented.
+On 03.05.2022 17:07:21, Pavel Pisa wrote:
+> Hello Geert,
+>=20
+> On Tuesday 03 of May 2022 13:37:46 Geert Uytterhoeven wrote:
+> > Hi Pavel,
+> > > --- /dev/null
+> > > +++ b/drivers/net/can/ctucanfd/ctucanfd_platform.c
+> > >
+> > > +/* Match table for OF platform binding */
+> > > +static const struct of_device_id ctucan_of_match[] =3D {
+> > > +       { .compatible =3D "ctu,ctucanfd-2", },
+> >
+> > Do you need to match on the above compatible value?
+> > The driver seems to treat the hardware the same, and the DT
+> > bindings state the compatible value below should always be present.
+>=20
+> I would keep it because there will be newer revisions and releases
+> of the core and I consider "ctu,ctucanfd" as the match to generic
+> one with maximal attempt to adjust to the version from provided
+> info registers but identification with the fixed version
+> "ctu,ctucanfd-2" ensures that some old hardware which is
+> in the wild is directly recognized even at /sys level
+> and if we need to do some workarounds for autodetection
+> etc. it can be recognized.
 
-You just repeated the same not answering the question. The
-fw_download_in_progress at point (2) can be still true, on that CPU. I
-explain it third time so let me rephrase it - the
-fw_download_in_progress can be reordered by compiler or CPU to:
+As Geert said:
+- There are 2 bindings in the driver which are (currently) treated the
+  same.
+- The binding documentation says devices must always have the
+  ctu,ctucanfd compatible.
 
-T1                                          | T2
-nfcmrvl_nci_unregister_dev()
-  nci_unregister_device()
-    var = fw_download_in_progress; (true)
-                                            | nfc_fw_download
-                                            | device_lock
-                                            | dev->fw_download = false;
-                                            | device_unlock
-    if (var)                                |
-      nfcmrvl_fw_dnld_abort(priv);          |
+This means (currently) the ctu,ctucanfd-2 is not needed in the driver.
+We can add it back once we need it.
 
-Every write barrier must be paired with read barrier. Every lock on one
-access to variable, must be paired with same lock on other access to
-variable .
+Or are there devices that have a compatible of ctu,ctucanfd-2 without
+stating to be compatible with ctu,ctucanfd?
 
-> 
->>> Although the timer handler fw_dnld_timeout() could be running, nfcmrvl_nci_unregister_dev()
->>> will check the flag "fw_download_in_progress" which is already set to false and nfcmrvl_fw_dnld_abort()
->>> in nfcmrvl_nci_unregister_dev() will not execute.
->>
->> I am sorry, but you cannot move code around hoping it will by itself
->> solve synchronization issues.
-> 
-> I think this solution sove synchronization issues. If you still have any questions welcome to ask me.
+regards,
+Marc
 
-No, you still do not get the pint. You cannot move code around because
-this itself does not solve missing synchronization primitives and
-related issues.
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
+--mnhfuo3af4c2bg3a
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Best regards,
-Krzysztof
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmJyHlcACgkQrX5LkNig
+0137/wf7Bt5X5J7njOAv8Nj3JgmHyfGQNLtw4QwMPQ8+F3y8I/rihTthe/4ua7sp
+pDDRiRFpzJQXgfKv6oE70VLug2RxISnRQ1jW9rNqX2yf0xGn82U2QFG9qjoJEkiG
+5lLNpaQG9E+xMO7OcN07MnB5UNnJ568AmhMtUf5JZInvpvzdr85/+1U6bP4Wo87m
+IZgjGn9sioBCOvl+13MUEW9YwWQRgS+7snjJ4c4Mnvc1T/no5DbK9nFViNs2Z78X
+qD6TwtJ2E/G0KGbtr8wR8+nY3vvlJLOLZHBhecyx1/996NxFe5OQsBDKmbDAG0d3
+6P9hP95RDc65hCOLyBX5N+q35qaVkg==
+=kcsI
+-----END PGP SIGNATURE-----
+
+--mnhfuo3af4c2bg3a--
