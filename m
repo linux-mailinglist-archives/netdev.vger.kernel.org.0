@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83846519585
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 04:39:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0827B519586
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 04:39:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344064AbiEDCmr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 22:42:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50232 "EHLO
+        id S1344066AbiEDCms (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 22:42:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232041AbiEDCmn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 22:42:43 -0400
+        with ESMTP id S245604AbiEDCmp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 22:42:45 -0400
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B52DC1902A
-        for <netdev@vger.kernel.org>; Tue,  3 May 2022 19:39:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 327DF1F63C
+        for <netdev@vger.kernel.org>; Tue,  3 May 2022 19:39:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651631948; x=1683167948;
+  t=1651631950; x=1683167950;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=op3ufkMsUw3X5mNCgmwsCaCzkYqkwQ6qdR+SQOk/NSM=;
-  b=UhXu16jv3zc79w8g+ZwuhhIJ4ObSVRR72W+iwfryGjpqZ2ftS+QgmSti
-   J/4fkZSjdOZoqqvVHA/jYrjxqOpHYSZ5ktop6vJR70A+lDdl3S781Xg2L
-   vgKUc7KRrPHkTNhT2wMfrrin7m8LrsjC4nDf34tPhTGmmNwLEaLFPLI35
-   jXsZB8iwmRG03MY9fMTOB5PZ1KOkppwX94z7+qtA7thHtPDS83/k9j+sB
-   BX8vSyBlXw+gALEpZRM//lPgL2PeSSzY8tnzdZDlHW+l1StAEfBerh+76
-   Gl0UE8zb/3OlDsSunBkvEdk4/KPm2UpT5Rb9UxeR4j/9CkXPGFRFdhJoR
+  bh=mKsIE68GbBhuzYCRN1lC3xNvECjStEdhe9VlJFA8TM0=;
+  b=hf7tbklD6KXOOUuECeUrOxMyNg232V10RxDwwFpeHLTb/qdmuEdm5S0c
+   gQxi2+pNVujwizaiYuYTd4lDGxKdKXPJqkiyCk9lrRhb9v6fCKlQNJXKr
+   Zjhz1//vTzQtGoVGRYZcLuQeNfBqN2G1De+XbQ+FwwNaO0WZlp6Dyy3a2
+   maknIdSuYpP6jw59XKSfP/2AFgFpZ9NGq6Bl9gpzB9TTzuxRv7y0AZfm9
+   ST1a764Tbzqixhmh5bIedlSEuZqn3eVJ5limEHTFLTKfmkQxgVbnHf9Cr
+   WR1wQdSsxGMBhnZqmm9/tWsKqScQfOfAGp7GFmGfU4jHMUB0RrWr1B41M
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="267799834"
+X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="267799836"
 X-IronPort-AV: E=Sophos;i="5.91,196,1647327600"; 
-   d="scan'208";a="267799834"
+   d="scan'208";a="267799836"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
   by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 19:39:07 -0700
 X-IronPort-AV: E=Sophos;i="5.91,196,1647327600"; 
-   d="scan'208";a="584493370"
+   d="scan'208";a="584493371"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.251.20.240])
   by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 19:39:07 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
-Cc:     Kishen Maloor <kishen.maloor@intel.com>, davem@davemloft.net,
+Cc:     Florian Westphal <fw@strlen.de>, davem@davemloft.net,
         kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
         matthieu.baerts@tessares.net, mptcp@lists.linux.dev,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 02/13] mptcp: read attributes of addr entries managed by userspace PMs
-Date:   Tue,  3 May 2022 19:38:50 -0700
-Message-Id: <20220504023901.277012-3-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 03/13] mptcp: netlink: split mptcp_pm_parse_addr into two functions
+Date:   Tue,  3 May 2022 19:38:51 -0700
+Message-Id: <20220504023901.277012-4-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504023901.277012-1-mathew.j.martineau@linux.intel.com>
 References: <20220504023901.277012-1-mathew.j.martineau@linux.intel.com>
@@ -60,153 +60,161 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kishen Maloor <kishen.maloor@intel.com>
+From: Florian Westphal <fw@strlen.de>
 
-This change introduces a parallel path in the kernel for retrieving
-the local id, flags, if_index for an addr entry in the context of
-an MPTCP connection that's being managed by a userspace PM. The
-userspace and in-kernel PM modes deviate in their procedures for
-obtaining this information.
+Next patch will need to parse MPTCP_PM_ATTR_ADDR attributes and
+fill an mptcp_addr_info structure from a different genl command
+callback.
+
+To avoid copy-paste, split the existing function to a helper
+that does the common part and then call the helper from the
+(renamed)mptcp_pm_parse_entry function.
 
 Acked-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Kishen Maloor <kishen.maloor@intel.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- net/mptcp/pm_netlink.c   | 13 +++++++++++-
- net/mptcp/pm_userspace.c | 43 ++++++++++++++++++++++++++++++++++++++++
- net/mptcp/protocol.h     |  7 ++++++-
- net/mptcp/subflow.c      |  2 +-
- 4 files changed, 62 insertions(+), 3 deletions(-)
+ net/mptcp/pm_netlink.c | 60 +++++++++++++++++++++++++++---------------
+ 1 file changed, 39 insertions(+), 21 deletions(-)
 
 diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index 9d515c3e0b16..79f5e7197a06 100644
+index 79f5e7197a06..7d9bed536966 100644
 --- a/net/mptcp/pm_netlink.c
 +++ b/net/mptcp/pm_netlink.c
-@@ -1033,6 +1033,9 @@ int mptcp_pm_nl_get_local_id(struct mptcp_sock *msk, struct sock_common *skc)
- 	if (mptcp_addresses_equal(&msk_local, &skc_local, false))
- 		return 0;
- 
-+	if (mptcp_pm_is_userspace(msk))
-+		return mptcp_userspace_pm_get_local_id(msk, &skc_local);
-+
- 	pernet = pm_nl_get_pernet_from_msk(msk);
- 
- 	rcu_read_lock();
-@@ -1297,15 +1300,23 @@ static int mptcp_nl_cmd_add_addr(struct sk_buff *skb, struct genl_info *info)
- 	return 0;
+@@ -1142,11 +1142,12 @@ static int mptcp_pm_family_to_addr(int family)
+ 	return MPTCP_PM_ADDR_ATTR_ADDR4;
  }
  
--int mptcp_pm_get_flags_and_ifindex_by_id(struct net *net, unsigned int id,
-+int mptcp_pm_get_flags_and_ifindex_by_id(struct mptcp_sock *msk, unsigned int id,
- 					 u8 *flags, int *ifindex)
+-static int mptcp_pm_parse_addr(struct nlattr *attr, struct genl_info *info,
+-			       bool require_family,
+-			       struct mptcp_pm_addr_entry *entry)
++static int mptcp_pm_parse_pm_addr_attr(struct nlattr *tb[],
++				       const struct nlattr *attr,
++				       struct genl_info *info,
++				       struct mptcp_addr_info *addr,
++				       bool require_family)
  {
- 	struct mptcp_pm_addr_entry *entry;
-+	struct sock *sk = (struct sock *)msk;
-+	struct net *net = sock_net(sk);
+-	struct nlattr *tb[MPTCP_PM_ADDR_ATTR_MAX + 1];
+ 	int err, addr_addr;
  
- 	*flags = 0;
- 	*ifindex = 0;
+ 	if (!attr) {
+@@ -1160,27 +1161,29 @@ static int mptcp_pm_parse_addr(struct nlattr *attr, struct genl_info *info,
+ 	if (err)
+ 		return err;
  
- 	if (id) {
-+		if (mptcp_pm_is_userspace(msk))
-+			return mptcp_userspace_pm_get_flags_and_ifindex_by_id(msk,
-+									      id,
-+									      flags,
-+									      ifindex);
+-	memset(entry, 0, sizeof(*entry));
++	if (tb[MPTCP_PM_ADDR_ATTR_ID])
++		addr->id = nla_get_u8(tb[MPTCP_PM_ADDR_ATTR_ID]);
 +
- 		rcu_read_lock();
- 		entry = __lookup_addr_by_id(pm_nl_get_pernet(net), id);
- 		if (entry) {
-diff --git a/net/mptcp/pm_userspace.c b/net/mptcp/pm_userspace.c
-index c50f8900ffba..910116b0f5b9 100644
---- a/net/mptcp/pm_userspace.c
-+++ b/net/mptcp/pm_userspace.c
-@@ -76,3 +76,46 @@ int mptcp_userspace_pm_append_new_local_addr(struct mptcp_sock *msk,
- 	spin_unlock_bh(&msk->pm.lock);
- 	return ret;
- }
+ 	if (!tb[MPTCP_PM_ADDR_ATTR_FAMILY]) {
+ 		if (!require_family)
+-			goto skip_family;
++			return err;
+ 
+ 		NL_SET_ERR_MSG_ATTR(info->extack, attr,
+ 				    "missing family");
+ 		return -EINVAL;
+ 	}
+ 
+-	entry->addr.family = nla_get_u16(tb[MPTCP_PM_ADDR_ATTR_FAMILY]);
+-	if (entry->addr.family != AF_INET
++	addr->family = nla_get_u16(tb[MPTCP_PM_ADDR_ATTR_FAMILY]);
++	if (addr->family != AF_INET
+ #if IS_ENABLED(CONFIG_MPTCP_IPV6)
+-	    && entry->addr.family != AF_INET6
++	    && addr->family != AF_INET6
+ #endif
+ 	    ) {
+ 		NL_SET_ERR_MSG_ATTR(info->extack, attr,
+ 				    "unknown address family");
+ 		return -EINVAL;
+ 	}
+-	addr_addr = mptcp_pm_family_to_addr(entry->addr.family);
++	addr_addr = mptcp_pm_family_to_addr(addr->family);
+ 	if (!tb[addr_addr]) {
+ 		NL_SET_ERR_MSG_ATTR(info->extack, attr,
+ 				    "missing address data");
+@@ -1188,22 +1191,37 @@ static int mptcp_pm_parse_addr(struct nlattr *attr, struct genl_info *info,
+ 	}
+ 
+ #if IS_ENABLED(CONFIG_MPTCP_IPV6)
+-	if (entry->addr.family == AF_INET6)
+-		entry->addr.addr6 = nla_get_in6_addr(tb[addr_addr]);
++	if (addr->family == AF_INET6)
++		addr->addr6 = nla_get_in6_addr(tb[addr_addr]);
+ 	else
+ #endif
+-		entry->addr.addr.s_addr = nla_get_in_addr(tb[addr_addr]);
++		addr->addr.s_addr = nla_get_in_addr(tb[addr_addr]);
 +
-+int mptcp_userspace_pm_get_flags_and_ifindex_by_id(struct mptcp_sock *msk,
-+						   unsigned int id,
-+						   u8 *flags, int *ifindex)
-+{
-+	struct mptcp_pm_addr_entry *entry, *match = NULL;
++	if (tb[MPTCP_PM_ADDR_ATTR_PORT])
++		addr->port = htons(nla_get_u16(tb[MPTCP_PM_ADDR_ATTR_PORT]));
 +
-+	*flags = 0;
-+	*ifindex = 0;
-+
-+	spin_lock_bh(&msk->pm.lock);
-+	list_for_each_entry(entry, &msk->pm.userspace_pm_local_addr_list, list) {
-+		if (id == entry->addr.id) {
-+			match = entry;
-+			break;
-+		}
-+	}
-+	spin_unlock_bh(&msk->pm.lock);
-+	if (match) {
-+		*flags = match->flags;
-+		*ifindex = match->ifindex;
-+	}
-+
-+	return 0;
++	return err;
 +}
 +
-+int mptcp_userspace_pm_get_local_id(struct mptcp_sock *msk,
-+				    struct mptcp_addr_info *skc)
++static int mptcp_pm_parse_entry(struct nlattr *attr, struct genl_info *info,
++				bool require_family,
++				struct mptcp_pm_addr_entry *entry)
 +{
-+	struct mptcp_pm_addr_entry new_entry;
-+	__be16 msk_sport =  ((struct inet_sock *)
-+			     inet_sk((struct sock *)msk))->inet_sport;
++	struct nlattr *tb[MPTCP_PM_ADDR_ATTR_MAX + 1];
++	int err;
 +
-+	memset(&new_entry, 0, sizeof(struct mptcp_pm_addr_entry));
-+	new_entry.addr = *skc;
-+	new_entry.addr.id = 0;
-+	new_entry.flags = MPTCP_PM_ADDR_FLAG_IMPLICIT;
++	memset(entry, 0, sizeof(*entry));
 +
-+	if (new_entry.addr.port == msk_sport)
-+		new_entry.addr.port = 0;
-+
-+	return mptcp_userspace_pm_append_new_local_addr(msk, &new_entry);
-+}
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index f41089e54555..7257dc7aed43 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -783,8 +783,12 @@ mptcp_pm_del_add_timer(struct mptcp_sock *msk,
- struct mptcp_pm_add_entry *
- mptcp_lookup_anno_list_by_saddr(const struct mptcp_sock *msk,
- 				const struct mptcp_addr_info *addr);
--int mptcp_pm_get_flags_and_ifindex_by_id(struct net *net, unsigned int id,
-+int mptcp_pm_get_flags_and_ifindex_by_id(struct mptcp_sock *msk,
-+					 unsigned int id,
- 					 u8 *flags, int *ifindex);
-+int mptcp_userspace_pm_get_flags_and_ifindex_by_id(struct mptcp_sock *msk,
-+						   unsigned int id,
-+						   u8 *flags, int *ifindex);
++	err = mptcp_pm_parse_pm_addr_attr(tb, attr, info, &entry->addr, require_family);
++	if (err)
++		return err;
  
- int mptcp_pm_announce_addr(struct mptcp_sock *msk,
- 			   const struct mptcp_addr_info *addr,
-@@ -862,6 +866,7 @@ bool mptcp_pm_add_addr_signal(struct mptcp_sock *msk, const struct sk_buff *skb,
- bool mptcp_pm_rm_addr_signal(struct mptcp_sock *msk, unsigned int remaining,
- 			     struct mptcp_rm_list *rm_list);
- int mptcp_pm_get_local_id(struct mptcp_sock *msk, struct sock_common *skc);
-+int mptcp_userspace_pm_get_local_id(struct mptcp_sock *msk, struct mptcp_addr_info *skc);
+-skip_family:
+ 	if (tb[MPTCP_PM_ADDR_ATTR_IF_IDX]) {
+ 		u32 val = nla_get_s32(tb[MPTCP_PM_ADDR_ATTR_IF_IDX]);
  
- void __init mptcp_pm_nl_init(void);
- void mptcp_pm_nl_work(struct mptcp_sock *msk);
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index a0e7af33fb26..6d59336a8e1e 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -1468,7 +1468,7 @@ int __mptcp_subflow_connect(struct sock *sk, const struct mptcp_addr_info *loc,
- 	if (local_id)
- 		subflow_set_local_id(subflow, local_id);
+ 		entry->ifindex = val;
+ 	}
  
--	mptcp_pm_get_flags_and_ifindex_by_id(sock_net(sk), local_id,
-+	mptcp_pm_get_flags_and_ifindex_by_id(msk, local_id,
- 					     &flags, &ifindex);
- 	subflow->remote_key = msk->remote_key;
- 	subflow->local_key = msk->local_key;
+-	if (tb[MPTCP_PM_ADDR_ATTR_ID])
+-		entry->addr.id = nla_get_u8(tb[MPTCP_PM_ADDR_ATTR_ID]);
+-
+ 	if (tb[MPTCP_PM_ADDR_ATTR_FLAGS])
+ 		entry->flags = nla_get_u32(tb[MPTCP_PM_ADDR_ATTR_FLAGS]);
+ 
+@@ -1251,7 +1269,7 @@ static int mptcp_nl_cmd_add_addr(struct sk_buff *skb, struct genl_info *info)
+ 	struct mptcp_pm_addr_entry addr, *entry;
+ 	int ret;
+ 
+-	ret = mptcp_pm_parse_addr(attr, info, true, &addr);
++	ret = mptcp_pm_parse_entry(attr, info, true, &addr);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -1445,7 +1463,7 @@ static int mptcp_nl_cmd_del_addr(struct sk_buff *skb, struct genl_info *info)
+ 	unsigned int addr_max;
+ 	int ret;
+ 
+-	ret = mptcp_pm_parse_addr(attr, info, false, &addr);
++	ret = mptcp_pm_parse_entry(attr, info, false, &addr);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -1619,7 +1637,7 @@ static int mptcp_nl_cmd_get_addr(struct sk_buff *skb, struct genl_info *info)
+ 	void *reply;
+ 	int ret;
+ 
+-	ret = mptcp_pm_parse_addr(attr, info, false, &addr);
++	ret = mptcp_pm_parse_entry(attr, info, false, &addr);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -1830,7 +1848,7 @@ static int mptcp_nl_cmd_set_flags(struct sk_buff *skb, struct genl_info *info)
+ 	u8 bkup = 0, lookup_by_id = 0;
+ 	int ret;
+ 
+-	ret = mptcp_pm_parse_addr(attr, info, false, &addr);
++	ret = mptcp_pm_parse_entry(attr, info, false, &addr);
+ 	if (ret < 0)
+ 		return ret;
+ 
 -- 
 2.36.0
 
