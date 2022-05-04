@@ -2,82 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EBB57519FA3
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 14:34:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEFE5519FBE
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 14:40:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349627AbiEDMiH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 08:38:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50550 "EHLO
+        id S235723AbiEDMoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 08:44:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349665AbiEDMhp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 08:37:45 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFE46326F5;
-        Wed,  4 May 2022 05:34:09 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id j15so1839647wrb.2;
-        Wed, 04 May 2022 05:34:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:mime-version:content-transfer-encoding
-         :content-description:subject:to:from:date:reply-to;
-        bh=tnWNyhQSjbSW1ZO8S+jLwuWc52C1vg2ZYoLqEkg9VVo=;
-        b=M5eQHUad9vyWBqzWqb8052I0MGQDeeCATC1x07l/Fd4Om2nrRiHnqmohNoizAI2YR+
-         HWJTBNraJVptSh9KgpZRiAwSJEYTTA3ju2dCW/LalVaBQLhcXHz6BIl2NnxJwF394CTK
-         vvJOLNYuf10rAIKiuZ7n7gitS5Q3MCx7GOlrqrAD79f15xZMxVv+bJi6iHI9/kmFVCo/
-         gO2hGhNctwqewJxOtV4AJUq3yA4aICQWTCQ0xWGifAW8hBTi6NfztJuZI30dM4KvXxXT
-         esnDgqZQVwsFPhr2izwTli+CqK7mwADZ40FGZBnP5KgCjGN/5OevMzxOA4gw7UuOaIHy
-         cEVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:mime-version
-         :content-transfer-encoding:content-description:subject:to:from:date
-         :reply-to;
-        bh=tnWNyhQSjbSW1ZO8S+jLwuWc52C1vg2ZYoLqEkg9VVo=;
-        b=0lwJZC9fi4yz0YiqDPT2Mj2k+IesumyPpYEMa40zHtZ85FmCC9xUjFrNVLqt6DuvjA
-         YCPvI+X4Qh4SQSZYJMXp8og1SEsAx/+W3O6fBXTS9YrRkqtWiOGmuJ5k/pYFViq/VxkY
-         0lACk+yK96Cg2jEtG+aRwnFcYYX7ANqOtgavMQf9g9ZNboADIkGXBVatV1V6rH8hInoV
-         3NS0ESCqtVp45e1+8VX0gQkRaLvvzUIkc4b1IXzliNtDm2BUrGWgtnY2BqudmUPoyht6
-         8Sn5bC/XnQnx5wCMuS93lIoJq0jwMNsoCHDb9njusMkLO7Us2ZHW3ZcVB0PP2fpvQRY2
-         jVxg==
-X-Gm-Message-State: AOAM532PBqwUMK9fquTRuvx9YfX1rGLfgqyYp0p67s3TyyzHSUhQ6bYO
-        9vlTO4WNLYzvSOEC7uEavd8=
-X-Google-Smtp-Source: ABdhPJwn+yH2ogKzQg2HjPyx/pZwvP9viOZjAnfOnSDjNY7Y7PLeRD8hY2+ZTAxhFAvmdF2NgQw2SA==
-X-Received: by 2002:a5d:64e6:0:b0:20c:4f23:96fc with SMTP id g6-20020a5d64e6000000b0020c4f2396fcmr16511038wri.154.1651667648470;
-        Wed, 04 May 2022 05:34:08 -0700 (PDT)
-Received: from [192.168.0.104] ([212.154.23.44])
-        by smtp.gmail.com with ESMTPSA id m6-20020a05600c460600b003942a244ed6sm3698856wmo.27.2022.05.04.05.33.55
-        (version=TLS1 cipher=AES128-SHA bits=128/128);
-        Wed, 04 May 2022 05:34:06 -0700 (PDT)
-Message-ID: <627272be.1c69fb81.1f7a9.6539@mx.google.com>
-Content-Type: text/plain; charset="iso-8859-1"
+        with ESMTP id S1349876AbiEDMnw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 08:43:52 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19F2BF76
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 05:40:15 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nmEIZ-0004Hb-Rc; Wed, 04 May 2022 14:40:07 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nmEIY-0006tO-Ru; Wed, 04 May 2022 14:40:06 +0200
+Date:   Wed, 4 May 2022 14:40:06 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v2 1/2] net: phy:
+ genphy_c45_baset1_an_config_aneg: do no set unknown configuration
+Message-ID: <20220504124006.GB19760@pengutronix.de>
+References: <20220504110655.1470008-1-o.rempel@pengutronix.de>
+ <20220504110655.1470008-2-o.rempel@pengutronix.de>
+ <YnJxOXcSVGW+g0ZP@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Description: Mail message body
-Subject: Re:
-To:     Recipients <henrydacciani0@gmail.com>
-From:   "LAWRENCE A. BIDDENBACK" <henrydacciani0@gmail.com>
-Date:   Wed, 04 May 2022 20:33:48 +0800
-Reply-To: lawrence_biddenback@hotmail.com
-X-Spam-Status: No, score=1.8 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Level: *
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YnJxOXcSVGW+g0ZP@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 14:39:47 up 35 days,  1:09, 85 users,  load average: 0.10, 0.14,
+ 0.16
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Attn: Sir/Madam
+On Wed, May 04, 2022 at 02:27:37PM +0200, Andrew Lunn wrote:
+> On Wed, May 04, 2022 at 01:06:54PM +0200, Oleksij Rempel wrote:
+> > Do not change default master/slave autoneg configuration if no
+> > changes was requested.
+> > 
+> > Fixes: 3da8ffd8545f ("net: phy: Add 10BASE-T1L support in phy-c45")
+> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> 
+> Hi Oleksij
+> 
+> I'm i right in saying 3da8ffd8545f is only in net-next?
 
-I hope this E-mail reaches you in good health. I'm Lawrence A, an Entrepren=
-eur, Venture Capitalist & Private Lender. I represent a group of Ultra High=
- Net Worth Donors worldwide. Kindly let me know if you can be trusted to di=
-stribute charitable items which includes Cash, Food Items and Clothing in y=
-our area.
- =
+ack.
 
-Thank you.
-Lawrence.
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
