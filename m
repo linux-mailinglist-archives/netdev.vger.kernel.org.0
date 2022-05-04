@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 794455198D7
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 09:51:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A77125198D9
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 09:51:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345808AbiEDHzJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 03:55:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55794 "EHLO
+        id S1345811AbiEDHzK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 03:55:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345827AbiEDHzH (ORCPT
+        with ESMTP id S1343813AbiEDHzH (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 03:55:07 -0400
 Received: from mint-fitpc2.mph.net (unknown [81.168.73.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4D87418E3C
-        for <netdev@vger.kernel.org>; Wed,  4 May 2022 00:51:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A9C6A193EF
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 00:51:23 -0700 (PDT)
 Received: from palantir17.mph.net (unknown [192.168.0.4])
-        by mint-fitpc2.mph.net (Postfix) with ESMTP id 15D3B3202DC;
-        Wed,  4 May 2022 08:51:10 +0100 (BST)
+        by mint-fitpc2.mph.net (Postfix) with ESMTP id 755ED3200C7;
+        Wed,  4 May 2022 08:51:22 +0100 (BST)
 Received: from localhost ([::1] helo=palantir17.mph.net)
         by palantir17.mph.net with esmtp (Exim 4.89)
         (envelope-from <habetsm.xilinx@gmail.com>)
-        id 1nm9mv-0003TJ-RF; Wed, 04 May 2022 08:51:09 +0100
-Subject: [PATCH net-next v3 07/13] sfc/siena: Rename functions in efx
- headers to avoid conflicts with sfc
+        id 1nm9n8-0003TY-7s; Wed, 04 May 2022 08:51:22 +0100
+Subject: [PATCH net-next v3 08/13] sfc/siena: Rename RX/TX functions to
+ avoid conflicts with sfc
 From:   Martin Habets <habetsm.xilinx@gmail.com>
 To:     kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
         davem@davemloft.net
 Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com
-Date:   Wed, 04 May 2022 08:51:09 +0100
-Message-ID: <165165066952.13116.13098153912452687070.stgit@palantir17.mph.net>
+Date:   Wed, 04 May 2022 08:51:22 +0100
+Message-ID: <165165068194.13116.17562165922362145446.stgit@palantir17.mph.net>
 In-Reply-To: <165165052672.13116.6437319692346674708.stgit@palantir17.mph.net>
 References: <165165052672.13116.6437319692346674708.stgit@palantir17.mph.net>
 User-Agent: StGit/0.17.1-dirty
@@ -46,2746 +46,1274 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When building with allyesconfig there are many identical
-symbol names.
-For siena use efx_siena_ as the function and variable prefix
-to avoid build errors.
+For siena use efx_siena_ as the function prefix.
+Several functions are not used in Siena, so they are removed.
 
-efx_mtd_remove_partition can become static as it is no longer called
-from other files.
-efx_ticks_to_usecs and efx_xmit_done_single are not used in Siena, so
-they are removed.
-Several functions are only used inside efx_channels.c for Siena so
-they can become static.
+Use a Siena specific variable name for module parameter
+efx_separate_tx_channels.
+Move efx_fini_tx_queue() to avoid a forward declaration of
+efx_dequeue_buffer().
 
 Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
 ---
- drivers/net/ethernet/sfc/siena/efx.c              |  153 ++++++++++----------
- drivers/net/ethernet/sfc/siena/efx.h              |   65 ++++-----
- drivers/net/ethernet/sfc/siena/efx_channels.c     |  113 ++++++++-------
- drivers/net/ethernet/sfc/siena/efx_channels.h     |   67 ++++-----
- drivers/net/ethernet/sfc/siena/efx_common.c       |  158 +++++++++++----------
- drivers/net/ethernet/sfc/siena/efx_common.h       |   90 ++++++------
- drivers/net/ethernet/sfc/siena/enum.h             |    2 
- drivers/net/ethernet/sfc/siena/ethtool.c          |   12 +-
- drivers/net/ethernet/sfc/siena/ethtool_common.c   |    6 -
- drivers/net/ethernet/sfc/siena/farch.c            |   41 +++--
- drivers/net/ethernet/sfc/siena/mcdi.c             |   12 +-
- drivers/net/ethernet/sfc/siena/mcdi_port_common.c |    6 -
- drivers/net/ethernet/sfc/siena/mtd.c              |   16 +-
- drivers/net/ethernet/sfc/siena/net_driver.h       |   17 +-
- drivers/net/ethernet/sfc/siena/rx.c               |   11 +
- drivers/net/ethernet/sfc/siena/rx_common.c        |    8 +
- drivers/net/ethernet/sfc/siena/rx_common.h        |    5 -
- drivers/net/ethernet/sfc/siena/selftest.c         |   18 +-
- drivers/net/ethernet/sfc/siena/siena.c            |   24 ++-
- drivers/net/ethernet/sfc/siena/siena_sriov.c      |    2 
- drivers/net/ethernet/sfc/siena/tx.c               |   61 ++------
- drivers/net/ethernet/sfc/siena/tx_common.c        |    8 +
- drivers/net/ethernet/sfc/siena/tx_common.h        |    4 -
- 23 files changed, 427 insertions(+), 472 deletions(-)
+ drivers/net/ethernet/sfc/siena/efx.c            |   15 ++-
+ drivers/net/ethernet/sfc/siena/efx.h            |    4 -
+ drivers/net/ethernet/sfc/siena/efx_channels.c   |   35 ++++---
+ drivers/net/ethernet/sfc/siena/efx_common.c     |    4 -
+ drivers/net/ethernet/sfc/siena/ethtool_common.c |   15 ++-
+ drivers/net/ethernet/sfc/siena/farch.c          |    9 +-
+ drivers/net/ethernet/sfc/siena/rx.c             |   22 ++--
+ drivers/net/ethernet/sfc/siena/rx_common.c      |  116 ++++++++++++-----------
+ drivers/net/ethernet/sfc/siena/rx_common.h      |   89 ++++++++----------
+ drivers/net/ethernet/sfc/siena/tx.c             |   16 +--
+ drivers/net/ethernet/sfc/siena/tx.h             |    7 -
+ drivers/net/ethernet/sfc/siena/tx_common.c      |   85 ++++++++---------
+ drivers/net/ethernet/sfc/siena/tx_common.h      |   32 +++---
+ 13 files changed, 216 insertions(+), 233 deletions(-)
 
 diff --git a/drivers/net/ethernet/sfc/siena/efx.c b/drivers/net/ethernet/sfc/siena/efx.c
-index f11e870b2eef..f54f3619705a 100644
+index f54f3619705a..70da9d7afbc5 100644
 --- a/drivers/net/ethernet/sfc/siena/efx.c
 +++ b/drivers/net/ethernet/sfc/siena/efx.c
-@@ -43,11 +43,11 @@
+@@ -58,8 +58,9 @@ MODULE_PARM_DESC(rss_cpus, "Number of CPUs to use for Receive-Side Scaling");
   *
-  *************************************************************************/
+  * This is only used in MSI-X interrupt mode
+  */
+-bool efx_separate_tx_channels;
+-module_param(efx_separate_tx_channels, bool, 0444);
++bool efx_siena_separate_tx_channels;
++module_param_named(efx_separate_tx_channels, efx_siena_separate_tx_channels,
++		   bool, 0444);
+ MODULE_PARM_DESC(efx_separate_tx_channels,
+ 		 "Use separate channels for TX and RX");
  
--module_param_named(interrupt_mode, efx_interrupt_mode, uint, 0444);
-+module_param_named(interrupt_mode, efx_siena_interrupt_mode, uint, 0444);
- MODULE_PARM_DESC(interrupt_mode,
- 		 "Interrupt mode (0=>MSIX 1=>MSI 2=>legacy)");
- 
--module_param(rss_cpus, uint, 0444);
-+module_param_named(rss_cpus, efx_siena_rss_cpus, uint, 0444);
- MODULE_PARM_DESC(rss_cpus, "Number of CPUs to use for Receive-Side Scaling");
- 
- /*
-@@ -174,7 +174,7 @@ static void efx_fini_port(struct efx_nic *efx)
- 	efx->port_initialized = false;
- 
- 	efx->link_state.up = false;
--	efx_link_status_changed(efx);
-+	efx_siena_link_status_changed(efx);
- }
- 
- static void efx_remove_port(struct efx_nic *efx)
-@@ -284,11 +284,11 @@ static int efx_probe_nic(struct efx_nic *efx)
- 		/* Determine the number of channels and queues by trying
- 		 * to hook in MSI-X interrupts.
- 		 */
--		rc = efx_probe_interrupts(efx);
-+		rc = efx_siena_probe_interrupts(efx);
- 		if (rc)
- 			goto fail1;
- 
--		rc = efx_set_channels(efx);
-+		rc = efx_siena_set_channels(efx);
- 		if (rc)
- 			goto fail1;
- 
-@@ -299,7 +299,7 @@ static int efx_probe_nic(struct efx_nic *efx)
- 
- 		if (rc == -EAGAIN)
- 			/* try again with new max_channels */
--			efx_remove_interrupts(efx);
-+			efx_siena_remove_interrupts(efx);
- 
- 	} while (rc == -EAGAIN);
- 
-@@ -310,13 +310,13 @@ static int efx_probe_nic(struct efx_nic *efx)
+@@ -306,7 +307,7 @@ static int efx_probe_nic(struct efx_nic *efx)
+ 	if (efx->n_channels > 1)
+ 		netdev_rss_key_fill(efx->rss_context.rx_hash_key,
+ 				    sizeof(efx->rss_context.rx_hash_key));
+-	efx_set_default_rx_indir_table(efx, &efx->rss_context);
++	efx_siena_set_default_rx_indir_table(efx, &efx->rss_context);
  
  	/* Initialise the interrupt moderation settings */
  	efx->irq_mod_step_us = DIV_ROUND_UP(efx->timer_quantum_ns, 1000);
--	efx_init_irq_moderation(efx, tx_irq_mod_usec, rx_irq_mod_usec, true,
--				true);
-+	efx_siena_init_irq_moderation(efx, tx_irq_mod_usec, rx_irq_mod_usec,
-+				      true, true);
+@@ -366,7 +367,7 @@ static int efx_probe_all(struct efx_nic *efx)
+ 			   " VFs may not function\n", rc);
+ #endif
  
+-	rc = efx_probe_filters(efx);
++	rc = efx_siena_probe_filters(efx);
+ 	if (rc) {
+ 		netif_err(efx, probe, efx->net_dev,
+ 			  "failed to create filter tables\n");
+@@ -380,7 +381,7 @@ static int efx_probe_all(struct efx_nic *efx)
  	return 0;
  
- fail2:
--	efx_remove_interrupts(efx);
-+	efx_siena_remove_interrupts(efx);
- fail1:
- 	efx->type->remove(efx);
- 	return rc;
-@@ -326,7 +326,7 @@ static void efx_remove_nic(struct efx_nic *efx)
- {
- 	netif_dbg(efx, drv, efx->net_dev, "destroying NIC\n");
- 
--	efx_remove_interrupts(efx);
-+	efx_siena_remove_interrupts(efx);
- 	efx->type->remove(efx);
- }
- 
-@@ -373,7 +373,7 @@ static int efx_probe_all(struct efx_nic *efx)
- 		goto fail4;
- 	}
- 
--	rc = efx_probe_channels(efx);
-+	rc = efx_siena_probe_channels(efx);
- 	if (rc)
- 		goto fail5;
- 
-@@ -399,7 +399,7 @@ static void efx_remove_all(struct efx_nic *efx)
- 	efx_xdp_setup_prog(efx, NULL);
- 	rtnl_unlock();
- 
--	efx_remove_channels(efx);
-+	efx_siena_remove_channels(efx);
- 	efx_remove_filters(efx);
+  fail5:
+-	efx_remove_filters(efx);
++	efx_siena_remove_filters(efx);
+  fail4:
  #ifdef CONFIG_SFC_SRIOV
  	efx->type->vswitching_remove(efx);
-@@ -413,7 +413,7 @@ static void efx_remove_all(struct efx_nic *efx)
-  * Interrupt moderation
-  *
-  **************************************************************************/
--unsigned int efx_usecs_to_ticks(struct efx_nic *efx, unsigned int usecs)
-+unsigned int efx_siena_usecs_to_ticks(struct efx_nic *efx, unsigned int usecs)
- {
- 	if (usecs == 0)
- 		return 0;
-@@ -422,18 +422,10 @@ unsigned int efx_usecs_to_ticks(struct efx_nic *efx, unsigned int usecs)
- 	return usecs * 1000 / efx->timer_quantum_ns;
- }
+@@ -400,7 +401,7 @@ static void efx_remove_all(struct efx_nic *efx)
+ 	rtnl_unlock();
  
--unsigned int efx_ticks_to_usecs(struct efx_nic *efx, unsigned int ticks)
--{
--	/* We must round up when converting ticks to microseconds
--	 * because we round down when converting the other way.
--	 */
--	return DIV_ROUND_UP(ticks * efx->timer_quantum_ns, 1000);
--}
--
- /* Set interrupt moderation parameters */
--int efx_init_irq_moderation(struct efx_nic *efx, unsigned int tx_usecs,
--			    unsigned int rx_usecs, bool rx_adaptive,
--			    bool rx_may_override_tx)
-+int efx_siena_init_irq_moderation(struct efx_nic *efx, unsigned int tx_usecs,
-+				  unsigned int rx_usecs, bool rx_adaptive,
-+				  bool rx_may_override_tx)
- {
- 	struct efx_channel *channel;
- 	unsigned int timer_max_us;
-@@ -466,8 +458,8 @@ int efx_init_irq_moderation(struct efx_nic *efx, unsigned int tx_usecs,
- 	return 0;
- }
- 
--void efx_get_irq_moderation(struct efx_nic *efx, unsigned int *tx_usecs,
--			    unsigned int *rx_usecs, bool *rx_adaptive)
-+void efx_siena_get_irq_moderation(struct efx_nic *efx, unsigned int *tx_usecs,
-+				  unsigned int *rx_usecs, bool *rx_adaptive)
- {
- 	*rx_adaptive = efx->irq_rx_adaptive;
- 	*rx_usecs = efx->irq_rx_moderation_us;
-@@ -520,7 +512,7 @@ static int efx_ioctl(struct net_device *net_dev, struct ifreq *ifr, int cmd)
-  *************************************************************************/
- 
- /* Context: process, rtnl_lock() held. */
--int efx_net_open(struct net_device *net_dev)
-+static int efx_net_open(struct net_device *net_dev)
- {
- 	struct efx_nic *efx = netdev_priv(net_dev);
- 	int rc;
-@@ -533,14 +525,14 @@ int efx_net_open(struct net_device *net_dev)
- 		return rc;
- 	if (efx->phy_mode & PHY_MODE_SPECIAL)
- 		return -EBUSY;
--	if (efx_mcdi_poll_reboot(efx) && efx_reset(efx, RESET_TYPE_ALL))
-+	if (efx_mcdi_poll_reboot(efx) && efx_siena_reset(efx, RESET_TYPE_ALL))
- 		return -EIO;
- 
- 	/* Notify the kernel of the link state polled during driver load,
- 	 * before the monitor starts running */
--	efx_link_status_changed(efx);
-+	efx_siena_link_status_changed(efx);
- 
--	efx_start_all(efx);
-+	efx_siena_start_all(efx);
- 	if (efx->state == STATE_DISABLED || efx->reset_pending)
- 		netif_device_detach(efx->net_dev);
- 	efx_selftest_async_start(efx);
-@@ -551,7 +543,7 @@ int efx_net_open(struct net_device *net_dev)
-  * Note that the kernel will ignore our return code; this method
-  * should really be a void.
-  */
--int efx_net_stop(struct net_device *net_dev)
-+static int efx_net_stop(struct net_device *net_dev)
- {
- 	struct efx_nic *efx = netdev_priv(net_dev);
- 
-@@ -559,7 +551,7 @@ int efx_net_stop(struct net_device *net_dev)
- 		  raw_smp_processor_id());
- 
- 	/* Stop the device and flush all the channels */
--	efx_stop_all(efx);
-+	efx_siena_stop_all(efx);
- 
- 	return 0;
- }
-@@ -587,16 +579,16 @@ static int efx_vlan_rx_kill_vid(struct net_device *net_dev, __be16 proto, u16 vi
- static const struct net_device_ops efx_netdev_ops = {
- 	.ndo_open		= efx_net_open,
- 	.ndo_stop		= efx_net_stop,
--	.ndo_get_stats64	= efx_net_stats,
--	.ndo_tx_timeout		= efx_watchdog,
--	.ndo_start_xmit		= efx_hard_start_xmit,
-+	.ndo_get_stats64	= efx_siena_net_stats,
-+	.ndo_tx_timeout		= efx_siena_watchdog,
-+	.ndo_start_xmit		= efx_siena_hard_start_xmit,
- 	.ndo_validate_addr	= eth_validate_addr,
- 	.ndo_eth_ioctl		= efx_ioctl,
--	.ndo_change_mtu		= efx_change_mtu,
--	.ndo_set_mac_address	= efx_set_mac_address,
--	.ndo_set_rx_mode	= efx_set_rx_mode,
--	.ndo_set_features	= efx_set_features,
--	.ndo_features_check	= efx_features_check,
-+	.ndo_change_mtu		= efx_siena_change_mtu,
-+	.ndo_set_mac_address	= efx_siena_set_mac_address,
-+	.ndo_set_rx_mode	= efx_siena_set_rx_mode,
-+	.ndo_set_features	= efx_siena_set_features,
-+	.ndo_features_check	= efx_siena_features_check,
- 	.ndo_vlan_rx_add_vid	= efx_vlan_rx_add_vid,
- 	.ndo_vlan_rx_kill_vid	= efx_vlan_rx_kill_vid,
+ 	efx_siena_remove_channels(efx);
+-	efx_remove_filters(efx);
++	efx_siena_remove_filters(efx);
  #ifdef CONFIG_SFC_SRIOV
-@@ -606,9 +598,9 @@ static const struct net_device_ops efx_netdev_ops = {
- 	.ndo_get_vf_config	= efx_sriov_get_vf_config,
- 	.ndo_set_vf_link_state  = efx_sriov_set_vf_link_state,
+ 	efx->type->vswitching_remove(efx);
  #endif
--	.ndo_get_phys_port_id   = efx_get_phys_port_id,
--	.ndo_get_phys_port_name	= efx_get_phys_port_name,
--	.ndo_setup_tc		= efx_setup_tc,
-+	.ndo_get_phys_port_id   = efx_siena_get_phys_port_id,
-+	.ndo_get_phys_port_name	= efx_siena_get_phys_port_name,
-+	.ndo_setup_tc		= efx_siena_setup_tc,
+@@ -602,7 +603,7 @@ static const struct net_device_ops efx_netdev_ops = {
+ 	.ndo_get_phys_port_name	= efx_siena_get_phys_port_name,
+ 	.ndo_setup_tc		= efx_siena_setup_tc,
  #ifdef CONFIG_RFS_ACCEL
- 	.ndo_rx_flow_steer	= efx_filter_rfs,
+-	.ndo_rx_flow_steer	= efx_filter_rfs,
++	.ndo_rx_flow_steer	= efx_siena_filter_rfs,
  #endif
-@@ -626,10 +618,10 @@ static int efx_xdp_setup_prog(struct efx_nic *efx, struct bpf_prog *prog)
- 		return -EINVAL;
- 	}
- 
--	if (prog && efx->net_dev->mtu > efx_xdp_max_mtu(efx)) {
-+	if (prog && efx->net_dev->mtu > efx_siena_xdp_max_mtu(efx)) {
- 		netif_err(efx, drv, efx->net_dev,
- 			  "Unable to configure XDP with MTU of %d (max: %d)\n",
--			  efx->net_dev->mtu, efx_xdp_max_mtu(efx));
-+			  efx->net_dev->mtu, efx_siena_xdp_max_mtu(efx));
- 		return -EINVAL;
- 	}
- 
-@@ -663,14 +655,14 @@ static int efx_xdp_xmit(struct net_device *dev, int n, struct xdp_frame **xdpfs,
- 	if (!netif_running(dev))
- 		return -EINVAL;
- 
--	return efx_xdp_tx_buffers(efx, n, xdpfs, flags & XDP_XMIT_FLUSH);
-+	return efx_siena_xdp_tx_buffers(efx, n, xdpfs, flags & XDP_XMIT_FLUSH);
- }
- 
- static void efx_update_name(struct efx_nic *efx)
- {
- 	strcpy(efx->name, efx->net_dev->name);
--	efx_mtd_rename(efx);
--	efx_set_channel_names(efx);
-+	efx_siena_mtd_rename(efx);
-+	efx_siena_set_channel_names(efx);
- }
- 
- static int efx_netdev_event(struct notifier_block *this,
-@@ -708,7 +700,7 @@ static int efx_register_netdev(struct efx_nic *efx)
- 	net_dev->netdev_ops = &efx_netdev_ops;
- 	if (efx_nic_rev(efx) >= EFX_REV_HUNT_A0)
- 		net_dev->priv_flags |= IFF_UNICAST_FLT;
--	net_dev->ethtool_ops = &efx_ethtool_ops;
-+	net_dev->ethtool_ops = &efx_siena_ethtool_ops;
- 	netif_set_gso_max_segs(net_dev, EFX_TSO_MAX_SEGS);
- 	net_dev->min_mtu = EFX_MIN_MTU;
- 	net_dev->max_mtu = EFX_MAX_MTU;
-@@ -742,7 +734,7 @@ static int efx_register_netdev(struct efx_nic *efx)
- 	efx_for_each_channel(channel, efx) {
- 		struct efx_tx_queue *tx_queue;
- 		efx_for_each_channel_tx_queue(tx_queue, channel)
--			efx_init_tx_queue_core_txq(tx_queue);
-+			efx_siena_init_tx_queue_core_txq(tx_queue);
- 	}
- 
- 	efx_associate(efx);
-@@ -756,7 +748,7 @@ static int efx_register_netdev(struct efx_nic *efx)
- 		goto fail_registered;
- 	}
- 
--	efx_init_mcdi_logging(efx);
-+	efx_siena_init_mcdi_logging(efx);
- 
- 	return 0;
- 
-@@ -780,7 +772,7 @@ static void efx_unregister_netdev(struct efx_nic *efx)
- 
- 	if (efx_dev_registered(efx)) {
- 		strlcpy(efx->name, pci_name(efx->pci_dev), sizeof(efx->name));
--		efx_fini_mcdi_logging(efx);
-+		efx_siena_fini_mcdi_logging(efx);
- 		device_remove_file(&efx->pci_dev->dev, &dev_attr_phy_type);
- 		unregister_netdev(efx->net_dev);
- 	}
-@@ -807,7 +799,7 @@ static const struct pci_device_id efx_pci_table[] = {
-  *
-  **************************************************************************/
- 
--void efx_update_sw_stats(struct efx_nic *efx, u64 *stats)
-+void efx_siena_update_sw_stats(struct efx_nic *efx, u64 *stats)
- {
- 	u64 n_rx_nodesc_trunc = 0;
- 	struct efx_channel *channel;
-@@ -833,14 +825,14 @@ static void efx_pci_remove_main(struct efx_nic *efx)
- 	 * are not READY.
- 	 */
- 	BUG_ON(efx->state == STATE_READY);
--	efx_flush_reset_workqueue(efx);
-+	efx_siena_flush_reset_workqueue(efx);
- 
--	efx_disable_interrupts(efx);
--	efx_clear_interrupt_affinity(efx);
-+	efx_siena_disable_interrupts(efx);
-+	efx_siena_clear_interrupt_affinity(efx);
- 	efx_nic_fini_interrupt(efx);
- 	efx_fini_port(efx);
- 	efx->type->fini(efx);
--	efx_fini_napi(efx);
-+	efx_siena_fini_napi(efx);
- 	efx_remove_all(efx);
- }
- 
-@@ -860,7 +852,7 @@ static void efx_pci_remove(struct pci_dev *pci_dev)
- 	rtnl_lock();
- 	efx_dissociate(efx);
- 	dev_close(efx->net_dev);
--	efx_disable_interrupts(efx);
-+	efx_siena_disable_interrupts(efx);
- 	efx->state = STATE_UNINIT;
- 	rtnl_unlock();
- 
-@@ -869,14 +861,14 @@ static void efx_pci_remove(struct pci_dev *pci_dev)
- 
- 	efx_unregister_netdev(efx);
- 
--	efx_mtd_remove(efx);
-+	efx_siena_mtd_remove(efx);
- 
- 	efx_pci_remove_main(efx);
- 
--	efx_fini_io(efx);
-+	efx_siena_fini_io(efx);
- 	netif_dbg(efx, drv, efx->net_dev, "shutdown successful\n");
- 
--	efx_fini_struct(efx);
-+	efx_siena_fini_struct(efx);
- 	free_netdev(efx->net_dev);
- 
- 	pci_disable_pcie_error_reporting(pci_dev);
-@@ -929,7 +921,7 @@ static int efx_pci_probe_main(struct efx_nic *efx)
- 	if (rc)
- 		goto fail1;
- 
--	efx_init_napi(efx);
-+	efx_siena_init_napi(efx);
- 
- 	down_write(&efx->filter_sem);
- 	rc = efx->type->init(efx);
-@@ -950,22 +942,22 @@ static int efx_pci_probe_main(struct efx_nic *efx)
- 	if (rc)
- 		goto fail5;
- 
--	efx_set_interrupt_affinity(efx);
--	rc = efx_enable_interrupts(efx);
-+	efx_siena_set_interrupt_affinity(efx);
-+	rc = efx_siena_enable_interrupts(efx);
- 	if (rc)
- 		goto fail6;
- 
- 	return 0;
- 
-  fail6:
--	efx_clear_interrupt_affinity(efx);
-+	efx_siena_clear_interrupt_affinity(efx);
- 	efx_nic_fini_interrupt(efx);
-  fail5:
- 	efx_fini_port(efx);
-  fail4:
- 	efx->type->fini(efx);
-  fail3:
--	efx_fini_napi(efx);
-+	efx_siena_fini_napi(efx);
- 	efx_remove_all(efx);
-  fail1:
- 	return rc;
-@@ -1046,7 +1038,7 @@ static int efx_pci_probe(struct pci_dev *pci_dev,
- 
- 	pci_set_drvdata(pci_dev, efx);
- 	SET_NETDEV_DEV(net_dev, &pci_dev->dev);
--	rc = efx_init_struct(efx, pci_dev, net_dev);
-+	rc = efx_siena_init_struct(efx, pci_dev, net_dev);
- 	if (rc)
- 		goto fail1;
- 
-@@ -1056,8 +1048,9 @@ static int efx_pci_probe(struct pci_dev *pci_dev,
- 		efx_probe_vpd_strings(efx);
- 
- 	/* Set up basic I/O (BAR mappings etc) */
--	rc = efx_init_io(efx, efx->type->mem_bar(efx), efx->type->max_dma_mask,
--			 efx->type->mem_map_size(efx));
-+	rc = efx_siena_init_io(efx, efx->type->mem_bar(efx),
-+			       efx->type->max_dma_mask,
-+			       efx->type->mem_map_size(efx));
- 	if (rc)
- 		goto fail2;
- 
-@@ -1101,9 +1094,9 @@ static int efx_pci_probe(struct pci_dev *pci_dev,
- 	return 0;
- 
-  fail3:
--	efx_fini_io(efx);
-+	efx_siena_fini_io(efx);
-  fail2:
--	efx_fini_struct(efx);
-+	efx_siena_fini_struct(efx);
-  fail1:
- 	WARN_ON(rc > 0);
- 	netif_dbg(efx, drv, efx->net_dev, "initialisation failed. rc=%d\n", rc);
-@@ -1142,8 +1135,8 @@ static int efx_pm_freeze(struct device *dev)
- 
- 		efx_device_detach_sync(efx);
- 
--		efx_stop_all(efx);
--		efx_disable_interrupts(efx);
-+		efx_siena_stop_all(efx);
-+		efx_siena_disable_interrupts(efx);
- 	}
- 
- 	rtnl_unlock();
-@@ -1159,7 +1152,7 @@ static int efx_pm_thaw(struct device *dev)
- 	rtnl_lock();
- 
- 	if (efx->state != STATE_DISABLED) {
--		rc = efx_enable_interrupts(efx);
-+		rc = efx_siena_enable_interrupts(efx);
- 		if (rc)
- 			goto fail;
- 
-@@ -1167,7 +1160,7 @@ static int efx_pm_thaw(struct device *dev)
- 		efx_mcdi_port_reconfigure(efx);
- 		mutex_unlock(&efx->mac_lock);
- 
--		efx_start_all(efx);
-+		efx_siena_start_all(efx);
- 
- 		efx_device_attach_if_not_resetting(efx);
- 
-@@ -1179,7 +1172,7 @@ static int efx_pm_thaw(struct device *dev)
- 	rtnl_unlock();
- 
- 	/* Reschedule any quenched resets scheduled during efx_pm_freeze() */
--	efx_queue_reset_work(efx);
-+	efx_siena_queue_reset_work(efx);
- 
- 	return 0;
- 
-@@ -1255,7 +1248,7 @@ static struct pci_driver efx_pci_driver = {
- 	.probe		= efx_pci_probe,
- 	.remove		= efx_pci_remove,
- 	.driver.pm	= &efx_pm_ops,
--	.err_handler	= &efx_err_handlers,
-+	.err_handler	= &efx_siena_err_handlers,
- #ifdef CONFIG_SFC_SRIOV
- 	.sriov_configure = efx_pci_sriov_configure,
- #endif
-@@ -1277,7 +1270,7 @@ static int __init efx_init_module(void)
- 	if (rc)
- 		goto err_notifier;
- 
--	rc = efx_create_reset_workqueue();
-+	rc = efx_siena_create_reset_workqueue();
- 	if (rc)
- 		goto err_reset;
- 
-@@ -1288,7 +1281,7 @@ static int __init efx_init_module(void)
- 	return 0;
- 
-  err_pci:
--	efx_destroy_reset_workqueue();
-+	efx_siena_destroy_reset_workqueue();
-  err_reset:
- 	unregister_netdevice_notifier(&efx_netdev_notifier);
-  err_notifier:
-@@ -1300,7 +1293,7 @@ static void __exit efx_exit_module(void)
- 	printk(KERN_INFO "Solarflare NET driver unloading\n");
- 
- 	pci_unregister_driver(&efx_pci_driver);
--	efx_destroy_reset_workqueue();
-+	efx_siena_destroy_reset_workqueue();
- 	unregister_netdevice_notifier(&efx_netdev_notifier);
- 
- }
+ 	.ndo_xdp_xmit		= efx_xdp_xmit,
+ 	.ndo_bpf		= efx_xdp
 diff --git a/drivers/net/ethernet/sfc/siena/efx.h b/drivers/net/ethernet/sfc/siena/efx.h
-index 962c6b66eea7..a4f9e6e962b0 100644
+index a4f9e6e962b0..f91f3c94a275 100644
 --- a/drivers/net/ethernet/sfc/siena/efx.h
 +++ b/drivers/net/ethernet/sfc/siena/efx.h
-@@ -12,36 +12,28 @@
- #include "net_driver.h"
- #include "filter.h"
+@@ -44,7 +44,7 @@ static inline void efx_rx_flush_packet(struct efx_channel *channel)
+  * TSO skbs.
+  */
+ #define EFX_RXQ_MIN_ENT		128U
+-#define EFX_TXQ_MIN_ENT(efx)	(2 * efx_tx_max_skb_descs(efx))
++#define EFX_TXQ_MIN_ENT(efx)	(2 * efx_siena_tx_max_skb_descs(efx))
  
--int efx_net_open(struct net_device *net_dev);
--int efx_net_stop(struct net_device *net_dev);
--
- /* TX */
--void efx_init_tx_queue_core_txq(struct efx_tx_queue *tx_queue);
--netdev_tx_t efx_hard_start_xmit(struct sk_buff *skb,
--				struct net_device *net_dev);
--netdev_tx_t __efx_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb);
-+void efx_siena_init_tx_queue_core_txq(struct efx_tx_queue *tx_queue);
-+netdev_tx_t efx_siena_hard_start_xmit(struct sk_buff *skb,
-+				      struct net_device *net_dev);
-+netdev_tx_t __efx_siena_enqueue_skb(struct efx_tx_queue *tx_queue,
-+				    struct sk_buff *skb);
- static inline netdev_tx_t efx_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb)
- {
- 	return INDIRECT_CALL_1(tx_queue->efx->type->tx_enqueue,
--			       __efx_enqueue_skb, tx_queue, skb);
-+			       __efx_siena_enqueue_skb, tx_queue, skb);
- }
--void efx_xmit_done_single(struct efx_tx_queue *tx_queue);
--int efx_setup_tc(struct net_device *net_dev, enum tc_setup_type type,
--		 void *type_data);
--extern unsigned int efx_piobuf_size;
-+int efx_siena_setup_tc(struct net_device *net_dev, enum tc_setup_type type,
-+		       void *type_data);
- 
- /* RX */
--void __efx_rx_packet(struct efx_channel *channel);
--void efx_rx_packet(struct efx_rx_queue *rx_queue, unsigned int index,
--		   unsigned int n_frags, unsigned int len, u16 flags);
-+void __efx_siena_rx_packet(struct efx_channel *channel);
-+void efx_siena_rx_packet(struct efx_rx_queue *rx_queue, unsigned int index,
-+			 unsigned int n_frags, unsigned int len, u16 flags);
- static inline void efx_rx_flush_packet(struct efx_channel *channel)
- {
- 	if (channel->rx_pkt_n_frags)
--		__efx_rx_packet(channel);
--}
--static inline bool efx_rx_buf_hash_valid(struct efx_nic *efx, const u8 *prefix)
--{
--	return true;
-+		__efx_siena_rx_packet(channel);
- }
- 
- /* Maximum number of TCP segments we support for soft-TSO */
-@@ -156,34 +148,33 @@ static inline bool efx_rss_active(struct efx_rss_context *ctx)
- }
- 
- /* Ethtool support */
--extern const struct ethtool_ops efx_ethtool_ops;
-+extern const struct ethtool_ops efx_siena_ethtool_ops;
- 
- /* Global */
--unsigned int efx_usecs_to_ticks(struct efx_nic *efx, unsigned int usecs);
--unsigned int efx_ticks_to_usecs(struct efx_nic *efx, unsigned int ticks);
--int efx_init_irq_moderation(struct efx_nic *efx, unsigned int tx_usecs,
--			    unsigned int rx_usecs, bool rx_adaptive,
--			    bool rx_may_override_tx);
--void efx_get_irq_moderation(struct efx_nic *efx, unsigned int *tx_usecs,
--			    unsigned int *rx_usecs, bool *rx_adaptive);
-+unsigned int efx_siena_usecs_to_ticks(struct efx_nic *efx, unsigned int usecs);
-+int efx_siena_init_irq_moderation(struct efx_nic *efx, unsigned int tx_usecs,
-+				  unsigned int rx_usecs, bool rx_adaptive,
-+				  bool rx_may_override_tx);
-+void efx_siena_get_irq_moderation(struct efx_nic *efx, unsigned int *tx_usecs,
-+				  unsigned int *rx_usecs, bool *rx_adaptive);
- 
- /* Update the generic software stats in the passed stats array */
--void efx_update_sw_stats(struct efx_nic *efx, u64 *stats);
-+void efx_siena_update_sw_stats(struct efx_nic *efx, u64 *stats);
- 
- /* MTD */
- #ifdef CONFIG_SFC_MTD
--int efx_mtd_add(struct efx_nic *efx, struct efx_mtd_partition *parts,
--		size_t n_parts, size_t sizeof_part);
-+int efx_siena_mtd_add(struct efx_nic *efx, struct efx_mtd_partition *parts,
-+		      size_t n_parts, size_t sizeof_part);
- static inline int efx_mtd_probe(struct efx_nic *efx)
- {
- 	return efx->type->mtd_probe(efx);
- }
--void efx_mtd_rename(struct efx_nic *efx);
--void efx_mtd_remove(struct efx_nic *efx);
-+void efx_siena_mtd_rename(struct efx_nic *efx);
-+void efx_siena_mtd_remove(struct efx_nic *efx);
- #else
- static inline int efx_mtd_probe(struct efx_nic *efx) { return 0; }
--static inline void efx_mtd_rename(struct efx_nic *efx) {}
--static inline void efx_mtd_remove(struct efx_nic *efx) {}
-+static inline void efx_siena_mtd_rename(struct efx_nic *efx) {}
-+static inline void efx_siena_mtd_remove(struct efx_nic *efx) {}
- #endif
- 
- #ifdef CONFIG_SFC_SRIOV
-@@ -221,7 +212,7 @@ static inline bool efx_rwsem_assert_write_locked(struct rw_semaphore *sem)
- 	return true;
- }
- 
--int efx_xdp_tx_buffers(struct efx_nic *efx, int n, struct xdp_frame **xdpfs,
--		       bool flush);
-+int efx_siena_xdp_tx_buffers(struct efx_nic *efx, int n,
-+			     struct xdp_frame **xdpfs, bool flush);
- 
- #endif /* EFX_EFX_H */
+ /* All EF10 architecture NICs steal one bit of the DMAQ size for various
+  * other purposes when counting TxQ entries, so we halve the queue size.
+@@ -78,7 +78,7 @@ static inline bool efx_rss_enabled(struct efx_nic *efx)
+  *
+  * 2. If the existing filters have higher priority, return -%EPERM.
+  *
+- * 3. If !efx_filter_is_mc_recipient(@spec), or the NIC does not
++ * 3. If !efx_siena_filter_is_mc_recipient(@spec), or the NIC does not
+  *    support delivery to multiple recipients, return -%EEXIST.
+  *
+  * This implies that filters for multiple multicast recipients must
 diff --git a/drivers/net/ethernet/sfc/siena/efx_channels.c b/drivers/net/ethernet/sfc/siena/efx_channels.c
-index eec80b024195..9ba2afd8a843 100644
+index 9ba2afd8a843..0efe4c5c4d51 100644
 --- a/drivers/net/ethernet/sfc/siena/efx_channels.c
 +++ b/drivers/net/ethernet/sfc/siena/efx_channels.c
-@@ -25,7 +25,7 @@
-  * 1 => MSI
-  * 2 => legacy
-  */
--unsigned int efx_interrupt_mode = EFX_INT_MODE_MSIX;
-+unsigned int efx_siena_interrupt_mode = EFX_INT_MODE_MSIX;
+@@ -138,7 +138,7 @@ static int efx_allocate_msix_channels(struct efx_nic *efx,
+ 	int n_xdp_tx;
+ 	int n_xdp_ev;
  
- /* This is the requested number of CPUs to use for Receive-Side Scaling (RSS),
-  * i.e. the number of CPUs among which we may distribute simultaneous
-@@ -34,7 +34,7 @@ unsigned int efx_interrupt_mode = EFX_INT_MODE_MSIX;
-  * Cards without MSI-X will only target one CPU via legacy or MSI interrupt.
-  * The default (0) means to assign an interrupt to each core.
-  */
--unsigned int rss_cpus;
-+unsigned int efx_siena_rss_cpus;
+-	if (efx_separate_tx_channels)
++	if (efx_siena_separate_tx_channels)
+ 		n_channels *= 2;
+ 	n_channels += extra_channels;
  
- static unsigned int irq_adapt_low_thresh = 8000;
- module_param(irq_adapt_low_thresh, uint, 0644);
-@@ -89,8 +89,8 @@ static unsigned int efx_wanted_parallelism(struct efx_nic *efx)
- {
- 	unsigned int count;
+@@ -220,7 +220,7 @@ static int efx_allocate_msix_channels(struct efx_nic *efx,
+ 	/* Ignore XDP tx channels when creating rx channels. */
+ 	n_channels -= efx->n_xdp_channels;
  
--	if (rss_cpus) {
--		count = rss_cpus;
-+	if (efx_siena_rss_cpus) {
-+		count = efx_siena_rss_cpus;
- 	} else {
- 		count = count_online_cores(efx, true);
+-	if (efx_separate_tx_channels) {
++	if (efx_siena_separate_tx_channels) {
+ 		efx->n_tx_channels =
+ 			min(max(n_channels / 2, 1U),
+ 			    efx->max_tx_channels);
+@@ -321,7 +321,7 @@ int efx_siena_probe_interrupts(struct efx_nic *efx)
  
-@@ -100,7 +100,8 @@ static unsigned int efx_wanted_parallelism(struct efx_nic *efx)
- 	}
+ 	/* Assume legacy interrupts */
+ 	if (efx->interrupt_mode == EFX_INT_MODE_LEGACY) {
+-		efx->n_channels = 1 + (efx_separate_tx_channels ? 1 : 0);
++		efx->n_channels = 1 + (efx_siena_separate_tx_channels ? 1 : 0);
+ 		efx->n_rx_channels = 1;
+ 		efx->n_tx_channels = 1;
+ 		efx->n_xdp_channels = 0;
+@@ -521,7 +521,8 @@ static void efx_filter_rfs_expire(struct work_struct *data)
+ 	channel = container_of(dwork, struct efx_channel, filter_work);
+ 	time = jiffies - channel->rfs_last_expiry;
+ 	quota = channel->rfs_filter_count * time / (30 * HZ);
+-	if (quota >= 20 && __efx_filter_rfs_expire(channel, min(channel->rfs_filter_count, quota)))
++	if (quota >= 20 && __efx_siena_filter_rfs_expire(channel,
++					min(channel->rfs_filter_count, quota)))
+ 		channel->rfs_last_expiry += time;
+ 	/* Ensure we do more work eventually even if NAPI poll is not happening */
+ 	schedule_delayed_work(dwork, 30 * HZ);
+@@ -558,7 +559,7 @@ static struct efx_channel *efx_alloc_channel(struct efx_nic *efx, int i)
  
- 	if (count > EFX_MAX_RX_QUEUES) {
--		netif_cond_dbg(efx, probe, efx->net_dev, !rss_cpus, warn,
-+		netif_cond_dbg(efx, probe, efx->net_dev, !efx_siena_rss_cpus,
-+			       warn,
- 			       "Reducing number of rx queues from %u to %u.\n",
- 			       count, EFX_MAX_RX_QUEUES);
- 		count = EFX_MAX_RX_QUEUES;
-@@ -249,7 +250,7 @@ static int efx_allocate_msix_channels(struct efx_nic *efx,
- /* Probe the number and type of interrupts we are able to obtain, and
-  * the resulting numbers of channels and RX queues.
-  */
--int efx_probe_interrupts(struct efx_nic *efx)
-+int efx_siena_probe_interrupts(struct efx_nic *efx)
- {
- 	unsigned int extra_channels = 0;
- 	unsigned int rss_spread;
-@@ -361,7 +362,7 @@ int efx_probe_interrupts(struct efx_nic *efx)
- }
+ 	rx_queue = &channel->rx_queue;
+ 	rx_queue->efx = efx;
+-	timer_setup(&rx_queue->slow_fill, efx_rx_slow_fill, 0);
++	timer_setup(&rx_queue->slow_fill, efx_siena_rx_slow_fill, 0);
  
- #if defined(CONFIG_SMP)
--void efx_set_interrupt_affinity(struct efx_nic *efx)
-+void efx_siena_set_interrupt_affinity(struct efx_nic *efx)
- {
- 	const struct cpumask *numa_mask = cpumask_of_pcibus(efx->pci_dev->bus);
- 	struct efx_channel *channel;
-@@ -380,7 +381,7 @@ void efx_set_interrupt_affinity(struct efx_nic *efx)
- 	}
- }
- 
--void efx_clear_interrupt_affinity(struct efx_nic *efx)
-+void efx_siena_clear_interrupt_affinity(struct efx_nic *efx)
- {
- 	struct efx_channel *channel;
- 
-@@ -389,17 +390,17 @@ void efx_clear_interrupt_affinity(struct efx_nic *efx)
- }
- #else
- void
--efx_set_interrupt_affinity(struct efx_nic *efx __attribute__ ((unused)))
-+efx_siena_set_interrupt_affinity(struct efx_nic *efx __always_unused)
- {
- }
- 
- void
--efx_clear_interrupt_affinity(struct efx_nic *efx __attribute__ ((unused)))
-+efx_siena_clear_interrupt_affinity(struct efx_nic *efx __always_unused)
- {
- }
- #endif /* CONFIG_SMP */
- 
--void efx_remove_interrupts(struct efx_nic *efx)
-+void efx_siena_remove_interrupts(struct efx_nic *efx)
- {
- 	struct efx_channel *channel;
- 
-@@ -422,7 +423,7 @@ void efx_remove_interrupts(struct efx_nic *efx)
-  * is reset, the memory buffer will be reused; this guards against
-  * errors during channel reset and also simplifies interrupt handling.
-  */
--int efx_probe_eventq(struct efx_channel *channel)
-+static int efx_probe_eventq(struct efx_channel *channel)
- {
- 	struct efx_nic *efx = channel->efx;
- 	unsigned long entries;
-@@ -441,7 +442,7 @@ int efx_probe_eventq(struct efx_channel *channel)
- }
- 
- /* Prepare channel's event queue */
--int efx_init_eventq(struct efx_channel *channel)
-+static int efx_init_eventq(struct efx_channel *channel)
- {
- 	struct efx_nic *efx = channel->efx;
- 	int rc;
-@@ -461,7 +462,7 @@ int efx_init_eventq(struct efx_channel *channel)
- }
- 
- /* Enable event queue processing and NAPI */
--void efx_start_eventq(struct efx_channel *channel)
-+void efx_siena_start_eventq(struct efx_channel *channel)
- {
- 	netif_dbg(channel->efx, ifup, channel->efx->net_dev,
- 		  "chan %d start event queue\n", channel->channel);
-@@ -475,7 +476,7 @@ void efx_start_eventq(struct efx_channel *channel)
- }
- 
- /* Disable event queue processing and NAPI */
--void efx_stop_eventq(struct efx_channel *channel)
-+void efx_siena_stop_eventq(struct efx_channel *channel)
- {
- 	if (!channel->enabled)
- 		return;
-@@ -484,7 +485,7 @@ void efx_stop_eventq(struct efx_channel *channel)
- 	channel->enabled = false;
- }
- 
--void efx_fini_eventq(struct efx_channel *channel)
-+static void efx_fini_eventq(struct efx_channel *channel)
- {
- 	if (!channel->eventq_init)
- 		return;
-@@ -496,7 +497,7 @@ void efx_fini_eventq(struct efx_channel *channel)
- 	channel->eventq_init = false;
- }
- 
--void efx_remove_eventq(struct efx_channel *channel)
-+static void efx_remove_eventq(struct efx_channel *channel)
- {
- 	netif_dbg(channel->efx, drv, channel->efx->net_dev,
- 		  "chan %d remove event queue\n", channel->channel);
-@@ -562,7 +563,7 @@ static struct efx_channel *efx_alloc_channel(struct efx_nic *efx, int i)
  	return channel;
  }
+@@ -631,7 +632,7 @@ struct efx_channel *efx_copy_channel(const struct efx_channel *old_channel)
+ 	rx_queue = &channel->rx_queue;
+ 	rx_queue->buffer = NULL;
+ 	memset(&rx_queue->rxd, 0, sizeof(rx_queue->rxd));
+-	timer_setup(&rx_queue->slow_fill, efx_rx_slow_fill, 0);
++	timer_setup(&rx_queue->slow_fill, efx_siena_rx_slow_fill, 0);
+ #ifdef CONFIG_RFS_ACCEL
+ 	INIT_DELAYED_WORK(&channel->filter_work, efx_filter_rfs_expire);
+ #endif
+@@ -657,13 +658,13 @@ static int efx_probe_channel(struct efx_channel *channel)
+ 		goto fail;
  
--int efx_init_channels(struct efx_nic *efx)
-+int efx_siena_init_channels(struct efx_nic *efx)
- {
- 	unsigned int i;
- 
-@@ -576,7 +577,7 @@ int efx_init_channels(struct efx_nic *efx)
- 
- 	/* Higher numbered interrupt modes are less capable! */
- 	efx->interrupt_mode = min(efx->type->min_interrupt_mode,
--				  efx_interrupt_mode);
-+				  efx_siena_interrupt_mode);
- 
- 	efx->max_channels = EFX_MAX_CHANNELS;
- 	efx->max_tx_channels = EFX_MAX_CHANNELS;
-@@ -584,7 +585,7 @@ int efx_init_channels(struct efx_nic *efx)
- 	return 0;
- }
- 
--void efx_fini_channels(struct efx_nic *efx)
-+void efx_siena_fini_channels(struct efx_nic *efx)
- {
- 	unsigned int i;
- 
-@@ -672,7 +673,7 @@ static int efx_probe_channel(struct efx_channel *channel)
- 	return 0;
- 
- fail:
--	efx_remove_channel(channel);
-+	efx_siena_remove_channel(channel);
- 	return rc;
- }
- 
-@@ -700,7 +701,7 @@ static void efx_get_channel_name(struct efx_channel *channel, char *buf,
- 	snprintf(buf, len, "%s%s-%d", efx->name, type, number);
- }
- 
--void efx_set_channel_names(struct efx_nic *efx)
-+void efx_siena_set_channel_names(struct efx_nic *efx)
- {
- 	struct efx_channel *channel;
- 
-@@ -710,7 +711,7 @@ void efx_set_channel_names(struct efx_nic *efx)
- 					sizeof(efx->msi_context[0].name));
- }
- 
--int efx_probe_channels(struct efx_nic *efx)
-+int efx_siena_probe_channels(struct efx_nic *efx)
- {
- 	struct efx_channel *channel;
- 	int rc;
-@@ -732,16 +733,16 @@ int efx_probe_channels(struct efx_nic *efx)
+ 	efx_for_each_channel_tx_queue(tx_queue, channel) {
+-		rc = efx_probe_tx_queue(tx_queue);
++		rc = efx_siena_probe_tx_queue(tx_queue);
+ 		if (rc)
  			goto fail;
- 		}
  	}
--	efx_set_channel_names(efx);
-+	efx_siena_set_channel_names(efx);
  
- 	return 0;
+ 	efx_for_each_channel_rx_queue(rx_queue, channel) {
+-		rc = efx_probe_rx_queue(rx_queue);
++		rc = efx_siena_probe_rx_queue(rx_queue);
+ 		if (rc)
+ 			goto fail;
+ 	}
+@@ -751,9 +752,9 @@ void efx_siena_remove_channel(struct efx_channel *channel)
+ 		  "destroy chan %d\n", channel->channel);
  
- fail:
--	efx_remove_channels(efx);
-+	efx_siena_remove_channels(efx);
- 	return rc;
- }
- 
--void efx_remove_channel(struct efx_channel *channel)
-+void efx_siena_remove_channel(struct efx_channel *channel)
- {
- 	struct efx_tx_queue *tx_queue;
- 	struct efx_rx_queue *rx_queue;
-@@ -757,12 +758,12 @@ void efx_remove_channel(struct efx_channel *channel)
+ 	efx_for_each_channel_rx_queue(rx_queue, channel)
+-		efx_remove_rx_queue(rx_queue);
++		efx_siena_remove_rx_queue(rx_queue);
+ 	efx_for_each_channel_tx_queue(tx_queue, channel)
+-		efx_remove_tx_queue(tx_queue);
++		efx_siena_remove_tx_queue(tx_queue);
+ 	efx_remove_eventq(channel);
  	channel->type->post_remove(channel);
  }
- 
--void efx_remove_channels(struct efx_nic *efx)
-+void efx_siena_remove_channels(struct efx_nic *efx)
- {
- 	struct efx_channel *channel;
- 
- 	efx_for_each_channel(channel, efx)
--		efx_remove_channel(channel);
-+		efx_siena_remove_channel(channel);
- 
- 	kfree(efx->xdp_tx_queues);
- }
-@@ -846,7 +847,13 @@ static void efx_set_xdp_channels(struct efx_nic *efx)
- 	}
- }
- 
--int efx_realloc_channels(struct efx_nic *efx, u32 rxq_entries, u32 txq_entries)
-+static int efx_soft_enable_interrupts(struct efx_nic *efx);
-+static void efx_soft_disable_interrupts(struct efx_nic *efx);
-+static void efx_init_napi_channel(struct efx_channel *channel);
-+static void efx_fini_napi_channel(struct efx_channel *channel);
-+
-+int efx_siena_realloc_channels(struct efx_nic *efx, u32 rxq_entries,
-+			       u32 txq_entries)
- {
- 	struct efx_channel *other_channel[EFX_MAX_CHANNELS], *channel;
- 	unsigned int i, next_buffer_table = 0;
-@@ -880,7 +887,7 @@ int efx_realloc_channels(struct efx_nic *efx, u32 rxq_entries, u32 txq_entries)
- 	}
- 
- 	efx_device_detach_sync(efx);
--	efx_stop_all(efx);
-+	efx_siena_stop_all(efx);
- 	efx_soft_disable_interrupts(efx);
- 
- 	/* Clone channels (where possible) */
-@@ -924,7 +931,7 @@ int efx_realloc_channels(struct efx_nic *efx, u32 rxq_entries, u32 txq_entries)
- 		channel = other_channel[i];
- 		if (channel && channel->type->copy) {
- 			efx_fini_napi_channel(channel);
--			efx_remove_channel(channel);
-+			efx_siena_remove_channel(channel);
- 			kfree(channel);
- 		}
- 	}
-@@ -934,9 +941,9 @@ int efx_realloc_channels(struct efx_nic *efx, u32 rxq_entries, u32 txq_entries)
- 		rc = rc ? rc : rc2;
- 		netif_err(efx, drv, efx->net_dev,
- 			  "unable to restart interrupts on channel reallocation\n");
--		efx_schedule_reset(efx, RESET_TYPE_DISABLE);
-+		efx_siena_schedule_reset(efx, RESET_TYPE_DISABLE);
- 	} else {
--		efx_start_all(efx);
-+		efx_siena_start_all(efx);
- 		efx_device_attach_if_not_resetting(efx);
- 	}
- 	return rc;
-@@ -950,7 +957,7 @@ int efx_realloc_channels(struct efx_nic *efx, u32 rxq_entries, u32 txq_entries)
- 	goto out;
- }
- 
--int efx_set_channels(struct efx_nic *efx)
-+int efx_siena_set_channels(struct efx_nic *efx)
- {
- 	struct efx_channel *channel;
+@@ -963,7 +964,7 @@ int efx_siena_set_channels(struct efx_nic *efx)
  	int rc;
-@@ -995,7 +1002,7 @@ static bool efx_default_channel_want_txqs(struct efx_channel *channel)
-  * START/STOP
-  *************/
  
--int efx_soft_enable_interrupts(struct efx_nic *efx)
-+static int efx_soft_enable_interrupts(struct efx_nic *efx)
- {
- 	struct efx_channel *channel, *end_channel;
- 	int rc;
-@@ -1011,7 +1018,7 @@ int efx_soft_enable_interrupts(struct efx_nic *efx)
- 			if (rc)
- 				goto fail;
- 		}
--		efx_start_eventq(channel);
-+		efx_siena_start_eventq(channel);
- 	}
+ 	efx->tx_channel_offset =
+-		efx_separate_tx_channels ?
++		efx_siena_separate_tx_channels ?
+ 		efx->n_channels - efx->n_tx_channels : 0;
  
- 	efx_mcdi_mode_event(efx);
-@@ -1022,7 +1029,7 @@ int efx_soft_enable_interrupts(struct efx_nic *efx)
- 	efx_for_each_channel(channel, efx) {
- 		if (channel == end_channel)
- 			break;
--		efx_stop_eventq(channel);
-+		efx_siena_stop_eventq(channel);
- 		if (!channel->type->keep_eventq)
- 			efx_fini_eventq(channel);
- 	}
-@@ -1030,7 +1037,7 @@ int efx_soft_enable_interrupts(struct efx_nic *efx)
- 	return rc;
- }
+ 	if (efx->xdp_tx_queue_count) {
+@@ -1130,15 +1131,15 @@ void efx_siena_start_channels(struct efx_nic *efx)
  
--void efx_soft_disable_interrupts(struct efx_nic *efx)
-+static void efx_soft_disable_interrupts(struct efx_nic *efx)
- {
- 	struct efx_channel *channel;
- 
-@@ -1049,7 +1056,7 @@ void efx_soft_disable_interrupts(struct efx_nic *efx)
- 		if (channel->irq)
- 			synchronize_irq(channel->irq);
- 
--		efx_stop_eventq(channel);
-+		efx_siena_stop_eventq(channel);
- 		if (!channel->type->keep_eventq)
- 			efx_fini_eventq(channel);
- 	}
-@@ -1058,7 +1065,7 @@ void efx_soft_disable_interrupts(struct efx_nic *efx)
- 	efx_mcdi_flush_async(efx);
- }
- 
--int efx_enable_interrupts(struct efx_nic *efx)
-+int efx_siena_enable_interrupts(struct efx_nic *efx)
- {
- 	struct efx_channel *channel, *end_channel;
- 	int rc;
-@@ -1101,7 +1108,7 @@ int efx_enable_interrupts(struct efx_nic *efx)
- 	return rc;
- }
- 
--void efx_disable_interrupts(struct efx_nic *efx)
-+void efx_siena_disable_interrupts(struct efx_nic *efx)
- {
- 	struct efx_channel *channel;
- 
-@@ -1115,7 +1122,7 @@ void efx_disable_interrupts(struct efx_nic *efx)
- 	efx->type->irq_disable_non_ev(efx);
- }
- 
--void efx_start_channels(struct efx_nic *efx)
-+void efx_siena_start_channels(struct efx_nic *efx)
- {
- 	struct efx_tx_queue *tx_queue;
- 	struct efx_rx_queue *rx_queue;
-@@ -1130,16 +1137,16 @@ void efx_start_channels(struct efx_nic *efx)
- 		efx_for_each_channel_rx_queue(rx_queue, channel) {
- 			efx_init_rx_queue(rx_queue);
+ 	efx_for_each_channel_rev(channel, efx) {
+ 		efx_for_each_channel_tx_queue(tx_queue, channel) {
+-			efx_init_tx_queue(tx_queue);
++			efx_siena_init_tx_queue(tx_queue);
  			atomic_inc(&efx->active_queues);
--			efx_stop_eventq(channel);
-+			efx_siena_stop_eventq(channel);
- 			efx_fast_push_rx_descriptors(rx_queue, false);
--			efx_start_eventq(channel);
-+			efx_siena_start_eventq(channel);
  		}
  
- 		WARN_ON(channel->rx_pkt_n_frags);
+ 		efx_for_each_channel_rx_queue(rx_queue, channel) {
+-			efx_init_rx_queue(rx_queue);
++			efx_siena_init_rx_queue(rx_queue);
+ 			atomic_inc(&efx->active_queues);
+ 			efx_siena_stop_eventq(channel);
+-			efx_fast_push_rx_descriptors(rx_queue, false);
++			efx_siena_fast_push_rx_descriptors(rx_queue, false);
+ 			efx_siena_start_eventq(channel);
+ 		}
+ 
+@@ -1184,9 +1185,9 @@ void efx_siena_stop_channels(struct efx_nic *efx)
+ 
+ 	efx_for_each_channel(channel, efx) {
+ 		efx_for_each_channel_rx_queue(rx_queue, channel)
+-			efx_fini_rx_queue(rx_queue);
++			efx_siena_fini_rx_queue(rx_queue);
+ 		efx_for_each_channel_tx_queue(tx_queue, channel)
+-			efx_fini_tx_queue(tx_queue);
++			efx_siena_fini_tx_queue(tx_queue);
  	}
  }
  
--void efx_stop_channels(struct efx_nic *efx)
-+void efx_siena_stop_channels(struct efx_nic *efx)
- {
- 	struct efx_tx_queue *tx_queue;
- 	struct efx_rx_queue *rx_queue;
-@@ -1160,8 +1167,8 @@ void efx_stop_channels(struct efx_nic *efx)
- 		 * temporarily.
- 		 */
- 		if (efx_channel_has_rx_queue(channel)) {
--			efx_stop_eventq(channel);
--			efx_start_eventq(channel);
-+			efx_siena_stop_eventq(channel);
-+			efx_siena_start_eventq(channel);
- 		}
+@@ -1228,7 +1229,7 @@ static int efx_process_channel(struct efx_channel *channel, int budget)
+ 			efx_channel_get_rx_queue(channel);
+ 
+ 		efx_rx_flush_packet(channel);
+-		efx_fast_push_rx_descriptors(rx_queue, true);
++		efx_siena_fast_push_rx_descriptors(rx_queue, true);
  	}
  
-@@ -1311,7 +1318,7 @@ static int efx_poll(struct napi_struct *napi, int budget)
- 	return spent;
- }
- 
--void efx_init_napi_channel(struct efx_channel *channel)
-+static void efx_init_napi_channel(struct efx_channel *channel)
- {
- 	struct efx_nic *efx = channel->efx;
- 
-@@ -1320,7 +1327,7 @@ void efx_init_napi_channel(struct efx_channel *channel)
- 		       efx_poll, napi_weight);
- }
- 
--void efx_init_napi(struct efx_nic *efx)
-+void efx_siena_init_napi(struct efx_nic *efx)
- {
- 	struct efx_channel *channel;
- 
-@@ -1328,7 +1335,7 @@ void efx_init_napi(struct efx_nic *efx)
- 		efx_init_napi_channel(channel);
- }
- 
--void efx_fini_napi_channel(struct efx_channel *channel)
-+static void efx_fini_napi_channel(struct efx_channel *channel)
- {
- 	if (channel->napi_dev)
- 		netif_napi_del(&channel->napi_str);
-@@ -1336,7 +1343,7 @@ void efx_fini_napi_channel(struct efx_channel *channel)
- 	channel->napi_dev = NULL;
- }
- 
--void efx_fini_napi(struct efx_nic *efx)
-+void efx_siena_fini_napi(struct efx_nic *efx)
- {
- 	struct efx_channel *channel;
- 
-@@ -1353,13 +1360,13 @@ static int efx_channel_dummy_op_int(struct efx_channel *channel)
- 	return 0;
- }
- 
--void efx_channel_dummy_op_void(struct efx_channel *channel)
-+void efx_siena_channel_dummy_op_void(struct efx_channel *channel)
- {
- }
- 
- static const struct efx_channel_type efx_default_channel_type = {
- 	.pre_probe		= efx_channel_dummy_op_int,
--	.post_remove		= efx_channel_dummy_op_void,
-+	.post_remove		= efx_siena_channel_dummy_op_void,
- 	.get_name		= efx_get_channel_name,
- 	.copy			= efx_copy_channel,
- 	.want_txqs		= efx_default_channel_want_txqs,
-diff --git a/drivers/net/ethernet/sfc/siena/efx_channels.h b/drivers/net/ethernet/sfc/siena/efx_channels.h
-index 64abb99a56b8..10d78049b885 100644
---- a/drivers/net/ethernet/sfc/siena/efx_channels.h
-+++ b/drivers/net/ethernet/sfc/siena/efx_channels.h
-@@ -11,42 +11,35 @@
- #ifndef EFX_CHANNELS_H
- #define EFX_CHANNELS_H
- 
--extern unsigned int efx_interrupt_mode;
--extern unsigned int rss_cpus;
--
--int efx_probe_interrupts(struct efx_nic *efx);
--void efx_remove_interrupts(struct efx_nic *efx);
--int efx_soft_enable_interrupts(struct efx_nic *efx);
--void efx_soft_disable_interrupts(struct efx_nic *efx);
--int efx_enable_interrupts(struct efx_nic *efx);
--void efx_disable_interrupts(struct efx_nic *efx);
--
--void efx_set_interrupt_affinity(struct efx_nic *efx);
--void efx_clear_interrupt_affinity(struct efx_nic *efx);
--
--int efx_probe_eventq(struct efx_channel *channel);
--int efx_init_eventq(struct efx_channel *channel);
--void efx_start_eventq(struct efx_channel *channel);
--void efx_stop_eventq(struct efx_channel *channel);
--void efx_fini_eventq(struct efx_channel *channel);
--void efx_remove_eventq(struct efx_channel *channel);
--
--int efx_realloc_channels(struct efx_nic *efx, u32 rxq_entries, u32 txq_entries);
--void efx_set_channel_names(struct efx_nic *efx);
--int efx_init_channels(struct efx_nic *efx);
--int efx_probe_channels(struct efx_nic *efx);
--int efx_set_channels(struct efx_nic *efx);
--void efx_remove_channel(struct efx_channel *channel);
--void efx_remove_channels(struct efx_nic *efx);
--void efx_fini_channels(struct efx_nic *efx);
--void efx_start_channels(struct efx_nic *efx);
--void efx_stop_channels(struct efx_nic *efx);
--
--void efx_init_napi_channel(struct efx_channel *channel);
--void efx_init_napi(struct efx_nic *efx);
--void efx_fini_napi_channel(struct efx_channel *channel);
--void efx_fini_napi(struct efx_nic *efx);
--
--void efx_channel_dummy_op_void(struct efx_channel *channel);
-+extern unsigned int efx_siena_interrupt_mode;
-+extern unsigned int efx_siena_rss_cpus;
-+
-+int efx_siena_probe_interrupts(struct efx_nic *efx);
-+void efx_siena_remove_interrupts(struct efx_nic *efx);
-+int efx_siena_enable_interrupts(struct efx_nic *efx);
-+void efx_siena_disable_interrupts(struct efx_nic *efx);
-+
-+void efx_siena_set_interrupt_affinity(struct efx_nic *efx);
-+void efx_siena_clear_interrupt_affinity(struct efx_nic *efx);
-+
-+void efx_siena_start_eventq(struct efx_channel *channel);
-+void efx_siena_stop_eventq(struct efx_channel *channel);
-+
-+int efx_siena_realloc_channels(struct efx_nic *efx, u32 rxq_entries,
-+			       u32 txq_entries);
-+void efx_siena_set_channel_names(struct efx_nic *efx);
-+int efx_siena_init_channels(struct efx_nic *efx);
-+int efx_siena_probe_channels(struct efx_nic *efx);
-+int efx_siena_set_channels(struct efx_nic *efx);
-+void efx_siena_remove_channel(struct efx_channel *channel);
-+void efx_siena_remove_channels(struct efx_nic *efx);
-+void efx_siena_fini_channels(struct efx_nic *efx);
-+void efx_siena_start_channels(struct efx_nic *efx);
-+void efx_siena_stop_channels(struct efx_nic *efx);
-+
-+void efx_siena_init_napi(struct efx_nic *efx);
-+void efx_siena_fini_napi(struct efx_nic *efx);
-+
-+void efx_siena_channel_dummy_op_void(struct efx_channel *channel);
- 
- #endif
+ 	/* Update BQL */
 diff --git a/drivers/net/ethernet/sfc/siena/efx_common.c b/drivers/net/ethernet/sfc/siena/efx_common.c
-index f6577e74d6e6..fb6fb345cc56 100644
+index fb6fb345cc56..f245d03c4caa 100644
 --- a/drivers/net/ethernet/sfc/siena/efx_common.c
 +++ b/drivers/net/ethernet/sfc/siena/efx_common.c
-@@ -110,7 +110,7 @@ const char *const efx_loopback_mode_names[] = {
-  */
- static struct workqueue_struct *reset_workqueue;
+@@ -395,7 +395,7 @@ static void efx_start_datapath(struct efx_nic *efx)
+ 		efx->rx_buffer_order = get_order(rx_buf_len);
+ 	}
  
--int efx_create_reset_workqueue(void)
-+int efx_siena_create_reset_workqueue(void)
- {
- 	reset_workqueue = create_singlethread_workqueue("sfc_reset");
- 	if (!reset_workqueue) {
-@@ -121,17 +121,17 @@ int efx_create_reset_workqueue(void)
- 	return 0;
- }
- 
--void efx_queue_reset_work(struct efx_nic *efx)
-+void efx_siena_queue_reset_work(struct efx_nic *efx)
- {
- 	queue_work(reset_workqueue, &efx->reset_work);
- }
- 
--void efx_flush_reset_workqueue(struct efx_nic *efx)
-+void efx_siena_flush_reset_workqueue(struct efx_nic *efx)
- {
- 	cancel_work_sync(&efx->reset_work);
- }
- 
--void efx_destroy_reset_workqueue(void)
-+void efx_siena_destroy_reset_workqueue(void)
- {
- 	if (reset_workqueue) {
- 		destroy_workqueue(reset_workqueue);
-@@ -142,7 +142,7 @@ void efx_destroy_reset_workqueue(void)
- /* We assume that efx->type->reconfigure_mac will always try to sync RX
-  * filters and therefore needs to read-lock the filter table against freeing
-  */
--void efx_mac_reconfigure(struct efx_nic *efx, bool mtu_only)
-+void efx_siena_mac_reconfigure(struct efx_nic *efx, bool mtu_only)
- {
- 	if (efx->type->reconfigure_mac) {
- 		down_read(&efx->filter_sem);
-@@ -161,11 +161,11 @@ static void efx_mac_work(struct work_struct *data)
- 
- 	mutex_lock(&efx->mac_lock);
- 	if (efx->port_enabled)
--		efx_mac_reconfigure(efx, false);
-+		efx_siena_mac_reconfigure(efx, false);
- 	mutex_unlock(&efx->mac_lock);
- }
- 
--int efx_set_mac_address(struct net_device *net_dev, void *data)
-+int efx_siena_set_mac_address(struct net_device *net_dev, void *data)
- {
- 	struct efx_nic *efx = netdev_priv(net_dev);
- 	struct sockaddr *addr = data;
-@@ -193,14 +193,14 @@ int efx_set_mac_address(struct net_device *net_dev, void *data)
- 
- 	/* Reconfigure the MAC */
- 	mutex_lock(&efx->mac_lock);
--	efx_mac_reconfigure(efx, false);
-+	efx_siena_mac_reconfigure(efx, false);
- 	mutex_unlock(&efx->mac_lock);
- 
- 	return 0;
- }
- 
- /* Context: netif_addr_lock held, BHs disabled. */
--void efx_set_rx_mode(struct net_device *net_dev)
-+void efx_siena_set_rx_mode(struct net_device *net_dev)
- {
- 	struct efx_nic *efx = netdev_priv(net_dev);
- 
-@@ -209,7 +209,7 @@ void efx_set_rx_mode(struct net_device *net_dev)
- 	/* Otherwise efx_start_port() will do this */
- }
- 
--int efx_set_features(struct net_device *net_dev, netdev_features_t data)
-+int efx_siena_set_features(struct net_device *net_dev, netdev_features_t data)
- {
- 	struct efx_nic *efx = netdev_priv(net_dev);
- 	int rc;
-@@ -226,10 +226,10 @@ int efx_set_features(struct net_device *net_dev, netdev_features_t data)
+-	efx_rx_config_page_split(efx);
++	efx_siena_rx_config_page_split(efx);
+ 	if (efx->rx_buffer_order)
+ 		netif_dbg(efx, drv, efx->net_dev,
+ 			  "RX buf len=%u; page order=%u batch=%u\n",
+@@ -428,7 +428,7 @@ static void efx_start_datapath(struct efx_nic *efx)
+ 	 * the ring completely.  We wake it when half way back to
+ 	 * empty.
  	 */
- 	if ((net_dev->features ^ data) & (NETIF_F_HW_VLAN_CTAG_FILTER |
- 					  NETIF_F_RXFCS)) {
--		/* efx_set_rx_mode() will schedule MAC work to update filters
-+		/* efx_siena_set_rx_mode() will schedule MAC work to update filters
- 		 * when a new features are finally set in net_dev.
- 		 */
--		efx_set_rx_mode(net_dev);
-+		efx_siena_set_rx_mode(net_dev);
- 	}
- 
- 	return 0;
-@@ -239,7 +239,7 @@ int efx_set_features(struct net_device *net_dev, netdev_features_t data)
-  * netif_carrier_on/off) of the link status, and also maintains the
-  * link status's stop on the port's TX queue.
-  */
--void efx_link_status_changed(struct efx_nic *efx)
-+void efx_siena_link_status_changed(struct efx_nic *efx)
- {
- 	struct efx_link_state *link_state = &efx->link_state;
- 
-@@ -270,7 +270,7 @@ void efx_link_status_changed(struct efx_nic *efx)
- 		netif_info(efx, link, efx->net_dev, "link down\n");
- }
- 
--unsigned int efx_xdp_max_mtu(struct efx_nic *efx)
-+unsigned int efx_siena_xdp_max_mtu(struct efx_nic *efx)
- {
- 	/* The maximum MTU that we can fit in a single page, allowing for
- 	 * framing, overhead and XDP headroom + tailroom.
-@@ -283,7 +283,7 @@ unsigned int efx_xdp_max_mtu(struct efx_nic *efx)
- }
- 
- /* Context: process, rtnl_lock() held. */
--int efx_change_mtu(struct net_device *net_dev, int new_mtu)
-+int efx_siena_change_mtu(struct net_device *net_dev, int new_mtu)
- {
- 	struct efx_nic *efx = netdev_priv(net_dev);
- 	int rc;
-@@ -293,24 +293,24 @@ int efx_change_mtu(struct net_device *net_dev, int new_mtu)
- 		return rc;
- 
- 	if (rtnl_dereference(efx->xdp_prog) &&
--	    new_mtu > efx_xdp_max_mtu(efx)) {
-+	    new_mtu > efx_siena_xdp_max_mtu(efx)) {
- 		netif_err(efx, drv, efx->net_dev,
- 			  "Requested MTU of %d too big for XDP (max: %d)\n",
--			  new_mtu, efx_xdp_max_mtu(efx));
-+			  new_mtu, efx_siena_xdp_max_mtu(efx));
- 		return -EINVAL;
- 	}
- 
- 	netif_dbg(efx, drv, efx->net_dev, "changing MTU to %d\n", new_mtu);
- 
- 	efx_device_detach_sync(efx);
--	efx_stop_all(efx);
-+	efx_siena_stop_all(efx);
- 
- 	mutex_lock(&efx->mac_lock);
- 	net_dev->mtu = new_mtu;
--	efx_mac_reconfigure(efx, true);
-+	efx_siena_mac_reconfigure(efx, true);
- 	mutex_unlock(&efx->mac_lock);
- 
--	efx_start_all(efx);
-+	efx_siena_start_all(efx);
- 	efx_device_attach_if_not_resetting(efx);
- 	return 0;
- }
-@@ -342,10 +342,10 @@ static void efx_monitor(struct work_struct *data)
- 		mutex_unlock(&efx->mac_lock);
- 	}
- 
--	efx_start_monitor(efx);
-+	efx_siena_start_monitor(efx);
- }
- 
--void efx_start_monitor(struct efx_nic *efx)
-+void efx_siena_start_monitor(struct efx_nic *efx)
- {
- 	if (efx->type->monitor)
- 		queue_delayed_work(efx->workqueue, &efx->monitor_work,
-@@ -432,7 +432,7 @@ static void efx_start_datapath(struct efx_nic *efx)
+-	efx->txq_stop_thresh = efx->txq_entries - efx_tx_max_skb_descs(efx);
++	efx->txq_stop_thresh = efx->txq_entries - efx_siena_tx_max_skb_descs(efx);
  	efx->txq_wake_thresh = efx->txq_stop_thresh / 2;
  
  	/* Initialise the channels */
--	efx_start_channels(efx);
-+	efx_siena_start_channels(efx);
- 
- 	efx_ptp_start_datapath(efx);
- 
-@@ -447,7 +447,7 @@ static void efx_stop_datapath(struct efx_nic *efx)
- 
- 	efx_ptp_stop_datapath(efx);
- 
--	efx_stop_channels(efx);
-+	efx_siena_stop_channels(efx);
- }
- 
- /**************************************************************************
-@@ -459,13 +459,13 @@ static void efx_stop_datapath(struct efx_nic *efx)
- /* Equivalent to efx_link_set_advertising with all-zeroes, except does not
-  * force the Autoneg bit on.
-  */
--void efx_link_clear_advertising(struct efx_nic *efx)
-+void efx_siena_link_clear_advertising(struct efx_nic *efx)
- {
- 	bitmap_zero(efx->link_advertising, __ETHTOOL_LINK_MODE_MASK_NBITS);
- 	efx->wanted_fc &= ~(EFX_FC_TX | EFX_FC_RX);
- }
- 
--void efx_link_set_wanted_fc(struct efx_nic *efx, u8 wanted_fc)
-+void efx_siena_link_set_wanted_fc(struct efx_nic *efx, u8 wanted_fc)
- {
- 	efx->wanted_fc = wanted_fc;
- 	if (efx->link_advertising[0]) {
-@@ -489,7 +489,7 @@ static void efx_start_port(struct efx_nic *efx)
- 	efx->port_enabled = true;
- 
- 	/* Ensure MAC ingress/egress is enabled */
--	efx_mac_reconfigure(efx, false);
-+	efx_siena_mac_reconfigure(efx, false);
- 
- 	mutex_unlock(&efx->mac_lock);
- }
-@@ -525,7 +525,7 @@ static void efx_stop_port(struct efx_nic *efx)
-  * is safe to call multiple times, so long as the NIC is not disabled.
-  * Requires the RTNL lock.
-  */
--void efx_start_all(struct efx_nic *efx)
-+void efx_siena_start_all(struct efx_nic *efx)
- {
- 	EFX_ASSERT_RESET_SERIALISED(efx);
- 	BUG_ON(efx->state == STATE_DISABLED);
-@@ -541,14 +541,14 @@ void efx_start_all(struct efx_nic *efx)
- 	efx_start_datapath(efx);
- 
- 	/* Start the hardware monitor if there is one */
--	efx_start_monitor(efx);
-+	efx_siena_start_monitor(efx);
- 
- 	/* Link state detection is normally event-driven; we have
- 	 * to poll now because we could have missed a change
- 	 */
- 	mutex_lock(&efx->mac_lock);
- 	if (efx_mcdi_phy_poll(efx))
--		efx_link_status_changed(efx);
-+		efx_siena_link_status_changed(efx);
- 	mutex_unlock(&efx->mac_lock);
- 
- 	if (efx->type->start_stats) {
-@@ -565,7 +565,7 @@ void efx_start_all(struct efx_nic *efx)
-  * times with the NIC in almost any state, but interrupts should be
-  * enabled.  Requires the RTNL lock.
-  */
--void efx_stop_all(struct efx_nic *efx)
-+void efx_siena_stop_all(struct efx_nic *efx)
- {
- 	EFX_ASSERT_RESET_SERIALISED(efx);
- 
-@@ -598,7 +598,8 @@ void efx_stop_all(struct efx_nic *efx)
- }
- 
- /* Context: process, dev_base_lock or RTNL held, non-blocking. */
--void efx_net_stats(struct net_device *net_dev, struct rtnl_link_stats64 *stats)
-+void efx_siena_net_stats(struct net_device *net_dev,
-+			 struct rtnl_link_stats64 *stats)
- {
- 	struct efx_nic *efx = netdev_priv(net_dev);
- 
-@@ -614,7 +615,7 @@ void efx_net_stats(struct net_device *net_dev, struct rtnl_link_stats64 *stats)
-  *
-  * Callers must hold the mac_lock
-  */
--int __efx_reconfigure_port(struct efx_nic *efx)
-+int __efx_siena_reconfigure_port(struct efx_nic *efx)
- {
- 	enum efx_phy_mode phy_mode;
- 	int rc = 0;
-@@ -640,14 +641,14 @@ int __efx_reconfigure_port(struct efx_nic *efx)
- /* Reinitialise the MAC to pick up new PHY settings, even if the port is
-  * disabled.
-  */
--int efx_reconfigure_port(struct efx_nic *efx)
-+int efx_siena_reconfigure_port(struct efx_nic *efx)
- {
- 	int rc;
- 
- 	EFX_ASSERT_RESET_SERIALISED(efx);
- 
- 	mutex_lock(&efx->mac_lock);
--	rc = __efx_reconfigure_port(efx);
-+	rc = __efx_siena_reconfigure_port(efx);
- 	mutex_unlock(&efx->mac_lock);
- 
- 	return rc;
-@@ -682,7 +683,7 @@ static void efx_wait_for_bist_end(struct efx_nic *efx)
-  * Returns 0 if the recovery mechanisms are unsuccessful.
-  * Returns a non-zero value otherwise.
-  */
--int efx_try_recovery(struct efx_nic *efx)
-+int efx_siena_try_recovery(struct efx_nic *efx)
- {
- #ifdef CONFIG_EEH
- 	/* A PCI error can occur and not be seen by EEH because nothing
-@@ -704,15 +705,15 @@ int efx_try_recovery(struct efx_nic *efx)
- /* Tears down the entire software state and most of the hardware state
-  * before reset.
-  */
--void efx_reset_down(struct efx_nic *efx, enum reset_type method)
-+void efx_siena_reset_down(struct efx_nic *efx, enum reset_type method)
- {
- 	EFX_ASSERT_RESET_SERIALISED(efx);
- 
- 	if (method == RESET_TYPE_MCDI_TIMEOUT)
- 		efx->type->prepare_flr(efx);
- 
--	efx_stop_all(efx);
--	efx_disable_interrupts(efx);
-+	efx_siena_stop_all(efx);
-+	efx_siena_disable_interrupts(efx);
- 
- 	mutex_lock(&efx->mac_lock);
- 	down_write(&efx->filter_sem);
-@@ -721,7 +722,7 @@ void efx_reset_down(struct efx_nic *efx, enum reset_type method)
- }
- 
- /* Context: netif_tx_lock held, BHs disabled. */
--void efx_watchdog(struct net_device *net_dev, unsigned int txqueue)
-+void efx_siena_watchdog(struct net_device *net_dev, unsigned int txqueue)
- {
- 	struct efx_nic *efx = netdev_priv(net_dev);
- 
-@@ -729,16 +730,16 @@ void efx_watchdog(struct net_device *net_dev, unsigned int txqueue)
- 		  "TX stuck with port_enabled=%d: resetting channels\n",
- 		  efx->port_enabled);
- 
--	efx_schedule_reset(efx, RESET_TYPE_TX_WATCHDOG);
-+	efx_siena_schedule_reset(efx, RESET_TYPE_TX_WATCHDOG);
- }
- 
- /* This function will always ensure that the locks acquired in
-- * efx_reset_down() are released. A failure return code indicates
-+ * efx_siena_reset_down() are released. A failure return code indicates
-  * that we were unable to reinitialise the hardware, and the
-  * driver should be disabled. If ok is false, then the rx and tx
-  * engines are not restarted, pending a RESET_DISABLE.
-  */
--int efx_reset_up(struct efx_nic *efx, enum reset_type method, bool ok)
-+int efx_siena_reset_up(struct efx_nic *efx, enum reset_type method, bool ok)
- {
- 	int rc;
- 
-@@ -765,7 +766,7 @@ int efx_reset_up(struct efx_nic *efx, enum reset_type method, bool ok)
- 				  "could not restore PHY settings\n");
- 	}
- 
--	rc = efx_enable_interrupts(efx);
-+	rc = efx_siena_enable_interrupts(efx);
- 	if (rc)
- 		goto fail;
- 
-@@ -787,7 +788,7 @@ int efx_reset_up(struct efx_nic *efx, enum reset_type method, bool ok)
- 
- 	mutex_unlock(&efx->mac_lock);
- 
--	efx_start_all(efx);
-+	efx_siena_start_all(efx);
- 
- 	if (efx->type->udp_tnl_push_ports)
- 		efx->type->udp_tnl_push_ports(efx);
-@@ -809,7 +810,7 @@ int efx_reset_up(struct efx_nic *efx, enum reset_type method, bool ok)
-  *
-  * Caller must hold the rtnl_lock.
-  */
--int efx_reset(struct efx_nic *efx, enum reset_type method)
-+int efx_siena_reset(struct efx_nic *efx, enum reset_type method)
- {
- 	int rc, rc2 = 0;
- 	bool disabled;
-@@ -818,11 +819,11 @@ int efx_reset(struct efx_nic *efx, enum reset_type method)
- 		   RESET_TYPE(method));
- 
- 	efx_device_detach_sync(efx);
--	/* efx_reset_down() grabs locks that prevent recovery on EF100.
-+	/* efx_siena_reset_down() grabs locks that prevent recovery on EF100.
- 	 * EF100 reset is handled in the efx_nic_type callback below.
- 	 */
- 	if (efx_nic_rev(efx) != EFX_REV_EF100)
--		efx_reset_down(efx, method);
-+		efx_siena_reset_down(efx, method);
- 
- 	rc = efx->type->reset(efx, method);
- 	if (rc) {
-@@ -851,7 +852,7 @@ int efx_reset(struct efx_nic *efx, enum reset_type method)
- 		method == RESET_TYPE_DISABLE ||
- 		method == RESET_TYPE_RECOVER_OR_DISABLE;
- 	if (efx_nic_rev(efx) != EFX_REV_EF100)
--		rc2 = efx_reset_up(efx, method, !disabled);
-+		rc2 = efx_siena_reset_up(efx, method, !disabled);
- 	if (rc2) {
- 		disabled = true;
- 		if (!rc)
-@@ -886,7 +887,7 @@ static void efx_reset_work(struct work_struct *data)
- 
- 	if ((method == RESET_TYPE_RECOVER_OR_DISABLE ||
- 	     method == RESET_TYPE_RECOVER_OR_ALL) &&
--	    efx_try_recovery(efx))
-+	    efx_siena_try_recovery(efx))
- 		return;
- 
- 	if (!pending)
-@@ -894,17 +895,17 @@ static void efx_reset_work(struct work_struct *data)
- 
- 	rtnl_lock();
- 
--	/* We checked the state in efx_schedule_reset() but it may
-+	/* We checked the state in efx_siena_schedule_reset() but it may
- 	 * have changed by now.  Now that we have the RTNL lock,
- 	 * it cannot change again.
- 	 */
- 	if (efx->state == STATE_READY)
--		(void)efx_reset(efx, method);
-+		(void)efx_siena_reset(efx, method);
- 
- 	rtnl_unlock();
- }
- 
--void efx_schedule_reset(struct efx_nic *efx, enum reset_type type)
-+void efx_siena_schedule_reset(struct efx_nic *efx, enum reset_type type)
- {
- 	enum reset_type method;
- 
-@@ -951,7 +952,7 @@ void efx_schedule_reset(struct efx_nic *efx, enum reset_type type)
- 	 */
- 	efx_mcdi_mode_poll(efx);
- 
--	efx_queue_reset_work(efx);
-+	efx_siena_queue_reset_work(efx);
- }
- 
- /**************************************************************************
-@@ -963,11 +964,12 @@ void efx_schedule_reset(struct efx_nic *efx, enum reset_type type)
-  * before use
-  *
-  **************************************************************************/
--int efx_port_dummy_op_int(struct efx_nic *efx)
-+int efx_siena_port_dummy_op_int(struct efx_nic *efx)
- {
- 	return 0;
- }
--void efx_port_dummy_op_void(struct efx_nic *efx) {}
-+
-+void efx_siena_port_dummy_op_void(struct efx_nic *efx) {}
- 
- /**************************************************************************
-  *
-@@ -978,8 +980,8 @@ void efx_port_dummy_op_void(struct efx_nic *efx) {}
- /* This zeroes out and then fills in the invariants in a struct
-  * efx_nic (including all sub-structures).
-  */
--int efx_init_struct(struct efx_nic *efx,
--		    struct pci_dev *pci_dev, struct net_device *net_dev)
-+int efx_siena_init_struct(struct efx_nic *efx,
-+			  struct pci_dev *pci_dev, struct net_device *net_dev)
- {
- 	int rc = -ENOMEM;
- 
-@@ -1033,7 +1035,7 @@ int efx_init_struct(struct efx_nic *efx,
- 
- 	efx->mem_bar = UINT_MAX;
- 
--	rc = efx_init_channels(efx);
-+	rc = efx_siena_init_channels(efx);
- 	if (rc)
- 		goto fail;
- 
-@@ -1049,17 +1051,17 @@ int efx_init_struct(struct efx_nic *efx,
- 	return 0;
- 
- fail:
--	efx_fini_struct(efx);
-+	efx_siena_fini_struct(efx);
- 	return rc;
- }
- 
--void efx_fini_struct(struct efx_nic *efx)
-+void efx_siena_fini_struct(struct efx_nic *efx)
- {
- #ifdef CONFIG_RFS_ACCEL
- 	kfree(efx->rps_hash_table);
- #endif
- 
--	efx_fini_channels(efx);
-+	efx_siena_fini_channels(efx);
- 
- 	kfree(efx->vpd_sn);
- 
-@@ -1070,8 +1072,8 @@ void efx_fini_struct(struct efx_nic *efx)
- }
- 
- /* This configures the PCI device to enable I/O and DMA. */
--int efx_init_io(struct efx_nic *efx, int bar, dma_addr_t dma_mask,
--		unsigned int mem_map_size)
-+int efx_siena_init_io(struct efx_nic *efx, int bar, dma_addr_t dma_mask,
-+		      unsigned int mem_map_size)
- {
- 	struct pci_dev *pci_dev = efx->pci_dev;
- 	int rc;
-@@ -1140,7 +1142,7 @@ int efx_init_io(struct efx_nic *efx, int bar, dma_addr_t dma_mask,
- 	return rc;
- }
- 
--void efx_fini_io(struct efx_nic *efx)
-+void efx_siena_fini_io(struct efx_nic *efx)
- {
- 	netif_dbg(efx, drv, efx->net_dev, "shutting down I/O\n");
- 
-@@ -1185,7 +1187,7 @@ static ssize_t mcdi_logging_store(struct device *dev,
- 
- static DEVICE_ATTR_RW(mcdi_logging);
- 
--void efx_init_mcdi_logging(struct efx_nic *efx)
-+void efx_siena_init_mcdi_logging(struct efx_nic *efx)
- {
- 	int rc = device_create_file(&efx->pci_dev->dev, &dev_attr_mcdi_logging);
- 
-@@ -1195,7 +1197,7 @@ void efx_init_mcdi_logging(struct efx_nic *efx)
- 	}
- }
- 
--void efx_fini_mcdi_logging(struct efx_nic *efx)
-+void efx_siena_fini_mcdi_logging(struct efx_nic *efx)
- {
- 	device_remove_file(&efx->pci_dev->dev, &dev_attr_mcdi_logging);
- }
-@@ -1222,8 +1224,8 @@ static pci_ers_result_t efx_io_error_detected(struct pci_dev *pdev,
- 
- 		efx_device_detach_sync(efx);
- 
--		efx_stop_all(efx);
--		efx_disable_interrupts(efx);
-+		efx_siena_stop_all(efx);
-+		efx_siena_disable_interrupts(efx);
- 
- 		status = PCI_ERS_RESULT_NEED_RESET;
- 	} else {
-@@ -1266,10 +1268,10 @@ static void efx_io_resume(struct pci_dev *pdev)
- 	if (efx->state == STATE_DISABLED)
- 		goto out;
- 
--	rc = efx_reset(efx, RESET_TYPE_ALL);
-+	rc = efx_siena_reset(efx, RESET_TYPE_ALL);
- 	if (rc) {
- 		netif_err(efx, hw, efx->net_dev,
--			  "efx_reset failed after PCI error (%d)\n", rc);
-+			  "efx_siena_reset failed after PCI error (%d)\n", rc);
- 	} else {
- 		efx->state = STATE_READY;
- 		netif_dbg(efx, hw, efx->net_dev,
-@@ -1286,7 +1288,7 @@ static void efx_io_resume(struct pci_dev *pdev)
-  * with our request for slot reset the mmio_enabled callback will never be
-  * called, and the link_reset callback is not used by AER or EEH mechanisms.
-  */
--const struct pci_error_handlers efx_err_handlers = {
-+const struct pci_error_handlers efx_siena_err_handlers = {
- 	.error_detected = efx_io_error_detected,
- 	.slot_reset	= efx_io_slot_reset,
- 	.resume		= efx_io_resume,
-@@ -1354,8 +1356,9 @@ static bool efx_can_encap_offloads(struct efx_nic *efx, struct sk_buff *skb)
- 	}
- }
- 
--netdev_features_t efx_features_check(struct sk_buff *skb, struct net_device *dev,
--				     netdev_features_t features)
-+netdev_features_t efx_siena_features_check(struct sk_buff *skb,
-+					   struct net_device *dev,
-+					   netdev_features_t features)
- {
- 	struct efx_nic *efx = netdev_priv(dev);
- 
-@@ -1375,8 +1378,8 @@ netdev_features_t efx_features_check(struct sk_buff *skb, struct net_device *dev
- 	return features;
- }
- 
--int efx_get_phys_port_id(struct net_device *net_dev,
--			 struct netdev_phys_item_id *ppid)
-+int efx_siena_get_phys_port_id(struct net_device *net_dev,
-+			       struct netdev_phys_item_id *ppid)
- {
- 	struct efx_nic *efx = netdev_priv(net_dev);
- 
-@@ -1386,7 +1389,8 @@ int efx_get_phys_port_id(struct net_device *net_dev,
- 		return -EOPNOTSUPP;
- }
- 
--int efx_get_phys_port_name(struct net_device *net_dev, char *name, size_t len)
-+int efx_siena_get_phys_port_name(struct net_device *net_dev,
-+				 char *name, size_t len)
- {
- 	struct efx_nic *efx = netdev_priv(net_dev);
- 
-diff --git a/drivers/net/ethernet/sfc/siena/efx_common.h b/drivers/net/ethernet/sfc/siena/efx_common.h
-index 65513fd0cf6c..470033611436 100644
---- a/drivers/net/ethernet/sfc/siena/efx_common.h
-+++ b/drivers/net/ethernet/sfc/siena/efx_common.h
-@@ -11,12 +11,12 @@
- #ifndef EFX_COMMON_H
- #define EFX_COMMON_H
- 
--int efx_init_io(struct efx_nic *efx, int bar, dma_addr_t dma_mask,
--		unsigned int mem_map_size);
--void efx_fini_io(struct efx_nic *efx);
--int efx_init_struct(struct efx_nic *efx, struct pci_dev *pci_dev,
--		    struct net_device *net_dev);
--void efx_fini_struct(struct efx_nic *efx);
-+int efx_siena_init_io(struct efx_nic *efx, int bar, dma_addr_t dma_mask,
-+		      unsigned int mem_map_size);
-+void efx_siena_fini_io(struct efx_nic *efx);
-+int efx_siena_init_struct(struct efx_nic *efx, struct pci_dev *pci_dev,
-+			  struct net_device *net_dev);
-+void efx_siena_fini_struct(struct efx_nic *efx);
- 
- #define EFX_MAX_DMAQ_SIZE 4096UL
- #define EFX_DEFAULT_DMAQ_SIZE 1024UL
-@@ -25,23 +25,24 @@ void efx_fini_struct(struct efx_nic *efx);
- #define EFX_MAX_EVQ_SIZE 16384UL
- #define EFX_MIN_EVQ_SIZE 512UL
- 
--void efx_link_clear_advertising(struct efx_nic *efx);
--void efx_link_set_wanted_fc(struct efx_nic *efx, u8);
-+void efx_siena_link_clear_advertising(struct efx_nic *efx);
-+void efx_siena_link_set_wanted_fc(struct efx_nic *efx, u8 wanted_fc);
- 
--void efx_start_all(struct efx_nic *efx);
--void efx_stop_all(struct efx_nic *efx);
-+void efx_siena_start_all(struct efx_nic *efx);
-+void efx_siena_stop_all(struct efx_nic *efx);
- 
--void efx_net_stats(struct net_device *net_dev, struct rtnl_link_stats64 *stats);
-+void efx_siena_net_stats(struct net_device *net_dev,
-+			 struct rtnl_link_stats64 *stats);
- 
--int efx_create_reset_workqueue(void);
--void efx_queue_reset_work(struct efx_nic *efx);
--void efx_flush_reset_workqueue(struct efx_nic *efx);
--void efx_destroy_reset_workqueue(void);
-+int efx_siena_create_reset_workqueue(void);
-+void efx_siena_queue_reset_work(struct efx_nic *efx);
-+void efx_siena_flush_reset_workqueue(struct efx_nic *efx);
-+void efx_siena_destroy_reset_workqueue(void);
- 
--void efx_start_monitor(struct efx_nic *efx);
-+void efx_siena_start_monitor(struct efx_nic *efx);
- 
--int __efx_reconfigure_port(struct efx_nic *efx);
--int efx_reconfigure_port(struct efx_nic *efx);
-+int __efx_siena_reconfigure_port(struct efx_nic *efx);
-+int efx_siena_reconfigure_port(struct efx_nic *efx);
- 
- #define EFX_ASSERT_RESET_SERIALISED(efx)		\
- 	do {						\
-@@ -51,16 +52,16 @@ int efx_reconfigure_port(struct efx_nic *efx);
- 			ASSERT_RTNL();			\
- 	} while (0)
- 
--int efx_try_recovery(struct efx_nic *efx);
--void efx_reset_down(struct efx_nic *efx, enum reset_type method);
--void efx_watchdog(struct net_device *net_dev, unsigned int txqueue);
--int efx_reset_up(struct efx_nic *efx, enum reset_type method, bool ok);
--int efx_reset(struct efx_nic *efx, enum reset_type method);
--void efx_schedule_reset(struct efx_nic *efx, enum reset_type type);
-+int efx_siena_try_recovery(struct efx_nic *efx);
-+void efx_siena_reset_down(struct efx_nic *efx, enum reset_type method);
-+void efx_siena_watchdog(struct net_device *net_dev, unsigned int txqueue);
-+int efx_siena_reset_up(struct efx_nic *efx, enum reset_type method, bool ok);
-+int efx_siena_reset(struct efx_nic *efx, enum reset_type method);
-+void efx_siena_schedule_reset(struct efx_nic *efx, enum reset_type type);
- 
- /* Dummy PHY ops for PHY drivers */
--int efx_port_dummy_op_int(struct efx_nic *efx);
--void efx_port_dummy_op_void(struct efx_nic *efx);
-+int efx_siena_port_dummy_op_int(struct efx_nic *efx);
-+void efx_siena_port_dummy_op_void(struct efx_nic *efx);
- 
- static inline int efx_check_disabled(struct efx_nic *efx)
- {
-@@ -88,29 +89,30 @@ static inline void efx_schedule_channel_irq(struct efx_channel *channel)
- }
- 
- #ifdef CONFIG_SFC_MCDI_LOGGING
--void efx_init_mcdi_logging(struct efx_nic *efx);
--void efx_fini_mcdi_logging(struct efx_nic *efx);
-+void efx_siena_init_mcdi_logging(struct efx_nic *efx);
-+void efx_siena_fini_mcdi_logging(struct efx_nic *efx);
- #else
--static inline void efx_init_mcdi_logging(struct efx_nic *efx) {}
--static inline void efx_fini_mcdi_logging(struct efx_nic *efx) {}
-+static inline void efx_siena_init_mcdi_logging(struct efx_nic *efx) {}
-+static inline void efx_siena_fini_mcdi_logging(struct efx_nic *efx) {}
- #endif
- 
--void efx_mac_reconfigure(struct efx_nic *efx, bool mtu_only);
--int efx_set_mac_address(struct net_device *net_dev, void *data);
--void efx_set_rx_mode(struct net_device *net_dev);
--int efx_set_features(struct net_device *net_dev, netdev_features_t data);
--void efx_link_status_changed(struct efx_nic *efx);
--unsigned int efx_xdp_max_mtu(struct efx_nic *efx);
--int efx_change_mtu(struct net_device *net_dev, int new_mtu);
-+void efx_siena_mac_reconfigure(struct efx_nic *efx, bool mtu_only);
-+int efx_siena_set_mac_address(struct net_device *net_dev, void *data);
-+void efx_siena_set_rx_mode(struct net_device *net_dev);
-+int efx_siena_set_features(struct net_device *net_dev, netdev_features_t data);
-+void efx_siena_link_status_changed(struct efx_nic *efx);
-+unsigned int efx_siena_xdp_max_mtu(struct efx_nic *efx);
-+int efx_siena_change_mtu(struct net_device *net_dev, int new_mtu);
- 
--extern const struct pci_error_handlers efx_err_handlers;
-+extern const struct pci_error_handlers efx_siena_err_handlers;
- 
--netdev_features_t efx_features_check(struct sk_buff *skb, struct net_device *dev,
--				     netdev_features_t features);
-+netdev_features_t efx_siena_features_check(struct sk_buff *skb,
-+					   struct net_device *dev,
-+					   netdev_features_t features);
- 
--int efx_get_phys_port_id(struct net_device *net_dev,
--			 struct netdev_phys_item_id *ppid);
-+int efx_siena_get_phys_port_id(struct net_device *net_dev,
-+			       struct netdev_phys_item_id *ppid);
- 
--int efx_get_phys_port_name(struct net_device *net_dev,
--			   char *name, size_t len);
-+int efx_siena_get_phys_port_name(struct net_device *net_dev,
-+				 char *name, size_t len);
- #endif
-diff --git a/drivers/net/ethernet/sfc/siena/enum.h b/drivers/net/ethernet/sfc/siena/enum.h
-index cd590e0685e5..25b28b3969d7 100644
---- a/drivers/net/ethernet/sfc/siena/enum.h
-+++ b/drivers/net/ethernet/sfc/siena/enum.h
-@@ -127,7 +127,7 @@ enum efx_loopback_mode {
-  *
-  * %RESET_TYPE_INVSIBLE, %RESET_TYPE_ALL, %RESET_TYPE_WORLD and
-  * %RESET_TYPE_DISABLE specify the method/scope of the reset.  The
-- * other valuesspecify reasons, which efx_schedule_reset() will choose
-+ * other valuesspecify reasons, which efx_siena_schedule_reset() will choose
-  * a method for.
-  *
-  * Reset methods are numbered in order of increasing scope.
-diff --git a/drivers/net/ethernet/sfc/siena/ethtool.c b/drivers/net/ethernet/sfc/siena/ethtool.c
-index 48506373721a..7aa621e97212 100644
---- a/drivers/net/ethernet/sfc/siena/ethtool.c
-+++ b/drivers/net/ethernet/sfc/siena/ethtool.c
-@@ -105,7 +105,7 @@ static int efx_ethtool_get_coalesce(struct net_device *net_dev,
- 	unsigned int tx_usecs, rx_usecs;
- 	bool rx_adaptive;
- 
--	efx_get_irq_moderation(efx, &tx_usecs, &rx_usecs, &rx_adaptive);
-+	efx_siena_get_irq_moderation(efx, &tx_usecs, &rx_usecs, &rx_adaptive);
- 
- 	coalesce->tx_coalesce_usecs = tx_usecs;
- 	coalesce->tx_coalesce_usecs_irq = tx_usecs;
-@@ -127,7 +127,7 @@ static int efx_ethtool_set_coalesce(struct net_device *net_dev,
- 	bool adaptive, rx_may_override_tx;
- 	int rc;
- 
--	efx_get_irq_moderation(efx, &tx_usecs, &rx_usecs, &adaptive);
-+	efx_siena_get_irq_moderation(efx, &tx_usecs, &rx_usecs, &adaptive);
- 
- 	if (coalesce->rx_coalesce_usecs != rx_usecs)
- 		rx_usecs = coalesce->rx_coalesce_usecs;
-@@ -146,8 +146,8 @@ static int efx_ethtool_set_coalesce(struct net_device *net_dev,
- 	else
- 		tx_usecs = coalesce->tx_coalesce_usecs_irq;
- 
--	rc = efx_init_irq_moderation(efx, tx_usecs, rx_usecs, adaptive,
--				     rx_may_override_tx);
-+	rc = efx_siena_init_irq_moderation(efx, tx_usecs, rx_usecs, adaptive,
-+					   rx_may_override_tx);
- 	if (rc != 0)
- 		return rc;
- 
-@@ -198,7 +198,7 @@ efx_ethtool_set_ringparam(struct net_device *net_dev,
- 			   "increasing TX queue size to minimum of %u\n",
- 			   txq_entries);
- 
--	return efx_realloc_channels(efx, ring->rx_pending, txq_entries);
-+	return efx_siena_realloc_channels(efx, ring->rx_pending, txq_entries);
- }
- 
- static void efx_ethtool_get_wol(struct net_device *net_dev,
-@@ -239,7 +239,7 @@ static int efx_ethtool_get_ts_info(struct net_device *net_dev,
- 	return 0;
- }
- 
--const struct ethtool_ops efx_ethtool_ops = {
-+const struct ethtool_ops efx_siena_ethtool_ops = {
- 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
- 				     ETHTOOL_COALESCE_USECS_IRQ |
- 				     ETHTOOL_COALESCE_USE_ADAPTIVE_RX,
 diff --git a/drivers/net/ethernet/sfc/siena/ethtool_common.c b/drivers/net/ethernet/sfc/siena/ethtool_common.c
-index bd552c7dffcb..e177b58e0664 100644
+index e177b58e0664..f54510cf4e72 100644
 --- a/drivers/net/ethernet/sfc/siena/ethtool_common.c
 +++ b/drivers/net/ethernet/sfc/siena/ethtool_common.c
-@@ -218,7 +218,7 @@ int efx_ethtool_set_pauseparam(struct net_device *net_dev,
+@@ -824,7 +824,8 @@ int efx_ethtool_get_rxnfc(struct net_device *net_dev,
  
- 	old_adv = efx->link_advertising[0];
- 	old_fc = efx->wanted_fc;
--	efx_link_set_wanted_fc(efx, wanted_fc);
-+	efx_siena_link_set_wanted_fc(efx, wanted_fc);
- 	if (efx->link_advertising[0] != old_adv ||
- 	    (efx->wanted_fc ^ old_fc) & EFX_FC_AUTO) {
- 		rc = efx_mcdi_port_reconfigure(efx);
-@@ -233,7 +233,7 @@ int efx_ethtool_set_pauseparam(struct net_device *net_dev,
- 	/* Reconfigure the MAC. The PHY *may* generate a link state change event
- 	 * if the user just changed the advertised capabilities, but there's no
- 	 * harm doing this twice */
--	efx_mac_reconfigure(efx, false);
-+	efx_siena_mac_reconfigure(efx, false);
+ 		mutex_lock(&efx->rss_lock);
+ 		if (info->flow_type & FLOW_RSS && info->rss_context) {
+-			ctx = efx_find_rss_context_entry(efx, info->rss_context);
++			ctx = efx_siena_find_rss_context_entry(efx,
++							info->rss_context);
+ 			if (!ctx) {
+ 				rc = -ENOENT;
+ 				goto out_unlock;
+@@ -1213,7 +1214,7 @@ int efx_ethtool_get_rxfh_context(struct net_device *net_dev, u32 *indir,
+ 		return -EOPNOTSUPP;
  
- out:
- 	mutex_unlock(&efx->mac_lock);
-@@ -1307,7 +1307,7 @@ int efx_ethtool_reset(struct net_device *net_dev, u32 *flags)
- 	if (rc < 0)
- 		return rc;
+ 	mutex_lock(&efx->rss_lock);
+-	ctx = efx_find_rss_context_entry(efx, rss_context);
++	ctx = efx_siena_find_rss_context_entry(efx, rss_context);
+ 	if (!ctx) {
+ 		rc = -ENOENT;
+ 		goto out_unlock;
+@@ -1257,18 +1258,18 @@ int efx_ethtool_set_rxfh_context(struct net_device *net_dev,
+ 			rc = -EINVAL;
+ 			goto out_unlock;
+ 		}
+-		ctx = efx_alloc_rss_context_entry(efx);
++		ctx = efx_siena_alloc_rss_context_entry(efx);
+ 		if (!ctx) {
+ 			rc = -ENOMEM;
+ 			goto out_unlock;
+ 		}
+ 		ctx->context_id = EFX_MCDI_RSS_CONTEXT_INVALID;
+ 		/* Initialise indir table and key to defaults */
+-		efx_set_default_rx_indir_table(efx, ctx);
++		efx_siena_set_default_rx_indir_table(efx, ctx);
+ 		netdev_rss_key_fill(ctx->rx_hash_key, sizeof(ctx->rx_hash_key));
+ 		allocated = true;
+ 	} else {
+-		ctx = efx_find_rss_context_entry(efx, *rss_context);
++		ctx = efx_siena_find_rss_context_entry(efx, *rss_context);
+ 		if (!ctx) {
+ 			rc = -ENOENT;
+ 			goto out_unlock;
+@@ -1279,7 +1280,7 @@ int efx_ethtool_set_rxfh_context(struct net_device *net_dev,
+ 		/* delete this context */
+ 		rc = efx->type->rx_push_rss_context_config(efx, ctx, NULL, NULL);
+ 		if (!rc)
+-			efx_free_rss_context_entry(ctx);
++			efx_siena_free_rss_context_entry(ctx);
+ 		goto out_unlock;
+ 	}
  
--	return efx_reset(efx, rc);
-+	return efx_siena_reset(efx, rc);
- }
+@@ -1290,7 +1291,7 @@ int efx_ethtool_set_rxfh_context(struct net_device *net_dev,
  
- int efx_ethtool_get_module_eeprom(struct net_device *net_dev,
+ 	rc = efx->type->rx_push_rss_context_config(efx, ctx, indir, key);
+ 	if (rc && allocated)
+-		efx_free_rss_context_entry(ctx);
++		efx_siena_free_rss_context_entry(ctx);
+ 	else
+ 		*rss_context = ctx->user_id;
+ out_unlock:
 diff --git a/drivers/net/ethernet/sfc/siena/farch.c b/drivers/net/ethernet/sfc/siena/farch.c
-index 9599123bc28d..6ee6ca192a44 100644
+index 6ee6ca192a44..4de36c6c28e1 100644
 --- a/drivers/net/ethernet/sfc/siena/farch.c
 +++ b/drivers/net/ethernet/sfc/siena/farch.c
-@@ -747,12 +747,13 @@ int efx_farch_fini_dmaq(struct efx_nic *efx)
-  * completion events.  This means that efx->rxq_flush_outstanding remained at 4
-  * after the FLR; also, efx->active_queues was non-zero (as no flush completion
-  * events were received, and we didn't go through efx_check_tx_flush_complete())
-- * If we don't fix this up, on the next call to efx_realloc_channels() we won't
-- * flush any RX queues because efx->rxq_flush_outstanding is at the limit of 4
-- * for batched flush requests; and the efx->active_queues gets messed up because
-- * we keep incrementing for the newly initialised queues, but it never went to
-- * zero previously.  Then we get a timeout every time we try to restart the
-- * queues, as it doesn't go back to zero when we should be flushing the queues.
-+ * If we don't fix this up, on the next call to efx_siena_realloc_channels() we
-+ * won't flush any RX queues because efx->rxq_flush_outstanding is at the limit
-+ * of 4 for batched flush requests; and the efx->active_queues gets messed up
-+ * because we keep incrementing for the newly initialised queues, but it never
-+ * went to zero previously.  Then we get a timeout every time we try to restart
-+ * the queues, as it doesn't go back to zero when we should be flushing the
-+ * queues.
-  */
- void efx_farch_finish_flr(struct efx_nic *efx)
- {
-@@ -838,7 +839,7 @@ efx_farch_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
- 		tx_ev_q_label = EFX_QWORD_FIELD(*event, FSF_AZ_TX_EV_Q_LABEL);
- 		tx_queue = channel->tx_queue +
- 				(tx_ev_q_label % EFX_MAX_TXQ_PER_CHANNEL);
--		efx_xmit_done(tx_queue, tx_ev_desc_ptr);
-+		efx_siena_xmit_done(tx_queue, tx_ev_desc_ptr);
- 	} else if (EFX_QWORD_FIELD(*event, FSF_AZ_TX_EV_WQ_FF_FULL)) {
- 		/* Rewrite the FIFO write pointer */
- 		tx_ev_q_label = EFX_QWORD_FIELD(*event, FSF_AZ_TX_EV_Q_LABEL);
-@@ -849,7 +850,7 @@ efx_farch_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
- 		efx_farch_notify_tx_desc(tx_queue);
- 		netif_tx_unlock(efx->net_dev);
- 	} else if (EFX_QWORD_FIELD(*event, FSF_AZ_TX_EV_PKT_ERR)) {
--		efx_schedule_reset(efx, RESET_TYPE_DMA_ERROR);
-+		efx_siena_schedule_reset(efx, RESET_TYPE_DMA_ERROR);
- 	} else {
- 		netif_err(efx, tx_err, efx->net_dev,
- 			  "channel %d unexpected TX event "
-@@ -956,7 +957,7 @@ efx_farch_handle_rx_bad_index(struct efx_rx_queue *rx_queue, unsigned index)
- 		   "dropped %d events (index=%d expected=%d)\n",
- 		   dropped, index, expected);
+@@ -1160,7 +1160,7 @@ static void efx_farch_handle_generated_event(struct efx_channel *channel,
+ 		/* The queue must be empty, so we won't receive any rx
+ 		 * events, so efx_process_channel() won't refill the
+ 		 * queue. Refill it here */
+-		efx_fast_push_rx_descriptors(rx_queue, true);
++		efx_siena_fast_push_rx_descriptors(rx_queue, true);
+ 	} else if (rx_queue && magic == EFX_CHANNEL_MAGIC_RX_DRAIN(rx_queue)) {
+ 		efx_farch_handle_drain_event(channel);
+ 	} else if (code == _EFX_CHANNEL_MAGIC_TX_DRAIN) {
+@@ -2925,13 +2925,14 @@ bool efx_farch_filter_rfs_expire_one(struct efx_nic *efx, u32 flow_id,
+ 			 */
+ 			arfs_id = 0;
+ 		} else {
+-			rule = efx_rps_hash_find(efx, &spec);
++			rule = efx_siena_rps_hash_find(efx, &spec);
+ 			if (!rule) {
+ 				/* ARFS table doesn't know of this filter, remove it */
+ 				force = true;
+ 			} else {
+ 				arfs_id = rule->arfs_id;
+-				if (!efx_rps_check_rule(rule, index, &force))
++				if (!efx_siena_rps_check_rule(rule, index,
++							      &force))
+ 					goto out_unlock;
+ 			}
+ 		}
+@@ -2939,7 +2940,7 @@ bool efx_farch_filter_rfs_expire_one(struct efx_nic *efx, u32 flow_id,
+ 						 flow_id, arfs_id)) {
+ 			if (rule)
+ 				rule->filter_id = EFX_ARFS_FILTER_ID_REMOVING;
+-			efx_rps_hash_del(efx, &spec);
++			efx_siena_rps_hash_del(efx, &spec);
+ 			efx_farch_filter_table_clear_entry(efx, table, index);
+ 			ret = true;
+ 		}
+diff --git a/drivers/net/ethernet/sfc/siena/rx.c b/drivers/net/ethernet/sfc/siena/rx.c
+index 099cb23e3250..47c09b93f7c4 100644
+--- a/drivers/net/ethernet/sfc/siena/rx.c
++++ b/drivers/net/ethernet/sfc/siena/rx.c
+@@ -157,7 +157,7 @@ void efx_siena_rx_packet(struct efx_rx_queue *rx_queue, unsigned int index,
+ 	 */
+ 	if (unlikely(rx_buf->flags & EFX_RX_PKT_DISCARD)) {
+ 		efx_rx_flush_packet(channel);
+-		efx_discard_rx_packet(channel, rx_buf, n_frags);
++		efx_siena_discard_rx_packet(channel, rx_buf, n_frags);
+ 		return;
+ 	}
  
--	efx_schedule_reset(efx, RESET_TYPE_DISABLE);
-+	efx_siena_schedule_reset(efx, RESET_TYPE_DISABLE);
+@@ -195,7 +195,7 @@ void efx_siena_rx_packet(struct efx_rx_queue *rx_queue, unsigned int index,
+ 
+ 	/* All fragments have been DMA-synced, so recycle pages. */
+ 	rx_buf = efx_rx_buffer(rx_queue, index);
+-	efx_recycle_rx_pages(channel, rx_buf, n_frags);
++	efx_siena_recycle_rx_pages(channel, rx_buf, n_frags);
+ 
+ 	/* Pipeline receives so that we give time for packet headers to be
+ 	 * prefetched into cache.
+@@ -217,7 +217,7 @@ static void efx_rx_deliver(struct efx_channel *channel, u8 *eh,
+ 		struct efx_rx_queue *rx_queue;
+ 
+ 		rx_queue = efx_channel_get_rx_queue(channel);
+-		efx_free_rx_buffers(rx_queue, rx_buf, n_frags);
++		efx_siena_free_rx_buffers(rx_queue, rx_buf, n_frags);
+ 		return;
+ 	}
+ 	skb_record_rx_queue(skb, channel->rx_queue.core_index);
+@@ -268,8 +268,8 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
+ 
+ 	if (unlikely(channel->rx_pkt_n_frags > 1)) {
+ 		/* We can't do XDP on fragmented packets - drop. */
+-		efx_free_rx_buffers(rx_queue, rx_buf,
+-				    channel->rx_pkt_n_frags);
++		efx_siena_free_rx_buffers(rx_queue, rx_buf,
++					  channel->rx_pkt_n_frags);
+ 		if (net_ratelimit())
+ 			netif_err(efx, rx_err, efx->net_dev,
+ 				  "XDP is not possible with multiple receive fragments (%d)\n",
+@@ -312,7 +312,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
+ 		xdpf = xdp_convert_buff_to_frame(&xdp);
+ 		err = efx_siena_xdp_tx_buffers(efx, 1, &xdpf, true);
+ 		if (unlikely(err != 1)) {
+-			efx_free_rx_buffers(rx_queue, rx_buf, 1);
++			efx_siena_free_rx_buffers(rx_queue, rx_buf, 1);
+ 			if (net_ratelimit())
+ 				netif_err(efx, rx_err, efx->net_dev,
+ 					  "XDP TX failed (%d)\n", err);
+@@ -326,7 +326,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
+ 	case XDP_REDIRECT:
+ 		err = xdp_do_redirect(efx->net_dev, &xdp, xdp_prog);
+ 		if (unlikely(err)) {
+-			efx_free_rx_buffers(rx_queue, rx_buf, 1);
++			efx_siena_free_rx_buffers(rx_queue, rx_buf, 1);
+ 			if (net_ratelimit())
+ 				netif_err(efx, rx_err, efx->net_dev,
+ 					  "XDP redirect failed (%d)\n", err);
+@@ -339,7 +339,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
+ 
+ 	default:
+ 		bpf_warn_invalid_xdp_action(efx->net_dev, xdp_prog, xdp_act);
+-		efx_free_rx_buffers(rx_queue, rx_buf, 1);
++		efx_siena_free_rx_buffers(rx_queue, rx_buf, 1);
+ 		channel->n_rx_xdp_bad_drops++;
+ 		trace_xdp_exception(efx->net_dev, xdp_prog, xdp_act);
+ 		break;
+@@ -348,7 +348,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
+ 		trace_xdp_exception(efx->net_dev, xdp_prog, xdp_act);
+ 		fallthrough;
+ 	case XDP_DROP:
+-		efx_free_rx_buffers(rx_queue, rx_buf, 1);
++		efx_siena_free_rx_buffers(rx_queue, rx_buf, 1);
+ 		channel->n_rx_xdp_drops++;
+ 		break;
+ 	}
+@@ -379,8 +379,8 @@ void __efx_siena_rx_packet(struct efx_channel *channel)
+ 
+ 		efx_loopback_rx_packet(efx, eh, rx_buf->len);
+ 		rx_queue = efx_channel_get_rx_queue(channel);
+-		efx_free_rx_buffers(rx_queue, rx_buf,
+-				    channel->rx_pkt_n_frags);
++		efx_siena_free_rx_buffers(rx_queue, rx_buf,
++					  channel->rx_pkt_n_frags);
+ 		goto out;
+ 	}
+ 
+diff --git a/drivers/net/ethernet/sfc/siena/rx_common.c b/drivers/net/ethernet/sfc/siena/rx_common.c
+index 9fb442da043c..4579f43484c3 100644
+--- a/drivers/net/ethernet/sfc/siena/rx_common.c
++++ b/drivers/net/ethernet/sfc/siena/rx_common.c
+@@ -30,6 +30,9 @@ MODULE_PARM_DESC(rx_refill_threshold,
+  */
+ #define EFX_RXD_HEAD_ROOM (1 + EFX_RX_MAX_FRAGS)
+ 
++static void efx_unmap_rx_buffer(struct efx_nic *efx,
++				struct efx_rx_buffer *rx_buf);
++
+ /* Check the RX page recycle ring for a page that can be reused. */
+ static struct page *efx_reuse_page(struct efx_rx_queue *rx_queue)
+ {
+@@ -103,9 +106,9 @@ static void efx_recycle_rx_page(struct efx_channel *channel,
+ }
+ 
+ /* Recycle the pages that are used by buffers that have just been received. */
+-void efx_recycle_rx_pages(struct efx_channel *channel,
+-			  struct efx_rx_buffer *rx_buf,
+-			  unsigned int n_frags)
++void efx_siena_recycle_rx_pages(struct efx_channel *channel,
++				struct efx_rx_buffer *rx_buf,
++				unsigned int n_frags)
+ {
+ 	struct efx_rx_queue *rx_queue = efx_channel_get_rx_queue(channel);
+ 
+@@ -118,15 +121,15 @@ void efx_recycle_rx_pages(struct efx_channel *channel,
+ 	} while (--n_frags);
+ }
+ 
+-void efx_discard_rx_packet(struct efx_channel *channel,
+-			   struct efx_rx_buffer *rx_buf,
+-			   unsigned int n_frags)
++void efx_siena_discard_rx_packet(struct efx_channel *channel,
++				 struct efx_rx_buffer *rx_buf,
++				 unsigned int n_frags)
+ {
+ 	struct efx_rx_queue *rx_queue = efx_channel_get_rx_queue(channel);
+ 
+-	efx_recycle_rx_pages(channel, rx_buf, n_frags);
++	efx_siena_recycle_rx_pages(channel, rx_buf, n_frags);
+ 
+-	efx_free_rx_buffers(rx_queue, rx_buf, n_frags);
++	efx_siena_free_rx_buffers(rx_queue, rx_buf, n_frags);
+ }
+ 
+ static void efx_init_rx_recycle_ring(struct efx_rx_queue *rx_queue)
+@@ -181,12 +184,12 @@ static void efx_fini_rx_buffer(struct efx_rx_queue *rx_queue,
+ 	/* If this is the last buffer in a page, unmap and free it. */
+ 	if (rx_buf->flags & EFX_RX_BUF_LAST_IN_PAGE) {
+ 		efx_unmap_rx_buffer(rx_queue->efx, rx_buf);
+-		efx_free_rx_buffers(rx_queue, rx_buf, 1);
++		efx_siena_free_rx_buffers(rx_queue, rx_buf, 1);
+ 	}
+ 	rx_buf->page = NULL;
+ }
+ 
+-int efx_probe_rx_queue(struct efx_rx_queue *rx_queue)
++int efx_siena_probe_rx_queue(struct efx_rx_queue *rx_queue)
+ {
+ 	struct efx_nic *efx = rx_queue->efx;
+ 	unsigned int entries;
+@@ -217,7 +220,7 @@ int efx_probe_rx_queue(struct efx_rx_queue *rx_queue)
+ 	return rc;
+ }
+ 
+-void efx_init_rx_queue(struct efx_rx_queue *rx_queue)
++void efx_siena_init_rx_queue(struct efx_rx_queue *rx_queue)
+ {
+ 	unsigned int max_fill, trigger, max_trigger;
+ 	struct efx_nic *efx = rx_queue->efx;
+@@ -272,7 +275,7 @@ void efx_init_rx_queue(struct efx_rx_queue *rx_queue)
+ 	efx_nic_init_rx(rx_queue);
+ }
+ 
+-void efx_fini_rx_queue(struct efx_rx_queue *rx_queue)
++void efx_siena_fini_rx_queue(struct efx_rx_queue *rx_queue)
+ {
+ 	struct efx_rx_buffer *rx_buf;
+ 	int i;
+@@ -301,7 +304,7 @@ void efx_fini_rx_queue(struct efx_rx_queue *rx_queue)
+ 	rx_queue->xdp_rxq_info_valid = false;
+ }
+ 
+-void efx_remove_rx_queue(struct efx_rx_queue *rx_queue)
++void efx_siena_remove_rx_queue(struct efx_rx_queue *rx_queue)
+ {
+ 	netif_dbg(rx_queue->efx, drv, rx_queue->efx->net_dev,
+ 		  "destroying RX queue %d\n", efx_rx_queue_index(rx_queue));
+@@ -315,8 +318,8 @@ void efx_remove_rx_queue(struct efx_rx_queue *rx_queue)
+ /* Unmap a DMA-mapped page.  This function is only called for the final RX
+  * buffer in a page.
+  */
+-void efx_unmap_rx_buffer(struct efx_nic *efx,
+-			 struct efx_rx_buffer *rx_buf)
++static void efx_unmap_rx_buffer(struct efx_nic *efx,
++				struct efx_rx_buffer *rx_buf)
+ {
+ 	struct page *page = rx_buf->page;
+ 
+@@ -330,9 +333,9 @@ void efx_unmap_rx_buffer(struct efx_nic *efx,
+ 	}
+ }
+ 
+-void efx_free_rx_buffers(struct efx_rx_queue *rx_queue,
+-			 struct efx_rx_buffer *rx_buf,
+-			 unsigned int num_bufs)
++void efx_siena_free_rx_buffers(struct efx_rx_queue *rx_queue,
++			       struct efx_rx_buffer *rx_buf,
++			       unsigned int num_bufs)
+ {
+ 	do {
+ 		if (rx_buf->page) {
+@@ -343,7 +346,7 @@ void efx_free_rx_buffers(struct efx_rx_queue *rx_queue,
+ 	} while (--num_bufs);
+ }
+ 
+-void efx_rx_slow_fill(struct timer_list *t)
++void efx_siena_rx_slow_fill(struct timer_list *t)
+ {
+ 	struct efx_rx_queue *rx_queue = from_timer(rx_queue, t, slow_fill);
+ 
+@@ -352,7 +355,7 @@ void efx_rx_slow_fill(struct timer_list *t)
+ 	++rx_queue->slow_fill_count;
+ }
+ 
+-void efx_schedule_slow_fill(struct efx_rx_queue *rx_queue)
++static void efx_schedule_slow_fill(struct efx_rx_queue *rx_queue)
+ {
+ 	mod_timer(&rx_queue->slow_fill, jiffies + msecs_to_jiffies(10));
+ }
+@@ -425,7 +428,7 @@ static int efx_init_rx_buffers(struct efx_rx_queue *rx_queue, bool atomic)
+ 	return 0;
+ }
+ 
+-void efx_rx_config_page_split(struct efx_nic *efx)
++void efx_siena_rx_config_page_split(struct efx_nic *efx)
+ {
+ 	efx->rx_page_buf_step = ALIGN(efx->rx_dma_len + efx->rx_ip_align +
+ 				      EFX_XDP_HEADROOM + EFX_XDP_TAILROOM,
+@@ -439,7 +442,7 @@ void efx_rx_config_page_split(struct efx_nic *efx)
+ 					       efx->rx_bufs_per_page);
+ }
+ 
+-/* efx_fast_push_rx_descriptors - push new RX descriptors quickly
++/* efx_siena_fast_push_rx_descriptors - push new RX descriptors quickly
+  * @rx_queue:		RX descriptor queue
+  *
+  * This will aim to fill the RX descriptor queue up to
+@@ -450,7 +453,8 @@ void efx_rx_config_page_split(struct efx_nic *efx)
+  * this means this function must run from the NAPI handler, or be called
+  * when NAPI is disabled.
+  */
+-void efx_fast_push_rx_descriptors(struct efx_rx_queue *rx_queue, bool atomic)
++void efx_siena_fast_push_rx_descriptors(struct efx_rx_queue *rx_queue,
++					bool atomic)
+ {
+ 	struct efx_nic *efx = rx_queue->efx;
+ 	unsigned int fill_level, batch_size;
+@@ -517,7 +521,7 @@ efx_siena_rx_packet_gro(struct efx_channel *channel,
+ 		struct efx_rx_queue *rx_queue;
+ 
+ 		rx_queue = efx_channel_get_rx_queue(channel);
+-		efx_free_rx_buffers(rx_queue, rx_buf, n_frags);
++		efx_siena_free_rx_buffers(rx_queue, rx_buf, n_frags);
+ 		return;
+ 	}
+ 
+@@ -556,7 +560,7 @@ efx_siena_rx_packet_gro(struct efx_channel *channel,
+ /* RSS contexts.  We're using linked lists and crappy O(n) algorithms, because
+  * (a) this is an infrequent control-plane operation and (b) n is small (max 64)
+  */
+-struct efx_rss_context *efx_alloc_rss_context_entry(struct efx_nic *efx)
++struct efx_rss_context *efx_siena_alloc_rss_context_entry(struct efx_nic *efx)
+ {
+ 	struct list_head *head = &efx->rss_context.list;
+ 	struct efx_rss_context *ctx, *new;
+@@ -589,7 +593,8 @@ struct efx_rss_context *efx_alloc_rss_context_entry(struct efx_nic *efx)
+ 	return new;
+ }
+ 
+-struct efx_rss_context *efx_find_rss_context_entry(struct efx_nic *efx, u32 id)
++struct efx_rss_context *efx_siena_find_rss_context_entry(struct efx_nic *efx,
++							 u32 id)
+ {
+ 	struct list_head *head = &efx->rss_context.list;
+ 	struct efx_rss_context *ctx;
+@@ -602,14 +607,14 @@ struct efx_rss_context *efx_find_rss_context_entry(struct efx_nic *efx, u32 id)
+ 	return NULL;
+ }
+ 
+-void efx_free_rss_context_entry(struct efx_rss_context *ctx)
++void efx_siena_free_rss_context_entry(struct efx_rss_context *ctx)
+ {
+ 	list_del(&ctx->list);
+ 	kfree(ctx);
+ }
+ 
+-void efx_set_default_rx_indir_table(struct efx_nic *efx,
+-				    struct efx_rss_context *ctx)
++void efx_siena_set_default_rx_indir_table(struct efx_nic *efx,
++					  struct efx_rss_context *ctx)
+ {
+ 	size_t i;
+ 
+@@ -619,7 +624,7 @@ void efx_set_default_rx_indir_table(struct efx_nic *efx,
+ }
+ 
+ /**
+- * efx_filter_is_mc_recipient - test whether spec is a multicast recipient
++ * efx_siena_filter_is_mc_recipient - test whether spec is a multicast recipient
+  * @spec: Specification to test
+  *
+  * Return: %true if the specification is a non-drop RX filter that
+@@ -627,7 +632,7 @@ void efx_set_default_rx_indir_table(struct efx_nic *efx,
+  * IPv4 or IPv6 address value in the respective multicast address
+  * range.  Otherwise %false.
+  */
+-bool efx_filter_is_mc_recipient(const struct efx_filter_spec *spec)
++bool efx_siena_filter_is_mc_recipient(const struct efx_filter_spec *spec)
+ {
+ 	if (!(spec->flags & EFX_FILTER_FLAG_RX) ||
+ 	    spec->dmaq_id == EFX_FILTER_RX_DMAQ_ID_DROP)
+@@ -652,8 +657,8 @@ bool efx_filter_is_mc_recipient(const struct efx_filter_spec *spec)
  	return false;
  }
  
-@@ -1001,7 +1002,7 @@ efx_farch_handle_rx_event(struct efx_channel *channel, const efx_qword_t *event)
- 
- 		/* Discard all pending fragments */
- 		if (rx_queue->scatter_n) {
--			efx_rx_packet(
-+			efx_siena_rx_packet(
- 				rx_queue,
- 				rx_queue->removed_count & rx_queue->ptr_mask,
- 				rx_queue->scatter_n, 0, EFX_RX_PKT_DISCARD);
-@@ -1015,7 +1016,7 @@ efx_farch_handle_rx_event(struct efx_channel *channel, const efx_qword_t *event)
- 
- 		/* Discard new fragment if not SOP */
- 		if (!rx_ev_sop) {
--			efx_rx_packet(
-+			efx_siena_rx_packet(
- 				rx_queue,
- 				rx_queue->removed_count & rx_queue->ptr_mask,
- 				1, 0, EFX_RX_PKT_DISCARD);
-@@ -1067,9 +1068,9 @@ efx_farch_handle_rx_event(struct efx_channel *channel, const efx_qword_t *event)
- 	channel->irq_mod_score += 2;
- 
- 	/* Handle received packet */
--	efx_rx_packet(rx_queue,
--		      rx_queue->removed_count & rx_queue->ptr_mask,
--		      rx_queue->scatter_n, rx_ev_byte_cnt, flags);
-+	efx_siena_rx_packet(rx_queue,
-+			    rx_queue->removed_count & rx_queue->ptr_mask,
-+			    rx_queue->scatter_n, rx_ev_byte_cnt, flags);
- 	rx_queue->removed_count += rx_queue->scatter_n;
- 	rx_queue->scatter_n = 0;
+-bool efx_filter_spec_equal(const struct efx_filter_spec *left,
+-			   const struct efx_filter_spec *right)
++bool efx_siena_filter_spec_equal(const struct efx_filter_spec *left,
++				 const struct efx_filter_spec *right)
+ {
+ 	if ((left->match_flags ^ right->match_flags) |
+ 	    ((left->flags ^ right->flags) &
+@@ -665,7 +670,7 @@ bool efx_filter_spec_equal(const struct efx_filter_spec *left,
+ 		      offsetof(struct efx_filter_spec, outer_vid)) == 0;
  }
-@@ -1222,7 +1223,7 @@ efx_farch_handle_driver_event(struct efx_channel *channel, efx_qword_t *event)
- 			  "channel %d seen DRIVER RX_RESET event. "
- 			"Resetting.\n", channel->channel);
- 		atomic_inc(&efx->rx_reset);
--		efx_schedule_reset(efx, RESET_TYPE_DISABLE);
-+		efx_siena_schedule_reset(efx, RESET_TYPE_DISABLE);
- 		break;
- 	case FSE_BZ_RX_DSC_ERROR_EV:
- 		if (ev_sub_data < EFX_VI_BASE) {
-@@ -1230,7 +1231,7 @@ efx_farch_handle_driver_event(struct efx_channel *channel, efx_qword_t *event)
- 				  "RX DMA Q %d reports descriptor fetch error."
- 				  " RX Q %d is disabled.\n", ev_sub_data,
- 				  ev_sub_data);
--			efx_schedule_reset(efx, RESET_TYPE_DMA_ERROR);
-+			efx_siena_schedule_reset(efx, RESET_TYPE_DMA_ERROR);
+ 
+-u32 efx_filter_spec_hash(const struct efx_filter_spec *spec)
++u32 efx_siena_filter_spec_hash(const struct efx_filter_spec *spec)
+ {
+ 	BUILD_BUG_ON(offsetof(struct efx_filter_spec, outer_vid) & 3);
+ 	return jhash2((const u32 *)&spec->outer_vid,
+@@ -675,8 +680,8 @@ u32 efx_filter_spec_hash(const struct efx_filter_spec *spec)
+ }
+ 
+ #ifdef CONFIG_RFS_ACCEL
+-bool efx_rps_check_rule(struct efx_arfs_rule *rule, unsigned int filter_idx,
+-			bool *force)
++bool efx_siena_rps_check_rule(struct efx_arfs_rule *rule,
++			      unsigned int filter_idx, bool *force)
+ {
+ 	if (rule->filter_id == EFX_ARFS_FILTER_ID_PENDING) {
+ 		/* ARFS is currently updating this entry, leave it */
+@@ -692,7 +697,7 @@ bool efx_rps_check_rule(struct efx_arfs_rule *rule, unsigned int filter_idx,
+ 	} else if (WARN_ON(rule->filter_id != filter_idx)) { /* can't happen */
+ 		/* ARFS has moved on, so old filter is not needed.  Since we did
+ 		 * not mark the rule with EFX_ARFS_FILTER_ID_REMOVING, it will
+-		 * not be removed by efx_rps_hash_del() subsequently.
++		 * not be removed by efx_siena_rps_hash_del() subsequently.
+ 		 */
+ 		*force = true;
+ 		return true;
+@@ -705,7 +710,7 @@ static
+ struct hlist_head *efx_rps_hash_bucket(struct efx_nic *efx,
+ 				       const struct efx_filter_spec *spec)
+ {
+-	u32 hash = efx_filter_spec_hash(spec);
++	u32 hash = efx_siena_filter_spec_hash(spec);
+ 
+ 	lockdep_assert_held(&efx->rps_hash_lock);
+ 	if (!efx->rps_hash_table)
+@@ -713,7 +718,7 @@ struct hlist_head *efx_rps_hash_bucket(struct efx_nic *efx,
+ 	return &efx->rps_hash_table[hash % EFX_ARFS_HASH_TABLE_SIZE];
+ }
+ 
+-struct efx_arfs_rule *efx_rps_hash_find(struct efx_nic *efx,
++struct efx_arfs_rule *efx_siena_rps_hash_find(struct efx_nic *efx,
+ 					const struct efx_filter_spec *spec)
+ {
+ 	struct efx_arfs_rule *rule;
+@@ -725,15 +730,15 @@ struct efx_arfs_rule *efx_rps_hash_find(struct efx_nic *efx,
+ 		return NULL;
+ 	hlist_for_each(node, head) {
+ 		rule = container_of(node, struct efx_arfs_rule, node);
+-		if (efx_filter_spec_equal(spec, &rule->spec))
++		if (efx_siena_filter_spec_equal(spec, &rule->spec))
+ 			return rule;
+ 	}
+ 	return NULL;
+ }
+ 
+-struct efx_arfs_rule *efx_rps_hash_add(struct efx_nic *efx,
+-				       const struct efx_filter_spec *spec,
+-				       bool *new)
++static struct efx_arfs_rule *efx_rps_hash_add(struct efx_nic *efx,
++					const struct efx_filter_spec *spec,
++					bool *new)
+ {
+ 	struct efx_arfs_rule *rule;
+ 	struct hlist_head *head;
+@@ -744,7 +749,7 @@ struct efx_arfs_rule *efx_rps_hash_add(struct efx_nic *efx,
+ 		return NULL;
+ 	hlist_for_each(node, head) {
+ 		rule = container_of(node, struct efx_arfs_rule, node);
+-		if (efx_filter_spec_equal(spec, &rule->spec)) {
++		if (efx_siena_filter_spec_equal(spec, &rule->spec)) {
+ 			*new = false;
+ 			return rule;
  		}
- #ifdef CONFIG_SFC_SRIOV
- 		else
-@@ -1243,7 +1244,7 @@ efx_farch_handle_driver_event(struct efx_channel *channel, efx_qword_t *event)
- 				  "TX DMA Q %d reports descriptor fetch error."
- 				  " TX Q %d is disabled.\n", ev_sub_data,
- 				  ev_sub_data);
--			efx_schedule_reset(efx, RESET_TYPE_DMA_ERROR);
-+			efx_siena_schedule_reset(efx, RESET_TYPE_DMA_ERROR);
- 		}
- #ifdef CONFIG_SFC_SRIOV
- 		else
-@@ -1496,12 +1497,12 @@ irqreturn_t efx_farch_fatal_interrupt(struct efx_nic *efx)
- 	if (++efx->int_error_count < EFX_MAX_INT_ERRORS) {
- 		netif_err(efx, hw, efx->net_dev,
- 			  "SYSTEM ERROR - reset scheduled\n");
--		efx_schedule_reset(efx, RESET_TYPE_INT_ERROR);
-+		efx_siena_schedule_reset(efx, RESET_TYPE_INT_ERROR);
- 	} else {
- 		netif_err(efx, hw, efx->net_dev,
- 			  "SYSTEM ERROR - max number of errors seen."
- 			  "NIC will be disabled\n");
--		efx_schedule_reset(efx, RESET_TYPE_DISABLE);
-+		efx_siena_schedule_reset(efx, RESET_TYPE_DISABLE);
- 	}
- 
- 	return IRQ_HANDLED;
-@@ -1529,7 +1530,7 @@ irqreturn_t efx_farch_legacy_interrupt(int irq, void *dev_id)
- 	 * code. Disable them earlier.
- 	 * If an EEH error occurred, the read will have returned all ones.
- 	 */
--	if (EFX_DWORD_IS_ALL_ONES(reg) && efx_try_recovery(efx) &&
-+	if (EFX_DWORD_IS_ALL_ONES(reg) && efx_siena_try_recovery(efx) &&
- 	    !efx->eeh_disabled_legacy_irq) {
- 		disable_irq_nosync(efx->legacy_irq);
- 		efx->eeh_disabled_legacy_irq = true;
-diff --git a/drivers/net/ethernet/sfc/siena/mcdi.c b/drivers/net/ethernet/sfc/siena/mcdi.c
-index 50baf62b2cbc..7f8f0889bf8d 100644
---- a/drivers/net/ethernet/sfc/siena/mcdi.c
-+++ b/drivers/net/ethernet/sfc/siena/mcdi.c
-@@ -725,7 +725,7 @@ static int _efx_mcdi_rpc_finish(struct efx_nic *efx, unsigned int cmd,
- 				  cmd, -rc);
- 			if (efx->type->mcdi_reboot_detected)
- 				efx->type->mcdi_reboot_detected(efx);
--			efx_schedule_reset(efx, RESET_TYPE_MC_FAILURE);
-+			efx_siena_schedule_reset(efx, RESET_TYPE_MC_FAILURE);
- 		} else if (proxy_handle && (rc == -EPROTO) &&
- 			   efx_mcdi_get_proxy_handle(efx, hdr_len, data_len,
- 						     proxy_handle)) {
-@@ -849,7 +849,7 @@ static int _efx_mcdi_rpc(struct efx_nic *efx, unsigned int cmd,
- 				       cmd, rc);
- 
- 			if (rc == -EINTR || rc == -EIO)
--				efx_schedule_reset(efx, RESET_TYPE_MC_FAILURE);
-+				efx_siena_schedule_reset(efx, RESET_TYPE_MC_FAILURE);
- 			efx_mcdi_release(mcdi);
- 		}
- 	}
-@@ -1254,7 +1254,7 @@ static void efx_mcdi_ev_death(struct efx_nic *efx, int rc)
- 		mcdi->new_epoch = true;
- 
- 		/* Nobody was waiting for an MCDI request, so trigger a reset */
--		efx_schedule_reset(efx, RESET_TYPE_MC_FAILURE);
-+		efx_siena_schedule_reset(efx, RESET_TYPE_MC_FAILURE);
- 	}
- 
- 	spin_unlock(&mcdi->iface_lock);
-@@ -1282,7 +1282,7 @@ static void efx_mcdi_ev_bist(struct efx_nic *efx)
- 		}
- 	}
- 	mcdi->new_epoch = true;
--	efx_schedule_reset(efx, RESET_TYPE_MC_BIST);
-+	efx_siena_schedule_reset(efx, RESET_TYPE_MC_BIST);
- 	spin_unlock(&mcdi->iface_lock);
+@@ -758,7 +763,8 @@ struct efx_arfs_rule *efx_rps_hash_add(struct efx_nic *efx,
+ 	return rule;
  }
  
-@@ -1296,7 +1296,7 @@ static void efx_mcdi_abandon(struct efx_nic *efx)
- 	if (xchg(&mcdi->mode, MCDI_MODE_FAIL) == MCDI_MODE_FAIL)
- 		return; /* it had already been done */
- 	netif_dbg(efx, hw, efx->net_dev, "MCDI is timing out; trying to recover\n");
--	efx_schedule_reset(efx, RESET_TYPE_MCDI_TIMEOUT);
-+	efx_siena_schedule_reset(efx, RESET_TYPE_MCDI_TIMEOUT);
+-void efx_rps_hash_del(struct efx_nic *efx, const struct efx_filter_spec *spec)
++void efx_siena_rps_hash_del(struct efx_nic *efx,
++			    const struct efx_filter_spec *spec)
+ {
+ 	struct efx_arfs_rule *rule;
+ 	struct hlist_head *head;
+@@ -769,7 +775,7 @@ void efx_rps_hash_del(struct efx_nic *efx, const struct efx_filter_spec *spec)
+ 		return;
+ 	hlist_for_each(node, head) {
+ 		rule = container_of(node, struct efx_arfs_rule, node);
+-		if (efx_filter_spec_equal(spec, &rule->spec)) {
++		if (efx_siena_filter_spec_equal(spec, &rule->spec)) {
+ 			/* Someone already reused the entry.  We know that if
+ 			 * this check doesn't fire (i.e. filter_id == REMOVING)
+ 			 * then the REMOVING mark was put there by our caller,
+@@ -788,7 +794,7 @@ void efx_rps_hash_del(struct efx_nic *efx, const struct efx_filter_spec *spec)
  }
+ #endif
  
- static void efx_handle_drain_event(struct efx_nic *efx)
-@@ -1387,7 +1387,7 @@ void efx_mcdi_process_event(struct efx_channel *channel,
- 			  "%s DMA error (event: "EFX_QWORD_FMT")\n",
- 			  code == MCDI_EVENT_CODE_TX_ERR ? "TX" : "RX",
- 			  EFX_QWORD_VAL(*event));
--		efx_schedule_reset(efx, RESET_TYPE_DMA_ERROR);
-+		efx_siena_schedule_reset(efx, RESET_TYPE_DMA_ERROR);
- 		break;
- 	case MCDI_EVENT_CODE_PROXY_RESPONSE:
- 		efx_mcdi_ev_proxy_response(efx,
-diff --git a/drivers/net/ethernet/sfc/siena/mcdi_port_common.c b/drivers/net/ethernet/sfc/siena/mcdi_port_common.c
-index 899cc1671004..57908045fb15 100644
---- a/drivers/net/ethernet/sfc/siena/mcdi_port_common.c
-+++ b/drivers/net/ethernet/sfc/siena/mcdi_port_common.c
-@@ -518,7 +518,7 @@ int efx_mcdi_phy_probe(struct efx_nic *efx)
- 	efx->wanted_fc = EFX_FC_RX | EFX_FC_TX;
- 	if (phy_data->supported_cap & (1 << MC_CMD_PHY_CAP_AN_LBN))
- 		efx->wanted_fc |= EFX_FC_AUTO;
--	efx_link_set_wanted_fc(efx, efx->wanted_fc);
-+	efx_siena_link_set_wanted_fc(efx, efx->wanted_fc);
- 
- 	return 0;
- 
-@@ -605,7 +605,7 @@ int efx_mcdi_phy_set_link_ksettings(struct efx_nic *efx, const struct ethtool_li
- 		efx_link_set_advertising(efx, cmd->link_modes.advertising);
- 		phy_cfg->forced_cap = 0;
- 	} else {
--		efx_link_clear_advertising(efx);
-+		efx_siena_link_clear_advertising(efx);
- 		phy_cfg->forced_cap = caps;
- 	}
- 	return 0;
-@@ -1297,5 +1297,5 @@ void efx_mcdi_process_link_change(struct efx_nic *efx, efx_qword_t *ev)
- 
- 	efx_mcdi_phy_check_fcntl(efx, lpa);
- 
--	efx_link_status_changed(efx);
-+	efx_siena_link_status_changed(efx);
- }
-diff --git a/drivers/net/ethernet/sfc/siena/mtd.c b/drivers/net/ethernet/sfc/siena/mtd.c
-index 273c08e5455f..12a624247f44 100644
---- a/drivers/net/ethernet/sfc/siena/mtd.c
-+++ b/drivers/net/ethernet/sfc/siena/mtd.c
-@@ -37,7 +37,7 @@ static void efx_mtd_sync(struct mtd_info *mtd)
- 		       part->name, part->dev_type_name, rc);
- }
- 
--static void efx_mtd_remove_partition(struct efx_mtd_partition *part)
-+static void efx_siena_mtd_remove_partition(struct efx_mtd_partition *part)
+-int efx_probe_filters(struct efx_nic *efx)
++int efx_siena_probe_filters(struct efx_nic *efx)
  {
  	int rc;
  
-@@ -51,8 +51,8 @@ static void efx_mtd_remove_partition(struct efx_mtd_partition *part)
- 	list_del(&part->node);
+@@ -835,7 +841,7 @@ int efx_probe_filters(struct efx_nic *efx)
+ 	return rc;
  }
  
--int efx_mtd_add(struct efx_nic *efx, struct efx_mtd_partition *parts,
--		size_t n_parts, size_t sizeof_part)
-+int efx_siena_mtd_add(struct efx_nic *efx, struct efx_mtd_partition *parts,
-+		      size_t n_parts, size_t sizeof_part)
+-void efx_remove_filters(struct efx_nic *efx)
++void efx_siena_remove_filters(struct efx_nic *efx)
  {
- 	struct efx_mtd_partition *part;
- 	size_t i;
-@@ -79,7 +79,7 @@ int efx_mtd_add(struct efx_nic *efx, struct efx_mtd_partition *parts,
- 		if (mtd_device_register(&part->mtd, NULL, 0))
- 			goto fail;
- 
--		/* Add to list in order - efx_mtd_remove() depends on this */
-+		/* Add to list in order - efx_siena_mtd_remove() depends on this */
- 		list_add_tail(&part->node, &efx->mtd_list);
+ #ifdef CONFIG_RFS_ACCEL
+ 	struct efx_channel *channel;
+@@ -870,7 +876,7 @@ static void efx_filter_rfs_work(struct work_struct *data)
+ 		rc %= efx->type->max_rx_ip_filters;
+ 	if (efx->rps_hash_table) {
+ 		spin_lock_bh(&efx->rps_hash_lock);
+-		rule = efx_rps_hash_find(efx, &req->spec);
++		rule = efx_siena_rps_hash_find(efx, &req->spec);
+ 		/* The rule might have already gone, if someone else's request
+ 		 * for the same spec was already worked and then expired before
+ 		 * we got around to our work.  In that case we have nothing
+@@ -930,8 +936,9 @@ static void efx_filter_rfs_work(struct work_struct *data)
+ 		/* We're overloading the NIC's filter tables, so let's do a
+ 		 * chunk of extra expiry work.
+ 		 */
+-		__efx_filter_rfs_expire(channel, min(channel->rfs_filter_count,
+-						     100u));
++		__efx_siena_filter_rfs_expire(channel,
++					      min(channel->rfs_filter_count,
++						  100u));
  	}
  
-@@ -89,13 +89,13 @@ int efx_mtd_add(struct efx_nic *efx, struct efx_mtd_partition *parts,
- 	while (i--) {
- 		part = (struct efx_mtd_partition *)((char *)parts +
- 						    i * sizeof_part);
--		efx_mtd_remove_partition(part);
-+		efx_siena_mtd_remove_partition(part);
- 	}
- 	/* Failure is unlikely here, but probably means we're out of memory */
- 	return -ENOMEM;
+ 	/* Release references */
+@@ -939,8 +946,8 @@ static void efx_filter_rfs_work(struct work_struct *data)
+ 	dev_put(req->net_dev);
  }
  
--void efx_mtd_remove(struct efx_nic *efx)
-+void efx_siena_mtd_remove(struct efx_nic *efx)
- {
- 	struct efx_mtd_partition *parts, *part, *next;
- 
-@@ -108,12 +108,12 @@ void efx_mtd_remove(struct efx_nic *efx)
- 				 node);
- 
- 	list_for_each_entry_safe(part, next, &efx->mtd_list, node)
--		efx_mtd_remove_partition(part);
-+		efx_siena_mtd_remove_partition(part);
- 
- 	kfree(parts);
- }
- 
--void efx_mtd_rename(struct efx_nic *efx)
-+void efx_siena_mtd_rename(struct efx_nic *efx)
- {
- 	struct efx_mtd_partition *part;
- 
-diff --git a/drivers/net/ethernet/sfc/siena/net_driver.h b/drivers/net/ethernet/sfc/siena/net_driver.h
-index 318db906a154..3fe93f25a569 100644
---- a/drivers/net/ethernet/sfc/siena/net_driver.h
-+++ b/drivers/net/ethernet/sfc/siena/net_driver.h
-@@ -207,7 +207,6 @@ struct efx_tx_buffer {
-  * @txd: The hardware descriptor ring
-  * @ptr_mask: The size of the ring minus 1.
-  * @piobuf: PIO buffer region for this TX queue (shared with its partner).
-- *	Size of the region is efx_piobuf_size.
-  * @piobuf_offset: Buffer offset to be specified in PIO descriptors
-  * @initialised: Has hardware queue been initialised?
-  * @timestamping: Is timestamping enabled for this channel?
-@@ -478,9 +477,9 @@ enum efx_sync_events_state {
-  * @n_rx_xdp_tx: Count of RX packets retransmitted due to XDP
-  * @n_rx_xdp_redirect: Count of RX packets redirected to a different NIC by XDP
-  * @rx_pkt_n_frags: Number of fragments in next packet to be delivered by
-- *	__efx_rx_packet(), or zero if there is none
-+ *	__efx_siena_rx_packet(), or zero if there is none
-  * @rx_pkt_index: Ring index of first buffer for next packet to be delivered
-- *	by __efx_rx_packet(), if @rx_pkt_n_frags != 0
-+ *	by __efx_siena_rx_packet(), if @rx_pkt_n_frags != 0
-  * @rx_list: list of SKBs from current RX, awaiting processing
-  * @rx_queue: RX queue for this channel
-  * @tx_queue: TX queues for this channel
-@@ -869,12 +868,12 @@ enum efx_xdp_tx_queues_mode {
-  * @nic_data: Hardware dependent state
-  * @mcdi: Management-Controller-to-Driver Interface state
-  * @mac_lock: MAC access lock. Protects @port_enabled, @phy_mode,
-- *	efx_monitor() and efx_reconfigure_port()
-+ *	efx_monitor() and efx_siena_reconfigure_port()
-  * @port_enabled: Port enabled indicator.
-- *	Serialises efx_stop_all(), efx_start_all(), efx_monitor() and
-- *	efx_mac_work() with kernel interfaces. Safe to read under any
-- *	one of the rtnl_lock, mac_lock, or netif_tx_lock, but all three must
-- *	be held to modify it.
-+ *	Serialises efx_siena_stop_all(), efx_siena_start_all(),
-+ *	efx_monitor() and efx_mac_work() with kernel interfaces.
-+ *	Safe to read under any one of the rtnl_lock, mac_lock, or netif_tx_lock,
-+ *	but all three must be held to modify it.
-  * @port_initialized: Port initialized?
-  * @net_dev: Operating system network device. Consider holding the rtnl lock
-  * @fixed_features: Features which cannot be turned off
-@@ -1255,7 +1254,7 @@ struct efx_udp_tunnel {
-  *	This must check whether the specified table entry is used by RFS
-  *	and that rps_may_expire_flow() returns true for it.
-  * @mtd_probe: Probe and add MTD partitions associated with this net device,
-- *	 using efx_mtd_add()
-+ *	 using efx_siena_mtd_add()
-  * @mtd_rename: Set an MTD partition name using the net device name
-  * @mtd_read: Read from an MTD partition
-  * @mtd_erase: Erase part of an MTD partition
-diff --git a/drivers/net/ethernet/sfc/siena/rx.c b/drivers/net/ethernet/sfc/siena/rx.c
-index 2375cef577e4..099cb23e3250 100644
---- a/drivers/net/ethernet/sfc/siena/rx.c
-+++ b/drivers/net/ethernet/sfc/siena/rx.c
-@@ -118,8 +118,8 @@ static struct sk_buff *efx_rx_mk_skb(struct efx_channel *channel,
- 	return skb;
- }
- 
--void efx_rx_packet(struct efx_rx_queue *rx_queue, unsigned int index,
--		   unsigned int n_frags, unsigned int len, u16 flags)
-+void efx_siena_rx_packet(struct efx_rx_queue *rx_queue, unsigned int index,
-+			 unsigned int n_frags, unsigned int len, u16 flags)
- {
- 	struct efx_nic *efx = rx_queue->efx;
- 	struct efx_channel *channel = efx_rx_queue_channel(rx_queue);
-@@ -310,7 +310,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
- 	case XDP_TX:
- 		/* Buffer ownership passes to tx on success. */
- 		xdpf = xdp_convert_buff_to_frame(&xdp);
--		err = efx_xdp_tx_buffers(efx, 1, &xdpf, true);
-+		err = efx_siena_xdp_tx_buffers(efx, 1, &xdpf, true);
- 		if (unlikely(err != 1)) {
- 			efx_free_rx_buffers(rx_queue, rx_buf, 1);
- 			if (net_ratelimit())
-@@ -357,7 +357,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
- }
- 
- /* Handle a received packet.  Second half: Touches packet payload. */
--void __efx_rx_packet(struct efx_channel *channel)
-+void __efx_siena_rx_packet(struct efx_channel *channel)
- {
- 	struct efx_nic *efx = channel->efx;
- 	struct efx_rx_buffer *rx_buf =
-@@ -391,7 +391,8 @@ void __efx_rx_packet(struct efx_channel *channel)
- 		rx_buf->flags &= ~EFX_RX_PKT_CSUMMED;
- 
- 	if ((rx_buf->flags & EFX_RX_PKT_TCP) && !channel->type->receive_skb)
--		efx_rx_packet_gro(channel, rx_buf, channel->rx_pkt_n_frags, eh, 0);
-+		efx_siena_rx_packet_gro(channel, rx_buf,
-+					channel->rx_pkt_n_frags, eh, 0);
- 	else
- 		efx_rx_deliver(channel, eh, rx_buf, channel->rx_pkt_n_frags);
- out:
-diff --git a/drivers/net/ethernet/sfc/siena/rx_common.c b/drivers/net/ethernet/sfc/siena/rx_common.c
-index fa8b9aacca11..9fb442da043c 100644
---- a/drivers/net/ethernet/sfc/siena/rx_common.c
-+++ b/drivers/net/ethernet/sfc/siena/rx_common.c
-@@ -504,8 +504,9 @@ void efx_fast_push_rx_descriptors(struct efx_rx_queue *rx_queue, bool atomic)
-  * regardless of checksum state and skbs with a good checksum.
-  */
- void
--efx_rx_packet_gro(struct efx_channel *channel, struct efx_rx_buffer *rx_buf,
--		  unsigned int n_frags, u8 *eh, __wsum csum)
-+efx_siena_rx_packet_gro(struct efx_channel *channel,
-+			struct efx_rx_buffer *rx_buf,
-+			unsigned int n_frags, u8 *eh, __wsum csum)
- {
- 	struct napi_struct *napi = &channel->napi_str;
- 	struct efx_nic *efx = channel->efx;
-@@ -520,8 +521,7 @@ efx_rx_packet_gro(struct efx_channel *channel, struct efx_rx_buffer *rx_buf,
- 		return;
- 	}
- 
--	if (efx->net_dev->features & NETIF_F_RXHASH &&
--	    efx_rx_buf_hash_valid(efx, eh))
-+	if (efx->net_dev->features & NETIF_F_RXHASH)
- 		skb_set_hash(skb, efx_rx_buf_hash(efx, eh),
- 			     PKT_HASH_TYPE_L3);
- 	if (csum) {
-diff --git a/drivers/net/ethernet/sfc/siena/rx_common.h b/drivers/net/ethernet/sfc/siena/rx_common.h
-index fbd2769307f9..909d06a4fdc9 100644
---- a/drivers/net/ethernet/sfc/siena/rx_common.h
-+++ b/drivers/net/ethernet/sfc/siena/rx_common.h
-@@ -81,8 +81,9 @@ void efx_rx_config_page_split(struct efx_nic *efx);
- void efx_fast_push_rx_descriptors(struct efx_rx_queue *rx_queue, bool atomic);
- 
- void
--efx_rx_packet_gro(struct efx_channel *channel, struct efx_rx_buffer *rx_buf,
--		  unsigned int n_frags, u8 *eh, __wsum csum);
-+efx_siena_rx_packet_gro(struct efx_channel *channel,
-+			struct efx_rx_buffer *rx_buf,
-+			unsigned int n_frags, u8 *eh, __wsum csum);
- 
- struct efx_rss_context *efx_alloc_rss_context_entry(struct efx_nic *efx);
- struct efx_rss_context *efx_find_rss_context_entry(struct efx_nic *efx, u32 id);
-diff --git a/drivers/net/ethernet/sfc/siena/selftest.c b/drivers/net/ethernet/sfc/siena/selftest.c
-index 3c5227afd497..7e24329bc005 100644
---- a/drivers/net/ethernet/sfc/siena/selftest.c
-+++ b/drivers/net/ethernet/sfc/siena/selftest.c
-@@ -58,14 +58,14 @@ static const char payload_msg[] =
- 	"Hello world! This is an Efx loopback test in progress!";
- 
- /* Interrupt mode names */
--static const unsigned int efx_interrupt_mode_max = EFX_INT_MODE_MAX;
--static const char *const efx_interrupt_mode_names[] = {
-+static const unsigned int efx_siena_interrupt_mode_max = EFX_INT_MODE_MAX;
-+static const char *const efx_siena_interrupt_mode_names[] = {
- 	[EFX_INT_MODE_MSIX]   = "MSI-X",
- 	[EFX_INT_MODE_MSI]    = "MSI",
- 	[EFX_INT_MODE_LEGACY] = "legacy",
- };
- #define INT_MODE(efx) \
--	STRING_TABLE_LOOKUP(efx->interrupt_mode, efx_interrupt_mode)
-+	STRING_TABLE_LOOKUP(efx->interrupt_mode, efx_siena_interrupt_mode)
- 
- /**
-  * struct efx_loopback_state - persistent state during a loopback selftest
-@@ -197,7 +197,7 @@ static int efx_test_eventq_irq(struct efx_nic *efx,
- 		schedule_timeout_uninterruptible(wait);
- 
- 		efx_for_each_channel(channel, efx) {
--			efx_stop_eventq(channel);
-+			efx_siena_stop_eventq(channel);
- 			if (channel->eventq_read_ptr !=
- 			    read_ptr[channel->channel]) {
- 				set_bit(channel->channel, &napi_ran);
-@@ -209,7 +209,7 @@ static int efx_test_eventq_irq(struct efx_nic *efx,
- 				if (efx_nic_event_test_irq_cpu(channel) >= 0)
- 					clear_bit(channel->channel, &int_pend);
- 			}
--			efx_start_eventq(channel);
-+			efx_siena_start_eventq(channel);
- 		}
- 
- 		wait *= 2;
-@@ -637,7 +637,7 @@ static int efx_test_loopbacks(struct efx_nic *efx, struct efx_self_tests *tests,
- 		state->flush = true;
- 		mutex_lock(&efx->mac_lock);
- 		efx->loopback_mode = mode;
--		rc = __efx_reconfigure_port(efx);
-+		rc = __efx_siena_reconfigure_port(efx);
- 		mutex_unlock(&efx->mac_lock);
- 		if (rc) {
- 			netif_err(efx, drv, efx->net_dev,
-@@ -731,7 +731,7 @@ int efx_selftest(struct efx_nic *efx, struct efx_self_tests *tests,
- 		if (rc_reset) {
- 			netif_err(efx, hw, efx->net_dev,
- 				  "Unable to recover from chip test\n");
--			efx_schedule_reset(efx, RESET_TYPE_DISABLE);
-+			efx_siena_schedule_reset(efx, RESET_TYPE_DISABLE);
- 			return rc_reset;
- 		}
- 
-@@ -744,7 +744,7 @@ int efx_selftest(struct efx_nic *efx, struct efx_self_tests *tests,
- 	mutex_lock(&efx->mac_lock);
- 	efx->phy_mode &= ~PHY_MODE_LOW_POWER;
- 	efx->loopback_mode = LOOPBACK_NONE;
--	__efx_reconfigure_port(efx);
-+	__efx_siena_reconfigure_port(efx);
- 	mutex_unlock(&efx->mac_lock);
- 
- 	rc = efx_test_phy(efx, tests, flags);
-@@ -759,7 +759,7 @@ int efx_selftest(struct efx_nic *efx, struct efx_self_tests *tests,
- 	mutex_lock(&efx->mac_lock);
- 	efx->phy_mode = phy_mode;
- 	efx->loopback_mode = loopback_mode;
--	__efx_reconfigure_port(efx);
-+	__efx_siena_reconfigure_port(efx);
- 	mutex_unlock(&efx->mac_lock);
- 
- 	efx_device_attach_if_not_resetting(efx);
-diff --git a/drivers/net/ethernet/sfc/siena/siena.c b/drivers/net/ethernet/sfc/siena/siena.c
-index 7cc6a2583d6c..726dd4b72779 100644
---- a/drivers/net/ethernet/sfc/siena/siena.c
-+++ b/drivers/net/ethernet/sfc/siena/siena.c
-@@ -40,7 +40,7 @@ static void siena_push_irq_moderation(struct efx_channel *channel)
- 	if (channel->irq_moderation_us) {
- 		unsigned int ticks;
- 
--		ticks = efx_usecs_to_ticks(efx, channel->irq_moderation_us);
-+		ticks = efx_siena_usecs_to_ticks(efx, channel->irq_moderation_us);
- 		EFX_POPULATE_DWORD_2(timer_cmd,
- 				     FRF_CZ_TC_TIMER_MODE,
- 				     FFE_CZ_TIMER_MODE_INT_HLDOFF,
-@@ -102,7 +102,7 @@ static int siena_test_chip(struct efx_nic *efx, struct efx_self_tests *tests)
- 	enum reset_type reset_method = RESET_TYPE_ALL;
- 	int rc, rc2;
- 
--	efx_reset_down(efx, reset_method);
-+	efx_siena_reset_down(efx, reset_method);
- 
- 	/* Reset the chip immediately so that it is completely
- 	 * quiescent regardless of what any VF driver does.
-@@ -118,7 +118,7 @@ static int siena_test_chip(struct efx_nic *efx, struct efx_self_tests *tests)
- 
- 	rc = efx_mcdi_reset(efx, reset_method);
- out:
--	rc2 = efx_reset_up(efx, reset_method, rc == 0);
-+	rc2 = efx_siena_reset_up(efx, reset_method, rc == 0);
- 	return rc ? rc : rc2;
- }
- 
-@@ -583,7 +583,7 @@ static int siena_try_update_nic_stats(struct efx_nic *efx)
- 	efx_update_diff_stat(&stats[SIENA_STAT_rx_good_bytes],
- 			     stats[SIENA_STAT_rx_bytes] -
- 			     stats[SIENA_STAT_rx_bad_bytes]);
--	efx_update_sw_stats(efx, stats);
-+	efx_siena_update_sw_stats(efx, stats);
- 	return 0;
- }
- 
-@@ -943,7 +943,7 @@ static int siena_mtd_probe(struct efx_nic *efx)
- 	if (rc)
- 		goto fail;
- 
--	rc = efx_mtd_add(efx, &parts[0].common, n_parts, sizeof(*parts));
-+	rc = efx_siena_mtd_add(efx, &parts[0].common, n_parts, sizeof(*parts));
- fail:
- 	if (rc)
- 		kfree(parts);
-@@ -980,7 +980,7 @@ const struct efx_nic_type siena_a0_nic_type = {
- 	.remove = siena_remove_nic,
- 	.init = siena_init_nic,
- 	.dimension_resources = siena_dimension_resources,
--	.fini = efx_port_dummy_op_void,
-+	.fini = efx_siena_port_dummy_op_void,
- #ifdef CONFIG_EEH
- 	.monitor = siena_monitor,
- #else
-@@ -994,7 +994,7 @@ const struct efx_nic_type siena_a0_nic_type = {
- 	.fini_dmaq = efx_farch_fini_dmaq,
- 	.prepare_flush = efx_siena_prepare_flush,
- 	.finish_flush = siena_finish_flush,
--	.prepare_flr = efx_port_dummy_op_void,
-+	.prepare_flr = efx_siena_port_dummy_op_void,
- 	.finish_flr = efx_farch_finish_flr,
- 	.describe_stats = siena_describe_nic_stats,
- 	.update_stats = siena_update_nic_stats,
-@@ -1024,7 +1024,7 @@ const struct efx_nic_type siena_a0_nic_type = {
- 	.tx_remove = efx_farch_tx_remove,
- 	.tx_write = efx_farch_tx_write,
- 	.tx_limit_len = efx_farch_tx_limit_len,
--	.tx_enqueue = __efx_enqueue_skb,
-+	.tx_enqueue = __efx_siena_enqueue_skb,
- 	.rx_push_rss_config = siena_rx_push_rss_config,
- 	.rx_pull_rss_config = siena_rx_pull_rss_config,
- 	.rx_probe = efx_farch_rx_probe,
-@@ -1032,7 +1032,7 @@ const struct efx_nic_type siena_a0_nic_type = {
- 	.rx_remove = efx_farch_rx_remove,
- 	.rx_write = efx_farch_rx_write,
- 	.rx_defer_refill = efx_farch_rx_defer_refill,
--	.rx_packet = __efx_rx_packet,
-+	.rx_packet = __efx_siena_rx_packet,
- 	.ev_probe = efx_farch_ev_probe,
- 	.ev_init = efx_farch_ev_init,
- 	.ev_fini = efx_farch_ev_fini,
-@@ -1075,9 +1075,9 @@ const struct efx_nic_type siena_a0_nic_type = {
- 	.sriov_set_vf_vlan = efx_siena_sriov_set_vf_vlan,
- 	.sriov_set_vf_spoofchk = efx_siena_sriov_set_vf_spoofchk,
- 	.sriov_get_vf_config = efx_siena_sriov_get_vf_config,
--	.vswitching_probe = efx_port_dummy_op_int,
--	.vswitching_restore = efx_port_dummy_op_int,
--	.vswitching_remove = efx_port_dummy_op_void,
-+	.vswitching_probe = efx_siena_port_dummy_op_int,
-+	.vswitching_restore = efx_siena_port_dummy_op_int,
-+	.vswitching_remove = efx_siena_port_dummy_op_void,
- 	.set_mac_address = efx_siena_sriov_mac_address_changed,
- #endif
- 
-diff --git a/drivers/net/ethernet/sfc/siena/siena_sriov.c b/drivers/net/ethernet/sfc/siena/siena_sriov.c
-index 8b0fdeebc1a5..f8e14f0d2f34 100644
---- a/drivers/net/ethernet/sfc/siena/siena_sriov.c
-+++ b/drivers/net/ethernet/sfc/siena/siena_sriov.c
-@@ -1043,7 +1043,7 @@ efx_siena_sriov_get_channel_name(struct efx_channel *channel,
- static const struct efx_channel_type efx_siena_sriov_channel_type = {
- 	.handle_no_channel	= efx_siena_sriov_handle_no_channel,
- 	.pre_probe		= efx_siena_sriov_probe_channel,
--	.post_remove		= efx_channel_dummy_op_void,
-+	.post_remove		= efx_siena_channel_dummy_op_void,
- 	.get_name		= efx_siena_sriov_get_channel_name,
- 	/* no copy operation; channel must not be reallocated */
- 	.keep_eventq		= true,
-diff --git a/drivers/net/ethernet/sfc/siena/tx.c b/drivers/net/ethernet/sfc/siena/tx.c
-index 9e68dc434832..118ec6f5f097 100644
---- a/drivers/net/ethernet/sfc/siena/tx.c
-+++ b/drivers/net/ethernet/sfc/siena/tx.c
-@@ -138,13 +138,14 @@ static void efx_tx_send_pending(struct efx_channel *channel)
-  * If any DMA mapping fails, any mapped fragments will be unmapped,
-  * the queue's insert pointer will be restored to its original value.
-  *
-- * This function is split out from efx_hard_start_xmit to allow the
-+ * This function is split out from efx_siena_hard_start_xmit to allow the
-  * loopback test to direct packets via specific TX queues.
-  *
-  * Returns NETDEV_TX_OK.
-  * You must hold netif_tx_lock() to call this function.
-  */
--netdev_tx_t __efx_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb)
-+netdev_tx_t __efx_siena_enqueue_skb(struct efx_tx_queue *tx_queue,
-+				    struct sk_buff *skb)
- {
- 	unsigned int old_insert_count = tx_queue->insert_count;
- 	bool xmit_more = netdev_xmit_more();
-@@ -219,8 +220,8 @@ netdev_tx_t __efx_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb
-  * Runs in NAPI context, either in our poll (for XDP TX) or a different NIC
-  * (for XDP redirect).
-  */
--int efx_xdp_tx_buffers(struct efx_nic *efx, int n, struct xdp_frame **xdpfs,
--		       bool flush)
-+int efx_siena_xdp_tx_buffers(struct efx_nic *efx, int n, struct xdp_frame **xdpfs,
-+			     bool flush)
- {
- 	struct efx_tx_buffer *tx_buffer;
- 	struct efx_tx_queue *tx_queue;
-@@ -310,8 +311,8 @@ int efx_xdp_tx_buffers(struct efx_nic *efx, int n, struct xdp_frame **xdpfs,
-  * Context: non-blocking.
-  * Should always return NETDEV_TX_OK and consume the skb.
-  */
--netdev_tx_t efx_hard_start_xmit(struct sk_buff *skb,
--				struct net_device *net_dev)
-+netdev_tx_t efx_siena_hard_start_xmit(struct sk_buff *skb,
-+				      struct net_device *net_dev)
+-int efx_filter_rfs(struct net_device *net_dev, const struct sk_buff *skb,
+-		   u16 rxq_index, u32 flow_id)
++int efx_siena_filter_rfs(struct net_device *net_dev, const struct sk_buff *skb,
++			 u16 rxq_index, u32 flow_id)
  {
  	struct efx_nic *efx = netdev_priv(net_dev);
- 	struct efx_tx_queue *tx_queue;
-@@ -354,52 +355,14 @@ netdev_tx_t efx_hard_start_xmit(struct sk_buff *skb,
- 		return NETDEV_TX_OK;
- 	}
- 
--	return __efx_enqueue_skb(tx_queue, skb);
-+	return __efx_siena_enqueue_skb(tx_queue, skb);
+ 	struct efx_async_filter_insertion *req;
+@@ -1041,7 +1048,8 @@ int efx_filter_rfs(struct net_device *net_dev, const struct sk_buff *skb,
+ 	return rc;
  }
  
--void efx_xmit_done_single(struct efx_tx_queue *tx_queue)
+-bool __efx_filter_rfs_expire(struct efx_channel *channel, unsigned int quota)
++bool __efx_siena_filter_rfs_expire(struct efx_channel *channel,
++				   unsigned int quota)
+ {
+ 	bool (*expire_one)(struct efx_nic *efx, u32 flow_id, unsigned int index);
+ 	struct efx_nic *efx = channel->efx;
+diff --git a/drivers/net/ethernet/sfc/siena/rx_common.h b/drivers/net/ethernet/sfc/siena/rx_common.h
+index 909d06a4fdc9..6b37f83ecb30 100644
+--- a/drivers/net/ethernet/sfc/siena/rx_common.h
++++ b/drivers/net/ethernet/sfc/siena/rx_common.h
+@@ -43,26 +43,19 @@ static inline u32 efx_rx_buf_hash(struct efx_nic *efx, const u8 *eh)
+ #endif
+ }
+ 
+-void efx_rx_slow_fill(struct timer_list *t);
+-
+-void efx_recycle_rx_pages(struct efx_channel *channel,
+-			  struct efx_rx_buffer *rx_buf,
+-			  unsigned int n_frags);
+-void efx_discard_rx_packet(struct efx_channel *channel,
+-			   struct efx_rx_buffer *rx_buf,
+-			   unsigned int n_frags);
+-
+-int efx_probe_rx_queue(struct efx_rx_queue *rx_queue);
+-void efx_init_rx_queue(struct efx_rx_queue *rx_queue);
+-void efx_fini_rx_queue(struct efx_rx_queue *rx_queue);
+-void efx_remove_rx_queue(struct efx_rx_queue *rx_queue);
+-void efx_destroy_rx_queue(struct efx_rx_queue *rx_queue);
+-
+-void efx_init_rx_buffer(struct efx_rx_queue *rx_queue,
+-			struct page *page,
+-			unsigned int page_offset,
+-			u16 flags);
+-void efx_unmap_rx_buffer(struct efx_nic *efx, struct efx_rx_buffer *rx_buf);
++void efx_siena_rx_slow_fill(struct timer_list *t);
++
++void efx_siena_recycle_rx_pages(struct efx_channel *channel,
++				struct efx_rx_buffer *rx_buf,
++				unsigned int n_frags);
++void efx_siena_discard_rx_packet(struct efx_channel *channel,
++				 struct efx_rx_buffer *rx_buf,
++				 unsigned int n_frags);
++
++int efx_siena_probe_rx_queue(struct efx_rx_queue *rx_queue);
++void efx_siena_init_rx_queue(struct efx_rx_queue *rx_queue);
++void efx_siena_fini_rx_queue(struct efx_rx_queue *rx_queue);
++void efx_siena_remove_rx_queue(struct efx_rx_queue *rx_queue);
+ 
+ static inline void efx_sync_rx_buffer(struct efx_nic *efx,
+ 				      struct efx_rx_buffer *rx_buf,
+@@ -72,46 +65,46 @@ static inline void efx_sync_rx_buffer(struct efx_nic *efx,
+ 				DMA_FROM_DEVICE);
+ }
+ 
+-void efx_free_rx_buffers(struct efx_rx_queue *rx_queue,
+-			 struct efx_rx_buffer *rx_buf,
+-			 unsigned int num_bufs);
++void efx_siena_free_rx_buffers(struct efx_rx_queue *rx_queue,
++			       struct efx_rx_buffer *rx_buf,
++			       unsigned int num_bufs);
+ 
+-void efx_schedule_slow_fill(struct efx_rx_queue *rx_queue);
+-void efx_rx_config_page_split(struct efx_nic *efx);
+-void efx_fast_push_rx_descriptors(struct efx_rx_queue *rx_queue, bool atomic);
++void efx_siena_rx_config_page_split(struct efx_nic *efx);
++void efx_siena_fast_push_rx_descriptors(struct efx_rx_queue *rx_queue,
++					bool atomic);
+ 
+ void
+ efx_siena_rx_packet_gro(struct efx_channel *channel,
+ 			struct efx_rx_buffer *rx_buf,
+ 			unsigned int n_frags, u8 *eh, __wsum csum);
+ 
+-struct efx_rss_context *efx_alloc_rss_context_entry(struct efx_nic *efx);
+-struct efx_rss_context *efx_find_rss_context_entry(struct efx_nic *efx, u32 id);
+-void efx_free_rss_context_entry(struct efx_rss_context *ctx);
+-void efx_set_default_rx_indir_table(struct efx_nic *efx,
+-				    struct efx_rss_context *ctx);
++struct efx_rss_context *efx_siena_alloc_rss_context_entry(struct efx_nic *efx);
++struct efx_rss_context *efx_siena_find_rss_context_entry(struct efx_nic *efx,
++							 u32 id);
++void efx_siena_free_rss_context_entry(struct efx_rss_context *ctx);
++void efx_siena_set_default_rx_indir_table(struct efx_nic *efx,
++					  struct efx_rss_context *ctx);
+ 
+-bool efx_filter_is_mc_recipient(const struct efx_filter_spec *spec);
+-bool efx_filter_spec_equal(const struct efx_filter_spec *left,
+-			   const struct efx_filter_spec *right);
+-u32 efx_filter_spec_hash(const struct efx_filter_spec *spec);
++bool efx_siena_filter_is_mc_recipient(const struct efx_filter_spec *spec);
++bool efx_siena_filter_spec_equal(const struct efx_filter_spec *left,
++				 const struct efx_filter_spec *right);
++u32 efx_siena_filter_spec_hash(const struct efx_filter_spec *spec);
+ 
+ #ifdef CONFIG_RFS_ACCEL
+-bool efx_rps_check_rule(struct efx_arfs_rule *rule, unsigned int filter_idx,
+-			bool *force);
+-struct efx_arfs_rule *efx_rps_hash_find(struct efx_nic *efx,
++bool efx_siena_rps_check_rule(struct efx_arfs_rule *rule,
++			      unsigned int filter_idx, bool *force);
++struct efx_arfs_rule *efx_siena_rps_hash_find(struct efx_nic *efx,
+ 					const struct efx_filter_spec *spec);
+-struct efx_arfs_rule *efx_rps_hash_add(struct efx_nic *efx,
+-				       const struct efx_filter_spec *spec,
+-				       bool *new);
+-void efx_rps_hash_del(struct efx_nic *efx, const struct efx_filter_spec *spec);
+-
+-int efx_filter_rfs(struct net_device *net_dev, const struct sk_buff *skb,
+-		   u16 rxq_index, u32 flow_id);
+-bool __efx_filter_rfs_expire(struct efx_channel *channel, unsigned int quota);
++void efx_siena_rps_hash_del(struct efx_nic *efx,
++			    const struct efx_filter_spec *spec);
++
++int efx_siena_filter_rfs(struct net_device *net_dev, const struct sk_buff *skb,
++			 u16 rxq_index, u32 flow_id);
++bool __efx_siena_filter_rfs_expire(struct efx_channel *channel,
++				   unsigned int quota);
+ #endif
+ 
+-int efx_probe_filters(struct efx_nic *efx);
+-void efx_remove_filters(struct efx_nic *efx);
++int efx_siena_probe_filters(struct efx_nic *efx);
++void efx_siena_remove_filters(struct efx_nic *efx);
+ 
+ #endif
+diff --git a/drivers/net/ethernet/sfc/siena/tx.c b/drivers/net/ethernet/sfc/siena/tx.c
+index 118ec6f5f097..0677a0254d85 100644
+--- a/drivers/net/ethernet/sfc/siena/tx.c
++++ b/drivers/net/ethernet/sfc/siena/tx.c
+@@ -41,14 +41,6 @@ static inline u8 *efx_tx_get_copy_buffer(struct efx_tx_queue *tx_queue,
+ 	return (u8 *)page_buf->addr + offset;
+ }
+ 
+-u8 *efx_tx_get_copy_buffer_limited(struct efx_tx_queue *tx_queue,
+-				   struct efx_tx_buffer *buffer, size_t len)
 -{
--	unsigned int pkts_compl = 0, bytes_compl = 0;
--	unsigned int read_ptr;
--	bool finished = false;
+-	if (len > EFX_TX_CB_SIZE)
+-		return NULL;
+-	return efx_tx_get_copy_buffer(tx_queue, buffer);
+-}
 -
--	read_ptr = tx_queue->read_count & tx_queue->ptr_mask;
+ static void efx_tx_maybe_stop_queue(struct efx_tx_queue *txq1)
+ {
+ 	/* We need to consider all queues that the net core sees as one */
+@@ -164,7 +156,7 @@ netdev_tx_t __efx_siena_enqueue_skb(struct efx_tx_queue *tx_queue,
+ 	 * size limit.
+ 	 */
+ 	if (segments) {
+-		rc = efx_tx_tso_fallback(tx_queue, skb);
++		rc = efx_siena_tx_tso_fallback(tx_queue, skb);
+ 		tx_queue->tso_fallbacks++;
+ 		if (rc == 0)
+ 			return 0;
+@@ -178,7 +170,7 @@ netdev_tx_t __efx_siena_enqueue_skb(struct efx_tx_queue *tx_queue,
+ 	}
+ 
+ 	/* Map for DMA and create descriptors if we haven't done so already. */
+-	if (!data_mapped && (efx_tx_map_data(tx_queue, skb, segments)))
++	if (!data_mapped && (efx_siena_tx_map_data(tx_queue, skb, segments)))
+ 		goto err;
+ 
+ 	efx_tx_maybe_stop_queue(tx_queue);
+@@ -201,7 +193,7 @@ netdev_tx_t __efx_siena_enqueue_skb(struct efx_tx_queue *tx_queue,
+ 
+ 
+ err:
+-	efx_enqueue_unwind(tx_queue, old_insert_count);
++	efx_siena_enqueue_unwind(tx_queue, old_insert_count);
+ 	dev_kfree_skb_any(skb);
+ 
+ 	/* If we're not expecting another transmit and we had something to push
+@@ -285,7 +277,7 @@ int efx_siena_xdp_tx_buffers(struct efx_nic *efx, int n, struct xdp_frame **xdpf
+ 			break;
+ 
+ 		/*  Create descriptor and set up for unmapping DMA. */
+-		tx_buffer = efx_tx_map_chunk(tx_queue, dma_addr, len);
++		tx_buffer = efx_siena_tx_map_chunk(tx_queue, dma_addr, len);
+ 		tx_buffer->xdpf = xdpf;
+ 		tx_buffer->flags = EFX_TX_BUF_XDP |
+ 				   EFX_TX_BUF_MAP_SINGLE;
+diff --git a/drivers/net/ethernet/sfc/siena/tx.h b/drivers/net/ethernet/sfc/siena/tx.h
+index f2c4d2f89919..ee801950c909 100644
+--- a/drivers/net/ethernet/sfc/siena/tx.h
++++ b/drivers/net/ethernet/sfc/siena/tx.h
+@@ -11,13 +11,6 @@
+ #include <linux/types.h>
+ 
+ /* Driver internal tx-path related declarations. */
 -
--	while (!finished) {
--		struct efx_tx_buffer *buffer = &tx_queue->buffer[read_ptr];
+-unsigned int efx_tx_limit_len(struct efx_tx_queue *tx_queue,
+-			      dma_addr_t dma_addr, unsigned int len);
 -
--		if (!efx_tx_buffer_in_use(buffer)) {
--			struct efx_nic *efx = tx_queue->efx;
+-u8 *efx_tx_get_copy_buffer_limited(struct efx_tx_queue *tx_queue,
+-				   struct efx_tx_buffer *buffer, size_t len);
 -
--			netif_err(efx, hw, efx->net_dev,
--				  "TX queue %d spurious single TX completion\n",
--				  tx_queue->queue);
--			efx_schedule_reset(efx, RESET_TYPE_TX_SKIP);
--			return;
--		}
+ /* What TXQ type will satisfy the checksum offloads required for this skb? */
+ static inline unsigned int efx_tx_csum_type_skb(struct sk_buff *skb)
+ {
+diff --git a/drivers/net/ethernet/sfc/siena/tx_common.c b/drivers/net/ethernet/sfc/siena/tx_common.c
+index 7945fe681e29..66adc8525a3a 100644
+--- a/drivers/net/ethernet/sfc/siena/tx_common.c
++++ b/drivers/net/ethernet/sfc/siena/tx_common.c
+@@ -19,7 +19,7 @@ static unsigned int efx_tx_cb_page_count(struct efx_tx_queue *tx_queue)
+ 			    PAGE_SIZE >> EFX_TX_CB_ORDER);
+ }
+ 
+-int efx_probe_tx_queue(struct efx_tx_queue *tx_queue)
++int efx_siena_probe_tx_queue(struct efx_tx_queue *tx_queue)
+ {
+ 	struct efx_nic *efx = tx_queue->efx;
+ 	unsigned int entries;
+@@ -64,7 +64,7 @@ int efx_probe_tx_queue(struct efx_tx_queue *tx_queue)
+ 	return rc;
+ }
+ 
+-void efx_init_tx_queue(struct efx_tx_queue *tx_queue)
++void efx_siena_init_tx_queue(struct efx_tx_queue *tx_queue)
+ {
+ 	struct efx_nic *efx = tx_queue->efx;
+ 
+@@ -94,32 +94,7 @@ void efx_init_tx_queue(struct efx_tx_queue *tx_queue)
+ 	tx_queue->initialised = true;
+ }
+ 
+-void efx_fini_tx_queue(struct efx_tx_queue *tx_queue)
+-{
+-	struct efx_tx_buffer *buffer;
 -
--		/* Need to check the flag before dequeueing. */
--		if (buffer->flags & EFX_TX_BUF_SKB)
--			finished = true;
+-	netif_dbg(tx_queue->efx, drv, tx_queue->efx->net_dev,
+-		  "shutting down TX queue %d\n", tx_queue->queue);
+-
+-	tx_queue->initialised = false;
+-
+-	if (!tx_queue->buffer)
+-		return;
+-
+-	/* Free any buffers left in the ring */
+-	while (tx_queue->read_count != tx_queue->write_count) {
+-		unsigned int pkts_compl = 0, bytes_compl = 0;
+-
+-		buffer = &tx_queue->buffer[tx_queue->read_count & tx_queue->ptr_mask];
 -		efx_dequeue_buffer(tx_queue, buffer, &pkts_compl, &bytes_compl);
 -
 -		++tx_queue->read_count;
--		read_ptr = tx_queue->read_count & tx_queue->ptr_mask;
 -	}
--
--	tx_queue->pkts_compl += pkts_compl;
--	tx_queue->bytes_compl += bytes_compl;
--
--	EFX_WARN_ON_PARANOID(pkts_compl != 1);
--
--	efx_xmit_done_check_empty(tx_queue);
+-	tx_queue->xmit_pending = false;
+-	netdev_tx_reset_queue(tx_queue->core_txq);
 -}
 -
--void efx_init_tx_queue_core_txq(struct efx_tx_queue *tx_queue)
-+void efx_siena_init_tx_queue_core_txq(struct efx_tx_queue *tx_queue)
+-void efx_remove_tx_queue(struct efx_tx_queue *tx_queue)
++void efx_siena_remove_tx_queue(struct efx_tx_queue *tx_queue)
  {
- 	struct efx_nic *efx = tx_queue->efx;
+ 	int i;
  
--	/* Must be inverse of queue lookup in efx_hard_start_xmit() */
-+	/* Must be inverse of queue lookup in efx_siena_hard_start_xmit() */
- 	tx_queue->core_txq =
- 		netdev_get_tx_queue(efx->net_dev,
- 				    tx_queue->channel->channel +
-@@ -407,8 +370,8 @@ void efx_init_tx_queue_core_txq(struct efx_tx_queue *tx_queue)
- 				     efx->n_tx_channels : 0));
+@@ -143,10 +118,10 @@ void efx_remove_tx_queue(struct efx_tx_queue *tx_queue)
+ 	tx_queue->channel->tx_queue_by_type[tx_queue->type] = NULL;
  }
  
--int efx_setup_tc(struct net_device *net_dev, enum tc_setup_type type,
--		 void *type_data)
-+int efx_siena_setup_tc(struct net_device *net_dev, enum tc_setup_type type,
-+		       void *type_data)
+-void efx_dequeue_buffer(struct efx_tx_queue *tx_queue,
+-			struct efx_tx_buffer *buffer,
+-			unsigned int *pkts_compl,
+-			unsigned int *bytes_compl)
++static void efx_dequeue_buffer(struct efx_tx_queue *tx_queue,
++			       struct efx_tx_buffer *buffer,
++			       unsigned int *pkts_compl,
++			       unsigned int *bytes_compl)
  {
- 	struct efx_nic *efx = netdev_priv(net_dev);
- 	struct tc_mqprio_qopt *mqprio = type_data;
-diff --git a/drivers/net/ethernet/sfc/siena/tx_common.c b/drivers/net/ethernet/sfc/siena/tx_common.c
-index 9bc8281b7f5b..7945fe681e29 100644
---- a/drivers/net/ethernet/sfc/siena/tx_common.c
-+++ b/drivers/net/ethernet/sfc/siena/tx_common.c
-@@ -214,7 +214,7 @@ static void efx_dequeue_buffers(struct efx_tx_queue *tx_queue,
- 			netif_err(efx, tx_err, efx->net_dev,
- 				  "TX queue %d spurious TX completion id %d\n",
- 				  tx_queue->queue, read_ptr);
--			efx_schedule_reset(efx, RESET_TYPE_TX_SKIP);
-+			efx_siena_schedule_reset(efx, RESET_TYPE_TX_SKIP);
- 			return;
- 		}
- 
-@@ -225,7 +225,7 @@ static void efx_dequeue_buffers(struct efx_tx_queue *tx_queue,
- 	}
+ 	if (buffer->unmap_len) {
+ 		struct device *dma_dev = &tx_queue->efx->pci_dev->dev;
+@@ -191,6 +166,29 @@ void efx_dequeue_buffer(struct efx_tx_queue *tx_queue,
+ 	buffer->flags = 0;
  }
  
--void efx_xmit_done_check_empty(struct efx_tx_queue *tx_queue)
-+void efx_siena_xmit_done_check_empty(struct efx_tx_queue *tx_queue)
- {
- 	if ((int)(tx_queue->read_count - tx_queue->old_write_count) >= 0) {
- 		tx_queue->old_write_count = READ_ONCE(tx_queue->write_count);
-@@ -238,7 +238,7 @@ void efx_xmit_done_check_empty(struct efx_tx_queue *tx_queue)
- 	}
- }
- 
--void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index)
-+void efx_siena_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index)
- {
- 	unsigned int fill_level, pkts_compl = 0, bytes_compl = 0;
- 	struct efx_nic *efx = tx_queue->efx;
-@@ -265,7 +265,7 @@ void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index)
- 			netif_tx_wake_queue(tx_queue->core_txq);
- 	}
- 
--	efx_xmit_done_check_empty(tx_queue);
-+	efx_siena_xmit_done_check_empty(tx_queue);
- }
- 
++void efx_siena_fini_tx_queue(struct efx_tx_queue *tx_queue)
++{
++	struct efx_tx_buffer *buffer;
++
++	netif_dbg(tx_queue->efx, drv, tx_queue->efx->net_dev,
++		  "shutting down TX queue %d\n", tx_queue->queue);
++
++	if (!tx_queue->buffer)
++		return;
++
++	/* Free any buffers left in the ring */
++	while (tx_queue->read_count != tx_queue->write_count) {
++		unsigned int pkts_compl = 0, bytes_compl = 0;
++
++		buffer = &tx_queue->buffer[tx_queue->read_count & tx_queue->ptr_mask];
++		efx_dequeue_buffer(tx_queue, buffer, &pkts_compl, &bytes_compl);
++
++		++tx_queue->read_count;
++	}
++	tx_queue->xmit_pending = false;
++	netdev_tx_reset_queue(tx_queue->core_txq);
++}
++
+ /* Remove packets from the TX queue
+  *
+  * This removes packets from the TX queue, up to and including the
+@@ -271,8 +269,8 @@ void efx_siena_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index)
  /* Remove buffers put into a tx_queue for the current packet.
+  * None of the buffers must have an skb attached.
+  */
+-void efx_enqueue_unwind(struct efx_tx_queue *tx_queue,
+-			unsigned int insert_count)
++void efx_siena_enqueue_unwind(struct efx_tx_queue *tx_queue,
++			      unsigned int insert_count)
+ {
+ 	struct efx_tx_buffer *buffer;
+ 	unsigned int bytes_compl = 0;
+@@ -286,8 +284,8 @@ void efx_enqueue_unwind(struct efx_tx_queue *tx_queue,
+ 	}
+ }
+ 
+-struct efx_tx_buffer *efx_tx_map_chunk(struct efx_tx_queue *tx_queue,
+-				       dma_addr_t dma_addr, size_t len)
++struct efx_tx_buffer *efx_siena_tx_map_chunk(struct efx_tx_queue *tx_queue,
++					     dma_addr_t dma_addr, size_t len)
+ {
+ 	const struct efx_nic_type *nic_type = tx_queue->efx->type;
+ 	struct efx_tx_buffer *buffer;
+@@ -313,7 +311,7 @@ struct efx_tx_buffer *efx_tx_map_chunk(struct efx_tx_queue *tx_queue,
+ 	return buffer;
+ }
+ 
+-int efx_tx_tso_header_length(struct sk_buff *skb)
++static int efx_tx_tso_header_length(struct sk_buff *skb)
+ {
+ 	size_t header_len;
+ 
+@@ -328,8 +326,8 @@ int efx_tx_tso_header_length(struct sk_buff *skb)
+ }
+ 
+ /* Map all data from an SKB for DMA and create descriptors on the queue. */
+-int efx_tx_map_data(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
+-		    unsigned int segment_count)
++int efx_siena_tx_map_data(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
++			  unsigned int segment_count)
+ {
+ 	struct efx_nic *efx = tx_queue->efx;
+ 	struct device *dma_dev = &efx->pci_dev->dev;
+@@ -359,7 +357,7 @@ int efx_tx_map_data(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
+ 
+ 		if (header_len != len) {
+ 			tx_queue->tso_long_headers++;
+-			efx_tx_map_chunk(tx_queue, dma_addr, header_len);
++			efx_siena_tx_map_chunk(tx_queue, dma_addr, header_len);
+ 			len -= header_len;
+ 			dma_addr += header_len;
+ 		}
+@@ -370,7 +368,7 @@ int efx_tx_map_data(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
+ 		struct efx_tx_buffer *buffer;
+ 		skb_frag_t *fragment;
+ 
+-		buffer = efx_tx_map_chunk(tx_queue, dma_addr, len);
++		buffer = efx_siena_tx_map_chunk(tx_queue, dma_addr, len);
+ 
+ 		/* The final descriptor for a fragment is responsible for
+ 		 * unmapping the whole fragment.
+@@ -402,7 +400,7 @@ int efx_tx_map_data(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
+ 	} while (1);
+ }
+ 
+-unsigned int efx_tx_max_skb_descs(struct efx_nic *efx)
++unsigned int efx_siena_tx_max_skb_descs(struct efx_nic *efx)
+ {
+ 	/* Header and payload descriptor for each output segment, plus
+ 	 * one for every input fragment boundary within a segment
+@@ -430,7 +428,8 @@ unsigned int efx_tx_max_skb_descs(struct efx_nic *efx)
+  *
+  * Returns 0 on success, error code otherwise.
+  */
+-int efx_tx_tso_fallback(struct efx_tx_queue *tx_queue, struct sk_buff *skb)
++int efx_siena_tx_tso_fallback(struct efx_tx_queue *tx_queue,
++			      struct sk_buff *skb)
+ {
+ 	struct sk_buff *segments, *next;
+ 
 diff --git a/drivers/net/ethernet/sfc/siena/tx_common.h b/drivers/net/ethernet/sfc/siena/tx_common.h
-index bbab7f248250..602f5a052918 100644
+index 602f5a052918..31ca52a25015 100644
 --- a/drivers/net/ethernet/sfc/siena/tx_common.h
 +++ b/drivers/net/ethernet/sfc/siena/tx_common.h
-@@ -26,8 +26,8 @@ static inline bool efx_tx_buffer_in_use(struct efx_tx_buffer *buffer)
- 	return buffer->len || (buffer->flags & EFX_TX_BUF_OPTION);
- }
+@@ -11,15 +11,10 @@
+ #ifndef EFX_TX_COMMON_H
+ #define EFX_TX_COMMON_H
  
--void efx_xmit_done_check_empty(struct efx_tx_queue *tx_queue);
--void efx_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index);
-+void efx_siena_xmit_done_check_empty(struct efx_tx_queue *tx_queue);
-+void efx_siena_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index);
+-int efx_probe_tx_queue(struct efx_tx_queue *tx_queue);
+-void efx_init_tx_queue(struct efx_tx_queue *tx_queue);
+-void efx_fini_tx_queue(struct efx_tx_queue *tx_queue);
+-void efx_remove_tx_queue(struct efx_tx_queue *tx_queue);
+-
+-void efx_dequeue_buffer(struct efx_tx_queue *tx_queue,
+-			struct efx_tx_buffer *buffer,
+-			unsigned int *pkts_compl,
+-			unsigned int *bytes_compl);
++int efx_siena_probe_tx_queue(struct efx_tx_queue *tx_queue);
++void efx_siena_init_tx_queue(struct efx_tx_queue *tx_queue);
++void efx_siena_fini_tx_queue(struct efx_tx_queue *tx_queue);
++void efx_siena_remove_tx_queue(struct efx_tx_queue *tx_queue);
  
- void efx_enqueue_unwind(struct efx_tx_queue *tx_queue,
- 			unsigned int insert_count);
+ static inline bool efx_tx_buffer_in_use(struct efx_tx_buffer *buffer)
+ {
+@@ -29,17 +24,16 @@ static inline bool efx_tx_buffer_in_use(struct efx_tx_buffer *buffer)
+ void efx_siena_xmit_done_check_empty(struct efx_tx_queue *tx_queue);
+ void efx_siena_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index);
+ 
+-void efx_enqueue_unwind(struct efx_tx_queue *tx_queue,
+-			unsigned int insert_count);
++void efx_siena_enqueue_unwind(struct efx_tx_queue *tx_queue,
++			      unsigned int insert_count);
+ 
+-struct efx_tx_buffer *efx_tx_map_chunk(struct efx_tx_queue *tx_queue,
+-				       dma_addr_t dma_addr, size_t len);
+-int efx_tx_tso_header_length(struct sk_buff *skb);
+-int efx_tx_map_data(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
+-		    unsigned int segment_count);
++struct efx_tx_buffer *efx_siena_tx_map_chunk(struct efx_tx_queue *tx_queue,
++					     dma_addr_t dma_addr, size_t len);
++int efx_siena_tx_map_data(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
++			  unsigned int segment_count);
+ 
+-unsigned int efx_tx_max_skb_descs(struct efx_nic *efx);
+-int efx_tx_tso_fallback(struct efx_tx_queue *tx_queue, struct sk_buff *skb);
++unsigned int efx_siena_tx_max_skb_descs(struct efx_nic *efx);
++int efx_siena_tx_tso_fallback(struct efx_tx_queue *tx_queue, struct sk_buff *skb);
+ 
+-extern bool efx_separate_tx_channels;
++extern bool efx_siena_separate_tx_channels;
+ #endif
 
