@@ -2,109 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC3E85197C2
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 09:03:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0178D5197C3
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 09:03:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345182AbiEDHGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 03:06:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33408 "EHLO
+        id S1345188AbiEDHGy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 03:06:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345172AbiEDHGv (ORCPT
+        with ESMTP id S232560AbiEDHGv (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 03:06:51 -0400
 Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2042.outbound.protection.outlook.com [40.107.244.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E921D22289
-        for <netdev@vger.kernel.org>; Wed,  4 May 2022 00:03:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5687421817
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 00:03:17 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=a4xn/nnzx7N62l3mJrAYJFuzwM6e+WvEFHOEWDE9Oi4SnZ5Gub5/waZrZOmbVvX48MzsMsjy/MmpO7hsbQN5HPdK5PAZCsjpVSVR3M24uryUvbzLrrvWfSFU28QW6c+mrT4D9JuAgSvAFNUxpNS/hoKaMGSvrPZRVPIsIuhblYnQWhFVmU4FyIYLyqxcXmqvn2Ju88eWLdMBPmD7PaFVBLMOOJ/T1Pzkfw8lmBSM8fwK6MTEtzF71QrIukPh+hfrR5cbpfMs7XmOg32YwvGATiioIZDH8Jep0ewumNFi95TJWwSXj3Bw3B+QOYnI7LQIKx/RdefmF7rrZ2tIYdQOfw==
+ b=UF0uhUFt1D86GAGtccRGOmrpMFRxvV9h9RD2TTsXqeoY1qcNGayopPS6Nu/pix1Dx76beghjrprn/WO8FIrqacU2zuvo8Bvv1gkZYlCA/CyGOJv8mvAVf+8KsbwNB38QwF3EIdLTranu0jcW5L2G5kVVpwCbecCnOqWSC03Cvz851iejw0ZWciETHp1iGECmF8Nd3hwvHTWApREgA/MOxVC3cwy/NyIXl+z7H6ie6ACvS0E3icrTQpnCatan+hI5RKnc3HIgTomH180K1IEwezK2sQbtKPJO9aUFSXDkPLeRLOg9gB/lZIe9HUXCiKjIzQvS5whWhnWVYgtRdEE2DQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7BlwR3kYAYk9NptSU4m7pVMUetmChk9XqYe+RfS/A9o=;
- b=obIRtKt7IjBoD0gjf5f3AmGEDZ86O8wHtvynx/XeV1frWHqp7qed5JaiI/D4xjEV17q7vAxf0JrB1RftQ9iBXlebMgvvZK2xgxvSoYMoIUZOwtpff9Ux8jorUfwQ7VZDBFQK+S7M9FZqGhAEX90axVh5Xz4JaTgO1iWBfs+9oKGsxm/Cb4f8IVEoQS+BqJyivOVJjHJCDV69xf8tu4eXoRJzb2Qidb1B84pqZo+uP5hrnvFXywbltXodhACWJkjXhxFEMpx4cUDYFHmuHX/+zwXUks9lD5fOpbeFay+NcVCUpibvReHmjsJfmosnmfRxyPuPwdqSVDNsbwvPvGcXWw==
+ bh=4rI825sAQRT27SgfpHtAoYQ6e8x2GyNHMWdtJyVMbpc=;
+ b=gH6b8qJyPv3jINhEIotnmTU8yvTwIPYnBxMknxAGmCzxXzQUViLWDY1EPv7cD9GUBTi4pHODpWzNqZtMFyWqQ2DuD5rDqHnUQzHnV8LCI3NeE1KGnmkbnEgeAq4GNODW5LmeJfQu8UOZSL88Vy4gak8exHYfN3roTPgYg4N7T+iyaKnsFWGt0i1LYpECGnYZNFXTbUjtFQfPd1KkFd6GNgL9aXdhIWQ4AtffZSSSRgollZxG+oX4Z1w1rx87sHbFjAc8m3pV+y4fyCk8g/RYPJ/gcQydoGD2Gbpv7wN4+GlcAwQp+jLPS+bCqS4vEWgahDWSv60ahMpuJCiNhFdlgw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7BlwR3kYAYk9NptSU4m7pVMUetmChk9XqYe+RfS/A9o=;
- b=NwUhlM7XwRD+TW4lpoKRsPw6dIBejKCFdn/xBGhX1MX4qujbLs6+2aSfWCYGzFJ0frI1mF5PYF5IeKDXHxdF9kd9lFtr6I8ABzsbXESNd1U39TrFLIJ2p+wYmNdnBLZ6imKrLUDwaydHZRI8n/fQEM7vagR8bgW/pg+OUEjNT++fqCCl3Zr0p6Wb1a/KO+SlZB4Ks9+1PPq1xqw/+1w0/YlUpY0ydqz4JRdzp+7TAA1IsF/niY5A6O5o2ax04tGW5byXKZWTUKYHH0Cm3eKwMty/xs74F4rR74ABBv5FttSDmV9i1Xlp4tXDdEgriLtyYv3WULezvkodT9pUGpFcYw==
+ bh=4rI825sAQRT27SgfpHtAoYQ6e8x2GyNHMWdtJyVMbpc=;
+ b=XW19UHy7yQZagN+IOUd4GrGiuVXrN6sVnY3fq1i3m1C9VI6Y/9iRxWDYVYC+Y4e7idQSIS9PkgpBkA6lShnJRqGR1wvGWPr9WogPmFo/GZnBS70Ccsq4mM+qQ177qXJbe2ixG9USf6dRh3U7ob2XI5pwH2ErEkyBtL4aej+OPRoOzx8BDAHXWqfaduTy1WkLmMiBSNej5sSxE1Q5H/3naI2OFBapsqsbF/hhFx21akQERAWOk/9s+nOEdpVE3ID2yRwYe0HkIkDSUd7u06gsnC4NQim4dIhJMaxQsbohJL39AREl5tN8WaADequKWYtLdRdjq4KpR/Nb1g5fOfjmdw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from BY5PR12MB4209.namprd12.prod.outlook.com (2603:10b6:a03:20d::22)
  by PH7PR12MB6586.namprd12.prod.outlook.com (2603:10b6:510:212::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.28; Wed, 4 May
- 2022 07:03:11 +0000
+ 2022 07:03:13 +0000
 Received: from BY5PR12MB4209.namprd12.prod.outlook.com
  ([fe80::bcda:499a:1cc1:abca]) by BY5PR12MB4209.namprd12.prod.outlook.com
  ([fe80::bcda:499a:1cc1:abca%4]) with mapi id 15.20.5206.025; Wed, 4 May 2022
- 07:03:11 +0000
+ 07:03:13 +0000
 From:   Saeed Mahameed <saeedm@nvidia.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [pull request][net 00/15] mlx5 fixes 2022-05-03
-Date:   Wed,  4 May 2022 00:02:41 -0700
-Message-Id: <20220504070256.694458-1-saeedm@nvidia.com>
+Cc:     netdev@vger.kernel.org, Ariel Levkovich <lariel@nvidia.com>,
+        Maor Dickman <maord@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net 01/15] net/mlx5e: Fix wrong source vport matching on tunnel rule
+Date:   Wed,  4 May 2022 00:02:42 -0700
+Message-Id: <20220504070256.694458-2-saeedm@nvidia.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220504070256.694458-1-saeedm@nvidia.com>
+References: <20220504070256.694458-1-saeedm@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: BY5PR17CA0015.namprd17.prod.outlook.com
- (2603:10b6:a03:1b8::28) To BY5PR12MB4209.namprd12.prod.outlook.com
+X-ClientProxiedBy: BY5PR04CA0023.namprd04.prod.outlook.com
+ (2603:10b6:a03:1d0::33) To BY5PR12MB4209.namprd12.prod.outlook.com
  (2603:10b6:a03:20d::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a395358f-9906-4206-9a76-08da2d9c2699
+X-MS-Office365-Filtering-Correlation-Id: 6e02f2f6-fee1-46a2-b63f-08da2d9c2791
 X-MS-TrafficTypeDiagnostic: PH7PR12MB6586:EE_
-X-Microsoft-Antispam-PRVS: <PH7PR12MB65866CA6F1D57BF848CAD6C7B3C39@PH7PR12MB6586.namprd12.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <PH7PR12MB65867AF803D3C93D45CFCBACB3C39@PH7PR12MB6586.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: CC32X0KUx1LrgcQF+lTUU6IeXUoARKwGuiFMzge8Vg26gMynWsqND+iK/EuNUFBYT8GV4kVFQBE+tRT7gD7idII7DlskQVwhOzuNOtjybeK6uDq0RuWzWpvdGywpXCVjhclEEdawssfShPC3M2lleQMa4DLK6jAa2rMViZXIm7kx3vb0wM/p2kF0hHRHHyUfz9uflsirEhJUKE2BTZJjDvqW4j4k2KQC4eM+TKu0q/mjG7xEw75AXJhJ0lVJZ3huk9edrenpfqq7mnruu/BVsRTeD5PdY5T+cBfLBXnsGAEuL2Z595n6cAcwYMu9OrpgSD7iCIvVgPnHZfeW9ugX751Oci4PmCEl0wGTOvAsLq87nItOLPNTuVGeV0rvfWU6mjzOKFm6+h42c66hGg/tdEsdzSKI0wsJuXucR/dIb/7PYUDYJjwz8e5ejHNY+0ZpaO9x9PSYmu9HRcQbYdpHholJ0kZADv3thtnXqvcELKpZZpdwtbouhLwTHCT8kT5/D7k0iPco21NGDiG3tj1zAyRtv2ilsyYgUcVhOov6kJScuGEiv5RAjGCmrXcrCRglROTzWOUwOo/1UABdcb6fb51XMnhckpHk1r2PKokq+jQsDU0igQ2NEflCH/Z6aCq5AvdBCxNXGJh72YiU43AZZg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4209.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(316002)(86362001)(83380400001)(36756003)(1076003)(107886003)(186003)(66556008)(66946007)(4326008)(66476007)(8676002)(2616005)(2906002)(8936002)(6512007)(6486002)(38100700002)(5660300002)(110136005)(6506007)(508600001)(6666004);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: Ok0fyAU4BhwgWuevGfIvveejyDWEUSZMREgt73Gtey7eLzNeGnS5D1d+11iG+jlqj3RIGEtflRDvkT4DGpDxwDPYOPnpKgm7HYne7PqKc5pakI2UOEJESBAfH8gW8Y04yYk7FX7Thbm9DqIPPDK7p8Y2KlvFvGQ/VPeXA1CyYhOkCkeTMan0e/WqWmaM5caMXndKqAtfjwNIESLLuaT4Yidej1RuEi/HmMOiAJRvINBko2YxgvzGARV41Ns/y2AFIMLZpxsIL0iviChk1lgoU/2hhOpU40MZQlJeYspHWE/j4eu8LcLJXnB4Ob106bk0WuxVp+B8faRsr8kSxc2/qZ0DbbMYh6C7ebW986RKXJOdw5qXKwg8jgumnqiLQPQWvG6gefTEoWa5dguiE5s8g1UPsazwI6sfEh7G6RT/E8jvG00Q5OShzf9Xy4i7Bo56pzu6eGU1dieqfjNcGPaOMahmCIVFQ38fbbSvNYIkOWoi4vvnZTB1b2MAHa+39LPWcQeviOBTqdZ2wh4stLALo27yt2hCcIeWAweXigYOBk9wWUir1WnrhnsU7MmraiBiAY88/axziaCMlY6x8WZ1a0RIgSNjHQvXI5J6jm+hSu0Ca9K/dbnc5p7ThsLOGbYPrADk1FPe80ArVWfR6pHHJg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4209.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(316002)(86362001)(83380400001)(36756003)(1076003)(107886003)(186003)(66556008)(66946007)(4326008)(66476007)(8676002)(2616005)(2906002)(8936002)(6512007)(6486002)(38100700002)(5660300002)(110136005)(54906003)(6506007)(508600001)(6666004);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?I6gh3BLJ7stcZ0XUOXnp+GM2YHl8lnrT8poIpZC+jOq2EiPN+wwaaOdRiTxb?=
- =?us-ascii?Q?zGn2BBx57qnwqCoEsTuD1dPEEAwT6ryCmoCeV/6XPNOJv62iEWSyUu+gr98f?=
- =?us-ascii?Q?X/mlGSymvolHGshsH4YgSK7++kt3UxWeiieRSIGE7epaWWoYP6qZXEtqpyhH?=
- =?us-ascii?Q?qkdK/gI3BmIaaFvoK7DFwKpJliUBglHJ+guyCHTkl4iSl0BhrtzRGYpp5s+T?=
- =?us-ascii?Q?vCrGCkODtSdG+yqPOd5BzF40BgcieUZrYMSRRyZ+JBoCXbSP9dB9MP6DMPgk?=
- =?us-ascii?Q?JGPRkwPYsjPxVmayor6P0YcwCw+WqwVKimvv8wmWDWTAEHCCnlor6Zx8Koau?=
- =?us-ascii?Q?TrvCbw1W54t94q/q+ETKXMp3wWg9X2BNJ4tFlj+OhlxBIKqk15QFlKE5f59X?=
- =?us-ascii?Q?p3gpdjKGyX1HZO1PU/QJ9r8a1y4s4ja1WhShvY0nEx0RBJ+pj1rXbCGBhKJo?=
- =?us-ascii?Q?h5dXjKHcb7Wcnq0WzHBRNMjMJHxgJ644VjR/f05znoDzRusPT5r7BGUVaN8D?=
- =?us-ascii?Q?IBiXyAmLCP9EALfwC50ANPCjwfmF4LFSx8l6NYhi48l3wSFGWtkFMSXU8oHv?=
- =?us-ascii?Q?jtbA0ztVIGFj0dGlSD66/PaQJk5vaJFe5861Ep6gieBxTbyhctBlxcDBUEYq?=
- =?us-ascii?Q?pMciNBI0Z49cwBrsQQ+7bSd7bKMoUjD/1/WgzcCJ9prO8Jsc0EBx3Z8BhMqi?=
- =?us-ascii?Q?D0C1CcBLL9hrdrSChMef0TPxeSh1QDNTs82N4EnWuKv+SQ0M0zZa9BkqbA+J?=
- =?us-ascii?Q?IdMLnSQNcLFtBzdB9UHnwcJLUE+RCkuHL/ZrdvAMrxFqR+hMvhGkHvYsdlAF?=
- =?us-ascii?Q?3SfGS+EyRcTypB+qWzvx0LqMH17R1k7sgzPOdUY692Q79bFc/eu2+QOChJGM?=
- =?us-ascii?Q?TbPlPyI6nUJWsdlozqolB3Jy0Cn2wbFpHkLYqMPAiK9LJk8lo4akrx42cSxq?=
- =?us-ascii?Q?UpocCvzCgyOcla5jyPCCvUuIUSPmS5lur37l5n8oN7N7v8DjlyfNDri3nLBJ?=
- =?us-ascii?Q?Ol2Fsz88xJqOUTFXMk8YzWlQYJiipZ1JKgfBKyD4Xq+n2XhHVK5xk5jtVTun?=
- =?us-ascii?Q?v09thWwky+CMW8rmUg+s+7KflRrh6yTJIztOBNNcEaWQZRKhkvDM9JbcEA4a?=
- =?us-ascii?Q?Oc6K1j/6R5Q9g0JzYxpgSFMPTr/mH1Ad0RwckJssT8Ro6KaN6MKHn3Hm0b1b?=
- =?us-ascii?Q?v03x214Ja7Xv1n63dF+mVgch42aJf5pAsuKXEcB5jN3Bw5mj9V1mlF3MqU8A?=
- =?us-ascii?Q?xydAOCTQaLAorvWv3vmx3rKi7QsyoOxNj7e4T2kx+SWqZZcslr2fLeAgyI7J?=
- =?us-ascii?Q?eduIU4tvws+ZjFtyVz9nZc0bTpXhx5RX91+6+Fn6ByrXFgm1jzTIVq0T5eLn?=
- =?us-ascii?Q?Tq19HiPLlSwPoBLRzrEeI+bzNuhIRIA7yIX63Mfb2lM/Q+vvk0MH7Trhdtsu?=
- =?us-ascii?Q?jNxF3lcxoJXxYrTT68rSyIfn1gtDyAC8k1adVDb2ct2kcMx1t8Y3fYIC6L8K?=
- =?us-ascii?Q?1CQ7DiFtDt8G8Oyt2YJlE9Ov//QuY7W6hauSA+KOLZi1FbVk69Xw3yFPatHx?=
- =?us-ascii?Q?UB4vXt0cQXOUBgvcaBoNlrsuSltKayU70Bq2v5PbQr014IyYGQc5e893qZuQ?=
- =?us-ascii?Q?X2URpfTV6l0e6QkPFlQRqEuPSm+q5ArU78UTnGNVgyZt/hIfuYAHuKhlCIpt?=
- =?us-ascii?Q?bcnzeQ64UlJrFKJAcGBkCTG9MFxoDWV0Wvc88vmuz5XnuGpMGqq+DaCZ7RpK?=
- =?us-ascii?Q?IXt1e90e0rI+TQjbuOjvrogPWnICSbIkF1qWYH3LM8xNEP0KzYK6?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?5+4+OVqiYn8Nm6YkpPCfH+p/saO5HR/F9XF1aifsitMbePJHaAjbTgOj9Nmn?=
+ =?us-ascii?Q?O4yYxgFwE+QpG55LjU39fL9dhsYF3ERmkOh3mKYqJfhjIvJZbOVEdaw6GhSv?=
+ =?us-ascii?Q?4bUdzW17u2X28QspzVKbZhiE130ZNzxbE69XOWHQDYo2m14CDGmqq721s+t3?=
+ =?us-ascii?Q?+1qrOFZyRt8r0ThYBwo0/FOLv1U9JK+21M4mZvH1ISJFkJtPJhJcxH4Lk/QA?=
+ =?us-ascii?Q?JBpVWAlTNTgUocTKu83qS86dxVEGRMo02zc7e9gkfJn9FaF5h/kbZgyXK6Bu?=
+ =?us-ascii?Q?oMK4x8oMxNND8Yfjd49dRPkhDRigmU6wTWmL9G94dZrRQljeSlv5RP0NPVtS?=
+ =?us-ascii?Q?V3UuPJq91EBRfO8vAiK2e2lyO3SPtMoKjTJu4fD8Duic5svTpX/P6AYpQvhT?=
+ =?us-ascii?Q?IdlE4Xe4EIkj5aeR6uMGSZagyDKLBV1jw+wOl5zVJIH9VHzitEEtSCOXPHcC?=
+ =?us-ascii?Q?XRN7q7W5vVYbLG0+rsiine4EXZy4VocsxJzD3oxoPTY4MqXdz/Aib2AhyRVF?=
+ =?us-ascii?Q?5Jz7ZYClKBguFf92MitGa+1z/Ajn1KaHGqeyruTbScbmOnVU2KPlAJDATaDE?=
+ =?us-ascii?Q?dd+wjAueigaU/ikl4DjebhmKwDKk2zWQt7O7HrpiuJDQLMSeQfo8JpFZboHy?=
+ =?us-ascii?Q?DfHqVuEITOBmEOopodQjN3MTflLMeZ51cJi8XkgulVdhkc3jmrA15vgg0Kyj?=
+ =?us-ascii?Q?DiR+u/Jc6H1q4JacIuCoEaMGJ5AlTDaqGdgImgU865ccXk6IfaoE5//qWABg?=
+ =?us-ascii?Q?VNIZgf2C5BF7hizXBk1fehVyYeBpvsXk75qnd3kgnNu7ua0z0WEzx9M/HL+I?=
+ =?us-ascii?Q?Q1E1AIu9pVegsxAEtgkw7VATHnQJZyr1Ld0f6SAlPVO4OE4S5J15SzA4TUxB?=
+ =?us-ascii?Q?DPHzc/pnCrUdMYAQp6sIVSNxEp6h/d6LeXyaER759VzRZZ7TutFOlnmMpsar?=
+ =?us-ascii?Q?qzv2axThAmQcLSWqIIyAPSchwzOCeDFcL+exyjzesQn3MPnijpAqBBABkQjF?=
+ =?us-ascii?Q?fUWKZTjCcdfT8L2OJYkwDhfaPRRIbMhDLK1KhwnvmQ1nsGLUwMUvkfqSZ+xZ?=
+ =?us-ascii?Q?wmx0N+Moxx3o5cL4ahedao89VicQaw9xjUp6DTHP3D//0SlgDcCOfkr7n5kX?=
+ =?us-ascii?Q?14ExJTBs/8POnoRiyKruzBVwGF1ibuyeCFSse37ADK/MUIWTNFckpl7d4ceE?=
+ =?us-ascii?Q?C684ixo9i65RKbU+so2sYEhqgDu5BEUJAIHT5JrBYS1jk9EZlDcQhk+xX1jb?=
+ =?us-ascii?Q?wYvIf6ortf8nSliB1mSLJ2P6okh6KnFugwy3sRyE9ZG4dhPjhD7tv5atEwbn?=
+ =?us-ascii?Q?WI2in9ZH5Rzs5ZnvtV3xt9dwWL18oYlfviB1QLApQCL3tB6Ho6alIHHAXmeu?=
+ =?us-ascii?Q?jEvugTv/Pcc+aUNehNq4CdPWTS1+E/LBaF6aru2VJiWYS1snXzChh0UaOkSD?=
+ =?us-ascii?Q?+d99HxY+eMpFLNFP9JC7vhQqaH7WKFEjV9Vpm9TfBXvZXUbtirXiabGGLVLu?=
+ =?us-ascii?Q?5aZZ97ivkoBs4gNhtITKh/ntgegq4//UqpKLWaKLlkby6FII2gLaAwS7Ywxz?=
+ =?us-ascii?Q?d1yNX14OzP63eEqpmSgjH/0dFKZzPxz7YwkcLt2ofPm3xiwwD4TklKfpqzhl?=
+ =?us-ascii?Q?0GJalkRUcgq94LUPX986sUEVwE9olHBbhoCFG75eIYwh6sS083arBmC75HpB?=
+ =?us-ascii?Q?+HDhWD097RBBHO9/fSAjr14aFjjz7opaAG6pxKr/oGUAWWAd0JmtC2TKmasX?=
+ =?us-ascii?Q?ofUOBTqhK6VaWW6GHlJoXOtGM+XTgz7a3bgrXNBhnU4t3bDjkuwR?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a395358f-9906-4206-9a76-08da2d9c2699
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6e02f2f6-fee1-46a2-b63f-08da2d9c2791
 X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4209.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2022 07:03:11.3188
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2022 07:03:12.9605
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QO81S7PYhj9kmigmcx9aYiBLfDr2n6yRi8kishuz/t+Vlr5VYyhYi1BPdLrNQwDGxPr5wGjTJ7kxTfBLxNgBlQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: XKme3mC8hHtnTQ9Uu+WIqINgTi1+WJcMz6Ra35Vi79vTccWZrxG32Vglkdi8hutf3wr1lscB7uyXL/RrMgX0yA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6586
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -116,73 +120,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series provides bug fixes to mlx5 driver.
-Please pull and let me know if there is any problem.
+From: Ariel Levkovich <lariel@nvidia.com>
 
-Thanks,
-Saeed.
+When OVS internal port is the vtep device, the first decap
+rule is matching on the internal port's vport metadata value
+and then changes the metadata to be the uplink's value.
 
+Therefore, following rules on the tunnel, in chain > 0, should
+avoid matching on internal port metadata and use the uplink
+vport metadata instead.
 
-The following changes since commit 0a806ecc4023fcf393fcc1093f4a532813ca4124:
+Select the uplink's metadata value for the source vport match
+in case the rule is in chain greater than zero, even if the tunnel
+route device is internal port.
 
-  Merge branch 'bnxt_en-bug-fixes' (2022-05-03 17:41:35 -0700)
+Fixes: 166f431ec6be ("net/mlx5e: Add indirect tc offload of ovs internal port")
+Signed-off-by: Ariel Levkovich <lariel@nvidia.com>
+Reviewed-by: Maor Dickman <maord@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-are available in the Git repository at:
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index 3f63df127091..3b151332e2f8 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -139,7 +139,7 @@ mlx5_eswitch_set_rule_source_port(struct mlx5_eswitch *esw,
+ 		if (mlx5_esw_indir_table_decap_vport(attr))
+ 			vport = mlx5_esw_indir_table_decap_vport(attr);
+ 
+-		if (esw_attr->int_port)
++		if (attr && !attr->chain && esw_attr->int_port)
+ 			metadata =
+ 				mlx5e_tc_int_port_get_metadata_for_match(esw_attr->int_port);
+ 		else
+-- 
+2.35.1
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2022-05-03
-
-for you to fetch changes up to a042d7f5bb68c47f6e0e546ca367d14e1e4b25ba:
-
-  net/mlx5: Fix matching on inner TTC (2022-05-04 00:00:07 -0700)
-
-----------------------------------------------------------------
-mlx5-fixes-2022-05-03
-
-----------------------------------------------------------------
-Ariel Levkovich (4):
-      net/mlx5e: Fix wrong source vport matching on tunnel rule
-      net/mlx5e: TC, Fix ct_clear overwriting ct action metadata
-      net/mlx5e: TC, fix decap fallback to uplink when int port not supported
-      net/mlx5e: Avoid checking offload capability in post_parse action
-
-Aya Levin (1):
-      net/mlx5: Fix slab-out-of-bounds while reading resource dump menu
-
-Mark Bloch (1):
-      net/mlx5: Fix matching on inner TTC
-
-Mark Zhang (1):
-      net/mlx5e: Fix the calling of update_buffer_lossy() API
-
-Moshe Shemesh (2):
-      net/mlx5: Fix deadlock in sync reset flow
-      net/mlx5: Avoid double clear or set of sync reset requested
-
-Moshe Tal (1):
-      net/mlx5e: Fix trust state reset in reload
-
-Paul Blakey (1):
-      net/mlx5e: CT: Fix queued up restore put() executing after relevant ft release
-
-Vlad Buslov (4):
-      net/mlx5e: Don't match double-vlan packets if cvlan is not set
-      net/mlx5e: Lag, Fix use-after-free in fib event handler
-      net/mlx5e: Lag, Fix fib_info pointer assignment
-      net/mlx5e: Lag, Don't skip fib events on current dst
-
- .../ethernet/mellanox/mlx5/core/diag/rsc_dump.c    | 31 ++++++++---
- .../ethernet/mellanox/mlx5/core/en/port_buffer.c   |  4 +-
- .../ethernet/mellanox/mlx5/core/en/tc/act/act.c    |  3 +-
- .../net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c | 34 +++++++++++-
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c | 24 ++++-----
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h | 11 ++++
- .../net/ethernet/mellanox/mlx5/core/en/tc_tun.c    |  3 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_dcbnl.c | 10 ++++
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    | 11 ++++
- .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |  2 +-
- drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c | 60 +++++++++++++---------
- drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c   | 38 +++++++++-----
- drivers/net/ethernet/mellanox/mlx5/core/lag/mp.h   |  7 ++-
- .../net/ethernet/mellanox/mlx5/core/lag/port_sel.c |  2 +-
- .../net/ethernet/mellanox/mlx5/core/lib/fs_ttc.c   |  2 +
- 15 files changed, 173 insertions(+), 69 deletions(-)
