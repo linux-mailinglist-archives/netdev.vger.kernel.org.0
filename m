@@ -2,61 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEB4951A387
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 17:16:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61AE051A398
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 17:18:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352089AbiEDPUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 11:20:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41940 "EHLO
+        id S1352121AbiEDPV2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 11:21:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352129AbiEDPT4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 11:19:56 -0400
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 971CC2228E
-        for <netdev@vger.kernel.org>; Wed,  4 May 2022 08:16:20 -0700 (PDT)
-Received: from fsav117.sakura.ne.jp (fsav117.sakura.ne.jp [27.133.134.244])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 244FFmYv098182;
-        Thu, 5 May 2022 00:15:48 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav117.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav117.sakura.ne.jp);
- Thu, 05 May 2022 00:15:48 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav117.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 244FFmOU098179
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Thu, 5 May 2022 00:15:48 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <5f3feecc-65ad-af5f-0ecd-94b2605ab67e@I-love.SAKURA.ne.jp>
-Date:   Thu, 5 May 2022 00:15:46 +0900
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2] net: rds: acquire refcount on TCP sockets
-Content-Language: en-US
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-To:     Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>
-Cc:     patchwork-bot+netdevbpf@kernel.org,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        David Miller <davem@davemloft.net>,
+        with ESMTP id S1352122AbiEDPVW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 11:21:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 270F643AE4;
+        Wed,  4 May 2022 08:17:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD063B8269F;
+        Wed,  4 May 2022 15:17:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 373AAC385A5;
+        Wed,  4 May 2022 15:17:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651677463;
+        bh=/TElw+eJLqLZJfiH+wgcHcLpwRKNjBsKkGVEQia8krA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=r2EKwrBPc+6tZUWBhSzhnQBRbc05hZb7TQkoWLFCHnEdKXJw3pmkGfZGmnrehNIzt
+         w4JzS33+2EMoGBnnb9xtS1/Spopuhywsv347T3+6LyYHbgpE6CtvE0AFq5B7fBqPyX
+         5MqWaHUdzYaViNaxBlBJK+ptIdjAAYkruP0EWQGDllsuxMmiP7mRJFbecq0YUstgiD
+         RpxbR+x5+dC5Tuv+76tsVvvXax+z+1tbQ0BeM8qtcsvnJHNnSQ0TrXHhc3n1lnDWSu
+         S6G8rlCBvr55hWxhdkIt/elBXUAB3x5zutaGRQmaLr3G+4d2Cx6Eo/yp43Szdk/NKp
+         Cfc4hXpr4p5Ow==
+Date:   Wed, 4 May 2022 16:17:17 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     "Gustavo A . R . Silva" <gustavoars@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Gross <agross@kernel.org>,
+        Andy Lavr <andy.lavr@gmail.com>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Bradley Grove <linuxdrivers@attotech.com>,
+        brcm80211-dev-list.pdl@broadcom.com,
+        Christian Brauner <brauner@kernel.org>,
+        Christian =?iso-8859-1?Q?G=F6ttsche?= <cgzones@googlemail.com>,
+        Christian Lamparter <chunkeey@googlemail.com>,
+        Chris Zankel <chris@zankel.net>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Daniel Axtens <dja@axtens.net>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Dan Williams <dan.j.williams@intel.com>,
+        David Gow <davidgow@google.com>,
+        David Howells <dhowells@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        devicetree@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
+        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
+        Eli Cohen <elic@nvidia.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Paris <eparis@parisplace.org>,
+        Eugeniu Rosca <erosca@de.adit-jv.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Gregory Greenman <gregory.greenman@intel.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Hulk Robot <hulkci@huawei.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        syzbot <syzbot+694120e1002c117747ed@syzkaller.appspotmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        linux-rdma <linux-rdma@vger.kernel.org>
-References: <a5fb1fc4-2284-3359-f6a0-e4e390239d7b@I-love.SAKURA.ne.jp>
- <165157801106.17866.6764782659491020080.git-patchwork-notify@kernel.org>
- <CANn89iLHihonbBUQWkd0mjJPUuYBLMVoLCsRswtXmGjU3NKL5w@mail.gmail.com>
- <CANn89iJ=LF0KhRXDiFcky7mqpVaiHdbc6RDacAdzseS=iwjr4Q@mail.gmail.com>
- <f6f9f21d-7cdd-682f-f958-5951aa180ec7@I-love.SAKURA.ne.jp>
- <CANn89iJOt9oC_sSmVhRx8fyyvJ2hWzYKcTfH1Rvbzpt5aP0qNA@mail.gmail.com>
- <bf5ce176-35e6-0a75-1ada-6bed071a6a75@I-love.SAKURA.ne.jp>
-In-Reply-To: <bf5ce176-35e6-0a75-1ada-6bed071a6a75@I-love.SAKURA.ne.jp>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        James Morris <jmorris@namei.org>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        John Keeping <john@metanate.com>,
+        Juergen Gross <jgross@suse.com>, Kalle Valo <kvalo@kernel.org>,
+        Keith Packard <keithp@keithp.com>, keyrings@vger.kernel.org,
+        kunit-dev@googlegroups.com,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        linux1394-devel@lists.sourceforge.net,
+        linux-afs@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-hardening@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-security-module@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-xtensa@linux-xtensa.org, llvm@lists.linux.dev,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Louis Peens <louis.peens@corigine.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Nathan Chancellor <nathan@kernel.org>, netdev@vger.kernel.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Rich Felker <dalias@aerifal.cx>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, selinux@vger.kernel.org,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        SHA-cyfmac-dev-list@infineon.com,
+        Simon Horman <simon.horman@corigine.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Stefan Richter <stefanr@s5r6.in-berlin.de>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Tom Rix <trix@redhat.com>,
+        Udipto Goswami <quic_ugoswami@quicinc.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        wcn36xx@lists.infradead.org, Wei Liu <wei.liu@kernel.org>,
+        xen-devel@lists.xenproject.org,
+        Xiu Jianfeng <xiujianfeng@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>
+Subject: Re: [PATCH 20/32] ASoC: sigmadsp: Use mem_to_flex_dup() with struct
+ sigmadsp_data
+Message-ID: <YnKY/V8spurPzaMA@sirena.org.uk>
+Mail-Followup-To: Kees Cook <keescook@chromium.org>,
+        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        alsa-devel@alsa-project.org, Alexei Starovoitov <ast@kernel.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Gross <agross@kernel.org>, Andy Lavr <andy.lavr@gmail.com>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Bradley Grove <linuxdrivers@attotech.com>,
+        brcm80211-dev-list.pdl@broadcom.com,
+        Christian Brauner <brauner@kernel.org>,
+        Christian =?iso-8859-1?Q?G=F6ttsche?= <cgzones@googlemail.com>,
+        Christian Lamparter <chunkeey@googlemail.com>,
+        Chris Zankel <chris@zankel.net>,
+        Cong Wang <cong.wang@bytedance.com>, Daniel Axtens <dja@axtens.net>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Dan Williams <dan.j.williams@intel.com>,
+        David Gow <davidgow@google.com>,
+        David Howells <dhowells@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        devicetree@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
+        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
+        Eli Cohen <elic@nvidia.com>, Eric Dumazet <edumazet@google.com>,
+        Eric Paris <eparis@parisplace.org>,
+        Eugeniu Rosca <erosca@de.adit-jv.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Gregory Greenman <gregory.greenman@intel.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Hulk Robot <hulkci@huawei.com>, Jakub Kicinski <kuba@kernel.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        James Morris <jmorris@namei.org>,
+        Jarkko Sakkinen <jarkko@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Jens Axboe <axboe@kernel.dk>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        John Keeping <john@metanate.com>, Juergen Gross <jgross@suse.com>,
+        Kalle Valo <kvalo@kernel.org>, Keith Packard <keithp@keithp.com>,
+        keyrings@vger.kernel.org, kunit-dev@googlegroups.com,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Lee Jones <lee.jones@linaro.org>, Leon Romanovsky <leon@kernel.org>,
+        linux1394-devel@lists.sourceforge.net,
+        linux-afs@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-hardening@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-security-module@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-xtensa@linux-xtensa.org, llvm@lists.linux.dev,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Louis Peens <louis.peens@corigine.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Max Filippov <jcmvbkbc@gmail.com>, Mimi Zohar <zohar@linux.ibm.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Nathan Chancellor <nathan@kernel.org>, netdev@vger.kernel.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Paul Moore <paul@paul-moore.com>,
+        Rich Felker <dalias@aerifal.cx>, Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, selinux@vger.kernel.org,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        SHA-cyfmac-dev-list@infineon.com,
+        Simon Horman <simon.horman@corigine.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Stefan Richter <stefanr@s5r6.in-berlin.de>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Tadeusz Struk <tadeusz.struk@linaro.org>, Tom Rix <trix@redhat.com>,
+        Udipto Goswami <quic_ugoswami@quicinc.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        wcn36xx@lists.infradead.org, Wei Liu <wei.liu@kernel.org>,
+        xen-devel@lists.xenproject.org,
+        Xiu Jianfeng <xiujianfeng@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>
+References: <20220504014440.3697851-1-keescook@chromium.org>
+ <20220504014440.3697851-21-keescook@chromium.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="WsBvT7ldclzXuz86"
+Content-Disposition: inline
+In-Reply-To: <20220504014440.3697851-21-keescook@chromium.org>
+X-Cookie: Mother is the invention of necessity.
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -64,75 +254,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/05/04 13:58, Tetsuo Handa wrote:
-> On 2022/05/04 12:09, Eric Dumazet wrote:
->> This exit() handler _has_ to remove all known listeners, and
->> definitely cancel work queues (synchronous operation)
->> before the actual "struct net" free can happen later.
-> 
-> But in your report, rds_tcp_tune() is called from rds_tcp_conn_path_connect() from
-> rds_connect_worker() via "struct rds_connection"->cp_conn_w work. I can see that
-> rds_tcp_kill_sock() calls rds_tcp_listen_stop(lsock, &rtn->rds_tcp_accept_w), and
-> rds_tcp_listen_stop() calls flush_workqueue(rds_wq) and flush_work(&rtn->rds_tcp_accept_w).
-> 
-> But I can't see how rds_tcp_exit_net() synchronously cancels all works associated
-> with "struct rds_conn_path".
-> 
-> struct rds_conn_path {
->         struct delayed_work     cp_send_w;
->         struct delayed_work     cp_recv_w;
->         struct delayed_work     cp_conn_w;
->         struct work_struct      cp_down_w;
-> }
-> 
-> These works are queued to rds_wq, but flush_workqueue() waits for completion only
-> if already queued. What if timer for queue_delayed_work() has not expired, or was
-> about to call queue_delayed_work() ? Is flush_workqueue(rds_wq) sufficient?
 
+--WsBvT7ldclzXuz86
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
- rds_tcp_tune+0x5a0/0x5f0 net/rds/tcp.c:503
- rds_tcp_conn_path_connect+0x489/0x880 net/rds/tcp_connect.c:127
- rds_connect_worker+0x1a5/0x2c0 net/rds/threads.c:176
- process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+On Tue, May 03, 2022 at 06:44:29PM -0700, Kees Cook wrote:
 
-rds_tcp_conn_path_connect is referenced by
-"struct rds_transport rds_tcp_transport"->conn_path_connect.
-It is invoked by
+> As part of the work to perform bounds checking on all memcpy() uses,
+> replace the open-coded a deserialization of bytes out of memory into a
+> trailing flexible array by using a flex_array.h helper to perform the
+> allocation, bounds checking, and copying.
 
-  ret = conn->c_trans->conn_path_connect(cp)
+Acked-by: Mark Brown <broonie@kernel.org>
 
-in rds_connect_worker().
+--WsBvT7ldclzXuz86
+Content-Type: application/pgp-signature; name="signature.asc"
 
-rds_connect_worker is referenced by "struct rds_conn_path"->cp_conn_w
-via INIT_DELAYED_WORK().
+-----BEGIN PGP SIGNATURE-----
 
-queue_delayed_work(rds_wq, &cp->cp_conn_w, *) is called by
-rds_queue_reconnect() or rds_conn_path_connect_if_down().
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJymP0ACgkQJNaLcl1U
+h9BOTAf/ZD8yoDRekvioENLYy8dN3NXa5AWr7w113Lw6amX9IH8PkZBk9MuYaDgS
+lyEL/dF+NQH1EG1pD8OqTodb2FRk6p2BmOqGHZamS0MgHy+d4s7a66k1YkGIKh1O
+8m5wnvOKz3Fk2HYUDyLrx+sOQL3a9Pp0Qh1JdRiAsXXyc6GyJwrC5vR/TbFMyfFd
+yDpPiY/nMzIqHfWGSIhIy2K+Fl9WzSdcTDasOELxcxGPYhdJbxgT/WoRcOTc/5l1
+gNGLh0quw//dri/kQ0Y9YwSNbjiZjy/ZPVbQ2WxIGlmhcmbavI9j6S4iDwgZzTpY
+B0dknkr+kOxX7zlsqhHYQ6guFBtrCw==
+=XAoD
+-----END PGP SIGNATURE-----
 
-If rds_conn_path_connect_if_down() were called from
-rds_tcp_accept_one_path() from rds_tcp_accept_one(),
-rds_tcp_tune() from rds_tcp_accept_one() was already called
-before rds_tcp_tune() from rds_tcp_conn_path_connect() is called.
-Since the addition on 0 was not reported at rds_tcp_tune() from
-rds_tcp_accept_one(), what Eric is reporting cannot be from
-rds_tcp_accept_one() from rds_tcp_accept_worker().
-
-Despite rds_tcp_kill_sock() sets rtn->rds_tcp_listen_sock = NULL and
-waits for rds_tcp_accept_one() from rds_tcp_accept_worker() to complete
-using flush_workqueue(rds_wq), what Eric is reporting is different from
-what syzbot+694120e1002c117747ed was reporting.
-
-> 
-> Anyway, if rds_tcp_kill_sock() can somehow guarantee that all works are completed
-> or cancelled, the fix would look like something below?
-
-I think it is OK to apply below diff in order to avoid addition on 0 problem, but
-it is not proven that kmem_cache_free() is not yet called. What should we do?
-
-> 
->  net/rds/tcp.c         | 11 ++++++++---
->  net/rds/tcp.h         |  2 +-
->  net/rds/tcp_connect.c |  5 ++++-
->  net/rds/tcp_listen.c  |  5 ++++-
->  4 files changed, 17 insertions(+), 6 deletions(-)
-> 
+--WsBvT7ldclzXuz86--
