@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B6BA351A3CC
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 17:21:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2344B51A3D1
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 17:21:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352465AbiEDPYw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 11:24:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48954 "EHLO
+        id S1352414AbiEDPZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 11:25:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352431AbiEDPYr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 11:24:47 -0400
+        with ESMTP id S1352448AbiEDPYs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 11:24:48 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9157845507;
-        Wed,  4 May 2022 08:20:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D17445513;
+        Wed,  4 May 2022 08:21:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1651677657; x=1683213657;
+  t=1651677664; x=1683213664;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=mdNa5vpYzeuV+PQwgwwzti4VZsAM9kgYrf9yZL/L80U=;
-  b=Kc4x6YfM70wzHUkmHIRddOcXY9bdlKAwZYs9IvopfcX8caJIC5Xz3P+B
-   Gr3Jcvk113kyeTzNkTl6VDmb6R+I9jl/ENSmUdIElDMC6Y5nKyfV6SN7y
-   m6zMiPh3yuND7zxyl/m00J5O3chOjcLRy7t8LRJwOTqdnHYBRvvnKJ0oA
-   OTN8wqz+533haUx3qFoAFtdCgpoVIVNCUr9VjhEdgaPwKdkuHtfLrUOm9
-   /Jp6+4CLrJ6HwJwQ+pxTUrPnIRGu7bye4JIiHHjeD/w8Wy5NbbNL3q5mr
-   NYHs9lRiq0fFdX1lXysYS3s5deDepI3qzKfIqm0snonEO4Z5si5gUpsVO
-   Q==;
+  bh=UIm1NdDvCbc7IiWWXgtYHjd92d9j0g5Uaol19nZC4bU=;
+  b=xTKtRFyMRU35JnWs+3RLVDegmqtjFZJFIrsyrKM/U8vK5QKGc+4ktoEG
+   BCDt4pG9oHVKEjmSmh/k8VuvPqxDxoOpbANamkyk+awvvOnEnmwm7X24l
+   AgzvYcOssPfxvdMMKm7QDfJ17GKsi1shU2rsLEBGTuft9IoJwnDQ0YQQM
+   JTAs1RDYDcOkg9f/mDtOnxYjxq0Dg3L6tr4VjGdq+5IdyVSOYtVh6pKOs
+   CzrjfxAZTqY5ZLJn0EljcF98+kuSyj901npgoRYz4Nf/o9vHptFmnz5Wk
+   cCTMCuUyU3NjwHbGF6ORiHpANm9LN79jy5MiA5PsOxd0ikJqDLsJASF2Y
+   A==;
 X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
-   d="scan'208";a="157795276"
+   d="scan'208";a="154805279"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 May 2022 08:20:56 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 May 2022 08:21:03 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 4 May 2022 08:20:45 -0700
+ 15.1.2375.17; Wed, 4 May 2022 08:20:59 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 4 May 2022 08:20:33 -0700
+ 15.1.2375.17 via Frontend Transport; Wed, 4 May 2022 08:20:47 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>
@@ -60,9 +60,9 @@ CC:     KP Singh <kpsingh@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Rob Herring <robh+dt@kernel.org>
-Subject: [Patch net-next v13 09/13] net: dsa: microchip: add support for phylink management
-Date:   Wed, 4 May 2022 20:47:51 +0530
-Message-ID: <20220504151755.11737-10-arun.ramadoss@microchip.com>
+Subject: [Patch net-next v13 10/13] net: dsa: microchip: add support for ethtool port counters
+Date:   Wed, 4 May 2022 20:47:52 +0530
+Message-ID: <20220504151755.11737-11-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220504151755.11737-1-arun.ramadoss@microchip.com>
 References: <20220504151755.11737-1-arun.ramadoss@microchip.com>
@@ -81,292 +81,374 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
 
-phylink_get_caps() is implemented and reused KSZ common API for
-phylink_mac_link_down() operation
+Added support for get_eth_**_stats() (phy/mac/ctrl) and
+get_stats64()
 
-lan937x_phylink_mac_config configures the interface using
-lan937x_mac_config and lan937x_phylink_mac_link_up configures
-the speed/duplex/flow control.
-
-Currently SGMII & in-band neg are not supported & it will be
-added later.
+Reused the KSZ common APIs for get_ethtool_stats() & get_sset_count()
+along with relevant lan937x hooks for KSZ common layer and added
+support for get_strings()
 
 Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- drivers/net/dsa/microchip/lan937x_dev.c  | 157 +++++++++++++++++++++++
- drivers/net/dsa/microchip/lan937x_dev.h  |   5 +
- drivers/net/dsa/microchip/lan937x_main.c |  66 ++++++++++
- 3 files changed, 228 insertions(+)
+ drivers/net/dsa/microchip/lan937x_dev.c  | 107 +++++++++++++++++++++-
+ drivers/net/dsa/microchip/lan937x_dev.h  |  47 ++++++++++
+ drivers/net/dsa/microchip/lan937x_main.c | 109 +++++++++++++++++++++++
+ 3 files changed, 262 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/dsa/microchip/lan937x_dev.c b/drivers/net/dsa/microchip/lan937x_dev.c
-index 353800edfa54..4612642e8f5e 100644
+index 4612642e8f5e..b154bc52f64a 100644
 --- a/drivers/net/dsa/microchip/lan937x_dev.c
 +++ b/drivers/net/dsa/microchip/lan937x_dev.c
-@@ -313,6 +313,163 @@ int lan937x_internal_phy_read(struct ksz_device *dev, int addr, int reg,
- 	return ksz_read16(dev, REG_VPHY_IND_DATA__2, val);
+@@ -16,6 +16,45 @@
+ #include "ksz_common.h"
+ #include "lan937x_dev.h"
+ 
++const struct mib_names lan937x_mib_names[] = {
++	{ 0x00, "rx_hi" },
++	{ 0x01, "rx_undersize" },
++	{ 0x02, "rx_fragments" },
++	{ 0x03, "rx_oversize" },
++	{ 0x04, "rx_jabbers" },
++	{ 0x05, "rx_symbol_err" },
++	{ 0x06, "rx_crc_err" },
++	{ 0x07, "rx_align_err" },
++	{ 0x08, "rx_mac_ctrl" },
++	{ 0x09, "rx_pause" },
++	{ 0x0A, "rx_bcast" },
++	{ 0x0B, "rx_mcast" },
++	{ 0x0C, "rx_ucast" },
++	{ 0x0D, "rx_64_or_less" },
++	{ 0x0E, "rx_65_127" },
++	{ 0x0F, "rx_128_255" },
++	{ 0x10, "rx_256_511" },
++	{ 0x11, "rx_512_1023" },
++	{ 0x12, "rx_1024_1522" },
++	{ 0x13, "rx_1523_2000" },
++	{ 0x14, "rx_2001" },
++	{ 0x15, "tx_hi" },
++	{ 0x16, "tx_late_col" },
++	{ 0x17, "tx_pause" },
++	{ 0x18, "tx_bcast" },
++	{ 0x19, "tx_mcast" },
++	{ 0x1A, "tx_ucast" },
++	{ 0x1B, "tx_deferred" },
++	{ 0x1C, "tx_total_col" },
++	{ 0x1D, "tx_exc_col" },
++	{ 0x1E, "tx_single_col" },
++	{ 0x1F, "tx_mult_col" },
++	{ 0x80, "rx_total" },
++	{ 0x81, "tx_total" },
++	{ 0x82, "rx_discards" },
++	{ 0x83, "tx_discards" },
++};
++
+ int lan937x_cfg(struct ksz_device *dev, u32 addr, u8 bits, bool set)
+ {
+ 	return regmap_update_bits(dev->regmap[0], addr, bits, set ? bits : 0);
+@@ -93,6 +132,53 @@ static void lan937x_flush_dyn_mac_table(struct ksz_device *dev, int port)
+ 	}
  }
  
-+static void lan937x_config_gbit(struct ksz_device *dev, bool gbit, u8 *data)
++static void lan937x_r_mib_cnt(struct ksz_device *dev, int port, u16 addr,
++			      u64 *cnt)
 +{
-+	if (gbit)
-+		*data &= ~PORT_MII_NOT_1GBIT;
-+	else
-+		*data |= PORT_MII_NOT_1GBIT;
-+}
++	unsigned int val;
++	u32 data;
++	int ret;
 +
-+static void lan937x_update_rgmii_tx_rx_delay(struct ksz_device *dev, int port,
-+					     bool is_tx)
-+{
-+	u16 data16;
-+	int reg;
-+	u8 val;
++	/* Enable MIB Counter read */
++	data = MIB_COUNTER_READ;
++	data |= (addr << MIB_COUNTER_INDEX_S);
++	lan937x_pwrite32(dev, port, REG_PORT_MIB_CTRL_STAT, data);
 +
-+	/* Apply different codes based on the ports as per characterization
-+	 * results
-+	 */
-+	if (is_tx) {
-+		reg = REG_PORT_XMII_CTRL_5;
-+		val = (port == LAN937X_RGMII_1_PORT) ? RGMII_1_TX_DELAY_2NS :
-+						       RGMII_2_TX_DELAY_2NS;
-+	} else {
-+		reg = REG_PORT_XMII_CTRL_4;
-+		val = (port == LAN937X_RGMII_1_PORT) ? RGMII_1_RX_DELAY_2NS :
-+						       RGMII_2_RX_DELAY_2NS;
-+	}
-+
-+	lan937x_pread16(dev, port, reg, &data16);
-+
-+	/* clear tune Adjust */
-+	data16 &= ~PORT_TUNE_ADJ;
-+	data16 |= (val << 7);
-+	lan937x_pwrite16(dev, port, reg, data16);
-+
-+	data16 |= PORT_DLL_RESET;
-+	/* write DLL reset to take effect */
-+	lan937x_pwrite16(dev, port, reg, data16);
-+}
-+
-+static void lan937x_apply_rgmii_delay(struct ksz_device *dev, int port, u8 val)
-+{
-+	struct ksz_port *p = &dev->ports[port];
-+
-+	/* Clear Ingress & Egress internal delay enabled bits */
-+	val &= ~(PORT_RGMII_ID_EG_ENABLE | PORT_RGMII_ID_IG_ENABLE);
-+
-+	/* if the delay is 0, do not enable DLL */
-+	if (p->rgmii_tx_val) {
-+		lan937x_update_rgmii_tx_rx_delay(dev, port, true);
-+		dev_info(dev->dev, "Applied rgmii tx delay for the port %d\n",
-+			 port);
-+		val |= PORT_RGMII_ID_EG_ENABLE;
-+	}
-+
-+	/* if the delay is 0, do not enable DLL */
-+	if (p->rgmii_rx_val) {
-+		lan937x_update_rgmii_tx_rx_delay(dev, port, false);
-+		dev_info(dev->dev, "Applied rgmii rx delay for the port %d\n",
-+			 port);
-+		val |= PORT_RGMII_ID_IG_ENABLE;
-+	}
-+
-+	/* Enable RGMII internal delays */
-+	lan937x_pwrite8(dev, port, REG_PORT_XMII_CTRL_1, val);
-+}
-+
-+void lan937x_mac_config(struct ksz_device *dev, int port,
-+			phy_interface_t interface)
-+{
-+	u8 data8;
-+
-+	lan937x_pread8(dev, port, REG_PORT_XMII_CTRL_1, &data8);
-+
-+	/* clear MII selection & set it based on interface later */
-+	data8 &= ~PORT_MII_SEL_M;
-+
-+	/* configure MAC based on interface */
-+	switch (interface) {
-+	case PHY_INTERFACE_MODE_MII:
-+		lan937x_config_gbit(dev, false, &data8);
-+		data8 |= PORT_MII_SEL;
-+		break;
-+	case PHY_INTERFACE_MODE_RMII:
-+		lan937x_config_gbit(dev, false, &data8);
-+		data8 |= PORT_RMII_SEL;
-+		break;
-+	case PHY_INTERFACE_MODE_RGMII:
-+	case PHY_INTERFACE_MODE_RGMII_ID:
-+	case PHY_INTERFACE_MODE_RGMII_TXID:
-+	case PHY_INTERFACE_MODE_RGMII_RXID:
-+		lan937x_config_gbit(dev, true, &data8);
-+		data8 |= PORT_RGMII_SEL;
-+
-+		/* Apply rgmii internal delay for the mac */
-+		lan937x_apply_rgmii_delay(dev, port, data8);
-+
-+		/* rgmii delay configuration is already applied above,
-+		 * hence return from here as no changes required
-+		 */
-+		return;
-+	default:
-+		dev_err(dev->dev, "Unsupported interface '%s' for port %d\n",
-+			phy_modes(interface), port);
++	ret = regmap_read_poll_timeout(dev->regmap[2],
++				       PORT_CTRL_ADDR(port,
++						      REG_PORT_MIB_CTRL_STAT),
++				       val, !(val & MIB_COUNTER_READ),
++				       10, 1000);
++	if (ret) {
++		dev_err(dev->dev, "Failed to get MIB\n");
 +		return;
 +	}
 +
-+	/* Write the updated value */
-+	lan937x_pwrite8(dev, port, REG_PORT_XMII_CTRL_1, data8);
++	/* count resets upon read */
++	lan937x_pread32(dev, port, REG_PORT_MIB_DATA, &data);
++	*cnt += data;
 +}
 +
-+void lan937x_config_interface(struct ksz_device *dev, int port,
-+			      int speed, int duplex,
-+			      bool tx_pause, bool rx_pause)
++void lan937x_r_mib_pkt(struct ksz_device *dev, int port, u16 addr,
++		       u64 *dropped, u64 *cnt)
 +{
-+	u8 xmii_ctrl0, xmii_ctrl1;
-+
-+	lan937x_pread8(dev, port, REG_PORT_XMII_CTRL_0, &xmii_ctrl0);
-+	lan937x_pread8(dev, port, REG_PORT_XMII_CTRL_1, &xmii_ctrl1);
-+
-+	switch (speed) {
-+	case SPEED_1000:
-+		lan937x_config_gbit(dev, true, &xmii_ctrl1);
-+		break;
-+	case SPEED_100:
-+		lan937x_config_gbit(dev, false, &xmii_ctrl1);
-+		xmii_ctrl0 |= PORT_MAC_SPEED_100;
-+		break;
-+	case SPEED_10:
-+		lan937x_config_gbit(dev, false, &xmii_ctrl1);
-+		xmii_ctrl0 &= ~PORT_MAC_SPEED_100;
-+		break;
-+	default:
-+		dev_err(dev->dev, "Unsupported speed on port %d: %d\n",
-+			port, speed);
-+		return;
-+	}
-+
-+	if (duplex)
-+		xmii_ctrl0 |= PORT_FULL_DUPLEX;
-+	else
-+		xmii_ctrl0 &= ~PORT_FULL_DUPLEX;
-+
-+	if (tx_pause)
-+		xmii_ctrl0 |= PORT_TX_FLOW_CTRL;
-+	else
-+		xmii_ctrl1 &= ~PORT_TX_FLOW_CTRL;
-+
-+	if (rx_pause)
-+		xmii_ctrl0 |= PORT_RX_FLOW_CTRL;
-+	else
-+		xmii_ctrl0 &= ~PORT_RX_FLOW_CTRL;
-+
-+	lan937x_pwrite8(dev, port, REG_PORT_XMII_CTRL_0, xmii_ctrl0);
-+	lan937x_pwrite8(dev, port, REG_PORT_XMII_CTRL_1, xmii_ctrl1);
++	addr = lan937x_mib_names[addr].index;
++	lan937x_r_mib_cnt(dev, port, addr, cnt);
 +}
 +
- void lan937x_port_setup(struct ksz_device *dev, int port, bool cpu_port)
++static void lan937x_port_init_cnt(struct ksz_device *dev, int port)
++{
++	struct ksz_port_mib *mib = &dev->ports[port].mib;
++
++	/* flush all enabled port MIB counters */
++	mutex_lock(&mib->cnt_mutex);
++	lan937x_pwrite32(dev, port, REG_PORT_MIB_CTRL_STAT,
++			 MIB_COUNTER_FLUSH_FREEZE);
++	ksz_write8(dev, REG_SW_MAC_CTRL_6, SW_MIB_COUNTER_FLUSH);
++	lan937x_pwrite32(dev, port, REG_PORT_MIB_CTRL_STAT, 0);
++	mutex_unlock(&mib->cnt_mutex);
++}
++
+ int lan937x_reset_switch(struct ksz_device *dev)
  {
- 	struct dsa_switch *ds = dev->ds;
+ 	u32 data32;
+@@ -573,7 +659,7 @@ static int lan937x_mdio_register(struct ksz_device *dev)
+ 
+ static int lan937x_switch_init(struct ksz_device *dev)
+ {
+-	int ret;
++	int i, ret;
+ 
+ 	dev->ds->ops = &lan937x_switch_ops;
+ 
+@@ -584,12 +670,27 @@ static int lan937x_switch_init(struct ksz_device *dev)
+ 
+ 	dev->port_mask = (1 << dev->port_cnt) - 1;
+ 
++	dev->reg_mib_cnt = SWITCH_COUNTER_NUM;
++	dev->mib_cnt = ARRAY_SIZE(lan937x_mib_names);
++
+ 	dev->ports = devm_kzalloc(dev->dev,
+ 				  dev->port_cnt * sizeof(struct ksz_port),
+ 				  GFP_KERNEL);
+ 	if (!dev->ports)
+ 		return -ENOMEM;
+ 
++	for (i = 0; i < dev->port_cnt; i++) {
++		spin_lock_init(&dev->ports[i].mib.stats64_lock);
++		mutex_init(&dev->ports[i].mib.cnt_mutex);
++		dev->ports[i].mib.counters =
++			devm_kzalloc(dev->dev,
++				     sizeof(u64) * (dev->mib_cnt + 1),
++				     GFP_KERNEL);
++
++		if (!dev->ports[i].mib.counters)
++			return -ENOMEM;
++	}
++
+ 	/* set the real number of ports */
+ 	dev->ds->num_ports = dev->port_cnt;
+ 	return 0;
+@@ -626,6 +727,10 @@ const struct ksz_dev_ops lan937x_dev_ops = {
+ 	.cfg_port_member = lan937x_cfg_port_member,
+ 	.flush_dyn_mac_table = lan937x_flush_dyn_mac_table,
+ 	.port_setup = lan937x_port_setup,
++	.r_mib_cnt = lan937x_r_mib_cnt,
++	.r_mib_pkt = lan937x_r_mib_pkt,
++	.port_init_cnt = lan937x_port_init_cnt,
++	.r_mib_stat64 = ksz_r_mib_stats64,
+ 	.shutdown = lan937x_reset_switch,
+ 	.detect = lan937x_switch_detect,
+ 	.init = lan937x_init,
 diff --git a/drivers/net/dsa/microchip/lan937x_dev.h b/drivers/net/dsa/microchip/lan937x_dev.h
-index 4e6d6f41e138..0141d417c446 100644
+index 0141d417c446..147800550162 100644
 --- a/drivers/net/dsa/microchip/lan937x_dev.h
 +++ b/drivers/net/dsa/microchip/lan937x_dev.h
-@@ -33,6 +33,11 @@ int lan937x_reset_switch(struct ksz_device *dev);
- void lan937x_cfg_port_member(struct ksz_device *dev, int port,
- 			     u8 member);
- void lan937x_port_setup(struct ksz_device *dev, int port, bool cpu_port);
-+void lan937x_config_interface(struct ksz_device *dev, int port,
-+			      int speed, int duplex,
-+			      bool tx_pause, bool rx_pause);
-+void lan937x_mac_config(struct ksz_device *dev, int port,
-+			phy_interface_t interface);
+@@ -38,8 +38,55 @@ void lan937x_config_interface(struct ksz_device *dev, int port,
+ 			      bool tx_pause, bool rx_pause);
+ void lan937x_mac_config(struct ksz_device *dev, int port,
+ 			phy_interface_t interface);
++void lan937x_r_mib_pkt(struct ksz_device *dev, int port, u16 addr,
++		       u64 *dropped, u64 *cnt);
++
++struct mib_names {
++	int index;
++	char string[ETH_GSTRING_LEN];
++};
++
++enum lan937x_mib_list {
++	lan937x_mib_rx_hi_pri_byte = 0,
++	lan937x_mib_rx_undersize,
++	lan937x_mib_rx_fragments,
++	lan937x_mib_rx_oversize,
++	lan937x_mib_rx_jabbers,
++	lan937x_mib_rx_sym_err,
++	lan937x_mib_rx_crc_err,
++	lan937x_mib_rx_align_err,
++	lan937x_mib_rx_mac_ctrl,
++	lan937x_mib_rx_pause,
++	lan937x_mib_rx_bcast,
++	lan937x_mib_rx_mcast,
++	lan937x_mib_rx_ucast,
++	lan937x_mib_rx_64_or_less,
++	lan937x_mib_rx_65_127,
++	lan937x_mib_rx_128_255,
++	lan937x_mib_rx_256_511,
++	lan937x_mib_rx_512_1023,
++	lan937x_mib_rx_1024_1522,
++	lan937x_mib_rx_1523_2000,
++	lan937x_mib_rx_2001,
++	lan937x_mib_tx_hi_pri_byte,
++	lan937x_mib_tx_late_col,
++	lan937x_mib_tx_pause,
++	lan937x_mib_tx_bcast,
++	lan937x_mib_tx_mcast,
++	lan937x_mib_tx_ucast,
++	lan937x_mib_tx_deferred,
++	lan937x_mib_tx_total_col,
++	lan937x_mib_tx_exc_col,
++	lan937x_mib_tx_single_col,
++	lan937x_mib_tx_mult_col,
++	lan937x_mib_rx_total,
++	lan937x_mib_tx_total,
++	lan937x_mib_rx_discard,
++	lan937x_mib_tx_discard,
++};
  
  extern const struct dsa_switch_ops lan937x_switch_ops;
  extern const struct ksz_dev_ops lan937x_dev_ops;
++extern const struct mib_names lan937x_mib_names[];
+ 
+ #endif
 diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
-index f48b54d9d2c0..38d5311bf21f 100644
+index 38d5311bf21f..6d0b0d62b8e1 100644
 --- a/drivers/net/dsa/microchip/lan937x_main.c
 +++ b/drivers/net/dsa/microchip/lan937x_main.c
-@@ -258,6 +258,68 @@ static int lan937x_get_max_mtu(struct dsa_switch *ds, int port)
- 	return (FR_MAX_SIZE - VLAN_ETH_HLEN - ETH_FCS_LEN);
+@@ -45,6 +45,20 @@ static int lan937x_phy_write16(struct dsa_switch *ds, int addr, int reg,
+ 	return lan937x_internal_phy_write(dev, addr, reg, val);
  }
  
-+static void lan937x_phylink_mac_config(struct dsa_switch *ds, int port,
-+				       unsigned int mode,
-+				       const struct phylink_link_state *state)
++static void lan937x_get_strings(struct dsa_switch *ds, int port, u32 stringset,
++				u8 *buf)
 +{
 +	struct ksz_device *dev = ds->priv;
++	int i;
 +
-+	/* Internal PHYs */
-+	if (lan937x_is_internal_phy_port(dev, port))
++	if (stringset != ETH_SS_STATS)
 +		return;
 +
-+	if (phylink_autoneg_inband(mode)) {
-+		dev_err(ds->dev, "In-band AN not supported!\n");
-+		return;
-+	}
-+
-+	lan937x_mac_config(dev, port, state->interface);
++	for (i = 0; i < dev->mib_cnt; i++)
++		memcpy(buf + i * ETH_GSTRING_LEN, lan937x_mib_names[i].string,
++		       ETH_GSTRING_LEN);
 +}
 +
-+static void lan937x_phylink_mac_link_up(struct dsa_switch *ds, int port,
-+					unsigned int mode,
-+					phy_interface_t interface,
-+					struct phy_device *phydev,
-+					int speed, int duplex,
-+					bool tx_pause, bool rx_pause)
+ static void lan937x_port_stp_state_set(struct dsa_switch *ds, int port,
+ 				       u8 state)
+ {
+@@ -215,6 +229,8 @@ static int lan937x_setup(struct dsa_switch *ds)
+ 	/* start switch */
+ 	lan937x_cfg(dev, REG_SW_OPERATION, SW_START, true);
+ 
++	ksz_init_mib_timer(dev);
++
+ 	return 0;
+ }
+ 
+@@ -320,12 +336,105 @@ static void lan937x_phylink_get_caps(struct dsa_switch *ds, int port,
+ 	}
+ }
+ 
++static void lan937x_get_eth_phy_stats(struct dsa_switch *ds, int port,
++				      struct ethtool_eth_phy_stats *phy_stats)
 +{
 +	struct ksz_device *dev = ds->priv;
++	struct ksz_port_mib *mib = &dev->ports[port].mib;
++	u64 *cnt;
 +
-+	/* Internal PHYs */
-+	if (lan937x_is_internal_phy_port(dev, port))
-+		return;
++	mutex_lock(&mib->cnt_mutex);
 +
-+	lan937x_config_interface(dev, port, speed, duplex,
-+				 tx_pause, rx_pause);
++	cnt = &mib->counters[lan937x_mib_rx_sym_err];
++	lan937x_r_mib_pkt(dev, port, lan937x_mib_rx_sym_err, NULL, cnt);
++
++	phy_stats->SymbolErrorDuringCarrier = *cnt;
++
++	mutex_unlock(&mib->cnt_mutex);
 +}
 +
-+static void lan937x_phylink_get_caps(struct dsa_switch *ds, int port,
-+				     struct phylink_config *config)
++static void lan937x_get_eth_mac_stats(struct dsa_switch *ds, int port,
++				      struct ethtool_eth_mac_stats *mac_stats)
 +{
 +	struct ksz_device *dev = ds->priv;
++	struct ksz_port_mib *mib = &dev->ports[port].mib;
++	u64 *ctr = mib->counters;
 +
-+	/* non legacy driver */
-+	config->legacy_pre_march2020 = false;
++	mutex_lock(&mib->cnt_mutex);
 +
-+	config->mac_capabilities = MAC_100FD;
-+
-+	/* internal T1 PHY */
-+	if (lan937x_is_internal_phy_port(dev, port)) {
-+		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
-+			  config->supported_interfaces);
-+	} else if (lan937x_is_rgmii_port(dev, port)) {
-+		/* MII/RMII/RGMII ports */
-+		config->mac_capabilities |= MAC_ASYM_PAUSE | MAC_SYM_PAUSE |
-+					    MAC_100HD | MAC_10 | MAC_1000FD;
-+		phy_interface_set_rgmii(config->supported_interfaces);
-+
-+		__set_bit(PHY_INTERFACE_MODE_MII,
-+			  config->supported_interfaces);
-+		__set_bit(PHY_INTERFACE_MODE_RMII,
-+			  config->supported_interfaces);
++	while (mib->cnt_ptr < dev->mib_cnt) {
++		lan937x_r_mib_pkt(dev, port, mib->cnt_ptr,
++				  NULL, &mib->counters[mib->cnt_ptr]);
++		++mib->cnt_ptr;
 +	}
++
++	mac_stats->FramesTransmittedOK = ctr[lan937x_mib_tx_mcast] +
++					 ctr[lan937x_mib_tx_bcast] +
++					 ctr[lan937x_mib_tx_ucast] +
++					 ctr[lan937x_mib_tx_pause];
++
++	mac_stats->SingleCollisionFrames = ctr[lan937x_mib_tx_single_col];
++	mac_stats->MultipleCollisionFrames = ctr[lan937x_mib_tx_mult_col];
++
++	mac_stats->FramesReceivedOK = ctr[lan937x_mib_rx_mcast] +
++				      ctr[lan937x_mib_rx_bcast] +
++				      ctr[lan937x_mib_rx_ucast] +
++				      ctr[lan937x_mib_rx_pause];
++
++	mac_stats->FrameCheckSequenceErrors = ctr[lan937x_mib_rx_crc_err];
++	mac_stats->AlignmentErrors = ctr[lan937x_mib_rx_align_err];
++	mac_stats->OctetsTransmittedOK = ctr[lan937x_mib_tx_total];
++	mac_stats->FramesWithDeferredXmissions = ctr[lan937x_mib_tx_deferred];
++	mac_stats->LateCollisions = ctr[lan937x_mib_tx_late_col];
++	mac_stats->FramesAbortedDueToXSColls = ctr[lan937x_mib_tx_exc_col];
++	mac_stats->FramesLostDueToIntMACXmitError = ctr[lan937x_mib_tx_discard];
++
++	mac_stats->OctetsReceivedOK = ctr[lan937x_mib_rx_total];
++	mac_stats->FramesLostDueToIntMACRcvError = ctr[lan937x_mib_rx_discard];
++	mac_stats->MulticastFramesXmittedOK = ctr[lan937x_mib_tx_mcast];
++	mac_stats->BroadcastFramesXmittedOK = ctr[lan937x_mib_tx_bcast];
++
++	mac_stats->MulticastFramesReceivedOK = ctr[lan937x_mib_rx_mcast];
++	mac_stats->BroadcastFramesReceivedOK = ctr[lan937x_mib_rx_bcast];
++	mac_stats->InRangeLengthErrors = ctr[lan937x_mib_rx_fragments];
++
++	mib->cnt_ptr = 0;
++	mutex_unlock(&mib->cnt_mutex);
++}
++
++static void lan937x_get_eth_ctrl_stats(struct dsa_switch *ds, int port,
++				       struct ethtool_eth_ctrl_stats *ctrl_sts)
++{
++	struct ksz_device *dev = ds->priv;
++	struct ksz_port_mib *mib = &dev->ports[port].mib;
++	u64 *cnt;
++
++	mutex_lock(&mib->cnt_mutex);
++
++	cnt = &mib->counters[lan937x_mib_rx_pause];
++	lan937x_r_mib_pkt(dev, port, lan937x_mib_rx_pause, NULL, cnt);
++	ctrl_sts->MACControlFramesReceived = *cnt;
++
++	cnt = &mib->counters[lan937x_mib_tx_pause];
++	lan937x_r_mib_pkt(dev, port, lan937x_mib_tx_pause, NULL, cnt);
++	ctrl_sts->MACControlFramesTransmitted = *cnt;
++
++	mutex_unlock(&mib->cnt_mutex);
 +}
 +
  const struct dsa_switch_ops lan937x_switch_ops = {
  	.get_tag_protocol = lan937x_get_tag_protocol,
  	.setup = lan937x_setup,
-@@ -270,6 +332,10 @@ const struct dsa_switch_ops lan937x_switch_ops = {
- 	.port_fast_age = ksz_port_fast_age,
- 	.port_max_mtu = lan937x_get_max_mtu,
- 	.port_change_mtu = lan937x_change_mtu,
-+	.phylink_get_caps = lan937x_phylink_get_caps,
-+	.phylink_mac_link_down = ksz_mac_link_down,
-+	.phylink_mac_config = lan937x_phylink_mac_config,
-+	.phylink_mac_link_up = lan937x_phylink_mac_link_up,
- };
- 
- int lan937x_switch_register(struct ksz_device *dev)
+ 	.phy_read = lan937x_phy_read16,
+ 	.phy_write = lan937x_phy_write16,
+ 	.port_enable = ksz_enable_port,
++	.get_strings = lan937x_get_strings,
++	.get_ethtool_stats = ksz_get_ethtool_stats,
++	.get_sset_count = ksz_sset_count,
++	.get_eth_ctrl_stats = lan937x_get_eth_ctrl_stats,
++	.get_eth_mac_stats = lan937x_get_eth_mac_stats,
++	.get_eth_phy_stats = lan937x_get_eth_phy_stats,
++	.get_stats64 = ksz_get_stats64,
+ 	.port_bridge_join = ksz_port_bridge_join,
+ 	.port_bridge_leave = ksz_port_bridge_leave,
+ 	.port_stp_state_set = lan937x_port_stp_state_set,
 -- 
 2.33.0
 
