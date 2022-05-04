@@ -2,88 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F794519783
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 08:41:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51D52519787
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 08:43:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345025AbiEDGog (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 02:44:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44628 "EHLO
+        id S1344918AbiEDGq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 02:46:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240187AbiEDGof (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 02:44:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9409818B13;
-        Tue,  3 May 2022 23:41:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 38CF46153E;
-        Wed,  4 May 2022 06:41:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 929DBC385A4;
-        Wed,  4 May 2022 06:40:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651646459;
-        bh=ZGMwwfSt9WgGcP9EzHW/QosFc70Yb/XaCBfaIMon8lM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hCMa156AuRtjnImdRRFb6sjNT7gi2K+aKH0x8uKbL7AEODCLcmpA+AldqhNahLoMc
-         Jjbn4PU2sZC0QO3tUog7PiYYrqIfJDpXhjQPR0ah9UBAo6hM2LqRyEviiRxk8BR/Z/
-         PswEhJLlhaaJETbJ+cDB+HgHVFfdIRtcQWjx3W6kmEYtvsvtdX1D61teQWllRNYd4Y
-         4rq0yVjTAy3gemypN42SU8Wvxydjxbsf9n9Yu7PohyC0omGj3kKtLN8XGs6TxWmKd5
-         RbuiHnFactE1ob6Dd26hg53PXFe++MOjqEkVBKu+OdQv2rpx3HjFyo1wUYQL3DAF3f
-         4Lj9rl6MCVe6w==
-Date:   Wed, 4 May 2022 12:10:55 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Abel Vesa <abel.vesa@nxp.com>, Stephen Boyd <sboyd@kernel.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Niklas =?iso-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund@ragnatech.se>, Anson Huang <Anson.Huang@nxp.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Han Xu <han.xu@nxp.com>, Dario Binacchi <dariobin@libero.it>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Peter Ujfalusi <peter.ujfalusi@ti.com>,
-        linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-iio@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-pm@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Drop redundant 'maxItems/minItems' in
- if/then schemas
-Message-ID: <YnIf95FnuC01qxIp@matsya>
-References: <20220503162738.3827041-1-robh@kernel.org>
+        with ESMTP id S1344614AbiEDGq4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 02:46:56 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78EC71A81E
+        for <netdev@vger.kernel.org>; Tue,  3 May 2022 23:43:21 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id dk23so1023886ejb.8
+        for <netdev@vger.kernel.org>; Tue, 03 May 2022 23:43:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=vmfGvdzEe7Sq3XbMqL7KmA39B54APPzcmwPdJivs+Iw=;
+        b=yUHggd5XkRGX7BVJ4f5wXLAMvX9qY4kDBGmX5mQ+cfxmRE/aFUntAgddgmt0hj+6ZY
+         aDH/UyHEGP4FFDNJ4HjId6UVjym7p8vIejq+c28syw0lcSafOBNduiTzH3cAcn9OXCpY
+         tDJpHzCtfMXinvogMOhlwsjAKW+o5l5tmv4g6GAoPKZt6ee7vJ+wRK+INu7gUjIsPXy4
+         sgXx28LeVmUJS22bHNbAdA/WmtCn55/uro8ypXAJu5n8Gc9MvsNT5XlYunSnrZF4m3dD
+         uW4QdavtPhGGLgwT/G98i+aZsGo2Edv+CRx9E6YzbGuywWlxUxCkHZffHMH+OTm8s/Fu
+         TuCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=vmfGvdzEe7Sq3XbMqL7KmA39B54APPzcmwPdJivs+Iw=;
+        b=nO6LkA3D3EcWcvg4Uad2jkg8ojLlDbXqbga+tWeXM67JJfgUd57CUouI0TVp1xUgRh
+         72WWcziBAocXlLqhTkNXZlDuuPrO/LvipTRHF+35dB6+exvNjdCVpDdYoETAgZNOx1J9
+         EkRg4BwphKjw8I8ueTLGEsbrQFu7SI0TFh0MWy3SpYU0KgWwhs6sBoiun/ttmprnRyP4
+         fO31/cQldzyxTw2vUUoU9nrYiU6bGVr4MlmCuZQCh85Jhd/Imp0sG1VFdNqMR6tkIGhx
+         GSYiAf9lyU440HeIN2YFnXhxPzKGuL38ibU/G2EW4ACDWwxcd3P5kOzvSsN8M0lQooiF
+         J3ow==
+X-Gm-Message-State: AOAM533T3JPeST6libaKeZGvojTcZdY68IzYZWMOd/yCsIcv3vzFxuWy
+        Mvk2AYetKHg5TMBRCC9c9h/K2g==
+X-Google-Smtp-Source: ABdhPJxRFMk5S9I6bl1IFF4cZ1hDJJ33NG9TVpbihrfMxZsC0Wy/1hStbekFcMTYa86v+ErMcU4qMA==
+X-Received: by 2002:a17:906:dc8b:b0:6ef:86e8:777 with SMTP id cs11-20020a170906dc8b00b006ef86e80777mr19342462ejc.326.1651646600068;
+        Tue, 03 May 2022 23:43:20 -0700 (PDT)
+Received: from [192.168.0.208] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id hw7-20020a170907a0c700b006f3ef214e16sm5385364ejc.124.2022.05.03.23.43.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 23:43:19 -0700 (PDT)
+Message-ID: <5eebd441-ded0-3668-f592-05bdeef920b1@linaro.org>
+Date:   Wed, 4 May 2022 08:43:18 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220503162738.3827041-1-robh@kernel.org>
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net] NFC: netlink: fix sleep in atomic bug when firmware
+ download timeout
+Content-Language: en-US
+To:     Duoming Zhou <duoming@zju.edu.cn>, linux-kernel@vger.kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org
+References: <20220504055847.38026-1-duoming@zju.edu.cn>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220504055847.38026-1-duoming@zju.edu.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -92,19 +74,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03-05-22, 11:27, Rob Herring wrote:
-> Another round of removing redundant minItems/maxItems when 'items' list is
-> specified. This time it is in if/then schemas as the meta-schema was
-> failing to check this case.
+On 04/05/2022 07:58, Duoming Zhou wrote:
+> There are sleep in atomic bug that could cause kernel panic during
+> firmware download process. The root cause is that nlmsg_new with
+> GFP_KERNEL parameter is called in fw_dnld_timeout which is a timer
+> handler. The call trace is shown below:
 > 
-> If a property has an 'items' list, then a 'minItems' or 'maxItems' with the
-> same size as the list is redundant and can be dropped. Note that is DT
-> schema specific behavior and not standard json-schema behavior. The tooling
-> will fixup the final schema adding any unspecified minItems/maxItems.
+> BUG: sleeping function called from invalid context at include/linux/sched/mm.h:265
+> Call Trace:
+> kmem_cache_alloc_node
+> __alloc_skb
+> nfc_genl_fw_download_done
+> call_timer_fn
+> __run_timers.part.0
+> run_timer_softirq
+> __do_softirq
+> ...
+> 
+> The nlmsg_new with GFP_KERNEL parameter may sleep during memory
+> allocation process, and the timer handler is run as the result of
+> a "software interrupt" that should not call any other function
+> that could sleep.
+> 
+> This patch changes allocation mode of netlink message from GFP_KERNEL
+> to GFP_ATOMIC in order to prevent sleep in atomic bug. The GFP_ATOMIC
+> flag makes memory allocation operation could be used in atomic context.
+> 
+> Fixes: 9674da8759df ("NFC: Add firmware upload netlink command")
+> Fixes: 9ea7187c53f6 ("NFC: netlink: Rename CMD_FW_UPLOAD to CMD_FW_DOWNLOAD")
+> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
 
-For phy:
 
-Acked-By: Vinod Koul <vkoul@kernel.org>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
--- 
-~Vinod
+
+Best regards,
+Krzysztof
