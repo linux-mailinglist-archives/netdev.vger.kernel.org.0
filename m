@@ -2,122 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CBC8B519E79
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 13:48:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FD12519E7A
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 13:48:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343995AbiEDLut (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 07:50:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58672 "EHLO
+        id S1349067AbiEDLvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 07:51:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234461AbiEDLus (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 07:50:48 -0400
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBBE05F91;
-        Wed,  4 May 2022 04:47:12 -0700 (PDT)
-Received: by mail-oi1-x229.google.com with SMTP id y63so909658oia.7;
-        Wed, 04 May 2022 04:47:12 -0700 (PDT)
+        with ESMTP id S234461AbiEDLvX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 07:51:23 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECF90201B5
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 04:47:46 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id bq30so1874490lfb.3
+        for <netdev@vger.kernel.org>; Wed, 04 May 2022 04:47:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bz0AXE0SYU2skMQoICtZi7uVEPUJbgHpcnH6xCu008Y=;
-        b=etLbOLwao7AqW0NXetY0eNvLOUZyGwjWwIG+eJWINm2VL/HiIVvXoZFSZd5eZ9ISg5
-         LszcjcVMJeo2i7rPfgTjaTst0kguZV33G6Ysl12jFR/RBczm9jxzoLy0lqLJPaKl5vP0
-         T1EM8GLxWr+wyT/WEp7yMUuLLNnO96BJSAuSW+q+oGPJOzlTzBMucOx8omJTdHWmetgp
-         OYzja1PkMQ1K3YuwOP21HFHQWjE8JduXmkg18dSeR3rwUn/TZDD6iHUKMTqLD0zKZD5k
-         rJyidF0Mice/PNhZESimr/AcBzWJ3bTyNNFrLoYyEDUbPEuZqCLeEHB/IJIr4eenQbOj
-         kZ3g==
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=GBgQb/W5R93LBXwe1puEQIXZ/v4kYHy/Vvot2WDzYI0=;
+        b=fuX+BfPlC1A/alsycE4nUZHBwmCnQRctuRurVXxyjqNw9L3q2XpLGw2cYYfBjTPO9v
+         Uf5gRUPPrsgQ3DHHXHXOgmm1PEFqDfrTPrBZ3xWbXQhH1SsbOuGbQpoAQNUdRTKPlG0i
+         IintJn8NNm+BIF0gHTI4/7eIhPE/uFEA/W01Li5TDcHEhytYgQSeVLt4PijCFC9x4tdW
+         epXd46tTO1bby+thHdhuMKiqeDp+GHhm1IssEPIXXHoeOC/trzg9WRwBNRHcnVaemQK5
+         60CALSYZU2YVj+e7gFpn8XWbavbmgBDn620C35DsECSM0pZeQI9E1Hki+rBBtCZU4g/c
+         hGPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bz0AXE0SYU2skMQoICtZi7uVEPUJbgHpcnH6xCu008Y=;
-        b=gPDE/hvWaPlwkxRM+ofWvW5gdmDdRqO440/x4N6nhzViyv7l+BJPQ2SfX2r1MYYFrW
-         dx/7QJfLXhs4ZPidUkj+czR4fX/2Nd1nWiODDiJZFSBHVjwVhcN9X/r6EdvZdDcsM1i+
-         +OHiIl9qSzeIJMPigf8l9y0wWWi/2AtL2NKp9Tne0zWYNswfmwPsci9bRGvkyH82uoaJ
-         TobmoF9miEt+064ljsWrohjIxFye1kRZzKh6u1tDAHO0gGZ64httcZemjl+BA/bckKTn
-         OB7grKyXRHi2XNeoYOqaLyfwDO7gF4fAI9PGfJiRa2rbpJBaqyN9wixwjnw8T7iTy4sF
-         +ISQ==
-X-Gm-Message-State: AOAM531PKhlpISH+lxX3SvxHSjqOiZVOD2OS6jbO9LQxKgdmqjGqytzT
-        /vZ7/lkkL+0aQYyTJgZk/0w=
-X-Google-Smtp-Source: ABdhPJxpKwqjBkj781v/BMs2W9l1Oz7m97vbOBDVx3nJW4wBPyKhrS7vbPNbT94pTuliUQx1xKsu1A==
-X-Received: by 2002:a05:6808:682:b0:325:667c:821a with SMTP id k2-20020a056808068200b00325667c821amr3715051oig.14.1651664832105;
-        Wed, 04 May 2022 04:47:12 -0700 (PDT)
-Received: from localhost.localdomain ([2804:14c:485:4b69:6ef3:840d:df28:4651])
-        by smtp.gmail.com with ESMTPSA id c19-20020a9d7853000000b006060322124csm5026305otm.28.2022.05.04.04.47.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 04:47:11 -0700 (PDT)
-From:   Fabio Estevam <festevam@gmail.com>
-To:     kuba@kernel.org
-Cc:     davem@davemloft.net, andrew@lunn.ch, claudiu.beznea@microchip.com,
-        netdev@vger.kernel.org, o.rempel@pengutronix.de,
-        linux@armlinux.org.uk, Fabio Estevam <festevam@denx.de>,
-        stable@vger.kernel.org
-Subject: [PATCH] net: phy: micrel: Do not use kszphy_suspend/resume for KSZ8061
-Date:   Wed,  4 May 2022 08:47:03 -0300
-Message-Id: <20220504114703.1229615-1-festevam@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=GBgQb/W5R93LBXwe1puEQIXZ/v4kYHy/Vvot2WDzYI0=;
+        b=WLyCMAG5fyJgsOQwV0F3K8ymCcCoi/tQMbuf/5RLH18GmISJ0GFdym3UbmMt3XlqcX
+         24U1sRPD8nIdmZX0kQkx2xibBvXgptG7f9PdMfEubvULhY6rBSrYZLj7JeM96Sumcj8F
+         iDV1A6zaFaa6y0hE485qg/uOHgg6rjlOSHSg+NH8Q6Ul24qp8y6Q4vOn9hPipNSe4vAu
+         rMVEph4Bgq1enm6xUU7niQvTJ+r9nQOhkwPcqwe3+sBlCuNzsugV1y+zFZLPpARLWw6Q
+         WyAPYbgA0HDX8rPxUSe80Scif40NPh/otqYhZSbwQY9/XWYKZ45qKTPUFtS9Jz3R3Rrs
+         4Vrw==
+X-Gm-Message-State: AOAM5314lOuijwEJgtwCqa/ufnUsN0OkeZRaJJzzLRJhJuBaSABwxvhN
+        MK5J6D/J8gr4acEZHoEtqG0EBC0fFZPpaHpL1g4=
+X-Google-Smtp-Source: ABdhPJwXtqJLxDwoyOuu2alNy2NJG+zQr956vauCkzJSEP6YZo8BUeHisWpFXQRNkvOWGqn08L8ha3OLnwE+mHIPqbQ=
+X-Received: by 2002:a05:6512:16a7:b0:445:862e:a1ba with SMTP id
+ bu39-20020a05651216a700b00445862ea1bamr13052798lfb.85.1651664864893; Wed, 04
+ May 2022 04:47:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Sender: sdavid46620@gmail.com
+Received: by 2002:a05:6504:1691:0:0:0:0 with HTTP; Wed, 4 May 2022 04:47:44
+ -0700 (PDT)
+From:   "Mr. Jimmy Moore" <jimmymoore265@gmail.com>
+Date:   Wed, 4 May 2022 12:47:44 +0100
+X-Google-Sender-Auth: -MAww_4oE0ONWe9xi4zMurBJJms
+Message-ID: <CAE1Pi3q2BJDpNryZk5BcsskgW_yJ4qKu3R+dBz=BAL8Jr4zW4g@mail.gmail.com>
+Subject: YOUR COVID-19 COMPENSATION
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=6.4 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLY,HK_NAME_FM_MR_MRS,LOTS_OF_MONEY,
+        LOTTO_DEPT,MILLION_USD,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        SUBJ_ALL_CAPS,T_SCC_BODY_TEXT_LINE,UNDISC_MONEY autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2a00:1450:4864:20:0:0:0:136 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5000]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [jimmymoore265[at]gmail.com]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.5 SUBJ_ALL_CAPS Subject is all capitals
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [sdavid46620[at]gmail.com]
+        *  0.0 MILLION_USD BODY: Talks about millions of dollars
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  0.0 LOTS_OF_MONEY Huge... sums of money
+        *  0.0 HK_NAME_FM_MR_MRS No description available.
+        *  1.0 FREEMAIL_REPLY From and body contain different freemails
+        *  2.0 LOTTO_DEPT Claims Department
+        *  2.0 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+X-Spam-Level: ******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Fabio Estevam <festevam@denx.de>
+UNITED NATIONS COVID-19 OVERDUE COMPENSATION UNIT.
+REFERENCE PAYMENT CODE: 8525595
+BAILOUT AMOUNT:$10.5 MILLION USD
+ADDRESS: NEW YORK, NY 10017, UNITED STATES
 
-Since commit f1131b9c23fb ("net: phy: micrel: use
-kszphy_suspend()/kszphy_resume for irq aware devices") the following
-NULL pointer dereference is observed on a board with KSZ8061:
+Dear award recipient, Covid-19 Compensation funds.
 
- # udhcpc -i eth0
-udhcpc: started, v1.35.0
-8<--- cut here ---
-Unable to handle kernel NULL pointer dereference at virtual address 00000008
-pgd = f73cef4e
-[00000008] *pgd=00000000
-Internal error: Oops: 5 [#1] SMP ARM
-Modules linked in:
-CPU: 0 PID: 196 Comm: ifconfig Not tainted 5.15.37-dirty #94
-Hardware name: Freescale i.MX6 SoloX (Device Tree)
-PC is at kszphy_config_reset+0x10/0x114
-LR is at kszphy_resume+0x24/0x64
-...
+You are receiving this correspondence because we have finally reached
+a consensus with the UN, IRS, and IMF that your total fund worth $10.5
+Million Dollars of Covid-19 Compensation payment shall be delivered to
+your nominated mode of receipt, and you are expected to pay the sum of
+$12,000 for levies owed to authorities after receiving your funds.
 
-The KSZ8061 phy_driver structure does not have the .probe/..driver_data
-fields, which means that priv is not allocated.
+You have a grace period of 2 weeks to pay the $12,000 levy after you
+have received your Covid-19 Compensation total sum of $10.5 Million.
+We shall proceed with the payment of your bailout grant only if you
+agree to the terms and conditions stated.
 
-This causes the NULL pointer dereference inside kszphy_config_reset().
+Contact Dr. Mustafa Ali, for more information by email at:(
+mustafaliali180@gmail.com ) Your consent in this regard would be
+highly appreciated.
 
-Fix the problem by using the generic suspend/resume functions as before.
-
-Cc: stable@vger.kernel.org
-Fixes: f1131b9c23fb ("net: phy: micrel: use kszphy_suspend()/kszphy_resume for irq aware devices")
-Signed-off-by: Fabio Estevam <festevam@denx.de>
----
- drivers/net/phy/micrel.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 685a0ab5453c..11cd073630e5 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -3021,8 +3021,8 @@ static struct phy_driver ksphy_driver[] = {
- 	.config_init	= ksz8061_config_init,
- 	.config_intr	= kszphy_config_intr,
- 	.handle_interrupt = kszphy_handle_interrupt,
--	.suspend	= kszphy_suspend,
--	.resume		= kszphy_resume,
-+	.suspend	= genphy_suspend,
-+	.resume		= genphy_resume,
- }, {
- 	.phy_id		= PHY_ID_KSZ9021,
- 	.phy_id_mask	= 0x000ffffe,
--- 
-2.25.1
-
+Best Regards,
+Mr. Jimmy Moore.
+Undersecretary-General United Nations
+Office of Internal Oversight-UNIOS
+UN making the world a better place
+http://www.un.org/sg/
