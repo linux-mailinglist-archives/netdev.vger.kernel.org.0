@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66D7551B453
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 02:09:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A931751B3E3
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 02:08:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238137AbiEEADi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 20:03:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46336 "EHLO
+        id S1358125AbiEEAD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 20:03:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383716AbiEDX7p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 19:59:45 -0400
+        with ESMTP id S1383721AbiEDX7r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 19:59:47 -0400
 Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70048.outbound.protection.outlook.com [40.107.7.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96F00522C7
-        for <netdev@vger.kernel.org>; Wed,  4 May 2022 16:56:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011EF522CD
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 16:56:09 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bR06tBbFMyP9xSj3D/HGduqM5IiK3hXr7/fWr7K5hwOzi60iEcHdaeLFCdRj7l4olOyhSclNtu++F9Bk3RCbUmNN7sSuW6YhXdGuT/PDgIwgiql4FuWoeiy19ppyS1otbparpQoBzAVRv8dL++d/v8+b2DTCJXTiU6/H8j2s/NMVSyNDkWViKNTKVTnm1cBIWAX5ZRteMWLXBstNc4IbJX6mZcwWf4oigoaTCYwZ6hPZjA52MvZzDqoCGR5Lf/W4mFL6Qj/AT3Edc1nDFjVmFoNL/7w/SFarnCdzbfv0weeP6RiVssUVh+/TDl263f4ese7RK1GxKp6tANbA1nWL4w==
+ b=WTWsZox9531C+8Rg/JFEBQVWOJGmkIv38qVlU3PS/k38RR/Jky7G9MpMMSBIPaxeL7EWaGt9EnZq6hRawgFh0qTKQvywljpReyNpC1ukyju+36RRjeRZYkr2nbcsoEvtLx8lt/Em4VAyMOKj94ZE9g2xl+/3dAoC0ULKl9YvgMIp/5IhvkXIp6L6xKo8krnuGE5mr8o26YWgCa8JhMAhzxQ9+vf9o3biIS2q3fWqVWdaGGvDM0+X56RBpIFgXTaMVrdAVbjz8f3jc2Yipk2MTEsTWVyGRgcmmy6yPXQlwyuPExmsh5ipHKT65i1TUIx3tsGlgBENmvWrHckrjyJwiQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UQVJFptU84H2kiiO49xW0LG2aatkH2eNOZ/3pi1ecBs=;
- b=WshmaDICQlwaBZQPjl5MG9ld5D9ANOvo83yAV5wLbzbtQT8roj3gHWGKeDfJAL8y6dORy7cATbWVHDSXJ2a/cgKrbxkeTVxZ0rsws0OlxZ4mCKc30IS7a6WMwmbC8GnVcoBtrn1ac6VeJrwBo9AMn0IhxAxD80ez7wuKbrBx/g8zVXK9zIQXIjKTqRSwEyvcC4aVjPcgv0ElqV9FCNE7YX1AqsSzbPWfzIjTrYRlJ8Rq3PTMY1bKHb7z2xNRDbF4oQDCF30Ys1zL/A2OtMoKKsoNQE26qBQd0oQJ9F4cGNIpTzQMAjuAZZQtKfLzTa5s4MxNhNk0KnHpL8UFdm5GHg==
+ bh=HQH0uq+0n42Eza8GHOPzX1voVKFx9OmXoH58D3KOtc4=;
+ b=bAVXcMAr4eIe4TOAXorV1KZvR1f0O+HKxISiwUFg5/jkNnzTKvn5iJGFpTxd/KLcyI+EytRJpu7se/qqzlkbISQPglmmS0TJRiKyuhwOxkz2GL4zACU69anI3GJ/gzgETEG1hoy6DdtwT65z7qGmiNCbLoDrjc29e8HBu8Yg8xzMtooJjn/ALiduNMs1S3HFgib6x9la0MuPAEX32JcHZRXeXj3ko8Z8MGw2gg9fYfaW3GPDL4MWbKPQKGFEkyHH4Gf/klp5CnQYCuIt4W9GkD/lB0T8+WNsIqWsLaU/+9yQfNaMpRLaoLmplq3jJNbPxFHeP3e2AWE9imlemOmALw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UQVJFptU84H2kiiO49xW0LG2aatkH2eNOZ/3pi1ecBs=;
- b=sjADzHJ98misdpmzy6dZJBW34wFcDtnW687LfNoywozJjfOi2wp95UEcxCiVpd0V7c1Y0qFt3RdFuQUH+LRW/cTlosN/CtgPuXuYEeRHcLJ9qjwOotpTqbWF26iVm/a1Bkjr0b3cMxhQTXRmIcd1qH2BPtOBUJcBA82SC+lpUwk=
+ bh=HQH0uq+0n42Eza8GHOPzX1voVKFx9OmXoH58D3KOtc4=;
+ b=QuynBMFDAVehzyeRmCcT/MRa4WyKncyRE3pqZD8jm/CHbA36T4RMhLJCY8At8W7Wo9SJK0KFwFkzcLxRWFs1MIXkky5j3DDNmwLgcc7jJPBv/PDp2coddYXyu9dFd8SERQM7191i/eUhd9zGq+NxtuJ0sogMjDv0nf58dv6NK5w=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by DB7PR04MB4683.eurprd04.prod.outlook.com (2603:10a6:5:37::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.25; Wed, 4 May
- 2022 23:55:56 +0000
+ 2022 23:55:57 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::d94f:b885:c587:5cd4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::d94f:b885:c587:5cd4%6]) with mapi id 15.20.5206.025; Wed, 4 May 2022
- 23:55:56 +0000
+ 23:55:57 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -54,9 +54,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         UNGLinuxDriver@microchip.com,
         Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
         Colin Foster <colin.foster@in-advantage.com>
-Subject: [PATCH v2 net 4/5] net: mscc: ocelot: restrict tc-trap actions to VCAP IS2 lookup 0
-Date:   Thu,  5 May 2022 02:55:02 +0300
-Message-Id: <20220504235503.4161890-5-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net 5/5] net: mscc: ocelot: avoid corrupting hardware counters when moving VCAP filters
+Date:   Thu,  5 May 2022 02:55:03 +0300
+Message-Id: <20220504235503.4161890-6-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220504235503.4161890-1-vladimir.oltean@nxp.com>
 References: <20220504235503.4161890-1-vladimir.oltean@nxp.com>
@@ -67,55 +67,55 @@ X-ClientProxiedBy: AS9PR06CA0227.eurprd06.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 35773b93-8f32-4bd3-d50c-08da2e29a11a
+X-MS-Office365-Filtering-Correlation-Id: 96105a7d-7765-468f-b2a4-08da2e29a1ff
 X-MS-TrafficTypeDiagnostic: DB7PR04MB4683:EE_
-X-Microsoft-Antispam-PRVS: <DB7PR04MB468384DD806FF2B0BEE90D32E0C39@DB7PR04MB4683.eurprd04.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <DB7PR04MB4683FF624A10D153ECEDB6B2E0C39@DB7PR04MB4683.eurprd04.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: EiVlew0/rbmdoVNN/VqqKybJCjq7mdBK3mA0Q+ktEzQp/Ga/ZrhZeHqeP9CMnVpjYzOh9OaDzApPvJ/bZ579aFPf9Lz63ta5BhM/cDc+/9jaF+JJfgjCogsGy1RxsQnof1sUizZoAUiT2CMb55TeyBPIMcsK8kpCavPnCl3wkoT2Y7vs56A3a7vOiuBsH93lXyXUMUOItp05t6jBWnur2sbuDVp6BU9H/0YW1is3kfMBtepTfCtJNr45/xAc9IH0ENignUKVPUw1dhvhrApSgkDbbuIEC1yg+kxwP0sq8uDeHXU1DeLtO4tRRP7XDInAzth6JVYc65IGOoCVjbE1hlChiRDxw/K0kjLsLy2yXM8NFtqFXVL9hBUGi81O2/I6fkgPnmv2IsJiGrTAxjJiI7z/MCD/AVMoHj7YArNTHUCyQs4fx3PrZG88X6jvZnW+YNcoZ1/L9wYhynfsuHN2hUduOt7c3eJFtceU8wskeP4Xvkf2lDaj9icoEXK+qeJ0ybZMjy4Q0ILblmDBY6U4S84iSRRqkZhPnRWhs1Z4a1A+etanrJhkWdmBv6hevrd/Hs4kI8HPlooqI+CITeo91qYiZWAuLnA/gHLnZBTJIFUq4LaonKBhTl+piIztXzGGnKHo5y/7UT6EUz4YP8MbRpjch0PoIflVbAlPsTdv6IpPgtrEB61B1VohkWYcd1mF+8lgtfqGfE/8JDkVc6X/YQ==
+X-Microsoft-Antispam-Message-Info: QLACUy+cFLxA/20hqmhwCvwD92ksiMAnpgyDGtX4yLkyFdJebpXcrBpBnUrj9NmN5plwTqEIp1YHjvVKOJ/ntP2yZEe1QBYVX9j/HEYksuhFvgPdW1yEiJtbbAWFs23V7IASOvbX81anOVrff5E0rXZUakQJNfeHaOYN+0eJXJ26ZAOSWPk4uNyXHpRwi8SHuRjnN0XJ4kUNH6t0WmTRxDTIvpxlOfspGRv9ru3gHz7rPYiD1LuDFGHZtREpVp/sUt0I55ILd99OUtnc1/sQT20kQyzi69rzbUqQPAt34KSv7491RWzFAWpSaiTWjdSqOWYl24s+0eV/RBHkZFSemTk2yTzKEJeCVqRVOdj/d7tw/1IIVFa4E0Wrbie6zySoLCdb6hIVvYHQk79pbwA/IEmJedsDP1xcSLzJfCerODw9M38aZlDHw2CgmwC3KHGVPrKFeTHIssL3Hs+rFLmPF6VRkhI2wnlXab1L5zpSf99xURewgS8K1+QcA6Ctet+Cfh8t2IQDte1tNy9M1EF1wmwCe6SJF8nZkza7y8jp+i6u67f+b/koijyiHYBfqL8LABSLmVfTp524Bp8GFuubRnpHWmZqF1W90NucTOf471WCIwwbGT/J5f2mx7DYoVUTMiqPqQlwtMZuWvvFQEVlm7+YuX3opV+/xcBJ1tgH7tR+soA/R04WG6Q4Di4mTUVGr3w8YY67s4jomqOxWmcYsg==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2906002)(7416002)(6666004)(52116002)(6486002)(8936002)(508600001)(6506007)(86362001)(5660300002)(6512007)(26005)(44832011)(83380400001)(186003)(8676002)(66946007)(4326008)(36756003)(38350700002)(2616005)(66556008)(66476007)(6916009)(38100700002)(54906003)(316002)(1076003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ZLol3WVIphjXC/SprW+gs0cDP7Rofh7Es++FjM3jcfs7ZICIPNPV5lPkYBL/?=
- =?us-ascii?Q?6C3wDFAn4z8OaU67Qk3Bx2boRUQ0YXCeeyGv7kB0/gdVzBwy1cNfRRPRNhZD?=
- =?us-ascii?Q?KSH2XrPHKxvomqYv7blXFeVPkXOfzCsBWBF8qPLwkNBb6x0utuBx/R0i7qoU?=
- =?us-ascii?Q?hSFMu1sgCyiyem4GDxXNnsE23HSDZGy9mJpkU/kR8qQ44/Pt+YBIsac8q4Xl?=
- =?us-ascii?Q?OoiEVWavnIEEe5BDM8YoVpE5ZEFDgkyJRfOpcRogGpNI7umfUyGtMRZ9uYy0?=
- =?us-ascii?Q?GcBQcVXsJwy4tGJeo+WSUHtoobQG01c5wKvh9xVpqERL1VD/HXMveBTrC8Q4?=
- =?us-ascii?Q?q8CUplwk9R/Z6cb/hEobXU5tXRPxRqPZhZj12RlRvte+W1/bNsDHSvgxoXN6?=
- =?us-ascii?Q?Bk3dMqMZzxyNHz93/PuNaYxwX5yNhf8zz/iY02/fpVqcf6KI7NdTHg7TFsha?=
- =?us-ascii?Q?TGFALaO6JpcQIyv5gJu/QEnyy5in+pG67Mgd4Ez0WQODnaiYIWPlmYUtB+MR?=
- =?us-ascii?Q?IParuKVi/JFHL/Llhc4L+MiuQXEZB2dr7h1nO32vdnys32wSo50hyBGEc1xw?=
- =?us-ascii?Q?+VTneZauq1rksyfaxBMSiG5PETLKGEpfTeiuMXlWtf9ZxgfygI6d51nHJMjW?=
- =?us-ascii?Q?Ne0NgfnT6zgo9iXKvrjjUkfn82tzYcpNnvd7Gj2yt7xrRd7Tf8QhjNswkUIO?=
- =?us-ascii?Q?LKEJ+EoTbug49W2wngceW48HF4PoeK+7GJCVRA4KNbS9b+jEi6R06WqxjLL6?=
- =?us-ascii?Q?RZUcHTjM2ETcmD16LpsMyQDJA/mRSK7qXRwmCUeTwdmSFvqXh0xImWBKNGCE?=
- =?us-ascii?Q?iWhkpo2N2cMnD86f+4YxUrsoCCsHXbZz1Dw/6vce+Pf8+v+Oimy44eowVmjN?=
- =?us-ascii?Q?s6fYNUfoFp35KSFZd2qi/owS5C5ufXupBrWHqkU16fwpt+1+gtXbRwdO5bih?=
- =?us-ascii?Q?PwYhdlK0pEKVxGRbam5XGpUEmRsinZB+2a9hf30LUiAg2HkIMxFJjeSKUTik?=
- =?us-ascii?Q?GnUCyH4FfROCD5wIVq4sl9Z0aeYKUMG8kSqRC4SaP0MBjznW5A0TgscZ7QnX?=
- =?us-ascii?Q?vuItWMv4VkJNF1kq3o/IJGE3HgWwiOHR7SLXDZaL4iDuHCerMUJL8/kmcbRn?=
- =?us-ascii?Q?/s63+t+VMabArUvGleMT/7/zhW10oLGaJF3byvHPO5+BsSVZOfJva0vUpj4e?=
- =?us-ascii?Q?hPKb67YuodapqZJz0Awre014fK6SnvVB70rgn5ewBmrmxuyMQez5IL4UsOXG?=
- =?us-ascii?Q?8yDgUuVW6vc94l2MzQmtmDDuDhJ1SotjjH+344/jirAaeJKHtVbCoDWSppGa?=
- =?us-ascii?Q?Hex8mp4SWsLNmdKHa8pO/lYPgf6KWBFX9NMwhf4sLOtjb1/vk8lSR2yD+dvy?=
- =?us-ascii?Q?ePynM+hNC09GO8W4y11cNzJ3tjKhMlMVIYgfaksZfwr4l5t5n7M8jt3EET0B?=
- =?us-ascii?Q?BKVChvuq2OOd26wiTsJMUwtEFTQQmnfKSjEOX9iU0wjvZaWHZhveWfZVL+j7?=
- =?us-ascii?Q?OVF2PWWx8ej7fytNPEDEDMW1JHW5N0hL+OIonG5VxBK4KDEcss9fLnCt9YSv?=
- =?us-ascii?Q?SmTZCBQZ8aEnq3EYUBs+iD+HcSXQQCFLEDOkYzT2AuUzbjNb1/uYRY/QPZby?=
- =?us-ascii?Q?awGWba95fJwGQUpoJOKojNOD8jme6rOTkS3d1Gb1076GzbU3uVPJYA5rrYLM?=
- =?us-ascii?Q?v9BCyFQpBf5eiYsVSMasxP2cOCZm499ic062D8YMu+/kzr/Ezzu7YO/gzM/i?=
- =?us-ascii?Q?sicCB6ZowLlSGkKZgeqWgQ8yxSDDP4M=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?xCX/GMr1VT51To3yqPe3MygjYWFJkx43PbNSG0YAJ4kQ+r/3uLGD9LPkMz3t?=
+ =?us-ascii?Q?dJ1u9elcBUIOS5T0hqQHLtKBnCgS2Eu3PqM9GejosdwdWJy6n48iOMuRWzJ+?=
+ =?us-ascii?Q?Bt5TZPBGu4VV1OPBuzF2PrubnfFV+1nK/BAJTBCCiEK8bTxKvX8VLrB7TxKU?=
+ =?us-ascii?Q?Sh419dSkqAj8Zfk8sS7Meu8yPQisLE0rdSiKOktGbe3FvrzuSxfpnAEZG9ir?=
+ =?us-ascii?Q?mwvK8s13XxLCECIcOgEJIVZD7expRcpAbc5sWENuxXHnAGrcCBSX2bCZx/Tx?=
+ =?us-ascii?Q?QeZGfV1Vry6S3J8IIJe8JbaTcP1PBbH9Y0hpOZYxy4pLzEA3uA9rk/G16PbT?=
+ =?us-ascii?Q?8TPd2uOTVMCMvt5ILIwQH6dsWKjcKPvHyymJ4xzbD/LEtrXeeislsMPCAkQF?=
+ =?us-ascii?Q?9Cdm3NXtRWE2uTIfLs2P5/XSvPlqXt2mh+0VYw97adRcihrxLzfbGO5zkbCR?=
+ =?us-ascii?Q?DLezyfpm8IlzaQZmvE0QFD0FWQi3cgSiOGWvK2VXi+yKGOBnlCnR2lXf8vps?=
+ =?us-ascii?Q?FgayHe0mcFyt80+KcO5uHmVQdSICF60XpFsvHmcQBivw3rUtNGTwJ+TEZBVp?=
+ =?us-ascii?Q?RX6pecaM7Kp4K1B93pMBD7OvDCrg+jo1M8LqzWT6QcaAnkq6TIUK7DrOFu+I?=
+ =?us-ascii?Q?Isp1SD9tUwgcsRGIbQdgpPlkMU7a3XDNWgXbmSi5GHPhdQ+fHMN/ywvK4D07?=
+ =?us-ascii?Q?yQKO3nSBLe/VEACLLCdYGjuV1GKUnIxikd1mzbM0CM7LxOjknIhcJ0wNsVJO?=
+ =?us-ascii?Q?nnATVLQsRTTW1V+SRSUP7T1RQBUKyxOMRIfI17OJbdGoefmz7b8/TK2dKwLr?=
+ =?us-ascii?Q?B+FxG7YGOXa32p+mog7pgH7NZc5Ns3e9yiMk/hzu57PggV37ysS6JQ4j8y4S?=
+ =?us-ascii?Q?OFaw7YAg1OVp3q8LGNmLRs7Oe2cTgfMvgQz3l22cAePOFWQBmSS2eIg2iGos?=
+ =?us-ascii?Q?1gjZwjv34FryimgCcSQ2rTHa0EeB4BtWopiX+mDENwd8nCRDctju7UBxOr0t?=
+ =?us-ascii?Q?9/e0FboSfL2zieOn9kWkPhainMEOHRDMtaGFfEBFt3FmanieobJFtc/PyTvS?=
+ =?us-ascii?Q?nih3CMcCWvJvaOUYAJsFTnCL9RWZkzhM3bgrS4KSOY2oVkAXIny36lsg+lys?=
+ =?us-ascii?Q?cCNfAPsoViTCJTBX6bjF5gCXBqWtwWtrVTrNS3V8L26qFa9Gk5EaWgC4mmtk?=
+ =?us-ascii?Q?nA+Ao3ftveKjXaFvotlavQJGDBG+ok9OJZASMxy/43cijYJMtF8JiiQEAkBJ?=
+ =?us-ascii?Q?g0Oq5Q3RP5gxORMHqxR10ql9pIw3TnaoBks+3VHFxT6QQHyJHzpmivFL1HyD?=
+ =?us-ascii?Q?ZZjaP4yr8LdUzFBmifXVYdajqMbD0tAfTuWf3GVa4z9KphIPFMqDpcuF4sxT?=
+ =?us-ascii?Q?/l6N+vHg3PNon9xhCoLZcAd+o6A7X2b79FQ/DLTbwjOU1w8WJ7PDxjPdAZMg?=
+ =?us-ascii?Q?kMrigUl09lDZrtBJ/7mA5Dy01KnX31ECiTZcUAhPdrkHQzzaWOSe+CUx27me?=
+ =?us-ascii?Q?aD3q7ROTFB4sr18+39fBALCwHqgxuyKw0B0d8W05IiC0AiWbayCBbGDcaSOZ?=
+ =?us-ascii?Q?dixRamTtlpg3qFbpCWzWDAQeJysuYvQ0hVgHYLMZeyleFzD1fcffmBDt4r/c?=
+ =?us-ascii?Q?k1A/cRchiDn4fDFnNl7J5m3OLbDfkbyJd3fYFDxlv+LnqxPkVs/d7hlPNTdc?=
+ =?us-ascii?Q?3AdDRMZMc/G383bw+AbQX0c8Wlp8p1UHKORcVUmA0bEQvQSlnxNC61n7Wd4G?=
+ =?us-ascii?Q?hV45UEDIA6CUqRqOtEy/y6V+7VkigXs=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 35773b93-8f32-4bd3-d50c-08da2e29a11a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 96105a7d-7765-468f-b2a4-08da2e29a1ff
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2022 23:55:55.9335
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2022 23:55:57.4334
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: GjQzGRp9EkPAvEY8gVMGmx6rGv8a45zfd2ndaqqx9+JUvddR4iXYLAhhE35kkD/XlPeLTTFd9XZA89+OC8LlcQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: ELo4fW+Jq8yv4xTrDCmUFN+VpBhVzz1vm6ecYl38uggZn0tIT2Tt/GzrXoL2l/V/tluFnwzT3PIwH2Wpg71CIw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4683
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -127,46 +127,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Once the CPU port was added to the destination port mask of a packet, it
-can never be cleared, so even packets marked as dropped by the MASK_MODE
-of a VCAP IS2 filter will still reach it. This is why we need the
-OCELOT_POLICER_DISCARD to "kill dropped packets dead" and make software
-stop seeing them.
+Given the following order of operations:
 
-We disallow policer rules from being put on any other chain than the one
-for the first lookup, but we don't do this for "drop" rules, although we
-should. This change is merely ascertaining that the rules dont't
-(completely) work and letting the user know.
+(1) we add filter A using tc-flower
+(2) we send a packet that matches it
+(3) we read the filter's statistics to find a hit count of 1
+(4) we add a second filter B with a higher preference than A, and A
+    moves one position to the right to make room in the TCAM for it
+(5) we send another packet, and this matches the second filter B
+(6) we read the filter statistics again.
 
-The blamed commit is the one that introduced the multi-chain architecture
-in ocelot. Prior to that, we should have always offloaded the filters to
-VCAP IS2 lookup 0, where they did work.
+When this happens, the hit count of filter A is 2 and of filter B is 1,
+despite a single packet having matched each filter.
 
-Fixes: 1397a2eb52e2 ("net: mscc: ocelot: create TCAM skeleton from tc filter chains")
+Furthermore, in an alternate history, reading the filter stats a second
+time between steps (3) and (4) makes the hit count of filter A remain at
+1 after step (6), as expected.
+
+The reason why this happens has to do with the filter->stats.pkts field,
+which is written to hardware through the call path below:
+
+               vcap_entry_set
+               /      |      \
+              /       |       \
+             /        |        \
+            /         |         \
+es0_entry_set   is1_entry_set   is2_entry_set
+            \         |         /
+             \        |        /
+              \       |       /
+        vcap_data_set(data.counter, ...)
+
+The primary role of filter->stats.pkts is to transport the filter hit
+counters from the last readout all the way from vcap_entry_get() ->
+ocelot_vcap_filter_stats_update() -> ocelot_cls_flower_stats().
+The reason why vcap_entry_set() writes it to hardware is so that the
+counters (saturating and having a limited bit width) are cleared
+after each user space readout.
+
+The writing of filter->stats.pkts to hardware during the TCAM entry
+movement procedure is an unintentional consequence of the code design,
+because the hit count isn't up to date at this point.
+
+So at step (4), when filter A is moved by ocelot_vcap_filter_add() to
+make room for filter B, the hardware hit count is 0 (no packet matched
+on it in the meantime), but filter->stats.pkts is 1, because the last
+readout saw the earlier packet. The movement procedure programs the old
+hit count back to hardware, so this creates the impression to user space
+that more packets have been matched than they really were.
+
+The bug can be seen when running the gact_drop_and_ok_test() from the
+tc_actions.sh selftest.
+
+Fix the issue by reading back the hit count to tmp->stats.pkts before
+migrating the VCAP filter. Sure, this is a best-effort technique, since
+the packets that hit the rule between vcap_entry_get() and
+vcap_entry_set() won't be counted, but at least it allows the counters
+to be reliably used for selftests where the traffic is under control.
+
+The vcap_entry_get() name is a bit unintuitive, but it only reads back
+the counter portion of the TCAM entry, not the entire entry.
+
+The index from which we retrieve the counter is also a bit unintuitive
+(i - 1 during add, i + 1 during del), but this is the way in which TCAM
+entry movement works. The "entry index" isn't a stored integer for a
+TCAM filter, instead it is dynamically computed by
+ocelot_vcap_block_get_filter_index() based on the entry's position in
+the &block->rules list. That position (as well as block->count) is
+automatically updated by ocelot_vcap_filter_add_to_block() on add, and
+by ocelot_vcap_block_remove_filter() on del. So "i" is the new filter
+index, and "i - 1" or "i + 1" respectively are the old addresses of that
+TCAM entry (we only support installing/deleting one filter at a time).
+
+Fixes: b596229448dd ("net: mscc: ocelot: Add support for tcam")
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 v1->v2: none
 
- drivers/net/ethernet/mscc/ocelot_flower.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mscc/ocelot_vcap.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_flower.c b/drivers/net/ethernet/mscc/ocelot_flower.c
-index a9b26b3002be..51cf241ff7d0 100644
---- a/drivers/net/ethernet/mscc/ocelot_flower.c
-+++ b/drivers/net/ethernet/mscc/ocelot_flower.c
-@@ -280,9 +280,10 @@ static int ocelot_flower_parse_action(struct ocelot *ocelot, int port,
- 			filter->type = OCELOT_VCAP_FILTER_OFFLOAD;
- 			break;
- 		case FLOW_ACTION_TRAP:
--			if (filter->block_id != VCAP_IS2) {
-+			if (filter->block_id != VCAP_IS2 ||
-+			    filter->lookup != 0) {
- 				NL_SET_ERR_MSG_MOD(extack,
--						   "Trap action can only be offloaded to VCAP IS2");
-+						   "Trap action can only be offloaded to VCAP IS2 lookup 0");
- 				return -EOPNOTSUPP;
- 			}
- 			if (filter->goto_target != -1) {
+diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.c b/drivers/net/ethernet/mscc/ocelot_vcap.c
+index 6de0df1815b7..f766471f40dc 100644
+--- a/drivers/net/ethernet/mscc/ocelot_vcap.c
++++ b/drivers/net/ethernet/mscc/ocelot_vcap.c
+@@ -1212,6 +1212,8 @@ int ocelot_vcap_filter_add(struct ocelot *ocelot,
+ 		struct ocelot_vcap_filter *tmp;
+ 
+ 		tmp = ocelot_vcap_block_find_filter_by_index(block, i);
++		/* Read back the filter's counters before moving it */
++		vcap_entry_get(ocelot, i - 1, tmp);
+ 		vcap_entry_set(ocelot, i, tmp);
+ 	}
+ 
+@@ -1264,6 +1266,8 @@ int ocelot_vcap_filter_del(struct ocelot *ocelot,
+ 		struct ocelot_vcap_filter *tmp;
+ 
+ 		tmp = ocelot_vcap_block_find_filter_by_index(block, i);
++		/* Read back the filter's counters before moving it */
++		vcap_entry_get(ocelot, i + 1, tmp);
+ 		vcap_entry_set(ocelot, i, tmp);
+ 	}
+ 
 -- 
 2.25.1
 
